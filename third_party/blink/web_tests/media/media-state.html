@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<title>Test CSS selector :playing, :paused.</title>
+<link rel="author" title="Jaeyong Bae" href="jdragon.bae@gmail.com">
+<link rel="help" href="https://www.w3.org/TR/selectors-4/#video-state">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+async_test(t => {
+  let audio = document.createElement('audio');
+  audio.src = "content/test.oga";
+  assert_true(audio.matches(':paused'));
+  assert_false(audio.matches(':playing'));
+  assert_equals(document.querySelector(':playing'), null);
+  audio.play().then(t.step_func_done(() => {
+    assert_true(audio.matches(':playing'));
+    assert_false(audio.matches(':paused'));
+    assert_equals(document.querySelector(':paused'), null);
+    audio.pause();
+    assert_true(audio.matches(':paused'));
+    assert_false(audio.matches(':playing'));
+    assert_equals(document.querySelector(':playing'), null);
+  }));
+});
+
+async_test(t => {
+  let video = document.createElement('video');
+  video.src = "content/test.oga";
+  assert_true(video.matches(':paused'));
+  assert_false(video.matches(':playing'));
+  assert_equals(document.querySelector(':playing'), null);
+  video.play().then(t.step_func_done(() => {
+    assert_true(video.matches(':playing'));
+    assert_false(video.matches(':paused'));
+    assert_equals(document.querySelector(':paused'), null);
+    video.pause();
+    assert_true(video.matches(':paused'));
+    assert_false(video.matches(':playing'));
+    assert_equals(document.querySelector(':playing'), null);
+  }));
+});
+</script>

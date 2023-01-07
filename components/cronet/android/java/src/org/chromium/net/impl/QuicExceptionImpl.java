@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ public class QuicExceptionImpl extends QuicException {
      *
      * @param message explanation of failure.
      * @param netErrorCode Error code from
-     * <a href=https://chromium.googlesource.com/chromium/src/+/master/net/base/net_error_list.h>
+     * <a href=https://chromium.googlesource.com/chromium/src/+/main/net/base/net_error_list.h>
      * this list</a>.
      * @param quicDetailedErrorCode Detailed <a href="https://www.chromium.org/quic">QUIC</a> error
      * code from <a

@@ -1,5 +1,10 @@
 Tests relationship accessibility values.
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 142
+    }
     domNode : ul#rg1
     ignored : false
     name : {
@@ -38,6 +43,7 @@ Tests relationship accessibility values.
         value : Lunch Options
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -85,6 +91,11 @@ Tests relationship accessibility values.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 142
+    }
     domNode : ul#rg2
     ignored : false
     name : {
@@ -123,6 +134,7 @@ Tests relationship accessibility values.
         value : Drink Options
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable

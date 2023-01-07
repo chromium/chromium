@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,17 +55,12 @@ public class ThreadUtils {
      *     public void doFoo() {
      *         mThreadChecker.assertOnValidThreadAndState();
      *     }
-     *
-     *     public void destroy() {
-     *         mThreadChecker.destroy();
-     *     }
      * }
      * }
      * </pre>
      */
     public static class ThreadChecker {
         private final long mThreadId = Process.myTid();
-        private boolean mDestroyed;
 
         /**
          * Asserts that the current thread is the same as the one the ThreadChecker was constructed
@@ -74,26 +69,6 @@ public class ThreadUtils {
         public void assertOnValidThread() {
             assert sThreadAssertsDisabled
                     || mThreadId == Process.myTid() : "Must only be used on a single thread.";
-        }
-
-        /**
-         * Asserts that the current thread is the same as the one the ThreadChecker was constructed
-         * on and that the ThreadChecker has not been marked as destroyed.
-         */
-        public void assertOnValidThreadAndState() {
-            assertOnValidThread();
-            if (mDestroyed) {
-                throw new IllegalStateException("Operation is not allowed after destroy().");
-            }
-        }
-
-        /**
-         * Marks the ThreadChecker as destroyed, leading to all future calls to
-         * {@link #assertOnValidThreadAndState} to throw an IllegalStateException.
-         */
-        public void destroy() {
-            assertOnValidThreadAndState();
-            mDestroyed = true;
         }
     }
 

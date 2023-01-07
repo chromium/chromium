@@ -1,0 +1,14 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("incognito_interstitial_screen_banner") {
+  sources = [
+    "incognito_interstitial_screen_banner.imageset/Contents.json",
+    "incognito_interstitial_screen_banner.imageset/incognito_interstitial_screen_banner@1x.png",
+    "incognito_interstitial_screen_banner.imageset/incognito_interstitial_screen_banner@2x.png",
+    "incognito_interstitial_screen_banner.imageset/incognito_interstitial_screen_banner@3x.png",
+  ]
+}

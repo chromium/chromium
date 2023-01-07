@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/public/cpp/ash_constants.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -17,19 +17,21 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/size_range_layout.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/tray_utils.h"
 #include "ash/system/tray/unfocusable_label.h"
+#include "base/bind.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
-#include "ui/views/animation/ink_drop_highlight.h"
-#include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/square_ink_drop_ripple.h"
+#include "ui/gfx/vector_icon_utils.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -49,12 +51,12 @@ std::unique_ptr<views::LayoutManager> CreateDefaultCenterLayoutManager() {
   // TODO(bruthig): Use constants instead of magic numbers.
   auto box_layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(8, kTrayPopupLabelHorizontalPadding));
+      gfx::Insets::VH(8, kTrayPopupLabelHorizontalPadding));
   box_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
-  return std::move(box_layout);
+  return box_layout;
 }
 
 // Creates a layout manager that positions Views horizontally. The Views will be
@@ -66,7 +68,7 @@ std::unique_ptr<views::LayoutManager> CreateDefaultEndsLayoutManager() {
       views::BoxLayout::MainAxisAlignment::kCenter);
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  return std::move(box_layout);
+  return box_layout;
 }
 
 std::unique_ptr<views::LayoutManager> CreateDefaultLayoutManager(
@@ -107,14 +109,6 @@ void ConfigureDefaultSizeAndFlex(TriView* tri_view,
                                             kTrayPopupItemMaxHeight));
 }
 
-gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style) {
-  if (ink_drop_style == TrayPopupInkDropStyle::HOST_CENTERED ||
-      ink_drop_style == TrayPopupInkDropStyle::INSET_BOUNDS) {
-    return gfx::Insets(kTrayPopupInkDropInset);
-  }
-  return gfx::Insets();
-}
-
 class HighlightPathGenerator : public views::HighlightPathGenerator {
  public:
   explicit HighlightPathGenerator(TrayPopupInkDropStyle ink_drop_style)
@@ -124,9 +118,9 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
   HighlightPathGenerator& operator=(const HighlightPathGenerator&) = delete;
 
   // views::HighlightPathGenerator:
-  base::Optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::RectF bounds = rect;
-    bounds.Inset(GetInkDropInsets(ink_drop_style_));
+    bounds.Inset(gfx::InsetsF(GetInkDropInsets(ink_drop_style_)));
     float corner_radius = 0.f;
     switch (ink_drop_style_) {
       case TrayPopupInkDropStyle::HOST_CENTERED:
@@ -168,7 +162,7 @@ TriView* TrayPopupUtils::CreateDefaultRowView() {
 TriView* TrayPopupUtils::CreateSubHeaderRowView(bool start_visible) {
   TriView* tri_view = CreateDefaultRowView();
   if (!start_visible) {
-    tri_view->SetInsets(gfx::Insets(
+    tri_view->SetInsets(gfx::Insets::TLBR(
         0, kTrayPopupPaddingHorizontal - kTrayPopupLabelHorizontalPadding, 0,
         0));
     tri_view->SetContainerVisible(TriView::Container::START, false);
@@ -179,7 +173,7 @@ TriView* TrayPopupUtils::CreateSubHeaderRowView(bool start_visible) {
 TriView* TrayPopupUtils::CreateMultiTargetRowView() {
   TriView* tri_view = new TriView(0 /* padding_between_items */);
 
-  tri_view->SetInsets(gfx::Insets(0, kMenuExtraMarginFromLeftEdge, 0, 0));
+  tri_view->SetInsets(gfx::Insets::TLBR(0, kMenuExtraMarginFromLeftEdge, 0, 0));
 
   ConfigureDefaultSizeAndFlex(tri_view, TriView::Container::START);
   ConfigureDefaultSizeAndFlex(tri_view, TriView::Container::CENTER);
@@ -216,21 +210,6 @@ views::ImageView* TrayPopupUtils::CreateMainImageView() {
   return image;
 }
 
-views::ToggleButton* TrayPopupUtils::CreateToggleButton(
-    views::Button::PressedCallback callback,
-    int accessible_name_id) {
-  views::ToggleButton* toggle = new views::ToggleButton(std::move(callback));
-  const gfx::Size toggle_size(toggle->GetPreferredSize());
-  const int vertical_padding = (kMenuButtonSize - toggle_size.height()) / 2;
-  const int horizontal_padding =
-      (kTrayToggleButtonWidth - toggle_size.width()) / 2;
-  toggle->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_padding, horizontal_padding)));
-  toggle->SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id));
-  UpdateToggleButtonColors(toggle);
-  return toggle;
-}
-
 std::unique_ptr<views::Painter> TrayPopupUtils::CreateFocusPainter() {
   return views::Painter::CreateSolidFocusPainter(
       AshColorProvider::Get()->GetControlsLayerColor(
@@ -238,16 +217,10 @@ std::unique_ptr<views::Painter> TrayPopupUtils::CreateFocusPainter() {
       kFocusBorderThickness, gfx::InsetsF());
 }
 
-void TrayPopupUtils::ConfigureTrayPopupButton(views::Button* button) {
-  button->SetInstallFocusRingOnFocus(true);
-  button->SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
-  button->SetHasInkDropActionOnClick(true);
-}
-
 void TrayPopupUtils::ConfigureAsStickyHeader(views::View* view) {
   view->SetID(VIEW_ID_STICKY_HEADER);
-  view->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kMenuSeparatorVerticalPadding, 0)));
+  view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(kMenuSeparatorVerticalPadding, 0)));
   view->SetPaintToLayer();
   view->layer()->SetFillsBoundsOpaquely(false);
 }
@@ -268,41 +241,9 @@ views::LabelButton* TrayPopupUtils::CreateTrayPopupButton(
 
 views::Separator* TrayPopupUtils::CreateVerticalSeparator() {
   views::Separator* separator = new views::Separator();
-  separator->SetPreferredHeight(24);
-  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor));
+  separator->SetPreferredLength(24);
+  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   return separator;
-}
-
-std::unique_ptr<views::InkDrop> TrayPopupUtils::CreateInkDrop(
-    views::InkDropHostView* host) {
-  std::unique_ptr<views::InkDropImpl> ink_drop =
-      std::make_unique<views::InkDropImpl>(host, host->size());
-  ink_drop->SetAutoHighlightMode(
-      views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE);
-  ink_drop->SetShowHighlightOnHover(false);
-  return std::move(ink_drop);
-}
-
-std::unique_ptr<views::InkDropRipple> TrayPopupUtils::CreateInkDropRipple(
-    TrayPopupInkDropStyle ink_drop_style,
-    const views::View* host,
-    const gfx::Point& center_point) {
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
-  return std::make_unique<views::FloodFillInkDropRipple>(
-      host->size(), GetInkDropInsets(ink_drop_style), center_point,
-      ripple_attributes.base_color, ripple_attributes.inkdrop_opacity);
-}
-
-std::unique_ptr<views::InkDropHighlight> TrayPopupUtils::CreateInkDropHighlight(
-    const views::View* host) {
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
-  auto highlight = std::make_unique<views::InkDropHighlight>(
-      gfx::SizeF(host->size()), ripple_attributes.base_color);
-  highlight->set_visible_opacity(ripple_attributes.highlight_opacity);
-  return highlight;
 }
 
 void TrayPopupUtils::InstallHighlightPathGenerator(
@@ -312,16 +253,23 @@ void TrayPopupUtils::InstallHighlightPathGenerator(
       host, std::make_unique<HighlightPathGenerator>(ink_drop_style));
 }
 
+views::Separator* TrayPopupUtils::CreateListSubHeaderSeparator() {
+  views::Separator* separator = new views::Separator();
+  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kMenuSeparatorVerticalPadding - views::Separator::kThickness, 0, 0, 0)));
+  return separator;
+}
+
 views::Separator* TrayPopupUtils::CreateListItemSeparator(bool left_inset) {
   views::Separator* separator = new views::Separator();
-  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator->SetBorder(views::CreateEmptyBorder(
+  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kMenuSeparatorVerticalPadding - views::Separator::kThickness,
       left_inset ? kMenuExtraMarginFromLeftEdge + kMenuButtonSize +
                        kTrayPopupLabelHorizontalPadding
                  : 0,
-      kMenuSeparatorVerticalPadding, 0));
+      kMenuSeparatorVerticalPadding, 0)));
   return separator;
 }
 
@@ -353,18 +301,6 @@ void TrayPopupUtils::UpdateCheckMarkVisibility(HoverHighlightView* container,
   container->SetAccessibilityState(
       visible ? HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX
               : HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
-}
-
-void TrayPopupUtils::UpdateToggleButtonColors(views::ToggleButton* toggle) {
-  auto* ash_color_provider = AshColorProvider::Get();
-  toggle->SetThumbOnColor(ash_color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSwitchKnobColorActive));
-  toggle->SetThumbOffColor(ash_color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSwitchKnobColorInactive));
-  toggle->SetTrackOnColor(ash_color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSwitchTrackColorActive));
-  toggle->SetTrackOffColor(ash_color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSwitchTrackColorInactive));
 }
 
 void TrayPopupUtils::SetLabelFontList(views::Label* label, FontStyle style) {

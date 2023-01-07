@@ -1,3 +1,5 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXLandmarkForm AXRoleDescription='form'
+++AXGroup AXRoleDescription='group'
+++++AXButton AXRoleDescription='button' AXTitle='Submit'
+++AXGroup AXSubrole=AXLandmarkForm AXDescription='Name' AXRoleDescription='form'
 ++++AXButton AXRoleDescription='button' AXTitle='Submit'

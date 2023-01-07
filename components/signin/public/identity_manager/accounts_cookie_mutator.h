@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNTS_COOKIE_MUTATOR_H_
 
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
@@ -51,6 +49,10 @@ class AccountsCookieMutator {
   };
 
   AccountsCookieMutator() = default;
+
+  AccountsCookieMutator(const AccountsCookieMutator&) = delete;
+  AccountsCookieMutator& operator=(const AccountsCookieMutator&) = delete;
+
   virtual ~AccountsCookieMutator() = default;
 
   typedef base::OnceCallback<void(const CoreAccountId& account_id,
@@ -114,7 +116,7 @@ class AccountsCookieMutator {
   // know that the contents of the Gaia cookie might have changed.
   virtual void TriggerCookieJarUpdate() = 0;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Forces the processing of GaiaCookieManagerService::OnCookieChange. On
   // iOS, it's necessary to force-trigger the processing of cookie changes
   // from the client as the normal mechanism for internally observing them
@@ -132,8 +134,9 @@ class AccountsCookieMutator {
       gaia::GaiaSource source,
       LogOutFromCookieCompletedCallback completion_callback) = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountsCookieMutator);
+  // Indicates that an account previously listed via ListAccounts should now
+  // be removed.
+  virtual void RemoveLoggedOutAccountByGaiaId(const std::string& gaia_id) = 0;
 };
 
 }  // namespace signin

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,11 +53,11 @@ std::unique_ptr<base::ListValue> ToValue(const std::vector<T>& vec) {
 template <typename T>
 void SetValue(base::DictionaryValue* dict,
               const char* key,
-              const base::Optional<T>& value) {
+              const absl::optional<T>& value) {
   if (!value)
     return;
 
-  dict->Set(key, ToValue(*value));
+  dict->SetKey(key, base::Value::FromUniquePtrValue(ToValue(*value)));
 }
 
 }  // namespace
@@ -76,9 +76,19 @@ std::unique_ptr<base::DictionaryValue> TestRuleCondition::ToValue() const {
            is_url_filter_case_sensitive);
   SetValue(dict.get(), kDomainsKey, domains);
   SetValue(dict.get(), kExcludedDomainsKey, excluded_domains);
+  SetValue(dict.get(), kInitiatorDomainsKey, initiator_domains);
+  SetValue(dict.get(), kExcludedInitiatorDomainsKey,
+           excluded_initiator_domains);
+  SetValue(dict.get(), kRequestDomainsKey, request_domains);
+  SetValue(dict.get(), kExcludedRequestDomainsKey, excluded_request_domains);
+  SetValue(dict.get(), kRequestMethodsKey, request_methods);
+  SetValue(dict.get(), kExcludedRequestMethodsKey, excluded_request_methods);
   SetValue(dict.get(), kResourceTypesKey, resource_types);
   SetValue(dict.get(), kExcludedResourceTypesKey, excluded_resource_types);
+  SetValue(dict.get(), kTabIdsKey, tab_ids);
+  SetValue(dict.get(), kExcludedTabIdsKey, excluded_tab_ids);
   SetValue(dict.get(), kDomainTypeKey, domain_type);
+
   return dict;
 }
 
@@ -93,6 +103,7 @@ std::unique_ptr<base::DictionaryValue> TestRuleQueryKeyValue::ToValue() const {
   auto dict = std::make_unique<base::DictionaryValue>();
   SetValue(dict.get(), kQueryKeyKey, key);
   SetValue(dict.get(), kQueryValueKey, value);
+  SetValue(dict.get(), kQueryReplaceOnlyKey, replace_only);
   return dict;
 }
 
@@ -148,7 +159,7 @@ std::unique_ptr<base::DictionaryValue> TestRuleRedirect::ToValue() const {
 
 TestHeaderInfo::TestHeaderInfo(std::string header,
                                std::string operation,
-                               base::Optional<std::string> value)
+                               absl::optional<std::string> value)
     : header(std::move(header)),
       operation(std::move(operation)),
       value(std::move(value)) {}
@@ -241,7 +252,8 @@ std::unique_ptr<base::DictionaryValue> TestRulesetInfo::GetManifestValue()
   ruleset.id = manifest_id;
   ruleset.path = relative_file_path;
   ruleset.enabled = enabled;
-  return ruleset.ToValue();
+  return base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(base::Value(ruleset.ToValue())));
 }
 
 std::unique_ptr<base::DictionaryValue> CreateManifest(
@@ -252,7 +264,7 @@ std::unique_ptr<base::DictionaryValue> CreateManifest(
   std::vector<std::string> permissions = hosts;
 
   if (!(flags & kConfig_OmitDeclarativeNetRequestPermission))
-    permissions.push_back(kAPIPermission);
+    permissions.push_back(kDeclarativeNetRequestPermission);
 
   // These permissions are needed for some tests. TODO(karandeepb): Add a
   // ConfigFlag for these.
@@ -264,6 +276,9 @@ std::unique_ptr<base::DictionaryValue> CreateManifest(
 
   if (flags & kConfig_HasActiveTab)
     permissions.push_back("activeTab");
+
+  if (flags & kConfig_HasDelarativeNetRequestWithHostAccessPermission)
+    permissions.push_back("declarativeNetRequestWithHostAccess");
 
   std::vector<std::string> background_scripts;
   if (flags & kConfig_HasBackgroundScript)

@@ -1,0 +1,10 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='This is to check '
+++++++++++UNKNOWN label='This is to check '
+++++++++STATIC_TEXT label='italic property'
+++++++++++UNKNOWN label='italic property'
+++++++++STATIC_TEXT label=' using i tag.'
+++++++++++UNKNOWN label=' using i tag.'

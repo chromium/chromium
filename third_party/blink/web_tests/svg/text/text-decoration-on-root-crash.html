@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" fill="url(#svgvar00004) red" text-decoration="underline">
+<radialGradient id="svgvar00004" />
+<text>Text</text>
+</svg>
+<script>
+let t = async_test(() => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(t.step_func_done(()=> {
+        // Pass if no DCHECK failures.
+    }));
+  });
+}, 'No crash with text-decoration in <svg>');
+</script>
+</body>
+</html>

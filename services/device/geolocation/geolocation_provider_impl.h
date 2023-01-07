@@ -1,18 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_DEVICE_GEOLOCATION_GEOLOCATION_PROVIDER_IMPL_H_
 #define SERVICES_DEVICE_GEOLOCATION_GEOLOCATION_PROVIDER_IMPL_H_
 
-#include <list>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -34,7 +32,7 @@ class SharedURLLoaderFactory;
 
 namespace device {
 
-class GeolocationSystemPermissionManager;
+class GeolocationManager;
 
 // Callback that returns the embedder's custom location provider. This callback
 // is provided to the Device Service by its embedder.
@@ -62,19 +60,25 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // instantiated on the same thread. Ownership is NOT returned.
   static GeolocationProviderImpl* GetInstance();
 
+  GeolocationProviderImpl(const GeolocationProviderImpl&) = delete;
+  GeolocationProviderImpl& operator=(const GeolocationProviderImpl&) = delete;
+
   // Optional: Provide global configuration to Geolocation. Should be called
   // before using Init() on the singleton GetInstance().
   // |url_loader_factory| : a factory to use for network geolocation requests.
   // |api_key| : a Google API key for network geolocation requests.
   // |custom_location_provider_getter| : a callback which returns a custom
   // location provider from embedder.
+  // |geolocation_manager| : An object that holds the macOS CLLocationManager
+  // object in order to avoid multiple initializations. Should be a nullptr
+  // on all other platforms.
   // |use_gms_core_location_provider| : For android only, a flag indicates
   // whether using the GMS core location provider.
   static void SetGeolocationConfiguration(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& api_key,
       const CustomLocationProviderCallback& custom_location_provider_getter,
-      GeolocationSystemPermissionManager* system_permission_manager,
+      GeolocationManager* geolocation_manager,
       bool use_gms_core_location_provider);
 
   void BindGeolocationControlReceiver(
@@ -142,8 +146,6 @@ class GeolocationProviderImpl : public GeolocationProvider,
   std::unique_ptr<LocationProvider> arbitrator_;
 
   mojo::Receiver<mojom::GeolocationControl> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationProviderImpl);
 };
 
 }  // namespace device

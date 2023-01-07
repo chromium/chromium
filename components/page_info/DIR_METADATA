@@ -1,5 +1,2 @@
-monorail {
-  component: "UI>Browser>Bubbles>PageInfo"
-}
+mixins: "//chrome/browser/ui/page_info/COMMON_METADATA"
 
-team_email: "security-enamel@chromium.org"

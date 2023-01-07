@@ -1,7 +1,43 @@
 # Chromium Python Style Guide
 
 _For other languages, please see the [Chromium style
-guides](https://chromium.googlesource.com/chromium/src/+/master/styleguide/styleguide.md)._
+guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
+
+As of 2021-05-12, Chromium is transitioning from Python 2 to Python 3 (follow
+[crbug.com/941669](https://crbug.com/941669) for updates). See
+[//docs/python3_migration.md](../../docs/python3_migration.md) for more on
+how to migrate code.
+
+For new (Python 3) code, you can assume Python 3.8 (and that's what the bots
+will use), but we are increasingly seeing people running 3.9 locally as well.
+
+We (often) use a tool called [vpython] to manage Python packages; vpython
+is a wrapper around virtualenv. However, it is not safe to use vpython
+regardless of context, as it can have performance issues. All tests are
+run under vpython, so it is safe there, and vpython is the default for
+running scripts during PRESUBMIT checks (input_api.python3_executable points to
+vpython3 and is used in GetPythonUnitTests), but you should not use vpython
+during gclient runhooks, or during the build unless a
+[//build/OWNER](../../build/OWNERS) has told you that it is okay to do so.
+
+Also, there is some performance overhead to using vpython, so prefer not
+to use vpython unless you need it (to pick up packages not available in the
+source tree).
+
+"shebang lines" (the first line of many unix scripts, like `#!/bin/sh`)
+aren't as useful as you might think in Chromium, because
+most of our python invocations come from other tools like Ninja or
+the swarming infrastructure, and they also don't work on Windows.
+So, don't expect them to help you. That said, a python 3 shebang is one way to
+indicate to the presubmit system that test scripts should be run under Python 3
+rather than Python 2.
+
+However, if your script is executable, you should still use one, and for
+Python you should use `#!/usr/bin/env python3` or `#!/usr/bin/env vpython3`
+in order to pick up the right version of Python from your $PATH rather than
+assuming you want the version in `/usr/bin`; this allows you to pick up the
+versions we endorse from
+`depot_tools`.
 
 Chromium follows [PEP-8](https://www.python.org/dev/peps/pep-0008/).
 
@@ -31,15 +67,34 @@ making changes to files that follow them.
 You can propose changes to this style guide by sending an email to
 `python@chromium.org`. Ideally, the list will arrive at some consensus and you
 can request review for a change to this file. If there's no consensus,
-[`//styleguide/python/OWNERS`](https://chromium.googlesource.com/chromium/src/+/master/styleguide/python/OWNERS)
+[`//styleguide/python/OWNERS`](https://chromium.googlesource.com/chromium/src/+/main/styleguide/python/OWNERS)
 get to decide.
+
+## Portability
+
+There are a couple of differences in how text files are handled on Windows that
+can lead to portability problems. These differences are:
+
+* The default encoding when reading/writing text files is cp1252 on Windows and
+utf-8 on Linux, which can lead to Windows-only test failures. These can be
+avoided by always specifying `encoding='utf-8'` when opening text files.
+
+* The default behavior when writing text files on Windows is to emit \r\n
+(carriage return line feed) line endings. This can lead to cryptic Windows-only
+test failures and is generally undesirable. This can be avoided by always
+specifying `newline=''` when opening text files for writing.
+
+That is, use these forms when opening text files in Python:
+
+* reading: with open(filename, 'r', encoding='utf-8') as f:
+* writing: with open(filename, 'w', encoding='utf-8', newline='') as f:
 
 ## Tools
 
 ### pylint
 [Depot tools](http://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools.html)
 contains a local copy of pylint, appropriately configured.
-* Directories need to opt into pylint presumbit checks via:
+* Directories need to opt into pylint presubmit checks via:
    `input_api.canned_checks.RunPylint()`.
 
 ### YAPF
@@ -74,4 +129,6 @@ YAPF has gotchas. You should review its changes before submitting. Notably:
 * For Chromium-specific bugs, please discuss on `python@chromium.org`.
 
 #### Editor Integration
-See: https://github.com/google/yapf/tree/master/plugins
+See: https://github.com/google/yapf/tree/main/plugins
+
+[vpython]: https://chromium.googlesource.com/infra/infra/+/refs/heads/main/doc/users/vpython.md

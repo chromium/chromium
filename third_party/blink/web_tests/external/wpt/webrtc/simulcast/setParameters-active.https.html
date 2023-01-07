@@ -7,6 +7,9 @@
 <script src="../RTCPeerConnection-helper.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="../../mediacapture-streams/permission-helper.js"></script>
 <script>
 async function queryReceiverStats(pc) {
   const inboundStats = [];
@@ -22,7 +25,7 @@ async function queryReceiverStats(pc) {
 }
 
 promise_test(async t => {
-  const rids = [0, 1, 2];
+  const rids = [0, 1];
   const pc1 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
   const pc2 = new RTCPeerConnection();

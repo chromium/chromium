@@ -1,0 +1,69 @@
+<style>
+  /*
+    Cannot use semantic colors because toast notification element must invert
+    the color scheme. These are swapped versions of --cros-* variables.
+  */
+  :host {
+    --personalization-app-bg-color-elevation-2: rgb(46, 46, 49);
+    --personalization-app-text-color-primary: var(--google-grey-200);
+  }
+
+  /* Invert cr-button colors. These are normally dark mode colors. */
+  cr-button {
+    --ink-color: var(--google-blue-300);
+    --text-color: var(--google-blue-300);
+  }
+
+  /* Override some cr-button variables. */
+  cr-button {
+    --active-shadow-rgb: transparent;
+    --border-color: transparent;
+    --hover-border-color: transparent;
+    --hover-bg-color: transparent;
+    --hover-bg-action: transparent;
+    --cr-button-height: 36px;
+    border: 0;
+    margin: 0;
+    padding: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --personalization-app-bg-color-elevation-2: white;
+      --personalization-app-text-color-primary: var(--google-grey-900);
+    }
+
+    /* Invert cr-button colors. These are normally light mode colors. */
+    cr-button {
+      --ink-color: var(--google-blue-600);
+      --text-color: var(--google-blue-600);
+    }
+  }
+
+  #container {
+    align-items: center;
+    background-color: var(--personalization-app-bg-color-elevation-2);
+    border-radius: 4px;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 2px 6px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+    color: var(--personalization-app-text-color-primary);
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    padding: 16px;
+  }
+
+  p {
+    margin: 0;
+    margin-inline-end: 16px;
+  }
+
+</style>
+<template is="dom-if" if="[[showError_]]">
+  <div id="container">
+    <p>[[getErrorMessage_(error_)]]</p>
+    <cr-button on-click="onDismissClicked_">
+      [[getDismissMessage_(error_)]]
+    </cr-button>
+  </div>
+</template>

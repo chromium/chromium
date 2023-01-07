@@ -1,0 +1,18 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# The compiler for the trusted nacl_helper_bootstrap binary.
+nacl_bootstrap_compiler = "g++"
+if (default_toolchain == "//build/toolchain/cros:target") {
+  import("//build/toolchain/cros_toolchain.gni")
+  if (target_cpu == "arm64" && current_cpu == "arm") {
+    nacl_bootstrap_compiler = cros_nacl_helper_arm32_cxx
+  } else {
+    nacl_bootstrap_compiler = cros_target_cxx
+  }
+} else if (current_cpu == "arm" && !is_android) {
+  nacl_bootstrap_compiler = "arm-linux-gnueabihf-g++"
+} else if (current_cpu == "mipsel" && !is_android) {
+  nacl_bootstrap_compiler = "mipsel-linux-gnu-g++"
+}

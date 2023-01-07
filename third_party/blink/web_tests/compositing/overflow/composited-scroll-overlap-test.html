@@ -26,6 +26,8 @@ function drawsContentAndLayoutObject(layer) {
         return false;
     if (layer.name.includes("LayoutView"))
         return false;
+    if (layer.name.includes("LayoutNGView"))
+        return false;
     return true;
 }
 

@@ -1,0 +1,25 @@
+caption: Switch the primary mouse button to the right button on the login screen
+desc: |-
+  Switch the primary mouse button to the right button on the login screen.
+
+            If this policy is set to enabled, the right button of the mouse will always be the primary key on the login screen.
+
+            If this policy is set to disabled, the left button of the mouse will always be the primary key on the login screen.
+
+            If you set this policy, users cannot change or override it.
+
+            If this policy is left unset, the left button of the mouse will be the primary key on the login screen initially, but can be switched by the user anytime.
+device_only: true
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+owners:
+- amraboelkher@chromium.org
+- emaxx@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:81-
+tags: []
+type: main

@@ -1,8 +1,10 @@
+# mypy: allow-untyped-defs
+
 import json
 import select
 
-from collections.abc import Mapping
 from http.client import HTTPConnection
+from typing import Dict, List, Mapping, Sequence, Tuple
 from urllib import parse as urlparse
 
 from . import error
@@ -13,7 +15,7 @@ from . import error
 missing = object()
 
 
-class ResponseHeaders(Mapping):
+class ResponseHeaders(Mapping[str, str]):
     """Read-only dictionary-like API for accessing response headers.
 
     This class:
@@ -22,11 +24,9 @@ class ResponseHeaders(Mapping):
       * Has case-insensitive header lookup.
       * Always returns all header values that have the same name, separated by
         commas.
-
-    It does not ensure header types (e.g. binary vs string).
     """
-    def __init__(self, items):
-        self.headers_dict = {}
+    def __init__(self, items: Sequence[Tuple[str, str]]):
+        self.headers_dict: Dict[str, List[str]] = {}
         for key, value in items:
             key = key.lower()
             if key not in self.headers_dict:
@@ -53,14 +53,13 @@ class ResponseHeaders(Mapping):
                 raise
 
     def __iter__(self):
-        for item in self.headers_dict:
-            yield item
+        yield from self.headers_dict
 
     def __len__(self):
         return len(self.headers_dict)
 
 
-class Response(object):
+class Response:
     """
     Describes an HTTP response received from a remote end whose
     body has been read and parsed as appropriate.
@@ -74,8 +73,8 @@ class Response(object):
     def __repr__(self):
         cls_name = self.__class__.__name__
         if self.error:
-            return "<%s status=%s error=%s>" % (cls_name, self.status, repr(self.error))
-        return "<% status=%s body=%s>" % (cls_name, self.status, json.dumps(self.body))
+            return f"<{cls_name} status={self.status} error={repr(self.error)}>"
+        return f"<{cls_name: }tatus={self.status} body={json.dumps(self.body)}>"
 
     def __str__(self):
         return json.dumps(self.body, indent=2)
@@ -98,7 +97,7 @@ class Response(object):
         return cls(http_response.status, body, headers)
 
 
-class HTTPWireProtocol(object):
+class HTTPWireProtocol:
     """
     Transports messages (commands and responses) over the WebDriver
     wire protocol.

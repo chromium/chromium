@@ -1,9 +1,10 @@
 include_rules = [
   "+chrome/app",
   "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   "+chrome/browser/android/browserservices/verification",
   "+chrome/browser/android/lifecycle",
-  "+chrome/browser/image_fetcher",
+  "+components/image_fetcher",
   "+chrome/browser/paint_preview/android",
   "+chrome/browser/password_check/android",
   "+chrome/browser/profiles/android/java",
@@ -22,6 +23,7 @@ include_rules = [
   "+components/autofill/android/java/src/org/chromium/components/autofill",
   "+components/background_task_scheduler/android/java",
   "+components/bookmarks/common/android/java/src/org/chromium/components/bookmarks",
+  "+components/browser_ui/accessibility/android",
   "+components/browser_ui/notifications/android",
   "+components/browser_ui/settings/android",
   "+components/browser_ui/sms/android",
@@ -48,10 +50,8 @@ include_rules = [
   "+components/search_engines",
   "+components/security_state/content/android/java",
   "+components/sync/android/java/src/org/chromium/components/sync",
-  "+components/sync/test/fake_server/android",
-  # We should only depend on the util package of something that lives in
-  # javatests.
-  "+components/sync/test/android/javatests/src/org/chromium/components/sync/test/util",
+  "+components/sync/test",
+  "+components/webauthn/android/java",
 
   "-content/public/android/java",
   "+content/public/android/java/src/org/chromium/content_public",
@@ -63,6 +63,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "federated_identity_test_utils.cc": [
+    "+content/public/browser/federated_identity_api_permission_context_delegate.h",
+  ],
   "WebappNavigationTest\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
   ],
@@ -71,6 +74,9 @@ specific_include_rules = {
   ],
   "AuthenticatorTest\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
+  ],
+  "Fido2ApiTestHelper.java": [
+    "+content/public/android/java/src/org/chromium/content/browser/ClientDataJsonImpl.java",
   ],
   "PageInfoPopupTest\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",

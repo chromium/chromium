@@ -1,7 +1,6 @@
 mark@chromium.org
 rsesek@chromium.org
 tapted@chromium.org
-thomasvl@chromium.org
 thakis@chromium.org
 
 per-file *_param_traits*.*=set noparent

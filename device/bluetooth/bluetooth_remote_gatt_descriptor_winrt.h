@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
@@ -32,6 +32,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorWinrt
       Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
                                  GenericAttributeProfile::IGattDescriptor>
           descriptor);
+
+  BluetoothRemoteGattDescriptorWinrt(
+      const BluetoothRemoteGattDescriptorWinrt&) = delete;
+  BluetoothRemoteGattDescriptorWinrt& operator=(
+      const BluetoothRemoteGattDescriptorWinrt&) = delete;
+
   ~BluetoothRemoteGattDescriptorWinrt() override;
 
   // BluetoothGattDescriptor:
@@ -42,8 +48,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorWinrt
   // BluetoothRemoteGattDescriptor:
   const std::vector<uint8_t>& GetValue() const override;
   BluetoothRemoteGattCharacteristic* GetCharacteristic() const override;
-  void ReadRemoteDescriptor(ValueCallback callback,
-                            ErrorCallback error_callback) override;
+  void ReadRemoteDescriptor(ValueCallback callback) override;
   void WriteRemoteDescriptor(const std::vector<uint8_t>& value,
                              base::OnceClosure callback,
                              ErrorCallback error_callback) override;
@@ -52,14 +57,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorWinrt
   GetDescriptorForTesting();
 
  private:
-  struct PendingReadCallbacks {
-    PendingReadCallbacks(ValueCallback callback, ErrorCallback error_callback);
-    ~PendingReadCallbacks();
-
-    ValueCallback callback;
-    ErrorCallback error_callback;
-  };
-
   struct PendingWriteCallbacks {
     PendingWriteCallbacks(base::OnceClosure callback,
                           ErrorCallback error_callback);
@@ -87,20 +84,18 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorWinrt
           write_result);
 
   // Weak. This object is owned by |characteristic_|.
-  BluetoothRemoteGattCharacteristic* characteristic_;
+  raw_ptr<BluetoothRemoteGattCharacteristic> characteristic_;
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
                              GenericAttributeProfile::IGattDescriptor>
       descriptor_;
   BluetoothUUID uuid_;
   std::string identifier_;
   std::vector<uint8_t> value_;
-  std::unique_ptr<PendingReadCallbacks> pending_read_callbacks_;
+  ValueCallback pending_read_callback_;
   std::unique_ptr<PendingWriteCallbacks> pending_write_callbacks_;
 
   base::WeakPtrFactory<BluetoothRemoteGattDescriptorWinrt> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattDescriptorWinrt);
 };
 
 }  // namespace device

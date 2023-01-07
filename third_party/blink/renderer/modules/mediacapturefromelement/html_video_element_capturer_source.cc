@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/limits.h"
 #include "third_party/blink/public/platform/web_media_player.h"
@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace {
@@ -72,6 +73,7 @@ HtmlVideoElementCapturerSource::GetPreferredFormats() {
 void HtmlVideoElementCapturerSource::StartCapture(
     const media::VideoCaptureParams& params,
     const VideoCaptureDeliverFrameCB& new_frame_callback,
+    const VideoCaptureCropVersionCB& crop_version_callback,
     const RunningCallback& running_callback) {
   DVLOG(2) << __func__ << " requested "
            << media::VideoCaptureFormat::ToString(params.requested_format);
@@ -80,7 +82,7 @@ void HtmlVideoElementCapturerSource::StartCapture(
 
   running_callback_ = running_callback;
   if (!web_media_player_ || !web_media_player_->HasVideo()) {
-    running_callback_.Run(false);
+    running_callback_.Run(RunState::kStopped);
     return;
   }
 
@@ -91,10 +93,10 @@ void HtmlVideoElementCapturerSource::StartCapture(
                std::min(static_cast<float>(media::limits::kMaxFramesPerSecond),
                         params.requested_format.frame_rate));
 
-  running_callback_.Run(true);
+  running_callback_.Run(RunState::kRunning);
   task_runner_->PostTask(
-      FROM_HERE, WTF::Bind(&HtmlVideoElementCapturerSource::sendNewFrame,
-                           weak_factory_.GetWeakPtr()));
+      FROM_HERE, WTF::BindOnce(&HtmlVideoElementCapturerSource::sendNewFrame,
+                               weak_factory_.GetWeakPtr()));
 }
 
 void HtmlVideoElementCapturerSource::StopCapture() {
@@ -119,7 +121,7 @@ void HtmlVideoElementCapturerSource::sendNewFrame() {
   if (start_capture_time_.is_null())
     start_capture_time_ = current_time;
 
-  if (auto frame = web_media_player_->GetCurrentFrame()) {
+  if (auto frame = web_media_player_->GetCurrentFrameThenUpdate()) {
     auto new_frame = media::VideoFrame::WrapVideoFrame(
         frame, frame->format(), frame->visible_rect(), frame->natural_size());
     new_frame->set_timestamp(current_time - start_capture_time_);
@@ -136,7 +138,7 @@ void HtmlVideoElementCapturerSource::sendNewFrame() {
 
   // Calculate the time in the future where the next frame should be created.
   const base::TimeDelta frame_interval =
-      base::TimeDelta::FromMicroseconds(1E6 / capture_frame_rate_);
+      base::Microseconds(1E6 / capture_frame_rate_);
   if (next_capture_time_.is_null()) {
     next_capture_time_ = current_time + frame_interval;
   } else {

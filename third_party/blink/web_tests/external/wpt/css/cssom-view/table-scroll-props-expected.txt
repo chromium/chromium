@@ -7,7 +7,7 @@ PASS Table and wider caption
 PASS Table with padding
 PASS Table with padding and content-box sizing
 FAIL Table with separated border assert_equals: Table with separated border scrollWidth expected 26 but got 20
-FAIL Table with collapsed border assert_equals: Table with collapsed border scrollWidth expected 26 but got 20
+FAIL Table with collapsed border assert_equals: Table with collapsed border scrollWidth expected 26 but got 22
 PASS Caption with padding
 PASS Caption with border
 PASS Caption with margin

@@ -1,0 +1,48 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+component("smbfs") {
+  sources = [
+    "smbfs_host.cc",
+    "smbfs_host.h",
+    "smbfs_mounter.cc",
+    "smbfs_mounter.h",
+  ]
+  public_deps = [ "//chromeos/ash/components/smbfs/mojom" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/components/disks",
+    "//chromeos/components/mojo_bootstrap",
+    "//mojo/public/cpp/bindings",
+    "//net",
+  ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_SMBFS_IMPL" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "smbfs_host_unittest.cc",
+    "smbfs_mounter_unittest.cc",
+  ]
+
+  deps = [
+    ":smbfs",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/smbfs/mojom",
+    "//chromeos/components/mojo_bootstrap",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

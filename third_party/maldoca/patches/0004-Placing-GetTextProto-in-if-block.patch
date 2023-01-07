@@ -1,0 +1,38 @@
+From 16eb27555d6de574baaa89115ae7388c783116d7 Mon Sep 17 00:00:00 2001
+From: Olabode Anise <anise@chromium.org>
+Date: Mon, 23 Aug 2021 20:51:30 +0000
+Subject: [PATCH] Placing GetTextProto in #if block
+
+---
+ third_party/maldoca/src/maldoca/base/file.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/maldoca/src/maldoca/base/file.h b/third_party/maldoca/src/maldoca/base/file.h
+index b9ad9635d04b..ebf2b56b1f95 100644
+--- a/third_party/maldoca/src/maldoca/base/file.h
++++ b/third_party/maldoca/src/maldoca/base/file.h
+@@ -29,7 +29,9 @@
+ #include "absl/strings/str_join.h"
+ #include "absl/strings/string_view.h"
+ #include "base/files/file_path.h"
++#ifndef MALDOCA_CRHOME
+ #include "google/protobuf/message.h"
++#endif
+ #include "maldoca/base/statusor.h"
+ #if defined(_WIN32)
+ #include "maldoca/base/utf8/unicodetext.h"
+@@ -77,11 +79,9 @@ inline absl::Status CreateDir(absl::string_view path) {
+ 
+ std::string CreateTempFileAndCloseOrDie(absl::string_view directory,
+                                         const std::string& contents);
+-#endif  // MALDOCA_CHROME
+ absl::Status GetTextProto(absl::string_view filename,
+                           ::google::protobuf::Message* proto);
+ 
+-#ifndef MALDOCA_CHROME
+ // Get a temp dir for testing
+ inline std::string TestTempDir() {
+   auto var = getenv("TEST_TMPDIR");
+-- 
+2.33.0.rc2.250.ged5fa647cd-goog
+

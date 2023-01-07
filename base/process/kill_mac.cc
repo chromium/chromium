@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,7 +114,7 @@ void WaitForChildToDie(pid_t child, int timeout) {
     } else {
       // Keep track of the elapsed time to be able to restart kevent if it's
       // interrupted.
-      TimeDelta remaining_delta = TimeDelta::FromSeconds(timeout);
+      TimeDelta remaining_delta = Seconds(timeout);
       TimeTicks deadline = TimeTicks::Now() + remaining_delta;
       result = -1;
       struct kevent event = {0};

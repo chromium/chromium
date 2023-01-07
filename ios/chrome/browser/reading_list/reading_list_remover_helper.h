@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_READING_LIST_READING_LIST_REMOVER_HELPER_H_
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
@@ -22,9 +22,13 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
   using Callback = base::OnceCallback<void(bool)>;
 
   explicit ReadingListRemoverHelper(ChromeBrowserState* browser_state);
+
+  ReadingListRemoverHelper(const ReadingListRemoverHelper&) = delete;
+  ReadingListRemoverHelper& operator=(const ReadingListRemoverHelper&) = delete;
+
   ~ReadingListRemoverHelper() override;
 
-  // Removes all Reading list items and asynchronously invoke |completion| with
+  // Removes all Reading list items and asynchronously invoke `completion` with
   // boolean indicating success or failure.
   void RemoveAllUserReadingListItemsIOS(Callback completion);
 
@@ -34,19 +38,17 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
 
  private:
   // Invoked when the reading list items have been deleted. Invoke the
-  // completion callback with |success| (invocation is asynchronous so
+  // completion callback with `success` (invocation is asynchronous so
   // the object won't be deleted immediately).
   void ReadlingListItemsRemoved(bool success);
 
   Callback completion_;
   ReadingListModel* reading_list_model_ = nullptr;
   ReadingListDownloadService* reading_list_download_service_ = nullptr;
-  ScopedObserver<ReadingListModel, ReadingListModelObserver> scoped_observer_{
-      this};
+  base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
+      scoped_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListRemoverHelper);
 };
 
 }  // namespace reading_list

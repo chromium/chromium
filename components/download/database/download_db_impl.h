@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/database/download_db.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -34,6 +33,10 @@ class DownloadDBImpl : public DownloadDB {
       DownloadNamespace download_namespace,
       std::unique_ptr<
           leveldb_proto::ProtoDatabase<download_pb::DownloadDBEntry>> db);
+
+  DownloadDBImpl(const DownloadDBImpl&) = delete;
+  DownloadDBImpl& operator=(const DownloadDBImpl&) = delete;
+
   ~DownloadDBImpl() override;
 
   // DownloadDB implementation.
@@ -84,10 +87,8 @@ class DownloadDBImpl : public DownloadDB {
   int num_initialize_attempts_ = 0;
 
   base::WeakPtrFactory<DownloadDBImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadDBImpl);
 };
 
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_DATABASE_IN_PROGRESS_DOWNLOAD_DB_IMPL_H_
+#endif  // COMPONENTS_DOWNLOAD_DATABASE_DOWNLOAD_DB_IMPL_H_

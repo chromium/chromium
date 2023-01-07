@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "base/macros.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 
 namespace base {
@@ -16,16 +16,17 @@ template <typename T> struct DefaultSingletonTraits;
 
 class PrefRegistrySimple;
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace extensions {
 
 // Chrome OS specific implementation of assets manager that shares default apps
 // between all users on the machine.
 class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
  public:
+  ExtensionAssetsManagerChromeOS(const ExtensionAssetsManagerChromeOS&) =
+      delete;
+  ExtensionAssetsManagerChromeOS& operator=(
+      const ExtensionAssetsManagerChromeOS&) = delete;
+
   static ExtensionAssetsManagerChromeOS* GetInstance();
 
   // A dictionary that maps shared extension IDs to version/paths/users.
@@ -121,10 +122,8 @@ class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
   // Clean shared extension with given |id|.
   static bool CleanUpExtension(
       const std::string& id,
-      base::DictionaryValue* extension_info,
+      base::Value::Dict& extension_info,
       std::multimap<std::string, base::FilePath>* live_extension_paths);
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionAssetsManagerChromeOS);
 };
 
 }  // namespace extensions

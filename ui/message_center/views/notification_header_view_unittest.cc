@@ -1,13 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/message_center/views/notification_header_view.h"
 
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -48,7 +52,7 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
 
     notification_header_view_ =
         new NotificationHeaderView(views::Button::PressedCallback());
-    container->AddChildView(notification_header_view_);
+    container->AddChildView(notification_header_view_.get());
 
     widget_.Show();
   }
@@ -77,7 +81,7 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
   }
 
  protected:
-  NotificationHeaderView* notification_header_view_ = nullptr;
+  raw_ptr<NotificationHeaderView> notification_header_view_ = nullptr;
 
  private:
   views::Widget widget_;
@@ -87,28 +91,27 @@ TEST_F(NotificationHeaderViewTest, UpdatesTimestampOverTime) {
   auto* timestamp_view =
       notification_header_view_->timestamp_view_for_testing();
 
-  notification_header_view_->SetTimestamp(base::Time::Now() +
-                                          base::TimeDelta::FromHours(3) +
-                                          base::TimeDelta::FromMinutes(30));
+  notification_header_view_->SetTimestamp(base::Time::Now() + base::Hours(3) +
+                                          base::Minutes(30));
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_MESSAGE_NOTIFICATION_DURATION_HOURS_SHORTEST_FUTURE, 3),
             timestamp_view->GetText());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromHours(3));
+  task_environment()->FastForwardBy(base::Hours(3));
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_MESSAGE_NOTIFICATION_DURATION_MINUTES_SHORTEST_FUTURE, 30),
             timestamp_view->GetText());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(30));
+  task_environment()->FastForwardBy(base::Minutes(30));
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MESSAGE_NOTIFICATION_NOW_STRING_SHORTEST),
       timestamp_view->GetText());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromDays(2));
+  task_environment()->FastForwardBy(base::Days(2));
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
@@ -193,7 +196,7 @@ TEST_F(NotificationHeaderViewTest, ColorContrastEnforcement) {
 
   // A bright background should enforce dark enough icons.
   notification_header_view_->SetBackgroundColor(SK_ColorWHITE);
-  notification_header_view_->SetAccentColor(SK_ColorWHITE);
+  notification_header_view_->SetColor(SK_ColorWHITE);
   SkColor expected_color =
       color_utils::BlendForMinContrast(SK_ColorWHITE, SK_ColorWHITE).color;
   EXPECT_EQ(expected_color, summary_text->GetEnabledColor());
@@ -202,7 +205,7 @@ TEST_F(NotificationHeaderViewTest, ColorContrastEnforcement) {
 
   // A dark background should enforce bright enough icons.
   notification_header_view_->SetBackgroundColor(SK_ColorBLACK);
-  notification_header_view_->SetAccentColor(SK_ColorBLACK);
+  notification_header_view_->SetColor(SK_ColorBLACK);
   expected_color =
       color_utils::BlendForMinContrast(SK_ColorBLACK, SK_ColorBLACK).color;
   EXPECT_EQ(expected_color, summary_text->GetEnabledColor());
@@ -213,6 +216,60 @@ TEST_F(NotificationHeaderViewTest, ColorContrastEnforcement) {
 TEST_F(NotificationHeaderViewTest, DefaultFocusBehavior) {
   EXPECT_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY,
             notification_header_view_->GetFocusBehavior());
+}
+
+TEST_F(NotificationHeaderViewTest, AppIconAndExpandButtonNotVisible) {
+  // Make sure that app icon and expand button are not visible if used for an
+  // ash notification.
+  auto notification_header_view = std::make_unique<NotificationHeaderView>(
+      views::Button::PressedCallback());
+  notification_header_view->SetIsInAshNotificationView(true);
+
+  EXPECT_FALSE(
+      notification_header_view->app_icon_view_for_testing()->GetVisible());
+  EXPECT_FALSE(notification_header_view->expand_button()->GetVisible());
+}
+
+TEST_F(NotificationHeaderViewTest, GroupChildNotificationVisibility) {
+  notification_header_view_->SetSummaryText(u"summary");
+  notification_header_view_->SetTimestamp(base::Time::Now());
+
+  EXPECT_TRUE(
+      notification_header_view_->app_icon_view_for_testing()->GetVisible());
+  EXPECT_TRUE(notification_header_view_->expand_button()->GetVisible());
+  EXPECT_TRUE(
+      notification_header_view_->summary_text_for_testing()->GetVisible());
+  EXPECT_TRUE(notification_header_view_->summary_text_divider_->GetVisible());
+  EXPECT_TRUE(
+      notification_header_view_->timestamp_view_for_testing()->GetVisible());
+  EXPECT_TRUE(notification_header_view_->timestamp_divider_->GetVisible());
+
+  // For group child notification, all the views except `timestamp_view_` should
+  // not be visible.
+  notification_header_view_->SetIsInGroupChildNotification(
+      /*is_in_group_child_notification=*/true);
+  EXPECT_FALSE(
+      notification_header_view_->app_icon_view_for_testing()->GetVisible());
+  EXPECT_FALSE(notification_header_view_->expand_button()->GetVisible());
+  EXPECT_FALSE(
+      notification_header_view_->summary_text_for_testing()->GetVisible());
+  EXPECT_FALSE(notification_header_view_->summary_text_divider_->GetVisible());
+  EXPECT_FALSE(notification_header_view_->timestamp_divider_->GetVisible());
+  EXPECT_TRUE(
+      notification_header_view_->timestamp_view_for_testing()->GetVisible());
+
+  // Switching back.
+  notification_header_view_->SetIsInGroupChildNotification(
+      /*is_in_group_child_notification=*/false);
+  EXPECT_TRUE(
+      notification_header_view_->app_icon_view_for_testing()->GetVisible());
+  EXPECT_TRUE(notification_header_view_->expand_button()->GetVisible());
+  EXPECT_TRUE(
+      notification_header_view_->summary_text_for_testing()->GetVisible());
+  EXPECT_TRUE(notification_header_view_->summary_text_divider_->GetVisible());
+  EXPECT_TRUE(
+      notification_header_view_->timestamp_view_for_testing()->GetVisible());
+  EXPECT_TRUE(notification_header_view_->timestamp_divider_->GetVisible());
 }
 
 TEST_F(NotificationHeaderViewTest, MetadataTest) {

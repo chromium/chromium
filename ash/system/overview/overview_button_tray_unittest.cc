@@ -1,13 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/overview/overview_button_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/login_status.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/root_window_controller.h"
@@ -258,7 +258,7 @@ TEST_F(OverviewButtonTrayTest, TrayOverviewUserAction) {
 // when TabletMode has been enabled,  when we are using multiple displays.
 // By default the DisplayManger is in extended mode.
 TEST_F(OverviewButtonTrayTest, DisplaysOnBothDisplays) {
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetTray()->GetVisible());
   EXPECT_FALSE(GetSecondaryTray()->GetVisible());
@@ -266,7 +266,7 @@ TEST_F(OverviewButtonTrayTest, DisplaysOnBothDisplays) {
   base::RunLoop().RunUntilIdle();
   // DisplayConfigurationObserver enables mirror mode when tablet mode is
   // enabled. Disable mirror mode to test tablet mode with multiple displays.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetTray()->GetVisible());
   EXPECT_TRUE(GetSecondaryTray()->GetVisible());
@@ -279,7 +279,7 @@ TEST_F(OverviewButtonTrayTest, DisplaysOnBothDisplays) {
 // https://crbug.com/798857.
 TEST_F(OverviewButtonTrayTest, DISABLED_SecondaryTrayCreatedVisible) {
   TabletModeControllerTestApi().EnterTabletMode();
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetSecondaryTray()->GetVisible());
 }
@@ -312,11 +312,11 @@ TEST_F(OverviewButtonTrayTest, ActiveStateOnlyDuringOverviewMode) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
 
-  EXPECT_TRUE(Shell::Get()->overview_controller()->StartOverview());
+  EXPECT_TRUE(EnterOverview());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_TRUE(GetTray()->is_active());
 
-  EXPECT_TRUE(Shell::Get()->overview_controller()->EndOverview());
+  EXPECT_TRUE(ExitOverview());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_FALSE(GetTray()->is_active());
 }
@@ -399,23 +399,24 @@ TEST_F(OverviewButtonTrayTest, SplitviewModeQuickSwitch) {
 
   // Enter splitview mode. Snap |window1| to the left, this will be the default
   // splitview window.
-  Shell::Get()->overview_controller()->StartOverview();
-  split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
-  split_view_controller()->SnapWindow(window2.get(),
-                                      SplitViewController::RIGHT);
+  EnterOverview();
+  split_view_controller()->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(
+      window2.get(), SplitViewController::SnapPosition::kSecondary);
   ASSERT_EQ(window1.get(), split_view_controller()->GetDefaultSnappedWindow());
 
   // Verify that after double tapping, we have switched to |window3|, even
   // though |window1| is more recently used.
   PerformDoubleTap();
-  EXPECT_EQ(window3.get(), split_view_controller()->right_window());
+  EXPECT_EQ(window3.get(), split_view_controller()->secondary_window());
   EXPECT_EQ(window3.get(), window_util::GetActiveWindow());
 
   // Focus |window1|. Verify that after double tapping, |window2| is the on the
   // right side for splitview.
   wm::ActivateWindow(window1.get());
   PerformDoubleTap();
-  EXPECT_EQ(window2.get(), split_view_controller()->right_window());
+  EXPECT_EQ(window2.get(), split_view_controller()->secondary_window());
   EXPECT_EQ(window2.get(), window_util::GetActiveWindow());
 
   split_view_controller()->EndSplitView();
@@ -615,7 +616,7 @@ TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest,
   // Create a window to show in overview.
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_FALSE(GetTray()->GetVisible());
 

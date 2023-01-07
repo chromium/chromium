@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/system/power/power_status.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 
 namespace message_center {
 class MessageCenter;
@@ -34,6 +34,11 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
 
   explicit PowerNotificationController(
       message_center::MessageCenter* message_center);
+
+  PowerNotificationController(const PowerNotificationController&) = delete;
+  PowerNotificationController& operator=(const PowerNotificationController&) =
+      delete;
+
   ~PowerNotificationController() override;
 
   void NotifyUsbNotificationClosedByUser();
@@ -90,8 +95,6 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   // Has the user already dismissed a low-power notification? Should be set
   // back to false when all power sources are disconnected.
   bool usb_notification_dismissed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerNotificationController);
 };
 
 }  // namespace ash

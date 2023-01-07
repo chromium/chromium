@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,23 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/core/dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_keyed_service.pbzero.h"
+
+namespace {
+
+base::flat_map<void*, int>& GetKeyedServicesCount() {
+  // A static map to keep the count of currently active KeyedServices per
+  // context.
+  static base::NoDestructor<base::flat_map<void*, int>> keyed_services_count_;
+  return *keyed_services_count_;
+}
+
+}  // namespace
 
 KeyedServiceFactory::KeyedServiceFactory(const char* name,
                                          DependencyManager* manager,
@@ -87,14 +100,21 @@ KeyedService* KeyedServiceFactory::Associate(
     void* context,
     std::unique_ptr<KeyedService> service) {
   DCHECK(!base::Contains(mapping_, context));
+  // Only count non-null services
+  if (service)
+    GetKeyedServicesCount()[context]++;
   auto iterator = mapping_.emplace(context, std::move(service)).first;
   return iterator->second.get();
 }
 
 void KeyedServiceFactory::Disassociate(void* context) {
   auto iterator = mapping_.find(context);
-  if (iterator != mapping_.end())
+  if (iterator != mapping_.end()) {
+    // if a service was null, it is not considered in the count.
+    if (iterator->second && --GetKeyedServicesCount()[context] == 0)
+      GetKeyedServicesCount().erase(context);
     mapping_.erase(iterator);
+  }
 }
 
 void KeyedServiceFactory::ContextShutdown(void* context) {
@@ -121,4 +141,15 @@ void KeyedServiceFactory::SetEmptyTestingFactory(void* context) {
 
 bool KeyedServiceFactory::HasTestingFactory(void* context) {
   return base::Contains(testing_factories_, context);
+}
+
+bool KeyedServiceFactory::IsServiceCreated(void* context) const {
+  auto it = mapping_.find(context);
+  return it != mapping_.end() && it->second != nullptr;
+}
+
+// static
+int KeyedServiceFactory::GetServicesCount(void* context) {
+  auto it = GetKeyedServicesCount().find(context);
+  return it != GetKeyedServicesCount().end() ? it->second : 0;
 }

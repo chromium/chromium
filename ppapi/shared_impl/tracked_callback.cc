@@ -1,16 +1,18 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ppapi/shared_impl/tracked_callback.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/c/pp_errors.h"
@@ -74,7 +76,8 @@ TrackedCallback::TrackedCallback(Resource* resource,
     if (is_blocking()) {
       // This is a blocking completion callback, so we will need a condition
       // variable for blocking & signalling the calling thread.
-      operation_completed_condvar_.reset(new base::ConditionVariable(&lock_));
+      operation_completed_condvar_ =
+          std::make_unique<base::ConditionVariable>(&lock_);
     } else {
       // It's a non-blocking callback, so we should have a MessageLoopResource
       // to dispatch to. Note that we don't error check here, though. Later,

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,8 @@ class InfoBarManager;
 // Returns the singleton instance of the class.
 + (UpgradeCenter*)sharedInstance;
 
-// Registers a client and a |dispatcher| for the UpgradeCenter. Client and
-// |dispatcher| are not retained, unregisterClient: must be called before
+// Registers a client and a `dispatcher` for the UpgradeCenter. Client and
+// `dispatcher` are not retained, unregisterClient: must be called before
 // the object goes away.
 - (void)registerClient:(id<UpgradeCenterClient>)client
            withHandler:(id<ApplicationCommands>)handler;

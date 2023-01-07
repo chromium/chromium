@@ -1,0 +1,26 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN
+++++++++BUTTON focusable label='First submit in a form is a valid default button' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='First submit  in a form is a valid default button'
+++++++++++++UNKNOWN label='First submit  in a form is a valid default button'
+++++++++BUTTON focusable label='Second submit in a form not a valid default button' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='Second submit in a form not a valid default button'
+++++++++++++UNKNOWN label='Second submit in a form not a valid default button'
+++++++UNKNOWN
+++++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN
+++++++++BUTTON focusable label='First image button in a form is a valid default button' actions='{DEFAULT}'
+++++++++++IMAGE
+++++++++++STATIC_TEXT label='First image button in a form is a valid default button'
+++++++++++++UNKNOWN label='First image button in a form is a valid default button'
+++++++++BUTTON focusable label='Second image button in a form not a valid default button' actions='{DEFAULT}'
+++++++++++IMAGE
+++++++++++STATIC_TEXT label='Second image button in a form not a valid default button'
+++++++++++++UNKNOWN label='Second image button in a form not a valid default button'
+++++++BUTTON focusable label='Submit outside of form not a valid default button' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Submit outside of form not a valid default button'
+++++++++++UNKNOWN label='Submit outside of form not a valid default button'

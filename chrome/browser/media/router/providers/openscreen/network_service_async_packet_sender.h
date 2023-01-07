@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_OPENSCREEN_NETWORK_SERVICE_ASYNC_PACKET_SENDER_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
@@ -30,6 +29,12 @@ class NetworkServiceAsyncPacketSender : public AsyncPacketSender {
   explicit NetworkServiceAsyncPacketSender(
       network::mojom::NetworkContext* network_context);
   explicit NetworkServiceAsyncPacketSender(NetworkServiceAsyncPacketSender&&);
+
+  NetworkServiceAsyncPacketSender(const NetworkServiceAsyncPacketSender&) =
+      delete;
+  NetworkServiceAsyncPacketSender& operator=(
+      const NetworkServiceAsyncPacketSender&) = delete;
+
   ~NetworkServiceAsyncPacketSender() override;
 
   // network::mojom::UDPSocket forwards.
@@ -39,8 +44,6 @@ class NetworkServiceAsyncPacketSender : public AsyncPacketSender {
 
  private:
   mojo::Remote<network::mojom::UDPSocket> socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceAsyncPacketSender);
 };
 
 }  // namespace media_router

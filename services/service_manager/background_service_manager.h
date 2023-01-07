@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "services/service_manager/public/cpp/manifest.h"
@@ -34,6 +33,10 @@ class ServiceManager;
 class BackgroundServiceManager {
  public:
   explicit BackgroundServiceManager(const std::vector<Manifest>& manifests);
+
+  BackgroundServiceManager(const BackgroundServiceManager&) = delete;
+  BackgroundServiceManager& operator=(const BackgroundServiceManager&) = delete;
+
   ~BackgroundServiceManager();
 
   // Creates a service instance for |identity|. This is intended for use by the
@@ -59,8 +62,6 @@ class BackgroundServiceManager {
 
   // Must only be used on the background thread.
   std::unique_ptr<ServiceManager> service_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundServiceManager);
 };
 
 }  // namespace service_manager

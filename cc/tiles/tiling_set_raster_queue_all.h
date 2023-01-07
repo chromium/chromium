@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <stddef.h>
 
 #include "base/containers/stack_container.h"
+#include "base/memory/raw_ptr_exclusion.h"
+#include "base/notreached.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/prioritized_tile.h"
@@ -53,11 +55,22 @@ class CC_EXPORT TilingSetRasterQueueAll {
     void AdvanceToNextTile(TilingIteratorType* iterator);
     template <typename TilingIteratorType>
     bool GetFirstTileAndCheckIfValid(TilingIteratorType* iterator);
-    bool IsTileValid(const Tile* tile) const;
+
+    enum IsTileValidResult {
+      kTileNotValid,
+      kTileNeedsRaster,
+      kTileNeedsCheckerImageReraster
+    };
+    IsTileValidResult IsTileValid(const Tile* tile) const;
 
     PrioritizedTile current_tile_;
-    PictureLayerTiling* tiling_;
-    TilingData* tiling_data_;
+
+    // `tiling_` and `tiling_data_` are not a raw_ptr<...> for performance
+    // reasons (based on analysis of sampling profiler data and
+    // tab_search:top100:2020).
+    RAW_PTR_EXCLUSION PictureLayerTiling* tiling_;
+    RAW_PTR_EXCLUSION TilingData* tiling_data_;
+
     PictureLayerTiling::PriorityRectType priority_rect_type_;
     gfx::Rect pending_visible_rect_;
   };
@@ -157,6 +170,9 @@ class CC_EXPORT TilingSetRasterQueueAll {
 
     void AdvancePhase();
 
+    // `tiling_` and `tiling_data_` are not a raw_ptr<...> for performance
+    // reasons (based on analysis of sampling profiler data and
+    // tab_search:top100:2020).
     PictureLayerTiling* tiling_;
     TilingData* tiling_data_;
 
@@ -180,7 +196,9 @@ class CC_EXPORT TilingSetRasterQueueAll {
   void MakeTilingIterator(IteratorType type, PictureLayerTiling* tiling);
   void AdvanceToNextStage();
 
-  PictureLayerTilingSet* tiling_set_;
+  // `tiling_set_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data).
+  RAW_PTR_EXCLUSION PictureLayerTilingSet* tiling_set_;
 
   struct IterationStage {
     IterationStage(IteratorType type, TilePriority::PriorityBin bin);

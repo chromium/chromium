@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -33,6 +32,12 @@ class ASH_EXPORT BluetoothNotificationController
  public:
   explicit BluetoothNotificationController(
       message_center::MessageCenter* message_center);
+
+  BluetoothNotificationController(const BluetoothNotificationController&) =
+      delete;
+  BluetoothNotificationController& operator=(
+      const BluetoothNotificationController&) = delete;
+
   ~BluetoothNotificationController() override;
 
   // device::BluetoothAdapter::Observer override.
@@ -61,23 +66,19 @@ class ASH_EXPORT BluetoothNotificationController
   friend class BluetoothNotificationControllerTest;
   class BluetoothPairedNotificationDelegate;
 
-  static const char kBluetoothDeviceDiscoverableNotificationId[];
+  static const char kBluetoothDeviceDiscoverableToastId[];
   // Identifier for the pairing notification; the Bluetooth code ensures we
   // only receive one pairing request at a time, so a single id is sufficient
   // and means we "update" one notification if not handled rather than
   // continually bugging the user.
   static const char kBluetoothDevicePairingNotificationId[];
 
-  // Adds a prefix to the device's address to obtain an unique notification ID.
-  static std::string GetPairedNotificationId(
-      const device::BluetoothDevice* device);
-
   // Internal method called by BluetoothAdapterFactory to provide the adapter
   // object.
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
-  // Presents a notification to the user when the adapter becomes discoverable
-  // to other nearby devices.
+  // Presents a toast to the user when the adapter becomes discoverable to
+  // other nearby devices.
   void NotifyAdapterDiscoverable();
 
   // Presents a notification to the user that a device |device| is making a
@@ -105,8 +106,6 @@ class ASH_EXPORT BluetoothNotificationController
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothNotificationController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothNotificationController);
 };
 
 }  // namespace ash

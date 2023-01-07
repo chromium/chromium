@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,7 +72,7 @@ void FakeNearbyShareCertificateManager::OnStart() {}
 
 void FakeNearbyShareCertificateManager::OnStop() {}
 
-base::Optional<NearbySharePrivateCertificate>
+absl::optional<NearbySharePrivateCertificate>
 FakeNearbyShareCertificateManager::GetValidPrivateCertificate(
     nearby_share::mojom::Visibility visibility) const {
   auto cert = GetNearbyShareTestPrivateCertificate(visibility);

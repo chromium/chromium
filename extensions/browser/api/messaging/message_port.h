@@ -1,16 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_API_MESSAGING_MESSAGE_PORT_H_
 #define EXTENSIONS_BROWSER_API_MESSAGING_MESSAGE_PORT_H_
 
-#include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/values.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -41,6 +40,9 @@ class MessagePort {
     virtual void PostMessage(const PortId& port_id, const Message& message) = 0;
   };
 
+  MessagePort(const MessagePort&) = delete;
+  MessagePort& operator=(const MessagePort&) = delete;
+
   virtual ~MessagePort();
 
   // Called right before a channel is created for this MessagePort and |port|.
@@ -56,20 +58,21 @@ class MessagePort {
   virtual bool IsValidPort() = 0;
 
   // Triggers the check of whether the port is still valid. If the port is
-  // determined to be invalid, the channel will be closed.
+  // determined to be invalid, the channel will be closed. This should only be
+  // called for opener ports.
   virtual void RevalidatePort();
 
   // Notifies the port that the channel has been opened.
   virtual void DispatchOnConnect(
       const std::string& channel_name,
-      std::unique_ptr<base::DictionaryValue> source_tab,
-      int source_frame_id,
+      absl::optional<base::Value::Dict> source_tab,
+      const ExtensionApiFrameIdMap::FrameData& source_frame,
       int guest_process_id,
       int guest_render_frame_routing_id,
       const MessagingEndpoint& source_endpoint,
       const std::string& target_extension_id,
       const GURL& source_url,
-      base::Optional<url::Origin> source_origin);
+      absl::optional<url::Origin> source_origin);
 
   // Notifies the port that the channel has been closed. If |error_message| is
   // non-empty, it indicates an error occurred while opening the connection.
@@ -86,14 +89,15 @@ class MessagePort {
 
   // MessagePorts that target extensions will need to adjust their keepalive
   // counts for their lazy background page.
-  virtual void IncrementLazyKeepaliveCount();
+  virtual void IncrementLazyKeepaliveCount(bool is_for_native_message_connect);
   virtual void DecrementLazyKeepaliveCount();
+
+  // Notifies the message port that one of the receivers intents to respond
+  // later.
+  virtual void NotifyResponsePending();
 
  protected:
   MessagePort();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessagePort);
 };
 
 }  // namespace extensions

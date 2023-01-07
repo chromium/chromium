@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,12 +23,16 @@
 #include "components/nacl/common/nacl_service.h"
 #include "components/nacl/common/nacl_switches.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/sandbox_init.h"
+#include "content/public/common/sandbox_init_win.h"
 #include "ipc/ipc_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
+#include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox_policy.h"
+
+#include <windows.h>
 
 namespace {
 
@@ -51,8 +55,13 @@ void NaClBrokerListener::Listen() {
   run_loop_.Run();
 }
 
-sandbox::policy::SandboxType NaClBrokerListener::GetSandboxType() {
-  return sandbox::policy::SandboxType::kPpapi;
+sandbox::mojom::Sandbox NaClBrokerListener::GetSandboxType() {
+  return sandbox::mojom::Sandbox::kPpapi;
+}
+
+std::string NaClBrokerListener::GetSandboxTag() {
+  return sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+      "nacl-broker-listener", GetSandboxType());
 }
 
 void NaClBrokerListener::OnChannelConnected(int32_t peer_pid) {
@@ -107,7 +116,7 @@ void NaClBrokerListener::OnLaunchLoaderThroughBroker(
 
     base::Process loader_process;
     sandbox::ResultCode result = content::StartSandboxedProcess(
-        this, cmd_line, handles, &loader_process);
+        this, *cmd_line, handles, &loader_process);
 
     if (result == sandbox::SBOX_ALL_OK) {
       mojo::OutgoingInvitation::Send(std::move(invitation),

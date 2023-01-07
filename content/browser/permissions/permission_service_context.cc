@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,39 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_service_impl.h"
+#include "content/browser/permissions/permission_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "url/origin.h"
 
 namespace content {
+
+// A holder owning document-associated PermissionServiceContext. The holder is
+// used as PermissionServiceContext itself can't inherit from
+// DocumentUserData, as PermissionServiceContext (unlike
+// DocumentUserData) can be created when RenderFrameHost doesn't exist
+// (e.g. for service workers).
+struct PermissionServiceContext::DocumentPermissionServiceContextHolder
+    : public DocumentUserData<DocumentPermissionServiceContextHolder> {
+  explicit DocumentPermissionServiceContextHolder(RenderFrameHost* rfh)
+      : DocumentUserData<DocumentPermissionServiceContextHolder>(rfh),
+        permission_service_context(rfh) {}
+
+  PermissionServiceContext permission_service_context;
+
+  DOCUMENT_USER_DATA_KEY_DECL();
+};
+
+DOCUMENT_USER_DATA_KEY_IMPL(
+    PermissionServiceContext::DocumentPermissionServiceContextHolder);
 
 class PermissionServiceContext::PermissionSubscription {
  public:
@@ -32,7 +54,7 @@ class PermissionServiceContext::PermissionSubscription {
   PermissionSubscription& operator=(const PermissionSubscription&) = delete;
 
   ~PermissionSubscription() {
-    DCHECK_NE(id_, 0);
+    DCHECK(id_);
     BrowserContext* browser_context = context_->GetBrowserContext();
     if (browser_context) {
       PermissionControllerImpl::FromBrowserContext(browser_context)
@@ -41,41 +63,54 @@ class PermissionServiceContext::PermissionSubscription {
   }
 
   void OnConnectionError() {
-    DCHECK_NE(id_, 0);
+    DCHECK(id_);
     context_->ObserverHadConnectionError(id_);
   }
 
   void OnPermissionStatusChanged(blink::mojom::PermissionStatus status) {
-    observer_->OnPermissionStatusChange(status);
+    if (observer_.is_connected())
+      observer_->OnPermissionStatusChange(status);
   }
 
-  void set_id(int id) { id_ = id; }
+  void set_id(PermissionController::SubscriptionId id) { id_ = id; }
 
  private:
-  PermissionServiceContext* const context_;
+  const raw_ptr<PermissionServiceContext> context_;
   mojo::Remote<blink::mojom::PermissionObserver> observer_;
-  int id_ = 0;
+  PermissionController::SubscriptionId id_;
 };
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(PermissionServiceContext)
+// static
+PermissionServiceContext* PermissionServiceContext::GetForCurrentDocument(
+    RenderFrameHost* render_frame_host) {
+  return &DocumentPermissionServiceContextHolder::GetOrCreateForCurrentDocument(
+              render_frame_host)
+              ->permission_service_context;
+}
 
 PermissionServiceContext::PermissionServiceContext(
     RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host), render_process_host_(nullptr) {}
+    : render_frame_host_(render_frame_host), render_process_host_(nullptr) {
+  render_frame_host->GetProcess()->AddObserver(this);
+}
 
 PermissionServiceContext::PermissionServiceContext(
     RenderProcessHost* render_process_host)
     : render_frame_host_(nullptr), render_process_host_(render_process_host) {}
 
 PermissionServiceContext::~PermissionServiceContext() {
+  if (render_frame_host_)
+    render_frame_host_->GetProcess()->RemoveObserver(this);
 }
 
 void PermissionServiceContext::CreateService(
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
   DCHECK(render_frame_host_);
-  services_.Add(std::make_unique<PermissionServiceImpl>(
-                    this, render_frame_host_->GetLastCommittedOrigin()),
-                std::move(receiver));
+  services_.Add(
+      std::make_unique<PermissionServiceImpl>(
+          this, url::Origin::Create(PermissionUtil::GetLastCommittedOriginAsURL(
+                    render_frame_host_))),
+      std::move(receiver));
 }
 
 void PermissionServiceContext::CreateServiceForWorker(
@@ -86,7 +121,7 @@ void PermissionServiceContext::CreateServiceForWorker(
 }
 
 void PermissionServiceContext::CreateSubscription(
-    PermissionType permission_type,
+    blink::PermissionType permission_type,
     const url::Origin& origin,
     blink::mojom::PermissionStatus current_status,
     blink::mojom::PermissionStatus last_known_status,
@@ -104,10 +139,11 @@ void PermissionServiceContext::CreateSubscription(
   }
 
   GURL requesting_origin(origin.Serialize());
-  int subscription_id =
+  auto subscription_id =
       PermissionControllerImpl::FromBrowserContext(browser_context)
           ->SubscribePermissionStatusChange(
-              permission_type, render_frame_host_, requesting_origin,
+              permission_type, render_process_host_, render_frame_host_,
+              requesting_origin,
               base::BindRepeating(
                   &PermissionSubscription::OnPermissionStatusChanged,
                   base::Unretained(subscription.get())));
@@ -115,7 +151,8 @@ void PermissionServiceContext::CreateSubscription(
   subscriptions_[subscription_id] = std::move(subscription);
 }
 
-void PermissionServiceContext::ObserverHadConnectionError(int subscription_id) {
+void PermissionServiceContext::ObserverHadConnectionError(
+    PermissionController::SubscriptionId subscription_id) {
   size_t erased = subscriptions_.erase(subscription_id);
   DCHECK_EQ(1u, erased);
 }
@@ -131,12 +168,19 @@ BrowserContext* PermissionServiceContext::GetBrowserContext() const {
 }
 
 GURL PermissionServiceContext::GetEmbeddingOrigin() const {
-  // TODO(https://crbug.com/1170277): This will return the wrong origin for a
-  // non primary FrameTree.
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host_);
-  return web_contents ? web_contents->GetLastCommittedURL().GetOrigin()
-                      : GURL();
+  return render_frame_host_ ? PermissionUtil::GetLastCommittedOriginAsURL(
+                                  render_frame_host_->GetMainFrame())
+                            : GURL();
+}
+
+void PermissionServiceContext::RenderProcessHostDestroyed(
+    RenderProcessHost* host) {
+  DCHECK(host == render_frame_host_->GetProcess());
+  subscriptions_.clear();
+  // RenderProcessHostImpl will always outlive 'this', but it gets cleaned up
+  // earlier so we need to listen to this event so we can do our clean up as
+  // well.
+  host->RemoveObserver(this);
 }
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,10 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class SessionOptionsProvider;
 
@@ -21,13 +19,18 @@ class ChromiumPacketSocketFactory : public rtc::PacketSocketFactory {
  public:
   explicit ChromiumPacketSocketFactory(
       base::WeakPtr<SessionOptionsProvider> session_options_provider);
+
+  ChromiumPacketSocketFactory(const ChromiumPacketSocketFactory&) = delete;
+  ChromiumPacketSocketFactory& operator=(const ChromiumPacketSocketFactory&) =
+      delete;
+
   ~ChromiumPacketSocketFactory() override;
 
   rtc::AsyncPacketSocket* CreateUdpSocket(
       const rtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port) override;
-  rtc::AsyncPacketSocket* CreateServerTcpSocket(
+  rtc::AsyncListenSocket* CreateServerTcpSocket(
       const rtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port,
@@ -42,11 +45,8 @@ class ChromiumPacketSocketFactory : public rtc::PacketSocketFactory {
 
  private:
   base::WeakPtr<SessionOptionsProvider> session_options_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromiumPacketSocketFactory);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CHROMIUM_SOCKET_FACTORY_H_

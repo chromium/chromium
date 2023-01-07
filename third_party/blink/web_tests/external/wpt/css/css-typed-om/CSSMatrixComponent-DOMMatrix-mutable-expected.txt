@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL CSSMatrixComponent's matrix attribute is mutable CSSMatrixTransformComponent is not defined
-Harness: the test ran to completion.
-

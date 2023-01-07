@@ -1,10 +1,4 @@
-drubery@chromium.org
-nparker@chromium.org
-vakh@chromium.org
-
-# This is for the common case of adding or renaming files. If you're doing
-# structural changes, use usual OWNERS rules.
-per-file BUILD.gn=*
+file://components/safe_browsing/OWNERS
 
 per-file *_messages*.h=set noparent
 per-file *_messages*.h=file://ipc/SECURITY_OWNERS

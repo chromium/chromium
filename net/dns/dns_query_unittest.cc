@@ -1,14 +1,17 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/dns/dns_query.h"
 
+#include <memory>
+#include <string>
 #include <tuple>
 
-#include "base/stl_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,7 +32,7 @@ bool ParseAndCreateDnsQueryFromRawPacket(const uint8_t* data,
                                          std::unique_ptr<DnsQuery>* out) {
   auto packet = base::MakeRefCounted<IOBufferWithSize>(length);
   memcpy(packet->data(), data, length);
-  out->reset(new DnsQuery(packet));
+  *out = std::make_unique<DnsQuery>(packet);
   return (*out)->Parse(length);
 }
 
@@ -120,7 +123,8 @@ TEST(DnsQueryTest, EDNS0) {
 
   base::StringPiece qname(kQNameData, sizeof(kQNameData));
   OptRecordRdata opt_rdata;
-  opt_rdata.AddOpt(OptRecordRdata::Opt(255, "\xde\xad\xbe\xef"));
+  opt_rdata.AddOpt(
+      OptRecordRdata::UnknownOpt::CreateForTesting(255, "\xde\xad\xbe\xef"));
   DnsQuery q1(0xbeef, qname, dns_protocol::kTypeA, &opt_rdata);
   EXPECT_EQ(dns_protocol::kTypeA, q1.qtype());
 
@@ -276,15 +280,279 @@ TEST(DnsQueryParseTest, FailsInvalidQueries) {
     const uint8_t* data;
     size_t size;
   } testcases[] = {
-      {kQueryTruncatedQuestion, base::size(kQueryTruncatedQuestion)},
-      {kQueryTwoQuestions, base::size(kQueryTwoQuestions)},
-      {kQueryInvalidDNSDomainName1, base::size(kQueryInvalidDNSDomainName1)},
-      {kQueryInvalidDNSDomainName2, base::size(kQueryInvalidDNSDomainName2)}};
+      {kQueryTruncatedQuestion, std::size(kQueryTruncatedQuestion)},
+      {kQueryTwoQuestions, std::size(kQueryTwoQuestions)},
+      {kQueryInvalidDNSDomainName1, std::size(kQueryInvalidDNSDomainName1)},
+      {kQueryInvalidDNSDomainName2, std::size(kQueryInvalidDNSDomainName2)}};
   std::unique_ptr<DnsQuery> query;
   for (const auto& testcase : testcases) {
     EXPECT_FALSE(ParseAndCreateDnsQueryFromRawPacket(testcase.data,
                                                      testcase.size, &query));
   }
+}
+
+TEST(DnsQueryParseTest, ParsesLongName) {
+  const char kHeader[] =
+      "\x6f\x15"   // ID
+      "\x00\x00"   // FLAGS
+      "\x00\x01"   // 1 question
+      "\x00\x00"   // 0 answers
+      "\x00\x00"   // 0 authority records
+      "\x00\x00";  // 0 additional records
+
+  std::string long_name;
+  for (int i = 0; i <= dns_protocol::kMaxNameLength - 10; i += 10) {
+    long_name.append("\x09loongname");
+  }
+  uint8_t remaining = dns_protocol::kMaxNameLength - long_name.size() - 1;
+  long_name.append(1, remaining);
+  for (int i = 0; i < remaining; ++i) {
+    long_name.append("a", 1);
+  }
+  ASSERT_LE(long_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength));
+  long_name.append("\x00", 1);
+
+  std::string data(kHeader, sizeof(kHeader) - 1);
+  data.append(long_name);
+  data.append(
+      "\x00\x01"   // TYPE=A
+      "\x00\x01",  // CLASS=IN
+      4);
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(data.size());
+  memcpy(packet->data(), data.data(), data.size());
+  DnsQuery query(packet);
+
+  EXPECT_TRUE(query.Parse(data.size()));
+}
+
+// Tests against incorrect name length validation, which is anti-pattern #3 from
+// the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsQueryParseTest, FailsTooLongName) {
+  const char kHeader[] =
+      "\x5f\x15"   // ID
+      "\x00\x00"   // FLAGS
+      "\x00\x01"   // 1 question
+      "\x00\x00"   // 0 answers
+      "\x00\x00"   // 0 authority records
+      "\x00\x00";  // 0 additional records
+
+  std::string long_name;
+  for (int i = 0; i <= dns_protocol::kMaxNameLength; i += 10) {
+    long_name.append("\x09loongname");
+  }
+  ASSERT_GT(long_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength));
+  long_name.append("\x00", 1);
+
+  std::string data(kHeader, sizeof(kHeader) - 1);
+  data.append(long_name);
+  data.append(
+      "\x00\x01"   // TYPE=A
+      "\x00\x01",  // CLASS=IN
+      4);
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(data.size());
+  memcpy(packet->data(), data.data(), data.size());
+  DnsQuery query(packet);
+
+  EXPECT_FALSE(query.Parse(data.size()));
+}
+
+// Tests against incorrect name length validation, which is anti-pattern #3 from
+// the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsQueryParseTest, FailsTooLongSingleLabelName) {
+  const char kHeader[] =
+      "\x5f\x15"   // ID
+      "\x00\x00"   // FLAGS
+      "\x00\x01"   // 1 question
+      "\x00\x00"   // 0 answers
+      "\x00\x00"   // 0 authority records
+      "\x00\x00";  // 0 additional records
+
+  std::string long_name;
+  long_name.append(1, static_cast<char>(dns_protocol::kMaxNameLength));
+  long_name.append(dns_protocol::kMaxNameLength, 'a');
+  ASSERT_GT(long_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength));
+  long_name.append("\x00", 1);
+
+  std::string data(kHeader, sizeof(kHeader) - 1);
+  data.append(long_name);
+  data.append(
+      "\x00\x01"   // TYPE=A
+      "\x00\x01",  // CLASS=IN
+      4);
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(data.size());
+  memcpy(packet->data(), data.data(), data.size());
+  DnsQuery query(packet);
+
+  EXPECT_FALSE(query.Parse(data.size()));
+}
+
+// Test that a query cannot be parsed with a name extending past the end of the
+// data.
+// Tests against incorrect name length validation, which is anti-pattern #3 from
+// the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsQueryParseTest, FailsNonendedName) {
+  const char kData[] =
+      "\x5f\x15"                    // ID
+      "\x00\x00"                    // FLAGS
+      "\x00\x01"                    // 1 question
+      "\x00\x00"                    // 0 answers
+      "\x00\x00"                    // 0 authority records
+      "\x00\x00"                    // 0 additional records
+      "\003www\006google\006test";  // Nonended name.
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(sizeof(kData) - 1);
+  memcpy(packet->data(), kData, sizeof(kData) - 1);
+  DnsQuery query(packet);
+
+  EXPECT_FALSE(query.Parse(sizeof(kData) - 1));
+}
+
+// Test that a query cannot be parsed with a name without final null
+// termination. Parsing should assume the name has not ended and find the first
+// byte of the TYPE field instead, making the actual type unparsable.
+// Tests against incorrect name null termination, which is anti-pattern #4 from
+// the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsQueryParseTest, FailsNameWithoutTerminator) {
+  const char kData[] =
+      "\x5f\x15"                   // ID
+      "\x00\x00"                   // FLAGS
+      "\x00\x01"                   // 1 question
+      "\x00\x00"                   // 0 answers
+      "\x00\x00"                   // 0 authority records
+      "\x00\x00"                   // 0 additional records
+      "\003www\006google\004test"  // Name without termination.
+      "\x00\x01"                   // TYPE=A
+      "\x00\x01";                  // CLASS=IN
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(sizeof(kData) - 1);
+  memcpy(packet->data(), kData, sizeof(kData) - 1);
+  DnsQuery query(packet);
+
+  EXPECT_FALSE(query.Parse(sizeof(kData) - 1));
+}
+
+TEST(DnsQueryParseTest, FailsQueryWithNoQuestions) {
+  const char kData[] =
+      "\x5f\x15"   // ID
+      "\x00\x00"   // FLAGS
+      "\x00\x00"   // 0 questions
+      "\x00\x00"   // 0 answers
+      "\x00\x00"   // 0 authority records
+      "\x00\x00";  // 0 additional records
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(sizeof(kData) - 1);
+  memcpy(packet->data(), kData, sizeof(kData) - 1);
+  DnsQuery query(packet);
+
+  EXPECT_FALSE(query.Parse(sizeof(kData) - 1));
+}
+
+TEST(DnsQueryParseTest, FailsQueryWithMultipleQuestions) {
+  const char kData[] =
+      "\x5f\x15"                       // ID
+      "\x00\x00"                       // FLAGS
+      "\x00\x02"                       // 2 questions
+      "\x00\x00"                       // 0 answers
+      "\x00\x00"                       // 0 authority records
+      "\x00\x00"                       // 0 additional records
+      "\003www\006google\004test\000"  // www.google.test
+      "\x00\x01"                       // TYPE=A
+      "\x00\x01"                       // CLASS=IN
+      "\003www\006google\004test\000"  // www.google.test
+      "\x00\x1c"                       // TYPE=AAAA
+      "\x00\x01";                      // CLASS=IN
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(sizeof(kData) - 1);
+  memcpy(packet->data(), kData, sizeof(kData) - 1);
+  DnsQuery query(packet);
+
+  EXPECT_FALSE(query.Parse(sizeof(kData) - 1));
+}
+
+// Test that if more questions are at the end of the buffer than the number of
+// questions claimed in the query header, the extra questions are safely
+// ignored.
+TEST(DnsQueryParseTest, IgnoresExtraQuestion) {
+  const char kData[] =
+      "\x5f\x15"                       // ID
+      "\x00\x00"                       // FLAGS
+      "\x00\x01"                       // 1 question
+      "\x00\x00"                       // 0 answers
+      "\x00\x00"                       // 0 authority records
+      "\x00\x00"                       // 0 additional records
+      "\003www\006google\004test\000"  // www.google.test
+      "\x00\x01"                       // TYPE=A
+      "\x00\x01"                       // CLASS=IN
+      "\003www\006google\004test\000"  // www.google.test
+      "\x00\x1c"                       // TYPE=AAAA
+      "\x00\x01";                      // CLASS=IN
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(sizeof(kData) - 1);
+  memcpy(packet->data(), kData, sizeof(kData) - 1);
+  DnsQuery query(packet);
+
+  EXPECT_TRUE(query.Parse(sizeof(kData) - 1));
+
+  std::string expected_qname("\003www\006google\004test\000", 17);
+  EXPECT_EQ(query.qname(), expected_qname);
+
+  EXPECT_EQ(query.qtype(), dns_protocol::kTypeA);
+}
+
+// Test that the query fails to parse if it does not contain the number of
+// questions claimed in the query header.
+// Tests against incorrect record count field validation, which is anti-pattern
+// #5 from the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsQueryParseTest, FailsQueryWithMissingQuestion) {
+  const char kData[] =
+      "\x5f\x15"   // ID
+      "\x00\x00"   // FLAGS
+      "\x00\x01"   // 1 question
+      "\x00\x00"   // 0 answers
+      "\x00\x00"   // 0 authority records
+      "\x00\x00";  // 0 additional records
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(sizeof(kData) - 1);
+  memcpy(packet->data(), kData, sizeof(kData) - 1);
+  DnsQuery query(packet);
+
+  EXPECT_FALSE(query.Parse(sizeof(kData) - 1));
+}
+
+// Test that DnsQuery parsing disallows name compression pointers (which should
+// never be useful when only single-question queries are parsed).
+// Indirectly tests against incorrect name compression pointer validation, which
+// is anti-pattern #6 from the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsQueryParseTest, FailsQueryWithNamePointer) {
+  const char kData[] =
+      "\x5f\x15"                   // ID
+      "\x00\x00"                   // FLAGS
+      "\x00\x01"                   // 1 question
+      "\x00\x00"                   // 0 answers
+      "\x00\x00"                   // 0 authority records
+      "\x00\x00"                   // 0 additional records
+      "\003www\006google\300\035"  // Name with pointer to byte 29
+      "\x00\x01"                   // TYPE=A
+      "\x00\x01"                   // CLASS=IN
+      "\004test\000";              // Byte 29 (name pointer destination): test.
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(sizeof(kData) - 1);
+  memcpy(packet->data(), kData, sizeof(kData) - 1);
+  DnsQuery query(packet);
+
+  EXPECT_FALSE(query.Parse(sizeof(kData) - 1));
 }
 
 }  // namespace

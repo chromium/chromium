@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<div hidden=until-found>target</div>
+<script>
+  window.addEventListener('message', async event => {
+    if (event.data === 'find') {
+      testRunner.findString('target', []);
+    } else if (event.data === 'isexpanded') {
+      const expanded = !document.querySelector('div').hasAttribute('hidden');
+      event.source.postMessage('expanded: ' + expanded, '*');
+    }
+  });
+</script>

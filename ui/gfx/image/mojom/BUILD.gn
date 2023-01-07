@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,6 +6,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [ "image.mojom" ]
+
+  webui_module_path = "chrome://resources/mojo/ui/gfx/image/mojom"
 
   public_deps = [ "//skia/public/mojom" ]
 

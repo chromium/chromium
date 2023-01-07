@@ -1,16 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.midi;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiManager;
-import android.os.Build;
 import android.os.Handler;
 
 import org.chromium.base.ContextUtils;
@@ -28,7 +26,6 @@ import java.util.Set;
  * A Java class implementing midi::MidiManagerAndroid functionality.
  */
 @JNINamespace("midi")
-@TargetApi(Build.VERSION_CODES.M)
 class MidiManagerAndroid {
     /**
      * Set true when this instance is successfully initialized.

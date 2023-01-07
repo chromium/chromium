@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@
 #include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -60,7 +61,8 @@ bool UnifiedMouseWarpController::WarpMouseCursor(ui::MouseEvent* event) {
   ::wm::ConvertPointToScreen(target, &point_in_unified_host);
   // The display bounds of the mirroring windows isn't scaled, so
   // transform back to the host coordinates.
-  target->GetHost()->GetRootTransform().TransformPoint(&point_in_unified_host);
+  point_in_unified_host =
+      target->GetHost()->GetRootTransform().MapPoint(point_in_unified_host);
 
   // A native event may not exist in unit test.
   if (!event->HasNativeEvent())

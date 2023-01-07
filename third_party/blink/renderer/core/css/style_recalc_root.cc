@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 
 namespace blink {
 
@@ -42,7 +43,7 @@ bool StyleRecalcRoot::IsDirty(const Node& node) const {
 
 namespace {
 
-base::Optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
+absl::optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
     ContainerNode& parent) {
   if (!parent.IsElementNode()) {
     // The flat tree does not contain shadow roots or the document node. The
@@ -53,7 +54,7 @@ base::Optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
   if (!root)
     return To<Element>(&parent);
   if (!root->HasSlotAssignment())
-    return base::nullopt;
+    return absl::nullopt;
   // The child has already been removed, so we cannot look up its slot
   // assignment directly. Find the slot which was part of the ancestor chain
   // before the removal by checking the child-dirty bits. Since the recalc root
@@ -64,7 +65,7 @@ base::Optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
   }
   // The slot has also been removed. Fall back to using the light tree parent as
   // the new recalc root.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool IsFlatTreeConnected(const Node& root) {

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 See https://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
-
+USE_PYTHON3 = True
 
 def CheckChange(input_api, output_api):
   """Checks that changes to client_variations.proto are mirrored."""

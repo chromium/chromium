@@ -36,12 +36,16 @@ namespace blink {
 namespace {
 Color GetSystemColor(MacSystemColorID color_id,
                      mojom::blink::ColorScheme color_scheme) {
+  // TODO(almaher): Consider using the mac light and dark high-contrast themes
+  // here instead if forced colors mode is enabled.
+
   // In tests, a WebSandboxSupport may not be set up. Just return a dummy
   // color, in this case, black.
   auto* sandbox_support = Platform::Current()->GetSandboxSupport();
   if (!sandbox_support)
     return Color();
-  return sandbox_support->GetSystemColor(color_id, color_scheme);
+  return Color::FromSkColor(
+      sandbox_support->GetSystemColor(color_id, color_scheme));
 }
 }
 
@@ -69,11 +73,15 @@ Color LayoutThemeMac::PlatformActiveSelectionForegroundColor(
 }
 
 Color LayoutThemeMac::PlatformSpellingMarkerUnderlineColor() const {
-  return Color(251, 45, 29);
+  // Using the same color than WebKit (see
+  // https://github.com/WebKit/WebKit/blob/main/Source/WebCore/platform/graphics/cocoa/GraphicsContextCocoa.mm#L167).
+  return Color(255, 59, 48, 191);
 }
 
 Color LayoutThemeMac::PlatformGrammarMarkerUnderlineColor() const {
-  return Color(107, 107, 107);
+  // Using the same color than WebKit (see
+  // https://github.com/WebKit/WebKit/blob/main/Source/WebCore/platform/graphics/cocoa/GraphicsContextCocoa.mm#L175).
+  return Color(25, 175, 50, 191);
 }
 
 bool LayoutThemeMac::IsAccentColorCustomized(
@@ -86,7 +94,7 @@ bool LayoutThemeMac::IsAccentColorCustomized(
       return false;
     }
   } else {
-    int user_custom_color = [[NSUserDefaults standardUserDefaults]
+    NSInteger user_custom_color = [[NSUserDefaults standardUserDefaults]
         integerForKey:@"AppleAquaColorVariant"];
     if (user_custom_color == NSBlueControlTint ||
         user_custom_color == NSDefaultControlTint) {
@@ -96,17 +104,30 @@ bool LayoutThemeMac::IsAccentColorCustomized(
   return true;
 }
 
+Color LayoutThemeMac::GetAccentColor(
+    mojom::blink::ColorScheme color_scheme) const {
+  if (@available(macOS 10.14, *)) {
+    return GetSystemColor(MacSystemColorID::kControlAccentColor, color_scheme);
+  } else {
+    return Color::FromRGBA32(
+        static_cast<RGBA32>([[NSUserDefaults standardUserDefaults]
+            integerForKey:@"AppleAquaColorVariant"]));
+  }
+}
+
 Color LayoutThemeMac::GetCustomFocusRingColor(
     mojom::blink::ColorScheme color_scheme) const {
   return color_scheme == mojom::blink::ColorScheme::kDark
-             ? SkColorSetRGB(0x99, 0xC8, 0xFF)
+             ? Color::FromRGB(0x99, 0xC8, 0xFF)
              : LayoutTheme::GetCustomFocusRingColor();
 }
 
 Color LayoutThemeMac::FocusRingColor(
     mojom::blink::ColorScheme color_scheme) const {
-  static const RGBA32 kDefaultFocusRingColorLight = 0xFF101010;
-  static const RGBA32 kDefaultFocusRingColorDark = 0xFF99C8FF;
+  const Color kDefaultFocusRingColorLight =
+      Color::FromRGBA(0x10, 0x10, 0x10, 0xFF);
+  const Color kDefaultFocusRingColorDark =
+      Color::FromRGBA(0x99, 0xC8, 0xFF, 0xFF);
   if (UsesTestModeFocusRingColor()) {
     return HasCustomFocusRingColor()
                ? GetCustomFocusRingColor(color_scheme)
@@ -117,14 +138,15 @@ Color LayoutThemeMac::FocusRingColor(
 
   if (ui::NativeTheme::GetInstanceForWeb()->UserHasContrastPreference()) {
     // When high contrast is enabled, #101010 should be used.
-    return Color(0xFF101010);
+    return Color::FromRGBA(0x10, 0x10, 0x10, 0xFF);
   }
 
-  SkColor keyboard_focus_indicator = SkColor(
-      GetSystemColor(MacSystemColorID::kKeyboardFocusIndicator, color_scheme));
-  Color focus_ring =
+  SkColor keyboard_focus_indicator =
+      GetSystemColor(MacSystemColorID::kKeyboardFocusIndicator, color_scheme)
+          .ToSkColorDeprecated();
+  Color focus_ring = Color::FromSkColor(
       ui::NativeTheme::GetInstanceForWeb()->FocusRingColorForBaseColor(
-          keyboard_focus_indicator);
+          keyboard_focus_indicator));
 
   if (!HasCustomFocusRingColor())
     return focus_ring;
@@ -140,7 +162,6 @@ bool LayoutThemeMac::UsesTestModeFocusRingColor() const {
 }
 
 LayoutTheme& LayoutTheme::NativeTheme() {
-  DCHECK(features::IsFormControlsRefreshEnabled());
   DEFINE_STATIC_REF(LayoutTheme, layout_theme, (LayoutThemeMac::Create()));
   return *layout_theme;
 }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.document;
 import android.app.Activity;
 import android.os.Bundle;
 
-import org.chromium.base.ApiCompatibilityUtils;
+import com.google.android.material.color.DynamicColors;
+
 import org.chromium.base.TraceEvent;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 
@@ -23,6 +25,10 @@ public class ChromeLauncherActivity extends Activity {
         TraceEvent.begin("ChromeLauncherActivity.onCreate");
         super.onCreate(savedInstanceState);
 
+        // TODO(https://crbug.com/1225066): Figure out a scalable way to apply overlays to
+        // activities like this.
+        applyThemeOverlays();
+
         if (VrModuleProvider.getIntentDelegate().isVrIntent(getIntent())) {
             // We need to turn VR mode on as early as possible in the intent handling flow to
             // avoid brightness flickering when handling VR intents.
@@ -36,7 +42,7 @@ public class ChromeLauncherActivity extends Activity {
                 finish();
                 break;
             case LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK:
-                ApiCompatibilityUtils.finishAndRemoveTask(this);
+                this.finishAndRemoveTask();
                 break;
             default:
                 assert false : "Intent dispatcher finished with action " + dispatchAction
@@ -45,5 +51,13 @@ public class ChromeLauncherActivity extends Activity {
                 break;
         }
         TraceEvent.end("ChromeLauncherActivity.onCreate");
+    }
+
+    private void applyThemeOverlays() {
+        setTheme(R.style.ColorOverlay_ChromiumAndroid);
+
+        // The effect of this activity's theme is currently limited to CCTs, so we should only apply
+        // dynamic colors when we enable them everywhere.
+        DynamicColors.applyToActivityIfAvailable(this);
     }
 }

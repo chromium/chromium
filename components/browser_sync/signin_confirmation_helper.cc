@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_db_task.h"
@@ -26,8 +26,8 @@ namespace {
 class HasTypedURLsTask : public history::HistoryDBTask {
  public:
   explicit HasTypedURLsTask(base::OnceCallback<void(bool)> cb)
-      : has_typed_urls_(false), cb_(std::move(cb)) {}
-  ~HasTypedURLsTask() override {}
+      : cb_(std::move(cb)) {}
+  ~HasTypedURLsTask() override = default;
 
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
@@ -44,7 +44,7 @@ class HasTypedURLsTask : public history::HistoryDBTask {
   void DoneRunOnMainThread() override { std::move(cb_).Run(has_typed_urls_); }
 
  private:
-  bool has_typed_urls_;
+  bool has_typed_urls_ = false;
   base::OnceCallback<void(bool)> cb_;
 };
 

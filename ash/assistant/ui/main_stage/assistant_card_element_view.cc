@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/assistant/ui/main_stage/assistant_card_element_view.h"
 
 #include <memory>
+#include <tuple>
 
 #include "ash/assistant/model/ui/assistant_card_element.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
@@ -28,7 +29,9 @@ namespace {
 
 using assistant::util::DeepLinkParam;
 using assistant::util::DeepLinkType;
-using assistant::util::ProactiveSuggestionsAction;
+
+constexpr char kAssistantCardElementHistogram[] =
+    "Ash.Assistant.AnimationSmoothness.CardElement";
 
 // Helpers ---------------------------------------------------------------------
 
@@ -52,7 +55,7 @@ void CreateAndSendMouseClick(aura::WindowTreeHost* host,
                                ui::EF_LEFT_MOUSE_BUTTON);
 
   // Send an ET_MOUSE_RELEASED event.
-  ignore_result(host->GetEventSink()->OnEventFromSource(&release_event));
+  std::ignore = host->GetEventSink()->OnEventFromSource(&release_event);
 }
 
 }  // namespace
@@ -77,6 +80,10 @@ const char* AssistantCardElementView::GetClassName() const {
 }
 
 ui::Layer* AssistantCardElementView::GetLayerForAnimating() {
+  // native_view() can be nullptr if this runs in unit test.
+  if (!native_view())
+    return nullptr;
+
   return native_view()->layer();
 }
 
@@ -85,6 +92,10 @@ std::string AssistantCardElementView::ToStringForTesting() const {
 }
 
 void AssistantCardElementView::AddedToWidget() {
+  // native_view() can be nullptr if this runs in unit test.
+  if (!native_view())
+    return;
+
   aura::Window* const top_level_window = native_view()->GetToplevelWindow();
 
   // Find the window for the Assistant card.
@@ -169,24 +180,6 @@ void AssistantCardElementView::DidSuppressNavigation(
     const GURL& url,
     WindowOpenDisposition disposition,
     bool from_user_gesture) {
-  // Proactive suggestion deep links may be invoked without a user gesture to
-  // log view impressions. Those are (currently) the only deep links we allow to
-  // be processed without originating from a user event.
-  if (!from_user_gesture) {
-    DeepLinkType deep_link_type = assistant::util::GetDeepLinkType(url);
-    if (deep_link_type != DeepLinkType::kProactiveSuggestions) {
-      NOTREACHED();
-      return;
-    }
-
-    const base::Optional<ProactiveSuggestionsAction> action =
-        assistant::util::GetDeepLinkParamAsProactiveSuggestionsAction(
-            assistant::util::GetDeepLinkParams(url), DeepLinkParam::kAction);
-    if (action != ProactiveSuggestionsAction::kViewImpression) {
-      NOTREACHED();
-      return;
-    }
-  }
   // We delegate navigation to the AssistantController so that it can apply
   // special handling to deep links.
   AssistantController::Get()->OpenUrl(url);
@@ -210,14 +203,11 @@ void AssistantCardElementView::InitLayout() {
   // Contents view.
   contents_view_ = AddChildView(
       const_cast<AssistantCardElement*>(card_element_)->MoveContentsView());
-
-  // OverrideDescription() doesn't work. Only names are read automatically.
-  GetViewAccessibility().OverrideName(card_element_->fallback());
 }
 
 std::unique_ptr<ElementAnimator> AssistantCardElementView::CreateAnimator() {
   return std::make_unique<AssistantUiElementViewAnimator>(
-      this, assistant::ui::kAssistantCardElementHistogram);
+      this, kAssistantCardElementHistogram);
 }
 
 }  // namespace ash

@@ -1,0 +1,17 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 2
+
+module arc.mojom;
+
+// Next method ID: 3
+interface PropertyInstance {
+  // Get Google camera app migration property.
+  GetGcaMigrationProperty@1() => (string? value);
+
+  // Override the Android-side setting and minimize tasks on back button
+  // activation.
+  [MinVersion=2] SetMinimizeOnBackButton@2(bool enable);
+};

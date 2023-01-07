@@ -1,0 +1,20 @@
+Name: Omnibox Protos
+Short Name: omnibox_proto
+URL: This is the canonical public repository
+Version: 480506726
+Date: 2022/10/12 UTC
+License: BSD
+Security Critical: Yes
+
+Description:
+This package contains the protos that are used by the Omnibox team to facilitate
+integration between Chrome and Google Search.
+Updates to this code should be made by changing the internal copies, and then
+running the export script.
+
+blaze run //chrome/omnibox/tools/proto_export -- \
+  --from_piper \
+  --output=$CHROMIUM_SRC/third_party/omnibox_proto
+
+Local Modifications:
+Unchanged from the output of the export script.

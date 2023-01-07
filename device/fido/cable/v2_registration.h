@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,10 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
+#include "base/containers/span.h"
 #include "device/fido/cable/v2_constants.h"
+#include "device/fido/fido_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace instance_id {
 class InstanceIDDriver;
@@ -26,6 +28,19 @@ namespace authenticator {
 // Registration represents a subscription to events from the tunnel service.
 class Registration {
  public:
+  // Type enumerates the types of registrations that are maintained.
+  enum class Type : uint8_t {
+    // LINKING is for link information shared with desktops after scanning a QR
+    // code. If the user chooses to unlink devices then this registration can be
+    // rotated by calling |RotateContactID|. That will cause the server to
+    // inform clients that the registration is no longer valid and that they
+    // should forget about it.
+    LINKING = 0,
+    // SYNC is for information shared via the Sync service. This is separate so
+    // that unlinking devices doesn't break sync peers.
+    SYNC = 1,
+  };
+
   // An Event contains the information sent by the tunnel service when a peer is
   // trying to connect.
   struct Event {
@@ -34,10 +49,25 @@ class Registration {
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
 
+    // Serialize returns a serialized form of the |Event|. This format is
+    // not stable and is suitable only for transient storage.
+    absl::optional<std::vector<uint8_t>> Serialize();
+
+    // FromSerialized parses the bytes produced by |Serialize|. It assumes that
+    // the input is well formed. It returns |nullptr| on error.
+    static std::unique_ptr<Event> FromSerialized(base::span<const uint8_t> in);
+
+    Type source;
+    FidoRequestType request_type;
     std::array<uint8_t, kTunnelIdSize> tunnel_id;
     std::array<uint8_t, kRoutingIdSize> routing_id;
-    std::vector<uint8_t> pairing_id;
+    std::array<uint8_t, kPairingIDSize> pairing_id;
     std::array<uint8_t, kClientNonceSize> client_nonce;
+    absl::optional<std::vector<uint8_t>> contact_id;
+
+    // protocol_revision can be optionally asserted while we transition from
+    // revision zero to revision one. This might be removed in the future.
+    unsigned protocol_revision = 0;
   };
 
   virtual ~Registration();
@@ -54,7 +84,7 @@ class Registration {
   // contact_id returns an opaque token that may be placed in pairing data for
   // desktops to later connect to. |nullopt| will be returned if the value is
   // not yet ready.
-  virtual base::Optional<std::vector<uint8_t>> contact_id() const = 0;
+  virtual absl::optional<std::vector<uint8_t>> contact_id() const = 0;
 };
 
 // Register subscribes to the tunnel service and returns a |Registration|. This
@@ -63,6 +93,8 @@ class Registration {
 // requests a tunnel.
 std::unique_ptr<Registration> Register(
     instance_id::InstanceIDDriver* instance_id_driver,
+    Registration::Type type,
+    base::OnceCallback<void()> on_ready,
     base::RepeatingCallback<void(std::unique_ptr<Registration::Event>)>
         event_callback);
 

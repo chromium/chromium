@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ const int kGoogleUpdateTimeoutMs = 20 * 1000;
 
 // Launches command |cmd_string|, and waits for |timeout| milliseconds before
 // timing out.  To wait indefinitely, one can set
-// |timeout| to be base::TimeDelta::FromMilliseconds(INFINITE).
+// |timeout| to be base::TimeDelta::Max().
 // Returns true if this executes successfully.
 // Returns false if command execution fails to execute, or times out.
 bool LaunchProcessAndWaitWithTimeout(const std::wstring& cmd_string,
@@ -60,7 +60,7 @@ bool UninstallGoogleUpdate(bool system_install) {
     success = true;  // Nothing to; vacuous success.
   } else {
     success = LaunchProcessAndWaitWithTimeout(
-        cmd_string, base::TimeDelta::FromMilliseconds(kGoogleUpdateTimeoutMs));
+        cmd_string, base::Milliseconds(kGoogleUpdateTimeoutMs));
   }
   return success;
 }
@@ -88,11 +88,8 @@ void ElevateIfNeededToReenableUpdates() {
 
   base::LaunchOptions launch_options;
   launch_options.force_breakaway_from_job_ = true;
-
-  if (base::win::UserAccountControlIsEnabled())
-    base::LaunchElevatedProcess(cmd, launch_options);
-  else
-    base::LaunchProcess(cmd, launch_options);
+  launch_options.elevated = base::win::UserAccountControlIsEnabled();
+  base::LaunchProcess(cmd, launch_options);
 }
 
 }  // namespace google_update

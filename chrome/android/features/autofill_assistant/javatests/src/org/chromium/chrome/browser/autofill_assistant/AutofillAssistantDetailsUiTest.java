@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,14 +41,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetails;
-import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsCoordinator;
-import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsModel;
-import org.chromium.chrome.browser.autofill_assistant.details.AssistantPlaceholdersConfiguration;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.R;
+import org.chromium.components.autofill_assistant.details.AssistantDetails;
+import org.chromium.components.autofill_assistant.details.AssistantDetailsCoordinator;
+import org.chromium.components.autofill_assistant.details.AssistantDetailsModel;
+import org.chromium.components.autofill_assistant.details.AssistantPlaceholdersConfiguration;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
 
@@ -103,6 +105,10 @@ public class AutofillAssistantDetailsUiTest {
         }
     }
 
+    private AssistantDetailsModel createModel() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(AssistantDetailsModel::new);
+    }
+
     /** Creates a coordinator for use in UI tests, and adds it to the global view hierarchy. */
     private AssistantDetailsCoordinator createCoordinator(AssistantDetailsModel model)
             throws Exception {
@@ -111,7 +117,8 @@ public class AutofillAssistantDetailsUiTest {
                     mTestRule.getActivity().getResources(), R.drawable.btn_close);
 
             return new AssistantDetailsCoordinator(InstrumentationRegistry.getTargetContext(),
-                    model, new AutofillAssistantUiTestUtil.MockImageFetcher(testImage, null));
+                    new AssistantStaticDependenciesChrome().createInfoPageUtil(), model,
+                    new AutofillAssistantUiTestUtil.MockImageFetcher(testImage, null));
         });
 
         runOnUiThreadBlocking(()
@@ -129,14 +136,16 @@ public class AutofillAssistantDetailsUiTest {
 
     @Before
     public void setUp() {
-        AutofillAssistantUiTestUtil.startOnBlankPage(mTestRule);
+        mTestRule.startCustomTabActivityWithIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        InstrumentationRegistry.getTargetContext(), "about:blank"));
     }
 
     /** Tests assumptions about the initial state of the details. */
     @Test
     @MediumTest
     public void testInitialState() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
 
         assertThat(model.get(AssistantDetailsModel.DETAILS).size(), is(0));
@@ -147,7 +156,7 @@ public class AutofillAssistantDetailsUiTest {
     @Test
     @MediumTest
     public void testVisibility() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
         ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
@@ -170,7 +179,7 @@ public class AutofillAssistantDetailsUiTest {
     @Test
     @MediumTest
     public void testAccessibility() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
         ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
@@ -187,7 +196,7 @@ public class AutofillAssistantDetailsUiTest {
     @Test
     @MediumTest
     public void testAccessibilityEmpty() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
         ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
@@ -203,7 +212,7 @@ public class AutofillAssistantDetailsUiTest {
     @Test
     @MediumTest
     public void testTitle() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
         ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
@@ -263,7 +272,7 @@ public class AutofillAssistantDetailsUiTest {
     @Test
     @MediumTest
     public void testDescriptionLine1() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
         ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
@@ -284,7 +293,7 @@ public class AutofillAssistantDetailsUiTest {
     @Test
     @MediumTest
     public void testDescriptionLine2() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
         ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
@@ -305,7 +314,7 @@ public class AutofillAssistantDetailsUiTest {
     @Test
     @MediumTest
     public void testDescriptionLine3() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
         ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
@@ -326,7 +335,7 @@ public class AutofillAssistantDetailsUiTest {
     @Test
     @MediumTest
     public void testPriceAttribution() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
         ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
@@ -347,7 +356,7 @@ public class AutofillAssistantDetailsUiTest {
     @Test
     @MediumTest
     public void testHighlighting() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
         ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
@@ -415,7 +424,7 @@ public class AutofillAssistantDetailsUiTest {
     @Test
     @MediumTest
     public void testStyleSpans() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         createCoordinator(model);
 
         setDetails(model,
@@ -440,7 +449,7 @@ public class AutofillAssistantDetailsUiTest {
     @Test
     @MediumTest
     public void testPlaceholders() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
         ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
@@ -475,7 +484,7 @@ public class AutofillAssistantDetailsUiTest {
     @Test
     @MediumTest
     public void testMultipleDetails() throws Exception {
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
         ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
@@ -496,7 +505,7 @@ public class AutofillAssistantDetailsUiTest {
     @MediumTest
     public void testPlaceholdersAnimation() throws Exception {
         // Test that the placeholders animation is running only when details have placeholders.
-        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsModel model = createModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
 
         assertThat(coordinator.isRunningPlaceholdersAnimationForTesting(), is(false));

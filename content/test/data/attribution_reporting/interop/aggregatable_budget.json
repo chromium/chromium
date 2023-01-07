@@ -1,0 +1,223 @@
+{
+  "description": "Max aggregatable budget per source",
+  "input": {
+    "sources": [
+      {
+        "timestamp": "1643235573000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "123",
+              "aggregation_keys": {
+                "a": "0x159",
+                "b": "0x5"
+              }
+            }
+          }
+        }]
+      },
+      // Should deactivate the first source.
+      {
+        "timestamp": "1643235583000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "123",
+              "aggregation_keys": {
+                "a": "0x159",
+                "b": "0x5"
+              }
+            }
+          }
+        }]
+      }
+    ],
+    "triggers": [
+      // Should be dropped due to insufficient aggregatable budget.
+      {
+        "timestamp": "1643235574000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "aggregatable_trigger_data": [
+                {
+                  "source_keys": ["a"],
+                  "key_piece": "0x400"
+                },
+                {
+                  "source_keys": ["b"],
+                  "key_piece": "0xA80"
+                }
+              ],
+              "aggregatable_values": {
+                "a": 65530,
+                "b": 7
+              }
+            }
+          }
+        }]
+      },
+      // Should result in an aggregatable report because there's sufficient
+      // aggregatable budget.
+      {
+        "timestamp": "1643235575000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "aggregatable_trigger_data": [
+                {
+                  "source_keys": ["a"],
+                  "key_piece": "0x400"
+                }
+              ],
+              "aggregatable_values": {
+                "a": 65535
+              }
+            }
+          }
+        }]
+      },
+      // Should be dropped due to insufficient aggregatable budget.
+      {
+        "timestamp": "1643235576000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "aggregatable_trigger_data": [
+                {
+                  "source_keys": ["b"],
+                  "key_piece": "0xa80"
+                }
+              ],
+              "aggregatable_values": {
+                "a": 2
+              }
+            }
+          }
+        }]
+      },
+      // Should result in an aggregatable report because there's sufficient
+      // aggregatable budget.
+      {
+        "timestamp": "1643235577000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "aggregatable_trigger_data": [
+                {
+                  "source_keys": ["b"],
+                  "key_piece": "0xa80"
+                }
+              ],
+              "aggregatable_values": {
+                "b": 1
+              }
+            }
+          }
+        }]
+      },
+      // Should result in an aggregatable report because the aggregatable
+      // budget is separate for the second source.
+      {
+        "timestamp": "1643235584000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "aggregatable_trigger_data": [
+                {
+                  "source_keys": ["b"],
+                  "key_piece": "0xa80"
+                }
+              ],
+              "aggregatable_values": {
+                "b": 65536
+              }
+            }
+          }
+        }]
+      }
+    ]
+  },
+  "output": {
+    "aggregatable_results": [
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [
+            {
+              "key": "0x559",
+              "value": 65535
+            }
+          ]
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
+        "report_time": "1643239175000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [
+            {
+              "key": "0xa85",
+              "value": 1
+            }
+          ]
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
+        "report_time": "1643239177000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [
+            {
+              "key": "0xa85",
+              "value": 65536
+            }
+          ]
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
+        "report_time": "1643239184000"
+      }
+    ]
+  }
+}

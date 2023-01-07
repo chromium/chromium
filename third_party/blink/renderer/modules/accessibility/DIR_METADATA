@@ -1,4 +1,1 @@
-monorail {
-  component: "Blink>Accessibility"
-}
-team_email: "chromium-accessibility@chromium.org"
+mixins: "//third_party/blink/renderer/modules/accessibility/COMMON_METADATA"

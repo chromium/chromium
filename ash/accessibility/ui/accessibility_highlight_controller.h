@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_ACCESSIBILITY_UI_ACCESSIBILITY_HIGHLIGHT_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/events/event_handler.h"
@@ -30,6 +29,12 @@ class ASH_EXPORT AccessibilityHighlightController
       public aura::client::CursorClientObserver {
  public:
   AccessibilityHighlightController();
+
+  AccessibilityHighlightController(const AccessibilityHighlightController&) =
+      delete;
+  AccessibilityHighlightController& operator=(
+      const AccessibilityHighlightController&) = delete;
+
   ~AccessibilityHighlightController() override;
 
   void HighlightFocus(bool focus);
@@ -49,7 +54,6 @@ class ASH_EXPORT AccessibilityHighlightController
   void OnFocus() override {}
   void OnBlur() override {}
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
-  void OnShowVirtualKeyboardIfEnabled() override {}
   void OnTextInputStateChanged(const ui::TextInputClient* client) override;
   void OnCaretBoundsChanged(const ui::TextInputClient* client) override;
 
@@ -71,8 +75,6 @@ class ASH_EXPORT AccessibilityHighlightController
   bool caret_ = false;
   bool caret_visible_ = false;
   gfx::Point caret_point_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityHighlightController);
 };
 
 }  // namespace ash

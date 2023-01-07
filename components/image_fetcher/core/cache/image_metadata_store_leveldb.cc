@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/image_fetcher/core/cache/proto/cached_image_metadata.pb.h"

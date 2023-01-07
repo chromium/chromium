@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,16 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "components/value_store/value_store.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/value_store/value_store.h"
+
+using value_store::ValueStore;
 
 namespace extensions {
 namespace lock_screen_data {
@@ -81,12 +82,11 @@ OperationResult DecryptData(const std::string& data,
 // |item_id|.
 bool IsItemRegistered(ValueStore* store, const std::string& item_id) {
   ValueStore::ReadResult read = store->Get(kStoreKeyRegisteredItems);
-
-  const base::DictionaryValue* registered_items = nullptr;
-  return read.status().ok() &&
-         read.settings().GetDictionary(kStoreKeyRegisteredItems,
-                                       &registered_items) &&
-         registered_items->HasKey(item_id);
+  if (!read.status().ok())
+    return false;
+  const base::Value::Dict* registered_items =
+      read.settings().FindDict(kStoreKeyRegisteredItems);
+  return registered_items && registered_items->Find(item_id);
 }
 
 // Gets a dictionary value that contains set of all registered data items from
@@ -99,9 +99,8 @@ void GetRegisteredItems(OperationResult* result,
                         ValueStore* store) {
   ValueStore::ReadResult read = store->Get(kStoreKeyRegisteredItems);
 
-  values->Clear();
+  values->DictClear();
 
-  std::unique_ptr<base::Value> registered_items;
   if (!read.status().ok()) {
     *result = OperationResult::kFailed;
     return;
@@ -110,7 +109,9 @@ void GetRegisteredItems(OperationResult* result,
   // Using remove to pass ownership of registered_item dict to
   // |registered_items| (and avoid doing a copy |read.settings()|
   // sub-dictionary).
-  if (!read.settings().Remove(kStoreKeyRegisteredItems, &registered_items)) {
+  absl::optional<base::Value> registered_items =
+      read.settings().Extract(kStoreKeyRegisteredItems);
+  if (!registered_items) {
     // If the registered items dictionary cannot be found, assume no items have
     // yet been registered, and return empty result.
     *result = OperationResult::kSuccess;
@@ -118,7 +119,8 @@ void GetRegisteredItems(OperationResult* result,
   }
 
   std::unique_ptr<base::DictionaryValue> items_dict =
-      base::DictionaryValue::From(std::move(registered_items));
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(std::move(*registered_items)));
 
   *result =
       items_dict.get() ? OperationResult::kSuccess : OperationResult::kFailed;
@@ -132,27 +134,28 @@ void RegisterItem(OperationResult* result,
                   ValueStore* store) {
   ValueStore::ReadResult read = store->Get(kStoreKeyRegisteredItems);
 
-  std::unique_ptr<base::Value> registered_items;
   if (!read.status().ok()) {
     *result = OperationResult::kFailed;
     return;
   }
-  if (!read.settings().Remove(kStoreKeyRegisteredItems, &registered_items))
-    registered_items = std::make_unique<base::DictionaryValue>();
+  absl::optional<base::Value> registered_items =
+      read.settings().Extract(kStoreKeyRegisteredItems);
+  if (!registered_items)
+    registered_items = base::Value(base::Value::Type::DICTIONARY);
 
-  std::unique_ptr<base::DictionaryValue> dict =
-      base::DictionaryValue::From(std::move(registered_items));
+  std::unique_ptr<base::DictionaryValue> dict = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(std::move(*registered_items)));
   if (!dict) {
     *result = OperationResult::kFailed;
     return;
   }
 
-  if (dict->HasKey(item_id)) {
+  if (dict->FindKey(item_id)) {
     *result = OperationResult::kAlreadyRegistered;
     return;
   }
 
-  dict->Set(item_id, std::make_unique<base::DictionaryValue>());
+  dict->SetKey(item_id, base::Value(base::Value::Type::DICTIONARY));
 
   ValueStore::WriteResult write =
       store->Set(ValueStore::DEFAULTS, kStoreKeyRegisteredItems, *dict);
@@ -213,8 +216,8 @@ void ReadImpl(OperationResult* result,
     return;
   }
 
-  const base::Value* item;
-  if (!read.settings().Get(item_id, &item)) {
+  const base::Value* item = read.settings().Find(item_id);
+  if (!item) {
     *result = OperationResult::kSuccess;
     *data = std::vector<char>();
     return;
@@ -247,16 +250,16 @@ void DeleteImpl(OperationResult* result,
     return;
   }
 
-  base::DictionaryValue* registered_items = nullptr;
-  if (!read.settings().GetDictionary(kStoreKeyRegisteredItems,
-                                     &registered_items) ||
-      !registered_items->Remove(item_id, nullptr)) {
+  base::Value::Dict* registered_items =
+      read.settings().FindDict(kStoreKeyRegisteredItems);
+  if (!registered_items || !registered_items->Remove(item_id)) {
     *result = OperationResult::kNotFound;
     return;
   }
 
-  ValueStore::WriteResult write = store->Set(
-      ValueStore::DEFAULTS, kStoreKeyRegisteredItems, *registered_items);
+  ValueStore::WriteResult write =
+      store->Set(ValueStore::DEFAULTS, kStoreKeyRegisteredItems,
+                 base::Value(std::move(*registered_items)));
   *result = write.status().ok() ? OperationResult::kSuccess
                                 : OperationResult::kFailed;
 }

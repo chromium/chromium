@@ -1,0 +1,54 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("browser") {
+  sources = [
+    "frame_user_note_changes.cc",
+    "frame_user_note_changes.h",
+    "user_note_instance.cc",
+    "user_note_instance.h",
+    "user_note_manager.cc",
+    "user_note_manager.h",
+    "user_note_service.cc",
+    "user_note_service.h",
+    "user_note_utils.cc",
+    "user_note_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/user_notes:features",
+    "//components/user_notes/interfaces",
+    "//components/user_notes/model",
+    "//components/user_notes/storage",
+    "//content/public/browser",
+    "//ui/gfx/geometry:geometry",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "frame_user_note_changes_unittest.cc",
+    "user_note_base_test.cc",
+    "user_note_base_test.h",
+    "user_note_instance_unittest.cc",
+    "user_note_manager_unittest.cc",
+    "user_note_service_unittest.cc",
+    "user_note_utils_unittest.cc",
+  ]
+
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/user_notes:features",
+    "//components/user_notes/interfaces",
+    "//components/user_notes/model",
+    "//components/user_notes/model:unit_tests",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -1,0 +1,762 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Cras histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Cras.A2dp100msFailureOverStream" units="units"
+    expires_after="2023-02-26">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    For each of bluetooth A2DP stream period, track the sum of all period
+    lengths of consecutive packet write failures observerd by CRAS that is
+    longer than 100ms.
+  </summary>
+</histogram>
+
+<histogram name="Cras.A2dp20msFailureOverStream" units="units"
+    expires_after="2023-03-26">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    For each of bluetooth A2DP stream period, track the sum of all period
+    lengths of consecutive packet write failures observerd by CRAS that is
+    longer than 20ms.
+  </summary>
+</histogram>
+
+<histogram name="Cras.A2dpExitCode" enum="CrasA2dpExitCode"
+    expires_after="2023-01-22">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Track all different paths causing bluetooth A2DP drop from audio output
+    settings. Collect this metrics to help investigate possible issues and
+    monitor the trend to catch regressions.
+  </summary>
+</histogram>
+
+<histogram name="Cras.Busyloop" units="units" expires_after="2023-03-26">
+<!-- Name completed by histogram_suffixes
+     name="Cras.TimePeriod" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    For each audio thread running state, records the number of busyloops.
+    Busyloop means the audio thread doen't sleep during more than two loops,
+    which may make the system busy. Depending on the time of running state, the
+    records is seperated into three logs: ShortPeriod(shorter than 10 minutes),
+    MediumPeriod(between 10 and 60 minutes), LongPeriod (longer than 60
+    minutes).
+  </summary>
+</histogram>
+
+<histogram name="Cras.BusyloopLength" units="units" expires_after="2023-02-12">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    When each busyloop stops, records the length of it. The lengths exceeding
+    1000 are recorded as 1000.
+  </summary>
+</histogram>
+
+<histogram
+    name="Cras.DeviceConfigureTime{Direction}{Device}{HostCapability}{PeripheralCapability}"
+    units="ms" expires_after="2023-07-11">
+  <owner>hychao@google.com</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The configure time of {Direction} device {Device} in CRAS(ChromeOS audio
+    server). The configure time is the time taken for the device's own configure
+    function to execute and when it returns signaling that device is ready to
+    send/receive audio data. For wired audio devices this is expected to range
+    from 10ms to 100ms, while wireless headsets this could take longer than
+    500ms. We collect this configure time to gather stats and track the
+    improvement on shortening this configure time.
+  </summary>
+  <token key="Direction">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".Input"/>
+    <variant name=".Output"/>
+  </token>
+  <token key="Device">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".A2DP"/>
+    <variant name=".AbnormalFallback"/>
+    <variant name=".AlsaLoopback"/>
+    <variant name=".Bluetooth"/>
+    <variant name=".FrontMic"/>
+    <variant name=".Haptic"/>
+    <variant name=".HDMI"/>
+    <variant name=".Headphone"/>
+    <variant name=".HFP"/>
+    <variant name=".Hotword"/>
+    <variant name=".InternalMic"/>
+    <variant name=".InternalSpeaker"/>
+    <variant name=".InvalidType"/>
+    <variant name=".KeyboardMic"/>
+    <variant name=".Lineout"/>
+    <variant name=".Mic"/>
+    <variant name=".NoDevice"/>
+    <variant name=".NormalFallback"/>
+    <variant name=".PostDspLoopback"/>
+    <variant name=".PostMixLoopback"/>
+    <variant name=".RearMic"/>
+    <variant name=".SilentHotword"/>
+    <variant name=".Unknown"/>
+    <variant name=".USB"/>
+  </token>
+  <token key="HostCapability">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".NonOffloading"/>
+    <variant name=".Offloading"/>
+  </token>
+  <token key="PeripheralCapability">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".NarrowBandMic"/>
+    <variant name=".WideBandMic"/>
+  </token>
+</histogram>
+
+<histogram name="Cras.DeviceGain" units="level" expires_after="2023-03-26">
+<!-- Name completed by histogram_suffixes
+     name="Cras.DeviceType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The gain of a device which is recorded when closing a device. The original
+    value of UI gain scaler is between 0 to 10. The gain here has been
+    multiplied by 100.
+  </summary>
+</histogram>
+
+<histogram name="Cras.DeviceNoiseCancellationStatus"
+    enum="CrasNoiseCancellationStatus" expires_after="2023-02-12">
+<!-- Name completed by histogram_suffixes
+     name="Cras.DeviceType" -->
+
+  <owner>johnylin@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Record the staus of Noise Cancellation (blocked/disabled/enabled) for the
+    supported device. It is recorded when the device is opened.
+  </summary>
+</histogram>
+
+<histogram
+    name="Cras.DeviceRuntime{Direction}{Device}{HostCapability}{PeripheralCapability}"
+    units="seconds" expires_after="2022-12-01">
+  <owner>jrwu@google.com</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The runtime of {Direction} device {Device} in CRAS(ChromeOS audio server).
+    The runtime is the duration between opening and closing a device. The value
+    is recorded when the device is closed. For certain devices, more detailed
+    host/peripheral-capabilities are recorded. The aggregated runtime for each
+    level is accessible up to &quot;Cras.DeviceRuntime&quot;.
+  </summary>
+  <token key="Direction">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".Input"/>
+    <variant name=".Output"/>
+  </token>
+  <token key="Device">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".A2DP"/>
+    <variant name=".AbnormalFallback"/>
+    <variant name=".AlsaLoopback"/>
+    <variant name=".Bluetooth"/>
+    <variant name=".FrontMic"/>
+    <variant name=".Haptic"/>
+    <variant name=".HDMI"/>
+    <variant name=".Headphone"/>
+    <variant name=".HFP"/>
+    <variant name=".Hotword"/>
+    <variant name=".InternalMic"/>
+    <variant name=".InternalSpeaker"/>
+    <variant name=".InvalidType"/>
+    <variant name=".KeyboardMic"/>
+    <variant name=".Lineout"/>
+    <variant name=".Mic"/>
+    <variant name=".NoDevice"/>
+    <variant name=".NormalFallback"/>
+    <variant name=".PostDspLoopback"/>
+    <variant name=".PostMixLoopback"/>
+    <variant name=".RearMic"/>
+    <variant name=".SilentHotword"/>
+    <variant name=".Unknown"/>
+    <variant name=".USB"/>
+  </token>
+  <token key="HostCapability">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".NonOffloading"/>
+    <variant name=".Offloading"/>
+  </token>
+  <token key="PeripheralCapability">
+    <variant name="" summary="aggregated across all breakdowns"/>
+    <variant name=".NarrowBandMic"/>
+    <variant name=".WideBandMic"/>
+  </token>
+</histogram>
+
+<histogram name="Cras.DeviceTypeInput" enum="CrasDeviceType"
+    expires_after="2023-03-26">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    It is used for logging input device usage of ChromeOS users. The count
+    indicates the number of each input device has been used and is recorded when
+    a device is closed.
+  </summary>
+</histogram>
+
+<histogram name="Cras.DeviceTypeOutput" enum="CrasDeviceType"
+    expires_after="2023-03-26">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    It is used for logging output device usage of ChromeOS users. The count
+    indicates the number of each input device has been used and is recorded when
+    a device is closed.
+  </summary>
+</histogram>
+
+<histogram name="Cras.DeviceVolume" units="level" expires_after="2023-03-19">
+<!-- Name completed by histogram_suffixes
+     name="Cras.DeviceType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The volume of a device, which is recorded when closing a device.
+  </summary>
+</histogram>
+
+<histogram name="Cras.FetchDelayMilliSeconds" units="ms"
+    expires_after="2023-03-26">
+<!-- Name completed by histogram_suffixes
+     name="Cras.ClientType" and
+     name="Cras.StreamType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The longest additional time CRAS(Chrome OS audio server) ever waits for a
+    stream exceeding the timeout threshold. This value is recorded per stream
+    when it gets removed and used to investigate the audio glitch/skip problem
+    on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Cras.HfpBatteryIndicatorSupported"
+    enum="CrasHfpBatteryIndicator" expires_after="2022-12-01">
+  <owner>enshuo@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    For each HFP audio device record whether it supports battery indicator.
+  </summary>
+</histogram>
+
+<histogram name="Cras.HfpBatteryReport" enum="CrasHfpBatteryIndicator"
+    expires_after="2022-12-01">
+  <owner>enshuo@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    For each HFP battery level change event record if it comes from the command
+    defined by Apple's Spec or BT HFP spec. The count indicates how frequent
+    user might see this event and can help us decide which data source we prefer
+    to show if the headset supports both.
+  </summary>
+</histogram>
+
+<histogram name="Cras.HfpScoConnectionError" enum="CrasHfpScoError"
+    expires_after="2022-12-01">
+  <owner>enshuo@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    For each SCO connection record the returned event. The event indicates if
+    the setup of the connection is successful or not.
+  </summary>
+</histogram>
+
+<histogram name="Cras.HfpWidebandSpeechPacketLoss" units="units"
+    expires_after="2023-03-26">
+  <owner>enshuo@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    For each HFP audio device supporting WBS record how many packets are lost
+    per 1000 packets when the device is closed. This is for tracking how bad the
+    packet loss can be for WBS in real world.
+  </summary>
+</histogram>
+
+<histogram name="Cras.HfpWidebandSpeechSupported" enum="BooleanSupported"
+    expires_after="2023-03-26">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    For each single connection of bluetooth HFP audio device record whether it
+    supports wideband-speech feature or not.
+  </summary>
+</histogram>
+
+<histogram name="Cras.HighestDeviceDelayInput" units="units"
+    expires_after="2023-02-12">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The highest hardware delay of input device in CRAS(ChromeOS audio server).
+    It is calculated by 1000 * highest_hw_level / largest_cb_level. The
+    highest_hw_level is the highest remaining frames in the device. The
+    largest_cb_level is the largest callback threshold of streams which have
+    attached to this device. The value is recorded when the device is removed.
+  </summary>
+</histogram>
+
+<histogram name="Cras.HighestDeviceDelayOutput" units="units"
+    expires_after="2023-02-12">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The highest hardware delay of output device in CRAS(ChromeOS audio server).
+    It is calculated by 1000 * highest_hw_level / largest_cb_level. The
+    highest_hw_level is the highest remaining frames in the device. The
+    largest_cb_level is the largest callback threshold of streams which have
+    attached to this device. The value is recorded when the device is removed.
+  </summary>
+</histogram>
+
+<histogram name="Cras.HighestInputHardwareLevel" units="frames"
+    expires_after="2023-01-22">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The highest hardware level of input device in CRAS(Chrome OS audio server).
+    The hardware level is the remaining frames in the device. For input device,
+    it can show the latency between capturing and actual reading.
+  </summary>
+</histogram>
+
+<histogram name="Cras.HighestOutputHardwareLevel" units="frames"
+    expires_after="2023-02-12">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The highest hardware level of output device in CRAS(Chrome OS audio server).
+    The hardware level is the remaining frames in the device. For output device,
+    it can show the latency between writing and actual playout.
+  </summary>
+</histogram>
+
+<histogram name="Cras.kHfpWidebandSpeechSelectedCodec" enum="CrasHfpCodec"
+    expires_after="2022-12-01">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    For each single connection of bluetooth HFP record the result of codec
+    negotiation, if supported.
+  </summary>
+</histogram>
+
+<histogram name="Cras.MissedCallbackFirstTimeInput" units="seconds"
+    expires_after="2023-02-12">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The first time missed callbacks happened on input streams in CRAS (Chrome OS
+    audio server). In normal situation, audio thread should follow the callback
+    schedule to send frames to clients. However, sometimes it may miss schedule
+    because of some reasons. When the first time that audio thread misses
+    callback schedule, record how many seconds have passed since stream started
+    running.
+  </summary>
+</histogram>
+
+<histogram name="Cras.MissedCallbackFirstTimeOutput" units="seconds"
+    expires_after="2023-01-22">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The first time missed callbacks happened on output streams in CRAS (Chrome
+    OS audio server). In normal situation, audio thread should follow the
+    callback schedule to fetch frames from clients. However, sometimes it may
+    miss schedule because of some reasons. When the first time that audio thread
+    misses callback schedule, record how many seconds have passed since stream
+    started running.
+  </summary>
+</histogram>
+
+<histogram name="Cras.MissedCallbackFrequencyAfterReschedulingInput"
+    units="count" expires_after="2023-01-22">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The number of missed callbacks of input streams in a day after rescheduling.
+    It is calculated by number of the missed callbacks / runtime of the stream
+    after rescheduling. This value is recorded when the stream is removed.
+  </summary>
+</histogram>
+
+<histogram name="Cras.MissedCallbackFrequencyAfterReschedulingOutput"
+    units="count" expires_after="2023-01-22">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The number of missed callbacks of output streams in a day after
+    rescheduling. It is calculated by number of the missed callbacks / runtime
+    of the stream after rescheduling. This value is recorded when the stream is
+    removed.
+  </summary>
+</histogram>
+
+<histogram name="Cras.MissedCallbackFrequencyInput" units="count"
+    expires_after="2023-01-22">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The number of missed callbacks of input streams in a day. It is calculated
+    by number of the missed callbacks / runtime of the stream. This value is
+    recorded when the stream is removed.
+  </summary>
+</histogram>
+
+<histogram name="Cras.MissedCallbackFrequencyOutput" units="count"
+    expires_after="2023-01-22">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The number of missed callbacks of output streams in a day. It is calculated
+    by number of the missed callbacks / runtime of the stream. This value is
+    recorded when the stream is removed.
+  </summary>
+</histogram>
+
+<histogram name="Cras.MissedCallbackSecondTimeInput" units="seconds"
+    expires_after="2023-01-22">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The second time missed callbacks happened on input streams in CRAS (Chrome
+    OS audio server). When the second time audio thread misses callback
+    schedule, record how many seconds have passed since the first time.
+  </summary>
+</histogram>
+
+<histogram name="Cras.MissedCallbackSecondTimeOutput" units="seconds"
+    expires_after="2023-01-22">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The second time missed callbacks happened on output streams in CRAS (Chrome
+    OS audio server). When the second time audio thread misses callback
+    schedule, record how many seconds have passed since the first time.
+  </summary>
+</histogram>
+
+<histogram name="Cras.RtcDevicePair" enum="CrasDevicePair"
+    expires_after="2023-03-26">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    After one webRTC stream is completed, the corresponding device pair will be
+    logged. The runtime shorter than 1s will be ignored.
+  </summary>
+</histogram>
+
+<histogram name="Cras.RtcRuntime.{InDevice}.{OutDevice}" units="seconds"
+    expires_after="2022-12-01">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The runtime of webRTC streams using input device {InDevice} and output
+    device {OutDevice}. This log will be logged after a stream is completed or
+    devices are changed.
+  </summary>
+  <token key="InDevice">
+    <variant name="A2DP"/>
+    <variant name="AlsaLoopback"/>
+    <variant name="Bluetooth"/>
+    <variant name="BluetoothNarrowBandMic"/>
+    <variant name="BluetoothWideBandMic"/>
+    <variant name="FrontMic"/>
+    <variant name="Haptic"/>
+    <variant name="HDMI"/>
+    <variant name="Headphone"/>
+    <variant name="HFP"/>
+    <variant name="Hotword"/>
+    <variant name="HSP"/>
+    <variant name="InternalMic"/>
+    <variant name="InternalSpeaker"/>
+    <variant name="InvalidType"/>
+    <variant name="KeyboardMic"/>
+    <variant name="Lineout"/>
+    <variant name="Mic"/>
+    <variant name="PostDspLoopback"/>
+    <variant name="PostMixLoopback"/>
+    <variant name="RearMic"/>
+    <variant name="SilentHotword"/>
+    <variant name="Unknown"/>
+    <variant name="USB"/>
+  </token>
+  <token key="OutDevice">
+    <variant name="A2DP"/>
+    <variant name="AlsaLoopback"/>
+    <variant name="Bluetooth"/>
+    <variant name="BluetoothNarrowBandMic"/>
+    <variant name="BluetoothWideBandMic"/>
+    <variant name="FrontMic"/>
+    <variant name="Haptic"/>
+    <variant name="HDMI"/>
+    <variant name="Headphone"/>
+    <variant name="HFP"/>
+    <variant name="Hotword"/>
+    <variant name="HSP"/>
+    <variant name="InternalMic"/>
+    <variant name="InternalSpeaker"/>
+    <variant name="InvalidType"/>
+    <variant name="KeyboardMic"/>
+    <variant name="Lineout"/>
+    <variant name="Mic"/>
+    <variant name="PostDspLoopback"/>
+    <variant name="PostMixLoopback"/>
+    <variant name="RearMic"/>
+    <variant name="SilentHotword"/>
+    <variant name="Unknown"/>
+    <variant name="USB"/>
+  </token>
+</histogram>
+
+<histogram name="Cras.SetAecRefDeviceType" enum="CrasDeviceType"
+    expires_after="2023-03-05">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    It is used to log the call to InputStream::SetOutputDeviceForAec() which
+    results different types of audio device being set as AEC referefence in
+    CRAS(Chrome OS audio server). Based on this metrics we can analyze the user
+    behavior in voice communication app. Note that CRAS_METRICS_DEVICE_NO_DEVICE
+    is tracking the case when the call sets a NULL device meaning to leave AEC
+    reference on system default.
+  </summary>
+</histogram>
+
+<histogram name="Cras.StreamAddError" enum="CrasStreamAddError"
+    expires_after="2022-11-20">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Record the errors happen when CRAS server adss a stream to its audio thread.
+  </summary>
+</histogram>
+
+<histogram name="Cras.StreamCallbackThreshold" units="frames"
+    expires_after="2023-01-22">
+<!-- Name completed by histogram_suffixes
+     name="Cras.Direction" and
+     name="Cras.ClientType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The callback threshold of stream in CRAS(Chrome OS audio server). It is the
+    number of frames when to request more from the client. This value is
+    recorded when the stream is created.
+  </summary>
+</histogram>
+
+<histogram name="Cras.StreamClientTypeInput" enum="CrasClientType"
+    expires_after="2023-03-19">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The client type of input stream in CRAS(Chrome OS audio server). This value
+    is recorded when the stream is created.
+  </summary>
+</histogram>
+
+<histogram name="Cras.StreamClientTypeOutput" enum="CrasClientType"
+    expires_after="2023-03-19">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The client type of output stream in CRAS(Chrome OS audio server). This value
+    is recorded when the stream is created.
+  </summary>
+</histogram>
+
+<histogram name="Cras.StreamConnectError" enum="CrasStreamConnectError"
+    expires_after="2023-03-26">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Record the errors happen when CRAS server handles the client requests to
+    connect new streams.
+  </summary>
+</histogram>
+
+<histogram name="Cras.StreamCreateError" enum="CrasStreamCreateError"
+    expires_after="2023-04-09">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>Record the errors happen when CRAS server creats a stream.</summary>
+</histogram>
+
+<histogram name="Cras.StreamEffects" units="value" expires_after="2022-09-20">
+<!-- Name completed by histogram_suffixes
+     name="Cras.Direction" and
+     name="Cras.ClientType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The bit map of effects to be enabled on this stream. This value is recorded
+    when the stream is created.
+  </summary>
+</histogram>
+
+<histogram name="Cras.StreamFlags" units="value" expires_after="2023-04-09">
+<!-- Name completed by histogram_suffixes
+     name="Cras.Direction" and
+     name="Cras.ClientType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The flags of stream in CRAS(Chrome OS audio server). It is the special
+    handling for stream. This value is recorded when the stream is created.
+  </summary>
+</histogram>
+
+<histogram name="Cras.StreamRuntime" units="seconds" expires_after="2023-03-26">
+<!-- Name completed by histogram_suffixes
+     name="Cras.Direction" and
+     name="Cras.ClientType" and
+     name="Cras.StreamType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The runtime of stream in CRAS(ChromeOS audio server). The runtime is the
+    duration between creating and destroying a stream. The value is recorded
+    when the stream is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Cras.StreamSamplingFormat" enum="AlsaSampleFormatType"
+    expires_after="2022-09-20">
+<!-- Name completed by histogram_suffixes
+     name="Cras.Direction" and
+     name="Cras.ClientType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The sampling format of stream in CRAS(Chrome OS audio server). This value is
+    recorded when the stream is created.
+  </summary>
+</histogram>
+
+<histogram name="Cras.StreamSamplingRate" units="bps"
+    expires_after="2023-03-26">
+<!-- Name completed by histogram_suffixes
+     name="Cras.Direction" and
+     name="Cras.ClientType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The sampling rate of stream in CRAS(Chrome OS audio server). This value is
+    recorded when the stream is created.
+  </summary>
+</histogram>
+
+<histogram name="Cras.UnderrunsPerDevice" units="count"
+    expires_after="2023-02-12">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The number of underruns happened on one audio device. Underrun here means
+    there are no samples in device buffer while device is playing. It is
+    recorded when device is closed by CRAS(Chrome OS audio server).
+  </summary>
+</histogram>
+
+<histogram name="Cras.WebRTC.Audio.ApmCaptureInputLevelAverageRms"
+    units="dBFS (negated)" expires_after="2023-03-26">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    This histogram reports the peak RMS of the signal in the output of WebRTC's
+    Audio Processing Module run in CRAS, after all WebRTC audio processing. A
+    new value is reported every 10 seconds, and the peak is the RMS of the
+    strongest 10 ms block over the latest interval. The metric is negated dBFS,
+    meaning that 0 is a full-scale signal, while 127 corresponds to -127 dBFS
+    (very faint).
+  </summary>
+</histogram>
+
+<histogram name="Cras.WebRTC.Audio.ApmCaptureInputLevelPeakRms"
+    units="dBFS (negated)" expires_after="2022-09-20">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    This histogram reports the peak RMS of the signal coming in to WebRTC's
+    Audio Processing Module run in CRAS, prior to any WebRTC processing. A new
+    value is reported every 10 seconds, and the peak is the RMS of the strongest
+    10 ms block over the latest interval. The metric is negated dBFS, meaning
+    that 0 is a full-scale signal, while 127 corresponds to -127 dBFS (very
+    faint).
+  </summary>
+</histogram>
+
+<histogram name="Cras.WebRTC.Audio.ApmCaptureOutputLevelAverageRms"
+    units="dBFS (negated)" expires_after="2022-05-01">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    This histogram reports the average RMS of the signal in the output of
+    WebRTC's Audio Processing Module run in CRAS, after all audio WebRTC
+    processing. A new value is reported every 10 seconds, and the average is
+    over the latest interval. The metric is negated dBFS, meaning that 0 is a
+    full-scale signal, while 127 corresponds to -127 dBFS (very faint).
+  </summary>
+</histogram>
+
+<histogram name="Cras.WebRTC.Audio.ApmCaptureOutputLevelPeakRms"
+    units="dBFS (negated)" expires_after="2022-05-01">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    This histogram reports the peak RMS of the signal in the output of WebRTC's
+    Audio Processing Module run in CRAS, after all WebRTC audio processing. A
+    new value is reported every 10 seconds, and the peak is the RMS of the
+    strongest 10 ms block over the latest interval. The metric is negated dBFS,
+    meaning that 0 is a full-scale signal, while 127 corresponds to -127 dBFS
+    (very faint).
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -1,0 +1,25 @@
+<style include="settings-shared">
+  iron-list > *:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
+  }
+
+  :host {
+    --settings-row-min-height: 64px;
+  }
+</style>
+<div id="container" class="layout vertical flex" scrollable
+    no-bottom-scroll-border>
+  <iron-list id="savedDevicesList" items="[[devices]]"
+      scroll-target="container" preserve-focus>
+    <template>
+      <os-settings-saved-devices-list-item
+        device="[[item]]"
+        tabindex$="[[tabIndex]]"
+        item-index="[[index]]"
+        last-focused="{{lastFocused_}}"
+        iron-list-tab-index="[[tabIndex]]"
+        list-size="[[devices.length]]">
+      </os-settings-saved-devices-list-item>
+    </template>
+  </iron-list>
+</div>

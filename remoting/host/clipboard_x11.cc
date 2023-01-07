@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/linux/x_server_clipboard.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
@@ -21,6 +21,10 @@ namespace remoting {
 class ClipboardX11 : public Clipboard, public x11::EventObserver {
  public:
   ClipboardX11();
+
+  ClipboardX11(const ClipboardX11&) = delete;
+  ClipboardX11& operator=(const ClipboardX11&) = delete;
+
   ~ClipboardX11() override;
 
   void Init();
@@ -44,9 +48,7 @@ class ClipboardX11 : public Clipboard, public x11::EventObserver {
 
   // Connection to the X server, used by |x_server_clipboard_|. This must only
   // be accessed on the input thread.
-  x11::Connection* connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardX11);
+  raw_ptr<x11::Connection> connection_;
 };
 
 ClipboardX11::ClipboardX11() = default;

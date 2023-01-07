@@ -1,35 +1,47 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+// Trusted vault protos to communicate with backend written in proto3 to avoid
+// subtle differences between enum fields.
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
 
 option optimize_for = LITE_RUNTIME;
 
-option java_package = "sync_pb";
 package sync_pb;
 
 message SharedMemberKey {
-  optional int32 epoch = 1;
-  optional bytes wrapped_key = 2;
-  optional bytes member_proof = 3;
+  int32 epoch = 1;
+  bytes wrapped_key = 2;
+  bytes member_proof = 3;
 }
 
 message RotationProof {
-  optional int32 new_epoch = 1;
-  optional bytes rotation_proof = 2;
+  int32 new_epoch = 1;
+  bytes rotation_proof = 2;
+}
+
+message SecurityDomainDetails {
+  message SyncDetails { bool degraded_recoverability = 1; }
+
+  SyncDetails sync_details = 1;
 }
 
 message SecurityDomain {
-  optional string name = 1;
+  string name = 1;
+  int32 current_epoch = 2;
+  SecurityDomainDetails security_domain_details = 3;
 }
 
 message SecurityDomainMember {
-  optional string name = 1;
-  optional bytes public_key = 2;
+  string name = 1;
+  bytes public_key = 2;
 
   message SecurityDomainMembership {
-    optional string security_domain = 1;
+    string security_domain = 1;
     repeated SharedMemberKey keys = 3;
     repeated RotationProof rotation_proofs = 4;
   }
@@ -41,11 +53,32 @@ message SecurityDomainMember {
     MEMBER_TYPE_PHYSICAL_DEVICE = 1;
   }
 
-  optional MemberType member_type = 4;
+  MemberType member_type = 4;
 }
 
 message JoinSecurityDomainsRequest {
-  optional SecurityDomain security_domain = 1;
-  optional SecurityDomainMember security_domain_member = 2;
-  optional SharedMemberKey shared_member_key = 3;
+  SecurityDomain security_domain = 1;
+  SecurityDomainMember security_domain_member = 2;
+  repeated SharedMemberKey shared_member_key = 3;
+  int32 member_type_hint = 4;
+}
+
+message JoinSecurityDomainsResponse {
+  SecurityDomain security_domain = 1;
+}
+
+message JoinSecurityDomainsErrorDetail {
+  JoinSecurityDomainsResponse already_exists_response = 1;
+}
+
+// TODO(crbug.com/1234719): figure out how to link google.protobuf.Any and use
+// it instead.
+message Proto3Any {
+  string type_url = 1;
+  bytes value = 2;
+}
+
+// Forked version of google.rpc.Status.
+message RPCStatus {
+  repeated Proto3Any details = 3;
 }

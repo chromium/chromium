@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "device/fido/fido_constants.h"
 
 namespace device {
@@ -168,6 +167,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleFrameAssembler {
  public:
   explicit FidoBleFrameAssembler(
       const FidoBleFrameInitializationFragment& fragment);
+
+  FidoBleFrameAssembler(const FidoBleFrameAssembler&) = delete;
+  FidoBleFrameAssembler& operator=(const FidoBleFrameAssembler&) = delete;
+
   ~FidoBleFrameAssembler();
 
   bool IsDone() const;
@@ -179,8 +182,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleFrameAssembler {
   uint16_t data_length_ = 0;
   uint8_t sequence_number_ = 0;
   FidoBleFrame frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(FidoBleFrameAssembler);
 };
 
 }  // namespace device

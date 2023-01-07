@@ -1,22 +1,24 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
+#import "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
+#import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
-#include "ios/chrome/browser/crash_report/crash_report_helper.h"
-#include "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_observer.h"
-#include "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
+#import "ios/chrome/browser/crash_report/crash_report_helper.h"
+#import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
+#import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
 #import "ios/testing/scoped_block_swizzler.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -32,14 +34,19 @@ class BreakpadHelperTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    // Ensure the CrashReporterBreadcrumbObserver singleton is created
+    // and registered.
+    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();
+
     mock_breakpad_controller_ =
         [OCMockObject mockForClass:[BreakpadController class]];
 
     // Swizzle +[BreakpadController sharedInstance] to return
-    // |mock_breakpad_controller_| instead of the normal singleton instance.
+    // `mock_breakpad_controller_` instead of the normal singleton instance.
     id implementation_block = ^BreakpadController*(id self) {
       return mock_breakpad_controller_;
     };
+    crash_helper::SyncCrashpadEnabledOnNextRun();
     breakpad_controller_shared_instance_swizzler_.reset(new ScopedBlockSwizzler(
         [BreakpadController class], @selector(sharedInstance),
         implementation_block));
@@ -49,11 +56,17 @@ class BreakpadHelperTest : public PlatformTest {
     [[mock_breakpad_controller_ stub] stop];
     crash_helper::SetEnabled(false);
 
+    // Clear the CrashReporterBreadcrumbObserver singleton state to
+    // avoid polluting other tests.
+    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+        .ResetForTesting();
+
     PlatformTest::TearDown();
   }
 
  protected:
   id mock_breakpad_controller_;
+  base::test::TaskEnvironment task_environment;
   std::unique_ptr<ScopedBlockSwizzler>
       breakpad_controller_shared_instance_swizzler_;
 };
@@ -75,6 +88,8 @@ TEST_F(BreakpadHelperTest, CrashReportUserApplicationStateAllKeys) {
   crash_keys::SetCurrentUserInterfaceStyle(2);
   crash_keys::SetRegularTabCount(999);
   crash_keys::SetIncognitoTabCount(999);
+  crash_keys::SetForegroundScenesCount(999);
+  crash_keys::SetConnectedScenesCount(999);
   crash_keys::SetDestroyingAndRebuildingIncognitoBrowserState(true);
   crash_keys::SetGridToVisibleTabAnimation(
       @"to_view_controller", @"presenting_view_controller",
@@ -83,7 +98,8 @@ TEST_F(BreakpadHelperTest, CrashReportUserApplicationStateAllKeys) {
 
   // Set a max-length breadcrumbs string.
   std::string breadcrumbs(breadcrumbs::kMaxDataLength, 'A');
-  crash_keys::SetBreadcrumbEvents(base::SysUTF8ToNSString(breadcrumbs));
+  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+      .SetPreviousSessionEvents({breadcrumbs});
 }
 
 TEST_F(BreakpadHelperTest, GetCrashReportCount) {
@@ -107,25 +123,29 @@ TEST_F(BreakpadHelperTest, HasReportToUpload) {
 }
 
 TEST_F(BreakpadHelperTest, IsUploadingEnabled) {
-  crash_helper::SetUserEnabledUploading(true);
-  EXPECT_TRUE(crash_helper::UserEnabledUploading());
+  crash_helper::common::SetUserEnabledUploading(true);
+  EXPECT_TRUE(crash_helper::common::UserEnabledUploading());
   crash_helper::SetEnabled(false);
-  EXPECT_TRUE(crash_helper::UserEnabledUploading());
+  EXPECT_FALSE(crash_helper::common::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] start:NO];
   crash_helper::SetEnabled(true);
-  EXPECT_TRUE(crash_helper::UserEnabledUploading());
+  EXPECT_TRUE(crash_helper::common::UserEnabledUploading());
 
-  crash_helper::SetUserEnabledUploading(false);
-  EXPECT_FALSE(crash_helper::UserEnabledUploading());
+  crash_helper::common::SetUserEnabledUploading(false);
+  EXPECT_FALSE(crash_helper::common::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] stop];
   crash_helper::SetEnabled(false);
-  EXPECT_FALSE(crash_helper::UserEnabledUploading());
+  EXPECT_FALSE(crash_helper::common::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] start:NO];
   crash_helper::SetEnabled(true);
-  EXPECT_FALSE(crash_helper::UserEnabledUploading());
+  EXPECT_TRUE(crash_helper::common::UserEnabledUploading());
 }
 
 TEST_F(BreakpadHelperTest, StartUploadingReportsInRecoveryMode) {
+  // This is a breakpad only test and can be deprecated once Breakpad is
+  // removed.
+  if (crash_helper::common::CanUseCrashpad())
+    return;
   // Test when crash reporter is disabled.
   crash_helper::SetEnabled(false);
   crash_helper::StartUploadingReportsInRecoveryMode();
@@ -151,6 +171,11 @@ TEST_F(BreakpadHelperTest, StartUploadingReportsInRecoveryMode) {
 }
 
 TEST_F(BreakpadHelperTest, RestoreDefaultConfiguration) {
+  // This is a breakpad only test and can be deprecated once Breakpad is
+  // removed.
+  if (crash_helper::common::CanUseCrashpad())
+    return;
+
   // Test when crash reporter is disabled.
   crash_helper::SetEnabled(false);
   crash_helper::RestoreDefaultConfiguration();

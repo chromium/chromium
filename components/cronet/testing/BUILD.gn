@@ -1,0 +1,55 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+# This section can be updated from globbing rules using:
+#  find data -type f | sort | sed 's/\(.*\)/"\1",/g'
+bundle_data("test_support_bundle_data") {
+  visibility = [ ":test_support" ]
+  testonly = true
+  sources = [
+    "test_server/data/cacheable.txt",
+    "test_server/data/cacheable.txt.mock-http-headers",
+    "test_server/data/content_length_mismatch.html",
+    "test_server/data/content_length_mismatch.html.mock-http-headers",
+    "test_server/data/gzipped.html",
+    "test_server/data/gzipped.html.mock-http-headers",
+    "test_server/data/multiredirect.html",
+    "test_server/data/multiredirect.html.mock-http-headers",
+    "test_server/data/notfound.html",
+    "test_server/data/notfound.html.mock-http-headers",
+    "test_server/data/quic_data/simple.txt",
+    "test_server/data/redirect.html",
+    "test_server/data/redirect.html.mock-http-headers",
+    "test_server/data/redirect_invalid_scheme.html",
+    "test_server/data/redirect_invalid_scheme.html.mock-http-headers",
+    "test_server/data/secureproxychecksuccess.txt",
+    "test_server/data/secureproxychecksuccess.txt.mock-http-headers",
+    "test_server/data/set_cookie.html",
+    "test_server/data/set_cookie.html.mock-http-headers",
+    "test_server/data/success.txt",
+    "test_server/data/success.txt.mock-http-headers",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
+# Test support for Cronet common implementation.
+source_set("test_support") {
+  testonly = true
+
+  deps = [ "//net:test_support" ]
+
+  data = [ "test_server/data/" ]
+
+  sources = [
+    "test_server/test_server.cc",
+    "test_server/test_server.h",
+  ]
+
+  if (is_ios) {
+    deps += [ ":test_support_bundle_data" ]
+  }
+}

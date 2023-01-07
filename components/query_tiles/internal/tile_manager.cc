@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/query_tiles/internal/stats.h"
@@ -32,11 +32,9 @@ constexpr char kTileStatsGroup[] = "tile_stats";
 class TileManagerImpl : public TileManager {
  public:
   TileManagerImpl(std::unique_ptr<TileStore> store,
-                  base::Clock* clock,
                   const std::string& accept_languages)
       : initialized_(false),
         store_(std::move(store)),
-        clock_(clock),
         accept_languages_(accept_languages) {}
 
  private:
@@ -61,7 +59,7 @@ class TileManagerImpl : public TileManager {
                                   std::move(group), std::move(callback)));
   }
 
-  void GetTiles(GetTilesCallback callback) override {
+  void GetTiles(bool shuffle_tiles, GetTilesCallback callback) override {
     if (!tile_group_) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), std::vector<Tile>()));
@@ -76,11 +74,16 @@ class TileManagerImpl : public TileManager {
     // are not used.
     std::vector<Tile> tiles =
         trending_tile_handler_.FilterExtraTrendingTiles(tile_group_->tiles);
+
+    if (shuffle_tiles)
+      ShuffleTiles(&tiles, TileShuffler());
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(tiles)));
   }
 
-  void GetTile(const std::string& tile_id, TileCallback callback) override {
+  void GetTile(const std::string& tile_id,
+               bool shuffle_tiles,
+               TileCallback callback) override {
     // First remove the inactive trending tiles.
     RemoveIdleTrendingTiles();
     // Find the tile.
@@ -96,7 +99,7 @@ class TileManagerImpl : public TileManager {
         }
       }
     }
-    auto result_tile = result ? base::make_optional(*result) : base::nullopt;
+    auto result_tile = result ? absl::make_optional(*result) : absl::nullopt;
     if (result_tile.has_value()) {
       // Get the tiles to display, and convert the result vector.
       // TODO(qinmin): make GetTile() return a vector of sub tiles, rather than
@@ -105,6 +108,8 @@ class TileManagerImpl : public TileManager {
           trending_tile_handler_.FilterExtraTrendingTiles(
               result_tile->sub_tiles);
       if (!sub_tiles.empty()) {
+        if (shuffle_tiles)
+          ShuffleTiles(&sub_tiles, TileShuffler());
         std::vector<std::unique_ptr<Tile>> sub_tile_ptrs;
         for (auto& tile : sub_tiles)
           sub_tile_ptrs.emplace_back(std::make_unique<Tile>(std::move(tile)));
@@ -186,8 +191,7 @@ class TileManagerImpl : public TileManager {
     }
 
     // Keep the stats group in memory for tile score calculation.
-    if (loaded_groups.find(kTileStatsGroup) != loaded_groups.end() &&
-        base::FeatureList::IsEnabled(features::kQueryTilesLocalOrdering)) {
+    if (loaded_groups.find(kTileStatsGroup) != loaded_groups.end()) {
       tile_stats_group_ = std::move(loaded_groups[kTileStatsGroup]);
       // prevent the stats group from being deleted.
       loaded_groups.erase(kTileStatsGroup);
@@ -208,7 +212,7 @@ class TileManagerImpl : public TileManager {
 
   // Returns true if the group is expired.
   bool IsGroupExpired(const TileGroup* group) const {
-    if (clock_->Now() >=
+    if (base::Time::Now() >=
         group->last_updated_ts + TileConfig::GetExpireDuration()) {
       stats::RecordGroupPruned(stats::PrunedGroupReason::kExpired);
       return true;
@@ -275,7 +279,7 @@ class TileManagerImpl : public TileManager {
     trending_tile_handler_.OnTileClicked(tile_id);
   }
 
-  void OnQuerySelected(const base::Optional<std::string>& parent_tile_id,
+  void OnQuerySelected(const absl::optional<std::string>& parent_tile_id,
                        const std::u16string& query_text) override {
     if (!tile_group_)
       return;
@@ -304,7 +308,7 @@ class TileManagerImpl : public TileManager {
     if (!tile_group_)
       return;
     std::vector<std::string> tiles_to_remove =
-        trending_tile_handler_.GetInactiveTrendingTiles();
+        trending_tile_handler_.GetTrendingTilesToRemove();
     if (tiles_to_remove.empty())
       return;
     tile_group_->RemoveTiles(tiles_to_remove);
@@ -325,9 +329,6 @@ class TileManagerImpl : public TileManager {
   // seems weird, probably do it through a separate store or use PrefService.
   std::unique_ptr<TileGroup> tile_stats_group_;
 
-  // Clock object.
-  base::Clock* clock_;
-
   // Accept languages from the PrefService. Used to check if tiles stored are of
   // the same language.
   std::string accept_languages_;
@@ -344,10 +345,8 @@ TileManager::TileManager() = default;
 
 std::unique_ptr<TileManager> TileManager::Create(
     std::unique_ptr<TileStore> tile_store,
-    base::Clock* clock,
     const std::string& locale) {
-  return std::make_unique<TileManagerImpl>(std::move(tile_store), clock,
-                                           locale);
+  return std::make_unique<TileManagerImpl>(std::move(tile_store), locale);
 }
 
 }  // namespace query_tiles

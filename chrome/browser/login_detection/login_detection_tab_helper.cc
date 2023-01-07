@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
-#include "components/ukm/content/source_url_recorder.h"
+#include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -57,7 +57,10 @@ void LoginDetectionTabHelper::MaybeCreateForWebContents(
 LoginDetectionTabHelper::LoginDetectionTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      oauth_login_detector_(std::make_unique<OAuthLoginDetector>()) {
+      content::WebContentsUserData<LoginDetectionTabHelper>(*web_contents),
+      oauth_login_detector_(std::make_unique<OAuthLoginDetector>()),
+      ukm_source_id_(
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()) {
   DCHECK(IsLoginDetectionFeatureEnabled());
 }
 
@@ -66,7 +69,7 @@ LoginDetectionTabHelper::~LoginDetectionTabHelper() = default;
 void LoginDetectionTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK(navigation_handle);
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
   if (!navigation_handle->HasCommitted())
     return;
@@ -88,8 +91,7 @@ void LoginDetectionTabHelper::DidFinishNavigation(
   // the time of login will be updated.
   if (auto signedin_site = oauth_login_detector_->GetSuccessfulLoginFlowSite(
           prev_navigation_url, navigation_handle->GetRedirectChain())) {
-    prefs::SaveSiteToOAuthSignedInList(GetPrefs(web_contents()),
-                                       *signedin_site);
+    ProcessNewSignedInSite(*signedin_site);
     RecordLoginDetectionMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow,
                                 navigation_handle->GetNextPageUkmSourceId());
     return;
@@ -128,17 +130,26 @@ void LoginDetectionTabHelper::DidOpenAsPopUp(
   oauth_login_detector_->DidOpenAsPopUp(opener_navigation_url);
 }
 
+void LoginDetectionTabHelper::PrimaryPageChanged(content::Page& page) {
+  ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
+}
+
 void LoginDetectionTabHelper::WebContentsDestroyed() {
   if (auto signedin_site = oauth_login_detector_->GetPopUpLoginFlowSite()) {
+    ProcessNewSignedInSite(*signedin_site);
     RecordLoginDetectionMetrics(
-        LoginDetectionType::kOauthPopUpFirstTimeLoginFlow,
-        ukm::GetSourceIdForWebContentsDocument(web_contents()));
-    prefs::SaveSiteToOAuthSignedInList(GetPrefs(web_contents()),
-                                       *signedin_site);
+        LoginDetectionType::kOauthPopUpFirstTimeLoginFlow, ukm_source_id_);
   }
   oauth_login_detector_.reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LoginDetectionTabHelper)
+void LoginDetectionTabHelper::ProcessNewSignedInSite(
+    const GURL& signedin_site) {
+  prefs::SaveSiteToOAuthSignedInList(GetPrefs(web_contents()), signedin_site);
+  site_isolation::SiteIsolationPolicy::IsolateNewOAuthURL(
+      web_contents()->GetBrowserContext(), signedin_site);
+}
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LoginDetectionTabHelper);
 
 }  // namespace login_detection

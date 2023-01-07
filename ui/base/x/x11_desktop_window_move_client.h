@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,15 @@
 #define UI_BASE_X_X11_DESKTOP_WINDOW_MOVE_CLIENT_H_
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/x/x11_move_loop_delegate.h"
 #include "ui/base/x/x11_whole_screen_move_loop.h"
 #include "ui/gfx/geometry/point.h"
+
+namespace gfx {
+class Rect;
+}
 
 namespace ui {
 
@@ -50,7 +54,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11DesktopWindowMoveClient
 
   // We need to keep track of this so we can actually move it when reacting to
   // mouse events.
-  Delegate* const window_;
+  const raw_ptr<Delegate> window_;
 
   // Our cursor offset from the top left window origin when the drag
   // started. Used to calculate the window's new bounds relative to the current

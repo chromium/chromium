@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,13 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "remoting/base/cpu_utils.h"
 #include "remoting/base/util.h"
 #include "remoting/proto/video.pb.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
@@ -28,27 +30,28 @@ namespace remoting {
 namespace {
 
 // Number of bytes in an RGBx pixel.
-const int kBytesPerRgbPixel = 4;
-
-// Defines the dimension of a macro block. This is used to compute the active
-// map for the encoder.
-const int kMacroBlockSize = 16;
+constexpr int kBytesPerRgbPixel = 4;
 
 // Magic encoder profile numbers for I420 and I444 input formats.
-const int kVp9I420ProfileNumber = 0;
-const int kVp9I444ProfileNumber = 1;
+constexpr int kVp9I420ProfileNumber = 0;
+constexpr int kVp9I444ProfileNumber = 1;
 
 // Magic encoder constants for adaptive quantization strategy.
-const int kVp9AqModeNone = 0;
-const int kVp9AqModeCyclicRefresh = 3;
+constexpr int kVp9AqModeNone = 0;
+constexpr int kVp9AqModeCyclicRefresh = 3;
 
-const int kDefaultTargetBitrateKbps = 1000;
+constexpr int kDefaultTargetBitrateKbps = 1000;
 
 // Minimum target bitrate per megapixel. The value is chosen experimentally such
 // that when screen is not changing the codec converges to the target quantizer
 // above in less than 10 frames.
 // TODO(zijiehe): This value is for VP8 only; reconsider the value for VP9.
-const int kVp8MinimumTargetBitrateKbpsPerMegapixel = 2500;
+constexpr int kVp8MinimumTargetBitrateKbpsPerMegapixel = 2500;
+
+// Default values for the encoder speed of the supported codecs.
+constexpr int kVp9LosslessEncodeSpeed = 5;
+constexpr int kVp9DefaultEncoderSpeed = 6;
+constexpr int kVp9MaxEncoderSpeed = 9;
 
 void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
                               const webrtc::DesktopSize& size) {
@@ -59,6 +62,11 @@ void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
   config->g_w = size.width();
   config->g_h = size.height();
   config->g_pass = VPX_RC_ONE_PASS;
+  // TODO(joedow): Determine whether it is possible to support portrait mode.
+  // VP9 only supports breaking an image up into columns for parallel encoding,
+  // this means that a display in portrait mode cannot be broken up into as many
+  // columns as a display in landscape mode can so performance will be degraded.
+  config->g_threads = WebrtcVideoEncoder::GetEncoderThreadCount(config->g_w);
 
   // Start emitting packets immediately.
   config->g_lag_in_frames = 0;
@@ -68,10 +76,6 @@ void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
   // frames, so take the hit of an "unnecessary" key-frame every 10,000 frames.
   config->kf_min_dist = 10000;
   config->kf_max_dist = 10000;
-
-  // Allow multiple cores on a system to be used for encoding for
-  // performance while at the same time ensuring we do not saturate.
-  config->g_threads = (base::SysInfo::NumberOfProcessors() + 1) / 2;
 
   // Do not drop any frames at encoder.
   config->rc_dropframe_thresh = 0;
@@ -85,11 +89,18 @@ void SetVp8CodecParameters(vpx_codec_enc_cfg_t* config,
                            const webrtc::DesktopSize& size) {
   SetCommonCodecParameters(config, size);
 
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Linux, using too many threads for VP8 encoding has been linked to high
   // CPU usage on machines that are under stress. See http://crbug.com/1151148.
-  config->g_threads = std::min(config->g_threads, 2U);
-#endif  // defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // 5/3/2022 update: Perf testing has shown that doubling the number of threads
+  // on machines with a large number of cores will improve performance at higher
+  // desktop resolutions.  Doubling the number of threads leads to ~30% increase
+  // in framerate at 4K. This could be increased further however we don't want
+  // to risk reintroducing the problem from the bug above so take the safe gains
+  // and leave plenty of cores for the non-remoting workload.
+  uint threshold = config->g_threads >= 16 ? 4U : 2U;
+  config->g_threads = std::min(config->g_threads, threshold);
+#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Value of 2 means using the real time profile. This is basically a
   // redundant option since we explicitly select real time mode when doing
@@ -132,13 +143,22 @@ void SetVp8CodecOptions(vpx_codec_ctx_t* codec) {
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set noise sensitivity";
 }
 
-void SetVp9CodecOptions(vpx_codec_ctx_t* codec, bool lossless_encode) {
-  // Request the lowest-CPU usage that VP9 supports, which depends on whether
-  // we are encoding lossy or lossless.
-  // Note that this is configured via the same parameter as for VP8.
-  int cpu_used = lossless_encode ? 5 : 6;
-  vpx_codec_err_t ret = vpx_codec_control(codec, VP8E_SET_CPUUSED, cpu_used);
+void SetVp9CodecOptions(vpx_codec_ctx_t* codec,
+                        bool lossless_encode,
+                        int encoder_speed) {
+  // Note that this knob uses the same parameter name as VP8.
+  vpx_codec_err_t ret =
+      vpx_codec_control(codec, VP8E_SET_CPUUSED, encoder_speed);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set CPUUSED";
+
+  // Turn on row-based multi-threading if more than one thread is available.
+  if (codec->config.enc->g_threads > 1) {
+    vpx_codec_control(codec, VP9E_SET_ROW_MT, 1);
+  }
+
+  // The param for this knob is a log2 value so 0 is reasonable here.
+  vpx_codec_control(codec, VP9E_SET_TILE_COLUMNS,
+                    static_cast<int>(std::log2(codec->config.enc->g_threads)));
 
   // Use the lowest level of noise sensitivity so as to spend less time
   // on motion estimation and inter-prediction mode.
@@ -155,87 +175,6 @@ void SetVp9CodecOptions(vpx_codec_ctx_t* codec, bool lossless_encode) {
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set aq mode";
 }
 
-void FreeImageIfMismatched(bool use_i444,
-                           const webrtc::DesktopSize& size,
-                           std::unique_ptr<vpx_image_t>* out_image,
-                           std::unique_ptr<uint8_t[]>* out_image_buffer) {
-  if (*out_image) {
-    const vpx_img_fmt_t desired_fmt =
-        use_i444 ? VPX_IMG_FMT_I444 : VPX_IMG_FMT_I420;
-    if (!size.equals(webrtc::DesktopSize((*out_image)->w, (*out_image)->h)) ||
-        (*out_image)->fmt != desired_fmt) {
-      out_image_buffer->reset();
-      out_image->reset();
-    }
-  }
-}
-
-void CreateImage(bool use_i444,
-                 const webrtc::DesktopSize& size,
-                 std::unique_ptr<vpx_image_t>* out_image,
-                 std::unique_ptr<uint8_t[]>* out_image_buffer) {
-  DCHECK(!size.is_empty());
-  DCHECK(!*out_image_buffer);
-  DCHECK(!*out_image);
-
-  std::unique_ptr<vpx_image_t> image(new vpx_image_t());
-  memset(image.get(), 0, sizeof(vpx_image_t));
-
-  // libvpx seems to require both to be assigned.
-  image->d_w = size.width();
-  image->w = size.width();
-  image->d_h = size.height();
-  image->h = size.height();
-
-  // libvpx should derive chroma shifts from|fmt| but currently has a bug:
-  // https://code.google.com/p/webm/issues/detail?id=627
-  if (use_i444) {
-    image->fmt = VPX_IMG_FMT_I444;
-    image->x_chroma_shift = 0;
-    image->y_chroma_shift = 0;
-  } else {  // I420
-    image->fmt = VPX_IMG_FMT_YV12;
-    image->x_chroma_shift = 1;
-    image->y_chroma_shift = 1;
-  }
-
-  // libyuv's fast-path requires 16-byte aligned pointers and strides, so pad
-  // the Y, U and V planes' strides to multiples of 16 bytes.
-  const int y_stride = ((image->w - 1) & ~15) + 16;
-  const int uv_unaligned_stride = y_stride >> image->x_chroma_shift;
-  const int uv_stride = ((uv_unaligned_stride - 1) & ~15) + 16;
-
-  // libvpx accesses the source image in macro blocks, and will over-read
-  // if the image is not padded out to the next macroblock: crbug.com/119633.
-  // Pad the Y, U and V planes' height out to compensate.
-  // Assuming macroblocks are 16x16, aligning the planes' strides above also
-  // macroblock aligned them.
-  static_assert(kMacroBlockSize == 16, "macroblock_size_not_16");
-  const int y_rows =
-      ((image->h - 1) & ~(kMacroBlockSize - 1)) + kMacroBlockSize;
-  const int uv_rows = y_rows >> image->y_chroma_shift;
-
-  // Allocate a YUV buffer large enough for the aligned data & padding.
-  const int buffer_size = y_stride * y_rows + 2 * uv_stride * uv_rows;
-  std::unique_ptr<uint8_t[]> image_buffer(new uint8_t[buffer_size]);
-
-  // Reset image value to 128 so we just need to fill in the y plane.
-  memset(image_buffer.get(), 128, buffer_size);
-
-  // Fill in the information for |image_|.
-  unsigned char* uchar_buffer =
-      reinterpret_cast<unsigned char*>(image_buffer.get());
-  image->planes[0] = uchar_buffer;
-  image->planes[1] = image->planes[0] + y_stride * y_rows;
-  image->planes[2] = image->planes[1] + uv_stride * uv_rows;
-  image->stride[0] = y_stride;
-  image->stride[1] = uv_stride;
-  image->stride[2] = uv_stride;
-
-  *out_image = std::move(image);
-  *out_image_buffer = std::move(image_buffer);
-}
-
 }  // namespace
 
 // static
@@ -250,23 +189,6 @@ std::unique_ptr<WebrtcVideoEncoder> WebrtcVideoEncoderVpx::CreateForVP9() {
   return base::WrapUnique(new WebrtcVideoEncoderVpx(true));
 }
 
-// See
-// https://www.webmproject.org/about/faq/#what-are-the-limits-of-vp8-and-vp9-in-terms-of-resolution-datarate-and-framerate
-// for the limitations of VP8 / VP9 encoders.
-// static
-bool WebrtcVideoEncoderVpx::IsSupportedByVP8(
-    const WebrtcVideoEncoderSelector::Profile& profile) {
-  return profile.resolution.width() <= 16384 &&
-         profile.resolution.height() <= 16384;
-}
-
-// static
-bool WebrtcVideoEncoderVpx::IsSupportedByVP9(
-    const WebrtcVideoEncoderSelector::Profile& profile) {
-  return profile.resolution.width() <= 65536 &&
-         profile.resolution.height() <= 65536;
-}
-
 WebrtcVideoEncoderVpx::~WebrtcVideoEncoderVpx() = default;
 
 void WebrtcVideoEncoderVpx::SetTickClockForTests(
@@ -275,8 +197,13 @@ void WebrtcVideoEncoderVpx::SetTickClockForTests(
 }
 
 void WebrtcVideoEncoderVpx::SetLosslessEncode(bool want_lossless) {
-  if (use_vp9_ && (want_lossless != lossless_encode_)) {
+  if (!use_vp9_)
+    return;
+
+  if (want_lossless != lossless_encode_) {
     lossless_encode_ = want_lossless;
+    SetEncoderSpeed(lossless_encode_ ? kVp9LosslessEncodeSpeed
+                                     : kVp9DefaultEncoderSpeed);
     if (codec_)
       Configure(webrtc::DesktopSize(codec_->config.enc->g_w,
                                     codec_->config.enc->g_h));
@@ -284,7 +211,10 @@ void WebrtcVideoEncoderVpx::SetLosslessEncode(bool want_lossless) {
 }
 
 void WebrtcVideoEncoderVpx::SetLosslessColor(bool want_lossless) {
-  if (use_vp9_ && (want_lossless != lossless_color_)) {
+  if (!use_vp9_)
+    return;
+
+  if (want_lossless != lossless_color_) {
     lossless_color_ = want_lossless;
     // TODO(wez): Switch to ConfigureCodec() path once libvpx supports it.
     // See https://code.google.com/p/webm/issues/detail?id=913.
@@ -293,6 +223,14 @@ void WebrtcVideoEncoderVpx::SetLosslessColor(bool want_lossless) {
     //                                codec_->config.enc->g_h));
     codec_.reset();
   }
+}
+
+void WebrtcVideoEncoderVpx::SetEncoderSpeed(int encoder_speed) {
+  if (!use_vp9_)
+    return;
+
+  vp9_encoder_speed_ = base::clamp<int>(encoder_speed, kVp9LosslessEncodeSpeed,
+                                        kVp9MaxEncoderSpeed);
 }
 
 void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
@@ -304,7 +242,7 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
   }
 
   webrtc::DesktopSize previous_frame_size =
-      image_ ? webrtc::DesktopSize(image_->w, image_->h)
+      image_ ? webrtc::DesktopSize(image_->d_w, image_->d_h)
              : webrtc::DesktopSize();
 
   webrtc::DesktopSize frame_size = frame ? frame->size() : previous_frame_size;
@@ -325,60 +263,57 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 
   UpdateConfig(params);
 
-  vpx_active_map_t act_map;
-  act_map.rows = active_map_size_.height();
-  act_map.cols = active_map_size_.width();
-  act_map.active_map = active_map_.get();
-
   webrtc::DesktopRegion updated_region;
   // Convert the updated capture data ready for encode.
   PrepareImage(frame.get(), &updated_region);
 
-  // Update active map based on updated region.
-  if (params.clear_active_map)
-    ClearActiveMap();
+  vpx_active_map_t act_map;
+  if (use_active_map_) {
+    if (params.clear_active_map)
+      active_map_.Clear();
 
-  if (params.key_frame)
-    updated_region.SetRect(webrtc::DesktopRect::MakeSize(frame_size));
+    if (params.key_frame)
+      updated_region.SetRect(webrtc::DesktopRect::MakeSize(frame_size));
 
-  SetActiveMapFromRegion(updated_region);
+    active_map_.Update(updated_region);
 
-  // Apply active map to the encoder.
-  if (vpx_codec_control(codec_.get(), VP8E_SET_ACTIVEMAP, &act_map)) {
-    LOG(ERROR) << "Unable to apply active map";
+    act_map.rows = active_map_.height();
+    act_map.cols = active_map_.width();
+    act_map.active_map = active_map_.data();
+    if (vpx_codec_control(codec_.get(), VP8E_SET_ACTIVEMAP, &act_map)) {
+      LOG(ERROR) << "Unable to apply active map";
+    }
   }
 
   vpx_codec_err_t ret = vpx_codec_encode(
       codec_.get(), image_.get(), 0, params.duration.InMicroseconds(),
       (params.key_frame) ? VPX_EFLAG_FORCE_KF : 0, VPX_DL_REALTIME);
   if (ret != VPX_CODEC_OK) {
-      LOG(ERROR) << "Encoding error: " << vpx_codec_err_to_string(ret) << "\n"
-                 << "Details: " << vpx_codec_error(codec_.get()) << "\n"
-                 << vpx_codec_error_detail(codec_.get());
-      // TODO(zijiehe): A more exact error type is preferred.
-      std::move(done).Run(EncodeResult::UNKNOWN_ERROR, nullptr);
-      return;
+    const char* error_detail = vpx_codec_error_detail(codec_.get());
+    LOG(ERROR) << "Encoding error: " << vpx_codec_err_to_string(ret) << "\n  "
+               << "Details: " << vpx_codec_error(codec_.get()) << "\n    "
+               << (error_detail ? error_detail : "No error details");
+    // TODO(zijiehe): A more exact error type is preferred.
+    std::move(done).Run(EncodeResult::UNKNOWN_ERROR, nullptr);
+    return;
   }
 
-  if (!lossless_encode_) {
-    // VP8 doesn't return active map, so we assume it's the same on the output
-    // as on the input.
-    if (use_vp9_) {
+  if (use_active_map_) {
+    // VP8 doesn't return an active map so we assume it hasn't changed.
+    if (use_vp9_ && !lossless_encode_) {
       ret = vpx_codec_control(codec_.get(), VP9E_GET_ACTIVEMAP, &act_map);
       DCHECK_EQ(ret, VPX_CODEC_OK)
           << "Failed to fetch active map: " << vpx_codec_err_to_string(ret)
           << "\n";
     }
-
-    UpdateRegionFromActiveMap(&updated_region);
   }
 
   // Read the encoded data.
   vpx_codec_iter_t iter = nullptr;
   bool got_data = false;
 
-  std::unique_ptr<EncodedFrame> encoded_frame(new EncodedFrame());
-  encoded_frame->size = frame_size;
+  auto encoded_frame = std::make_unique<EncodedFrame>();
+  encoded_frame->dimensions = frame_size;
   if (use_vp9_) {
     encoded_frame->codec = webrtc::kVideoCodecVP9;
   } else {
@@ -394,9 +329,8 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
     switch (vpx_packet->kind) {
       case VPX_CODEC_CX_FRAME_PKT: {
         got_data = true;
-        // TODO(sergeyu): Avoid copying the data here..
-        encoded_frame->data.assign(
-            reinterpret_cast<const char*>(vpx_packet->data.frame.buf),
+        encoded_frame->data = webrtc::EncodedImageBuffer::Create(
+            reinterpret_cast<const uint8_t*>(vpx_packet->data.frame.buf),
             vpx_packet->data.frame.sz);
         encoded_frame->key_frame =
             vpx_packet->data.frame.flags & VPX_FRAME_IS_KEY;
@@ -415,10 +349,15 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 
 WebrtcVideoEncoderVpx::WebrtcVideoEncoderVpx(bool use_vp9)
     : use_vp9_(use_vp9),
+      image_(nullptr, vpx_img_free),
       clock_(base::DefaultTickClock::GetInstance()),
       bitrate_filter_(kVp8MinimumTargetBitrateKbpsPerMegapixel) {
   // Indicates config is still uninitialized.
   config_.g_timebase.den = 0;
+
+  if (use_vp9_) {
+    SetEncoderSpeed(kVp9DefaultEncoderSpeed);
+  }
 }
 
 void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
@@ -432,27 +371,20 @@ void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
             << ".";
   }
 
-  // Tear down |image_| if it no longer matches the size and color settings.
-  // PrepareImage() will then create a new buffer of the required dimensions if
-  // |image_| is not allocated.
-  FreeImageIfMismatched(lossless_color_, size, &image_, &image_buffer_);
+  // Tear down |image_| if it doesn't match the new frame size.
+  if (image_ && !size.equals(webrtc::DesktopSize(image_->d_w, image_->d_h))) {
+    image_.reset();
+  }
 
-  // Initialize active map.
-  active_map_size_ = webrtc::DesktopSize(
-      (size.width() + kMacroBlockSize - 1) / kMacroBlockSize,
-      (size.height() + kMacroBlockSize - 1) / kMacroBlockSize);
-  active_map_.reset(
-      new uint8_t[active_map_size_.width() * active_map_size_.height()]);
-  ClearActiveMap();
+  // Tear down |codec_| if the new size does not match what this codec instance
+  // was configured for.
+  if (codec_ && !size.equals(webrtc::DesktopSize(codec_->config.enc->g_w,
+                                                 codec_->config.enc->g_h))) {
+    codec_.reset();
+  }
 
-  // TODO(wez): Remove this hack once VPX can handle frame size reconfiguration.
-  // See https://code.google.com/p/webm/issues/detail?id=912.
-  if (codec_) {
-    // If the frame size has changed then force re-creation of the codec.
-    if (codec_->config.enc->g_w != static_cast<unsigned int>(size.width()) ||
-        codec_->config.enc->g_h != static_cast<unsigned int>(size.height())) {
-      codec_.reset();
-    }
+  if (use_active_map_) {
+    active_map_.Initialize(size);
   }
 
   // Fetch a default configuration for the desired codec.
@@ -482,7 +414,7 @@ void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
 
   // Apply further customizations to the codec now it's initialized.
   if (use_vp9_) {
-    SetVp9CodecOptions(codec_.get(), lossless_encode_);
+    SetVp9CodecOptions(codec_.get(), lossless_encode_, vp9_encoder_speed_);
   } else {
     SetVp8CodecOptions(codec_.get());
   }
@@ -558,10 +490,14 @@ void WebrtcVideoEncoderVpx::PrepareImage(
     // aligned. The conversion routines don't require even width & height,
     // so this is safe even if the source dimensions are not even.
     updated_region->IntersectWith(
-        webrtc::DesktopRect::MakeWH(image_->w, image_->h));
+        webrtc::DesktopRect::MakeWH(image_->d_w, image_->d_h));
   } else {
-    CreateImage(lossless_color_, frame->size(), &image_, &image_buffer_);
-    updated_region->AddRect(webrtc::DesktopRect::MakeWH(image_->w, image_->h));
+    vpx_img_fmt_t fmt = lossless_color_ ? VPX_IMG_FMT_I444 : VPX_IMG_FMT_YV12;
+    image_.reset(vpx_img_alloc(nullptr, fmt, frame->size().width(),
+                               frame->size().height(),
+                               GetSimdMemoryAlignment()));
+    updated_region->AddRect(
+        webrtc::DesktopRect::MakeWH(image_->d_w, image_->d_h));
   }
 
   // Convert the updated region to YUV ready for encoding.
@@ -578,7 +514,7 @@ void WebrtcVideoEncoderVpx::PrepareImage(
     case VPX_IMG_FMT_I444:
       for (webrtc::DesktopRegion::Iterator r(*updated_region); !r.IsAtEnd();
            r.Advance()) {
-        const webrtc::DesktopRect& rect = r.rect();
+        webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->d_w);
         int rgb_offset =
             rgb_stride * rect.top() + rect.left() * kBytesPerRgbPixel;
         int yuv_offset = uv_stride * rect.top() + rect.left();
@@ -591,7 +527,7 @@ void WebrtcVideoEncoderVpx::PrepareImage(
     case VPX_IMG_FMT_YV12:
       for (webrtc::DesktopRegion::Iterator r(*updated_region); !r.IsAtEnd();
            r.Advance()) {
-        const webrtc::DesktopRect& rect = r.rect();
+        webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->d_w);
         int rgb_offset =
             rgb_stride * rect.top() + rect.left() * kBytesPerRgbPixel;
         int y_offset = y_stride * rect.top() + rect.left();
@@ -606,57 +542,6 @@ void WebrtcVideoEncoderVpx::PrepareImage(
       NOTREACHED();
       break;
   }
-}
-
-void WebrtcVideoEncoderVpx::ClearActiveMap() {
-  DCHECK(active_map_);
-  // Clear active map first.
-  memset(active_map_.get(), 0,
-         active_map_size_.width() * active_map_size_.height());
-}
-
-void WebrtcVideoEncoderVpx::SetActiveMapFromRegion(
-    const webrtc::DesktopRegion& updated_region) {
-  // Mark updated areas active.
-  for (webrtc::DesktopRegion::Iterator r(updated_region); !r.IsAtEnd();
-       r.Advance()) {
-    const webrtc::DesktopRect& rect = r.rect();
-    int left = rect.left() / kMacroBlockSize;
-    int right = (rect.right() - 1) / kMacroBlockSize;
-    int top = rect.top() / kMacroBlockSize;
-    int bottom = (rect.bottom() - 1) / kMacroBlockSize;
-    DCHECK_LT(right, active_map_size_.width());
-    DCHECK_LT(bottom, active_map_size_.height());
-
-    uint8_t* map = active_map_.get() + top * active_map_size_.width();
-    for (int y = top; y <= bottom; ++y) {
-      for (int x = left; x <= right; ++x)
-        map[x] = 1;
-      map += active_map_size_.width();
-    }
-  }
-}
-
-void WebrtcVideoEncoderVpx::UpdateRegionFromActiveMap(
-    webrtc::DesktopRegion* updated_region) {
-  const uint8_t* map = active_map_.get();
-  for (int y = 0; y < active_map_size_.height(); ++y) {
-    for (int x0 = 0; x0 < active_map_size_.width();) {
-      int x1 = x0;
-      for (; x1 < active_map_size_.width(); ++x1) {
-        if (map[y * active_map_size_.width() + x1] == 0)
-          break;
-      }
-      if (x1 > x0) {
-        updated_region->AddRect(webrtc::DesktopRect::MakeLTRB(
-            kMacroBlockSize * x0, kMacroBlockSize * y, kMacroBlockSize * x1,
-            kMacroBlockSize * (y + 1)));
-      }
-      x0 = x1 + 1;
-    }
-  }
-  updated_region->IntersectWith(
-      webrtc::DesktopRect::MakeWH(image_->w, image_->h));
 }
 
 }  // namespace remoting

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/accessibility_controller.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -44,6 +43,8 @@ class AccessibilityConfirmationDialog;
 class AccessibilityEventRewriter;
 class AccessibilityHighlightController;
 class AccessibilityObserver;
+class DictationBubbleController;
+class DictationNudgeController;
 class FloatingAccessibilityController;
 class PointScanController;
 class ScopedBacklightsForcedOff;
@@ -57,6 +58,26 @@ enum AccessibilityNotificationVisibility {
   A11Y_NOTIFICATION_SHOW,
 };
 
+// Used to indicate which accessibility notification should be shown.
+enum class A11yNotificationType {
+  // No accessibility notification.
+  kNone,
+  // Shown when spoken feedback is set enabled with A11Y_NOTIFICATION_SHOW.
+  kSpokenFeedbackEnabled,
+  // Shown when braille display is connected while spoken feedback is enabled.
+  kBrailleDisplayConnected,
+  // Shown when braille display is connected while spoken feedback is not
+  // enabled yet. Note: in this case braille display connected would enable
+  // spoken feedback.
+  kSpokenFeedbackBrailleEnabled,
+  // Shown when Switch Access is enabled.
+  kSwitchAccessEnabled,
+  // Shown when speech recognition files download successfully.
+  kSpeechRecognitionFilesDownloaded,
+  // Shown when speech recognition files download fails.
+  kSpeechRecognitionFilesFailed,
+};
+
 // The controller for accessibility features in ash. Features can be enabled
 // in chrome's webui settings or the system tray menu (see TrayAccessibility).
 // Uses preferences to communicate with chrome to support mash.
@@ -67,21 +88,22 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   enum FeatureType {
     kAutoclick = 0,
     kCaretHighlight,
-    KCursorHighlight,
+    kCursorColor,
+    kCursorHighlight,
     kDictation,
+    kDockedMagnifier,
     kFloatingMenu,
     kFocusHighlight,
     kFullscreenMagnifier,
-    kDockedMagnifier,
     kHighContrast,
     kLargeCursor,
+    kLiveCaption,
     kMonoAudio,
-    kSpokenFeedback,
     kSelectToSpeak,
+    kSpokenFeedback,
     kStickyKeys,
     kSwitchAccess,
     kVirtualKeyboard,
-    kCursorColor,
 
     kFeatureCount,
     kNoConflictingFeature
@@ -161,7 +183,24 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     Dialog dialog_;
   };
 
+  // Contains data used to give an accessibility-related notification.
+  struct A11yNotificationWrapper {
+    A11yNotificationWrapper();
+    A11yNotificationWrapper(A11yNotificationType type_in,
+                            std::vector<std::u16string> replacements_in);
+    ~A11yNotificationWrapper();
+    A11yNotificationWrapper(const A11yNotificationWrapper&);
+
+    A11yNotificationType type = A11yNotificationType::kNone;
+    std::vector<std::u16string> replacements;
+  };
+
   AccessibilityControllerImpl();
+
+  AccessibilityControllerImpl(const AccessibilityControllerImpl&) = delete;
+  AccessibilityControllerImpl& operator=(const AccessibilityControllerImpl&) =
+      delete;
+
   ~AccessibilityControllerImpl() override;
 
   // See Shell::RegisterProfilePrefs().
@@ -174,17 +213,20 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   Feature& GetFeature(FeatureType feature) const;
 
+  base::WeakPtr<AccessibilityControllerImpl> GetWeakPtr();
+
   // Getters for the corresponding features.
   Feature& autoclick() const;
   Feature& caret_highlight() const;
   Feature& cursor_highlight() const;
-  FeatureWithDialog& dictation() const;
+  Feature& dictation() const;
   Feature& floating_menu() const;
   Feature& focus_highlight() const;
   FeatureWithDialog& fullscreen_magnifier() const;
   FeatureWithDialog& docked_magnifier() const;
   FeatureWithDialog& high_contrast() const;
   Feature& large_cursor() const;
+  Feature& live_caption() const;
   Feature& mono_audio() const;
   Feature& spoken_feedback() const;
   Feature& select_to_speak() const;
@@ -212,8 +254,13 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   PointScanController* GetPointScanController();
 
+  // Update the autoclick menu bounds and sticky keys overlay bounds if
+  // necessary. This may need to happen when the display work area changes, or
+  // if system UI regions change (like the virtual keyboard position).
+  void UpdateFloatingPanelBoundsIfNeeded();
+
   // Update the autoclick menu bounds if necessary. This may need to happen when
-  // the display work area changes, or if system ui regions change (like the
+  // the display work area changes, or if system UI regions change (like the
   // virtual keyboard position).
   void UpdateAutoclickMenuBoundsIfNeeded();
 
@@ -240,6 +287,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   bool IsLargeCursorSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForLargeCursor();
+
+  bool IsLiveCaptionSettingVisibleInTray();
+  bool IsEnterpriseIconVisibleForLiveCaption();
 
   bool IsMonoAudioSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForMonoAudio();
@@ -290,7 +340,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   // Plays an earcon. Earcons are brief and distinctive sounds that indicate
   // that their mapped event has occurred. The |sound_key| enums can be found in
-  // ash/components/audio/sounds.h.
+  // chromeos/ash/components/audio/sounds.h.
   void PlayEarcon(Sound sound_key);
 
   // Initiates play of shutdown sound. Returns the TimeDelta duration.
@@ -303,9 +353,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   // Toggle dictation.
   void ToggleDictation();
-
-  // Cancels all current and queued speech immediately.
-  void SilenceSpokenFeedback();
 
   // Called when we first detect two fingers are held down, which can be used to
   // toggle spoken feedback on some touch-only devices.
@@ -382,6 +429,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
       int point_scan_speed_dips_per_second) override;
   void SetDictationActive(bool is_active) override;
   void ToggleDictationFromSource(DictationToggleSource source) override;
+  void ShowDictationLanguageUpgradedNudge(
+      const std::string& dictation_locale,
+      const std::string& application_locale) override;
   void HandleAutoclickScrollableBoundsFound(
       gfx::Rect& bounds_in_screen) override;
   std::u16string GetBatteryDescription() const override;
@@ -393,6 +443,29 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void DisablePolicyRecommendationRestorerForTesting() override;
   void SuspendSwitchAccessKeyHandling(bool suspend) override;
   void EnableChromeVoxVolumeSlideGesture() override;
+  void UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
+      int download_progress) override;
+  void ShowSpeechRecognitionDownloadNotificationForDictation(
+      bool succeeded,
+      const std::u16string& display_language) override;
+  void UpdateDictationBubble(
+      bool visible,
+      DictationBubbleIconType icon,
+      const absl::optional<std::u16string>& text,
+      const absl::optional<std::vector<DictationBubbleHintType>>& hints)
+      override;
+  void SilenceSpokenFeedback() override;
+
+  // A confirmation dialog will be shown the first time an accessibility feature
+  // is enabled using the specified accelerator key sequence. Only one dialog
+  // will be shown at a time, and will not be shown again if the user has
+  // selected "accept" on a given dialog. The dialog was added to ensure that
+  // users would be aware of the shortcut they have just enabled, and to prevent
+  // users from accidentally triggering the feature. The dialog is currently
+  // shown when enabling the following features: high contrast, full screen
+  // magnifier, docked magnifier and screen rotation and when requested by the
+  // AccessibilityPrivate extension API. The shown dialog is stored as a weak
+  // pointer in the variable |confirmation_dialog_| below.
   void ShowConfirmationDialog(const std::u16string& title,
                               const std::u16string& description,
                               base::OnceClosure on_accept_callback,
@@ -402,6 +475,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // Test helpers:
   AccessibilityEventRewriter* GetAccessibilityEventRewriterForTest();
@@ -420,6 +494,15 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   bool enable_chromevox_volume_slide_gesture() {
     return enable_chromevox_volume_slide_gesture_;
   }
+  DictationNudgeController* GetDictationNudgeControllerForTest() {
+    return dictation_nudge_controller_.get();
+  }
+
+  int dictation_soda_download_progress() {
+    return dictation_soda_download_progress_;
+  }
+
+  DictationBubbleController* GetDictationBubbleControllerForTest();
 
  private:
   // Populate |features_| with the feature of the correct type.
@@ -447,7 +530,12 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void UpdateAutoclickMenuPositionFromPref();
   void UpdateFloatingMenuPositionFromPref();
   void UpdateLargeCursorFromPref();
+  void UpdateLiveCaptionFromPref();
   void UpdateCursorColorFromPrefs();
+  void UpdateFilterGreyscaleFromPrefs();
+  void UpdateFilterSaturationFromPrefs();
+  void UpdateFilterSepiaFromPrefs();
+  void UpdateFilterHueRotationFromPrefs();
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);
   void UpdateSwitchAccessAutoScanEnabledFromPref();
   void UpdateSwitchAccessAutoScanSpeedFromPref();
@@ -463,6 +551,10 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void DeactivateSwitchAccess();
   void SyncSwitchAccessPrefsToSignInProfile();
   void UpdateKeyCodesAfterSwitchAccessEnabled();
+
+  // Dictation's SODA download progress. Values are between 0 and 100. Tracked
+  // for testing purposes only.
+  int dictation_soda_download_progress_ = 0;
 
   // Client interface in chrome browser.
   AccessibilityControllerClient* client_ = nullptr;
@@ -512,6 +604,14 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // Used to force the backlights off to darken the screen.
   std::unique_ptr<ScopedBacklightsForcedOff> scoped_backlights_forced_off_;
 
+  // Used to show the offline dictation language upgrade nudge. This is created
+  // with ShowDictationLanguageUpgradedNudge() and reset at Shutdown() or when
+  // the Dictation feature is disabled.
+  std::unique_ptr<DictationNudgeController> dictation_nudge_controller_;
+
+  // Used to control the Dictation bubble UI.
+  std::unique_ptr<DictationBubbleController> dictation_bubble_controller_;
+
   // True if ChromeVox should enable its volume slide gesture.
   bool enable_chromevox_volume_slide_gesture_ = false;
 
@@ -529,8 +629,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   base::WeakPtr<AccessibilityConfirmationDialog> confirmation_dialog_;
 
   base::WeakPtrFactory<AccessibilityControllerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerImpl);
 };
 
 }  // namespace ash

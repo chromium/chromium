@@ -1,0 +1,11 @@
+<style include="common">
+</style>
+<div class="ambient-toggle-row-container">
+  <div class="ambient-toggle-row">
+    <p id="toggleDescription">$i18n{ambientModePageDescription}</p>
+    <cr-toggle id="toggle" checked="{{checked}}"
+        aria-label$="[[getAriaLabel_(checked)]]"
+        aria-describedby="toggleDescription">
+    </cr-toggle>
+  </div>
+</div>

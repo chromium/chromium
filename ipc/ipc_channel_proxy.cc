@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/record_replay.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_factory.h"
@@ -25,6 +25,8 @@
 #include "ipc/message_filter.h"
 #include "ipc/message_filter_router.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+
+#include "base/record_replay.h"
 
 namespace IPC {
 
@@ -63,7 +65,7 @@ void ChannelProxy::Context::ClearIPCTaskRunner() {
 
 void ChannelProxy::Context::CreateChannel(
     std::unique_ptr<ChannelFactory> factory) {
-  base::AutoLock l(channel_lifetime_lock_);
+  base::AutoLock channel_lock(channel_lifetime_lock_);
   DCHECK(!channel_);
   DCHECK_EQ(factory->GetIPCTaskRunner(), ipc_task_runner_);
   channel_ = factory->BuildChannel(this);
@@ -73,7 +75,7 @@ void ChannelProxy::Context::CreateChannel(
   if (support) {
     thread_safe_channel_ = support->CreateThreadSafeChannel();
 
-    base::AutoLock l(pending_filters_lock_);
+    base::AutoLock filter_lock(pending_filters_lock_);
     for (auto& entry : pending_io_thread_interfaces_)
       support->AddGenericAssociatedInterface(entry.first, entry.second);
     pending_io_thread_interfaces_.clear();
@@ -413,9 +415,9 @@ void ChannelProxy::Context::ClearChannel() {
 void ChannelProxy::Context::AddGenericAssociatedInterfaceForIOThread(
     const std::string& name,
     const GenericAssociatedInterfaceFactory& factory) {
-  base::AutoLock l(channel_lifetime_lock_);
+  base::AutoLock channel_lock(channel_lifetime_lock_);
   if (!channel_) {
-    base::AutoLock l(pending_filters_lock_);
+    base::AutoLock filter_lock(pending_filters_lock_);
     pending_io_thread_interfaces_.emplace_back(name, factory);
     return;
   }
@@ -488,7 +490,7 @@ ChannelProxy::~ChannelProxy() {
 void ChannelProxy::Init(const IPC::ChannelHandle& channel_handle,
                         Channel::Mode mode,
                         bool create_pipe_now) {
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // When we are creating a server on POSIX, we need its file descriptor
   // to be created immediately so that it can be accessed and passed
   // to other processes. Forcing it to be created immediately avoids
@@ -496,7 +498,7 @@ void ChannelProxy::Init(const IPC::ChannelHandle& channel_handle,
   if (mode & Channel::MODE_SERVER_FLAG) {
     create_pipe_now = true;
   }
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   Init(
       ChannelFactory::Create(channel_handle, mode, context_->ipc_task_runner()),
       create_pipe_now);
@@ -606,13 +608,10 @@ void ChannelProxy::AddGenericAssociatedInterfaceForIOThread(
   context()->AddGenericAssociatedInterfaceForIOThread(name, factory);
 }
 
-void ChannelProxy::GetGenericRemoteAssociatedInterface(
-    const std::string& name,
-    mojo::ScopedInterfaceEndpointHandle handle) {
+void ChannelProxy::GetRemoteAssociatedInterface(
+    mojo::GenericPendingAssociatedReceiver receiver) {
   DCHECK(did_init_);
-  context()->thread_safe_channel().GetAssociatedInterface(
-      name, mojo::PendingAssociatedReceiver<mojom::GenericInterface>(
-                std::move(handle)));
+  context()->thread_safe_channel().GetAssociatedInterface(std::move(receiver));
 }
 
 void ChannelProxy::ClearIPCTaskRunner() {

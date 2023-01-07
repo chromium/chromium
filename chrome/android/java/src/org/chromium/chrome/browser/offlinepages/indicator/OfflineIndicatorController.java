@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -89,8 +90,7 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
     public static void initialize() {
         // No need to create the singleton if the feature is not enabled. Also, if V2 is enabled,
         // this version will be disabled.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.OFFLINE_INDICATOR)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.OFFLINE_INDICATOR_V2)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.OFFLINE_INDICATOR)) {
             return;
         }
 
@@ -105,6 +105,11 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
     public static OfflineIndicatorController getInstance() {
         assert sInstance != null;
         return sInstance;
+    }
+
+    @VisibleForTesting
+    protected static void resetInstanceForTesting() {
+        sInstance = null;
     }
 
     @Override
@@ -181,7 +186,7 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
         if (tab == null) return false;
         if (tab.isShowingErrorPage()) return false;
         if (OfflinePageUtils.isOfflinePage(tab)) return false;
-        if (TextUtils.equals(tab.getUrlString(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
+        if (TextUtils.equals(tab.getUrl().getSpec(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
             return false;
         }
 
@@ -255,13 +260,14 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
                         .setSingleLine(true)
                         .setProfileImage(icon)
                         .setBackgroundColor(Color.BLACK)
-                        .setTextAppearance(R.style.TextAppearance_TextMedium_Primary_Light)
+                        .setTextAppearance(R.style.TextAppearance_TextMedium_Primary_Baseline_Light)
                         .setDuration(SNACKBAR_DURATION_MS)
                         .setAction(chromeActivity.getString(
                                            R.string.offline_indicator_view_offline_content),
                                 null);
         if (isUsingTopSnackbar()) {
-            mTopSnackbarManager.show(snackbar, chromeActivity);
+            mTopSnackbarManager.show(snackbar, chromeActivity, chromeActivity.getWindowAndroid(),
+                    BrowserControlsManagerSupplier.from(chromeActivity.getWindowAndroid()));
         } else {
             // Show a bottom snackbar via SnackbarManager.
             SnackbarManager snackbarManager = chromeActivity.getSnackbarManager();

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@macro/default_bg_color"/>
+    <corners android:radius="@dimen/page_zoom_view_corner_radius"/>
+    <padding
+        android:top="@dimen/page_zoom_view_padding"
+        android:bottom="@dimen/page_zoom_view_padding" />
+</shape>

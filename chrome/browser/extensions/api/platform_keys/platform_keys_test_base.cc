@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,16 @@
 #include "base/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
+#include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/cloud/policy_builder.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,6 +50,7 @@ PlatformKeysTestBase::PlatformKeysTestBase(
   set_chromeos_user_ = false;
   // We log in without running browser.
   set_exit_when_last_browser_closes(false);
+  cryptohome_mixin_.MarkUserAsExisting(account_id_);
 }
 
 PlatformKeysTestBase::~PlatformKeysTestBase() {}
@@ -59,21 +60,23 @@ void PlatformKeysTestBase::SetUp() {
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
 
-  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+  net::EmbeddedTestServer::ServerCertificateConfig gaia_cert_config;
+  gaia_cert_config.dns_names = {GaiaUrls::GetInstance()->gaia_url().host()};
+  gaia_server_.SetSSLConfig(gaia_cert_config);
+  gaia_server_.RegisterRequestHandler(base::BindRepeating(
       &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
 
-  // Don't spin up the IO thread yet since no threads are allowed while
-  // spawning sandbox host process. See crbug.com/322732.
-  ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+  // Initialize the server to allocate a port, so that URLs can be pointed at it
+  // in SetUpCommandLine(). Don't spin up the IO thread yet since no threads are
+  // allowed while spawning sandbox host process. See crbug.com/322732.
+  ASSERT_TRUE(gaia_server_.InitializeAndListen());
 
-  // Start https wrapper here so that the URLs can be pointed at it in
-  // SetUpCommandLine().
-  ASSERT_TRUE(gaia_https_forwarder_.Initialize(
-      GaiaUrls::GetInstance()->gaia_url().host(),
-      embedded_test_server()->base_url()));
+  ash::platform_keys::PlatformKeysServiceFactory::GetInstance()->SetTestingMode(
+      true);
 
-  chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
-      ->SetTestingMode(true);
+  if (system_token_status() == SystemTokenStatus::EXISTS) {
+    CreateTestSystemSlot();
+  }
 
   extensions::MixinBasedExtensionApiTest::SetUp();
 }
@@ -84,7 +87,8 @@ void PlatformKeysTestBase::SetUpCommandLine(base::CommandLine* command_line) {
   policy::AffiliationTestHelper::AppendCommandLineSwitchesForLoginManager(
       command_line);
 
-  const GURL gaia_url = gaia_https_forwarder_.GetURLForSSLHost(std::string());
+  const GURL gaia_url =
+      gaia_server_.GetURL(GaiaUrls::GetInstance()->gaia_url().host(), "/");
   command_line->AppendSwitchASCII(::switches::kGaiaUrl, gaia_url.spec());
   command_line->AppendSwitchASCII(::switches::kLsoUrl, gaia_url.spec());
   command_line->AppendSwitchASCII(::switches::kGoogleApisUrl, gaia_url.spec());
@@ -96,11 +100,11 @@ void PlatformKeysTestBase::SetUpCommandLine(base::CommandLine* command_line) {
 void PlatformKeysTestBase::SetUpInProcessBrowserTestFixture() {
   extensions::MixinBasedExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
-  chromeos::SessionManagerClient::InitializeFakeInMemory();
+  ash::SessionManagerClient::InitializeFakeInMemory();
 
   policy::AffiliationTestHelper affiliation_helper =
       policy::AffiliationTestHelper::CreateForCloud(
-          chromeos::FakeSessionManagerClient::Get());
+          ash::FakeSessionManagerClient::Get());
 
   if (enrollment_status() == EnrollmentStatus::ENROLLED) {
     std::set<std::string> device_affiliation_ids;
@@ -121,10 +125,9 @@ void PlatformKeysTestBase::SetUpInProcessBrowserTestFixture() {
         &user_policy, account_id_, user_affiliation_ids));
   }
 
-  ON_CALL(mock_policy_provider_, IsInitializationComplete(testing::_))
-      .WillByDefault(testing::Return(true));
-  ON_CALL(mock_policy_provider_, IsFirstPolicyLoadComplete(testing::_))
-      .WillByDefault(testing::Return(true));
+  mock_policy_provider_.SetDefaultReturns(
+      /*is_initialization_complete_return=*/true,
+      /*is_first_policy_load_complete_return=*/true);
   mock_policy_provider_.SetAutoRefresh();
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
       &mock_policy_provider_);
@@ -134,7 +137,8 @@ void PlatformKeysTestBase::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   // Start the accept thread as the sandbox host process has already been
   // spawned.
-  embedded_test_server()->StartAcceptingConnections();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  gaia_server_.StartAcceptingConnections();
 
   FakeGaia::AccessTokenInfo token_info;
   token_info.scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
@@ -161,10 +165,14 @@ void PlatformKeysTestBase::SetUpOnMainThread() {
 
   if (system_token_status() == SystemTokenStatus::EXISTS) {
     base::RunLoop loop;
-    content::GetIOThreadTaskRunner({})->PostTask(
+    // Call specializations of the virtual method that configures the created
+    // system slot.
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
         FROM_HERE,
-        base::BindOnce(&PlatformKeysTestBase::SetUpTestSystemSlotOnIO,
-                       base::Unretained(this), loop.QuitClosure()));
+        base::BindOnce(&PlatformKeysTestBase::PrepareTestSystemSlotOnIO,
+                       base::Unretained(this),
+                       base::Unretained(test_system_slot_.get())),
+        loop.QuitClosure());
     loop.Run();
   }
 
@@ -174,15 +182,16 @@ void PlatformKeysTestBase::SetUpOnMainThread() {
 void PlatformKeysTestBase::TearDownOnMainThread() {
   extensions::MixinBasedExtensionApiTest::TearDownOnMainThread();
 
-  chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
-      ->SetTestingMode(false);
+  ash::platform_keys::PlatformKeysServiceFactory::GetInstance()->SetTestingMode(
+      false);
 
   if (system_token_status() == SystemTokenStatus::EXISTS) {
     base::RunLoop loop;
-    content::GetIOThreadTaskRunner({})->PostTask(
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&PlatformKeysTestBase::TearDownTestSystemSlotOnIO,
-                       base::Unretained(this), loop.QuitClosure()));
+                       base::Unretained(this)),
+        loop.QuitClosure());
     loop.Run();
   }
   EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
@@ -200,7 +209,7 @@ bool PlatformKeysTestBase::TestExtension(const std::string& page_url) {
   Browser* const browser = CreateBrowser(profile());
 
   extensions::ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(browser, GURL(page_url));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(page_url)));
 
   if (!catcher.GetNextResult()) {
     message_ = catcher.message();
@@ -213,21 +222,12 @@ bool PlatformKeysTestBase::IsPreTest() {
   return content::IsPreTest();
 }
 
-void PlatformKeysTestBase::SetUpTestSystemSlotOnIO(
-    base::OnceClosure done_callback) {
-  test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>();
+void PlatformKeysTestBase::CreateTestSystemSlot() {
+  test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>(
+      /*simulate_token_loader=*/false);
   ASSERT_TRUE(test_system_slot_->ConstructedSuccessfully());
-
-  PrepareTestSystemSlotOnIO(test_system_slot_.get());
-
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                               std::move(done_callback));
 }
 
-void PlatformKeysTestBase::TearDownTestSystemSlotOnIO(
-    base::OnceClosure done_callback) {
+void PlatformKeysTestBase::TearDownTestSystemSlotOnIO() {
   test_system_slot_.reset();
-
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                               std::move(done_callback));
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ class Browser;
 @interface ActivityServiceCoordinator : ChromeCoordinator
 
 // Initializes a coordinator instance configured to share the current tab's URL
-// based on |baseViewController| and |browser|, and where |params| contains all
+// based on `baseViewController` and `browser`, and where `params` contains all
 // necessary values to drive the scenario.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
@@ -39,9 +39,7 @@ class Browser;
     presentationProvider;
 
 // Handler for activities that need to be executed within a certain scope.
-@property(nonatomic, readwrite, weak)
-    id<BookmarksCommands, QRGenerationCommands>
-        scopedHandler;
+@property(nonatomic, readwrite, weak) id<QRGenerationCommands> scopedHandler;
 
 @end
 

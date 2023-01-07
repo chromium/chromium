@@ -1,18 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/crostini/crostini_force_close_view.h"
 
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace crostini {
@@ -39,13 +38,13 @@ views::Widget* CrostiniForceCloseView::Show(
 
 views::Widget* CrostiniForceCloseView::Show(
     const std::string& app_name,
-    gfx::NativeWindow closable_window,
-    gfx::NativeView closable_view,
+    gfx::NativeWindow context,
+    gfx::NativeView parent,
     base::OnceClosure force_close_callback) {
   views::Widget* dialog_widget = views::DialogDelegate::CreateDialogWidget(
       new CrostiniForceCloseView(base::UTF8ToUTF16(app_name),
                                  std::move(force_close_callback)),
-      closable_window, closable_view);
+      context, parent);
   dialog_widget->Show();
   return dialog_widget;
 }
@@ -74,7 +73,7 @@ CrostiniForceCloseView::CrostiniForceCloseView(
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   set_margins(provider->GetDialogInsetsForContentType(
-      views::DialogContentType::TEXT, views::DialogContentType::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   views::Label* message_label = new views::Label(
       app_name.empty()
@@ -86,7 +85,6 @@ CrostiniForceCloseView::CrostiniForceCloseView(
   AddChildView(message_label);
 
   set_close_on_deactivate(true);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::CROSTINI_FORCE_CLOSE);
 }
 
 CrostiniForceCloseView::~CrostiniForceCloseView() = default;

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="unload-utils.js"></script>
+<script src="utils.js"></script>
+<body>
+<script type="module">
+const params = new URLSearchParams(location.search);
+const state = params.get('state') || 'start';
+
+const bc = openChannel();
+
+// Test steps:
+//   1. `start` page starts prerendering `prerendering` page.
+//   2. `prerendering` page adds `frame`.
+//   3. `prerendering` page removes `frame`.
+//   4. `pageshow`, `pagehide` and `unload` are handled in `frame`.
+bc.postMessage('load ' + state);
+if (state == 'start') {
+  startPrerendering(createTestUrl('prerendering'));
+} else if (state === 'prerendering') {
+  const frame = addFrame(createTestUrl('frame'));
+
+  // Wait until the frame is loaded and requests removal.
+  await waitChannelMessage('request removal');
+
+  // Set up for waiting the unload message from `frame` and get a promise to
+  // wait it, then remove the frame. Once the promise is resolved, complete
+  // the test.
+  const promise = waitChannelMessage('unload frame in prerendering');
+  frame.remove();
+  await promise;
+  bc.postMessage('Done');
+} else if (state == 'frame') {
+  addEventListeners('frame');
+  bc.postMessage('request removal');
+}
+bc.close();
+</script>
+</body>

@@ -27,10 +27,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_H_
 
+#include "base/notreached.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -45,18 +48,14 @@ class CORE_EXPORT DOMURL final : public ScriptWrappable, public DOMURLUtils {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DOMURL* Create(const String& url, ExceptionState& exception_state) {
-    return MakeGarbageCollected<DOMURL>(url, BlankURL(), exception_state);
-  }
+  using PassKey = base::PassKey<DOMURL>;
 
+  static DOMURL* Create(const String& url, ExceptionState& exception_state);
   static DOMURL* Create(const String& url,
                         const String& base,
-                        ExceptionState& exception_state) {
-    return MakeGarbageCollected<DOMURL>(url, KURL(NullURL(), base),
-                                        exception_state);
-  }
+                        ExceptionState& exception_state);
 
-  DOMURL(const String& url, const KURL& base, ExceptionState&);
+  DOMURL(PassKey, const String& url, const KURL& base, ExceptionState&);
   ~DOMURL() override;
 
   static String CreatePublicURL(ExecutionContext*, URLRegistrable*);
@@ -64,9 +63,13 @@ class CORE_EXPORT DOMURL final : public ScriptWrappable, public DOMURLUtils {
   KURL Url() const override { return url_; }
   void SetURL(const KURL& url) override { url_ = url; }
 
-  String Input() const override { return input_; }
-  void SetInput(const String&) override;
+  String Input() const override {
+    // Url() can never be null, so Input() is never called.
+    NOTREACHED();
+    return String();
+  }
 
+  void setHref(const String&, ExceptionState& exception_state);
   void setSearch(const String&) override;
 
   URLSearchParams* searchParams();
@@ -82,7 +85,6 @@ class CORE_EXPORT DOMURL final : public ScriptWrappable, public DOMURLUtils {
   void UpdateSearchParams(const String&);
 
   KURL url_;
-  String input_;
   WeakMember<URLSearchParams> search_params_;
 };
 

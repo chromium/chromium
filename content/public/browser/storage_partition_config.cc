@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,21 +13,7 @@
 
 namespace content {
 
-StoragePartitionId::StoragePartitionId(BrowserContext* browser_context)
-    : config_(StoragePartitionConfig::CreateDefault(browser_context)) {}
-
-StoragePartitionId::StoragePartitionId(const std::string& partition_id,
-                                       const StoragePartitionConfig& config)
-    : id_(partition_id), config_(config) {
-  DCHECK(id_.empty() || GURL(id_).is_valid());
-}
-
-std::string StoragePartitionId::ToString() const {
-  std::stringstream ss;
-  ss << "id='" << id_ << "' config=" << config_;
-  return ss.str();
-}
-
+StoragePartitionConfig::StoragePartitionConfig() = default;
 StoragePartitionConfig::StoragePartitionConfig(const StoragePartitionConfig&) =
     default;
 StoragePartitionConfig& StoragePartitionConfig::operator=(
@@ -61,10 +47,10 @@ StoragePartitionConfig::StoragePartitionConfig(
       partition_name_(partition_name),
       in_memory_(in_memory) {}
 
-base::Optional<StoragePartitionConfig>
+absl::optional<StoragePartitionConfig>
 StoragePartitionConfig::GetFallbackForBlobUrls() const {
   if (fallback_to_partition_domain_for_blob_urls_ == FallbackMode::kNone)
-    return base::nullopt;
+    return absl::nullopt;
 
   return StoragePartitionConfig(
       partition_domain_, "",

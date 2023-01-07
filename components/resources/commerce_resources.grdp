@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_CART_DOMAIN_CART_URL_REGEX_JSON" file="../commerce/core/heuristics/resources/cart_domain_cart_url_regex.json" compress="gzip" type="BINDATA" />
+  <include name="IDR_CHECKOUT_URL_REGEX_DOMAIN_MAPPING_JSON" file="../commerce/core/heuristics/resources/checkout_url_regex_domain_mapping.json" compress="gzip" type="BINDATA"/>
+
+  <include name="IDR_QUERY_SHOPPING_META_JS" file="../commerce/core/resources/query_shopping_meta.js" type="BINDATA" />
+</grit-part>

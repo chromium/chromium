@@ -2,7 +2,7 @@ async function setUp(dp) {
   // Grant permission to register Background Sync events.
   await dp.Browser.grantPermissions({
     origin: location.origin,
-    permissions: ['backgroundSync'],
+    permissions: ['backgroundSync', 'backgroundFetch'],
   });
 
   await dp.BackgroundService.startObserving({service: 'backgroundFetch'});

@@ -4,14 +4,12 @@ section: develop
 layout: article
 ---
 
-
 <!-- Documentation licensed under CC BY 4.0 -->
 <!-- License available at https://creativecommons.org/licenses/by/4.0/ -->
 
-# JavaScript Conformance Rules for Closure Library
-
 The config file:
 [closure/goog/conformance\_proto.txt](https://github.com/google/closure-library/tree/master/closure/goog/conformance_proto.txt)
+
 
 ## Introduction
 
@@ -30,17 +28,16 @@ used in a given context.
 ## Possible Violations
 
 If you are adding code and the warning you are seeing doesn’t seem appropriate
-and the warning is a "Possible Violation" then the compiler doesn’t have enough
+and the warning is a "possible violation", then the compiler doesn’t have enough
 type information to confirm that you aren’t violating a rule. As noted in the
 [JS Conformance Framework] documentation, conformance rules are enforced
-strictly so you aren’t allowed to "possibly violate". The fix is to change the
-code to so that sufficient type information is available.
+strictly so you aren’t allowed to "possibly violate".
 
 ## How to fix possible violations
 
-Removing false-positive 'possible violations' requires providing more
-type-information. Often this is as simple as declaring array content types or
-tightening an APIs return type or choosing a different API.
+Removing false-positive 'possible violations' requires providing more type
+information. Often this is as simple as declaring array content types,
+tightening an API's return type, or choosing a different API.
 
 For example, many Closure DOM APIs return a precise type if passed a
 `goog.dom.TagName` instance. Passing this instance instead of a string solves
@@ -50,34 +47,34 @@ Examples:
 
 ```js
 // Possible violation.
-var img = goog.dom.createDom('img');
+const img = goog.dom.createDom('img');
 img.src = src;
 // Clean.
-var img = goog.dom.createDom(goog.dom.TagName.IMG);
+const img = goog.dom.createDom(goog.dom.TagName.IMG);
 img.src = src;
 // Build error - native APIs don't support goog.dom.TagName.
-var img = document.createElement(goog.dom.TagName.IMG);
+const img = document.createElement(goog.dom.TagName.IMG);
 img.src = src;
 ```
 
 ```js
 // Possible violation.
-var img = goog.dom.getElementByClass('avatar');
+const img = goog.dom.getElementByClass('avatar');
 img.src = src;
 // Clean.
-var img = goog.dom.getElementByTagNameAndClass(goog.dom.TagName.IMG, 'avatar');
+const img = goog.dom.getElementByTagNameAndClass(goog.dom.TagName.IMG, 'avatar');
 img.src = src;
 ```
 
 ```js
 // Possible violation.
-var img = goog.dom.getElement('avatar');
+const img = goog.dom.getElement('avatar');
 img.src = src;
 // Clean.
-var img = goog.dom.asserts.assertIsHTMLImageElement(goog.dom.getElement('avatar'));
+const img = goog.dom.asserts.assertIsHtmlImageElement(goog.dom.getElement('avatar'));
 img.src = src;
 // No violation but unsafe - see below.
-var img = /** @type {!HTMLImageElement} */ (goog.dom.getElement('avatar'));
+const img = /** @type {!HTMLImageElement} */ (goog.dom.getElement('avatar'));
 img.src = src;
 ```
 
@@ -85,44 +82,21 @@ Summing it up:
 
 *   Use `goog.dom` functions with `goog.dom.TagName` instances.
 *   Use `getElementByTagNameAndClass`.
-*   Use `goog.dom.asserts` if there's no better API.
+*   Use `goog.asserts.dom` if there's no better API.
 *   Avoid type-casting as there's no check whether you actually cast a correct
-    type - it means that you can cast `HTMLScriptElement` typed as `Element` to
-    `HTMLImageElement`.
+    type. For example, type-casting `HTMLScriptElement` as an `Element` can lead
+    it to being incorrectly treated as an `HTMLImageElement` elsewhere.
 
 ## Explanation of conformance rules
-
-### goog.base
-
-goog.base is not compatible with EcmaScript 5+ strict mode.  As part of the
-migration to strict mode Closure Library has moved away from goog.base and
-instead uses the "base" method defined on the class constructor by
-goog.inherits.
-
-Calling a super class constructor:
-
-```js
-var MyClass = function(arg) {
-  MyClass.base(this, 'constructor', arg);
-};
-```
-
-Calling a super class method:
-
-```js
-MyClass.prototype.method = function(arg) {
-  MyClass.base(this, 'method', arg);
-}
-```
-
 
 {: #logger}
 ### goog.debug.Logger 
 
-goog.debug.Logger should not be used directly. Instead use the goog.log static
-wrappers. goog.log is safely strippable from production code. However,
-goog.debug.Logger is only stripped from code if the logger\_ suffix is used in
-the name.
+`goog.debug.Logger` should not be used directly. Use the `goog.log` static
+wrappers instead, as `goog.log` is safely strippable from production code. On
+the other hand, `goog.debug.Logger` is only stripped from code if the `logger_`
+suffix is used in the name.
+
 
 Note:  You may see "possible violations" for code that is not a logger if the
 code is badly typed. Verify that you have a dependency on the type you are
@@ -130,16 +104,15 @@ expecting.
 
 ### eval
 
-eval is a security risk and is not allowed to be used. Since values passed to
-eval() are evaluated and executed as any ordinary JavaScript, it is not
-inherently safe to pass content to eval(). Eval() is typically not necessary
+`eval` is a security risk and is not allowed to be used. Since values passed to
+`eval()` are evaluated and executed as any ordinary JavaScript, it is not
+inherently safe to pass content to `eval()`. `eval()` is typically not necessary
 for ordinary programming.
 
 IE's `execScript` is also banned.
 
 `Function`, `setTimeout`, `setInterval` and `requestAnimationFrame` with string
 argument are also banned.
-
 
 {: #throwOfNonErrorTypes}
 ### throw 'message' 
@@ -148,7 +121,6 @@ argument are also banned.
 debugging significantly more difficult.  Use `throw new Error('message')`
 instead.
 
-
 {: #callee}
 ### Arguments.prototype.callee 
 
@@ -156,17 +128,16 @@ instead.
 "[strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode)"
 code.
 
-
 {: #documentWrite}
 ### Calls to Document.prototype.write 
 
 Calling `Document.prototype.write` is a security risk and is banned. Any content
-passed to `write()` will be automatically evaluated in the DOM and therefore the
+passed to `write()` will be automatically evaluated in the DOM, so the
 assignment of user-controlled, insufficiently sanitized or escaped content can
 result in [XSS] vulnerabilities.
 
 `Document.prototype.write` is bad for performance as it forces document
-reparsing, has unpredictable semantics and disallows many optimizations a
+re-parsing, has unpredictable semantics and disallows many optimizations a
 browser may make. It is almost never needed. Only exception is writing to a
 completely new window such as a popup or an iframe.
 
@@ -174,7 +145,6 @@ completely new window such as a popup or an iframe.
 If you need to use it, use the type-safe [`goog.dom.safe.documentWrite`]
 wrapper, or directly render a Strict Soy template using
 [`goog.soy.Renderer.prototype.renderElement`] \(or similar\).
-
 
 {: #innerHtml}
 ### Assignment to Element.prototype.innerHTML/outerHTML 
@@ -189,27 +159,25 @@ Instead, use the type-safe [`goog.dom.safe.setInnerHtml`] wrapper, or directly
 render a Strict Soy template using [`goog.soy.Renderer.prototype.renderElement`]
 \(or similar\).
 
-Note: Reads of these properties are permitted.
-
+NOTE: Reads of these properties are permitted.
 
 {: #untypedElements}
-### Creating untyped elements is forbidden 
+### Creating untyped elements 
 
 We have several conformance rules banning assignment to dangerous properties
 such as `script.src`. These rules work only if we know the type of the
-manipulated element, e.g. `HTMLScriptElement`. Sadly,
-`document.createElement('script')` and similar return only `Element` as
-perceived by JS Compiler. For our rules to work, we need to know the exact type
+manipulated element, e.g. `HTMLScriptElement`. Unfortunately,
+`document.createElement('script')` and similar APIs return only `Element` as
+perceived by the compiler. For our rules to work, we need to know the exact type
 which is returned by `goog.dom` methods when used together with
 `goog.dom.TagName`. Typically, it's `goog.dom.createElement` and
-`goog.dom.createDom` but other methods such as `goog.dom.getElementsByTagName`
+`goog.dom.createDom`, but other methods such as `goog.dom.getElementsByTagName`
 also work. `DomHelper` counterparts of these methods support `goog.dom.TagName`
 too.
 
 For this reason, we ban creating untyped `'script'`, `'iframe'`, `'frame'`,
 `'embed'`, and `'object'` elements and require using `goog.dom` methods with
 `goog.dom.TagName` with them.
-
 
 {: #location}
 ### Assignment to Location.prototype.href and Window.prototype.location 
@@ -219,23 +187,21 @@ Direct assignment of a non-constant value to `Location.prototype.href` and
 controlled strings assigned to `Location.href` can result in [XSS]
 vulnerabilities, e.g. via "`javascript:evil()`" URLs.
 
-Instead of directly assigning to Location.prototype.href or
-Window.prototype.location, use the safe wrapper function
-[`goog.dom.safe.setLocationHref`]. When passed
-a string, this wrapper sanitizes the URL before passing it to the underlying DOM
-property. If passed a value of type `goog.html.SafeUrl`, the value is assigned
-without further sanitization.
+Instead of directly assigning to `Location.prototype.href` or
+`Window.prototype.location`, use the safe wrapper function
+[`goog.dom.safe.setLocationHref`]. When passed a string, this wrapper sanitizes
+the URL before passing it to the underlying DOM property. If passed a value of
+type `goog.html.SafeUrl`, the value is assigned without further sanitization.
 
-Note: Reads of this property are permitted.
-
+NOTE: Reads of this property are permitted.
 
 {: #href}
 ### Assignment to .href property of Anchor, Link, etc elements 
 
-Direct assignment of a non-constant value to the href property of Anchor, Link,
-and similar elements is a security risk and is banned. Externally controlled
-strings assigned to the href property can result in [XSS] vulnerabilities, e.g.
-via "javascript:evil()" URLs.
+Direct assignment of a non-constant value to the `href` property of Anchor,
+Link, and similar elements is a security risk and is banned. Externally
+controlled strings assigned to the href property can result in [XSS]
+vulnerabilities, e.g. via "`javascript:evil()`" URLs.
 
 Instead of directly assigning to the href property, use safe wrapper functions
 such as [`goog.dom.safe.setAnchorHref`]. When passed a
@@ -243,8 +209,7 @@ string, this wrapper sanitizes the URL before passing it to the underlying DOM
 property. If passed a value of type `goog.html.SafeUrl`, the value is assigned
 without further sanitization.
 
-Note: Reads of this property are permitted.
-
+NOTE: Reads of this property are permitted.
 
 {: #trustedResourceUrl}
 ### Assignment to property requires a TrustedResourceUrl via goog.dom.safe 
@@ -254,17 +219,16 @@ Base.href and Script.src, via a string that is not fully application controlled
 is a security risk and is banned. Attacker controlled values assigned to these
 properties can result in loading code from an untrusted domain. For example, the
 following would be unsafe if www.google.com were to have an open redirector and
-attackerControlled were something like '../redirect=http://evil.com/evil#':
+attackerControlled were something like `'../redirect=http://evil.com/evil#'`:
 
 ```js
 script.src = 'https://www.google.com/module/' + attackerControlled + '.js';
 ```
 
 Instead of directly assigning to these properties use safe wrapper functions
-which take TrustedResourceUrl, such as goog.dom.safe.setScriptSrc.
+which take `TrustedResourceUrl`, such as `goog.dom.safe.setScriptSrc`.
 
 Note: Reads of this property are permitted.
-
 
 {: #createDom}
 ### Assigning a variable to a dangerous property via createDom is forbidden. 
@@ -299,58 +263,40 @@ goog.dom.createDom('img', {'src': ''});
 Note that string literal values assigned to banned attributes are allowed as
 they couldn't be attacker controlled.
 
-
 {: #scriptContent}
 ### Setting content of Script element is not allowed 
 
 Setting content of `<script>` and then appending it to the document has the same
-effect as calling eval(). This coding pattern is prone to XSS vulnerabilities,
+effect as calling `eval()`. This coding pattern is prone to XSS vulnerabilities,
 and therefore disallowed.
-
 
 {: #postMessage}
 ### Window.prototype.postMessage 
 
-Raw "postMessage" can create security vulnerabilities. Use gapi.rpc instead.
-gapi.rpc conceptually augments window.postmessage with more security and other
-features.
-
-Valid reasons for using raw "postMessage" include when it is used for
-communication to/from an iframe hosted on the same domain as the page containing
-the iframe. However, be sure to get a security review to allow usage of this.
-
-
-
-{: #expose}
-### @expose 
-
-@expose has non-obvious global side-effects that can cause errors.
+Raw `postMessage()` does not restrict target and sender origins by default. This
+can cause security vulnerabilities.
 
 
 {: #globalVars}
 ### Global declarations 
 
-Global functions and var declarations are not allowed, these pollute global
-scope.  Top level namespaces are allowed if declared with "goog.provide" or
+Global functions and var declarations are not allowed, as these pollute global
+scope. Top level namespaces are allowed if declared with "goog.provide" or
 "goog.module".
-
 
 {: #unknownThis}
 ### Unknown types 
 
-Loose types "?" (unknown), "\*" (all), "Object" and "Function" should be used
-sparingly as they degrade available type information. "?" as a "this" type is
-forbidden so that accidental unknowns (which are far more common) can be
-caught.
-
+Loose types `?` (unknown), `*` (all), `Object` and `Function` should be used
+sparingly as they degrade available type information. `?` as a "this" type is
+forbidden so that accidental unknowns (which are far more common) can be caught.
 
 
 {: #storage}
 ### Client Side Storage (Closure library specific) 
 
 Client side storage mechanisms are dangerous because of PII and security
-implications. TODO(johnlenz): Document what someone submitting code to Closure
-should in the case they see this warning.
+implications.
 
 
 

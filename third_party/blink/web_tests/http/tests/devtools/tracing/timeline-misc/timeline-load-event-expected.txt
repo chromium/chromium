@@ -16,6 +16,7 @@ MarkDOMContent Properties:
     data : {
         frame : <string>
         isMainFrame : true
+        isOutermostMainFrame : true
         page : <string>
     }
     endTime : <number>
@@ -28,6 +29,7 @@ MarkLoad Properties:
     data : {
         frame : <string>
         isMainFrame : true
+        isOutermostMainFrame : true
         page : <string>
     }
     endTime : <number>
@@ -41,6 +43,7 @@ MarkDOMContent Properties:
     data : {
         frame : <string>
         isMainFrame : true
+        isOutermostMainFrame : true
         page : <string>
     }
     endTime : <number>
@@ -53,6 +56,7 @@ MarkLoad Properties:
     data : {
         frame : <string>
         isMainFrame : true
+        isOutermostMainFrame : true
         page : <string>
     }
     endTime : <number>

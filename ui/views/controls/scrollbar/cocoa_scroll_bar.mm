@@ -1,20 +1,22 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/memory/raw_ptr.h"
 
 #import "ui/views/controls/scrollbar/cocoa_scroll_bar.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/i18n/rtl.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 
@@ -36,6 +38,10 @@ constexpr float kOverlayOpacity = 0.8f;
 class CocoaScrollBarThumb : public BaseScrollBarThumb {
  public:
   explicit CocoaScrollBarThumb(CocoaScrollBar* scroll_bar);
+
+  CocoaScrollBarThumb(const CocoaScrollBarThumb&) = delete;
+  CocoaScrollBarThumb& operator=(const CocoaScrollBarThumb&) = delete;
+
   ~CocoaScrollBarThumb() override;
 
   // Returns true if the thumb is in hovered state.
@@ -57,9 +63,7 @@ class CocoaScrollBarThumb : public BaseScrollBarThumb {
 
  private:
   // The CocoaScrollBar that owns us.
-  CocoaScrollBar* cocoa_scroll_bar_;  // weak.
-
-  DISALLOW_COPY_AND_ASSIGN(CocoaScrollBarThumb);
+  raw_ptr<CocoaScrollBar> cocoa_scroll_bar_;  // weak.
 };
 
 CocoaScrollBarThumb::CocoaScrollBarThumb(CocoaScrollBar* scroll_bar)
@@ -105,7 +109,7 @@ void CocoaScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
               ui::NativeTheme::ScrollbarOrientation::kHorizontal
           ? ui::NativeTheme::kScrollbarHorizontalThumb
           : ui::NativeTheme::kScrollbarVerticalThumb;
-  GetNativeTheme()->Paint(canvas->sk_canvas(), thumb_part,
+  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), thumb_part,
                           ui::NativeTheme::kNormal, GetLocalBounds(), params);
 }
 
@@ -141,7 +145,7 @@ void CocoaScrollBarThumb::OnMouseExited(const ui::MouseEvent& event) {
 CocoaScrollBar::CocoaScrollBar(bool horizontal)
     : ScrollBar(horizontal),
       hide_scrollbar_timer_(FROM_HERE,
-                            base::TimeDelta::FromMilliseconds(500),
+                            base::Milliseconds(500),
                             base::BindRepeating(&CocoaScrollBar::HideScrollbar,
                                                 base::Unretained(this))),
       thickness_animation_(this),
@@ -152,7 +156,7 @@ CocoaScrollBar::CocoaScrollBar(bool horizontal)
   bridge_.reset([[ViewsScrollbarBridge alloc] initWithDelegate:this]);
   scroller_style_ = [ViewsScrollbarBridge getPreferredScrollerStyle];
 
-  thickness_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(240));
+  thickness_animation_.SetSlideDuration(base::Milliseconds(240));
 
   SetPaintToLayer();
   has_scrolltrack_ = scroller_style_ == NSScrollerStyleLegacy;
@@ -218,7 +222,7 @@ void CocoaScrollBar::OnPaint(gfx::Canvas* canvas) {
               ui::NativeTheme::ScrollbarOrientation::kHorizontal
           ? ui::NativeTheme::kScrollbarHorizontalTrack
           : ui::NativeTheme::kScrollbarVerticalTrack;
-  GetNativeTheme()->Paint(canvas->sk_canvas(), track_part,
+  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), track_part,
                           ui::NativeTheme::kNormal, GetLocalBounds(), params);
 }
 
@@ -423,6 +427,7 @@ ui::NativeTheme::ExtraParams CocoaScrollBar::GetPainterParams() const {
   }
   params.scrollbar_extra.is_overlay =
       GetScrollerStyle() == NSScrollerStyleOverlay;
+  params.scrollbar_extra.scale_from_dip = 1.0f;
   return params;
 }
 
@@ -445,7 +450,7 @@ void CocoaScrollBar::HideScrollbar() {
   did_start_dragging_ = false;
 
   ui::ScopedLayerAnimationSettings animation(layer()->GetAnimator());
-  animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(240));
+  animation.SetTransitionDuration(base::Milliseconds(240));
   animation.AddObserver(this);
   layer()->SetOpacity(0.0f);
 }

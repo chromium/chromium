@@ -1,3 +1,3 @@
-Document
+Document Value.IsReadOnly=true
 ++Group IsControlElement=false
 ++++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Value.IsReadOnly=false Value.Value='Mercedes Label'

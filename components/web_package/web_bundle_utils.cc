@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,14 +62,15 @@ bool HasNoSniffHeader(const network::mojom::URLResponseHead& response) {
   std::string content_type_options;
   response.headers->EnumerateHeader(nullptr, kContentTypeOptionsHeaderName,
                                     &content_type_options);
-  return base::LowerCaseEqualsASCII(content_type_options, kNoSniffHeaderValue);
+  return base::EqualsCaseInsensitiveASCII(content_type_options,
+                                          kNoSniffHeaderValue);
 }
 
-bool IsValidUrnUuidURL(const GURL& url) {
+bool IsValidUuidInPackageURL(const GURL& url) {
   std::string spec = url.spec();
-  return base::StartsWith(spec,
-                          "urn:uuid:", base::CompareCase::INSENSITIVE_ASCII) &&
-         base::GUID::ParseCaseInsensitive(base::StringPiece(spec).substr(9))
+  return base::StartsWith(
+             spec, "uuid-in-package:", base::CompareCase::INSENSITIVE_ASCII) &&
+         base::GUID::ParseCaseInsensitive(base::StringPiece(spec).substr(16))
              .is_valid();
 }
 

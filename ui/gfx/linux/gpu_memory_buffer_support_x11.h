@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/native_pixmap_handle.h"
 
 namespace gfx {
 class Size;
@@ -31,6 +32,12 @@ class COMPONENT_EXPORT(GBM_SUPPORT_X11) GpuMemoryBufferSupportX11 {
                                           const gfx::Size& size,
                                           gfx::BufferUsage usage);
 
+  bool CanCreateNativePixmapForFormat(gfx::BufferFormat format);
+  std::unique_ptr<GbmBuffer> CreateBufferFromHandle(
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::NativePixmapHandle handle);
+
   ~GpuMemoryBufferSupportX11();
 
   GpuMemoryBufferSupportX11(const GpuMemoryBufferSupportX11&) = delete;
@@ -40,6 +47,8 @@ class COMPONENT_EXPORT(GBM_SUPPORT_X11) GpuMemoryBufferSupportX11 {
   const std::vector<gfx::BufferUsageAndFormat>& supported_configs() const {
     return supported_configs_;
   }
+
+  bool has_gbm_device() const { return device_ != nullptr; }
 
  private:
   friend class base::NoDestructor<GpuMemoryBufferSupportX11>;

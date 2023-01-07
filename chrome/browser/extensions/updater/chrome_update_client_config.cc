@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/version.h"
@@ -55,6 +56,11 @@ class ExtensionActivityDataService final
     : public update_client::ActivityDataService {
  public:
   explicit ExtensionActivityDataService(ExtensionPrefs* extension_prefs);
+
+  ExtensionActivityDataService(const ExtensionActivityDataService&) = delete;
+  ExtensionActivityDataService& operator=(const ExtensionActivityDataService&) =
+      delete;
+
   ~ExtensionActivityDataService() override = default;
 
   // update_client::ActivityDataService:
@@ -70,9 +76,7 @@ class ExtensionActivityDataService final
  private:
   // This member is not owned by this class, it's owned by a profile keyed
   // service.
-  ExtensionPrefs* extension_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActivityDataService);
+  raw_ptr<ExtensionPrefs> extension_prefs_;
 };
 
 // Calculates the value to use for the ping days parameter.
@@ -129,7 +133,7 @@ void ExtensionActivityDataService::GetAndClearActiveBits(
 // communication with the update backend.
 ChromeUpdateClientConfig::ChromeUpdateClientConfig(
     content::BrowserContext* context,
-    base::Optional<GURL> url_override)
+    absl::optional<GURL> url_override)
     : context_(context),
       impl_(ExtensionUpdateClientCommandLineConfigPolicy(
                 base::CommandLine::ForCurrentProcess()),
@@ -140,6 +144,8 @@ ChromeUpdateClientConfig::ChromeUpdateClientConfig(
       url_override_(url_override) {
   DCHECK(pref_service_);
 }
+
+ChromeUpdateClientConfig::~ChromeUpdateClientConfig() = default;
 
 double ChromeUpdateClientConfig::InitialDelay() const {
   return impl_.InitialDelay();
@@ -182,12 +188,6 @@ std::string ChromeUpdateClientConfig::GetChannel() const {
   return chrome::GetChannelName(chrome::WithExtendedStable(true));
 }
 
-std::string ChromeUpdateClientConfig::GetBrand() const {
-  std::string brand;
-  google_brand::GetBrand(&brand);
-  return brand;
-}
-
 std::string ChromeUpdateClientConfig::GetLang() const {
   return ChromeUpdateQueryParamsDelegate::GetLang();
 }
@@ -210,7 +210,7 @@ ChromeUpdateClientConfig::GetNetworkFetcherFactory() {
   if (!network_fetcher_factory_) {
     network_fetcher_factory_ =
         base::MakeRefCounted<update_client::NetworkFetcherChromiumFactory>(
-            content::BrowserContext::GetDefaultStoragePartition(context_)
+            context_->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess(),
             // Only extension updates that require authentication are served
             // from chrome.google.com, so send cookies if and only if that is
@@ -255,10 +255,6 @@ bool ChromeUpdateClientConfig::EnabledDeltas() const {
   return impl_.EnabledDeltas();
 }
 
-bool ChromeUpdateClientConfig::EnabledComponentUpdates() const {
-  return impl_.EnabledComponentUpdates();
-}
-
 bool ChromeUpdateClientConfig::EnabledBackgroundDownloader() const {
   return impl_.EnabledBackgroundDownloader();
 }
@@ -287,12 +283,20 @@ ChromeUpdateClientConfig::GetProtocolHandlerFactory() const {
   return impl_.GetProtocolHandlerFactory();
 }
 
-ChromeUpdateClientConfig::~ChromeUpdateClientConfig() = default;
+absl::optional<bool> ChromeUpdateClientConfig::IsMachineExternallyManaged()
+    const {
+  return impl_.IsMachineExternallyManaged();
+}
+
+update_client::UpdaterStateProvider
+ChromeUpdateClientConfig::GetUpdaterStateProvider() const {
+  return impl_.GetUpdaterStateProvider();
+}
 
 // static
 scoped_refptr<ChromeUpdateClientConfig> ChromeUpdateClientConfig::Create(
     content::BrowserContext* context,
-    base::Optional<GURL> update_url_override) {
+    absl::optional<GURL> update_url_override) {
   FactoryCallback& factory = GetFactoryCallback();
   return factory.is_null() ? base::MakeRefCounted<ChromeUpdateClientConfig>(
                                  context, update_url_override)

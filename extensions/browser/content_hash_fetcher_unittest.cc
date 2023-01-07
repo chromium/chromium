@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -26,6 +27,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/zip.h"
@@ -43,6 +45,10 @@ class ContentHashFetcherTest : public ExtensionsTest {
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
+
+  ContentHashFetcherTest(const ContentHashFetcherTest&) = delete;
+  ContentHashFetcherTest& operator=(const ContentHashFetcherTest&) = delete;
+
   ~ContentHashFetcherTest() override {}
 
   bool LoadTestExtension() {
@@ -156,8 +162,6 @@ class ContentHashFetcherTest : public ExtensionsTest {
   base::FilePath test_dir_base_;
   std::unique_ptr<MockContentVerifierDelegate> delegate_;
   scoped_refptr<Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentHashFetcherTest);
 };
 
 // This tests our ability to successfully fetch, parse, and validate a missing
@@ -232,8 +236,7 @@ TEST_F(ContentHashFetcherTest, MissingVerifiedContentsAndCorrupt) {
   // Tamper with a file in the extension.
   base::FilePath script_path = extension_root().AppendASCII("script.js");
   std::string addition = "//hello world";
-  ASSERT_TRUE(
-      base::AppendToFile(script_path, addition.c_str(), addition.size()));
+  ASSERT_TRUE(base::AppendToFile(script_path, addition));
 
   RegisterInterception(fetch_url(), GetResourcePath("verified_contents.json"));
 

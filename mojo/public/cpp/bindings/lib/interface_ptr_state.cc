@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,6 +76,10 @@ void InterfacePtrStateBase::Bind(
       GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(task_runner));
 }
 
+PendingRemoteState InterfacePtrStateBase::Unbind() {
+  return PendingRemoteState(PassMessagePipe(), version());
+}
+
 void InterfacePtrStateBase::OnQueryVersion(
     base::OnceCallback<void(uint32_t)> callback,
     uint32_t version) {
@@ -86,30 +90,40 @@ void InterfacePtrStateBase::OnQueryVersion(
 bool InterfacePtrStateBase::InitializeEndpointClient(
     bool passes_associated_kinds,
     bool has_sync_methods,
+    bool has_uninterruptable_methods,
     std::unique_ptr<MessageReceiver> payload_validator,
-    const char* interface_name) {
+    const char* interface_name,
+    MessageToMethodInfoCallback method_info_callback,
+    MessageToMethodNameCallback method_name_callback) {
   // https://linear.app/replay/issue/RUN-999
-  CHECK(!recordreplay::AreEventsDisallowed());
+  CHECK(!recordreplay::AreEventsDisallowed() || recordreplay::HasDivergedFromRecording());
 
   // The object hasn't been bound.
   if (!handle_.is_valid())
     return false;
 
   MultiplexRouter::Config config =
-      passes_associated_kinds
+      (passes_associated_kinds || has_uninterruptable_methods)
           ? MultiplexRouter::MULTI_INTERFACE
           : (has_sync_methods
                  ? MultiplexRouter::SINGLE_INTERFACE_WITH_SYNC_METHODS
                  : MultiplexRouter::SINGLE_INTERFACE);
-  DCHECK(runner_->RunsTasksInCurrentSequence());
-  router_ = new MultiplexRouter(std::move(handle_), config, true, runner_,
-                                interface_name);
+  router_ = MultiplexRouter::Create(std::move(handle_), config, true, runner_,
+                                    interface_name);
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
       router_->CreateLocalEndpointHandle(kPrimaryInterfaceId), nullptr,
       std::move(payload_validator), false, std::move(runner_),
       // The version is only queried from the client so the value passed here
       // will not be used.
-      0u, interface_name);
+      0u, interface_name, method_info_callback, method_name_callback);
+
+  // Note that we defer this until after attaching the endpoint. This is in case
+  // `runner_` does not run tasks in the current sequence but MultiplexRouter is
+  // in SINGLE_INTERFACE mode. In that case, MultiplexRouter elides some
+  // internal synchronization, so we need to ensure that messages aren't
+  // processed by the router before the endpoint above is fully attached.
+  router_->StartReceiving();
+
   return true;
 }
 

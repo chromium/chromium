@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,10 @@ TestGraphImpl::~TestGraphImpl() = default;
 TestNodeWrapper<FrameNodeImpl> TestGraphImpl::CreateFrameNodeAutoId(
     ProcessNodeImpl* process_node,
     PageNodeImpl* page_node,
-    FrameNodeImpl* parent_frame_node,
-    int frame_tree_node_id) {
-  return TestNodeWrapper<FrameNodeImpl>::Create(
-      this, process_node, page_node, parent_frame_node, frame_tree_node_id,
-      ++next_frame_routing_id_);
+    FrameNodeImpl* parent_frame_node) {
+  return TestNodeWrapper<FrameNodeImpl>::Create(this, process_node, page_node,
+                                                parent_frame_node,
+                                                ++next_frame_routing_id_);
 }
 
 GraphTestHarness::GraphTestHarness()
@@ -46,7 +45,8 @@ GraphTestHarness::~GraphTestHarness() {
 void GraphTestHarness::SetUp() {
   setup_called_ = true;
 
-  graph_features_helper_.ConfigureGraph(graph_.get());
+  graph_->SetUp();
+  graph_features_.ConfigureGraph(graph_.get());
 
   // This can't be done in the constructor because it is a virtual function.
   OnGraphCreated(graph_.get());

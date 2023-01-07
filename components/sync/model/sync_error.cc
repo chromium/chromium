@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ SyncError::SyncError(const SyncError& other) {
   Copy(other);
 }
 
-SyncError::~SyncError() {}
+SyncError::~SyncError() = default;
 
 SyncError& SyncError::operator=(const SyncError& other) {
   if (this == &other) {
@@ -134,8 +134,8 @@ std::string SyncError::ToString() const {
   if (!IsSet()) {
     return std::string();
   }
-  return location_->ToString() + ", " + ModelTypeToString(model_type_) + " " +
-         GetMessagePrefix() + message_;
+  return location_->ToString() + ", " + ModelTypeToDebugString(model_type_) +
+         " " + GetMessagePrefix() + message_;
 }
 
 void SyncError::PrintLogError() const {
@@ -147,7 +147,7 @@ void SyncError::PrintLogError() const {
                                   location_->line_number(), logSeverity)
                   .stream(),
               logSeverity >= ::logging::GetMinLogLevel())
-      << ModelTypeToString(model_type_) << " " << GetMessagePrefix()
+      << ModelTypeToDebugString(model_type_) << " " << GetMessagePrefix()
       << message_;
 }
 

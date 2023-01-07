@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals_page_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,6 +21,10 @@ namespace explore_sites {
 class ExploreSitesInternalsUI : public ui::MojoWebUIController {
  public:
   explicit ExploreSitesInternalsUI(content::WebUI* web_ui);
+
+  ExploreSitesInternalsUI(const ExploreSitesInternalsUI&) = delete;
+  ExploreSitesInternalsUI& operator=(const ExploreSitesInternalsUI&) = delete;
+
   ~ExploreSitesInternalsUI() override;
 
   // Instantiates the implementor of the mojom::PageHandler mojo
@@ -31,11 +35,9 @@ class ExploreSitesInternalsUI : public ui::MojoWebUIController {
 
  private:
   std::unique_ptr<ExploreSitesInternalsPageHandler> page_handler_;
-  ExploreSitesService* explore_sites_service_;
+  raw_ptr<ExploreSitesService> explore_sites_service_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesInternalsUI);
 };
 
 }  // namespace explore_sites

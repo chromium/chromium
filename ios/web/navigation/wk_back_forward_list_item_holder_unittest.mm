@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -70,37 +70,37 @@ TEST_F(WKBackForwardListItemHolderTest, GetNavigationTypeFromHolder) {
       WKBackForwardListItemHolder::FromNavigationItem(item.get());
 
   // Verify that setting 'WKNavigationTypeOther' means
-  // |navigation_type| returns WKNavigationTypeBackForward
+  // `navigation_type` returns WKNavigationTypeBackForward
   WKNavigationType type = WKNavigationTypeOther;
   holder->set_navigation_type(type);
   EXPECT_EQ(type, holder->navigation_type());
 
   // Verify that setting 'WKNavigationTypeBackForward' means
-  // |navigation_type| returns 'WKNavigationTypeBackForward'
+  // `navigation_type` returns 'WKNavigationTypeBackForward'
   type = WKNavigationTypeBackForward;
   holder->set_navigation_type(type);
   EXPECT_EQ(type, holder->navigation_type());
 
   // Verify that setting 'WKNavigationTypeFormSubmitted' means
-  // |navigation_type| returns 'WKNavigationTypeFormSubmitted'
+  // `navigation_type` returns 'WKNavigationTypeFormSubmitted'
   type = WKNavigationTypeFormSubmitted;
   holder->set_navigation_type(type);
   EXPECT_EQ(type, holder->navigation_type());
 
   // Verify that setting 'WKNavigationTypeFormResubmitted' means
-  // |navigation_type| returns 'WKNavigationTypeFormResubmitted'
+  // `navigation_type` returns 'WKNavigationTypeFormResubmitted'
   type = WKNavigationTypeFormResubmitted;
   holder->set_navigation_type(type);
   EXPECT_EQ(type, holder->navigation_type());
 
   // Verify that setting 'WKNavigationTypeReload' means
-  // |navigation_type| returns 'WKNavigationTypeReload'
+  // `navigation_type` returns 'WKNavigationTypeReload'
   type = WKNavigationTypeReload;
   holder->set_navigation_type(type);
   EXPECT_EQ(type, holder->navigation_type());
 
   // Verify that setting 'WKNavigationTypeLinkActivated' means
-  // |navigation_type| returns 'WKNavigationTypeLinkActivated'
+  // `navigation_type` returns 'WKNavigationTypeLinkActivated'
   type = WKNavigationTypeLinkActivated;
   holder->set_navigation_type(type);
   EXPECT_EQ(type, holder->navigation_type());

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.AutofillExpirationDateFixFlowPrompt.AutofillExpirationDateFixFlowPromptDelegate;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.WindowAndroid;
@@ -55,7 +54,7 @@ final class AutofillExpirationDateFixFlowBridge
     }
 
     @Override
-    public void onUserAccept(String month, String year) {
+    public void onUserAcceptExpirationDate(String month, String year) {
         AutofillExpirationDateFixFlowBridgeJni.get().onUserAccept(
                 mNativeCardExpirationDateFixFlowViewAndroid,
                 AutofillExpirationDateFixFlowBridge.this, month, year);
@@ -67,6 +66,10 @@ final class AutofillExpirationDateFixFlowBridge
                 mNativeCardExpirationDateFixFlowViewAndroid,
                 AutofillExpirationDateFixFlowBridge.this);
     }
+
+    /* no-op. Legal lines aren't set. */
+    @Override
+    public void onLinkClicked(String url) {}
 
     /**
      * Shows a prompt for expiration date fix flow.
@@ -81,9 +84,10 @@ final class AutofillExpirationDateFixFlowBridge
             return;
         }
 
-        mExpirationDateFixFlowPrompt = new AutofillExpirationDateFixFlowPrompt(
-                activity, this, mTitle, mConfirmButtonLabel, mIconId, mCardLabel);
-        mExpirationDateFixFlowPrompt.show((ChromeActivity) activity);
+        mExpirationDateFixFlowPrompt =
+                AutofillExpirationDateFixFlowPrompt.createAsInfobarFixFlowPrompt(
+                        activity, this, mTitle, mIconId, mCardLabel, mConfirmButtonLabel);
+        mExpirationDateFixFlowPrompt.show(activity, windowAndroid.getModalDialogManager());
     }
 
     /**

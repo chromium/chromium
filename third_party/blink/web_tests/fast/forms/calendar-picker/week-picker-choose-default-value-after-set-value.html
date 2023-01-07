@@ -2,6 +2,8 @@
 <html>
 <head>
 <script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../../forms/resources/picker-common.js"></script>
 <script src="resources/calendar-picker-common.js"></script>
 </head>
@@ -31,14 +33,14 @@ shouldBeEqualToString('input.value', '2000-W02');
 shouldBeUndefined('eventsCounter.input');
 shouldBeUndefined('eventsCounter.change');
 
-openPicker(input, test1);
+openPickerDeprecatedJsTest(input, test1);
 
 function test1() {
     eventSender.keyDown('ArrowLeft');
     removeCommitDelay();
     eventSender.keyDown('Enter');
 
-    waitUntilClosing(() => {
+    waitUntilClosingDeprecatedJsTest(() => {
         shouldBeEqualToString('input.value', '2000-W01');
 
         shouldBe('eventsCounter.input', '1');

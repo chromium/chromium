@@ -31,15 +31,16 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_H_
 
-#include <memory>
-#include "cc/paint/paint_canvas.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_node.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace blink {
 
@@ -76,10 +77,19 @@ class BLINK_EXPORT WebFrame {
 
   virtual bool IsWebLocalFrame() const = 0;
   virtual WebLocalFrame* ToWebLocalFrame() = 0;
+  virtual const WebLocalFrame* ToWebLocalFrame() const = 0;
   virtual bool IsWebRemoteFrame() const = 0;
   virtual WebRemoteFrame* ToWebRemoteFrame() = 0;
+  virtual const WebRemoteFrame* ToWebRemoteFrame() const = 0;
 
-  bool Swap(WebFrame*);
+  bool Swap(WebLocalFrame* new_frame);
+  bool Swap(
+      WebRemoteFrame* new_frame,
+      CrossVariantMojoAssociatedRemote<mojom::RemoteFrameHostInterfaceBase>
+          remote_frame_host,
+      CrossVariantMojoAssociatedReceiver<mojom::RemoteFrameInterfaceBase>
+          receiver,
+      mojom::FrameReplicationStatePtr replicated_state);
 
   // This method closes and deletes the WebFrame. This is typically called by
   // the embedder in response to a frame detached callback to the WebFrame
@@ -114,10 +124,7 @@ class BLINK_EXPORT WebFrame {
   void ClearOpener();
 
   // Returns the parent frame or 0 if this is a top-most frame.
-  // TODO(sashab): "Virtual" is needed here temporarily to resolve linker errors
-  // in core/. Remove the "virtual" keyword once WebFrame and WebLocalFrameImpl
-  // have been moved to core/.
-  virtual WebFrame* Parent() const;
+  WebFrame* Parent() const;
 
   // Returns the top-most frame in the hierarchy containing this frame.
   WebFrame* Top() const;
@@ -136,6 +143,13 @@ class BLINK_EXPORT WebFrame {
 
   // Returns the next frame in "frame traversal order".
   WebFrame* TraverseNext() const;
+
+  // Returns true if this frame is the top-level main frame (associated with
+  // the root Document in a WebContents). See content::Page for detailed
+  // documentation.
+  // This is false for main frames created for fenced-frames.
+  // TODO(khushalsagar) : Should also be the case for portals.
+  bool IsOutermostMainFrame() const;
 
   // Scripting ----------------------------------------------------------
 
@@ -156,13 +170,17 @@ class BLINK_EXPORT WebFrame {
 
   // True if the frame is thought (heuristically) to be created for
   // advertising purposes.
-  virtual bool IsAdSubframe() const = 0;
+  virtual bool IsAdFrame() const = 0;
 
   // Utility -------------------------------------------------------------
 
   // Returns the frame inside a given frame or iframe element. Returns 0 if
   // the given node is not a frame, iframe or if the frame is empty.
   static WebFrame* FromFrameOwnerElement(const WebNode&);
+
+  // Whether the owner element of this frame is in the document tree or the
+  // shadow tree, per https://w3c.github.io/webcomponents/spec/shadow/.
+  mojom::TreeScopeType GetTreeScopeType() const { return scope_; }
 
   // This identifier represents the stable identifier between a
   // LocalFrame  <--> RenderFrameHostImpl or a
@@ -172,8 +190,6 @@ class BLINK_EXPORT WebFrame {
 #if INSIDE_BLINK
   static WebFrame* FromCoreFrame(Frame*);
   static Frame* ToCoreFrame(const WebFrame&);
-
-  bool InShadowTree() const { return scope_ == mojom::TreeScopeType::kShadow; }
 #endif
 
  protected:
@@ -192,4 +208,4 @@ class BLINK_EXPORT WebFrame {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_H_

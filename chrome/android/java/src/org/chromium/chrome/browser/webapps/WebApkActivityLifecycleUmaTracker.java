@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
+import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -27,7 +30,6 @@ import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.WebApkSplashscreenMetrics;
-import org.chromium.chrome.browser.metrics.WebApkUma;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -74,7 +76,8 @@ public class WebApkActivityLifecycleUmaTracker
             if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
 
             WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
-            WebApkUma.recordShellApkVersion(webApkExtras.shellApkVersion, webApkExtras.distributor);
+            WebApkUmaRecorder.recordShellApkVersion(
+                    webApkExtras.shellApkVersion, webApkExtras.distributor);
         });
     }
 
@@ -113,7 +116,7 @@ public class WebApkActivityLifecycleUmaTracker
     public void onPauseWithNative() {
         WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
         long sessionDuration = SystemClock.elapsedRealtime() - mStartTime;
-        WebApkUma.recordWebApkSessionDuration(webApkExtras.distributor, sessionDuration);
+        WebApkUmaRecorder.recordWebApkSessionDuration(webApkExtras.distributor, sessionDuration);
         WebApkUkmRecorder.recordWebApkSessionDuration(webApkExtras.manifestUrl,
                 webApkExtras.distributor, webApkExtras.webApkVersionCode, sessionDuration);
     }

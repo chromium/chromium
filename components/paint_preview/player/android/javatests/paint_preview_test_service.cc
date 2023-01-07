@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/browser/test_paint_preview_policy.h"
 #include "components/paint_preview/common/file_stream.h"
@@ -184,9 +185,9 @@ PaintPreviewTestService::CreateSingleSkp(
   for (size_t i = 0; i < child_rects.size() / 4; ++i) {
     const int x = child_rects[i * 4];
     const int y = child_rects[i * 4 + 1];
-    const int width = child_rects[i * 4 + 2];
-    const int height = child_rects[i * 4 + 3];
-    auto rect = SkRect::MakeXYWH(x, y, width, height);
+    const int w = child_rects[i * 4 + 2];
+    const int h = child_rects[i * 4 + 3];
+    auto rect = SkRect::MakeXYWH(x, y, w, h);
     auto sub_pic = SkPicture::MakePlaceholder(rect);
     SkMatrix matrix = SkMatrix::Translate(x, y);
     uint32_t sub_id = sub_pic->uniqueID();

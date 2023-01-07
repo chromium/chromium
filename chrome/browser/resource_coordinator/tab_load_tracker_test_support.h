@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,15 +29,15 @@ bool WaitForTransitionToLoading(content::WebContents* contents);
 bool WaitForTransitionToLoaded(content::WebContents* contents);
 bool WaitUntilNoLongerTracked(content::WebContents* contents);
 
-#if !defined(OS_ANDROID)
-// Waits until all tabs in a TabStripModel have transitionned to a given state.
+#if !BUILDFLAG(IS_ANDROID)
+// Waits until all tabs in a TabStripModel have transitioned to a given state.
 bool WaitForTransitionToLoadingState(
     TabStripModel* tab_strip,
     TabLoadTracker::LoadingState loading_state);
 bool WaitForTransitionToUnloaded(TabStripModel* tab_strip);
 bool WaitForTransitionToLoading(TabStripModel* tab_strip);
 bool WaitForTransitionToLoaded(TabStripModel* tab_strip);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace resource_coordinator
 

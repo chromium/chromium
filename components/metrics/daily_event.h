@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,10 @@
 #define COMPONENTS_METRICS_DAILY_EVENT_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 class PrefRegistrySimple;
@@ -40,13 +41,14 @@ class DailyEvent {
   class Observer {
    public:
     Observer();
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer();
 
     // Called when the daily event is fired.
     virtual void OnDailyEvent(IntervalType type) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Constructs DailyEvent monitor which stores the time it last fired in the
@@ -60,6 +62,10 @@ class DailyEvent {
   DailyEvent(PrefService* pref_service,
              const char* pref_name,
              const std::string& histogram_name);
+
+  DailyEvent(const DailyEvent&) = delete;
+  DailyEvent& operator=(const DailyEvent&) = delete;
+
   ~DailyEvent();
 
   // Adds a observer to be notified when a day elapses. All observers should
@@ -81,7 +87,7 @@ class DailyEvent {
   // A weak pointer to the PrefService object to read and write preferences
   // from. Calling code should ensure this object continues to exist for the
   // lifetime of the DailyEvent object.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // The name of the preference to store the last fired time in.
   // Calling code should ensure this outlives the DailyEvent.
@@ -95,8 +101,6 @@ class DailyEvent {
 
   // The time that the daily event was last fired.
   base::Time last_fired_;
-
-  DISALLOW_COPY_AND_ASSIGN(DailyEvent);
 };
 
 }  // namespace metrics

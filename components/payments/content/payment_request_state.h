@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "components/autofill/core/browser/address_normalizer.h"
 #include "components/payments/content/initialization_task.h"
 #include "components/payments/content/payment_app_factory.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -28,6 +27,7 @@
 #include "url/origin.h"
 
 namespace autofill {
+class AddressNormalizer;
 class AutofillProfile;
 class CreditCard;
 class PersonalDataManager;
@@ -41,6 +41,7 @@ class RenderFrameHost;
 namespace payments {
 
 class ContentPaymentRequestDelegate;
+class CSPChecker;
 class PaymentApp;
 
 // Keeps track of the information currently selected by the user and whether the
@@ -95,24 +96,32 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   using StatusCallback = base::OnceCallback<void(bool)>;
   using MethodsSupportedCallback =
       base::OnceCallback<void(bool methods_supported,
-                              const std::string& error_message)>;
+                              const std::string& error_message,
+                              AppCreationFailureReason error_reason)>;
 
   // The `spec` parameter should not be null.
-  PaymentRequestState(content::RenderFrameHost* initiator_render_frame_host,
-                      const GURL& top_level_origin,
-                      const GURL& frame_origin,
-                      const url::Origin& frame_security_origin,
-                      base::WeakPtr<PaymentRequestSpec> spec,
-                      base::WeakPtr<Delegate> delegate,
-                      const std::string& app_locale,
-                      autofill::PersonalDataManager* personal_data_manager,
-                      ContentPaymentRequestDelegate* payment_request_delegate,
-                      JourneyLogger* journey_logger);
+  PaymentRequestState(
+      content::RenderFrameHost* initiator_render_frame_host,
+      const GURL& top_level_origin,
+      const GURL& frame_origin,
+      const url::Origin& frame_security_origin,
+      base::WeakPtr<PaymentRequestSpec> spec,
+      base::WeakPtr<Delegate> delegate,
+      const std::string& app_locale,
+      autofill::PersonalDataManager* personal_data_manager,
+      base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate,
+      base::WeakPtr<JourneyLogger> journey_logger,
+      base::WeakPtr<CSPChecker> csp_checker);
+
+  PaymentRequestState(const PaymentRequestState&) = delete;
+  PaymentRequestState& operator=(const PaymentRequestState&) = delete;
+
   ~PaymentRequestState() override;
 
   // PaymentAppFactory::Delegate
   content::WebContents* GetWebContents() override;
-  ContentPaymentRequestDelegate* GetPaymentRequestDelegate() const override;
+  base::WeakPtr<ContentPaymentRequestDelegate> GetPaymentRequestDelegate()
+      const override;
   void ShowProcessingSpinner() override;
   base::WeakPtr<PaymentRequestSpec> GetSpec() const override;
   std::string GetTwaPackageName() const override;
@@ -120,21 +129,26 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   const GURL& GetFrameOrigin() override;
   const url::Origin& GetFrameSecurityOrigin() override;
   content::RenderFrameHost* GetInitiatorRenderFrameHost() const override;
+  content::GlobalRenderFrameHostId GetInitiatorRenderFrameHostId()
+      const override;
   const std::vector<mojom::PaymentMethodDataPtr>& GetMethodData()
       const override;
-  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
+  std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override;
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;
   const std::vector<autofill::AutofillProfile*>& GetBillingProfiles() override;
   bool IsRequestedAutofillDataAvailable() override;
-  bool MayCrawlForInstallablePaymentApps() override;
   bool IsOffTheRecord() const override;
   void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) override;
-  void OnPaymentAppCreationError(const std::string& error_message) override;
+  void OnPaymentAppCreationError(
+      const std::string& error_message,
+      AppCreationFailureReason reason =
+          AppCreationFailureReason::UNKNOWN) override;
   bool SkipCreatingNativePaymentApps() const override;
   void OnDoneCreatingPaymentApps() override;
   void SetCanMakePaymentEvenWithoutApps() override;
+  base::WeakPtr<CSPChecker> GetCSPChecker() override;
 
   // PaymentResponseHelper::Delegate
   void OnPaymentResponseReady(
@@ -287,10 +301,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   base::WeakPtr<PaymentRequestState> AsWeakPtr();
 
-  void set_is_show_user_gesture(bool is_show_user_gesture) {
-    is_show_user_gesture_ = is_show_user_gesture;
-  }
-
  private:
   // Fetches the Autofill Profiles for this user from the PersonalDataManager,
   // and stores copies of them, owned by this PaymentRequestState, in
@@ -332,7 +342,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   bool GetCanMakePaymentValue() const;
   bool GetHasEnrolledInstrumentValue() const;
 
-  content::GlobalFrameRoutingId frame_routing_id_;
+  content::GlobalRenderFrameHostId frame_routing_id_;
   const GURL top_origin_;
   const GURL frame_origin_;
   const url::Origin frame_security_origin_;
@@ -355,10 +365,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   // |get_all_apps_finished_| is true.
   bool has_enrolled_instrument_ = false;
 
-  // Whether there's at least one app that is not an autofill credit card. Can
-  // be used only after |get_all_apps_finished_| is true.
-  bool has_non_autofill_app_ = false;
-
   // Whether the data is currently being validated by the merchant.
   bool is_waiting_for_merchant_validation_ = false;
 
@@ -369,22 +375,26 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   base::WeakPtr<PaymentRequestSpec> spec_;
   base::WeakPtr<Delegate> delegate_;
+  base::WeakPtr<JourneyLogger> journey_logger_;
+  base::WeakPtr<CSPChecker> csp_checker_;
 
   // Not owned. Never null. Will outlive this object.
-  autofill::PersonalDataManager* personal_data_manager_;
-  JourneyLogger* journey_logger_;
+  raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
 
   StatusCallback can_make_payment_callback_;
   StatusCallback has_enrolled_instrument_callback_;
   MethodsSupportedCallback are_requested_methods_supported_callback_;
   bool are_requested_methods_supported_ = false;
   std::string get_all_payment_apps_error_;
+  AppCreationFailureReason get_all_payment_apps_error_reason_ =
+      AppCreationFailureReason::UNKNOWN;
 
-  autofill::AutofillProfile* selected_shipping_profile_ = nullptr;
-  autofill::AutofillProfile* selected_shipping_option_error_profile_ = nullptr;
-  autofill::AutofillProfile* selected_contact_profile_ = nullptr;
-  autofill::AutofillProfile* invalid_shipping_profile_ = nullptr;
-  autofill::AutofillProfile* invalid_contact_profile_ = nullptr;
+  raw_ptr<autofill::AutofillProfile> selected_shipping_profile_ = nullptr;
+  raw_ptr<autofill::AutofillProfile> selected_shipping_option_error_profile_ =
+      nullptr;
+  raw_ptr<autofill::AutofillProfile> selected_contact_profile_ = nullptr;
+  raw_ptr<autofill::AutofillProfile> invalid_shipping_profile_ = nullptr;
+  raw_ptr<autofill::AutofillProfile> invalid_contact_profile_ = nullptr;
   base::WeakPtr<PaymentApp> selected_app_;
 
   // Profiles may change due to (e.g.) sync events, so profiles are cached after
@@ -397,16 +407,13 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   // Credit cards are directly owned by the apps in this list.
   std::vector<std::unique_ptr<PaymentApp>> available_apps_;
 
-  ContentPaymentRequestDelegate* payment_request_delegate_;
+  base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate_;
 
   std::unique_ptr<PaymentResponseHelper> response_helper_;
 
   PaymentsProfileComparator profile_comparator_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  // Whether PaymentRequest.show() was invoked with a user gesture.
-  bool is_show_user_gesture_ = false;
 
   // If set to true, then both GetCanMakePaymentValue() and
   // GetHasEnrolledInstrumentValue() will return true, regardless of presence of
@@ -418,8 +425,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   bool can_make_payment_even_without_apps_ = false;
 
   base::WeakPtrFactory<PaymentRequestState> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestState);
 };
 
 }  // namespace payments

@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/wm/core/capture_controller.h"
 
+#include "base/observer_list.h"
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -59,18 +60,24 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
   std::map<aura::Window*, aura::client::CaptureDelegate*> delegates =
       delegates_;
 
+  aura::WindowTracker tracker;
+  if (new_capture_window)
+    tracker.Add(new_capture_window);
+  if (old_capture_window)
+    tracker.Add(old_capture_window);
+
   // If we're starting a new capture, cancel all touches that aren't
   // targeted to the capturing window.
   if (new_capture_window) {
+    aura::Env::GetInstance()->gesture_recognizer()->CancelActiveTouchesExcept(
+        new_capture_window);
     // Cancelling touches might cause |new_capture_window| to get deleted.
     // Track |new_capture_window| and check if it still exists before
     // committing |capture_window_|.
-    aura::WindowTracker tracker;
-    tracker.Add(new_capture_window);
-    aura::Env::GetInstance()->gesture_recognizer()->CancelActiveTouchesExcept(
-        new_capture_window);
     if (!tracker.Contains(new_capture_window))
       new_capture_window = nullptr;
+    if (old_capture_window && !tracker.Contains(old_capture_window))
+      old_capture_window = nullptr;
   }
 
   capture_window_ = new_capture_window;
@@ -80,8 +87,15 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
                           ? nullptr
                           : delegates_[capture_root_window];
 
-  for (const auto& it : delegates)
+  // With more than one delegate (e.g. multiple displays), an earlier
+  // UpdateCapture() call could cancel an existing capture and destroy
+  // |old_capture_window|, causing a later UpdateCapture() call to access
+  // a dangling pointer, so detect and handle it.
+  for (const auto& it : delegates) {
     it.second->UpdateCapture(old_capture_window, new_capture_window);
+    if (old_capture_window && !tracker.Contains(old_capture_window))
+      old_capture_window = nullptr;
+  }
 
   if (capture_delegate_ != old_capture_delegate) {
     if (old_capture_delegate)

@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/threaded_icon_loader.h"
 
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -27,11 +27,12 @@ constexpr char kIconLoaderBaseUrl[] = "http://test.com/";
 constexpr char kIconLoaderBaseDir[] = "notifications/";
 constexpr char kIconLoaderIcon100x100[] = "100x100.png";
 constexpr char kIconLoaderInvalidIcon[] = "file.txt";
+constexpr char kIconLoaderSVG100x100[] = "100x100.svg";
 
 class ThreadedIconLoaderTest : public PageTestBase {
  public:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetDocument().SetBaseURLOverride(KURL(kIconLoaderBaseUrl));
   }
 
@@ -42,15 +43,16 @@ class ThreadedIconLoaderTest : public PageTestBase {
 
   // Registers a mocked url. When fetched, |fileName| will be loaded from the
   // test data directory.
-  KURL RegisterMockedURL(const String& file_name) {
+  KURL RegisterMockedURL(const String& file_name,
+                         const String& mime_type = "image/png") {
     return url_test_helpers::RegisterMockedURLLoadFromBase(
         kIconLoaderBaseUrl, test::CoreTestDataPath(kIconLoaderBaseDir),
-        file_name, "image/png");
+        file_name, mime_type);
   }
 
   std::pair<SkBitmap, double> LoadIcon(
       const KURL& url,
-      base::Optional<gfx::Size> resize_dimensions = base::nullopt) {
+      absl::optional<gfx::Size> resize_dimensions = absl::nullopt) {
     auto* icon_loader = MakeGarbageCollected<ThreadedIconLoader>();
 
     ResourceRequest resource_request(url);
@@ -63,9 +65,9 @@ class ThreadedIconLoaderTest : public PageTestBase {
     icon_loader->Start(
         GetDocument().GetExecutionContext(), resource_request,
         resize_dimensions,
-        WTF::Bind(&ThreadedIconLoaderTest::DidGetIcon, WTF::Unretained(this),
-                  run_loop.QuitClosure(), WTF::Unretained(&icon),
-                  WTF::Unretained(&resize_scale)));
+        WTF::BindOnce(&ThreadedIconLoaderTest::DidGetIcon,
+                      WTF::Unretained(this), run_loop.QuitClosure(),
+                      WTF::Unretained(&icon), WTF::Unretained(&resize_scale)));
     WebURLLoaderMockFactory::GetSingletonInstance()
         ->ServeAsynchronousRequests();
     run_loop.Run();
@@ -151,6 +153,29 @@ TEST_F(ThreadedIconLoaderTest, ResizeFailed) {
   EXPECT_EQ(icon.width(), 100);
   EXPECT_EQ(icon.height(), 100);
   EXPECT_EQ(resize_scale, 1.0);
+}
+
+TEST_F(ThreadedIconLoaderTest, LoadSVG) {
+  auto result =
+      LoadIcon(RegisterMockedURL(kIconLoaderSVG100x100, "image/svg+xml"));
+  const SkBitmap& icon = result.first;
+  double resize_scale = result.second;
+
+  ASSERT_FALSE(icon.isNull());
+  EXPECT_FALSE(icon.drawsNothing());
+  EXPECT_EQ(icon.width(), 100);
+  EXPECT_EQ(icon.height(), 100);
+  EXPECT_EQ(resize_scale, 1.0);
+}
+
+TEST_F(ThreadedIconLoaderTest, InvalidSVGReturnsNullIcon) {
+  auto result =
+      LoadIcon(RegisterMockedURL(kIconLoaderInvalidIcon, "image/svg+xml"));
+  const SkBitmap& icon = result.first;
+  double resize_scale = result.second;
+
+  ASSERT_TRUE(icon.isNull());
+  EXPECT_EQ(resize_scale, -1.0);
 }
 
 }  // namespace

@@ -1,13 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_NETWORK_CHANGE_NOTIFIER_H_
 #define ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_NETWORK_CHANGE_NOTIFIER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/android/network_change_notifier_delegate_android.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 
 namespace android_webview {
 
@@ -24,6 +25,9 @@ class AwNetworkChangeNotifier
     : public net::NetworkChangeNotifier,
       public net::NetworkChangeNotifierDelegateAndroid::Observer {
  public:
+  AwNetworkChangeNotifier(const AwNetworkChangeNotifier&) = delete;
+  AwNetworkChangeNotifier& operator=(const AwNetworkChangeNotifier&) = delete;
+
   ~AwNetworkChangeNotifier() override;
 
   // NetworkChangeNotifier:
@@ -36,17 +40,19 @@ class AwNetworkChangeNotifier
   bool AreNetworkHandlesCurrentlySupported() const override;
   void GetCurrentConnectedNetworks(NetworkList* network_list) const override;
   ConnectionType GetCurrentNetworkConnectionType(
-      NetworkHandle network) const override;
-  NetworkHandle GetCurrentDefaultNetwork() const override;
+      net::handles::NetworkHandle network) const override;
+  net::handles::NetworkHandle GetCurrentDefaultNetwork() const override;
 
   // NetworkChangeNotifierDelegateAndroid::Observer:
   void OnConnectionTypeChanged() override;
+  void OnConnectionCostChanged() override;
   void OnMaxBandwidthChanged(double max_bandwidth_mbps,
                              ConnectionType type) override;
-  void OnNetworkConnected(NetworkHandle network) override;
-  void OnNetworkSoonToDisconnect(NetworkHandle network) override;
-  void OnNetworkDisconnected(NetworkHandle network) override;
-  void OnNetworkMadeDefault(NetworkHandle network) override;
+  void OnNetworkConnected(net::handles::NetworkHandle network) override;
+  void OnNetworkSoonToDisconnect(net::handles::NetworkHandle network) override;
+  void OnNetworkDisconnected(net::handles::NetworkHandle network) override;
+  void OnNetworkMadeDefault(net::handles::NetworkHandle network) override;
+  void OnDefaultNetworkActive() override;
 
  private:
   friend class AwNetworkChangeNotifierFactory;
@@ -56,9 +62,7 @@ class AwNetworkChangeNotifier
 
   static NetworkChangeCalculatorParams DefaultNetworkChangeCalculatorParams();
 
-  net::NetworkChangeNotifierDelegateAndroid* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwNetworkChangeNotifier);
+  const raw_ptr<net::NetworkChangeNotifierDelegateAndroid> delegate_;
 };
 
 }  // namespace android_webview

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <inttypes.h>
 
 #include "base/containers/span.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_observer.h"
@@ -34,8 +34,9 @@ class CORE_EXPORT ResourceLoadObserverForFrame final
   void WillSendRequest(const ResourceRequest&,
                        const ResourceResponse& redirect_response,
                        ResourceType,
-                       const FetchInitiatorInfo&,
-                       RenderBlockingBehavior) override;
+                       const ResourceLoaderOptions&,
+                       RenderBlockingBehavior,
+                       const Resource*) override;
   void DidChangePriority(uint64_t identifier,
                          ResourceLoadPriority,
                          int intra_priority_value) override;
@@ -59,17 +60,25 @@ class CORE_EXPORT ResourceLoadObserverForFrame final
                       const ResourceError&,
                       int64_t encoded_data_length,
                       IsInternalRequest) override;
+  void DidChangeRenderBlockingBehavior(Resource* resource,
+                                       const FetchParameters& params) override;
   void Trace(Visitor*) const override;
 
  private:
   CoreProbeSink* GetProbe();
   void CountUsage(WebFeature);
 
+  void UpdatePowerModeVote();
+
+  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
+
   // There are some overlap between |document_loader_|, |document_| and
   // |fetcher_properties_|. Use |fetcher_properties_| whenever possible.
   const Member<DocumentLoader> document_loader_;
   const Member<Document> document_;
   const Member<const ResourceFetcherProperties> fetcher_properties_;
+
+  bool power_mode_vote_is_loading_ = false;
 };
 
 }  // namespace blink

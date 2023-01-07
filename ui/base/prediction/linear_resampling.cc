@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/ui_base_features.h"
 
@@ -15,22 +16,21 @@ namespace ui {
 namespace {
 // Minimum time difference between last two consecutive events before attempting
 // to resample.
-constexpr auto kResampleMinDelta = base::TimeDelta::FromMilliseconds(2);
+constexpr auto kResampleMinDelta = base::Milliseconds(2);
 // Maximum time to predict forward from the last event, to avoid predicting too
 // far into the future. This time is further bounded by 50% of the last time
 // delta.
-constexpr auto kResampleMaxPrediction = base::TimeDelta::FromMilliseconds(8);
+constexpr auto kResampleMaxPrediction = base::Milliseconds(8);
 // Align events to a few milliseconds before frame_time. This is to make the
 // resampling either doing interpolation or extrapolating a closer future time
 // so that resampled result is more accurate and has less noise. This adds some
 // latency during resampling but a few ms should be fine.
-constexpr auto kResampleLatency = base::TimeDelta::FromMilliseconds(-5);
+constexpr auto kResampleLatency = base::Milliseconds(-5);
 // The optimal prediction anticipation from experimentation: In the study
 // https://bit.ly/3iyQf8V we found that, on a machine with VSync at 60Hz, adding
 // 1/2 * frame_interval (on top of kResampleLatency) minimizes the Lag on touch
 // scrolling. + 1/2 * (1/60) - 5ms = 3.3ms.
-constexpr auto kResampleLatencyExperimental =
-    base::TimeDelta::FromMillisecondsD(3.3);
+constexpr auto kResampleLatencyExperimental = base::Milliseconds(3.3);
 
 // Get position at |sample_time| by linear interpolate/extrapolate a and b.
 inline gfx::PointF lerp(const InputPredictor::InputData& a,
@@ -88,11 +88,16 @@ std::unique_ptr<InputPredictor::InputData> LinearResampling::GeneratePrediction(
       latency_calculator_.GetResampleLatency(frame_interval);
   base::TimeTicks sample_time = frame_time + resample_latency;
 
-  base::TimeDelta max_prediction =
-      std::min(kResampleMaxPrediction, events_dt_ / 2.0);
+  // Clamping shouldn't affect prediction experiment, as we're predicting
+  // further in the future.
+  if (!base::FeatureList::IsEnabled(
+          ::features::kResamplingScrollEventsExperimentalPrediction)) {
+    base::TimeDelta max_prediction =
+        std::min(kResampleMaxPrediction, events_dt_ / 2.0);
 
-  sample_time =
-      std::min(sample_time, events_queue_[0].time_stamp + max_prediction);
+    sample_time =
+        std::min(sample_time, events_queue_[0].time_stamp + max_prediction);
+  }
 
   return std::make_unique<InputData>(
       lerp(events_queue_[0], events_queue_[1], sample_time), sample_time);
@@ -129,7 +134,7 @@ base::TimeDelta LinearResampling::LatencyCalculator::CalculateLatency() {
   double latency;
   if (base::StringToDouble(latency_value, &latency)) {
     return prediction_type == ::features::kPredictionTypeTimeBased
-               ? base::TimeDelta::FromMillisecondsD(latency)
+               ? base::Milliseconds(latency)
                : latency * frame_interval_ + kResampleLatency;
   }
 

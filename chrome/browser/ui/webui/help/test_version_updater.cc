@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,3 +13,9 @@ void TestVersionUpdater::CheckForUpdate(StatusCallback callback,
   callback.Run(status_, progress_, rollback_, powerwash_, version_,
                update_size_, message_);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool TestVersionUpdater::IsManagedAutoUpdateEnabled() {
+  return true;
+}
+#endif

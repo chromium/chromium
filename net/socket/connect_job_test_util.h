@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "net/base/net_errors.h"
@@ -31,6 +30,10 @@ class TestConnectJobDelegate : public ConnectJob::Delegate {
 
   explicit TestConnectJobDelegate(
       SocketExpected socket_expected = SocketExpected::ON_SUCCESS_ONLY);
+
+  TestConnectJobDelegate(const TestConnectJobDelegate&) = delete;
+  TestConnectJobDelegate& operator=(const TestConnectJobDelegate&) = delete;
+
   ~TestConnectJobDelegate() override;
 
   // ConnectJob::Delegate implementation.
@@ -84,8 +87,6 @@ class TestConnectJobDelegate : public ConnectJob::Delegate {
 
   base::RunLoop run_loop_;
   std::unique_ptr<base::RunLoop> auth_challenge_run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectJobDelegate);
 };
 
 }  // namespace net

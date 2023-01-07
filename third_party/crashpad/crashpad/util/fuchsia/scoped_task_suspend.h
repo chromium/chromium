@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -36,12 +35,14 @@ namespace crashpad {
 class ScopedTaskSuspend {
  public:
   explicit ScopedTaskSuspend(const zx::process& process);
+
+  ScopedTaskSuspend(const ScopedTaskSuspend&) = delete;
+  ScopedTaskSuspend& operator=(const ScopedTaskSuspend&) = delete;
+
   ~ScopedTaskSuspend() = default;
 
  private:
   zx::suspend_token suspend_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTaskSuspend);
 };
 
 }  // namespace crashpad

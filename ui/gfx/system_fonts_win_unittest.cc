@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,12 @@ class SystemFontsWinTest : public testing::Test {
  public:
   SystemFontsWinTest() = default;
 
+  SystemFontsWinTest(const SystemFontsWinTest&) = delete;
+  SystemFontsWinTest& operator=(const SystemFontsWinTest&) = delete;
+
  protected:
   void SetUp() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // System fonts is keeping a cache of loaded system fonts. These fonts are
     // scaled based on global callbacks configured on startup. The tests in this
     // file are testing these callbacks and need to be sure we cleared the
@@ -29,9 +32,6 @@ class SystemFontsWinTest : public testing::Test {
     win::ResetSystemFontsForTesting();
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemFontsWinTest);
 };
 
 LOGFONT CreateLOGFONT(const wchar_t* name, LONG height) {

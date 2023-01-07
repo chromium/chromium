@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,6 +102,14 @@ cbor::Value AsCBOR(const AuthenticatorSupportedOptions& options) {
 
   if (options.always_uv) {
     option_map.emplace(kAlwaysUvKey, true);
+  }
+
+  if (options.make_cred_uv_not_required) {
+    option_map.emplace(kMakeCredUvNotRqdKey, true);
+  }
+
+  if (options.supports_min_pin_length_extension) {
+    option_map.emplace(kExtensionMinPINLength, true);
   }
 
   return cbor::Value(std::move(option_map));

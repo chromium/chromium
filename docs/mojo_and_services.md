@@ -294,7 +294,6 @@ Then the actual `MathService` implementation:
 
 ``` cpp
 // src/chrome/services/math/math_service.h
-#include "base/macros.h"
 #include "chrome/services/math/public/mojom/math_service.mojom.h"
 
 namespace math {
@@ -302,9 +301,9 @@ namespace math {
 class MathService : public mojom::MathService {
  public:
   explicit MathService(mojo::PendingReceiver<mojom::MathService> receiver);
-  ~MathService() override;
   MathService(const MathService&) = delete;
   MathService& operator=(const MathService&) = delete;
+  ~MathService() override;
 
  private:
   // mojom::MathService:
@@ -396,7 +395,7 @@ API:
 ``` cpp
 mojo::Remote<math::mojom::MathService> math_service =
     content::ServiceProcessHost::Launch<math::mojom::MathService>(
-        content::ServiceProcessHost::LaunchOptions()
+        content::ServiceProcessHost::Options()
             .WithDisplayName("Math!")
             .Pass());
 ```
@@ -421,18 +420,32 @@ NOTE: To ensure the execution of the response callback, the
 and [this note from an earlier section](#sending-a-message)).
 ***
 
-### Using a non-standard sandbox
+### Specifying a sandbox
 
-Ideally services will run inside the utility process sandbox, in which
-case there is nothing else to do. For services that need a custom
-sandbox, a new sandbox type must be defined in consultation with
-security-dev@chromium.org.  To launch with a custom sandbox a
-specialization of `GetServiceSandboxType()` must be supplied in an
-appropriate `service_sandbox_type.h` such as
-[`//chrome/browser/service_sandbox_type.h`](https://cs.chromium.org/chromium/src/chrome/browser/service_sandbox_type.h)
-or
-[`//content/browser/service_sandbox_type.h`](https://cs.chromium.org/chromium/src/content/browser/service_sandbox_type.h)
-and included where `ServiceProcessHost::Launch()` is called.
+All services must specify a sandbox. Ideally services will run inside the
+`kService` process sandbox unless they need access to operating system
+resources. For services that need a custom sandbox, a new sandbox type must be
+defined in consultation with security-dev@chromium.org.
+
+The preferred way to define the sandbox for your interface is by specifying a
+`[ServiceSandbox=type]` attribute on your `interface {}` in its `.mojom` file:
+
+```
+import "sandbox/policy/mojom/sandbox.mojom"
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface FakeService {
+  ...
+};
+```
+
+Valid values are those in
+[`//sandbox/policy/mojom/sandbox.mojom`](https://cs.chromium.org/chromium/src/sandbox/policy/mojom/sandbox.mojom). Note
+that the sandbox is only applied if the interface is launched
+out-of-process using `content::ServiceProcessHost::Launch()`.
+
+As a last resort, dynamic or feature based mapping to an underlying platform
+sandbox can be achieved but requires plumbing through ContentBrowserClient
+(e.g. `ShouldEnableNetworkServiceSandbox()`).
 
 ## Content-Layer Services Overview
 
@@ -465,6 +478,52 @@ void PopulateFrameBinders(RenderFrameHostImpl* host,
 }
 ```
 
+It's also possible to bind an interface on a different sequence by specifying a task runner:
+
+``` cpp
+// //content/browser/browser_interface_binders.cc
+void PopulateFrameBinders(RenderFrameHostImpl* host,
+                          mojo::BinderMap* map) {
+...
+  map->Add<magic::mojom::GoatTeleporter>(base::BindRepeating(
+      &RenderFrameHostImpl::GetGoatTeleporter, base::Unretained(host)),
+      GetIOThreadTaskRunner({}));
+}
+```
+
+Workers also have `BrowserInterfaceBroker` connections between the renderer and
+the corresponding remote implementation in the browser process. Adding new
+worker-specific interfaces is similar to the steps detailed above for frames,
+with the following differences:
+ - For Dedicated Workers, add a new method to
+   [`DedicatedWorkerHost`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/worker_host/dedicated_worker_host.h)
+   and register it in
+   [`PopulateDedicatedWorkerBinders`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/browser_interface_binders.cc;l=1126;drc=e24e0a914ff0da18e78044ebad7518afe9e13847)
+ - For Shared Workers, add a new method to
+   [`SharedWorkerHost`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/worker_host/shared_worker_host.h)
+   and register it in
+   [`PopulateSharedWorkerBinders`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/browser_interface_binders.cc;l=1232;drc=e24e0a914ff0da18e78044ebad7518afe9e13847)
+ - For Service Workers, add a new method to
+   [`ServiceWorkerHost`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/service_worker/service_worker_host.h)
+   and register it in
+   [`PopulateServiceWorkerBinders`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/browser_interface_binders.cc;l=1326;drc=e24e0a914ff0da18e78044ebad7518afe9e13847)
+
+Interfaces can also be added at the process level using the
+`BrowserInterfaceBroker` connection between the Blink `Platform` object in the
+renderer and the corresponding `RenderProcessHost` object in the browser
+process. This allows any thread (including frame and worker threads) in the
+renderer to access the interface, but comes with additional overhead because
+the `BrowserInterfaceBroker` implementation used must be thread-safe. To add a
+new process-level interface, add a new method to `RenderProcessHostImpl` and
+register it using a call to
+[`AddUIThreadInterface`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/render_process_host_impl.h;l=918;drc=ec5eaba0e021b757d5cbbf2c27ac8f06809d81e9)
+in
+[`RenderProcessHostImpl::RegisterMojoInterfaces`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/render_process_host_impl.cc;l=2317;drc=a817d852ea2f2085624d64154ad847dfa3faaeb6).
+On the renderer side, use
+[`Platform::GetBrowserInterfaceBroker`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/platform/platform.h;l=781;drc=ee1482552c4c97b40f15605fe6a52565cfe74548)
+to retrieve the corresponding `BrowserInterfaceBroker` object to call
+`GetInterface` on.
+
 For binding an embedder-specific document-scoped interface, override
 [`ContentBrowserClient::RegisterBrowserInterfaceBindersForFrame()`](https://cs.chromium.org/chromium/src/content/public/browser/content_browser_client.h?rcl=3eb14ce219e383daa0cd8d743f475f9d9ce8c81a&l=999)
 and add the binders to the provided map.
@@ -482,7 +541,30 @@ helper in `browser_interface_binders.cc`. However, it is recommended
 to have the renderer and browser sides consistent if possible.
 ***
 
-TODO: add information about workers.
+### Navigation-Associated Interfaces
+
+For cases where the ordering of messages from different frames is important,
+and when messages need to be ordered correctly with respect to the messages
+implementing navigation, navigation-associated interfaces can be used.
+Navigation-associated interfaces leverage connections from each frame to the
+corresponding `RenderFrameHostImpl` object and send messages from each
+connection over the same FIFO pipe that's used for messages relating to
+navigation. As a result, messages sent after a navigation are guaranteed to
+arrive in the browser process after the navigation-related messages, and the
+ordering of messages sent from different frames of the same document is
+preserved as well.
+
+To add a new navigation-associated interface, create a new method for
+`RenderFrameHostImpl` and register it with a call to
+`associated_registry_->AddInterface` in
+[`RenderFrameHostImpl::SetUpMojoConnection`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/render_frame_host_impl.cc;l=8365;drc=a817d852ea2f2085624d64154ad847dfa3faaeb6).
+From the renderer, use
+[`LocalFrame::GetRemoteNavigationAssociatedInterfaces`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/local_frame.h;l=409;drc=19f17a30e102f811bc90a13f79e8ad39193a6403)
+to get an object to call
+`GetInterface` on (this call is similar to
+`BrowserInterfaceBroker::GetInterface` except that it takes a
+[pending associated receiver](https://chromium.googlesource.com/chromium/src/+/main/mojo/public/cpp/bindings/README.md#associated-interfaces)
+instead of a pending receiver).
 
 ## Additional Support
 

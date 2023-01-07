@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/tiles/raster_tile_priority_queue_all.h"
 
+#include "base/notreached.h"
 #include "cc/tiles/tiling_set_raster_queue_all.h"
 
 namespace cc {

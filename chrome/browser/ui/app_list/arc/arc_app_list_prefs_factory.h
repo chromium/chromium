@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,14 @@
 #include <memory>
 #include <unordered_map>
 
+#include "ash/components/arc/mojom/app.mojom-forward.h"
+#include "ash/components/arc/session/connection_holder.h"
 #include "base/memory/singleton.h"
-#include "components/arc/mojom/app.mojom-forward.h"
-#include "components/arc/session/connection_holder.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class ArcAppListPrefs;
 
-class ArcAppListPrefsFactory : public BrowserContextKeyedServiceFactory {
+class ArcAppListPrefsFactory : public ProfileKeyedServiceFactory {
  public:
   static ArcAppListPrefs* GetForBrowserContext(
       content::BrowserContext* context);
@@ -35,8 +35,6 @@ class ArcAppListPrefsFactory : public BrowserContextKeyedServiceFactory {
   ~ArcAppListPrefsFactory() override;
 
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 
   static bool is_sync_test_;

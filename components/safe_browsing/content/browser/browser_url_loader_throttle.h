@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -50,6 +48,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
           web_contents_getter,
       int frame_tree_node_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service);
+
+  BrowserURLLoaderThrottle(const BrowserURLLoaderThrottle&) = delete;
+  BrowserURLLoaderThrottle& operator=(const BrowserURLLoaderThrottle&) = delete;
 
   ~BrowserURLLoaderThrottle() override;
 
@@ -115,9 +116,6 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   // The total delay caused by SafeBrowsing deferring the resource load.
   base::TimeDelta total_delay_;
-  // Whether the interstitial page has been shown and therefore user action has
-  // been involved.
-  bool user_action_involved_ = false;
 
   GURL original_url_;
 
@@ -127,8 +125,6 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   std::unique_ptr<CheckerOnIO> io_checker_;
 
   base::WeakPtrFactory<BrowserURLLoaderThrottle> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserURLLoaderThrottle);
 };
 
 }  // namespace safe_browsing

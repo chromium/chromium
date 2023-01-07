@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,14 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-@class ChromeIdentity;
 @protocol IdentityChooserCoordinatorDelegate;
+@protocol SystemIdentity;
 
 // Coordinator to display the identity chooser view controller.
 @interface IdentityChooserCoordinator : ChromeCoordinator
 
-// Selected ChromeIdentity.
-@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
+// Selected identity.
+@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 // Delegate.
 @property(nonatomic, weak) id<IdentityChooserCoordinatorDelegate> delegate;
 // Origin of the animation for the IdentityChooser.

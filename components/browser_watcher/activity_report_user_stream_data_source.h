@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "third_party/crashpad/crashpad/handler/user_stream_data_source.h"
 
 namespace crashpad {
@@ -26,13 +25,16 @@ class ActivityReportUserStreamDataSource
   explicit ActivityReportUserStreamDataSource(
       const base::FilePath& user_data_dir);
 
+  ActivityReportUserStreamDataSource(
+      const ActivityReportUserStreamDataSource&) = delete;
+  ActivityReportUserStreamDataSource& operator=(
+      const ActivityReportUserStreamDataSource&) = delete;
+
   std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
   ProduceStreamData(crashpad::ProcessSnapshot* process_snapshot) override;
 
  private:
   base::FilePath user_data_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivityReportUserStreamDataSource);
 };
 
 }  // namespace browser_watcher

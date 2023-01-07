@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLLoaderFactory
       base::WeakPtr<BlobUrlRegistry> url_registry,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver);
 
+  BlobURLLoaderFactory(const BlobURLLoaderFactory&) = delete;
+  BlobURLLoaderFactory& operator=(const BlobURLLoaderFactory&) = delete;
+
   // URLLoaderFactory:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -60,8 +63,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLLoaderFactory
   GURL url_;
 
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlobURLLoaderFactory);
 };
 
 }  // namespace storage

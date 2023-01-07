@@ -1,8 +1,8 @@
 android.webkit.WebView focusable focused scrollable name='Table example'
 ++android.widget.GridView role_description='table' collection row_count=3 column_count=2
 ++++android.view.View
-++++++android.view.View role_description='column header' collection_item heading name='Pair' row_span=1 column_span=1
-++++++android.view.View role_description='column header' collection_item heading name='Single' row_span=1 column_index=1 column_span=1
+++++++android.view.View role_description='column header' collection_item table_header name='Pair' row_span=1 column_span=1
+++++++android.view.View role_description='column header' collection_item table_header name='Single' row_span=1 column_index=1 column_span=1
 ++++android.view.View
 ++++++android.view.View collection_item name='AB' row_index=1 row_span=1 column_span=1
 ++++++android.view.View collection_item name='B' row_index=1 row_span=1 column_index=1 column_span=1

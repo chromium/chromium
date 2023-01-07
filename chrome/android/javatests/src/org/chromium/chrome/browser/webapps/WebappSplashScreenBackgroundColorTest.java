@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -38,7 +38,7 @@ public class WebappSplashScreenBackgroundColorTest {
                 mActivityTestRule
                         .createIntent()
                         // This is setting Color.GREEN with 50% opacity.
-                        .putExtra(ShortcutHelper.EXTRA_BACKGROUND_COLOR, 0x8000FF00L));
+                        .putExtra(WebappConstants.EXTRA_BACKGROUND_COLOR, 0x8000FF00L));
 
         ColorDrawable background = (ColorDrawable) splashScreen.getBackground();
 

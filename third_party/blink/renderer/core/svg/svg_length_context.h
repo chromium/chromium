@@ -23,8 +23,13 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/svg/svg_unit_types.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "ui/gfx/geometry/rect_f.h"
+
+namespace gfx {
+class SizeF;
+class Vector2dF;
+}
 
 namespace blink {
 
@@ -42,32 +47,32 @@ class CORE_EXPORT SVGLengthContext {
   explicit SVGLengthContext(const SVGElement*);
 
   template <typename T>
-  static FloatRect ResolveRectangle(const T* context,
-                                    SVGUnitTypes::SVGUnitType type,
-                                    const FloatRect& viewport) {
+  static gfx::RectF ResolveRectangle(const T* context,
+                                     SVGUnitTypes::SVGUnitType type,
+                                     const gfx::RectF& viewport) {
     return ResolveRectangle(
         context, type, viewport, *context->x()->CurrentValue(),
         *context->y()->CurrentValue(), *context->width()->CurrentValue(),
         *context->height()->CurrentValue());
   }
 
-  static FloatRect ResolveRectangle(const SVGElement*,
-                                    SVGUnitTypes::SVGUnitType,
-                                    const FloatRect& viewport,
-                                    const SVGLength& x,
-                                    const SVGLength& y,
-                                    const SVGLength& width,
-                                    const SVGLength& height);
-  static FloatPoint ResolvePoint(const SVGElement*,
-                                 SVGUnitTypes::SVGUnitType,
-                                 const SVGLength& x,
-                                 const SVGLength& y);
+  static gfx::RectF ResolveRectangle(const SVGElement*,
+                                     SVGUnitTypes::SVGUnitType,
+                                     const gfx::RectF& viewport,
+                                     const SVGLength& x,
+                                     const SVGLength& y,
+                                     const SVGLength& width,
+                                     const SVGLength& height);
+  static gfx::PointF ResolvePoint(const SVGElement*,
+                                  SVGUnitTypes::SVGUnitType,
+                                  const SVGLength& x,
+                                  const SVGLength& y);
   static float ResolveLength(const SVGElement*,
                              SVGUnitTypes::SVGUnitType,
                              const SVGLength&);
-  FloatPoint ResolveLengthPair(const Length& x_length,
-                               const Length& y_length,
-                               const ComputedStyle&) const;
+  gfx::Vector2dF ResolveLengthPair(const Length& x_length,
+                                   const Length& y_length,
+                                   const ComputedStyle&) const;
 
   float ConvertValueToUserUnits(float,
                                 SVGLengthMode,
@@ -85,7 +90,7 @@ class CORE_EXPORT SVGLengthContext {
                               const ComputedStyle&,
                               float dimension);
 
-  bool DetermineViewport(FloatSize&) const;
+  bool DetermineViewport(gfx::SizeF&) const;
   float ResolveValue(const CSSPrimitiveValue&, SVGLengthMode) const;
 
  private:
@@ -97,6 +102,12 @@ class CORE_EXPORT SVGLengthContext {
 
   float ConvertValueFromUserUnitsToCHS(float value) const;
   float ConvertValueFromCHSToUserUnits(float value) const;
+
+  float ConvertValueFromUserUnitsToICS(float value) const;
+  float ConvertValueFromICSToUserUnits(float value) const;
+
+  float ConvertValueFromUserUnitsToLHS(float value) const;
+  float ConvertValueFromLHSToUserUnits(float value) const;
 
   const SVGElement* context_;
 };

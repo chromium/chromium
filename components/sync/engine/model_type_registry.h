@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -39,6 +39,10 @@ class ModelTypeRegistry : public ModelTypeConnector,
   ModelTypeRegistry(NudgeHandler* nudge_handler,
                     CancelationSignal* cancelation_signal,
                     SyncEncryptionHandler* sync_encryption_handler);
+
+  ModelTypeRegistry(const ModelTypeRegistry&) = delete;
+  ModelTypeRegistry& operator=(const ModelTypeRegistry&) = delete;
+
   ~ModelTypeRegistry() override;
 
   // Implementation of ModelTypeConnector.
@@ -46,8 +50,7 @@ class ModelTypeRegistry : public ModelTypeConnector,
       ModelType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) override;
   void DisconnectDataType(ModelType type) override;
-  void ConnectProxyType(ModelType type) override;
-  void DisconnectProxyType(ModelType type) override;
+  void SetProxyTabsDatatypeEnabled(bool enabled) override;
 
   // Implementation of SyncEncryptionHandler::Observer.
   void OnPassphraseRequired(
@@ -56,8 +59,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
   void OnPassphraseAccepted() override;
   void OnTrustedVaultKeyRequired() override;
   void OnTrustedVaultKeyAccepted() override;
-  void OnBootstrapTokenUpdated(const std::string& bootstrap_token,
-                               BootstrapTokenType type) override;
   void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                bool encrypt_everything) override;
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
@@ -65,15 +66,16 @@ class ModelTypeRegistry : public ModelTypeConnector,
   void OnPassphraseTypeChanged(PassphraseType type,
                                base::Time passphrase_time) override;
 
-  // Gets the set of enabled types.
-  ModelTypeSet GetEnabledTypes() const;
+  // Gets the set of connected types, which is essentially the set of types that
+  // the sync engine cares about. For each of these, a worker exists to
+  // propagate changes between the server and the local model's processor.
+  ModelTypeSet GetConnectedTypes() const;
+
+  bool proxy_tabs_datatype_enabled() const;
 
   // Returns set of types for which initial set of updates was downloaded and
   // applied.
   ModelTypeSet GetInitialSyncEndedTypes() const;
-
-  // Returns set of enabled types, i.e. types that has alive ModelTypeWorker.
-  ModelTypeSet GetEnabledDataTypes() const;
 
   // Returns the update handler for |type|.
   const UpdateHandler* GetUpdateHandler(ModelType type) const;
@@ -88,8 +90,9 @@ class ModelTypeRegistry : public ModelTypeConnector,
   base::WeakPtr<ModelTypeConnector> AsWeakPtr();
 
  private:
-  // Enabled proxy types, which don't have a worker.
-  ModelTypeSet enabled_proxy_types_;
+  // Whether PROXY_TABS is enabled, which is not enabled for real (e.g. it
+  // doesn't have a worker).
+  bool proxy_tabs_datatype_enabled_ = false;
 
   std::vector<std::unique_ptr<ModelTypeWorker>> connected_model_type_workers_;
 
@@ -98,24 +101,15 @@ class ModelTypeRegistry : public ModelTypeConnector,
   UpdateHandlerMap update_handler_map_;
   CommitContributorMap commit_contributor_map_;
 
-  // A copy of the most recent passphrase type.
-  PassphraseType passphrase_type_ =
-      SyncEncryptionHandler::kInitialPassphraseType;
-
-  // The set of encrypted types.
-  ModelTypeSet encrypted_types_;
-
-  NudgeHandler* const nudge_handler_;
+  const raw_ptr<NudgeHandler> nudge_handler_;
 
   // CancelationSignal is signalled on engine shutdown. It is passed to
   // ModelTypeWorker to cancel blocking operation.
-  CancelationSignal* const cancelation_signal_;
+  const raw_ptr<CancelationSignal> cancelation_signal_;
 
-  SyncEncryptionHandler* const sync_encryption_handler_;
+  const raw_ptr<SyncEncryptionHandler> sync_encryption_handler_;
 
   base::WeakPtrFactory<ModelTypeRegistry> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModelTypeRegistry);
 };
 
 }  // namespace syncer

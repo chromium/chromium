@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,13 @@
 #define CHROME_BROWSER_CHROMEOS_FILEAPI_RECENT_ARC_MEDIA_SOURCE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/fileapi/recent_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -28,6 +26,10 @@ class RecentFile;
 class RecentArcMediaSource : public RecentSource {
  public:
   explicit RecentArcMediaSource(Profile* profile);
+
+  RecentArcMediaSource(const RecentArcMediaSource&) = delete;
+  RecentArcMediaSource& operator=(const RecentArcMediaSource&) = delete;
+
   ~RecentArcMediaSource() override;
 
   // RecentSource overrides:
@@ -49,7 +51,7 @@ class RecentArcMediaSource : public RecentSource {
   Profile* const profile_;
   std::vector<std::unique_ptr<MediaRoot>> roots_;
 
-  base::Optional<Params> params_;
+  absl::optional<Params> params_;
 
   // Time when the build started.
   base::TimeTicks build_start_time_;
@@ -58,8 +60,6 @@ class RecentArcMediaSource : public RecentSource {
   std::vector<RecentFile> files_;
 
   base::WeakPtrFactory<RecentArcMediaSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RecentArcMediaSource);
 };
 
 }  // namespace chromeos

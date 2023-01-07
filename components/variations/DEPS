@@ -1,13 +1,17 @@
 # This component is shared with the Chrome OS build, so it's important to limit
 # dependencies to a minimal set.
+# TODO(crbug.com/1256807): Remove components/metrics, it's only used for tests.
 include_rules = [
   "-components",
   "+components/compression",
   "+components/crash/core/common",
+  "+components/metrics",
   "+components/prefs",
   "+components/variations",
+  "+components/version_info",
   "+crypto",
   "-net",
+  "+net/android",
   "+third_party/protobuf",
   "+third_party/smhasher",
   "+third_party/zlib/google",

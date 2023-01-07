@@ -23,6 +23,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.JNIUtils;
 import org.chromium.base.LocaleUtils;
+import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -30,16 +31,21 @@ import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ProductConfig;
 import org.chromium.chrome.browser.crash.ApplicationStatusTracker;
 import org.chromium.chrome.browser.crash.FirebaseConfig;
-import org.chromium.chrome.browser.crash.PureJavaExceptionHandler;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaUtils;
+import org.chromium.components.crash.CustomAssertionHandler;
+import org.chromium.components.crash.PureJavaExceptionHandler;
+import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionReporter;
+import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionReporterFactory;
 import org.chromium.components.embedder_support.application.FontPreloadingWorkaround;
 import org.chromium.components.module_installer.util.ModuleUtil;
+import org.chromium.components.version_info.VersionConstants;
 import org.chromium.ui.base.ResourceBundle;
 
 /**
@@ -51,6 +57,8 @@ import org.chromium.ui.base.ResourceBundle;
  * {@link SplitChromeApplication}.
  */
 public class SplitCompatApplication extends Application {
+    public static final String CHROME_SPLIT_NAME = "chrome";
+    private static final String TAG = "SplitCompatApp";
     private static final String COMMAND_LINE_FILE = "chrome-command-line";
     private static final String ATTACH_BASE_CONTEXT_EVENT = "ChromeApplication.attachBaseContext";
     // Public to allow use in ChromeBackupAgent
@@ -58,6 +66,7 @@ public class SplitCompatApplication extends Application {
 
     private Supplier<Impl> mImplSupplier;
     private Impl mImpl;
+    private ServiceTracingProxyProvider mServiceTracingProxyProvider;
 
     /**
      * Holds the implementation of application logic. Will be called by {@link
@@ -111,21 +120,30 @@ public class SplitCompatApplication extends Application {
     // Quirk: context.getApplicationContext() returns null during this method.
     @Override
     protected void attachBaseContext(Context context) {
+        boolean isIsolatedProcess = ContextUtils.isIsolatedProcess();
         boolean isBrowserProcess = isBrowserProcess();
+        // Using concatenation rather than %s to allow values to be inlined by R8.
+        Log.i(TAG,
+                "Launched version=" + VersionConstants.PRODUCT_VERSION
+                        + " minSdkVersion=" + BuildConfig.MIN_SDK_VERSION
+                        + " isBundle=" + ProductConfig.IS_BUNDLE + " processName=%s isIsolated=%s",
+                ContextUtils.getProcessName(), isIsolatedProcess);
 
         if (isBrowserProcess) {
             UmaUtils.recordMainEntryPointTime();
-            performBrowserProcessPreloading(context);
-
-            // If the app locale override preference is set, create a new override
-            // context to use as the base context for the application.
-            // Must be initialized early to override Application level localizations.
+            // Register Service tracing early as some services are used below in this function.
+            mServiceTracingProxyProvider = ServiceTracingProxyProvider.create(context);
+            // *** The Application Context should not be used before the locale override is set ***
             if (GlobalAppLocaleController.getInstance().init(context)) {
+                // If the app locale override preference is set, create a new override
+                // context to use as the base context for the application.
+                // Must be initialized early to override Application level localizations.
                 Configuration config =
                         GlobalAppLocaleController.getInstance().getOverrideConfig(context);
                 LocaleUtils.setDefaultLocalesFromConfiguration(config);
                 context = context.createConfigurationContext(config);
             }
+            performBrowserProcessPreloading(context);
         }
 
         super.attachBaseContext(context);
@@ -143,7 +161,6 @@ public class SplitCompatApplication extends Application {
         ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
         LibraryLoader.getInstance().setLinkerImplementation(
                 ProductConfig.USE_CHROMIUM_LINKER, ProductConfig.USE_MODERN_LINKER);
-        LibraryLoader.getInstance().enableJniChecks();
 
         if (!isBrowserProcess) {
             EarlyTraceEvent.earlyEnableInChildWithoutCommandLine();
@@ -186,14 +203,30 @@ public class SplitCompatApplication extends Application {
             // Disable MemoryPressureMonitor polling when Chrome goes to the background.
             ApplicationStatus.registerApplicationStateListener(
                     SplitCompatApplication::updateMemoryPressurePolling);
+
+            if (AppLocaleUtils.shouldUseSystemManagedLocale()) {
+                AppLocaleUtils.maybeMigrateOverrideLanguage();
+            }
         }
 
         BuildInfo.setFirebaseAppId(FirebaseConfig.getFirebaseAppId());
 
-        if (!ContextUtils.isIsolatedProcess()) {
-            // Incremental install disables process isolation, so things in this block will
-            // actually be run for incremental apks, but not normal apks.
-            PureJavaExceptionHandler.installHandler();
+        // WebView installs its own PureJavaExceptionHandler.
+        // Incremental install disables process isolation, so things in this block will
+        // actually be run for incremental apks, but not normal apks.
+        if (!isIsolatedProcess && !isWebViewProcess()) {
+            JavaExceptionReporterFactory factory = new JavaExceptionReporterFactory() {
+                @Override
+                public JavaExceptionReporter createJavaExceptionReporter() {
+                    // ChromePureJavaExceptionReporter may be in the chrome module, so load by
+                    // reflection from there.
+                    return (JavaExceptionReporter) BundleUtils.newInstance(
+                            createChromeContext(ContextUtils.getApplicationContext()),
+                            "org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter");
+                }
+            };
+            PureJavaExceptionHandler.installHandler(factory);
+            CustomAssertionHandler.installPreNativeHandler(factory);
         }
 
         TraceEvent.end(ATTACH_BASE_CONTEXT_EVENT);
@@ -227,6 +260,18 @@ public class SplitCompatApplication extends Application {
         getImpl().startActivity(intent, options);
     }
 
+    // Note that we do not need to (and can't) override getSystemService(Class<T>) as internally
+    // that just gets the name of the Service and calls getSystemService(String) for backwards
+    // compatibility with overrides like this one.
+    @Override
+    public Object getSystemService(String name) {
+        Object service = super.getSystemService(name);
+        if (mServiceTracingProxyProvider != null) {
+            mServiceTracingProxyProvider.traceSystemServices();
+        }
+        return service;
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -245,6 +290,14 @@ public class SplitCompatApplication extends Application {
 
     public static boolean isBrowserProcess() {
         return !ContextUtils.getProcessName().contains(":");
+    }
+
+    /** Creates a context which can be used to load code and resources in the chrome split. */
+    public static Context createChromeContext(Context base) {
+        if (!BundleUtils.isIsolatedSplitInstalled(base, CHROME_SPLIT_NAME)) {
+            return base;
+        }
+        return BundleUtils.createIsolatedSplitContext(base, CHROME_SPLIT_NAME);
     }
 
     private void maybeInitProcessType() {
@@ -267,7 +320,7 @@ public class SplitCompatApplication extends Application {
     }
 
     private static Boolean shouldUseDebugFlags() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED);
+        return ChromeFeatureList.sCommandLineOnNonRooted.isEnabled();
     }
 
     private static void updateMemoryPressurePolling(@ApplicationState int newState) {

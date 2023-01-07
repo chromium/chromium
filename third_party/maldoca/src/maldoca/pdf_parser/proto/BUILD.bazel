@@ -1,0 +1,172 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+licenses(["notice"])
+
+load("@com_github_grpc_grpc//bazel:python_rules.bzl", "py_proto_library")
+load("@rules_cc//cc:defs.bzl", "cc_proto_library")
+
+package(default_visibility = ["//visibility:public"])
+
+proto_library(
+    name = "pdf_assets_proto",
+    srcs = [
+        "pdf_assets.proto",
+    ],
+    deps = [
+        "@com_google_protobuf//:wrappers_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "pdf_assets_cc_proto",
+    deps = [
+        ":pdf_assets_proto",
+    ],
+)
+
+py_proto_library(
+    name = "pdf_assets_py_pb2",
+    deps = [
+        ":pdf_assets_proto",
+    ],
+)
+
+proto_library(
+    name = "pdf_feature_proto",
+    srcs = [
+        "pdf_feature.proto",
+    ],
+    deps = [
+        "@com_google_protobuf//:wrappers_proto",
+        ":pdf_assets_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "pdf_feature_cc_proto",
+    deps = [
+        ":pdf_feature_proto",
+    ],
+)
+
+py_proto_library(
+    name = "pdf_feature_py_pb2",
+    deps = [
+        ":pdf_feature_proto",
+    ],
+)
+
+proto_library(
+    name = "pdfium_result_proto",
+    srcs = [
+        "pdfium_result.proto",
+    ],
+    deps = [
+        "@com_google_protobuf//:wrappers_proto",
+        ":pdf_assets_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "pdfium_result_cc_proto",
+    deps = [
+        ":pdfium_result_proto",
+    ],
+)
+
+py_proto_library(
+    name = "pdfium_result_py_pb2",
+    deps = [
+        ":pdfium_result_proto",
+    ],
+)
+
+proto_library(
+    name = "adobe_js_proto",
+    srcs = [
+        "adobe_js.proto",
+    ],
+    deps = [
+        "@com_google_protobuf//:wrappers_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "adobe_js_cc_proto",
+    deps = [
+        ":adobe_js_proto",
+    ],
+)
+
+py_proto_library(
+    name = "adobe_js_py_pb2",
+    deps = [
+        ":adobe_js_proto",
+    ],
+)
+
+proto_library(
+    name = "parser_packet_proto",
+    srcs = [
+        "parser_packet.proto",
+    ],
+    deps = [
+        ":pdfium_result_proto",
+        "@com_google_protobuf//:wrappers_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "parser_packet_cc_proto",
+    deps = [
+        ":parser_packet_proto",
+    ],
+)
+
+proto_library(
+    name = "features_packet_proto",
+    srcs = [
+        "features_packet.proto",
+    ],
+    deps = [
+        ":pdf_feature_proto",
+        "@com_google_protobuf//:wrappers_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "features_packet_cc_proto",
+    deps = [
+        ":features_packet_proto",
+    ],
+)
+
+proto_library(
+    name = "exporting_packet_proto",
+    srcs = [
+        "exporting_packet.proto",
+    ],
+    deps = [
+        "@com_google_protobuf//:wrappers_proto",
+        "@tensorflow_protos//:tf_example",
+    ],
+)
+
+cc_proto_library(
+    name = "exporting_packet_cc_proto",
+    deps = [
+        ":exporting_packet_proto",
+    ],
+)

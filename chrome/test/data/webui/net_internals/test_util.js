@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import {CrosView} from 'chrome://net-internals/chromeos_view.js';
 // </if>
 import {DnsView} from 'chrome://net-internals/dns_view.js';
@@ -21,9 +21,9 @@ import {assertEquals, assertNotEquals, assertTrue} from '../chai_assert.js';
  * @return {Object}
  */
 function getTab(tabId) {
-  var tabSwitcher = MainView.getInstance().tabSwitcher();
-  var view = tabSwitcher.getTabView(tabId);
-  var tabLink = tabSwitcher.tabIdToLink_[tabId];
+  const tabSwitcher = MainView.getInstance().tabSwitcher();
+  const view = tabSwitcher.getTabView(tabId);
+  const tabLink = tabSwitcher.tabIdToLink_[tabId];
 
   assertNotEquals(view, undefined, tabId + ' does not exist.');
   assertNotEquals(tabLink, undefined, tabId + ' does not exist.');
@@ -50,7 +50,7 @@ function getTab(tabId) {
    * @return {bool} Whether or not the tab's link is visible.
    */
   function tabLinkIsVisible(tabId) {
-    var tabLink = getTab(tabId).tabLink;
+    const tabLink = getTab(tabId).tabLink;
     return nodeIsVisible(tabLink);
   }
 
@@ -75,20 +75,20 @@ function getTab(tabId) {
      * files, must be careful to only create this map while a test is running.
      * @type {object.<string, string>}
      */
-    var hashToTabIdMap = {
+    const hashToTabIdMap = {
       events: EventsView.TAB_ID,
       proxy: ProxyView.TAB_ID,
       dns: DnsView.TAB_ID,
       sockets: SocketsView.TAB_ID,
       hsts: DomainSecurityPolicyView.TAB_ID,
-      // <if expr="chromeos">
-      chromeos: CrosView.TAB_ID
+      // <if expr="chromeos_ash">
+      chromeos: CrosView.TAB_ID,
       // </if>
     };
 
     assertEquals(
         typeof hashToTabIdMap[hash], 'string', 'Invalid tab anchor: ' + hash);
-    var tabId = hashToTabIdMap[hash];
+    const tabId = hashToTabIdMap[hash];
     assertEquals('object', typeof getTab(tabId), 'Invalid tab: ' + tabId);
     return tabId;
   }
@@ -98,15 +98,15 @@ function getTab(tabId) {
    * @param {string}: hash Hash associated with the tab to switch to.
    */
   export function switchToView(hash) {
-    var tabId = getTabId(hash);
+    const tabId = getTabId(hash);
 
     // Make sure the tab link is visible, as we only simulate normal usage.
-    expectTrue(
+    assertTrue(
         tabLinkIsVisible(tabId), tabId + ' does not have a visible tab link.');
-    var tabLinkNode = getTab(tabId).tabLink;
+    const tabLinkNode = getTab(tabId).tabLink;
 
     // Simulate a left click on the link.
-    var mouseEvent = document.createEvent('MouseEvents');
+    const mouseEvent = document.createEvent('MouseEvents');
     mouseEvent.initMouseEvent(
         'click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false,
         0, null);
@@ -120,9 +120,9 @@ function getTab(tabId) {
     window.onhashchange();
 
     // Make sure only the specified tab is visible.
-    var tabSwitcher = MainView.getInstance().tabSwitcher();
-    var tabIdToView = tabSwitcher.getAllTabViews();
-    for (var curTabId in tabIdToView) {
+    const tabSwitcher = MainView.getInstance().tabSwitcher();
+    const tabIdToView = tabSwitcher.getAllTabViews();
+    for (const curTabId in tabIdToView) {
       assertEquals(
           curTabId === tabId, tabSwitcher.getTabView(curTabId).isVisible(),
           curTabId + ': Unexpected visibility state.');
@@ -142,9 +142,9 @@ function getTab(tabId) {
     assertTrue(tabLinkIsVisible(getActiveTabId()));
 
     // Check visibility state of all tabs.
-    var tabCount = 0;
-    for (var hash in tabVisibilityState) {
-      var tabId = getTabId(hash);
+    let tabCount = 0;
+    for (const hash in tabVisibilityState) {
+      const tabId = getTabId(hash);
       assertEquals('object', typeof getTab(tabId), 'Invalid tab: ' + tabId);
       assertEquals(
           tabVisibilityState[hash], tabLinkIsVisible(tabId),
@@ -156,10 +156,10 @@ function getTab(tabId) {
     }
 
     // Check that every tab was listed.
-    var tabSwitcher = MainView.getInstance().tabSwitcher();
-    var tabIdToView = tabSwitcher.getAllTabViews();
-    var expectedTabCount = 0;
-    for (tabId in tabIdToView) {
+    const tabSwitcher = MainView.getInstance().tabSwitcher();
+    const tabIdToView = tabSwitcher.getAllTabViews();
+    let expectedTabCount = 0;
+    for (const tabId in tabIdToView) {
       expectedTabCount++;
     }
     assertEquals(tabCount, expectedTabCount);

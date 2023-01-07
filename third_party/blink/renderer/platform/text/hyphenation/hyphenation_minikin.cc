@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/hyphenation/hyphenator_aosp.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
+#include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 
 namespace blink {
 
@@ -91,9 +93,9 @@ StringView HyphenationMinikin::WordToHyphenate(
       ++begin;
     while (begin != end && ShouldSkipTrailingChar(end[-1]))
       --end;
-    *num_leading_chars_out = begin - text.Characters8();
+    *num_leading_chars_out = static_cast<unsigned>(begin - text.Characters8());
     CHECK_GE(end, begin);
-    return StringView(begin, end - begin);
+    return StringView(begin, static_cast<unsigned>(end - begin));
   }
   const UChar* begin = text.Characters16();
   int index = 0;
@@ -120,6 +122,7 @@ StringView HyphenationMinikin::WordToHyphenate(
 }
 
 Vector<uint8_t> HyphenationMinikin::Hyphenate(const StringView& text) const {
+  DCHECK(ShouldHyphenateWord(text));
   Vector<uint8_t> result;
   if (text.Is8Bit()) {
     String text16_bit = text.ToString();
@@ -140,7 +143,7 @@ wtf_size_t HyphenationMinikin::LastHyphenLocation(
     wtf_size_t before_index) const {
   unsigned num_leading_chars;
   StringView word = WordToHyphenate(text, &num_leading_chars);
-  if (before_index <= num_leading_chars)
+  if (before_index <= num_leading_chars || !ShouldHyphenateWord(word))
     return 0;
   before_index = std::min<wtf_size_t>(before_index - num_leading_chars,
                                       word.length() - kMinimumSuffixLength);
@@ -166,7 +169,8 @@ Vector<wtf_size_t, 8> HyphenationMinikin::HyphenLocations(
   StringView word = WordToHyphenate(text, &num_leading_chars);
 
   Vector<wtf_size_t, 8> hyphen_locations;
-  if (word.length() < kMinimumPrefixLength + kMinimumSuffixLength)
+  if (word.length() < kMinimumPrefixLength + kMinimumSuffixLength ||
+      !ShouldHyphenateWord(word))
     return hyphen_locations;
 
   Vector<uint8_t> result = Hyphenate(word);
@@ -180,71 +184,81 @@ Vector<wtf_size_t, 8> HyphenationMinikin::HyphenLocations(
   return hyphen_locations;
 }
 
-using LocaleMap = HashMap<AtomicString, AtomicString, CaseFoldingHash>;
+struct HyphenatorLocaleData {
+  const char* locale = nullptr;
+  const char* locale_for_exact_match = nullptr;
+};
+
+using LocaleMap =
+    HashMap<AtomicString, const HyphenatorLocaleData*, CaseFoldingHash>;
 
 static LocaleMap CreateLocaleFallbackMap() {
   // This data is from CLDR, compiled by AOSP.
   // https://android.googlesource.com/platform/frameworks/base/+/master/core/jni/android_text_Hyphenator.cpp
-  using LocaleFallback = const char * [2];
+  struct LocaleFallback {
+    const char* locale;
+    HyphenatorLocaleData data;
+  };
   static LocaleFallback locale_fallback_data[] = {
       // English locales that fall back to en-US. The data is from CLDR. It's
       // all English locales,
       // minus the locales whose parent is en-001 (from supplementalData.xml,
       // under <parentLocales>).
-      {"en-AS", "en-us"},  // English (American Samoa)
-      {"en-GU", "en-us"},  // English (Guam)
-      {"en-MH", "en-us"},  // English (Marshall Islands)
-      {"en-MP", "en-us"},  // English (Northern Mariana Islands)
-      {"en-PR", "en-us"},  // English (Puerto Rico)
-      {"en-UM", "en-us"},  // English (United States Minor Outlying Islands)
-      {"en-VI", "en-us"},  // English (Virgin Islands)
+      {"en-AS", {"en-us"}},  // English (American Samoa)
+      {"en-GU", {"en-us"}},  // English (Guam)
+      {"en-MH", {"en-us"}},  // English (Marshall Islands)
+      {"en-MP", {"en-us"}},  // English (Northern Mariana Islands)
+      {"en-PR", {"en-us"}},  // English (Puerto Rico)
+      {"en-UM", {"en-us"}},  // English (United States Minor Outlying Islands)
+      {"en-VI", {"en-us"}},  // English (Virgin Islands)
       // All English locales other than those falling back to en-US are mapped
-      // to en-GB.
-      {"en", "en-gb"},
+      // to en-GB, except that "en" is mapped to "en-us" for interoperability
+      // with other browsers.
+      {"en", {"en-gb", "en-us"}},
       // For German, we're assuming the 1996 (and later) orthography by default.
-      {"de", "de-1996"},
+      {"de", {"de-1996"}},
       // Liechtenstein uses the Swiss hyphenation rules for the 1901
       // orthography.
-      {"de-LI-1901", "de-ch-1901"},
+      {"de-LI-1901", {"de-ch-1901"}},
       // Norwegian is very probably Norwegian Bokmål.
-      {"no", "nb"},
+      {"no", {"nb"}},
       // Use mn-Cyrl. According to CLDR's likelySubtags.xml, mn is most likely
       // to be mn-Cyrl.
-      {"mn", "mn-cyrl"},  // Mongolian
+      {"mn", {"mn-cyrl"}},  // Mongolian
       // Fall back to Ethiopic script for languages likely to be written in
       // Ethiopic.
       // Data is from CLDR's likelySubtags.xml.
-      {"am", "und-ethi"},   // Amharic
-      {"byn", "und-ethi"},  // Blin
-      {"gez", "und-ethi"},  // Geʻez
-      {"ti", "und-ethi"},   // Tigrinya
-      {"wal", "und-ethi"},  // Wolaytta
+      {"am", {"und-ethi"}},   // Amharic
+      {"byn", {"und-ethi"}},  // Blin
+      {"gez", {"und-ethi"}},  // Geʻez
+      {"ti", {"und-ethi"}},   // Tigrinya
+      {"wal", {"und-ethi"}},  // Wolaytta
       // Use Hindi as a fallback hyphenator for all languages written in
       // Devanagari, etc. This makes
       // sense because our Indic patterns are not really linguistic, but
       // script-based.
-      {"und-Beng", "bn"},  // Bengali
-      {"und-Deva", "hi"},  // Devanagari -> Hindi
-      {"und-Gujr", "gu"},  // Gujarati
-      {"und-Guru", "pa"},  // Gurmukhi -> Punjabi
-      {"und-Knda", "kn"},  // Kannada
-      {"und-Mlym", "ml"},  // Malayalam
-      {"und-Orya", "or"},  // Oriya
-      {"und-Taml", "ta"},  // Tamil
-      {"und-Telu", "te"},  // Telugu
+      {"und-Beng", {"bn"}},  // Bengali
+      {"und-Deva", {"hi"}},  // Devanagari -> Hindi
+      {"und-Gujr", {"gu"}},  // Gujarati
+      {"und-Guru", {"pa"}},  // Gurmukhi -> Punjabi
+      {"und-Knda", {"kn"}},  // Kannada
+      {"und-Mlym", {"ml"}},  // Malayalam
+      {"und-Orya", {"or"}},  // Oriya
+      {"und-Taml", {"ta"}},  // Tamil
+      {"und-Telu", {"te"}},  // Telugu
 
       // List of locales with hyphens not to fall back.
-      {"de-1901", nullptr},
-      {"de-1996", nullptr},
-      {"de-ch-1901", nullptr},
-      {"en-gb", nullptr},
-      {"en-us", nullptr},
-      {"mn-cyrl", nullptr},
-      {"und-ethi", nullptr},
+      {"de-1901", {"de-1901"}},
+      {"de-1996", {"de-1996"}},
+      {"de-ch-1901", {"de-ch-1901"}},
+      {"en-gb", {"en-gb"}},
+      {"en-us", {"en-us"}},
+      {"mn-cyrl", {"mn-cyrl"}},
+      {"und-ethi", {"und-ethi"}},
   };
   LocaleMap map;
   for (const auto& it : locale_fallback_data)
-    map.insert(AtomicString(it[0]), it[1]);
+    map.insert(AtomicString(it.locale), &it.data);
   return map;
 }
 
@@ -254,9 +268,9 @@ AtomicString HyphenationMinikin::MapLocale(const AtomicString& locale) {
   for (AtomicString mapped_locale = locale;;) {
     const auto& it = locale_fallback.find(mapped_locale);
     if (it != locale_fallback.end()) {
-      if (it->value)
-        return it->value;
-      return mapped_locale;
+      if (it->value->locale_for_exact_match && locale == mapped_locale)
+        return it->value->locale_for_exact_match;
+      return it->value->locale;
     }
     const wtf_size_t last_hyphen = mapped_locale.ReverseFind('-');
     if (last_hyphen == kNotFound || !last_hyphen)
@@ -268,24 +282,27 @@ AtomicString HyphenationMinikin::MapLocale(const AtomicString& locale) {
 scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
     const AtomicString& locale) {
   const AtomicString mapped_locale = HyphenationMinikin::MapLocale(locale);
-  if (mapped_locale.Impl() != locale.Impl())
+  if (!EqualIgnoringASCIICase(mapped_locale, locale))
     return LayoutLocale::Get(mapped_locale)->GetHyphenation();
 
   scoped_refptr<HyphenationMinikin> hyphenation(
       base::AdoptRef(new HyphenationMinikin));
-  if (hyphenation->OpenDictionary(locale.LowerASCII()))
-    return hyphenation;
-
-  return nullptr;
+  const AtomicString lower_ascii_locale = locale.LowerASCII();
+  if (!hyphenation->OpenDictionary(lower_ascii_locale))
+    return nullptr;
+  hyphenation->Initialize(lower_ascii_locale);
+  return hyphenation;
 }
 
 scoped_refptr<HyphenationMinikin> HyphenationMinikin::FromFileForTesting(
+    const AtomicString& locale,
     base::File file) {
   scoped_refptr<HyphenationMinikin> hyphenation(
       base::AdoptRef(new HyphenationMinikin));
-  if (hyphenation->OpenDictionary(std::move(file)))
-    return hyphenation;
-  return nullptr;
+  if (!hyphenation->OpenDictionary(std::move(file)))
+    return nullptr;
+  hyphenation->Initialize(locale);
+  return hyphenation;
 }
 
 }  // namespace blink

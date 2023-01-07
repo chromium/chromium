@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ AccessibilityMediaElement::AccessibilityMediaElement(
 
 String AccessibilityMediaElement::TextAlternative(
     bool recursive,
-    bool in_aria_labelled_by_traversal,
+    const AXObject* aria_label_or_description_root,
     AXObjectSet& visited,
     ax::mojom::NameFrom& name_from,
     AXRelatedObjectVector* related_objects,
@@ -41,12 +41,12 @@ String AccessibilityMediaElement::TextAlternative(
     return element->GetLocale().QueryString(IDS_MEDIA_PLAYBACK_ERROR);
   }
   return AXLayoutObject::TextAlternative(
-      recursive, in_aria_labelled_by_traversal, visited, name_from,
+      recursive, aria_label_or_description_root, visited, name_from,
       related_objects, name_sources);
 }
 
 bool AccessibilityMediaElement::CanHaveChildren() const {
-  return HasControls();
+  return true;
 }
 
 bool AccessibilityMediaElement::ComputeAccessibilityIsIgnored(
@@ -59,24 +59,6 @@ AXRestriction AccessibilityMediaElement::Restriction() const {
     return kRestrictionDisabled;
 
   return AXNodeObject::Restriction();
-}
-
-bool AccessibilityMediaElement::HasControls() const {
-  if (IsDetached())
-    return false;
-  if (!IsA<HTMLMediaElement>(GetNode()) || !GetNode()->isConnected()) {
-    NOTREACHED() << "Accessible media element not ready: " << GetNode()
-                 << "  isConnected? " << GetNode()->isConnected();
-    return false;
-  }
-  return To<HTMLMediaElement>(GetNode())->ShouldShowControls();
-}
-
-bool AccessibilityMediaElement::HasEmptySource() const {
-  if (IsDetached())
-    return false;
-  return To<HTMLMediaElement>(GetNode())->getNetworkState() ==
-         HTMLMediaElement::kNetworkEmpty;
 }
 
 bool AccessibilityMediaElement::IsUnplayable() const {

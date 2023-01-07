@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,10 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "remoting/protocol/audio_stub.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class SessionConfig;
 
@@ -25,6 +23,9 @@ class AudioWriter : public ChannelDispatcherBase,
   // Once AudioWriter is created, the Init() method of ChannelDispatcherBase
   // should be used to initialize it for the session.
   static std::unique_ptr<AudioWriter> Create(const SessionConfig& config);
+
+  AudioWriter(const AudioWriter&) = delete;
+  AudioWriter& operator=(const AudioWriter&) = delete;
 
   ~AudioWriter() override;
 
@@ -36,11 +37,8 @@ class AudioWriter : public ChannelDispatcherBase,
   AudioWriter();
 
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioWriter);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_AUDIO_WRITER_H_

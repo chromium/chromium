@@ -1,30 +1,31 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/app_launcher/app_launcher_browser_agent.h"
 
 #import <UIKit/UIKit.h>
-#include <map>
+#import <map>
 
-#include "base/test/task_environment.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/fake_app_launcher_abuse_detector.h"
-#include "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/app_launcher_overlay.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "net/base/mac/url_conversions.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,25 +38,28 @@ using app_launcher_overlays::AllowAppLaunchResponse;
 class AppLauncherBrowserAgentTest : public PlatformTest {
  protected:
   AppLauncherBrowserAgentTest() {
-    AppLauncherBrowserAgent::CreateForBrowser(&browser_);
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    AppLauncherBrowserAgent::CreateForBrowser(browser_.get());
     application_ = OCMClassMock([UIApplication class]);
     OCMStub([application_ sharedApplication]).andReturn(application_);
   }
   ~AppLauncherBrowserAgentTest() override {
     [application_ stopMocking];
-    browser_.GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+    browser_->GetWebStateList()->CloseAllWebStates(
+        WebStateList::CLOSE_NO_FLAGS);
   }
 
   // Returns the AppLauncherBrowserAgent.
   AppLauncherBrowserAgent* browser_agent() {
-    return AppLauncherBrowserAgent::FromBrowser(&browser_);
+    return AppLauncherBrowserAgent::FromBrowser(browser_.get());
   }
 
-  // Adds a WebState to |browser_| using |opener|.  The WebState's session
-  // history is populated with |nav_item_count| items.  Returns the added
+  // Adds a WebState to `browser_` using `opener`.  The WebState's session
+  // history is populated with `nav_item_count` items.  Returns the added
   // WebState.
   web::WebState* AddWebState(web::WebState* opener, size_t nav_item_count) {
-    // Create the NavigationManager and populate it with |nav_item_count| items.
+    // Create the NavigationManager and populate it with `nav_item_count` items.
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     for (size_t i = 0; i < nav_item_count; ++i) {
       navigation_manager->AddItem(GURL("http://www.chromium.test"),
@@ -72,16 +76,16 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
     abuse_detectors_[web_state] = abuse_detector;
     AppLauncherTabHelper::CreateForWebState(web_state, abuse_detector);
     // Insert the WebState into the Browser's WebStateList.
-    int index = browser_.GetWebStateList()->count();
-    browser_.GetWebStateList()->InsertWebState(
+    int index = browser_->GetWebStateList()->count();
+    browser_->GetWebStateList()->InsertWebState(
         index, std::move(passed_web_state), WebStateList::INSERT_ACTIVATE,
         WebStateOpener(opener));
     return web_state;
   }
 
-  // Returns whether the front OverlayRequest for |web_state|'s queue is
+  // Returns whether the front OverlayRequest for `web_state`'s queue is
   // configured with an AppLaunchConfirmationRequest with
-  // |is_repeated_request|.
+  // `is_repeated_request`.
   bool IsShowingDialog(web::WebState* web_state, bool is_repeated_request) {
     OverlayRequest* request = OverlayRequestQueue::FromWebState(
                                   web_state, OverlayModality::kWebContentArea)
@@ -94,8 +98,9 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
     return config && config->is_repeated_request() == is_repeated_request;
   }
 
-  base::test::TaskEnvironment task_environment_;
-  TestBrowser browser_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   std::map<web::WebState*, FakeAppLauncherAbuseDetector*> abuse_detectors_;
   id application_ = nil;
 };
@@ -111,7 +116,7 @@ TEST_F(AppLauncherBrowserAgentTest, AppStoreUrlShowsAlert) {
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppStoreUrl, kSourcePageUrl, /*link_transition=*/false);
 
-  // Verify that an app launch overlay request was added to |web_state|'s queue.
+  // Verify that an app launch overlay request was added to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(web_state, /*is_repeated_request=*/false));
 
   // Add a response allowing the navigation.
@@ -186,7 +191,7 @@ TEST_F(AppLauncherBrowserAgentTest, RepeatedRequestShowsAlert) {
       kAppUrl, kSourcePageUrl, /*link_transition=*/false);
 
   // Verify that an app launch overlay request for a repeated request was added
-  // to |web_state|'s queue.
+  // to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(web_state, /*is_repeated_request=*/true));
 
   // Add a response allowing the navigation.
@@ -218,7 +223,7 @@ TEST_F(AppLauncherBrowserAgentTest, AppUrlWithoutLinkShowsAlert) {
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppUrl, kSourcePageUrl, /*link_transition=*/false);
 
-  // Verify that an app launch overlay request was added to |web_state|'s queue.
+  // Verify that an app launch overlay request was added to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(web_state, /*is_repeated_request=*/false));
 
   // Add a response allowing the navigation.
@@ -251,6 +256,6 @@ TEST_F(AppLauncherBrowserAgentTest, ShowDialogInOpener) {
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppStoreUrl, kSourcePageUrl, /*link_transition=*/false);
 
-  // Verify that an app launch overlay request was added to |web_state|'s queue.
+  // Verify that an app launch overlay request was added to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(opener, /*is_repeated_request=*/false));
 }

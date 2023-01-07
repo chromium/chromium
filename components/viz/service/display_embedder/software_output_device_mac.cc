@@ -1,15 +1,18 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/service/display_embedder/software_output_device_mac.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/mac/foundation_util.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/ca_layer_params.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/mac/io_surface.h"
-#include "ui/gfx/skia_util.h"
 
 namespace viz {
 

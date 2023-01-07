@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 @class PasswordFetcher;
 
 namespace password_manager {
-class PasswordStore;
+class PasswordStoreInterface;
 struct PasswordForm;
 }  // namespace password_manager
 
@@ -34,12 +34,12 @@ class GURL;
 
 @interface PasswordFetcher : NSObject
 
-// The designated initializer. |passwordStore| must not be nil. The passwords
-// will be filtered by the passed |origin|, pass an empty GURL to avoid
+// The designated initializer. `passwordStore` must not be nil. The passwords
+// will be filtered by the passed `origin`, pass an empty GURL to avoid
 // filtering.
 - (instancetype)
     initWithPasswordStore:
-        (scoped_refptr<password_manager::PasswordStore>)passwordStore
+        (scoped_refptr<password_manager::PasswordStoreInterface>)passwordStore
                  delegate:(id<PasswordFetcherDelegate>)delegate
                       URL:(const GURL&)URL NS_DESIGNATED_INITIALIZER;
 

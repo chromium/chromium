@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -169,8 +169,8 @@ class TwoDisplays
  public:
   TwoDisplays() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoDisplays);
+  TwoDisplays(const TwoDisplays&) = delete;
+  TwoDisplays& operator=(const TwoDisplays&) = delete;
 };
 
 }  // namespace
@@ -521,8 +521,10 @@ class TwoDisplaysBottomRightReference
  public:
   TwoDisplaysBottomRightReference() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoDisplaysBottomRightReference);
+  TwoDisplaysBottomRightReference(const TwoDisplaysBottomRightReference&) =
+      delete;
+  TwoDisplaysBottomRightReference& operator=(
+      const TwoDisplaysBottomRightReference&) = delete;
 };
 
 }  // namespace

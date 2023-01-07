@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,12 @@
 struct MyStruct {
   // Chromium is built with a warning/error that there are no user-defined
   // constructors invoked when initializing global-scoped values.
-  // CheckedPtr<char> conversion might trigger a global constructor call when a
+  // raw_ptr<char> conversion might trigger a global constructor call when a
   // pointer field is initialized with a non-null value.  This frequently
   // happens when initializing |const char*| fields with a string literal:
   //     struct MyStruct {
   //       int foo;
-  //       CheckedPtr<const char> bar;
+  //       raw_ptr<const char> bar;
   //     }
   //     MyStruct g_foo = {123, "string literal" /* global constr! */};
   //

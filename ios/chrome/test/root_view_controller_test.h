@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/macros.h"
 #include "testing/platform_test.h"
 
 // Base test fixture that restores the key window's original root view
@@ -15,6 +14,10 @@
 class RootViewControllerTest : public PlatformTest {
  public:
   RootViewControllerTest() = default;
+
+  RootViewControllerTest(const RootViewControllerTest&) = delete;
+  RootViewControllerTest& operator=(const RootViewControllerTest&) = delete;
+
   ~RootViewControllerTest() override = default;
 
  protected:
@@ -29,8 +32,6 @@ class RootViewControllerTest : public PlatformTest {
   // The key window's original root view controller, which must be restored at
   // the end of the test.
   UIViewController* original_root_view_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootViewControllerTest);
 };
 
 #endif  // IOS_CHROME_TEST_ROOT_VIEW_CONTROLLER_TEST_H_

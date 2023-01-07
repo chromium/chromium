@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define ASH_SHELF_DRAG_HANDLE_H_
 
 #include "ash/ash_export.h"
-#include "ash/shelf/contextual_nudge.h"
-#include "ash/shelf/contextual_nudge_status_tracker.h"
+#include "ash/controls/contextual_nudge.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
@@ -34,7 +34,7 @@ class ASH_EXPORT DragHandle : public views::Button,
                               public SplitViewObserver,
                               public ShelfObserver {
  public:
-  DragHandle(int drag_handle_corner_radius, Shelf* shelf);
+  DragHandle(float drag_handle_corner_radius, Shelf* shelf);
   DragHandle(const DragHandle&) = delete;
   ~DragHandle() override;
 

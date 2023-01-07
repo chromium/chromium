@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 // Design doc for IntersectionObserver implementation:
 //   https://docs.google.com/a/google.com/document/d/1hLK0eyT5_BzyNS4OkjsnoqqFQDYCbKfyBinj94OnLiQ
@@ -24,7 +24,7 @@ class IntersectionObserverController
       public NameClient {
  public:
   explicit IntersectionObserverController(ExecutionContext*);
-  virtual ~IntersectionObserverController();
+  ~IntersectionObserverController() override;
 
   void ScheduleIntersectionObserverForDelivery(IntersectionObserver&);
 
@@ -38,7 +38,8 @@ class IntersectionObserverController
   // communicates whether observer->trackVisibility() is true for any tracked
   // observer.
   bool ComputeIntersections(unsigned flags,
-                            LocalFrameUkmAggregator& ukm_aggregator);
+                            LocalFrameUkmAggregator& ukm_aggregator,
+                            absl::optional<base::TimeTicks>& monotonic_time);
 
   // The second argument indicates whether the Element is a target of any
   // observers for which observer->trackVisibility() is true.

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,9 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
+namespace ash {
 
 // Class responsible for handling easy unlock auth attempts (both for unlocking
 // the screen and logging in). The auth protocol is started by calling `Start`,
@@ -26,6 +25,10 @@ class EasyUnlockAuthAttempt {
   enum Type { TYPE_UNLOCK, TYPE_SIGNIN };
 
   EasyUnlockAuthAttempt(const AccountId& account_id, Type type);
+
+  EasyUnlockAuthAttempt(const EasyUnlockAuthAttempt&) = delete;
+  EasyUnlockAuthAttempt& operator=(const EasyUnlockAuthAttempt&) = delete;
+
   ~EasyUnlockAuthAttempt();
 
   // Ensures the device is currently locked and the unlock process is being
@@ -56,10 +59,8 @@ class EasyUnlockAuthAttempt {
   State state_;
   const AccountId account_id_;
   Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockAuthAttempt);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_AUTH_ATTEMPT_H_

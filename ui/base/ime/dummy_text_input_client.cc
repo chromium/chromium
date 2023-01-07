@@ -1,13 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/ime/dummy_text_input_client.h"
 
-#if defined(OS_WIN)
-#include <vector>
-#endif
-
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -26,7 +23,8 @@ DummyTextInputClient::DummyTextInputClient(TextInputType text_input_type,
                                            TextInputMode text_input_mode)
     : text_input_type_(text_input_type),
       text_input_mode_(text_input_mode),
-      insert_char_count_(0) {}
+      insert_char_count_(0),
+      autocorrect_enabled_(true) {}
 
 DummyTextInputClient::~DummyTextInputClient() {
 }
@@ -36,8 +34,8 @@ void DummyTextInputClient::SetCompositionText(
   composition_history_.push_back(composition);
 }
 
-uint32_t DummyTextInputClient::ConfirmCompositionText(bool keep_selection) {
-  return UINT32_MAX;
+size_t DummyTextInputClient::ConfirmCompositionText(bool keep_selection) {
+  return std::numeric_limits<size_t>::max();
 }
 
 void DummyTextInputClient::ClearCompositionText() {
@@ -79,8 +77,13 @@ gfx::Rect DummyTextInputClient::GetCaretBounds() const {
   return gfx::Rect();
 }
 
+gfx::Rect DummyTextInputClient::GetSelectionBoundingBox() const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return gfx::Rect();
+}
+
 bool DummyTextInputClient::GetCompositionCharacterBounds(
-    uint32_t index,
+    size_t index,
     gfx::Rect* rect) const {
   return false;
 }
@@ -102,17 +105,24 @@ bool DummyTextInputClient::GetCompositionTextRange(gfx::Range* range) const {
 }
 
 bool DummyTextInputClient::GetEditableSelectionRange(gfx::Range* range) const {
-  return false;
+  if (!cursor_range_.IsValid())
+    return false;
+  range->set_start(cursor_range_.start());
+  range->set_end(cursor_range_.end());
+  return true;
 }
 
 bool DummyTextInputClient::SetEditableSelectionRange(const gfx::Range& range) {
   selection_history_.push_back(range);
-  return false;
+  cursor_range_ = range;
+  return true;
 }
 
+#if BUILDFLAG(IS_MAC)
 bool DummyTextInputClient::DeleteRange(const gfx::Range& range) {
   return false;
 }
+#endif
 
 bool DummyTextInputClient::GetTextFromRange(const gfx::Range& range,
                                             std::u16string* text) const {
@@ -149,7 +159,7 @@ bool DummyTextInputClient::ShouldDoLearning() {
   return false;
 }
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool DummyTextInputClient::SetCompositionFromExistingText(
     const gfx::Range& range,
     const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
@@ -157,7 +167,7 @@ bool DummyTextInputClient::SetCompositionFromExistingText(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::Range DummyTextInputClient::GetAutocorrectRange() const {
   return autocorrect_range_;
 }
@@ -167,17 +177,42 @@ gfx::Rect DummyTextInputClient::GetAutocorrectCharacterBounds() const {
 
 bool DummyTextInputClient::SetAutocorrectRange(
     const gfx::Range& range) {
-  autocorrect_range_ = range;
+  if (autocorrect_enabled_) {
+    autocorrect_range_ = range;
+  }
+  return autocorrect_enabled_;
+}
+
+absl::optional<GrammarFragment>
+DummyTextInputClient::GetGrammarFragmentAtCursor() const {
+  for (const auto& fragment : grammar_fragments_) {
+    if (fragment.range.Contains(cursor_range_)) {
+      return fragment;
+    }
+  }
+  return absl::nullopt;
+}
+
+bool DummyTextInputClient::ClearGrammarFragments(const gfx::Range& range) {
+  grammar_fragments_.clear();
   return true;
 }
 
+bool DummyTextInputClient::AddGrammarFragments(
+    const std::vector<GrammarFragment>& fragments) {
+  grammar_fragments_.insert(grammar_fragments_.end(), fragments.begin(),
+                            fragments.end());
+  return true;
+}
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void DummyTextInputClient::GetActiveTextInputControlLayoutBounds(
-    base::Optional<gfx::Rect>* control_bounds,
-    base::Optional<gfx::Rect>* selection_bounds) {}
+    absl::optional<gfx::Rect>* control_bounds,
+    absl::optional<gfx::Rect>* selection_bounds) {}
+#endif
 
+#if BUILDFLAG(IS_WIN)
 void DummyTextInputClient::SetActiveCompositionForAccessibility(
     const gfx::Range& range,
     const std::u16string& active_composition_text,

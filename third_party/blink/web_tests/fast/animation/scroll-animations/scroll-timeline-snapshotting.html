@@ -4,7 +4,7 @@
 <link rel="help" href="https://wicg.github.io/scroll-animations/#avoiding-cycles">
 <script src='../../../resources/testharness.js'></script>
 <script src='../../../resources/testharnessreport.js'></script>
-<script src='../../../external/wpt/web-animations/testcommon.js'></script>
+<script src='resources/testcommon.js'></script>
 <style>
   body {
     height: 800px;
@@ -21,8 +21,12 @@ promise_test(async t => {
 
   const scroller = document.scrollingElement;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-  const timeline = new ScrollTimeline(
-    {scrollSource: scroller, timeRange: maxScroll});
+  const timeline = new ScrollTimeline({scrollSource: scroller});
+
+  if (!window.eventSender) {
+    document.write('This test requires eventSender');
+    return;
+  }
 
   eventSender.keyDown("ArrowDown");
   // Wait for the scroll to change.
@@ -31,7 +35,10 @@ promise_test(async t => {
     await waitForNextFrame();
   } while(scroller.scrollTop == startScroll);
 
-  assert_times_equal(timeline.currentTime, scroller.scrollTop,
-    'Scroll timeline current time corresponds to the scroll position.');
+  assert_percents_approx_equal(
+      timeline.currentTime,
+      (scroller.scrollTop / maxScroll) * 100,
+      maxScroll,
+      'Scroll timeline current time corresponds to the scroll position.');
 }, 'Scroll timeline current time is updated after handling user-driven scroll.');
 </script>

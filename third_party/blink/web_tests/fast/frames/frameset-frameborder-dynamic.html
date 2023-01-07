@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<script>
+testRunner.waitUntilDone();
+window.onload = () => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.querySelector('#f').setAttribute('frameborder', '1');
+      requestAnimationFrame(() => { testRunner.notifyDone(); });
+    });
+  });
+};
+</script>
+<frameset cols="50%,*" rows="50%,*" border="10">
+  <frame frameborder="0"></frame>
+  <frame frameborder="0"></frame>
+  <frame frameborder="0"></frame>
+  <frameset><frame frameborder="0" id="f"></frame></frameset>
+</frameset>
+</html>

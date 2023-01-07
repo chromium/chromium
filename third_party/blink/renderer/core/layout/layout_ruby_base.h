@@ -57,22 +57,22 @@ class LayoutRubyBase : public LayoutBlockFlow {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
- private:
   // The argument must be nullptr. It's necessary for the LayoutNGMixin
   // constructor.
-  explicit LayoutRubyBase(Element*);
+  explicit LayoutRubyBase(ContainerNode*);
 
+ private:
   ETextAlign TextAlignmentForLine(bool ends_with_soft_break) const override;
   void AdjustInlineDirectionLineBounds(
       unsigned expansion_opportunity_count,
       LayoutUnit& logical_left,
       LayoutUnit& logical_width) const override;
 
-  void MoveChildren(LayoutRubyBase* to_base,
+  void MoveChildren(LayoutRubyBase& to_base,
                     LayoutObject* before_child = nullptr);
-  void MoveInlineChildren(LayoutRubyBase* to_base,
+  void MoveInlineChildren(LayoutRubyBase& to_base,
                           LayoutObject* before_child = nullptr);
-  void MoveBlockChildren(LayoutRubyBase* to_base,
+  void MoveBlockChildren(LayoutRubyBase& to_base,
                          LayoutObject* before_child = nullptr);
 
   friend class LayoutNGMixin<LayoutRubyBase>;

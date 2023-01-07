@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/printing/printer_configuration.h"
-
-#include "base/task/post_task.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cups_proxy {
 
@@ -36,7 +35,7 @@ class CupsProxyServiceDelegate {
 
   virtual std::vector<chromeos::Printer> GetPrinters(
       chromeos::PrinterClass printer_class) = 0;
-  virtual base::Optional<chromeos::Printer> GetPrinter(
+  virtual absl::optional<chromeos::Printer> GetPrinter(
       const std::string& id) = 0;
   virtual std::vector<std::string> GetRecentlyUsedPrinters() = 0;
   virtual bool IsPrinterInstalled(const chromeos::Printer& printer) = 0;

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/api/events.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
@@ -21,6 +20,10 @@ class DeclarativeManifestData : public Extension::ManifestData {
   using Rule = extensions::api::events::Rule;
 
   DeclarativeManifestData();
+
+  DeclarativeManifestData(const DeclarativeManifestData&) = delete;
+  DeclarativeManifestData& operator=(const DeclarativeManifestData&) = delete;
+
   ~DeclarativeManifestData() override;
 
   // Gets the DeclarativeManifestData for |extension|, or NULL if none was
@@ -37,7 +40,6 @@ class DeclarativeManifestData : public Extension::ManifestData {
 
  private:
   std::map<std::string, std::vector<Rule>> event_rules_map_;
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeManifestData);
 };
 
 }  // namespace extensions

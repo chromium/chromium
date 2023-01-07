@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "mojo/core/core.h"
+#include "mojo/core/embedder/embedder.h"
+#include "mojo/core/ipcz_driver/transport.h"
 
 namespace mojo {
 namespace core {
@@ -25,10 +27,18 @@ ScopedIPCSupport::ScopedIPCSupport(
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
     ShutdownPolicy shutdown_policy)
     : shutdown_policy_(shutdown_policy) {
-  Core::Get()->SetIOTaskRunner(std::move(io_thread_task_runner));
+  ipcz_driver::Transport::SetIOTaskRunner(io_thread_task_runner);
+  if (!IsMojoIpczEnabled()) {
+    Core::Get()->SetIOTaskRunner(std::move(io_thread_task_runner));
+  }
 }
 
 ScopedIPCSupport::~ScopedIPCSupport() {
+  if (IsMojoIpczEnabled()) {
+    // No extra shutdown required for mojo-ipcz.
+    return;
+  }
+
   if (shutdown_policy_ == ShutdownPolicy::FAST) {
     ShutdownIPCSupport(base::DoNothing());
     return;

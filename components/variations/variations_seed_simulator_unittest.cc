@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,20 @@
 
 #include <map>
 
-#include "base/macros.h"
+#include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_entropy_provider.h"
+#include "base/time/time.h"
+#include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
 
 namespace {
-
-// Converts |time| to Study proto format.
-int64_t TimeToProtoTime(const base::Time& time) {
-  return (time - base::Time::UnixEpoch()).InSeconds();
-}
 
 // Creates and activates a single-group field trial with name |trial_name| and
 // group |group_name| and variations |params| (if not null).
@@ -73,6 +71,10 @@ class VariationsSeedSimulatorTest : public ::testing::Test {
  public:
   VariationsSeedSimulatorTest() {}
 
+  VariationsSeedSimulatorTest(const VariationsSeedSimulatorTest&) = delete;
+  VariationsSeedSimulatorTest& operator=(const VariationsSeedSimulatorTest&) =
+      delete;
+
   ~VariationsSeedSimulatorTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
     // process singletons.
@@ -80,40 +82,21 @@ class VariationsSeedSimulatorTest : public ::testing::Test {
     testing::ClearAllVariationParams();
   }
 
-  // Uses a VariationsSeedSimulator to simulate the differences between
-  // |studies| and the current field trial state.
-  VariationsSeedSimulator::Result SimulateDifferences(
-      const std::vector<ProcessedStudy>& studies) {
-    // Should pick the first group that has non-zero probability weight.
-    base::MockEntropyProvider default_provider(0);
-    // Should pick default groups, if they have non-zero probability weight.
-    base::MockEntropyProvider low_provider(1.0 - 1e-8);
-    VariationsSeedSimulator seed_simulator(default_provider, low_provider);
-    return seed_simulator.ComputeDifferences(studies);
-  }
-
   // Simulates the differences between |study| and the current field trial
   // state, returning a string like "1 2 3", where 1 is the number of regular
   // group changes, 2 is the number of "kill best effort" group changes and 3
   // is the number of "kill critical" group changes.
   std::string SimulateStudyDifferences(const Study* study) {
-    std::vector<ProcessedStudy> studies;
-    if (!ProcessedStudy::ValidateAndAppendStudy(study, false, &studies))
-      return "invalid study";
-    return ConvertSimulationResultToString(SimulateDifferences(studies));
-  }
-
-  // Simulates the differences between expired |study| and the current field
-  // trial state, returning a string like "1 2 3", where 1 is the number of
-  // regular group changes, 2 is the number of "kill best effort" group changes
-  // and 3 is the number of "kill critical" group changes.
-  std::string SimulateStudyDifferencesExpired(const Study* study) {
-    std::vector<ProcessedStudy> studies;
-    if (!ProcessedStudy::ValidateAndAppendStudy(study, true, &studies))
-      return "invalid study";
-    if (!studies[0].is_expired())
-      return "not expired";
-    return ConvertSimulationResultToString(SimulateDifferences(studies));
+    VariationsSeed seed;
+    seed.add_study()->MergeFrom(*study);
+    auto client_state = CreateDummyClientFilterableState();
+    MockEntropyProviders entropy_providers({
+        .low_entropy = kAlwaysUseLastGroup,
+        .high_entropy = kAlwaysUseFirstGroup,
+    });
+    return ConvertSimulationResultToString(
+        VariationsSeedSimulator(entropy_providers)
+            .SimulateSeedStudies(seed, *client_state));
   }
 
   // Formats |result| as a string with format "1 2 3", where 1 is the number of
@@ -126,9 +109,6 @@ class VariationsSeedSimulatorTest : public ::testing::Test {
                               result.kill_best_effort_group_change_count,
                               result.kill_critical_group_change_count);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VariationsSeedSimulatorTest);
 };
 
 TEST_F(VariationsSeedSimulatorTest, PermanentNoChanges) {
@@ -189,27 +169,6 @@ TEST_F(VariationsSeedSimulatorTest, PermanentGroupChangeDueToExperimentID) {
   EXPECT_EQ("1 0 0", SimulateStudyDifferences(&study));
 }
 
-TEST_F(VariationsSeedSimulatorTest, PermanentExpired) {
-  CreateTrial("A", "B", nullptr);
-
-  Study study = CreateStudy("A", Study_Consistency_PERMANENT);
-  Study_Experiment* experiment = AddExperiment("B", 1, &study);
-  AddExperiment("C", 0, &study);
-
-  // There should be a difference because the study is expired, which should
-  // result in the default group "C" being chosen.
-  EXPECT_EQ("1 0 0", SimulateStudyDifferencesExpired(&study));
-
-  experiment->set_type(Study_Experiment_Type_NORMAL);
-  EXPECT_EQ("1 0 0", SimulateStudyDifferencesExpired(&study));
-  experiment->set_type(Study_Experiment_Type_IGNORE_CHANGE);
-  EXPECT_EQ("0 0 0", SimulateStudyDifferencesExpired(&study));
-  experiment->set_type(Study_Experiment_Type_KILL_BEST_EFFORT);
-  EXPECT_EQ("0 1 0", SimulateStudyDifferencesExpired(&study));
-  experiment->set_type(Study_Experiment_Type_KILL_CRITICAL);
-  EXPECT_EQ("0 0 1", SimulateStudyDifferencesExpired(&study));
-}
-
 TEST_F(VariationsSeedSimulatorTest, SessionRandomized) {
   CreateTrial("A", "B", nullptr);
 
@@ -262,28 +221,6 @@ TEST_F(VariationsSeedSimulatorTest, SessionRandomizedGroupProbabilityZero) {
   EXPECT_EQ("0 1 0", SimulateStudyDifferences(&study));
   experiment->set_type(Study_Experiment_Type_KILL_CRITICAL);
   EXPECT_EQ("0 0 1", SimulateStudyDifferences(&study));
-}
-
-TEST_F(VariationsSeedSimulatorTest, SessionRandomizedExpired) {
-  CreateTrial("A", "B", nullptr);
-
-  Study study = CreateStudy("A", Study_Consistency_SESSION);
-  Study_Experiment* experiment = AddExperiment("B", 1, &study);
-  AddExperiment("C", 1, &study);
-  AddExperiment("D", 1, &study);
-
-  // There should be a difference because the study is expired, which should
-  // result in the default group "D" being chosen.
-  EXPECT_EQ("1 0 0", SimulateStudyDifferencesExpired(&study));
-
-  experiment->set_type(Study_Experiment_Type_NORMAL);
-  EXPECT_EQ("1 0 0", SimulateStudyDifferencesExpired(&study));
-  experiment->set_type(Study_Experiment_Type_IGNORE_CHANGE);
-  EXPECT_EQ("0 0 0", SimulateStudyDifferencesExpired(&study));
-  experiment->set_type(Study_Experiment_Type_KILL_BEST_EFFORT);
-  EXPECT_EQ("0 1 0", SimulateStudyDifferencesExpired(&study));
-  experiment->set_type(Study_Experiment_Type_KILL_CRITICAL);
-  EXPECT_EQ("0 0 1", SimulateStudyDifferencesExpired(&study));
 }
 
 TEST_F(VariationsSeedSimulatorTest, ParamsUnchanged) {
@@ -384,30 +321,6 @@ TEST_F(VariationsSeedSimulatorTest, ParamsAdded) {
   EXPECT_EQ("0 1 0", SimulateStudyDifferences(&study));
   experiment->set_type(Study_Experiment_Type_KILL_CRITICAL);
   EXPECT_EQ("0 0 1", SimulateStudyDifferences(&study));
-}
-
-// Tests that simulating an expired trial without a default group doesn't crash.
-// This is very much an edge case which should generally not be encountered due
-// to server-side, but we should ensure that it still doesn't cause a client
-// side crash.
-TEST_F(VariationsSeedSimulatorTest, NoDefaultGroup) {
-  static struct base::Feature kFeature {
-    "FeatureName", base::FEATURE_ENABLED_BY_DEFAULT
-  };
-  CreateTrial("Study1", "VariationsDefaultExperiment", nullptr);
-
-  Study study;
-  study.set_consistency(Study::PERMANENT);
-  study.set_name("Study1");
-  const base::Time year_ago =
-      base::Time::Now() - base::TimeDelta::FromDays(365);
-  study.set_expiry_date(TimeToProtoTime(year_ago));
-  auto* exp1 = AddExperiment("A", 1, &study);
-  study.clear_default_experiment_name();
-  exp1->mutable_feature_association()->add_enable_feature(kFeature.name);
-
-  EXPECT_FALSE(study.has_default_experiment_name());
-  EXPECT_EQ("0 0 0", SimulateStudyDifferencesExpired(&study));
 }
 
 }  // namespace variations

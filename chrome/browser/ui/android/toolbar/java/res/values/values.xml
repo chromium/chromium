@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- Toolbar/AppMenu - Drawable level on reload image button -->
+    <integer name="reload_button_level_reload">0</integer>
+    <integer name="reload_button_level_stop">1</integer>
+
+</resources>

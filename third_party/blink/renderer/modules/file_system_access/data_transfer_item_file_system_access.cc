@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
@@ -19,12 +17,9 @@
 #include "third_party/blink/renderer/core/clipboard/data_transfer_item.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
-#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
-#include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -42,10 +37,10 @@ ScriptPromise DataTransferItemFileSystemAccess::getAsFileSystemHandle(
     return ScriptPromise::CastUndefined(script_state);
   }
 
-  mojo::Remote<mojom::blink::FileSystemAccessManager> nfs_manager;
+  mojo::Remote<mojom::blink::FileSystemAccessManager> fsa_manager;
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   execution_context->GetBrowserInterfaceBroker().GetInterface(
-      nfs_manager.BindNewPipeAndPassReceiver());
+      fsa_manager.BindNewPipeAndPassReceiver());
 
   const DataObjectItem& data_object_item =
       *data_transfer_item.GetDataObjectItem();
@@ -58,24 +53,32 @@ ScriptPromise DataTransferItemFileSystemAccess::getAsFileSystemHandle(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  // We need to move `nfs_manager` into GetEntryFromDataTransferToken in order
+  // We need to move `fsa_manager` into GetEntryFromDataTransferToken in order
   // to keep it in scope long enough for the callback to be executed. To do this
-  // we extract `raw_nfs_manager` from `nfs_manager` and move `nfs_manager` into
+  // we extract `raw_fsa_manager` from `fsa_manager` and move `fsa_manager` into
   // the GetEntryFromDataTransferToken callback.
-  auto* raw_nfs_manager = nfs_manager.get();
-  raw_nfs_manager->GetEntryFromDataTransferToken(
+  auto* raw_fsa_manager = fsa_manager.get();
+  raw_fsa_manager->GetEntryFromDataTransferToken(
       std::move(token_remote),
-      WTF::Bind(
+      WTF::BindOnce(
           [](mojo::Remote<mojom::blink::FileSystemAccessManager>,
              ScriptPromiseResolver* resolver,
+             mojom::blink::FileSystemAccessErrorPtr result,
              mojom::blink::FileSystemAccessEntryPtr entry) {
             ScriptState* script_state = resolver->GetScriptState();
             if (!script_state)
               return;
+
+            if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
+              DCHECK(entry.is_null());
+              file_system_access_error::Reject(resolver, *result);
+              return;
+            }
+
             resolver->Resolve(FileSystemHandle::CreateFromMojoEntry(
                 std::move(entry), ExecutionContext::From(script_state)));
           },
-          std::move(nfs_manager), WrapPersistent(resolver)));
+          std::move(fsa_manager), WrapPersistent(resolver)));
 
   return result;
 }

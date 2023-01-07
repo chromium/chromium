@@ -2,15 +2,17 @@
 
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
 
 <input type=color id=colorid value="#AAAAAA">
 
 <script>
 promise_test(async () => {
-  await openPickerWithPromise(colorid);
-  popupWindow.focus();
-  const popupDocument = popupWindow.document;
+  await openPicker(colorid);
+  internals.pagePopupWindow.focus();
+  const popupDocument = internals.pagePopupWindow.document;
   const formatToggler = popupDocument.querySelector('format-toggler');
 
   formatToggler.click();

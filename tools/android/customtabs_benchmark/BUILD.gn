@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,8 +23,7 @@ android_apk("customtabs_benchmark_apk") {
   apk_name = "CustomTabsBenchmark"
   deps = [
     ":customtabs_benchmark_apk_resources",
-    "//third_party/android_deps:android_support_v4_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_core_core_java",
   ]
 }

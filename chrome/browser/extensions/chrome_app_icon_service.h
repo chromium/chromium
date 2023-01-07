@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
@@ -19,7 +19,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/launcher/launcher_extension_app_updater.h"
+#include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
 #endif
 
 namespace content {
@@ -43,7 +43,7 @@ class ChromeAppIconDelegate;
 // Usage: ChromeAppIconService::Get(context)->CreateIcon().
 class ChromeAppIconService : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                             public LauncherAppUpdater::Delegate,
+                             public ShelfAppUpdater::Delegate,
 #endif
                              public ExtensionRegistryObserver {
  public:
@@ -51,6 +51,9 @@ class ChromeAppIconService : public KeyedService,
       base::RepeatingCallback<void(const gfx::Size&, gfx::ImageSkia*)>;
 
   explicit ChromeAppIconService(content::BrowserContext* context);
+
+  ChromeAppIconService(const ChromeAppIconService&) = delete;
+  ChromeAppIconService& operator=(const ChromeAppIconService&) = delete;
 
   ~ChromeAppIconService() override;
 
@@ -97,18 +100,19 @@ class ChromeAppIconService : public KeyedService,
                            UnloadedExtensionReason reason) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // LauncherAppUpdater::Delegate:
+  // ShelfAppUpdater::Delegate:
   void OnAppUpdated(content::BrowserContext* browser_context,
-                    const std::string& app_id) override;
+                    const std::string& app_id,
+                    bool reload_icon) override;
 #endif
 
   // Unowned pointer.
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS this handles Chrome app life-cycle events that may change how
   // extension based app icon looks like.
-  std::unique_ptr<LauncherExtensionAppUpdater> app_updater_;
+  std::unique_ptr<ShelfExtensionAppUpdater> app_updater_;
 #endif
 
   // Deletes the icon set for |app_id| from the map if it is empty.
@@ -120,8 +124,6 @@ class ChromeAppIconService : public KeyedService,
       observation_{this};
 
   base::WeakPtrFactory<ChromeAppIconService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppIconService);
 };
 
 }  // namespace extensions

@@ -2,7 +2,7 @@ Name: International Phone Number Library
 Short Name: libphonenumber
 URL: https://github.com/googlei18n/libphonenumber/
 Version: unknown
-Revision: 68eba9d6ee8b11fb58ece36b6c46d07965d7f7ff
+Revision: 140dfeb81b753388e8a672900fb7a971e9a0d362
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
@@ -11,6 +11,7 @@ This directory contains the source code of International Phone Number Library
 for C/C++.
 
 This library depends on
+- third_party/abseil-cpp
 - third_party/icu for internationalisation, UTF8-16-32 conversion and regular
   expressions.
 - third_party/protobuf Lite version.

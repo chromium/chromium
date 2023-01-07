@@ -1,13 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package com.android.webview.chromium;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.webkit.ServiceWorkerClient;
 import android.webkit.WebResourceResponse;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwServiceWorkerClient;
@@ -17,9 +18,8 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
  * An adapter class that forwards the callbacks from {@link AwServiceWorkerClient}
  * to the corresponding {@link ServiceWorkerClient}.
  */
-@TargetApi(Build.VERSION_CODES.N)
+@RequiresApi(Build.VERSION_CODES.N)
 public class ServiceWorkerClientAdapter extends AwServiceWorkerClient {
-
     private ServiceWorkerClient mServiceWorkerClient;
 
     public ServiceWorkerClientAdapter(ServiceWorkerClient client) {

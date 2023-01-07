@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL Relative URL-like from same-origin importScripts() assert_equals: expected "gamma/import.js" but got "beta/import.js"
-PASS Absolute URL-like from same-origin importScripts()
-FAIL Relative URL-like from cross-origin importScripts() assert_equals: Relative URL-like specifier resolution should fail expected "(unreached)" but got "beta/import.js"
-PASS Absolute URL-like from cross-origin importScripts()
-Harness: the test ran to completion.
-

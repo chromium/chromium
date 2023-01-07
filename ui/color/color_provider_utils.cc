@@ -1,14 +1,65 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/color/color_provider_utils.h"
+
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 
 namespace ui {
+namespace {
+
+using RendererColorId = color::mojom::RendererColorId;
+
+// Below defines the mapping between RendererColorIds and ColorIds.
+struct RendererColorIdTable {
+  RendererColorId renderer_color_id;
+  ColorId color_id;
+};
+constexpr RendererColorIdTable kRendererColorIdMap[] = {
+    {RendererColorId::kColorMenuBackground, kColorMenuBackground},
+    {RendererColorId::kColorMenuItemBackgroundSelected,
+     kColorMenuItemBackgroundSelected},
+    {RendererColorId::kColorMenuSeparator, kColorMenuSeparator},
+    {RendererColorId::kColorOverlayScrollbarFill, kColorOverlayScrollbarFill},
+    {RendererColorId::kColorOverlayScrollbarFillDark,
+     kColorOverlayScrollbarFillDark},
+    {RendererColorId::kColorOverlayScrollbarFillLight,
+     kColorOverlayScrollbarFillLight},
+    {RendererColorId::kColorOverlayScrollbarFillHovered,
+     kColorOverlayScrollbarFillHovered},
+    {RendererColorId::kColorOverlayScrollbarFillHoveredDark,
+     kColorOverlayScrollbarFillHoveredDark},
+    {RendererColorId::kColorOverlayScrollbarFillHoveredLight,
+     kColorOverlayScrollbarFillHoveredLight},
+    {RendererColorId::kColorOverlayScrollbarStroke,
+     kColorOverlayScrollbarStroke},
+    {RendererColorId::kColorOverlayScrollbarStrokeDark,
+     kColorOverlayScrollbarStrokeDark},
+    {RendererColorId::kColorOverlayScrollbarStrokeLight,
+     kColorOverlayScrollbarStrokeLight},
+    {RendererColorId::kColorOverlayScrollbarStrokeHovered,
+     kColorOverlayScrollbarStrokeHovered},
+    {RendererColorId::kColorOverlayScrollbarStrokeHoveredDark,
+     kColorOverlayScrollbarStrokeHoveredDark},
+    {RendererColorId::kColorOverlayScrollbarStrokeHoveredLight,
+     kColorOverlayScrollbarStrokeHoveredLight},
+};
+
+ColorProviderUtilsCallbacks* g_color_provider_utils_callbacks = nullptr;
+
+}  // namespace
+
+ColorProviderUtilsCallbacks::~ColorProviderUtilsCallbacks() = default;
 
 base::StringPiece ColorModeName(ColorProviderManager::ColorMode color_mode) {
   switch (color_mode) {
@@ -33,50 +84,39 @@ base::StringPiece ContrastModeName(
   }
 }
 
-#define E1(enum_name) \
-  { enum_name, #enum_name }
-#define E2(enum_name, old_enum_name) \
-  { enum_name, #enum_name }
-#define E3(enum_name, old_enum_name, enum_value) \
-  { enum_name, #enum_name }
-#define E_CPONLY(...) E(__VA_ARGS__)
-#define GET_E(_1, _2, _3, macro_name, ...) macro_name
-#define E(...) GET_E(__VA_ARGS__, E3, E2, E1)(__VA_ARGS__),
+base::StringPiece SystemThemeName(ui::SystemTheme system_theme) {
+  switch (system_theme) {
+    case ui::SystemTheme::kDefault:
+      return "kDefault";
+#if BUILDFLAG(IS_LINUX)
+    case ui::SystemTheme::kGtk:
+      return "kGtk";
+    case ui::SystemTheme::kQt:
+      return "kQt";
+#endif
+    default:
+      return "<invalid>";
+  }
+}
 
-base::StringPiece ColorIdName(ColorId color_id) {
+// Note that this second include is not redundant. The second inclusion of the
+// .inc file serves to undefine the macros the first inclusion defined.
+#include "ui/color/color_id_map_macros.inc"
+
+std::string ColorIdName(ColorId color_id) {
   static constexpr const auto color_id_map =
       base::MakeFixedFlatMap<ColorId, const char*>({COLOR_IDS});
   auto* i = color_id_map.find(color_id);
   if (i != color_id_map.cend())
-    return i->second;
-  return "<invalid>";
+    return {i->second};
+  base::StringPiece color_name;
+  if (g_color_provider_utils_callbacks &&
+      g_color_provider_utils_callbacks->ColorIdName(color_id, &color_name))
+    return std::string(color_name.data(), color_name.length());
+  return base::StringPrintf("ColorId(%d)", color_id);
 }
 
-#undef E1
-#undef E2
-#undef E3
-#undef E_CPONLY
-#undef GET_E
-#undef E
-
-base::StringPiece ColorSetIdName(ColorSetId color_set_id) {
-  // Since we're returning a StringPiece we need a stable location to store the
-  // string we may construct below. This is only for immediate logging. The
-  // behavior is undefined if the result is retained beyond the scope in which
-  // this function is called.
-  static char color_set_id_string[20] = "";
-  switch (color_set_id) {
-    case kColorSetNative:
-      return "kColorSetNative";
-    case kColorSetCoreDefaults:
-      return "kColorSetCoreDefaults";
-    default: {
-      std::snprintf(color_set_id_string, sizeof(color_set_id_string),
-                    "ColorSetId(%d)", color_set_id);
-      return color_set_id_string;
-    }
-  }
-}
+#include "ui/color/color_id_map_macros.inc"
 
 std::string SkColorName(SkColor color) {
   static const auto color_name_map =
@@ -91,8 +131,6 @@ std::string SkColorName(SkColor color) {
           {gfx::kGoogleBlue700, "kGoogleBlue700"},
           {gfx::kGoogleBlue800, "kGoogleBlue800"},
           {gfx::kGoogleBlue900, "kGoogleBlue900"},
-          {gfx::kGoogleBlueDark400, "kGoogleBlueDark400"},
-          {gfx::kGoogleBlueDark600, "kGoogleBlueDark600"},
           {gfx::kGoogleRed050, "kGoogleRed050"},
           {gfx::kGoogleRed100, "kGoogleRed100"},
           {gfx::kGoogleRed200, "kGoogleRed200"},
@@ -103,9 +141,6 @@ std::string SkColorName(SkColor color) {
           {gfx::kGoogleRed700, "kGoogleRed700"},
           {gfx::kGoogleRed800, "kGoogleRed800"},
           {gfx::kGoogleRed900, "kGoogleRed900"},
-          {gfx::kGoogleRedDark500, "kGoogleRedDark500"},
-          {gfx::kGoogleRedDark600, "kGoogleRedDark600"},
-          {gfx::kGoogleRedDark800, "kGoogleRedDark800"},
           {gfx::kGoogleGreen050, "kGoogleGreen050"},
           {gfx::kGoogleGreen100, "kGoogleGreen100"},
           {gfx::kGoogleGreen200, "kGoogleGreen200"},
@@ -116,8 +151,6 @@ std::string SkColorName(SkColor color) {
           {gfx::kGoogleGreen700, "kGoogleGreen700"},
           {gfx::kGoogleGreen800, "kGoogleGreen800"},
           {gfx::kGoogleGreen900, "kGoogleGreen900"},
-          {gfx::kGoogleGreenDark500, "kGoogleGreenDark500"},
-          {gfx::kGoogleGreenDark600, "kGoogleGreenDark600"},
           {gfx::kGoogleYellow050, "kGoogleYellow050"},
           {gfx::kGoogleYellow100, "kGoogleYellow100"},
           {gfx::kGoogleYellow200, "kGoogleYellow200"},
@@ -184,17 +217,79 @@ std::string SkColorName(SkColor color) {
           {SK_ColorGRAY, "SK_ColorGRAY"},
           {SK_ColorLTGRAY, "SK_ColorLTGRAY"},
           {SK_ColorWHITE, "SK_ColorWHITE"},
-          {SK_ColorRED, "kPlaceholderColor(SK_ColorRED)"},
+          {SK_ColorRED, "kPlaceholderColor"},
           {SK_ColorGREEN, "SK_ColorGREEN"},
           {SK_ColorBLUE, "SK_ColorBLUE"},
           {SK_ColorYELLOW, "SK_ColorYELLOW"},
           {SK_ColorCYAN, "SK_ColorCYAN"},
           {SK_ColorMAGENTA, "SK_ColorMAGENTA"},
       });
+  auto color_with_alpha = color;
+  SkAlpha color_alpha = SkColorGetA(color_with_alpha);
+  color = SkColorSetA(color, color_alpha != 0 ? SK_AlphaOPAQUE : color_alpha);
   auto* i = color_name_map.find(color);
-  if (i != color_name_map.cend())
-    return i->second;
+  if (i != color_name_map.cend()) {
+    if (SkColorGetA(color_with_alpha) == SkColorGetA(color))
+      return i->second;
+    return base::StringPrintf("rgba(%s, %f)", i->second, 1.0 / color_alpha);
+  }
   return color_utils::SkColorToRgbaString(color);
+}
+
+std::string ConvertColorProviderColorIdToCSSColorId(std::string color_id_name) {
+  color_id_name.replace(color_id_name.begin(), color_id_name.begin() + 1, "-");
+  std::string css_color_id_name;
+  for (char i : color_id_name) {
+    if (base::IsAsciiUpper(i))
+      css_color_id_name += std::string("-");
+    css_color_id_name += base::ToLowerASCII(i);
+  }
+  return css_color_id_name;
+}
+
+std::string ConvertSkColorToCSSColor(SkColor color) {
+  return base::StringPrintf("#%.2x%.2x%.2x%.2x", SkColorGetR(color),
+                            SkColorGetG(color), SkColorGetB(color),
+                            SkColorGetA(color));
+}
+
+RendererColorMap CreateRendererColorMap(const ColorProvider& color_provider) {
+  RendererColorMap map;
+  for (const auto& table : kRendererColorIdMap) {
+    map.emplace(table.renderer_color_id,
+                color_provider.GetColor(table.color_id));
+  }
+  return map;
+}
+
+ColorProvider CreateColorProviderFromRendererColorMap(
+    const RendererColorMap& renderer_color_map) {
+  ColorProvider color_provider;
+  ui::ColorMixer& mixer = color_provider.AddMixer();
+
+  for (const auto& table : kRendererColorIdMap)
+    mixer[table.color_id] = {renderer_color_map.at(table.renderer_color_id)};
+  color_provider.GenerateColorMap();
+
+  return color_provider;
+}
+
+bool IsRendererColorMappingEquivalent(
+    const ColorProvider& color_provider,
+    const RendererColorMap& renderer_color_map) {
+  for (const auto& table : kRendererColorIdMap) {
+    // The `renderer_color_map_` should map the full set of renderer color ids.
+    DCHECK(base::Contains(renderer_color_map, table.renderer_color_id));
+    if (color_provider.GetColor(table.color_id) !=
+        renderer_color_map.at(table.renderer_color_id)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void SetColorProviderUtilsCallbacks(ColorProviderUtilsCallbacks* callbacks) {
+  g_color_provider_utils_callbacks = callbacks;
 }
 
 }  // namespace ui

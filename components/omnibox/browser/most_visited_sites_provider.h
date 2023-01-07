@@ -1,14 +1,13 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OMNIBOX_BROWSER_MOST_VISITED_SITES_PROVIDER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_MOST_VISITED_SITES_PROVIDER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/compiler_specific.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -26,18 +25,15 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
 
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
+  void DeleteMatch(const AutocompleteMatch& match) override;
+  void DeleteMatchElement(const AutocompleteMatch& match,
+                          size_t element) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
+  FRIEND_TEST_ALL_PREFIXES(ParameterizedMostVisitedSitesProviderTest,
                            AllowMostVisitedSitesSuggestions);
 
   ~MostVisitedSitesProvider() override;
-
-  // Constructs an AutocompleteMatch from supplied details.
-  AutocompleteMatch BuildMatch(const std::u16string& description,
-                               const GURL& url,
-                               int relevance,
-                               AutocompleteMatchType::Type type);
 
   // When the TopSites service serves the most visited URLs, this function
   // converts those urls to AutocompleteMatches and adds them to |matches_|.
@@ -48,8 +44,9 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
   // met.
   bool AllowMostVisitedSitesSuggestions(const AutocompleteInput& input) const;
 
-  AutocompleteProviderClient* const client_;
-  AutocompleteProviderListener* const listener_;
+  void BlockURL(const GURL& site_url);
+
+  const raw_ptr<AutocompleteProviderClient> client_;
   // Note: used to cancel requests - not a general purpose WeakPtr factory.
   base::WeakPtrFactory<MostVisitedSitesProvider> request_weak_ptr_factory_{
       this};

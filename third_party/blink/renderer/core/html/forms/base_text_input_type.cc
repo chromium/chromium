@@ -25,10 +25,11 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/html/forms/email_input_type.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -37,8 +38,8 @@ void BaseTextInputType::Trace(Visitor* visitor) const {
   TextFieldInputType::Trace(visitor);
 }
 
-BaseTextInputType::BaseTextInputType(HTMLInputElement& element)
-    : TextFieldInputType(element) {}
+BaseTextInputType::BaseTextInputType(Type type, HTMLInputElement& element)
+    : TextFieldInputType(type, element) {}
 
 BaseTextInputType::~BaseTextInputType() = default;
 
@@ -83,10 +84,22 @@ bool BaseTextInputType::TooShort(
 }
 
 bool BaseTextInputType::PatternMismatch(const String& value) const {
+  if (IsEmailInputType() && GetElement().Multiple()) {
+    Vector<String> values = EmailInputType::ParseMultipleValues(value);
+    for (const auto& val : values) {
+      if (PatternMismatchPerValue(val))
+        return true;
+    }
+    return false;
+  }
+  return PatternMismatchPerValue(value);
+}
+
+bool BaseTextInputType::PatternMismatchPerValue(const String& value) const {
   const AtomicString& raw_pattern =
       GetElement().FastGetAttribute(html_names::kPatternAttr);
   // Empty values can't be mismatched
-  if (raw_pattern.IsNull() || value.IsEmpty())
+  if (raw_pattern.IsNull() || value.empty())
     return false;
   if (!regexp_ || pattern_for_regexp_ != raw_pattern) {
     ScriptRegexp* raw_regexp = MakeGarbageCollected<ScriptRegexp>(

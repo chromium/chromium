@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "content/browser/sms/sms_parser.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 
@@ -39,42 +40,46 @@ SmsFetcher* SmsFetcher::Get(BrowserContext* context) {
 }
 
 void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
-                               SmsQueue::Subscriber* subscriber) {
+                               SmsQueue::Subscriber& subscriber) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(subscriber);
   // Should not be called multiple times for the same subscriber and origin.
-  DCHECK(!subscribers_.HasSubscriber(origin_list, subscriber));
+  DCHECK(!subscribers_.HasSubscriber(origin_list, &subscriber));
 
-  subscribers_.Push(origin_list, subscriber);
+  subscribers_.Push(origin_list, &subscriber);
   if (provider_)
     provider_->Retrieve(nullptr, SmsFetchType::kRemote);
 }
 
 void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
-                               SmsQueue::Subscriber* subscriber,
-                               RenderFrameHost* render_frame_host) {
+                               SmsQueue::Subscriber& subscriber,
+                               RenderFrameHost& render_frame_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(subscriber);
-  DCHECK(render_frame_host);
+  // This function cannot get called during prerendering because
+  // WebOTPService::Receive() calls this, but WebOTPService is deferred during
+  // prerendering by MojoBinderPolicyApplier. This DCHECK proves we don't have
+  // to worry about prerendering when using WebContents::FromRenderFrameHost()
+  // below (see function comments for WebContents::FromRenderFrameHost() for
+  // more details).
+  DCHECK_NE(render_frame_host.GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kPrerendering);
   // Should not be called multiple times for the same subscriber.
-  DCHECK(!remote_cancel_callbacks_.count(subscriber));
-  DCHECK(!subscribers_.HasSubscriber(origin_list, subscriber));
+  DCHECK(!remote_cancel_callbacks_.count(&subscriber));
+  DCHECK(!subscribers_.HasSubscriber(origin_list, &subscriber));
 
-  subscribers_.Push(origin_list, subscriber);
+  subscribers_.Push(origin_list, &subscriber);
 
   // Fetches a remote SMS.
-  // TODO(crbug.com/1015645): Support iframe in cross-device WebOTP.
   base::OnceClosure cancel_callback =
       GetContentClient()->browser()->FetchRemoteSms(
-          WebContents::FromRenderFrameHost(render_frame_host), origin_list[0],
+          WebContents::FromRenderFrameHost(&render_frame_host), origin_list,
           base::BindOnce(&SmsFetcherImpl::OnRemote,
                          weak_ptr_factory_.GetWeakPtr()));
   if (cancel_callback)
-    remote_cancel_callbacks_[subscriber] = std::move(cancel_callback);
+    remote_cancel_callbacks_[&subscriber] = std::move(cancel_callback);
 
   // Fetches a local SMS.
   if (provider_)
-    provider_->Retrieve(render_frame_host, SmsFetchType::kLocal);
+    provider_->Retrieve(&render_frame_host, SmsFetchType::kLocal);
 }
 
 void SmsFetcherImpl::Unsubscribe(const OriginList& origin_list,
@@ -109,9 +114,9 @@ bool SmsFetcherImpl::Notify(const OriginList& origin_list,
   return true;
 }
 
-void SmsFetcherImpl::OnRemote(base::Optional<OriginList> origin_list,
-                              base::Optional<std::string> one_time_code,
-                              base::Optional<FailureType> failure_type) {
+void SmsFetcherImpl::OnRemote(absl::optional<OriginList> origin_list,
+                              absl::optional<std::string> one_time_code,
+                              absl::optional<FailureType> failure_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (failure_type) {

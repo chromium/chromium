@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "weblayer/browser/weblayer_field_trials.h"
 
 class PrefService;
@@ -54,9 +55,10 @@ class FeatureListCreator {
   void SetUpFieldTrials();
 
   // Owned by BrowserProcess.
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 
-  SystemNetworkContextManager* system_network_context_manager_;  // NOT OWNED.
+  raw_ptr<SystemNetworkContextManager>
+      system_network_context_manager_;  // NOT OWNED.
 
   std::unique_ptr<variations::VariationsService> variations_service_;
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,13 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/chip.h"
-#include "components/autofill_assistant/browser/element_precondition.h"
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/web/element.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -26,6 +25,10 @@ namespace autofill_assistant {
 class PromptAction : public Action {
  public:
   explicit PromptAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  PromptAction(const PromptAction&) = delete;
+  PromptAction& operator=(const PromptAction&) = delete;
+
   ~PromptAction() override;
 
  private:
@@ -41,11 +44,13 @@ class PromptAction : public Action {
       size_t choice_index,
       const ClientStatus& status,
       const std::vector<std::string>& ignored_payloads,
+      const std::vector<std::string>& ignored_tags,
       const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements);
   void UpdateUserActions();
   void OnAutoSelectCondition(
       const ClientStatus& status,
       const std::vector<std::string>& payloads,
+      const std::vector<std::string>& tags,
       const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements);
   void OnElementChecksDone(
       base::OnceCallback<void(const ClientStatus&)> wait_for_dom_callback);
@@ -59,7 +64,7 @@ class PromptAction : public Action {
 
   // preconditions_[i] contains the element preconditions for
   // proto.prompt.choice[i].
-  std::vector<std::unique_ptr<ElementPrecondition>> preconditions_;
+  std::vector<ElementConditionProto> preconditions_;
 
   // precondition_results_[i] contains the last result reported by
   // preconditions_[i].
@@ -79,9 +84,9 @@ class PromptAction : public Action {
 
   // The action ends once this precondition matches. The payload points
   // to the specific choice that matched.
-  std::unique_ptr<ElementPrecondition> auto_select_;
+  absl::optional<ElementConditionProto> auto_select_;
 
-  // If >= 0, contains the index of the Choice to auto-select. Set based or the
+  // If >= 0, contains the index of the Choice to auto-select. Set based on the
   // payload reported by |auto_select_|.
   int auto_select_choice_index_ = -1;
 
@@ -97,8 +102,6 @@ class PromptAction : public Action {
   Stopwatch last_checks_stopwatch_;
 
   base::WeakPtrFactory<PromptAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PromptAction);
 };
 
 }  // namespace autofill_assistant

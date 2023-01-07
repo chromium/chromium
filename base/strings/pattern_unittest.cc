@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ TEST(StringUtilTest, MatchPatternTest) {
 
   // Test UTF16 character matching.
   EXPECT_TRUE(MatchPattern(u"www.google.com", u"*.com"));
-  EXPECT_TRUE(MatchPattern(u"Hello*1234", UTF8ToUTF16("He??o\\*1*")));
+  EXPECT_TRUE(MatchPattern(u"Hello*1234", u"He??o\\*1*"));
 
   // Some test cases that might cause naive implementations to exhibit
   // exponential run time or fail.

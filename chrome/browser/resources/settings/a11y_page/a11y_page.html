@@ -2,19 +2,20 @@
     <settings-animated-pages id="pages" current-route="{{currentRoute}}"
         section="a11y" focus-config="[[focusConfig_]]">
       <div route-path="default">
-<if expr="chromeos">
+<if expr="is_chromeos">
         <cr-link-row
             label="$i18n{manageAccessibilityFeatures}"
             on-click="onManageSystemAccessibilityFeaturesTap_"
             sub-label="$i18n{moreFeaturesLinkDescription}" external>
         </cr-link-row>
 </if>
-<if expr="not chromeos">
+<if expr="not is_chromeos">
         <template is="dom-if" if="[[captionSettingsOpensExternally_]]">
           <template is="dom-if" if="[[enableLiveCaption_]]">
             <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
           </template>
           <cr-link-row id="captions"
+              class="hr"
               label="$i18n{captionsPreferencesTitle}"
               sub-label="$i18n{captionsPreferencesSubtitle}"
               on-click="onCaptionsClick_"
@@ -23,6 +24,7 @@
         </template>
         <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
           <cr-link-row id="captions"
+              class="hr"
               label="$i18n{captionsTitle}"
               on-click="onCaptionsClick_"
               role-description="$i18n{subpageArrowRoleDescription}">
@@ -42,6 +44,7 @@
             label="$i18n{caretBrowsingTitle}"
             sub-label="$i18n{caretBrowsingSubtitle}">
         </settings-toggle-button>
+</if>
         <settings-toggle-button
             class="hr"
             hidden$="[[!showAccessibilityLabelsSetting_]]"
@@ -50,12 +53,12 @@
             label="$i18n{accessibleImageLabelsTitle}"
             sub-label="$i18n{accessibleImageLabelsSubtitle}">
         </settings-toggle-button>
-</if>
         <cr-link-row class="hr" label="$i18n{moreFeaturesLink}"
             on-click="onMoreFeaturesLinkClick_" sub-label="$i18n{a11yWebStore}"
             external>
         </cr-link-row>
       </div>
+<if expr="not is_chromeos">
       <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
         <template is="dom-if" route-path="/captions">
           <settings-subpage
@@ -65,4 +68,5 @@
           </settings-subpage>
         </template>
       </template>
+</if>
     </settings-animated-pages>

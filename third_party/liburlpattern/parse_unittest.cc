@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file or at https://opensource.org/licenses/MIT.
 
@@ -76,10 +76,30 @@ TEST(ParseTest, FixedInGroup) {
   RunParseTest("{/foo}", expected_parts);
 }
 
+TEST(ParseTest, FixedAndFixedInGroup) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFixed, "/foo", Modifier::kNone),
+  };
+  RunParseTest("/{foo}", expected_parts);
+}
+
+TEST(ParseTest, FixedInGroupAndFixed) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFixed, "/foo", Modifier::kNone),
+  };
+  RunParseTest("{/}foo", expected_parts);
+}
+
+TEST(ParseTest, FixedInGroupAndFixedInGroup) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFixed, "/foo", Modifier::kNone),
+  };
+  RunParseTest("{/}{foo}", expected_parts);
+}
+
 TEST(ParseTest, FixedAndEmptyGroup) {
   std::vector<Part> expected_parts = {
-      Part(PartType::kFixed, "/f", Modifier::kNone),
-      Part(PartType::kFixed, "oo", Modifier::kNone),
+      Part(PartType::kFixed, "/foo", Modifier::kNone),
   };
   RunParseTest("/f{}oo", expected_parts);
 }
@@ -106,16 +126,15 @@ TEST(ParseTest, FixedInGroupWithOneOrMoreModifier) {
 }
 
 TEST(ParseTest, FixedInEarlyTerminatedGroup) {
-  RunParseTest("{/foo", absl::InvalidArgumentError("expected CLOSE"));
+  RunParseTest("{/foo", absl::InvalidArgumentError("expected '}'"));
 }
 
 TEST(ParseTest, FixedInUnbalancedGroup) {
-  RunParseTest("{/foo?", absl::InvalidArgumentError("expected CLOSE"));
+  RunParseTest("{/foo?", absl::InvalidArgumentError("expected '}'"));
 }
 
 TEST(ParseTest, FixedWithModifier) {
-  RunParseTest("/foo?",
-               absl::InvalidArgumentError("Unexpected OTHER_MODIFIER"));
+  RunParseTest("/foo?", absl::InvalidArgumentError("Unexpected modifier"));
 }
 
 TEST(ParseTest, Regex) {
@@ -146,7 +165,7 @@ TEST(ParseTest, RegexWithPrefixAndSuffixInGroup) {
 }
 
 TEST(ParseTest, RegexAndRegexInGroup) {
-  RunParseTest("/f{(o)(o)}", absl::InvalidArgumentError("expected CLOSE"));
+  RunParseTest("/f{(o)(o)}", absl::InvalidArgumentError("expected '}'"));
 }
 
 TEST(ParseTest, RegexWithPrefix) {
@@ -234,11 +253,11 @@ TEST(ParseTest, WildcardFollowingWildcardWithModifierStart) {
 }
 
 TEST(ParseTest, WildcardWithMultipleModifiersPlus) {
-  RunParseTest("/**+", absl::InvalidArgumentError("expected END"));
+  RunParseTest("/**+", absl::InvalidArgumentError("expected end of pattern"));
 }
 
 TEST(ParseTest, WildcardWithMultipleModifiersQuestion) {
-  RunParseTest("/**?", absl::InvalidArgumentError("expected END"));
+  RunParseTest("/**?", absl::InvalidArgumentError("expected end of pattern"));
 }
 
 TEST(ParseTest, WildcardInGroup) {
@@ -282,7 +301,7 @@ TEST(ParseTest, NameInGroup) {
 }
 
 TEST(ParseTest, NameAndNameInGroup) {
-  RunParseTest("/foo{:bar:baz}", absl::InvalidArgumentError("expected CLOSE"));
+  RunParseTest("/foo{:bar:baz}", absl::InvalidArgumentError("expected '}'"));
 }
 
 TEST(ParseTest, NameWithPrefixAndSuffixInGroup) {
@@ -340,11 +359,17 @@ TEST(ParseTest, NameWithModifierStarAndWildcard) {
 }
 
 TEST(ParseTest, NameWithModifierStarAndModifierQuestion) {
-  RunParseTest("/:foo*?", absl::InvalidArgumentError("expected END"));
+  RunParseTest("/:foo*?",
+               absl::InvalidArgumentError("expected end of pattern"));
 }
 
 TEST(ParseTest, NameWithModifierStarAndModifierPlus) {
-  RunParseTest("/:foo*+", absl::InvalidArgumentError("expected END"));
+  RunParseTest("/:foo*+",
+               absl::InvalidArgumentError("expected end of pattern"));
+}
+
+TEST(ParseTest, DuplicateName) {
+  RunParseTest("/:foo/:foo", absl::InvalidArgumentError("Duplicate"));
 }
 
 }  // namespace liburlpattern

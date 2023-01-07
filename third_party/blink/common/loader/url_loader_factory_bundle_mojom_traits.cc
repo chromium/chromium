@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,12 +19,6 @@ using Traits =
 mojo::PendingRemote<network::mojom::URLLoaderFactory> Traits::default_factory(
     BundleInfoType& bundle) {
   return std::move(bundle->pending_default_factory());
-}
-
-// static
-mojo::PendingRemote<network::mojom::URLLoaderFactory> Traits::appcache_factory(
-    BundleInfoType& bundle) {
-  return std::move(bundle->pending_appcache_factory());
 }
 
 // static
@@ -50,8 +44,6 @@ bool Traits::Read(blink::mojom::URLLoaderFactoryBundleDataView data,
   *out_bundle = std::make_unique<blink::PendingURLLoaderFactoryBundle>();
 
   (*out_bundle)->pending_default_factory() = data.TakeDefaultFactory<
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>>();
-  (*out_bundle)->pending_appcache_factory() = data.TakeAppcacheFactory<
       mojo::PendingRemote<network::mojom::URLLoaderFactory>>();
   if (!data.ReadSchemeSpecificFactories(
           &(*out_bundle)->pending_scheme_specific_factories())) {

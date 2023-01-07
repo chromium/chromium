@@ -1,8 +1,7 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .code_generator_info import CodeGeneratorInfo
 from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
 from .composition_parts import WithDebugInfo
@@ -10,7 +9,6 @@ from .composition_parts import WithExposure
 from .composition_parts import WithExtendedAttributes
 from .composition_parts import WithIdentifier
 from .composition_parts import WithOwner
-from .exposure import Exposure
 from .idl_type import IdlType
 from .ir_map import IRMap
 from .literal_constant import LiteralConstant
@@ -22,7 +20,7 @@ from .user_defined_type import UserDefinedType
 class Dictionary(UserDefinedType, WithExtendedAttributes,
                  WithCodeGeneratorInfo, WithExposure, WithComponent,
                  WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-dictionaries"""
+    """https://webidl.spec.whatwg.org/#idl-dictionaries"""
 
     class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
              WithExposure, WithComponent, WithDebugInfo):
@@ -103,6 +101,13 @@ class Dictionary(UserDefinedType, WithExtendedAttributes,
                     dictionary.own_members)
 
         return tuple(collect_inherited_members(self))
+
+    @property
+    def has_required_member(self):
+        """
+        Returns True if the dictionary has any required dictionary members.
+        """
+        return bool(any(member.is_required for member in self.members))
 
     # UserDefinedType overrides
     @property

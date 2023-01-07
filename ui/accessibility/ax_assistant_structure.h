@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,15 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/strings/string_split.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 
 namespace ui {
+
+struct AXTreeUpdate;
 
 struct AssistantNode {
   AssistantNode();
@@ -45,7 +45,7 @@ struct AssistantNode {
   bool line_through;
 
   // Selected portion of the text.
-  base::Optional<gfx::Range> selection;
+  absl::optional<gfx::Range> selection;
 
   // Fake Android view class name of the element.  Each node is assigned
   // a closest approximation of Android's views to keep the server happy.
@@ -53,13 +53,14 @@ struct AssistantNode {
 
   // HTML and CSS attributes.
   std::string html_tag;
-  std::string html_id;
-  std::string html_class;
   std::string css_display;
+
+  // HTML attributes: map from lowercase ASCII HTML attribute name to value.
+  base::StringPairs html_attributes;
 
   // Accessibility functionality of the node inferred from DOM or based on HTML
   // role attribute.
-  base::Optional<std::string> role;
+  absl::optional<std::string> role;
 };
 
 struct AssistantTree {

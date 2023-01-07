@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,9 @@ namespace ppapi {
 // PPB_Instance_API.GetSingletonResource.
 enum SingletonResourceID {
   BROWSER_FONT_SINGLETON_ID,
-  FLASH_FULLSCREEN_SINGLETON_ID,
   GAMEPAD_SINGLETON_ID,
   ISOLATED_FILESYSTEM_SINGLETON_ID,
   NETWORK_PROXY_SINGLETON_ID,
-  PDF_SINGLETON_ID,
   UMA_SINGLETON_ID,
 };
 

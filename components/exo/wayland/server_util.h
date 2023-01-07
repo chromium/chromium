@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ struct wl_resource;
 
 namespace exo {
 
+class SecurityDelegate;
 class DataOffer;
 
 namespace wayland {
@@ -59,6 +60,20 @@ void SetSurfaceResource(Surface* surface, wl_resource* resource);
 wl_resource* GetDataOfferResource(const DataOffer* data_offer);
 void SetDataOfferResource(DataOffer* data_offer,
                           wl_resource* data_offer_resource);
+
+// Associates the given |display| with its |security_delegate|.
+void SetSecurityDelegate(wl_display* display,
+                         SecurityDelegate* security_delegate);
+
+// Clears the SecurityDelegate association for |display|.
+void RemoveSecurityDelegate(wl_display* display);
+
+// Returns the associated security_delegate for this |display|.
+SecurityDelegate* GetSecurityDelegate(wl_display* display);
+
+// Returns the associated security_delegate for the display this |client| is
+// connected to.
+SecurityDelegate* GetSecurityDelegate(wl_client* client);
 
 }  // namespace wayland
 }  // namespace exo

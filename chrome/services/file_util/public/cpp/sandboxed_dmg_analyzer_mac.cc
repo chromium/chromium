@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
@@ -49,7 +50,7 @@ void SandboxedDMGAnalyzer::PrepareFileToAnalyze() {
 
   if (!file.IsValid()) {
     DLOG(ERROR) << "Could not open file: " << file_path_.value();
-    ReportFileFailure();
+    ReportFileFailure(safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
     return;
   }
 
@@ -58,7 +59,7 @@ void SandboxedDMGAnalyzer::PrepareFileToAnalyze() {
   bool too_big_to_unpack = base::checked_cast<uint64_t>(size) > max_size_;
   if (too_big_to_unpack) {
     DLOG(ERROR) << "File is too big: " << file_path_.value();
-    ReportFileFailure();
+    ReportFileFailure(safe_browsing::ArchiveAnalysisResult::kTooLarge);
     return;
   }
 
@@ -67,19 +68,28 @@ void SandboxedDMGAnalyzer::PrepareFileToAnalyze() {
                                 std::move(file)));
 }
 
-void SandboxedDMGAnalyzer::ReportFileFailure() {
+void SandboxedDMGAnalyzer::ReportFileFailure(
+    safe_browsing::ArchiveAnalysisResult reason) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_),
-                                safe_browsing::ArchiveAnalyzerResults()));
+  if (callback_) {
+    safe_browsing::ArchiveAnalyzerResults results;
+    results.analysis_result = reason;
+
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_), results));
+  }
 }
 
 void SandboxedDMGAnalyzer::AnalyzeFile(base::File file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  remote_analyzer_->AnalyzeDmgFile(
-      std::move(file),
-      base::BindOnce(&SandboxedDMGAnalyzer::AnalyzeFileDone, this));
+  if (remote_analyzer_) {
+    remote_analyzer_->AnalyzeDmgFile(
+        std::move(file),
+        base::BindOnce(&SandboxedDMGAnalyzer::AnalyzeFileDone, this));
+  } else {
+    AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());
+  }
 }
 
 void SandboxedDMGAnalyzer::AnalyzeFileDone(

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,27 +12,28 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/cryptohome/userdataauth_util.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/easy_unlock_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/login/auth/key.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/cryptohome/userdataauth_util.h"
+#include "chromeos/ash/components/dbus/easy_unlock/easy_unlock_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "crypto/encryptor.h"
 #include "crypto/random.h"
 #include "crypto/symmetric_key.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::cryptohome::KeyLabel;
 
 const int kUserKeyByteSize = 16;
 const int kSessionKeyByteSize = 16;
@@ -54,6 +55,10 @@ class EasyUnlockCreateKeysOperation::ChallengeCreator {
                    const std::string& tpm_pub_key,
                    EasyUnlockDeviceKeyData* device,
                    ChallengeCreatedCallback callback);
+
+  ChallengeCreator(const ChallengeCreator&) = delete;
+  ChallengeCreator& operator=(const ChallengeCreator&) = delete;
+
   ~ChallengeCreator();
 
   void Start();
@@ -83,12 +88,9 @@ class EasyUnlockCreateKeysOperation::ChallengeCreator {
   std::string ec_public_key_;
   std::string esk_;
 
-  // Owned by DBusThreadManager
   EasyUnlockClient* easy_unlock_client_;
 
   base::WeakPtrFactory<ChallengeCreator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChallengeCreator);
 };
 
 EasyUnlockCreateKeysOperation::ChallengeCreator::ChallengeCreator(
@@ -102,7 +104,7 @@ EasyUnlockCreateKeysOperation::ChallengeCreator::ChallengeCreator(
       tpm_pub_key_(tpm_pub_key),
       device_(device),
       callback_(std::move(callback)),
-      easy_unlock_client_(DBusThreadManager::Get()->GetEasyUnlockClient()) {}
+      easy_unlock_client_(EasyUnlockClient::Get()) {}
 
 EasyUnlockCreateKeysOperation::ChallengeCreator::~ChallengeCreator() {}
 
@@ -280,10 +282,10 @@ void EasyUnlockCreateKeysOperation::CreateKeyForDeviceAtIndex(size_t index) {
     return;
   }
 
-  challenge_creator_.reset(new ChallengeCreator(
+  challenge_creator_ = std::make_unique<ChallengeCreator>(
       user_key, session_key->key(), tpm_public_key_, device,
       base::BindOnce(&EasyUnlockCreateKeysOperation::OnChallengeCreated,
-                     weak_ptr_factory_.GetWeakPtr(), index)));
+                     weak_ptr_factory_.GetWeakPtr(), index));
   challenge_creator_->Start();
 }
 
@@ -317,7 +319,7 @@ void EasyUnlockCreateKeysOperation::OnGetSystemSalt(
 
   EasyUnlockDeviceKeyData* device = &devices_[index];
   auto key_def = cryptohome::KeyDefinition::CreateForPassword(
-      user_key.GetSecret(), EasyUnlockKeyManager::GetKeyLabel(index),
+      user_key.GetSecret(), KeyLabel(EasyUnlockKeyManager::GetKeyLabel(index)),
       kEasyUnlockKeyPrivileges);
   key_def.revision = kEasyUnlockKeyRevision;
   key_def.provider_data.push_back(cryptohome::KeyDefinition::ProviderData(
@@ -351,11 +353,10 @@ void EasyUnlockCreateKeysOperation::OnGetSystemSalt(
   // Create the authorization request with an empty label, in order to act as a
   // wildcard. See https://crbug.com/1002336 for more.
   *request.mutable_authorization_request() =
-      cryptohome::CreateAuthorizationRequest(std::string() /* label */,
-                                             auth_key->GetSecret());
+      cryptohome::CreateAuthorizationRequest(KeyLabel(), auth_key->GetSecret());
   *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
       cryptohome::Identification(user_context_.GetAccountId()));
-  chromeos::UserDataAuthClient::Get()->AddKey(
+  UserDataAuthClient::Get()->AddKey(
       request, base::BindOnce(&EasyUnlockCreateKeysOperation::OnKeyCreated,
                               weak_ptr_factory_.GetWeakPtr(), index, user_key));
 }
@@ -363,7 +364,7 @@ void EasyUnlockCreateKeysOperation::OnGetSystemSalt(
 void EasyUnlockCreateKeysOperation::OnKeyCreated(
     size_t index,
     const Key& user_key,
-    base::Optional<::user_data_auth::AddKeyReply> reply) {
+    absl::optional<::user_data_auth::AddKeyReply> reply) {
   DCHECK_EQ(key_creation_index_, index);
   cryptohome::MountError return_code = cryptohome::MOUNT_ERROR_FATAL;
   if (reply.has_value())
@@ -387,4 +388,4 @@ void EasyUnlockCreateKeysOperation::OnKeyCreated(
   CreateKeyForDeviceAtIndex(key_creation_index_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

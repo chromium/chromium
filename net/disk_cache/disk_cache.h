@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -23,13 +24,10 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
-
-namespace trace_event {
-class ProcessMemoryDump;
-}
 
 namespace android {
 class ApplicationStatusListener;
@@ -47,55 +45,81 @@ namespace disk_cache {
 class Entry;
 class Backend;
 class EntryResult;
+class BackendFileOperationsFactory;
+struct RangeResult;
 using EntryResultCallback = base::OnceCallback<void(EntryResult)>;
+using RangeResultCallback = base::OnceCallback<void(const RangeResult&)>;
 
 // How to handle resetting the back-end cache from the previous session.
 // See CreateCacheBackend() for its usage.
 enum class ResetHandling { kReset, kResetOnError, kNeverReset };
 
-// Returns an instance of a Backend of the given |type|. |path| points to a
-// folder where the cached data will be stored (if appropriate). This cache
-// instance must be the only object that will be reading or writing files to
-// that folder (if another one exists, and |type| is not net::DISK_CACHE this
-// operation will not complete until the previous duplicate gets destroyed and
-// finishes all I/O). The returned object should be deleted when not needed
-// anymore.
+struct NET_EXPORT BackendResult {
+  BackendResult();
+  ~BackendResult();
+  BackendResult(BackendResult&&);
+  BackendResult& operator=(BackendResult&&);
+
+  BackendResult(const BackendResult&) = delete;
+  BackendResult& operator=(const BackendResult&) = delete;
+
+  // `error_in` should not be net::OK for MakeError().
+  static BackendResult MakeError(net::Error error_in);
+  // `backend_in` should not be nullptr for Make().
+  static BackendResult Make(std::unique_ptr<Backend> backend_in);
+
+  net::Error net_error = net::ERR_FAILED;
+  std::unique_ptr<Backend> backend;
+};
+
+using BackendResultCallback = base::OnceCallback<void(BackendResult)>;
+
+// Returns an instance of a Backend of the given `type`. `file_operations`
+// (nullable) is used to broker file operations in sandboxed environments.
+// Currently `file_operations` is only used for the simple backend.
+// `path` points to a folder where the cached data will be stored (if
+// appropriate). This cache instance must be the only object that will be
+// reading or writing files to that folder (if another one exists, and `type` is
+// not net::DISK_CACHE this operation will not complete until the previous
+// duplicate gets destroyed and finishes all I/O). The returned object should be
+// deleted when not needed anymore.
 //
-// If |reset_handling| is set to kResetOnError and there is a problem with the
+// If `reset_handling` is set to kResetOnError and there is a problem with the
 // cache initialization, the files will be deleted and a new set will be
 // created. If it's set to kReset, this will happen even if there isn't a
 // problem with cache initialization. Finally, if it's set to kNeverReset, the
 // cache creation will fail if there is a problem with cache initialization.
 //
-// |max_bytes| is the maximum size the cache can grow to. If zero is passed in
-// as |max_bytes|, the cache will determine the value to use. The returned
-// pointer can be nullptr if a fatal error is found. The actual return value of
-// the function is a net error code. If this function returns ERR_IO_PENDING,
-// the |callback| will be invoked when a backend is available or a fatal error
-// condition is reached.  The pointer to receive the |backend| must remain valid
-// until the operation completes (the callback is notified).
-NET_EXPORT net::Error CreateCacheBackend(net::CacheType type,
-                                         net::BackendType backend_type,
-                                         const base::FilePath& path,
-                                         int64_t max_bytes,
-                                         ResetHandling reset_handling,
-                                         net::NetLog* net_log,
-                                         std::unique_ptr<Backend>* backend,
-                                         net::CompletionOnceCallback callback);
+// `max_bytes` is the maximum size the cache can grow to. If zero is passed in
+// as `max_bytes`, the cache will determine the value to use.
+//
+// `net_error` in return value of the function is a net error code. If it is
+// ERR_IO_PENDING, the `callback` will be invoked when a backend is available or
+// a fatal error condition is reached.  `backend` in return value or parameter
+// to callback can be nullptr if a fatal error is found.
+NET_EXPORT BackendResult
+CreateCacheBackend(net::CacheType type,
+                   net::BackendType backend_type,
+                   scoped_refptr<BackendFileOperationsFactory> file_operations,
+                   const base::FilePath& path,
+                   int64_t max_bytes,
+                   ResetHandling reset_handling,
+                   net::NetLog* net_log,
+                   BackendResultCallback callback);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Similar to the function above, but takes an |app_status_listener| which is
 // used to listen for when the Android application status changes, so we can
 // flush the cache to disk when the app goes to the background.
-NET_EXPORT net::Error CreateCacheBackend(
+NET_EXPORT BackendResult CreateCacheBackend(
     net::CacheType type,
     net::BackendType backend_type,
+    scoped_refptr<BackendFileOperationsFactory> file_operations,
     const base::FilePath& path,
     int64_t max_bytes,
     ResetHandling reset_handling,
     net::NetLog* net_log,
-    std::unique_ptr<Backend>* backend,
-    net::CompletionOnceCallback callback,
+    BackendResultCallback callback,
     base::android::ApplicationStatusListener* app_status_listener);
 #endif
 
@@ -108,21 +132,26 @@ NET_EXPORT net::Error CreateCacheBackend(
 //
 // Note that this will not wait for |post_cleanup_callback| of a previous
 // instance for |path| to run.
-NET_EXPORT net::Error CreateCacheBackend(
-    net::CacheType type,
-    net::BackendType backend_type,
-    const base::FilePath& path,
-    int64_t max_bytes,
-    ResetHandling reset_handling,
-    net::NetLog* net_log,
-    std::unique_ptr<Backend>* backend,
-    base::OnceClosure post_cleanup_callback,
-    net::CompletionOnceCallback callback);
+NET_EXPORT BackendResult
+CreateCacheBackend(net::CacheType type,
+                   net::BackendType backend_type,
+                   scoped_refptr<BackendFileOperationsFactory> file_operations,
+                   const base::FilePath& path,
+                   int64_t max_bytes,
+                   ResetHandling reset_handling,
+                   net::NetLog* net_log,
+                   base::OnceClosure post_cleanup_callback,
+                   BackendResultCallback callback);
 
 // This will flush any internal threads used by backends created w/o an
 // externally injected thread specified, so tests can be sure that all I/O
 // has finished before inspecting the world.
 NET_EXPORT void FlushCacheThreadForTesting();
+
+// Async version of FlushCacheThreadForTesting. `callback` will be called on
+// the calling sequence.
+NET_EXPORT void FlushCacheThreadAsynchronouslyForTesting(
+    base::OnceClosure cllback);
 
 // The root interface for a disk cache instance.
 class NET_EXPORT Backend {
@@ -134,7 +163,7 @@ class NET_EXPORT Backend {
 
   class Iterator {
    public:
-    virtual ~Iterator() {}
+    virtual ~Iterator() = default;
 
     // OpenNextEntry returns a result with net_error() |net::OK| and provided
     // entry if there is an entry to enumerate which it can return immediately.
@@ -163,8 +192,8 @@ class NET_EXPORT Backend {
   // on what will succeed and what will fail.  In particular the blockfile
   // backend will leak entries closed after backend deletion, while others
   // handle it properly.
-  Backend(net::CacheType cache_type) : cache_type_(cache_type) {}
-  virtual ~Backend() {}
+  explicit Backend(net::CacheType cache_type) : cache_type_(cache_type) {}
+  virtual ~Backend() = default;
 
   // Returns the type of this cache.
   net::CacheType GetCacheType() const { return cache_type_; }
@@ -265,11 +294,6 @@ class NET_EXPORT Backend {
   // referred to by |key|.
   virtual void OnExternalCacheHit(const std::string& key) = 0;
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  virtual size_t DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_absolute_name) const = 0;
-
   // Backends can optionally permit one to store, probabilistically, up to a
   // byte associated with a key of an existing entry in memory.
 
@@ -295,8 +319,10 @@ class NET_EXPORT Backend {
 // This interface represents an entry in the disk cache.
 class NET_EXPORT Entry {
  public:
-  typedef net::CompletionOnceCallback CompletionOnceCallback;
-  typedef net::IOBuffer IOBuffer;
+  using CompletionOnceCallback = net::CompletionOnceCallback;
+  using IOBuffer = net::IOBuffer;
+  using RangeResultCallback = disk_cache::RangeResultCallback;
+  using RangeResult = disk_cache::RangeResult;
 
   // Marks this cache entry for deletion.
   virtual void Doom() = 0;
@@ -413,17 +439,11 @@ class NET_EXPORT Entry {
 
   // Returns information about the currently stored portion of a sparse entry.
   // |offset| and |len| describe a particular range that should be scanned to
-  // find out if it is stored or not. |start| will contain the offset of the
-  // first byte that is stored within this range, and the return value is the
-  // minimum number of consecutive stored bytes. Note that it is possible that
-  // this entry has stored more than the returned value. This method returns a
-  // net error code whenever the request cannot be completed successfully. If
-  // this method returns ERR_IO_PENDING, the |callback| will be invoked when the
-  // operation completes, and |start| must remain valid until that point.
-  virtual int GetAvailableRange(int64_t offset,
-                                int len,
-                                int64_t* start,
-                                CompletionOnceCallback callback) = 0;
+  // find out if it is stored or not. Please see the documentation of
+  // RangeResult for more details.
+  virtual RangeResult GetAvailableRange(int64_t offset,
+                                        int len,
+                                        RangeResultCallback callback) = 0;
 
   // Returns true if this entry could be a sparse entry or false otherwise. This
   // is a quick test that may return true even if the entry is not really
@@ -461,7 +481,7 @@ class NET_EXPORT Entry {
   virtual void SetLastUsedTimeForTest(base::Time time) = 0;
 
  protected:
-  virtual ~Entry() {}
+  virtual ~Entry() = default;
 };
 
 struct EntryDeleter {
@@ -520,6 +540,218 @@ class NET_EXPORT EntryResult {
   net::Error net_error_ = net::ERR_FAILED;
   bool opened_ = false;
   ScopedEntryPtr entry_;
+};
+
+// Represents a result of GetAvailableRange.
+struct NET_EXPORT RangeResult {
+  RangeResult() = default;
+  explicit RangeResult(net::Error error) : net_error(error) {}
+
+  RangeResult(int64_t start, int available_len)
+      : net_error(net::OK), start(start), available_len(available_len) {}
+
+  // This is net::OK if operation succeeded, and `start` and `available_len`
+  // were set appropriately (potentially with 0 for `available_len`).
+  //
+  // In return value of GetAvailableRange(), net::ERR_IO_PENDING means that the
+  // result will be provided asynchronously via the callback. This can not occur
+  // in the value passed to the callback itself.
+  //
+  // In case the operation failed, this will be the error code.
+  net::Error net_error = net::ERR_FAILED;
+
+  // First byte within the range passed to GetAvailableRange that's available
+  // in the cache entry.
+  //
+  // Valid iff net_error is net::OK.
+  int64_t start = -1;
+
+  // Number of consecutive bytes stored within the requested range starting from
+  // `start` that can be read at once. This may be zero.
+  //
+  // Valid iff net_error is net::OK.
+  int available_len = 0;
+};
+
+// The maximum size of cache that can be created for type
+// GENERATED_WEBUI_BYTE_CODE_CACHE. There are only a handful of commonly
+// accessed WebUI pages, which can each cache 0.5 - 1.5 MB of code. There is no
+// point in having a very large WebUI code cache, even if lots of disk space is
+// available.
+constexpr int kMaxWebUICodeCacheSize = 5 * 1024 * 1024;
+
+class UnboundBackendFileOperations;
+
+// An interface to provide file operations so that the HTTP cache works on
+// a sandboxed process.
+// All the paths must be absolute paths.
+// A BackendFileOperations object is bound to a sequence.
+class BackendFileOperations {
+ public:
+  struct FileEnumerationEntry {
+    FileEnumerationEntry() = default;
+    FileEnumerationEntry(base::FilePath path,
+                         int64_t size,
+                         base::Time last_accessed,
+                         base::Time last_modified)
+        : path(std::move(path)),
+          size(size),
+          last_accessed(last_accessed),
+          last_modified(last_modified) {}
+
+    base::FilePath path;
+    int64_t size = 0;
+    base::Time last_accessed;
+    base::Time last_modified;
+  };
+
+  // An enum representing the mode for DeleteFile function.
+  enum class DeleteFileMode {
+    // The default mode, meaning base::DeleteFile.
+    kDefault,
+    // Ensure that new files for the same name can be created immediately after
+    // deletion. Note that this is the default behavior on POSIX. On Windows
+    // this assumes that all the file handles for the file to be deleted are
+    // opened with FLAG_WIN_SHARE_DELETE.
+    kEnsureImmediateAvailability,
+  };
+
+  // An interface to enumerate files in a directory.
+  // Indirect descendants are not listed, and directories are not listed.
+  class FileEnumerator {
+   public:
+    virtual ~FileEnumerator() = default;
+
+    // Returns the next file in the directory, if any. Returns nullopt if there
+    // are no further files (including the error case). The path of the
+    // returned entry should be a full path.
+    virtual absl::optional<FileEnumerationEntry> Next() = 0;
+
+    // Returns true if we've found an error during traversal.
+    virtual bool HasError() const = 0;
+  };
+
+  virtual ~BackendFileOperations() = default;
+
+  // Creates a directory with the given path and returns whether that succeeded.
+  virtual bool CreateDirectory(const base::FilePath& path) = 0;
+
+  // Returns true if the given path exists on the local filesystem.
+  virtual bool PathExists(const base::FilePath& path) = 0;
+
+  // Returns true if the given path exists on the local filesystem and it's a
+  // directory.
+  virtual bool DirectoryExists(const base::FilePath& path) = 0;
+
+  // Opens a file with the given path and flags. Returns the opened file.
+  virtual base::File OpenFile(const base::FilePath& path, uint32_t flags) = 0;
+
+  // Deletes a file with the given path and returns whether that succeeded.
+  virtual bool DeleteFile(const base::FilePath& path,
+                          DeleteFileMode mode = DeleteFileMode::kDefault) = 0;
+
+  // Renames a file `from_path` to `to_path`. Returns the error information.
+  virtual bool ReplaceFile(const base::FilePath& from_path,
+                           const base::FilePath& to_path,
+                           base::File::Error* error) = 0;
+
+  // Returns information about the given path.
+  virtual absl::optional<base::File::Info> GetFileInfo(
+      const base::FilePath& path) = 0;
+
+  // Creates an object that can be used to enumerate files in the specified
+  // directory.
+  virtual std::unique_ptr<FileEnumerator> EnumerateFiles(
+      const base::FilePath& path) = 0;
+
+  // Deletes the given directory recursively, asynchronously. `callback` will
+  // called with whether the operation succeeded.
+  // This is done by:
+  //  1. Renaming the directory to another directory,
+  //  2. Calling `callback` with the result, and
+  //  3. Deleting the directory.
+  // This means the caller won't know the result of 3.
+  virtual void CleanupDirectory(const base::FilePath& path,
+                                base::OnceCallback<void(bool)> callback) = 0;
+
+  // Unbind this object from the sequence, and returns an
+  // UnboundBackendFileOperations which can be bound to any sequence. Once
+  // this method is called, no methods (except for the destructor) on this
+  // object must not be called.
+  virtual std::unique_ptr<UnboundBackendFileOperations> Unbind() = 0;
+};
+
+// BackendFileOperations which is not yet bound to a sequence.
+class UnboundBackendFileOperations {
+ public:
+  virtual ~UnboundBackendFileOperations() = default;
+
+  // This can be called at most once.
+  virtual std::unique_ptr<BackendFileOperations> Bind(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) = 0;
+};
+
+// A factory interface that creates BackendFileOperations.
+class BackendFileOperationsFactory
+    : public base::RefCounted<BackendFileOperationsFactory> {
+ public:
+  // Creates a BackendFileOperations which is bound to `task_runner`.
+  virtual std::unique_ptr<BackendFileOperations> Create(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) = 0;
+
+  // Creates an "unbound" BackendFileOperations.
+  virtual std::unique_ptr<UnboundBackendFileOperations> CreateUnbound() = 0;
+
+ protected:
+  friend class base::RefCounted<BackendFileOperationsFactory>;
+  virtual ~BackendFileOperationsFactory() = default;
+};
+
+// A trivial BackendFileOperations implementation which uses corresponding
+// base functions.
+class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
+ public:
+  TrivialFileOperations();
+  ~TrivialFileOperations() override;
+
+  // BackendFileOperations implementation:
+  bool CreateDirectory(const base::FilePath& path) override;
+  bool PathExists(const base::FilePath& path) override;
+  bool DirectoryExists(const base::FilePath& path) override;
+  base::File OpenFile(const base::FilePath& path, uint32_t flags) override;
+  bool DeleteFile(const base::FilePath& path, DeleteFileMode mode) override;
+  bool ReplaceFile(const base::FilePath& from_path,
+                   const base::FilePath& to_path,
+                   base::File::Error* error) override;
+  absl::optional<base::File::Info> GetFileInfo(
+      const base::FilePath& path) override;
+  std::unique_ptr<FileEnumerator> EnumerateFiles(
+      const base::FilePath& path) override;
+  void CleanupDirectory(const base::FilePath& path,
+                        base::OnceCallback<void(bool)> callback) override;
+  std::unique_ptr<UnboundBackendFileOperations> Unbind() override;
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+#if DCHECK_IS_ON()
+  bool bound_ = true;
+#endif
+};
+
+class NET_EXPORT TrivialFileOperationsFactory
+    : public BackendFileOperationsFactory {
+ public:
+  TrivialFileOperationsFactory();
+
+  // BackendFileOperationsFactory implementation:
+  std::unique_ptr<BackendFileOperations> Create(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override;
+  std::unique_ptr<UnboundBackendFileOperations> CreateUnbound() override;
+
+ private:
+  ~TrivialFileOperationsFactory() override;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace disk_cache

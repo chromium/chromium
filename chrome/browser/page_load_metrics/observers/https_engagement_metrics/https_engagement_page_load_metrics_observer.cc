@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,25 @@ HttpsEngagementPageLoadMetricsObserver::HttpsEngagementPageLoadMetricsObserver(
     content::BrowserContext* context) {
   engagement_service_ =
       HttpsEngagementServiceFactory::GetForBrowserContext(context);
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+HttpsEngagementPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class is interested only in the primary page's end of life timing,
+  // and doesn't need to continue observing FencedFrame pages.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+HttpsEngagementPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // Once prerendered pages have been activated we will want to report this
+  // metric. Statistics are only be reported when foreground_time is nonzero so
+  // there are no additional checks needed.
+  return CONTINUE_OBSERVING;
 }
 
 void HttpsEngagementPageLoadMetricsObserver::OnComplete(

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
-#include "base/macros.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 
 namespace syncer {
@@ -17,22 +15,23 @@ namespace syncer {
 class KeyDerivationParams;
 struct NigoriState;
 
-KeyDerivationParams CreateKeyDerivationParamsForCustomPassphrase(
-    const base::RepeatingCallback<std::string()>& random_salt_generator);
-
 // Interface representing an intended local change to the Nigori state that
 // is pending a commit to the sync server.
 class PendingLocalNigoriCommit {
  public:
   static std::unique_ptr<PendingLocalNigoriCommit> ForSetCustomPassphrase(
       const std::string& passphrase,
-      const base::RepeatingCallback<std::string()>& random_salt_generator);
+      const KeyDerivationParams& key_derivation_params);
 
   static std::unique_ptr<PendingLocalNigoriCommit> ForKeystoreInitialization();
 
   static std::unique_ptr<PendingLocalNigoriCommit> ForKeystoreReencryption();
 
   PendingLocalNigoriCommit() = default;
+
+  PendingLocalNigoriCommit(const PendingLocalNigoriCommit&) = delete;
+  PendingLocalNigoriCommit& operator=(const PendingLocalNigoriCommit&) = delete;
+
   virtual ~PendingLocalNigoriCommit() = default;
 
   // Attempts to modify |*state| to reflect the intended commit. Returns true if
@@ -50,9 +49,6 @@ class PendingLocalNigoriCommit {
   // Invoked when the change no longer applies or was aborted for a different
   // reason (e.g. sync disabled). |observer| must not be null.
   virtual void OnFailure(SyncEncryptionHandler::Observer* observer) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PendingLocalNigoriCommit);
 };
 
 }  // namespace syncer

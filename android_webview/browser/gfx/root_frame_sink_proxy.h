@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_ROOT_FRAME_SINK_PROXY_H_
 
 #include "android_webview/browser/gfx/root_frame_sink.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 
 namespace viz {
@@ -23,6 +23,10 @@ class RootFrameSinkProxyClient {
       viz::FrameSinkId frame_sink_id,
       uint32_t layer_tree_frame_sink_id,
       std::vector<viz::ReturnedResource> resources) = 0;
+  virtual void OnCompositorFrameTransitionDirectiveProcessed(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id) = 0;
 };
 
 // Per-AwContents object. Straddles UI and Viz thread. Public methods should be
@@ -34,6 +38,10 @@ class RootFrameSinkProxy : public viz::BeginFrameObserverBase {
       const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
       RootFrameSinkProxyClient* client,
       viz::BeginFrameSource* begin_frame_source);
+
+  RootFrameSinkProxy(const RootFrameSinkProxy&) = delete;
+  RootFrameSinkProxy& operator=(const RootFrameSinkProxy&) = delete;
+
   ~RootFrameSinkProxy() override;
 
   void AddChildFrameSinkId(const viz::FrameSinkId& frame_sink_id);
@@ -63,9 +71,17 @@ class RootFrameSinkProxy : public viz::BeginFrameObserverBase {
   void ReturnResourcesOnViz(viz::FrameSinkId frame_sink_id,
                             uint32_t layer_tree_frame_sink_id,
                             std::vector<viz::ReturnedResource> resources);
+  void OnCompositorFrameTransitionDirectiveProcessedOnViz(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id);
   void ReturnResourcesOnUI(viz::FrameSinkId frame_sink_id,
                            uint32_t layer_tree_frame_sink_id,
                            std::vector<viz::ReturnedResource> resources);
+  void OnCompositorFrameTransitionDirectiveProcessedOnUI(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id);
 
   bool BeginFrame(const viz::BeginFrameArgs& args);
 
@@ -74,10 +90,10 @@ class RootFrameSinkProxy : public viz::BeginFrameObserverBase {
 
   const scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
-  RootFrameSinkProxyClient* const client_;
+  const raw_ptr<RootFrameSinkProxyClient> client_;
   std::unique_ptr<RootFrameSinkClient> root_frame_sink_client_;
   scoped_refptr<RootFrameSink> without_gpu_;
-  viz::BeginFrameSource* const begin_frame_source_;
+  const raw_ptr<viz::BeginFrameSource> begin_frame_source_;
   bool had_input_event_ = false;
   bool observing_bfs_ = false;
 
@@ -86,8 +102,6 @@ class RootFrameSinkProxy : public viz::BeginFrameObserverBase {
 
   base::WeakPtrFactory<RootFrameSinkProxy> weak_ptr_factory_{this};
   base::WeakPtrFactory<RootFrameSinkProxy> weak_ptr_factory_on_viz_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RootFrameSinkProxy);
 };
 
 }  // namespace android_webview

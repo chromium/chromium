@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -42,33 +42,48 @@ config("pgo_optimization_flags") {
     if (is_win) {
       if (target_cpu == "x64") {
         _pgo_target = "win64"
-        inputs = [ "//chrome/build/win64.pgo.txt" ]
       } else {
         _pgo_target = "win32"
-        inputs = [ "//chrome/build/win32.pgo.txt" ]
       }
     } else if (is_mac) {
-      _pgo_target = "mac"
-      inputs = [ "//chrome/build/mac.pgo.txt" ]
+      if (target_cpu == "arm64") {
+        _pgo_target = "mac-arm"
+      } else {
+        _pgo_target = "mac"
+      }
     } else if (is_linux || is_chromeos_lacros) {
       _pgo_target = "linux"
+    } else if (is_android) {
+      # Temporarily use mac-arm profile until Android native PGO support works.
+      # TODO(crbug.com/1308749): fix this.
+      _pgo_target = "mac-arm"
+    }
+
+    if (_pgo_target == "win64") {
+      inputs = [ "//chrome/build/win64.pgo.txt" ]
+    } else if (_pgo_target == "win32") {
+      inputs = [ "//chrome/build/win32.pgo.txt" ]
+    } else if (_pgo_target == "mac-arm") {
+      inputs = [ "//chrome/build/mac-arm.pgo.txt" ]
+    } else if (_pgo_target == "mac") {
+      inputs = [ "//chrome/build/mac-arm.pgo.txt" ]
+    } else if (_pgo_target == "linux") {
       inputs = [ "//chrome/build/linux.pgo.txt" ]
     }
 
-    if (pgo_data_path == "" && _pgo_target != "") {
-      pgo_data_path = rebase_path(exec_script("//tools/update_pgo_profiles.py",
-                                              [
-                                                "--target",
-                                                _pgo_target,
-                                                "get_profile_path",
-                                              ],
-                                              "value"),
-                                  root_build_dir)
+    if (_pgo_target != "" && pgo_data_path == "") {
+      pgo_data_path = exec_script("//tools/update_pgo_profiles.py",
+                                  [
+                                    "--target",
+                                    _pgo_target,
+                                    "get_profile_path",
+                                  ],
+                                  "value")
     }
     assert(pgo_data_path != "",
            "Please set pgo_data_path to point at the profile data")
     cflags = [
-      "-fprofile-instr-use=$pgo_data_path",
+      "-fprofile-use=" + rebase_path(pgo_data_path, root_build_dir),
 
       # It's possible to have some profile data legitimately missing,
       # and at least some profile data always ends up being considered

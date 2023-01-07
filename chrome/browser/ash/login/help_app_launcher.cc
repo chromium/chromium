@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/ui/login_web_dialog.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/locale_settings.h"
 #include "content/public/browser/browser_thread.h"
@@ -20,21 +21,17 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
-using content::BrowserThread;
-using extensions::ExtensionRegistry;
-
+namespace ash {
 namespace {
 
-// Official HelpApp extension id.
-const char kExtensionId[] = "honijodknafkokifofgiaalefdiedpko";
+using ::content::BrowserThread;
+using ::extensions::ExtensionRegistry;
 
 const char kHelpAppFormat[] = "chrome-extension://%s/oobe.html?id=%d";
 
 const char* g_extension_id_for_test = nullptr;
 
 }  // namespace
-
-namespace chromeos {
 
 ///////////////////////////////////////////////////////////////////////////////
 // HelpApp, public:
@@ -50,7 +47,7 @@ void HelpAppLauncher::ShowHelpTopic(HelpTopic help_topic_id) {
   if (!registry)
     return;
 
-  const char* extension_id = kExtensionId;
+  const char* extension_id = extension_misc::kHelpAppExtensionId;
   if (g_extension_id_for_test && *g_extension_id_for_test != '\0') {
     extension_id = g_extension_id_for_test;
   }
@@ -80,10 +77,10 @@ void HelpAppLauncher::ShowHelpTopicDialog(Profile* profile,
                                           const GURL& topic_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   LoginWebDialog* dialog = new LoginWebDialog(
-      profile, NULL, parent_window_,
+      profile, parent_window_,
       l10n_util::GetStringUTF16(IDS_LOGIN_OOBE_HELP_DIALOG_TITLE), topic_url);
   dialog->Show();
   // The dialog object will be deleted on dialog close.
 }
 
-}  // namespace chromeos
+}  // namespace ash

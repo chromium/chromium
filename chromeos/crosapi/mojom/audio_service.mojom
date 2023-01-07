@@ -1,0 +1,151 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// This interface is created to implement chrome.audio extension API in Lacros.
+// Audio api in Lacros is ultimately connected to ash::CrasAudioHandler.
+// The structs in this file are mirroring types from
+// https://developer.chrome.com/docs/extensions/reference/audio/#type
+
+[Stable, Extensible]
+enum StreamType {
+  [Default] kNone = 0,
+  kInput = 1,
+  kOutput = 2,
+};
+
+[Stable, Extensible]
+enum DeviceType {
+  [Default] kNone = 0,
+  kHeadphone = 1,
+  kMic = 2,
+  kUsb = 3,
+  kBluetooth = 4,
+  kHdmi = 5,
+  kInternalSpeaker = 6,
+  kInternalMic = 7,
+  kFrontMic = 8,
+  kRearMic = 9,
+  kKeyboardMic = 10,
+  kHotword = 11,
+  kLineout = 12,
+  kPostMixLoopback = 13,
+  kPostDspLoopback = 14,
+  kAlsaLoopback = 15,
+  kOther = 16,
+};
+
+[Stable]
+struct AudioDeviceInfo {
+  // Device name.
+  string deviceName@0;
+
+  // Type of the device.
+  DeviceType deviceType@1;
+
+  // The user-friendly name (e.g. "USB Microphone").
+  string displayName@2;
+
+  // The unique identifier of the audio device.
+  string id@3;
+
+  // True if this device is currently active.
+  bool isActive@4;
+
+  // The sound level of the device, volume for output, gain for input.
+  int32 level@5;
+
+  // The stable/persisted device id string when available.
+  string? stableDeviceId@6;
+
+  // Stream type associated with this device.
+  StreamType streamType@7;
+};
+
+[Stable]
+struct DeviceFilter {
+  [Stable, Extensible]
+  enum ActiveState {
+    [Default] kUnset = 0,
+    kInactive = 1,
+    kActive = 2,
+  };
+
+  // If set, only audio devices whose active state matches this value will
+  // satisfy the filter.
+  ActiveState includedActiveState@0;
+
+  // If set, only audio devices whose stream type is included in this list will
+  // satisfy the filter.
+  array<StreamType>? includedStreamTypes@1;
+};
+
+[Stable]
+struct DeviceIdLists {
+  // List of input devices specified by their ID.
+  array<string> inputs@0;
+
+  // List of output devices specified by their ID.
+  array<string> outputs@1;
+};
+
+[Stable]
+struct AudioDeviceProperties {
+  // The audio device's desired sound level.
+  // If used with audio input device, represents audio device gain.
+  // If used with audio output device, represents audio device volume.
+  int32 level@0;
+};
+
+// Interface for audio change observer. Implemented by lacros-chrome. Used by
+// ash-chrome to send audio change events.
+[Stable, Uuid="aa4fcb30-c406-4133-be23-db3fcc6ca113"]
+interface AudioChangeObserver {
+  // Fired when audio devices change, either new devices being added,
+  // or existing devices being removed.
+  // |devices| contains the full list of the devices after update
+  OnDeviceListChanged@0(array<AudioDeviceInfo> devices);
+
+  // Fired when sound level changes for an active audio device.
+  OnLevelChanged@1(string id, int32 level);
+
+  // Fired when the mute state of the audio input or output changes.
+  OnMuteChanged@2(bool is_input, bool is_muted);
+};
+
+// This API provides Lacros with access to audio devices.
+// This is used to support chrome.audio extension API in lacros-chrome.
+// Implemented in ash-chrome.
+//
+// Next MinVersion: 1
+// Next ID: 6
+[Stable, Uuid="495da3b2-8c95-43d3-a508-79474c80e738"]
+interface AudioService {
+  // Gets a list of audio devices filtered based on filter.
+  // Returns empty optional if ash call failed
+  // (e.g. CrasAudioHandler not available).
+  GetDevices@0(DeviceFilter filter) => (array<AudioDeviceInfo>? devices);
+
+  // Gets the system-wide mute state for the specified stream type.
+  // success - method call result.
+  // True if ash call was successful.
+  // False if ash call failed (e.g. CrasAudioHandler not available).
+  // is_muted - mute state for the specified stream type.
+  GetMute@1(StreamType stream_type) => (bool success, bool is_muted);
+
+  // Sets lists of active input and/or output devices.
+  SetActiveDeviceLists@2(DeviceIdLists ids) => (bool success);
+
+  // Sets mute state for a stream type.The mute state will apply to all audio
+  // devices with the specified audio stream type.
+  SetMute@3(StreamType stream_type, bool is_muted) => (bool success);
+
+  // Sets the properties for the input or output device, specified by id.
+  SetProperties@4(string id, AudioDeviceProperties properties)
+    => (bool success);
+
+  // Adds an observer for audio change. Multiple observers may be registered.
+  AddAudioChangeObserver@5(pending_remote<AudioChangeObserver> observer);
+};

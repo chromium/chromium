@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,7 +10,7 @@ from page_sets.system_health import system_health_story
 
 IDLE_TIME_IN_SECONDS = 100
 SAMPLING_INTERVAL_IN_SECONDS = 1
-STEPS = IDLE_TIME_IN_SECONDS / SAMPLING_INTERVAL_IN_SECONDS
+STEPS = IDLE_TIME_IN_SECONDS // SAMPLING_INTERVAL_IN_SECONDS
 
 
 class _LongRunningStory(system_health_story.SystemHealthStory):
@@ -24,7 +24,7 @@ class _LongRunningStory(system_health_story.SystemHealthStory):
       action_runner.tab.browser.tabs.New()
     if self._take_memory_measurement:
       action_runner.MeasureMemory()
-    for _ in xrange(STEPS):
+    for _ in range(STEPS):
       action_runner.Wait(SAMPLING_INTERVAL_IN_SECONDS)
       if self._take_memory_measurement:
         action_runner.MeasureMemory()
@@ -34,9 +34,8 @@ class _LongRunningStory(system_health_story.SystemHealthStory):
     if cls.BACKGROUND:
       return ('Load %s then open a new blank tab and let the loaded page stay '
               'in background for %s seconds.' % (cls.URL, IDLE_TIME_IN_SECONDS))
-    else:
-      return ('Load %s then let it stay in foreground for %s seconds.' %
-              (cls.URL, IDLE_TIME_IN_SECONDS))
+    return ('Load %s then let it stay in foreground for %s seconds.' %
+            (cls.URL, IDLE_TIME_IN_SECONDS))
 
   def WillStartTracing(self, chrome_trace_config):
     # Long running stories generate large traces, so use a large tracing buffer

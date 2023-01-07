@@ -1,0 +1,148 @@
+caption: Configuration policy for the OnBulkDataEntry Chrome Enterprise Connector
+desc: |-
+  List of Chrome Enterprise Connectors services settings to be applied to the <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR">OnBulkDataEntry</ph> Enterprise Connector, which triggers when data is entered in Chrome from the clipboard or by drag and dropping web content.
+
+        The <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD">url_list</ph>, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD">tags</ph>, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD">enable</ph> and <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD">disable</ph> fields are used to determine if the connector should send data for analysis when it is entered in a specific page and what tags to include in the analysis request for that data. A tag corresponding to an 'enable' pattern will be included in the analysis request if the page URL matches a pattern associated to that tag as long as no 'disable' pattern with that same tag matches the page URL. The analysis occurs if at least 1 tag is to be included in the request.
+
+        The <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD">service_provider</ph> field identifies which analysis service provider the settings correspond to.
+
+        The <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD">block_until_verdict</ph> field being set to 1 means Chrome will wait to get a response from the analysis service before giving the page access to the data. Any other integer value means Chrome gives the page access to the data immediately.
+
+        The <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE">minimum_data_size</ph> field indicates the minimum size (in bytes) data entered in Chrome must equal or surpass to be scanned. The default value is 100 bytes if the field is unset.
+
+        The <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD">require_justification_tags</ph> field is used to determine for which tags the connector should require the user to enter a justification to bypass a scan that results in a bypassable warning. If the field is not set, it's assumed that a justification is not required.
+
+        The <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD">custom_messages</ph>, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD">message</ph>, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD">learn_more_url</ph>, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD">language</ph> and <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD">tag</ph> fields are used to configure a message to show the user when a warning is shown after a scan had a non-clean verdict. The message field contains the text to show the user and should have at most 200 characters. The learn_more_url field contains an admin-provided URL that will be clickable by the user to get more customer-provided information about why the action was blocked. The language field is optional and contains the language of the message. An empty language field or a value of 'default' indicates a message to be used when the user's language doesn't have a message. The tag field specifies for which type of scans the message is displayed. The custom_messages list can have zero or more entries, where each entry is required to have non-empty message and tag fields.
+
+        This policy requires additional setup to take effect, please visit https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting for more information.
+example_value:
+- block_until_verdict: 0
+  custom_messages:
+  - language: default
+    learn_more_url: moreinfo.example.com
+    message: Custom message for potential sensitive data leaks.
+    tag: dlp
+  - language: en-US
+    learn_more_url: moreinfo.example.com/en
+    message: Custom message for potential malware file transfer.
+    tag: malware
+  - language: fr-CA
+    learn_more_url: moreinfo.example.com/fr
+    message: Message pour le transfert de logiciel malveillant.
+    tag: malware
+  disable:
+  - tags:
+    - malware
+    url_list:
+    - '*.us.com'
+  enable:
+  - tags:
+    - malware
+    url_list:
+    - '*'
+  - tags:
+    - dlp
+    url_list:
+    - '*.them.com'
+    - '*.others.com'
+  minimum_data_size: 100
+  require_justification_tags:
+  - malware
+  - dlp
+  service_provider: google
+  verification:
+    linux:
+    - key
+    mac:
+    - key
+    windows:
+    - key
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- rogerta@chromium.org
+- mad@chromium.org
+- domfc@chromium.org
+schema:
+  items:
+    properties:
+      block_until_verdict:
+        type: integer
+      custom_messages:
+        items:
+          properties:
+            language:
+              type: string
+            learn_more_url:
+              type: string
+            message:
+              type: string
+            tag:
+              type: string
+          type: object
+        type: array
+      disable:
+        items:
+          properties:
+            tags:
+              items:
+                type: string
+              type: array
+            url_list:
+              items:
+                type: string
+              type: array
+          type: object
+        type: array
+      enable:
+        items:
+          properties:
+            tags:
+              items:
+                type: string
+              type: array
+            url_list:
+              items:
+                type: string
+              type: array
+          type: object
+        type: array
+      minimum_data_size:
+        minimum: 0
+        type: integer
+      require_justification_tags:
+        items:
+          type: string
+        type: array
+      service_provider:
+        enum:
+        - google
+        - local_user_agent
+        - local_system_agent
+        type: string
+      verification:
+        properties:
+          linux:
+            items:
+              type: string
+            type: array
+          mac:
+            items:
+              type: string
+            type: array
+          windows:
+            items:
+              type: string
+            type: array
+        type: object
+    type: object
+  type: array
+supported_on:
+- chrome.*:84-
+- chrome_os:84-
+tags: []
+type: dict

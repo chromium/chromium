@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "courgette/assembly_program.h"
 #include "courgette/base_test_unittest.h"
 #include "courgette/image_utils.h"
@@ -46,7 +46,7 @@ class TestDisassemblerElf32X86 : public DisassemblerElf32X86 {
       EXPECT_TRUE(SectionName(section_header, &name));
       // Ensure |name| is unique and is printable (may be empty though).
       EXPECT_EQ(0U, name_set.count(name));
-      EXPECT_TRUE(std::all_of(name.begin(), name.end(), ::isprint));
+      EXPECT_TRUE(base::ranges::all_of(name, ::isprint));
       name_set.insert(name);
     }
     // Check for existence of a few common sections.

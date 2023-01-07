@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "components/variations/variations_ids_provider.h"
 
@@ -21,26 +19,27 @@ class RenderProcessHost;
 // renderers.
 //
 // This class registers itself as an observer of FieldTrialList. FieldTrialList
-// notifies this class by calling it's OnFieldTrialGroupFinalized method when a
+// notifies this class by calling its OnFieldTrialGroupFinalized method when a
 // group is selected (finalized) for a FieldTrial and OnFieldTrialGroupFinalized
 // method sends the FieldTrial's name and the group to all renderer processes.
 // Each renderer process creates the FieldTrial, and by using a 100% probability
-// for the FieldTrial, forces the FieldTrial to have the same group string.
-// This class also registers itself as a VariationsIdsProvider Observer
-// and updates the renderers if the variations header changes.
-
+// for the FieldTrial, forces the FieldTrial to have the same group string. This
+// is mostly an optimization so that renderers don't send anything to the
+// browser when they know that a trial is already active.
+//
+// This class also registers itself as a VariationsIdsProvider Observer and
+// updates the renderers if the variations header changes.
 class FieldTrialSynchronizer
-    : public base::RefCountedThreadSafe<FieldTrialSynchronizer>,
-      public base::FieldTrialList::Observer,
+    : public base::FieldTrialList::Observer,
       public variations::VariationsIdsProvider::Observer {
  public:
-  // Construction also sets up the global singleton instance.  This instance is
-  // used to communicate between the UI and other threads, and is destroyed only
-  // as the main thread (browser_main) terminates, which means all other threads
-  // have completed, and will not need this instance any further. It adds itself
-  // as an observer of FieldTrialList so that it gets notified whenever a group
-  // is finalized in the browser process.
-  FieldTrialSynchronizer();
+  // Creates the global FieldTrialSynchronizer instance for this process. After
+  // this is invoked, renderers are notified whenever a field trial group is
+  // finalized.
+  static void CreateInstance();
+
+  FieldTrialSynchronizer(const FieldTrialSynchronizer&) = delete;
+  FieldTrialSynchronizer& operator=(const FieldTrialSynchronizer&) = delete;
 
   // FieldTrialList::Observer methods:
 
@@ -58,17 +57,10 @@ class FieldTrialSynchronizer
   static void UpdateRendererVariationsHeader(RenderProcessHost* host);
 
  private:
-  // Notify all renderer processes about the |group_name| that is finalized for
-  // the given field trail (|field_trial_name|). This is called on UI thread.
-  void NotifyAllRenderersOfFieldTrial(const std::string& field_trial_name,
-                                      const std::string& group_name);
-
-  static void NotifyAllRenderersOfVariationsHeader();
-
-  friend class base::RefCountedThreadSafe<FieldTrialSynchronizer>;
+  FieldTrialSynchronizer();
   ~FieldTrialSynchronizer() override;
 
-  DISALLOW_COPY_AND_ASSIGN(FieldTrialSynchronizer);
+  static void NotifyAllRenderersOfVariationsHeader();
 };
 
 }  // namespace content

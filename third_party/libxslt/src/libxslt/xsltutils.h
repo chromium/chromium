@@ -13,9 +13,6 @@
 #define __XML_XSLTUTILS_H__
 
 #include <libxslt/xsltconfig.h>
-#ifdef HAVE_STDARG_H
-#include <stdarg.h>
-#endif
 #include <libxml/xpath.h>
 #include <libxml/dict.h>
 #include <libxml/xmlerror.h>
@@ -247,6 +244,22 @@ XSLTPUBFUN xmlXPathCompExprPtr XSLTCALL
 						 const xmlChar *str,
 						 int flags);
 
+#ifdef IN_LIBXSLT
+#define XSLT_SOURCE_NODE_MASK       15u
+#define XSLT_SOURCE_NODE_HAS_KEY    1u
+#define XSLT_SOURCE_NODE_HAS_ID     2u
+int
+xsltGetSourceNodeFlags(xmlNodePtr node);
+int
+xsltSetSourceNodeFlags(xsltTransformContextPtr ctxt, xmlNodePtr node,
+                       int flags);
+int
+xsltClearSourceNodeFlags(xmlNodePtr node, int flags);
+void **
+xsltGetPSVIPtr(xmlNodePtr cur);
+#endif
+
+#ifdef WITH_PROFILER
 /*
  * Profiling.
  */
@@ -260,6 +273,7 @@ XSLTPUBFUN long XSLTCALL
 		xsltTimestamp			(void);
 XSLTPUBFUN void XSLTCALL
 		xsltCalibrateAdjust		(long delta);
+#endif
 
 /**
  * XSLT_TIMESTAMP_TICS_PER_SEC:
@@ -292,10 +306,11 @@ typedef void (*xsltHandleDebuggerCallback) (xmlNodePtr cur, xmlNodePtr node,
 typedef int (*xsltAddCallCallback) (xsltTemplatePtr templ, xmlNodePtr source);
 typedef void (*xsltDropCallCallback) (void);
 
-XSLTPUBFUN void XSLTCALL
-		xsltSetDebuggerStatus		(int value);
 XSLTPUBFUN int XSLTCALL
 		xsltGetDebuggerStatus		(void);
+#ifdef WITH_DEBUGGER
+XSLTPUBFUN void XSLTCALL
+		xsltSetDebuggerStatus		(int value);
 XSLTPUBFUN int XSLTCALL
 		xsltSetDebuggerCallbacks	(int no, void *block);
 XSLTPUBFUN int XSLTCALL
@@ -303,6 +318,7 @@ XSLTPUBFUN int XSLTCALL
 						 xmlNodePtr source);
 XSLTPUBFUN void XSLTCALL
 		xslDropCall			(void);
+#endif
 
 #ifdef __cplusplus
 }

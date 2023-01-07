@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,17 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
-#include "net/base/escape.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -47,13 +47,13 @@ base::FilePath ExternalFileURLToVirtualPath(const GURL& url) {
   if (!url.is_valid() || url.scheme() != content::kExternalFileScheme)
     return base::FilePath();
   return base::FilePath::FromUTF8Unsafe(
-      net::UnescapeBinaryURLComponent(url.path_piece()));
+      base::UnescapeBinaryURLComponent(url.path_piece()));
 }
 
 GURL VirtualPathToExternalFileURL(const base::FilePath& virtual_path) {
-  return GURL(
-      base::StringPrintf("%s:%s", content::kExternalFileScheme,
-                         net::EscapePath(virtual_path.AsUTF8Unsafe()).c_str()));
+  return GURL(base::StringPrintf(
+      "%s:%s", content::kExternalFileScheme,
+      base::EscapePath(virtual_path.AsUTF8Unsafe()).c_str()));
 }
 
 GURL CreateExternalFileURLFromPath(Profile* profile,
@@ -63,17 +63,14 @@ GURL CreateExternalFileURLFromPath(Profile* profile,
 
   GURL raw_file_system_url;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile,
-          path,
-          file_manager::kFileManagerAppId,
+          profile, path, file_manager::util::GetFileManagerURL(),
           &raw_file_system_url)) {
     return GURL();
   }
 
   const storage::FileSystemURL file_system_url =
-      file_manager::util::GetFileSystemContextForExtensionId(
-          profile, file_manager::kFileManagerAppId)
-          ->CrackURL(raw_file_system_url);
+      file_manager::util::GetFileManagerFileSystemContext(profile)
+          ->CrackURLInFirstPartyContext(raw_file_system_url);
   if (!file_system_url.is_valid())
     return GURL();
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,7 @@ public class MockNavigationController implements NavigationController {
     }
 
     @Override
-    public void setUseDesktopUserAgent(boolean override, boolean reloadOnChange) {}
+    public void setUseDesktopUserAgent(boolean override, boolean reloadOnChange, int caller) {}
 
     @Override
     public NavigationEntry getEntryAtIndex(int index) {

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace policy {
 
@@ -44,7 +44,7 @@ bool Base64UrlEncode(const std::set<std::string>& input,
 ResourceCache::ResourceCache(
     const base::FilePath& cache_dir,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::Optional<int64_t> max_cache_size)
+    absl::optional<int64_t> max_cache_size)
     : cache_dir_(cache_dir),
       task_runner_(task_runner),
       max_cache_size_(max_cache_size) {
@@ -302,9 +302,9 @@ int64_t ResourceCache::GetCacheDirectoryOrFileSize(
   if (base::DirectoryExists(path)) {
     int types = base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES;
     base::FileEnumerator enumerator(path, /* recursive */ false, types);
-    for (base::FilePath path = enumerator.Next(); !path.empty();
-         path = enumerator.Next()) {
-      path_size += GetCacheDirectoryOrFileSize(path);
+    for (base::FilePath child_path = enumerator.Next(); !child_path.empty();
+         child_path = enumerator.Next()) {
+      path_size += GetCacheDirectoryOrFileSize(child_path);
     }
   } else if (!base::GetFileSize(path, &path_size)) {
     path_size = 0;

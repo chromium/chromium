@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/bindings/core/v8/profiler_trace_builder.h"
-
 #include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_frame.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_profiler_marker.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_sample.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_stack.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_trace.h"
@@ -28,9 +28,11 @@ ProfilerTrace* ProfilerTraceBuilder::FromProfile(
   if (profile) {
     for (int i = 0; i < profile->GetSamplesCount(); i++) {
       const auto* node = profile->GetSample(i);
-      auto timestamp = base::TimeTicks() + base::TimeDelta::FromMicroseconds(
-                                               profile->GetSampleTimestamp(i));
-      builder->AddSample(node, timestamp);
+      auto timestamp = base::TimeTicks() +
+                       base::Microseconds(profile->GetSampleTimestamp(i));
+      const auto state = profile->GetSampleState(i);
+      const auto embedder_state = profile->GetSampleEmbedderState(i);
+      builder->AddSample(node, timestamp, state, embedder_state);
     }
   }
   return builder->GetTrace();
@@ -50,8 +52,11 @@ void ProfilerTraceBuilder::Trace(Visitor* visitor) const {
   visitor->Trace(samples_);
 }
 
-void ProfilerTraceBuilder::AddSample(const v8::CpuProfileNode* node,
-                                     base::TimeTicks timestamp) {
+void ProfilerTraceBuilder::AddSample(
+    const v8::CpuProfileNode* node,
+    base::TimeTicks timestamp,
+    const v8::StateTag state,
+    const v8::EmbedderStateTag embedder_state) {
   auto* sample = ProfilerSample::Create();
   // TODO(yoav): This should not use MonotonicTimeToDOMHighResTimeStamp, as
   // these timestamps are clamped, which makes no sense for traces. Since this
@@ -62,26 +67,23 @@ void ProfilerTraceBuilder::AddSample(const v8::CpuProfileNode* node,
       /*cross_origin_isolated_capability=*/true);
 
   sample->setTimestamp(relative_timestamp);
-  if (base::Optional<wtf_size_t> stack_id = GetOrInsertStackId(node))
+  if (absl::optional<wtf_size_t> stack_id = GetOrInsertStackId(node))
     sample->setStackId(*stack_id);
+
+  if (absl::optional<blink::V8ProfilerMarker> marker =
+          BlinkStateToMarker(embedder_state, state))
+    sample->setMarker(*marker);
 
   samples_.push_back(sample);
 }
 
-base::Optional<wtf_size_t> ProfilerTraceBuilder::GetOrInsertStackId(
+absl::optional<wtf_size_t> ProfilerTraceBuilder::GetOrInsertStackId(
     const v8::CpuProfileNode* node) {
   if (!node)
-    return base::Optional<wtf_size_t>();
+    return absl::optional<wtf_size_t>();
 
-  // Omit frames that don't pass a cross-origin check.
-  // Do this at the stack level (rather than the frame level) to avoid
-  // including skeleton frames without data.
-  KURL resource_url(node->GetScriptResourceNameStr());
-  if (!ShouldIncludeStackFrame(resource_url, node->GetScriptId(),
-                               node->GetSourceType(),
-                               node->IsScriptSharedCrossOrigin())) {
+  if (!ShouldIncludeStackFrame(node))
     return GetOrInsertStackId(node->GetParent());
-  }
 
   auto existing_stack_id = node_to_stack_map_.find(node);
   if (existing_stack_id != node_to_stack_map_.end()) {
@@ -93,7 +95,7 @@ base::Optional<wtf_size_t> ProfilerTraceBuilder::GetOrInsertStackId(
   auto* stack = ProfilerStack::Create();
   wtf_size_t frame_id = GetOrInsertFrameId(node);
   stack->setFrameId(frame_id);
-  if (base::Optional<int> parent_stack_id =
+  if (absl::optional<int> parent_stack_id =
           GetOrInsertStackId(node->GetParent()))
     stack->setParentId(*parent_stack_id);
 
@@ -155,22 +157,31 @@ ProfilerTrace* ProfilerTraceBuilder::GetTrace() const {
 }
 
 bool ProfilerTraceBuilder::ShouldIncludeStackFrame(
-    const KURL& script_url,
-    int script_id,
-    v8::CpuProfileNode::SourceType source_type,
-    bool script_shared_cross_origin) {
+    const v8::CpuProfileNode* node) {
+  DCHECK(node);
+
   // Omit V8 metadata frames.
+  const v8::CpuProfileNode::SourceType source_type = node->GetSourceType();
   if (source_type != v8::CpuProfileNode::kScript &&
       source_type != v8::CpuProfileNode::kBuiltin &&
       source_type != v8::CpuProfileNode::kCallback) {
     return false;
   }
 
-  // If we couldn't derive script data, only allow builtins and callbacks.
-  if (script_id == v8::UnboundScript::kNoScriptId) {
-    return source_type == v8::CpuProfileNode::kBuiltin ||
-           source_type == v8::CpuProfileNode::kCallback;
+  // Attempt to attribute each stack frame to a script.
+  // - For JS functions, this is their own script.
+  // - For builtins, this is the first attributable caller script.
+  const v8::CpuProfileNode* resource_node = node;
+  if (source_type != v8::CpuProfileNode::kScript) {
+    while (resource_node &&
+           resource_node->GetScriptId() == v8::UnboundScript::kNoScriptId) {
+      resource_node = resource_node->GetParent();
+    }
   }
+  if (!resource_node)
+    return false;
+
+  int script_id = resource_node->GetScriptId();
 
   // If we already tested whether or not this script was cross-origin, return
   // the cached results.
@@ -178,13 +189,16 @@ bool ProfilerTraceBuilder::ShouldIncludeStackFrame(
   if (it != script_same_origin_cache_.end())
     return it->value;
 
-  if (!script_url.IsValid())
+  KURL resource_url(resource_node->GetScriptResourceNameStr());
+  if (!resource_url.IsValid())
     return false;
 
-  auto origin = SecurityOrigin::Create(script_url);
-  // TODO(acomminos): Consider easing this check based on optional headers.
-  bool allowed =
-      script_shared_cross_origin || origin->IsSameOriginWith(allowed_origin_);
+  auto origin = SecurityOrigin::Create(resource_url);
+  // Omit frames that don't pass a cross-origin check.
+  // Do this at the stack level (rather than the frame level) to avoid
+  // including skeleton frames without data.
+  bool allowed = resource_node->IsScriptSharedCrossOrigin() ||
+                 origin->IsSameOriginWith(allowed_origin_);
   script_same_origin_cache_.Set(script_id, allowed);
   return allowed;
 }

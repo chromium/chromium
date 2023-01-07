@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@ class PlatformSensorProvider : public PlatformSensorProviderBase {
   // the current platform.
   static std::unique_ptr<PlatformSensorProvider> Create();
 
+  PlatformSensorProvider(const PlatformSensorProvider&) = delete;
+  PlatformSensorProvider& operator=(const PlatformSensorProvider&) = delete;
+
   ~PlatformSensorProvider() override = default;
 
  protected:
@@ -28,8 +31,6 @@ class PlatformSensorProvider : public PlatformSensorProviderBase {
   // Determines if the ISensor or Windows.Devices.Sensors implementation
   // should be used on Windows.
   static bool UseWindowsWinrt();
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorProvider);
 };
 
 }  // namespace device

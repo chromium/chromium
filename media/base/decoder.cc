@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/base/decoder.h"
+
+#include "base/notreached.h"
 
 namespace media {
 
@@ -52,9 +54,6 @@ std::string GetDecoderName(VideoDecoderType type) {
       return "V4L2VideoDecoder";
     case VideoDecoderType::kTesting:
       return "Testing or Mock Video decoder";
-    default:
-      NOTREACHED();
-      return "VideoDecoderType created through invalid static_cast";
   }
 }
 
@@ -72,11 +71,14 @@ std::string GetDecoderName(AudioDecoderType type) {
       return "MediaCodecAudioDecoder";
     case AudioDecoderType::kBroker:
       return "AudioDecoderBroker";
+    case AudioDecoderType::kPassthroughDTS:
+      return "PassthroughDTSAudioDecoder";
     case AudioDecoderType::kTesting:
       return "Testing or Mock Audio decoder";
-    default:
-      NOTREACHED();
-      return "VideoDecoderType created through invalid static_cast";
+    case AudioDecoderType::kAudioToolbox:
+      return "AudioToolbox";
+    case AudioDecoderType::kMediaFoundation:
+      return "MediaFoundationAudioDecoder";
   }
 }
 

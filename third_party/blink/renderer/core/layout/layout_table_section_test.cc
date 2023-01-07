@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ namespace {
 class LayoutTableSectionTest : public RenderingTest {
  protected:
   LayoutTableSection* GetSectionByElementId(const char* id) {
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGTableEnabled());
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGEnabled());
     return To<LayoutTableSection>(GetLayoutObjectByElementId(id));
   }
 
@@ -30,7 +30,7 @@ class LayoutTableSectionTest : public RenderingTest {
     for (unsigned i = 0; i < rows; ++i) {
       auto* row = GetDocument().CreateRawElement(html_names::kTrTag);
       section->appendChild(row);
-      for (unsigned i = 0; i < columns; ++i)
+      for (unsigned column = 0; column < columns; ++column)
         row->appendChild(GetDocument().CreateRawElement(html_names::kTdTag));
     }
     UpdateAllLifecyclePhasesForTest();
@@ -90,7 +90,7 @@ TEST_F(LayoutTableSectionTest, BackgroundIsKnownToBeOpaqueWithEmptyCell) {
 
 TEST_F(LayoutTableSectionTest, EmptySectionDirtiedRowsAndEffeciveColumns) {
   // TablesNG does not support the API.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
 
   SetBodyInnerHTML(R"HTML(
@@ -115,7 +115,7 @@ TEST_F(LayoutTableSectionTest, EmptySectionDirtiedRowsAndEffeciveColumns) {
 
 TEST_F(LayoutTableSectionTest, PrimaryCellAtAndOriginatingCellAt) {
   // TablesNG does not support the API.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(
     <table>
@@ -153,7 +153,7 @@ TEST_F(LayoutTableSectionTest, PrimaryCellAtAndOriginatingCellAt) {
 
 TEST_F(LayoutTableSectionTest, DirtiedRowsAndEffectiveColumnsWithSpans) {
   // TablesNG does not support the API.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -244,7 +244,7 @@ TEST_F(LayoutTableSectionTest, DirtiedRowsAndEffectiveColumnsWithSpans) {
 TEST_F(LayoutTableSectionTest,
        DirtiedRowsAndEffectiveColumnsWithCollapsedBorders) {
   // TablesNG does not support DirtiedRowsAndEffectiveColumns.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -341,7 +341,7 @@ static void SetCellsOverflowInRow(LayoutTableRow* row) {
 
 TEST_F(LayoutTableSectionTest, OverflowingCells) {
   // TablesNG does not support the API.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(
     <style>

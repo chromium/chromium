@@ -1,0 +1,45 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: rgb(255, 255, 255);
+  }
+  div {
+    color: rgb(31, 31, 31);
+  }
+ }
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: rgb(31, 31, 31);
+  }
+  div {
+    color: rgb(227, 227, 227);
+  }
+}
+
+.center {
+  left: 50%;
+  position: fixed;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.center-bottom {
+  left: 50%;
+  position: fixed;
+  top: 90%;
+  transform: translate(-50%, -50%);
+}
+.icon {
+  border-radius: 50%;
+  height: 160px;
+  width: 160px;
+}
+.message {
+  font-family: 'Google Sans';
+  text-align: center;
+  width: 80%;
+}
+

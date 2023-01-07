@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/tab_metrics_event.pb.h"
@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -46,6 +47,10 @@ constexpr char kExampleDomain[] = "example.com";
 class FakeBrowserWindow : public TestBrowserWindow {
  public:
   FakeBrowserWindow() = default;
+
+  FakeBrowserWindow(const FakeBrowserWindow&) = delete;
+  FakeBrowserWindow& operator=(const FakeBrowserWindow&) = delete;
+
   ~FakeBrowserWindow() override = default;
 
   // Helper function to handle FakeBrowserWindow lifetime. Modeled after
@@ -103,11 +108,9 @@ class FakeBrowserWindow : public TestBrowserWindow {
   }
 
  private:
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
   bool is_active_ = false;
   ui::WindowShowState show_state_ = ui::SHOW_STATE_NORMAL;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBrowserWindow);
 };
 
 }  // namespace
@@ -134,9 +137,9 @@ class TabMetricsLoggerTest : public ChromeRenderViewHostTestHarness {
 
   TabActivitySimulator tab_activity_simulator_;
   std::unique_ptr<Browser> browser_;
-  TabStripModel* tab_strip_model_;
-  content::WebContents* web_contents_;
-  content::WebContentsTester* web_contents_tester_;
+  raw_ptr<TabStripModel> tab_strip_model_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContentsTester> web_contents_tester_;
   TabMetricsLogger::PageMetrics pg_metrics_;
 
   void TearDown() override {
@@ -293,6 +296,10 @@ TEST_F(TabMetricsLoggerTest, GetTabFeatures) {
 // Checks that ForegroundedOrClosed event is logged correctly.
 // TODO(charleszhao): add checks for TabMetrics event.
 class TabMetricsLoggerUKMTest : public ::testing::Test {
+ public:
+  TabMetricsLoggerUKMTest(const TabMetricsLoggerUKMTest&) = delete;
+  TabMetricsLoggerUKMTest& operator=(const TabMetricsLoggerUKMTest&) = delete;
+
  protected:
   TabMetricsLoggerUKMTest() = default;
 
@@ -327,8 +334,6 @@ class TabMetricsLoggerUKMTest : public ::testing::Test {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   // The object being tested:
   TabMetricsLogger logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabMetricsLoggerUKMTest);
 };
 
 // Checks TabFeature is logged correctly with TabMetricsLogger::LogTabMetrics.
@@ -476,7 +481,7 @@ TEST_F(TabMetricsLoggerTest, CreateWindowFeaturesTestMoveTabToOtherWindow) {
 
   // Drag the tab out of its window.
   std::unique_ptr<content::WebContents> dragged_tab =
-      starting_browser->tab_strip_model()->DetachWebContentsAt(1);
+      starting_browser->tab_strip_model()->DetachWebContentsAtForInsertion(1);
   starting_browser_metrics.tab_count--;
   EXPECT_EQ(TabMetricsLogger::CreateWindowFeatures(starting_browser.get()),
             starting_browser_metrics);
@@ -491,7 +496,7 @@ TEST_F(TabMetricsLoggerTest, CreateWindowFeaturesTestMoveTabToOtherWindow) {
       FakeBrowserWindow::CreateBrowserWithFakeWindowForParams(params);
   created_browser->window()->Activate();
   created_browser->tab_strip_model()->InsertWebContentsAt(
-      0, std::move(dragged_tab), TabStripModel::ADD_ACTIVE);
+      0, std::move(dragged_tab), AddTabTypes::ADD_ACTIVE);
 
   WindowFeatures created_browser_metrics{WindowMetricsEvent::TYPE_TABBED,
                                          WindowMetricsEvent::SHOW_STATE_NORMAL,
@@ -522,7 +527,7 @@ TEST_F(TabMetricsLoggerTest, CreateWindowFeaturesTestReplaceTab) {
             expected_metrics);
 
   // Replace the tab.
-  content::WebContents::CreateParams web_contents_params(profile(), nullptr);
+  content::WebContents::CreateParams web_contents_params(profile());
   std::unique_ptr<content::WebContents> new_contents = base::WrapUnique(
       content::WebContentsTester::CreateTestWebContents(web_contents_params));
   std::unique_ptr<content::WebContents> old_contents =
@@ -532,7 +537,7 @@ TEST_F(TabMetricsLoggerTest, CreateWindowFeaturesTestReplaceTab) {
             expected_metrics);
 
   // Close the replaced tab. This should update TabCount.
-  browser->tab_strip_model()->CloseWebContentsAt(1, TabStripModel::CLOSE_NONE);
+  browser->tab_strip_model()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
   expected_metrics.tab_count--;
   EXPECT_EQ(TabMetricsLogger::CreateWindowFeatures(browser.get()),
             expected_metrics);

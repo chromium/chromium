@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <stdint.h>
 #include <memory>
 
+#include "ash/components/arc/session/arc_management_transition.h"
 #include "base/callback_forward.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "components/arc/session/arc_supervision_transition.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 // Most utility should be put in components/arc/arc_util.{h,cc}, rather than
@@ -102,14 +102,18 @@ bool IsArcCompatibleFileSystemUsedForUser(const user_manager::User* user);
 // case.
 void DisallowArcForTesting();
 
+// Clears check if ARC allowed. For use at end of tests, in case a test
+// has a profile with the same memory address as a profile in a previous test.
+void ClearArcAllowedCheckForTesting();
+
 // Resets check if ARC allowed for the given |profile|.
 void ResetArcAllowedCheckForTesting(const Profile* profile);
 
 // Returns whether the user has opted in (or is opting in now) to use Google
 // Play Store on ARC.
-// This is almost equivalent to the value of "arc.enabled" preference. However,
-// in addition, if ARC is not allowed for the given |profile|, then returns
-// false. Please see detailed condition for the comment of
+// This is almost equivalent to the value of "arc.enabled" preference.
+// However, in addition, if ARC is not allowed for the given |profile|, then
+// returns false. Please see detailed condition for the comment of
 // IsArcAllowedForProfile().
 // Note: For historical reason, the preference name is not matched with the
 // actual meaning.
@@ -133,8 +137,8 @@ bool IsArcPlayStoreEnabledPreferenceManagedForProfile(const Profile* profile);
 bool SetArcPlayStoreEnabledForProfile(Profile* profile, bool enabled);
 
 // Returns whether all ARC related OptIn preferences (i.e.
-// ArcBackupRestoreEnabled and ArcLocationServiceEnabled) are managed or unused
-// (e.g. for Active Directory users).
+// ArcBackupRestoreEnabled and ArcLocationServiceEnabled) are managed or
+// unused (e.g. for Active Directory users).
 bool AreArcAllOptInPreferencesIgnorableForProfile(const Profile* profile);
 
 // Returns true iff there is a user associated with |profile|, and it is an
@@ -170,26 +174,27 @@ void UpdateArcFileSystemCompatibilityPrefIfNeeded(
     base::OnceClosure callback);
 
 // Returns the supervision transition status as stored in profile prefs.
-ArcSupervisionTransition GetSupervisionTransition(const Profile* profile);
+ArcManagementTransition GetManagementTransition(const Profile* profile);
 
 // Returns true if Play Store package is present and can be launched in this
 // session.
 bool IsPlayStoreAvailable();
 
-// Returns whether adding secondary account to ARC++ is enabled for child user.
+// Returns whether adding secondary account to ARC++ is enabled for child
+// user.
 bool IsSecondaryAccountForChildEnabled();
 
-// Skip to show OOBE/in sesion UI asking users to set up ARC OptIn preferences,
-// iff all of them are managed by the admin policy.
-// Skips in session play terms of service for managed user and starts ARC
-// directly. Leaves B&R/GLS off if not set by admin since users don't see
-// the Tos page.
+// Skip to show OOBE/in sesion UI asking users to set up ARC OptIn
+// preferences, iff all of them are managed by the admin policy. Skips in
+// session play terms of service for managed user and starts ARC directly.
+// Leaves B&R/GLS off if not set by admin since users don't see the Tos page.
 bool ShouldStartArcSilentlyForManagedProfile(const Profile* profile);
 
 // Returns an ARC window with the given task ID.
 aura::Window* GetArcWindow(int32_t task_id);
 
-// Creates a web contents for an ARC Custom Tab using the given profile and url.
+// Creates a web contents for an ARC Custom Tab using the given profile and
+// url.
 std::unique_ptr<content::WebContents> CreateArcCustomTabWebContents(
     Profile* profile,
     const GURL& url);

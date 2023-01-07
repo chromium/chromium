@@ -41,14 +41,14 @@ class MockUser(object):
                          list_title,
                          list_items,
                          can_choose_multiple=False,
-                         raw_input=raw_input):
+                         input_func=input):
         pass
 
     def __init__(self):
         self.opened_urls = []
         self._canned_responses = ['Mock user response']
 
-    def prompt(self, message, repeat=1, raw_input=raw_input):
+    def prompt(self, message, repeat=1, input_func=input):
         return self._canned_responses.pop(0)
 
     def set_canned_responses(self, responses):
@@ -56,7 +56,10 @@ class MockUser(object):
 
     def confirm(self, message=None, default='y'):
         _log.info(message)
-        return default == 'y'
+        response = default
+        if self._canned_responses:
+            response = self._canned_responses.pop(0)
+        return response == 'y'
 
     def can_open_url(self):
         return True

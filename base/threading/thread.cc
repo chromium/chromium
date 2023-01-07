@@ -1,10 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/threading/thread.h"
 
+#include <memory>
 #include <type_traits>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -27,11 +29,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 #include "base/files/file_descriptor_watcher_posix.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -50,16 +53,15 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
  public:
   explicit SequenceManagerThreadDelegate(
       MessagePumpType message_pump_type,
-      OnceCallback<std::unique_ptr<MessagePump>()> message_pump_factory,
-      sequence_manager::TimeDomain* time_domain)
+      OnceCallback<std::unique_ptr<MessagePump>()> message_pump_factory)
       : sequence_manager_(
             sequence_manager::internal::SequenceManagerImpl::CreateUnbound(
                 sequence_manager::SequenceManager::Settings::Builder()
                     .SetMessagePumpType(message_pump_type)
                     .Build())),
         default_task_queue_(sequence_manager_->CreateTaskQueue(
-            sequence_manager::TaskQueue::Spec("default_tq")
-                .SetTimeDomain(time_domain))),
+            sequence_manager::TaskQueue::Spec(
+                sequence_manager::QueueName::DEFAULT_TQ))),
         message_pump_factory_(std::move(message_pump_factory)) {
     sequence_manager_->SetDefaultTaskRunner(default_task_queue_->task_runner());
   }
@@ -97,7 +99,7 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
       sequence_manager_;
   scoped_refptr<sequence_manager::TaskQueue> default_task_queue_;
   OnceCallback<std::unique_ptr<MessagePump>()> message_pump_factory_;
-  base::Optional<SimpleTaskExecutor> simple_task_executor_;
+  absl::optional<SimpleTaskExecutor> simple_task_executor_;
 };
 
 }  // namespace
@@ -107,7 +109,33 @@ Thread::Options::Options() = default;
 Thread::Options::Options(MessagePumpType type, size_t size)
     : message_pump_type(type), stack_size(size) {}
 
-Thread::Options::Options(Options&& other) = default;
+Thread::Options::Options(ThreadType thread_type) : thread_type(thread_type) {}
+
+Thread::Options::Options(Options&& other)
+    : message_pump_type(std::move(other.message_pump_type)),
+      delegate(std::move(other.delegate)),
+      timer_slack(std::move(other.timer_slack)),
+      message_pump_factory(std::move(other.message_pump_factory)),
+      stack_size(std::move(other.stack_size)),
+      thread_type(std::move(other.thread_type)),
+      joinable(std::move(other.joinable)) {
+  other.moved_from = true;
+}
+
+Thread::Options& Thread::Options::operator=(Thread::Options&& other) {
+  DCHECK_NE(this, &other);
+
+  message_pump_type = std::move(other.message_pump_type);
+  delegate = std::move(other.delegate);
+  timer_slack = std::move(other.timer_slack);
+  message_pump_factory = std::move(other.message_pump_factory);
+  stack_size = std::move(other.stack_size);
+  thread_type = std::move(other.thread_type);
+  joinable = std::move(other.joinable);
+  other.moved_from = true;
+
+  return *this;
+}
 
 Thread::Options::~Options() = default;
 
@@ -132,20 +160,21 @@ bool Thread::Start() {
   DCHECK(owning_sequence_checker_.CalledOnValidSequence());
 
   Options options;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (com_status_ == STA)
     options.message_pump_type = MessagePumpType::UI;
 #endif
-  return StartWithOptions(options);
+  return StartWithOptions(std::move(options));
 }
 
-bool Thread::StartWithOptions(const Options& options) {
+bool Thread::StartWithOptions(Options options) {
+  DCHECK(options.IsValid());
   DCHECK(owning_sequence_checker_.CalledOnValidSequence());
   DCHECK(!delegate_);
   DCHECK(!IsRunning());
   DCHECK(!stopping_) << "Starting a non-joinable thread a second time? That's "
                      << "not allowed!";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK((com_status_ != STA) ||
          (options.message_pump_type == MessagePumpType::UI));
 #endif
@@ -160,18 +189,15 @@ bool Thread::StartWithOptions(const Options& options) {
 
   if (options.delegate) {
     DCHECK(!options.message_pump_factory);
-    DCHECK(!options.task_queue_time_domain);
-    delegate_ = WrapUnique(options.delegate);
+    delegate_ = std::move(options.delegate);
   } else if (options.message_pump_factory) {
     delegate_ = std::make_unique<SequenceManagerThreadDelegate>(
-        MessagePumpType::CUSTOM, options.message_pump_factory,
-        options.task_queue_time_domain);
+        MessagePumpType::CUSTOM, options.message_pump_factory);
   } else {
     delegate_ = std::make_unique<SequenceManagerThreadDelegate>(
         options.message_pump_type,
         BindOnce([](MessagePumpType type) { return MessagePump::Create(type); },
-                 options.message_pump_type),
-        options.task_queue_time_domain);
+                 options.message_pump_type));
   }
 
   start_event_.Reset();
@@ -181,12 +207,13 @@ bool Thread::StartWithOptions(const Options& options) {
   // fixed).
   {
     AutoLock lock(thread_lock_);
-    bool success =
-        options.joinable
-            ? PlatformThread::CreateWithPriority(options.stack_size, this,
-                                                 &thread_, options.priority)
-            : PlatformThread::CreateNonJoinableWithPriority(
-                  options.stack_size, this, options.priority);
+    bool success = options.joinable
+                       ? PlatformThread::CreateWithType(
+                             options.stack_size, this, &thread_,
+                             options.thread_type, options.message_pump_type)
+                       : PlatformThread::CreateNonJoinableWithType(
+                             options.stack_size, this, options.thread_type,
+                             options.message_pump_type);
     if (!success) {
       DLOG(ERROR) << "failed to create thread";
       return false;
@@ -347,17 +374,16 @@ void Thread::ThreadMain() {
   delegate_->BindToCurrentThread(timer_slack_);
   DCHECK(CurrentThread::Get());
   DCHECK(ThreadTaskRunnerHandle::IsSet());
-
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
   // Allow threads running a MessageLoopForIO to use FileDescriptorWatcher API.
   std::unique_ptr<FileDescriptorWatcher> file_descriptor_watcher;
   if (CurrentIOThread::IsSet()) {
-    file_descriptor_watcher.reset(
-        new FileDescriptorWatcher(delegate_->GetDefaultTaskRunner()));
+    file_descriptor_watcher = std::make_unique<FileDescriptorWatcher>(
+        delegate_->GetDefaultTaskRunner());
   }
-#endif
+#endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<win::ScopedCOMInitializer> com_initializer;
   if (com_status_ != NONE) {
     com_initializer.reset(
@@ -389,7 +415,7 @@ void Thread::ThreadMain() {
   // Let the thread do extra cleanup.
   CleanUp();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   com_initializer.reset();
 #endif
 

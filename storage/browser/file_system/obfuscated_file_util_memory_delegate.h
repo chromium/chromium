@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "storage/browser/file_system/native_file_util.h"
@@ -42,6 +41,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
     : public ObfuscatedFileUtilDelegate {
  public:
   ObfuscatedFileUtilMemoryDelegate(const base::FilePath& file_system_directory);
+
+  ObfuscatedFileUtilMemoryDelegate(const ObfuscatedFileUtilMemoryDelegate&) =
+      delete;
+  ObfuscatedFileUtilMemoryDelegate& operator=(
+      const ObfuscatedFileUtilMemoryDelegate&) = delete;
+
   ~ObfuscatedFileUtilMemoryDelegate() override;
 
   bool DirectoryExists(const base::FilePath& path) override;
@@ -53,7 +58,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
   NativeFileUtil::CopyOrMoveMode CopyOrMoveModeForDestination(
       const FileSystemURL& dest_url,
       bool copy) override;
-  base::File CreateOrOpen(const base::FilePath& path, int file_flags) override;
+  base::File CreateOrOpen(const base::FilePath& path,
+                          uint32_t file_flags) override;
   base::File::Error EnsureFileExists(const base::FilePath& path,
                                      bool* created) override;
   base::File::Error CreateDirectory(const base::FilePath& path,
@@ -69,12 +75,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
   base::File::Error CopyOrMoveFile(
       const base::FilePath& src_path,
       const base::FilePath& dest_path,
-      FileSystemOperation::CopyOrMoveOption option,
+      FileSystemOperation::CopyOrMoveOptionSet options,
       NativeFileUtil::CopyOrMoveMode mode) override;
   base::File::Error CopyInForeignFile(
       const base::FilePath& src_path,
       const base::FilePath& dest_path,
-      FileSystemOperation::CopyOrMoveOption option,
+      FileSystemOperation::CopyOrMoveOptionSet options,
       NativeFileUtil::CopyOrMoveMode mode) override;
   base::File::Error DeleteFile(const base::FilePath& path) override;
 
@@ -112,10 +118,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
 
   // Parses the given path into a decomposed path and performs validity checks
   // and normalization. Returns an empty value if checks fail.
-  base::Optional<DecomposedPath> ParsePath(const base::FilePath& path);
+  absl::optional<DecomposedPath> ParsePath(const base::FilePath& path);
 
   // Creates or opens a file specified in |dp|.
-  void CreateOrOpenInternal(const DecomposedPath& dp, int file_flags);
+  void CreateOrOpenInternal(const DecomposedPath& dp, uint32_t file_flags);
 
   // Moves a directory from |src_dp| to |dest_dp|.
   bool MoveDirectoryInternal(const DecomposedPath& src_dp,
@@ -135,8 +141,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
   std::vector<base::FilePath::StringType> root_path_components_;
 
   base::WeakPtrFactory<ObfuscatedFileUtilMemoryDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ObfuscatedFileUtilMemoryDelegate);
 };
 
 }  // namespace storage

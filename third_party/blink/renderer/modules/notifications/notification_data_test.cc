@@ -1,13 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/notifications/notification_data.h"
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_unsignedlong_unsignedlongsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_notification_action.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_notification_options.h"
 #include "third_party/blink/renderer/modules/notifications/notification.h"
@@ -54,11 +54,12 @@ TEST(NotificationDataTest, ReflectProperties) {
   V8TestingScope scope(base_url);
 
   Vector<unsigned> vibration_pattern;
-  for (size_t i = 0; i < base::size(kNotificationVibration); ++i)
+  for (size_t i = 0; i < std::size(kNotificationVibration); ++i)
     vibration_pattern.push_back(kNotificationVibration[i]);
 
-  UnsignedLongOrUnsignedLongSequence vibration_sequence;
-  vibration_sequence.SetUnsignedLongSequence(vibration_pattern);
+  auto* vibration_sequence =
+      MakeGarbageCollected<V8UnionUnsignedLongOrUnsignedLongSequence>(
+          vibration_pattern);
 
   HeapVector<Member<NotificationAction>> actions;
   for (size_t i = 0; i < Notification::maxActions(); ++i) {
@@ -141,11 +142,12 @@ TEST(NotificationDataTest, SilentNotificationWithVibration) {
   V8TestingScope scope;
 
   Vector<unsigned> vibration_pattern;
-  for (size_t i = 0; i < base::size(kNotificationVibration); ++i)
+  for (size_t i = 0; i < std::size(kNotificationVibration); ++i)
     vibration_pattern.push_back(kNotificationVibration[i]);
 
-  UnsignedLongOrUnsignedLongSequence vibration_sequence;
-  vibration_sequence.SetUnsignedLongSequence(vibration_pattern);
+  auto* vibration_sequence =
+      MakeGarbageCollected<V8UnionUnsignedLongOrUnsignedLongSequence>(
+          std::move(vibration_pattern));
 
   NotificationOptions* options =
       NotificationOptions::Create(scope.GetIsolate());
@@ -240,11 +242,12 @@ TEST(NotificationDataTest, VibrationNormalization) {
   V8TestingScope scope;
 
   Vector<unsigned> unnormalized_pattern;
-  for (size_t i = 0; i < base::size(kNotificationVibrationUnnormalized); ++i)
+  for (size_t i = 0; i < std::size(kNotificationVibrationUnnormalized); ++i)
     unnormalized_pattern.push_back(kNotificationVibrationUnnormalized[i]);
 
-  UnsignedLongOrUnsignedLongSequence vibration_sequence;
-  vibration_sequence.SetUnsignedLongSequence(unnormalized_pattern);
+  auto* vibration_sequence =
+      MakeGarbageCollected<V8UnionUnsignedLongOrUnsignedLongSequence>(
+          unnormalized_pattern);
 
   NotificationOptions* options =
       NotificationOptions::Create(scope.GetIsolate());
@@ -257,7 +260,7 @@ TEST(NotificationDataTest, VibrationNormalization) {
   EXPECT_FALSE(exception_state.HadException());
 
   Vector<int> normalized_pattern;
-  for (size_t i = 0; i < base::size(kNotificationVibrationNormalized); ++i)
+  for (size_t i = 0; i < std::size(kNotificationVibrationNormalized); ++i)
     normalized_pattern.push_back(kNotificationVibrationNormalized[i]);
 
   ASSERT_EQ(normalized_pattern.size(),
@@ -344,9 +347,8 @@ TEST(NotificationDataTest, MaximumActionCount) {
 TEST(NotificationDataTest, RejectsTriggerTimestampOverAYear) {
   V8TestingScope scope;
 
-  base::Time show_timestamp = base::Time::Now() +
-                              kMaxNotificationShowTriggerDelay +
-                              base::TimeDelta::FromDays(1);
+  base::Time show_timestamp =
+      base::Time::Now() + kMaxNotificationShowTriggerDelay + base::Days(1);
   TimestampTrigger* show_trigger =
       TimestampTrigger::Create(show_timestamp.ToJsTime());
 

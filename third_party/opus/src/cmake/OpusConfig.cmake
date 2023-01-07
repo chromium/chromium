@@ -9,16 +9,18 @@ configure_file(cmake/config.h.cmake.in config.h @ONLY)
 add_definitions(-DHAVE_CONFIG_H)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(GLOBAL PROPERTY C_STANDARD 99)
+
+if(MSVC)
+  # For compilers that have no notion of a C standard level,
+  # such as Microsoft Visual C++ before VS 16.7,
+  # this property has no effect.
+  set(CMAKE_C_STANDARD 11)
+else()
+  set(CMAKE_C_STANDARD 99)
+endif()
 
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-endif()
-
-include(CheckLibraryExists)
-check_library_exists(m floor "" HAVE_LIBM)
-if(HAVE_LIBM)
-  list(APPEND OPUS_REQUIRED_LIBRARIES m)
 endif()
 
 include(CFeatureCheck)
@@ -35,9 +37,18 @@ else()
   check_symbol_exists(alloca "stdlib.h;malloc.h" USE_ALLOCA_SUPPORTED)
 endif()
 
-include(CheckFunctionExists)
-check_function_exists(lrintf HAVE_LRINTF)
-check_function_exists(lrint HAVE_LRINT)
+include(CMakePushCheckState)
+cmake_push_check_state(RESET)
+include(CheckLibraryExists)
+check_library_exists(m floor "" HAVE_LIBM)
+if(HAVE_LIBM)
+  list(APPEND OPUS_REQUIRED_LIBRARIES m)
+  set(CMAKE_REQUIRED_LIBRARIES m)
+endif()
+
+check_symbol_exists(lrintf "math.h" HAVE_LRINTF)
+check_symbol_exists(lrint "math.h" HAVE_LRINT)
+cmake_pop_check_state()
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(i[0-9]86|x86|X86|amd64|AMD64|x86_64)")
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)

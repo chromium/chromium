@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,6 @@ namespace policy {
 class AutoLaunchProtocolsPolicyHandler
     : public policy::SchemaValidatingPolicyHandler {
  public:
-  static const char kProtocolNameKey[];
-  static const char kOriginListKey[];
-
   explicit AutoLaunchProtocolsPolicyHandler(
       const policy::Schema& chrome_schema);
 

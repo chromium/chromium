@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
@@ -19,7 +19,9 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "gin/v8_initializer.h"
 #include "headless/lib/browser/headless_browser_impl.h"
+#include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/lib/headless_content_main_delegate.h"
 #include "headless/public/devtools/domains/emulation.h"
@@ -32,6 +34,10 @@
 #include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#endif
+
 namespace headless {
 namespace {
 
@@ -42,10 +48,10 @@ class SynchronousLoadObserver {
       : web_contents_(web_contents),
         devtools_client_(HeadlessDevToolsClient::Create()) {
     web_contents_->GetDevToolsTarget()->AttachClient(devtools_client_.get());
-    load_observer_.reset(new LoadObserver(
+    load_observer_ = std::make_unique<LoadObserver>(
         devtools_client_.get(),
         base::BindOnce(&HeadlessBrowserTest::FinishAsynchronousTest,
-                       base::Unretained(browser_test))));
+                       base::Unretained(browser_test)));
   }
 
   ~SynchronousLoadObserver() {
@@ -57,7 +63,7 @@ class SynchronousLoadObserver {
   }
 
  private:
-  HeadlessWebContents* web_contents_;  // Not owned.
+  raw_ptr<HeadlessWebContents> web_contents_;  // Not owned.
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
   std::unique_ptr<LoadObserver> load_observer_;
 };
@@ -76,6 +82,9 @@ class EvaluateHelper {
                                        base::Unretained(this)));
   }
 
+  EvaluateHelper(const EvaluateHelper&) = delete;
+  EvaluateHelper& operator=(const EvaluateHelper&) = delete;
+
   ~EvaluateHelper() {
     web_contents_->GetDevToolsTarget()->DetachClient(devtools_client_.get());
   }
@@ -90,13 +99,11 @@ class EvaluateHelper {
   }
 
  private:
-  HeadlessBrowserTest* browser_test_;  // Not owned.
-  HeadlessWebContents* web_contents_;  // Not owned.
+  raw_ptr<HeadlessBrowserTest> browser_test_;  // Not owned.
+  raw_ptr<HeadlessWebContents> web_contents_;  // Not owned.
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
 
   std::unique_ptr<runtime::EvaluateResult> result_;
-
-  DISALLOW_COPY_AND_ASSIGN(EvaluateHelper);
 };
 
 }  // namespace
@@ -130,14 +137,14 @@ void LoadObserver::OnResponseReceived(
 }
 
 HeadlessBrowserTest::HeadlessBrowserTest() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac the source root is not set properly. We override it by assuming
   // that is two directories up from the execution test file.
   base::FilePath dir_exe_path;
   CHECK(base::PathService::Get(base::DIR_EXE, &dir_exe_path));
   dir_exe_path = dir_exe_path.Append("../../");
   CHECK(base::PathService::Override(base::DIR_SOURCE_ROOT, dir_exe_path));
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   base::FilePath headless_test_data(FILE_PATH_LITERAL("headless/test/data"));
   CreateTestServer(headless_test_data);
 }
@@ -160,6 +167,17 @@ void HeadlessBrowserTest::SetUpWithoutGPU() {
 HeadlessBrowserTest::~HeadlessBrowserTest() = default;
 
 void HeadlessBrowserTest::PreRunTestOnMainThread() {
+#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
+#if defined(USE_V8_CONTEXT_SNAPSHOT)
+  constexpr gin::V8SnapshotFileType kSnapshotType =
+      gin::V8SnapshotFileType::kWithAdditionalContext;
+#else
+  constexpr gin::V8SnapshotFileType kSnapshotType =
+      gin::V8SnapshotFileType::kDefault;
+#endif  // USE_V8_CONTEXT_SNAPSHOT
+  gin::V8Initializer::LoadV8Snapshot(kSnapshotType);
+#endif
+
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   // Pump startup related events.
   base::RunLoop().RunUntilIdle();
@@ -176,6 +194,18 @@ void HeadlessBrowserTest::PostRunTestOnMainThread() {
   base::RunLoop().RunUntilIdle();
 }
 
+#if BUILDFLAG(IS_MAC)
+void HeadlessBrowserTest::CreatedBrowserMainParts(
+    content::BrowserMainParts* parts) {
+  auto fake_geolocation_manager =
+      std::make_unique<device::FakeGeolocationManager>();
+  fake_geolocation_manager->SetSystemPermission(
+      device::LocationSystemPermissionStatus::kAllowed);
+  static_cast<HeadlessBrowserMainParts*>(parts)
+      ->SetGeolocationManagerForTesting(std::move(fake_geolocation_manager));
+}
+#endif
+
 HeadlessBrowser* HeadlessBrowserTest::browser() const {
   return HeadlessContentMainDelegate::GetInstance()->browser();
 }
@@ -184,12 +214,17 @@ HeadlessBrowser::Options* HeadlessBrowserTest::options() const {
   return HeadlessContentMainDelegate::GetInstance()->browser()->options();
 }
 
-bool HeadlessBrowserTest::WaitForLoad(HeadlessWebContents* web_contents) {
+bool HeadlessBrowserTest::WaitForLoad(HeadlessWebContents* web_contents,
+                                      net::Error* error) {
   HeadlessWebContentsImpl* web_contents_impl =
       HeadlessWebContentsImpl::From(web_contents);
   content::TestNavigationObserver observer(web_contents_impl->web_contents(),
                                            1);
   observer.Wait();
+
+  if (error)
+    *error = observer.last_net_error_code();
+
   return observer.last_navigation_succeeded();
 }
 
@@ -202,7 +237,7 @@ void HeadlessBrowserTest::WaitForLoadAndGainFocus(
   // is issued first is undefined. The following code is waiting on both, in any
   // order.
   content::TestNavigationObserver load_observer(content, 1);
-  content::FrameFocusedObserver focus_observer(content->GetMainFrame());
+  content::FrameFocusedObserver focus_observer(content->GetPrimaryMainFrame());
   load_observer.Wait();
   focus_observer.Wait();
 }
@@ -238,7 +273,7 @@ HeadlessAsyncDevTooledBrowserTest::~HeadlessAsyncDevTooledBrowserTest() =
 void HeadlessAsyncDevTooledBrowserTest::DevToolsTargetReady() {
   EXPECT_TRUE(web_contents_->GetDevToolsTarget());
   web_contents_->GetDevToolsTarget()->AttachClient(devtools_client_.get());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   devtools_client_->GetEmulation()->SetDeviceMetricsOverride(
       emulation::SetDeviceMetricsOverrideParams::Builder()
           .SetWidth(0)

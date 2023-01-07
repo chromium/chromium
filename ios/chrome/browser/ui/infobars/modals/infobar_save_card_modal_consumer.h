@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,9 @@ NSString* kExpirationYearPrefKey = @"expirationYear";
 NSString* kLegalMessagesPrefKey = @"legalMessages";
 NSString* kCurrentCardSavedPrefKey = @"currentCardSaved";
 NSString* kSupportsEditingPrefKey = @"supportsEditing";
+NSString* kDisplayedTargetAccountEmailPrefKey = @"displayedTargetAccountEmail";
+NSString* kDisplayedTargetAccountAvatarPrefKey =
+    @"displayedTargetAccountAvatar";
 }  // namespace
 
 // Consumer for model to push configurations to the SaveCard UI.

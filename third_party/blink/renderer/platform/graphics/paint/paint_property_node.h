@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,11 @@
 
 #include <algorithm>
 #include <iosfwd>
+
+#include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
+#include "cc/trees/property_tree.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -43,10 +47,16 @@ enum class PaintPropertyChangeType : unsigned char {
   // the value changes are 'simple' in that they don't cause cascading changes.
   // For example, they do not cause a new render surface to be created, which
   // may otherwise cause tree changes elsewhere. An example of this is opacity
-  // changing in the [0, 1) range.
+  // changing in the [0, 1) range. PaintPropertyTreeBuilder may try to directly
+  // update the associated compositor node through PaintArtifactCompositor::
+  // DirectlyUpdate*(), and if that's successful, the change will be downgraded
+  // to kChangeOnlyCompositedValues.
   kChangedOnlySimpleValues,
   // We only changed values and not the hierarchy of the tree, but nothing is
-  // known about the kind of value change.
+  // known about the kind of value change. The difference between
+  // kChangedOnlySimpleValues and kChangedOnlyValues is only meaningful in
+  // PaintPropertyTreeBuilder for eligibility of direct update of compositor
+  // node. Otherwise we should never distinguish between them.
   kChangedOnlyValues,
   // We have directly modified the tree topology by adding or removing a node.
   kNodeAddedOrRemoved,
@@ -98,10 +108,14 @@ class PaintPropertyNode
     return true;
   }
 
-  void ClearChangedToRoot() const { ClearChangedTo(nullptr); }
-  void ClearChangedTo(const NodeTypeOrAlias* node) const {
-    for (auto* n = this; n && n != node; n = n->Parent())
-      n->changed_ = PaintPropertyChangeType::kUnchanged;
+  // Clear changed flags along the path to the root, and set sequence number.
+  // If a subclass needs to clear changed flags along additional paths, the
+  // subclass must override this.
+  // For information about |sequence_number|, see: |changed_sequence_number_|.
+  void ClearChangedToRoot(int sequence_number) const {
+    for (auto* n = this; n && n->changed_sequence_number_ != sequence_number;
+         n = n->Parent())
+      n->ClearChanged(sequence_number);
   }
 
   // Returns true if this node is an alias for its parent. A parent alias is a
@@ -145,7 +159,8 @@ class PaintPropertyNode
   }
 
   int CcNodeId(int sequence_number) const {
-    return cc_sequence_number_ == sequence_number ? cc_node_id_ : -1;
+    return cc_sequence_number_ == sequence_number ? cc_node_id_
+                                                  : cc::kInvalidPropertyNodeId;
   }
   void SetCcNodeId(int sequence_number, int id) const {
     cc_sequence_number_ = sequence_number;
@@ -216,6 +231,15 @@ class PaintPropertyNode
     changed_ = std::max(changed_, changed);
   }
 
+  // For information about |sequence_number|, see: |changed_sequence_number_|.
+  void ClearChanged(int sequence_number) const {
+    DCHECK_NE(changed_sequence_number_, sequence_number);
+    changed_ = PaintPropertyChangeType::kUnchanged;
+    changed_sequence_number_ = sequence_number;
+  }
+
+  int ChangedSequenceNumber() const { return changed_sequence_number_; }
+
   std::unique_ptr<JSONObject> ToJSONBase() const {
     auto json = std::make_unique<JSONObject>();
     if (Parent())
@@ -239,18 +263,22 @@ class PaintPropertyNode
 
   // Indicates that the paint property value changed in the last update in the
   // prepaint lifecycle step. This is used for raster invalidation and damage
-  // in the compositor. This value is cleared through |ClearChangedTo*|. Before
-  // CompositeAfterPaint, this is cleared explicitly at the end of paint (see:
-  // LocalFrameView::RunPaintLifecyclePhase), otherwise this is cleared through
-  // PaintController::FinishCycle.
+  // in the compositor. This value is cleared through ClearChangedToRoot()
+  // called by PaintArtifactCompositor::ClearPropertyTreeChangedState().
   mutable PaintPropertyChangeType changed_;
-
-  scoped_refptr<const NodeTypeOrAlias> parent_;
+  // The changed sequence number is an optimization to avoid an O(n^2) to O(n^4)
+  // treewalk when clearing the changed bits for the entire tree. When starting
+  // to clear the changed bits, a new (unique) number is selected for the entire
+  // tree, and |changed_sequence_number_| is set to this number if the node (and
+  // ancestors) have already been visited for clearing.
+  mutable int changed_sequence_number_ = 0;
 
   // Caches the id of the associated cc property node. It's valid only when
   // cc_sequence_number_ matches the sequence number of the cc property tree.
-  mutable int cc_node_id_ = -1;
+  mutable int cc_node_id_ = cc::kInvalidPropertyNodeId;
   mutable int cc_sequence_number_ = 0;
+
+  scoped_refptr<const NodeTypeOrAlias> parent_;
 
 #if DCHECK_IS_ON()
   String debug_name_;
@@ -261,6 +289,8 @@ class PaintPropertyNode
 
 template <typename NodeType>
 class PropertyTreePrinter {
+  STACK_ALLOCATED();
+
  public:
   void AddNode(const NodeType* node) {
     if (node)
@@ -268,7 +298,7 @@ class PropertyTreePrinter {
   }
 
   String NodesAsTreeString() {
-    if (nodes_.IsEmpty())
+    if (nodes_.empty())
       return "";
     StringBuilder string_builder;
     BuildTreeString(string_builder, RootNode(), 0);
@@ -300,7 +330,7 @@ class PropertyTreePrinter {
     const auto* node = nodes_.back();
     while (!node->IsRoot())
       node = node->Parent();
-    if (node->DebugName().IsEmpty())
+    if (node->DebugName().empty())
       const_cast<NodeType*>(node)->SetDebugName("root");
     nodes_.insert(node);
     return *node;

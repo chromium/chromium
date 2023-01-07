@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
@@ -99,7 +99,7 @@ public class HomepagePolicyIntegrationTest {
     @Test
     @MediumTest
     @Feature({"Homepage"})
-    @FlakyTest(message = "crbug.com/1075804")
+    @DisabledTest(message = "crbug.com/1133544")
     public void testStartUpPage() {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -112,7 +112,7 @@ public class HomepagePolicyIntegrationTest {
         Assert.assertEquals("URL stored in shared preference should be the same as policy setting",
                 TEST_URL,
                 SharedPreferencesManager.getInstance().readString(
-                        ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY, ""));
+                        ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, ""));
 
         // METRICS_HOMEPAGE_LOCATION_TYPE is recorded once in deferred start up tasks.
         Assert.assertEquals("Settings.Homepage.LocationType should record POLICY_OTHER once.", 1,

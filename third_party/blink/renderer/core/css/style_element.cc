@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
@@ -40,16 +41,19 @@
 namespace blink {
 
 static bool IsCSS(const Element& element, const AtomicString& type) {
-  return type.IsEmpty() ||
+  return type.empty() ||
          (element.IsHTMLElement() ? EqualIgnoringASCIICase(type, "text/css")
                                   : (type == "text/css"));
 }
 
 StyleElement::StyleElement(Document* document, bool created_by_parser)
-    : created_by_parser_(created_by_parser),
+    : has_finished_parsing_children_(!created_by_parser),
       loading_(false),
       registered_as_candidate_(false),
-      start_position_(TextPosition::BelowRangePosition()) {
+      created_by_parser_(created_by_parser),
+      start_position_(TextPosition::BelowRangePosition()),
+      pending_sheet_type_(PendingSheetType::kNone),
+      render_blocking_behavior_(RenderBlockingBehavior::kUnset) {
   if (created_by_parser && document &&
       document->GetScriptableDocumentParser() &&
       !document->IsInDocumentWrite()) {
@@ -68,7 +72,7 @@ StyleElement::ProcessingResult StyleElement::ProcessStyleSheet(
 
   registered_as_candidate_ = true;
   document.GetStyleEngine().AddStyleSheetCandidateNode(element);
-  if (created_by_parser_)
+  if (!has_finished_parsing_children_)
     return kProcessingSuccessful;
 
   return Process(element);
@@ -91,7 +95,7 @@ void StyleElement::RemovedFrom(Element& element,
 }
 
 StyleElement::ProcessingResult StyleElement::ChildrenChanged(Element& element) {
-  if (created_by_parser_)
+  if (!has_finished_parsing_children_)
     return kProcessingSuccessful;
   probe::WillChangeStyleElement(&element);
   return Process(element);
@@ -100,7 +104,7 @@ StyleElement::ProcessingResult StyleElement::ChildrenChanged(Element& element) {
 StyleElement::ProcessingResult StyleElement::FinishParsingChildren(
     Element& element) {
   ProcessingResult result = Process(element);
-  created_by_parser_ = false;
+  has_finished_parsing_children_ = true;
   return result;
 }
 
@@ -114,8 +118,12 @@ void StyleElement::ClearSheet(Element& owner_element) {
   DCHECK(sheet_);
 
   if (sheet_->IsLoading()) {
-    owner_element.GetDocument().GetStyleEngine().RemovePendingSheet(
-        owner_element, style_engine_context_);
+    DCHECK(IsSameObject(owner_element));
+    if (pending_sheet_type_ != PendingSheetType::kNonBlocking) {
+      owner_element.GetDocument().GetStyleEngine().RemovePendingBlockingSheet(
+          owner_element, pending_sheet_type_);
+    }
+    pending_sheet_type_ = PendingSheetType::kNone;
   }
 
   sheet_.Release()->ClearOwnerNode();
@@ -129,6 +137,7 @@ static bool IsInUserAgentShadowDOM(const Element& element) {
 StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
                                                          const String& text) {
   DCHECK(element.isConnected());
+  DCHECK(IsSameObject(element));
   Document& document = element.GetDocument();
 
   ContentSecurityPolicy* csp =
@@ -144,32 +153,44 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
                                &element, text, element.nonce(), document.Url(),
                                start_position_.line_));
 
-  // Clearing the current sheet may remove the cache entry so create the new
-  // sheet first
+  // Use a strong reference to keep the cache entry (which is a weak reference)
+  // alive after ClearSheet().
+  Persistent<CSSStyleSheet> old_sheet = sheet_;
+  if (old_sheet)
+    ClearSheet(element);
+
   CSSStyleSheet* new_sheet = nullptr;
 
   // If type is empty or CSS, this is a CSS style sheet.
   const AtomicString& type = this->type();
   if (IsCSS(element, type) && passes_content_security_policy_checks) {
-    scoped_refptr<MediaQuerySet> media_queries;
+    MediaQuerySet* media_queries = nullptr;
     const AtomicString& media_string = media();
-    if (!media_string.IsEmpty()) {
+    bool media_query_matches = true;
+    if (!media_string.empty()) {
       media_queries =
           MediaQuerySet::Create(media_string, element.GetExecutionContext());
+      if (LocalFrame* frame = document.GetFrame()) {
+        MediaQueryEvaluator evaluator(frame);
+        media_query_matches = evaluator.Eval(*media_queries);
+      }
     }
+    auto type_and_behavior = ComputePendingSheetTypeAndRenderBlockingBehavior(
+        element, media_query_matches, created_by_parser_);
+    pending_sheet_type_ = type_and_behavior.first;
+    render_blocking_behavior_ = type_and_behavior.second;
+
     loading_ = true;
     TextPosition start_position =
         start_position_ == TextPosition::BelowRangePosition()
             ? TextPosition::MinimumPosition()
             : start_position_;
     new_sheet = document.GetStyleEngine().CreateSheet(
-        element, text, start_position, style_engine_context_);
+        element, text, start_position, pending_sheet_type_,
+        render_blocking_behavior_);
     new_sheet->SetMediaQueries(media_queries);
     loading_ = false;
   }
-
-  if (sheet_)
-    ClearSheet(element);
 
   sheet_ = new_sheet;
   if (sheet_)
@@ -189,13 +210,40 @@ bool StyleElement::SheetLoaded(Document& document) {
   if (IsLoading())
     return false;
 
-  document.GetStyleEngine().RemovePendingSheet(*sheet_->ownerNode(),
-                                               style_engine_context_);
+  DCHECK(IsSameObject(*sheet_->ownerNode()));
+  if (pending_sheet_type_ != PendingSheetType::kNonBlocking) {
+    document.GetStyleEngine().RemovePendingBlockingSheet(*sheet_->ownerNode(),
+                                                         pending_sheet_type_);
+  }
+  document.GetStyleEngine().SetNeedsActiveStyleUpdate(
+      sheet_->ownerNode()->GetTreeScope());
+  pending_sheet_type_ = PendingSheetType::kNone;
   return true;
 }
 
-void StyleElement::StartLoadingDynamicSheet(Document& document) {
-  document.GetStyleEngine().AddPendingSheet(style_engine_context_);
+void StyleElement::SetToPendingState(Document& document, Element& element) {
+  DCHECK(IsSameObject(element));
+  DCHECK_LT(pending_sheet_type_, PendingSheetType::kBlocking);
+  pending_sheet_type_ = PendingSheetType::kBlocking;
+  document.GetStyleEngine().AddPendingBlockingSheet(element,
+                                                    pending_sheet_type_);
+}
+
+void StyleElement::BlockingAttributeChanged(Element& element) {
+  // If this is a dynamically inserted style element, and the `blocking`
+  // has changed so that the element is no longer render-blocking, then unblock
+  // rendering on this element. Note that Parser-inserted stylesheets are
+  // render-blocking by default, so removing `blocking=render` does not unblock
+  // rendering.
+  if (pending_sheet_type_ != PendingSheetType::kDynamicRenderBlocking)
+    return;
+  if (!IsA<HTMLElement>(element) ||
+      To<HTMLElement>(element).IsPotentiallyRenderBlocking()) {
+    return;
+  }
+  element.GetDocument().GetStyleEngine().RemovePendingBlockingSheet(
+      element, pending_sheet_type_);
+  pending_sheet_type_ = PendingSheetType::kNonBlocking;
 }
 
 void StyleElement::Trace(Visitor* visitor) const {

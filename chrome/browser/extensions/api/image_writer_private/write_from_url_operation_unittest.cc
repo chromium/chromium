@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -118,7 +118,7 @@ class ImageWriterWriteFromUrlOperationTest : public ImageWriterUnitTestBase {
       const std::string& hash) {
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         url_loader_factory_remote;
-    content::BrowserContext::GetDefaultStoragePartition(&test_profile_)
+    test_profile_.GetDefaultStoragePartition()
         ->GetURLLoaderFactoryForBrowserProcess()
         ->Clone(url_loader_factory_remote.InitWithNewPipeAndPassReceiver());
 

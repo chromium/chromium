@@ -41,9 +41,10 @@
 #include <utility>
 
 #include "absl/algorithm/container.h"
+#include "absl/base/macros.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"  // IWYU pragma: export
-#include "absl/container/internal/node_hash_policy.h"
+#include "absl/container/internal/node_slot_policy.h"
 #include "absl/container/internal/raw_hash_map.h"  // IWYU pragma: export
 #include "absl/memory/memory.h"
 
@@ -76,6 +77,10 @@ class NodeHashMapPolicy;
 // If your type is not yet supported by the `absl::Hash` framework, see
 // absl/hash/hash.h for information on extending Abseil hashing to user-defined
 // types.
+//
+// Using `absl::node_hash_map` at interface boundaries in dynamically loaded
+// libraries (e.g. .dll, .so) is unsupported due to way `absl::Hash` values may
+// be randomized across dynamically loaded libraries.
 //
 // Example:
 //
@@ -347,8 +352,8 @@ class node_hash_map
   // `node_hash_map`.
   //
   //   iterator try_emplace(const_iterator hint,
-  //                        const init_type& k, Args&&... args):
-  //   iterator try_emplace(const_iterator hint, init_type&& k, Args&&... args):
+  //                        const key_type& k, Args&&... args):
+  //   iterator try_emplace(const_iterator hint, key_type&& k, Args&&... args):
   //
   // Inserts (via copy or move) the element of the specified key into the
   // `node_hash_map` using the position of `hint` as a non-binding suggestion
@@ -525,17 +530,19 @@ class node_hash_map
 // erase_if(node_hash_map<>, Pred)
 //
 // Erases all elements that satisfy the predicate `pred` from the container `c`.
+// Returns the number of erased elements.
 template <typename K, typename V, typename H, typename E, typename A,
           typename Predicate>
-void erase_if(node_hash_map<K, V, H, E, A>& c, Predicate pred) {
-  container_internal::EraseIf(pred, &c);
+typename node_hash_map<K, V, H, E, A>::size_type erase_if(
+    node_hash_map<K, V, H, E, A>& c, Predicate pred) {
+  return container_internal::EraseIf(pred, &c);
 }
 
 namespace container_internal {
 
 template <class Key, class Value>
 class NodeHashMapPolicy
-    : public absl::container_internal::node_hash_policy<
+    : public absl::container_internal::node_slot_policy<
           std::pair<const Key, Value>&, NodeHashMapPolicy<Key, Value>> {
   using value_type = std::pair<const Key, Value>;
 

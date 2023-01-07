@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <head>
   <title>Subresource loading with Web Bundles</title>
-  <link rel="webbundle" href="../resources/wbn/hello.wbn"
-        resources="http://127.0.0.1:8000/loading/wbn/resources/wbn/server/hello/script.js
-                   http://127.0.0.1:8000/loading/wbn/resources/wbn/server/hello/notfound.js">
+  <script type="webbundle">
+    {
+      "source":"../resources/wbn/hello.wbn",
+      "resources": [
+        "http://127.0.0.1:8000/loading/wbn/resources/wbn/server/hello/script.js",
+        "http://127.0.0.1:8000/loading/wbn/resources/wbn/server/hello/notfound.js"
+      ]
+    }
+  </script>
 </head>
 <body>
 <script>
@@ -19,7 +25,7 @@ await new Promise((resolve) => {
     window.addEventListener('load', () => setTimeout(resolve, 0));
   });
 
-if (!document.createElement('link').relList.supports('webbundle')) {
+if (!HTMLScriptElement.supports('webbundle')) {
   console.error("Subresource Web Bundles is not supported");
   testRunner.notifyDone();
   return;

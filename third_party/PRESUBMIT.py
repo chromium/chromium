@@ -1,10 +1,12 @@
-# Copyright (c) 2011 The Chromium Authors. All rights reserved.
+# Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import os
 
-ANDROID_WHITELISTED_LICENSES = [
+USE_PYTHON3 = True
+
+ANDROID_ALLOWED_LICENSES = [
   'A(pple )?PSL 2(\.0)?',
   'Android Software Development Kit License',
   'Apache( License)?,?( Version)? 2(\.0)?',
@@ -27,7 +29,7 @@ ANDROID_WHITELISTED_LICENSES = [
 ]
 
 def LicenseIsCompatibleWithAndroid(input_api, license):
-  regex = '^(%s)$' % '|'.join(ANDROID_WHITELISTED_LICENSES)
+  regex = '^(%s)$' % '|'.join(ANDROID_ALLOWED_LICENSES)
   tokens = \
     [x.strip() for x in input_api.re.split(' and |,', license) if len(x) > 0]
   has_compatible_license = False
@@ -63,7 +65,11 @@ def _CheckThirdPartyReadmesUpdated(input_api, output_api):
         not local_path.startswith('third_party' + input_api.os_path.sep +
                                   'feed_library' + input_api.os_path.sep) and
         not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'mojo' + input_api.os_path.sep) and
+                                  'ipcz' + input_api.os_path.sep) and
+        # TODO(danakj): We should look for the README.chromium file in
+        # third_party/rust/CRATE_NAME/vVERSION/.
+        not local_path.startswith('third_party' + input_api.os_path.sep +
+                                  'rust' + input_api.os_path.sep) and
         not local_path.startswith('third_party' + input_api.os_path.sep +
                                   'webxr_test_pages' + input_api.os_path.sep)):
       files.append(f)
@@ -84,7 +90,7 @@ def _CheckThirdPartyReadmesUpdated(input_api, output_api):
     r'^Short Name: [a-zA-Z0-9_\-\.]+\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
   version_pattern = input_api.re.compile(
-    r'^Version: [a-zA-Z0-9_\-\+\.:]+\r?$',
+    r'^Version: [a-zA-Z0-9_\-\+\.:/]+\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
   release_pattern = input_api.re.compile(
     r'^Security Critical: (yes|no)\r?$',

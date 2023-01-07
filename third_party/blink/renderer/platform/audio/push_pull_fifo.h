@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_PUSH_PULL_FIFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_PUSH_PULL_FIFO_H_
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -42,14 +43,16 @@ class PLATFORM_EXPORT PushPullFIFO {
 
  public:
   // Maximum FIFO length. (512 render quanta)
-  static const size_t kMaxFIFOLength;
+  static const uint32_t kMaxFIFOLength;
 
   // |fifo_length| cannot exceed |kMaxFIFOLength|. Otherwise it crashes.
   // ||render_quantum_frames| is the render size used by the audio graph.  It
   // |defaults to 128, the original and default render size.
   explicit PushPullFIFO(unsigned number_of_channels,
-                        size_t fifo_length,
+                        uint32_t fifo_length,
                         unsigned render_quantum_frames = 128);
+  PushPullFIFO(const PushPullFIFO&) = delete;
+  PushPullFIFO& operator=(const PushPullFIFO&) = delete;
   ~PushPullFIFO();
 
   // Pushes the rendered frames by WebAudio engine.
@@ -69,18 +72,33 @@ class PLATFORM_EXPORT PushPullFIFO {
   //  - In case of underflow (FIFO empty while pull), the remaining space in the
   //    requested output bus will be filled with silence. Thus it will fulfill
   //    the request from the consumer without causing error, but with a glitch.
-  size_t Pull(AudioBus* output_bus, size_t frames_requested);
+  size_t Pull(AudioBus* output_bus, uint32_t frames_requested);
 
-  size_t length() const { return fifo_length_; }
+  // Pull and update |ear_mark_frames_| to make the dual thread rendering mode
+  // (i.e. AudioWorklet) more smooth. The single thread rendering does not need
+  // this treatment.
+  size_t PullAndUpdateEarmark(AudioBus* output_bus, uint32_t frames_requested);
+
+  void SetEarmarkFrames(size_t earmark_frames) {
+    DCHECK(IsMainThread());
+    base::AutoLock locker(lock_);
+    earmark_frames_ = earmark_frames;
+  }
+
+  uint32_t length() const { return fifo_length_; }
   unsigned NumberOfChannels() const {
     lock_.AssertAcquired();
     return fifo_bus_->NumberOfChannels();
   }
 
-  // TODO(hongchan): For single thread unit test only. Consider refactoring.
   AudioBus* GetFIFOBusForTest() {
-    MutexLocker locker(lock_);
+    base::AutoLock locker(lock_);
     return fifo_bus_.get();
+  }
+
+  size_t GetEarmarkFramesForTest() {
+    base::AutoLock locker(lock_);
+    return earmark_frames_;
   }
 
   // For single thread unit test only. Get the current configuration that
@@ -90,7 +108,7 @@ class PLATFORM_EXPORT PushPullFIFO {
 
  private:
   // The size of the FIFO.
-  const size_t fifo_length_ = 0;
+  const uint32_t fifo_length_ = 0;
 
   // The render size used by the audio graph.
   const unsigned render_quantum_frames_;
@@ -100,14 +118,17 @@ class PLATFORM_EXPORT PushPullFIFO {
   unsigned overflow_count_ = 0;
   unsigned underflow_count_ = 0;
 
-  Mutex lock_;
+  base::Lock lock_;
+
+  // To adapt the unstable callback timing. Every buffer underrun from
+  // PullAndUpdateEarmark() will increase this number.
+  size_t earmark_frames_ GUARDED_BY(lock_) = 0;
+
   // The number of frames in the FIFO actually available for pulling.
-  size_t frames_available_ GUARDED_BY(lock_) = 0;
+  uint32_t frames_available_ GUARDED_BY(lock_) = 0;
   size_t index_read_ GUARDED_BY(lock_) = 0;
   size_t index_write_ GUARDED_BY(lock_) = 0;
   scoped_refptr<AudioBus> fifo_bus_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(PushPullFIFO);
 };
 
 }  // namespace blink

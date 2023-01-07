@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/browser/media_session_service.h"
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "build/chromeos_buildflags.h"
@@ -14,7 +13,7 @@
 #include "services/media_session/public/cpp/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -35,30 +34,28 @@ class LacrosMediaSessionServiceImpl
   void BindAudioFocusManager(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
       override {
-    auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-    if (lacros_chrome_service &&
-        lacros_chrome_service->IsMediaSessionAudioFocusAvailable()) {
-      lacros_chrome_service->BindAudioFocusManager(std::move(receiver));
+    auto* lacros_service = chromeos::LacrosService::Get();
+    if (lacros_service && lacros_service->IsMediaSessionAudioFocusAvailable()) {
+      lacros_service->BindAudioFocusManager(std::move(receiver));
     }
   }
 
   void BindAudioFocusManagerDebug(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
           receiver) override {
-    auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-    if (lacros_chrome_service &&
-        lacros_chrome_service->IsMediaSessionAudioFocusDebugAvailable()) {
-      lacros_chrome_service->BindAudioFocusManagerDebug(std::move(receiver));
+    auto* lacros_service = chromeos::LacrosService::Get();
+    if (lacros_service &&
+        lacros_service->IsMediaSessionAudioFocusDebugAvailable()) {
+      lacros_service->BindAudioFocusManagerDebug(std::move(receiver));
     }
   }
 
   void BindMediaControllerManager(
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
           receiver) override {
-    auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-    if (lacros_chrome_service &&
-        lacros_chrome_service->IsMediaSessionControllerAvailable()) {
-      lacros_chrome_service->BindMediaControllerManager(std::move(receiver));
+    auto* lacros_service = chromeos::LacrosService::Get();
+    if (lacros_service && lacros_service->IsMediaSessionControllerAvailable()) {
+      lacros_service->BindMediaControllerManager(std::move(receiver));
     }
   }
 };
@@ -70,11 +67,10 @@ media_session::MediaSessionService& GetMediaSessionService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  if (lacros_chrome_service &&
-      lacros_chrome_service->IsMediaSessionControllerAvailable() &&
-      lacros_chrome_service->IsMediaSessionAudioFocusDebugAvailable() &&
-      lacros_chrome_service->IsMediaSessionAudioFocusAvailable()) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service && lacros_service->IsMediaSessionControllerAvailable() &&
+      lacros_service->IsMediaSessionAudioFocusDebugAvailable() &&
+      lacros_service->IsMediaSessionAudioFocusAvailable()) {
     static base::NoDestructor<LacrosMediaSessionServiceImpl> service;
     return *service;
   }

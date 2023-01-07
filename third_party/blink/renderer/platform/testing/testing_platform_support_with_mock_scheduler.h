@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/scoped_main_thread_overrider.h"
@@ -34,6 +33,10 @@ class MainThreadSchedulerImpl;
 class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {
  public:
   TestingPlatformSupportWithMockScheduler();
+  TestingPlatformSupportWithMockScheduler(
+      const TestingPlatformSupportWithMockScheduler&) = delete;
+  TestingPlatformSupportWithMockScheduler& operator=(
+      const TestingPlatformSupportWithMockScheduler&) = delete;
   ~TestingPlatformSupportWithMockScheduler() override;
 
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner() {
@@ -79,9 +82,6 @@ class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {
   base::sequence_manager::SequenceManager*
       sequence_manager_;  // Owned by scheduler_.
   std::unique_ptr<ScopedMainThreadOverrider> main_thread_overrider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingPlatformSupportWithMockScheduler);
 };
 
 }  // namespace blink

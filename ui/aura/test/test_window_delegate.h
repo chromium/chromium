@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -21,6 +19,10 @@ namespace test {
 class TestWindowDelegate : public WindowDelegate {
  public:
   TestWindowDelegate();
+
+  TestWindowDelegate(const TestWindowDelegate&) = delete;
+  TestWindowDelegate& operator=(const TestWindowDelegate&) = delete;
+
   ~TestWindowDelegate() override;
 
   // Returns a TestWindowDelegate that delete itself when
@@ -69,8 +71,6 @@ class TestWindowDelegate : public WindowDelegate {
   gfx::Size minimum_size_;
   gfx::Size maximum_size_;
   bool can_focus_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowDelegate);
 };
 
 // A simple WindowDelegate implementation for these tests. It owns itself
@@ -78,6 +78,10 @@ class TestWindowDelegate : public WindowDelegate {
 class ColorTestWindowDelegate : public TestWindowDelegate {
  public:
   explicit ColorTestWindowDelegate(SkColor color);
+
+  ColorTestWindowDelegate(const ColorTestWindowDelegate&) = delete;
+  ColorTestWindowDelegate& operator=(const ColorTestWindowDelegate&) = delete;
+
   ~ColorTestWindowDelegate() override;
 
   ui::KeyboardCode last_key_code() const { return last_key_code_; }
@@ -93,8 +97,6 @@ class ColorTestWindowDelegate : public TestWindowDelegate {
   SkColor color_;
   ui::KeyboardCode last_key_code_;
   gfx::Size window_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ColorTestWindowDelegate);
 };
 
 // A simple WindowDelegate that has a hit-test mask.
@@ -102,20 +104,24 @@ class MaskedWindowDelegate : public TestWindowDelegate {
  public:
   explicit MaskedWindowDelegate(const gfx::Rect mask_rect);
 
+  MaskedWindowDelegate(const MaskedWindowDelegate&) = delete;
+  MaskedWindowDelegate& operator=(const MaskedWindowDelegate&) = delete;
+
   // Overridden from TestWindowDelegate:
   bool HasHitTestMask() const override;
   void GetHitTestMask(SkPath* mask) const override;
 
  private:
   gfx::Rect mask_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(MaskedWindowDelegate);
 };
 
 // Keeps track of mouse/key events.
 class EventCountDelegate : public TestWindowDelegate {
  public:
   EventCountDelegate();
+
+  EventCountDelegate(const EventCountDelegate&) = delete;
+  EventCountDelegate& operator=(const EventCountDelegate&) = delete;
 
   // Overridden from TestWindowDelegate:
   void OnKeyEvent(ui::KeyEvent* event) override;
@@ -146,8 +152,6 @@ class EventCountDelegate : public TestWindowDelegate {
   int key_press_count_;
   int key_release_count_;
   int gesture_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventCountDelegate);
 };
 
 }  // namespace test

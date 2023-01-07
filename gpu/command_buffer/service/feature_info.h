@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -93,7 +92,6 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool chromium_texture_filtering_hint = false;
     bool angle_texture_usage = false;
     bool ext_texture_storage = false;
-    bool chromium_raster_transport = false;
     bool chromium_framebuffer_mixed_samples = false;
     bool blend_equation_advanced = false;
     bool blend_equation_advanced_coherent = false;
@@ -130,10 +128,9 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool oes_rgb8_rgba8 = false;
     bool angle_robust_resource_initialization = false;
     bool nv_fence = false;
-    bool chromium_texture_storage_image = false;
+    bool texture_storage_image = false;
     bool ext_window_rectangles = false;
     bool chromium_gpu_fence = false;
-    bool unpremultiply_and_dither_copy = false;
     bool separate_stencil_ref_mask_writemask = false;
     bool mesa_framebuffer_flip_y = false;
     bool ovr_multiview2 = false;
@@ -152,6 +149,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool ext_texture_compression_rgtc = false;
     bool oes_draw_buffers_indexed = false;
     bool ext_yuv_target = false;
+    bool angle_rgbx_internal_format = false;
   };
 
   FeatureInfo();
@@ -159,6 +157,9 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
   // Constructor with workarounds taken from the current process's CommandLine
   FeatureInfo(const GpuDriverBugWorkarounds& gpu_driver_bug_workarounds,
               const GpuFeatureInfo& gpu_feature_info);
+
+  FeatureInfo(const FeatureInfo&) = delete;
+  FeatureInfo& operator=(const FeatureInfo&) = delete;
 
   // Initializes the feature information. Needs a current GL context.
   void Initialize(ContextType context_type,
@@ -207,7 +208,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
   bool IsWebGL2OrES3OrHigherContext() const;
   bool IsES31ForTestingContext() const;
 
-  void EnableCHROMIUMTextureStorageImage();
+  void EnableTextureStorageImage();
   void EnableCHROMIUMColorBufferFloatRGBA();
   void EnableCHROMIUMColorBufferFloatRGB();
   void EnableEXTFloatBlend();
@@ -279,8 +280,6 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
 
   bool disable_shader_translator_;
   std::unique_ptr<gl::GLVersionInfo> gl_version_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureInfo);
 };
 
 }  // namespace gles2

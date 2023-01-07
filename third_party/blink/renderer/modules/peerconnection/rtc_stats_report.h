@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,9 @@ Vector<webrtc::NonStandardGroupId> GetExposedGroupIds(
     const ScriptState* script_state);
 
 // https://w3c.github.io/webrtc-pc/#rtcstatsreport-object
-class RTCStatsReport final : public ScriptWrappable,
-                             public Maplike<String, v8::Local<v8::Value>> {
+class RTCStatsReport final
+    : public ScriptWrappable,
+      public Maplike<String, IDLString, v8::Local<v8::Object>, IDLObject> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -31,12 +32,12 @@ class RTCStatsReport final : public ScriptWrappable,
   uint32_t size() const;
 
   // Maplike<String, v8::Local<v8::Value>>
-  PairIterable<String, v8::Local<v8::Value>>::IterationSource* StartIteration(
-      ScriptState*,
-      ExceptionState&) override;
+  PairIterable<String, IDLString, v8::Local<v8::Object>, IDLObject>::
+      IterationSource*
+      StartIteration(ScriptState*, ExceptionState&) override;
   bool GetMapEntry(ScriptState*,
                    const String& key,
-                   v8::Local<v8::Value>&,
+                   v8::Local<v8::Object>&,
                    ExceptionState&) override;
 
  private:

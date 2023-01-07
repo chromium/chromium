@@ -1,14 +1,18 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+assert(!is_android)
+
 mojom("mojo_bindings") {
   sources = [ "realbox.mojom" ]
+  webui_module_path = "/"
 
   public_deps = [
     "//chrome/common/search:mojo_bindings",
+    "//components/omnibox/browser:omnibox",
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",

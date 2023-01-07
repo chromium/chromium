@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_label.h"
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/focus_ring.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 AppInfoLabel::AppInfoLabel(const std::u16string& text)
     : AppInfoLabel(text,

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/optional.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/download/internal/background_service/driver_entry.h"
@@ -18,6 +18,7 @@
 #include "components/download/internal/background_service/test/entry_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 
@@ -30,6 +31,9 @@ class FileMonitorTest : public testing::Test {
         handle_(task_runner_),
         completion_callback_called_(false) {}
 
+  FileMonitorTest(const FileMonitorTest&) = delete;
+  FileMonitorTest& operator=(const FileMonitorTest&) = delete;
+
   ~FileMonitorTest() override = default;
 
   void HardRecoveryResponse(bool result);
@@ -38,9 +42,7 @@ class FileMonitorTest : public testing::Test {
   void SetUp() override {
     EXPECT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     download_dir_ = scoped_temp_dir_.GetPath();
-    base::TimeDelta keep_alive_time = base::TimeDelta::FromHours(12);
-    monitor_ = std::make_unique<FileMonitorImpl>(download_dir_, task_runner_,
-                                                 keep_alive_time);
+    monitor_ = std::make_unique<FileMonitorImpl>(download_dir_, task_runner_);
   }
 
   void TearDown() override { ASSERT_TRUE(scoped_temp_dir_.Delete()); }
@@ -55,10 +57,7 @@ class FileMonitorTest : public testing::Test {
   bool completion_callback_called_;
   std::unique_ptr<FileMonitor> monitor_;
 
-  base::Optional<bool> hard_recovery_result_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileMonitorTest);
+  absl::optional<bool> hard_recovery_result_;
 };
 
 base::FilePath FileMonitorTest::CreateTemporaryFile(std::string file_name) {
@@ -107,25 +106,25 @@ TEST_F(FileMonitorTest, TestDeleteUnknownFiles) {
   std::vector<Entry*> entries = {&entry1, &entry2};
   std::vector<DriverEntry> driver_entries = {driver_entry1, driver_entry2};
 
-  monitor_->DeleteUnknownFiles(entries, driver_entries);
+  monitor_->DeleteUnknownFiles(entries, driver_entries, base::DoNothing());
   task_runner_->RunUntilIdle();
   check_file_existence(true, true, true, true, false, false);
 
   entries = {&entry2};
   driver_entries = {driver_entry1, driver_entry2};
-  monitor_->DeleteUnknownFiles(entries, driver_entries);
+  monitor_->DeleteUnknownFiles(entries, driver_entries, base::DoNothing());
   task_runner_->RunUntilIdle();
   check_file_existence(true, true, true, true, false, false);
 
   entries = {&entry2};
   driver_entries = {driver_entry2};
-  monitor_->DeleteUnknownFiles(entries, driver_entries);
+  monitor_->DeleteUnknownFiles(entries, driver_entries, base::DoNothing());
   task_runner_->RunUntilIdle();
   check_file_existence(false, true, false, true, false, false);
 
   entries.clear();
   driver_entries.clear();
-  monitor_->DeleteUnknownFiles(entries, driver_entries);
+  monitor_->DeleteUnknownFiles(entries, driver_entries, base::DoNothing());
   task_runner_->RunUntilIdle();
   check_file_existence(false, false, false, false, false, false);
 }

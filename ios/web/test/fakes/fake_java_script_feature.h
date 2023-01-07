@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ namespace web {
 class WebFrame;
 class WebState;
 
-// The text added to the page by |kJavaScriptFeatureTestScript| on document
+// The text added to the page by `kJavaScriptFeatureTestScript` on document
 // load.
 extern const char kFakeJavaScriptFeatureLoadedText[];
 
@@ -35,11 +35,11 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
   FakeJavaScriptFeature(JavaScriptFeature::ContentWorld content_world);
   ~FakeJavaScriptFeature() override;
 
-  // Executes |kJavaScriptFeatureTestScriptReplaceDivContents| in |web_frame|.
+  // Executes `kJavaScriptFeatureTestScriptReplaceDivContents` in `web_frame`.
   void ReplaceDivContents(WebFrame* web_frame);
 
-  // Executes |kJavaScriptFeatureTestScriptReplyWithPostMessage| with
-  // |parameters| in |web_frame|.
+  // Executes `kJavaScriptFeatureTestScriptReplyWithPostMessage` with
+  // `parameters` in `web_frame`.
   void ReplyWithPostMessage(WebFrame* web_frame,
                             const std::vector<base::Value>& parameters);
 
@@ -55,7 +55,7 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
 
  private:
   // JavaScriptFeature:
-  base::Optional<std::string> GetScriptMessageHandlerName() const override;
+  absl::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(WebState* web_state,
                              const ScriptMessage& message) override;
 

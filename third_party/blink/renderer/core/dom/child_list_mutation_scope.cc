@@ -111,7 +111,7 @@ inline bool ChildListMutationAccumulator::IsRemovedNodeInOrder(Node& child) {
 void ChildListMutationAccumulator::WillRemoveChild(Node& child) {
   DCHECK(HasObservers());
 
-  if (!added_nodes_.IsEmpty() || !IsRemovedNodeInOrder(child))
+  if (!added_nodes_.empty() || !IsRemovedNodeInOrder(child))
     EnqueueMutationRecord();
 
   if (IsEmpty()) {
@@ -140,7 +140,7 @@ void ChildListMutationAccumulator::EnqueueMutationRecord() {
 }
 
 bool ChildListMutationAccumulator::IsEmpty() {
-  bool result = removed_nodes_.IsEmpty() && added_nodes_.IsEmpty();
+  bool result = removed_nodes_.empty() && added_nodes_.empty();
 #if DCHECK_IS_ON()
   if (result) {
     DCHECK(!previous_sibling_);

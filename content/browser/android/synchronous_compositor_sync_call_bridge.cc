@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/android/synchronous_compositor_sync_call_bridge.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "content/browser/android/synchronous_compositor_host.h"
@@ -40,9 +42,9 @@ void SynchronousCompositorSyncCallBridge::RemoteClosedOnIOThread() {
 bool SynchronousCompositorSyncCallBridge::ReceiveFrameOnIOThread(
     int layer_tree_frame_sink_id,
     uint32_t metadata_version,
-    base::Optional<viz::LocalSurfaceId> local_surface_id,
-    base::Optional<viz::CompositorFrame> compositor_frame,
-    base::Optional<viz::HitTestRegionList> hit_test_region_list) {
+    absl::optional<viz::LocalSurfaceId> local_surface_id,
+    absl::optional<viz::CompositorFrame> compositor_frame,
+    absl::optional<viz::HitTestRegionList> hit_test_region_list) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   base::AutoLock lock(lock_);
   if (remote_state_ != RemoteState::READY || frame_futures_.empty())
@@ -55,13 +57,15 @@ bool SynchronousCompositorSyncCallBridge::ReceiveFrameOnIOThread(
   frame_futures_.pop_front();
 
   if (compositor_frame) {
-    DCHECK(local_surface_id);
+    if (!local_surface_id)
+      return false;
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&SynchronousCompositorSyncCallBridge::
                                       ProcessFrameMetadataOnUIThread,
                                   this, metadata_version,
-                                  compositor_frame->metadata.Clone()));
-    frame_ptr->frame.reset(new viz::CompositorFrame);
+                                  compositor_frame->metadata.Clone(),
+                                  local_surface_id.value()));
+    frame_ptr->frame = std::make_unique<viz::CompositorFrame>();
     *frame_ptr->frame = std::move(*compositor_frame);
     frame_ptr->local_surface_id = local_surface_id.value();
     frame_ptr->hit_test_region_list = std::move(hit_test_region_list);
@@ -159,10 +163,13 @@ void SynchronousCompositorSyncCallBridge::BeginFrameCompleteOnUIThread() {
 
 void SynchronousCompositorSyncCallBridge::ProcessFrameMetadataOnUIThread(
     uint32_t metadata_version,
-    viz::CompositorFrameMetadata metadata) {
+    viz::CompositorFrameMetadata metadata,
+    const viz::LocalSurfaceId& local_surface_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (host_)
-    host_->UpdateFrameMetaData(metadata_version, std::move(metadata));
+  if (host_) {
+    host_->UpdateFrameMetaData(metadata_version, std::move(metadata),
+                               local_surface_id);
+  }
 }
 
 void SynchronousCompositorSyncCallBridge::

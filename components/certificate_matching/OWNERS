@@ -1,2 +1,2 @@
-file://chromeos/policy/OWNERS
-file://chromeos/network/OWNERS
+file://chromeos/ash/components/network/OWNERS
+file://chromeos/ash/components/policy/OWNERS

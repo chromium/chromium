@@ -1,8 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-window.addEventListener('load', async function() {
+const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
   let config = await promise(chrome.test.getConfig);
 
   let PATH_BASE = "/extensions/api_test/webnavigation/pendingDeletion";

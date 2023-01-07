@@ -1,0 +1,50 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Fuzzer dictionary for cookie lines fuzzers.
+
+# Primary delimiters:
+" "
+"\x09"
+"="
+";"
+
+# Keywords:
+"Expires"
+"Max-Age"
+"Domain"
+"Path"
+"Secure"
+"HttpOnly"
+"SameSite"
+"SameParty"
+"Strict"
+"Lax"
+"None"
+"Default"
+"__Secure-"
+"__Host-"
+"Priority"
+"Partitioned"
+
+# Truncating characters:
+"\x00"
+"\x0A"
+"\x0D"
+
+# Invalid characters (only a few):
+"\x01"
+"\x7F"
+
+# Characters with special significance to the Path attribute:
+"/"
+
+# Characters with special significance to the Domain attribute:
+"."
+# TLD and eTLD
+".com"
+".co.uk"
+
+# Characters with special significance to the Max-Age attribute:
+"-"

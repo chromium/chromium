@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 #define ASH_SYSTEM_MEDIA_UNIFIED_MEDIA_CONTROLS_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/style/icon_button.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/image_button.h"
 
 namespace gfx {
 class ImageSkia;
@@ -32,7 +32,7 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
   ~UnifiedMediaControlsView() override = default;
 
   void SetIsPlaying(bool playing);
-  void SetArtwork(base::Optional<gfx::ImageSkia> artwork);
+  void SetArtwork(absl::optional<gfx::ImageSkia> artwork);
   void SetTitle(const std::u16string& title);
   void SetArtist(const std::u16string& artist);
   void UpdateActionButtonAvailability(
@@ -54,26 +54,19 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
  private:
   friend class UnifiedMediaControlsControllerTest;
 
-  class MediaActionButton : public views::ImageButton {
+  class MediaActionButton : public IconButton {
    public:
     MediaActionButton(UnifiedMediaControlsController* controller,
                       media_session::mojom::MediaSessionAction action,
-                      const std::u16string& accessible_name);
+                      int accessible_name_id);
+    MediaActionButton(const MediaActionButton&) = delete;
+    MediaActionButton& operator=(const MediaActionButton&) = delete;
     ~MediaActionButton() override = default;
 
     void SetAction(media_session::mojom::MediaSessionAction action,
                    const std::u16string& accessible_name);
 
-    // views::ImageButton:
-    std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-    std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-        const override;
-    std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-    void OnThemeChanged() override;
-
    private:
-    void UpdateVectorIcon();
-
     // Action that can be taken on the media through the button, it can be paly,
     // pause or stop the media etc. See MediaSessionAction for all the actions.
     media_session::mojom::MediaSessionAction action_;

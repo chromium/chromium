@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -28,7 +29,7 @@ class PasswordStoreSigninNotifierImpl
       const PasswordStoreSigninNotifierImpl&) = delete;
 
   // PasswordStoreSigninNotifier implementations.
-  void SubscribeToSigninEvents(PasswordStore* store) override;
+  void SubscribeToSigninEvents(PasswordReuseManager* reuse_manager) override;
   void UnsubscribeFromSigninEvents() override;
 
   // IdentityManager::Observer implementations.
@@ -40,9 +41,9 @@ class PasswordStoreSigninNotifierImpl
   // Passes signed-out to |store_|.
   void NotifySignedOut(const std::string& username, bool primary_account);
 
-  signin::IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
-  PasswordStore* store_ = nullptr;  // weak
+  raw_ptr<PasswordReuseManager> reuse_manager_ = nullptr;  // weak
 };
 
 }  // namespace password_manager

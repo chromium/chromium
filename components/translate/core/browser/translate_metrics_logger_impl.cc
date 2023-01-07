@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
+#include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -60,13 +62,55 @@ const char kTranslatePageLoadRankerVersion[] =
     "Translate.PageLoad.Ranker.Version";
 const char kTranslatePageLoadTriggerDecision[] =
     "Translate.PageLoad.TriggerDecision";
-const char kTranslatePageLoadTriggerDecisionAllTriggerDecisions[] =
-    "Translate.PageLoad.TriggerDecision.AllTriggerDecisions";
-const char kTranslatePageLoadTriggerDecisionTotalCount[] =
-    "Translate.PageLoad.TriggerDecision.TotalCount";
 
-TranslationType NullTranslateMetricsLogger::GetNextManualTranslationType() {
+// Application frequency UMA histograms.
+const char kTranslateApplicationStartAlwaysTranslateLanguage[] =
+    "Translate.ApplicationStart.AlwaysTranslateLanguage";
+const char kTranslateApplicationStartAlwaysTranslateLanguageCount[] =
+    "Translate.ApplicationStart.AlwaysTranslateLanguage.Count";
+const char kTranslateApplicationStartNeverTranslateLanguage[] =
+    "Translate.ApplicationStart.NeverTranslateLanguage";
+const char kTranslateApplicationStartNeverTranslateLanguageCount[] =
+    "Translate.ApplicationStart.NeverTranslateLanguage.Count";
+const char kTranslateApplicationStartNeverTranslateSiteCount[] =
+    "Translate.ApplicationStart.NeverTranslateSite.Count";
+
+TranslationType NullTranslateMetricsLogger::GetNextManualTranslationType(
+    bool is_context_menu_initiated_translation) {
   return TranslationType::kUninitialized;
+}
+
+void TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
+    std::unique_ptr<TranslatePrefs> translate_prefs) {
+  // TODO(1229371): These histograms are only recorded when Chrome starts up
+  // using the preferences of whatever profile is logged in at the time. This
+  // information should be recorded each time a profile logs in.
+
+  std::vector<std::string> always_translate_languages =
+      translate_prefs->GetAlwaysTranslateLanguages();
+  for (const auto& always_translate_language : always_translate_languages) {
+    base::UmaHistogramSparse(kTranslateApplicationStartAlwaysTranslateLanguage,
+                             base::HashMetricName(always_translate_language));
+  }
+  base::UmaHistogramCounts100(
+      kTranslateApplicationStartAlwaysTranslateLanguageCount,
+      always_translate_languages.size());
+
+  std::vector<std::string> never_translate_languages =
+      translate_prefs->GetNeverTranslateLanguages();
+  for (const auto& never_translate_language : never_translate_languages) {
+    base::UmaHistogramSparse(kTranslateApplicationStartNeverTranslateLanguage,
+                             base::HashMetricName(never_translate_language));
+  }
+  base::UmaHistogramCounts100(
+      kTranslateApplicationStartNeverTranslateLanguageCount,
+      never_translate_languages.size());
+
+  std::vector<std::string> never_translate_sites =
+      translate_prefs->GetNeverPromptSitesBetween(base::Time::UnixEpoch(),
+                                                  base::Time::Now());
+  base::UmaHistogramCounts100(kTranslateApplicationStartNeverTranslateSiteCount,
+                              never_translate_sites.size());
 }
 
 TranslateMetricsLoggerImpl::TranslateMetricsLoggerImpl(
@@ -166,6 +210,7 @@ void TranslateMetricsLoggerImpl::RecordMetrics(bool is_final) {
           int(base::HashMetricName(model_detected_language_)))
       .SetHTMLContentLanguage(int(base::HashMetricName(html_content_language_)))
       .SetHTMLDocumentLanguage(int(base::HashMetricName(html_doc_language_)))
+      .SetWasContentEmpty(was_content_empty_)
       .Record(ukm_recorder);
 
   sequence_no_++;
@@ -188,12 +233,6 @@ void TranslateMetricsLoggerImpl::RecordPageLoadUmaMetrics(
 
   base::UmaHistogramEnumeration(kTranslatePageLoadTriggerDecision,
                                 trigger_decision_);
-  base::UmaHistogramCounts100(kTranslatePageLoadTriggerDecisionTotalCount,
-                              all_trigger_decisions_.size());
-  for (const auto& trigger_decision : all_trigger_decisions_) {
-    base::UmaHistogramEnumeration(
-        kTranslatePageLoadTriggerDecisionAllTriggerDecisions, trigger_decision);
-  }
   if (has_href_translate_target_) {
     base::UmaHistogramEnumeration(kTranslatePageLoadHrefTriggerDecision,
                                   trigger_decision_);
@@ -275,15 +314,17 @@ void TranslateMetricsLoggerImpl::LogTriggerDecision(
     TriggerDecision trigger_decision) {
   // Only stores the first non-kUninitialized trigger decision that is logged,
   // except in the case that Href translate overrides the decision to either
-  // auto translate or show the UI.
+  // auto translate or show the UI, while autotranslation to a predefined
+  // target similarly overrides everything except autotranslation by Href.
   if (trigger_decision_ == TriggerDecision::kUninitialized ||
       trigger_decision == TriggerDecision::kAutomaticTranslationByHref ||
       (trigger_decision == TriggerDecision::kShowUIFromHref &&
+       trigger_decision_ != TriggerDecision::kAutomaticTranslationByHref) ||
+      (trigger_decision ==
+           TriggerDecision::kAutomaticTranslationToPredefinedTarget &&
        trigger_decision_ != TriggerDecision::kAutomaticTranslationByHref)) {
     trigger_decision_ = trigger_decision;
   }
-
-  all_trigger_decisions_.push_back(trigger_decision);
 }
 
 void TranslateMetricsLoggerImpl::LogAutofillAssistantDeferredTriggerDecision() {
@@ -328,7 +369,7 @@ void TranslateMetricsLoggerImpl::LogTranslationStarted(
 
 void TranslateMetricsLoggerImpl::LogTranslationFinished(
     bool was_successful,
-    TranslateErrors::Type error_type) {
+    TranslateErrors error_type) {
   // Note that a translation can fail (i.e. was_successful is false) and have an
   // error type of NONE in some cases. One case where this happens is when a
   // translation is interrupted midway through.
@@ -437,10 +478,19 @@ void TranslateMetricsLoggerImpl::LogUIInteraction(
   base::UmaHistogramEnumeration(kTranslateUiInteractionEvent, ui_interaction);
 }
 
-TranslationType TranslateMetricsLoggerImpl::GetNextManualTranslationType() {
+TranslationType TranslateMetricsLoggerImpl::GetNextManualTranslationType(
+    bool is_context_menu_initiated_translation) {
+  if (is_context_menu_initiated_translation) {
+    return has_any_translation_started_
+               ? TranslationType::kManualContextMenuReTranslation
+               : TranslationType::kManualContextMenuInitialTranslation;
+  }
+
+  // If the translation was not initiated from the context menu, then it must
+  // have been triggered from the translate UI.
   return has_any_translation_started_
-             ? TranslationType::kManualReTranslation
-             : TranslationType::kManualInitialTranslation;
+             ? TranslationType::kManualUiReTranslation
+             : TranslationType::kManualUiInitialTranslation;
 }
 
 void TranslateMetricsLoggerImpl::SetHasHrefTranslateTarget(
@@ -494,9 +544,13 @@ void TranslateMetricsLoggerImpl::UpdateTimeTranslated(bool was_translated,
 TranslationStatus
 TranslateMetricsLoggerImpl::ConvertTranslationTypeToRevertedTranslationStatus(
     TranslationType translation_type) {
-  if (translation_type == TranslationType::kManualInitialTranslation ||
-      translation_type == TranslationType::kManualReTranslation)
-    return TranslationStatus::kRevertedManualTranslation;
+  if (translation_type == TranslationType::kManualUiInitialTranslation ||
+      translation_type == TranslationType::kManualUiReTranslation)
+    return TranslationStatus::kRevertedManualUiTranslation;
+  if (translation_type ==
+          TranslationType::kManualContextMenuInitialTranslation ||
+      translation_type == TranslationType::kManualContextMenuReTranslation)
+    return TranslationStatus::kRevertedManualContextMenuTranslation;
   if (translation_type == TranslationType::kAutomaticTranslationByPref ||
       translation_type == TranslationType::kAutomaticTranslationByLink)
     return TranslationStatus::kRevertedAutomaticTranslation;
@@ -507,12 +561,20 @@ TranslationStatus
 TranslateMetricsLoggerImpl::ConvertTranslationTypeToFailedTranslationStatus(
     TranslationType translation_type,
     bool was_translation_error) {
-  if (translation_type == TranslationType::kManualInitialTranslation ||
-      translation_type == TranslationType::kManualReTranslation) {
+  if (translation_type == TranslationType::kManualUiInitialTranslation ||
+      translation_type == TranslationType::kManualUiReTranslation) {
     if (was_translation_error)
-      return TranslationStatus::kFailedWithErrorManualTranslation;
+      return TranslationStatus::kFailedWithErrorManualUiTranslation;
     else
-      return TranslationStatus::kFailedWithNoErrorManualTranslation;
+      return TranslationStatus::kFailedWithNoErrorManualUiTranslation;
+  }
+  if (translation_type ==
+          TranslationType::kManualContextMenuInitialTranslation ||
+      translation_type == TranslationType::kManualContextMenuReTranslation) {
+    if (was_translation_error)
+      return TranslationStatus::kFailedWithErrorManualContextMenuTranslation;
+    else
+      return TranslationStatus::kFailedWithNoErrorManualContextMenuTranslation;
   }
   if (translation_type == TranslationType::kAutomaticTranslationByPref ||
       translation_type == TranslationType::kAutomaticTranslationByLink) {
@@ -530,9 +592,13 @@ TranslateMetricsLoggerImpl::ConvertTranslationTypeToSuccessfulTranslationStatus(
     TranslationType translation_type) {
   if (is_translation_in_progress)
     return TranslationStatus::kTranslationAbandoned;
-  if (translation_type == TranslationType::kManualInitialTranslation ||
-      translation_type == TranslationType::kManualReTranslation)
-    return TranslationStatus::kSuccessFromManualTranslation;
+  if (translation_type == TranslationType::kManualUiInitialTranslation ||
+      translation_type == TranslationType::kManualUiReTranslation)
+    return TranslationStatus::kSuccessFromManualUiTranslation;
+  if (translation_type ==
+          TranslationType::kManualContextMenuInitialTranslation ||
+      translation_type == TranslationType::kManualContextMenuReTranslation)
+    return TranslationStatus::kSuccessFromManualContextMenuTranslation;
   if (translation_type == TranslationType::kAutomaticTranslationByPref)
     return TranslationStatus::kSuccessFromAutomaticTranslationByPref;
   if (translation_type == TranslationType::kAutomaticTranslationByLink)
@@ -563,6 +629,10 @@ void TranslateMetricsLoggerImpl::LogDetectedLanguage(
 void TranslateMetricsLoggerImpl::LogDetectionReliabilityScore(
     const float& model_detection_reliability_score) {
   model_detection_reliability_score_ = model_detection_reliability_score;
+}
+
+void TranslateMetricsLoggerImpl::LogWasContentEmpty(bool was_content_empty) {
+  was_content_empty_ = was_content_empty;
 }
 
 }  // namespace translate

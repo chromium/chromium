@@ -1,15 +1,8 @@
-import base64
 import json
 import os
-
-import six
+from base64 import decodebytes
 
 from wptserve.utils import isomorphic_decode, isomorphic_encode
-
-def decodebytes(s):
-    if six.PY3:
-        return base64.decodebytes(six.ensure_binary(s))
-    return base64.decodestring(s)
 
 def main(request, response):
     headers = []
@@ -42,7 +35,7 @@ def main(request, response):
         return headers, body
 
     if b"VIDEO" in request.GET:
-        headers.append((b"Content-Type", b"video/webm"))
+        headers.append((b"Content-Type", b"video/ogg"))
         body = open(os.path.join(request.doc_root, u"media", u"movie_5.ogv"), "rb").read()
         length = len(body)
         # If "PartialContent" is specified, the requestor wants to test range

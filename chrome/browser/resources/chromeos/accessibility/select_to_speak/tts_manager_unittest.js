@@ -1,9 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
-GEN_INCLUDE(['mock_tts.js']);
+GEN_INCLUDE(['../common/testing/mock_tts.js']);
 
 /** Mock TTS client. */
 class MockTtsClient {
@@ -13,7 +13,7 @@ class MockTtsClient {
 
   getTtsOptions() {
     const options = /** @type {!chrome.tts.TtsOptions} */ ({});
-    options.onEvent = (event) => this.receivedEvent = event;
+    options.onEvent = event => this.receivedEvent = event;
     return options;
   }
 }
@@ -29,21 +29,17 @@ SelectToSpeakTtsManagerUnitTest = class extends SelectToSpeakE2ETest {
   }
 
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async () => {
-      const module = await import('/select_to_speak/tts_manager.js');
-      window.TtsManager = module.TtsManager;
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    const module = await import('/select_to_speak/tts_manager.js');
+    window.TtsManager = module.TtsManager;
 
-      this.mockTtsClient = new MockTtsClient();
-      this.ttsManager = new TtsManager();
-
-      runTest();
-    })();
+    this.mockTtsClient = new MockTtsClient();
+    this.ttsManager = new TtsManager();
   }
 };
 
-SYNC_TEST_F('SelectToSpeakTtsManagerUnitTest', 'SpeakUtterance', function() {
+AX_TEST_F('SelectToSpeakTtsManagerUnitTest', 'SpeakUtterance', function() {
   this.ttsManager.speak(
       ' text with space ', this.mockTtsClient.getTtsOptions());
   const receivedEvent = this.mockTtsClient.receivedEvent;
@@ -52,7 +48,7 @@ SYNC_TEST_F('SelectToSpeakTtsManagerUnitTest', 'SpeakUtterance', function() {
   assertTrue(this.ttsManager.isSpeaking());
 });
 
-SYNC_TEST_F('SelectToSpeakTtsManagerUnitTest', 'StopUtterance', function() {
+AX_TEST_F('SelectToSpeakTtsManagerUnitTest', 'StopUtterance', function() {
   this.ttsManager.speak(
       ' text with space ', this.mockTtsClient.getTtsOptions());
   this.ttsManager.stop();
@@ -61,7 +57,7 @@ SYNC_TEST_F('SelectToSpeakTtsManagerUnitTest', 'StopUtterance', function() {
   assertFalse(this.ttsManager.isSpeaking());
 });
 
-SYNC_TEST_F('SelectToSpeakTtsManagerUnitTest', 'FinishUtterance', function() {
+AX_TEST_F('SelectToSpeakTtsManagerUnitTest', 'FinishUtterance', function() {
   this.ttsManager.speak(
       ' text with space ', this.mockTtsClient.getTtsOptions());
 
@@ -75,7 +71,7 @@ SYNC_TEST_F('SelectToSpeakTtsManagerUnitTest', 'FinishUtterance', function() {
   assertFalse(this.ttsManager.isSpeaking());
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakTtsManagerUnitTest', 'SendWordEventsWhenSpeaking',
     function() {
       this.ttsManager.speak(
@@ -96,7 +92,7 @@ SYNC_TEST_F(
       assertTrue(this.ttsManager.isSpeaking());
     });
 
-SYNC_TEST_F('SelectToSpeakTtsManagerUnitTest', 'PauseAndResume', function() {
+AX_TEST_F('SelectToSpeakTtsManagerUnitTest', 'PauseAndResume', function() {
   const options = this.mockTtsClient.getTtsOptions();
   options.rate = 0.5;
   this.ttsManager.speak(' text with space ', options);
@@ -141,7 +137,7 @@ SYNC_TEST_F('SelectToSpeakTtsManagerUnitTest', 'PauseAndResume', function() {
   assertEquals(this.mockTts.pendingUtterances()[0], 'space ');
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakTtsManagerUnitTest', 'ResumeWithNoRemainingContent',
     function() {
       const options = this.mockTtsClient.getTtsOptions();

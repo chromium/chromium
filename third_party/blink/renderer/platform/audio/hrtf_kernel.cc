@@ -37,13 +37,15 @@
 
 namespace blink {
 
+namespace {
+
 // Takes the input AudioChannel as an input impulse response and calculates the
 // average group delay.  This represents the initial delay before the most
 // energetic part of the impulse response.  The sample-frame delay is removed
 // from the impulseP impulse response, and this value  is returned.  The length
 // of the passed in AudioChannel must be a power of 2.
-static float ExtractAverageGroupDelay(AudioChannel* channel,
-                                      size_t analysis_fft_size) {
+float ExtractAverageGroupDelay(AudioChannel* channel,
+                               unsigned analysis_fft_size) {
   DCHECK(channel);
 
   float* impulse_p = channel->MutableData();
@@ -57,15 +59,17 @@ static float ExtractAverageGroupDelay(AudioChannel* channel,
   FFTFrame estimation_frame(analysis_fft_size);
   estimation_frame.DoFFT(impulse_p);
 
-  float frame_delay =
-      clampTo<float>(estimation_frame.ExtractAverageGroupDelay());
+  const float frame_delay =
+      ClampTo<float>(estimation_frame.ExtractAverageGroupDelay());
   estimation_frame.DoInverseFFT(impulse_p);
 
   return frame_delay;
 }
 
+}  // namespace
+
 HRTFKernel::HRTFKernel(AudioChannel* channel,
-                       size_t fft_size,
+                       unsigned fft_size,
                        float sample_rate)
     : frame_delay_(0), sample_rate_(sample_rate) {
   DCHECK(channel);
@@ -74,15 +78,16 @@ HRTFKernel::HRTFKernel(AudioChannel* channel,
   frame_delay_ = ExtractAverageGroupDelay(channel, fft_size / 2);
 
   float* impulse_response = channel->MutableData();
-  size_t response_length = channel->length();
+  const uint32_t response_length = channel->length();
 
   // We need to truncate to fit into 1/2 the FFT size (with zero padding) in
   // order to do proper convolution.
   // Truncate if necessary to max impulse response length allowed by FFT.
-  size_t truncated_response_length = std::min(response_length, fft_size / 2);
+  const unsigned truncated_response_length =
+      std::min(response_length, fft_size / 2);
 
   // Quick fade-out (apply window) at truncation point
-  unsigned number_of_fade_out_frames = static_cast<unsigned>(
+  const unsigned number_of_fade_out_frames = static_cast<unsigned>(
       sample_rate / 4410);  // 10 sample-frames @44.1KHz sample-rate
   DCHECK_LT(number_of_fade_out_frames, truncated_response_length);
   for (unsigned i = truncated_response_length - number_of_fade_out_frames;
@@ -106,13 +111,13 @@ std::unique_ptr<HRTFKernel> HRTFKernel::CreateInterpolatedKernel(
   DCHECK(kernel2);
   DCHECK_GE(x, 0.0);
   DCHECK_LT(x, 1.0);
-  x = clampTo(x, 0.0f, 1.0f);
+  x = ClampTo(x, 0.0f, 1.0f);
 
-  float sample_rate1 = kernel1->SampleRate();
-  float sample_rate2 = kernel2->SampleRate();
+  const float sample_rate1 = kernel1->SampleRate();
+  const float sample_rate2 = kernel2->SampleRate();
   DCHECK_EQ(sample_rate1, sample_rate2);
 
-  float frame_delay =
+  const float frame_delay =
       (1 - x) * kernel1->FrameDelay() + x * kernel2->FrameDelay();
 
   std::unique_ptr<FFTFrame> interpolated_frame =

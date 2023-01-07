@@ -1,0 +1,64 @@
+{
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "chromeos-kevin-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-chromiumos-archive",
+              "builder_group": "chromium.chromiumos",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_arch": "arm",
+                "target_bits": 32,
+                "target_cros_boards": [
+                  "kevin"
+                ],
+                "target_platform": "chromeos"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "arm",
+                  "chromeos"
+                ],
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "chromeos-kevin-rel",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
+  "$build/goma": {
+    "enable_ats": true,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org",
+    "use_luci_auth": true
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "tryserver.chromium.chromiumos",
+  "recipe": "chromium_trybot"
+}

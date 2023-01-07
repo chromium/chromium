@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 #include <stddef.h>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/media/session/media_session_player_observer.h"
+#include "content/public/browser/global_routing_id.h"
 #include "media/audio/audio_device_description.h"
 #include "services/media_session/public/cpp/media_position.h"
 
@@ -19,8 +21,10 @@ namespace content {
 // MediaSessionPlayerObserver to be used in tests.
 class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
  public:
+  MockMediaSessionPlayerObserver(RenderFrameHost* render_frame_host,
+                                 media::MediaContentType media_content_type);
   explicit MockMediaSessionPlayerObserver(
-      RenderFrameHost* render_frame_host = nullptr);
+      media::MediaContentType media_content_type);
   ~MockMediaSessionPlayerObserver() override;
 
   // Implements MediaSessionPlayerObserver.
@@ -34,7 +38,8 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnExitPictureInPicture(int player_id) override;
   void OnSetAudioSinkId(int player_id,
                         const std::string& raw_device_id) override;
-  base::Optional<media_session::MediaPosition> GetPosition(
+  void OnSetMute(int player_id, bool mute) override;
+  absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;
   bool IsPictureInPictureAvailable(int player_id) const override;
   RenderFrameHost* render_frame_host() const override;
@@ -42,6 +47,9 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   bool HasVideo(int player_id) const override;
   std::string GetAudioOutputSinkId(int player_id) const override;
   bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
+  media::MediaContentType GetMediaContentType() const override;
+
+  void SetMediaContentType(media::MediaContentType media_content_type);
 
   // Simulate that a new player started.
   // Returns the player_id.
@@ -82,7 +90,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
 
     bool is_playing_;
     double volume_multiplier_;
-    base::Optional<media_session::MediaPosition> position_;
+    absl::optional<media_session::MediaPosition> position_;
     bool is_in_picture_in_picture_;
     std::string audio_sink_id_ =
         media::AudioDeviceDescription::kDefaultDeviceId;
@@ -93,7 +101,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   // player_id. The value of the vector is the playing status and volume.
   std::vector<MockPlayer> players_;
 
-  RenderFrameHost* render_frame_host_;
+  absl::optional<GlobalRenderFrameHostId> render_frame_host_global_id_;
 
   int received_resume_calls_ = 0;
   int received_suspend_calls_ = 0;
@@ -103,6 +111,8 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   int received_enter_picture_in_picture_calls_ = 0;
   int received_exit_picture_in_picture_calls_ = 0;
   int received_set_audio_sink_id_calls_ = 0;
+
+  media::MediaContentType media_content_type_;
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,7 @@ namespace net {
 const unsigned int URLRequestThrottlerManager::kMaximumNumberOfEntries = 1500;
 const unsigned int URLRequestThrottlerManager::kRequestsBetweenCollecting = 200;
 
-URLRequestThrottlerManager::URLRequestThrottlerManager()
-    : requests_since_last_gc_(0),
-      logged_for_localhost_disabled_(false),
-      registered_from_thread_(base::kInvalidThreadId) {
+URLRequestThrottlerManager::URLRequestThrottlerManager() {
   url_id_replacements_.ClearPassword();
   url_id_replacements_.ClearUsername();
   url_id_replacements_.ClearQuery();
@@ -71,7 +68,7 @@ scoped_refptr<URLRequestThrottlerEntryInterface>
 
   // Create the entry if needed.
   if (entry.get() == nullptr) {
-    entry = new URLRequestThrottlerEntry(this, url_id);
+    entry = base::MakeRefCounted<URLRequestThrottlerEntry>(this, url_id);
 
     // We only disable back-off throttling on an entry that we have
     // just constructed.  This is to allow unit tests to explicitly override
@@ -95,14 +92,14 @@ scoped_refptr<URLRequestThrottlerEntryInterface>
 
 void URLRequestThrottlerManager::OverrideEntryForTests(
     const GURL& url,
-    URLRequestThrottlerEntry* entry) {
+    scoped_refptr<URLRequestThrottlerEntry> entry) {
   // Normalize the url.
   std::string url_id = GetIdFromUrl(url);
 
   // Periodically garbage collect old entries.
   GarbageCollectEntriesIfNecessary();
 
-  url_entries_[url_id] = entry;
+  url_entries_[url_id] = std::move(entry);
 }
 
 void URLRequestThrottlerManager::EraseEntryForTests(const GURL& url) {

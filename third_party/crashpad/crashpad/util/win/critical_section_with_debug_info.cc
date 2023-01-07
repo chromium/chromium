@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 // limitations under the License.
 
 #include "util/win/critical_section_with_debug_info.h"
+
+#include <versionhelpers.h>
 
 #include "base/logging.h"
 #include "util/win/get_function.h"
@@ -54,13 +56,7 @@ bool InitializeCriticalSectionWithDebugInfoIfPossible(
   // count, but that doesn't appear to work. For now, we initialize a valid
   // CRITICAL_SECTION, but without .DebugInfo.
 
-  const DWORD version = GetVersion();
-  const DWORD major_version = LOBYTE(LOWORD(version));
-  const DWORD minor_version = HIBYTE(LOWORD(version));
-  const bool win7_or_lower =
-      major_version < 6 || (major_version == 6 && minor_version <= 1);
-
-  if (win7_or_lower) {
+  if (!IsWindows8OrGreater()) {
     InitializeCriticalSection(critical_section);
     return true;
   }

@@ -1,3 +1,1 @@
-monorail {
-  component: "UI>Browser>Search"
-}
+mixins: "//chrome/android/COMMON_METADATA"

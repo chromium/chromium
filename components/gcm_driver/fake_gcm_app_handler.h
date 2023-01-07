@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 
 namespace base {
@@ -28,6 +27,10 @@ class FakeGCMAppHandler : public GCMAppHandler {
   };
 
   FakeGCMAppHandler();
+
+  FakeGCMAppHandler(const FakeGCMAppHandler&) = delete;
+  FakeGCMAppHandler& operator=(const FakeGCMAppHandler&) = delete;
+
   ~FakeGCMAppHandler() override;
 
   const Event& received_event() const { return received_event_; }
@@ -65,8 +68,6 @@ class FakeGCMAppHandler : public GCMAppHandler {
   std::string acked_message_id_;
   IncomingMessage message_;
   GCMClient::SendErrorDetails send_error_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGCMAppHandler);
 };
 
 }  // namespace gcm

@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TABLE_BOX_COMPONENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TABLE_BOX_COMPONENT_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_table.h"
@@ -27,6 +28,8 @@ class CORE_EXPORT LayoutTableBoxComponent : public LayoutBox {
                                     const LayoutTable&,
                                     const StyleDifference&,
                                     const ComputedStyle& old_style);
+
+  void Trace(Visitor*) const override;
 
   class MutableForPainting : public LayoutObject::MutableForPainting {
    public:
@@ -67,7 +70,7 @@ class CORE_EXPORT LayoutTableBoxComponent : public LayoutBox {
 
  protected:
   explicit LayoutTableBoxComponent(Element* element)
-      : LayoutBox(element), last_paint_result_(kFullyPainted) {
+      : LayoutBox(element), last_paint_result_(kMayBeClippedByCullRect) {
     NOT_DESTROYED();
   }
 

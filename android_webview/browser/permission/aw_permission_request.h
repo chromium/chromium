@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 
@@ -38,6 +37,9 @@ class AwPermissionRequest {
   static base::android::ScopedJavaLocalRef<jobject> Create(
       std::unique_ptr<AwPermissionRequestDelegate> delegate,
       base::WeakPtr<AwPermissionRequest>* weak_ptr);
+
+  AwPermissionRequest(const AwPermissionRequest&) = delete;
+  AwPermissionRequest& operator=(const AwPermissionRequest&) = delete;
 
   // Return the Java peer. Must be null-checked.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
@@ -76,8 +78,6 @@ class AwPermissionRequest {
 
   bool processed_;
   base::WeakPtrFactory<AwPermissionRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AwPermissionRequest);
 };
 
 }  // namespace android_webview

@@ -1,10 +1,9 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/device/serial/serial_port_impl.h"
 
-#include "base/stl_util.h"
 #include "base/test/bind.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -68,11 +67,11 @@ class FakeSerialIoHandler : public SerialIoHandler {
   void WriteImpl() override {}
 
   void CancelReadImpl() override {
-    QueueReadCompleted(/*bytes_read=*/0, mojom::SerialReceiveError::NONE);
+    ReadCompleted(/*bytes_read=*/0, mojom::SerialReceiveError::NONE);
   }
 
   void CancelWriteImpl() override {
-    QueueWriteCompleted(/*bytes_written=*/0, mojom::SerialSendError::NONE);
+    WriteCompleted(/*bytes_written=*/0, mojom::SerialSendError::NONE);
   }
 
   bool ConfigurePortImpl() override {
@@ -323,7 +322,7 @@ TEST_F(SerialPortImplTest, Close) {
   CreatePort(&serial_port, &watcher);
 
   base::RunLoop loop;
-  serial_port->Close(loop.QuitClosure());
+  serial_port->Close(/*flush=*/true, loop.QuitClosure());
   loop.Run();
 }
 

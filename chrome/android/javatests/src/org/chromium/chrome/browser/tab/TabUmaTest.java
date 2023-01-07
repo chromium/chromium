@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.TabbedModeTabDelegateFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -83,8 +85,12 @@ public class TabUmaTest {
                 /* ChromeActivityNativeDelegate */ cta, /* isCustomTab= */ false,
                 rootUiCoordinator.getBrowserControlsManager(),
                 cta.getFullscreenManager(), /* TabCreatorManager */ cta,
-                cta::getTabModelSelector, cta::getCompositorViewHolder,
-                cta.getModalDialogManagerSupplier());
+                cta::getTabModelSelector, cta.getCompositorViewHolderSupplier(),
+                cta.getModalDialogManagerSupplier(), cta::getSnackbarManager,
+                cta.getBrowserControlsManager(), cta.getActivityTabProvider(),
+                cta.getLifecycleDispatcher(), cta.getWindowAndroid(),
+                cta::getLastUserInteractionTime, cta::hadWarmStart, new DummyJankTracker(),
+                rootUiCoordinator.getToolbarManager()::getToolbar, /*crowButtonDelegate=*/ null);
         // clang-format on
     }
 
@@ -96,7 +102,7 @@ public class TabUmaTest {
                                 .setDelegateFactory(createTabDelegateFactory())
                                 .setInitiallyHidden(true)
                                 .build();
-            if (show) bgTab.show(TabSelectionType.FROM_USER);
+            if (show) bgTab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER);
             return bgTab;
         });
     }
@@ -112,9 +118,9 @@ public class TabUmaTest {
             tab.loadUrl(new LoadUrlParams(mTestUrl));
 
             // Simulate the renderer being killed by the OS.
-            if (kill) ChromeTabUtils.simulateRendererKilledForTesting(tab, false);
+            if (kill) ChromeTabUtils.simulateRendererKilledForTesting(tab);
 
-            tab.show(TabSelectionType.FROM_USER);
+            tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER);
             return tab;
         });
     }
@@ -134,11 +140,13 @@ public class TabUmaTest {
         int offset = lazyLoadCount.getDelta();
 
         // Show the tab and verify that one sample was recorded in the lazy load bucket.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { tab.show(TabSelectionType.FROM_USER); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER); });
         Assert.assertEquals(offset + 1, lazyLoadCount.getDelta());
 
         // Show the tab again and verify that we didn't record another sample.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { tab.show(TabSelectionType.FROM_USER); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER); });
         Assert.assertEquals(offset + 1, lazyLoadCount.getDelta());
     }
 
@@ -167,7 +175,8 @@ public class TabUmaTest {
                     .build();
         });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.show(TabSelectionType.FROM_USER));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER));
 
         // There should be no histogram changes.
         Assert.assertEquals(switchFgStatusOffset, getHistogram(switchFgStatus));
@@ -225,7 +234,7 @@ public class TabUmaTest {
                               .setDelegateFactory(createTabDelegateFactory())
                               .setTabState(createTabState())
                               .build();
-            tab.show(TabSelectionType.FROM_USER);
+            tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER);
             return tab;
         });
 

@@ -1,3 +1,3 @@
-Blocked access to external URL http://xx/
+Blocked access to external URL http://doesnotexist/
 Blocked access to external URL http://yy/
 This test passes if it doesn't crash.

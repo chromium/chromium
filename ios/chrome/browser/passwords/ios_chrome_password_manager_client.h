@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/common/language_code.h"
@@ -19,14 +18,17 @@
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detection_manager.h"
+#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/sync_credentials_filter.h"
 #include "components/password_manager/ios/password_manager_client_bridge.h"
 #include "components/prefs/pref_member.h"
+#include "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/safe_browsing/input_event_observer.h"
 #import "ios/chrome/browser/safe_browsing/password_protection_java_script_feature.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ChromeBrowserState;
 
@@ -35,6 +37,7 @@ class LogManager;
 }
 
 namespace password_manager {
+class PasswordScriptsFetcher;
 class PasswordFormManagerForUI;
 class PasswordManagerDriver;
 }
@@ -67,6 +70,11 @@ class IOSChromePasswordManagerClient
   explicit IOSChromePasswordManagerClient(
       id<IOSChromePasswordManagerClientBridge> bridge);
 
+  IOSChromePasswordManagerClient(const IOSChromePasswordManagerClient&) =
+      delete;
+  IOSChromePasswordManagerClient& operator=(
+      const IOSChromePasswordManagerClient&) = delete;
+
   ~IOSChromePasswordManagerClient() override;
 
   // password_manager::PasswordManagerClient implementation.
@@ -77,7 +85,6 @@ class IOSChromePasswordManagerClient
   void PromptUserToMovePasswordToAccount(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_move)
       override;
-  bool RequiresReauthToFill() override;
   void ShowManualFallbackForSaving(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       bool has_generated_password,
@@ -100,8 +107,19 @@ class IOSChromePasswordManagerClient
   const password_manager::PasswordFeatureManager* GetPasswordFeatureManager()
       const override;
   PrefService* GetPrefs() const override;
-  password_manager::PasswordStore* GetProfilePasswordStore() const override;
-  password_manager::PasswordStore* GetAccountPasswordStore() const override;
+  PrefService* GetLocalStatePrefs() const override;
+  const syncer::SyncService* GetSyncService() const override;
+  password_manager::PasswordStoreInterface* GetProfilePasswordStore()
+      const override;
+  password_manager::PasswordStoreInterface* GetAccountPasswordStore()
+      const override;
+  password_manager::PasswordReuseManager* GetPasswordReuseManager()
+      const override;
+  password_manager::PasswordScriptsFetcher* GetPasswordScriptsFetcher()
+      override;
+  password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() override;
+
   void NotifyUserAutoSignin(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
       const url::Origin& origin) override;
@@ -113,7 +131,6 @@ class IOSChromePasswordManagerClient
   void NotifyStorePasswordCalled() override;
   void NotifyUserCredentialsWereLeaked(
       password_manager::CredentialLeakType leak_type,
-      password_manager::CompromisedSitesCount saved_sites,
       const GURL& origin,
       const std::u16string& username) override;
   bool IsSavingAndFillingEnabled(const GURL& url) const override;
@@ -124,7 +141,7 @@ class IOSChromePasswordManagerClient
   autofill::LanguageCode GetPageLanguage() const override;
   const password_manager::CredentialsFilter* GetStoreResultFilter()
       const override;
-  const autofill::LogManager* GetLogManager() const override;
+  autofill::LogManager* GetLogManager() override;
   ukm::SourceId GetUkmSourceId() override;
   password_manager::PasswordManagerMetricsRecorder* GetMetricsRecorder()
       override;
@@ -145,12 +162,14 @@ class IOSChromePasswordManagerClient
       const std::string& username,
       const std::vector<password_manager::MatchingReusedCredential>&
           matching_reused_credentials,
-      bool password_field_exists) override;
+      bool password_field_exists,
+      uint64_t reused_password_hash,
+      const std::string& domain) override;
 
   void LogPasswordReuseDetectedEvent() override;
 
-  // Shows the password protection UI. |warning_text| is the displayed text.
-  // |callback| is invoked when the user dismisses the UI.
+  // Shows the password protection UI. `warning_text` is the displayed text.
+  // `callback` is invoked when the user dismisses the UI.
   void NotifyUserPasswordProtectionWarning(
       const std::u16string& warning_text,
       base::OnceCallback<void(safe_browsing::WarningAction)> callback);
@@ -183,7 +202,7 @@ class IOSChromePasswordManagerClient
   // Recorder of metrics that is associated with the last committed navigation
   // of the tab owning this ChromePasswordManagerClient. May be unset at
   // times. Sends statistics on destruction.
-  base::Optional<password_manager::PasswordManagerMetricsRecorder>
+  absl::optional<password_manager::PasswordManagerMetricsRecorder>
       metrics_recorder_;
 
   // Helper for performing logic that is common between
@@ -195,8 +214,6 @@ class IOSChromePasswordManagerClient
   base::ScopedObservation<PasswordProtectionJavaScriptFeature,
                           InputEventObserver>
       input_event_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromePasswordManagerClient);
   base::WeakPtrFactory<IOSChromePasswordManagerClient> weak_factory_{this};
 };
 

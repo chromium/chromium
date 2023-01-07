@@ -1,24 +1,23 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {FileManagerUI} from './ui/file_manager_ui.m.js';
-// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
-// #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {Action, ActionsModel} from './actions_model.m.js';
-// #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-// clang-format on
+import {contextMenuHandler} from './ui/context_menu_handler.js';
 
-// #import {FileSelectionHandler} from './file_selection.m.js';
+import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {Action, ActionsModel} from './actions_model.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileSelectionHandler} from './file_selection.js';
+import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {FileManagerUI} from './ui/file_manager_ui.js';
 
 /**
  * Manages actions for the current selection.
  */
-/* #export */ class ActionsController {
+export class ActionsController {
   /**
    * @param {!VolumeManager} volumeManager
    * @param {!MetadataModel} metadataModel
@@ -88,7 +87,7 @@
 
     // Attach listeners to events based on user action to show the menu, which
     // updates the DOM.
-    cr.ui.contextMenuHandler.addEventListener(
+    contextMenuHandler.addEventListener(
         'show', this.onContextMenuShow_.bind(this));
     this.ui_.selectionMenuButton.addEventListener(
         'menushow', this.onMenuShow_.bind(this));

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include <evntrace.h>
 
 #include "base/check_op.h"
+#include "base/logging.h"
+#include "base/numerics/checked_math.h"
 
 /*
 EventSetInformation configuration macros:
@@ -71,9 +73,9 @@ TlmProvider::TlmProvider(const char* provider_name,
                          const GUID& provider_guid,
                          PENABLECALLBACK enable_callback,
                          void* enable_callback_context) noexcept {
-  int32_t status = Register(provider_name, provider_guid, enable_callback,
-                            enable_callback_context);
-  DCHECK_EQ(status, ERROR_SUCCESS);
+  ULONG status = Register(provider_name, provider_guid, enable_callback,
+                          enable_callback_context);
+  LOG_IF(ERROR, status != ERROR_SUCCESS) << "Provider resistration failure";
 }
 
 // Appends a nul-terminated string to a metadata block.
@@ -86,13 +88,11 @@ uint16_t TlmProvider::AppendNameToMetadata(char* metadata,
   DCHECK_LE(index, metadata_size);
 
   const size_t cch = strlen(name) + 1;
-  if (cch > static_cast<unsigned>(metadata_size - index)) {
-    index = -1;
-  } else {
-    memcpy(metadata + index, name, cch);
-    index += static_cast<uint16_t>(cch);
-  }
+  if (cch > static_cast<unsigned>(metadata_size - index))
+    return static_cast<uint16_t>(-1);
 
+  memcpy(metadata + index, name, cch);
+  index += static_cast<uint16_t>(cch);
   return index;
 }
 
@@ -100,16 +100,16 @@ void TlmProvider::Unregister() noexcept {
   if (reg_handle_ == 0)
     return;
 
-  int32_t status = EventUnregister(reg_handle_);
-  DCHECK_EQ(status, ERROR_SUCCESS);
+  ULONG status = EventUnregister(reg_handle_);
+  LOG_IF(ERROR, status != ERROR_SUCCESS) << "Provider unregistration failure";
   reg_handle_ = 0;
   level_plus1_ = 0;
 }
 
-int32_t TlmProvider::Register(const char* provider_name,
-                              const GUID& provider_guid,
-                              PENABLECALLBACK enable_callback,
-                              void* enable_callback_context) noexcept {
+ULONG TlmProvider::Register(const char* provider_name,
+                            const GUID& provider_guid,
+                            PENABLECALLBACK enable_callback,
+                            void* enable_callback_context) noexcept {
   // Calling Register when already registered is a fatal error.
   CHECK_EQ(reg_handle_, 0ULL);
 
@@ -121,17 +121,15 @@ int32_t TlmProvider::Register(const char* provider_name,
   // Append the provider name starting at offset 2 (skip MetadataSize).
   provider_metadata_size_ = AppendNameToMetadata(
       provider_metadata_, kMaxProviderMetadataSize, 2, provider_name);
-  if (provider_metadata_size_ > kMaxProviderMetadataSize) {
-    DCHECK_GT(provider_metadata_size_, kMaxProviderMetadataSize);
+  if (provider_metadata_size_ > kMaxProviderMetadataSize)
     return ERROR_BUFFER_OVERFLOW;
-  }
 
   // Fill in MetadataSize field at offset 0.
   *reinterpret_cast<uint16_t*>(provider_metadata_) = provider_metadata_size_;
 
   enable_callback_ = enable_callback;
   enable_callback_context_ = enable_callback_context;
-  int32_t status =
+  ULONG status =
       EventRegister(&provider_guid, StaticEnableCallback, this, &reg_handle_);
   if (status != ERROR_SUCCESS)
     return status;
@@ -160,7 +158,6 @@ int32_t TlmProvider::Register(const char* provider_name,
       status = event_set_information_ptr(reg_handle_, EventProviderSetTraits,
                                          provider_metadata_,
                                          provider_metadata_size_);
-      DCHECK_EQ(status, ERROR_SUCCESS);
     }
 
     FreeLibrary(eventing_lib);
@@ -266,29 +263,29 @@ char TlmProvider::EventAddField(char* metadata,
   if (out_type == 0) {
     // 1-byte encoding: inType + TlgOutNULL.
     if (1 > kMaxEventMetadataSize - *metadata_index) {
-      *metadata_index = -1;
+      *metadata_index = static_cast<uint16_t>(-1);
       return 0;
     }
 
-    metadata[*metadata_index] = in_type;
+    metadata[*metadata_index] = static_cast<char>(in_type);
     *metadata_index += 1;
     return 0;
   }
   // 2-byte encoding: in_type + out_type.
   if (kMaxEventMetadataSize - *metadata_index < 2) {
-    *metadata_index = -1;
+    *metadata_index = static_cast<uint16_t>(-1);
     return 0;
   }
 
   // Set high bit to indicate presence of OutType.
-  metadata[*metadata_index] = in_type | 0x80;
+  metadata[*metadata_index] = static_cast<char>(in_type | 0x80);
   *metadata_index += 1;
-  metadata[*metadata_index] = out_type;
+  metadata[*metadata_index] = static_cast<char>(out_type);
   *metadata_index += 1;
   return 0;
 }
 
-int32_t TlmProvider::EventEnd(
+ULONG TlmProvider::EventEnd(
     char* metadata,
     uint16_t meta_data_index,
     EVENT_DATA_DESCRIPTOR* descriptors,
@@ -331,7 +328,8 @@ const char* TlmMbcsStringField::Value() const noexcept {
 
 void TlmMbcsStringField::FillEventDescriptor(
     EVENT_DATA_DESCRIPTOR* descriptors) const noexcept {
-  EventDataDescCreate(&descriptors[0], value_, strlen(value_) + 1);
+  EventDataDescCreate(&descriptors[0], value_,
+                      base::checked_cast<ULONG>(strlen(value_) + 1));
 }
 
 TlmUtf8StringField::TlmUtf8StringField(const char* name,
@@ -347,5 +345,6 @@ const char* TlmUtf8StringField::Value() const noexcept {
 
 void TlmUtf8StringField::FillEventDescriptor(
     EVENT_DATA_DESCRIPTOR* descriptors) const noexcept {
-  EventDataDescCreate(&descriptors[0], value_, strlen(value_) + 1);
+  EventDataDescCreate(&descriptors[0], value_,
+                      base::checked_cast<ULONG>(strlen(value_) + 1));
 }

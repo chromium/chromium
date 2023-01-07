@@ -6,6 +6,11 @@ include_rules = [
   # to test.
 
   "+crypto",
-  "+net"
+  '+google_apis/gaia/gaia_auth_util.h',
+  "+net",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+services/network/test",
+  "+third_party/re2",
 ]
 

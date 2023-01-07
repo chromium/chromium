@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -35,7 +34,7 @@ class ShelfConfigTest : public AshTestBase {
 
 // Make sure ShelfConfig is dense when screen becomes small in tablet mode.
 TEST_F(ShelfConfigTest, SmallDisplayIsDense) {
-  UpdateDisplay("1000x1000");
+  UpdateDisplay("1100x1000");
   SetTabletMode(true);
 
   ASSERT_TRUE(IsTabletMode());
@@ -46,18 +45,18 @@ TEST_F(ShelfConfigTest, SmallDisplayIsDense) {
   ASSERT_TRUE(is_dense());
 
   // Set the display size back.
-  UpdateDisplay("1000x1000");
+  UpdateDisplay("1100x1000");
   ASSERT_FALSE(is_dense());
 
   // Change display to have a small height, and check that ShelfConfig is dense.
-  UpdateDisplay("1000x300");
+  UpdateDisplay("1100x300");
   ASSERT_TRUE(is_dense());
 }
 
 // Make sure ShelfConfig switches between dense and not dense when switching
 // between clamshell and tablet mode.
 TEST_F(ShelfConfigTest, DenseChangeOnTabletModeChange) {
-  UpdateDisplay("1000x1000");
+  UpdateDisplay("1100x1000");
 
   ASSERT_FALSE(IsTabletMode());
   ASSERT_TRUE(is_dense());
@@ -104,7 +103,7 @@ TEST_F(ShelfConfigTest, ShelfSizeChangesWithContext) {
       ShelfConfig::Get()->system_shelf_size();
   const int control_tablet_dense_home = ShelfConfig::Get()->control_size();
 
-  UpdateDisplay("1000x1000");
+  UpdateDisplay("1100x1000");
   ASSERT_TRUE(IsTabletMode());
   widget = CreateTestWidget();
   GetAppListTestHelper()->CheckVisibility(false);
@@ -176,12 +175,11 @@ TEST_F(ShelfConfigTest, InAppMode) {
   EXPECT_TRUE(ShelfConfig::Get()->is_in_app());
 
   // Now go into overview.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(ShelfConfig::Get()->is_in_app());
 
   // Back to the app.
-  overview_controller->EndOverview();
+  ExitOverview();
   EXPECT_TRUE(ShelfConfig::Get()->is_in_app());
 
   // Leave the session.

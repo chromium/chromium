@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>FedCM API - interfaces and properties exposed by origin trial via third party token</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script src="http://localhost:8000/origin_trials/webexposed/resources/fedcm-origin-trial.js"></script>
+<script>
+    test(t => {
+      OriginTrialsHelper.check_properties_exist(this,
+        {
+          'IdentityCredential': ['token'],
+        });
+  }, 'FedCM API interfaces and properties in Origin-Trial enabled document.');
+</script>

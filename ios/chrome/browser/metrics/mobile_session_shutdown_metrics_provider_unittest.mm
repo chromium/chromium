@@ -1,29 +1,29 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
+#import "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
-#include "base/macros.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/test_simple_task_runner.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_service.h"
-#include "components/metrics/metrics_state_manager.h"
-#include "components/metrics/test/test_enabled_state_provider.h"
-#include "components/metrics/test/test_metrics_service_client.h"
-#include "components/prefs/testing_pref_service.h"
+#import "base/bind.h"
+#import "base/files/file_path.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/test_simple_task_runner.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/metrics/metrics_service.h"
+#import "components/metrics/metrics_state_manager.h"
+#import "components/metrics/test/test_enabled_state_provider.h"
+#import "components/metrics/test/test_metrics_service_client.h"
+#import "components/prefs/testing_pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/previous_session_info/previous_session_info_private.h"
-#include "testing/gtest/include/gtest/gtest-param-test.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest-param-test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,6 +37,11 @@ class MobileSessionShutdownMetricsProviderForTesting
   explicit MobileSessionShutdownMetricsProviderForTesting(
       metrics::MetricsService* metrics_service)
       : MobileSessionShutdownMetricsProvider(metrics_service) {}
+
+  MobileSessionShutdownMetricsProviderForTesting(
+      const MobileSessionShutdownMetricsProviderForTesting&) = delete;
+  MobileSessionShutdownMetricsProviderForTesting& operator=(
+      const MobileSessionShutdownMetricsProviderForTesting&) = delete;
 
   void set_is_first_launch_after_upgrade(bool value) {
     is_first_launch_after_upgrade_ = value;
@@ -65,8 +70,6 @@ class MobileSessionShutdownMetricsProviderForTesting
   bool has_crash_logs_ = false;
   bool received_memory_warning_before_last_shutdown_ = false;
   bool was_last_shutdown_frozen_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MobileSessionShutdownMetricsProviderForTesting);
 };
 
 class MobileSessionShutdownMetricsProviderTest
@@ -77,6 +80,21 @@ class MobileSessionShutdownMetricsProviderTest
     metrics::MetricsService::RegisterPrefs(local_state_.registry());
   }
 
+  MobileSessionShutdownMetricsProviderTest(
+      const MobileSessionShutdownMetricsProviderTest&) = delete;
+  MobileSessionShutdownMetricsProviderTest& operator=(
+      const MobileSessionShutdownMetricsProviderTest&) = delete;
+
+  // Initializes the MetricsStateManager, CleanExitBeacon, and MetricsService.
+  void InitializeMetrics() {
+    metrics_state_ = metrics::MetricsStateManager::Create(
+        &local_state_, new metrics::TestEnabledStateProvider(false, false),
+        std::wstring(), base::FilePath());
+    metrics_state_->InstantiateFieldTrialList();
+    metrics_service_.reset(new metrics::MetricsService(
+        metrics_state_.get(), &metrics_client_, &local_state_));
+  }
+
  protected:
   TestingPrefServiceSimple local_state_;
   metrics::TestMetricsServiceClient metrics_client_;
@@ -84,9 +102,6 @@ class MobileSessionShutdownMetricsProviderTest
   std::unique_ptr<metrics::MetricsService> metrics_service_;
   std::unique_ptr<MobileSessionShutdownMetricsProviderForTesting>
       metrics_provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MobileSessionShutdownMetricsProviderTest);
 };
 
 // Verifies that a sample is recorded in the correct bucket of the shutdown type
@@ -146,21 +161,15 @@ TEST_P(MobileSessionShutdownMetricsProviderTest, ProvideStabilityMetrics) {
       FIRST_LAUNCH_AFTER_UPGRADE,
   };
 
-  // Setup the MetricsService.
-  local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly,
-                          was_last_shutdown_clean);
-  metrics_state_ = metrics::MetricsStateManager::Create(
-      &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
-      metrics::MetricsStateManager::LoadClientInfoCallback());
-  metrics_service_.reset(new metrics::MetricsService(
-      metrics_state_.get(), &metrics_client_, &local_state_));
+  metrics::CleanExitBeacon::SetStabilityExitedCleanlyForTesting(
+      &local_state_, was_last_shutdown_clean);
 
-  // Create the metrics provider to test.
-  metrics_provider_.reset(new MobileSessionShutdownMetricsProviderForTesting(
-      metrics_service_.get()));
+  // Set up the MetricsService and metrics provider.
+  InitializeMetrics();
 
   // Setup the metrics provider for the current test.
+  metrics_provider_.reset(new MobileSessionShutdownMetricsProviderForTesting(
+      metrics_service_.get()));
   metrics_provider_->set_is_first_launch_after_upgrade(
       is_first_launch_after_upgrade);
   metrics_provider_->set_received_memory_warning_before_last_shutdown(
@@ -182,18 +191,13 @@ TEST_P(MobileSessionShutdownMetricsProviderTest, ProvideStabilityMetrics) {
 
 // Tests Stability.iOS.TabCountBefore* metrics recording after clean shutdown.
 TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricCleanShutdown) {
-  // Setup the MetricsService.
   [PreviousSessionInfo sharedInstance].tabCount = 2;
   [PreviousSessionInfo sharedInstance].OTRTabCount = 3;
-  local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, true);
-  metrics_state_ = metrics::MetricsStateManager::Create(
-      &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
-      metrics::MetricsStateManager::LoadClientInfoCallback());
-  metrics_service_.reset(new metrics::MetricsService(
-      metrics_state_.get(), &metrics_client_, &local_state_));
+  metrics::CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&local_state_,
+                                                                true);
 
-  // Create the metrics provider to test.
+  // Set up the MetricsService and metrics provider.
+  InitializeMetrics();
   metrics_provider_.reset(new MobileSessionShutdownMetricsProviderForTesting(
       metrics_service_.get()));
 
@@ -218,18 +222,13 @@ TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricCleanShutdown) {
 // Tests Stability.iOS.TabCountBefore* metrics recording after
 // Unexplained Termination Event or Explained Termination Event.
 TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricUte) {
-  // Setup the MetricsService.
   [PreviousSessionInfo sharedInstance].tabCount = 2;
   [PreviousSessionInfo sharedInstance].OTRTabCount = 3;
-  local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
-  metrics_state_ = metrics::MetricsStateManager::Create(
-      &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
-      metrics::MetricsStateManager::LoadClientInfoCallback());
-  metrics_service_.reset(new metrics::MetricsService(
-      metrics_state_.get(), &metrics_client_, &local_state_));
+  metrics::CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&local_state_,
+                                                                false);
 
-  // Create the metrics provider to test.
+  // Set up the MetricsService and metrics provider.
+  InitializeMetrics();
   metrics_provider_.reset(new MobileSessionShutdownMetricsProviderForTesting(
       metrics_service_.get()));
 
@@ -254,21 +253,15 @@ TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricUte) {
 
 // Tests Stability.iOS.TabCountBefore* metrics recording after crash with log.
 TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricCrashWithLog) {
-  // Setup the MetricsService.
   [PreviousSessionInfo sharedInstance].tabCount = 2;
   [PreviousSessionInfo sharedInstance].OTRTabCount = 3;
-  local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
-  metrics_state_ = metrics::MetricsStateManager::Create(
-      &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
-      metrics::MetricsStateManager::LoadClientInfoCallback());
-  metrics_service_.reset(new metrics::MetricsService(
-      metrics_state_.get(), &metrics_client_, &local_state_));
+  metrics::CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&local_state_,
+                                                                false);
 
-  // Create the metrics provider to test.
+  // Set up the MetricsService and metrics provider.
+  InitializeMetrics();
   metrics_provider_.reset(new MobileSessionShutdownMetricsProviderForTesting(
       metrics_service_.get()));
-
   metrics_provider_->set_has_crash_logs(true);
 
   // Create a histogram tester for verifying samples written to the shutdown
@@ -292,21 +285,15 @@ TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricCrashWithLog) {
 
 // Tests Stability.iOS.TabCountBefore* metrics recording after UI Freeze.
 TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricFreeze) {
-  // Setup the MetricsService.
   [PreviousSessionInfo sharedInstance].tabCount = 2;
   [PreviousSessionInfo sharedInstance].OTRTabCount = 3;
-  local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
-  metrics_state_ = metrics::MetricsStateManager::Create(
-      &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
-      metrics::MetricsStateManager::LoadClientInfoCallback());
-  metrics_service_.reset(new metrics::MetricsService(
-      metrics_state_.get(), &metrics_client_, &local_state_));
+  metrics::CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&local_state_,
+                                                                false);
 
-  // Create the metrics provider to test.
+  // Set up the MetricsService and metrics provider.
+  InitializeMetrics();
   metrics_provider_.reset(new MobileSessionShutdownMetricsProviderForTesting(
       metrics_service_.get()));
-
   metrics_provider_->set_was_last_shutdown_frozen(true);
 
   // Create a histogram tester for verifying samples written to the shutdown
@@ -334,14 +321,11 @@ TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricFreeze) {
 //   - Stability.iOS.UTE.OSRestartedAfterPreviousSession
 TEST_F(MobileSessionShutdownMetricsProviderTest,
        ProvideHasPossibleExplanationMetric) {
-  // Setup the MetricsService and HistogramTester.
-  local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
-  metrics_state_ = metrics::MetricsStateManager::Create(
-      &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
-      metrics::MetricsStateManager::LoadClientInfoCallback());
-  metrics_service_.reset(new metrics::MetricsService(
-      metrics_state_.get(), &metrics_client_, &local_state_));
+  metrics::CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&local_state_,
+                                                                false);
+
+  // Set up the MetricsService and metrics provider.
+  InitializeMetrics();
   metrics_provider_.reset(new MobileSessionShutdownMetricsProviderForTesting(
       metrics_service_.get()));
 

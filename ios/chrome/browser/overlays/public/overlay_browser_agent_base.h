@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #include "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_callback_installer.h"
@@ -29,18 +29,18 @@ class OverlayBrowserAgentBase {
   // Constructor to be called by subclasses.
   explicit OverlayBrowserAgentBase(Browser* browser);
 
-  // Called by subclasses in order to install callbacks using |installer| on
-  // supported OverlayRequests at |modality|.  |installer| must be non-null.
+  // Called by subclasses in order to install callbacks using `installer` on
+  // supported OverlayRequests at `modality`.  `installer` must be non-null.
   void AddInstaller(std::unique_ptr<OverlayRequestCallbackInstaller> installer,
                     OverlayModality modality);
 
   // Returns the aggregate request support for all callback installers added
-  // for |modality|.
+  // for `modality`.
   const OverlayRequestSupport* GetRequestSupport(OverlayModality modality);
 
  private:
-  // Installs the callbacks for |request| using the installers added via
-  // AddInstaller() for |modality|.
+  // Installs the callbacks for `request` using the installers added via
+  // AddInstaller() for `modality`.
   void InstallOverlayRequestCallbacks(OverlayRequest* request,
                                       OverlayModality modality);
 
@@ -49,13 +49,13 @@ class OverlayBrowserAgentBase {
   class CallbackInstallationDriver : public OverlayPresenterObserver {
    public:
     // Constructor for an installation driver for OverlayRequests presented via
-    // |browser|'s OverlayPresenters.
+    // `browser`'s OverlayPresenters.
     CallbackInstallationDriver(Browser* browser,
                                OverlayBrowserAgentBase* browser_agent);
     ~CallbackInstallationDriver() override;
 
     // Starts driving the BrowserAgent's installation of callbacks for requests
-    // whose UI is presented from |modality|'s presenter.
+    // whose UI is presented from `modality`'s presenter.
     void StartInstallingCallbacks(OverlayModality modality);
 
    private:
@@ -69,7 +69,9 @@ class OverlayBrowserAgentBase {
 
     Browser* browser_ = nullptr;
     OverlayBrowserAgentBase* browser_agent_ = nullptr;
-    ScopedObserver<OverlayPresenter, OverlayPresenterObserver> scoped_observer_;
+    base::ScopedMultiSourceObservation<OverlayPresenter,
+                                       OverlayPresenterObserver>
+        scoped_observations_{this};
   };
 
   // Storage struct used to store OverlayRequestCallbackInstallers and their

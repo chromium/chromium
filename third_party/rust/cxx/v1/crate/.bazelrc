@@ -1,0 +1,2 @@
+build --enable_platform_specific_config
+build:linux --@rules_rust//:extra_rustc_flags=-Clink-arg=-fuse-ld=lld

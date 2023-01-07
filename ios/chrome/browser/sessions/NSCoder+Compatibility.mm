@@ -1,20 +1,20 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/sessions/NSCoder+Compatibility.h"
 
-#include "base/check.h"
+#import "base/check.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-// Note: |NSNotFound| is equal to |NSIntegerMax| in 32-bit and 64-bit that
-// in turn is initialized to |LONG_MAX|. On a 32-bit build, |INT_MAX| and
-// |LONG_MAX| have the same value, however, in a 64-bit build, |LONG_MAX|
-// is much larger, so we define |NSNotFound32| to |INT_MAX| that has the
+// Note: `NSNotFound` is equal to `NSIntegerMax` in 32-bit and 64-bit that
+// in turn is initialized to `LONG_MAX`. On a 32-bit build, `INT_MAX` and
+// `LONG_MAX` have the same value, however, in a 64-bit build, `LONG_MAX`
+// is much larger, so we define `NSNotFound32` to `INT_MAX` that has the
 // same value in both 32-bit and 64-bit builds.
 enum { NSNotFound32 = INT_MAX };
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,16 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_ELEMENT_STORE_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/web/element.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
 namespace autofill_assistant {
+class ElementFinderResult;
 
 // Temporary store for elements resolved from a |Selector| by the
 // |ElementFinder|. This store only holds a shallow copy of the element,
@@ -36,7 +37,12 @@ class ElementStore {
   // Get an element from the store. If the element does not exist or cannot be
   // reconstructed this returns an error status.
   virtual ClientStatus GetElement(const std::string& client_id,
-                                  ElementFinder::Result* out_element) const;
+                                  ElementFinderResult* out_element) const;
+
+  // Restore an element. If the element cannot be reconstructed, this returns
+  // an error status.
+  ClientStatus RestoreElement(const DomObjectFrameStack& object,
+                              ElementFinderResult* out_element) const;
 
   // Removes an element. Returns true if the element was removed.
   bool RemoveElement(const std::string& client_id);
@@ -50,7 +56,7 @@ class ElementStore {
  private:
   friend class FakeElementStore;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   base::flat_map<std::string, DomObjectFrameStack> object_map_;
 };

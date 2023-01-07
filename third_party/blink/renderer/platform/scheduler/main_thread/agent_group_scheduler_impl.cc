@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,9 +49,14 @@ AgentGroupSchedulerImpl::AgentGroupSchedulerImpl(
       main_thread_scheduler_(main_thread_scheduler) {
   DCHECK(!default_task_queue_->GetFrameScheduler());
   DCHECK_EQ(default_task_queue_->GetAgentGroupScheduler(), this);
+  agents_ = MakeGarbageCollected<HeapHashSet<WeakMember<Agent>>>();
 }
 
 AgentGroupSchedulerImpl::~AgentGroupSchedulerImpl() {
+  for (Agent* agent : *agents_) {
+    agent->SchedulerDestroyed();
+  }
+
   default_task_queue_->DetachFromMainThreadScheduler();
   compositor_task_queue_->DetachFromMainThreadScheduler();
   main_thread_scheduler_.RemoveAgentGroupScheduler(this);
@@ -103,6 +108,29 @@ BrowserInterfaceBrokerProxy&
 AgentGroupSchedulerImpl::GetBrowserInterfaceBroker() {
   DCHECK(broker_.is_bound());
   return broker_;
+}
+
+v8::Isolate* AgentGroupSchedulerImpl::Isolate() {
+  // TODO(dtapuska): crbug.com/1051790 implement an Isolate per scheduler.
+  v8::Isolate* isolate = main_thread_scheduler_.isolate();
+  DCHECK(isolate);
+  return isolate;
+}
+
+void AgentGroupSchedulerImpl::AddAgent(Agent* agent) {
+  DCHECK(agents_->find(agent) == agents_->end());
+  agents_->insert(agent);
+}
+
+void AgentGroupSchedulerImpl::RemoveAgent(Agent* agent) {
+  DCHECK(agents_->find(agent) != agents_->end());
+  agents_->erase(agent);
+}
+
+void AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint() {
+  for (Agent* agent : *agents_) {
+    agent->PerformMicrotaskCheckpoint();
+  }
 }
 
 }  // namespace scheduler

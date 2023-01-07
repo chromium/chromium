@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_VIEWS_H_
 
-#include "base/macros.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "ui/base/ui_base_types.h"
 
@@ -27,11 +26,15 @@ class AcceleratorProvider;
 
 class RenderViewContextMenuViews : public RenderViewContextMenu {
  public:
+  RenderViewContextMenuViews(const RenderViewContextMenuViews&) = delete;
+  RenderViewContextMenuViews& operator=(const RenderViewContextMenuViews&) =
+      delete;
+
   ~RenderViewContextMenuViews() override;
 
   // Factory function to create an instance.
   static RenderViewContextMenuViews* Create(
-      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost& render_frame_host,
       const content::ContextMenuParams& params);
 
   void RunMenuAt(views::Widget* parent,
@@ -44,7 +47,7 @@ class RenderViewContextMenuViews : public RenderViewContextMenu {
   void Show() override;
 
  protected:
-  RenderViewContextMenuViews(content::RenderFrameHost* render_frame_host,
+  RenderViewContextMenuViews(content::RenderFrameHost& render_frame_host,
                              const content::ContextMenuParams& params);
 
   // RenderViewContextMenu implementation.
@@ -57,6 +60,7 @@ class RenderViewContextMenuViews : public RenderViewContextMenu {
   void AppendPlatformEditableItems() override;
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
+  void ExecOpenInReadAnything() override;
 
   // Gets the AcceleratorProvider for the browser. May be null.
   ui::AcceleratorProvider* GetBrowserAcceleratorProvider() const;
@@ -73,8 +77,6 @@ class RenderViewContextMenuViews : public RenderViewContextMenu {
   // View observer of the submenu view and widget. SubmenuViewObserver is used
   // to observe bounds changes.
   std::unique_ptr<SubmenuViewObserver> submenu_view_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenuViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_VIEWS_H_

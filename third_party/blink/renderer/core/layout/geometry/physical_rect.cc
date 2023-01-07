@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,18 @@ PhysicalSize PhysicalRect::DistanceAsSize(PhysicalOffset target) const {
   else if (target.top > size.height)
     distance.height = target.top - size.height;
   return distance;
+}
+
+LayoutUnit PhysicalRect::SquaredDistanceTo(const PhysicalOffset& point) const {
+  LayoutUnit x1 = X(), x2 = Right();
+  if (x1 > x2)
+    std::swap(x1, x2);
+  LayoutUnit diff_x = point.left - ClampTo<LayoutUnit>(point.left, x1, x2);
+  LayoutUnit y1 = Y(), y2 = Bottom();
+  if (y1 > y2)
+    std::swap(y1, y2);
+  LayoutUnit diff_y = point.top - ClampTo<LayoutUnit>(point.top, y1, y2);
+  return diff_x * diff_x + diff_y * diff_y;
 }
 
 bool PhysicalRect::Contains(const PhysicalRect& other) const {

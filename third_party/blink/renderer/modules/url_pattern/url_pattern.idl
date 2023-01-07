@@ -1,22 +1,27 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 typedef (USVString or URLPatternInit) URLPatternInput;
 
+enum URLPatternComponent { "protocol", "username", "password", "hostname",
+                           "port", "pathname", "search", "hash" };
+
 // https://wicg.github.io/urlpattern/
 [
-  SecureContext,
-  Exposed=(Window,Worker),
-  RuntimeEnabled=URLPattern
+  Exposed=(Window,Worker)
 ] interface URLPattern {
-  [RaisesException] constructor(URLPatternInit init);
+  [RaisesException, Measure]
+  constructor(URLPatternInput input, USVString baseURL, optional URLPatternOptions options = {});
 
-  [RaisesException]
-  boolean test(URLPatternInput input, optional USVString baseURL);
+  [RaisesException, Measure]
+  constructor(optional URLPatternInput input = {}, optional URLPatternOptions options = {});
 
-  [RaisesException]
-  URLPatternResult exec(URLPatternInput input, optional USVString baseURL);
+  [RaisesException, CallWith=ScriptState, Measure]
+  boolean test(optional URLPatternInput input = {}, optional USVString baseURL);
+
+  [RaisesException, CallWith=ScriptState, Measure]
+  URLPatternResult? exec(optional URLPatternInput input = {}, optional USVString baseURL);
 
   readonly attribute USVString protocol;
   readonly attribute USVString username;
@@ -26,4 +31,8 @@ typedef (USVString or URLPatternInit) URLPatternInput;
   readonly attribute USVString pathname;
   readonly attribute USVString search;
   readonly attribute USVString hash;
+
+  [RuntimeEnabled=URLPatternCompareComponent, Measure]
+  static short compareComponent(URLPatternComponent component,
+                                URLPattern left, URLPattern right);
 };

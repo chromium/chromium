@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_DYNAMIC_MODULE_RESOLVER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -32,7 +32,6 @@ class CORE_EXPORT DynamicModuleResolver final
   // Implements "HostImportModuleDynamically" semantics.
   // Should be called w/ a valid V8 context.
   void ResolveDynamically(const ModuleRequest& module_request,
-                          const KURL& referrer_resource_url,
                           const ReferrerScriptInfo& referrer_info,
                           ScriptPromiseResolver*);
 

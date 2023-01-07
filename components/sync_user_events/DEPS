@@ -4,5 +4,5 @@ include_rules = [
   "+components/sync/driver",
   "+components/sync/model",
   "+components/sync/protocol",
-  "+components/sync/test/model",
+  "+components/sync/test",
 ]

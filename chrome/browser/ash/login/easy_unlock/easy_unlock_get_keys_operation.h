@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,15 @@
 #include <stddef.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
-#include "chromeos/cryptohome/homedir_methods.h"
-#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 class EasyUnlockGetKeysOperation {
  public:
@@ -27,6 +25,11 @@ class EasyUnlockGetKeysOperation {
                               const EasyUnlockDeviceKeyDataList& data_list)>;
   EasyUnlockGetKeysOperation(const UserContext& user_context,
                              GetKeysCallback callback);
+
+  EasyUnlockGetKeysOperation(const EasyUnlockGetKeysOperation&) = delete;
+  EasyUnlockGetKeysOperation& operator=(const EasyUnlockGetKeysOperation&) =
+      delete;
+
   ~EasyUnlockGetKeysOperation();
 
   // Starts the operation. If the cryptohome service is not yet available, the
@@ -42,7 +45,7 @@ class EasyUnlockGetKeysOperation {
 
   // Callback for GetKeyData(). Updates `devices_`, increments `key_index_`, and
   // calls GetKeyData() again.
-  void OnGetKeyData(base::Optional<user_data_auth::GetKeyDataReply> reply);
+  void OnGetKeyData(absl::optional<user_data_auth::GetKeyDataReply> reply);
 
   UserContext user_context_;
   GetKeysCallback callback_;
@@ -51,10 +54,8 @@ class EasyUnlockGetKeysOperation {
   EasyUnlockDeviceKeyDataList devices_;
 
   base::WeakPtrFactory<EasyUnlockGetKeysOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockGetKeysOperation);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_GET_KEYS_OPERATION_H_

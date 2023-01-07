@@ -102,7 +102,7 @@ authorization from the authors.
         <list type="STRING8" name="printer_name">
             <fieldref>printerNameLen</fieldref>
         </list>
-        <!-- There's some padding in here... -->
+        <pad align="4" />
         <list type="STRING8" name="locale">
             <fieldref>localeLen</fieldref>
         </list>
@@ -125,7 +125,7 @@ authorization from the authors.
         <list type="STRING8" name="printerName">
             <fieldref>printerNameLen</fieldref>
         </list>
-        <!-- padding -->
+        <pad align="4" />
         <list type="STRING8" name="locale">
             <fieldref>localeLen</fieldref>
         </list>
@@ -177,11 +177,11 @@ authorization from the authors.
         <list type="BYTE" name="data">
             <fieldref>len_data</fieldref>
         </list>
-        <!-- padding -->
+        <pad align="4" />
         <list type="STRING8" name="doc_format">
             <fieldref>len_fmt</fieldref>
         </list>
-        <!-- padding -->
+        <pad align="4" />
         <list type="STRING8" name="options">
             <fieldref>len_options</fieldref>
         </list>

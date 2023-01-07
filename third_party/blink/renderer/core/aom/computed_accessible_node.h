@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ class ScriptState;
 class ComputedAccessibleNodePromiseResolver final
     : public GarbageCollected<ComputedAccessibleNodePromiseResolver> {
  public:
+  ComputedAccessibleNodePromiseResolver(ScriptState*, Document&, AXID);
   ComputedAccessibleNodePromiseResolver(ScriptState*, Element&);
   ~ComputedAccessibleNodePromiseResolver() {}
 
@@ -36,9 +37,13 @@ class ComputedAccessibleNodePromiseResolver final
   class RequestAnimationFrameCallback;
 
   int continue_callback_request_id_ = 0;
+
+  // Backed by either element_ or ax_id_.
   Member<Element> element_;
+  AXID ax_id_;
+
   Member<ScriptPromiseResolver> resolver_;
-  bool resolve_with_node_;
+  bool resolve_with_node_ = false;
   std::unique_ptr<AXContext> ax_context_;
 };
 
@@ -46,36 +51,36 @@ class ComputedAccessibleNode : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ComputedAccessibleNode(AXID, WebComputedAXTree*, Document*);
-  ~ComputedAccessibleNode() override = default;
+  ComputedAccessibleNode(AXID, Document*);
+  ~ComputedAccessibleNode() override;
 
   void Trace(Visitor*) const override;
 
   // TODO(meredithl): add accessors for state properties.
-  base::Optional<bool> atomic() const;
-  base::Optional<bool> busy() const;
-  base::Optional<bool> disabled() const;
-  base::Optional<bool> readOnly() const;
-  base::Optional<bool> expanded() const;
-  base::Optional<bool> modal() const;
-  base::Optional<bool> multiline() const;
-  base::Optional<bool> multiselectable() const;
-  base::Optional<bool> required() const;
-  base::Optional<bool> selected() const;
+  absl::optional<bool> atomic() const;
+  absl::optional<bool> busy() const;
+  absl::optional<bool> disabled() const;
+  absl::optional<bool> readOnly() const;
+  absl::optional<bool> expanded() const;
+  absl::optional<bool> modal() const;
+  absl::optional<bool> multiline() const;
+  absl::optional<bool> multiselectable() const;
+  absl::optional<bool> required() const;
+  absl::optional<bool> selected() const;
 
-  base::Optional<int32_t> colCount() const;
-  base::Optional<int32_t> colIndex() const;
-  base::Optional<int32_t> colSpan() const;
-  base::Optional<int32_t> level() const;
-  base::Optional<int32_t> posInSet() const;
-  base::Optional<int32_t> rowCount() const;
-  base::Optional<int32_t> rowIndex() const;
-  base::Optional<int32_t> rowSpan() const;
-  base::Optional<int32_t> setSize() const;
+  absl::optional<int32_t> colCount() const;
+  absl::optional<int32_t> colIndex() const;
+  absl::optional<int32_t> colSpan() const;
+  absl::optional<int32_t> level() const;
+  absl::optional<int32_t> posInSet() const;
+  absl::optional<int32_t> rowCount() const;
+  absl::optional<int32_t> rowIndex() const;
+  absl::optional<int32_t> rowSpan() const;
+  absl::optional<int32_t> setSize() const;
 
-  base::Optional<float> valueMax() const;
-  base::Optional<float> valueMin() const;
-  base::Optional<float> valueNow() const;
+  absl::optional<float> valueMax() const;
+  absl::optional<float> valueMin() const;
+  absl::optional<float> valueNow() const;
 
   const String autocomplete() const;
   const String checked() const;
@@ -95,16 +100,16 @@ class ComputedAccessibleNode : public ScriptWrappable {
   ScriptPromise ensureUpToDate(ScriptState*);
 
  private:
-  base::Optional<bool> GetBoolAttribute(WebAOMBoolAttribute) const;
-  base::Optional<int32_t> GetIntAttribute(WebAOMIntAttribute) const;
-  base::Optional<float> GetFloatAttribute(WebAOMFloatAttribute) const;
+  Document* GetDocument() const;
+  WebComputedAXTree* GetTree() const;
+  absl::optional<bool> GetBoolAttribute(WebAOMBoolAttribute) const;
+  absl::optional<int32_t> GetIntAttribute(WebAOMIntAttribute) const;
+  absl::optional<float> GetFloatAttribute(WebAOMFloatAttribute) const;
   const String GetStringAttribute(WebAOMStringAttribute) const;
 
   AXID ax_id_;
 
   // This tree is owned by the RenderFrame.
-  blink::WebComputedAXTree* tree_;
-  Member<Document> document_;
   std::unique_ptr<AXContext> ax_context_;
 };
 

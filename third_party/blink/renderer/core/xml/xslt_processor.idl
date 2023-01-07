@@ -30,10 +30,7 @@
 // their interface definition remains the closest thing to a spec:
 // https://hg.mozilla.org/mozilla-central/file/012853bd80b7/dom/webidl/XSLTProcessor.webidl
 
-[
-    Exposed=Window,
-    RuntimeEnabled=XSLT
-] interface XSLTProcessor {
+[ Exposed=Window ] interface XSLTProcessor {
     [CallWith=Document, MeasureAs=XSLTProcessor] constructor();
 
     void importStylesheet(Node style);

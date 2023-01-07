@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PROCESS_SINGLETON_MODAL_DIALOG_LOCK_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/process_singleton.h"
 
 namespace base {
@@ -27,6 +26,11 @@ class ProcessSingletonModalDialogLock {
   explicit ProcessSingletonModalDialogLock(
       const ProcessSingleton::NotificationCallback& original_callback);
 
+  ProcessSingletonModalDialogLock(const ProcessSingletonModalDialogLock&) =
+      delete;
+  ProcessSingletonModalDialogLock& operator=(
+      const ProcessSingletonModalDialogLock&) = delete;
+
   ~ProcessSingletonModalDialogLock();
 
   // Receives a callback to be run to close the active modal dialog, or an empty
@@ -45,8 +49,6 @@ class ProcessSingletonModalDialogLock {
 
   base::RepeatingClosure notification_handler_;
   ProcessSingleton::NotificationCallback original_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSingletonModalDialogLock);
 };
 
 #endif  // CHROME_BROWSER_PROCESS_SINGLETON_MODAL_DIALOG_LOCK_H_

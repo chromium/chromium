@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,9 +74,11 @@ public class ShareServiceImplTest {
     @Test
     @SmallTest
     public void testSupportedMime() {
+        Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("application/pdf"));
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("audio/mp3"));
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("audio/mpeg"));
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("audio/wav"));
+        Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("image/avif"));
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("image/jpeg"));
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("image/svg+xml"));
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("text/csv"));

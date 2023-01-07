@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -33,21 +33,23 @@ class GbmSurfaceFactory;
 class GbmSurfaceless : public gl::SurfacelessEGL {
  public:
   GbmSurfaceless(GbmSurfaceFactory* surface_factory,
+                 gl::GLDisplayEGL* display,
                  std::unique_ptr<DrmWindowProxy> window,
                  gfx::AcceleratedWidget widget);
+
+  GbmSurfaceless(const GbmSurfaceless&) = delete;
+  GbmSurfaceless& operator=(const GbmSurfaceless&) = delete;
 
   void QueueOverlayPlane(DrmOverlayPlane plane);
 
   // gl::GLSurface:
   bool Initialize(gl::GLSurfaceFormat format) override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
-  bool ScheduleOverlayPlane(int z_order,
-                            gfx::OverlayTransform transform,
-                            gl::GLImage* image,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
+  gfx::SwapResult SwapBuffers(PresentationCallback callback,
+                              gl::FrameData data) override;
+  bool ScheduleOverlayPlane(
+      gl::GLImage* image,
+      std::unique_ptr<gfx::GpuFence> gpu_fence,
+      const gfx::OverlayPlaneData& overlay_plane_data) override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,
@@ -60,15 +62,18 @@ class GbmSurfaceless : public gl::SurfacelessEGL {
                                 int y,
                                 int width,
                                 int height,
-                                PresentationCallback callback) override;
+                                PresentationCallback callback,
+                                gl::FrameData data) override;
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
-                        PresentationCallback presentation_callback) override;
+                        PresentationCallback presentation_callback,
+                        gl::FrameData data) override;
   void PostSubBufferAsync(int x,
                           int y,
                           int width,
                           int height,
                           SwapCompletionCallback completion_callback,
-                          PresentationCallback presentation_callback) override;
+                          PresentationCallback presentation_callback,
+                          gl::FrameData data) override;
   EGLConfig GetConfig() override;
   void SetRelyOnImplicitSync() override;
   void SetForceGlFlushOnSwapBuffers() override;
@@ -100,8 +105,7 @@ class GbmSurfaceless : public gl::SurfacelessEGL {
   EGLSyncKHR InsertFence(bool implicit);
   void FenceRetired(PendingFrame* frame);
 
-  void OnSubmission(gfx::SwapResult result,
-                    std::unique_ptr<gfx::GpuFence> out_fence);
+  void OnSubmission(gfx::SwapResult result, gfx::GpuFenceHandle release_fence);
   void OnPresentation(const gfx::PresentationFeedback& feedback);
 
   GbmSurfaceFactory* const surface_factory_;
@@ -126,8 +130,6 @@ class GbmSurfaceless : public gl::SurfacelessEGL {
   bool requires_gl_flush_on_swap_buffers_ = false;
 
   base::WeakPtrFactory<GbmSurfaceless> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GbmSurfaceless);
 };
 
 }  // namespace ui

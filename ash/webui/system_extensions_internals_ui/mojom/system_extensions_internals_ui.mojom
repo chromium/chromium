@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom.system_extensions_internals;
+
+import "mojo/public/mojom/base/safe_base_name.mojom";
+
+// Interface for installing an unpacked System Extension.
+interface PageHandler {
+  // Installs a system extension from `system_extension_dir_name`, which must be
+  // a folder located at the top level of the default Downloads directory.
+  InstallSystemExtensionFromDownloadsDir(
+    mojo_base.mojom.SafeBaseName system_extension_dir_name) => (bool success);
+
+  // Returns whether a system extension is installed or not. Note that we
+  // currently only support one system extension being installed at a time, so
+  // a boolean is enough.
+  IsSystemExtensionInstalled() => (bool is_installed);
+
+  // Uninstalls the currently installed System Extension.
+  UninstallSystemExtension() => ();
+};

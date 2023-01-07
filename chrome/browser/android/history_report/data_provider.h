@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/cancelable_task_tracker.h"
 
@@ -37,6 +37,10 @@ class DataProvider {
   DataProvider(Profile* profile,
                DeltaFileService* delta_file_service,
                bookmarks::BookmarkModel* bookmark_model);
+
+  DataProvider(const DataProvider&) = delete;
+  DataProvider& operator=(const DataProvider&) = delete;
+
   ~DataProvider();
 
   // Provides up to limit delta file entries with sequence number > last_seq_no.
@@ -49,12 +53,10 @@ class DataProvider {
  private:
   void RecreateLog();
 
-  history::HistoryService* history_service_;
+  raw_ptr<history::HistoryService> history_service_;
   scoped_refptr<bookmarks::ModelLoader> bookmark_model_loader_;
-  DeltaFileService* delta_file_service_;
+  raw_ptr<DeltaFileService> delta_file_service_;
   base::CancelableTaskTracker history_task_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataProvider);
 };
 
 }  // namespace history_report

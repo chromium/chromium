@@ -1,0 +1,7 @@
+include_rules = [
+  "+ash/constants",
+  "+dbus",
+  "+components/device_event_log",
+  "+components/qr_code_generator/qr_code_generator.h",
+  "+components/user_manager",
+]

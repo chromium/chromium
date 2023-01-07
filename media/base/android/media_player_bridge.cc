@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/android/media_common_android.h"
@@ -65,14 +65,15 @@ void RecordWatchTimeUMA(bool is_hls, bool has_video) {
 
 }  // namespace
 
-MediaPlayerBridge::MediaPlayerBridge(const GURL& url,
-                                     const GURL& site_for_cookies,
-                                     const url::Origin& top_frame_origin,
-                                     const std::string& user_agent,
-                                     bool hide_url_log,
-                                     Client* client,
-                                     bool allow_credentials,
-                                     bool is_hls)
+MediaPlayerBridge::MediaPlayerBridge(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_frame_origin,
+    const std::string& user_agent,
+    bool hide_url_log,
+    Client* client,
+    bool allow_credentials,
+    bool is_hls)
     : prepared_(false),
       playback_completed_(false),
       pending_play_(false),
@@ -120,7 +121,7 @@ MediaPlayerBridge::~MediaPlayerBridge() {
 
 void MediaPlayerBridge::Initialize() {
   cookies_.clear();
-  if (url_.SchemeIsBlob()) {
+  if (url_.SchemeIsBlob() || url_.SchemeIsFileSystem()) {
     NOTREACHED();
     return;
   }
@@ -168,6 +169,11 @@ void MediaPlayerBridge::SetVideoSurface(gl::ScopedJavaSurface surface) {
 }
 
 void MediaPlayerBridge::SetPlaybackRate(double playback_rate) {
+  if (!prepared_) {
+    pending_playback_rate_ = playback_rate;
+    return;
+  }
+
   if (j_media_player_bridge_.is_null())
     return;
 
@@ -181,19 +187,12 @@ void MediaPlayerBridge::SetPlaybackRate(double playback_rate) {
 void MediaPlayerBridge::Prepare() {
   DCHECK(j_media_player_bridge_.is_null());
 
-  if (url_.SchemeIsBlob()) {
+  if (url_.SchemeIsBlob() || url_.SchemeIsFileSystem()) {
     NOTREACHED();
     return;
   }
 
   CreateJavaMediaPlayerBridge();
-
-  if (url_.SchemeIsFileSystem()) {
-    client_->GetMediaResourceGetter()->GetPlatformPathFromURL(
-        url_, base::BindOnce(&MediaPlayerBridge::SetDataSource,
-                             weak_factory_.GetWeakPtr()));
-    return;
-  }
 
   SetDataSource(url_.spec());
 }
@@ -383,7 +382,7 @@ base::TimeDelta MediaPlayerBridge::GetCurrentTime() {
   if (!prepared_)
     return pending_seek_;
   JNIEnv* env = base::android::AttachCurrentThread();
-  return base::TimeDelta::FromMilliseconds(
+  return base::Milliseconds(
       Java_MediaPlayerBridge_getCurrentPosition(env, j_media_player_bridge_));
 }
 
@@ -394,7 +393,7 @@ base::TimeDelta MediaPlayerBridge::GetDuration() {
   const int duration_ms =
       Java_MediaPlayerBridge_getDuration(env, j_media_player_bridge_);
   return duration_ms < 0 ? media::kInfiniteDuration
-                         : base::TimeDelta::FromMilliseconds(duration_ms);
+                         : base::Milliseconds(duration_ms);
 }
 
 void MediaPlayerBridge::Release() {
@@ -419,7 +418,7 @@ void MediaPlayerBridge::Release() {
 }
 
 void MediaPlayerBridge::SetVolume(double volume) {
-  volume_ = base::ClampToRange(volume, 0.0, 1.0);
+  volume_ = base::clamp(volume, 0.0, 1.0);
   UpdateVolumeInternal();
 }
 
@@ -476,7 +475,7 @@ void MediaPlayerBridge::OnMediaPrepared() {
   // events.
   if (should_seek_on_prepare_) {
     SeekInternal(pending_seek_);
-    pending_seek_ = base::TimeDelta::FromMilliseconds(0);
+    pending_seek_ = base::Milliseconds(0);
     should_seek_on_prepare_ = false;
   }
 
@@ -486,6 +485,11 @@ void MediaPlayerBridge::OnMediaPrepared() {
   if (pending_play_) {
     StartInternal();
     pending_play_ = false;
+  }
+
+  if (pending_playback_rate_) {
+    SetPlaybackRate(pending_playback_rate_.value());
+    pending_playback_rate_.reset();
   }
 }
 
@@ -549,7 +553,7 @@ void MediaPlayerBridge::SeekInternal(base::TimeDelta time) {
 
   // Seeking to an invalid position may cause media player to stuck in an
   // error state.
-  if (time < base::TimeDelta()) {
+  if (time.is_negative()) {
     DCHECK_EQ(-1.0, time.InMillisecondsF());
     return;
   }
@@ -570,7 +574,7 @@ GURL MediaPlayerBridge::GetUrl() {
   return url_;
 }
 
-GURL MediaPlayerBridge::GetSiteForCookies() {
+const net::SiteForCookies& MediaPlayerBridge::GetSiteForCookies() {
   return site_for_cookies_;
 }
 

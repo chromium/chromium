@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,26 +8,29 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/context_menu_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/selection_controller_delegate.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
+#include "ui/views/views_export.h"
 #include "ui/views/word_lookup_client.h"
 
 namespace views {
 class LabelSelectionTest;
 class MenuRunner;
 class SelectionController;
+
+VIEWS_EXPORT extern const ui::ClassProperty<CascadingProperty<SkColor>*>* const
+    kCascadingLabelEnabledColor;
 
 // A view subclass that can display a string.
 class VIEWS_EXPORT Label : public View,
@@ -76,6 +79,9 @@ class VIEWS_EXPORT Label : public View,
   // Construct a Label with the given |font| description.
   Label(const std::u16string& text, const CustomFont& font);
 
+  Label(const Label&) = delete;
+  Label& operator=(const Label&) = delete;
+
   ~Label() override;
 
   static const gfx::FontList& GetDefaultFontList();
@@ -110,6 +116,9 @@ class VIEWS_EXPORT Label : public View,
   // that vary from the global text style by anything besides weight.
   void SetTextStyleRange(int style, const gfx::Range& range);
 
+  // Apply the baseline style range across the entire label.
+  void ApplyBaselineTextStyle();
+
   // Enables or disables auto-color-readability (enabled by default).  If this
   // is enabled, then calls to set any foreground or background color will
   // trigger an automatic mapper that uses color_utils::BlendForMinContrast()
@@ -123,11 +132,13 @@ class VIEWS_EXPORT Label : public View,
   // enabled.
   SkColor GetEnabledColor() const;
   virtual void SetEnabledColor(SkColor color);
+  void SetEnabledColorId(absl::optional<ui::ColorId> enabled_color_id);
 
   // Gets/Sets the background color. This won't be explicitly drawn, but the
   // label will force the text color to be readable over it.
   SkColor GetBackgroundColor() const;
   void SetBackgroundColor(SkColor color);
+  void SetBackgroundColorId(absl::optional<ui::ColorId> background_color_id);
 
   // Gets/Sets the selection text color. This will automatically force the color
   // to be readable over the selection background color, if auto color
@@ -184,8 +195,8 @@ class VIEWS_EXPORT Label : public View,
 
   // If multi-line, a non-zero value will cap the number of lines rendered, and
   // elide the rest (currently only ELIDE_TAIL supported). See gfx::RenderText.
-  int GetMaxLines() const;
-  void SetMaxLines(int max_lines);
+  size_t GetMaxLines() const;
+  void SetMaxLines(size_t max_lines);
 
   // If single-line, a non-zero value will help determine the amount of space
   // needed *after* elision, which may be less than the passed |max_width|.
@@ -294,12 +305,14 @@ class VIEWS_EXPORT Label : public View,
   // within the |range|. See gfx::RenderText.
   std::vector<gfx::Rect> GetSubstringBounds(const gfx::Range& range);
 
-  base::CallbackListSubscription AddTextChangedCallback(
-      views::PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddTextChangedCallback(
+      views::PropertyChangedCallback callback);
 
   // View:
   int GetBaseline() const override;
   gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   int GetHeightForWidth(int w) const override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
@@ -316,6 +329,11 @@ class VIEWS_EXPORT Label : public View,
   // which may exceed the local bounds of the label.
   gfx::Rect GetTextBounds() const;
 
+  // Returns the Y coordinate the font_list() will actually be drawn at, in
+  // local coordinates.  This may differ from GetTextBounds().y() since the font
+  // is positioned inside the display rect.
+  int GetFontListY() const;
+
   void PaintText(gfx::Canvas* canvas);
 
   // View:
@@ -325,7 +343,7 @@ class VIEWS_EXPORT Label : public View,
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
   void OnThemeChanged() override;
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -393,6 +411,10 @@ class VIEWS_EXPORT Label : public View,
   // Get the text size for the current layout.
   gfx::Size GetTextSize() const;
 
+  // Get the text size that ignores the current layout and respects
+  // `available_size`.
+  gfx::Size GetBoundedTextSize(const SizeBounds& available_size) const;
+
   // Returns the appropriate foreground color to use given the proposed
   // |foreground| and |background| colors.
   SkColor GetForegroundColor(SkColor foreground, SkColor background) const;
@@ -428,7 +450,7 @@ class VIEWS_EXPORT Label : public View,
 
   int text_context_;
   int text_style_;
-  base::Optional<int> line_height_;
+  absl::optional<int> line_height_;
 
   // An un-elided and single-line RenderText object used for preferred sizing.
   std::unique_ptr<gfx::RenderText> full_text_;
@@ -448,6 +470,9 @@ class VIEWS_EXPORT Label : public View,
   SkColor actual_selection_text_color_ = gfx::kPlaceholderColor;
   SkColor selection_background_color_ = gfx::kPlaceholderColor;
 
+  absl::optional<ui::ColorId> enabled_color_id_;
+  absl::optional<ui::ColorId> background_color_id_;
+
   // Set to true once the corresponding setter is invoked.
   bool enabled_color_set_ = false;
   bool background_color_set_ = false;
@@ -461,7 +486,7 @@ class VIEWS_EXPORT Label : public View,
   bool auto_color_readability_enabled_ = true;
   // TODO(mukai): remove |multi_line_| when all RenderText can render multiline.
   bool multi_line_ = false;
-  int max_lines_ = 0;
+  size_t max_lines_ = 0;
   std::u16string tooltip_text_;
   bool handles_tooltips_ = true;
   // Whether to collapse the label when it's not visible.
@@ -480,8 +505,6 @@ class VIEWS_EXPORT Label : public View,
   // Context menu related members.
   ui::SimpleMenuModel context_menu_contents_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Label);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Label, View)
@@ -494,6 +517,8 @@ VIEW_BUILDER_PROPERTY(SkColor, EnabledColor)
 VIEW_BUILDER_PROPERTY(SkColor, BackgroundColor)
 VIEW_BUILDER_PROPERTY(SkColor, SelectionTextColor)
 VIEW_BUILDER_PROPERTY(SkColor, SelectionBackgroundColor)
+VIEW_BUILDER_PROPERTY(ui::ColorId, EnabledColorId)
+VIEW_BUILDER_PROPERTY(ui::ColorId, BackgroundColorId)
 VIEW_BUILDER_PROPERTY(const gfx::ShadowValues&, Shadows)
 VIEW_BUILDER_PROPERTY(bool, SubpixelRenderingEnabled)
 VIEW_BUILDER_PROPERTY(bool, SkipSubpixelRenderingOpacityCheck)
@@ -511,6 +536,7 @@ VIEW_BUILDER_PROPERTY(bool, HandlesTooltips)
 VIEW_BUILDER_PROPERTY(int, MaximumWidth)
 VIEW_BUILDER_PROPERTY(bool, CollapseWhenHidden)
 VIEW_BUILDER_PROPERTY(bool, Selectable)
+VIEW_BUILDER_METHOD(SizeToFit, int)
 END_VIEW_BUILDER
 
 }  // namespace views

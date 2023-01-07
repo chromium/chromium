@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<style>
+
+::-webkit-scrollbar {
+  width: 20px;
+  height: 20px;
+  background: #ccc;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+#scroller {
+  position: absolute;
+  overflow: scroll;
+  z-index: 0;
+  background: white;
+  left: 0;
+  top: 0;
+  width: 400px;
+  height: 300px;
+}
+
+</style>
+</head>
+<body>
+<div style="width: 1200px; height: 900px"></div>
+<div id="scroller">
+  <div style="width: 800px; height: 600px"></div>
+</div>
+<script>
+
+promise_test (async () => {
+  internals.settings.setScrollAnimatorEnabled(false);
+
+  // Simulate high DPI.
+  await new Promise(resolve => {
+    testRunner.setBackingScaleFactor(2, resolve);
+  });
+  await waitForCompositorCommit();
+
+  // Move the mouse over the vertical scrollbar.
+  await mouseMoveTo(780, 100);
+
+  // Scroll down.
+  await smoothScroll(200, 780, 100, GestureSourceType.MOUSE_INPUT,
+                     'down', SPEED_INSTANT);
+
+  // The div scroller should have scrolled.
+  await waitFor(() => { return scroller.scrollTop > 0; });
+  assert_equals(scrollY, 0, "Document should not scroll.");
+
+}, "Test wheel scrolling over div scroller's custom scrollbar on high DPI.");
+
+</script>
+</body>
+</html>

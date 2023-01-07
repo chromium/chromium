@@ -1,0 +1,16 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module arc.mojom;
+
+// Controls the setting entries for the ARC backup and restore feature.
+// Next method ID: 1
+interface BackupSettingsInstance {
+  // Enables or disables the backup feature as specified by the |enabled|
+  // parameter. The |managed| parameter indicates whether or not this setting
+  // is managed by the enterprise policy.
+  SetBackupEnabled@0(bool enabled, bool managed);
+};

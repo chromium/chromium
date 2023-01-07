@@ -1,0 +1,54 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// The enum below is exactly the same as its counterpart in
+// third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
+
+// The failure mode of a scan job.
+[Stable, Extensible]
+enum ScanFailureMode {
+  // No failure occurred.
+  [Default] kNoFailure = 0,
+
+  // An unknown or generic failure occurred.
+  kUnknown = 1,
+
+  // The device is busy.
+  kDeviceBusy = 2,
+
+  // The document feeder is jammed.
+  kAdfJammed = 3,
+
+  // The document feeder is empty.
+  kAdfEmpty = 4,
+
+  // The flatbed cover is open.
+  kFlatbedOpen = 5,
+
+  // An error occurred while communicating with the device.
+  kIoError = 6,
+};
+
+// This interface is used to access scanners.
+[Stable, Uuid="f0c77c02-b5c1-4919-8218-3076ecad58db"]
+interface DocumentScan {
+  // Returns the names of all available, de-duplicated scanners.
+  GetScannerNames@0() => (array<string> scanner_names);
+
+  // Performs a simple scan of the first page with a given scanner name. There
+  // are no settings and the actual scanner settings will be hard coded to use
+  // color mode.
+  //
+  // Returns the failure mode (which may be `kNoFailure` on success) and the
+  // data for the first page. The callback that receives `scan_data` must check
+  // it is non-null, in addition to checking `failure_mode`, in order to
+  // determine if the call succeeded.
+  //
+  // This API is intentionally designed this way for backwards compatibility
+  // with the documentScan.scan API that exists as of this writing.
+  ScanFirstPage@1(string scanner_name)
+      => (ScanFailureMode failure_mode, string? scan_data);
+};

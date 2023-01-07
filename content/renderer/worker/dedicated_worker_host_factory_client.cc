@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/renderer/worker/dedicated_worker_host_factory_client.h"
 
+#include <algorithm>
 #include <utility>
-#include "content/renderer/loader/web_worker_fetch_context_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
@@ -16,11 +16,14 @@
 #include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
+#include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/mojom/tokens/tokens.mojom.h"
+#include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
+#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_fetch_context.h"
 #include "third_party/blink/public/platform/web_dedicated_worker.h"
 #include "third_party/blink/public/platform/web_url.h"
 
@@ -38,8 +41,25 @@ DedicatedWorkerHostFactoryClient::~DedicatedWorkerHostFactoryClient() = default;
 void DedicatedWorkerHostFactoryClient::CreateWorkerHostDeprecated(
     const blink::DedicatedWorkerToken& dedicated_worker_token,
     const blink::WebURL& script_url,
-    base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
-        callback) {
+    CreateWorkerHostCallback callback) {
+  // The callback of mojom::CreateWorkerHost() requires mojo::PendingRemote as
+  // the second param, but the passed callback requires
+  // blink::CrossVariantMojoRemote. To bridge them, wrap the passed callback.
+  using MojoCreateWorkerHostCallback = base::OnceCallback<void(
+      const network::CrossOriginEmbedderPolicy&,
+      mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>)>;
+  MojoCreateWorkerHostCallback adapter_callback = base::BindOnce(
+      [](CreateWorkerHostCallback callback,
+         const network::CrossOriginEmbedderPolicy& policy,
+         mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
+             back_forward_cache_controller_host) {
+        blink::CrossVariantMojoRemote<
+            blink::mojom::BackForwardCacheControllerHostInterfaceBase>
+            pending_remote = std::move(back_forward_cache_controller_host);
+        std::move(callback).Run(policy, std::move(pending_remote));
+      },
+      std::move(callback));
+
   DCHECK(!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
@@ -48,7 +68,7 @@ void DedicatedWorkerHostFactoryClient::CreateWorkerHostDeprecated(
       dedicated_worker_token, script_url,
       browser_interface_broker.InitWithNewPipeAndPassReceiver(),
       dedicated_worker_host.InitWithNewPipeAndPassReceiver(),
-      std::move(callback));
+      std::move(adapter_callback));
   OnWorkerHostCreated(std::move(browser_interface_broker),
                       std::move(dedicated_worker_host));
 }
@@ -71,26 +91,28 @@ scoped_refptr<blink::WebWorkerFetchContext>
 DedicatedWorkerHostFactoryClient::CloneWorkerFetchContext(
     blink::WebWorkerFetchContext* web_worker_fetch_context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  scoped_refptr<WebWorkerFetchContextImpl> worker_fetch_context;
+  scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
+      cloned_web_dedicated_or_shared_worker_fetch_context;
   if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    worker_fetch_context =
-        static_cast<WebWorkerFetchContextImpl*>(web_worker_fetch_context)
+    cloned_web_dedicated_or_shared_worker_fetch_context =
+        static_cast<blink::WebDedicatedOrSharedWorkerFetchContext*>(
+            web_worker_fetch_context)
             ->CloneForNestedWorker(
                 service_worker_provider_context_.get(),
                 subresource_loader_factory_bundle_->Clone(),
-                subresource_loader_factory_bundle_
-                    ->CloneWithoutAppCacheFactory(),
+                subresource_loader_factory_bundle_->Clone(),
                 std::move(pending_subresource_loader_updater_),
                 std::move(task_runner));
   } else {
-    worker_fetch_context =
-        static_cast<WebWorkerFetchContextImpl*>(web_worker_fetch_context)
+    cloned_web_dedicated_or_shared_worker_fetch_context =
+        static_cast<blink::WebDedicatedOrSharedWorkerFetchContext*>(
+            web_worker_fetch_context)
             ->CloneForNestedWorkerDeprecated(std::move(task_runner));
   }
-  return worker_fetch_context;
+  return cloned_web_dedicated_or_shared_worker_fetch_context;
 }
 
-scoped_refptr<WebWorkerFetchContextImpl>
+scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
 DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
     const blink::RendererPreferences& renderer_preference,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
@@ -99,17 +121,25 @@ DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
         pending_resource_load_info_notifier) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   DCHECK(subresource_loader_factory_bundle_);
-  scoped_refptr<WebWorkerFetchContextImpl> worker_fetch_context =
-      WebWorkerFetchContextImpl::Create(
-          service_worker_provider_context_.get(), renderer_preference,
-          std::move(watcher_receiver),
-          subresource_loader_factory_bundle_->Clone(),
-          subresource_loader_factory_bundle_->CloneWithoutAppCacheFactory(),
-          std::move(pending_subresource_loader_updater_),
-          RenderThreadImpl::current()
-              ->cors_exempt_header_list(),
-          std::move(pending_resource_load_info_notifier));
-  return worker_fetch_context;
+  std::vector<std::string> cors_exempt_header_list =
+      RenderThreadImpl::current()->cors_exempt_header_list();
+  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
+      cors_exempt_header_list.size());
+  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
+                 web_cors_exempt_header_list.begin(), [](const std::string& h) {
+                   return blink::WebString::FromLatin1(h);
+                 });
+  scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
+      web_dedicated_or_shared_worker_fetch_context =
+          blink::WebDedicatedOrSharedWorkerFetchContext::Create(
+              service_worker_provider_context_.get(), renderer_preference,
+              std::move(watcher_receiver),
+              subresource_loader_factory_bundle_->Clone(),
+              subresource_loader_factory_bundle_->Clone(),
+              std::move(pending_subresource_loader_updater_),
+              web_cors_exempt_header_list,
+              std::move(pending_resource_load_info_notifier));
+  return web_dedicated_or_shared_worker_fetch_context;
 }
 
 void DedicatedWorkerHostFactoryClient::OnWorkerHostCreated(
@@ -129,7 +159,9 @@ void DedicatedWorkerHostFactoryClient::OnScriptLoadStarted(
         pending_subresource_loader_factory_bundle,
     mojo::PendingReceiver<blink::mojom::SubresourceLoaderUpdater>
         subresource_loader_updater,
-    blink::mojom::ControllerServiceWorkerInfoPtr controller_info) {
+    blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
+    mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
+        back_forward_cache_controller_host) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   DCHECK(main_script_load_params);
   DCHECK(pending_subresource_loader_factory_bundle);
@@ -170,7 +202,8 @@ void DedicatedWorkerHostFactoryClient::OnScriptLoadStarted(
       main_script_load_params->redirect_infos;
   worker_main_script_load_params->url_loader_client_endpoints =
       std::move(main_script_load_params->url_loader_client_endpoints);
-  worker_->OnScriptLoadStarted(std::move(worker_main_script_load_params));
+  worker_->OnScriptLoadStarted(std::move(worker_main_script_load_params),
+                               std::move(back_forward_cache_controller_host));
 }
 
 void DedicatedWorkerHostFactoryClient::OnScriptLoadStartFailed() {

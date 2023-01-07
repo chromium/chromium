@@ -1,0 +1,399 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Printing histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Printing.ConversionSize.Emf" units="KB"
+    expires_after="2023-09-10">
+  <owner>thestig@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
+  <summary>
+    On Windows, the average size of a printed page after converting to EMF.
+    Recorded after conversion.
+  </summary>
+</histogram>
+
+<histogram name="Printing.ConversionSize.EmfWithReducedRasterization"
+    units="KB" expires_after="2023-09-10">
+  <owner>thestig@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
+  <summary>
+    On Windows, the average size of a printed page after converting to EMF with
+    the reduced rasterization feature turned on. Recorded after conversion.
+  </summary>
+</histogram>
+
+<histogram name="Printing.ConversionSize.PostScript2" units="KB"
+    expires_after="2023-09-10">
+  <owner>thestig@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
+  <summary>
+    On Windows, the average size of a printed page after converting to level 2
+    PostScript. Recorded after conversion.
+  </summary>
+</histogram>
+
+<histogram name="Printing.ConversionSize.PostScript3" units="KB"
+    expires_after="2023-09-10">
+  <owner>thestig@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
+  <summary>
+    On Windows, the average size of a printed page after converting to level 3
+    PostScript. Recorded after conversion.
+  </summary>
+</histogram>
+
+<histogram name="Printing.ConversionSize.PostScript3WithType42Fonts" units="KB"
+    expires_after="2023-09-10">
+  <owner>thestig@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
+  <summary>
+    On Windows, the average size of a printed page after converting to level 3
+    PostScript with Type 42 fonts. Recorded after conversion.
+  </summary>
+</histogram>
+
+<histogram name="Printing.ConversionSize.Pwg" units="KB"
+    expires_after="2023-09-10">
+  <owner>thestig@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
+  <summary>
+    On desktop, the average size of a printed page after converting to PWG
+    Raster format. Recorded after conversion.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.AddressResolutionResult" enum="BooleanSuccess"
+    expires_after="2023-04-09">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
+  <summary>
+    Records whether resolution of a .local address via mDNS was successful. The
+    metric is recorded during attempted setup of a printer discovered via mDNS.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.HighestIppVersion" enum="IppVersion"
+    expires_after="2022-04-17">
+  <owner>skau@chromium.org</owner>
+  <owner>pawliczek@chromium.org</owner>
+  <summary>
+    Records the highest IPP version reported by a printer when we query the
+    printer for attributes. Useful to understand the population of printers
+    currently used. Recorded during printer setup for IPP printers. Recorded
+    only on ChromeOS.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.IppAttributesSuccess" enum="BooleanSuccess"
+    expires_after="2023-02-12">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
+  <summary>
+    Record if the request for IPP attributes was successful during printer
+    setup. This only occurs for setup attempts of IPP and IPPS printers.
+    Starting with M79, this is only recorded if the printer was reachable.
+
+    Recorded when printers are queried for attributes in ChromeOS settings.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.IppDeviceReachable" enum="BooleanSuccess"
+    expires_after="2023-02-26">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
+  <summary>
+    Record if the request for IPP attributes was successful in reaching the
+    printer. Recorded during the attempt to setup IPP/IPPS printers.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.JobDuration.JobCancelled" units="ms"
+    expires_after="2023-03-05">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    Records the print job duration of a cancelled print job. Includes time spent
+    in a suspended or error state. Only recorded on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.JobDuration.JobDone" units="ms"
+    expires_after="2023-03-26">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    Records the print job duration of a done/completed print job. Includes time
+    spent in a suspended or error state. Only recorded on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.JobResult" enum="PrintJobResult"
+    expires_after="never">
+<!-- expires-never: Monitors printing health for Chrome OS. -->
+
+  <owner>bmgordon@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
+  <summary>
+    The final status of every print job that was succesfully queued. Only used
+    on Chrome OS.
+
+    Recorded upon the completion of each print job by the CupsPrintJobManager.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.MigratedMakeAndModel" enum="BooleanMigrated"
+    expires_after="2023-02-12">
+  <owner>luum@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
+  <summary>
+    Records when a synced printer's outdated separate make and model strings
+    have been migrated to the new merged form. Recorded during initial sync
+    across PrintersSyncBridge.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.NearbyNetworkPrintersCount" units="printers"
+    expires_after="2023-02-19">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    The number of detected network printers that have not been saved. Recorded
+    when the user navigates to the OS Settings Printing page to set up printers.
+    Only recorded on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.PrintDocumentSize" units="KB"
+    expires_after="2023-02-19">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    Records the total size of the printed document (PDF) sent to CUPS. Only
+    recorded on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.PrinterAdded" enum="PrinterProtocol"
+    expires_after="2023-02-26">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>src/chromeos/printing/OWNERS</owner>
+  <summary>
+    The protocol for a printer that was added. Used to track printer churn by
+    protocol. Only on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.PrinterRemoved" enum="PrinterProtocol"
+    expires_after="2023-02-26">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>src/chromeos/printing/OWNERS</owner>
+  <summary>
+    The protocol for a printer that was removed. Used to track printer churn by
+    protocol. Only on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.PrintersDiscovered" units="printers"
+    expires_after="2023-03-05">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>src/chromeos/printing/OWNERS</owner>
+  <summary>
+    The number of printers shown in the discovered printers dialog during
+    printer set up. Only recorded on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.PrinterSetupResult" enum="PrinterSetupResult"
+    expires_after="never">
+<!-- expires-never: Monitors printer setup health for Chrome OS. -->
+
+  <owner>bmgordon@chromium.org</owner>
+  <owner>src/chromeos/printing/OWNERS</owner>
+  <summary>
+    The success or error code for the setup of a CUPS printer. Recorded when
+    setup is attempted through the settings dialogs. Only recorded on Chrome OS.
+    Printer setup results go into either this histogram or the
+    Printing.CUPS.ZeroconfPrinterSetupResult histogram - not both.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.PrinterSetupResult.PrintPreview"
+    enum="PrinterSetupResult" expires_after="2023-02-26">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
+  <summary>
+    The success or error code for the setup of a CUPS printer. Recorded when
+    setup is attempted from the print preview dialog. Only recorded on Chrome
+    OS. Printer setup results go into either this histogram or the
+    Printing.CUPS.ZeroconfPrinterSetupResult.PrintPreview histogram - not both.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.PrinterStatusQueryResult"
+    enum="PrinterStatusQueryResult" expires_after="2023-03-05">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the success outcome of a printer status query to a local printer.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.PrinterStatusReasons"
+    enum="PrinterStatusReasons" expires_after="2023-02-12">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the status reasons returned by a local printer from a printer status
+    query. Each returned printer status request can contain multiple status
+    reasons so summing these buckets will overcount the total # of status
+    queries.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.PrinterStatusRetrySuccess" enum="Boolean"
+    expires_after="2022-12-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the success outcome for a retried printer status query to an
+    unreachable local printer. Only recorded for the retry attempt. The result
+    for the first attempt is recorded by Printing.CUPS.PrinterStatusQueryResult.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.ProtocolUsed" enum="PrinterProtocol"
+    expires_after="2023-02-19">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
+  <summary>
+    Records the protocol for a selected printer in Chrome OS. Used to track
+    usage of the various printer protocols. Since a selection occurs when print
+    preview is opened, this will count at least one every time that happens if a
+    CUPS printer was selected.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.TotalNetworkPrintersCount" units="printers"
+    expires_after="2023-03-05">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    The total number of detected network printers. Recorded when the user
+    navigates to the OS Settings Printing page to set up printers. Only recorded
+    on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.UnknownPpdColorModel" enum="Boolean"
+    expires_after="2023-08-07">
+  <owner>dhoss@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Records instances in which print preview encounters an unknown PPD color
+    model. Recorded after print settings are received from print preview. Note
+    that this this histogram expired on 2021-02-01 and was extended on
+    2021-03-30.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.UsbSetupSource" enum="UsbPrinterSetupSource"
+    expires_after="2022-10-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the source from which a USB printer was configured in Chrome OS.
+    Used to track relative usage of the various printer setup routes. Only emits
+    after a successful printer setup.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.ZeroconfPrinterSetupResult"
+    enum="PrinterSetupResult" expires_after="never">
+<!-- expires-never: Monitors printer setup health for Chrome OS. -->
+
+  <owner>kdlee@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
+  <summary>
+    The success or error code for the setup of a Zeroconf printer. Recorded when
+    setup is attempted through the settings dialogs. Only recorded on Chrome OS.
+    Printer setup results go into either this histogram or the
+    Printing.CUPS.PrinterSetupResult histogram - not both.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.ZeroconfPrinterSetupResult.PrintPreview"
+    enum="PrinterSetupResult" expires_after="2023-02-26">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
+  <summary>
+    The success or error code for the setup of a Zeroconf printer. Recorded when
+    setup is attempted from the print preview dialog. Only recorded on Chrome
+    OS. Printer setup results go into either this histogram or the
+    Printing.CUPS.PrinterSetupResult.PrintPreview histogram - not both.
+  </summary>
+</histogram>
+
+<histogram name="Printing.Oop.PrintResult" enum="PrintOopResult"
+    expires_after="2023-03-19">
+  <owner>awscreen@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Records the final result of a print job where the interactions with the
+    system printing APIs are performed out-of-process in the PrintBackend
+    service.
+
+    This covers printing initiated from Print Preview as well as from a system
+    print dialog for platforms which provide that.
+
+    Recorded upon completion of each print job by PrintJobWorkerOop.
+  </summary>
+</histogram>
+
+<histogram
+    name="Printing.PrintBackend.DriversRequiringElevatedPrivilegeEncountered"
+    enum="BooleanFound" expires_after="2023-02-12">
+  <owner>awscreen@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Records if any printer driver operations were found to fail because of
+    access-denied errors when used in a sandboxed utility process. This can
+    occur from queries for setting up print preview as well as when printing a
+    document to a destination.
+  </summary>
+</histogram>
+
+<histogram name="Printing.PrintServers.ServersToQuery" units="servers"
+    expires_after="2023-03-05">
+  <owner>pawliczek@chromium.org</owner>
+  <owner>bmgordon@chromium.org</owner>
+  <summary>
+    Records the number of print servers that must be queried according to
+    policies. Only non-zero values are recorded. The histogram is emitted when
+    ExternalPrintServers* policies are loaded and processed. It happens when a
+    profile is opened or when one of the policies is modified.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

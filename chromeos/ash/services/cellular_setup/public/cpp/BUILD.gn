@@ -1,0 +1,29 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "esim_manager_test_observer.cc",
+    "esim_manager_test_observer.h",
+    "fake_activation_delegate.cc",
+    "fake_activation_delegate.h",
+    "fake_carrier_portal_handler.cc",
+    "fake_carrier_portal_handler.h",
+    "fake_cellular_setup.cc",
+    "fake_cellular_setup.h",
+  ]
+
+  public_deps = [
+    "//chromeos/ash/services/cellular_setup",
+    "//chromeos/ash/services/cellular_setup/public/mojom",
+  ]
+
+  deps = [ "//base" ]
+}

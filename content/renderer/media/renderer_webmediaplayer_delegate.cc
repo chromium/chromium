@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/system/sys_info.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/common/content_client.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_frame.h"
@@ -18,6 +20,8 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/public/web/web_view_observer.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace {
@@ -33,20 +37,16 @@ namespace media {
 RendererWebMediaPlayerDelegate::RendererWebMediaPlayerDelegate(
     content::RenderFrame* render_frame)
     : RenderFrameObserver(render_frame),
+      blink::WebViewObserver(render_frame->GetWebView()),
       allow_idle_cleanup_(
           content::GetContentClient()->renderer()->IsIdleMediaSuspendEnabled()),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
-  idle_cleanup_interval_ = base::TimeDelta::FromSeconds(5);
-  idle_timeout_ = base::TimeDelta::FromSeconds(15);
+  idle_cleanup_interval_ = base::Seconds(5);
+  idle_timeout_ = base::Seconds(15);
 
   is_low_end_ = base::SysInfo::IsLowEndDevice();
   idle_cleanup_timer_.SetTaskRunner(
       render_frame->GetTaskRunner(blink::TaskType::kInternalMedia));
-
-  // This corresponds to UMA_HISTOGRAM_COUNTS_1000.
-  peak_player_count_uma_ =
-      base::SingleSampleMetricsFactory::Get()->CreateCustomCountsMetric(
-          "Media.PeakWebMediaPlayerCount", 0, 1000, 50);
 }
 
 RendererWebMediaPlayerDelegate::~RendererWebMediaPlayerDelegate() {}
@@ -55,16 +55,23 @@ bool RendererWebMediaPlayerDelegate::IsFrameHidden() {
   if (is_frame_hidden_for_testing_)
     return true;
 
-  return (render_frame() && render_frame()->IsHidden());
+  // There is always a render frame except perhaps during teardown (though
+  // |this| should be deleted before that would be observable).
+  if (!render_frame())
+    return true;
+
+  // If the view is gone it means we are tearing down.
+  if (!render_frame()->GetWebView())
+    return true;
+
+  return render_frame()->GetWebView()->GetVisibilityState() !=
+             blink::mojom::PageVisibilityState::kVisible &&
+         render_frame()->GetWebView()->GetVisibilityState() !=
+             blink::mojom::PageVisibilityState::kHiddenButPainting;
 }
 
 int RendererWebMediaPlayerDelegate::AddObserver(Observer* observer) {
-  const auto result = id_map_.Add(observer);
-  if (id_map_.size() > peak_player_count_) {
-    peak_player_count_ = id_map_.size();
-    peak_player_count_uma_->SetSample(peak_player_count_);
-  }
-  return result;
+  return id_map_.Add(observer);
 }
 
 void RendererWebMediaPlayerDelegate::RemoveObserver(int player_id) {
@@ -176,24 +183,35 @@ bool RendererWebMediaPlayerDelegate::IsStale(int player_id) {
   return stale_players_.count(player_id);
 }
 
-void RendererWebMediaPlayerDelegate::WasHidden() {
-  RecordAction(base::UserMetricsAction("Media.Hidden"));
+void RendererWebMediaPlayerDelegate::OnPageVisibilityChanged(
+    blink::mojom::PageVisibilityState visibility_state) {
+  // Treat 'hidden but painting' as 'visible', since whatever is consuming the
+  // painted output (e.g., Picture in Picture), probably wants the video.
+  // Otherwise, the player might optimize the video away.
+  const bool is_shown =
+      visibility_state == blink::mojom::PageVisibilityState::kVisible ||
+      visibility_state == blink::mojom::PageVisibilityState::kHiddenButPainting;
+  if (is_shown_ == is_shown)
+    return;
+  is_shown_ = is_shown;
 
-  for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
-       it.Advance())
-    it.GetCurrentValue()->OnFrameHidden();
+  if (is_shown) {
+    RecordAction(base::UserMetricsAction("Media.Shown"));
 
-  ScheduleUpdateTask();
-}
+    for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
+         it.Advance())
+      it.GetCurrentValue()->OnFrameShown();
 
-void RendererWebMediaPlayerDelegate::WasShown() {
-  RecordAction(base::UserMetricsAction("Media.Shown"));
+    ScheduleUpdateTask();
+  } else {
+    RecordAction(base::UserMetricsAction("Media.Hidden"));
 
-  for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
-       it.Advance())
-    it.GetCurrentValue()->OnFrameShown();
+    for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
+         it.Advance())
+      it.GetCurrentValue()->OnFrameHidden();
 
-  ScheduleUpdateTask();
+    ScheduleUpdateTask();
+  }
 }
 
 void RendererWebMediaPlayerDelegate::SetIdleCleanupParamsForTesting(
@@ -294,6 +312,12 @@ void RendererWebMediaPlayerDelegate::CleanUpIdlePlayers(
 }
 
 void RendererWebMediaPlayerDelegate::OnDestruct() {
+  // All WebMediaPlayer instances should have been destructed by this point.
+  CHECK(id_map_.IsEmpty());
+  CHECK(idle_player_map_.empty());
+  CHECK(stale_players_.empty());
+  CHECK(players_with_video_.empty());
+  CHECK(playing_videos_.empty());
   delete this;
 }
 

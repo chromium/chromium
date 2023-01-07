@@ -1,0 +1,23 @@
+caption: Set <ph name="PRODUCT_FRAME_NAME">$3<ex>Google Chrome Frame</ex></ph> user
+  data directory
+deprecated: true
+desc: |-
+  Configures the directory that <ph name="PRODUCT_FRAME_NAME">$3<ex>Google Chrome Frame</ex></ph> will use for storing user data.
+
+        If you set this policy, <ph name="PRODUCT_FRAME_NAME">$3<ex>Google Chrome Frame</ex></ph> will use the provided directory.
+
+        See https://support.google.com/chrome/a?p=Supported_directory_variables for a list of variables that can be used.
+
+        If this setting is left not set the default profile directory will be used.
+example_value: ${user_home}/Chrome Frame
+features:
+  dynamic_refresh: false
+label: Set user data directory
+owners:
+- grt@chromium.org
+schema:
+  type: string
+supported_on:
+- chrome_frame:12-32
+tags: []
+type: string

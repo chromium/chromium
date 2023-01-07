@@ -130,6 +130,8 @@ class Document {
 ```
 
 ### Precede boolean values with words like “is” and “did”
+
+**Good:**
 ```c++
 bool is_valid;
 bool did_send_data;

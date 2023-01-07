@@ -1,143 +1,345 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
+<translation id="1018219910092211213">DNS ਸੰਬੰਧੀ ਸਮੱਸਿਆ ਨੂੰ ਹੱਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1018656279737460067">ਰੱਦ ਕੀਤਾ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ਥ੍ਰੈੱਡ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
+<translation id="1047773237499189053">ਨਵੀਂ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਹੈ, ਹੋਰ ਜਾਣਨ ਲਈ 'ਉੱਪਰ ਤੀਰ' ਕੁੰਜੀ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="1059913517121127803">ਸਕੈਨ ਕਰਨਾ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
+<translation id="1062407476771304334">ਬਦਲੋ</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall ਦਾ ਪਤਾ ਲੱਗਾ</translation>
 <translation id="1075811647922107217">ਪੰਨੇ ਦਾ ਆਕਾਰ</translation>
+<translation id="1094693127011229778">IP ਪਤਾ ਉਪਲਬਧ ਨਹੀਂ</translation>
+<translation id="1113892970288677790">ਚੁਣੇ ਗਏ ਆਰਟਵਰਕ ਅਤੇ ਚਿੱਤਰਾਂ ਦੀ ਚੋਣ ਕਰੋ</translation>
+<translation id="1119447706177454957">ਅੰਦਰੂਨੀ ਗੜਬੜ</translation>
 <translation id="1124772482545689468">ਵਰਤੋਂਕਾਰ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">ਬਾਹਰੀ ਡੀਵਾਈਸਾਂ ਲਈ ਅੱਪਡੇਟ ਫ਼ਰਮਵੇਅਰ ਵਿੰਡੋ ਖੁੱਲ੍ਹੀ ਹੈ। <ph name="NUM_UPDATES" /> ਅੱਪਡੇਟ ਉਪਲਬਧ ਹਨ।</translation>
+<translation id="1145516343487477149">ਮਦਦ ਲੇਖ ਅਤੇ Chromebook ਸੰਬੰਧੀ ਆਮ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਲੱਭੋ</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
+<translation id="1175951029573070619">ਔਸਤ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1195447618553298278">ਅਗਿਆਤ ਗੜਬੜ।</translation>
+<translation id="1196959502276349371">ਵਰਜਨ <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">ਚਲਾਓ/ਰੋਕੋ</translation>
+<translation id="1201402288615127009">ਅੱਗੇ</translation>
 <translation id="1204296502688602597">DNS ਵਿਲੰਬਤਾ</translation>
+<translation id="1207734034680156868">ਸੁਝਾਅ ਤੁਹਾਡੇ ਵਰਣਨ 'ਤੇ ਆਧਾਰਿਤ ਹਨ</translation>
 <translation id="123124571410524056">ਪੋਰਟਲ 'ਤੇ ਸ਼ੱਕ ਹੈ</translation>
 <translation id="1238612778414822719">HTTPS ਵਿਲੰਬਤਾ</translation>
+<translation id="1264369926465113395">ਰਚਨਾਕਾਰਾਂ ਲਈ Chromebook ਦਾ ਨਵਾਂ ਡਿਜੀਟਲ ਰਸਾਲਾ ਦੇਖੋ</translation>
 <translation id="1270369111467284986">ਕੈਪਟਿਵ ਪੋਰਟਲ 'ਤੇ ਸ਼ੱਕ ਹੈ</translation>
 <translation id="1290331692326790741">ਕਮਜ਼ੋਰ ਸਿਗਨਲ</translation>
+<translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ (<ph name="PERCENTAGE_VALUE" />% ਪੂਰਾ ਹੋ ਗਿਆ)</translation>
+<translation id="1310380015393971138">ਕੋਈ <ph name="NETWORK_NAME" /> ਨੈੱਟਵਰਕ ਉਪਲਬਧ ਨਹੀਂ</translation>
+<translation id="131421566576084655">ਪਿਛਲੇ ਡਾਟਾ ਰੀਸੈੱਟ ਦੀ ਤਾਰੀਖ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ਘਰੇਲੂ ਨੈੱਟਵਰਕ, ਰੋਮਿੰਗ ਨਹੀਂ</translation>
 <translation id="1327977588028644528">ਗੇਟਵੇ</translation>
+<translation id="1328223165223065150">ਵਾਲਪੇਪਰ ਦਾ ਰੰਗ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ਸਕੈਨ ਕਰਨ ਯੋਗ ਖੇਤਰ ਵਿੱਚ ਫਿੱਟ ਕਰੋ</translation>
+<translation id="1367951781824006909">ਇੱਕ ਫਾਈਲ ਚੁਣੋ</translation>
 <translation id="1387854245479784695">ਇਹ ਸਾਰੇ ਕੋਰ ਅੰਕੜਿਆਂ ਦਾ ਇਕੱਤਰੀਕਰਨ ਹੈ</translation>
+<translation id="1394661041439318933">ਡੀਵਾਈਸ ਦੇ ਕੇਸ ਦੀ ਬੈਟਰੀ ਦਾ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
 <translation id="1397738625398125236">ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="1398634363027580500">ਬਹੁਤ ਜ਼ਿਆਦਾ HTTPS ਵਿਲੰਬਤਾ</translation>
+<translation id="1407069428457324124">ਗੂੜ੍ਹਾ ਥੀਮ</translation>
 <translation id="1413240736185167732">ਅਸਫਲ ਰਹੀ - ਫਿਲਟਰ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="142228117786570094">ਮੇਰੇ ਕੋਲ ਕੁੰਜੀਆਂ ਦਾ ਜੋੜਾ ਹੈ</translation>
+<translation id="1423591390236870726"><ph name="KEY_NAME" /> ਕੁੰਜੀ ਨਹੀਂ ਦਬਾਈ ਗਈ</translation>
+<translation id="1435763214710588005">ਚੁਣੇ ਹੋਏ ਦਿਨ 'ਤੇ, ਹਰ ਮਹੀਨੇ ਡਾਟਾ ਵਰਤੋਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਰੀਸੈੱਟ ਹੋ ਜਾਂਦੀ ਹੈ</translation>
+<translation id="1442433966118452622">ਚਿੱਤਰ ਸਰੋਤ</translation>
+<translation id="1451536289672181509">ਡੀਵਾਈਸ ਇੱਕ ਕੀ-ਬੋਰਡ ਹੈ।</translation>
+<translation id="1459693405370120464">ਮੌਸਮ</translation>
 <translation id="1468664791493211953">ਪੇਸ਼ਕਸ਼ਾਂ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ਵੱਲੋਂ ਇਸ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦੀ ਨਿਗਰਾਨੀ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="1478594628797167447">ਸਕੈਨਰ</translation>
+<translation id="1483493594462132177">ਭੇਜੋ</translation>
+<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> 'ਤੇ ਫ਼ਰਮਵੇਅਰ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ਇਸ ਵਰਤੋਂਕਾਰ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ ਅਤੇ ਦੂਰ-ਦਰਾਡੇ ਤੋਂ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਅਤੇ ਵਰਤੋਂਕਾਰ ਸਰਗਰਮੀ ਦੀ ਨਿਗਰਾਨੀ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="150962533380566081">ਅਵੈਧ PUK।</translation>
 <translation id="1510238584712386396">ਲੌਂਚਰ</translation>
+<translation id="1526389707933164996">ਸਕ੍ਰੀਨ ਸੇਵਰ ਐਨੀਮੇਸ਼ਨ</translation>
+<translation id="152892567002884378">ਅਵਾਜ਼ ਵਧਾਓ</translation>
+<translation id="1555130319947370107">ਨੀਲਾ</translation>
+<translation id="155865706765934889">ਟਚਪੈਡ</translation>
+<translation id="1561927818299383735">ਬੈਕਲਿਟ ਰੰਗ</translation>
+<translation id="1565038567006703504"><ph name="DEVICE_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="1567064801249837505">ਐਲਬਮਾਂ</translation>
+<translation id="1572585716423026576">ਵਾਲਪੇਪਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
+<translation id="1578784163189013834">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬੈਕਗ੍ਰਾਊਂਡ ਚੁਣੋ</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ਤੋਂ ਡਾਟਾ ਵਰਤੋਂ</translation>
 <translation id="1621067168122174824">ਚਾਰਜ ਟੈਸਟ ਚਲਾਓ</translation>
+<translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="1641857168437328880">ਦਸਤਾਵੇਜ਼ ਫ਼ੀਡਰ (ਇੱਕ ਪਾਸੜ)</translation>
+<translation id="1643449475550628585">ਵਾਲਪੇਪਰ ਚਿੱਤਰ ਨੂੰ ਰੋਜ਼ਾਨਾ ਬਦਲੋ</translation>
 <translation id="1644574205037202324">ਇਤਿਹਾਸ</translation>
 <translation id="1662989795263954667">ਬੰਦ ਹੋ ਗਿਆ - ਸਿਆਹੀ ਖਤਮ ਹੋ ਗਈ ਹੈ</translation>
+<translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
+<translation id="1668469839109562275">ਅੰਦਰ-ਮੌਜੂਦ VPN</translation>
+<translation id="1672499492233627739">ਵੈੱਬਕੈਮ ਵੀਡੀਓ ਫ਼ੀਡ</translation>
+<translation id="1676557873873341166">ਵੀਡੀਓ ਬਣਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1703835215927279855">ਚਿੱਠੀ</translation>
 <translation id="1706391837335750954">DNS ਰਿਜ਼ੌਲਵਰਵ ਮੌਜੂਦ ਹੈ</translation>
+<translation id="1715359911173058521">ਸਕੈਨਰ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਵੇਲੇ ਕੋਈ ਸਮੱਸਿਆ ਆਈ। ਨੈੱਟਵਰਕ ਜਾਂ USB ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> ਅਤੇ <ph name="SECOND_MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="1726100011689679555">ਨਾਮ ਸਰਵਰ</translation>
+<translation id="1731082422893354635">ਬਲੂਟੁੱਥ ਟੱਚਪੈਡ</translation>
+<translation id="1745577949879301685">ਚਿੱਤਰ ਲੋਡ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕੇ। ਆਪਣੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਜਾਂ ਚਿੱਤਰਾਂ ਨੂੰ ਦੁਬਾਰਾ ਲੋਡ ਕਰ ਕੇ ਦੇਖੋ।</translation>
+<translation id="1751249301761991853">ਨਿੱਜੀ</translation>
+<translation id="1753496554272155572">ਵਾਲਪੇਪਰ ਦੀ ਪੂਰਵ-ਝਲਕ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
+<translation id="1755556344721611131">ਤਸ਼ਖੀਸੀ ਐਪ</translation>
+<translation id="175763766237925754">ਵਧੀਆ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1759842336958782510">Chrome</translation>
+<translation id="1768959921651994223">ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਕਿਸਮ</translation>
+<translation id="1782199038061388045">ਅਨੁਵਾਦ</translation>
 <translation id="1792647875738159689">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
+<translation id="1801418420130173017">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਕਰੋ</translation>
+<translation id="1807246157184219062">ਹਲਕਾ</translation>
+<translation id="1827738518074806965">ਕਲਾ ਗੈਲਰੀ</translation>
 <translation id="1851218745569890714">ਵੀਡੀਓ ਕਾਨਫਰੰਸਿੰਗ</translation>
+<translation id="1852934301711881861">ChromeOS Flex ਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="1856388568474281774">ਹੇਠਾਂ ਤੀਰ</translation>
+<translation id="1858620243986915808">ਸਕ੍ਰੀਨਸ਼ਾਟ ਨੱਥੀ ਕਰੋ</translation>
+<translation id="1871569928317311284">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਕਰੋ</translation>
+<translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">ਗੂੜ੍ਹਾ ਮੋਡ ਬੰਦ ਕਰੋ</translation>
+<translation id="1881188606372070653">ਕਨੂੰਨੀ ਕਾਰਨਾਂ ਕਰਕੇ ਸਮੱਗਰੀ ਵਿੱਚ ਤਬਦੀਲੀਆਂ ਕਰਨ ਦੀ ਬੇਨਤੀ ਕਰਨ ਲਈ <ph name="BEGIN_LINK1" />ਕਨੂੰਨੀ ਮਦਦ ਪੰਨੇ<ph name="END_LINK1" /> 'ਤੇ ਜਾਓ। ਖਾਤੇ ਅਤੇ ਸਿਸਟਮ ਦੀ ਕੁਝ ਜਾਣਕਾਰੀ Google ਨੂੰ ਭੇਜੀ ਜਾ ਸਕਦੀ ਹੈ। ਅਸੀਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਨੂੰ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਸਾਡੀ <ph name="BEGIN_LINK2" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK2" /> ਅਤੇ <ph name="BEGIN_LINK3" />ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK3" /> ਦੇ ਅਧੀਨ, ਤਕਨੀਕੀ ਸਮੱਸਿਆਵਾਂ ਨੂੰ ਹੱਲ ਕਰਨ ਅਤੇ ਸਾਡੀਆਂ ਸੇਵਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਵਰਤਾਂਗੇ।</translation>
 <translation id="1887850431809612466">ਹਾਰਡਵੇਅਰ ਸੰਸ਼ੋਧਨ</translation>
+<translation id="1904932688895783618">ਇੱਥੇ ਕੁਝ ਹੋਰ ਲਾਹੇਵੰਦ ਸਰੋਤ ਦਿੱਤੇ ਗਏ ਹਨ:</translation>
 <translation id="1905710495812624430">ਅਧਿਕਤਮ ਮਨਜ਼ੂਰ ਕੀਤੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਵਧੀਆਂ।</translation>
 <translation id="1908234395526491708">UDP ਬੇਨਤੀ ਦੀਆਂ ਅਸਫਲਤਾਵਾਂ</translation>
-<translation id="1930797645656624981">Chrome OS ਇਨਪੁੱਟ ਵਿਧੀ ਸੇਵਾ</translation>
 <translation id="1947737735496445907">ਪ੍ਰਿੰਟ ਕੀਤੀ ਗਈ</translation>
+<translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google ਪ੍ਰੋਫਾਈਲ ਫ਼ੋਟੋ</translation>
 <translation id="1979103255016296513">ਪਾਸਵਰਡ ਬਦਲਣਾ ਬਾਕੀ ਹੈ</translation>
 <translation id="1999615961760456652">ਕੈਪਟਿਵ ਪੋਰਟਲ</translation>
+<translation id="200669432486043882">ਫਾਈਲ ਬਦਲੋ</translation>
+<translation id="2006864819935886708">ਕਨੈਕਟੀਵਿਟੀ</translation>
 <translation id="2008685064673031089">ਪ੍ਰਮੁੱਖ ਖੋਜ</translation>
+<translation id="2011174342667534258">SDK ਵਰਜਨ:</translation>
+<translation id="2016697457005847575">ਸਮੱਸਿਆਵਾਂ ਦੇ ਨਿਪਟਾਰੇ ਸੰਬੰਧੀ ਪੜਾਅ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
+<translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">ਸਕ੍ਰੀਨ ਸੇਵਰ ਦੇਖਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਕਿਸੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ ਅਤੇ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ।</translation>
 <translation id="2080070583977670716">ਹੋਰ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="2085089206770112532">ਡਿਸਪਲੇ ਦੀ ਚਮਕ ਘਟਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
+<translation id="2105810540595158374">ਡੀਵਾਈਸ ਇੱਕ ਗੇਮ ਕੰਟਰੋਲਰ ਹੈ।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ਵਰਜਨ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB ਵਿੱਚੋਂ <ph name="AVAILABLE_MEMORY" /> GB ਉਪਲਬਧ ਹੈ</translation>
+<translation id="2138109643290557664">ਐਨੀਮੇਸ਼ਨ ਰਾਹੀਂ ਦਿਖਾਓ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2152882202543497059"><ph name="NUMBER" /> ਫ਼ੋਟੋਆਂ</translation>
 <translation id="2157959690810728433">ਕਤਾਰਬੱਧ</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="2161394479394250669">ਪ੍ਰਿੰਟ ਜੌਬ ਰੱਦ ਕਰੋ</translation>
+<translation id="2163937499206714165">ਗੂੜ੍ਹਾ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="2180197493692062006">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਐਪ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="2182088270354640012">ਵਿਚਾਰ ਲਈ ਧੰਨਵਾਦ। ਤੁਹਾਡਾ ਵਿਚਾਰ Chrome OS ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਦਾ ਹੈ ਅਤੇ ਇਸਦੀ Chrome OS ਟੀਮ ਵੱਲੋਂ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾਵੇਗੀ। ਸਪੁਰਦ ਕੀਤੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਰਿਪੋਰਟਾਂ ਦੀ ਗਿਣਤੀ ਜ਼ਿਆਦਾ ਹੋਣ ਕਰਕੇ, ਤੁਹਾਨੂੰ ਸਿੱਧਾ ਜਵਾਬ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋਵੇਗਾ।</translation>
+<translation id="2209788852729124853">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ</translation>
+<translation id="2212733584906323460">ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ ਨਾਮ ਦਿਓ</translation>
 <translation id="2217935453350629363">ਮੌਜੂਦਾ ਗਤੀ</translation>
 <translation id="2224337661447660594">ਇੰਟਰਨੈੱਟ ਨਹੀਂ</translation>
+<translation id="222447520299472966">ਘੱਟੋ-ਘੱਟ ਇੱਕ ਕਲਾ ਗੈਲਰੀ ਐਲਬਮ ਨੂੰ ਚੁਣਨ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="2230005943220647148">ਸੈਲਸੀਅਸ</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">ਕੀ-ਬੋਰਡ ਬੈਕਲਾਈਟ ਨੂੰ ਟੌਗਲ ਕਰਨ ਵਾਲਾ ਬਟਨ</translation>
+<translation id="2240366984605217732">ਖਾਕਾ ਸਵਿੱਚ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="225692081236532131">ਕਿਰਿਆਸ਼ੀਲਤਾ ਸਥਿਤੀ</translation>
+<translation id="2271469253353559191">ਗੂੜ੍ਹਾ ਮੋਡ ਨਿਯਤ ਕਰੋ</translation>
+<translation id="2276999893457278469">ਪ੍ਰਮੁੱਖ ਮਦਦ ਸਮੱਗਰੀ</translation>
+<translation id="2287186687001756809">ਕੋਈ ਚਿੱਤਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਫ਼ੋਟੋਆਂ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, <ph name="LINK" /> ’ਤੇ ਜਾਓ</translation>
+<translation id="2307344026739914387">ਮੌਜੂਦਾ ਕੁੰਜੀਆਂ ਦਾ ਜੋੜਾ ਵਰਤੋ</translation>
+<translation id="2320295602967756579">ਹਲਕਾ ਥੀਮ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="2323506179655536734">ਛੱਡ ਦਿੱਤਾ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ਨੇੜਲੇ ਡਿਵਾਈਸਾਂ ਨੂੰ ਲੱਭਣ ਲਈ ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="2346474577291266260">ਸ਼ਾਨਦਾਰ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2364498172489649528">ਪਾਸ ਕੀਤਾ</translation>
+<translation id="2380886658946992094">ਕਨੂੰਨੀ</translation>
 <translation id="2391082728065870591">ਵਿਚਾਰ ਸੰਬੰਧੀ ਰਿਪੋਰਟ ਭੇਜੋ</translation>
+<translation id="2407209115954268704">ਸਿਮ ਦੀ ਲਾਕ ਸਥਿਤੀ</translation>
+<translation id="2414886740292270097">ਡਾਰਕ</translation>
 <translation id="2418150275289244458">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
+<translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> ਵਿੱਚੋਂ <ph name="CURRENT_PAGE" /> ਚਿੱਤਰ</translation>
 <translation id="2446553403094072641">ਫ਼ਲੋਟਿੰਗ ਪੁਆਇੰਟ ਸਟੀਕਤਾ</translation>
 <translation id="2448312741937722512">ਟਾਈਪ ਕਰੋ</translation>
 <translation id="2461822463642141190">ਮੌਜੂਦਾ</translation>
+<translation id="248546197012830854">ਡੀਵਾਈਸ ਆਫ਼ਲਾਈਨ ਹੈ। ਮਦਦ ਸਮੱਗਰੀ ਦੇਖਣ ਲਈ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
+<translation id="2491955442992294626">ਜਦੋਂ ਤੁਸੀਂ ਕਿਸੇ ਹੋਰ ਵਿੰਡੋ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋਵੋ, ਤਾਂ ਕੁੰਜੀਆਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ</translation>
+<translation id="2493126929778606526">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਚੁਣੀਆਂ ਗਈਆਂ, ਤੁਹਾਡੀਆਂ ਬਿਹਤਰੀਨ ਫ਼ੋਟੋਆਂ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2505327257735685095">ਮੌਜੂਦਾ ਵਾਲਪੇਪਰ ਚਿੱਤਰ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
+<translation id="2513396635448525189">ਲੌਗ-ਇਨ ਚਿੱਤਰ</translation>
 <translation id="2517472476991765520">ਸਕੈਨ ਕਰੋ</translation>
+<translation id="2526590354069164005">ਡੈਸਕਟਾਪ</translation>
+<translation id="253029298928638905">ਮੁੜ-ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
+<translation id="2533048460510040082">ਸੁਝਾਈ ਗਈ ਮਦਦ ਸਮੱਗਰੀ</translation>
+<translation id="2536159006530886390">ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
-<translation id="2585245331261708204">Chrome OS 'ਚ ਨਵਾਂ ਕੀ ਹੈ</translation>
+<translation id="2584559707064218956">ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
+<translation id="2597774443162333062">ਫ਼ਾਈਲਾਂ ਡੀਬੱਗਿੰਗ ਲਈ Google ਨੂੰ ਭੇਜੀਆਂ ਜਾਣਗੀਆਂ</translation>
+<translation id="2619761439309613843">ਰੋਜ਼ਾਨਾ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="2620436844016719705">ਸਿਸਟਮ</translation>
+<translation id="2638662041295312666">ਸਾਈਨ-ਇਨ ਚਿੱਤਰ</translation>
+<translation id="2640549051766135490">ਐਲਬਮ <ph name="TITLE" /> <ph name="DESC" /> ਚੁਣੀ ਗਈ</translation>
+<translation id="2712812801627182647">TLS ਪ੍ਰਮਾਣੀਕਰਨ ਕੁੰਜੀ</translation>
+<translation id="2713444072780614174">ਸਫ਼ੈਦ</translation>
+<translation id="2717139507051041123">ਗੂੜ੍ਹੇ ਰੰਗ ਵਾਲੇ ਮੋਡ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2740531572673183784">ਠੀਕ</translation>
 <translation id="2751739896257479635">EAP ਫੇਜ਼ 2 ਪ੍ਰਮਾਣੀਕਰਨ</translation>
+<translation id="2783010256799387990">ਪਾਸ ਕੀਤਾ</translation>
 <translation id="2789486458103222910">ਠੀਕ ਹੈ</translation>
 <translation id="2805756323405976993">ਐਪਸ</translation>
-<translation id="2862104018715411648">ਆਪਣੇ ਦਸਤਾਵੇਜ਼ ਨੂੰ ਸਕੈਨਰ 'ਤੇ ਰੱਖੋ ਅਤੇ ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਸਕੈਨ ਕਰੋ ਚੁਣੋ</translation>
+<translation id="28232023175184696">ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਸਕਦਾ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
+<translation id="2859243502336719778">ਜ਼ਰੂਰੀ ਅੱਪਡੇਟ</translation>
+<translation id="2860473693272905224">ਕਿਸੇ ਹੋਰ ਪੰਨੇ ਨੂੰ ਸਕੈਨਰ 'ਤੇ ਰੱਖੋ</translation>
 <translation id="2872961005593481000">ਸ਼ਟ ਡਾਊਨ</translation>
+<translation id="2874939134665556319">ਪਿਛਲਾ ਟਰੈਕ</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ਸਕਿੰਟਾਂ ਵਿੱਚ <ph name="RATE" /> ਖਤਮ ਹੋਈ।</translation>
+<translation id="2926057806159140518">ਆਪਣਾ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ ਜਾਂ ਆਪਣਾ QR ਕੋਡ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="3008341117444806826">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="3009958530611748826">ਇੱਥੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਕੋਈ ਫੋਲਡਰ ਚੁਣੋ</translation>
+<translation id="3017079585324758401">ਬੈਕਗ੍ਰਾਊਂਡ</translation>
+<translation id="3027578600144895987">ਕੈਮਰਾ ਬੰਦ ਕਰੋ</translation>
+<translation id="3031560714565892478">ਡੀਵਾਈਸ ਇੱਕ ਵੀਡੀਓ ਕੈਮਰਾ ਹੈ।</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
+<translation id="3056720590588772262">ਅਖੀਰਲਾ ਬਿੰਦੂ</translation>
 <translation id="3069085583900247081">ਟੈਸਟ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="3083667275341675831">ਕਨੈਕਟੀਵਿਟੀ ਤਸ਼ਖੀਸ</translation>
+<translation id="3084958266922136097">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬੰਦ ਕਰੋ</translation>
 <translation id="3091839911843451378">ਅਸਫਲ ਰਹੀ - ਪ੍ਰਿੰਟਰ ਰੁਕ ਗਿਆ ਹੈ</translation>
 <translation id="3102119246920354026">ਕੈਚ</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">ਡੀਵਾਈਸ ਕਨੈਕਟ ਹੈ।</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ਕੀ ਪੰਨਾ ਹਟਾਉਣਾ ਹੈ?}=1{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਹਟਾਉਣਾ ਹੈ?}other{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਹਟਾਉਣਾ ਹੈ?}}</translation>
 <translation id="315116470104423982">ਮੋਬਾਈਲ ਡਾਟਾ</translation>
+<translation id="3156846309055100599">ਪੰਨਾ <ph name="PAGE_NUMBER" /> ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="315738237743207937">ਕੈਪਟਿਵ ਪੋਰਟਲ ਦਾ ਪਤਾ ਲੱਗਾ</translation>
+<translation id="3170673040743561620">ਆਪਣੇ ਦਸਤਾਵੇਜ਼ ਨੂੰ ਸਕੈਨਰ 'ਤੇ ਰੱਖੋ</translation>
 <translation id="3188257591659621405">ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
+<translation id="319101249942218879">ਅਵਤਾਰ ਚਿੱਤਰ ਬਦਲਿਆ ਗਿਆ</translation>
+<translation id="3192947282887913208">ਆਡੀਓ ਫਾਈਲ</translation>
 <translation id="3199982728237701504">ਦਸਤਾਵੇਜ਼ ਫ਼ੀਡਰ (ਦੋ ਪਾਸੜ)</translation>
 <translation id="3226405216343213872">ਸਕੈਨਰ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="3246869037381808805">1 ਦਿਨ ਤੋਂ ਜ਼ਿਆਦਾ ਪੁਰਾਣੀਆਂ ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="3268178239013324452">ਅਸਫਲ ਰਹੀ - ਢੱਕਣ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
+<translation id="3275729367986477355">ਅਵਤਾਰ ਚਿੱਤਰ</translation>
+<translation id="3283504360622356314">{0,plural, =1{ਫ਼ਾਈਲ ਦਾ ਸੰਪਾਦਨ ਕਰੋ}one{ਫ਼ਾਈਲ ਦਾ ਸੰਪਾਦਨ ਕਰੋ}other{ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3291996639387199448">ਕੁੰਜੀ ਨਿਰਦੇਸ਼</translation>
+<translation id="3294437725009624529">ਮਹਿਮਾਨ</translation>
 <translation id="3310640316857623290">DNS ਵਿਲੰਬਤਾ ਇਜਾਜ਼ਤਯੋਗ ਨਿਊਨਤਮ ਸੀਮਾ ਤੋਂ ਕਾਫ਼ੀ ਉੱਤੇ ਹੈ</translation>
 <translation id="3328783797891415197">ਟੈਸਟ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
+<translation id="3340011300870565703">ਡੀਵਾਈਸ ਦੇ ਸੱਜੇ ਪਾਸੇ ਵਾਲੇ ਬੱਡ ਦਾ ਬੈਟਰੀ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
 <translation id="3368922792935385530">ਕਨੈਕਟ ਕੀਤਾ</translation>
 <translation id="3369013195428705271">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਆਪਣਾ ਸਾਰਾ ਪ੍ਰਿੰਟ ਇਤਿਹਾਸ ਕਲੀਅਰ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਤੁਹਾਡੀਆਂ ਚੱਲ ਰਹੀਆਂ ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਨੂੰ ਕਲੀਅਰ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="3404249063913988450">ਸਕ੍ਰੀਨ ਸੇਵਰ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="3413935475507503304">ਅੱਪਡੇਟ ਨਾਲ ਜਾਰੀ ਰੱਖਣ ਲਈ, 'ਅੱਗੇ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ਸੁਰੱਖਿਆ</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> ਵਿੱਚੋਂ ਪੰਨਾ <ph name="PRINTED_PAGES" /> ਨੂੰ ਪ੍ਰਿੰਟ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="345898999683440380">ਪੰਨਾ <ph name="PAGE_NUM" /> ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। <ph name="PERCENTAGE_VALUE" />% ਮੁਕੰਮਲ।</translation>
 <translation id="3459509316159669723">ਪ੍ਰਿੰਟ ਕਰਨਾ</translation>
+<translation id="346539236881580388">ਫ਼ੋਟੋ ਦੁਬਾਰਾ ਖਿੱਚੋ</translation>
+<translation id="3484914941826596830">ਫ਼ਰਮਵੇਅਰ ਦੇ ਅੱਪਡੇਟ ਹੋਣ ਦੌਰਾਨ ਇਸ ਬਾਹਰੀ ਡੀਵਾਈਸ ਨੂੰ ਅਣਪਲੱਗ ਨਾ ਕਰੋ ਜਾਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਬੰਦ ਨਾ ਕਰੋ। ਤੁਸੀਂ ਇਸ ਵਿੰਡੋ ਨੂੰ ਛੋਟਾ ਕਰ ਸਕਦੇ ਹੋ। ਇਸ ਅੱਪਡੇਟ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ ਅਤੇ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਸ ਸਮੇਂ ਦੌਰਾਨ ਤੁਹਾਡਾ ਬਾਹਰੀ ਡੀਵਾਈਸ ਕੰਮ ਨਾ ਕਰੇ।</translation>
+<translation id="3486220673238053218">ਪਰਿਭਾਸ਼ਾ</translation>
 <translation id="3488065109653206955">ਅੰਸ਼ਕ ਤੌਰ ਤੇ ਸਕਿਰਿਆ ਕੀਤਾ</translation>
+<translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ਕਾਰਗੁਜ਼ਾਰੀ ਟ੍ਰੇਸ ਡਾਟਾ<ph name="END_LINK1" /> ਭੇਜੋ</translation>
+<translation id="3517001332549868749">ChromeOS ਸੰਬੰਧੀ ਅੱਪਡੇਟ</translation>
 <translation id="3527036260304016759">ਅਸਫਲ ਰਹੀ - ਅਗਿਆਤ ਗੜਬੜ</translation>
 <translation id="3532980081107202182">ਲਗਭਗ <ph name="MIN_REMAINING" /> ਮਿੰਟ ਬਾਕੀ</translation>
+<translation id="3557205324756024651">ਸਥਾਨਕ ਪਛਾਣ (ਵਿਕਲਪਿਕ)</translation>
+<translation id="3565064564551103223">ਮਨਜ਼ੂਰਸ਼ੁਦਾ IP</translation>
+<translation id="3569407787324516067">ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
+<translation id="3577473026931028326">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="357889014807611375">ਮੀਟਰਡ ਵਾਈ-ਫਾਈ</translation>
+<translation id="3583278742022654445">ਸਿਗਨਲ ਦੀ ਕਮਜ਼ੋਰ ਤੀਬਰਤਾ। ਵਾਈ-ਫਾਈ ਸਿਗਨਲ ਸਰੋਤ ਦੇ ਨਜ਼ਦੀਕ ਜਾ ਕੇ ਦੇਖੋ।</translation>
 <translation id="3595596368722241419">ਬੈਟਰੀ ਪੂਰੀ</translation>
+<translation id="3600339377155080675">ਸਕ੍ਰੀਨ ਪ੍ਰਤਿਬਿੰਬ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ</translation>
+<translation id="3603829704940252505">ਅਵਤਾਰ</translation>
+<translation id="3604713164406837697">ਵਾਲਪੇਪਰ ਬਦਲੋ</translation>
 <translation id="360565022852130722">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਕਮਜ਼ੋਰ ਪ੍ਰੋਟੋਕੋਲ WEP 802.1x ਨਾਲ ਸੁਰੱਖਿਅਤ ਹੈ</translation>
+<translation id="3606583719724308068">HTTPS ਵੈੱਬਸਾਈਟਾਂ ਲਈ ਉੱਚ ਵਿਲੰਬਤਾ</translation>
+<translation id="361575905210396100">ਤੁਹਾਡੇ ਵਿਚਾਰ ਲਈ ਧੰਨਵਾਦ</translation>
+<translation id="3621202678540785336">ਇਨਪੁਟ</translation>
+<translation id="3632579075709132555">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਟੌਗਲ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ</translation>
+<translation id="3651050199673793219">ਕੋਈ ਤਾਪਮਾਨ ਇਕਾਈ ਚੁਣੋ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ਟੈਸਟ</translation>
+<translation id="370665806235115550">ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="3708186454126126312">ਪਹਿਲਾਂ ਤੋਂ ਕਨੈਕਟ ਕੀਤੇ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ਸਮੀਖਿਆਵਾਂ)</translation>
 <translation id="3748026146096797577">ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="3749289110408117711">ਫਾਈਲ ਨਾਮ</translation>
+<translation id="3771294271822695279">ਵੀਡਿਓ ਫਾਈਲਾਂ</translation>
+<translation id="3784455785234192852">ਲਾਕ ਕਰੋ</translation>
 <translation id="38114475217616659">ਸਾਰਾ ਇਤਿਹਾਸ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="3820172043799983114">ਅਵੈਧ ਪਿੰਨ।</translation>
+<translation id="3824259034819781947">ਫ਼ਾਈਲਾਂ ਨੱਥੀ ਕਰੋ</translation>
 <translation id="3838338534323494292">ਨਵਾਂ ਪਾਸਵਰਡ</translation>
+<translation id="385051799172605136">ਪਿੱਛੇ</translation>
+<translation id="3858860766373142691">ਨਾਮ</translation>
+<translation id="3862598938296403232">ਵਰਣਨ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="3865414814144988605">ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
+<translation id="3866249974567520381">ਵਰਣਨ</translation>
 <translation id="387301095347517405">ਤੁਹਾਡੀ ਬੈਟਰੀ ਵੱਲੋਂ ਚਾਰਜ ਹੋਣ ਦੇ ਚੱਕਰ ਨੂੰ ਪੂਰਾ ਕੀਤੇ ਜਾਣ ਦੀ ਗਿਣਤੀ</translation>
+<translation id="3885327323343477505">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬਦਲੋ</translation>
+<translation id="3923184630988645767">ਡਾਟਾ ਵਰਤੋਂ</translation>
+<translation id="3932043219784172185">ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="3941014780699102620">ਹੋਸਟ ਨੂੰ ਹੱਲ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="3942420633017001071">ਤਸ਼ਖੀਸ</translation>
+<translation id="3954678691475912818">ਡੀਵਾਈਸ ਦੀ ਕਿਸਮ ਅਗਿਆਤ ਹੈ।</translation>
+<translation id="3966286471246132217">ਜ਼ਿਆਦਾ ਸਟੀਕ ਨਤੀਜਿਆਂ ਲਈ, ਟੈਸਟ ਪੂਰਾ ਹੋਣ ਤੱਕ ਸਾਰੀਆਂ ਐਪਾਂ ਬੰਦ ਰੱਖੋ।</translation>
 <translation id="3967822245660637423">ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਇਆ</translation>
+<translation id="3969602104473960991">ChromeOS ਦਾ ਪਾਸਵਰਡ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="397105322502079400">ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ਦਿਨਾਂ ਤੋਂ ਜ਼ਿਆਦਾ ਪੁਰਾਣੀਆਂ ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
+<translation id="3993704782688964914">ਤੁਹਾਡਾ <ph name="DEVICE_NAME" /> ਹੁਣ ਅੱਪ-ਟੂ-ਡੇਟ ਹੈ</translation>
 <translation id="4003384961948020559">ਅਸਫਲ ਰਹੀ - ਆਊਟਪੁੱਟ ਭਰ ਗਿਆ ਹੈ</translation>
 <translation id="4034824040120875894">ਪ੍ਰਿੰਟਰ</translation>
+<translation id="4044093238444069296">ਗੇਟਵੇ ਨਾਲ ਸੰਪਰਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="4046123991198612571">ਅਗਲਾ ਟਰੈਕ</translation>
+<translation id="404928562651467259">ਚਿਤਾਵਨੀ</translation>
+<translation id="4093865285251893588">ਪ੍ਰੋਫਾਈਲ ਚਿੱਤਰ</translation>
+<translation id="409427325554347132">ਟੈਸਟ ਦੇ ਵੇਰਵੇ ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="4110686435123617899">ਐਲਬਮ ਚੁਣੋ <ph name="TITLE" /> <ph name="DESC" /></translation>
+<translation id="4111761024568264522">USB ਟੱਚਪੈਡ</translation>
+<translation id="4117637339509843559">ਗੂੜ੍ਹਾ ਮੋਡ</translation>
 <translation id="4131410914670010031">ਕਾਲਾ ਅਤੇ ਚਿੱਟਾ</translation>
 <translation id="4145784616224233563">HTTP ਫ਼ਾਇਰਵਾਲ</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ਪੱਕਾ ਕਰੋ ਕਿ ਸਕੈਨਰ ਚਾਲੂ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਜਾਂ ਕਿਸੇ ਸਿੱਧੇ ਕਨੈਕਸ਼ਨ ਰਾਹੀਂ ਉਪਲਬਧ ਹੈ</translation>
+<translation id="4159784952369912983">ਜਾਮਨੀ</translation>
+<translation id="4170180284036919717">ਇੱਕ ਫ਼ੋਟੋ ਖਿੱਚੋ</translation>
 <translation id="4170700058716978431">ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4176463684765177261">ਅਸਮਰਥਿਤ</translation>
+<translation id="4176659219503619100">ਕੰਟਰੋਲ ਪੈਨਲ</translation>
+<translation id="420283545744377356">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬੰਦ ਕਰੋ</translation>
+<translation id="4213104098953699324">USB ਕੀ-ਬੋਰਡ</translation>
 <translation id="4227825898293920515">ਪਾਸਵਰਡ ਦੀ ਮਿਆਦ <ph name="TIME" /> ਵਿੱਚ ਮੁੱਕ ਜਾਵੇਗੀ</translation>
 <translation id="4238516577297848345">ਕੋਈ ਪ੍ਰਿੰਟ ਜੌਬ ਪ੍ਰਕਿਰਿਆ-ਅਧੀਨ ਨਹੀਂ ਹੈ</translation>
+<translation id="4239069858505860023">GPRS</translation>
+<translation id="4244962993387259361">ਮੈਮੋਰੀ ਟੈਸਟ ਚਲਾਉਣ ਲਈ ਤੁਹਾਨੂੰ ਘੱਟੋ-ਘੱਟ 500 MB ਖਾਲੀ ਜਗ੍ਹਾ ਦੀ ਲੋੜ ਹੈ। ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ &gt; ਸਟੋਰੇਜ ਪ੍ਰਬੰਧਨ 'ਤੇ ਜਾਓ।</translation>
+<translation id="4250229828105606438">ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
+<translation id="4258281355379922695">HTTP ਵਿਲੰਬਤਾ</translation>
+<translation id="4271957103967917607">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦੇਖੋ</translation>
+<translation id="4289540628985791613">ਓਵਰਵਿਊ</translation>
+<translation id="4289849978083912975">ਸਲਾਈਡ ਸ਼ੋਅ</translation>
 <translation id="4297501883039923494">ਬੰਦ ਹੋ ਗਿਆ - ਅਗਿਆਤ ਗੜਬੜ</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ਚਿੱਤਰ</translation>
+<translation id="4333390807948134856"><ph name="KEY_NAME" /> ਕੁੰਜੀ ਦਬਾਈ ਗਈ</translation>
 <translation id="4378373042927530923">ਨੈੱਟਵਰਕ ਤਸ਼ਖੀਸ ਨਹੀਂ ਚੱਲੀ</translation>
+<translation id="4378551569595875038">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098"><ph name="DEVICE_NAME" /> ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="4415951057168511744">ਮੌਜੂਦਾ ਅਵਤਾਰ</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ਬੰਦ ਹੈ</translation>
 <translation id="4429881212383817840">Kerberos ਟਿਕਟ ਦੀ ਮਿਆਦ ਜਲਦ ਹੀ ਮੁੱਕ ਜਾਵੇਗੀ</translation>
 <translation id="4431821876790500265">ਰਿਪੋਰਟ ਦੇਖੋ</translation>
 <translation id="445059817448385655">ਪੁਰਾਣਾ ਪਾਸਵਰਡ</translation>
@@ -145,87 +347,171 @@
 <translation id="4454245904991689773">ਇਸ ਵਿੱਚ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="4479639480957787382">ਈਥਰਨੈਟ</translation>
 <translation id="4483049906298469269">ਗੈਰ-ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="4503223151711056411">ਖੱਬਾ ਤੀਰ</translation>
 <translation id="4511264077854731334">ਪੋਰਟਲ</translation>
+<translation id="4521826082652183069">ਵਿਸ਼ੇ ਸੰਬੰਧੀ ਵਿਕਲਪਿਕ ਨਾਮ ਦਾ ਮਿਲਾਨ</translation>
+<translation id="4536864596629708641">IP ਸੰਰੂਪਣ</translation>
+<translation id="4546131424594385779">ਲੂਪਿੰਗ ਵੀਡੀਓ ਬਣਾਓ</translation>
 <translation id="4548483925627140043">ਸਿਗਨਲ ਨਹੀਂ ਮਿਲਿਆ</translation>
+<translation id="4556753742174065117">ਸਾਰਾ ਫ਼ਰਮਵੇਅਰ ਅੱਪ-ਟੂ-ਡੇਟ ਹੈ</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ਬੈਟਰੀ</translation>
+<translation id="4561801978359312462">ਸਿਮ ਅਣਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4562494484721939086">ਕੋਈ ਸੇਵਾ ਨਹੀਂ</translation>
 <translation id="458794348635939462">ਸਾਰੇ ਹੋਸਟਾਂ ਨੂੰ ਹੱਲ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4593212453765072419">ਪ੍ਰੌਕਸੀ ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="4609350030397390689">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਘਟਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ਵਿੱਚੋਂ <ph name="PRINTED_PAGE_NUMBER" />। ਪ੍ਰਿੰਟ ਜੌਬ ਨੂੰ ਰੱਦ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
+<translation id="463791356324567266">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="4646949265910132906">ਸੁਰੱਖਿਅਤ ਵਾਈ-ਫਾਈ ਕਨੈਕਸ਼ਨ</translation>
-<translation id="4652335678334611408">ਸੈਸ਼ਨ ਲੌਗ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="4650608062294027130">ਸੱਜੀ Shift ਕੁੰਜੀ</translation>
+<translation id="4654549501020883054">ਰੋਜ਼ਾਨਾ ਬਦਲੋ</translation>
 <translation id="4665014895760275686">ਨਿਰਮਾਤਾ</translation>
 <translation id="467510802200863975">ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ</translation>
 <translation id="467715984478005772">ਫ਼ਾਇਰਵਾਲ 'ਤੇ ਸ਼ੱਕ ਹੈ</translation>
 <translation id="4691278870498629773">ਬੰਦ ਹੋ ਗਿਆ - ਟ੍ਰੇਅ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="469379815867856270">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ</translation>
-<translation id="4707579418881001319">L2TP/IPsec + ਵਰਤੋਂਕਾਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
 <translation id="4731797938093519117">ਮਾਂ-ਪਿਓ ਲਈ ਪਹੁੰਚ</translation>
+<translation id="473775607612524610">ਅੱਪਡੇਟ ਕਰੋ</translation>
+<translation id="4744944742468440486">ਤੁਹਾਡੀ ਚੋਣ ਨਾਲ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ</translation>
 <translation id="4773299976671772492">ਬੰਦ ਕੀਤਾ</translation>
+<translation id="4782311465517282004">ਲਿਖਤ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖਣ ਜਾਂ ਉਸ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰਨ 'ਤੇ ਪਰਿਭਾਸ਼ਾਵਾਂ, ਅਨੁਵਾਦ, ਜਾਂ ਇਕਾਈ ਰੂਪਾਂਤਰਨ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> ਫ਼ੋਟੋ</translation>
+<translation id="4793710386569335688">ਹੋਰ ਮਦਦ ਲਈ, <ph name="BEGIN_LINK" />ਮਦਦ ਕੇਂਦਰ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
+<translation id="4793756956024303490">ਨਪੀੜਨ ਐਲਗੋਰਿਦਮ</translation>
+<translation id="4794140124556169553">CPU ਦੀ ਜਾਂਚ ਚਲਾਉਣਾ ਤੁਹਾਡੇ ਸਿਸਟਮ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰ ਸਕਦਾ ਹੈ</translation>
+<translation id="4800589996161293643">Chromebook ਭਾਈਚਾਰਾ</translation>
 <translation id="4808449224298348341">ਰੱਦ ਕੀਤੀ ਪ੍ਰਿੰਟ ਜੌਬ <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4809927044794281115">ਹਲਕਾ ਥੀਮ</translation>
+<translation id="4813136279048157860">ਮੇਰੇ ਚਿੱਤਰ</translation>
 <translation id="4813345808229079766">ਕਨੈਕਸ਼ਨ</translation>
 <translation id="4832079907277790330">Files ਐਪ ਵਿੱਚ ਫੋਲਡਰ ਨੂੰ ਚੁਣੋ...</translation>
 <translation id="4835901797422965222">ਕੋਈ ਕਿਰਿਆਸ਼ੀਲ ਨੈੱਟਵਰਕ ਨਹੀਂ ਹਨ</translation>
+<translation id="4839698083503556542">ਆਪਣੀ ਖੁਦ ਦੀ ਫ਼ਿਲਮ ਬਣਾਓ</translation>
+<translation id="484462545196658690">ਸਵੈ</translation>
+<translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ਚੁਣਿਆ ਗਿਆ, <ph name="TOPIC_SOURCE" /> ਐਲਬਮਾਂ ਨੂੰ ਚੁਣਨ ਲਈ Enter ਦਬਾਓ</translation>
+<translation id="484790837831576105">(Android) DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="4848429997038228357">ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ਕੋਸ਼ਿਸ਼ ਬਾਕੀ}one{<ph name="ERROR_MESSAGE" /> {0} ਕੋਸ਼ਿਸ਼ ਬਾਕੀ}other{<ph name="ERROR_MESSAGE" /> {0} ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ}}</translation>
+<translation id="4873827928179867585">ਪ੍ਰਮਾਣੀਕਰਨ ਐਲਗੋਰਿਦਮ</translation>
 <translation id="4880328057631981605">ਐਕਸੈੱਸ ਪੁਆਇੰਟ ਨਾਮ</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">ਛੇਤੀ ਇੱਕ ਨਵਾਂ ਪਾਸਵਰਡ ਚੁਣੋ</translation>
 <translation id="4891842000192098784">ਤਣਾਅ</translation>
+<translation id="4897058166682006107">ਡੀਵਾਈਸ ਦੇ ਖੱਬੇ ਪਾਸੇ ਵਾਲੇ ਬੱਡ ਦਾ ਬੈਟਰੀ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
+<translation id="4905998861748258752">ਸਕ੍ਰੀਨ ਸੇਵਰ ਵਿਕਲਪਾਂ ਨੂੰ ਚੁਣਨ ਲਈ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4917385247580444890">ਮਜ਼ਬੂਤ</translation>
 <translation id="4917889632206600977">ਬੰਦ ਹੋ ਗਿਆ - ਕਾਗਜ਼ ਖਤਮ ਹੋ ਗਏ</translation>
+<translation id="491791267030419270">ਵਿਚਾਰ ਲਿਖਣ ਸੰਬੰਧੀ ਨੁਕਤੇ</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ਸਕਿੰਟਾਂ ਵਿੱਚ <ph name="RATE" /> ਚਾਰਜ ਹੋਈ।</translation>
+<translation id="4930320165497208503">ਕਿਸੇ ਕਨੈਕਸ਼ਨ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਜਾਂ ਉਸਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="4932733599132424254">ਤਾਰੀਖ</translation>
+<translation id="4950314376641394653">ਫ਼ਰਮਵੇਅਰ <ph name="DEVICE_NAME" /> ਨੂੰ ਵਰਜਨ <ph name="VERSION" /> 'ਤੇ ਅੱਪਡੇਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="498186245079027698">ਸਕੈਨਰ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ। ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਸਕੈਨ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਲੋੜੀਂਦੀ ਜਗ੍ਹਾ ਹੈ।</translation>
 <translation id="4985509611418653372">ਚਲਾਓ</translation>
 <translation id="4987769320337599931">ਫ਼ਾਇਰਵਾਲ</translation>
 <translation id="4999333166442584738">ਰਿਪੋਰਟ ਲੁਕਾਓ</translation>
 <translation id="500920857929044050">ਟੈਸਟ ਬੰਦ ਕਰੋ</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">ਜਦੋਂ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਅਕਿਰਿਆਸ਼ੀਲ ਹੁੰਦੀ ਹੈ, ਤਾਂ ਫ਼ੋਟੋਆਂ, ਸਮਾਂ, ਮੌਸਮ ਅਤੇ ਮੀਡੀਆ ਜਾਣਕਾਰੀ ਦਿਖਾਓ।</translation>
+<translation id="5039804452771397117">ਆਗਿਆ ਦਿਓ</translation>
+<translation id="5049856988445523908">ਸਿਮ ਲਾਕ ਕੀਤਾ ਗਿਆ (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ਗਰੁੱਪ ਦਾ ਨਾਮ</translation>
+<translation id="5051044138948155788">ਸਿਰਫ਼ ਇਹੀ ਪੰਨਾ ਹੈ। ਇਹ ਤੁਹਾਨੂੰ ਸਕੈਨਿੰਗ ਸ਼ੁਰੂ ਕਰਨ ਵਾਲੀ ਸਕ੍ਰੀਨ 'ਤੇ ਲੈ ਜਾਵੇਗਾ।</translation>
 <translation id="5088172560898466307">ਸਰਵਰ ਹੋਸਟਨਾਮ</translation>
 <translation id="5089810972385038852">ਰਾਜ</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">ਪ੍ਰਮਾਣੀਕਰਨ</translation>
 <translation id="5154917547274118687">ਮੈਮਰੀ</translation>
+<translation id="5160857336552977725">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="5166918508782100047">ਤਤਕਾਲ ਜਵਾਬਾਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5168185087976003268">ਬੈਟਰੀ ਦੀ ਸਥਿਤੀ</translation>
+<translation id="5170568018924773124">ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
+<translation id="5190187232518914472">ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਯਾਦਾਂ ਨੂੰ ਤਾਜ਼ਾ ਕਰੋ। ਐਲਬਮਾਂ ਸ਼ਾਮਲ ਜਾਂ ਉਹਨਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="5212543919916444558">ਮੈਨੂੰ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ 'ਤੇ ਅਜਿਹਾ ਕੁਝ ਵੀ ਨਹੀਂ ਮਿਲਿਆ ਜਿਸ ਵਿੱਚ ਮੈਂ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਾਂ। ਮੇਰੇ ਤੋਂ ਕੁਝ ਵੀ ਪੁੱਛਣ ਲਈ ਮਾਈਕ 'ਤੇ ਟੈਪ ਕਰਕੇ ਦੇਖੋ।</translation>
+<translation id="5212593641110061691">ਪੱਤਰਕਾ</translation>
 <translation id="5222676887888702881">ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
+<translation id="522307662484862935">ਈਮੇਲ ਪਤਾ ਸ਼ਾਮਲ ਨਾ ਕਰੋ</translation>
+<translation id="5227902338748591677">ਗੂੜ੍ਹਾ ਥੀਮ ਨਿਯਮ ਕਰੋ</translation>
+<translation id="5234764350956374838">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
 <translation id="5252456968953390977">ਰੋਮਿੰਗ</translation>
+<translation id="5257811368506016604">ਹਲਕੇ ਰੰਗ ਵਾਲੇ ਮੋਡ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5264277876637023664">CPU ਟੈਸਟ ਚਲਾਓ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">ਨਿਯਮਬੱਧ ਕੰਮਾਂ ਨੂੰ ਮੁੜ-ਚਲਾਓ</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">ਬੈਕਲਾਈਟ ਦਾ ਰੰਗ</translation>
 <translation id="5294769550414936029">ਵਰਜਨ <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300814202279832142">ਵਿੰਡੋ ਨੂੰ ਡੈਸਕ 'ਤੇ ਲਿਜਾਓ</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ਪਛਾਣ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5318334351163689047">TCP ਬੇਨਤੀ ਦੀਆਂ ਅਸਫਲਤਾਵਾਂ</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">ਹੁਣੇ ਇੱਕ ਨਵਾਂ ਪਾਸਵਰਡ ਚੁਣੋ</translation>
 <translation id="5333530671332546086">ਅਗਿਆਤ ਪੋਰਟਲ ਸਥਿਤੀ</translation>
+<translation id="5346687412805619883">ਸਥਾਨਕ ਨੈੱਟਵਰਕ</translation>
+<translation id="5358174242040570474">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਵਾਲਪੇਪਰ ਨੂੰ ਦੁਬਾਰਾ ਚੁਣ ਕੇ ਦੇਖੋ ਜਾਂ ਐਪ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ।</translation>
 <translation id="5372659122375744710">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
+<translation id="5376354385557966694">ਸਵੈਚਲਿਤ ਹਲਕਾ ਮੋਡ</translation>
+<translation id="5389159777326897627">ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ</translation>
+<translation id="5389224261615877010">ਸਤਰੰਗ</translation>
+<translation id="5400907029458559844">ਡੀਵਾਈਸ ਨੂੰ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5401938042319910061">ਸਾਰੇ ਨਿਯਮਬੱਧ ਕੰਮ ਚਲਾਓ</translation>
 <translation id="5423849171846380976">ਸਕਿਰਿਆ ਕੀਤਾ</translation>
 <translation id="5430931332414098647">ਤਤਕਾਲ ਟੈਦਰਿੰਗ</translation>
 <translation id="5431318178759467895">ਰੰਗ</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">ਮਹਿਮਾਨ ਵਜੋਂ ਬ੍ਰਾਊਜ਼ ਕਰੋ</translation>
 <translation id="54609108002486618">ਪ੍ਰਬੰਧਿਤ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ਕੋਸ਼ਿਸ਼ ਬਾਕੀ}one{{0} ਕੋਸ਼ਿਸ਼ ਬਾਕੀ}other{{0} ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">ਸਕੈਨ ਪੂਰਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
+<translation id="5499762266711462226">ਕੀ-ਬੋਰਡ ਦਾ ਰੰਗ ਵਾਲਪੇਪਰ 'ਤੇ ਆਧਾਰਿਤ ਹੈ</translation>
+<translation id="5502931783115429516">Android ਨਹੀਂ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
+<translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578477003638479617">UMTS</translation>
+<translation id="5578519639599103840">ਮੁੜ-ਸਕੈਨ ਕਰੋ</translation>
+<translation id="5583640892426849032">ਬੈਕਸਪੇਸ</translation>
+<translation id="5600027863942488546"><ph name="KEY_NAME" /> ਕੁੰਜੀ ਦੀ ਜਾਂਚ ਕੀਤੀ ਗਈ</translation>
+<translation id="5620281292257375798">ਸਿਰਫ਼ ਅੰਦਰੂਨੀ</translation>
+<translation id="5649768706273821470">ਸੁਣਿਆ</translation>
+<translation id="5655283760733841251">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਵਧਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
+<translation id="5659593005791499971">ਈਮੇਲ</translation>
 <translation id="5669267381087807207">ਸਕਿਰਿਆ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ਪਰਿਵਾਰ</translation>
+<translation id="5695599963893094957">ਆਪਣੇ ਕੀ-ਬੋਰਡ 'ਤੇ ਕੋਈ ਵੀ ਕੁੰਜੀ ਦਬਾ ਕੇ ਟਾਈਪ ਕਰੋ। ਤੁਸੀਂ ਇੱਕੋ ਸਮੇਂ 'ਤੇ 4 ਕੁੰਜੀਆਂ ਤੱਕ ਦਬਾ ਸਕਦੇ ਹੋ।</translation>
+<translation id="5701381305118179107">ਕੇਂਦਰ</translation>
+<translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ਵਿੱਚੋਂ <ph name="CURRENT_PAGE" /></translation>
+<translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="5760715441271661976">ਪੋਰਟਲ ਸਥਿਤੀ</translation>
-<translation id="5797428682393400134">ਸਫਲ ਰਿਹਾ</translation>
+<translation id="576835345334454681">ਡਿਸਪਲੇ ਦੀ ਚਮਕ ਵਧਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
+<translation id="57838592816432529">ਮਿਊਟ ਕਰੋ</translation>
+<translation id="5784136236926853061">ਜ਼ਿਆਦਾ HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="5832805196449965646">ਵਿਅਕਤੀ ਜੋੜੋ</translation>
 <translation id="583281660410589416">ਅਗਿਆਤ</translation>
+<translation id="5843706793424741864">ਫਾਰੇਨਹੀਟ</translation>
 <translation id="5849570051105887917">ਹੋਮ ਪ੍ਰਦਾਨਕ ਕੋਡ</translation>
+<translation id="5859603669299126575">ਕਲਾ ਗੈਲਰੀ ਐਲਬਮ</translation>
+<translation id="5860033963881614850">ਬੰਦ ਕਰੋ</translation>
+<translation id="5860491529813859533">ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5866840822086176774">ਬਹੁਤ ਮਜ਼ਬੂਤ</translation>
+<translation id="588258955323874662">ਫੁਲਸਕ੍ਰੀਨ</translation>
 <translation id="5895138241574237353">ਰੀਸਟਾਰਟ ਕਰੋ</translation>
+<translation id="5901630391730855834">ਪੀਲਾ</translation>
+<translation id="5903200662178656908">ਡੀਵਾਈਸ ਕੀ-ਬੋਰਡ ਅਤੇ ਮਾਊਸ ਦਾ ਸੁਮੇਲ ਹੈ।</translation>
+<translation id="5907649332524363701">ਕੁੰਜੀ ਦਾ ਰੰਗ</translation>
 <translation id="5916084858004523819">ਪਾਬੰਦੀ ਲਗਾਈ ਗਈ</translation>
+<translation id="5916664084637901428">ਚਾਲੂ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ਤੁਹਾਡੀ ਫ਼ਾਈਲ ਸਫਲਤਾਪੂਰਕ ਸਕੈਨ ਕੀਤੀ ਗਈ ਅਤੇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ।}one{ਤੁਹਾਡੀ ਫ਼ਾਈਲ ਸਫਲਤਾਪੂਰਕ ਸਕੈਨ ਕੀਤੀ ਗਈ ਅਤੇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ।}other{ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਸਫਲਤਾਪੂਰਕ ਸਕੈਨ ਕੀਤੀਆਂ ਗਈਆਂ ਅਤੇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਗਈਆਂ।}}</translation>
 <translation id="5931523347251946569">ਫ਼ਾਈਲ ਨਹੀਂ ਮਿਲੀ</translation>
+<translation id="5939518447894949180">ਰੀਸੈਟ ਕਰੋ</translation>
+<translation id="594552776027197022">ਬੇਤਰਤੀਬ ਕੁੰਜੀਆਂ ਦਾ ਜੋੜਾ ਸਿਰਜੋ</translation>
+<translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਵਾਲਪੇਪਰ</translation>
+<translation id="6017514345406065928">ਹਰਾ</translation>
+<translation id="6034694447310538551">ਹਰ ਮਹੀਨੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="6037291330010597344">ਸਕੈਨਰ ਦਾ ਦਸਤਾਵੇਜ਼ ਫ਼ੀਡਰ ਖਾਲੀ ਹੈ। ਦਸਤਾਵੇਜ਼ ਸ਼ਾਮਲ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6040852767465482106">ਅਨਾਮ ਪਛਾਣ</translation>
 <translation id="604124094241169006">ਆਟੋਮੈਟਿਕ</translation>
@@ -233,146 +519,328 @@
 <translation id="6050189528197190982">Grayscale</translation>
 <translation id="6058625436358447366">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਪੁਰਾਣਾ ਅਤੇ ਨਵਾਂ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6061772781719867950">ਅਸਫਲ HTTP ਬੇਨਤੀਆਂ</translation>
+<translation id="6075872808778243331">(Android) HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="6104112872696127344">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਗਈ</translation>
 <translation id="6106186594183574873">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6108689792487843350">ਗੇਟਵੇ ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ</translation>
+<translation id="6112878310391905610">ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="6113701710518389813">ਉੱਪਰ ਤੀਰ</translation>
+<translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> ਹੋਰ ਐਲਬਮਾਂ</translation>
 <translation id="6122191549521593678">ਆਨਲਾਈਨ</translation>
+<translation id="6122277663991249694">ChromeOS ਇਨਪੁੱਟ ਵਿਧੀ ਸੇਵਾ</translation>
 <translation id="6137767437444130246">ਵਰਤੋਂਕਾਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
 <translation id="6146993107019042706">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਨਵਾਂ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ਹੋਰ ਜਾਣੋ</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ਵਰਤੋਂ ਨਾਲ ਬੈਟਰੀ ਦੀ ਸਮਰੱਥਾ ਵਿੱਚ ਕਮੀ ਆਉਂਦੀ ਹੈ</translation>
 <translation id="6191293864534840972">ਨੁਕਸਦਾਰ ਨਾਮ ਸਰਵਰ</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ਕੋਈ ਸਕੈਨਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="6232017090690406397">ਬੈਟਰੀ</translation>
+<translation id="6235460611964961764">ਡਾਟਾ ਵਰਤੋਂ ਨੂੰ ਹੱਥੀਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
+<translation id="6243280677745499710">ਇਸ ਵੇਲੇ ਸੈੱਟ ਹੈ</translation>
+<translation id="6275224645089671689">ਸੱਜਾ ਤੀਰ</translation>
+<translation id="6278428485366576908">ਥੀਮ</translation>
+<translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">ਗੂੜ੍ਹਾ ਥੀਮ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ਟੈਸਟ ਨੂੰ ਰੱਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
+<translation id="631063167932043783">Explore ਐਪ</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> 'ਤੇ ਫ਼ਰਮਵੇਅਰ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
+<translation id="6321407676395378991">ਸਕ੍ਰੀਨ ਸੇਵਰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6325525973963619867">ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="6331191339300272798">ਸਵੈਚਲਿਤ ਗੂੜ੍ਹਾ ਥੀਮ</translation>
+<translation id="6340526405444716530">ਵਿਅਕਤੀਗਤਕਰਨ</translation>
+<translation id="6348738456043757611">ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ</translation>
+<translation id="6359706544163531585">ਹਲਕਾ ਥੀਮ ਬੰਦ ਕਰੋ</translation>
 <translation id="636850387210749493">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਐਨਰੌਲਮੈਂਟ</translation>
+<translation id="6379086450106841622">ਟੱਚਸਕ੍ਰੀਨ</translation>
+<translation id="6381741036071372448">ਆਪਣੇ ਕੀ-ਬੋਰਡ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਦੇਖੋ</translation>
+<translation id="6388847657025262518">ਸਕੈਨਰ ਦਾ ਦਸਤਾਵੇਜ਼ ਫ਼ੀਡਰ ਜਾਮ ਹੋ ਗਿਆ ਹੈ। ਫ਼ੀਡਰ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="6394634179843537518">ਫ਼ਾਈਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="6410257289063177456">ਚਿੱਤਰ ਫਾਈਲਾਂ</translation>
 <translation id="641081527798843608">ਵਿਸ਼ਾ ਮਿਲਾਨ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">ਕਮਜ਼ੋਰ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">ਖਾਤਾ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="6456394469623773452">ਠੀਕ</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ਕੀ ਪੰਨਾ ਮੁੜ-ਸਕੈਨ ਕਰਨਾ ਹੈ?}=1{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਮੁੜ-ਸਕੈਨ ਕਰਨਾ ਹੈ?}other{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਮੁੜ-ਸਕੈਨ ਕਰਨਾ ਹੈ?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="649050271426829538">ਬੰਦ ਹੋ ਗਿਆ - ਕਾਗਜ਼ ਫਸ ਗਿਆ ਹੈ</translation>
+<translation id="6494974875566443634">ਵਿਉਂਤਬੱਧਕਰਨ</translation>
+<translation id="6500818810472529210">Google Search ਵਿੱਚ ਨਤੀਜਾ ਦੇਖੋ</translation>
+<translation id="650266656685499220">ਐਲਬਮਾਂ ਬਣਾਉਣ ਲਈ, Google Photos 'ਤੇ ਜਾਓ</translation>
 <translation id="6516990319416533844">ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਦਰ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ, ਥੋੜ੍ਹੇ ਸਮੇਂ ਲਈ ਆਪਣੀ ਬੈਟਰੀ ਦੀ ਖਪਤ ਹੋਣ ਦਿਓ</translation>
 <translation id="6517239166834772319">ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="6527081081771465939">ਅਗਿਆਤ ਵਾਈ-ਫਾਈ ਦੀ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਪ੍ਰੋਟੋਕੋਲ</translation>
+<translation id="6535178685492749208">ਤੁਸੀਂ ਆਫ਼ਲਾਈਨ ਹੋ। ਵਿਚਾਰ ਬਾਅਦ ਵਿੱਚ ਭੇਜਿਆ ਜਾਵੇਗਾ।</translation>
 <translation id="65587193855025101">ਫਲੈਟਬੈੱਡ</translation>
 <translation id="6564646048574748301">ਅਸਫਲ ਰਹੀ - ਪ੍ਰਿੰਟਰ ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ</translation>
+<translation id="6566314079205407217">ਬਹੁ-ਪੰਨਾ ਸਕੈਨ ਕਰੋ</translation>
+<translation id="6574762126505704998">ਭਰੋ</translation>
+<translation id="6575134580692778371">ਕੌਂਫਿਗਰ ਨਹੀਂ ਕੀਤਾ</translation>
+<translation id="6579509898032828423">ਇਸ ਫ਼ੋਟੋ ਨੂੰ ਵਰਤੋ</translation>
+<translation id="6596816719288285829">IP ਪਤਾ</translation>
 <translation id="6618744767048954150">ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="6620487321149975369">ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਉਦੋਂ ਤੱਕ ਇਤਿਹਾਸ ਵਿੱਚ ਦਿਸਣਗੀਆਂ, ਜਦੋਂ ਤੱਕ ਉਹਨਾਂ ਨੂੰ ਹੱਥੀਂ ਨਹੀਂ ਹਟਾਇਆ ਜਾਂਦਾ</translation>
+<translation id="6624819909909965616">10 MB ਤੋਂ ਵੱਡੀ ਫ਼ਾਈਲ ਅੱਪਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ</translation>
 <translation id="6643016212128521049">ਹਟਾਓ</translation>
+<translation id="6647510110698214773">ਇਨਕ੍ਰਿਪਸ਼ਨ ਐਲਗੋਰਿਦਮ</translation>
+<translation id="6650062777702288430">ਕਾਨਾ/ਵਰਨਅੰਕੀ 'ਤੇ ਸਵਿੱਚ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="6657585470893396449">ਪਾਸਵਰਡ</translation>
+<translation id="6659594942844771486">ਟੈਬ</translation>
+<translation id="6692996468359469499">ਆਪਣੀ ਚੋਣ ਨਾਲ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="6704062477274546131">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
+<translation id="6723839937902243910">ਪਾਵਰ</translation>
+<translation id="6723847290197874913">ਕੀ-ਬੋਰਡ ਬੈਕਲਾਈਟ</translation>
+<translation id="672609503628871915">ਦੇਖੋ ਕਿ ਕੀ ਨਵਾਂ ਹੈ</translation>
 <translation id="6747215703636344499">ਬੰਦ ਹੋ ਗਿਆ - ਆਊਟਪੁੱਟ ਭਰ ਗਿਆ ਹੈ</translation>
+<translation id="6749473226660745022">ਫ਼ੋਟੋਆਂ</translation>
+<translation id="6753452347192452143">ਡੀਵਾਈਸ ਇੱਕ ਕੰਪਿਊਟਰ ਹੈ।</translation>
 <translation id="6756731097889387912">ਸਕੈਨਿੰਗ ਨੂੰ ਰੱਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
+<translation id="6760706756348334449">ਅਵਾਜ਼ ਘਟਾਓ</translation>
 <translation id="6766275201586212568">ਅਸਫਲ DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="6768237774506518020">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਦੀ ਉੱਚ ਅਸਫਲ ਦਰ</translation>
+<translation id="6791471867139427246">ਕੀ-ਬੋਰਡ ਦੀ ਰੌਸ਼ਨੀ ਦਾ ਰੰਗ</translation>
+<translation id="680983167891198932">ਕੁੰਜੀ</translation>
+<translation id="6816797338148849397">ਤੁਹਾਡੀ ਚੋਣ ਨਾਲ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਹੈ। ਪਹੁੰਚ ਕਰਨ ਲਈ 'ਉੱਪਰ ਤੀਰ' ਕੁੰਜੀ ਵਰਤੋ।</translation>
 <translation id="6853312040151791195">ਡਿਸਚਾਰਜ ਹੋਣ ਦੀ ਦਰ</translation>
-<translation id="6898743098396957679">ਸਕੈਨਿੰਗ ਪੂਰੀ ਨਹੀਂ ਹੋ ਸਕੀ</translation>
+<translation id="6889786074662672253">ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੌਰਾਨ ਇਸ ਬਾਹਰੀ ਡੀਵਾਈਸ ਨੂੰ ਅਣਪਲੱਗ ਨਾ ਕਰੋ ਜਾਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਬੰਦ ਨਾ ਕਰੋ। ਤੁਸੀਂ ਇਸ ਵਿੰਡੋ ਨੂੰ ਛੋਟਾ ਕਰ ਸਕਦੇ ਹੋ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ ਅਤੇ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਸ ਸਮੇਂ ਦੌਰਾਨ ਤੁਹਾਡਾ ਬਾਹਰੀ ਡੀਵਾਈਸ ਕੰਮ ਨਾ ਕਰੇ।</translation>
+<translation id="6905724422583748843"><ph name="PAGE_NAME" /> 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
+<translation id="6910312834584889076">ਸਕੈਨਰ ਦਾ ਕਵਰ ਖੁੱਲ੍ਹਾ ਹੈ। ਕਵਰ ਬੰਦ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6911383237894364323">ਮੀਡੀਆ ਸਰਵਰਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
+<translation id="6943893908656559156">ਰਿਮੋਟ ਪਛਾਣ (ਵਿਕਲਪਿਕ)</translation>
 <translation id="6957231940976260713">ਸੇਵਾ ਦਾ ਨਾਮ</translation>
+<translation id="6961170852793647506">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ, ਆਪਣੇ ਦਸਤਾਵੇਜ਼ ਨੂੰ ਸਕੈਨਰ 'ਤੇ ਰੱਖੋ</translation>
+<translation id="6965382102122355670">ਠੀਕ</translation>
 <translation id="6977381486153291903">ਫਰਮਵੇਅਰ ਸੁਧਾਈ</translation>
+<translation id="7005833343836210400">ਡੀਵਾਈਸ ਆਫ਼ਲਾਈਨ ਹੈ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ਇਸ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ ਅਤੇ ਇਸਨੂੰ ਦੇਖੇ ਗਏ ਵੈੱਬ-ਪੰਨਿਆਂ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਈਮੇਲ ਸਮੇਤ ਵਰਤੋਂਕਾਰ ਦੀਆਂ ਸਾਰੀਆਂ ਸਰਗਰਮੀਆਂ ਤੱਕ ਪਹੁੰਚ ਹਾਸਲ ਹੈ।</translation>
 <translation id="7040230719604914234">ਓਪਰੇਟਰ</translation>
+<translation id="7041549558901442110">ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ।</translation>
+<translation id="7058278511608979688">ਸਮਾਪਤ ਕਰੋ ਅਤੇ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="7059230779847288458">ਚਾਰਜ ਹੋ ਰਹੀ ਹੈ, ਪੂਰੀ ਤਰ੍ਹਾਂ ਚਾਰਜ ਹੋਣ ਵਿੱਚ <ph name="TIME_VALUE" /> ਦਾ ਸਮਾਂ ਬਾਕੀ</translation>
+<translation id="7068619307603204412">ਆਪਣਾ ਡੀਵਾਈਸ ਤਿਆਰ ਕਰੋ</translation>
 <translation id="708426984172631313">ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">ਅਸਫਲ ਰਿਹਾ - ਇਖਤਿਆਰੀਕਰਨ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="7103252855940681301"><ph name="COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" /> ਡੀਵਾਈਸ ਨੂੰ <ph name="NAME" /> ਨਾਮ ਦਿੱਤਾ ਗਿਆ।</translation>
+<translation id="7134436342991564651">{0,plural, =1{ਨਾਮ ਸਰਵਰ}one{ਨਾਮ ਸਰਵਰ}other{ਨਾਮ ਸਰਵਰ}}</translation>
 <translation id="7143207342074048698">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="714876143603641390">LAN ਕਨੈਕਟੀਵਿਟੀ</translation>
-<translation id="7162487448488904999">ਗੈਲਰੀ</translation>
+<translation id="7154020516215182599">ਆਪਣਾ ਵਿਚਾਰ ਸਾਂਝਾ ਕਰੋ ਜਾਂ ਆਪਣੀ ਸਮੱਸਿਆ ਦਾ ਵਰਣਨ ਕਰੋ। ਜੇ ਸੰਭਵ ਹੋਵੇ, ਤਾਂ ਆਪਣੀ ਸਮੱਸਿਆ ਬਾਰੇ ਦੱਸਣ ਲਈ ਪੜਾਅ ਸ਼ਾਮਲ ਕਰੋ।</translation>
+<translation id="7155171745945906037">ਕੈਮਰੇ ਜਾਂ ਫ਼ਾਈਲ ਤੋਂ ਮੌਜੂਦਾ ਫ਼ੋਟੋ</translation>
+<translation id="7162487448488904999">Gallery</translation>
+<translation id="7170236477717446850">ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ</translation>
+<translation id="7172721935181587524">1 ਚਿੱਤਰ</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਸ਼ਾਇਦ ਪ੍ਰਸ਼ਾਸਕ ਰਿਮੋਟਲੀ ਡੀਵਾਈਸ ਦਾ ਸੰਰੂਪਣ ਕਰ ਸਕਦੇ ਹਨ।</translation>
+<translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
+<translation id="7212734716605298123">ਬਾਹਰੀ ਡੀਵਾਈਸਾਂ ਲਈ ਫ਼ਰਮਵੇਅਰ ਅੱਪਡੇਟ</translation>
 <translation id="7216409898977639127">ਸੈਲਿਊਲਰ ਪ੍ਰਦਾਨਕ</translation>
+<translation id="725133483556299729">ਈਮੇਲ ਚੁਣੋ</translation>
+<translation id="7271040990581020067">ਫ਼ਿਲਹਾਲ ਸਕੈਨਰ ਵਰਤੋਂ ਵਿੱਚ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">ਹਵਾ ਨੂੰ ਮਹਿਸੂਸ ਕਰੋ</translation>
+<translation id="7287310195820267359">ਵਾਲਪੇਪਰ ਸੰਗ੍ਰਹਿ</translation>
+<translation id="7297226631177386107">ਫ਼ਾਇਰਵਾਲ ਰਾਹੀਂ HTTPS ਵੈੱਬਸਾਈਟਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="7302860742311162920">ICCID</translation>
+<translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook ਮਦਦ ਫ਼ੋਰਮ ਵਿੱਚ ਮਾਹਰਾਂ ਤੋਂ ਸਵਾਲ ਪੁੱਛੋ</translation>
+<translation id="7311368985037279727">ਕੀ-ਬੋਰਡ ਦਾ ਰੰਗ</translation>
+<translation id="7319430975418800333">A3</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search ਵਿੱਚ ਨਤੀਜਾ ਦੇਖਣ ਲਈ Search ਦੇ ਨਾਲ Space ਨੂੰ ਦਬਾਓ।</translation>
 <translation id="7343649194310845056">ਨੈੱਟਵਰਕ ਡੀਵਾਈਸ</translation>
 <translation id="7359657277149375382">ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ</translation>
+<translation id="73631062356239394">ਤਸ਼ਖੀਸੀ ਡਾਟਾ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7397270852490618635">ਹਲਕਾ ਥੀਮ ਬੰਦ ਕਰੋ</translation>
+<translation id="741244894080940828">ਰੂਪਾਂਤਰਨ</translation>
+<translation id="7415801143053185905">ਬਹੁਤ ਜ਼ਿਆਦਾ HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। 1 ਪੰਨਾ ਸਕੈਨ ਕੀਤਾ ਗਿਆ}one{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। {NUMBER_OF_PAGES} ਪੰਨਾ ਸਕੈਨ ਕੀਤਾ ਗਿਆ}other{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। {NUMBER_OF_PAGES} ਪੰਨੇ ਸਕੈਨ ਕੀਤੇ ਗਏ}}</translation>
 <translation id="7469648432129124067">ਪੋਰਟਲ ਦਾ ਪਤਾ ਲੱਗਾ</translation>
+<translation id="7481312909269577407">ਅੱਗੇ ਭੇਜੋ</translation>
 <translation id="7487067081878637334">ਤਕਨਾਲੋਜੀ</translation>
 <translation id="7490813197707563893">MAC ਪਤਾ</translation>
 <translation id="7497215489070763236">ਸਰਵਰ CA ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
 <translation id="7502658306369382406">IPv6 ਪਤਾ</translation>
+<translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">ਹਲਕਾ ਥੀਮ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7550715992156305117">ਤਸ਼ਖੀਸ ਸੰਬੰਧੀ ਨਿਯਮਬੱਧ ਕੰਮ</translation>
+<translation id="7551123448725492271">ਡੀਵਾਈਸ ਇੱਕ ਆਡੀਓ ਡੀਵਾਈਸ ਹੈ।</translation>
 <translation id="7561454561030345039">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਕਾਰਵਾਈ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7570674786725311828">USB ਟੱਚਸਕ੍ਰੀਨ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ਬਾਕੀ</translation>
 <translation id="7620771111601174153">ਮਦਦ ਕੇਂਦਰ ਵਿੱਚ ਹੋਰ ਜਾਣੋ</translation>
+<translation id="763165478673169849">ਪਿਛਲੀ ਵਾਰ ਰੀਸੈੱਟ ਕਰਨ ਦਾ ਸਮਾਂ</translation>
 <translation id="7648838807254605802">ਜ਼ਿਆਦਾ HTTPS ਵਿਲੰਬਤਾ</translation>
+<translation id="7656388927906093505">ਡੀਵਾਈਸ ਇੱਕ ਮਾਊਸ ਹੈ।</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
+<translation id="7665800271478495366">ਅਵਤਾਰ ਬਦਲੋ</translation>
 <translation id="7690294790491645610">ਨਵੇਂ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7701040980221191251">ਕੋਈ ਨਹੀਂ</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">ਸਾਈਕਲ ਗਿਣਤੀ</translation>
+<translation id="7747039790905080783">ਪਹਿਲਾਂ ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਗਈ ਕੁੰਜੀ</translation>
+<translation id="7762130827864645708">ਤੁਹਾਡੇ ਵੱਲੋਂ ਪਾਸਵਰਡ ਨੂੰ ਬਦਲਣਾ ਸਫਲ ਰਿਹਾ। ਕਿਰਪਾ ਕਰਕੇ ਹੁਣ ਤੋਂ ਨਵੇਂ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />ਸਿਸਟਮ ਅਤੇ ਐਪ ਜਾਣਕਾਰੀ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />ਮਾਪਕ<ph name="END_LINK2" /> ਭੇਜੋ</translation>
+<translation id="7763470514545477072">ਡੋੋਮੇਨ ਪਿਛੇਤਰ ਦਾ ਮਿਲਾਨ</translation>
 <translation id="7769672763586021400">ਮਾਡਲ ਆਈ.ਡੀ.</translation>
+<translation id="7784116172884276937">ਕਿਸੇ DNS ਸਰਵਰ ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="779591286616261875">ਨਵੀਂ ਰਿਪੋਰਟ ਭੇਜੋ</translation>
+<translation id="7799817062559422778">ਹਲਕਾ ਮੋਡ</translation>
+<translation id="780301667611848630">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="7805768142964895445">ਸਥਿਤੀ</translation>
 <translation id="7819857487979277519">PSK (WPA ਜਾਂ RSN)</translation>
+<translation id="7841134249932030522">ਗੂੜ੍ਹਾ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="7846634333498149051">ਕੀ-ਬੋਰਡ</translation>
+<translation id="7856267634822906833">ਬਲੂਟੁੱਥ ਟੱਚਸਕ੍ਰੀਨ</translation>
+<translation id="7869143217755017858">ਗੂੜ੍ਹਾ ਮੋਡ ਬੰਦ ਕਰੋ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ਪ੍ਰਦਾਨਕ ਕਿਸਮ</translation>
+<translation id="7882501334836096755">ਜਨਤਕ ਕੁੰਜੀ</translation>
+<translation id="7890841768028788197">ਅੰਦਰੂਨੀ ਟੱਚਸਕ੍ਰੀਨ</translation>
 <translation id="7936303884198020182">ਕੋਈ ਨਾਮ ਸਰਵਰ ਨਹੀਂ ਮਿਲਿਆ</translation>
+<translation id="7942349550061667556">ਲਾਲ</translation>
+<translation id="7943235353293548836">ਸਥਾਈ ਕੀਪ-ਅਲਾਇਵ ਅੰਤਰਾਲ</translation>
+<translation id="7955587717700691983">ਬਲੂਟੁੱਥ ਕੀ-ਬੋਰਡ</translation>
 <translation id="7960831585769876809">ਤਾਪਮਾਨ</translation>
+<translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
+<translation id="7978412674231730200">ਨਿੱਜੀ ਕੁੰਜੀ</translation>
 <translation id="7994702968232966508">EAP ਵਿਧੀ</translation>
 <translation id="802154636333426148">ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">ਸਵੈ-ਵਿਵਸਥਿਤ ਰੰਗ ਵਾਲੇ ਮੋਡ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8041089156583427627">ਵਿਚਾਰ ਭੇਜੋ</translation>
+<translation id="8045012663542226664">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਮਿਊਟ ਕਰਨ ਵਾਲਾ ਬਟਨ</translation>
 <translation id="8075838845814659848">ਬਾਕੀ ਚਾਰਜ</translation>
+<translation id="8082366717211101304">Android ਐਪਾਂ ਤੋਂ DNS ਸੰਬੰਧੀ ਸਮੱਸਿਆ ਨੂੰ ਹੱਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="808894953321890993">ਪਾਸਵਰਡ ਬਦਲੋ</translation>
+<translation id="8094062939584182041">Google ਨੂੰ ਇਸ ਸਮੱਸਿਆ ਬਾਰੇ ਤੁਹਾਨੂੰ ਈਮੇਲ ਭੇਜਣ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
+<translation id="8104083085214006426">ਤੁਸੀਂ ਕੋਈ ਖੁੱਲ੍ਹਾ ਅਤੇ ਅਸੁਰੱਖਿਅਤ ਨੈੱਟਵਰਕ ਵਰਤ ਰਹੇ ਹੋ</translation>
+<translation id="811820734797650957">(Android) ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8132480444149501833">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰਾਂ ਲਈ ਬੇਨਤੀ ਕਰੋ</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ਚੁਣੋ</translation>
+<translation id="8179976553408161302">ਦਰਜ ਕਰੋ</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8208861521865154048">ਫ਼ਾਇਦੇ</translation>
+<translation id="8226628635270268143">ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਫ਼ੋਟੋਆਂ ਅਤੇ ਐਲਬਮਾਂ ਚੁਣੋ</translation>
+<translation id="8227119283605456246">ਫ਼ਾਈਲ ਨੱਥੀ ਕਰੋ</translation>
 <translation id="8230672074305416752">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8246209727385807362">ਅਗਿਆਤ ਕੈਰੀਅਰ</translation>
+<translation id="827422111966801947">ਜਾਮਨੀ ਨੀਲਾ</translation>
+<translation id="8286154143153872371">ਵਾਲਪੇਪਰ ਦੇਖਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਕਿਸੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ ਅਤੇ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ।</translation>
 <translation id="8291967909914612644">ਹੋਮ ਪ੍ਰਦਾਨਕ ਦੇਸ਼</translation>
 <translation id="8294431847097064396">ਸ੍ਰੋਤ</translation>
 <translation id="8297006494302853456">ਕਮਜ਼ੋਰ</translation>
 <translation id="8302368968391049045">HTTPS ਫ਼ਾਇਰਵਾਲ</translation>
+<translation id="8318753676953949627">ਕੋਈ ਚਿੱਤਰ ਨਹੀਂ</translation>
+<translation id="8336739000755212683">ਡੀਵਾਈਸ ਦੇ ਖਾਤੇ ਦਾ ਚਿੱਤਰ ਬਦਲੋ</translation>
 <translation id="8347227221149377169">ਪ੍ਰਿੰਟ ਜੌਬਾਂ</translation>
 <translation id="8352772353338965963">ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਲਈ ਇੱਕ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ। ਸਾਰੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਖਾਤਿਆਂ ਤੱਕ ਬਿਨਾਂ ਕਿਸੇ ਪਾਸਵਰਡ ਦੇ ਪਹੁੰਚਿਆ ਜਾ ਸਕਦਾ ਹੈ, ਇਸਲਈ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਸਿਰਫ਼ ਭਰੋਸੇਯੋਗ ਖਾਤਿਆਂ ਨਾਲ ਵਰਤੀ ਜਾਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="8364946094152050673">ਖਾਲੀ ਨਾਮ ਸਰਵਰ</translation>
 <translation id="8372477600026034341">ਵਾਧੂ ਹੋਸਟ</translation>
 <translation id="8395584934117017006">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="8398927464629426868">ਉਹ ਦਰ ਜਿਸ 'ਤੇ ਡੀਵਾਈਸ ਇਸ ਵੇਲੇ ਚਾਰਜ ਜਾਂ ਡਿਸਚਾਰਜ ਹੋ ਰਿਹਾ ਹੈ</translation>
+<translation id="8420955526972171689">ਹਾਰਡਵੇਅਰ ਸੰਬੰਧੀ ਸਮੱਸਿਆਵਾਂ ਲਈ ਟੈਸਟ ਅਤੇ ਸਮੱਸਿਆ-ਨਿਪਟਾਰਾ ਚਲਾਓ</translation>
+<translation id="8422748173858722634">IMEI</translation>
+<translation id="8428073762635678092">ਅੰਦਰੂਨੀ ਕੀ-ਬੋਰਡ</translation>
+<translation id="8431300646573772016">ChromeOS ਵਿੱਚ ਨਵਾਂ ਕੀ ਹੈ</translation>
+<translation id="843568408673868420">ਇੰਟਰਨੈੱਟ ਕਨੈਕਟੀਵਿਟੀ</translation>
+<translation id="844521431886043384">DNS ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
+<translation id="8456761643544401578">ਸਵੈਚਲਿਤ ਗੂੜ੍ਹਾ ਮੋਡ</translation>
 <translation id="8461329675984532579">ਹੋਮ ਪ੍ਰਦਾਨਕ ਨਾਮ</translation>
 <translation id="8475690821716466388">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਕਮਜ਼ੋਰ ਪ੍ਰੋਟੋਕੋਲ WEP PSK ਨਾਲ ਸੁਰੱਖਿਅਤ ਹੈ</translation>
 <translation id="8477551185774834963">DNS ਵਿਲੰਬਤਾ ਇਜਾਜ਼ਤਯੋਗ ਨਿਊਨਤਮ ਸੀਮਾ ਤੋਂ ਥੋੜ੍ਹੀ ਜਿਹੀ ਉੱਤੇ ਹੈ</translation>
 <translation id="8483248364096924578">IP ਪਤਾ</translation>
+<translation id="8491311378305535241">Android ਐਪਾਂ ਤੋਂ ਫ਼ਾਇਰਵਾਲ ਰਾਹੀਂ HTTP ਵੈੱਬਸਾਈਟਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="8498220429738806196">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰ</translation>
 <translation id="8503813439785031346">ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
 <translation id="8503836310948963452">ਬਸ ਕੁਝ ਮਿੰਟ ਹੋਰ…</translation>
+<translation id="8528615187455571738">Crosvm</translation>
+<translation id="8575298406870537639">ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਨੂੰ ਆਪਣੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਇਸ ਵਿਕਲਪ ਦੀ ਲੋੜ ਹੋ ਸਕਦੀ ਹੈ। ਵੇਰਵਿਆਂ ਲਈ ਆਪਣੇ ਕੈਰੀਅਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="8576249514688522074">ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8620617069779373398">ਰੋਮਿੰਗ ਅਵਸਥਾ</translation>
+<translation id="8655295600908251630">ਚੈਨਲ</translation>
+<translation id="8655828773034788261">URL ਸਾਂਝਾ ਕਰੋ:</translation>
+<translation id="8660881923941176839">ਪੌਂਡ</translation>
 <translation id="8675354002693747642">ਪਹਿਲਾਂ ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਗਈ ਕੁੰਜੀ</translation>
+<translation id="8677859815076891398">ਕੋਈ ਐਲਬਮ ਨਹੀਂ ਹੈ। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ਵਿੱਚ ਐਲਬਮ ਬਣਾਓ।</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਖੱਬੀ ਜਾਂ ਸੱਜੀ ਤੀਰ ਕੁੰਜੀ ਵਰਤੋ।</translation>
+<translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="871560550817059752">ਅਸਫਲ ਰਹੀ - ਸਿਆਹੀ ਖਤਮ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="8723108084122415655">ਗੈਰ-ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਵਿਲੰਬਤਾ ਨਿਊਨਤਮ ਸੀਮਾ ਤੋਂ ਉੱਤੇ ਹੈ</translation>
+<translation id="8725066075913043281">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="8726019395068607495">ਬੰਦ ਹੋ ਗਿਆ - ਢੱਕਣ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
 <translation id="8730621377337864115">ਹੋ ਗਿਆ</translation>
 <translation id="8747900814994928677">ਤਬਦੀਲੀ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
+<translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google Photos ਐਲਬਮ</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">ਇਸ ਨੈੱਟਵਰਕ ਕੋਲ ਕੈਪਟਿਵ ਪੋਰਟਲ ਹੋ ਸਕਦਾ ਹੈ</translation>
 <translation id="8798099450830957504">ਪੂਰਵ-ਨਿਰਧਾਰਤ</translation>
 <translation id="8798441408945964110">ਪ੍ਰਦਾਨਕ ਦਾ ਨਾਮ</translation>
 <translation id="8814190375133053267">ਵਾਈ-ਫਾਈ</translation>
 <translation id="8818152010000655963">ਵਾਲਪੇਪਰ</translation>
+<translation id="8834539327799336565">ਇਸ ਵੇਲੇ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="8845001906332463065">ਮਦਦ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="8855781559874488009">ਫ਼ਾਇਰਵਾਲ ਰਾਹੀਂ HTTP ਵੈੱਬਸਾਈਟਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="885701979325669005">ਸਟੋਰੇਜ</translation>
+<translation id="8863170912498892583">ਗੂੜ੍ਹਾ ਥੀਮ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="8863888432376731307">"<ph name="QUERY" />" ਅਤੇ ਹੋਰ ਲਈ <ph name="INTENT" /> ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="8864415976656252616">ਕੋਈ ਸੁਝਾਈ ਗਈ ਸਮੱਗਰੀ ਨਹੀਂ। ਪ੍ਰਮੁੱਖ ਮਦਦ ਸਮੱਗਰੀ ਦੇਖੋ।</translation>
+<translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">ਡੀਵਾਈਸ ਇੱਕ ਟੈਬਲੈੱਟ ਹੈ।</translation>
 <translation id="8881098542468797602">ਟੈਸਟ ਸਫਲ ਰਿਹਾ</translation>
 <translation id="8898840733695078011">ਸਿਗਨਲ ਸ਼ਕਤੀ</translation>
 <translation id="8910721771319628100">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਵਿਲੰਬਤਾ ਨਿਊਨਤਮ ਸੀਮਾ ਤੋਂ ਉੱਤੇ ਹੈ</translation>
+<translation id="8918637186205009138"><ph name="GIVEN_NAME" /> ਦਾ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">ਅਸਫਲ ਰਹੀ - ਟ੍ਰੇਅ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
+<translation id="8923267550422472772">ਰੀਸੈੱਟ ਕਰਨ ਲਈ ਮਹੀਨੇ ਦਾ ਦਿਨ</translation>
 <translation id="8928727111548978589">ਅਸਫਲ ਰਹੀ - ਕਾਗਜ਼ ਖਤਮ ਹੋ ਗਏ</translation>
+<translation id="8930521118335213258">ਪੀਅਰ</translation>
 <translation id="8930622219860340959">ਵਾਇਰਲੈੱਸ</translation>
+<translation id="8936793075252196307">ਕਲਾਇੰਟ ਦਾ IP ਪਤਾ</translation>
+<translation id="8945750210906526975">ਅੰਦਰੂਨੀ ਟੱਚਪੈਡ</translation>
+<translation id="894617464444543719">ਡੀਵਾਈਸ ਇੱਕ ਫ਼ੋਨ ਹੈ।</translation>
 <translation id="8968751544471797276">ਚਾਰਜਿੰਗ ਦਰ</translation>
 <translation id="8970109610781093811">ਦੁਬਾਰਾ ਚਲਾਓ</translation>
+<translation id="8983038754672563810">HSPA</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ਸਕੈਨ ਕਰੋ}=1{{NUMBER_OF_PAGES} ਪੰਨਾ ਸਕੈਨ ਕਰੋ}other{{NUMBER_OF_PAGES} ਪੰਨੇ ਸਕੈਨ ਕਰੋ}}</translation>
+<translation id="8997710128084572139">ਡੀਵਾਈਸ ਦੀ ਬੈਟਰੀ ਦਾ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
 <translation id="9003704114456258138">ਬਾਰੰਬਾਰਤਾ</translation>
+<translation id="9025198690966128418">ਨਿੱਜੀ ਡੀਵਾਈਸ ਵਜੋਂ ਵਰਤੋ</translation>
+<translation id="9028832514430399253">ਸਕ੍ਰੀਨ ਸੇਵਰ ਵਿਕਲਪਾਂ ਨੂੰ ਚੁਣਨ ਲਈ ਟੌਗਲ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਵਿੱਚ ਉੱਚ ਵਿਲੰਬਤਾ ਹੈ</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ਬਲੂਟੁੱਥ</translation>
+<translation id="9082718469794970195">ਇਸ ਵੀਡੀਓ ਨੂੰ ਵਰਤੋ</translation>
+<translation id="9087578468327036362">ਇਸ ਪੁੱਛਗਿੱਛ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
 <translation id="9088306295921699330">ਮੌਜੂਦਾ ਵਰਤੋਂ</translation>
+<translation id="9092255287806472980">ਤੁਹਾਡਾ ਵਿਚਾਰ Chrome OS ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਦਾ ਹੈ ਅਤੇ ਇਸਦੀ ਸਾਡੀ ਟੀਮ ਵੱਲੋਂ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾਵੇਗੀ। ਰਿਪੋਰਟਾਂ ਦੀ ਗਿਣਤੀ ਜ਼ਿਆਦਾ ਹੋਣ ਕਰਕੇ, ਅਸੀਂ ਜਵਾਬ ਨਹੀਂ ਭੇਜ ਸਕਾਂਗੇ।</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ਦੀ ਟਿਕਟ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="9106415115617144481">ਪੰਨਾ <ph name="PAGE_NUMBER" /> ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="9111102763498581341">ਅਣਲਾਕ ਕਰੋ</translation>
+<translation id="9122602430962285795">ਮੁੜ-ਕਨੈਕਟ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
+<translation id="9126720536733509015">ਇੱਕ ਤੋਂ ਵੱਧ ਪੰਨਿਆਂ ਨੂੰ ਇੱਕੋ PDF ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="9137526406337347448">Google ਸੇਵਾਵਾਂ</translation>
+<translation id="9138630967333032450">ਖੱਬੀ Shift ਕੁੰਜੀ</translation>
 <translation id="9149391708638971077">ਮੈਮੋਰੀ ਟੈਸਟ ਚਲਾਓ</translation>
 <translation id="9173638680043580060">ਇੱਕ ਮਿੰਟ ਤੋਂ ਘੱਟ ਸਮਾਂ ਬਾਕੀ</translation>
-<translation id="9190063653747922532">L2TP/IPsec + ਪ੍ਰੀ-ਸ਼ੇਅਰਡ ਕੁੰਜੀ</translation>
+<translation id="917720651393141712">ਜਾਂਚ</translation>
+<translation id="9188992814426075118">ਤੁਹਾਡਾ ਕੀ-ਬੋਰਡ ਤੁਹਾਡੇ ਵਾਲਪੇਪਰ ਨਾਲ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮੇਲ ਖਾ ਸਕਦਾ ਹੈ</translation>
+<translation id="9204237731135241582">Android ਐਪਾਂ ਤੋਂ ਗੇਟਵੇ ਨਾਲ ਸੰਪਰਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="9211490828691860325">ਸਾਰੇ ਡੈਸਕ</translation>
+<translation id="932327136139879170">ਹੋਮ</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 <translation id="952992212772159698">ਸਕਿਰਿਆ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="960719561871045870">ਓਪਰੇਟਰ ਕੋਡ</translation>
 <translation id="982713511914535780">ਡਿਸਚਾਰਜ ਟੈਸਟ ਚਲਾਓ</translation>

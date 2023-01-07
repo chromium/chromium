@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -32,7 +33,7 @@ class AwFormDatabaseServiceTest : public Test {
     env_ = AttachCurrentThread();
     ASSERT_TRUE(env_);
 
-    service_.reset(new AwFormDatabaseService(temp_dir_.GetPath()));
+    service_ = std::make_unique<AwFormDatabaseService>(temp_dir_.GetPath());
   }
 
   void TearDown() override {
@@ -43,7 +44,7 @@ class AwFormDatabaseServiceTest : public Test {
   // The path to the temporary directory used for the test operations.
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  JNIEnv* env_;
+  raw_ptr<JNIEnv> env_;
   std::unique_ptr<AwFormDatabaseService> service_;
 };
 

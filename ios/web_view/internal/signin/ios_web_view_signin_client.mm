@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ios/web_view/internal/signin/ios_web_view_signin_client.h"
 
-#include "base/macros.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
 #include "ios/web_view/internal/signin/web_view_gaia_auth_fetcher.h"
 #include "ios/web_view/internal/web_view_browser_state.h"

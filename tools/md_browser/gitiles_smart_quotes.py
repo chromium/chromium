@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,10 +29,11 @@ class _GitilesSmartQuotesPattern(Pattern):
 
 class _GitilesSmartQuotesExtension(Extension):
   """Add Gitiles' smart quotes to Markdown."""
-  def extendMarkdown(self, md, md_globals):
+
+  def extendMarkdown(self, md):
     md.inlinePatterns.add('gitilessmartquotes',
                           _GitilesSmartQuotesPattern(r"""(['"])([^\2]+)\2"""),
-                          '<emphasis')
+                          '<em_strong')
 
 
 def makeExtension(*args, **kwargs):

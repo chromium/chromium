@@ -1,21 +1,26 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/optional.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_delegate.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
-#include "ios/web/public/test/web_view_interaction_test_util.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
-#include "testing/gtest_mac.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -59,13 +64,13 @@ class FakeJavaScriptConsoleFeatureDelegate
       web::WebState* web_state,
       web::WebFrame* sender_frame,
       const JavaScriptConsoleMessage& message) override {
-    last_received_message_ = base::Optional<JavaScriptConsoleMessage>(
+    last_received_message_ = absl::optional<JavaScriptConsoleMessage>(
         JavaScriptConsoleMessage(message));
     last_received_web_frame_ = sender_frame;
     last_received_web_state_ = web_state;
   }
 
-  base::Optional<JavaScriptConsoleMessage> last_received_message_;
+  absl::optional<JavaScriptConsoleMessage> last_received_message_;
   web::WebFrame* last_received_web_frame_ = nullptr;
   web::WebState* last_received_web_state_ = nullptr;
 };
@@ -95,20 +100,30 @@ const char kIFramePageHtml[] =
 }  // namespace
 
 // Tests console messages are received by JavaScriptConsoleFeature.
-class JavaScriptConsoleFeatureTest : public ChromeWebTest {
+class JavaScriptConsoleFeatureTest : public PlatformTest {
  protected:
   JavaScriptConsoleFeatureTest()
-      : ChromeWebTest(std::make_unique<web::FakeWebClient>()) {
+      : web_client_(std::make_unique<web::FakeWebClient>()) {}
+
+  void SetUp() override {
+    PlatformTest::SetUp();
+
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
+
     JavaScriptConsoleFeature* feature =
         JavaScriptConsoleFeatureFactory::GetInstance()->GetForBrowserState(
-            GetBrowserState());
+            browser_state_.get());
     feature->SetDelegate(&delegate_);
     GetWebClient()->SetJavaScriptFeatures({feature});
   }
 
-  web::FakeWebClient* GetWebClient() override {
-    return static_cast<web::FakeWebClient*>(
-        WebTestWithWebState::GetWebClient());
+  web::FakeWebClient* GetWebClient() {
+    return static_cast<web::FakeWebClient*>(web_client_.Get());
   }
 
   bool IsDelegateStateEmpty() {
@@ -133,6 +148,13 @@ class JavaScriptConsoleFeatureTest : public ChromeWebTest {
     return iframe;
   }
 
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
+
   FakeJavaScriptConsoleFeatureDelegate delegate_;
 };
 
@@ -140,7 +162,7 @@ class JavaScriptConsoleFeatureTest : public ChromeWebTest {
 TEST_F(JavaScriptConsoleFeatureTest, DebugMessageReceivedMainFrame) {
   ASSERT_TRUE(IsDelegateStateEmpty());
 
-  ASSERT_TRUE(LoadHtml(kPageHtml));
+  web::test::LoadHtml(base::SysUTF8ToNSString(kPageHtml), web_state());
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "debug"));
 
   EXPECT_EQ(web_state(), delegate_.last_received_web_state());
@@ -156,7 +178,7 @@ TEST_F(JavaScriptConsoleFeatureTest, DebugMessageReceivedMainFrame) {
 TEST_F(JavaScriptConsoleFeatureTest, ErrorMessageReceivedMainFrame) {
   ASSERT_TRUE(IsDelegateStateEmpty());
 
-  ASSERT_TRUE(LoadHtml(kPageHtml));
+  web::test::LoadHtml(base::SysUTF8ToNSString(kPageHtml), web_state());
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "error"));
 
   EXPECT_EQ(web_state(), delegate_.last_received_web_state());
@@ -172,7 +194,7 @@ TEST_F(JavaScriptConsoleFeatureTest, ErrorMessageReceivedMainFrame) {
 TEST_F(JavaScriptConsoleFeatureTest, InfoMessageReceivedMainFrame) {
   ASSERT_TRUE(IsDelegateStateEmpty());
 
-  ASSERT_TRUE(LoadHtml(kPageHtml));
+  web::test::LoadHtml(base::SysUTF8ToNSString(kPageHtml), web_state());
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "info"));
 
   EXPECT_EQ(web_state(), delegate_.last_received_web_state());
@@ -188,7 +210,7 @@ TEST_F(JavaScriptConsoleFeatureTest, InfoMessageReceivedMainFrame) {
 TEST_F(JavaScriptConsoleFeatureTest, LogMessageReceivedMainFrame) {
   ASSERT_TRUE(IsDelegateStateEmpty());
 
-  ASSERT_TRUE(LoadHtml(kPageHtml));
+  web::test::LoadHtml(base::SysUTF8ToNSString(kPageHtml), web_state());
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "log"));
 
   EXPECT_EQ(web_state(), delegate_.last_received_web_state());
@@ -204,7 +226,7 @@ TEST_F(JavaScriptConsoleFeatureTest, LogMessageReceivedMainFrame) {
 TEST_F(JavaScriptConsoleFeatureTest, WarnMessageReceivedMainFrame) {
   ASSERT_TRUE(IsDelegateStateEmpty());
 
-  ASSERT_TRUE(LoadHtml(kPageHtml));
+  web::test::LoadHtml(base::SysUTF8ToNSString(kPageHtml), web_state());
   ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "warn"));
 
   EXPECT_EQ(web_state(), delegate_.last_received_web_state());
@@ -220,7 +242,7 @@ TEST_F(JavaScriptConsoleFeatureTest, WarnMessageReceivedMainFrame) {
 TEST_F(JavaScriptConsoleFeatureTest, DebugMessageReceivedIFrame) {
   ASSERT_TRUE(IsDelegateStateEmpty());
 
-  ASSERT_TRUE(LoadHtml(kIFramePageHtml));
+  web::test::LoadHtml(base::SysUTF8ToNSString(kIFramePageHtml), web_state());
   ASSERT_TRUE(web::test::TapWebViewElementWithIdInIframe(web_state(), "debug"));
 
   ASSERT_EQ(web_state(), delegate_.last_received_web_state());
@@ -238,7 +260,7 @@ TEST_F(JavaScriptConsoleFeatureTest, DebugMessageReceivedIFrame) {
 TEST_F(JavaScriptConsoleFeatureTest, ErrorMessageReceivedIFrame) {
   ASSERT_TRUE(IsDelegateStateEmpty());
 
-  ASSERT_TRUE(LoadHtml(kIFramePageHtml));
+  web::test::LoadHtml(base::SysUTF8ToNSString(kIFramePageHtml), web_state());
   ASSERT_TRUE(web::test::TapWebViewElementWithIdInIframe(web_state(), "error"));
 
   ASSERT_EQ(web_state(), delegate_.last_received_web_state());
@@ -256,7 +278,7 @@ TEST_F(JavaScriptConsoleFeatureTest, ErrorMessageReceivedIFrame) {
 TEST_F(JavaScriptConsoleFeatureTest, InfoMessageReceivedIFrame) {
   ASSERT_TRUE(IsDelegateStateEmpty());
 
-  ASSERT_TRUE(LoadHtml(kIFramePageHtml));
+  web::test::LoadHtml(base::SysUTF8ToNSString(kIFramePageHtml), web_state());
   ASSERT_TRUE(web::test::TapWebViewElementWithIdInIframe(web_state(), "info"));
 
   ASSERT_EQ(web_state(), delegate_.last_received_web_state());
@@ -274,7 +296,7 @@ TEST_F(JavaScriptConsoleFeatureTest, InfoMessageReceivedIFrame) {
 TEST_F(JavaScriptConsoleFeatureTest, LogMessageReceivedIFrame) {
   ASSERT_TRUE(IsDelegateStateEmpty());
 
-  ASSERT_TRUE(LoadHtml(kIFramePageHtml));
+  web::test::LoadHtml(base::SysUTF8ToNSString(kIFramePageHtml), web_state());
   ASSERT_TRUE(web::test::TapWebViewElementWithIdInIframe(web_state(), "log"));
 
   ASSERT_EQ(web_state(), delegate_.last_received_web_state());
@@ -292,7 +314,7 @@ TEST_F(JavaScriptConsoleFeatureTest, LogMessageReceivedIFrame) {
 TEST_F(JavaScriptConsoleFeatureTest, WarnMessageReceivedIFrame) {
   ASSERT_TRUE(IsDelegateStateEmpty());
 
-  ASSERT_TRUE(LoadHtml(kIFramePageHtml));
+  web::test::LoadHtml(base::SysUTF8ToNSString(kIFramePageHtml), web_state());
   ASSERT_TRUE(web::test::TapWebViewElementWithIdInIframe(web_state(), "warn"));
 
   ASSERT_EQ(web_state(), delegate_.last_received_web_state());

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+  <group android:id="@+id/normal_menu_group" >
+    <item
+        android:id="@+id/info_menu_id"
+        android:icon="@drawable/btn_info"
+        android:title="@string/show_info"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/search_menu_id"
+        android:icon="@drawable/ic_search"
+        android:title="@string/search"
+        android:visible="false"
+        app:showAsAction="ifRoom"
+        app:iconTint="@color/default_icon_color_secondary_tint_list" />
+    <item
+        android:id="@+id/close_menu_id"
+        android:icon="@drawable/btn_close"
+        android:title="@string/close"
+        app:showAsAction="ifRoom"
+        app:iconTint="@color/default_icon_color_secondary_tint_list" />
+    <item
+        android:id="@+id/optout_menu_id"
+        android:title="@string/history_clusters_disable_menu_item_label"
+        app:showAsAction="never" />
+  </group>
+  <group
+      android:id="@+id/selection_mode_menu_group"
+      android:visible="false" >
+    <item
+        android:id="@+id/selection_mode_delete_menu_id"
+        android:icon="@drawable/ic_delete_white_24dp"
+        android:title="@string/remove"
+        app:showAsAction="ifRoom"
+        app:iconTint="@color/default_icon_color_secondary_tint_list" />
+    <item
+        android:id="@+id/selection_mode_open_in_new_tab"
+        android:title="@string/contextmenu_open_in_new_tab"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/selection_mode_open_in_incognito"
+        android:title="@string/contextmenu_open_in_incognito_tab"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/selection_mode_open_in_tab_group"
+        android:title="@string/history_clusters_open_all_in_tabgroup"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/selection_mode_copy_link"
+        android:title="@string/copy_link"
+        app:showAsAction="never" />
+  </group>
+</menu>

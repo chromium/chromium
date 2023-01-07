@@ -1,0 +1,35 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <title>$i18n{sidePanelTitle}</title>
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+    }
+
+    body {
+      background: white;
+      overflow: auto;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: var(--google-grey-900);
+      }
+    }
+  </style>
+</head>
+<body>
+  <side-panel-app></side-panel-app>
+  <script type="module" src="app.js"></script>
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+caption: Allow users to select a desk template layout to load
+default: false
+desc: Setting the policy to Enabled allows users to use desktop layout templates.  Setting
+  the policy to Disabled or unset means these templates will be unavailable.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome_os
+items:
+- caption: Allow users to use desk templates
+  value: true
+- caption: Do not allow users to use desk templates
+  value: false
+owners:
+- brianbeck@chromium.org
+- yzd@chromium.org
+schema:
+  type: boolean
+tags: []
+type: main

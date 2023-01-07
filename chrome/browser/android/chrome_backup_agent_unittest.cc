@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/android/chrome_backup_agent.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -50,10 +51,10 @@ class ChromeBackupAgentTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::vector<std::string> expected_pref_names_;
   TestingProfileManager testing_profile_manager_;
-  TestingProfile* testing_profile_;
-  sync_preferences::TestingPrefServiceSyncable* pref_service_;
-  PrefRegistrySimple* registry_;
-  JNIEnv* env_;
+  raw_ptr<TestingProfile> testing_profile_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  raw_ptr<PrefRegistrySimple> registry_;
+  raw_ptr<JNIEnv> env_;
 };
 
 TEST_F(ChromeBackupAgentTest, GetBoolBackupNames) {
@@ -72,11 +73,11 @@ TEST_F(ChromeBackupAgentTest, GetBoolBackupValues_AllDefault) {
   JavaBooleanArrayToBoolVector(env_, result, &values);
   ASSERT_EQ(expected_pref_names_.size(), values.size());
   for (size_t i = 0; i < values.size(); i++) {
-    bool expected_value;
-    ASSERT_TRUE(pref_service_->GetDefaultPrefValue(expected_pref_names_[i])
-                    ->GetAsBoolean(&expected_value));
-    EXPECT_EQ(expected_value, values[i]) << "i = " << i << ", "
-                                         << expected_pref_names_[i];
+    const base::Value* default_pref_value =
+        pref_service_->GetDefaultPrefValue(expected_pref_names_[i]);
+    ASSERT_TRUE(default_pref_value->is_bool());
+    EXPECT_EQ(default_pref_value->GetBool(), values[i])
+        << "i = " << i << ", " << expected_pref_names_[i];
   }
 }
 
@@ -90,11 +91,11 @@ TEST_F(ChromeBackupAgentTest, GetBoolBackupValues_IrrelevantChange) {
   JavaBooleanArrayToBoolVector(env_, result, &values);
   ASSERT_EQ(expected_pref_names_.size(), values.size());
   for (size_t i = 0; i < values.size(); i++) {
-    bool expected_value;
-    ASSERT_TRUE(pref_service_->GetDefaultPrefValue(expected_pref_names_[i])
-                    ->GetAsBoolean(&expected_value));
-    EXPECT_EQ(expected_value, values[i]) << "i = " << i << ", "
-                                         << expected_pref_names_[i];
+    const base::Value* default_pref_value =
+        pref_service_->GetDefaultPrefValue(expected_pref_names_[i]);
+    ASSERT_TRUE(default_pref_value->is_bool());
+    EXPECT_EQ(default_pref_value->GetBool(), values[i])
+        << "i = " << i << ", " << expected_pref_names_[i];
   }
 }
 

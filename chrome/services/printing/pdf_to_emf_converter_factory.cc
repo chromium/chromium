@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,9 @@ PdfToEmfConverterFactory::~PdfToEmfConverterFactory() = default;
 void PdfToEmfConverterFactory::CreateConverter(
     base::ReadOnlySharedMemoryRegion pdf_region,
     const PdfRenderSettings& render_settings,
-    mojo::PendingRemote<mojom::PdfToEmfConverterClient> client,
     CreateConverterCallback callback) {
-  auto converter = std::make_unique<PdfToEmfConverter>(
-      std::move(pdf_region), render_settings, std::move(client));
+  auto converter = std::make_unique<PdfToEmfConverter>(std::move(pdf_region),
+                                                       render_settings);
   uint32_t page_count = converter->total_page_count();
   mojo::PendingRemote<mojom::PdfToEmfConverter> converter_remote;
   mojo::MakeSelfOwnedReceiver(

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -208,7 +207,7 @@ std::unique_ptr<MetadataDatabaseIndex> MetadataDatabaseIndex::Create(
   std::unique_ptr<ServiceMetadata> service_metadata =
       InitializeServiceMetadata(db);
   if (!service_metadata)
-    return std::unique_ptr<MetadataDatabaseIndex>();
+    return nullptr;
 
   DatabaseContents contents;
   PutVersionToDB(kCurrentDatabaseVersion, db);
@@ -243,13 +242,6 @@ void MetadataDatabaseIndex::Initialize(
   for (size_t i = 0; i < contents->file_trackers.size(); ++i)
     StoreFileTracker(std::move(contents->file_trackers[i]));
   contents->file_trackers.clear();
-
-  UMA_HISTOGRAM_COUNTS_1M("SyncFileSystem.MetadataNumber",
-                          metadata_by_id_.size());
-  UMA_HISTOGRAM_COUNTS_1M("SyncFileSystem.TrackerNumber",
-                          tracker_by_id_.size());
-  UMA_HISTOGRAM_COUNTS_100("SyncFileSystem.RegisteredAppNumber",
-                           app_root_by_app_id_.size());
 }
 
 MetadataDatabaseIndex::MetadataDatabaseIndex(LevelDBWrapper* db) : db_(db) {}

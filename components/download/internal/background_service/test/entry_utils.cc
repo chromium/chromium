@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <algorithm>
 
 #include "base/guid.h"
+#include "base/memory/values_equivalent.h"
 #include "components/download/internal/background_service/test/entry_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
@@ -12,10 +13,7 @@ namespace download {
 namespace test {
 
 bool CompareEntry(const Entry* const& expected, const Entry* const& actual) {
-  if (expected == nullptr || actual == nullptr)
-    return expected == actual;
-
-  return *expected == *actual;
+  return base::ValuesEquivalent(expected, actual);
 }
 
 bool CompareEntryList(const std::vector<Entry*>& expected,

@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -46,7 +47,6 @@
 #include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_text_control_single_line.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -101,7 +101,7 @@ void PasswordInputType::CreateShadowSubtree() {
 void PasswordInputType::DidSetValueByUserEdit() {
   if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
     // If the last character is deleted, we hide the reveal button.
-    if (GetElement().value().IsEmpty()) {
+    if (GetElement().Value().empty()) {
       should_show_reveal_button_ = false;
     }
     UpdatePasswordRevealButton();
@@ -212,7 +212,7 @@ void PasswordInputType::HandleBeforeTextInsertedEvent(
   if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
     // This is the only scenario we go from no reveal button to showing the
     // reveal button: the password is empty and we have some user input.
-    if (GetElement().value().IsEmpty())
+    if (GetElement().Value().empty())
       should_show_reveal_button_ = true;
   }
 

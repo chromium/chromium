@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -29,8 +30,8 @@ using ::testing::WithArg;
 
 const int64_t kMockElapsedTime =
     base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds();
-constexpr char kUsername[] = "user";
-constexpr char kPassword[] = "password123";
+constexpr char16_t kUsername[] = u"user";
+constexpr char16_t kPassword[] = u"password123";
 
 MATCHER_P(CredentialsAre, credentials, "") {
   return std::equal(arg.begin(), arg.end(), credentials.get().begin(),
@@ -48,8 +49,7 @@ MATCHER_P(CredentialIs, credential, "") {
 }
 
 LeakCheckCredential TestCredential() {
-  return LeakCheckCredential(base::ASCIIToUTF16(kUsername),
-                             base::ASCIIToUTF16(kPassword));
+  return LeakCheckCredential(kUsername, kPassword);
 }
 
 std::vector<LeakCheckCredential> TestCredentials() {
@@ -106,7 +106,7 @@ class BulkLeakCheckServiceTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
   BulkLeakCheckService service_;
-  MockLeakDetectionCheckFactory* factory_;
+  raw_ptr<MockLeakDetectionCheckFactory> factory_;
 };
 
 void BulkLeakCheckServiceTest::ConductLeakCheck(
@@ -237,6 +237,8 @@ TEST_F(BulkLeakCheckServiceTest, FailedToCreateCheckWithError) {
   EXPECT_EQ(BulkLeakCheckService::State::kSignedOut, service().GetState());
   EXPECT_EQ(0u, service().GetPendingChecksCount());
   base::HistogramTester::CountsMap expected_counts;
+  expected_counts
+      ["PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled"] = 1;
   expected_counts["PasswordManager.BulkCheck.Error"] = 1;
   EXPECT_THAT(
       histogram_tester().GetTotalCountsForPrefix("PasswordManager.BulkCheck"),
@@ -265,9 +267,16 @@ TEST_F(BulkLeakCheckServiceTest, CancelNothing) {
 TEST_F(BulkLeakCheckServiceTest, CancelSomething) {
   auto leak_check = std::make_unique<MockBulkLeakCheck>();
   EXPECT_CALL(*leak_check, CheckCredentials);
+  EXPECT_CALL(*leak_check, GetPendingChecksCount).WillRepeatedly(Return(10));
+  BulkLeakCheckDelegateInterface* delegate = nullptr;
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
-      .WillOnce(Return(ByMove(std::move(leak_check))));
+      .WillOnce(
+          DoAll(SaveArg<0>(&delegate), Return(ByMove(std::move(leak_check)))));
+
   service().CheckUsernamePasswordPairs(TestCredentials());
+
+  // Finish one credential before the bulk check gets canceled.
+  delegate->OnFinishedCredential(TestCredential(), IsLeaked(true));
 
   StrictMock<MockObserver> observer;
   service().AddObserver(&observer);
@@ -277,12 +286,10 @@ TEST_F(BulkLeakCheckServiceTest, CancelSomething) {
   EXPECT_EQ(BulkLeakCheckService::State::kCanceled, service().GetState());
   EXPECT_EQ(0u, service().GetPendingChecksCount());
   histogram_tester().ExpectUniqueSample(
-      "PasswordManager.BulkCheck.CanceledCredentials", 2, 1);
-  histogram_tester().ExpectUniqueSample(
       "PasswordManager.BulkCheck.CanceledTime", kMockElapsedTime, 1);
-  EXPECT_THAT(
-      histogram_tester().GetTotalCountsForPrefix("PasswordManager.BulkCheck"),
-      ::testing::SizeIs(2));
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled",
+      TestCredentials().size(), 1);
 
   service().RemoveObserver(&observer);
 }
@@ -433,6 +440,8 @@ TEST_F(BulkLeakCheckServiceTest, CheckFinishedWithError) {
   EXPECT_EQ(BulkLeakCheckService::State::kServiceError, service().GetState());
   EXPECT_EQ(0u, service().GetPendingChecksCount());
   base::HistogramTester::CountsMap expected_counts;
+  expected_counts
+      ["PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled"] = 1;
   expected_counts["PasswordManager.BulkCheck.Error"] = 1;
   EXPECT_THAT(
       histogram_tester().GetTotalCountsForPrefix("PasswordManager.BulkCheck"),
@@ -462,6 +471,8 @@ TEST_F(BulkLeakCheckServiceTest, CheckFinishedWithQuotaLimit) {
   EXPECT_EQ(BulkLeakCheckService::State::kQuotaLimit, service().GetState());
   EXPECT_EQ(0u, service().GetPendingChecksCount());
   base::HistogramTester::CountsMap expected_counts;
+  expected_counts
+      ["PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled"] = 1;
   expected_counts["PasswordManager.BulkCheck.Error"] = 1;
   EXPECT_THAT(
       histogram_tester().GetTotalCountsForPrefix("PasswordManager.BulkCheck"),

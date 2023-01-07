@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/policy_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -140,24 +141,25 @@ TEST(ThirdPartyAuthConfig, ParseInvalidCombination) {
 }
 
 TEST(ThirdPartyAuthConfig, ExtractEmpty) {
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   std::string url1, url2, cert;
   EXPECT_FALSE(ThirdPartyAuthConfig::ExtractStrings(dict, &url1, &url2, &cert));
 }
 
 TEST(ThirdPartyAuthConfig, ExtractUnknown) {
-  base::DictionaryValue dict;
-  dict.SetString("unknownName", "someValue");
+  base::Value::Dict dict;
+  dict.Set("unknownName", "someValue");
 
   std::string url1, url2, cert;
   EXPECT_FALSE(ThirdPartyAuthConfig::ExtractStrings(dict, &url1, &url2, &cert));
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 TEST(ThirdPartyAuthConfig, ExtractAll) {
-  base::DictionaryValue dict;
-  dict.SetString(key::kRemoteAccessHostTokenUrl, "test1");
-  dict.SetString(key::kRemoteAccessHostTokenValidationUrl, "test2");
-  dict.SetString(key::kRemoteAccessHostTokenValidationCertificateIssuer, "t3");
+  base::Value::Dict dict;
+  dict.Set(key::kRemoteAccessHostTokenUrl, "test1");
+  dict.Set(key::kRemoteAccessHostTokenValidationUrl, "test2");
+  dict.Set(key::kRemoteAccessHostTokenValidationCertificateIssuer, "t3");
 
   std::string url1, url2, cert;
   EXPECT_TRUE(ThirdPartyAuthConfig::ExtractStrings(dict, &url1, &url2, &cert));
@@ -167,8 +169,8 @@ TEST(ThirdPartyAuthConfig, ExtractAll) {
 }
 
 TEST(ThirdPartyAuthConfig, ExtractPartial) {
-  base::DictionaryValue dict;
-  dict.SetString(key::kRemoteAccessHostTokenValidationUrl, "test2");
+  base::Value::Dict dict;
+  dict.Set(key::kRemoteAccessHostTokenValidationUrl, "test2");
 
   std::string url1, url2, cert;
   EXPECT_TRUE(ThirdPartyAuthConfig::ExtractStrings(dict, &url1, &url2, &cert));
@@ -176,6 +178,8 @@ TEST(ThirdPartyAuthConfig, ExtractPartial) {
   EXPECT_EQ("test2", url2);
   EXPECT_EQ("", cert);
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
+        // !BUILDFLAG(IS_IOS)
 
 TEST(ThirdPartyAuthConfig, Output) {
   ThirdPartyAuthConfig third_party_auth_config;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
-#include "chromeos/dbus/shill/shill_clients.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/dbus/shill/shill_clients.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,6 +24,12 @@ namespace ash {
 class WifiToggleNotificationControllerTest : public AshTestBase {
  public:
   WifiToggleNotificationControllerTest() = default;
+
+  WifiToggleNotificationControllerTest(
+      const WifiToggleNotificationControllerTest&) = delete;
+  WifiToggleNotificationControllerTest& operator=(
+      const WifiToggleNotificationControllerTest&) = delete;
+
   ~WifiToggleNotificationControllerTest() override = default;
 
   // testing::Test:
@@ -39,8 +45,6 @@ class WifiToggleNotificationControllerTest : public AshTestBase {
   chromeos::network_config::CrosNetworkConfigTestHelper network_config_helper_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WifiToggleNotificationControllerTest);
 };
 
 // Verifies that toggling Wi-Fi (usually via keyboard) shows a notification.

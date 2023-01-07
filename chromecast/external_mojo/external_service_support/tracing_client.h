@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CHROMECAST_EXTERNAL_MOJO_EXTERNAL_SERVICE_SUPPORT_TRACING_CLIENT_H_
 #define CHROMECAST_EXTERNAL_MOJO_EXTERNAL_SERVICE_SUPPORT_TRACING_CLIENT_H_
 
 #include <memory>
-#include <string>
 
 namespace chromecast {
 namespace external_service_support {

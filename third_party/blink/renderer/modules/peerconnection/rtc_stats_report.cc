@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,23 @@ namespace blink {
 
 namespace {
 
-v8::Local<v8::Value> RTCStatsToValue(ScriptState* script_state,
-                                     const RTCStats* stats) {
+template <typename T>
+v8::Local<v8::Value> HashMapToValue(ScriptState* script_state,
+                                    HashMap<String, T>&& map) {
+  V8ObjectBuilder builder(script_state);
+  for (auto& it : map) {
+    builder.Add(it.key, it.value);
+  }
+  v8::Local<v8::Object> v8_object = builder.V8Value();
+  if (v8_object.IsEmpty()) {
+    NOTREACHED();
+    return v8::Undefined(script_state->GetIsolate());
+  }
+  return v8_object;
+}
+
+v8::Local<v8::Object> RTCStatsToV8Object(ScriptState* script_state,
+                                         const RTCStats* stats) {
   V8ObjectBuilder builder(script_state);
 
   builder.AddString("id", stats->Id());
@@ -72,34 +87,40 @@ v8::Local<v8::Value> RTCStatsToValue(ScriptState* script_state,
       case webrtc::RTCStatsMemberInterface::kSequenceString:
         builder.Add(name, member->ValueSequenceString());
         break;
+      case webrtc::RTCStatsMemberInterface::kMapStringUint64:
+        builder.Add(
+            name, HashMapToValue(script_state, member->ValueMapStringUint64()));
+        break;
+      case webrtc::RTCStatsMemberInterface::kMapStringDouble:
+        builder.Add(
+            name, HashMapToValue(script_state, member->ValueMapStringDouble()));
+        break;
       default:
         NOTREACHED();
     }
   }
 
   v8::Local<v8::Object> v8_object = builder.V8Value();
-  if (v8_object.IsEmpty()) {
-    NOTREACHED();
-    return v8::Undefined(script_state->GetIsolate());
-  }
+  CHECK(!v8_object.IsEmpty());
   return v8_object;
 }
 
 class RTCStatsReportIterationSource final
-    : public PairIterable<String, v8::Local<v8::Value>>::IterationSource {
+    : public PairIterable<String, IDLString, v8::Local<v8::Object>, IDLObject>::
+          IterationSource {
  public:
   RTCStatsReportIterationSource(std::unique_ptr<RTCStatsReportPlatform> report)
       : report_(std::move(report)) {}
 
   bool Next(ScriptState* script_state,
             String& key,
-            v8::Local<v8::Value>& value,
+            v8::Local<v8::Object>& value,
             ExceptionState& exception_state) override {
     std::unique_ptr<RTCStats> stats = report_->Next();
     if (!stats)
       return false;
     key = stats->Id();
-    value = RTCStatsToValue(script_state, stats.get());
+    value = RTCStatsToV8Object(script_state, stats.get());
     return true;
   }
 
@@ -133,20 +154,21 @@ uint32_t RTCStatsReport::size() const {
   return base::saturated_cast<uint32_t>(report_->Size());
 }
 
-PairIterable<String, v8::Local<v8::Value>>::IterationSource*
-RTCStatsReport::StartIteration(ScriptState*, ExceptionState&) {
+PairIterable<String, IDLString, v8::Local<v8::Object>, IDLObject>::
+    IterationSource*
+    RTCStatsReport::StartIteration(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<RTCStatsReportIterationSource>(
       report_->CopyHandle());
 }
 
 bool RTCStatsReport::GetMapEntry(ScriptState* script_state,
                                  const String& key,
-                                 v8::Local<v8::Value>& value,
+                                 v8::Local<v8::Object>& value,
                                  ExceptionState&) {
   std::unique_ptr<RTCStats> stats = report_->GetStats(key);
   if (!stats)
     return false;
-  value = RTCStatsToValue(script_state, stats.get());
+  value = RTCStatsToV8Object(script_state, stats.get());
   return true;
 }
 

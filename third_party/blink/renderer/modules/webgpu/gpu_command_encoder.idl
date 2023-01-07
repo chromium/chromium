@@ -1,11 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed(Window WebGPU, Worker WebGPU)
+    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    SecureContext
 ] interface GPUCommandEncoder {
     [RaisesException] GPURenderPassEncoder beginRenderPass(GPURenderPassDescriptor descriptor);
     GPUComputePassEncoder beginComputePass(optional GPUComputePassDescriptor descriptor = {});
@@ -43,7 +44,12 @@
         GPUBuffer destination,
         GPUSize64 destinationOffset);
 
-    void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
+   [RaisesException] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
+
+    void clearBuffer(
+        GPUBuffer buffer,
+        optional GPUSize64 offset = 0,
+        optional GPUSize64 size);
 
     GPUCommandBuffer finish(optional GPUCommandBufferDescriptor descriptor = {});
 };

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/ref_counted.h"
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -31,19 +32,15 @@ class VideoFrameHandlerProxyLacros : public crosapi::mojom::VideoFrameHandler {
       delete;
   ~VideoFrameHandlerProxyLacros() override;
 
-  class AccessPermissionProxy : public mojom::ScopedAccessPermission {
-   public:
-    AccessPermissionProxy(
-        mojo::PendingRemote<crosapi::mojom::ScopedAccessPermission> remote);
-    AccessPermissionProxy(const AccessPermissionProxy&) = delete;
-    AccessPermissionProxy& operator=(const AccessPermissionProxy&) = delete;
-    ~AccessPermissionProxy() override;
-
-   private:
-    mojo::Remote<crosapi::mojom::ScopedAccessPermission> remote_;
-  };
+  // crosapi::mojom::VideoFrameHandler implementation that others may need to
+  // call.
+  void OnError(media::VideoCaptureError error) override;
+  void OnLog(const std::string& message) override;
 
  private:
+  class AccessPermissionProxyMap;
+  class VideoFrameAccessHandlerProxy;
+
   // crosapi::mojom::VideoFrameHandler implementation.
   void OnNewBuffer(int buffer_id,
                    crosapi::mojom::VideoBufferHandlePtr buffer_handle) override;
@@ -51,16 +48,16 @@ class VideoFrameHandlerProxyLacros : public crosapi::mojom::VideoFrameHandler {
                             std::vector<crosapi::mojom::ReadyFrameInBufferPtr>
                                 scaled_buffers) override;
   void OnBufferRetired(int buffer_id) override;
-  void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  void OnLog(const std::string& message) override;
+  void OnNewCropVersion(uint32_t crop_version) override;
+  void OnFrameWithEmptyRegionCapture() override;
   void OnStarted() override;
   void OnStartedUsingGpuDecode() override;
   void OnStopped() override;
 
   mojo::Receiver<crosapi::mojom::VideoFrameHandler> receiver_{this};
-
   mojo::Remote<mojom::VideoFrameHandler> handler_;
+  scoped_refptr<AccessPermissionProxyMap> access_permission_proxy_map_;
 };
 
 }  // namespace video_capture

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,15 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "components/services/storage/service_worker/service_worker_storage.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 
@@ -49,21 +53,24 @@ class ServiceWorkerStorageControlImpl
   void Delete(DeleteCallback callback) override;
   void Recover(std::vector<mojom::ServiceWorkerLiveVersionInfoPtr> versions,
                RecoverCallback callback) override;
-  void GetRegisteredOrigins(GetRegisteredOriginsCallback callback) override;
+  void GetRegisteredStorageKeys(
+      GetRegisteredStorageKeysCallback callback) override;
   void FindRegistrationForClientUrl(
       const GURL& client_url,
+      const blink::StorageKey& key,
       FindRegistrationForClientUrlCallback callback) override;
   void FindRegistrationForScope(
       const GURL& scope,
+      const blink::StorageKey& key,
       FindRegistrationForScopeCallback callback) override;
   void FindRegistrationForId(int64_t registration_id,
-                             const base::Optional<url::Origin>& origin,
+                             const absl::optional<blink::StorageKey>& key,
                              FindRegistrationForIdCallback callback) override;
-  void GetRegistrationsForOrigin(
-      const url::Origin& origin,
-      GetRegistrationsForOriginCallback callback) override;
-  void GetUsageForOrigin(const url::Origin& origin,
-                         GetUsageForOriginCallback callback) override;
+  void GetRegistrationsForStorageKey(
+      const blink::StorageKey& key,
+      GetRegistrationsForStorageKeyCallback callback) override;
+  void GetUsageForStorageKey(const blink::StorageKey& key,
+                             GetUsageForStorageKeyCallback callback) override;
   void GetAllRegistrationsDeprecated(
       GetAllRegistrationsDeprecatedCallback calback) override;
   void StoreRegistration(
@@ -71,26 +78,31 @@ class ServiceWorkerStorageControlImpl
       std::vector<mojom::ServiceWorkerResourceRecordPtr> resources,
       StoreRegistrationCallback callback) override;
   void DeleteRegistration(int64_t registration_id,
-                          const GURL& origin,
+                          const blink::StorageKey& key,
                           DeleteRegistrationCallback callback) override;
   void UpdateToActiveState(int64_t registration_id,
-                           const GURL& origin,
+                           const blink::StorageKey& key,
                            UpdateToActiveStateCallback callback) override;
   void UpdateLastUpdateCheckTime(
       int64_t registration_id,
-      const GURL& origin,
+      const blink::StorageKey& key,
       base::Time last_update_check_time,
       UpdateLastUpdateCheckTimeCallback callback) override;
   void UpdateNavigationPreloadEnabled(
       int64_t registration_id,
-      const GURL& origin,
+      const blink::StorageKey& key,
       bool enable,
       UpdateNavigationPreloadEnabledCallback callback) override;
   void UpdateNavigationPreloadHeader(
       int64_t registration_id,
-      const GURL& origin,
+      const blink::StorageKey& key,
       const std::string& value,
       UpdateNavigationPreloadHeaderCallback callback) override;
+  void UpdateFetchHandlerType(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type,
+      UpdateFetchHandlerTypeCallback callback) override;
   void GetNewRegistrationId(GetNewRegistrationIdCallback callback) override;
   void GetNewVersionId(GetNewVersionIdCallback callback) override;
   void GetNewResourceId(GetNewResourceIdCallback callback) override;
@@ -116,7 +128,7 @@ class ServiceWorkerStorageControlImpl
                    const std::vector<std::string>& keys,
                    GetUserDataCallback callback) override;
   void StoreUserData(int64_t registration_id,
-                     const url::Origin& origin,
+                     const blink::StorageKey& key,
                      std::vector<mojom::ServiceWorkerUserDataPtr> user_data,
                      StoreUserDataCallback callback) override;
   void ClearUserData(int64_t registration_id,
@@ -148,6 +160,9 @@ class ServiceWorkerStorageControlImpl
       ApplyPolicyUpdatesCallback callback) override;
   void GetPurgingResourceIdsForTest(
       GetPurgingResourceIdsForTestCallback callback) override;
+  void GetPurgingResourceIdsForLiveVersionForTest(
+      int64_t version_id,
+      GetPurgingResourceIdsForTestCallback callback) override;
   void GetPurgeableResourceIdsForTest(
       GetPurgeableResourceIdsForTestCallback callback) override;
   void GetUncommittedResourceIdsForTest(
@@ -165,14 +180,15 @@ class ServiceWorkerStorageControlImpl
       mojom::ServiceWorkerRegistrationDataPtr data,
       std::unique_ptr<ResourceList> resources,
       mojom::ServiceWorkerDatabaseStatus status);
-  void DidGetRegistrationsForOrigin(
-      GetRegistrationsForOriginCallback callback,
+  void DidGetRegistrationsForStorageKey(
+      GetRegistrationsForStorageKeyCallback callback,
       mojom::ServiceWorkerDatabaseStatus status,
       std::unique_ptr<ServiceWorkerStorage::RegistrationList>
           registration_data_list,
       std::unique_ptr<std::vector<ResourceList>> resources_list);
   void DidStoreRegistration(
       StoreRegistrationCallback callback,
+      int64_t stored_version_id,
       mojom::ServiceWorkerDatabaseStatus status,
       int64_t deleted_version_id,
       uint64_t deleted_resources_size,
@@ -180,7 +196,7 @@ class ServiceWorkerStorageControlImpl
   void DidDeleteRegistration(
       DeleteRegistrationCallback callback,
       mojom::ServiceWorkerDatabaseStatus status,
-      ServiceWorkerStorage::OriginState origin_state,
+      ServiceWorkerStorage::StorageKeyState storage_key_state,
       int64_t deleted_version_id,
       uint64_t deleted_resources_size,
       const std::vector<int64_t>& newly_purgeable_resources);
@@ -191,6 +207,14 @@ class ServiceWorkerStorageControlImpl
 
   void MaybePurgeResources(int64_t version_id,
                            const std::vector<int64_t>& purgeable_resources);
+
+  // Cancels resource purging on successfull registration.
+  // This is necessary when resurrecting an uninstalling registration
+  // in the unregistration + registration case because unregistration could've
+  // scheduled resources purging yet registration will try to reuse them which
+  // leads to potential use of doomed resources once the current version is
+  // marked as no longer alive.
+  void MaybeCancelPurgeResources(int64_t version_id);
 
   const std::unique_ptr<ServiceWorkerStorage> storage_;
 
@@ -205,4 +229,4 @@ class ServiceWorkerStorageControlImpl
 
 }  // namespace storage
 
-#endif  // COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_STORAGE_CONTROLIMPL_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_STORAGE_CONTROL_IMPL_H_

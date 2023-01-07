@@ -1,0 +1,34 @@
+{
+  "name": "NLClassifier",
+  "description": "Classify the input text into a set of known categories.",
+  "subgraph_metadata": [
+    {
+      "input_tensor_metadata": [
+        {
+          "name": "input_text",
+          "description": "Embedding vectors representing the input text to be classified.",
+          "content": {
+            "content_properties_type": "FeatureProperties",
+            "content_properties": {
+            }
+          },
+          "stats": {
+          }
+        }
+      ],
+      "output_tensor_metadata": [
+        {
+          "name": "probability",
+          "description": "Probabilities of the labels respectively.",
+          "content": {
+            "content_properties_type": "FeatureProperties",
+            "content_properties": {
+            }
+          },
+          "stats": {
+          }
+        }
+      ]
+    }
+  ]
+}

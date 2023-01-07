@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 // PDF content of the captured window scene.
 @interface ScreenshotDelegate : NSObject <UIScreenshotServiceDelegate>
 
-// Init the ScreenshotDelegate and set the |browserInterfaceProvider| to
+// Init the ScreenshotDelegate and set the `browserInterfaceProvider` to
 // generate PDF screenshots from.
 - (instancetype)initWithBrowserInterfaceProvider:
     (id<BrowserInterfaceProvider>)browserInterfaceProvider

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/views/hover_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-
-class Profile;
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ui {
 class MouseEvent;
@@ -39,17 +38,12 @@ class CastDialogSinkButton : public HoverButton {
   void RequestFocus() override;
   void OnFocus() override;
   void OnBlur() override;
+  void OnThemeChanged() override;
 
   const UIMediaSink& sink() const { return sink_; }
 
-  // If this button will cast to a meeting, creates a view showing a warning
-  // about the feature being deprecated.  Otherwise returns nullptr.  The
-  // |profile| parameter is used to open the meeting tab the the user clicks on
-  // the link in the warning.
-  std::unique_ptr<views::View> MakeCastToMeetingDeprecationWarningView(
-      Profile* profile);
-
   static const gfx::VectorIcon* GetVectorIcon(SinkIconType icon_type);
+  static const gfx::VectorIcon* GetVectorIcon(UIMediaSink sink);
 
  private:
   friend class MediaRouterUiForTest;
@@ -64,9 +58,10 @@ class CastDialogSinkButton : public HoverButton {
                            SetStatusLabelForDialSinks);
 
   void OnEnabledChanged();
+  void UpdateTitleTextStyle();
 
   const UIMediaSink sink_;
-  base::Optional<std::u16string> saved_status_text_;
+  absl::optional<std::u16string> saved_status_text_;
   base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&CastDialogSinkButton::OnEnabledChanged,

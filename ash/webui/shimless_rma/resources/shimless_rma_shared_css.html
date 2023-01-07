@@ -1,0 +1,220 @@
+<template>
+  <style include="cr-shared-style md-select shimless-fonts">
+    :host {
+      --cr-dialog-width: 320px;
+      --cr-dialog-button-container-padding-horizontal: 24px;
+      --content-container-padding: 40px;
+      --margin-between-panes: 80px;
+      --radio-button-top-padding: 20px;
+      --title-bottom-margin: 16px;
+    }
+
+    html {
+      background-color: var(--cros-bg-color);
+    }
+
+    .indented-description {
+      color: var(--shimless-instructions-text-color);
+      margin-top: 8px;
+      padding: 0; /* specify all to override */
+      width: 512px;
+    }
+
+    .icon-message {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+    }
+
+    .large-icon {
+      height: 200px;
+      width: 300px;
+    }
+
+    .small-icon {
+      height: 20px;
+      min-width: 20px;
+      padding-inline-end: 8px;
+      width: 20px;
+    }
+
+    .small-icon-base {
+      height: 20px;
+      width: 20px;
+    }
+
+    .large-spinner {
+      height: 286px;
+      width: 286px;
+    }
+
+    .small-spinner {
+      height: 20px;
+      padding-inline-end: 8px;
+      width: 20px;
+    }
+
+    h1 {
+      color: var(--shimless-title-text-color);
+      font-family: var(--shimless-title-font-family);
+      font-size: var(--shimless-title-font-size);
+      font-weight: var(--shimless-medium-font-weight);
+      line-height: var(--shimless-title-line-height);
+      margin-bottom: var(--title-bottom-margin);
+      margin-top: 0;
+      outline: none;
+    }
+
+    .instructions {
+      color: var(--shimless-instructions-text-color);
+      font-family: var(--shimless-instructions-font-family);
+      font-size: var(--shimless-instructions-font-size);
+      font-weight: var(--shimless-regular-font-weight);
+      line-height: var(--shimless-instructions-line-height);
+      margin-bottom: 16px;
+    }
+
+    cr-input {
+      font-family: var(--shimless-input-font-family);
+      font-size: var(--shimless-input-font-size);
+      font-weight: var(--shimless-regular-font-weight);
+      line-height: var(--shimless-input-line-height);
+    }
+
+    cr-dialog::part(dialog) {
+      box-shadow: var(--cros-elevation-3-shadow);
+    }
+
+    cr-dialog [slot=title] {
+      color: var(--shimless-dialog-title-text-color);
+      font-family: var(--shimless-dialog-title-font-family);
+      font-size: var(--shimless-dialog-title-font-size);
+      font-weight: var(--shimless-medium-font-weight);
+      line-height: var(--shimless-dialog-title-line-height);
+      padding: 24px;
+    }
+
+    cr-dialog [slot=body] {
+      color: var(--shimless-dialog-body-text-color);
+      font-family: var(--shimless-dialog-body-font-family);
+      font-size: var(--shimless-dialog-body-font-size);
+      font-weight: var(--shimless-regular-font-weight);
+      line-height: var(--shimless-dialog-body-line-height);
+      padding-inline-end: 24px;
+      padding-inline-start: 24px;
+    }
+
+    cr-dialog .dialog-footer {
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      padding-bottom: 20px;
+      padding-top: 32px;
+    }
+
+    cr-dialog cr-button {
+      border-radius: 4px;
+      margin-inline-start: 8px;
+    }
+
+    cr-radio-button {
+      --cr-radio-button-size: 20px;
+      align-items: start;
+      font-size: var(--shimless-instructions-font-size);
+      line-height: 20px;
+      padding-bottom: 0;
+      padding-inline-start: 20px;
+      padding-top: var(--radio-button-top-padding);
+    }
+
+    cr-radio-group {
+      margin-top: calc(40px - var(--radio-button-top-padding) - 
+          var(--title-bottom-margin));
+    }
+
+    base-page {
+      height: 100%;
+      width: 100%;
+    }
+
+    .warning-icon {
+      fill: var(--cros-icon-color-warning);
+    }
+
+    .component-grid {
+      display: inline-grid;
+      grid-auto-rows: min-content;
+      grid-column-gap: 16px;
+      grid-row-gap: 16px;
+      height: 100%;
+      width: 100%;
+    }
+
+    /**
+     * NOTE: If you change the number of columns, don't forget to update the
+     * NUM_COLUMNS constant in the keyboard navigation code. Otherwise the down
+     * and up arrows won't work as expected.
+     */
+    .component-grid.repair {
+      grid-template-columns: auto auto;
+    }
+
+    .component-grid.calibration {
+      grid-template-columns: auto;
+    }
+
+    cr-button {
+      border-radius: 15px;
+    }
+
+    .gradient {
+      background-image: linear-gradient(to bottom,
+        rgba(255,255,255,0), rgba(255,255,255,1));
+      bottom: calc(var(--header-footer-height) + var(--container-vertical-padding));
+      height: 40px;
+      pointer-events: none;
+      position: fixed;
+    }
+
+    .gradient.equal-panes {
+      width: calc(.5 * (var(--content-container-width)
+        - var(--content-container-padding) * 2
+        - var(--margin-between-panes)));
+    }
+
+    .gradient.unequal-panes {
+      width: calc(.6 * (var(--content-container-width)
+        - var(--content-container-padding) * 2
+        - var(--margin-between-panes)));
+    }
+
+    .illustration-wrapper {
+      align-items: center;
+      display: flex;
+      height: 100%;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .illustration {
+      width: 320px;
+    }
+
+    .input-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: center;
+    }
+
+    .scroll-container {
+      height: var(--content-container-height);
+      overflow: auto;
+    }
+
+    [slot=right-pane] {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</template>

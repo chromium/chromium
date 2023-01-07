@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>activate.html</title>
+<body>
+  <portal src="./cart.html"></portal>
+  <script>
+    var loadPromise = new Promise(r => {
+      window.onload = () => r(true);
+    });
+
+    function activate() {
+      return document.querySelector("portal").activate().then(
+        () => true, () => false);
+    }
+  </script>
+</body>

@@ -1,0 +1,132 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+[Stable]
+struct SupportHostDetails {
+  // Version of the remote support host in major.minor.build.revision format.
+  // This is an opaque string which is parsed by the website client.
+  string host_version;
+
+  // The set of features supported by the remote support host.  This is
+  // an opaque set of strings which is parsed by the website client.
+  array<string> supported_features;
+};
+
+// Response to a StartSupportSession request. This union includes a support host
+// observer if the session was started successfully, otherwise it includes an
+// error reason to indicate why it failed.
+[Stable]
+union StartSupportSessionResponse {
+  // Used to observe connection state change events when a session was started
+  // successfully.
+  pending_receiver<remoting.mojom.SupportHostObserver> observer;
+
+  // Provides the reason the session was not started.
+  remoting.mojom.StartSupportSessionError support_session_error;
+};
+
+// Provides the reason a remote support session could not be started.
+[Stable, Extensible]
+enum StartSupportSessionError {
+  [Default] kUnknown = 0,
+
+  // The managed device admin has an existing connection which cannot be
+  // disconnected.
+  kExistingAdminSession = 1,
+};
+
+// The parameters required to start a remote support session.
+//
+// Next version: 2
+[Stable]
+struct SupportSessionParams {
+  // Gaia username of the user requesting the connection.
+  string user_name;
+
+  // The access token used for connecting to signaling and CRD backend services.
+  string oauth_access_token;
+
+  // Do not prompt local user for approval when connecting. Used for Admin
+  // initiated connections using the RemoteCommand infrastructure.
+  [EnableIf=is_chromeos]
+  bool suppress_user_dialogs = false;
+
+  // Do not show connection notifications in the system tray. Used for Admin
+  // initiated connections using the RemoteCommand infrastructure.
+  [EnableIf=is_chromeos]
+  bool suppress_notifications = false;
+
+  // Terminate the session if local user input is received. Used for Admin
+  // initiated connections using the RemoteCommand infrastructure.
+  [EnableIf=is_chromeos]
+  bool terminate_upon_input = false;
+
+  // Curtain off the local displays during the remoting session. Used for Admin
+  // initiated connections using the RemoteCommand infrastructure.
+  [EnableIf=is_chromeos, MinVersion=1]
+  bool curtain_local_user_session = false;
+};
+
+// Represents the state of the remote support host NAT device policies.
+[Stable]
+struct NatPolicyState {
+  // Indicates whether NAT traversal is enabled.
+  bool nat_enabled;
+
+  // Indicates whether TURN (relay) connections are allowed. Note that this
+  // value is only considered for P2P connection establishment when
+  // |nat_enabled| is true.
+  bool relay_enabled;
+};
+
+// Used by the remote support host to provides connection state change and error
+// events to the owner of the remote support session.  This is typically the
+// native message host which is owned by the CRD client website.
+// This is currently only implemented on CrOS, where the remote for this
+// interface is owned in ash-chrome and the receiver is bound in lacros-chrome.
+[Stable, Uuid="3961f91c-dd8f-4b9b-a6ae-6bf8371d5a91"]
+interface SupportHostObserver {
+  // Indicates the remote support host is starting.
+  OnHostStateStarting@0();
+
+  // Indicates the remote support host has requested an access code.
+  OnHostStateRequestedAccessCode@1();
+
+  // Indicates the remote support host has received an access code.
+  // |access_code| is an opaque string (12 digit code) which is provided to the
+  // remote user who uses it to connect to this session.
+  // |lifetime| is the amount of time |access_code| is valid.
+  OnHostStateReceivedAccessCode@2(string access_code,
+                                  mojo_base.mojom.TimeDelta lifetime);
+
+  // Indicates the remote support host is beginning the connection process.
+  OnHostStateConnecting@3();
+
+  // Indicates the remote support host has completed the connection process.
+  // |remote_user_address| is the Gaia address of the remote user.
+  OnHostStateConnected@4(string remote_username);
+
+  // Indicates the remote support host is now disconnected.
+  // |disconnect_reason| is a stringified protocol::ErrorCode which indicates
+  // the reason the session was disconnected. It is not meant to be displayed
+  // directly in the UI.
+  OnHostStateDisconnected@6([MinVersion=1] string? disconnect_reason);
+
+  // Indicates there was a change to the NAT device policy.
+  OnNatPolicyChanged@7(NatPolicyState nat_policy_state);
+
+  // Indicates the host experienced an unexpected error.
+  OnHostStateError@8(int64 error_code);
+
+  // Indicates the host experienced an error loading the device policy.
+  OnPolicyError@9();
+
+  // Indicates the remote support host could not start as the user's domain is
+  // not included in the device policy allowlist.
+  OnInvalidDomainError@10();
+};

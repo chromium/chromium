@@ -1,0 +1,195 @@
+<style include="common cros-button-style">
+  :host {
+    --color-container-size: 48px;
+  }
+
+  #container {
+    display: grid;
+    grid-template-areas:
+      '. label   .'
+      '. options .'
+      '. .       .';
+    grid-template-columns: 12px 1fr 20px;
+    grid-template-rows: auto 1fr 20px;
+  }
+
+  #keyboardBacklightLabel {
+    align-items: center;
+    background: none;
+    border: none;
+    display: flex;
+    flex-flow: row nowrap;
+    grid-area: label;
+    justify-content: space-between;
+    margin-block-start: 20px;
+    margin-inline-start: 8px;
+  }
+
+  #keyboardBacklightLabel > p {
+    color: var(--cros-text-color-primary);
+    font: var(--personalization-app-label-font);
+    margin: 0;
+  }
+
+  #selector {
+    display: flex;
+    flex-flow: row nowrap;
+    grid-area: options;
+    margin-top: 14px;
+    position: relative;
+  }
+
+  .divider {
+    align-self: center;
+    border-inline-start: 1px solid var(--cros-separator-color);
+    height: 20px;
+  }
+
+  .color-container {
+    -webkit-tap-highlight-color: transparent;
+    align-items: center;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    height: var(--color-container-size);
+    justify-content: center;
+    width: var(--color-container-size);
+  }
+
+  .color-inner-container {
+    align-items: center;
+    border-radius: 50%;
+    display: flex;
+    height: 24px;
+    justify-content: center;
+    position: relative;
+    width: 24px;
+  }
+
+  .dark-icon {
+    fill: var(--cros-icon-color-primary-dark);
+  }
+
+  .light-icon {
+    fill: var(--cros-icon-color-primary-light);
+  }
+
+  .color-container[aria-checked='true'] .color-inner-container {
+    height: 36px;
+    width: 36px;
+  }
+
+  .color-container:focus-visible {
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: -2px;
+  }
+
+  #toast {
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: var(--color-container-size);
+  }
+
+  #toastDot {
+    background-color: var(--cros-button-background-color-primary);
+    border-radius: 100%;
+    height: 8px;
+    margin-block-end: 5px;
+    margin-inline-start: 20px;
+    width: 8px;
+  }
+
+  #toastContent {
+    align-items: center;
+    background-color: var(--cros-button-background-color-primary);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: row;
+    padding: 8px 0;
+  }
+
+  #toastContent > svg {
+    fill: var(--cros-button-label-color-primary);
+    padding: 0 14px;
+  }
+
+  #toastContent span {
+    color: var(--cros-button-label-color-primary);
+    font: var(--cros-body-2-font);
+    margin-inline-end: 14px;
+  }
+</style>
+<div id="container" class="preview-container">
+  <div id="keyboardBacklightLabel">
+    <p class="title">$i18n{keyboardBacklightTitle}</p>
+  </div>
+  <iron-a11y-keys id="keys" keys="left right enter" on-keys-pressed="onKeysPress_">
+  </iron-a11y-keys>
+  <iron-selector id="selector" selected="0" selectable=".color-container"
+      selected-item="{{ironSelectedColor_}}"
+      role="radiogroup" aria-describedby="keyboardBacklightLabel">
+    <div id$="[[wallpaperColorId_]]"
+        class$="[[getWallpaperColorContainerClass_(backlightColor_)]]"
+        tabindex="0"
+        on-click="onWallpaperColorSelected_"
+        on-keypress="onWallpaperColorSelected_"
+        aria-label="$i18n{wallpaperColor}"
+        aria-checked$="[[getWallpaperColorAriaChecked_(backlightColor_)]]"
+        title$="[[getWallpaperColorTitle_()]]"
+        role="radio">
+      <div class="color-inner-container"
+          style$="[[getWallpaperColorInnerContainerStyle_(wallpaperColor_)]]">
+        <svg class$="[[getWallpaperIconColorClass_(wallpaperColor_)]]" viewBox="0 0 20 20" width="16" height="16">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0605 5.585L13.5805 6.935C14.3705 7.715 14.2005 8.985 13.4105 9.765L4.76469 18.4108C3.98364 19.1918 2.71731 19.1918 1.93626 18.4108L0.583834 17.0584C-0.196879 16.2776 -0.197265 15.012 0.582974 14.2308L7.40048 7.405L9.23048 5.585C10.0105 4.805 11.2805 4.805 12.0605 5.585ZM8.82101 8.81494L1.95101 15.6849L3.36101 17.1049L10.231 10.2249L8.82101 8.81494Z">
+          </path>
+          <path d="M16 6L15.06 3.94L13 3L15.06 2.06L16 0L16.94 2.06L19 3L16.94 3.94L16 6Z">
+          </path>
+          <path d="M17.001 17L16.061 14.94L14.001 14L16.061 13.06L17.001 11L17.941 13.06L20.001 14L17.941 14.94L17.001 17Z">
+          </path>
+          <path d="M17.001 17L16.061 14.94L14.001 14L16.061 13.06L17.001 11L17.941 13.06L20.001 14L17.941 14.94L17.001 17Z">
+          </path>
+          <path d="M3.06 4.94L4 7L4.94 4.94L7 4L4.94 3.06L4 1L3.06 3.06L1 4L3.06 4.94Z">
+          </path>
+        </svg>
+      </div>
+    </div>
+    <template is="dom-if" if="[[shouldShowNudge_]]">
+      <div id="toast">
+        <div id="toastDot"></div>
+        <div id="toastContent">
+          <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.375 4.375L6.5 0.25L4.625 4.375L0.5 6.25L4.625 8.125L6.5 12.25L8.375 8.125L12.5 6.25L8.375 4.375ZM12.5 7.75L11.5625 9.8125L9.5 10.75L11.5625 11.6875L12.5 13.75L13.4375 11.6875L15.5 10.75L13.4375 9.8125L12.5 7.75Z"/>
+          </svg>
+          <span>$i18n{wallpaperColorNudgeText}</span>
+        </div>
+      </div>
+    </template>
+    <div class="divider"></div>
+    <template is="dom-repeat" items="[[presetColorIds_]]" as="presetColorId">
+      <div id$="[[presetColorId]]"
+          class$="[[getPresetColorContainerClass_(presetColorId, presetColors_, backlightColor_)]]"
+          on-click="onPresetColorSelected_" on-keypress="onPresetColorSelected_"
+          aria-label$="[[getPresetColorAriaLabel_(presetColorId)]]"
+          role="radio"
+          aria-checked$="[[getPresetColorAriaChecked_(presetColorId, presetColors_, backlightColor_)]]"
+          title$="[[getPresetColorAriaLabel_(presetColorId)]]">
+        <div class="color-inner-container"
+            style$="[[getColorInnerContainerStyle_(presetColorId, presetColors_)]]">
+        </div>
+      </div>
+    </template>
+    <div id$="[[rainbowColorId_]]"
+        class$="[[getRainbowColorContainerClass_(backlightColor_)]]"
+        tabindex="0"
+        on-click="onRainbowColorSelected_" on-keypress="onRainbowColorSelected_"
+        aria-label="$i18n{rainbowColor}" role="radio"
+        aria-checked$="[[getRainbowColorAriaChecked_(backlightColor_)]]"
+        title="$i18n{rainbowColor}">
+      <div class="color-inner-container"
+          style$="[[getColorInnerContainerStyle_(rainbowColorId_, presetColors_)]]">
+      </div>
+    </div>
+  </iron-selector>
+</div>

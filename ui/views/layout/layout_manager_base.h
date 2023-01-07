@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -31,6 +31,9 @@ class View;
 // CalculateProposedLayout(). Used in interpolating and animating layouts.
 class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
  public:
+  LayoutManagerBase(const LayoutManagerBase&) = delete;
+  LayoutManagerBase& operator=(const LayoutManagerBase&) = delete;
+
   ~LayoutManagerBase() override;
 
   View* host_view() { return host_view_; }
@@ -63,32 +66,32 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
 
   // Direct cache control for subclasses that want to override default caching
   // behavior. Use at your own risk.
-  base::Optional<gfx::Size> cached_minimum_size() const {
+  absl::optional<gfx::Size> cached_minimum_size() const {
     return cached_minimum_size_;
   }
   void set_cached_minimum_size(
-      const base::Optional<gfx::Size>& minimum_size) const {
+      const absl::optional<gfx::Size>& minimum_size) const {
     cached_minimum_size_ = minimum_size;
   }
-  const base::Optional<gfx::Size>& cached_preferred_size() const {
+  const absl::optional<gfx::Size>& cached_preferred_size() const {
     return cached_preferred_size_;
   }
   void set_cached_preferred_size(
-      const base::Optional<gfx::Size>& preferred_size) const {
+      const absl::optional<gfx::Size>& preferred_size) const {
     cached_preferred_size_ = preferred_size;
   }
-  const base::Optional<gfx::Size>& cached_height_for_width() const {
+  const absl::optional<gfx::Size>& cached_height_for_width() const {
     return cached_height_for_width_;
   }
   void set_cached_height_for_width(
-      const base::Optional<gfx::Size>& height_for_width) const {
+      const absl::optional<gfx::Size>& height_for_width) const {
     cached_height_for_width_ = height_for_width;
   }
-  const base::Optional<gfx::Size>& cached_layout_size() const {
+  const absl::optional<gfx::Size>& cached_layout_size() const {
     return cached_layout_size_;
   }
   void set_cached_layout_size(
-      const base::Optional<gfx::Size>& layout_size) const {
+      const absl::optional<gfx::Size>& layout_size) const {
     cached_layout_size_ = layout_size;
   }
   const ProposedLayout& cached_layout() const { return cached_layout_; }
@@ -203,10 +206,10 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
   void PropagateInstalled(View* host);
   void PropagateInvalidateLayout();
 
-  View* host_view_ = nullptr;
+  raw_ptr<View> host_view_ = nullptr;
   std::map<const View*, ChildInfo> child_infos_;
   std::vector<std::unique_ptr<LayoutManagerBase>> owned_layouts_;
-  LayoutManagerBase* parent_layout_ = nullptr;
+  raw_ptr<LayoutManagerBase> parent_layout_ = nullptr;
 
   // Used to suspend invalidation while processing signals from the host view,
   // or while invalidating the host view without invalidating the layout.
@@ -224,13 +227,11 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
 
   // Do some really simple caching because layout generation can cost as much
   // as 1ms or more for complex views.
-  mutable base::Optional<gfx::Size> cached_minimum_size_;
-  mutable base::Optional<gfx::Size> cached_preferred_size_;
-  mutable base::Optional<gfx::Size> cached_height_for_width_;
-  mutable base::Optional<gfx::Size> cached_layout_size_;
+  mutable absl::optional<gfx::Size> cached_minimum_size_;
+  mutable absl::optional<gfx::Size> cached_preferred_size_;
+  mutable absl::optional<gfx::Size> cached_height_for_width_;
+  mutable absl::optional<gfx::Size> cached_layout_size_;
   mutable ProposedLayout cached_layout_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutManagerBase);
 };
 
 }  // namespace views

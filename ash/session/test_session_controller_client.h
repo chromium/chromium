@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,7 @@
 
 #include "ash/public/cpp/session/session_controller_client.h"
 #include "ash/public/cpp/session/session_types.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/token.h"
 #include "components/user_manager/user_type.h"
 
@@ -42,6 +40,11 @@ class TestSessionControllerClient : public SessionControllerClient {
  public:
   TestSessionControllerClient(SessionControllerImpl* controller,
                               TestPrefServiceProvider* prefs_provider);
+
+  TestSessionControllerClient(const TestSessionControllerClient&) = delete;
+  TestSessionControllerClient& operator=(const TestSessionControllerClient&) =
+      delete;
+
   ~TestSessionControllerClient() override;
 
   static void DisableAutomaticallyProvideSigninPref();
@@ -60,6 +63,9 @@ class TestSessionControllerClient : public SessionControllerClient {
     return attempt_restart_chrome_count_;
   }
   int request_sign_out_count() const { return request_sign_out_count_; }
+  int request_restart_for_update_count() const {
+    return request_restart_for_update_count_;
+  }
 
   // Helpers to set SessionController state.
   void SetCanLockScreen(bool can_lock);
@@ -75,12 +81,25 @@ class TestSessionControllerClient : public SessionControllerClient {
   // sessions prior this call will be removed without sending out notifications.
   void CreatePredefinedUserSessions(int count);
 
-  // Adds a user session from a given display email. The display email will be
-  // canonicalized and used to construct an AccountId. |enable_settings| sets
-  // whether web UI settings are allowed. If |provide_pref_service| is true,
-  // eagerly inject a PrefService for this user. |is_new_profile| indicates
-  // whether the user has a newly created profile on the device.
+  // Adds a user session from a given display email. If |provide_pref_service|
+  // is true, eagerly inject a PrefService for this user. |is_new_profile|
+  // indicates whether the user has a newly created profile on the device.
+  //
+  // For convenience |display_email| is used to create an |AccountId|. For
+  // testing behavior where |AccountId|s are compared, prefer the method of the
+  // same name that takes an |AccountId| created with a valid storage key
+  // instead. See the documentation for|AccountId::GetUserEmail| for
+  // discussion.
   void AddUserSession(
+      const std::string& display_email,
+      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
+      bool provide_pref_service = true,
+      bool is_new_profile = false,
+      const std::string& given_name = std::string());
+
+  // Adds a user session from a given AccountId.
+  void AddUserSession(
+      const AccountId& account_id,
       const std::string& display_email,
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
       bool provide_pref_service = true,
@@ -111,7 +130,9 @@ class TestSessionControllerClient : public SessionControllerClient {
 
   // ash::SessionControllerClient:
   void RequestLockScreen() override;
+  void RequestHideLockScreen() override;
   void RequestSignOut() override;
+  void RequestRestartForUpdate() override;
   void AttemptRestartChrome() override;
   void SwitchActiveUser(const AccountId& account_id) override;
   void CycleActiveUser(CycleUserDirection direction) override;
@@ -119,12 +140,17 @@ class TestSessionControllerClient : public SessionControllerClient {
   void EmitAshInitialized() override;
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
+  bool IsEnterpriseManaged() const override;
 
   // By default `LockScreen()` only changes the session state but no UI views
   // will be created.  If your tests requires the lock screen to be created,
   // please set this to true.
   void set_show_lock_screen_views(bool should_show) {
     should_show_lock_screen_ = should_show;
+  }
+
+  void set_is_enterprise_managed(bool is_enterprise_managed) {
+    is_enterprise_managed_ = is_enterprise_managed;
   }
 
  private:
@@ -138,15 +164,16 @@ class TestSessionControllerClient : public SessionControllerClient {
 
   bool use_lower_case_user_id_ = true;
   int request_sign_out_count_ = 0;
+  int request_restart_for_update_count_ = 0;
   int attempt_restart_chrome_count_ = 0;
 
   bool should_show_lock_screen_ = false;
 
+  bool is_enterprise_managed_ = false;
+
   std::unique_ptr<views::Widget> multi_profile_login_widget_;
 
   base::WeakPtrFactory<TestSessionControllerClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionControllerClient);
 };
 
 }  // namespace ash

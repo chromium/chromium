@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.uri.utilsTest');
 goog.setTestOnly();
@@ -32,6 +24,14 @@ class HasString {
     return this.value_;
   }
 }
+
+/**
+ * @param {string} stringValue The result of toString.
+ * @return {?}
+ */
+const createHasString = (stringValue) => {
+  return new HasString(stringValue);
+};
 
 testSuite({
   setUpPage() {
@@ -104,6 +104,32 @@ testSuite({
     assertEquals('q=query&hl=en', utils.getQueryData(uri));
     assertEquals('fragment', utils.getFragmentEncoded(uri));
     assertEquals('fragment', utils.getFragment(uri));
+  },
+
+  testSplitMaliciousUri() {
+    const uri = 'https://malicious.com\\test.google.com';
+    assertEquals('https', utils.getScheme(uri));
+    assertEquals('malicious.com', utils.getDomain(uri));
+    assertEquals('malicious.com', utils.getDomainEncoded(uri));
+    assertNull(utils.getPort(uri));
+    assertEquals('\\test.google.com', utils.getPathEncoded(uri));
+    assertEquals('\\test.google.com', utils.getPath(uri));
+    assertNull(utils.getQueryData(uri));
+    assertNull(utils.getFragmentEncoded(uri));
+    assertNull(utils.getFragment(uri));
+  },
+
+  testSplitMaliciousUriUsername() {
+    const uri = 'https://malicious.com\\@test.google.com';
+    assertEquals('https', utils.getScheme(uri));
+    assertEquals('malicious.com', utils.getDomain(uri));
+    assertEquals('malicious.com', utils.getDomainEncoded(uri));
+    assertNull(utils.getPort(uri));
+    assertEquals('\\@test.google.com', utils.getPathEncoded(uri));
+    assertEquals('\\@test.google.com', utils.getPath(uri));
+    assertNull(utils.getQueryData(uri));
+    assertNull(utils.getFragmentEncoded(uri));
+    assertNull(utils.getFragment(uri));
   },
 
   testSplitBadAuthority() {
@@ -333,10 +359,10 @@ testSuite({
         'should handle params of non-primitive types',
         'http://foo@www.google.com:80/path?q=query#fragment',
         utils.buildFromEncodedParts(
-            new HasString('http'), new HasString('foo'),
-            new HasString('www.google.com'), new HasString('80'),
-            new HasString('/path'), new HasString('q=query'),
-            new HasString('fragment')));
+            createHasString('http'), createHasString('foo'),
+            createHasString('www.google.com'), createHasString('80'),
+            createHasString('/path'), createHasString('q=query'),
+            createHasString('fragment')));
   },
 
   testAppendParam() {
@@ -391,8 +417,8 @@ testSuite({
     assertEquals(
         'should handle objects with to-string', 'http://foo.com?q=a&r=b',
         utils.appendParams(
-            'http://foo.com', 'q', new HasString('a'), 'r',
-            [new HasString('b')]));
+            'http://foo.com', 'q', createHasString('a'), 'r',
+            [createHasString('b')]));
 
     assertThrows(
         'appendParams should fail with an odd number of arguments.', () => {
@@ -436,7 +462,7 @@ testSuite({
         'http://foo.com?q=1&r=2&s=3&s=4&s=null&s=undefined#preserve',
         utils.appendParams(
             'http://foo.com#preserve',
-            ['q', 1, 'r', 2, 's', [3, new HasString('4'), null, undefined]]));
+            ['q', 1, 'r', 2, 's', [3, createHasString('4'), null, undefined]]));
   },
 
   testAppendParamEscapes() {
@@ -450,7 +476,7 @@ testSuite({
   testAppendParamsFromMap() {
     const uri = utils.appendParamsFromMap(
         'http://www.foo.com',
-        {'a': 1, 'b': 'bob', 'c': [1, 2, new HasString('3')]});
+        {'a': 1, 'b': 'bob', 'c': [1, 2, createHasString('3')]});
     assertArrayEquals(['1'], utils.getParamValues(uri, 'a'));
     assertArrayEquals(['bob'], utils.getParamValues(uri, 'b'));
     assertArrayEquals(['1', '2', '3'], utils.getParamValues(uri, 'c'));
@@ -460,7 +486,7 @@ testSuite({
     assertEquals('a=1', utils.buildQueryDataFromMap({'a': 1}));
     const uri = 'foo.com?' +
         utils.buildQueryDataFromMap(
-            {'a': 1, 'b': 'bob', 'c': [1, 2, new HasString('3')]});
+            {'a': 1, 'b': 'bob', 'c': [1, 2, createHasString('3')]});
     assertArrayEquals(['1'], utils.getParamValues(uri, 'a'));
     assertArrayEquals(['bob'], utils.getParamValues(uri, 'b'));
     assertArrayEquals(['1', '2', '3'], utils.getParamValues(uri, 'c'));
@@ -799,5 +825,18 @@ testSuite({
     assertEquals(
         'https://www.google.com:8113/?q=t&q1=y',
         utils.setPath('https://www.google.com:8113/foobar?q=t&q1=y', ''));
+  },
+
+  testSplitCallsLoggingFunction() {
+    const uri1 = 'http://www.google.com';
+    let logged = false;
+    utils.setUrlPackageSupportLoggingHandler((loggedUri) => {
+      logged = true;
+      assertEquals(uri1, loggedUri);
+    });
+    // Enabling this logging doesn't change any of the return values.
+    assertEquals('http', utils.getScheme(uri1));
+    assertTrue(logged);
+    utils.setUrlPackageSupportLoggingHandler(null);
   },
 });

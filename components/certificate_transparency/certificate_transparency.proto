@@ -1,0 +1,116 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chrome_browser_certificate_transparency;
+
+import "ct_timestamp.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Represents the final state of a log at the time it was made read-only.
+message FinalTreeHead {
+  // Size of the log at the time it was made read-only.
+  uint64 tree_size = 1;
+  // Root hash of the log (base64-encoded) at the time it was made read-only.
+  string sha256_root_hash = 2;
+}
+
+message CTLog {
+  // Human-readable description to identify log.
+  string description = 1;
+  // Public key of the log, as a DER-encoded ASN.1 SubjectPublicKeyInfo
+  // structure, then encoded as base64
+  // (https://tools.ietf.org/html/rfc5280#section-4.1.2.7).
+  string key = 2;
+  // The base64-encoded LogID found in SCTs issued by this log
+  // (https://tools.ietf.org/html/rfc6962#section-3.2).
+  string log_id = 3;
+  // Maximum merge delay, in seconds. The log should not take longer than this
+  // to incorporate a certificate.
+  uint64 mmd_secs = 4;
+  // URL of the log's HTTP API.
+  string url = 5;
+
+  message Interval {
+    CTTimestamp start = 1;
+    CTTimestamp end = 2;
+  }
+  // The log will only accept certificates that expire between those dates.
+  // Start time is inclusive, end time is not inclusive.
+  Interval temporal_interval = 6;
+
+  enum Purpose {
+    UNSET_PURPOSE = 0;
+    PROD = 1;
+    TEST = 2;
+  }
+  // Whether the log is for production purposes, or test only.
+  Purpose purpose = 7;
+
+  enum CurrentState {
+    UNSET_STATE = 0;
+    PENDING = 1;
+    QUALIFIED = 2;
+    USABLE = 3;
+    READ_ONLY = 4;
+    RETIRED = 5;
+    REJECTED = 6;
+  }
+  message State {
+    // Current state of the log.
+    CurrentState current_state = 1;
+    // Time at which the log entered this state.
+    CTTimestamp state_start = 2;
+  }
+  // State history of the log. Inverse chronological order, first element should
+  // be the current state.
+  repeated State state = 8;
+
+  message OperatorChange {
+    // Name of the log operator.
+    string name = 1;
+    // Timestamp at which this operator started operating this log.
+    CTTimestamp operator_start = 2;
+  }
+  // History of all log operators that have ever operated this log, including
+  // the timestamp at which each started operating it. Inverse chronological
+  // order, first element should be the current operator.
+  repeated OperatorChange operator_history = 9;
+
+  // State of the log at the time it was made read-only. Should only be set if
+  // state is READ_ONLY.
+  FinalTreeHead read_only_info = 16;
+}
+
+message LogOperator {
+  // Name of this log operator.
+  string name = 1;
+  // Email addresses at which the log operator can be reached.
+  repeated string email = 2;
+}
+
+message CTLogList {
+  // Major version of the list, incremented any time there are changes in the
+  // list, except for trivial (i.e. timestamp-only) changes.
+  uint64 list_version_major = 1;
+  // Minor version of the list, incremented any time the list is modified with
+  // only trivial (i.e. timestamp-only) changes. Allows consumers to determine
+  // the timestamp at which certain changes occur; for example, if a log is
+  // rejected, a consumer can look at the minor version 1 of that major version
+  // to determine at what timestamp that change was made.
+  uint64 list_version_minor = 2;
+  // Log list timestamp. This is meant to be used for freshness checks, and is
+  // updated periodically regardless of whether the list contents' have changed.
+  // Use list_version_major instead if monitoring for list contents' changes.
+  CTTimestamp timestamp = 3;
+  // Compatibility version, incremented if the list structure is changed in a
+  // non-backwards-compatible way.
+  uint64 compatibility_version = 4;
+  // Contains all known log operators.
+  repeated LogOperator operators = 5;
+  // Contains all known logs.
+  repeated CTLog logs = 6;
+}

@@ -1,23 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/main/browser_util.h"
 
-#include <memory>
-#include <ostream>
-#include <set>
+#import <memory>
+#import <ostream>
+#import <set>
 
-#include "base/check_op.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/check_op.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,8 +25,8 @@
 
 namespace {
 
-// Given a set of |browsers|, finds the one with |tab_id|. Returns the browser
-// and |tab_index| of the tab within the returned browser’s WebStateList.
+// Given a set of `browsers`, finds the one with `tab_id`. Returns the browser
+// and `tab_index` of the tab within the returned browser’s WebStateList.
 Browser* FindBrowser(NSString* tab_id,
                      const std::set<Browser*>& browsers,
                      int& tab_index) {
@@ -34,8 +34,7 @@ Browser* FindBrowser(NSString* tab_id,
     WebStateList* web_state_list = browser->GetWebStateList();
     for (int i = 0; i < web_state_list->count(); ++i) {
       web::WebState* web_state = web_state_list->GetWebStateAt(i);
-      NSString* current_tab_id =
-          TabIdTabHelper::FromWebState(web_state)->tab_id();
+      NSString* current_tab_id = web_state->GetStableIdentifier();
       if ([current_tab_id isEqualToString:tab_id]) {
         tab_index = i;
         return browser;
@@ -43,12 +42,12 @@ Browser* FindBrowser(NSString* tab_id,
     }
   }
   tab_index = WebStateList::kInvalidIndex;
-  return nil;
+  return nullptr;
 }
 
-// Finds the browser in |browser_list| containing a tab with |tab_id|. Searches
-// incognito browsers if |incognito| is true, otherwise searches regular
-// browsers. Returns the browser and |tab_index| of the tab within the returned
+// Finds the browser in `browser_list` containing a tab with `tab_id`. Searches
+// incognito browsers if `incognito` is true, otherwise searches regular
+// browsers. Returns the browser and `tab_index` of the tab within the returned
 // browser's WebStateList.
 Browser* FindBrowser(NSString* tab_id,
                      BrowserList* browser_list,
@@ -60,8 +59,8 @@ Browser* FindBrowser(NSString* tab_id,
                                  tab_index);
 }
 
-// Moves snapshot associated with |snapshot_id| from |source_browser| to
-// |destination_browser|'s snapshot cache.
+// Moves snapshot associated with `snapshot_id` from `source_browser` to
+// `destination_browser`'s snapshot cache.
 void MoveSnapshot(NSString* snapshot_id,
                   Browser* source_browser,
                   Browser* destination_browser) {

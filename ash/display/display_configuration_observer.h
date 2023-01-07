@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -21,9 +20,12 @@ class ASH_EXPORT DisplayConfigurationObserver
       public TabletModeObserver {
  public:
   DisplayConfigurationObserver();
-  ~DisplayConfigurationObserver() override;
 
-  bool save_preference() const { return save_preference_; }
+  DisplayConfigurationObserver(const DisplayConfigurationObserver&) = delete;
+  DisplayConfigurationObserver& operator=(const DisplayConfigurationObserver&) =
+      delete;
+
+  ~DisplayConfigurationObserver() override;
 
  protected:
   // WindowTreeHostManager::Observer:
@@ -38,14 +40,10 @@ class ASH_EXPORT DisplayConfigurationObserver
   void StartMirrorMode();
   void EndMirrorMode();
 
-  bool save_preference_ = true;
-
   // True if the device was in mirror mode before siwtching to tablet mode.
   bool was_in_mirror_mode_ = false;
 
   base::WeakPtrFactory<DisplayConfigurationObserver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayConfigurationObserver);
 };
 
 }  // namespace ash

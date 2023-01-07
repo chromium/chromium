@@ -1,12 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 
+#include "base/callback_helpers.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,15 +50,13 @@ gpu::SyncToken GenTestSyncToken(GLbyte id) {
 
 scoped_refptr<StaticBitmapImage> CreateBitmap() {
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
-  auto release_callback = viz::SingleReleaseCallback::Create(
-      base::BindOnce([](const gpu::SyncToken&, bool) {}));
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       mailbox, GenTestSyncToken(100), 0, SkImageInfo::MakeN32Premul(100, 100),
       GL_TEXTURE_2D, true, SharedGpuContext::ContextProviderWrapper(),
       base::PlatformThread::CurrentRef(),
-      base::MakeRefCounted<base::NullTaskRunner>(),
-      std::move(release_callback));
+      base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing(),
+      /*supports_display_compositing=*/true, /*is_overlay_candidate=*/true);
 }
 
 class AcceleratedStaticBitmapImageTest : public Test {
@@ -110,8 +109,8 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
           sync_token2.GetConstData(),
           sync_token2.GetConstData() + sizeof(gpu::SyncToken)));
 
-  IntPoint dest_point(0, 0);
-  IntRect source_sub_rectangle(0, 0, 10, 10);
+  gfx::Point dest_point(0, 0);
+  gfx::Rect source_sub_rectangle(0, 0, 10, 10);
   ASSERT_TRUE(bitmap->CopyToTexture(
       &destination_gl, GL_TEXTURE_2D, 1 /*dest_texture_id*/,
       0 /*dest_texture_level*/, false /*unpack_premultiply_alpha*/,

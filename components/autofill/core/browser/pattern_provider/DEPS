@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/grit/components_resources.h",
-  "+services/data_decoder/public/cpp:cpp",
-  "+services/data_decoder/public",
-]

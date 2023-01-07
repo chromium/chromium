@@ -1,11 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_BUBBLE_MODEL_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_BUBBLE_MODEL_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 
 class Profile;
@@ -22,6 +23,10 @@ class AccessibilityLabelsBubbleModel : public ConfirmBubbleModel {
                                  content::WebContents* web_contents,
                                  bool enable_always);
   ~AccessibilityLabelsBubbleModel() override;
+  AccessibilityLabelsBubbleModel(const AccessibilityLabelsBubbleModel&) =
+      delete;
+  AccessibilityLabelsBubbleModel& operator=(
+      const AccessibilityLabelsBubbleModel&) = delete;
 
   // ConfirmBubbleModel implementation.
   std::u16string GetTitle() const override;
@@ -37,11 +42,13 @@ class AccessibilityLabelsBubbleModel : public ConfirmBubbleModel {
   // Set the profile preferences to enable or disable the feature.
   void SetPref(bool enabled);
 
-  Profile* profile_;
-  content::WebContents* web_contents_;
-  bool enable_always_;
+  // Unowned.
+  raw_ptr<Profile> profile_;
 
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityLabelsBubbleModel);
+  base::WeakPtr<content::WebContents> web_contents_;
+
+  // Whether to always enable or just enable once.
+  bool enable_always_;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_BUBBLE_MODEL_H_

@@ -1,0 +1,48 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//chrome/android/features/android_library_factory_tmpl.gni")
+}
+
+source_set("public") {
+  sources = [
+    "config.cc",
+    "config.h",
+    "feature_notification_guide_service.cc",
+    "feature_notification_guide_service.h",
+    "feature_type.h",
+  ]
+
+  deps = [ "//skia" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/notifications/scheduler/public",
+    "//components/keyed_service/core",
+  ]
+}
+
+if (is_android) {
+  java_cpp_enum("jni_enums") {
+    visibility = [ "*" ]
+
+    sources = [ "feature_type.h" ]
+  }
+
+  android_library("java") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideService.java" ]
+
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    srcjar_deps = [ ":jni_enums" ]
+  }
+}
+
+group("unit_tests") {
+  testonly = true
+
+  deps = [ "internal:unit_tests" ]
+}

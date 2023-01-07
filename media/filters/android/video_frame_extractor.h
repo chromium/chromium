@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "media/base/media_export.h"
-#include "media/filters/ffmpeg_demuxer.h"
+#include "media/base/video_decoder_config.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 
 struct AVPacket;
 struct AVStream;
@@ -24,7 +24,6 @@ class BlockingUrlProtocol;
 class DataSource;
 class FFmpegBitstreamConverter;
 class FFmpegGlue;
-class VideoDecoderConfig;
 
 // This class synchronously extracts a video key frame. Should be used in
 // sandboxed process since the media data is user input.
@@ -42,6 +41,10 @@ class MEDIA_EXPORT VideoFrameExtractor {
                               const VideoDecoderConfig& decoder_config)>;
 
   explicit VideoFrameExtractor(DataSource* data_source);
+
+  VideoFrameExtractor(const VideoFrameExtractor&) = delete;
+  VideoFrameExtractor& operator=(const VideoFrameExtractor&) = delete;
+
   ~VideoFrameExtractor();
 
   // Starts to retrieve thumbnail from video frame.
@@ -62,22 +65,20 @@ class MEDIA_EXPORT VideoFrameExtractor {
   void OnError();
 
   // Objects to read video data.
-  DataSource* data_source_;
+  raw_ptr<DataSource> data_source_;
   std::unique_ptr<BlockingUrlProtocol> protocol_;
   std::unique_ptr<FFmpegGlue> glue_;
 
   // FFMPEG related objects to prepare video frame to decode.
   ScopedAVPacket packet_;
   int video_stream_index_;
-  AVStream* video_stream_ = nullptr;
+  raw_ptr<AVStream> video_stream_ = nullptr;
   VideoDecoderConfig video_config_;
   std::unique_ptr<FFmpegBitstreamConverter> bitstream_converter_;
 
   VideoFrameCallback video_frame_callback_;
 
   base::WeakPtrFactory<VideoFrameExtractor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameExtractor);
 };
 
 }  // namespace media

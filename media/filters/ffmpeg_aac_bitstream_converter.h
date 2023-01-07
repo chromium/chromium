@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/filters/ffmpeg_bitstream_converter.h"
 
@@ -29,6 +28,11 @@ class MEDIA_EXPORT FFmpegAACBitstreamConverter
   // |stream_codec_parameters| is retained, so it must outlive this class.
   explicit FFmpegAACBitstreamConverter(
       AVCodecParameters* stream_codec_parameters);
+
+  FFmpegAACBitstreamConverter(const FFmpegAACBitstreamConverter&) = delete;
+  FFmpegAACBitstreamConverter& operator=(const FFmpegAACBitstreamConverter&) =
+      delete;
+
   ~FFmpegAACBitstreamConverter() override;
 
   // FFmpegBitstreamConverter implementation.
@@ -39,7 +43,7 @@ class MEDIA_EXPORT FFmpegAACBitstreamConverter
  private:
   // Variable to hold a pointer to memory where we can access the global
   // data from the FFmpeg file format's global headers.
-  AVCodecParameters* stream_codec_parameters_;
+  raw_ptr<AVCodecParameters> stream_codec_parameters_;
 
   bool header_generated_;
   uint8_t hdr_[kAdtsHeaderSize];
@@ -48,8 +52,6 @@ class MEDIA_EXPORT FFmpegAACBitstreamConverter
   int sample_rate_index_;
   int channel_configuration_;
   int frame_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegAACBitstreamConverter);
 };
 
 }  // namespace media

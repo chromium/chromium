@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,18 +13,15 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
-#include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/timer/timer.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_com_initializer.h"
-#include "ipc/ipc_message_utils.h"
-#include "remoting/host/chromoting_param_traits.h"
-#include "remoting/host/chromoting_param_traits_impl.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "remoting/host/file_transfer/file_chooser.h"
 #include "remoting/host/file_transfer/file_chooser_common_win.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/win/core_resource.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 
@@ -139,16 +136,15 @@ int FileChooserMain() {
 
   FileChooser::Result result = ShowFileChooser();
 
-  base::Pickle pickle;
-  IPC::WriteParam(&pickle, result);
+  mojo::Message serialized_message =
+      mojom::FileChooserResult::SerializeAsMessage(&result);
 
   // Highly unlikely, but we want to know if it happens.
-  if (pickle.size() > kFileChooserPipeBufferSize) {
-    pickle = base::Pickle();
-    IPC::WriteParam(
-        &pickle,
-        protocol::MakeFileTransferError(
-            FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
+  if (serialized_message.data_num_bytes() > kFileChooserPipeBufferSize) {
+    FileChooser::Result error_result(protocol::MakeFileTransferError(
+        FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
+    serialized_message =
+        mojom::FileChooserResult::SerializeAsMessage(&error_result);
   }
 
   HANDLE stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -158,7 +154,8 @@ int FileChooserMain() {
   }
 
   DWORD bytes_written;
-  if (!WriteFile(stdout_handle, pickle.data(), pickle.size(), &bytes_written,
+  if (!WriteFile(stdout_handle, serialized_message.data(),
+                 serialized_message.data_num_bytes(), &bytes_written,
                  nullptr)) {
     PLOG(ERROR) << "Failed to write file chooser result";
   }
@@ -168,9 +165,10 @@ int FileChooserMain() {
   // in case. Check that all bytes were written successfully, and return an
   // error code if not to signal the parent that it shouldn't try to parse the
   // output.
-  if (bytes_written != pickle.size()) {
+  if (bytes_written != serialized_message.data_num_bytes()) {
     LOG(ERROR) << "Failed to write all bytes to pipe. (Buffer full?) Expected: "
-               << pickle.size() << " Actual: " << bytes_written;
+               << serialized_message.data_num_bytes()
+               << " Actual: " << bytes_written;
     return EXIT_FAILURE;
   }
 

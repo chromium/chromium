@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_COMMAND_BUFFER_CLIENT_MOCK_TRANSFER_BUFFER_H_
 #define GPU_COMMAND_BUFFER_CLIENT_MOCK_TRANSFER_BUFFER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/ring_buffer.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 
@@ -26,6 +26,9 @@ class MockTransferBuffer : public TransferBufferInterface {
                      unsigned int result_size,
                      unsigned int alignment,
                      bool initialize_fail);
+
+  MockTransferBuffer(const MockTransferBuffer&) = delete;
+  MockTransferBuffer& operator=(const MockTransferBuffer&) = delete;
 
   ~MockTransferBuffer() override;
 
@@ -75,7 +78,7 @@ class MockTransferBuffer : public TransferBufferInterface {
   uint32_t GetExpectedResultBufferOffset();
   int GetExpectedTransferBufferId();
 
-  CommandBuffer* command_buffer_;
+  raw_ptr<CommandBuffer> command_buffer_;
   uint32_t size_;
   uint32_t result_size_;
   uint32_t alignment_;
@@ -83,13 +86,11 @@ class MockTransferBuffer : public TransferBufferInterface {
   scoped_refptr<Buffer> buffers_[kNumBuffers];
   int actual_buffer_index_;
   int expected_buffer_index_;
-  void* last_alloc_;
+  raw_ptr<void> last_alloc_;
   uint32_t expected_offset_;
   uint32_t actual_offset_;
   bool initialize_fail_;
   bool outstanding_result_pointer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTransferBuffer);
 };
 
 }  // namespace gpu

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,18 +29,15 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/search_engines/template_url_service.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -72,8 +69,10 @@ class AutocompleteBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   AutocompleteController* GetAutocompleteController() const {
-    return GetLocationBar()->GetOmniboxView()->model()->popup_model()->
-        autocomplete_controller();
+    return GetLocationBar()
+        ->GetOmniboxView()
+        ->model()
+        ->autocomplete_controller();
   }
 
   void FocusSearchCheckPreconditions() const {
@@ -82,8 +81,7 @@ class AutocompleteBrowserTest : public extensions::ExtensionBrowserTest {
     OmniboxEditModel* omnibox_model = omnibox_view->model();
 
     EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
-    EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL),
-              omnibox_view->GetText());
+    EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
     EXPECT_EQ(std::u16string(), omnibox_model->keyword());
     EXPECT_FALSE(omnibox_model->is_keyword_hint());
     EXPECT_FALSE(omnibox_model->is_keyword_selected());
@@ -96,14 +94,14 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, Basic) {
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();
 
   EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
-  EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), omnibox_view->GetText());
+  EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
   // TODO(phajdan.jr): check state of IsSelectAll when it's consistent across
   // platforms.
 
   location_bar->FocusLocation(true);
 
   EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
-  EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), omnibox_view->GetText());
+  EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
   EXPECT_TRUE(omnibox_view->IsSelectAll());
 
   omnibox_view->SetUserText(u"chrome");
@@ -115,14 +113,14 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, Basic) {
   omnibox_view->RevertAll();
 
   EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
-  EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), omnibox_view->GetText());
+  EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
   EXPECT_FALSE(omnibox_view->IsSelectAll());
 
   omnibox_view->SetUserText(u"chrome");
   location_bar->Revert();
 
   EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
-  EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), omnibox_view->GetText());
+  EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
   EXPECT_FALSE(omnibox_view->IsSelectAll());
 }
 
@@ -151,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, MAYBE_Autocomplete) {
         u"chrome", metrics::OmniboxEventProto::NTP,
         ChromeAutocompleteSchemeClassifier(browser()->profile()));
     input.set_prevent_inline_autocomplete(true);
-    input.set_want_asynchronous_matches(false);
+    input.set_omit_asynchronous_matches(true);
     autocomplete_controller->Start(input);
 
     EXPECT_TRUE(autocomplete_controller->done());
@@ -168,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, MAYBE_Autocomplete) {
   {
     location_bar->Revert();
     EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
-    EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), omnibox_view->GetText());
+    EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
     EXPECT_FALSE(omnibox_view->IsSelectAll());
     const AutocompleteResult& result = autocomplete_controller->result();
     EXPECT_TRUE(result.empty()) << AutocompleteResultAsString(result);
@@ -182,18 +180,16 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, TabAwayRevertSelect) {
   // and select all.
   LocationBar* location_bar = GetLocationBar();
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();
-  EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), omnibox_view->GetText());
+  EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
   omnibox_view->SetUserText(std::u16string());
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  content::CreateAndLoadWebContentsObserver observer;
   chrome::AddSelectedTabWithURL(browser(),
                                 GURL(url::kAboutBlankURL),
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   observer.Wait();
-  EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), omnibox_view->GetText());
+  EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
   chrome::CloseTab(browser());
-  EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), omnibox_view->GetText());
+  EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
   EXPECT_TRUE(omnibox_view->IsSelectAll());
 }
 
@@ -343,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, FocusSearch) {
     FocusSearchCheckPreconditions();
 
     omnibox_model->ResetDisplayTexts();
-    EXPECT_EQ(base::ASCIIToUTF16(url::kAboutBlankURL), omnibox_view->GetText());
+    EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
 
     location_bar->FocusSearch();
     EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());

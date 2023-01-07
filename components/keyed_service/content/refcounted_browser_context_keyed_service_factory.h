@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 #include "components/keyed_service/core/refcounted_keyed_service_factory.h"
@@ -37,6 +36,11 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserContextKeyedServiceFactory
   using TestingFactory =
       base::RepeatingCallback<scoped_refptr<RefcountedKeyedService>(
           content::BrowserContext* context)>;
+
+  RefcountedBrowserContextKeyedServiceFactory(
+      const RefcountedBrowserContextKeyedServiceFactory&) = delete;
+  RefcountedBrowserContextKeyedServiceFactory& operator=(
+      const RefcountedBrowserContextKeyedServiceFactory&) = delete;
 
   // Associates |testing_factory| with |context| so that |testing_factory| is
   // used to create the KeyedService when requested.  |testing_factory| can be
@@ -81,6 +85,9 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserContextKeyedServiceFactory
   // Interface for people building a concrete FooServiceFactory: --------------
 
   // Finds which browser context (if any) to use.
+  //
+  // Should return nullptr when the service should not be created for the given
+  // |context|.
   virtual content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const;
 
@@ -100,6 +107,14 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserContextKeyedServiceFactory
 
   // All subclasses of BrowserContextKeyedServiceFactory must return a
   // KeyedService instead of just a BrowserContextKeyedBase.
+  //
+  // This should not return nullptr; instead, return nullptr from
+  // `GetBrowserContextToUse()`.
+  // NOTE: There is a //chrome-specific exception to this rule for a
+  // ChromeOS-specific case until crbug.com/1284664 is resolved. See
+  // documentation on //chrome's //
+  // `RefcountedProfileKeyedServiceFactory::BuildServiceInstanceFor()` for
+  // details.
   virtual scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       content::BrowserContext* context) const = 0;
 
@@ -137,8 +152,6 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserContextKeyedServiceFactory
   void ContextShutdown(void* context) final;
   void ContextDestroyed(void* context) final;
   void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry) final;
-
-  DISALLOW_COPY_AND_ASSIGN(RefcountedBrowserContextKeyedServiceFactory);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CONTENT_REFCOUNTED_BROWSER_CONTEXT_KEYED_SERVICE_FACTORY_H_

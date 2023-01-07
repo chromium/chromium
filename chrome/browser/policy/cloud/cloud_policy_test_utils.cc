@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,14 @@
 namespace policy {
 
 void GetExpectedDefaultPolicy(PolicyMap* policy_map) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   policy_map->Set(key::kNTPContentSuggestionsEnabled, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_USER, POLICY_SOURCE_ENTERPRISE_DEFAULT,
                   base::Value(false), nullptr);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   SetEnterpriseUsersDefaults(policy_map);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  SetEnterpriseUsersProfileDefaults(policy_map);
 #endif
 }
 

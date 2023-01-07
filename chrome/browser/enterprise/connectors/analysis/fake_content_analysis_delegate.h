@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 
@@ -33,14 +34,8 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
       base::RepeatingCallback<enterprise_connectors::ContentAnalysisResponse(
           const base::FilePath&)>;
 
-  // Callback that determines the encryption of the file specified.  Returns
-  // true if the file is considered encrypted for tests.
-  using EncryptionStatusCallback =
-      base::RepeatingCallback<bool(const base::FilePath&)>;
-
   FakeContentAnalysisDelegate(base::RepeatingClosure delete_closure,
                               StatusCallback status_callback,
-                              EncryptionStatusCallback encryption_callback,
                               std::string dm_token,
                               content::WebContents* web_contents,
                               Data data,
@@ -53,7 +48,6 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   static std::unique_ptr<ContentAnalysisDelegate> Create(
       base::RepeatingClosure delete_closure,
       StatusCallback status_callback,
-      EncryptionStatusCallback encryption_callback,
       std::string dm_token,
       content::WebContents* web_contents,
       Data data,
@@ -89,28 +83,44 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   static void SetResponseResult(
       safe_browsing::BinaryUploadService::Result result);
 
+  static void ResetDialogFlags();
+  static bool WasDialogShown();
+  static bool WasDialogCanceled();
+
  private:
   // Simulates a response from the binary upload service.  the |path| argument
   // is used to call |status_callback_| to determine if the path should succeed
   // or fail.
   void Response(
       base::FilePath path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      absl::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
+          file_request_callback);
 
   // ContentAnalysisDelegate overrides.
   void UploadTextForDeepScanning(
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
       override;
-  void UploadFileForDeepScanning(
-      safe_browsing::BinaryUploadService::Result result,
-      const base::FilePath& path,
+  void UploadPageForDeepScanning(
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
       override;
+  bool ShowFinalResultInDialog() override;
+  bool CancelDialog() override;
+
+  // Fake upload callback for deep scanning. Virtual to be overridden by other
+  // fakes.
+  virtual void FakeUploadFileForDeepScanning(
+      safe_browsing::BinaryUploadService::Result result,
+      const base::FilePath& path,
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      FakeFilesRequestHandler::FakeFileRequestCallback callback);
 
   static safe_browsing::BinaryUploadService::Result result_;
+  static bool dialog_shown_;
+  static bool dialog_canceled_;
+
   base::RepeatingClosure delete_closure_;
   StatusCallback status_callback_;
-  EncryptionStatusCallback encryption_callback_;
   std::string dm_token_;
 
   base::WeakPtrFactory<FakeContentAnalysisDelegate> weakptr_factory_{this};

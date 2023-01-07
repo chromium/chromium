@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,10 @@ class MojoBlobReaderDelegate : public storage::MojoBlobReader::Delegate {
   using CompletionCallback = base::OnceCallback<void(net::Error net_error)>;
   explicit MojoBlobReaderDelegate(CompletionCallback completion_callback)
       : completion_callback_(std::move(completion_callback)) {}
+
+  MojoBlobReaderDelegate(const MojoBlobReaderDelegate&) = delete;
+  MojoBlobReaderDelegate& operator=(const MojoBlobReaderDelegate&) = delete;
+
   ~MojoBlobReaderDelegate() override = default;
   RequestSideData DidCalculateSize(uint64_t total_size,
                                    uint64_t content_size) override {
@@ -40,7 +44,6 @@ class MojoBlobReaderDelegate : public storage::MojoBlobReader::Delegate {
 
  private:
   CompletionCallback completion_callback_;
-  DISALLOW_COPY_AND_ASSIGN(MojoBlobReaderDelegate);
 };
 
 void OnReadComplete(web_package::mojom::BundleDataSource::ReadCallback callback,
@@ -49,12 +52,12 @@ void OnReadComplete(web_package::mojom::BundleDataSource::ReadCallback callback,
                     int bytes_read) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (bytes_read != io_buf->size()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::vector<uint8_t> vec;
-  vec.assign(bit_cast<uint8_t*>(io_buf->data()),
-             bit_cast<uint8_t*>(io_buf->data()) + bytes_read);
+  vec.assign(base::bit_cast<uint8_t*>(io_buf->data()),
+             base::bit_cast<uint8_t*>(io_buf->data()) + bytes_read);
   std::move(callback).Run(std::move(vec));
 }
 
@@ -66,16 +69,16 @@ void OnCalculateSizeComplete(
     int net_error) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (net_error != net::OK) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   if (offset >= blob_reader->total_size()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   uint64_t offset_plus_length;
   if (!base::CheckAdd(offset, length).AssignIfValid(&offset_plus_length)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   if (offset_plus_length > blob_reader->total_size())
@@ -84,19 +87,20 @@ void OnCalculateSizeComplete(
   auto set_read_range_status = blob_reader->SetReadRange(offset, length);
   if (set_read_range_status != storage::BlobReader::Status::DONE) {
     DCHECK_EQ(set_read_range_status, storage::BlobReader::Status::NET_ERROR);
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   auto* raw_blob_reader = blob_reader.get();
   auto io_buf =
       base::MakeRefCounted<net::IOBufferWithSize>(static_cast<size_t>(length));
-  auto on_read_callback = base::AdaptCallbackForRepeating(base::BindOnce(
+  auto split_callback = base::SplitOnceCallback(base::BindOnce(
       &OnReadComplete, std::move(callback), std::move(blob_reader), io_buf));
   int bytes_read;
-  storage::BlobReader::Status read_status = raw_blob_reader->Read(
-      io_buf.get(), io_buf->size(), &bytes_read, on_read_callback);
+  storage::BlobReader::Status read_status =
+      raw_blob_reader->Read(io_buf.get(), io_buf->size(), &bytes_read,
+                            std::move(split_callback.first));
   if (read_status != storage::BlobReader::Status::IO_PENDING) {
-    on_read_callback.Run(bytes_read);
+    std::move(split_callback.second).Run(bytes_read);
   }
 }
 
@@ -304,6 +308,16 @@ void WebBundleBlobDataSource::BlobDataSourceCore::Read(uint64_t offset,
       base::Unretained(this), offset, length, std::move(callback)));
 }
 
+void WebBundleBlobDataSource::BlobDataSourceCore::Length(
+    LengthCallback callback) {
+  std::move(callback).Run(-1);
+}
+
+void WebBundleBlobDataSource::BlobDataSourceCore::IsRandomAccessContext(
+    IsRandomAccessContextCallback callback) {
+  std::move(callback).Run(false);
+}
+
 void WebBundleBlobDataSource::BlobDataSourceCore::StreamingBlobDone(
     storage::BlobBuilderFromStream* builder,
     std::unique_ptr<storage::BlobDataHandle> result) {
@@ -334,19 +348,20 @@ void WebBundleBlobDataSource::BlobDataSourceCore::OnBlobReadyForRead(
     ReadCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!blob_) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   auto blob_reader = blob_->CreateReader();
   auto* raw_blob_reader = blob_reader.get();
-  auto on_calculate_complete = base::AdaptCallbackForRepeating(
+  auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&OnCalculateSizeComplete, offset, length,
                      std::move(callback), std::move(blob_reader)));
-  auto status = raw_blob_reader->CalculateSize(on_calculate_complete);
+  auto status = raw_blob_reader->CalculateSize(std::move(split_callback.first));
   if (status != storage::BlobReader::Status::IO_PENDING) {
-    on_calculate_complete.Run(status == storage::BlobReader::Status::NET_ERROR
-                                  ? raw_blob_reader->net_error()
-                                  : net::OK);
+    std::move(split_callback.second)
+        .Run(status == storage::BlobReader::Status::NET_ERROR
+                 ? raw_blob_reader->net_error()
+                 : net::OK);
   }
 }
 

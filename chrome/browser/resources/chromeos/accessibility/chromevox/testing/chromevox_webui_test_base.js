@@ -1,19 +1,18 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 GEN_INCLUDE([
+  '../../common/testing/accessibility_test_base.js',
   '../../common/testing/assert_additions.js',
   '../../common/testing/common.js',
-  '../../common/testing/callback_helper.js'
+  '../../common/testing/callback_helper.js',
 ]);
-// clang-format on
 
 /**
  * Base test fixture for ChromeVox webui tests. Run in a Blink renderer.
  */
-ChromeVoxWebUITestBase = class extends testing.Test {
+ChromeVoxWebUITestBase = class extends AccessibilityTestBase {
   constructor() {
     super();
     if (this.isAsync) {
@@ -40,46 +39,6 @@ ChromeVoxWebUITestBase = class extends testing.Test {
     while (document.body.firstChild) {
       document.body.removeChild(document.body.firstChild);
     }
-    this.appendHtml(html);
-  }
-
-  /**
-   * Loads some inlined html into the current document, replacing
-   * whatever was there previously. This version takes the html
-   * encoded as a multiline string. `
-   * <button>
-   * `
-   * OBSOLETE: prior to multiline string support in js.
-   * Use a comment inside a function, so you can use it like this:
-   *
-   * this.loadDoc(function() {/*!
-   *     <p>Html goes here</p>
-   * * /});
-   *
-   * @param {Function} commentEncodedHtml The html to load, embedded as a
-   *     comment inside an anonymous function - see example, above.
-   */
-  loadDoc(commentEncodedHtml) {
-    const html =
-        TestUtils.extractHtmlFromCommentEncodedString(commentEncodedHtml);
-    this.loadHtml(html);
-  }
-
-  /**
-   * Appends some inlined html into the current document, at the end of
-   * the body element. Takes the html encoded as a comment inside a function,
-   * so you can use it like this:
-   *
-   * this.appendDoc(function() {/*!
-   *     <p>Html goes here</p>
-   * * /});
-   *
-   * @param {Function} commentEncodedHtml The html to load, embedded as a
-   *     comment inside an anonymous function - see example, above.
-   */
-  appendDoc(commentEncodedHtml) {
-    const html =
-        TestUtils.extractHtmlFromCommentEncodedString(commentEncodedHtml);
     this.appendHtml(html);
   }
 
@@ -118,13 +77,6 @@ ChromeVoxWebUITestBase = class extends testing.Test {
 
 /** @override */
 ChromeVoxWebUITestBase.prototype.isAsync = false;
-
-/**
- * @override
- * It doesn't make sense to run the accessibility audit on these tests,
- * since many of them are deliberately testing inaccessible html.
- */
-ChromeVoxWebUITestBase.prototype.runAccessibilityChecks = false;
 
 /** @override */
 ChromeVoxWebUITestBase.prototype.browsePreload = DUMMY_URL;

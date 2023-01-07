@@ -1,0 +1,20 @@
+digraph graphname {
+    accessibility_features [label="Accessibility Features"];
+    feature_chromevox [label="ChromeVox (Spoken feedback)"];
+    feature_select_to_speak [label="Select to Speak"];
+    frameworks [label="Frameworks"];
+    chrome_automation [label="chrome.automation api"];
+    chrome_text_to_speech [label="chrome.tts (text-to-speech) api"];
+    renderers [label="Renderers"];
+    renderer_arc [label="Android apps"];
+    renderer_blink [label="Web"];
+
+    accessibility_features -> frameworks;
+    accessibility_features -> feature_chromevox;
+    accessibility_features -> feature_select_to_speak;
+    frameworks -> chrome_automation;
+    frameworks -> chrome_text_to_speech;
+    chrome_automation -> renderers
+    renderers -> renderers_arc
+    renderers -> renderers_blink
+}

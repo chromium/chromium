@@ -41,7 +41,7 @@ testRegexpFile(const char *filename) {
     for (i = 0;i<1000;i++)
 	states[i] = NULL;
 
-    input = fopen(filename, "r");
+    input = fopen(filename, "rb");
     if (input == NULL) {
         xmlGenericError(xmlGenericErrorContext,
 		"Cannot open %s for reading\n", filename);
@@ -216,7 +216,7 @@ testRegexpFile(const char *filename) {
 
 int main(int argc, char **argv) {
 
-    xmlInitMemory();
+    xmlInitParser();
 
     if (argc == 1) {
 	int ret;

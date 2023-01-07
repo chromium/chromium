@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/fido/aoa/android_accessory_discovery.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -115,7 +116,7 @@ void AndroidAccessoryDiscovery::OnDeviceAdded(
                                   std::move(device)));
 }
 
-static base::Optional<AndroidAccessoryDiscovery::InterfaceInfo>
+static absl::optional<AndroidAccessoryDiscovery::InterfaceInfo>
 FindAccessoryInterface(const device::mojom::UsbDeviceInfoPtr& device_info) {
   for (const device::mojom::UsbConfigurationInfoPtr& config :
        device_info->configurations) {
@@ -131,8 +132,8 @@ FindAccessoryInterface(const device::mojom::UsbDeviceInfoPtr& device_info) {
       if (info->class_code == 0xff && info->subclass_code == 0xff &&
           info->endpoints.size() == 2) {
         // This is the AOA interface. (ADB, if enabled, has a subclass of 66.)
-        base::Optional<uint8_t> in_endpoint_num;
-        base::Optional<uint8_t> out_endpoint_num;
+        absl::optional<uint8_t> in_endpoint_num;
+        absl::optional<uint8_t> out_endpoint_num;
 
         for (const device::mojom::UsbEndpointInfoPtr& endpoint :
              info->endpoints) {
@@ -158,7 +159,7 @@ FindAccessoryInterface(const device::mojom::UsbDeviceInfoPtr& device_info) {
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AndroidAccessoryDiscovery::HandleAccessoryDevice(
@@ -303,7 +304,7 @@ void AndroidAccessoryDiscovery::OnReadComplete(
     InterfaceInfo interface_info,
     std::array<uint8_t, kSyncNonceLength> nonce,
     mojom::UsbTransferStatus result,
-    const std::vector<uint8_t>& payload) {
+    base::span<const uint8_t> payload) {
   // BABBLE results if the message from the USB peer was longer than expected.
   // That's fine because we're expecting potentially discard some messages in
   // order to find the sync message.
@@ -361,7 +362,7 @@ void AndroidAccessoryDiscovery::OnOpen(
 void AndroidAccessoryDiscovery::OnVersionReply(
     mojo::Remote<device::mojom::UsbDevice> device,
     device::mojom::UsbTransferStatus status,
-    const std::vector<uint8_t>& payload) {
+    base::span<const uint8_t> payload) {
   if (status != mojom::UsbTransferStatus::COMPLETED || payload.size() != 2) {
     RecordEvent(AOADiscoveryEvent::kVersionFailed);
     FIDO_LOG(DEBUG) << "Android AOA version request failed with status: "

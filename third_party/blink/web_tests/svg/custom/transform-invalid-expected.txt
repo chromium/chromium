@@ -1,30 +1,30 @@
-CONSOLE ERROR: line 5: Error: <rect> attribute transform: Expected transform function, "foo(20,20)".
-CONSOLE ERROR: line 6: Error: <rect> attribute transform: Expected number, "scale()".
-CONSOLE ERROR: line 7: Error: <rect> attribute transform: Expected ')', "scale(20,20,20)".
-CONSOLE ERROR: line 8: Error: <rect> attribute transform: Trailing garbage, "scale(20,)".
-CONSOLE ERROR: line 9: Error: <rect> attribute transform: Trailing garbage, "scale(20,,)".
-CONSOLE ERROR: line 10: Error: <rect> attribute transform: Unexpected end of attribute. Expected ')', "scale(20".
-CONSOLE ERROR: line 11: Error: <rect> attribute transform: Expected '(', "scale 20)".
-CONSOLE ERROR: line 12: Error: <rect> attribute transform: Expected number, "scale(r)".
-CONSOLE ERROR: line 13: Error: <rect> attribute transform: Expected number, "translate()".
-CONSOLE ERROR: line 14: Error: <rect> attribute transform: Expected ')', "translate(20,20,20)".
-CONSOLE ERROR: line 15: Error: <rect> attribute transform: Trailing garbage, "translate(20,)".
-CONSOLE ERROR: line 16: Error: <rect> attribute transform: Trailing garbage, "translate(20,,)".
-CONSOLE ERROR: line 17: Error: <rect> attribute transform: Unexpected end of attribute. Expected ')', "translate(20".
-CONSOLE ERROR: line 18: Error: <rect> attribute transform: Expected '(', "translate 20)".
-CONSOLE ERROR: line 19: Error: <rect> attribute transform: Expected number, "translate(r)".
-CONSOLE ERROR: line 20: Error: <rect> attribute transform: Expected number, "skewX()".
-CONSOLE ERROR: line 21: Error: <rect> attribute transform: Expected ')', "skewX(20,20,20)".
-CONSOLE ERROR: line 22: Error: <rect> attribute transform: Expected ')', "skewX(20,)".
-CONSOLE ERROR: line 23: Error: <rect> attribute transform: Expected ')', "skewX(20,,)".
-CONSOLE ERROR: line 24: Error: <rect> attribute transform: Unexpected end of attribute. Expected ')', "skewX(20".
-CONSOLE ERROR: line 25: Error: <rect> attribute transform: Expected '(', "skewX 20)".
-CONSOLE ERROR: line 26: Error: <rect> attribute transform: Expected number, "skewX(r)".
-CONSOLE ERROR: line 27: Error: <rect> attribute transform: Expected number, "skewY()".
-CONSOLE ERROR: line 28: Error: <rect> attribute transform: Expected ')', "skewY(20,20,20)".
-CONSOLE ERROR: line 29: Error: <rect> attribute transform: Expected ')', "skewY(20,)".
-CONSOLE ERROR: line 30: Error: <rect> attribute transform: Expected ')', "skewY(20,,)".
-CONSOLE ERROR: line 31: Error: <rect> attribute transform: Unexpected end of attribute. Expected ')', "skewY(20".
-CONSOLE ERROR: line 32: Error: <rect> attribute transform: Expected '(', "skewY 20)".
-CONSOLE ERROR: line 33: Error: <rect> attribute transform: Expected number, "skewY(r)".
-CONSOLE ERROR: line 34: Error: <rect> attribute transform: Unexpected end of attribute. Trailing garbage, "…20), scale(1)  ,".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected transform function, "foo(20,20)".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected number, "scale()".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected ')', "scale(20,20,20)".
+CONSOLE ERROR: Error: <rect> attribute transform: Trailing garbage, "scale(20,)".
+CONSOLE ERROR: Error: <rect> attribute transform: Trailing garbage, "scale(20,,)".
+CONSOLE ERROR: Error: <rect> attribute transform: Unexpected end of attribute. Expected ')', "scale(20".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected '(', "scale 20)".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected number, "scale(r)".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected number, "translate()".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected ')', "translate(20,20,20)".
+CONSOLE ERROR: Error: <rect> attribute transform: Trailing garbage, "translate(20,)".
+CONSOLE ERROR: Error: <rect> attribute transform: Trailing garbage, "translate(20,,)".
+CONSOLE ERROR: Error: <rect> attribute transform: Unexpected end of attribute. Expected ')', "translate(20".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected '(', "translate 20)".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected number, "translate(r)".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected number, "skewX()".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected ')', "skewX(20,20,20)".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected ')', "skewX(20,)".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected ')', "skewX(20,,)".
+CONSOLE ERROR: Error: <rect> attribute transform: Unexpected end of attribute. Expected ')', "skewX(20".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected '(', "skewX 20)".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected number, "skewX(r)".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected number, "skewY()".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected ')', "skewY(20,20,20)".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected ')', "skewY(20,)".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected ')', "skewY(20,,)".
+CONSOLE ERROR: Error: <rect> attribute transform: Unexpected end of attribute. Expected ')', "skewY(20".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected '(', "skewY 20)".
+CONSOLE ERROR: Error: <rect> attribute transform: Expected number, "skewY(r)".
+CONSOLE ERROR: Error: <rect> attribute transform: Unexpected end of attribute. Trailing garbage, "…20), scale(1)  ,".

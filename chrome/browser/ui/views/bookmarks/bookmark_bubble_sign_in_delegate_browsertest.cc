@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -40,14 +39,16 @@ class BookmarkBubbleSignInDelegateTest : public InProcessBrowserTest {
  public:
   BookmarkBubbleSignInDelegateTest() {}
 
+  BookmarkBubbleSignInDelegateTest(const BookmarkBubbleSignInDelegateTest&) =
+      delete;
+  BookmarkBubbleSignInDelegateTest& operator=(
+      const BookmarkBubbleSignInDelegateTest&) = delete;
+
   Profile* profile() { return browser()->profile(); }
 
   void ReplaceBlank(Browser* browser);
 
   void SignInBrowser(Browser* browser);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBubbleSignInDelegateTest);
 };
 
 // The default browser created for tests start with one tab open on
@@ -62,8 +63,8 @@ void BookmarkBubbleSignInDelegateTest::ReplaceBlank(Browser* browser) {
 }
 
 void BookmarkBubbleSignInDelegateTest::SignInBrowser(Browser* browser) {
-  std::unique_ptr<BubbleSyncPromoDelegate> delegate;
-  delegate.reset(new BookmarkBubbleSignInDelegate(browser));
+  auto delegate =
+      std::make_unique<BookmarkBubbleSignInDelegate>(browser->profile());
   delegate->OnEnableSync(AccountInfo());
 }
 
@@ -133,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest, BrowserRemoved) {
   int starting_tab_count = extra_browser->tab_strip_model()->count();
 
   std::unique_ptr<BubbleSyncPromoDelegate> delegate =
-      std::make_unique<BookmarkBubbleSignInDelegate>(browser());
+      std::make_unique<BookmarkBubbleSignInDelegate>(profile());
 
   BrowserList::SetLastActive(extra_browser);
 

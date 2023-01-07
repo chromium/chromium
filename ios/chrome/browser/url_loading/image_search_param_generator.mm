@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
 
-#include "base/strings/utf_string_conversions.h"
-#include "components/search_engines/template_url_service.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/search_engines/template_url_service.h"
 #import "ui/gfx/image/image.h"
 #import "ui/gfx/image/image_util.h"
 
@@ -75,7 +75,7 @@ ImageSearchParamGenerator::LoadParamsForResizedImageData(
   }
   search_args.image_thumbnail_content = byte_string;
 
-  // Generate the URL and populate |post_content| with the content type and
+  // Generate the URL and populate `post_content` with the content type and
   // HTTP body for the request.
   TemplateURLRef::PostContent post_content;
   GURL result(default_url->image_url_ref().ReplaceSearchTerms(

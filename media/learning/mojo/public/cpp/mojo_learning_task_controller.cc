@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,8 @@ MojoLearningTaskController::~MojoLearningTaskController() = default;
 void MojoLearningTaskController::BeginObservation(
     base::UnguessableToken id,
     const FeatureVector& features,
-    const base::Optional<TargetValue>& default_target,
-    const base::Optional<ukm::SourceId>& source_id) {
+    const absl::optional<TargetValue>& default_target,
+    const absl::optional<ukm::SourceId>& source_id) {
   // We don't need to keep track of in-flight observations, since the service
   // side handles it for us.  Also note that |source_id| is ignored; the service
   // has no reason to trust it.  It will fill it in for us.  DCHECK in case
@@ -41,7 +41,7 @@ void MojoLearningTaskController::CancelObservation(base::UnguessableToken id) {
 
 void MojoLearningTaskController::UpdateDefaultTarget(
     base::UnguessableToken id,
-    const base::Optional<TargetValue>& default_target) {
+    const absl::optional<TargetValue>& default_target) {
   controller_->UpdateDefaultTarget(id, default_target);
 }
 

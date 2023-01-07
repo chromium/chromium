@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/partition_impl.h"
@@ -19,6 +18,10 @@ namespace storage {
 class StorageServiceImplTest : public testing::Test {
  public:
   StorageServiceImplTest() = default;
+
+  StorageServiceImplTest(const StorageServiceImplTest&) = delete;
+  StorageServiceImplTest& operator=(const StorageServiceImplTest&) = delete;
+
   ~StorageServiceImplTest() override = default;
 
  protected:
@@ -30,8 +33,6 @@ class StorageServiceImplTest : public testing::Test {
   mojo::Remote<mojom::StorageService> remote_service_;
   StorageServiceImpl service_{remote_service_.BindNewPipeAndPassReceiver(),
                               /*io_task_runner=*/nullptr};
-
-  DISALLOW_COPY_AND_ASSIGN(StorageServiceImplTest);
 };
 
 TEST_F(StorageServiceImplTest, UniqueInMemoryPartitions) {
@@ -40,7 +41,7 @@ TEST_F(StorageServiceImplTest, UniqueInMemoryPartitions) {
 
   mojo::Remote<mojom::Partition> in_memory_partition1;
   remote_service()->BindPartition(
-      /*path=*/base::nullopt,
+      /*path=*/absl::nullopt,
       in_memory_partition1.BindNewPipeAndPassReceiver());
   in_memory_partition1.FlushForTesting();
 
@@ -48,7 +49,7 @@ TEST_F(StorageServiceImplTest, UniqueInMemoryPartitions) {
 
   mojo::Remote<mojom::Partition> in_memory_partition2;
   remote_service()->BindPartition(
-      base::nullopt /* path */,
+      absl::nullopt /* path */,
       in_memory_partition2.BindNewPipeAndPassReceiver());
   in_memory_partition2.FlushForTesting();
 

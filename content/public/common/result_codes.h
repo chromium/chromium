@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,9 @@ enum ResultCode {
   // Last return code (keep this last).
   RESULT_CODE_LAST_CODE
 };
+
+static_assert(RESULT_CODE_KILLED_BAD_MESSAGE == 3,
+              "This enum is frozen - process_posix.cc may spy on this value.");
 
 static_assert(RESULT_CODE_LAST_CODE == 5,
               "This enum is frozen - see the IMPORTANT note above.");

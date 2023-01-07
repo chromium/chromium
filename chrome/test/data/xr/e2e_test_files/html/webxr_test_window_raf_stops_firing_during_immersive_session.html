@@ -13,10 +13,9 @@ on Android.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       function stepVerifyBeforePresent() {
         window.requestAnimationFrame( () => {
+          console.log('Got window frame before presentation');
           finishJavaScriptStep();
         });
       }
@@ -24,6 +23,9 @@ on Android.
       function stepVerifyDuringPresent() {
         let handle = window.requestAnimationFrame( () => {
           numWindowRafs++;
+          console.log(
+              'Got window frame during immersive session, frame number: ' +
+              numWindowRafs);
           // Even though we wait for setVSyncPaused to be called Java-side,
           // 1-2 frames might still get window rAFs due to the call to the
           // renderer being asynchronous.
@@ -37,6 +39,7 @@ on Android.
 
       function stepVerifyAfterPresent() {
         window.requestAnimationFrame( () => {
+          console.log('Got window frame after presentation');
           done();
         });
       }

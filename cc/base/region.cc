@@ -1,11 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/base/region.h"
 
 #include <stddef.h>
+#include <utility>
 
+#include "base/no_destructor.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/simple_enclosed_region.h"
@@ -38,6 +40,12 @@ const Region& Region::operator=(const Region& region) {
 const Region& Region::operator+=(const gfx::Vector2d& offset) {
   skregion_.translate(offset.x(), offset.y());
   return *this;
+}
+
+// static
+const Region& Region::Empty() {
+  static base::NoDestructor<Region> kEmpty;
+  return *kEmpty;
 }
 
 void Region::Swap(Region* region) {
@@ -131,10 +139,10 @@ std::string Region::ToString() const {
 std::unique_ptr<base::Value> Region::AsValue() const {
   std::unique_ptr<base::ListValue> result(new base::ListValue());
   for (gfx::Rect rect : *this) {
-    result->AppendInteger(rect.x());
-    result->AppendInteger(rect.y());
-    result->AppendInteger(rect.width());
-    result->AppendInteger(rect.height());
+    result->Append(rect.x());
+    result->Append(rect.y());
+    result->Append(rect.width());
+    result->Append(rect.height());
   }
   return std::move(result);
 }

@@ -2,18 +2,19 @@
 
 set noparent
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
-ajwong@chromium.org
+# by emailing lsc-policy@chromium.org when this list changes.
+altimin@chromium.org
 danakj@chromium.org
 dcheng@chromium.org
 fdoray@chromium.org
 gab@chromium.org
-jdoerrie@chromium.org
 kylechar@chromium.org
 mark@chromium.org
 thakis@chromium.org
 thestig@chromium.org
 wez@chromium.org
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# by emailing lsc-policy@chromium.org when this list changes.
 
 # per-file rules:
 # These are for the common case of adding or renaming files. If you're doing
@@ -21,24 +22,28 @@ wez@chromium.org
 per-file BUILD.gn=*
 
 # For Android-specific changes:
-per-file *android*=file://base/android/OWNERS
-per-file BUILD.gn=file://base/android/OWNERS
+per-file ..._android*=file://base/android/OWNERS
 
 # For Fuchsia-specific changes:
-per-file *_fuchsia*=file://build/fuchsia/OWNERS
+per-file ..._fuchsia*=file://build/fuchsia/OWNERS
 
 # For Windows-specific changes:
-per-file *_win*=file://base/win/OWNERS
+per-file ..._win*=file://base/win/OWNERS
 
 per-file callback_list*=pkasting@chromium.org
 per-file feature_list*=asvitkine@chromium.org
 per-file feature_list*=isherman@chromium.org
+
+# Logging-related changes:
+per-file check*=olivierli@chromium.org
+per-file check*=pbos@chromium.org
+per-file dcheck*=olivierli@chromium.org
+per-file dcheck*=pbos@chromium.org
+per-file logging*=olivierli@chromium.org
+per-file logging*=pbos@chromium.org
 
 # Restricted since rand_util.h also backs the cryptographically secure RNG.
 per-file rand_util*=set noparent
 per-file rand_util*=file://ipc/SECURITY_OWNERS
 
 per-file safe_numerics_unittest.cc=file://base/numerics/OWNERS
-
-# For TCMalloc tests:
-per-file security_unittest.cc=jln@chromium.org

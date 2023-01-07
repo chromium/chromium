@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 
 HoverTabSelector::HoverTabSelector(TabStripModel* tab_strip_model)
     : tab_strip_model_(tab_strip_model), tab_transition_tab_index_(-1) {
@@ -31,8 +32,7 @@ void HoverTabSelector::StartTabTransition(int index) {
   if (index != tab_strip_model_->active_index()) {
     // The delay between beginning to hover over a tab and the transition
     // to that tab taking place.
-    const base::TimeDelta kHoverTransitionDelay =
-        base::TimeDelta::FromMilliseconds(500);
+    const base::TimeDelta kHoverTransitionDelay = base::Milliseconds(500);
     tab_transition_tab_index_ = index;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
@@ -49,7 +49,9 @@ void HoverTabSelector::CancelTabTransition() {
 void HoverTabSelector::PerformTabTransition() {
   DCHECK(tab_transition_tab_index_ >= 0 &&
          tab_transition_tab_index_ < tab_strip_model_->count());
-  tab_strip_model_->ActivateTabAt(tab_transition_tab_index_,
-                                  {TabStripModel::GestureType::kOther});
+  tab_strip_model_->ActivateTabAt(
+      tab_transition_tab_index_,
+      TabStripUserGestureDetails(
+          TabStripUserGestureDetails::GestureType::kOther));
 }
 

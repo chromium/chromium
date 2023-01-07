@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,15 +11,17 @@ import collections
 import logging
 import os
 import posixpath
+import re
 import subprocess
 import zipfile
 
 import models
 import path_util
+import parallel
 
 
 _TOTAL_NODE_NAME = '<TOTAL>'
-_DEX_PATH_COMPONENT = 'prebuilt'
+_OUTLINED_PREFIX = '$$Outlined$'
 
 
 def _ParseJarInfoFile(file_name):
@@ -31,15 +33,38 @@ def _ParseJarInfoFile(file_name):
   return source_map
 
 
-def _RunApkAnalyzer(apk_path, mapping_path):
+def RunApkAnalyzerAsync(apk_path, mapping_path):
+  """Starts an apkanalyzer job for the given apk.
+
+  Args:
+    apk_path: Path to the apk to run on.
+    mapping_path: Path to the proguard mapping file.
+
+  Returns:
+    An object to pass to CreateDexSymbols().
+  """
   args = [path_util.GetApkAnalyzerPath(), 'dex', 'packages', apk_path]
   if mapping_path and os.path.exists(mapping_path):
     args.extend(['--proguard-mappings', mapping_path])
   env = os.environ.copy()
   env['JAVA_HOME'] = path_util.GetJavaHome()
-  output = subprocess.check_output(args, env=env).decode('ascii')
+
+  # Use a thread rather than directly using a Popen instance so that stdout is
+  # being read from.
+  return parallel.CallOnThread(subprocess.run,
+                               args,
+                               env=env,
+                               encoding='utf8',
+                               capture_output=True,
+                               check=True)
+
+
+def _ParseApkAnalyzerOutput(stdout, stderr):
+  stderr = re.sub(r'Successfully loaded.*?\n', '', stderr)
+  if stderr.strip():
+    raise Exception('Unexpected stderr:\n' + stderr)
   data = []
-  for line in output.splitlines():
+  for line in stdout.splitlines():
     try:
       vals = line.split()
       # We want to name these columns so we know exactly which is which.
@@ -51,16 +76,6 @@ def _RunApkAnalyzer(apk_path, mapping_path):
       logging.error('Problem line was: %s', line)
       raise
   return data
-
-
-def _ExpectedDexTotalSize(apk_path):
-  dex_total = 0
-  with zipfile.ZipFile(apk_path) as z:
-    for zip_info in z.infolist():
-      if not zip_info.filename.endswith('.dex'):
-        continue
-      dex_total += zip_info.file_size
-  return dex_total
 
 
 # VisibleForTesting
@@ -150,40 +165,82 @@ class LambdaNormalizer:
     self._lambda_by_class_counter = collections.defaultdict(int)
     self._lambda_name_to_nested_number = {}
 
-  def Normalize(self, package, name):
+  def _GetLambdaName(self, class_path, base_name, prefix=''):
+    lambda_number = self._lambda_name_to_nested_number.get(class_path)
+    if lambda_number is None:
+      # First time we've seen this lambda, increment nested class count.
+      lambda_number = self._lambda_by_class_counter[base_name]
+      self._lambda_name_to_nested_number[class_path] = lambda_number
+      self._lambda_by_class_counter[base_name] = lambda_number + 1
+    return prefix + base_name + '$$Lambda$' + str(lambda_number)
+
+  def Normalize(self, class_path, full_name):
     # Make d8 desugared lambdas look the same as Desugar ones.
-    # D8 lambda: org.-$$Lambda$Promise$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex
-    #     D8 lambdas may also have no .dex suffix.
     # Desugar lambda: org.Promise$Nested1$$Lambda$0
     # 1) Need to prefix with proper class name so that they will show as nested.
     # 2) Need to suffix with number so that they diff better.
     # Original name will be kept as "object_path".
-    lambda_start_idx = package.find('-$$Lambda$')
-    class_path = package
-    if lambda_start_idx != -1:
-      dex_suffix_idx = package.find('.dex')
-      if dex_suffix_idx == -1:
-        lambda_end_idx = len(package)
-      else:
-        lambda_end_idx = dex_suffix_idx + len('.dex')
-      old_lambda_name = package[lambda_start_idx:lambda_end_idx]
-      class_path = package.replace('-$$Lambda$', '')
-      base_name = _TruncateFrom(class_path, '$', rfind=True)
-      # Map all methods of the lambda class to the same nested number.
-      lambda_number = self._lambda_name_to_nested_number.get(class_path)
-      if lambda_number is None:
-        # First time we've seen this lambda, increment nested class count.
-        lambda_number = self._lambda_by_class_counter[base_name]
-        self._lambda_name_to_nested_number[class_path] = lambda_number
-        self._lambda_by_class_counter[base_name] = lambda_number + 1
-
-      new_lambda_name = '{}$$Lambda${}'.format(base_name[lambda_start_idx:],
-                                               lambda_number)
-      name = name.replace(old_lambda_name, new_lambda_name)
+    # See tests for a more comprehensive list of what d8 currently generates.
 
     # Map nested classes to outer class.
     outer_class = _TruncateFrom(class_path, '$')
-    return outer_class, name
+
+    # $$ is the convention for a synthetic class and all known desugared lambda
+    # classes have 'Lambda' in the synthetic part of its name. If it doesn't
+    # then it's almost certainly not a desugared lambda class.
+    if 'Lambda' not in class_path[class_path.find('$$'):]:
+      return outer_class, full_name
+
+    # Example: package.AnimatedProgressBar$$InternalSyntheticLambda$3$81073ff6$0
+    # Example: package.Class$$Lambda$2$$InternalSyntheticOutline$8$cbe941dd782$0
+    match = re.fullmatch(
+        # The base_name group needs to be non-greedy/minimal (using +?) since we
+        # want it to not include $$Lambda$28 when present.
+        r'(?P<base_name>.+?)(\$\$Lambda\$\d+)?'
+        r'\$\$InternalSynthetic[a-zA-Z0-9_]+'
+        r'\$\d+\$[0-9a-f]+\$\d+',
+        class_path)
+    if match:
+      new_name = self._GetLambdaName(class_path=class_path,
+                                     base_name=match.group('base_name'))
+      return outer_class, full_name.replace(class_path, new_name)
+    # Example: AnimatedProgressBar$$ExternalSyntheticLambda0
+    # Example: AutofillAssistant$$Lambda$2$$ExternalSyntheticOutline0
+    # Example: ContextMenuCoord$$Lambda$2$$ExternalSyntheticThrowCCEIfNotNull0
+    match = re.fullmatch(
+        r'(?P<base_name>.+?)(\$\$Lambda\$\d+)?'
+        r'\$\$ExternalSynthetic[a-zA-Z0-9_]+', class_path)
+    if match:
+      new_name = self._GetLambdaName(class_path=class_path,
+                                     base_name=match.group('base_name'),
+                                     prefix=_OUTLINED_PREFIX)
+      return outer_class, full_name.replace(class_path, new_name)
+    # Example: package.FirebaseInstallationsRegistrar$$Lambda$1
+    match = re.fullmatch(r'(?P<base_name>.+)\$\$Lambda\$\d+', class_path)
+    if match:
+      # Although these are already valid names, re-number them to avoid name
+      # collisions with renamed InternalSyntheticLambdas.
+      new_name = self._GetLambdaName(class_path=class_path,
+                                     base_name=match.group('base_name'))
+      return outer_class, full_name.replace(class_path, new_name)
+    # Example: org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk
+    # Assume that the last portion of the name after $ is the hash identifier.
+    match = re.fullmatch(
+        r'(?P<package>.+)-\$\$Lambda\$(?P<class>[^$]+)(?P<nested>.*)\$[^$]+',
+        class_path)
+    if match:
+      package_name = match.group('package')
+      class_name = match.group('class')
+      nested_classes = match.group('nested')
+      base_name = package_name + class_name + nested_classes
+      new_name = self._GetLambdaName(class_path=class_path, base_name=base_name)
+      outer_class = package_name + class_name
+      return outer_class, full_name.replace(class_path, new_name)
+    assert False, (
+        'No valid match for new lambda name format: ' + class_path + '\n'
+        'Please update https://crbug.com/1208385 with this error so we can '
+        'update the lambda normalization code.')
+    return None
 
 
 # Visible for testing.
@@ -210,7 +267,14 @@ def CreateDexSymbol(name, size, source_map, lambda_normalizer):
       outer_class, name = lambda_normalizer.Normalize(old_package, name)
 
   source_path = source_map.get(outer_class, '')
-  object_path = posixpath.join(models.APK_PREFIX_PATH, *old_package.split('.'))
+  # Create a special meta-directory for outlined lambdas to easily monitor their
+  # total size and spot regressions.
+  if name.startswith(_OUTLINED_PREFIX):
+    object_path = posixpath.join(models.APK_PREFIX_PATH, 'Outlined',
+                                 *old_package.split('.'))
+  else:
+    object_path = posixpath.join(models.APK_PREFIX_PATH,
+                                 *old_package.split('.'))
   if name.endswith(')'):
     section_name = models.SECTION_DEX_METHOD
   else:
@@ -223,31 +287,75 @@ def CreateDexSymbol(name, size, source_map, lambda_normalizer):
                        source_path=source_path)
 
 
-def CreateDexSymbols(apk_path, mapping_path, size_info_prefix):
-  source_map = _ParseJarInfoFile(size_info_prefix + '.jar.info')
-
-  nodes = _RunApkAnalyzer(apk_path, mapping_path)
-  nodes = UndoHierarchicalSizing(nodes)
-
-  dex_expected_size = _ExpectedDexTotalSize(apk_path)
-  total_node_size = sum([x[2] for x in nodes])
-  # TODO(agrieve): Figure out why this log is triggering for
-  #     ChromeModernPublic.apk (https://crbug.com/851535).
-  # Reporting: dex_expected_size=6546088 total_node_size=6559549
-  if dex_expected_size < total_node_size:
-    logging.error(
-      'Node size too large, check for node processing errors. '
-      'dex_expected_size=%d total_node_size=%d', dex_expected_size,
-      total_node_size)
+def _SymbolsFromNodes(nodes, source_map):
   # Use (DEX_METHODS, DEX) buckets to speed up sorting.
-  symbols = ([], [])
+  symbol_buckets = ([], [])
   lambda_normalizer = LambdaNormalizer()
   for _, name, node_size in nodes:
     symbol = CreateDexSymbol(name, node_size, source_map, lambda_normalizer)
     if symbol:
-      symbols[int(symbol.section_name is models.SECTION_DEX)].append(symbol)
+      bucket_index = int(symbol.section_name is models.SECTION_DEX)
+      symbol_buckets[bucket_index].append(symbol)
+  for symbols_bucket in symbol_buckets:
+    symbols_bucket.sort(key=lambda s: s.full_name)
+  return symbol_buckets
 
-  symbols[0].sort(key=lambda s: s.full_name)
-  symbols[1].sort(key=lambda s: s.full_name)
-  symbols[0].extend(symbols[1])
-  return symbols[0]
+
+def CreateDexSymbols(apk_analyzer_async_result, dex_total_size,
+                     size_info_prefix):
+  """Creates DEX symbols given apk_analyzer output.
+
+  Args:
+    apk_analyzer_async_result: Return value from RunApkAnalyzerAsync().
+    dex_total_size: Sum of the sizes of all .dex files in the apk.
+    size_info_prefix: Path such as: out/Release/size-info/BaseName.
+
+  Returns:
+    A tuple of (section_ranges, raw_symbols).
+  """
+  logging.debug('Waiting for apkanalyzer to finish')
+  apk_analyzer_result = apk_analyzer_async_result.get()
+  logging.debug('Analyzing DEX - processing results')
+  source_map = _ParseJarInfoFile(size_info_prefix + '.jar.info')
+
+  nodes = _ParseApkAnalyzerOutput(apk_analyzer_result.stdout,
+                                  apk_analyzer_result.stderr)
+  nodes = UndoHierarchicalSizing(nodes)
+
+  total_node_size = sum([x[2] for x in nodes])
+  # TODO(agrieve): Figure out why this log is triggering for
+  #     ChromeModernPublic.apk (https://crbug.com/851535).
+  # Reporting: dex_total_size=6546088 total_node_size=6559549
+  if dex_total_size < total_node_size:
+    logging.error(
+        'Node size too large, check for node processing errors. '
+        'dex_total_size=%d total_node_size=%d', dex_total_size, total_node_size)
+
+  dex_method_symbols, dex_other_symbols = _SymbolsFromNodes(nodes, source_map)
+
+  dex_method_size = round(sum(s.pss for s in dex_method_symbols))
+  dex_other_size = round(sum(s.pss for s in dex_other_symbols))
+
+  unattributed_dex = dex_total_size - dex_method_size - dex_other_size
+  # Compare against -5 instead of 0 to guard against round-off errors.
+  assert unattributed_dex >= -5, (
+      'sum(dex_symbols.size) > filesize(classes.dex). {} vs {}'.format(
+          dex_method_size + dex_other_size, dex_total_size))
+
+  if unattributed_dex > 0:
+    dex_other_symbols.append(
+        models.Symbol(
+            models.SECTION_DEX,
+            unattributed_dex,
+            full_name='** .dex (unattributed - includes string literals)'))
+
+  # We can't meaningfully track section size of dex methods vs other, so
+  # just fake the size of dex methods as the sum of symbols, and make
+  # "dex other" responsible for any unattributed bytes.
+  section_ranges = {
+      models.SECTION_DEX_METHOD: (0, dex_method_size),
+      models.SECTION_DEX: (0, dex_total_size - dex_method_size),
+  }
+
+  dex_other_symbols.extend(dex_method_symbols)
+  return section_ranges, dex_other_symbols

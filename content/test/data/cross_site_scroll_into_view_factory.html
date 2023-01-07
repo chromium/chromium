@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="rootScroller">
+<!-- This file is based on cross_site_iframe_factory.html. See comments in that
+file as well as tree_parser_util.js for more details and syntax information.
+
+This page creates a nested, non-branching, frame tree with each child frame being
+fully outside of its embedder's initial viewport. The inner-most frame will
+create a <input> box, also outside the frame's initial viewport.
+
+See window.Attributes map for supported attributes.
+
+Usage Example:
+
+  cross_site_scroll_into_view_factory
+      .html?siteA{MobileViewport,RTL}(siteB(siteC{TouchActionNone}))
+
+ -->
+<head>
+<title>Cross-site scroll-into-view frame tree factory</title>
+<script>
+  window.Attributes = {
+    // Make's a frame's document "dir=rtl" to support testing right-to-left
+    // writing modes.
+    RTL: 0,
+    // Adds a viewport meta tag to a frame, making it "mobile friendly". This
+    // occurs for subframes as well but only has an effect in the root frame.
+    MobileViewport: 1,
+    // Adds a viewport meta tag to a frame, making it
+    // "mobile friendly" and also limiting minimum-zoom. This occurs for
+    // subframes as well but only has an effect in the root frame.
+    MobileViewportNoZoom: 2,
+    // Adds a `touch-action: none` style to the inner-most
+    // frame's <input> box. No-op in other frames.
+    TouchActionNone: 3,
+    // Uses a <fencedframe> element rather than an <iframe> for the child
+    // frame.
+    FencedFrame: 4,
+    // Puts the <input> box into a root scroller element.
+    RootScroller: 5,
+
+    // Keep this up to date with last enum.
+    MAX_VALUE: 5
+  }
+</script>
+<style>
+  html,body {
+    width: 100%;
+    height: 100%;
+  }
+  html {
+    overflow: hidden;
+  }
+  .rootScroller {
+    overflow: auto;
+  }
+  iframe, fencedframe {
+    position: absolute;
+    /* 4 screens worth of inset, to make sure this is off screen on Android
+     * where minimum scale on load is 0.25 */
+    inset-inline-start: 400%;
+    inset-block-start: 400%;
+    width: 60%;
+    height: 60%;
+  }
+  input {
+    position: absolute;
+    inset-inline-start: 400%;
+    inset-block-start: 400%;
+    width: 50%;
+  }
+  div.rootScroller {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: coral;
+  }
+  .spacer {
+    /* make the document scrollable */
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    width: 1200%;
+    height: 1200%;
+  }
+
+  .touchActionNone {
+    touch-action: none;
+  }
+
+  .layoutViewport {
+    /* Used to let the test measure the size of the layout viewport; needed when
+     * testing desktop page on mobile where ICB size doesn't match layout
+     * viewport size (i.e. the "shrinks viewport contents to fit" setting) */
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    visibility: hidden;
+  }
+</style>
+</head>
+<body>
+<div class="layoutViewport"></div>
+<h2 id='siteNameHeading'></h2>
+<div class="spacer"></div>
+
+
+<script src='tree_parser_util.js'></script>
+<script>
+
+function backgroundColorForSite(site) {
+  var lightness = 0.75;
+
+  // The site names will be of the form siteA, siteB, etc so map the fifth
+  // character to an index. This could be negative, we don't really care.
+  var index = site.charCodeAt(4) - 'a'.charCodeAt(0);
+
+  // If the first character is 'a', this will the the starting color.
+  var hueOfA = 200;  // Spoiler alert: it's blue.
+
+  // Color palette generation articles suggest that spinning the hue wheel by
+  // the golden ratio yields a magically nice color distribution. Something
+  // about sunflower seeds. I am skeptical of the rigor of that claim (probably
+  // any irrational number at a slight offset from 2/3 would do) but it does
+  // look pretty.
+  var phi = 2 / (1 + Math.pow(5, .5));
+  var hue = Math.round((360 * index * phi + hueOfA) % 360);
+  return 'hsl(' + hue + ', 60%, ' + Math.round(100 * lightness) + '%)';
+}
+
+function isUrl(siteString) {
+  try {
+    var url = new URL(siteString);
+  } catch (e) {
+    if (e instanceof TypeError)
+      return false;
+  }
+  return true;
+}
+
+/**
+ * Extract the specified port number, if any. Returns empty string if not
+ * specified.
+ */
+function sitePortNumber(siteString) {
+  let index = siteString.indexOf(':');
+  if (index == -1)
+    return ""
+  return siteString.substring(index + 1);
+}
+
+/**
+ * Adds ".test" to an argument if it doesn't already have a top level domain.
+ * Converts "siteA" to "a.test" to match test host names defined in test SSL
+ * certificate.  Adds the specified port number, if any, or the default port
+ * otherwise.
+ */
+function canonicalizeSiteAndPort(siteString, defaultPort) {
+  var portNumber = sitePortNumber(siteString) || defaultPort;
+  var hostName = siteString.split(':')[0];
+  if (hostName !== "localhost" && hostName.indexOf('.') == -1)
+    hostName = hostName + '.test';
+
+  if (hostName.startsWith('site'))
+    hostName = hostName.substring('site'.length).toLowerCase();
+
+  return hostName + (portNumber ? ':' + portNumber : "");
+}
+
+function hasAttribute(attribute) {
+  if (!Number.isInteger(attribute) || attribute < 0
+      || attribute > Attributes.MAX_VALUE) {
+    throw new Error("hasAttribute parameter invalid: " + attribute);
+  }
+
+  for (var frame_attribute of frame_attributes) {
+    if (frame_attribute == attribute) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function processFrameAttributes(frameTree) {
+  window.frame_attributes = [];
+  for (var attribute of frameTree.attributes) {
+    if (!Attributes.hasOwnProperty(attribute))
+      throw new Error("Invalid specified attribute: " + attribute);
+
+    frame_attributes.push(Attributes[attribute]);
+  }
+}
+
+function main() {
+  var goCrossSite = !window.location.protocol.startsWith('file');
+  var queryString = decodeURIComponent(window.location.search.substring(1));
+  var frameTree = TreeParserUtil.parse(queryString);
+  var currentSite = isUrl(frameTree.value)
+                      ? frameTree.value
+                      : canonicalizeSiteAndPort(frameTree.value, "");
+
+  processFrameAttributes(frameTree);
+
+  if (hasAttribute(Attributes.RTL)) {
+    document.documentElement.setAttribute('dir', 'rtl')
+  }
+
+  if (hasAttribute(Attributes.MobileViewport)) {
+    const meta = document.createElement('meta');
+    meta.setAttribute('name', 'viewport');
+    meta.setAttribute('content', 'width=device-width');
+    document.head.appendChild(meta);
+  }
+
+  if (hasAttribute(Attributes.MobileViewportNoZoom)) {
+    const meta = document.createElement('meta');
+    meta.setAttribute('name', 'viewport');
+    meta.setAttribute('content', 'width=device-width,minimum-scale=1');
+    document.head.appendChild(meta);
+  }
+
+  if (hasAttribute(Attributes.RootScroller)) {
+    const html = document.documentElement;
+    const kMaxOffset = 1000000;
+    html.scrollLeft = kMaxOffset;
+    html.scrollTop = kMaxOffset;
+
+    html.classList.remove('rootScroller');
+
+    const rootScroller = document.createElement('div');
+    rootScroller.classList.add('rootScroller');
+
+    const spacer = document.createElement('div');
+    spacer.classList.add('spacer');
+    spacer.innerText = "Root Scroller";
+    rootScroller.appendChild(spacer);
+
+    document.body.appendChild(rootScroller);
+  }
+
+  document.getElementById('siteNameHeading').appendChild(
+      document.createTextNode(currentSite));
+
+  // Apply style to the current document.
+  document.body.style.backgroundColor = backgroundColorForSite(currentSite);
+
+  if (frameTree.children.length == 0) {
+    let input = document.createElement('input');
+
+    if (hasAttribute(Attributes.TouchActionNone))
+      input.classList.add('touchActionNone');
+
+    if (document.documentElement.classList.contains('rootScroller'))
+      document.body.appendChild(input);
+    else
+      document.querySelector('.rootScroller').appendChild(input);
+
+    return;
+  }
+
+  // ScrollIntoView tests don't need multiple children and we don't support it.
+  console.assert(frameTree.children.length == 1);
+
+  // Compute the URL for this child frame.
+  let url = frameTree.children[0].value;
+  let siteAndPort = url;
+  if (!isUrl(url)) {
+    siteAndPort = canonicalizeSiteAndPort(url, window.location.port);
+    const subtreeString = TreeParserUtil.flatten(frameTree.children[0]);
+    url = '';
+    url += window.location.protocol + '//';              // scheme (preserved)
+    url += goCrossSite ? siteAndPort : window.location.host;    // host and port
+    url += window.location.pathname;                     // path (preserved)
+    url += '?' + encodeURIComponent(subtreeString);      // query
+  }
+
+  // Construct the child frame.
+  var elementType = hasAttribute(Attributes.FencedFrame) ? 'fencedframe' : 'iframe';
+  var frame = document.createElement(elementType);
+  frame.src = url;
+  frame.id = "childframe";
+
+  // Add the child frame to the document.
+  document.body.appendChild(frame);
+}
+
+main();
+</script>
+</body></html>

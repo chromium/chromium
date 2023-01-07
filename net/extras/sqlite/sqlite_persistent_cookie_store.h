@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "net/cookies/cookie_monster.h"
@@ -41,6 +40,10 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
   // origin is secure.
   typedef std::pair<std::string, bool> CookieOrigin;
 
+  // Port number to use for cookies whose source port is unknown at the time of
+  // database migration to V13. The value -1 comes from url::PORT_UNSPECIFIED.
+  static const int kDefaultUnknownPort = -1;
+
   // All blocking database accesses will be performed on
   // |background_task_runner|, while |client_task_runner| is used to invoke
   // callbacks.
@@ -50,6 +53,10 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       bool restore_old_session_cookies,
       CookieCryptoDelegate* crypto_delegate);
+
+  SQLitePersistentCookieStore(const SQLitePersistentCookieStore&) = delete;
+  SQLitePersistentCookieStore& operator=(const SQLitePersistentCookieStore&) =
+      delete;
 
   // Deletes the cookies whose origins match those given in |cookies|.
   void DeleteAllInList(const std::list<CookieOrigin>& cookies);
@@ -84,8 +91,6 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
 
   const scoped_refptr<Backend> backend_;
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(SQLitePersistentCookieStore);
 };
 
 }  // namespace net

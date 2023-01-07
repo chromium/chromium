@@ -1,8 +1,7 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
@@ -40,13 +39,31 @@ source_set("time_zone_monitor") {
     deps += [ "//ui/gfx" ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [ "time_zone_monitor_linux.cc" ]
+    deps += [ "//build:chromeos_buildflags" ]
   }
 
   if (is_chromeos_ash) {
-    sources += [ "time_zone_monitor_chromeos.cc" ]
-    deps += [ "//chromeos/settings" ]
+    sources += [ "time_zone_monitor_ash.cc" ]
+    deps += [ "//chromeos/ash/components/settings" ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "time_zone_monitor_lacros.cc",
+      "time_zone_monitor_lacros.h",
+
+      # Keep using linux implementation as a fallback.
+      # TODO(crbug.com/1288168): TODO clean up this, when we no longer need
+      # to support older ash.
+      "time_zone_monitor_linux.cc",
+    ]
+    deps += [
+      "//build:chromeos_buildflags",
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
   }
 
   if (is_mac) {
@@ -71,7 +88,11 @@ if (is_android) {
     # result of //services/device:java depending on it.
     visibility = [ "//services/device:*" ]
     sources = [ "android/java/src/org/chromium/device/time_zone_monitor/TimeZoneMonitor.java" ]
-    deps = [ "//base:base_java" ]
+    deps = [
+      "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
+    ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

@@ -1,0 +1,289 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Assistant histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="UserEligibilityTiming">
+<!--
+    Before M90, the base ("") variant was reported multiple times per search
+    and at other random points in time.
+
+    From M90 onwards, this is reported to exactly once per mic click.
+  -->
+
+  <variant name="" summary="when the mic button is pressed"/>
+  <variant name=".Startup" summary="on browser startup"/>
+</variants>
+
+<histogram name="Assistant.BetterOnboarding.Click"
+    enum="AssistantBetterOnboardingType" expires_after="2023-05-01">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    The number of times Assistant better onboarding buttons are clicked.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.ButtonClickCount" enum="AssistantButtonId"
+    expires_after="2023-03-21">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    The number of times buttons on Assistant UI (e.g., minimize) are clicked.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.ContextEnabledUserCount" enum="BooleanEnabled"
+    expires_after="2023-03-21">
+  <owner>updowndota@chromium.org</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Among eligible users, whether the user has the Assistant context (related
+    info) enabled. Recorded once for every UMA upload. The set of eligible users
+    includes all users with profiles that can allow Assistant service to be
+    enabled (AssistantAllowedState is limited by locale, policy, etc).
+  </summary>
+</histogram>
+
+<histogram name="Assistant.DspHotwordDetection"
+    enum="DspHotwordDetectionStatus" expires_after="2023-02-19">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Counts the number of times Dsp hotword gets detected in each status, to help
+    capture the hotword false acceptance rate.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.EntryPoint" enum="AssistantEntryPoint"
+    expires_after="2023-02-12">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Record the Assistant entry point where Assistant UI becomes visible.
+    ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.ExitPoint" enum="AssistantExitPoint"
+    expires_after="2023-02-12">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Record the Assistant exit point where Assistant UI becomes invisible.
+    ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.HotwordEnableNotification" enum="BooleanHit"
+    expires_after="2022-12-31">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Counts the number of times user click the hotword enable notification to
+    open Assistant settings.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.Interaction.Resolution"
+    enum="AssistantInteractionResolution" expires_after="2023-05-01">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Record the Assistant interaction resolution code. It indicates how the
+    Assistant server interpreted a particular query and decision on the state,
+    e.g. if the conversation is normal or timed out or ended with other errors.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.Libassistant.DlcInstallResult"
+    enum="Assistant.LibassistantDlcInstallResult" expires_after="2023-06-30">
+  <owner>wutao@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    The result of an attempt to install the libassistant DLC package. Emitted
+    when the Assistant service installs the DLC.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.Libassistant.DlcLoadStatus"
+    enum="Assistant.LibassistantDlcLoadStatus" expires_after="2023-06-30">
+  <owner>wutao@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records if the libassistant DLC is loaded successfully. Emitted when the
+    libassistant service initializes.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.OptInFlow.GetSettingsRequestTime" units="ms"
+    expires_after="2022-11-06">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Amount of time between get settings request and response. The request will
+    be sent for each time the Assistant OptIn Flow is triggered to get string
+    texts from the server.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.OptInFlow.LoadingTimeoutCount" units="timeouts"
+    expires_after="2023-04-09">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Number of times that the loading timeout triggers. The loading timeout is
+    set by the Assistant OptIn Flow loading screen, which shows up during the
+    server string texts and webviews are pending.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.OptInFlowStatus" enum="AssistantOptInFlowStatus"
+    expires_after="2023-04-10">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>Record the status of the Assistant opt-in flow.</summary>
+</histogram>
+
+<histogram name="Assistant.QueryCountPerEntryPoint" enum="AssistantEntryPoint"
+    expires_after="2022-12-26">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>Number of queries fired for each entry point.</summary>
+</histogram>
+
+<histogram name="Assistant.QueryResponseType" enum="AssistantQueryResponseType"
+    expires_after="2023-03-19">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>The Assistant query response type.</summary>
+</histogram>
+
+<histogram name="Assistant.QuerySource" enum="AssistantQuerySource"
+    expires_after="2023-05-01">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    The source of Assistant query (e.g. dialog plate text field, voice input).
+    Recorded when the query is committed.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.ServiceEnabledUserCount" enum="BooleanEnabled"
+    expires_after="2023-05-01">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Among eligible users, whether the user has the Assistant service enabled.
+    Recorded once for every UMA upload. The set of eligible users includes all
+    users with profiles that can allow Assistant service to be enabled
+    (AssistantAllowedState is limited by locale, policy, etc).
+  </summary>
+</histogram>
+
+<histogram name="Assistant.ServiceReadyTime" units="ms"
+    expires_after="2023-08-15">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Amount of time between when the Assistant service is launched, and when the
+    Assistant back-end signals it is ready to process queries.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.ServiceStartTime" units="ms"
+    expires_after="2023-08-15">
+  <owner>updowndota@chromium.org</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>Amount of time spent in starting Assistant service.</summary>
+</histogram>
+
+<histogram name="Assistant.SetDspHotwordLocale" enum="BooleanSuccess"
+    expires_after="2023-05-01">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For each attempt to set the hotword locale for a DSP device, counts whether
+    the attempt succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.VoiceSearch.AgsaVersion{Timing}" units="Version"
+    expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    (Android only) Reports the current Agsa version on the device. The version
+    is reported as described in GSAState#parseAgsaMajorMinorVersionAsInteger.
+
+    This is reported {Timing}.
+  </summary>
+  <token key="Timing" variants="UserEligibilityTiming"/>
+</histogram>
+
+<histogram name="Assistant.VoiceSearch.ConsentOutcome"
+    enum="AssistantConsentOutcome" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    (Android only) Reports the outcome of the consent dialog shown for the
+    assistant.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.VoiceSearch.UserEligibility.FailureReason{Timing}"
+    enum="EligibilityFailureReason" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    (Android only) Reports why users failed the eligibility check for the
+    feature.
+
+    Before M90, this histogram only reported the FailureReason which failed the
+    eligibility check. If a client failed for multiple reasons, some would be
+    ignored.
+
+    From M90 onwards, this will report all FailureReasons that effect
+    eligibility.
+
+    This is reported {Timing}.
+  </summary>
+  <token key="Timing" variants="UserEligibilityTiming"/>
+</histogram>
+
+<histogram name="Assistant.VoiceSearch.UserEligibility{Timing}"
+    enum="BooleanEligible" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    (Android only) Reports user eligibility for Assistant voice search. This is
+    reported even when the feature is disabled.
+
+    This is reported {Timing}.
+  </summary>
+  <token key="Timing" variants="UserEligibilityTiming"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

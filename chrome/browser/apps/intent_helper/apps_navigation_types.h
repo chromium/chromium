@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/models/image_model.h"
 
 namespace apps {
@@ -46,7 +45,6 @@ enum class PreferredPlatform {
   // The preferred app is an ARC app.
   ARC,
 
-  // TODO(crbug.com/826982) Not needed until app registry is in use.
   // The preferred app is a PWA app.
   PWA,
 };
@@ -57,13 +55,6 @@ enum class AppsNavigationAction {
 
   // The current navigation should resume.
   RESUME,
-};
-
-// This enum backs an UMA histogram and must be treated as append-only.
-enum class Source {
-  kHttpOrHttps = 0,
-  kExternalProtocol = 1,
-  kMaxValue = kExternalProtocol
 };
 
 // The type of an entry in the intent picker for the user to choose from.
@@ -101,6 +92,18 @@ struct IntentPickerAppInfo {
 
   // The string shown to the user to identify this app in the intent picker.
   std::string display_name;
+};
+
+// The variant of the Intent Picker bubble to display. Used to customize some
+// strings and behavior.
+enum class IntentPickerBubbleType {
+  // Used to select an app to handle http/https links.
+  kLinkCapturing,
+  // Used to select an app to handle external protocol links (e.g. sms:).
+  kExternalProtocol,
+  // Special case of kExternalProtocol for tel: links, which can also be handled
+  // by Android devices.
+  kClickToCall,
 };
 
 // Callback to allow app-platform-specific code to asynchronously signal what

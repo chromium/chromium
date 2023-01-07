@@ -27,7 +27,9 @@
 
 #include <algorithm>
 #include <memory>
+
 #include "base/callback.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/dynamic_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
@@ -41,6 +43,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode_string.h"
 
 using std::numeric_limits;
 
@@ -50,7 +54,7 @@ namespace {
 
 struct SameSizeAsStringImpl {
 #if DCHECK_IS_ON()
-  ThreadRestrictionVerifier verifier;
+  unsigned int ref_count_change_count;
 #endif
   int fields[3];
 };
@@ -70,14 +74,26 @@ void StringImpl::operator delete(void* ptr) {
 
 inline StringImpl::~StringImpl() {
   DCHECK(!IsStatic());
-
-  if (IsAtomic())
-    AtomicStringTable::Instance().Remove(this);
 }
 
-void StringImpl::DestroyIfNotStatic() const {
-  if (!IsStatic())
+void StringImpl::DestroyIfNeeded() const {
+  if (hash_and_flags_.load(std::memory_order_acquire) & kIsAtomic) {
+    // TODO: Remove const_cast
+    if (AtomicStringTable::Instance().ReleaseAndRemoveIfNeeded(
+            const_cast<StringImpl*>(this))) {
+      delete this;
+    } else {
+      // AtomicStringTable::Add() revived this before we started really
+      // killing it.
+    }
+  } else {
+    // This is not necessary but TSAN bots don't like the load in the
+    // caller to have relaxed memory order. Adding this check here instead
+    // of changing the load memory order to minimize perf impact.
+    int ref_count = ref_count_.load(std::memory_order_acquire);
+    DCHECK_EQ(ref_count, 1);
     delete this;
+  }
 }
 
 unsigned StringImpl::ComputeASCIIFlags() const {
@@ -91,18 +107,6 @@ unsigned StringImpl::ComputeASCIIFlags() const {
       kAsciiPropertyCheckDone | kContainsOnlyAscii | kIsLowerAscii;
   DCHECK((previous_flags & mask) == 0 || (previous_flags & mask) == new_flags);
   return new_flags;
-}
-
-bool StringImpl::IsSafeToSendToAnotherThread() const {
-  if (IsStatic())
-    return true;
-  // AtomicStrings are not safe to send between threads as ~StringImpl()
-  // will try to remove them from the wrong AtomicStringTable.
-  if (IsAtomic())
-    return false;
-  if (HasOneRef())
-    return true;
-  return false;
 }
 
 #if DCHECK_IS_ON()
@@ -296,7 +300,7 @@ scoped_refptr<StringImpl> StringImpl::Create(const LChar* string) {
   if (!string)
     return empty_;
   size_t length = strlen(reinterpret_cast<const char*>(string));
-  return Create(string, SafeCast<wtf_size_t>(length));
+  return Create(string, base::checked_cast<wtf_size_t>(length));
 }
 
 bool StringImpl::ContainsOnlyWhitespaceOrEmpty() {
@@ -666,21 +670,19 @@ wtf_size_t StringImpl::ToUInt(NumberParsingOptions options, bool* ok) const {
 }
 
 wtf_size_t StringImpl::HexToUIntStrict(bool* ok) {
+  constexpr auto kStrict = NumberParsingOptions::Strict();
   if (Is8Bit()) {
-    return HexCharactersToUInt(Characters8(), length_,
-                               NumberParsingOptions::kStrict, ok);
+    return HexCharactersToUInt(Characters8(), length_, kStrict, ok);
   }
-  return HexCharactersToUInt(Characters16(), length_,
-                             NumberParsingOptions::kStrict, ok);
+  return HexCharactersToUInt(Characters16(), length_, kStrict, ok);
 }
 
 uint64_t StringImpl::HexToUInt64Strict(bool* ok) {
+  constexpr auto kStrict = NumberParsingOptions::Strict();
   if (Is8Bit()) {
-    return HexCharactersToUInt64(Characters8(), length_,
-                                 NumberParsingOptions::kStrict, ok);
+    return HexCharactersToUInt64(Characters8(), length_, kStrict, ok);
   }
-  return HexCharactersToUInt64(Characters16(), length_,
-                               NumberParsingOptions::kStrict, ok);
+  return HexCharactersToUInt64(Characters16(), length_, kStrict, ok);
 }
 
 int64_t StringImpl::ToInt64(NumberParsingOptions options, bool* ok) const {

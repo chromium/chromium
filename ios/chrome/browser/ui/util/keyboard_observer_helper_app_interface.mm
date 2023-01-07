@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,7 @@
 @implementation KeyboardObserverHelperAppInterface
 
 + (KeyboardObserverHelper*)appSharedInstance {
-  static KeyboardObserverHelper* sharedInstance;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [[KeyboardObserverHelper alloc] init];
-  });
-  return sharedInstance;
+  return [KeyboardObserverHelper sharedKeyboardObserver];
 }
 
 @end

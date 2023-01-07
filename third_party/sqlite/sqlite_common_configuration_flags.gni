@@ -74,6 +74,9 @@ sqlite_common_configuration_flags = [
   # Chrome does not use sqlite3_column_decltype().
   "SQLITE_OMIT_DECLTYPE",
 
+  # Chrome does not use SQLite's JSON support.
+  "SQLITE_OMIT_JSON",
+
   # Chrome does not use sqlite3_{enable_}load_extension().
   # Asides from giving us fairly minor code savings, this option disables code
   # that breaks our method for renaming SQLite's exported symbols. Last,

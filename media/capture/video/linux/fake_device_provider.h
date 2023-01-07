@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,6 @@ class FakeDeviceProvider
   void GetDeviceIds(std::vector<std::string>* target_container) override;
   std::string GetDeviceModelId(const std::string& device_id) override;
   std::string GetDeviceDisplayName(const std::string& device_id) override;
-  VideoFacingMode GetCameraFacing(const std::string& device_id,
-                                  const std::string& model_id) override;
-  int GetOrientation(const std::string& device_id,
-                     const std::string& model_id) override;
 
  private:
   std::vector<VideoCaptureDeviceDescriptor> descriptors_;

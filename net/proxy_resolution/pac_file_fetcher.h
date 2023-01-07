@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <string>
 
 #include "net/base/completion_once_callback.h"
+#include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -25,8 +26,12 @@ class URLRequestContext;
 // timeouts, maximum size constraints, content encoding, etc..
 class NET_EXPORT_PRIVATE PacFileFetcher {
  public:
+  PacFileFetcher();
+  PacFileFetcher(const PacFileFetcher&) = delete;
+  PacFileFetcher& operator=(const PacFileFetcher&) = delete;
+
   // Destruction should cancel any outstanding requests.
-  virtual ~PacFileFetcher() {}
+  virtual ~PacFileFetcher();
 
   // Downloads the given PAC URL, and invokes |callback| on completion.
   // Returns OK on success, otherwise the error code. If the return code is
@@ -63,6 +68,15 @@ class NET_EXPORT_PRIVATE PacFileFetcher {
   // called.  Must be called before the URLRequestContext the fetcher was
   // created with is torn down.
   virtual void OnShutdown() = 0;
+
+  const IsolationInfo& isolation_info() const { return isolation_info_; }
+
+ private:
+  // Transient IsolationInfo used to fetch PAC scripts and resolve hostnames.
+  // Safe to reuse because delays for WPAD fetches don't provide information
+  // to the web platform useful to attackers, and WPAD fetches uniformly
+  // block all network requests.
+  const IsolationInfo isolation_info_ = IsolationInfo::CreateTransient();
 };
 
 }  // namespace net

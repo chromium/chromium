@@ -1,15 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/test/app/chrome_test_util.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
+#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_service.h"
+#import "components/crash/core/common/reporter_running_ios.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/previous_session_info/previous_session_info_private.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -19,10 +20,10 @@
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/app/main_controller_private.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
@@ -31,13 +32,13 @@
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_controller_testing.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/test/fakes/fake_web_state_observer.h"
-#include "net/base/mac/url_conversions.h"
+#import "ios/web/public/test/fakes/fake_web_state_observer.h"
+#import "net/base/mac/url_conversions.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -66,7 +67,7 @@
 // testing. UIOpenURLContext has no init available, so this can only be
 // allocated. It uses obscuring properties for URL and options.
 // TODO(crbug.com/1115018) Explore improving this which can become brittle.
-API_AVAILABLE(ios(13.0)) @interface FakeUIOpenURLContext : UIOpenURLContext
+@interface FakeUIOpenURLContext : UIOpenURLContext
 @property(nonatomic, copy) NSURL* URL;
 @property(nonatomic, strong) UISceneOpenURLOptions* options;
 @end
@@ -77,8 +78,8 @@ API_AVAILABLE(ios(13.0)) @interface FakeUIOpenURLContext : UIOpenURLContext
 @end
 
 namespace {
-// Returns the original ChromeBrowserState if |incognito| is false. If
-// |ingonito| is true, returns an off-the-record ChromeBrowserState.
+// Returns the original ChromeBrowserState if `incognito` is false. If
+// `incognito` is true, returns an off-the-record ChromeBrowserState.
 ChromeBrowserState* GetBrowserState(bool incognito) {
   std::vector<ChromeBrowserState*> browser_states =
       GetApplicationContext()
@@ -98,7 +99,7 @@ ChromeBrowserState* GetBrowserState(bool incognito) {
 namespace chrome_test_util {
 
 MainController* GetMainController() {
-  return [MainApplicationDelegate sharedMainController];
+  return MainApplicationDelegate.sharedMainController;
 }
 
 SceneState* GetForegroundActiveScene() {
@@ -151,8 +152,10 @@ UIViewController* GetActiveViewController() {
   return active_view_controller;
 }
 
-id<ApplicationCommands, BrowserCommands> HandlerForActiveBrowser() {
-  return static_cast<id<ApplicationCommands, BrowserCommands>>(
+id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands>
+HandlerForActiveBrowser() {
+  return static_cast<
+      id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands>>(
       GetMainBrowser()->GetCommandDispatcher());
 }
 
@@ -191,16 +194,14 @@ void SetBooleanUserPref(ChromeBrowserState* browser_state,
   pref.SetValue(value);
 }
 
-void SetWWANStateTo(bool value) {
-  MainController* mainController = chrome_test_util::GetMainController();
-  net::NetworkChangeNotifier::ConnectionType connectionType =
-      value ? net::NetworkChangeNotifier::CONNECTION_4G
-            : net::NetworkChangeNotifier::CONNECTION_WIFI;
-  [mainController.metricsMediator connectionTypeChanged:connectionType];
-}
-
-void SetFirstLaunchStateTo(bool value) {
-  [[PreviousSessionInfo sharedInstance] setIsFirstSessionAfterUpgrade:value];
+void SetIntegerUserPref(ChromeBrowserState* browser_state,
+                        const char* pref_name,
+                        int value) {
+  DCHECK(browser_state);
+  DCHECK(browser_state->GetPrefs());
+  IntegerPrefMember pref;
+  pref.Init(pref_name, browser_state->GetPrefs());
+  pref.SetValue(value);
 }
 
 bool IsMetricsRecordingEnabled() {
@@ -215,50 +216,29 @@ bool IsMetricsReportingEnabled() {
   return GetApplicationContext()->GetMetricsService()->reporting_active();
 }
 
-bool IsBreakpadEnabled() {
-  return [[BreakpadController sharedInstance] isEnabled];
+bool IsCrashpadEnabled() {
+  return crash_reporter::IsCrashpadRunning();
 }
 
-bool IsBreakpadReportingEnabled() {
-  return [[BreakpadController sharedInstance] isUploadingEnabled];
-}
-
-bool IsFirstLaunchAfterUpgrade() {
-  return [chrome_test_util::GetMainController() isFirstLaunchAfterUpgrade];
-}
-
-void WaitForBreakpadQueue() {
-  dispatch_queue_t queue = [[BreakpadController sharedInstance] queue];
-  dispatch_barrier_sync(queue, ^{
-                        });
+bool IsCrashpadReportingEnabled() {
+  return crash_helper::common::UserEnabledUploading();
 }
 
 void OpenChromeFromExternalApp(const GURL& url) {
-  if (base::ios::IsMultiwindowSupported()) {
-    if (@available(iOS 13, *)) {
-      UIScene* scene =
-          [[UIApplication sharedApplication].connectedScenes anyObject];
-      [scene.delegate sceneWillResignActive:scene];
+  UIScene* scene =
+      [[UIApplication sharedApplication].connectedScenes anyObject];
+  [scene.delegate sceneWillResignActive:scene];
 
-      // FakeUIOpenURLContext cannot be instanciated, but it is just needed
-      // for carrying the properties over to the scene delegate.
-      FakeUIOpenURLContext* context = [FakeUIOpenURLContext alloc];
-      context.URL = net::NSURLWithGURL(url);
+  // FakeUIOpenURLContext cannot be instanciated, but it is just needed
+  // for carrying the properties over to the scene delegate.
+  FakeUIOpenURLContext* context = [FakeUIOpenURLContext alloc];
+  context.URL = net::NSURLWithGURL(url);
 
-      NSSet<UIOpenURLContext*>* URLContexts =
-          [[NSSet alloc] initWithArray:@[ context ]];
+  NSSet<UIOpenURLContext*>* URLContexts =
+      [[NSSet alloc] initWithArray:@[ context ]];
 
-      [scene.delegate scene:scene openURLContexts:URLContexts];
-      [scene.delegate sceneDidBecomeActive:scene];
-    }
-  } else {
-    [[[UIApplication sharedApplication] delegate]
-        applicationWillResignActive:[UIApplication sharedApplication]];
-    [GetMainController() setStartupParametersWithURL:url];
-
-    [[[UIApplication sharedApplication] delegate]
-        applicationDidBecomeActive:[UIApplication sharedApplication]];
-  }
+  [scene.delegate scene:scene openURLContexts:URLContexts];
+  [scene.delegate sceneDidBecomeActive:scene];
 }
 
 bool PurgeCachedWebViewPages() {

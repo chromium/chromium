@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,16 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/crosapi/mojom/message_center.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
+#include "chromeos/crosapi/mojom/notification.mojom-shared.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
@@ -28,7 +28,6 @@
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
 
-using base::ASCIIToUTF16;
 using gfx::test::AreBitmapsEqual;
 using gfx::test::AreImagesEqual;
 
@@ -40,7 +39,7 @@ std::unique_ptr<message_center::Notification> CreateNotificationWithId(
     const std::string& id) {
   return std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, u"title", u"message",
-      /*icon=*/gfx::Image(),
+      /*icon=*/ui::ImageModel(),
       /*display_source=*/std::u16string(), GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(), /*delegate=*/nullptr);
 }
@@ -55,7 +54,9 @@ class MojoDelegate : public mojom::NotificationDelegate {
   // crosapi::mojom::NotificationDelegate:
   void OnNotificationClosed(bool by_user) override { ++closed_count_; }
   void OnNotificationClicked() override { ++clicked_count_; }
-  void OnNotificationButtonClicked(uint32_t button_index) override {
+  void OnNotificationButtonClicked(
+      uint32_t button_index,
+      const absl::optional<std::u16string>& reply) override {
     ++button_clicked_count_;
     last_button_index_ = button_index;
   }
@@ -118,6 +119,13 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
   mojo_notification->fullscreen_visibility =
       mojom::FullscreenVisibility::kOverUser;
 
+  mojo_notification->notifier_id = mojom::NotifierId::New();
+  mojo_notification->notifier_id->type = mojom::NotifierType::kApplication;
+  mojo_notification->notifier_id->url = GURL("http://example.com/");
+  mojo_notification->notifier_id->id = "test_notifier_id";
+  mojo_notification->notifier_id->title = u"notifier_title";
+  mojo_notification->notifier_id->profile_id = "test_profile_id";
+
   SkBitmap test_badge = gfx::test::CreateBitmap(1, 2);
   mojo_notification->badge = gfx::ImageSkia::CreateFrom1xBitmap(test_badge);
   SkBitmap test_icon = gfx::test::CreateBitmap(3, 4);
@@ -128,6 +136,7 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
   mojo_notification->buttons.push_back(std::move(button1));
   auto button2 = mojom::ButtonInfo::New();
   button2->title = u"button2";
+  button2->placeholder = absl::make_optional(u"placeholder2");
   mojo_notification->buttons.push_back(std::move(button2));
 
   // Display the notification.
@@ -155,13 +164,22 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
   EXPECT_EQ(message_center::FullscreenVisibility::OVER_USER,
             ui_notification->fullscreen_visibility());
 
+  EXPECT_EQ(ui_notification->notifier_id().type,
+            message_center::NotifierType::APPLICATION);
+  EXPECT_EQ(ui_notification->notifier_id().url, "http://example.com/");
+  EXPECT_EQ(ui_notification->notifier_id().id, "test_notifier_id");
+  EXPECT_EQ(ui_notification->notifier_id().title, u"notifier_title");
+  EXPECT_EQ(ui_notification->notifier_id().profile_id, "test_profile_id");
+
   EXPECT_TRUE(
       AreBitmapsEqual(test_badge, ui_notification->small_image().AsBitmap()));
-  EXPECT_TRUE(AreBitmapsEqual(test_icon, ui_notification->icon().AsBitmap()));
+  EXPECT_TRUE(AreBitmapsEqual(
+      test_icon, *ui_notification->icon().Rasterize(nullptr).bitmap()));
 
   ASSERT_EQ(2u, ui_notification->buttons().size());
   EXPECT_EQ(u"button1", ui_notification->buttons()[0].title);
   EXPECT_EQ(u"button2", ui_notification->buttons()[1].title);
+  EXPECT_EQ(u"placeholder2", ui_notification->buttons()[1].placeholder.value());
 }
 
 TEST_F(MessageCenterAshTest, SerializationImage) {
@@ -294,6 +312,45 @@ TEST_F(MessageCenterAshTest, SerializationProgress) {
   EXPECT_EQ(u"complete", ui_notification->progress_status());
 }
 
+// Regression test for https://crbug.com/1270544.
+TEST_F(MessageCenterAshTest, DisplayNotificationCanUpdateWithoutClosing) {
+  // Display a progress notification.
+  auto mojo_notification = mojom::Notification::New();
+  mojo_notification->type = mojom::NotificationType::kProgress;
+  mojo_notification->id = "test_id";
+  mojo_notification->progress = 55;
+
+  auto mojo_delegate1 = std::make_unique<MojoDelegate>();
+  message_center_remote_->DisplayNotification(
+      std::move(mojo_notification),
+      mojo_delegate1->receiver_.BindNewPipeAndPassRemote());
+  message_center_remote_.FlushForTesting();
+
+  // Update the progress by creating a new notification with the same ID.
+  mojo_notification = mojom::Notification::New();
+  mojo_notification->type = mojom::NotificationType::kProgress;
+  mojo_notification->id = "test_id";
+  mojo_notification->progress = 66;
+
+  auto mojo_delegate2 = std::make_unique<MojoDelegate>();
+  message_center_remote_->DisplayNotification(
+      std::move(mojo_notification),
+      mojo_delegate2->receiver_.BindNewPipeAndPassRemote());
+  message_center_remote_.FlushForTesting();
+
+  // Destroy the first delegate, which destroys its mojo receiver. This
+  // simulates how Lacros updates notifications.
+  mojo_delegate1.reset();
+  message_center_remote_.FlushForTesting();
+
+  // Notification is still visible and has updated progress.
+  message_center::Notification* ui_notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          "test_id");
+  ASSERT_TRUE(ui_notification);
+  EXPECT_EQ(66, ui_notification->progress());
+}
+
 TEST_F(MessageCenterAshTest, UserActions) {
   // Build mojo notification for display.
   auto mojo_notification = mojom::Notification::New();
@@ -314,14 +371,14 @@ TEST_F(MessageCenterAshTest, UserActions) {
   ASSERT_TRUE(ui_notification);
 
   // Simulate the user clicking on the notification body.
-  ui_notification->delegate()->Click(/*button_index=*/base::nullopt,
-                                     /*reply=*/base::nullopt);
+  ui_notification->delegate()->Click(/*button_index=*/absl::nullopt,
+                                     /*reply=*/absl::nullopt);
   mojo_delegate.receiver_.FlushForTesting();
   EXPECT_EQ(1, mojo_delegate.clicked_count_);
 
   // Simulate the user clicking on a notification button.
   ui_notification->delegate()->Click(/*button_index=*/1,
-                                     /*reply=*/base::nullopt);
+                                     /*reply=*/absl::nullopt);
   mojo_delegate.receiver_.FlushForTesting();
   EXPECT_EQ(1, mojo_delegate.button_clicked_count_);
   EXPECT_EQ(1u, mojo_delegate.last_button_index_);
@@ -356,6 +413,42 @@ TEST_F(MessageCenterAshTest, GetDisplayedNotifications) {
 
   // The notifications ids are returned. No particular order is specified.
   EXPECT_THAT(ids, testing::UnorderedElementsAre("id0", "id1"));
+}
+
+TEST_F(MessageCenterAshTest, NotificationsGroupByNotifierId) {
+  // Build mojo notification for display.
+  auto mojo_notification = mojom::Notification::New();
+  mojo_notification->type = mojom::NotificationType::kSimple;
+  mojo_notification->id = "test_id";
+  mojo_notification->origin_url = GURL("http://example.com/");
+  mojo_notification->notifier_id = mojom::NotifierId::New();
+  mojo_notification->notifier_id->type = mojom::NotifierType::kWebPage;
+
+  auto mojo_notification_2 = mojom::Notification::New();
+  mojo_notification_2->type = mojom::NotificationType::kSimple;
+  mojo_notification_2->id = "test_id_2";
+  mojo_notification_2->origin_url = GURL("http://example.com/");
+  mojo_notification_2->notifier_id = mojom::NotifierId::New();
+  mojo_notification_2->notifier_id->type = mojom::NotifierType::kWebPage;
+
+  // Display the notification.
+  MojoDelegate mojo_delegate;
+  message_center_remote_->DisplayNotification(
+      std::move(mojo_notification),
+      mojo_delegate.receiver_.BindNewPipeAndPassRemote());
+  message_center_remote_.FlushForTesting();
+
+  // Display another notification from the same notifier_id.
+  MojoDelegate mojo_delegate2;
+  message_center_remote_->DisplayNotification(
+      std::move(mojo_notification_2),
+      mojo_delegate2.receiver_.BindNewPipeAndPassRemote());
+  message_center_remote_.FlushForTesting();
+
+  // There should only be a single popup since the new notification should be
+  // added to the existing notification as a grouped child.
+  EXPECT_EQ(
+      1u, message_center::MessageCenter::Get()->GetPopupNotifications().size());
 }
 
 }  // namespace

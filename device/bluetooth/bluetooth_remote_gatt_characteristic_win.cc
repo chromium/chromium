@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,16 +56,16 @@ BluetoothRemoteGattCharacteristicWin::~BluetoothRemoteGattCharacteristicWin() {
   }
   parent_service_->GetWinAdapter()->NotifyGattCharacteristicRemoved(this);
 
-  if (!read_characteristic_value_callbacks_.first.is_null()) {
-    DCHECK(!read_characteristic_value_callbacks_.second.is_null());
-    std::move(read_characteristic_value_callbacks_.second)
-        .Run(BluetoothRemoteGattService::GATT_ERROR_FAILED);
+  if (read_characteristic_value_callback_) {
+    std::move(read_characteristic_value_callback_)
+        .Run(BluetoothGattService::GattErrorCode::kFailed,
+             /*value=*/std::vector<uint8_t>());
   }
 
   if (!write_characteristic_value_callbacks_.first.is_null()) {
     DCHECK(!write_characteristic_value_callbacks_.second.is_null());
     std::move(write_characteristic_value_callbacks_.second)
-        .Run(BluetoothRemoteGattService::GATT_ERROR_FAILED);
+        .Run(BluetoothGattService::GattErrorCode::kFailed);
   }
 }
 
@@ -131,25 +131,23 @@ bool BluetoothRemoteGattCharacteristicWin::IsNotifying() const {
 }
 
 void BluetoothRemoteGattCharacteristicWin::ReadRemoteCharacteristic(
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
 
   if (!characteristic_info_.get()->IsReadable) {
-    std::move(error_callback)
-        .Run(BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED);
+    std::move(callback).Run(BluetoothGattService::GattErrorCode::kNotPermitted,
+                            std::vector<uint8_t>());
     return;
   }
 
   if (characteristic_value_read_or_write_in_progress_) {
-    std::move(error_callback)
-        .Run(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS);
+    std::move(callback).Run(BluetoothGattService::GattErrorCode::kInProgress,
+                            std::vector<uint8_t>());
     return;
   }
 
   characteristic_value_read_or_write_in_progress_ = true;
-  read_characteristic_value_callbacks_ =
-      std::make_pair(std::move(callback), std::move(error_callback));
+  read_characteristic_value_callback_ = std::move(callback);
   task_manager_->PostReadGattCharacteristicValue(
       parent_service_->GetServicePath(), characteristic_info_.get(),
       base::BindOnce(&BluetoothRemoteGattCharacteristicWin::
@@ -166,7 +164,7 @@ void BluetoothRemoteGattCharacteristicWin::WriteRemoteCharacteristic(
 
   if (characteristic_value_read_or_write_in_progress_) {
     std::move(error_callback)
-        .Run(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS);
+        .Run(BluetoothGattService::GattErrorCode::kInProgress);
     return;
   }
 
@@ -200,13 +198,13 @@ void BluetoothRemoteGattCharacteristicWin::DeprecatedWriteRemoteCharacteristic(
   if (!characteristic_info_->IsWritable &&
       !characteristic_info_->IsWritableWithoutResponse) {
     std::move(error_callback)
-        .Run(BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED);
+        .Run(BluetoothGattService::GattErrorCode::kNotPermitted);
     return;
   }
 
   if (characteristic_value_read_or_write_in_progress_) {
     std::move(error_callback)
-        .Run(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS);
+        .Run(BluetoothGattService::GattErrorCode::kInProgress);
     return;
   }
 
@@ -363,16 +361,15 @@ void BluetoothRemoteGattCharacteristicWin::
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   characteristic_value_read_or_write_in_progress_ = false;
 
-  std::pair<ValueCallback, ErrorCallback> callbacks;
-  callbacks.swap(read_characteristic_value_callbacks_);
+  ValueCallback callback = std::move(read_characteristic_value_callback_);
   if (FAILED(hr)) {
-    std::move(callbacks.second).Run(HRESULTToGattErrorCode(hr));
+    std::move(callback).Run(HRESULTToGattErrorCode(hr), std::vector<uint8_t>());
   } else {
     characteristic_value_.clear();
     for (ULONG i = 0; i < value->DataSize; i++)
       characteristic_value_.push_back(value->Data[i]);
 
-    std::move(callbacks.first).Run(characteristic_value_);
+    std::move(callback).Run(absl::nullopt, characteristic_value_);
   }
 }
 
@@ -390,23 +387,23 @@ void BluetoothRemoteGattCharacteristicWin::
   }
 }
 
-BluetoothRemoteGattService::GattErrorCode
+BluetoothGattService::GattErrorCode
 BluetoothRemoteGattCharacteristicWin::HRESULTToGattErrorCode(HRESULT hr) {
   if (HRESULT_FROM_WIN32(ERROR_INVALID_USER_BUFFER) == hr)
-    return BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH;
+    return BluetoothGattService::GattErrorCode::kInvalidLength;
 
   switch (hr) {
     case E_BLUETOOTH_ATT_READ_NOT_PERMITTED:
     case E_BLUETOOTH_ATT_WRITE_NOT_PERMITTED:
-      return BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED;
+      return BluetoothGattService::GattErrorCode::kNotPermitted;
     case E_BLUETOOTH_ATT_UNKNOWN_ERROR:
-      return BluetoothRemoteGattService::GATT_ERROR_UNKNOWN;
+      return BluetoothGattService::GattErrorCode::kUnknown;
     case E_BLUETOOTH_ATT_INVALID_ATTRIBUTE_VALUE_LENGTH:
-      return BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH;
+      return BluetoothGattService::GattErrorCode::kInvalidLength;
     case E_BLUETOOTH_ATT_REQUEST_NOT_SUPPORTED:
-      return BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED;
+      return BluetoothGattService::GattErrorCode::kNotSupported;
     default:
-      return BluetoothRemoteGattService::GATT_ERROR_FAILED;
+      return BluetoothGattService::GattErrorCode::kFailed;
   }
 }
 

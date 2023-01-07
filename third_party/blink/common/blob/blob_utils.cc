@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/numerics/clamped_math.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -17,8 +18,9 @@ constexpr uint64_t BlobUtils::kUnknownSize;
 
 namespace {
 
-const base::Feature kBlobDataPipeTuningFeature{
-    "BlobDataPipeTuning", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBlobDataPipeTuningFeature,
+             "BlobDataPipeTuning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr int kBlobMinDataPipeCapacity = 1024;
 

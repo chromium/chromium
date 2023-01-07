@@ -1,0 +1,52 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<body>
+<script>
+attribution_reporting_promise_test(async t => {
+  await registerAttributionSrc(t, {
+    source: {
+      destination: `https://{{host}}`,
+    },
+    method: 'a',
+  });
+
+  await Promise.all([
+    registerAttributionSrc(t, {trigger: {
+      event_trigger_data: [{trigger_data: '3'}],
+    }}),
+    registerAttributionSrc(t, {trigger: {
+      event_trigger_data: [{trigger_data: '4'}],
+    }}),
+    registerAttributionSrc(t, {trigger: {
+      event_trigger_data: [{trigger_data: '5'}],
+    }}),
+  ]);
+
+  const reports = [];
+
+  while (reports.length < 3) {
+    const payload = await pollEventLevelReports();
+    payload.reports.forEach(report => {
+      reports.push(JSON.parse(report.body));
+    });
+  }
+
+  assert_equals(reports.length, 3);
+
+  reports.sort((a, b) => {
+    if (a.trigger_data < b.trigger_data) return -1;
+    if (a.trigger_data > b.trigger_data) return 1;
+    return 0;
+  });
+
+  assert_equals(reports[0].trigger_data, '3');
+  assert_equals(reports[1].trigger_data, '4');
+  assert_equals(reports[2].trigger_data, '5');
+}, 'Navigation sources can be attributed 3 times.');
+</script>

@@ -19,15 +19,16 @@ layer and above. For example, all WebContents live on this **UI** thread.
 
 ## View Threads in Android
 
-A [Window](http://developer.android.com/reference/android/view/Window.html), its
-view tree, and [Views](https://developer.android.com/reference/android/view/View)
-in that tree are all single threaded in general; for a particular View, call
-this the **view** thread. It is possible to create separate Windows and view
-trees on separate threads, as long as Views are not moved between them. So there
-can be more than one **view** thread.
+A [Window](https://developer.android.com/reference/android/view/Window.html),
+its view tree, and
+[Views](https://developer.android.com/reference/android/view/View) in that tree
+are all single threaded in general; for a particular View, call this the
+**view** thread. It is possible to create separate Windows and view trees on
+separate threads, as long as Views are not moved between them. So there can be
+more than one **view** thread.
 
 Most apps do not make use of this hidden feature; they use a single view tree on
-the [main thread](http://developer.android.com/reference/android/os/Looper.html#getMainLooper())
+the [main thread](https://developer.android.com/reference/android/os/Looper#getMainLooper())
 of the application. However, in general, it’s not safe to assume there’s only a
 single **view** thread, or that the **view** thread and the **main** thread is
 the same.
@@ -46,7 +47,7 @@ and [WebViewChromiumFactoryProvider](../glue/java/src/com/android/webview/chromi
 The idea is hold off initializing chromium until a **view** thread is identified.
 
 **View** thread can be identified by certain View methods. For example,
-[onAttachedToWindow](http://developer.android.com/reference/android/view/View.html#onAttachedToWindow())
+[onAttachedToWindow](https://developer.android.com/reference/android/view/View.html#onAttachedToWindow())
 is called by the view tree on the **view** thread. Of course this is not 100%
 reliable since apps could call those methods as well.
 
@@ -66,7 +67,7 @@ are not held off include:
 Views in android are expected to be created and used on its single **view**
 thread, unless otherwise noted in the API. For WebView, this is enforced for
 apps targeting JB MR2 or above. The code lives in the
-[WebView](https://github.com/android/platform_frameworks_base/blob/master/core/java/android/webkit/WebView.java).
+[WebView](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/webkit/WebView.java).
 Note this is an orthogonal concern to the single **UI** thread described above,
 as this check still allows different WebViews to be used on different **view**
 threads.

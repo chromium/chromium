@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,10 @@ class COMPOSITOR_EXPORT ScrollInputHandler : public cc::InputHandlerClient {
  public:
   explicit ScrollInputHandler(
       const base::WeakPtr<cc::InputHandler>& input_handler);
+
+  ScrollInputHandler(const ScrollInputHandler&) = delete;
+  ScrollInputHandler& operator=(const ScrollInputHandler&) = delete;
+
   ~ScrollInputHandler() override;
 
   // Ask the InputHandler to scroll |element| according to |scroll|.
@@ -29,9 +33,10 @@ class COMPOSITOR_EXPORT ScrollInputHandler : public cc::InputHandlerClient {
   void WillShutdown() override;
   void Animate(base::TimeTicks time) override;
   void ReconcileElasticOverscrollAndRootScroll() override;
+  void SetPrefersReducedMotion(bool prefers_reduced_motion) override;
   void UpdateRootLayerStateForSynchronousInputHandler(
-      const gfx::ScrollOffset& total_scroll_offset,
-      const gfx::ScrollOffset& max_scroll_offset,
+      const gfx::PointF& total_scroll_offset,
+      const gfx::PointF& max_scroll_offset,
       const gfx::SizeF& scrollable_size,
       float page_scale_factor,
       float min_page_scale_factor,
@@ -42,10 +47,8 @@ class COMPOSITOR_EXPORT ScrollInputHandler : public cc::InputHandlerClient {
  private:
   // Cleared in WillShutdown().
   base::WeakPtr<cc::InputHandler> input_handler_weak_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollInputHandler);
 };
 
 }  // namespace ui
 
-#endif  // UI_COMPOSITOR_OVERSCROLL_UI_INPUT_HANDLER_H_
+#endif  // UI_COMPOSITOR_OVERSCROLL_SCROLL_INPUT_HANDLER_H_

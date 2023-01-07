@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_browser_sharing {
 enum MessageType : int;
@@ -41,7 +42,7 @@ class SharingMessageSender {
    public:
     using SendMessageCallback =
         base::OnceCallback<void(SharingSendMessageResult result,
-                                base::Optional<std::string> message_id,
+                                absl::optional<std::string> message_id,
                                 SharingChannelType channel_type)>;
     virtual ~SendMessageDelegate() = default;
 
@@ -107,7 +108,7 @@ class SharingMessageSender {
 
   void OnMessageSent(const std::string& message_guid,
                      SharingSendMessageResult result,
-                     base::Optional<std::string> message_id,
+                     absl::optional<std::string> message_id,
                      SharingChannelType channel_type);
 
   void InvokeSendMessageCallback(
@@ -115,7 +116,7 @@ class SharingMessageSender {
       SharingSendMessageResult result,
       std::unique_ptr<chrome_browser_sharing::ResponseMessage> response);
 
-  syncer::LocalDeviceInfoProvider* local_device_info_provider_;
+  raw_ptr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
 
   // Map of random GUID to SentMessageMetadata.
   std::map<std::string, SentMessageMetadata> message_metadata_;

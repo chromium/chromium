@@ -1,12 +1,11 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 
-assert(use_x11 || ozone_platform_drm || ozone_platform_wayland ||
-       ozone_platform_x11)
+assert(ozone_platform_drm || ozone_platform_wayland || ozone_platform_x11)
 
 source_set("drm") {
   sources = [
@@ -46,7 +45,7 @@ source_set("gbm") {
   ]
 }
 
-if (use_x11 || ozone_platform_x11) {
+if (ozone_platform_x11) {
   component("gpu_memory_buffer_support_x11") {
     sources = [
       "gpu_memory_buffer_support_x11.cc",

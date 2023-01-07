@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -317,9 +317,9 @@ TEST_F(GetPagesTaskTest, OrderDescendingCreationTime) {
   generator()->SetNamespace(kCCTNamespace);
   OfflinePageItem item1 = generator()->CreateItem();
   OfflinePageItem item2 = generator()->CreateItem();
-  item2.creation_time = item1.creation_time + base::TimeDelta::FromSeconds(2);
+  item2.creation_time = item1.creation_time + base::Seconds(2);
   OfflinePageItem item3 = generator()->CreateItem();
-  item3.creation_time = item1.creation_time + base::TimeDelta::FromSeconds(1);
+  item3.creation_time = item1.creation_time + base::Seconds(1);
 
   InsertItems({item1, item2, item3});
 
@@ -336,9 +336,9 @@ TEST_F(GetPagesTaskTest, OrderAccessTime) {
   OfflinePageItem item1 = generator()->CreateItem();
   item1.last_access_time = base::Time();
   OfflinePageItem item2 = generator()->CreateItem();
-  item2.last_access_time = base::Time() + base::TimeDelta::FromSeconds(2);
+  item2.last_access_time = base::Time() + base::Seconds(2);
   OfflinePageItem item3 = generator()->CreateItem();
-  item3.last_access_time = base::Time() + base::TimeDelta::FromSeconds(1);
+  item3.last_access_time = base::Time() + base::Seconds(1);
 
   InsertItems({item1, item2, item3});
 

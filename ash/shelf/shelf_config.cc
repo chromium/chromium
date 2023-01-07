@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,17 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
-#include "ui/gfx/color_analysis.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 
 namespace ash {
 
@@ -73,7 +71,7 @@ void RecordReasonForShowingShelfControls() {
 
 class ShelfConfig::ShelfAccessibilityObserver : public AccessibilityObserver {
  public:
-  ShelfAccessibilityObserver(
+  explicit ShelfAccessibilityObserver(
       const base::RepeatingClosure& accessibility_state_changed_callback)
       : accessibility_state_changed_callback_(
             accessibility_state_changed_callback) {
@@ -99,11 +97,44 @@ class ShelfConfig::ShelfAccessibilityObserver : public AccessibilityObserver {
       observation_{this};
 };
 
+class ShelfConfig::ShelfSplitViewObserver : public SplitViewObserver {
+ public:
+  explicit ShelfSplitViewObserver(
+      SplitViewController* controller,
+      const base::RepeatingCallback<void(SplitViewController::State,
+                                         SplitViewController::State)>&
+          split_view_state_changed_callback)
+      : split_view_state_changed_callback_(split_view_state_changed_callback) {
+    observation_.Observe(controller);
+  }
+
+  ShelfSplitViewObserver(const ShelfSplitViewObserver& other) = delete;
+  ShelfSplitViewObserver& operator=(const ShelfSplitViewObserver& other) =
+      delete;
+
+  ~ShelfSplitViewObserver() override = default;
+  // SplitViewObserver:
+  void OnSplitViewStateChanged(SplitViewController::State previous_state,
+                               SplitViewController::State state) override {
+    split_view_state_changed_callback_.Run(previous_state, state);
+  }
+
+ private:
+  base::RepeatingCallback<void(SplitViewController::State,
+                               SplitViewController::State)>
+      split_view_state_changed_callback_;
+
+  base::ScopedObservation<SplitViewController, SplitViewObserver> observation_{
+      this};
+};
+
 ShelfConfig::ShelfConfig()
     : use_in_app_shelf_in_overview_(false),
       overview_mode_(false),
       in_tablet_mode_(false),
       is_dense_(false),
+      is_in_app_(true),
+      in_split_view_with_overview_(false),
       shelf_controls_shown_(true),
       is_virtual_keyboard_shown_(false),
       is_app_list_visible_(false),
@@ -118,7 +149,6 @@ ShelfConfig::ShelfConfig()
       shelf_status_area_hit_region_padding_dense_(2),
       app_icon_group_margin_tablet_(16),
       app_icon_group_margin_clamshell_(12),
-      shelf_focus_border_color_(gfx::kGoogleBlue300),
       workspace_area_visible_inset_(2),
       workspace_area_auto_hide_inset_(5),
       hidden_shelf_in_screen_portion_(3),
@@ -156,9 +186,10 @@ void ShelfConfig::Init() {
   Shell* const shell = Shell::Get();
 
   shell->app_list_controller()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
+  display_observer_.emplace(this);
   shell->system_tray_model()->virtual_keyboard()->AddObserver(this);
   shell->overview_controller()->AddObserver(this);
+  shell->session_controller()->AddObserver(this);
 
   shell->tablet_mode_controller()->AddObserver(this);
   in_tablet_mode_ = shell->IsInTabletMode();
@@ -169,21 +200,39 @@ void ShelfConfig::Shutdown() {
   Shell* const shell = Shell::Get();
   shell->tablet_mode_controller()->RemoveObserver(this);
 
+  shell->session_controller()->RemoveObserver(this);
   shell->overview_controller()->RemoveObserver(this);
   shell->system_tray_model()->virtual_keyboard()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display_observer_.reset();
   shell->app_list_controller()->RemoveObserver(this);
 }
 
 void ShelfConfig::OnOverviewModeWillStart() {
   DCHECK(!overview_mode_);
-  use_in_app_shelf_in_overview_ = is_in_app();
+  use_in_app_shelf_in_overview_ = is_in_app_;
   overview_mode_ = true;
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  in_split_view_with_overview_ = split_view_controller->InSplitViewMode();
+
+  split_view_observer_ = std::make_unique<ShelfSplitViewObserver>(
+      split_view_controller,
+      base::BindRepeating(&ShelfConfig::OnSplitViewStateChanged,
+                          base::Unretained(this)));
 }
 
 void ShelfConfig::OnOverviewModeEnding(OverviewSession* overview_session) {
+  split_view_observer_.reset();
   overview_mode_ = false;
+  in_split_view_with_overview_ = false;
   use_in_app_shelf_in_overview_ = false;
+  UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
+}
+
+void ShelfConfig::OnSplitViewStateChanged(
+    SplitViewController::State previous_state,
+    SplitViewController::State state) {
+  in_split_view_with_overview_ = (state != SplitViewController::State::kNoSnap);
   UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
 }
 
@@ -197,6 +246,10 @@ void ShelfConfig::OnTabletModeStarting() {
   in_tablet_mode_ = true;
 
   UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/true);
+}
+
+void ShelfConfig::OnSessionStateChanged(session_manager::SessionState state) {
+  UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
 }
 
 void ShelfConfig::OnTabletModeEnding() {
@@ -309,7 +362,7 @@ int ShelfConfig::control_size() const {
 }
 
 int ShelfConfig::control_border_radius() const {
-  return (is_in_app() && in_tablet_mode_)
+  return (is_in_app_ && in_tablet_mode_)
              ? control_size() / 2 - in_app_control_button_height_inset_
              : control_size() / 2;
 }
@@ -323,7 +376,7 @@ int ShelfConfig::control_button_edge_spacing(bool is_primary_axis_edge) const {
 
 base::TimeDelta ShelfConfig::hotseat_background_animation_duration() const {
   // This matches the duration of the maximize/minimize animation.
-  return base::TimeDelta::FromMilliseconds(300);
+  return base::Milliseconds(300);
 }
 
 base::TimeDelta ShelfConfig::shelf_animation_duration() const {
@@ -333,22 +386,6 @@ base::TimeDelta ShelfConfig::shelf_animation_duration() const {
 int ShelfConfig::status_area_hit_region_padding() const {
   return is_dense_ ? shelf_status_area_hit_region_padding_dense_
                    : shelf_status_area_hit_region_padding_;
-}
-
-bool ShelfConfig::is_in_app() const {
-  Shell* shell = Shell::Get();
-  const auto* session = shell->session_controller();
-  if (!session ||
-      session->GetSessionState() != session_manager::SessionState::ACTIVE) {
-    return false;
-  }
-  if (is_virtual_keyboard_shown_)
-    return true;
-  if (is_app_list_visible_)
-    return false;
-  if (overview_mode_)
-    return use_in_app_shelf_in_overview_;
-  return true;
 }
 
 float ShelfConfig::drag_hide_ratio_threshold() const {
@@ -380,22 +417,31 @@ void ShelfConfig::UpdateConfig(bool new_is_app_list_visible,
   // If the virtual keyboard is shown, the back button and in-app shelf should
   // be shown so users can exit the keyboard. SystemTrayModel may be null in
   // tests.
-  const bool new_is_virtual_keyboard_shown =
-      Shell::Get()->system_tray_model()
-          ? Shell::Get()->system_tray_model()->virtual_keyboard()->visible()
-          : false;
+  const bool new_is_virtual_keyboard_shown = Shell::Get()->system_tray_model()
+                                                 ? Shell::Get()
+                                                       ->system_tray_model()
+                                                       ->virtual_keyboard()
+                                                       ->arc_keyboard_visible()
+                                                 : false;
 
-  if (!tablet_mode_changed && is_dense_ == new_is_dense &&
-      shelf_controls_shown_ == new_shelf_controls_shown &&
-      is_virtual_keyboard_shown_ == new_is_virtual_keyboard_shown &&
-      is_app_list_visible_ == new_is_app_list_visible) {
+  const bool new_is_in_app =
+      CalculateIsInApp(new_is_app_list_visible, new_is_virtual_keyboard_shown);
+
+  const bool changed =
+      tablet_mode_changed || is_dense_ != new_is_dense ||
+      is_in_app_ != new_is_in_app ||
+      shelf_controls_shown_ != new_shelf_controls_shown ||
+      is_virtual_keyboard_shown_ != new_is_virtual_keyboard_shown ||
+      is_app_list_visible_ != new_is_app_list_visible;
+
+  if (!changed)
     return;
-  }
 
   is_dense_ = new_is_dense;
   shelf_controls_shown_ = new_shelf_controls_shown;
   is_virtual_keyboard_shown_ = new_is_virtual_keyboard_shown;
   is_app_list_visible_ = new_is_app_list_visible;
+  is_in_app_ = new_is_in_app;
 
   OnShelfConfigUpdated();
 }
@@ -405,59 +451,60 @@ int ShelfConfig::GetShelfSize(bool ignore_in_app_state) const {
   if (!in_tablet_mode_)
     return 48;
 
-  if (!ignore_in_app_state && is_in_app())
+  // Use in app shelf when split view is enabled.
+  if (!ignore_in_app_state && (is_in_app_ || in_split_view_with_overview_))
     return in_app_shelf_size();
 
   return is_dense_ ? 48 : 56;
 }
 
-SkColor ShelfConfig::GetShelfControlButtonColor() const {
+SkColor ShelfConfig::GetShelfControlButtonColor(
+    const views::Widget* widget) const {
+  DCHECK(widget);
+
   const session_manager::SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
 
   if (in_tablet_mode_ &&
       session_state == session_manager::SessionState::ACTIVE) {
-    return is_in_app() ? SK_ColorTRANSPARENT : GetDefaultShelfColor();
-  } else if (session_state == session_manager::SessionState::OOBE) {
+    return is_in_app_ ? SK_ColorTRANSPARENT : GetDefaultShelfColor(widget);
+  }
+  if (!features::IsDarkLightModeEnabled() &&
+      session_state == session_manager::SessionState::OOBE) {
     return SkColorSetA(SK_ColorBLACK, 16);  // 6% opacity
   }
-  return AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  return widget->GetColorProvider()->GetColor(
+      kColorAshControlBackgroundColorInactive);
 }
 
-SkColor ShelfConfig::GetShelfWithAppListColor() const {
-  return SkColorSetA(SK_ColorBLACK, 20);  // 8% opacity
+SkColor ShelfConfig::GetMaximizedShelfColor(const views::Widget* widget) const {
+  return SkColorSetA(GetDefaultShelfColor(widget), 0xFF);  // 100% opacity
 }
 
-SkColor ShelfConfig::GetMaximizedShelfColor() const {
-  return SkColorSetA(GetDefaultShelfColor(), 0xFF);  // 100% opacity
-}
-
-AshColorProvider::BaseLayerType ShelfConfig::GetShelfBaseLayerType() const {
+ui::ColorId ShelfConfig::GetShelfBaseLayerColorId() const {
   if (!in_tablet_mode_)
-    return AshColorProvider::BaseLayerType::kTransparent80;
+    return kColorAshShieldAndBase80;
 
-  if (!is_in_app())
-    return AshColorProvider::BaseLayerType::kTransparent60;
+  if (!is_in_app_)
+    return kColorAshShieldAndBase60;
 
-  return AshColorProvider::Get()->IsDarkModeEnabled()
-             ? AshColorProvider::BaseLayerType::kTransparent90
-             : AshColorProvider::BaseLayerType::kOpaque;
+  return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+             ? kColorAshShieldAndBase90
+             : kColorAshShieldAndBaseOpaque;
 }
 
-SkColor ShelfConfig::GetDefaultShelfColor() const {
-  if (!features::IsBackgroundBlurEnabled()) {
-    return AshColorProvider::Get()->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent90);
-  }
+SkColor ShelfConfig::GetDefaultShelfColor(const views::Widget* widget) const {
+  DCHECK(widget);
 
-  AshColorProvider::BaseLayerType layer_type = GetShelfBaseLayerType();
+  const auto* color_provider = widget->GetColorProvider();
+  if (!features::IsBackgroundBlurEnabled())
+    return color_provider->GetColor(kColorAshShieldAndBase90);
 
-  return AshColorProvider::Get()->GetBaseLayerColor(layer_type);
+  return color_provider->GetColor(GetShelfBaseLayerColorId());
 }
 
 int ShelfConfig::GetShelfControlButtonBlurRadius() const {
-  if (features::IsBackgroundBlurEnabled() && in_tablet_mode_ && !is_in_app())
+  if (features::IsBackgroundBlurEnabled() && in_tablet_mode_ && !is_in_app_)
     return shelf_blur_radius_;
   return 0;
 }
@@ -472,7 +519,7 @@ int ShelfConfig::GetAppIconGroupMargin() const {
 }
 
 base::TimeDelta ShelfConfig::DimAnimationDuration() const {
-  return base::TimeDelta::FromMilliseconds(1000);
+  return base::Milliseconds(1000);
 }
 
 gfx::Tween::Type ShelfConfig::DimAnimationTween() const {
@@ -489,6 +536,25 @@ gfx::Size ShelfConfig::DragHandleSize() const {
 
 void ShelfConfig::UpdateConfigForAccessibilityState() {
   UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
+}
+
+bool ShelfConfig::CalculateIsInApp(bool app_list_visible,
+                                   bool virtual_keyboard_shown) const {
+  Shell* shell = Shell::Get();
+  const auto* session = shell->session_controller();
+  if (!session ||
+      session->GetSessionState() != session_manager::SessionState::ACTIVE) {
+    return false;
+  }
+  if (virtual_keyboard_shown)
+    return true;
+  if (app_list_visible)
+    return false;
+  if (in_split_view_with_overview_)
+    return true;
+  if (overview_mode_)
+    return use_in_app_shelf_in_overview_;
+  return true;
 }
 
 void ShelfConfig::OnShelfConfigUpdated() {

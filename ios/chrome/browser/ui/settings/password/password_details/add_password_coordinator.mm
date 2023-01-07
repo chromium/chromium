@@ -1,0 +1,175 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator.h"
+
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/add_password_handler.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+@interface AddPasswordCoordinator () <
+    AddPasswordHandler,
+    AddPasswordMediatorDelegate,
+    UIAdaptivePresentationControllerDelegate> {
+  // Manager responsible for getting existing password profiles.
+  IOSChromePasswordCheckManager* _manager;
+}
+
+// Main view controller for this coordinator.
+@property(nonatomic, strong) PasswordDetailsTableViewController* viewController;
+
+// Main mediator for this coordinator.
+@property(nonatomic, strong) AddPasswordMediator* mediator;
+
+// Module containing the reauthentication mechanism for editing existing
+// passwords.
+@property(nonatomic, weak) ReauthenticationModule* reauthenticationModule;
+
+// Modal alert for interactions with password.
+@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
+
+// Dispatcher.
+@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
+
+@end
+
+@implementation AddPasswordCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                              reauthModule:(ReauthenticationModule*)reauthModule
+                      passwordCheckManager:
+                          (IOSChromePasswordCheckManager*)manager {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    DCHECK(viewController);
+    DCHECK(manager);
+    DCHECK(reauthModule);
+    _manager = manager;
+    _reauthenticationModule = reauthModule;
+    _dispatcher = static_cast<id<BrowserCommands, ApplicationCommands>>(
+        browser->GetCommandDispatcher());
+  }
+  return self;
+}
+
+- (void)start {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  DCHECK(authenticationService);
+  NSString* syncingUserEmail = nil;
+  id<SystemIdentity> identity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
+  if (identity) {
+    SyncSetupService* syncSetupService =
+        SyncSetupServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    if (syncSetupService->IsDataTypeActive(syncer::PASSWORDS)) {
+      syncingUserEmail = identity.userEmail;
+    }
+  }
+
+  self.viewController = [[PasswordDetailsTableViewController alloc]
+      initWithCredentialType:CredentialTypeNew
+            syncingUserEmail:syncingUserEmail];
+
+  self.mediator = [[AddPasswordMediator alloc] initWithDelegate:self
+                                           passwordCheckManager:_manager];
+  self.mediator.consumer = self.viewController;
+  self.viewController.delegate = self.mediator;
+  self.viewController.addPasswordHandler = self;
+  self.viewController.reauthModule = self.reauthenticationModule;
+
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.viewController];
+  navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  navigationController.presentationController.delegate = self;
+
+  [self.baseViewController presentViewController:navigationController
+                                        animated:YES
+                                      completion:nil];
+}
+
+- (void)stop {
+  [self.viewController.navigationController dismissViewControllerAnimated:YES
+                                                               completion:nil];
+  self.mediator = nil;
+  self.viewController = nil;
+}
+
+#pragma mark - AddPasswordMediatorDelegate
+
+- (void)dismissPasswordDetailsTableViewController {
+  [self.delegate passwordDetailsTableViewControllerDidFinish:self];
+}
+
+- (void)setUpdatedPassword:
+    (const password_manager::CredentialUIEntry&)credential {
+  [self.delegate setMostRecentlyUpdatedPasswordDetails:credential];
+}
+
+- (void)showPasswordDetailsControllerWithCredential:
+    (const password_manager::CredentialUIEntry&)credential {
+  [self.delegate dismissAddViewControllerAndShowPasswordDetails:credential
+                                                    coordinator:self];
+}
+
+#pragma mark - AddPasswordHandler
+
+- (void)showPasscodeDialog {
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE);
+  NSString* message =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_CONTENT);
+  self.alertCoordinator =
+      [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
+                                                   browser:self.browser
+                                                     title:title
+                                                   message:message];
+
+  __weak __typeof(self) weakSelf = self;
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
+
+  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
+                                   action:nil
+                                    style:UIAlertActionStyleCancel];
+
+  [self.alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
+                action:^{
+                  [weakSelf.dispatcher closeSettingsUIAndOpenURL:command];
+                }
+                 style:UIAlertActionStyleDefault];
+
+  [self.alertCoordinator start];
+}
+
+@end

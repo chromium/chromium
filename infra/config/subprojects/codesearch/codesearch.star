@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -38,7 +38,6 @@ try_.defaults.goma_backend.set(goma.backend.RBE_PROD)
 try_.defaults.os.set(os.LINUX_DEFAULT)
 try_.defaults.pool.set("luci.chromium.try")
 try_.defaults.service_account.set("chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com")
-try_.defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 
 try_.defaults.caches.set([
     swarming.cache(
@@ -72,6 +71,20 @@ try_.builder(
 )
 
 try_.builder(
+    name = "gen-mac-try",
+    os = os.MAC_10_15,
+)
+
+try_.builder(
+    name = "gen-webview-try",
+)
+
+try_.builder(
     name = "gen-win-try",
     os = os.WINDOWS_10,
+    properties = {
+        "recipe_properties": {
+            "platform": "win",
+        },
+    },
 )

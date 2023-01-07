@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,9 @@ TaskAttributionTiming::TaskAttributionTiming(const AtomicString& name,
                                              const AtomicString& container_type,
                                              const AtomicString& container_src,
                                              const AtomicString& container_id,
-                                             const AtomicString& container_name)
-    : PerformanceEntry(name, 0.0, 0.0),
+                                             const AtomicString& container_name,
+                                             const uint32_t navigation_id)
+    : PerformanceEntry(name, 0.0, 0.0, navigation_id),
       container_type_(container_type),
       container_src_(container_src),
       container_id_(container_id),

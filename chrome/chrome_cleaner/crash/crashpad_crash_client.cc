@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -57,8 +56,8 @@ const char* ConvertDwordToString(DWORD value) {
   // characters long. Leave space for a NULL terminator character.
   static char buffer[11] = {};
 
-  _snprintf(buffer, base::size(buffer), "%u", value);
-  buffer[base::size(buffer) - 1] = '\0';
+  _snprintf(buffer, std::size(buffer), "%u", value);
+  buffer[std::size(buffer) - 1] = '\0';
   return buffer;
 }
 
@@ -73,8 +72,8 @@ const char* ConvertSizeTToString(SIZE_T value) {
   // terminator character.
   static char buffer[21] = {};
 
-  _snprintf(buffer, base::size(buffer), "%Iu", value);
-  buffer[base::size(buffer) - 1] = '\0';
+  _snprintf(buffer, std::size(buffer), "%Iu", value);
+  buffer[std::size(buffer) - 1] = '\0';
   return buffer;
 }
 

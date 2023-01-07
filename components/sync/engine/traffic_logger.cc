@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,19 +11,19 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "components/sync/protocol/proto_value_conversions.h"
-#include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
 
 namespace {
 template <class T>
 void LogData(const T& data,
-             std::unique_ptr<base::DictionaryValue> (
-                 *to_dictionary_value)(const T&, bool),
+             std::unique_ptr<base::DictionaryValue> (*to_dictionary_value)(
+                 const T&,
+                 const ProtoValueConversionOptions& options),
              const std::string& description) {
   if (DCHECK_IS_ON() && VLOG_IS_ON(1)) {
     std::unique_ptr<base::DictionaryValue> value =
-        (*to_dictionary_value)(data, true /* include_specifics */);
+        (*to_dictionary_value)(data, /*options=*/{});
     std::string message;
     base::JSONWriter::WriteWithOptions(
         *value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &message);

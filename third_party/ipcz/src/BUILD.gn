@@ -1,0 +1,443 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build_overrides/ipcz.gni")
+import("//testing/test.gni")
+
+enable_multiprocess_tests = is_linux
+
+buildflag_header("test_buildflags") {
+  header = "test_buildflags.h"
+  flags = [ "ENABLE_IPCZ_MULTIPROCESS_TESTS=$enable_multiprocess_tests" ]
+}
+
+shared_library("ipcz_shared") {
+  output_name = "ipcz"
+  sources = [
+    "api.cc",
+    "api.h",
+  ]
+  deps = [
+    ":ipcz_sources_standalone",
+    "//third_party/abseil-cpp:absl",
+  ]
+  public_deps = [ ":ipcz_header" ]
+  defines = [ "IPCZ_SHARED_LIBRARY" ]
+  public_configs = [ ":ipcz_include_dir" ]
+  configs += [ ":ipcz_include_src_dir" ]
+}
+
+source_set("ipcz_header") {
+  visibility = [ ":*" ]
+  public = [ "../include/ipcz/ipcz.h" ]
+  public_configs = [ ":ipcz_include_dir" ]
+}
+
+# This template emits two source_set targets for a target "foo": one named
+# "foo_standalone" for use in standalone ipcz library builds with no Chromium
+# dependencies; and one named "foo_chromium" for integration into the Chromium
+# build, with dependencies on //base.
+#
+# ipcz_source_set targets can express dependencies on each other with the
+# ipcz_deps and ipcz_public_deps variables, which automatically expand to the
+# same variant as the dependent source_set. Apart from this the targets are
+# roughly equivalent to a plain source_set.
+template("ipcz_source_set") {
+  source_set("${target_name}_standalone") {
+    forward_variables_from(invoker,
+                           [
+                             "visibility",
+                             "public",
+                             "sources",
+                             "deps",
+                             "public_deps",
+                             "public_configs",
+                             "testonly",
+                           ])
+
+    if (defined(invoker.configs)) {
+      configs += invoker.configs
+    }
+
+    if (!defined(public_deps)) {
+      public_deps = []
+    }
+    public_deps += [ "${ipcz_src_root}/standalone" ]
+    if (defined(invoker.ipcz_public_deps)) {
+      foreach(dep, invoker.ipcz_public_deps) {
+        public_deps += [ "${dep}_standalone" ]
+      }
+    }
+
+    if (defined(invoker.ipcz_deps)) {
+      if (!defined(deps)) {
+        deps = []
+      }
+      foreach(dep, invoker.ipcz_deps) {
+        deps += [ "${dep}_standalone" ]
+      }
+    }
+
+    defines = [ "IPCZ_STANDALONE" ]
+  }
+
+  # We can only emit the Chromium variant if we're in the Chromium build.
+  if (!build_ipcz_standalone) {
+    source_set("${target_name}_chromium") {
+      forward_variables_from(invoker,
+                             [
+                               "visibility",
+                               "public",
+                               "sources",
+                               "deps",
+                               "public_deps",
+                               "public_configs",
+                               "testonly",
+                             ])
+
+      if (defined(invoker.configs)) {
+        configs += invoker.configs
+      }
+
+      if (!defined(public_deps)) {
+        public_deps = []
+      }
+      public_deps += [ "//base" ]
+      if (defined(invoker.ipcz_public_deps)) {
+        foreach(dep, invoker.ipcz_public_deps) {
+          public_deps += [ "${dep}_chromium" ]
+        }
+      }
+
+      if (defined(invoker.ipcz_deps)) {
+        if (!defined(deps)) {
+          deps = []
+        }
+        foreach(dep, invoker.ipcz_deps) {
+          deps += [ "${dep}_chromium" ]
+        }
+      }
+    }
+  }
+}
+
+ipcz_source_set("ipcz") {
+  public = [ "api.h" ]
+  sources = [ "api.cc" ]
+  deps = [ "//third_party/abseil-cpp:absl" ]
+  ipcz_deps = [ ":ipcz_sources" ]
+  public_deps = [ ":ipcz_header" ]
+  public_configs = [ ":ipcz_include_dir" ]
+  configs = [ ":ipcz_include_src_dir" ]
+}
+
+ipcz_source_set("reference_drivers") {
+  testonly = true
+
+  public = [
+    "reference_drivers/async_reference_driver.h",
+    "reference_drivers/single_process_reference_driver_base.h",
+    "reference_drivers/sync_reference_driver.h",
+  ]
+
+  sources = [
+    "reference_drivers/async_reference_driver.cc",
+    "reference_drivers/object.cc",
+    "reference_drivers/object.h",
+    "reference_drivers/random.cc",
+    "reference_drivers/random.h",
+    "reference_drivers/single_process_reference_driver_base.cc",
+    "reference_drivers/sync_reference_driver.cc",
+  ]
+
+  if (enable_multiprocess_tests) {
+    public += [
+      "reference_drivers/file_descriptor.h",
+      "reference_drivers/handle_eintr.h",
+      "reference_drivers/memfd_memory.h",
+      "reference_drivers/multiprocess_reference_driver.h",
+      "reference_drivers/socket_transport.h",
+      "reference_drivers/wrapped_file_descriptor.h",
+    ]
+    sources += [
+      "reference_drivers/file_descriptor.cc",
+      "reference_drivers/memfd_memory.cc",
+      "reference_drivers/multiprocess_reference_driver.cc",
+      "reference_drivers/socket_transport.cc",
+      "reference_drivers/wrapped_file_descriptor.cc",
+    ]
+  }
+
+  ipcz_deps = [
+    ":impl",
+    ":util",
+  ]
+  public_deps = [ ":ipcz_header" ]
+  public_configs = [ ":ipcz_include_src_dir" ]
+
+  deps = []
+  if (is_fuchsia) {
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/zx" ]
+  }
+
+  if (is_android) {
+    deps += [ "//third_party/ashmem" ]
+  }
+}
+
+ipcz_source_set("util") {
+  visibility = [ ":*" ]
+
+  public = [
+    "util/log.h",
+    "util/multi_mutex_lock.h",
+    "util/ref_counted.h",
+    "util/stack_trace.h",
+    "util/strong_alias.h",
+  ]
+
+  sources = [ "util/ref_counted.cc" ]
+
+  deps = [ "//third_party/abseil-cpp:absl" ]
+  configs = [ ":ipcz_include_src_dir" ]
+}
+
+ipcz_source_set("impl") {
+  visibility = [ ":*" ]
+  public = [
+    "ipcz/api_object.h",
+    "ipcz/block_allocator.h",
+    "ipcz/box.h",
+    "ipcz/buffer_pool.h",
+    "ipcz/driver_memory.h",
+    "ipcz/driver_memory_mapping.h",
+    "ipcz/driver_object.h",
+    "ipcz/driver_transport.h",
+    "ipcz/fragment.h",
+    "ipcz/fragment_descriptor.h",
+    "ipcz/fragment_ref.h",
+    "ipcz/link_side.h",
+    "ipcz/link_type.h",
+    "ipcz/local_router_link.h",
+    "ipcz/message.h",
+    "ipcz/node.h",
+    "ipcz/node_connector.h",
+    "ipcz/node_link.h",
+    "ipcz/node_link_memory.h",
+    "ipcz/node_messages.h",
+    "ipcz/node_name.h",
+    "ipcz/node_type.h",
+    "ipcz/operation_context.h",
+    "ipcz/parcel.h",
+    "ipcz/parcel_queue.h",
+    "ipcz/portal.h",
+    "ipcz/ref_counted_fragment.h",
+    "ipcz/remote_router_link.h",
+    "ipcz/route_edge.h",
+    "ipcz/router.h",
+    "ipcz/router_link.h",
+    "ipcz/router_link_state.h",
+    "ipcz/sequence_number.h",
+    "ipcz/sequenced_queue.h",
+    "ipcz/sublink_id.h",
+    "ipcz/test_messages.h",
+    "ipcz/validator.h",
+  ]
+  sources = [
+    "ipcz/api_object.cc",
+    "ipcz/atomic_queue_state.cc",
+    "ipcz/atomic_queue_state.h",
+    "ipcz/block_allocator.cc",
+    "ipcz/block_allocator_pool.cc",
+    "ipcz/block_allocator_pool.h",
+    "ipcz/box.cc",
+    "ipcz/buffer_id.h",
+    "ipcz/buffer_pool.cc",
+    "ipcz/driver_memory.cc",
+    "ipcz/driver_memory_mapping.cc",
+    "ipcz/driver_object.cc",
+    "ipcz/driver_transport.cc",
+    "ipcz/fragment.cc",
+    "ipcz/fragment_descriptor.cc",
+    "ipcz/fragment_ref.cc",
+    "ipcz/handle_type.h",
+    "ipcz/link_side.cc",
+    "ipcz/link_type.cc",
+    "ipcz/local_router_link.cc",
+    "ipcz/message.cc",
+    "ipcz/message_macros/message_declaration_macros.h",
+    "ipcz/message_macros/message_definition_macros.h",
+    "ipcz/message_macros/message_listener_declaration_macros.h",
+    "ipcz/message_macros/message_listener_definition_macros.h",
+    "ipcz/message_macros/message_listener_dispatch_macros.h",
+    "ipcz/message_macros/message_params_declaration_macros.h",
+    "ipcz/message_macros/message_params_declaration_macros.h",
+    "ipcz/message_macros/undef_message_macros.h",
+    "ipcz/monitored_atomic.h",
+    "ipcz/node.cc",
+    "ipcz/node_connector.cc",
+    "ipcz/node_link.cc",
+    "ipcz/node_link_memory.cc",
+    "ipcz/node_messages.cc",
+    "ipcz/node_messages_generator.h",
+    "ipcz/node_name.cc",
+    "ipcz/parcel.cc",
+    "ipcz/parcel_queue.cc",
+    "ipcz/portal.cc",
+    "ipcz/ref_counted_fragment.cc",
+    "ipcz/remote_router_link.cc",
+    "ipcz/route_edge.cc",
+    "ipcz/router.cc",
+    "ipcz/router_descriptor.cc",
+    "ipcz/router_descriptor.h",
+    "ipcz/router_link_state.cc",
+    "ipcz/test_messages.cc",
+    "ipcz/test_messages_generator.h",
+    "ipcz/trap_event_dispatcher.cc",
+    "ipcz/trap_event_dispatcher.h",
+    "ipcz/trap_set.cc",
+    "ipcz/trap_set.h",
+    "ipcz/validator.cc",
+  ]
+  public_deps = [
+    ":ipcz_header",
+    "//third_party/abseil-cpp:absl",
+  ]
+  ipcz_public_deps = [ ":util" ]
+  public_configs = [ ":ipcz_include_dir" ]
+  configs = [ ":ipcz_include_src_dir" ]
+}
+
+ipcz_source_set("ipcz_sources") {
+  ipcz_public_deps = [
+    ":impl",
+    ":util",
+  ]
+
+  public_deps = [ ":ipcz_header" ]
+  public_configs = [ ":ipcz_include_dir" ]
+}
+
+config("ipcz_include_dir") {
+  include_dirs = [ "${ipcz_include_root}" ]
+}
+
+config("ipcz_include_src_dir") {
+  include_dirs = [ "${ipcz_src_root}" ]
+}
+
+ipcz_source_set("ipcz_test_support") {
+  testonly = true
+  public = [
+    "test/mock_driver.h",
+    "test/multinode_test.h",
+    "test/test.h",
+    "test/test_base.h",
+    "test/test_transport_listener.h",
+  ]
+
+  sources = [
+    "test/mock_driver.cc",
+    "test/multinode_test.cc",
+    "test/test_base.cc",
+    "test/test_transport_listener.cc",
+  ]
+
+  if (enable_multiprocess_tests) {
+    public += [ "test/test_child_launcher.h" ]
+    sources += [ "test/test_child_launcher.cc" ]
+  }
+
+  deps = [
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+  public_deps = [ ":test_buildflags" ]
+  ipcz_public_deps = [
+    ":impl",
+    ":ipcz",
+    ":reference_drivers",
+    ":util",
+  ]
+}
+
+ipcz_source_set("ipcz_tests_sources") {
+  testonly = true
+
+  sources = [
+    "api_test.cc",
+    "box_test.cc",
+    "connect_test.cc",
+    "ipcz/block_allocator_test.cc",
+    "ipcz/buffer_pool_test.cc",
+    "ipcz/driver_memory_test.cc",
+    "ipcz/driver_object_test.cc",
+    "ipcz/driver_transport_test.cc",
+    "ipcz/message_test.cc",
+    "ipcz/node_connector_test.cc",
+    "ipcz/node_link_memory_test.cc",
+    "ipcz/node_link_test.cc",
+    "ipcz/node_test.cc",
+    "ipcz/parcel_queue_test.cc",
+    "ipcz/ref_counted_fragment_test.cc",
+    "ipcz/route_edge_test.cc",
+    "ipcz/router_link_test.cc",
+    "ipcz/sequenced_queue_test.cc",
+    "merge_portals_test.cc",
+    "queueing_test.cc",
+    "reference_drivers/sync_reference_driver_test.cc",
+    "remote_portal_test.cc",
+    "trap_test.cc",
+    "util/ref_counted_test.cc",
+    "util/safe_math_test.cc",
+    "util/stack_trace_test.cc",
+  ]
+
+  if (enable_multiprocess_tests) {
+    sources += [
+      "reference_drivers/memfd_memory_test.cc",
+      "reference_drivers/multiprocess_reference_driver_test.cc",
+      "reference_drivers/socket_transport_test.cc",
+    ]
+  }
+
+  deps = [
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+  ipcz_deps = [
+    ":impl",
+    ":ipcz",
+    ":util",
+  ]
+  ipcz_public_deps = [
+    ":ipcz_test_support",
+    ":reference_drivers",
+  ]
+
+  configs = [ ":ipcz_include_src_dir" ]
+}
+
+# In Chromium builds, ipcz tests are built into the //ipc:ipc_tests test suite
+# by linking ":ipcz_test_sources_chromium" directly into that target. The
+# standalone ipcz_tests executable is still defined in Chromium builds though so
+# that it gets compile coverage from Chromium infrastructure.
+test("ipcz_tests") {
+  sources = [ "test/run_all_tests.cc" ]
+  deps = [
+    ":ipcz_tests_sources_standalone",
+    ":test_buildflags",
+    "${ipcz_src_root}/standalone",
+    "//testing/gtest",
+  ]
+  configs += [ ":ipcz_include_src_dir" ]
+}
+
+group("all") {
+  testonly = true
+  deps = [ ":ipcz_tests" ]
+}

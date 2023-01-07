@@ -1,11 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {LoadImageRequest} from './load_image_request.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
-/* #export */ function ImageLoaderUtil() {}
+import {LoadImageRequest} from './load_image_request.js';
+
+export function ImageLoaderUtil() {}
 
 /**
  * Checks if the options on the request contain any image processing.
@@ -154,7 +155,7 @@ ImageLoaderUtil.calculateCopyParameters = function(source, request) {
       canvas: {
         width: request.width,
         height: request.height,
-      }
+      },
     };
   }
 
@@ -170,17 +171,17 @@ ImageLoaderUtil.calculateCopyParameters = function(source, request) {
       x: 0,
       y: 0,
       width: source.width,
-      height: source.height
+      height: source.height,
     },
     target: {
       x: 0,
       y: 0,
       width: targetDimensions.width,
-      height: targetDimensions.height
+      height: targetDimensions.height,
     },
     canvas: {
       width: targetCanvasDimensions.width,
-      height: targetCanvasDimensions.height
-    }
+      height: targetCanvasDimensions.height,
+    },
   };
 };

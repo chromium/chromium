@@ -1,7 +1,3 @@
 file://components/signin/OWNERS
 
 alexilin@chromium.org
-
-# Solely for the duration of the refactoring of OAuth2TokenService
-# (https://crbug.com/950159). Do not choose for any other reviews.
-blundell@chromium.org

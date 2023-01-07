@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/modules/mediasource/media_source_registry_impl.h"
 
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -47,12 +46,10 @@ void MediaSourceRegistryImpl::Init() {
 void MediaSourceRegistryImpl::RegisterURL(SecurityOrigin*,
                                           const KURL& url,
                                           URLRegistrable* registrable) {
-  MutexLocker lock(map_mutex_);
-
-  DCHECK(IsMainThread() ||
-         RuntimeEnabledFeatures::MediaSourceInWorkersEnabled());
+  base::AutoLock lock(map_lock_);
 
   DCHECK_EQ(&registrable->Registry(), this);
+
   DCHECK(!url.IsEmpty());  // Caller of interface should already enforce this.
 
   DVLOG(1) << __func__ << " url=" << url << ", IsMainThread=" << IsMainThread();
@@ -64,11 +61,9 @@ void MediaSourceRegistryImpl::RegisterURL(SecurityOrigin*,
 }
 
 void MediaSourceRegistryImpl::UnregisterURL(const KURL& url) {
-  MutexLocker lock(map_mutex_);
+  base::AutoLock lock(map_lock_);
 
   DVLOG(1) << __func__ << " url=" << url << ", IsMainThread=" << IsMainThread();
-  DCHECK(IsMainThread() ||
-         RuntimeEnabledFeatures::MediaSourceInWorkersEnabled());
   DCHECK(!url.IsEmpty());  // Caller of interface should already enforce this.
 
   auto iter = media_sources_.find(url.GetString());
@@ -82,11 +77,14 @@ void MediaSourceRegistryImpl::UnregisterURL(const KURL& url) {
 
 scoped_refptr<MediaSourceAttachment> MediaSourceRegistryImpl::LookupMediaSource(
     const String& url) {
-  MutexLocker lock(map_mutex_);
+  base::AutoLock lock(map_lock_);
 
   DCHECK(IsMainThread());
-  DCHECK(!url.IsEmpty());
-  return media_sources_.at(url);
+  DCHECK(!url.empty());
+  auto iter = media_sources_.find(url);
+  if (iter == media_sources_.end())
+    return nullptr;
+  return iter->value;
 }
 
 MediaSourceRegistryImpl::MediaSourceRegistryImpl() {

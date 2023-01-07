@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define ASH_WM_GESTURES_WM_GESTURE_HANDLER_H_
 
 #include "ash/ash_export.h"
-#include "base/optional.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 class ScrollEvent;
@@ -59,8 +59,7 @@ class ASH_EXPORT WmGestureHandler {
   // Called by ProcessScrollEvent(). Depending on |finger_count|, may switch
   // desks, start overview or move the overview highlight. Returns true if the
   // event has been handled and should not be processed further, false
-  // otherwise. Forwards events to DesksController if
-  // |is_enhanced_desk_animations_| is true.
+  // otherwise. Forwards events to DesksController.
   bool ProcessEventImpl(int finger_count, float delta_x, float delta_y);
 
   // Called when a scroll is ended. Returns true if the scroll is processed.
@@ -77,10 +76,7 @@ class ASH_EXPORT WmGestureHandler {
                                 float scroll_y);
 
   // Contains the data during a scroll session. Empty is no scroll is underway.
-  base::Optional<ScrollData> scroll_data_;
-
-  // True when the enhanced desk animations feature is enabled.
-  const bool is_enhanced_desk_animations_;
+  absl::optional<ScrollData> scroll_data_;
 };
 
 }  // namespace ash

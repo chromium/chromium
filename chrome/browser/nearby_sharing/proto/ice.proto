@@ -1,0 +1,40 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/google/internal/communications/instantmessaging/v1/ice.proto
+// Messages not used in Chrome have been omitted.
+
+syntax = "proto3";
+
+package nearbyshare.tachyon_proto;
+
+option optimize_for = LITE_RUNTIME;
+
+import "duration.proto";
+
+message ICEConfiguration {
+  // Duration the config is valid for.
+  Duration lifetime_duration = 1;
+
+  // ICE servers to be used by the client to establish a connection.
+  // E.g.:
+  // [ { "urls": "stun:stun1.example.net" }, { "urls": "turn:turn.example.org",
+  // "username": "user", "credential": "myPassword" } ]
+  repeated ICEServerList ice_servers = 2;
+}
+
+message ICEServerList {
+  // STUN or TURN URI(s) as defined in [rfc7064] and [rfc7065] or other URI
+  // types.
+  repeated string urls = 1;
+
+  // If this IceServer object represents a TURN server, then this attribute
+  // specifies the credential to use with that TURN server.
+  string username = 2;
+
+  // If this IceServer object represents a TURN server, then this attribute
+  // specifies the credential to use with that TURN server.
+  string credential = 3;
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -17,7 +18,7 @@
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -33,6 +34,7 @@ namespace assistant {
 namespace {
 
 constexpr char kTestProfileName[] = "user@gmail.com";
+constexpr char16_t kTestProfileName16[] = u"user@gmail.com";
 constexpr char kTestGaiaId[] = "1234567890";
 
 class ScopedSpoofGoogleBrandedDevice {
@@ -50,6 +52,10 @@ class FakeUserManagerWithLocalState : public ash::FakeChromeUserManager {
     RegisterPrefs(test_local_state_->registry());
   }
 
+  FakeUserManagerWithLocalState(const FakeUserManagerWithLocalState&) = delete;
+  FakeUserManagerWithLocalState& operator=(
+      const FakeUserManagerWithLocalState&) = delete;
+
   PrefService* GetLocalState() const override {
     return test_local_state_.get();
   }
@@ -63,8 +69,6 @@ class FakeUserManagerWithLocalState : public ash::FakeChromeUserManager {
   TestingProfileManager* const testing_profile_manager_;
 
   std::unique_ptr<TestingPrefServiceSimple> test_local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUserManagerWithLocalState);
 };
 
 class ScopedLogIn {
@@ -86,6 +90,9 @@ class ScopedLogIn {
     MakeAccountAvailableAsPrimaryAccount(user_type);
   }
 
+  ScopedLogIn(const ScopedLogIn&) = delete;
+  ScopedLogIn& operator=(const ScopedLogIn&) = delete;
+
   ~ScopedLogIn() { fake_user_manager_->RemoveUserFromList(account_id_); }
 
  private:
@@ -104,8 +111,8 @@ class ScopedLogIn {
 
     if (!identity_test_env_->identity_manager()->HasPrimaryAccount(
             signin::ConsentLevel::kSignin)) {
-      identity_test_env_->MakeUnconsentedPrimaryAccountAvailable(
-          account_id_.GetUserEmail());
+      identity_test_env_->MakePrimaryAccountAvailable(
+          account_id_.GetUserEmail(), signin::ConsentLevel::kSignin);
     }
   }
 
@@ -130,7 +137,6 @@ class ScopedLogIn {
         EXPECT_EQ(account_id_, fake_user_manager_->GetGuestAccountId());
         return;
       case user_manager::NUM_USER_TYPES:
-      case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
         NOTREACHED();
     }
   }
@@ -161,7 +167,6 @@ class ScopedLogIn {
       case user_manager::USER_TYPE_GUEST:
         fake_user_manager_->AddGuestUser();
         return;
-      case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
       case user_manager::NUM_USER_TYPES:
         NOTREACHED();
     }
@@ -174,8 +179,6 @@ class ScopedLogIn {
   FakeUserManagerWithLocalState* fake_user_manager_;
   signin::IdentityTestEnvironment* identity_test_env_;
   const AccountId account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLogIn);
 };
 
 }  // namespace
@@ -183,6 +186,10 @@ class ScopedLogIn {
 class ChromeAssistantUtilTest : public testing::Test {
  public:
   ChromeAssistantUtilTest() = default;
+
+  ChromeAssistantUtilTest(const ChromeAssistantUtilTest&) = delete;
+  ChromeAssistantUtilTest& operator=(const ChromeAssistantUtilTest&) = delete;
+
   ~ChromeAssistantUtilTest() override = default;
 
   void SetUp() override {
@@ -192,8 +199,8 @@ class ChromeAssistantUtilTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
 
     profile_ = profile_manager_->CreateTestingProfile(
-        kTestProfileName, /*prefs=*/{}, base::UTF8ToUTF16(kTestProfileName),
-        /*avatar_id=*/0, /*supervised_user_id=*/{},
+        kTestProfileName, /*prefs=*/{}, kTestProfileName16,
+        /*avatar_id=*/0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
     identity_test_env_adaptor_ =
@@ -257,15 +264,13 @@ class ChromeAssistantUtilTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   // Owned by |profile_manager_|
   TestingProfile* profile_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAssistantUtilTest);
 };
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_PrimaryUser) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetGaiaUserAccountId(profile()));
 
-  EXPECT_EQ(chromeos::assistant::AssistantAllowedState::ALLOWED,
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
 }
 
@@ -277,7 +282,7 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_SecondaryUser) {
                                  GetGaiaUserAccountId(profile()));
 
   EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
+      ash::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
       IsAssistantAllowedForProfile(profile()));
 }
 
@@ -286,7 +291,7 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_ChildUser) {
                     GetGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_CHILD);
 
-  EXPECT_EQ(chromeos::assistant::AssistantAllowedState::ALLOWED,
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
 }
 
@@ -295,7 +300,7 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_GuestUser) {
                     GetGuestAccountId(), user_manager::USER_TYPE_GUEST);
 
   EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
+      ash::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
       IsAssistantAllowedForProfile(profile()));
 }
 
@@ -308,31 +313,30 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_Locale) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetGaiaUserAccountId(profile()));
 
-  EXPECT_EQ(chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_LOCALE,
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_LOCALE,
             IsAssistantAllowedForProfile(profile()));
   icu::Locale::setDefault(old_locale, error_code);
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_DemoMode) {
-  chromeos::DemoSession::SetDemoConfigForTesting(
-      chromeos::DemoSession::DemoModeConfig::kOnline);
+  ash::DemoSession::SetDemoConfigForTesting(
+      ash::DemoSession::DemoModeConfig::kOnline);
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_PUBLIC_ACCOUNT);
-  EXPECT_EQ(chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_DEMO_MODE,
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_DEMO_MODE,
             IsAssistantAllowedForProfile(profile()));
 
-  chromeos::DemoSession::SetDemoConfigForTesting(
-      chromeos::DemoSession::DemoModeConfig::kNone);
+  ash::DemoSession::SetDemoConfigForTesting(
+      ash::DemoSession::DemoModeConfig::kNone);
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_PublicSession) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_PUBLIC_ACCOUNT);
-  EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION,
-      IsAssistantAllowedForProfile(profile()));
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION,
+            IsAssistantAllowedForProfile(profile()));
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_NonGmail) {
@@ -340,16 +344,15 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_NonGmail) {
       GetFakeUserManager(), identity_test_env(),
       GetGaiaUserAccountId("user2@someotherdomain.com", "0123456789"));
 
-  EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE,
-      IsAssistantAllowedForProfile(profile()));
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE,
+            IsAssistantAllowedForProfile(profile()));
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_GoogleMail) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetGaiaUserAccountId("user2@googlemail.com", "0123456789"));
 
-  EXPECT_EQ(chromeos::assistant::AssistantAllowedState::ALLOWED,
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
 }
 
@@ -360,7 +363,7 @@ TEST_F(ChromeAssistantUtilTest,
       GetGaiaUserAccountId("user2@someotherdomain.com", "0123456789"));
 
   ScopedSpoofGoogleBrandedDevice make_google_branded_device;
-  EXPECT_EQ(chromeos::assistant::AssistantAllowedState::ALLOWED,
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
 }
 
@@ -370,9 +373,8 @@ TEST_F(ChromeAssistantUtilTest,
                     GetActiveDirectoryUserAccountId(profile()),
                     user_manager::USER_TYPE_ACTIVE_DIRECTORY);
 
-  EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE,
-      IsAssistantAllowedForProfile(profile()));
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE,
+            IsAssistantAllowedForProfile(profile()));
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_KioskApp) {
@@ -380,9 +382,8 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_KioskApp) {
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_KIOSK_APP);
 
-  EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
-      IsAssistantAllowedForProfile(profile()));
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
+            IsAssistantAllowedForProfile(profile()));
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_ArcKioskApp) {
@@ -390,9 +391,8 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_ArcKioskApp) {
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_ARC_KIOSK_APP);
 
-  EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
-      IsAssistantAllowedForProfile(profile()));
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
+            IsAssistantAllowedForProfile(profile()));
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_WebKioskApp) {
@@ -400,9 +400,8 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_WebKioskApp) {
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_WEB_KIOSK_APP);
 
-  EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
-      IsAssistantAllowedForProfile(profile()));
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
+            IsAssistantAllowedForProfile(profile()));
 }
 
 }  // namespace assistant

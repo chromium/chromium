@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,10 @@ class RTCPeerConnectionHandler;
 class MODULES_EXPORT MediaStreamTrackMetrics {
  public:
   explicit MediaStreamTrackMetrics();
+
+  MediaStreamTrackMetrics(const MediaStreamTrackMetrics&) = delete;
+  MediaStreamTrackMetrics& operator=(const MediaStreamTrackMetrics&) = delete;
+
   ~MediaStreamTrackMetrics();
 
   enum class Direction { kSend, kReceive };
@@ -100,8 +104,6 @@ class MODULES_EXPORT MediaStreamTrackMetrics {
   webrtc::PeerConnectionInterface::IceConnectionState ice_state_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamTrackMetrics);
 };
 
 }  // namespace blink

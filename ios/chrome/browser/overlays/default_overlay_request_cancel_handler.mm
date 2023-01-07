@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/default_overlay_request_cancel_handler.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,10 +28,10 @@ void DefaultOverlayRequestCancelHandler::Cancel() {
 DefaultOverlayRequestCancelHandler::NavigationHelper::NavigationHelper(
     DefaultOverlayRequestCancelHandler* cancel_handler,
     web::WebState* web_state)
-    : cancel_handler_(cancel_handler), scoped_observer_(this) {
+    : cancel_handler_(cancel_handler) {
   DCHECK(cancel_handler);
   DCHECK(web_state);
-  scoped_observer_.Add(web_state);
+  scoped_observation_.Observe(web_state);
 }
 
 DefaultOverlayRequestCancelHandler::NavigationHelper::~NavigationHelper() =
@@ -57,7 +57,7 @@ void DefaultOverlayRequestCancelHandler::NavigationHelper::RenderProcessGone(
 
 void DefaultOverlayRequestCancelHandler::NavigationHelper::WebStateDestroyed(
     web::WebState* web_state) {
-  scoped_observer_.RemoveAll();
+  scoped_observation_.Reset();
   cancel_handler_->Cancel();
   // The cancel handler is destroyed after Cancel(), so no code can be added
   // after this call.

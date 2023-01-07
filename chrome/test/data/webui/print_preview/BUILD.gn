@@ -1,578 +1,145 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+# Print Preview test files that contain // <if expr> and therefore require
+# preprocessing.
+preprocessed_tests = [
+  "button_strip_test.ts",
+  "color_settings_test.ts",
+  "destination_dialog_test.ts",
+  "destination_settings_test.ts",
+  "destination_store_test.ts",
+  "duplex_settings_test.ts",
+  "invalid_settings_browsertest.ts",
+  "key_event_test.ts",
+  "model_settings_availability_test.ts",
+  "model_settings_policy_test.ts",
+  "model_test.ts",
+  "native_layer_stub.ts",
+  "policy_test.ts",
+  "preview_generation_test.ts",
+  "print_button_test.ts",
+  "print_preview_app_test.ts",
+  "print_preview_sidebar_test.ts",
+  "print_preview_test_utils.ts",
+  "restore_state_test.ts",
+]
+
+if (is_mac || is_win) {
+  preprocessed_tests += [ "system_dialog_browsertest.ts" ]
+}
+
+# Print Preview test files that do not require preprocessing. If adding
+# // <if expr to any file below, move it to the list above.
+non_preprocessed_tests = [
+  "advanced_dialog_test.ts",
+  "advanced_item_test.ts",
+  "button_strip_interactive_test.ts",
+  "copies_settings_test.ts",
+  "custom_margins_test.ts",
+  "destination_item_test.ts",
+  "destination_list_test.ts",
+  "dpi_settings_test.ts",
+  "header_test.ts",
+  "layout_settings_test.ts",
+  "margins_settings_test.ts",
+  "media_size_settings_test.ts",
+  "number_settings_section_interactive_test.ts",
+  "number_settings_section_test.ts",
+  "other_options_settings_test.ts",
+  "pages_per_sheet_settings_test.ts",
+  "pages_settings_test.ts",
+  "pdf_toolbar_manager_test.ts",
+  "pdf_viewer_test.ts",
+  "pdf_zoom_toolbar_test.ts",
+  "preview_area_test.ts",
+  "scaling_settings_interactive_test.ts",
+  "scaling_settings_test.ts",
+  "select_mixin_test.ts",
+  "settings_select_test.ts",
+  "test_plugin_proxy.ts",
+]
+
+if (is_chromeos) {
+  non_preprocessed_tests += [
+    "destination_dialog_cros_interactive_test.ts",
+    "destination_dialog_cros_test.ts",
+    "destination_dropdown_cros_test.ts",
+    "destination_item_test_cros.ts",
+    "destination_search_test_chromeos.ts",
+    "destination_select_test_cros.ts",
+    "native_layer_cros_stub.ts",
+    "pin_settings_test.ts",
+    "print_server_store_test.ts",
+  ]
+} else {
+  non_preprocessed_tests += [
+    "destination_dialog_interactive_test.ts",
+    "destination_search_test.ts",
+    "destination_select_test.ts",
+  ]
+  preprocessed_tests += [ "link_container_test.ts" ]
+}
+
+preprocessed_folder = "$target_gen_dir/preprocessed"
 
 preprocess_if_expr("preprocess") {
   in_folder = "./"
-  out_folder = "$target_gen_dir"
-  in_files = [
-    "destination_settings_test.js",
-    "destination_store_test.js",
-    "invalid_settings_browsertest.js",
-    "key_event_test.js",
-    "policy_test.js",
-    "preview_generation_test.js",
-    "print_button_test.js",
-    "print_preview_app_test.js",
-    "print_preview_sidebar_test.js",
-    "restore_state_test.js",
-    "user_manager_test.js",
-  ]
+  out_folder = preprocessed_folder
+  in_files = preprocessed_tests
 }
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://print/=../../chrome/browser/resources/print_preview/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
+copy("copy") {
+  sources = non_preprocessed_tests
+  outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
+}
 
-  # TODO(crbug.com/1000989): Add JS type checking for all commented out targets.
+ts_library("build_ts") {
+  root_dir = preprocessed_folder
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://print/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/print_preview/tsc/*",
+            target_gen_dir),
+    "chrome://print/pdf/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
+                    target_gen_dir),
+    "chrome://print/pdf/pdf_viewer_wrapper.js|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/pdf/tsc/pdf_viewer_pp.js",
+            target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  definitions = [
+    "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/mime_handler_private.d.ts",
+  ]
+  in_files = preprocessed_tests + non_preprocessed_tests
   deps = [
-    ":advanced_dialog_test",
-    ":advanced_item_test",
-    ":button_strip_interactive_test",
-    ":button_strip_test",
-    ":cloud_print_interface_stub",
-    ":color_settings_test",
-    ":copies_settings_test",
-    ":custom_margins_test",
-    ":destination_item_test",
-    ":destination_list_test",
-    ":destination_settings_test",
-    ":destination_store_test",
-    ":dpi_settings_test",
-    ":duplex_settings_test",
-    ":header_test",
-    ":invalid_settings_browsertest",
-    ":key_event_test",
-    ":layout_settings_test",
-    ":link_container_test",
-    ":margins_settings_test",
-    ":media_size_settings_test",
-    ":model_settings_availability_test",
-    ":model_settings_policy_test",
-    ":model_test",
-    ":native_layer_stub",
-
-    #":number_settings_section_interactive_test",
-    #":number_settings_section_test",
-    #":other_options_settings_test",
-    #":pages_per_sheet_settings_test",
-    #":pages_settings_test",
-    #":pdf_toolbar_manager_test",
-    #":pdf_viewer_test",
-    #":pdf_zoom_toolbar_test",
-    #":pin_settings_test",
-    ":test_plugin_proxy",
-
-    #":policy_test",
-    #":preview_area_test",
-    #":preview_generation_test",
-    #":print_button_test",
-    #":print_preview_app_test",
-    #":print_preview_sidebar_test",
-    ":print_preview_test_utils",
-
-    #":restore_state_test",
-    #":scaling_settings_interactive_test",
-    #":scaling_settings_test",
-    #":select_behavior_test",
-    #":settings_select_test",
-    #":system_dialog_browsertest",
-    #":user_manager_test",
+    "..:build_ts",
+    "//chrome/browser/resources/pdf:build_ts",
+    "//chrome/browser/resources/print_preview:build_ts",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      ":destination_dialog_cros_interactive_test",
-      ":destination_dialog_cros_test",
-      ":destination_dropdown_cros_test",
-      ":destination_item_test_cros",
-      ":destination_search_test_chromeos",
-      ":destination_select_test_cros",
-      ":destination_settings_test_cros",
-      ":native_layer_cros_stub",
-      ":print_server_store_test",
-    ]
-  } else {
-    deps += [
-      ":destination_dialog_interactive_test",
-      ":destination_dialog_test",
-      ":destination_search_test",
-      ":destination_select_test",
-    ]
-  }
-}
-
-js_library("advanced_dialog_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("advanced_item_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("button_strip_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("button_strip_interactive_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("color_settings_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("copies_settings_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("custom_margins_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("print_preview_test_utils") {
-  deps = [
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  extra_deps = [
+    ":copy",
+    ":preprocess",
   ]
 }
 
-js_library("native_layer_stub") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:test_browser_proxy.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-  ]
-}
-
-js_library("cloud_print_interface_stub") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:test_browser_proxy.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-  ]
-}
-
-js_library("destination_settings_test") {
-  deps = [
-    ":cloud_print_interface_stub",
-    ":native_layer_stub",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-if (is_chromeos_ash) {
-  js_library("destination_dialog_cros_test") {
-    deps = [
-      ":cloud_print_interface_stub",
-      ":native_layer_stub",
-      ":print_preview_test_utils",
-      "..:chai_assert",
-      "..:test_util.m",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-} else {
-  js_library("destination_dialog_test") {
-    deps = [
-      ":cloud_print_interface_stub",
-      ":native_layer_stub",
-      ":print_preview_test_utils",
-      "..:chai_assert",
-      "..:test_util.m",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-}
-
-if (is_chromeos_ash) {
-  js_library("destination_dialog_cros_interactive_test") {
-    deps = [
-      ":cloud_print_interface_stub",
-      ":native_layer_stub",
-      ":print_preview_test_utils",
-      "..:chai_assert",
-      "..:test_util.m",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-} else {
-  js_library("destination_dialog_interactive_test") {
-    deps = [
-      ":cloud_print_interface_stub",
-      ":native_layer_stub",
-      ":print_preview_test_utils",
-      "..:chai_assert",
-      "..:test_util.m",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-}
-
-js_library("destination_list_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("destination_item_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-if (is_chromeos_ash) {
-  js_library("native_layer_cros_stub") {
-    deps = [
-      "..:test_browser_proxy.m",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-      "//ui/webui/resources/js:promise_resolver.m",
-    ]
-  }
-
-  js_library("destination_settings_test_cros") {
-    deps = [
-      ":native_layer_cros_stub",
-      ":native_layer_stub",
-      "..:chai_assert",
-      "..:test_util.m",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-      "//ui/webui/resources/js:cr.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-
-  js_library("destination_dropdown_cros_test") {
-    deps = [
-      ":print_preview_test_utils",
-      "..:chai_assert",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-    ]
-  }
-
-  js_library("destination_select_test_cros") {
-    deps = [
-      ":native_layer_cros_stub",
-      ":native_layer_stub",
-      ":print_preview_test_utils",
-      "..:chai_assert",
-      "..:test_util.m",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-    ]
-  }
-
-  js_library("destination_search_test_chromeos") {
-    deps = [
-      ":native_layer_cros_stub",
-      ":native_layer_stub",
-      ":print_preview_test_utils",
-      "..:chai_assert",
-      "..:test_util.m",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-
-  js_library("destination_item_test_cros") {
-    deps = [
-      ":print_preview_test_utils",
-      "..:chai_assert",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-} else {
-  js_library("destination_select_test") {
-    deps = [
-      ":print_preview_test_utils",
-      "..:chai_assert",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-
-  js_library("destination_search_test") {
-    deps = [
-      ":native_layer_stub",
-      ":print_preview_test_utils",
-      "..:chai_assert",
-      "..:test_util.m",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-}
-
-js_library("destination_store_test") {
-  deps = [
-    ":cloud_print_interface_stub",
-    ":native_layer_stub",
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("dpi_settings_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("duplex_settings_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("header_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_plural_string_proxy",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("test_plugin_proxy") {
-  deps = [
-    "..:test_browser_proxy.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("invalid_settings_browsertest") {
-  deps = [
-    ":cloud_print_interface_stub",
-    ":native_layer_stub",
-    ":print_preview_test_utils",
-    ":test_plugin_proxy",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("key_event_test") {
-  deps = [
-    ":native_layer_stub",
-    ":print_preview_test_utils",
-    ":test_plugin_proxy",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("layout_settings_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("link_container_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("margins_settings_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("media_size_settings_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("model_settings_availability_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("model_settings_policy_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("model_test") {
-  deps = [
-    ":print_preview_test_utils",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/print_preview:print_preview",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-if (is_chromeos_ash) {
-  js_library("print_server_store_test") {
-    deps = [
-      ":native_layer_cros_stub",
-      "..:chai_assert",
-      "..:test_util.m",
-      "//chrome/browser/resources/print_preview:print_preview",
-      "//ui/webui/resources/js:assert.m",
-      "//ui/webui/resources/js:cr.m",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
+generate_grd("build_grdp") {
+  grd_prefix = "webui_print_preview"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "print_preview"
 }

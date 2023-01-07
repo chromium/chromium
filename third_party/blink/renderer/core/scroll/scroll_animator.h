@@ -34,11 +34,13 @@
 #include <memory>
 #include "base/time/default_tick_clock.h"
 
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/animation/scroll_offset_animation_curve.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_client.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
-#include "third_party/blink/renderer/platform/animation/compositor_scroll_offset_animation_curve.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
@@ -111,17 +113,16 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   // The callback will be run if the animation is updated by another
   // UserScroll, otherwise it is called when the animation is finished,
   // cancelled or reset.
-  ScrollResult UserScroll(ScrollGranularity,
+  ScrollResult UserScroll(ui::ScrollGranularity,
                           const ScrollOffset& delta,
                           ScrollableArea::ScrollCallback on_finish) override;
   void ScrollToOffsetWithoutAnimation(const ScrollOffset&) override;
   ScrollOffset DesiredTargetOffset() const override;
+  void AdjustAnimation(const gfx::Vector2d& adjustment) override;
 
   // ScrollAnimatorCompositorCoordinator implementation.
-  void TickAnimation(double monotonic_time) override;
+  void TickAnimation(base::TimeTicks monotonic_time) override;
   void CancelAnimation() override;
-  void AdjustAnimationAndSetScrollOffset(const ScrollOffset&,
-                                         mojom::blink::ScrollType) override;
   void TakeOverCompositorAnimation() override;
   void ResetAnimationState() override;
   void UpdateCompositorAnimations() override;
@@ -131,7 +132,7 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
 
   void Trace(Visitor*) const override;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool HaveScrolledSincePageLoad() { return have_scrolled_since_page_load_; }
 #endif
 
@@ -152,12 +153,12 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   // because we are already at targetPos.
   bool WillAnimateToOffset(const ScrollOffset& target_pos);
 
-  std::unique_ptr<CompositorScrollOffsetAnimationCurve> animation_curve_;
+  std::unique_ptr<cc::ScrollOffsetAnimationCurve> animation_curve_;
   const base::TickClock* const tick_clock_;
   base::TimeTicks start_time_;
 
   ScrollOffset target_offset_;
-  ScrollGranularity last_granularity_;
+  ui::ScrollGranularity last_granularity_;
 
   // on_finish_ is a callback to call on animation finished, cancelled, or
   // otherwise interrupted in any way.
@@ -167,7 +168,7 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   // if it is still useful.
   // TODO(crbug.com/1122682): This is necessary for fade-in/out animations
   // on Mac scrollbars. Remove this when MacScrollbarAnimatorImpl is removed.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool have_scrolled_since_page_load_;
 #endif
 };

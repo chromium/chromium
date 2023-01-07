@@ -1,0 +1,135 @@
+diff --git a/base/third_party/symbolize/symbolize.cc b/base/third_party/symbolize/symbolize.cc
+index e2f99a647bf88..3c72fd1183f48 100644
+--- a/base/third_party/symbolize/symbolize.cc
++++ b/base/third_party/symbolize/symbolize.cc
+@@ -141,12 +141,16 @@ _END_GOOGLE_NAMESPACE_
+ 
+ _START_GOOGLE_NAMESPACE_
+ 
+-// Read up to "count" bytes from "offset" in the file pointed by file
+-// descriptor "fd" into the buffer starting at "buf" while handling short reads
+-// and EINTR.  On success, return the number of bytes read.  Otherwise, return
+-// -1.
+-static ssize_t ReadFromOffset(const int fd, void *buf, const size_t count,
+-                              const size_t offset) {
++FileDescriptor::~FileDescriptor() {
++  if (fd_ >= 0) {
++    close(fd_);
++  }
++}
++
++ssize_t ReadFromOffset(const int fd,
++                       void* buf,
++                       const size_t count,
++                       const size_t offset) {
+   SAFE_ASSERT(fd >= 0);
+   SAFE_ASSERT(count <= static_cast<size_t>(std::numeric_limits<ssize_t>::max()));
+   char *buf0 = reinterpret_cast<char *>(buf);
+@@ -371,22 +375,6 @@ static bool GetSymbolFromObjectFile(const int fd,
+ }
+ 
+ namespace {
+-// Thin wrapper around a file descriptor so that the file descriptor
+-// gets closed for sure.
+-struct FileDescriptor {
+-  const int fd_;
+-  explicit FileDescriptor(int fd) : fd_(fd) {}
+-  ~FileDescriptor() {
+-    if (fd_ >= 0) {
+-      close(fd_);
+-    }
+-  }
+-  int get() { return fd_; }
+-
+- private:
+-  FileDescriptor(const FileDescriptor &);
+-  void operator=(const FileDescriptor&);
+-};
+ 
+ // Helper class for reading lines from file.
+ //
+@@ -503,20 +491,11 @@ static char *GetHex(const char *start, const char *end, uint64_t *hex) {
+   return const_cast<char *>(p);
+ }
+ 
+-// Searches for the object file (from /proc/self/maps) that contains
+-// the specified pc.  If found, sets |start_address| to the start address
+-// of where this object file is mapped in memory, sets the module base
+-// address into |base_address|, copies the object file name into
+-// |out_file_name|, and attempts to open the object file.  If the object
+-// file is opened successfully, returns the file descriptor.  Otherwise,
+-// returns -1.  |out_file_name_size| is the size of the file name buffer
+-// (including the null-terminator).
+-static ATTRIBUTE_NOINLINE int
+-OpenObjectFileContainingPcAndGetStartAddress(uint64_t pc,
+-                                             uint64_t &start_address,
+-                                             uint64_t &base_address,
+-                                             char *out_file_name,
+-                                             size_t out_file_name_size) {
++int OpenObjectFileContainingPcAndGetStartAddress(uint64_t pc,
++                                                 uint64_t& start_address,
++                                                 uint64_t& base_address,
++                                                 char* out_file_name,
++                                                 size_t out_file_name_size) {
+   int object_fd;
+ 
+   int maps_fd;
+diff --git a/base/third_party/symbolize/symbolize.h b/base/third_party/symbolize/symbolize.h
+index 5959e579ffc93..11b24fbd06f5c 100644
+--- a/base/third_party/symbolize/symbolize.h
++++ b/base/third_party/symbolize/symbolize.h
+@@ -94,17 +94,54 @@
+ 
+ _START_GOOGLE_NAMESPACE_
+ 
++// Read up to "count" bytes from "offset" in the file pointed by file
++// descriptor "fd" into the buffer starting at "buf" while handling short reads
++// and EINTR.  On success, return the number of bytes read.  Otherwise, return
++// -1.
++ssize_t ReadFromOffset(const int fd,
++                       void* buf,
++                       const size_t count,
++                       const size_t offset);
++
+ // Gets the section header for the given name, if it exists. Returns true on
+ // success. Otherwise, returns false.
+ bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
+                             ElfW(Shdr) *out);
+ 
++// Searches for the object file (from /proc/self/maps) that contains
++// the specified pc.  If found, sets |start_address| to the start address
++// of where this object file is mapped in memory, sets the module base
++// address into |base_address|, copies the object file name into
++// |out_file_name|, and attempts to open the object file.  If the object
++// file is opened successfully, returns the file descriptor.  Otherwise,
++// returns -1.  |out_file_name_size| is the size of the file name buffer
++// (including the null-terminator).
++ATTRIBUTE_NOINLINE int OpenObjectFileContainingPcAndGetStartAddress(
++    uint64_t pc,
++    uint64_t& start_address,
++    uint64_t& base_address,
++    char* out_file_name,
++    size_t out_file_name_size);
++
+ _END_GOOGLE_NAMESPACE_
+ 
+ #endif  /* __ELF__ */
+ 
+ _START_GOOGLE_NAMESPACE_
+ 
++// Thin wrapper around a file descriptor so that the file descriptor
++// gets closed for sure.
++struct FileDescriptor {
++  const int fd_;
++  explicit FileDescriptor(int fd) : fd_(fd) {}
++  ~FileDescriptor();
++  int get() { return fd_; }
++
++ private:
++  FileDescriptor(const FileDescriptor &);
++  void operator=(const FileDescriptor&);
++};
++
+ // Restrictions on the callbacks that follow:
+ //  - The callbacks must not use heaps but only use stacks.
+ //  - The callbacks must be async-signal-safe.

@@ -28,7 +28,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/portal/document_portals.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -67,6 +68,7 @@
 #include "third_party/blink/renderer/core/page/drag_controller.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
 #include "third_party/blink/renderer/core/page/plugin_data.h"
 #include "third_party/blink/renderer/core/page/plugins_changed_observer.h"
@@ -77,16 +79,15 @@
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/validation_message_client_impl.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
@@ -105,6 +106,7 @@ const int kMaxNumberOfFrames = 1000;
 const int kTenFrames = 10;
 
 bool g_limit_max_frames_to_ten_for_testing = false;
+
 }  // namespace
 
 // Function defined in third_party/blink/public/web/blink.h.
@@ -135,7 +137,7 @@ void Page::InsertOrdinaryPageForTesting(Page* page) {
 
 HeapVector<Member<Page>> Page::RelatedPages() {
   HeapVector<Member<Page>> result;
-  Page* ptr = this->next_related_page_;
+  Page* ptr = next_related_page_;
   while (ptr != this) {
     result.push_back(ptr);
     ptr = ptr->next_related_page_;
@@ -143,27 +145,20 @@ HeapVector<Member<Page>> Page::RelatedPages() {
   return result;
 }
 
-float DeviceScaleFactorDeprecated(LocalFrame* frame) {
-  if (!frame)
-    return 1;
-  Page* page = frame->GetPage();
-  if (!page)
-    return 1;
-  return page->DeviceScaleFactorDeprecated();
-}
-
 Page* Page::CreateNonOrdinary(
-    PageClients& page_clients,
+    ChromeClient& chrome_client,
     scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
-  return MakeGarbageCollected<Page>(page_clients, agent_group_scheduler,
+  return MakeGarbageCollected<Page>(base::PassKey<Page>(), chrome_client,
+                                    agent_group_scheduler,
                                     /*is_ordinary=*/false);
 }
 
 Page* Page::CreateOrdinary(
-    PageClients& page_clients,
+    ChromeClient& chrome_client,
     Page* opener,
     scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
-  Page* page = MakeGarbageCollected<Page>(page_clients, agent_group_scheduler,
+  Page* page = MakeGarbageCollected<Page>(base::PassKey<Page>(), chrome_client,
+                                          agent_group_scheduler,
                                           /*is_ordinary=*/true);
 
   if (opener) {
@@ -182,15 +177,21 @@ Page* Page::CreateOrdinary(
   return page;
 }
 
-Page::Page(PageClients& page_clients,
+Page::Page(base::PassKey<Page>,
+           ChromeClient& chrome_client,
            scheduler::WebAgentGroupScheduler& agent_group_scheduler,
            bool is_ordinary)
     : SettingsDelegate(std::make_unique<Settings>()),
       main_frame_(nullptr),
+      fenced_frames_impl_(
+          features::IsFencedFramesEnabled()
+              ? absl::optional<features::FencedFramesImplementationType>(
+                    features::kFencedFramesImplementationTypeParam.Get())
+              : absl::nullopt),
       agent_group_scheduler_(agent_group_scheduler),
       animator_(MakeGarbageCollected<PageAnimator>(*this)),
       autoscroll_controller_(MakeGarbageCollected<AutoscrollController>(*this)),
-      chrome_client_(page_clients.chrome_client),
+      chrome_client_(&chrome_client),
       drag_caret_(MakeGarbageCollected<DragCaret>()),
       drag_controller_(MakeGarbageCollected<DragController>(this)),
       focus_controller_(MakeGarbageCollected<FocusController>(this)),
@@ -202,7 +203,6 @@ Page::Page(PageClients& page_clients,
           MakeGarbageCollected<PointerLockController>(this)),
       browser_controls_(MakeGarbageCollected<BrowserControls>(*this)),
       console_message_storage_(MakeGarbageCollected<ConsoleMessageStorage>()),
-      inspector_issue_storage_(MakeGarbageCollected<InspectorIssueStorage>()),
       global_root_scroller_controller_(
           MakeGarbageCollected<TopDocumentRootScrollerController>(*this)),
       visual_viewport_(MakeGarbageCollected<VisualViewport>(*this)),
@@ -216,7 +216,7 @@ Page::Page(PageClients& page_clients,
           MakeGarbageCollected<ValidationMessageClientImpl>(*this)),
       opened_by_dom_(false),
       tab_key_cycles_through_elements_(true),
-      device_scale_factor_(1),
+      inspector_device_scale_factor_override_(1),
       lifecycle_state_(mojom::blink::PageLifecycleState::New()),
       is_ordinary_(is_ordinary),
       is_cursor_visible_(true),
@@ -228,21 +228,17 @@ Page::Page(PageClients& page_clients,
   DCHECK(!AllPages().Contains(this));
   AllPages().insert(this);
 
-  // Try to dereference the scrollbar theme. This is here to ensure tests are
-  // correctly setting up their platform theme or mocking scrollbars. On
-  // Android, unit tests run without a ThemeEngine and thus must set a mock
-  // ScrollbarTheme, if they don't this call will crash. To set a mock theme,
-  // see ScopedMockOverlayScrollbars or WebScopedMockScrollbars.
-  DCHECK(&GetScrollbarTheme());
-
   page_scheduler_ =
       agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(this);
   // The scheduler should be set before the main frame.
   DCHECK(!main_frame_);
-  history_navigation_virtual_time_pauser_ =
-      page_scheduler_->CreateWebScopedVirtualTimePauser(
-          "HistoryNavigation",
-          WebScopedVirtualTimePauser::VirtualTaskDuration::kInstant);
+  if (auto* virtual_time_controller =
+          page_scheduler_->GetVirtualTimeController()) {
+    history_navigation_virtual_time_pauser_ =
+        virtual_time_controller->CreateWebScopedVirtualTimePauser(
+            "HistoryNavigation",
+            WebScopedVirtualTimePauser::VirtualTaskDuration::kInstant);
+  }
 }
 
 Page::~Page() {
@@ -303,11 +299,11 @@ const ConsoleMessageStorage& Page::GetConsoleMessageStorage() const {
 }
 
 InspectorIssueStorage& Page::GetInspectorIssueStorage() {
-  return *inspector_issue_storage_;
+  return inspector_issue_storage_;
 }
 
 const InspectorIssueStorage& Page::GetInspectorIssueStorage() const {
-  return *inspector_issue_storage_;
+  return inspector_issue_storage_;
 }
 
 TopDocumentRootScrollerController& Page::GlobalRootScrollerController() const {
@@ -371,8 +367,18 @@ SpatialNavigationController& Page::GetSpatialNavigationController() {
   return *spatial_navigation_controller_;
 }
 
+void Page::UsesOverlayScrollbarsChanged() {
+  for (Page* page : AllPages()) {
+    for (Frame* frame = page->MainFrame(); frame;
+         frame = frame->Tree().TraverseNext()) {
+      if (auto* local_frame = DynamicTo<LocalFrame>(frame))
+        local_frame->View()->UsesOverlayScrollbarsChanged();
+    }
+  }
+}
+
 void Page::PlatformColorsChanged() {
-  for (const Page* page : AllPages())
+  for (const Page* page : AllPages()) {
     for (Frame* frame = page->MainFrame(); frame;
          frame = frame->Tree().TraverseNext()) {
       if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
@@ -381,6 +387,7 @@ void Page::PlatformColorsChanged() {
           view->InvalidatePaintForViewAndDescendants();
       }
     }
+  }
 }
 
 void Page::ColorSchemeChanged() {
@@ -390,6 +397,11 @@ void Page::ColorSchemeChanged() {
       if (auto* local_frame = DynamicTo<LocalFrame>(frame))
         local_frame->GetDocument()->ColorSchemeChanged();
     }
+}
+
+void Page::ColorProvidersChanged() {
+  for (Page* page : AllPages())
+    page->InvalidatePaint();
 }
 
 void Page::InitialStyleChanged() {
@@ -402,14 +414,11 @@ void Page::InitialStyleChanged() {
   }
 }
 
-PluginData* Page::GetPluginData(const SecurityOrigin* main_frame_origin) {
+PluginData* Page::GetPluginData() {
   if (!plugin_data_)
     plugin_data_ = MakeGarbageCollected<PluginData>();
 
-  if (!plugin_data_->Origin() ||
-      !main_frame_origin->IsSameOriginWith(plugin_data_->Origin()))
-    plugin_data_->UpdatePluginList(main_frame_origin);
-
+  plugin_data_->UpdatePluginList();
   return plugin_data_.Get();
 }
 
@@ -498,16 +507,6 @@ float Page::PageScaleFactor() const {
   return GetVisualViewport().Scale();
 }
 
-void Page::SetDeviceScaleFactorDeprecated(float scale_factor) {
-  if (device_scale_factor_ == scale_factor)
-    return;
-
-  device_scale_factor_ = scale_factor;
-
-  if (MainFrame() && MainFrame()->IsLocalFrame())
-    DeprecatedLocalMainFrame()->DeviceScaleFactorChanged();
-}
-
 void Page::AllVisitedStateChanged(bool invalidate_visited_link_hashes) {
   for (const Page* page : OrdinaryPages()) {
     for (Frame* frame = page->main_frame_; frame;
@@ -542,10 +541,15 @@ void Page::SetVisibilityState(
   if (is_initial_state)
     return;
 
+  HeapVector<Member<PageVisibilityObserver>> observers;
   page_visibility_observer_set_.ForEachObserver(
-      [](PageVisibilityObserver* observer) {
-        observer->PageVisibilityChanged();
+      [&](PageVisibilityObserver* observer) {
+        observers.push_back(observer);
       });
+  std::sort(observers.begin(), observers.end(),
+            recordreplay::CompareMemberByPointerId<Member<PageVisibilityObserver>>());
+  for (PageVisibilityObserver* observer : observers)
+    observer->PageVisibilityChanged();
 
   if (main_frame_) {
     if (lifecycle_state_->visibility ==
@@ -610,12 +614,25 @@ void CheckFrameCountConsistency(int expected_frame_count, Frame* frame) {
   int actual_frame_count = 0;
 
   if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
-    actual_frame_count += static_cast<int>(
-        DocumentPortals::From(*local_frame->GetDocument()).GetPortals().size());
+    if (auto* portals = DocumentPortals::Get(*local_frame->GetDocument())) {
+      actual_frame_count += static_cast<int>(portals->GetPortals().size());
+    }
   }
 
-  for (; frame; frame = frame->Tree().TraverseNext())
+  for (; frame; frame = frame->Tree().TraverseNext()) {
     ++actual_frame_count;
+
+    // Check the ``DocumentFencedFrames`` on every local frame beneath
+    // the ``frame`` to get an accurate count (i.e. if an iframe embeds
+    // a fenced frame and creates a new ``DocumentFencedFrames`` object).
+    if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+      if (auto* fenced_frames =
+              DocumentFencedFrames::Get(*local_frame->GetDocument())) {
+        actual_frame_count +=
+            static_cast<int>(fenced_frames->GetFencedFrames().size());
+      }
+    }
+  }
 
   DCHECK_EQ(expected_frame_count, actual_frame_count);
 }
@@ -647,8 +664,10 @@ void Page::SettingsChanged(ChangeType change_type) {
       }
       break;
     case ChangeType::kViewportPaintProperties:
-      GetVisualViewport().SetNeedsPaintPropertyUpdate();
-      GetVisualViewport().InitializeScrollbars();
+      if (GetVisualViewport().IsActiveViewport()) {
+        GetVisualViewport().SetNeedsPaintPropertyUpdate();
+        GetVisualViewport().InitializeScrollbars();
+      }
       if (auto* local_frame = DynamicTo<LocalFrame>(MainFrame())) {
         if (LocalFrameView* view = local_frame->View())
           view->SetNeedsPaintPropertyUpdate();
@@ -708,12 +727,12 @@ void Page::SettingsChanged(ChangeType change_type) {
           ->AXObjectCacheOwner()
           .ClearAXObjectCache();
       break;
-    case ChangeType::kViewportRule: {
+    case ChangeType::kViewportStyle: {
       auto* main_local_frame = DynamicTo<LocalFrame>(MainFrame());
       if (!main_local_frame)
         break;
       if (Document* doc = main_local_frame->GetDocument())
-        doc->GetStyleEngine().ViewportRulesChanged();
+        doc->GetStyleEngine().ViewportStyleSettingChanged();
       break;
     }
     case ChangeType::kTextTrackKindUserPreference:
@@ -776,7 +795,7 @@ void Page::SettingsChanged(ChangeType change_type) {
         // Iterate through all of the scrollable areas and mark their layout
         // objects for layout.
         if (LocalFrameView* view = local_frame->View()) {
-          if (const auto* scrollable_areas = view->ScrollableAreas()) {
+          if (const auto* scrollable_areas = view->UserScrollableAreas()) {
             for (const auto& scrollable_area : *scrollable_areas) {
               if (scrollable_area->ScrollsOverflow()) {
                 if (auto* layout_box = scrollable_area->GetLayoutBox()) {
@@ -842,8 +861,8 @@ void Page::InvalidatePaint() {
 }
 
 void Page::NotifyPluginsChanged() const {
-  HeapVector<Member<PluginsChangedObserver>, 32> observers;
-  CopyToVector(plugins_changed_observers_, observers);
+  HeapVector<Member<PluginsChangedObserver>, 32> observers(
+      plugins_changed_observers_);
   for (PluginsChangedObserver* observer : observers)
     observer->PluginsChanged();
 }
@@ -854,18 +873,13 @@ void Page::UpdateAcceleratedCompositingSettings() {
     auto* local_frame = DynamicTo<LocalFrame>(frame);
     if (!local_frame)
       continue;
-    LayoutView* layout_view = local_frame->ContentLayoutObject();
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      layout_view->Compositor()->UpdateAcceleratedCompositingSettings();
-    } else {
-      // Mark all scrollable areas as needing a paint property update because
-      // the compositing reasons may have changed.
-      if (const auto* areas = local_frame->View()->ScrollableAreas()) {
-        for (const auto& scrollable_area : *areas) {
-          if (scrollable_area->ScrollsOverflow()) {
-            if (auto* layout_box = scrollable_area->GetLayoutBox())
-              layout_box->SetNeedsPaintPropertyUpdate();
-          }
+    // Mark all scrollable areas as needing a paint property update because the
+    // compositing reasons may have changed.
+    if (const auto* areas = local_frame->View()->UserScrollableAreas()) {
+      for (const auto& scrollable_area : *areas) {
+        if (scrollable_area->ScrollsOverflow()) {
+          if (auto* layout_box = scrollable_area->GetLayoutBox())
+            layout_box->SetNeedsPaintPropertyUpdate();
         }
       }
     }
@@ -889,6 +903,22 @@ void Page::DidCommitLoad(LocalFrame* frame) {
                                         mojom::blink::ScrollBehavior::kInstant,
                                         ScrollableArea::ScrollCallback());
   }
+  // crbug/1312107: If DevTools has "Highlight ad frames" checked when the
+  // main frame is refreshed or the ad frame is navigated to a different
+  // process, DevTools calls `Settings::SetHighlightAds` so early that the
+  // local frame is still in provisional state (not swapped in). Explicitly
+  // invalidate the settings here as `Page::DidCommitLoad` is only fired after
+  // the navigation is committed, at which point the local frame must already
+  // be swapped-in.
+  //
+  // This explicit update is placed outside the above if-block to accommodate
+  // iframes. The iframes share the same Page (frame tree) as the main frame,
+  // but local frame swap can happen to any of the iframes.
+  //
+  // TODO(crbug/1357763): Properly apply the settings when the local frame
+  // becomes the main frame of the page (i.e. when the navigation is
+  // committed).
+  frame->UpdateAdHighlight();
   GetLinkHighlight().ResetForPageNavigation();
 }
 
@@ -921,7 +951,6 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(scrolling_coordinator_);
   visitor->Trace(browser_controls_);
   visitor->Trace(console_message_storage_);
-  visitor->Trace(inspector_issue_storage_);
   visitor->Trace(global_root_scroller_controller_);
   visitor->Trace(visual_viewport_);
   visitor->Trace(overscroll_controller_);
@@ -936,19 +965,12 @@ void Page::Trace(Visitor* visitor) const {
   Supplementable<Page>::Trace(visitor);
 }
 
-void Page::AnimationHostInitialized(cc::AnimationHost& animation_host,
-                                    LocalFrameView* view) {
-  if (GetScrollingCoordinator()) {
-    GetScrollingCoordinator()->AnimationHostInitialized(animation_host, view);
-  }
-  GetLinkHighlight().AnimationHostInitialized(animation_host);
+void Page::DidInitializeCompositing(cc::AnimationHost& host) {
+  GetLinkHighlight().AnimationHostInitialized(host);
 }
 
-void Page::WillCloseAnimationHost(LocalFrameView* view) {
-  if (scrolling_coordinator_)
-    scrolling_coordinator_->WillCloseAnimationHost(view);
+void Page::WillStopCompositing() {
   GetLinkHighlight().WillCloseAnimationHost();
-
   // We may have disconnected the associated LayerTreeHost during
   // the frame lifecycle so ensure the PageAnimator is reset to the
   // default state.
@@ -976,12 +998,12 @@ void Page::WillBeDestroyed() {
     // Before: ... -> prev -> this -> next -> ...
     // After: ... -> prev -> next -> ...
     // (this is ok even if |this| is the only element on the list).
-    Page* prev = this->prev_related_page_;
-    Page* next = this->next_related_page_;
+    Page* prev = prev_related_page_;
+    Page* next = next_related_page_;
     next->prev_related_page_ = prev;
     prev->next_related_page_ = next;
-    this->prev_related_page_ = nullptr;
-    this->next_related_page_ = nullptr;
+    prev_related_page_ = nullptr;
+    next_related_page_ = nullptr;
   }
 
   if (scrolling_coordinator_)
@@ -1008,6 +1030,9 @@ void Page::RegisterPluginsChangedObserver(PluginsChangedObserver* observer) {
 ScrollbarTheme& Page::GetScrollbarTheme() const {
   if (settings_->GetForceAndroidOverlayScrollbar())
     return ScrollbarThemeOverlayMobile::GetInstance();
+
+  // Ensures that renderer preferences are set.
+  DCHECK(main_frame_);
   return ScrollbarTheme::GetTheme();
 }
 
@@ -1029,7 +1054,7 @@ void Page::ReportIntervention(const String& text) {
     auto* message = MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kOther,
         mojom::ConsoleMessageLevel::kWarning, text,
-        std::make_unique<SourceLocation>(String(), 0, 0, nullptr));
+        std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
     local_frame->GetDocument()->AddConsoleMessage(message);
   }
 }
@@ -1056,10 +1081,6 @@ bool Page::LocalMainFrameNetworkIsAlmostIdle() const {
   return frame->GetIdlenessDetector()->NetworkIsAlmostIdle();
 }
 
-bool Page::IsFocused() const {
-  return GetFocusController().IsFocused();
-}
-
 void Page::AddAutoplayFlags(int32_t value) {
   autoplay_flags_ |= value;
 }
@@ -1073,22 +1094,37 @@ int32_t Page::AutoplayFlags() const {
 }
 
 void Page::SetInsidePortal(bool inside_portal) {
+  if (inside_portal_ == inside_portal)
+    return;
+
   inside_portal_ = inside_portal;
+
+  if (MainFrame() && MainFrame()->IsLocalFrame())
+    DeprecatedLocalMainFrame()->PortalStateChanged();
 }
 
 bool Page::InsidePortal() const {
   return inside_portal_;
 }
 
+void Page::SetIsMainFrameFencedFrameRoot() {
+  is_fenced_frame_tree_ = true;
+}
+
+bool Page::IsMainFrameFencedFrameRoot() const {
+  return is_fenced_frame_tree_;
+}
+
 void Page::SetMediaFeatureOverride(const AtomicString& media_feature,
                                    const String& value) {
   if (!media_feature_overrides_) {
-    if (value.IsEmpty())
+    if (value.empty())
       return;
     media_feature_overrides_ = std::make_unique<MediaFeatureOverrides>();
   }
   media_feature_overrides_->SetOverride(media_feature, value);
-  if (media_feature == "prefers-color-scheme")
+  if (media_feature == "prefers-color-scheme" ||
+      media_feature == "forced-colors")
     SettingsChanged(ChangeType::kColorScheme);
   else
     SettingsChanged(ChangeType::kMediaQuery);
@@ -1107,7 +1143,27 @@ void Page::SetVisionDeficiency(VisionDeficiency new_vision_deficiency) {
   }
 }
 
-Page::PageClients::PageClients() : chrome_client(nullptr) {}
+void Page::Animate(base::TimeTicks monotonic_frame_begin_time) {
+  GetAutoscrollController().Animate();
+  Animator().ServiceScriptedAnimations(monotonic_frame_begin_time);
+  // The ValidationMessage overlay manages its own internal Page that isn't
+  // hooked up the normal BeginMainFrame flow, so we manually tick its
+  // animations here.
+  GetValidationMessageClient().ServiceScriptedAnimations(
+      monotonic_frame_begin_time);
+}
+
+void Page::UpdateLifecycle(LocalFrame& root,
+                           WebLifecycleUpdate requested_update,
+                           DocumentUpdateReason reason) {
+  if (requested_update == WebLifecycleUpdate::kLayout) {
+    Animator().UpdateLifecycleToLayoutClean(root, reason);
+  } else if (requested_update == WebLifecycleUpdate::kPrePaint) {
+    Animator().UpdateLifecycleToPrePaintClean(root, reason);
+  } else {
+    Animator().UpdateAllLifecyclePhases(root, reason);
+  }
+}
 
 template class CORE_TEMPLATE_EXPORT Supplement<Page>;
 

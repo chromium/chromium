@@ -1,0 +1,20 @@
+{
+  "name": "connect_external",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests connect from a content script.",
+  "permissions": ["tabs", "https://a.test/", "webNavigation"],
+  "background": {
+    "persistent": false,
+    "scripts": ["test.js"]
+  },
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "matches": [
+         "https://*/*fenced_frame.html"
+      ],
+      "js": ["content_script.js"]
+    }
+  ]
+}

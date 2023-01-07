@@ -26,6 +26,7 @@
 #include "prng/chacha_prng_util.h"
 #include "prng/prng.h"
 #include "statusor.h"
+#include "third_party/shell-encryption/base/shell_encryption_export.h"
 
 namespace rlwe {
 
@@ -56,7 +57,7 @@ class ChaChaPrng : public SecurePrng {
   // errors.
   //
   // Thread safe.
-  static rlwe::StatusOr<std::unique_ptr<ChaChaPrng>> Create(
+  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::unique_ptr<ChaChaPrng>> Create(
       absl::string_view in_key);
 
   // Returns 8 bits of randomness.
@@ -72,12 +73,12 @@ class ChaChaPrng : public SecurePrng {
   // Generate a valid seed for the Prng.
   //
   // Fails on internal cryptographic errors.
-  static rlwe::StatusOr<std::string> GenerateSeed() {
+  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::string> GenerateSeed() {
     return internal::ChaChaPrngGenerateKey();
   }
 
   // Output the size of the expected generated seed.
-  static int SeedLength() { return internal::kChaChaKeyBytesSize; }
+  static SHELL_ENCRYPTION_EXPORT int SeedLength() { return internal::kChaChaKeyBytesSize; }
 
  private:
   explicit ChaChaPrng(absl::string_view in_key, int position_in_buffer,

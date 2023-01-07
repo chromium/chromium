@@ -1,0 +1,4 @@
+include_rules = [
+  # Only used to "test" for mismatching declarations between the two headers.
+  "+third_party/abseil-cpp/absl/base/dynamic_annotations.h",
+]

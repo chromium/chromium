@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
@@ -20,9 +21,10 @@ class MockNoStatePrefetchLinkManager final : public NoStatePrefetchLinkManager {
   MockNoStatePrefetchLinkManager()
       : NoStatePrefetchLinkManager(/*manager=*/nullptr) {}
 
-  base::Optional<int> OnStartLinkTrigger(
+  absl::optional<int> OnStartLinkTrigger(
       int launcher_render_process_id,
       int launcher_render_view_id,
+      int launcher_render_frame_id,
       blink::mojom::PrerenderAttributesPtr attributes,
       const url::Origin& initiator_origin) override {
     DCHECK(!is_start_called_);
@@ -66,7 +68,7 @@ class MockNoStatePrefetchProcessorImplDelegate final
   }
 
  private:
-  MockNoStatePrefetchLinkManager* link_manager_;
+  raw_ptr<MockNoStatePrefetchLinkManager> link_manager_;
 };
 
 class NoStatePrefetchProcessorImplTest

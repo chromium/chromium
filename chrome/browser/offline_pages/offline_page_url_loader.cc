@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,6 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace offline_pages {
@@ -114,7 +113,7 @@ void OfflinePageURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const base::Optional<GURL>& new_url) {
+    const absl::optional<GURL>& new_url) {
   NOTREACHED();
 }
 
@@ -283,8 +282,8 @@ void OfflinePageURLLoader::OnReceiveResponse(
   response_head->mime_type = "multipart/related";
   response_head->content_length = file_size;
 
-  client_->OnReceiveResponse(std::move(response_head));
-  client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+  client_->OnReceiveResponse(std::move(response_head),
+                             std::move(consumer_handle), absl::nullopt);
 
   handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,

@@ -113,8 +113,12 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
     def __init__(self, json5_file_path, output_dir):
         super(RuntimeFeatureWriter, self).__init__(json5_file_path, output_dir)
         self._outputs = {
-            (self.file_basename + '.h'): self.generate_header,
-            (self.file_basename + '.cc'): self.generate_implementation,
+            (self.file_basename + '.h'):
+            self.generate_header,
+            (self.file_basename + '.cc'):
+            self.generate_implementation,
+            ('exported/web_runtime_features_base.cc'):
+            self.generate_web_implementation,
         }
 
         # Write features to file for bindings generation
@@ -157,6 +161,10 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
 
     @template_expander.use_jinja('templates/' + file_basename + '.cc.tmpl')
     def generate_implementation(self):
+        return self._template_inputs()
+
+    @template_expander.use_jinja('templates/web_runtime_features_base.cc.tmpl')
+    def generate_web_implementation(self):
         return self._template_inputs()
 
 

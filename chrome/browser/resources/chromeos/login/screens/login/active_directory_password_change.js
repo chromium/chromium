@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,23 +6,25 @@
  * @fileoverview Polymer element for Active Directory password change screen.
  */
 
-'use strict';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/buttons/oobe_next_button.m.js';
+import '../../components/buttons/oobe_text_button.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_loading_dialog.m.js';
+import '../../components/dialogs/oobe_modal_dialog.m.js';
 
-(function() {
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/**
- * Horizontal padding for the error bubble.
- * @type {number}
- * @const
- */
-const BUBBLE_HORIZONTAL_PADDING = 65;
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
 
-/**
- * Vertical padding for the error bubble.
- * @type {number}
- * @const
- */
-const BUBBLE_VERTICAL_PADDING = -144;
 
 /**
  * Possible error states of the screen. Must be in the same order as
@@ -44,74 +46,106 @@ const UIState = {
   PROGRESS: 'progress',
 };
 
-Polymer({
-  is: 'active-directory-password-change-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ */
+const ActiveDirectoryPasswordChangeBase = mixinBehaviors(
+    [
+      OobeI18nBehavior,
+      OobeDialogHostBehavior,
+      LoginScreenBehavior,
+      MultiStepBehavior,
+    ],
+    PolymerElement);
 
-  behaviors: [
-    OobeI18nBehavior,
-    OobeDialogHostBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+/**
+ * @typedef {{
+ *   errorDialog:  OobeModalDialogElement,
+ *   oldPassword:  CrInputElement,
+ *   newPassword:  CrInputElement,
+ * }}
+ */
+ActiveDirectoryPasswordChangeBase.$;
 
-  EXTERNAL_API: ['showErrorDialog'],
+class ActiveDirectoryPasswordChange extends ActiveDirectoryPasswordChangeBase {
+  static get is() {
+    return 'active-directory-password-change-element';
+  }
 
-  properties: {
-    /**
-     * The user principal name.
-     */
-    username: String,
-    /**
-     * The old password.
-     */
-    oldPassword_: String,
-    /**
-     * The new password (first copy).
-     */
-    newPassword_: String,
-    /**
-     * The new password (second copy).
-     */
-    newPasswordRepeat_: String,
-    /**
-     * The text content for error dialog.
-     */
-    errorDialogText_: String,
-    /**
-     * Indicates if old password is wrong.
-     */
-    oldPasswordWrong_: {
-      type: Boolean,
-      value: false,
-    },
-    /**
-     * Indicates if new password is rejected.
-     */
-    newPasswordRejected_: {
-      type: Boolean,
-      value: false,
-    },
-    /**
-     * Indicates if password is not repeated correctly.
-     */
-    passwordMismatch_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * The user principal name.
+       */
+      username_: String,
+      /**
+       * The old password.
+       */
+      oldPassword_: String,
+      /**
+       * The new password (first copy).
+       */
+      newPassword_: String,
+      /**
+       * The new password (second copy).
+       */
+      newPasswordRepeat_: String,
+      /**
+       * The text content for error dialog.
+       */
+      errorDialogText_: String,
+      /**
+       * Indicates if old password is wrong.
+       */
+      oldPasswordWrong_: Boolean,
+      /**
+       * Indicates if new password is rejected.
+       */
+      newPasswordRejected_: Boolean,
+      /**
+       * Indicates if password is not repeated correctly.
+       */
+      passwordMismatch_: Boolean,
+    };
+  }
+
+  constructor() {
+    super();
+    this.username_ = '';
+    this.oldPassword_ = '';
+    this.newPassword_ = '';
+    this.newPasswordRepeat_ = '';
+    this.errorDialogText_ = '';
+    this.oldPasswordWrong_ = false;
+    this.newPasswordRejected_ = false;
+    this.passwordMismatch_ = false;
+  }
+
+  get EXTERNAL_API() {
+    return ['showErrorDialog'];
+  }
 
   defaultUIStep() {
     return UIState.PASSWORD;
-  },
+  }
 
-  UI_STEPS: UIState,
+  static get UI_STEPS() {
+    return UIState;
+  }
 
   /** @override */
   ready() {
-    this.initializeLoginScreen('ActiveDirectoryPasswordChangeScreen', {
-      resetAllowed: false,
-    });
-  },
+    super.ready();
+    this.initializeLoginScreen('ActiveDirectoryPasswordChangeScreen');
+  }
 
   /**
    * Event handler that is invoked just before the frame is shown.
@@ -121,11 +155,13 @@ Polymer({
     // Active Directory password change screen is similar to Active
     // Directory login screen. So we restore bottom bar controls.
     this.reset();
-    if ('username' in data)
-      this.username = data.username;
-    if ('error' in data)
+    if ('username' in data) {
+      this.username_ = data.username;
+    }
+    if ('error' in data) {
       this.setInvalid(data.error);
-  },
+    }
+  }
 
   /**
    * Updates localized content of the screen that is not updated via
@@ -133,7 +169,7 @@ Polymer({
    */
   updateLocalizedContent() {
     this.i18nUpdateLocale();
-  },
+  }
 
   /**
    * @public
@@ -143,25 +179,25 @@ Polymer({
   showErrorDialog(content) {
     this.errorDialogText_ = content;
     this.$.errorDialog.showDialog();
-  },
+  }
 
   /** @public */
   reset() {
     this.setUIStep(UIState.PASSWORD);
     this.resetInputFields_();
-  },
+  }
 
   /** @private */
   resetInputFields_() {
-    this.oldPassword = '';
-    this.newPassword = '';
-    this.newPasswordRepeat = '';
+    this.oldPassword_ = '';
+    this.newPassword_ = '';
+    this.newPasswordRepeat_ = '';
     this.errorDialogText_ = '';
 
     this.oldPasswordWrong_ = false;
     this.newPasswordRejected_ = false;
     this.passwordMismatch_ = false;
-  },
+  }
 
   /**
    * @public
@@ -182,23 +218,23 @@ Polymer({
       default:
         console.error('Not handled error: ' + error);
     }
-  },
+  }
 
-  /** @private */
+  /**
+   *  @private
+  */
   onSubmit_() {
     if (!this.$.oldPassword.validate() || !this.$.newPassword.validate()) {
       return;
     }
-    if (this.newPassword != this.newPasswordRepeat) {
+    if (this.newPassword_ != this.newPasswordRepeat_) {
       this.passwordMismatch_ = true;
       return;
     }
     this.setUIStep(UIState.PROGRESS);
+    this.userActed(['changePassword', this.oldPassword_, this.newPassword_]);
     this.resetInputFields_();
-    chrome.send(
-        'login.ActiveDirectoryPasswordChangeScreen.changePassword',
-        [this.oldPassword, this.newPassword]);
-  },
+  }
 
   /**
    * @private
@@ -206,6 +242,8 @@ Polymer({
    */
   onClose_() {
     this.userActed('cancel');
-  },
-});
-})();
+  }
+}
+
+customElements.define(
+    ActiveDirectoryPasswordChange.is, ActiveDirectoryPasswordChange);

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 128 tests; 94 PASS, 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 128 tests; 96 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL mathvariant on the math element is mapped to CSS text-transform assert_equals: attribute specified expected "math-fraktur" but got "none"
 PASS scriptlevel on the math element is mapped to math-depth(...)
 PASS invalid scriptlevel values on the math element are not mapped to math-depth(...)
@@ -58,7 +58,7 @@ PASS invalid scriptlevel values on the mphantom element are not mapped to math-d
 PASS displaystyle on the mphantom element is mapped to CSS math-style
 FAIL mathvariant on the mprescripts element is mapped to CSS text-transform assert_equals: attribute specified expected "math-fraktur" but got "none"
 PASS scriptlevel on the mprescripts element is mapped to math-depth(...)
-FAIL invalid scriptlevel values on the mprescripts element are not mapped to math-depth(...) assert_equals: invalid scriptlevel value expected "0" but got "1"
+PASS invalid scriptlevel values on the mprescripts element are not mapped to math-depth(...)
 PASS displaystyle on the mprescripts element is mapped to CSS math-style
 FAIL mathvariant on the mroot element is mapped to CSS text-transform assert_equals: attribute specified expected "math-fraktur" but got "none"
 PASS scriptlevel on the mroot element is mapped to math-depth(...)
@@ -122,7 +122,7 @@ PASS invalid scriptlevel values on the munderover element are not mapped to math
 PASS displaystyle on the munderover element is mapped to CSS math-style
 FAIL mathvariant on the none element is mapped to CSS text-transform assert_equals: attribute specified expected "math-fraktur" but got "none"
 PASS scriptlevel on the none element is mapped to math-depth(...)
-FAIL invalid scriptlevel values on the none element are not mapped to math-depth(...) assert_equals: invalid scriptlevel value expected "0" but got "1"
+PASS invalid scriptlevel values on the none element are not mapped to math-depth(...)
 PASS displaystyle on the none element is mapped to CSS math-style
 FAIL mathvariant on the semantics element is mapped to CSS text-transform assert_equals: attribute specified expected "math-fraktur" but got "none"
 PASS scriptlevel on the semantics element is mapped to math-depth(...)

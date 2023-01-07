@@ -1,60 +1,83 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_PROJECTOR_PROJECTOR_UI_CONTROLLER_H_
 #define ASH_PROJECTOR_PROJECTOR_UI_CONTROLLER_H_
 
-#include <string>
-#include <vector>
-
 #include "ash/ash_export.h"
-#include "ash/projector/model/projector_ui_model.h"
+#include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/projector/projector_session.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/scoped_observation.h"
-#include "ui/views/widget/unique_widget_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ash {
 
 class ProjectorControllerImpl;
+struct AnnotatorTool;
 
 // The controller in charge of UI.
 class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
  public:
+  // Shows a notification informing the user that a Projector error has
+  // occurred.
+  static void ShowFailureNotification(
+      int message_id,
+      int title_id = IDS_ASH_PROJECTOR_FAILURE_TITLE);
+
+  // Shows a notification informing the user that a Projector save error has
+  // occurred.
+  static void ShowSaveFailureNotification();
+
   explicit ProjectorUiController(ProjectorControllerImpl* projector_controller);
   ProjectorUiController(const ProjectorUiController&) = delete;
   ProjectorUiController& operator=(const ProjectorUiController&) = delete;
   ~ProjectorUiController() override;
 
-  // Show Projector toolbar. Virtual for testing.
-  virtual void ShowToolbar();
-  // Close Projector toolbar. Virtual for testing.
-  virtual void CloseToolbar();
-  // Invoked when key idea is marked to show a toast. Virtual for testing.
-  virtual void OnKeyIdeaMarked();
-  // Invoked when laser pointer button is pressed. Virtual for testing.
-  virtual void OnLaserPointerPressed();
+  // Show Projector annotation tray for `current_root`. Virtual for testing.
+  virtual void ShowAnnotationTray(aura::Window* current_root);
+  // Hide Projector annotation tray. Virtual for testing.
+  virtual void HideAnnotationTray();
   // Invoked when marker button is pressed. Virtual for testing.
-  virtual void OnMarkerPressed();
-  // Invoked when transcription is available for rendering. Virtual for testing.
-  virtual void OnTranscription(const std::string& transcription, bool is_final);
+  virtual void EnableAnnotatorTool();
+  // Sets the annotator tool.
+  virtual void SetAnnotatorTool(const AnnotatorTool& tool);
+  // Resets and disables the annotator tools and clears the canvas.
+  void ResetTools();
+  // Invoked when the canvas has either succeeded or failed to initialize.
+  void OnCanvasInitialized(bool success);
+  // Returns if the annotation canvas has been initialized.
+  bool GetAnnotatorAvailability();
+  // Toggles the UI of the annotation tray and the marker's enabled state.
+  void ToggleAnnotationTray();
 
-  ProjectorUiModel* model() { return &model_; }
+  void OnRecordedWindowChangingRoot(aura::Window* new_root);
 
-  bool IsToolbarVisible() const;
+  bool is_annotator_enabled() { return annotator_enabled_; }
 
  private:
-  // Reset tools, including resetting the state in model, closing the sub
-  // widgets, etc.
-  void ResetTools();
-
   // ProjectorSessionObserver:
   void OnProjectorSessionActiveStateChanged(bool active) override;
 
-  ProjectorUiModel model_;
-  views::UniqueWidgetPtr projector_bar_widget_;
+  ProjectorMarkerColor GetMarkerColorForMetrics(SkColor color);
 
-  ProjectorControllerImpl* projector_controller_ = nullptr;
+  void UpdateTrayEnabledState();
+
+  bool annotator_enabled_ = false;
+
+  // The current root window in which the video recording is happening.
+  aura::Window* current_root_ = nullptr;
+
+  // True if the canvas is initialized successfully, false if it failed to
+  // initialize. An absent value indicates that the initialization has not
+  // completed.
+  absl::optional<bool> canvas_initialized_state_;
 
   base::ScopedObservation<ProjectorSession, ProjectorSessionObserver>
       projector_session_observation_{this};

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -144,13 +144,13 @@ void EncodeString(const std::u16string& value, std::string* into) {
 void EncodeBinary(const std::string& value, std::string* into) {
   EncodeVarInt(value.length(), into);
   into->append(value.begin(), value.end());
-  DCHECK(into->size() >= value.size());
+  DCHECK_GE(into->size(), value.size());
 }
 
 void EncodeBinary(base::span<const uint8_t> value, std::string* into) {
   EncodeVarInt(value.size(), into);
   into->append(value.begin(), value.end());
-  DCHECK(into->size() >= value.size());
+  DCHECK_GE(into->size(), value.size());
 }
 
 void EncodeStringWithLength(const std::u16string& value, std::string* into) {
@@ -477,9 +477,8 @@ bool DecodeIDBKeyPath(StringPiece* slice, IndexedDBKeyPath* value) {
     case blink::mojom::IDBKeyPathType::Array: {
       std::vector<std::u16string> array;
       int64_t count;
-      if (!DecodeVarInt(slice, &count))
+      if (!DecodeVarInt(slice, &count) || count < 0)
         return false;
-      DCHECK_GE(count, 0);
       while (count--) {
         std::u16string string;
         if (!DecodeStringWithLength(slice, &string))
@@ -526,7 +525,7 @@ bool ConsumeEncodedIDBKey(StringPiece* slice) {
       return true;
     case kIndexedDBKeyArrayTypeByte: {
       int64_t length;
-      if (!DecodeVarInt(slice, &length))
+      if (!DecodeVarInt(slice, &length) || length < 0)
         return false;
       while (length--) {
         if (!ConsumeEncodedIDBKey(slice))
@@ -603,14 +602,10 @@ int CompareEncodedStringsWithLength(StringPiece* slice1,
     *ok = false;
     return 0;
   }
-  DCHECK_GE(len1, 0);
-  DCHECK_GE(len2, 0);
   if (len1 < 0 || len2 < 0) {
     *ok = false;
     return 0;
   }
-  DCHECK_GE(slice1->size(), len1 * sizeof(char16_t));
-  DCHECK_GE(slice2->size(), len2 * sizeof(char16_t));
   if (slice1->size() < len1 * sizeof(char16_t) ||
       slice2->size() < len2 * sizeof(char16_t)) {
     *ok = false;
@@ -634,8 +629,6 @@ int CompareEncodedBinary(StringPiece* slice1, StringPiece* slice2, bool* ok) {
     *ok = false;
     return 0;
   }
-  DCHECK_GE(len1, 0);
-  DCHECK_GE(len2, 0);
   if (len1 < 0 || len2 < 0) {
     *ok = false;
     return 0;
@@ -643,8 +636,6 @@ int CompareEncodedBinary(StringPiece* slice1, StringPiece* slice2, bool* ok) {
   size_t size1 = len1;
   size_t size2 = len2;
 
-  DCHECK_GE(slice1->size(), size1);
-  DCHECK_GE(slice2->size(), size2);
   if (slice1->size() < size1 || slice2->size() < size2) {
     *ok = false;
     return 0;
@@ -846,8 +837,6 @@ int Compare(const StringPiece& a,
   KeyPrefix prefix_b;
   bool ok_a = KeyPrefix::Decode(&slice_a, &prefix_a);
   bool ok_b = KeyPrefix::Decode(&slice_b, &prefix_b);
-  DCHECK(ok_a);
-  DCHECK(ok_b);
   if (!ok_a || !ok_b) {
     *ok = false;
     return 0;
@@ -1222,7 +1211,7 @@ std::string IndexedDBKeyToDebugString(base::StringPiece key) {
   return result.str();
 }
 
-ScopeLockRange GetDatabaseLockRange(int64_t database_id) {
+PartitionedLockRange GetDatabaseLockRange(int64_t database_id) {
   // The numbers are transformed into big-endian to make them
   // bytewise-comparable. Eventually, these lock ranges should just match the
   // leveldb keys when they are bytewise-comparable.
@@ -1232,8 +1221,8 @@ ScopeLockRange GetDatabaseLockRange(int64_t database_id) {
           std::string(reinterpret_cast<char*>(&next), sizeof(next))};
 }
 
-ScopeLockRange GetObjectStoreLockRange(int64_t database_id,
-                                       int64_t object_store_id) {
+PartitionedLockRange GetObjectStoreLockRange(int64_t database_id,
+                                             int64_t object_store_id) {
   // The numbers are transformed into big-endian to make them
   // bytewise-comparable. Eventually, these lock ranges should just match the
   // leveldb keys when they are bytewise-comparable.
@@ -1345,14 +1334,14 @@ bool KeyPrefix::Decode(StringPiece* slice, KeyPrefix* result) {
 
 std::string KeyPrefix::EncodeEmpty() {
   const std::string result(4, 0);
-  DCHECK(EncodeInternal(0, 0, 0) == std::string(4, 0));
+  DCHECK_EQ(EncodeInternal(0, 0, 0), std::string(4, 0));
   return result;
 }
 
 std::string KeyPrefix::Encode() const {
-  DCHECK(database_id_ != kInvalidId);
-  DCHECK(object_store_id_ != kInvalidId);
-  DCHECK(index_id_ != kInvalidId);
+  DCHECK_NE(database_id_, kInvalidId);
+  DCHECK_NE(object_store_id_, kInvalidId);
+  DCHECK_NE(index_id_, kInvalidId);
   return EncodeInternal(database_id_, object_store_id_, index_id_);
 }
 
@@ -1367,9 +1356,9 @@ std::string KeyPrefix::EncodeInternal(int64_t database_id,
   EncodeIntSafely(object_store_id, kMaxObjectStoreId, &object_store_id_string);
   EncodeIntSafely(index_id, kMaxIndexId, &index_id_string);
 
-  DCHECK(database_id_string.size() <= kMaxDatabaseIdSizeBytes);
-  DCHECK(object_store_id_string.size() <= kMaxObjectStoreIdSizeBytes);
-  DCHECK(index_id_string.size() <= kMaxIndexIdSizeBytes);
+  DCHECK_LE(database_id_string.size(), kMaxDatabaseIdSizeBytes);
+  DCHECK_LE(object_store_id_string.size(), kMaxObjectStoreIdSizeBytes);
+  DCHECK_LE(index_id_string.size(), kMaxIndexIdSizeBytes);
 
   unsigned char first_byte =
       (database_id_string.size() - 1)
@@ -1392,9 +1381,9 @@ std::string KeyPrefix::EncodeInternal(int64_t database_id,
 }
 
 int KeyPrefix::Compare(const KeyPrefix& other) const {
-  DCHECK(database_id_ != kInvalidId);
-  DCHECK(object_store_id_ != kInvalidId);
-  DCHECK(index_id_ != kInvalidId);
+  DCHECK_NE(database_id_, kInvalidId);
+  DCHECK_NE(object_store_id_, kInvalidId);
+  DCHECK_NE(index_id_, kInvalidId);
 
   if (database_id_ != other.database_id_)
     return CompareInts(database_id_, other.database_id_);
@@ -1439,9 +1428,9 @@ std::string KeyPrefix::DebugString() {
 }
 
 KeyPrefix::Type KeyPrefix::type() const {
-  DCHECK(database_id_ != kInvalidId);
-  DCHECK(object_store_id_ != kInvalidId);
-  DCHECK(index_id_ != kInvalidId);
+  DCHECK_NE(database_id_, kInvalidId);
+  DCHECK_NE(object_store_id_, kInvalidId);
+  DCHECK_NE(index_id_, kInvalidId);
 
   if (!database_id_)
     return GLOBAL_METADATA;

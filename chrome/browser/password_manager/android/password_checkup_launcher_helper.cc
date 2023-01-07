@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,10 @@ void PasswordCheckupLauncherHelper::LaunchCheckupInAccountWithWindowAndroid(
 // static
 void PasswordCheckupLauncherHelper::LaunchLocalCheckup(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& windowAndroid) {
-  Java_PasswordCheckupLauncher_launchLocalCheckup(env, windowAndroid);
+    const base::android::JavaRef<jobject>& windowAndroid,
+    password_manager::PasswordCheckReferrerAndroid passwordCheckReferrer) {
+  Java_PasswordCheckupLauncher_launchLocalCheckup(
+      env, windowAndroid, static_cast<int>(passwordCheckReferrer));
 }
 
 // static

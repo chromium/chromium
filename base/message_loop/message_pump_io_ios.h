@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/base_export.h"
 #include "base/mac/scoped_cffiledescriptorref.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_mac.h"
@@ -25,6 +24,9 @@ class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
   class FdWatchController : public FdWatchControllerInterface {
    public:
     explicit FdWatchController(const Location& from_here);
+
+    FdWatchController(const FdWatchController&) = delete;
+    FdWatchController& operator=(const FdWatchController&) = delete;
 
     // Implicitly calls StopWatchingFileDescriptor.
     ~FdWatchController() override;
@@ -57,11 +59,13 @@ class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
     base::ScopedCFTypeRef<CFRunLoopSourceRef> fd_source_;
     base::WeakPtr<MessagePumpIOSForIO> pump_;
     FdWatcher* watcher_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(FdWatchController);
   };
 
   MessagePumpIOSForIO();
+
+  MessagePumpIOSForIO(const MessagePumpIOSForIO&) = delete;
+  MessagePumpIOSForIO& operator=(const MessagePumpIOSForIO&) = delete;
+
   ~MessagePumpIOSForIO() override;
 
   bool WatchFileDescriptor(int fd,
@@ -82,8 +86,6 @@ class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
   ThreadChecker watch_file_descriptor_caller_checker_;
 
   base::WeakPtrFactory<MessagePumpIOSForIO> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpIOSForIO);
 };
 
 }  // namespace base

@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,7 +8,7 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-import re
+USE_PYTHON3 = True
 
 # chrome/PRESUBMIT.py blocks several linters due to the infeasibility of
 # enforcing them on a large codebase. Here we'll start by enforcing all

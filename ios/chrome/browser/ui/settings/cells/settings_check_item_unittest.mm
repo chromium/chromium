@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,7 +21,7 @@ namespace {
 using SettingsCheckItemTest = PlatformTest;
 
 // Tests that the text and detail text are honoured after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(SettingsCheckItemTest, ConfigureCell) {
   SettingsCheckItem* item = [[SettingsCheckItem alloc] initWithType:0];
   NSString* text = @"Test Text";
@@ -81,6 +82,25 @@ TEST_F(SettingsCheckItemTest, InfoButtonVisibilityDuringConflict) {
 
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
   EXPECT_TRUE(CheckCell.infoButton.hidden);
+}
+
+// Tests that infoButton would be greyed out when the item is not enabled.
+TEST_F(SettingsCheckItemTest, InfoButtonVisibilityWhenDisabled) {
+  SettingsCheckItem* item = [[SettingsCheckItem alloc] initWithType:0];
+  item.text = @"Test Text";
+  item.detailText = @"Test Text";
+  item.enabled = NO;
+  item.indicatorHidden = YES;
+  item.infoButtonHidden = NO;
+
+  id cell = [[[item cellClass] alloc] init];
+  SettingsCheckCell* CheckCell =
+      base::mac::ObjCCastStrict<SettingsCheckCell>(cell);
+
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  EXPECT_FALSE(CheckCell.infoButton.hidden);
+  EXPECT_NSEQ(CheckCell.infoButton.tintColor,
+              [UIColor colorNamed:kTextSecondaryColor]);
 }
 
 }  // namespace

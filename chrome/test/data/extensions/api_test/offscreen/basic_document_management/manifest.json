@@ -1,0 +1,9 @@
+{
+  "name": "offscreen basic document management test",
+  "version": "0.1",
+  "manifest_version": 3,
+  "permissions": ["offscreen"],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

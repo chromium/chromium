@@ -1,0 +1,37 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+component("system_clock") {
+  defines = [ "IS_SYSTEM_CLOCK_IMPL" ]
+
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_system_clock_client.cc",
+    "fake_system_clock_client.h",
+    "system_clock_client.cc",
+    "system_clock_client.h",
+    "system_clock_sync_observation.cc",
+    "system_clock_sync_observation.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":system_clock",
+    "//base/test:test_support",
+    "//dbus",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [ "system_clock_sync_observation_unittest.cc" ]
+}

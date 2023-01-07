@@ -1,15 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_keyboard_accessory_view.h"
 
-#include "base/mac/foundation_util.h"
-#include "ios/chrome/browser/system_flags.h"
+#import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -21,10 +20,11 @@
 
 @property(nonatomic, retain) NSArray<NSString*>* buttonTitles;
 @property(nonatomic, weak) id<OmniboxAssistiveKeyboardDelegate> delegate;
+@property(nonatomic, weak) id<UIPasteConfigurationSupporting> pasteTarget;
 
 // Called when a keyboard shortcut button is pressed.
 - (void)keyboardButtonPressed:(NSString*)title;
-// Creates a button shortcut for |title|.
+// Creates a button shortcut for `title`.
 - (UIView*)shortcutButtonWithTitle:(NSString*)title;
 
 @end
@@ -35,12 +35,15 @@
 @synthesize delegate = _delegate;
 
 - (instancetype)initWithButtons:(NSArray<NSString*>*)buttonTitles
-                       delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate {
+                       delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate
+                    pasteTarget:
+                        (id<UIPasteConfigurationSupporting>)pasteTarget {
   self = [super initWithFrame:CGRectZero
                inputViewStyle:UIInputViewStyleKeyboard];
   if (self) {
     _buttonTitles = buttonTitles;
     _delegate = delegate;
+    _pasteTarget = pasteTarget;
     self.translatesAutoresizingMaskIntoConstraints = NO;
     self.allowsSelfSizing = YES;
     [self addSubviews];
@@ -75,13 +78,13 @@
   [self addSubview:shortcutStackView];
 
   // Create and add a stackview containing the leading assistive buttons, i.e.
-  // Voice search and camera search.
-  NSArray<UIButton*>* leadingButtons =
-      OmniboxAssistiveKeyboardLeadingButtons(_delegate);
+  // Voice search, camera search and paste search.
+  NSArray<UIControl*>* leadingControls =
+      OmniboxAssistiveKeyboardLeadingControls(_delegate, self.pasteTarget);
   UIStackView* searchStackView = [[UIStackView alloc] init];
   searchStackView.translatesAutoresizingMaskIntoConstraints = NO;
   searchStackView.spacing = kBetweenSearchButtonSpacing;
-  for (UIButton* button in leadingButtons) {
+  for (UIControl* button in leadingControls) {
     [searchStackView addArrangedSubview:button];
   }
   [self addSubview:searchStackView];

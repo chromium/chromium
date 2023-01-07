@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/enterprise/arc_snapshot_reboot_notification_impl.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
@@ -41,7 +42,8 @@ void ArcSnapshotRebootNotificationImpl::Show() {
   shown_ = true;
 
   message_center::NotifierId notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId);
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId,
+      ash::NotificationCatalogName::kArcSnapshotReboot);
 
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons.push_back(
@@ -81,7 +83,7 @@ int ArcSnapshotRebootNotificationImpl::get_restart_button_id_for_testing() {
 }
 
 void ArcSnapshotRebootNotificationImpl::HandleClick(
-    base::Optional<int> button_index) {
+    absl::optional<int> button_index) {
   if (!button_index)
     return;
   DCHECK(button_index.value() == kRestartButtonId);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kSAMLUserId[] = "12345";
@@ -23,7 +22,7 @@ const char kSAMLUserEmail[] = "alice@corp.example.com";
 
 const char kSyncToken[] = "sync-token-1";
 
-constexpr base::TimeDelta kSamlTokenDelay = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kSamlTokenDelay = base::Seconds(60);
 
 class FakeUserManagerWithLocalState : public FakeChromeUserManager {
  public:
@@ -120,4 +119,4 @@ TEST_F(PasswordSyncTokenLoginCheckerTest, ValidateSyncTokenHistogram) {
       "ChromeOS.SAML.InSessionPasswordSyncEvent", 1, 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

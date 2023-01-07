@@ -1,0 +1,39 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Federated Credential Management API (https://fedidcg.github.io/FedCM/)
+
+[Exposed=Window, SecureContext]
+interface IdentityCredential : Credential {
+  readonly attribute USVString? token;
+};
+
+partial dictionary CredentialRequestOptions {
+  IdentityCredentialRequestOptions identity;
+};
+
+dictionary IdentityCredentialRequestOptions {
+  sequence<IdentityProviderConfig> providers;
+};
+
+dictionary IdentityProviderConfig {
+  required USVString configURL;
+  required USVString clientId;
+  USVString nonce;
+};
+
+dictionary IdentityCredentialLogoutRPsRequest {
+  required USVString url;
+  required USVString accountId;
+};
+
+[Exposed=Window, SecureContext]
+partial interface IdentityCredential {
+  static Promise<undefined> logoutRPs(sequence<IdentityCredentialLogoutRPsRequest> logoutRequests);
+};
+
+[Exposed=Window, SecureContext]
+interface IdentityProvider {
+  static undefined login();
+  static undefined logout();
+};

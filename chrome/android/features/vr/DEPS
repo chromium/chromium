@@ -5,4 +5,5 @@ include_rules = [
   "+components/browser_ui/notifications/android",
   "+components/module_installer",
   "+content/public/android/java/src/org/chromium/content_public",
+  "+components/browser_ui/widget/android:java",
 ]

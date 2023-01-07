@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "components/gcm_driver/features.h"
 #include "components/gcm_driver/gcm_driver_desktop.h"
 #include "google_apis/gcm/engine/gcm_store.h"
 
@@ -105,6 +106,10 @@ void GCMAccountMapper::SetAccountTokens(
       account_mapping->email = token_iter->email;
       account_mapping->access_token = token_iter->access_token;
     }
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kGCMReportAccountTokenChanges)) {
+    return;
   }
 
   // Decide what to do with each account (either start mapping, or start
@@ -347,8 +352,7 @@ void GCMAccountMapper::OnRegisterFinished(const std::string& registration_id,
 bool GCMAccountMapper::CanTriggerUpdate(
     const base::Time& last_update_time) const {
   return last_update_time +
-             base::TimeDelta::FromHours(kGCMUpdateIntervalHours -
-                                        kGCMUpdateEarlyStartHours) <
+             base::Hours(kGCMUpdateIntervalHours - kGCMUpdateEarlyStartHours) <
          clock_->Now();
 }
 
@@ -356,8 +360,8 @@ bool GCMAccountMapper::IsLastStatusChangeOlderThanTTL(
     const AccountMapping& account_mapping) const {
   int ttl_seconds = account_mapping.status == AccountMapping::REMOVING ?
       kGCMRemoveMappingMessageTTL : kGCMAddMappingMessageTTL;
-  return account_mapping.status_change_timestamp +
-      base::TimeDelta::FromSeconds(ttl_seconds) < clock_->Now();
+  return account_mapping.status_change_timestamp + base::Seconds(ttl_seconds) <
+         clock_->Now();
 }
 
 AccountMapping* GCMAccountMapper::FindMappingByAccountId(

@@ -1,0 +1,35 @@
+<style>
+  :host {
+    height: var(--emoji-size);
+    width: var(--emoji-size);
+  }
+
+  #category-button {
+    --cr-icon-button-fill-color: var(--cros-icon-color-secondary);
+    border-radius: 50%;
+    display: block;
+    height: 100%;
+    /* cancel internal margin-inline-start of cr-icon-button */
+    margin: 0;
+    width: 100%;
+  }
+
+  #category-button.category-button-active {
+    --cr-icon-button-fill-color: var(--cros-icon-color-prominent);
+    background-color: var(--cros-highlight-color);
+  }
+
+  #category-button.category-button-primary {
+    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+  }
+</style>
+
+
+<cr-icon-button
+  id="category-button"
+  class$="[[_className(active, searchActive)]]"
+  iron-icon="[[icon]]"
+  on-click="handleClick"
+  aria-label="[[name]]"
+>
+</cr-icon-button>

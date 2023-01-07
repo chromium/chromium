@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,10 @@ enum class ActivationDecision : int {
   ACTIVATION_DISABLED = 2,
 
   // Did not activate because although there was a configuration whose
-  // activation conditions were met, the main frame URL was allowlisted.
+  // activation conditions were met, the root frame URL was allowlisted.
   URL_ALLOWLISTED = 4,
 
-  // Did not activate because the main frame document URL did not match the
+  // Did not activate because the root frame document URL did not match the
   // activation conditions of any of enabled configurations.
   ACTIVATION_CONDITIONS_NOT_MET = 5,
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -167,7 +167,7 @@ TEST(AudioVideoMetadataExtractorTest, VideoWebM) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST(AudioVideoMetadataExtractorTest, AndroidRotatedMP4Video) {
   std::unique_ptr<AudioVideoMetadataExtractor> extractor =
-      GetExtractor("90rotation.mp4", true, true, 0.196, 1920, 1080);
+      GetExtractor("90rotation.mp4", true, true, 0.196056, 1920, 1080);
 
   EXPECT_EQ(90, extractor->rotation());
 
@@ -257,7 +257,7 @@ TEST(AudioVideoMetadataExtractorTest, AudioMP3) {
 
 TEST(AudioVideoMetadataExtractorTest, AudioFLACInMp4) {
   std::unique_ptr<AudioVideoMetadataExtractor> extractor =
-      GetExtractor("sfx-flac.mp4", true, true, 0.289, -1, -1);
+      GetExtractor("sfx-flac.mp4", true, true, 0.288413, -1, -1);
   EXPECT_EQ("Lavf57.75.100", extractor->encoder());
 
   EXPECT_EQ("mov,mp4,m4a,3gp,3g2,mj2", extractor->stream_infos()[0].type);

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@ class IdentityManager;
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace version_info {
+enum class Channel;
+}
 
 namespace password_manager {
 
@@ -38,15 +42,17 @@ class LeakDetectionCheckFactory {
   LeakDetectionCheckFactory(LeakDetectionCheckFactory&&) = delete;
   LeakDetectionCheckFactory& operator=(LeakDetectionCheckFactory&&) = delete;
 
-  // The leak check is available only for signed-in users.
+  // The leak check is available for all signed-in users. If the feature is
+  // enabled, it is also available for signed-out users.
   // |delegate| gets the results for the fetch.
-  // |identity_manager| is used to obtain the token.
+  // |identity_manager| is used to obtain the token for signed in users.
   // |url_loader_factory| does the actual network request.
+  // |channel| is used to obtain correct api key for signed out users.
   virtual std::unique_ptr<LeakDetectionCheck> TryCreateLeakCheck(
       LeakDetectionDelegateInterface* delegate,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      const = 0;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      version_info::Channel channel) const = 0;
 
   // The leak check is available only for signed-in users and if the feature is
   // available.

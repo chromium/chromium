@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include "base/task/sequence_manager/task_queue.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 
@@ -39,11 +41,16 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   scoped_refptr<MainThreadTaskQueue> CompositorTaskQueue();
   WebThreadScheduler& GetMainThreadScheduler() override;
   AgentGroupScheduler& AsAgentGroupScheduler() override;
+  v8::Isolate* Isolate() override;
 
   void BindInterfaceBroker(
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote_broker)
       override;
   BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
+  void AddAgent(Agent* agent) override;
+  void RemoveAgent(Agent* agent) override;
+
+  void PerformMicrotaskCheckpoint();
 
  private:
   scoped_refptr<MainThreadTaskQueue> default_task_queue_;
@@ -51,6 +58,7 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   scoped_refptr<MainThreadTaskQueue> compositor_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   MainThreadSchedulerImpl& main_thread_scheduler_;  // Not owned.
+  Persistent<HeapHashSet<WeakMember<Agent>>> agents_;
 
   BrowserInterfaceBrokerProxy broker_;
 };

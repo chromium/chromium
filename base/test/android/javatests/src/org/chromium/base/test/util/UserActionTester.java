@@ -1,11 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base.test.util;
 
+import androidx.annotation.GuardedBy;
+
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.metrics.UmaRecorderHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +16,8 @@ import java.util.List;
 /**
  * A util class that records UserActions.
  */
-public class UserActionTester implements RecordUserAction.UserActionCallback {
+public class UserActionTester implements Callback<String> {
+    @GuardedBy("mActions")
     private List<String> mActions;
 
     public UserActionTester() {
@@ -21,7 +25,7 @@ public class UserActionTester implements RecordUserAction.UserActionCallback {
         ThreadUtils.runOnUiThreadBlocking(new Runnable() {
             @Override
             public void run() {
-                RecordUserAction.setActionCallbackForTesting(UserActionTester.this);
+                UmaRecorderHolder.get().addUserActionCallbackForTesting(UserActionTester.this);
             }
         });
     }
@@ -30,22 +34,29 @@ public class UserActionTester implements RecordUserAction.UserActionCallback {
         ThreadUtils.runOnUiThreadBlocking(new Runnable() {
             @Override
             public void run() {
-                RecordUserAction.removeActionCallbackForTesting();
+                UmaRecorderHolder.get().removeUserActionCallbackForTesting(UserActionTester.this);
             }
         });
     }
 
     @Override
-    public void onActionRecorded(String action) {
-        mActions.add(action);
+    public void onResult(String action) {
+        synchronized (mActions) {
+            mActions.add(action);
+        }
     }
 
+    /**
+     * @return A copy of the current list of recorded UserActions.
+     */
     public List<String> getActions() {
-        return mActions;
+        synchronized (mActions) {
+            return new ArrayList<>(mActions);
+        }
     }
 
     @Override
     public String toString() {
-        return "Actions: " + mActions.toString();
+        return "Actions: " + getActions();
     }
 }

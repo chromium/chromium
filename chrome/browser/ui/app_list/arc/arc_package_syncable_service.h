@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -45,6 +44,10 @@ class ArcPackageSyncableService : public syncer::SyncableService,
     int64_t last_backup_time;
   };
 
+  ArcPackageSyncableService(const ArcPackageSyncableService&) = delete;
+  ArcPackageSyncableService& operator=(const ArcPackageSyncableService&) =
+      delete;
+
   ~ArcPackageSyncableService() override;
 
   static ArcPackageSyncableService* Create(Profile* profile,
@@ -56,13 +59,13 @@ class ArcPackageSyncableService : public syncer::SyncableService,
 
   // syncer::SyncableService:
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  base::Optional<syncer::ModelError> MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
       std::unique_ptr<syncer::SyncErrorFactory> error_handler) override;
   void StopSyncing(syncer::ModelType type) override;
-  base::Optional<syncer::ModelError> ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
@@ -132,8 +135,6 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   syncer::SyncableService::StartSyncFlare flare_;
 
   ArcAppListPrefs* const prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPackageSyncableService);
 };
 
 }  // namespace arc

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,8 +45,8 @@
     "search",
     "send",
 
-    // importance attribute / Priority Hints
-    // https://wicg.github.io/priority-hints/#solution-0
+    // fetchpriority attribute / Priority Hints
+    // https://wicg.github.io/priority-hints/#solution
     "high",
     "low",
     "auto",
@@ -73,6 +73,12 @@
     "eager",
     "auto",
 
+    // popup attribute (experimental)
+    // https://github.com/openui/open-ui/blob/main/research/src/pages/popup/popup.research.explainer.mdx
+    "auto",
+    "hint",
+    "async",
+
     // referrerpolicy attribute
     // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies
     "no-referrer",
@@ -95,5 +101,10 @@
     // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/VirtualKeyboardPolicy/explainer.md
     "auto",
     "manual",
+
+    // mode attribute
+    // https://github.com/WICG/fenced-frame
+    "default",
+    "opaque-ads",
   ],
 }

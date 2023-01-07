@@ -43,7 +43,7 @@ InsertIntoTextNodeCommand::InsertIntoTextNodeCommand(Text* node,
       text_(text) {
   DCHECK(node_);
   DCHECK_LE(offset_, node_->length());
-  DCHECK(!text_.IsEmpty());
+  DCHECK(!text_.empty());
 }
 
 void InsertIntoTextNodeCommand::DoApply(EditingState*) {
@@ -54,7 +54,7 @@ void InsertIntoTextNodeCommand::DoApply(EditingState*) {
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   }
 
-  if (!HasEditableStyle(*node_))
+  if (!IsEditable(*node_))
     return;
 
   if (password_echo_enabled) {
@@ -68,7 +68,7 @@ void InsertIntoTextNodeCommand::DoApply(EditingState*) {
 }
 
 void InsertIntoTextNodeCommand::DoUnapply() {
-  if (!HasEditableStyle(*node_))
+  if (!IsEditable(*node_))
     return;
 
   node_->deleteData(offset_, text_.length(), IGNORE_EXCEPTION_FOR_TESTING);

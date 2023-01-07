@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -31,6 +30,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/animation.h"
 
 DownloadShelf::DownloadShelf(Browser* browser, Profile* profile)
@@ -89,7 +89,7 @@ void DownloadShelf::Unhide() {
 }
 
 base::TimeDelta DownloadShelf::GetTransientDownloadShowDelay() const {
-  return base::TimeDelta::FromSeconds(2);
+  return base::Seconds(2);
 }
 
 void DownloadShelf::ShowDownload(DownloadUIModel::DownloadUIModelPtr download) {
@@ -98,7 +98,7 @@ void DownloadShelf::ShowDownload(DownloadUIModel::DownloadUIModelPtr download) {
     return;
 
   if (!DownloadCoreServiceFactory::GetForBrowserContext(download->profile())
-           ->IsShelfEnabled())
+           ->IsDownloadUiEnabled())
     return;
 
   Unhide();
@@ -126,8 +126,7 @@ void DownloadShelf::ShowDownload(DownloadUIModel::DownloadUIModelPtr download) {
 void DownloadShelf::ShowDownloadById(
     const offline_items_collection::ContentId& id) {
   if (OfflineItemUtils::IsDownload(id)) {
-    auto* const manager =
-        content::BrowserContext::GetDownloadManager(profile());
+    auto* const manager = profile()->GetDownloadManager();
     if (manager) {
       auto* const download = manager->GetDownloadByGuid(id.id);
       if (download)
@@ -145,7 +144,7 @@ void DownloadShelf::ShowDownloadById(
 }
 
 void DownloadShelf::OnGetDownloadDoneForOfflineItem(
-    const base::Optional<offline_items_collection::OfflineItem>& item) {
+    const absl::optional<offline_items_collection::OfflineItem>& item) {
   if (item.has_value()) {
     auto* const manager =
         OfflineItemModelManagerFactory::GetForBrowserContext(profile());

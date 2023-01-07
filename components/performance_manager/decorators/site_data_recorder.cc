@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -19,13 +20,13 @@ namespace performance_manager {
 // use some of these features without this being an attempt to communicate
 // with the user (e.g. the page is just really finishing to load).
 constexpr base::TimeDelta kTitleOrFaviconChangePostLoadGracePeriod =
-    base::TimeDelta::FromSeconds(20);
+    base::Seconds(20);
 
 // The period of time during which audio usage gets ignored after a page gets
 // backgrounded. It's necessary because there might be a delay between a media
 // request gets initiated and the time the audio actually starts.
 constexpr base::TimeDelta kFeatureUsagePostBackgroundGracePeriod =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 // Provides SiteData machinery access to some internals of a PageNodeImpl.
 class SiteDataAccess {
@@ -58,6 +59,10 @@ class SiteDataNodeData : public NodeAttachedDataImpl<SiteDataNodeData>,
 
   explicit SiteDataNodeData(const PageNodeImpl* page_node)
       : page_node_(page_node) {}
+
+  SiteDataNodeData(const SiteDataNodeData&) = delete;
+  SiteDataNodeData& operator=(const SiteDataNodeData&) = delete;
+
   ~SiteDataNodeData() override = default;
 
   // NodeAttachedData:
@@ -120,10 +125,11 @@ class SiteDataNodeData : public NodeAttachedDataImpl<SiteDataNodeData>,
 
   // The SiteDataCache used to serve writers for the PageNode owned by this
   // object.
-  SiteDataCache* data_cache_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  raw_ptr<SiteDataCache> data_cache_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
 
   // The PageNode that owns this object.
-  const PageNodeImpl* page_node_ GUARDED_BY_CONTEXT(sequence_checker_) =
+  raw_ptr<const PageNodeImpl> page_node_ GUARDED_BY_CONTEXT(sequence_checker_) =
       nullptr;
 
   // The time at which this tab switched to LoadingState::kLoadedIdle, null if
@@ -134,8 +140,6 @@ class SiteDataNodeData : public NodeAttachedDataImpl<SiteDataNodeData>,
   std::unique_ptr<SiteDataReader> reader_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataNodeData);
 };
 
 void SiteDataNodeData::OnMainFrameUrlChanged(const GURL& url,
@@ -312,7 +316,9 @@ void SiteDataRecorder::OnMainFrameUrlChanged(const PageNode* page_node) {
                               page_node->IsVisible());
 }
 
-void SiteDataRecorder::OnLoadingStateChanged(const PageNode* page_node) {
+void SiteDataRecorder::OnLoadingStateChanged(
+    const PageNode* page_node,
+    PageNode::LoadingState previous_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* data = GetSiteDataNodeDataFromPageNode(page_node);
   data->OnIsLoadedIdleChanged(IsLoadedIdle(page_node->GetLoadingState()));

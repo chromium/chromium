@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ std::unique_ptr<views::Widget> CreateChromeVoxPanel() {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   params.parent = Shell::GetContainer(
       root_window, kShellWindowId_AccessibilityPanelContainer);
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.bounds = gfx::Rect(0, 0, root_window->bounds().width(),
                             root_window->bounds().height());
   widget->Init(std::move(params));
@@ -122,15 +122,15 @@ TEST_F(AccessibilityPanelLayoutManagerTest, DisplayBoundsChange) {
 
   // When the display resolution changes the panel still sits at the top of the
   // screen.
-  UpdateDisplay("1234,567");
+  UpdateDisplay("1200x700,1300x800");
   display::Screen* screen = display::Screen::GetScreen();
   gfx::Rect expected_bounds(0, 0, screen->GetPrimaryDisplay().bounds().width(),
                             kDefaultPanelHeight);
   EXPECT_EQ(widget->GetNativeWindow()->bounds(), expected_bounds);
 
   gfx::Rect expected_work_area = screen->GetPrimaryDisplay().bounds();
-  expected_work_area.Inset(0, kDefaultPanelHeight, 0,
-                           ShelfConfig::Get()->shelf_size());
+  expected_work_area.Inset(gfx::Insets::TLBR(
+      kDefaultPanelHeight, 0, ShelfConfig::Get()->shelf_size(), 0));
   EXPECT_EQ(screen->GetPrimaryDisplay().work_area(), expected_work_area);
 }
 

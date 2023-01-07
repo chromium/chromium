@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 #include <string.h>
 
-#include "base/macros.h"
+#include <iterator>
+
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/multiprocess_exec.h"
@@ -26,7 +26,7 @@
 #include "util/misc/address_sanitizer.h"
 #include "util/numeric/safe_assignment.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <sys/syscall.h>
 
 #include "snapshot/linux/process_snapshot_linux.h"
@@ -41,6 +41,9 @@ namespace {
 
 class ExceptionGenerator {
  public:
+  ExceptionGenerator(const ExceptionGenerator&) = delete;
+  ExceptionGenerator& operator=(const ExceptionGenerator&) = delete;
+
   static ExceptionGenerator* Get() {
     static ExceptionGenerator* instance = new ExceptionGenerator();
     return instance;
@@ -73,8 +76,6 @@ class ExceptionGenerator {
 
   FileHandle in_;
   FileHandle out_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionGenerator);
 };
 
 constexpr char kAllowedAnnotationName[] = "name_of_allowed_anno";
@@ -101,7 +102,7 @@ void ChildTestFunction() {
   static StringAnnotation<32> non_allowed_annotation(kNonAllowedAnnotationName);
   non_allowed_annotation.Set(kNonAllowedAnnotationValue);
 
-  char string_data[base::size(kSensitiveStackData)];
+  char string_data[std::size(kSensitiveStackData)];
   strcpy(string_data, kSensitiveStackData);
 
   void (*code_pointer)(void) = ChildTestFunction;
@@ -248,6 +249,9 @@ class SanitizeTest : public MultiprocessExec {
     SetExpectedChildTerminationBuiltinTrap();
   }
 
+  SanitizeTest(const SanitizeTest&) = delete;
+  SanitizeTest& operator=(const SanitizeTest&) = delete;
+
   ~SanitizeTest() = default;
 
  private:
@@ -298,8 +302,6 @@ class SanitizeTest : public MultiprocessExec {
     EXPECT_FALSE(screened_snapshot.Initialize(
         &snapshot, nullptr, nullptr, addrs.non_module_address, false));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SanitizeTest);
 };
 
 TEST(ProcessSnapshotSanitized, Sanitize) {

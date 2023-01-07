@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,35 +12,19 @@
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/account_manager_core/account.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
 namespace {
-
-constexpr char kFakeGaiaId[] = "fake-gaia-id";
-
-class FakeEnvironmentProvider : public EnvironmentProvider {
-  crosapi::mojom::SessionType GetSessionType() override {
-    return crosapi::mojom::SessionType::kRegularSession;
-  }
-  mojom::DeviceMode GetDeviceMode() override {
-    return crosapi::mojom::DeviceMode::kConsumer;
-  }
-  mojom::DefaultPathsPtr GetDefaultPaths() override {
-    mojom::DefaultPathsPtr paths = mojom::DefaultPaths::New();
-    base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &paths->documents);
-    base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &paths->downloads);
-    return paths;
-  }
-  std::string GetDeviceAccountGaiaId() override { return kFakeGaiaId; }
-};
 
 // TODO(crbug.com/1124494): Refactor the code to share with ARC.
 base::ScopedFD CreateSocketForTesting(const base::FilePath& socket_path) {
@@ -63,8 +47,9 @@ base::ScopedFD CreateSocketForTesting(const base::FilePath& socket_path) {
 }  // namespace
 
 TestMojoConnectionManager::TestMojoConnectionManager(
-    const base::FilePath& socket_path)
-    : environment_provider_(std::make_unique<FakeEnvironmentProvider>()) {
+    const base::FilePath& socket_path,
+    EnvironmentProvider* environment_provider)
+    : environment_provider_(environment_provider) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CreateSocketForTesting, socket_path),
@@ -95,15 +80,6 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
     return;
   }
 
-  mojo::PlatformChannel legacy_channel;
-  CrosapiManager::Get()->SendLegacyInvitation(
-      environment_provider_.get(), legacy_channel.TakeLocalEndpoint(),
-      base::BindOnce([]() {
-        // Called when the Mojo connection to lacros-chrome is disconnected.
-        // It may be "just a Mojo error" or "test is finished".
-        LOG(WARNING) << "Legacy Mojo to lacros-chrome is disconnected.";
-      }));
-
   mojo::PlatformChannel channel;
   CrosapiManager::Get()->SendInvitation(
       channel.TakeLocalEndpoint(), base::BindOnce([]() {
@@ -111,21 +87,21 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
       }));
 
   base::ScopedFD startup_fd = browser_util::CreateStartupData(
-      environment_provider_.get(),
-      browser_util::InitialBrowserAction::kOpenWindow);
+      environment_provider_,
+      browser_util::InitialBrowserAction(
+          mojom::InitialBrowserAction::kUseStartupPreference),
+      /*is_keep_alive_enabled=*/false, absl::nullopt);
   if (!startup_fd.is_valid()) {
     LOG(ERROR) << "Failed to create startup data";
     return;
   }
 
   std::vector<base::ScopedFD> fds;
-  fds.push_back(
-      legacy_channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD());
   fds.push_back(std::move(startup_fd));
   fds.push_back(channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD());
 
   // Version of protocol Chrome is using.
-  uint8_t protocol_version = 0;
+  uint8_t protocol_version = 1;
   struct iovec iov[] = {{&protocol_version, sizeof(protocol_version)}};
   ssize_t result = mojo::SendmsgWithHandles(connection_fd.get(), iov,
                                             sizeof(iov) / sizeof(iov[0]), fds);

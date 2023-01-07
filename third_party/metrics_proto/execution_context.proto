@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,6 +80,9 @@ enum Thread {
 
   // WebRTC threads, e.g. WebRTC_Signaling,WebRTC_Network (in renderer process).
   WEBRTC_THREAD = 21;
+
+  // DRM threads (in GPU process).
+  DRM_THREAD = 22;
 
   // A Chrome thread not identified by any other enum. Defined for the benefit
   // of Chrome OS. Do not use for the Chrome sampling profiler; define a new

@@ -14,6 +14,8 @@
 
 #include "absl/status/status.h"
 
+#include <errno.h>
+
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/strings/str_cat.h"
@@ -36,7 +38,9 @@ TEST(StatusCode, InsertionOperator) {
 // its creator, and its classifier.
 struct ErrorTest {
   absl::StatusCode code;
-  using Creator = absl::Status (*)(absl::string_view);
+  using Creator = absl::Status (*)(
+      absl::string_view
+  );
   using Classifier = bool (*)(const absl::Status&);
   Creator creator;
   Classifier classifier;
@@ -78,7 +82,9 @@ TEST(Status, CreateAndClassify) {
     // expected error code and message.
     std::string message =
         absl::StrCat("error code ", test.code, " test message");
-    absl::Status status = test.creator(message);
+    absl::Status status = test.creator(
+        message
+    );
     EXPECT_EQ(test.code, status.code());
     EXPECT_EQ(message, status.message());
 
@@ -292,6 +298,10 @@ TEST(Status, ToStringMode) {
               AllOf(HasSubstr("INTERNAL: fail"), HasSubstr("[foo='bar']"),
                     HasSubstr("[bar='\\xff']")));
 
+  EXPECT_THAT(s.ToString(absl::StatusToStringMode::kWithEverything),
+              AllOf(HasSubstr("INTERNAL: fail"), HasSubstr("[foo='bar']"),
+                    HasSubstr("[bar='\\xff']")));
+
   EXPECT_THAT(s.ToString(~absl::StatusToStringMode::kWithPayload),
               AllOf(HasSubstr("INTERNAL: fail"), Not(HasSubstr("[foo='bar']")),
                     Not(HasSubstr("[bar='\\xff']"))));
@@ -476,5 +486,23 @@ TEST(Status, Swap) {
   test_swap(with_payload, ok);
   test_swap(no_payload, with_payload);
   test_swap(with_payload, no_payload);
+}
+
+TEST(StatusErrno, ErrnoToStatusCode) {
+  EXPECT_EQ(absl::ErrnoToStatusCode(0), absl::StatusCode::kOk);
+
+  // Spot-check a few errno values.
+  EXPECT_EQ(absl::ErrnoToStatusCode(EINVAL),
+            absl::StatusCode::kInvalidArgument);
+  EXPECT_EQ(absl::ErrnoToStatusCode(ENOENT), absl::StatusCode::kNotFound);
+
+  // We'll pick a very large number so it hopefully doesn't collide to errno.
+  EXPECT_EQ(absl::ErrnoToStatusCode(19980927), absl::StatusCode::kUnknown);
+}
+
+TEST(StatusErrno, ErrnoToStatus) {
+  absl::Status status = absl::ErrnoToStatus(ENOENT, "Cannot open 'path'");
+  EXPECT_EQ(status.code(), absl::StatusCode::kNotFound);
+  EXPECT_EQ(status.message(), "Cannot open 'path': No such file or directory");
 }
 }  // namespace

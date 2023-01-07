@@ -1,25 +1,19 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_CSP_DIRECTIVE_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_CSP_DIRECTIVE_LIST_H_
 
-#include "base/macros.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
-#include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
-#include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class KURL;
-class SecurityOrigin;
 
 enum class ResourceType : uint8_t;
 
@@ -27,16 +21,6 @@ struct CORE_EXPORT CSPOperativeDirective {
   CSPDirectiveName type;
   const network::mojom::blink::CSPSourceList* source_list;
 };
-
-CORE_EXPORT
-network::mojom::blink::ContentSecurityPolicyPtr CSPDirectiveListParse(
-    ContentSecurityPolicy*,
-    const UChar* begin,
-    const UChar* end,
-    const SecurityOrigin& self_origin,
-    network::mojom::ContentSecurityPolicyType,
-    network::mojom::ContentSecurityPolicySource,
-    bool should_parse_wasm_eval = false);
 
 CORE_EXPORT
 bool CSPDirectiveListIsReportOnly(
@@ -61,7 +45,8 @@ bool CSPDirectiveListAllowTrustedTypeAssignmentFailure(
     ContentSecurityPolicy* policy,
     const String& message,
     const String& sample,
-    const String& sample_prefix);
+    const String& sample_prefix,
+    absl::optional<base::UnguessableToken> issue_id);
 
 CORE_EXPORT
 bool CSPDirectiveListAllowTrustedTypePolicy(
@@ -69,7 +54,8 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
     ContentSecurityPolicy* policy,
     const String& policy_name,
     bool is_duplicate,
-    ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details);
+    ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details,
+    absl::optional<base::UnguessableToken> issue_id);
 
 CORE_EXPORT
 bool CSPDirectiveListRequiresTrustedTypes(
@@ -112,6 +98,16 @@ bool CSPDirectiveListAllowWasmCodeGeneration(
 CORE_EXPORT
 bool CSPDirectiveListShouldDisableEval(
     const network::mojom::blink::ContentSecurityPolicy& csp,
+    String& error_message);
+
+// We need to pass both `csp` and `policy` in because for now, we need to
+// ensure the policy supports `wasm-unsafe-eval`.
+// TODO(crbug.com/1342523): when we don't need this check, remove the `policy`
+// argument here.
+CORE_EXPORT
+bool CSPDirectiveListShouldDisableWasmEval(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    const ContentSecurityPolicy* policy,
     String& error_message);
 
 CORE_EXPORT

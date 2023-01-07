@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
-namespace net {
-namespace ct {
+namespace net::ct {
 
 // Returns the length of the audit path for a leaf at |leaf_index| in a Merkle
 // tree containing |tree_size| leaves.
@@ -45,7 +43,6 @@ struct NET_EXPORT MerkleAuditProof {
   std::vector<std::string> nodes;
 };
 
-}  // namespace ct
-}  // namespace net
+}  // namespace net::ct
 
 #endif  // NET_CERT_MERKLE_AUDIT_PROOF_H_

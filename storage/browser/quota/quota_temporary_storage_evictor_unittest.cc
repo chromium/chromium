@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,16 +12,16 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "components/services/storage/public/cpp/buckets/bucket_id.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_temporary_storage_evictor.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
-using blink::mojom::StorageType;
+using ::blink::mojom::StorageType;
 
 namespace storage {
 
@@ -29,29 +29,23 @@ class QuotaTemporaryStorageEvictorTest;
 
 namespace {
 
-// TODO(crbug.com/889590): Replace with common converter.
-url::Origin ToOrigin(const std::string& url) {
-  return url::Origin::Create(GURL(url));
-}
-
 class MockQuotaEvictionHandler : public QuotaEvictionHandler {
  public:
   explicit MockQuotaEvictionHandler(QuotaTemporaryStorageEvictorTest* test)
       : available_space_(0),
-        error_on_evict_origin_data_(false),
+        error_on_evict_buckets_data_(false),
         error_on_get_usage_and_quota_(false) {}
 
-  void EvictOriginData(const url::Origin& origin,
-                       StorageType type,
+  void EvictBucketData(const BucketLocator& bucket,
                        StatusCallback callback) override {
-    if (error_on_evict_origin_data_) {
+    if (error_on_evict_buckets_data_) {
       std::move(callback).Run(
           blink::mojom::QuotaStatusCode::kErrorInvalidModification);
       return;
     }
-    int64_t origin_usage = EnsureOriginRemoved(origin);
-    if (origin_usage >= 0)
-      available_space_ += origin_usage;
+    int64_t bucket_usage = EnsureBucketRemoved(bucket);
+    if (bucket_usage >= 0)
+      available_space_ += bucket_usage;
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
   }
 
@@ -68,19 +62,19 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
                             true);
   }
 
-  void GetEvictionOrigin(StorageType type,
-                         int64_t global_quota,
-                         GetOriginCallback callback) override {
-    if (origin_order_.empty())
-      std::move(callback).Run(base::nullopt);
-    else
-      std::move(callback).Run(origin_order_.front());
+  void GetEvictionBucket(StorageType type,
+                         GetBucketCallback callback) override {
+    if (bucket_order_.empty()) {
+      std::move(callback).Run(absl::nullopt);
+    } else {
+      std::move(callback).Run(bucket_order_.front());
+    }
   }
 
   int64_t GetUsage() const {
     int64_t total_usage = 0;
-    for (const auto& origin_usage_pair : origins_)
-      total_usage += origin_usage_pair.second;
+    for (const auto& bucket_usage_pair : buckets_)
+      total_usage += bucket_usage_pair.second;
     return total_usage;
   }
 
@@ -98,48 +92,48 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
   void set_task_for_get_usage_and_quota(base::RepeatingClosure task) {
     task_for_get_usage_and_quota_ = std::move(task);
   }
-  void set_error_on_evict_origin_data(bool error_on_evict_origin_data) {
-    error_on_evict_origin_data_ = error_on_evict_origin_data;
+  void set_error_on_evict_buckets_data(bool error_on_evict_buckets_data) {
+    error_on_evict_buckets_data_ = error_on_evict_buckets_data;
   }
   void set_error_on_get_usage_and_quota(bool error_on_get_usage_and_quota) {
     error_on_get_usage_and_quota_ = error_on_get_usage_and_quota;
   }
 
-  // Simulates an access to |origin|.  It reorders the internal LRU list.
-  // It internally uses AddOrigin().
-  void AccessOrigin(const url::Origin& origin) {
-    const auto& it = origins_.find(origin);
-    EXPECT_TRUE(origins_.end() != it);
-    AddOrigin(origin, it->second);
+  // Simulates an access to `bucket`. It reorders the internal LRU list.
+  // It internally uses AddBucket().
+  void AccessBucket(const BucketLocator& bucket) {
+    const auto& it = buckets_.find(bucket.id);
+    EXPECT_TRUE(buckets_.end() != it);
+    AddBucket(bucket, it->second);
   }
 
-  // Simulates adding or overwriting the |origin| to the internal origin set
-  // with the |usage|.  It also adds or moves the |origin| to the end of the
-  // LRU list.
-  void AddOrigin(const url::Origin& origin, int64_t usage) {
-    EnsureOriginRemoved(origin);
-    origin_order_.push_back(origin);
-    origins_[origin] = usage;
+  // Simulates adding or overwriting the `bucket` to the internal bucket set
+  // with the `usage`.  It also adds or moves the `bucket` to the
+  // end of the LRU list.
+  void AddBucket(const BucketLocator& bucket, int64_t usage) {
+    EnsureBucketRemoved(bucket);
+    bucket_order_.push_back(bucket);
+    buckets_[bucket.id] = usage;
   }
 
  private:
-  int64_t EnsureOriginRemoved(const url::Origin& origin) {
-    int64_t origin_usage;
-    if (!base::Contains(origins_, origin))
+  int64_t EnsureBucketRemoved(const BucketLocator& bucket) {
+    int64_t bucket_usage;
+    if (!base::Contains(buckets_, bucket.id))
       return -1;
     else
-      origin_usage = origins_[origin];
+      bucket_usage = buckets_[bucket.id];
 
-    origins_.erase(origin);
-    origin_order_.remove(origin);
-    return origin_usage;
+    buckets_.erase(bucket.id);
+    bucket_order_.remove(bucket);
+    return bucket_usage;
   }
 
   QuotaSettings settings_;
   int64_t available_space_;
-  std::list<url::Origin> origin_order_;
-  std::map<url::Origin, int64_t> origins_;
-  bool error_on_evict_origin_data_;
+  std::list<BucketLocator> bucket_order_;
+  std::map<BucketId, int64_t> buckets_;
+  bool error_on_evict_buckets_data_;
   bool error_on_get_usage_and_quota_;
 
   base::RepeatingClosure task_for_get_usage_and_quota_;
@@ -152,12 +146,17 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
   QuotaTemporaryStorageEvictorTest()
       : num_get_usage_and_quota_for_eviction_(0) {}
 
+  QuotaTemporaryStorageEvictorTest(const QuotaTemporaryStorageEvictorTest&) =
+      delete;
+  QuotaTemporaryStorageEvictorTest& operator=(
+      const QuotaTemporaryStorageEvictorTest&) = delete;
+
   void SetUp() override {
-    quota_eviction_handler_.reset(new MockQuotaEvictionHandler(this));
+    quota_eviction_handler_ = std::make_unique<MockQuotaEvictionHandler>(this);
 
     // Run multiple evictions in a single RunUntilIdle() when interval_ms == 0
-    temporary_storage_evictor_.reset(new QuotaTemporaryStorageEvictor(
-        quota_eviction_handler_.get(), 0));
+    temporary_storage_evictor_ = std::make_unique<QuotaTemporaryStorageEvictor>(
+        quota_eviction_handler_.get(), 0);
   }
 
   void TearDown() override {
@@ -167,8 +166,9 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
   }
 
   void TaskForRepeatedEvictionTest(
-      const std::pair<base::Optional<url::Origin>, int64_t>& origin_to_be_added,
-      const base::Optional<url::Origin>& origin_to_be_accessed,
+      const std::pair<absl::optional<BucketLocator>, int64_t>&
+          bucket_to_be_added,
+      const absl::optional<BucketLocator> bucket_to_be_accessed,
       int expected_usage_after_first,
       int expected_usage_after_second) {
     EXPECT_GE(4, num_get_usage_and_quota_for_eviction_);
@@ -176,11 +176,11 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
       case 2:
         EXPECT_EQ(expected_usage_after_first,
                   quota_eviction_handler()->GetUsage());
-        if (origin_to_be_added.first.has_value())
-          quota_eviction_handler()->AddOrigin(*origin_to_be_added.first,
-                                              origin_to_be_added.second);
-        if (origin_to_be_accessed.has_value())
-          quota_eviction_handler()->AccessOrigin(*origin_to_be_accessed);
+        if (bucket_to_be_added.first.has_value())
+          quota_eviction_handler()->AddBucket(*bucket_to_be_added.first,
+                                              bucket_to_be_added.second);
+        if (bucket_to_be_accessed.has_value())
+          quota_eviction_handler()->AccessBucket(*bucket_to_be_accessed);
         break;
       case 3:
         EXPECT_EQ(expected_usage_after_second,
@@ -189,6 +189,12 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
         break;
     }
     ++num_get_usage_and_quota_for_eviction_;
+  }
+
+  BucketLocator CreateBucket(const std::string& url, bool is_default) {
+    return BucketLocator(bucket_id_generator_.GenerateNextId(),
+                         blink::StorageKey::CreateFromStringForTesting(url),
+                         blink::mojom::StorageType::kTemporary, is_default);
   }
 
  protected:
@@ -213,18 +219,21 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
     return num_get_usage_and_quota_for_eviction_;
   }
 
+  BucketId::Generator bucket_id_generator_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockQuotaEvictionHandler> quota_eviction_handler_;
   std::unique_ptr<QuotaTemporaryStorageEvictor> temporary_storage_evictor_;
   int num_get_usage_and_quota_for_eviction_;
   base::WeakPtrFactory<QuotaTemporaryStorageEvictorTest> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(QuotaTemporaryStorageEvictorTest);
 };
 
 TEST_F(QuotaTemporaryStorageEvictorTest, SimpleEvictionTest) {
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.z.com"), 3000);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.y.com"), 200);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.x.com"), 500);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.z.com", /*is_default=*/false), 3000);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.y.com", /*is_default=*/false), 200);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.x.com", /*is_default=*/false), 500);
   quota_eviction_handler()->SetPoolSize(4000);
   quota_eviction_handler()->set_available_space(1000000000);
   EXPECT_EQ(3000 + 200 + 500, quota_eviction_handler()->GetUsage());
@@ -234,16 +243,20 @@ TEST_F(QuotaTemporaryStorageEvictorTest, SimpleEvictionTest) {
   EXPECT_EQ(200 + 500, quota_eviction_handler()->GetUsage());
 
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
-  EXPECT_EQ(1, statistics().num_evicted_origins);
+  EXPECT_EQ(1, statistics().num_evicted_buckets);
   EXPECT_EQ(1, statistics().num_eviction_rounds);
   EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);
 }
 
 TEST_F(QuotaTemporaryStorageEvictorTest, MultipleEvictionTest) {
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.z.com"), 20);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.y.com"), 2900);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.x.com"), 450);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.w.com"), 400);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.z.com", /*is_default=*/true), 20);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.y.com", /*is_default=*/true), 2900);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.x.com", /*is_default=*/true), 450);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.w.com", /*is_default=*/true), 400);
   quota_eviction_handler()->SetPoolSize(4000);
   quota_eviction_handler()->set_available_space(1000000000);
   EXPECT_EQ(20 + 2900 + 450 + 400, quota_eviction_handler()->GetUsage());
@@ -253,7 +266,7 @@ TEST_F(QuotaTemporaryStorageEvictorTest, MultipleEvictionTest) {
   EXPECT_EQ(450 + 400, quota_eviction_handler()->GetUsage());
 
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
-  EXPECT_EQ(2, statistics().num_evicted_origins);
+  EXPECT_EQ(2, statistics().num_evicted_buckets);
   EXPECT_EQ(1, statistics().num_eviction_rounds);
   EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);
 }
@@ -266,18 +279,23 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionTest) {
   const int64_t initial_total_size = a_size + b_size + c_size + d_size;
   const int64_t e_size = 275;
 
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.d.com"), d_size);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.c.com"), c_size);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.b.com"), b_size);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.a.com"), a_size);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.d.com", /*is_default=*/false), d_size);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.c.com", /*is_default=*/false), c_size);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.b.com", /*is_default=*/false), b_size);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.a.com", /*is_default=*/false), a_size);
   quota_eviction_handler()->SetPoolSize(1000);
   quota_eviction_handler()->set_available_space(1000000000);
   quota_eviction_handler()->set_task_for_get_usage_and_quota(
       base::BindRepeating(
           &QuotaTemporaryStorageEvictorTest::TaskForRepeatedEvictionTest,
           weak_factory_.GetWeakPtr(),
-          std::make_pair(ToOrigin("http://www.e.com"), e_size), base::nullopt,
-          initial_total_size - d_size,
+          std::make_pair(CreateBucket("http://www.e.com", /*is_default=*/false),
+                         e_size),
+          absl::nullopt, initial_total_size - d_size,
           initial_total_size - d_size + e_size - c_size));
   EXPECT_EQ(initial_total_size, quota_eviction_handler()->GetUsage());
   temporary_storage_evictor()->Start();
@@ -287,7 +305,7 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionTest) {
   EXPECT_EQ(5, num_get_usage_and_quota_for_eviction());
 
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
-  EXPECT_EQ(3, statistics().num_evicted_origins);
+  EXPECT_EQ(3, statistics().num_evicted_buckets);
   EXPECT_EQ(2, statistics().num_eviction_rounds);
   EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);
 }
@@ -299,17 +317,21 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionSkippedTest) {
   const int64_t d_size = 292;
   const int64_t initial_total_size = a_size + b_size + c_size + d_size;
 
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.d.com"), d_size);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.c.com"), c_size);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.b.com"), b_size);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.a.com"), a_size);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.d.com", /*is_default=*/true), d_size);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.c.com", /*is_default=*/true), c_size);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.b.com", /*is_default=*/true), b_size);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.a.com", /*is_default=*/true), a_size);
   quota_eviction_handler()->SetPoolSize(1000);
   quota_eviction_handler()->set_available_space(1000000000);
   quota_eviction_handler()->set_task_for_get_usage_and_quota(
       base::BindRepeating(
           &QuotaTemporaryStorageEvictorTest::TaskForRepeatedEvictionTest,
-          weak_factory_.GetWeakPtr(), std::make_pair(base::nullopt, 0),
-          base::nullopt, initial_total_size - d_size,
+          weak_factory_.GetWeakPtr(), std::make_pair(absl::nullopt, 0),
+          absl::nullopt, initial_total_size - d_size,
           initial_total_size - d_size));
   EXPECT_EQ(initial_total_size, quota_eviction_handler()->GetUsage());
   // disable_timer_for_testing();
@@ -319,12 +341,12 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionSkippedTest) {
   EXPECT_EQ(4, num_get_usage_and_quota_for_eviction());
 
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
-  EXPECT_EQ(1, statistics().num_evicted_origins);
+  EXPECT_EQ(1, statistics().num_evicted_buckets);
   EXPECT_EQ(3, statistics().num_eviction_rounds);
   EXPECT_EQ(2, statistics().num_skipped_eviction_rounds);
 }
 
-TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionWithAccessOriginTest) {
+TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionWithAccessBucketTest) {
   const int64_t a_size = 400;
   const int64_t b_size = 150;
   const int64_t c_size = 120;
@@ -332,18 +354,28 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionWithAccessOriginTest) {
   const int64_t initial_total_size = a_size + b_size + c_size + d_size;
   const int64_t e_size = 275;
 
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.d.com"), d_size);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.c.com"), c_size);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.b.com"), b_size);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.a.com"), a_size);
+  BucketLocator a_bucket =
+      CreateBucket("http://www.a.com", /*is_default=*/true);
+  BucketLocator b_bucket =
+      CreateBucket("http://www.b.com", /*is_default=*/true);
+  BucketLocator c_bucket =
+      CreateBucket("http://www.c.com", /*is_default=*/true);
+  BucketLocator d_bucket =
+      CreateBucket("http://www.d.com", /*is_default=*/true);
+  BucketLocator e_bucket =
+      CreateBucket("http://www.e.com", /*is_default=*/true);
+
+  quota_eviction_handler()->AddBucket(d_bucket, d_size);
+  quota_eviction_handler()->AddBucket(c_bucket, c_size);
+  quota_eviction_handler()->AddBucket(b_bucket, b_size);
+  quota_eviction_handler()->AddBucket(a_bucket, a_size);
   quota_eviction_handler()->SetPoolSize(1000);
   quota_eviction_handler()->set_available_space(1000000000);
   quota_eviction_handler()->set_task_for_get_usage_and_quota(
       base::BindRepeating(
           &QuotaTemporaryStorageEvictorTest::TaskForRepeatedEvictionTest,
-          weak_factory_.GetWeakPtr(),
-          std::make_pair(ToOrigin("http://www.e.com"), e_size),
-          ToOrigin("http://www.c.com"), initial_total_size - d_size,
+          weak_factory_.GetWeakPtr(), std::make_pair(e_bucket, e_size),
+          c_bucket, initial_total_size - d_size,
           initial_total_size - d_size + e_size - b_size));
   EXPECT_EQ(initial_total_size, quota_eviction_handler()->GetUsage());
   temporary_storage_evictor()->Start();
@@ -353,7 +385,7 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionWithAccessOriginTest) {
   EXPECT_EQ(5, num_get_usage_and_quota_for_eviction());
 
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
-  EXPECT_EQ(3, statistics().num_evicted_origins);
+  EXPECT_EQ(3, statistics().num_evicted_buckets);
   EXPECT_EQ(2, statistics().num_eviction_rounds);
   EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);
 }
@@ -361,8 +393,10 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionWithAccessOriginTest) {
 TEST_F(QuotaTemporaryStorageEvictorTest, DiskSpaceNonEvictionTest) {
   // If we're using so little that evicting all of it wouldn't
   // do enough to alleviate a diskspace shortage, we don't evict.
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.z.com"), 10);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.x.com"), 20);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.z.com", /*is_default=*/true), 10);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.x.com", /*is_default=*/true), 20);
   quota_eviction_handler()->SetPoolSize(10000);
   quota_eviction_handler()->set_available_space(
       quota_eviction_handler()->settings().should_remain_available - 350);
@@ -373,16 +407,20 @@ TEST_F(QuotaTemporaryStorageEvictorTest, DiskSpaceNonEvictionTest) {
   EXPECT_EQ(10 + 20, quota_eviction_handler()->GetUsage());
 
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
-  EXPECT_EQ(0, statistics().num_evicted_origins);
+  EXPECT_EQ(0, statistics().num_evicted_buckets);
   EXPECT_EQ(1, statistics().num_eviction_rounds);
   EXPECT_EQ(1, statistics().num_skipped_eviction_rounds);
 }
 
 TEST_F(QuotaTemporaryStorageEvictorTest, DiskSpaceEvictionTest) {
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.z.com"), 294);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.y.com"), 120);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.x.com"), 150);
-  quota_eviction_handler()->AddOrigin(ToOrigin("http://www.w.com"), 300);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.z.com", /*is_default=*/true), 294);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.y.com", /*is_default=*/true), 120);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.x.com", /*is_default=*/true), 150);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.w.com", /*is_default=*/true), 300);
   quota_eviction_handler()->SetPoolSize(10000);
   quota_eviction_handler()->set_available_space(
       quota_eviction_handler()->settings().should_remain_available - 350);
@@ -393,7 +431,7 @@ TEST_F(QuotaTemporaryStorageEvictorTest, DiskSpaceEvictionTest) {
   EXPECT_EQ(150 + 300, quota_eviction_handler()->GetUsage());
 
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
-  EXPECT_EQ(2, statistics().num_evicted_origins);
+  EXPECT_EQ(2, statistics().num_evicted_buckets);
   EXPECT_EQ(1, statistics().num_eviction_rounds);
   EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);  // FIXME?
 }

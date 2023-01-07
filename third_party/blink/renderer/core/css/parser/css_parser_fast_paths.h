@@ -1,14 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_FAST_PATHS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_FAST_PATHS_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -31,6 +31,8 @@ class CORE_EXPORT CSSParserFastPaths {
   static bool IsValidKeywordPropertyAndValue(CSSPropertyID,
                                              CSSValueID,
                                              CSSParserMode);
+
+  static bool IsValidSystemFont(CSSValueID);
 
   static CSSValue* ParseColor(const String&, CSSParserMode);
 };

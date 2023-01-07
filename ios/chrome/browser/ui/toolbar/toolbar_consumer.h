@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,13 +18,9 @@
 // Updates the toolbar with the current progress of the loading WebState.
 - (void)setLoadingProgressFraction:(double)progress;
 // Updates the toolbar with the current number of total tabs. If the tab is
-// added, |addedInBackground| is set to YES if the tab is added in background.
+// added, `addedInBackground` is set to YES if the tab is added in background.
 // NO otherwise.
 - (void)setTabCount:(int)tabCount addedInBackground:(BOOL)addedInBackground;
-// Sets the bookmarks status of the page.
-- (void)setPageBookmarked:(BOOL)bookmarked;
-// Sets whether the bookmark button is enabled or not.
-- (void)setBookmarkEnabled:(BOOL)enabled;
 // Sets whether the voice search is enabled or not.
 - (void)setVoiceSearchEnabled:(BOOL)enabled;
 // Sets whether the share menu is enabled.

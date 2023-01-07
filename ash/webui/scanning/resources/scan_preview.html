@@ -1,0 +1,185 @@
+<style include="scanning-shared scanning-fonts">
+  :host {
+    --preview-border-width: 2px;
+    --image-focus-shadow: rgba(var(--google-blue-600-rgb), .4) 0 0 0 var(--preview-border-width);
+  }
+
+  #helpDiv {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+  }
+
+  #readyToScanImg {
+    margin: var(--ready-to-scan-image-margin-top) auto 32px;
+    width: 50%;
+  }
+
+  #helperText {
+    color: var(--scanning-helper-text-color);
+    font-family: var(--scanning-helper-text-font-family);
+    font-size: var(--scanning-helper-text-font-size);
+    font-weight: var(--scanning-regular-font-weight);
+    line-height: var(--scanning-helper-text-line-height);
+    margin: 0 auto var(--helper-text-margin-bottom);
+    text-align: center;
+    width: 65%;
+  }
+
+  #helpOrProgress {
+    background-color: var(--cros-bg-color);
+    display: flex;
+    /* Calculate a height that results in a Letter aspect ratio (1:1.2941). */
+    height: calc(1.2941 * var(--left-panel-width));
+  }
+
+  #progressText,
+  #cancelingText {
+    color: var(--scanning-progress-text-color);
+    font-family: var(--scanning-progress-text-font-family);
+    font-size: var(--scanning-progress-text-font-size);
+    font-weight: var(--scanning-regular-font-weight);
+    line-height: var(--scanning-progress-text-line-height);
+  }
+
+  #scanProgress,
+  #cancelingProgress {
+    margin: 60% auto auto;
+    text-align: center;
+    width: 70%;
+  }
+
+  .preview {
+    border-radius: 4px;
+    max-height: calc(100vh - var(--panel-container-margin-top));
+    outline: none;
+    overflow-y: auto;
+    padding-top: var(--preview-border-width);
+  }
+
+  .preview:focus {
+    box-shadow: 0 0 0 var(--preview-border-width) rgba(var(--google-blue-600-rgb), .4);
+  }
+
+  :host([show-single-image-focus_]) .preview:hover {
+    box-shadow: none;
+  }
+
+  .preview-item {
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 4px;
+    width: calc(100% - var(--preview-border-width));
+  }
+
+  .scanned-image {
+    box-shadow: rgba(var(--google-grey-200-rgb), .3) 0 4px 4px 0,
+                rgba(var(--google-grey-900-rgb), .15) 0 8px 12px 1px;
+    margin-bottom: var(--scanned-image-margin-bottom);
+    margin-inline-start: 12px;
+    width: calc(100% - 24px);
+  }
+
+  :host([show-single-image-focus_]) .preview:hover .focused-scanned-image {
+    box-shadow: var(--image-focus-shadow);
+  }
+
+  :host([show-single-image-focus_]) #scannedImages:focus-within .focused-scanned-image {
+    box-shadow: var(--image-focus-shadow);
+  }
+
+  paper-progress {
+    border-radius: 4px;
+    height: 4px;
+    margin-top: 12px;
+    width: 100%;
+  }
+
+  action-toolbar {
+    left: var(--action-toolbar-left);
+    position: fixed;
+    top: var(--action-toolbar-top);
+    visibility: hidden;
+  }
+
+  :host([force-action-toolbar-visible_]) action-toolbar {
+    visibility: visible;
+  }
+
+  .preview:hover action-toolbar {
+    visibility: visible;
+  }
+
+  .preview:focus action-toolbar {
+    visibility: visible;
+  }
+
+  :host([multi-page-scanning_]) .preview {
+    overflow-y: hidden;
+    position: relative;
+  }
+
+  :host([multi-page-scanning_]) #helpOrProgress {
+    height: var(--multi-page-scan-progress-height);
+    margin-top: -4px;
+    opacity: .9;
+    position: fixed;
+    width: calc(var(--left-panel-width) - var(--preview-border-width));
+    z-index: 1;
+  }
+</style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+  query-matches="{{isDarkModeEnabled_}}">
+</iron-media-query>
+<div id="previewDiv" class="preview" aria-label="[[previewAriaLabel_]]"
+    tabindex="0" on-scroll="onScannedImagesScroll_">
+  <div id="helpOrProgress" class="preview-item" aria-hidden="true"
+      hidden$="[[!showHelpOrProgress_]]">
+    <div id="helpDiv" hidden$="[[!showHelperText_]]">
+      <img id="readyToScanImg"
+          src$="[[getReadyToScanSvgSrc_(isDarkModeEnabled_)]]"
+          alt="[[i18n('scanPreviewHelperText')]]">
+      </img>
+      <span id="helperText">
+        [[i18n('scanPreviewHelperText')]]
+      </span>
+    </div>
+    <div id="scanProgress" hidden$="[[!showScanProgress_]]">
+      <span id="progressText">[[progressTextString_]]</span>
+      <paper-progress id="scanProgressBar" value="[[progressPercent]]">
+      </paper-progress>
+    </div>
+    <div id="cancelingProgress" hidden$="[[!showCancelingProgress_]]">
+      <span id="cancelingText">[[i18n('cancelingScanningText')]]</span>
+      <paper-progress id="cancelingProgressBar" indeterminate></paper-progress>
+    </div>
+  </div>
+  <div id="scannedImages" hidden$="[[!showScannedImages_]]">
+    <template is="dom-repeat" items="[[objectUrls]]" as="url">
+      <img class="preview-item scanned-image" src="[[url]]"
+          on-load="onScannedImageLoaded_" on-click="onScannedImageClick_"
+          on-focus="onScannedImageInFocus_" tabindex="-1"
+          aria-label="[[getScannedImageAriaLabel_(index, objectUrls.length)]]">
+      <action-toolbar hidden$="[[!showActionToolbarByIndex_(index,
+          currentPageIndexInView_, showActionToolbar_)]]"
+          num-total-pages="[[objectUrls.length]]" page-index="[[index]]"
+          on-show-remove-page-dialog="onShowRemovePageDialog_"
+          on-show-rescan-page-dialog="onShowRescanPageDialog_">
+    </template>
+  </div>
+</div>
+<cr-dialog id="scanPreviewDialog" on-cancel="closeDialog_">
+  <div id="dialogTitle" slot="title">
+    [[dialogTitleText_]]
+  </div>
+  <div id="dialogConfirmationText" slot="body">
+    [[dialogConfirmationText_]]
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" class="cancel-button" on-click="closeDialog_">
+      [[i18n('cancelButtonText')]]
+    </cr-button>
+    <cr-button id="actionButton" class="action-button">
+      [[dialogButtonText_]]
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,10 @@
 
 #include "components/browsing_data/content/shared_worker_helper.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 class BrowserContext;
 }
@@ -19,6 +23,9 @@ namespace browsing_data {
 class MockSharedWorkerHelper : public SharedWorkerHelper {
  public:
   explicit MockSharedWorkerHelper(content::BrowserContext* browser_context);
+
+  MockSharedWorkerHelper(const MockSharedWorkerHelper&) = delete;
+  MockSharedWorkerHelper& operator=(const MockSharedWorkerHelper&) = delete;
 
   // Adds some shared worker samples.
   void AddSharedWorkerSamples();
@@ -37,7 +44,7 @@ class MockSharedWorkerHelper : public SharedWorkerHelper {
   void StartFetching(FetchCallback callback) override;
   void DeleteSharedWorker(const GURL& worker,
                           const std::string& name,
-                          const url::Origin& constructor_origin) override;
+                          const blink::StorageKey& storage_key) override;
 
  private:
   ~MockSharedWorkerHelper() override;
@@ -45,8 +52,6 @@ class MockSharedWorkerHelper : public SharedWorkerHelper {
   FetchCallback callback_;
   std::map<SharedWorkerInfo, bool> workers_;
   std::list<SharedWorkerInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSharedWorkerHelper);
 };
 
 }  // namespace browsing_data

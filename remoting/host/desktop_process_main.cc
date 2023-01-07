@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -23,11 +23,11 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/host/base/host_exit_codes.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/desktop_process.h"
-#include "remoting/host/host_exit_codes.h"
 #include "remoting/host/host_main.h"
 #include "remoting/host/me2me_desktop_environment.h"
-#include "remoting/host/switches.h"
 #include "remoting/host/win/session_desktop_environment.h"
 
 namespace remoting {
@@ -76,21 +76,22 @@ int DesktopProcessMain() {
 
   // Create a platform-dependent environment factory.
   std::unique_ptr<DesktopEnvironmentFactory> desktop_environment_factory;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // base::Unretained() is safe here: |desktop_process| outlives run_loop.Run().
   auto inject_sas_closure = base::BindRepeating(
       &DesktopProcess::InjectSas, base::Unretained(&desktop_process));
   auto lock_workstation_closure = base::BindRepeating(
       &DesktopProcess::LockWorkstation, base::Unretained(&desktop_process));
 
-  desktop_environment_factory.reset(new SessionDesktopEnvironmentFactory(
-      ui_task_runner, video_capture_task_runner, input_task_runner,
-      ui_task_runner, inject_sas_closure, lock_workstation_closure));
-#else  // !defined(OS_WIN)
+  desktop_environment_factory =
+      std::make_unique<SessionDesktopEnvironmentFactory>(
+          ui_task_runner, video_capture_task_runner, input_task_runner,
+          ui_task_runner, inject_sas_closure, lock_workstation_closure);
+#else   // !BUILDFLAG(IS_WIN)
   desktop_environment_factory.reset(new Me2MeDesktopEnvironmentFactory(
       ui_task_runner, video_capture_task_runner, input_task_runner,
       ui_task_runner));
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   if (!desktop_process.Start(std::move(desktop_environment_factory)))
     return kInitializationFailed;
@@ -104,8 +105,8 @@ int DesktopProcessMain() {
 
 }  // namespace remoting
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 int main(int argc, char** argv) {
   return remoting::HostMain(argc, argv);
 }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)

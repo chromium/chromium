@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tracing;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,6 +11,7 @@ import android.content.Context;
 import android.os.Build;
 import android.view.accessibility.AccessibilityManager;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -42,9 +42,10 @@ public class TracingNotificationManager {
     private static final String MSG_STOPPING_NOTIFICATION_MESSAGE =
             "Trace data is being collected and compressed.";
     private static final String MSG_COMPLETE_NOTIFICATION_TITLE = "Chrome trace is complete";
-    private static final String MSG_COMPLETE_NOTIFICATION_MESSAGE = "The trace is ready to share.";
+    private static final String MSG_COMPLETE_NOTIFICATION_MESSAGE =
+            "The trace is ready. Open tracing settings to share.";
     private static final String MSG_STOP = "Stop recording";
-    private static final String MSG_SHARE = "Share trace";
+    private static final String MSG_OPEN_SETTINGS = "Open tracing settings";
 
     // TODO(eseckler): Consider recording UMAs, see e.g. IncognitoNotificationManager.
 
@@ -82,7 +83,7 @@ public class TracingNotificationManager {
         return true;
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private static boolean notificationChannelEnabled(String channelId) {
         NotificationChannel channel = getNotificationManager(ContextUtils.getApplicationContext())
                                               .getNotificationChannel(channelId);
@@ -114,7 +115,7 @@ public class TracingNotificationManager {
                         .setContentTitle(title)
                         .setContentText(message)
                         .setOngoing(true)
-                        .addAction(R.drawable.ic_stop_white_36dp, MSG_STOP,
+                        .addAction(R.drawable.ic_stop_white_24dp, MSG_STOP,
                                 TracingNotificationServiceImpl.getStopRecordingIntent(context));
         showNotification(sTracingActiveNotificationBuilder.build());
     }
@@ -168,14 +169,15 @@ public class TracingNotificationManager {
         Context context = ContextUtils.getApplicationContext();
         String title = MSG_COMPLETE_NOTIFICATION_TITLE;
         String message = MSG_COMPLETE_NOTIFICATION_MESSAGE;
+        int noIcon = 0;
 
         NotificationWrapperBuilder builder =
                 createNotificationWrapperBuilder()
                         .setContentTitle(title)
                         .setContentText(message)
                         .setOngoing(false)
-                        .addAction(R.drawable.ic_share_white_24dp, MSG_SHARE,
-                                TracingNotificationServiceImpl.getShareTraceIntent(context))
+                        .addAction(noIcon, MSG_OPEN_SETTINGS,
+                                TracingNotificationServiceImpl.getOpenSettingsIntent(context))
                         .setDeleteIntent(
                                 TracingNotificationServiceImpl.getDiscardTraceIntent(context));
         showNotification(builder.build());
@@ -193,8 +195,7 @@ public class TracingNotificationManager {
 
     private static NotificationWrapperBuilder createNotificationWrapperBuilder() {
         return NotificationWrapperBuilderFactory
-                .createNotificationWrapperBuilder(
-                        true /* preferCompat */, ChromeChannelDefinitions.ChannelId.BROWSER)
+                .createNotificationWrapperBuilder(ChromeChannelDefinitions.ChannelId.BROWSER)
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.ic_chrome)
                 .setShowWhen(false)

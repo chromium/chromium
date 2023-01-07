@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_ROUND_RECT_PAINTER_H_
 #define UI_VIEWS_ROUND_RECT_PAINTER_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/painter.h"
 #include "ui/views/views_export.h"
@@ -20,9 +19,13 @@ namespace views {
 // Painter to draw a border with rounded corners.
 class VIEWS_EXPORT RoundRectPainter : public Painter {
  public:
-  enum { kBorderWidth = 1 };
+  static constexpr int kBorderWidth = 1;
 
   RoundRectPainter(SkColor border_color, int corner_radius);
+
+  RoundRectPainter(const RoundRectPainter&) = delete;
+  RoundRectPainter& operator=(const RoundRectPainter&) = delete;
+
   ~RoundRectPainter() override;
 
   // Painter:
@@ -32,8 +35,6 @@ class VIEWS_EXPORT RoundRectPainter : public Painter {
  private:
   const SkColor border_color_;
   const int corner_radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(RoundRectPainter);
 };
 
 }  // namespace views

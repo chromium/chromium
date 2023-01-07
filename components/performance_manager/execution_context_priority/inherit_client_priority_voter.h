@@ -1,11 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_INHERIT_CLIENT_PRIORITY_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_INHERIT_CLIENT_PRIORITY_VOTER_H_
-
-#include <map>
 
 #include "components/performance_manager/execution_context_priority/max_vote_aggregator.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"

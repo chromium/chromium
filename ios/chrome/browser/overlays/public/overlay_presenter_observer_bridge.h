@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include <string>
-
-#include "base/macros.h"
 #include "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
 
 // Observes overlay UI presentation events from Objective-C. To use as an
@@ -46,6 +43,12 @@ class OverlayPresenterObserverBridge : public OverlayPresenterObserver {
   // It it the responsibility of calling code to add/remove the instance
   // from OverlayPresenter's observer list.
   OverlayPresenterObserverBridge(id<OverlayPresenterObserving> observer);
+
+  OverlayPresenterObserverBridge(const OverlayPresenterObserverBridge&) =
+      delete;
+  OverlayPresenterObserverBridge& operator=(
+      const OverlayPresenterObserverBridge&) = delete;
+
   ~OverlayPresenterObserverBridge() override;
 
   // OverlayPresenterObserver:
@@ -62,8 +65,6 @@ class OverlayPresenterObserverBridge : public OverlayPresenterObserver {
 
  private:
   __weak id<OverlayPresenterObserving> observer_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayPresenterObserverBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_PRESENTER_OBSERVER_BRIDGE_H_

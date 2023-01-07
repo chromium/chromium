@@ -1,0 +1,16 @@
+include_rules = [
+  "+components/history",
+  "+components/database_utils",
+  "+components/keyed_service",
+  "+components/leveldb_proto",
+  "+components/optimization_guide",
+  "-components/optimization_guide/content",
+  "+components/prefs",
+  "+components/ukm",
+  "+services/metrics/public",
+  "+services/network/public/cpp/shared_url_loader_factory.h",
+  "+sql",
+  "+third_party/perfetto",
+  "+third_party/tflite",
+  "+third_party/tflite_support",
+]

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/filesystem/directory_entry_sync.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_flags.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/filesystem/directory_reader_sync.h"
 #include "third_party/blink/renderer/modules/filesystem/entry.h"
 #include "third_party/blink/renderer/modules/filesystem/file_entry_sync.h"
@@ -54,10 +55,10 @@ FileEntrySync* DirectoryEntrySync::getFile(const String& path,
   auto* sync_helper = MakeGarbageCollected<EntryCallbacksSyncHelper>();
 
   auto success_callback_wrapper =
-      WTF::Bind(&EntryCallbacksSyncHelper::OnSuccess,
-                WrapPersistentIfNeeded(sync_helper));
-  auto error_callback_wrapper = WTF::Bind(&EntryCallbacksSyncHelper::OnError,
-                                          WrapPersistentIfNeeded(sync_helper));
+      WTF::BindOnce(&EntryCallbacksSyncHelper::OnSuccess,
+                    WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = WTF::BindOnce(
+      &EntryCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(sync_helper));
 
   file_system_->GetFile(
       this, path, options, std::move(success_callback_wrapper),
@@ -73,10 +74,10 @@ DirectoryEntrySync* DirectoryEntrySync::getDirectory(
   auto* sync_helper = MakeGarbageCollected<EntryCallbacksSyncHelper>();
 
   auto success_callback_wrapper =
-      WTF::Bind(&EntryCallbacksSyncHelper::OnSuccess,
-                WrapPersistentIfNeeded(sync_helper));
-  auto error_callback_wrapper = WTF::Bind(&EntryCallbacksSyncHelper::OnError,
-                                          WrapPersistentIfNeeded(sync_helper));
+      WTF::BindOnce(&EntryCallbacksSyncHelper::OnSuccess,
+                    WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = WTF::BindOnce(
+      &EntryCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(sync_helper));
 
   file_system_->GetDirectory(
       this, path, options, std::move(success_callback_wrapper),
@@ -89,8 +90,8 @@ DirectoryEntrySync* DirectoryEntrySync::getDirectory(
 void DirectoryEntrySync::removeRecursively(ExceptionState& exception_state) {
   auto* sync_helper = MakeGarbageCollected<VoidCallbacksSyncHelper>();
 
-  auto error_callback_wrapper = WTF::Bind(&VoidCallbacksSyncHelper::OnError,
-                                          WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = WTF::BindOnce(
+      &VoidCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(sync_helper));
 
   file_system_->RemoveRecursively(this, VoidCallbacks::SuccessCallback(),
                                   std::move(error_callback_wrapper),

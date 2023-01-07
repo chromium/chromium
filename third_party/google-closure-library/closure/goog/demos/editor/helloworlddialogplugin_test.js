@@ -1,5 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-// Use of this source code is governed by the Apache License, Version 2.0.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.demos.editor.HelloWorldDialogPluginTest');
 goog.setTestOnly('goog.demos.editor.HelloWorldDialogPluginTest');
@@ -50,6 +53,7 @@ testSuite({
     mockRange = new MockRange();
     mockCtrl.addMock(mockRange);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     mockField = new FieldMock(undefined, undefined, mockRange);
     mockCtrl.addMock(mockField);
 
@@ -66,6 +70,7 @@ testSuite({
 
   /**
    * Tests that the plugin's dialog is properly created.
+   * @suppress {checkTypes} suppression added to enable type checking
    */
   testCreateDialog() {
     mockField.$replay();
@@ -73,6 +78,7 @@ testSuite({
     plugin = new HelloWorldDialogPlugin();
     plugin.registerFieldObject(mockField);
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const dialog = plugin.createDialog(googDom.getDomHelper());
     assertTrue(
         'Dialog should be of type goog.demos.editor.HelloWorldDialog',
@@ -83,6 +89,8 @@ testSuite({
 
   /**
    * Tests that when the OK event fires the editable field is properly updated.
+   * @suppress {missingProperties,checkTypes} suppression added to enable type
+   * checking
    */
   testOk() {
     mockField.focus();
@@ -105,6 +113,7 @@ testSuite({
 
     plugin = new HelloWorldDialogPlugin();
     plugin.registerFieldObject(mockField);
+    /** @suppress {visibility} suppression added to enable type checking */
     const dialog = plugin.createDialog(googDom.getDomHelper());
 
     // Mock of execCommand + clicking OK without actually opening the dialog.
@@ -116,6 +125,7 @@ testSuite({
   /**
    * Tests that the selection is cleared when the dialog opens and is
    * correctly restored after ok is clicked.
+   * @suppress {visibility} suppression added to enable type checking
    */
   testRestoreSelectionOnOk() {
     setUpRealEditableField();
@@ -136,7 +146,7 @@ testSuite({
     // NOTE(user): You can't remove the selection from a field in Opera without
     // blurring it.
     elem.parentNode.blur();
-    expectedFailures.expectFailureFor(googUserAgent.IE || googUserAgent.OPERA);
+    expectedFailures.expectFailureFor(googUserAgent.IE);
     try {
       assertNull(
           'There should be no selection while dialog is open',

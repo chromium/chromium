@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,8 +47,8 @@ class TestCommandStorageManagerDelegate : public CommandStorageManagerDelegate {
 
 TEST_F(CommandStorageManagerTest, OnErrorWritingSessionCommands) {
   TestCommandStorageManagerDelegate delegate;
-  CommandStorageManager manager(CommandStorageManager::kOther, path_, &delegate,
-                                /* use_marker */ true);
+  CommandStorageManager manager(CommandStorageManager::kOther, path_,
+                                &delegate);
   CommandStorageManagerTestHelper test_helper(&manager);
   manager.set_pending_reset(true);
   // Write a command, the delegate should not be notified of an error.

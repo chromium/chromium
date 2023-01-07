@@ -1,11 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 
-#include "base/numerics/ranges.h"
+#include <algorithm>
+#include <utility>
+
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -17,13 +21,11 @@
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
-#include "third_party/blink/renderer/modules/xr/xr_webgl_rendering_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/geometry/double_size.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
-
-#include <algorithm>
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -40,7 +42,7 @@ const char kCleanFrameWarning[] =
 }  // namespace
 
 XRWebGLLayer* XRWebGLLayer::Create(XRSession* session,
-                                   const XRWebGLRenderingContext& context,
+                                   const V8XRWebGLRenderingContext* context,
                                    const XRWebGLLayerInit* initializer,
                                    ExceptionState& exception_state) {
   if (session->ended()) {
@@ -113,16 +115,16 @@ XRWebGLLayer* XRWebGLLayer::Create(XRSession* session,
 
     // Clamp the developer-requested framebuffer size to ensure it's not too
     // small to see or unreasonably large.
-    // TODO: Would be best to have the max value communicated from the service
-    // rather than limited to the native res.
-    framebuffer_scale = base::ClampToRange(
-        initializer->framebufferScaleFactor(), kFramebufferMinScale, max_scale);
+    // TODO(bajones): Would be best to have the max value communicated from the
+    // service rather than limited to the native res.
+    framebuffer_scale = base::clamp(initializer->framebufferScaleFactor(),
+                                    kFramebufferMinScale, max_scale);
   }
 
-  DoubleSize framebuffers_size = session->DefaultFramebufferSize();
+  gfx::SizeF framebuffers_size = session->RecommendedFramebufferSize();
 
-  IntSize desired_size(framebuffers_size.Width() * framebuffer_scale,
-                       framebuffers_size.Height() * framebuffer_scale);
+  gfx::Size desired_size =
+      gfx::ToFlooredSize(gfx::ScaleSize(framebuffers_size, framebuffer_scale));
 
   // Create an opaque WebGL Framebuffer
   WebGLFramebuffer* framebuffer =
@@ -176,14 +178,14 @@ XRWebGLLayer::~XRWebGLLayer() {
 
 uint32_t XRWebGLLayer::framebufferWidth() const {
   if (drawing_buffer_) {
-    return drawing_buffer_->size().Width();
+    return drawing_buffer_->size().width();
   }
   return webgl_context_->drawingBufferWidth();
 }
 
 uint32_t XRWebGLLayer::framebufferHeight() const {
   if (drawing_buffer_) {
-    return drawing_buffer_->size().Height();
+    return drawing_buffer_->size().height();
   }
   return webgl_context_->drawingBufferHeight();
 }
@@ -214,14 +216,22 @@ XRViewport* XRWebGLLayer::getViewport(XRView* view) {
                  view_data->CurrentViewportScale() * 100);
   view_data->SetViewportModifiable(false);
 
-  return GetViewportForEye(view->EyeValue());
+  if (viewports_dirty_) {
+    UpdateViewports();
+  }
+
+  // framebuffer_scale_ is the scale requested by the web developer when this
+  // layer was created. The session's recommended framebuffer scale is the scale
+  // requested by the XR runtime. Both scales must be applied to the viewport.
+  return view->Viewport(framebuffer_scale_ *
+                        session()->RecommendedFramebufferScale());
 }
 
-XRViewport* XRWebGLLayer::GetViewportForEye(XRView::XREye eye) {
+XRViewport* XRWebGLLayer::GetViewportForEye(device::mojom::blink::XREye eye) {
   if (viewports_dirty_)
     UpdateViewports();
 
-  if (eye == XRView::kEyeRight)
+  if (eye == device::mojom::blink::XREye::kRight)
     return right_viewport_;
 
   // This code path also handles an eye of "none".
@@ -252,6 +262,10 @@ void XRWebGLLayer::UpdateViewports() {
     // Calculate new sizes with optional viewport scale applied. This assumes
     // that XRSession::views() returns views in matching order.
     if (session()->StereoscopicViews()) {
+      // TODO(1275873): This technically works fine because the entire bounds is
+      // still sent to the XR process, but if there are more than two views,
+      // the terms "left" and "right" are not accurate. The entire bounds of
+      // all viewports should be sent instead.
       double left_scale = session()->views()[0]->CurrentViewportScale();
       left_viewport_ = MakeGarbageCollected<XRViewport>(
           0, 0, rounded(framebuffer_width * 0.5 * left_scale),
@@ -290,18 +304,30 @@ HTMLCanvasElement* XRWebGLLayer::output_canvas() const {
   return nullptr;
 }
 
-uint32_t XRWebGLLayer::CameraImageTextureId() const {
-  return camera_image_texture_id_;
-}
+WebGLTexture* XRWebGLLayer::GetCameraTexture() {
+  DVLOG(1) << __func__;
 
-base::Optional<gpu::MailboxHolder> XRWebGLLayer::CameraImageMailboxHolder()
-    const {
-  return camera_image_mailbox_holder_;
+  // We already have a WebGL texture for the camera image - return it:
+  if (camera_image_texture_) {
+    return camera_image_texture_;
+  }
+
+  // We don't have a WebGL texture, and we cannot create it - return null:
+  if (!camera_image_texture_id_) {
+    return nullptr;
+  }
+
+  // We don't have a WebGL texture, but we can create it, so create, store and
+  // return it:
+  camera_image_texture_ = MakeGarbageCollected<WebGLUnownedTexture>(
+      webgl_context_, camera_image_texture_id_, GL_TEXTURE_2D);
+
+  return camera_image_texture_;
 }
 
 void XRWebGLLayer::OnFrameStart(
-    const base::Optional<gpu::MailboxHolder>& buffer_mailbox_holder,
-    const base::Optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
+    const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder,
+    const absl::optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
   if (framebuffer_) {
     framebuffer_->MarkOpaqueBufferComplete(true);
     framebuffer_->SetContentsChanged(false);
@@ -320,24 +346,27 @@ void XRWebGLLayer::OnFrameStart(
       camera_image_mailbox_holder_ = camera_image_mailbox_holder;
       camera_image_texture_id_ =
           GetBufferTextureId(camera_image_mailbox_holder_);
-      BindBufferTexture(camera_image_mailbox_holder_);
+      DVLOG(3) << __func__
+               << ": camera_image_texture_id_=" << camera_image_texture_id_;
+      BindCameraBufferTexture(camera_image_mailbox_holder_);
     }
   }
 }
 
 uint32_t XRWebGLLayer::GetBufferTextureId(
-    const base::Optional<gpu::MailboxHolder>& buffer_mailbox_holder) {
+    const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder) {
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
   gl->WaitSyncTokenCHROMIUM(buffer_mailbox_holder->sync_token.GetConstData());
   DVLOG(3) << __func__ << ": buffer_mailbox_holder->sync_token="
            << buffer_mailbox_holder->sync_token.ToDebugString();
   GLuint texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
       buffer_mailbox_holder->mailbox.name);
+  DVLOG(3) << __func__ << ": texture_id=" << texture_id;
   return texture_id;
 }
 
-void XRWebGLLayer::BindBufferTexture(
-    const base::Optional<gpu::MailboxHolder>& buffer_mailbox_holder) {
+void XRWebGLLayer::BindCameraBufferTexture(
+    const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder) {
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
 
   if (buffer_mailbox_holder) {
@@ -384,26 +413,40 @@ void XRWebGLLayer::OnFrameEnd() {
       // Always call submit, but notify if the contents were changed or not.
       session()->xr()->frameProvider()->SubmitWebGLLayer(this,
                                                          framebuffer_dirty);
-      if (camera_image_mailbox_holder_ && camera_image_texture_id_) {
-        DVLOG(3) << __func__ << "Deleting camera image texture";
+      if (camera_image_texture_id_) {
+        // We shouldn't ever have a camera texture if the holder wasn't present:
+        DCHECK(camera_image_mailbox_holder_);
+
+        DVLOG(3) << __func__
+                 << ": deleting camera image texture, camera_image_texture_id_="
+                 << camera_image_texture_id_;
         gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
+
         gl->EndSharedImageAccessDirectCHROMIUM(camera_image_texture_id_);
         gl->DeleteTextures(1, &camera_image_texture_id_);
+
+        // Notify our WebGLUnownedTexture (created from
+        // camera_image_texture_id_) that we have deleted it. Also, release the
+        // reference since we no longer need it (note that it could still be
+        // kept alive by the JS application, but should be a defunct object).
+        if (camera_image_texture_) {
+          camera_image_texture_->OnGLDeleteTextures();
+          camera_image_texture_ = nullptr;
+        }
+
         camera_image_texture_id_ = 0;
-        camera_image_mailbox_holder_ = base::nullopt;
+        camera_image_mailbox_holder_ = absl::nullopt;
       }
     }
   }
 }
 
 void XRWebGLLayer::OnResize() {
-  if (!session()->immersive() && drawing_buffer_) {
-    // For non-immersive sessions a resize indicates we should adjust the
-    // drawing buffer size to match the canvas.
-    DoubleSize framebuffers_size = session()->DefaultFramebufferSize();
+  if (drawing_buffer_) {
+    gfx::SizeF framebuffers_size = session()->RecommendedFramebufferSize();
 
-    IntSize desired_size(framebuffers_size.Width() * framebuffer_scale_,
-                         framebuffers_size.Height() * framebuffer_scale_);
+    gfx::Size desired_size = gfx::ToFlooredSize(
+        gfx::ScaleSize(framebuffers_size, framebuffer_scale_));
     drawing_buffer_->Resize(desired_size);
   }
 
@@ -424,6 +467,7 @@ void XRWebGLLayer::Trace(Visitor* visitor) const {
   visitor->Trace(right_viewport_);
   visitor->Trace(webgl_context_);
   visitor->Trace(framebuffer_);
+  visitor->Trace(camera_image_texture_);
   XRLayer::Trace(visitor);
 }
 

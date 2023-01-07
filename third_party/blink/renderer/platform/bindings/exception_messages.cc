@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -42,20 +43,20 @@ String ExceptionMessages::FailedToConvertJSValue(const char* type) {
 String ExceptionMessages::FailedToConstruct(const char* type,
                                             const String& detail) {
   return "Failed to construct '" + String(type) +
-         (!detail.IsEmpty() ? String("': " + detail) : String("'"));
+         (!detail.empty() ? String("': " + detail) : String("'"));
 }
 
 String ExceptionMessages::FailedToEnumerate(const char* type,
                                             const String& detail) {
   return "Failed to enumerate the properties of '" + String(type) +
-         (!detail.IsEmpty() ? String("': " + detail) : String("'"));
+         (!detail.empty() ? String("': " + detail) : String("'"));
 }
 
 String ExceptionMessages::FailedToExecute(const char* method,
                                           const char* type,
                                           const String& detail) {
   return "Failed to execute '" + String(method) + "' on '" + String(type) +
-         (!detail.IsEmpty() ? String("': " + detail) : String("'"));
+         (!detail.empty() ? String("': " + detail) : String("'"));
 }
 
 String ExceptionMessages::FailedToGet(const char* property,
@@ -176,6 +177,13 @@ String ExceptionMessages::NotAFiniteNumber(const Decimal& value,
                         value.IsInfinity() ? "infinite" : "not a number");
 }
 
+String ExceptionMessages::InputArrayTooLong(unsigned int expected_size,
+                                            unsigned int actual_size) {
+  return "Input array's length should be less than " +
+         String::Number(expected_size) + ". Actual length is " +
+         String::Number(actual_size) + ".";
+}
+
 String ExceptionMessages::OrdinalNumber(int number) {
   String suffix("th");
   switch (number % 10) {
@@ -195,11 +203,72 @@ String ExceptionMessages::OrdinalNumber(int number) {
   return String::Number(number) + suffix;
 }
 
+String ExceptionMessages::IndexExceedsMaximumBound(const char* name,
+                                                   bool eq,
+                                                   const String& given,
+                                                   const String& bound) {
+  StringBuilder result;
+  result.Append("The ");
+  result.Append(name);
+  result.Append(" provided (");
+  result.Append(given);
+  result.Append(") is greater than ");
+  result.Append(eq ? "or equal to " : "");
+  result.Append("the maximum bound (");
+  result.Append(bound);
+  result.Append(").");
+  return result.ToString();
+}
+
+String ExceptionMessages::IndexExceedsMinimumBound(const char* name,
+                                                   bool eq,
+                                                   const String& given,
+                                                   const String& bound) {
+  StringBuilder result;
+  result.Append("The ");
+  result.Append(name);
+  result.Append(" provided (");
+  result.Append(given);
+  result.Append(") is less than ");
+  result.Append(eq ? "or equal to " : "");
+  result.Append("the minimum bound (");
+  result.Append(bound);
+  result.Append(").");
+  return result.ToString();
+}
+
+String ExceptionMessages::IndexOutsideRange(const char* name,
+                                            const String& given,
+                                            const String& lower_bound,
+                                            BoundType lower_type,
+                                            const String& upper_bound,
+                                            BoundType upper_type) {
+  StringBuilder result;
+  result.Append("The ");
+  result.Append(name);
+  result.Append(" provided (");
+  result.Append(given);
+  result.Append(") is outside the range ");
+  result.Append(lower_type == kExclusiveBound ? '(' : '[');
+  result.Append(lower_bound);
+  result.Append(", ");
+  result.Append(upper_bound);
+  result.Append(upper_type == kExclusiveBound ? ')' : ']');
+  result.Append('.');
+  return result.ToString();
+}
+
 String ExceptionMessages::ReadOnly(const char* detail) {
   DEFINE_STATIC_LOCAL(String, read_only, ("This object is read-only."));
   return detail
              ? String::Format("This object is read-only, because %s.", detail)
              : read_only;
+}
+
+String ExceptionMessages::SharedArrayBufferNotAllowed(
+    const char* expected_type) {
+  return String::Format("The provided %s value must not be shared.",
+                        expected_type);
 }
 
 String ExceptionMessages::ValueNotOfType(const char* expected_type) {

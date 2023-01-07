@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/account_manager/account_manager.h"
-#include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/location.h"
@@ -27,13 +26,13 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "chromeos/dbus/authpolicy/authpolicy_client.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "components/account_manager_core/account.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/vector_icons/vector_icons.h"
 #include "dbus/message.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -44,10 +43,7 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::AuthPolicyClient;
-
-constexpr base::TimeDelta kGetUserStatusCallsInterval =
-    base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kGetUserStatusCallsInterval = base::Hours(1);
 constexpr char kProfileSigninNotificationId[] = "chrome://settings/signin/";
 
 // Sets up Chrome OS Account Manager.
@@ -60,13 +56,14 @@ void SetupAccountManager(Profile* profile, const AccountId& account_id) {
   auto* account_manager =
       factory->GetAccountManager(profile->GetPath().value());
   DCHECK(account_manager);
-  // |AccountManager::UpsertAccount| is idempotent and safe to call multiple
-  // times.
+  // |account_manager::AccountManager::UpsertAccount| is idempotent and safe to
+  // call multiple times.
   account_manager->UpsertAccount(
       ::account_manager::AccountKey{
           account_id.GetObjGuid(),
           account_manager::AccountType::kActiveDirectory},
-      account_id.GetUserEmail(), AccountManager::kActiveDirectoryDummyToken);
+      account_id.GetUserEmail(),
+      account_manager::AccountManager::kActiveDirectoryDummyToken);
 }
 
 }  // namespace
@@ -203,7 +200,7 @@ void AuthPolicyCredentialsManager::GetUserKerberosFiles() {
 void AuthPolicyCredentialsManager::OnGetUserKerberosFilesCallback(
     authpolicy::ErrorType error,
     const authpolicy::KerberosFiles& kerberos_files) {
-  auto nullstr = base::Optional<std::string>();
+  auto nullstr = absl::optional<std::string>();
   kerberos_files_handler_.SetFiles(
       kerberos_files.has_krb5cc() ? kerberos_files.krb5cc() : nullstr,
       kerberos_files.has_krb5conf() ? kerberos_files.krb5conf() : nullstr);
@@ -227,7 +224,8 @@ void AuthPolicyCredentialsManager::StartObserveNetwork() {
   if (is_observing_network_)
     return;
   is_observing_network_ = true;
-  NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
 }
 
 void AuthPolicyCredentialsManager::StopObserveNetwork() {
@@ -235,8 +233,7 @@ void AuthPolicyCredentialsManager::StopObserveNetwork() {
     return;
   DCHECK(NetworkHandler::IsInitialized());
   is_observing_network_ = false;
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                 FROM_HERE);
+  network_state_handler_observer_.Reset();
 }
 
 void AuthPolicyCredentialsManager::UpdateDisplayAndGivenName(
@@ -267,14 +264,15 @@ void AuthPolicyCredentialsManager::ShowNotification(int message_id) {
                                       base::NumberToString(message_id);
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
-      kProfileSigninNotificationId);
+      kProfileSigninNotificationId,
+      NotificationCatalogName::kAuthpolicyCredentialsError);
 
   // Set |profile_id| for multi-user notification blocker.
   notifier_id.profile_id = profile_->GetProfileUserName();
 
   auto delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](base::Optional<int> button_index) {
+          base::BindRepeating([](absl::optional<int> button_index) {
             chrome::AttemptUserExit();
           }));
 
@@ -285,7 +283,7 @@ void AuthPolicyCredentialsManager::ShowNotification(int message_id) {
           l10n_util::GetStringUTF16(message_id),
           l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DISPLAY_SOURCE),
           GURL(notification_id), notifier_id, data, std::move(delegate),
-          chromeos::kNotificationWarningIcon,
+          vector_icons::kNotificationWarningIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
   notification->SetSystemPriority();
 
@@ -331,9 +329,7 @@ AuthPolicyCredentialsManagerFactory::GetInstance() {
 }
 
 AuthPolicyCredentialsManagerFactory::AuthPolicyCredentialsManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AuthPolicyCredentialsManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("AuthPolicyCredentialsManager") {}
 
 AuthPolicyCredentialsManagerFactory::~AuthPolicyCredentialsManagerFactory() {}
 

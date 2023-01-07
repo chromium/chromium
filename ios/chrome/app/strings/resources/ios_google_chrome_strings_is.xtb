@@ -1,26 +1,39 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1143896152279775643">Aðgangsorðið verður vistað í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Hjálpaðu okkur að bæta eiginleika og afköst Chrome</translation>
-<translation id="1314663809820920746">Þú getur áfram séð öll bókamerki, feril, aðgangsorð og aðrar stillingar í þessu tæki. Breytingar verða ekki samstilltar við Google reikninginn þinn.</translation>
+<translation id="1462727070346936664">Skráðu þig inn til að fá sem mest út úr Chrome.</translation>
 <translation id="1479202195792305274">Chrome getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google reikningnum þínum.</translation>
+<translation id="1493827051843127077">Notaðu Chrome sem sjálfgefinn kost til að samstilla flipa, aðgangsorð og greiðsluupplýsingar í öllum tækjunum þínum</translation>
 <translation id="1504372625950710826">Chrome gat ekki leitað að uppfærslum. Athugaðu nettenginguna þína.</translation>
+<translation id="1511320244449497906">Þú ert innskráð(ur) og samstillir gögnin þín við reikning í umsjón <ph name="DOMAIN" />. Viðkomandi kerfisstjóri getur nú stillt notendareglur sem eru sértækar fyrir viðkomandi reikning og geta breytt virkni Chrome.</translation>
 <translation id="1682483655351012182">Samstilla gögnin þín í Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">Hjálpaðu til við að bæta Google Chrome með því að senda sjálfkrafa notkunarupplýsingar og hrunskýrslur til Google</translation>
 <translation id="1917964099031477364">Þessi reikningur og öll óvistuð gögn verða fjarlægð úr Chrome og öðrum Google forritum á þessu tæki.</translation>
+<translation id="1968388653333775699">Komdu meiru í verk með Chrome</translation>
 <translation id="2009224836393115614">Chrome gat ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
+<translation id="2056123005618757196">Komdu meiru í verk með einfaldari, öruggari og hraðari Google Chrome.</translation>
 <translation id="2147651015520127414">Chrome staðfesti að <ph name="ISSUER" /> gaf út vottorð þessa vefsvæðis.</translation>
 <translation id="2199719347983604670">Gögn úr Chrome samstillingu</translation>
+<translation id="2313070403598893276">Google Chrome er einfaldur, öruggur og hefur aldrei verið hraðari</translation>
+<translation id="2339201583852607431">Aðgangsorðið þitt verður vistað á Google reikningnum þínum (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome deilir staðsetningunni þinni með vefsvæðum sem þú veitir heimild.</translation>
 <translation id="2347208864470321755">Þegar kveikt er á þessum eiginleika mun Chrome bjóðast til að þýða síður á öðrum tungumálum með Google Translate. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
-<translation id="2415682770504543561">Veldu Chrome sem sjálfgefinn vafra</translation>
+<translation id="2427791862912929107">Chrome inniheldur eiginleika sem hjálpa þér að stjórna netgögnunum þínum og hleðsluhraða vefsíðna.
+<ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
+<translation id="2561231791489583059">Notaðu Chrome sem sjálfgefinn vafra til að njóta verndar gegn hættulegum vefsvæðum og tryggja öryggi aðgangsorðanna þinna</translation>
 <translation id="2574249610672786438">Skráðu þig inn í öllum tækjunum þínum til að sjá flipana þína hvar sem þú notar Chrome</translation>
 <translation id="2576431527583832481">Chrome er nú enn betra! Ný útgáfa er í boði.</translation>
 <translation id="257708665678654955">Viltu að Google Chrome bjóðist til að þýða síður á <ph name="LANGUAGE_NAME" /> næst á þessu vefsvæði?</translation>
+<translation id="2671426118752779020">Þú getur notað aðgangsorðin sem þú vistaðir í aðgangsorðastjórnun Google í öðrum forritum í iPhone.</translation>
+<translation id="2689064829982324496">Til að skrá þig út af Google reikningnum þínum á öllum vefsvæðum skaltu <ph name="BEGIN_LINK" />skrá þig út af Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>
 <translation id="2732745070297234559">Chrome gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun.</translation>
-<translation id="2740105938841089077">Nota Chrome til að opna tengla</translation>
+<translation id="2869959624320573933">Skráðu þig inn á Chrome</translation>
 <translation id="2919738076569633423">Með því að nota Chrome samþykkir þú <ph name="BEGIN_LINK_TOS" />þjónustuskilmálana<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Veldu <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Vegna þess að þú ert að skrá þig út af reikningi sem stýrt er af <ph name="SIGNOUT_MANAGED_DOMAIN" /> verður Chrome gögnum þínum eytt úr þessu tæki. Gögnin verða áfram geymd á Google reikningnum þínum.</translation>
 <translation id="3167189358072330585">Reikningurinn þinn virkar ekki í Google Chrome. Hafðu samband við stjórnanda lénsins eða notaðu venjulegan Google reikning til að skrá þig inn.</translation>
 <translation id="3173834708294760622">Google Chrome síða</translation>
@@ -29,66 +42,100 @@
 <translation id="3345341804167540816">Notaðu Chrome alls staðar</translation>
 <translation id="3522659714780527202">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>
 <translation id="3533694711092285624">Engin vistuð aðgangsorð. Chrome getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
+<translation id="3641179212828090796">Notaðu aðgangsorðið sem þú vistaðir í Chrome til að skrá þig inn hraðar</translation>
+<translation id="3655656110921623717">Þetta þýðir að Chrome biður alltaf um snjalltækjaútgáfu vefsvæðis.</translation>
 <translation id="3706101708757577809">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="3720541637541300822">Læsa huliðsflipum um leið og þú lokar Chrome</translation>
 <translation id="384394811301901750">Google Chrome getur ekki notað myndavélina að svo stöddu</translation>
-<translation id="38949020760388809">Veldu hvort þú vilt hreinsa gögn Chrome úr þessu tæki eða geyma þau.</translation>
 <translation id="3980220367029651214">Þú ert að breyta samstillingarreikningi þínum úr <ph name="USER_EMAIL1" /> í <ph name="USER_EMAIL2" />.Fyrirliggjandi Chrome gögnum þínum er stjórnað af <ph name="DOMAIN" />. Þetta eyðir gögnunum þínum af þessu tæki en þau verða áfram geymd á <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Fyrirtækið þitt krefst þess að þú skráir þig ekki inn í Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome hefur ekki aðgang að myndunum þínum eða myndskeiðum. Veittu aðgang í iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4099578267706723511">Hjálpaðu til við að bæta Google Chrome með því að senda talnagögn um notkun og tilkynningar um hrun til Google.</translation>
-<translation id="415767770115540173">Fáðu betri Google upplifun í Chrome út frá staðsetningu þinni.</translation>
 <translation id="417201473131094001">Ekki stutt í Chrome Canary</translation>
+<translation id="4192781968753717021">Þetta aðgangsorð fannst í öryggisbroti. Google aðgangsorðastjórnun mælir með að þú breytir aðgangsorðinu þínu strax.</translation>
+<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> notaði Chrome og skildi eftir bókamerki, aðgangsorð og aðrar stillingar í þessu tæki.</translation>
 <translation id="424864128008805179">Viltu skrá þig út úr Chrome?</translation>
 <translation id="4249068189593983585">Ábending um Chrome. Til að sjá fleiri valkosti fyrir flipa skaltu halda hnappinum „Sýna flipa“ inni á tækjastikunni, sem er neðst eða efst á skjánum.</translation>
 <translation id="4523886039239821078">Einhverjar viðbætur valda því að Chrome hrynur. Fjarlægðu þær.</translation>
 <translation id="4633328489441962921">Chrome getur ekki leitað að uppfærslum.</translation>
+<translation id="4636900170638246267">Skráðu þig inn á þetta vefsvæði og Chrome.</translation>
 <translation id="4698415050768537821">Chrome gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google reikningnum þínum.<ph name="END_LINK" /></translation>
+<translation id="4802922164792993118">Chrome ábending. Vertu fljótari að skrá þig inn með því að velja vistuð aðgangsorð efst á lyklaborðinu.</translation>
+<translation id="4819268619367838612">Chrome sendir gögn um notkun og hrun til Google til að bæta forritið. <ph name="BEGIN_LINK" />Stjórna<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Ekki stutt í Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira.</translation>
+<translation id="5108659628347594808">Bættu Chrome</translation>
+<translation id="5119391094379141756">Veldu Chrome</translation>
 <translation id="5162467219239570114">Chrome er úrelt. Ef engin uppfærsla er til staðar í <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> getur verið að tækið þitt styðji ekki lengur nýjar útgáfur af Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome getur ekki notað myndavélina því að annað forrit er að nota hana</translation>
+<translation id="5460571915754665838">4. Veldu Chrome</translation>
+<translation id="5552137475244467770">Chrome athugar aðgangsorðin þín reglulega og ber þau saman við lista sem hafa verið birtir á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfn dulkóðuð svo enginn geti lesið þau, þ.m.t. ekki Google.</translation>
 <translation id="5639704535586432836">Opnaðu Stillingar &gt; Persónuvernd &gt; Myndavél &gt; Chrome og kveiktu á myndavélinni.</translation>
 <translation id="5642200033778930880">Google Chrome getur ekki notað myndavélina á tvískiptum skjá</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Ótengt, Chrome getur ekki leitað að uppfærslum.</translation>
+<translation id="5716154293141027663">Opna Chrome hvenær sem þú ýtir á tengil í öðrum forritum</translation>
 <translation id="5854621639439811139">Ábending um Chrome. Sumir hnappar, eins og Til baka, Áfram og Leita, eru nú neðst á skjánum.</translation>
-<translation id="6036420186814142909">Google Chrome inniheldur eiginleika sem hjálpa þér að stjórna netgögnunum þínum og hleðsluhraða vefsíðna.
-<ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
+<translation id="5998675059699164418">Fyrirtækið þitt krefst þess að þú skráir þig inn til að nota Chrome.</translation>
+<translation id="6054613632208573261">Notaðu Chrome sjálfgefið</translation>
+<translation id="6063091872902370735">Leyfa innskráningu í Chrome</translation>
+<translation id="6110625574506755980">Tilteknir Chrome eiginleikar verða ekki í boði lengur.</translation>
 <translation id="6181930887571472871">Skipta yfir í Chrome</translation>
 <translation id="6238746320622508509">Leyfa Chrome að læsa huliðsflipunum þínum.</translation>
-<translation id="6573431926118603307">Flipar sem þú hefur opnað í Chrome í öðrum tækjum birtast hér.</translation>
+<translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
+<translation id="6427126399757991875">Fyrirtækið þitt er að setja upp Chrome...</translation>
+<translation id="651403856614361404">Þetta aðgangsorð fannst í öryggisbroti. Chrome mælir með því að þú skiptir um aðgangsorð núna.</translation>
 <translation id="6600954340915313787">Afritað yfir í Chrome</translation>
 <translation id="6634107063912726160">Þegar þú skráir þig út mun Chrome ekki samstilla ný gögn við Google reikninginn þinn. Gögn sem voru samstillt áður verða áfram á reikningnum.</translation>
 <translation id="6648150602980899529">Þú ert að skrá þig út af reikningi sem stýrt er af <ph name="DOMAIN" /> og veitir í leiðinni stjórnanda lénsins umsjón með Chrome gögnunum þínum. Gögnin þín verða tengd við þennan reikning til frambúðar. Ef þú skráir þig út af Chrome verður gögnunum þínum á þessu tæki eytt, en þau verða áfram geymd á Google reikningnum þínum.</translation>
 <translation id="6676840375528380067">Viltu hreinsa Chrome gögnin úr þessu tæki?</translation>
 <translation id="6822673484890854830">Chrome gat ekki athugað öll aðgangsorð. Reyndu aftur síðar.</translation>
 <translation id="6964931465519938134">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
+<translation id="701356708427365932">Kynntu þér nýju Chrome valmyndina</translation>
+<translation id="7059914902409643750">Lagaðu Chrome að þínum þörfum</translation>
 <translation id="7124339256045485976">Haltu Chrome uppfærðu</translation>
 <translation id="7161390184744336561">Google Chrome er úrelt</translation>
 <translation id="7165736900384873061">Byrjaðu að nota QR-skanna Google Chrome</translation>
-<translation id="7172660552945675509">Ábending: <ph name="BEGIN_LINK" />Færðu Chrome í forritastikuna<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome notar andlitskennsl til að tryggja heimilaðan aðgang að aðgangsorðum þínum.</translation>
+<translation id="7187993566681480880">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú hefur skráð þig inn.</translation>
+<translation id="72119412072970160">Þú getur notað aðgangsorðin sem þú vistaðir í aðgangsorðastjórnun Google í öðrum forritum í iPad.</translation>
 <translation id="7261678641327190792">Chrome getur ekki athugað aðgangsorðin þín</translation>
-<translation id="7265369419224458312">Hér hefurðu aðgang að flipunum sem eru opnir í tölvunni þinni. Opnaðu einfaldlega Chrome í tölvunni, farðu í valmyndina og veldu „Skrá inn í Chrome…“</translation>
 <translation id="7272930098487145294">Til að vista myndir og láta Chrome bæta við myndirnar þínar skaltu ýta á Stillingar</translation>
+<translation id="7275945473750112644">Reikningurinn þinn er í umsjón <ph name="HOSTED_DOMAIN" /> og því verður Chrome gögnunum þínum eytt úr þessu tæki</translation>
 <translation id="7400722733683201933">Um Google Chrome</translation>
 <translation id="7501046334262221972">Til að gera Chrome að sjálfgefnum vafra skaltu opna stillingarnar. Þar skaltu ýta á „Sjálfgefið vafraforrit“ og velja Chrome.</translation>
 <translation id="756809126120519699">Chrome gögnum eytt</translation>
 <translation id="7626032353295482388">Velkomin(n) í Chrome</translation>
 <translation id="7662994914830945754">Skráðu þig inn og kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>
-<translation id="766361182512894255">Aðgangsorðið þitt var afhjúpað vegna öryggisbrots. Chrome mælir með því að þú breytir aðgangsorðinu þínu núna.</translation>
+<translation id="7693590760643069321">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="7698568245838009292">Chrome biður um aðgang að myndavélinni</translation>
+<translation id="7754633291442704733"><ph name="DOMAIN" /> fyrirtækisins þíns fær aðgang að Chrome gögnunum þínum, bókamerkjum, ferli, aðgangsorðum og öðrum stillingum sem þú geymir á þessum reikningi. Þegar þú skráir þig út verður gögnunum þínum eytt úr þessu tæki.  Hins vegar verða gögnin þín geymd á stýrða Google reikningnum þínum og verða aðgengileg fyrirtækinu þínu. Fyrirtækið þitt getur líka stillt notendareglur sem eru sértækar fyrir reikninginn þinn og geta breytt virkni Chrome.</translation>
+<translation id="7780154209050837198">Skráðu þig inn á Chrome með Google reikningnum þínum svo að Chrome nýtist þér sem best.</translation>
 <translation id="7855730255114109580">Google Chrome er uppfært</translation>
-<translation id="8109233255338845204">Reikningurinn þinn er í umsjón <ph name="HOSTED_DOMAIN" /> og því verður Chrome gögnunum þínum eytt úr þessu tæki.</translation>
+<translation id="8022947259858476807">Notaðu Chrome sem sjálfgefinn valkost til að opna tengla, leita í græjum og til sjálfvirkrar útfyllingar aðgangsorða í öðrum forritum</translation>
+<translation id="81358522153858150">Chrome styður nú notendareglur fyrir stýrða reikninginn þinn</translation>
 <translation id="8160472928944011082">Ekki er hægt að uppfæra Chrome</translation>
+<translation id="8357607116237445042">Veldu hvort þú vilt hreinsa gögn Chrome úr þessu tæki eða geyma þau</translation>
 <translation id="8370517070665726704">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>
 <translation id="840168496893712993">Einhverjar viðbætur valda því að Chrome hrynur. Prófaðu að fjarlægja þær.</translation>
+<translation id="8414886616817913619">Fyrirtækið þitt krefst þess að þú skráir þig inn til að nota Chrome. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8459495907675268833">Völdu gögnin hafa verið fjarlægð af Chrome og samstilltum tækjum. Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, svo sem yfir leit og virkni í annarri þjónustu Google, á history.google.com.</translation>
 <translation id="850555388806794946">Til að gera Chrome að sjálfgefnum vafra:
   1. Opnaðu Stillingar
   2. Ýttu á „Sjálfgefið vafraforrit“
   3. Veldu Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Ef þú leyfir Chrome að vita staðsetningu þína sendir Chrome hana á sjálfgefnu leitarvélina þína og þau vefsvæði sem þú veitir aðgang að staðsetningu. Vefsvæði kunna að biðja um staðsetningu þína þegar þau búa yfir staðbundum upplýsingum til að birta þér, t.d. um nálægar verslanir eða fréttir.</translation>
+<translation id="8736550665979974340">Öryggi með Google Chrome</translation>
+<translation id="8772179140489533211">Sýna innskráningartilkynningar í Chrome.</translation>
+<translation id="8788269841521769222">Þú þarft ekki að muna þetta aðgangsorð. Það verður vistað í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" /></translation>
+<translation id="8897749957032330183">Aðgangsorð eru vistuð í Google aðgangsorðastjórnun í þessu tæki.</translation>
+<translation id="8969290730818637510">Þegar kveikt er á þessu:
+<ph name="BEGIN_INDENT" />  • Hjálpaðu til við að bæta Chrome fyrir fólk sem notar það eins og þú.<ph name="END_INDENT" />
+
+Hafðu í huga:
+<ph name="BEGIN_INDENT" />  • Upplýsingar um notkun þína á Chrome eru sendar til Google en eru ekki tengdar við þig.
+  • Ef Chrome hrynur gætu tilteknar persónuupplýsingar komið fram í upplýsingum um hrunið.
+  • Ef þú kveikir að samstillingu gætu mæligildi innihaldið upplýsingar um vefslóðir sem þú ferð á.<ph name="END_INDENT" /></translation>
+<translation id="9112744793181547300">Stilla Chrome sem sjálfgefið?</translation>
+<translation id="9122931302567044771">Þetta þýðir að Chrome biður alltaf um skjáborðsútgáfu vefsvæðis.</translation>
 </translationbundle>

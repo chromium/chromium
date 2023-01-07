@@ -86,17 +86,17 @@ class CrashLogsTest(unittest.TestCase):
             make_mock_crash_report_darwin('DumpRenderTree', 28526)[200:]
         files = {
             '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150718_quadzen.crash':
-            older_mock_crash_report,
+            older_mock_crash_report.encode('utf8', 'replace'),
             '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150719_quadzen.crash':
-            mock_crash_report,
+            mock_crash_report.encode('utf8', 'replace'),
             '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150720_quadzen.crash':
-            newer_mock_crash_report,
+            newer_mock_crash_report.encode('utf8', 'replace'),
             '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150721_quadzen.crash':
             None,
             '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150722_quadzen.crash':
-            other_process_mock_crash_report,
+            other_process_mock_crash_report.encode('utf8', 'replace'),
             '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150723_quadzen.crash':
-            misformatted_mock_crash_report,
+            misformatted_mock_crash_report.encode('utf8', 'replace'),
         }
         filesystem = MockFileSystem(files)
         crash_logs = CrashLogs(MockSystemHost(filesystem=filesystem))

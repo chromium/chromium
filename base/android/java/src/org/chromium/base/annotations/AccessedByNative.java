@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *  @AccessedByNative is used to ensure proguard will keep this field, since it's
- *  only accessed by native.
+ * Applied to fields that are accessed from native via JNI. Causes R8 to not
+ * rename them.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.CLASS)

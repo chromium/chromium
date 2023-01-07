@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,13 +50,6 @@ ChromeVoxUnitTestBase.prototype = {
 
   /** @override */
   browsePreload: DUMMY_URL,
-
-  /**
-   * @override
-   * It doesn't make sense to run the accessibility audit on these tests,
-   * since many of them are deliberately testing inaccessible html.
-   */
-  runAccessibilityChecks: false,
 
   /**
    * Loads some inlined html into the body of the current document, replacing

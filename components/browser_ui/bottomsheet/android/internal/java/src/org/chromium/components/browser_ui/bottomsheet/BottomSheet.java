@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.bottomsheet;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
@@ -26,13 +25,16 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.internal.R;
+import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.util.AccessibilityUtil;
 
 /**
@@ -148,12 +150,6 @@ class BottomSheet extends FrameLayout
     /** The FrameLayout used to hold the bottom sheet toolbar. */
     private TouchRestrictingFrameLayout mToolbarHolder;
 
-    /**
-     * The default toolbar view. This is shown when the current bottom sheet content doesn't have
-     * its own toolbar and when the bottom sheet is closed.
-     */
-    protected View mDefaultToolbarView;
-
     /** Whether the {@link BottomSheet} and its children should react to touch events. */
     private boolean mIsTouchEnabled;
 
@@ -169,6 +165,18 @@ class BottomSheet extends FrameLayout
     /** A means of checking whether accessibility is currently enabled. */
     private AccessibilityUtil mAccessibilityUtil;
 
+    private Window mWindow;
+
+    /**
+     * Provides the height of the base app area on which bottom sheet client is drawn. This is
+     * not necessary for most embedders of BottomSheet, unless they have non-zero vertical Window
+     * offset that would push down a part of app area out of the screen. BottomSheet then uses
+     * this height to resize the sheet content so all of it is visible.
+     *
+     * Note: The only embedder for which BottomSheet needs this is partial-height custom tabs.
+     */
+    private Supplier<Integer> mBaseHeightProvider;
+
     /**
      * A view used to render a shadow behind the sheet and extends outside the bounds of its parent
      * view.
@@ -182,7 +190,7 @@ class BottomSheet extends FrameLayout
             super(context, atts);
             mShadowLength = context.getResources().getDimensionPixelSize(
                     R.dimen.bottom_sheet_shadow_length);
-            setTranslationX(-mShadowLength);
+            setTranslationX((LocalizationUtils.isLayoutRtl() ? 1 : -1) * mShadowLength);
             setTranslationY(-mShadowLength);
         }
 
@@ -219,7 +227,7 @@ class BottomSheet extends FrameLayout
         }
 
         float startX = mVisibleViewportRect.left;
-        float endX = getToolbarView().getWidth() + mVisibleViewportRect.left;
+        float endX = getWidth() + mVisibleViewportRect.left;
         return currentEvent.getRawX() > startX && currentEvent.getRawX() < endX;
     }
 
@@ -257,7 +265,7 @@ class BottomSheet extends FrameLayout
     }
 
     /** @param accessibilityUtil A mechanism for testing whether accessibility is enabled. */
-    void setAccssibilityUtil(AccessibilityUtil accessibilityUtil) {
+    void setAccessibilityUtil(AccessibilityUtil accessibilityUtil) {
         mAccessibilityUtil = accessibilityUtil;
     }
 
@@ -308,14 +316,14 @@ class BottomSheet extends FrameLayout
      * calculations in this class.
      * @param window Android window for getting insets.
      * @param keyboardDelegate Delegate for hiding the keyboard.
+     * @param baseHeightProvider Provides the height of base app area the sheet content is drawn on.
      */
-    public void init(Window window, KeyboardVisibilityDelegate keyboardDelegate) {
+    public void init(Window window, KeyboardVisibilityDelegate keyboardDelegate,
+            Supplier<Integer> baseHeightProvider) {
         mSheetContainer = (ViewGroup) getParent();
 
         mToolbarHolder =
                 (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_toolbar_container);
-
-        mDefaultToolbarView = mToolbarHolder.findViewById(R.id.bottom_sheet_toolbar);
 
         mBottomSheetContentContainer =
                 (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_content);
@@ -324,6 +332,8 @@ class BottomSheet extends FrameLayout
         mContainerWidth = mSheetContainer.getWidth();
         mContainerHeight = mSheetContainer.getHeight();
         mContentWidth = mContainerWidth;
+        mWindow = window;
+        mBaseHeightProvider = baseHeightProvider;
 
         sizeAndPositionSheetInParent();
 
@@ -342,8 +352,14 @@ class BottomSheet extends FrameLayout
                 mContainerHeight = bottom - top;
 
                 if (previousWidth != mContainerWidth || previousHeight != mContainerHeight) {
-                    if (mCurrentState == SheetState.HALF && !isHalfStateEnabled()) {
-                        setSheetState(SheetState.FULL, false);
+                    if (!isHalfStateEnabled()) {
+                        if (mCurrentState == SheetState.HALF) {
+                            setSheetState(SheetState.FULL, false);
+                        } else if (mCurrentState == SheetState.SCROLLING
+                                && mTargetState == SheetState.HALF) {
+                            // Let the animation resume to the full height.
+                            mTargetState = SheetState.FULL;
+                        }
                     }
                     invalidateContentDesiredHeight();
                     sizeAndPositionSheetInParent();
@@ -380,8 +396,13 @@ class BottomSheet extends FrameLayout
                     if (mGestureDetector.isScrolling() && keyboardDelegate != null) {
                         keyboardDelegate.hideKeyboard(BottomSheet.this);
                     } else {
-                        cancelAnimation();
-                        setSheetState(mCurrentState, false);
+                        if (mTargetState != SheetState.NONE) {
+                            cancelAnimation();
+                            createSettleAnimation(mTargetState, StateChangeReason.NONE);
+                        } else {
+                            endAnimations();
+                            setSheetState(mCurrentState, false);
+                        }
                     }
                 }
 
@@ -456,7 +477,8 @@ class BottomSheet extends FrameLayout
 
     @Override
     public boolean isTouchEventInToolbar(MotionEvent event) {
-        mToolbarHolder.getLocationInWindow(mCachedLocation);
+        mToolbarHolder.getLocationOnScreen(mCachedLocation);
+
         // This check only tests for collision for the Y component since the sheet is the full width
         // of the screen. We only care if the touch event is above the bottom of the toolbar since
         // we won't receive an event if the touch is outside the sheet.
@@ -549,9 +571,6 @@ class BottomSheet extends FrameLayout
         swapViews(newToolbar, mSheetContent != null ? mSheetContent.getToolbarView() : null,
                 mToolbarHolder);
 
-        // We hide the default toolbar if the new content has its own.
-        mDefaultToolbarView.setVisibility(newToolbar != null ? GONE : VISIBLE);
-
         onSheetContentChanged(content);
     }
 
@@ -624,9 +643,9 @@ class BottomSheet extends FrameLayout
         mSettleAnimator.setInterpolator(mInterpolator);
 
         // When the animation is canceled or ends, reset the handle to null.
-        mSettleAnimator.addListener(new AnimatorListenerAdapter() {
+        mSettleAnimator.addListener(new CancelAwareAnimatorListener() {
             @Override
-            public void onAnimationEnd(Animator animator) {
+            public void onEnd(Animator animator) {
                 if (mIsDestroyed) return;
 
                 mSettleAnimator = null;
@@ -787,23 +806,29 @@ class BottomSheet extends FrameLayout
             assert ratio > 0 && ratio <= 1 : "Custom peek ratios must be in the range of (0, 1].";
             return ratio;
         }
-        assert getToolbarView() != null : "Using default peek height requires a non-null toolbar";
 
         View toolbarView = getToolbarView();
-        int toolbarHeight = toolbarView.getHeight();
-        if (toolbarHeight == 0) {
-            // If the toolbar is not laid out yet and has a fixed height layout parameter, we assume
-            // that the toolbar will have this height in the future.
-            ViewGroup.LayoutParams layoutParams = toolbarView.getLayoutParams();
-            if (layoutParams != null) {
-                if (layoutParams.height > 0) {
-                    toolbarHeight = layoutParams.height;
-                } else {
-                    toolbarView.measure(
-                            MeasureSpec.makeMeasureSpec(getMaxSheetWidth(), MeasureSpec.EXACTLY),
-                            MeasureSpec.makeMeasureSpec(
-                                    getMaxContentHeight(), MeasureSpec.AT_MOST));
-                    toolbarHeight = toolbarView.getMeasuredHeight();
+
+        int toolbarHeight;
+        if (toolbarView == null) {
+            toolbarHeight = getResources().getDimensionPixelSize(R.dimen.bottom_sheet_peek_height);
+        } else {
+            toolbarHeight = toolbarView.getHeight();
+            if (toolbarHeight == 0) {
+                // If the toolbar is not laid out yet and has a fixed height layout parameter, we
+                // assume that the toolbar will have this height in the future.
+                ViewGroup.LayoutParams layoutParams = toolbarView.getLayoutParams();
+                if (layoutParams != null) {
+                    if (layoutParams.height > 0) {
+                        toolbarHeight = layoutParams.height;
+                    } else {
+                        toolbarView.measure(
+                                MeasureSpec.makeMeasureSpec(
+                                        getMaxSheetWidth(), MeasureSpec.EXACTLY),
+                                MeasureSpec.makeMeasureSpec(
+                                        getMaxContentHeight(), MeasureSpec.AT_MOST));
+                        toolbarHeight = toolbarView.getMeasuredHeight();
+                    }
                 }
             }
         }
@@ -813,7 +838,7 @@ class BottomSheet extends FrameLayout
     private View getToolbarView() {
         return mSheetContent != null && mSheetContent.getToolbarView() != null
                 ? mSheetContent.getToolbarView()
-                : mDefaultToolbarView;
+                : null;
     }
 
     /**
@@ -888,12 +913,6 @@ class BottomSheet extends FrameLayout
 
         for (BottomSheetObserver o : mObservers) {
             o.onSheetOffsetChanged(mLastOffsetRatioSent, getCurrentOffsetPx());
-        }
-
-        if (isPeekStateEnabled()
-                && MathUtils.areFloatsEqual(
-                        offsetWithBrowserControls, getSheetHeightForState(SheetState.PEEK))) {
-            for (BottomSheetObserver o : mObservers) o.onSheetFullyPeeked();
         }
     }
 
@@ -1021,8 +1040,10 @@ class BottomSheet extends FrameLayout
             if (getFocusedChild() == null) requestFocus();
         }
 
+        sizeAndPositionSheetInParent();
+
         for (BottomSheetObserver o : mObservers) {
-            o.onSheetStateChanged(mCurrentState);
+            o.onSheetStateChanged(mCurrentState, reason);
         }
     }
 
@@ -1068,11 +1089,25 @@ class BottomSheet extends FrameLayout
         return mContainerWidth;
     }
 
-    /** Center and size the sheet in its container. */
     private void sizeAndPositionSheetInParent() {
+        // Center and size the sheet in its container.
         int maxSheetWidth = getMaxSheetWidth();
         getLayoutParams().width = maxSheetWidth;
-        setTranslationX((mContainerWidth - maxSheetWidth) / 2f);
+        setTranslationX((LocalizationUtils.isLayoutRtl() ? -1 : 1)
+                * (mContainerWidth - maxSheetWidth) / 2f);
+
+        // Resizing is necessary if we have non-zero translation on Window Y, which can change
+        // throughout the lifecycle. Ensure sheet content's bottom is aligned with the base layout.
+        if (mBaseHeightProvider != null && mWindow.getAttributes().y != 0
+                && (mCurrentState == SheetState.PEEK || mCurrentState == SheetState.HALF
+                        || mCurrentState == SheetState.FULL)) {
+            BottomSheetContent content = mSheetContent;
+            assert content != null
+                    && content.getContentView() != null : "Current content should exist";
+
+            int bottomY = mBaseHeightProvider.get();
+            content.getContentView().getLayoutParams().height = bottomY - (int) getTranslationY();
+        }
         requestLayout();
     }
 

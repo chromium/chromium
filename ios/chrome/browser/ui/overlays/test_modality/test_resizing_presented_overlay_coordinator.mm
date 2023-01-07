@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@
 // The frame of the presentation container view in window coordinates.
 @property(nonatomic, readonly) CGRect windowFrame;
 // Initializer for a presentation controller that lays its presentation
-// container view with |windowFrame|.
+// container view with `windowFrame`.
 - (instancetype)
     initWithPresentedViewController:(UIViewController*)presentedViewController
            presentingViewController:(UIViewController*)presentingViewController

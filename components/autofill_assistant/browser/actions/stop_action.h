@@ -1,13 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_STOP_ACTION_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_STOP_ACTION_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 
 namespace autofill_assistant {
@@ -15,13 +12,15 @@ namespace autofill_assistant {
 class StopAction : public Action {
  public:
   explicit StopAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  StopAction(const StopAction&) = delete;
+  StopAction& operator=(const StopAction&) = delete;
+
   ~StopAction() override;
 
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(StopAction);
 };
 
 }  // namespace autofill_assistant

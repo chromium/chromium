@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shutdown_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -27,6 +26,10 @@ class ASH_EXPORT ShutdownControllerImpl : public ShutdownController {
   };
 
   ShutdownControllerImpl();
+
+  ShutdownControllerImpl(const ShutdownControllerImpl&) = delete;
+  ShutdownControllerImpl& operator=(const ShutdownControllerImpl&) = delete;
+
   ~ShutdownControllerImpl() override;
 
   void AddObserver(Observer* observer);
@@ -43,8 +46,6 @@ class ASH_EXPORT ShutdownControllerImpl : public ShutdownController {
   bool reboot_on_shutdown_ = false;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownControllerImpl);
 };
 
 }  // namespace ash

@@ -1,0 +1,12 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/channel.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "browsing_topics_internals.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+}

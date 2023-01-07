@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,25 +20,32 @@ struct UrlLoadParams;
 // Protocol for object that can open new tabs during application launch.
 @protocol TabOpening<NSObject>
 
-// Dismisses any modal view, excluding the omnibox if |dismissOmnibox| is NO,
-// then opens either a normal or incognito tab with |url|. After opening |url|,
-// run completion |handler| if it is not nil. After Tab is opened the virtual
-// URL is set to the pending navigation item.
-- (void)dismissModalsAndOpenSelectedTabInMode:
+// 1. Dismisses any modal view, excluding the omnibox if `dismissOmnibox` is NO,
+// 2. (only if `targetMode` is UNDETERMINED) Resolves the value of `targetMode`,
+//    potentially by presenting the Incognito interstitial to the user and
+//    letting them choose, alternatively by falling back to normal mode if the
+//    user did not enable the "Ask to Open Links from Other Apps in Incognito"
+//    setting.
+// 3. Opens either a normal or incognito tab with `urlLoadParams`,
+//    unless it was manually cancelled by the user at step 2.
+//
+// If `completion` is not nil, it is either called once Incognito interstitial
+// has been presented, or once a new tab has been opened.
+// After Tab is opened the virtual URL is set to the pending navigation item.
+- (void)dismissModalsAndMaybeOpenSelectedTabInMode:
             (ApplicationModeForTabOpening)targetMode
-                            withUrlLoadParams:
-                                (const UrlLoadParams&)urlLoadParams
-                               dismissOmnibox:(BOOL)dismissOmnibox
-                                   completion:(ProceduralBlock)completion;
+                                 withUrlLoadParams:
+                                     (const UrlLoadParams&)urlLoadParams
+                                    dismissOmnibox:(BOOL)dismissOmnibox
+                                        completion:(ProceduralBlock)completion;
 
-// Dismisses any modal view, excluding the omnibox if |dismissOmnibox| is NO,
-// then opens the list of URLs in |URLs| in either normal or incognito.
-// After opening the array of URLs, run completion |handler| if it not nil.
-- (void)dismissModalsAndOpenMultipleTabsInMode:
-            (ApplicationModeForTabOpening)targetMode
-                                          URLs:(const std::vector<GURL>&)URLs
-                                dismissOmnibox:(BOOL)dismissOmnibox
-                                    completion:(ProceduralBlock)completion;
+// Dismisses any modal view, excluding the omnibox if `dismissOmnibox` is NO,
+// then opens the list of URLs in `URLs` in either normal or incognito.
+// After opening the array of URLs, run completion `handler` if it not nil.
+- (void)dismissModalsAndOpenMultipleTabsWithURLs:(const std::vector<GURL>&)URLs
+                                 inIncognitoMode:(BOOL)incognitoMode
+                                  dismissOmnibox:(BOOL)dismissOmnibox
+                                      completion:(ProceduralBlock)completion;
 
 // Creates a new tab if the launch options are not null.
 - (void)openTabFromLaunchWithParams:(URLOpenerParams*)params
@@ -51,12 +58,12 @@ struct UrlLoadParams;
 
 // Returns a block that can be executed on the new tab to trigger one of the
 // commands. This block can be passed to
-// |dismissModalsAndOpenSelectedTabInMode:withURL:transition:completion:|.
+// `dismissModalsAndMaybeOpenSelectedTabInMode:withURL:transition:completion:`.
 // This block must only be executed if new tab opened on NTP.
 - (ProceduralBlock)completionBlockForTriggeringAction:
-    (NTPTabOpeningPostOpeningAction)action;
+    (TabOpeningPostOpeningAction)action;
 
-// Whether the |URL| is already opened, in regular mode.
+// Whether the `URL` is already opened, in regular mode.
 - (BOOL)URLIsOpenedInRegularMode:(const GURL&)URL;
 
 @end

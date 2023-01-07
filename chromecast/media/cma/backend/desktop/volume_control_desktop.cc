@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
 
@@ -41,8 +40,11 @@ class VolumeControlInternal {
 
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    thread_.StartWithOptions(options);
+    thread_.StartWithOptions(std::move(options));
   }
+
+  VolumeControlInternal(const VolumeControlInternal&) = delete;
+  VolumeControlInternal& operator=(const VolumeControlInternal&) = delete;
 
   ~VolumeControlInternal() = default;
 
@@ -71,7 +73,7 @@ class VolumeControlInternal {
       return;
     }
 
-    level = base::ClampToRange(level, 0.0f, 1.0f);
+    level = base::clamp(level, 0.0f, 1.0f);
     thread_.task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&VolumeControlInternal::SetVolumeOnThread,
                                   base::Unretained(this), source, type, level));
@@ -148,8 +150,6 @@ class VolumeControlInternal {
   std::vector<VolumeObserver*> volume_observers_;
 
   base::Thread thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(VolumeControlInternal);
 };
 
 VolumeControlInternal& GetVolumeControl() {
@@ -206,13 +206,13 @@ void VolumeControl::SetOutputLimit(AudioContentType type, float limit) {}
 
 // static
 float VolumeControl::VolumeToDbFS(float volume) {
-  volume = base::ClampToRange(volume, 0.0f, 1.0f);
+  volume = base::clamp(volume, 0.0f, 1.0f);
   return kMinVolumeDbfs + volume * (kMaxVolumeDbfs - kMinVolumeDbfs);
 }
 
 // static
 float VolumeControl::DbFSToVolume(float db) {
-  db = base::ClampToRange(db, kMinVolumeDbfs, kMaxVolumeDbfs);
+  db = base::clamp(db, kMinVolumeDbfs, kMaxVolumeDbfs);
   return (db - kMinVolumeDbfs) / (kMaxVolumeDbfs - kMinVolumeDbfs);
 }
 

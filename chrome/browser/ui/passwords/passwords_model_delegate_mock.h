@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -19,6 +18,11 @@ class PasswordsModelDelegateMock
       public base::SupportsWeakPtr<PasswordsModelDelegateMock> {
  public:
   PasswordsModelDelegateMock();
+
+  PasswordsModelDelegateMock(const PasswordsModelDelegateMock&) = delete;
+  PasswordsModelDelegateMock& operator=(const PasswordsModelDelegateMock&) =
+      delete;
+
   ~PasswordsModelDelegateMock() override;
 
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
@@ -94,6 +98,10 @@ class PasswordsModelDelegateMock
   MOCK_METHOD(void, OnDialogHidden, (), (override));
   MOCK_METHOD(bool, AuthenticateUser, (), (override));
   MOCK_METHOD(void,
+              AuthenticateUserWithMessage,
+              (const std::u16string& message, AvailabilityCallback callback),
+              (override));
+  MOCK_METHOD(void,
               AuthenticateUserForAccountStoreOptInAndSavePassword,
               (const std::u16string&, const std::u16string&),
               (override));
@@ -101,13 +109,16 @@ class PasswordsModelDelegateMock
               AuthenticateUserForAccountStoreOptInAndMovePassword,
               (),
               (override));
+  MOCK_METHOD(
+      void,
+      AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword,
+      (),
+      (override));
   MOCK_METHOD(bool,
               ArePasswordsRevealedWhenBubbleIsOpened,
               (),
               (const override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordsModelDelegateMock);
+  MOCK_METHOD(void, ShowBiometricActivationConfirmation, (), (override));
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_MODEL_DELEGATE_MOCK_H_

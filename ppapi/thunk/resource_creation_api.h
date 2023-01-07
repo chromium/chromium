@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,6 @@
 #include "ppapi/c/ppb_websocket.h"
 #include "ppapi/c/private/pp_private_font_charset.h"
 #include "ppapi/shared_impl/api_id.h"
-#include "ppapi/shared_impl/ppb_image_data_shared.h"
 
 // Windows defines 'PostMessage', so we have to undef it.
 #ifdef PostMessage
@@ -175,24 +174,20 @@ class ResourceCreationAPI {
   virtual PP_Resource CreateVideoEncoder(PP_Instance instance) = 0;
   virtual PP_Resource CreateVpnProvider(PP_Instance instance) = 0;
   virtual PP_Resource CreateWebSocket(PP_Instance instance) = 0;
+#if !BUILDFLAG(IS_NACL)
   virtual PP_Resource CreateX509CertificatePrivate(PP_Instance instance) = 0;
-#if !defined(OS_NACL)
   virtual PP_Resource CreateAudioInput(PP_Instance instance) = 0;
   virtual PP_Resource CreateAudioOutput(PP_Instance instance) = 0;
   virtual PP_Resource CreateBrowserFont(
       PP_Instance instance,
       const PP_BrowserFont_Trusted_Description* description) = 0;
   virtual PP_Resource CreateBuffer(PP_Instance instance, uint32_t size) = 0;
-  virtual PP_Resource CreateFlashFontFile(
-      PP_Instance instance,
-      const PP_BrowserFont_Trusted_Description* description,
-      PP_PrivateFontCharset charset) = 0;
   virtual PP_Resource CreateVideoCapture(PP_Instance instance) = 0;
   virtual PP_Resource CreateVideoDecoderDev(
       PP_Instance instance,
       PP_Resource context3d_id,
       PP_VideoDecoder_Profile profile) = 0;
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   static const ApiID kApiID = API_ID_RESOURCE_CREATION;
 };

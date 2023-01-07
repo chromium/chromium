@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,7 @@
 #include <limits>
 
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -47,13 +45,6 @@ std::string UniquePosition::RandomSuffix() {
 }
 
 // static.
-UniquePosition UniquePosition::CreateInvalid() {
-  UniquePosition pos;
-  DCHECK(!pos.IsValid());
-  return pos;
-}
-
-// static.
 UniquePosition UniquePosition::FromProto(const sync_pb::UniquePosition& proto) {
   if (proto.has_custom_compressed_v1()) {
     return UniquePosition(proto.custom_compressed_v1());
@@ -65,22 +56,22 @@ UniquePosition UniquePosition::FromProto(const sync_pb::UniquePosition& proto) {
 
     un_gzipped.resize(uncompressed_len);
     int result = uncompress(
-        reinterpret_cast<Bytef*>(base::data(un_gzipped)), &uncompressed_len,
+        reinterpret_cast<Bytef*>(std::data(un_gzipped)), &uncompressed_len,
         reinterpret_cast<const Bytef*>(proto.compressed_value().data()),
         proto.compressed_value().size());
     if (result != Z_OK) {
       DLOG(ERROR) << "Unzip failed " << result;
-      return UniquePosition::CreateInvalid();
+      return UniquePosition();
     }
     if (uncompressed_len != proto.uncompressed_length()) {
       DLOG(ERROR) << "Uncompressed length " << uncompressed_len
                   << " did not match specified length "
                   << proto.uncompressed_length();
-      return UniquePosition::CreateInvalid();
+      return UniquePosition();
     }
     return UniquePosition(Compress(un_gzipped));
   } else {
-    return UniquePosition::CreateInvalid();
+    return UniquePosition();
   }
 }
 
@@ -135,7 +126,7 @@ UniquePosition UniquePosition::Between(const UniquePosition& before,
   return UniquePosition(mid + suffix, suffix);
 }
 
-UniquePosition::UniquePosition() : is_valid_(false) {}
+UniquePosition::UniquePosition() = default;
 
 bool UniquePosition::LessThan(const UniquePosition& other) const {
   DCHECK(this->IsValid());
@@ -169,26 +160,8 @@ void UniquePosition::SerializeToString(std::string* blob) const {
   ToProto().SerializeToString(blob);
 }
 
-int64_t UniquePosition::ToInt64() const {
-  uint64_t y = 0;
-  const std::string& s = Uncompress(compressed_);
-  size_t l = sizeof(int64_t);
-  if (s.length() < l) {
-    NOTREACHED();
-    l = s.length();
-  }
-  for (size_t i = 0; i < l; ++i) {
-    const uint8_t byte = s[l - i - 1];
-    y |= static_cast<uint64_t>(byte) << (i * 8);
-  }
-  y ^= 0x8000000000000000ULL;
-  // This is technically implementation-defined if y > INT64_MAX, so
-  // we're assuming that we're on a twos-complement machine.
-  return static_cast<int64_t>(y);
-}
-
 bool UniquePosition::IsValid() const {
-  return is_valid_;
+  return !compressed_.empty();
 }
 
 std::string UniquePosition::ToDebugString() const {
@@ -364,14 +337,13 @@ std::string UniquePosition::FindBetweenWithSuffix(const std::string& before,
   return mid;
 }
 
-UniquePosition::UniquePosition(const std::string& internal_rep)
-    : compressed_(internal_rep),
-      is_valid_(IsValidBytes(Uncompress(internal_rep))) {}
+UniquePosition::UniquePosition(const std::string& compressed)
+    : compressed_(IsValidBytes(Uncompress(compressed)) ? compressed
+                                                       : std::string()) {}
 
 UniquePosition::UniquePosition(const std::string& uncompressed,
                                const std::string& suffix)
-    : compressed_(Compress(uncompressed)),
-      is_valid_(IsValidBytes(uncompressed)) {
+    : UniquePosition(Compress(uncompressed)) {
   DCHECK(uncompressed.rfind(suffix) + kSuffixLength == uncompressed.length());
   DCHECK(IsValidSuffix(suffix));
   DCHECK(IsValid());
@@ -484,9 +456,10 @@ static uint32_t ReadEncodedRunLength(const std::string& str, size_t i) {
   DCHECK_LE(i + 4, str.length());
 
   // Step 1: Extract the big-endian count.
-  uint32_t encoded_length =
-      ((uint8_t)(str[i + 3]) << 0) | ((uint8_t)(str[i + 2]) << 8) |
-      ((uint8_t)(str[i + 1]) << 16) | ((uint8_t)(str[i + 0]) << 24);
+  uint32_t encoded_length = (static_cast<uint8_t>(str[i + 3]) << 0) |
+                            (static_cast<uint8_t>(str[i + 2]) << 8) |
+                            (static_cast<uint8_t>(str[i + 1]) << 16) |
+                            (static_cast<uint8_t>(str[i + 0]) << 24);
 
   // Step 2: If this was an inverted count, un-invert it.
   uint32_t length;

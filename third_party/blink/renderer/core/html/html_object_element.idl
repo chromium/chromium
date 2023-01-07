@@ -29,7 +29,6 @@
 ] interface HTMLObjectElement : HTMLElement {
     [CEReactions, Reflect, URL, RaisesException=Setter] attribute ScriptURLString data;
     [CEReactions, Reflect] attribute DOMString type;
-    // TODO(foolip): attribute boolean typeMustMatch;
     [CEReactions, Reflect] attribute DOMString name;
     [CEReactions, Reflect] attribute DOMString useMap;
     [ImplementedAs=formOwner] readonly attribute HTMLFormElement? form;

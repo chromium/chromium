@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/signaling/xmpp_log_to_server.h"
+
+#include <memory>
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -44,8 +46,8 @@ class XmppLogToServerTest : public testing::Test {
   void SetUp() override {
     EXPECT_CALL(signal_strategy_, AddListener(_));
     EXPECT_CALL(signal_strategy_, RemoveListener(_));
-    xmpp_log_to_server_.reset(new XmppLogToServer(
-        ServerLogEntry::ME2ME, &signal_strategy_, kTestBotJid));
+    xmpp_log_to_server_ = std::make_unique<XmppLogToServer>(
+        ServerLogEntry::ME2ME, &signal_strategy_, kTestBotJid);
   }
 
  protected:

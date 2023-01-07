@@ -1,0 +1,22 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_annotation = [
+  "annotation_agent_container_impl.cc",
+  "annotation_agent_container_impl.h",
+  "annotation_agent_generator.h",
+  "annotation_agent_generator.cc",
+  "annotation_agent_impl.cc",
+  "annotation_agent_impl.h",
+  "annotation_selector.cc",
+  "annotation_selector.h",
+  "text_annotation_selector.cc",
+  "text_annotation_selector.h",
+]
+
+blink_core_tests_annotation = [
+  "annotation_agent_container_impl_test.cc",
+  "annotation_agent_impl_test.cc",
+  "annotation_test_utils.h",
+]

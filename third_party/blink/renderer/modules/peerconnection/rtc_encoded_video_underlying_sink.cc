@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
@@ -14,8 +15,10 @@ namespace blink {
 
 RTCEncodedVideoUnderlyingSink::RTCEncodedVideoUnderlyingSink(
     ScriptState* script_state,
-    TransformerCallback transformer_callback)
-    : transformer_callback_(std::move(transformer_callback)) {
+    TransformerCallback transformer_callback,
+    webrtc::TransformableFrameInterface::Direction expected_direction)
+    : transformer_callback_(std::move(transformer_callback)),
+      expected_direction_(expected_direction) {
   DCHECK(transformer_callback_);
 }
 
@@ -50,6 +53,12 @@ ScriptPromise RTCEncodedVideoUnderlyingSink::write(
   if (!webrtc_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Empty frame");
+    return ScriptPromise();
+  }
+
+  if (webrtc_frame->GetDirection() != expected_direction_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Invalid frame");
     return ScriptPromise();
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -40,11 +39,23 @@ AppListSyncableServiceFactory* AppListSyncableServiceFactory::GetInstance() {
 std::unique_ptr<KeyedService> AppListSyncableServiceFactory::BuildInstanceFor(
     content::BrowserContext* browser_context) {
   Profile* profile = static_cast<Profile*>(browser_context);
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
     return nullptr;
   }
-  VLOG(1) << "BuildInstanceFor: " << profile->GetDebugName()
-          << " (" << profile << ")";
+
+  // No service for sign in profile.
+  if (ash::ProfileHelper::IsSigninProfile(profile))
+    return nullptr;
+
+  // This condition still needs to be explicitly stated here despite having
+  // ProfileKeyedService logic implemented because `IsGuestSession()` and
+  // `IsRegularProfile()` are not yet mutually exclusive in ASH and Lacros.
+  // TODO(rsult): remove this condition when `IsGuestSession() is fixed.
+  if (profile->IsGuestSession() && !profile->IsOffTheRecord())
+    return nullptr;
+
+  VLOG(1) << "BuildInstanceFor: " << profile->GetDebugName() << " (" << profile
+          << ")";
   return std::make_unique<AppListSyncableService>(profile);
 }
 
@@ -54,9 +65,15 @@ void AppListSyncableServiceFactory::SetUseInTesting(bool use) {
 }
 
 AppListSyncableServiceFactory::AppListSyncableServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-        "AppListSyncableService",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "AppListSyncableService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // Use OTR profile for Guest Session.
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              // No service for system profile.
+              .WithSystem(ProfileSelection::kNone)
+              .Build()) {
   VLOG(1) << "AppListSyncableServiceFactory()";
   typedef std::set<BrowserContextKeyedServiceFactory*> FactorySet;
   FactorySet dependent_factories;
@@ -64,15 +81,13 @@ AppListSyncableServiceFactory::AppListSyncableServiceFactory()
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   dependent_factories.insert(ArcAppListPrefsFactory::GetInstance());
   dependent_factories.insert(apps::AppServiceProxyFactory::GetInstance());
-  for (FactorySet::iterator it = dependent_factories.begin();
-       it != dependent_factories.end();
-       ++it) {
-    DependsOn(*it);
-  }
+  dependent_factories.insert(
+      app_list::FileSuggestKeyedServiceFactory::GetInstance());
+  for (auto* dependent_factory : dependent_factories)
+    DependsOn(dependent_factory);
 }
 
-AppListSyncableServiceFactory::~AppListSyncableServiceFactory() {
-}
+AppListSyncableServiceFactory::~AppListSyncableServiceFactory() = default;
 
 KeyedService* AppListSyncableServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
@@ -80,32 +95,7 @@ KeyedService* AppListSyncableServiceFactory::BuildServiceInstanceFor(
 }
 
 void AppListSyncableServiceFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-}
-
-content::BrowserContext* AppListSyncableServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  Profile* const profile = Profile::FromBrowserContext(context);
-  // No service if |context| is not a profile.
-  if (!profile)
-    return nullptr;
-
-  // No service for system profile.
-  if (profile->IsSystemProfile())
-    return nullptr;
-
-  // No service for sign in profile.
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
-    return nullptr;
-
-  // Use profile as-is for guest session.
-  if (profile->IsGuestSession())
-    return chrome::GetBrowserContextOwnInstanceInIncognito(context);
-
-  // This matches the logic in ExtensionSyncServiceFactory, which uses the
-  // orginal browser context.
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
-}
+    user_prefs::PrefRegistrySyncable* registry) {}
 
 bool AppListSyncableServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   // Start AppListSyncableService early so that the app list positions are

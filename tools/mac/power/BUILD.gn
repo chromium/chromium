@@ -1,0 +1,105 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This is the root build file for mac power-related tooling. To build the
+# targets here you can do something like
+#
+# ninja -C out/Default tools/mac/power:all
+
+import("//build/config/mac/mac_sdk.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+# This file should only be included for macOS.
+assert(is_mac)
+
+group("all") {
+  testonly = true
+
+  deps = [
+    ":power_sampler",
+    ":power_sampler_unittests",
+  ]
+}
+
+static_library("power_sampler_lib") {
+  sources = [
+    "power_sampler/battery_sampler.h",
+    "power_sampler/battery_sampler.mm",
+    "power_sampler/csv_exporter.cc",
+    "power_sampler/csv_exporter.h",
+    "power_sampler/json_exporter.cc",
+    "power_sampler/json_exporter.h",
+    "power_sampler/m1_sampler.h",
+    "power_sampler/m1_sampler.mm",
+    "power_sampler/main_display_sampler.cc",
+    "power_sampler/main_display_sampler.h",
+    "power_sampler/monitor.cc",
+    "power_sampler/monitor.h",
+    "power_sampler/resource_coalition_sampler.cc",
+    "power_sampler/resource_coalition_sampler.h",
+    "power_sampler/sample_counter.cc",
+    "power_sampler/sample_counter.h",
+    "power_sampler/sampler.cc",
+    "power_sampler/sampler.h",
+    "power_sampler/sampling_controller.cc",
+    "power_sampler/sampling_controller.h",
+    "power_sampler/smc_sampler.h",
+    "power_sampler/smc_sampler.mm",
+    "power_sampler/user_active_simulator.cc",
+    "power_sampler/user_active_simulator.h",
+    "power_sampler/user_idle_level_sampler.cc",
+    "power_sampler/user_idle_level_sampler.h",
+  ]
+  deps = [
+    "//base",
+    "//components/power_metrics",
+  ]
+  frameworks = [
+    "CoreGraphics.framework",
+    "Foundation.framework",
+
+    # Used by the backlight sampler.
+    "DisplayServices.framework",
+    "IOKit.framework",
+  ]
+  framework_dirs = [ "$mac_sdk_path/System/Library/PrivateFrameworks" ]
+}
+
+executable("power_sampler") {
+  sources = [ "power_sampler/power_sampler_main.cc" ]
+  deps = [
+    ":power_sampler_lib",
+    "//base",
+  ]
+}
+
+test("power_sampler_unittests") {
+  testonly = true
+  sources = [
+    "power_sampler/battery_sampler_unittest.cc",
+    "power_sampler/csv_exporter_unittest.cc",
+    "power_sampler/json_exporter_unittest.cc",
+    "power_sampler/m1_sampler_unittest.mm",
+    "power_sampler/main_display_sampler_unittest.cc",
+    "power_sampler/resource_coalition_sampler_unittest.cc",
+    "power_sampler/sampling_controller_unittest.cc",
+    "power_sampler/smc_sampler_unittest.mm",
+    "power_sampler/user_idle_level_sampler_unittest.cc",
+  ]
+
+  deps = [
+    ":power_sampler_lib",
+    "//base",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//components/power_metrics",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+proto_library("proto") {
+  sources = [ "protos/third_party/pprof/src/profile.proto" ]
+}

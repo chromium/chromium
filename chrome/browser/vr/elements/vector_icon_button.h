@@ -1,14 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_VR_ELEMENTS_VECTOR_ICON_BUTTON_H_
 #define CHROME_BROWSER_VR_ELEMENTS_VECTOR_ICON_BUTTON_H_
 
-#include <memory>
-
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/button.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -25,6 +23,10 @@ class VR_UI_EXPORT VectorIconButton : public Button {
   VectorIconButton(base::RepeatingCallback<void()> click_handler,
                    const gfx::VectorIcon& icon,
                    AudioDelegate* audio_delegate);
+
+  VectorIconButton(const VectorIconButton&) = delete;
+  VectorIconButton& operator=(const VectorIconButton&) = delete;
+
   ~VectorIconButton() override;
 
   VectorIcon* foreground() const { return foreground_; }
@@ -44,8 +46,7 @@ class VR_UI_EXPORT VectorIconButton : public Button {
   // This value is used to determine the amount of scaling and can be set
   // externally to create a smaller or larger icon.
   float icon_scale_factor_;
-  VectorIcon* foreground_;
-  DISALLOW_COPY_AND_ASSIGN(VectorIconButton);
+  raw_ptr<VectorIcon> foreground_;
 };
 
 }  // namespace vr

@@ -1,28 +1,29 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/media/midi_permission_context.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/contexts/geolocation_permission_context.h"
+#include "components/permissions/contexts/midi_permission_context.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
 #else
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
@@ -38,7 +39,7 @@ class PermissionContextBasePermissionsPolicyTest
     : public ChromeRenderViewHostTestHarness {
  public:
   PermissionContextBasePermissionsPolicyTest()
-      : last_request_result_(CONTENT_SETTING_DEFAULT), request_id_(0) {}
+      : last_request_result_(CONTENT_SETTING_DEFAULT) {}
 
   void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
 
@@ -47,7 +48,7 @@ class PermissionContextBasePermissionsPolicyTest
   static constexpr const char* kOrigin2 = "https://maps.google.com";
 
   content::RenderFrameHost* GetMainRFH(const char* origin) {
-    content::RenderFrameHost* result = web_contents()->GetMainFrame();
+    content::RenderFrameHost* result = web_contents()->GetPrimaryMainFrame();
     content::RenderFrameHostTester::For(result)
         ->InitializeRenderFrameIfNeeded();
     SimulateNavigation(&result, GURL(origin));
@@ -61,9 +62,11 @@ class PermissionContextBasePermissionsPolicyTest
           blink::mojom::PermissionsPolicyFeature::kNotFound) {
     blink::ParsedPermissionsPolicy frame_policy = {};
     if (feature != blink::mojom::PermissionsPolicyFeature::kNotFound) {
-      frame_policy.push_back(
-          {feature, std::vector<url::Origin>{url::Origin::Create(GURL(origin))},
-           false, false});
+      frame_policy.emplace_back(feature,
+                                std::vector({blink::OriginWithPossibleWildcards(
+                                    url::Origin::Create(GURL(origin)),
+                                    /*has_subdomain_wildcard=*/false)}),
+                                false, false);
     }
     content::RenderFrameHost* result =
         content::RenderFrameHostTester::For(parent)->AppendChildWithPolicy(
@@ -83,9 +86,11 @@ class PermissionContextBasePermissionsPolicyTest
     content::RenderFrameHost* current = *rfh;
     auto navigation = content::NavigationSimulator::CreateRendererInitiated(
         current->GetLastCommittedURL(), current);
-    std::vector<url::Origin> parsed_origins;
-    for (const std::string& origin : origins)
-      parsed_origins.push_back(url::Origin::Create(GURL(origin)));
+    std::vector<blink::OriginWithPossibleWildcards> parsed_origins;
+    for (const std::string& origin : origins) {
+      parsed_origins.emplace_back(url::Origin::Create(GURL(origin)),
+                                  /*has_subdomain_wildcard=*/false);
+    }
     navigation->SetPermissionsPolicyHeader(
         {{feature, parsed_origins, false, false}});
     navigation->Commit();
@@ -97,17 +102,17 @@ class PermissionContextBasePermissionsPolicyTest
     return pcb
         ->GetPermissionStatus(
             rfh, rfh->GetLastCommittedURL(),
-            web_contents()->GetMainFrame()->GetLastCommittedURL())
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL())
         .content_setting;
   }
 
   ContentSetting RequestPermissionForFrame(
       permissions::PermissionContextBase* pcb,
       content::RenderFrameHost* rfh) {
-    permissions::PermissionRequestID id(rfh, request_id_++);
+    permissions::PermissionRequestID id(
+        rfh, permission_request_id_generator_.GenerateNextId());
     pcb->RequestPermission(
-        content::WebContents::FromRenderFrameHost(rfh), id,
-        rfh->GetLastCommittedURL(), /*user_gesture=*/true,
+        id, rfh->GetLastCommittedURL(), /*user_gesture=*/true,
         base::BindOnce(&PermissionContextBasePermissionsPolicyTest::
                            RequestPermissionForFrameFinished,
                        base::Unretained(this)));
@@ -121,7 +126,7 @@ class PermissionContextBasePermissionsPolicyTest
   MakeGeolocationPermissionContext() {
     return std::make_unique<permissions::GeolocationPermissionContext>(
         profile(),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         std::make_unique<GeolocationPermissionContextDelegateAndroid>(profile())
 #else
         std::make_unique<GeolocationPermissionContextDelegate>(profile())
@@ -142,7 +147,8 @@ class PermissionContextBasePermissionsPolicyTest
   }
 
   ContentSetting last_request_result_;
-  int request_id_;
+  permissions::PermissionRequestID::RequestLocalId::Generator
+      permission_request_id_generator_;
 };
 
 TEST_F(PermissionContextBasePermissionsPolicyTest, DefaultPolicy) {
@@ -150,7 +156,7 @@ TEST_F(PermissionContextBasePermissionsPolicyTest, DefaultPolicy) {
   content::RenderFrameHost* child = AddChildRFH(parent, kOrigin2);
 
   // Midi is allowed by default in the top level frame but not in subframes.
-  MidiPermissionContext midi(profile());
+  permissions::MidiPermissionContext midi(profile());
   EXPECT_EQ(CONTENT_SETTING_ALLOW, GetPermissionForFrame(&midi, parent));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetPermissionForFrame(&midi, child));
 
@@ -176,7 +182,7 @@ TEST_F(PermissionContextBasePermissionsPolicyTest, DisabledTopLevelFrame) {
       &parent, blink::mojom::PermissionsPolicyFeature::kMidiFeature,
       std::vector<std::string>());
   content::RenderFrameHost* child = AddChildRFH(parent, kOrigin2);
-  MidiPermissionContext midi(profile());
+  permissions::MidiPermissionContext midi(profile());
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetPermissionForFrame(&midi, parent));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetPermissionForFrame(&midi, child));
 
@@ -198,7 +204,7 @@ TEST_F(PermissionContextBasePermissionsPolicyTest, EnabledForChildFrame) {
   // Enable midi for the child frame.
   content::RenderFrameHost* child = AddChildRFH(
       parent, kOrigin2, blink::mojom::PermissionsPolicyFeature::kMidiFeature);
-  MidiPermissionContext midi(profile());
+  permissions::MidiPermissionContext midi(profile());
   EXPECT_EQ(CONTENT_SETTING_ALLOW, GetPermissionForFrame(&midi, parent));
   EXPECT_EQ(CONTENT_SETTING_ALLOW, GetPermissionForFrame(&midi, child));
 

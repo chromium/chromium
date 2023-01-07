@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,56 +6,68 @@
 // API is the browser.
 
 // NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
-// in src/platform2/diagnostics/mojo/.
+// in src/platform2/diagnostics/mojom/public/wilco_dtc_supportd.mojom.
 
 module chromeos.wilco_dtc_supportd.mojom;
 
-import "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom";
+import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom";
 
-[Extensible]
+[Stable, Extensible]
+// NextMinVersion: 2, NextIndex: 6
 enum WilcoDtcSupportdWebRequestHttpMethod {
-  kGet,
-  kHead,
-  kPost,
-  kPut,
-  kPatch,
+  // This is required for backwards compatibility, should not be used.
+  [MinVersion=1, Default] kUnmappedEnumField = 5,
+  kGet = 0,
+  kHead = 1,
+  kPost = 2,
+  kPut = 3,
+  kPatch = 4,
 };
 
-[Extensible]
+[Stable, Extensible]
+// NextMinVersion: 2, NextIndex: 4
 enum WilcoDtcSupportdWebRequestStatus {
+  // This is required for backwards compatibility, should not be used.
+  [MinVersion=1, Default] kUnmappedEnumField = 3,
   // The request was successfully completed with a 2xx HTTP status.
-  kOk,
+  kOk = 0,
   // Failed to make the web request. This covers such cases when the network
   // is unavailable, or connection attempt failed, or TLS handshake failed,
   // or too many pending requests, etc.
-  kNetworkError,
+  kNetworkError = 1,
   // HTTP request finished with a non-2xx status.
-  kHttpError,
+  kHttpError = 2,
 };
 
-[Extensible]
+[Stable, Extensible]
+// NextMinVersion: 2, NextIndex: 8
 enum WilcoDtcSupportdEvent {
+  // This is required for backwards compatibility, should not be used.
+  [MinVersion=1, Default] kUnmappedEnumField = 7,
   // An unauthorized battery is connected.
-  kBatteryAuth,
+  kBatteryAuth = 0,
   // Charger is unauthorized, and battery will not charge.
-  kNonWilcoCharger,
+  kNonWilcoCharger = 1,
   // Attached dock is incompatible.
-  kIncompatibleDock,
+  kIncompatibleDock = 2,
   // Attached dock presents hardware failures.
-  kDockError,
+  kDockError = 3,
   // HDMI and USB Type-C cannot be used for displays at the same time
   // with the attached dock.
-  kDockDisplay,
+  kDockDisplay = 4,
   // Attached dock will operate in USB Type-C compatible mode.
-  kDockThunderbolt,
+  kDockThunderbolt = 5,
   // Attached charger does not supply enough power.
-  kLowPowerCharger,
+  kLowPowerCharger = 6,
 };
 
 // Factory interface exposed by the wilco_dtc_supportd daemon, which allows both
 // endpoints (the wilco_dtc_supportd and the browser) to exchange with their
 // interfaces (WilcoDtcSupportdService and WilcoDtcSupportdClient
 // correspondingly).
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
 interface WilcoDtcSupportdServiceFactory {
   // Returns an interface to WilcoDtcSupportdService in response to the passed
   // interface to WilcoDtcSupportdClient.
@@ -65,6 +77,9 @@ interface WilcoDtcSupportdServiceFactory {
 };
 
 // Interface exposed by the wilco_dtc_supportd daemon.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
 interface WilcoDtcSupportdService {
   // Sends a message, originating from the wilco_dtc UI extension (hosted by
   // the browser), to the wilco_dtc daemon. The message contents are serialized
@@ -101,6 +116,9 @@ interface WilcoDtcSupportdService {
 
 // Interface exposed by the consumer of WilcoDtcSupportdService. In production
 // this is the browser.
+//
+// NextMinVersion: 1, NextIndex: 6
+[Stable]
 interface WilcoDtcSupportdClient {
   // Performs a web request, originating from the wilco_dtc daemon, using the
   // browser's network stack.
@@ -160,10 +178,11 @@ interface WilcoDtcSupportdClient {
   // Binds |service| to an implementation of CrosHealthdDiagnsticsService. In
   // production, this implementation is provided by cros_healthd.
   GetCrosHealthdDiagnosticsService@4(
-      chromeos.cros_healthd.mojom.CrosHealthdDiagnosticsService& service);
+      pending_receiver<ash.cros_healthd.mojom.CrosHealthdDiagnosticsService>
+          service);
 
   // Binds |service| to an implementation of CrosHealthdProbeService. In
   // production, this implementation is provided by cros_healthd.
   GetCrosHealthdProbeService@5(
-      chromeos.cros_healthd.mojom.CrosHealthdProbeService& service);
+      pending_receiver<ash.cros_healthd.mojom.CrosHealthdProbeService> service);
 };

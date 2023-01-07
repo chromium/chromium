@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/public/browser/service_worker_context.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
 
@@ -26,7 +27,8 @@ class ServiceWorkerVersion;
 // |this| must outlive |callback_|.
 class ServiceWorkerOfflineCapabilityChecker {
  public:
-  explicit ServiceWorkerOfflineCapabilityChecker(const GURL& url);
+  explicit ServiceWorkerOfflineCapabilityChecker(const GURL& url,
+                                                 const blink::StorageKey& key);
   ~ServiceWorkerOfflineCapabilityChecker();
 
   ServiceWorkerOfflineCapabilityChecker(
@@ -58,6 +60,7 @@ class ServiceWorkerOfflineCapabilityChecker {
       scoped_refptr<ServiceWorkerVersion> worker);
 
   const GURL url_;
+  const blink::StorageKey key_;
   ServiceWorkerContext::CheckOfflineCapabilityCallback callback_;
   std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher_;
 };

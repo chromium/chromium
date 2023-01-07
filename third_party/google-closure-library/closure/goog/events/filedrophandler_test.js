@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.events.FileDropHandlerTest');
 goog.setTestOnly();
@@ -33,7 +25,12 @@ testSuite({
   setUp() {
     textarea = new GoogEventTarget();
     doc = new GoogEventTarget();
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.ownerDocument = doc;
+    /** @suppress {checkTypes} suppression added to enable type checking */
     handler = new FileDropHandler(textarea);
     dnd = false;
     files = null;
@@ -49,6 +46,10 @@ testSuite({
     handler.dispose();
   },
 
+  /**
+     @suppress {checkTypes,missingProperties} suppression added to enable type
+     checking
+   */
   testOneFile() {
     let preventDefault = false;
     const expectedfiles = [{fileName: 'file1.jpg'}];
@@ -94,6 +95,10 @@ testSuite({
     assertEquals(expectedfiles[0].fileName, files[0].fileName);
   },
 
+  /**
+     @suppress {checkTypes,missingProperties} suppression added to enable type
+     checking
+   */
   testMultipleFiles() {
     let preventDefault = false;
     const expectedfiles = [{fileName: 'file1.jpg'}, {fileName: 'file2.jpg'}];
@@ -140,6 +145,7 @@ testSuite({
     assertEquals(expectedfiles[1].fileName, files[1].fileName);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testNoFiles() {
     let preventDefault = false;
     const dt = {types: ['text']};
@@ -181,6 +187,7 @@ testSuite({
     assertNull(files);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testDragEnter() {
     let preventDefault = false;
 
@@ -222,6 +229,10 @@ testSuite({
     assertFalse(preventDefault);
   },
 
+  /**
+     @suppress {checkTypes,missingProperties} suppression added to enable type
+     checking
+   */
   testPreventDropOutside() {
     let preventDefault = false;
     const dt = {types: ['Files'], files: [{fileName: 'file1.jpg'}]};
@@ -252,6 +263,7 @@ testSuite({
 
     handler.dispose();
     // Create a new FileDropHandler that prevents drops outside the text area.
+    /** @suppress {checkTypes} suppression added to enable type checking */
     handler = new FileDropHandler(textarea, true);
 
     // Assert that default actions are now prevented on dragenter on the
@@ -281,6 +293,7 @@ testSuite({
     assertEquals('none', dt.dropEffect);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testEffectAllowedExceptionIsCaught() {
     // This bug was only affecting IE10+.
     if (!userAgent.IE || !userAgent.isVersionOrHigher(10)) {

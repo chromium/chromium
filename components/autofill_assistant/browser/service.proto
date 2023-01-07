@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,15 @@ option java_multiple_files = true;
 
 package autofill_assistant;
 
-import "action_strategy.proto";
-import "action_value.proto";
-import "dom_action.proto";
-import "generic_ui.proto";
-import "model.proto";
-import "view_layout.proto";
+import "components/autofill_assistant/browser/action_strategy.proto";
+import "components/autofill_assistant/browser/action_value.proto";
+import "components/autofill_assistant/browser/cud_condition.proto";
+import "components/autofill_assistant/browser/dom_action.proto";
+import "components/autofill_assistant/browser/generic_ui.proto";
+import "components/autofill_assistant/browser/model.proto";
+import "components/autofill_assistant/browser/view_layout.proto";
+import "components/autofill_assistant/content/common/proto/semantic_feature_overrides.proto";
+import "components/autofill_assistant/browser/public/external_action.proto";
 
 // A field trial containing the name of the trial and the name of the
 // randomly selected trial group.
@@ -25,12 +28,15 @@ message FieldTrialProto {
 }
 
 // Context contains client environment details.
+// Next ID: 24
 message ClientContextProto {
   message Chrome {
     optional string chrome_version = 1;
     repeated FieldTrialProto active_field_trials = 2;
   }
-  oneof client { Chrome chrome = 1; }
+  oneof client {
+    Chrome chrome = 1;
+  }
 
   // locale will be the language tag of the default locale. The tag should
   // be a well-formed IETF BCP 47 language tag with language and country code
@@ -39,7 +45,8 @@ message ClientContextProto {
   optional string locale = 5;
 
   // country should be a country code as defined by ISO 3166-1-alpha-2.
-  // The intent is to communicate the client's location to the server.
+  // The intent is to communicate the client's location to the server. Location
+  // is extracted from Chrome Variations Service latest country.
   optional string country = 6;
 
   // Experiment ids string provided by the 'caller'.
@@ -54,6 +61,14 @@ message ClientContextProto {
 
   // True if the script was triggered by a direct action.
   optional bool is_direct_action = 9;
+
+  // True if this an in-Chrome triggered flow, rather than an externally
+  // triggered one.
+  optional bool is_in_chrome_triggered = 17;
+
+  // The type of trigger script that was shown and accepted at the beginning of
+  // this flow, if any.
+  optional TriggerScriptProto.TriggerUIType trigger_ui_type = 18;
 
   message DeviceContextProto {
     message VersionProto {
@@ -113,6 +128,32 @@ message ClientContextProto {
     LANDSCAPE = 2;
   }
   optional ScreenOrientation screen_orientation = 16;
+
+  // The type of platform the device is running on, e.g. Android, Desktop, or
+  // iOS.
+  enum PlatformType {
+    PLATFORM_TYPE_UNDEFINED = 0;
+    PLATFORM_TYPE_ANDROID = 1;
+    PLATFORM_TYPE_IOS = 2;
+    PLATFORM_TYPE_DESKTOP = 3;
+  }
+  optional PlatformType platform_type = 20;
+
+  // The model for semantic dom annotation.
+  message AnnotateDomModelContextProto {
+    optional int64 model_version = 1;
+
+    // If set to true, serve semantic selectors even if a user is not part of
+    // an official server side experiment. This is used for emulator use cases
+    // that do not necessarily have a signed in user or an account.
+    optional bool force_semantic_selection = 2;
+  }
+  optional AnnotateDomModelContextProto annotate_dom_model_context = 22;
+
+  // Set if the client has the JS flow library needed for JS flow execution.
+  optional bool js_flow_library_loaded = 23;
+
+  reserved 19, 21;
 }
 
 // Get the list of scripts that can potentially be run on a url.
@@ -123,6 +164,18 @@ message SupportsScriptRequestProto {
   repeated ScriptParameterProto script_parameters = 2;
 
   optional ClientContextProto client_context = 3;
+}
+
+// Parameters for testers and developers of implicit triggering. This proto can
+// be specified via the base64-encoded command line switch
+// --autofill-assistant-implicit-triggering-debug-parameters. Values will take
+// precedence over existing values in case of conflict.
+message ImplicitTriggeringDebugParametersProto {
+  // The list of additional script parameters to send to the backend. This is
+  // mainly intended to allow specifying DEBUG_SOCKET_ID and DEBUG_BUNDLE_ID.
+  // Note: only a small set of parameters is allowlisted for GetTriggerScripts,
+  // see components/autofill_assistant/browser/script_parameters.cc
+  repeated ScriptParameterProto additional_script_parameters = 1;
 }
 
 message ScriptParameterProto {
@@ -144,7 +197,197 @@ message SupportsScriptResponseProto {
   // The ScriptStoreConfig to use with the initial GetActions request.
   optional ScriptStoreConfig script_store_config = 6;
 
+  // Semantic selector related policy configuration.
+  optional SemanticSelectorPolicy semantic_selector_policy = 7;
+
   reserved 4, 5;
+}
+
+// A privacy sensitive way to look up Capabilities. Allows querying for
+// capabilities by hashing the requested domain urls and sending only some of
+// the leading bits, such that the recipient will be unable to reconstruct the
+// original URL.
+message GetCapabilitiesByHashPrefixRequestProto {
+  // Required. Number of bits in each hash prefix. Value must be in the range
+  // [15, 64].
+  optional uint32 hash_prefix_length = 1;
+  // Required. Hash prefixes for requested urls. The prefix will be taken as the
+  // first `hash_prefix_length` number of bits of this uint64. Other bits will
+  // be ignored. CityHash64 should be used to calculate the hashes. Encoding of
+  // the domain url prior to hashing should be UTF-8, it should include the
+  // http(s) header and exclude the last '/' character.
+  // Examples:
+  // - https://www.exampledomain.com
+  // - https://example.domain.com
+  // - https://domain.com
+  repeated uint64 hash_prefix = 2 [packed = true];
+  // The client context of the device for which you want to know script
+  // capabilities.
+  // NOTE: Currently, this will only contain the Chrome version number, locale
+  // and country for privacy reasons.
+  optional ClientContextProto client_context = 3;
+  // There is only a subset of parameters allowed to be sent from the client.
+  // INTENT parameter is required.
+  repeated ScriptParameterProto script_parameters = 4;
+}
+
+// Information that is passed from the bundle to the caller in GetCapabilities
+// RPC requests.
+// Next ID: 3
+message BundleCapabilitiesInformationProto {
+  // Information used by Chrome's FastCheckout vertical.
+  message ChromeFastCheckoutProto {
+    // A list of form signatures on which to trigger the bundle.
+    repeated uint64 trigger_form_signatures = 1 [packed = true];
+  }
+
+  optional ChromeFastCheckoutProto chrome_fast_checkout = 1;
+
+  // If set to `true` the bundle supports consentless execution which is the
+  // case for JS scripts executed on the client-side.
+  optional bool supports_consentless_execution = 2;
+}
+
+message GetCapabilitiesByHashPrefixResponseProto {
+  message MatchInfoProto {
+    // Domain url that matches one of the requested hash prefixes.
+    optional string url_match = 1;
+    // The list of script parameters for the client to use.
+    // Note: The list only contains additional or changed script parameters.
+    // This will specifically NOT include mandatory script parameters such as
+    // ENABLED or START_IMMEDIATELY, and will also not contain the INTENT.
+    // Clients are required to add those parameters themselves if needed to.
+    // They are omitted here to reduce the size of the response.
+    repeated ScriptParameterProto script_parameters_override = 2;
+
+    // Additional information that a bundle may wish to pass to the caller of
+    // the GetCapabilities RPC call.
+    optional BundleCapabilitiesInformationProto
+        bundle_capabilities_information = 3;
+  }
+  // Match information for the requested hash prefixes. No correlation should
+  // be assumed between the order of returned info and the order of requested
+  // prefixes. Clients are expected to match the returned urls to determine
+  // which responses they are interested in.
+  repeated MatchInfoProto match_info = 1;
+}
+
+message GetNoRoundTripScriptsByHashPrefixRequestProto {
+  // The number of leading bits to consider from hash_prefix. The remaining
+  // trailing bits from hash_prefix should be ignored.
+  optional uint32 hash_prefix_length = 1;
+
+  // The CityHash64 of the URL of interest. Only the first hash_prefix_length
+  // bits are meaningful.
+  optional uint64 hash_prefix = 2;
+
+  // The client context.
+  optional ClientContextProto client_context = 3;
+
+  // Optional script parameters. Note that only a subset of parameters are
+  // allowed to be sent from the client.
+  repeated ScriptParameterProto script_parameters = 4;
+
+  // CUP-signed version of this proto. When set, the rest of the fields should
+  // be ignored.
+  optional CUPRequestData cup_data = 5;
+}
+
+message GetNoRoundTripScriptsByHashPrefixResponseProto {
+  // CUP-signed version of this proto. When set, the rest of the fields in
+  // ScriptActionRequestProto should be ignored.
+  optional CUPResponseData cup_data = 1;
+
+  message MatchInfo {
+    message RoutineScript {
+      optional string script_path = 1;
+      // The set of actions to execute. If the last executed action is not a
+      // stop action or a stop action inside a JS flow action the script will
+      // fail.
+      optional ActionsResponseProto action_response = 2;
+    }
+
+    // The domain for the script
+    optional string domain = 1;
+
+    // The response of the supports site request for this domain.
+    optional SupportsScriptResponseProto supports_site_response = 2;
+
+    // The scripts for the domain. Can contain one main script and several
+    // interrupt scripts.
+    repeated RoutineScript routine_scripts = 3;
+  }
+  // List of potential scripts matches for the request URL hash prefix. Callers
+  // should inspect each element of the list to find the exact match, if any.
+  repeated MatchInfo match_infos = 2;
+
+  // Mentions non-fatal errors, such as an empty request.
+  repeated string warnings = 3;
+}
+
+// Request to get user data.
+message GetUserDataRequestProto {
+  message PaymentMethodRequest {
+    // The client token, generated by GMS Core.
+    optional bytes client_token = 1;
+    // The list of supported card networks.
+    repeated string supported_card_networks = 2;
+    // The list of known payment instruments from a previous call.
+    repeated string preexisting_ids = 3;
+  }
+  message AddressRequest {
+    // The list of known addresses from a previous call.
+    repeated string preexisting_ids = 1;
+  }
+
+  // For logging, to know which run this request has originated from.
+  optional uint64 run_id = 1;
+
+  optional bool request_name = 2;
+  optional bool request_email = 3;
+  optional bool request_phone = 4;
+  optional AddressRequest request_shipping_addresses = 8;
+  optional PaymentMethodRequest request_payment_methods = 7;
+
+  reserved 5, 6;
+}
+
+// Response with user data.
+message GetUserDataResponseProto {
+  // The locale to be used when creating this data. This can have influence
+  // on the potential processing by Autofill.
+  optional string locale = 3;
+
+  repeated ProfileProto available_contacts = 1;
+  // The identifier of the contact to select. If not specified, the client
+  // will use its own heuristics to select a default contact.
+  optional string selected_contact_identifier = 5;
+
+  // Available phone numbers to select.
+  repeated PhoneNumberProto available_phone_numbers = 10;
+  // The identifier of the phone number to select. If not specified,
+  // the client will use its own heuristics to select a default payment
+  // instrument.
+  optional string selected_phone_number_identifier = 11;
+
+  // Available (shipping) addresses to select.
+  repeated ProfileProto available_addresses = 4;
+  // The identifier of the shipping address to select. If not specified, the
+  // client will use its own heuristics to select a default shipping address.
+  optional string selected_shipping_address_identifier = 6;
+  // An opaque token to launch the GMS address editor for creating a new
+  // address.
+  optional bytes add_address_token = 8;
+
+  // Available payment instruments to select.
+  repeated PaymentInstrumentProto available_payment_instruments = 2;
+  // The identifier of the payment instrument to select. If not specified,
+  // the client will use its own heuristics to select a default payment
+  // instrument.
+  optional string selected_payment_instrument_identifier = 7;
+  // An opaque token returned by the |GetInstrumentListResponse| to launch
+  // the GMS card editor to create a new credit card.
+  optional bytes add_payment_instrument_token = 9;
 }
 
 // Overlay image to be drawn on top of full overlays.
@@ -172,7 +415,7 @@ message OverlayImageProto {
   optional ClientDimensionProto text_size = 7;
 }
 
-// Next ID: 22
+// Next ID: 26
 message ClientSettingsProto {
   message IntegrationTestSettings {
     // Disables animations for the poodle and the progress bar.
@@ -237,15 +480,12 @@ message ClientSettingsProto {
   // specified size instead.
   optional float talkback_sheet_size_fraction = 18;
 
-  // Strings to define the back button behaviour. This will show the user a
-  // message with an Undo button. If this setting is not present, the back
-  // button will show a Snackbar with Undo option.
+  // Deprecated, should be moved into |display_strings|.
   message BackButtonSettings {
-    // The message being shown in the header.
-    optional string message = 1;
-
     // The label of the highlighted "Undo" action.
     optional string undo_label = 2;
+
+    reserved 1;
   }
   optional BackButtonSettings back_button_settings = 19;
 
@@ -293,6 +533,73 @@ message ClientSettingsProto {
   }
   optional SlowWarningSettings slow_warning_settings = 21;
 
+  // Strings that are needed for Chrome Client UI.
+  enum DisplayStringId {
+    // Unspecified value
+    UNSPECIFIED = 0;
+
+    // Text label that is shown when autofill assistant cannot help anymore,
+    // because of a user action.
+    GIVE_UP = 1;
+
+    // Text label shown next to an UNDO button when user action indicate they
+    // want to continue on their own.
+    MAYBE_GIVE_UP = 2;
+
+    // Text label that is shown when autofill assistant cannot help anymore,
+    // because something went wrong.
+    DEFAULT_ERROR = 3;
+
+    // Text on the payment request primary button to confirm payment information
+    PAYMENT_INFO_CONFIRM = 4;
+
+    // Generic label for a button to continue to the next screen.
+    CONTINUE_BUTTON = 5;
+
+    // Text label that is shown when stopping the Autofill Assistant.
+    STOPPED = 6;
+
+    // Option shown in the menu when clicking the Autofill Assistant profile
+    // icon. Clicking this option will open a feedback sharing dialog.
+    SEND_FEEDBACK = 7;
+
+    // A generic term for Close on buttons and menus.
+    CLOSE = 8;
+
+    // Title for Chrome's Settings.
+    SETTINGS = 9;
+
+    // Undo message for snackbar.
+    UNDO = 10;
+  }
+
+  // A Chrome display string along with its ID. This is used to create a map of
+  // display strings below.
+  message DisplayString {
+    optional DisplayStringId id = 1;
+    optional string value = 2;
+  }
+  // A map of display strings keyed by the ID. Note that the locale of these
+  // strings must be provided in |display_strings_locale|. These strings are
+  // ignored if locale is not provided.
+  repeated DisplayString display_strings = 22;
+
+  // The locale of |display_strings|. If |display_strings_locale| is not
+  // provided, we ignore |display_strings|. When locale
+  // is updated/switched to a new locale, we replace the set of
+  // |display_strings|, even if empty. The provided locale should be in BCP 47
+  // format, e.g. "en-US".
+  optional string display_strings_locale = 23;
+
+  // Extra time SelectorObserver has to finish. If it takes longer than
+  // max_wait_time + extra_timeout (this value) it assumes something went
+  // wrong and fails with a |TIMED_OUT| error.
+  optional int32 selector_observer_extra_timeout_ms = 24;
+
+  // SelectorObserver will wait until no DOM mutation notifications are received
+  // for this amount of time to check the selectors.
+  optional int32 selector_observer_debounce_interval_ms = 25;
+
   reserved 8 to 11;
 }
 
@@ -318,18 +625,10 @@ message SupportedScriptProto {
     // be executed. No precondition means that a script can run in any case.
     optional ScriptPreconditionProto precondition = 3;
 
-    // Text display at the same time as the script is proposed. If more than one
-    // script has an initial prompt, the prompt of the highest-priority script
-    // wins.
-    optional string initial_prompt = 4;
-
     // Display priority of the script. Lowest number has highest priority, which
     // means a script with priority 0 should be displayed before a script with
     // priority 1.
     optional int32 priority = 5;
-
-    // An optional chip to display.
-    optional ChipProto chip = 12;
 
     // Optionally map this script to a direct action.
     optional DirectActionProto direct_action = 13;
@@ -349,46 +648,11 @@ message SupportedScriptProto {
     // scripts started by direct actions.
     optional bool needs_ui = 15 [default = true];
 
-    reserved 1, 2, 6, 7, 10, 11, 16 to 18;
+    reserved 1, 2, 4, 6, 7, 10 to 12, 16 to 18;
   }
   optional PresentationProto presentation = 2;
 
   reserved 3;
-}
-
-enum ScriptStatusProto {
-  // Never explicitly set. Reading this value means the enum field is either
-  // not set or set to a value not listed here.
-  UNKNOWN_SCRIPT_STATUS = 0;
-  // The script finished successfully.
-  SCRIPT_STATUS_SUCCESS = 1;
-  // The script failed.
-  SCRIPT_STATUS_FAILURE = 2;
-  // The user cancelled the script.
-  SCRIPT_STATUS_CANCELLED = 3;
-  // The script is currently running.
-  SCRIPT_STATUS_RUNNING = 4;
-  // The script was not run.
-  SCRIPT_STATUS_NOT_RUN = 5;
-}
-
-// Condition on the status of a previous script run.
-message ScriptStatusMatchProto {
-  enum Comparator {
-    UNSPECIFIED = 0;
-    EQUAL = 1;
-    DIFFERENT = 2;
-  }
-
-  // Required. Path of the script whose status should be checked.
-  optional string script = 1;
-
-  // Required. The status the script should have for the condition to hold.
-  optional ScriptStatusProto status = 2;
-
-  // Optional. The comparison performed when checking the status. It will be
-  // interpreted as EQUAL if not set.
-  optional Comparator comparator = 3;
 }
 
 message ScriptPreconditionProto {
@@ -399,12 +663,11 @@ message ScriptPreconditionProto {
 
   // Combined with AND: all matches must be true for precondition to hold.
   repeated ScriptParameterMatchProto script_parameter_match = 7;
-  repeated ScriptStatusMatchProto script_status_match = 8;
 
   // Script can only run if the given condition match.
   optional ElementConditionProto element_condition = 10;
 
-  reserved 3, 9;
+  reserved 3, 8, 9;
 }
 
 message ScriptParameterMatchProto {
@@ -424,7 +687,20 @@ enum PolicyType {
   SCRIPT = 1;
 }
 
+message CUPRequestData {
+  // A serialized ScriptActionRequestProto.
+  optional bytes request = 1;
+  // Combination of public key id and random nonce.
+  optional bytes query_cup2key = 2;
+  // SHA2 hash of the request.
+  optional bytes hash_hex = 3;
+}
+
 message ScriptActionRequestProto {
+  // CUP-signed version of this proto. When set, the rest of the fields in
+  // ScriptActionRequestProto should be ignored.
+  optional CUPRequestData cup_data = 11;
+
   optional ClientContextProto client_context = 7;
 
   // Global payload from the previous response, possibly for another script.
@@ -440,6 +716,8 @@ message ScriptActionRequestProto {
     InitialScriptActionsRequestProto initial_request = 4;
     NextScriptActionsRequestProto next_request = 5;
   }
+
+  reserved 6, 9, 10;
 }
 
 // Message specifying how to retrieve the scripts. If bundle_path is set, it
@@ -458,6 +736,8 @@ message InitialScriptActionsRequestProto {
     // The exact URL on which the script was initially started.
     optional string url = 2;
     optional PolicyType policy = 3;
+
+    reserved 4 to 12;
   }
   optional QueryProto query = 3;
 
@@ -465,6 +745,8 @@ message InitialScriptActionsRequestProto {
 
   // Specify a bundle and version to run.
   optional ScriptStoreConfig script_store_config = 6;
+
+  reserved 1, 4, 5, 7 to 11;
 }
 
 message RoundtripTimingStats {
@@ -473,6 +755,30 @@ message RoundtripTimingStats {
   optional int64 roundtrip_time_ms = 1;
   // Reports the total client processing time for the executed batch of actions.
   optional int64 client_time_ms = 2;
+}
+
+message RoundtripNetworkStats {
+  message ActionNetworkStats {
+    // The action type.
+    optional int32 action_info_case = 1;
+    // The size of this action after decoding, in bytes.
+    optional int64 decoded_size_bytes = 2;
+  }
+  // The total size of the received HTTP response body in bytes, before
+  // decoding. This is essentially the network footprint of the received
+  // response, modulo HTTP headers.
+  optional int64 roundtrip_encoded_body_size_bytes = 1;
+  // The total size of the received HTTP response body in bytes, after
+  // decoding. This is essentially the memory footprint of the received proto,
+  // and a baseline to compare the footprint of individual actions with.
+  optional int64 roundtrip_decoded_body_size_bytes = 2;
+  // The network stats for ALL received actions. Note that this may include
+  // actions that were not executed, so this list can be longer than
+  // |processed_actions|.
+  repeated ActionNetworkStats action_stats = 3;
+  // Used for Chrome metrics only; in backend-metrics, this will always be 1 and
+  // can be ignored.
+  optional int32 num_roundtrips = 4;
 }
 
 // Next request to get a script's actions.
@@ -486,10 +792,26 @@ message NextScriptActionsRequestProto {
   // Tracks whether the last roundtrip triggered a slow connection warning and
   // whether it was shown to the user.
   optional SlowWarningStatus slow_connection_warning = 34;
+  // Roundtrip network stats for this RPC.
+  optional RoundtripNetworkStats network_stats = 3;
+}
+
+message CUPResponseData {
+  // A serialized ActionsResponseProto.
+  optional bytes response = 1;
+  // The signature signing both the response, as well as the request hash, key
+  // ID, and nonce of the corresponding ScriptActionRequestProto. See
+  // https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/cup.md
+  // for the signing scheme.
+  optional bytes ecdsa_signature = 2;
 }
 
 // Response of a script's actions.
 message ActionsResponseProto {
+  // CUP-signed version of this proto. When set, the rest of the fields in
+  // ActionsResponseProto should be ignored.
+  optional CUPResponseData cup_data = 11;
+
   // Opaque data to send to the next ScriptActionRequestProto.
   optional bytes global_payload = 4;
 
@@ -511,15 +833,66 @@ message ActionsResponseProto {
   // Note: This is an intermediate solution and the logic associated with this
   // field will eventually be absorbed into the supports script response from
   // the backend.
-  message UpdateScriptListProto { repeated SupportedScriptProto scripts = 1; }
+  message UpdateScriptListProto {
+    repeated SupportedScriptProto scripts = 1;
+  }
   optional UpdateScriptListProto update_script_list = 5;
+
+  // Needs to be evaluated before each JS flow action. Contains function
+  // definitions that js flows might call.
+  // Only set if ClientContextProto::js_flow_library_loaded is false.
+  optional string js_flow_library = 13;
+
+  // Id of the current run.
+  optional uint64 run_id = 12;
+
+  // Opaque data for reporting progress. Only included in the initial response
+  // from GetActions.
+  optional bytes report_token = 14;
 
   reserved 1, 6 to 10;
 }
 
-// Can be used to indicate the presence of a field, without the ambiguity that
-// a boolean field would have.
-message Empty {}
+// A privacy sensitive way to look up Trigger Scripts. Allows querying for
+// scripts by hashing the requested domain urls and sending only some of
+// the leading bits, such that the recipient will be unable to reconstruct the
+// original URL.
+message GetTriggerScriptsByHashPrefixRequestProto {
+  // Required. Number of bits in each hash prefix. Value must be in the range
+  // [15, 64].
+  optional uint32 hash_prefix_length = 1;
+  // Required. Hash prefixes for requested urls. The prefix will be taken as the
+  // first `hash_prefix_length` number of bits of this uint64. Other bits will
+  // be ignored. CityHash64 should be used to calculate the hashes. Encoding of
+  // the domain url prior to hashing should be UTF-8, it should include the
+  // http(s) header and exclude the last '/' character.
+  // Examples:
+  // - https://www.exampledomain.com
+  // - https://example.domain.com
+  // - https://domain.com
+  repeated uint64 hash_prefix = 2 [packed = true];
+  // The client context of the device for which you want to know script
+  // capabilities.
+  // NOTE: Currently, this will only contain the Chrome version number, locale
+  // and country for privacy reasons.
+  optional ClientContextProto client_context = 3;
+  // There is only a subset of parameters allowed to be sent from the client.
+  // INTENT parameter is required.
+  repeated ScriptParameterProto script_parameters = 4;
+}
+
+message GetTriggerScriptsByHashPrefixResponseProto {
+  message MatchInfoProto {
+    // The domain for which this trigger script is available.
+    optional string domain = 1;
+    optional GetTriggerScriptsResponseProto trigger_scripts_response = 2;
+  }
+  // Match information for the requested hash prefixes. No correlation should
+  // be assumed between the order of returned info and the order of requested
+  // prefixes. Clients are expected to match the returned urls to determine
+  // which responses they are interested in.
+  repeated MatchInfoProto match_info = 1;
+}
 
 // RPC request to fetch the available trigger scripts for a particular domain.
 message GetTriggerScriptsRequestProto {
@@ -529,8 +902,8 @@ message GetTriggerScriptsRequestProto {
   // NOTE: Currently, this will only contain the Chrome version number for
   // privacy reasons.
   optional ClientContextProto client_context = 2;
-  // Optional debug script parameters.
-  repeated ScriptParameterProto debug_script_parameters = 3;
+  // Optional script parameters.
+  repeated ScriptParameterProto script_parameters = 3;
 }
 
 // The RPC response to a |GetTriggerScriptsRequestProto|.
@@ -545,18 +918,28 @@ message GetTriggerScriptsResponseProto {
 
   // The amount of time a trigger script may evaluate trigger conditions while
   // invisible. If a trigger script is invisible for this amount of time, it
-  // will automatically finish with LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT.
+  // will automatically finish with TRIGGER_CONDITION_TIMEOUT.
   // If not specified, there is no automatic timeout.
   //
   // This is only counted while no trigger script is shown, and the time is
   // reset on tab switch and whenever a trigger script is hidden. Note that this
   // only counts the time in-between checks, so the actual timeout will be
   // slightly longer.
-  optional int32 timeout_ms = 3;
+  optional int32 trigger_condition_timeout_ms = 3;
 
   // The amount of time between consecutive checks of trigger conditions. Should
   // not be too small to limit performance impact.
   optional int32 trigger_condition_check_interval_ms = 4 [default = 1000];
+
+  // The list of script parameters for the client to use. This can be different
+  // from the list the client sent in the GetTriggerScriptsRequest.
+  //
+  // For some flows, the GetTriggerScripts RPC is the first and only
+  // communication with the backend prior to the start of the regular flow. As
+  // such, the backend needs to send any additional script parameters (such as
+  // appropriate overlay colors) back to the client such that the regular flows
+  // are guaranteed to have a full set of script parameters when/if they start.
+  repeated ScriptParameterProto script_parameters = 5;
 }
 
 // A trigger script contains the full specification for a trigger script that is
@@ -581,6 +964,31 @@ message TriggerScriptProto {
     ACCEPT = 5;
   }
 
+  // Set of TriggerUIType to group UKM metrics by.
+  //
+  // The set of available values is defined by AutofillAssistantTriggerUIType in
+  // tools/metrics/histograms/enums.xml
+  enum TriggerUIType {
+    UNSPECIFIED_TRIGGER_UI_TYPE = 0;
+
+    // Explicit trigger requests by some external trigger surface, i.e., a link
+    // or button.
+    SHOPPING_CART_FIRST_TIME_USER = 1;
+    SHOPPING_CART_RETURNING_USER = 2;
+    SHOPPING_CHECKOUT_FIRST_TIME_USER = 3;
+    SHOPPING_CHECKOUT_RETURNING_USER = 4;
+    FOOD_ORDERING_CART_FIRST_TIME_USER = 9;
+    FOOD_ORDERING_CART_RETURNING_USER = 10;
+
+    // Implicit trigger requests started by Chrome itself.
+    IN_CHROME_SHOPPING_CART_FIRST_TIME_USER = 5;
+    IN_CHROME_SHOPPING_CART_RETURNING_USER = 6;
+    IN_CHROME_SHOPPING_CHECKOUT_FIRST_TIME_USER = 7;
+    IN_CHROME_SHOPPING_CHECKOUT_RETURNING_USER = 8;
+    IN_CHROME_FOOD_ORDERING_CART_FIRST_TIME_USER = 11;
+    IN_CHROME_FOOD_ORDERING_CART_RETURNING_USER = 12;
+  }
+
   // The |trigger_condition| must be true for the script to trigger.
   optional TriggerScriptConditionProto trigger_condition = 1;
 
@@ -592,24 +1000,21 @@ message TriggerScriptProto {
       [default = CANCEL_SESSION];
 
   // An identifier for the type of trigger UI this trigger represents, for UKM.
-  optional TriggerUIType trigger_ui_type = 5;
+  optional TriggerUIType trigger_ui_type = 7;
 
-  reserved 2;
-}
-
-// Set of TriggerUIType to group UKM metrics by.
-//
-// The set of available values is defined by AutofillAssistantTriggerUIType in
-// tools/metrics/histograms/enums.xml
-enum TriggerUIType {
-  UNSPECIFIED_TRIGGER_UI_TYPE = 0;
-  CART_FIRST_TIME_USER = 1;
-  CART_RETURNING_USER = 2;
-  CHECKOUT_FIRST_TIME_USER = 3;
-  CHECKOUT_RETURNING_USER = 4;
+  reserved 2, 5, 6;
 }
 
 message TriggerScriptConditionProto {
+  message DocumentReadyStateCondition {
+    // The minimum document ready state for the condition to be true.
+    optional DocumentReadyState min_document_ready_state = 1;
+
+    // If specified, check the document in the given frame, instead
+    // of the main document.
+    optional SelectorProto frame = 2;
+  }
+
   oneof type {
     // The condition matches if all of these conditions match.
     TriggerScriptConditionsProto all_of = 1;
@@ -636,6 +1041,9 @@ message TriggerScriptConditionProto {
     // Domain (exact match), including the scheme (e.g.
     // "https://www.example.com").
     string domain_with_scheme = 12;
+    // The condition matches if the DOM state of the specified frame matches
+    // |document_ready_state|.
+    DocumentReadyStateCondition document_ready_state = 13;
   }
 
   reserved 4;
@@ -686,12 +1094,23 @@ message TriggerScriptUIProto {
   // bottom of the page while the trigger script is being displayed.
   optional bool resize_visual_viewport = 8;
   // Whether the bottom sheet should temporarily disappear when scrolling down
-  // the website, to move out of the way.
+  // the website, to move out of the way. This setting is ignored if
+  // |ui_timeout_ms| is specified.
   //
   // The value of resize_visual_viewport is ignored when scroll_to_hide is true.
   // This allows the backend setting both to true and letting chrome choose
   // scroll_to_hide if it is supported.
   optional bool scroll_to_hide = 9;
+  // The amount of time that the UI may be shown to the user. If not specified,
+  // there is no limit. This is intended for websites where the UI could block
+  // important parts of the website underneath and |scroll_to_hide| does not
+  // mitigate the issue. If this field is specified, |scroll_to_hide| will be
+  // ignored. |resize_visual_viewport| will be applied if requested.
+  //
+  // Once hidden, the UI may be shown again the next time the trigger condition
+  // is true (same behavior as NOT_NOW). Note that the timeout is disabled if
+  // the user taps either the overflow icon or the confirm chip.
+  optional int32 ui_timeout_ms = 10;
 }
 
 // An action could be performed.
@@ -703,9 +1122,13 @@ message ActionProto {
   // pass this back unchanged in the next request
   optional bytes server_payload = 4;
 
+  // The action to be executed.
+  //
+  // WARNING: proto messages in this oneof and all protos they depend on must
+  // meet the requirements listed on jspb_parse.h to be callable conveniently
+  // from RunJsFlow. In practice, this means don't add any new fields of type
+  // bytes, uint32, uint64, fixed32, fixed64, sfixed32 or sfixed64.
   oneof action_info {
-    ClickProto click = 5;
-    SetFormFieldValueProto set_form_value = 6;
     SelectOptionProto select_option = 7;
     NavigateProto navigate = 9;
     PromptProto prompt = 10;
@@ -716,7 +1139,6 @@ message ActionProto {
     UseAddressProto use_address = 29;
     UploadDomProto upload_dom = 18;
     ShowProgressBarProto show_progress_bar = 24;
-    HighlightElementProto highlight_element = 31;
     ShowDetailsProto show_details = 32;
     StopProto stop = 35;
     CollectUserDataProto collect_user_data = 36;
@@ -751,6 +1173,29 @@ message ActionProto {
     CheckElementIsOnTopProto check_element_is_on_top = 69;
     ReleaseElementsProto release_elements = 70;
     DispatchJsEventProto dispatch_js_event = 72;
+    SendKeyEventProto send_key_event = 73;
+    SelectOptionElementProto select_option_element = 74;
+    CheckElementTagProto check_element_tag = 75;
+    CheckOptionElementProto check_option_element = 76;
+    SetPersistentUiProto set_persistent_ui = 77;
+    ClearPersistentUiProto clear_persistent_ui = 78;
+    ScrollIntoViewIfNeededProto scroll_into_view_if_needed = 79;
+    ScrollWindowProto scroll_window = 80;
+    ScrollContainerProto scroll_container = 81;
+    SetTouchableAreaProto set_touchable_area = 82;
+    BlurFieldProto blur_field = 85;
+    ResetPendingCredentialsProto reset_pending_credentials = 86;
+    SaveSubmittedPasswordProto save_submitted_password = 87;
+    UpdateClientSettingsProto update_client_settings = 89;
+    JsFlowProto js_flow = 92;
+    ExecuteJsProto execute_js = 93;
+    RegisterPasswordResetRequestProto register_password_reset_request = 94;
+    ExternalActionProto external_action = 95;
+    SetNativeValueProto set_native_value = 96;
+    SetNativeCheckedProto set_native_checked = 97;
+    PromptQrCodeScanProto prompt_qr_code_scan = 98;
+    ReportProgressProto report_progress = 99;
+    ParseSingleTagXmlProto parse_single_tag_xml = 100;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -758,7 +1203,8 @@ message ActionProto {
   // action sent to the client after this one. Default is false.
   optional bool clean_contextual_ui = 33;
 
-  reserved 8, 13 to 17, 20 to 23, 25 to 27, 30, 34, 38, 46 to 48, 50, 51, 71;
+  reserved 5, 6, 8, 13 to 17, 20 to 23, 25 to 27, 30, 31, 34, 38, 46 to 48, 50,
+      51, 71, 83, 84, 88, 90, 91;
 }
 
 // Result of |CollectUserDataProto| to be sent to the server.
@@ -775,22 +1221,19 @@ message CollectUserDataResultProto {
   // If set, this means that the user clicked on one of the terms and conditions
   // links.
   optional int32 terms_link = 5;
-  // The payload of the chosen login option.
-  optional bytes login_payload = 6;
+
+  oneof payload_or_tag {
+    // The payload of the chosen login option, from LoginOptionsProto.payload.
+    bytes login_payload = 6;
+    // The payload of the chosen login option, from LoginOptionsProto.tag.
+    string login_tag = 21;
+  }
   // The values obtained by the generic user interface.
   optional ModelProto model = 9;
   // The memory keys of all non-empty text inputs, corresponding to the memory
   // keys specified in |TextInputProto|. The values themselves are stored in the
   // client and do not leave the device.
   repeated string set_text_input_memory_keys = 10;
-  // The start date of the date/time range, if requested.
-  optional DateProto date_range_start_date = 11;
-  // The index of the selected timeslot for the start of the date/time range.
-  optional int32 date_range_start_timeslot = 12;
-  // The end date of the date/time range, if requested.
-  optional DateProto date_range_end_date = 13;
-  // The index of the selected timeslot for the end of the date/time range.
-  optional int32 date_range_end_timeslot = 14;
   // The values obtained from the additional sections.
   repeated ModelProto.ModelValue additional_sections_values = 15;
   // Indicates whether the UI was shown to the user. This can be false if
@@ -798,14 +1241,8 @@ message CollectUserDataResultProto {
   optional bool shown_to_user = 16;
   // Indicates that the chosen login option was missing the username.
   optional bool login_missing_username = 17;
-  // Indicates what profile data is available for the Contact.
-  repeated string non_empty_contact_field = 18;
-  // Indicates what profile data is available for the Shipping address.
-  repeated string non_empty_shipping_address_field = 19;
-  // Indicates what profile data is available for the Billing address.
-  repeated string non_empty_billing_address_field = 20;
 
-  reserved 7, 8;
+  reserved 7, 8, 11 to 14, 18 to 20;
 }
 
 message ActionTimingStats {
@@ -841,8 +1278,6 @@ message ProcessedActionProto {
     PromptProto.Result prompt_choice = 5;
     // Should be set as a result of CollectUserDataAction.
     CollectUserDataResultProto collect_user_data_result = 15;
-    // Should be set as a result of SetFormFieldValueAction.
-    SetFormFieldValueProto.Result set_form_field_value_result = 17;
     // May be set as a result of WaitForDomProto.
     WaitForDomProto.Result wait_for_dom_result = 22;
     // Should be set as a result of FormAction.
@@ -854,6 +1289,16 @@ message ProcessedActionProto {
     GetElementStatusProto.Result get_element_status_result = 31;
     // Should be set as a result of UploadDomProto.
     UploadDomProto.Result upload_dom_result = 33;
+    // Should be set as a result of CheckOptionElementProto.
+    CheckOptionElementProto.Result check_option_element_result = 35;
+    // Should be set as a result of SendKeystrokeEventsProto.
+    SendKeystrokeEventsProto.Result send_key_stroke_events_result = 36;
+    // Should be set as a result of JsFlowProto.
+    JsFlowProto.Result js_flow_result = 37;
+    // Should be set as a result of SaveSubmittedPassword.
+    SaveSubmittedPasswordProto.Result save_submitted_password_result = 38;
+    // Should be set as a result of an ExternalAction.
+    ExternalActionProto.Result external_action_result = 39;
   }
 
   // Reports information about navigation that happened while
@@ -867,16 +1312,11 @@ message ProcessedActionProto {
   // Collects the timing stats related to the action execution.
   optional ActionTimingStats timing_stats = 32;
 
-  // If true, the user triggered, during the client action, at least one user
-  // action, such as a prompt choice, through a direct action instead of
-  // selecting a chip on the UI. This is meant for monitoring and debugging.
-  optional bool direct_action = 24;
-
   // Tracks whether the action triggered a slow website warning and whether it
   // was shown to the user.
   optional SlowWarningStatus slow_warning_status = 34;
 
-  reserved 3, 4, 6 to 14, 16, 18, 26, 27, 29, 30;
+  reserved 3, 4, 6 to 14, 16 to 18, 24, 26, 27, 29, 30;
 }
 
 // Extended information about the action status, which provides more details
@@ -897,11 +1337,13 @@ message ProcessedActionStatusDetailsProto {
   // More information included for autofill related errors.
   optional AutofillErrorInfoProto autofill_error_info = 3;
 
-  // More information included for |SetFormFieldValueProto| related errors.
-  optional SetFormFieldErrorInfoProto form_field_error_info = 4;
-
   // Additional information from the |WebController|.
   optional WebControllerErrorInfoProto web_controller_error_info = 5;
+
+  // Additional information from the |ElementFinder|.
+  repeated ElementFinderInfoProto element_finder_info = 6;
+
+  reserved 4;
 }
 
 message NavigationInfoProto {
@@ -923,10 +1365,9 @@ message NavigationInfoProto {
 
 // Extra debugging information included in case of unexpected errors.
 //
-// Presence of this element is usually the sign of a bug in the client code and
-// is always the sign that the client code needs to be updated: such issues
-// should be either fixed or reported as proper, expected error with a useful
-// status code.
+// Presence of this element either points to a problem in the executed
+// javascript (in which case, the relevant js_exception_xxx fields should be
+// set) or a bug in the client code.
 message UnexpectedErrorInfoProto {
   // Source file, within the client code, where an unexpected error was detected
   // and reported.
@@ -944,13 +1385,27 @@ message UnexpectedErrorInfoProto {
   // JavaScript exception class name, if reporting a JavaScript error.
   optional string js_exception_classname = 3;
 
-  // JavaScript exception line number, within the js snippet that was sent to
-  // devtools runtime by the client, if reporting a JavaScript error.
-  optional int32 js_exception_line_number = 4;
+  enum JsExceptionLocation {
+    UNKNOWN = 0;
+    // Corresponds to ActionsResponseProto::js_flow_library
+    JS_FLOW_LIBRARY = 1;
+    // Corresponds to JsFlowProto::js_flow
+    JS_FLOW = 2;
+  }
+
+  // The location that caused the JavaScript exception. Guaranteed to have the
+  // same number of entries as js_exception_line_numbers and
+  // js_exception_column_numbers.
+  repeated JsExceptionLocation js_exception_locations = 8 [packed = true];
+  // JavaScript exception line numbers, within the js snippet that was sent to
+  // devtools runtime by the client, if reporting a JavaScript error. Together
+  // with |js_exception_column_numbers| this forms a stack trace.
+  repeated int32 js_exception_line_numbers = 4;
 
   // JavaScript exception column number, within the js snippet that was sent to
-  // devtools runtime by the client, if reporting a JavaScript error.
-  optional int32 js_exception_column_number = 5;
+  // devtools runtime by the client, if reporting a JavaScript error. Together
+  // with |js_exception_line_numbers| this forms a stack trace.
+  repeated int32 js_exception_column_numbers = 5;
 
   // Error code returned by devtools, if any. 0 is considered a success.
   optional int32 devtools_error_code = 6;
@@ -1028,13 +1483,6 @@ message AutofillErrorInfoProto {
   optional GetFullCardFailureType get_full_card_failure_type = 6;
 }
 
-// Message to report |SetFormFieldValueProto| related errors for debugging
-// purposes.
-message SetFormFieldErrorInfoProto {
-  // The index of |keypress| that caused the action to be invalid.
-  optional int32 invalid_keypress_index = 1;
-}
-
 // Message to report errors related to WebController execution.
 message WebControllerErrorInfoProto {
   enum WebAction {
@@ -1052,10 +1500,6 @@ message WebControllerErrorInfoProto {
 
     // Select an option from an HTML dropdown.
     SELECT_OPTION = 4;
-
-    // Set the element's style to be highlighted by adding a BoxShadow to the
-    // element.
-    HIGHLIGHT_ELEMENT = 5;
 
     // Scroll the element into view with padding. This uses native JS
     // functionality for the initial scrolling and calculates the scrolling
@@ -1106,11 +1550,91 @@ message WebControllerErrorInfoProto {
 
     // Dispatch a 'duplexweb' event on document.
     DISPATCH_EVENT_ON_DOCUMENT = 20;
+
+    // Send a single key event.
+    SEND_KEY_EVENT = 21;
+
+    // Set the selected option of an element.
+    SELECT_OPTION_ELEMENT = 22;
+
+    // Send a JS click to the element.
+    JS_CLICK_ELEMENT = 23;
+
+    // Check the selected option of an element.
+    CHECK_OPTION_ELEMENT = 24;
+
+    // Scroll an element into view only if needed.
+    SCROLL_INTO_VIEW_IF_NEEDED = 25;
+
+    // Scroll the window of a frame by a certain amount.
+    SCROLL_WINDOW = 26;
+
+    // Scroll the container by a certain amount.
+    SCROLL_CONTAINER = 27;
+
+    // Blur an element that might have focus to remove its focus.
+    BLUR_FIELD = 28;
+
+    // Execute JS on an element.
+    EXECUTE_JS = 29;
+
+    reserved 5;
   }
 
   // The web-action that failed. This is usually a step in an execution chain
   // for an action.
   optional WebAction failed_web_action = 1;
+}
+
+message ElementFinderInfoProto {
+  // Tracking ID of the |Selector|.
+  optional int64 tracking_id = 1;
+
+  // If the Selector fails to be resolved, this index holds the starting index
+  // of filters currently being applied.
+  optional int32 failed_filter_index_range_start = 2;
+
+  // If a filter failed, this index holds the filter that was supposed to be
+  // applied next.
+  optional int32 failed_filter_index_range_end = 3;
+
+  // The original status of |ElementFinder|.
+  optional ProcessedActionStatusProto status = 4;
+
+  // If set, the document could not be resolved.
+  optional bool get_document_failed = 5;
+
+  enum SemanticInferenceStatus {
+    // Unknown error. Should not occur.
+    UNKNOWN = 0;
+    // The model was run successfully.
+    SUCCESS = 1;
+    // An unexpected error happened when the model was run. E.g. the frame
+    // was not available where it was expected to be.
+    UNEXPECTED_ERROR = 2;
+    // The model was successfully loaded but could not initialize the executor.
+    INITIALIZATION_ERROR = 3;
+    // The model could not be loaded. This is unexpected and should not occur.
+    MODEL_LOAD_ERROR = 4;
+    // The model loading timed out.
+    MODEL_LOAD_TIMEOUT = 5;
+  }
+  message PredictedElement {
+    // The predicted objective and predicted role of this element.
+    optional SelectorProto.SemanticFilter semantic_filter = 4;
+    // The element's backend node id.
+    optional int32 backend_node_id = 3;
+
+    reserved 1, 2;
+  }
+  message SemanticInferenceResult {
+    // If this is empty, the model inference did not find any results.
+    repeated PredictedElement predicted_elements = 1;
+    // Status per frame. The order is not predictable, the results are
+    // collected async and arrive in random order.
+    repeated SemanticInferenceStatus status_per_frame = 2;
+  }
+  optional SemanticInferenceResult semantic_inference_result = 6;
 }
 
 // The pseudo type values come from
@@ -1135,11 +1659,18 @@ enum PseudoType {
 }
 
 // A reference to one or more elements on the page, possibly nested in frames.
+// Next ID: 12
 message SelectorProto {
   // Filters for the element on the page. Filter are applied sequentially, using
   // the output of the previous filter as input. The root of these filters is
   // the main frame's document.
   repeated Filter filters = 9;
+
+  // An ID that's used to identify selector in logs, as they pass through
+  // different layers. It is passed to the client only as FYI. Client might
+  // choose to echo back these ids when reporting specific selectors as
+  // matching or not matching.
+  optional int64 tracking_id = 10;
 
   // A filter that starts with one or more elements and returns one on more
   // elements. Filters are meant to be applied sequentially.
@@ -1147,6 +1678,8 @@ message SelectorProto {
   // The returned elements will be sorted by their order in the document.
   // Elements that were matched via the labelled filter will have the same order
   // as their label.
+  //
+  // Next ID: 17
   message Filter {
     oneof filter {
       // Enter the document of an iframe or shadow root. The next filters apply
@@ -1246,9 +1779,38 @@ message SelectorProto {
       // overlays that cover the frame element itself, apply this filter on the
       // frame element before calling enter_frame.
       OnTopFilter on_top = 13;
+
+      // Filtering against an element property.
+      //
+      // This filter replaces |inner_text| and |value|.
+      PropertyFilter property = 14;
+
+      // Retrieve parent of current elements.
+      EmptyFilter parent = 15;
+
+      // Run the ML model over extracted node signals and retrieve a matching
+      // result.
+      // TODO(b/233340267): By convention this must be the first filter in the
+      // list. It can be followed by any set of other filters.
+      // TODO(b/233340267): The filter only supports returning a single element,
+      // although that element can have any number of children. Should it find
+      // multiple elements, the Selector will return a |TOO_MANY_ELEMENTS|
+      // error.
+      SemanticFilter semantic = 16;
     }
 
     reserved 10;
+  }
+
+  // A regular expression value for filtering.
+  message PropertyFilter {
+    // The property to filter against.
+    optional string property = 1;
+
+    oneof value {
+      TextFilter text_filter = 2;
+      AutofillValueRegexp autofill_value_regexp = 3;
+    }
   }
 
   // A way of filtering elements by their pseudo-element content.
@@ -1323,19 +1885,22 @@ message SelectorProto {
     optional int32 index = 1;
   }
 
-  reserved 1 to 8;
-}
+  message SemanticFilter {
+    // The objective we expect this Selector to have.
+    optional int32 objective = 1;
+    // The role we expect this Selector to have.
+    optional int32 role = 2;
+    // Timeout, defaults to 5s.
+    // TODO(b/218482826): Consider moving this to settings.
+    optional int32 model_timeout_ms = 3 [default = 5000];
+    // If true, ignore the objective and treat it as a wildcard '*' when
+    // matching.
+    optional bool ignore_objective = 4;
 
-// Contain all arguments to perform a click.
-message ClickProto {
-  optional SelectorProto element_to_click = 1;
-  optional ClickType click_type = 2;
+    reserved 5;
+  }
 
-  // Configure whether click should check whether the element is the topmost
-  // element before clicking on it.
-  //
-  // If set to REQUIRE_STEP_SUCCESS, click might fail with ELEMENT_NOT_ON_TOP.
-  optional OptionalStep on_top = 3;
+  reserved 1 to 8, 11;
 }
 
 enum OptionalStep {
@@ -1345,7 +1910,11 @@ enum OptionalStep {
   REQUIRE_STEP_SUCCESS = 3;
 }
 
-// Contain all arguments to perform a select option action.
+// Contain all arguments to perform a select option action. This action also
+// fires a "change" event on the element. If the option is not found, an
+// |OPTION_VALUE_NOT_FOUND| error is returned. If the action is used on an
+// element that is not an HTML <select> element, an |INVALID_TARGET| error is
+// returned.
 message SelectOptionProto {
   // The drop down element on which to select an option.
   optional SelectorProto element = 2;
@@ -1355,7 +1924,7 @@ message SelectOptionProto {
     TextFilter text_filter_value = 7;
     // A value from an Autofill source. Note that this must be preceded by a
     // |CollectUserDataAction|.
-    AutofillValueRegexp autofill_value = 8;
+    AutofillValueRegexp autofill_regexp_value = 8;
   }
 
   // Defines which attribute to use for comparing the option to the expected
@@ -1369,11 +1938,131 @@ message SelectOptionProto {
   }
   optional OptionComparisonAttribute option_comparison_attribute = 6;
 
+  // If |strict|, only one match is allowed. Multiple matches will return a
+  // |TOO_MANY_OPTION_VALUES_FOUND| error. If not |strict| and multiple matches
+  // are found, the first one is selected.
+  optional bool strict = 9;
+
   reserved 1, 3 to 5;
+}
+
+// Contains an update to ClientSettings. This is used to update Display Strings
+// for locales from the backend.
+message UpdateClientSettingsProto {
+  // The new ClientSettings to be used. Please see comments on how display
+  // strings are updated for display string locales in the description of
+  // |ClientSettingsProto|.
+  optional ClientSettingsProto client_settings = 1;
+}
+
+// Action to prompt QR Code Scanning. The action is used to scan a QR Code,
+// either via Camera Preview or Image Upload, and store the output in client
+// memory.
+message PromptQrCodeScanProto {
+  // Whether to trigger QR Code Scanning via Camera Preview or Image Upload.
+  optional bool use_gallery = 1;
+
+  // Key to store the QR Code scanning output in client memory. This is a
+  // mandatory field.
+  optional string output_client_memory_key = 2;
+
+  // UI strings shown to the user during QR Code Scanning via Camera Preview.
+  message CameraScanUiStrings {
+    // Text to be displayed as title on Toolbar.
+    optional string title_text = 1;
+
+    // Text to ask users to grant camera permission.
+    optional string permission_text = 2;
+
+    // Text on action button while asking users to grant camera permissions.
+    optional string permission_button_text = 3;
+
+    // Text to ask users to grant camera permissions by going into system
+    // settings.
+    optional string open_settings_text = 4;
+
+    // Text on action button while asking users to grant camera permissions by
+    // going into system settings.
+    optional string open_settings_button_text = 5;
+
+    // Instruction text shown during camera preview.
+    optional string camera_preview_instruction_text = 6;
+
+    // Security text shown during camera preview.
+    optional string camera_preview_security_text = 7;
+  }
+
+  // UI strings shown to the user during QR Code Scanning via Image Picker.
+  message ImagePickerUiStrings {
+    // Text to be displayed as title on Toolbar.
+    optional string title_text = 1;
+
+    // Text to ask users to grant permission to access images.
+    optional string permission_text = 2;
+
+    // Text on action button while asking users to grant permission to
+    // access images.
+    optional string permission_button_text = 3;
+
+    // Text to ask users to grant media permissions by going into system
+    // settings.
+    optional string open_settings_text = 4;
+
+    // Text on action button while asking users to grant media permissions
+    //  by going into system settings.
+    optional string open_settings_button_text = 5;
+  }
+
+  // UI strings shown during camera scan. This is a mandatory field when QR Code
+  // Scanning via Camera Preview is to be triggered.
+  optional CameraScanUiStrings camera_scan_ui_strings = 3;
+
+  // UI strings shown during image picker. This is a mandatory field when QR
+  // Code Scanning via Image Picker is to be triggered.
+  optional ImagePickerUiStrings image_picker_ui_strings = 4;
+}
+
+// Reads a single tag XML from client memory, extracts select fields based on
+// XML config specified and writes them back in the client memory.
+message ParseSingleTagXmlProto {
+  // Key to read the input single tag XML from client memory, |UserModel|. This
+  // is a mandatory field.
+  optional string input_client_memory_key = 1;
+
+  message Field {
+    // XML key for the field.
+    optional string key = 1;
+
+    // Key to store the extracted value in |UserModel| on the client.
+    optional string output_client_memory_key = 2;
+  }
+
+  // Spec for a field that needs to be extracted from the XML.
+  repeated Field fields = 2;
+
+  // Cases where the XML input does not match the specified XML Spec, we return
+  // a failure to the server in the form of Action Status. If this boolean
+  // is set to true, we further check if the failure was because the XML was
+  // signed(*) and show a different error message accordingly.
+  // *Note: We currently check for a XML being signed by simply checking
+  // if it only contains a plain numerical string. This may lead to
+  // misclassification when the input data is a random numeric string.
+  optional bool custom_failure_for_signed_input_data = 3 [default = true];
 }
 
 // Contain a localized text message from the server.
 message TellProto {
+  message TextToSpeech {
+    // Optional field to override the text to synthesize and play using
+    // TTS ('message' is used as the default text to play).
+    optional string tts_message = 1;
+
+    // Whether the current TTS message should be played immediately or not. If
+    // this is false, the message will instead only play when the user taps the
+    // TTS icon.
+    optional bool play_now = 2;
+  }
+
   // The message to show in the status bar. The behavior is now the following
   //
   //  * If the field is set, the status bar is updated (explicitly setting an
@@ -1384,6 +2073,9 @@ message TellProto {
   // Show the UI if it's not shown yet, such as when a script has been started
   // by a direct action.
   optional bool needs_ui = 2 [default = true];
+
+  // Config for TextToSpeech (TTS) functionality.
+  optional TextToSpeech text_to_speech = 3;
 }
 
 // Contain all arguments to show cast on an element.
@@ -1399,15 +2091,6 @@ message ShowCastProto {
 
   // Element to scroll to.
   optional SelectorProto element_to_present = 1;
-
-  // Optional title to show in the status bar.
-  optional string title = 2;
-
-  // Restrict interaction to the area spanned by the given elements.
-  //
-  // Deprecated: use touchable_element_area instead. Ignored if
-  // touchable_element_area is non-empty.
-  repeated SelectorProto deprecated_touchable_elements = 5;
 
   // Restrict interaction to a series of rectangular areas.
   optional ElementAreaProto touchable_element_area = 6;
@@ -1433,7 +2116,12 @@ message ShowCastProto {
   // not set, the window will be scrolled.
   optional SelectorProto container = 12;
 
-  reserved 3, 4, 8;
+  reserved 2 to 5, 8;
+}
+
+// Set the touchable and restricted area of the overlay.
+message SetTouchableAreaProto {
+  optional ElementAreaProto element_area = 1;
 }
 
 // An area made up of rectangles whole border are made defined by the position
@@ -1458,51 +2146,68 @@ message ElementAreaProto {
   repeated Rectangle restricted = 2;
 }
 
+// Message used to indicate what form fields should be filled with what
+// information coming from either the address or the credit card.
+message RequiredFieldProto {
+  // A value expression containing any number of |key| placeholders, where the
+  // |key| is an integer corresponding to entries from field_types.h or
+  // |AutofillFormatProto::AutofillAssistantCustomField|.
+  // Example:
+  // * 3 -> First name.
+  // * 51 -> Full card name.
+  // Note that the set of actually available fields are outside of our
+  // control and are retrieved automatically.
+  // An empty value expression will clear the field.
+  optional ValueExpression value_expression = 12;
+
+  // The element to fill.
+  optional SelectorProto element = 2;
+
+  // The strategy used to execute filling the value.
+  // This is only considered for text fields and ignored for dropdowns.
+  optional KeyboardValueFillStrategy fill_strategy = 7;
+
+  // Delay between two key presses when simlulating.
+  // This is only considered for text fields and ignored for dropdowns.
+  optional int32 delay_in_millisecond = 4 [default = 20];
+
+  // The strategy used to select a value option. If no
+  // |option_comparison_value_expression_re2| is set, this is used to
+  // differentiate between "starts with" and "match".
+  optional DropdownSelectStrategy select_strategy = 8;
+
+  // The attribute to compare for selecting an option.
+  // This is only considered for dropdowns and ignored for text fields. If set,
+  // takes precedence over |select_strategy|.
+  optional SelectOptionProto.OptionComparisonAttribute
+      option_comparison_attribute = 13;
+
+  // In case of a dropdown, this should be used instead of the
+  // |value_expression_proto|. If it's empty, |value_expression_proto| will be
+  // used. This is only considered for dropdowns and ignored for text fields.
+  optional ValueExpressionRegexp option_comparison_value_expression_re2 = 14;
+
+  // Fill in the value even if it's non-empty. This is useful to work around
+  // cases where the way Autofill sets the field doesn't work on the website.
+  optional bool forced = 5;
+
+  // The field is optional. If there is no value from Autofill available or
+  // the element is not found, the field will be skipped.
+  optional bool is_optional = 11;
+
+  // For JavaScript implemented dropdowns. This first clicks on the |element|,
+  // then waits for |option_element_to_click| to appear and clicks it. The
+  // selector must match a generic option, an |inner_text_pattern| will be
+  // added to this element reference to match a single option.
+  // Both clicks use the same |click_type|.
+  optional SelectorProto option_element_to_click = 9;
+  optional ClickType click_type = 10;
+
+  reserved 1, 3, 6;
+}
+
 // Fill a form with an address if there is, otherwise fail this action.
 message UseAddressProto {
-  // Message used to indicate what form fields should be filled with what
-  // information coming from the address.
-  message RequiredField {
-    // A string containing any number of "${key}" placeholders, where the key
-    // is an integer corresponding to entries from field_types.h or
-    // |AutofillFormatProto::AutofillAssistantCustomField|.
-    // Example:
-    // * "3" -> First name.
-    // * "${3}" -> First name.
-    // * "(+${12}) (${11}) ${10}" -> phone country code, city code, number,
-    //   e.g., (+41) (79) (1234567)
-    // Note that the set of actually available fields are outside of our
-    // control and are retrieved automatically from the provided profile.
-    // An value expression set to an empty string will clear the field.
-    optional string value_expression = 6;
-
-    optional SelectorProto element = 2;
-
-    // The strategy used to execute filling the value.
-    optional KeyboardValueFillStrategy fill_strategy = 7;
-
-    // The strategy used to select a value option.
-    optional DropdownSelectStrategy select_strategy = 8;
-
-    // Delay between two key presses when simlulating.
-    optional int32 delay_in_millisecond = 4 [default = 20];
-
-    // Fill in the fill even if it's non-empty. This is useful to work around
-    // cases where the way autofill sets the field doesn't work on the website.
-    // Usually used together with simulate_key_presses.
-    optional bool forced = 5;
-
-    // For JavaScript implemented dropdowns. This first clicks on the |element|,
-    // then waits for |option_element_to_click| to appear and clicks it. The
-    // selector must match a generic option, an |inner_text_pattern| will be
-    // added to this element reference to match a single option.
-    // Both clicks use the same |click_type|.
-    optional SelectorProto option_element_to_click = 9;
-    optional ClickType click_type = 10;
-
-    reserved 1, 3;
-  }
-
   oneof address_source {
     // The client memory key from which to retrieve the address.
     string name = 1;
@@ -1514,7 +2219,7 @@ message UseAddressProto {
   optional SelectorProto form_field_element = 4;
 
   // An optional list of fields that should be filled by this action.
-  repeated RequiredField required_fields = 6;
+  repeated RequiredFieldProto required_fields = 6;
 
   // If true, this skips the Autofill step jumping straight to the
   // |required_fields|.
@@ -1526,48 +2231,6 @@ message UseAddressProto {
 // Fill a form with a credit card if there is one stored in client memory,
 // otherwise fail this action.
 message UseCreditCardProto {
-  // Message used to indicate what form fields should be filled with what
-  // information.
-  message RequiredField {
-    // A string containing any number of "${key}" placeholders, where the key
-    // is an integer corresponding to entries from field_types.h or
-    // |AutofillFormatProto::AutofillAssistantCustomField|.
-    // Example:
-    // * "51" -> Full name.
-    // * "${51}" -> Full Name.
-    // * "${53}/${55}" -> expiration month / expiration year
-    // Note that the set of actually available fields are outside of our
-    // control and are retrieved automatically from the provided credit card.
-    // An value expression set to an empty string will clear the field.
-    optional string value_expression = 6;
-
-    optional SelectorProto element = 2;
-
-    // The strategy used to execute filling the value.
-    optional KeyboardValueFillStrategy fill_strategy = 7;
-
-    // The strategy used to select a value option.
-    optional DropdownSelectStrategy select_strategy = 8;
-
-    // Delay between two key presses when simlulating.
-    optional int32 delay_in_millisecond = 4 [default = 20];
-
-    // Fill in the fill even if it's non-empty. This is useful to work around
-    // cases where the way autofill sets the field doesn't work on the website.
-    // Usually used together with simulate_key_presses.
-    optional bool forced = 5;
-
-    // For JavaScript implemented dropdowns. This first clicks on the |element|,
-    // then waits for |option_element_to_click| to appear and clicks it. The
-    // selector must match a generic option, an |inner_text_pattern| will be
-    // added to this element reference to match a single option.
-    // Both clicks use the same |click_type|.
-    optional SelectorProto option_element_to_click = 9;
-    optional ClickType click_type = 10;
-
-    reserved 1, 3;
-  }
-
   // The client model identifier from which to retrieve the credit card.
   // If not specified, will use the card stored in client memory instead.
   optional string model_identifier = 4;
@@ -1575,11 +2238,17 @@ message UseCreditCardProto {
   // A reference to the card number field in the form that should be filled.
   optional SelectorProto form_field_element = 3;
 
-  repeated RequiredField required_fields = 7;
+  repeated RequiredFieldProto required_fields = 7;
 
   // If true, this skips the Autofill step jumping straight to the
   // |required_fields|.
   optional bool skip_autofill = 8;
+
+  // If true, this skips resolving the CreditCard. The card can be used to fill
+  // fields like name or expiration date. Be aware that you cannot fill CVC or
+  // credit card number without resolving the card.
+  // This skips the autofill step, regardless of |skip_autofill|.
+  optional bool skip_resolve = 9;
 
   reserved 1, 5, 6;
 }
@@ -1607,8 +2276,11 @@ message WaitForDomProto {
 
   // Result to include into ProcessedActionProto.
   message Result {
-    // Payload of all matching conditions, if one is set.
+    // Payload of all matching conditions, from ElementConditionProto.payload.
     repeated bytes matching_condition_payloads = 1;
+
+    // Payload of all matching conditions, from ElementConditionProto.tag.
+    repeated string matching_condition_tags = 2;
   }
 }
 
@@ -1632,11 +2304,24 @@ message ElementConditionProto {
 
   // A payload that identifies this condition. WaitForDom puts this payload
   // into the result. This is ignored outside of WaitForDom.
+  //
+  // Prefer using tag.
   optional bytes payload = 5;
 
+  // A tag that is echoed back to WaitForDom.Result if the condition matches.
+  //
+  // This is ignored outside of WaitForDom.
+  optional string tag = 8;
+
   // Optional. If set, the element of |match| will be stored under this
-  // identifier on the client.
+  // identifier on the client. If |require_unique_element| is not set to true,
+  // the first match will be stored.
   optional ClientIdProto client_id = 6;
+
+  // Optional. If set to true, the finding of element of |match| will be done
+  // in a strict manner, failing if multiple elements match the Selector. By
+  // default the matching is non-strict, selecting the first match.
+  optional bool require_unique_element = 7;
 }
 
 message ElementConditionsProto {
@@ -1658,18 +2343,14 @@ message UploadDomProto {
   // Whether |tree_root| can match multiple elements. If false and multiple
   // elements are matched, this action will fail with TOO_MANY_MATCHES.
   optional bool can_match_multiple_elements = 2;
+
+  // Whether innerText of DOM should be included.
+  optional bool include_all_inner_text = 3;
 }
 
 // Shows the progress bar.
 message ShowProgressBarProto {
-  // Message to show on the progress bar while loading.
-  optional string message = 3;
-
   oneof progress_indicator {
-    // Value between 0 and 100 indicating the current progress. Values above 100
-    // will be capped to 100, values below 0 will be capped to 0 by the client.
-    int32 progress = 6;
-
     // Value between 0 and |N| (where N is the size of the initial
     // |step_icons|) indicating the current step the flow is in, marking
     // all previous steps as complete. The active step will not be marked as
@@ -1709,26 +2390,16 @@ message ShowProgressBarProto {
   // progress bar being rerendered. The previous configuration will be carried
   // over in each new progress |ShowProgressBarAction|.
   message StepProgressBarConfiguration {
-    // This boolean should always be true, unless you wish to switch to the
-    // old progress bar during the flow. This is not recommended!
-    optional bool use_step_progress_bar = 1;
-
     // Set the icons for the new progress bar. The size of the |step_icons|
     // gives the length of the progress bar. As such an empty list is not
     // supported. The list needs to be at least 2 items long.
     repeated StepProgressBarIcon annotated_step_icons = 3;
 
-    reserved 2;
+    reserved 1, 2;
   }
   optional StepProgressBarConfiguration step_progress_bar_configuration = 9;
 
-  reserved 1, 2, 4, 5;
-}
-
-// Contain all arguments to perform a highlight element action.
-message HighlightElementProto {
-  // The element to highlight.
-  optional SelectorProto element = 1;
+  reserved 1 to 6;
 }
 
 // Controls the browser navigation.
@@ -1830,23 +2501,6 @@ message WaitForDocumentProto {
 //   log should contain additional information about the issue, if verbose
 //   logging is enabled (suggested level: 2 or 3).
 message ShowGenericUiProto {
-  message RequestAutofillCreditCards { optional string model_identifier = 1; }
-  message RequestAutofillProfiles { optional string model_identifier = 1; }
-  message RequestLoginOptions {
-    message PasswordManagerLogins {
-      optional string sublabel = 1;
-      optional bytes payload = 2;
-    }
-    message LoginOption {
-      oneof type {
-        LoginOptionProto custom_login_option = 1;
-        PasswordManagerLogins password_manager_logins = 2;
-      }
-    }
-
-    repeated LoginOption login_options = 1;
-    optional string model_identifier = 2;
-  }
   message RequestUserData {
     message AdditionalValue {
       // The client memory identifier (from |UserData|).
@@ -1872,19 +2526,6 @@ message ShowGenericUiProto {
   // subset of the input model identifiers!
   repeated string output_model_identifiers = 2;
 
-  // If specified, available autofill credit cards will be provided and
-  // auto-updated in the specified |model_identifier|.
-  optional RequestAutofillCreditCards request_credit_cards = 3;
-
-  // If specified, available autofill profiles will be provided and auto-updated
-  // in the specified |model_identifier|.
-  optional RequestAutofillProfiles request_profiles = 4;
-
-  // If specified, available login options (including those provided by password
-  // manager) will be provided and auto-updated in the specified
-  // |model_identifier|.
-  optional RequestLoginOptions request_login_options = 5;
-
   message PeriodicElementChecks {
     message ElementCheck {
       // The element condition to be checked during the action.
@@ -1907,8 +2548,33 @@ message ShowGenericUiProto {
   // |is_client_side_only| set to true.
   optional RequestUserData request_user_data = 9;
 
-  reserved 10;
+  reserved 3 to 5, 10;
 }
+
+// Show backend-specified user interface elements to the user until dismissed.
+//
+// The UI will be shown until cleared by ClearPersistentUi or overwritten
+// by a subsequent SetPersistentUi.
+// The Ui is also cleared at the end of the script if it ended in error or if
+// the last action had |clean_contextual_ui| = true.
+//
+// Client errors:
+//   INVALID_ACTION if |generic_user_interface| was ill-defined or incomplete,
+//   or if the client failed to instantiate the UI for some reason. The Chrome
+//   log should contain additional information about the issue, if verbose
+//   logging is enabled (suggested level: 2 or 3).
+message SetPersistentUiProto {
+  // Required. The generic user interface to show.
+  //
+  // The following interaction callbacks aren't supported:
+  // - SetUserActions
+  // - ToggleUserAction
+  // - EndAction
+  optional GenericUserInterfaceProto generic_user_interface = 1;
+}
+
+// Clears the Ui set by SetPersistentUi.
+message ClearPersistentUiProto {}
 
 // Allow choosing one or more possibility. If ShowCast was called just
 // before, allow interaction with the touchable element area, otherwise don't
@@ -1928,9 +2594,6 @@ message PromptProto {
     // The chip to display to the UI.
     optional ChipProto chip = 11;
 
-    // Map this choice to a direct action.
-    optional DirectActionProto direct_action = 12;
-
     // Auto-select this choice when the condition is met.
     optional ElementConditionProto auto_select_when = 15;
 
@@ -1943,9 +2606,14 @@ message PromptProto {
 
     // Server payload originally sent by the server. This should
     // be transmitted as-is by the client without interpreting.
+    //
+    // Prefer using tag.
     optional bytes server_payload = 5;
 
-    reserved 4, 6, 8, 13, 14, 17;
+    // Tag set by the server. It is put into PromptProto.Result.tag
+    optional string tag = 18;
+
+    reserved 4, 6, 8, 12 to 14, 17;
   }
   repeated Choice choices = 4;
 
@@ -1993,6 +2661,9 @@ message PromptProto {
     // transmitted as-is by the client without interpreting.
     optional bytes server_payload = 5;
 
+    // Tag originally set in Choice.tag.
+    optional string choice_tag = 6;
+
     reserved 1;
   }
 }
@@ -2030,6 +2701,19 @@ message ContactDetailsProto {
   // If present, it will be used as the title to be displayed for the contact
   // details section instead of the default one.
   optional string contact_details_section_title = 9;
+  // Defines how to evaluate validity of this contact.
+  repeated RequiredDataPiece required_data_piece = 10;
+
+  // If true, the phone number will be asked in a separate section from the
+  // rest of the contact info. If true, |request_payer_phone| must be false.
+  // Only supported for backend-provided data.
+  optional bool separate_phone_number_section = 11;
+  // The title of the separate phone number section.
+  // Required if |separate_phone_number_section| is true, ignored if false.
+  optional string phone_number_section_title = 12;
+  // Defines how to evaluate the validity of the phone number in the separate
+  // section. Ignored if |separate_phone_number_section| is false.
+  repeated RequiredDataPiece phone_number_required_data_piece = 13;
 }
 
 message LoginDetailsProto {
@@ -2059,8 +2743,17 @@ message LoginDetailsProto {
     // description.
     optional string edit_button_content_description = 10;
 
-    // If the option was chosen, this payload will be returned to the server.
-    optional bytes payload = 1;
+    oneof payload_or_tag {
+      // The payload attached to this login option, to be echoed back to the
+      // caller when the option is chosen.
+      //
+      // Prefer using tag.
+      bytes payload = 1;
+
+      // The tag attached to this login option, to be echoed back to the
+      // caller when the option is chosen.
+      string tag = 21;
+    }
 
     // Whether the UI should automatically choose this login option if no
     // password manager login options are available.
@@ -2082,50 +2775,16 @@ message LoginDetailsProto {
   repeated LoginOptionProto login_options = 2;
 }
 
-message DateTimeRangeProto {
-  message TimeSlot {
-    // The label to display.
-    optional string label = 1;
-    // The comparison value to be used to compare this timeslot
-    // to others. Smaller values indicate earlier times. This will be used to
-    // prevent start > end and vice-versa.
-    optional int32 comparison_value = 2;
-  }
-
-  // The initial start date of the date/time range.
-  optional DateProto start_date = 15;
-  // The index of the initial start time slot to select.
-  optional int32 start_time_slot = 13;
-  // The initial end date of the date/time range.
-  optional DateProto end_date = 16;
-  // The index of the initial end time slot to select.
-  optional int32 end_time_slot = 14;
-  // The minimum allowed date of the date/time range.
-  optional DateProto min_date = 3;
-  // The maximum allowed date of the date/time range.
-  optional DateProto max_date = 4;
-  // The label for the start date (e.g., 'Pick up date').
-  optional string start_date_label = 8;
-  // The label for the start time (e.g., 'Pick up time').
-  optional string start_time_label = 9;
-  // The label for the end date (e.g., 'Drop off date').
-  optional string end_date_label = 10;
-  // The label for the end time (e.g., 'Drop off time').
-  optional string end_time_label = 11;
-  // The time slots to offer (e.g., 08:00 AM, 08:30 AM, ...)
-  repeated TimeSlot time_slots = 12;
-  // The error message to display if the date is not set.
-  optional string date_not_set_error = 17;
-  // The error message to display if the time is not set.
-  optional string time_not_set_error = 18;
-
-  reserved 1, 2, 5, 6, 7;
-}
-
 // A section showing a simple text message.
 message StaticTextSectionProto {
-  // The text to display. Can contain markup tags like <b>.
-  optional string text = 1;
+  oneof value {
+    // The text to display. Can contain markup tags like <b>.
+    string text = 1;
+    // Key to read the display string value from client memory.
+    // Note: Corresponding action will fail if we do not find
+    // a non-empty single display string value.
+    string client_memory_key = 2;
+  }
 }
 
 // A single text input.
@@ -2187,9 +2846,73 @@ message PopupListSectionProto {
   optional string no_selection_error_message = 6;
 }
 
+message AutofillEntryProto {
+  // The value that this data point holds.
+  optional string value = 1;
+  // The value should be used exactly as specified. Use this only in
+  // exceptional circumstances, as you will lose any of the additional
+  // processing done automatically by Autofill, such as:
+  // - Setting a NAME_FULL will split it and also set NAME_FIRST, NAME_MIDDLE
+  //   and NAME_LAST as applicable.
+  // - Setting a PHONE_HOME_WHOLE_NUMBER will also set PHONE_HOME_NUMBER,
+  //   PHONE_HOME_CITY_CODE, PHONE_HOME_COUNTRY_CODE and
+  //   PHONE_HOME_CITY_AND_NUMBER.
+  optional bool raw = 2;
+}
+
+message ProfileProto {
+  // The values, where the key is one of autofill::ServerFieldType.
+  map<int32, AutofillEntryProto> values = 2;
+  // The identifier for this set of profile data.
+  optional string identifier = 3;
+  // The token to edit this profile. This is only available for profiles
+  // originating from an address source.
+  optional bytes edit_token = 4;
+
+  reserved 1;
+}
+
+message PhoneNumberProto {
+  // The identifier of this phone number.
+  optional string identifier = 1;
+  // The canonical value of the phone number, including country and area code
+  // without any separators.
+  optional AutofillEntryProto value = 2;
+}
+
+message PaymentInstrumentProto {
+  // The values for the card, where the key is one of autofill::ServerFieldType.
+  map<int32, AutofillEntryProto> card_values = 2;
+  // The payments instrument id used to identify and unmask the credit card.
+  optional int64 instrument_id = 7;
+  // The network of the card.
+  optional string network = 5;
+  // The last 4 digits of the card.
+  optional string last_four_digits = 6;
+  // The values for the billing address, where the key is one of
+  // autofill::ServerFieldType.
+  map<int32, AutofillEntryProto> address_values = 3;
+  // The identifier for this payment instrument (credit card + billing address).
+  optional string identifier = 4;
+  // The token to edit this payment instrument.
+  optional bytes edit_token = 8;
+
+  reserved 1;
+}
+
+message DataOriginNoticeProto {
+  // Text of the link to the dialog.
+  optional string link_text = 1;
+
+  // Content of the dialog
+  optional string dialog_title = 2;
+  optional string dialog_text = 3;
+  optional string dialog_button_text = 4;
+}
+
 // Asks to provide the data used by UseAddressAction and
 // UseCreditCardAction.
-// Next: 34
+// Next: 40
 message CollectUserDataProto {
   enum TermsAndConditionsState {
     // No choice has been made yet.
@@ -2198,6 +2921,17 @@ message CollectUserDataProto {
     ACCEPTED = 1;
     // The 'review' radio button is toggled.
     REVIEW_REQUIRED = 2;
+  }
+
+  // Specifies information about the data source to be used.
+  message DataSource {
+    // If enabled and the user data request fails, fall back to the Chrome
+    // Autofill data instead where possible. E.g. in WebLayer this setting is
+    // ignored (Chrome Autofill data is not available). If this is false, the
+    // action will fail if the user data request fails, even if Chrome Autofill
+    // data would have been available.
+    optional bool allow_fallback_on_failure = 1 [default = true];
+    optional bool allow_fallback_on_missing_data = 2;
   }
 
   optional string prompt = 1;
@@ -2221,8 +2955,6 @@ message CollectUserDataProto {
   // Optional specification for the confirm button (defaults to standard confirm
   // chip if not specified).
   optional ChipProto confirm_chip = 33;
-  // Optionally allows confirming through the given direct actions.
-  optional DirectActionProto confirm_direct_action = 10;
   // The initial state of the terms & conditions choice.
   optional TermsAndConditionsState terms_and_conditions_state = 8;
   // When 'false', hide the terms and conditions box in the UI.
@@ -2248,18 +2980,12 @@ message CollectUserDataProto {
   // display a "Show terms" button that will navigate the user to the terms and
   // conditions page when clicked.
   repeated UserActionProto additional_actions = 11;
-  // Optionally requests a payment method with a billing address that has a
-  // postcode value.
-  optional bool require_billing_postal_code = 14;
-  // The error message to display when the billing address is missing the
-  // postal code. This field is mandatory if |require_postal_code| is true.
-  optional string billing_postal_code_missing_text = 15;
   // The error message to display when the selected credit card is expired.
   optional string credit_card_expired_text = 23;
   // The login details that should be gathered.
   optional LoginDetailsProto login_details = 16;
-  // The date/time range that should be gathered.
-  optional DateTimeRangeProto date_time_range = 17;
+  // If set, shows the data origin section to the user.
+  optional DataOriginNoticeProto data_origin_notice = 39;
   // An optional list of additional sections, which is above all other sections.
   repeated UserFormSectionProto additional_prepended_sections = 18;
   // An optional list of additional sections, which is below all other sections.
@@ -2289,8 +3015,16 @@ message CollectUserDataProto {
   // contact_details.contact_details_name}. NOTE: when clearing the billing
   // address, the selected credit card should also be cleared!
   repeated string clear_previous_profile_selection = 30;
+  // Defines how to evaluate validitiy of an address or credit card.
+  repeated RequiredDataPiece required_shipping_address_data_piece = 34;
+  repeated RequiredDataPiece required_credit_card_data_piece = 35;
+  repeated RequiredDataPiece required_billing_address_data_piece = 36;
 
-  reserved 7, 26;
+  // If set, will request data from the GetUserData remote backend, rather than
+  // Chrome Autofill. Takes precedence over |user_data|.
+  optional DataSource data_source = 38;
+
+  reserved 7, 10, 14, 15, 17, 26, 37;
 }
 
 // Stop Autofill Assistant.
@@ -2425,53 +3159,8 @@ message ShowDetailsProto {
   optional int32 delay_ms = 7;
 }
 
-// Set the value of an form element.
-message SetFormFieldValueProto {
-  message Result { optional bool fallback_to_simulate_key_presses = 1; }
-  message KeyPress {
-    oneof keypress {
-      // Text to insert as-is into a form field.
-      string text = 1;
-      // DEPRECATED: A single US-ASCII character (e.g., 13 for carriage return).
-      int32 keycode = 2;
-      // Text as generated by processing a virtual key code with a keyboard
-      // layout. This can also be used for keyboard control sequences such
-      // as "\r" or "\t".
-      string keyboard_input = 3;
-      // Use the username from the Chrome password manager login previously
-      // selected in a CollectUserDataAction.
-      bool use_username = 4;
-      // Use the password from the Chrome password manager login previously
-      // selected in a CollectUserDataAction.
-      bool use_password = 5;
-      // Use the value stored at the specified memory location.
-      string client_memory_key = 6;
-      // A value from an Autofill source. Note that this must be preceded by a
-      // |CollectUserDataAction|.
-      AutofillValue autofill_value = 8;
-    }
-
-    reserved 7;
-  }
-
-  // A reference to the form element whose value should be set.
-  optional SelectorProto element = 1;
-
-  // The value to set.
-  repeated KeyPress value = 2;
-
-  // The strategy used to execute filling the value.
-  optional KeyboardValueFillStrategy fill_strategy = 7;
-
-  // Delay between two key presses when simlulating.
-  optional int32 delay_in_millisecond = 6 [default = 20];
-
-  reserved 5;
-}
-
 // Asks the password manager to generate a suitable password for |element|. The
-// generated password can be filled in subsequent SetFormFieldValueProto
-// actions.
+// generated password can be filled in subsequent actions.
 message GeneratePasswordForFormFieldProto {
   // A reference to the form element for which to generate a password.
   optional SelectorProto element = 1;
@@ -2494,6 +3183,37 @@ message SaveGeneratedPasswordProto {
   // The client memory key of stored password.
   optional string memory_key = 1;
 }
+
+// Clears potentially submitted or pending forms in password manager. Used to
+// make password manager "forget" about any previously processed form that
+// is pending or submitted.
+message ResetPendingCredentialsProto {}
+
+// Saves the current submitted password to the password store. The action
+// fails if the password manager has no record of a submitted password.
+message SaveSubmittedPasswordProto {
+  // If leak_detection_timeout_ms is specified, the action performs a
+  // leak check for the submitted credential. If leak_detection_timeout_ms is
+  // specified, but zero, the default value in SaveSubmittedPasswordAction
+  // is used.
+  optional int32 leak_detection_timeout_ms = 1;
+  message Result {
+    // If the same password was used and therefore the credential is still
+    // insecure, the action succeeds to avoid script termination.
+    // Instead it returns a result flagging the re-use of the
+    // password so that the AutofillAssistant flow can try again.
+    optional bool used_same_password = 1;
+    // If the new credential is still leaked, return a result flag that states
+    // this. The flow can choose to react to this, e.g. prompting the user
+    // to user another password.
+    optional bool used_leaked_credential = 2;
+  }
+}
+
+// Notifies the client that a password reset has been requested. This is
+// relevant for analyzing the outcome of password change flows. The action
+// fails if login details are not saved in the client's |UserData|.
+message RegisterPasswordResetRequestProto {}
 
 // Configures the UI of the autofill assistant client.
 message ConfigureUiStateProto {
@@ -2520,9 +3240,13 @@ message SetAttributeProto {
 }
 
 message InfoBoxProto {
-  // Optional path to an image. Ok tick used if not set.
-  optional string image_path = 1;
-
+  oneof image {
+    // Optional path to an image.
+    // This is deprecated and will be removed in M108.
+    string image_path = 1;
+    // Drawable shown in a separate ImageView above TextView.
+    DrawableProto drawable = 4;
+  }
   // The explanation to show in the box. Not setting this field will clear an
   // existing info box.
   optional string explanation = 2;
@@ -2607,8 +3331,7 @@ message ShowFormProto {
   // form inputs are valid.
   optional ChipProto chip = 2;
 
-  // Optionally allow confirming the prompt using given direct actions.
-  optional DirectActionProto direct_action = 3;
+  reserved 3;
 }
 
 message FormProto {
@@ -2684,6 +3407,12 @@ message CounterInputProto {
     // must contain |initial_value| or it will otherwise default to the first
     // value.
     optional int32 initial_value = 4 [default = 0];
+
+    // The weight of adding 1 in this counter. Defaults to 1. Incrementing by 1
+    // in counter has an effect of incrementing by |size| in the counter
+    // section. For example, a family ticket in showtimes counts as |size|
+    // tickets in total amount restriction.
+    optional int32 size = 9 [default = 1];
 
     reserved 7;
   }
@@ -2845,12 +3574,15 @@ message PopupMessageProto {
 
 // Action to get an element's status.
 message GetElementStatusProto {
-  optional SelectorProto element = 1;
+  oneof element {
+    SelectorProto selector = 1;
+    ClientIdProto client_id = 5;
+  }
 
   optional ValueMatch expected_value_match = 2;
   optional ValueSource value_source = 4;
 
-  // If set and a mismatch happens, the action will report an failure status
+  // If set and a mismatch happens, the action will report a failure status
   // with |ELEMENT_MISMATCH|. If this flag is set to false, the action will not
   // fail and simply report the result.
   optional bool mismatch_should_fail = 3;
@@ -2881,6 +3613,7 @@ message GetElementStatusProto {
   message MatchOptions {
     optional bool case_sensitive = 1;
     optional bool remove_space = 2;
+    optional string find_and_remove_re2 = 3;
   }
 
   message MatchExpectation {
@@ -2896,21 +3629,23 @@ message GetElementStatusProto {
 
   message TextMatch {
     oneof value_source {
-      // The value to check against.
-      string value = 1;
-      // A value from an Autofill source. Note that this must be preceded by a
-      // |CollectUserDataAction|.
-      AutofillValue autofill_value = 2;
       // A regular expression.
       string re2 = 4;
+      // A value resolvable to a text. May require to be preceded by a
+      // |CollectUserDataAction|.
+      TextValue text_value = 5;
     }
 
     // Optional. The expectations to declare this as a matching success. If
     // left empty, the action will always be treated as successful.
     optional MatchExpectation match_expectation = 3;
+
+    reserved 1, 2;
   }
 
-  message ValueMatch { optional TextMatch text_match = 1; }
+  message ValueMatch {
+    optional TextMatch text_match = 1;
+  }
 
   message ComparisonReport {
     optional MatchOptions match_options = 1;
@@ -2931,3 +3666,66 @@ message ReleaseElementsProto {
 
 // Action to unconditionally dispatch a custom JS event 'duplexweb' on document.
 message DispatchJsEventProto {}
+
+// Executes a javascript flow in an isolated environment. Additional actions may
+// be requested directly from the flow. See
+// components/autofill_assistant/browser/js_flow_executor_impl.h for details.
+message JsFlowProto {
+  message Result {
+    // A serialized JSON object containing the overall result value of the flow.
+    // This will never contain string values, for reasons of privacy and
+    // security. If the script attempts to return string values anyway, this
+    // field will be empty and the action will return INVALID_ACTION.
+    optional string result_json = 1;
+  }
+
+  // The JS flow to execute in a sandbox. If present
+  // ActionsResponseProto::js_flow_library needs to be evaluated first.
+  optional string js_flow = 1;
+
+  reserved 2;
+}
+
+// Action which forwards a proto to the owner of the |HeadlessScriptController|
+// for the current flow. Not supported for internal flows.
+message ExternalActionProto {
+  // The opaque proto to be forwarded to the owner of the
+  // |HeadlessScriptController| for this flow.
+  optional external.ActionInfo info = 1;
+
+  // Whether to show the touchable area in the overlay.
+  // If true, it will consume the current touchable area.
+  optional bool show_touchable_area = 2;
+
+  // Whether interrupts should be executed while Autofill Assistant is in prompt
+  // state.
+  optional bool allow_interrupt = 3;
+
+  // A condition on the DOM. Whenever its status changes a notification is sent
+  // to the external caller.
+  message ExternalCondition {
+    // The identifier to be used in the external notification.
+    optional int32 id = 1;
+
+    // The condition to be checked internally.
+    optional ElementConditionProto element_condition = 2;
+  }
+  repeated ExternalCondition conditions = 4;
+
+  message Result {
+    optional external.ResultInfo result_info = 1;
+  }
+}
+
+// Fire-and-forget RPC request to report script progress.
+message ReportProgressRequestProto {
+  // Token sent for the current flow by the initial call to GetActions.
+  optional bytes token = 1;
+  // Data to be logged; generated at script compile time.
+  optional bytes payload = 2;
+}
+
+message ReportProgressProto {
+  // Data to be logged; generated at script compile time.
+  optional string payload = 1;
+}

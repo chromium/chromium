@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <process.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,7 +31,7 @@ class DecrementCountDelegate : public ObjectWatcher::Delegate {
   void OnObjectSignaled(HANDLE object) override { --(*counter_); }
 
  private:
-  int* counter_;
+  raw_ptr<int> counter_;
 };
 
 void RunTest_BasicSignal(

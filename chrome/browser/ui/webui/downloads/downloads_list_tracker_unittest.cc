@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,12 +96,12 @@ class DownloadsListTrackerTest : public testing::Test {
 
   MockDownloadItem* CreateNextItem() {
     return CreateMock(mock_items_.size(), base::Time::UnixEpoch() +
-        base::TimeDelta::FromHours(mock_items_.size()));
+                                              base::Hours(mock_items_.size()));
   }
 
   void CreateTracker() {
-    tracker_.reset(
-        new TestDownloadsListTracker(manager(), page_.BindAndGetRemote()));
+    tracker_ = std::make_unique<TestDownloadsListTracker>(
+        manager(), page_.BindAndGetRemote());
   }
 
   TestingProfile* profile() { return &profile_; }

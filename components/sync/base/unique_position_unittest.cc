@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,8 @@
 #include "base/base64.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,45 +43,45 @@ class UniquePositionTest : public ::testing::Test {
     return pos.ToProto().ByteSize();
   }
 
-const size_t kMinLength = UniquePosition::kSuffixLength;
-const size_t kGenericPredecessorLength = kMinLength + 2;
-const size_t kGenericSuccessorLength = kMinLength + 1;
-const size_t kBigPositionLength = kMinLength;
-const size_t kSmallPositionLength = kMinLength;
+  const size_t kMinLength = UniquePosition::kSuffixLength;
+  const size_t kGenericPredecessorLength = kMinLength + 2;
+  const size_t kGenericSuccessorLength = kMinLength + 1;
+  const size_t kBigPositionLength = kMinLength;
+  const size_t kSmallPositionLength = kMinLength;
 
-// Be careful when adding more prefixes to this list.
-// We have to manually ensure each has a unique suffix.
-const UniquePosition kGenericPredecessor =
-    FromBytes((std::string(kGenericPredecessorLength, '\x23') + '\xFF'));
-const UniquePosition kGenericSuccessor =
-    FromBytes(std::string(kGenericSuccessorLength, '\xAB') + '\xFF');
-const UniquePosition kBigPosition =
-    FromBytes(std::string(kBigPositionLength - 1, '\xFF') + '\xFE' + '\xFF');
-const UniquePosition kBigPositionLessTwo =
-    FromBytes(std::string(kBigPositionLength - 1, '\xFF') + '\xFC' + '\xFF');
-const UniquePosition kBiggerPosition =
-    FromBytes(std::string(kBigPositionLength, '\xFF') + '\xFF');
-const UniquePosition kSmallPosition =
-    FromBytes(std::string(kSmallPositionLength - 1, '\x00') + '\x01' + '\xFF');
-const UniquePosition kSmallPositionPlusOne =
-    FromBytes(std::string(kSmallPositionLength - 1, '\x00') + '\x02' + '\xFF');
-const UniquePosition kHugePosition = FromBytes(
-    std::string(UniquePosition::kCompressBytesThreshold, '\xFF') + '\xAB');
+  // Be careful when adding more prefixes to this list.
+  // We have to manually ensure each has a unique suffix.
+  const UniquePosition kGenericPredecessor =
+      FromBytes((std::string(kGenericPredecessorLength, '\x23') + '\xFF'));
+  const UniquePosition kGenericSuccessor =
+      FromBytes(std::string(kGenericSuccessorLength, '\xAB') + '\xFF');
+  const UniquePosition kBigPosition =
+      FromBytes(std::string(kBigPositionLength - 1, '\xFF') + '\xFE' + '\xFF');
+  const UniquePosition kBigPositionLessTwo =
+      FromBytes(std::string(kBigPositionLength - 1, '\xFF') + '\xFC' + '\xFF');
+  const UniquePosition kBiggerPosition =
+      FromBytes(std::string(kBigPositionLength, '\xFF') + '\xFF');
+  const UniquePosition kSmallPosition = FromBytes(
+      std::string(kSmallPositionLength - 1, '\x00') + '\x01' + '\xFF');
+  const UniquePosition kSmallPositionPlusOne = FromBytes(
+      std::string(kSmallPositionLength - 1, '\x00') + '\x02' + '\xFF');
+  const UniquePosition kHugePosition = FromBytes(
+      std::string(UniquePosition::kCompressBytesThreshold, '\xFF') + '\xAB');
 
-const UniquePosition kPositionArray[7] = {
-    kGenericPredecessor,   kGenericSuccessor, kBigPosition,
-    kBigPositionLessTwo,   kBiggerPosition,   kSmallPosition,
-    kSmallPositionPlusOne,
-};
+  const UniquePosition kPositionArray[7] = {
+      kGenericPredecessor,   kGenericSuccessor, kBigPosition,
+      kBigPositionLessTwo,   kBiggerPosition,   kSmallPosition,
+      kSmallPositionPlusOne,
+  };
 
-const UniquePosition kSortedPositionArray[7] = {
-    kSmallPosition,    kSmallPositionPlusOne, kGenericPredecessor,
-    kGenericSuccessor, kBigPositionLessTwo,   kBigPosition,
-    kBiggerPosition,
-};
+  const UniquePosition kSortedPositionArray[7] = {
+      kSmallPosition,    kSmallPositionPlusOne, kGenericPredecessor,
+      kGenericSuccessor, kBigPositionLessTwo,   kBigPosition,
+      kBiggerPosition,
+  };
 
-const size_t kNumPositions = base::size(kPositionArray);
-const size_t kNumSortedPositions = base::size(kSortedPositionArray);
+  const size_t kNumPositions = std::size(kPositionArray);
+  const size_t kNumSortedPositions = std::size(kSortedPositionArray);
 };
 
 static constexpr char kMinSuffix[] = {
@@ -88,7 +89,7 @@ static constexpr char kMinSuffix[] = {
     '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
     '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
     '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x01'};
-static_assert(base::size(kMinSuffix) == UniquePosition::kSuffixLength,
+static_assert(std::size(kMinSuffix) == UniquePosition::kSuffixLength,
               "Wrong size of kMinSuffix.");
 
 static constexpr char kMaxSuffix[] = {
@@ -96,7 +97,7 @@ static constexpr char kMaxSuffix[] = {
     '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF',
     '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF',
     '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF'};
-static_assert(base::size(kMaxSuffix) == UniquePosition::kSuffixLength,
+static_assert(std::size(kMaxSuffix) == UniquePosition::kSuffixLength,
               "Wrong size of kMaxSuffix.");
 
 static constexpr char kNormalSuffix[] = {
@@ -104,7 +105,7 @@ static constexpr char kNormalSuffix[] = {
     '\x34', '\x69', '\x70', '\x46', '\x34', '\x79', '\x49',
     '\x44', '\x4F', '\x66', '\x4C', '\x58', '\x41', '\x31',
     '\x34', '\x68', '\x59', '\x56', '\x43', '\x6F', '\x3D'};
-static_assert(base::size(kNormalSuffix) == UniquePosition::kSuffixLength,
+static_assert(std::size(kNormalSuffix) == UniquePosition::kSuffixLength,
               "Wrong size of kNormalSuffix.");
 
 ::testing::AssertionResult LessThan(const char* m_expr,
@@ -114,9 +115,9 @@ static_assert(base::size(kNormalSuffix) == UniquePosition::kSuffixLength,
   if (m.LessThan(n))
     return ::testing::AssertionSuccess();
 
-  return ::testing::AssertionFailure() << m_expr << " is not less than "
-                                       << n_expr << " (" << m.ToDebugString()
-                                       << " and " << n.ToDebugString() << ")";
+  return ::testing::AssertionFailure()
+         << m_expr << " is not less than " << n_expr << " ("
+         << m.ToDebugString() << " and " << n.ToDebugString() << ")";
 }
 
 ::testing::AssertionResult Equals(const char* m_expr,
@@ -126,9 +127,9 @@ static_assert(base::size(kNormalSuffix) == UniquePosition::kSuffixLength,
   if (m.Equals(n))
     return ::testing::AssertionSuccess();
 
-  return ::testing::AssertionFailure() << m_expr << " is not equal to "
-                                       << n_expr << " (" << m.ToDebugString()
-                                       << " != " << n.ToDebugString() << ")";
+  return ::testing::AssertionFailure()
+         << m_expr << " is not equal to " << n_expr << " (" << m.ToDebugString()
+         << " != " << n.ToDebugString() << ")";
 }
 
 // Test that the code can read the uncompressed serialization format.
@@ -215,7 +216,7 @@ TEST_F(RelativePositioningTest, ComparisonSanityTest2) {
 // Exercise comparision functions by sorting and re-sorting the list.
 TEST_F(RelativePositioningTest, SortPositions) {
   ASSERT_EQ(kNumPositions, kNumSortedPositions);
-  UniquePosition positions[base::size(kPositionArray)];
+  UniquePosition positions[std::size(kPositionArray)];
   for (size_t i = 0; i < kNumPositions; ++i) {
     positions[i] = kPositionArray[i];
   }
@@ -231,7 +232,7 @@ TEST_F(RelativePositioningTest, SortPositions) {
 // Some more exercise for the comparison function.
 TEST_F(RelativePositioningTest, ReverseSortPositions) {
   ASSERT_EQ(kNumPositions, kNumSortedPositions);
-  UniquePosition positions[base::size(kPositionArray)];
+  UniquePosition positions[std::size(kPositionArray)];
   for (size_t i = 0; i < kNumPositions; ++i) {
     positions[i] = kPositionArray[i];
   }
@@ -386,7 +387,7 @@ TEST_P(PositionInsertTest, StressRightInsertBetween) {
 class SuffixGenerator {
  public:
   explicit SuffixGenerator(const std::string& cache_guid)
-      : cache_guid_(cache_guid), next_id_(-65535) {}
+      : cache_guid_(cache_guid) {}
 
   std::string NextSuffix() {
     // This is not entirely realistic, but that should be OK.  The current
@@ -400,7 +401,7 @@ class SuffixGenerator {
 
  private:
   const std::string cache_guid_;
-  int64_t next_id_;
+  int64_t next_id_ = -65535;
 };
 
 // Cache guids generated in the same style as real clients.
@@ -410,10 +411,9 @@ static const char kCacheGuidStr2[] = "yaKb7zHtY06aue9a0vlZgw==";
 class PositionScenariosTest : public UniquePositionTest {
  public:
   PositionScenariosTest()
-      : generator1_(
-            std::string(kCacheGuidStr1, base::size(kCacheGuidStr1) - 1)),
+      : generator1_(std::string(kCacheGuidStr1, std::size(kCacheGuidStr1) - 1)),
         generator2_(
-            std::string(kCacheGuidStr2, base::size(kCacheGuidStr2) - 1)) {}
+            std::string(kCacheGuidStr2, std::size(kCacheGuidStr2) - 1)) {}
 
   std::string NextClient1Suffix() { return generator1_.NextSuffix(); }
 
@@ -483,24 +483,24 @@ TEST_F(PositionScenariosTest, TwoClientsInsertAtEnd_B) {
   EXPECT_LT(GetLength(pos), 500U);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    MinSuffix,
-    PositionInsertTest,
-    ::testing::Values(std::string(kMinSuffix, base::size(kMinSuffix))));
-INSTANTIATE_TEST_SUITE_P(
-    MaxSuffix,
-    PositionInsertTest,
-    ::testing::Values(std::string(kMaxSuffix, base::size(kMaxSuffix))));
+INSTANTIATE_TEST_SUITE_P(MinSuffix,
+                         PositionInsertTest,
+                         ::testing::Values(std::string(kMinSuffix,
+                                                       std::size(kMinSuffix))));
+INSTANTIATE_TEST_SUITE_P(MaxSuffix,
+                         PositionInsertTest,
+                         ::testing::Values(std::string(kMaxSuffix,
+                                                       std::size(kMaxSuffix))));
 INSTANTIATE_TEST_SUITE_P(
     NormalSuffix,
     PositionInsertTest,
-    ::testing::Values(std::string(kNormalSuffix, base::size(kNormalSuffix))));
+    ::testing::Values(std::string(kNormalSuffix, std::size(kNormalSuffix))));
 
 class PositionFromIntTest : public UniquePositionTest {
  public:
   PositionFromIntTest()
-      : generator_(
-            std::string(kCacheGuidStr1, base::size(kCacheGuidStr1) - 1)) {}
+      : generator_(std::string(kCacheGuidStr1, std::size(kCacheGuidStr1) - 1)) {
+  }
 
  protected:
   static const int64_t kTestValues[];
@@ -555,23 +555,13 @@ const int64_t PositionFromIntTest::kTestValues[] = {0LL,
                                                     INT64_MAX - 1};
 
 const size_t PositionFromIntTest::kNumTestValues =
-    base::size(PositionFromIntTest::kTestValues);
+    std::size(PositionFromIntTest::kTestValues);
 
 TEST_F(PositionFromIntTest, IsValid) {
   for (size_t i = 0; i < kNumTestValues; ++i) {
     const UniquePosition pos =
         UniquePosition::FromInt64(kTestValues[i], NextSuffix());
     EXPECT_TRUE(pos.IsValid()) << "i = " << i << "; " << pos.ToDebugString();
-  }
-}
-
-TEST_F(PositionFromIntTest, RoundTripConversion) {
-  for (size_t i = 0; i < kNumTestValues; ++i) {
-    const int64_t expected_value = kTestValues[i];
-    const UniquePosition pos =
-        UniquePosition::FromInt64(kTestValues[i], NextSuffix());
-    const int64_t value = pos.ToInt64();
-    EXPECT_EQ(expected_value, value) << "i = " << i;
   }
 }
 
@@ -585,7 +575,7 @@ class IndexedLessThan {
   }
 
  private:
-  const T* values_;
+  raw_ptr<const T> values_;
   LessThan less_than_;
 };
 
@@ -599,10 +589,10 @@ TEST_F(PositionFromIntTest, ConsistentOrdering) {
     original_ordering[i] = int64_ordering[i] = position_ordering[i] = i;
   }
 
-  std::sort(int64_ordering.begin(), int64_ordering.end(),
-            IndexedLessThan<int64_t>(kTestValues));
-  std::sort(position_ordering.begin(), position_ordering.end(),
-            IndexedLessThan<UniquePosition, PositionLessThan>(positions));
+  base::ranges::sort(int64_ordering, IndexedLessThan<int64_t>(kTestValues));
+  base::ranges::sort(
+      position_ordering,
+      IndexedLessThan<UniquePosition, PositionLessThan>(positions));
   EXPECT_NE(original_ordering, int64_ordering);
   EXPECT_EQ(int64_ordering, position_ordering);
 }

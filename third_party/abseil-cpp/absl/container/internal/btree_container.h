@@ -20,6 +20,7 @@
 #include <iterator>
 #include <utility>
 
+#include "absl/base/attributes.h"
 #include "absl/base/internal/throw_delegate.h"
 #include "absl/container/internal/btree.h"  // IWYU pragma: export
 #include "absl/container/internal/common.h"
@@ -43,15 +44,15 @@ class btree_container {
   // transparent case.
   template <class K>
   using key_arg =
-      typename KeyArg<IsTransparent<typename Tree::key_compare>::value>::
-          template type<K, typename Tree::key_type>;
+      typename KeyArg<params_type::kIsKeyCompareTransparent>::template type<
+          K, typename Tree::key_type>;
 
  public:
   using key_type = typename Tree::key_type;
   using value_type = typename Tree::value_type;
   using size_type = typename Tree::size_type;
   using difference_type = typename Tree::difference_type;
-  using key_compare = typename Tree::key_compare;
+  using key_compare = typename Tree::original_key_compare;
   using value_compare = typename Tree::value_compare;
   using allocator_type = typename Tree::allocator_type;
   using reference = typename Tree::reference;
@@ -165,9 +166,10 @@ class btree_container {
 
   // Extract routines.
   node_type extract(iterator position) {
-    // Use Move instead of Transfer, because the rebalancing code expects to
-    // have a valid object to scribble metadata bits on top of.
-    auto node = CommonAccess::Move<node_type>(get_allocator(), position.slot());
+    // Use Construct instead of Transfer because the rebalancing code will
+    // destroy the slot later.
+    auto node =
+        CommonAccess::Construct<node_type>(get_allocator(), position.slot());
     erase(position);
     return node;
   }
@@ -176,7 +178,7 @@ class btree_container {
   }
 
   // Utility routines.
-  void clear() { tree_.clear(); }
+  ABSL_ATTRIBUTE_REINITIALIZES void clear() { tree_.clear(); }
   void swap(btree_container &other) { tree_.swap(other.tree_); }
   void verify() const { tree_.verify(); }
 
@@ -214,7 +216,7 @@ class btree_container {
   allocator_type get_allocator() const { return tree_.get_allocator(); }
 
   // The key comparator used by the btree.
-  key_compare key_comp() const { return tree_.key_comp(); }
+  key_compare key_comp() const { return key_compare(tree_.key_comp()); }
   value_compare value_comp() const { return tree_.value_comp(); }
 
   // Support absl::Hash.
@@ -227,6 +229,7 @@ class btree_container {
   }
 
  protected:
+  friend struct btree_access;
   Tree tree_;
 };
 
@@ -247,7 +250,7 @@ class btree_set_container : public btree_container<Tree> {
   using key_type = typename Tree::key_type;
   using value_type = typename Tree::value_type;
   using size_type = typename Tree::size_type;
-  using key_compare = typename Tree::key_compare;
+  using key_compare = typename Tree::original_key_compare;
   using allocator_type = typename Tree::allocator_type;
   using iterator = typename Tree::iterator;
   using const_iterator = typename Tree::const_iterator;
@@ -289,8 +292,11 @@ class btree_set_container : public btree_container<Tree> {
   }
   template <typename... Args>
   std::pair<iterator, bool> emplace(Args &&... args) {
-    init_type v(std::forward<Args>(args)...);
-    return this->tree_.insert_unique(params_type::key(v), std::move(v));
+    // Use a node handle to manage a temp slot.
+    auto node = CommonAccess::Construct<node_type>(this->get_allocator(),
+                                                   std::forward<Args>(args)...);
+    auto *slot = CommonAccess::GetSlot(node);
+    return this->tree_.insert_unique(params_type::key(slot), slot);
   }
   iterator insert(const_iterator hint, const value_type &v) {
     return this->tree_
@@ -304,9 +310,12 @@ class btree_set_container : public btree_container<Tree> {
   }
   template <typename... Args>
   iterator emplace_hint(const_iterator hint, Args &&... args) {
-    init_type v(std::forward<Args>(args)...);
+    // Use a node handle to manage a temp slot.
+    auto node = CommonAccess::Construct<node_type>(this->get_allocator(),
+                                                   std::forward<Args>(args)...);
+    auto *slot = CommonAccess::GetSlot(node);
     return this->tree_
-        .insert_hint_unique(iterator(hint), params_type::key(v), std::move(v))
+        .insert_hint_unique(iterator(hint), params_type::key(slot), slot)
         .first;
   }
   template <typename InputIterator>
@@ -398,7 +407,7 @@ class btree_map_container : public btree_set_container<Tree> {
   using key_type = typename Tree::key_type;
   using mapped_type = typename params_type::mapped_type;
   using value_type = typename Tree::value_type;
-  using key_compare = typename Tree::key_compare;
+  using key_compare = typename Tree::original_key_compare;
   using allocator_type = typename Tree::allocator_type;
   using iterator = typename Tree::iterator;
   using const_iterator = typename Tree::const_iterator;
@@ -535,6 +544,7 @@ class btree_multiset_container : public btree_container<Tree> {
   using params_type = typename Tree::params_type;
   using init_type = typename params_type::init_type;
   using is_key_compare_to = typename params_type::is_key_compare_to;
+  friend class BtreeNodePeer;
 
   template <class K>
   using key_arg = typename super_type::template key_arg<K>;
@@ -543,7 +553,7 @@ class btree_multiset_container : public btree_container<Tree> {
   using key_type = typename Tree::key_type;
   using value_type = typename Tree::value_type;
   using size_type = typename Tree::size_type;
-  using key_compare = typename Tree::key_compare;
+  using key_compare = typename Tree::original_key_compare;
   using allocator_type = typename Tree::allocator_type;
   using iterator = typename Tree::iterator;
   using const_iterator = typename Tree::const_iterator;
@@ -595,12 +605,18 @@ class btree_multiset_container : public btree_container<Tree> {
   }
   template <typename... Args>
   iterator emplace(Args &&... args) {
-    return this->tree_.insert_multi(init_type(std::forward<Args>(args)...));
+    // Use a node handle to manage a temp slot.
+    auto node = CommonAccess::Construct<node_type>(this->get_allocator(),
+                                                   std::forward<Args>(args)...);
+    return this->tree_.insert_multi(CommonAccess::GetSlot(node));
   }
   template <typename... Args>
   iterator emplace_hint(const_iterator hint, Args &&... args) {
-    return this->tree_.insert_hint_multi(
-        iterator(hint), init_type(std::forward<Args>(args)...));
+    // Use a node handle to manage a temp slot.
+    auto node = CommonAccess::Construct<node_type>(this->get_allocator(),
+                                                   std::forward<Args>(args)...);
+    return this->tree_.insert_hint_multi(iterator(hint),
+                                         CommonAccess::GetSlot(node));
   }
   iterator insert(node_type &&node) {
     if (!node) return this->end();
@@ -666,6 +682,7 @@ template <typename Tree>
 class btree_multimap_container : public btree_multiset_container<Tree> {
   using super_type = btree_multiset_container<Tree>;
   using params_type = typename Tree::params_type;
+  friend class BtreeNodePeer;
 
  public:
   using mapped_type = typename params_type::mapped_type;

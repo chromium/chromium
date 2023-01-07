@@ -1,0 +1,35 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  # `crate_name` has been manually changed from `memoffset` to
+  # `memoffset_unstable_const` to match Crubit's expectations.  It is not 100%
+  # clear what a long-term solution should look like, but this particular
+  # problem will probably go away on its own once related Rust features get
+  # stabilized and there is no need to opt into "unstable_const" in `features`
+  # below.
+  #
+  # TODO(https://crbug.com/1344314): Automate renaming crates under
+  # //third_party/rust and then remove the comment above.
+  crate_name = "memoffset_unstable_const"
+
+  epoch = "0.6"
+  crate_type = "rlib"
+  crate_root = "crate/src/lib.rs"
+
+  # Unit tests skipped. Generate with --with-tests to include them.
+  build_native_rust_unit_tests = false
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2015"
+  cargo_pkg_version = "0.6.5"
+  cargo_pkg_authors = "Gilad Naaman <gilad.naaman@gmail.com>"
+  cargo_pkg_name = "memoffset"
+  cargo_pkg_description = "offset_of functionality for Rust structs."
+  build_deps = [ "//third_party/rust/autocfg/v1:buildrs_support" ]
+  features = [ "unstable_const" ]
+  build_root = "crate/build.rs"
+  build_sources = [ "crate/build.rs" ]
+}

@@ -1,0 +1,75 @@
+[package]
+name = "addr2line"
+version = "0.17.0"
+description = "A cross-platform symbolication library written in Rust, using `gimli`"
+documentation = "https://docs.rs/addr2line"
+exclude = ["/benches/*", "/fixtures/*", ".github"]
+keywords = ["DWARF", "debug", "elf", "symbolicate", "atos"]
+categories = ["development-tools::debugging"]
+license = "Apache-2.0 OR MIT"
+readme = "./README.md"
+repository = "https://github.com/gimli-rs/addr2line"
+
+[dependencies]
+gimli = { version = "0.26", default-features = false, features = ["read"] }
+fallible-iterator = { version = "0.2", default-features = false, optional = true }
+object = { version = "0.27.1", default-features = false, features = ["read"], optional = true }
+smallvec = { version = "1", default-features = false, optional = true }
+rustc-demangle = { version = "0.1", optional = true }
+cpp_demangle = { version = "0.3", default-features = false, optional = true }
+
+# Internal feature, only used when building as part of libstd, not part of the
+# stable interface of this crate.
+core = { version = '1.0.0', optional = true, package = 'rustc-std-workspace-core' }
+alloc = { version = '1.0.0', optional = true, package = 'rustc-std-workspace-alloc' }
+compiler_builtins = { version = '0.1.2', optional = true }
+
+[dev-dependencies]
+memmap = "0.7"
+clap = "2"
+backtrace = "0.3.13"
+findshlibs = "0.10"
+rustc-test = "0.3"
+auxiliary = { path = "tests/auxiliary" }
+typed-arena = "2"
+
+[profile.dev]
+split-debuginfo = 'packed'
+
+[profile.test]
+split-debuginfo = 'packed'
+
+[profile.release]
+debug = true
+split-debuginfo = 'packed'
+
+[profile.bench]
+debug = true
+codegen-units = 1
+split-debuginfo = 'packed'
+
+[features]
+default = ["rustc-demangle", "cpp_demangle", "std-object", "fallible-iterator", "smallvec"]
+std = ["gimli/std"]
+std-object = ["std", "object", "object/std", "object/compression", "gimli/endian-reader"]
+
+# Internal feature, only used when building as part of libstd, not part of the
+# stable interface of this crate.
+rustc-dep-of-std = ['core', 'alloc', 'compiler_builtins', 'gimli/rustc-dep-of-std']
+
+[[test]]
+name = "output_equivalence"
+harness = false
+required-features = ["std-object"]
+
+[[test]]
+name = "correctness"
+required-features = ["default"]
+
+[[test]]
+name = "parse"
+required-features = ["std-object"]
+
+[[example]]
+name = "addr2line"
+required-features = ["std-object"]

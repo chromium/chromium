@@ -1,0 +1,21 @@
+caption: Allow Smart Lock to be used
+default_for_enterprise_users: false
+desc: |-
+  If you enable this setting, users will be allowed to use Smart Lock if the requirements for the feature are satisfied.
+
+        If you disable this setting, users will not be allowed to use Smart Lock.
+
+        If this policy is left not set, the default is not allowed for enterprise-managed users and allowed for non-managed users.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://chrome/browser/ash/login/easy_unlock/OWNERS
+- hansberry@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:38-
+tags: []
+type: main

@@ -1,0 +1,16 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+group("proto_lite") {
+  public_deps = [
+    ":support_tool_proto",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+proto_library("support_tool_proto") {
+  sources = [ "data_collection_module.proto" ]
+}

@@ -1,0 +1,105 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Proto to hold the parsed output.
+
+syntax = "proto2";
+
+package maldoca;
+
+option optimize_for = LITE_RUNTIME;
+
+import "maldoca/ole/proto/extract_vba_settings.proto";
+import "maldoca/ole/proto/ole_to_proto_settings.proto";
+import "maldoca/ole/proto/ooxml_to_proto_settings.proto";
+
+// Configs for DocProcessor.
+message ProcessorConfig {
+  map<string, HandlerConfig> handler_configs = 1;
+  // If true, we won't check for file type but trust the input specification.
+  optional bool disable_file_type_check = 2;
+}
+
+// Holds config information for handlers.
+message HandlerConfig {
+  // Valid Handler types. Register a new handler here.
+  enum HandlerType {
+    UNDEFINED = 0;
+    DEFAULT_OFFICE_PARSER = 1;
+    DEFAULT_PDF_PARSER = 2;
+    DEFAULT_OFFICE_FEATURE_EXTRACTOR = 3;
+    DEFAULT_PDF_FEATURE_EXTRACTOR = 4;
+    DEFAULT_OFFICE_EXPORT = 5;
+    DEFAULT_PDF_EXPORT = 6;
+    DEFAULT_VBA_PARSER = 7;
+  }
+  oneof config {
+    ParserConfig parser_config = 1;
+    FeatureExtractorConfig feature_extractor_config = 2;
+    FeatureExportConfig feature_export_config = 3;
+  }
+  // List of other handlers must run before this.
+  repeated string dependencies = 4;
+  // Specifies which type of doc processing pipeline it belongs to
+  enum DocType {
+    ANY = 0;
+    OFFICE = 1;
+    PDF = 2;
+  }
+  optional DocType doc_type = 5;
+}
+
+// Configs for DefaultOfficeParser (HandlerType: DEFAULT_OFFICE_PARSER) handler
+message DefaultOfficeParserConfig {
+  optional ole.OleToProtoSettings ole_to_proto_settings = 1;
+  optional ooxml.OoxmlToProtoSettings ooxml_to_proto_settings = 2;
+  optional vba.ExtractVBASettings extract_vba_settings = 3;
+}
+
+// For each type of handler, you can pass in a set of handler specific config
+// in this proto.
+message ParserHandlerConfig {
+  oneof config {
+    DefaultOfficeParserConfig default_office_parser_config = 1;
+  }
+}
+
+// Configs for the parser handler
+message ParserConfig {
+  // Reserved for plugins. Latest used extension is none.
+  extensions 100000 to 200000;
+
+  optional bool use_sandbox = 1;
+  // Identify the handler used as the parser
+  optional HandlerConfig.HandlerType handler_type = 2;
+  optional ParserHandlerConfig handler_config = 3;
+}
+
+// Configs for the feature extraction handler
+message FeatureExtractorConfig {
+  // Reserved for plugins. Latest used extension is none.
+  extensions 100000 to 200000;
+
+  // Identify the handler used as the Extractor
+  optional HandlerConfig.HandlerType handler_type = 1;
+}
+
+// Configs for the feature export handler
+message FeatureExportConfig {
+  // Reserved for plugins. Latest used extension is none.
+  extensions 100000 to 200000;
+
+  // Identify the handler used for Export
+  optional HandlerConfig.HandlerType handler_type = 1;
+}

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,10 @@ class AndroidAppCommunicationTestSupportStub
       bool is_activity_result_ok,
       const std::string& payment_method_identifier,
       const std::string& stringified_details) override {}
+
+  void ExpectInvokeAndAbortPaymentApp() override {}
+
+  void ExpectNoAbortPaymentApp() override {}
 
   content::BrowserContext* context() override { return &context_; }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,16 @@ namespace borealis {
 
 ScopedTestWindow::ScopedTestWindow(std::unique_ptr<aura::Window> window,
                                    BorealisWindowManager* manager)
-    : window_(std::move(window)), manager_(manager) {
-  apps::Instance instance(manager_->GetShelfAppId(window_.get()),
+    : instance_id_(base::UnguessableToken::Create()),
+      window_(std::move(window)),
+      manager_(manager) {
+  apps::Instance instance(manager_->GetShelfAppId(window_.get()), instance_id_,
                           window_.get());
   manager_->OnInstanceUpdate(apps::InstanceUpdate(nullptr, &instance));
 }
 
 ScopedTestWindow::~ScopedTestWindow() {
-  apps::Instance instance(manager_->GetShelfAppId(window_.get()),
+  apps::Instance instance(manager_->GetShelfAppId(window_.get()), instance_id_,
                           window_.get());
   std::unique_ptr<apps::Instance> delta = instance.Clone();
   delta->UpdateState(apps::InstanceState::kDestroyed, base::Time::Now());

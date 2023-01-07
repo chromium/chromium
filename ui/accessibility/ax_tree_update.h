@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "ui/accessibility/ax_base_export.h"
@@ -85,8 +84,6 @@ struct AX_BASE_EXPORT AXTreeUpdate {
 
   // Return a multi-line indented string representation, for logging.
   std::string ToString() const;
-
-  // TODO(dmazzoni): location changes
 };
 
 // Two tree updates can be merged into one if the second one

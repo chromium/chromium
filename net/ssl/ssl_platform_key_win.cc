@@ -1,17 +1,16 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/ssl/ssl_platform_key_win.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "crypto/openssl_util.h"
 #include "crypto/scoped_capi_types.h"
@@ -40,7 +39,7 @@ std::string GetCAPIProviderName(HCRYPTPROV provider) {
   }
   // Per Microsoft's documentation, PP_NAME is NUL-terminated. However,
   // smartcard drivers are notoriously buggy, so check this.
-  auto nul = std::find(name.begin(), name.end(), 0);
+  auto nul = base::ranges::find(name, 0);
   if (nul != name.end()) {
     name_len = nul - name.begin();
   }
@@ -50,12 +49,15 @@ std::string GetCAPIProviderName(HCRYPTPROV provider) {
 class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
  public:
   // Takes ownership of |provider|.
-  SSLPlatformKeyCAPI(HCRYPTPROV provider, DWORD key_spec)
-      : provider_name_(GetCAPIProviderName(provider)),
-        provider_(provider),
+  SSLPlatformKeyCAPI(crypto::ScopedHCRYPTPROV provider, DWORD key_spec)
+      : provider_name_(GetCAPIProviderName(provider.get())),
+        provider_(std::move(provider)),
         key_spec_(key_spec) {}
 
-  ~SSLPlatformKeyCAPI() override {}
+  SSLPlatformKeyCAPI(const SSLPlatformKeyCAPI&) = delete;
+  SSLPlatformKeyCAPI& operator=(const SSLPlatformKeyCAPI&) = delete;
+
+  ~SSLPlatformKeyCAPI() override = default;
 
   std::string GetProviderName() override { return "CAPI: " + provider_name_; }
 
@@ -65,8 +67,10 @@ class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
     // Prioritize SHA-1, but if the server doesn't advertise it, leave the other
     // algorithms enabled to try.
     return {
-        SSL_SIGN_RSA_PKCS1_SHA1, SSL_SIGN_RSA_PKCS1_SHA256,
-        SSL_SIGN_RSA_PKCS1_SHA384, SSL_SIGN_RSA_PKCS1_SHA512,
+        SSL_SIGN_RSA_PKCS1_SHA1,
+        SSL_SIGN_RSA_PKCS1_SHA256,
+        SSL_SIGN_RSA_PKCS1_SHA384,
+        SSL_SIGN_RSA_PKCS1_SHA512,
     };
   }
 
@@ -104,7 +108,9 @@ class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
     }
 
     crypto::ScopedHCRYPTHASH hash_handle;
-    if (!CryptCreateHash(provider_, hash_alg, 0, 0, hash_handle.receive())) {
+    if (!CryptCreateHash(
+            provider_.get(), hash_alg, 0, 0,
+            crypto::ScopedHCRYPTHASH::Receiver(hash_handle).get())) {
       PLOG(ERROR) << "CreateCreateHash failed";
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
@@ -145,8 +151,6 @@ class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
   std::string provider_name_;
   crypto::ScopedHCRYPTPROV provider_;
   DWORD key_spec_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLPlatformKeyCAPI);
 };
 
 class ScopedNCRYPT_PROV_HANDLE {
@@ -167,7 +171,7 @@ class ScopedNCRYPT_PROV_HANDLE {
   NCRYPT_PROV_HANDLE prov_ = 0;
 };
 
-std::string GetCNGProviderName(NCRYPT_KEY_HANDLE key) {
+std::wstring GetCNGProviderName(NCRYPT_KEY_HANDLE key) {
   ScopedNCRYPT_PROV_HANDLE prov;
   DWORD prov_len = 0;
   SECURITY_STATUS status = NCryptGetProperty(
@@ -175,7 +179,7 @@ std::string GetCNGProviderName(NCRYPT_KEY_HANDLE key) {
       reinterpret_cast<BYTE*>(prov.InitializeInto()),
       sizeof(*prov.InitializeInto()), &prov_len, NCRYPT_SILENT_FLAG);
   if (FAILED(status)) {
-    return "(error getting provider)";
+    return L"(error getting provider)";
   }
   DCHECK_EQ(sizeof(NCRYPT_PROV_HANDLE), prov_len);
 
@@ -186,24 +190,25 @@ std::string GetCNGProviderName(NCRYPT_KEY_HANDLE key) {
   status = NCryptGetProperty(prov.get(), NCRYPT_NAME_PROPERTY, nullptr, 0,
                              &name_len, NCRYPT_SILENT_FLAG);
   if (FAILED(status) || name_len % sizeof(wchar_t) != 0) {
-    return "(error getting provider name)";
+    return L"(error getting provider name)";
   }
-  std::vector<wchar_t> name(name_len / sizeof(wchar_t));
+  std::vector<wchar_t> name;
+  name.reserve(name_len / sizeof(wchar_t));
   status = NCryptGetProperty(
       prov.get(), NCRYPT_NAME_PROPERTY, reinterpret_cast<BYTE*>(name.data()),
       name.size() * sizeof(wchar_t), &name_len, NCRYPT_SILENT_FLAG);
   if (FAILED(status)) {
-    return "(error getting provider name)";
+    return L"(error getting provider name)";
   }
   name.resize(name_len / sizeof(wchar_t));
 
   // Per Microsoft's documentation, the name is NUL-terminated. However,
   // smartcard drivers are notoriously buggy, so check this.
-  auto nul = std::find(name.begin(), name.end(), 0);
+  auto nul = base::ranges::find(name, 0);
   if (nul != name.end()) {
     name.erase(nul, name.end());
   }
-  return base::WideToUTF8(base::WStringPiece(name.data(), name.size()));
+  return std::wstring(name.begin(), name.end());
 }
 
 class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
@@ -215,25 +220,58 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
         type_(type),
         max_length_(max_length) {}
 
+  SSLPlatformKeyCNG(const SSLPlatformKeyCNG&) = delete;
+  SSLPlatformKeyCNG& operator=(const SSLPlatformKeyCNG&) = delete;
+
   ~SSLPlatformKeyCNG() override { NCryptFreeObject(key_); }
 
-  std::string GetProviderName() override { return "CNG: " + provider_name_; }
+  std::string GetProviderName() override {
+    return "CNG: " + base::WideToUTF8(provider_name_);
+  }
 
   std::vector<uint16_t> GetAlgorithmPreferences() override {
+    // Per TLS 1.3 (RFC 8446), the RSA-PSS code points in TLS correspond to
+    // RSA-PSS with salt length equal to the digest length. TPM 2.0's
+    // TPM_ALG_RSAPSS algorithm, however, uses the maximum possible salt length.
+    // The TPM provider will fail signing requests for other salt lengths and
+    // thus cannot generate TLS-compatible PSS signatures.
+    //
+    // However, as of TPM revision 1.16, TPMs which follow FIPS 186-4 will
+    // instead interpret TPM_ALG_RSAPSS using salt length equal to the digest
+    // length. Those TPMs can generate TLS-compatible PSS signatures. As a
+    // result, if this is a TPM-based key, we only report PSS as supported if
+    // the salt length will match the digest length.
+    bool supports_pss = true;
+    if (provider_name_ == MS_PLATFORM_KEY_STORAGE_PROVIDER) {
+      DWORD salt_size = 0;
+      DWORD size_of_salt_size = sizeof(salt_size);
+      HRESULT status =
+          NCryptGetProperty(key_, NCRYPT_PCP_PSS_SALT_SIZE_PROPERTY,
+                            reinterpret_cast<PBYTE>(&salt_size),
+                            size_of_salt_size, &size_of_salt_size, 0);
+      if (FAILED(status) || salt_size != NCRYPT_TPM_PSS_SALT_SIZE_HASHSIZE) {
+        supports_pss = false;
+      }
+    }
     // If this is an under 1024-bit RSA key, conservatively prefer to sign SHA-1
     // hashes. Older Estonian ID cards can only sign SHA-1 hashes.  Prioritize
     // SHA-1, but if the server doesn't advertise it, leave the other algorithms
     // enabled to try.
     if (type_ == EVP_PKEY_RSA && max_length_ <= 1024 / 8) {
-      return {
-          SSL_SIGN_RSA_PKCS1_SHA1, SSL_SIGN_RSA_PKCS1_SHA256,
-          SSL_SIGN_RSA_PKCS1_SHA384, SSL_SIGN_RSA_PKCS1_SHA512,
-          // 1024-bit keys are too small for SSL_SIGN_RSA_PSS_SHA512.
-          SSL_SIGN_RSA_PSS_SHA256, SSL_SIGN_RSA_PSS_SHA384,
+      std::vector<uint16_t> ret = {
+          SSL_SIGN_RSA_PKCS1_SHA1,
+          SSL_SIGN_RSA_PKCS1_SHA256,
+          SSL_SIGN_RSA_PKCS1_SHA384,
+          SSL_SIGN_RSA_PKCS1_SHA512,
       };
+      if (supports_pss) {
+        // 1024-bit keys are too small for SSL_SIGN_RSA_PSS_SHA512.
+        ret.push_back(SSL_SIGN_RSA_PSS_SHA256);
+        ret.push_back(SSL_SIGN_RSA_PSS_SHA384);
+      }
+      return ret;
     }
-    return SSLPrivateKey::DefaultAlgorithmPreferences(type_,
-                                                      true /* supports PSS */);
+    return SSLPrivateKey::DefaultAlgorithmPreferences(type_, supports_pss);
   }
 
   Error Sign(uint16_t algorithm,
@@ -336,22 +374,20 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
   }
 
  private:
-  std::string provider_name_;
+  std::wstring provider_name_;
   NCRYPT_KEY_HANDLE key_;
   int type_;
   size_t max_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLPlatformKeyCNG);
 };
 
 }  // namespace
 
 scoped_refptr<SSLPrivateKey> WrapCAPIPrivateKey(
     const X509Certificate* certificate,
-    HCRYPTPROV prov,
+    crypto::ScopedHCRYPTPROV prov,
     DWORD key_spec) {
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(
-      std::make_unique<SSLPlatformKeyCAPI>(prov, key_spec),
+      std::make_unique<SSLPlatformKeyCAPI>(std::move(prov), key_spec),
       GetSSLPlatformKeyTaskRunner());
 }
 
@@ -394,7 +430,8 @@ scoped_refptr<SSLPrivateKey> FetchClientCertPrivateKey(
   if (key_spec == CERT_NCRYPT_KEY_SPEC) {
     return WrapCNGPrivateKey(certificate, prov_or_key);
   } else {
-    return WrapCAPIPrivateKey(certificate, prov_or_key, key_spec);
+    return WrapCAPIPrivateKey(certificate,
+                              crypto::ScopedHCRYPTPROV(prov_or_key), key_spec);
   }
 }
 

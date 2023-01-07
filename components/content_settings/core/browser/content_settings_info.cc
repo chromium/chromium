@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,9 +28,9 @@ ContentSettingsInfo::ContentSettingsInfo(
 ContentSettingsInfo::~ContentSettingsInfo() {}
 
 ContentSetting ContentSettingsInfo::GetInitialDefaultSetting() const {
-  const base::Value* initial_default =
+  const base::Value& initial_default =
       website_settings_info()->initial_default_value();
-  DCHECK(initial_default);
+  DCHECK(initial_default.is_int());
   return ValueToContentSetting(initial_default);
 }
 
@@ -42,14 +42,6 @@ bool ContentSettingsInfo::IsSettingValid(ContentSetting setting) const {
 // IsDefaultSettingValid.
 bool ContentSettingsInfo::IsDefaultSettingValid(ContentSetting setting) const {
   ContentSettingsType type = website_settings_info_->type();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Don't support ALLOW for protected media default setting until migration.
-  if (type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER &&
-      setting == CONTENT_SETTING_ALLOW) {
-    return false;
-  }
-#endif
-
   // Don't support ALLOW for the default media settings.
   if ((type == ContentSettingsType::MEDIASTREAM_CAMERA ||
        type == ContentSettingsType::MEDIASTREAM_MIC) &&

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ namespace weblayer {
 class ProfileDiskOperationsTest : public testing::Test {
  protected:
   base::ScopedPathOverride data_dir_override_{DIR_USER_DATA};
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::ScopedPathOverride cache_dir_override_{base::DIR_CACHE};
 #endif
 };

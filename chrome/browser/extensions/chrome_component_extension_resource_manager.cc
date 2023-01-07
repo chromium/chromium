@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,31 +24,25 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/grit/pdf_resources_map.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
+#include "ash/webui/file_manager/untrusted_resources/grit/file_manager_untrusted_resources_map.h"
 #include "base/command_line.h"
+#include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/file_manager/file_manager_string_util.h"
-#include "chrome/browser/resources/pdf/ink/buildflags.h"
 #include "ui/file_manager/grit/file_manager_gen_resources_map.h"
 #include "ui/file_manager/grit/file_manager_resources_map.h"
 
-#if BUILDFLAG(ENABLE_USE_MEDIA_APP_INK)
+#if BUILDFLAG(ENABLE_INK)
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
-#else
-// TODO(crbug/1150244): Remove when deprecated.
-#include "third_party/ink/grit/ink_resources.h"
-#endif  // BUILDFLAG(ENABLE_USE_MEDIA_APP_INK)
+#endif  // BUILDFLAG(ENABLE_INK)
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PDF)
 #include <utility>
 #include "chrome/browser/pdf/pdf_extension_util.h"
+#include "chrome/grit/pdf_resources_map.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
@@ -96,31 +90,21 @@ ChromeComponentExtensionResourceManager::Data::Data() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"chrome_app/chrome_app_icon_32.png", IDR_CHROME_APP_ICON_32},
     {"chrome_app/chrome_app_icon_192.png", IDR_CHROME_APP_ICON_192},
-#if BUILDFLAG(ENABLE_USE_MEDIA_APP_INK)
+#if BUILDFLAG(ENABLE_INK)
     // Built in go/bbsrc/lib/BUILD
     {"pdf/ink/ink_engine_ink.worker.js",
      IDR_MEDIA_APP_INK_ENGINE_INK_WORKER_JS},
     {"pdf/ink/ink_engine_ink.wasm", IDR_MEDIA_APP_INK_ENGINE_INK_WASM},
     {"pdf/ink/ink_lib_binary.js", IDR_MEDIA_APP_EXPORT_CANVAS_BIN_JS},
     {"pdf/ink/ink_loader.js", IDR_MEDIA_APP_INK_JS},
-#else
-    // TODO(crbug/1150244): Remove these when deprecated.
-    {"pdf/ink/ink_lib_binary.js", IDR_INK_LIB_BINARY_JS},
-    {"pdf/ink/wasm_ink.worker.js", IDR_INK_WORKER_JS},
-    {"pdf/ink/wasm_ink.wasm", IDR_INK_WASM},
-    {"pdf/ink/ink_loader.js", IDR_INK_LOADER_JS},
-#endif  // BUILDFLAG(ENABLE_USE_MEDIA_APP_INK)
+#endif  // BUILDFLAG(ENABLE_INK)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
 
   AddComponentResourceEntries(kComponentExtensionResources,
                               kComponentExtensionResourcesSize);
   AddComponentResourceEntries(kExtraComponentExtensionResources,
-                              base::size(kExtraComponentExtensionResources));
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  AddComponentResourceEntries(kPdfResources, kPdfResourcesSize);
-#endif
+                              std::size(kExtraComponentExtensionResources));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add Files app JS modules resources.
@@ -128,11 +112,24 @@ ChromeComponentExtensionResourceManager::Data::Data() {
   AddComponentResourceEntries(kFileManagerGenResources,
                               kFileManagerGenResourcesSize);
 
+  // Add Files app resources to display untrusted content in <webview> frames.
+  // Files app extension's resource paths need to be prefixed by
+  // "file_manager/".
+  for (size_t i = 0; i < kFileManagerUntrustedResourcesSize; ++i) {
+    base::FilePath resource_path =
+        base::FilePath("file_manager")
+            .AppendASCII(kFileManagerUntrustedResources[i].path);
+    resource_path = resource_path.NormalizePathSeparators();
+
+    DCHECK(!base::Contains(path_to_resource_id_, resource_path));
+    path_to_resource_id_[resource_path] = kFileManagerUntrustedResources[i].id;
+  }
+
   // ResourceBundle and g_browser_process are not always initialized in unit
   // tests.
   if (ui::ResourceBundle::HasSharedInstance() && g_browser_process) {
     ui::TemplateReplacements file_manager_replacements;
-    ui::TemplateReplacementsFromDictionaryValue(*GetFileManagerStrings(),
+    ui::TemplateReplacementsFromDictionaryValue(GetFileManagerStrings(),
                                                 &file_manager_replacements);
     template_replacements_[extension_misc::kFilesManagerAppId] =
         std::move(file_manager_replacements);
@@ -145,16 +142,17 @@ ChromeComponentExtensionResourceManager::Data::Data() {
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
+  AddComponentResourceEntries(kPdfResources, kPdfResourcesSize);
+
   // ResourceBundle is not always initialized in unit tests.
   if (ui::ResourceBundle::HasSharedInstance()) {
-    base::Value dict(base::Value::Type::DICTIONARY);
+    base::Value::Dict dict;
     pdf_extension_util::AddStrings(
         pdf_extension_util::PdfViewerContext::kPdfViewer, &dict);
-    pdf_extension_util::AddAdditionalData(&dict);
+    pdf_extension_util::AddAdditionalData(/*enable_annotations=*/true, &dict);
 
     ui::TemplateReplacements pdf_viewer_replacements;
-    ui::TemplateReplacementsFromDictionaryValue(
-        base::Value::AsDictionaryValue(dict), &pdf_viewer_replacements);
+    ui::TemplateReplacementsFromDictionaryValue(dict, &pdf_viewer_replacements);
     template_replacements_[extension_misc::kPdfExtensionId] =
         std::move(pdf_viewer_replacements);
   }

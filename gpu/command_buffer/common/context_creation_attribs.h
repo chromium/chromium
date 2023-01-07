@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,7 @@ GPU_EXPORT bool IsWebGL2OrES3ContextType(ContextType context_type);
 GPU_EXPORT bool IsWebGL2OrES3OrHigherContextType(ContextType context_type);
 GPU_EXPORT bool IsES31ForTestingContextType(ContextType context_type);
 GPU_EXPORT bool IsWebGPUContextType(ContextType context_type);
+GPU_EXPORT const char* ContextTypeToLabel(ContextType context_type);
 
 enum ColorSpace {
   COLOR_SPACE_UNSPECIFIED,

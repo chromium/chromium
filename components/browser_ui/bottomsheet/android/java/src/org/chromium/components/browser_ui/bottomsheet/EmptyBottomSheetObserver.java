@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,7 @@ public class EmptyBottomSheetObserver implements BottomSheetObserver {
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
 
     @Override
-    public void onSheetStateChanged(int newState) {}
-
-    @Override
-    public void onSheetFullyPeeked() {}
+    public void onSheetStateChanged(int newState, int reason) {}
 
     @Override
     public void onSheetContentChanged(BottomSheetContent newContent) {}

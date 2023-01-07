@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,9 +39,6 @@ bool IsIdentifierDefaultProtocolClient(NSString* identifier,
 // applies only for the current user. Returns false if this cannot be done, or
 // if the operation fails.
 bool SetAsDefaultBrowser() {
-  if (!CanSetAsDefaultBrowser())
-    return false;
-
   // We really do want the outer bundle here, not the main bundle since setting
   // a shortcut to Chrome as the default browser doesn't make sense.
   NSString* identifier = [base::mac::OuterBundle() bundleIdentifier];
@@ -86,7 +83,7 @@ bool SetAsDefaultProtocolClient(const std::string& protocol) {
   if (!identifier)
     return false;
 
-  NSString* protocol_ns = [NSString stringWithUTF8String:protocol.c_str()];
+  NSString* protocol_ns = base::SysUTF8ToNSString(protocol);
   OSStatus return_code =
       LSSetDefaultHandlerForURLScheme(base::mac::NSToCFCast(protocol_ns),
                                       base::mac::NSToCFCast(identifier));
@@ -94,10 +91,6 @@ bool SetAsDefaultProtocolClient(const std::string& protocol) {
 }
 
 DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
-  if (chrome::GetChannel() == version_info::Channel::CANARY) {
-    return SET_DEFAULT_NOT_ALLOWED;
-  }
-
   return SET_DEFAULT_UNATTENDED;
 }
 
@@ -187,9 +180,10 @@ DefaultWebClientState IsDefaultProtocolClient(const std::string& protocol) {
   if (!my_identifier)
     return UNKNOWN_DEFAULT;
 
-  NSString* protocol_ns = [NSString stringWithUTF8String:protocol.c_str()];
-  return IsIdentifierDefaultProtocolClient(my_identifier, protocol_ns) ?
-      IS_DEFAULT : NOT_DEFAULT;
+  return IsIdentifierDefaultProtocolClient(my_identifier,
+                                           base::SysUTF8ToNSString(protocol))
+             ? IS_DEFAULT
+             : NOT_DEFAULT;
 }
 
 }  // namespace shell_integration

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/ipc/common/surface_handle.h"
+#include "gpu/ipc/service/shared_image_stub.h"
 #include "media/gpu/chromeos/video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
+#include "ui/gfx/buffer_types.h"
 
 namespace base {
 class Location;
@@ -20,9 +25,12 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace gpu {
-class GpuChannel;
 class CommandBufferStub;
 }  // namespace gpu
+
+namespace gfx {
+struct GpuFenceHandle;
+}  // namespace gfx
 
 namespace media {
 
@@ -38,18 +46,51 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
       base::RepeatingCallback<VideoFrame*(const VideoFrame& wrapped_frame)>;
   using GetCommandBufferStubCB =
       base::RepeatingCallback<gpu::CommandBufferStub*()>;
-  using GetGpuChannelCB =
-      base::RepeatingCallback<base::WeakPtr<gpu::GpuChannel>()>;
 
-  // Creates a MailboxVideoFrameConverter instance. The callers will send
-  // wrapped VideoFrames to ConvertFrame(), |unwrap_frame_cb| is the callback
-  // used to get the original, unwrapped, VideoFrame. |gpu_task_runner| is the
-  // task runner of the GPU main thread. Returns nullptr if any argument is
-  // invalid.
+  class GpuDelegate {
+   public:
+    GpuDelegate() = default;
+    GpuDelegate(const GpuDelegate&) = delete;
+    GpuDelegate& operator=(const GpuDelegate&) = delete;
+    virtual ~GpuDelegate() = default;
+
+    virtual bool Initialize() = 0;
+    virtual gpu::SharedImageStub::SharedImageDestructionCallback
+    CreateSharedImage(const gpu::Mailbox& mailbox,
+                      gfx::GpuMemoryBufferHandle handle,
+                      gfx::BufferFormat format,
+                      gfx::BufferPlane plane,
+                      gpu::SurfaceHandle surface_handle,
+                      const gfx::Size& size,
+                      const gfx::ColorSpace& color_space,
+                      GrSurfaceOrigin surface_origin,
+                      SkAlphaType alpha_type,
+                      uint32_t usage) = 0;
+    virtual bool UpdateSharedImage(const gpu::Mailbox& mailbox,
+                                   gfx::GpuFenceHandle in_fence_handle) = 0;
+    virtual bool WaitOnSyncTokenAndReleaseFrame(
+        scoped_refptr<VideoFrame> frame,
+        const gpu::SyncToken& sync_token) = 0;
+  };
+
+  // Creates a MailboxVideoFrameConverter instance. If |unwrap_frame_cb| is
+  // non-null, the MailboxVideoFrameConverter instance assumes that callers will
+  // call ConvertFrame() with wrapped VideoFrames and |unwrap_frame_cb| is the
+  // callback needed to unwrap them. If |unwrap_frame_cb| is null, the instance
+  // assumes that callers will call ConvertFrame() with unwrapped VideoFrames.
+  // |gpu_task_runner| is the task runner of the GPU main thread.
+  // |enable_unsafe_webgpu| hints whether to request the creation of
+  // SharedImages with SHARED_IMAGE_USAGE_WEBGPU. Returns nullptr if the
+  // MailboxVideoFrameConverter can't be created.
   static std::unique_ptr<VideoFrameConverter> Create(
       UnwrapFrameCB unwrap_frame_cb,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-      GetCommandBufferStubCB get_stub_cb);
+      GetCommandBufferStubCB get_stub_cb,
+      bool enable_unsafe_webgpu);
+
+  MailboxVideoFrameConverter(const MailboxVideoFrameConverter&) = delete;
+  MailboxVideoFrameConverter& operator=(const MailboxVideoFrameConverter&) =
+      delete;
 
   // Enqueues |frame| to be converted to a gpu::Mailbox backed VideoFrame.
   // |frame| must wrap a DMA-buf backed VideoFrame that is retrieved via
@@ -62,6 +103,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
 
  private:
   friend class MailboxVideoFrameConverterTest;
+  friend class MailboxVideoFrameConverterWithUnwrappedFramesTest;
 
   // Use VideoFrame::unique_id() as internal VideoFrame indexing.
   using UniqueID = decltype(std::declval<VideoFrame>().unique_id());
@@ -72,7 +114,8 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   MailboxVideoFrameConverter(
       UnwrapFrameCB unwrap_frame_cb,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-      GetGpuChannelCB get_gpu_channel_cb);
+      std::unique_ptr<GpuDelegate> gpu_delegate,
+      bool enable_unsafe_webgpu);
   // Destructor runs on the GPU main thread.
   ~MailboxVideoFrameConverter() override;
   void Destroy() override;
@@ -99,6 +142,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   // method runs on |gpu_task_runner_|. Returns true if the SharedImage could be
   // created successfully; false otherwise (and OnError() is called).
   bool GenerateSharedImageOnGPUThread(VideoFrame* video_frame,
+                                      const gfx::ColorSpace& src_color_space,
                                       const gfx::Rect& destination_visible_rect,
                                       ScopedSharedImage* shared_image);
 
@@ -140,12 +184,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   UnwrapFrameCB unwrap_frame_cb_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
-  const GetGpuChannelCB get_gpu_channel_cb_;
-
-  // |gpu_channel_| will outlive CommandBufferStub, keep the former as a WeakPtr
-  // to guarantee proper resource cleanup. To be dereferenced on
-  // |gpu_task_runner_| only.
-  base::WeakPtr<gpu::GpuChannel> gpu_channel_;
+  const std::unique_ptr<GpuDelegate> gpu_delegate_;
 
   // Mapping from the unique id of the frame to its corresponding SharedImage.
   // Accessed only on |parent_task_runner_|. The ScopedSharedImages are owned by
@@ -160,6 +199,8 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   base::queue<std::pair<scoped_refptr<VideoFrame>, UniqueID>>
       input_frame_queue_;
 
+  const bool enable_unsafe_webgpu_;
+
   // The weak pointer of this, bound to |parent_task_runner_|.
   // Used at the VideoFrame destruction callback.
   base::WeakPtr<MailboxVideoFrameConverter> parent_weak_this_;
@@ -169,8 +210,6 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   base::WeakPtrFactory<MailboxVideoFrameConverter> parent_weak_this_factory_{
       this};
   base::WeakPtrFactory<MailboxVideoFrameConverter> gpu_weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MailboxVideoFrameConverter);
 };
 
 }  // namespace media

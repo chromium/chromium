@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
@@ -81,6 +80,9 @@ class AddressValidator {
                    std::unique_ptr<::i18n::addressinput::Storage> storage,
                    LoadRulesListener* load_rules_listener);
 
+  AddressValidator(const AddressValidator&) = delete;
+  AddressValidator& operator=(const AddressValidator&) = delete;
+
   virtual ~AddressValidator();
 
   // Loads the generic validation rules for |region_code| and specific rules
@@ -115,36 +117,6 @@ class AddressValidator {
       const ::i18n::addressinput::FieldProblemMap* filter,
       ::i18n::addressinput::FieldProblemMap* problems) const;
 
-  // Fills in |suggestions| for the partially typed in |user_input|, assuming
-  // the user is typing in the |focused_field|. If the number of |suggestions|
-  // is over the |suggestion_limit|, then returns no |suggestions| at all.
-  //
-  // If the |solutions| parameter is NULL, the checks whether the validation
-  // rules are available, but does not fill in suggestions.
-  //
-  // Sample user input 1:
-  //   country code = "US"
-  //   postal code = "90066"
-  //   focused field = POSTAL_CODE
-  //   suggestions limit = 1
-  // Suggestion:
-  //   [{administrative_area: "CA"}]
-  //
-  // Sample user input 2:
-  //   country code = "CN"
-  //   dependent locality = "Zongyang"
-  //   focused field = DEPENDENT_LOCALITY
-  //   suggestions limit = 10
-  // Suggestion:
-  //   [{dependent_locality: "Zongyang Xian",
-  //     locality: "Anqing Shi",
-  //     administrative_area: "Anhui Sheng"}]
-  virtual Status GetSuggestions(
-      const ::i18n::addressinput::AddressData& user_input,
-      ::i18n::addressinput::AddressField focused_field,
-      size_t suggestion_limit,
-      std::vector< ::i18n::addressinput::AddressData>* suggestions) const;
-
   // Normalizes the |address_data|. For example, "texas" changes to "TX".
   // Returns true on success, otherwise leaves |address_data| alone and returns
   // false.
@@ -178,9 +150,6 @@ class AddressValidator {
   // Loads and stores aggregate rules at COUNTRY level.
   const std::unique_ptr<::i18n::addressinput::PreloadSupplier> supplier_;
 
-  // Suggests addresses based on user input.
-  const std::unique_ptr<InputSuggester> input_suggester_;
-
   // Normalizes addresses into a canonical form.
   const std::unique_ptr<::i18n::addressinput::AddressNormalizer> normalizer_;
 
@@ -208,8 +177,6 @@ class AddressValidator {
   // any WeakPtrs to AddressValidator are invalidated before its members
   // variable's destructors are executed, rendering them invalid.
   base::WeakPtrFactory<AddressValidator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AddressValidator);
 };
 
 }  // namespace autofill

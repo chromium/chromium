@@ -1,24 +1,40 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <string>
 
+#include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/screen_base.h"
+#include "ui/display/test/scoped_screen_override.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/shell.h"
+#include "ui/display/test/display_manager_test_api.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/display/mac/test/virtual_display_mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -26,12 +42,15 @@ namespace {
 // with and without the experimental WindowPlacement blink feature.
 class PopupBrowserTest : public InProcessBrowserTest,
                          public ::testing::WithParamInterface<bool> {
+ public:
+  PopupBrowserTest(const PopupBrowserTest&) = delete;
+  PopupBrowserTest& operator=(const PopupBrowserTest&) = delete;
+
  protected:
   PopupBrowserTest() = default;
   ~PopupBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         embedder_support::kDisablePopupBlocking);
     const bool enable_window_placement = GetParam();
@@ -52,12 +71,9 @@ class PopupBrowserTest : public InProcessBrowserTest,
     Browser* popup = ui_test_utils::WaitForBrowserToOpen();
     EXPECT_NE(popup, browser);
     auto* popup_contents = popup->tab_strip_model()->GetActiveWebContents();
-    EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetMainFrame()));
+    EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetPrimaryMainFrame()));
     return popup;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PopupBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, PopupBrowserTest, ::testing::Bool());
@@ -100,14 +116,15 @@ class WidgetBoundsChangeWaiter final : public views::WidgetObserver {
             std::abs(rect.height() - initial_bounds_.height()) >= resize_by_);
   }
 
-  views::Widget* const widget_;
+  const raw_ptr<views::Widget> widget_;
   const int move_by_, resize_by_;
   const gfx::Rect initial_bounds_;
   base::RunLoop run_loop_;
 };
 
 // Ensure popups are opened in the available space of the opener's display.
-IN_PROC_BROWSER_TEST_P(PopupBrowserTest, OpenClampedToCurrentDisplay) {
+// TODO(crbug.com/1211516): Flaky.
+IN_PROC_BROWSER_TEST_P(PopupBrowserTest, DISABLED_OpenClampedToCurrentDisplay) {
   const auto display = GetDisplayNearestBrowser(browser());
   EXPECT_TRUE(display.work_area().Contains(browser()->window()->GetBounds()))
       << "The browser window should be contained by its display's work area";
@@ -148,7 +165,13 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, OpenClampedToCurrentDisplay) {
 }
 
 // Ensure popups cannot be moved beyond the available display space by script.
-IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MoveClampedToCurrentDisplay) {
+// TODO(crbug.com/1228795): Flaking on Linux Ozone
+#if BUILDFLAG(IS_LINUX) && defined(USE_OZONE)
+#define MAYBE_MoveClampedToCurrentDisplay DISABLED_MoveClampedToCurrentDisplay
+#else
+#define MAYBE_MoveClampedToCurrentDisplay MoveClampedToCurrentDisplay
+#endif
+IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_MoveClampedToCurrentDisplay) {
   const auto display = GetDisplayNearestBrowser(browser());
   const char kOpenPopup[] =
       "open('.', '', 'left=' + (screen.availLeft + 50) + "
@@ -219,6 +242,109 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, ResizeClampedToCurrentDisplay) {
         << " work_area: " << display.work_area().ToString()
         << " popup: " << popup_bounds.ToString();
   }
+}
+
+// TODO(crbug.com/1183791): Disabled everywhere except ChromeOS and Mac because
+// of races with SetScreenInstance and observers not being notified.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#define MAYBE_AboutBlankCrossScreenPlacement AboutBlankCrossScreenPlacement
+#else
+#define MAYBE_AboutBlankCrossScreenPlacement \
+  DISABLED_AboutBlankCrossScreenPlacement
+#endif
+// Tests that an about:blank popup can be moved across screens with permission.
+IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay("100+100-801x802,901+100-802x802");
+#elif BUILDFLAG(IS_MAC)
+  if (!display::test::VirtualDisplayMacUtil::IsAPIAvailable()) {
+    GTEST_SKIP() << "Skipping test for unsupported MacOS version.";
+  }
+  display::test::VirtualDisplayMacUtil virtual_display_mac_util;
+  virtual_display_mac_util.AddDisplay(
+      1, display::test::VirtualDisplayMacUtil::k1920x1080);
+#else
+  display::ScreenBase test_screen;
+  test_screen.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
+                                        display::DisplayList::Type::PRIMARY);
+  test_screen.display_list().AddDisplay(
+      {2, gfx::Rect(901, 100, 802, 802)},
+      display::DisplayList::Type::NOT_PRIMARY);
+  display::test::ScopedScreenOverride screen_override(&test_screen);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  display::Screen* screen = display::Screen::GetScreen();
+  ASSERT_EQ(2, screen->GetNumDisplays());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* opener = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // TODO(crbug.com/1119974): this test could be in content_browsertests
+  // and not browser_tests if permission controls were supported.
+
+  if (GetParam()) {  // Check whether the WindowPlacement feature is enabled.
+    // Request and auto-accept the Window Placement permission request.
+    permissions::PermissionRequestManager* permission_request_manager =
+        permissions::PermissionRequestManager::FromWebContents(opener);
+    permission_request_manager->set_auto_response_for_test(
+        permissions::PermissionRequestManager::ACCEPT_ALL);
+    constexpr char kGetScreensLength[] = R"(
+      (async () => {
+        try {
+          return (await getScreenDetails()).screens.length;
+        } catch {
+          return 0;
+        }
+      })();
+    )";
+    EXPECT_EQ(2, EvalJs(opener, kGetScreensLength));
+    // Do not auto-accept any other permission requests.
+    permission_request_manager->set_auto_response_for_test(
+        permissions::PermissionRequestManager::NONE);
+  }
+
+  // Open an about:blank popup. It should start on the same screen as browser().
+  Browser* popup = OpenPopup(
+      browser(), "w = open('about:blank', '', 'width=200,height=200');");
+  const auto opener_display = GetDisplayNearestBrowser(browser());
+  auto original_popup_display = GetDisplayNearestBrowser(popup);
+  EXPECT_EQ(opener_display, original_popup_display);
+
+  const auto second_display = screen->GetAllDisplays()[1];
+  const std::string move_popup_to_the_second_screen_script = base::StringPrintf(
+      "w.moveTo(%d, %d);", second_display.work_area().x() + 100,
+      second_display.work_area().y() + 100);
+  // Have the opener try to move the popup to the second screen.
+  content::ExecuteScriptAsync(opener, move_popup_to_the_second_screen_script);
+
+  // Wait for the substantial move, widgets may move during initialization.
+  auto* widget = views::Widget::GetWidgetForNativeWindow(
+      popup->window()->GetNativeWindow());
+  WidgetBoundsChangeWaiter(widget, /*move_by=*/40, /*resize_by=*/0).Wait();
+  auto new_popup_display = GetDisplayNearestBrowser(popup);
+  // The popup only moves to the second screen with Window Placement permission.
+  EXPECT_EQ(GetParam(), original_popup_display != new_popup_display);
+  EXPECT_EQ(GetParam(), second_display == new_popup_display);
+  // The popup is always constrained to the bounds of the target display.
+  auto popup_bounds = popup->window()->GetBounds();
+  EXPECT_TRUE(new_popup_display.work_area().Contains(popup_bounds))
+      << " work_area: " << new_popup_display.work_area().ToString()
+      << " popup: " << popup_bounds.ToString();
+}
+
+// Opens two popups with custom position and size, but one has noopener. They
+// should both have the same position and size. http://crbug.com/1011688
+IN_PROC_BROWSER_TEST_P(PopupBrowserTest, NoopenerPositioning) {
+  Browser* noopener_popup = OpenPopup(
+      browser(),
+      "open('.', '', 'noopener=1,height=200,width=200,top=100,left=100')");
+  Browser* opener_popup = OpenPopup(
+      browser(),
+      "open('.', '', 'height=200,width=200,top=100,left=100')");
+  EXPECT_EQ(noopener_popup->window()->GetBounds(),
+            opener_popup->window()->GetBounds());
 }
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,32 +6,33 @@
 #define CHROME_BROWSER_PREDICTORS_PREDICTORS_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace features {
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
-extern const base::Feature kLoadingPredictorUseLocalPredictions;
+BASE_DECLARE_FEATURE(kLoadingPredictorUseLocalPredictions);
 
-extern const base::Feature kLoadingOnlyLearnHighPriorityResources;
+BASE_DECLARE_FEATURE(kLoadingOnlyLearnHighPriorityResources);
 
-extern const base::Feature kLoadingPredictorTableConfig;
+BASE_DECLARE_FEATURE(kLoadingPredictorTableConfig);
 
-extern const base::Feature kLoadingPreconnectToRedirectTarget;
+BASE_DECLARE_FEATURE(kLoadingPreconnectToRedirectTarget);
 
-extern const base::Feature kLoadingPredictorDisregardAlwaysAccessesNetwork;
+BASE_DECLARE_FEATURE(kLoadingPredictorDisregardAlwaysAccessesNetwork);
 
-extern const base::Feature kLoadingPredictorUseOptimizationGuide;
+BASE_DECLARE_FEATURE(kLoadingPredictorUseOptimizationGuide);
 
-extern const base::Feature kLoadingPredictorPrefetch;
+BASE_DECLARE_FEATURE(kLoadingPredictorPrefetch);
 
 enum class PrefetchSubresourceType { kAll, kCss, kJsAndCss };
 
 extern const base::FeatureParam<PrefetchSubresourceType>
     kLoadingPredictorPrefetchSubresourceType;
 
-extern const base::Feature kLoadingPredictorInflightPredictiveActions;
+BASE_DECLARE_FEATURE(kLoadingPredictorInflightPredictiveActions);
 
 // Returns whether local predictions should be used to make preconnect
 // predictions.
@@ -48,10 +49,6 @@ bool ShouldUseOptimizationGuidePredictions();
 // Returns whether optimization guide predictions should always be retrieved,
 // even if local predictions are available for preconnect predictions.
 bool ShouldAlwaysRetrieveOptimizationGuidePredictions();
-
-// Returns the maximum number of preresolves that can be inflight at any given
-// time.
-size_t GetMaxInflightPreresolves();
 
 // Returns the maximum number of prefetches that can be inflight at any given
 // time.

@@ -1,21 +1,10 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-window.enablePixelTesting = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
-<script src="resources/calendar-picker-common.js"></script>
-</head>
-<body>
-<input type=date id=date value="0001-01-01">
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
 
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
+<input type=date value="0001-01-01">
 
 <script>
-openPickerAppearanceOnly(document.getElementById('date'), finishJSTest);
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'));
 </script>
-</body>
-</html>

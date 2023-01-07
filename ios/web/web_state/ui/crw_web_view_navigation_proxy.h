@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_WEB_STATE_UI_WEB_VIEW_NAVIGATION_PROXY_H_
-#define IOS_WEB_WEB_STATE_UI_WEB_VIEW_NAVIGATION_PROXY_H_
+#ifndef IOS_WEB_WEB_STATE_UI_CRW_WEB_VIEW_NAVIGATION_PROXY_H_
+#define IOS_WEB_WEB_STATE_UI_CRW_WEB_VIEW_NAVIGATION_PROXY_H_
 
 #import <WebKit/WebKit.h>
 
@@ -18,4 +18,4 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 NS_ASSUME_NONNULL_END
 
-#endif  // IOS_WEB_WEB_STATE_UI_WEB_VIEW_NAVIGATION_PROXY_H_
+#endif  // IOS_WEB_WEB_STATE_UI_CRW_WEB_VIEW_NAVIGATION_PROXY_H_

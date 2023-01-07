@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -84,14 +84,15 @@ template("remoting_android_client_java_tmpl") {
     deps = [
       "//base:base_java",
       "//base:jni_java",
+      "//build/android:build_java",
       "//remoting/android:remoting_android_client_java_resources",
       "//remoting/android:remoting_apk_manifest",
       "//remoting/proto/remoting/v1:directory_proto_java",
-      "//third_party/android_deps:android_support_v7_appcompat_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_appcompat_appcompat_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
-      "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
       "//third_party/androidx:androidx_mediarouter_mediarouter_java",
       "//ui/android:ui_utils_java",
     ]

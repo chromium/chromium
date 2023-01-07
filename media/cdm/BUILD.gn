@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,11 +9,11 @@ source_set("cdm_api") {
 }
 
 source_set("cdm_type_conversion") {
-  if (enable_library_cdms) {
+  if (enable_library_cdms || is_win) {
     # This target is a subcomponent.
     visibility = [
+      ":*",
       "//media",
-      "//media/cdm",
     ]
     configs += [ "//media:subcomponent_config" ]
   } else {
@@ -51,6 +51,8 @@ source_set("cdm") {
     "aes_decryptor.h",
     "cbcs_decryptor.cc",
     "cbcs_decryptor.h",
+    "cdm_capability.cc",
+    "cdm_capability.h",
     "cdm_context_ref_impl.cc",
     "cdm_context_ref_impl.h",
     "cenc_decryptor.cc",
@@ -61,10 +63,11 @@ source_set("cdm") {
     "default_cdm_factory.h",
     "json_web_key.cc",
     "json_web_key.h",
+    "supported_audio_codecs.cc",
+    "supported_audio_codecs.h",
   ]
 
-  # TODO(crbug.com/167187): Fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+  public_deps = [ ":cdm_type" ]
 
   deps = [
     "//crypto",
@@ -81,25 +84,16 @@ source_set("cdm") {
     deps += [
       ":cdm_api",
       ":cdm_paths",
-      ":cdm_type_conversion",
-      "//components/crash/core/common:crash_key",
     ]
     sources += [
       "cdm_adapter.cc",
       "cdm_adapter.h",
       "cdm_adapter_factory.cc",
       "cdm_adapter_factory.h",
-      "cdm_allocator.cc",
-      "cdm_allocator.h",
-      "cdm_auxiliary_helper.cc",
-      "cdm_auxiliary_helper.h",
-      "cdm_helpers.cc",
-      "cdm_helpers.h",
       "cdm_module.cc",
       "cdm_module.h",
       "cdm_wrapper.h",
       "output_protection.h",
-      "platform_verification.h",
       "supported_cdm_versions.cc",
       "supported_cdm_versions.h",
     ]
@@ -114,31 +108,68 @@ source_set("cdm") {
     }
   }
 
+  if (is_win || enable_library_cdms) {
+    sources += [
+      "cdm_allocator.cc",
+      "cdm_allocator.h",
+      "cdm_auxiliary_helper.cc",
+      "cdm_auxiliary_helper.h",
+      "cdm_document_service.h",
+      "cdm_helpers.cc",
+      "cdm_helpers.h",
+      "load_cdm_uma_helper.cc",
+      "load_cdm_uma_helper.h",
+    ]
+    deps += [
+      ":cdm_api",
+      ":cdm_type_conversion",
+      "//components/crash/core/common:crash_key",
+    ]
+  }
+
   if (is_win) {
     sources += [
+      "media_foundation_cdm_data.cc",
+      "media_foundation_cdm_data.h",
       "win/media_foundation_cdm.cc",
       "win/media_foundation_cdm.h",
       "win/media_foundation_cdm_factory.cc",
       "win/media_foundation_cdm_factory.h",
+      "win/media_foundation_cdm_module.cc",
+      "win/media_foundation_cdm_module.h",
       "win/media_foundation_cdm_session.cc",
       "win/media_foundation_cdm_session.h",
+      "win/media_foundation_cdm_util.cc",
+      "win/media_foundation_cdm_util.h",
     ]
 
     libs = [ "Propsys.lib" ]
 
-    deps += [ "//media/base/win:media_foundation_util" ]
+    deps += [
+      ":cdm_paths",
+      "//media/base/win:media_foundation_util",
+    ]
   }
 }
 
-static_library("cdm_paths") {
-  sources = [
-    "cdm_paths.cc",
-    "cdm_paths.h",
-  ]
-  deps = [
-    "//base",
-    "//media:media_buildflags",
-  ]
+if (enable_library_cdms) {
+  static_library("cdm_paths") {
+    public = [ "cdm_paths.h" ]
+
+    sources = [ "cdm_paths.cc" ]
+
+    public_deps = [ ":cdm_type" ]
+
+    deps = [
+      "//base",
+      "//media:media_buildflags",
+    ]
+  }
+}
+
+source_set("cdm_type") {
+  sources = [ "cdm_type.h" ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -163,11 +194,7 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//media:media_config",
-  ]
+  configs += [ "//media:media_config" ]
 
   data_deps = []
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,19 +14,18 @@
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gfx_export.h"
-#include "ui/gfx/hdr_metadata.h"
 
-#if defined(USE_OZONE) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(USE_OZONE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "ui/gfx/native_pixmap_handle.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "ui/gfx/mac/io_surface.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
+#include "base/types/token_type.h"
 #include "base/win/scoped_handle.h"
-#elif defined(OS_ANDROID)
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#elif BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
 #endif
-
-extern "C" typedef struct _ClientBuffer* ClientBuffer;
 
 namespace base {
 namespace trace_event {
@@ -51,12 +50,18 @@ enum GpuMemoryBufferType {
 
 using GpuMemoryBufferId = GenericSharedMemoryId;
 
+#if BUILDFLAG(IS_WIN)
+using DXGIHandleToken = base::TokenType<class DXGIHandleTokenTypeMarker>;
+#endif
+
 // TODO(crbug.com/863011): Convert this to a proper class to ensure the state is
 // always consistent, particularly that the only one handle is set at the same
 // time and it corresponds to |type|.
 struct GFX_EXPORT GpuMemoryBufferHandle {
+  static constexpr GpuMemoryBufferId kInvalidId = GpuMemoryBufferId(-1);
+
   GpuMemoryBufferHandle();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   explicit GpuMemoryBufferHandle(
       base::android::ScopedHardwareBufferHandle handle);
 #endif
@@ -69,14 +74,15 @@ struct GFX_EXPORT GpuMemoryBufferHandle {
   GpuMemoryBufferId id{0};
   base::UnsafeSharedMemoryRegion region;
   uint32_t offset = 0;
-  int32_t stride = 0;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+  uint32_t stride = 0;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   NativePixmapHandle native_pixmap_handle;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   ScopedIOSurface io_surface;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   base::win::ScopedHandle dxgi_handle;
-#elif defined(OS_ANDROID)
+  absl::optional<DXGIHandleToken> dxgi_token;
+#elif BUILDFLAG(IS_ANDROID)
   base::android::ScopedHardwareBufferHandle android_hardware_buffer;
 #endif
 };
@@ -102,7 +108,7 @@ class GFX_EXPORT GpuMemoryBuffer {
   // after this has been called.
   virtual void Unmap() = 0;
 
-  // Returns the size for the buffer.
+  // Returns the size in pixels of the first plane of the buffer.
   virtual Size GetSize() const = 0;
 
   // Returns the format for the buffer.
@@ -116,10 +122,6 @@ class GFX_EXPORT GpuMemoryBuffer {
   // as an overlay. Note that this will not impact texturing from the buffer.
   virtual void SetColorSpace(const ColorSpace& color_space);
 
-  // Set the HDR metadata for use when this buffer is used as an overlay. Note
-  // that this will not impact texturing from the buffer.
-  virtual void SetHDRMetadata(const HDRMetadata& hdr_metadata);
-
   // Returns a unique identifier associated with buffer.
   virtual GpuMemoryBufferId GetId() const = 0;
 
@@ -130,9 +132,6 @@ class GFX_EXPORT GpuMemoryBuffer {
   // be sent over IPC. This duplicates file handles as appropriate, so that a
   // caller takes ownership of the returned handle.
   virtual GpuMemoryBufferHandle CloneHandle() const = 0;
-
-  // Type-checking downcast routine.
-  virtual ClientBuffer AsClientBuffer() = 0;
 
   // Dumps information about the memory backing the GpuMemoryBuffer to |pmd|.
   // The memory usage is attributed to |buffer_dump_guid|.

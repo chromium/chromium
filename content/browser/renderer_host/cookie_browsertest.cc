@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,12 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/frame_messages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -37,12 +34,15 @@
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/alternative_service.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-test-utils.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -55,10 +55,7 @@ void SetCookieFromJS(RenderFrameHost* frame, std::string cookie) {
 }
 
 std::string GetCookieFromJS(RenderFrameHost* frame) {
-  std::string cookie;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      frame, "window.domAutomationController.send(document.cookie);", &cookie));
-  return cookie;
+  return EvalJs(frame, "document.cookie;").ExtractString();
 }
 
 void SetCookieDirect(WebContentsImpl* tab,
@@ -70,10 +67,12 @@ void SetCookieDirect(WebContentsImpl* tab,
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
   auto cookie_obj = net::CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), base::nullopt /* server_time */);
+      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
 
   base::RunLoop run_loop;
-  BrowserContext::GetDefaultStoragePartition(tab->GetBrowserContext())
+  tab->GetBrowserContext()
+      ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->SetCanonicalCookie(
           *cookie_obj, url, options,
@@ -89,10 +88,11 @@ std::string GetCookiesDirect(WebContentsImpl* tab, const GURL& url) {
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
   net::CookieList result;
   base::RunLoop run_loop;
-  BrowserContext::GetDefaultStoragePartition(tab->GetBrowserContext())
+  tab->GetBrowserContext()
+      ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->GetCookieList(
-          url, options,
+          url, options, net::CookiePartitionKeyCollection(),
           base::BindLambdaForTesting(
               [&](const net::CookieAccessResultList& cookie_list,
                   const net::CookieAccessResultList& excluded_cookies) {
@@ -110,10 +110,6 @@ class CookieBrowserTest : public ContentBrowserTest {
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-    feature_list_.InitWithFeatures(
-        {net::features::kSameSiteByDefaultCookies,
-         net::features::kCookiesWithoutSameSiteMustBeSecure} /* enabled */,
-        {} /* disabled */);
     ContentBrowserTest::SetUp();
   }
 
@@ -121,9 +117,6 @@ class CookieBrowserTest : public ContentBrowserTest {
     // Support multiple sites on the test server.
     host_resolver()->AddRule("*", "127.0.0.1");
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Exercises basic cookie operations via javascript, including an http page
@@ -137,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(https_server.Start());
 
-  // The server sends a HttpOnly cookie. The RenderFrameMessageFilter should
+  // The server sends a HttpOnly cookie. The RestrictedCookieManager should
   // never allow this to be sent to any renderer process.
   GURL https_url =
       https_server.GetURL("a.test", "/set-cookie?notforjs=1;HttpOnly");
@@ -172,33 +165,35 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
   EXPECT_NE(web_contents_http->GetSiteInstance()->GetProcess(),
             web_contents_https->GetSiteInstance()->GetProcess());
 
-  EXPECT_EQ("", GetCookieFromJS(web_contents_https->GetMainFrame()));
-  EXPECT_EQ("", GetCookieFromJS(web_contents_http->GetMainFrame()));
+  EXPECT_EQ("", GetCookieFromJS(web_contents_https->GetPrimaryMainFrame()));
+  EXPECT_EQ("", GetCookieFromJS(web_contents_http->GetPrimaryMainFrame()));
 
   // Non-TLS page writes secure cookie.
-  EXPECT_TRUE(ExecuteScript(web_contents_http->GetMainFrame(),
-                            "document.cookie = 'A=1; secure;';"));
-  EXPECT_EQ("", GetCookieFromJS(web_contents_https->GetMainFrame()));
-  EXPECT_EQ("", GetCookieFromJS(web_contents_http->GetMainFrame()));
+  EXPECT_TRUE(ExecJs(web_contents_http->GetPrimaryMainFrame(),
+                     "document.cookie = 'A=1; secure;';"));
+  EXPECT_EQ("", GetCookieFromJS(web_contents_https->GetPrimaryMainFrame()));
+  EXPECT_EQ("", GetCookieFromJS(web_contents_http->GetPrimaryMainFrame()));
 
-  // TLS page writes not-secure cookie.
-  EXPECT_TRUE(ExecuteScript(web_contents_http->GetMainFrame(),
-                            "document.cookie = 'B=2';"));
-  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_https->GetMainFrame()));
-  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_http->GetMainFrame()));
+  // Non-TLS page writes not-secure cookie.
+  EXPECT_TRUE(ExecJs(web_contents_http->GetPrimaryMainFrame(),
+                     "document.cookie = 'B=2';"));
+  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_https->GetPrimaryMainFrame()));
+  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_http->GetPrimaryMainFrame()));
 
   // TLS page writes secure cookie.
-  EXPECT_TRUE(ExecuteScript(web_contents_https->GetMainFrame(),
-                            "document.cookie = 'C=3;secure;';"));
-  EXPECT_EQ("B=2; C=3", GetCookieFromJS(web_contents_https->GetMainFrame()));
-  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_http->GetMainFrame()));
+  EXPECT_TRUE(ExecJs(web_contents_https->GetPrimaryMainFrame(),
+                     "document.cookie = 'C=3;secure;';"));
+  EXPECT_EQ("B=2; C=3",
+            GetCookieFromJS(web_contents_https->GetPrimaryMainFrame()));
+  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_http->GetPrimaryMainFrame()));
 
   // TLS page writes not-secure cookie.
-  EXPECT_TRUE(ExecuteScript(web_contents_https->GetMainFrame(),
-                            "document.cookie = 'D=4';"));
+  EXPECT_TRUE(ExecJs(web_contents_https->GetPrimaryMainFrame(),
+                     "document.cookie = 'D=4';"));
   EXPECT_EQ("B=2; C=3; D=4",
-            GetCookieFromJS(web_contents_https->GetMainFrame()));
-  EXPECT_EQ("B=2; D=4", GetCookieFromJS(web_contents_http->GetMainFrame()));
+            GetCookieFromJS(web_contents_https->GetPrimaryMainFrame()));
+  EXPECT_EQ("B=2; D=4",
+            GetCookieFromJS(web_contents_http->GetPrimaryMainFrame()));
 }
 
 // Ensure "priority" cookie option is settable via document.cookie.
@@ -261,11 +256,15 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHost* main_frame = web_contents->GetMainFrame();
-  RenderFrameHost* a_iframe =
-      web_contents->GetFrameTree()->root()->child_at(0)->current_frame_host();
-  RenderFrameHost* b_iframe =
-      web_contents->GetFrameTree()->root()->child_at(1)->current_frame_host();
+  RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  RenderFrameHost* a_iframe = web_contents->GetPrimaryFrameTree()
+                                  .root()
+                                  ->child_at(0)
+                                  ->current_frame_host();
+  RenderFrameHost* b_iframe = web_contents->GetPrimaryFrameTree()
+                                  .root()
+                                  ->child_at(1)
+                                  ->current_frame_host();
 
   // The top-level frame should get all same-site cookies.
   EXPECT_EQ("none=1; strict=1; unspecified=1; lax=1",
@@ -282,6 +281,58 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
   EXPECT_EQ("none=1", GetCookieFromJS(b_iframe));
 }
 
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingChar) {
+  using std::string_literals::operator""s;
+
+  std::string cookie_string;
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->AddCustomHeader("Set-Cookie", cookie_string);
+        return std::move(response);
+      }));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL http_url = embedded_test_server()->GetURL("/");
+  base::HistogramTester histogram;
+
+  // Test scenarios where a control char may appear at start, middle and end of
+  // a cookie line. Control char array with NULL (\x0), CR (\xD), and LF (xA)
+  char kTestChars[] = {'\x0', '\xD', '\xA'};
+
+  for (const auto& test : kTestChars) {
+    std::string ctl_string(1, test);
+
+    // ctrl char at start of string
+    cookie_string = ctl_string + "foo=bar"s;
+    EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+    // ctrl char at middle of string
+    cookie_string = "foo=bar;"s + ctl_string + "httponly"s;
+    EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+    // ctrl char at end of string
+    cookie_string = "foo=bar;"s + "httponly;"s + ctl_string;
+    EXPECT_TRUE(NavigateToURL(shell(), http_url));
+  }
+  // Test if there are multiple control characters that terminate.
+  cookie_string = "foo=bar;\xA\xDhttponly"s;
+  EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+  FetchHistogramsFromChildProcesses();
+  histogram.ExpectBucketCount(
+      "Cookie.TruncatingCharacterInCookieString",
+      net::TruncatingCharacterInCookieStringType::kTruncatingCharNull, 0);
+  histogram.ExpectBucketCount(
+      "Cookie.TruncatingCharacterInCookieString",
+      net::TruncatingCharacterInCookieStringType::kTruncatingCharNewline, 0);
+  histogram.ExpectBucketCount(
+      "Cookie.TruncatingCharacterInCookieString",
+      net::TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed, 0);
+}
+
 class RestrictedCookieManagerInterceptor
     : public network::mojom::RestrictedCookieManagerInterceptorForTesting {
  public:
@@ -290,7 +341,7 @@ class RestrictedCookieManagerInterceptor
       mojo::PendingRemote<network::mojom::RestrictedCookieManager> real_rcm)
       : receiver_(this, std::move(receiver)), real_rcm_(std::move(real_rcm)) {}
 
-  void set_override_url(base::Optional<std::string> maybe_url) {
+  void set_override_url(absl::optional<std::string> maybe_url) {
     override_url_ = std::move(maybe_url);
   }
 
@@ -298,18 +349,23 @@ class RestrictedCookieManagerInterceptor
                            const net::SiteForCookies& site_for_cookies,
                            const url::Origin& top_frame_origin,
                            const std::string& cookie,
+                           bool partitioned_cookies_runtime_feature_enabled,
                            SetCookieFromStringCallback callback) override {
     GetForwardingInterface()->SetCookieFromString(
         URLToUse(url), site_for_cookies, top_frame_origin, std::move(cookie),
+        /*partitioned_cookies_runtime_feature_enabled=*/false,
         std::move(callback));
   }
 
   void GetCookiesString(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
+                        bool partitioned_cookies_runtime_feature_enabled,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
-        URLToUse(url), site_for_cookies, top_frame_origin, std::move(callback));
+        URLToUse(url), site_for_cookies, top_frame_origin,
+        /*partitioned_cookies_runtime_feature_enabled=*/false,
+        std::move(callback));
   }
 
  private:
@@ -321,7 +377,7 @@ class RestrictedCookieManagerInterceptor
     return override_url_ ? GURL(override_url_.value()) : url_in;
   }
 
-  base::Optional<std::string> override_url_;
+  absl::optional<std::string> override_url_;
 
   mojo::Receiver<network::mojom::RestrictedCookieManager> receiver_;
   mojo::Remote<network::mojom::RestrictedCookieManager> real_rcm_;
@@ -329,7 +385,7 @@ class RestrictedCookieManagerInterceptor
 
 class CookieStoreContentBrowserClient : public ContentBrowserClient {
  public:
-  ~CookieStoreContentBrowserClient() override {}
+  ~CookieStoreContentBrowserClient() override = default;
 
   bool WillCreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole role,
@@ -354,14 +410,14 @@ class CookieStoreContentBrowserClient : public ContentBrowserClient {
     return false;  // only made a proxy, still need the actual impl to be made.
   }
 
-  void set_override_url(base::Optional<std::string> maybe_url) {
+  void set_override_url(absl::optional<std::string> maybe_url) {
     override_url_ = maybe_url;
     if (rcm_interceptor_)
       rcm_interceptor_->set_override_url(override_url_);
   }
 
  private:
-  base::Optional<std::string> override_url_;
+  absl::optional<std::string> override_url_;
   std::unique_ptr<RestrictedCookieManagerInterceptor> rcm_interceptor_;
 };
 
@@ -389,11 +445,11 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
       "   +--Site B ------- proxies for A\n"
       "Where A = http://127.0.0.1/\n"
       "      B = http://baz.com/",
-      v.DepictFrameTree(tab->GetFrameTree()->root()));
+      v.DepictFrameTree(tab->GetPrimaryFrameTree().root()));
 
-  RenderFrameHost* main_frame = tab->GetMainFrame();
+  RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
   RenderFrameHost* iframe =
-      tab->GetFrameTree()->root()->child_at(0)->current_frame_host();
+      tab->GetPrimaryFrameTree().root()->child_at(0)->current_frame_host();
 
   EXPECT_NE(iframe->GetProcess(), main_frame->GetProcess());
 
@@ -420,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
       "   +--Site B ------- proxies for A\n"
       "Where A = http://127.0.0.1/\n"
       "      B = http://baz.com/",
-      v.DepictFrameTree(tab->GetFrameTree()->root()));
+      v.DepictFrameTree(tab->GetPrimaryFrameTree().root()));
 
   // Now set a cross-site cookie from the main frame's process.
   {
@@ -441,113 +497,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
       "   +--Site B ------- proxies for A\n"
       "Where A = http://127.0.0.1/\n"
       "      B = http://baz.com/",
-      v.DepictFrameTree(tab->GetFrameTree()->root()));
-}
-
-class SamePartyEnabledCookieBrowserTest : public CookieBrowserTest {
- public:
-  ~SamePartyEnabledCookieBrowserTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    CookieBrowserTest::SetUpCommandLine(command_line);
-    // Set up First-Party Sets and also enables net::Feature::kFirstPartySets.
-    // a.test, b.test and c.test are in the same FPS.
-    command_line->AppendSwitchASCII(
-        "use-first-party-set", "https://a.test,https://b.test,https://c.test");
-  }
-};
-
-// SameParty cookies (that aren't marked as http-only) should be available to
-// JavaScript.
-IN_PROC_BROWSER_TEST_F(SamePartyEnabledCookieBrowserTest, SamePartyCookies) {
-  // Must use HTTPS because SameParty cookies must be Secure.
-  net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
-  server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  server.AddDefaultHandlers(GetTestDataFilePath());
-  SetupCrossSiteRedirector(&server);
-  ASSERT_TRUE(server.Start());
-
-  // The server sets five cookies on a.test/b.test/c.test/d.test.
-  // d.test is not a member site from the same First-Party Sets with others.
-  std::string cookies_to_set =
-      "/set-cookie?unspecified=1;Secure"
-      "&samesite-none-sameparty=1;SameSite=None;SameParty;Secure"
-      "&samesite-lax-sameparty=1;SameSite=Lax;SameParty;Secure"
-      "&sameparty=1;SameParty;Secure"
-      "&sameparty-http=1;SameParty;Secure;httponly";
-
-  GURL url = server.GetURL("a.test", cookies_to_set);
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-  url = server.GetURL("b.test", cookies_to_set);
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-  url = server.GetURL("c.test", cookies_to_set);
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-  // d.test is not in the FPS.
-  url = server.GetURL("d.test", cookies_to_set);
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  url = server.GetURL("a.test",
-                      "/cross_site_iframe_factory.html?a.test(a.test(),b.test("
-                      "c.test),d.test(b.test(c.test)))");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents->GetMainFrame();
-  ASSERT_EQ(3u, main_frame->child_count());
-
-  RenderFrameHostImpl* a_iframe = main_frame->child_at(0)->current_frame_host();
-  RenderFrameHostImpl* b_iframe = main_frame->child_at(1)->current_frame_host();
-  RenderFrameHostImpl* d_iframe = main_frame->child_at(2)->current_frame_host();
-
-  EXPECT_EQ("a.test", a_iframe->GetLastCommittedURL().host());
-  EXPECT_EQ("b.test", b_iframe->GetLastCommittedURL().host());
-  EXPECT_EQ("d.test", d_iframe->GetLastCommittedURL().host());
-
-  // The top-level frame should get all cookies.
-  EXPECT_EQ(
-      "unspecified=1; samesite-none-sameparty=1; samesite-lax-sameparty=1; "
-      "sameparty=1",
-      GetCookieFromJS(main_frame));
-
-  // All same-site/SameParty cookies will be delievered to the a.test -> a.test
-  // frame, as it is same-site with its ancestors.
-  EXPECT_EQ(
-      "unspecified=1; samesite-none-sameparty=1; samesite-lax-sameparty=1; "
-      "sameparty=1",
-      GetCookieFromJS(a_iframe));
-
-  // SameParty cookies will be delievered to the a.test -> b.test frame, as it
-  // is in the same First-Party Sets with its ancestors.
-  EXPECT_EQ("samesite-none-sameparty=1; samesite-lax-sameparty=1; sameparty=1",
-            GetCookieFromJS(b_iframe));
-
-  // samesite-none-sameparty cookie will be delivered to the a.test -> d.test
-  // frame, as d.test is not in any FPS.
-  EXPECT_EQ("samesite-none-sameparty=1", GetCookieFromJS(d_iframe));
-
-  ASSERT_EQ(1u, b_iframe->child_count());
-  RenderFrameHostImpl* bc_iframe = b_iframe->child_at(0)->current_frame_host();
-  EXPECT_EQ("c.test", bc_iframe->GetLastCommittedURL().host());
-  // SameParty cookies will be delievered to the a.test -> b.test -> c.test
-  // frame, as it is in the same First-Party Sets with its ancestors.
-  EXPECT_EQ("samesite-none-sameparty=1; samesite-lax-sameparty=1; sameparty=1",
-            GetCookieFromJS(bc_iframe));
-
-  ASSERT_EQ(1u, d_iframe->child_count());
-  RenderFrameHostImpl* db_iframe = d_iframe->child_at(0)->current_frame_host();
-  EXPECT_EQ("b.test", db_iframe->GetLastCommittedURL().host());
-  // No cookies will be delievered to the a.test -> d.test -> b.test frame, as
-  // it is embedded in a non-member site.
-  EXPECT_EQ("", GetCookieFromJS(db_iframe));
-
-  ASSERT_EQ(1u, db_iframe->child_count());
-  RenderFrameHostImpl* dbc_iframe =
-      db_iframe->child_at(0)->current_frame_host();
-  EXPECT_EQ("c.test", dbc_iframe->GetLastCommittedURL().host());
-  // No cookies will be delievered to the a.test -> d.test -> b.test -> c.test
-  // frame, as it's ancestors has non-member site.
-  EXPECT_EQ("", GetCookieFromJS(dbc_iframe));
+      v.DepictFrameTree(tab->GetPrimaryFrameTree().root()));
 }
 
 }  // namespace content

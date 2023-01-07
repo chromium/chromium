@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,8 @@ class ReporterLoggingServiceTest : public testing::Test {
   }
 
   void SetUp() override {
-    registry_logger_.reset(new RegistryLogger(RegistryLogger::Mode::REPORTER));
+    registry_logger_ =
+        std::make_unique<RegistryLogger>(RegistryLogger::Mode::REPORTER);
 
     reporter_logging_service_ = ReporterLoggingService::GetInstance();
     reporter_logging_service_->Initialize(registry_logger_.get());
@@ -238,8 +239,8 @@ TEST_F(ReporterLoggingServiceTest, LogProcessInformation) {
   io_counters.ReadTransferCount = 4;
   io_counters.WriteTransferCount = 5;
   io_counters.OtherTransferCount = 6;
-  SystemResourceUsage usage = {io_counters, base::TimeDelta::FromSeconds(10),
-                               base::TimeDelta::FromSeconds(20), 123456};
+  SystemResourceUsage usage = {io_counters, base::Seconds(10),
+                               base::Seconds(20), 123456};
 
   StrictMock<MockSettings> mock_settings;
   EXPECT_CALL(mock_settings, engine()).WillOnce(Return(Engine::TEST_ONLY));

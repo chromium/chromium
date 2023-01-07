@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "chrome/services/cups_proxy/fake_cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/public/cpp/cups_util.h"
 #include "chrome/services/cups_proxy/public/cpp/ipp_messages.h"
@@ -23,7 +24,6 @@ namespace {
 using ipp_parser::mojom::IppAttributePtr;
 using ipp_parser::mojom::IppMessagePtr;
 using ipp_parser::mojom::IppRequestPtr;
-using ipp_parser::mojom::ValueType;
 
 using Printer = chromeos::Printer;
 
@@ -41,9 +41,9 @@ class FakeServiceDelegate : public FakeCupsProxyServiceDelegate {
     known_printers_.insert(printer_id);
   }
 
-  base::Optional<Printer> GetPrinter(const std::string& id) override {
+  absl::optional<Printer> GetPrinter(const std::string& id) override {
     if (!base::Contains(known_printers_, id)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     return Printer(id);
@@ -62,7 +62,7 @@ class IppValidatorTest : public testing::Test {
 
   ~IppValidatorTest() override = default;
 
-  base::Optional<IppRequest> RunValidateIppRequest(
+  absl::optional<IppRequest> RunValidateIppRequest(
       const IppRequestPtr& request) {
     return ipp_validator_->ValidateIppRequest(request.Clone());
   }
@@ -83,7 +83,6 @@ IppAttributePtr BuildAttributePtr(std::string name,
   ret->name = name;
   ret->group_tag = group_tag;
   ret->value_tag = value_tag;
-  ret->value = ipp_parser::mojom::IppAttributeValue::New();
   return ret;
 }
 
@@ -116,13 +115,13 @@ IppRequestPtr GetBasicIppRequest() {
   // Setup each attribute.
   IppAttributePtr attr_charset = BuildAttributePtr(
       "attributes-charset", IPP_TAG_OPERATION, IPP_TAG_CHARSET);
-  attr_charset->type = ValueType::STRING;
-  attr_charset->value->set_strings({"utf-8"});
+  attr_charset->value =
+      ipp_parser::mojom::IppAttributeValue::NewStrings({"utf-8"});
 
   IppAttributePtr attr_natlang = BuildAttributePtr(
       "attributes-natural-language", IPP_TAG_OPERATION, IPP_TAG_LANGUAGE);
-  attr_natlang->type = ValueType::STRING;
-  attr_natlang->value->set_strings({"en"});
+  attr_natlang->value =
+      ipp_parser::mojom::IppAttributeValue::NewStrings({"en"});
 
   ipp_message->attributes.push_back(std::move(attr_charset));
   ipp_message->attributes.push_back(std::move(attr_natlang));
@@ -186,8 +185,8 @@ TEST_F(IppValidatorTest, UnknownAttribute) {
   std::string fake_attr_name = "fake-attribute-name";
   IppAttributePtr fake_attr =
       BuildAttributePtr(fake_attr_name, IPP_TAG_OPERATION, IPP_TAG_TEXT);
-  fake_attr->type = ValueType::STRING;
-  fake_attr->value->set_strings({"fake_attribute_value"});
+  fake_attr->value = ipp_parser::mojom::IppAttributeValue::NewStrings(
+      {"fake_attribute_value"});
   request->ipp->attributes.push_back(std::move(fake_attr));
 
   auto result = RunValidateIppRequest(request);

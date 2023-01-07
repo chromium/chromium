@@ -1,10 +1,11 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.content_shell;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.drawable.ClipDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -43,6 +44,13 @@ import org.chromium.ui.base.WindowAndroid;
 public class Shell extends LinearLayout {
 
     private static final long COMPLETED_PROGRESS_TIMEOUT_MS = 200;
+
+    // Stylus handwriting: Setting this ime option instructs stylus writing service to restrict
+    // capturing writing events slightly outside the Url bar area. This is needed to prevent stylus
+    // handwriting in inputs in web content area that are very close to url bar area, from being
+    // committed to Url bar's Edit text. Ex: google.com search field.
+    private static final String IME_OPTION_RESTRICT_STYLUS_WRITING_AREA =
+            "restrictDirectWritingArea=true";
 
     private final Runnable mClearProgressRunnable = new Runnable() {
         @Override
@@ -185,6 +193,7 @@ public class Shell extends LinearLayout {
                 return false;
             }
         });
+        mUrlTextView.setPrivateImeOptions(IME_OPTION_RESTRICT_STYLUS_WRITING_AREA);
     }
 
     /**
@@ -319,12 +328,12 @@ public class Shell extends LinearLayout {
      * {link @ActionMode.Callback} that uses the default implementation in
      * {@link SelectionPopupController}.
      */
-    private ActionMode.Callback defaultActionCallback() {
+    private ActionMode.Callback2 defaultActionCallback() {
         final ActionModeCallbackHelper helper =
                 SelectionPopupController.fromWebContents(mWebContents)
                         .getActionModeCallbackHelper();
 
-        return new ActionMode.Callback() {
+        return new ActionMode.Callback2() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 helper.onCreateActionMode(mode, menu);
@@ -344,6 +353,11 @@ public class Shell extends LinearLayout {
             @Override
             public void onDestroyActionMode(ActionMode mode) {
                 helper.onDestroyActionMode();
+            }
+
+            @Override
+            public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
+                helper.onGetContentRect(mode, view, outRect);
             }
         };
     }

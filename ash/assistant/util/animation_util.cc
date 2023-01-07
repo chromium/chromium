@@ -1,13 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/assistant/util/animation_util.h"
 
 #include "ash/public/cpp/metrics_util.h"
+#include "base/bind.h"
 #include "base/time/time.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -115,11 +117,11 @@ void StartLayerAnimationSequence(
     ::ui::LayerAnimator* layer_animator,
     ::ui::LayerAnimationSequence* layer_animation_sequence,
     ::ui::LayerAnimationObserver* observer,
-    base::Optional<AnimationSmoothnessCallback> smoothness_callback) {
+    absl::optional<AnimationSmoothnessCallback> smoothness_callback) {
   if (observer)
     layer_animation_sequence->AddObserver(observer);
 
-  base::Optional<ui::AnimationThroughputReporter> reporter;
+  absl::optional<ui::AnimationThroughputReporter> reporter;
   if (smoothness_callback) {
     reporter.emplace(layer_animator, ash::metrics_util::ForSmoothness(
                                          smoothness_callback.value()));
@@ -131,7 +133,7 @@ void StartLayerAnimationSequence(
     views::View* view,
     ::ui::LayerAnimationSequence* layer_animation_sequence,
     ::ui::LayerAnimationObserver* observer,
-    base::Optional<AnimationSmoothnessCallback> smoothness_callback) {
+    absl::optional<AnimationSmoothnessCallback> smoothness_callback) {
   DCHECK(view->layer());
   StartLayerAnimationSequence(view->layer()->GetAnimator(),
                               layer_animation_sequence, observer,

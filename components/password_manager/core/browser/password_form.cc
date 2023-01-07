@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include <string>
 
 #include "base/json/json_writer.h"
+#include "base/json/values_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -49,16 +51,21 @@ std::string ToString(PasswordForm::Scheme scheme) {
 
 std::string ToString(PasswordForm::Type type) {
   switch (type) {
-    case PasswordForm::Type::kManual:
-      return "Manual";
+    case PasswordForm::Type::kFormSubmission:
+      return "Form Submission";
     case PasswordForm::Type::kGenerated:
       return "Generated";
     case PasswordForm::Type::kApi:
       return "API";
+    case PasswordForm::Type::kManuallyAdded:
+      return "Manually Added";
+    case PasswordForm::Type::kImported:
+      return "Imported";
   }
 
-  NOTREACHED();
-  return std::string();
+  // In old clients type might contain non-enum values and their mapping is
+  // unknown.
+  return "Unknown";
 }
 
 std::string ToString(PasswordForm::GenerationUploadStatus status) {
@@ -73,6 +80,19 @@ std::string ToString(PasswordForm::GenerationUploadStatus status) {
 
   NOTREACHED();
   return std::string();
+}
+
+std::string ToString(InsecureType insecure_type) {
+  switch (insecure_type) {
+    case InsecureType::kLeaked:
+      return "Leaked";
+    case InsecureType::kPhished:
+      return "Phished";
+    case InsecureType::kWeak:
+      return "Weak";
+    case InsecureType::kReused:
+      return "Reused";
+  }
 }
 
 // Utility function that creates a std::string from an object supporting the
@@ -94,70 +114,142 @@ std::u16string ValueElementVectorToString(
 }
 
 // Serializes a PasswordForm to a JSON object. Used only for logging in tests.
-void PasswordFormToJSON(const PasswordForm& form,
-                        base::DictionaryValue* target) {
-  target->SetString("scheme", ToString(form.scheme));
-  target->SetString("signon_realm", form.signon_realm);
-  target->SetBoolean("is_public_suffix_match", form.is_public_suffix_match);
-  target->SetBoolean("is_affiliation_based_match",
-                     form.is_affiliation_based_match);
-  target->SetString("url", form.url.possibly_invalid_spec());
-  target->SetString("action", form.action.possibly_invalid_spec());
-  target->SetString("submit_element", form.submit_element);
-  target->SetString("username_element", form.username_element);
-  target->SetInteger("username_element_renderer_id",
-                     form.username_element_renderer_id.value());
-  target->SetString("username_value", form.username_value);
-  target->SetString("password_element", form.password_element);
-  target->SetString("password_value", form.password_value);
-  target->SetInteger("password_element_renderer_id",
-                     form.password_element_renderer_id.value());
-  target->SetString("new_password_element", form.new_password_element);
-  target->SetInteger("password_element_renderer_id",
-                     form.password_element_renderer_id.value());
-  target->SetString("new_password_value", form.new_password_value);
-  target->SetString("confirmation_password_element",
-                    form.confirmation_password_element);
-  target->SetInteger("confirmation_password_element_renderer_id",
-                     form.confirmation_password_element_renderer_id.value());
-  target->SetString("all_possible_usernames",
-                    ValueElementVectorToString(form.all_possible_usernames));
-  target->SetString("all_possible_passwords",
-                    ValueElementVectorToString(form.all_possible_passwords));
-  target->SetBoolean("blocked_by_user", form.blocked_by_user);
-  target->SetDouble("date_last_used", form.date_last_used.ToDoubleT());
-  target->SetDouble("date_created", form.date_created.ToDoubleT());
-  target->SetDouble("date_synced", form.date_synced.ToDoubleT());
-  target->SetString("type", ToString(form.type));
-  target->SetInteger("times_used", form.times_used);
-  target->SetString("form_data", ToString(form.form_data));
-  target->SetString("generation_upload_status",
-                    ToString(form.generation_upload_status));
-  target->SetString("display_name", form.display_name);
-  target->SetString("icon_url", form.icon_url.possibly_invalid_spec());
-  target->SetString("federation_origin", form.federation_origin.Serialize());
-  target->SetBoolean("skip_next_zero_click", form.skip_zero_click);
-  target->SetBoolean("was_parsed_using_autofill_predictions",
-                     form.was_parsed_using_autofill_predictions);
-  target->SetString("affiliated_web_realm", form.affiliated_web_realm);
-  target->SetString("app_display_name", form.app_display_name);
-  target->SetString("app_icon_url", form.app_icon_url.possibly_invalid_spec());
-  target->SetString("submission_event", ToString(form.submission_event));
-  target->SetBoolean("only_for_fallback", form.only_for_fallback);
-  target->SetBoolean("is_gaia_with_skip_save_password_form",
-                     form.form_data.is_gaia_with_skip_save_password_form);
-  target->SetBoolean("is_new_password_reliable", form.is_new_password_reliable);
-  target->SetString("in_store", ToString(form.in_store));
+void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
+  target.Set("scheme", ToString(form.scheme));
+  target.Set("signon_realm", form.signon_realm);
+  target.Set("is_public_suffix_match", form.is_public_suffix_match);
+  target.Set("is_affiliation_based_match", form.is_affiliation_based_match);
+  target.Set("url", form.url.possibly_invalid_spec());
+  target.Set("action", form.action.possibly_invalid_spec());
+  target.Set("submit_element", form.submit_element);
+  target.Set("username_element", form.username_element);
+  target.Set("username_element_renderer_id",
+             base::NumberToString(form.username_element_renderer_id.value()));
+  target.Set("username_value", form.username_value);
+  target.Set("password_element", form.password_element);
+  target.Set("password_value", form.password_value);
+  target.Set("password_element_renderer_id",
+             base::NumberToString(form.password_element_renderer_id.value()));
+  target.Set("new_password_element", form.new_password_element);
+  target.Set(
+      "new_password_element_renderer_id",
+      base::NumberToString(form.new_password_element_renderer_id.value()));
+  target.Set("new_password_value", form.new_password_value);
+  target.Set("confirmation_password_element",
+             form.confirmation_password_element);
+  target.Set("confirmation_password_element_renderer_id",
+             base::NumberToString(
+                 form.confirmation_password_element_renderer_id.value()));
+  target.Set("all_possible_usernames",
+             ValueElementVectorToString(form.all_possible_usernames));
+  target.Set("all_possible_passwords",
+             ValueElementVectorToString(form.all_possible_passwords));
+  target.Set("blocked_by_user", form.blocked_by_user);
+  target.Set("date_last_used", form.date_last_used.ToDoubleT());
+  target.Set("date_password_modified", form.date_password_modified.ToDoubleT());
+  target.Set("date_created", form.date_created.ToDoubleT());
+  target.Set("type", ToString(form.type));
+  target.Set("times_used", form.times_used);
+  target.Set("form_data", ToString(form.form_data));
+  target.Set("generation_upload_status",
+             ToString(form.generation_upload_status));
+  target.Set("display_name", form.display_name);
+  target.Set("icon_url", form.icon_url.possibly_invalid_spec());
+  target.Set("federation_origin", form.federation_origin.Serialize());
+  target.Set("skip_next_zero_click", form.skip_zero_click);
+  target.Set("was_parsed_using_autofill_predictions",
+             form.was_parsed_using_autofill_predictions);
+  target.Set("affiliated_web_realm", form.affiliated_web_realm);
+  target.Set("app_display_name", form.app_display_name);
+  target.Set("app_icon_url", form.app_icon_url.possibly_invalid_spec());
+  target.Set("submission_event", ToString(form.submission_event));
+  target.Set("only_for_fallback", form.only_for_fallback);
+  target.Set("is_gaia_with_skip_save_password_form",
+             form.form_data.is_gaia_with_skip_save_password_form);
+  target.Set("is_new_password_reliable", form.is_new_password_reliable);
+  target.Set("in_store", ToString(form.in_store));
 
   std::vector<std::string> hashes;
   hashes.reserve(form.moving_blocked_for_list.size());
   for (const auto& gaia_id_hash : form.moving_blocked_for_list) {
     hashes.push_back(gaia_id_hash.ToBase64());
   }
-  target->SetString("moving_blocked_for_list", base::JoinString(hashes, ", "));
+
+  target.Set("moving_blocked_for_list", base::JoinString(hashes, ", "));
+
+  base::Value::List password_issues;
+  password_issues.reserve(form.password_issues.size());
+  for (const auto& issue : form.password_issues) {
+    base::Value::Dict issue_value;
+    issue_value.Set("insecurity_type", ToString(issue.first));
+    issue_value.Set("create_time", base::TimeToValue(issue.second.create_time));
+    issue_value.Set("is_muted", static_cast<bool>(issue.second.is_muted));
+    password_issues.Append(std::move(issue_value));
+  }
+
+  target.Set("password_issues ", std::move(password_issues));
+
+  base::Value::List password_notes;
+  password_notes.reserve(form.notes.size());
+  for (const auto& note : form.notes) {
+    base::Value::Dict note_dict;
+    note_dict.Set("unique_display_name", note.unique_display_name);
+    note_dict.Set("value", note.value);
+    note_dict.Set("date_created", base::TimeToValue(note.date_created));
+    note_dict.Set("hide_by_default", note.hide_by_default);
+    password_notes.Append(std::move(note_dict));
+  }
+  target.Set("notes", std::move(password_notes));
+
+  target.Set("previously_associated_sync_account_email",
+             form.previously_associated_sync_account_email);
 }
 
 }  // namespace
+
+InsecurityMetadata::InsecurityMetadata() = default;
+InsecurityMetadata::InsecurityMetadata(base::Time create_time, IsMuted is_muted)
+    : create_time(create_time), is_muted(is_muted) {}
+InsecurityMetadata::InsecurityMetadata(const InsecurityMetadata& rhs) = default;
+InsecurityMetadata::~InsecurityMetadata() = default;
+
+bool operator==(const InsecurityMetadata& lhs, const InsecurityMetadata& rhs) {
+  return lhs.create_time == rhs.create_time && *lhs.is_muted == *rhs.is_muted;
+}
+
+PasswordNote::PasswordNote() = default;
+
+PasswordNote::PasswordNote(std::u16string value, base::Time date_created)
+    : value(std::move(value)), date_created(std::move(date_created)) {}
+
+PasswordNote::PasswordNote(std::u16string unique_display_name,
+                           std::u16string value,
+                           base::Time date_created,
+                           bool hide_by_default)
+    : unique_display_name(std::move(unique_display_name)),
+      value(std::move(value)),
+      date_created(date_created),
+      hide_by_default(hide_by_default) {}
+
+PasswordNote::PasswordNote(const PasswordNote& rhs) = default;
+
+PasswordNote::PasswordNote(PasswordNote&& rhs) = default;
+
+PasswordNote& PasswordNote::operator=(const PasswordNote& rhs) = default;
+
+PasswordNote& PasswordNote::operator=(PasswordNote&& rhs) = default;
+
+PasswordNote::~PasswordNote() = default;
+
+bool operator==(const PasswordNote& lhs, const PasswordNote& rhs) {
+  return lhs.unique_display_name == rhs.unique_display_name &&
+         lhs.value == rhs.value && lhs.date_created == rhs.date_created &&
+         lhs.hide_by_default == rhs.hide_by_default;
+}
+
+bool operator!=(const PasswordNote& lhs, const PasswordNote& rhs) {
+  return !(lhs == rhs);
+}
 
 PasswordForm::PasswordForm() = default;
 
@@ -171,13 +263,14 @@ PasswordForm& PasswordForm::operator=(const PasswordForm& form) = default;
 
 PasswordForm& PasswordForm::operator=(PasswordForm&& form) = default;
 
-bool PasswordForm::IsPossibleChangePasswordForm() const {
-  return !new_password_element_renderer_id.is_null();
+bool PasswordForm::IsLikelySignupForm() const {
+  return HasNewPasswordElement() && HasUsernameElement() &&
+         !HasPasswordElement();
 }
 
-bool PasswordForm::IsPossibleChangePasswordFormWithoutUsername() const {
-  return IsPossibleChangePasswordForm() &&
-         username_element_renderer_id.is_null();
+bool PasswordForm::IsLikelyChangePasswordForm() const {
+  return HasNewPasswordElement() &&
+         (!HasUsernameElement() || HasPasswordElement());
 }
 
 bool PasswordForm::HasUsernameElement() const {
@@ -202,7 +295,11 @@ bool PasswordForm::IsSingleUsername() const {
 }
 
 bool PasswordForm::IsUsingAccountStore() const {
-  return in_store == Store::kAccountStore;
+  return (in_store & Store::kAccountStore) != Store::kNotSet;
+}
+
+bool PasswordForm::IsUsingProfileStore() const {
+  return (in_store & Store::kProfileStore) != Store::kNotSet;
 }
 
 bool PasswordForm::HasNonEmptyPasswordValue() const {
@@ -211,10 +308,7 @@ bool PasswordForm::HasNonEmptyPasswordValue() const {
 
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
                                     const PasswordForm& right) {
-  return (left.signon_realm == right.signon_realm && left.url == right.url &&
-          left.username_element == right.username_element &&
-          left.username_value == right.username_value &&
-          left.password_element == right.password_element);
+  return PasswordFormUniqueKey(left) == PasswordFormUniqueKey(right);
 }
 
 bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
@@ -231,16 +325,14 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.password_element_renderer_id == rhs.password_element_renderer_id &&
          lhs.password_value == rhs.password_value &&
          lhs.new_password_element == rhs.new_password_element &&
-         lhs.confirmation_password_element_renderer_id ==
-             rhs.confirmation_password_element_renderer_id &&
          lhs.confirmation_password_element ==
              rhs.confirmation_password_element &&
          lhs.confirmation_password_element_renderer_id ==
              rhs.confirmation_password_element_renderer_id &&
          lhs.new_password_value == rhs.new_password_value &&
          lhs.date_created == rhs.date_created &&
-         lhs.date_synced == rhs.date_synced &&
          lhs.date_last_used == rhs.date_last_used &&
+         lhs.date_password_modified == rhs.date_password_modified &&
          lhs.blocked_by_user == rhs.blocked_by_user && lhs.type == rhs.type &&
          lhs.times_used == rhs.times_used &&
          lhs.form_data.SameFormAs(rhs.form_data) &&
@@ -262,7 +354,10 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.only_for_fallback == rhs.only_for_fallback &&
          lhs.is_new_password_reliable == rhs.is_new_password_reliable &&
          lhs.in_store == rhs.in_store &&
-         lhs.moving_blocked_for_list == rhs.moving_blocked_for_list;
+         lhs.moving_blocked_for_list == rhs.moving_blocked_for_list &&
+         lhs.password_issues == rhs.password_issues && lhs.notes == rhs.notes &&
+         lhs.previously_associated_sync_account_email ==
+             rhs.previously_associated_sync_account_email;
 }
 
 bool operator!=(const PasswordForm& lhs, const PasswordForm& rhs) {
@@ -274,19 +369,19 @@ std::ostream& operator<<(std::ostream& os, PasswordForm::Scheme scheme) {
 }
 
 std::ostream& operator<<(std::ostream& os, const PasswordForm& form) {
-  base::DictionaryValue form_json;
-  PasswordFormToJSON(form, &form_json);
+  base::Value::Dict form_json;
+  PasswordFormToJSON(form, form_json);
 
   // Serialize the default PasswordForm, and remove values from the result that
   // are equal to this to make the results more concise.
-  base::DictionaryValue default_form_json;
-  PasswordFormToJSON(PasswordForm(), &default_form_json);
-  for (base::DictionaryValue::Iterator it_default_key_values(default_form_json);
-       !it_default_key_values.IsAtEnd(); it_default_key_values.Advance()) {
-    const base::Value* actual_value;
-    if (form_json.Get(it_default_key_values.key(), &actual_value) &&
-        it_default_key_values.value().Equals(actual_value)) {
-      form_json.Remove(it_default_key_values.key(), nullptr);
+  base::Value::Dict default_form_json;
+  PasswordFormToJSON(PasswordForm(), default_form_json);
+  for (auto it_default_key_values : default_form_json) {
+    const base::Value* actual_value =
+        form_json.Find(it_default_key_values.first);
+    if (actual_value != nullptr &&
+        it_default_key_values.second == *actual_value) {
+      form_json.Remove(it_default_key_values.first);
     }
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,16 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/video_tutorials/tutorial.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace video_tutorials {
 
 using TutorialList = std::vector<Tutorial>;
 using MultipleItemCallback = base::OnceCallback<void(std::vector<Tutorial>)>;
-using SingleItemCallback = base::OnceCallback<void(base::Optional<Tutorial>)>;
+using SingleItemCallback = base::OnceCallback<void(absl::optional<Tutorial>)>;
 
 // The central class on chrome client responsible for managing, storing, and
 // serving video tutorials in chrome.
@@ -33,14 +33,14 @@ class VideoTutorialService : public KeyedService,
                            SingleItemCallback callback) = 0;
 
   // Called to retrieve all the supported locales.
-  virtual const std::vector<std::string>& GetSupportedLanguages() = 0;
+  virtual std::vector<std::string> GetSupportedLanguages() = 0;
 
   // Returns a list of languages in which a given tutorial is available.
   virtual const std::vector<std::string>& GetAvailableLanguagesForTutorial(
       FeatureType feature_type) = 0;
 
   // Called to retrieve the preferred locale, if it is set by the user.
-  virtual base::Optional<std::string> GetPreferredLocale() = 0;
+  virtual absl::optional<std::string> GetPreferredLocale() = 0;
 
   // Called to set the preferred locale.
   virtual void SetPreferredLocale(const std::string& locale) = 0;

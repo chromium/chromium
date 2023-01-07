@@ -118,7 +118,6 @@ XML_OBJS = $(XML_INTDIR)\buf.obj\
 	$(XML_INTDIR)\chvalid.obj\
 	$(XML_INTDIR)\debugXML.obj\
 	$(XML_INTDIR)\dict.obj\
-	$(XML_INTDIR)\DOCBparser.obj\
 	$(XML_INTDIR)\encoding.obj\
 	$(XML_INTDIR)\entities.obj\
 	$(XML_INTDIR)\error.obj\
@@ -164,7 +163,6 @@ XML_OBJS_A = $(XML_INTDIR_A)\buf.obj\
 	$(XML_INTDIR_A)\chvalid.obj\
 	$(XML_INTDIR_A)\debugXML.obj\
 	$(XML_INTDIR_A)\dict.obj\
-	$(XML_INTDIR_A)\DOCBparser.obj\
 	$(XML_INTDIR_A)\encoding.obj\
 	$(XML_INTDIR_A)\entities.obj\
 	$(XML_INTDIR_A)\error.obj\
@@ -210,7 +208,6 @@ XML_OBJS_A_DLL = $(XML_INTDIR_A_DLL)\buf.obj\
 	$(XML_INTDIR_A_DLL)\chvalid.obj\
 	$(XML_INTDIR_A_DLL)\debugXML.obj\
 	$(XML_INTDIR_A_DLL)\dict.obj\
-	$(XML_INTDIR_A_DLL)\DOCBparser.obj\
 	$(XML_INTDIR_A_DLL)\encoding.obj\
 	$(XML_INTDIR_A_DLL)\entities.obj\
 	$(XML_INTDIR_A_DLL)\error.obj\
@@ -259,17 +256,7 @@ XML_OBJS_A_DLL = $(XML_OBJS_A_DLL) $(XML_INTDIR_A_DLL)\xzlib.obj
 UTILS = $(BINDIR)\xmllint.exe\
 	$(BINDIR)\xmlcatalog.exe\
 	$(BINDIR)\testAutomata.exe\
-	$(BINDIR)\testC14N.exe\
-	$(BINDIR)\testDocbook.exe\
-	$(BINDIR)\testHTML.exe\
-	$(BINDIR)\testReader.exe\
-	$(BINDIR)\testRelax.exe\
-	$(BINDIR)\testRegexp.exe\
 	$(BINDIR)\testModule.exe\
-	$(BINDIR)\testSAX.exe\
-	$(BINDIR)\testSchemas.exe\
-	$(BINDIR)\testURI.exe\
-	$(BINDIR)\testXPath.exe\
 	$(BINDIR)\runtest.exe\
 	$(BINDIR)\runsuite.exe\
 	$(BINDIR)\runxmlconf.exe\
@@ -440,63 +427,3 @@ checktests : $(UTILS)
 	cd .. && win32\$(BINDIR)\testdict.exe
 	cd .. && win32\$(BINDIR)\runxmlconf.exe
 
-XPathtests : $(BINDIR)\testXPath.exe
-	@echo. 2> .memdump
-	@echo ## XPath regression tests
-	@-$(BINDIR)\testXPath.exe | find /C "support not compiled in" 1>nul
-	@if %ERRORLEVEL% NEQ 0 @( \
-		echo Skipping debug not compiled in\
-		@exit 0 \
-	)
-	@for %%I in ($(XML_SRCDIR)\test\XPath\expr\*.*) do @( \
-		@IF NOT EXIST $(XML_SRCDIR)\result\XPath\expr\%%~nxI ( \
-			@echo New test %%~nxI &&\
-			@echo %%~nxI &&\
-			$(BINDIR)\testXPath.exe -f --expr %%I > $(XML_SRCDIR)/result/XPath/expr/%%~nxI &&\
-			findstr /C:"MEMORY ALLOCATED : 0" \
-		) ELSE ( \
-			$(BINDIR)\testXPath.exe -f --expr %%I 2>&1 > result.%%~nxI &&\
-			fc $(XML_SRCDIR)\result\XPath\expr\%%~nxI result.%%~nxI >nul &\
-			iF ERRORLEVEL 1 exit 1 & \
-			findstr "MEMORY ALLOCATED" .memdump | findstr /C:"MEMORY ALLOCATED : 0" >nul &&\
-			del result.%%~nxI \
-		) \
-	)
-	@for %%I in ($(XML_SRCDIR)\test\XPath\docs\*.*) do @( \
-		for %%J in ($(XML_SRCDIR)\test\XPath\tests\%%~nxI*.*) do @( \
-			if not exist $(XML_SRCDIR)\result\XPath\tests\%%~nxJ ( \
-				$(BINDIR)\testXPath.exe -f -i %%I %%J > $(XML_SRCDIR)\result\XPath\tests\%%~nxJ &&\
-				findstr /C:"MEMORY ALLOCATED" .memdump | findstr /C:"MEMORY ALLOCATED : 0" > nul \
-			) ELSE ( \
-				$(BINDIR)\testXPAth.exe -f -i %%I %%J 2>&1 > result.%%~nxJ &&\
-				findstr /C:"MEMORY ALLOCATED" .memdump | findstr /C:"MEMORY ALLOCATED : 0">null &&\
-				fc $(XML_SRCDIR)\result\XPath\tests\%%~nxJ result.%%~nxJ >null & \
-				IF ERRORLEVEL 1 (echo Error: %%I %%J & exit 1) & \
-				del result.%%~nxJ \
-			)\
-		)\
-	)
-
-XMLtests : $(BINDIR)\xmllint.exe
-	@echo. 2> .memdump
-	@echo ## XML regression tests
-	-@for %%I in ($(XML_SRCDIR)\test\*) do @( \
-		if not exist $(XML_SRCDIR)\result\%%~nxI ( \
-			echo New test file %%~nxI &\
-			$(BINDIR)\xmllint.exe  %%I > $(XML_SRCDIR)\result\%%~nxI && \
-			findstr /C:"MEMORY ALLOCATED" .memdump | findstr /C:"MEMORY ALLOCATED : 0" > null \
-		) ELSE ( \
-			$(BINDIR)\xmllint.exe %%I 2>&1 > result.%%~nxI && \
-			findstr /C:"MEMORY ALLOC" .memdump | findstr /C:"MEMORY ALLOCATED : 0" > null && \
-			fc $(XML_SRCDIR)\result\%%~nxI result.%%~nxI > null && \
-			$(BINDIR)\xmllint.exe result.%%~nxI 2>&1 > result2.%%~nxI | findstr /V /C:"failed to load external entity" && \
-			fc result.%%~nxI result2.%%~nxI & \
-			del result.%%~nxI result2.%%~nxI\
-		) \
-	)	
-
-				
-
-
-
-	

@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from telemetry.util import wpr_modes
@@ -42,7 +42,7 @@ class ToughPinchZoomPage(rendering_story.RenderingStory):
 
   def RunPageInteractions(self, action_runner):
     action_runner.tab.WaitForDocumentReadyStateToBeInteractiveOrBetter()
-    for _ in xrange(0, 3):
+    for _ in range(3):
       current_scale_factor = self.target_scale_factor
       self.RunPinchGesture(action_runner, scale_factor=current_scale_factor)
       while current_scale_factor > 1.0:

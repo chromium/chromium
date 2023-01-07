@@ -1,0 +1,12 @@
+Test that clicking an anchor with attributionsrc in an insecure context triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : http://devtools.test:8000
+            violatingNodeId : <number>
+            violationType : InsecureContext
+        }
+    }
+}
+

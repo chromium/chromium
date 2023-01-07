@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
+#include "components/version_info/channel.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/features/feature_session_type.h"

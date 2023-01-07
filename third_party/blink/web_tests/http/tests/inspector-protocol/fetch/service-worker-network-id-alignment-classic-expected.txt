@@ -1,0 +1,21 @@
+Tests that Network events are fired for service workers and they align (classic)
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/main.html?type=classic, type: Document
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/sw-classic.js, type: Other
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/imported-classic.js, type: Script
+[browser] Request to http://127.0.0.1:8000/404-me, type: XHR
+
+Results from Running the Page:
+	classic init
+	-> imported value: CLASSIC
+	-> fetch within worker: Not Found
+
+Network Events and Alignment:
+[/main\.html/] Status Code 200
+[/main\.html/] OK: All expected network events found and align with one another!
+[/sw-classic\.js/] Status Code 200
+[/sw-classic\.js/] OK: All expected network events found and align with one another!
+[/imported-classic\.js/] Status Code 200
+[/imported-classic\.js/] OK: All expected network events found and align with one another!
+[/404-me/] Status Code 404
+[/404-me/] OK: All expected network events found and align with one another!
+

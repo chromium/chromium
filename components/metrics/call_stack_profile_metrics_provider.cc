@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -54,6 +54,9 @@ class PendingProfiles {
  public:
   static PendingProfiles* GetInstance();
 
+  PendingProfiles(const PendingProfiles&) = delete;
+  PendingProfiles& operator=(const PendingProfiles&) = delete;
+
   // Retrieves all the pending profiles.
   std::vector<SampledProfile> RetrieveProfiles();
 
@@ -70,10 +73,10 @@ class PendingProfiles {
 
   // Collects |serialized_profile|. It may be ignored depending on the
   // pre-defined storage capacity and whether collection is enabled.
-  // |serialized_profile| is not const& because it must be passed with
-  // std::move.
+  // |serialized_profile| must be passed with std::move because it could be very
+  // large.
   void MaybeCollectSerializedProfile(base::TimeTicks profile_start_time,
-                                     std::string serialized_profile);
+                                     std::string&& serialized_profile);
 
   // Allows testing against the initial state multiple times.
   void ResetToDefaultStateForTesting();
@@ -111,8 +114,6 @@ class PendingProfiles {
 
   // The set of completed serialized profiles that should be reported.
   std::vector<std::string> serialized_profiles_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(PendingProfiles);
 };
 
 // static
@@ -135,8 +136,7 @@ std::vector<SampledProfile> PendingProfiles::RetrieveProfiles() {
   profiles.reserve(serialized_profiles.size());
   for (const auto& serialized_profile : serialized_profiles) {
     SampledProfile profile;
-    if (profile.ParseFromArray(serialized_profile.data(),
-                               serialized_profile.size())) {
+    if (profile.ParseFromString(serialized_profile)) {
       profiles.push_back(std::move(profile));
     }
   }
@@ -203,7 +203,7 @@ void PendingProfiles::MaybeCollectProfile(base::TimeTicks profile_start_time,
 
 void PendingProfiles::MaybeCollectSerializedProfile(
     base::TimeTicks profile_start_time,
-    std::string serialized_profile) {
+    std::string&& serialized_profile) {
   base::AutoLock scoped_lock(lock_);
 
   // There is no room for additional profiles.
@@ -229,12 +229,9 @@ PendingProfiles::PendingProfiles() = default;
 
 // CallStackProfileMetricsProvider --------------------------------------------
 
-const base::Feature
-    CallStackProfileMetricsProvider::kSamplingProfilerReporting = {
-        "SamplingProfilerReporting", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature CallStackProfileMetricsProvider::kHeapProfilerReporting{
-    "HeapProfilerReporting", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSamplingProfilerReporting,
+             "SamplingProfilerReporting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 CallStackProfileMetricsProvider::CallStackProfileMetricsProvider() = default;
 CallStackProfileMetricsProvider::~CallStackProfileMetricsProvider() = default;
@@ -250,12 +247,10 @@ void CallStackProfileMetricsProvider::ReceiveProfile(
     return;
   }
 
-  const base::Feature& feature =
-      profile.trigger_event() == SampledProfile::PERIODIC_HEAP_COLLECTION
-          ? kHeapProfilerReporting
-          : kSamplingProfilerReporting;
-  if (!base::FeatureList::IsEnabled(feature))
+  if (profile.trigger_event() != SampledProfile::PERIODIC_HEAP_COLLECTION &&
+      !base::FeatureList::IsEnabled(kSamplingProfilerReporting)) {
     return;
+  }
   PendingProfiles::GetInstance()->MaybeCollectProfile(profile_start_time,
                                                       std::move(profile));
 }
@@ -263,13 +258,16 @@ void CallStackProfileMetricsProvider::ReceiveProfile(
 // static
 void CallStackProfileMetricsProvider::ReceiveSerializedProfile(
     base::TimeTicks profile_start_time,
-    std::string serialized_profile) {
-  // Heap profiler does not use this path as it only reports profiles
-  // from the browser process.
+    bool is_heap_profile,
+    std::string&& serialized_profile) {
+  // Note: All parameters of this function come from a Mojo message from an
+  // untrusted process.
   if (GetCpuInterceptorCallbackInstance()) {
+    // GetCpuInterceptorCallbackInstance() is set only in tests, so it's safe to
+    // trust `is_heap_profile` and `serialized_profile` here.
+    DCHECK(!is_heap_profile);
     SampledProfile profile;
-    if (profile.ParseFromArray(serialized_profile.data(),
-                               serialized_profile.size())) {
+    if (profile.ParseFromString(serialized_profile)) {
       DCHECK(profile.trigger_event() == SampledProfile::PROCESS_STARTUP ||
              profile.trigger_event() == SampledProfile::PERIODIC_COLLECTION);
       GetCpuInterceptorCallbackInstance().Run(std::move(profile));
@@ -277,8 +275,13 @@ void CallStackProfileMetricsProvider::ReceiveSerializedProfile(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(kSamplingProfilerReporting))
+  // If an attacker spoofs `is_heap_profile` or `profile_start_time`, the worst
+  // they can do is cause `serialized_profile` to be sent to UMA when profile
+  // reporting should be disabled.
+  if (!is_heap_profile &&
+      !base::FeatureList::IsEnabled(kSamplingProfilerReporting)) {
     return;
+  }
   PendingProfiles::GetInstance()->MaybeCollectSerializedProfile(
       profile_start_time, std::move(serialized_profile));
 }
@@ -302,12 +305,13 @@ void CallStackProfileMetricsProvider::ProvideCurrentSessionData(
   std::vector<SampledProfile> profiles =
       PendingProfiles::GetInstance()->RetrieveProfiles();
 
-  DCHECK(base::FeatureList::IsEnabled(kSamplingProfilerReporting) ||
-         base::FeatureList::IsEnabled(kHeapProfilerReporting) ||
-         profiles.empty());
-
-  for (auto& profile : profiles)
+  for (auto& profile : profiles) {
+    // Only heap samples should ever be received if SamplingProfilerReporting is
+    // disabled.
+    DCHECK(base::FeatureList::IsEnabled(kSamplingProfilerReporting) ||
+           profile.trigger_event() == SampledProfile::PERIODIC_HEAP_COLLECTION);
     *uma_proto->add_sampled_profile() = std::move(profile);
+  }
 }
 
 // static

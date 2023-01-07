@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,20 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 namespace webrtc {
 class DesktopFrame;
 class DesktopSize;
 }  // namespace webrtc
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class FrameConsumer {
  public:
-  virtual ~FrameConsumer() {}
+  FrameConsumer(const FrameConsumer&) = delete;
+  FrameConsumer& operator=(const FrameConsumer&) = delete;
+
+  virtual ~FrameConsumer() = default;
 
   // List of supported pixel formats needed by various platforms.
   enum PixelFormat {
@@ -38,13 +39,9 @@ class FrameConsumer {
   virtual PixelFormat GetPixelFormat() = 0;
 
  protected:
-  FrameConsumer() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameConsumer);
+  FrameConsumer() = default;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_FRAME_CONSUMER_H_

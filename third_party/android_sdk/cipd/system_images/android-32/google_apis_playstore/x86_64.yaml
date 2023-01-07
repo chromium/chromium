@@ -1,0 +1,9 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+package: chromium/third_party/android_sdk/public/system-images/android-32/google_apis_playstore/x86_64
+description: system_images;android-32;google_apis_playstore;x86_64
+root: ../../../../public/
+data:
+  - dir: system-images/android-32/google_apis_playstore/x86_64

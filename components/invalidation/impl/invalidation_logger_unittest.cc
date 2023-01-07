@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/invalidation/impl/invalidation_logger.h"
 
+#include "base/values.h"
 #include "components/invalidation/impl/invalidation_logger_observer.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
@@ -23,11 +24,10 @@ class InvalidationLoggerObserverTest : public InvalidationLoggerObserver {
     invalidation_received = false;
     detailed_status_received = false;
     updated_topics_replicated = std::map<std::string, TopicCountMap>();
-    registered_handlers = std::multiset<std::string>();
+    registered_handlers = std::set<std::string>();
   }
 
-  void OnRegistrationChange(
-      const std::multiset<std::string>& handlers) override {
+  void OnRegistrationChange(const std::set<std::string>& handlers) override {
     registered_handlers = handlers;
     registration_change_received = true;
   }
@@ -43,7 +43,7 @@ class InvalidationLoggerObserverTest : public InvalidationLoggerObserver {
     updated_topics_replicated[handler] = topics_counts;
   }
 
-  void OnDebugMessage(const base::DictionaryValue& details) override {
+  void OnDebugMessage(const base::Value::Dict& details) override {
     debug_message_received = true;
   }
 
@@ -51,7 +51,7 @@ class InvalidationLoggerObserverTest : public InvalidationLoggerObserver {
     invalidation_received = true;
   }
 
-  void OnDetailedStatus(const base::DictionaryValue& details) override {
+  void OnDetailedStatus(base::Value::Dict details) override {
     detailed_status_received = true;
   }
 
@@ -62,7 +62,7 @@ class InvalidationLoggerObserverTest : public InvalidationLoggerObserver {
   bool invalidation_received;
   bool detailed_status_received;
   std::map<std::string, TopicCountMap> updated_topics_replicated;
-  std::multiset<std::string> registered_handlers;
+  std::set<std::string> registered_handlers;
 };
 
 // Test that the callbacks are actually being called when observers are
@@ -107,7 +107,7 @@ TEST(InvalidationLoggerTest, TestReleaseOfObserver) {
   log.OnStateChange(INVALIDATIONS_ENABLED);
   log.OnRegistration(std::string());
   log.OnUnregistration(std::string());
-  log.OnDebugMessage(base::DictionaryValue());
+  log.OnDebugMessage(base::Value::Dict());
   log.OnUpdatedTopics(std::map<std::string, Topics>());
   EXPECT_FALSE(observer_test.registration_change_received);
   EXPECT_FALSE(observer_test.update_id_received);
@@ -263,22 +263,22 @@ TEST(InvalidationLoggerTest, TestRegisteredHandlers) {
   log.RegisterObserver(&observer_test);
 
   log.OnRegistration(std::string("FakeHandler1"));
-  std::multiset<std::string> test_multiset;
-  test_multiset.insert("FakeHandler1");
+  std::set<std::string> test_set;
+  test_set.insert("FakeHandler1");
   EXPECT_TRUE(observer_test.registration_change_received);
-  EXPECT_EQ(observer_test.registered_handlers, test_multiset);
+  EXPECT_EQ(observer_test.registered_handlers, test_set);
 
   observer_test.ResetStates();
   log.OnRegistration(std::string("FakeHandler2"));
-  test_multiset.insert("FakeHandler2");
+  test_set.insert("FakeHandler2");
   EXPECT_TRUE(observer_test.registration_change_received);
-  EXPECT_EQ(observer_test.registered_handlers, test_multiset);
+  EXPECT_EQ(observer_test.registered_handlers, test_set);
 
   observer_test.ResetStates();
   log.OnUnregistration(std::string("FakeHandler2"));
-  test_multiset.erase("FakeHandler2");
+  test_set.erase("FakeHandler2");
   EXPECT_TRUE(observer_test.registration_change_received);
-  EXPECT_EQ(observer_test.registered_handlers, test_multiset);
+  EXPECT_EQ(observer_test.registered_handlers, test_set);
 
   log.UnregisterObserver(&observer_test);
 }

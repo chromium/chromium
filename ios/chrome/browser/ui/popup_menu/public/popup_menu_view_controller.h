@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 // CommandHandler.
 @property(nonatomic, weak) id<PopupMenuViewControllerDelegate> delegate;
 
-// Adds |content| as a child ViewController and its view to the popup.
+// Adds `content` as a child ViewController and its view to the popup.
 - (void)addContent:(UIViewController*)content;
 
 @end

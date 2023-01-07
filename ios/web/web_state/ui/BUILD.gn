@@ -1,8 +1,10 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//ios/build/config.gni")
+import("//ios/features.gni")
 
 source_set("ui") {
   public_deps = [ ":web_controller_header" ]
@@ -12,12 +14,15 @@ source_set("ui") {
     ":web_view_handler",
     "//base",
     "//base/ios",
+    "//build:branding_buildflags",
     "//ios/net",
     "//ios/third_party/webkit",
     "//ios/web:core",
+    "//ios/web/annotations",
     "//ios/web/browsing_data",
     "//ios/web/common",
     "//ios/web/common:uikit",
+    "//ios/web/download",
     "//ios/web/favicon",
     "//ios/web/find_in_page",
     "//ios/web/js_features/context_menu",
@@ -31,12 +36,14 @@ source_set("ui") {
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/net:net",
     "//ios/web/public",
+    "//ios/web/public/deprecated",
     "//ios/web/public/download",
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",
     "//ios/web/public/webui",
     "//ios/web/security",
     "//ios/web/session",
+    "//ios/web/text_fragments",
     "//ios/web/web_state:page_viewport_state",
     "//ios/web/web_state:user_interaction",
     "//ios/web/web_state:web_state_impl_header",
@@ -52,8 +59,7 @@ source_set("ui") {
   ]
 
   sources = [
-    "cookie_blocking_error_logger.h",
-    "cookie_blocking_error_logger.mm",
+    "crw_context_menu_item.mm",
     "crw_swipe_recognizer_provider.h",
     "crw_touch_tracking_recognizer.mm",
     "crw_web_controller.mm",
@@ -78,6 +84,7 @@ source_set("ui") {
 source_set("web_controller_header") {
   deps = [
     ":crw_web_view_navigation_proxy",
+    "//base",
     "//ios/web/public/deprecated",
   ]
 
@@ -108,13 +115,17 @@ source_set("crw_web_view_navigation_proxy") {
 
 source_set("crw_context_menu_controller") {
   deps = [
+    ":wk_web_view_configuration_provider",
     "//base",
+    "//ios/web/common",
+    "//ios/web/common:features",
     "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",
-    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
   ]
 
   sources = [
@@ -124,8 +135,6 @@ source_set("crw_context_menu_controller") {
     "crw_context_menu_element_fetcher.mm",
     "crw_html_element_fetch_request.h",
     "crw_html_element_fetch_request.mm",
-    "crw_legacy_context_menu_controller.h",
-    "crw_legacy_context_menu_controller.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -141,12 +150,13 @@ source_set("wk_web_view_configuration_provider") {
   public_deps = [ ":wk_web_view_configuration_provider_header" ]
   deps = [
     "//base",
-    "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/common",
     "//ios/third_party/webkit",
     "//ios/web/common",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/js_messaging:java_script_feature_util",
+    "//ios/web/navigation:session_restore_feature",
     "//ios/web/public",
     "//ios/web/web_state/js",
     "//ios/web/webui",

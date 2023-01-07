@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "content/browser/notifications/notification_database_data.pb.h"
 #include "content/browser/notifications/notification_database_resources.pb.h"
 #include "content/public/browser/notification_database_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -63,25 +63,25 @@ bool DeserializeNotificationDatabaseData(const std::string& input,
   output->num_clicks = message.num_clicks();
   output->num_action_button_clicks = message.num_action_button_clicks();
   output->creation_time_millis = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(message.creation_time_millis()));
+      base::Microseconds(message.creation_time_millis()));
 
   if (message.has_time_until_close_millis()) {
     output->time_until_close_millis =
-        base::TimeDelta::FromMilliseconds(message.time_until_close_millis());
+        base::Milliseconds(message.time_until_close_millis());
   } else {
-    output->time_until_close_millis = base::nullopt;
+    output->time_until_close_millis = absl::nullopt;
   }
   if (message.has_time_until_first_click_millis()) {
-    output->time_until_first_click_millis = base::TimeDelta::FromMilliseconds(
-        message.time_until_first_click_millis());
+    output->time_until_first_click_millis =
+        base::Milliseconds(message.time_until_first_click_millis());
   } else {
-    output->time_until_first_click_millis = base::nullopt;
+    output->time_until_first_click_millis = absl::nullopt;
   }
   if (message.has_time_until_last_click_millis()) {
-    output->time_until_last_click_millis = base::TimeDelta::FromMilliseconds(
-        message.time_until_last_click_millis());
+    output->time_until_last_click_millis =
+        base::Milliseconds(message.time_until_last_click_millis());
   } else {
-    output->time_until_last_click_millis = base::nullopt;
+    output->time_until_last_click_millis = absl::nullopt;
   }
 
   switch (message.closed_reason()) {
@@ -132,7 +132,7 @@ bool DeserializeNotificationDatabaseData(const std::string& input,
   }
 
   notification_data->timestamp = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(payload.timestamp()));
+      base::Microseconds(payload.timestamp()));
 
   notification_data->renotify = payload.renotify();
   notification_data->silent = payload.silent();
@@ -173,15 +173,16 @@ bool DeserializeNotificationDatabaseData(const std::string& input,
   if (payload.has_show_trigger_timestamp()) {
     notification_data->show_trigger_timestamp =
         base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromMicroseconds(
-                payload.show_trigger_timestamp()));
+            base::Microseconds(payload.show_trigger_timestamp()));
   } else {
-    notification_data->show_trigger_timestamp = base::nullopt;
+    notification_data->show_trigger_timestamp = absl::nullopt;
   }
 
   output->has_triggered = message.has_triggered();
 
-  output->notification_resources = base::nullopt;
+  output->is_shown_by_browser = message.is_shown_by_browser();
+
+  output->notification_resources = absl::nullopt;
 
   return true;
 }
@@ -305,6 +306,8 @@ bool SerializeNotificationDatabaseData(const NotificationDatabaseData& input,
   }
 
   message.set_has_triggered(input.has_triggered);
+
+  message.set_is_shown_by_browser(input.is_shown_by_browser);
 
   return message.SerializeToString(output);
 }

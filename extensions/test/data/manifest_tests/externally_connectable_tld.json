@@ -1,0 +1,10 @@
+{
+  "name": "extensions_unittests --gtest_filter=ExternallyConnectableTest.TLD",
+  "version": "1",
+  "manifest_version": 2,
+  "externally_connectable": {
+    "matches": [
+      "http://*.co.uk/*"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,7 @@ namespace ppapi {
 class ManifestService;
 
 // Sets the IPC channels for the browser and the renderer.
-// This will be used for non-SFI mode. Must be called before the
-// ppapi_start() IRT interface is called.
+// Must be called before the ppapi_start() IRT interface is called.
 PPAPI_PROXY_EXPORT void SetIPCChannelHandles(
     IPC::ChannelHandle browser_ipc_handle,
     IPC::ChannelHandle renderer_ipc_handle,

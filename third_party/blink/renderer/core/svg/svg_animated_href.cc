@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,10 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
-
-class StringOrTrustedScriptURL;
 
 void SVGAnimatedHref::Trace(Visitor* visitor) const {
   visitor->Trace(xlink_href_);
@@ -45,18 +43,17 @@ const SVGString* SVGAnimatedHref::CurrentValue() const {
   return BackingString()->SVGAnimatedString::CurrentValue();
 }
 
-void SVGAnimatedHref::baseVal(
-    StringOrTrustedScriptURL& string_or_trusted_script_url) {
+V8UnionStringOrTrustedScriptURL* SVGAnimatedHref::baseVal() {
   UseCounter::Count(ContextElement()->GetDocument(),
                     WebFeature::kSVGHrefBaseVal);
-  BackingString()->SVGAnimatedString::baseVal(string_or_trusted_script_url);
+  return BackingString()->SVGAnimatedString::baseVal();
 }
 
-void SVGAnimatedHref::setBaseVal(const StringOrTrustedScriptURL& value,
+void SVGAnimatedHref::setBaseVal(const V8UnionStringOrTrustedScriptURL* value,
                                  ExceptionState& exception_state) {
   UseCounter::Count(ContextElement()->GetDocument(),
                     WebFeature::kSVGHrefBaseVal);
-  return BackingString()->SVGAnimatedString::setBaseVal(value, exception_state);
+  BackingString()->SVGAnimatedString::setBaseVal(value, exception_state);
 }
 
 String SVGAnimatedHref::animVal() {

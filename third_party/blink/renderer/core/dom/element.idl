@@ -24,6 +24,12 @@
 enum NativeScrollBehavior { "disable-native-scroll", "perform-before-native-scroll", "perform-after-native-scroll" };
 callback ScrollStateCallback = void (ScrollState scrollState);
 
+// https://drafts.csswg.org/cssom-view/#dictdef-checkvisibilityoptions
+dictionary CheckVisibilityOptions {
+  boolean checkOpacity = false;
+  boolean checkVisibilityCSS = false;
+};
+
 // https://dom.spec.whatwg.org/#interface-element
 
 [
@@ -32,20 +38,22 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     readonly attribute DOMString? namespaceURI;
     readonly attribute DOMString? prefix;
     readonly attribute DOMString localName;
-    [Affects=Nothing] readonly attribute DOMString tagName;
+    readonly attribute DOMString tagName;
 
-    [Affects=Nothing, CEReactions, Reflect] attribute DOMString id;
-    [Affects=Nothing, CEReactions, Reflect=class] attribute DOMString className;
-    [Affects=Nothing, SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList classList;
+    [CEReactions, Reflect] attribute DOMString id;
+    [CEReactions, Reflect=class] attribute DOMString className;
+    [SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList classList;
     [Unscopable, CEReactions, Reflect] attribute DOMString slot;
 
     [Affects=Nothing] boolean hasAttributes();
-    [Affects=Nothing, SameObject, PerWorldBindings, ImplementedAs=attributesForBindings] readonly attribute NamedNodeMap attributes;
+    [SameObject, PerWorldBindings, ImplementedAs=attributesForBindings] readonly attribute NamedNodeMap attributes;
     [Affects=Nothing] sequence<DOMString> getAttributeNames();
     [Affects=Nothing] DOMString? getAttribute(DOMString name);
     [Affects=Nothing] DOMString? getAttributeNS(DOMString? namespaceURI, DOMString localName);
-    [RaisesException, CEReactions] void setAttribute(DOMString name, TrustedString value);
-    [RaisesException, CEReactions] void setAttributeNS(DOMString? namespaceURI, DOMString name, TrustedString value);
+    [RaisesException, CEReactions] void setAttribute(DOMString name, DOMString value);
+    [RaisesException, CEReactions] void setAttribute(DOMString name, TrustedType value);
+    [RaisesException, CEReactions] void setAttributeNS(DOMString? namespaceURI, DOMString name, DOMString value);
+    [RaisesException, CEReactions] void setAttributeNS(DOMString? namespaceURI, DOMString name, TrustedType value);
     [CEReactions] void removeAttribute(DOMString name);
     [CEReactions] void removeAttributeNS(DOMString? namespaceURI, DOMString localName);
     [RaisesException, CEReactions] boolean toggleAttribute(DOMString qualifiedName, optional boolean force);
@@ -58,10 +66,8 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     [RaisesException, CEReactions] Attr? setAttributeNodeNS(Attr attr);
     [RaisesException, CEReactions] Attr removeAttributeNode(Attr attr);
 
-    [RuntimeEnabled=EditContext] attribute EditContext? editContext;
-
     [RaisesException, MeasureAs=ElementAttachShadow] ShadowRoot attachShadow(ShadowRootInit shadowRootInitDict);
-    [Affects=Nothing, PerWorldBindings, ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
+    [PerWorldBindings, ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
 
     [RaisesException] Element? closest(DOMString selectors);
     [RaisesException] boolean matches(DOMString selectors);
@@ -76,7 +82,7 @@ callback ScrollStateCallback = void (ScrollState scrollState);
 
     // CSS Shadow Parts
     // https://drafts.csswg.org/css-shadow-parts/#idl
-    [Affects=Nothing, SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList part;
+    [SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList part;
 
     // Pointer Events
     // https://w3c.github.io/pointerevents/#extensions-to-the-element-interface
@@ -94,12 +100,12 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     // TODO(mkwst): Write a spec for the `TrustedHTML` variants.
     // TODO(lyf): Change the type to `[TreatNullAs=xxx] HTMLString` after
     // https://crbug.com/1058762 has been fixed.
-    [Affects=Nothing, CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString innerHTML;
-    [Affects=Nothing, CEReactions, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString outerHTML;
+    [CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString innerHTML;
+    [CEReactions, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString outerHTML;
     [CEReactions, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
 
     // Declarative Shadow DOM getInnerHTML() function.
-    [Affects=Nothing, RuntimeEnabled=DeclarativeShadowDOM, RuntimeCallStatsCounter=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
+    [Affects=Nothing, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
 
     // Pointer Lock
     // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
@@ -111,6 +117,9 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     [Measure] DOMRectList getClientRects();
     [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect] DOMRect getBoundingClientRect();
 
+    // https://drafts.csswg.org/cssom-view/#dom-element-checkvisibility
+    [RuntimeEnabled=checkVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
+
     // TODO(sunyunjia): Add default value for scrollIntoView() once
     // crbug.com/734599 is fixed.
     void scrollIntoView(optional (ScrollIntoViewOptions or boolean) arg = {});
@@ -120,21 +129,23 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     void scrollTo(unrestricted double x, unrestricted double y);
     void scrollBy(optional ScrollToOptions options = {});
     void scrollBy(unrestricted double x, unrestricted double y);
-    [Affects=Nothing] attribute unrestricted double scrollTop;
-    [Affects=Nothing] attribute unrestricted double scrollLeft;
-    [Affects=Nothing] readonly attribute long scrollWidth;
-    [Affects=Nothing] readonly attribute long scrollHeight;
-    [Affects=Nothing] readonly attribute long clientTop;
-    [Affects=Nothing] readonly attribute long clientLeft;
-    [Affects=Nothing] readonly attribute long clientWidth;
-    [Affects=Nothing] readonly attribute long clientHeight;
-
-    // Typed OM
-    // https://drafts.css-houdini.org/css-typed-om/#inline-stylepropertymap-objects
-    [SameObject, MeasureAs=CSSTypedOMStylePropertyMap] readonly attribute StylePropertyMap attributeStyleMap;
+    attribute unrestricted double scrollTop;
+    attribute unrestricted double scrollLeft;
+    readonly attribute long scrollWidth;
+    readonly attribute long scrollHeight;
+    readonly attribute long clientTop;
+    readonly attribute long clientLeft;
+    readonly attribute long clientWidth;
+    readonly attribute long clientHeight;
 
     // Non-standard API
     [MeasureAs=ElementScrollIntoViewIfNeeded] void scrollIntoViewIfNeeded(optional boolean centerIfNeeded);
+
+    // The Pop-up API
+    [MeasureAs=ElementShowPopup,RuntimeEnabled=HTMLPopupAttribute,RaisesException] void showPopUp();
+    [MeasureAs=ElementHidePopup,RuntimeEnabled=HTMLPopupAttribute,RaisesException] void hidePopUp();
+    [Unscopable,CEReactions,RuntimeEnabled=HTMLPopupAttribute,MeasureAs=AnyPopupAttribute,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popUp;
+    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute boolean defaultOpen;
 
     // Experimental accessibility API
     [RuntimeEnabled=ComputedAccessibilityInfo] readonly attribute DOMString? computedRole;
@@ -148,10 +159,14 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     attribute EventHandler onbeforecut;
     attribute EventHandler onbeforepaste;
     attribute EventHandler onsearch;
-    [RuntimeEnabled=BeforeMatchEvent] attribute EventHandler onbeforematch;
 
     // Element Timing
-    [Affects=Nothing, CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;
+    [CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;
+
+    // CSS Toggles
+    // See https://tabatkins.github.io/css-toggle/#dom and
+    // https://github.com/tabatkins/css-toggle/issues/26
+    [RuntimeEnabled=CSSToggles, SameObject] readonly attribute CSSToggleMap toggles;
 };
 
 Element includes ParentNode;

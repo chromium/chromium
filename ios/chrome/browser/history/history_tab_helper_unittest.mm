@@ -1,24 +1,25 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/history/history_tab_helper.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
-#include "base/test/task_environment.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
-#include "ios/web/public/navigation/navigation_item.h"
-#include "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "base/bind.h"
+#import "base/callback.h"
+#import "base/run_loop.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/test/bind.h"
+#import "base/test/task_environment.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,14 +31,16 @@ class HistoryTabHelperTest : public PlatformTest {
  public:
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
+    test_cbs_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = test_cbs_builder.Build();
-    ASSERT_TRUE(chrome_browser_state_->CreateHistoryService());
 
     web_state_.SetBrowserState(chrome_browser_state_.get());
     HistoryTabHelper::CreateForWebState(&web_state_);
   }
 
-  // Queries the history service for information about the given |url| and
+  // Queries the history service for information about the given `url` and
   // returns the response.  Spins the runloop until a response is received.
   void QueryURL(const GURL& url) {
     history::HistoryService* service =
@@ -55,15 +58,14 @@ class HistoryTabHelperTest : public PlatformTest {
     loop.Run();
   }
 
-  // Adds an entry for the given |url| to the history database.
+  // Adds an entry for the given `url` to the history database.
   void AddVisitForURL(const GURL& url) {
     history::HistoryService* service =
         ios::HistoryServiceFactory::GetForBrowserState(
             chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
-    service->AddPage(url, base::Time::Now(), NULL, 0, GURL(),
-                     history::RedirectList(),
-                     ui::PAGE_TRANSITION_MANUAL_SUBFRAME,
-                     history::SOURCE_BROWSED, false, false);
+    service->AddPage(
+        url, base::Time::Now(), NULL, 0, GURL(), history::RedirectList(),
+        ui::PAGE_TRANSITION_MANUAL_SUBFRAME, history::SOURCE_BROWSED, false);
   }
 
  protected:
@@ -72,7 +74,7 @@ class HistoryTabHelperTest : public PlatformTest {
   web::FakeWebState web_state_;
   base::CancelableTaskTracker tracker_;
 
-  // Cached data from the last call to |QueryURL()|.
+  // Cached data from the last call to `QueryURL()`.
   history::URLRow latest_row_result_;
 };
 
@@ -222,4 +224,33 @@ TEST_F(HistoryTabHelperTest, TestFileNotAdded) {
   AddVisitForURL(file_url);
   QueryURL(file_url);
   EXPECT_NE(file_url, latest_row_result_.url());
+}
+
+TEST_F(HistoryTabHelperTest,
+       CreateAddPageArgsPopulatesOnVisitContextAnnotations) {
+  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+  GURL test_url("https://www.google.com/");
+  item->SetVirtualURL(test_url);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(test_url);
+  context.SetHasCommitted(true);
+
+  std::string raw_response_headers = "HTTP/1.1 234 OK\r\n\r\n";
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      net::HttpResponseHeaders::TryToCreate(raw_response_headers);
+  DCHECK(response_headers);
+  context.SetResponseHeaders(response_headers);
+
+  HistoryTabHelper* helper = HistoryTabHelper::FromWebState(&web_state_);
+  history::HistoryAddPageArgs args =
+      helper->CreateHistoryAddPageArgs(item.get(), &context);
+
+  // Make sure the `context_annotations` are populated.
+  ASSERT_TRUE(args.context_annotations.has_value());
+  // Most of the actual fields can't be verified here, because the corresponding
+  // data sources don't exist in this unit test (e.g. there's no Browser, no
+  // other TabHelpers, etc). At least check the response code that was set up
+  // above.
+  EXPECT_EQ(args.context_annotations->response_code, 234);
 }

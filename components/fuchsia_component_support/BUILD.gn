@@ -1,0 +1,59 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+visibility = []
+
+# Integration helpers for fuchsia.* FIDL APIs used by Fuchsia Components.
+source_set("fuchsia_component_support") {
+  # Only for use by Fuchsia Components.
+  visibility += [
+    ":unit_tests",
+    "//chromecast/internal/*",
+    "//fuchsia_web/runners/*",
+    "//fuchsia_web/webengine/*",
+    "//fuchsia_web/webinstance_host/*",
+  ]
+  public = [
+    "config_reader.h",
+    "feedback_registration.h",
+    "inspect.h",
+  ]
+  sources = [
+    "config_reader.cc",
+    "feedback_registration.cc",
+    "inspect.cc",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+  deps = [
+    "//build:branding_buildflags",
+    "//components/version_info",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  visibility += [ "//components:components_unittests__exec" ]
+  sources = [
+    "config_reader_unittest.cc",
+    "inspect_unittest.cc",
+  ]
+  deps = [
+    ":fuchsia_component_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/version_info",
+    "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
+  ]
+}

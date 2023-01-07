@@ -11,11 +11,12 @@ of this feature, as well as [Samples](https://github.com/GoogleChromeLabs/houdin
 ## Workflow
 
 Historically the CSS Paint API (PaintWorklet) implementation ran on the main
-thread, but is currently being optimized to run on the compositor thread. We
-will use an example to show the workflow of both cases.
+thread. It has been optimized to run on the compositor thread. We will use an
+example to show the workflow of both cases.
 
 Here is a simple example of using PaintWorklet to draw something on the screen.
 
+``` html
 <style>
 #demo {
   background-image: paint(foo);
@@ -23,7 +24,7 @@ Here is a simple example of using PaintWorklet to draw something on the screen.
   height: 200px;
 }
 </style>
-<script>
+<script id="code" type="text/worklet">
 registerPaint('foo', class {
   paint(ctx, size) {
     ctx.fillStyle = 'green';
@@ -31,20 +32,47 @@ registerPaint('foo', class {
   }
 });
 </script>
+<script>
+var code = document.getElementById('code').textContent;
+var blob = new Blob([code], {type : 'text/javascript'});
+CSS.paintWorklet.addModule(URL.createObjectURL(blob));
+</script>
+```
 
 In our implementation, there is one [PaintWorklet](paint_worklet.h) instance
-created from the frame. There are two
-[PaintWorkletGlobalScope](paint_worklet_global_scope.h) created to enforce
-stateless. The number of global scopes can be arbitrary, and our implementation
-chose two.
+created from the frame.
 
-During `PaintWorkletGlobalScope#registerPaint`, the Javascript inside the paint
+### Main thread workflow
+
+Let's start with the two web-exposed APIs and dive into the main thread
+workflow. Specifically the two APIs are `addModule` and `registerPaint`.
+
+When `addModule` is executed, `Worklet::addModule` is called. There are two
+[PaintWorkletGlobalScope](paint_worklet_global_scope.h) created, and the
+[PaintWorkletGlobalScopeProxy](paint_worklet_global_scope_proxy.h) serves as the
+proxy when other classes need to communicate with PaintWorkletGlobalScope. We
+create two PaintWorkletGlobalScope to enforce stateless. The number of global
+scopes can be arbitrary as long as it is >= 2, and we chose two in our
+implementation.
+
+`registerPaint` is executed on each PaintWorkletGlobalScope. When the
+`PaintWorkletGlobalScope::registerPaint` is called, it creates a
+[CSSPaintDefinition](css_paint_definition.h) and PaintWorkletGlobalScope owns
+it. Besides that, it creates
+[DocumentPaintDefinition](document_paint_definition.h) which is owned by
+PaintWorklet. It then registers the CSSPaintDefinition to the
+DocumentPaintDefinition.
+
+Below is a diagram that shows what happens when `addModule` and `registerPaint`
+are called:
+
+![addModule and registerPaint call](images/addModule_registerPaint.png)
+
+During `PaintWorkletGlobalScope::registerPaint`, the Javascript inside the paint
 function is turned into a V8 paint callback. We randomly choose one of the two
 global scopes to execute the callback. The execution of the callback
 produces a PaintRecord, which contains a set of skia draw commands. The V8 paint
 callback is executed on a shared V8 isolate.
-
-### Main thread workflow
 
 During the main thread paint, the `PaintWorklet::Paint` is called, which
 executes the V8 paint callback synchronously. A PaintRecord is produced and
@@ -52,6 +80,10 @@ passed to the compositor thread to raster.
 
 When animation is involved, the main thread animation system updates the value
 of the animated properties, which are used by the `PaintWorklet::Paint`.
+
+Below is a diagram that shows what happens when `PaintWorklet::Paint` is called.
+
+![PaintWorklet::Paint](images/PaintWorklet_Paint.png)
 
 ### Off main thread workflow
 
@@ -65,6 +97,10 @@ Let's see how it works without animations.
    encapsulated in [CSSPaintWorkletInput](../../core/css/cssom/css_paint_worklet_input.h).
    The input arguments contain necessary information for the CC raster phase.
 
+   In our code, this step is executed in `CSSPaintValue::GetImage`, and we can
+   trace its call sites to find out when and where this is called during the
+   main thread paint. This function creates a `PaintWorkletDeferredImage`.
+
 1. During commit, the `PaintWorkletInput` is passed to CC. Specifically, the
    `PictureLayerImpl` owns `PaintWorkletRecordMap`, which is a map from
    `PaintWorkletInput` to `std::pair<PaintImage::Id, PaintRecord>`. The
@@ -72,6 +108,14 @@ Let's see how it works without animations.
    the actual content of the `PaintWorkletDeferredImage`, which will be
    generated at CC raster time. Initially the `PaintRecord` is `nullptr` which
    indicates that it needs to be produced.
+
+   But how does the `PaintWorkletInput` gets passed to CC? During main thread
+   paint, we will generate a set of `DisplayItemList` for each layer, and each
+   `DisplayItemList` contains a `DiscardableImageMap`. If a
+   `DiscardableImageMap` is for paint worklet, then it will contain a vector
+   of `PaintWorkletinputWithImageId`, where each one is a pair of
+   `PaintWorkletInput` and `PaintImage::Id`. Now if we look at the
+   `PaintWorkletDeferredImage` class, we can see it contains a `PaintImage`.
 
 1. After commit, we need to update the pending tree. This happens in
    `LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation`.
@@ -126,8 +170,29 @@ native properties in the future.
    `PaintWorkletInput::PropertyKey` which can be used to identify a
    `PaintWorkletInput`. Then we can use the `PaintWorkletInput` to find its
    associated `PaintRecord` in the `PictureLayerImpl`'s `PaintWorkletRecordMap`,
-   invalidate it and update its content when we update the pending tree via
-   `LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation`.
+   invalidate it and update its content when we update the pending tree. More
+   specifically, this happens in
+   `AnimatedPaintWorkletTracker::InvalidatePaintWorkletsOnPendingTree`, and
+   `AnimatedPaintWorkletTracker::InvalidatePaintWorkletsOnPendingTree` is
+   called by `LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation`
+   which does the impl-side invalidation.
+
+Some other differences compared with the main-thread workflow.
+
+When `addModule` is executed, we are creating two `PaintWorkletGlobalScope` on
+the main thread, and two on the worklet thread. Please refer to the two different
+Create function in the [PaintWorkletGlobalScope](paint_worklet_global_scope.h)
+class for details. The two global scopes on the worklet thread are created when
+the worklet thread is initialized.
+
+`registerPaint` is executed on each PaintWorkletGlobalScope. That means, twice
+on the main thread, and twice on the worklet thread. In this case, we need to
+make sure that the `CSSPaintDefinition` created on the main thread and the
+worklet thread are consistent with each other. Once that is verified, we then
+register the CSSPaintDefinition to the DocumentPaintDefinition. For the main
+thread version, this is happening at `PaintWorklet::RegisterCSSPaintDefinition`.
+For the worklet thread, this happens at
+`PaintWorkletProxyClient::RegisterCSSPaintDefinition`.
 
 ## Implementation
 

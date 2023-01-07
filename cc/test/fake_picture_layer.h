@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/ref_counted.h"
 #include "cc/layers/picture_layer.h"
@@ -28,7 +29,8 @@ class FakePictureLayer : public PictureLayer {
   }
 
   // Layer implementation.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
   bool Update() override;
 
   int update_count() const { return update_count_; }

@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/cocoa/screentime/history_bridge.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,7 +24,7 @@ class TestHistoryDeleter : public HistoryDeleter {
   ~TestHistoryDeleter() override {}
 
   bool deleted_all() const { return deleted_all_; }
-  base::Optional<TimeInterval> deleted_interval() const {
+  absl::optional<TimeInterval> deleted_interval() const {
     return deleted_interval_;
   }
   const std::set<GURL>& deleted_urls() const { return deleted_urls_; }
@@ -46,7 +47,7 @@ class TestHistoryDeleter : public HistoryDeleter {
 
  private:
   bool deleted_all_ = false;
-  base::Optional<TimeInterval> deleted_interval_ = base::nullopt;
+  absl::optional<TimeInterval> deleted_interval_ = absl::nullopt;
   std::set<GURL> deleted_urls_;
   base::RunLoop wait_loop_;
 };
@@ -96,7 +97,7 @@ class HistoryBridgeTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> service_;
-  TestHistoryDeleter* deleter_;
+  raw_ptr<TestHistoryDeleter> deleter_;
   std::unique_ptr<HistoryBridge> bridge_;
   base::RunLoop history_teardown_loop_;
 };
@@ -113,9 +114,8 @@ TEST_F(HistoryBridgeTest, DeleteAll) {
 TEST_F(HistoryBridgeTest, DeleteURLs) {
   const GURL kTestUrlA("https://www.chromium.org/");
   const base::Time now = base::Time::Now();
-  AddPage(kTestUrlA, now - base::TimeDelta::FromSeconds(2));
-  AddPage(GURL("https://test.chromium.org/"),
-          now - base::TimeDelta::FromSeconds(1));
+  AddPage(kTestUrlA, now - base::Seconds(2));
+  AddPage(GURL("https://test.chromium.org/"), now - base::Seconds(1));
 
   service()->DeleteURLs({kTestUrlA});
   deleter()->WaitForDelete();
@@ -125,16 +125,13 @@ TEST_F(HistoryBridgeTest, DeleteURLs) {
 
 TEST_F(HistoryBridgeTest, DeleteTimeInterval) {
   const base::Time now = base::Time::Now();
-  AddPage(GURL("https://www.chromium.org/a"),
-          now - base::TimeDelta::FromSeconds(2));
-  AddPage(GURL("https://www.chromium.org/b"),
-          now - base::TimeDelta::FromSeconds(1));
+  AddPage(GURL("https://www.chromium.org/a"), now - base::Seconds(2));
+  AddPage(GURL("https://www.chromium.org/b"), now - base::Seconds(1));
 
-  DeleteHistoryBetween(now - base::TimeDelta::FromSeconds(3), now);
+  DeleteHistoryBetween(now - base::Seconds(3), now);
   deleter()->WaitForDelete();
   EXPECT_FALSE(deleter()->deleted_all());
-  EXPECT_EQ(deleter()->deleted_interval()->first,
-            now - base::TimeDelta::FromSeconds(3));
+  EXPECT_EQ(deleter()->deleted_interval()->first, now - base::Seconds(3));
   EXPECT_EQ(deleter()->deleted_interval()->second, now);
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -61,6 +60,10 @@ enum SecurityInterstitialCommand {
 class ControllerClient {
  public:
   explicit ControllerClient(std::unique_ptr<MetricsHelper> metrics_helper);
+
+  ControllerClient(const ControllerClient&) = delete;
+  ControllerClient& operator=(const ControllerClient&) = delete;
+
   virtual ~ControllerClient();
 
   // Handle the user's reporting preferences.
@@ -125,8 +128,6 @@ class ControllerClient {
   std::unique_ptr<MetricsHelper> metrics_helper_;
   // Link to the help center.
   GURL help_center_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ControllerClient);
 };
 
 }  // namespace security_interstitials

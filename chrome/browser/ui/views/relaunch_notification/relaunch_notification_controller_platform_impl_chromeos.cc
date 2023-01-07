@@ -1,22 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.h"
 
+#include <utility>
+
 #include "ash/public/cpp/update_types.h"
 #include "ash/shell.h"
 #include "base/bind.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "base/callback.h"
+#include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_timer.h"
-#include "chrome/grit/chromium_strings.h"
-#include "chrome/grit/generated_resources.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/devicetype_utils.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
+#include "ui/display/manager/display_configurator.h"
 
 RelaunchNotificationControllerPlatformImpl::
     RelaunchNotificationControllerPlatformImpl() = default;
@@ -32,16 +32,17 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRecommended(
 
 void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
     base::Time deadline,
+    bool is_notification_type_overriden,
     base::OnceCallback<base::Time()> on_visible) {
   if (!relaunch_required_timer_) {
     relaunch_required_timer_ = std::make_unique<RelaunchRequiredTimer>(
-        deadline,
-        base::BindRepeating(&RelaunchNotificationControllerPlatformImpl::
-                                RefreshRelaunchRequiredTitle,
-                            base::Unretained(this)));
+        deadline, base::BindRepeating(
+                      &RelaunchNotificationControllerPlatformImpl::
+                          RefreshRelaunchRequiredTitle,
+                      base::Unretained(this), is_notification_type_overriden));
   }
 
-  RefreshRelaunchRequiredTitle();
+  RefreshRelaunchRequiredTitle(is_notification_type_overriden);
 
   if (!CanScheduleReboot()) {
     on_visible_ = std::move(on_visible);
@@ -52,8 +53,7 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
 }
 
 void RelaunchNotificationControllerPlatformImpl::CloseRelaunchNotification() {
-  SystemTrayClient::Get()->SetUpdateNotificationState(
-      ash::NotificationStyle::kDefault, std::u16string(), std::u16string());
+  SystemTrayClientImpl::Get()->ResetUpdateState();
   relaunch_required_timer_.reset();
   on_visible_.Reset();
   StopObserving();
@@ -67,24 +67,14 @@ void RelaunchNotificationControllerPlatformImpl::SetDeadline(
 
 void RelaunchNotificationControllerPlatformImpl::
     RefreshRelaunchRecommendedTitle(bool past_deadline) {
-  std::string enterprise_domain_manager =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
-          ->GetEnterpriseDomainManager();
   if (past_deadline) {
-    SystemTrayClient::Get()->SetUpdateNotificationState(
-        ash::NotificationStyle::kAdminRecommended,
-        l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_OVERDUE_TITLE),
-        l10n_util::GetStringFUTF16(IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY,
-                                   base::UTF8ToUTF16(enterprise_domain_manager),
-                                   ui::GetChromeOSDeviceName()));
+    SystemTrayClientImpl::Get()->SetRelaunchNotificationState(
+        {.requirement_type =
+             ash::RelaunchNotificationState::kRecommendedAndOverdue});
   } else {
-    SystemTrayClient::Get()->SetUpdateNotificationState(
-        ash::NotificationStyle::kAdminRecommended,
-        l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_TITLE),
-        l10n_util::GetStringFUTF16(IDS_RELAUNCH_RECOMMENDED_BODY,
-                                   base::UTF8ToUTF16(enterprise_domain_manager),
-                                   ui::GetChromeOSDeviceName()));
+    SystemTrayClientImpl::Get()->SetRelaunchNotificationState(
+        {.requirement_type =
+             ash::RelaunchNotificationState::kRecommendedNotOverdue});
   }
 }
 
@@ -93,19 +83,19 @@ bool RelaunchNotificationControllerPlatformImpl::IsRequiredNotificationShown()
   return relaunch_required_timer_ != nullptr;
 }
 
-void RelaunchNotificationControllerPlatformImpl::
-    RefreshRelaunchRequiredTitle() {
-  // SystemTrayClient may not exist in unit tests.
-  if (SystemTrayClient::Get()) {
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
-    SystemTrayClient::Get()->SetUpdateNotificationState(
-        ash::NotificationStyle::kAdminRequired,
-        relaunch_required_timer_->GetWindowTitle(),
-        l10n_util::GetStringFUTF16(
-            IDS_RELAUNCH_REQUIRED_BODY,
-            base::UTF8ToUTF16(connector->GetEnterpriseDomainManager()),
-            ui::GetChromeOSDeviceName()));
+void RelaunchNotificationControllerPlatformImpl::RefreshRelaunchRequiredTitle(
+    bool is_notification_type_overriden) {
+  // SystemTrayClientImpl may not exist in unit tests.
+  if (SystemTrayClientImpl::Get()) {
+    SystemTrayClientImpl::Get()->SetRelaunchNotificationState(
+        {.requirement_type = ash::RelaunchNotificationState::kRequired,
+         // We only override notification type to kRequired in the
+         // MinimumVersionPolicyHandler that handles device policies.
+         .policy_source = is_notification_type_overriden
+                              ? ash::RelaunchNotificationState::kDevice
+                              : ash::RelaunchNotificationState::kUser,
+         .rounded_time_until_reboot_required =
+             relaunch_required_timer_->GetRoundedDeadlineDelta()});
   }
 }
 

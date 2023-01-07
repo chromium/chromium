@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,19 +20,19 @@ source_set("cells") {
     "//base",
     "//base:i18n",
     "//components/bookmarks/browser:browser",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/icons",
+    "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/ui",
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]

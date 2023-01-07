@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_forward.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/linux/seccomp-bpf-helpers/baseline_policy.h"
@@ -23,6 +22,10 @@ namespace policy {
 class SANDBOX_POLICY_EXPORT BPFBasePolicy : public bpf_dsl::Policy {
  public:
   BPFBasePolicy();
+
+  BPFBasePolicy(const BPFBasePolicy&) = delete;
+  BPFBasePolicy& operator=(const BPFBasePolicy&) = delete;
+
   ~BPFBasePolicy() override;
 
   // bpf_dsl::Policy:
@@ -37,7 +40,6 @@ class SANDBOX_POLICY_EXPORT BPFBasePolicy : public bpf_dsl::Policy {
  private:
   // Compose the BaselinePolicy from sandbox/.
   std::unique_ptr<BaselinePolicy> baseline_policy_;
-  DISALLOW_COPY_AND_ASSIGN(BPFBasePolicy);
 };
 
 }  // namespace policy

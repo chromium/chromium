@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_code_fetcher.h"
@@ -43,6 +42,11 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
       const CoreAccountId& account_id,
       bool initial_signin,
       bool is_primary_account);
+
+  ArcBackgroundAuthCodeFetcher(const ArcBackgroundAuthCodeFetcher&) = delete;
+  ArcBackgroundAuthCodeFetcher& operator=(const ArcBackgroundAuthCodeFetcher&) =
+      delete;
+
   ~ArcBackgroundAuthCodeFetcher() override;
 
   // ArcAuthCodeFetcher:
@@ -84,9 +88,13 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
   // Account on Chrome OS.
   const bool is_primary_account_;
 
-  base::WeakPtrFactory<ArcBackgroundAuthCodeFetcher> weak_ptr_factory_{this};
+  // Indicates if the request to `kAuthTokenExchangeEndPoint` which fetches the
+  // auth code to be used for Google Play Store sign-in should bypass the proxy.
+  // Currently we only set the value to true if the network is configured to use
+  // a mandatory PAC script which is broken or not reachable.
+  bool bypass_proxy_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(ArcBackgroundAuthCodeFetcher);
+  base::WeakPtrFactory<ArcBackgroundAuthCodeFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

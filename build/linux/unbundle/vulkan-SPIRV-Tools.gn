@@ -1,0 +1,69 @@
+# This shim can only be used if you build Chromium without DAWN
+
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("spvtools_internal_config") {
+  packages = [ "SPIRV-Tools" ]
+}
+
+shim_headers("vulkan-SPIRV-Tools_shim") {
+  root_path = "include"
+  headers = [
+    "spirv-tools/instrument.hpp",
+    "spirv-tools/libspirv.h",
+    "spirv-tools/libspirv.hpp",
+    "spirv-tools/linker.hpp",
+    "spirv-tools/optimizer.hpp",
+  ]
+}
+
+source_set("SPIRV-Tools") {
+  deps = [ ":vulkan-SPIRV-Tools_shim" ]
+  public_configs = [ ":spvtools_internal_config" ]
+}
+
+source_set("spvtools") {
+  deps = [ ":vulkan-SPIRV-Tools_shim" ]
+  public_configs = [ ":spvtools_internal_config" ]
+}
+
+source_set("spvtools_core_enums_unified1") {
+  deps = [ ":vulkan-SPIRV-Tools_shim" ]
+  public_configs = [ ":spvtools_internal_config" ]
+}
+
+source_set("spvtools_core_tables_unified1") {
+  deps = [ ":vulkan-SPIRV-Tools_shim" ]
+  public_configs = [ ":spvtools_internal_config" ]
+}
+
+source_set("spvtools_headers") {
+  deps = [ ":vulkan-SPIRV-Tools_shim" ]
+  public_configs = [ ":spvtools_internal_config" ]
+}
+
+source_set("spvtools_language_header_cldebuginfo100") {
+  deps = [ ":vulkan-SPIRV-Tools_shim" ]
+  public_configs = [ ":spvtools_internal_config" ]
+}
+
+source_set("spvtools_language_header_debuginfo") {
+  deps = [ ":vulkan-SPIRV-Tools_shim" ]
+  public_configs = [ ":spvtools_internal_config" ]
+}
+
+source_set("spvtools_language_header_vkdebuginfo100") {
+  deps = [ ":vulkan-SPIRV-Tools_shim" ]
+  public_configs = [ ":spvtools_internal_config" ]
+}
+
+source_set("spvtools_opt") {
+  deps = [ ":vulkan-SPIRV-Tools_shim" ]
+  public_configs = [ ":spvtools_internal_config" ]
+}
+
+source_set("spvtools_val") {
+  deps = [ ":vulkan-SPIRV-Tools_shim" ]
+  public_configs = [ ":spvtools_internal_config" ]
+}

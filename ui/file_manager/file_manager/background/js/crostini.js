@@ -1,21 +1,20 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {Crostini} from '../../externs/background/crostini.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {Crostini} from '../../externs/background/crostini.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 /**
  * Implementation of Crostini shared path state handler.
  *
  * @implements {Crostini}
  */
-/* #export */ class CrostiniImpl {
+export class CrostiniImpl {
   constructor() {
     /**
      * True if VM is enabled.
@@ -28,14 +27,14 @@
      * Keyed by entry.toURL(), maps to list of VMs.
      * @private @dict {!Object<!Array<string>>}
      */
-    this.shared_paths_ = {};
+    this.sharedPaths_ = {};
 
     /** @private {?VolumeManager} */
     this.volumeManager_ = null;
   }
 
   /**
-   * Initialize enabled settings.
+   * Initialize enabled settings and register for any shared path changes.
    * Must be done after loadTimeData is available.
    */
   initEnabled() {
@@ -43,6 +42,8 @@
         loadTimeData.getBoolean('CROSTINI_ENABLED');
     this.enabled_[CrostiniImpl.PLUGIN_VM] =
         loadTimeData.getBoolean('PLUGIN_VM_ENABLED');
+    chrome.fileManagerPrivate.onCrostiniChanged.addListener(
+        this.onCrostiniChanged_.bind(this));
   }
 
   /**
@@ -51,14 +52,6 @@
    */
   initVolumeManager(volumeManager) {
     this.volumeManager_ = volumeManager;
-  }
-
-  /**
-   * Register for any shared path changes.
-   */
-  listen() {
-    chrome.fileManagerPrivate.onCrostiniChanged.addListener(
-        this.onCrostiniChanged_.bind(this));
   }
 
   /**
@@ -101,16 +94,16 @@
     // These paths will still be shared as a result of a parent path being
     // shared, but if the parent is unshared in the future, these children
     // paths should not remain.
-    for (const [path, vms] of Object.entries(this.shared_paths_)) {
+    for (const [path, vms] of Object.entries(this.sharedPaths_)) {
       if (path.startsWith(url)) {
         this.unregisterSharedPath_(vmName, path);
       }
     }
-    const vms = this.shared_paths_[url];
-    if (this.shared_paths_[url]) {
-      this.shared_paths_[url].push(vmName);
+    const vms = this.sharedPaths_[url];
+    if (this.sharedPaths_[url]) {
+      this.sharedPaths_[url].push(vmName);
     } else {
-      this.shared_paths_[url] = [vmName];
+      this.sharedPaths_[url] = [vmName];
     }
   }
 
@@ -121,13 +114,13 @@
    * @private
    */
   unregisterSharedPath_(vmName, path) {
-    const vms = this.shared_paths_[path];
+    const vms = this.sharedPaths_[path];
     if (vms) {
       const newVms = vms.filter(vm => vm != vmName);
       if (newVms.length > 0) {
-        this.shared_paths_[path] = newVms;
+        this.sharedPaths_[path] = newVms;
       } else {
-        delete this.shared_paths_[path];
+        delete this.sharedPaths_[path];
       }
     }
   }
@@ -183,13 +176,13 @@
     }
 
     while (path.length > root.length) {
-      const vms = this.shared_paths_[path];
+      const vms = this.sharedPaths_[path];
       if (vms && vms.includes(vmName)) {
         return true;
       }
       path = path.substring(0, path.lastIndexOf('/'));
     }
-    const rootVms = this.shared_paths_[root];
+    const rootVms = this.sharedPaths_[root];
     return !!rootVms && rootVms.includes(vmName);
   }
 
@@ -241,6 +234,13 @@
       return false;
     }
 
+    // Cannot share root of Shared with me since it represents 2 dirs:
+    // `.files-by-id` and `.shortcut-targets-by-id`.
+    if (root === VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME &&
+        entry.fullPath === '/') {
+      return false;
+    }
+
     return CrostiniImpl.VALID_ROOT_TYPES_FOR_SHARE.has(root);
   }
 }
@@ -270,7 +270,9 @@ CrostiniImpl.VALID_ROOT_TYPES_FOR_SHARE = new Map([
   [VolumeManagerCommon.RootType.DRIVE, 'MyDrive'],
   [VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT, 'TeamDrive'],
   [VolumeManagerCommon.RootType.SHARED_DRIVE, 'TeamDrive'],
+  [VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME, 'SharedWithMe'],
   [VolumeManagerCommon.RootType.CROSTINI, 'Crostini'],
+  [VolumeManagerCommon.RootType.GUEST_OS, 'GuestOs'],
   [VolumeManagerCommon.RootType.ARCHIVE, 'Archive'],
   [VolumeManagerCommon.RootType.SMB, 'SMB'],
 ]);

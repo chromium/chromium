@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,17 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 
 class FakeDesktopMediaList : public DesktopMediaList {
  public:
-  explicit FakeDesktopMediaList(DesktopMediaList::Type type);
+  explicit FakeDesktopMediaList(DesktopMediaList::Type type,
+                                bool is_source_list_delegated = false);
+
+  FakeDesktopMediaList(const FakeDesktopMediaList&) = delete;
+  FakeDesktopMediaList& operator=(const FakeDesktopMediaList&) = delete;
+
   ~FakeDesktopMediaList() override;
 
   void AddSource(int id);
@@ -20,6 +26,14 @@ class FakeDesktopMediaList : public DesktopMediaList {
   void MoveSource(int old_index, int new_index);
   void SetSourceThumbnail(int index);
   void SetSourceName(int index, std::u16string name);
+  void SetSourcePreview(int index, gfx::ImageSkia);
+  void OnDelegatedSourceListSelection();
+  void OnDelegatedSourceListDismissed();
+
+  bool is_focused() const { return is_focused_; }
+  int clear_delegated_source_list_selection_count() const {
+    return clear_delegated_source_list_selection_count_;
+  }
 
   // DesktopMediaList implementation:
   void SetUpdatePeriod(base::TimeDelta period) override;
@@ -30,14 +44,21 @@ class FakeDesktopMediaList : public DesktopMediaList {
   int GetSourceCount() const override;
   const Source& GetSource(int index) const override;
   DesktopMediaList::Type GetMediaListType() const override;
+  void SetPreviewedSource(
+      const absl::optional<content::DesktopMediaID>& id) override;
+  bool IsSourceListDelegated() const override;
+  void ClearDelegatedSourceListSelection() override;
+  void FocusList() override;
+  void HideList() override;
 
  private:
   std::vector<Source> sources_;
-  DesktopMediaListObserver* observer_;
+  raw_ptr<DesktopMediaListObserver> observer_ = nullptr;
   gfx::ImageSkia thumbnail_;
   const DesktopMediaList::Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDesktopMediaList);
+  const bool is_source_list_delegated_;
+  bool is_focused_ = false;
+  int clear_delegated_source_list_selection_count_ = 0;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_FAKE_DESKTOP_MEDIA_LIST_H_

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,11 +27,11 @@ class WebStateDelegate {
  public:
   WebStateDelegate();
 
-  // Called when |source| wants to open a new window. |url| is the URL of
-  // the new window; |opener_url| is the URL of the page which requested a
-  // window to be open; |initiated_by_user| is true if action was caused by the
-  // user. |source| will not open a window if this method returns nil. This
-  // method can not return |source|.
+  // Called when `source` wants to open a new window. `url` is the URL of
+  // the new window; `opener_url` is the URL of the page which requested a
+  // window to be open; `initiated_by_user` is true if action was caused by the
+  // user. `source` will not open a window if this method returns nil. This
+  // method can not return `source`.
   virtual WebState* CreateNewWebState(WebState* source,
                                       const GURL& url,
                                       const GURL& opener_url,
@@ -43,16 +43,10 @@ class WebStateDelegate {
 
   // Returns the WebState the URL is opened in, or nullptr if the URL wasn't
   // opened immediately.
-  virtual WebState* OpenURLFromWebState(WebState*,
-                                        const WebState::OpenURLParams&);
+  virtual WebState* OpenURLFromWebState(WebState* source,
+                                        const WebState::OpenURLParams& params);
 
-  // Notifies the delegate that the user triggered the context menu with the
-  // given |ContextMenuParams|. If the delegate does not implement this method,
-  // no context menu will be displayed.
-  virtual void HandleContextMenu(WebState* source,
-                                 const ContextMenuParams& params);
-
-  // Requests the repost form confirmation dialog. Clients must call |callback|
+  // Requests the repost form confirmation dialog. Clients must call `callback`
   // with true to allow repost and with false to cancel the repost. If this
   // method is not implemented then WebState will repost the form.
   virtual void ShowRepostFormWarningDialog(
@@ -66,9 +60,9 @@ class WebStateDelegate {
       WebState* source);
 
   // Called when a request receives an authentication challenge specified by
-  // |protection_space|, and is unable to respond using cached credentials.
-  // Clients must call |callback| even if they want to cancel authentication
-  // (in which case |username| or |password| should be nil).
+  // `protection_space`, and is unable to respond using cached credentials.
+  // Clients must call `callback` even if they want to cancel authentication
+  // (in which case `username` or `password` should be nil).
   typedef base::OnceCallback<void(NSString* username, NSString* password)>
       AuthCallback;
   virtual void OnAuthRequired(WebState* source,
@@ -76,47 +70,21 @@ class WebStateDelegate {
                               NSURLCredential* proposed_credential,
                               AuthCallback callback) = 0;
 
-  // Determines whether the given link with |link_url| should show a preview on
-  // force touch.
-  virtual bool ShouldPreviewLink(WebState* source, const GURL& link_url);
-  // Called when the user performs a peek action on a link with |link_url| with
-  // force touch. Returns a view controller shown as a pop-up. Uses Webkit's
-  // default preview behavior when it returns nil.
-  virtual UIViewController* GetPreviewingViewController(WebState* source,
-                                                        const GURL& link_url);
-  // Called when the user performs a pop action on the preview on force touch.
-  // |previewing_view_controller| is the view controller that is popped.
-  // It should display |previewing_view_controller| inside the app.
-  virtual void CommitPreviewingViewController(
-      WebState* source,
-      UIViewController* previewing_view_controller);
-
   // Returns the UIView used to contain the WebView for sizing purposes. Can be
   // nil.
   virtual UIView* GetWebViewContainer(WebState* source);
 
-  // Called when iOS13+ context menu is triggered and now it is required to
-  // provide a UIContextMenuConfiguration to |completion_handler| to generate
-  // the context menu. |previewProvider| is used to show a custom ViewController
-  // to preview the page.
+  // Called when the context menu is triggered and now it is required to
+  // provide a UIContextMenuConfiguration to `completion_handler` to generate
+  // the context menu.
   virtual void ContextMenuConfiguration(
       WebState* source,
       const ContextMenuParams& params,
-      UIContextMenuContentPreviewProvider preview_provider,
-      void (^completion_handler)(UIContextMenuConfiguration*))
-      API_AVAILABLE(ios(13.0));
-  // Called when iOS13+ context menu is ready to be showed.
-  virtual void ContextMenuDidEnd(WebState* source, const GURL& link_url)
-      API_AVAILABLE(ios(13.0));
-  // Called when iOS13+ context menu will commit with animator.
+      void (^completion_handler)(UIContextMenuConfiguration*));
+  // Called when the context menu will commit with animator.
   virtual void ContextMenuWillCommitWithAnimator(
       WebState* source,
-      const GURL& link_url,
-      id<UIContextMenuInteractionCommitAnimating> animator)
-      API_AVAILABLE(ios(13.0));
-  // Called when iOS13+ context menu will present.
-  virtual void ContextMenuWillPresent(WebState* source, const GURL& link_url)
-      API_AVAILABLE(ios(13.0));
+      id<UIContextMenuInteractionCommitAnimating> animator);
 
   // UIResponder Form Input APIs, consult Apple's UIResponder documentation for
   // more info.
@@ -128,13 +96,13 @@ class WebStateDelegate {
  private:
   friend class WebStateImpl;
 
-  // Called when |this| becomes the WebStateDelegate for |source|.
+  // Called when `this` becomes the WebStateDelegate for `source`.
   void Attach(WebState* source);
 
-  // Called when |this| is no longer the WebStateDelegate for |source|.
+  // Called when `this` is no longer the WebStateDelegate for `source`.
   void Detach(WebState* source);
 
-  // The WebStates for which |this| is currently a delegate.
+  // The WebStates for which `this` is currently a delegate.
   std::set<WebState*> attached_states_;
 };
 

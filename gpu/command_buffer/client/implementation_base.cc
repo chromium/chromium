@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,8 @@
 
 namespace gpu {
 
-#if !defined(_MSC_VER)
 const uint32_t ImplementationBase::kMaxSizeOfSimpleResult;
 const uint32_t ImplementationBase::kStartingOffset;
-#endif
 
 ImplementationBase::ImplementationBase(CommandBufferHelper* helper,
                                        TransferBufferInterface* transfer_buffer,
@@ -414,16 +412,6 @@ void ImplementationBase::WillCallGLFromSkia() {
 void ImplementationBase::DidCallGLFromSkia() {
   // Should only be called on subclasses that have GrContextSupport
   NOTREACHED();
-}
-
-void ImplementationBase::SetDisplayTransform(gfx::OverlayTransform transform) {
-  helper_->Flush();
-  gpu_control_->SetDisplayTransform(transform);
-}
-
-void ImplementationBase::SetFrameRate(float frame_rate) {
-  helper_->Flush();
-  gpu_control_->SetFrameRate(frame_rate);
 }
 
 }  // namespace gpu

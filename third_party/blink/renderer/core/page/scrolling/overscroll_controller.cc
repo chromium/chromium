@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -49,8 +49,8 @@ void OverscrollController::ResetAccumulated(bool reset_x, bool reset_y) {
 
 void OverscrollController::HandleOverscroll(
     const ScrollResult& scroll_result,
-    const FloatPoint& position_in_root_frame,
-    const FloatSize& velocity_in_root_frame) {
+    const gfx::PointF& position_in_root_frame,
+    const gfx::Vector2dF& velocity_in_root_frame) {
   DCHECK(visual_viewport_);
   DCHECK(chrome_client_);
 
@@ -60,8 +60,8 @@ void OverscrollController::HandleOverscroll(
 
   gfx::Vector2dF delta_in_viewport =
       gfx::ScaleVector2d(unused_delta, visual_viewport_->Scale());
-  gfx::Vector2dF velocity_in_viewport = gfx::ScaleVector2d(
-      gfx::Vector2dF(velocity_in_root_frame), visual_viewport_->Scale());
+  gfx::Vector2dF velocity_in_viewport =
+      gfx::ScaleVector2d(velocity_in_root_frame, visual_viewport_->Scale());
   gfx::PointF position_in_viewport =
       visual_viewport_->RootFrameToViewport(position_in_root_frame);
 

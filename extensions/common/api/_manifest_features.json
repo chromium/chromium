@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,22 +39,28 @@
     "channel": "stable",
     "extension_types": ["platform_app"]
   },
+  "automation": [{
+    "channel": "dev",
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
+  }, {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"],
+    "allowlist": [ "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E" ]
+  }],
   "background": {
     "channel": "stable",
     "extension_types": [
       // Platform apps specify their background page via app.background.
-      "extension", "legacy_packaged_app", "hosted_app", "login_screen_extension"
-    ]
+      "extension", "legacy_packaged_app", "hosted_app", "login_screen_extension", "chromeos_system_extension" ]
   },
   "background.persistent": {
     "channel": "stable",
     "extension_types": [
-      "extension", "legacy_packaged_app", "login_screen_extension"
-    ]
+      "extension", "legacy_packaged_app", "login_screen_extension" ]
   },
   "background.service_worker": {
     "channel": "stable",
-    "extension_types": ["extension"]
+    "extension_types": ["extension", "chromeos_system_extension"]
   },
   "bluetooth": [{
     // Note: The "bluetooth" manifest permission is used by the
@@ -111,14 +117,21 @@
       "extension", "legacy_packaged_app", "login_screen_extension"
     ]
   },
+  "cross_origin_embedder_policy": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"]
+  },
+  "cross_origin_opener_policy": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"]
+  },
   "current_locale": {
     "channel": "stable",
     "extension_types": "all"
   },
   "declarative_net_request": {
     "channel": "stable",
-    "extension_types": ["extension"],
-    "feature_flag": "DeclarativeNetRequest"
+    "extension_types": ["extension"]
   },
   "default_locale": {
     "channel": "stable",
@@ -135,16 +148,17 @@
   "externally_connectable": {
     "channel": "stable",
     "extension_types": [
-      "extension", "hosted_app", "legacy_packaged_app", "platform_app"
+      "extension",
+      "hosted_app",
+      "legacy_packaged_app",
+      "platform_app",
+      "chromeos_system_extension"
     ]
   },
   "file_handlers": [
     {
       "channel": "stable",
-      "extension_types": [
-        "platform_app",
-        "hosted_app"  // This should be removed when bookmark apps have migrated off hosted apps.
-      ]
+      "extension_types": ["platform_app"]
     }, {
       "channel": "stable",
       "extension_types": [ "extension"],
@@ -191,12 +205,23 @@
     "channel": "stable",
     "extension_types": ["platform_app"]
   },
-  "kiosk_enabled": {
-    "channel": "stable",
-    "extension_types": [
-      "platform_app"
-    ]
-  },
+  "kiosk_enabled": [
+    {
+      "channel": "stable",
+      "extension_types": [
+        "platform_app"
+      ]
+    },
+    {
+      "channel": "stable",
+      "extension_types": [
+        "extension"
+      ],
+      "session_types": [
+        "kiosk"
+      ]
+    }
+  ],
   "kiosk_only": {
     "channel": "stable",
     "extension_types": [
@@ -284,6 +309,11 @@
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
   },
+  "optional_host_permissions": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
+  },
   "options_ui": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
@@ -295,7 +325,8 @@
       "legacy_packaged_app",
       "hosted_app",
       "platform_app",
-      "login_screen_extension"
+      "login_screen_extension",
+      "chromeos_system_extension"
     ]
   },
   "replacement_android_app": {
@@ -324,6 +355,12 @@
         "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",  // Secure Shell Ext (stable)
         "38C361D4A0726CE45D3572D65071B6BDB3092371"   // Secure Shell Ext (dev)
       ]
+    },
+    {
+      "channel": "dev",
+      "extension_types": ["extension"],
+      "platforms": ["chromeos", "lacros"],
+      "session_types": ["kiosk"]
     }
   ],
   "usb_printers": {
@@ -349,23 +386,13 @@
       "channel": "stable",
       "extension_types": ["platform_app"],
       "location": "component"
+    },
+    {
+      "channel": "stable",
+      "dependencies": ["behavior:imprivata_login_screen_extension"],
+      "extension_types": ["login_screen_extension"]
     }
   ],
-  "web_app_file_handlers": {
-    "channel": "stable",
-    "extension_types": ["hosted_app"]
-  },
-  // TODO(https://crbug.com/1065748): Remove web_app_linked_shortcut_items and
-  // web_app_shortcut_icons keys once we've transitioned PWAs from the current
-  // Extensions based representation to WebApp based representation.
-  "web_app_linked_shortcut_items" : {
-    "channel": "stable",
-    "extension_types": ["hosted_app"]
-  },
-  "web_app_shortcut_icons" : {
-    "channel": "stable",
-    "extension_types": ["hosted_app"]
-  },
   "webview": {
     "channel": "stable",
     "extension_types": ["platform_app"]

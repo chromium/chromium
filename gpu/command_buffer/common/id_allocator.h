@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // This file contains the definition of the IdAllocator class.
 
-#ifndef GPU_COMMAND_BUFFER_CLIENT_ID_ALLOCATOR_H_
-#define GPU_COMMAND_BUFFER_CLIENT_ID_ALLOCATOR_H_
+#ifndef GPU_COMMAND_BUFFER_COMMON_ID_ALLOCATOR_H_
+#define GPU_COMMAND_BUFFER_COMMON_ID_ALLOCATOR_H_
 
 #include <stdint.h>
 
@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {
@@ -27,6 +26,10 @@ static const ResourceId kInvalidResource = 0u;
 class GPU_EXPORT IdAllocator {
  public:
   IdAllocator();
+
+  IdAllocator(const IdAllocator&) = delete;
+  IdAllocator& operator=(const IdAllocator&) = delete;
+
   ~IdAllocator();
 
   // Allocates a new resource ID.
@@ -58,10 +61,8 @@ class GPU_EXPORT IdAllocator {
   typedef std::map<ResourceId, ResourceId> ResourceIdRangeMap;
 
   ResourceIdRangeMap used_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdAllocator);
 };
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_CLIENT_ID_ALLOCATOR_H_
+#endif  // GPU_COMMAND_BUFFER_COMMON_ID_ALLOCATOR_H_

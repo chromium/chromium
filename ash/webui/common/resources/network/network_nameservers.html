@@ -1,0 +1,105 @@
+<style include="network-shared md-select iron-flex">
+  a {
+    margin-inline-start: 4px;
+  }
+
+  cr-input {
+    margin-bottom: 4px;
+    /* Aligns with the start of cr-radio-button's text. */
+    margin-inline-start: 38px;
+  }
+
+  cr-radio-group {
+    --cr-radio-group-item-padding: 12px;
+    width: 100%;
+  }
+
+  .nameservers {
+    /* Aligns with the start of cr-radio-button's text. */
+    margin-inline-start: 38px;
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+
+  .nameservers:not([changeable]) {
+    opacity: var(--cr-disabled-opacity);
+  }
+
+  #radioGroupDiv {
+    align-items: center;
+    display: block;
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  cr-policy-indicator {
+    /* Aligns with the other policy indicators. */
+    margin-inline-end: calc(var(--settings-control-label-spacing) + 34px);
+  }
+</style>
+
+<div class="property-box">
+  <div class="start">
+    [[i18n('networkNameservers')]]
+  </div>
+  <cr-policy-indicator indicator-type="[[getPolicyIndicatorType(
+      managedProperties.nameServersConfigType)]]">
+  </cr-policy-indicator>
+</div>
+<div id="radioGroupDiv">
+  <cr-radio-group id="nameserverType" class="layout vertical"
+      selected="[[nameserversType_]]"
+      on-selected-changed="onTypeChange_"
+      aria-label="[[i18n('networkNameservers')]]"
+      disabled="[[disabled]]">
+    <!-- Automatic nameservers -->
+    <cr-radio-button name="[[nameserversTypeEnum_.AUTOMATIC]]"
+      disabled="[[!canChangeConfigType_]]">
+      [[i18n('networkNameserversAutomatic')]]
+    </cr-radio-button>
+    <template is="dom-if" if="[[showNameservers_(nameserversType_,
+        nameserversTypeEnum_.AUTOMATIC, nameservers_)]]">
+      <div class="nameservers" changeable$="[[canChangeConfigType_]]">
+        [[getNameserversString_(nameservers_)]]
+      </div>
+    </template>
+
+    <!-- Google nameservers -->
+    <cr-radio-button name="[[nameserversTypeEnum_.GOOGLE]]"
+      disabled="[[!canChangeConfigType_]]">
+      [[i18n('networkNameserversGoogle')]]
+      <template is="dom-if"
+          if="[[i18nExists('networkGoogleNameserversLearnMoreUrl')]]">
+        <a href="[[i18n('networkGoogleNameserversLearnMoreUrl')]]"
+            target="_blank" on-click="doNothing_">
+          [[i18n('networkNameserversLearnMore')]]
+        </a>
+      </template>
+    </cr-radio-button>
+    <template is="dom-if" if="[[showNameservers_(nameserversType_,
+        nameserversTypeEnum_.GOOGLE, nameservers_)]]">
+      <div class="nameservers" changeable$="[[canChangeConfigType_]]">
+        [[getNameserversString_(nameservers_)]]
+      </div>
+    </template>
+
+    <!-- Custom nameservers -->
+    <cr-radio-button name="[[nameserversTypeEnum_.CUSTOM]]"
+      disabled="[[!canChangeConfigType_]]">
+      [[i18n('networkNameserversCustom')]]
+    </cr-radio-button>
+    <template is="dom-if" if="[[showNameservers_(nameserversType_,
+        nameserversTypeEnum_.CUSTOM)]]">
+      <div class="property-box single-column two-line">
+        <template is="dom-repeat" items="[[nameservers_]]">
+          <cr-input id="nameserver[[index]]" value="{{item}}"
+              aria-label="[[getCustomNameServerInputA11yLabel_(index)]]"
+              on-change="onValueChange_"
+              disabled="[[!canEditCustomNameServers_(nameserversType_,
+                  managedProperties)]]">
+          </cr-input>
+        </template>
+      </div>
+    </template>
+  </cr-radio-group>
+</div>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/content_verifier/content_hash.h"
 #include "extensions/common/extension_id.h"
@@ -53,6 +51,9 @@ class ContentHashFetcher {
 
   ContentHashFetcher(ContentHash::FetchKey fetch_key);
 
+  ContentHashFetcher(const ContentHashFetcher&) = delete;
+  ContentHashFetcher& operator=(const ContentHashFetcher&) = delete;
+
   // Note: |this| is deleted once OnSimpleLoaderComplete() completes.
   void Start(HashFetcherCallback hash_fetcher_callback);
 
@@ -73,8 +74,6 @@ class ContentHashFetcher {
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ContentHashFetcher);
 };
 
 }  // namespace internals

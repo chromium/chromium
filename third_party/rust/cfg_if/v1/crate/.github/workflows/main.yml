@@ -1,0 +1,56 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [stable, beta, nightly]
+    steps:
+      - uses: actions/checkout@master
+      - name: Install Rust Stable
+        run: |
+          rustup self update
+          rustup update ${{ matrix.rust }}
+          rustup default ${{ matrix.rust }}
+          rustc -vV
+      - name: Run tests
+        run: cargo test
+
+  rustfmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Install Rust Stable
+        run: |
+          rustup update stable
+          rustup default stable
+          rustup component add rustfmt
+      - name: Run rustfmt
+        run: cargo fmt -- --check
+
+  publish_docs:
+    name: Publish Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Install Rust Stable
+        run: |
+          rustup update stable
+          rustup default stable
+      - name: Build documentation
+        run: cargo doc --no-deps
+      - name: Publish documentation
+        run: |
+          cd target/doc
+          git init
+          git remote add origin https://x-access-token:${{ secrets.github_token }}@github.com/${{ github.repository }}
+          git fetch origin
+          git reset --hard "origin/gh-pages^" --
+          git add .
+          git -c user.name='ci' -c user.email='ci' commit -m init
+          git push -f -q origin HEAD:gh-pages
+        if: github.event_name == 'push' && github.event.ref == 'refs/heads/master'

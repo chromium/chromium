@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ import java.lang.annotation.RetentionPolicy;
         SettingType.EXTENDED_REPORTING_SAFE_BROWSING_ENABLED,
         SettingType.REAL_TIME_SAFE_BROWSING_ENABLED})
 @Retention(RetentionPolicy.SOURCE)
-public @interface SettingType {
+@interface SettingType {
     /**
      * Allows the embedder to set whether it wants to disable/enable the Safe Browsing functionality
      * (which checks that the loaded URLs are safe). Safe Browsing is enabled by default.

@@ -5,53 +5,77 @@
     width: 100%;
   }
 
+  ntp-module-header {
+    margin-bottom: 8px;
+  }
+
   #files {
     display: flex;
     flex-direction: column;
+    margin-bottom: 7px;
   }
 
   .file {
-    align-items: center;
-    border-top: 0.5px solid var(--ntp-border-color);
-    color: var(--cr-primary-text-color);
+    box-sizing: border-box;
+    color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     flex-shrink: 0;
-    height: 38px;
-    margin-inline-end: 16px;
-    margin-inline-start: 16px;
+    height: 56px;
+    outline: none;
+    padding: 8px 18px;
     text-decoration: none;
   }
 
+  .file:hover {
+    background-color: var(--color-new-tab-page-control-background-hovered);
+  }
+
+  .file:active,
+  :host-context(.focus-outline-visible) .file:focus {
+    background-color: var(--color-new-tab-page-active-background);
+  }
+
   .file-icon {
-    margin-inline-end: 8px;
-  }
-
-  .file-title {
-    text-overflow: ellipsis;
-  }
-
-  .file-description {
-    color: var(--cr-secondary-text-color);
+    height: 19px;
+    margin-inline-end: 19px;
+    margin-top: 3px;
+    object-fit: contain;
+    width: 19px;
   }
 
   .file-info {
     display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
   }
 
-  .justification-container {
-    align-items: center;
-    display: flex;
+  .file-title,
+  .file-description {
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .user-image {
-    border-radius: 50%;
-    max-height: 30px;
+  .file-title {
+    font-size: 13px;
+  }
+
+  .file-description {
+    color: var(--color-new-tab-page-secondary-foreground);
+    font-size: 12px;
   }
 </style>
 <ntp-module-header
+    dismiss-text="[[i18nRecursive('',
+                                  'modulesDismissButtonText',
+                                  'modulesDriveFilesLower')]]"
     disable-text="[[i18nRecursive('',
                                   'modulesDisableButtonText',
-                                  'modulesDriveSentence')]]"
+                                  'modulesDriveSentence2')]]"
+    show-info-button on-info-button-click="onInfoButtonClick_"
+    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
     on-disable-button-click="onDisableButtonClick_">
   $i18n{modulesDriveTitle}
 </ntp-module-header>
@@ -60,23 +84,21 @@
     <a class="file" href="[[item.itemUrl.url]]" on-click="onFileClick_"
         on-auxclick="onFileClick_">
       <img
-          is="ntp-img"
+          is="cr-auto-img"
           class="file-icon"
           draggable="false"
           auto-src="[[getImageSrc_(item)]]">
       </img>
-      <div class="file-title" title="[[item.title]]">[[item.title]]</div>
-      <div class="justification-container">
-        <template is="dom-if" if="[[item.untrustedPhotoUrl]]">
-          <img
-              is="ntp-img"
-              class="user-image"
-              draggable="false"
-              auto-src="[[item.untrustedPhotoUrl.url]]">
-          </img>
-        </template>
+      <div class="file-info">
+        <div class="file-title">[[item.title]]</div>
         <div class="file-description">[[item.justificationText]]</div>
       </div>
     </a>
   </template>
 </div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesDriveInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>

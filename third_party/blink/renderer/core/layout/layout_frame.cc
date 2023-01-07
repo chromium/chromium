@@ -36,12 +36,6 @@ LayoutFrame::LayoutFrame(HTMLFrameElement* frame)
   SetInline(false);
 }
 
-FrameEdgeInfo LayoutFrame::EdgeInfo() const {
-  NOT_DESTROYED();
-  auto* element = To<HTMLFrameElement>(GetNode());
-  return FrameEdgeInfo(element->NoResize(), element->HasFrameBorder());
-}
-
 void LayoutFrame::ImageChanged(WrappedImagePtr image, CanDeferInvalidation) {
   NOT_DESTROYED();
   if (const CursorList* cursors = StyleRef().Cursors()) {
@@ -59,10 +53,14 @@ void LayoutFrame::ImageChanged(WrappedImagePtr image, CanDeferInvalidation) {
   }
 }
 
-void LayoutFrame::UpdateFromElement() {
+void LayoutFrame::UpdateLayout() {
   NOT_DESTROYED();
-  if (Parent() && Parent()->IsFrameSet())
-    To<LayoutFrameSet>(Parent())->NotifyFrameEdgeInfoChanged();
+  // Should respect to BoxLayoutExtraInput.
+  if (Parent()->IsLayoutNGObject()) {
+    UpdateLogicalWidth();
+    UpdateLogicalHeight();
+  }
+  LayoutEmbeddedContent::UpdateLayout();
 }
 
 }  // namespace blink

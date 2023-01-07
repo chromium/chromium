@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,12 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "crypto/crypto_buildflags.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_export.h"
-#include "net/cert/x509_cert_types.h"
+#include "net/net_buildflags.h"
 
 namespace net {
 
@@ -23,7 +24,8 @@ class CertVerifyResult;
 class CRLSet;
 class NetLogWithSource;
 class X509Certificate;
-typedef std::vector<scoped_refptr<X509Certificate> > CertificateList;
+class ChromeRootStoreData;
+typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 
 // Class to perform certificate path building and verification for various
 // certificate uses. All methods of this class must be thread-safe, as they
@@ -66,18 +68,41 @@ class NET_EXPORT CertVerifyProc
     kMaxValue = kChainLengthOne
   };
 
-#if !(defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class EKUStatus {
+    kInvalid = 0,
+    kNoEKU = 1,
+    kAnyEKU = 2,
+    kServerAuthOnly = 3,
+    kServerAuthAndClientAuthOnly = 4,
+    kServerAuthAndOthers = 5,
+    kOther = 6,
+    kMaxValue = kOther
+  };
+
+#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   // Creates and returns a CertVerifyProc that uses the system verifier.
   // |cert_net_fetcher| may not be used, depending on the implementation.
   static scoped_refptr<CertVerifyProc> CreateSystemVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher);
 #endif
 
-#if defined(OS_FUCHSIA) || defined(USE_NSS_CERTS) || defined(OS_MAC)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_NSS_CERTS)
   // Creates and returns a CertVerifyProcBuiltin using the SSL SystemTrustStore.
   static scoped_refptr<CertVerifyProc> CreateBuiltinVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher);
 #endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  // Creates and returns a CertVerifyProcBuiltin using the Chrome Root Store
+  // SystemTrustStore.
+  static scoped_refptr<CertVerifyProc> CreateBuiltinWithChromeRootStore(
+      scoped_refptr<CertNetFetcher> cert_net_fetcher);
+#endif
+
+  CertVerifyProc(const CertVerifyProc&) = delete;
+  CertVerifyProc& operator=(const CertVerifyProc&) = delete;
 
   // Verifies the certificate against the given hostname as an SSL server
   // certificate. Returns OK if successful or an error code upon failure.
@@ -153,9 +178,6 @@ class NET_EXPORT CertVerifyProc
   // Implementations are expected to fill in all applicable fields, excluding:
   //
   // * ocsp_result
-  // * has_md2
-  // * has_md4
-  // * has_md5
   // * has_sha1
   // * has_sha1_leaf
   //
@@ -196,12 +218,22 @@ class NET_EXPORT CertVerifyProc
   // requirement they expire within 7 years after the effective date of the BRs
   // (i.e. by 1 July 2019).
   static bool HasTooLongValidity(const X509Certificate& cert);
+};
 
-  // Feature flag affecting the Legacy Symantec PKI deprecation, documented
-  // at https://g.co/chrome/symantecpkicerts
-  static const base::Feature kLegacySymantecPKIEnforcement;
+// Factory for creating new CertVerifyProcs when they need to be updated.
+class NET_EXPORT CertVerifyProcFactory
+    : public base::RefCountedThreadSafe<CertVerifyProcFactory> {
+ public:
+  // Create a new CertVerifyProc that uses the passed in ChromeRootStoreData.
+  virtual scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
+      scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      const ChromeRootStoreData* root_store_data) = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(CertVerifyProc);
+ protected:
+  virtual ~CertVerifyProcFactory() = default;
+
+ private:
+  friend class base::RefCountedThreadSafe<CertVerifyProcFactory>;
 };
 
 }  // namespace net

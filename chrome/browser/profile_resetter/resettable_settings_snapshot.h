@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -42,6 +41,11 @@ class ResettableSettingsSnapshot {
   };
 
   explicit ResettableSettingsSnapshot(Profile* profile);
+
+  ResettableSettingsSnapshot(const ResettableSettingsSnapshot&) = delete;
+  ResettableSettingsSnapshot& operator=(const ResettableSettingsSnapshot&) =
+      delete;
+
   ~ResettableSettingsSnapshot();
 
   // Getters.
@@ -118,8 +122,6 @@ class ResettableSettingsSnapshot {
   scoped_refptr<SharedCancellationFlag> cancellation_flag_;
 
   base::WeakPtrFactory<ResettableSettingsSnapshot> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResettableSettingsSnapshot);
 };
 
 // Serializes specified |snapshot| members to a protobuf. |field_mask| is a bit
@@ -135,7 +137,7 @@ void SendSettingsFeedbackProto(const reset_report::ChromeResetReport& report,
 
 // Returns list of key/value pairs for all available reported information
 // from the |profile| and some additional fields.
-std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
+base::Value::List GetReadableFeedbackForSnapshot(
     Profile* profile,
     const ResettableSettingsSnapshot& snapshot);
 

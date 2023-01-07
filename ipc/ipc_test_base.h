@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
@@ -22,6 +21,10 @@
 class IPCChannelMojoTestBase : public testing::Test {
  public:
   IPCChannelMojoTestBase();
+
+  IPCChannelMojoTestBase(const IPCChannelMojoTestBase&) = delete;
+  IPCChannelMojoTestBase& operator=(const IPCChannelMojoTestBase&) = delete;
+
   ~IPCChannelMojoTestBase() override;
 
   void Init(const std::string& test_client_name);
@@ -44,14 +47,12 @@ class IPCChannelMojoTestBase : public testing::Test {
   mojo::ScopedMessagePipeHandle TakeHandle();
 
  private:
-  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   mojo::ScopedMessagePipeHandle handle_;
   mojo::core::test::MultiprocessTestHelper helper_;
 
   std::unique_ptr<IPC::Channel> channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(IPCChannelMojoTestBase);
 };
 
 class IpcChannelMojoTestClient {

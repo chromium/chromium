@@ -1,0 +1,64 @@
+Tests Page.setFontFamilies() for 'standard'.
+.test
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 8
+        isCustomFont : false
+    }
+]
+Tests Page.setFontFamilies() for 'serif'.
+.test
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 5
+        isCustomFont : false
+    }
+]
+Tests Page.setFontFamilies() for 'sansSerif'.
+.test
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 9
+        isCustomFont : false
+    }
+]
+Tests Page.setFontFamilies() for 'cursive'.
+.test
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 7
+        isCustomFont : false
+    }
+]
+Tests Page.setFontFamilies() for 'fantasy'.
+.test
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 7
+        isCustomFont : false
+    }
+]
+Tests Page.setFontFamilies() for 'fixed'.
+.test
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 5
+        isCustomFont : false
+    }
+]
+Tests Page.setFontFamilies() for 'math'.
+.test
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 4
+        isCustomFont : false
+    }
+]
+

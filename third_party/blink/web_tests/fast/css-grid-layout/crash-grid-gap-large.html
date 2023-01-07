@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test using a large grid gap and auto width.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/grid-definitions-parsing-utils.js"></script>
+<style>
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(auto, 1px));
+    column-gap: 4294967177px;
+  }
+</style>
+</head>
+<body>
+  <div id="grid">
+    <div></div>
+    <div></div>
+  </div>
+  <script>
+    test(function () {
+      testGridPositionDefinitionsValues(document.getElementById("grid"), "auto", "auto", "auto", "auto");
+    }, "Tests that setting grid gap to a huge value is properly clamped and does not make the renderer crash.");
+  </script>
+</body>
+</html>

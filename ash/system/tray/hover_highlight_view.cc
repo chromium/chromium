@@ -1,10 +1,11 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/tray/hover_highlight_view.h"
 
 #include <string>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -18,17 +19,20 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
 HoverHighlightView::HoverHighlightView(ViewClickListener* listener)
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS), listener_(listener) {
   SetNotifyEnterExitOnChild(true);
-  SetInkDropMode(InkDropMode::ON);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 }
 
 HoverHighlightView::~HoverHighlightView() = default;
@@ -72,13 +76,12 @@ void HoverHighlightView::SetRightViewVisible(bool visible) {
 }
 
 void HoverHighlightView::SetSubText(const std::u16string& sub_text) {
-  DCHECK(is_populated_);
-  DCHECK(text_label_);
+  DCHECK(sub_row_);
   DCHECK(!sub_text.empty());
 
   if (!sub_text_label_) {
-    sub_text_label_ = TrayPopupUtils::CreateUnfocusableLabel();
-    tri_view_->AddView(TriView::Container::CENTER, sub_text_label_);
+    sub_text_label_ =
+        sub_row_->AddChildView(TrayPopupUtils::CreateUnfocusableLabel());
   }
 
   sub_text_label_->SetEnabledColor(
@@ -91,16 +94,26 @@ void HoverHighlightView::SetSubText(const std::u16string& sub_text) {
 void HoverHighlightView::AddIconAndLabel(const gfx::ImageSkia& image,
                                          const std::u16string& text) {
   DCHECK(!is_populated_);
+
+  std::unique_ptr<views::ImageView> icon(TrayPopupUtils::CreateMainImageView());
+  icon->SetImage(image);
+  icon->SetEnabled(GetEnabled());
+
+  AddViewAndLabel(std::move(icon), text);
+}
+
+void HoverHighlightView::AddViewAndLabel(std::unique_ptr<views::View> view,
+                                         const std::u16string& text) {
+  DCHECK(!is_populated_);
+  DCHECK(view);
   is_populated_ = true;
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   tri_view_ = TrayPopupUtils::CreateDefaultRowView();
   AddChildView(tri_view_);
 
-  left_icon_ = TrayPopupUtils::CreateMainImageView();
-  left_icon_->SetImage(image);
-  left_icon_->SetEnabled(GetEnabled());
-  tri_view_->AddView(TriView::Container::START, left_icon_);
+  left_view_ = view.get();
+  tri_view_->AddView(TriView::Container::START, view.release());
 
   text_label_ = TrayPopupUtils::CreateUnfocusableLabel();
   text_label_->SetText(text);
@@ -112,10 +125,12 @@ void HoverHighlightView::AddIconAndLabel(const gfx::ImageSkia& image,
   tri_view_->AddView(TriView::Container::CENTER, text_label_);
   // By default, END container is invisible, so labels in the CENTER should have
   // an extra padding at the end.
-  tri_view_->SetContainerBorder(
-      TriView::Container::CENTER,
-      views::CreateEmptyBorder(0, 0, 0, kTrayPopupLabelRightPadding));
+  tri_view_->SetContainerBorder(TriView::Container::CENTER,
+                                views::CreateEmptyBorder(gfx::Insets::TLBR(
+                                    0, 0, 0, kTrayPopupLabelRightPadding)));
   tri_view_->SetContainerVisible(TriView::Container::END, false);
+
+  AddSubRowContainer();
 
   SetAccessibleName(text);
 }
@@ -135,6 +150,8 @@ void HoverHighlightView::AddLabelRow(const std::u16string& text) {
   TrayPopupUtils::SetLabelFontList(
       text_label_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
   tri_view_->AddView(TriView::Container::CENTER, text_label_);
+
+  AddSubRowContainer();
 
   SetAccessibleName(text);
 }
@@ -162,11 +179,12 @@ void HoverHighlightView::SetAccessibilityState(
 }
 
 void HoverHighlightView::Reset() {
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
   text_label_ = nullptr;
   sub_text_label_ = nullptr;
-  left_icon_ = nullptr;
+  left_view_ = nullptr;
   right_view_ = nullptr;
+  sub_row_ = nullptr;
   tri_view_ = nullptr;
   is_populated_ = false;
 }
@@ -176,8 +194,10 @@ void HoverHighlightView::OnSetTooltipText(const std::u16string& tooltip_text) {
     text_label_->SetTooltipText(tooltip_text);
   if (sub_text_label_)
     sub_text_label_->SetTooltipText(tooltip_text);
-  if (left_icon_)
-    left_icon_->SetTooltipText(tooltip_text);
+  if (left_view_) {
+    DCHECK(views::IsViewClass<views::ImageView>(left_view_));
+    static_cast<views::ImageView*>(left_view_)->SetTooltipText(tooltip_text);
+  }
 }
 
 bool HoverHighlightView::PerformAction(const ui::Event& event) {
@@ -240,9 +260,20 @@ void HoverHighlightView::OnFocus() {
   ActionableView::OnFocus();
 }
 
+void HoverHighlightView::AddSubRowContainer() {
+  DCHECK(is_populated_);
+  DCHECK(tri_view_);
+  DCHECK(text_label_);
+  DCHECK(!sub_row_);
+  sub_row_ = new views::View();
+  sub_row_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
+  tri_view_->AddView(TriView::Container::CENTER, sub_row_);
+}
+
 void HoverHighlightView::OnEnabledChanged() {
-  if (left_icon_)
-    left_icon_->SetEnabled(GetEnabled());
+  if (left_view_)
+    left_view_->SetEnabled(GetEnabled());
   if (text_label_)
     text_label_->SetEnabled(GetEnabled());
   if (right_view_)

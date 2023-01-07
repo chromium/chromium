@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Interface for the holding space service implemented in ash-chrome.
+// See //ash/public/cpp/holding_space/README.md.
+//
+// Next MinVersion: 3
+// Next ID: 1
+[Stable, Uuid="00c78a1d-b80e-426a-9df1-428c439b3942"]
+interface HoldingSpaceService {
+
+  // Adds a printed PDF item backed by the provided absolute `file_path`. If
+  // `from_incognito_profile` is true, the print job was from an incognito
+  // profile.
+  [MinVersion=1] AddPrintedPdf@0(
+      mojo_base.mojom.FilePath file_path@0,
+      [MinVersion=2] bool from_incognito_profile@1);
+};

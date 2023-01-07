@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/url_data_source.h"
 #include "ui/base/layout.h"
@@ -27,6 +25,10 @@ namespace chromeos {
 class UserImageSource : public content::URLDataSource {
  public:
   UserImageSource();
+
+  UserImageSource(const UserImageSource&) = delete;
+  UserImageSource& operator=(const UserImageSource&) = delete;
+
   ~UserImageSource() override;
 
   // content::URLDataSource implementation.
@@ -35,16 +37,13 @@ class UserImageSource : public content::URLDataSource {
       const GURL& url,
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string& path) override;
+  std::string GetMimeType(const GURL& url) override;
 
   // Returns PNG encoded image for user with specified |account_id|. If there's
   // no user with such an id, returns the first default image. Always returns
   // the 100%-scale asset.
   static scoped_refptr<base::RefCountedMemory> GetUserImage(
       const AccountId& account_id);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserImageSource);
 };
 
 }  // namespace chromeos

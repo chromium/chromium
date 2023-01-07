@@ -1,12 +1,55 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/common/fetch/fetch_request_type_converters.h"
 
-#include "content/common/service_worker/service_worker_utils.h"
+#include "net/base/load_flags.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "ui/base/page_transition_types.h"
+
+namespace content {
+
+namespace {
+
+// Converts an enum defined in net/base/load_flags.h to
+// blink::mojom::FetchCacheMode.
+blink::mojom::FetchCacheMode GetFetchCacheModeFromLoadFlags(int load_flags) {
+  if (load_flags & net::LOAD_DISABLE_CACHE)
+    return blink::mojom::FetchCacheMode::kNoStore;
+
+  if (load_flags & net::LOAD_VALIDATE_CACHE)
+    return blink::mojom::FetchCacheMode::kValidateCache;
+
+  if (load_flags & net::LOAD_BYPASS_CACHE) {
+    if (load_flags & net::LOAD_ONLY_FROM_CACHE)
+      return blink::mojom::FetchCacheMode::kUnspecifiedForceCacheMiss;
+    return blink::mojom::FetchCacheMode::kBypassCache;
+  }
+
+  if (load_flags & net::LOAD_SKIP_CACHE_VALIDATION) {
+    if (load_flags & net::LOAD_ONLY_FROM_CACHE)
+      return blink::mojom::FetchCacheMode::kOnlyIfCached;
+    return blink::mojom::FetchCacheMode::kForceCache;
+  }
+
+  if (load_flags & net::LOAD_ONLY_FROM_CACHE) {
+    DCHECK(!(load_flags & net::LOAD_SKIP_CACHE_VALIDATION));
+    DCHECK(!(load_flags & net::LOAD_BYPASS_CACHE));
+    return blink::mojom::FetchCacheMode::kUnspecifiedOnlyIfCachedStrict;
+  }
+  return blink::mojom::FetchCacheMode::kDefault;
+}
+
+}  // namespace
+
+blink::mojom::FetchCacheMode GetFetchCacheModeFromLoadFlagsForTest(
+    int load_flags) {
+  return GetFetchCacheModeFromLoadFlags(load_flags);
+}
+
+}  // namespace content
 
 namespace mojo {
 
@@ -23,19 +66,22 @@ blink::mojom::FetchAPIRequestPtr TypeConverter<
   // We put the request body data into |output->body| rather than
   // |output->blob|. The |blob| is used in cases without
   // network::ResourceRequest involved. See fetch_api_request.mojom.
-  // We leave |output->body| as base::nullopt when |input.request_body| is
+  // We leave |output->body| as absl::nullopt when |input.request_body| is
   // nullptr.
   if (input.request_body)
     output->body = input.request_body;
+  output->request_initiator = input.request_initiator;
+  output->navigation_redirect_chain = input.navigation_redirect_chain;
   output->referrer = blink::mojom::Referrer::New(
       input.referrer,
       blink::ReferrerUtils::NetToMojoReferrerPolicy(input.referrer_policy));
   output->mode = input.mode;
   output->is_main_resource_load =
-      content::ServiceWorkerUtils::IsMainRequestDestination(input.destination);
+      blink::ServiceWorkerLoaderHelpers::IsMainRequestDestination(
+          input.destination);
   output->credentials_mode = input.credentials_mode;
   output->cache_mode =
-      content::ServiceWorkerUtils::GetCacheModeFromLoadFlags(input.load_flags);
+      content::GetFetchCacheModeFromLoadFlags(input.load_flags);
   output->redirect_mode = input.redirect_mode;
   output->destination =
       static_cast<network::mojom::RequestDestination>(input.destination);
@@ -49,6 +95,11 @@ blink::mojom::FetchAPIRequestPtr TypeConverter<
   output->is_history_navigation =
       input.transition_type & ui::PAGE_TRANSITION_FORWARD_BACK;
   output->devtools_stack_id = input.devtools_stack_id;
+  if (input.trust_token_params) {
+    output->trust_token_params = input.trust_token_params->Clone();
+  }
+  output->target_address_space =
+      static_cast<network::mojom::IPAddressSpace>(input.target_address_space);
   return output;
 }
 

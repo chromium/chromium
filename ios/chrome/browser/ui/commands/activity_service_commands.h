@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,9 @@
 
 // Shows the share sheet for the current page.
 - (void)sharePage;
+
+// Shows the share sheet for a link to the Chrome App in the App Store.
+- (void)shareChromeApp;
 
 // Shows the share sheet for the page and currently highlighted text.
 - (void)shareHighlight:(ShareHighlightCommand*)command;

@@ -1,0 +1,29 @@
+{
+    children: [
+        {
+            name: "context_provider",
+            url: "fuchsia-pkg://fuchsia.com/web_engine#meta/context_provider.cm",
+        },
+    ],
+    use: [
+        {
+            protocol: [
+                "fuchsia.web.ContextProvider",
+            ],
+            from: "#context_provider",
+            dependency: "weak",
+        },
+    ],
+    offer: [
+        {
+            protocol: [
+                "fuchsia.feedback.ComponentDataRegister",
+                "fuchsia.feedback.CrashReportingProductRegister",
+                "fuchsia.sys.Environment",
+                "fuchsia.sys.Loader",
+            ],
+            from: "parent",
+            to: "#context_provider",
+        },
+    ],
+}

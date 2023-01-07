@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,35 +11,46 @@ namespace blink {
 
 NGReplacedLayoutAlgorithm::NGReplacedLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params),
-      // TODO(dgrogan): Use something from NGLayoutInputNode instead of
-      // accessing LayoutBox directly.
-      natural_size_(PhysicalSize(Node().GetLayoutBox()->IntrinsicSize())
-                        .ConvertToLogical(Style().GetWritingMode())) {}
+    : NGLayoutAlgorithm(params) {}
 
-scoped_refptr<const NGLayoutResult> NGReplacedLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGReplacedLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken() || BreakToken()->IsBreakBefore());
   // Set this as a legacy root so that legacy painters are used.
   container_builder_.SetIsLegacyLayoutRoot();
 
-  // TODO(dgrogan): |natural_size_.block_size| is frequently not the correct
-  // intrinsic block size. Move |ComputeIntrinsicBlockSizeForAspectRatioElement|
-  // from NGFlexLayoutAlgorithm to ng_length_utils and call it here.
-  LayoutUnit intrinsic_block_size = natural_size_.block_size;
-  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size +
-                                           BorderPadding().BlockSum());
+  // TODO(crbug.com/1252693): kIgnoreBlockLengths applies inline constraints
+  // through the aspect ratio. But the aspect ratio is ignored when computing
+  // the intrinsic block size for NON-replaced elements. This is inconsistent
+  // and could lead to subtle bugs.
+  const LayoutUnit intrinsic_block_size =
+      ComputeReplacedSize(Node(), ConstraintSpace(), BorderPadding(),
+                          /* override_available_size */ absl::nullopt,
+                          ReplacedSizeMode::kIgnoreBlockLengths)
+          .block_size;
+  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
 
   return container_builder_.ToBoxFragment();
 }
 
-// TODO(dgrogan): |natural_size_.inline_size| is frequently not the correct
-// intrinsic inline size. Move NGFlexLayoutAlgorithm's
-// |ComputeIntrinsicInlineSizeForAspectRatioElement| to here.
 MinMaxSizesResult NGReplacedLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) const {
-  MinMaxSizes sizes({natural_size_.inline_size, natural_size_.inline_size});
-  sizes += BorderScrollbarPadding().InlineSum();
-  return {sizes, false};
+    const MinMaxSizesFloatInput&) {
+  // Most layouts are interested in the min/max content contribution which will
+  // call |ComputeReplacedSize| directly. (Which doesn't invoke the code below).
+  // This is only used by flex, which expects inline-lengths to be ignored for
+  // the min/max content size.
+  MinMaxSizes sizes;
+  sizes = ComputeReplacedSize(Node(), ConstraintSpace(), BorderPadding(),
+                              /* override_available_size */ absl::nullopt,
+                              ReplacedSizeMode::kIgnoreInlineLengths)
+              .inline_size;
+
+  const bool depends_on_block_constraints =
+      Style().LogicalHeight().IsPercentOrCalc() ||
+      Style().LogicalMinHeight().IsPercentOrCalc() ||
+      Style().LogicalMaxHeight().IsPercentOrCalc() ||
+      (Style().LogicalHeight().IsAuto() &&
+       ConstraintSpace().IsBlockAutoBehaviorStretch());
+  return {sizes, depends_on_block_constraints};
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,8 @@ class CommandBufferServiceTest : public testing::Test,
   void MakeService(unsigned int entry_count) {
     command_buffer_service_ =
         std::make_unique<CommandBufferService>(this, nullptr);
-    api_mock_.reset(new AsyncAPIMock(false, command_buffer_service_.get()));
+    api_mock_ =
+        std::make_unique<AsyncAPIMock>(false, command_buffer_service_.get());
     SetNewGetBuffer(entry_count * sizeof(CommandBufferEntry));
   }
 

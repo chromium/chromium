@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/hash/hash.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -17,9 +18,6 @@
 
 namespace optimization_guide {
 
-// The returned string is used to record histograms for the optimization type.
-// Also add the string to OptimizationGuide.OptimizationTypes histogram suffix
-// in histograms.xml.
 std::string GetStringNameForOptimizationType(
     proto::OptimizationType optimization_type) {
   switch (optimization_type) {
@@ -31,8 +29,8 @@ std::string GetStringNameForOptimizationType(
       return "ResourceLoading";
     case proto::OptimizationType::LITE_PAGE_REDIRECT:
       return "LitePageRedirect";
-    case proto::OptimizationType::OPTIMIZATION_NONE:
-      return "None";
+    case proto::OptimizationType::METADATA_FETCH_VALIDATION:
+      return "MetadataFetchValidation";
     case proto::OptimizationType::DEFER_ALL_SCRIPT:
       return "DeferAllScript";
     case proto::OptimizationType::PERFORMANCE_HINTS:
@@ -45,10 +43,6 @@ std::string GetStringNameForOptimizationType(
       return "LoadingPredictor";
     case proto::OptimizationType::FAST_HOST_HINTS:
       return "FastHostHints";
-    case proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION:
-      return "DelayAsyncScriptExecution";
-    case proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS:
-      return "DelayCompetingLowPriorityRequests";
     case proto::OptimizationType::LITE_VIDEO:
       return "LiteVideo";
     case proto::OptimizationType::LINK_PERFORMANCE:
@@ -57,7 +51,32 @@ std::string GetStringNameForOptimizationType(
       return "ShoppingPagePredictor";
     case proto::OptimizationType::LOGIN_DETECTION:
       return "LoginDetection";
+    case proto::OptimizationType::MERCHANT_TRUST_SIGNALS:
+      return "MerchantTrustSignals";
+    case proto::OptimizationType::PRICE_TRACKING:
+      return "PriceTracking";
+    case proto::OptimizationType::BLOOM_FILTER_VALIDATION:
+      return "BloomFilterValidation";
+    case proto::OptimizationType::ABOUT_THIS_SITE:
+      return "AboutThisSite";
+    case proto::OptimizationType::MERCHANT_TRUST_SIGNALS_V2:
+      return "MerchantTrustSignalsV2";
+    case proto::OptimizationType::PAGE_ENTITIES:
+      return "PageEntities";
+    case proto::OptimizationType::HISTORY_CLUSTERS:
+      return "HistoryClusters";
+    case proto::OptimizationType::THANK_CREATOR_ELIGIBLE:
+      return "ThankCreatorEligible";
+    case proto::OptimizationType::IBAN_AUTOFILL_BLOCKED:
+      return "IBANAutofillBlocked";
   }
+
+  // The returned string is used to record histograms for the optimization type.
+  //
+  // Whenever a new value is added, make sure to add it to the OptimizationType
+  // variant list in
+  // //tools/metrics/histograms/metadata/optimization/histograms.xml. Also
+  // update enums.xml when adding new value in OptimizationType.
   NOTREACHED();
   return std::string();
 }

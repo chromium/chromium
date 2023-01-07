@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@ public struct UserDefaultsWidgetStore {
   // Use UserDefaults.standard because this information only needs to be stored and retrieved from
   // the main app.
   private let userDefaults = UserDefaults.standard
-
 
   public func storeWidgetInfo(_ info: [String]) throws {
     let encoder = JSONEncoder()

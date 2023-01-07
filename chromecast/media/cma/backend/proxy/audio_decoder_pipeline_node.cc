@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,17 +60,23 @@ void AudioDecoderPipelineNode::GetStatistics(
   return delegated_decoder_->GetStatistics(statistics);
 }
 
+CmaBackend::AudioDecoder::AudioTrackTimestamp
+AudioDecoderPipelineNode::GetAudioTrackTimestamp() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  return delegated_decoder_->GetAudioTrackTimestamp();
+}
+
+int AudioDecoderPipelineNode::GetStartThresholdInFrames() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  return delegated_decoder_->GetStartThresholdInFrames();
+}
+
 bool AudioDecoderPipelineNode::RequiresDecryption() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   return delegated_decoder_->RequiresDecryption();
-}
-
-void AudioDecoderPipelineNode::SetObserver(
-    CmaBackend::AudioDecoder::Observer* observer) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  delegated_decoder_->SetObserver(observer);
 }
 
 void AudioDecoderPipelineNode::SetOwnedDecoder(

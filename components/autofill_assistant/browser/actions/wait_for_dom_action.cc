@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
+#include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
@@ -19,8 +21,7 @@
 namespace autofill_assistant {
 namespace {
 
-static constexpr base::TimeDelta kDefaultCheckDuration =
-    base::TimeDelta::FromSeconds(15);
+static constexpr base::TimeDelta kDefaultCheckDuration = base::Seconds(15);
 
 void CollectExpectedElements(const ElementConditionProto& condition,
                              std::vector<std::string>* expected_client_ids) {
@@ -62,15 +63,13 @@ void WaitForDomAction::InternalProcessAction(ProcessActionCallback callback) {
   base::TimeDelta max_wait_time = kDefaultCheckDuration;
   int timeout_ms = proto_.wait_for_dom().timeout_ms();
   if (timeout_ms > 0)
-    max_wait_time = base::TimeDelta::FromMilliseconds(timeout_ms);
+    max_wait_time = base::Milliseconds(timeout_ms);
 
   if (!proto_.wait_for_dom().has_wait_condition()) {
     VLOG(2) << "WaitForDomAction: no condition specified";
     ReportActionResult(std::move(callback), ClientStatus(INVALID_ACTION));
     return;
   }
-  wait_condition_ = std::make_unique<ElementPrecondition>(
-      proto_.wait_for_dom().wait_condition());
   delegate_->WaitForDomWithSlowWarning(
       max_wait_time, proto_.wait_for_dom().allow_interrupt(),
       /* observer= */ nullptr,
@@ -86,8 +85,8 @@ void WaitForDomAction::InternalProcessAction(ProcessActionCallback callback) {
 void WaitForDomAction::CheckElements(
     BatchElementChecker* checker,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  wait_condition_->Check(
-      checker,
+  checker->AddElementConditionCheck(
+      proto_.wait_for_dom().wait_condition(),
       base::BindOnce(&WaitForDomAction::OnWaitConditionDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -96,6 +95,7 @@ void WaitForDomAction::OnWaitConditionDone(
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& status,
     const std::vector<std::string>& payloads,
+    const std::vector<std::string>& tags,
     const base::flat_map<std::string, DomObjectFrameStack>& elements) {
   // Results are first cleared, as OnWaitConditionDone can be called more
   // than once. Yet, we want report only the payloads sent with the final call
@@ -105,6 +105,9 @@ void WaitForDomAction::OnWaitConditionDone(
   result->clear_matching_condition_payloads();
   for (const std::string& payload : payloads) {
     result->add_matching_condition_payloads(payload);
+  }
+  for (const std::string& tag : tags) {
+    result->add_matching_condition_tags(tag);
   }
 
   elements_ = elements;
@@ -129,7 +132,7 @@ void WaitForDomAction::UpdateElementStore() {
 void WaitForDomAction::ReportActionResult(ProcessActionCallback callback,
                                           const ClientStatus& status) {
   UpdateElementStore();
-  UpdateProcessedAction(status.proto_status());
+  UpdateProcessedAction(status);
   std::move(callback).Run(std::move(processed_action_proto_));
 }
 }  // namespace autofill_assistant

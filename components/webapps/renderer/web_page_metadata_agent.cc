@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,10 @@ namespace webapps {
 
 WebPageMetadataAgent::WebPageMetadataAgent(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&WebPageMetadataAgent::OnRenderFrameObserverRequest,
-                          base::Unretained(this)));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::WebPageMetadataAgent>(base::BindRepeating(
+          &WebPageMetadataAgent::OnRenderFrameObserverRequest,
+          base::Unretained(this)));
 }
 
 WebPageMetadataAgent::~WebPageMetadataAgent() = default;

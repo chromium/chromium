@@ -1,0 +1,33 @@
+diff --git a/components-chromium/iron-icon/iron-icon.js b/components-chromium/iron-icon/iron-icon.js
+index 35835d2b5c484..2a647f13b3e55 100644
+--- a/components-chromium/iron-icon/iron-icon.js
++++ b/components-chromium/iron-icon/iron-icon.js
+@@ -8,8 +8,6 @@ found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by Google as
+ part of the polymer project is also subject to an additional IP rights grant
+ found at http://polymer.github.io/PATENTS.txt
+ */
+-import '../iron-flex-layout/iron-flex-layout.js';
+-
+ import {IronMeta} from '../iron-meta/iron-meta.js';
+ import {Polymer} from '../polymer/polymer_bundled.min.js';
+ import {dom} from '../polymer/polymer_bundled.min.js';
+@@ -89,8 +87,9 @@ Polymer({
+   _template: html`
+     <style>
+       :host {
+-        @apply --layout-inline;
+-        @apply --layout-center-center;
++        align-items: center;
++        display: inline-flex;
++        justify-content: center;
+         position: relative;
+ 
+         vertical-align: middle;
+@@ -100,7 +99,6 @@ Polymer({
+ 
+         width: var(--iron-icon-width, 24px);
+         height: var(--iron-icon-height, 24px);
+-        @apply --iron-icon;
+       }
+ 
+       :host([hidden]) {

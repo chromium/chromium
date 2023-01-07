@@ -1,0 +1,23 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/webmachinelearning/model-loader/blob/main/explainer.md
+
+// Notice that `MLBufferView` and `MLResource` will be modified and shared with
+// the WebNN API: https://webmachinelearning.github.io/webnn/
+
+// TODO(crbug.com/1309261): This is different from the specification of WebNN
+// because in the first version we do not involve any hardware acceleration. We
+// should update it when WebNN is implemented.
+typedef ArrayBufferView MLBufferView;
+
+// TODO(crbug.com/1309261): This is different from the specification of WebNN
+// because in the first version we do not involve any hardware acceleration. We
+// should update it when WebNN is implemented.
+typedef MLBufferView MLResource;
+
+dictionary MLTensor {
+  required MLResource data;
+  required sequence<unsigned long> dimensions;
+};

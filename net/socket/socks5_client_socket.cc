@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/io_buffer.h"
+#include "net/base/sys_addrinfo.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -38,12 +38,7 @@ SOCKS5ClientSocket::SOCKS5ClientSocket(
     : io_callback_(base::BindRepeating(&SOCKS5ClientSocket::OnIOComplete,
                                        base::Unretained(this))),
       transport_socket_(std::move(transport_socket)),
-      next_state_(STATE_NONE),
-      completed_handshake_(false),
-      bytes_sent_(0),
-      bytes_received_(0),
       read_header_size(kReadHeaderSize),
-      was_ever_used_(false),
       destination_(destination),
       net_log_(transport_socket_->NetLog()),
       traffic_annotation_(traffic_annotation) {}
@@ -120,10 +115,6 @@ bool SOCKS5ClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
     return transport_socket_->GetSSLInfo(ssl_info);
   NOTREACHED();
   return false;
-}
-
-void SOCKS5ClientSocket::GetConnectionAttempts(ConnectionAttempts* out) const {
-  out->clear();
 }
 
 int64_t SOCKS5ClientSocket::GetTotalReceivedBytes() const {
@@ -279,7 +270,7 @@ int SOCKS5ClientSocket::DoGreetWrite() {
 
   if (buffer_.empty()) {
     buffer_ =
-        std::string(kSOCKS5GreetWriteData, base::size(kSOCKS5GreetWriteData));
+        std::string(kSOCKS5GreetWriteData, std::size(kSOCKS5GreetWriteData));
     bytes_sent_ = 0;
   }
 

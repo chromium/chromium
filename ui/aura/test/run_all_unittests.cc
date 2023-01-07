@@ -1,9 +1,8 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "mojo/core/embedder/embedder.h"
@@ -21,6 +20,9 @@ AuraTestSuite* g_test_suite = nullptr;
 class AuraTestSuite : public base::TestSuite {
  public:
   AuraTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
+
+  AuraTestSuite(const AuraTestSuite&) = delete;
+  AuraTestSuite& operator=(const AuraTestSuite&) = delete;
 
   void DestroyEnv() { env_.reset(); }
   void CreateEnv() { env_ = aura::Env::CreateInstance(); }
@@ -42,7 +44,6 @@ class AuraTestSuite : public base::TestSuite {
 
  private:
   std::unique_ptr<aura::Env> env_;
-  DISALLOW_COPY_AND_ASSIGN(AuraTestSuite);
 };
 
 namespace aura {

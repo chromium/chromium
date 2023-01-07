@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,8 @@ ExtensionFunction::ResponseAction SystemCpuGetInfoFunction::Run() {
 
 void SystemCpuGetInfoFunction::OnGetCpuInfoCompleted(bool success) {
   if (success) {
-    Respond(OneArgument(base::Value::FromUniquePtrValue(
-        CpuInfoProvider::Get()->cpu_info().ToValue())));
+    Respond(
+        OneArgument(base::Value(CpuInfoProvider::Get()->cpu_info().ToValue())));
   } else {
     Respond(Error("Error occurred when querying cpu information."));
   }

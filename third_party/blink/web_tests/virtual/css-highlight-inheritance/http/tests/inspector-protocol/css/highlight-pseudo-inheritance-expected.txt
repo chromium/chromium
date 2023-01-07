@@ -1,0 +1,20 @@
+Test that inherited highlight pseudos are reported in getMatchedStylesForNode.
+Logging #target's own pseudos:
+Found 1 pseudo element matches
+Match 0 has pseudoType highlight
+Match 0 has 1 matched rules
+Match 0's rule 0 has cssText color: lightblue;
+Logging #target's inherited pseudos:
+Found 1 pseudo element matches
+Match 0 has pseudoType highlight
+Match 0 has 2 matched rules
+Match 0's rule 0 has cssText color: red;
+Match 0's rule 1 has cssText color: orange;
+Found 0 pseudo element matches
+Found 1 pseudo element matches
+Match 0 has pseudoType selection
+Match 0 has 1 matched rules
+Match 0's rule 0 has cssText color: limegreen;
+Found 0 pseudo element matches
+Found 0 pseudo element matches
+

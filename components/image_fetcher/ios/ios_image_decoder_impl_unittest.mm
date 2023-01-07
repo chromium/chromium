@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -77,7 +76,7 @@ TEST_F(IOSImageDecoderImplTest, JPGImage) {
   std::string image_data =
       std::string(reinterpret_cast<char*>(kJPGImage), sizeof(kJPGImage));
   ios_image_decoder_impl_->DecodeImage(
-      image_data, gfx::Size(),
+      image_data, gfx::Size(), /*data_decoder=*/nullptr,
       base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
                      base::Unretained(this)));
 
@@ -92,7 +91,7 @@ TEST_F(IOSImageDecoderImplTest, WebpImage) {
   std::string image_data =
       std::string(reinterpret_cast<char*>(kWEBPImage), sizeof(kWEBPImage));
   ios_image_decoder_impl_->DecodeImage(
-      image_data, gfx::Size(),
+      image_data, gfx::Size(), /*data_decoder=*/nullptr,
       base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
                      base::Unretained(this)));
 

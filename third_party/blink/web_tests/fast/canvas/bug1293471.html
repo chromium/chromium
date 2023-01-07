@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(function(t) {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 20;
+  const context = canvas.getContext('2d');
+  // This test verifies that pixel premultiplicatio/unpremul is done correctly
+  // when putImageData covers the entire canvas.
+  // This is a regression test for a bug that was caused by a fast path that
+  // was short-circuiting alpha type conversions when the canvas was fully
+  // overwritten.
+  canvasData = context.createImageData(canvas.width, canvas.height);
+  for(let i = 0; i < canvasData.data.length; i = i + 4) {
+    canvasData.data[i] = 0;
+    canvasData.data[i+1] = 0;
+    canvasData.data[i+2] = 127;
+    canvasData.data[i+3] = 127;
+  }
+  context.putImageData(canvasData, 0, 0);
+
+  let pixel = context.getImageData(10,10,1,1).data
+  const epsilon = 2;
+  assert_array_approx_equals(pixel, [0, 0, 127, 127], epsilon, "ImageData pixel survived round trip");
+})
+</script>

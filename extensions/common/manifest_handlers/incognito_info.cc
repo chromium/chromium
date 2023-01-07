@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,8 @@ IncognitoHandler::~IncognitoHandler() = default;
 bool IncognitoHandler::Parse(Extension* extension, std::u16string* error) {
   IncognitoManifestKeys manifest_keys;
   if (!IncognitoManifestKeys::ParseFromDictionary(
-          extension->manifest()->available_values(), &manifest_keys, error)) {
+          extension->manifest()->available_values().GetDict(), &manifest_keys,
+          error)) {
     return false;
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -376,7 +376,8 @@ TEST(ProcessMitigationsTest, CheckWin8ExtensionPointPolicySuccess) {
   TestRunner runner;
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_EXTENSION_POINT_DISABLE),
+  EXPECT_EQ(policy->GetConfig()->SetProcessMitigations(
+                MITIGATION_EXTENSION_POINT_DISABLE),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 
@@ -386,9 +387,9 @@ TEST(ProcessMitigationsTest, CheckWin8ExtensionPointPolicySuccess) {
   TestRunner runner2;
   sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
 
-  EXPECT_EQ(
-      policy2->SetDelayedProcessMitigations(MITIGATION_EXTENSION_POINT_DISABLE),
-      SBOX_ALL_OK);
+  EXPECT_EQ(policy2->GetConfig()->SetDelayedProcessMitigations(
+                MITIGATION_EXTENSION_POINT_DISABLE),
+            SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
 }
 

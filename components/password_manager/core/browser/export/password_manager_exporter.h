@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,17 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece.h"
-#include "base/time/time.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
 
 namespace password_manager {
 
-class CredentialProviderInterface;
+class SavedPasswordsPresenter;
 
 // Controls the exporting of passwords. One instance per export flow.
 // PasswordManagerExporter will perform the export asynchronously as soon as all
@@ -35,9 +33,12 @@ class PasswordManagerExporter {
   using SetPosixFilePermissionsCallback =
       base::RepeatingCallback<bool(const base::FilePath&, int)>;
 
-  explicit PasswordManagerExporter(
-      CredentialProviderInterface* credential_provider_interface,
-      ProgressCallback on_progress);
+  explicit PasswordManagerExporter(SavedPasswordsPresenter* presenter,
+                                   ProgressCallback on_progress);
+
+  PasswordManagerExporter(const PasswordManagerExporter&) = delete;
+  PasswordManagerExporter& operator=(const PasswordManagerExporter&) = delete;
+
   virtual ~PasswordManagerExporter();
 
   // Pre-load the passwords from the password store.
@@ -94,7 +95,7 @@ class PasswordManagerExporter {
   void Cleanup();
 
   // The source of the password list which will be exported.
-  CredentialProviderInterface* const credential_provider_interface_;
+  const raw_ptr<SavedPasswordsPresenter> presenter_;
 
   // Callback to the UI.
   ProgressCallback on_progress_;
@@ -129,8 +130,6 @@ class PasswordManagerExporter {
   // the same sequence.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<PasswordManagerExporter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerExporter);
 };
 
 }  // namespace password_manager

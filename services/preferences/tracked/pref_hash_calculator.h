@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define SERVICES_PREFERENCES_TRACKED_PREF_HASH_CALCULATOR_H_
 
 #include <string>
-
-#include "base/macros.h"
 
 namespace base {
 class Value;
@@ -31,6 +29,9 @@ class PrefHashCalculator {
                      const std::string& device_id,
                      const std::string& legacy_device_id);
 
+  PrefHashCalculator(const PrefHashCalculator&) = delete;
+  PrefHashCalculator& operator=(const PrefHashCalculator&) = delete;
+
   ~PrefHashCalculator();
 
   // Calculates a hash value for the supplied preference |path| and |value|.
@@ -48,8 +49,6 @@ class PrefHashCalculator {
   const std::string seed_;
   const std::string device_id_;
   const std::string legacy_device_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefHashCalculator);
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_PREF_HASH_CALCULATOR_H_

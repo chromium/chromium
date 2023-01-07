@@ -27,8 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQL_TRANSACTION_STATE_MACHINE_H_
 
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_transaction_state.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

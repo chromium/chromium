@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ BOOL IsSwipingBack(UISwipeGestureRecognizerDirection direction);
 // If swiping to the left (or right in RTL).
 BOOL IsSwipingForward(UISwipeGestureRecognizerDirection direction);
 
-// Returns |YES| if the item should use Chromium native swipe.  This is true for
+// Returns `YES` if the item should use Chromium native swipe.  This is true for
 // the NTP and chrome://crash.
 BOOL UseNativeSwipe(web::NavigationItem* item);
 

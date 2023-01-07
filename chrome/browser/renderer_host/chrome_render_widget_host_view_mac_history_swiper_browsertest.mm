@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -88,17 +87,22 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
         base_path, base::FilePath(FILE_PATH_LITERAL("iframe.html")));
   }
 
+  ChromeRenderWidgetHostViewMacHistorySwiperTest(
+      const ChromeRenderWidgetHostViewMacHistorySwiperTest&) = delete;
+  ChromeRenderWidgetHostViewMacHistorySwiperTest& operator=(
+      const ChromeRenderWidgetHostViewMacHistorySwiperTest&) = delete;
+
   void SetUpOnMainThread() override {
     event_queue_.reset([[NSMutableArray alloc] init]);
     touch_ = CGPointMake(0.5, 0.5);
 
     // Ensure that the navigation stack is not empty.
-    ui_test_utils::NavigateToURL(browser(), url1_);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1_));
     ASSERT_EQ(url1_, GetWebContents()->GetURL());
-    ui_test_utils::NavigateToURL(browser(), url2_);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2_));
     ASSERT_EQ(url2_, GetWebContents()->GetURL());
 
-    mock_clock_.Advance(base::TimeDelta::FromMilliseconds(100));
+    mock_clock_.Advance(base::Milliseconds(100));
     ui::SetEventTickClockForTesting(&mock_clock_);
   }
 
@@ -126,12 +130,6 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
   // Returns the vertical scroll offset of the current page.
   int GetScrollTop() {
     return GetScriptIntValue("document.body.scrollTop");
-  }
-
-  bool IsHistorySwipingSupported() {
-    // These tests require 10.7+ APIs.
-    return [NSEvent
-        respondsToSelector:@selector(isSwipeTrackingFromScrollEventsEnabled)];
   }
 
   // Create mock events --------------------------------------------------------
@@ -189,8 +187,9 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
                                NSEventPhase momentum_phase,
                                CGFloat scrolling_delta_x,
                                CGFloat scrolling_delta_y) {
-    id event = MockScrollWheelEvent(
-        NSMakePoint(scrolling_delta_x, scrolling_delta_y), NSScrollWheel);
+    id event =
+        MockScrollWheelEvent(NSMakePoint(scrolling_delta_x, scrolling_delta_y),
+                             NSEventTypeScrollWheel);
     [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(phase)] phase];
     [(NSEvent*)[[event stub]
         andReturnValue:OCMOCK_VALUE(momentum_phase)] momentumPhase];
@@ -282,36 +281,30 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
   // Queue the typical events at the beginning of a new swipe gesture. The
   // ordering and values were determined by recording real swipe events.
   void QueueBeginningEvents(int dx, int dy) {
-    QueueTouch(
-        DEPLOYMENT_TOUCHES_BEGAN, NSEventTypeGesture, NSMouseEventSubtype, NO);
+    QueueTouch(DEPLOYMENT_TOUCHES_BEGAN, NSEventTypeGesture,
+               NSEventSubtypeMouseEvent, NO);
     QueueTrackpadScroll(0, 0, NSEventPhaseMayBegin, YES);
-    QueueTouch(
-        DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture, NSMouseEventSubtype, NO);
+    QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+               NSEventSubtypeMouseEvent, NO);
 
     QueueTrackpadScroll(dx, dy, NSEventPhaseBegan, NO);
     QueueGestureBegin();
-    QueueTouch(DEPLOYMENT_TOUCHES_MOVED,
-               NSEventTypeBeginGesture,
-               NSTouchEventSubtype,
-               NO);
-    QueueTouch(
-        DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture, NSTouchEventSubtype, YES);
+    QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeBeginGesture,
+               NSEventSubtypeTouch, NO);
+    QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+               NSEventSubtypeTouch, YES);
     UpdateTouchLocationFromTrackpadScroll(dx, dy);
-    QueueTouch(
-        DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture, NSTouchEventSubtype, NO);
+    QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+               NSEventSubtypeTouch, NO);
   }
 
   // Queue the typical events at the end of a new swipe gesture. The ordering
   // and values were determined by recording real swipe events.
   void QueueEndEvents() {
-    QueueTouch(DEPLOYMENT_TOUCHES_MOVED,
-               NSEventTypeEndGesture,
-               NSMouseEventSubtype,
-               NO);
-    QueueTouch(DEPLOYMENT_TOUCHES_ENDED,
-               NSEventTypeEndGesture,
-               NSMouseEventSubtype,
-               NO);
+    QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeEndGesture,
+               NSEventSubtypeMouseEvent, NO);
+    QueueTouch(DEPLOYMENT_TOUCHES_ENDED, NSEventTypeEndGesture,
+               NSEventSubtypeMouseEvent, NO);
     QueueGestureEnd();
     QueueTrackpadScroll(0, 0, NSEventPhaseEnded, YES);
   }
@@ -320,8 +313,8 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
   void QueueScrollAndTouchMoved(int dx, int dy) {
     QueueTrackpadScroll(dx, dy, NSEventPhaseChanged, NO);
     UpdateTouchLocationFromTrackpadScroll(dx, dy);
-    QueueTouch(
-        DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture, NSTouchEventSubtype, YES);
+    QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+               NSEventSubtypeTouch, YES);
   }
 
   // Queues a touch event with the stored touch coordinates.
@@ -335,7 +328,7 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
   // Replays the events from the queue.
   void RunQueuedEvents() {
     while ([event_queue_ count] > 0) {
-      QueuedEvent* queued_event = [event_queue_ objectAtIndex:0];
+      QueuedEvent* queued_event = [event_queue_ firstObject];
       NSEvent* event = queued_event.event;
       NSView* view = GetWebContents()
                          ->GetRenderViewHost()
@@ -395,239 +388,113 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
   base::scoped_nsobject<NSMutableArray> event_queue_;
   // The current location of the user's fingers on the track pad.
   CGPoint touch_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeRenderWidgetHostViewMacHistorySwiperTest);
 };
 
 // The ordering, timing, and parameters of the events was determined by
 // recording a real swipe.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestBackwardsHistoryNavigationRealData) {
-  if (!IsHistorySwipingSupported())
-    return;
-
-  QueueTouch(0.510681,
-             0.444672,
-             DEPLOYMENT_TOUCHES_BEGAN,
-             NSEventTypeGesture,
-             NSMouseEventSubtype,
-             NO);
+  QueueTouch(0.510681, 0.444672, DEPLOYMENT_TOUCHES_BEGAN, NSEventTypeGesture,
+             NSEventSubtypeMouseEvent, NO);
   QueueTrackpadScroll(0, 0, NSEventPhaseMayBegin, YES);
-  QueueTouch(0.510681,
-             0.444672,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSMouseEventSubtype,
-             NO);
+  QueueTouch(0.510681, 0.444672, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeMouseEvent, NO);
 
   QueueTrackpadScroll(1, 0, NSEventPhaseBegan, NO);
   QueueGestureBegin();
-  QueueTouch(0.510681,
-             0.444672,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeBeginGesture,
-             NSTouchEventSubtype,
-             NO);
-  QueueTouch(0.510681,
-             0.444672,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.510681, 0.444672, DEPLOYMENT_TOUCHES_MOVED,
+             NSEventTypeBeginGesture, NSEventSubtypeTouch, NO);
+  QueueTouch(0.510681, 0.444672, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
-  QueueTouch(0.507019,
-             0.444092,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             NO);
+  QueueTouch(0.507019, 0.444092, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, NO);
   QueueTrackpadScroll(3, 0, NSEventPhaseChanged, YES);
 
   QueueTrackpadScroll(3, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.502861,
-             0.443512,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.502861, 0.443512, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(6, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.497002,
-             0.44294,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.497002, 0.44294, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(5, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.487236,
-             0.44149,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.487236, 0.44149, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(8, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.480392,
-             0.440628,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             NO);
-  QueueTouch(0.475266,
-             0.440338,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.480392, 0.440628, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, NO);
+  QueueTouch(0.475266, 0.440338, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(6, -1, NSEventPhaseChanged, NO);
   QueueTrackpadScroll(10, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.467934,
-             0.439758,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.467934, 0.439758, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(6, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.462807,
-             0.439186,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.462807, 0.439186, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(12, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.454018,
-             0.438316,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.454018, 0.438316, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(6, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.449623,
-             0.438026,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.449623, 0.438026, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(9, 0, NSEventPhaseChanged, NO);
-  QueueTouch(0.443275,
-             0.437744,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
-  QueueTouch(0.437164,
-             0.437164,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.443275, 0.437744, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
+  QueueTouch(0.437164, 0.437164, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(9, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.431305,
-             0.436874,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.431305, 0.436874, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(8, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.425926,
-             0.436295,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.425926, 0.436295, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(7, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.420311,
-             0.43573,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.420311, 0.43573, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(7, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.415184,
-             0.43544,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.415184, 0.43544, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(6, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.410057,
-             0.43457,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
-  QueueTouch(0.40493,
-             0.43399,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.410057, 0.43457, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
+  QueueTouch(0.40493, 0.43399, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(7, -1, NSEventPhaseChanged, YES);
   QueueTrackpadScroll(3, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.402489,
-             0.433701,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.402489, 0.433701, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(5, 0, NSEventPhaseChanged, NO);
-  QueueTouch(0.398094,
-             0.433418,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.398094, 0.433418, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(4, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.394669,
-             0.433128,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
-  QueueTouch(0.391006,
-             0.432549,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.394669, 0.433128, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
+  QueueTouch(0.391006, 0.432549, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(4, -1, NSEventPhaseChanged, NO);
   QueueTrackpadScroll(5, 0, NSEventPhaseChanged, YES);
-  QueueTouch(0.386848,
-             0.432259,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
-  QueueTouch(0.38343,
-             0.432259,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.386848, 0.432259, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
+  QueueTouch(0.38343, 0.432259, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   // Skipped a bunch of events. The data on the gesture end events are fudged.
 
-  QueueTouch(0.38343,
-             0.432259,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeEndGesture,
-             NSMouseEventSubtype,
-             NO);
-  QueueTouch(0.38343,
-             0.432259,
-             DEPLOYMENT_TOUCHES_ENDED,
-             NSEventTypeEndGesture,
-             NSMouseEventSubtype,
-             NO);
+  QueueTouch(0.38343, 0.432259, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeEndGesture,
+             NSEventSubtypeMouseEvent, NO);
+  QueueTouch(0.38343, 0.432259, DEPLOYMENT_TOUCHES_ENDED, NSEventTypeEndGesture,
+             NSEventSubtypeMouseEvent, NO);
   QueueGestureEnd();
   QueueTrackpadScroll(0, 0, NSEventPhaseEnded, YES);
 
@@ -640,9 +507,6 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // http://crbug.com/396328
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestAllDiagonalSwipes) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   QueueBeginningEvents(1, -1);
   for (int i = 0; i < 150; ++i)
     QueueScrollAndTouchMoved(1, -1);
@@ -658,9 +522,6 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // not trigger history navigation.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestStaggeredDiagonalSwipe) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   QueueBeginningEvents(1, 0);
   for (int i = 0; i < 150; ++i) {
     switch (i % 3) {
@@ -702,9 +563,6 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // trigger a history swipe. This should trigger history navigation.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestMostlyHorizontal) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   QueueBeginningEvents(1, 1);
   for (int i = 0; i < 150; ++i) {
     if (i % 10 == 0) {
@@ -728,9 +586,6 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // crbug.com/375512
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestAllHorizontalButFirst) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   QueueBeginningEvents(0, -1);
   QueueScrollAndTouchMoved(0, -1);
   for (int i = 0; i < 149; ++i)
@@ -745,10 +600,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // are horizontal, and should not trigger history swiping.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestIframeHistorySwiping) {
-  if (!IsHistorySwipingSupported())
-    return;
-
-  ui_test_utils::NavigateToURL(browser(), url_iframe_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_iframe_));
   ASSERT_EQ(url_iframe_, GetWebContents()->GetURL());
 
   content::InputEventAckWaiter wheel_end_ack_waiter(
@@ -780,18 +632,15 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // The gesture ends before the touchesEndedWithEvent: method gets called.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestGestureEndTiming) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   QueueBeginningEvents(1, 0);
   for (int i = 0; i < 150; ++i)
     QueueScrollAndTouchMoved(1, 0);
 
-  QueueTouch(
-      DEPLOYMENT_TOUCHES_MOVED, NSEventTypeEndGesture, NSMouseEventSubtype, NO);
+  QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeEndGesture,
+             NSEventSubtypeMouseEvent, NO);
   QueueGestureEnd();
-  QueueTouch(
-      DEPLOYMENT_TOUCHES_ENDED, NSEventTypeEndGesture, NSMouseEventSubtype, NO);
+  QueueTouch(DEPLOYMENT_TOUCHES_ENDED, NSEventTypeEndGesture,
+             NSEventSubtypeMouseEvent, NO);
   QueueTrackpadScroll(0, 0, NSEventPhaseEnded, YES);
 
   RunQueuedEvents();
@@ -802,13 +651,10 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 IN_PROC_BROWSER_TEST_F(
     ChromeRenderWidgetHostViewMacHistorySwiperTest,
     DISABLED_InnerScrollersOverscrollBehaviorPreventsNavigation) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   const base::FilePath base_path(FILE_PATH_LITERAL("scroll"));
   GURL url_overscroll_behavior = ui_test_utils::GetTestUrl(
       base_path, base::FilePath(FILE_PATH_LITERAL("overscroll_behavior.html")));
-  ui_test_utils::NavigateToURL(browser(), url_overscroll_behavior);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_overscroll_behavior));
   ASSERT_EQ(url_overscroll_behavior, GetWebContents()->GetURL());
 
   QueueBeginningEvents(1, 0);

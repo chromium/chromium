@@ -1,14 +1,12 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
 #define SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
 
-#include <memory>
-
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -20,7 +18,7 @@ namespace audio {
 
 // This class is used for reproduction of system sounds. All methods
 // should be accessed from the Audio thread.
-class SoundsManager {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) SoundsManager {
  public:
   typedef int SoundKey;
 
@@ -34,6 +32,9 @@ class SoundsManager {
 
   // Returns a pointer to a singleton instance of the SoundsManager.
   static SoundsManager* Get();
+
+  SoundsManager(const SoundsManager&) = delete;
+  SoundsManager& operator=(const SoundsManager&) = delete;
 
   // Initializes sounds manager for testing. The |manager| will be owned
   // by the internal pointer and will be deleted by Shutdown().
@@ -62,9 +63,6 @@ class SoundsManager {
   virtual ~SoundsManager();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SoundsManager);
 };
 
 }  // namespace audio

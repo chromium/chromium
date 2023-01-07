@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,13 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,10 +27,10 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/top_sites_impl.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
@@ -53,7 +53,7 @@ struct RawPrepopulatedPage {
                          // roughly match favicon).
 };
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Android does not use prepopulated pages.
 const RawPrepopulatedPage kRawPrepopulatedPages[] = {
     {
@@ -68,13 +68,13 @@ const RawPrepopulatedPage kRawPrepopulatedPages[] = {
 void InitializePrepopulatedPageList(
     Profile* profile,
     history::PrepopulatedPageList* prepopulated_pages) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DCHECK(prepopulated_pages);
   PrefService* pref_service = profile->GetPrefs();
   bool hide_web_store_icon = pref_service->GetBoolean(prefs::kHideWebStoreIcon);
 
-  prepopulated_pages->reserve(base::size(kRawPrepopulatedPages));
-  for (size_t i = 0; i < base::size(kRawPrepopulatedPages); ++i) {
+  prepopulated_pages->reserve(std::size(kRawPrepopulatedPages));
+  for (size_t i = 0; i < std::size(kRawPrepopulatedPages); ++i) {
     const RawPrepopulatedPage& page = kRawPrepopulatedPages[i];
     if (hide_web_store_icon && page.url_id == IDS_WEBSTORE_URL)
       continue;
@@ -110,19 +110,19 @@ scoped_refptr<history::TopSites> TopSitesFactory::BuildTopSites(
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
   scoped_refptr<history::TopSitesImpl> top_sites(new history::TopSitesImpl(
-      profile->GetPrefs(), history_service, prepopulated_page_list,
-      base::BindRepeating(CanAddURLToHistory)));
+      profile->GetPrefs(), history_service, template_url_service,
+      prepopulated_page_list, base::BindRepeating(CanAddURLToHistory)));
   top_sites->Init(context->GetPath().Append(history::kTopSitesFilename));
   return top_sites;
 }
 
 TopSitesFactory::TopSitesFactory()
-    : RefcountedBrowserContextKeyedServiceFactory(
-          "TopSites",
-          BrowserContextDependencyManager::GetInstance()) {
+    : RefcountedProfileKeyedServiceFactory("TopSites") {
   DependsOn(HistoryServiceFactory::GetInstance());
-
+  DependsOn(TemplateURLServiceFactory::GetInstance());
   // This dependency is only used when the experimental
   // kTopSitesFromSiteEngagement feature is active.
   DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());

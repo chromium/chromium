@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Picture-in-Picture video conferencing test</title>
+  </head>
+  <body>
+    <video id="video" preload=auto src='../bigbuck.webm'></video>
+  </body>
+<script>
+const video = document.getElementById('video');
+
+let isMicrophoneActive = false;
+let isCameraActive = false;
+navigator.mediaSession.setMicrophoneActive(isMicrophoneActive);
+navigator.mediaSession.setCameraActive(isCameraActive);
+
+async function enterPictureInPicture() {
+  await video.play();
+  await video.requestPictureInPicture();
+  return true;
+}
+
+navigator.mediaSession.setActionHandler('togglemicrophone', () => {
+  isMicrophoneActive = !isMicrophoneActive;
+  navigator.mediaSession.setMicrophoneActive(isMicrophoneActive);
+  document.title = 'togglemicrophone';
+});
+
+navigator.mediaSession.setActionHandler('togglecamera', () => {
+  isCameraActive = !isCameraActive;
+  navigator.mediaSession.setCameraActive(isCameraActive);
+  document.title = 'togglecamera';
+});
+
+navigator.mediaSession.setActionHandler('hangup', () => {
+  document.title = 'hangup';
+});
+</script>
+</html>

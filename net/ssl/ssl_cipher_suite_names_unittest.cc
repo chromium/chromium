@@ -1,11 +1,9 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/ssl/ssl_cipher_suite_names.h"
 
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
@@ -126,9 +124,9 @@ TEST(CipherSuiteNamesTest, ParseSSLCipherStringFails) {
     "0xBEEFY",
   };
 
-  for (size_t i = 0; i < base::size(cipher_strings); ++i) {
+  for (const auto* cipher_string : cipher_strings) {
     uint16_t cipher_suite = 0;
-    EXPECT_FALSE(ParseSSLCipherString(cipher_strings[i], &cipher_suite));
+    EXPECT_FALSE(ParseSSLCipherString(cipher_string, &cipher_suite));
   }
 }
 

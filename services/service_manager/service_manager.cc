@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
@@ -20,7 +19,7 @@
 #include "base/token.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/constants.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
@@ -32,7 +31,7 @@
 #include "services/service_manager/service_instance.h"
 #include "services/service_manager/service_process_host.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "services/service_manager/service_process_launcher.h"
 #endif
 
@@ -42,14 +41,14 @@ namespace {
 
 const char kCapability_ServiceManager[] = "service_manager:service_manager";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kServiceExecutableExtension[] = ".service.exe";
-#elif !defined(OS_IOS)
+#elif !BUILDFLAG(IS_IOS)
 const char kServiceExecutableExtension[] = ".service";
 #endif
 
 base::ProcessId GetCurrentPid() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // iOS does not support base::Process.
   return 0;
 #else
@@ -69,35 +68,37 @@ const Identity& GetServiceManagerInstanceIdentity() {
 class DefaultServiceProcessHost : public ServiceProcessHost {
  public:
   explicit DefaultServiceProcessHost(const base::FilePath& executable_path)
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
       : launcher_(nullptr, executable_path)
 #endif
   {
   }
 
+  DefaultServiceProcessHost(const DefaultServiceProcessHost&) = delete;
+  DefaultServiceProcessHost& operator=(const DefaultServiceProcessHost&) =
+      delete;
+
   ~DefaultServiceProcessHost() override = default;
 
   mojo::PendingRemote<mojom::Service> Launch(
       const Identity& identity,
-      sandbox::policy::SandboxType sandbox_type,
+      sandbox::mojom::Sandbox sandbox_type,
       const std::u16string& display_name,
       LaunchCallback callback) override {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     return mojo::NullRemote();
 #else
     // TODO(https://crbug.com/781334): Support sandboxing.
-    CHECK_EQ(sandbox_type, sandbox::policy::SandboxType::kNoSandbox);
-    return launcher_.Start(identity, sandbox::policy::SandboxType::kNoSandbox,
+    CHECK_EQ(sandbox_type, sandbox::mojom::Sandbox::kNoSandbox);
+    return launcher_.Start(identity, sandbox::mojom::Sandbox::kNoSandbox,
                            std::move(callback));
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
   }
 
  private:
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   ServiceProcessLauncher launcher_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultServiceProcessHost);
 };
 
 // Default ServiceManager::Delegate implementation. This supports launching only
@@ -110,6 +111,11 @@ class DefaultServiceManagerDelegate : public ServiceManager::Delegate {
   explicit DefaultServiceManagerDelegate(
       ServiceManager::ServiceExecutablePolicy service_executable_policy)
       : service_executable_policy_(service_executable_policy) {}
+
+  DefaultServiceManagerDelegate(const DefaultServiceManagerDelegate&) = delete;
+  DefaultServiceManagerDelegate& operator=(
+      const DefaultServiceManagerDelegate&) = delete;
+
   ~DefaultServiceManagerDelegate() override = default;
 
   bool RunBuiltinServiceInstanceInCurrentProcess(
@@ -138,8 +144,6 @@ class DefaultServiceManagerDelegate : public ServiceManager::Delegate {
 
  private:
   const ServiceManager::ServiceExecutablePolicy service_executable_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultServiceManagerDelegate);
 };
 
 }  // namespace
@@ -300,7 +304,7 @@ ServiceInstance* ServiceManager::FindOrCreateMatchingTargetInstance(
       break;
     }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
     case Manifest::ExecutionMode::kOutOfProcessBuiltin: {
       auto process_host = delegate_->CreateProcessHostForBuiltinServiceInstance(
           target_instance->identity());
@@ -329,11 +333,11 @@ ServiceInstance* ServiceManager::FindOrCreateMatchingTargetInstance(
       }
       break;
     }
-#else   // !defined(OS_IOS)
+#else   // !BUILDFLAG(IS_IOS)
     default:
       NOTREACHED();
       return nullptr;
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
   }
 
   return target_instance;

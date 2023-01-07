@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
@@ -20,7 +19,7 @@
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "components/sessions/core/session_id.h"
-#include "ui/gfx/image/image_skia.h"
+#include "content/public/browser/global_routing_id.h"
 
 class PrefRegistrySimple;
 
@@ -35,6 +34,9 @@ namespace task_manager {
 // enabled calculations of the usage of the various resources.
 class TaskManagerInterface {
  public:
+  TaskManagerInterface(const TaskManagerInterface&) = delete;
+  TaskManagerInterface& operator=(const TaskManagerInterface&) = delete;
+
   // Registers the task manager related prefs.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -46,12 +48,12 @@ class TaskManagerInterface {
   static TaskManagerInterface* GetTaskManager();
 
   // Update the accumulated network stats with additional data sent/received
-  // for a route described by |process_id| and |route_id|. If the associated
+  // for a route described by |render_frame_host_id|. If the associated
   // task cannot be found it will be attributed to the browser process task.
-  static void UpdateAccumulatedStatsNetworkForRoute(int process_id,
-                                                    int route_id,
-                                                    int64_t recv_bytes,
-                                                    int64_t sent_bytes);
+  static void UpdateAccumulatedStatsNetworkForRoute(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      int64_t recv_bytes,
+      int64_t sent_bytes);
 
   void AddObserver(TaskManagerObserver* observer);
   void RemoveObserver(TaskManagerObserver* observer);
@@ -292,8 +294,6 @@ class TaskManagerInterface {
 
   // The flags containing the enabled resources types calculations.
   int64_t enabled_resources_flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerInterface);
 };
 
 }  // namespace task_manager

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/values.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/http/http_network_session.h"
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_connect_job.h"
@@ -24,10 +25,12 @@ class SocketPerformanceWatcherFactory;
 ClientSocketPoolManagerImpl::ClientSocketPoolManagerImpl(
     const CommonConnectJobParams& common_connect_job_params,
     const CommonConnectJobParams& websocket_common_connect_job_params,
-    HttpNetworkSession::SocketPoolType pool_type)
+    HttpNetworkSession::SocketPoolType pool_type,
+    bool cleanup_on_ip_address_change)
     : common_connect_job_params_(common_connect_job_params),
       websocket_common_connect_job_params_(websocket_common_connect_job_params),
-      pool_type_(pool_type) {
+      pool_type_(pool_type),
+      cleanup_on_ip_address_change_(cleanup_on_ip_address_change) {
   // |websocket_endpoint_lock_manager| must only be set for websocket
   // connections.
   DCHECK(!common_connect_job_params_.websocket_endpoint_lock_manager);
@@ -83,7 +86,7 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
         sockets_per_proxy_server, sockets_per_group,
         unused_idle_socket_timeout(pool_type_), proxy_server,
         pool_type_ == HttpNetworkSession::WEBSOCKET_SOCKET_POOL,
-        &common_connect_job_params_);
+        &common_connect_job_params_, cleanup_on_ip_address_change_);
   }
 
   std::pair<SocketPoolMap::iterator, bool> ret =
@@ -91,9 +94,8 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
   return ret.first->second.get();
 }
 
-std::unique_ptr<base::Value>
-ClientSocketPoolManagerImpl::SocketPoolInfoToValue() const {
-  std::unique_ptr<base::ListValue> list(new base::ListValue());
+base::Value ClientSocketPoolManagerImpl::SocketPoolInfoToValue() const {
+  base::Value::List list;
   for (const auto& socket_pool : socket_pools_) {
     // TODO(menke): Is this really needed?
     const char* type;
@@ -104,21 +106,11 @@ ClientSocketPoolManagerImpl::SocketPoolInfoToValue() const {
     } else {
       type = "http_proxy_socket_pool";
     }
-    list->Append(
-        socket_pool.second->GetInfoAsValue(socket_pool.first.ToURI(), type));
+    list.Append(socket_pool.second->GetInfoAsValue(
+        ProxyServerToProxyUri(socket_pool.first), type));
   }
 
-  return std::move(list);
-}
-
-void ClientSocketPoolManagerImpl::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_dump_absolute_name) const {
-  SocketPoolMap::const_iterator socket_pool =
-      socket_pools_.find(ProxyServer::Direct());
-  if (socket_pool == socket_pools_.end())
-    return;
-  socket_pool->second->DumpMemoryStats(pmd, parent_dump_absolute_name);
+  return base::Value(std::move(list));
 }
 
 }  // namespace net

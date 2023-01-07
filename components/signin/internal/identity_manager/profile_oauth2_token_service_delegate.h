@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -19,8 +19,9 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "net/base/backoff_entry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #endif
 
@@ -38,13 +39,20 @@ class ProfileOAuth2TokenService;
 // CreateAccessTokenFetcher properly.
 class ProfileOAuth2TokenServiceDelegate {
  public:
-  ProfileOAuth2TokenServiceDelegate();
+  explicit ProfileOAuth2TokenServiceDelegate(bool use_backoff);
+
+  ProfileOAuth2TokenServiceDelegate(const ProfileOAuth2TokenServiceDelegate&) =
+      delete;
+  ProfileOAuth2TokenServiceDelegate& operator=(
+      const ProfileOAuth2TokenServiceDelegate&) = delete;
+
   virtual ~ProfileOAuth2TokenServiceDelegate();
 
-  virtual std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
+  [[nodiscard]] virtual std::unique_ptr<OAuth2AccessTokenFetcher>
+  CreateAccessTokenFetcher(
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      OAuth2AccessTokenConsumer* consumer) WARN_UNUSED_RESULT = 0;
+      OAuth2AccessTokenConsumer* consumer) = 0;
 
   // Returns |true| if a refresh token is available for |account_id|, and
   // |false| otherwise.
@@ -53,13 +61,15 @@ class ProfileOAuth2TokenServiceDelegate {
   // returned by |GetAccounts|.
   virtual bool RefreshTokenIsAvailable(
       const CoreAccountId& account_id) const = 0;
+
   virtual GoogleServiceAuthError GetAuthError(
       const CoreAccountId& account_id) const;
   virtual void UpdateAuthError(const CoreAccountId& account_id,
-                               const GoogleServiceAuthError& error) {}
+                               const GoogleServiceAuthError& error,
+                               bool fire_auth_error_changed = true);
 
   // Returns a list of accounts for which a refresh token is maintained by
-  // |this| instance.
+  // |this| instance, in the order the refresh tokens were added.
   // Note: If tokens have not been fully loaded yet, an empty list is returned.
   // Also, see |RefreshTokenIsAvailable|.
   virtual std::vector<CoreAccountId> GetAccounts() const;
@@ -96,8 +106,11 @@ class ProfileOAuth2TokenServiceDelegate {
   void AddObserver(ProfileOAuth2TokenServiceObserver* observer);
   void RemoveObserver(ProfileOAuth2TokenServiceObserver* observer);
 
-  // Returns a pointer to its instance of net::BackoffEntry if it has one, or
-  // a nullptr otherwise.
+  // Returns true if there is at least one observer.
+  bool HasObserver() const;
+
+  // Returns a pointer to its instance of net::BackoffEntry if it has one
+  // (`use_backoff` was true in the constructor), or a nullptr otherwise.
   virtual const net::BackoffEntry* BackoffEntry() const;
 
   // -----------------------------------------------------------------------
@@ -108,7 +121,8 @@ class ProfileOAuth2TokenServiceDelegate {
   // is initialized. Default implementation is NOTREACHED - subsclasses that
   // are used by the ProfileOAuth2TokenService must provide an implementation
   // for this method.
-  virtual void LoadCredentials(const CoreAccountId& primary_account_id);
+  virtual void LoadCredentials(const CoreAccountId& primary_account_id,
+                               bool is_syncing);
 
   // Returns the state of the load credentials operation.
   signin::LoadCredentialsState load_credentials_state() const {
@@ -126,19 +140,19 @@ class ProfileOAuth2TokenServiceDelegate {
   // and false otherwise.
   virtual bool FixRequestErrorIfPossible();
 
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // Triggers platform specific implementation to reload accounts from system.
   virtual void ReloadAllAccountsFromSystemWithPrimaryAccount(
-      const base::Optional<CoreAccountId>& primary_account_id) {}
+      const absl::optional<CoreAccountId>& primary_account_id) {}
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Triggers platform specific implementation for iOS to add a given account
   // to the token service from a system account.
   virtual void ReloadAccountFromSystem(const CoreAccountId& account_id) {}
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns a reference to the corresponding Java object.
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 #endif
@@ -151,6 +165,11 @@ class ProfileOAuth2TokenServiceDelegate {
   void set_load_credentials_state(signin::LoadCredentialsState state) {
     load_credentials_state_ = state;
   }
+
+  virtual void ClearAuthError(const absl::optional<CoreAccountId>& account_id);
+  virtual GoogleServiceAuthError BackOffError() const;
+  // Can be called only if `use_backoff` was true in the constructor.
+  virtual void ResetBackOffEntry();
 
   // Called by subclasses to notify observers.
   void FireEndBatchChanges();
@@ -166,14 +185,24 @@ class ProfileOAuth2TokenServiceDelegate {
   class ScopedBatchChange {
    public:
     explicit ScopedBatchChange(ProfileOAuth2TokenServiceDelegate* delegate);
+
+    ScopedBatchChange(const ScopedBatchChange&) = delete;
+    ScopedBatchChange& operator=(const ScopedBatchChange&) = delete;
+
     ~ScopedBatchChange();
 
    private:
-    ProfileOAuth2TokenServiceDelegate* delegate_;  // Weak.
-    DISALLOW_COPY_AND_ASSIGN(ScopedBatchChange);
+    raw_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;  // Weak.
   };
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           RetryBackoff);
+  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+                           BackOffIsTriggerredForTransientErrors);
+  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateTest,
+                           UpdateAuthError_TransientErrors);
+
   // List of observers to notify when refresh token availability changes.
   // Makes sure list is empty on destruction.
   base::ObserverList<ProfileOAuth2TokenServiceObserver, true>::Unchecked
@@ -189,7 +218,14 @@ class ProfileOAuth2TokenServiceDelegate {
   // The depth of batch changes.
   int batch_change_depth_;
 
-  DISALLOW_COPY_AND_ASSIGN(ProfileOAuth2TokenServiceDelegate);
+  // If the error is transient, back off is used on some platforms to rate-limit
+  // network token requests so as to not overload the server. |backoff_entry_|
+  // is initialized only if `use_backoff` was true in the constructor.
+  std::unique_ptr<net::BackoffEntry> backoff_entry_;
+  GoogleServiceAuthError backoff_error_;
+
+  // A map from account id to the last seen error for that account.
+  std::map<CoreAccountId, GoogleServiceAuthError> errors_;
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_H_

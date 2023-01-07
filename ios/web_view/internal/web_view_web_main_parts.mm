@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,10 @@
 #include "base/strings/string_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/features.h"
+#include "components/variations/variations_ids_provider.h"
 #include "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #include "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/cwv_flags_internal.h"
@@ -21,18 +24,29 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/resource/resource_bundle.h"
 
+#if DCHECK_IS_ON()
+#include "ui/display/screen_base.h"
+#endif
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace ios_web_view {
 
-WebViewWebMainParts::WebViewWebMainParts()
-    : field_trial_list_(/*entropy_provider=*/nullptr) {}
+WebViewWebMainParts::WebViewWebMainParts() = default;
 
-WebViewWebMainParts::~WebViewWebMainParts() = default;
+WebViewWebMainParts::~WebViewWebMainParts() {
+#if DCHECK_IS_ON()
+  // The screen object is never deleted on IOS. Make sure that all display
+  // observers are removed at the end.
+  display::ScreenBase* screen =
+      static_cast<display::ScreenBase*>(display::Screen::GetScreen());
+  DCHECK(!screen->HasDisplayObservers());
+#endif
+}
 
-void WebViewWebMainParts::PreMainMessageLoopStart() {
+void WebViewWebMainParts::PreCreateMainMessageLoop() {
   l10n_util::OverrideLocaleWithCocoaLocale();
   ui::ResourceBundle::InitSharedInstanceWithLocale(
       std::string(), nullptr, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
@@ -50,18 +64,20 @@ void WebViewWebMainParts::PreCreateThreads() {
 
   ApplicationContext::GetInstance()->PreCreateThreads();
 
+  variations::VariationsIdsProvider::Create(
+      variations::VariationsIdsProvider::Mode::kUseSignedInState);
+
   std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
   std::string enable_features = base::JoinString(
       {
           autofill::features::kAutofillUpstream.name,
-          autofill::features::kAutofillEnableAccountWalletStorage.name,
           password_manager::features::kEnablePasswordsAccountStorage.name,
+          syncer::kSyncTrustedVaultPassphraseiOSRPC.name,
+          syncer::kSyncTrustedVaultPassphraseRecovery.name,
       },
       ",");
   std::string disabled_features = base::JoinString(
       {
-          // ios/web_view does not support editing card info in the save dialog.
-          autofill::features::kAutofillSaveCardInfobarEditSupport.name,
       },
       ",");
   feature_list->InitializeFromCommandLine(
@@ -75,14 +91,23 @@ void WebViewWebMainParts::PreMainMessageLoopRun() {
 
   web::WebUIIOSControllerFactory::RegisterFactory(
       WebViewWebUIIOSControllerFactory::GetInstance());
+
+  component_updater::ComponentUpdateService* cus =
+      ApplicationContext::GetInstance()->GetComponentUpdateService();
+  RegisterSafetyTipsComponent(cus);
 }
 
 void WebViewWebMainParts::PostMainMessageLoopRun() {
-  WebViewTranslateService::GetInstance()->Shutdown();
+  ApplicationContext::GetInstance()->ShutdownSafeBrowsingServiceIfNecessary();
 
   // CWVWebViewConfiguration must destroy its WebViewBrowserStates before the
   // threads are stopped by ApplicationContext.
   [CWVWebViewConfiguration shutDown];
+
+  // Translate must be shutdown AFTER CWVWebViewConfiguration since translate
+  // may receive final callbacks during webstate shutdowns.
+  WebViewTranslateService::GetInstance()->Shutdown();
+
   ApplicationContext::GetInstance()->SaveState();
 }
 
@@ -95,33 +120,33 @@ void WebViewWebMainParts::LoadNonScalableResources() {
   base::PathService::Get(base::DIR_MODULE, &pak_file);
   pak_file = pak_file.Append(FILE_PATH_LITERAL("web_view_resources.pak"));
   ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
-  resource_bundle.AddDataPackFromPath(pak_file, ui::SCALE_FACTOR_NONE);
+  resource_bundle.AddDataPackFromPath(pak_file, ui::kScaleFactorNone);
 }
 
 void WebViewWebMainParts::LoadScalableResources() {
   ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_100P)) {
+  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k100Percent)) {
     base::FilePath pak_file_100;
     base::PathService::Get(base::DIR_MODULE, &pak_file_100);
     pak_file_100 =
         pak_file_100.Append(FILE_PATH_LITERAL("web_view_100_percent.pak"));
-    resource_bundle.AddDataPackFromPath(pak_file_100, ui::SCALE_FACTOR_100P);
+    resource_bundle.AddDataPackFromPath(pak_file_100, ui::k100Percent);
   }
 
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_200P)) {
+  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k200Percent)) {
     base::FilePath pak_file_200;
     base::PathService::Get(base::DIR_MODULE, &pak_file_200);
     pak_file_200 =
         pak_file_200.Append(FILE_PATH_LITERAL("web_view_200_percent.pak"));
-    resource_bundle.AddDataPackFromPath(pak_file_200, ui::SCALE_FACTOR_200P);
+    resource_bundle.AddDataPackFromPath(pak_file_200, ui::k200Percent);
   }
 
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_300P)) {
+  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k300Percent)) {
     base::FilePath pak_file_300;
     base::PathService::Get(base::DIR_MODULE, &pak_file_300);
     pak_file_300 =
         pak_file_300.Append(FILE_PATH_LITERAL("web_view_300_percent.pak"));
-    resource_bundle.AddDataPackFromPath(pak_file_300, ui::SCALE_FACTOR_300P);
+    resource_bundle.AddDataPackFromPath(pak_file_300, ui::k300Percent);
   }
 }
 

@@ -23,12 +23,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_H_
 
-#include <memory>
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_info.h"
 #include "third_party/blink/renderer/core/loader/resource/multipart_image_resource_parser.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -135,10 +135,10 @@ class CORE_EXPORT ImageResource final
   Member<ImageResourceContent> content_;
 
   Member<MultipartImageResourceParser> multipart_parser_;
+  base::TimeTicks last_flush_time_;
+
   MultipartParsingState multipart_parsing_state_ =
       MultipartParsingState::kWaitingForFirstPart;
-
-  base::TimeTicks last_flush_time_;
 
   bool is_during_finish_as_error_ = false;
 
@@ -156,4 +156,4 @@ struct DowncastTraits<ImageResource> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_H_

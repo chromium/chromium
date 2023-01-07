@@ -1,9 +1,12 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/net/net_error_tab_helper.h"
 
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/error_page/common/net_error_info.h"
 #include "content/public/browser/browser_thread.h"
@@ -125,7 +128,7 @@ class NetErrorTabHelperTest : public ChromeRenderViewHostTestHarness {
     subframe_ = content::RenderFrameHostTester::For(main_rfh())
                     ->AppendChild("subframe");
 
-    tab_helper_.reset(new TestNetErrorTabHelper(web_contents()));
+    tab_helper_ = std::make_unique<TestNetErrorTabHelper>(web_contents());
     NetErrorTabHelper::set_state_for_testing(
         NetErrorTabHelper::TESTING_FORCE_ENABLED);
   }
@@ -144,7 +147,8 @@ class NetErrorTabHelperTest : public ChromeRenderViewHostTestHarness {
     else
       net_error = net::ERR_TIMED_OUT;
     content::MockNavigationHandle navigation_handle(
-        bogus_url_, (main_frame == MAIN_FRAME) ? main_rfh() : subframe_);
+        bogus_url_, (main_frame == MAIN_FRAME) ? main_rfh() : subframe_.get());
+    navigation_handle.set_is_in_primary_main_frame(main_frame == MAIN_FRAME);
     navigation_handle.set_net_error_code(net_error);
     navigation_handle.set_has_committed(true);
     navigation_handle.set_is_error_page(true);
@@ -180,7 +184,7 @@ class NetErrorTabHelperTest : public ChromeRenderViewHostTestHarness {
   TestNetErrorTabHelper* tab_helper() { return tab_helper_.get(); }
 
  private:
-  content::RenderFrameHost* subframe_;
+  raw_ptr<content::RenderFrameHost> subframe_;
   std::unique_ptr<TestNetErrorTabHelper> tab_helper_;
   GURL bogus_url_;
 };
@@ -337,7 +341,7 @@ TEST_F(NetErrorTabHelperTest, CoalesceFailures) {
 // Makes sure that URLs are sanitized before running the platform network
 // diagnostics tool.
 TEST_F(NetErrorTabHelperTest, SanitizeDiagnosticsUrl) {
-  tab_helper()->SetCurrentTargetFrame(web_contents()->GetMainFrame());
+  tab_helper()->SetCurrentTargetFrame(web_contents()->GetPrimaryMainFrame());
   tab_helper()->network_diagnostics_interface()->RunNetworkDiagnostics(
       GURL("http://foo:bar@somewhere:123/hats?for#goats"));
   EXPECT_EQ("http://somewhere:123/",
@@ -358,7 +362,7 @@ TEST_F(NetErrorTabHelperTest, NoDiagnosticsForNonHttpSchemes) {
   };
 
   for (const char* url : kUrls) {
-    tab_helper()->SetCurrentTargetFrame(web_contents()->GetMainFrame());
+    tab_helper()->SetCurrentTargetFrame(web_contents()->GetPrimaryMainFrame());
     tab_helper()->network_diagnostics_interface()
         ->RunNetworkDiagnostics(GURL(url));
     EXPECT_EQ(0, tab_helper()->times_diagnostics_dialog_invoked());

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebGPU copyExternalImageToTexture test</title>
+  <style type="text/css">
+  .nomargin {
+    margin: 0px auto;
+  }
+  </style>
+  <script type="text/javascript" src="pixel_webgpu_util.js"></script>
+  <script type="text/javascript">
+    var g_swapsBeforeAck = 15;
+
+    function getInitGPUCanvasData(width, height) {
+      const rectWidth = Math.floor(width / 2);
+      const rectHeight = Math.floor(height / 2);
+
+      const alphaValue = 255;
+      const colorValue = 255;
+
+      // BGRA8Unorm texture
+      const initialData = new Uint8ClampedArray(4 * width * height);
+      const maxRectHeightIndex = width * rectHeight;
+      for (let pixelIndex = 0; pixelIndex < initialData.length / 4; ++pixelIndex) {
+        const index = pixelIndex * 4;
+
+        // Top-half two rectangles
+        if (pixelIndex < maxRectHeightIndex) {
+          // top-left side rectangle
+          if (pixelIndex % width < rectWidth) {
+            // top-left side rectangle
+            initialData[index] = colorValue;
+            initialData[index + 1] = 0;
+            initialData[index + 2] = 0;
+            initialData[index + 3] = alphaValue;
+          } else {
+            // top-right side rectangle
+            initialData[index] = 0;
+            initialData[index + 1] = colorValue;
+            initialData[index + 2] = 0;
+            initialData[index + 3] = alphaValue;
+          }
+        } else { // Bottom-half two rectangles
+          // bottom-left side rectangle
+          if (pixelIndex % width < rectWidth) {
+            initialData[index] = 0;
+            initialData[index + 1] = 0;
+            initialData[index + 2] = colorValue;
+            initialData[index + 3] = alphaValue;
+          } else {
+            // bottom-right side rectangle
+            initialData[index] = 0;
+            initialData[index + 1] = 0;
+            initialData[index + 2] = 0;
+            initialData[index + 3] = alphaValue;
+          }
+        }
+      }
+      return initialData;
+    }
+
+    async function main() {
+
+      const gpuCanvas = document.getElementById('canvas_gpu');
+      const [gpuDevice, gpuContext] = await webGpuUtils.init(gpuCanvas);
+      if (!gpuDevice || !gpuContext) {
+        console.error("Failed to initialize WebGPU - skipping test");
+        domAutomationController.send("FAILURE");
+        return;
+      }
+
+      const gpuCanvasSource = document.getElementById('canvas_gpu_src');
+      const gpuContextSource = gpuCanvasSource.getContext('webgpu');
+      if (!gpuContext) {
+        console.error('getContext(webgpu) failed');
+        domAutomationController.send("FAILURE");
+        return;
+      }
+
+      gpuContextSource.configure({
+        device: gpuDevice,
+        format: "bgra8unorm",
+        usage: GPUTextureUsage.COPY_DST
+      });
+
+      const initialData = getInitGPUCanvasData(gpuCanvasSource.width, gpuCanvasSource.height);
+      let canvasTexture = gpuContextSource.getCurrentTexture();
+      gpuDevice.queue.writeTexture(
+        { texture: canvasTexture},
+        initialData,
+        {
+          bytesPerRow: gpuCanvasSource.width * 4,
+          rowsPerImage: gpuCanvasSource.height,
+        },
+        {
+          width: gpuCanvasSource.width, height: gpuCanvasSource.height, depthOrArrayLayers: 1,
+        }
+      );
+
+      const renderCallback = function() {
+        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, gpuCanvasSource,
+                                           {useImport: false, isWebGLCanvas: false});
+
+        waitForFinish();
+      };
+
+      window.requestAnimationFrame(renderCallback);
+    }
+
+    function waitForFinish() {
+      if (g_swapsBeforeAck == 0) {
+        domAutomationController.send("SUCCESS");
+      } else {
+        g_swapsBeforeAck--;
+        window.requestAnimationFrame(waitForFinish);
+      }
+    }
+  </script>
+</head>
+<body onload="main()">
+  <canvas id="canvas_gpu_src" width="200" height="200" class="nomargin"></canvas>
+  <canvas id="canvas_gpu" width="200" height="200" class="nomargin"></canvas>
+</body>
+</html>

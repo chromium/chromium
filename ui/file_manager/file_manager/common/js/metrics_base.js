@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,9 @@
  * @fileoverview Utility methods for accessing chrome.metricsPrivate API.
  *
  * To be included as a first script in main.html
- *
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-// eslint-disable-next-line no-var
-var metrics;  // Needs to be defined in each window which uses metrics.
-const metricsBase = metrics || {};
+const metricsBase = {};
 
 /**
  * A map from interval name to interval start timestamp.
@@ -134,16 +130,16 @@ metricsBase.recordValue = (name, type, min, max, buckets, value) => {
       'type': type,
       'min': min,
       'max': max,
-      'buckets': buckets
+      'buckets': buckets,
     },
-    value
+    value,
   ]);
 };
 
 /**
  * Complete the time interval recording.
  *
- * Should be preceded by a call to startInterval with the same name. *
+ * Should be preceded by a call to startInterval with the same name.
  *
  * @param {string} name Unique interval name.
  */
@@ -154,6 +150,36 @@ metricsBase.recordInterval = name => {
     console.error('Unknown interval: ' + name);
   }
 };
+
+/**
+ * Complete the time interval recording into appropriate bucket.
+ *
+ * Should be preceded by a call to startInterval with the same |name|.
+ *
+ * @param {string} name Unique interval name.
+ * @param {number} numFiles The number of files in this current directory.
+ * @param {!Array<number>} buckets Array of numbers that correspond to a bucket
+ *    value, this will be suffixed to |name| when recorded.
+ * @param {number=} tolerance Allowed tolerance for |value| to coalesce into a
+ *    bucket.
+ */
+metricsBase.recordDirectoryListLoadWithTolerance =
+    (name, numFiles, buckets, tolerance) => {
+      if (name in metricsBase.intervals) {
+        for (const bucketValue of buckets) {
+          const toleranceMargin = bucketValue * tolerance;
+          if (numFiles >= (bucketValue - toleranceMargin) &&
+              numFiles <= (bucketValue + toleranceMargin)) {
+            metricsBase.recordTime(
+                `${name}.${bucketValue}`,
+                Date.now() - metricsBase.intervals[name]);
+            return;
+          }
+        }
+      } else {
+        console.error('Interval not started:', name);
+      }
+    };
 
 /**
  * Record an enum value.
@@ -195,10 +221,9 @@ metricsBase.recordEnum = (name, value, opt_validValues) => {
     'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
     'min': 1,
     'max': boundaryValue - 1,
-    'buckets': boundaryValue
+    'buckets': boundaryValue,
   };
   metricsBase.call_('recordValue', [metricDescr, index]);
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {metricsBase};
+export {metricsBase};

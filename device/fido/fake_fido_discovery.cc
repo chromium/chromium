@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,8 +67,8 @@ FakeFidoDiscovery* FakeFidoDiscoveryFactory::ForgeNextNfcDiscovery(
 
 FakeFidoDiscovery* FakeFidoDiscoveryFactory::ForgeNextCableDiscovery(
     FakeFidoDiscovery::StartMode mode) {
-  next_cable_discovery_ = std::make_unique<FakeFidoDiscovery>(
-      FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy, mode);
+  next_cable_discovery_ =
+      std::make_unique<FakeFidoDiscovery>(FidoTransportProtocol::kHybrid, mode);
   return next_cable_discovery_.get();
 }
 
@@ -89,7 +89,7 @@ FakeFidoDiscoveryFactory::Create(FidoTransportProtocol transport) {
     case FidoTransportProtocol::kBluetoothLowEnergy:
     case FidoTransportProtocol::kAndroidAccessory:
       return {};
-    case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
+    case FidoTransportProtocol::kHybrid:
       return SingleDiscovery(std::move(next_cable_discovery_));
     case FidoTransportProtocol::kInternal:
       return SingleDiscovery(std::move(next_platform_discovery_));

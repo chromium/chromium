@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,16 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/payments/mojom/payment_request_data.mojom.h"
 
 namespace payments {
 
 class PaymentsValidators {
  public:
+  PaymentsValidators() = delete;
+  PaymentsValidators(const PaymentsValidators&) = delete;
+  PaymentsValidators& operator=(const PaymentsValidators&) = delete;
+
   // The most common identifiers are three-letter alphabetic codes as
   // defined by [ISO4217] (for example, "USD" for US Dollars).
   static bool IsValidCurrencyCodeFormat(const std::string& code,
@@ -47,9 +50,6 @@ class PaymentsValidators {
   static bool IsValidPaymentValidationErrorsFormat(
       const mojom::PaymentValidationErrorsPtr& errors,
       std::string* optional_error_message);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PaymentsValidators);
 };
 
 }  // namespace payments

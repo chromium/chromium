@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,16 @@
 #include "base/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The maximum length in bytes allowed for a device name, as encoded in UTF-8 in
 // a std::string, which will not contain a null terminator.
 extern const size_t kNearbyShareDeviceNameMaxLength;
 
 // Manages local device data related to the UpdateDevice RPC such as the device
-// ID, name, and icon url; provides the user's full name and icon URL returned
+// ID, name, and icon URL; provides the user's full name and icon URL returned
 // from the Nearby server; and handles uploading contacts and certificates to
 // the Nearby server. The uploading of contacts and certificates might seem out
 // of place, but this class is the entry point for  all UpdateDevice RPC calls.
@@ -30,7 +30,7 @@ class NearbyShareLocalDeviceDataManager {
    public:
     virtual void OnLocalDeviceDataChanged(bool did_device_name_change,
                                           bool did_full_name_change,
-                                          bool did_icon_url_change) = 0;
+                                          bool did_icon_change) = 0;
   };
 
   using UploadCompleteCallback = base::OnceCallback<void(bool success)>;
@@ -55,13 +55,13 @@ class NearbyShareLocalDeviceDataManager {
   virtual std::string GetDeviceName() const = 0;
 
   // Returns the user's full name, for example, "Barack Obama". Returns
-  // base::nullopt if the name has not yet been set from an UpdateDevice RPC
+  // absl::nullopt if the name has not yet been set from an UpdateDevice RPC
   // response.
-  virtual base::Optional<std::string> GetFullName() const = 0;
+  virtual absl::optional<std::string> GetFullName() const = 0;
 
-  // Returns the URL of the user's image. Returns base::nullopt if the URL has
+  // Returns the URL of the user's image. Returns absl::nullopt if the URL has
   // not yet been set from an UpdateDevice RPC response.
-  virtual base::Optional<std::string> GetIconUrl() const = 0;
+  virtual absl::optional<std::string> GetIconUrl() const = 0;
 
   // Validates the provided device name and returns an error if validation
   // fails. This is just a check and the device name is not persisted.
@@ -104,7 +104,7 @@ class NearbyShareLocalDeviceDataManager {
 
   void NotifyLocalDeviceDataChanged(bool did_device_name_change,
                                     bool did_full_name_change,
-                                    bool did_icon_url_change);
+                                    bool did_icon_change);
 
  private:
   bool is_running_ = false;

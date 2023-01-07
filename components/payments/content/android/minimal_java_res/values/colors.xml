@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Payments UI colors -->
+    <color name="google_pay_icon_color">@color/modern_grey_700</color>
+</resources>

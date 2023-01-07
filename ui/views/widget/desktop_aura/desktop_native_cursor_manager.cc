@@ -1,22 +1,25 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
 
-#include <utility>
-
 #include "base/trace_event/trace_event.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/cursor/cursor_loader.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/wm/core/cursor_loader.h"
 
 namespace views {
 
-DesktopNativeCursorManager::DesktopNativeCursorManager() = default;
+DesktopNativeCursorManager::DesktopNativeCursorManager() {
+  aura::client::SetCursorShapeClient(&cursor_loader_);
+}
 
-DesktopNativeCursorManager::~DesktopNativeCursorManager() = default;
+DesktopNativeCursorManager::~DesktopNativeCursorManager() {
+  aura::client::SetCursorShapeClient(nullptr);
+}
 
 void DesktopNativeCursorManager::AddHost(aura::WindowTreeHost* host) {
   hosts_.insert(host);
@@ -87,6 +90,11 @@ void DesktopNativeCursorManager::SetMouseEventsEnabled(
 
   for (auto* host : hosts_)
     host->dispatcher()->OnMouseEventsEnableStateChanged(enabled);
+}
+
+void DesktopNativeCursorManager::InitCursorSizeObserver(
+    wm::NativeCursorManagerDelegate* delegate) {
+  NOTREACHED();
 }
 
 }  // namespace views

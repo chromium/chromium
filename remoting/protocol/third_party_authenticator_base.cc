@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,7 @@
 #include "remoting/protocol/channel_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // static
 const jingle_xmpp::StaticQName ThirdPartyAuthenticatorBase::kTokenUrlTag =
@@ -28,8 +27,7 @@ ThirdPartyAuthenticatorBase::ThirdPartyAuthenticatorBase(
     Authenticator::State initial_state)
     : token_state_(initial_state),
       started_(false),
-      rejection_reason_(INVALID_CREDENTIALS) {
-}
+      rejection_reason_(RejectionReason::INVALID_CREDENTIALS) {}
 
 ThirdPartyAuthenticatorBase::~ThirdPartyAuthenticatorBase() = default;
 
@@ -98,5 +96,4 @@ ThirdPartyAuthenticatorBase::CreateChannelAuthenticator() const {
   return underlying_->CreateChannelAuthenticator();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

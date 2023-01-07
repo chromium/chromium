@@ -1,0 +1,22 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_absl_algorithm_container") {
+  packages = [ "absl_algorithm_container" ]
+}
+
+shim_headers("container_shim") {
+  root_path = "."
+  prefix = "absl/algorithm/"
+  headers = [ "container.h" ]
+}
+
+source_set("container") {
+  deps = [ ":container_shim" ]
+  public_configs = [ ":system_absl_algorithm_container" ]
+}
+
+source_set("algorithm_test") {
+}
+source_set("container_test") {
+}

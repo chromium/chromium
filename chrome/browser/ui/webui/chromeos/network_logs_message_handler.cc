@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,18 @@
 #include <iostream>
 
 #include "base/files/file_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/system_logs/debug_log_writer.h"
 #include "chrome/browser/ash/system_logs/system_logs_writer.h"
-#include "chrome/browser/chromeos/file_manager/filesystem_api_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -54,9 +52,9 @@ bool WriteTimestampedFile(const base::FilePath& file_path,
   return bytes_written > 0;
 }
 
-bool GetBoolOrFalse(const base::Value* dict, const char* keyname) {
-  const base::Value* key = dict->FindKey(keyname);
-  return key && key->GetBool();
+bool GetBoolOrFalse(const base::Value::Dict& dict, const char* keyname) {
+  const auto key = dict.FindBool(keyname);
+  return key && *key;
 }
 
 }  // namespace
@@ -79,18 +77,16 @@ void NetworkLogsMessageHandler::RegisterMessages() {
 void NetworkLogsMessageHandler::Respond(const std::string& callback_id,
                                         const std::string& result,
                                         bool is_error) {
-  base::Value response(base::Value::Type::LIST);
+  base::Value::List response;
   response.Append(result);
   response.Append(is_error);
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
-void NetworkLogsMessageHandler::OnStoreLogs(const base::ListValue* list) {
-  CHECK_EQ(2u, list->GetSize());
-  std::string callback_id;
-  CHECK(list->GetString(0, &callback_id));
-  const base::Value* options;
-  CHECK(list->Get(1, &options));
+void NetworkLogsMessageHandler::OnStoreLogs(const base::Value::List& list) {
+  CHECK_EQ(2u, list.size());
+  std::string callback_id = list[0].GetString();
+  const base::Value::Dict& options = list[1].GetDict();
   AllowJavascript();
 
   if (GetBoolOrFalse(options, "systemLogs")) {
@@ -99,16 +95,16 @@ void NetworkLogsMessageHandler::OnStoreLogs(const base::ListValue* list) {
         out_dir_, scrub_data,
         base::BindOnce(&NetworkLogsMessageHandler::OnWriteSystemLogs,
                        weak_factory_.GetWeakPtr(), callback_id,
-                       options->Clone()));
+                       options.Clone()));
   } else {
-    MaybeWriteDebugLogs(callback_id, options->Clone());
+    MaybeWriteDebugLogs(callback_id, options.Clone());
   }
 }
 
 void NetworkLogsMessageHandler::OnWriteSystemLogs(
     const std::string& callback_id,
-    base::Value&& options,
-    base::Optional<base::FilePath> syslogs_path) {
+    base::Value::Dict&& options,
+    absl::optional<base::FilePath> syslogs_path) {
   if (!syslogs_path) {
     Respond(callback_id, "Error writing system logs file.", /*is_error=*/true);
     return;
@@ -118,14 +114,14 @@ void NetworkLogsMessageHandler::OnWriteSystemLogs(
 
 void NetworkLogsMessageHandler::MaybeWriteDebugLogs(
     const std::string& callback_id,
-    base::Value&& options) {
-  if (GetBoolOrFalse(&options, "debugLogs")) {
+    base::Value::Dict&& options) {
+  if (GetBoolOrFalse(options, "debugLogs")) {
     if (!base::SysInfo::IsRunningOnChromeOS()) {
       Respond(callback_id, "Debug logs unavailable on Linux build.",
               /*is_error=*/true);
       return;
     }
-    bool include_chrome = GetBoolOrFalse(&options, "chromeLogs");
+    bool include_chrome = GetBoolOrFalse(options, "chromeLogs");
     chromeos::debug_log_writer::StoreLogs(
         out_dir_, include_chrome,
         base::BindOnce(&NetworkLogsMessageHandler::OnWriteDebugLogs,
@@ -138,8 +134,8 @@ void NetworkLogsMessageHandler::MaybeWriteDebugLogs(
 
 void NetworkLogsMessageHandler::OnWriteDebugLogs(
     const std::string& callback_id,
-    base::Value&& options,
-    base::Optional<base::FilePath> logs_path) {
+    base::Value::Dict&& options,
+    absl::optional<base::FilePath> logs_path) {
   if (!logs_path) {
     Respond(callback_id, "Error writing debug logs.", /*is_error=*/true);
     return;
@@ -149,8 +145,8 @@ void NetworkLogsMessageHandler::OnWriteDebugLogs(
 
 void NetworkLogsMessageHandler::MaybeWritePolicies(
     const std::string& callback_id,
-    base::Value&& options) {
-  if (GetBoolOrFalse(&options, "policies")) {
+    base::Value::Dict&& options) {
+  if (GetBoolOrFalse(options, "policies")) {
     std::string json_policies = GetJsonPolicies(web_ui());
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
@@ -182,13 +178,12 @@ void NetworkLogsMessageHandler::OnWriteSystemLogsCompleted(
 }
 
 void NetworkLogsMessageHandler::OnSetShillDebugging(
-    const base::ListValue* list) {
-  CHECK_EQ(2u, list->GetSize());
-  std::string callback_id, subsystem;
-  CHECK(list->GetString(0, &callback_id));
-  CHECK(list->GetString(1, &subsystem));
+    const base::Value::List& list) {
+  CHECK_EQ(2u, list.size());
+  std::string callback_id = list[0].GetString();
+  std::string subsystem = list[1].GetString();
   AllowJavascript();
-  chromeos::DBusThreadManager::Get()->GetDebugDaemonClient()->SetDebugMode(
+  chromeos::DebugDaemonClient::Get()->SetDebugMode(
       subsystem,
       base::BindOnce(&NetworkLogsMessageHandler::OnSetShillDebuggingCompleted,
                      weak_factory_.GetWeakPtr(), callback_id));

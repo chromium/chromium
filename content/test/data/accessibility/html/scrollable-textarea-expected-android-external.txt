@@ -1,0 +1,4 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++EditText text:"little" clickable editable focusable multiLine textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]
+++++EditText text:"lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text" clickable editable focusable multiLine scrollable textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, PAGE_DOWN, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]

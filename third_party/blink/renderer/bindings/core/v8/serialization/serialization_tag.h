@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,8 +75,15 @@ enum SerializationTag {
   kReadableStreamTransferTag = 'r',   // index:uint32_t
   kTransformStreamTransferTag = 'm',  // index:uint32_t
   kWritableStreamTransferTag = 'w',   // index:uint32_t
-  kDOMPointTag = 'Q',                 // x:Double, y:Double, z:Double, w:Double
-  kDOMPointReadOnlyTag = 'W',         // x:Double, y:Double, z:Double, w:Double
+  kMediaStreamTrack =
+      's',  // trackImplSubtype:Uint32Enum, session_id.high:uint64_t,
+            // session_id.low:uint64_t, transfer_id.high:uint64_t,
+            // transfer_id.low:uint64_t, kind:WebCoreString, id:WebCoreString,
+            // label:WebCoreString, enabled:byte, muted:byte,
+            // contentHint:Uint32Enum, readyState:Uint32Enum
+            // If trackImplSubtype=BrowserCapture: cropVersion:uint32_t
+  kDOMPointTag = 'Q',          // x:Double, y:Double, z:Double, w:Double
+  kDOMPointReadOnlyTag = 'W',  // x:Double, y:Double, z:Double, w:Double
   kDOMRectTag = 'E',          // x:Double, y:Double, width:Double, height:Double
   kDOMRectReadOnlyTag = 'R',  // x:Double, y:Double, width:Double, height:Double
   kDOMQuadTag = 'T',          // p1:Double, p2:Double, p3:Double, p4:Double
@@ -104,8 +111,14 @@ enum SerializationTag {
   kRTCEncodedAudioFrameTag = 'A',  // uint32_t -> transferred audio frame ID
   kRTCEncodedVideoFrameTag = 'V',  // uint32_t -> transferred video frame ID
 
-  kAudioFrameTag = 'a',  // uint32_t -> transferred audio frame data
-  kVideoFrameTag = 'v',  // uint32_t -> transferred video frame ID
+  kAudioDataTag = 'a',          // uint32_t -> transferred audio data
+  kVideoFrameTag = 'v',         // uint32_t -> transferred video frame ID
+  kEncodedAudioChunkTag = 'y',  // uint32_t -> transferred chunk
+  kEncodedVideoChunkTag = 'z',  // uint32_t -> transferred chunk
+
+  kCropTargetTag = 'c',  // crop_id:WebCoreString
+
+  kMediaSourceHandleTag = 'S',  // uint32_t -> transferred MediaSourceHandle
 
   // The following tags were used by the Shape Detection API implementation
   // between M71 and M81. During these milestones, the API was always behind
@@ -120,4 +133,4 @@ enum SerializationTag {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_SERIALIZATION_TAG_H_

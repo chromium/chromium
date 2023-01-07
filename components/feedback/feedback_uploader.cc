@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,31 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/task/post_task.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_switches.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
-#include "net/url_request/url_fetcher.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace feedback {
 
 namespace {
+
+constexpr char kReportSendingResultHistogramName[] =
+    "Feedback.ReportSending.Result";
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FeedbackReportSendingResult {
+  kSuccessAtFirstTry = 0,  // The report was uploaded successfully without retry
+  kSuccessAfterRetry = 1,  // The report was uploaded successfully after retry
+  kDropped = 2,            // The report is corrupt or invalid and was dropped
+  kMaxValue = kDropped,
+};
 
 constexpr base::FilePath::CharType kFeedbackReportPath[] =
     FILE_PATH_LITERAL("Feedback Reports");
@@ -39,11 +50,11 @@ constexpr int kHttpPostFailServerError = 500;
 // backoff delay is applied on successive failures.
 // This value can be overriden by tests by calling
 // FeedbackUploader::SetMinimumRetryDelayForTesting().
-base::TimeDelta g_minimum_retry_delay = base::TimeDelta::FromMinutes(60);
+base::TimeDelta g_minimum_retry_delay = base::Minutes(60);
 
 // If a new report is queued to be dispatched immediately while another is being
 // dispatched, this is the time to wait for the on-going dispatching to finish.
-base::TimeDelta g_dispatching_wait_delay = base::TimeDelta::FromSeconds(4);
+base::TimeDelta g_dispatching_wait_delay = base::Seconds(4);
 
 GURL GetFeedbackPostGURL() {
   const base::CommandLine& command_line =
@@ -110,6 +121,13 @@ void FeedbackUploader::StartDispatchingReport() {
 }
 
 void FeedbackUploader::OnReportUploadSuccess() {
+  if (retry_delay_ == g_minimum_retry_delay) {
+    UMA_HISTOGRAM_ENUMERATION(kReportSendingResultHistogramName,
+                              FeedbackReportSendingResult::kSuccessAtFirstTry);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(kReportSendingResultHistogramName,
+                              FeedbackReportSendingResult::kSuccessAfterRetry);
+  }
   retry_delay_ = g_minimum_retry_delay;
   is_dispatching_ = false;
   // Explicitly release the successfully dispatched report.
@@ -127,6 +145,8 @@ void FeedbackUploader::OnReportUploadFailure(bool should_retry) {
   } else {
     // The report won't be retried, hence explicitly delete its file on disk.
     report_being_dispatched_->DeleteReportOnDisk();
+    UMA_HISTOGRAM_ENUMERATION(kReportSendingResultHistogramName,
+                              FeedbackReportSendingResult::kDropped);
   }
 
   // The report dispatching failed, and should either be retried or not. In all
@@ -177,7 +197,7 @@ void FeedbackUploader::DispatchReport() {
           data:
             "The free-form text that user has entered and useful debugging "
             "logs (UI logs, Chrome logs, kernel logs, auto update engine logs, "
-            "ARC++ logs, etc.). The logs are anonymized to remove any "
+            "ARC++ logs, etc.). The logs are redacted to remove any "
             "user-private data. The user can view the system information "
             "before sending, and choose to send the feedback report without "
             "system information and the logs (unchecking 'Send system "
@@ -190,7 +210,11 @@ void FeedbackUploader::DispatchReport() {
           setting:
             "This feature cannot be disabled by settings and is only activated "
             "by direct user request."
-          policy_exception_justification: "Not implemented."
+          chrome_policy {
+            UserFeedbackAllowed {
+              UserFeedbackAllowed: false
+            }
+          }
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = feedback_post_url_;

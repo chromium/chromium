@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tab_switcher_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/toolbar_height_no_shadow"
+    android:clickable="true"
+    android:visibility="gone">
+
+    <ViewStub
+        android:id="@+id/incognito_tabs_stub"
+        android:inflatedId="@+id/incognito_toggle_tabs"
+        android:layout="@layout/incognito_toggle_tabs"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="4dp"/>
+
+    <org.chromium.chrome.browser.logo.LogoView
+        android:id="@+id/logo"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/new_tab_view"
+        android:background="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:visibility="gone">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:layout_gravity="start|top"
+            android:scaleType="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:tint="@macro/default_icon_color"
+            app:srcCompat="@drawable/new_tab_icon"
+            android:contentDescription="@string/accessibility_toolbar_btn_new_tab"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingEnd="16dp"
+            android:gravity="center_vertical"
+            android:text="@string/button_new_tab"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
+    </LinearLayout>
+
+    <org.chromium.chrome.browser.toolbar.NewTabButton
+        android:id="@+id/new_tab_button"
+        style="@style/ToolbarButton"
+        android:layout_width="wrap_content"
+        android:layout_gravity="start|top"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:contentDescription="@string/accessibility_toolbar_btn_new_tab" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/identity_disc_button"
+        android:layout_toStartOf="@+id/menu_anchor"
+        android:layout_marginStart="@dimen/identity_disc_button_margin_start"
+        android:paddingStart="@dimen/start_surface_toolbar_button_padding_to_button"
+        android:paddingEnd="@dimen/start_surface_toolbar_button_padding_to_button"
+        style="@style/ToolbarButton"
+        android:visibility="gone"
+        tools:ignore="ContentDescription"/>
+
+    <org.chromium.chrome.browser.toolbar.TabSwitcherButtonView
+        android:id="@+id/start_tab_switcher_button"
+        android:layout_toStartOf="@+id/menu_anchor"
+        style="@style/ToolbarButton"
+        android:paddingStart="8dp"
+        app:menuMaxWidth="@dimen/tab_switcher_menu_width"
+        android:visibility="gone"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
+        app:menuVerticalOverlapAnchor="false" />
+
+    <FrameLayout
+      android:id="@+id/menu_anchor"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_alignParentEnd="true"
+      android:layout_alignParentStart="false">
+      <include layout="@layout/menu_button"/>
+    </FrameLayout>
+
+</org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarView>

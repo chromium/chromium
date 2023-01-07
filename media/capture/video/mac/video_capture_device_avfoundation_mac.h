@@ -1,9 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_MAC_H_
 #define MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_MAC_H_
+
+#include "base/memory/raw_ptr.h"
 
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
@@ -13,12 +15,49 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/capture/video/mac/sample_buffer_transformer_mac.h"
-#import "media/capture/video/mac/video_capture_device_avfoundation_protocol_mac.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 
 namespace media {
+
+class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
+ public:
+  virtual ~VideoCaptureDeviceAVFoundationFrameReceiver() = default;
+
+  // Called to deliver captured video frames.  It's safe to call this method
+  // from any thread, including those controlled by AVFoundation.
+  virtual void ReceiveFrame(const uint8_t* video_frame,
+                            int video_frame_length,
+                            const VideoCaptureFormat& frame_format,
+                            const gfx::ColorSpace color_space,
+                            int aspect_numerator,
+                            int aspect_denominator,
+                            base::TimeDelta timestamp) = 0;
+
+  // Called to deliver GpuMemoryBuffer-wrapped captured video frames. This
+  // function may be called from any thread, including those controlled by
+  // AVFoundation.
+  virtual void ReceiveExternalGpuMemoryBufferFrame(
+      CapturedExternalVideoBuffer frame,
+      std::vector<CapturedExternalVideoBuffer> scaled_frames,
+      base::TimeDelta timestamp) = 0;
+
+  // Callbacks with the result of a still image capture, or in case of error,
+  // respectively. It's safe to call these methods from any thread.
+  virtual void OnPhotoTaken(const uint8_t* image_data,
+                            size_t image_length,
+                            const std::string& mime_type) = 0;
+
+  // Callback when a call to takePhoto fails.
+  virtual void OnPhotoError() = 0;
+
+  // Forwarder to VideoCaptureDevice::Client::OnError().
+  virtual void ReceiveError(VideoCaptureError error,
+                            const base::Location& from_here,
+                            const std::string& reason) = 0;
+};
 
 // When this feature is enabled, the capturer can be configured using
 // setScaledResolutions to output scaled versions of the captured frame (in
@@ -26,7 +65,7 @@ namespace media {
 // the capturer. These are available either when the camera supports it and
 // kAVFoundationCaptureV2ZeroCopy is enabled or when kInCaptureConvertToNv12 is
 // used to convert frames to NV12.
-CAPTURE_EXPORT extern const base::Feature kInCapturerScaling;
+CAPTURE_EXPORT BASE_DECLARE_FEATURE(kInCapturerScaling);
 
 // Find the best capture format from |formats| for the specified dimensions and
 // frame rate. Returns an element of |formats|, or nil.
@@ -42,8 +81,7 @@ FindBestCaptureFormat(NSArray<AVCaptureDeviceFormat*>* formats,
 // "next generation" moniker.
 CAPTURE_EXPORT
 @interface VideoCaptureDeviceAVFoundation
-    : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate,
-                VideoCaptureDeviceAVFoundationProtocol> {
+    : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate> {
  @private
   // The following attributes are set via -setCaptureHeight:width:frameRate:.
   int _frameWidth;
@@ -60,12 +98,16 @@ CAPTURE_EXPORT
   // Protects concurrent setting and using |frameReceiver_|. Note that the
   // GUARDED_BY decoration below does not have any effect.
   base::Lock _lock;
-  media::VideoCaptureDeviceAVFoundationFrameReceiver* _frameReceiver
+  // Used to avoid UAF in -captureOutput.
+  base::Lock _destructionLock;
+  raw_ptr<media::VideoCaptureDeviceAVFoundationFrameReceiver> _frameReceiver
       GUARDED_BY(_lock);  // weak.
   bool _capturedFirstFrame GUARDED_BY(_lock);
   bool _capturedFrameSinceLastStallCheck GUARDED_BY(_lock);
   std::unique_ptr<base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>
       _weakPtrFactoryForStallCheck;
+  // Timestamp offset to subtract from all frames, to avoid leaking uptime.
+  base::TimeDelta start_timestamp_;
 
   // Used to rate-limit crash reports for https://crbug.com/1168112.
   bool _hasDumpedForFrameSizeMismatch;
@@ -81,9 +123,10 @@ CAPTURE_EXPORT
   // When enabled, converts captured frames to NV12.
   std::unique_ptr<media::SampleBufferTransformer> _sampleBufferTransformer;
   // Transformers used to create downscaled versions of the captured image.
-  // Enabled when setScaledResolutions is called (i.e. media::VideoFrameFeedback
-  // asks for scaled frames on behalf of a consumer in the Renderer process),
-  // NV12 output is enabled and the kInCapturerScaling feature is on.
+  // Enabled when setScaledResolutions is called (i.e.
+  // media::VideoCaptureFeedback asks for scaled frames on behalf of a consumer
+  // in the Renderer process), NV12 output is enabled and the kInCapturerScaling
+  // feature is on.
   std::vector<std::unique_ptr<media::SampleBufferTransformer>>
       _scaledFrameTransformers;
 
@@ -101,6 +144,63 @@ CAPTURE_EXPORT
 
   scoped_refptr<base::SingleThreadTaskRunner> _mainThreadTaskRunner;
 }
+
+// Previous to any use, clients must call -initWithFrameReceiver: to
+// initialise an object of this class and register a |frameReceiver_|. This
+// initializes the instance and the underlying capture session and registers the
+// frame receiver.
+- (instancetype)initWithFrameReceiver:
+    (media::VideoCaptureDeviceAVFoundationFrameReceiver*)frameReceiver;
+
+// Frame receiver registration or removal can also happen via explicit call
+// to -setFrameReceiver:. Re-registrations are safe and allowed, even during
+// capture using this method.
+- (void)setFrameReceiver:
+    (media::VideoCaptureDeviceAVFoundationFrameReceiver*)frameReceiver;
+
+// Sets which capture device to use by name, retrieved via |deviceNames|.
+// Method -setCaptureDevice: must be called at least once with a device
+// identifier from GetVideoCaptureDeviceNames(). It creates all the necessary
+// AVFoundation objects on the first call; it connects them ready for capture
+// every time. Once the deviceId is known, the library objects are created if
+// needed and connected for the capture, and a by default resolution is set. If
+// |deviceId| is nil, then the eventual capture is stopped and library objects
+// are disconnected. Returns YES on success, NO otherwise. If the return value
+// is NO, an error message is assigned to |outMessage|. This method should not
+// be called during capture (i.e. between -startCapture and -stopCapture).
+- (BOOL)setCaptureDevice:(NSString*)deviceId
+            errorMessage:(NSString**)outMessage;
+
+// Configures the capture properties for the capture session and the video data
+// output; this means it MUST be called after setCaptureDevice:. Return YES on
+// success, else NO.
+- (BOOL)setCaptureHeight:(int)height
+                   width:(int)width
+               frameRate:(float)frameRate;
+
+// If an efficient path is available, the capturer will perform scaling and
+// deliver scaled frames to the |frameReceiver| as specified by |resolutions|.
+// The scaled frames are delivered in addition to the original captured frame.
+// Resolutions that match the captured frame or that would result in upscaling
+// are ignored.
+- (void)setScaledResolutions:(std::vector<gfx::Size>)resolutions;
+
+// Starts video capturing and registers notification listeners. Must be
+// called after setCaptureDevice:, and, eventually, also after
+// setCaptureHeight:width:frameRate:.
+// The capture can be stopped and restarted multiple times, potentially
+// reconfiguring the device in between.
+// Returns YES on success, NO otherwise.
+- (BOOL)startCapture;
+
+// Stops video capturing and stops listening to notifications. Same as
+// setCaptureDevice:nil but doesn't disconnect the library objects. The capture
+// can be
+- (void)stopCapture;
+
+// Takes a photo. This method should only be called between -startCapture and
+// -stopCapture.
+- (void)takePhoto;
 
 // This function translates Mac Core Video pixel formats to Chromium pixel
 // formats. This implementation recognizes NV12.

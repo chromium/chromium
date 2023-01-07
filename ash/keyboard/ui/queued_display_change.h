@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_KEYBOARD_UI_QUEUED_DISPLAY_CHANGE_H_
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 

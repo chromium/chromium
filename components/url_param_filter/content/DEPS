@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/url_param_filter/core",
+  "+content/public/browser",
+  "+content/public/common",
+  "+content/public/test",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+third_party/blink/public/common/loader",
+]

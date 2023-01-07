@@ -1,16 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/syslog_logging.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_switcher/alternative_browser_driver.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
@@ -24,6 +25,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace browser_switcher {
 
@@ -36,7 +39,7 @@ namespace {
 const base::TimeDelta kFetchSitelistDelay = base::TimeDelta();
 
 // How long to wait after a fetch to re-fetch the sitelist to keep it fresh.
-const base::TimeDelta kRefreshSitelistDelay = base::TimeDelta::FromMinutes(30);
+const base::TimeDelta kRefreshSitelistDelay = base::Minutes(30);
 
 // How many times to re-try fetching the XML file for the sitelist.
 const int kFetchNumRetries = 1;
@@ -101,15 +104,14 @@ XmlDownloader::XmlDownloader(Profile* profile,
     : service_(service), all_done_callback_(std::move(all_done_callback)) {
   file_url_factory_.Bind(
       content::CreateFileURLLoaderFactory(base::FilePath(), nullptr));
-  other_url_factory_ =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  other_url_factory_ = profile->GetDefaultStoragePartition()
+                           ->GetURLLoaderFactoryForBrowserProcess();
 
   sources_ = service_->GetRulesetSources();
 
   for (auto& source : sources_) {
     if (!source.url.is_valid())
-      DoneParsing(&source, ParsedXml({}));
+      DoneParsing(&source, ParsedXml({}, {}, absl::nullopt));
   }
 
   // Fetch in 1 minute.
@@ -119,9 +121,9 @@ XmlDownloader::XmlDownloader(Profile* profile,
 XmlDownloader::~XmlDownloader() = default;
 
 bool XmlDownloader::HasValidSources() const {
-  return std::any_of(
-      sources_.begin(), sources_.end(),
-      [](const RulesetSource& source) { return source.url.is_valid(); });
+  return base::ranges::any_of(sources_, [](const RulesetSource& source) {
+    return source.url.is_valid();
+  });
 }
 
 base::Time XmlDownloader::last_refresh_time() const {
@@ -166,20 +168,32 @@ network::mojom::URLLoaderFactory* XmlDownloader::GetURLLoaderFactoryForURL(
 void XmlDownloader::ParseXml(RulesetSource* source,
                              std::unique_ptr<std::string> bytes) {
   if (!bytes) {
-    DoneParsing(source, ParsedXml({}, "could not fetch XML"));
+    DoneParsing(source, ParsedXml({}, {}, "could not fetch XML"));
     return;
   }
-  ParseIeemXml(*bytes, base::BindOnce(&XmlDownloader::DoneParsing,
-                                      weak_ptr_factory_.GetWeakPtr(),
-                                      base::Unretained(source)));
+  ParseIeemXml(
+      *bytes, service_->prefs().GetParsingMode(),
+      base::BindOnce(&XmlDownloader::DoneParsing,
+                     weak_ptr_factory_.GetWeakPtr(), base::Unretained(source)));
 }
 
 void XmlDownloader::DoneParsing(RulesetSource* source, ParsedXml xml) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Greylists can't contain any negative rules, so remove the leading "!".
+  // Special processing for "greylist" XML.
   if (source->contains_inverted_rules) {
-    for (auto& rule : xml.rules) {
+    // BrowserSwitcherExternalGreylistUrl is special: all the rules are part of
+    // the greylist, regardless of what <open-in> says in the XML.
+    //
+    // Merge all the rules into |greylist|, and clear |sitelist|.
+    xml.rules.greylist.insert(xml.rules.greylist.end(),
+                              xml.rules.sitelist.begin(),
+                              xml.rules.sitelist.end());
+    xml.rules.sitelist.clear();
+
+    // Greylists can't contain any negative rules either, so remove the leading
+    // "!".
+    for (auto& rule : xml.rules.greylist) {
       if (base::StartsWith(rule, "!", base::CompareCase::SENSITIVE))
         rule.erase(0, 1);
     }
@@ -318,11 +332,9 @@ std::vector<RulesetSource> BrowserSwitcherService::GetRulesetSources() {
 
 void BrowserSwitcherService::LoadRulesFromPrefs() {
   if (prefs().GetExternalSitelistUrl().is_valid())
-    sitelist()->SetExternalSitelist(
-        ParsedXml(prefs().GetCachedExternalSitelist(), base::nullopt));
+    sitelist()->SetExternalSitelist(prefs().GetCachedExternalSitelist());
   if (prefs().GetExternalGreylistUrl().is_valid())
-    sitelist()->SetExternalGreylist(
-        ParsedXml(prefs().GetCachedExternalGreylist(), base::nullopt));
+    sitelist()->SetExternalGreylist(prefs().GetCachedExternalGreylist());
 }
 
 void BrowserSwitcherService::OnAllRulesetsParsed() {
@@ -343,12 +355,10 @@ void BrowserSwitcherService::OnBrowserSwitcherPrefsChanged(
   // Record |BrowserSwitcher.AlternativeBrowser| when the
   // |BrowserSwitcherEnabled| or |AlternativeBrowserPath| policies change.
   bool should_record_metrics =
-      changed_prefs.end() !=
-      std::find_if(changed_prefs.begin(), changed_prefs.end(),
-                   [](const std::string& pref) {
-                     return pref == prefs::kEnabled ||
-                            pref == prefs::kAlternativeBrowserPath;
-                   });
+      base::ranges::any_of(changed_prefs, [](const std::string& pref) {
+        return pref == prefs::kEnabled ||
+               pref == prefs::kAlternativeBrowserPath;
+      });
   if (should_record_metrics && prefs_.IsEnabled()) {
     UMA_HISTOGRAM_ENUMERATION("BrowserSwitcher.AlternativeBrowser",
                               driver_->GetBrowserType());
@@ -356,13 +366,19 @@ void BrowserSwitcherService::OnBrowserSwitcherPrefsChanged(
 
   auto sources = GetRulesetSources();
 
-  // Re-download if one of the URLs changed. O(n^2), with n <= 3.
-  bool should_redownload = std::any_of(
-      sources.begin(), sources.end(),
-      [&changed_prefs](const RulesetSource& source) {
-        return (std::find(changed_prefs.begin(), changed_prefs.end(),
-                          source.pref_name) != changed_prefs.end());
-      });
+  // Re-download if one of the URLs or the ParsingMode changed. O(n^2), but n<=3
+  // so it's fast.
+  auto it = base::ranges::find(changed_prefs, prefs::kParsingMode);
+  bool parsing_mode_changed = it != changed_prefs.end();
+  bool should_redownload =
+      parsing_mode_changed ||
+      base::ranges::any_of(
+          sources,
+          [&changed_prefs](const std::string& pref_name) {
+            auto it = base::ranges::find(changed_prefs, pref_name);
+            return it != changed_prefs.end();
+          },
+          &RulesetSource::pref_name);
 
   if (should_redownload)
     StartDownload(fetch_delay());
@@ -378,7 +394,7 @@ void BrowserSwitcherService::OnExternalSitelistParsed(ParsedXml xml) {
     if (prefs().GetExternalSitelistUrl().is_valid())
       prefs().SetCachedExternalSitelist(xml.rules);
 
-    sitelist()->SetExternalSitelist(std::move(xml));
+    sitelist()->SetExternalSitelist(std::move(xml.rules));
   }
 }
 
@@ -388,11 +404,13 @@ void BrowserSwitcherService::OnExternalGreylistParsed(ParsedXml xml) {
   } else {
     VLOG(2) << "Done parsing external SiteList for greylist rules. "
             << "Applying rules to future navigations.";
+    DCHECK(xml.rules.sitelist.empty());
 
-    if (prefs().GetExternalGreylistUrl().is_valid())
+    if (prefs().GetExternalGreylistUrl().is_valid()) {
       prefs().SetCachedExternalGreylist(xml.rules);
+    }
 
-    sitelist()->SetExternalGreylist(std::move(xml));
+    sitelist()->SetExternalGreylist(std::move(xml.rules));
   }
 }
 

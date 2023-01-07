@@ -47,7 +47,7 @@ include you need if you just want to use this API.
 
 ### [disk_cache/blockfile directory](/net/disk_cache/blockfile/)
 
-This implementation backs the HTTP cache on Windows and OS X.  It tries to pack
+This implementation backs the HTTP cache on Windows. It tries to pack
 many small entries caches typically have into "block" files, which can help
 performance but introduces a lot of complexity and makes recovery from
 corruption very tricky.
@@ -59,9 +59,9 @@ mode.
 
 ### [disk_cache/simple directory](/net/disk_cache/simple/)
 
-This implementation backs the HTTP cache on Android, ChromeOS, and Linux, and
-is used to implement some features like CacheStorage on all platforms.  The
-design is centered around roughly having a single file per cache entry (more
+This implementation backs the HTTP cache on Android, ChromeOS, and Linux,
+macOS and is used to implement some features like CacheStorage on all platforms.
+The design is centered around roughly having a single file per cache entry (more
 precisely for streams 0 and 1), with a compact and simple in-memory index for
 membership tests, which makes it very robust against failures, but also highly
 sensitive to OS file system performance.

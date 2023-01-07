@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 
-// Clears the application snapshots taken by iOS and invoke |callback| when
+// Clears the application snapshots taken by iOS and invoke `callback` when
 // the deletion has completed (asynchronously).
 void ClearIOSSnapshots(base::OnceClosure callback);
 
-// Adds to |snapshotsPaths| all the possible paths to the application's
+// Adds to `snapshotsPaths` all the possible paths to the application's
 // snapshots taken by iOS.
 void GetSnapshotsPaths(std::vector<base::FilePath>* snapshotsPaths);
 

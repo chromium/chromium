@@ -1,18 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <deque>
 
-#include "base/command_line.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/no_destructor.h"
 #include "base/test/bind.h"
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_switches.h"
+#include "components/metrics/stability_metrics_helper.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "weblayer/browser/android/metrics/metrics_test_helper.h"
@@ -45,15 +44,14 @@ bool HasHistogramWithHash(const metrics::ChromeUserMetricsExtension& uma_log,
 class MetricsBrowserTest : public WebLayerBrowserTest {
  public:
   void SetUp() override {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitch(metrics::switches::kForceEnableMetricsReporting);
+    metrics::ForceEnableMetricsReportingForTesting();
 
     InstallTestGmsBridge(GetConsentType(),
                          base::BindRepeating(&MetricsBrowserTest::OnLogMetrics,
                                              base::Unretained(this)));
     WebLayerMetricsServiceClient::GetInstance()->SetFastStartupForTesting(true);
     WebLayerMetricsServiceClient::GetInstance()->SetUploadIntervalForTesting(
-        base::TimeDelta::FromMilliseconds(10));
+        base::Milliseconds(10));
     WebLayerBrowserTest::SetUp();
   }
 
@@ -150,6 +148,7 @@ IN_PROC_BROWSER_TEST_F(MetricsBrowserTest, PageLoadsEnableMultipleUploads) {
 }
 
 IN_PROC_BROWSER_TEST_F(MetricsBrowserTest, NavigationIncrementsPageLoadCount) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
   metrics::ChromeUserMetricsExtension log = WaitForNextMetricsLog();
   // The initial log should not have a page load count (because nothing was
@@ -158,6 +157,8 @@ IN_PROC_BROWSER_TEST_F(MetricsBrowserTest, NavigationIncrementsPageLoadCount) {
     const metrics::SystemProfileProto& system_profile = log.system_profile();
     ASSERT_TRUE(system_profile.has_stability());
     EXPECT_EQ(0, system_profile.stability().page_load_count());
+    histogram_tester.ExpectBucketCount(
+        "Stability.Counts2", metrics::StabilityEventType::kPageLoad, 0);
   }
 
   // Loading a page should increment the page load count.
@@ -168,6 +169,8 @@ IN_PROC_BROWSER_TEST_F(MetricsBrowserTest, NavigationIncrementsPageLoadCount) {
     const metrics::SystemProfileProto& system_profile = log.system_profile();
     ASSERT_TRUE(system_profile.has_stability());
     EXPECT_EQ(1, system_profile.stability().page_load_count());
+    histogram_tester.ExpectBucketCount(
+        "Stability.Counts2", metrics::StabilityEventType::kPageLoad, 1);
   }
 }
 

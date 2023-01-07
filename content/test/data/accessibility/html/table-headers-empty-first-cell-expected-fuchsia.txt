@@ -1,0 +1,101 @@
+UNKNOWN focusable has_input_focus label='Table example - headers with empty first cell'
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++TABLE label='Delivery slots:' number_of_rows=5 number_of_columns=6
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Delivery slots:'
+++++++++++++UNKNOWN label='Delivery slots:'
+++++++++ROW_GROUP hidden
+++++++++++TABLE_ROW
+++++++++++++CELL cell_row_span=1 cell_column_span=1
+++++++++++++COLUMN_HEADER label='Monday' cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Monday'
+++++++++++++++++UNKNOWN label='Monday'
+++++++++++++COLUMN_HEADER label='Tuesday' cell_column_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Tuesday'
+++++++++++++++++UNKNOWN label='Tuesday'
+++++++++++++COLUMN_HEADER label='Wednesday' cell_column_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Wednesday'
+++++++++++++++++UNKNOWN label='Wednesday'
+++++++++++++COLUMN_HEADER label='Thursday' cell_column_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Thursday'
+++++++++++++++++UNKNOWN label='Thursday'
+++++++++++++COLUMN_HEADER label='Friday' cell_column_index=5 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Friday'
+++++++++++++++++UNKNOWN label='Friday'
+++++++++++TABLE_ROW row_index=1
+++++++++++++UNKNOWN label='09:00 - 11:00' cell_row_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='09:00 - 11:00'
+++++++++++++++++UNKNOWN label='09:00 - 11:00'
+++++++++++++CELL label='Closed' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Closed'
+++++++++++++++++UNKNOWN label='Closed'
+++++++++++++CELL label='Open' cell_row_index=1 cell_column_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Open'
+++++++++++++++++UNKNOWN label='Open'
+++++++++++++CELL label='Open' cell_row_index=1 cell_column_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Open'
+++++++++++++++++UNKNOWN label='Open'
+++++++++++++CELL label='Closed' cell_row_index=1 cell_column_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Closed'
+++++++++++++++++UNKNOWN label='Closed'
+++++++++++++CELL label='Closed' cell_row_index=1 cell_column_index=5 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Closed'
+++++++++++++++++UNKNOWN label='Closed'
+++++++++++TABLE_ROW row_index=2
+++++++++++++UNKNOWN label='11:00 - 13:00' cell_row_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='11:00 - 13:00'
+++++++++++++++++UNKNOWN label='11:00 - 13:00'
+++++++++++++CELL label='Open' cell_row_index=2 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Open'
+++++++++++++++++UNKNOWN label='Open'
+++++++++++++CELL label='Open' cell_row_index=2 cell_column_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Open'
+++++++++++++++++UNKNOWN label='Open'
+++++++++++++CELL label='Closed' cell_row_index=2 cell_column_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Closed'
+++++++++++++++++UNKNOWN label='Closed'
+++++++++++++CELL label='Closed' cell_row_index=2 cell_column_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Closed'
+++++++++++++++++UNKNOWN label='Closed'
+++++++++++++CELL label='Closed' cell_row_index=2 cell_column_index=5 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Closed'
+++++++++++++++++UNKNOWN label='Closed'
+++++++++++TABLE_ROW row_index=3
+++++++++++++UNKNOWN label='13:00 - 15:00' cell_row_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='13:00 - 15:00'
+++++++++++++++++UNKNOWN label='13:00 - 15:00'
+++++++++++++CELL label='Open' cell_row_index=3 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Open'
+++++++++++++++++UNKNOWN label='Open'
+++++++++++++CELL label='Open' cell_row_index=3 cell_column_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Open'
+++++++++++++++++UNKNOWN label='Open'
+++++++++++++CELL label='Open' cell_row_index=3 cell_column_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Open'
+++++++++++++++++UNKNOWN label='Open'
+++++++++++++CELL label='Closed' cell_row_index=3 cell_column_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Closed'
+++++++++++++++++UNKNOWN label='Closed'
+++++++++++++CELL label='Closed' cell_row_index=3 cell_column_index=5 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Closed'
+++++++++++++++++UNKNOWN label='Closed'
+++++++++++TABLE_ROW row_index=4
+++++++++++++UNKNOWN label='15:00 - 17:00' cell_row_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='15:00 - 17:00'
+++++++++++++++++UNKNOWN label='15:00 - 17:00'
+++++++++++++CELL label='Closed' cell_row_index=4 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Closed'
+++++++++++++++++UNKNOWN label='Closed'
+++++++++++++CELL label='Closed' cell_row_index=4 cell_column_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Closed'
+++++++++++++++++UNKNOWN label='Closed'
+++++++++++++CELL label='Closed' cell_row_index=4 cell_column_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Closed'
+++++++++++++++++UNKNOWN label='Closed'
+++++++++++++CELL label='Open' cell_row_index=4 cell_column_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Open'
+++++++++++++++++UNKNOWN label='Open'
+++++++++++++CELL label='Open' cell_row_index=4 cell_column_index=5 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Open'
+++++++++++++++++UNKNOWN label='Open'

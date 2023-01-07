@@ -1,16 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_FAST_INK_FAST_INK_POINTS_H_
 #define ASH_FAST_INK_FAST_INK_POINTS_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -21,26 +19,40 @@ namespace fast_ink {
 // contiguous trajectory segments.
 class ASH_EXPORT FastInkPoints {
  public:
+  static const SkColor kDefaultColor;
+
   // Struct to describe each point.
   struct FastInkPoint {
     gfx::PointF location;
     base::TimeTicks time;
+    SkColor color = kDefaultColor;
     bool gap_after = false;  // True when there is a gap after this point.
   };
 
   // Constructor with a parameter to choose the fade out time of the points in
   // the collection. Zero means no fadeout.
   explicit FastInkPoints(base::TimeDelta life_duration);
+
+  FastInkPoints(const FastInkPoints&) = delete;
+  FastInkPoints& operator=(const FastInkPoints&) = delete;
+
   ~FastInkPoints();
 
   // Adds a point.
   void AddPoint(const gfx::PointF& point, const base::TimeTicks& time);
+  void AddPoint(const gfx::PointF& point,
+                const base::TimeTicks& time,
+                SkColor color);
   // Adds a gap after the most recent point. This is useful for multi-stroke
   // gesture handling (e.g. strokes going over the bezel).
   void AddGap();
   // Updates the collection latest time. Automatically clears points that are
   // too old.
   void MoveForwardToTime(const base::TimeTicks& latest_time);
+  // Removes the last stroke by removing the points since the last gap. If there
+  // are no gaps, deletes all points. Returns the bounding rectangle of the
+  // deleted points.
+  gfx::Rect UndoLastStroke();
   // Removes all points.
   void Clear();
   // Gets the bounding box of the points, int coordinates.
@@ -73,8 +85,6 @@ class ASH_EXPORT FastInkPoints {
   // The latest time of the collection of points. This gets updated when new
   // points are added or when MoveForwardToTime is called.
   base::TimeTicks collection_latest_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(FastInkPoints);
 };
 
 }  // namespace fast_ink

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
 
   base::i18n::InitializeICU();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<std::string> args;
   base::CommandLine::StringVector wide_args = command_line.GetArgs();
   for (const auto& arg : wide_args) {

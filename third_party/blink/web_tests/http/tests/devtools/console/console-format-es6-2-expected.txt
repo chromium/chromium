@@ -37,20 +37,20 @@ console-format-es6-2.js:15 MapIterator {41, {…}}
     [[Entries]]
         0: 41
         1: Object
-    __proto__: Map Iterator
+    [[Prototype]]: Map Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "keys"
 console-format-es6-2.js:16 [MapIterator]
     0: MapIterator {41, {…}}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[0]
 MapIterator {41, {…}}
     [[Entries]]
         0: 41
         1: Object
-    __proto__: Map Iterator
+    [[Prototype]]: Map Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "keys"
@@ -58,20 +58,20 @@ console-format-es6-2.js:15 MapIterator {42, {…}}
     [[Entries]]
         0: 42
         1: Object
-    __proto__: Map Iterator
+    [[Prototype]]: Map Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
 console-format-es6-2.js:16 [MapIterator]
     0: MapIterator {42, {…}}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[1]
 MapIterator {42, {…}}
     [[Entries]]
         0: 42
         1: Object
-    __proto__: Map Iterator
+    [[Prototype]]: Map Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
@@ -79,20 +79,20 @@ console-format-es6-2.js:15 MapIterator {41 => 42, {…} => {…}}
     [[Entries]]
         0: {41 => 42}
         1: {Object => Object}
-    __proto__: Map Iterator
+    [[Prototype]]: Map Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "entries"
 console-format-es6-2.js:16 [MapIterator]
     0: MapIterator {41 => 42, {…} => {…}}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[2]
 MapIterator {41 => 42, {…} => {…}}
     [[Entries]]
         0: {41 => 42}
         1: {Object => Object}
-    __proto__: Map Iterator
+    [[Prototype]]: Map Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "entries"
@@ -100,20 +100,20 @@ console-format-es6-2.js:15 SetIterator {41, {…}}
     [[Entries]]
         0: 41
         1: Object
-    __proto__: Set Iterator
+    [[Prototype]]: Set Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
 console-format-es6-2.js:16 [SetIterator]
     0: SetIterator {41, {…}}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[3]
 SetIterator {41, {…}}
     [[Entries]]
         0: 41
         1: Object
-    __proto__: Set Iterator
+    [[Prototype]]: Set Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
@@ -121,20 +121,20 @@ console-format-es6-2.js:15 SetIterator {41, {…}}
     [[Entries]]
         0: 41
         1: Object
-    __proto__: Set Iterator
+    [[Prototype]]: Set Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
 console-format-es6-2.js:16 [SetIterator]
     0: SetIterator {41, {…}}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[4]
 SetIterator {41, {…}}
     [[Entries]]
         0: 41
         1: Object
-    __proto__: Set Iterator
+    [[Prototype]]: Set Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
@@ -142,58 +142,58 @@ console-format-es6-2.js:15 SetIterator {41 => 41, {…} => {…}}
     [[Entries]]
         0: {41 => 41}
         1: {Object => Object}
-    __proto__: Set Iterator
+    [[Prototype]]: Set Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "entries"
 console-format-es6-2.js:16 [SetIterator]
     0: SetIterator {41 => 41, {…} => {…}}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[5]
 SetIterator {41 => 41, {…} => {…}}
     [[Entries]]
         0: {41 => 41}
         1: {Object => Object}
-    __proto__: Set Iterator
+    [[Prototype]]: Set Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "entries"
 console-format-es6-2.js:15 MapIterator {{…}}
     [[Entries]]
         0: Object
-    __proto__: Map Iterator
+    [[Prototype]]: Map Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 1
     [[IteratorKind]]: "values"
 console-format-es6-2.js:16 [MapIterator]
     0: MapIterator {{…}}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[6]
 MapIterator {{…}}
     [[Entries]]
         0: Object
-    __proto__: Map Iterator
+    [[Prototype]]: Map Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 1
     [[IteratorKind]]: "values"
 console-format-es6-2.js:15 SetIterator {{…}}
     [[Entries]]
         0: Object
-    __proto__: Set Iterator
+    [[Prototype]]: Set Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 1
     [[IteratorKind]]: "values"
 console-format-es6-2.js:16 [SetIterator]
     0: SetIterator {{…}}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[7]
 SetIterator {{…}}
     [[Entries]]
         0: Object
-    __proto__: Set Iterator
+    [[Prototype]]: Set Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 1
     [[IteratorKind]]: "values"

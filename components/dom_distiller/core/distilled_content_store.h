@@ -1,16 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DOM_DISTILLER_CORE_DOM_DISTILLER_CONTENT_STORE_H_
-#define COMPONENTS_DOM_DISTILLER_CORE_DOM_DISTILLER_CONTENT_STORE_H_
+#ifndef COMPONENTS_DOM_DISTILLER_CORE_DISTILLED_CONTENT_STORE_H_
+#define COMPONENTS_DOM_DISTILLER_CORE_DISTILLED_CONTENT_STORE_H_
 
 #include <memory>
 #include <string>
 #include <unordered_map>
 
 #include "base/bind.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 
@@ -76,7 +76,7 @@ class InMemoryContentStore : public DistilledContentStore {
 
   void EraseUrlToIdMapping(const DistilledArticleProto& proto);
 
-  typedef base::MRUCache<std::string,
+  typedef base::LRUCache<std::string,
                          std::unique_ptr<DistilledArticleProto, CacheDeletor>>
       ContentMap;
   typedef std::unordered_map<std::string, std::string> UrlMap;
@@ -87,4 +87,4 @@ class InMemoryContentStore : public DistilledContentStore {
 
 }  // namespace dom_distiller
 
-#endif  // COMPONENTS_DOM_DISTILLER_CORE_DOM_DISTILLER_CONTENT_CACHE_H_
+#endif  // COMPONENTS_DOM_DISTILLER_CORE_DISTILLED_CONTENT_STORE_H_

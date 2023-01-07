@@ -1,0 +1,34 @@
+<style>
+  .bold {
+    font-weight: bold;
+  }
+
+  div ~ div {
+    margin-top: 5px;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+<h2>Device Trust Connector</h2>
+<div>
+  Is Enabled: <span id="enabled-string" class="bold"></span>
+</div>
+<div id="key-manager-row">
+  Key Manager Initialized: <span id="key-manager-state" class="bold"></span>
+</div>
+<div id="key-metadata-row">
+  <div>
+    Trust Level: <span id="key-trust-level" class="bold"></span>
+    Key Type: <span id="key-type" class="bold"></span>
+  </div>
+  <div>
+    SPKI Hash: <span id="spki-hash" class="bold"></span>
+  </div>
+</div>
+<div>
+  Signals:
+  <pre id="signals"></pre>
+  <button id="copy-signals">Copy Signals</button>
+</div>

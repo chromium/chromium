@@ -3,12 +3,18 @@ rootWebArea
 ++++genericContainer ignored
 ++++++splitter horizontal name='Outside custom element'
 ++++++genericContainer
-++++++++presentational ignored
-++++++++++staticText name='a'
-++++++++++++inlineTextBox name='a'
+++++++++staticText name='a'
+++++++++++inlineTextBox name='a'
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored name='b'
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored invisible name='c'
 ++++++splitter horizontal name='Inside custom element'
 ++++++genericContainer ignored
 ++++++++genericContainer ignored
-++++++++++presentational ignored
-++++++++++++staticText name='a'
-++++++++++++++inlineTextBox name='a'
+++++++++++staticText name='a'
+++++++++++++inlineTextBox name='a'
+++++++++++genericContainer ignored invisible
+++++++++++++staticText ignored name='b'
+++++++++++genericContainer ignored invisible
+++++++++++++staticText ignored invisible name='c'

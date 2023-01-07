@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -23,10 +24,10 @@
 #include "base/mac/scoped_mach_port.h"
 #include "base/mac/scoped_mach_vm.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/record_replay.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/typed_macros.h"
+
+#include "base/record_replay.h"
 
 extern "C" {
 kern_return_t fileport_makeport(int fd, mach_port_t*);
@@ -71,6 +72,9 @@ class ChannelMac : public Channel,
       NOTREACHED();
     }
   }
+
+  ChannelMac(const ChannelMac&) = delete;
+  ChannelMac& operator=(const ChannelMac&) = delete;
 
   void Start() override {
     io_task_runner_->PostTask(
@@ -156,6 +160,21 @@ class ChannelMac : public Channel,
     return true;
   }
 
+  bool GetReadPlatformHandlesForIpcz(
+      size_t num_handles,
+      std::vector<PlatformHandle>& handles) override {
+    if (incoming_handles_.size() != num_handles) {
+      // ChannelMac messages are transmitted all at once or not at all, so this
+      // method should always be invoked with the exact, correct number of
+      // handles already in `incoming_handles_`.
+      return false;
+    }
+
+    DCHECK(handles.empty());
+    incoming_handles_.swap(handles);
+    return true;
+  }
+
  private:
   ~ChannelMac() override = default;
 
@@ -209,10 +228,11 @@ class ChannelMac : public Channel,
     send_buffer_.reset();
     receive_buffer_.reset();
     incoming_handles_.clear();
+    reject_writes_ = true;
 
     if (leak_handles_) {
-      ignore_result(receive_port_.release());
-      ignore_result(send_port_.release());
+      std::ignore = receive_port_.release();
+      std::ignore = send_port_.release();
     } else {
       receive_port_.reset();
       send_port_.reset();
@@ -288,19 +308,20 @@ class ChannelMac : public Channel,
       return false;
     }
 
-    // Record the audit token of the sender. All messages received by the
-    // channel must be from this same sender.
-    auto* trailer = buffer.Object<mach_msg_audit_trailer_t>();
-    peer_audit_token_.reset(new audit_token_t);
-    memcpy(peer_audit_token_.get(), &trailer->msgh_audit,
-           sizeof(audit_token_t));
-
     send_port_ = base::mac::ScopedMachSendRight(message->msgh_remote_port);
 
     if (!RequestSendDeadNameNotification()) {
+      send_port_.reset();
       OnError(Error::kConnectionFailed);
       return false;
     }
+
+    // Record the audit token of the sender. All messages received by the
+    // channel must be from this same sender.
+    auto* trailer = buffer.Object<mach_msg_audit_trailer_t>();
+    peer_audit_token_ = std::make_unique<audit_token_t>();
+    memcpy(peer_audit_token_.get(), &trailer->msgh_audit,
+           sizeof(audit_token_t));
 
     base::AutoLock lock(write_lock_);
     handshake_done_ = true;
@@ -480,7 +501,7 @@ class ChannelMac : public Channel,
 
   // base::MessagePumpKqueue::MachPortWatcher:
   void OnMachMessageReceived(mach_port_t port) override {
-    TRACE_EVENT("ipc,toplevel", "Mojo read message");
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"), "Mojo read message");
 
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
@@ -710,7 +731,8 @@ class ChannelMac : public Channel,
 
   // Lock that protects the following members.
   base::Lock write_lock_;
-  // Whether writes should be rejected due to an internal error.
+  // Whether writes should be rejected due to an internal error or channel
+  // shutdown.
   bool reject_writes_ = false;
   // IO buffer for sending Mach messages.
   base::mac::ScopedMachVM send_buffer_;
@@ -722,8 +744,6 @@ class ChannelMac : public Channel,
   // When |handshake_done_| is false or |send_buffer_contains_message_| is true,
   // calls to Write() will enqueue messages here.
   base::circular_deque<MessagePtr> pending_messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelMac);
 };
 
 }  // namespace

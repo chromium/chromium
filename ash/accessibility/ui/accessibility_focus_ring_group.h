@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/accessibility/ui/accessibility_animation_one_shot.h"
 #include "ash/accessibility/ui/accessibility_focus_ring.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
 #include "ash/accessibility/ui/accessibility_layer.h"
@@ -26,11 +27,15 @@ namespace ash {
 class ASH_EXPORT AccessibilityFocusRingGroup {
  public:
   AccessibilityFocusRingGroup();
+
+  AccessibilityFocusRingGroup(const AccessibilityFocusRingGroup&) = delete;
+  AccessibilityFocusRingGroup& operator=(const AccessibilityFocusRingGroup&) =
+      delete;
+
   virtual ~AccessibilityFocusRingGroup();
 
   void UpdateFocusRingsFromInfo(AccessibilityLayerDelegate* delegate);
-  bool CanAnimate() const;
-  void AnimateFocusRings(base::TimeTicks timestamp);
+  bool AnimateFocusRings(base::TimeTicks timestamp);
 
   // Returns true if the focus ring has changed, false if there were no changes.
   bool UpdateFocusRing(std::unique_ptr<AccessibilityFocusRingInfo> focus_ring,
@@ -73,11 +78,10 @@ class ASH_EXPORT AccessibilityFocusRingGroup {
   std::unique_ptr<AccessibilityFocusRingInfo> focus_ring_info_;
   std::vector<AccessibilityFocusRing> previous_focus_rings_;
   std::vector<std::unique_ptr<AccessibilityFocusRingLayer>> focus_layers_;
+  std::unique_ptr<AccessibilityAnimationOneShot> focus_animation_;
   std::vector<AccessibilityFocusRing> focus_rings_;
   LayerAnimationInfo focus_animation_info_;
   bool no_fade_for_testing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFocusRingGroup);
 };
 
 }  // namespace ash

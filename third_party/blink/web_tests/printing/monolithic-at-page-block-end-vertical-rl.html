@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner)
+      testRunner.setPrinting();
+  if (window.internals)
+      internals.settings.setShouldPrintBackgrounds(true);
+</script>
+<style>
+  html { writing-mode: vertical-rl; }
+  body { margin: 0; }
+</style>
+<div style="contain:size; position:absolute; left:0; width:100px; height:100px;">
+  <div style="margin-left:-100px; width:200px; height:100px; background:blue;"></div>
+</div>
+<p style="writing-mode:horizontal-tb; margin-left:1em; margin-top:150px;">
+  When printed, there should be two pages. There should be a blue square on
+  each page. On the first page, the square should be at the left-hand side of
+  the page, and on the second page, it should be at the right-hand side.
+</p>
+<div style="break-before:page; block-size:10px;"></div>

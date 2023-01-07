@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 24: WebSocket connection to 'ws://127.0.0.1:8893/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+CONSOLE ERROR: WebSocket connection to 'ws://127.0.0.1:8893/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
 Verify firing error event behaviors in Worker when close() is called from onclose.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

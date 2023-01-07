@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@
       request => request.name() === 'empty.html?xhr');
   var xhrNode = await NetworkTestRunner.waitForNetworkLogViewNodeForRequest(request);
 
-  UI.panels.network._networkLogView._refresh();
+  UI.panels.network.networkLogView.refresh();
   for (var columnName of columnsToTest) {
     const cell = xhrNode.createCell(columnName);
     // Cell may contain live locations that are unresolved.

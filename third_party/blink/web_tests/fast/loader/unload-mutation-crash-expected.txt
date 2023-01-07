@@ -1,2 +1,2 @@
-CONSOLE MESSAGE: line 19: PASS unless crash.
+CONSOLE MESSAGE: PASS unless crash.
 

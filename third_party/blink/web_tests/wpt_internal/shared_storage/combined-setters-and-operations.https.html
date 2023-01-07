@@ -1,0 +1,39 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
+<script src="../fenced_frame/resources/utils.js"></script>
+
+<body>
+<script>
+'use strict';
+
+promise_test(async () => {
+  const ancestor_key = token();
+  let url0 = generateURL("resources/frame0.html", [ancestor_key]);
+  let url1 = generateURL("resources/frame1.html", [ancestor_key]);
+  let url2 = generateURL("resources/frame2.html", [ancestor_key]);
+
+  await sharedStorage.set('key0-set-from-document', 'value0');
+  await sharedStorage.worklet.addModule("resources/verify-storage-entries-module.js");
+  await sharedStorage.run("set-key0-operation");
+
+  let uuid1 = await sharedStorage.selectURL(
+      "verify-storage-entries-url-selection-operation",
+      [{url: url0,
+        reportingMetadata: {'click': "resources/frame0.html"}},
+       {url: url1,
+        reportingMetadata:
+          {'mouse interaction': "resources/frame1.html",
+          'click': "resources/frame2.html"}}]);
+
+  attachFencedFrame(uuid1, 'opaque-ads');
+
+  // frame1_loaded implies that the setters and the operations were successful.
+  assert_equals(await nextValueFromServer(ancestor_key), "frame1_loaded");
+
+}, 'verify-storage-entries-url-selection-operation');
+
+</script>
+</body>

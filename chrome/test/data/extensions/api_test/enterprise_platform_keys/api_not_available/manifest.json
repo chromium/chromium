@@ -1,0 +1,14 @@
+{
+  // chrome-extension://aecpbnckhoppanpmefllkdkohionpmig
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtnAqVJvUof3ub8XQKnA8XUWxjcvnmsQD0z8JIuPzjXpaF07A1r52GT+O8m1b/8LS1iz9N8lqjT88tSUVPjrHIaRVt1En2bwOUnNqICxGCPSv+TGzqZOn2mompNKnnKR4b//xBDTcwgJ/QkVWh1l5iVXx2jJcZmXiQfuHRcmhT/lyfr4FD9puhfnt2l+OEJWBVMJgvesDTF0WPAzwdhsPrXemfv1FFbWINkriuWFCeYx03xx5szN83xsJxKf7xQ5hfh4PcsSSA/Q8oaEOXH6/QOFoDNdqYrjmpf4proilRvhoGEgeT+XSrIErRh6y1ZUatqb9VpMKRcw9rOA1epxA0wIDAQAB",
+  "name": "API not available test.",
+  "version": "0.1",
+  "manifest_version": 2,
+  "background": {
+    "scripts": ["api_not_available.js"],
+    "persistent": true
+  },
+  "permissions": [
+    "enterprise.platformKeys"
+  ]
+}

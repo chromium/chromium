@@ -2,6 +2,7 @@
 <html>
 <head>
 <script src="/js-test-resources/js-test.js"></script>
+<script src="/resources/sab-polyfill.js"></script>
 </head>
 <body>
 <div id="description"></div>
@@ -55,9 +56,7 @@ ws.onopen = function()
     ws.send(createEmptyArrayBufferView());
     ws.send(createArrayBufferViewContainingAllDistinctBytes());
 
-    if (window.SharedArrayBuffer) {
-        shouldThrow("ws.send(createSharedArrayBufferView())");
-    }
+    shouldThrow("ws.send(createSharedArrayBufferView())");
 };
 
 ws.onmessage = function(event)

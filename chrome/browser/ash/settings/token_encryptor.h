@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <memory>
 #include <string>
-
-#include "base/macros.h"
 
 namespace crypto {
 class SymmetricKey;
@@ -38,6 +36,10 @@ class TokenEncryptor {
 class CryptohomeTokenEncryptor : public TokenEncryptor {
  public:
   explicit CryptohomeTokenEncryptor(const std::string& system_salt);
+
+  CryptohomeTokenEncryptor(const CryptohomeTokenEncryptor&) = delete;
+  CryptohomeTokenEncryptor& operator=(const CryptohomeTokenEncryptor&) = delete;
+
   ~CryptohomeTokenEncryptor() override;
 
   // TokenEncryptor overrides:
@@ -68,8 +70,6 @@ class CryptohomeTokenEncryptor : public TokenEncryptor {
   // A key based on the system salt.  Useful for encrypting device-level
   // data for which we have no additional credentials.
   std::unique_ptr<crypto::SymmetricKey> system_salt_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptohomeTokenEncryptor);
 };
 
 }  // namespace ash

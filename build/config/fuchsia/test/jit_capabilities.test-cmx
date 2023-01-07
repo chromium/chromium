@@ -1,7 +1,0 @@
-{
-  "sandbox": {
-    "features": [
-      "deprecated-ambient-replace-as-executable"
-    ]
-  }
-}

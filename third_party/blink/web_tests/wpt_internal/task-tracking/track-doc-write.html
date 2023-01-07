@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Verify that tasks are tracked across scripts evaluated due to document.write calls.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+window.initialId = scheduler.taskId;
+window.results = [];
+const expected = [
+  { value: "not ancestor", name: "Inline script task" },
+  { value: "not ancestor", name: "External blocking script task" },
+  { value: "not ancestor", name: "Inline module script task" },
+];
+
+const scriptToEval = `window.results.push(scheduler.isAncestor(window.initialId));`;
+document.write("<script>" + scriptToEval + "<\/script>");
+document.write("<script src='resources/script.js'><\/script>");
+document.write("<script type=module>" + scriptToEval + "<\/script>");
+promise_test(() => {
+  return new Promise(async resolve => {
+    // Wait till all the results come in.
+    while (window.results.length < expected.length) {
+      await new Promise(r => setTimeout(r, 10));
+    }
+    resolve();
+  }).then(() => {
+    for (let index in window.results) {
+      const { value, name } = expected[index];
+      const result = results[index];
+      assert_equals(result, value, `${name} got an unexpected value of '${result}' rather than '${value}'`);
+    }
+  });
+}, "Scripts triggered by document.write have correct ancestor values.");
+</script>
+

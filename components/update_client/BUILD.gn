@@ -1,9 +1,16 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//components/update_client/buildflags.gni")
 import("//net/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_PUFFIN_PATCHES=$enable_puffin_patches" ]
+}
 
 source_set("network_impl") {
   sources = [
@@ -39,6 +46,7 @@ source_set("in_process_patcher") {
     "patch/in_process_patcher.h",
   ]
   deps = [
+    ":buildflags",
     ":update_client",
     "//base",
     "//courgette:bsdiff",
@@ -63,6 +71,7 @@ source_set("patch_impl") {
     "patch/patch_impl.h",
   ]
   deps = [
+    ":buildflags",
     ":update_client",
     "//build:chromeos_buildflags",
     "//components/services/patch/public/cpp",
@@ -122,8 +131,6 @@ static_library("update_client") {
     "request_sender.cc",
     "request_sender.h",
     "task.h",
-    "task_send_registration_ping.cc",
-    "task_send_registration_ping.h",
     "task_send_uninstall_ping.cc",
     "task_send_uninstall_ping.h",
     "task_traits.h",
@@ -142,8 +149,6 @@ static_library("update_client") {
     "update_query_params.h",
     "update_query_params_delegate.cc",
     "update_query_params_delegate.h",
-    "updater_state.cc",
-    "updater_state.h",
     "url_fetcher_downloader.cc",
     "url_fetcher_downloader.h",
     "utils.cc",
@@ -167,12 +172,21 @@ static_library("update_client") {
     sources += [
       "background_downloader_win.cc",
       "background_downloader_win.h",
-      "updater_state_win.cc",
     ]
   }
 
-  if (is_mac) {
-    sources += [ "updater_state_mac.mm" ]
+  # TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+  # we should remove the enable_puffin_patches flag.
+  if (enable_puffin_patches) {
+    include_dirs = [ "//third_party/puffin/src/include" ]
+    sources += [
+      "crx_cache.cc",
+      "crx_cache.h",
+      "puffin_component_unpacker.cc",
+      "puffin_component_unpacker.h",
+      "puffin_patcher.cc",
+      "puffin_patcher.h",
+    ]
   }
 }
 
@@ -255,7 +269,6 @@ source_set("unit_tests") {
     "update_checker_unittest.cc",
     "update_client_unittest.cc",
     "update_query_params_unittest.cc",
-    "updater_state_unittest.cc",
     "utils_unittest.cc",
   ]
 
@@ -286,6 +299,18 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/re2",
   ]
+
+  # TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+  # we should remove the enable_puffin_patches flag.
+  if (enable_puffin_patches) {
+    sources += [
+      "crx_cache_unittest.cc",
+      "puffin_component_unpacker_unittest.cc",
+      "puffin_patcher_unittest.cc",
+    ]
+    deps += [ "//third_party/puffin:libpuffpatch" ]
+    data_deps = [ "//components/test/data/update_client/puffin_patch_test:puffin_patch_test_files" ]
+  }
 }
 
 fuzzer_test("update_client_protocol_serializer_fuzzer") {

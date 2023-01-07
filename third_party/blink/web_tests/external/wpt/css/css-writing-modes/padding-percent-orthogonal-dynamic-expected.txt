@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS 400px minus 100px padding based on #child height
+FAIL 200px minus 100px padding based on #child height assert_equals: expected 100 but got 300
+Harness: the test ran to completion.
+

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,9 +57,9 @@ void ErrorPageHelper::DisableErrorPageHelperForNextError() {
 ErrorPageHelper::ErrorPageHelper(content::RenderFrame* render_frame)
     : RenderFrameObserver(render_frame),
       RenderFrameObserverTracker<ErrorPageHelper>(render_frame) {
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&ErrorPageHelper::BindErrorPageHelper,
-                          weak_factory_.GetWeakPtr()));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::ErrorPageHelper>(base::BindRepeating(
+          &ErrorPageHelper::BindErrorPageHelper, weak_factory_.GetWeakPtr()));
 }
 
 ErrorPageHelper::~ErrorPageHelper() = default;

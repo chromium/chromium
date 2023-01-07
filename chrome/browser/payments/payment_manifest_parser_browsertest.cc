@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,6 +50,11 @@ std::string CreatePaymentMethodManifestJson(
 class PaymentManifestParserTest : public InProcessBrowserTest {
  public:
   PaymentManifestParserTest() : parser_(std::make_unique<ErrorLogger>()) {}
+
+  PaymentManifestParserTest(const PaymentManifestParserTest&) = delete;
+  PaymentManifestParserTest& operator=(const PaymentManifestParserTest&) =
+      delete;
+
   ~PaymentManifestParserTest() override = default;
 
   // Sends the |content| to the utility process to parse as a web app manifest
@@ -114,8 +119,6 @@ class PaymentManifestParserTest : public InProcessBrowserTest {
   std::vector<WebAppManifestSection> web_app_manifest_;
   std::vector<GURL> web_app_manifest_urls_;
   std::vector<url::Origin> supported_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestParserTest);
 };
 
 // Handles a a manifest with 100 web app URLs.

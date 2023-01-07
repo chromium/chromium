@@ -105,6 +105,22 @@
                         }
                     ],
                     "description": "Dispatch a mouse event for a given node. Only used for UI Devtools."
+                },
+                {
+                    "name": "dispatchKeyEvent",
+                    "parameters": [
+                        {
+                            "name": "nodeId",
+                            "$ref": "NodeId",
+                            "description": "Id of the node."
+                        },
+                        {
+                            "name": "event",
+                            "$ref": "KeyEvent",
+                            "description": "Keyboard event to dispatch."
+                        }
+                    ],
+                    "description": "Dispatch a keyboard event for a given node. Only used for UI Devtools."
                 }
             ],
             "description": "This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object\nthat has an `id`. This `id` can be used to get additional information on the Node, resolve it into\nthe JavaScript object wrapper, etc. It is important that client receives DOM events only for the\nnodes that are known to the client. Backend keeps track of the nodes that were sent to the client\nand never sends the same node twice. It is client's responsibility to collect information about\nthe nodes that were sent to the client.<p>Note that `iframe` owner elements will return\ncorresponding document elements as their child nodes.</p>",
@@ -308,7 +324,48 @@
                             "description": "Only used for mouseWheel event."
                         }
                     ]
-                }
+                },
+                {
+                  "id": "KeyEvent",
+                  "description": "Used by dispatchKeyEvent. Only used for UI DevTools. Mirroring the KeyEvent class from ui/events/event.h",
+                  "type": "object",
+                  "properties" : [
+                      {
+                          "name": "type",
+                          "type": "string",
+                          "enum": [
+                              "keyPressed",
+                              "keyReleased"
+                          ],
+                          "description": "Key event type."
+                      },
+                      {
+                          "name": "keyCode",
+                          "type": "integer",
+                          "description": "Virtual key code. Definition: ui/events/keycodes/keyboard_codes_posix.h"
+                      },
+                      {
+                          "name": "code",
+                          "type": "integer",
+                          "description": "Dom code. Definition: ui/events/keycodes/dom/dom_code_data.inc"
+                      },
+                      {
+                          "name": "flags",
+                          "type": "integer",
+                          "description": "Event flags for keyboard modifiers. Definition: ui/events/event_constants.h"
+                      },
+                      {
+                          "name": "key",
+                          "type": "integer",
+                          "description": "Provide meaning of a key. It's either a dom key value for a key stroke event or an unicode character for a character event."
+                      },
+                      {
+                          "name": "isChar",
+                          "type": "boolean",
+                          "description": "Whether it's a character event or a key stroke event."
+                      }
+                  ]
+              }
             ]
         },
         {

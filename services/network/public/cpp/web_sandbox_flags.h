@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,4 +67,4 @@ WebSandboxFlagsParsingResult ParseWebSandboxPolicy(
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_SANDBOX_FLAGS_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_WEB_SANDBOX_FLAGS_H_

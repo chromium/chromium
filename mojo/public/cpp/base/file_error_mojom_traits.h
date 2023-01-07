@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BASE_FILE_ERROR_MOJOM_TRAITS_H_
 
 #include "base/files/file.h"
+#include "base/notreached.h"
 #include "mojo/public/mojom/base/file_error.mojom-shared.h"
 
 namespace mojo {

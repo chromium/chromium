@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -61,6 +61,26 @@ Section Headers:
   [37] .symtab           SYMTAB    00000000 22700cf0 105ef20 10     38 901679  4
   [38] .strtab           STRTAB       00000000 234c4950 213a4fe 00      0   0  1
   [39] .shstrtab         STRTAB        00000000 257b46da 0001b4 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings)
+  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)
+  O (extra OS processing required) o (OS specific), p (processor specific)
+"""
+
+_SMALL_SECTIONS = """There are 10 section headers, starting at offset 0x25:
+
+Section Headers:
+  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            00000000 000000 000000 00      0   0  0
+  [ 1] .interp           PROGBITS        00000154 000154 000013 00   A  0   0  1
+  [ 2] .note.gnu.build-id NOTE           00000168 000168 000024 00   A  0   0  4
+  [ 3] .dynsym           DYNSYM          0000018c 00018c 001960 10   A  4   1  4
+  [ 4] .dynstr           STRTAB          00001b0c 001b0c 000fb9 00   A  0   0  1
+  [ 5] .hash             HASH            00002ad4 002ad4 000a7c 04   A  3   0  4
+  [ 6] .gnu.version      VERSYM          00003558 003558 00032c 02   A  3   0  2
+  [ 7] .gnu.version_d    VERDEF          00003888 003888 00001c 00   A  4   1  4
+  [ 8] .gnu.version_r    VERNEED         000038a4 0038a4 000060 00   A  4   3  4
+  [ 9] .rel.dyn          REL             00003904 003904 288498 08   A  3   0  4
 Key to Flags:
   W (write), A (alloc), X (execute), M (merge), S (strings)
   I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)
@@ -196,6 +216,12 @@ Key to Flags:
 """,
 }
 
+_RELOCATIONS = """
+Relocation section '.rel.dyn' at offset 0x23b74 contains 394086 entries:
+Relocation section '.rel.plt' at offset 0x2f313c contains 1 entries:
+"""
+
+
 def _PrintHeader(path):
   sys.stdout.write('\n')
   sys.stdout.write('File: ' + path + '\n')
@@ -220,9 +246,14 @@ def main():
   elif sys.argv[1] == '-h':
     sys.stdout.write(_HEADERS)
   elif sys.argv[1] == '-S':
-    sys.stdout.write(_SECTIONS)
+    if os.path.getsize(paths[0]) <= 5 * 1024 * 1024:
+      sys.stdout.write(_SMALL_SECTIONS)
+    else:
+      sys.stdout.write(_SECTIONS)
   elif sys.argv[1] == '-n':
     sys.stdout.write(_NOTES)
+  elif sys.argv[1] == '-r':
+    sys.stdout.write(_RELOCATIONS)
   else:
     assert False, 'Invalid args: %s' % sys.argv
 

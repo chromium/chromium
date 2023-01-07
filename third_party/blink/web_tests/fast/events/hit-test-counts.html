@@ -105,10 +105,6 @@ async function sendEvents(targetX, targetY, documents)
         eventSender.mouseUp();
     });
 
-    logCounts('Wheel', documents, function() {
-        eventSender.mouseScrollBy(0, 5, false, false, 0, false);
-    });
-
     logCounts('TouchStart', documents, function() {
         eventSender.addTouchPoint(targetX, targetY, 15, 15);
         eventSender.touchStart(unique_event_id + 1);

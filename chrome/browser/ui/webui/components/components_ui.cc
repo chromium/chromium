@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -36,6 +35,10 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 content::WebUIDataSource* CreateComponentsUIHTMLSource(Profile* profile) {
@@ -50,13 +53,18 @@ content::WebUIDataSource* CreateComponentsUIHTMLSource(Profile* profile) {
       "trusted-types jstemplate parse-html-subset;");
 
   static constexpr webui::LocalizedString kStrings[] = {
-      {"componentsTitle", IDS_COMPONENTS_TITLE},
-      {"componentsNoneInstalled", IDS_COMPONENTS_NONE_INSTALLED},
-      {"componentVersion", IDS_COMPONENTS_VERSION},
-      {"checkUpdate", IDS_COMPONENTS_CHECK_FOR_UPDATE},
-      {"noComponents", IDS_COMPONENTS_NO_COMPONENTS},
-      {"statusLabel", IDS_COMPONENTS_STATUS_LABEL},
-      {"checkingLabel", IDS_COMPONENTS_CHECKING_LABEL},
+    {"componentsTitle", IDS_COMPONENTS_TITLE},
+    {"componentsNoneInstalled", IDS_COMPONENTS_NONE_INSTALLED},
+    {"componentVersion", IDS_COMPONENTS_VERSION},
+    {"checkUpdate", IDS_COMPONENTS_CHECK_FOR_UPDATE},
+    {"noComponents", IDS_COMPONENTS_NO_COMPONENTS},
+    {"statusLabel", IDS_COMPONENTS_STATUS_LABEL},
+    {"checkingLabel", IDS_COMPONENTS_CHECKING_LABEL},
+#if BUILDFLAG(IS_CHROMEOS)
+    {"os-components-text1", IDS_COMPONENTS_OS_TEXT1_LABEL},
+    {"os-components-text2", IDS_COMPONENTS_OS_TEXT2_LABEL},
+    {"os-components-link", IDS_COMPONENTS_OS_LINK},
+#endif
   };
   source->AddLocalizedStrings(kStrings);
 
@@ -65,6 +73,10 @@ content::WebUIDataSource* CreateComponentsUIHTMLSource(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+                      chromeos::BrowserParamsProxy::Get()->SessionType() ==
+                              crosapi::mojom::SessionType::kPublicSession ||
+                          profile->IsGuestSession()
 #else
       profile->IsOffTheRecord()
 #endif
@@ -96,7 +108,7 @@ ComponentsUI::~ComponentsUI() {}
 
 // static
 base::RefCountedMemory* ComponentsUI::GetFaviconResourceBytes(
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_PLUGINS_FAVICON, scale_factor);
 }

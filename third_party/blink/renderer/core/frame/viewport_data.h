@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 #include "third_party/blink/public/mojom/page/display_cutout.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -39,12 +40,20 @@ class ViewportData final : public GarbageCollected<ViewportData> {
     return viewport_fit_;
   }
 
+  CORE_EXPORT void SetVirtualKeyboardOverlaysContent(bool overlays_content);
+  CORE_EXPORT bool GetVirtualKeyboardOverlaysContent() const {
+    return virtual_keyboard_overlays_content_;
+  }
+
  private:
   Member<Document> document_;
 
   ViewportDescription viewport_description_;
   ViewportDescription legacy_viewport_description_;
   Length viewport_default_min_width_;
+
+  // Whether overlays content was set via the virtualKeyboard API.
+  bool virtual_keyboard_overlays_content_ = false;
 
   // Stores the current value viewport-fit value.
   mojom::ViewportFit viewport_fit_ = blink::mojom::ViewportFit::kAuto;

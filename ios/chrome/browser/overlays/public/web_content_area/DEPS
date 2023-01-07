@@ -1,0 +1,12 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^http_auth_overlay.mm": [
+    "+ios/chrome/browser/ui/elements/text_field_configuration.h",
+  ],
+  "^java_script_dialog_overlay.mm": [
+    "+ios/chrome/browser/ui/dialogs/java_script_dialog_blocking_state.h",
+    "+ios/chrome/browser/ui/elements/text_field_configuration.h",
+  ],
+
+}
+

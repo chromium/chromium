@@ -65,8 +65,8 @@ Top-Level Elements
 
   This element represents a data structure.  The name attribute gives the name
   of the structure.  The content represents the fields of the structure, and
-  consists of one or more of the field, pad, and list elements described in
-  the section "Structure Contents" below.
+  consists of one or more of the length, field, pad, and list elements described
+  in the section "Structure Contents" below.
 
 <union name="identifier">structure contents</union>
 
@@ -214,6 +214,23 @@ enum; the value is restricted to one of the constants named in the enum.
   This element represents a field in a data structure.  The type attribute
   declares the data type of the field, and the name attribute gives the name
   of the field.
+
+<length>expression</length>
+  This element overrides the length of the data structure by specifying it
+  explicitly instead of it being defined by the layout of the structure.
+  This makes it possible to handle structures with conditional fields
+  (see the <switch> element) where the future revisions of protocols may
+  introduce new variants and old code must still properly ignore them.
+
+  The content is an expression giving the length of the data structure in terms
+  of other fields in the structure.  See the section "Expressions" for details
+  on the expression representation.
+
+  The expression must not depend on conditional fields.
+
+  Additionally, the length of the data structure must be at least such that it
+  includes the fields that the expression depends on. Smaller length is
+  considered a violation of the protocol.
 
 <fd name="identifier" />
 

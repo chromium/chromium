@@ -1,14 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_BLUETOOTH_BLUETOOTH_METRICS_H_
 #define CONTENT_BROWSER_BLUETOOTH_BLUETOOTH_METRICS_H_
 
-#include <string>
-#include <vector>
-
-#include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace base {
@@ -34,45 +31,9 @@ enum class CacheQueryOutcome {
 };
 
 // requestDevice() Metrics
-enum class UMARequestDeviceOutcome {
-  SUCCESS = 0,
-  NO_BLUETOOTH_ADAPTER = 1,
-  NO_RENDER_FRAME = 2,
-  OBSOLETE_DISCOVERY_START_FAILED = 3,
-  OBSOLETE_DISCOVERY_STOP_FAILED = 4,
-  OBSOLETE_NO_MATCHING_DEVICES_FOUND = 5,
-  BLUETOOTH_ADAPTER_NOT_PRESENT = 6,
-  OBSOLETE_BLUETOOTH_ADAPTER_OFF = 7,
-  CHOSEN_DEVICE_VANISHED = 8,
-  BLUETOOTH_CHOOSER_CANCELLED = 9,
-  BLUETOOTH_CHOOSER_DENIED_PERMISSION = 10,
-  BLOCKLISTED_SERVICE_IN_FILTER = 11,
-  BLUETOOTH_OVERVIEW_HELP_LINK_PRESSED = 12,
-  ADAPTER_OFF_HELP_LINK_PRESSED = 13,
-  NEED_LOCATION_HELP_LINK_PRESSED = 14,
-  BLUETOOTH_CHOOSER_POLICY_DISABLED = 15,
-  BLUETOOTH_GLOBALLY_DISABLED = 16,
-  BLUETOOTH_CHOOSER_EVENT_HANDLER_INVALID = 17,
-  BLUETOOTH_LOW_ENERGY_NOT_AVAILABLE = 18,
-  BLUETOOTH_CHOOSER_RESCAN = 19,
-  // NOTE: Add new requestDevice() outcomes immediately above this line. Make
-  // sure to update the enum list in
-  // tools/metrics/histograms/histograms.xml accordingly.
-  COUNT
-};
-
-// There should be a call to this function before every
-// Send(BluetoothMsg_RequestDeviceSuccess...) or
-// Send(BluetoothMsg_RequestDeviceError...).
-CONTENT_EXPORT void RecordRequestDeviceOutcome(UMARequestDeviceOutcome outcome);
 
 // Records stats about the arguments used when calling requestDevice.
-//  - The number of filters used.
-//  - The size of each filter.
-//  - UUID of the services used in filters.
-//  - Number of optional services used.
-//  - UUID of the optional services.
-//  - Size of the union of all services.
+//  - The union of filtered and optional service UUIDs.
 void RecordRequestDeviceOptions(
     const blink::mojom::WebBluetoothRequestDeviceOptionsPtr& options);
 
@@ -143,7 +104,7 @@ void RecordGetPrimaryServicesOutcome(
 // Records the UUID of the service used when calling getPrimaryService.
 void RecordGetPrimaryServicesServices(
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const base::Optional<device::BluetoothUUID>& service);
+    const absl::optional<device::BluetoothUUID>& service);
 
 // getCharacteristic() and getCharacteristics() Metrics
 
@@ -193,7 +154,7 @@ void RecordGetCharacteristicsOutcome(
 // Records the UUID of the characteristic used when calling getCharacteristic.
 void RecordGetCharacteristicsCharacteristic(
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const base::Optional<device::BluetoothUUID>& characteristic);
+    const absl::optional<device::BluetoothUUID>& characteristic);
 
 // Records the outcome of the cache query for getDescriptors. Should only be
 // called if QueryCacheForService fails.
@@ -206,34 +167,33 @@ void RecordGetDescriptorsOutcome(
 // These are the possible outcomes when performing GATT operations i.e.
 // characteristic.readValue/writeValue descriptor.readValue/writeValue.
 enum class UMAGATTOperationOutcome {
-  SUCCESS = 0,
-  NO_DEVICE = 1,
-  NO_SERVICE = 2,
-  NO_CHARACTERISTIC = 3,
-  NO_DESCRIPTOR = 4,
-  UNKNOWN = 5,
-  FAILED = 6,
-  IN_PROGRESS = 7,
-  INVALID_LENGTH = 8,
-  NOT_PERMITTED = 9,
-  NOT_AUTHORIZED = 10,
-  NOT_PAIRED = 11,
-  NOT_SUPPORTED = 12,
-  BLOCKLISTED = 13,
+  kSuccess = 0,
+  kNoDevice = 1,
+  kNoService = 2,
+  kNoCharacteristic = 3,
+  kNoDescriptor = 4,
+  kUnknown = 5,
+  kFailed = 6,
+  kInProgress = 7,
+  kInvalidLength = 8,
+  kNotPermitted = 9,
+  kNotAuthorized = 10,
+  kNotPaired = 11,
+  kNotSupported = 12,
+  kBlocklisted = 13,
   // Note: Add new GATT Outcomes immediately above this line.
   // Make sure to update the enum list in
   // tools/metrics/histograms/histograms.xml accordingly.
-  COUNT
+  kMaxValue = kBlocklisted
 };
 
+// Values below do NOT map to UMA metric values.
 enum class UMAGATTOperation {
-  CHARACTERISTIC_READ,
-  CHARACTERISTIC_WRITE,
-  START_NOTIFICATIONS,
-  DESCRIPTOR_READ,
-  DESCRIPTOR_WRITE,
-  // Note: Add new GATT Operations immediately above this line.
-  COUNT
+  kCharacteristicRead,
+  kCharacteristicWrite,
+  kStartNotifications,
+  kDescriptorReadObsolete,
+  kDescriptorWriteObsolete,
 };
 
 // Records the outcome of a GATT operation.
@@ -242,10 +202,9 @@ enum class UMAGATTOperation {
 void RecordGATTOperationOutcome(UMAGATTOperation operation,
                                 UMAGATTOperationOutcome outcome);
 
-// Characteristic.readValue() Metrics
-// There should be a call to this function for every call to
-// Send(BluetoothMsg_ReadCharacteristicValueSuccess) and
-// Send(BluetoothMsg_ReadCharacteristicValueError).
+// Characteristic.readValue() Metrics:
+// There should be a call to this function for every Mojo
+// bluetooth.mojom.Device.ReadValueForCharacteristic response.
 void RecordCharacteristicReadValueOutcome(UMAGATTOperationOutcome error);
 
 // Records the outcome of a cache query for readValue. Should only be called if
@@ -253,9 +212,8 @@ void RecordCharacteristicReadValueOutcome(UMAGATTOperationOutcome error);
 void RecordCharacteristicReadValueOutcome(CacheQueryOutcome outcome);
 
 // Characteristic.writeValue() Metrics
-// There should be a call to this function for every call to
-// Send(BluetoothMsg_WriteCharacteristicValueSuccess) and
-// Send(BluetoothMsg_WriteCharacteristicValueError).
+// There should be a call to this function for every Mojo
+// bluetooth.mojom.Device.WriteValueForCharacteristic response.
 void RecordCharacteristicWriteValueOutcome(UMAGATTOperationOutcome error);
 
 // Records the outcome of a cache query for writeValue. Should only be called if
@@ -263,9 +221,9 @@ void RecordCharacteristicWriteValueOutcome(UMAGATTOperationOutcome error);
 void RecordCharacteristicWriteValueOutcome(CacheQueryOutcome outcome);
 
 // Characteristic.startNotifications() Metrics
-// There should be a call to this function for every call to
-// Send(BluetoothMsg_StartNotificationsSuccess) and
-// Send(BluetoothMsg_StopNotificationsError).
+// There should be a call to this function for every call to the
+// blink.mojom.WebBluetoothService.RemoteCharacteristicStartNotifications Mojo
+// call.
 void RecordStartNotificationsOutcome(UMAGATTOperationOutcome outcome);
 
 // Records the outcome of a cache query for startNotifications. Should only be
@@ -289,11 +247,6 @@ enum class UMARSSISignalStrengthLevel {
 // called.
 void RecordRSSISignalStrength(int rssi);
 void RecordRSSISignalStrengthLevel(UMARSSISignalStrengthLevel level);
-
-// In the case of not accepting all devices in the options that are given
-// to WebBluetooth requestDevice(), records the number of devices in the
-// chooser when a device is paired.
-void RecordNumOfDevices(bool accept_all_devices, size_t num_of_devices);
 
 }  // namespace content
 

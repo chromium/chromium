@@ -5,10 +5,20 @@
     100%  { transform: rotate(360deg); }
 }
 
+@keyframes scale-individual {
+    0%  { scale: 1; }
+    50%  { scale: 2; }
+    100%  { scale: 4; }
+}
 @keyframes rotate-individual {
     0%  { rotate: 0deg; }
     50%  { rotate: 180deg; }
     100%  { rotate: 360deg; }
+}
+@keyframes translate-individual {
+    0%  { translate: 0px 0; }
+    50%  { translate: 100px 0; }
+    100%  { translate: 150px 50px; }
 }
 div {
     /* to avoid empty layers */
@@ -22,10 +32,14 @@ div {
     document.addEventListener('animationstart', () => internals.pauseAnimations(0));
 </script>
 <div id="transform3d" style="transform: translateZ(100px);"></div>
-<div id="transform3d-individual" style="translate: 0px 0px 100px;">translated individual</div>
+<div id="scale3d" style="scale: 1 1 2;">3d scale</div>
+<div id="rotate3d" style="rotate: 0 1 0 45deg;">3d rotate</div>
+<div id="translate3d" style="translate: 0px 0px 100px;">3d translate</div>
 <div id="backface-visibility" style="backface-visibility: hidden">backface hidden</div>
 <div id="animation" style="width: 50px; height: 50px; -webkit-animation-name: rotate; -webkit-animation-iteration-count: infinite; -webkit-animation-duration: 5s;">animated</div>
-<div id="animation-individual" style="width: 50px; height: 50px; animation-name: rotate-individual; animation-iteration-count: infinite; animation-duration: 5s;">animated individual</div>
+<div id="animation-scale" style="width: 50px; height: 50px; animation-name: scale-individual; animation-iteration-count: infinite; animation-duration: 5s;">animated individual</div>
+<div id="animation-rotate" style="width: 50px; height: 50px; animation-name: rotate-individual; animation-iteration-count: infinite; animation-duration: 5s;">animated individual</div>
+<div id="animation-translate" style="width: 50px; height: 50px; animation-name: translate-individual; animation-iteration-count: infinite; animation-duration: 5s;">animated individual</div>
 <div id="transformWithCompositedDescendants" style="transform: rotate(10deg)">
     <div style="transform: scale3d(2, 3, 4);">
     </div>

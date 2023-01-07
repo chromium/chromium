@@ -1,0 +1,91 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Default: '
+++++++++++UNKNOWN label='Default: '
+++++++++TEXT_FIELD focusable label='Default:' actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Button: '
+++++++++++UNKNOWN label='Button: '
+++++++++BUTTON focusable label='Button:' actions='{DEFAULT}'
+++++++UNKNOWN hidden
+++++++++STATIC_TEXT hidden label='Checkbox: '
+++++++++CHECK_BOX focusable label='Checkbox:' actions='{DEFAULT}' checked_state='UNCHECKED'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Color: '
+++++++++++UNKNOWN label='Color: '
+++++++++UNKNOWN focusable label='Color:' actions='{DEFAULT, SET_VALUE}' value='#000000'
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Email: '
+++++++++++UNKNOWN label='Email: '
+++++++++TEXT_FIELD focusable label='Email:' actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN
+++++++UNKNOWN
+++++++++STATIC_TEXT label='File: '
+++++++++++UNKNOWN label='File: '
+++++++++BUTTON focusable label='File:' actions='{DEFAULT}' value='No file chosen'
+++++++++++BUTTON focusable label='Choose File' actions='{DEFAULT}'
+++++++++++++STATIC_TEXT label='Choose File'
+++++++++++++++UNKNOWN label='Choose File'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='No file chosen'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Image: '
+++++++++++UNKNOWN label='Image: '
+++++++++BUTTON focusable label='Image:' actions='{DEFAULT}'
+++++++++++IMAGE
+++++++++++STATIC_TEXT label='Submit'
+++++++++++++UNKNOWN label='Submit'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Number: '
+++++++++++UNKNOWN label='Number: '
+++++++++UNKNOWN focusable label='Number:' actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Password: '
+++++++++++UNKNOWN label='Password: '
+++++++++TEXT_FIELD focusable label='Password:' actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN
+++++++UNKNOWN hidden
+++++++++STATIC_TEXT hidden label='Radio: '
+++++++++RADIO_BUTTON focusable label='Radio:' actions='{DEFAULT}' checked_state='UNCHECKED'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Range: '
+++++++++++UNKNOWN label='Range: '
+++++++++SLIDER focusable label='Range:' actions='{SET_VALUE}'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Reset: '
+++++++++++UNKNOWN label='Reset: '
+++++++++BUTTON focusable label='Reset:' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='Reset'
+++++++++++++UNKNOWN label='Reset'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Search: '
+++++++++++UNKNOWN label='Search: '
+++++++++SEARCH_BOX focusable label='Search:' actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Submit: '
+++++++++++UNKNOWN label='Submit: '
+++++++++BUTTON focusable label='Submit:' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='Submit'
+++++++++++++UNKNOWN label='Submit'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Tel: '
+++++++++++UNKNOWN label='Tel: '
+++++++++TEXT_FIELD focusable label='Tel:' actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Text: '
+++++++++++UNKNOWN label='Text: '
+++++++++TEXT_FIELD focusable label='Text:' actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Url: '
+++++++++++UNKNOWN label='Url: '
+++++++++TEXT_FIELD focusable label='Url:' actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN

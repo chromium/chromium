@@ -1,0 +1,24 @@
+caption: Enable Google Assistant voice match flow
+default: true
+desc: |-
+  Setting the policy to Enabled lets show Google Assistant voice match flow during initial setup. Setting the policy to Disabled keeps Google Assistant from showing voice match flow during initial setup.
+
+        Leaving the policy unset means it is Enabled.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Show Google Assistant voice match flow during initial setup
+  value: true
+- caption: Do not show Google Assistant voice match flow during initial setup
+  value: false
+owners:
+- raleksandrov@google.com
+- cros-oac@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:93-
+tags: []
+type: main

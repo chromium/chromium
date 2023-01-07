@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,6 +99,10 @@ bool StructTraits<display::mojom::DisplaySnapshotDataView,
   if (!data.ReadColorSpace(&color_space))
     return false;
 
+  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata;
+  if (!data.ReadHdrStaticMetadata(&hdr_static_metadata))
+    return false;
+
   std::string display_name;
   if (!data.ReadDisplayName(&display_name))
     return false;
@@ -144,13 +148,16 @@ bool StructTraits<display::mojom::DisplaySnapshotDataView,
     return false;
 
   *out = std::make_unique<display::DisplaySnapshot>(
-      data.display_id(), origin, physical_size, type, data.base_connector_id(),
-      path_topology, data.is_aspect_preserving_scaling(), data.has_overscan(),
+      data.display_id(), data.port_display_id(), data.edid_display_id(),
+      data.connector_index(), origin, physical_size, type,
+      data.base_connector_id(), path_topology,
+      data.is_aspect_preserving_scaling(), data.has_overscan(),
       privacy_screen_state, data.has_color_correction_matrix(),
       data.color_correction_in_linear_space(), color_space,
-      data.bits_per_channel(), display_name, file_path, std::move(modes),
-      panel_orientation, std::move(edid), current_mode, native_mode,
-      data.product_code(), data.year_of_manufacture(), maximum_cursor_size);
+      data.bits_per_channel(), hdr_static_metadata, display_name, file_path,
+      std::move(modes), panel_orientation, std::move(edid), current_mode,
+      native_mode, data.product_code(), data.year_of_manufacture(),
+      maximum_cursor_size);
   return true;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,10 @@
 
 CredentialProviderSigninInfoFetcher::CredentialProviderSigninInfoFetcher(
     const std::string& refresh_token,
+    const std::string& consumer_name,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : scoped_access_token_fetcher_(
+    : consumer_name_(consumer_name),
+      scoped_access_token_fetcher_(
           GaiaAccessTokenFetcher::
               CreateExchangeRefreshTokenForAccessTokenInstance(
                   this,
@@ -61,21 +63,29 @@ void CredentialProviderSigninInfoFetcher::SetCompletionCallbackAndStart(
 }
 
 void CredentialProviderSigninInfoFetcher::OnGetTokenInfoResponse(
-    std::unique_ptr<base::DictionaryValue> token_info) {
+    const base::Value::Dict& token_info) {
   DCHECK(token_handle_.empty());
-  bool has_error = !token_info->GetString("token_handle", &token_handle_) ||
-                   token_handle_.empty();
+  if (const std::string* token_handle = token_info.FindString("token_handle");
+      token_handle) {
+    token_handle_ = *token_handle;
+  }
+  bool has_error = token_handle_.empty();
   WriteResultsIfFinished(has_error);
 }
 
 void CredentialProviderSigninInfoFetcher::OnGetUserInfoResponse(
-    std::unique_ptr<base::DictionaryValue> user_info) {
+    const base::Value::Dict& user_info) {
   DCHECK(!mdm_access_token_.empty());
   DCHECK(!mdm_id_token_.empty());
   DCHECK(full_name_.empty());
-  bool has_error =
-      !user_info->GetString("name", &full_name_) || full_name_.empty();
-  user_info->GetString("picture", &picture_url_);
+  if (const std::string* full_name = user_info.FindString("name"); full_name) {
+    full_name_ = *full_name;
+  }
+  if (const std::string* picture_url = user_info.FindString("picture");
+      picture_url) {
+    picture_url_ = *picture_url;
+  }
+  bool has_error = full_name_.empty();
   WriteResultsIfFinished(has_error);
 }
 
@@ -110,6 +120,10 @@ void CredentialProviderSigninInfoFetcher::OnGetTokenSuccess(
 void CredentialProviderSigninInfoFetcher::OnGetTokenFailure(
     const GoogleServiceAuthError& error) {
   WriteResultsIfFinished(true);
+}
+
+std::string CredentialProviderSigninInfoFetcher::GetConsumerName() const {
+  return consumer_name_;
 }
 
 void CredentialProviderSigninInfoFetcher::RequestUserInfoFromAccessToken(

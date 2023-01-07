@@ -1,13 +1,11 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
-import("//ui/file_manager/base/gn/js_test_gen_html.gni")
-import("//ui/webui/resources/js/cr.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 visibility = [
   "//ui/file_manager/file_manager/externs/*",
@@ -20,100 +18,21 @@ group("closure_compile") {
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
     ":closure_compile_jsmodules",
-    ":closure_compile_module",
-    ":js_test_gen_html_modules_type_check_auto",
-    ":test_support_type_check",
+    ":js_test_type_check",
   ]
 }
 
-js_type_check("closure_compile_jsmodules") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "js_module_root=gen/ui/file_manager/",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
-                  ]
-
-  deps = [
-    ":actions_controller.m",
-    ":actions_model.m",
-    ":android_app_list_model.m",
-    ":app_state_controller.m",
-    ":column_visibility_controller.m",
-    ":constants.m",
-    ":crossover_search_utils.m",
-    ":crostini_controller.m",
-    ":deferred_elements.m",
-    ":dialog_action_controller.m",
-    ":dialog_type.m",
-    ":directory_contents.m",
-    ":directory_model.m",
-    ":directory_tree_naming_controller.m",
-    ":drive_dialog_controller.m",
-    ":drop_effect_and_label.m",
-    ":elements_importer.m",
-    ":empty_folder_controller.m",
-    ":fake_android_app_list_model.m",
-    ":fake_file_selection_handler.m",
-    ":file_list_model.m",
-    ":file_manager.m",
-    ":file_manager_commands.m",
-    ":file_selection.m",
-    ":file_tasks.m",
-    ":file_transfer_controller.m",
-    ":file_type_filters_controller.m",
-    ":file_watcher.m",
-    ":folder_shortcuts_data_model.m",
-    ":gear_menu_controller.m",
-    ":holding_space_util.m",
-    ":import_controller.m",
-    ":last_modified_controller.m",
-    ":launch_param.m",
-    ":list_thumbnail_loader.m",
-    ":main.m",
-    ":main_window_component.m",
-    ":metadata_box_controller.m",
-    ":metadata_update_controller.m",
-    ":mock_directory_model.m",
-    ":mock_folder_shortcut_data_model.m",
-    ":mock_navigation_list_model.m",
-    ":mock_thumbnail_loader.m",
-    ":naming_controller.m",
-    ":navigation_list_model.m",
-    ":navigation_uma.m",
-    ":path_component.m",
-    ":providers_model.m",
-    ":quick_view_controller.m",
-    ":quick_view_model.m",
-    ":quick_view_uma.m",
-    ":scan_controller.m",
-    ":search_controller.m",
-    ":selection_menu_controller.m",
-    ":sort_menu_controller.m",
-    ":spinner_controller.m",
-    ":task_controller.m",
-    ":task_history.m",
-    ":thumbnail_loader.m",
-    ":toolbar_controller.m",
-    ":web_store_utils.m",
-    ":webui_command_extender.m",
-  ]
-}
-
-js_type_check("closure_compile_module") {
-  uses_legacy_modules = true
+group("js_modules") {
   deps = [
     ":actions_controller",
     ":actions_model",
     ":android_app_list_model",
     ":app_state_controller",
-    ":closure_compile_externs",
-    ":column_visibility_controller",
+    ":banner_controller",
     ":constants",
     ":crossover_search_utils",
     ":crostini_controller",
     ":dialog_action_controller",
-    ":dialog_type",
     ":directory_contents",
     ":directory_model",
     ":directory_tree_naming_controller",
@@ -121,6 +40,8 @@ js_type_check("closure_compile_module") {
     ":drop_effect_and_label",
     ":elements_importer",
     ":empty_folder_controller",
+    ":fake_android_app_list_model",
+    ":fake_file_selection_handler",
     ":file_list_model",
     ":file_manager",
     ":file_manager_commands",
@@ -131,7 +52,8 @@ js_type_check("closure_compile_module") {
     ":file_watcher",
     ":folder_shortcuts_data_model",
     ":gear_menu_controller",
-    ":import_controller",
+    ":guest_os_controller",
+    ":holding_space_util",
     ":last_modified_controller",
     ":launch_param",
     ":list_thumbnail_loader",
@@ -140,6 +62,11 @@ js_type_check("closure_compile_module") {
     ":metadata_box_controller",
     ":metadata_update_controller",
     ":metrics_start",
+    ":mock_actions_model",
+    ":mock_directory_model",
+    ":mock_folder_shortcut_data_model",
+    ":mock_navigation_list_model",
+    ":mock_thumbnail_loader",
     ":naming_controller",
     ":navigation_list_model",
     ":navigation_uma",
@@ -157,417 +84,310 @@ js_type_check("closure_compile_module") {
     ":task_history",
     ":thumbnail_loader",
     ":toolbar_controller",
-    ":web_store_utils",
     ":webui_command_extender",
   ]
 }
 
-js_library("closure_compile_externs") {
-  sources = []
-  externs_list = [
-    "$externs_path/command_line_private.js",
-    "$externs_path/metrics_private.js",
-    "//ui/file_manager/file_manager/externs/background/crostini.js",
-    "//ui/file_manager/file_manager/externs/background/drive_sync_handler.js",
-    "//ui/file_manager/file_manager/externs/background/background_base.js",
-    "//ui/file_manager/file_manager/externs/background/file_browser_background_full.js",
-    "//ui/file_manager/file_manager/externs/background/file_operation_manager.js",
-    "//ui/file_manager/file_manager/externs/background/media_import_handler.js",
-    "//ui/file_manager/file_manager/externs/background/task_queue.js",
-    "//ui/file_manager/file_manager/externs/background/duplicate_finder.js",
-    "//ui/file_manager/file_manager/externs/background/media_scanner.js",
-    "//ui/file_manager/file_manager/externs/background/progress_center.js",
-    "//ui/file_manager/file_manager/externs/background_window.js",
-    "//ui/file_manager/file_manager/externs/chrome_echo_private.js",
-    "//ui/file_manager/file_manager/externs/chrome_webstore_widget_private.js",
-    "//ui/file_manager/file_manager/externs/command_handler_deps.js",
-    "//ui/file_manager/file_manager/externs/css_rule.js",
-    "//ui/file_manager/file_manager/externs/directory_change_event.js",
-    "//ui/file_manager/file_manager/externs/drive_dialog_controller.js",
-    "//ui/file_manager/file_manager/externs/entries_changed_event.js",
-    "//ui/file_manager/file_manager/externs/gallery_foreground.js",
-    "//ui/file_manager/file_manager/externs/menu_item_update_event.js",
-    "//ui/file_manager/file_manager/externs/paper_elements.js",
-    "//ui/file_manager/file_manager/externs/platform.js",
-    "//ui/file_manager/file_manager/externs/search_item.js",
-  ]
-}
+js_type_check("closure_compile_jsmodules") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
+                    "js_module_root=gen/ui/file_manager/tsc/",
+                    "js_module_root=gen/ui/file_manager/",
+                    "js_module_root=" +
+                        rebase_path("//ui/file_manager/", root_build_dir),
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                  ]
 
-js_type_check("test_support_type_check") {
-  uses_legacy_modules = true
-  testonly = true
   deps = [
+    ":actions_controller",
+    ":actions_model",
+    ":android_app_list_model",
+    ":app_state_controller",
+    ":banner_controller",
+    ":constants",
+    ":crossover_search_utils",
+    ":crostini_controller",
+    ":deferred_elements",
+    ":dialog_action_controller",
+    ":directory_contents",
+    ":directory_model",
+    ":directory_tree_naming_controller",
+    ":drive_dialog_controller",
+    ":drop_effect_and_label",
+    ":elements_importer",
+    ":empty_folder_controller",
     ":fake_android_app_list_model",
-    ":mock_actions_model",
+    ":fake_file_selection_handler",
+    ":file_list_model",
+    ":file_manager",
+    ":file_manager_commands",
+    ":file_rename",
+    ":file_selection",
+    ":file_tasks",
+    ":file_transfer_controller",
+    ":file_type_filters_controller",
+    ":file_watcher",
+    ":folder_shortcuts_data_model",
+    ":gear_menu_controller",
+    ":guest_os_controller",
+    ":holding_space_util",
+    ":last_modified_controller",
+    ":launch_param",
+    ":list_thumbnail_loader",
+    ":main",
+    ":main_window_component",
+    ":metadata_box_controller",
+    ":metadata_update_controller",
     ":mock_directory_model",
     ":mock_folder_shortcut_data_model",
     ":mock_navigation_list_model",
     ":mock_thumbnail_loader",
+    ":naming_controller",
+    ":navigation_list_model",
+    ":navigation_uma",
+    ":path_component",
+    ":providers_model",
+    ":quick_view_controller",
+    ":quick_view_model",
+    ":quick_view_uma",
+    ":scan_controller",
+    ":search_controller",
+    ":selection_menu_controller",
+    ":sort_menu_controller",
+    ":spinner_controller",
+    ":task_controller",
+    ":task_history",
+    ":thumbnail_loader",
+    ":toolbar_controller",
+    ":webui_command_extender",
+    "//ui/file_manager:js_from_ts",
   ]
 }
 
 js_library("actions_controller") {
   deps = [
     ":actions_model",
+    ":directory_model",
     ":file_selection",
+    ":folder_shortcuts_data_model",
+    "metadata:metadata_model",
+    "ui:context_menu_handler",
     "ui:file_manager_ui",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr:ui",
-    "//ui/webui/resources/js/cr/ui:context_menu_handler",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
   ]
-}
-
-js_library("actions_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/actions_controller.m.js" ]
-  deps = [
-    ":actions_model.m",
-    ":directory_model.m",
-    ":file_selection.m",
-    ":folder_shortcuts_data_model.m",
-    "metadata:metadata_model.m",
-    "ui:file_manager_ui.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:drive_sync_handler.m",
-    "//ui/webui/resources/js/cr/ui:context_menu_handler.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("actions_model") {
   deps = [
     ":folder_shortcuts_data_model",
     "metadata:metadata_model",
-    "ui:files_alert_dialog",
-    "ui:list_container",
+    "ui:action_model_ui",
+    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/foreground/js/ui:action_model_ui",
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [
-    "//ui/file_manager/file_manager/externs/background/drive_sync_handler.js",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
-js_library("actions_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/actions_model.m.js" ]
+js_library("banner_controller") {
   deps = [
-    ":folder_shortcuts_data_model.m",
-    "metadata:metadata_model.m",
-    "ui:action_model_ui.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:drive_sync_handler.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    ":constants",
+    ":directory_model",
+    "ui/banners:dlp_restricted_banner",
+    "ui/banners:drive_low_individual_space_banner",
+    "ui/banners:drive_out_of_individual_space_banner",
+    "ui/banners:drive_out_of_organization_space_banner",
+    "ui/banners:drive_welcome_banner",
+    "ui/banners:holding_space_welcome_banner",
+    "ui/banners:invalid_usb_filesystem_banner",
+    "ui/banners:local_disk_low_space_banner",
+    "ui/banners:shared_with_crostini_pluginvm_banner",
+    "ui/banners:trash_banner",
+    "//ui/file_manager/file_manager/common/js:api",
+    "//ui/file_manager/file_manager/common/js:async_util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/common/js:xfm",
+    "//ui/file_manager/file_manager/externs:banner",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:crostini",
+    "//ui/webui/resources/js/cr:event_target",
   ]
+}
 
-  extra_deps = [ ":modulize" ]
+js_unittest("banner_controller_unittest") {
+  deps = [
+    ":banner_controller",
+    ":directory_model",
+    ":mock_directory_model",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/common/js:xfm",
+    "//ui/file_manager/file_manager/externs:banner",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:crostini",
+  ]
+}
+
+js_unittest("banner_util_unittest") {
+  deps = [
+    ":banner_controller",
+    ":directory_model",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:banner",
+    "//ui/file_manager/file_manager/externs:volume_info",
+  ]
 }
 
 js_library("mock_actions_model") {
-  testonly = true
-  deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr:event_target",
-  ]
-}
-
-js_library("mock_actions_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/mock_actions_model.m.js" ]
   deps = [
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("fake_file_selection_handler") {
-  testonly = true
   deps = [
-    "//ui/webui/resources/js:cr",
+    ":file_selection",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
-js_library("fake_file_selection_handler.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/fake_file_selection_handler.m.js" ]
+js_unittest("actions_model_unittest") {
   deps = [
-    ":file_selection.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_unittest("actions_model_unittest.m") {
-  deps = [
-    ":actions_model.m",
-    ":folder_shortcuts_data_model.m",
-    "metadata:mock_metadata.m",
-    "ui:action_model_ui.m",
-    "ui:files_alert_dialog.m",
-    "ui:list_container.m",
+    ":actions_model",
+    ":folder_shortcuts_data_model",
+    "metadata:mock_metadata",
+    "ui:action_model_ui",
+    "ui:files_alert_dialog",
+    "ui:list_container",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_drive_sync_handler.m",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:mock_chrome.m",
-    "//ui/file_manager/file_manager/common/js:mock_entry.m",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/common/js:xfm.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/file_manager/file_manager/background/js:mock_drive_sync_handler",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/common/js:xfm",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
 js_library("fake_android_app_list_model") {
-  testonly = true
-  deps = [ ":android_app_list_model" ]
-}
-
-js_library("fake_android_app_list_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/fake_android_app_list_model.m.js" ]
   deps = [
-    ":android_app_list_model.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    ":android_app_list_model",
+    "//ui/webui/resources/js/cr:event_target",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("mock_directory_model") {
-  testonly = true
   deps = [
     ":directory_contents",
     ":directory_model",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:util",
+    ":file_list_model",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/webui/resources/js/cr:event_target",
   ]
-}
-
-js_library("mock_directory_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/mock_directory_model.m.js" ]
-  deps = [
-    ":directory_contents.m",
-    ":directory_model.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("mock_folder_shortcut_data_model") {
-  testonly = true
   deps = [
     ":folder_shortcuts_data_model",
+    "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/webui/resources/js/cr/ui:array_data_model",
   ]
-}
-
-js_library("mock_folder_shortcut_data_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/mock_folder_shortcut_data_model.m.js" ]
-  deps = [
-    ":folder_shortcuts_data_model.m",
-    "//ui/file_manager/file_manager/common/js:mock_entry.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("mock_navigation_list_model") {
-  testonly = true
-  deps = [ ":navigation_list_model" ]
-}
-
-js_library("mock_navigation_list_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/mock_navigation_list_model.m.js" ]
   deps = [
-    ":navigation_list_model.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    ":navigation_list_model",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/webui/resources/js/cr:event_target",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("mock_thumbnail_loader") {
-  testonly = true
   deps = [ ":thumbnail_loader" ]
-}
-
-js_library("mock_thumbnail_loader.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/mock_thumbnail_loader.m.js" ]
-  deps = [ ":thumbnail_loader.m" ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("android_app_list_model") {
   deps = [ "//ui/webui/resources/js/cr:event_target" ]
 }
 
-js_library("android_app_list_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/android_app_list_model.m.js" ]
-
-  deps = [ "//ui/webui/resources/js/cr:event_target.m" ]
-
-  extra_deps = [ ":modulize" ]
-}
-
 js_library("app_state_controller") {
   deps = [
-    ":dialog_type",
     ":directory_model",
+    ":file_list_model",
     "ui:file_manager_ui",
+    "ui:list_container",
+    "//ui/file_manager/file_manager/common/js:app_util",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/webui/resources/js:assert",
   ]
-}
-
-js_library("app_state_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/app_state_controller.m.js" ]
-  deps = [
-    ":dialog_type.m",
-    ":directory_model.m",
-    "ui:file_manager_ui.m",
-    "ui:list_container.m",
-    "//ui/file_manager/file_manager/common/js:app_util.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("column_visibility_controller") {
-  deps = [
-    ":directory_model",
-    "ui:file_manager_ui",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-  ]
-}
-
-js_library("column_visibility_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/column_visibility_controller.m.js" ]
-  deps = [
-    ":directory_model.m",
-    "ui:file_manager_ui.m",
-    "//ui/file_manager/file_manager/common/js:importer_common.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("constants") {
 }
 
-js_library("constants.m") {
-  sources = [
-    "$root_gen_dir/ui/file_manager/file_manager/foreground/js/constants.m.js",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
 js_library("crossover_search_utils") {
-}
-
-js_library("crossover_search_utils.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/crossover_search_utils.m.js" ]
   deps = [
-    ":directory_model.m",
-    ":navigation_list_model.m",
+    ":directory_model",
+    ":navigation_list_model",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("crostini_controller") {
   deps = [
+    ":constants",
     ":directory_model",
     ":file_manager_commands",
+    ":navigation_list_model",
     "ui:directory_tree",
-    "//ui/file_manager/file_manager/foreground/elements:files_message",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs/background:crostini",
+    "//ui/file_manager/file_manager/foreground/elements:files_toast",
+    "//ui/webui/resources/js:assert",
   ]
-}
-
-js_library("crostini_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/crostini_controller.m.js" ]
-  deps = [
-    ":constants.m",
-    ":directory_model.m",
-    ":file_manager_commands.m",
-    ":navigation_list_model.m",
-    "ui:directory_tree.m",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs/background:crostini.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_message.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_toast.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("dialog_action_controller") {
   deps = [
-    ":dialog_type",
     ":directory_contents",
     ":directory_model",
     ":file_selection",
     ":launch_param",
     ":naming_controller",
     "metadata:metadata_model",
+    "ui:command",
     "ui:dialog_footer",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/webui/resources/js/cr/ui:command",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:util",
   ]
-}
-
-js_library("dialog_action_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/dialog_action_controller.m.js" ]
-  deps = [
-    ":dialog_type.m",
-    ":directory_contents.m",
-    ":directory_model.m",
-    ":file_selection.m",
-    ":launch_param.m",
-    ":naming_controller.m",
-    "metadata:metadata_model.m",
-    "ui:dialog_footer.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:command.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("dialog_type") {
-}
-
-js_library("dialog_type.m") {
-  sources = [
-    "$root_gen_dir/ui/file_manager/file_manager/foreground/js/dialog_type.m.js",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("directory_contents") {
@@ -577,259 +397,203 @@ js_library("directory_contents") {
     "metadata:metadata_model",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:trash",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr/ui:array_data_model",
-  ]
-}
-
-js_library("directory_contents.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/directory_contents.m.js" ]
-  deps = [
-    ":constants.m",
-    ":file_list_model.m",
-    "metadata:metadata_model.m",
-    "//ui/file_manager/file_manager/common/js:async_util.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
-js_unittest("directory_contents_unittest.m") {
+js_unittest("directory_contents_unittest") {
   deps = [
-    ":directory_contents.m",
+    ":directory_contents",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:entry_location.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:entry_location",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
 
 js_library("directory_model") {
   deps = [
+    ":constants",
     ":directory_contents",
+    ":file_list_model",
     ":file_watcher",
+    "metadata:metadata_model",
     "ui:file_list_selection_model",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-  ]
-  externs_list = [
-    "//ui/file_manager/file_manager/externs/background/file_operation_manager.js",
-    "//ui/file_manager/file_manager/externs/entries_changed_event.js",
+    "ui:list_selection_model",
+    "ui:list_single_selection_model",
+    "//ui/file_manager/file_manager/common/js:async_util",
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:entries_changed_event",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:file_operation_manager",
+    "//ui/file_manager/file_manager/externs/ts:state",
+    "//ui/file_manager/file_manager/externs/ts:store",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
-js_library("directory_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/directory_model.m.js" ]
+js_unittest("directory_model_unittest") {
   deps = [
-    ":constants.m",
-    ":directory_contents.m",
-    ":file_list_model.m",
-    ":file_watcher.m",
-    "metadata:metadata_model.m",
-    "ui:file_list_selection_model.m",
-    "//ui/file_manager/file_manager/common/js:async_util.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:entries_changed_event.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:file_operation_manager.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
-    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
+    ":directory_contents",
+    ":directory_model",
+    "metadata:mock_metadata",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/background/js:mock_file_operation_manager",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("navigation_uma") {
   deps = [
-    ":dialog_type",
     "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
-}
-
-js_library("navigation_uma.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/navigation_uma.m.js" ]
-  deps = [
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("directory_tree_naming_controller") {
   deps = [
     ":directory_model",
+    "ui:dialogs",
     "ui:directory_tree",
+    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js/cr/ui:dialogs",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/foreground/js:file_rename",
+    "//ui/webui/resources/js:assert",
   ]
-}
-
-js_library("directory_tree_naming_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/directory_tree_naming_controller.m.js" ]
-  deps = [
-    ":directory_model.m",
-    "ui:directory_tree.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr/ui:dialogs.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("drive_dialog_controller") {
   deps = [
     "ui:file_manager_ui",
     "ui:files_confirm_dialog",
-  ]
-  externs_list =
-      [ "//ui/file_manager/file_manager/externs/drive_dialog_controller.js" ]
-}
-
-js_library("drive_dialog_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/drive_dialog_controller.m.js" ]
-  deps = [
-    "ui:file_manager_ui.m",
-    "ui:files_confirm_dialog.m",
-    "//ui/file_manager/file_manager/externs:drive_dialog_controller.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("drop_effect_and_label") {
 }
 
-js_library("drop_effect_and_label.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/drop_effect_and_label.m.js" ]
-
-  extra_deps = [ ":modulize" ]
-}
-
 js_library("elements_importer") {
-}
-
-js_library("elements_importer.m") {
-  deps = [ ":deferred_elements.m" ]
-}
-
-js_library("deferred_elements.m") {
-  visibility += [ "//ui/file_manager:*" ]
-  deps = [
-    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_message.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_ripple.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_spinner.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_toast.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip.m",
-    "//ui/file_manager/file_manager/foreground/elements:xf_button.m",
-    "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress.m",
-    "//ui/file_manager/file_manager/foreground/elements:xf_display_panel.m",
-    "//ui/file_manager/file_manager/foreground/elements:xf_panel_item.m",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
-  ]
+  deps = [ ":deferred_elements" ]
 }
 
 js_library("empty_folder_controller") {
   deps = [
     ":directory_model",
     ":file_list_model",
-    "ui:empty_folder",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
-js_library("empty_folder_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/empty_folder_controller.m.js" ]
+js_unittest("empty_folder_controller_unittest") {
   deps = [
-    ":constants.m",
-    ":directory_model.m",
-    ":file_list_model.m",
-    "ui:empty_folder.m",
-    "ui:files_alert_dialog.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/webui/resources/js:assert.m",
+    ":directory_model",
+    ":empty_folder_controller",
+    ":file_list_model",
+    ":mock_directory_model",
+    "metadata:mock_metadata",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
+}
 
-  extra_deps = [ ":modulize" ]
+js_library("deferred_elements") {
+  visibility += [ "//ui/file_manager:*" ]
+  deps = [
+    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
+    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
+    "//ui/file_manager/file_manager/foreground/elements:files_ripple",
+    "//ui/file_manager/file_manager/foreground/elements:files_spinner",
+    "//ui/file_manager/file_manager/foreground/elements:files_toast",
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
+    "//ui/file_manager/file_manager/foreground/elements:xf_button",
+    "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress",
+    "//ui/file_manager/file_manager/foreground/elements:xf_display_panel",
+    "//ui/file_manager/file_manager/foreground/elements:xf_panel_item",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
 }
 
 js_library("file_list_model") {
   deps = [
     "metadata:metadata_model",
+    "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:recent_date_bucket",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js/cr/ui:array_data_model",
+    "//ui/file_manager/file_manager/externs:entry_location",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
-js_library("file_list_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/file_list_model.m.js" ]
+js_unittest("file_list_model_unittest") {
   deps = [
-    "metadata:metadata_model.m",
-    "//ui/file_manager/file_manager/common/js:file_type.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/externs:entry_location.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_unittest("file_list_model_unittest.m") {
-  deps = [
-    ":file_list_model.m",
-    "metadata:metadata_model.m",
+    ":file_list_model",
+    "metadata:metadata_model",
     "//chrome/test/data/webui:chai_assert",
   ]
 }
 
 js_library("file_manager") {
   deps = [
+    ":actions_controller",
     ":android_app_list_model",
     ":app_state_controller",
-    ":column_visibility_controller",
+    ":banner_controller",
+    ":crossover_search_utils",
     ":crostini_controller",
     ":dialog_action_controller",
-    ":dialog_type",
+    ":directory_contents",
     ":directory_model",
+    ":directory_tree_naming_controller",
     ":drive_dialog_controller",
-    ":elements_importer",
     ":empty_folder_controller",
+    ":file_manager_commands",
     ":file_selection",
+    ":file_tasks",
     ":file_transfer_controller",
     ":file_type_filters_controller",
     ":folder_shortcuts_data_model",
     ":gear_menu_controller",
-    ":import_controller",
     ":last_modified_controller",
     ":launch_param",
+    ":list_thumbnail_loader",
     ":main_window_component",
+    ":metadata_box_controller",
     ":metadata_update_controller",
     ":naming_controller",
+    ":navigation_list_model",
     ":navigation_uma",
     ":providers_model",
     ":quick_view_controller",
@@ -842,176 +606,97 @@ js_library("file_manager") {
     ":spinner_controller",
     ":task_controller",
     ":toolbar_controller",
+    "metadata:content_metadata_provider",
+    "metadata:metadata_model",
+    "metadata:thumbnail_model",
+    "ui:a11y_announce",
     "ui:commandbutton",
+    "ui:context_menu_handler",
     "ui:directory_tree",
+    "ui:file_grid",
+    "ui:file_list_selection_model",
     "ui:file_manager_ui",
+    "ui:file_metadata_formatter",
+    "ui:file_table",
+    "ui:list",
+    "ui:menu",
+    "//ui/file_manager/file_manager/common/js:api",
+    "//ui/file_manager/file_manager/common/js:array_data_model",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+    "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:storage_adapter",
-    "//ui/webui/resources/js/cr/ui:list_selection_model",
+    "//ui/file_manager/file_manager/common/js:trash",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:command_handler_deps",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs:foreground_window",
+    "//ui/file_manager/file_manager/externs/background:crostini",
+    "//ui/file_manager/file_manager/externs/background:file_manager_base",
+    "//ui/file_manager/file_manager/externs/background:file_operation_manager",
+    "//ui/file_manager/file_manager/externs/background:progress_center",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
-js_library("file_manager.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/file_manager.m.js" ]
+js_library("file_rename") {
   deps = [
-    ":actions_controller.m",
-    ":android_app_list_model.m",
-    ":app_state_controller.m",
-    ":column_visibility_controller.m",
-    ":crossover_search_utils.m",
-    ":crostini_controller.m",
-    ":dialog_action_controller.m",
-    ":dialog_type.m",
-    ":directory_contents.m",
-    ":directory_model.m",
-    ":directory_tree_naming_controller.m",
-    ":drive_dialog_controller.m",
-    ":empty_folder_controller.m",
-    ":file_manager_commands.m",
-    ":file_selection.m",
-    ":file_tasks.m",
-    ":file_transfer_controller.m",
-    ":file_type_filters_controller.m",
-    ":folder_shortcuts_data_model.m",
-    ":gear_menu_controller.m",
-    ":import_controller.m",
-    ":last_modified_controller.m",
-    ":launch_param.m",
-    ":list_thumbnail_loader.m",
-    ":main_window_component.m",
-    ":metadata_box_controller.m",
-    ":metadata_update_controller.m",
-    ":naming_controller.m",
-    ":navigation_list_model.m",
-    ":navigation_uma.m",
-    ":providers_model.m",
-    ":quick_view_controller.m",
-    ":quick_view_model.m",
-    ":quick_view_uma.m",
-    ":scan_controller.m",
-    ":search_controller.m",
-    ":selection_menu_controller.m",
-    ":sort_menu_controller.m",
-    ":spinner_controller.m",
-    ":task_controller.m",
-    ":toolbar_controller.m",
-    "metadata:content_metadata_provider.m",
-    "metadata:metadata_model.m",
-    "metadata:thumbnail_model.m",
-    "ui:a11y_announce.m",
-    "ui:banners.m",
-    "ui:commandbutton.m",
-    "ui:directory_tree.m",
-    "ui:file_grid.m",
-    "ui:file_list_selection_model.m",
-    "ui:file_manager_ui.m",
-    "ui:file_metadata_formatter.m",
-    "ui:file_table.m",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
-    "//ui/file_manager/file_manager/common/js:filtered_volume_manager.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:progress_center_common.m",
-    "//ui/file_manager/file_manager/common/js:storage_adapter.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:background_window.m",
-    "//ui/file_manager/file_manager/externs:command_handler_deps.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/file_manager/file_manager/externs/background:crostini.m",
-    "//ui/file_manager/file_manager/externs/background:file_browser_background_full.m",
-    "//ui/file_manager/file_manager/externs/background:file_operation_manager.m",
-    "//ui/file_manager/file_manager/externs/background:import_history.m",
-    "//ui/file_manager/file_manager/externs/background:media_import_handler.m",
-    "//ui/file_manager/file_manager/externs/background:media_scanner.m",
-    "//ui/file_manager/file_manager/externs/background:progress_center.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_message.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-    "//ui/webui/resources/js/cr/ui:context_menu_handler.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:menu.m",
+    "//ui/file_manager/file_manager/common/js:api",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("file_manager_commands") {
   deps = [
-    ":actions_controller",
-    ":dialog_type",
-    ":directory_contents",
+    ":actions_model",
+    ":constants",
     ":directory_model",
-    ":directory_tree_naming_controller",
     ":file_selection",
     ":file_tasks",
-    ":file_transfer_controller",
     ":holding_space_util",
-    ":naming_controller",
-    ":providers_model",
-    ":spinner_controller",
-    ":task_controller",
+    ":path_component",
+    ":webui_command_extender",
+    "ui:command",
+    "ui:context_menu_handler",
     "ui:directory_tree",
-    "ui:file_manager_ui",
+    "ui:files_confirm_dialog",
+    "ui:list",
+    "//ui/file_manager/file_manager/common/js:api",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:file_operation_common",
+    "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:storage_adapter",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-  ]
-  externs_list = [
-    "//ui/file_manager/file_manager/externs/background/file_operation_manager.js",
-    "//ui/file_manager/file_manager/externs/background/progress_center.js",
-    "//ui/file_manager/file_manager/externs/command_handler_deps.js",
+    "//ui/file_manager/file_manager/common/js:trash",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:command_handler_deps",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
-js_library("file_manager_commands.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/file_manager_commands.m.js" ]
+js_unittest("file_manager_commands_unittest") {
   deps = [
-    ":actions_model.m",
-    ":constants.m",
-    ":dialog_type.m",
-    ":directory_model.m",
-    ":file_selection.m",
-    ":file_tasks.m",
-    ":holding_space_util.m",
-    ":path_component.m",
-    ":webui_command_extender.m",
-    "ui:directory_tree.m",
-    "ui:files_confirm_dialog.m",
-    "//ui/file_manager/file_manager/common/js:file_operation_common.m",
-    "//ui/file_manager/file_manager/common/js:file_type.m",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:progress_center_common.m",
-    "//ui/file_manager/file_manager/common/js:trash.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:command_handler_deps.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr/ui:command.m",
-    "//ui/webui/resources/js/cr/ui:context_menu_handler.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_unittest("file_manager_commands_unittest.m") {
-  deps = [
-    ":file_manager_commands.m",
-    ":file_tasks.m",
+    ":file_manager_commands",
+    ":file_tasks",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager.m",
-    "//ui/file_manager/file_manager/common/js:mock_chrome.m",
-    "//ui/file_manager/file_manager/common/js:mock_entry.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
@@ -1025,106 +710,68 @@ js_library("file_selection") {
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:file_operation_manager",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("file_selection.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/file_selection.m.js" ]
-  deps = [
-    ":constants.m",
-    ":directory_model.m",
-    "metadata:metadata_model.m",
-    "ui:list_container.m",
-    "//ui/file_manager/file_manager/common/js:file_type.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:file_operation_manager.m",
-    "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("file_tasks") {
   deps = [
+    ":constants",
     ":directory_model",
     ":file_transfer_controller",
     ":naming_controller",
     ":task_history",
     "metadata:metadata_model",
+    "ui:combobutton",
+    "ui:default_task_dialog",
     "ui:file_manager_ui",
+    "ui:files_confirm_dialog",
+    "ui:files_menu",
+    "ui:menu",
+    "ui:multi_menu_button",
     "//ui/file_manager/file_manager/common/js:async_util",
-  ]
-  externs_list = [
-    "//ui/file_manager/file_manager/externs/background/crostini.js",
-    "//ui/file_manager/file_manager/externs/background/progress_center.js",
-  ]
-}
-
-js_library("file_tasks.m") {
-  sources = [
-    "$root_gen_dir/ui/file_manager/file_manager/foreground/js/file_tasks.m.js",
-  ]
-  deps = [
-    ":constants.m",
-    ":directory_model.m",
-    ":file_transfer_controller.m",
-    ":naming_controller.m",
-    ":task_history.m",
-    ":web_store_utils.m",
-    "metadata:metadata_model.m",
-    "ui:combobutton.m",
-    "ui:default_task_dialog.m",
-    "ui:file_manager_ui.m",
-    "ui:files_confirm_dialog.m",
-    "ui:files_menu.m",
-    "ui:multi_menu_button.m",
-    "//ui/file_manager/file_manager/common/js:async_util.m",
-    "//ui/file_manager/file_manager/common/js:file_type.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:progress_center_common.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:crostini.m",
-    "//ui/file_manager/file_manager/externs/background:progress_center.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog.m",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:progress_center_common",
+    "//ui/file_manager/file_manager/common/js:url_constants",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:crostini",
+    "//ui/file_manager/file_manager/externs/background:progress_center",
+    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:menu.m",
+    "//ui/webui/resources/js/cr:ui",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
-js_unittest("file_tasks_unittest.m") {
+js_unittest("file_tasks_unittest") {
   deps = [
-    ":directory_model.m",
-    ":file_tasks.m",
-    ":file_transfer_controller.m",
-    ":naming_controller.m",
-    ":task_history.m",
-    "metadata:metadata_model.m",
-    "ui:file_manager_ui.m",
+    ":directory_model",
+    ":file_tasks",
+    ":file_transfer_controller",
+    ":naming_controller",
+    ":task_history",
+    "metadata:metadata_model",
+    "ui:file_manager_ui",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_crostini.m",
-    "//ui/file_manager/file_manager/background/js:mock_progress_center.m",
-    "//ui/file_manager/file_manager/common/js:mock_chrome.m",
-    "//ui/file_manager/file_manager/common/js:mock_entry.m",
-    "//ui/file_manager/file_manager/common/js:progress_center_common.m",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:entry_location.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:progress_center.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog.m",
+    "//ui/file_manager/file_manager/background/js:mock_crostini",
+    "//ui/file_manager/file_manager/background/js:mock_progress_center",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:progress_center_common",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:entry_location",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:progress_center",
+    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
   ]
 }
 
@@ -1133,112 +780,90 @@ js_library("file_transfer_controller") {
     ":directory_model",
     ":drop_effect_and_label",
     ":file_selection",
-    ":webui_command_extender",
+    ":thumbnail_loader",
     "metadata:metadata_model",
     "metadata:thumbnail_model",
+    "ui:command",
     "ui:directory_tree",
-    "ui:file_manager_ui",
+    "ui:drag_selector",
+    "ui:list",
     "ui:list_container",
-    "ui:progress_center_panel",
+    "ui:tree",
+    "//ui/file_manager/file_manager/common/js:api",
+    "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:storage_adapter",
+    "//ui/file_manager/file_manager/common/js:trash",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:entry_location",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:file_operation_manager",
+    "//ui/file_manager/file_manager/externs/background:progress_center",
+    "//ui/file_manager/file_manager/foreground/elements:files_toast",
+    "//ui/webui/resources/js:assert",
+  ]
+}
+
+js_unittest("file_transfer_controller_unittest") {
+  deps = [
+    ":fake_file_selection_handler",
+    ":file_list_model",
+    ":file_selection",
+    ":file_transfer_controller",
+    ":mock_directory_model",
+    "metadata:mock_metadata",
+    "metadata:thumbnail_model",
+    "ui:a11y_announce",
+    "ui:command",
+    "ui:directory_tree",
+    "ui:file_grid",
+    "ui:file_table",
+    "ui:list_container",
+    "ui:list_selection_model",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:file_operation_manager",
+    "//ui/file_manager/file_manager/externs/background:progress_center",
+    "//ui/file_manager/file_manager/foreground/elements:files_toast",
+    "//ui/webui/resources/js/cr:ui",
   ]
   externs_list =
-      [ "//ui/file_manager/file_manager/externs/background/progress_center.js" ]
-}
-
-js_library("file_transfer_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/file_transfer_controller.m.js" ]
-  deps = [
-    ":directory_model.m",
-    ":drop_effect_and_label.m",
-    ":file_selection.m",
-    ":thumbnail_loader.m",
-    "metadata:metadata_model.m",
-    "metadata:thumbnail_model.m",
-    "ui:directory_tree.m",
-    "ui:drag_selector.m",
-    "ui:list_container.m",
-    "//ui/file_manager/file_manager/common/js:file_type.m",
-    "//ui/file_manager/file_manager/common/js:progress_center_common.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:entry_location.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:file_operation_manager.m",
-    "//ui/file_manager/file_manager/externs/background:progress_center.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:command.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:tree.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_unittest("file_transfer_controller_unittest.m") {
-  deps = [
-    ":dialog_type.m",
-    ":fake_file_selection_handler.m",
-    ":file_list_model.m",
-    ":file_selection.m",
-    ":file_transfer_controller.m",
-    ":mock_directory_model.m",
-    "metadata:mock_metadata.m",
-    "metadata:thumbnail_model.m",
-    "ui:a11y_announce.m",
-    "ui:directory_tree.m",
-    "ui:file_grid.m",
-    "ui:file_table.m",
-    "ui:list_container.m",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager.m",
-    "//ui/file_manager/file_manager/common/js:mock_chrome.m",
-    "//ui/file_manager/file_manager/common/js:mock_entry.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:file_operation_manager.m",
-    "//ui/file_manager/file_manager/externs/background:import_history.m",
-    "//ui/file_manager/file_manager/externs/background:progress_center.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:command.m",
-    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
-  ]
+      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
 }
 
 js_library("file_type_filters_controller") {
   deps = [
     ":directory_model",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+    "ui:a11y_announce",
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/externs:directory_change_event",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
   ]
 }
 
-js_library("file_type_filters_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/file_type_filters_controller.m.js" ]
+js_unittest("file_type_filters_controller_unittest") {
   deps = [
-    ":directory_model.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_unittest("file_type_filters_controller_unittest.m") {
-  deps = [
-    ":directory_model.m",
-    ":file_type_filters_controller.m",
+    ":directory_model",
+    ":file_type_filters_controller",
+    "ui:a11y_announce",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:directory_change_event",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -1246,22 +871,10 @@ js_library("file_watcher") {
   deps = [
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js/cr:event_target",
   ]
-}
-
-js_library("file_watcher.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/file_watcher.m.js" ]
-  deps = [
-    "//ui/file_manager/file_manager/common/js:async_util.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("folder_shortcuts_data_model") {
@@ -1271,129 +884,42 @@ js_library("folder_shortcuts_data_model") {
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/webui/resources/js/cr:event_target",
   ]
-}
-
-js_library("folder_shortcuts_data_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/folder_shortcuts_data_model.m.js" ]
-  deps = [
-    "//ui/file_manager/file_manager/common/js:async_util.m",
-    "//ui/file_manager/file_manager/common/js:filtered_volume_manager.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("gear_menu_controller") {
   deps = [
     ":directory_model",
     ":file_manager_commands",
+    ":providers_model",
     "ui:gear_menu",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
+    "ui:multi_menu_button",
+    "ui:providers_menu",
+    "//ui/file_manager/file_manager/common/js:api",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:directory_change_event",
   ]
 }
 
-js_library("gear_menu_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/gear_menu_controller.m.js" ]
+js_library("guest_os_controller") {
   deps = [
-    ":directory_model.m",
-    ":file_manager_commands.m",
-    ":providers_model.m",
-    "ui:gear_menu.m",
-    "ui:multi_menu_button.m",
-    "ui:providers_menu.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:directory_change_event.m",
+    ":directory_model",
+    ":navigation_list_model",
+    "ui:directory_tree",
+    "//ui/file_manager/file_manager/common/js:api",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+    "//ui/file_manager/file_manager/common/js:util",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("holding_space_util") {
   deps = [
+    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_library("holding_space_util.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/holding_space_util.m.js" ]
-  deps = [
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
     "//ui/webui/resources/js:load_time_data.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("import_controller") {
-  deps = [
-    ":actions_controller",
-    ":dialog_type",
-    ":directory_tree_naming_controller",
-    ":file_selection",
-    ":file_transfer_controller",
-    ":naming_controller",
-    ":providers_model",
-    ":spinner_controller",
-    ":task_controller",
-    "ui:directory_tree",
-    "ui:file_manager_ui",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-  ]
-  externs_list = [
-    "//ui/file_manager/file_manager/externs/background/media_import_handler.js",
-    "//ui/file_manager/file_manager/externs/background/duplicate_finder.js",
-    "//ui/file_manager/file_manager/externs/background/task_queue.js",
-    "//ui/file_manager/file_manager/externs/command_handler_deps.js",
-  ]
-}
-
-js_library("import_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/import_controller.m.js" ]
-  deps = [
-    ":file_selection.m",
-    "//ui/file_manager/file_manager/common/js:importer_common.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:command_handler_deps.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:media_import_handler.m",
-    "//ui/file_manager/file_manager/externs/background:media_scanner.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_unittest("import_controller_unittest.m") {
-  deps = [
-    ":import_controller.m",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_media_scanner.m",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager.m",
-    "//ui/file_manager/file_manager/common/js:mock_chrome.m",
-    "//ui/file_manager/file_manager/common/js:mock_entry.m",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:media_import_handler.m",
-    "//ui/file_manager/file_manager/externs/background:media_scanner.m",
-    "//ui/webui/resources/js:assert.m",
   ]
 }
 
@@ -1401,35 +927,16 @@ js_library("last_modified_controller") {
   deps = [
     ":directory_model",
     "ui:file_table",
+    "//ui/file_manager/file_manager/common/js:util",
   ]
-}
-
-js_library("last_modified_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/last_modified_controller.m.js" ]
-  deps = [
-    ":directory_model.m",
-    "ui:file_table.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("launch_param") {
   deps = [
-    ":dialog_type",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
-}
-
-js_library("launch_param.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/launch_param.m.js" ]
-  deps = [
-    ":dialog_type.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("list_thumbnail_loader") {
@@ -1438,127 +945,78 @@ js_library("list_thumbnail_loader") {
     ":file_list_model",
     ":thumbnail_loader",
     "metadata:thumbnail_model",
+    "//ui/file_manager/file_manager/common/js:lru_cache",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
-js_library("list_thumbnail_loader.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/list_thumbnail_loader.m.js" ]
+js_unittest("list_thumbnail_loader_unittest") {
   deps = [
-    ":directory_model.m",
-    ":file_list_model.m",
-    ":thumbnail_loader.m",
-    "metadata:thumbnail_model.m",
-    "//ui/file_manager/file_manager/common/js:lru_cache.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_unittest("list_thumbnail_loader_unittest.m") {
-  deps = [
-    ":directory_model.m",
-    ":file_list_model.m",
-    ":list_thumbnail_loader.m",
-    ":mock_thumbnail_loader.m",
-    "metadata:metadata_model.m",
-    "metadata:thumbnail_model.m",
+    ":directory_model",
+    ":file_list_model",
+    ":list_thumbnail_loader",
+    ":mock_thumbnail_loader",
+    "metadata:metadata_model",
+    "metadata:thumbnail_model",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:mock_entry.m",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
 js_library("main") {
+  visibility += [ "//ui/file_manager:*" ]
+  extra_deps =
+      [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
   deps = [
     ":file_manager",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
-    "//ui/file_manager/file_manager/common/js:metrics",
+    ":metrics_start",
     "//ui/file_manager/file_manager/common/js:util",
-  ]
-}
-
-js_library("main.m") {
-  visibility += [ "//ui/file_manager:*" ]
-  deps = [
-    ":file_manager.m",
-    ":metrics_start.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
   ]
 }
 
 js_library("main_window_component") {
   deps = [
     ":app_state_controller",
-    ":dialog_type",
     ":directory_contents",
     ":directory_model",
     ":file_selection",
     ":naming_controller",
     ":task_controller",
     "ui:file_manager_ui",
+    "ui:file_tap_handler",
+    "ui:list_container",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:directory_change_event",
+    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
-}
-
-js_library("main_window_component.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/main_window_component.m.js" ]
-  deps = [
-    ":app_state_controller.m",
-    ":dialog_type.m",
-    ":directory_contents.m",
-    ":directory_model.m",
-    ":file_selection.m",
-    ":naming_controller.m",
-    ":task_controller.m",
-    "ui:file_manager_ui.m",
-    "ui:file_tap_handler.m",
-    "ui:list_container.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:directory_change_event.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("metadata_box_controller") {
   deps = [
+    ":path_component",
     ":quick_view_model",
+    "metadata:metadata_item",
     "metadata:metadata_model",
     "ui:file_metadata_formatter",
     "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/foreground/elements:files_metadata_box",
     "//ui/file_manager/file_manager/foreground/elements:files_quick_view",
+    "//ui/webui/resources/js:assert",
   ]
-}
-
-js_library("metadata_box_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata_box_controller.m.js" ]
-  deps = [
-    ":path_component.m",
-    ":quick_view_model.m",
-    "metadata:metadata_item.m",
-    "metadata:metadata_model.m",
-    "ui:file_metadata_formatter.m",
-    "//ui/file_manager/file_manager/common/js:file_type.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_metadata_box.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_quick_view.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("metadata_update_controller") {
@@ -1567,31 +1025,12 @@ js_library("metadata_update_controller") {
     "metadata:metadata_model",
     "ui:file_metadata_formatter",
     "ui:list_container",
+    "//ui/file_manager/file_manager/common/js:util",
   ]
-}
-
-js_library("metadata_update_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata_update_controller.m.js" ]
-  deps = [
-    ":directory_model.m",
-    "metadata:metadata_model.m",
-    "ui:file_metadata_formatter.m",
-    "ui:list_container.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("metrics_start") {
   deps = [ "//ui/file_manager/file_manager/common/js:metrics" ]
-}
-
-js_library("metrics_start.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metrics_start.m.js" ]
-  deps = [ "//ui/file_manager/file_manager/common/js:metrics.m" ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("naming_controller") {
@@ -1599,207 +1038,144 @@ js_library("naming_controller") {
     ":directory_contents",
     ":directory_model",
     ":file_selection",
+    "ui:dialogs",
     "ui:list_container",
-    "//ui/webui/resources/js/cr/ui:dialogs",
+    "//ui/file_manager/file_manager/common/js:api",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/foreground/js:file_rename",
+    "//ui/webui/resources/js:assert",
   ]
-}
-
-js_library("naming_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/naming_controller.m.js" ]
-  deps = [
-    ":directory_contents.m",
-    ":directory_model.m",
-    ":file_selection.m",
-    "ui:list_container.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr/ui:dialogs.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("navigation_list_model") {
   deps = [
     ":android_app_list_model",
+    ":directory_model",
     ":folder_shortcuts_data_model",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:trash",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js/cr:event_target",
-    "//ui/webui/resources/js/cr/ui:array_data_model",
   ]
 }
 
-js_library("navigation_list_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/navigation_list_model.m.js" ]
+js_unittest("navigation_list_model_unittest") {
   deps = [
-    ":android_app_list_model.m",
-    ":directory_model.m",
-    ":folder_shortcuts_data_model.m",
+    ":android_app_list_model",
+    ":directory_model",
+    ":fake_android_app_list_model",
+    ":mock_directory_model",
+    ":mock_folder_shortcut_data_model",
+    ":navigation_list_model",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
-    "//ui/file_manager/file_manager/common/js:trash.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_unittest("navigation_list_model_unittest.m") {
-  deps = [
-    ":android_app_list_model.m",
-    ":directory_model.m",
-    ":fake_android_app_list_model.m",
-    ":mock_directory_model.m",
-    ":mock_folder_shortcut_data_model.m",
-    ":navigation_list_model.m",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager.m",
-    "//ui/file_manager/file_manager/background/js:volume_info_impl.m",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
-    "//ui/file_manager/file_manager/common/js:mock_chrome.m",
-    "//ui/file_manager/file_manager/common/js:mock_entry.m",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
+    "//ui/file_manager/file_manager/background/js:volume_info_impl",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
   ]
 }
 
 js_library("path_component") {
-  deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types" ]
+  deps = [
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+  ]
 }
 
-js_library("path_component.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/path_component.m.js" ]
+js_unittest("path_component_unittest") {
   deps = [
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
+    ":path_component",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_info",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("providers_model") {
-  deps = [ "//ui/webui/resources/js:assert" ]
-}
-
-js_library("providers_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/providers_model.m.js" ]
   deps = [
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/webui/resources/js:assert",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
-js_unittest("providers_model_unittest.m") {
+js_unittest("providers_model_unittest") {
   deps = [
-    ":providers_model.m",
+    ":providers_model",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager.m",
-    "//ui/file_manager/file_manager/background/js:volume_info_impl.m",
-    "//ui/file_manager/file_manager/common/js:mock_chrome.m",
-    "//ui/file_manager/file_manager/common/js:mock_entry.m",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
+    "//ui/file_manager/file_manager/background/js:volume_info_impl",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
 
 js_library("quick_view_controller") {
   deps = [
-    ":dialog_type",
+    ":constants",
+    ":file_manager_commands",
     ":file_selection",
+    ":file_tasks",
     ":metadata_box_controller",
     ":quick_view_model",
     ":quick_view_uma",
     ":task_controller",
+    ":thumbnail_loader",
+    "metadata:metadata_item",
     "metadata:metadata_model",
+    "ui:file_list_selection_model",
+    "ui:files_confirm_dialog",
     "ui:list_container",
-    "//ui/webui/resources/js/cr/ui:list_selection_model",
+    "ui:multi_menu_button",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:command_handler_deps",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/foreground/elements:files_quick_view",
+    "//ui/file_manager/image_loader:image_loader_client",
+    "//ui/file_manager/image_loader:load_image_request",
+    "//ui/webui/resources/js:assert",
   ]
-}
-
-js_library("quick_view_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/quick_view_controller.m.js" ]
-  deps = [
-    ":constants.m",
-    ":dialog_type.m",
-    ":file_manager_commands.m",
-    ":file_selection.m",
-    ":file_tasks.m",
-    ":metadata_box_controller.m",
-    ":quick_view_model.m",
-    ":quick_view_uma.m",
-    ":task_controller.m",
-    ":thumbnail_loader.m",
-    "metadata:metadata_item.m",
-    "metadata:metadata_model.m",
-    "ui:file_list_selection_model.m",
-    "ui:files_confirm_dialog.m",
-    "ui:list_container.m",
-    "ui:multi_menu_button.m",
-    "//ui/file_manager/file_manager/common/js:file_type.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:command_handler_deps.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_quick_view.m",
-    "//ui/file_manager/image_loader:image_loader_client.m",
-    "//ui/file_manager/image_loader:load_image_request.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
 }
 
 js_library("quick_view_model") {
   deps = [
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
-js_library("quick_view_model.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/quick_view_model.m.js" ]
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
 js_library("quick_view_uma") {
   deps = [
-    ":dialog_type",
     ":file_tasks",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/webui/resources/js:assert",
   ]
-}
-
-js_library("quick_view_uma.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/quick_view_uma.m.js" ]
-  deps = [
-    ":dialog_type.m",
-    ":file_tasks.m",
-    "//ui/file_manager/file_manager/common/js:file_type.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("scan_controller") {
@@ -1809,443 +1185,253 @@ js_library("scan_controller") {
     ":file_selection",
     ":spinner_controller",
     "ui:list_container",
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
-}
-
-js_library("scan_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/scan_controller.m.js" ]
-  deps = [
-    ":directory_model.m",
-    ":file_manager_commands.m",
-    ":file_selection.m",
-    ":spinner_controller.m",
-    "ui:list_container.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("search_controller") {
   deps = [
     ":directory_model",
     ":task_controller",
-    "ui:location_line",
+    "ui:file_manager_ui",
     "ui:search_box",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:entry_location",
+    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
-}
-
-js_library("search_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/search_controller.m.js" ]
-  deps = [
-    ":directory_model.m",
-    ":task_controller.m",
-    "ui:file_manager_ui.m",
-    "ui:location_line.m",
-    "ui:search_box.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:entry_location.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("selection_menu_controller") {
   deps = [
-    ":directory_model",
-    ":file_manager_commands",
+    "ui:menu",
+    "ui:multi_menu_button",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
   ]
-}
-
-js_library("selection_menu_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/selection_menu_controller.m.js" ]
-  deps = [
-    "ui:multi_menu_button.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:menu.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("sort_menu_controller") {
   deps = [
     ":file_list_model",
+    "ui:multi_menu_button",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
   ]
-}
-
-js_library("sort_menu_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/sort_menu_controller.m.js" ]
-  deps = [
-    ":file_list_model.m",
-    "ui:multi_menu_button.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("spinner_controller") {
 }
 
-js_library("spinner_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/spinner_controller.m.js" ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_unittest("spinner_controller_unittest.m") {
+js_unittest("spinner_controller_unittest") {
   deps = [
-    ":spinner_controller.m",
+    ":spinner_controller",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
 js_library("task_controller") {
   deps = [
-    ":dialog_type",
     ":directory_model",
     ":file_selection",
     ":file_tasks",
+    ":file_transfer_controller",
     ":metadata_update_controller",
+    ":naming_controller",
     ":task_history",
     "metadata:metadata_model",
+    "ui:command",
     "ui:file_manager_ui",
-  ]
-  externs_list =
-      [ "//ui/file_manager/file_manager/externs/background/progress_center.js" ]
-}
-
-js_library("task_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/task_controller.m.js" ]
-  deps = [
-    ":dialog_type.m",
-    ":directory_model.m",
-    ":file_selection.m",
-    ":file_tasks.m",
-    ":file_transfer_controller.m",
-    ":metadata_update_controller.m",
-    ":naming_controller.m",
-    ":task_history.m",
-    "metadata:metadata_model.m",
-    "ui:file_manager_ui.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:crostini.m",
-    "//ui/file_manager/file_manager/externs/background:progress_center.m",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:crostini",
+    "//ui/file_manager/file_manager/externs/background:progress_center",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:command.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
-js_unittest("task_controller_unittest.m") {
+js_unittest("task_controller_unittest") {
   deps = [
-    ":dialog_type.m",
-    ":directory_model.m",
-    ":fake_file_selection_handler.m",
-    ":file_selection.m",
-    ":metadata_update_controller.m",
-    ":naming_controller.m",
-    ":task_controller.m",
-    "metadata:mock_metadata.m",
-    "ui:file_manager_ui.m",
+    ":directory_model",
+    ":fake_file_selection_handler",
+    ":file_selection",
+    ":metadata_update_controller",
+    ":naming_controller",
+    ":task_controller",
+    "metadata:mock_metadata",
+    "ui:command",
+    "ui:file_manager_ui",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_crostini.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:mock_chrome.m",
-    "//ui/file_manager/file_manager/common/js:mock_entry.m",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:progress_center.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:command.m",
+    "//ui/file_manager/file_manager/background/js:mock_crostini",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:progress_center",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
 js_library("task_history") {
-  deps = [ "//ui/webui/resources/js/cr:event_target" ]
-}
-
-js_library("task_history.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/task_history.m.js" ]
   deps = [
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 # TODO(tapted): Move this into //ui/file_manager/base.
+
 js_library("thumbnail_loader") {
-  visibility += [ "//ui/file_manager/gallery/*" ]
   deps = [
     "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/image_loader:image_loader_client",
+    "//ui/file_manager/image_loader:image_orientation",
+    "//ui/file_manager/image_loader:load_image_request",
     "//ui/webui/resources/js:assert",
   ]
 }
 
-js_library("thumbnail_loader.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/thumbnail_loader.m.js" ]
+js_unittest("thumbnail_loader_unittest") {
   deps = [
-    "//ui/file_manager/file_manager/common/js:file_type.m",
-    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation.m",
-    "//ui/file_manager/image_loader:image_loader_client.m",
-    "//ui/file_manager/image_loader:load_image_request.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_unittest("thumbnail_loader_unittest.m") {
-  deps = [
-    ":thumbnail_loader.m",
+    ":thumbnail_loader",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:mock_entry.m",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/file_manager/image_loader:image_loader_client.m",
-    "//ui/file_manager/image_loader:load_image_request.m",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/file_manager/image_loader:image_loader_client",
+    "//ui/file_manager/image_loader:image_orientation",
+    "//ui/file_manager/image_loader:load_image_request",
   ]
 }
 
 js_library("toolbar_controller") {
   deps = [
+    ":directory_model",
     ":file_selection",
+    "ui:a11y_announce",
+    "ui:command",
+    "ui:file_list_selection_model",
     "ui:list_container",
-    "ui:location_line",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js/cr/ui:command",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/webui/resources/js:assert",
   ]
-}
-
-js_library("toolbar_controller.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/toolbar_controller.m.js" ]
-  deps = [
-    ":directory_model.m",
-    ":file_selection.m",
-    "ui:a11y_announce.m",
-    "ui:file_list_selection_model.m",
-    "ui:list_container.m",
-    "ui:location_line.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:command.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("web_store_utils") {
-  deps = [ ":constants" ]
-}
-
-js_library("web_store_utils.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/web_store_utils.m.js" ]
-  deps = [ ":constants.m" ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("webui_command_extender") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr/ui:command",
-  ]
-}
-
-js_library("webui_command_extender.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/webui_command_extender.m.js" ]
-  deps = [
+    "ui:command",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:command.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
-js_test_gen_html("js_test_gen_html_modules") {
+js_test_type_check("js_test_type_check") {
   is_polymer3 = true
   deps = [
-    ":actions_model_unittest.m",
-    ":directory_contents_unittest.m",
-    ":file_list_model_unittest.m",
-    ":file_manager_commands_unittest.m",
-    ":file_tasks_unittest.m",
-    ":file_transfer_controller_unittest.m",
-    ":file_type_filters_controller_unittest.m",
-    ":import_controller_unittest.m",
-    ":list_thumbnail_loader_unittest.m",
-    ":navigation_list_model_unittest.m",
-    ":providers_model_unittest.m",
-    ":spinner_controller_unittest.m",
-    ":task_controller_unittest.m",
-    ":thumbnail_loader_unittest.m",
+    ":actions_model_unittest",
+    ":banner_controller_unittest",
+    ":banner_util_unittest",
+    ":directory_contents_unittest",
+    ":directory_model_unittest",
+    ":empty_folder_controller_unittest",
+    ":file_list_model_unittest",
+    ":file_manager_commands_unittest",
+    ":file_tasks_unittest",
+    ":file_transfer_controller_unittest",
+    ":file_type_filters_controller_unittest",
+    ":list_thumbnail_loader_unittest",
+    ":navigation_list_model_unittest",
+    ":path_component_unittest",
+    ":providers_model_unittest",
+    ":spinner_controller_unittest",
+    ":task_controller_unittest",
+    ":thumbnail_loader_unittest",
   ]
 
   closure_flags = strict_error_checking_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
                     "generate_exports=false",
+                    "js_module_root=gen/ui/file_manager/tsc/",
                     "js_module_root=./gen/ui",
-                    "js_module_root=../../ui/file_manager/",
+                    "js_module_root=" +
+                        rebase_path("//ui/file_manager/", root_build_dir),
                     "js_module_root=./gen/ui/file_manager/",
                     "jscomp_off=duplicate",
-                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                     "hide_warnings_for=third_party/",
-                    "hide_warnings_for=third_party/",
+                    "hide_warnings_for=gen/ui/file_manager/tsc/",
                   ]
+  extra_deps = [ "//ui/file_manager:js_from_ts" ]
 }
 
-js_modulizer("modulize") {
-  input_files = [
-    "actions_controller.js",
-    "actions_model.js",
-    "android_app_list_model.js",
-    "app_state_controller.js",
-    "constants.js",
-    "crossover_search_utils.js",
-    "crostini_controller.js",
-    "column_visibility_controller.js",
-    "dialog_action_controller.js",
-    "dialog_type.js",
-    "directory_contents.js",
-    "directory_model.js",
-    "directory_tree_naming_controller.js",
-    "drive_dialog_controller.js",
-    "drop_effect_and_label.js",
-    "empty_folder_controller.js",
-    "fake_android_app_list_model.js",
-    "fake_file_selection_handler.js",
-    "file_list_model.js",
-    "file_manager.js",
-    "file_manager_commands.js",
-    "file_selection.js",
-    "file_tasks.js",
-    "file_transfer_controller.js",
-    "file_type_filters_controller.js",
-    "file_watcher.js",
-    "folder_shortcuts_data_model.js",
-    "gear_menu_controller.js",
-    "holding_space_util.js",
-    "import_controller.js",
-    "last_modified_controller.js",
-    "launch_param.js",
-    "list_thumbnail_loader.js",
-    "main_window_component.js",
-    "metadata_box_controller.js",
-    "metadata_update_controller.js",
-    "metrics_start.js",
-    "mock_actions_model.js",
-    "mock_directory_model.js",
-    "mock_folder_shortcut_data_model.js",
-    "mock_navigation_list_model.js",
-    "mock_thumbnail_loader.js",
-    "naming_controller.js",
-    "navigation_list_model.js",
-    "navigation_uma.js",
-    "path_component.js",
-    "providers_model.js",
-    "quick_view_controller.js",
-    "quick_view_model.js",
-    "quick_view_uma.js",
-    "scan_controller.js",
-    "search_controller.js",
-    "selection_menu_controller.js",
-    "sort_menu_controller.js",
-    "spinner_controller.js",
-    "task_controller.js",
-    "task_history.js",
-    "thumbnail_loader.js",
-    "toolbar_controller.js",
-    "web_store_utils.js",
-    "webui_command_extender.js",
-  ]
-
-  namespace_rewrites = cr_namespace_rewrites + [
-                         "cr.ui.FilesMenuItem|FilesMenuItem",
-                         "cr.ui.MultiMenu|MultiMenu",
-                         "cr.ui.ComboButton|ComboButton",
-                         "cr.filebrowser.DefaultTaskDialog|DefaultTaskDialog",
-                       ]
-}
-
-preprocess_folder =
-    rebase_path(
-        "$target_gen_dir/../../../preprocessed/file_manager/foreground/js",
-        root_build_dir)
-
-files_app_path =
-    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
+tsc_folder =
+    rebase_path("$target_gen_dir/../../../tsc/file_manager/foreground/js",
                 root_build_dir)
+
 image_loader_path =
     rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
                 root_build_dir)
 
 optimize_webui("build") {
+  visibility += [ "//ui/file_manager:build_grd" ]
   host = "file_manager"
 
-  input = preprocess_folder
+  input = tsc_folder
   js_module_in_files = [
-    "main.m.js",
-    "deferred_elements.m.js",
+    "main.js",
+    "deferred_elements.js",
   ]
 
   js_out_files = [
-    "main.m.rollup.js",
-    "deferred_elements.m.rollup.js",
-    "shared.m.rollup.js",
+    "main.rollup.js",
+    "deferred_elements.rollup.js",
+    "shared.rollup.js",
   ]
 
   external_paths = [
-    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
     "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
   ]
 
+  excludes = [ "chrome://resources/mojo/mojo/public/js/bindings.js" ]
+
   deps = [
-    ":main.m",
-    "//ui/file_manager:preprocess_generated",
-    "//ui/file_manager:preprocess_static",
+    ":main",
+    "//ui/file_manager:build_ts",
+    "//ui/webui/resources:library",
     "//ui/webui/resources:preprocess",
   ]
 }
 
 optimize_webui("build_worker") {
+  visibility += [ "//ui/file_manager:build_grd" ]
   host = "file_manager"
 
-  input = preprocess_folder
-  js_module_in_files = [ "metadata/metadata_dispatcher.m.js" ]
+  input = tsc_folder
+  js_module_in_files = [ "metadata/metadata_dispatcher.js" ]
 
-  js_out_files = [ "metadata_dispatcher.m.rollup.js" ]
+  js_out_files = [ "metadata_dispatcher.rollup.js" ]
 
   external_paths = [
-    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
     "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
   ]
 
   deps = [
-    "metadata:metadata_dispatcher.m",
-    "//ui/file_manager:preprocess_generated",
-    "//ui/file_manager:preprocess_static",
+    "metadata:metadata_dispatcher",
+    "//ui/file_manager:build_ts",
     "//ui/webui/resources:preprocess",
   ]
 }

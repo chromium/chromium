@@ -1,0 +1,24 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+// This defines a mojo transport format for an interleaved, signed
+// 16-bit audio buffer.
+// Marked [Stable], enabling its use across the LaCrOS/Ash boundary as part of
+// the speech recognition API.
+[Stable]
+struct AudioDataS16 {
+  // Number of channels.
+  int32 channel_count;
+
+  // Sample rate of the buffer.
+  int32 sample_rate;
+
+  // Number of frames in the buffer.
+  int32 frame_count;
+
+  // Channel data.
+  array<int16> data;
+};

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,15 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_list.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -34,6 +35,10 @@ namespace {
 class MockObserver : public AvatarMenuObserver {
  public:
   MockObserver() : count_(0) {}
+
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
+
   ~MockObserver() override {}
 
   void OnAvatarMenuChanged(AvatarMenu* avatar_menu) override { ++count_; }
@@ -42,8 +47,6 @@ class MockObserver : public AvatarMenuObserver {
 
  private:
   int count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockObserver);
 };
 
 class ProfileListDesktopTest : public testing::Test {
@@ -51,6 +54,9 @@ class ProfileListDesktopTest : public testing::Test {
   ProfileListDesktopTest()
       : manager_(TestingBrowserProcess::GetGlobal()) {
   }
+
+  ProfileListDesktopTest(const ProfileListDesktopTest&) = delete;
+  ProfileListDesktopTest& operator=(const ProfileListDesktopTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(manager_.SetUp());
@@ -76,14 +82,18 @@ class ProfileListDesktopTest : public testing::Test {
   void AddOmittedProfile(const std::string& name) {
     ProfileAttributesStorage* storage = manager()->profile_attributes_storage();
     base::FilePath profile_path = manager()->profiles_dir().AppendASCII(name);
-    storage->AddProfile(profile_path, ASCIIToUTF16(name), std::string(),
-                        std::u16string(), false, 0, std::string(),
-                        EmptyAccountId());
-    ProfileAttributesEntry* entry =
-        storage->GetProfileAttributesWithPath(profile_path);
-    ASSERT_NE(entry, nullptr);
-    entry->SetIsEphemeral(true);
-    entry->SetIsOmitted(true);
+    ProfileAttributesInitParams params;
+    params.profile_path = profile_path;
+    params.profile_name = ASCIIToUTF16(name);
+    params.is_ephemeral = true;
+    params.is_omitted = true;
+    storage->AddProfile(std::move(params));
+  }
+
+  TestingProfile* CreateTestingProfile(const std::string& profile_name) {
+    return manager()->CreateTestingProfile(
+        profile_name, IdentityTestEnvironmentProfileAdaptor::
+                          GetIdentityTestEnvironmentFactories());
   }
 
   int change_count() const { return mock_observer_->change_count(); }
@@ -93,13 +103,11 @@ class ProfileListDesktopTest : public testing::Test {
   TestingProfileManager manager_;
   std::unique_ptr<MockObserver> mock_observer_;
   std::unique_ptr<AvatarMenu> avatar_menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileListDesktopTest);
 };
 
 TEST_F(ProfileListDesktopTest, InitialCreation) {
-  manager()->CreateTestingProfile("Test 1");
-  manager()->CreateTestingProfile("Test 2");
+  CreateTestingProfile("Test 1");
+  CreateTestingProfile("Test 2");
 
   AvatarMenu* menu = GetAvatarMenu();
   EXPECT_EQ(0, change_count());
@@ -129,7 +137,7 @@ TEST_F(ProfileListDesktopTest, NoOmittedProfiles) {
 
   // Add the profiles.
   for (const std::string& profile_name : profile_names)
-    manager()->CreateTestingProfile(profile_name);
+    CreateTestingProfile(profile_name);
 
   // Rebuild avatar menu.
   profile_list->RebuildMenu();
@@ -163,7 +171,7 @@ TEST_F(ProfileListDesktopTest, WithOmittedProfiles) {
   std::vector<size_t> included_profile_indices;
   for (size_t i = 0u; i < profile_names.size(); ++i) {
     if (profile_names[i].find("included") != std::string::npos) {
-      manager()->CreateTestingProfile(profile_names[i]);
+      CreateTestingProfile(profile_names[i]);
       included_profile_indices.push_back(i);
     } else {
       AddOmittedProfile(profile_names[i]);
@@ -186,8 +194,8 @@ TEST_F(ProfileListDesktopTest, WithOmittedProfiles) {
 }
 
 TEST_F(ProfileListDesktopTest, ActiveItem) {
-  manager()->CreateTestingProfile("Test 1");
-  manager()->CreateTestingProfile("Test 2");
+  CreateTestingProfile("Default");
+  CreateTestingProfile("Test 2");
 
   AvatarMenu* menu = GetAvatarMenu();
   ASSERT_EQ(2u, menu->GetNumberOfItems());
@@ -201,8 +209,8 @@ TEST_F(ProfileListDesktopTest, ModifyingNameResortsCorrectly) {
   std::string name2("Beta");
   std::string newname1("Gamma");
 
-  TestingProfile* profile1 = manager()->CreateTestingProfile(name1);
-  manager()->CreateTestingProfile(name2);
+  TestingProfile* profile1 = CreateTestingProfile(name1);
+  CreateTestingProfile(name2);
 
   AvatarMenu* menu = GetAvatarMenu();
   EXPECT_EQ(0, change_count());
@@ -237,14 +245,14 @@ TEST_F(ProfileListDesktopTest, ModifyingNameResortsCorrectly) {
 }
 
 TEST_F(ProfileListDesktopTest, ChangeOnNotify) {
-  manager()->CreateTestingProfile("Test 1");
-  manager()->CreateTestingProfile("Test 2");
+  CreateTestingProfile("Test 1");
+  CreateTestingProfile("Test 2");
 
   AvatarMenu* menu = GetAvatarMenu();
   EXPECT_EQ(0, change_count());
   EXPECT_EQ(2u, menu->GetNumberOfItems());
 
-  manager()->CreateTestingProfile("Test 3");
+  CreateTestingProfile("Test 3");
 
   // Three changes happened via the call to CreateTestingProfile: adding the
   // profile to the attributes storage, setting the user name (which rebuilds

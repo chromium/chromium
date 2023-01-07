@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/macros.h"
-
 #include <wayland-server-core.h>
+
+#include "base/memory/raw_ptr.h"
 
 struct wl_client;
 struct wl_resource;
@@ -22,6 +22,10 @@ namespace wl {
 class ServerObject {
  public:
   explicit ServerObject(wl_resource* resource);
+
+  ServerObject(const ServerObject&) = delete;
+  ServerObject& operator=(const ServerObject&) = delete;
+
   virtual ~ServerObject();
 
   wl_resource* resource() const { return resource_; }
@@ -29,9 +33,7 @@ class ServerObject {
   static void OnResourceDestroyed(wl_resource* resource);
 
  private:
-  wl_resource* resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServerObject);
+  raw_ptr<wl_resource> resource_;
 };
 
 template <class T>

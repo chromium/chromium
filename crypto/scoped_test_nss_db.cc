@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,9 +38,9 @@ ScopedTestNSSDB::~ScopedTestNSSDB() {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   if (slot_) {
-    SECStatus status = SECMOD_CloseUserDB(slot_.get());
+    SECStatus status = CloseSoftwareNSSDB(slot_.get());
     if (status != SECSuccess)
-      PLOG(ERROR) << "SECMOD_CloseUserDB failed: " << PORT_GetError();
+      PLOG(ERROR) << "CloseSoftwareNSSDB failed: " << PORT_GetError();
   }
 
   if (!temp_dir_.Delete())

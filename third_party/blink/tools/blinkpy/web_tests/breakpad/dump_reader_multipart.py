@@ -67,7 +67,7 @@ class DumpReaderMultipart(DumpReader):
 
         self._generate_breakpad_symbols_if_necessary()
         f, temp_name = self._host.filesystem.open_binary_tempfile('dmp')
-        f.write('\r\n'.join(dump['upload_file_minidump']))
+        f.write(b'\r\n'.join(dump['upload_file_minidump']))
         f.close()
 
         cmd = [

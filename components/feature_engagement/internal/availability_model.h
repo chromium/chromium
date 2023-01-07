@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,8 @@
 #include <stdint.h>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/optional.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
+#include "base/feature_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -25,6 +21,9 @@ class AvailabilityModel {
   // load was a success. In the case of a failure, it is invalid to ever call
   // GetAvailability(...).
   using OnInitializedCallback = base::OnceCallback<void(bool success)>;
+
+  AvailabilityModel(const AvailabilityModel&) = delete;
+  AvailabilityModel& operator=(const AvailabilityModel&) = delete;
 
   virtual ~AvailabilityModel() = default;
 
@@ -39,14 +38,11 @@ class AvailabilityModel {
   // Returns the day number since epoch (1970-01-01) in the local timezone for
   // when the particular |feature| was made available.
   // See TimeProvider::GetCurrentDay().
-  virtual base::Optional<uint32_t> GetAvailability(
+  virtual absl::optional<uint32_t> GetAvailability(
       const base::Feature& feature) const = 0;
 
  protected:
   AvailabilityModel() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityModel);
 };
 
 }  // namespace feature_engagement

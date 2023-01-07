@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/memory/memory_kills_histogram.h"
 #include "content/public/test/browser_task_environment.h"
@@ -20,10 +19,6 @@ namespace {
 base::HistogramBase* GetLowMemoryKillsCountHistogram() {
   return base::StatisticsRecorder::FindHistogram(
       "Memory.LowMemoryKiller.Count");
-}
-
-base::HistogramBase* GetOOMKillsCountHistogram() {
-  return base::StatisticsRecorder::FindHistogram("Memory.OOMKills.Count");
 }
 
 }  // namespace.
@@ -45,24 +40,15 @@ TEST_F(MemoryKillsMonitorTest, TestHistograms) {
   MemoryKillsMonitor::LogLowMemoryKill("TAB", 10000);
 
   auto* lmk_count_histogram = GetLowMemoryKillsCountHistogram();
-  auto* oom_count_histogram = GetOOMKillsCountHistogram();
   // Before StartMonitoring() is called, nothing is recorded.
   ASSERT_FALSE(lmk_count_histogram);
-  ASSERT_FALSE(oom_count_histogram);
 
   // Start monitoring.
   g_memory_kills_monitor_unittest_instance->StartMonitoring();
   lmk_count_histogram = GetLowMemoryKillsCountHistogram();
-  oom_count_histogram = GetOOMKillsCountHistogram();
   ASSERT_TRUE(lmk_count_histogram);
-  ASSERT_TRUE(oom_count_histogram);
   {
     auto count_samples = lmk_count_histogram->SnapshotSamples();
-    EXPECT_EQ(1, count_samples->TotalCount());
-    EXPECT_EQ(1, count_samples->GetCount(0));
-  }
-  {
-    auto count_samples = oom_count_histogram->SnapshotSamples();
     EXPECT_EQ(1, count_samples->TotalCount());
     EXPECT_EQ(1, count_samples->GetCount(0));
   }
@@ -108,34 +94,10 @@ TEST_F(MemoryKillsMonitorTest, TestHistograms) {
     // here.
   }
 
-  // OOM kills.
-  // Simulate getting 3 more oom kills.
-  g_memory_kills_monitor_unittest_instance->CheckOOMKillImpl(
-      g_memory_kills_monitor_unittest_instance->last_oom_kills_count_ + 3);
-
-  oom_count_histogram = GetOOMKillsCountHistogram();
-  ASSERT_TRUE(oom_count_histogram);
-  {
-    auto count_samples = oom_count_histogram->SnapshotSamples();
-    EXPECT_EQ(4, count_samples->TotalCount());
-    // The zero count is implicitly added when StartMonitoring() is called.
-    EXPECT_EQ(1, count_samples->GetCount(0));
-    EXPECT_EQ(1, count_samples->GetCount(1));
-    EXPECT_EQ(1, count_samples->GetCount(2));
-    EXPECT_EQ(1, count_samples->GetCount(3));
-  }
-
   lmk_count_histogram = GetLowMemoryKillsCountHistogram();
   ASSERT_TRUE(lmk_count_histogram);
   {
     auto count_samples = lmk_count_histogram->SnapshotSamples();
-    // Ensure zero count is not increased.
-    EXPECT_EQ(1, count_samples->GetCount(0));
-  }
-  oom_count_histogram = GetOOMKillsCountHistogram();
-  ASSERT_TRUE(oom_count_histogram);
-  {
-    auto count_samples = oom_count_histogram->SnapshotSamples();
     // Ensure zero count is not increased.
     EXPECT_EQ(1, count_samples->GetCount(0));
   }

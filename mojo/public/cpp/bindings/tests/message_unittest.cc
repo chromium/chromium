@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
 
 #include <algorithm>
+#include <tuple>
 #include <vector>
 
 #include "mojo/public/cpp/bindings/message.h"
@@ -23,7 +24,7 @@ void CreateTestMessagePayload(std::vector<uint8_t>* bytes,
                               std::vector<ScopedHandle>* handles) {
   Message message(kTestMessageName, kTestMessageFlags, 0, kTestPayloadSize,
                   nullptr);
-  message.header()->trace_id = 0;
+  message.header()->trace_nonce = 0;
   bytes->resize(message.data_num_bytes());
   std::copy(message.data(), message.data() + message.data_num_bytes(),
             bytes->begin());
@@ -47,7 +48,7 @@ TEST(BindingsMessageTest, ConstructFromPayload) {
                   reinterpret_cast<const MojoHandle*>(in_handles1.data()),
                   in_handles1.size(), MOJO_WRITE_MESSAGE_FLAG_NONE);
   for (auto& handle : in_handles1)
-    ignore_result(handle.release());
+    std::ignore = handle.release();
 
   // Now construct a Message object from the same payload and feed that into the
   // pipe.

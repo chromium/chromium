@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: WebGL Specification (https://www.khronos.org/registry/webgl/specs/latest/1.0/)
+// Source: WebGL Specification (https://registry.khronos.org/webgl/specs/latest/1.0/)
 
 typedef unsigned long  GLenum;
 typedef boolean        GLboolean;
@@ -86,7 +86,8 @@ typedef (ImageBitmap or
          HTMLImageElement or
          HTMLCanvasElement or
          HTMLVideoElement or
-         OffscreenCanvas) TexImageSource;
+         OffscreenCanvas or
+         VideoFrame) TexImageSource;
 
 typedef ([AllowShared] Float32Array or sequence<GLfloat>) Float32List;
 typedef ([AllowShared] Int32Array or sequence<GLint>) Int32List;
@@ -512,10 +513,11 @@ interface mixin WebGLRenderingContextBase
     const GLenum UNPACK_COLORSPACE_CONVERSION_WEBGL = 0x9243;
     const GLenum BROWSER_DEFAULT_WEBGL          = 0x9244;
 
-    [Exposed=Window] readonly attribute (HTMLCanvasElement or OffscreenCanvas) canvas;
-    [Exposed=Worker] readonly attribute OffscreenCanvas canvas;
+    readonly attribute (HTMLCanvasElement or OffscreenCanvas) canvas;
     readonly attribute GLsizei drawingBufferWidth;
     readonly attribute GLsizei drawingBufferHeight;
+    attribute PredefinedColorSpace drawingBufferColorSpace;
+    attribute PredefinedColorSpace unpackColorSpace;
 
     [WebGLHandlesContextLoss] WebGLContextAttributes? getContextAttributes();
     [WebGLHandlesContextLoss] boolean isContextLost();
@@ -731,10 +733,9 @@ interface WebGLRenderingContext
 WebGLRenderingContext includes WebGLRenderingContextBase;
 WebGLRenderingContext includes WebGLRenderingContextOverloads;
 
-[Exposed=(Window,Worker),
- Constructor(DOMString type,
- optional WebGLContextEventInit eventInit = {})]
+[Exposed=(Window,Worker)]
 interface WebGLContextEvent : Event {
+    constructor(DOMString type, optional WebGLContextEventInit eventInit = {});
     readonly attribute DOMString statusMessage;
 };
 

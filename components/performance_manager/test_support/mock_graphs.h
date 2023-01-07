@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ class TestProcessNodeImpl : public ProcessNodeImpl {
 
   void SetProcessWithPid(base::ProcessId pid,
                          base::Process process,
-                         base::Time launch_time);
+                         base::TimeTicks launch_time);
 };
 
 // The following graph topology is created to emulate a scenario when a single

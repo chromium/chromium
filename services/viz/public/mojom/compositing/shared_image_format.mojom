@@ -1,0 +1,31 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "services/viz/public/mojom/compositing/resource_format.mojom";
+
+// See PlaneConfig in components/viz/common/resources/shared_image_format.h
+enum PlaneConfig { kY_V_U, kY_UV };
+
+// See Subsampling in components/viz/common/resources/shared_image_format.h
+enum Subsampling { k420 };
+
+// See ChannelFormat in components/viz/common/resources/shared_image_format.h
+enum ChannelFormat { k8, k10, k16, k16F };
+
+// A struct for multiplanar format that is defined by the PlaneConfig,
+// Subsampling and ChannelFormat it holds.
+struct MultiplanarFormat {
+  PlaneConfig plane_config;
+  Subsampling subsampling;
+  ChannelFormat channel_format;
+};
+
+// Corresponds to viz::SharedImageFormat. It can only be ResourceFormat (for
+// single plane, eg. RGBA) or MultiplanarFormat at any given time.
+union SharedImageFormat {
+  ResourceFormat resource_format;
+  MultiplanarFormat multiplanar_format;
+};

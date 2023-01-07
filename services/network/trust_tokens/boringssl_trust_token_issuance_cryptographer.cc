@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,10 +36,10 @@ bool BoringsslTrustTokenIssuanceCryptographer::Initialize(
 
   const TRUST_TOKEN_METHOD* method = nullptr;
   switch (issuer_configured_version) {
-    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb:
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb:
       method = TRUST_TOKEN_experiment_v2_pmb();
       break;
-    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf:
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf:
       method = TRUST_TOKEN_experiment_v2_voprf();
       break;
   }
@@ -65,16 +65,16 @@ bool BoringsslTrustTokenIssuanceCryptographer::AddKey(base::StringPiece key) {
   return true;
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 BoringsslTrustTokenIssuanceCryptographer::BeginIssuance(size_t num_tokens) {
   if (!ctx_)
-    return base::nullopt;
+    return absl::nullopt;
 
   ScopedBoringsslBytes raw_issuance_request;
   if (!TRUST_TOKEN_CLIENT_begin_issuance(
           ctx_.get(), raw_issuance_request.mutable_ptr(),
           raw_issuance_request.mutable_len(), num_tokens)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return base::Base64Encode(raw_issuance_request.as_span());
@@ -108,8 +108,8 @@ BoringsslTrustTokenIssuanceCryptographer::ConfirmIssuance(
   for (size_t i = 0; i < sk_TRUST_TOKEN_num(tokens.get()); ++i) {
     TRUST_TOKEN* token = sk_TRUST_TOKEN_value(tokens.get(), i);
     // Copy the token's contents.
-    ret->tokens.push_back(
-        std::string(reinterpret_cast<const char*>(token->data), token->len));
+    ret->tokens.emplace_back(reinterpret_cast<const char*>(token->data),
+                             token->len);
   }
 
   return ret;

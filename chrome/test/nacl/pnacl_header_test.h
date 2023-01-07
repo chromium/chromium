@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 namespace net {
@@ -30,11 +28,15 @@ class TestDispatcherHostDelegate : public ResourceDispatcherHostDelegate {
   TestDispatcherHostDelegate()
       : ResourceDispatcherHostDelegate(), found_pnacl_header_(false) {}
 
+TestDispatcherHostDelegate(const TestDispatcherHostDelegate&) = delete;
+TestDispatcherHostDelegate& operator=(const TestDispatcherHostDelegate&) =
+delete;
+
+
   ~TestDispatcherHostDelegate() override {}
 
   void RequestBeginning(net::URLRequest* request,
                         content::ResourceContext* resource_context,
-                        content::AppCacheService* appcache_service,
                         blink::mojom::ResourceType resource_type,
                         std::vector<std::unique_ptr<content::ResourceThrottle>>*
                             throttles) override;
@@ -43,14 +45,16 @@ class TestDispatcherHostDelegate : public ResourceDispatcherHostDelegate {
 
  private:
   bool found_pnacl_header_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDispatcherHostDelegate);
 };
 */
 
 class PnaclHeaderTest : public InProcessBrowserTest {
  public:
   PnaclHeaderTest();
+
+  PnaclHeaderTest(const PnaclHeaderTest&) = delete;
+  PnaclHeaderTest& operator=(const PnaclHeaderTest&) = delete;
+
   ~PnaclHeaderTest() override;
 
   // Run a simple test that checks that the NaCl plugin sends the right
@@ -68,8 +72,6 @@ class PnaclHeaderTest : public InProcessBrowserTest {
 
   int noncors_loads_;
   int cors_loads_;
-  // TestDispatcherHostDelegate test_delegate_;
-  DISALLOW_COPY_AND_ASSIGN(PnaclHeaderTest);
 };
 
 #endif  // CHROME_TEST_NACL_PNACL_HEADER_TEST_H_

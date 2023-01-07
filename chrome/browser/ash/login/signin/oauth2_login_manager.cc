@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,26 +14,25 @@
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 
-namespace chromeos {
+namespace ash {
 
 OAuth2LoginManager::OAuth2LoginManager(Profile* user_profile)
     : user_profile_(user_profile),
-      restore_strategy_(RESTORE_FROM_SAVED_OAUTH2_REFRESH_TOKEN),
       state_(SESSION_RESTORE_NOT_STARTED) {
   GetIdentityManager()->AddObserver(this);
 
   // For telemetry, we mark session restore completed to avoid warnings from
   // MergeSessionThrottle.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableGaiaServices)) {
+          switches::kDisableGaiaServices)) {
     SetSessionRestoreState(SESSION_RESTORE_DONE);
   }
 }
@@ -50,38 +49,23 @@ void OAuth2LoginManager::RemoveObserver(
 }
 
 void OAuth2LoginManager::RestoreSession(
-    SessionRestoreStrategy restore_strategy,
-    const std::string& oauth2_refresh_token,
     const std::string& oauth2_access_token) {
   DCHECK(user_profile_);
-  restore_strategy_ = restore_strategy;
-  refresh_token_ = oauth2_refresh_token;
   oauthlogin_access_token_ = oauth2_access_token;
   session_restore_start_ = base::Time::Now();
   ContinueSessionRestore();
 }
 
 void OAuth2LoginManager::ContinueSessionRestore() {
-  DCHECK_NE(DEPRECATED_RESTORE_FROM_COOKIE_JAR, restore_strategy_)
-      << "Exchanging cookies for OAuth 2.0 tokens is no longer supported";
-
   SetSessionRestoreState(OAuth2LoginManager::SESSION_RESTORE_PREPARING);
 
-  // Save passed OAuth2 refresh token.
-  if (restore_strategy_ == RESTORE_FROM_PASSED_OAUTH2_REFRESH_TOKEN) {
-    DCHECK(!refresh_token_.empty());
-    restore_strategy_ = RESTORE_FROM_SAVED_OAUTH2_REFRESH_TOKEN;
-    StoreOAuth2Token();
-    return;
-  }
-
-  DCHECK_EQ(RESTORE_FROM_SAVED_OAUTH2_REFRESH_TOKEN, restore_strategy_);
   RestoreSessionFromSavedTokens();
 }
 
 void OAuth2LoginManager::RestoreSessionFromSavedTokens() {
   signin::IdentityManager* identity_manager = GetIdentityManager();
-  if (identity_manager->HasAccountWithRefreshToken(
+  if (identity_manager->AreRefreshTokensLoaded() &&
+      identity_manager->HasAccountWithRefreshToken(
           GetUnconsentedPrimaryAccountId())) {
     VLOG(1) << "OAuth2 refresh token is already loaded.";
     VerifySessionCookies();
@@ -92,12 +76,14 @@ void OAuth2LoginManager::RestoreSessionFromSavedTokens() {
     // and OnRefreshTokenAvailable is not called. Flagging it here would
     // cause user to go through Gaia in next login to obtain a new refresh
     // token.
-    user_manager::UserManager::Get()->SaveUserOAuthStatus(
-        AccountId::FromUserEmail(
-            identity_manager
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                .email),
-        user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN);
+    CoreAccountInfo account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    if (!account_info.IsEmpty()) {
+      // Primary account is empty when Active Directory accounts are used.
+      user_manager::UserManager::Get()->SaveUserOAuthStatus(
+          AccountIdFromAccountInfo(account_info),
+          user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN);
+    }
   }
 }
 
@@ -152,36 +138,14 @@ CoreAccountId OAuth2LoginManager::GetUnconsentedPrimaryAccountId() {
   return primary_account_id;
 }
 
-void OAuth2LoginManager::StoreOAuth2Token() {
-  DCHECK(!refresh_token_.empty());
-
-  signin::IdentityManager* identity_manager = GetIdentityManager();
-  // The primary account must be already set at this point.
-  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  const CoreAccountInfo primary_account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-
-  // We already have the refresh token at this
-  // point, and will not get any additional callbacks from Account Manager or
-  // Identity Manager about refresh tokens. Manually call
-  // `OnRefreshTokenUpdatedForAccount` to continue the flow.
-  // TODO(https://crbug.com/977137): Clean this up after cleaning
-  // OAuth2LoginVerifier.
-  OnRefreshTokenUpdatedForAccount(primary_account_info);
-}
-
 void OAuth2LoginManager::VerifySessionCookies() {
-  DCHECK(!login_verifier_.get());
-  login_verifier_ = std::make_unique<OAuth2LoginVerifier>(
-      this, GetIdentityManager(), GetUnconsentedPrimaryAccountId(),
-      oauthlogin_access_token_);
-
-  if (restore_strategy_ == RESTORE_FROM_SAVED_OAUTH2_REFRESH_TOKEN) {
-    login_verifier_->VerifyUserCookies();
-    return;
+  if (!login_verifier_) {
+    login_verifier_ = std::make_unique<OAuth2LoginVerifier>(
+        this, GetIdentityManager(), GetUnconsentedPrimaryAccountId(),
+        oauthlogin_access_token_);
   }
 
-  RestoreSessionCookies();
+  login_verifier_->VerifyUserCookies();
 }
 
 void OAuth2LoginManager::RestoreSessionCookies() {
@@ -313,4 +277,4 @@ void OAuth2LoginManager::SetSessionRestoreStartForTesting(
   session_restore_start_ = time;
 }
 
-}  // namespace chromeos
+}  // namespace ash

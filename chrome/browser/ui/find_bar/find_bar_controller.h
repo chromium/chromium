@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/find_in_page/find_tab_helper.h"
@@ -35,6 +35,9 @@ class FindBarController : public content::NotificationObserver,
                           public find_in_page::FindResultObserver {
  public:
   explicit FindBarController(std::unique_ptr<FindBar> find_bar);
+
+  FindBarController(const FindBarController&) = delete;
+  FindBarController& operator=(const FindBarController&) = delete;
 
   ~FindBarController() override;
 
@@ -96,7 +99,7 @@ class FindBarController : public content::NotificationObserver,
   std::unique_ptr<FindBar> find_bar_;
 
   // The WebContents we are currently associated with.  Can be NULL.
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   std::unique_ptr<FindBarPlatformHelper> find_bar_platform_helper_;
 
@@ -109,10 +112,9 @@ class FindBarController : public content::NotificationObserver,
   // replacing user-entered text with selection.
   bool has_user_modified_text_ = false;
 
-  ScopedObserver<find_in_page::FindTabHelper, find_in_page::FindResultObserver>
-      find_tab_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FindBarController);
+  base::ScopedObservation<find_in_page::FindTabHelper,
+                          find_in_page::FindResultObserver>
+      find_tab_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_H_

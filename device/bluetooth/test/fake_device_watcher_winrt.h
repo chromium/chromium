@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include "base/macros.h"
-
 namespace device {
 
 class FakeDeviceWatcherWinrt
@@ -21,6 +19,10 @@ class FakeDeviceWatcherWinrt
           ABI::Windows::Devices::Enumeration::IDeviceWatcher> {
  public:
   FakeDeviceWatcherWinrt();
+
+  FakeDeviceWatcherWinrt(const FakeDeviceWatcherWinrt&) = delete;
+  FakeDeviceWatcherWinrt& operator=(const FakeDeviceWatcherWinrt&) = delete;
+
   ~FakeDeviceWatcherWinrt() override;
 
   // IDeviceWatcher:
@@ -82,8 +84,6 @@ class FakeDeviceWatcherWinrt
       ABI::Windows::Devices::Enumeration::DeviceWatcher*,
       IInspectable*>>
       enumerated_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceWatcherWinrt);
 };
 
 }  // namespace device

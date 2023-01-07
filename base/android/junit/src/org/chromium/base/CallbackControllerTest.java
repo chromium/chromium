@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,5 +104,36 @@ public class CallbackControllerTest {
         callbackController.destroy();
         wrapped.run();
         verifyNoMoreInteractions(target);
+    }
+
+    @Test
+    public void testNestedRunnable() {
+        CallbackController callbackController = new CallbackController();
+        CallbackTarget target = Mockito.mock(CallbackTarget.class);
+        Runnable makeCancelableAndRun =
+                () -> callbackController.makeCancelable(target::runnableTarget).run();
+        Runnable wrapped = callbackController.makeCancelable(makeCancelableAndRun);
+
+        // Inside of the wrapping CancelableRunnable#run(), the inner make/run is performed. This
+        // verifies the lock is reentrant.
+        wrapped.run();
+        verify(target).runnableTarget();
+
+        wrapped.run();
+        verify(target, times(2)).runnableTarget();
+
+        callbackController.destroy();
+        wrapped.run();
+        verifyNoMoreInteractions(target);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testNestedDestroy() {
+        CallbackController callbackController = new CallbackController();
+        CallbackTarget target = Mockito.mock(CallbackTarget.class);
+        Runnable wrapped = callbackController.makeCancelable(callbackController::destroy);
+
+        // This should throw an AssertionError.
+        wrapped.run();
     }
 }

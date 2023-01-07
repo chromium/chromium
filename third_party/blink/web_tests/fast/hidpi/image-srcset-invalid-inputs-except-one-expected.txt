@@ -1,27 +1,27 @@
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since it has multiple 'h' descriptors or a mix of 'x' and 'h' descriptors.
-CONSOLE ERROR: Dropped srcset candidate "bar.jpg"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since it has an unknown descriptor.
-CONSOLE ERROR: Dropped srcset candidate "foo.jpg"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since its 'x' descriptor is invalid.
-CONSOLE ERROR: Dropped srcset candidate "bar.jpg"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since it has multiple 'h' descriptors or a mix of 'x' and 'h' descriptors.
-CONSOLE ERROR: Dropped srcset candidate "bar.jpg"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since it has an unknown descriptor.
-CONSOLE ERROR: Dropped srcset candidate "foo.jpg"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since its 'x' descriptor is invalid.
-CONSOLE ERROR: Dropped srcset candidate "bar.jpg"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since it has multiple 'h' descriptors or a mix of 'x' and 'h' descriptors.
-CONSOLE ERROR: Dropped srcset candidate "bar.jpg"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since it has an unknown descriptor.
-CONSOLE ERROR: Dropped srcset candidate "foo.jpg"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since its 'x' descriptor is invalid.
-CONSOLE ERROR: Dropped srcset candidate "bar.jpg"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since it has multiple 'h' descriptors or a mix of 'x' and 'h' descriptors.
-CONSOLE ERROR: Dropped srcset candidate "bar.jpg"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since it has an unknown descriptor.
-CONSOLE ERROR: Dropped srcset candidate "foo.jpg"
-CONSOLE ERROR: Failed parsing 'srcset' attribute value since its 'x' descriptor is invalid.
-CONSOLE ERROR: Dropped srcset candidate "bar.jpg"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since it has multiple 'h' descriptors or a mix of 'x' and 'h' descriptors.
+CONSOLE WARNING: Dropped srcset candidate "bar.jpg"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since it has an unknown descriptor.
+CONSOLE WARNING: Dropped srcset candidate "foo.jpg"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since its 'x' descriptor is invalid.
+CONSOLE WARNING: Dropped srcset candidate "bar.jpg"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since it has multiple 'h' descriptors or a mix of 'x' and 'h' descriptors.
+CONSOLE WARNING: Dropped srcset candidate "bar.jpg"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since it has an unknown descriptor.
+CONSOLE WARNING: Dropped srcset candidate "foo.jpg"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since its 'x' descriptor is invalid.
+CONSOLE WARNING: Dropped srcset candidate "bar.jpg"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since it has multiple 'h' descriptors or a mix of 'x' and 'h' descriptors.
+CONSOLE WARNING: Dropped srcset candidate "bar.jpg"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since it has an unknown descriptor.
+CONSOLE WARNING: Dropped srcset candidate "foo.jpg"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since its 'x' descriptor is invalid.
+CONSOLE WARNING: Dropped srcset candidate "bar.jpg"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since it has multiple 'h' descriptors or a mix of 'x' and 'h' descriptors.
+CONSOLE WARNING: Dropped srcset candidate "bar.jpg"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since it has an unknown descriptor.
+CONSOLE WARNING: Dropped srcset candidate "foo.jpg"
+CONSOLE WARNING: Failed parsing 'srcset' attribute value since its 'x' descriptor is invalid.
+CONSOLE WARNING: Dropped srcset candidate "bar.jpg"
 PASS successfullyParsed is true
 
 TEST COMPLETE

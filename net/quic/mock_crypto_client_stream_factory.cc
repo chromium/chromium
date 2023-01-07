@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,25 +6,22 @@
 
 #include "base/lazy_instance.h"
 #include "net/quic/quic_chromium_client_session.h"
-#include "net/third_party/quiche/src/quic/core/quic_crypto_client_stream.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_client_stream.h"
 
 using std::string;
 
 namespace net {
 
-MockCryptoClientStreamFactory::~MockCryptoClientStreamFactory() {}
+MockCryptoClientStreamFactory::~MockCryptoClientStreamFactory() = default;
 
 MockCryptoClientStreamFactory::MockCryptoClientStreamFactory()
-    : handshake_mode_(MockCryptoClientStream::CONFIRM_HANDSHAKE),
-      last_stream_(nullptr),
-      config_(new quic::QuicConfig()),
-      use_mock_crypter_(false) {}
+    : config_(std::make_unique<quic::QuicConfig>()) {}
 
 void MockCryptoClientStreamFactory::SetConfig(const quic::QuicConfig& config) {
   config_ = std::make_unique<quic::QuicConfig>(config);
 }
 
-quic::QuicCryptoClientStream*
+std::unique_ptr<quic::QuicCryptoClientStream>
 MockCryptoClientStreamFactory::CreateQuicCryptoClientStream(
     const quic::QuicServerId& server_id,
     QuicChromiumClientSession* session,
@@ -35,10 +32,17 @@ MockCryptoClientStreamFactory::CreateQuicCryptoClientStream(
     proof_verify_details = proof_verify_details_queue_.front();
     proof_verify_details_queue_.pop();
   }
-  last_stream_ = new MockCryptoClientStream(
-      server_id, session, nullptr, *(config_.get()), crypto_config,
-      handshake_mode_, proof_verify_details, use_mock_crypter_);
-  return last_stream_;
+  std::unique_ptr<MockCryptoClientStream> stream =
+      std::make_unique<MockCryptoClientStream>(
+          server_id, session, nullptr, *(config_.get()), crypto_config,
+          handshake_mode_, proof_verify_details, use_mock_crypter_);
+  streams_.push_back(stream->GetWeakPtr());
+  return stream;
+}
+
+MockCryptoClientStream* MockCryptoClientStreamFactory::last_stream() const {
+  CHECK(!streams_.empty());
+  return streams_.back().get();
 }
 
 }  // namespace net

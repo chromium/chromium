@@ -1,13 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_FAVICON_CORE_FAVICON_DRIVER_H_
 #define COMPONENTS_FAVICON_CORE_FAVICON_DRIVER_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 
@@ -25,6 +22,9 @@ namespace favicon {
 // subclassing FaviconDriver.
 class FaviconDriver {
  public:
+  FaviconDriver(const FaviconDriver&) = delete;
+  FaviconDriver& operator=(const FaviconDriver&) = delete;
+
   // Adds/Removes an observer.
   void AddObserver(FaviconDriverObserver* observer);
   void RemoveObserver(FaviconDriverObserver* observer);
@@ -60,8 +60,6 @@ class FaviconDriver {
 
  private:
   base::ObserverList<FaviconDriverObserver>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconDriver);
 };
 
 }  // namespace favicon

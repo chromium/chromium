@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,6 @@ class CardUnmaskPromptController {
   virtual void OnUnmaskPromptAccepted(const std::u16string& cvc,
                                       const std::u16string& exp_month,
                                       const std::u16string& exp_year,
-                                      bool should_store_pan,
                                       bool enable_fido_auth) = 0;
   virtual void NewCardLinkClicked() = 0;
 
@@ -34,7 +33,7 @@ class CardUnmaskPromptController {
   virtual int GetCvcImageRid() const = 0;
   virtual bool ShouldRequestExpirationDate() const = 0;
   virtual bool GetStoreLocallyStartState() const = 0;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual int GetGooglePayImageRid() const = 0;
   virtual bool ShouldOfferWebauthn() const = 0;
   virtual bool GetWebauthnOfferStartState() const = 0;

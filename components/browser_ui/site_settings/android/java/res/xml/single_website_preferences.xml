@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -23,7 +25,7 @@
         android:key="intrusive_ads_info"
         android:title="@string/intrusive_ads_information"
         android:icon="@drawable/btn_info"
-        app:iconTint="@color/default_icon_color" />
+        app:iconTint="@macro/default_icon_color" />
     <Preference
         android:selectable="false"
         android:key="intrusive_ads_info_divider"
@@ -42,6 +44,11 @@
         android:positiveButtonText="@string/webstorage_clear_data_dialog_ok_button"
         android:negativeButtonText="@string/cancel"
         android:widgetLayout="@layout/clear_storage" />
+    <PreferenceCategory
+        android:key="related_sites_header"
+        android:title="@string/website_settings_related_sites" />
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="related_sites" />
     <PreferenceCategory
         android:key="site_permissions"
         android:title="@string/website_settings_permissions_category" />

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,7 +77,7 @@ class CleanerEngineRequestsImpl : public mojom::CleanerEngineRequests {
 
   scoped_refptr<MojoTaskRunner> mojo_task_runner_;
   mojo::AssociatedReceiver<mojom::CleanerEngineRequests> receiver_{this};
-  InterfaceMetadataObserver* metadata_observer_ = nullptr;
+  [[maybe_unused]] InterfaceMetadataObserver* metadata_observer_ = nullptr;
   std::unique_ptr<chrome_cleaner::FileRemoverAPI> file_remover_;
 };
 

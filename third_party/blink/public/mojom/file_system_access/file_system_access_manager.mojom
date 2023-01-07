@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,9 +31,9 @@ struct ChooseFileSystemEntryAcceptsOption {
   array<string> extensions;
 };
 
-// If |include_accepts_all| is true, an "all files" option is included in the
-// dialog displayed to the user. If no valid options are present in |accepts|
-// |include_accepts_all| is treated as if it was true.
+// If `include_accepts_all` is true, an "all files" option is included in the
+// dialog displayed to the user. If no valid options are present in `accepts`
+// `include_accepts_all` is treated as if it was true.
 struct AcceptsTypesInfo {
   array<ChooseFileSystemEntryAcceptsOption> accepts;
   bool include_accepts_all;
@@ -49,7 +49,9 @@ struct SaveFilePickerOptions {
   string suggested_name;
 };
 
-struct DirectoryPickerOptions {};
+struct DirectoryPickerOptions {
+  bool request_writable;
+};
 
 // Encapsulation of data from the FilePickerOptions idl spec:
 // https://wicg.github.io/file-system-access/#dictdef-filepickeroptions.
@@ -61,15 +63,15 @@ union FilePickerOptions {
 
 // See the documentation for how the `starting_directory` fields interact:
 // https://github.com/WICG/file-system-access/blob/main/SuggestedNameAndDir.md
-// |starting_directory_id| allows for specification of the "purpose" of a file
+// `starting_directory_id` allows for specification of the "purpose" of a file
 // picker invocation. When an ID is specified, the picker will remember the
 // picked directory. The next time the matching ID is specified, the picker
 // will default to this directory. The ID cannot exceed 32 characters in
 // length and may only contain alphanumeric characters, '-', and '_'.
 // A maximum of 32 custom IDs is allowed per origin (LRU eviction).
-// |well_known_starting_directory| opens the file picker at a well-known
+// `well_known_starting_directory` opens the file picker at a well-known
 // directory.
-// |starting_directory_token| is resolved into a file or directory by the
+// `starting_directory_token` is resolved into a file or directory by the
 // FileSystemAccessManager to be used as the starting directory for the file
 // picker. If the token is a file, its parent directory is used.
 // See the FileSystemAccessManager's ResolveDefaultDirectory() method for
@@ -120,7 +122,14 @@ interface FileSystemAccessManager {
   // Token redemption can fail if the id of the process trying to redeem the
   // token does not match the id assigned to the token at creation or if the
   // FileSystemAccessManager does not have record of the token.
+  // May show a prompt to the user if the entry corresponds to a sensitive path.
+  // getAsFileSystemHandle() is an async API that can only be called
+  // synchronously while handling the drop event (i.e. as a direct result of
+  // some user interaction, and at the time of the interaction).
+  // Returns an error code if something failed, or a valid entry on success.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   GetEntryFromDataTransferToken(
     pending_remote<FileSystemAccessDataTransferToken> token
-  )  => (FileSystemAccessEntry entry);
+  )  => (FileSystemAccessError result, FileSystemAccessEntry? entry);
 };

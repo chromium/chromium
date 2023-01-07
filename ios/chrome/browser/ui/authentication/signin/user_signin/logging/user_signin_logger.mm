@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,13 +22,25 @@ using signin_metrics::PromoAction;
 #pragma mark - Public
 
 - (instancetype)initWithAccessPoint:(AccessPoint)accessPoint
-                        promoAction:(PromoAction)promoAction {
+                        promoAction:(PromoAction)promoAction
+              accountManagerService:
+                  (ChromeAccountManagerService*)accountManagerService {
   self = [super init];
   if (self) {
+    DCHECK(accountManagerService);
+    _accountManagerService = accountManagerService;
     _accessPoint = accessPoint;
     _promoAction = promoAction;
   }
   return self;
+}
+
+- (void)dealloc {
+  DCHECK(!self.accountManagerService);
+}
+
+- (void)disconnect {
+  self.accountManagerService = nullptr;
 }
 
 - (void)logSigninStarted {

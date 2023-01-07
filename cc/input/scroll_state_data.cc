@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,9 @@ ScrollStateData::ScrollStateData()
       is_scroll_chain_cut(false),
       is_main_thread_hit_tested(false) {}
 
-ScrollStateData::ScrollStateData(const ScrollStateData& other) = default;
+ScrollStateData::ScrollStateData(const ScrollStateData&) = default;
+
+ScrollStateData& ScrollStateData::operator=(const ScrollStateData&) = default;
 
 ElementId ScrollStateData::current_native_scrolling_element() const {
   return current_native_scrolling_element_;

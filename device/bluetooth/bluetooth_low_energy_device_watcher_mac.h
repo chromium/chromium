@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,10 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "device/bluetooth/bluetooth_export.h"
 
@@ -38,6 +36,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceWatcherMac
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
       LowEnergyDeviceListUpdatedCallback
           update_low_energy_device_list_callback);
+
+  BluetoothLowEnergyDeviceWatcherMac(
+      const BluetoothLowEnergyDeviceWatcherMac&) = delete;
+  BluetoothLowEnergyDeviceWatcherMac& operator=(
+      const BluetoothLowEnergyDeviceWatcherMac&) = delete;
 
   BluetoothLowEnergyDeviceWatcherMac(
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
@@ -86,8 +89,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceWatcherMac
       std::make_unique<base::FilePathWatcher>();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyDeviceWatcherMac);
 };
 
 }  // namespace device

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,16 @@
 #include <string>
 
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/public/common/widget_type.h"
 #include "content/public/renderer/render_thread.h"
 #include "ipc/ipc_test_sink.h"
 #include "ipc/message_filter.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
+#include "third_party/blink/public/mojom/page/page.mojom.h"
 
 namespace IPC {
 class MessageFilter;
@@ -63,10 +65,10 @@ class MockRenderThread : public RenderThread {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void RemoveRoute(int32_t routing_id) override;
   int GenerateRoutingID() override;
-  bool GenerateFrameRoutingID(
-      int32_t& routing_id,
-      blink::LocalFrameToken& frame_token,
-      base::UnguessableToken& devtools_frame_token) override;
+  bool GenerateFrameRoutingID(int32_t& routing_id,
+                              blink::LocalFrameToken& frame_token,
+                              base::UnguessableToken& devtools_frame_token,
+                              blink::DocumentToken& document_token) override;
   void AddFilter(IPC::MessageFilter* filter) override;
   void RemoveFilter(IPC::MessageFilter* filter) override;
   void AddObserver(RenderThreadObserver* observer) override;
@@ -75,22 +77,24 @@ class MockRenderThread : public RenderThread {
       blink::WebResourceRequestSenderDelegate* delegate) override;
   void RecordAction(const base::UserMetricsAction& action) override;
   void RecordComputedAction(const std::string& action) override;
-  void RegisterExtension(std::unique_ptr<v8::Extension> extension) override;
   int PostTaskToAllWebWorkers(base::RepeatingClosure closure) override;
   base::WaitableEvent* GetShutdownEvent() override;
   int32_t GetClientId() override;
   void SetRendererProcessType(
       blink::scheduler::WebRendererProcessType type) override;
   blink::WebString GetUserAgent() override;
+  blink::WebString GetFullUserAgent() override;
+  blink::WebString GetReducedUserAgent() override;
   const blink::UserAgentMetadata& GetUserAgentMetadata() override;
-  bool IsUseZoomForDSF() override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void PreCacheFont(const LOGFONT& log_font) override;
   void ReleaseCachedFonts() override;
 #endif
   void SetFieldTrialGroup(const std::string& trial_name,
                           const std::string& group_name) override;
-  void SetUseZoomForDSFEnabled(bool zoom_for_dsf);
+  void WriteIntoTrace(
+      perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
+      override;
 
   // Returns a new, unique routing ID that can be assigned to the next view,
   // widget, or frame.
@@ -108,6 +112,10 @@ class MockRenderThread : public RenderThread {
   // so it must be cleaned up on its own.
   void OnCreateWindow(const mojom::CreateNewWindowParams& params,
                       mojom::CreateNewWindowReply* reply);
+
+  // Releases any `blink::WebView`s that are being held onto by PageBroadcast
+  // associated remotes.
+  void ReleaseAllWebViews();
 
   void OnCreateChildFrame(
       int32_t child_routing_id,
@@ -145,11 +153,15 @@ class MockRenderThread : public RenderThread {
   // A list of message filters added to this thread.
   std::vector<scoped_refptr<IPC::MessageFilter> > filters_;
 
+  // `blink::WebView`s associated with CreateNewWindow have their
+  // lifecycle associated with the mojo channel provided to them.
+  std::vector<mojo::AssociatedRemote<blink::mojom::PageBroadcast>>
+      page_broadcasts_;
+
   // Observers to notify.
   base::ObserverList<RenderThreadObserver>::Unchecked observers_;
 
   std::unique_ptr<mojom::RenderMessageFilter> mock_render_message_filter_;
-  bool zoom_for_dsf_ = false;
 };
 
 }  // namespace content

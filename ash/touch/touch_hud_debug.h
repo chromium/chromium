@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/touch/touch_observer_hud.h"
-#include "base/macros.h"
 
 namespace views {
 class Label;
@@ -35,6 +34,9 @@ class ASH_EXPORT TouchHudDebug : public TouchObserverHud {
   };
 
   explicit TouchHudDebug(aura::Window* initial_root);
+
+  TouchHudDebug(const TouchHudDebug&) = delete;
+  TouchHudDebug& operator=(const TouchHudDebug&) = delete;
 
   // Changes the display mode (e.g. scale, visibility). Calling this repeatedly
   // cycles between a fixed number of display modes.
@@ -69,8 +71,6 @@ class ASH_EXPORT TouchHudDebug : public TouchObserverHud {
   TouchHudCanvas* canvas_;
   views::View* label_container_;
   views::Label* touch_labels_[kMaxTouchPoints];
-
-  DISALLOW_COPY_AND_ASSIGN(TouchHudDebug);
 };
 
 }  // namespace ash

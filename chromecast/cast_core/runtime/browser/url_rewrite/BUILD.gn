@@ -1,0 +1,37 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+
+cast_source_set("url_rewrite") {
+  sources = [
+    "url_request_rewrite_type_converters.cc",
+    "url_request_rewrite_type_converters.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/url_rewrite/mojom",
+    "//mojo/public/cpp/bindings",
+    "//third_party/cast_core/public/src/proto/v2:url_rewrite_proto",
+  ]
+}
+
+cast_source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "url_request_rewrite_type_converters_unittest.cc" ]
+
+  deps = [
+    ":url_rewrite",
+    "//base",
+    "//base/test:test_support",
+    "//components/url_rewrite/browser",
+    "//components/url_rewrite/mojom",
+    "//mojo/core/test:run_all_unittests",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/cast_core/public/src/proto/v2:url_rewrite_proto",
+  ]
+}

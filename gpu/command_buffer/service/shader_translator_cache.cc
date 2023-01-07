@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ scoped_refptr<ShaderTranslator> ShaderTranslatorCache::GetTranslator(
     ShShaderSpec shader_spec,
     const ShBuiltInResources* resources,
     ShShaderOutput shader_output_language,
-    ShCompileOptions driver_bug_workarounds) {
+    const ShCompileOptions& driver_bug_workarounds) {
   ShaderTranslatorInitParams params(shader_type, shader_spec, *resources,
                                     shader_output_language,
                                     driver_bug_workarounds);

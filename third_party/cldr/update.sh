@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 # If needed, update the unzip line as appropriate.
 
 # CLDR release to checkout. See http://cldr.unicode.org/index/downloads
-CLDR_URL='http://unicode.org/Public/cldr/38.1/cldr-common-38.1.zip'
+CLDR_URL='http://unicode.org/Public/cldr/40/cldr-common-40.0.zip'
 # To update the CLDR files, change this URL and also update the Version
 # field in README.chromium. Then run this script and commit the changes.
 

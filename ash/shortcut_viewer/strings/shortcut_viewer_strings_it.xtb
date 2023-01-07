@@ -5,7 +5,6 @@
 <translation id="104962181688258143">Apre l'app File</translation>
 <translation id="1122869341872663659">Sono visualizzati <ph name="N" /> risultati di ricerca relativi a <ph name="QUERY" /></translation>
 <translation id="1195667586424773550">Trascina il link nella barra degli indirizzi della scheda</translation>
-<translation id="1204450209689312104">Apre una nuova finestra in modalità di navigazione in incognito</translation>
 <translation id="1251638888133819822">Attiva o disattiva la lente d'ingrandimento a schermo intero</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /> <ph name="SEPARATOR1" /> <ph name="MODIFIER2" /> <ph name="SEPARATOR2" /> <ph name="MODIFIER3" /> <ph name="SEPARATOR3" /> <ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -15,8 +14,10 @@
 <translation id="1477442857810932985">Vai alla fine della riga</translation>
 <translation id="1499072997694708844">Chiude le finestre di ricerca aperte o interrompe il caricamento della pagina attuale</translation>
 <translation id="1510238584712386396">Avvio app</translation>
+<translation id="1516966594427080024">Apri una nuova finestra in modalità di navigazione in incognito</translation>
 <translation id="152892567002884378">Alza il volume</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, quindi <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Vai alla scrivania 1 di 8</translation>
 <translation id="1652741121070700329">Passa all'inizio della parola precedente</translation>
 <translation id="1679841710523778799">Aumenta la luminosità</translation>
 <translation id="168356808214100546">Tieni premuto <ph name="ALT" />, tocca <ph name="TAB" /> fin quando arrivi alla finestra che vuoi aprire, quindi rilascia.</translation>
@@ -52,7 +53,6 @@
 <translation id="2530339807289914946">Scorre la pagina web verso il basso</translation>
 <translation id="2530896289327917474">Attiva o disattiva la navigazione con cursore</translation>
 <translation id="2574014812750545982">Reimposta il livello di zoom nella pagina</translation>
-<translation id="2596078834055697711">Consente di acquisire uno screenshot della finestra</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, quindi <ph name="TAB" /> o <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Carica di nuovo la pagina corrente</translation>
 <translation id="2764005613199379871">Consente di impostare lo stato attivo nella barra degli indirizzi di ricerca</translation>
@@ -65,14 +65,16 @@
 <translation id="2914313326123580426">Mostra o nasconde il riquadro Strumenti per sviluppatori</translation>
 <translation id="292495055542441795">Attiva/disattiva lo schermo intero</translation>
 <translation id="3020183492814296499">Scorciatoie</translation>
-<translation id="3084301071537457911">Mette in evidenza l'elemento successivo sulla shelf</translation>
-<translation id="309173601632226815">Mette in evidenza il pulsante Avvio applicazioni nella shelf</translation>
-<translation id="3105917916468784889">Acquisisce uno screenshot</translation>
+<translation id="3084301071537457911">Mette in evidenza l'elemento successivo sulla barra delle app</translation>
+<translation id="309173601632226815">Mette in evidenza il pulsante Avvio applicazioni nella barra delle app</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Area attiva nella barra degli indirizzi</translation>
-<translation id="3256109297135787951">Consente di rimuovere l'evidenziazione da un elemento sulla shelf</translation>
+<translation id="3256109297135787951">Consente di rimuovere l'evidenziazione da un elemento sulla barra delle app</translation>
 <translation id="3288816184963444640">Chiude la finestra corrente</translation>
+<translation id="3322797428033495633">Impostare lo stato attivo sulla finestra Picture in picture</translation>
+<translation id="3350805006883559974">Finestra attiva mobile in alto</translation>
 <translation id="3407560819924487926">Apre il Task Manager</translation>
+<translation id="3417835166382867856">Cerca tra le schede</translation>
 <translation id="3422679037938588196">Passa alla corrispondenza precedente della ricerca</translation>
 <translation id="353037708190149633">Salva tutte le pagine aperte nella finestra corrente come Preferiti in una nuova cartella</translation>
 <translation id="355103131818127604">Apre il link in una nuova scheda in background</translation>
@@ -85,12 +87,13 @@
 <translation id="3720939646656082033">Apre il link in una nuova scheda e passa alla nuova scheda</translation>
 <translation id="3725795051337497754">Chiude la scheda corrente</translation>
 <translation id="3751033133896282964">Annulla l'ultima azione</translation>
-<translation id="3792178297143798024">Consente di aprire l'elemento evidenziato sulla shelf</translation>
+<translation id="3792178297143798024">Consente di aprire l'elemento evidenziato sulla barra delle app</translation>
 <translation id="379295446891231126">Da <ph name="CTRL" /><ph name="SEPARATOR" /> 1 a 8</translation>
 <translation id="3837047332182291558">Aumenta la luminosità della tastiera (soltanto per tastiere retroilluminate)</translation>
 <translation id="3949671998904569433">virgola</translation>
-<translation id="3976863468609830880">Seleziona l'ultima icona nella shelf</translation>
+<translation id="3976863468609830880">Seleziona l'ultima icona nella barra delle app</translation>
 <translation id="3994783594793697310">Reimposta il livello di zoom dello schermo</translation>
+<translation id="4026837045671473537">Attiva modalità di inversione dei colori</translation>
 <translation id="4026843240379844265">Sposta la finestra attiva tra gli schermi</translation>
 <translation id="4035482366624727273">Seleziona tutti i contenuti della pagina</translation>
 <translation id="4060703249685950734">Riapre l'ultima scheda o finestra chiusa</translation>
@@ -108,7 +111,6 @@
 <translation id="4556221320735744018">Visualizza la guida relativa alle scorciatoie da tastiera</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /> <ph name="SEPARATOR1" /> <ph name="BACK1" /> oppure <ph name="CTRL2" /> <ph name="SEPARATOR2" /> <ph name="SHIFT" /> <ph name="SEPARATOR3" /> <ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Apre l'area di stato (dove è visualizzata l'immagine del tuo account)</translation>
-<translation id="4642092649622328492">Acquisisce lo screenshot parziale</translation>
 <translation id="4698850295812410683">Consente di mostrare gli strumenti stilo</translation>
 <translation id="4801989101741319327">Passa alla fine della parola successiva</translation>
 <translation id="4866066940972151697">Attiva la scrivania a destra</translation>
@@ -124,11 +126,13 @@
 <translation id="526651782186312376">Seleziona il testo all'inizio della riga</translation>
 <translation id="5316716239522500219">Consente di duplicare i monitor</translation>
 <translation id="539072479502328326">Attiva o disattiva la lente d'ingrandimento ancorata</translation>
+<translation id="5466615362193675484">Apre/chiude il menu per la modalità di blocco del ridimensionamento</translation>
 <translation id="5541719484267030947">Mentre trascini la scheda, premi <ph name="ESC" /></translation>
 <translation id="5554139136362089836">Esegue ricerche nella pagina corrente</translation>
 <translation id="5563050856984839829">Premi <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> e fai clic su un link</translation>
 <translation id="561814908794220892">Apre la pagina web in una nuova scheda</translation>
 <translation id="5620219513321115856">Sposta la finestra attiva sulla scrivania a destra</translation>
+<translation id="5699366815052349604">Assegna la finestra attiva a tutte le scrivanie</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> o <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Apre il link nella scheda</translation>
 <translation id="5757474750054631686">Oscura la tastiera (soltanto per tastiere retroilluminate)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">Ruota finestra</translation>
 <translation id="5926306472221400972">Acquisisci screenshot a schermo intero</translation>
 <translation id="6022924867608035986">Cancella testo dalla casella di ricerca</translation>
-<translation id="6045998054441862242">Attiva la modalità ad alto contrasto</translation>
 <translation id="6052614013050385269">Consente di fare clic sul link con il pulsante destro del mouse</translation>
 <translation id="6129953537138746214">Spazio</translation>
 <translation id="6143669479988153888">Aumenta lo zoom nella pagina</translation>
@@ -147,13 +150,15 @@
 <translation id="6276708887952587684">Visualizza il codice sorgente della pagina</translation>
 <translation id="6321940490215594447">Apre la pagina Cronologia</translation>
 <translation id="6340769215862220182">Aumenta lo zoom dello schermo</translation>
+<translation id="634687982629734605">Consente di spostare lo stato attivo tra: l'area di stato (dove è visualizzata l'immagine del tuo account), Avvio app, la barra degli indirizzi, la barra dei Preferiti (se visibile), la pagina web aperta e la barra dei download (se visibile). Se viene visualizzata una finestra di dialogo attivabile, sposta lì lo stato attivo.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Seleziona il testo alla fine della riga</translation>
-<translation id="6425378783626925378">Consente di fare clic sulle icone 1-8 nella shelf</translation>
-<translation id="6435207348963613811">Mette in evidenza l'elemento precedente sulla shelf</translation>
+<translation id="6425378783626925378">Consente di fare clic sulle icone 1-8 nella barra delle app</translation>
+<translation id="6435207348963613811">Mette in evidenza l'elemento precedente sulla barra delle app</translation>
 <translation id="6445033640292336367">Ripristina la posizione originale della scheda</translation>
 <translation id="6474744297082284761">Diminuisce lo zoom (con lente d’ingrandimento ancorata o a schermo intero attiva)</translation>
 <translation id="649811797655257835">Seleziona il file, quindi premi <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">Apri o chiudi il widget calendario.</translation>
 <translation id="6551886416582667425">Acquisisci screenshot/registrazione parziale</translation>
 <translation id="6556040137485212400">Consente di aprire la finestra rimasta inutilizzata per più tempo</translation>
 <translation id="666343722268997814">Apre il menu di scelta rapida per l'elemento evidenziato</translation>
@@ -190,7 +195,6 @@
 <translation id="8026334261755873520">Cancella dati di navigazione</translation>
 <translation id="8130528849632411619">Passa all'inizio del documento</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> o <ph name="E" /></translation>
-<translation id="8232835244134740473">Consente di spostare lo stato attivo tra: l'area di stato (dove è visualizzata l'immagine del tuo account), Avvio applicazioni, la barra degli indirizzi, la barra dei Preferiti (se visibile), la pagina web aperta e la barra dei download (se visibile).</translation>
 <translation id="8234414138295101081">Ruota lo schermo di 90 gradi</translation>
 <translation id="8241665785394195545">parentesi quadra chiusa</translation>
 <translation id="8264941229485248811">Consente di mostrare o nascondere il controllo Strumenti per sviluppatori</translation>
@@ -198,16 +202,17 @@
 <translation id="8388247778047144397">Trascina il link in un'area vuota della tabstrip</translation>
 <translation id="8389638407792712197">Apre una nuova finestra</translation>
 <translation id="8429696719963529183">Utilizza i tasti F (da F1 a F12)</translation>
-<translation id="8537650670971624753">Esci dalla modalità di ricerca</translation>
 <translation id="85690795166292698">Apre il link in una nuova scheda</translation>
 <translation id="8609384513243082612">Apre una nuova scheda</translation>
 <translation id="8644639153978066712">Visualizza i file nascosti nell'app File</translation>
 <translation id="8717459106217102612">Seleziona la parola o la lettera precedente</translation>
 <translation id="8727232706774971183">Visualizza le notifiche</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> da 1 a 8</translation>
 <translation id="8855885154700222542">Tasto schermo intero</translation>
 <translation id="8881584919399569791">Sposta la finestra attiva sulla scrivania a sinistra</translation>
 <translation id="88986195241502842">Pagina giù</translation>
 <translation id="8924883688469390268">Passa all'utente precedente</translation>
+<translation id="8941626538514548667">Consente di impostare lo stato attivo sui contenuti web nel browser</translation>
 <translation id="8977648847395357314">Seleziona i contenuti della barra degli indirizzi</translation>
 <translation id="8982190978301344584">Consente di mostrare il menu con un elenco di IME disponibili</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> da 1 a 8</translation>

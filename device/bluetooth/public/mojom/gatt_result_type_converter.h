@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_BLUETOOTH_GATT_RESULT_TYPE_CONVERTER_H_
-#define DEVICE_BLUETOOTH_GATT_RESULT_TYPE_CONVERTER_H_
+#ifndef DEVICE_BLUETOOTH_PUBLIC_MOJOM_GATT_RESULT_TYPE_CONVERTER_H_
+#define DEVICE_BLUETOOTH_PUBLIC_MOJOM_GATT_RESULT_TYPE_CONVERTER_H_
 
+#include "base/notreached.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/public/mojom/device.mojom.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
@@ -22,25 +23,21 @@ struct TypeConverter<bluetooth::mojom::GattResult,
   static bluetooth::mojom::GattResult Convert(
       const device::BluetoothGattService::GattErrorCode& input) {
     switch (input) {
-      case device::BluetoothGattService::GattErrorCode::GATT_ERROR_UNKNOWN:
+      case device::BluetoothGattService::GattErrorCode::kUnknown:
         return bluetooth::mojom::GattResult::UNKNOWN;
-      case device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED:
+      case device::BluetoothGattService::GattErrorCode::kFailed:
         return bluetooth::mojom::GattResult::FAILED;
-      case device::BluetoothGattService::GattErrorCode::GATT_ERROR_IN_PROGRESS:
+      case device::BluetoothGattService::GattErrorCode::kInProgress:
         return bluetooth::mojom::GattResult::IN_PROGRESS;
-      case device::BluetoothGattService::GattErrorCode::
-          GATT_ERROR_INVALID_LENGTH:
+      case device::BluetoothGattService::GattErrorCode::kInvalidLength:
         return bluetooth::mojom::GattResult::INVALID_LENGTH;
-      case device::BluetoothGattService::GattErrorCode::
-          GATT_ERROR_NOT_PERMITTED:
+      case device::BluetoothGattService::GattErrorCode::kNotPermitted:
         return bluetooth::mojom::GattResult::NOT_PERMITTED;
-      case device::BluetoothGattService::GattErrorCode::
-          GATT_ERROR_NOT_AUTHORIZED:
+      case device::BluetoothGattService::GattErrorCode::kNotAuthorized:
         return bluetooth::mojom::GattResult::NOT_AUTHORIZED;
-      case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_PAIRED:
+      case device::BluetoothGattService::GattErrorCode::kNotPaired:
         return bluetooth::mojom::GattResult::NOT_PAIRED;
-      case device::BluetoothGattService::GattErrorCode::
-          GATT_ERROR_NOT_SUPPORTED:
+      case device::BluetoothGattService::GattErrorCode::kNotSupported:
         return bluetooth::mojom::GattResult::NOT_SUPPORTED;
     }
     NOTREACHED();
@@ -49,4 +46,4 @@ struct TypeConverter<bluetooth::mojom::GattResult,
 };
 }  // namespace mojo
 
-#endif  // DEVICE_BLUETOOTH_GATT_RESULT_TYPE_CONVERTER_H_
+#endif  // DEVICE_BLUETOOTH_PUBLIC_MOJOM_GATT_RESULT_TYPE_CONVERTER_H_

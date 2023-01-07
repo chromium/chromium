@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/execution_context/execution_context_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
@@ -64,7 +65,7 @@ class ExecutionContextRegistryImplTest : public GraphTestHarness {
   }
 
  protected:
-  ExecutionContextRegistryImpl* registry_ = nullptr;
+  raw_ptr<ExecutionContextRegistryImpl> registry_ = nullptr;
 };
 
 using ExecutionContextRegistryImplDeathTest = ExecutionContextRegistryImplTest;
@@ -131,10 +132,7 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
   EXPECT_EQ(worker,
             registry_->GetWorkerNodeByWorkerToken(worker->worker_token()));
 
-  // Querying an invalid token or a random token should fail.
-  EXPECT_FALSE(
-      registry_->GetExecutionContextByToken(blink::ExecutionContextToken(
-          blink::LocalFrameToken(base::UnguessableToken::Null()))));
+  // Querying a random token should fail.
   EXPECT_FALSE(
       registry_->GetExecutionContextByToken(blink::ExecutionContextToken()));
   EXPECT_FALSE(registry_->GetFrameNodeByFrameToken(blink::LocalFrameToken()));

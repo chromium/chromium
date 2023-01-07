@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
@@ -43,29 +42,8 @@
 
 namespace blink {
 
-namespace {
-// These values are written to logs.  New enum values can be added, but existing
-// enums must never be renumbered or deleted and reused.
-enum class WorkerType {
-  OTHER = 0,
-  DEDICATED_WORKER = 1,
-  SHARED_WORKER = 2,
-  SERVICE_WORKER = 3,
-  kMaxValue = SERVICE_WORKER,
-};
-}  // namespace
-
 FileReaderSync::FileReaderSync(ExecutionContext* context)
-    : task_runner_(context->GetTaskRunner(TaskType::kFileReading)) {
-  WorkerType type = WorkerType::OTHER;
-  if (context->IsDedicatedWorkerGlobalScope())
-    type = WorkerType::DEDICATED_WORKER;
-  else if (context->IsSharedWorkerGlobalScope())
-    type = WorkerType::SHARED_WORKER;
-  else if (context->IsServiceWorkerGlobalScope())
-    type = WorkerType::SERVICE_WORKER;
-  base::UmaHistogramEnumeration("FileReaderSync.WorkerType", type);
-}
+    : task_runner_(context->GetTaskRunner(TaskType::kFileReading)) {}
 
 DOMArrayBuffer* FileReaderSync::readAsArrayBuffer(
     Blob* blob,

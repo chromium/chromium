@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -25,10 +24,8 @@ namespace internal {
 namespace {
 constexpr int kInverseProbabilityOfDelay = 8;
 constexpr int kInverseProbabilityOfNotResuming = 10;
-constexpr base::TimeDelta kMillisecondsToResume =
-    base::TimeDelta::FromMilliseconds(2);
-constexpr base::TimeDelta kPauseBindingsFrequency =
-    base::TimeDelta::FromMilliseconds(7);
+constexpr base::TimeDelta kMillisecondsToResume = base::Milliseconds(2);
+constexpr base::TimeDelta kPauseBindingsFrequency = base::Milliseconds(7);
 }  // namespace
 
 // TODO(mpdenton) This only adds random delays on method call processing. This

@@ -1,0 +1,60 @@
+<style include="cr-shared-style">
+  localized-link,
+  #learn-more-description {
+    color: var(--cros-text-color-secondary);
+  }
+
+  #container {
+    height: 200px;
+  }
+
+  #deviceListTitle {
+    color: var(--cros-text-color-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    margin: 20px 0 8px 0;
+  }
+</style>
+<bluetooth-base-page
+    show-scan-progress="[[isBluetoothEnabled]]"
+    button-bar-state="[[buttonBarState_]]">
+  <div slot="page-body" id="pageBody">
+    <template is="dom-if" if="[[!shouldOmitLinks]]" restamp>
+      <localized-link
+          localized-string="[[i18nAdvanced('bluetoothPairingLearnMoreLabel')]]">
+      </localized-link>
+    </template>
+    <template is="dom-if" if="[[shouldOmitLinks]]" restamp>
+      <div id="learn-more-description" aria-live="polite">
+        [[i18n('bluetoothPairingDescription')]]
+      </div>
+    </template>
+    <h2 id="deviceListTitle" aria-live="polite">
+      [[getDeviceListTitle_(devices.*, isBluetoothEnabled, devicePendingPairing.*)]]
+    </h2>
+    <template  is="dom-if" if="[[shouldShowDeviceList_(devices.*,
+        isBluetoothEnabled)]]" restamp>
+      <div id="container" class="layout vertical flex" scrollable
+          no-bottom-scroll-border>
+          <iron-list items="[[devices]]"
+              preserve-focus>
+            <template>
+              <bluetooth-pairing-device-item
+                  item="[[item]]"
+                  device="[[item]]"
+                  device-item-state="[[getDeviceItemState_(
+                      item, devicePendingPairing.*, failedPairingDeviceId)]]"
+                  tabindex$="[[tabIndex]]"
+                  focus-row-index="[[index]]"
+                  iron-list-tab-index="[[tabIndex]]"
+                  last-focused="{{lastFocused_}}"
+                  list-blurred="{{listBlurred_}}"
+                  item-index="[[index]]"
+                  list-size="[[devices.length]]" >
+              </bluetooth-pairing-device-item>
+            </template>
+          </iron-list>
+      </div>
+    </template>
+  </div>
+</bluetooth-base-page>

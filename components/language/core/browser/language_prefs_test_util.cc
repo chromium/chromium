@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,12 +31,13 @@ void LanguagePrefTester::ExpectPref(
 void LanguagePrefTester::ExpectAcceptLanguagePrefs(
     const std::string& expected_prefs,
     const std::string& expected_prefs_chromeos) const {
-  ExpectPref(language::prefs::kAcceptLanguages, expected_prefs,
-             expected_prefs_chromeos);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ExpectPref(language::prefs::kPreferredLanguages, expected_prefs,
              expected_prefs_chromeos);
-#endif
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  ExpectPref(language::prefs::kAcceptLanguages, expected_prefs,
+             expected_prefs_chromeos);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Similar to function above: this one expects both ChromeOS and other
@@ -71,14 +72,13 @@ void LanguagePrefTester::SetLanguagePrefs(
 
 void LanguagePrefTester::SetForcedLanguagePrefs(
     std::vector<std::string>&& languages) {
-  base::Value::ListStorage languages_list;
+  base::Value::List languages_list;
 
   for (std::string language : languages) {
-    languages_list.push_back(base::Value(std::move(language)));
+    languages_list.Append(std::move(language));
   }
 
-  prefs_->Set(language::prefs::kForcedLanguages,
-              base::Value(std::move(languages_list)));
+  prefs_->SetList(language::prefs::kForcedLanguages, std::move(languages_list));
 }
 
 }  // namespace test

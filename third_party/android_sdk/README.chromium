@@ -1,23 +1,20 @@
 Name: Android SDK
 URL: http://developer.android.com/sdk/index.html
-Version: 30
-  Android SDK Build-tools 30.0.1
-  Android SDK Command-line Tools 3.0
-  Android SDK Emulator 30.0.12
-  Android SDK Platform-tools 30.0.3
-  Android SDK Platform API 30
-  Android SDK Sources 29
-  SDK Patch Applier v4
+Version: 31
+  Android SDK Build-Tools 33.0.0
+  Android SDK Command-line Tools 7.0
+  Android SDK Emulator 31.2.10
+  Android SDK Patch Applier v4
+  Android SDK Platform-Tools 33.0.2
+  Android SDK Platform API 33
+  Android SDK Sources 31
+  Google Cloud Messaging for Android Library, rev 3
 Security Critical: no
 License: Apache Version 2.0
 
 Description:
 The Android SDK provide API libraries and developer tools necessary to
 build, test and debug for Android.
-
-Local Modifications:
-- public/
-  - Added extras/chromium/.
 
 Update Instructions:
 * What to update:
@@ -27,8 +24,12 @@ Update Instructions:
   * Find the latest build on the android-sdk-packager builder. Get the CIPD
     instance id from its logs and update //DEPS:
     https://ci.chromium.org/p/chromium/builders/ci/android-sdk-packager
-  * Use `public/cmdline-tools/latest/bin/sdkmanager platform-tools` to make
-    sure that it is the latest version.
+  * Run `gclient sync` to fetch the updated files for the new instances in
+    //DEPS.
+  * Run `public/cmdline-tools/latest/bin/sdkmanager --list_installed` and make
+    sure that the packages are the new version.
+  * Run `cat public/cmdline-tools/latest/source.properties` to check the
+    version of cmdline-tools (this is not included in --list_installed).
   * Update this file with the new version.
 * Adding new sdk packages:
   * Prepare the CIPD yaml files for packages in the cipd/ directory.
@@ -38,3 +39,6 @@ Update Instructions:
   * Follow the update instructions to get a build from the CI builder.
 * Updating this file:
   * The overall Version field should correspond to the Platform API version.
+* Updating other things:
+  * Use "git log third_party/android_sdk/README.chromium" to find previous
+    update commits and see what sorts of changes to make.

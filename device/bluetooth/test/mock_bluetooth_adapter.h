@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,17 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace device {
 
@@ -25,6 +29,10 @@ class MockBluetoothAdapter : public BluetoothAdapter {
   class Observer : public BluetoothAdapter::Observer {
    public:
     Observer(scoped_refptr<BluetoothAdapter> adapter);
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     ~Observer() override;
 
     MOCK_METHOD2(AdapterPresentChanged, void(BluetoothAdapter*, bool));
@@ -40,8 +48,6 @@ class MockBluetoothAdapter : public BluetoothAdapter {
 
    private:
     const scoped_refptr<BluetoothAdapter> adapter_;
-
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   MockBluetoothAdapter();
@@ -49,7 +55,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
   bool IsInitialized() const override { return true; }
 
   void Initialize(base::OnceClosure callback) override;
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void Shutdown() override;
 #endif
   MOCK_METHOD1(AddObserver, void(BluetoothAdapter::Observer*));
@@ -113,13 +119,31 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                     CreateServiceErrorCallback error_callback));
   MOCK_CONST_METHOD1(GetGattService,
                      BluetoothLocalGattService*(const std::string& identifier));
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS)
+  MOCK_METHOD3(SetServiceAllowList,
+               void(const UUIDList& uuids,
+                    base::OnceClosure callback,
+                    ErrorCallback error_callback));
+  MOCK_METHOD0(GetLowEnergyScanSessionHardwareOffloadingStatus,
+               LowEnergyScanSessionHardwareOffloadingStatus());
+  MOCK_METHOD2(
+      StartLowEnergyScanSession,
+      std::unique_ptr<BluetoothLowEnergyScanSession>(
+          std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
+          base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  MOCK_METHOD0(SetStandardChromeOSAdapterName, void());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   MOCK_METHOD4(
       ConnectDevice,
       void(const std::string& address,
-           const base::Optional<BluetoothDevice::AddressType>& address_type,
+           const absl::optional<BluetoothDevice::AddressType>& address_type,
            ConnectDeviceCallback callback,
-           ErrorCallback error_callback));
+           ConnectDeviceErrorCallback error_callback));
 
 #endif
 
@@ -153,7 +177,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
       std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data,
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) override;
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void SetAdvertisingInterval(
       const base::TimeDelta& min,
       const base::TimeDelta& max,

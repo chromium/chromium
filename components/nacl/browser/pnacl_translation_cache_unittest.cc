@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/nacl/browser/pnacl_translation_cache.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -28,7 +30,7 @@ class PnaclTranslationCacheTest : public testing::Test {
   PnaclTranslationCacheTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
   ~PnaclTranslationCacheTest() override {}
-  void SetUp() override { cache_.reset(new PnaclTranslationCache()); }
+  void SetUp() override { cache_ = std::make_unique<PnaclTranslationCache>(); }
   void TearDown() override {
     // The destructor of PnaclTranslationCacheWriteEntry posts a task to the IO
     // thread to close the backend cache entry. We want to make sure the entries

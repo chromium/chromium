@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests exception message from eval on worker context in console contains stack trace.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function startWorker()
@@ -13,7 +13,7 @@
       }
   `);
 
-  TestRunner.addSniffer(SDK.RuntimeModel.prototype, '_executionContextCreated', contextCreated);
+  TestRunner.addSniffer(SDK.RuntimeModel.prototype, 'executionContextCreated', contextCreated);
   TestRunner.evaluateInPage('startWorker()');
 
   function contextCreated() {

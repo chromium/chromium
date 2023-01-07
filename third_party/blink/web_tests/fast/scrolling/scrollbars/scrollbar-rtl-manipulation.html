@@ -80,7 +80,7 @@ window.onload = () => {
     let y = standardRect.top + (onMacPlatform ? 0 : BUTTON_WIDTH) + 2;
     await mouseMoveTo(x, y);
     await mouseDownAt(x, y);
-    await mouseMoveTo(x, y + 15);
+    await mouseMoveTo(x, y + 15, Buttons.LEFT);
     await mouseUpAt(x, y + 15);
     // TODO(arakeri): Replace with assert_equals once crbug.com/1009892 is fixed.
     assert_approx_equals(standardDiv.scrollTop, EXPECTED_DELTA, 1, "Vertical thumb drag failed.");
@@ -90,7 +90,7 @@ window.onload = () => {
     y = standardRect.bottom - TRACK_WIDTH / 2;
     await mouseMoveTo(x, y);
     await mouseDownAt(x, y);
-    await mouseMoveTo(x - 15, y);
+    await mouseMoveTo(x - 15, y, Buttons.LEFT);
     await mouseUpAt(x - 15, y);
     assert_approx_equals(standardDiv.scrollLeft, -EXPECTED_DELTA, 1, "Horizontal thumb drag failed.");
   }, "Test thumb drag on rtl scrollbar.");

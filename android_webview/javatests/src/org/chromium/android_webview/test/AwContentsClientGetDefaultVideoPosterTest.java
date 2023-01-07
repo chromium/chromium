@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,6 +77,24 @@ public class AwContentsClientGetDefaultVideoPosterTest {
         AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
         String data = "<html><head><body><video id='video' control src='' /> </body></html>";
+        mActivityTestRule.loadDataAsync(
+                testContainerView.getAwContents(), data, "text/html", false);
+        contentsClient.waitForGetDefaultVideoPosterCalled();
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void testDefaultVideoPosterCSP() throws Throwable {
+        DefaultVideoPosterClient contentsClient = new DefaultVideoPosterClient(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
+        // Even though this content security policy does not allow loading from
+        // android-webview-video-poster: this should still work as it's exempt from CSP.
+        String data = "<html><head>"
+                + "<meta http-equiv='Content-Security-Policy' content=\"default-src 'self';\">"
+                + "<body><video id='video' control src='' /> </body></html>";
         mActivityTestRule.loadDataAsync(
                 testContainerView.getAwContents(), data, "text/html", false);
         contentsClient.waitForGetDefaultVideoPosterCalled();

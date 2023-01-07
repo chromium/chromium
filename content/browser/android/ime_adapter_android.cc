@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,12 +19,12 @@
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
-#include "content/common/frame_messages.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/android/content_jni_headers/ImeAdapterImpl_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/native_web_keyboard_event.h"
-#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/base/ime/ime_text_span.h"
 
@@ -55,8 +55,8 @@ NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
     int unicode_char) {
   return NativeWebKeyboardEvent(
       env, java_key_event, static_cast<blink::WebInputEvent::Type>(type),
-      modifiers, base::TimeTicks() + base::TimeDelta::FromMilliseconds(time_ms),
-      key_code, scan_code, unicode_char, is_system_key);
+      modifiers, base::TimeTicks() + base::Milliseconds(time_ms), key_code,
+      scan_code, unicode_char, is_system_key);
 }
 
 }  // anonymous namespace
@@ -193,7 +193,7 @@ void ImeAdapterAndroid::UpdateState(const ui::mojom::TextInputState& state) {
       state.composition ? state.composition.value().end() : -1,
       state.reply_to_request,
       static_cast<int>(state.last_vk_visibility_request),
-      static_cast<int>(state.vk_policy), ShouldVirtualKeyboardOverlayContent());
+      static_cast<int>(state.vk_policy));
 }
 
 void ImeAdapterAndroid::UpdateOnTouchDown() {
@@ -344,15 +344,63 @@ void ImeAdapterAndroid::CancelComposition() {
     Java_ImeAdapterImpl_cancelComposition(env, obj);
 }
 
-void ImeAdapterAndroid::FocusedNodeChanged(bool is_editable_node) {
+void ImeAdapterAndroid::FocusedNodeChanged(
+    bool is_editable_node,
+    const gfx::Rect& node_bounds_in_screen) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
   if (!obj.is_null()) {
-    Java_ImeAdapterImpl_focusedNodeChanged(env, obj, is_editable_node);
+    Java_ImeAdapterImpl_focusedNodeChanged(
+        env, obj, is_editable_node, node_bounds_in_screen.x(),
+        node_bounds_in_screen.y(), node_bounds_in_screen.right(),
+        node_bounds_in_screen.bottom());
   }
 }
 
-void ImeAdapterAndroid::AdvanceFocusInForm(JNIEnv* env,
+bool ImeAdapterAndroid::RequestStartStylusWriting() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
+  if (!obj.is_null()) {
+    return Java_ImeAdapterImpl_requestStartStylusWriting(env, obj);
+  }
+  return false;
+}
+
+void ImeAdapterAndroid::OnEditElementFocusedForStylusWriting(
+    const gfx::Rect& focused_edit_bounds,
+    const gfx::Rect& caret_bounds) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
+  if (!obj.is_null()) {
+    gfx::Point caret_center = caret_bounds.CenterPoint();
+    Java_ImeAdapterImpl_onEditElementFocusedForStylusWriting(
+        env, obj, focused_edit_bounds.x(), focused_edit_bounds.y(),
+        focused_edit_bounds.right(), focused_edit_bounds.bottom(),
+        caret_center.x(), caret_center.y());
+  }
+}
+
+void ImeAdapterAndroid::HandleStylusWritingGestureAction(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>&,
+    const base::android::JavaParamRef<jobject>& jgesture_data_byte_buffer) {
+  auto* input_handler = GetFocusedFrameWidgetInputHandler();
+  if (!input_handler)
+    return;
+  blink::mojom::StylusWritingGestureDataPtr gesture_data;
+  if (!blink::mojom::StylusWritingGestureData::Deserialize(
+          static_cast<jbyte*>(
+              env->GetDirectBufferAddress(jgesture_data_byte_buffer.obj())),
+          env->GetDirectBufferCapacity(jgesture_data_byte_buffer.obj()),
+          &gesture_data)) {
+    NOTREACHED();
+    return;
+  }
+
+  input_handler->HandleStylusWritingGestureAction(std::move(gesture_data));
+}
+
+void ImeAdapterAndroid::AdvanceFocusForIME(JNIEnv* env,
                                            const JavaParamRef<jobject>& obj,
                                            jint focus_type) {
   RenderFrameHostImpl* rfh =
@@ -360,7 +408,7 @@ void ImeAdapterAndroid::AdvanceFocusInForm(JNIEnv* env,
   if (!rfh)
     return;
 
-  rfh->GetAssociatedLocalFrame()->AdvanceFocusInForm(
+  rfh->GetAssociatedLocalFrame()->AdvanceFocusForIME(
       static_cast<blink::mojom::FocusType>(focus_type));
 }
 
@@ -474,10 +522,7 @@ RenderFrameHost* ImeAdapterAndroid::GetFocusedFrame() {
     return nullptr;
   RenderWidgetHostImpl* rwh =
       RenderWidgetHostImpl::From(rwhva_->GetRenderWidgetHost());
-  if (!rwh || !rwh->delegate())
-    return nullptr;
-
-  if (auto* contents = rwh->delegate()->GetAsWebContents())
+  if (auto* contents = WebContentsImpl::FromRenderWidgetHostImpl(rwh))
     return contents->GetFocusedFrame();
 
   return nullptr;
@@ -489,12 +534,6 @@ ImeAdapterAndroid::GetFocusedFrameWidgetInputHandler() {
   if (!rwhi)
     return nullptr;
   return rwhi->GetFrameWidgetInputHandler();
-}
-
-bool ImeAdapterAndroid::ShouldVirtualKeyboardOverlayContent() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  return rwhva_ && rwhva_->ShouldVirtualKeyboardOverlayContent();
 }
 
 std::vector<ui::ImeTextSpan> ImeAdapterAndroid::GetImeTextSpansFromJava(

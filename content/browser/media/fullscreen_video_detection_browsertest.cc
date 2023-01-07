@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <vector>
+#include "build/build_config.h"
 
 #include "base/path_service.h"
 #include "content/browser/media/media_browsertest.h"
@@ -35,6 +36,9 @@ class FullscreenEventsRecorder : public WebContentsObserver {
   explicit FullscreenEventsRecorder(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
+  FullscreenEventsRecorder(const FullscreenEventsRecorder&) = delete;
+  FullscreenEventsRecorder& operator=(const FullscreenEventsRecorder&) = delete;
+
   void MediaEffectivelyFullscreenChanged(bool value) override {
     AddEvent(value ? FullscreenTestEvent::kEffectivelyFullscreen
                    : FullscreenTestEvent::kNotEffectivelyFullscreen);
@@ -63,15 +67,17 @@ class FullscreenEventsRecorder : public WebContentsObserver {
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   size_t expected_event_count_ = 0;
+  FullscreenTestEvent last_event_ = FullscreenTestEvent::kInvalidEvent;
   std::vector<FullscreenTestEvent> events_;
 
   void AddEvent(FullscreenTestEvent e) {
+    if (last_event_ == e)
+      return;
     events_.push_back(e);
+    last_event_ = e;
     if (events_.size() == expected_event_count_ && run_loop_)
       run_loop_->Quit();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenEventsRecorder);
 };
 
 }  // namespace
@@ -217,7 +223,13 @@ IN_PROC_BROWSER_TEST_F(FullscreenDetectionTest, DetachAttachDuringFullscreen) {
 
 // The test changes visibility of the <video> and observes
 // how it gets and loses effectively-fullscreen status.
-IN_PROC_BROWSER_TEST_F(FullscreenDetectionTest, HideVideoTag) {
+// TODO(crbug.com/1352246): Re-enable this test
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+#define MAYBE_HideVideoTag DISABLED_HideVideoTag
+#else
+#define MAYBE_HideVideoTag HideVideoTag
+#endif
+IN_PROC_BROWSER_TEST_F(FullscreenDetectionTest, MAYBE_HideVideoTag) {
   auto* web_contents = shell()->web_contents();
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/media/fullscreen.html")));

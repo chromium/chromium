@@ -16,10 +16,10 @@
       "url": "https://googleapis.will-be-overridden.com"
     },
     "oauth_account_manager_origin_url": {
-      "url": "https://oauthaccountmanager.will-be-overriden.com"
+      "url": "https://oauthaccountmanager.will-be-overridden.com"
     },
-    "captcha_base_url": {
-      "url": "http://accounts.example.com/"
+    "account_capabilities_origin_url": {
+      "url": "https://accountcapabilities.will-be-overridden.com"
     },
     "client_login_url": {
       "url": "https://accounts.example.com/ClientLogin"
@@ -42,8 +42,11 @@
     "signin_chrome_sync_dice": {
       "url": "https://accounts.example.com/signin/chrome/sync?ssp=1"
     },
-    "signin_chrome_sync_keys_url": {
+    "signin_chrome_sync_keys_retrieval_url": {
       "url": "https://accounts.example.com/encryption/unlock/example-platform"
+    },
+    "signin_chrome_sync_keys_recoverability_degraded_url": {
+      "url": "https://accounts.example.com/encryption/unlock/example-platform?kdi=CAIaDgoKY2hyb21lc3luYxAB"
     },
     "service_login_auth_url": {
       "url": "https://accounts.example.com/ServiceLoginAuth"
@@ -53,9 +56,6 @@
     },
     "continue_url_for_logout": {
       "url": "https://accounts.example.com/chrome/blank.html"
-    },
-    "get_user_info_url": {
-      "url": "https://accounts.example.com/GetUserInfo"
     },
     "token_auth_url": {
       "url": "https://accounts.example.com/TokenAuth"
@@ -96,6 +96,9 @@
     "reauth_url": {
       "url": "https://accounts.example.com/embedded/xreauth/chrome"
     },
+    "account_capabilities_url": {
+      "url": "https://accountcapabilities.exampleapis.com/v1/capabilities"
+    },
     "get_check_connection_info_url": {
       "url": "https://accounts.example.com/GetCheckConnectionInfo"
     },
@@ -116,9 +119,6 @@
     },
     "reauth_api_url": {
       "url": "https://www.exampleapis.com/reauth/v1beta/users/"
-    },
-    "gaia_login_form_realm": {
-      "url": "https://accounts.example.com/LoginFormRealm"
     }
   }
 }

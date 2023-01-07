@@ -1,4 +1,4 @@
-// Copyright 2016 The Crashpad Authors. All rights reserved.
+// Copyright 2016 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,12 +15,16 @@
 #include "snapshot/capture_memory.h"
 
 #include <stdint.h>
+#include <windows.h>
 
+// dbghelp must be after windows.h.
+#include <dbghelp.h>
+
+#include <iterator>
 #include <limits>
 #include <memory>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "snapshot/memory_snapshot.h"
 
 namespace crashpad {
@@ -70,6 +74,7 @@ void CaptureMemory::PointedToByContext(const CPUContext& context,
                                        Delegate* delegate) {
 #if defined(ARCH_CPU_X86_FAMILY)
   if (context.architecture == kCPUArchitectureX86_64) {
+    MaybeCaptureMemoryAround(delegate, context.x86_64->rip);
     MaybeCaptureMemoryAround(delegate, context.x86_64->rax);
     MaybeCaptureMemoryAround(delegate, context.x86_64->rbx);
     MaybeCaptureMemoryAround(delegate, context.x86_64->rcx);
@@ -85,8 +90,9 @@ void CaptureMemory::PointedToByContext(const CPUContext& context,
     MaybeCaptureMemoryAround(delegate, context.x86_64->r13);
     MaybeCaptureMemoryAround(delegate, context.x86_64->r14);
     MaybeCaptureMemoryAround(delegate, context.x86_64->r15);
-    MaybeCaptureMemoryAround(delegate, context.x86_64->rip);
+    // Note: Shadow stack region is directly captured.
   } else {
+    MaybeCaptureMemoryAround(delegate, context.x86->eip);
     MaybeCaptureMemoryAround(delegate, context.x86->eax);
     MaybeCaptureMemoryAround(delegate, context.x86->ebx);
     MaybeCaptureMemoryAround(delegate, context.x86->ecx);
@@ -94,22 +100,21 @@ void CaptureMemory::PointedToByContext(const CPUContext& context,
     MaybeCaptureMemoryAround(delegate, context.x86->edi);
     MaybeCaptureMemoryAround(delegate, context.x86->esi);
     MaybeCaptureMemoryAround(delegate, context.x86->ebp);
-    MaybeCaptureMemoryAround(delegate, context.x86->eip);
   }
 #elif defined(ARCH_CPU_ARM_FAMILY)
   if (context.architecture == kCPUArchitectureARM64) {
     MaybeCaptureMemoryAround(delegate, context.arm64->pc);
-    for (size_t i = 0; i < base::size(context.arm64->regs); ++i) {
+    for (size_t i = 0; i < std::size(context.arm64->regs); ++i) {
       MaybeCaptureMemoryAround(delegate, context.arm64->regs[i]);
     }
   } else {
     MaybeCaptureMemoryAround(delegate, context.arm->pc);
-    for (size_t i = 0; i < base::size(context.arm->regs); ++i) {
+    for (size_t i = 0; i < std::size(context.arm->regs); ++i) {
       MaybeCaptureMemoryAround(delegate, context.arm->regs[i]);
     }
   }
 #elif defined(ARCH_CPU_MIPS_FAMILY)
-  for (size_t i = 0; i < base::size(context.mipsel->regs); ++i) {
+  for (size_t i = 0; i < std::size(context.mipsel->regs); ++i) {
     MaybeCaptureMemoryAround(delegate, context.mipsel->regs[i]);
   }
 #else

@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_TRACING_OBSERVER_PROTO_H_
 #define SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_TRACING_OBSERVER_PROTO_H_
 
+#include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer.h"
@@ -32,7 +33,13 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
  public:
   TracingObserverProto(base::trace_event::TraceLog*,
                        base::trace_event::MemoryDumpManager*);
+
+  TracingObserverProto(const TracingObserverProto&) = delete;
+  TracingObserverProto& operator=(const TracingObserverProto&) = delete;
+
   ~TracingObserverProto() override;
+
+  static void RegisterForTesting();
 
   bool AddChromeDumpToTraceIfEnabled(
       const base::trace_event::MemoryDumpRequestArgs&,
@@ -46,26 +53,36 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
       const std::vector<mojom::VmRegionPtr>&,
       const base::TimeTicks& timestamp) override;
 
-  void StartTracing(
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  void StartTracingImpl(
       tracing::PerfettoProducer* producer,
       const perfetto::DataSourceConfig& data_source_config) override;
 
-  void StopTracing(
+  void StopTracingImpl(
       base::OnceClosure stop_complete_callback = base::OnceClosure()) override;
 
   void Flush(base::RepeatingClosure flush_complete_callback) override;
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   static void MemoryMapsAsProtoInto(
       const std::vector<mojom::VmRegionPtr>& memory_maps,
       perfetto::protos::pbzero::SmapsPacket* smaps,
       bool is_argument_filtering_enabled);
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  using DataSourceProxy =
+      tracing::PerfettoTracedProcess::DataSourceProxy<TracingObserverProto>;
+#endif
+
  private:
-  std::unique_ptr<perfetto::TraceWriter> trace_writer_;
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  friend class perfetto::DataSource<TracingObserverProto>;
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  base::Lock writer_lock_;
+  std::unique_ptr<perfetto::TraceWriter> trace_writer_ GUARDED_BY(writer_lock_);
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
-  base::Lock producer_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TracingObserverProto);
+  static tracing::PerfettoTracedProcess::DataSourceBase* instance_for_testing_;
 };
 
 }  // namespace memory_instrumentation

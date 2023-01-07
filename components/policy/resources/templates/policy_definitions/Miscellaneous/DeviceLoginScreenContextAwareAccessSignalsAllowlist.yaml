@@ -1,0 +1,35 @@
+caption: Enable attestation flow for a list of URLs on the login and lock screen
+desc: |-
+  Enable <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR">Chrome Enterprise Platform Identity Connector</ph> for a list of URLs on the login and lock screen.
+
+        Setting this policy specifies which URLs should be allowed to be part of the attestation flow to get the set of signals from the machine.
+
+        Leaving this policy unset or empty means that no endpoint will be able to start the attestation flow nor get signals from the machine.
+
+        URLs must have HTTPS scheme, e.g. "https://example.com".
+
+        Note: Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
+
+        This policy will only impact the attestation flow on the login and lock screen. To change the in-session attestation flow, please use the <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME">ContextAwareAccessSignalsAllowlist</ph> policy.
+
+        For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+device_only: true
+example_value:
+- https://example1.com
+- https://[*.]example2.com
+- https://foo.example3.com/path
+features:
+  cloud_only: true
+  dynamic_refresh: true
+owners:
+- lmasopust@google.com
+- rodmartin@google.com
+- cbe-device-trust-eng@google.com
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:108-
+tags: []
+type: list

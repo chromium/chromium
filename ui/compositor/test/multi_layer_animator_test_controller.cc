@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ void MultiLayerAnimatorTestController::CompleteAnimations() {
     // StepAnimations() will only progress the current running animations. Thus
     // each queued animation will require at least one 'Step' call and we cannot
     // just use a large duration here.
-    StepAnimations(base::TimeDelta::FromMilliseconds(20));
+    StepAnimations(base::Milliseconds(20));
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,12 +67,23 @@ void TabModelObserverJniBridge::WillCloseTab(JNIEnv* env,
     observer.WillCloseTab(tab, animate);
 }
 
-void TabModelObserverJniBridge::DidCloseTab(JNIEnv* env,
-                                            const JavaParamRef<jobject>& jobj,
-                                            int tab_id,
-                                            bool incognito) {
+void TabModelObserverJniBridge::OnFinishingTabClosure(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jobj,
+    int tab_id,
+    bool incognito) {
   for (auto& observer : observers_)
-    observer.DidCloseTab(tab_id, incognito);
+    observer.OnFinishingTabClosure(tab_id, incognito);
+}
+
+void TabModelObserverJniBridge::OnFinishingMultipleTabClosure(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jobj,
+    const base::android::JavaParamRef<jobjectArray>& jtabs) {
+  std::vector<TabAndroid*> tabs =
+      TabAndroid::GetAllNativeTabs(env, ScopedJavaLocalRef(jtabs));
+  for (auto& observer : observers_)
+    observer.OnFinishingMultipleTabClosure(tabs);
 }
 
 void TabModelObserverJniBridge::WillAddTab(JNIEnv* env,
@@ -142,18 +153,8 @@ void TabModelObserverJniBridge::AllTabsPendingClosure(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobjectArray>& jtabs) {
-  std::vector<TabAndroid*> tabs;
-
-  // |jtabs| is actually a Tab[]. Iterate over the array and convert it to
-  // a vector of TabAndroid*.
-  JavaObjectArrayReader<jobject> jtabs_array(jtabs);
-  tabs.reserve(jtabs_array.size());
-  for (auto jtab : jtabs_array) {
-    TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
-    CHECK(tab);
-    tabs.push_back(tab);
-  }
-
+  std::vector<TabAndroid*> tabs =
+      TabAndroid::GetAllNativeTabs(env, ScopedJavaLocalRef(jtabs));
   for (auto& observer : observers_)
     observer.AllTabsPendingClosure(tabs);
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -45,7 +44,6 @@ std::string TextDumpEventToString(mojom::TextDumpEvent event) {
   switch (event) {
     case mojom::TextDumpEvent::kFirstLayout:
       return "FirstLayout";
-      break;
     case mojom::TextDumpEvent::kFinishedLoad:
       return "FinishedLoad";
   }
@@ -65,7 +63,7 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
   PageTextChunkConsumer(
       mojo::PendingReceiver<mojom::PageTextConsumer> receiver,
       uint32_t max_size,
-      base::OnceCallback<void(const base::Optional<std::u16string>&)>
+      base::OnceCallback<void(const absl::optional<std::u16string>&)>
           on_complete)
       : remaining_size_(max_size),
         on_complete_(std::move(on_complete)),
@@ -110,7 +108,7 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
 
   void OnDisconnect() {
     receiver_.reset();
-    std::move(on_complete_).Run(base::nullopt);
+    std::move(on_complete_).Run(absl::nullopt);
     // Don't do anything else. This callback may have destroyed |this|.
   }
 
@@ -121,7 +119,7 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
   // While |on_complete_| is non-null, the mojo pipe is also bound. Once the
   // |on_complete_| callback is run, this class is no longer active and can be
   // deleted (in stack with the callback).
-  base::OnceCallback<void(const base::Optional<std::u16string>&)> on_complete_;
+  base::OnceCallback<void(const absl::optional<std::u16string>&)> on_complete_;
   mojo::Receiver<mojom::PageTextConsumer> receiver_;
 
   // All chunks that have been read from the data pipe. These will be
@@ -210,7 +208,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
 
   size_t MakeSelfOwnedAndDispatchRequests(
       scoped_refptr<RequestMediator> self,
-      base::RepeatingCallback<void(base::Optional<FrameTextDumpResult>)>
+      base::RepeatingCallback<void(absl::optional<FrameTextDumpResult>)>
           on_frame_text_dump_complete,
       content::RenderFrameHost* rfh) {
     DCHECK_EQ(self.get(), this);
@@ -224,7 +222,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
     mojo::AssociatedRemote<mojom::PageTextService> renderer_text_service;
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&renderer_text_service);
 
-    auto rfh_id = rfh->GetGlobalFrameRoutingId();
+    auto rfh_id = rfh->GetGlobalId();
     bool is_subframe = rfh->GetMainFrame() != rfh;
     int nav_id = content::WebContents::FromRenderFrameHost(rfh)
                      ->GetController()
@@ -276,7 +274,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
 
   void OnPageTextAsString(scoped_refptr<RequestMediator> self,
                           const FrameTextDumpResult& preliminary_result,
-                          const base::Optional<std::u16string>& page_text) {
+                          const absl::optional<std::u16string>& page_text) {
     DCHECK(on_frame_text_dump_complete_);
 
     std::string event_suffix =
@@ -286,7 +284,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
       base::UmaHistogramMediumTimes(
           kTimeUntilDisconnectHistogram + event_suffix,
           base::TimeTicks::Now() - requests_sent_time_);
-      on_frame_text_dump_complete_.Run(base::nullopt);
+      on_frame_text_dump_complete_.Run(absl::nullopt);
       return;
     }
 
@@ -302,7 +300,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
 
   // Called whenever a text dump is completed for an event. This called as many
   // times as events requested, which can be greater than 1.
-  base::RepeatingCallback<void(base::Optional<FrameTextDumpResult>)>
+  base::RepeatingCallback<void(absl::optional<FrameTextDumpResult>)>
       on_frame_text_dump_complete_;
 
   // All |PageTextChunkConsumer|'s that are owned by this.
@@ -322,7 +320,8 @@ PageTextObserver::ConsumerTextDumpRequest::ConsumerTextDumpRequest() = default;
 PageTextObserver::ConsumerTextDumpRequest::~ConsumerTextDumpRequest() = default;
 
 PageTextObserver::PageTextObserver(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PageTextObserver>(*web_contents) {}
 PageTextObserver::~PageTextObserver() = default;
 
 PageTextObserver* PageTextObserver::GetOrCreateForWebContents(
@@ -333,25 +332,22 @@ PageTextObserver* PageTextObserver::GetOrCreateForWebContents(
   return PageTextObserver::FromWebContents(web_contents);
 }
 
-void PageTextObserver::DidStartNavigation(content::NavigationHandle* handle) {
-  if (!handle->IsInMainFrame()) {
-    return;
-  }
-
-  requests_.clear();
-  page_result_.reset();
-  outstanding_requests_ = 0;
-  outstanding_requests_grace_timer_.reset();
-}
-
 void PageTextObserver::DidFinishNavigation(content::NavigationHandle* handle) {
   // Only main frames are supported for right now.
-  if (!handle->IsInMainFrame()) {
+  if (!handle->IsInPrimaryMainFrame()) {
     return;
   }
 
   if (!handle->HasCommitted()) {
     return;
+  }
+
+  // Reset consumer requests if the navigation is not in the same document.
+  if (!handle->IsSameDocument()) {
+    requests_.clear();
+    page_result_.reset();
+    outstanding_requests_ = 0;
+    outstanding_requests_grace_timer_.reset();
   }
 
   if (consumers_.empty()) {
@@ -377,12 +373,11 @@ void PageTextObserver::DidFinishNavigation(content::NavigationHandle* handle) {
 }
 
 bool PageTextObserver::IsOOPIF(content::RenderFrameHost* rfh) const {
-  return rfh->GetProcess()->GetID() !=
-         rfh->GetMainFrame()->GetProcess()->GetID();
+  return rfh->IsCrossProcessSubframe();
 }
 
 void PageTextObserver::RenderFrameCreated(content::RenderFrameHost* rfh) {
-  if (!IsOOPIF(rfh)) {
+  if (!IsOOPIF(rfh) || !rfh->GetPage().IsPrimary()) {
     return;
   }
 
@@ -400,7 +395,7 @@ void PageTextObserver::RenderFrameCreated(content::RenderFrameHost* rfh) {
 }
 
 void PageTextObserver::OnFrameTextDumpCompleted(
-    base::Optional<FrameTextDumpResult> frame_result) {
+    absl::optional<FrameTextDumpResult> frame_result) {
   // Ensure that the generated frame result is not for a previous page load.
   // This should be done before decrementing |outstanding_requests_| so that
   // each page load handles its own state.
@@ -433,6 +428,9 @@ void PageTextObserver::OnFrameTextDumpCompleted(
 void PageTextObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
+  if (!render_frame_host->IsInPrimaryMainFrame())
+    return;
+
   base::UmaHistogramCounts100(
       "OptimizationGuide.PageTextDump.OutstandingRequests.DidFinishLoad",
       outstanding_requests_);
@@ -474,6 +472,6 @@ void PageTextObserver::RemoveConsumer(Consumer* consumer) {
   consumers_.erase(consumer);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PageTextObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PageTextObserver);
 
 }  // namespace optimization_guide

@@ -1,11 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/test/fake_local_frame.h"
 
+#include "build/build_config.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
+#include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/mojom/attributed_string.mojom.h"
+#endif
 
 namespace content {
 
@@ -18,6 +26,10 @@ void FakeLocalFrame::Init(blink::AssociatedInterfaceProvider* provider) {
       blink::mojom::LocalFrame::Name_,
       base::BindRepeating(&FakeLocalFrame::BindFrameHostReceiver,
                           base::Unretained(this)));
+}
+
+void FakeLocalFrame::FlushMessages() {
+  receiver_.FlushForTesting();
 }
 
 void FakeLocalFrame::GetTextSurroundingSelection(
@@ -72,6 +84,10 @@ void FakeLocalFrame::ReportBlinkFeatureUsage(
 
 void FakeLocalFrame::RenderFallbackContent() {}
 
+void FakeLocalFrame::RenderFallbackContentWithResourceTiming(
+    blink::mojom::ResourceTimingInfoPtr,
+    const std::string& server_timing_value) {}
+
 void FakeLocalFrame::BeforeUnload(bool is_reload,
                                   BeforeUnloadCallback callback) {
   base::TimeTicks now = base::TimeTicks::Now();
@@ -82,11 +98,14 @@ void FakeLocalFrame::MediaPlayerActionAt(
     const gfx::Point& location,
     blink::mojom::MediaPlayerActionPtr action) {}
 
+void FakeLocalFrame::PluginActionAt(const gfx::Point& location,
+                                    blink::mojom::PluginActionType action) {}
+
 void FakeLocalFrame::AdvanceFocusInFrame(
     blink::mojom::FocusType focus_type,
-    const base::Optional<blink::RemoteFrameToken>& source_frame_token) {}
+    const absl::optional<blink::RemoteFrameToken>& source_frame_token) {}
 
-void FakeLocalFrame::AdvanceFocusInForm(blink::mojom::FocusType focus_type) {}
+void FakeLocalFrame::AdvanceFocusForIME(blink::mojom::FocusType focus_type) {}
 
 void FakeLocalFrame::ReportContentSecurityPolicyViolation(
     network::mojom::CSPViolationPtr violation) {}
@@ -94,18 +113,41 @@ void FakeLocalFrame::ReportContentSecurityPolicyViolation(
 void FakeLocalFrame::DidUpdateFramePolicy(
     const blink::FramePolicy& frame_policy) {}
 
-void FakeLocalFrame::OnScreensChange() {}
-
 void FakeLocalFrame::PostMessageEvent(
-    const base::Optional<blink::RemoteFrameToken>& source_frame_token,
+    const absl::optional<blink::RemoteFrameToken>& source_frame_token,
     const std::u16string& source_origin,
     const std::u16string& target_origin,
     blink::TransferableMessage message) {}
 
+void FakeLocalFrame::JavaScriptMethodExecuteRequest(
+    const std::u16string& object_name,
+    const std::u16string& method_name,
+    base::Value::List arguments,
+    bool wants_result,
+    JavaScriptMethodExecuteRequestCallback callback) {}
+
+void FakeLocalFrame::JavaScriptExecuteRequest(
+    const std::u16string& javascript,
+    bool wants_result,
+    JavaScriptExecuteRequestCallback callback) {}
+
+void FakeLocalFrame::JavaScriptExecuteRequestForTests(
+    const std::u16string& javascript,
+    bool wants_result,
+    bool has_user_gesture,
+    int32_t world_id,
+    JavaScriptExecuteRequestForTestsCallback callback) {}
+
+void FakeLocalFrame::JavaScriptExecuteRequestInIsolatedWorld(
+    const std::u16string& javascript,
+    bool wants_result,
+    int32_t world_id,
+    JavaScriptExecuteRequestInIsolatedWorldCallback callback) {}
+
 void FakeLocalFrame::GetSavableResourceLinks(
     GetSavableResourceLinksCallback callback) {}
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void FakeLocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {}
 void FakeLocalFrame::GetFirstRectForRange(const gfx::Range& range) {}
 void FakeLocalFrame::GetStringForRange(const gfx::Range& range,
@@ -118,7 +160,7 @@ void FakeLocalFrame::BindReportingObserver(
     mojo::PendingReceiver<blink::mojom::ReportingObserver> receiver) {}
 
 void FakeLocalFrame::UpdateOpener(
-    const base::Optional<blink::FrameToken>& opener_frame_token) {}
+    const absl::optional<blink::FrameToken>& opener_frame_token) {}
 
 void FakeLocalFrame::MixedContentFound(
     const GURL& main_resource_url,
@@ -129,7 +171,35 @@ void FakeLocalFrame::MixedContentFound(
     bool had_redirect,
     network::mojom::SourceLocationPtr source_location) {}
 
-void FakeLocalFrame::ActivateForPrerendering() {}
+void FakeLocalFrame::BindDevToolsAgent(
+    mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
+    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver) {}
+
+#if BUILDFLAG(IS_ANDROID)
+void FakeLocalFrame::ExtractSmartClipData(
+    const gfx::Rect& rect,
+    ExtractSmartClipDataCallback callback) {
+  std::move(callback).Run(std::u16string(), std::u16string(), gfx::Rect());
+}
+#endif
+
+void FakeLocalFrame::HandleRendererDebugURL(const GURL& url) {}
+
+void FakeLocalFrame::GetCanonicalUrlForSharing(
+    base::OnceCallback<void(const absl::optional<GURL>&)> callback) {}
+
+void FakeLocalFrame::GetOpenGraphMetadata(
+    base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)>) {}
+
+void FakeLocalFrame::SetNavigationApiHistoryEntriesForRestore(
+    blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays) {}
+
+void FakeLocalFrame::NotifyNavigationApiOfDisposedEntries(
+    const std::vector<std::string>& keys) {}
+
+void FakeLocalFrame::TraverseCancelled(
+    const std::string& navigation_api_key,
+    blink::mojom::TraverseCancelledReason reason) {}
 
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {

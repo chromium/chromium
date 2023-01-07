@@ -11,6 +11,7 @@ include_rules = [
   "+net/url_request",
   "+net/http",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+services/network/test",
   "+third_party/re2",
   "+third_party/zlib/google",

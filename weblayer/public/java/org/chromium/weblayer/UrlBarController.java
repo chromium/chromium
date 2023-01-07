@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 /**
  * UrlBarController enables creation of URL bar views and retrieval of information about them.
  */
-public class UrlBarController {
+class UrlBarController {
     private final IUrlBarController mImpl;
 
     // Constructor for test mocking.
@@ -43,6 +43,25 @@ public class UrlBarController {
                     View.class);
         } catch (RemoteException exception) {
             throw new APICallException(exception);
+        }
+    }
+
+    /**
+     * Shows the page-info dialog.
+     *
+     * @throws IllegalStateException if called and not attached.
+     *
+     * @since 95
+     */
+    public void showPageInfo(@NonNull PageInfoDisplayOptions options) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 95) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            mImpl.showPageInfo(options.getBundle());
+        } catch (RemoteException e) {
+            throw new APICallException(e);
         }
     }
 }

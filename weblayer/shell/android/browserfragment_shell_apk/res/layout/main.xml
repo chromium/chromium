@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/create_tab"
+            android:text="Create and Preload Tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/navigate_tab"
+            android:text="Open Tab"
+            android:enabled="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/shut_down"
+            android:text="Shut Down"
+            android:enabled="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+      </LinearLayout>
+      <androidx.fragment.app.FragmentContainerView
+          android:id="@+id/fragment_container_view"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent" />
+</LinearLayout>
+

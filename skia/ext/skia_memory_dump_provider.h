@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SKIA_EXT_SKIA_MEMORY_DUMP_PROVIDER_H_
 #define SKIA_EXT_SKIA_MEMORY_DUMP_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -17,6 +16,9 @@ class SK_API SkiaMemoryDumpProvider
  public:
   static SkiaMemoryDumpProvider* GetInstance();
 
+  SkiaMemoryDumpProvider(const SkiaMemoryDumpProvider&) = delete;
+  SkiaMemoryDumpProvider& operator=(const SkiaMemoryDumpProvider&) = delete;
+
   // base::trace_event::MemoryDumpProvider implementation:
   bool OnMemoryDump(
       const base::trace_event::MemoryDumpArgs& args,
@@ -27,8 +29,6 @@ class SK_API SkiaMemoryDumpProvider
 
   SkiaMemoryDumpProvider();
   ~SkiaMemoryDumpProvider() override;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaMemoryDumpProvider);
 };
 
 }  // namespace skia

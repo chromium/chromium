@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
  * Material-styled horizontal progress bar
@@ -156,12 +156,9 @@ public class MaterialProgressBar extends View implements AnimatorUpdateListener 
 
     private void initialize(Context context, AttributeSet attrs, int defStyle) {
         Resources resources = context.getResources();
-        int backgroundColor =
-                ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_background);
-        int progressColor =
-                ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_foreground);
-        int secondaryProgressColor =
-                ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_secondary);
+        int backgroundColor = context.getColor(R.color.progress_bar_bg_color_list);
+        int progressColor = SemanticColorUtils.getProgressBarForeground(context);
+        int secondaryProgressColor = context.getColor(R.color.progress_bar_secondary);
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(

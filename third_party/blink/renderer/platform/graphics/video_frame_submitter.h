@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,10 @@
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
+#include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/client/shared_bitmap_reporter.h"
@@ -25,6 +24,7 @@
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_timing_details.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_resource_provider.h"
@@ -48,6 +48,8 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   VideoFrameSubmitter(WebContextProviderCallback,
                       cc::VideoPlaybackRoughnessReporter::ReportingCallback,
                       std::unique_ptr<VideoFrameResourceProvider>);
+  VideoFrameSubmitter(const VideoFrameSubmitter&) = delete;
+  VideoFrameSubmitter& operator=(const VideoFrameSubmitter&) = delete;
   ~VideoFrameSubmitter() override;
 
   // cc::VideoFrameProvider::Client implementation.
@@ -59,7 +61,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   // WebVideoFrameSubmitter implementation.
   void Initialize(cc::VideoFrameProvider*, bool is_media_stream) override;
-  void SetRotation(media::VideoRotation) override;
+  void SetTransform(media::VideoTransformation) override;
   void EnableSubmission(viz::SurfaceId) override;
   void SetIsSurfaceVisible(bool is_visible) override;
   void SetIsPageVisible(bool is_visible) override;
@@ -71,13 +73,12 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   // cc::mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
-      const WTF::Vector<viz::ReturnedResource>& resources) override;
+      WTF::Vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(
       const viz::BeginFrameArgs&,
       const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&) override;
   void OnBeginFramePausedChanged(bool paused) override {}
-  void ReclaimResources(
-      const WTF::Vector<viz::ReturnedResource>& resources) override;
+  void ReclaimResources(WTF::Vector<viz::ReturnedResource> resources) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
 
@@ -88,11 +89,18 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
  private:
   friend class VideoFrameSubmitterTest;
+  class FrameSinkBundleProxy;
 
   // Called during Initialize() and OnContextLost() after a new ContextGL is
   // requested.
   void OnReceivedContextProvider(
       bool use_gpu_compositing,
+      scoped_refptr<viz::RasterContextProvider> context_provider);
+
+  // Adopts `context_provider` if it's non-null and in a usable state. Returns
+  // true on success and false on failure, implying that a new ContextProvider
+  // should be requested.
+  bool MaybeAcceptContextProvider(
       scoped_refptr<viz::RasterContextProvider> context_provider);
 
   // Starts submission and calls UpdateSubmissionState(); which may submit.
@@ -132,17 +140,28 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   viz::CompositorFrame CreateCompositorFrame(
       uint32_t frame_token,
       const viz::BeginFrameAck& begin_frame_ack,
-      scoped_refptr<media::VideoFrame> video_frame);
+      scoped_refptr<media::VideoFrame> video_frame,
+      media::VideoTransformation transform);
 
   cc::VideoFrameProvider* video_frame_provider_ = nullptr;
   bool is_media_stream_ = false;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
-  mojo::Remote<viz::mojom::blink::CompositorFrameSink> compositor_frame_sink_;
+  mojo::Remote<viz::mojom::blink::CompositorFrameSink> remote_frame_sink_;
   mojo::Remote<mojom::blink::SurfaceEmbedder> surface_embedder_;
   mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver_{this};
   WebContextProviderCallback context_provider_callback_;
   std::unique_ptr<VideoFrameResourceProvider> resource_provider_;
   bool waiting_for_compositor_ack_ = false;
+
+  // When UseVideoFrameSinkBundle is enabled, this is initialized to a local
+  // implementation which batches outgoing Viz requests with those from other
+  // related VideoFrameSubmitters, rather than having each VideoFrameSubmitter
+  // submit their ad hoc requests directly to Viz.
+  std::unique_ptr<FrameSinkBundleProxy> bundle_proxy_;
+
+  // Points to either `remote_frame_sink_` or `bundle_proxy_` depending
+  // on whether UseVideoFrameSinkBundle is enabled.
+  viz::mojom::blink::CompositorFrameSink* compositor_frame_sink_ = nullptr;
 
   // Current rendering state. Set by StartRendering() and StopRendering().
   bool is_rendering_ = false;
@@ -166,7 +185,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   // Needs to be initialized in implementation because media isn't a public_dep
   // of blink/platform.
-  media::VideoRotation rotation_;
+  media::VideoTransformation transform_;
 
   viz::FrameSinkId frame_sink_id_;
 
@@ -185,9 +204,17 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   base::OneShotTimer empty_frame_timer_;
 
-  base::Optional<int> last_frame_id_;
+  absl::optional<int> last_frame_id_;
 
+  // We use cc::FrameSorter directly, rather than via
+  // cc::CompositorFrameReportingController because video frames do not progress
+  // through all of the pipeline stages that traditional CompositorFrames do.
+  // Instead they are a specialized variant of compositor-only frames, submitted
+  // via a batch. So track the mapping of FrameToken to viz::BeginFrameArgs in
+  // `pending_frames_`, and denote their completion directly to `frame_sorter_`.
+  base::flat_map<uint32_t, viz::BeginFrameArgs> pending_frames_;
   cc::FrameSequenceTrackerCollection frame_trackers_;
+  cc::FrameSorter frame_sorter_;
 
   // The BeginFrameArgs passed to the most recent call of OnBeginFrame().
   // Required for FrameSequenceTrackerCollection::NotifySubmitFrame
@@ -198,13 +225,11 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // presented.
   base::flat_set<uint32_t> ignorable_submitted_frames_;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
+  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
 
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<VideoFrameSubmitter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameSubmitter);
 };
 
 }  // namespace blink

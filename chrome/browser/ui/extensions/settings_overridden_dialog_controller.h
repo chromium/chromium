@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -25,7 +26,7 @@ class SettingsOverriddenDialogController {
     // The icon to display, if any. If non-null, the VectorIcon should have
     // all its colors fully specified; otherwise a placehold grey color will
     // be used.
-    const gfx::VectorIcon* icon = nullptr;
+    raw_ptr<const gfx::VectorIcon> icon = nullptr;
   };
 
   // The result (i.e., user input) from the dialog being shown.

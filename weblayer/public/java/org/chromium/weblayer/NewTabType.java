@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({NewTabType.FOREGROUND_TAB, NewTabType.BACKGROUND_TAB, NewTabType.NEW_POPUP,
         NewTabType.NEW_WINDOW})
 @Retention(RetentionPolicy.SOURCE)
-public @interface NewTabType {
+@interface NewTabType {
     /**
      * The page requested a new tab to be shown active.
      */

@@ -34,7 +34,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace blink {
 
@@ -77,4 +77,4 @@ BLINK_EXPORT void SetDOMActivityLogger(int32_t world_id,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOM_ACTIVITY_LOGGER_H_

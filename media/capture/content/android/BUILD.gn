@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -36,6 +36,8 @@ generate_jni("screen_capture_jni_headers") {
 android_library("screen_capture_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   sources = [ "java/src/org/chromium/media/ScreenCapture.java" ]

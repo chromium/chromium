@@ -48,7 +48,7 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
 /**
  * LIBXML_VERSION_EXTRA:
  *
- * extra version information, used to show a CVS compilation
+ * extra version information, used to show a git commit description
  */
 #define LIBXML_VERSION_EXTRA "@LIBXML_VERSION_EXTRA@"
 
@@ -230,15 +230,6 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
 #endif
 
 /**
- * LIBXML_DOCB_ENABLED:
- *
- * Whether the SGML Docbook support is configured in
- */
-#if @WITH_DOCB@
-#define LIBXML_DOCB_ENABLED
-#endif
-
-/**
  * LIBXML_XPATH_ENABLED:
  *
  * Whether XPath is configured in
@@ -254,6 +245,15 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
  */
 #if @WITH_XPTR@
 #define LIBXML_XPTR_ENABLED
+#endif
+
+/**
+ * LIBXML_XPTR_LOCS_ENABLED:
+ *
+ * Whether support for XPointer locations is configured in
+ */
+#if @WITH_XPTR_LOCS@
+#define LIBXML_XPTR_LOCS_ENABLED
 #endif
 
 /**
@@ -456,6 +456,15 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
 # define LIBXML_ATTR_FORMAT(fmt,args)
 #endif
 
+#ifndef XML_DEPRECATED
+#  ifdef IN_LIBXML
+#    define XML_DEPRECATED
+#  else
+/* Available since at least GCC 3.1 */
+#    define XML_DEPRECATED __attribute__((deprecated))
+#  endif
+#endif
+
 #else /* ! __GNUC__ */
 /**
  * ATTRIBUTE_UNUSED:
@@ -475,6 +484,15 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
  * Macro used to indicate to GCC the parameter are printf like
  */
 #define LIBXML_ATTR_FORMAT(fmt,args)
+/**
+ * XML_DEPRECATED:
+ *
+ * Macro used to indicate that a function, variable, type or struct member
+ * is deprecated.
+ */
+#ifndef XML_DEPRECATED
+#define XML_DEPRECATED
+#endif
 #endif /* __GNUC__ */
 
 #ifdef __cplusplus

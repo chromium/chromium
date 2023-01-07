@@ -1,11 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/update_client/test_configurator.h"
 
+#include <string>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "components/prefs/pref_service.h"
@@ -20,6 +23,7 @@
 #include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -36,11 +40,7 @@ std::vector<GURL> MakeDefaultUrls() {
 }  // namespace
 
 TestConfigurator::TestConfigurator(PrefService* pref_service)
-    : brand_("TEST"),
-      initial_time_(0),
-      ondemand_time_(0),
-      enabled_cup_signing_(false),
-      enabled_component_updates_(true),
+    : enabled_cup_signing_(false),
       pref_service_(pref_service),
       unzip_factory_(base::MakeRefCounted<update_client::UnzipChromiumFactory>(
           base::BindRepeating(&unzip::LaunchInProcessUnzipper))),
@@ -52,7 +52,9 @@ TestConfigurator::TestConfigurator(PrefService* pref_service)
       network_fetcher_factory_(
           base::MakeRefCounted<NetworkFetcherChromiumFactory>(
               test_shared_loader_factory_,
-              base::BindRepeating([](const GURL& url) { return false; }))) {}
+              base::BindRepeating([](const GURL& url) { return false; }))),
+      updater_state_provider_(base::BindRepeating(
+          [](bool /*is_machine*/) { return UpdaterStateAttributes(); })) {}
 
 TestConfigurator::~TestConfigurator() = default;
 
@@ -73,8 +75,8 @@ int TestConfigurator::UpdateDelay() const {
 }
 
 std::vector<GURL> TestConfigurator::UpdateUrl() const {
-  if (!update_check_url_.is_empty())
-    return std::vector<GURL>(1, update_check_url_);
+  if (!update_check_urls_.empty())
+    return update_check_urls_;
 
   return MakeDefaultUrls();
 }
@@ -97,10 +99,6 @@ base::Version TestConfigurator::GetBrowserVersion() const {
 
 std::string TestConfigurator::GetChannel() const {
   return "fake_channel_string";
-}
-
-std::string TestConfigurator::GetBrand() const {
-  return brand_;
 }
 
 std::string TestConfigurator::GetLang() const {
@@ -142,55 +140,12 @@ bool TestConfigurator::EnabledDeltas() const {
   return true;
 }
 
-bool TestConfigurator::EnabledComponentUpdates() const {
-  return enabled_component_updates_;
-}
-
 bool TestConfigurator::EnabledBackgroundDownloader() const {
   return false;
 }
 
 bool TestConfigurator::EnabledCupSigning() const {
   return enabled_cup_signing_;
-}
-
-void TestConfigurator::SetBrand(const std::string& brand) {
-  brand_ = brand;
-}
-
-void TestConfigurator::SetOnDemandTime(int seconds) {
-  ondemand_time_ = seconds;
-}
-
-void TestConfigurator::SetInitialDelay(double seconds) {
-  initial_time_ = seconds;
-}
-
-void TestConfigurator::SetEnabledCupSigning(bool enabled_cup_signing) {
-  enabled_cup_signing_ = enabled_cup_signing;
-}
-
-void TestConfigurator::SetEnabledComponentUpdates(
-    bool enabled_component_updates) {
-  enabled_component_updates_ = enabled_component_updates;
-}
-
-void TestConfigurator::SetDownloadPreference(
-    const std::string& download_preference) {
-  download_preference_ = download_preference;
-}
-
-void TestConfigurator::SetUpdateCheckUrl(const GURL& url) {
-  update_check_url_ = url;
-}
-
-void TestConfigurator::SetPingUrl(const GURL& url) {
-  ping_url_ = url;
-}
-
-void TestConfigurator::SetCrxDownloaderFactory(
-    scoped_refptr<CrxDownloaderFactory> crx_downloader_factory) {
-  crx_downloader_factory_ = crx_downloader_factory;
 }
 
 PrefService* TestConfigurator::GetPrefService() const {
@@ -208,6 +163,58 @@ bool TestConfigurator::IsPerUserInstall() const {
 std::unique_ptr<ProtocolHandlerFactory>
 TestConfigurator::GetProtocolHandlerFactory() const {
   return std::make_unique<ProtocolHandlerFactoryJSON>();
+}
+
+absl::optional<bool> TestConfigurator::IsMachineExternallyManaged() const {
+  return is_machine_externally_managed_;
+}
+
+UpdaterStateProvider TestConfigurator::GetUpdaterStateProvider() const {
+  return updater_state_provider_;
+}
+
+void TestConfigurator::SetOnDemandTime(int seconds) {
+  ondemand_time_ = seconds;
+}
+
+void TestConfigurator::SetInitialDelay(double seconds) {
+  initial_time_ = seconds;
+}
+
+void TestConfigurator::SetEnabledCupSigning(bool enabled_cup_signing) {
+  enabled_cup_signing_ = enabled_cup_signing;
+}
+
+void TestConfigurator::SetDownloadPreference(
+    const std::string& download_preference) {
+  download_preference_ = download_preference;
+}
+
+void TestConfigurator::SetUpdateCheckUrl(const GURL& url) {
+  update_check_urls_ = {url};
+}
+
+void TestConfigurator::SetUpdateCheckUrls(const std::vector<GURL>& urls) {
+  update_check_urls_ = urls;
+}
+
+void TestConfigurator::SetPingUrl(const GURL& url) {
+  ping_url_ = url;
+}
+
+void TestConfigurator::SetCrxDownloaderFactory(
+    scoped_refptr<CrxDownloaderFactory> crx_downloader_factory) {
+  crx_downloader_factory_ = crx_downloader_factory;
+}
+
+void TestConfigurator::SetIsMachineExternallyManaged(
+    absl::optional<bool> is_machine_externally_managed) {
+  is_machine_externally_managed_ = is_machine_externally_managed;
+}
+
+void TestConfigurator::SetUpdaterStateProvider(
+    UpdaterStateProvider update_state_provider) {
+  updater_state_provider_ = update_state_provider;
 }
 
 }  // namespace update_client

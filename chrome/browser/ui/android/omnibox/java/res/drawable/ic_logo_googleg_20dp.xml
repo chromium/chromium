@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- 20dp google g in a 24dp frame. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+     android:width="24dp"
+     android:height="24dp"
+     android:viewportWidth="24.0"
+     android:viewportHeight="24.0">
+ <path
+     android:pathData="M18.098,19.039C19.816,17.439 20.906,15.056 20.906,12C20.906,11.445 20.855,10.85 20.728,10.281L12.005,10.281L12.005,13.867L17.022,13.867C16.77,15.131 16.084,16.095 15.103,16.719L15.103,17.184L17.548,19.039L18.098,19.039Z"
+     android:fillColor="#4285F4"/>
+ <path
+     android:pathData="M6.739,13.734C7.464,15.948 9.539,17.541 11.998,17.541C13.2,17.541 14.261,17.255 15.105,16.72L18.098,19.041C16.462,20.563 14.283,21.375 11.998,21.375C8.294,21.375 5.114,19.25 3.594,16.147L3.698,15.512L6.238,13.734L6.739,13.734Z"
+     android:fillColor="#34A853"/>
+ <path
+     android:pathData="M6.742,10.256C6.557,10.819 6.463,11.408 6.463,12C6.463,12.609 6.561,13.195 6.742,13.744L3.597,16.153C2.983,14.903 2.638,13.494 2.638,12C2.638,10.506 2.983,9.097 3.597,7.847L4.22,7.713L6.602,9.572L6.742,10.256L6.742,10.256Z"
+     android:fillColor="#FBBC05"/>
+ <path
+     android:pathData="M11.998,6.461C13.319,6.461 14.511,6.93 15.447,7.697L18.172,4.969C16.511,3.52 14.381,2.625 11.997,2.625C8.294,2.625 5.114,4.748 3.594,7.85L6.741,10.258C7.469,8.048 9.541,6.461 11.998,6.461Z"
+     android:fillColor="#EA4335"/>
+</vector>

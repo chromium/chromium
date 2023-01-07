@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_form_data_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 
 namespace blink {

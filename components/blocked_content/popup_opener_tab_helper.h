@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -36,6 +36,9 @@ class PopupOpenerTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<PopupOpenerTabHelper> {
  public:
+  PopupOpenerTabHelper(const PopupOpenerTabHelper&) = delete;
+  PopupOpenerTabHelper& operator=(const PopupOpenerTabHelper&) = delete;
+
   ~PopupOpenerTabHelper() override;
 
   void OnOpenedPopup(PopupTracker* popup_tracker);
@@ -73,10 +76,10 @@ class PopupOpenerTabHelper
   // Visible time for this tab until a tab-under is detected. At which point it
   // gets the visible time from the |visibility_tracker_|. Will be unset until a
   // tab-under is detected.
-  base::Optional<base::TimeDelta> visible_time_before_tab_under_;
+  absl::optional<base::TimeDelta> visible_time_before_tab_under_;
 
   // The clock which is used by the visibility trackers.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Keeps track of the total foreground time for this tab.
   std::unique_ptr<ui::ScopedVisibilityTracker> visibility_tracker_;
@@ -90,11 +93,9 @@ class PopupOpenerTabHelper
   ukm::SourceId last_opener_source_id_ = ukm::kInvalidSourceId;
 
   // The settings map for the web contents this object is associated with.
-  HostContentSettingsMap* settings_map_ = nullptr;
+  raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PopupOpenerTabHelper);
 };
 
 }  // namespace blocked_content

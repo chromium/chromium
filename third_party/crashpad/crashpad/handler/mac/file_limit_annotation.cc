@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
+#include <iterator>
 #include <string>
 
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "client/crashpad_info.h"
 #include "client/simple_string_dictionary.h"
@@ -108,7 +108,7 @@ void RecordFileLimitAnnotation() {
   int mib[] = {CTL_KERN, KERN_MAXFILES};
   size = sizeof(value);
   std::string max_files = FormatFromSysctl(
-      sysctl(mib, base::size(mib), &value, &size, nullptr, 0), &value, &size);
+      sysctl(mib, std::size(mib), &value, &size, nullptr, 0), &value, &size);
 
   std::string open_files = CountOpenFileDescriptors();
 

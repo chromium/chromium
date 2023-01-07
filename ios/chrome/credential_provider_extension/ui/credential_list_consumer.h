@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 @class UIButton;
 
-@protocol CredentialListConsumerDelegate <NSObject>
+@protocol CredentialListHandler <NSObject>
 
 // Called when the user taps the cancel button in the navigation bar.
 - (void)navigationCancelButtonWasPressed:(UIButton*)button;
@@ -23,16 +23,24 @@
 // Called when user wants to see details for the given credential.
 - (void)showDetailsForCredential:(id<Credential>)credential;
 
+// Called when user taps the option to create a new password
+- (void)newPasswordWasSelected;
+
 @end
 
 @protocol CredentialListConsumer <NSObject>
 
 // The delegate for the actions in the consumer.
-@property(nonatomic, weak) id<CredentialListConsumerDelegate> delegate;
+@property(nonatomic, weak) id<CredentialListHandler> delegate;
 
 // Tells the consumer to show the passed in suggested and all passwords.
 - (void)presentSuggestedPasswords:(NSArray<id<Credential>>*)suggested
-                     allPasswords:(NSArray<id<Credential>>*)all;
+                     allPasswords:(NSArray<id<Credential>>*)all
+                    showSearchBar:(BOOL)showSearchBar
+            showNewPasswordOption:(BOOL)showNewPasswordOption;
+
+// Sets the prompt to show for the view.
+- (void)setTopPrompt:(NSString*)prompt;
 
 @end
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-@class ChromeIdentity;
 @class IdentityChooserCoordinator;
+@protocol SystemIdentity;
 
 // Delegate protocol for IdentityChooserCoordinator.
 @protocol IdentityChooserCoordinatorDelegate<NSObject>
@@ -18,16 +18,16 @@
     (IdentityChooserCoordinator*)coordinator;
 
 // Called when the user taps on "Add Account…" button. The view controller is
-// already dimissed when this call is made. This call is followed by
-// |-identityChooserCoordinatorDidClose:|.
+// already dismissed when this call is made. This call is followed by
+// `-identityChooserCoordinatorDidClose:`.
 - (void)identityChooserCoordinatorDidTapOnAddAccount:
     (IdentityChooserCoordinator*)coordinator;
 
 // Called when the user selects an identity. The view controller is
-// already dimissed when this call is made. This call is followed by
-// |-identityChooserCoordinatorDidClose:|.
+// already dismissed when this call is made. This call is followed by
+// `-identityChooserCoordinatorDidClose:`.
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
-                 didSelectIdentity:(ChromeIdentity*)identity;
+                 didSelectIdentity:(id<SystemIdentity>)identity;
 
 @end
 

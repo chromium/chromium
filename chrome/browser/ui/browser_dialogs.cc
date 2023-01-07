@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,11 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 
-namespace chrome {
+#if !defined(TOOLKIT_VIEWS)
+#include "ui/shell_dialogs/selected_file_info.h"
+#endif
 
-void RecordDialogCreation(DialogIdentifier identifier) {
-  UMA_HISTOGRAM_ENUMERATION("Dialog.Creation", identifier,
-                            DialogIdentifier::MAX_VALUE);
-}
+namespace chrome {
 
 #if !defined(TOOLKIT_VIEWS)
 void ShowWindowNamePrompt(Browser* browser) {

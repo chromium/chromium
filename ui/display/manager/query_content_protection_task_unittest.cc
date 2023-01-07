@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_layout_manager.h"
 #include "ui/display/manager/test/action_logger_util.h"
@@ -41,6 +40,12 @@ class QueryContentProtectionTaskTest : public testing::Test {
   using Status = QueryContentProtectionTask::Status;
 
   QueryContentProtectionTaskTest() = default;
+
+  QueryContentProtectionTaskTest(const QueryContentProtectionTaskTest&) =
+      delete;
+  QueryContentProtectionTaskTest& operator=(
+      const QueryContentProtectionTaskTest&) = delete;
+
   ~QueryContentProtectionTaskTest() override = default;
 
   void ResponseCallback(Status status,
@@ -59,10 +64,7 @@ class QueryContentProtectionTaskTest : public testing::Test {
     uint32_t protection_mask;
   };
 
-  base::Optional<Response> response_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueryContentProtectionTaskTest);
+  absl::optional<Response> response_;
 };
 
 TEST_F(QueryContentProtectionTaskTest, QueryInternalDisplay) {

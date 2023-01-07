@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2018 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
-
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/AlertDialogContent"
     android:minHeight="36dp"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    android:layout_marginBottom="32dp"
-    android:paddingBottom="16dp"
-    android:layout_marginTop="6dp"
-    android:orientation="horizontal"
     android:gravity="center_vertical">
 
     <com.google.android.material.textfield.TextInputLayout
@@ -46,5 +41,4 @@
         android:src="@drawable/btn_info"
         android:layout_gravity="center"
         android:contentDescription="@string/learn_more" />
-
 </LinearLayout>

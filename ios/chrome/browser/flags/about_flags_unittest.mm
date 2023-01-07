@@ -1,12 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/flags/about_flags.h"
 
-#include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/flags_test_helpers.h"
-#include "testing/platform_test.h"
+#import "components/flags_ui/feature_entry.h"
+#import "components/flags_ui/flags_test_helpers.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,9 +17,7 @@ using AboutFlagsTest = PlatformTest;
 // Makes sure that every flag has an owner and an expiry entry in
 // flag-metadata.json.
 TEST_F(AboutFlagsTest, EveryFlagHasMetadata) {
-  size_t count;
-  const flags_ui::FeatureEntry* entries = testing::GetFeatureEntries(&count);
-  flags_ui::testing::EnsureEveryFlagHasMetadata(entries, count);
+  flags_ui::testing::EnsureEveryFlagHasMetadata(testing::GetFeatureEntries());
 }
 
 // Ensures that all flags marked as never expiring in flag-metadata.json is

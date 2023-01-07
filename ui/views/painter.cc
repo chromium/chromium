@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,10 @@ class SolidRoundRectPainter : public Painter {
                         const gfx::Insets& insets,
                         SkBlendMode blend_mode,
                         bool antialias);
+
+  SolidRoundRectPainter(const SolidRoundRectPainter&) = delete;
+  SolidRoundRectPainter& operator=(const SolidRoundRectPainter&) = delete;
+
   ~SolidRoundRectPainter() override;
 
   // Painter:
@@ -49,8 +53,6 @@ class SolidRoundRectPainter : public Painter {
   const gfx::Insets insets_;
   const SkBlendMode blend_mode_;
   const bool antialias_;
-
-  DISALLOW_COPY_AND_ASSIGN(SolidRoundRectPainter);
 };
 
 SolidRoundRectPainter::SolidRoundRectPainter(SkColor bg_color,
@@ -106,6 +108,10 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
 class SolidFocusPainter : public Painter {
  public:
   SolidFocusPainter(SkColor color, int thickness, const gfx::InsetsF& insets);
+
+  SolidFocusPainter(const SolidFocusPainter&) = delete;
+  SolidFocusPainter& operator=(const SolidFocusPainter&) = delete;
+
   ~SolidFocusPainter() override;
 
   // Painter:
@@ -116,8 +122,6 @@ class SolidFocusPainter : public Painter {
   const SkColor color_;
   const int thickness_;
   const gfx::InsetsF insets_;
-
-  DISALLOW_COPY_AND_ASSIGN(SolidFocusPainter);
 };
 
 SolidFocusPainter::SolidFocusPainter(SkColor color,
@@ -149,6 +153,9 @@ class ImagePainter : public Painter {
   // Constructs an ImagePainter with the specified image and insets.
   ImagePainter(const gfx::ImageSkia& image, const gfx::Insets& insets);
 
+  ImagePainter(const ImagePainter&) = delete;
+  ImagePainter& operator=(const ImagePainter&) = delete;
+
   ~ImagePainter() override;
 
   // Painter:
@@ -157,8 +164,6 @@ class ImagePainter : public Painter {
 
  private:
   std::unique_ptr<gfx::NineImagePainter> nine_painter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImagePainter);
 };
 
 ImagePainter::ImagePainter(const int image_ids[])
@@ -181,6 +186,10 @@ void ImagePainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
 class PaintedLayer : public ui::LayerOwner, public ui::LayerDelegate {
  public:
   explicit PaintedLayer(std::unique_ptr<Painter> painter);
+
+  PaintedLayer(const PaintedLayer&) = delete;
+  PaintedLayer& operator=(const PaintedLayer&) = delete;
+
   ~PaintedLayer() override;
 
   // LayerDelegate:
@@ -190,8 +199,6 @@ class PaintedLayer : public ui::LayerOwner, public ui::LayerDelegate {
 
  private:
   std::unique_ptr<Painter> painter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintedLayer);
 };
 
 PaintedLayer::PaintedLayer(std::unique_ptr<Painter> painter)
@@ -281,7 +288,7 @@ std::unique_ptr<Painter> Painter::CreateSolidFocusPainter(
   // on the thickness, callers had to add 1 to the bottom and right insets.
   // Subtract that here so it works the same way with the new
   // Canvas::DrawSolidFocusRect.
-  const gfx::Insets corrected_insets = insets - gfx::Insets(0, 0, 1, 1);
+  const gfx::InsetsF corrected_insets(insets - gfx::Insets::TLBR(0, 0, 1, 1));
   return std::make_unique<SolidFocusPainter>(color, 1, corrected_insets);
 }
 

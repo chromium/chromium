@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,9 +25,7 @@ const size_t kEntryHashKeyAsHexStringSize = 2 * sizeof(uint64_t);
 
 }  // namespace
 
-namespace disk_cache {
-
-namespace simple_util {
+namespace disk_cache::simple_util {
 
 std::string ConvertEntryHashKeyToHexString(uint64_t hash_key) {
   const std::string hash_key_str = base::StringPrintf("%016" PRIx64, hash_key);
@@ -104,15 +102,6 @@ int GetFileIndexFromStreamIndex(int stream_index) {
   return (stream_index == 2) ? 1 : 0;
 }
 
-bool GetMTime(const base::FilePath& path, base::Time* out_mtime) {
-  DCHECK(out_mtime);
-  base::File::Info file_info;
-  if (!base::GetFileInfo(path, &file_info))
-    return false;
-  *out_mtime = file_info.last_modified;
-  return true;
-}
-
 uint32_t Crc32(const char* data, int length) {
   uint32_t empty_crc = crc32(0, Z_NULL, 0);
   if (length == 0)
@@ -124,6 +113,4 @@ uint32_t IncrementalCrc32(uint32_t previous_crc, const char* data, int length) {
   return crc32(previous_crc, reinterpret_cast<const Bytef*>(data), length);
 }
 
-}  // namespace simple_util
-
-}  // namespace disk_cache
+}  // namespace disk_cache::simple_util

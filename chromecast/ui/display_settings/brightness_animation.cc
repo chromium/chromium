@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,15 @@
 
 #include <limits>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 
 namespace chromecast {
 
 namespace {
 
-constexpr base::TimeDelta kManualAnimationDuration =
-    base::TimeDelta::FromSeconds(0);
+constexpr base::TimeDelta kManualAnimationDuration = base::Seconds(0);
 
 // Brightness changes are smoothed linearly over a 50 ms interval by the
 // backlight controller IC.
@@ -43,7 +42,7 @@ BrightnessAnimation::~BrightnessAnimation() {
 void BrightnessAnimation::AnimateToNewValue(float new_target_brightness,
                                             base::TimeDelta duration) {
   start_brightness_ = controller_->GetDisplayBrightness();
-  target_brightness_ = base::ClampToRange(new_target_brightness, 0.0f, 1.0f);
+  target_brightness_ = base::clamp(new_target_brightness, 0.0f, 1.0f);
   DVLOG(4) << "Animating to new_target_brightness " << new_target_brightness
            << " from current_brightness_=" << current_brightness_;
 
@@ -52,7 +51,7 @@ void BrightnessAnimation::AnimateToNewValue(float new_target_brightness,
         << "Brightness animation started from invalid start_brightness_="
         << start_brightness_;
     start_brightness_ = target_brightness_;
-    SetDuration(base::TimeDelta::FromSeconds(0));
+    SetDuration(base::Seconds(0));
   } else {
     // This will reset the animation timer to the beginning.
     SetDuration(duration);
@@ -61,7 +60,7 @@ void BrightnessAnimation::AnimateToNewValue(float new_target_brightness,
 }
 
 void BrightnessAnimation::AnimateToState(double state) {
-  state = base::ClampToRange(state, 0.0, 1.0);
+  state = base::clamp(state, 0.0, 1.0);
   current_brightness_ =
       start_brightness_ + (target_brightness_ - start_brightness_) * state;
   ApplyValuesToDisplay();

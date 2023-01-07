@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -33,7 +32,10 @@ class NET_EXPORT SSLPrivateKey
   using SignCallback =
       base::OnceCallback<void(Error, const std::vector<uint8_t>&)>;
 
-  SSLPrivateKey() {}
+  SSLPrivateKey() = default;
+
+  SSLPrivateKey(const SSLPrivateKey&) = delete;
+  SSLPrivateKey& operator=(const SSLPrivateKey&) = delete;
 
   // Returns a human-readable name of the provider that backs this
   // SSLPrivateKey, for debugging. If not applicable or available, return the
@@ -65,11 +67,10 @@ class NET_EXPORT SSLPrivateKey
                                                            bool supports_pss);
 
  protected:
-  virtual ~SSLPrivateKey() {}
+  virtual ~SSLPrivateKey() = default;
 
  private:
   friend class base::RefCountedThreadSafe<SSLPrivateKey>;
-  DISALLOW_COPY_AND_ASSIGN(SSLPrivateKey);
 };
 
 }  // namespace net

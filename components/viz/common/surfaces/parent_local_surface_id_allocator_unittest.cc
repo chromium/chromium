@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,11 @@ namespace viz {
 class ParentLocalSurfaceIdAllocatorTest : public testing::Test {
  public:
   ParentLocalSurfaceIdAllocatorTest() = default;
+
+  ParentLocalSurfaceIdAllocatorTest(const ParentLocalSurfaceIdAllocatorTest&) =
+      delete;
+  ParentLocalSurfaceIdAllocatorTest& operator=(
+      const ParentLocalSurfaceIdAllocatorTest&) = delete;
 
   ~ParentLocalSurfaceIdAllocatorTest() override = default;
 
@@ -48,8 +53,6 @@ class ParentLocalSurfaceIdAllocatorTest : public testing::Test {
 
  private:
   std::unique_ptr<ParentLocalSurfaceIdAllocator> allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParentLocalSurfaceIdAllocatorTest);
 };
 
 // UpdateFromChild() on a parent allocator should accept the child's sequence

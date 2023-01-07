@@ -1,0 +1,95 @@
+<style include="cr-shared-style shimless-rma-shared">
+  #nextButtonCaret {
+    margin-inline-start: 5px;
+  }
+
+  #navigationButtonWrapper {
+    bottom: var(--header-footer-height);
+    position: absolute;
+  }
+
+  #getStartedButton {
+    margin-inline-end: 8px;
+  }
+
+  #unqualifiedComponentsLink {
+    color: var(--cros-link-color);
+  }
+
+  .button-spinner {
+    height: 20px;
+    margin-inline-start: 5px;
+    width: 20px;
+  }
+
+  iron-icon[icon='shimless-icon:warning'] {
+    fill: var(--cros-icon-color-warning);
+  }
+</style>
+
+<base-page>
+  <div slot="left-pane">
+    <h1 tabindex="-1">[[i18n('welcomeTitleText')]]</h1>
+    <div class="instructions">[[i18n('beginRmaWarningText')]]</div>
+    <div id="verificationMessage" class="icon-message">
+      <paper-spinner-lite id="busyIcon" class="small-spinner"
+          hidden$="[[!verificationInProgress_]]" active>
+      </paper-spinner-lite>
+      <iron-icon id="verificationIcon"
+        icon$="[[getVerificationIcon_(isCompliant_)]]"
+        hidden$="[[verificationInProgress_]]" class="small-icon">
+      </iron-icon>
+      <div aria-live="polite">
+        <span hidden$="[[!verificationInProgress_]]" class="instructions">
+          [[i18n('validatingComponentsText')]]
+        </span>
+        <span hidden$="[[verificationInProgress_]]" class="instructions">
+          <span hidden$="[[!isCompliant_]]">
+            [[i18n('validatedComponentsSuccessText')]]
+          </span>
+          <span inner-h-t-m-l="[[verificationFailedMessage_]]"
+              hidden$="[[isCompliant_]]" class="instructions">
+          </span>
+        </span>
+      </div>
+    </div>
+    <div id="navigationButtonWrapper">
+      <cr-button id="getStartedButton" class="action-button"
+          on-click="onGetStartedButtonClicked_"
+          disabled="[[isGetStartedButtonDisabled_(verificationInProgress_,
+          allButtonsDisabled)]]">
+        [[i18n('getStartedButtonLabel')]]
+        <paper-spinner-lite class="button-spinner"
+            hidden$="[[!getStartedButtonClicked]]" active>
+        </paper-spinner-lite>
+      </cr-button>
+      <cr-button id="landingExit" class="pill"
+          on-click="onLandingExitButtonClicked_"
+          disabled="[[allButtonsDisabled]]">
+        <span id="exitButtonLabel">
+          [[i18n('exitButtonLabel')]]
+        </span>
+        <paper-spinner-lite class="button-spinner"
+            hidden$="[[!confirmExitButtonClicked]]" active>
+        </paper-spinner-lite>
+      </cr-button>
+    </div>
+  </div>
+  <div slot="right-pane">
+    <div class="illustration-wrapper" aria-hidden="true">
+      <img class="illustration" src="illustrations/repair_start.svg"
+          alt="[[i18n('repairStartAltText')]]">
+    </div>
+  </div>
+</base-page>
+
+<cr-dialog id="unqualifiedComponentsDialog" on-cancel="closeDialog_"
+    ignore-popstate>
+  <div slot="title">[[i18n('unqualifiedComponentsTitle')]]</div>
+  <div slot="body" id="dialogBody">[[componentsList_]]</div>
+  <div class="dialog-footer" slot="button-container">
+    <cr-button class="action-button" on-click="closeDialog_">
+      [[i18n('okButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -116,13 +116,13 @@ development and testing purposes.
 ## Setting up the build
 
 Chromium uses [Ninja](https://ninja-build.org) as its main build tool along with
-a tool called [GN](https://gn.googlesource.com/gn/+/master/docs/quick_start.md)
+a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
 to generate `.ninja` files. You can create any number of *build directories*
 with different configurations. To create a build directory which builds Chrome
 for Android, run:
 
 ```shell
-$ gn gen --args='target_os="android" is_chromecast=true' out/Default
+$ gn gen --args='target_os="android" is_cast_android=true' out/Default
 ```
 
 * You only have to run this once for each new build directory, Ninja will
@@ -134,7 +134,7 @@ $ gn gen --args='target_os="android" is_chromecast=true' out/Default
   The default will be a debug component build matching the current host
   operating system and CPU.
 * For more info on GN, run `gn help` on the command line or read the
-  [quick start guide](https://gn.googlesource.com/gn/+/master/docs/quick_start.md).
+  [quick start guide](https://gn.googlesource.com/gn/+/main/docs/quick_start.md).
 
 Also be aware that some scripts (e.g. `tombstones.py`, `adb_gdb.py`)
 require you to set `CHROMIUM_OUTPUT_DIR=out/Default`.

@@ -1,0 +1,18 @@
+[
+    {
+        "duration": "190.0",
+        "name": "performance_browser_tests/_gtest_"
+    },
+    {
+        "duration": "7.0",
+        "name": "views_perftests/_gtest_"
+    },
+    {
+        "duration": "300.0",
+        "name": "base_perftests/_gtest_"
+    },
+    {
+        "duration": "330.0",
+        "name": "dawn_perf_tests/_gtest_"
+    }
+]

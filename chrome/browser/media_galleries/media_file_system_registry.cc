@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -15,31 +16,25 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/browser/media_galleries/gallery_watch_manager.h"
 #include "chrome/browser/media_galleries/media_file_system_context.h"
-#include "chrome/browser/media_galleries/media_galleries_dialog_controller.h"
 #include "chrome/browser/media_galleries/media_galleries_histograms.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
-#include "components/prefs/pref_service.h"
 #include "components/storage_monitor/media_storage_util.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_details.h"
-#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_process_host_observer.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
@@ -47,7 +42,7 @@
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
 
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
 #endif
 
@@ -70,6 +65,11 @@ class MediaFileSystemRegistryShutdownNotifierFactory
         MediaFileSystemRegistryShutdownNotifierFactory>::get();
   }
 
+  MediaFileSystemRegistryShutdownNotifierFactory(
+      const MediaFileSystemRegistryShutdownNotifierFactory&) = delete;
+  MediaFileSystemRegistryShutdownNotifierFactory& operator=(
+      const MediaFileSystemRegistryShutdownNotifierFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       MediaFileSystemRegistryShutdownNotifierFactory>;
@@ -80,8 +80,6 @@ class MediaFileSystemRegistryShutdownNotifierFactory
     DependsOn(MediaGalleriesPreferencesFactory::GetInstance());
   }
   ~MediaFileSystemRegistryShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileSystemRegistryShutdownNotifierFactory);
 };
 
 struct InvalidatedGalleriesInfo {
@@ -89,169 +87,27 @@ struct InvalidatedGalleriesInfo {
   std::set<MediaGalleryPrefId> pref_ids;
 };
 
-// Tracks the liveness of multiple RenderProcessHosts that the caller is
-// interested in. Once all of the RPHs have closed or been destroyed a call
-// back informs the caller.
-class RPHReferenceManager {
+// Just a convenience class to help scope ExtensionGalleriesHost to the lifetime
+// of a content::Page.
+class PageAlivenessReference
+    : public content::PageUserData<PageAlivenessReference> {
  public:
-  // |no_references_callback| is called when the last WebContents reference
-  // goes away. WebContents references are added through
-  // ReferenceFromWebContents().
-  explicit RPHReferenceManager(base::OnceClosure no_references_callback);
-  virtual ~RPHReferenceManager();
-
-  // Remove all references, but don't call |no_references_callback|.
-  void Reset() { observer_map_.clear(); }
-
-  // Returns true if there are no references.
-  bool empty() const { return observer_map_.empty(); }
-
-  // Adds a reference to the passed |contents|. Calling this multiple times with
-  // the same |contents| is a no-op.
-  void ReferenceFromWebContents(content::WebContents* contents);
+  // `page_dead_callback` is called when the page is destroyed.
+  PageAlivenessReference(content::Page& page,
+                         base::OnceClosure page_dead_callback)
+      : content::PageUserData<PageAlivenessReference>(page),
+        page_dead_callback_(std::move(page_dead_callback)) {}
+  ~PageAlivenessReference() override { std::move(page_dead_callback_).Run(); }
 
  private:
-  class RPHWebContentsObserver : public content::WebContentsObserver {
-   public:
-    RPHWebContentsObserver(RPHReferenceManager* manager,
-                           WebContents* web_contents);
+  friend PageUserData;
+  PAGE_USER_DATA_KEY_DECL();
 
-   private:
-    // content::WebContentsObserver
-    void WebContentsDestroyed() override;
-    void NavigationEntryCommitted(
-        const content::LoadCommittedDetails& load_details) override;
-
-    RPHReferenceManager* manager_;
-  };
-
-  class RPHObserver : public content::RenderProcessHostObserver {
-   public:
-    RPHObserver(RPHReferenceManager* manager, RenderProcessHost* host);
-    ~RPHObserver() override;
-
-    void AddWebContentsObserver(WebContents* web_contents);
-    void RemoveWebContentsObserver(WebContents* web_contents);
-    bool HasWebContentsObservers() { return !observed_web_contentses_.empty(); }
-
-   private:
-    void RenderProcessHostDestroyed(RenderProcessHost* host) override;
-
-    RPHReferenceManager* manager_;
-    RenderProcessHost* host_;
-    std::map<WebContents*, std::unique_ptr<RPHWebContentsObserver>>
-        observed_web_contentses_;
-  };
-
-  // Handlers for observed events.
-  void OnRenderProcessHostDestroyed(RenderProcessHost* rph);
-  void OnWebContentsDestroyedOrNavigated(WebContents* contents);
-
-  // A callback to call when the last RVH reference goes away.
-  base::OnceClosure no_references_callback_;
-
-  // The set of render processes and web contents that may have references to
-  // the file system ids this instance manages.
-  std::map<const RenderProcessHost*, std::unique_ptr<RPHObserver>>
-      observer_map_;
+  // Called once the page is dead.
+  base::OnceClosure page_dead_callback_;
 };
 
-RPHReferenceManager::RPHReferenceManager(
-    base::OnceClosure no_references_callback)
-    : no_references_callback_(std::move(no_references_callback)) {}
-
-RPHReferenceManager::~RPHReferenceManager() {
-  Reset();
-}
-
-void RPHReferenceManager::ReferenceFromWebContents(
-    content::WebContents* contents) {
-  RenderProcessHost* rph = contents->GetMainFrame()->GetProcess();
-  if (!base::Contains(observer_map_, rph)) {
-    observer_map_[rph] = std::make_unique<RPHObserver>(this, rph);
-  }
-  observer_map_[rph]->AddWebContentsObserver(contents);
-}
-
-RPHReferenceManager::RPHWebContentsObserver::RPHWebContentsObserver(
-    RPHReferenceManager* manager,
-    WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      manager_(manager) {
-}
-
-void RPHReferenceManager::RPHWebContentsObserver::WebContentsDestroyed() {
-  manager_->OnWebContentsDestroyedOrNavigated(web_contents());
-}
-
-void RPHReferenceManager::RPHWebContentsObserver::NavigationEntryCommitted(
-    const content::LoadCommittedDetails& load_details) {
-  if (load_details.is_same_document)
-    return;
-
-  manager_->OnWebContentsDestroyedOrNavigated(web_contents());
-}
-
-RPHReferenceManager::RPHObserver::RPHObserver(
-    RPHReferenceManager* manager, RenderProcessHost* host)
-    : manager_(manager),
-      host_(host) {
-  host->AddObserver(this);
-}
-
-RPHReferenceManager::RPHObserver::~RPHObserver() {
-  observed_web_contentses_.clear();
-  if (host_)
-    host_->RemoveObserver(this);
-}
-
-void RPHReferenceManager::RPHObserver::AddWebContentsObserver(
-    WebContents* web_contents) {
-  if (base::Contains(observed_web_contentses_, web_contents))
-    return;
-
-  observed_web_contentses_[web_contents] =
-      std::make_unique<RPHWebContentsObserver>(manager_, web_contents);
-}
-
-void RPHReferenceManager::RPHObserver::RemoveWebContentsObserver(
-    WebContents* web_contents) {
-  DCHECK(observed_web_contentses_.find(web_contents) !=
-         observed_web_contentses_.end());
-  observed_web_contentses_.erase(web_contents);
-}
-
-void RPHReferenceManager::RPHObserver::RenderProcessHostDestroyed(
-    RenderProcessHost* host) {
-  host_ = nullptr;
-  manager_->OnRenderProcessHostDestroyed(host);
-}
-
-void RPHReferenceManager::OnRenderProcessHostDestroyed(
-    RenderProcessHost* rph) {
-  auto rph_info = observer_map_.find(rph);
-  // This could be a potential problem if the RPH is navigated to a page on the
-  // same renderer (triggering OnWebContentsDestroyedOrNavigated()) and then the
-  // renderer crashes.
-  if (rph_info == observer_map_.end()) {
-    NOTREACHED();
-    return;
-  }
-  observer_map_.erase(rph_info);
-  if (observer_map_.empty())
-    std::move(no_references_callback_).Run();
-}
-
-void RPHReferenceManager::OnWebContentsDestroyedOrNavigated(
-    WebContents* contents) {
-  RenderProcessHost* rph = contents->GetMainFrame()->GetProcess();
-  auto rph_info = observer_map_.find(rph);
-  DCHECK(rph_info != observer_map_.end());
-
-  rph_info->second->RemoveWebContentsObserver(contents);
-  if (!rph_info->second->HasWebContentsObservers())
-    OnRenderProcessHostDestroyed(rph);
-}
+PAGE_USER_DATA_KEY_IMPL(PageAlivenessReference);
 
 }  // namespace
 
@@ -278,8 +134,7 @@ MediaFileSystemInfo::~MediaFileSystemInfo() {}
 // The main owner of this class is
 // |MediaFileSystemRegistry::extension_hosts_map_|, but a callback may
 // temporarily hold a reference.
-class ExtensionGalleriesHost
-    : public base::RefCountedThreadSafe<ExtensionGalleriesHost> {
+class ExtensionGalleriesHost {
  public:
   // |no_references_callback| is called when the last WebContents reference
   // goes away. WebContents references are added through
@@ -291,9 +146,16 @@ class ExtensionGalleriesHost
       : file_system_context_(file_system_context),
         profile_path_(profile_path),
         extension_id_(extension_id),
-        no_references_callback_(std::move(no_references_callback)),
-        rph_refs_(base::BindRepeating(&ExtensionGalleriesHost::CleanUp,
-                                      base::Unretained(this))) {}
+        no_references_callback_(std::move(no_references_callback)) {}
+
+  ~ExtensionGalleriesHost() {
+    for (auto& it : pref_id_map_) {
+      file_system_context_->RevokeFileSystem(it.second.fsid);
+    }
+  }
+
+  ExtensionGalleriesHost(const ExtensionGalleriesHost&) = delete;
+  ExtensionGalleriesHost& operator=(const ExtensionGalleriesHost&) = delete;
 
   // For each gallery in the list of permitted |galleries|, checks if the
   // device is attached and if so looks up or creates a file system name and
@@ -314,8 +176,8 @@ class ExtensionGalleriesHost
         device_ids,
         base::BindOnce(
             &ExtensionGalleriesHost::GetMediaFileSystemsForAttachedDevices,
-            this, base::Owned(device_ids), galleries, galleries_info,
-            std::move(callback)));
+            weak_factory_.GetWeakPtr(), base::Owned(device_ids), galleries,
+            galleries_info, std::move(callback)));
   }
 
   // Checks if |gallery| is attached and if so, registers the file system and
@@ -330,8 +192,8 @@ class ExtensionGalleriesHost
     MediaStorageUtil::FilterAttachedDevices(
         device_ids,
         base::BindOnce(&ExtensionGalleriesHost::RegisterAttachedMediaFileSystem,
-                       this, base::Owned(device_ids), gallery,
-                       std::move(callback)));
+                       weak_factory_.GetWeakPtr(), base::Owned(device_ids),
+                       gallery, std::move(callback)));
   }
 
   // Revoke the file system for |id| if this extension has created one for |id|.
@@ -344,7 +206,6 @@ class ExtensionGalleriesHost
     pref_id_map_.erase(gallery);
 
     if (pref_id_map_.empty()) {
-      rph_refs_.Reset();
       CleanUp();
     }
   }
@@ -353,19 +214,23 @@ class ExtensionGalleriesHost
   // created
   // by this class.
   void ReferenceFromWebContents(content::WebContents* web_contents) {
-    rph_refs_.ReferenceFromWebContents(web_contents);
+    referring_page_count_++;
+    // The count is decremented when the below Page is destroyed.
+    PageAlivenessReference::CreateForPage(
+        web_contents->GetPrimaryPage(),
+        base::BindOnce(&ExtensionGalleriesHost::DecrementReferringPageCount,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void DecrementReferringPageCount() {
+    referring_page_count_--;
+    if (referring_page_count_ == 0) {
+      CleanUp();
+    }
   }
 
  private:
   typedef std::map<MediaGalleryPrefId, MediaFileSystemInfo> PrefIdFsInfoMap;
-
-  // Private destructor and friend declaration for ref counted implementation.
-  friend class base::RefCountedThreadSafe<ExtensionGalleriesHost>;
-
-  virtual ~ExtensionGalleriesHost() {
-    DCHECK(rph_refs_.empty());
-    DCHECK(pref_id_map_.empty());
-  }
 
   void GetMediaFileSystemsForAttachedDevices(
       const MediaStorageUtil::DeviceIdSet* attached_devices,
@@ -373,14 +238,6 @@ class ExtensionGalleriesHost
       const MediaGalleriesPrefInfoMap& galleries_info,
       MediaFileSystemsCallback callback) {
     std::vector<MediaFileSystemInfo> result;
-
-    if (rph_refs_.empty()) {
-      // We're actually in the middle of shutdown, and Filter...() lagging
-      // which can invoke this method interleaved in the destruction callback
-      // sequence and re-populate pref_id_map_.
-      std::move(callback).Run(result);
-      return;
-    }
 
     for (auto pref_id_it = galleries.begin(); pref_id_it != galleries.end();
          ++pref_id_it) {
@@ -420,7 +277,6 @@ class ExtensionGalleriesHost
     }
 
     if (result.empty()) {
-      rph_refs_.Reset();
       CleanUp();
     }
 
@@ -434,10 +290,7 @@ class ExtensionGalleriesHost
       base::OnceCallback<void(base::File::Error result)> callback) {
     base::File::Error result = base::File::FILE_ERROR_NOT_FOUND;
 
-    // If rph_refs is empty then we're actually in the middle of shutdown, and
-    // Filter...() lagging which can invoke this method interleaved in the
-    // destruction callback sequence and re-populate pref_id_map_.
-    if (!attached_device->empty() && !rph_refs_.empty()) {
+    if (!attached_device->empty()) {
       std::string fs_name = MediaFileSystemBackend::ConstructMountName(
           profile_path_, extension_id_, gallery.pref_id);
       base::FilePath path = gallery.AbsolutePath();
@@ -461,7 +314,6 @@ class ExtensionGalleriesHost
     }
 
     if (pref_id_map_.empty()) {
-      rph_refs_.Reset();
       CleanUp();
     }
     content::GetIOThreadTaskRunner({})->PostTask(
@@ -476,20 +328,15 @@ class ExtensionGalleriesHost
   }
 
   void CleanUp() {
-    DCHECK(rph_refs_.empty());
-    for (PrefIdFsInfoMap::const_iterator it = pref_id_map_.begin();
-         it != pref_id_map_.end();
-         ++it) {
-      file_system_context_->RevokeFileSystem(it->second.fsid);
-    }
-    pref_id_map_.clear();
-
+    // This causes the owner of this class to destroy this object. The revoking
+    // of our filesystems occurs in the destructor. It's written that way
+    // because sometimes the Profile Shutdown can ALSO cause object destruction.
     std::move(no_references_callback_).Run();
   }
 
   // MediaFileSystemRegistry owns |this| and |file_system_context_|, so it's
   // safe to store a raw pointer.
-  MediaFileSystemContext* file_system_context_;
+  raw_ptr<MediaFileSystemContext> file_system_context_;
 
   // Path for the active profile.
   const base::FilePath profile_path_;
@@ -503,11 +350,12 @@ class ExtensionGalleriesHost
   // A map from the gallery preferences id to the file system information.
   PrefIdFsInfoMap pref_id_map_;
 
-  // The set of render processes and web contents that may have references to
-  // the file system ids this instance manages.
-  RPHReferenceManager rph_refs_;
+  // The number of living content::Page instances that are interested in this
+  // combination of Profile and `extension_id`.
+  size_t referring_page_count_ = 0U;
 
-  DISALLOW_COPY_AND_ASSIGN(ExtensionGalleriesHost);
+  // Don't let callbacks extend our lifetime, as that makes things complicated.
+  base::WeakPtrFactory<ExtensionGalleriesHost> weak_factory_{this};
 };
 
 /******************
@@ -518,8 +366,7 @@ void MediaFileSystemRegistry::GetMediaFileSystemsForExtension(
     content::WebContents* contents,
     const extensions::Extension* extension,
     MediaFileSystemsCallback callback) {
-  // TODO(tommycli): Change to DCHECK after fixing http://crbug.com/374330.
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   MediaGalleriesPreferences* preferences = GetPreferences(profile);
@@ -594,7 +441,7 @@ MediaGalleriesPreferences* MediaFileSystemRegistry::GetPreferences(
 
 GalleryWatchManager* MediaFileSystemRegistry::gallery_watch_manager() {
   if (!gallery_watch_manager_)
-    gallery_watch_manager_.reset(new GalleryWatchManager);
+    gallery_watch_manager_ = std::make_unique<GalleryWatchManager>();
   return gallery_watch_manager_.get();
 }
 
@@ -653,6 +500,11 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
     : public MediaFileSystemContext {
  public:
   MediaFileSystemContextImpl() {}
+
+  MediaFileSystemContextImpl(const MediaFileSystemContextImpl&) = delete;
+  MediaFileSystemContextImpl& operator=(const MediaFileSystemContextImpl&) =
+      delete;
+
   ~MediaFileSystemContextImpl() override {}
 
   bool RegisterFileSystem(const std::string& device_id,
@@ -666,7 +518,7 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
   void RevokeFileSystem(const std::string& fs_name) override {
     ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(fs_name);
 
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&MTPDeviceMapService::RevokeMTPFileSystem,
@@ -705,7 +557,7 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
   bool RegisterFileSystemForMTPDevice(const std::string& device_id,
                                       const std::string fs_name,
                                       const base::FilePath& path) {
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(!StorageInfo::IsMassStorageDevice(device_id));
 
@@ -728,8 +580,6 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
     return false;
 #endif
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileSystemContextImpl);
 };
 
 // Constructor in 'private' section because depends on private class definition.
@@ -802,14 +652,18 @@ ExtensionGalleriesHost* MediaFileSystemRegistry::GetExtensionGalleryHost(
   if (extension_hosts->second.empty())
     preferences->AddGalleryChangeObserver(this);
 
-  ExtensionGalleriesHost* result = extension_hosts->second[extension_id].get();
-  if (!result) {
-    result = new ExtensionGalleriesHost(
-        file_system_context_.get(), profile->GetPath(), extension_id,
-        base::BindOnce(&MediaFileSystemRegistry::OnExtensionGalleriesHostEmpty,
-                       base::Unretained(this), profile, extension_id));
-    extension_hosts_map_[profile][extension_id] = result;
+  auto it = extension_hosts->second.find(extension_id);
+  if (it != extension_hosts->second.end()) {
+    return it->second.get();
   }
+
+  auto new_host = std::make_unique<ExtensionGalleriesHost>(
+      file_system_context_.get(), profile->GetPath(), extension_id,
+      base::BindOnce(&MediaFileSystemRegistry::OnExtensionGalleriesHostEmpty,
+                     base::Unretained(this), profile, extension_id));
+  // Save a raw pointer to the newly created host so we can return it.
+  auto* result = new_host.get();
+  extension_hosts->second[extension_id] = std::move(new_host);
   return result;
 }
 

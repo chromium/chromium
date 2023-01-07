@@ -27,8 +27,8 @@ bool {{class_name}}::Validate(
 
   // NOTE: The memory backing |object| may be smaller than |sizeof(*object)| if
   // the message comes from an older version.
-  const {{class_name}}* object = static_cast<const {{class_name}}*>(data);
-  ALLOW_UNUSED_LOCAL(object);
+  [[maybe_unused]] const {{class_name}}* object =
+      static_cast<const {{class_name}}*>(data);
 
 {#- Before validating fields introduced at a certain version, we need to add
     a version check, which makes sure we skip further validation if |object|

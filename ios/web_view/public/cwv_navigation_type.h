@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_VIEW_PUBLIC_CWV_PAGE_TRANSITION_H_
-#define IOS_WEB_VIEW_PUBLIC_CWV_PAGE_TRANSITION_H_
+#ifndef IOS_WEB_VIEW_PUBLIC_CWV_NAVIGATION_TYPE_H_
+#define IOS_WEB_VIEW_PUBLIC_CWV_NAVIGATION_TYPE_H_
 
 #import <Foundation/Foundation.h>
 
@@ -133,4 +133,4 @@ typedef NS_OPTIONS(NSUInteger, CWVNavigationType) {
 
 NS_ASSUME_NONNULL_END
 
-#endif  // IOS_WEB_VIEW_PUBLIC_CWV_PAGE_TRANSITION_H_
+#endif  // IOS_WEB_VIEW_PUBLIC_CWV_NAVIGATION_TYPE_H_

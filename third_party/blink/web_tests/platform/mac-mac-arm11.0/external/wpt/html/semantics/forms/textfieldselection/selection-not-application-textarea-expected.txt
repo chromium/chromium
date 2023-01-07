@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL text field selection for the input textarea assert_equals: updated selectionStart expected 1 but got 0
-Harness: the test ran to completion.
-

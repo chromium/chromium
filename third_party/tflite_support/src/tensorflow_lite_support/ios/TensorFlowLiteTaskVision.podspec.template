@@ -1,0 +1,21 @@
+Pod::Spec.new do |s|
+  s.name             = 'TensorFlowLiteTaskVision'
+  s.version          = '${TFLS_BUILD_VERSION}'
+  s.authors          = 'Google Inc.'
+  s.license          = { :type => 'Apache',:file => "LICENSE" }
+  s.homepage         = 'https://github.com/tensorflow/tflite-support'
+  s.source           = { :http => '${TFLS_DOWNLOAD_URL}' }
+  s.summary          = 'TensorFlow Lite Task Library - Vision'
+  s.description      = 'The Computer Vision APIs of the TFLite Task Library'
+
+  s.ios.deployment_target = '10.0'
+
+  s.module_name = 'TensorFlowLiteTaskVision'
+  s.static_framework = true
+  s.pod_target_xcconfig = {
+    'VALID_ARCHS' => 'x86_64, arm64, armv7',
+  }
+  s.library = 'c++'
+  s.frameworks = 'CoreMedia', 'Accelerate'
+  s.vendored_frameworks = 'Frameworks/TensorFlowLiteTaskVision.framework'
+end

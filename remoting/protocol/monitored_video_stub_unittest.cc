@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,12 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/timer/timer.h"
@@ -23,20 +24,18 @@ using ::testing::AnyNumber;
 using ::testing::AtMost;
 using ::testing::InvokeWithoutArgs;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 static const int64_t kTestOverrideDelayMilliseconds = 1;
 
 class MonitoredVideoStubTest : public testing::Test {
  protected:
   void SetUp() override {
-    packet_.reset(new VideoPacket());
-    monitor_.reset(new MonitoredVideoStub(
-        &video_stub_,
-        base::TimeDelta::FromMilliseconds(kTestOverrideDelayMilliseconds),
+    packet_ = std::make_unique<VideoPacket>();
+    monitor_ = std::make_unique<MonitoredVideoStub>(
+        &video_stub_, base::Milliseconds(kTestOverrideDelayMilliseconds),
         base::BindRepeating(&MonitoredVideoStubTest::OnVideoChannelStatus,
-                            base::Unretained(this))));
+                            base::Unretained(this)));
     EXPECT_CALL(video_stub_, ProcessVideoPacketPtr(_, _)).Times(AnyNumber());
   }
 
@@ -97,5 +96,4 @@ TEST_F(MonitoredVideoStubTest, OnChannelStayDisconnected) {
   base::RunLoop().Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

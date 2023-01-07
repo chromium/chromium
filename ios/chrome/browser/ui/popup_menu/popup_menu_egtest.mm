@@ -1,20 +1,21 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ios/ios_util.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/feature_engagement/feature_engagement_app_interface.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -133,15 +134,26 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that the menu is closed when tapping the close button or the scrim.
+// Tests that the menu is opened and closed correctly, whatever the current
+// device type is.
 - (void)testOpenAndCloseToolsMenu {
+  // TODO(crbug.com/1289776): This test only fails on ipad bots with
+  // multitasking enabled (e.g. compact width).
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
+      [ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled for iPad multitasking.");
+  }
   [ChromeEarlGreyUI openToolsMenu];
 
-  // A scrim covers the whole window and tapping on this scrim dismisses the
-  // tools menu.  The "Tools Menu" button happens to be outside of the bounds of
-  // the menu and is a convenient place to tap to activate the scrim.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
-      performAction:grey_tap()];
+  // If using the new overflow menu, swipe up to expand the menu to the full
+  // height to make sure that `closeToolsMenu` still closes it.
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
+      [ChromeEarlGrey isCompactWidth]) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
+        performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+  }
+
+  [ChromeEarlGreyUI closeToolsMenu];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
       assertWithMatcher:grey_notVisible()];
@@ -154,6 +166,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
       tapToolsMenuButton:chrome_test_util::OpenNewWindowMenuButton()];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
 
   // Verify the second window.
   [ChromeEarlGrey waitForForegroundWindowCount:2];
@@ -167,12 +180,16 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   // Navigate to a mock pdf and verify that the find button is disabled.
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGreyUI openToolsMenu];
+  id<GREYMatcher> tableViewMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(kToolsMenuFindInPageId),
                                    grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
+      onElementWithMatcher:tableViewMatcher]
       assertWithMatcher:grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled)];
 }
@@ -183,6 +200,34 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   // Close Tools menu.
   [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+}
+
+// Tests that the overflow menu IPH shows up when triggered.
+- (void)testOverflowMenuIPH {
+  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The overflow menu IPH only exists when the overflow menu is enabled.")
+  }
+  GREYAssert([FeatureEngagementAppInterface enableOverflowMenuTipTriggering],
+             @"Feature Engagement tracker did not load");
+
+  // Open and close tools menu twice with no action to trigger tooltip.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI closeToolsMenu];
+
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI closeToolsMenu];
+
+  // Background and foreground the app, which should show tooltip.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(@"BubbleViewLabelIdentifier")];
+
+  // Open the tools menu and verify the second tooltip is visible.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(@"BubbleViewLabelIdentifier")];
 }
 
 @end

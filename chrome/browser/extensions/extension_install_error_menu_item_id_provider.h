@@ -1,11 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_ERROR_MENU_ITEM_ID_PROVIDER_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_ERROR_MENU_ITEM_ID_PROVIDER_H_
-
-#include "base/macros.h"
 
 namespace extensions {
 
@@ -17,14 +15,18 @@ namespace extensions {
 class ExtensionInstallErrorMenuItemIdProvider {
  public:
   ExtensionInstallErrorMenuItemIdProvider();
+
+  ExtensionInstallErrorMenuItemIdProvider(
+      const ExtensionInstallErrorMenuItemIdProvider&) = delete;
+  ExtensionInstallErrorMenuItemIdProvider& operator=(
+      const ExtensionInstallErrorMenuItemIdProvider&) = delete;
+
   ~ExtensionInstallErrorMenuItemIdProvider();
 
   int menu_command_id() { return menu_command_id_; }
 
  private:
   int menu_command_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallErrorMenuItemIdProvider);
 };
 
 }  // namespace extensions

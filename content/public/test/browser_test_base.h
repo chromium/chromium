@@ -1,34 +1,61 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// If you are looking to write a new browser test, you are probably looking for
+// one of the already-implemented subclasses, e.g. `content::ContentBrowserTest`
+// for tests that can run directly on top of content_shell,
+// `InProcessBrowserTest` for tests that require `//chrome`-layer functionality,
+// et cetera. See `//content/public/test/browser_test.h` for more information.
+//
+// `content::BrowserTestBase` is a base class that provides shared functionality
+// across various types of browser tests. It is not intended for direct use in
+// tests, as it does not actually define how to launch a browser, nor how to run
+// a test in said browser.
 
 #ifndef CONTENT_PUBLIC_TEST_BROWSER_TEST_BASE_H_
 #define CONTENT_PUBLIC_TEST_BROWSER_TEST_BASE_H_
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_host_resolver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/dns/public/dns_over_https_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/mojom/network_service_test.mojom.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(RUST_ENABLED)
+#include "testing/rust_gtest_interop/rust_gtest_interop.h"
+#endif
 
 namespace base {
 class CommandLine;
 class FilePath;
 class TimeDelta;
+}  // namespace base
+
+namespace chromeos {
+class ScopedDisableCrosapiForTesting;
 }
 
 namespace content {
 class BrowserMainParts;
 class WebContents;
 
-class BrowserTestBase : public testing::Test {
+class BrowserTestBase : public ::testing::Test {
  public:
   BrowserTestBase();
   ~BrowserTestBase() override;
@@ -61,16 +88,32 @@ class BrowserTestBase : public testing::Test {
   // this if they want to use the production path.
   virtual bool UseProductionQuotaSettings();
 
+  // This is invoked if the test receives SIGTERM or SIGSEGV.
+  virtual void SignalRunTestOnMainThread(int signal) {}
+
   // Crash the Network Service process. Should only be called when
   // out-of-process Network Service is enabled. Re-applies any added host
   // resolver rules, though network tasks started before the call returns may
   // racily start before the rules have been re-applied.
   void SimulateNetworkServiceCrash();
 
+  // Ignores all future NetworkService crashes that would be otherwise detected
+  // and flagged by the AssertThatNetworkServiceDidNotCrash method.
+  //
+  // The IgnoreNetworkServiceCrashes method is useful in a test that plans to
+  // trigger crashes. Note that calling IgnoreNetworkServiceCrashes is *not*
+  // needed when triggering the crash via SimulateNetworkServiceCrash method.
+  void IgnoreNetworkServiceCrashes();
+
   // Returns the host resolver being used for the tests. Subclasses might want
   // to configure it inside tests.
   net::RuleBasedHostResolverProc* host_resolver() {
     return test_host_resolver_ ? test_host_resolver_->host_resolver() : nullptr;
+  }
+
+  // Returns the NetworkServiceTest remote endpoint in this test fixture.
+  mojo::Remote<network::mojom::NetworkServiceTest>& network_service_test() {
+    return network_service_test_;
   }
 
  protected:
@@ -90,9 +133,23 @@ class BrowserTestBase : public testing::Test {
   // PreEarlyInitialization() has been called.
   virtual void CreatedBrowserMainParts(BrowserMainParts* browser_main_parts) {}
 
+  // GTest assertions that the connection to `network_service_test_` did not get
+  // dropped unexpectedly.
+  void AssertThatNetworkServiceDidNotCrash();
+
   // Sets flag to allow host resolutions to reach the network. Must be called
   // before Setup() to take effect.
   void SetAllowNetworkAccessToHostResolutions();
+
+  // Sets flag that will cause the network service's system DNS configuration to
+  // be replaced with a basic, single-server configuration. This should improve
+  // test reproducibility and consistency across platforms, at the cost of
+  // disabling the platform-specific logic that handles system config changes.
+  void SetReplaceSystemDnsConfig();
+
+  // Sets DoH configuration for use during tests.
+  void SetTestDohConfig(net::SecureDnsMode secure_dns_mode,
+                        net::DnsOverHttpsConfig config);
 
   // This is invoked from main after browser_init/browser_main have completed.
   // This prepares for the test by creating a new browser and doing any other
@@ -122,7 +179,7 @@ class BrowserTestBase : public testing::Test {
 
   bool set_up_called() { return set_up_called_; }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // This is only needed by a test that raises SIGTERM to ensure that a specific
   // codepath is taken.
   void DisableSIGTERMHandling() {
@@ -160,7 +217,7 @@ class BrowserTestBase : public testing::Test {
   void SetInitialWebContents(WebContents* web_contents);
 
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android browser tests need to wait for async initialization in Java code.
   // This waits for those to complete before we can continue with the test.
   void WaitUntilJavaIsReady(base::OnceClosure quit_closure,
@@ -173,11 +230,24 @@ class BrowserTestBase : public testing::Test {
   // added in SetUpOnMainThread.
   void InitializeNetworkProcess();
 
+  // Captures |browser_main_parts_| and forwards the call to
+  // CreatedBrowserMainParts().
+  void CreatedBrowserMainPartsImpl(BrowserMainParts* browser_main_parts);
+
   // Embedded test server, cheap to create, started on demand.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
 
   // Host resolver used during tests.
   std::unique_ptr<TestHostResolver> test_host_resolver_;
+
+  // When true, `InitializeNetworkProcess` will tell the network service to use
+  // a dummy system DNS configuration.
+  bool replace_system_dns_config_ = false;
+
+  // DoH configuration used during tests. When it contains a value,
+  // `InitializeNetworkProcess` will pass it to the network service.
+  absl::optional<std::pair<net::SecureDnsMode, net::DnsOverHttpsConfig>>
+      test_doh_config_;
 
   // A field trial list that's used to support field trials activated prior to
   // browser start.
@@ -199,25 +269,79 @@ class BrowserTestBase : public testing::Test {
   bool use_software_compositing_ = false;
 
   // Initial WebContents to watch for navigations during SetUpOnMainThread.
-  WebContents* initial_web_contents_ = nullptr;
+  raw_ptr<WebContents> initial_web_contents_ = nullptr;
 
   // Whether SetUp was called. This value is checked in the destructor of this
   // class to ensure that SetUp was called. If it's not called, the test will
   // not run and report a false positive result.
   bool set_up_called_ = false;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<chromeos::ScopedDisableCrosapiForTesting> disable_crosapi_;
+#endif
+
   std::unique_ptr<storage::QuotaSettings> quota_settings_;
 
   std::unique_ptr<NoRendererCrashesAssertion> no_renderer_crashes_assertion_;
+
+  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test_;
 
   bool initialized_network_process_ = false;
 
   bool allow_network_access_to_host_resolutions_ = false;
 
-#if defined(OS_POSIX)
+  raw_ptr<BrowserMainParts, DanglingUntriaged> browser_main_parts_ = nullptr;
+
+#if BUILDFLAG(IS_POSIX)
   bool handle_sigterm_;
 #endif
 };
+
+#if defined(RUST_ENABLED)
+// Macro to make an extern "C" function which acts as a Gtest factory for a
+// BrowserTestBase subclass T. Invoke this macro once for each subclass of
+// BrowserTestBase that should be used as a TestSuite class from a Rust browser
+// test, which can be specified with `#[gtest_suite(T)]`.
+//
+// The function generated by the macro is used by the
+// rust_gtest_interop::TestSuite trait implementation to connect a Rust test to
+// the C++ class.
+#define RUST_BROWSERTEST_TEST_SUITE_FACTORY(T)                     \
+  extern "C" T* RustBrowserTestFactory_##T(void (*f)(T*)) {        \
+    return ::content::rust_browsertest_factory_for_subclass<T>(f); \
+  }
+
+// This class provides Rust access to BrowserTestBase and its subclasses. It
+// replaces rust_gtest_interop::RustTest because TestBody() is not used by the
+// the BrowserTestBase class. Instead, the test is run from within the
+// RunTestOnMainThread() override.
+template <class BrowserTestBaseSubclass>
+class RustBrowserTest : public BrowserTestBaseSubclass {
+ public:
+  explicit RustBrowserTest(void (&test_fn)(BrowserTestBaseSubclass*))
+      : test_fn_(test_fn) {
+    static_assert(std::is_convertible_v<BrowserTestBaseSubclass*,
+                                        ::content::BrowserTestBase*>,
+                  "RustBrowserTest's Subclass parameter must be a subclass"
+                  " of content::BrowserTestBase");
+  }
+  void RunTestOnMainThread() override { test_fn_(this); }
+
+ private:
+  void TestBody() override {}
+
+  void (&test_fn_)(BrowserTestBaseSubclass*);
+};
+
+// Templated implementation of GtestFactoryFunction for browser tests. Rust
+// can't use templated methods currently, so other fully-typed functions need to
+// exist which can make use of this function, via the
+// RUST_BROWSERTEST_TEST_SUITE_FACTORY() macro.
+template <class Subclass>
+Subclass* rust_browsertest_factory_for_subclass(void (*body)(Subclass*)) {
+  return new RustBrowserTest<Subclass>(*body);
+}
+#endif  // RUST_ENABLED
 
 }  // namespace content
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -51,6 +50,10 @@ void RetryForHistogramBucketUntilCountReached(
 class MockBatteryMonitor : public device::mojom::BatteryMonitor {
  public:
   MockBatteryMonitor() = default;
+
+  MockBatteryMonitor(const MockBatteryMonitor&) = delete;
+  MockBatteryMonitor& operator=(const MockBatteryMonitor&) = delete;
+
   ~MockBatteryMonitor() override = default;
 
   void Bind(mojo::PendingReceiver<device::mojom::BatteryMonitor> receiver) {
@@ -90,14 +93,17 @@ class MockBatteryMonitor : public device::mojom::BatteryMonitor {
   device::mojom::BatteryStatus status_;
   bool status_to_report_ = false;
   mojo::Receiver<device::mojom::BatteryMonitor> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockBatteryMonitor);
 };
 
 // Test that the metricss around battery usage are recorded correctly.
 class BatteryMetricsBrowserTest : public InProcessBrowserTest {
  public:
   BatteryMetricsBrowserTest() = default;
+
+  BatteryMetricsBrowserTest(const BatteryMetricsBrowserTest&) = delete;
+  BatteryMetricsBrowserTest& operator=(const BatteryMetricsBrowserTest&) =
+      delete;
+
   ~BatteryMetricsBrowserTest() override = default;
 
  protected:
@@ -121,18 +127,9 @@ class BatteryMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<MockBatteryMonitor> mock_battery_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryMetricsBrowserTest);
 };
 
-#if defined(OS_WIN)
-#define DISABLED_ON_WIN(name) DISABLED##name
-#else
-#define DISABLED_ON_WIN(name) name
-#endif
-
-IN_PROC_BROWSER_TEST_F(BatteryMetricsBrowserTest,
-                       DISABLED_ON_WIN(BatteryDropUMA)) {
+IN_PROC_BROWSER_TEST_F(BatteryMetricsBrowserTest, BatteryDropUMA) {
   // Verify that drops in battery level are recorded, and drops by less than 1%
   // are aggregated together until there is a full percentage drop.
   device::mojom::BatteryStatus status;

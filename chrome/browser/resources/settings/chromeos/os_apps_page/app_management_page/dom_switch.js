@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,62 +31,88 @@
  */
 
 // TODO(crbug.com/992795) Merge with cr-view-manager.
-Polymer({
-  is: 'app-management-dom-switch',
+import {assert} from 'chrome://resources/js/assert.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {html, PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  behaviors: [Polymer.Templatizer],
+/** @polymer */
+class AppManagementDomSwitchElement extends PolymerElement {
+  static get is() {
+    return 'app-management-dom-switch';
+  }
 
-  properties: {
-    /**
-     * Should contain the route-id of one of the elements within the dom-switch.
-     * @private {?string}
-     */
-    route: {
-      type: String,
-      observer: 'onRouteChanged_',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The template instance.
-     * @private {?Element|?TemplateInstanceBase}
-     */
-    instance_: {
-      type: Object,
-      value: null,
-    },
+  static get properties() {
+    return {
+      /**
+       * Should contain the route-id of one of the elements within the
+       * dom-switch.
+       * @private {?string}
+       */
+      route: {
+        type: String,
+        observer: 'onRouteChanged_',
+      },
 
-    /**
-     * Maps the route-id of each element within the dom-switch to the element
-     * itself.
-     * @private {Object<string, Element>}
-     */
-    children_: {
-      type: Object,
-      value: () => ({}),
-    },
+      /**
+       * The template instance.
+       * @private {?Element|?TemplateInstanceBase}
+       */
+      instance_: {
+        type: Object,
+        value: null,
+      },
 
-    /**
-     * The element whose route-id corresponds to the current route. This is the
-     * only element within the dom-switch which is attached to the DOM.
-     * @private {?Element}
-     */
-    selectedChild_: {
-      type: Object,
-      value: null,
-    },
-  },
+      /**
+       * Maps the route-id of each element within the dom-switch to the element
+       * itself.
+       * @private {Object<string, Element>}
+       */
+      children_: {
+        type: Object,
+        value: () => ({}),
+      },
 
-  firstRenderForTesting_: new PromiseResolver(),
+      /**
+       * The element whose route-id corresponds to the current route. This is
+       * the only element within the dom-switch which is attached to the DOM.
+       * @private {?Element}
+       */
+      selectedChild_: {
+        type: Object,
+        value: null,
+      },
+    };
+  }
 
-  attached() {
-    const template = this.getContentChildren()[0];
-    this.templatize(/** @type {!HTMLTemplateElement} */ (template));
+  constructor() {
+    super();
+
+    /** @private {!PromiseResolver} */
+    this.firstRenderForTesting_ = new PromiseResolver();
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    const template = /** @type {!HTMLTemplateElement} */ (
+        this.shadowRoot.querySelector('slot')
+            .assignedNodes({flatten: true})
+            .filter(n => n.nodeType === Node.ELEMENT_NODE)[0]);
+
+    const TemplateClass = templatize(template, this, {
+      mutableData: false,
+      forwardHostProp: this._forwardHostPropV2,
+    });
 
     // This call stamps all the child elements of the dom-switch at once
     // (calling their created Polymer lifecycle callbacks). If optimisations
     // are required in the future, it may be possible to only stamp children
     // on demand as they are rendered.
-    this.instance_ = (this.stamp({}));
+    this.instance_ = new TemplateClass();
 
     const children = this.instance_.root.children;
     for (const child of children) {
@@ -98,7 +124,7 @@ Polymer({
       // If attached is called after the route has been set.
       this.onRouteChanged_(this.route);
     }
-  },
+  }
 
   /**
    * @param {?string} newRouteId
@@ -131,7 +157,7 @@ Polymer({
 
     this.selectedChild_ = newSelectedChild;
     this.firstRenderForTesting_.resolve();
-  },
+  }
 
   /**
    * @param {string} prop
@@ -141,5 +167,8 @@ Polymer({
     if (this.instance_) {
       this.instance_.forwardHostProp(prop, value);
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    AppManagementDomSwitchElement.is, AppManagementDomSwitchElement);

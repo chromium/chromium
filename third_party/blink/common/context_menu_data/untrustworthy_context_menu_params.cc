@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,6 +76,8 @@ void UntrustworthyContextMenuParams::Assign(
   selection_rect = other.selection_rect;
   selection_start_offset = other.selection_start_offset;
   opened_from_highlight = other.opened_from_highlight;
+  form_renderer_id = other.form_renderer_id;
+  field_renderer_id = other.field_renderer_id;
 }
 
 UntrustworthyContextMenuParams::~UntrustworthyContextMenuParams() = default;

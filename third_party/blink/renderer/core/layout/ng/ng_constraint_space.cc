@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell_interface.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_interface.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -36,45 +38,61 @@ ASSERT_SIZE(NGConstraintSpace, SameSizeAsNGConstraintSpace);
 
 NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
     const LayoutBlock& block) {
-  // We should only ever create a constraint space from legacy layout if the
-  // object is a new formatting context.
-  DCHECK(block.CreatesNewFormattingContext());
+  DCHECK(!block.IsTableCell());
 
   const LayoutBlock* cb = block.ContainingBlock();
-  LayoutUnit available_logical_width =
-      LayoutBoxUtils::AvailableLogicalWidth(block, cb);
-  LayoutUnit available_logical_height =
-      LayoutBoxUtils::AvailableLogicalHeight(block, cb);
-  LogicalSize percentage_size = {available_logical_width,
-                                 available_logical_height};
-  LogicalSize available_size = percentage_size;
+  LogicalSize available_size;
+  bool is_fixed_inline_size = false;
+  bool is_fixed_block_size = false;
+  if (cb) {
+    available_size.inline_size =
+        LayoutBoxUtils::AvailableLogicalWidth(block, cb);
+    available_size.block_size =
+        LayoutBoxUtils::AvailableLogicalHeight(block, cb);
+  } else {
+    DCHECK(block.IsLayoutView());
+    available_size = To<LayoutView>(block).InitialContainingBlockSize();
+    is_fixed_inline_size = true;
+    is_fixed_block_size = true;
+  }
 
-  bool fixed_inline = false, fixed_block = false;
-  bool fixed_block_is_definite = true;
+  LogicalSize percentage_size = available_size;
+
+  bool is_initial_block_size_definite = true;
   if (block.HasOverrideLogicalWidth()) {
     available_size.inline_size = block.OverrideLogicalWidth();
-    fixed_inline = true;
+    is_fixed_inline_size = true;
   }
   if (block.HasOverrideLogicalHeight()) {
     available_size.block_size = block.OverrideLogicalHeight();
-    fixed_block = true;
+    is_fixed_block_size = true;
   }
-  if (block.IsFlexItem() && fixed_block) {
+  if (block.IsFlexItem() && is_fixed_block_size) {
     // The flexbox-specific behavior is in addition to regular definite-ness, so
     // if the flex item would normally have a definite height it should keep it.
-    fixed_block_is_definite =
+    is_initial_block_size_definite =
         To<LayoutFlexibleBox>(block.Parent())
             ->UseOverrideLogicalHeightForPerentageResolution(block) ||
         block.HasDefiniteLogicalHeight();
   }
+
+  // We cannot enter NG layout at an object that isn't a formatting context
+  // root. However, even though we're creating a constraint space for an object
+  // here, that doesn't have to mean that we're going to lay it out. For
+  // instance, if we're laying out an out-of-flow positioned NG object contained
+  // by a legacy object, |block| here will be the container of the OOF, not the
+  // OOF itself. It's perfectly fine if that one isn't a formatting context
+  // root, since it's being laid out by the legacy engine anyway. As for the OOF
+  // that we're actually going to lay out, it will always establish a new
+  // formatting context, since it's out-of-flow.
+  bool is_new_fc = block.CreatesNewFormattingContext();
 
   const ComputedStyle& style = block.StyleRef();
   const auto writing_mode = style.GetWritingMode();
   bool parallel_containing_block = IsParallelWritingMode(
       cb ? cb->StyleRef().GetWritingMode() : writing_mode, writing_mode);
   NGConstraintSpaceBuilder builder(writing_mode, style.GetWritingDirection(),
-                                   /* is_new_fc */ true,
-                                   !parallel_containing_block);
+                                   is_new_fc, !parallel_containing_block);
 
   if (!block.IsWritingModeRoot() || block.IsGridItem()) {
     // We don't know if the parent layout will require our baseline, so always
@@ -82,37 +100,7 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
     builder.SetBaselineAlgorithmType(block.IsInline() &&
                                              block.IsAtomicInlineLevel()
                                          ? NGBaselineAlgorithmType::kInlineBlock
-                                         : NGBaselineAlgorithmType::kFirstLine);
-  }
-
-  if (block.IsTableCell()) {
-    const LayoutNGTableCellInterface& cell =
-        ToInterface<LayoutNGTableCellInterface>(block);
-    const ComputedStyle& cell_style = cell.ToLayoutObject()->StyleRef();
-    const ComputedStyle& table_style =
-        cell.TableInterface()->ToLayoutObject()->StyleRef();
-    DCHECK(block.IsTableCellLegacy());
-    builder.SetIsTableCell(true, /* is_table_cell_legacy */ true);
-    builder.SetIsRestrictedBlockSizeTableCell(
-        !cell_style.LogicalHeight().IsAuto() ||
-        !table_style.LogicalHeight().IsAuto());
-    const LayoutBlock& cell_block = To<LayoutBlock>(*cell.ToLayoutObject());
-    if (fixed_block) {
-      fixed_block_is_definite = cell_block.HasDefiniteLogicalHeight() ||
-                                !table_style.LogicalHeight().IsAuto();
-    }
-    builder.SetTableCellBorders(
-        {cell_block.BorderStart(), cell_block.BorderEnd(),
-         cell_block.BorderBefore(), cell_block.BorderAfter()});
-    builder.SetTableCellIntrinsicPadding(
-        {LayoutUnit(), LayoutUnit(), LayoutUnit(cell.IntrinsicPaddingBefore()),
-         LayoutUnit(cell.IntrinsicPaddingAfter())});
-    builder.SetHideTableCellIfEmpty(
-        cell_style.EmptyCells() == EEmptyCells::kHide &&
-        table_style.BorderCollapse() == EBorderCollapse::kSeparate);
-    builder.SetIsTableCellWithCollapsedBorders(
-        cell_block.Parent()->Parent()->Parent()->StyleRef().BorderCollapse() ==
-        EBorderCollapse::kCollapse);
+                                         : NGBaselineAlgorithmType::kDefault);
   }
 
   if (block.IsAtomicInlineLevel() || block.IsFlexItem() || block.IsGridItem() ||
@@ -121,11 +109,16 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
 
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(percentage_size);
-  builder.SetIsFixedInlineSize(fixed_inline);
-  builder.SetIsFixedBlockSize(fixed_block);
-  builder.SetIsFixedBlockSizeIndefinite(!fixed_block_is_definite);
-  builder.SetStretchInlineSizeIfAuto(
-      !block.SizesLogicalWidthToFitContent(style.LogicalWidth()));
+  builder.SetIsFixedInlineSize(is_fixed_inline_size);
+  builder.SetIsFixedBlockSize(is_fixed_block_size);
+  builder.SetIsInitialBlockSizeIndefinite(!is_initial_block_size_definite);
+  // HTML element with display:table is shrink-to-fit.
+  bool shrink_to_fit =
+      block.SizesLogicalWidthToFitContent(style.LogicalWidth()) ||
+      (block.IsTable() && block.Parent() && block.Parent()->IsLayoutView());
+  builder.SetInlineAutoBehavior(shrink_to_fit
+                                    ? NGAutoBehavior::kFitContent
+                                    : NGAutoBehavior::kStretchImplicit);
   return builder.ToConstraintSpace();
 }
 

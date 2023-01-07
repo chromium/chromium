@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,24 +10,29 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -40,6 +45,7 @@
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/switches.h"
 #include "extensions/shell/browser/desktop_controller.h"
+#include "extensions/shell/browser/shell_browser_context.h"
 #include "extensions/shell/browser/shell_content_browser_client.h"
 #include "extensions/shell/browser/shell_extension_system.h"
 #include "extensions/shell/test/shell_test.h"
@@ -51,6 +57,9 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/display/display_switches.h"
 
 #if defined(USE_AURA)
@@ -67,26 +76,52 @@ const char kRedirectResponsePath[] = "/server-redirect";
 const char kRedirectResponseFullPath[] = "/guest_redirect.html";
 const char kUserAgentRedirectResponsePath[] = "/detect-user-agent";
 const char kTestServerPort[] = "testServer.port";
+const char kExpectUserAgentPath[] = "/expect-user-agent";
 
 // Handles |request| by serving a redirect response if the |User-Agent| is
 // foobar.
-static std::unique_ptr<net::test_server::HttpResponse> UserAgentResponseHandler(
-    const std::string& path,
-    const GURL& redirect_target,
-    const net::test_server::HttpRequest& request) {
+static std::unique_ptr<net::test_server::HttpResponse>
+UserAgentRedirectResponseHandler(const std::string& path,
+                                 const GURL& redirect_target,
+                                 const net::test_server::HttpRequest& request) {
   if (!base::StartsWith(path, request.relative_url,
-                        base::CompareCase::SENSITIVE))
-    return std::unique_ptr<net::test_server::HttpResponse>();
+                        base::CompareCase::SENSITIVE)) {
+    return nullptr;
+  }
 
   auto it = request.headers.find("User-Agent");
   EXPECT_TRUE(it != request.headers.end());
   if (!base::StartsWith("foobar", it->second, base::CompareCase::SENSITIVE))
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
 
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
   http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
   http_response->AddCustomHeader("Location", redirect_target.spec());
+  return std::move(http_response);
+}
+
+static std::unique_ptr<net::test_server::HttpResponse>
+ExpectUserAgentResponseHandler(const std::string& path,
+                               const net::test_server::HttpRequest& request) {
+  if (!base::StartsWith(path, request.relative_url,
+                        base::CompareCase::SENSITIVE)) {
+    return nullptr;
+  }
+
+  auto it = request.headers.find("User-Agent");
+  EXPECT_TRUE(it != request.headers.end());
+  EXPECT_TRUE(
+      base::StartsWith("foobar", it->second, base::CompareCase::SENSITIVE));
+
+  it = request.headers.find("Sec-CH-UA-Platform");
+  EXPECT_TRUE(it != request.headers.end());
+  EXPECT_EQ("\"\"", it->second);
+
+  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
+      new net::test_server::BasicHttpResponse);
+  http_response->set_code(net::HTTP_OK);
+  http_response->set_content_type("html/text");
   return std::move(http_response);
 }
 
@@ -97,6 +132,10 @@ class WebContentsHiddenObserver : public content::WebContentsObserver {
       : WebContentsObserver(web_contents),
         hidden_callback_(std::move(hidden_callback)),
         hidden_observed_(false) {}
+
+  WebContentsHiddenObserver(const WebContentsHiddenObserver&) = delete;
+  WebContentsHiddenObserver& operator=(const WebContentsHiddenObserver&) =
+      delete;
 
   // WebContentsObserver.
   void OnVisibilityChanged(content::Visibility visibility) override {
@@ -111,8 +150,6 @@ class WebContentsHiddenObserver : public content::WebContentsObserver {
  private:
   base::RepeatingClosure hidden_callback_;
   bool hidden_observed_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsHiddenObserver);
 };
 
 // Handles |request| by serving a redirect response.
@@ -121,8 +158,9 @@ std::unique_ptr<net::test_server::HttpResponse> RedirectResponseHandler(
     const GURL& redirect_target,
     const net::test_server::HttpRequest& request) {
   if (!base::StartsWith(path, request.relative_url,
-                        base::CompareCase::SENSITIVE))
-    return std::unique_ptr<net::test_server::HttpResponse>();
+                        base::CompareCase::SENSITIVE)) {
+    return nullptr;
+  }
 
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
@@ -141,8 +179,46 @@ std::unique_ptr<net::test_server::HttpResponse> EmptyResponseHandler(
         new net::test_server::RawHttpResponse("", ""));
   }
 
-  return std::unique_ptr<net::test_server::HttpResponse>();
+  return nullptr;
 }
+
+class RenderWidgetHostVisibilityObserver
+    : public content::RenderWidgetHostObserver {
+ public:
+  RenderWidgetHostVisibilityObserver(content::RenderWidgetHost* host,
+                                     base::OnceClosure hidden_callback)
+      : hidden_callback_(std::move(hidden_callback)) {
+    observation_.Observe(host);
+  }
+  ~RenderWidgetHostVisibilityObserver() override = default;
+  RenderWidgetHostVisibilityObserver(
+      const RenderWidgetHostVisibilityObserver&) = delete;
+  RenderWidgetHostVisibilityObserver& operator=(
+      const RenderWidgetHostVisibilityObserver&) = delete;
+
+  bool hidden_observed() const { return hidden_observed_; }
+
+ private:
+  // content::RenderWidgetHostObserver:
+  void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* host,
+                                         bool became_visible) override {
+    if (!became_visible) {
+      hidden_observed_ = true;
+      std::move(hidden_callback_).Run();
+    }
+  }
+
+  void RenderWidgetHostDestroyed(content::RenderWidgetHost* host) override {
+    EXPECT_TRUE(observation_.IsObservingSource(host));
+    observation_.Reset();
+  }
+
+  base::OnceClosure hidden_callback_;
+  base::ScopedObservation<content::RenderWidgetHost,
+                          content::RenderWidgetHostObserver>
+      observation_{this};
+  bool hidden_observed_ = false;
+};
 
 }  // namespace
 
@@ -162,7 +238,7 @@ void WebViewAPITest::LaunchApp(const std::string& app_location) {
   ASSERT_TRUE(extension);
   extension_system_->LaunchApp(extension->id());
 
-  ExtensionTestMessageListener launch_listener("LAUNCHED", false);
+  ExtensionTestMessageListener launch_listener("LAUNCHED");
   launch_listener.set_failure_message("FAILURE");
   ASSERT_TRUE(launch_listener.WaitUntilSatisfied());
 
@@ -182,17 +258,17 @@ void WebViewAPITest::RunTest(const std::string& test_name,
   LaunchApp(app_location);
 
   if (ad_hoc_framework) {
-    ExtensionTestMessageListener done_listener("TEST_PASSED", false);
+    ExtensionTestMessageListener done_listener("TEST_PASSED");
     done_listener.set_failure_message("TEST_FAILED");
     ASSERT_TRUE(content::ExecuteScript(
-        embedder_web_contents_,
+        embedder_web_contents_.get(),
         base::StringPrintf("runTest('%s')", test_name.c_str())))
         << "Unable to start test.";
     ASSERT_TRUE(done_listener.WaitUntilSatisfied());
   } else {
     ResultCatcher catcher;
     ASSERT_TRUE(content::ExecuteScript(
-        embedder_web_contents_,
+        embedder_web_contents_.get(),
         base::StringPrintf("runTest('%s')", test_name.c_str())))
         << "Unable to start test.";
     ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -201,7 +277,8 @@ void WebViewAPITest::RunTest(const std::string& test_name,
 
 void WebViewAPITest::SetUpCommandLine(base::CommandLine* command_line) {
   AppShellTest::SetUpCommandLine(command_line);
-  command_line->AppendSwitchASCII(::switches::kJavaScriptFlags, "--expose-gc");
+  command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                  "--expose-gc");
 }
 
 void WebViewAPITest::SetUpOnMainThread() {
@@ -217,7 +294,7 @@ void WebViewAPITest::StartTestServer(const std::string& app_location) {
     return;
   }
 
-  test_config_.SetInteger(kTestServerPort, embedded_test_server()->port());
+  test_config_.SetIntPath(kTestServerPort, embedded_test_server()->port());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath test_data_dir;
@@ -233,7 +310,7 @@ void WebViewAPITest::StartTestServer(const std::string& app_location) {
       base::BindRepeating(&EmptyResponseHandler, kEmptyResponsePath));
 
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &UserAgentResponseHandler, kUserAgentRedirectResponsePath,
+      &UserAgentRedirectResponseHandler, kUserAgentRedirectResponsePath,
       embedded_test_server()->GetURL(kRedirectResponseFullPath)));
 
   net::test_server::RegisterDefaultHandlers(embedded_test_server());
@@ -273,8 +350,8 @@ TestGuestViewManager* WebViewAPITest::GetGuestViewManager() {
       ShellContentBrowserClient::Get()->GetBrowserContext();
   TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
       TestGuestViewManager::FromBrowserContext(context));
-  // TestGuestViewManager::WaitForSingleGuestCreated may and will get called
-  // before a guest is created.
+  // Test code may access the TestGuestViewManager before it would be created
+  // during creation of the first guest.
   if (!manager) {
     manager =
         static_cast<TestGuestViewManager*>(GuestViewManager::CreateWithDelegate(
@@ -289,8 +366,9 @@ void WebViewAPITest::SendMessageToGuestAndWait(
     const std::string& message,
     const std::string& wait_message) {
   std::unique_ptr<ExtensionTestMessageListener> listener;
-  if (!wait_message.empty())
-    listener.reset(new ExtensionTestMessageListener(wait_message, false));
+  if (!wait_message.empty()) {
+    listener = std::make_unique<ExtensionTestMessageListener>(wait_message);
+  }
 
   EXPECT_TRUE(
       content::ExecuteScript(
@@ -309,7 +387,7 @@ void WebViewDPIAPITest::SetUp() {
 }
 
 content::WebContents* WebViewAPITest::GetGuestWebContents() {
-  return GetGuestViewManager()->WaitForSingleGuestCreated();
+  return GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
 }
 
 // This test verifies that hiding the embedder also hides the guest.
@@ -317,8 +395,11 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, EmbedderVisibilityChanged) {
   LaunchApp("web_view/visibility_changed");
 
   base::RunLoop run_loop;
-  WebContentsHiddenObserver observer(GetGuestWebContents(),
-                                     run_loop.QuitClosure());
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  EXPECT_TRUE(guest_view);
+  RenderWidgetHostVisibilityObserver observer(
+      guest_view->GetGuestMainFrame()->GetRenderWidgetHost(),
+      run_loop.QuitClosure());
 
   // Handled in web_view/visibility_changed/main.js
   SendMessageToEmbedder("hide-embedder");
@@ -331,25 +412,27 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, DisplayNoneSetSrc) {
   LaunchApp("web_view/display_none_set_src");
   // Navigate the guest while it's in "display: none" state.
   SendMessageToEmbedder("navigate-guest");
-  GetGuestViewManager()->WaitForSingleGuestCreated();
+  GetGuestViewManager()->WaitForSingleGuestViewCreated();
 
   // Now attempt to navigate the guest again.
   SendMessageToEmbedder("navigate-guest");
 
-  ExtensionTestMessageListener test_passed_listener("WebViewTest.PASSED",
-                                                    false);
+  ExtensionTestMessageListener test_passed_listener("WebViewTest.PASSED");
   // Making the guest visible would trigger loadstop.
   SendMessageToEmbedder("show-guest");
   EXPECT_TRUE(test_passed_listener.WaitUntilSatisfied());
 }
 
-// This test verifies that hiding the guest triggers WebContents::WasHidden().
+// This test verifies that hiding the guest triggers visibility change notifications.
 IN_PROC_BROWSER_TEST_F(WebViewAPITest, GuestVisibilityChanged) {
   LaunchApp("web_view/visibility_changed");
 
   base::RunLoop run_loop;
-  WebContentsHiddenObserver observer(GetGuestWebContents(),
-                                     run_loop.QuitClosure());
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  EXPECT_TRUE(guest_view);
+  RenderWidgetHostVisibilityObserver observer(
+      guest_view->GetGuestMainFrame()->GetRenderWidgetHost(),
+      run_loop.QuitClosure());
 
   // Handled in web_view/visibility_changed/main.js
   SendMessageToEmbedder("hide-guest");
@@ -361,15 +444,14 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, GuestVisibilityChanged) {
 // The test launches an app with guest and closes the window on loadcommit. It
 // then launches the app window again. The process is repeated 3 times.
 // http://crbug.com/291278
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CloseOnLoadcommit DISABLED_CloseOnLoadcommit
 #else
 #define MAYBE_CloseOnLoadcommit CloseOnLoadcommit
 #endif
 IN_PROC_BROWSER_TEST_F(WebViewAPITest, MAYBE_CloseOnLoadcommit) {
   LaunchApp("web_view/close_on_loadcommit");
-  ExtensionTestMessageListener test_done_listener("done-close-on-loadcommit",
-                                                  false);
+  ExtensionTestMessageListener test_done_listener("done-close-on-loadcommit");
   ASSERT_TRUE(test_done_listener.WaitUntilSatisfied());
 }
 
@@ -380,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, ReloadEmbedder) {
   // app for this test.
   LaunchApp("web_view/visibility_changed");
 
-  ExtensionTestMessageListener launched_again_listener("LAUNCHED", false);
+  ExtensionTestMessageListener launched_again_listener("LAUNCHED");
   embedder_web_contents_->GetController().Reload(content::ReloadType::NORMAL,
                                                  false);
   ASSERT_TRUE(launched_again_listener.WaitUntilSatisfied());
@@ -461,26 +543,28 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContextMenu) {
   LaunchApp("web_view/visibility_changed");
 
   // Ensure the webview's surface is ready for hit testing.
-  content::WebContents* guest_web_contents = GetGuestWebContents();
-  content::WaitForHitTestData(guest_web_contents);
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+
+  auto* guest_rfh = guest_view->GetGuestMainFrame();
+  content::WaitForHitTestData(guest_rfh);
 
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor =
-      std::make_unique<content::ContextMenuInterceptor>();
-  context_menu_interceptor->Init(guest_web_contents->GetMainFrame());
+      std::make_unique<content::ContextMenuInterceptor>(guest_rfh);
 
   // Trigger the context menu. AppShell doesn't show a context menu; this is
   // just a sanity check that nothing breaks.
-  content::WebContents* root_web_contents =
-      guest_web_contents->GetOutermostWebContents();
-  content::RenderWidgetHostView* guest_view =
-      guest_web_contents->GetRenderWidgetHostView();
+  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
+
+  content::RenderWidgetHostView* guest_rwhv =
+      guest_rfh->GetRenderWidgetHost()->GetView();
   gfx::Point guest_context_menu_position(5, 5);
   gfx::Point root_context_menu_position =
-      guest_view->TransformPointToRootCoordSpace(guest_context_menu_position);
+      guest_rwhv->TransformPointToRootCoordSpace(guest_context_menu_position);
   content::SimulateMouseClickAt(
-      root_web_contents, blink::WebInputEvent::kNoModifiers,
+      embedder_web_contents, blink::WebInputEvent::kNoModifiers,
       blink::WebMouseEvent::Button::kRight, root_context_menu_position);
   context_menu_interceptor->Wait();
 }
@@ -633,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestCanGoBack) {
 }
 
 // Crashes on Win only.  http://crbug.com/805903
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestLoadStartLoadRedirect DISABLED_TestLoadStartLoadRedirect
 #else
 #define MAYBE_TestLoadStartLoadRedirect TestLoadStartLoadRedirect
@@ -727,25 +811,23 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestRemoveWebviewOnExit) {
   GURL::Replacements replace_host;
   replace_host.SetHostStr("localhost");
 
-  // Run the test and wait until the guest WebContents is available and has
-  // finished loading.
-  ExtensionTestMessageListener guest_loaded_listener("guest-loaded", false);
-  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_,
+  // Run the test and wait until the guest is available and has finished
+  // loading.
+  ExtensionTestMessageListener guest_loaded_listener("guest-loaded");
+  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_.get(),
                                      "runTest('testRemoveWebviewOnExit')"));
 
-  content::WebContents* guest_web_contents = GetGuestWebContents();
-  EXPECT_TRUE(
-      guest_web_contents->GetMainFrame()->GetProcess()->IsForGuestsOnly());
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  EXPECT_TRUE(guest_view);
+  EXPECT_TRUE(guest_view->GetGuestMainFrame()->GetProcess()->IsForGuestsOnly());
   ASSERT_TRUE(guest_loaded_listener.WaitUntilSatisfied());
 
-  content::WebContentsDestroyedWatcher destroyed_watcher(guest_web_contents);
-
   // Tell the embedder to kill the guest.
-  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_,
+  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_.get(),
                                      "removeWebviewOnExitDoCrash()"));
 
-  // Wait until the guest WebContents is destroyed.
-  destroyed_watcher.Wait();
+  // Wait until the guest is destroyed.
+  GetGuestViewManager()->WaitForLastGuestDeleted();
   StopTestServer();
 }
 
@@ -766,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestRemoveWebviewAfterNavigation) {
   RunTest("testRemoveWebviewAfterNavigation", "web_view/apitest");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestResizeWebviewResizesContent \
   DISABLED_TestResizeWebviewResizesContent
 #else
@@ -789,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestWebRequestAPI) {
 }
 
 // Crashes on Win only.  http://crbug.com/805903
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestWebRequestAPIWithHeaders DISABLED_TestWebRequestAPIWithHeaders
 #else
 #define MAYBE_TestWebRequestAPIWithHeaders TestWebRequestAPIWithHeaders
@@ -830,7 +912,12 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestWebViewInsideFrame) {
   LaunchApp("web_view/inside_iframe");
 }
 
-IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestCaptureVisibleRegion) {
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TestCaptureVisibleRegion DISABLED_TestCaptureVisibleRegion
+#else
+#define MAYBE_TestCaptureVisibleRegion TestCaptureVisibleRegion
+#endif
+IN_PROC_BROWSER_TEST_F(WebViewAPITest, MAYBE_TestCaptureVisibleRegion) {
   RunTest("testCaptureVisibleRegion", "web_view/apitest");
 }
 
@@ -858,6 +945,48 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestNoUserCodeFocus) {
 
 IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestClosedShadowRoot) {
   RunTest("testClosedShadowRoot", "web_view/apitest");
+}
+
+class WebViewAPITestUserAgentOverride
+    : public WebViewAPITest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kUserAgentOverrideExperiment,
+         blink::features::kUACHOverrideBlank},
+        {});
+    WebViewAPITest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebViewAPITestUserAgentOverride, TestSetUserAgentOverride) {
+  blink::UserAgentMetadata ua_metadata;
+  ua_metadata.platform = "foobar";
+  content::MockClientHintsControllerDelegate client_hints_controller_delegate(
+      ua_metadata);
+
+  static_cast<ShellBrowserContext*>(
+      ShellContentBrowserClient::Get()->GetBrowserContext())
+      ->set_client_hints_controller_delegate(&client_hints_controller_delegate);
+
+  // The 'Sec-CH-UA' header is only sent over HTTPS
+  net::test_server::EmbeddedTestServer https_server(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.RegisterRequestHandler(base::BindRepeating(
+      &ExpectUserAgentResponseHandler, kExpectUserAgentPath));
+  https_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  ASSERT_TRUE(https_server.Start());
+  base::HistogramTester histogram;
+  test_config_.SetIntPath(kTestServerPort, https_server.port());
+  RunTest("testSetUserAgentOverride", "web_view/apitest");
+  content::FetchHistogramsFromChildProcesses();
+  histogram.ExpectBucketCount(
+      blink::UserAgentOverride::kUserAgentOverrideHistogram,
+      blink::UserAgentOverride::UserAgentOverriden, 1);
 }
 
 }  // namespace extensions

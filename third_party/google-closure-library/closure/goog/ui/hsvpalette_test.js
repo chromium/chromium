@@ -1,16 +1,13 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * @fileoverview
+ * @suppress {missingRequire} Stubbing goog.dom
+ */
 
 goog.module('goog.ui.HsvPaletteTest');
 goog.setTestOnly();
@@ -26,7 +23,6 @@ const events = goog.require('goog.events');
 const googColor = goog.require('goog.color');
 const style = goog.require('goog.style');
 const testSuite = goog.require('goog.testing.testSuite');
-const userAgent = goog.require('goog.userAgent');
 
 let samplePalette;
 let eventWasFired;
@@ -43,11 +39,14 @@ testSuite({
     stubs.reset();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testRtl() {
     samplePalette.render(document.getElementById('sandboxRtl'));
     const color = '#ffffff';
+    /** @suppress {visibility} suppression added to enable type checking */
     samplePalette.inputElement.value = color;
     samplePalette.handleInput(null);
+    /** @suppress {visibility} suppression added to enable type checking */
     const expectedRight = samplePalette.hsImageEl_.offsetWidth -
         Math.ceil(samplePalette.hsHandleEl_.offsetWidth / 2);
     assertEquals(
@@ -64,6 +63,7 @@ testSuite({
 
   testCustomClassName() {
     const customClassName = 'custom-plouf';
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const customClassPalette = new HsvPalette(null, null, customClassName);
     customClassPalette.createDom();
     assertTrue(
@@ -135,16 +135,9 @@ testSuite({
     assertNotNull(elem);
     assertEquals(String(TagName.DIV), elem.tagName);
 
-    if (userAgent.IE && !userAgent.isVersionOrHigher('7')) {
-      assertSameElements(
-          'On IE6, the noalpha class must be present',
-          ['goog-hsv-palette', 'goog-hsv-palette-noalpha'],
-          classlist.get(elem));
-    } else {
-      assertEquals(
-          'The noalpha class must not be present', 'goog-hsv-palette',
-          elem.className);
-    }
+    assertEquals(
+        'The noalpha class must not be present', 'goog-hsv-palette',
+        elem.className);
   },
 
   testRenderWithEnableBrowserSpellcheckOnInputFalse() {
@@ -158,6 +151,7 @@ testSuite({
   testSwatchTextIsReadable() {
     samplePalette.render(document.getElementById('sandbox'));
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const swatchElement = samplePalette.swatchElement;
 
     // Text should be black when background is light.
@@ -171,14 +165,17 @@ testSuite({
         '#ffffff', googColor.parse(style.getStyle(swatchElement, 'color')).hex);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testInputColor() {
     samplePalette.render(document.getElementById('sandbox'));
     const color = '#001122';
+    /** @suppress {visibility} suppression added to enable type checking */
     samplePalette.inputElement.value = color;
     samplePalette.handleInput(null);
     assertEquals(color, googColor.parse(samplePalette.getColor()).hex);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testHandleMouseMoveValue() {
     samplePalette.render(document.getElementById('sandbox'));
     stubs.set(goog.dom, 'getPageScroll', () => new Coordinate(0, 0));
@@ -187,10 +184,19 @@ testSuite({
     samplePalette.setColor('#630c00');
     style.setPageOffset(samplePalette.valueBackgroundImageElement, 0, 0);
     style.setSize(samplePalette.valueBackgroundImageElement, 10, 100);
+    /**
+     * @suppress {checkTypes,visibility} suppression added to enable type
+     * checking
+     */
     const boundaries =
         style.getBounds(samplePalette.valueBackgroundImageElement, 0, 0);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const event = new GoogEvent();
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     event.clientY = -50;
     // TODO(user): Use
     // goog.testing.events.fireMouseDownEvent(
@@ -201,6 +207,7 @@ testSuite({
     assertEquals('#ff1f00', googColor.parse(samplePalette.getColor()).hex);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testHandleMouseMoveHueSaturation() {
     samplePalette.render(document.getElementById('sandbox'));
     stubs.set(goog.dom, 'getPageScroll', () => new Coordinate(0, 0));
@@ -208,10 +215,20 @@ testSuite({
     // The following hue/saturation selection should yield a light yellow.
     style.setPageOffset(samplePalette.hsImageEl_, 0, 0);
     style.setSize(samplePalette.hsImageEl_, 100, 100);
+    /** @suppress {visibility} suppression added to enable type checking */
     const boundaries = style.getBounds(samplePalette.hsImageEl_);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const event = new GoogEvent();
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     event.clientX = 20;
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     event.clientY = 85;
     // TODO(user): Use goog.testing.events when appropriate (see above).
     samplePalette.handleMouseMoveHs_(boundaries, event);

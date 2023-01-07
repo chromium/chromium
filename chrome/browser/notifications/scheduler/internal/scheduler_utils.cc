@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_config.h"
 #include "ui/gfx/codec/png_codec.h"

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/debug/activity_tracker.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/record_replay.h"
 #include "base/synchronization/condition_variable.h"
@@ -19,6 +19,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // -----------------------------------------------------------------------------
 // A WaitableEvent on POSIX is implemented as a wait-list. Currently we don't
@@ -50,7 +51,7 @@ WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                              InitialState initial_state)
     : kernel_(new WaitableEventKernel(reset_policy, initial_state)) {
   // Pointer registration is needed for sorting in WaitSet.user_events_
-  if (!recordreplay::AreEventsDisallowed())
+  if (!recordreplay::AreEventsDisallowed() || recordreplay::HasDivergedFromRecording())
     recordreplay::RegisterPointer("WaitableEvent", this);
 }
 
@@ -160,7 +161,7 @@ class SyncWaiter : public WaitableEvent::Waiter {
 
  private:
   bool fired_;
-  WaitableEvent* signaling_event_;  // The WaitableEvent which woke us
+  raw_ptr<WaitableEvent> signaling_event_;  // The WaitableEvent which woke us
   base::Lock lock_;
   base::ConditionVariable cv_;
 };
@@ -177,7 +178,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
                          recordreplay::PointerId(this), wait_delta.ToInternalValue());
   }
 
-  Optional<recordreplay::AutoDisallowEvents> disallow;
+  absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (kernel_->record_replay_unordered_)
     disallow.emplace();
 
@@ -188,8 +189,8 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
   // Record the event that this thread is blocking upon (for hang diagnosis) and
   // consider it blocked for scheduling purposes. Ignore this for non-blocking
   // WaitableEvents.
-  Optional<debug::ScopedEventWaitActivity> event_activity;
-  Optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
+  absl::optional<debug::ScopedEventWaitActivity> event_activity;
+  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
   if (waiting_is_blocking_) {
     event_activity.emplace(this);
@@ -226,15 +227,14 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
   const TimeTicks end_time =
       wait_delta.is_max() ? TimeTicks::Max()
                           : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
-
-  for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();) {
+  for (TimeDelta remaining = wait_delta; remaining.is_positive() && !sw.fired();
+       remaining = end_time.is_max()
+                       ? TimeDelta::Max()
+                       : end_time - subtle::TimeTicksNowIgnoringOverride()) {
     if (end_time.is_max())
       sw.cv()->Wait();
     else
       sw.cv()->TimedWait(remaining);
-    remaining = end_time.is_max()
-                    ? TimeDelta::Max()
-                    : end_time - subtle::TimeTicksNowIgnoringOverride();
   }
 
   // Get the SyncWaiter signaled state before releasing the lock.
@@ -281,7 +281,7 @@ cmp_fst_addr(const std::pair<WaitableEvent*, unsigned> &a,
 // NO_THREAD_SAFETY_ANALYSIS: Complex control flow.
 size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables,
                                size_t count) NO_THREAD_SAFETY_ANALYSIS {
-  Optional<recordreplay::AutoDisallowEvents> disallow;
+  absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (count && raw_waitables[0]->kernel_->record_replay_unordered_)
     disallow.emplace();
 

@@ -38,7 +38,7 @@ def PresubmitCheckTestExpectations(input_api, output_api):
         os_path.dirname(os_path.abspath(__file__)), '..', '..',
         'lint_test_expectations.py')
     _, errs = input_api.subprocess.Popen(
-        [input_api.python_executable, lint_path],
+        [input_api.python3_executable, lint_path],
         stdout=input_api.subprocess.PIPE,
         stderr=input_api.subprocess.PIPE).communicate()
     if not errs:
@@ -46,6 +46,7 @@ def PresubmitCheckTestExpectations(input_api, output_api):
             output_api.PresubmitError("lint_test_expectations.py failed "
                                       "to produce output; check by hand. ")
         ]
+    errs = errs.decode('utf-8')
     if errs.strip() == 'Lint succeeded.':
         return []
     if errs.rstrip().endswith('Lint succeeded with warnings.'):

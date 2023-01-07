@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace mojom {
@@ -28,7 +28,7 @@ class LeakDetectionRequestInterface {
  public:
   using LookupSingleLeakCallback =
       base::OnceCallback<void(std::unique_ptr<SingleLookupResponse>,
-                              base::Optional<LeakDetectionError>)>;
+                              absl::optional<LeakDetectionError>)>;
 
   LeakDetectionRequestInterface() = default;
   virtual ~LeakDetectionRequestInterface() = default;
@@ -42,13 +42,16 @@ class LeakDetectionRequestInterface {
       delete;
 
   // Initiates a leak lookup network request for the credential corresponding to
-  // |username_hash_prefix| and |encrypted_payload|. |access_token| is required
-  // to authenticate the request. Invokes |callback| on completion, unless this
-  // instance is deleted beforehand. If the request failed, |callback| is
-  // invoked with |nullptr|, otherwise a SingleLookupResponse is returned.
+  // |username_hash_prefix| and |encrypted_payload|.
+  // |access_token| is required to authenticate the request for signed-in users.
+  // |api_key| is required to authenticate the request for signed-out users.
+  // Invokes |callback| on completion, unless this instance is deleted
+  // beforehand. If the request failed, |callback| is invoked with |nullptr|,
+  // otherwise a SingleLookupResponse is returned.
   virtual void LookupSingleLeak(
       network::mojom::URLLoaderFactory* url_loader_factory,
-      const std::string& access_token,
+      const absl::optional<std::string>& access_token,
+      const absl::optional<std::string>& api_key,
       LookupSingleLeakPayload payload,
       LookupSingleLeakCallback callback) = 0;
 };

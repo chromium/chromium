@@ -44,9 +44,10 @@
 #include <memory>
 #include <vector>
 
+#include "absl/base/config.h"
 #include "absl/base/internal/per_thread_tls.h"
 #include "absl/base/optimization.h"
-#include "absl/container/internal/have_sse.h"
+#include "absl/profiling/internal/sample_recorder.h"
 #include "absl/synchronization/mutex.h"
 #include "absl/utility/utility.h"
 
@@ -57,7 +58,7 @@ namespace container_internal {
 // Stores information about a sampled hashtable.  All mutations to this *must*
 // be made through `Record*` functions below.  All reads from this *must* only
 // occur in the callback to `HashtablezSampler::Iterate`.
-struct HashtablezInfo {
+struct HashtablezInfo : public profiling_internal::Sample<HashtablezInfo> {
   // Constructs the object but does not fill in any fields.
   HashtablezInfo();
   ~HashtablezInfo();
@@ -66,7 +67,8 @@ struct HashtablezInfo {
 
   // Puts the object into a clean state, fills in the logically `const` members,
   // blocking for any readers that are currently sampling the object.
-  void PrepareForSampling() ABSL_EXCLUSIVE_LOCKS_REQUIRED(init_mu);
+  void PrepareForSampling(int64_t stride, size_t inline_element_size_value)
+      ABSL_EXCLUSIVE_LOCKS_REQUIRED(init_mu);
 
   // These fields are mutated by the various Record* APIs and need to be
   // thread-safe.
@@ -79,28 +81,22 @@ struct HashtablezInfo {
   std::atomic<size_t> hashes_bitwise_or;
   std::atomic<size_t> hashes_bitwise_and;
   std::atomic<size_t> hashes_bitwise_xor;
-
-  // `HashtablezSampler` maintains intrusive linked lists for all samples.  See
-  // comments on `HashtablezSampler::all_` for details on these.  `init_mu`
-  // guards the ability to restore the sample to a pristine state.  This
-  // prevents races with sampling and resurrecting an object.
-  absl::Mutex init_mu;
-  HashtablezInfo* next;
-  HashtablezInfo* dead ABSL_GUARDED_BY(init_mu);
+  std::atomic<size_t> max_reserve;
 
   // All of the fields below are set by `PrepareForSampling`, they must not be
   // mutated in `Record*` functions.  They are logically `const` in that sense.
-  // These are guarded by init_mu, but that is not externalized to clients, who
-  // can only read them during `HashtablezSampler::Iterate` which will hold the
-  // lock.
+  // These are guarded by init_mu, but that is not externalized to clients,
+  // which can read them only during `SampleRecorder::Iterate` which will hold
+  // the lock.
   static constexpr int kMaxStackDepth = 64;
   absl::Time create_time;
   int32_t depth;
   void* stack[kMaxStackDepth];
+  size_t inline_element_size;  // How big is the slot?
 };
 
 inline void RecordRehashSlow(HashtablezInfo* info, size_t total_probe_length) {
-#if ABSL_INTERNAL_RAW_HASH_SET_HAVE_SSE2
+#ifdef ABSL_INTERNAL_HAVE_SSE2
   total_probe_length /= 16;
 #else
   total_probe_length /= 8;
@@ -112,6 +108,18 @@ inline void RecordRehashSlow(HashtablezInfo* info, size_t total_probe_length) {
   info->num_rehashes.store(
       1 + info->num_rehashes.load(std::memory_order_relaxed),
       std::memory_order_relaxed);
+}
+
+inline void RecordReservationSlow(HashtablezInfo* info,
+                                  size_t target_capacity) {
+  info->max_reserve.store(
+      (std::max)(info->max_reserve.load(std::memory_order_relaxed),
+                 target_capacity),
+      std::memory_order_relaxed);
+}
+
+inline void RecordClearedReservationSlow(HashtablezInfo* info) {
+  info->max_reserve.store(0, std::memory_order_relaxed);
 }
 
 inline void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
@@ -137,7 +145,15 @@ inline void RecordEraseSlow(HashtablezInfo* info) {
       std::memory_order_relaxed);
 }
 
-HashtablezInfo* SampleSlow(int64_t* next_sample);
+struct SamplingState {
+  int64_t next_sample;
+  // When we make a sampling decision, we record that distance so we can weight
+  // each sample.
+  int64_t sample_stride;
+};
+
+HashtablezInfo* SampleSlow(SamplingState& next_sample,
+                           size_t inline_element_size);
 void UnsampleSlow(HashtablezInfo* info);
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
@@ -177,6 +193,16 @@ class HashtablezInfoHandle {
     RecordRehashSlow(info_, total_probe_length);
   }
 
+  inline void RecordReservation(size_t target_capacity) {
+    if (ABSL_PREDICT_TRUE(info_ == nullptr)) return;
+    RecordReservationSlow(info_, target_capacity);
+  }
+
+  inline void RecordClearedReservation() {
+    if (ABSL_PREDICT_TRUE(info_ == nullptr)) return;
+    RecordClearedReservationSlow(info_);
+  }
+
   inline void RecordInsert(size_t hash, size_t distance_from_desired) {
     if (ABSL_PREDICT_TRUE(info_ == nullptr)) return;
     RecordInsertSlow(info_, hash, distance_from_desired);
@@ -206,6 +232,8 @@ class HashtablezInfoHandle {
 
   inline void RecordStorageChanged(size_t /*size*/, size_t /*capacity*/) {}
   inline void RecordRehash(size_t /*total_probe_length*/) {}
+  inline void RecordReservation(size_t /*target_capacity*/) {}
+  inline void RecordClearedReservation() {}
   inline void RecordInsert(size_t /*hash*/, size_t /*distance_from_desired*/) {}
   inline void RecordErase() {}
 
@@ -215,98 +243,47 @@ class HashtablezInfoHandle {
 #endif  // defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
-extern ABSL_PER_THREAD_TLS_KEYWORD int64_t global_next_sample;
+extern ABSL_PER_THREAD_TLS_KEYWORD SamplingState global_next_sample;
 #endif  // defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 
 // Returns an RAII sampling handle that manages registration and unregistation
 // with the global sampler.
-inline HashtablezInfoHandle Sample() {
+inline HashtablezInfoHandle Sample(
+    size_t inline_element_size ABSL_ATTRIBUTE_UNUSED) {
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
-  if (ABSL_PREDICT_TRUE(--global_next_sample > 0)) {
+  if (ABSL_PREDICT_TRUE(--global_next_sample.next_sample > 0)) {
     return HashtablezInfoHandle(nullptr);
   }
-  return HashtablezInfoHandle(SampleSlow(&global_next_sample));
+  return HashtablezInfoHandle(
+      SampleSlow(global_next_sample, inline_element_size));
 #else
   return HashtablezInfoHandle(nullptr);
 #endif  // !ABSL_PER_THREAD_TLS
 }
 
-// Holds samples and their associated stack traces with a soft limit of
-// `SetHashtablezMaxSamples()`.
-//
-// Thread safe.
-class HashtablezSampler {
- public:
-  // Returns a global Sampler.
-  static HashtablezSampler& Global();
+using HashtablezSampler =
+    ::absl::profiling_internal::SampleRecorder<HashtablezInfo>;
 
-  HashtablezSampler();
-  ~HashtablezSampler();
+// Returns a global Sampler.
+HashtablezSampler& GlobalHashtablezSampler();
 
-  // Registers for sampling.  Returns an opaque registration info.
-  HashtablezInfo* Register();
-
-  // Unregisters the sample.
-  void Unregister(HashtablezInfo* sample);
-
-  // The dispose callback will be called on all samples the moment they are
-  // being unregistered. Only affects samples that are unregistered after the
-  // callback has been set.
-  // Returns the previous callback.
-  using DisposeCallback = void (*)(const HashtablezInfo&);
-  DisposeCallback SetDisposeCallback(DisposeCallback f);
-
-  // Iterates over all the registered `StackInfo`s.  Returning the number of
-  // samples that have been dropped.
-  int64_t Iterate(const std::function<void(const HashtablezInfo& stack)>& f);
-
- private:
-  void PushNew(HashtablezInfo* sample);
-  void PushDead(HashtablezInfo* sample);
-  HashtablezInfo* PopDead();
-
-  std::atomic<size_t> dropped_samples_;
-  std::atomic<size_t> size_estimate_;
-
-  // Intrusive lock free linked lists for tracking samples.
-  //
-  // `all_` records all samples (they are never removed from this list) and is
-  // terminated with a `nullptr`.
-  //
-  // `graveyard_.dead` is a circular linked list.  When it is empty,
-  // `graveyard_.dead == &graveyard`.  The list is circular so that
-  // every item on it (even the last) has a non-null dead pointer.  This allows
-  // `Iterate` to determine if a given sample is live or dead using only
-  // information on the sample itself.
-  //
-  // For example, nodes [A, B, C, D, E] with [A, C, E] alive and [B, D] dead
-  // looks like this (G is the Graveyard):
-  //
-  //           +---+    +---+    +---+    +---+    +---+
-  //    all -->| A |--->| B |--->| C |--->| D |--->| E |
-  //           |   |    |   |    |   |    |   |    |   |
-  //   +---+   |   | +->|   |-+  |   | +->|   |-+  |   |
-  //   | G |   +---+ |  +---+ |  +---+ |  +---+ |  +---+
-  //   |   |         |        |        |        |
-  //   |   | --------+        +--------+        |
-  //   +---+                                    |
-  //     ^                                      |
-  //     +--------------------------------------+
-  //
-  std::atomic<HashtablezInfo*> all_;
-  HashtablezInfo graveyard_;
-
-  std::atomic<DisposeCallback> dispose_;
-};
+using HashtablezConfigListener = void (*)();
+void SetHashtablezConfigListener(HashtablezConfigListener l);
 
 // Enables or disables sampling for Swiss tables.
+bool IsHashtablezEnabled();
 void SetHashtablezEnabled(bool enabled);
+void SetHashtablezEnabledInternal(bool enabled);
 
 // Sets the rate at which Swiss tables will be sampled.
+int32_t GetHashtablezSampleParameter();
 void SetHashtablezSampleParameter(int32_t rate);
+void SetHashtablezSampleParameterInternal(int32_t rate);
 
 // Sets a soft max for the number of samples that will be kept.
-void SetHashtablezMaxSamples(int32_t max);
+size_t GetHashtablezMaxSamples();
+void SetHashtablezMaxSamples(size_t max);
+void SetHashtablezMaxSamplesInternal(size_t max);
 
 // Configuration override.
 // This allows process-wide sampling without depending on order of

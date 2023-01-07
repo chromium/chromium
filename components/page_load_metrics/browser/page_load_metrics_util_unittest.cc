@@ -1,11 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 
+#include "base/test/metrics/histogram_tester.h"
+#include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+namespace page_load_metrics {
 
 class PageLoadMetricsUtilTest : public testing::Test {};
 
@@ -68,7 +73,7 @@ TEST_F(PageLoadMetricsUtilTest, GetGoogleHostnamePrefix) {
       {true, "www.www", "https://www.www.google.com/"},
   };
   for (const auto& test : test_cases) {
-    base::Optional<std::string> result =
+    absl::optional<std::string> result =
         page_load_metrics::GetGoogleHostnamePrefix(GURL(test.url));
     EXPECT_EQ(test.expected_result, result.has_value())
         << "For URL: " << test.url;
@@ -234,3 +239,153 @@ TEST_F(PageLoadMetricsUtilTest, QueryContainsComponentPrefix) {
         << "For query: " << test.query << " with component: " << test.component;
   }
 }
+
+TEST_F(PageLoadMetricsUtilTest, UmaMaxCumulativeShiftScoreHistogram) {
+  constexpr char kTestMaxCumulativeShiftScoreSessionWindow[] = "Test";
+  const page_load_metrics::NormalizedCLSData normalized_cls_data{0.5, false};
+  base::HistogramTester histogram_tester;
+  page_load_metrics::UmaMaxCumulativeShiftScoreHistogram10000x(
+      kTestMaxCumulativeShiftScoreSessionWindow, normalized_cls_data);
+  histogram_tester.ExpectTotalCount(kTestMaxCumulativeShiftScoreSessionWindow,
+                                    1);
+  histogram_tester.ExpectBucketCount(kTestMaxCumulativeShiftScoreSessionWindow,
+                                     5000, 1);
+}
+
+TEST_F(PageLoadMetricsUtilTest, GetNonPrerenderingBackgroundStartTiming) {
+  struct {
+    PrerenderingState prerendering_state;
+    absl::optional<base::TimeDelta> activation_start;
+    PageVisibility visibility_at_start_or_activation_;
+    absl::optional<base::TimeDelta> time_to_first_background;
+    absl::optional<base::TimeDelta> expected_result;
+  } test_cases[] = {
+      {PrerenderingState::kNoPrerendering, absl::nullopt,
+       PageVisibility::kForeground, absl::nullopt, absl::nullopt},
+      {PrerenderingState::kNoPrerendering, absl::nullopt,
+       PageVisibility::kForeground, base::Seconds(2), base::Seconds(2)},
+      {PrerenderingState::kNoPrerendering, absl::nullopt,
+       PageVisibility::kBackground, absl::nullopt, base::Seconds(0)},
+      {PrerenderingState::kNoPrerendering, absl::nullopt,
+       PageVisibility::kBackground, base::Seconds(2), base::Seconds(0)},
+      {PrerenderingState::kInPrerendering, absl::nullopt,
+       PageVisibility::kForeground, absl::nullopt, absl::nullopt},
+      {PrerenderingState::kInPrerendering, absl::nullopt,
+       PageVisibility::kForeground, base::Seconds(10), absl::nullopt},
+      {PrerenderingState::kActivatedNoActivationStart, absl::nullopt,
+       PageVisibility::kForeground, base::Seconds(12), absl::nullopt},
+      {PrerenderingState::kActivated, base::Seconds(10),
+       PageVisibility::kForeground, absl::nullopt, absl::nullopt},
+      {PrerenderingState::kActivated, base::Seconds(10),
+       PageVisibility::kForeground, base::Seconds(12), base::Seconds(12)},
+      // Invalid time_to_first_background. Not checked and may return invalid
+      // value.
+      {PrerenderingState::kActivated, base::Seconds(10),
+       PageVisibility::kForeground, base::Seconds(2), base::Seconds(2)},
+      {PrerenderingState::kActivated, base::Seconds(10),
+       PageVisibility::kBackground, absl::nullopt, base::Seconds(10)},
+      {PrerenderingState::kActivated, base::Seconds(10),
+       PageVisibility::kBackground, base::Seconds(12), base::Seconds(10)},
+      // Invalid time_to_first_background. Not checked and may return invalid
+      // value.
+      {PrerenderingState::kActivated, base::Seconds(10),
+       PageVisibility::kBackground, base::Seconds(2), base::Seconds(10)},
+  };
+  for (const auto& test_case : test_cases) {
+    page_load_metrics::FakePageLoadMetricsObserverDelegate delegate;
+    delegate.prerendering_state_ = test_case.prerendering_state;
+    delegate.activation_start_ = test_case.activation_start;
+    if (test_case.time_to_first_background.has_value()) {
+      delegate.first_background_time_ =
+          delegate.navigation_start_ +
+          test_case.time_to_first_background.value();
+    } else {
+      delegate.first_background_time_ = absl::nullopt;
+    }
+
+    switch (test_case.prerendering_state) {
+      case PrerenderingState::kNoPrerendering:
+        DCHECK_NE(test_case.visibility_at_start_or_activation_,
+                  PageVisibility::kNotInitialized);
+        delegate.started_in_foreground_ =
+            (test_case.visibility_at_start_or_activation_ ==
+             PageVisibility::kForeground);
+        delegate.visibility_at_activation_ = PageVisibility::kNotInitialized;
+        break;
+      case PrerenderingState::kInPrerendering:
+        delegate.started_in_foreground_ = false;
+        delegate.visibility_at_activation_ = PageVisibility::kNotInitialized;
+        break;
+      case PrerenderingState::kActivatedNoActivationStart:
+        delegate.started_in_foreground_ = false;
+        delegate.visibility_at_activation_ =
+            test_case.visibility_at_start_or_activation_;
+        break;
+      case PrerenderingState::kActivated:
+        delegate.started_in_foreground_ = false;
+        delegate.visibility_at_activation_ =
+            test_case.visibility_at_start_or_activation_;
+        break;
+    }
+
+    absl::optional<base::TimeDelta> got =
+        GetNonPrerenderingBackgroundStartTiming(delegate);
+    EXPECT_EQ(test_case.expected_result, got);
+  }
+}
+
+TEST_F(PageLoadMetricsUtilTest, CorrectEventAsNavigationOrActivationOrigined) {
+  struct {
+    PrerenderingState prerendering_state;
+    absl::optional<base::TimeDelta> activation_start;
+    base::TimeDelta event;
+    absl::optional<base::TimeDelta> expected_result;
+  } test_cases[] = {
+      // Not modified
+      {PrerenderingState::kNoPrerendering, absl::nullopt, base::Seconds(2),
+       base::Seconds(2)},
+      // max(0, 2 - x), where x is time of activation start that may come in the
+      // future and should be greater than an already occurred event.
+      {PrerenderingState::kInPrerendering, absl::nullopt, base::Seconds(2),
+       base::Seconds(0)},
+      {PrerenderingState::kActivatedNoActivationStart, absl::nullopt,
+       base::Seconds(2), base::Seconds(0)},
+      // max(0, 2 - 10)
+      {PrerenderingState::kActivated, base::Seconds(10), base::Seconds(2),
+       base::Seconds(0)},
+      // max(0, 12 - 10)
+      {PrerenderingState::kActivated, base::Seconds(10), base::Seconds(12),
+       base::Seconds(2)},
+  };
+  for (const auto& test_case : test_cases) {
+    page_load_metrics::FakePageLoadMetricsObserverDelegate delegate;
+    delegate.prerendering_state_ = test_case.prerendering_state;
+    delegate.activation_start_ = test_case.activation_start;
+
+    base::TimeDelta got =
+        CorrectEventAsNavigationOrActivationOrigined(delegate, test_case.event);
+    EXPECT_EQ(test_case.expected_result, got);
+
+    // Currently, multiple implementations of PageLoadMetricsObserver is
+    // ongoing. We'll left the old version for a while.
+    // TODO(https://crbug.com/1317494): Delete below.
+
+    page_load_metrics::mojom::PageLoadTiming timing;
+    page_load_metrics::InitPageLoadTimingForTest(&timing);
+    timing.navigation_start = base::Time::FromDoubleT(1);
+    timing.activation_start = test_case.activation_start;
+
+    base::TimeDelta got2 = CorrectEventAsNavigationOrActivationOrigined(
+        delegate, timing, test_case.event);
+    EXPECT_EQ(test_case.expected_result, got2);
+
+    // In some path, this function is called with old PageLoadTiming, which can
+    // lack activation_start. The result is the same for such case.
+    timing.activation_start = absl::nullopt;
+    base::TimeDelta got3 = CorrectEventAsNavigationOrActivationOrigined(
+        delegate, timing, test_case.event);
+    EXPECT_EQ(test_case.expected_result, got3);
+  }
+}
+
+}  // namespace page_load_metrics

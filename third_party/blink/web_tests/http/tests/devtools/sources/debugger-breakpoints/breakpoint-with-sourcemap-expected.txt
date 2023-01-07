@@ -1,7 +1,0 @@
-Checks breakpoint in file with sourcemap
-Script execution paused.
-Call stack:
-    0) foo (index.ts:2)
-    1)  (:1)
-Script execution resumed.
-

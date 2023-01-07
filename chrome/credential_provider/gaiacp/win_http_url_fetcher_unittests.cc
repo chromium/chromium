@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,9 +40,8 @@ TEST_P(GcpWinHttpUrlFetcherTest,
   base::Value request(base::Value::Type::DICTIONARY);
   request.SetStringKey("request-str-key", "request-str-value");
   request.SetIntKey("request-int-key", 1234);
-  base::TimeDelta request_timeout =
-      base::TimeDelta::FromMilliseconds(timeout_in_millis);
-  base::Optional<base::Value> request_result;
+  base::TimeDelta request_timeout = base::Milliseconds(timeout_in_millis);
+  absl::optional<base::Value> request_result;
 
   base::Value expected_result(base::Value::Type::DICTIONARY);
   expected_result.SetStringKey("response-str-key", "response-str-value");
@@ -119,7 +118,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
               request_data.headers.at("Authorization").find(access_token));
     ASSERT_EQ(1u, request_data.headers.count(header1));
     ASSERT_EQ(header1_value, request_data.headers.at(header1));
-    base::Optional<base::Value> body_value =
+    absl::optional<base::Value> body_value =
         base::JSONReader::Read(request_data.body);
     ASSERT_EQ(request, body_value.value());
   }

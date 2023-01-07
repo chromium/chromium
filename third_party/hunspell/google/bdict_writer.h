@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <string>
 #include <vector>
-
-#include "base/macros.h"
 
 namespace hunspell {
 
@@ -21,6 +19,10 @@ class BDictWriter {
   typedef std::vector< std::pair<std::string, std::vector<int> > > WordList;
 
   BDictWriter();
+
+  BDictWriter(const BDictWriter&) = delete;
+  BDictWriter& operator=(const BDictWriter&) = delete;
+
   ~BDictWriter();
 
   // Affix setters.
@@ -61,8 +63,6 @@ class BDictWriter {
 
   // Root of the generated trie. Filled by SetWords.
   DicNode* trie_root_;
-
-  DISALLOW_COPY_AND_ASSIGN(BDictWriter);
 };
 
 }  // namespace hunspell

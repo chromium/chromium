@@ -25,7 +25,8 @@
 #include "third_party/blink/renderer/core/page/plugins_changed_observer.h"
 #include "third_party/blink/renderer/modules/plugins/dom_plugin.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -40,7 +41,7 @@ class DOMPluginArray final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit DOMPluginArray(LocalDOMWindow*);
+  DOMPluginArray(LocalDOMWindow*, bool should_return_fixed_plugin_data);
 
   void UpdatePluginData();
 
@@ -52,6 +53,12 @@ class DOMPluginArray final : public ScriptWrappable,
 
   void refresh(bool reload);
 
+  // This function returns the "fixed" list of mime types, for the PDF viewer
+  // only. This function should only be used when
+  // should_return_fixed_plugin_data_ is true.
+  HeapVector<Member<DOMMimeType>> GetFixedMimeTypeArray();
+  bool IsPdfViewerAvailable();
+
   // PluginsChangedObserver implementation.
   void PluginsChanged() override;
 
@@ -61,7 +68,7 @@ class DOMPluginArray final : public ScriptWrappable,
   PluginData* GetPluginData() const;
   void ContextDestroyed() override;
 
-  bool ShouldReturnEmptyPluginData() const;
+  const bool should_return_fixed_plugin_data_;
 
   HeapVector<Member<DOMPlugin>> dom_plugins_;
 };

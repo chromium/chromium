@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_error.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -71,7 +71,7 @@ void DidNavigateOrOpenWindow(ScriptPromiseResolver* resolver,
 ServiceWorkerWindowClient::ResolveWindowClientCallback
 ServiceWorkerWindowClient::CreateResolveWindowClientCallback(
     ScriptPromiseResolver* resolver) {
-  return WTF::Bind(&DidNavigateOrOpenWindow, WrapPersistent(resolver));
+  return WTF::BindOnce(&DidNavigateOrOpenWindow, WrapPersistent(resolver));
 }
 
 ServiceWorkerWindowClient::ServiceWorkerWindowClient(
@@ -103,7 +103,7 @@ ScriptPromise ServiceWorkerWindowClient::focus(ScriptState* script_state) {
   global_scope->ConsumeWindowInteraction();
 
   global_scope->GetServiceWorkerHost()->FocusClient(
-      Uuid(), WTF::Bind(&DidFocus, WrapPersistent(resolver)));
+      Uuid(), WTF::BindOnce(&DidFocus, WrapPersistent(resolver)));
   return promise;
 }
 

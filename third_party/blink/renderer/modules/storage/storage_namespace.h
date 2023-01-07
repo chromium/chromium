@@ -26,8 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_STORAGE_NAMESPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_STORAGE_NAMESPACE_H_
 
-#include <memory>
-
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom-blink-forward.h"
@@ -35,37 +33,29 @@
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key_hash.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class CachedStorageArea;
+class LocalDOMWindow;
 class InspectorDOMStorageAgent;
 class StorageController;
-class SecurityOrigin;
 
-// Contains DOMStorage storage areas for origins & handles inspector agents. A
-// namespace is either a SessionStorage namespace with a namespace_id, or a
-// LocalStorage namespace with no (or an empty) namespace_id. The LocalStorage
-// version of the StorageNamespace lives in the StorageController.
+// Contains DOMStorage storage areas for BlinkStorageKeys & handles inspector
+// agents. A namespace is either a SessionStorage namespace with a namespace_id,
+// or a LocalStorage namespace with no (or an empty) namespace_id. The
+// LocalStorage version of the StorageNamespace lives in the StorageController.
 // InspectorDOMStorageAgents that are registered on this object are notified
-// through |DidDispatchStorageEvent|.
-//
-// With the kOnionSoupDOMStorage flag off:
-// The StorageNamespace basically delegates calls to GetWebStorageArea to the
-// internal WebStorageNamespace. |GetWebStorageArea| is used to get the storage
-// area for an origin.
-//
-// With the kOnionSoupDOMStorage flag on:
-// The StorageNamespace for SessioStorage supplement the Page. |GetCachedArea|
-// is used to get the storage area for an origin.
+// through `DidDispatchStorageEvent`.
 class MODULES_EXPORT StorageNamespace final
     : public GarbageCollected<StorageNamespace>,
       public Supplement<Page> {
@@ -82,11 +72,20 @@ class MODULES_EXPORT StorageNamespace final
   // Creates a namespace for LocalStorage.
   StorageNamespace(StorageController*);
   // Creates a namespace for SessionStorage.
-  StorageNamespace(StorageController*, const String& namespace_id);
+  StorageNamespace(Page& page, StorageController*, const String& namespace_id);
 
-  scoped_refptr<CachedStorageArea> GetCachedArea(const SecurityOrigin* origin);
+  // |storage_area| is ignored here if a cached namespace already exists.
+  scoped_refptr<CachedStorageArea> GetCachedArea(
+      LocalDOMWindow* local_dom_window,
+      mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
-  // Only valid to call this if |this| and |target| are session storage
+  scoped_refptr<CachedStorageArea> CreateCachedAreaForPrerender(
+      LocalDOMWindow* local_dom_window,
+      mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
+
+  void EvictSessionStorageCachedData();
+
+  // Only valid to call this if `this` and `target` are session storage
   // namespaces.
   void CloneTo(const String& target);
 
@@ -95,7 +94,7 @@ class MODULES_EXPORT StorageNamespace final
   // Removes any CachedStorageAreas that aren't referenced by any source.
   void CleanUpUnusedAreas();
 
-  bool IsSessionStorage() const { return !namespace_id_.IsEmpty(); }
+  bool IsSessionStorage() const { return !namespace_id_.empty(); }
 
   void AddInspectorStorageAgent(InspectorDOMStorageAgent* agent);
   void RemoveInspectorStorageAgent(InspectorDOMStorageAgent* agent);
@@ -103,16 +102,16 @@ class MODULES_EXPORT StorageNamespace final
   void Trace(Visitor* visitor) const override;
 
   // Iterates all of the inspector agents and calls
-  // |DidDispatchDOMStorageEvent|.
-  void DidDispatchStorageEvent(const SecurityOrigin* origin,
+  // `DidDispatchDOMStorageEvent`.
+  void DidDispatchStorageEvent(const BlinkStorageKey& storage_key,
                                const String& key,
                                const String& old_value,
                                const String& new_value);
 
-  // Called by areas in |cached_areas_| to bind/rebind their StorageArea
+  // Called by areas in `cached_areas_` to bind/rebind their StorageArea
   // interface.
   void BindStorageArea(
-      const scoped_refptr<const SecurityOrigin>& origin,
+      const LocalDOMWindow& local_dom_window,
       mojo::PendingReceiver<mojom::blink::StorageArea> receiver);
 
   // If this StorageNamespace was previously connected to the backend, this
@@ -128,12 +127,14 @@ class MODULES_EXPORT StorageNamespace final
   // Lives globally.
   StorageController* controller_;
   String namespace_id_;
-  // |StorageNamespace| is a per-Page object and doesn't have any
-  // |ExecutionContext|.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  // `StorageNamespace` is a per-Page object and doesn't have any
+  // `ExecutionContext`.
   HeapMojoRemote<mojom::blink::SessionStorageNamespace> namespace_{nullptr};
-  HashMap<scoped_refptr<const SecurityOrigin>,
+  // TODO(https://crbug.com/1212808) Migrate hash map and function.
+  HashMap<std::unique_ptr<const BlinkStorageKey>,
           scoped_refptr<CachedStorageArea>,
-          SecurityOriginHash>
+          BlinkStorageKeyHash>
       cached_areas_;
 };
 

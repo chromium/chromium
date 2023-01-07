@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ int ProgressCalculator::Calculate(installer::InstallerStage stage) const {
   last_stage_ = stage;
 
   static_assert(installer::NUM_STAGES > 1, "There must be more than one stage");
-  double fraction = static_cast<double>(stage) / (installer::NUM_STAGES - 1.0);
+  double fraction =
+      static_cast<double>(stage) / (double{installer::NUM_STAGES} - 1.0);
   return round(((kMaxProgress - kMinProgress) * fraction) + kMinProgress);
 }

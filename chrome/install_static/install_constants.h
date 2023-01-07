@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,24 +9,32 @@
 #ifndef CHROME_INSTALL_STATIC_INSTALL_CONSTANTS_H_
 #define CHROME_INSTALL_STATIC_INSTALL_CONSTANTS_H_
 
+#include <stdint.h>
 #include <windows.h>
 
-#include <stdint.h>
+#include "chrome/install_static/buildflags.h"
 
 namespace install_static {
 
 // Identifies different strategies for determining an update channel.
 enum class ChannelStrategy {
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+  // The default update channel may be overridden by an explicit value. The
+  // installer gets this value on the command line (--channel=name), whereas the
+  // browser gets this value from the Windows registry. This is used by Google
+  // Chrome's primary install mode to differentiate the extended stable, beta,
+  // and dev channels from the default (stable) channel.
+  FLOATING,
+
+  // Update channel is a fixed value. This is used by to pin Google Chrome's
+  // secondary install modes to their respective channels (e.g., the SxS mode
+  // follows the canary channel).
+  FIXED,
+#else   // BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
   // Update channels are not supported. This value is for exclusive use by
   // brands that do not integrate with Google Update.
   UNSUPPORTED,
-  // Update channel is determined by parsing the "ap" value in the registry.
-  // This is used by Google Chrome's primary install mode to differentiate the
-  // beta and dev channels from the default stable channel.
-  ADDITIONAL_PARAMETERS,
-  // Update channel is a fixed value. This is used by to pin Google Chrome's SxS
-  // secondary install mode to the canary channel.
-  FIXED,
+#endif  // BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
 };
 
 // A POD-struct defining constants for a brand's install mode. A brand has one

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,76 +6,92 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_RESULT_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "base/macros.h"
+#include "ash/public/cpp/style/color_mode_observer.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "components/omnibox/browser/autocomplete_match.h"
-#include "url/gurl.h"
+#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 class AppListControllerDelegate;
-class AutocompleteController;
 class BitmapFetcher;
 class Profile;
 
-// These are used in histograms, do not remove/renumber entries. If you're
-// adding to this enum with the intention that it will be logged, update the
-// AppListOmniboxResult enum listing in tools/metrics/histograms/enums.xml.
-enum class OmniboxResultType {
-  kQuerySuggestion = 0,
-  kZeroStateSuggestion = 1,
-  kMaxValue = kZeroStateSuggestion,
-};
-
 namespace app_list {
 
-class OmniboxResult : public ChromeSearchResult, public BitmapFetcherDelegate {
+class OmniboxResult : public ChromeSearchResult,
+                      public BitmapFetcherDelegate,
+                      public ash::ColorModeObserver,
+                      public crosapi::mojom::SearchResultConsumer {
  public:
   OmniboxResult(Profile* profile,
                 AppListControllerDelegate* list_controller,
-                AutocompleteController* autocomplete_controller,
-                const AutocompleteMatch& match,
-                bool is_zero_suggestion);
+                crosapi::mojom::SearchResultPtr search_result,
+                const std::u16string& query);
   ~OmniboxResult() override;
+
+  OmniboxResult(const OmniboxResult&) = delete;
+  OmniboxResult& operator=(const OmniboxResult&) = delete;
 
   // ChromeSearchResult:
   void Open(int event_flags) override;
-  void InvokeAction(int action_index) override;
 
   // BitmapFetcherDelegate:
   void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override;
 
-  // Returns the URL that will be navigated to by this search result.
-  GURL DestinationURL() const;
+  int dedup_priority() const { return dedup_priority_; }
 
  private:
+  // ash::ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
+
+  // crosapi::mojom::SearchResultConsumer:
+  void OnFaviconReceived(const gfx::ImageSkia& icon) override;
+
   void UpdateIcon();
+  // Creates a generic backup icon: used when rich icons are not available.
+  void SetGenericIcon();
   void UpdateTitleAndDetails();
 
   void Remove();
 
-  // Returns true if |match_| indicates a url search result with non-empty
+  // Returns true if match indicates a url search result with non-empty
   // description.
   bool IsUrlResultWithDescription() const;
 
-  bool IsRichEntityResult() const;
+  // Returns true if match has an image url.
+  bool IsRichEntity() const;
   void FetchRichEntityImage(const GURL& url);
 
-  void SetZeroSuggestionActions();
-
-  void RecordOmniboxResultHistogram();
+  void InitializeButtonActions(
+      const std::vector<ash::SearchResultActionType>& button_actions);
 
   ash::SearchResultType GetSearchResultType() const;
 
-  Profile* profile_;
-  AppListControllerDelegate* list_controller_;
-  AutocompleteController* autocomplete_controller_;
-  AutocompleteMatch match_;
-  const bool is_zero_suggestion_;
-  std::unique_ptr<BitmapFetcher> bitmap_fetcher_;
+  // Indicates the priority of a result for deduplicatin. Results with the same
+  // ID but lower |dedup_priority| are removed.
+  int dedup_priority_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(OmniboxResult);
+  // Handle used to receive asynchronous data about this search result over
+  // Mojo.
+  const mojo::Receiver<crosapi::mojom::SearchResultConsumer> consumer_receiver_;
+
+  Profile* const profile_;
+  AppListControllerDelegate* const list_controller_;
+  crosapi::mojom::SearchResultPtr search_result_;
+  const std::u16string query_;
+  std::unique_ptr<BitmapFetcher> bitmap_fetcher_;
+  // Whether this omnibox result uses a generic backup icon.
+  bool uses_generic_icon_ = false;
+
+  // Cached unwrapped search result fields.
+  const std::u16string contents_;
+  const std::u16string description_;
+
+  base::WeakPtrFactory<OmniboxResult> weak_factory_{this};
 };
 
 }  // namespace app_list

@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_GUEST_VIEW_CHROME_GUEST_VIEW_MANAGER_DELEGATE_H_
 #define CHROME_BROWSER_GUEST_VIEW_CHROME_GUEST_VIEW_MANAGER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
 
 namespace extensions {
@@ -18,13 +17,16 @@ class ChromeGuestViewManagerDelegate
     : public ExtensionsGuestViewManagerDelegate {
  public:
   explicit ChromeGuestViewManagerDelegate(content::BrowserContext* context);
+
+  ChromeGuestViewManagerDelegate(const ChromeGuestViewManagerDelegate&) =
+      delete;
+  ChromeGuestViewManagerDelegate& operator=(
+      const ChromeGuestViewManagerDelegate&) = delete;
+
   ~ChromeGuestViewManagerDelegate() override;
 
   // GuestViewManagerDelegate:
   void OnGuestAdded(content::WebContents* guest_web_contents) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeGuestViewManagerDelegate);
 };
 
 }  // namespace extensions

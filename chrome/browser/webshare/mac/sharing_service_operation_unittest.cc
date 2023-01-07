@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,8 @@ class SharingServiceOperationUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetIncognito() {
-    Profile* const otr_profile = profile()->GetPrimaryOTRProfile();
+    Profile* const otr_profile =
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     EXPECT_TRUE(otr_profile->IsOffTheRecord());
     EXPECT_TRUE(otr_profile->IsIncognitoProfile());
     scoped_refptr<content::SiteInstance> instance =
@@ -80,12 +81,12 @@ TEST_F(SharingServiceOperationUnitTest, TestIncognitoWithFiles) {
       [&error](blink::mojom::ShareError in_error) { error = in_error; }));
 
   // Should be cancelled after 1-2 seconds. So 500ms is not enough.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+  task_environment()->FastForwardBy(base::Milliseconds(500));
   EXPECT_EQ(error, blink::mojom::ShareError::INTERNAL_ERROR);
 
   // But 5*500ms > 2 seconds, so it should now be cancelled.
   for (int n = 0; n < 4; n++)
-    task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+    task_environment()->FastForwardBy(base::Milliseconds(500));
   EXPECT_EQ(error, blink::mojom::ShareError::CANCELED);
 }
 

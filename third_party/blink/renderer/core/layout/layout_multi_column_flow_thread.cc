@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -50,12 +51,18 @@ LayoutMultiColumnFlowThread::LayoutMultiColumnFlowThread(bool needs_paint_layer)
 
 LayoutMultiColumnFlowThread::~LayoutMultiColumnFlowThread() = default;
 
+void LayoutMultiColumnFlowThread::Trace(Visitor* visitor) const {
+  visitor->Trace(last_set_worked_on_);
+  LayoutFlowThread::Trace(visitor);
+  FragmentationContext::Trace(visitor);
+}
+
 LayoutMultiColumnFlowThread* LayoutMultiColumnFlowThread::CreateAnonymous(
     Document& document,
     const ComputedStyle& parent_style,
     bool needs_paint_layer) {
   LayoutMultiColumnFlowThread* layout_object =
-      new LayoutMultiColumnFlowThread(needs_paint_layer);
+      MakeGarbageCollected<LayoutMultiColumnFlowThread>(needs_paint_layer);
   layout_object->SetDocumentForAnonymous(&document);
   layout_object->SetStyle(
       document.GetStyleResolver().CreateAnonymousStyleWithDisplay(
@@ -103,8 +110,12 @@ static inline bool IsMultiColumnContainer(const LayoutObject& object) {
 // other formatting contexts in-between). We also require that there be no
 // transforms, since transforms insist on being in the containing block chain
 // for everything inside it, which conflicts with a spanners's need to have the
-// multicol container as its direct containing block. We may also not put
-// spanners inside objects that don't support fragmentation.
+// multicol container as its direct containing block. A transform is supposed to
+// be a containing block for everything inside, including fixed-positioned
+// elements. Letting spanners escape this containment seems strange. See
+// https://github.com/w3c/csswg-drafts/issues/6805
+// Finally, we may also not put spanners inside objects that don't support
+// fragmentation.
 bool LayoutMultiColumnFlowThread::CanContainSpannerInParentFragmentationContext(
     const LayoutObject& object) const {
   NOT_DESTROYED();
@@ -212,6 +223,7 @@ static LayoutObject* FirstLayoutObjectInSet(
     return multicol_set->FlowThread()->FirstChild();
   // Adjacent column content sets should not occur. We would have no way of
   // figuring out what each of them contains then.
+  CHECK(sibling->IsLayoutMultiColumnSpannerPlaceholder());
   LayoutBox* spanner = To<LayoutMultiColumnSpannerPlaceholder>(sibling)
                            ->LayoutObjectInFlowThread();
   return NextInPreOrderAfterChildrenSkippingOutOfFlow(
@@ -226,6 +238,7 @@ static LayoutObject* LastLayoutObjectInSet(LayoutMultiColumnSet* multicol_set) {
     return nullptr;
   // Adjacent column content sets should not occur. We would have no way of
   // figuring out what each of them contains then.
+  CHECK(sibling->IsLayoutMultiColumnSpannerPlaceholder());
   LayoutBox* spanner = To<LayoutMultiColumnSpannerPlaceholder>(sibling)
                            ->LayoutObjectInFlowThread();
   return PreviousInPreOrderSkippingOutOfFlow(
@@ -239,8 +252,14 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::MapDescendantToColumnSet(
   DCHECK(!ContainingColumnSpannerPlaceholder(layout_object));
   DCHECK_NE(layout_object, this);
   DCHECK(layout_object->IsDescendantOf(this));
-  // Out-of-flow objects don't belong in column sets.
-  DCHECK(layout_object->ContainingBlock()->IsDescendantOf(this));
+  // Out-of-flow objects don't belong in column sets. DHCECK that the object is
+  // contained by the flow thread, except for legends ("rendered" or
+  // not). Although a rendered legend isn't part of the fragmentation context,
+  // we'll let it contribute to creation of a column set, for the sake of
+  // simplicity. Style and DOM changes may later on change which LEGEND child is
+  // the rendered legend, and we don't want to keep track of that.
+  DCHECK(layout_object->IsRenderedLegend() ||
+         layout_object->ContainingBlock()->IsDescendantOf(this));
   DCHECK_EQ(layout_object->FlowThreadContainingBlock(), this);
   DCHECK(!layout_object->IsLayoutMultiColumnSet());
   DCHECK(!layout_object->IsLayoutMultiColumnSpannerPlaceholder());
@@ -484,7 +503,7 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::ColumnSetAtBlockOffset(
     }
   } else {
     DCHECK(!column_sets_invalidated_);
-    if (multi_column_set_list_.IsEmpty())
+    if (multi_column_set_list_.empty())
       return nullptr;
     if (offset < LayoutUnit()) {
       column_set = multi_column_set_list_.front();
@@ -494,7 +513,7 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::ColumnSetAtBlockOffset(
           .AllOverlapsWithAdapter<MultiColumnSetSearchAdapter>(adapter);
 
       // If no set was found, the offset is in the flow thread overflow.
-      if (!adapter.Result() && !multi_column_set_list_.IsEmpty())
+      if (!adapter.Result() && !multi_column_set_list_.empty())
         column_set = multi_column_set_list_.back();
       else
         column_set = adapter.Result();
@@ -735,7 +754,16 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::PendingColumnSetForNG()
 
 void LayoutMultiColumnFlowThread::AppendNewFragmentainerGroupFromNG() {
   NOT_DESTROYED();
-  DCHECK(last_set_worked_on_);
+  if (!last_set_worked_on_) {
+    // There may be no column sets at all (when there's no content inside the
+    // multicol container). Still the multicol container itself may take up
+    // space and become fragmented, due to its specified block-size, padding,
+    // etc. The NG code doesn't care about this when calling this method. Just
+    // bail. It may also be that we haven't gotten to the first column set yet.
+    // This may happen when NG lays out an empty column (before a spanner) where
+    // legacy doesn't think that there should be a column.
+    return;
+  }
   last_set_worked_on_->AppendNewFragmentainerGroup();
 }
 
@@ -757,7 +785,6 @@ void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
   for (LayoutBox* column_box = FirstMultiColumnBox(); column_box;
        column_box = column_box->NextSiblingMultiColumnBox()) {
     column_box->ClearNeedsLayout();
-    column_box->UpdateAfterLayout();
   }
 
   // If we have a trailing column set, finish it.
@@ -769,7 +796,6 @@ void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
 
   ValidateColumnSets();
   SetLogicalHeight(flow_thread_offset);
-  UpdateAfterLayout();
   ClearNeedsLayout();
   last_set_worked_on_ = nullptr;
 }
@@ -856,7 +882,7 @@ void LayoutMultiColumnFlowThread::CalculateColumnCountAndWidth(
 
 LayoutUnit LayoutMultiColumnFlowThread::ColumnGap(const ComputedStyle& style,
                                                   LayoutUnit available_width) {
-  if (const base::Optional<Length>& column_gap = style.ColumnGap())
+  if (const absl::optional<Length>& column_gap = style.ColumnGap())
     return ValueForLength(*column_gap, available_width);
 
   // "1em" is recommended as the normal gap setting. Matches <p> margins.
@@ -1073,7 +1099,7 @@ void LayoutMultiColumnFlowThread::SkipColumnSpanner(
   // and where such out-of-flow objects might be, just go through the whole
   // subtree.
   for (LayoutObject* descendant = layout_object->SlowFirstChild(); descendant;
-       descendant = descendant->NextInPreOrder()) {
+       descendant = descendant->NextInPreOrder(layout_object)) {
     if (descendant->IsBox() && descendant->IsOutOfFlowPositioned()) {
       descendant->ContainingBlock()->InsertPositionedObject(
           To<LayoutBox>(descendant));
@@ -1251,15 +1277,19 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantWillBeRemoved(
   // set from the spanner placeholders that we've already found.
   LayoutMultiColumnSet* column_set_to_remove;
   if (adjacent_next_spanner_placeholder) {
-    column_set_to_remove = To<LayoutMultiColumnSet>(
-        adjacent_next_spanner_placeholder->PreviousSiblingMultiColumnBox());
+    LayoutBox* sibling =
+        adjacent_next_spanner_placeholder->PreviousSiblingMultiColumnBox();
+    CHECK(sibling->IsLayoutMultiColumnSet());
+    column_set_to_remove = To<LayoutMultiColumnSet>(sibling);
     DCHECK(
         !adjacent_previous_spanner_placeholder ||
         column_set_to_remove ==
             adjacent_previous_spanner_placeholder->NextSiblingMultiColumnBox());
   } else if (adjacent_previous_spanner_placeholder) {
-    column_set_to_remove = To<LayoutMultiColumnSet>(
-        adjacent_previous_spanner_placeholder->NextSiblingMultiColumnBox());
+    LayoutBox* sibling =
+        adjacent_previous_spanner_placeholder->NextSiblingMultiColumnBox();
+    CHECK(sibling->IsLayoutMultiColumnSet());
+    column_set_to_remove = To<LayoutMultiColumnSet>(sibling);
   } else {
     // If there were no adjacent spanners, it has to mean that there's only one
     // column set, since it's only spanners that may cause creation of
@@ -1340,6 +1370,9 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantStyleWillChange(
   if (NeedsToRemoveFromFlowThread(*descendant, descendant->StyleRef(),
                                   new_style)) {
     FlowThreadDescendantWillBeRemoved(descendant);
+#if DCHECK_IS_ON()
+    style_changed_box_ = nullptr;
+#endif
     return;
   }
 #if DCHECK_IS_ON()
@@ -1359,6 +1392,12 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantStyleDidChange(
     StyleDifference diff,
     const ComputedStyle& old_style) {
   NOT_DESTROYED();
+
+#if DCHECK_IS_ON()
+  const auto* style_changed_box = style_changed_box_;
+  style_changed_box_ = nullptr;
+#endif
+
   bool toggle_spanners_if_needed = toggle_spanners_if_needed_;
   toggle_spanners_if_needed_ = false;
 
@@ -1385,16 +1424,20 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantStyleDidChange(
 
   if (!toggle_spanners_if_needed)
     return;
+
+  if (could_contain_spanners_ ==
+      CanContainSpannerInParentFragmentationContext(*descendant))
+    return;
+
 #if DCHECK_IS_ON()
   // Make sure that we were preceded by a call to
   // flowThreadDescendantStyleWillChange() with the same descendant as we have
   // now.
-  DCHECK_EQ(style_changed_box_, descendant);
+  if (style_changed_box)
+    DCHECK_EQ(style_changed_box, descendant);
 #endif
 
-  if (could_contain_spanners_ !=
-      CanContainSpannerInParentFragmentationContext(*descendant))
-    ToggleSpannersInSubtree(descendant);
+  ToggleSpannersInSubtree(descendant);
 }
 
 void LayoutMultiColumnFlowThread::ToggleSpannersInSubtree(

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,7 +40,7 @@ class ErrorConsoleUnitTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
     profile_->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
     error_console_ = ErrorConsole::Get(profile_.get());
   }
@@ -47,7 +48,7 @@ class ErrorConsoleUnitTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  ErrorConsole* error_console_;
+  raw_ptr<ErrorConsole> error_console_;
 };
 
 // Test that the error console is enabled/disabled appropriately.

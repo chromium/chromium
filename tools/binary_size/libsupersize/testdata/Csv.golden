@@ -12,7 +12,8 @@ Name,Size
 
 GroupCount,Address,SizeWithoutPadding,Padding,NumAliases,PSS,Section,Name
 ,0x28d900,16,0,1,16.0,t,_GLOBAL__sub_I_page_allocator.cc
-,0x28d910,56,0,1,56.0,t,_GLOBAL__sub_I_bbr_sender.cc
+,0x28d910,56,0,2,28.0,t,_GLOBAL__sub_I_bbr_sender.cc
+,0x28d910,56,0,2,28.0,t,_GLOBAL__sub_I_bbr_sender.cc
 ,0x28d948,28,0,1,28.0,t,_GLOBAL__sub_I_pacing_sender.cc
 ,0x28d964,38,0,1,38.0,t,extFromUUseMapping
 ,0x28d98a,32,0,1,32.0,t,extFromUUseMapping

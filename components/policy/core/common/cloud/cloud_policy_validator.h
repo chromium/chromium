@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,17 +14,17 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/policy_value_validator.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #endif
 
@@ -53,7 +53,7 @@ namespace policy {
 class POLICY_EXPORT CloudPolicyValidatorBase {
  public:
   // Validation result codes. These values are also used for UMA histograms by
-  // UserCloudPolicyStoreChromeOS and must stay stable - new elements should
+  // UserCloudPolicyStoreAsh and must stay stable - new elements should
   // be added at the end before VALIDATION_STATUS_SIZE. Also update the
   // associated enum definition in histograms.xml.
   enum Status {
@@ -142,6 +142,8 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   // Returns a human-readable representation of |status|.
   static const char* StatusToString(Status status);
 
+  CloudPolicyValidatorBase(const CloudPolicyValidatorBase&) = delete;
+  CloudPolicyValidatorBase& operator=(const CloudPolicyValidatorBase&) = delete;
   virtual ~CloudPolicyValidatorBase();
 
   // Validation status which can be read after completion has been signaled.
@@ -372,12 +374,10 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   std::string key_;
   std::string cached_key_;
   std::string cached_key_signature_;
-  std::string verification_key_;
+  absl::optional<std::string> verification_key_;
   std::string owning_domain_;
   bool allow_key_rotation_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyValidatorBase);
 };
 
 // A simple type-parameterized extension of CloudPolicyValidator that
@@ -397,6 +397,8 @@ class POLICY_EXPORT CloudPolicyValidator final
       scoped_refptr<base::SequencedTaskRunner> background_task_runner)
       : CloudPolicyValidatorBase(std::move(policy_response),
                                  background_task_runner) {}
+  CloudPolicyValidator(const CloudPolicyValidator&) = delete;
+  CloudPolicyValidator& operator=(const CloudPolicyValidator&) = delete;
 
   void ValidateValues(
       std::unique_ptr<PolicyValueValidator<PayloadProto>> value_validator) {
@@ -435,14 +437,12 @@ class POLICY_EXPORT CloudPolicyValidator final
 
   std::vector<std::unique_ptr<PolicyValueValidator<PayloadProto>>>
       value_validators_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyValidator);
 };
 
 using UserCloudPolicyValidator =
     CloudPolicyValidator<enterprise_management::CloudPolicySettings>;
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 using ComponentCloudPolicyValidator =
     CloudPolicyValidator<enterprise_management::ExternalPolicyData>;
 #endif

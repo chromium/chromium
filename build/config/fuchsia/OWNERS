@@ -1,4 +1,4 @@
 file://build/fuchsia/OWNERS
 
 per-file *.cmx=set noparent
-per-file *.cmx=file://fuchsia/SECURITY_OWNERS
+per-file *.cmx=file://build/fuchsia/SECURITY_OWNERS

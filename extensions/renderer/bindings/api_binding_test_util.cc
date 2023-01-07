@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "gin/converter.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
@@ -49,29 +49,68 @@ bool RunFunctionImpl(v8::Local<v8::Function> function,
 
 std::string ReplaceSingleQuotes(base::StringPiece str) {
   std::string result;
-  base::ReplaceChars(str.as_string(), "'", "\"", &result);
+  base::ReplaceChars(str, "'", "\"", &result);
   return result;
 }
 
-std::unique_ptr<base::Value> ValueFromString(base::StringPiece str) {
+base::Value ValueFromString(base::StringPiece str) {
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(ReplaceSingleQuotes(str));
+  if (!value) {
+    ADD_FAILURE() << "Failed to parse " << str;
+    return base::Value();
+  }
+  return std::move(value.value());
+}
+
+base::Value::List ListValueFromString(base::StringPiece str) {
+  base::Value value = ValueFromString(str);
+  if (value.is_none()) {
+    return base::Value::List();
+  }
+
+  if (!value.is_list()) {
+    ADD_FAILURE() << "Not a list: " << str;
+    return base::Value::List();
+  }
+
+  return std::move(value).TakeList();
+}
+
+base::Value::Dict DictValueFromString(base::StringPiece str) {
+  base::Value value = ValueFromString(str);
+  if (value.is_none()) {
+    return base::Value::Dict();
+  }
+
+  if (!value.is_dict()) {
+    ADD_FAILURE() << "Not a dict: " << str;
+    return base::Value::Dict();
+  }
+
+  return std::move(value).TakeDict();
+}
+
+std::unique_ptr<base::Value> DeprecatedValueFromString(base::StringPiece str) {
   std::unique_ptr<base::Value> value =
       base::JSONReader::ReadDeprecated(ReplaceSingleQuotes(str));
   EXPECT_TRUE(value) << str;
   return value;
 }
 
-std::unique_ptr<base::ListValue> ListValueFromString(base::StringPiece str) {
-  return base::ListValue::From(ValueFromString(str));
-}
-
-std::unique_ptr<base::DictionaryValue> DictionaryValueFromString(
+std::unique_ptr<base::ListValue> DeprecatedListValueFromString(
     base::StringPiece str) {
-  return base::DictionaryValue::From(ValueFromString(str));
+  return base::ListValue::From(DeprecatedValueFromString(str));
 }
 
-std::string ValueToString(const base::Value& value) {
+std::unique_ptr<base::DictionaryValue> DeprecatedDictionaryValueFromString(
+    base::StringPiece str) {
+  return base::DictionaryValue::From(DeprecatedValueFromString(str));
+}
+
+std::string ValueToString(const base::ValueView& value_view) {
   std::string json;
-  EXPECT_TRUE(base::JSONWriter::Write(value, &json));
+  EXPECT_TRUE(base::JSONWriter::Write(value_view, &json));
   return json;
 }
 
@@ -204,6 +243,22 @@ std::string GetStringPropertyFromObject(v8::Local<v8::Object> object,
                                         v8::Local<v8::Context> context,
                                         base::StringPiece key) {
   return V8ToString(GetPropertyFromObject(object, context, key), context);
+}
+
+bool ValueTypeChecker<v8::Function>::IsType(v8::Local<v8::Value> value) {
+  return value->IsFunction();
+}
+
+bool ValueTypeChecker<v8::Object>::IsType(v8::Local<v8::Value> value) {
+  return value->IsObject();
+}
+
+bool ValueTypeChecker<v8::Promise>::IsType(v8::Local<v8::Value> value) {
+  return value->IsPromise();
+}
+
+bool ValueTypeChecker<v8::Array>::IsType(v8::Local<v8::Value> value) {
+  return value->IsArray();
 }
 
 }  // namespace extensions

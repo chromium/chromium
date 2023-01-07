@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,11 +22,13 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/buildflags.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/mac/install_from_dmg.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/mac/mac_startup_profiler.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
+#include "chrome/browser/updater/scheduler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -37,9 +39,9 @@
 #include "components/version_info/channel.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
-#include "net/base/features.h"
 #include "net/cert/internal/system_trust_store.h"
 #include "services/network/public/cpp/features.h"
+#include "ui/base/cocoa/permissions_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
@@ -51,13 +53,11 @@
 
 // ChromeBrowserMainPartsMac ---------------------------------------------------
 
-ChromeBrowserMainPartsMac::ChromeBrowserMainPartsMac(
-    const content::MainFunctionParams& parameters,
-    StartupData* startup_data)
-    : ChromeBrowserMainPartsPosix(parameters, startup_data) {}
+ChromeBrowserMainPartsMac::ChromeBrowserMainPartsMac(bool is_integration_test,
+                                                     StartupData* startup_data)
+    : ChromeBrowserMainPartsPosix(is_integration_test, startup_data) {}
 
-ChromeBrowserMainPartsMac::~ChromeBrowserMainPartsMac() {
-}
+ChromeBrowserMainPartsMac::~ChromeBrowserMainPartsMac() = default;
 
 int ChromeBrowserMainPartsMac::PreEarlyInitialization() {
   if (base::mac::WasLaunchedAsLoginItemRestoreState()) {
@@ -69,19 +69,19 @@ int ChromeBrowserMainPartsMac::PreEarlyInitialization() {
         base::CommandLine::ForCurrentProcess();
     singleton_command_line->AppendSwitch(switches::kNoStartupWindow);
   }
-
   return ChromeBrowserMainPartsPosix::PreEarlyInitialization();
 }
 
-void ChromeBrowserMainPartsMac::PreMainMessageLoopStart() {
+void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   MacStartupProfiler::GetInstance()->Profile(
       MacStartupProfiler::PRE_MAIN_MESSAGE_LOOP_START);
-  ChromeBrowserMainPartsPosix::PreMainMessageLoopStart();
+  ChromeBrowserMainPartsPosix::PreCreateMainMessageLoop();
 
   // ChromeBrowserMainParts should have loaded the resource bundle by this
   // point (needed to load the nib).
   CHECK(ui::ResourceBundle::HasSharedInstance());
 
+#if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 #if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
   InstallUpdaterAndRegisterBrowser();
 #else
@@ -89,6 +89,7 @@ void ChromeBrowserMainPartsMac::PreMainMessageLoopStart() {
   // The framework is only distributed with branded Google Chrome builds.
   [[KeystoneGlue defaultKeystoneGlue] registerWithKeystone];
 #endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+  updater::SchedulePeriodicTasks();
 
   // Disk image installation is sort of a first-run task, so it shares the
   // no first run switches.
@@ -102,13 +103,15 @@ void ChromeBrowserMainPartsMac::PreMainMessageLoopStart() {
   // anyone tries doing anything silly like firing off an import job, and
   // before anything creating preferences like Local State in order for the
   // relaunched installed application to still consider itself as first-run.
-  if (!first_run::IsFirstRunSuppressed(parsed_command_line())) {
+  if (!first_run::IsFirstRunSuppressed(
+          *base::CommandLine::ForCurrentProcess())) {
     if (MaybeInstallFromDiskImage()) {
       // The application was installed and the installed copy has been
       // launched.  This process is now obsolete.  Exit.
       exit(0);
     }
   }
+#endif  // !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 
   // Create the app delegate. This object is intentionally leaked as a global
   // singleton. It is accessed through -[NSApp delegate].
@@ -118,6 +121,8 @@ void ChromeBrowserMainPartsMac::PreMainMessageLoopStart() {
   chrome::BuildMainMenu(NSApp, app_controller,
                         l10n_util::GetStringUTF16(IDS_PRODUCT_NAME), false);
   [app_controller mainMenuCreated];
+
+  ui::WarmScreenCapture();
 
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
@@ -133,15 +138,12 @@ void ChromeBrowserMainPartsMac::PreMainMessageLoopStart() {
   }
 }
 
-void ChromeBrowserMainPartsMac::PostMainMessageLoopStart() {
+void ChromeBrowserMainPartsMac::PostCreateMainMessageLoop() {
   MacStartupProfiler::GetInstance()->Profile(
       MacStartupProfiler::POST_MAIN_MESSAGE_LOOP_START);
-  ChromeBrowserMainPartsPosix::PostMainMessageLoopStart();
+  ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
 
-  if (base::FeatureList::IsEnabled(
-          net::features::kCertVerifierBuiltinFeature)) {
-    net::InitializeTrustStoreMacCache();
-  }
+  net::InitializeTrustStoreMacCache();
 }
 
 void ChromeBrowserMainPartsMac::PreProfileInit() {
@@ -154,10 +156,17 @@ void ChromeBrowserMainPartsMac::PreProfileInit() {
   g_browser_process->platform_part()->app_shim_listener()->Init();
 }
 
-void ChromeBrowserMainPartsMac::PostProfileInit() {
-  MacStartupProfiler::GetInstance()->Profile(
-      MacStartupProfiler::POST_PROFILE_INIT);
-  ChromeBrowserMainPartsPosix::PostProfileInit();
+void ChromeBrowserMainPartsMac::PostProfileInit(Profile* profile,
+                                                bool is_initial_profile) {
+  if (is_initial_profile) {
+    MacStartupProfiler::GetInstance()->Profile(
+        MacStartupProfiler::POST_PROFILE_INIT);
+  }
+
+  ChromeBrowserMainPartsPosix::PostProfileInit(profile, is_initial_profile);
+
+  if (!is_initial_profile)
+    return;
 
   // Activation of Keystone is not automatic but done in response to the
   // counting and reporting of profiles.

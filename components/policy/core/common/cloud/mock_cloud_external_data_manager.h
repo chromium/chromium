@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/external_data_fetcher.h"
@@ -22,19 +21,21 @@ class ExternalDataFetcher;
 class MockCloudExternalDataManager : public CloudExternalDataManager {
  public:
   MockCloudExternalDataManager();
+  MockCloudExternalDataManager(const MockCloudExternalDataManager&) = delete;
+  MockCloudExternalDataManager& operator=(const MockCloudExternalDataManager&) =
+      delete;
   ~MockCloudExternalDataManager() override;
 
   MOCK_METHOD0(OnPolicyStoreLoaded, void(void));
   MOCK_METHOD1(Connect, void(scoped_refptr<network::SharedURLLoaderFactory>));
   MOCK_METHOD0(Disconnect, void(void));
-  MOCK_METHOD2(Fetch,
-               void(const std::string&, ExternalDataFetcher::FetchCallback));
+  MOCK_METHOD3(Fetch,
+               void(const std::string&,
+                    const std::string&,
+                    ExternalDataFetcher::FetchCallback));
 
   std::unique_ptr<ExternalDataFetcher> CreateExternalDataFetcher(
       const std::string& policy);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCloudExternalDataManager);
 };
 
 }  // namespace policy

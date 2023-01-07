@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,10 @@
 @protocol GREYMatcher;
 @class FakeChromeIdentity;
 
+namespace signin {
+enum class ConsentLevel;
+}
+
 #define SigninEarlGrey \
   [SigninEarlGreyImpl invokedFromFile:@"" __FILE__ lineNumber:__LINE__]
 
@@ -20,19 +24,14 @@
 // TODO(crbug.com/974833): Consider moving these into ChromeEarlGrey.
 @interface SigninEarlGreyImpl : BaseEGTestHelperImpl
 
-// Returns a fake identity.
-- (FakeChromeIdentity*)fakeIdentity1;
-
-// Returns a second fake identity.
-- (FakeChromeIdentity*)fakeIdentity2;
-
-// Returns a fake managed identity.
-- (FakeChromeIdentity*)fakeManagedIdentity;
-
-// Adds |fakeIdentity| to the fake identity service.
+// Adds `fakeIdentity` to the fake identity service.
 - (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 
-// Removes |fakeIdentity| from the fake identity service asynchronously to
+// Maps `capabilities` to the `fakeIdentity`. Check fails if the
+// `fakeIdentity` has not been added to the fake identity service.
+- (void)setCapabilities:(NSDictionary*)capabilities forIdentity:fakeIdentity;
+
+// Removes `fakeIdentity` from the fake identity service asynchronously to
 // simulate identity removal from the device.
 - (void)forgetFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 
@@ -40,15 +39,22 @@
 // app fails to sign out.
 - (void)signOut;
 
-// Induces a GREYAssert if |fakeIdentity| is not signed in to the active
+// Induces a GREYAssert if `fakeIdentity` is not signed in to the active
 // profile.
 - (void)verifySignedInWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
+
+// Induces a GREYAssert if the user is not signed in with `expectedEmail`.
+- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail
+                              consent:(signin::ConsentLevel)consent;
 
 // Induces a GREYAssert if an identity is signed in.
 - (void)verifySignedOut;
 
-// Induces a GREYAssert if there are no signed-in identities.
-- (void)verifyAuthenticated;
+// Induces a GREYAssert if the Sync state does not match `enabled`.
+- (void)verifySyncUIEnabled:(BOOL)enabled;
+
+// Induces a GREYAssert if the Sync cell is not hidden.
+- (void)verifySyncUIIsHidden;
 
 @end
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 #include <mach/mach.h>
 
 #include "base/files/file_path.h"
-#include "base/strings/stringprintf.h"
 #include "snapshot/mac/mach_o_image_annotations_reader.h"
 #include "snapshot/mac/mach_o_image_reader.h"
 #include "util/misc/tri_state.h"

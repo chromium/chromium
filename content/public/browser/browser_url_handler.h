@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ class CONTENT_EXPORT BrowserURLHandler {
   static URLHandler null_handler();
 
   // Returns the singleton instance.
-  static  BrowserURLHandler* GetInstance();
+  static BrowserURLHandler* GetInstance();
 
   // RewriteURLIfNecessary gives all registered URLHandlers a shot at processing
   // the given URL, and modifies it in place.

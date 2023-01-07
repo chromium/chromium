@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <memory>
 #include <sstream>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 class Browser;
@@ -64,6 +62,11 @@ class FullscreenControllerStateTest {
   static const int kMaxStateNameLength = 39;
 
   FullscreenControllerStateTest();
+
+  FullscreenControllerStateTest(const FullscreenControllerStateTest&) = delete;
+  FullscreenControllerStateTest& operator=(
+      const FullscreenControllerStateTest&) = delete;
+
   virtual ~FullscreenControllerStateTest();
 
   static const char* GetStateString(State state);
@@ -196,8 +199,6 @@ class FullscreenControllerStateTest {
 
   // Log of operations reported on errors via GetAndClearDebugLog().
   std::ostringstream debugging_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControllerStateTest);
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_FULLSCREEN_CONTROLLER_STATE_TEST_H_

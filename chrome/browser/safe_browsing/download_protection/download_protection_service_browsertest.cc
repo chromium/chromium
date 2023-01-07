@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/site_instance.h"
@@ -33,7 +33,7 @@ class DownloadProtectionServiceBrowserTest : public InProcessBrowserTest {
 
   void DownloadAndWait(GURL url) {
     content::DownloadManager* download_manager =
-        content::BrowserContext::GetDownloadManager(browser()->profile());
+        browser()->profile()->GetDownloadManager();
     content::DownloadTestObserverTerminal observer(
         download_manager, 1,
         content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE);
@@ -85,10 +85,12 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyZipHash) {
   ASSERT_EQ(2, requests[0]->archived_binary_size());
 
   EXPECT_EQ("a.zip", requests[0]->archived_binary(0).file_basename());
+  EXPECT_EQ(11, requests[0]->archived_binary(0).length());
   EXPECT_EQ(std::string(kAZipDigest, kAZipDigest + crypto::kSHA256Length),
             requests[0]->archived_binary(0).digests().sha256());
 
   EXPECT_EQ("b.zip", requests[0]->archived_binary(1).file_basename());
+  EXPECT_EQ(10, requests[0]->archived_binary(1).length());
   EXPECT_EQ(std::string(kBZipDigest, kBZipDigest + crypto::kSHA256Length),
             requests[0]->archived_binary(1).digests().sha256());
 }

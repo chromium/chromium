@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,18 +9,7 @@ import array
 import json
 import sys
 import os
-import urlparse
-
-SOURCE_ROOT = os.path.join(os.path.dirname(
-    os.path.abspath(__file__)), os.pardir, os.pardir)
-
-# Manually inject dependency paths.
-sys.path.insert(0, os.path.join(
-    SOURCE_ROOT, "third_party", "protobuf", "third_party", "six"))
-sys.path.insert(0, os.path.join(
-    SOURCE_ROOT, "third_party", "protobuf", "python"))
-
-import media_engagement_preload_pb2
+import urllib.parse
 
 """
 A Deterministic acyclic finite state automaton (DAFSA) is a compact
@@ -434,22 +423,15 @@ def encode(dafsa):
 
   output.extend(encode_links(dafsa, offsets, len(output)))
   output.reverse()
-  return output
+  return bytes(output)
 
 
-def to_proto(data):
-  """Generates protobuf from a list of encoded bytes."""
-  message = media_engagement_preload_pb2.PreloadedData()
-  message.dafsa = array.array('B', data).tostring()
-  return message.SerializeToString()
-
-
-def words_to_proto(words):
-  """Generates protobuf from a word list"""
+def words_to_encoded_dafsa(words):
+  """Generates an encoded DAFSA from a word list"""
   dafsa = to_dafsa(words)
   for fun in (reverse, join_suffixes, reverse, join_suffixes, join_labels):
     dafsa = fun(dafsa)
-  return to_proto(encode(dafsa))
+  return encode(dafsa)
 
 
 def parse_json(infile):
@@ -458,7 +440,7 @@ def parse_json(infile):
     netlocs = {}
     for entry in json.loads(infile):
       # Parse the origin and reject any with an invalid protocol.
-      parsed = urlparse.urlparse(entry)
+      parsed = urllib.parse.urlparse(entry)
       if parsed.scheme != 'http' and parsed.scheme != 'https':
         raise InputError('Invalid protocol: %s' % entry)
 
@@ -471,18 +453,28 @@ def parse_json(infile):
 
     # Join the numerical values to the netlocs.
     output = []
-    for location, value in netlocs.iteritems():
+    for location, value in netlocs.items():
       output.append(location + str(value))
     return output
   except ValueError:
     raise InputError('Failed to parse JSON.')
 
 def main():
-  if len(sys.argv) != 3:
-    print('usage: %s infile outfile' % sys.argv[0])
+  if len(sys.argv) != 4:
+    print('usage: %s builddir infile outfile' % sys.argv[0])
     return 1
-  with open(sys.argv[1], 'r') as infile, open(sys.argv[2], 'wb') as outfile:
-    outfile.write(words_to_proto(parse_json(infile.read())))
+
+  pyproto = os.path.join(sys.argv[1], 'pyproto')
+  sys.path.insert(0, pyproto)
+  sys.path.insert(0, os.path.join(pyproto, 'chrome', 'browser', 'media'))
+  import media_engagement_preload_pb2
+
+  with open(sys.argv[2], 'r') as infile, open(sys.argv[3], 'wb') as outfile:
+    dafsa = words_to_encoded_dafsa(parse_json(infile.read()))
+
+    message = media_engagement_preload_pb2.PreloadedData()
+    message.dafsa = dafsa
+    outfile.write(message.SerializeToString())
   return 0
 
 

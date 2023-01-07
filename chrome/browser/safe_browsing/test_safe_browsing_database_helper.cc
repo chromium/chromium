@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,18 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "components/safe_browsing/core/db/v4_database.h"
-#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/db/v4_test_util.h"
+#include "components/safe_browsing/core/browser/db/v4_database.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 
 namespace {
@@ -28,6 +30,10 @@ class FakeSafeBrowsingUIManager
  public:
   FakeSafeBrowsingUIManager() {}
 
+  FakeSafeBrowsingUIManager(const FakeSafeBrowsingUIManager&) = delete;
+  FakeSafeBrowsingUIManager& operator=(const FakeSafeBrowsingUIManager&) =
+      delete;
+
  protected:
   ~FakeSafeBrowsingUIManager() override {}
 
@@ -35,9 +41,6 @@ class FakeSafeBrowsingUIManager
     resource.DispatchCallback(FROM_HERE, true /* proceed */,
                               true /* showed_interstitial */);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeSafeBrowsingUIManager);
 };
 
 }  // namespace
@@ -51,7 +54,7 @@ class InsertingDatabaseFactory : public safe_browsing::TestV4DatabaseFactory {
       const std::vector<safe_browsing::ListIdentifier>& lists_to_insert)
       : lists_to_insert_(lists_to_insert), store_factory_(store_factory) {}
 
-  std::unique_ptr<safe_browsing::V4Database> Create(
+  std::unique_ptr<safe_browsing::V4Database, base::OnTaskRunnerDeleter> Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       std::unique_ptr<safe_browsing::StoreMap> store_map) override {
     const base::FilePath base_store_path(FILE_PATH_LITERAL("UrlDb.store"));
@@ -76,7 +79,7 @@ class InsertingDatabaseFactory : public safe_browsing::TestV4DatabaseFactory {
  private:
   std::vector<safe_browsing::ListIdentifier> lists_to_insert_;
   std::vector<safe_browsing::ListIdentifier> lists_;
-  safe_browsing::TestV4StoreFactory* store_factory_;
+  raw_ptr<safe_browsing::TestV4StoreFactory> store_factory_;
 };
 
 TestSafeBrowsingDatabaseHelper::TestSafeBrowsingDatabaseHelper()

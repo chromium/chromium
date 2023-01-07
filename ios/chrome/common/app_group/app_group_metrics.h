@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,6 +69,20 @@ extern NSString* const kCredentialExtensionFetchPasswordFailureCount;
 // An app_group key to the number of times Credential Extension was queried
 // for a password with a nil argument.
 extern NSString* const kCredentialExtensionFetchPasswordNilArgumentCount;
+
+// An app_group key for the number of times saving a newly generated password
+// to the keychain failed.
+extern NSString* const kCredentialExtensionKeychainSavePasswordFailureCount;
+
+// An app_group key for the number of times saving a new credential failed.
+extern NSString* const kCredentialExtensionSaveCredentialFailureCount;
+
+// An app_group key for the number of times the consent verified view shows.
+extern NSString* const kCredentialExtensionConsentVerifiedCount;
+
+// Returns the app_group key containing the number of times the given histogram
+// bucket was fired.
+NSString* HistogramCountKey(NSString* histogram, int bucket);
 
 // Offsets the sessionID to avoid collision. The sessionID is limited to 1<<23.
 int AppGroupSessionID(int sessionID, AppGroupApplications application);

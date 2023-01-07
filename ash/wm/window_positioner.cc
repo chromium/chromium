@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/ranges/algorithm.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -104,8 +105,7 @@ void SetBoundsAndOffsetTransientChildren(aura::Window* window,
   }
 
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
-  settings.SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kWindowAutoMoveDurationMS));
+  settings.SetTransitionDuration(base::Milliseconds(kWindowAutoMoveDurationMS));
   window->SetBounds(bounds);
 }
 
@@ -126,7 +126,7 @@ void SetBoundsAnimated(aura::Window* window,
 void AutoPlaceSingleWindow(aura::Window* window, bool animated) {
   gfx::Rect work_area = screen_util::GetDisplayWorkAreaBoundsInParent(window);
   gfx::Rect bounds = window->bounds();
-  const base::Optional<gfx::Rect> user_defined_area =
+  const absl::optional<gfx::Rect> user_defined_area =
       WindowState::Get(window)->pre_auto_manage_window_bounds();
   if (user_defined_area) {
     bounds = *user_defined_area;
@@ -145,9 +145,10 @@ void AutoPlaceSingleWindow(aura::Window* window, bool animated) {
 // Get the first open (non minimized) window which is on the screen defined.
 aura::Window* GetReferenceWindow(const aura::Window* root_window,
                                  const aura::Window* exclude,
-                                 bool* single_window) {
-  if (single_window)
-    *single_window = true;
+                                 bool on_hide_remove,
+                                 bool* out_single_window) {
+  if (out_single_window)
+    *out_single_window = true;
   // Get the active window.
   aura::Window* active = window_util::GetActiveWindow();
   if (active && active->GetRootWindow() != root_window)
@@ -164,7 +165,7 @@ aura::Window* GetReferenceWindow(const aura::Window* root_window,
   int index = 0;
   // Find the index of the current active window.
   if (active)
-    index = std::find(windows.begin(), windows.end(), active) - windows.begin();
+    index = base::ranges::find(windows, active) - windows.begin();
 
   // Scan the cycle list backwards to see which is the second topmost window
   // (and so on). Note that we might cycle a few indices twice if there is no
@@ -175,19 +176,22 @@ aura::Window* GetReferenceWindow(const aura::Window* root_window,
     aura::Window* window = windows[i % windows.size()];
     while (::wm::GetTransientParent(window))
       window = ::wm::GetTransientParent(window);
+    // For hiding, do not auto-position if there are any remaining windows,
+    // even windows that do not have auto-positioning turned on.
     if (window != exclude &&
-        window->type() == aura::client::WINDOW_TYPE_NORMAL &&
+        window->GetType() == aura::client::WINDOW_TYPE_NORMAL &&
         window->GetRootWindow() == root_window && window->TargetVisibility() &&
-        WindowState::Get(window)->GetWindowPositionManaged()) {
+        (on_hide_remove ||
+         WindowState::Get(window)->GetWindowPositionManaged())) {
       if (found && found != window) {
-        // no need to check !single_window because the function must have
-        // been already returned in the "if (!single_window)" below.
-        *single_window = false;
+        // no need to check !out_single_window because the function must have
+        // been already returned in the "if (!out_single_window)" below.
+        *out_single_window = false;
         return found;
       }
       found = window;
       // If there is no need to check single window, return now.
-      if (!single_window)
+      if (!out_single_window)
         return found;
     }
   }
@@ -203,7 +207,8 @@ void WindowPositioner::GetBoundsAndShowStateForNewWindow(
     gfx::Rect* bounds_in_out,
     ui::WindowShowState* show_state_out) {
   aura::Window* root_window = Shell::GetRootWindowForNewWindows();
-  aura::Window* top_window = GetReferenceWindow(root_window, nullptr, nullptr);
+  aura::Window* top_window = GetReferenceWindow(
+      root_window, nullptr, /*on_hide_remove=*/false, nullptr);
 
   // If there is no valid window we take and adjust the passed coordinates.
   if (!top_window) {
@@ -255,8 +260,9 @@ void WindowPositioner::RearrangeVisibleWindowOnHideOrRemove(
     return;
   // Find a single open browser window.
   bool single_window;
-  aura::Window* other_shown_window = GetReferenceWindow(
-      removed_window->GetRootWindow(), removed_window, &single_window);
+  aura::Window* other_shown_window =
+      GetReferenceWindow(removed_window->GetRootWindow(), removed_window,
+                         /*on_hide_remove=*/true, &single_window);
   if (!other_shown_window || !single_window ||
       !WindowPositionCanBeManaged(other_shown_window))
     return;
@@ -282,8 +288,9 @@ void WindowPositioner::RearrangeVisibleWindowOnShow(
 
   // Find a single open managed window.
   bool single_window;
-  aura::Window* other_shown_window = GetReferenceWindow(
-      added_window->GetRootWindow(), added_window, &single_window);
+  aura::Window* other_shown_window =
+      GetReferenceWindow(added_window->GetRootWindow(), added_window,
+                         /*on_hide_remove=*/false, &single_window);
 
   if (!other_shown_window) {
     // It could be that this window is the first window joining the workspace.

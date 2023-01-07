@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,12 @@ namespace chrome {
 // Flags for Chrome specific child processes to resolve the appropriate process
 // via ChromeContentClient::GetChildProcessPath().
 enum ChildProcessHostFlags {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Starts a child process with the macOS alert style to show notifications as
   // alerts instead of banners which are shown by the main app.
   kChildProcessHelperAlerts =
       content::ChildProcessHost::CHILD_EMBEDDER_FIRST + 1,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 }  // namespace chrome

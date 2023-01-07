@@ -1,0 +1,46 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module system_extensions_test.mojom;
+
+import "ui/events/mojom/keyboard_codes.mojom";
+import "ui/events/mojom/event_constants.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Interface that allows tests to perform browser-side actions on behalf of
+// them e.g. get the size of the shelf, open new windows, etc.
+interface CrosWindowManagementTestHelper {
+  // Opens a test System Web App window. The C++ part of the test needs to call
+  // `swa_installation().WaitForAppInstall()` to ensure the test SWA is
+  // installed before opening with this method.
+  OpenSystemWebAppWindow() => (string window_id);
+
+  // Opens a new browser window. Returns the id of the new window.
+  OpenBrowserWindow() => (string window_id);
+
+  // Closes the browser window with `window_id`. Crashes if there is no window
+  // with `window_id`.
+  CloseBrowserWindow(string window_id) => ();
+
+  // Sets the displays and their properties based on `displays`. See
+  // ManagedDisplayInfo::CreateFromSpec() for documentation and examples.
+  SetDisplays(string displays) => ();
+
+  // Returns the height of the shelf.
+  GetShelfHeight() => (int32 shelf_height);
+
+  // Returns the minimum size of a window with `window_id`.
+  GetMinimumSize(string window_id) => (gfx.mojom.Size minimum_size);
+
+  // Simulates a key with `keyboard_code` and `modifiers` being pressed.
+  // `modifiers` is a bitmask of event and keyboard event flags in
+  // `events_contants.mojom`.
+  SimulatePressKey(ui.mojom.KeyboardCode keyboard_code,
+                   int32 modifiers) => ();
+  // Simulates a key with `keyboard_code` and `modifiers` being pressed.
+  // `modifiers` is a bitmask of event and keyboard event flags in
+  // `events_contants.mojom`.
+  SimulateReleaseKey(ui.mojom.KeyboardCode keyboard_code,
+                     int32 modifiers) => ();
+};

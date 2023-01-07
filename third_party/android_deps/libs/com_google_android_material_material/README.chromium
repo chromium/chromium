@@ -1,9 +1,10 @@
 Name: Material Components for Android
 Short Name: material
 URL: https://github.com/material-components/material-components-android
-Version: 1.2.0-alpha06
+Version: 1.7.0-alpha02
 License: Android Software Development Kit License
 License File: LICENSE
+CPEPrefix: unknown
 Security Critical: yes
 
 Description:

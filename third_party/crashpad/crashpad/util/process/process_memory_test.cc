@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 
 #include <memory>
 
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
@@ -30,9 +30,15 @@
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_native.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "test/mac/mach_multiprocess.h"
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "test/linux/fake_ptrace_connection.h"
+#include "util/linux/direct_ptrace_connection.h"
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 namespace crashpad {
 namespace test {
@@ -42,7 +48,7 @@ namespace {
 // port which requires root or a code signing entitlement. To account for this
 // we implement an adaptor class that wraps MachMultiprocess on macOS, because
 // it shares the child's task port, and makes it behave like MultiprocessExec.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 class MultiprocessAdaptor : public MachMultiprocess {
  public:
   void SetChildTestMainFunction(const std::string& function_name) {
@@ -97,14 +103,14 @@ class MultiprocessAdaptor : public MultiprocessExec {
 
   void MultiprocessParent() override { Parent(); }
 };
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 void DoChildReadTestSetup(size_t* region_size,
                           std::unique_ptr<char[]>* region) {
   *region_size = 4 * base::GetPageSize();
   region->reset(new char[*region_size]);
   for (size_t index = 0; index < *region_size; ++index) {
-    (*region)[index] = index % 256;
+    (*region)[index] = static_cast<char>(index % 256);
   }
 }
 
@@ -125,6 +131,9 @@ class ReadTest : public MultiprocessAdaptor {
   ReadTest() : MultiprocessAdaptor() {
     SetChildTestMainFunction("ReadTestChild");
   }
+
+  ReadTest(const ReadTest&) = delete;
+  ReadTest& operator=(const ReadTest&) = delete;
 
   void RunAgainstSelf() {
     size_t region_size;
@@ -148,8 +157,15 @@ class ReadTest : public MultiprocessAdaptor {
   }
 
   void DoTest(ProcessType process, size_t region_size, VMAddress address) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    FakePtraceConnection connection;
+    ASSERT_TRUE(connection.Initialize(process));
+    ProcessMemoryLinux memory(&connection);
+#else
     ProcessMemoryNative memory;
     ASSERT_TRUE(memory.Initialize(process));
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     std::unique_ptr<char[]> result(new char[region_size]);
 
@@ -198,8 +214,6 @@ class ReadTest : public MultiprocessAdaptor {
     EXPECT_EQ(result[0], 2);
     EXPECT_EQ(result[1], 'J');
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ReadTest);
 };
 
 TEST(ProcessMemory, ReadSelf) {
@@ -268,6 +282,9 @@ class ReadCStringTest : public MultiprocessAdaptor {
     SetChildTestMainFunction("ReadCStringTestChild");
   }
 
+  ReadCStringTest(const ReadCStringTest&) = delete;
+  ReadCStringTest& operator=(const ReadCStringTest&) = delete;
+
   void RunAgainstSelf() {
     const char* const_empty;
     const char* const_short;
@@ -328,8 +345,15 @@ class ReadCStringTest : public MultiprocessAdaptor {
               VMAddress local_empty_address,
               VMAddress local_short_address,
               VMAddress long_string_address) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    FakePtraceConnection connection;
+    ASSERT_TRUE(connection.Initialize(process));
+    ProcessMemoryLinux memory(&connection);
+#else
     ProcessMemoryNative memory;
     ASSERT_TRUE(memory.Initialize(process));
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     Compare(memory, const_empty_address, kConstCharEmpty);
     Compare(memory, const_short_address, kConstCharShort);
@@ -340,8 +364,6 @@ class ReadCStringTest : public MultiprocessAdaptor {
   }
 
   const bool limit_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadCStringTest);
 };
 
 TEST(ProcessMemory, ReadCStringSelf) {
@@ -367,7 +389,7 @@ TEST(ProcessMemory, ReadCStringSizeLimitedChild) {
 void DoReadUnmappedChildMainSetup(void* page) {
   char* region = reinterpret_cast<char*>(page);
   for (size_t index = 0; index < base::GetPageSize(); ++index) {
-    region[index] = index % 256;
+    region[index] = static_cast<char>(index % 256);
   }
 }
 
@@ -389,6 +411,9 @@ class ReadUnmappedTest : public MultiprocessAdaptor {
     SetChildTestMainFunction("ReadUnmappedChildMain");
   }
 
+  ReadUnmappedTest(const ReadUnmappedTest&) = delete;
+  ReadUnmappedTest& operator=(const ReadUnmappedTest&) = delete;
+
   void RunAgainstChild() { Run(); }
 
  private:
@@ -399,8 +424,15 @@ class ReadUnmappedTest : public MultiprocessAdaptor {
   }
 
   void DoTest(ProcessType process, VMAddress address) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    DirectPtraceConnection connection;
+    ASSERT_TRUE(connection.Initialize(process));
+    ProcessMemoryLinux memory(&connection);
+#else
     ProcessMemoryNative memory;
     ASSERT_TRUE(memory.Initialize(process));
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     VMAddress page_addr1 = address;
     VMAddress page_addr2 = page_addr1 + base::GetPageSize();
@@ -414,8 +446,6 @@ class ReadUnmappedTest : public MultiprocessAdaptor {
     EXPECT_FALSE(memory.Read(page_addr2, base::GetPageSize(), result.get()));
     EXPECT_FALSE(memory.Read(page_addr2 - 1, 2, result.get()));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ReadUnmappedTest);
 };
 
 TEST(ProcessMemory, ReadUnmappedChild) {
@@ -511,6 +541,9 @@ class ReadCStringUnmappedTest : public MultiprocessAdaptor {
     SetChildTestMainFunction("ReadCStringUnmappedChildMain");
   }
 
+  ReadCStringUnmappedTest(const ReadCStringUnmappedTest&) = delete;
+  ReadCStringUnmappedTest& operator=(const ReadCStringUnmappedTest&) = delete;
+
   void RunAgainstChild() { Run(); }
 
  private:
@@ -525,8 +558,15 @@ class ReadCStringUnmappedTest : public MultiprocessAdaptor {
 
   void DoTest(ProcessType process,
               const std::vector<StringDataInChildProcess>& strings) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    DirectPtraceConnection connection;
+    ASSERT_TRUE(connection.Initialize(process));
+    ProcessMemoryLinux memory(&connection);
+#else
     ProcessMemoryNative memory;
     ASSERT_TRUE(memory.Initialize(process));
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     std::string result;
     result.reserve(kChildProcessStringLength + 1);
@@ -553,8 +593,6 @@ class ReadCStringUnmappedTest : public MultiprocessAdaptor {
   }
 
   const bool limit_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadCStringUnmappedTest);
 };
 
 TEST(ProcessMemory, ReadCStringUnmappedChild) {

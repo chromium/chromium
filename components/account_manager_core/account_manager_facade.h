@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,10 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "build/chromeos_buildflags.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 class OAuth2AccessTokenFetcher;
 class OAuth2AccessTokenConsumer;
@@ -41,6 +43,13 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     virtual void OnAccountUpserted(const Account& account) = 0;
     // Invoked when an account is removed.
     virtual void OnAccountRemoved(const Account& account) = 0;
+    // Invoked when the error state associated with an account changes.
+    virtual void OnAuthErrorChanged(const AccountKey& account,
+                                    const GoogleServiceAuthError& error) = 0;
+    // Invoked when the account signin dialog is closed on the OS side. Check
+    // `AccountManagerObserver::OnSigninDialogClosed()` Mojo API in
+    // account_manager.mojom for details.
+    virtual void OnSigninDialogClosed();
   };
 
   // The source UI surface used for launching the account addition /
@@ -50,23 +59,43 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
   // Note: Please update |AccountManagerAccountAdditionSource| in enums.xml
   // after adding new values.
   enum class AccountAdditionSource : int {
-    // Settings > Add account button.
+    // OS Settings > Add account button.
     kSettingsAddAccountButton = 0,
-    // Settings > Sign in again button.
+    // OS Settings > Sign in again button.
     kSettingsReauthAccountButton = 1,
     // Launched from an ARC application.
     kArc = 2,
     // Launched automatically from Chrome content area. As of now, this is
     // possible only when an account requires re-authentication.
-    kContentArea = 3,
+    kContentAreaReauth = 3,
     // Print Preview dialog.
-    kPrintPreviewDialog = 4,
+    kPrintPreviewDialogUnused = 4,
     // Account Manager migration welcome screen.
     kAccountManagerMigrationWelcomeScreen = 5,
     // Onboarding.
     kOnboarding = 6,
+    // At profile creation, main account of secondary profile.
+    kChromeProfileCreation = 7,
+    // Account addition flow launched by the user from One Google Bar.
+    kOgbAddAccount = 8,
+    // Avatar bubble -> Sign in again button.
+    kAvatarBubbleReauthAccountButton = 9,
+    // A Chrome extension required account re-authentication.
+    kChromeExtensionReauth = 10,
+    // Sync promo with an account that requires re-authentication.
+    kChromeSyncPromoReauth = 11,
+    // Chrome Settings > Sign in again button.
+    kChromeSettingsReauthAccountButton = 12,
+    // Avatar bubble -> Turn on sync button.
+    kAvatarBubbleTurnOnSyncAddAccount = 13,
+    // A Chrome extension required a new account.
+    kChromeExtensionAddAccount = 14,
+    // Sync promo with a new account.
+    kChromeSyncPromoAddAccount = 15,
+    // Chrome Settings > Turn on Sync.
+    kChromeSettingsTurnOnSyncButton = 16,
 
-    kMaxValue = kOnboarding
+    kMaxValue = kChromeSettingsTurnOnSyncButton
   };
 
   AccountManagerFacade();
@@ -94,19 +123,20 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
       base::OnceCallback<void(const GoogleServiceAuthError&)> callback) = 0;
 
   // Launches account addition dialog.
-  virtual void ShowAddAccountDialog(const AccountAdditionSource& source) = 0;
+  virtual void ShowAddAccountDialog(AccountAdditionSource source) = 0;
 
   // Launches account addition dialog and calls the `callback` with the result.
   // If `result` is `kSuccess`, the added account will be passed to the
-  // callback. Otherwise `account` will be set to `base::nullopt`.
+  // callback. Otherwise `account` will be set to `absl::nullopt`.
   virtual void ShowAddAccountDialog(
-      const AccountAdditionSource& source,
+      AccountAdditionSource source,
       base::OnceCallback<void(const AccountAdditionResult& result)>
           callback) = 0;
 
   // Launches account reauthentication dialog for provided `email`.
-  virtual void ShowReauthAccountDialog(const AccountAdditionSource& source,
-                                       const std::string& email) = 0;
+  virtual void ShowReauthAccountDialog(AccountAdditionSource source,
+                                       const std::string& email,
+                                       base::OnceClosure callback) = 0;
 
   // Launches OS Settings > Accounts.
   virtual void ShowManageAccountsSettings() = 0;
@@ -116,8 +146,22 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
   // The returned object should not outlive `AccountManagerFacade` itself.
   virtual std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const AccountKey& account,
-      const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer) = 0;
+
+  // Reports an `error` for `account`.
+  // `account` must be a valid Gaia account known to Account Manager.
+  // Setting the error `state` as `kNone` resets the error state for `account`.
+  virtual void ReportAuthError(const AccountKey& account,
+                               const GoogleServiceAuthError& error) = 0;
+
+  // Adds or updates an account programmatically without user interaction.
+  // Should only be used in tests.
+  virtual void UpsertAccountForTesting(const Account& account,
+                                       const std::string& token_value) = 0;
+
+  // Removes an account programmatically without user interaction. Should only
+  // be used in tests.
+  virtual void RemoveAccountForTesting(const AccountKey& account) = 0;
 };
 
 }  // namespace account_manager

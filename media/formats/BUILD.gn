@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -65,6 +65,8 @@ source_set("formats") {
     "webm/webm_info_parser.h",
     "webm/webm_parser.cc",
     "webm/webm_parser.h",
+    "webm/webm_projection_parser.cc",
+    "webm/webm_projection_parser.h",
     "webm/webm_stream_parser.cc",
     "webm/webm_stream_parser.h",
     "webm/webm_tracks_parser.cc",
@@ -82,12 +84,7 @@ source_set("formats") {
     "//third_party/libwebm",
   ]
 
-  configs += [
-    "//media:subcomponent_config",
-
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
+  configs += [ "//media:subcomponent_config" ]
 
   if (proprietary_codecs) {
     deps += [ "//media/video" ]
@@ -98,6 +95,7 @@ source_set("formats") {
       "mp4/avc.h",
       "mp4/h264_annex_b_to_avc_bitstream_converter.cc",
       "mp4/h264_annex_b_to_avc_bitstream_converter.h",
+      "mp4/mp4_status.h",
       "mpeg/adts_constants.cc",
       "mpeg/adts_constants.h",
       "mpeg/adts_stream_parser.cc",
@@ -123,6 +121,19 @@ source_set("formats") {
     sources += [
       "mp4/dolby_vision.cc",
       "mp4/dolby_vision.h",
+    ]
+  }
+
+  if (enable_platform_dts_audio) {
+    sources += [
+      "dts/dts_stream_parser.cc",
+      "dts/dts_stream_parser.h",
+      "dts/dts_util.cc",
+      "dts/dts_util.h",
+      "mp4/dts.cc",
+      "mp4/dts.h",
+      "mp4/dtsx.cc",
+      "mp4/dtsx.h",
     ]
   }
 
@@ -171,6 +182,43 @@ source_set("formats") {
       "mp2t/ts_section_cets_pssh.h",
     ]
   }
+
+  # TODO(https://crbug.com/1266991): These should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+  sources += [
+    "hls/items.cc",
+    "hls/items.h",
+    "hls/media_playlist.cc",
+    "hls/media_playlist.h",
+    "hls/media_segment.cc",
+    "hls/media_segment.h",
+    "hls/multivariant_playlist.cc",
+    "hls/multivariant_playlist.h",
+    "hls/parse_status.cc",
+    "hls/parse_status.h",
+    "hls/playlist.cc",
+    "hls/playlist.h",
+    "hls/playlist_common.cc",
+    "hls/playlist_common.h",
+    "hls/source_string.cc",
+    "hls/source_string.h",
+    "hls/tag_name.cc",
+    "hls/tag_name.h",
+    "hls/tags.cc",
+    "hls/tags.h",
+    "hls/types.cc",
+    "hls/types.h",
+    "hls/variable_dictionary.cc",
+    "hls/variable_dictionary.h",
+    "hls/variant_stream.cc",
+    "hls/variant_stream.h",
+  ]
+  deps += [ "//third_party/re2" ]
+  public_deps = [
+    "//third_party/abseil-cpp:absl",
+
+    # Needed because `hls/media_playlist.h` includes GURL in its public API.
+    "//url",
+  ]
 }
 
 static_library("test_support") {
@@ -186,11 +234,6 @@ static_library("test_support") {
     "webm/opus_packet_builder.h",
     "webm/tracks_builder.cc",
     "webm/tracks_builder.h",
-  ]
-
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   deps = [
@@ -224,15 +267,11 @@ source_set("unit_tests") {
     "webm/webm_content_encodings_client_unittest.cc",
     "webm/webm_crypto_helpers_unittest.cc",
     "webm/webm_parser_unittest.cc",
+    "webm/webm_projection_parser_unittest.cc",
     "webm/webm_stream_parser_unittest.cc",
     "webm/webm_tracks_parser_unittest.cc",
     "webm/webm_video_client_unittest.cc",
     "webm/webm_webvtt_parser_unittest.cc",
-  ]
-
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   deps = [
@@ -257,6 +296,14 @@ source_set("unit_tests") {
 
     deps += [ "//crypto" ]
 
+    if (enable_platform_dts_audio) {
+      sources += [
+        "dts/dts_util_unittest.cc",
+        "mp4/dts_unittest.cc",
+        "mp4/dtsx_unittest.cc",
+      ]
+    }
+
     if (enable_mse_mpeg2ts_stream_parser) {
       sources += [
         "mp2t/es_adapter_video_unittest.cc",
@@ -276,6 +323,62 @@ source_set("unit_tests") {
       sources += [ "mp4/hevc_unittest.cc" ]
     }
   }
+
+  # TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+  sources += [
+    "hls/common_playlist_unittest.cc",
+    "hls/items_unittest.cc",
+    "hls/media_playlist_test_builder.cc",
+    "hls/media_playlist_test_builder.h",
+    "hls/media_playlist_unittest.cc",
+    "hls/multivariant_playlist_test_builder.cc",
+    "hls/multivariant_playlist_test_builder.h",
+    "hls/multivariant_playlist_unittest.cc",
+    "hls/playlist_test_builder.h",
+    "hls/playlist_unittest.cc",
+    "hls/tags_unittest.cc",
+    "hls/test_util.h",
+    "hls/types_unittest.cc",
+    "hls/variable_dictionary_unittest.cc",
+  ]
+}
+
+# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+fuzzer_test("hls_items_fuzzer") {
+  sources = [ "hls/items_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//media",
+  ]
+}
+
+# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+fuzzer_test("hls_attribute_list_fuzzer") {
+  sources = [ "hls/attribute_list_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//media",
+  ]
+}
+
+# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+fuzzer_test("hls_media_playlist_fuzzer") {
+  sources = [ "hls/media_playlist_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//media",
+  ]
+}
+
+# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+fuzzer_test("hls_multivariant_playlist_fuzzer") {
+  sources = [ "hls/multivariant_playlist_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//media",
+  ]
 }
 
 if (proprietary_codecs) {
@@ -286,6 +389,16 @@ if (proprietary_codecs) {
       "//base",
       "//media",
       "//ui/gfx/geometry",
+    ]
+  }
+}
+
+if (enable_platform_dts_audio) {
+  fuzzer_test("dts_util_fuzzer") {
+    sources = [ "dts/dts_util_fuzzer.cc" ]
+    deps = [
+      "//media",
+      "//base",
     ]
   }
 }

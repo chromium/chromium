@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/performance_manager/public/decorators/page_load_tracker_decorator_helper.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -29,7 +30,8 @@ void NotifyPageLoadTrackerDecoratorOnPMSequence(content::WebContents* contents,
               method(page_node);
             }
           },
-          PerformanceManager::GetPageNodeForWebContents(contents), method));
+          PerformanceManager::GetPrimaryPageNodeForWebContents(contents),
+          method));
 }
 
 }  // namespace
@@ -57,7 +59,7 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
 
     // |web_contents| must not be loading when it starts being tracked by this
     // observer. Otherwise, loading state wouldn't be tracked correctly.
-    DCHECK(!web_contents->IsLoadingToDifferentDocument());
+    DCHECK(!web_contents->ShouldShowLoadingUI());
   }
 
   WebContentsObserver(const WebContentsObserver&) = delete;
@@ -75,27 +77,33 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
     DCHECK_EQ(loading_state_, LoadingState::kNotLoading);
 
     // Only observe top-level navigation to a different document.
-    if (!web_contents()->IsLoadingToDifferentDocument())
+    if (!web_contents()->ShouldShowLoadingUI())
       return;
 
-    loading_state_ = LoadingState::kLoadingWaitingForResponse;
+    loading_state_ = LoadingState::kWaitingForNavigation;
     NotifyPageLoadTrackerDecoratorOnPMSequence(
         web_contents(), &PageLoadTrackerDecorator::DidStartLoading);
   }
 
-  void DidReceiveResponse() override {
+  void PrimaryPageChanged(content::Page& page) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    // Only observe top-level navigation to a different document.
-    if (!web_contents()->IsLoadingToDifferentDocument())
+    // Only observe top-level navigation that will show navigation UI.
+    if (!web_contents()->ShouldShowLoadingUI())
       return;
 
     DCHECK(web_contents()->IsLoading());
-    DCHECK_EQ(loading_state_, LoadingState::kLoadingWaitingForResponse);
-    loading_state_ = LoadingState::kLoadingDidReceiveResponse;
+
+    // Return if the state is already updated, since it can be called in
+    // multiple times between DidStartLoading() and DidStopLoading().
+    if (loading_state_ == LoadingState::kLoading)
+      return;
+
+    DCHECK_EQ(loading_state_, LoadingState::kWaitingForNavigation);
+    loading_state_ = LoadingState::kLoading;
     NotifyPageLoadTrackerDecoratorOnPMSequence(
-        web_contents(), &PageLoadTrackerDecorator::DidReceiveResponse);
+        web_contents(), &PageLoadTrackerDecorator::PrimaryPageChanged);
   }
 
   void DidStopLoading() override {
@@ -142,24 +150,24 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
  private:
   // TODO(https://crbug.com/1048719): Extract the logic to manage a linked list
   // of WebContentsObservers to a helper class.
-  PageLoadTrackerDecoratorHelper* const outer_;
-  WebContentsObserver* prev_ GUARDED_BY_CONTEXT(sequence_checker_);
-  WebContentsObserver* next_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ptr<PageLoadTrackerDecoratorHelper> outer_;
+  raw_ptr<WebContentsObserver> prev_ GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<WebContentsObserver> next_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   enum class LoadingState {
     // Initial state.
-    // DidStartLoading():     Transition to kLoadingWaitingForResponse.
-    // DidReceiveResponse():  Invalid from this state.
+    // DidStartLoading():     Transition to kWaitingForNavigation.
+    // PrimaryPageChanged():  Invalid from this state.
     // DidStopLoading():      Invalid from this state.
     kNotLoading,
     // DidStartLoading():     Invalid from this state.
-    // DidReceiveResponse():  Transition to kLoadingDidReceiveResponse.
+    // PrimaryPageChanged():  Transition to kLoading.
     // DidStopLoading():      Transition to kNotLoading.
-    kLoadingWaitingForResponse,
+    kWaitingForNavigation,
     // DidStartLoading():     Invalid from this state.
-    // DidReceiveResponse():  Invalid from this state.
+    // PrimaryPageChanged():  Invalid from this state.
     // DidStopLoading():      Transition to kNotLoading.
-    kLoadingDidReceiveResponse,
+    kLoading,
   };
 
   LoadingState loading_state_ GUARDED_BY_CONTEXT(sequence_checker_) =

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,8 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "remoting/host/security_key/security_key_message.h"
 
@@ -26,7 +24,7 @@ SecurityKeyMessageReaderImpl::SecurityKeyMessageReaderImpl(
       reader_thread_("SecurityKeyMessageReaderImpl") {
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  reader_thread_.StartWithOptions(options);
+  reader_thread_.StartWithOptions(std::move(options));
 
   read_task_runner_ = reader_thread_.task_runner();
   main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
@@ -78,7 +76,7 @@ void SecurityKeyMessageReaderImpl::ReadMessage() {
     }
 
     std::string message_data(message_length_bytes, '\0');
-    if (!ReadFromStream(base::data(message_data), message_data.size())) {
+    if (!ReadFromStream(std::data(message_data), message_data.size())) {
       NotifyError();
       return;
     }

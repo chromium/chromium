@@ -1,0 +1,33 @@
+source_set("feed_ios_public") {
+  sources = [
+    "notice_card_tracker.cc",
+    "notice_card_tracker.h",
+    "pref_names.cc",
+    "pref_names.h",
+    "prefs.h",
+  ]
+  public_deps = [
+    "//components/feed/core/common:feed_core_common",
+    "//components/feed/core/shared_prefs:feed_shared_prefs",
+  ]
+  deps = [
+    "//base",
+    "//components/feed:feature_list",
+    "//components/feed/core/v2:ios_shared",
+    "//components/prefs",
+  ]
+}
+
+source_set("feed_ios_unit_tests") {
+  testonly = true
+  sources = [ "notice_card_tracker_unittest.cc" ]
+  deps = [
+    ":feed_ios_public",
+    "//base/test:test_support",
+    "//components/feed/core/v2:feed_core_v2",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

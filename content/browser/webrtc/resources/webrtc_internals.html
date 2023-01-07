@@ -21,6 +21,9 @@
         <a>
           <button>Download the PeerConnection updates and stats data</button>
         </a>
+        <label>
+          <input type="checkbox">Compress result
+        </label>
       </div>
       <p>
         <label>
@@ -41,6 +44,15 @@
       <p class="audio-diagnostic-dumps-info">A diagnostic packet and event recording can be used for analyzing various issues related to thread starvation, jitter buffers or bandwidth estimation. Two types of data are logged. First, incoming and outgoing RTP headers and RTCP packets are logged. These do not include any audio or video information, nor any other types of personally identifiable information (so no IP addresses or URLs). Checking this box will enable the recording for ongoing WebRTC calls and for future WebRTC calls. When the box is unchecked or this page is closed, all ongoing recordings will be stopped and this recording functionality will be disabled for future WebRTC calls. Recording in multiple tabs or multiple recordings in the same tab will cause multiple log files to be created. When enabling, a filename for the recording can be entered. The entered filename is used as a base, to which the following suffixes will be appended.</p>
       <p>&lt;base filename&gt;_&lt;date&gt;_&lt;timestamp&gt;_&lt;render process ID&gt;_&lt;recording ID&gt;</p>
       <p class="audio-diagnostic-dumps-info">If a file with the same name already exists, it will be overwritten. No more than 5 logfiles  will be created, and each of them is limited to 60MB of storage.  On Android these limits are 3 files of at most 10MB each.  When the limit is reached, the checkbox must be unchecked and  rechecked to resume logging.</p>
+    </template>
+    <template id="stats-template">
+      <div>
+        Read stats From:
+        <select id="statsSelectElement">
+        </select>
+        <p><b>Note:</b> computed stats are in []. Experimental stats are marked with an * at the end and do not show up in the getStats result.</p>
+        <p id="legacy-stats-warning"><b>Note:</b> the callback-based getStats API and many of its goog-prefixed values are non-standard and may be removed from the getStats() API in the future.</p>
+      </div>
     </template>
   </body>
 </html>

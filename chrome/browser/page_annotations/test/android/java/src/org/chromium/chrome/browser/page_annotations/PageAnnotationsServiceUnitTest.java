@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ public class PageAnnotationsServiceUnitTest {
 
     private static final LinkedList<PageAnnotation> FAKE_ANNOTATIONS_LIST =
             new LinkedList<PageAnnotation>() {
-                { add(new BuyableProductPageAnnotation(10000000L, "USD")); }
+                { add(new BuyableProductPageAnnotation(10000000L, "USD", "200")); }
             };
 
     @Mock

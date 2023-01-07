@@ -1,0 +1,75 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "ui/gfx/image/mojom/image.mojom";
+import "url/mojom/url.mojom";
+
+
+[Stable]
+struct ParentAccessResult {
+  // Result status of the request.
+  // kUnknown:  default status that shouldn't be returned.
+  // kApproved: the parent was verified and approved the request.
+  // kDeclined: the parent explicitly declined the request.
+  // kCancelled: the request was dismissed/cancelled but
+  //             not explicitly declined.
+  // kError: there was an error in the request. Example error_type.
+  [Stable, Extensible]
+  enum Status {
+    [Default] kUnknown = 0,
+    kApproved = 1,
+    kDeclined = 2,
+    kCancelled = 3,
+    kError = 4,
+  };
+
+  // The type of error that occurred
+  // kNone:  no error, the default value.
+  // kUnknown: an unknown error occurred.
+  // kNotAChildUser: the user requesting permission
+  //                 is not a child.
+  // kAlreadyVisible: the dialog is already visible and
+  //                  handling another permission request.
+  [Stable, Extensible]
+  enum ErrorType {
+    [Default] kNone = 0,
+    kUnknown = 1,
+    kNotAChildUser = 2,
+    kAlreadyVisible = 3,
+  };
+
+  // The terminal status of the request.
+  Status status@0;
+
+  // The type of error which occurred.  Only set if status is kError.
+  ErrorType error_type@1;
+};
+
+// Interface that provides access to the Parent Access Widget.
+// New use cases that integrate with the Parent Access Widget should add
+// a new interface method below, with a different MinVersion, and then
+// increment the interface's MinVersion.
+//
+// The caller side of this interface must check the MinVersion of the Lacros
+// API using LacrosService::GetInterfaceVersion() to determine whether it
+// supports the functionality it requires.  It should never send an IPC over
+// the interface to an incompatible version.
+[Stable, Uuid="9be7bba2-a67d-4f8a-bf18-e37338dc7c8e"]
+// Interface that provides access to the ParentAccessDialog to ChromeOS.
+interface ParentAccess {
+  // Request parental approval for website access.
+  // url:  The url being requested
+  // display_name: The child's display name
+  // favicon:  The favicon for the website requested (can be empty if
+  //           it couldn't be retrieved).
+  [MinVersion=0]
+  GetWebsiteParentApproval@0(
+      url.mojom.Url url,
+      mojo_base.mojom.String16 child_display_name,
+      gfx.mojom.ImageSkia favicon) => (ParentAccessResult result);
+};
+

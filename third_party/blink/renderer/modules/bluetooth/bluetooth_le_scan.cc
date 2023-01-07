@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_le_scan.h"
 
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
 
 namespace blink {
 
@@ -30,11 +31,10 @@ BluetoothLEScan::BluetoothLEScan(
         filter_init->setNamePrefix(filter->name_prefix);
 
       if (filter->services && filter->services.has_value()) {
-        HeapVector<blink::StringOrUnsignedLong> services;
+        HeapVector<Member<V8UnionStringOrUnsignedLong>> services;
         for (const auto& uuid : filter->services.value()) {
-          blink::StringOrUnsignedLong uuid_string;
-          uuid_string.SetString(uuid);
-          services.push_back(uuid_string);
+          services.push_back(
+              MakeGarbageCollected<V8UnionStringOrUnsignedLong>(uuid));
         }
         filter_init->setServices(services);
       }

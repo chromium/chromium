@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ struct ArcValueEvent {
    * kCpuFrequency - khz
    * kCpuPower - milli-watts
    * kGpuPower - milli-watts
-   * kMemporyPower - milli-watts
+   * kMemoryPower - milli-watts
    * kPackagePowerConstraint - milli-watts
    */
   int value;

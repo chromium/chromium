@@ -217,7 +217,7 @@ privacy-relevant, using nouns and verbs that are simple and precise (camera,
 mic, geo-location, and so on). But we avoid asking questions about resource-use
 (caching, persistence, CPU, and so on). We’re better prepared to make those
 types of resource decisions automatically. (Consider, for example, that the HTTP
-cache, AppCache, and even [Google
+cache, and even [Google
 Gears](https://en.wikipedia.org/wiki/Gears_(software)) also do not/did not
 prompt the user.)
 

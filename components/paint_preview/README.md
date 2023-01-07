@@ -54,7 +54,7 @@ discrepencies;
 
 ### Compositing
 
-To maintain the [Rule Of 2](https://chromium.googlesource.com/chromium/src/+/master/docs/security/rule-of-2.md)
+To maintain the [Rule Of 2](https://chromium.googlesource.com/chromium/src/+/main/docs/security/rule-of-2.md)
 compositing takes place in a sandboxed utility process. The Skia Pictures are
 loaded into the compositor and from those pictures bitmaps can be generated. A
 caller may elect to request the contents of the frame be turned into a single
@@ -76,14 +76,14 @@ for it.
 ## Usage
 
 Capture step is intended to be completed via
-[PaintPreviewBaseService::CapturePaintPreview()](https://source.chromium.org/chromium/chromium/src/+/master:components/paint_preview/browser/paint_preview_base_service.h;bpv=1;bpt=1;l=127)
+[PaintPreviewBaseService::CapturePaintPreview()](https://source.chromium.org/chromium/chromium/src/+/main:components/paint_preview/browser/paint_preview_base_service.h;bpv=1;bpt=1;l=127)
 , although
-[PaintPreviewClient](https://source.chromium.org/chromium/chromium/src/+/master:components/paint_preview/browser/paint_preview_client.h;bpv=1;bpt=1;l=36)
+[PaintPreviewClient](https://source.chromium.org/chromium/chromium/src/+/main:components/paint_preview/browser/paint_preview_client.h;bpv=1;bpt=1;l=36)
 can be used directly if preferred.
 
-Compositing should be started using [StartCompositorService()](https://source.chromium.org/chromium/chromium/src/+/master:components/paint_preview/browser/compositor_utils.h;bpv=1;bpt=1;l=16).
+Compositing should be started using [StartCompositorService()](https://source.chromium.org/chromium/chromium/src/+/main:components/paint_preview/browser/compositor_utils.h;bpv=1;bpt=1;l=16).
 This should be followed by using the PaintPreviewCompositorService to create a
-[PaintPreviewCompositorClient](https://source.chromium.org/chromium/chromium/src/+/master:components/paint_preview/public/paint_preview_compositor_client.h;bpv=1;bpt=1;l=24)
+[PaintPreviewCompositorClient](https://source.chromium.org/chromium/chromium/src/+/main:components/paint_preview/public/paint_preview_compositor_client.h;bpv=1;bpt=1;l=24)
 from which compositing can be controlled.
 
 See the `player/` subdirectory for more details on playback.

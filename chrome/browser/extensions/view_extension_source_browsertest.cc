@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,23 +30,23 @@ IN_PROC_BROWSER_TEST_F(ViewExtensionSourceTest, ViewSourceTabRestore) {
   // Go to the Chrome bookmarks URL.  It should redirect to the bookmark
   // manager Chrome extension.
   GURL bookmarks_url(chrome::kChromeUIBookmarksURL);
-  ui_test_utils::NavigateToURL(browser(), bookmarks_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bookmarks_url));
   EXPECT_TRUE(chrome::CanViewSource(browser()));
   content::WebContents* bookmarks_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL bookmarks_extension_url =
-      bookmarks_tab->GetMainFrame()->GetLastCommittedURL();
+      bookmarks_tab->GetPrimaryMainFrame()->GetLastCommittedURL();
   EXPECT_TRUE(bookmarks_extension_url.SchemeIs(extensions::kExtensionScheme));
 
   // Open a new view-source tab for that URL.
   GURL view_source_url(content::kViewSourceScheme + std::string(":") +
                        bookmarks_extension_url.spec());
-  AddTabAtIndex(1, view_source_url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, view_source_url, ui::PAGE_TRANSITION_TYPED));
   content::WebContents* view_source_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(view_source_url, view_source_tab->GetVisibleURL());
   EXPECT_EQ(bookmarks_extension_url,
-            view_source_tab->GetMainFrame()->GetLastCommittedURL());
+            view_source_tab->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_FALSE(chrome::CanViewSource(browser()));
 
   // Close the view-source tab.
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(ViewExtensionSourceTest, ViewSourceTabRestore) {
   // view-source:chrome-extension://.../.
   EXPECT_EQ(view_source_url, view_source_tab->GetVisibleURL());
   EXPECT_EQ(bookmarks_extension_url,
-            view_source_tab->GetMainFrame()->GetLastCommittedURL());
+            view_source_tab->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_FALSE(chrome::CanViewSource(browser()));
 
   // Verify that the view-source content is not empty, and that the

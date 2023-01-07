@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -27,6 +27,7 @@
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Policy;
 
@@ -146,7 +147,7 @@ class TestConnectionFactoryImpl : public ConnectionFactoryImpl {
   // cases it's never consumed by the ConnectionFactory.
   std::unique_ptr<FakeConnectionHandler> scoped_handler_;
   // The current fake connection handler..
-  FakeConnectionHandler* fake_handler_;
+  raw_ptr<FakeConnectionHandler> fake_handler_;
   // Dummy GCM Stats recorder.
   FakeGCMStatsRecorder dummy_recorder_;
   // Dummy mojo pipes.
@@ -176,7 +177,7 @@ TestConnectionFactoryImpl::TestConnectionFactoryImpl(
           base::BindRepeating(&WriteContinuation))),
       fake_handler_(scoped_handler_.get()) {
   // Set a non-null time.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+  tick_clock_.Advance(base::Milliseconds(1));
 
   EXPECT_EQ(mojo::CreateDataPipe(nullptr, receive_pipe_producer_,
                                  receive_pipe_consumer_),
@@ -359,7 +360,7 @@ ConnectionFactoryImplTest::~ConnectionFactoryImplTest() {}
 
 void ConnectionFactoryImplTest::WaitForConnections() {
   run_loop_->Run();
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
 }
 
 void ConnectionFactoryImplTest::ConnectionsComplete() {
@@ -524,8 +525,7 @@ TEST_F(ConnectionFactoryImplTest, CanarySucceedsRetryDuringLogin) {
 
   // Pump the loop, to ensure the pending backoff retry has no effect.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, GetRunLoop()->QuitWhenIdleClosure(),
-      base::TimeDelta::FromMilliseconds(1));
+      FROM_HERE, GetRunLoop()->QuitWhenIdleClosure(), base::Milliseconds(1));
   WaitForConnections();
 }
 
@@ -611,7 +611,7 @@ TEST_F(ConnectionFactoryImplTest, DISABLED_SuppressConnectWhenNoNetwork) {
   EXPECT_TRUE(factory()->IsEndpointReachable());
 
   // Advance clock so the login window reset isn't encountered.
-  factory()->tick_clock()->Advance(base::TimeDelta::FromSeconds(11));
+  factory()->tick_clock()->Advance(base::Seconds(11));
 
   // Will trigger reset, but will not attempt a new connection.
   factory()->OnConnectionChanged(

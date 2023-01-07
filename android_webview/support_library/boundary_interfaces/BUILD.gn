@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,24 +10,27 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/FeatureFlagHolderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/IsomorphicObjectBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/JsReplyProxyBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/ProcessGlobalConfigConstants.java",
     "src/org/chromium/support_lib_boundary/ProxyControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/SafeBrowsingResponseBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ScriptHandlerBoundaryInterface.java",
-    "src/org/chromium/support_lib_boundary/ScriptReferenceBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerClientBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerWebSettingsBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/StaticsBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/TracingControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/VisualStateCallbackBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/WebAuthnCallbackBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessageBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessageCallbackBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessageListenerBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/WebMessagePayloadBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessagePortBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebResourceErrorBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebResourceRequestBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebSettingsBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewClientBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/WebViewCookieManagerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewProviderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewProviderFactoryBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewRendererBoundaryInterface.java",

@@ -1,12 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_UI_WEBUI_POLICY_POLICY_UI_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_WEBUI_POLICY_POLICY_UI_HANDLER_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
+#include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "ios/web/public/webui/web_ui_ios.h"
@@ -21,6 +25,7 @@ struct PolicyNamespace;
 // The JavaScript message handler for the chrome://policy page.
 class PolicyUIHandler : public web::WebUIIOSMessageHandler,
                         public policy::PolicyService::Observer,
+                        public policy::PolicyStatusProvider::Observer,
                         public policy::SchemaRegistry::Observer {
  public:
   PolicyUIHandler();
@@ -39,33 +44,55 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
                        const policy::PolicyMap& previous,
                        const policy::PolicyMap& current) override;
 
+  // policy::PolicyValueProvider::Observer implementation.
+  void OnPolicyStatusChanged() override;
+
   // policy::SchemaRegistry::Observer.
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;
 
  private:
   // Returns a dictionary containing the policies supported by Chrome.
-  base::Value GetPolicyNames() const;
+  base::Value::Dict GetPolicyNames() const;
 
   // Returns a dictionary containing the current values of the policies
-  // supported by Chrome.
-  base::Value GetPolicyValues() const;
+  // supported by Chrome and list of the policy IDs.
+  base::Value::Dict GetPolicyValues() const;
 
   // Called to handle the "listenPoliciesUpdates" WebUI message.
-  void HandleListenPoliciesUpdates(const base::ListValue* args);
+  void HandleListenPoliciesUpdates(const base::Value::List& args);
+
+  // Called to handle the "copyPoliciesJSON" WebUI message.
+  void HandleCopyPoliciesJson(const base::Value::List& args);
 
   // Called to handle the "reloadPolicies" WebUI message.
-  void HandleReloadPolicies(const base::ListValue* args);
+  void HandleReloadPolicies(const base::Value::List& args);
 
   // Send information about the current policy values to the UI. For each policy
   // whose value has been set, dictionaries containing the value and additional
   // metadata are sent.
   void SendPolicies();
 
+  // Get a value dictionary of cloud policies' status information for each scope
+  // that has cloud policy enabled (device and/or user).
+  base::Value::Dict GetStatusValue() const;
+
+  void SendStatus();
+
   // The callback invoked by PolicyService::RefreshPolicies().
   void OnRefreshPoliciesDone();
 
+  // Build a JSON string of all the policies.
+  std::string GetPoliciesAsJson();
+
   // Returns the PolicyService associated with this WebUI's BrowserState.
   policy::PolicyService* GetPolicyService() const;
+
+  // Provider that supply status dictionary for machine policy,
+  std::unique_ptr<policy::PolicyStatusProvider> machine_status_provider_;
+
+  base::ScopedObservation<policy::PolicyStatusProvider,
+                          policy::PolicyStatusProvider::Observer>
+      machine_status_provider_observation_{this};
 
   // Vends WeakPtrs for this object.
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};

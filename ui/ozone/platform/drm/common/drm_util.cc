@@ -1,31 +1,31 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/drm/common/drm_util.h"
 
 #include <drm_fourcc.h>
+#include <fcntl.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/mman.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/logging.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "ui/display/types/display_constants.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
@@ -50,29 +50,29 @@ bool IsCrtcInUse(
   return false;
 }
 
-// Return a CRTC compatible with |connector| and not already used in |displays|.
+// Returns a CRTC compatible with |connector| and not already used in |displays|
+// and the CRTC that's currently connected to the connector.
 // If there are multiple compatible CRTCs, the one that supports the majority of
-// planes will be returned.
-uint32_t GetCrtc(
+// planes will be returned as best CRTC.
+std::pair<uint32_t /* best_crtc */, uint32_t /* connected_crtc */> GetCrtcs(
     int fd,
     drmModeConnector* connector,
     drmModeRes* resources,
-    const std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
-        displays) {
-  ScopedDrmPlaneResPtr plane_resources(drmModeGetPlaneResources(fd));
-  std::vector<ScopedDrmPlanePtr> planes;
-  for (uint32_t i = 0; i < plane_resources->count_planes; i++)
-    planes.emplace_back(drmModeGetPlane(fd, plane_resources->planes[i]));
-
+    const std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>& displays,
+    const std::vector<ScopedDrmPlanePtr>& planes) {
   DCHECK_GE(32, resources->count_crtcs);
+  int most_crtc_planes = -1;
   uint32_t best_crtc = 0;
-  int best_crtc_planes = -1;
+  uint32_t connected_crtc = 0;
 
   // Try to find an encoder for the connector.
   for (int i = 0; i < connector->count_encoders; ++i) {
     ScopedDrmEncoderPtr encoder(drmModeGetEncoder(fd, connector->encoders[i]));
     if (!encoder)
       continue;
+
+    if (connector->encoder_id == encoder->encoder_id)
+      connected_crtc = encoder->crtc_id;
 
     for (int j = 0; j < resources->count_crtcs; ++j) {
       // Check if the encoder is compatible with this CRTC
@@ -85,20 +85,16 @@ uint32_t GetCrtc(
           planes.begin(), planes.end(), [crtc_bit](const ScopedDrmPlanePtr& p) {
             return p->possible_crtcs & crtc_bit;
           });
-
-      uint32_t assigned_crtc = 0;
-      if (connector->encoder_id == encoder->encoder_id)
-        assigned_crtc = encoder->crtc_id;
-      if (supported_planes > best_crtc_planes ||
-          (supported_planes == best_crtc_planes &&
-           assigned_crtc == resources->crtcs[j])) {
-        best_crtc_planes = supported_planes;
+      if (supported_planes > most_crtc_planes ||
+          (supported_planes == most_crtc_planes &&
+           connected_crtc == resources->crtcs[j])) {
+        most_crtc_planes = supported_planes;
         best_crtc = resources->crtcs[j];
       }
     }
   }
 
-  return best_crtc;
+  return std::make_pair(best_crtc, connected_crtc);
 }
 
 // Computes the refresh rate for the specific mode. If we have enough
@@ -141,12 +137,13 @@ display::DisplayConnectionType GetDisplayType(drmModeConnector* connector) {
   }
 }
 
+template <typename T>
 int GetDrmProperty(int fd,
-                   drmModeConnector* connector,
+                   T* object,
                    const std::string& name,
                    ScopedDrmPropertyPtr* property) {
-  for (int i = 0; i < connector->count_props; ++i) {
-    ScopedDrmPropertyPtr tmp(drmModeGetProperty(fd, connector->props[i]));
+  for (uint32_t i = 0; i < static_cast<uint32_t>(object->count_props); ++i) {
+    ScopedDrmPropertyPtr tmp(drmModeGetProperty(fd, object->props[i]));
     if (!tmp)
       continue;
 
@@ -186,22 +183,38 @@ ScopedDrmPropertyBlobPtr GetDrmPropertyBlob(int fd,
 
 display::PrivacyScreenState GetPrivacyScreenState(int fd,
                                                   drmModeConnector* connector) {
-  ScopedDrmPropertyPtr property;
-  int index = GetDrmProperty(fd, connector, "privacy-screen", &property);
-  if (index < 0)
-    return display::PrivacyScreenState::kNotSupported;
+  ScopedDrmPropertyPtr sw_property;
+  const int sw_index = GetDrmProperty(
+      fd, connector, kPrivacyScreenSwStatePropertyName, &sw_property);
+  ScopedDrmPropertyPtr hw_property;
+  const int hw_index = GetDrmProperty(
+      fd, connector, kPrivacyScreenHwStatePropertyName, &hw_property);
 
-  DCHECK_LT(connector->prop_values[index],
-            display::PrivacyScreenState::kPrivacyScreenStateLast);
-  if (connector->prop_values[index] >=
-      display::PrivacyScreenState::kPrivacyScreenStateLast) {
-    LOG(ERROR) << "Invalid privacy-screen property value: Expected < "
-               << display::PrivacyScreenState::kPrivacyScreenStateLast
-               << ", but got: " << connector->prop_values[index];
+  // Both privacy-screen properties (software- and hardware-state) must be
+  // present in order for the feature to be supported, but the hardware-state
+  // property indicates the true state of the privacy screen.
+  if (sw_index >= 0 && hw_index >= 0) {
+    const std::string hw_enum_value = GetNameForEnumValue(
+        hw_property.get(), connector->prop_values[hw_index]);
+    const display::PrivacyScreenState* state =
+        GetInternalTypeValueFromDrmEnum(hw_enum_value, kPrivacyScreenStates);
+    return state ? *state : display::kNotSupported;
   }
 
-  return static_cast<display::PrivacyScreenState>(
-      connector->prop_values[index]);
+  // If the new privacy screen UAPI properties are missing, try to fetch the
+  // legacy privacy screen property.
+  ScopedDrmPropertyPtr legacy_property;
+  const int legacy_index = GetDrmProperty(
+      fd, connector, kPrivacyScreenPropertyNameLegacy, &legacy_property);
+  if (legacy_index >= 0) {
+    const std::string legacy_enum_value = GetNameForEnumValue(
+        legacy_property.get(), connector->prop_values[legacy_index]);
+    const display::PrivacyScreenState* state = GetInternalTypeValueFromDrmEnum(
+        legacy_enum_value, kPrivacyScreenStates);
+    return state ? *state : display::kNotSupported;
+  }
+
+  return display::PrivacyScreenState::kNotSupported;
 }
 
 std::vector<uint64_t> GetPathTopology(int fd, drmModeConnector* connector) {
@@ -234,14 +247,31 @@ display::PanelOrientation GetPanelOrientation(int fd,
   int index = GetDrmProperty(fd, connector, "panel orientation", &property);
   if (index < 0)
     return display::PanelOrientation::kNormal;
+
+  // If the DRM driver doesn't provide panel orientation then this property
+  // will be DRM_MODE_PANEL_ORIENTATION_UNKNOWN (which is -1, except
+  // `prop_values` is unsigned, so compare against max uint64_t). Assume that
+  // panels with unknown orientation have normal orientation.
+  if (connector->prop_values[index] == std::numeric_limits<uint64_t>::max())
+    return display::PanelOrientation::kNormal;
+
   DCHECK_LE(connector->prop_values[index], display::PanelOrientation::kLast);
   return static_cast<display::PanelOrientation>(connector->prop_values[index]);
 }
 
-int ConnectorIndex(int device_index, int display_index) {
+int ConnectorIndex8(int device_index, int display_index) {
   DCHECK_LT(device_index, 16);
   DCHECK_LT(display_index, 16);
   return ((device_index << 4) + display_index) & 0xFF;
+}
+
+// A connector's index is a combination of:
+// 1) |display_index| the display's index in DRM       bits 0-7
+// 2) |device_index| the display's DRM's index         bits 8-15
+// e.g. - A 3rd display in a 2nd DRM would produce a connector index == 0x0102
+//        (since display index == 2 and DRM index == 1)
+uint16_t ConnectorIndex16(uint8_t device_index, uint8_t display_index) {
+  return ((device_index << 8) + display_index) & 0xFFFF;
 }
 
 bool HasPerPlaneColorCorrectionMatrix(const int fd, drmModeCrtc* crtc) {
@@ -260,14 +290,15 @@ bool HasPerPlaneColorCorrectionMatrix(const int fd, drmModeCrtc* crtc) {
   return plane_resources->count_planes > 0;
 }
 
-bool IsDrmModuleName(const int fd, const std::string& name) {
-  // TODO(dcastagna): Use DrmDevice::GetVersion so that it can be easily mocked
-  // and tested.
-  drmVersionPtr drm_version = drmGetVersion(fd);
-  DCHECK(drm_version) << "Can't get version for drm device.";
-  bool result = std::string(drm_version->name) == name;
-  drmFreeVersion(drm_version);
-  return result;
+// Read a file and trim whitespace. If the file can't be read, returns
+// nullopt.
+absl::optional<std::string> ReadFileAndTrim(const base::FilePath& path) {
+  std::string data;
+  if (!base::ReadFileToString(path, &data))
+    return absl::nullopt;
+
+  return std::string(
+      base::TrimWhitespaceASCII(data, base::TrimPositions::TRIM_ALL));
 }
 
 }  // namespace
@@ -312,23 +343,56 @@ gfx::Size GetMaximumCursorSize(int fd) {
   return gfx::Size(width, height);
 }
 
+bool IsVrrCapable(int fd, drmModeConnector* connector) {
+  if (!features::IsVariableRefreshRateEnabled()) {
+    return false;
+  }
+
+  ScopedDrmPropertyPtr vrr_capable_property;
+  const int vrr_capable_index = GetDrmProperty(
+      fd, connector, kVrrCapablePropertyName, &vrr_capable_property);
+  return vrr_capable_index >= 0 && connector->prop_values[vrr_capable_index];
+}
+
+bool IsVrrEnabled(int fd, drmModeCrtc* crtc) {
+  if (!features::IsVariableRefreshRateEnabled()) {
+    return false;
+  }
+
+  ScopedDrmObjectPropertyPtr crtc_props(
+      drmModeObjectGetProperties(fd, crtc->crtc_id, DRM_MODE_OBJECT_CRTC));
+  ScopedDrmPropertyPtr vrr_enabled_property;
+  const int vrr_enabled_index = GetDrmProperty(
+      fd, crtc_props.get(), kVrrEnabledPropertyName, &vrr_enabled_property);
+  return vrr_enabled_index >= 0 && crtc_props->prop_values[vrr_enabled_index];
+}
+
 HardwareDisplayControllerInfo::HardwareDisplayControllerInfo(
     ScopedDrmConnectorPtr connector,
     ScopedDrmCrtcPtr crtc,
-    size_t index)
+    uint8_t index)
     : connector_(std::move(connector)), crtc_(std::move(crtc)), index_(index) {}
 
 HardwareDisplayControllerInfo::~HardwareDisplayControllerInfo() = default;
 
-std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>
-GetAvailableDisplayControllerInfos(int fd) {
+std::pair<HardwareDisplayControllerInfoList, std::vector<uint32_t>>
+GetDisplayInfosAndInvalidCrtcs(int fd) {
   ScopedDrmResourcesPtr resources(drmModeGetResources(fd));
   DCHECK(resources) << "Failed to get DRM resources";
   std::vector<std::unique_ptr<HardwareDisplayControllerInfo>> displays;
+  std::vector<uint32_t> invalid_crtcs;
 
   std::vector<ScopedDrmConnectorPtr> connectors;
   std::vector<drmModeConnector*> available_connectors;
   for (int i = 0; i < resources->count_connectors; ++i) {
+    if (i >= kMaxDrmConnectors) {
+      LOG(WARNING) << "Reached the current limit of " << kMaxDrmConnectors
+                   << " connectors per DRM. Ignoring the remaining "
+                   << resources->count_connectors - kMaxDrmConnectors
+                   << " connectors.";
+      break;
+    }
+
     ScopedDrmConnectorPtr connector(
         drmModeGetConnector(fd, resources->connectors[i]));
     if (!connector)
@@ -366,24 +430,39 @@ GetAvailableDisplayControllerInfos(int fd) {
                             c1_crtcs != c2_crtcs;
                    });
 
+  ScopedDrmPlaneResPtr plane_resources(drmModeGetPlaneResources(fd));
+  std::vector<ScopedDrmPlanePtr> planes;
+  for (uint32_t i = 0; i < plane_resources->count_planes; i++)
+    planes.emplace_back(drmModeGetPlane(fd, plane_resources->planes[i]));
+
   for (auto* c : available_connectors) {
-    uint32_t crtc_id = GetCrtc(fd, c, resources.get(), displays);
-    if (!crtc_id)
+    uint32_t best_crtc, connected_crtc;
+    std::tie(best_crtc, connected_crtc) =
+        GetCrtcs(fd, c, resources.get(), displays, planes);
+    if (!best_crtc)
       continue;
 
-    ScopedDrmCrtcPtr crtc(drmModeGetCrtc(fd, crtc_id));
-    auto iter = std::find_if(connectors.begin(), connectors.end(),
-                             [c](const ScopedDrmConnectorPtr& connector) {
-                               return connector.get() == c;
-                             });
+    // If the currently connected CRTC isn't the best CRTC for the connector,
+    // add the CRTC to the list of Invalid CRTCs.
+    if (connected_crtc && connected_crtc != best_crtc)
+      invalid_crtcs.push_back((connected_crtc));
+
+    ScopedDrmCrtcPtr crtc(drmModeGetCrtc(fd, best_crtc));
+    auto iter = base::ranges::find(connectors, c, &ScopedDrmConnectorPtr::get);
     DCHECK(iter != connectors.end());
-    const size_t index = iter - connectors.begin();
+    // |connectors.size()| <= 256, so |index| should be between 0-255.
+    const uint8_t index = iter - connectors.begin();
     DCHECK_LT(index, connectors.size());
     displays.push_back(std::make_unique<HardwareDisplayControllerInfo>(
         std::move(*iter), std::move(crtc), index));
   }
 
-  return displays;
+  return std::make_pair(std::move(displays), std::move(invalid_crtcs));
+}
+
+std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>
+GetAvailableDisplayControllerInfos(int fd) {
+  return GetDisplayInfosAndInvalidCrtcs(fd).first;
 }
 
 bool SameMode(const drmModeModeInfo& lhs, const drmModeModeInfo& rhs) {
@@ -454,9 +533,11 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     HardwareDisplayControllerInfo* info,
     int fd,
     const base::FilePath& sys_path,
-    size_t device_index,
+    uint8_t device_index,
     const gfx::Point& origin) {
-  const uint8_t display_index = ConnectorIndex(device_index, info->index());
+  const uint8_t display_index = ConnectorIndex8(device_index, info->index());
+  const uint16_t connector_index =
+      ConnectorIndex16(device_index, info->index());
   const gfx::Size physical_size =
       gfx::Size(info->connector()->mmWidth, info->connector()->mmHeight);
   const display::DisplayConnectionType type = GetDisplayType(info->connector());
@@ -479,17 +560,19 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   // linear space. https://crbug.com/839020 to track if it will be possible to
   // disable the per-plane degamma/gamma.
   const bool color_correction_in_linear_space =
-      has_color_correction_matrix && IsDrmModuleName(fd, "rockchip");
+      has_color_correction_matrix && GetDrmDriverNameFromFd(fd) == "rockchip";
   const gfx::Size maximum_cursor_size = GetMaximumCursorSize(fd);
 
   std::string display_name;
   // Make sure the ID contains non index part.
-  int64_t display_id = display_index | 0x100;
+  int64_t port_display_id = display_index | 0x100;
+  int64_t edid_display_id = display::kInvalidDisplayId;
   int64_t product_code = display::DisplaySnapshot::kInvalidProductCode;
   int32_t year_of_manufacture = display::kInvalidYearOfManufacture;
   bool has_overscan = false;
   gfx::ColorSpace display_color_space;
   uint32_t bits_per_channel = 8u;
+  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata{};
   // Active pixels size from the first detailed timing descriptor in the EDID.
   gfx::Size active_pixel_size;
 
@@ -502,12 +585,13 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     DCHECK(edid_blob->length);
     edid.assign(static_cast<uint8_t*>(edid_blob->data),
                 static_cast<uint8_t*>(edid_blob->data) + edid_blob->length);
-
-    display::EdidParser edid_parser(edid);
+    const bool is_external = type != display::DISPLAY_CONNECTION_TYPE_INTERNAL;
+    display::EdidParser edid_parser(edid, is_external);
     display_name = edid_parser.display_name();
     active_pixel_size = edid_parser.active_pixel_size();
     product_code = edid_parser.GetProductCode();
-    display_id = edid_parser.GetDisplayId(display_index);
+    port_display_id = edid_parser.GetIndexBasedDisplayId(display_index);
+    edid_display_id = edid_parser.GetEdidBasedDisplayId();
     year_of_manufacture = edid_parser.year_of_manufacture();
     has_overscan =
         edid_parser.has_overscan_flag() && edid_parser.overscan_flag();
@@ -517,6 +601,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     bits_per_channel = std::max(edid_parser.bits_per_channel(), 0);
     base::UmaHistogramCounts100("DrmUtil.CreateDisplaySnapshot.BitsPerChannel",
                                 bits_per_channel);
+    hdr_static_metadata = edid_parser.hdr_static_metadata();
   } else {
     VLOG(1) << "Failed to get EDID blob for connector "
             << info->connector()->connector_id;
@@ -528,12 +613,13 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       ExtractDisplayModes(info, active_pixel_size, &current_mode, &native_mode);
 
   return std::make_unique<display::DisplaySnapshot>(
-      display_id, origin, physical_size, type, base_connector_id, path_topology,
+      port_display_id, port_display_id, edid_display_id, connector_index,
+      origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_color_correction_matrix, color_correction_in_linear_space,
-      display_color_space, bits_per_channel, display_name, sys_path,
-      std::move(modes), panel_orientation, edid, current_mode, native_mode,
-      product_code, year_of_manufacture, maximum_cursor_size);
+      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
+      sys_path, std::move(modes), panel_orientation, edid, current_mode,
+      native_mode, product_code, year_of_manufacture, maximum_cursor_size);
 }
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
@@ -634,6 +720,62 @@ std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob) {
   }
 
   return path;
+}
+
+std::string GetEnumNameForProperty(
+    const drmModePropertyRes& property,
+    const drmModeObjectProperties& property_values) {
+  for (uint32_t prop_idx = 0; prop_idx < property_values.count_props;
+       ++prop_idx) {
+    if (property_values.props[prop_idx] != property.prop_id)
+      continue;
+
+    for (int enum_idx = 0; enum_idx < property.count_enums; ++enum_idx) {
+      const drm_mode_property_enum& property_enum = property.enums[enum_idx];
+      if (property_enum.value == property_values.prop_values[prop_idx])
+        return property_enum.name;
+    }
+  }
+
+  NOTREACHED();
+  return std::string();
+}
+
+absl::optional<std::string> GetDrmDriverNameFromFd(int fd) {
+  ScopedDrmVersionPtr version(drmGetVersion(fd));
+  if (!version) {
+    LOG(ERROR) << "Failed to query DRM version";
+    return absl::nullopt;
+  }
+
+  return std::string(version->name, version->name_len);
+}
+
+absl::optional<std::string> GetDrmDriverNameFromPath(
+    const char* device_file_name) {
+  base::ScopedFD fd(open(device_file_name, O_RDWR));
+  if (!fd.is_valid()) {
+    LOG(ERROR) << "Failed to open DRM device " << device_file_name;
+    return absl::nullopt;
+  }
+
+  return GetDrmDriverNameFromFd(fd.get());
+}
+
+std::vector<const char*> GetPreferredDrmDrivers() {
+  const base::FilePath dmi_dir("/sys/class/dmi/id");
+
+  const auto sys_vendor = ReadFileAndTrim(dmi_dir.Append("sys_vendor"));
+  const auto product_name = ReadFileAndTrim(dmi_dir.Append("product_name"));
+
+  // The iMac 12.1 and 12.2 have an integrated Intel GPU that isn't connected
+  // to any real outputs. Prefer the Radeon card instead.
+  if (sys_vendor == "Apple Inc." &&
+      (product_name == "iMac12,1" || product_name == "iMac12,2"))
+    return {"radeon"};
+
+  // Default order.
+  return {"i915", "amdgpu", "virtio_gpu"};
 }
 
 }  // namespace ui

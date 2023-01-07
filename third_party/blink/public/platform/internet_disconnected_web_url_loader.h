@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,13 +46,12 @@ class InternetDisconnectedWebURLLoader final : public WebURLLoader {
   void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
       scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-      int requestor_id,
       bool pass_response_pipe_to_client,
       bool no_mime_sniffing,
       base::TimeDelta timeout_interval,
       WebURLLoaderClient*,
       WebURLResponse&,
-      base::Optional<WebURLError>&,
+      absl::optional<WebURLError>&,
       WebData&,
       int64_t& encoded_data_length,
       int64_t& encoded_body_length,
@@ -62,12 +61,11 @@ class InternetDisconnectedWebURLLoader final : public WebURLLoader {
   void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
       scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-      int requestor_id,
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       WebURLLoaderClient* client) override;
-  void SetDefersLoading(DeferType defers) override;
+  void Freeze(WebLoaderFreezeMode mode) override;
   void DidChangePriority(WebURLRequest::Priority, int) override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
       override;

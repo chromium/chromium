@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,13 @@
 
 namespace variations {
 namespace prefs {
+
+// Reflects the state of the "DeviceChromeVariations" policy. The policy
+// determines if and which variations should be enabled for the client on
+// ChromeOS. The possible values are defined in the
+// variations::RestrictionPolicy enum.
+const char kDeviceVariationsRestrictionsByPolicy[] =
+    "device_variations_restrictions_by_policy";
 
 // base64-encoded compressed serialized form of the variations seed protobuf.
 const char kVariationsCompressedSeed[] = "variations_compressed_seed";
@@ -27,6 +34,9 @@ const char kVariationsFailedToFetchSeedStreak[] =
 // Variations server responds with 200 or 304). This is a client timestamp.
 const char kVariationsLastFetchTime[] = "variations_last_fetch_time";
 
+// The milestone, e.g. 96, with which the regular seed was fetched.
+const char kVariationsSeedMilestone[] = "variations_seed_milestone";
+
 // Pair of <Chrome version string, country code string> representing the country
 // used for filtering permanent consistency studies until the next time Chrome
 // is updated.
@@ -34,11 +44,17 @@ const char kVariationsPermanentConsistencyCountry[] =
     "variations_permanent_consistency_country";
 
 // A country code string representing the country used for filtering permanent
-// consistency studies and will not be updated on Chrome updated. It can be
-// changed via chrome://translate-internals and is intended for
-// testing / developer use.
+// consistency studies. This is not updated when Chrome is updated, but it can
+// be changed via chrome://translate-internals and is intended for testing and
+// developer use.
 const char kVariationsPermanentOverriddenCountry[] =
     "variations_permanent_overridden_country";
+
+// Reflects the state of the "ChromeVariations" policy. The policy determines if
+// and which variations should be enabled for the client. The possible values
+// are defined in the variations::RestrictionPolicy enum.
+const char kVariationsRestrictionsByPolicy[] =
+    "variations_restrictions_by_policy";
 
 // String for the restrict parameter to be appended to the variations URL.
 const char kVariationsRestrictParameter[] = "variations_restrict_parameter";
@@ -52,18 +68,18 @@ const char kVariationsRestrictParameter[] = "variations_restrict_parameter";
 const char kVariationsSafeCompressedSeed[] = "variations_safe_compressed_seed";
 
 // The serialized base::Time used for safe seed expiry checks. This is usually
-// the time at which the last known "safe" seed was received, though it could
-// potentially be a build timestamp instead, if the received date is unknown. An
-// empty (default-constructed) base::Time if there is no known "safe" seed. This
-// is a server-provided timestamp.
+// the time at which the last known "safe" seed was received; however, it could
+// be a build timestamp if the received date is unknown. An empty
+// (default-constructed) base::Time if there is no known "safe" seed. This is a
+// server-provided timestamp.
 const char kVariationsSafeSeedDate[] = "variations_safe_seed_date";
 
 // The serialized base::Time from the fetch corresponding to the safe seed, i.e.
-// a copy of the last value stored to the |kVariationsLastFetchTime| pref that
+// a copy of the last value stored in the |kVariationsLastFetchTime| pref that
 // corresponded to the same seed contents as the safe seed. This is a client
 // timestamp.
 // Note: This pref was added about a milestone after most of the other safe seed
-// prefs, and so might be missing for some clients that otherwise have safe seed
+// prefs, so it might be missing for some clients that otherwise have safe seed
 // data.
 const char kVariationsSafeSeedFetchTime[] = "variations_safe_seed_fetch_time";
 
@@ -71,15 +87,18 @@ const char kVariationsSafeSeedFetchTime[] = "variations_safe_seed_fetch_time";
 // last known "safe" seed.
 const char kVariationsSafeSeedLocale[] = "variations_safe_seed_locale";
 
-// The country code used by the VariationsService for evaluating permanent
-// consistency studies, that was successfully used in association with the last
-// known "safe" seed.
+// The milestone with which the "safe" seed was fetched.
+const char kVariationsSafeSeedMilestone[] = "variations_safe_seed_milestone";
+
+// A saved copy of |kVariationsPermanentConsistencyCountry|. The saved value is
+// the most recent value that was successfully used by the VariationsService for
+// evaluating permanent consistency studies.
 const char kVariationsSafeSeedPermanentConsistencyCountry[] =
     "variations_safe_seed_permanent_consistency_country";
 
-// The country code received by the VariationsService for evaluating studies,
-// that was successfully used in association with the last known "safe" seed.
-// This is the country code used for session consistency studies.
+// A saved copy of |kVariationsCountry|. The saved value is the most recent
+// value that was successfully used by the VariationsService for evaluating
+// session consistency studies.
 const char kVariationsSafeSeedSessionConsistencyCountry[] =
     "variations_safe_seed_session_consistency_country";
 
@@ -93,19 +112,6 @@ const char kVariationsSeedDate[] = "variations_seed_date";
 
 // Digital signature of the binary variations seed data, base64-encoded.
 const char kVariationsSeedSignature[] = "variations_seed_signature";
-
-// Reflects the state of the "ChromeVariations" policy which determines
-// if and which variations should be enabled for the client. The possible
-// values are defined in the VariationsService::RestrictionPolicyValues enum.
-const char kVariationsRestrictionsByPolicy[] =
-    "variations_restrictions_by_policy";
-
-// Reflects the state of the "DeviceChromeVariations" policy which determines
-// if and which variations should be enabled for the client on ChromeOS. The
-// possible values are defined in the
-// VariationsService::RestrictionPolicyValues enum.
-const char kDeviceVariationsRestrictionsByPolicy[] =
-    "device_variations_restrictions_by_policy";
 
 }  // namespace prefs
 }  // namespace variations

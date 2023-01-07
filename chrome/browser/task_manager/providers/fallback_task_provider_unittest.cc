@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/task_manager/providers/fallback_task_provider.h"
@@ -26,6 +27,9 @@ class FakeTask : public Task {
              process_id),
         type_(type) {}
 
+  FakeTask(const FakeTask&) = delete;
+  FakeTask& operator=(const FakeTask&) = delete;
+
   Type GetType() const override { return type_; }
 
   int GetChildProcessUniqueID() const override { return 0; }
@@ -36,14 +40,15 @@ class FakeTask : public Task {
 
  private:
   Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTask);
 };
 
 class FakeTaskProvider : public TaskProvider {
  public:
-  FakeTaskProvider() {}
-  ~FakeTaskProvider() override {}
+  FakeTaskProvider() = default;
+  FakeTaskProvider(const FakeTaskProvider&) = delete;
+  FakeTaskProvider& operator=(const FakeTaskProvider&) = delete;
+  ~FakeTaskProvider() override = default;
+
   Task* GetTaskOfUrlRequest(int child_id, int route_id) override {
     return nullptr;
   }
@@ -68,8 +73,6 @@ class FakeTaskProvider : public TaskProvider {
   void StopUpdating() override {}
 
   std::vector<Task*> task_provider_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTaskProvider);
 };
 
 // Defines a test for the child process task provider and the child process
@@ -88,7 +91,9 @@ class FallbackTaskProviderTest : public testing::Test,
     task_provider_->allow_fallback_for_testing_ = true;
   }
 
-  ~FallbackTaskProviderTest() override {}
+  FallbackTaskProviderTest(const FallbackTaskProviderTest&) = delete;
+  FallbackTaskProviderTest& operator=(const FallbackTaskProviderTest&) = delete;
+  ~FallbackTaskProviderTest() override = default;
 
   // task_manager::TaskProviderObserver:
   void TaskAdded(Task* task) override {
@@ -172,14 +177,12 @@ class FallbackTaskProviderTest : public testing::Test,
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FallbackTaskProvider> task_provider_;
   std::vector<Task*> seen_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FallbackTaskProviderTest);
 };
 
 TEST_F(FallbackTaskProviderTest, BasicTest) {
   // The delay for showing a secondary source is 750ms; delay 1000ms to ensure
   // we see them.
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(1000);
+  base::TimeDelta delay = base::Milliseconds(1000);
   base::ScopedMockTimeMessageLoopTaskRunner mock_main_runner;
   StartUpdating();
 

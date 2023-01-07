@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_POLICY_SCHEMA_REGISTRY_SERVICE_H_
 
 #include <memory>
-
-#include "base/macros.h"
 
 namespace policy {
 
@@ -24,14 +22,14 @@ class SchemaRegistryService {
   SchemaRegistryService(std::unique_ptr<SchemaRegistry> registry,
                         const Schema& chrome_schema,
                         CombinedSchemaRegistry* global_registry);
+  SchemaRegistryService(const SchemaRegistryService&) = delete;
+  SchemaRegistryService& operator=(const SchemaRegistryService&) = delete;
   ~SchemaRegistryService();
 
   SchemaRegistry* registry() const { return registry_.get(); }
 
  private:
   std::unique_ptr<SchemaRegistry> registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchemaRegistryService);
 };
 
 }  // namespace policy

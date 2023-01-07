@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/time/time.h"
 #include "chrome/browser/media/history/media_history_store.mojom.h"
 #include "chrome/browser/media/history/media_history_table_base.h"
 #include "sql/init_status.h"
@@ -36,6 +37,10 @@ class MediaHistoryPlaybackTable : public MediaHistoryTableBase {
 
   using MediaHistoryPlaybacks = std::vector<MediaHistoryPlayback>;
 
+  MediaHistoryPlaybackTable(const MediaHistoryPlaybackTable&) = delete;
+  MediaHistoryPlaybackTable& operator=(const MediaHistoryPlaybackTable&) =
+      delete;
+
   bool DeleteURL(const GURL& url) override;
 
  private:
@@ -53,8 +58,6 @@ class MediaHistoryPlaybackTable : public MediaHistoryTableBase {
 
   // Returns the playback rows in the database.
   std::vector<mojom::MediaHistoryPlaybackRowPtr> GetPlaybackRows();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaHistoryPlaybackTable);
 };
 
 }  // namespace media_history

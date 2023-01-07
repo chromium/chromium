@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,15 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/site_for_cookies.h"
-#include "services/network/public/mojom/cookie_manager.mojom-blink-forward.h"
-#include "services/network/public/mojom/restricted_cookie_manager.mojom-blink-forward.h"
+#include "services/network/public/mojom/cookie_manager.mojom-blink.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

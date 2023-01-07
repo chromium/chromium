@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,12 +22,15 @@ class UnifiedSystemTray;
 class TrayContainer;
 class TrayItemView;
 class NotificationCounterView;
+class NotificationIconsController;
 class QuietModeView;
+class SeparatorTrayItemView;
 
 // Tray item view for notification icon shown in the tray.
 class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
  public:
-  explicit NotificationIconTrayItemView(Shelf* shelf);
+  NotificationIconTrayItemView(Shelf* shelf,
+                               NotificationIconsController* controller_);
   ~NotificationIconTrayItemView() override;
   NotificationIconTrayItemView(const NotificationIconTrayItemView&) = delete;
   NotificationIconTrayItemView& operator=(const NotificationIconTrayItemView&) =
@@ -47,11 +50,14 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   // TrayItemView:
   void HandleLocaleChange() override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   // Store the id to make sure we still have it when notification is removed and
   // goes out of scope.
   std::string notification_id_;
+
+  NotificationIconsController* const controller_;
 };
 
 // Controller for notification icons in UnifiedSystemTray button. The icons will
@@ -76,10 +82,6 @@ class ASH_EXPORT NotificationIconsController
 
   // Returns the number of notification icons showing in |tray_items_|.
   size_t TrayNotificationIconsCount() const;
-
-  // Returns true if we should not show notification related items in tray (e.g.
-  // during quiet mode, screen lock, etc.).
-  bool ShouldShowNotificationItemsInTray();
 
   // Returns a string describing the current state for accessibility.
   std::u16string GetAccessibleNameString() const;
@@ -111,12 +113,12 @@ class ASH_EXPORT NotificationIconsController
 
   bool icons_view_visible() const { return icons_view_visible_; }
 
- private:
-  friend class NotificationIconsControllerTest;
-
   // Iterate through the notifications in message center and update the icons
   // shown accordingly.
   void UpdateNotificationIcons();
+
+ private:
+  friend class NotificationIconsControllerTest;
 
   // If the notification with given id is currently shown in tray, returns the
   // pointer to that tray item. Otherwise, returns a null pointer.
@@ -139,7 +141,7 @@ class ASH_EXPORT NotificationIconsController
 
   NotificationCounterView* notification_counter_view_ = nullptr;
   QuietModeView* quiet_mode_view_ = nullptr;
-  TrayItemView* separator_ = nullptr;
+  SeparatorTrayItemView* separator_ = nullptr;
 
   base::ScopedObservation<UnifiedSystemTrayModel,
                           UnifiedSystemTrayModel::Observer>

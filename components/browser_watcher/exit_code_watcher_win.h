@@ -1,10 +1,9 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef COMPONENTS_BROWSER_WATCHER_EXIT_CODE_WATCHER_WIN_H_
 #define COMPONENTS_BROWSER_WATCHER_EXIT_CODE_WATCHER_WIN_H_
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/threading/thread.h"
 #include "base/win/scoped_handle.h"
@@ -15,6 +14,10 @@ namespace browser_watcher {
 class ExitCodeWatcher {
  public:
   ExitCodeWatcher();
+
+  ExitCodeWatcher(const ExitCodeWatcher&) = delete;
+  ExitCodeWatcher& operator=(const ExitCodeWatcher&) = delete;
+
   ~ExitCodeWatcher();
 
   // This function expects |process| to be open with sufficient privilege to
@@ -27,13 +30,10 @@ class ExitCodeWatcher {
   void StopWatching();
 
   const base::Process& process() const { return process_; }
-  int exit_code() const { return exit_code_; }
+  int ExitCodeForTesting() const { return exit_code_; }
 
  private:
-  // Writes |exit_code| to registry, returns true on success.
-  bool WriteProcessExitCode(int exit_code);
-
-  // Waits for the process to exit and records its exit code in registry.
+  // Waits for the process to exit and records its exit code in a histogram.
   // This is a blocking call.
   void WaitForExit();
 
@@ -48,8 +48,6 @@ class ExitCodeWatcher {
 
   // Event handle to use to stop exit watcher thread
   base::win::ScopedHandle stop_watching_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExitCodeWatcher);
 };
 
 }  // namespace browser_watcher

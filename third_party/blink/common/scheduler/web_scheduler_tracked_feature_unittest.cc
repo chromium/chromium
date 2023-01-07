@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@ namespace blink {
 namespace scheduler {
 
 TEST(WebSchedulerTrackedFeatureTest, StringToFeature) {
-  ASSERT_EQ(WebSchedulerTrackedFeature::kWebFileSystem,
-            StringToFeature("WebFileSystem"));
+  ASSERT_EQ(WebSchedulerTrackedFeature::kWebSocket,
+            StringToFeature("WebSocket"));
   ASSERT_EQ(WebSchedulerTrackedFeature::kDocumentLoaded,
             StringToFeature("DocumentLoaded"));
-  ASSERT_EQ(base::nullopt, StringToFeature("FeatureThatNeverExists"));
+  ASSERT_EQ(absl::nullopt, StringToFeature("FeatureThatNeverExists"));
 }
 
 }  // namespace scheduler

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,10 @@ void Vector2d::Add(const Vector2d& other) {
 void Vector2d::Subtract(const Vector2d& other) {
   x_ = base::ClampSub(x_, other.x_);
   y_ = base::ClampSub(y_, other.y_);
+}
+
+Vector2d operator-(const Vector2d& v) {
+  return Vector2d(-base::MakeClampedNum(v.x()), -base::MakeClampedNum(v.y()));
 }
 
 int64_t Vector2d::LengthSquared() const {

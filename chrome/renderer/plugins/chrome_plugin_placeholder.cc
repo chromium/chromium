@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,7 +28,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "gin/object_template_builder.h"
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -52,7 +53,6 @@
 
 using base::UserMetricsAction;
 using content::RenderThread;
-using content::RenderView;
 
 namespace {
 const ChromePluginPlaceholder* g_last_active_menu = nullptr;
@@ -120,11 +120,6 @@ ChromePluginPlaceholder::~ChromePluginPlaceholder() {
   }
 }
 
-mojo::PendingRemote<chrome::mojom::PluginRenderer>
-ChromePluginPlaceholder::BindPluginRenderer() {
-  return plugin_renderer_receiver_.BindNewPipeAndPassRemote();
-}
-
 // TODO(bauerb): Move this method to NonLoadablePluginPlaceholder?
 // static
 ChromePluginPlaceholder* ChromePluginPlaceholder::CreateLoadableMissingPlugin(
@@ -134,12 +129,11 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateLoadableMissingPlugin(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_BLOCKED_PLUGIN_HTML);
 
-  base::DictionaryValue values;
-  values.SetString("name", "");
-  values.SetString("message",
-                   l10n_util::GetStringUTF8(IDS_PLUGIN_NOT_SUPPORTED));
+  base::Value::Dict values;
+  values.Set("name", "");
+  values.Set("message", l10n_util::GetStringUTF8(IDS_PLUGIN_NOT_SUPPORTED));
 
-  std::string html_data = webui::GetI18nTemplateHtml(template_html, &values);
+  std::string html_data = webui::GetI18nTemplateHtml(template_html, values);
 
   // Will destroy itself when its WebViewPlugin is going away.
   return new ChromePluginPlaceholder(render_frame, params, html_data,
@@ -155,11 +149,11 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
     const std::u16string& name,
     int template_id,
     const std::u16string& message) {
-  base::DictionaryValue values;
-  values.SetString("message", message);
-  values.SetString("name", name);
-  values.SetString("hide", l10n_util::GetStringUTF8(IDS_PLUGIN_HIDE));
-  values.SetString(
+  base::Value::Dict values;
+  values.Set("message", message);
+  values.Set("name", name);
+  values.Set("hide", l10n_util::GetStringUTF8(IDS_PLUGIN_HIDE));
+  values.Set(
       "pluginType",
       render_frame->IsMainFrame() &&
               render_frame->GetWebFrame()->GetDocument().IsPluginDocument()
@@ -172,7 +166,7 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
 
   DCHECK(!template_html.empty()) << "unable to load template. ID: "
                                  << template_id;
-  std::string html_data = webui::GetI18nTemplateHtml(template_html, &values);
+  std::string html_data = webui::GetI18nTemplateHtml(template_html, values);
 
   // |blocked_plugin| will destroy itself when its WebViewPlugin is going away.
   ChromePluginPlaceholder* blocked_plugin =
@@ -199,30 +193,6 @@ void ChromePluginPlaceholder::SetStatus(chrome::mojom::PluginStatus status) {
   status_ = status;
 }
 
-void ChromePluginPlaceholder::ShowPermissionBubbleCallback() {
-  mojo::AssociatedRemote<chrome::mojom::PluginHost> plugin_host;
-  render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      plugin_host.BindNewEndpointAndPassReceiver());
-  plugin_host->ShowFlashPermissionBubble();
-}
-
-void ChromePluginPlaceholder::FinishedDownloading() {
-  SetMessage(l10n_util::GetStringFUTF16(IDS_PLUGIN_UPDATING, plugin_name_));
-}
-
-void ChromePluginPlaceholder::UpdateDownloading() {
-  SetMessage(l10n_util::GetStringFUTF16(IDS_PLUGIN_DOWNLOADING, plugin_name_));
-}
-
-void ChromePluginPlaceholder::UpdateSuccess() {
-  PluginListChanged();
-}
-
-void ChromePluginPlaceholder::UpdateFailure() {
-  SetMessage(l10n_util::GetStringFUTF16(IDS_PLUGIN_DOWNLOAD_ERROR_SHORT,
-                                        plugin_name_));
-}
-
 void ChromePluginPlaceholder::SetIsPrerendering(bool is_prerendering) {
   OnSetIsPrerendering(is_prerendering);
 }
@@ -235,7 +205,7 @@ void ChromePluginPlaceholder::PluginListChanged() {
   std::string mime_type(GetPluginParams().mime_type.Utf8());
 
   ChromeContentRendererClient::GetPluginInfoHost()->GetPluginInfo(
-      routing_id(), GURL(GetPluginParams().url),
+      GetPluginParams().url,
       render_frame()->GetWebFrame()->Top()->GetSecurityOrigin(), mime_type,
       &plugin_info);
   if (plugin_info->status == status_)
@@ -245,7 +215,7 @@ void ChromePluginPlaceholder::PluginListChanged() {
   ReplacePlugin(new_plugin);
   if (!new_plugin) {
     PluginUMAReporter::GetInstance()->ReportPluginMissing(
-        GetPluginParams().mime_type.Utf8(), GURL(GetPluginParams().url));
+        GetPluginParams().mime_type.Utf8(), GetPluginParams().url);
   }
 }
 
@@ -274,24 +244,13 @@ void ChromePluginPlaceholder::ShowContextMenu(
     params.custom_items.push_back(std::move(separator_item));
   }
 
-  bool flash_hidden =
-      status_ == chrome::mojom::PluginStatus::kFlashHiddenPreferHtml;
-  if (!GetPluginInfo().path.value().empty() && !flash_hidden) {
+  if (!GetPluginInfo().path.value().empty()) {
     auto run_item = blink::mojom::CustomContextMenuItem::New();
     run_item->action = MENU_COMMAND_PLUGIN_RUN;
     // Disable this menu item if the plugin is blocked by policy.
     run_item->enabled = LoadingAllowed();
     run_item->label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PLUGIN_RUN);
     params.custom_items.push_back(std::move(run_item));
-  }
-
-  if (flash_hidden) {
-    auto enable_flash_item = blink::mojom::CustomContextMenuItem::New();
-    enable_flash_item->action = MENU_COMMAND_ENABLE_FLASH;
-    enable_flash_item->enabled = true;
-    enable_flash_item->label =
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_ENABLE_FLASH);
-    params.custom_items.push_back(std::move(enable_flash_item));
   }
 
   auto hide_item = blink::mojom::CustomContextMenuItem::New();
@@ -340,10 +299,6 @@ void ChromePluginPlaceholder::CustomContextMenuAction(uint32_t action) {
       HidePlugin();
       break;
     }
-    case MENU_COMMAND_ENABLE_FLASH: {
-      ShowPermissionBubbleCallback();
-      break;
-    }
     default:
       NOTREACHED();
   }
@@ -385,9 +340,7 @@ gin::ObjectTemplateBuilder ChromePluginPlaceholder::GetObjectTemplateBuilder(
               "load", &ChromePluginPlaceholder::LoadCallback)
           .SetMethod<void (ChromePluginPlaceholder::*)()>(
               "didFinishLoading",
-              &ChromePluginPlaceholder::DidFinishLoadingCallback)
-          .SetMethod("showPermissionBubble",
-                     &ChromePluginPlaceholder::ShowPermissionBubbleCallback);
+              &ChromePluginPlaceholder::DidFinishLoadingCallback);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnablePluginPlaceholderTesting)) {

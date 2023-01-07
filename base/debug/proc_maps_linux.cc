@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <inttypes.h>
 #endif
 
@@ -39,7 +39,7 @@ static bool ContainsGateVMA(std::string* proc_maps, size_t pos) {
 bool ReadProcMaps(std::string* proc_maps) {
   // seq_file only writes out a page-sized amount on each call. Refer to header
   // file for details.
-  const long kReadSize = sysconf(_SC_PAGESIZE);
+  const size_t read_size = static_cast<size_t>(sysconf(_SC_PAGESIZE));
 
   base::ScopedFD fd(HANDLE_EINTR(open("/proc/self/maps", O_RDONLY)));
   if (!fd.is_valid()) {
@@ -52,10 +52,10 @@ bool ReadProcMaps(std::string* proc_maps) {
     // To avoid a copy, resize |proc_maps| so read() can write directly into it.
     // Compute |buffer| afterwards since resize() may reallocate.
     size_t pos = proc_maps->size();
-    proc_maps->resize(pos + kReadSize);
+    proc_maps->resize(pos + read_size);
     void* buffer = &(*proc_maps)[pos];
 
-    ssize_t bytes_read = HANDLE_EINTR(read(fd.get(), buffer, kReadSize));
+    ssize_t bytes_read = HANDLE_EINTR(read(fd.get(), buffer, read_size));
     if (bytes_read < 0) {
       DPLOG(ERROR) << "Couldn't read /proc/self/maps";
       proc_maps->clear();
@@ -63,7 +63,7 @@ bool ReadProcMaps(std::string* proc_maps) {
     }
 
     // ... and don't forget to trim off excess bytes.
-    proc_maps->resize(pos + bytes_read);
+    proc_maps->resize(pos + static_cast<size_t>(bytes_read));
 
     if (bytes_read == 0)
       break;

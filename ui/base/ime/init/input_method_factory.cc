@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,24 +7,19 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #include "ui/base/ime/win/input_method_win_imm32.h"
 #include "ui/base/ime/win/input_method_win_tsf.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include "ui/base/ime/mac/input_method_mac.h"
-#elif defined(USE_X11) || defined(USE_OZONE)
-#if defined(USE_X11)
-#include "ui/base/ime/linux/input_method_auralinux.h"
-#endif  // defined(USE_X11)
-#if defined(USE_OZONE)
+#elif defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
-#endif  // defined(USE_OZONE)
 #else
 #include "ui/base/ime/input_method_minimal.h"
 #endif
@@ -42,7 +37,7 @@ bool g_create_input_method_called = false;
 namespace ui {
 
 std::unique_ptr<InputMethod> CreateInputMethod(
-    internal::InputMethodDelegate* delegate,
+    ImeKeyEventDispatcher* ime_key_event_dispatcher,
     gfx::AcceleratedWidget widget) {
   if (!g_create_input_method_called)
     g_create_input_method_called = true;
@@ -54,33 +49,26 @@ std::unique_ptr<InputMethod> CreateInputMethod(
   }
 
   if (g_input_method_set_for_testing)
-    return std::make_unique<MockInputMethod>(delegate);
+    return std::make_unique<MockInputMethod>(ime_key_event_dispatcher);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
-    return base::WrapUnique(new MockInputMethod(delegate));
+    return base::WrapUnique(new MockInputMethod(ime_key_event_dispatcher));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kTSFImeSupport) &&
       base::win::GetVersion() > base::win::Version::WIN7) {
-    return std::make_unique<InputMethodWinTSF>(delegate, widget);
+    return std::make_unique<InputMethodWinTSF>(ime_key_event_dispatcher,
+                                               widget);
   }
-  return std::make_unique<InputMethodWinImm32>(delegate, widget);
-#elif defined(OS_APPLE)
-  return std::make_unique<InputMethodMac>(delegate);
-#elif defined(USE_X11) || defined(USE_OZONE)
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    return ui::OzonePlatform::GetInstance()->CreateInputMethod(delegate,
-                                                               widget);
-  }
-#endif  // defined(USE_OZONE)
-#if defined(USE_X11)
-  return std::make_unique<ui::InputMethodAuraLinux>(delegate);
-#endif  // defined(USE_X11)
-  NOTREACHED();
-  return nullptr;
+  return std::make_unique<InputMethodWinImm32>(ime_key_event_dispatcher,
+                                               widget);
+#elif BUILDFLAG(IS_APPLE)
+  return std::make_unique<InputMethodMac>(ime_key_event_dispatcher);
+#elif defined(USE_OZONE)
+  return ui::OzonePlatform::GetInstance()->CreateInputMethod(
+      ime_key_event_dispatcher, widget);
 #else
-  return std::make_unique<InputMethodMinimal>(delegate);
+  return std::make_unique<InputMethodMinimal>(ime_key_event_dispatcher);
 #endif
 }
 

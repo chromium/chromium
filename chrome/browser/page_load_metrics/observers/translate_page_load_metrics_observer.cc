@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,39 +38,78 @@ TranslatePageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
+  DCHECK(!is_in_primary_page_);
+  is_in_primary_page_ = true;
   translate_metrics_logger_->OnPageLoadStart(started_in_foreground);
   return CONTINUE_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-TranslatePageLoadMetricsObserver::OnCommit(
+TranslatePageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
-  translate_metrics_logger_->SetUkmSourceId(source_id);
+    const GURL& currently_committed_url) {
+  // Continue running, but don't communicate via `translate_metrics_logger_`
+  // until the prerendered page activation.
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+TranslatePageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // TranslateManager expects that only one TranslateMetricsLoggerImpl
+  // communicates with per WebContents.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+TranslatePageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
+  if (is_in_primary_page_) {
+    translate_metrics_logger_->SetUkmSourceId(
+        GetDelegate().GetPageUkmSourceId());
+  }
   return CONTINUE_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 TranslatePageLoadMetricsObserver::OnHidden(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  translate_metrics_logger_->OnForegroundChange(false);
+  if (is_in_primary_page_) {
+    translate_metrics_logger_->OnForegroundChange(false);
+  }
   return CONTINUE_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 TranslatePageLoadMetricsObserver::OnShown() {
-  translate_metrics_logger_->OnForegroundChange(true);
+  if (is_in_primary_page_) {
+    translate_metrics_logger_->OnForegroundChange(true);
+  }
   return CONTINUE_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 TranslatePageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  translate_metrics_logger_->RecordMetrics(false);
+  if (is_in_primary_page_) {
+    translate_metrics_logger_->RecordMetrics(false);
+  }
   return CONTINUE_OBSERVING;
 }
 
 void TranslatePageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  translate_metrics_logger_->RecordMetrics(true);
+  if (is_in_primary_page_) {
+    translate_metrics_logger_->RecordMetrics(true);
+  }
+}
+
+void TranslatePageLoadMetricsObserver::DidActivatePrerenderedPage(
+    content::NavigationHandle* navigation_handle) {
+  DCHECK(!is_in_primary_page_);
+  is_in_primary_page_ = true;
+  translate_metrics_logger_->OnPageLoadStart(
+      GetDelegate().GetVisibilityTracker().currently_in_foreground());
+  translate_metrics_logger_->SetUkmSourceId(GetDelegate().GetPageUkmSourceId());
 }

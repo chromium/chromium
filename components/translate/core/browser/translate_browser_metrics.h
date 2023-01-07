@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,10 @@ enum InitiationStatusType {
   INITIATION_STATUS_DISABLED_BY_KEY,
   INITIATION_STATUS_LANGUAGE_IN_ULP,
   INITIATION_STATUS_ABORTED_BY_RANKER,
-  INITIATION_STATUS_ABORTED_BY_TOO_OFTEN_DENIED,
+
+  // Deprecated, never used in practice
+  DEPRECATED_INITIATION_STATUS_ABORTED_BY_TOO_OFTEN_DENIED,
+
   INITIATION_STATUS_ABORTED_BY_MATCHES_PREVIOUS_LANGUAGE,
   INITIATION_STATUS_CREATE_INFOBAR,
   INITIATION_STATUS_SHOW_ICON,
@@ -44,6 +47,7 @@ enum InitiationStatusType {
   INITIATION_STATUS_DOESNT_NEED_TRANSLATION,
   INITIATION_STATUS_IDENTICAL_LANGUAGE_USE_SOURCE_LANGUAGE_UNKNOWN,
   INITIATION_STATUS_DISABLED_BY_AUTOFILL_ASSISTANT,
+  INITIATION_STATUS_AUTO_BY_PREDEFINED_TARGET_LANGUAGE,
   // Insert new items here.
   INITIATION_STATUS_MAX,
 };
@@ -82,16 +86,17 @@ enum class TargetLanguageOrigin {
   kDefaultEnglish,
   kChangedByUser,
   kUninitialized,
+  kAutoTranslate,
   // Insert new items here. Keep in sync with TranslateTargetLanguageOrigin in
   // enums.xml when adding values.
-  kMaxValue = kUninitialized
+  kMaxValue = kAutoTranslate
 };
 
 enum class MenuTranslationUnavailableReason {
   kTranslateDisabled,
   kNetworkOffline,
   kApiKeysMissing,
-  kMHTMLPage,
+  kMIMETypeUnsupported,
   kURLNotTranslatable,
   kTargetLangUnknown,
   kNotAllowedByPolicy,
@@ -105,9 +110,6 @@ enum class MenuTranslationUnavailableReason {
 // browser action.
 void ReportInitiationStatus(InitiationStatusType type);
 
-// Called when Chrome opens the URL so that the user sends an error feedback.
-void ReportLanguageDetectionError();
-
 // Called when the context (Desktop) menu or app (Mobile) menu is shown and
 // manual translation is unavailable to report a reason it is unavailable.
 void ReportMenuTranslationUnavailableReason(
@@ -116,17 +118,15 @@ void ReportMenuTranslationUnavailableReason(
 // Called when language detection details are complete.
 void ReportLanguageDetectionContentLength(size_t length);
 
-void ReportLocalesOnDisabledByPrefs(base::StringPiece locale);
-
 void ReportUnsupportedLanguageAtInitiation(base::StringPiece language);
 
 // Called when a request is sent to the translate server to report the source
-// language of the translated page. Buckets are labelled with CLD3LanguageCode
+// language of the translated page. Buckets are labelled with LocaleCodeISO639
 // values.
 void ReportTranslateSourceLanguage(base::StringPiece language);
 
 // Called when a request is sent to the translate server to report the target
-// language for the translated page. Buckets are labelled with CLD3LanguageCode
+// language for the translated page. Buckets are labelled with LocaleCodeISO639
 // values.
 void ReportTranslateTargetLanguage(base::StringPiece language);
 

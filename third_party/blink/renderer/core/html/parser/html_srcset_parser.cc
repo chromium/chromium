@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
@@ -88,7 +88,7 @@ struct DescriptorToken {
       ++position;
     }
     return CharactersToInt(attribute + start, length_excluding_descriptor,
-                           WTF::NumberParsingOptions::kNone, &is_valid);
+                           WTF::NumberParsingOptions(), &is_valid);
   }
 
   template <typename CharType>
@@ -200,13 +200,13 @@ static void TokenizeDescriptors(const CharType* attribute_start,
 
 static void SrcsetError(Document* document, String message) {
   if (document && document->GetFrame()) {
-    StringBuilder error_message;
-    error_message.Append("Failed parsing 'srcset' attribute value since ");
-    error_message.Append(message);
+    StringBuilder warning_message;
+    warning_message.Append("Failed parsing 'srcset' attribute value since ");
+    warning_message.Append(message);
     document->GetFrame()->Console().AddMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kOther,
-            mojom::ConsoleMessageLevel::kError, error_message.ToString()));
+            mojom::ConsoleMessageLevel::kWarning, warning_message.ToString()));
   }
 }
 
@@ -336,7 +336,7 @@ static void ParseImageCandidatesFromSrcsetAttribute(
             document->GetFrame()->Console().AddMessage(
                 MakeGarbageCollected<ConsoleMessage>(
                     mojom::ConsoleMessageSource::kOther,
-                    mojom::ConsoleMessageLevel::kError,
+                    mojom::ConsoleMessageLevel::kWarning,
                     String("Dropped srcset candidate ") +
                         JSONValue::QuoteString(
                             String(image_url_start,
@@ -412,7 +412,7 @@ static unsigned AvoidDownloadIfHigherDensityResourceIsInCache(
   for (unsigned i = image_candidates.size() - 1; i > winner; --i) {
     KURL url = document->CompleteURL(
         StripLeadingAndTrailingHTMLSpaces(image_candidates[i]->Url()));
-    if (GetMemoryCache()->ResourceForURL(
+    if (MemoryCache::Get()->ResourceForURL(
             url, document->Fetcher()->GetCacheIdentifier(url)) ||
         url.ProtocolIsData())
       return i;
@@ -432,7 +432,7 @@ static ImageCandidate PickBestImageCandidate(
   // Setting max density value based on https://github.com/whatwg/html/pull/5901
   const float kMaxDensity = 2.2;
   bool ignore_src = false;
-  if (image_candidates.IsEmpty())
+  if (image_candidates.empty())
     return ImageCandidate();
 
   if (RuntimeEnabledFeatures::SrcsetMaxDensityEnabled() &&
@@ -512,7 +512,7 @@ ImageCandidate BestFitSourceForImageAttributes(float device_scale_factor,
   ParseImageCandidatesFromSrcsetAttribute(srcset_attribute, image_candidates,
                                           document);
 
-  if (!src_attribute.IsEmpty())
+  if (!src_attribute.empty())
     image_candidates.push_back(
         ImageCandidate(src_attribute, 0, src_attribute.length(),
                        DescriptorParsingResult(), ImageCandidate::kSrcOrigin));
@@ -531,7 +531,7 @@ String BestFitSourceForImageAttributes(float device_scale_factor,
   Vector<ImageCandidate> image_candidates;
   image_candidates.push_back(srcset_image_candidate);
 
-  if (!src_attribute.IsEmpty())
+  if (!src_attribute.empty())
     image_candidates.push_back(
         ImageCandidate(src_attribute, 0, src_attribute.length(),
                        DescriptorParsingResult(), ImageCandidate::kSrcOrigin));

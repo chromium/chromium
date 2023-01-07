@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_SHARED_IMPL_PPB_CHAR_SET_SHARED_H_
-#define PPAPI_SHARED_IMPL_PPB_CHAR_SET_SHARED_H_
+#ifndef PPAPI_SHARED_IMPL_PRIVATE_PPB_CHAR_SET_SHARED_H_
+#define PPAPI_SHARED_IMPL_PRIVATE_PPB_CHAR_SET_SHARED_H_
 
 #include <stdint.h>
 
@@ -44,4 +44,4 @@ class PPAPI_SHARED_EXPORT PPB_CharSet_Shared {
 
 }  // namespace ppapi
 
-#endif  // PPAPI_SHARED_IMPL_PPB_CHAR_SET_SHARED_H_
+#endif  // PPAPI_SHARED_IMPL_PRIVATE_PPB_CHAR_SET_SHARED_H_

@@ -4,7 +4,7 @@
 <script>
 if (window.testRunner) {
     testRunner.dumpAsText();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 var newWindow = window.open("resources/document-reload-with-failed-deferred-scripts.html");

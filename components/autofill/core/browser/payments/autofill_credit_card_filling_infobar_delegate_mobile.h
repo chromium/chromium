@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace autofill {
@@ -25,6 +24,12 @@ class AutofillCreditCardFillingInfoBarDelegateMobile
   AutofillCreditCardFillingInfoBarDelegateMobile(
       const CreditCard& card,
       base::OnceClosure card_filling_callback);
+
+  AutofillCreditCardFillingInfoBarDelegateMobile(
+      const AutofillCreditCardFillingInfoBarDelegateMobile&) = delete;
+  AutofillCreditCardFillingInfoBarDelegateMobile& operator=(
+      const AutofillCreditCardFillingInfoBarDelegateMobile&) = delete;
+
   ~AutofillCreditCardFillingInfoBarDelegateMobile() override;
 
   int issuer_icon_id() const { return issuer_icon_id_; }
@@ -61,8 +66,6 @@ class AutofillCreditCardFillingInfoBarDelegateMobile
 
   std::u16string card_label_;
   std::u16string card_sub_label_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillCreditCardFillingInfoBarDelegateMobile);
 };
 
 }  // namespace autofill

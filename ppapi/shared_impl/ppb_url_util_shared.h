@@ -1,11 +1,9 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef PPAPI_SHARED_IMPL_PPB_URL_UTIL_SHARED_H_
 #define PPAPI_SHARED_IMPL_PPB_URL_UTIL_SHARED_H_
-
-#include <string>
 
 #include "ppapi/c/dev/ppb_url_util_dev.h"
 #include "ppapi/c/pp_var.h"

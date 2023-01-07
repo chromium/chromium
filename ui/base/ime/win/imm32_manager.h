@@ -1,9 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_IME_WIN_IMM32_MANAGER_H
-#define UI_BASE_IME_WIN_IMM32_MANAGER_H
+#ifndef UI_BASE_IME_WIN_IMM32_MANAGER_H_
+#define UI_BASE_IME_WIN_IMM32_MANAGER_H_
 
 #include <windows.h>
 
@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -76,6 +75,10 @@ struct CompositionText;
 class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
  public:
   IMM32Manager();
+
+  IMM32Manager(const IMM32Manager&) = delete;
+  IMM32Manager& operator=(const IMM32Manager&) = delete;
+
   virtual ~IMM32Manager();
 
   // Retrieves whether or not there is an ongoing composition.
@@ -301,10 +304,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
 
   // Indicates whether or not we want IME to render composition text.
   bool use_composition_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(IMM32Manager);
 };
 
 }  // namespace ui
 
-#endif  // UI_BASE_IME_WIN_IMM32_MANAGER_H
+#endif  // UI_BASE_IME_WIN_IMM32_MANAGER_H_

@@ -1,10 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_FAKE_UPLOAD_CLIENT_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_FAKE_UPLOAD_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 
 namespace reporting {
@@ -16,27 +18,23 @@ class FakeUploadClient : public UploadClient {
  public:
   ~FakeUploadClient() override;
 
-  static void Create(
-      policy::CloudPolicyClient* cloud_policy_client,
-      ReportSuccessfulUploadCallback report_upload_success_cb,
-      EncryptionKeyAttachedCallback encryption_key_attached_cb,
-      base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>
-          created_cb);
+  static void Create(CreatedCallback created_cb);
 
   Status EnqueueUpload(
-      bool need_encryption_keys,
-      std::unique_ptr<std::vector<EncryptedRecord>> records) override;
+      bool need_encryption_key,
+      std::vector<EncryptedRecord> records,
+      ScopedReservation scoped_reservation,
+      ReportSuccessfulUploadCallback report_upload_success_cb,
+      EncryptionKeyAttachedCallback encryption_key_attached_cb) override;
 
  private:
-  FakeUploadClient(policy::CloudPolicyClient* cloud_policy_client,
-                   ReportSuccessfulUploadCallback report_upload_success_cb,
-                   EncryptionKeyAttachedCallback encryption_key_attached_cb);
+  FakeUploadClient();
 
-  void OnUploadComplete(base::Optional<base::Value> response);
-
-  policy::CloudPolicyClient* const cloud_policy_client_;
-  ReportSuccessfulUploadCallback report_upload_success_cb_;
-  EncryptionKeyAttachedCallback encryption_key_attached_cb_;
+  void OnUploadComplete(
+      ScopedReservation scoped_reservation,
+      ReportSuccessfulUploadCallback report_upload_success_cb,
+      EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      StatusOr<base::Value::Dict> response);
 };
 
 }  // namespace reporting

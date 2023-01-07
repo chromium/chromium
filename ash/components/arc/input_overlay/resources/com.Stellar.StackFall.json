@@ -1,0 +1,51 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{
+  "tap": [
+    {
+      "id": 0,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "move",
+      "key": "Space",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.4957102,
+            -0.24762407
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "boost",
+      "key": "Enter",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.04766444,
+            -0.38648364
+          ],
+          "max_x": 50
+        }
+      ]
+    }
+  ]
+}

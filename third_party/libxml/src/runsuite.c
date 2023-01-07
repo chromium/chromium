@@ -9,7 +9,7 @@
 #include "libxml.h"
 #include <stdio.h>
 
-#if !defined(_WIN32) || defined(__CYGWIN__)
+#if !defined(_WIN32)
 #include <unistd.h>
 #endif
 #include <string.h>
@@ -48,7 +48,7 @@ static int checkTestFile(const char *filename) {
     if (stat(filename, &buf) == -1)
         return(0);
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
     if (!(buf.st_mode & _S_IFREG))
         return(0);
 #else
@@ -325,6 +325,7 @@ xsdIncorrectTestCase(xmlNodePtr cur) {
         fprintf(stderr, "out of memory !\n");
 	fatalError();
     }
+    xmlBufferSetAllocationScheme(buf, XML_BUFFER_ALLOC_DOUBLEIT);
     xmlNodeDump(buf, test->doc, test, 0, 0);
     pctxt = xmlRelaxNGNewMemParserCtxt((const char *)buf->content, buf->use);
     xmlRelaxNGSetParserErrors(pctxt, testErrorHandler, testErrorHandler,
@@ -363,6 +364,7 @@ installResources(xmlNodePtr tst, const xmlChar *base) {
         fprintf(stderr, "out of memory !\n");
 	fatalError();
     }
+    xmlBufferSetAllocationScheme(buf, XML_BUFFER_ALLOC_DOUBLEIT);
     xmlNodeDump(buf, tst->doc, tst, 0, 0);
 
     while (tst != NULL) {
@@ -458,6 +460,7 @@ xsdTestCase(xmlNodePtr tst) {
         fprintf(stderr, "out of memory !\n");
 	fatalError();
     }
+    xmlBufferSetAllocationScheme(buf, XML_BUFFER_ALLOC_DOUBLEIT);
     xmlNodeDump(buf, test->doc, test, 0, 0);
     pctxt = xmlRelaxNGNewMemParserCtxt((const char *)buf->content, buf->use);
     xmlRelaxNGSetParserErrors(pctxt, testErrorHandler, testErrorHandler,

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 224 tests; 204 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 226 tests; 225 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS ReadableStreamDefaultReader includes ReadableStreamGenericReader: member names are unique
@@ -16,7 +16,7 @@ PASS ReadableStream interface: operation getReader(optional ReadableStreamGetRea
 PASS ReadableStream interface: operation pipeThrough(ReadableWritablePair, optional StreamPipeOptions)
 PASS ReadableStream interface: operation pipeTo(WritableStream, optional StreamPipeOptions)
 PASS ReadableStream interface: operation tee()
-FAIL ReadableStream interface: async iterable<any> Cannot read property 'writable' of undefined
+FAIL ReadableStream interface: async iterable<any> Cannot read properties of undefined (reading 'value')
 PASS ReadableStream must be primary interface of new ReadableStream()
 PASS Stringification of new ReadableStream()
 PASS ReadableStream interface: new ReadableStream() must inherit property "locked" with the proper type
@@ -159,15 +159,17 @@ PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() m
 PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() must inherit property "releaseLock()" with the proper type
 PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() must inherit property "write(optional any)" with the proper type
 PASS WritableStreamDefaultWriter interface: calling write(optional any) on (new WritableStream()).getWriter() with too few arguments must throw TypeError
-FAIL WritableStreamDefaultController interface: existence and properties of interface object assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController interface object length assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController interface object name assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController interface: existence and properties of interface prototype object assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController interface: operation error(optional any) assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController must be primary interface of self.writableStreamDefaultController assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
+PASS WritableStreamDefaultController interface: existence and properties of interface object
+PASS WritableStreamDefaultController interface object length
+PASS WritableStreamDefaultController interface object name
+PASS WritableStreamDefaultController interface: existence and properties of interface prototype object
+PASS WritableStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property
+PASS WritableStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property
+PASS WritableStreamDefaultController interface: attribute signal
+PASS WritableStreamDefaultController interface: operation error(optional any)
+PASS WritableStreamDefaultController must be primary interface of self.writableStreamDefaultController
 PASS Stringification of self.writableStreamDefaultController
+PASS WritableStreamDefaultController interface: self.writableStreamDefaultController must inherit property "signal" with the proper type
 PASS WritableStreamDefaultController interface: self.writableStreamDefaultController must inherit property "error(optional any)" with the proper type
 PASS WritableStreamDefaultController interface: calling error(optional any) on self.writableStreamDefaultController with too few arguments must throw TypeError
 PASS TransformStream interface: existence and properties of interface object
@@ -182,17 +184,17 @@ PASS TransformStream must be primary interface of new TransformStream()
 PASS Stringification of new TransformStream()
 PASS TransformStream interface: new TransformStream() must inherit property "readable" with the proper type
 PASS TransformStream interface: new TransformStream() must inherit property "writable" with the proper type
-FAIL TransformStreamDefaultController interface: existence and properties of interface object assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface object length assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface object name assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: existence and properties of interface prototype object assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: attribute desiredSize assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: operation enqueue(optional any) assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: operation error(optional any) assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: operation terminate() assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController must be primary interface of self.transformStreamDefaultController assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+PASS TransformStreamDefaultController interface: existence and properties of interface object
+PASS TransformStreamDefaultController interface object length
+PASS TransformStreamDefaultController interface object name
+PASS TransformStreamDefaultController interface: existence and properties of interface prototype object
+PASS TransformStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property
+PASS TransformStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property
+PASS TransformStreamDefaultController interface: attribute desiredSize
+PASS TransformStreamDefaultController interface: operation enqueue(optional any)
+PASS TransformStreamDefaultController interface: operation error(optional any)
+PASS TransformStreamDefaultController interface: operation terminate()
+PASS TransformStreamDefaultController must be primary interface of self.transformStreamDefaultController
 PASS Stringification of self.transformStreamDefaultController
 PASS TransformStreamDefaultController interface: self.transformStreamDefaultController must inherit property "desiredSize" with the proper type
 PASS TransformStreamDefaultController interface: self.transformStreamDefaultController must inherit property "enqueue(optional any)" with the proper type

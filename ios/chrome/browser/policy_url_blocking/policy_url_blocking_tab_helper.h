@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,10 @@ class PolicyUrlBlockingTabHelper
   ~PolicyUrlBlockingTabHelper() override;
 
   // web::WebStatePolicyDecider
-  web::WebStatePolicyDecider::PolicyDecision ShouldAllowRequest(
+  void ShouldAllowRequest(
       NSURLRequest* request,
-      const web::WebStatePolicyDecider::RequestInfo& request_info) override;
+      web::WebStatePolicyDecider::RequestInfo request_info,
+      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
 
  private:
   friend class web::WebStateUserData<PolicyUrlBlockingTabHelper>;

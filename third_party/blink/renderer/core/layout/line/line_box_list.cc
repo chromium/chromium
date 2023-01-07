@@ -40,6 +40,12 @@
 
 namespace blink {
 
+template <typename InlineBoxType>
+void InlineBoxList<InlineBoxType>::Trace(Visitor* visitor) const {
+  visitor->Trace(first_);
+  visitor->Trace(last_);
+}
+
 #if DCHECK_IS_ON()
 template <typename InlineBoxType>
 void InlineBoxList<InlineBoxType>::AssertIsEmpty() {
@@ -205,8 +211,8 @@ bool LineBoxList::HitTest(LineLayoutBoxModel layout_object,
                           HitTestResult& result,
                           const HitTestLocation& hit_test_location,
                           const PhysicalOffset& accumulated_offset,
-                          HitTestAction hit_test_action) const {
-  if (hit_test_action != kHitTestForeground)
+                          HitTestPhase phase) const {
+  if (phase != HitTestPhase::kForeground)
     return false;
 
   // The only way an inline could hit test like this is if it has a layer.
@@ -218,14 +224,14 @@ bool LineBoxList::HitTest(LineLayoutBoxModel layout_object,
     return false;
 
   const PhysicalOffset& point = hit_test_location.Point();
-  IntRect hit_search_bounding_box = hit_test_location.EnclosingIntRect();
+  gfx::Rect hit_search_bounding_box = hit_test_location.ToEnclosingRect();
 
   CullRect cull_rect(
       First()->IsHorizontal()
-          ? IntRect(point.left.ToInt(), hit_search_bounding_box.Y(), 1,
-                    hit_search_bounding_box.Height())
-          : IntRect(hit_search_bounding_box.X(), point.top.ToInt(),
-                    hit_search_bounding_box.Width(), 1));
+          ? gfx::Rect(point.left.ToInt(), hit_search_bounding_box.y(), 1,
+                      hit_search_bounding_box.height())
+          : gfx::Rect(hit_search_bounding_box.x(), point.top.ToInt(),
+                      hit_search_bounding_box.width(), 1));
 
   if (!AnyLineIntersectsRect(layout_object, cull_rect, accumulated_offset))
     return false;

@@ -1,14 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/nqe/cached_network_quality.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 CachedNetworkQuality::CachedNetworkQuality()
     : effective_connection_type_(EFFECTIVE_CONNECTION_TYPE_UNKNOWN) {}
@@ -40,8 +36,4 @@ bool CachedNetworkQuality::OlderThan(
   return last_update_time_ < cached_network_quality.last_update_time_;
 }
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

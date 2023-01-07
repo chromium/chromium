@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @IntDef({ActionModeItemType.SHARE, ActionModeItemType.WEB_SEARCH})
 @Retention(RetentionPolicy.SOURCE)
-public @interface ActionModeItemType {
+@interface ActionModeItemType {
     int SHARE = org.chromium.weblayer_private.interfaces.ActionModeItemType.SHARE;
     int WEB_SEARCH = org.chromium.weblayer_private.interfaces.ActionModeItemType.WEB_SEARCH;
 }

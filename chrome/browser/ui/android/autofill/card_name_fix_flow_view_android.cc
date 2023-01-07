@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,10 @@ void CardNameFixFlowViewAndroid::OnUserAccept(
     const JavaParamRef<jstring>& name) {
   controller_->OnNameAccepted(
       base::android::ConvertJavaStringToUTF16(env, name));
+}
+
+void CardNameFixFlowViewAndroid::OnUserDismiss(JNIEnv* env) {
+  controller_->OnDismissed();
 }
 
 void CardNameFixFlowViewAndroid::PromptDismissed(

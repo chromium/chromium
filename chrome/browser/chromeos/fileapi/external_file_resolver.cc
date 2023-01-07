@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include <utility>
 #include "base/bind.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -52,6 +52,9 @@ class URLHelper {
                        std::move(lifetime), profile_id, url));
   }
 
+  URLHelper(const URLHelper&) = delete;
+  URLHelper& operator=(const URLHelper&) = delete;
+
  private:
   void RunOnUIThread(Lifetime lifetime, void* profile_id, const GURL& url) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -61,7 +64,7 @@ class URLHelper {
     }
     Profile* const profile = reinterpret_cast<Profile*>(profile_id);
     content::StoragePartition* const storage =
-        content::BrowserContext::GetStoragePartitionForUrl(profile, url);
+        profile->GetDefaultStoragePartition();
     DCHECK(storage);
 
     scoped_refptr<storage::FileSystemContext> context =
@@ -119,8 +122,6 @@ class URLHelper {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   file_manager::util::FileSystemURLAndHandle isolated_file_system_;
   std::string mime_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLHelper);
 };
 
 }  // namespace

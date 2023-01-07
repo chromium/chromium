@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/android/chrome_jni_headers/SigninManagerImpl_jni.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -18,7 +19,6 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 
 #include "base/android/callback_android.h"
-#include "base/android/jni_string.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
@@ -29,15 +29,12 @@
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 
 using base::android::JavaParamRef;
 
@@ -55,7 +52,7 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
         all_data_(all_data),
         callback_(std::move(callback)),
         origin_runner_(base::ThreadTaskRunnerHandle::Get()),
-        remover_(content::BrowserContext::GetBrowsingDataRemover(profile)) {
+        remover_(profile->GetBrowsingDataRemover()) {
     remover_->AddObserver(this);
 
     if (all_data) {
@@ -83,6 +80,9 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
     }
   }
 
+  ProfileDataRemover(const ProfileDataRemover&) = delete;
+  ProfileDataRemover& operator=(const ProfileDataRemover&) = delete;
+
   ~ProfileDataRemover() override {}
 
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
@@ -101,13 +101,11 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   bool all_data_;
   base::OnceClosure callback_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_runner_;
-  content::BrowsingDataRemover* remover_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileDataRemover);
+  raw_ptr<content::BrowsingDataRemover> remover_;
 };
 
 // Returns whether the user is a managed user or not.
@@ -184,7 +182,7 @@ void SigninManagerAndroid::RegisterPolicyWithAccount(
     const CoreAccountInfo& account,
     RegisterPolicyWithAccountCallback callback) {
   if (!ShouldLoadPolicyForUser(account.email)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -193,7 +191,7 @@ void SigninManagerAndroid::RegisterPolicyWithAccount(
       base::BindOnce(
           [](RegisterPolicyWithAccountCallback callback,
              const std::string& dm_token, const std::string& client_id) {
-            base::Optional<ManagementCredentials> credentials;
+            absl::optional<ManagementCredentials> credentials;
             if (!dm_token.empty()) {
               credentials.emplace(dm_token, client_id);
             }
@@ -220,7 +218,7 @@ void SigninManagerAndroid::FetchAndApplyCloudPolicy(
 void SigninManagerAndroid::OnPolicyRegisterDone(
     const CoreAccountInfo& account,
     base::OnceCallback<void()> policy_callback,
-    const base::Optional<ManagementCredentials>& credentials) {
+    const absl::optional<ManagementCredentials>& credentials) {
   if (credentials) {
     FetchPolicyBeforeSignIn(account, std::move(policy_callback),
                             credentials.value());
@@ -235,7 +233,7 @@ void SigninManagerAndroid::FetchPolicyBeforeSignIn(
     base::OnceCallback<void()> policy_callback,
     const ManagementCredentials& credentials) {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
+      profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
   user_policy_signin_service_->FetchPolicyForSignedInUser(
       AccountIdFromAccountInfo(account), credentials.dm_token,
@@ -256,7 +254,7 @@ void SigninManagerAndroid::IsAccountManaged(
       account,
       base::BindOnce(
           [](base::android::ScopedJavaGlobalRef<jobject> callback,
-             const base::Optional<ManagementCredentials>& credentials) {
+             const absl::optional<ManagementCredentials>& credentials) {
             base::android::RunBooleanCallbackAndroid(callback,
                                                      credentials.has_value());
           },
@@ -275,13 +273,6 @@ SigninManagerAndroid::GetManagementDomain(JNIEnv* env) {
   }
 
   return domain;
-}
-
-void SigninManagerAndroid::
-    LogOutAllAccountsForMobileIdentityConsistencyRollback(JNIEnv* env) {
-  identity_manager_->GetAccountsCookieMutator()->LogOutAllAccounts(
-      gaia::GaiaSource::kAccountReconcilorMirror,
-      base::DoNothing::Once<const GoogleServiceAuthError&>());
 }
 
 void SigninManagerAndroid::WipeProfileData(

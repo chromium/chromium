@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,8 @@
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "ui/file_manager/file_types_data.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
@@ -30,8 +32,6 @@ namespace {
 constexpr char kAudioMimeType[] = "audio/*";
 constexpr char kImageMimeType[] = "image/*";
 constexpr char kVideoMimeType[] = "video/*";
-constexpr char kAmrMimeType[] = "audio/amr";
-constexpr char kAmrExtension[] = ".amr";
 
 void OnReadDirectoryOnIOThread(
     const storage::FileSystemOperation::ReadDirectoryCallback& callback,
@@ -83,19 +83,16 @@ bool MatchesFileType(const base::FilePath& path,
   if (file_type == RecentSource::FileType::kAll)
     return true;
 
-  // File type for |path| is guessed using net::GetMimeTypeFromFile.
+  // File type for |path| is guessed by data generated from file_types.json5.
   // It guesses mime types based on file extensions, but it has a limited set
   // of file extensions.
   // TODO(fukino): It is better to have better coverage of file extensions to be
   // consistent with file-type detection on Android system. crbug.com/1034874.
-  std::string mime_type;
-  if (!net::GetMimeTypeFromFile(path, &mime_type)) {
-    const base::FilePath::StringType ext = path.Extension();
-    if (base::ToLowerASCII(ext) != kAmrExtension) {
-      return false;
-    }
-    mime_type = kAmrMimeType;
+  const auto ext = base::ToLowerASCII(path.Extension());
+  if (!file_types_data::kExtensionToMIME.contains(ext)) {
+    return false;
   }
+  std::string mime_type = file_types_data::kExtensionToMIME.at(ext);
 
   switch (file_type) {
     case RecentSource::FileType::kAudio:
@@ -104,6 +101,8 @@ bool MatchesFileType(const base::FilePath& path,
       return net::MatchesMimeType(kImageMimeType, mime_type);
     case RecentSource::FileType::kVideo:
       return net::MatchesMimeType(kVideoMimeType, mime_type);
+    case RecentSource::FileType::kDocument:
+      return file_types_data::kDocumentMIMETypes.contains(mime_type);
     default:
       return false;
   }
@@ -270,7 +269,8 @@ storage::FileSystemURL RecentDiskSource::BuildDiskURL(
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   return mount_points->CreateExternalFileSystemURL(
-      url::Origin::Create(params_.value().origin()), mount_point_name_, path);
+      blink::StorageKey(url::Origin::Create(params_.value().origin())),
+      mount_point_name_, path);
 }
 
 }  // namespace chromeos

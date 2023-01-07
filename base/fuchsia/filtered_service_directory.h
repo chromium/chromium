@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -24,15 +23,22 @@ class BASE_EXPORT FilteredServiceDirectory {
  public:
   // Creates a directory that proxies requests to the specified service
   // |directory|.
-  explicit FilteredServiceDirectory(sys::ServiceDirectory* directory);
+  explicit FilteredServiceDirectory(
+      std::shared_ptr<sys::ServiceDirectory> directory);
+
+  FilteredServiceDirectory(const FilteredServiceDirectory&) = delete;
+  FilteredServiceDirectory& operator=(const FilteredServiceDirectory&) = delete;
+
   ~FilteredServiceDirectory();
 
   // Adds the specified service to the list of allowed services.
-  void AddService(base::StringPiece service_name);
+  // Returns a status other than ZX_OK if the service cannot be added, e.g.
+  // because it is already in the list of allowed services.
+  [[nodiscard]] zx_status_t AddService(StringPiece service_name);
 
   // Connects a directory client. The directory can be passed to a sandboxed
   // process to be used for /svc namespace.
-  void ConnectClient(
+  [[nodiscard]] zx_status_t ConnectClient(
       fidl::InterfaceRequest<::fuchsia::io::Directory> dir_request);
 
   // Accessor for the OutgoingDirectory, used to add handlers for services
@@ -40,10 +46,8 @@ class BASE_EXPORT FilteredServiceDirectory {
   sys::OutgoingDirectory* outgoing_directory() { return &outgoing_directory_; }
 
  private:
-  const sys::ServiceDirectory* const directory_;
+  const std::shared_ptr<sys::ServiceDirectory> directory_;
   sys::OutgoingDirectory outgoing_directory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilteredServiceDirectory);
 };
 
 }  // namespace base

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/unguessable_token.h"
@@ -89,7 +90,7 @@ class PaintPreviewCompositorBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  std::unique_ptr<SimpleFactoryKey> key_ = nullptr;
+  std::unique_ptr<SimpleFactoryKey> key_;
 };
 
 // Test that a "true" initialization works and doesn't crash.

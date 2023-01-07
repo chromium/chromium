@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,60 +8,87 @@
  * settings.
  */
 
-Polymer({
-  is: 'settings-storage-external',
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import './storage_external_entry.js';
+import '../../prefs/prefs.js';
+import '../../settings_shared.css.js';
 
-  behaviors: [
-    I18nBehavior,
-    WebUIListenerBehavior,
-  ],
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    /**
-     * List of the plugged-in external storages.
-     * @private {Array<!settings.ExternalStorage>}
-     */
-    externalStorages_: {
-      type: Array,
-      value() {
-        return [];
-      }
-    },
+import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage} from './device_page_browser_proxy.js';
 
-    /** @private {!chrome.settingsPrivate.PrefObject} */
-    externalStorageVisiblePref_: {
-      type: Object,
-      value() {
-        return /** @type {!chrome.settingsPrivate.PrefObject} */ ({});
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsStorageExternalElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+
+/** @polymer */
+class SettingsStorageExternalElement extends
+    SettingsStorageExternalElementBase {
+  static get is() {
+    return 'settings-storage-external';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * List of the plugged-in external storages.
+       * @private {Array<!ExternalStorage>}
+       */
+      externalStorages_: {
+        type: Array,
+        value() {
+          return [];
+        },
       },
-    },
-  },
 
-  /** @private {?settings.DevicePageBrowserProxy} */
-  browserProxy_: null,
+      /** @private {!chrome.settingsPrivate.PrefObject} */
+      externalStorageVisiblePref_: {
+        type: Object,
+        value() {
+          return /** @type {!chrome.settingsPrivate.PrefObject} */ ({});
+        },
+      },
+    };
+  }
 
   /** @override */
-  created() {
-    this.browserProxy_ = settings.DevicePageBrowserProxyImpl.getInstance();
-  },
+  constructor() {
+    super();
+
+    /** @private {!DevicePageBrowserProxy} */
+    this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.browserProxy_.setExternalStoragesUpdatedCallback(
         this.handleExternalStoragesUpdated_.bind(this));
     this.browserProxy_.updateExternalStorages();
-  },
+  }
 
   /**
-   * @param {Array<!settings.ExternalStorage>} storages
+   * @param {Array<!ExternalStorage>} storages
    * @private
    */
   handleExternalStoragesUpdated_(storages) {
     this.externalStorages_ = storages;
-  },
+  }
 
   /**
-   * @param {Array<!settings.ExternalStorage>} externalStorages
+   * @param {Array<!ExternalStorage>} externalStorages
    * @return {string}
    * @private
    */
@@ -70,5 +97,8 @@ Polymer({
         !externalStorages || externalStorages.length === 0 ?
             'storageExternalStorageEmptyListHeader' :
             'storageExternalStorageListHeader');
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsStorageExternalElement.is, SettingsStorageExternalElement);

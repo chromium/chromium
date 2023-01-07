@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/metrics/field_trial.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_frame_host.h"
-#include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -24,16 +23,19 @@
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_messages.h"
-#include "extensions/common/extension_urls.h"
 #include "extensions/common/switches.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 
 namespace extensions {
 
 ChromeExtensionWebContentsObserver::ChromeExtensionWebContentsObserver(
     content::WebContents* web_contents)
-    : ExtensionWebContentsObserver(web_contents) {}
+    : ExtensionWebContentsObserver(web_contents),
+      content::WebContentsUserData<ChromeExtensionWebContentsObserver>(
+          *web_contents) {}
 
 ChromeExtensionWebContentsObserver::~ChromeExtensionWebContentsObserver() {}
 
@@ -73,7 +75,7 @@ void ChromeExtensionWebContentsObserver::RenderFrameCreated(
   if ((extension->is_extension() || extension->is_platform_app()) &&
       Manifest::IsComponentLocation(extension->location())) {
     policy->GrantRequestOrigin(
-        process_id, url::Origin::Create(GURL(content::kChromeUIResourcesURL)));
+        process_id, url::Origin::Create(GURL(blink::kChromeUIResourcesURL)));
     policy->GrantRequestOrigin(
         process_id, url::Origin::Create(GURL(chrome::kChromeUIThemeURL)));
   }
@@ -94,63 +96,21 @@ void ChromeExtensionWebContentsObserver::RenderFrameCreated(
   }
 }
 
-bool ChromeExtensionWebContentsObserver::OnMessageReceived(
-    const IPC::Message& message,
-    content::RenderFrameHost* render_frame_host) {
-  DCHECK(initialized());
-  if (ExtensionWebContentsObserver::OnMessageReceived(message,
-                                                      render_frame_host)) {
-    return true;
-  }
-
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(ChromeExtensionWebContentsObserver, message,
-                                   render_frame_host)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_DetailedConsoleMessageAdded,
-                        OnDetailedConsoleMessageAdded)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
-void ChromeExtensionWebContentsObserver::OnDetailedConsoleMessageAdded(
-    content::RenderFrameHost* render_frame_host,
-    const std::u16string& message,
-    const std::u16string& source,
-    const StackTrace& stack_trace,
-    int32_t severity_level) {
-  DCHECK(initialized());
-  if (!IsSourceFromAnExtension(source))
-    return;
-
-  std::string extension_id = GetExtensionIdFromFrame(render_frame_host);
-  if (extension_id.empty())
-    extension_id = GURL(source).host();
-
-  ErrorConsole::Get(browser_context())
-      ->ReportError(std::unique_ptr<ExtensionError>(new RuntimeError(
-          extension_id, browser_context()->IsOffTheRecord(), source, message,
-          stack_trace, web_contents()->GetLastCommittedURL(),
-          static_cast<logging::LogSeverity>(severity_level),
-          render_frame_host->GetRoutingID(),
-          render_frame_host->GetProcess()->GetID())));
-}
-
 void ChromeExtensionWebContentsObserver::InitializeRenderFrame(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(initialized());
   ExtensionWebContentsObserver::InitializeRenderFrame(render_frame_host);
   WindowController* controller = dispatcher()->GetExtensionWindowController();
   if (controller) {
-    render_frame_host->Send(new ExtensionMsg_UpdateBrowserWindowId(
-        render_frame_host->GetRoutingID(), controller->GetWindowId()));
+    GetLocalFrame(render_frame_host)
+        ->UpdateBrowserWindowId(controller->GetWindowId());
   }
 }
 
 void ChromeExtensionWebContentsObserver::ReloadIfTerminated(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(initialized());
-  std::string extension_id = GetExtensionIdFromFrame(render_frame_host);
+  std::string extension_id = util::GetExtensionIdFromFrame(render_frame_host);
   if (extension_id.empty())
     return;
 
@@ -166,6 +126,6 @@ void ChromeExtensionWebContentsObserver::ReloadIfTerminated(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeExtensionWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeExtensionWebContentsObserver);
 
 }  // namespace extensions

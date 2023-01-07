@@ -1,13 +1,14 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 
+#include "base/i18n/rtl.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 // The distance the mouse can be dragged outside the bounds of the thumb during
@@ -18,10 +19,7 @@ static constexpr int kScrollThumbDragOutSnap = 100;
 namespace views {
 
 BaseScrollBarThumb::BaseScrollBarThumb(ScrollBar* scroll_bar)
-    : scroll_bar_(scroll_bar),
-      drag_start_position_(-1),
-      mouse_offset_(-1),
-      state_(Button::STATE_NORMAL) {}
+    : scroll_bar_(scroll_bar) {}
 
 BaseScrollBarThumb::~BaseScrollBarThumb() = default;
 
@@ -34,7 +32,7 @@ void BaseScrollBarThumb::SetLength(int length) {
   SetSize(size);
 }
 
-int BaseScrollBarThumb::GetSize() const {
+int BaseScrollBarThumb::GetLength() const {
   if (IsHorizontal())
     return width();
   return height();
@@ -58,6 +56,14 @@ int BaseScrollBarThumb::GetPosition() const {
   return y() - track_bounds.y();
 }
 
+void BaseScrollBarThumb::SetSnapBackOnDragOutside(bool snap) {
+  snap_back_on_drag_outside_ = snap;
+}
+
+bool BaseScrollBarThumb::GetSnapBackOnDragOutside() const {
+  return snap_back_on_drag_outside_;
+}
+
 void BaseScrollBarThumb::OnMouseEntered(const ui::MouseEvent& event) {
   SetState(Button::STATE_HOVERED);
 }
@@ -74,20 +80,22 @@ bool BaseScrollBarThumb::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 bool BaseScrollBarThumb::OnMouseDragged(const ui::MouseEvent& event) {
-  // If the user moves the mouse more than |kScrollThumbDragOutSnap| outside
-  // the bounds of the thumb, the scrollbar will snap the scroll back to the
-  // point it was at before the drag began.
-  if (IsHorizontal()) {
-    if ((event.y() < y() - kScrollThumbDragOutSnap) ||
-        (event.y() > (y() + height() + kScrollThumbDragOutSnap))) {
-      scroll_bar_->ScrollToThumbPosition(drag_start_position_, false);
-      return true;
-    }
-  } else {
-    if ((event.x() < x() - kScrollThumbDragOutSnap) ||
-        (event.x() > (x() + width() + kScrollThumbDragOutSnap))) {
-      scroll_bar_->ScrollToThumbPosition(drag_start_position_, false);
-      return true;
+  if (snap_back_on_drag_outside_) {
+    // If the user moves the mouse more than |kScrollThumbDragOutSnap| outside
+    // the bounds of the thumb, the scrollbar will snap the scroll back to the
+    // point it was at before the drag began.
+    if (IsHorizontal()) {
+      if ((event.y() < y() - kScrollThumbDragOutSnap) ||
+          (event.y() > (y() + height() + kScrollThumbDragOutSnap))) {
+        scroll_bar_->ScrollToThumbPosition(drag_start_position_, false);
+        return true;
+      }
+    } else {
+      if ((event.x() < x() - kScrollThumbDragOutSnap) ||
+          (event.x() > (x() + width() + kScrollThumbDragOutSnap))) {
+        scroll_bar_->ScrollToThumbPosition(drag_start_position_, false);
+        return true;
+      }
     }
   }
   if (IsHorizontal()) {
@@ -132,6 +140,7 @@ bool BaseScrollBarThumb::IsHorizontal() const {
 }
 
 BEGIN_METADATA(BaseScrollBarThumb, View)
+ADD_PROPERTY_METADATA(bool, SnapBackOnDragOutside);
 END_METADATA
 
 }  // namespace views

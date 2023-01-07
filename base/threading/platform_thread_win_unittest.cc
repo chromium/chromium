@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ namespace base {
 // set the memory and I/O priorities to very low. This test confirms that
 // behavior which we suspect is a Windows kernel bug. If this test starts
 // failing, the mitigation for https://crbug.com/901483 in
-// PlatformThread::SetCurrentThreadPriority() should be revisited.
+// PlatformThread::SetCurrentThreadType() should be revisited.
 TEST(PlatformThreadWinTest, SetBackgroundThreadModeFailsInIdlePriorityProcess) {
   PlatformThreadHandle::Handle thread_handle =
       PlatformThread::CurrentHandle().platform_handle();
@@ -60,17 +60,17 @@ TEST(PlatformThreadWinTest, SetBackgroundThreadModeFailsInIdlePriorityProcess) {
   const int priority_after_thread_mode_background_begin =
       ::GetThreadPriority(thread_handle);
   if (win::GetVersion() == win::Version::WIN7) {
-    const ThreadPriority priority =
-        base::PlatformThread::GetCurrentThreadPriority();
-    EXPECT_TRUE(priority == ThreadPriority::NORMAL ||
-                priority == ThreadPriority::BACKGROUND);
+    const ThreadPriorityForTest priority =
+        PlatformThread::GetCurrentThreadPriorityForTest();
+    EXPECT_TRUE(priority == ThreadPriorityForTest::kNormal ||
+                priority == ThreadPriorityForTest::kBackground);
   } else {
     EXPECT_EQ(priority_after_thread_mode_background_begin,
               THREAD_PRIORITY_NORMAL);
   }
   internal::AssertMemoryPriority(thread_handle, MEMORY_PRIORITY_VERY_LOW);
 
-  PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+  PlatformThread::Sleep(base::Seconds(1));
 
   // After 1 second, GetThreadPriority() and memory priority don't change (this
   // refutes the hypothesis that it simply takes time before GetThreadPriority()

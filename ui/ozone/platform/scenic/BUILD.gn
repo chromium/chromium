@@ -1,9 +1,10 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 assert(is_fuchsia)
 
+import("//build/config/dcheck_always_on.gni")
 import("//gpu/vulkan/features.gni")
 
 visibility = [ "//ui/ozone/*" ]
@@ -16,6 +17,8 @@ source_set("scenic") {
     "overlay_manager_scenic.h",
     "ozone_platform_scenic.cc",
     "ozone_platform_scenic.h",
+    "safe_presenter.cc",
+    "safe_presenter.h",
     "scenic_gpu_host.cc",
     "scenic_gpu_host.h",
     "scenic_gpu_service.cc",
@@ -53,24 +56,27 @@ source_set("scenic") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//third_party/angle/src/common/fuchsia_egl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.images",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//ui/base",
     "//ui/base/cursor",
-    "//ui/base/cursor:cursor_base",
     "//ui/base/ime/fuchsia",
     "//ui/display/fake",
     "//ui/events:dom_keycode_converter",
     "//ui/events/ozone/layout",
-    "//ui/gfx/geometry",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
-    "//ui/ozone/public/mojom",
+    "//ui/ozone/platform/scenic/mojom",
+  ]
+  public_deps = [
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
+    "//ui/gfx/geometry",
     "//ui/platform_window",
   ]
 
@@ -82,9 +88,14 @@ source_set("scenic") {
     ]
     defines += [ "VK_USE_PLATFORM_MAGMA_KHR" ]
     deps += [ "//gpu/ipc/common:vulkan_ycbcr_info" ]
-    data_deps += [
-      "//third_party/angle:libEGL",
-      "//third_party/angle:libGLESv2",
-    ]
+    data_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan" ]
+
+    # VulkanInstance enables validation layer in Debug builds and when DCHECKs
+    # are enabled in Release builds. In these cases the validation layer
+    # libraries and configs need to be included in the generated Fuchsia
+    # package.
+    if (is_debug || dcheck_always_on) {
+      data_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan_layers:VkLayer_khronos_validation" ]
+    }
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,6 +59,8 @@ void LayoutWorkletGlobalScope::Dispose() {
       ScriptController()->GetScriptState());
 
   WorkletGlobalScope::Dispose();
+
+  NotifyContextDestroyed();
 }
 
 // https://drafts.css-houdini.org/css-layout-api/#dom-layoutworkletglobalscope-registerlayout
@@ -66,7 +68,7 @@ void LayoutWorkletGlobalScope::registerLayout(
     const AtomicString& name,
     V8NoArgumentConstructor* layout_ctor,
     ExceptionState& exception_state) {
-  if (name.IsEmpty()) {
+  if (name.empty()) {
     exception_state.ThrowTypeError("The empty string is not a valid name.");
     return;
   }

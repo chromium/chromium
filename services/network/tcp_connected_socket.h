@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -56,10 +56,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPConnectedSocket
       mojo::ScopedDataPipeProducerHandle receive_pipe_handle,
       mojo::ScopedDataPipeConsumerHandle send_pipe_handle,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  TCPConnectedSocket(const TCPConnectedSocket&) = delete;
+  TCPConnectedSocket& operator=(const TCPConnectedSocket&) = delete;
+
   ~TCPConnectedSocket() override;
 
   void Connect(
-      const base::Optional<net::IPEndPoint>& local_addr,
+      const absl::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       mojom::NetworkContext::CreateTCPConnectedSocketCallback callback);
@@ -104,21 +108,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPConnectedSocket
 
   const mojo::Remote<mojom::SocketObserver> observer_;
 
-  net::NetLog* const net_log_;
-  net::ClientSocketFactory* const client_socket_factory_;
-  TLSSocketFactory* tls_socket_factory_;
+  const raw_ptr<net::NetLog> net_log_;
+  const raw_ptr<net::ClientSocketFactory> client_socket_factory_;
+  raw_ptr<TLSSocketFactory> tls_socket_factory_;
 
   std::unique_ptr<net::TransportClientSocket> socket_;
 
   mojom::NetworkContext::CreateTCPConnectedSocketCallback connect_callback_;
+
+  mojom::TCPConnectedSocketOptionsPtr socket_options_;
 
   base::OnceClosure pending_upgrade_to_tls_callback_;
 
   std::unique_ptr<SocketDataPump> socket_data_pump_;
 
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPConnectedSocket);
 };
 
 }  // namespace network

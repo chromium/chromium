@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -30,14 +30,11 @@ NetworkChangeNotifierFuchsia::NetworkChangeNotifierFuchsia(
       require_wlan_(require_wlan) {
   DCHECK(handle);
 
-  watcher_.set_error_handler(
-      [](zx_status_t status) {
-        ZX_LOG(FATAL, status)
-            << "Lost connection to fuchsia.net.interfaces/Watcher.";
-      });
+  watcher_.set_error_handler(base::LogFidlErrorAndExitProcess(
+      FROM_HERE, "fuchsia.net.interfaces.Watcher"));
 
   fuchsia::net::interfaces::WatcherSyncPtr watcher = handle.BindSync();
-  base::Optional<internal::ExistingInterfaceProperties> interfaces =
+  absl::optional<internal::ExistingInterfaceProperties> interfaces =
       internal::GetExistingInterfaces(watcher);
   if (!interfaces)
     return;
@@ -107,7 +104,7 @@ void NetworkChangeNotifierFuchsia::OnInterfacesEvent(
 void NetworkChangeNotifierFuchsia::OnInterfaceAdded(
     fuchsia::net::interfaces::Properties properties) {
   uint64_t id = properties.id();
-  base::Optional<internal::InterfaceProperties> cache_entry =
+  absl::optional<internal::InterfaceProperties> cache_entry =
       internal::InterfaceProperties::VerifyAndCreate(std::move(properties));
   if (!cache_entry) {
     OnWatcherError("OnInterfaceAdded: incomplete interface properties.");

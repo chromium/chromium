@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chromeos/ui/base/window_pin_type.h"
-#include "chromeos/ui/base/window_properties.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
+#include "chrome/browser/ui/ash/window_pin_util.h"
+#include "components/exo/shell_surface_util.h"
+#include "components/exo/window_properties.h"
+#include "components/exo/wm_helper.h"
 #include "ui/aura/env.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
@@ -24,7 +26,7 @@ ArcKioskAppLauncher::ArcKioskAppLauncher(content::BrowserContext* context,
                                          Delegate* delegate)
     : app_id_(app_id), prefs_(prefs), delegate_(delegate) {
   prefs_->AddObserver(this);
-  aura::Env::GetInstance()->AddObserver(this);
+  exo::WMHelper::GetInstance()->AddExoWindowObserver(this);
   // Launching the app by app id in landscape mode and in non-touch mode.
   arc::LaunchApp(context, app_id_, ui::EF_NONE,
                  arc::UserInteractionType::NOT_USER_INITIATED);
@@ -50,25 +52,15 @@ void ArcKioskAppLauncher::OnTaskCreated(int32_t task_id,
   }
 }
 
-void ArcKioskAppLauncher::OnWindowInitialized(aura::Window* window) {
-  // The |window|’s task ID is not set yet. We need to observe
-  // the window until the |kApplicationIdKey| property is set.
+void ArcKioskAppLauncher::OnExoWindowCreated(aura::Window* window) {
   window->AddObserver(this);
   windows_.insert(window);
-}
 
-void ArcKioskAppLauncher::OnWindowPropertyChanged(aura::Window* window,
-                                                  const void* key,
-                                                  intptr_t old) {
-  // If we do not know yet what task ID to look for, do nothing.
-  // Existing windows will be revisited the moment the task ID
-  // becomes known.
+  // The |window|’s task ID might not be set yet. Record the window and
+  // OnTaskCreated will check if it's the window we're looking for.
   if (task_id_ == -1)
     return;
 
-  // We are only interested in changes to |kApplicationIdKey|,
-  // but that constant is not accessible outside shell_surface.cc.
-  // So we react to all property changes.
   CheckAndPinWindow(window);
 }
 
@@ -83,15 +75,14 @@ bool ArcKioskAppLauncher::CheckAndPinWindow(aura::Window* const window) {
     return false;
   // Stop observing as target window is already found.
   StopObserving();
-  window->SetProperty(chromeos::kWindowPinTypeKey,
-                      chromeos::WindowPinType::kTrustedPinned);
+  PinWindow(window, /*trusted=*/true);
   if (delegate_)
     delegate_->OnAppWindowLaunched();
   return true;
 }
 
 void ArcKioskAppLauncher::StopObserving() {
-  aura::Env::GetInstance()->RemoveObserver(this);
+  exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
   for (auto* window : windows_)
     window->RemoveObserver(this);
   windows_.clear();

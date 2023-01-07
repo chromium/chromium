@@ -1,0 +1,71 @@
+{
+  "kind": "calendar#events",
+  "etag": "\"p32ofplf5q6gf20g\"",
+  "timeZone": "America/Los_Angeles",
+  "items": [
+    {
+      "kind": "calendar#event",
+      "id": "1",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "summary": "confirmed",
+      "colorId": "3",
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      }
+    },
+    {
+      "kind": "calendar#event",
+      "id": "2",
+      "status": "cancelled",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "summary": "cancelled",
+      "colorId": "3",
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      }
+    },
+    {
+      "kind": "calendar#event",
+      "id": "3",
+      "status": "tentative",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "summary": "tentative",
+      "colorId": "3",
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      }
+    },
+    {
+      "kind": "calendar#event",
+      "id": "4",
+      "status": "qwerty",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "summary": "wrong type",
+      "colorId": "3",
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      }
+    }
+  ]
+}

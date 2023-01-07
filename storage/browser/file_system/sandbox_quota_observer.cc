@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,26 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
+#include "base/files/file_error_or.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
+#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
-#include "storage/browser/quota/quota_client.h"
+#include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
 SandboxQuotaObserver::SandboxQuotaObserver(
-    QuotaManagerProxy* quota_manager_proxy,
-    base::SequencedTaskRunner* update_notify_runner,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
+    scoped_refptr<base::SequencedTaskRunner> update_notify_runner,
     ObfuscatedFileUtil* sandbox_file_util,
     FileSystemUsageCache* file_system_usage_cache)
-    : quota_manager_proxy_(quota_manager_proxy),
-      update_notify_runner_(update_notify_runner),
+    : quota_manager_proxy_(std::move(quota_manager_proxy)),
+      update_notify_runner_(std::move(update_notify_runner)),
       sandbox_file_util_(sandbox_file_util),
       file_system_usage_cache_(file_system_usage_cache) {}
 
@@ -30,10 +34,10 @@ SandboxQuotaObserver::~SandboxQuotaObserver() = default;
 
 void SandboxQuotaObserver::OnStartUpdate(const FileSystemURL& url) {
   DCHECK(update_notify_runner_->RunsTasksInCurrentSequence());
-  base::FilePath usage_file_path = GetUsageCachePath(url);
-  if (usage_file_path.empty())
+  base::FileErrorOr<base::FilePath> usage_file_path = GetUsageCachePath(url);
+  if (!usage_file_path.has_value() || usage_file_path->empty())
     return;
-  file_system_usage_cache_->IncrementDirty(usage_file_path);
+  file_system_usage_cache_->IncrementDirty(usage_file_path.value());
 }
 
 void SandboxQuotaObserver::OnUpdate(const FileSystemURL& url, int64_t delta) {
@@ -41,15 +45,16 @@ void SandboxQuotaObserver::OnUpdate(const FileSystemURL& url, int64_t delta) {
 
   if (quota_manager_proxy_.get()) {
     quota_manager_proxy_->NotifyStorageModified(
-        QuotaClientType::kFileSystem, url.origin(),
-        FileSystemTypeToQuotaStorageType(url.type()), delta, base::Time::Now());
+        QuotaClientType::kFileSystem, url.storage_key(),
+        FileSystemTypeToQuotaStorageType(url.type()), delta, base::Time::Now(),
+        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
   }
 
-  base::FilePath usage_file_path = GetUsageCachePath(url);
-  if (usage_file_path.empty())
+  base::FileErrorOr<base::FilePath> usage_file_path = GetUsageCachePath(url);
+  if (!usage_file_path.has_value() || usage_file_path->empty())
     return;
 
-  pending_update_notification_[usage_file_path] += delta;
+  pending_update_notification_[usage_file_path.value()] += delta;
   if (!delayed_cache_update_helper_.IsRunning()) {
     delayed_cache_update_helper_.Start(
         FROM_HERE,
@@ -62,23 +67,23 @@ void SandboxQuotaObserver::OnUpdate(const FileSystemURL& url, int64_t delta) {
 void SandboxQuotaObserver::OnEndUpdate(const FileSystemURL& url) {
   DCHECK(update_notify_runner_->RunsTasksInCurrentSequence());
 
-  base::FilePath usage_file_path = GetUsageCachePath(url);
-  if (usage_file_path.empty())
+  base::FileErrorOr<base::FilePath> usage_file_path = GetUsageCachePath(url);
+  if (!usage_file_path.has_value() || usage_file_path->empty())
     return;
 
-  auto found = pending_update_notification_.find(usage_file_path);
+  auto found = pending_update_notification_.find(usage_file_path.value());
   if (found != pending_update_notification_.end()) {
     UpdateUsageCacheFile(found->first, found->second);
     pending_update_notification_.erase(found);
   }
 
-  file_system_usage_cache_->DecrementDirty(usage_file_path);
+  file_system_usage_cache_->DecrementDirty(usage_file_path.value());
 }
 
 void SandboxQuotaObserver::OnAccess(const FileSystemURL& url) {
   if (quota_manager_proxy_.get()) {
     quota_manager_proxy_->NotifyStorageAccessed(
-        url.origin(), FileSystemTypeToQuotaStorageType(url.type()),
+        url.storage_key(), FileSystemTypeToQuotaStorageType(url.type()),
         base::Time::Now());
   }
 }
@@ -88,21 +93,25 @@ void SandboxQuotaObserver::SetUsageCacheEnabled(const url::Origin& origin,
                                                 bool enabled) {
   if (quota_manager_proxy_.get()) {
     quota_manager_proxy_->SetUsageCacheEnabled(
-        QuotaClientType::kFileSystem, origin,
+        QuotaClientType::kFileSystem, blink::StorageKey(origin),
         FileSystemTypeToQuotaStorageType(type), enabled);
   }
 }
 
-base::FilePath SandboxQuotaObserver::GetUsageCachePath(
+base::FileErrorOr<base::FilePath> SandboxQuotaObserver::GetUsageCachePath(
     const FileSystemURL& url) {
   DCHECK(sandbox_file_util_);
-  base::File::Error error = base::File::FILE_OK;
-  base::FilePath path =
-      SandboxFileSystemBackendDelegate::GetUsageCachePathForOriginAndType(
-          sandbox_file_util_, url.origin(), url.type(), &error);
-  if (error != base::File::FILE_OK) {
+  base::FileErrorOr<base::FilePath> path = base::FilePath();
+  if (url.bucket().has_value()) {
+    path = SandboxFileSystemBackendDelegate::GetUsageCachePathForBucketAndType(
+        sandbox_file_util_, url.bucket().value(), url.type());
+  } else {
+    path =
+        SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
+            sandbox_file_util_, url.storage_key(), url.type());
+  }
+  if (!path.has_value()) {
     LOG(WARNING) << "Could not get usage cache path for: " << url.DebugString();
-    return base::FilePath();
   }
   return path;
 }

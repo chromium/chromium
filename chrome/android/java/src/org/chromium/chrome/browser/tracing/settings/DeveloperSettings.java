@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.version_info.Channel;
 import org.chromium.components.version_info.VersionConstants;
+import org.chromium.components.version_info.VersionInfo;
 
 /**
  * Settings fragment containing preferences aimed at Chrome and web developers.
@@ -53,7 +53,7 @@ public class DeveloperSettings extends PreferenceFragmentCompat {
         getActivity().setTitle(MSG_DEVELOPER_OPTIONS_TITLE);
         SettingsUtils.addPreferencesFromResource(this, R.xml.developer_preferences);
 
-        if (ChromeVersionInfo.isBetaBuild() || ChromeVersionInfo.isStableBuild()) {
+        if (VersionInfo.isBetaBuild() || VersionInfo.isStableBuild()) {
             getPreferenceScreen().removePreference(findPreference(UI_PREF_BETA_STABLE_HINT));
         }
     }

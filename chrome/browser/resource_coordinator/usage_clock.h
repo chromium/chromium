@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_USAGE_CLOCK_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_USAGE_CLOCK_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 
@@ -23,6 +22,10 @@ class UsageClock
 {
  public:
   UsageClock();
+
+  UsageClock(const UsageClock&) = delete;
+  UsageClock& operator=(const UsageClock&) = delete;
+
   ~UsageClock() override;
 
   // Returns the amount of Chrome usage time since this was instantiated.
@@ -44,8 +47,6 @@ class UsageClock
   // The time at which the current session started, or a null TimeTicks if not
   // currently in a session.
   base::TimeTicks current_usage_session_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageClock);
 };
 
 }  // namespace resource_coordinator

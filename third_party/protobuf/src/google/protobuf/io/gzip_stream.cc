@@ -36,6 +36,7 @@
 
 #if HAVE_ZLIB
 #include <google/protobuf/io/gzip_stream.h>
+#include <google/protobuf/port.h>
 
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/stubs/logging.h>
@@ -70,7 +71,7 @@ GzipInputStream::GzipInputStream(ZeroCopyInputStream* sub_stream, Format format,
   output_position_ = output_buffer_;
 }
 GzipInputStream::~GzipInputStream() {
-  operator delete(output_buffer_);
+  internal::SizedDelete(output_buffer_, output_buffer_length_);
   zerror_ = inflateEnd(&zcontext_);
 }
 
@@ -186,7 +187,7 @@ bool GzipInputStream::Skip(int count) {
   return ok;
 }
 int64_t GzipInputStream::ByteCount() const {
-  int64 ret = byte_count_ + zcontext_.total_out;
+  int64_t ret = byte_count_ + zcontext_.total_out;
   if (zcontext_.next_out != NULL && output_position_ != NULL) {
     ret += reinterpret_cast<uintptr_t>(zcontext_.next_out) -
            reinterpret_cast<uintptr_t>(output_position_);
@@ -244,7 +245,7 @@ void GzipOutputStream::Init(ZeroCopyOutputStream* sub_stream,
 
 GzipOutputStream::~GzipOutputStream() {
   Close();
-  operator delete(input_buffer_);
+  internal::SizedDelete(input_buffer_, input_buffer_length_);
 }
 
 // private
@@ -298,7 +299,7 @@ bool GzipOutputStream::Next(void** data, int* size) {
   return true;
 }
 void GzipOutputStream::BackUp(int count) {
-  GOOGLE_CHECK_GE(zcontext_.avail_in, count);
+  GOOGLE_CHECK_GE(zcontext_.avail_in, static_cast<uInt>(count));
   zcontext_.avail_in -= count;
 }
 int64_t GzipOutputStream::ByteCount() const {

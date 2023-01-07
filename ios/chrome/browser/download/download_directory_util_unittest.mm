@@ -1,15 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/download/download_directory_util.h"
+#import "ios/chrome/browser/download/download_directory_util.h"
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/task_environment.h"
-#include "base/time/time.h"
-#include "testing/platform_test.h"
+#import "base/test/task_environment.h"
+#import "base/time/time.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

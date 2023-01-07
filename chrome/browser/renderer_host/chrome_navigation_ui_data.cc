@@ -1,10 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "content/public/browser/navigation_handle.h"
@@ -94,6 +94,7 @@ std::unique_ptr<content::NavigationUIData> ChromeNavigationUIData::Clone() {
 
   copy->is_no_state_prefetching_ = is_no_state_prefetching_;
   copy->prerender_histogram_prefix_ = prerender_histogram_prefix_;
+  copy->bookmark_id_ = bookmark_id_;
 
   return std::move(copy);
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 // Utility for dynamically loading libsecret.
 class LibsecretLoader {
@@ -42,6 +42,10 @@ class LibsecretLoader {
   class COMPONENT_EXPORT(OS_CRYPT) SearchHelper {
    public:
     SearchHelper();
+
+    SearchHelper(const SearchHelper&) = delete;
+    SearchHelper& operator=(const SearchHelper&) = delete;
+
     ~SearchHelper();
 
     // Search must be called exactly once for success() and results() to be
@@ -55,10 +59,13 @@ class LibsecretLoader {
 
    private:
     // |results_| and |error_| are C-style objects owned by this instance.
-    GList* results_ = nullptr;
+    raw_ptr<GList> results_ = nullptr;
     GError* error_ = nullptr;
-    DISALLOW_COPY_AND_ASSIGN(SearchHelper);
   };
+
+  LibsecretLoader() = delete;
+  LibsecretLoader(const LibsecretLoader&) = delete;
+  LibsecretLoader& operator=(const LibsecretLoader&) = delete;
 
   // Loads the libsecret library and checks that it responds to queries.
   // Returns false if either step fails.
@@ -91,13 +98,16 @@ class LibsecretLoader {
   // True if the libsecret binaries have been loaded and the library responds
   // to queries.
   static bool LibsecretIsAvailable();
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LibsecretLoader);
 };
 
 class COMPONENT_EXPORT(OS_CRYPT) LibsecretAttributesBuilder {
  public:
   LibsecretAttributesBuilder();
+
+  LibsecretAttributesBuilder(const LibsecretAttributesBuilder&) = delete;
+  LibsecretAttributesBuilder& operator=(const LibsecretAttributesBuilder&) =
+      delete;
+
   ~LibsecretAttributesBuilder();
 
   void Append(const std::string& name, const std::string& value);
@@ -115,9 +125,7 @@ class COMPONENT_EXPORT(OS_CRYPT) LibsecretAttributesBuilder {
   // to the objects stored in this container. Using a vector here will fail the
   // ASan tests, because it may move the objects and break the references.
   std::list<std::string> name_values_;
-  GHashTable* attrs_;
-
-  DISALLOW_COPY_AND_ASSIGN(LibsecretAttributesBuilder);
+  raw_ptr<GHashTable> attrs_;
 };
 
 #endif  // COMPONENTS_OS_CRYPT_LIBSECRET_UTIL_LINUX_H_

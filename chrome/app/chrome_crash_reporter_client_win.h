@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_WIN_H_
 #define CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_WIN_H_
 
-#include "base/macros.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
 class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
@@ -18,6 +17,11 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 #endif  // !defined(NACL_WIN64)
 
   ChromeCrashReporterClient();
+
+  ChromeCrashReporterClient(const ChromeCrashReporterClient&) = delete;
+  ChromeCrashReporterClient& operator=(const ChromeCrashReporterClient&) =
+      delete;
+
   ~ChromeCrashReporterClient() override;
 
   // crash_reporter::CrashReporterClient implementation.
@@ -50,8 +54,7 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   bool EnableBreakpadForProcess(const std::string& process_type) override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeCrashReporterClient);
+  std::wstring GetWerRuntimeExceptionModule() override;
 };
 
 #endif  // CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_WIN_H_

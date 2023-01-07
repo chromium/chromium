@@ -1,29 +1,36 @@
 set noparent
 blundell@chromium.org
 caitkp@chromium.org
-jochen@chromium.org
 tedchoc@chromium.org
 
 # For build configuration things and simple changes.
 thakis@chromium.org
 
+per-file arc_strings.grdp=file://ash/components/arc/OWNERS
 per-file android_system_error_page_strings.grdp=file://components/android_system_error_page/OWNERS
 per-file autofill_assistant_strings.grdp=file://components/autofill_assistant/OWNERS
 per-file autofill_payments_strings.grdp=file://components/autofill/core/browser/payments/OWNERS
 per-file autofill_strings.grdp=file://components/autofill/OWNERS
 per-file bookmark_bar_strings.grdp=file://components/bookmarks/OWNERS
 per-file browsing_data_strings.grdp=file://components/browsing_data/OWNERS
+per-file commerce_strings.grdp=file://components/commerce_strings_grdp/OWNERS
+per-file content_creation_strings.grdp=file://components/content_creation/OWNERS
 per-file crash_strings.grdp=file://components/crash/OWNERS
 per-file dom_distiller_strings.grdp=file://components/dom_distiller/OWNERS
+per-file enterprise_strings.grdp=file://components/enterprise/OWNERS
 per-file error_page_strings.grdp=file://components/error_page/OWNERS
+per-file fullscreen_control_strings.grdp=file://components/fullscreen_control/OWNERS
 per-file heavy_ad_intervention_strings.grdp=file://components/heavy_ad_intervention/OWNERS
+per-file history_clusters_strings.grdp=file://components/history_clusters/OWNERS
 per-file javascript_dialogs_strings.grdp=file://components/javascript_dialogs/OWNERS
+per-file live_caption_strings.grdp=file://components/live_caption/OWNERS
 per-file management_mobile_strings.grdp=file://components/management/OWNERS
 per-file management_strings.grdp=file://docs/privacy/OWNERS
 per-file media_message_center_strings.grdp=file://components/media_message_center/OWNERS
 per-file new_or_sad_tab_strings.grdp=file://chrome/browser/ui/webui/ntp/OWNERS
 per-file new_or_sad_tab_strings.grdp=file://chrome/browser/resources/ntp4/OWNERS
 per-file ntp_snippets_strings.grdp=file://components/ntp_snippets/OWNERS
+per-file omnibox_pedal_ui_strings.grdp=file://components/omnibox/OWNERS
 per-file omnibox_strings.grdp=file://components/omnibox/OWNERS
 per-file page_info_strings.grdp=file://chrome/browser/ui/page_info/OWNERS
 per-file paint_preview_strings.grdp=file://components/paint_preview/OWNERS
@@ -34,10 +41,12 @@ per-file pdf_strings.grdp=file://pdf/OWNERS
 per-file policy_strings.grdp=file://components/policy/OWNERS
 per-file print_media_strings.grdp=file://components/printing/OWNERS
 per-file printing_component_strings.grdp=file://components/printing/OWNERS
+per-file privacy_sandbox_strings.grdp=file://components/privacy_sandbox/OWNERS
 per-file reset_password_strings.grdp=file://components/safe_browsing/OWNERS
 per-file security_interstitials_strings.grdp=file://components/security_interstitials/OWNERS
-per-file security_state_strings.grdp=file://components/security_state/OWNERS
 per-file send_tab_to_self_strings.grdp=file://components/send_tab_to_self/OWNERS
+per-file site_settings_strings.grdp=file://components/browser_ui/site_settings/OWNERS
+per-file site_settings_strings.grdp=file://chrome/browser/resources/settings/site_settings/OWNERS
 per-file sms_strings.grdp=file://content/browser/sms/OWNERS
 per-file ssl_errors_strings.grdp=file://components/ssl_errors/OWNERS
 per-file subresource_filter_strings.grdp=file://components/subresource_filter/OWNERS
@@ -57,13 +66,12 @@ per-file PRESUBMIT.py=file://ui/webui/PLATFORM_OWNERS
 per-file *.grd=claudiomagni@chromium.org
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
 
 # This is for the common case of adding or removing tests or files. If you're
 # making structural changes, please get a review from one of the overall
 # components OWNERS.
 per-file BUILD.gn=*
 
-# Service sandbox specialization must be reviewed by SECURITY_OWNERS
-per-file service_sandbox_type.h=set noparent
-per-file service_sandbox_type.h=file://ipc/SECURITY_OWNERS
+# Updating network error interstitial strings.
+per-file error_page_strings.grdp=edwardjung@chromium.org

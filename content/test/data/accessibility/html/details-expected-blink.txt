@@ -8,8 +8,12 @@ rootWebArea
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='details tag'
 ++++++++++++++inlineTextBox name='details tag'
-++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++staticText ignored invisible name='<newline>    '
+++++++++++staticText ignored invisible name='<newline>    '
 ++++++++++paragraph ignored invisible
+++++++++++++staticText ignored invisible name='The details tag specifies additional details that the user can view or hide on demand.'
+++++++++++staticText ignored invisible name='<newline>  '
 ++++++details
 ++++++++genericContainer ignored
 ++++++++++disclosureTriangle name='details tag open'

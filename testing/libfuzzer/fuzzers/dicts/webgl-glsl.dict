@@ -1,6 +1,4 @@
 # Tokens for WebGL 2.0 Shader Language.
-# TODO: Seperate tokens for vertex shaders into seperate file for use by
-# swiftshader_vertex_routine_fuzzer.
 
 # Preprocessor tokens
 "#"

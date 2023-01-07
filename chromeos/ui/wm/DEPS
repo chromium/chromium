@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/prefs",
+  "+components/url_matcher",
+  "+ui/aura",
+  "+ui/base",
+  "+ui/display",
+  "+ui/gfx",
+  "+ui/platform_window",
+  "+ui/views",
+]

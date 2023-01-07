@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <windows.h>
+
 #include <iostream>
 #include <list>
 #include <string>
@@ -15,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/shell/common/shell_switches.h"
 #include "ui/gfx/win/direct_write.h"
@@ -64,7 +64,7 @@ bool WebTestBrowserCheckLayoutSystemDeps() {
                               &metrics.lfSmCaptionFont};
   const wchar_t required_font[] = L"Segoe UI";
   int required_font_size = -12;
-  for (size_t i = 0; i < base::size(system_fonts); ++i) {
+  for (size_t i = 0; i < std::size(system_fonts); ++i) {
     if (system_fonts[i]->lfHeight != required_font_size ||
         wcscmp(required_font, system_fonts[i]->lfFaceName)) {
       errors.push_back(

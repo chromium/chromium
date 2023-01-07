@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/bind.h"
 #include "base/bits.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/client/fenced_allocator.h"
 #include "gpu/command_buffer/common/buffer.h"
@@ -29,6 +29,10 @@ class GPU_EXPORT MemoryChunk {
   MemoryChunk(int32_t shm_id,
               scoped_refptr<gpu::Buffer> shm,
               CommandBufferHelper* helper);
+
+  MemoryChunk(const MemoryChunk&) = delete;
+  MemoryChunk& operator=(const MemoryChunk&) = delete;
+
   ~MemoryChunk();
 
   // Gets the size of the largest free block that is available without waiting.
@@ -112,8 +116,6 @@ class GPU_EXPORT MemoryChunk {
   int32_t shm_id_;
   scoped_refptr<gpu::Buffer> shm_;
   FencedAllocatorWrapper allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryChunk);
 };
 
 // Manages MemoryChunks.
@@ -127,6 +129,9 @@ class GPU_EXPORT MappedMemoryManager {
   // to be reclaimed before allocating more memory.
   MappedMemoryManager(CommandBufferHelper* helper,
                       size_t unused_memory_reclaim_limit);
+
+  MappedMemoryManager(const MappedMemoryManager&) = delete;
+  MappedMemoryManager& operator=(const MappedMemoryManager&) = delete;
 
   ~MappedMemoryManager();
 
@@ -212,7 +217,7 @@ class GPU_EXPORT MappedMemoryManager {
 
   // size a chunk is rounded up to.
   uint32_t chunk_size_multiple_;
-  CommandBufferHelper* helper_;
+  raw_ptr<CommandBufferHelper> helper_;
   MemoryChunkVector chunks_;
   size_t allocated_memory_;
   size_t max_free_bytes_;
@@ -220,8 +225,6 @@ class GPU_EXPORT MappedMemoryManager {
   // A process-unique ID used for disambiguating memory dumps from different
   // mapped memory manager.
   int tracing_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(MappedMemoryManager);
 };
 
 // A class that will manage the lifetime of a mapped memory allocation
@@ -239,6 +242,9 @@ class GPU_EXPORT ScopedMappedMemoryPtr {
         mapped_memory_manager_(mapped_memory_manager) {
     Reset(size);
   }
+
+  ScopedMappedMemoryPtr(const ScopedMappedMemoryPtr&) = delete;
+  ScopedMappedMemoryPtr& operator=(const ScopedMappedMemoryPtr&) = delete;
 
   ~ScopedMappedMemoryPtr() {
     Release();
@@ -278,7 +284,6 @@ class GPU_EXPORT ScopedMappedMemoryPtr {
   bool flush_after_release_;
   CommandBufferHelper* helper_;
   MappedMemoryManager* mapped_memory_manager_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedMappedMemoryPtr);
 };
 
 }  // namespace gpu

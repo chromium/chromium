@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@ package com.android.webview.chromium;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.view.View;
-
-import com.android.webview.chromium.WebViewDelegateFactory.WebViewDelegate;
+import android.webkit.WebViewDelegate;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.annotations.JniIgnoreNatives;
@@ -51,7 +50,9 @@ class DrawGLFunctor implements AwContents.NativeDrawGLFunctor {
         assert canvas != null;
         if (sSupportFunctorReleasedCallback) {
             assert releasedCallback != null;
-            mWebViewDelegate.callDrawGlFunction(canvas, mNativeDrawGLFunctor, releasedCallback);
+            GlueApiHelperForN.callDrawGlFunction(
+                    mWebViewDelegate, canvas, mNativeDrawGLFunctor, releasedCallback);
+
         } else {
             assert releasedCallback == null;
             mWebViewDelegate.callDrawGlFunction(canvas, mNativeDrawGLFunctor);

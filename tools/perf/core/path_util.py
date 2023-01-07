@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,6 +25,10 @@ def SysPath(path, position=None):
 def GetChromiumSrcDir():
   return os.path.abspath(os.path.join(
       os.path.dirname(__file__), '..', '..', '..'))
+
+
+def GetDeviceInteractionDir():
+  return os.path.join(GetChromiumSrcDir(), 'third_party', 'catapult', 'devil')
 
 
 def GetTelemetryDir():
@@ -64,6 +68,12 @@ def GetAndroidPylibDir():
 
 def GetVariationsDir():
   return os.path.join(GetChromiumSrcDir(), 'tools', 'variations')
+
+
+def AddDeviceInteractionToPath():
+  device_interaction_path = GetDeviceInteractionDir()
+  if device_interaction_path not in sys.path:
+    sys.path.insert(1, device_interaction_path)
 
 
 def AddTelemetryToPath():

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <memory>
 #include <vector>
-
-#include "base/macros.h"
 
 class Profile;
 
@@ -19,7 +17,9 @@ struct DefaultSingletonTraits;
 
 namespace send_tab_to_self {
 
+class AndroidNotificationHandler;
 class ReceivingUiHandler;
+class SendTabToSelfToolbarIconController;
 
 // Registry responsible for keeping track of which UI handlers are appropriate
 // for each platform. A platform can have multiple handlers which are
@@ -29,11 +29,26 @@ class ReceivingUiHandlerRegistry {
  public:
   // Returns the singleton instance of this class.
   static ReceivingUiHandlerRegistry* GetInstance();
+
+  ReceivingUiHandlerRegistry(const ReceivingUiHandlerRegistry&) = delete;
+  ReceivingUiHandlerRegistry& operator=(const ReceivingUiHandlerRegistry&) =
+      delete;
+
   void InstantiatePlatformSpecificHandlers(Profile* profile_);
 
   // Returns all the handlers to perform UI updates for the platform.
   // Called by the SendTabToSelfClientService.
   const std::vector<std::unique_ptr<ReceivingUiHandler>>& GetHandlers() const;
+
+  // Return the SendTabToSelfToolbarIconController owned by the registry
+  // for the given |profile|.
+  SendTabToSelfToolbarIconController* GetToolbarButtonControllerForProfile(
+      Profile* profile);
+
+  AndroidNotificationHandler* GetAndroidNotificationHandlerForProfile(
+      Profile* profile);
+
+  void OnProfileShutdown(Profile* profile);
 
  private:
   friend struct base::DefaultSingletonTraits<ReceivingUiHandlerRegistry>;
@@ -41,7 +56,6 @@ class ReceivingUiHandlerRegistry {
   ReceivingUiHandlerRegistry();
   ~ReceivingUiHandlerRegistry();
   std::vector<std::unique_ptr<ReceivingUiHandler>> applicable_handlers_;
-  DISALLOW_COPY_AND_ASSIGN(ReceivingUiHandlerRegistry);
 };
 
 }  // namespace send_tab_to_self

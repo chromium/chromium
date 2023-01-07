@@ -1,0 +1,148 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/chrome_build.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+static_library("core") {
+  sources = [
+    "category_cluster_finalizer.cc",
+    "category_cluster_finalizer.h",
+    "cluster_finalizer.h",
+    "cluster_metrics_utils.cc",
+    "cluster_metrics_utils.h",
+    "cluster_processor.h",
+    "clusterer.cc",
+    "clusterer.h",
+    "clustering_backend.h",
+    "config.cc",
+    "config.h",
+    "content_annotations_cluster_processor.cc",
+    "content_annotations_cluster_processor.h",
+    "content_visibility_cluster_finalizer.cc",
+    "content_visibility_cluster_finalizer.h",
+    "features.cc",
+    "features.h",
+    "file_clustering_backend.cc",
+    "file_clustering_backend.h",
+    "history_clusters_db_tasks.cc",
+    "history_clusters_db_tasks.h",
+    "history_clusters_debug_jsons.cc",
+    "history_clusters_debug_jsons.h",
+    "history_clusters_prefs.cc",
+    "history_clusters_prefs.h",
+    "history_clusters_service.cc",
+    "history_clusters_service.h",
+    "history_clusters_service_task_get_most_recent_clusters.cc",
+    "history_clusters_service_task_get_most_recent_clusters.h",
+    "history_clusters_service_task_update_clusters.cc",
+    "history_clusters_service_task_update_clusters.h",
+    "history_clusters_types.cc",
+    "history_clusters_types.h",
+    "history_clusters_util.cc",
+    "history_clusters_util.h",
+    "keyword_cluster_finalizer.cc",
+    "keyword_cluster_finalizer.h",
+    "label_cluster_finalizer.cc",
+    "label_cluster_finalizer.h",
+    "metrics_cluster_finalizer.cc",
+    "metrics_cluster_finalizer.h",
+    "noisy_cluster_finalizer.cc",
+    "noisy_cluster_finalizer.h",
+    "on_device_clustering_backend.cc",
+    "on_device_clustering_backend.h",
+    "on_device_clustering_features.cc",
+    "on_device_clustering_features.h",
+    "on_device_clustering_util.cc",
+    "on_device_clustering_util.h",
+    "query_clusters_state.cc",
+    "query_clusters_state.h",
+    "ranking_cluster_finalizer.cc",
+    "ranking_cluster_finalizer.h",
+    "similar_visit.h",
+    "similar_visit_deduper_cluster_finalizer.cc",
+    "similar_visit_deduper_cluster_finalizer.h",
+    "single_domain_cluster_finalizer.cc",
+    "single_domain_cluster_finalizer.h",
+    "single_visit_cluster_finalizer.cc",
+    "single_visit_cluster_finalizer.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+  deps = [
+    "//base",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:entities",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/query_parser",
+    "//components/search_engines",
+    "//components/site_engagement/core",
+    "//components/strings:components_strings_grit",
+    "//components/url_formatter",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "category_cluster_finalizer_unittest.cc",
+    "clusterer_unittest.cc",
+    "config_unittest.cc",
+    "content_annotations_cluster_processor_unittest.cc",
+    "content_visibility_cluster_finalizer_unittest.cc",
+    "file_clustering_backend_unittest.cc",
+    "history_clusters_db_tasks_unittest.cc",
+    "history_clusters_service_unittest.cc",
+    "history_clusters_util_unittest.cc",
+    "keyword_cluster_finalizer_unittest.cc",
+    "label_cluster_finalizer_unittest.cc",
+    "metrics_cluster_finalizer_unittest.cc",
+    "noisy_cluster_finalizer_unittest.cc",
+    "on_device_clustering_backend_unittest.cc",
+    "on_device_clustering_util_unittest.cc",
+    "query_clusters_state_unittest.cc",
+    "ranking_cluster_finalizer_unittest.cc",
+    "similar_visit_deduper_cluster_finalizer_unittest.cc",
+    "single_domain_cluster_finalizer_unittest.cc",
+    "single_visit_cluster_finalizer_unittest.cc",
+  ]
+  deps = [
+    ":core",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:entities",
+    "//components/search_engines",
+    "//components/site_engagement/core",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "clustering_test_utils.cc",
+    "clustering_test_utils.h",
+    "history_clusters_service_test_api.cc",
+    "history_clusters_service_test_api.h",
+  ]
+  public_deps = [ ":core" ]
+  deps = [
+    "//base/test:test_support",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+  ]
+}

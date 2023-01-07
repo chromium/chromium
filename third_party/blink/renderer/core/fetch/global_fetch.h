@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_GLOBAL_FETCH_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 
 namespace blink {
 
-class LocalDOMWindow;
 class ExceptionState;
+class LocalDOMWindow;
+class NavigatorBase;
 class RequestInit;
 class ScriptState;
 class WorkerGlobalScope;
@@ -26,7 +28,7 @@ class CORE_EXPORT GlobalFetch {
     virtual ~ScopedFetcher();
 
     virtual ScriptPromise Fetch(ScriptState*,
-                                const RequestInfo&,
+                                const V8RequestInfo*,
                                 const RequestInit*,
                                 ExceptionState&) = 0;
 
@@ -36,20 +38,21 @@ class CORE_EXPORT GlobalFetch {
 
     static ScopedFetcher* From(LocalDOMWindow&);
     static ScopedFetcher* From(WorkerGlobalScope&);
+    static ScopedFetcher* From(NavigatorBase& navigator);
 
     void Trace(Visitor*) const override;
   };
 
-  static ScriptPromise fetch(ScriptState*,
-                             LocalDOMWindow&,
-                             const RequestInfo&,
-                             const RequestInit*,
-                             ExceptionState&);
-  static ScriptPromise fetch(ScriptState*,
-                             WorkerGlobalScope&,
-                             const RequestInfo&,
-                             const RequestInit*,
-                             ExceptionState&);
+  static ScriptPromise fetch(ScriptState* script_state,
+                             LocalDOMWindow& window,
+                             const V8RequestInfo* input,
+                             const RequestInit* init,
+                             ExceptionState& exception_state);
+  static ScriptPromise fetch(ScriptState* script_state,
+                             WorkerGlobalScope& worker,
+                             const V8RequestInfo* input,
+                             const RequestInit* init,
+                             ExceptionState& exception_state);
 };
 
 }  // namespace blink

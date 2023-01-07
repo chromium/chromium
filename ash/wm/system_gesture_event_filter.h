@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
@@ -17,6 +16,10 @@ class WmGestureHandler;
 class SystemGestureEventFilter : public ui::EventHandler {
  public:
   SystemGestureEventFilter();
+
+  SystemGestureEventFilter(const SystemGestureEventFilter&) = delete;
+  SystemGestureEventFilter& operator=(const SystemGestureEventFilter&) = delete;
+
   ~SystemGestureEventFilter() override;
 
   // Overridden from ui::EventHandler:
@@ -27,8 +30,6 @@ class SystemGestureEventFilter : public ui::EventHandler {
   friend class SystemGestureEventFilterTest;
 
   std::unique_ptr<WmGestureHandler> wm_gesture_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemGestureEventFilter);
 };
 
 }  // namespace ash

@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/offline_pages/core/background/offliner_stub.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -27,7 +28,7 @@ bool OfflinerStub::LoadAndSave(const SavePageRequest& request,
   if (disable_loading_)
     return false;
 
-  pending_request_.reset(new SavePageRequest(request));
+  pending_request_ = std::make_unique<SavePageRequest>(request);
   completion_callback_ = std::move(completion_callback);
 
   // Post the callback on the run loop.

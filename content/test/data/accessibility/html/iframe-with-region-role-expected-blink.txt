@@ -1,0 +1,11 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++region name='my iframe'
+++++++++rootWebArea
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer
+++++++++++++++++button name='Ordinary Button'
+++++++++++++++++++staticText name='Ordinary Button'
+++++++++++++++++++++inlineTextBox name='Ordinary Button'

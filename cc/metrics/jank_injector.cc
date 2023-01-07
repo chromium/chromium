@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,11 @@
 #include "base/bind.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "url/gurl.h"
@@ -21,6 +24,9 @@
 namespace cc {
 
 namespace {
+
+constexpr char kTraceCategory[] =
+    "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame");
 
 const char kJankInjectionAllowedURLs[] = "allowed_urls";
 const char kJankInjectionClusterSize[] = "cluster";
@@ -80,14 +86,13 @@ bool IsJankInjectionEnabledForURL(const GURL& url) {
 
   const auto& paths = iter->second;
   const auto& path = url.path_piece();
-  return paths.end() !=
-         std::find_if(paths.begin(), paths.end(), [path](const std::string& p) {
-           return base::StartsWith(path, p);
-         });
+  return base::ranges::any_of(paths, [path](const std::string& p) {
+    return base::StartsWith(path, p);
+  });
 }
 
 void RunJank(JankInjectionParams params) {
-  TRACE_EVENT0("cc,benchmark", "Injected Jank");
+  TRACE_EVENT0(kTraceCategory, "Injected Jank");
   if (params.busy_loop) {
     // Do some useless work, and prevent any weird compiler optimization from
     // doing anything here.

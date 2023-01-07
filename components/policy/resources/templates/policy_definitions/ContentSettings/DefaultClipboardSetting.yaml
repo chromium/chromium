@@ -1,0 +1,34 @@
+caption: Default clipboard setting
+default: null
+desc: |-
+  Setting the policy to 2 blocks sites from using the clipboard site permission. Setting the policy to 3 or leaving it unset lets the user change the setting and decide if the clipboard APIs are available when a site wants to use one.
+
+        This policy can be overridden for specific URL patterns using the <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME">ClipboardAllowedForUrls</ph> and <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME">ClipboardBlockedForUrls</ph> policies.
+
+        This policy only affects clipboard operations controlled by the clipboard site permission, and does not affect sanitized clipboard writes or trusted copy and paste operations.
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Do not allow any site to use the clipboard site permission
+  name: BlockClipboard
+  value: 2
+- caption: Allow sites to ask the user to grant the clipboard site permission
+  name: AskClipboard
+  value: 3
+owners:
+- domfc@chromium.org
+- file://components/content_settings/OWNERS
+schema:
+  enum:
+  - 2
+  - 3
+  type: integer
+supported_on:
+- chrome.*:103-
+- chrome_os:103-
+tags: []
+type: int-enum

@@ -1,13 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "extensions/browser/api/web_request/form_data_parser.h"
 
 #include <stddef.h>
 
 #include "base/check.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
-#include "extensions/browser/api/web_request/form_data_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -20,8 +20,8 @@ std::unique_ptr<FormDataParser> InitParser(
     const std::string& content_type_header) {
   std::unique_ptr<FormDataParser> parser(
       FormDataParser::CreateFromContentTypeHeader(&content_type_header));
-  if (parser.get() == NULL)
-    return std::unique_ptr<FormDataParser>();
+  if (parser.get() == nullptr)
+    return nullptr;
   return parser;
 }
 
@@ -189,7 +189,7 @@ TEST(WebRequestFormDataParserTest, Parsing) {
                           "binary",
                           ("\u0420\u043e\u0434\u0436\u0435\u0440 "
                            "\u0416\u0435\u043b\u044f\u0437\u043d\u044b")};
-  const std::vector<std::string> kExpected(kPairs, kPairs + base::size(kPairs));
+  const std::vector<std::string> kExpected(kPairs, kPairs + std::size(kPairs));
 
   std::vector<const base::StringPiece*> input;
   std::vector<std::string> output;

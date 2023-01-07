@@ -1,0 +1,125 @@
+AXWebArea
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++++AXStaticText AXValue='disc'
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='%E2%97%A6 '
+++++++AXStaticText AXValue='circle'
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='%E2%96%A0 '
+++++++AXStaticText AXValue='square'
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='%E2%96%BE '
+++++++AXStaticText AXValue='disclosure-open'
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='%E2%96%B8 '
+++++++AXStaticText AXValue='disclosure-closed'
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++++AXStaticText AXValue='explicit-bullets'
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='1. '
+++++++AXStaticText AXValue='explicit-numbers'
+++++AXGroup
+++++++AXListMarker AXValue='2. '
+++++AXGroup
+++++++AXListMarker AXValue='3. '
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='One. '
+++++++AXStaticText AXValue='explicit-words'
+++++AXGroup
+++++++AXListMarker AXValue='Two. '
+++++AXGroup
+++++++AXListMarker AXValue='Three. '
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='One. '
+++++++AXStaticText AXValue='auto-alphabetic'
+++++AXGroup
+++++++AXListMarker AXValue='Two. '
+++++AXGroup
+++++++AXListMarker AXValue='Three. '
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++++AXStaticText AXValue='auto-cyclic'
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++++AXStaticText AXValue='auto-extends'
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='1. '
+++++++AXStaticText AXValue='auto-fixed'
+++++AXGroup
+++++++AXListMarker AXValue='2. '
+++++AXGroup
+++++++AXListMarker AXValue='3. '
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='1. '
+++++++AXStaticText AXValue='auto-symbolic'
+++++AXGroup
+++++++AXListMarker AXValue='2. '
+++++AXGroup
+++++++AXListMarker AXValue='3. '
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='1. '
+++++++AXStaticText AXValue='auto-numeric'
+++++AXGroup
+++++++AXListMarker AXValue='2. '
+++++AXGroup
+++++++AXListMarker AXValue='3. '
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='1. '
+++++++AXStaticText AXValue='auto-additive'
+++++AXGroup
+++++++AXListMarker AXValue='2. '
+++++AXGroup
+++++++AXListMarker AXValue='3. '
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++++AXStaticText AXValue='reference-bullets'
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++AXGroup
+++++++AXListMarker AXValue='%E2%80%A2 '
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='1> '
+++++++AXStaticText AXValue='reference-numbers'
+++++AXGroup
+++++++AXListMarker AXValue='2> '
+++++AXGroup
+++++++AXListMarker AXValue='3> '
+++AXList AXSubrole=AXContentList
+++++AXGroup
+++++++AXListMarker AXValue='One> '
+++++++AXStaticText AXValue='reference-words'
+++++AXGroup
+++++++AXListMarker AXValue='Two> '
+++++AXGroup
+++++++AXListMarker AXValue='Three> '

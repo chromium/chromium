@@ -1,21 +1,21 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/history/history_entry_inserter.h"
 
-#include "base/i18n/time_formatting.h"
+#import "base/i18n/time_formatting.h"
 #import "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "components/history/core/browser/browsing_history_service.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/time/time.h"
+#import "components/history/core/browser/browsing_history_service.h"
 #import "ios/chrome/browser/ui/history/history_entry_item.h"
-#include "ios/chrome/browser/ui/history/history_util.h"
+#import "ios/chrome/browser/ui/history/history_util.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -36,7 +36,8 @@ HistoryEntryItem* TestHistoryEntryItem(base::Time timestamp,
                        accessibilityDelegate:nil];
   item.text = [history::FormattedTitle(entry.title, entry.url) copy];
   item.detailText =
-      [base::SysUTF8ToNSString(entry.url.GetOrigin().spec()) copy];
+      [base::SysUTF8ToNSString(entry.url.DeprecatedGetOriginAsURL().spec())
+          copy];
   item.timeText =
       [base::SysUTF16ToNSString(base::TimeFormatTimeOfDay(entry.time)) copy];
   item.URL = entry.url;
@@ -65,9 +66,8 @@ class HistoryEntryInserterTest : public PlatformTest {
 // Tests that history entry items added to ListModel are sorted by
 // timestamp.
 TEST_F(HistoryEntryInserterTest, AddItems) {
-  base::Time today =
-      base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(1);
-  base::TimeDelta minute = base::TimeDelta::FromMinutes(1);
+  base::Time today = base::Time::Now().LocalMidnight() + base::Hours(1);
+  base::TimeDelta minute = base::Minutes(1);
   HistoryEntryItem* entry1 = TestHistoryEntryItem(today, "entry1");
   HistoryEntryItem* entry2 = TestHistoryEntryItem(today - minute, "entry2");
   HistoryEntryItem* entry3 =
@@ -110,10 +110,9 @@ TEST_F(HistoryEntryInserterTest, AddItems) {
 // Tests that items from different dates are added in correctly ordered
 // sections.
 TEST_F(HistoryEntryInserterTest, AddSections) {
-  base::Time today =
-      base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(12);
-  base::TimeDelta day = base::TimeDelta::FromDays(1);
-  base::TimeDelta minute = base::TimeDelta::FromMinutes(1);
+  base::Time today = base::Time::Now().LocalMidnight() + base::Hours(12);
+  base::TimeDelta day = base::Days(1);
+  base::TimeDelta minute = base::Minutes(1);
   HistoryEntryItem* day1 = TestHistoryEntryItem(today, "day1");
   HistoryEntryItem* day2_entry1 =
       TestHistoryEntryItem(today - day, "day2_entry1");
@@ -233,9 +232,8 @@ TEST_F(HistoryEntryInserterTest, AddDuplicateItems) {
 
 // Tests that removing a section invokes the appropriate delegate callback.
 TEST_F(HistoryEntryInserterTest, RemoveSection) {
-  base::Time today =
-      base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(1);
-  base::TimeDelta day = base::TimeDelta::FromDays(1);
+  base::Time today = base::Time::Now().LocalMidnight() + base::Hours(1);
+  base::TimeDelta day = base::Days(1);
   HistoryEntryItem* day1 = TestHistoryEntryItem(today, "day1");
   HistoryEntryItem* day2 = TestHistoryEntryItem(today - day, "day2");
 

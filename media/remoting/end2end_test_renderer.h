@@ -1,18 +1,19 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_REMOTING_END2END_RENDERER_H_
-#define MEDIA_REMOTING_END2END_RENDERER_H_
+#ifndef MEDIA_REMOTING_END2END_TEST_RENDERER_H_
+#define MEDIA_REMOTING_END2END_TEST_RENDERER_H_
 
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/renderer.h"
-#include "media/remoting/rpc_broker.h"
 #include "media/remoting/stream_provider.h"
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace media {
 namespace remoting {
@@ -32,7 +33,7 @@ class End2EndTestRenderer final : public Renderer {
   void Initialize(MediaResource* media_resource,
                   RendererClient* client,
                   PipelineStatusCallback init_cb) override;
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) override;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
   void Flush(base::OnceClosure flush_cb) override;
   void StartPlayingFrom(base::TimeDelta time) override;
@@ -66,13 +67,12 @@ class End2EndTestRenderer final : public Renderer {
 
   void InitializeReceiverRenderer(PipelineStatus status);
   void OnCourierRendererInitialized(PipelineStatus status);
-  void OnReceiverInitalized(PipelineStatus status);
+  void OnReceiverInitialized(PipelineStatus status);
   void CompleteInitialize();
 
   // Callback function when RPC message is received.
-  void OnReceivedRpc(std::unique_ptr<media::remoting::pb::RpcMessage> message);
-  void OnAcquireRenderer(
-      std::unique_ptr<media::remoting::pb::RpcMessage> message);
+  void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnAcquireRenderer(std::unique_ptr<openscreen::cast::RpcMessage> message);
   void OnAcquireRendererDone(int receiver_renderer_handle);
 
   PipelineStatusCallback init_cb_;
@@ -86,16 +86,17 @@ class End2EndTestRenderer final : public Renderer {
 
   // Receiver components.
   std::unique_ptr<TestRemotee> media_remotee_;
-  ReceiverController* receiver_controller_;
+  raw_ptr<ReceiverController> receiver_controller_;
   std::unique_ptr<Receiver> receiver_;
   std::unique_ptr<StreamProvider> stream_provider_;
-  RpcBroker* receiver_rpc_broker_;
+  raw_ptr<openscreen::cast::RpcMessenger> receiver_rpc_messenger_;
 
   // Handle of |receiver_|
-  int receiver_renderer_handle_ = RpcBroker::kInvalidHandle;
+  int receiver_renderer_handle_ =
+      openscreen::cast::RpcMessenger::kInvalidHandle;
   // Handle of |courier_renderer_|, it would be sent with AcquireRenderer
   // message.
-  int sender_renderer_handle_ = RpcBroker::kInvalidHandle;
+  int sender_renderer_handle_ = openscreen::cast::RpcMessenger::kInvalidHandle;
 
   base::WeakPtrFactory<End2EndTestRenderer> weak_factory_{this};
 };
@@ -103,4 +104,4 @@ class End2EndTestRenderer final : public Renderer {
 }  // namespace remoting
 }  // namespace media
 
-#endif  // MEDIA_REMOTING_END2END_RENDERER_H_
+#endif  // MEDIA_REMOTING_END2END_TEST_RENDERER_H_

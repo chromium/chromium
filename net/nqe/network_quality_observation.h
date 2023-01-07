@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,13 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/nqe/network_quality_estimator_util.h"
 #include "net/nqe/network_quality_observation_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 // Records observations of network quality metrics (such as round trip time
 // or throughput), along with the time the observation was made. Observations
@@ -36,7 +32,7 @@ class NET_EXPORT_PRIVATE Observation {
               base::TimeTicks timestamp,
               int32_t signal_strength,
               NetworkQualityObservationSource source,
-              const base::Optional<IPHash>& host);
+              const absl::optional<IPHash>& host);
 
   Observation(const Observation& other);
   Observation& operator=(const Observation& other);
@@ -57,7 +53,7 @@ class NET_EXPORT_PRIVATE Observation {
   NetworkQualityObservationSource source() const { return source_; }
 
   // A unique identifier for the remote host which was used for the measurement.
-  base::Optional<IPHash> host() const { return host_; }
+  absl::optional<IPHash> host() const { return host_; }
 
   // Returns the observation categories to which this observation belongs to.
   std::vector<ObservationCategory> GetObservationCategories() const;
@@ -74,13 +70,9 @@ class NET_EXPORT_PRIVATE Observation {
 
   NetworkQualityObservationSource source_;
 
-  base::Optional<IPHash> host_;
+  absl::optional<IPHash> host_;
 };
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal
 
 #endif  // NET_NQE_NETWORK_QUALITY_OBSERVATION_H_

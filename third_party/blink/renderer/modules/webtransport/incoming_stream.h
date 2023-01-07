@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,23 +9,22 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/types/strong_alias.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
 class ScriptState;
-class StreamAbortInfo;
 class ReadableStream;
-class ReadableStreamDefaultControllerWithScriptScope;
+class ReadableByteStreamController;
 
 // Implementation of the IncomingStream mixin from the standard:
 // https://wicg.github.io/web-transport/#incoming-stream. ReceiveStream and
@@ -42,12 +41,15 @@ class MODULES_EXPORT IncomingStream final
   };
 
   IncomingStream(ScriptState*,
-                 base::OnceClosure on_abort,
+                 base::OnceCallback<void(absl::optional<uint8_t>)> on_abort,
                  mojo::ScopedDataPipeConsumerHandle);
   ~IncomingStream();
 
-  // Init() must be called before the stream is used.
-  void Init();
+  // Init() or InitWithExistingReadableStream() must be called before the stream
+  // is used.
+  void Init(ExceptionState&);
+
+  void InitWithExistingReadableStream(ReadableStream*, ExceptionState&);
 
   // Methods from the IncomingStream IDL:
   // https://wicg.github.io/web-transport/#incoming-stream
@@ -57,19 +59,15 @@ class MODULES_EXPORT IncomingStream final
     return readable_;
   }
 
-  ScriptPromise ReadingAborted() const { return reading_aborted_; }
-
-  void AbortReading(StreamAbortInfo*);
-
-  // Called from QuicTransport via a WebTransportStream class. May execute
+  // Called from WebTransport via a WebTransportStream class. May execute
   // JavaScript.
   void OnIncomingStreamClosed(bool fin_received);
 
-  // Called via QuicTransport via a WebTransportStream class. Expects a
+  // Errors the associated stream with the given reason. Expects a
   // JavaScript scope to have been entered.
-  void Reset();
+  void Error(ScriptValue reason);
 
-  // Called from QuicTransport rather than using
+  // Called from WebTransport rather than using
   // ExecutionContextLifecycleObserver to ensure correct destruction order.
   // Does not execute JavaScript.
   void ContextDestroyed();
@@ -79,15 +77,10 @@ class MODULES_EXPORT IncomingStream final
   void Trace(Visitor*) const;
 
  private:
-  class UnderlyingSource;
+  class UnderlyingByteSource;
 
-  using IsLocalAbort = base::StrongAlias<class IsLocalAbortTag, bool>;
-
-  // Called when |data_pipe_| becomes readable or errored.
+  // Called when |data_pipe_| becomes readable, closed or errored.
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
-
-  // Called when |data_pipe_| is closed.
-  void OnPeerClosed(MojoResult, const mojo::HandleSignalsState&);
 
   // Rejects any unfinished read() calls and resets |data_pipe_|.
   void HandlePipeClosed();
@@ -98,25 +91,20 @@ class MODULES_EXPORT IncomingStream final
   // Reads all the data currently in the pipe and enqueues it. If no data is
   // currently available, triggers the |read_watcher_| and enqueues when data
   // becomes available.
-  void ReadFromPipeAndEnqueue();
+  void ReadFromPipeAndEnqueue(ExceptionState&);
 
   // Copies a sequence of bytes into an ArrayBuffer and enqueues it.
-  void EnqueueBytes(const void* source, uint32_t byte_length);
+  void EnqueueBytes(const void* source, uint32_t byte_length, ExceptionState&);
 
-  // Creates a DOMException indicating that the stream has been aborted.
-  // If IsLocalAbort it true it will indicate a locally-initiated abort,
-  // otherwise it will indicate a server--initiated abort.
-  ScriptValue CreateAbortException(IsLocalAbort);
+  // Closes |readable_|, and resets |data_pipe_|.
+  void CloseAbortAndReset(ExceptionState&);
 
-  // Closes |readable_|, resolves |reading_aborted_| and resets |data_pipe_|.
-  void CloseAbortAndReset();
-
-  // Errors |readable_|, resolves |reading_aborted_| and resets |data_pipe_|.
+  // Errors |readable_|, and resets |data_pipe_|.
   // |exception| will be set as the error on |readable_|.
   void ErrorStreamAbortAndReset(ScriptValue exception);
 
-  // Resolves the |reading_aborted_| promise and resets the |data_pipe_|.
-  void AbortAndReset();
+  // Resets the |data_pipe_|.
+  void AbortAndReset(absl::optional<uint8_t> code);
 
   // Resets |data_pipe_| and clears the watchers.
   // If the pipe is open it will be closed as a side-effect.
@@ -127,27 +115,20 @@ class MODULES_EXPORT IncomingStream final
 
   const Member<ScriptState> script_state_;
 
-  base::OnceClosure on_abort_;
+  base::OnceCallback<void(absl::optional<uint8_t>)> on_abort_;
 
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
 
   // Only armed when we need to read something.
   mojo::SimpleWatcher read_watcher_;
 
-  // Always armed to detect close.
-  mojo::SimpleWatcher close_watcher_;
-
   Member<ReadableStream> readable_;
-  Member<ReadableStreamDefaultControllerWithScriptScope> controller_;
-
-  // Promise returned by the |readingAborted| attribute.
-  ScriptPromise reading_aborted_;
-  Member<ScriptPromiseResolver> reading_aborted_resolver_;
+  Member<ReadableByteStreamController> controller_;
 
   State state_ = State::kOpen;
 
   // This is set when OnIncomingStreamClosed() is called.
-  base::Optional<bool> fin_received_;
+  absl::optional<bool> fin_received_;
 
   // True when |data_pipe_| has been detected to be closed. The close is not
   // processed until |fin_received_| is also set.

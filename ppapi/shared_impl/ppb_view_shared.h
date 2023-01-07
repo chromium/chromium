@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define PPAPI_SHARED_IMPL_PPB_VIEW_SHARED_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/pp_rect.h"
 #include "ppapi/c/pp_size.h"
 #include "ppapi/shared_impl/resource.h"
@@ -37,6 +36,10 @@ class PPAPI_SHARED_EXPORT PPB_View_Shared : public Resource,
   PPB_View_Shared(ResourceObjectType type,
                   PP_Instance instance,
                   const ViewData& data);
+
+  PPB_View_Shared(const PPB_View_Shared&) = delete;
+  PPB_View_Shared& operator=(const PPB_View_Shared&) = delete;
+
   ~PPB_View_Shared() override;
 
   // Resource overrides.
@@ -55,8 +58,6 @@ class PPAPI_SHARED_EXPORT PPB_View_Shared : public Resource,
 
  private:
   ViewData data_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_View_Shared);
 };
 
 }  // namespace ppapi

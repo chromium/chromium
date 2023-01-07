@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<button id="test"></button>
+<script>
+  var go_passes = [
+    () => document.getElementById("test").setAttribute("aria-pressed", "true"),
+    () => document.getElementById("test").removeAttribute("aria-pressed")
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+
+</script>

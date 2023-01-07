@@ -29,7 +29,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -41,6 +42,9 @@ class CORE_EXPORT MessageChannel final : public ScriptWrappable {
 
  public:
   static MessageChannel* Create(ExecutionContext* execution_context) {
+    // https://linear.app/replay/issue/RUN-1043
+    recordreplay::Assert("[RUN-1043] MessageChannel::Create");
+
     return MakeGarbageCollected<MessageChannel>(execution_context);
   }
 

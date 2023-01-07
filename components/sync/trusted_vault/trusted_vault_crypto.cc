@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
 
+#include "base/check_op.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "crypto/hmac.h"
 
@@ -17,7 +18,7 @@ const uint8_t kWrappedKeyHeader[] = {'V', '1', ' ', 's', 'h', 'a', 'r',
 
 }  // namespace
 
-base::Optional<std::vector<uint8_t>> DecryptTrustedVaultWrappedKey(
+absl::optional<std::vector<uint8_t>> DecryptTrustedVaultWrappedKey(
     const SecureBoxPrivateKey& private_key,
     base::span<const uint8_t> wrapped_key) {
   return private_key.Decrypt(
@@ -33,22 +34,41 @@ std::vector<uint8_t> ComputeTrustedVaultWrappedKey(
       /*payload=*/trusted_vault_key);
 }
 
-std::vector<uint8_t> ComputeTrustedVaultHMAC(base::span<const uint8_t> key,
-                                             base::span<const uint8_t> data) {
+std::vector<uint8_t> ComputeMemberProof(
+    const SecureBoxPublicKey& key,
+    const std::vector<uint8_t>& trusted_vault_key) {
   crypto::HMAC hmac(crypto::HMAC::SHA256);
-  CHECK(hmac.Init(key));
+  CHECK(hmac.Init(trusted_vault_key));
 
-  std::vector<uint8_t> digest(kHMACDigestLength);
-  CHECK(hmac.Sign(data, digest));
-  return digest;
+  std::vector<uint8_t> member_proof(kHMACDigestLength);
+  CHECK(hmac.Sign(key.ExportToBytes(), member_proof));
+  return member_proof;
 }
 
-bool VerifyTrustedVaultHMAC(base::span<const uint8_t> key,
-                            base::span<const uint8_t> data,
-                            base::span<const uint8_t> digest) {
+bool VerifyMemberProof(const SecureBoxPublicKey& key,
+                       const std::vector<uint8_t>& trusted_vault_key,
+                       const std::vector<uint8_t>& member_proof) {
   crypto::HMAC hmac(crypto::HMAC::SHA256);
-  CHECK(hmac.Init(key));
-  return hmac.Verify(data, digest);
+  CHECK(hmac.Init(trusted_vault_key));
+  return hmac.Verify(key.ExportToBytes(), member_proof);
+}
+
+std::vector<uint8_t> ComputeRotationProofForTesting(  // IN-TEST
+    const std::vector<uint8_t>& trusted_vault_key,
+    const std::vector<uint8_t>& prev_trusted_vault_key) {
+  return SecureBoxSymmetricEncrypt(
+      /*shared_secret=*/prev_trusted_vault_key,
+      /*header=*/trusted_vault_key,
+      /*payload=*/base::span<uint8_t>());
+}
+
+bool VerifyRotationProof(const std::vector<uint8_t>& trusted_vault_key,
+                         const std::vector<uint8_t>& prev_trusted_vault_key,
+                         const std::vector<uint8_t>& rotation_proof) {
+  return SecureBoxSymmetricDecrypt(
+             /*shared_secret=*/prev_trusted_vault_key,
+             /*header=*/trusted_vault_key, /*encrypted_payload=*/rotation_proof)
+      .has_value();
 }
 
 }  // namespace syncer

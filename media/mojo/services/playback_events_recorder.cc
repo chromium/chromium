@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,7 @@ void RecordEventWithValue(const char* name, int64_t value) {
   RecordEventWithValueAt(name, value, base::TimeTicks::Now());
 }
 
-constexpr base::TimeDelta kBitrateReportPeriod =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kBitrateReportPeriod = base::Seconds(5);
 
 }  // namespace
 
@@ -124,8 +123,8 @@ void PlaybackEventsRecorder::OnBufferingComplete() {
   last_buffering_end_time_ = now;
 }
 
-void PlaybackEventsRecorder::OnError(PipelineStatus status) {
-  RecordEventWithValue("Error", status);
+void PlaybackEventsRecorder::OnError(const PipelineStatus& status) {
+  RecordEventWithValue("Error", status.code());
 }
 
 void PlaybackEventsRecorder::OnNaturalSizeChanged(const gfx::Size& size) {

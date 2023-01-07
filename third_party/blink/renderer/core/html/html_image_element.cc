@@ -26,6 +26,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
 #include "third_party/blink/renderer/core/css/parser/sizes_attribute_parser.h"
@@ -35,7 +36,8 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
@@ -60,6 +62,7 @@
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
@@ -109,6 +112,10 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
               mojom::blink::DocumentPolicyFeature::kUnsizedMedia)),
       is_legacy_format_or_unoptimized_image_(false),
       is_ad_related_(false),
+      is_lcp_element_(false),
+      is_changed_shortly_after_mouseover_(false),
+      has_sizes_attribute_(false),
+      is_lazy_loaded_(false),
       referrer_policy_(network::mojom::ReferrerPolicy::kDefault) {
   SetHasCustomStyleCallbacks();
 }
@@ -289,6 +296,7 @@ void HTMLImageElement::SetBestFitURLAndDPRFromImageCandidate(
       listener_ = MakeGarbageCollected<ViewportChangeListener>(this);
 
     GetDocument().GetMediaQueryMatcher().AddViewportListener(listener_);
+    // If we have a listener, that means a viewport dependent image
   } else if (listener_) {
     GetDocument().GetMediaQueryMatcher().RemoveViewportListener(listener_);
   }
@@ -331,16 +339,16 @@ void HTMLImageElement::ParseAttribute(
   } else if (name == html_names::kLoadingAttr) {
     LoadingAttributeValue loading = GetLoadingAttributeValue(params.new_value);
     if (loading == LoadingAttributeValue::kEager ||
-        (loading == LoadingAttributeValue::kAuto && GetDocument().GetFrame() &&
-         GetDocument().GetFrame()->GetLazyLoadImageSetting() !=
-             LocalFrame::LazyLoadImageSetting::kEnabledAutomatic)) {
+        (loading == LoadingAttributeValue::kAuto)) {
       GetImageLoader().LoadDeferredImage(referrer_policy_);
+    } else {
+      is_lazy_loaded_ = true;
     }
-  } else if (name == html_names::kImportanceAttr &&
+  } else if (name == html_names::kFetchpriorityAttr &&
              RuntimeEnabledFeatures::PriorityHintsEnabled(
                  GetExecutionContext())) {
     // We only need to keep track of usage here, as the communication of the
-    // |importance| attribute to the loading pipeline takes place in
+    // |fetchPriority| attribute to the loading pipeline takes place in
     // ImageLoader.
     UseCounter::Count(GetDocument(), WebFeature::kPriorityHints);
   } else if (name == html_names::kCrossoriginAttr) {
@@ -361,8 +369,19 @@ void HTMLImageElement::ParseAttribute(
       GetImageLoader().UpdateFromElement(
           ImageLoader::kUpdateIgnorePreviousError, referrer_policy_);
     }
+  } else if (name == html_names::kAttributionsrcAttr) {
+    LocalDOMWindow* window = GetDocument().domWindow();
+    if (!params.new_value.empty() && window && window->GetFrame()) {
+      window->GetFrame()->GetAttributionSrcLoader()->Register(
+          GetDocument().CompleteURL(params.new_value), this);
+    }
   } else {
     HTMLElement::ParseAttribute(params);
+  }
+  if (has_sizes_attribute_ && is_lazy_loaded_ && listener_) {
+    UseCounter::Count(
+        GetDocument(),
+        WebFeature::kViewportDependentLazyLoadedImageWithSizesAttribute);
   }
 }
 
@@ -389,7 +408,7 @@ bool HTMLImageElement::SupportedImageType(
     const HashSet<String>* disabled_image_types) {
   String trimmed_type = ContentType(type).GetType();
   // An empty type attribute is implicitly supported.
-  if (trimmed_type.IsEmpty())
+  if (trimmed_type.empty())
     return true;
   if (disabled_image_types && disabled_image_types->Contains(trimmed_type)) {
     return false;
@@ -400,13 +419,13 @@ bool HTMLImageElement::SupportedImageType(
 // http://picture.responsiveimages.org/#update-source-set
 ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
   DCHECK(IsMainThread());
-  Node* parent = parentNode();
   source_ = nullptr;
-  if (!parent || !IsA<HTMLPictureElement>(*parent))
+  auto* picture_parent = DynamicTo<HTMLPictureElement>(parentNode());
+  if (!picture_parent)
     return ImageCandidate();
   HashSet<String> disabled_image_types;
   probe::GetDisabledImageTypes(GetExecutionContext(), &disabled_image_types);
-  for (Node* child = parent->firstChild(); child;
+  for (Node* child = picture_parent->firstChild(); child;
        child = child->nextSibling()) {
     if (child == this)
       return ImageCandidate();
@@ -420,7 +439,7 @@ ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
                                     WebFeature::kPictureSourceSrc);
     }
     String srcset = source->FastGetAttribute(html_names::kSrcsetAttr);
-    if (srcset.IsEmpty())
+    if (srcset.empty())
       continue;
     String type = source->FastGetAttribute(html_names::kTypeAttr);
     if (!SupportedImageType(type, &disabled_image_types))
@@ -456,7 +475,7 @@ LayoutObject* HTMLImageElement::CreateLayoutObject(const ComputedStyle& style,
     case LayoutDisposition::kFallbackContent:
       return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
     case LayoutDisposition::kPrimaryContent: {
-      LayoutImage* image = new LayoutImage(this);
+      LayoutImage* image = MakeGarbageCollected<LayoutImage>(this);
       image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());
       image->SetImageDevicePixelRatio(image_device_pixel_ratio_);
       return image;
@@ -531,7 +550,8 @@ void HTMLImageElement::RemovedFrom(ContainerNode& insertion_point) {
 
 unsigned HTMLImageElement::width() {
   if (InActiveDocument()) {
-    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+    GetDocument().UpdateStyleAndLayoutForNode(
+        this, DocumentUpdateReason::kJavaScript);
   }
 
   if (!GetLayoutObject()) {
@@ -544,7 +564,7 @@ unsigned HTMLImageElement::width() {
 
     // if the image is available, use its width
     if (ImageResourceContent* image_content = GetImageLoader().GetContent()) {
-      return image_content->IntrinsicSize(kRespectImageOrientation).Width();
+      return image_content->IntrinsicSize(kRespectImageOrientation).width();
     }
   }
 
@@ -553,7 +573,8 @@ unsigned HTMLImageElement::width() {
 
 unsigned HTMLImageElement::height() {
   if (InActiveDocument()) {
-    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+    GetDocument().UpdateStyleAndLayoutForNode(
+        this, DocumentUpdateReason::kJavaScript);
   }
 
   if (!GetLayoutObject()) {
@@ -566,7 +587,7 @@ unsigned HTMLImageElement::height() {
 
     // if the image is available, use its height
     if (ImageResourceContent* image_content = GetImageLoader().GetContent()) {
-      return image_content->IntrinsicSize(kRespectImageOrientation).Height();
+      return image_content->IntrinsicSize(kRespectImageOrientation).height();
     }
   }
 
@@ -672,7 +693,8 @@ void HTMLImageElement::setWidth(unsigned value) {
 }
 
 int HTMLImageElement::x() const {
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+  GetDocument().UpdateStyleAndLayoutForNode(this,
+                                            DocumentUpdateReason::kJavaScript);
   LayoutObject* r = GetLayoutObject();
   if (!r)
     return 0;
@@ -684,7 +706,8 @@ int HTMLImageElement::x() const {
 }
 
 int HTMLImageElement::y() const {
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+  GetDocument().UpdateStyleAndLayoutForNode(this,
+                                            DocumentUpdateReason::kJavaScript);
   LayoutObject* r = GetLayoutObject();
   if (!r)
     return 0;
@@ -737,12 +760,12 @@ bool HTMLImageElement::IsInteractiveContent() const {
   return FastHasAttribute(html_names::kUsemapAttr);
 }
 
-FloatSize HTMLImageElement::DefaultDestinationSize(
-    const FloatSize& default_object_size,
+gfx::SizeF HTMLImageElement::DefaultDestinationSize(
+    const gfx::SizeF& default_object_size,
     const RespectImageOrientationEnum respect_orientation) const {
   ImageResourceContent* image_content = CachedImage();
   if (!image_content || !image_content->HasImage())
-    return FloatSize();
+    return gfx::SizeF();
 
   Image* image = image_content->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image))
@@ -752,7 +775,7 @@ FloatSize HTMLImageElement::DefaultDestinationSize(
   if (GetLayoutObject() && GetLayoutObject()->IsLayoutImage() &&
       image->HasIntrinsicSize())
     size.Scale(To<LayoutImage>(GetLayoutObject())->ImageDevicePixelRatio());
-  return FloatSize(size);
+  return gfx::SizeF(size);
 }
 
 static bool SourceSizeValue(const Element* element,
@@ -779,9 +802,8 @@ FetchParameters::ResourceWidth HTMLImageElement::GetResourceWidth() const {
 
 float HTMLImageElement::SourceSize(Element& element) {
   float value;
-  // We don't care here if the sizes attribute exists, so we ignore the return
-  // value.  If it doesn't exist, we just return the default.
-  SourceSizeValue(&element, GetDocument(), value);
+  // We only care if the sizes attribute exist here for use counter purposes..
+  has_sizes_attribute_ = SourceSizeValue(&element, GetDocument(), value);
   return value;
 }
 
@@ -795,6 +817,8 @@ void HTMLImageElement::SelectSourceURL(
   if (!GetDocument().IsActive())
     return;
 
+  is_changed_shortly_after_mouseover_ =
+      PaintTiming::From(GetDocument()).IsLCPMouseoverDispatchedRecently();
   HTMLSourceElement* old_source = source_;
   ImageCandidate candidate = FindBestFitImageFromPictureParent();
   if (candidate.IsEmpty()) {
@@ -852,8 +876,8 @@ void HTMLImageElement::EnsureCollapsedOrFallbackContent() {
     return;
 
   ImageResourceContent* image_content = GetImageLoader().GetContent();
-  base::Optional<ResourceError> error =
-      image_content ? image_content->GetResourceError() : base::nullopt;
+  absl::optional<ResourceError> error =
+      image_content ? image_content->GetResourceError() : absl::nullopt;
   SetLayoutDisposition(error && error->ShouldCollapseInitiator()
                            ? LayoutDisposition::kCollapsed
                            : LayoutDisposition::kFallbackContent);

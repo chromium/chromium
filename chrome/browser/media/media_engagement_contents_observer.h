@@ -1,10 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_CONTENTS_OBSERVER_H_
 #define CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_CONTENTS_OBSERVER_H_
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -23,6 +26,11 @@ class MediaEngagementSession;
 
 class MediaEngagementContentsObserver : public content::WebContentsObserver {
  public:
+  MediaEngagementContentsObserver(const MediaEngagementContentsObserver&) =
+      delete;
+  MediaEngagementContentsObserver& operator=(
+      const MediaEngagementContentsObserver&) = delete;
+
   ~MediaEngagementContentsObserver() override;
 
   // WebContentsObserver implementation.
@@ -118,7 +126,7 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
   void SetTaskRunnerForTest(scoped_refptr<base::SequencedTaskRunner>);
 
   // |this| is owned by |service_|.
-  MediaEngagementService* service_;
+  raw_ptr<MediaEngagementService> service_;
 
   // Timer that will fire when the playback time reaches the minimum for
   // significant media playback.
@@ -141,34 +149,42 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
    public:
     explicit PlaybackTimer(base::Clock*);
 
+    PlaybackTimer(const PlaybackTimer&) = delete;
+    PlaybackTimer& operator=(const PlaybackTimer&) = delete;
+
+    ~PlaybackTimer();
+
     void Start();
     void Stop();
     bool IsRunning() const;
     base::TimeDelta Elapsed() const;
     void Reset();
 
-    DISALLOW_COPY_AND_ASSIGN(PlaybackTimer);
-
    private:
     // The clock is owned by |service_| which already owns |this|.
-    base::Clock* clock_;
+    raw_ptr<base::Clock> clock_;
 
-    base::Optional<base::Time> start_time_;
+    absl::optional<base::Time> start_time_;
     base::TimeDelta recorded_time_;
   };
 
   // A structure containing all the information we have about a player's state.
   struct PlayerState {
     explicit PlayerState(base::Clock*);
-    ~PlayerState();
+
+    PlayerState(const PlayerState&) = delete;
+    PlayerState& operator=(const PlayerState&) = delete;
+
     PlayerState(PlayerState&&);
 
-    base::Optional<bool> muted;
-    base::Optional<bool> playing;           // Currently playing.
-    base::Optional<bool> significant_size;  // The video track has at least
+    ~PlayerState();
+
+    absl::optional<bool> muted;
+    absl::optional<bool> playing;           // Currently playing.
+    absl::optional<bool> significant_size;  // The video track has at least
                                             // a certain frame size.
-    base::Optional<bool> has_audio;         // The media has an audio track.
-    base::Optional<bool> has_video;         // The media has a video track.
+    absl::optional<bool> has_audio;         // The media has an audio track.
+    absl::optional<bool> has_video;         // The media has a video track.
 
     // The engagement score of the origin at playback has been recorded
     // to a histogram.
@@ -180,8 +196,6 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
 
     bool reached_end_of_stream = false;
     std::unique_ptr<PlaybackTimer> playback_timer;
-
-    DISALLOW_COPY_AND_ASSIGN(PlayerState);
   };
   std::map<content::MediaPlayerId, PlayerState> player_states_;
   PlayerState& GetPlayerState(const content::MediaPlayerId& id);
@@ -249,8 +263,6 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
   // may be shared by other instances if they are part of the same session. It
   // willl be null if it is not part of a session.
   scoped_refptr<MediaEngagementSession> session_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementContentsObserver);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_CONTENTS_OBSERVER_H_

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,6 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/process_iterator.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -333,15 +332,15 @@ void ReportAppInitDllsTargets(REGSAM access_mask) {
 
 void ReportRegistry(REGSAM access_mask) {
   // Report on startup keys/values.
-  ReportRegistryKeys(startup_registry_keys, base::size(startup_registry_keys),
+  ReportRegistryKeys(startup_registry_keys, std::size(startup_registry_keys),
                      access_mask, kHasFileInformation);
-  ReportRegistryValues(system_path_values, base::size(system_path_values),
+  ReportRegistryValues(system_path_values, std::size(system_path_values),
                        access_mask, kHasFileInformation);
-  ReportRegistryValues(system_values, base::size(system_values), access_mask,
+  ReportRegistryValues(system_values, std::size(system_values), access_mask,
                        kNoFileInformation);
 
   // Report on extension policy keys.
-  ReportRegistryKeys(extension_policy_keys, base::size(extension_policy_keys),
+  ReportRegistryKeys(extension_policy_keys, std::size(extension_policy_keys),
                      access_mask, kNoFileInformation);
   ReportAppInitDllsTargets(access_mask);
   ReportNameServer(access_mask);
@@ -365,11 +364,11 @@ void ReportFoldersUnderPath(const base::FilePath& path, const wchar_t* prefix) {
 void ReportInstalledPrograms() {
   static unsigned int install_paths[] = {
       base::DIR_PROGRAM_FILES,     base::DIR_PROGRAM_FILESX86,
-      base::DIR_PROGRAM_FILES6432, base::DIR_APP_DATA,
+      base::DIR_PROGRAM_FILES6432, base::DIR_ROAMING_APP_DATA,
       base::DIR_LOCAL_APP_DATA,    base::DIR_COMMON_APP_DATA,
   };
   std::set<base::FilePath> path_processed;
-  for (size_t path = 0; path < base::size(install_paths); ++path) {
+  for (size_t path = 0; path < std::size(install_paths); ++path) {
     base::FilePath install_path;
     bool success = base::PathService::Get(install_paths[path], &install_path);
     if (!success) {
@@ -438,13 +437,13 @@ bool RetrieveExecutablePathFromServiceName(const std::wstring& service_name,
                               base::CompareCase::INSENSITIVE_ASCII)) {
     // Remove the prefix "\??\" in front of the path.
     file_path = base::FilePath(
-        file_path.value().substr(base::size(kAbsolutePrefix) - 1));
+        file_path.value().substr(std::size(kAbsolutePrefix) - 1));
   } else if (base::StartsWith(file_path.value(), kSystemRootPrefix,
                               base::CompareCase::INSENSITIVE_ASCII)) {
     // Remove the prefix "\systemroot\" in front of the path. The path
     // will be resolved from the system folder.
     file_path = base::FilePath(
-        file_path.value().substr(base::size(kSystemRootPrefix) - 1));
+        file_path.value().substr(std::size(kSystemRootPrefix) - 1));
   }
 
   // For relative path, resolve them from %systemroot%.
@@ -635,22 +634,6 @@ void ReportProxySettingsInformation() {
   // Retrieve the default WinHTTP proxy configuration from the registry.
   WINHTTP_PROXY_INFO proxy_info;
   if (::WinHttpGetDefaultProxyConfiguration(&proxy_info)) {
-    const char* access_type = nullptr;
-    switch (proxy_info.dwAccessType) {
-      case WINHTTP_ACCESS_TYPE_NO_PROXY:
-        access_type = "no proxy";
-        break;
-      case WINHTTP_ACCESS_TYPE_DEFAULT_PROXY:
-        access_type = "default proxy";
-        break;
-      case WINHTTP_ACCESS_TYPE_NAMED_PROXY:
-        access_type = "named proxy";
-        break;
-      default:
-        access_type = "unknown";
-        break;
-    }
-
     // Report proxy information when it's not the default configuration.
     if (proxy_info.dwAccessType != WINHTTP_ACCESS_TYPE_NO_PROXY ||
         proxy_info.lpszProxy || proxy_info.lpszProxyBypass) {
@@ -713,7 +696,7 @@ void ReportInstalledExtensions(JsonParserAPI* json_parser,
   // phases combined.
   const base::TimeTicks end_time =
       base::TimeTicks::Now() +
-      base::TimeDelta::FromMilliseconds(kParseAttemptTimeoutMilliseconds);
+      base::Milliseconds(kParseAttemptTimeoutMilliseconds);
   extension_settings_done.TimedWait(end_time - base::TimeTicks::Now());
   master_preferences_done.TimedWait(end_time - base::TimeTicks::Now());
   default_extensions_done.TimedWait(end_time - base::TimeTicks::Now());

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <deque>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
@@ -34,6 +34,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
           config_client_receiver,
       mojo::PendingRemote<mojom::CustomProxyConnectionObserver>
           observer_remote);
+
+  NetworkServiceProxyDelegate(const NetworkServiceProxyDelegate&) = delete;
+  NetworkServiceProxyDelegate& operator=(const NetworkServiceProxyDelegate&) =
+      delete;
+
   ~NetworkServiceProxyDelegate() override;
 
   void SetProxyResolutionService(
@@ -69,7 +74,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
 
   // mojom::CustomProxyConfigClient implementation:
   void OnCustomProxyConfigUpdated(
-      mojom::CustomProxyConfigPtr proxy_config) override;
+      mojom::CustomProxyConfigPtr proxy_config,
+      OnCustomProxyConfigUpdatedCallback callback) override;
   void MarkProxiesAsBad(base::TimeDelta bypass_duration,
                         const net::ProxyList& bad_proxies,
                         MarkProxiesAsBadCallback callback) override;
@@ -79,9 +85,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;
   mojo::Remote<mojom::CustomProxyConnectionObserver> observer_;
 
-  net::ProxyResolutionService* proxy_resolution_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceProxyDelegate);
+  raw_ptr<net::ProxyResolutionService> proxy_resolution_service_ = nullptr;
 };
 
 }  // namespace network

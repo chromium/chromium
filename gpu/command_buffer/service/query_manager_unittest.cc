@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
@@ -62,7 +63,7 @@ class QueryManagerTest : public GpuServiceTest {
   }
 
   void SetUpMockGL(const char* extension_expectations) {
-    command_buffer_service_.reset(new FakeCommandBufferServiceBase());
+    command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
     scoped_refptr<gpu::Buffer> buffer =
         command_buffer_service_->CreateTransferBufferHelper(kSharedBufferSize,
                                                             &shared_memory_id_);
@@ -70,15 +71,16 @@ class QueryManagerTest : public GpuServiceTest {
     buffer = command_buffer_service_->CreateTransferBufferHelper(
         kSharedBufferSize, &shared_memory2_id_);
     memset(buffer->memory(), kInitialMemoryValue, kSharedBufferSize);
-    decoder_.reset(new MockGLES2Decoder(&client_, command_buffer_service_.get(),
-                                        &outputter_));
+    decoder_ = std::make_unique<MockGLES2Decoder>(
+        &client_, command_buffer_service_.get(), &outputter_);
     TestHelper::SetupFeatureInfoInitExpectations(
         gl_.get(), extension_expectations);
     EXPECT_CALL(*decoder_.get(), GetGLContext())
       .WillRepeatedly(Return(GetGLContext()));
     scoped_refptr<FeatureInfo> feature_info(new FeatureInfo());
     feature_info->InitializeForTesting();
-    manager_.reset(new GLES2QueryManager(decoder_.get(), feature_info.get()));
+    manager_ =
+        std::make_unique<GLES2QueryManager>(decoder_.get(), feature_info.get());
   }
 
   QueryManager::Query* CreateQuery(GLenum target,

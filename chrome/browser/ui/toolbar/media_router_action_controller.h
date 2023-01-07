@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,6 +46,11 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   // Constructor for injecting dependencies in tests.
   MediaRouterActionController(Profile* profile,
                               media_router::MediaRouter* router);
+
+  MediaRouterActionController(const MediaRouterActionController&) = delete;
+  MediaRouterActionController& operator=(const MediaRouterActionController&) =
+      delete;
+
   ~MediaRouterActionController() override;
 
   // Whether the media router action is shown by an administrator policy.
@@ -59,9 +66,8 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   void OnIssuesCleared() override;
 
   // media_router::MediaRoutesObserver:
-  void OnRoutesUpdated(const std::vector<media_router::MediaRoute>& routes,
-                       const std::vector<media_router::MediaRoute::Id>&
-                           joinable_route_ids) override;
+  void OnRoutesUpdated(
+      const std::vector<media_router::MediaRoute>& routes) override;
 
   // Called when a Media Router dialog is shown or hidden, and updates the
   // visibility of the action icon. Overridden in tests.
@@ -89,7 +95,7 @@ class MediaRouterActionController : public media_router::IssuesObserver,
  private:
   friend class MediaRouterActionControllerUnitTest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterActionControllerUnitTest,
-                           EphemeralIconForRoutesAndIssues);
+                           EphemeralIconForIssues);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterActionControllerUnitTest,
                            EphemeralIconForDialog);
 
@@ -99,7 +105,7 @@ class MediaRouterActionController : public media_router::IssuesObserver,
 
   // The profile |this| is associated with. There should be one instance of this
   // class per profile.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   bool has_issue_ = false;
   bool has_local_display_route_ = false;
@@ -126,8 +132,6 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<MediaRouterActionController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterActionController);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_ACTION_CONTROLLER_H_

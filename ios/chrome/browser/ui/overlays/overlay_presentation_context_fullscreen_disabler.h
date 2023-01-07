@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/overlays/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
@@ -20,7 +20,7 @@ class FullscreenController;
 class OverlayContainerFullscreenDisabler {
  public:
   // Constructs a OverlayContainerFullscreenDisabler that disables fullscreen
-  // for |browser| when overlays are displayed at |modality|.
+  // for `browser` when overlays are displayed at `modality`.
   OverlayContainerFullscreenDisabler(Browser* browser,
                                      OverlayModality modality);
   ~OverlayContainerFullscreenDisabler();
@@ -48,7 +48,8 @@ class OverlayContainerFullscreenDisabler {
     FullscreenController* fullscreen_controller_ = nullptr;
     // The animated disabler.
     std::unique_ptr<AnimatedScopedFullscreenDisabler> disabler_;
-    ScopedObserver<OverlayPresenter, OverlayPresenterObserver> scoped_observer_;
+    base::ScopedObservation<OverlayPresenter, OverlayPresenterObserver>
+        scoped_observation_{this};
   };
 
   FullscreenDisabler fullscreen_disabler_;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@ class MetricSample;
 // Metrics helpers to serialize and deserialize metrics collected by
 // ChromeOS.
 namespace SerializationUtils {
+
+// If there are more than 100,000 messages in the file, discard the remaining
+// messages to avoid running out of memory.
+extern const int kMaxMessagesPerRead;
 
 // Deserializes a sample passed as a string and return a sample.
 // The return value will either be a scoped_ptr to a Metric sample (if the

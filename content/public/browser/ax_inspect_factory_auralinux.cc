@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,14 @@
 #include "content/browser/accessibility/accessibility_event_recorder_auralinux.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_auralinux.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
+#include "content/browser/accessibility/browser_accessibility_manager.h"
 
 namespace content {
 
 // static
 std::unique_ptr<ui::AXTreeFormatter>
 AXInspectFactory::CreatePlatformFormatter() {
-  return AXInspectFactory::CreateFormatter(kLinux);
+  return AXInspectFactory::CreateFormatter(ui::AXApiType::kLinux);
 }
 
 // static
@@ -22,37 +23,53 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
-  return AXInspectFactory::CreateRecorder(kLinux, manager, pid, selector);
+  return AXInspectFactory::CreateRecorder(ui::AXApiType::kLinux, manager, pid,
+                                          selector);
 }
 
 // static
 std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
-    AXInspectFactory::Type type) {
+    ui::AXApiType::Type type) {
+  // Developer mode: crash immediately on any accessibility fatal error.
+  // This only runs during integration tests, or if a developer is
+  // using an inspection tool, e.g. chrome://accessibility.
+  BrowserAccessibilityManager::AlwaysFailFast();
+
   switch (type) {
-    case kBlink:
+    case ui::AXApiType::kBlink:
       return std::make_unique<AccessibilityTreeFormatterBlink>();
-    case kLinux:
+    case ui::AXApiType::kLinux:
       return std::make_unique<AccessibilityTreeFormatterAuraLinux>();
     default:
-      NOTREACHED() << "Unsupported inspect type " << type;
+      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
   return nullptr;
 }
 
 // static
 std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
-    AXInspectFactory::Type type,
+    ui::AXApiType::Type type,
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
+  // Developer mode: crash immediately on any accessibility fatal error.
+  // This only runs during integration tests, or if a developer is
+  // using an inspection tool, e.g. chrome://accessibility.
+  BrowserAccessibilityManager::AlwaysFailFast();
+
   switch (type) {
-    case kLinux:
+    case ui::AXApiType::kLinux:
       return std::make_unique<AccessibilityEventRecorderAuraLinux>(manager, pid,
                                                                    selector);
     default:
-      NOTREACHED() << "Unsupported inspect type " << type;
+      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
   return nullptr;
+}
+
+// static
+std::vector<ui::AXApiType::Type> AXInspectFactory::SupportedApis() {
+  return {ui::AXApiType::kBlink, ui::AXApiType::kLinux};
 }
 
 }  // namespace content

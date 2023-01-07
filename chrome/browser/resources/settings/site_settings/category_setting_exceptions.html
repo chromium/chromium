@@ -3,30 +3,29 @@
         padding: 0 var(--cr-section-padding);
       }
     </style>
-    <div id="exceptionHeader" hidden="[[!enableContentSettingsRedesign_]]">
+    <div id="exceptionHeader">
       <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
       <div id="exceptionHeaderSubLabel" class="secondary">
-        $i18n{siteSettingsCustomizedBehaviorsDescription}
+        [[description]]
       </div>
     </div>
     <site-list
         category="[[category]]"
-        category-subtype="[[ContentSetting.BLOCK]]"
+        category-subtype="[[contentSettingEnum_.BLOCK]]"
         category-header="[[blockHeader]]"
         read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
-        search-filter="[[searchFilter]]"
-        hidden$="[[!showBlockSiteList_]]">
+        search-filter="[[searchFilter]]">
     </site-list>
     <site-list
         category="[[category]]"
-        category-subtype="[[ContentSetting.SESSION_ONLY]]"
+        category-subtype="[[contentSettingEnum_.SESSION_ONLY]]"
         category-header="$i18n{siteSettingsSessionOnly}"
         read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
         search-filter="[[searchFilter]]">
     </site-list>
     <site-list
         category="[[category]]"
-        category-subtype="[[ContentSetting.ALLOW]]"
+        category-subtype="[[contentSettingEnum_.ALLOW]]"
         category-header="[[allowHeader]]"
         read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
         search-filter="[[searchFilter]]"

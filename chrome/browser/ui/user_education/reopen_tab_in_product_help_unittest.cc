@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,18 @@
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/user_education/mock_feature_promo_controller.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help_trigger.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,10 +34,8 @@ using ::testing::Return;
 
 namespace {
 
-constexpr base::TimeDelta kTabMinimumActiveDuration =
-    base::TimeDelta::FromSeconds(15);
-constexpr base::TimeDelta kNewTabOpenedTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kTabMinimumActiveDuration = base::Seconds(15);
+constexpr base::TimeDelta kNewTabOpenedTimeout = base::Seconds(5);
 
 }  // namespace
 
@@ -58,14 +57,16 @@ class ReopenTabInProductHelpTest : public BrowserWithTestWindowTest {
     // This test only supports one window.
     DCHECK(!mock_promo_controller_);
 
-    mock_promo_controller_ = static_cast<MockFeaturePromoController*>(
-        test_window->SetFeaturePromoController(
-            std::make_unique<MockFeaturePromoController>()));
+    mock_promo_controller_ =
+        static_cast<user_education::test::MockFeaturePromoController*>(
+            test_window->SetFeaturePromoController(
+                std::make_unique<
+                    user_education::test::MockFeaturePromoController>()));
     return test_window;
   }
 
   base::SimpleTestTickClock* clock() { return &clock_; }
-  MockFeaturePromoController* mock_promo_controller() {
+  user_education::test::MockFeaturePromoController* mock_promo_controller() {
     return mock_promo_controller_;
   }
 
@@ -73,14 +74,16 @@ class ReopenTabInProductHelpTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestTickClock clock_;
 
-  MockFeaturePromoController* mock_promo_controller_ = nullptr;
+  raw_ptr<user_education::test::MockFeaturePromoController>
+      mock_promo_controller_ = nullptr;
 };
 
 TEST_F(ReopenTabInProductHelpTest, TriggersIPH) {
   ReopenTabInProductHelp reopen_tab_iph(profile(), clock());
 
-  EXPECT_CALL(*mock_promo_controller(),
-              MaybeShowPromo(Ref(feature_engagement::kIPHReopenTabFeature), _))
+  EXPECT_CALL(
+      *mock_promo_controller(),
+      MaybeShowPromo(Ref(feature_engagement::kIPHReopenTabFeature), _, _))
       .Times(1)
       .WillOnce(Return(true));
 

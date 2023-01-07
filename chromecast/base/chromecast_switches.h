@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,11 @@ extern const char kCrashServerUrl[];
 
 // Disable Crash Reporting
 extern const char kDisableCrashReporter[];
+
+// Path to dumpstate binary to be used for crash reporting.
+// This gives Chromium's crash reporter the flexibility to switch
+// between multiple implementations of dumpstate tool.
+extern const char kDumpstateBinPath[];
 
 // Content-implementation switches
 extern const char kEnableLocalFileAccesses[];
@@ -83,7 +88,7 @@ extern const char kSystemGestureStartHeight[];
 extern const char kBottomSystemGestureStartHeight[];
 extern const char kBackGestureHorizontalThreshold[];
 extern const char kEnableTopDragGesture[];
-extern const char kEnableRoundedWindowCorners[];
+extern const char kManagedMode[];
 
 // Background color used when Chromium hasn't rendered anything yet.
 extern const char kCastAppBackgroundColor[];
@@ -100,6 +105,13 @@ extern const char kDisableMojoRenderer[];
 extern const char kForceUpdateRemoteUrl[];
 
 extern const char kSysInfoFilePath[];
+
+// Switches for Cast browser decoupling.
+extern const char kDeferFeatureList[];
+extern const char kUseCastBrowserPrefConfig[];
+extern const char kInProcessBroker[];
+
+extern const char kCastMojoBrokerPath[];
 
 }  // namespace switches
 

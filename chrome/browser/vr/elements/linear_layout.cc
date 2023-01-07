@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@ float GetExtent(const UiElement& element, bool horizontal) {
   gfx::Point3F p = horizontal ? gfx::Point3F(element.size().width(), 0, 0)
                               : gfx::Point3F(0, element.size().height(), 0);
   gfx::Point3F o;
-  element.LocalTransform().TransformPoint(&p);
-  element.LocalTransform().TransformPoint(&o);
+  p = element.LocalTransform().MapPoint(p);
+  o = element.LocalTransform().MapPoint(o);
   return (p - o).Length();
 }
 

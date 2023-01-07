@@ -1,14 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/main/browser_list_factory.h"
 
-#include <memory>
+#import <memory>
 
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser_list_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -48,7 +49,7 @@ void BrowserListFactory::BrowserStateShutdown(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   // Because there's a single service instance of the BrowserList for both
-  // regular and OTR browser states, |BrowserStateShutdown| will be called when
+  // regular and OTR browser states, `BrowserStateShutdown` will be called when
   // OTR browser states are destroyed. Since this happens each time the last
   // incognito tab is closed, avoid a shutdown of the browser list when an OTR
   // browser state shuts down. Removing this early return will cause all browser

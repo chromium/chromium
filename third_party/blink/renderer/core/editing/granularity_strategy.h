@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,15 @@
 
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/selection_strategy.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/vector2d.h"
+
+namespace gfx {
+class Point;
+}
 
 namespace blink {
 
-class IntPoint;
 class LocalFrame;
 
 enum class TextGranularity;
@@ -27,7 +30,7 @@ class GranularityStrategy {
 
   // Calculates and returns the new selection based on the updated extent
   // location in absolute coordinates.
-  virtual SelectionInDOMTree UpdateExtent(const IntPoint&, LocalFrame*) = 0;
+  virtual SelectionInDOMTree UpdateExtent(const gfx::Point&, LocalFrame*) = 0;
 
  protected:
   GranularityStrategy();
@@ -42,7 +45,7 @@ class CharacterGranularityStrategy final : public GranularityStrategy {
   // GranularityStrategy:
   SelectionStrategy GetType() const final;
   void Clear() final;
-  SelectionInDOMTree UpdateExtent(const IntPoint&, LocalFrame*) final;
+  SelectionInDOMTree UpdateExtent(const gfx::Point&, LocalFrame*) final;
 };
 
 // "Expand by word, shrink by character" selection strategy.
@@ -90,7 +93,7 @@ class DirectionGranularityStrategy final : public GranularityStrategy {
   // GranularityStrategy:
   SelectionStrategy GetType() const final;
   void Clear() final;
-  SelectionInDOMTree UpdateExtent(const IntPoint&, LocalFrame*) final;
+  SelectionInDOMTree UpdateExtent(const gfx::Point&, LocalFrame*) final;
 
  private:
   enum class StrategyState {
@@ -121,7 +124,7 @@ class DirectionGranularityStrategy final : public GranularityStrategy {
   // This defines location of the offset-adjusted extent point (from the
   // latest updateExtent call) relative to the location of extent's
   // VisiblePosition. It is used to detect sub-position extent movement.
-  IntSize diff_extent_point_from_extent_position_;
+  gfx::Vector2d diff_extent_point_from_extent_position_;
 };
 
 }  // namespace blink

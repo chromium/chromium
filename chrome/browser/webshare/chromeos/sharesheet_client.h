@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,10 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "url/gurl.h"
 
@@ -22,19 +23,21 @@ class WebContents;
 namespace webshare {
 
 class PrepareDirectoryTask;
+class PrepareSubDirectoryTask;
 
 // Chrome-OS implementation of navigator.share() sharing to
 // sharesheet::SharesheetService.
 class SharesheetClient : public content::WebContentsObserver {
  public:
-  using CloseCallback = sharesheet::CloseCallback;
+  using DeliveredCallback = sharesheet::DeliveredCallback;
   using SharesheetCallback = base::RepeatingCallback<void(
       content::WebContents* web_contents,
       const std::vector<base::FilePath>& file_paths,
       const std::vector<std::string>& content_types,
+      const std::vector<uint64_t>& file_sizes,
       const std::string& text,
       const std::string& title,
-      CloseCallback close_callback)>;
+      DeliveredCallback delivered_callback)>;
 
   explicit SharesheetClient(content::WebContents* web_contents);
   SharesheetClient(const SharesheetClient&) = delete;
@@ -52,6 +55,8 @@ class SharesheetClient : public content::WebContentsObserver {
  private:
   void OnPrepareDirectory(blink::mojom::ShareError);
 
+  void OnPrepareSubdirectory(blink::mojom::ShareError);
+
   void OnStoreFiles(blink::mojom::ShareError);
 
   void OnShowSharesheet(sharesheet::SharesheetResult result);
@@ -59,9 +64,10 @@ class SharesheetClient : public content::WebContentsObserver {
   static void ShowSharesheet(content::WebContents* web_contents,
                              const std::vector<base::FilePath>& file_paths,
                              const std::vector<std::string>& content_types,
+                             const std::vector<uint64_t>& file_sizes,
                              const std::string& text,
                              const std::string& title,
-                             CloseCallback close_callback);
+                             DeliveredCallback delivered_callback);
 
   static SharesheetCallback& GetSharesheetCallback();
 
@@ -80,14 +86,16 @@ class SharesheetClient : public content::WebContentsObserver {
     base::FilePath directory;
     std::vector<base::FilePath> file_paths;
     std::vector<std::string> content_types;
+    std::vector<uint64_t> file_sizes;
     std::string text;
     std::string title;
     blink::mojom::ShareService::ShareCallback callback;
 
     std::unique_ptr<PrepareDirectoryTask> prepare_directory_task;
+    std::unique_ptr<PrepareSubDirectoryTask> prepare_subdirectory_task;
   };
 
-  base::Optional<CurrentShare> current_share_;
+  absl::optional<CurrentShare> current_share_;
 
   base::WeakPtrFactory<SharesheetClient> weak_ptr_factory_{this};
 };

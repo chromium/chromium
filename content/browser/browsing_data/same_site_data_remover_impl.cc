@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,14 +13,17 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/metrics/user_metrics.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/same_site_data_remover.h"
+#include "content/public/browser/storage_partition.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -42,7 +45,12 @@ void OnGetAllCookiesWithAccessSemantics(
       base::BarrierClosure(cookies.size(), std::move(closure));
   for (size_t i = 0; i < cookies.size(); ++i) {
     const net::CanonicalCookie& cookie = cookies[i];
-    if (cookie.IsEffectivelySameSiteNone(access_semantics_list[i])) {
+    // Partitioned cookies are only available in a single top-level site (or
+    // that site's First-Party Set). Since partitioned cookies cannot be used as
+    // a cross-site tracking mechanism, we exclude them from this type of
+    // clearing.
+    if (!cookie.IsPartitioned() &&
+        cookie.IsEffectivelySameSiteNone(access_semantics_list[i])) {
       same_site_none_domains->emplace(cookie.Domain());
       cookie_manager->DeleteCanonicalCookie(
           cookie, base::BindOnce([](const base::RepeatingClosure& callback,
@@ -54,15 +62,20 @@ void OnGetAllCookiesWithAccessSemantics(
   }
 }
 
-bool DoesOriginMatchDomain(const std::set<std::string>& same_site_none_domains,
-                           const url::Origin& origin,
-                           storage::SpecialStoragePolicy* policy) {
+std::unique_ptr<BrowsingDataFilterBuilder> CreateBrowsingDataFilterBuilder(
+    const std::set<std::string>& same_site_none_domains) {
+  std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete);
   for (const std::string& domain : same_site_none_domains) {
-    if (net::cookie_util::IsDomainMatch(domain, origin.host())) {
-      return true;
-    }
+    std::string host_domain = net::cookie_util::CookieDomainAsHost(domain);
+    std::string registrable_domain = GetDomainAndRegistry(
+        host_domain,
+        net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+    filter_builder->AddRegisterableDomain(
+        registrable_domain.empty() ? host_domain : registrable_domain);
   }
-  return false;
+  return filter_builder;
 }
 
 }  // namespace
@@ -70,8 +83,7 @@ bool DoesOriginMatchDomain(const std::set<std::string>& same_site_none_domains,
 SameSiteDataRemoverImpl::SameSiteDataRemoverImpl(
     BrowserContext* browser_context)
     : browser_context_(browser_context),
-      storage_partition_(
-          BrowserContext::GetDefaultStoragePartition(browser_context_)) {
+      storage_partition_(browser_context_->GetDefaultStoragePartition()) {
   DCHECK(browser_context_);
 }
 
@@ -100,29 +112,35 @@ void SameSiteDataRemoverImpl::DeleteSameSiteNoneCookies(
 void SameSiteDataRemoverImpl::ClearStoragePartitionData(
     base::OnceClosure closure) {
   // TODO(crbug.com/987177): Figure out how to handle protected storage.
+  std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
+      CreateBrowsingDataFilterBuilder(same_site_none_domains_);
   storage_partition_->ClearData(
       kStoragePartitionRemovalMask,
-      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-      base::BindRepeating(&DoesOriginMatchDomain, same_site_none_domains_),
-      nullptr, false, base::Time(), base::Time::Max(), std::move(closure));
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, filter_builder.get(),
+      StoragePartition::StorageKeyPolicyMatcherFunction(), nullptr, false,
+      base::Time(), base::Time::Max(), std::move(closure));
 }
 
 void SameSiteDataRemoverImpl::ClearStoragePartitionForOrigins(
     base::OnceClosure closure,
-    StoragePartition::OriginMatcherFunction origin_matcher) {
+    std::set<url::Origin> origins) {
   // TODO(crbug.com/987177): Figure out how to handle protected storage.
+  std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete);
+  for (const url::Origin& origin : origins) {
+    filter_builder->AddOrigin(origin);
+  }
   storage_partition_->ClearData(
       kStoragePartitionRemovalMask,
-      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-      std::move(origin_matcher), nullptr, false, base::Time(),
-      base::Time::Max(), std::move(closure));
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, filter_builder.get(),
+      StoragePartition::StorageKeyPolicyMatcherFunction(), nullptr, false,
+      base::Time(), base::Time::Max(), std::move(closure));
 }
 
 // Defines the ClearSameSiteNoneData function declared in same_site_remover.h.
 // Clears cookies and associated data available in third-party contexts.
 void ClearSameSiteNoneData(base::OnceClosure closure, BrowserContext* context) {
-  base::RecordAction(
-      base::UserMetricsAction("ClearBrowsingData_SameSiteNoneData"));
   auto same_site_remover = std::make_unique<SameSiteDataRemoverImpl>(context);
   SameSiteDataRemoverImpl* remover = same_site_remover.get();
 
@@ -134,16 +152,13 @@ void ClearSameSiteNoneData(base::OnceClosure closure, BrowserContext* context) {
 void ClearSameSiteNoneCookiesAndStorageForOrigins(
     base::OnceClosure closure,
     BrowserContext* context,
-    StoragePartition::OriginMatcherFunction clear_storage_origin_matcher) {
-  base::RecordAction(
-      base::UserMetricsAction("ClearBrowsingData_SameSiteNoneData"));
+    std::set<url::Origin> origins) {
   auto same_site_remover = std::make_unique<SameSiteDataRemoverImpl>(context);
   SameSiteDataRemoverImpl* remover = same_site_remover.get();
 
-  remover->DeleteSameSiteNoneCookies(
-      base::BindOnce(&SameSiteDataRemoverImpl::ClearStoragePartitionForOrigins,
-                     std::move(same_site_remover), std::move(closure),
-                     std::move(clear_storage_origin_matcher)));
+  remover->DeleteSameSiteNoneCookies(base::BindOnce(
+      &SameSiteDataRemoverImpl::ClearStoragePartitionForOrigins,
+      std::move(same_site_remover), std::move(closure), std::move(origins)));
 }
 
 }  // namespace content

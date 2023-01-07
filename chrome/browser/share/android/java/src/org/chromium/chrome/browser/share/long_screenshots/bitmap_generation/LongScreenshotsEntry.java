@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 
@@ -69,6 +68,7 @@ public class LongScreenshotsEntry {
     /**
      * @param generator BitmapGenerator to be used to capture and composite the website.
      * @param bounds The bounds of the entry.
+     * @param memoryTracker Callback to be notified of the entry's memory usage.
      */
     public LongScreenshotsEntry(
             BitmapGenerator generator, Rect bounds, Callback<Integer> memoryTracker) {
@@ -132,13 +132,7 @@ public class LongScreenshotsEntry {
         return mGeneratedBitmap;
     }
 
-    @VisibleForTesting
-    public void setBitmapGenerator(BitmapGenerator generator) {
-        mGenerator = generator;
-    }
-
     private void onBitmapGenerated(Bitmap bitmap) {
-        // TODO(tgupta): Add metrics logging here.
         mGeneratedBitmap = bitmap;
 
         if (mMemoryTracker != null && mGeneratedBitmap != null) {

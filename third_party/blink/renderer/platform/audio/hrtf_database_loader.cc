@@ -30,8 +30,8 @@
 
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -49,13 +49,15 @@ scoped_refptr<HRTFDatabaseLoader>
 HRTFDatabaseLoader::CreateAndLoadAsynchronouslyIfNecessary(float sample_rate) {
   DCHECK(IsMainThread());
 
-  scoped_refptr<HRTFDatabaseLoader> loader = GetLoaderMap().at(sample_rate);
-  if (loader) {
+  auto it = GetLoaderMap().find(sample_rate);
+  if (it != GetLoaderMap().end()) {
+    scoped_refptr<HRTFDatabaseLoader> loader = it->value;
     DCHECK_EQ(sample_rate, loader->DatabaseSampleRate());
     return loader;
   }
 
-  loader = base::AdoptRef(new HRTFDatabaseLoader(sample_rate));
+  scoped_refptr<HRTFDatabaseLoader> loader =
+      base::AdoptRef(new HRTFDatabaseLoader(sample_rate));
   GetLoaderMap().insert(sample_rate, loader.get());
   loader->LoadAsynchronously();
   return loader;
@@ -74,11 +76,11 @@ HRTFDatabaseLoader::~HRTFDatabaseLoader() {
 
 void HRTFDatabaseLoader::LoadTask() {
   DCHECK(!IsMainThread());
-  DCHECK(!hrtf_database_);
 
-  // Protect access to m_hrtfDatabase, which can be accessed from the audio
+  // Protect access to |hrtf_database_|, which can be accessed from the audio
   // thread.
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
+  DCHECK(!hrtf_database_);
   // Load the default HRTF database.
   hrtf_database_ = std::make_unique<HRTFDatabase>(database_sample_rate_);
 }
@@ -86,15 +88,17 @@ void HRTFDatabaseLoader::LoadTask() {
 void HRTFDatabaseLoader::LoadAsynchronously() {
   DCHECK(IsMainThread());
 
-  // m_hrtfDatabase and m_thread should both be unset because this should be a
-  // new HRTFDatabaseLoader object that was just created by
-  // createAndLoadAsynchronouslyIfNecessary and because we haven't started
-  // loadTask yet for this object.
+  base::AutoLock locker(lock_);
+
+  // |hrtf_database_| and |thread_| should both be unset because this should be
+  // a new HRTFDatabaseLoader object that was just created by
+  // CreateAndLoadAsynchronouslyIfNecessary and because we haven't started
+  // LoadTask yet for this object.
   DCHECK(!hrtf_database_);
   DCHECK(!thread_);
 
   // Start the asynchronous database loading process.
-  thread_ = Platform::Current()->CreateThread(
+  thread_ = NonMainThread::CreateThread(
       ThreadCreationParams(ThreadType::kHRTFDatabaseLoaderThread));
   // TODO(alexclarke): Should this be posted as a loading task?
   PostCrossThreadTask(*thread_->GetTaskRunner(), FROM_HERE,
@@ -107,23 +111,29 @@ HRTFDatabase* HRTFDatabaseLoader::Database() {
 
   // Seeing that this is only called from the audio thread, we can't block.
   // It's ok to return nullptr if we can't get the lock.
-  MutexTryLocker try_locker(lock_);
+  base::AutoTryLock try_locker(lock_);
 
-  if (!try_locker.Locked())
+  if (!try_locker.is_acquired()) {
     return nullptr;
+  }
 
   return hrtf_database_.get();
 }
 
 // This cleanup task is needed just to make sure that the loader thread finishes
-// the load task and thus the loader thread doesn't touch m_thread any more.
+// the load task and thus the loader thread doesn't touch thread_ any more.
 void HRTFDatabaseLoader::CleanupTask(base::WaitableEvent* sync) {
   sync->Signal();
 }
 
 void HRTFDatabaseLoader::WaitForLoaderThreadCompletion() {
-  if (!thread_)
+  // We can lock this because this is called from either the main thread or
+  // the offline audio rendering thread.
+  base::AutoLock locker(lock_);
+
+  if (!thread_) {
     return;
+  }
 
   base::WaitableEvent sync;
   // TODO(alexclarke): Should this be posted as a loading task?

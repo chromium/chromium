@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,9 +21,6 @@ source_set("android") {
   sources = [
     "ar_compositor_delegate_provider.cc",
     "ar_compositor_delegate_provider.h",
-    "xr_install_helper_delegate.h",
-    "xr_install_infobar.cc",
-    "xr_install_infobar.h",
   ]
 
   if (enable_arcore) {
@@ -40,7 +37,7 @@ source_set("android") {
   deps = [
     ":android_utils",
     "//base",
-    "//components/infobars/core",
+    "//components/messages/android",
     "//components/resources:android_resources",
     "//components/strings",
     "//components/webxr:webxr",
@@ -67,6 +64,7 @@ android_library("ar_java_interfaces") {
   ]
 
   deps = [
+    "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -78,11 +76,13 @@ android_library("ar_java_base") {
     ":ar_java_interfaces",
     ":webxr_android_enums_java",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
-    "//ui/android:ui_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 
   sources = [
@@ -104,6 +104,7 @@ android_library("ar_java") {
     ":ar_java_base",
     ":webxr_android_enums_java",
     "//base:base_java",
+    "//build/android:build_java",
     "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
   ]
 

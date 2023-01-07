@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 
 #include <algorithm>
 #include <iterator>
-
-#include "base/stl_util.h"
 
 namespace device {
 
@@ -38,6 +36,8 @@ constexpr struct GamepadInfo {
     {0x0111, 0x1417, kXInputTypeNone},
     {0x0111, 0x1419, kXInputTypeNone},
     {0x0111, 0x1420, kXInputTypeNone},
+    {0x0111, 0x1431, kXInputTypeNone},
+    {0x0111, 0x1434, kXInputTypeNone},
     {0x0113, 0xf900, kXInputTypeNone},
     // Creative Technology, Ltd
     {0x041e, 0x1003, kXInputTypeNone},
@@ -88,10 +88,14 @@ constexpr struct GamepadInfo {
     {0x045e, 0x0719, kXInputTypeXbox360},
     {0x045e, 0x0b00, kXInputTypeXboxOne},
     {0x045e, 0x0b05, kXInputTypeNone},
+    {0x045e, 0x0b06, kXInputTypeXboxOne},
     {0x045e, 0x0b0a, kXInputTypeXboxOne},
     {0x045e, 0x0b0c, kXInputTypeNone},
     {0x045e, 0x0b12, kXInputTypeXboxOne},
     {0x045e, 0x0b13, kXInputTypeNone},
+    {0x045e, 0x0b20, kXInputTypeNone},
+    {0x045e, 0x0b21, kXInputTypeNone},
+    {0x045e, 0x0b22, kXInputTypeNone},
     // Logitech, Inc.
     {0x046d, 0xc208, kXInputTypeNone},
     {0x046d, 0xc209, kXInputTypeNone},
@@ -397,6 +401,9 @@ constexpr struct GamepadInfo {
     {0x1038, 0x1412, kXInputTypeNone},
     {0x1038, 0x1418, kXInputTypeNone},
     {0x1038, 0x1420, kXInputTypeNone},
+    {0x1038, 0x1430, kXInputTypeXbox360},
+    {0x1038, 0x1431, kXInputTypeXbox360},
+    {0x1038, 0x1434, kXInputTypeXbox360},
     {0x1080, 0x0009, kXInputTypeNone},
     // Betop
     {0x11c0, 0x5213, kXInputTypeNone},
@@ -465,6 +472,7 @@ constexpr struct GamepadInfo {
     {0x18d1, 0x9400, kXInputTypeNone},
     // Lab126, Inc.
     {0x1949, 0x0402, kXInputTypeNone},
+    {0x1949, 0x041a, kXInputTypeXbox360},
     // Gampaq Co.Ltd
     {0x19fa, 0x0607, kXInputTypeNone},
     // ACRUX
@@ -583,12 +591,14 @@ constexpr struct GamepadInfo {
     {0x28de, 0x1106, kXInputTypeNone},
     {0x28de, 0x1142, kXInputTypeNone},
     {0x28de, 0x11fc, kXInputTypeNone},
-    {0x28de, 0x11ff, kXInputTypeNone},
+    {0x28de, 0x11ff, kXInputTypeXbox360},
     {0x28de, 0x1201, kXInputTypeNone},
     {0x28de, 0x1202, kXInputTypeNone},
     {0x2c22, 0x2000, kXInputTypeNone},
     {0x2c22, 0x2300, kXInputTypeNone},
     {0x2c22, 0x2302, kXInputTypeNone},
+    // DJI
+    {0x2ca3, 0x1020, kXInputTypeNone},
     {0x2dc8, 0x1003, kXInputTypeNone},
     {0x2dc8, 0x1080, kXInputTypeNone},
     {0x2dc8, 0x2830, kXInputTypeNone},
@@ -617,7 +627,7 @@ constexpr struct GamepadInfo {
     {0xf766, 0x0001, kXInputTypeNone},
     {0xf766, 0x0005, kXInputTypeNone},
 };
-constexpr size_t kGamepadInfoLength = base::size(kGamepadInfo);
+constexpr size_t kGamepadInfoLength = std::size(kGamepadInfo);
 
 bool CompareEntry(const GamepadInfo& a, const GamepadInfo& b) {
   return std::tie(a.vendor, a.product) < std::tie(b.vendor, b.product);
@@ -666,6 +676,26 @@ GamepadId GamepadIdList::GetGamepadId(base::StringPiece product_name,
     return GamepadId::kPowerALicPro;
   }
   return GamepadId::kUnknownGamepad;
+}
+
+std::pair<uint16_t, uint16_t> GamepadIdList::GetDeviceIdsFromGamepadId(
+    GamepadId gamepad_id) const {
+  // For most devices, the vendor/product ID pair is unique to a single gamepad
+  // model. The GamepadId for these devices contains the 16-bit vendor and
+  // product IDs packed into a 32-bit value. Some devices use duplicate or
+  // invalid vendor and product IDs and are assigned "fake" GamepadIds that are
+  // not derived from the vendor and product IDs.
+
+  // Handle devices that have been assigned fake GamepadId values.
+  if (gamepad_id == GamepadId::kPowerALicPro)
+    return {0, 0};
+
+  // Handle devices that use packed vendor/product GamepadId values.
+  auto vendor_and_product = static_cast<uint32_t>(gamepad_id);
+  const uint16_t vendor_id = vendor_and_product >> 16;
+  const uint16_t product_id = vendor_and_product & 0xffff;
+  DCHECK(GetGamepadInfo(vendor_id, product_id));
+  return {vendor_id, product_id};
 }
 
 std::vector<std::tuple<uint16_t, uint16_t, XInputType>>

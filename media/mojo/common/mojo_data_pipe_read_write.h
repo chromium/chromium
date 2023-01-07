@@ -1,13 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_MOJO_COMMON_MOJO_DATA_PIPE_READ_WRITE_H_
 #define MEDIA_MOJO_COMMON_MOJO_DATA_PIPE_READ_WRITE_H_
 
-#include <memory>
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -19,6 +17,9 @@ class MojoDataPipeReader {
  public:
   explicit MojoDataPipeReader(
       mojo::ScopedDataPipeConsumerHandle consumer_handle);
+
+  MojoDataPipeReader(const MojoDataPipeReader&) = delete;
+  MojoDataPipeReader& operator=(const MojoDataPipeReader&) = delete;
 
   ~MojoDataPipeReader();
 
@@ -51,7 +52,7 @@ class MojoDataPipeReader {
 
   // The current buffer to be read. It is provided by Read() and should be
   // guaranteed to be valid until the current read completes.
-  uint8_t* current_buffer_ = nullptr;
+  raw_ptr<uint8_t> current_buffer_ = nullptr;
 
   // The number of bytes to be read for the current read request.
   uint32_t current_buffer_size_ = 0;
@@ -61,8 +62,6 @@ class MojoDataPipeReader {
 
   // Number of bytes already read into the current buffer.
   uint32_t bytes_read_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDataPipeReader);
 };
 
 // Write a certain amount of data into a mojo data pipe by request.
@@ -70,6 +69,9 @@ class MojoDataPipeWriter {
  public:
   explicit MojoDataPipeWriter(
       mojo::ScopedDataPipeProducerHandle producer_handle);
+
+  MojoDataPipeWriter(const MojoDataPipeWriter&) = delete;
+  MojoDataPipeWriter& operator=(const MojoDataPipeWriter&) = delete;
 
   ~MojoDataPipeWriter();
 
@@ -111,8 +113,6 @@ class MojoDataPipeWriter {
 
   // Number of bytes already written from the current buffer.
   uint32_t bytes_written_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDataPipeWriter);
 };
 
 }  // namespace media

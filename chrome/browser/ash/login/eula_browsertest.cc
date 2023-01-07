@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,17 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/login/test/dialog_window_waiter.h"
 #include "chrome/browser/ash/login/test/fake_eula_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -24,12 +26,14 @@
 #include "chrome/browser/ash/login/test/scoped_help_app_for_test.h"
 #include "chrome/browser/ash/login/test/webview_content_extractor.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -37,114 +41,54 @@
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-using ::testing::ElementsAre;
-
-namespace chromeos {
+namespace ash {
 namespace {
 
+using ::testing::ElementsAre;
+
 const test::UIPath kEulaWebview = {"oobe-eula-md", "crosEulaFrame"};
+const test::UIPath kEulaDialog = {"oobe-eula-md", "eulaDialog"};
 const test::UIPath kAcceptEulaButton = {"oobe-eula-md", "acceptButton"};
 const test::UIPath kUsageStats = {"oobe-eula-md", "usageStats"};
 const test::UIPath kAdditionalTermsLink = {"oobe-eula-md", "additionalTerms"};
 const test::UIPath kAdditionalTermsDialog = {"oobe-eula-md", "additionalToS"};
 const test::UIPath kLearnMoreLink = {"oobe-eula-md", "learnMore"};
+const test::UIPath kBackButton = {"oobe-eula-md", "backButton"};
 
 const char kRemoraRequisition[] = "remora";
 
-// Helper class to wait until the WebCotnents finishes loading.
-class WebContentsLoadFinishedWaiter : public content::WebContentsObserver {
- public:
-  explicit WebContentsLoadFinishedWaiter(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
-  ~WebContentsLoadFinishedWaiter() override = default;
-
-  void Wait() {
-    if (!web_contents()->IsLoading() &&
-        web_contents()->GetLastCommittedURL() != GURL::EmptyGURL()) {
-      return;
-    }
-
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-
- private:
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& url) override {
-    if (run_loop_)
-      run_loop_->Quit();
-  }
-
-  std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsLoadFinishedWaiter);
-};
-
-// Helper invoked by GuestViewManager::ForEachGuest to collect WebContents of
-// Webview named as `web_view_name`.
-bool AddNamedWebContentsToSet(std::set<content::WebContents*>* frame_set,
-                              const std::string& web_view_name,
-                              content::WebContents* web_contents) {
-  auto* web_view = extensions::WebViewGuest::FromWebContents(web_contents);
-  if (web_view && web_view->name() == web_view_name)
-    frame_set->insert(web_contents);
-  return false;
-}
-
 class EulaTest : public OobeBaseTest {
  public:
-  EulaTest() = default;
+  EulaTest() {
+    // EULA screen is not shown when OobeConsolidatedConsent is enabled, and
+    // its content is moved to the consolidated consent screen.
+    feature_list_.InitAndDisableFeature(features::kOobeConsolidatedConsent);
+  }
+
+  EulaTest(const EulaTest&) = delete;
+  EulaTest& operator=(const EulaTest&) = delete;
+
   ~EulaTest() override = default;
 
   void ShowEulaScreen() {
     LoginDisplayHost::default_host()->StartWizard(EulaView::kScreenId);
     OobeScreenWaiter(EulaView::kScreenId).Wait();
+    // Wait until the webview has finished loading.
+    test::OobeJS().CreateVisibilityWaiter(true, kEulaDialog)->Wait();
   }
 
  protected:
-  content::WebContents* FindEulaContents() {
-    // Tag the Eula webview in use with a unique name.
-    constexpr char kUniqueEulaWebviewName[] = "unique-eula-webview-name";
-    test::OobeJS().Evaluate(base::StringPrintf(
-        "(function(){"
-        "  var eulaWebView = $('oobe-eula-md').$.crosEulaFrame;"
-        "  eulaWebView.name = '%s';"
-        "})();",
-        kUniqueEulaWebviewName));
-
-    // Find the WebContents tagged with the unique name.
-    std::set<content::WebContents*> frame_set;
-    auto* const owner_contents = GetLoginUI()->GetWebContents();
-    auto* const manager = guest_view::GuestViewManager::FromBrowserContext(
-        owner_contents->GetBrowserContext());
-    manager->ForEachGuest(
-        owner_contents,
-        base::BindRepeating(&AddNamedWebContentsToSet, &frame_set,
-                            kUniqueEulaWebviewName));
-    EXPECT_EQ(1u, frame_set.size());
-    return *frame_set.begin();
-  }
-
-  // Wait for the fallback offline page (loaded as data url) to be loaded.
-  void WaitForLocalWebviewLoad() {
-    content::WebContents* eula_contents = FindEulaContents();
-    ASSERT_TRUE(eula_contents);
-
-    while (!eula_contents->GetLastCommittedURL().SchemeIs("data")) {
-      // Pump messages to avoid busy loop so that renderer could do some work.
-      base::RunLoop().RunUntilIdle();
-      WebContentsLoadFinishedWaiter(eula_contents).Wait();
-    }
+  void SetUpOnMainThread() override {
+    OobeBaseTest::SetUpOnMainThread();
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
   }
 
   base::OnceClosure SetCollectStatsConsentClosure(bool consented) {
@@ -188,10 +132,8 @@ class EulaTest : public OobeBaseTest {
     return consented;
   }
 
+  base::test::ScopedFeatureList feature_list_;
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EulaTest);
 };
 
 // When testing the offline fallback mechanism, the requests reaching the
@@ -208,7 +150,6 @@ class EulaOfflineTest : public EulaTest {
 IN_PROC_BROWSER_TEST_F(EulaOfflineTest, LoadOffline) {
   ShowEulaScreen();
 
-  WaitForLocalWebviewLoad();
   EXPECT_TRUE(test::GetWebViewContents(kEulaWebview)
                   .find(FakeEulaMixin::kOfflineEULAWarning) !=
               std::string::npos);
@@ -217,14 +158,6 @@ IN_PROC_BROWSER_TEST_F(EulaOfflineTest, LoadOffline) {
 // Tests that online version is shown when it is accessible.
 IN_PROC_BROWSER_TEST_F(EulaTest, LoadOnline) {
   ShowEulaScreen();
-
-  // Wait until the webview has finished loading.
-  content::WebContents* eula_contents = FindEulaContents();
-  ASSERT_TRUE(eula_contents);
-  WebContentsLoadFinishedWaiter(eula_contents).Wait();
-
-  // Wait until the Accept button on the EULA frame becomes enabled.
-  chromeos::test::OobeJS().CreateEnabledWaiter(true, kAcceptEulaButton)->Wait();
 
   const std::string webview_contents = test::GetWebViewContents(kEulaWebview);
   EXPECT_TRUE(webview_contents.find(FakeEulaMixin::kFakeOnlineEula) !=
@@ -350,13 +283,12 @@ IN_PROC_BROWSER_TEST_F(EulaTest, LearnMore) {
           1)));
 }
 
-// Tests that "Additional ToS" dialog could be opened and closed.
-// TODO(crbug.com/1175244): Flaky on linux-chromeos-rel.
-#ifdef NDEBUG
+#if defined(NDEBUG)
 #define MAYBE_AdditionalToS DISABLED_AdditionalToS
 #else
 #define MAYBE_AdditionalToS AdditionalToS
 #endif
+// Tests that "Additional ToS" dialog could be opened and closed.
 IN_PROC_BROWSER_TEST_F(EulaTest, MAYBE_AdditionalToS) {
   base::HistogramTester histogram_tester;
   ShowEulaScreen();
@@ -413,6 +345,11 @@ IN_PROC_BROWSER_TEST_F(EulaTest, SkippedEula) {
   EXPECT_FALSE(GetGoogleCollectStatsConsent());
 }
 
-}  // namespace
+IN_PROC_BROWSER_TEST_F(EulaTest, ClickBack) {
+  ShowEulaScreen();
+  test::OobeJS().ClickOnPath(kBackButton);
+  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
+}
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

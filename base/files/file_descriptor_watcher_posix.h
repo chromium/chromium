@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,13 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/check_op.h"
-#include "base/memory/ref_counted.h"
+#include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base {
 
@@ -75,7 +75,9 @@ class BASE_EXPORT FileDescriptorWatcher {
     // Controller is deleted, ownership of |watcher_| is transfered to a delete
     // task posted to the MessageLoopForIO. This ensures that |watcher_| isn't
     // deleted while it is being used by the MessageLoopForIO.
-    Watcher* watcher_;
+    //
+    // TODO(crbug.com/1298696): Breaks base_unittests.
+    raw_ptr<Watcher, DanglingUntriagedDegradeToNoOpWhenMTE> watcher_;
 
     // An event for the watcher to notify controller that it's destroyed.
     // As the |watcher_| is owned by Controller, always outlives the Watcher.
@@ -83,7 +85,7 @@ class BASE_EXPORT FileDescriptorWatcher {
 
     // Validates that the Controller is used on the sequence on which it was
     // instantiated.
-    SequenceChecker sequence_checker_;
+    SEQUENCE_CHECKER(sequence_checker_);
 
     WeakPtrFactory<Controller> weak_factory_{this};
   };

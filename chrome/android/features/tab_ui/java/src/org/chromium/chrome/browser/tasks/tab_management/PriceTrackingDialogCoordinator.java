@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@ import android.view.LayoutInflater;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -27,36 +29,47 @@ class PriceTrackingDialogCoordinator implements OnCheckedChangeListener {
 
     PriceTrackingDialogCoordinator(Context context, ModalDialogManager modalDialogManager,
             TabSwitcherMediator.ResetHandler resetHandler, TabModelSelector tabModelSelector,
-            PriceDropNotificationManager notificationManager) {
-        mDialogView = (PriceTrackingDialogView) LayoutInflater.from(context).inflate(
-                R.layout.price_tracking_dialog_layout, null, false);
-        mDialogView.setupTrackPricesSwitchOnCheckedChangeListener(this);
-        mDialogView.setupPriceAlertsArrowOnClickListener(
-                v -> { notificationManager.launchNotificationSettings(); });
-        mModalDialogManager = modalDialogManager;
+            PriceDropNotificationManager notificationManager,
+            @TabListCoordinator.TabListMode int mode) {
+        try (TraceEvent e = TraceEvent.scoped("PriceTrackingDialogCoordinator.constructor")) {
+            mDialogView = (PriceTrackingDialogView) LayoutInflater.from(context).inflate(
+                    R.layout.price_tracking_dialog_layout, null, false);
+            mDialogView.setupTrackPricesSwitchOnCheckedChangeListener(this);
+            mDialogView.setupPriceAlertsArrowOnClickListener(
+                    v -> { notificationManager.launchNotificationSettings(); });
+            mModalDialogManager = modalDialogManager;
 
-        ModalDialogProperties.Controller dialogController = new ModalDialogProperties.Controller() {
-            @Override
-            public void onClick(PropertyModel model, int buttonType) {}
+            ModalDialogProperties.Controller dialogController =
+                    new ModalDialogProperties.Controller() {
+                        @Override
+                        public void onClick(PropertyModel model, int buttonType) {}
 
-            @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {
-                if (dismissalCause == DialogDismissalCause.ACTIVITY_DESTROYED) return;
+                        @Override
+                        public void onDismiss(PropertyModel model, int dismissalCause) {
+                            if (dismissalCause == DialogDismissalCause.ACTIVITY_DESTROYED) return;
 
-                resetHandler.resetWithTabList(
-                        tabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
-                        false, TabSwitcherMediator.isShowingTabsInMRUOrder());
-            }
-        };
+                            // We only need to call resetWithTabList under GRID tab switcher. For
+                            // now it's used to show/hide price drop cards on tabs timely.
+                            if (mode == TabListCoordinator.TabListMode.GRID) {
+                                resetHandler.resetWithTabList(
+                                        tabModelSelector.getTabModelFilterProvider()
+                                                .getCurrentTabModelFilter(),
+                                        false,
+                                        TabSwitcherCoordinator.isShowingTabsInMRUOrder(mode));
+                            }
+                        }
+                    };
 
-        mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                         .with(ModalDialogProperties.CONTROLLER, dialogController)
-                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
-                         .build();
+            mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                             .with(ModalDialogProperties.CONTROLLER, dialogController)
+                             .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                             .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
+                             .build();
+        }
     }
 
     void show() {
+        mDialogView.setupRowMenuVisibility();
         mDialogView.updateSwitch();
         mModalDialogManager.showDialog(mModel, ModalDialogManager.ModalDialogType.APP);
     }

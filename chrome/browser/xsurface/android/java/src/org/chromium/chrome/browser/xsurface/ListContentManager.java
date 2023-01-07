@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,6 +63,11 @@ public interface ListContentManager {
     /** Returns number of items to show. */
     default int getItemCount() {
         return 0;
+    }
+
+    /** Returns whether the item at index should span across all columns. */
+    default boolean isFullSpan(int index) {
+        return false;
     }
 
     /** Adds an observer to be notified when the list content changes. */

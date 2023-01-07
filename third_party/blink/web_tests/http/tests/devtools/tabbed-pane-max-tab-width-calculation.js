@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
   TestRunner.addResult(`Tests tabbed pane max tab element width calculation.\n`);
 
   function calculateAndDumpMaxWidth(measuredWidths, totalWidth) {
-    var maxWidth = UI.TabbedPane.prototype._calculateMaxWidth(measuredWidths, totalWidth);
+    var maxWidth = UI.TabbedPane.prototype.calculateMaxWidth(measuredWidths, totalWidth);
     TestRunner.addResult(
         'measuredWidths = [' + String(measuredWidths) + '], totalWidth = ' + totalWidth + ', maxWidth = ' + maxWidth +
         '.');

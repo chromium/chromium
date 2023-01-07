@@ -1,9 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

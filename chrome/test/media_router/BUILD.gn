@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,16 +14,19 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "media_router_cast_ui_for_test.cc",
+    "media_router_cast_ui_for_test.h",
     "media_router_e2e_browsertest.cc",
     "media_router_e2e_browsertest.h",
     "media_router_e2e_ui_browsertest.cc",
+    "media_router_gmc_ui_for_test.cc",
+    "media_router_gmc_ui_for_test.h",
     "media_router_integration_browsertest.cc",
     "media_router_integration_browsertest.h",
     "media_router_integration_ui_browsertest.cc",
-    "media_router_native_integration_browsertest.cc",
     "media_router_one_ua_integration_browsertest.cc",
-    "media_router_ui_for_test.cc",
-    "media_router_ui_for_test.h",
+    "media_router_ui_for_test_base.cc",
+    "media_router_ui_for_test_base.h",
   ]
   deps = [
     ":test_support",
@@ -31,11 +34,14 @@ source_set("browser_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser/media/router",
+    "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/views:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//components/global_media_controls",
     "//components/media_router/common",
     "//components/policy/core/browser",
     "//components/policy/core/common:test_support",
@@ -51,10 +57,7 @@ source_set("browser_tests") {
     "//ui/views:test_support",
     "//url",
   ]
-  data_deps = [
-    ":browser_test_resources",
-    "//chrome/browser/resources/media_router/extension:media_router",
-  ]
+  data_deps = [ ":browser_test_resources" ]
 }
 
 copy("browser_test_resources") {
@@ -80,8 +83,7 @@ copy("browser_test_resources") {
   ]
 }
 
-# Run separately from the Chromium waterfall with the external component
-# extension.  See README.md
+# Run separately from the Chromium waterfall. See README.md for details.
 if (enable_downstream_media_tests) {
   group("media_router_e2e_tests") {
     testonly = true
@@ -90,10 +92,7 @@ if (enable_downstream_media_tests) {
       ":e2e_test_resources",
       "//chrome/test:browser_tests",
     ]
-    data = [
-      "$root_out_dir/mr_extension/",
-      "internal/",
-    ]
+    data = [ "internal/" ]
   }
 }
 
@@ -116,26 +115,17 @@ if (enable_downstream_media_tests) {
       ":browser_test_resources",
       "//chrome/test:browser_tests",
     ]
-    data = [
-      "internal/",
-      "$root_out_dir/mr_extension/",
-    ]
+    data = [ "internal/" ]
   }
 }
 
 source_set("test_support") {
   testonly = true
   sources = [
-    "media_router_base_browsertest.cc",
-    "media_router_base_browsertest.h",
     "test_media_sinks_observer.cc",
     "test_media_sinks_observer.h",
   ]
-  public_deps = [
-    "//base",
-    "//chrome/browser/extensions",
-    "//extensions/browser",
-  ]
+  public_deps = [ "//base" ]
   deps = [
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:test_support",
@@ -144,20 +134,6 @@ source_set("test_support") {
     "//chrome/test:test_support_ui",
     "//content/public/common",
     "//content/test:test_support",
-    "//extensions/common",
     "//testing/gtest",
   ]
-}
-
-if (enable_downstream_media_tests) {
-  group("media_router_perf_tests") {
-    testonly = true
-    data = [
-      "$root_out_dir/mr_extension/",
-      "internal/",
-      "telemetry/",
-    ]
-    deps = [ "//tools/perf:perf" ]
-    data_deps = [ "//tools/perf/contrib/media_router_benchmarks:telemetry_extension_resources" ]
-  }
 }

@@ -1,8 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+/** @type {!HTMLTemplateElement} */
+const htmlTemplate = html`{__html_template__}`;
 
 /**
  * Definition of a circular progress indicator custom element.
@@ -13,12 +18,12 @@
  *   element.setAttribute('progress', '50'); to set progress to half complete
  * or alternately, set the 'element.progress' JS property for the same result.
  */
-/* #export */ class CircularProgress extends HTMLElement {
+export class CircularProgress extends HTMLElement {
   constructor() {
     super();
-    const host = document.createElement('template');
-    host.innerHTML = this.constructor.template_;
-    this.attachShadow({mode: 'open'}).appendChild(host.content.cloneNode(true));
+
+    const fragment = htmlTemplate.content.cloneNode(true);
+    this.attachShadow({mode: 'open'}).appendChild(fragment);
 
     /** @private {number} */
     this.progress_ = 0.0;
@@ -47,60 +52,6 @@
      * @private {number}
      */
     this.fullCircle_ = 63;
-  }
-
-  /**
-   * Static getter for the custom element template.
-   * @private
-   */
-  static get template_() {
-    return `<style>
-                    .progress {
-                        height: 36px;
-                        width: 36px;
-                    }
-
-                    :host-context([detailed-panel][data-category='expanded'])
-                    .progress {
-                        height: 32px;
-                        width: 32px;
-                     }
-
-                    :host-context([detailed-panel][data-category='collapsed'])
-                    .progress {
-                        height: 28px;
-                        width: 28px;
-                    }
-
-                    .bottom {
-                        stroke: var(--google-blue-100);
-                        fill: none;
-                    }
-                    .top {
-                        stroke: var(--google-blue-600);
-                        stroke-linecap: round;
-                        fill: none;
-                    }
-                    text {
-                        font: bold 14px Roboto;
-                        fill: var(--google-blue-600);
-                    }
-                </style>
-                <div class='progress'>
-                    <svg xmlns='http://www.w3.org/2000/svg'
-                        viewBox='0 0 36 36'>
-                        <g id='circles' stroke-width='3'>
-                          <circle class='bottom' cx='18' cy='18' r='10'/>
-                          <circle class='top' transform='rotate(-90 18 18)'
-                            cx='18' cy='18' r='10' stroke-dasharray='0 1'/>
-                        </g>
-                        <text class='label' x='18' y='18' text-anchor='middle'
-                            alignment-baseline='central'></text>
-                        <circle class='errormark' visibility='hidden'
-                            cx='25.5' cy='10.5' r='4'
-                            fill='#D93025' stroke='none'/>
-                    </svg>
-                </div>`;
   }
 
   /**

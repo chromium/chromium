@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include "base/time/time.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/interpolated_transform.h"
-#include "ui/gfx/transform.h"
 
 namespace ash {
 
@@ -22,12 +22,12 @@ const int k360DegreeTransitionDurationMs = 750;
 
 base::TimeDelta GetTransitionDuration(int degrees) {
   if (degrees == 360)
-    return base::TimeDelta::FromMilliseconds(k360DegreeTransitionDurationMs);
+    return base::Milliseconds(k360DegreeTransitionDurationMs);
   if (degrees == 180)
-    return base::TimeDelta::FromMilliseconds(k180DegreeTransitionDurationMs);
+    return base::Milliseconds(k180DegreeTransitionDurationMs);
   if (degrees == 0)
-    return base::TimeDelta::FromMilliseconds(0);
-  return base::TimeDelta::FromMilliseconds(k90DegreeTransitionDurationMs);
+    return base::Milliseconds(0);
+  return base::Milliseconds(k90DegreeTransitionDurationMs);
 }
 
 }  // namespace
@@ -44,8 +44,8 @@ WindowRotation::~WindowRotation() = default;
 void WindowRotation::InitTransform(ui::Layer* layer) {
   // No rotation required, use the identity transform.
   if (degrees_ == 0) {
-    interpolated_transform_.reset(
-        new ui::InterpolatedConstantTransform(gfx::Transform()));
+    interpolated_transform_ =
+        std::make_unique<ui::InterpolatedConstantTransform>(gfx::Transform());
     return;
   }
 
@@ -74,9 +74,9 @@ void WindowRotation::InitTransform(ui::Layer* layer) {
   }
 
   // Convert points to world space.
-  current_transform.TransformPoint(&old_pivot);
-  current_transform.TransformPoint(&new_pivot);
-  current_transform.TransformPoint(&new_origin_);
+  old_pivot = current_transform.MapPoint(old_pivot);
+  new_pivot = current_transform.MapPoint(new_pivot);
+  new_origin_ = current_transform.MapPoint(new_origin_);
 
   std::unique_ptr<ui::InterpolatedTransform> rotation =
       std::make_unique<ui::InterpolatedTransformAboutPivot>(
@@ -95,8 +95,8 @@ void WindowRotation::InitTransform(ui::Layer* layer) {
       std::make_unique<ui::InterpolatedScale>(1.0f, 1.0f / scale_factor, 0.5f,
                                               1.0f);
 
-  interpolated_transform_.reset(
-      new ui::InterpolatedConstantTransform(current_transform));
+  interpolated_transform_ =
+      std::make_unique<ui::InterpolatedConstantTransform>(current_transform);
 
   scale_up->SetChild(std::move(scale_down));
   translation->SetChild(std::move(scale_up));

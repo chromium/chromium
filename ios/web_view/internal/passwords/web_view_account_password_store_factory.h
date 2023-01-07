@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 
 // Fired whenever password data is updated from the sync servers.
@@ -29,11 +29,16 @@ namespace ios_web_view {
 class WebViewAccountPasswordStoreFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static scoped_refptr<password_manager::PasswordStore> GetForBrowserState(
-      WebViewBrowserState* browser_state,
-      ServiceAccessType access_type);
+  static scoped_refptr<password_manager::PasswordStoreInterface>
+  GetForBrowserState(WebViewBrowserState* browser_state,
+                     ServiceAccessType access_type);
 
   static WebViewAccountPasswordStoreFactory* GetInstance();
+
+  WebViewAccountPasswordStoreFactory(
+      const WebViewAccountPasswordStoreFactory&) = delete;
+  WebViewAccountPasswordStoreFactory& operator=(
+      const WebViewAccountPasswordStoreFactory&) = delete;
 
  private:
   friend class base::NoDestructor<WebViewAccountPasswordStoreFactory>;
@@ -47,8 +52,6 @@ class WebViewAccountPasswordStoreFactory
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewAccountPasswordStoreFactory);
 };
 
 }  // namespace ios_web_view

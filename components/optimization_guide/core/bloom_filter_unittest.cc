@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,7 +103,7 @@ TEST(BloomFilterTest, EverythingMatches) {
 }
 
 // Disable this test in configurations that don't print CHECK failures.
-#if !defined(OS_IOS) && !(defined(OFFICIAL_BUILD) && defined(NDEBUG))
+#if !BUILDFLAG(IS_IOS) && !(defined(OFFICIAL_BUILD) && defined(NDEBUG))
 TEST(BloomFilterTest, ByteVectorTooSmall) {
   std::string data(1023, 0xff);
   EXPECT_DEATH(

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -21,17 +20,14 @@ namespace {
 using ::testing::_;
 
 // These constants should be the same as screen_power_controller_aura.cc.
-constexpr base::TimeDelta kScreenOnOffDuration =
-    base::TimeDelta::FromMilliseconds(200);
-constexpr base::TimeDelta kDisplayPowerOnDelay =
-    base::TimeDelta::FromMilliseconds(35);
-constexpr base::TimeDelta kDisplayPowerOffDelay =
-    base::TimeDelta::FromMilliseconds(85);
+constexpr base::TimeDelta kScreenOnOffDuration = base::Milliseconds(200);
+constexpr base::TimeDelta kDisplayPowerOnDelay = base::Milliseconds(35);
+constexpr base::TimeDelta kDisplayPowerOffDelay = base::Milliseconds(85);
 
 class MockScreenPowerControllerDelegate
     : public ScreenPowerController::Delegate {
  public:
-  virtual ~MockScreenPowerControllerDelegate() = default;
+  ~MockScreenPowerControllerDelegate() override = default;
 
   // ScreenPowerController::Delegate implementation:
   MOCK_METHOD(void, SetScreenPowerOn, (PowerToggleCallback callback), (override));

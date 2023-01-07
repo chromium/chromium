@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
@@ -72,16 +72,18 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
         buffer_pool);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
+
+  VideoCaptureDeviceClientTest(const VideoCaptureDeviceClientTest&) = delete;
+  VideoCaptureDeviceClientTest& operator=(const VideoCaptureDeviceClientTest&) =
+      delete;
+
   ~VideoCaptureDeviceClientTest() override = default;
 
  protected:
-  NiceMock<MockVideoFrameReceiver>* receiver_;
+  raw_ptr<NiceMock<MockVideoFrameReceiver>> receiver_;
   std::unique_ptr<unittest_internal::MockGpuMemoryBufferManager>
       gpu_memory_buffer_manager_;
   std::unique_ptr<VideoCaptureDeviceClient> device_client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceClientTest);
 };
 
 // A small test for reference and to verify VideoCaptureDeviceClient is
@@ -112,7 +114,7 @@ TEST_F(VideoCaptureDeviceClientTest, Minimal) {
       gpu_memory_buffer_manager_->CreateFakeGpuMemoryBuffer(
           kBufferDimensions, gfx::BufferFormat::YUV_420_BIPLANAR,
           gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-          gpu::kNullSurfaceHandle);
+          gpu::kNullSurfaceHandle, nullptr);
   {
     InSequence s;
     const int expected_buffer_id = 0;
@@ -152,7 +154,8 @@ TEST_F(VideoCaptureDeviceClientTest, FailsSilentlyGivenInvalidFrameFormat) {
   std::unique_ptr<gfx::GpuMemoryBuffer> buffer =
       gpu_memory_buffer_manager_->CreateFakeGpuMemoryBuffer(
           kBufferDimensions, gfx::BufferFormat::YUV_420_BIPLANAR,
-          gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE, gpu::kNullSurfaceHandle);
+          gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE, gpu::kNullSurfaceHandle,
+          nullptr);
   EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer(_, _, _)).Times(0);
   device_client_->OnIncomingCapturedGfxBuffer(
       buffer.get(), kFrameFormat, 0 /*clockwise rotation*/, base::TimeTicks(),
@@ -228,7 +231,7 @@ TEST_F(VideoCaptureDeviceClientTest, DataCaptureGoodPixelFormats) {
     PIXEL_FORMAT_NV21,
     PIXEL_FORMAT_YUY2,
     PIXEL_FORMAT_UYVY,
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     PIXEL_FORMAT_RGB24,
 #endif
     PIXEL_FORMAT_ARGB,
@@ -311,7 +314,7 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
             size_and_rotation.input_resolution,
             gfx::BufferFormat::YUV_420_BIPLANAR,
             gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
-            gpu::kNullSurfaceHandle);
+            gpu::kNullSurfaceHandle, nullptr);
 
     gfx::Size coded_size;
     EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer(_, _, _))

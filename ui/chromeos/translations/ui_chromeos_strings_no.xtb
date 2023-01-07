@@ -2,69 +2,84 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1000498691615767391">Velg en mappe du vil åpne</translation>
-<translation id="1035094536595558507">Lysbildevisning</translation>
 <translation id="1047956942837015229">Sletter <ph name="COUNT" /> elementer ...</translation>
 <translation id="1049926623896334335">Word-dokument</translation>
+<translation id="1056775291175587022">Ingen nettverk</translation>
+<translation id="1056898198331236512">Advarsel</translation>
 <translation id="1060368002126861100">For å åpne filer med <ph name="APP_NAME" />, flytt dem til mappen for Windows-filer først.</translation>
 <translation id="1062407476771304334">Erstatt</translation>
-<translation id="1119069657431255176">Komprimert tar-arkiv for Bzip2</translation>
+<translation id="1119447706177454957">Intern feil</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Engelsk (USA) med Dvorak-programmeringstastatur</translation>
 <translation id="1134697384939541955">Engelsk (USA) med utvidet tastatur</translation>
-<translation id="1148097584170732637"><ph name="FILE_COUNT" /> ble funnet.
-    <ph name="LINE_BREAK1" />
-    Utilstrekkelig plass i lokal lagring. Du trenger <ph name="FILE_SIZE" /> til.
-    <ph name="LINE_BREAK2" />
-    Prøv å velge færre bilder.</translation>
+<translation id="1138691154716715755">Tidligere denne måneden</translation>
 <translation id="1150565364351027703">Solbriller</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalansk</translation>
+<translation id="1168100932582989117">Google-navnetjenere</translation>
 <translation id="1172970565351728681">Omtrent <ph name="REMAINING_TIME" /> gjenstår</translation>
 <translation id="1173894706177603556">Gi nytt navn</translation>
+<translation id="1173916544412572294">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – detaljer</translation>
 <translation id="117624967391683467">Kopierer <ph name="FILE_NAME" /> ...</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1190144681599273207">Henting av denne filen kommer til å bruke ca. <ph name="FILE_SIZE" /> mobildata.</translation>
+<translation id="1194390763418645112">Filtilgang for <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Neste</translation>
+<translation id="1209796539517632982">Automatiske navnetjenere</translation>
 <translation id="1210831758834677569">Lao</translation>
 <translation id="1243314992276662751">Last opp</translation>
 <translation id="1249250836236328755">Sjanger</translation>
+<translation id="1254593899333212300">Direkte internettilkobling</translation>
+<translation id="1272293450992660632">PIN-kodene er ikke like.</translation>
+<translation id="1280820357415527819">Søker etter mobilnettverk</translation>
+<translation id="1291603679744561561">SIM-kortet er låst</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1297922636971898492">Google Disk er ikke tilgjengelig for øyeblikket. Opplastingen starter automatisk på nytt når Google Disk er tilgjengelig.</translation>
 <translation id="1307931752636661898">Kan ikke vise Linux-filer</translation>
-<translation id="1346748346194534595">Høyre</translation>
-<translation id="1351692861129622852">Importerer <ph name="FILE_COUNT" /> filer ...</translation>
+<translation id="1313405956111467313">Automatisk konfigurasjon av proxy-tjener</translation>
+<translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Filen eller katalogen ikke er brukbar.</translation>
 <translation id="1363028406613469049">Spor</translation>
 <translation id="1378727793141957596">Velkommen til Google Disk</translation>
 <translation id="1379911846207762492">Du kan gjøre filer tilgjengelige uten nett, slik at du kan bruke dem når du ikke har noen internettilkobling.</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1395262318152388157">Fremdriftsbryter</translation>
+<translation id="1399511500114202393">Ingen brukersertifikater</translation>
 <translation id="1404323374378969387">Norsk</translation>
-<translation id="1430915738399379752">Skriv ut</translation>
+<translation id="1433628812591023318">For å slippe filer i Parallels Desktop må du flytte filen til Windows-filene.</translation>
 <translation id="1435838927755162558">Del mappen med Parallels Desktop</translation>
-<translation id="1467432559032391204">Venstre</translation>
+<translation id="1439919885608649279">Person med blomster</translation>
 <translation id="1471718551822868769">Slovakisk</translation>
-<translation id="1474339897586437869">«<ph name="FILENAME" />» ble ikke lastet opp. Det er ikke nok ledig plass på Google Disk.</translation>
 <translation id="1482884275703521657">Finsk</translation>
 <translation id="148466539719134488">Sveitsisk</translation>
 <translation id="1497522201463361063">Kunne ikke gi «<ph name="FILE_NAME" />» nytt navn. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Engelsk (USA) med Dvorak-tastatur</translation>
+<translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – vert</translation>
+<translation id="1521655867290435174">Google Regneark</translation>
 <translation id="1538729222189715449">Åpner Linux-filer …</translation>
 <translation id="1547964879613821194">Canadisk engelsk</translation>
 <translation id="1556189134700913550">Gjelder alle</translation>
 <translation id="1561842594491319104">Chrome-enheter</translation>
 <translation id="1572585716423026576">Angi som bakgrunn</translation>
 <translation id="1576937952766665062">Bengali, translitterasjon</translation>
+<translation id="1577977504532381335">Gjennomgå administratorreglene</translation>
+<translation id="158849752021629804">Trenger hjemmenettverk</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugisisk med tastaturet USA-Internasjonal</translation>
+<translation id="1629521517399325891">Brukersertifikatet er ikke tilgjengelig for nettverksautentisering.</translation>
 <translation id="1641780993263690097">Kinesisk pinyin</translation>
 <translation id="1646019627374511909">Gjør <ph name="NUMBER_OF_ITEMS" /> filer tilgjengelige uten nett</translation>
 <translation id="164969095109328410">Chrome-enhet</translation>
+<translation id="1661867754829461514">Personlig kode mangler</translation>
+<translation id="166439687370499867">Det er ikke tillatt å endre delte nettverkskonfigurasjoner</translation>
 <translation id="1665611772925418501">Kunne ikke endre filen.</translation>
 <translation id="1673103856845176271">Filen kunne ikke åpnes av sikkerhetsårsaker.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">Sykling</translation>
 <translation id="1722487484194605434">Zipper <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
+<translation id="1722687688096767818">Legger til profil …</translation>
+<translation id="1726100011689679555">Navnetjenere</translation>
 <translation id="1729953886957086472">Tysk (Tyskland)</translation>
 <translation id="1730235522912993863">Kinesisk cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementer er kopiert.</translation>
@@ -72,20 +87,23 @@
 <translation id="1742316578210444689">Hebraisk, translitterasjon</translation>
 <translation id="1747761757048858544">Nederlandsk (Nederland)</translation>
 <translation id="174937106936716857">Totalt antall filer</translation>
+<translation id="1755345808328621801">Denne filen er laget for datamaskiner som kjører Windows-programvare. Den er ikke kompatibel med enheten din, som kjører ChromeOS. Søk etter en passende erstatningsapp i Chrome Nettmarked.</translation>
+<translation id="1757915090001272240">Bred Latin</translation>
+<translation id="1773212559869067373">Autentiseringssertifikatet ble avvist lokalt</translation>
 <translation id="1775381402323441512">Videoinformasjon</translation>
 <translation id="180035236176489073">Du må ha internettilkobling for å få tilgang til disse filene.</translation>
 <translation id="1807938677607439181">Alle filer</translation>
 <translation id="1810764548349082891">Ingen forhåndsvisning er tilgjengelig</translation>
 <translation id="1812302367230252929">Amharisk, translitterasjon</translation>
 <translation id="1813278315230285598">Tjenester</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Forsiktig:<ph name="END_BOLD" /> Disse filene er midlertidige og kan bli slettet automatisk for å frigjøre diskplass. <ph name="BEGIN_LINK" />Les mer<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingviner</translation>
 <translation id="183183971458492120">Laster inn informasjon …</translation>
+<translation id="1832073788765803750">Katakana – halv bredde</translation>
+<translation id="1834290891154666894">Ugyldig oppføring i listen over samsvarende alternative emnenavn</translation>
 <translation id="1838709767668011582">Google-nettsted</translation>
-<translation id="1844692022597038441">Denne filen er ikke tilgjengelig utenfor Internett.</translation>
-<translation id="1847880352285315359">Lagret</translation>
 <translation id="1853795129690976061">Denne mappen deles med Linux</translation>
 <translation id="1864756863218646478">Kunne ikke finne filen.</translation>
+<translation id="1884013283844450420">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – koble til</translation>
 <translation id="1920670151694390848">Malayalam, translitterasjon</translation>
 <translation id="1920798810075583923">Vannmelon</translation>
 <translation id="1924372192547904021">Formaterte <ph name="DRIVE_NAME" /></translation>
@@ -94,126 +112,155 @@
 <translation id="1936717151811561466">Finsk</translation>
 <translation id="1942765061641586207">Bildeoppløsning</translation>
 <translation id="1972984168337863910">Vis tilbakemeldingspaneler på filer</translation>
-<translation id="1984456723671657197">Denne filtypen støttes ikke. <ph name="BEGIN_LINK_HELP" />Finn ut mer<ph name="END_LINK_HELP" /> om å åpne filer i Chrome OS.</translation>
 <translation id="1995337122023280937">Gå til filplassering</translation>
+<translation id="1999709132469742660">Filtilgang for alle nettadresser</translation>
 <translation id="2001796770603320721">Administrer i Disk</translation>
 <translation id="2009067268969781306">Diskformatering sletter alle data som er lagret på disken. Denne handlingen kan ikke angres.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
-<translation id="2028997212275086731">RAR-arkiv</translation>
 <translation id="2037845485764049925">Russisk</translation>
+<translation id="2044023416777079300">Modemet er ikke registrert</translation>
 <translation id="2046702855113914483">Nudler</translation>
 <translation id="2070909990982335904">Navn som starter med et punktum, er reservert for systemet. Velg et annet navn.</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2084108471225856927">Enhetsinnstillinger</translation>
+<translation id="2084809735218147718">Tegnspråk for takk</translation>
 <translation id="2085470240340828803">Det finnes allerede en fil med navnet «<ph name="FILENAME" />». Hva ønsker du å gjøre?</translation>
-<translation id="2121825465123208577">Endre størrelse</translation>
+<translation id="2088690981887365033">VPN-nettverk</translation>
+<translation id="2122305276694332719">Automatisk tilkobling til skjulte nettverk gjør det mulig for andre å se enheten din og enkelte nettverksinnstillinger, så det anbefales ikke.</translation>
 <translation id="2125607626296734455">Khmer</translation>
+<translation id="2139545522194199494">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – koble til</translation>
+<translation id="2141347188420181405">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – blokkert av administratoren din – detaljer</translation>
 <translation id="2142680004883808240">Russisk med fonetisk YaZHert-tastatur</translation>
+<translation id="2143778271340628265">Manuell konfigurasjon av proxy-tjener</translation>
+<translation id="2148716181193084225">I dag</translation>
 <translation id="2163152940313951844">Ugyldig tegn: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugisisk med datamaskintastaturet USA-Internasjonal</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> er brukt</translation>
 <translation id="2198315389084035571">Kinesisk (forenklet)</translation>
-<translation id="2208158072373999562">.zip-arkiv</translation>
 <translation id="22085916256174561">Koreansk</translation>
 <translation id="2208919847696382164">Installér med Linux</translation>
 <translation id="2225536596944493418">Er du sikker på at du vil slette <ph name="NUMBER_OF_ITEMS" /> elementer?</translation>
 <translation id="2230062665678605299">Kunne ikke opprette mappen «<ph name="FOLDER_NAME" />». <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Person med kaffe</translation>
 <translation id="2251368349685848079">Gjenopprett fra papirkurven</translation>
+<translation id="2282155092769082568">Nettadresse for automatisk konfigurering:</translation>
+<translation id="2284767815536050991">flyttbar lagring</translation>
 <translation id="2288278176040912387">Platespiller</translation>
 <translation id="2291538123825441971">Åpner <ph name="NUMBER_OF_FILES" /> filer.</translation>
 <translation id="2303301624314357662">Åpner filen <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> er løst ut.</translation>
+<translation id="2307462900900812319">Konfigurer nettverket</translation>
 <translation id="2325650632570794183">Denne filtypen støttes ikke. Gå til Chrome Nettmarked for å finne en app som kan åpne denne filtypen.</translation>
 <translation id="2326539130272988168">Bulgarsk</translation>
-<translation id="2352947182261340447">Utilstrekkelig plass i lokal lagring.</translation>
+<translation id="23721837607121582">Last ned mobilprofilen, nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Bytt til listevisning</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> filer valgt</translation>
+<translation id="2383454254762599978">Legg i papirkurven</translation>
+<translation id="2387458720915042159">Tilkoblingstype for proxy-tjener</translation>
 <translation id="2389832672041313158">Burmesisk/myanmarsk</translation>
+<translation id="2392369802118427583">Aktiver</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> tilgjengelig</translation>
+<translation id="2417486498593892439">Logg på nettverket</translation>
 <translation id="2425665904502185219">Total filstørrelse</translation>
 <translation id="2428749644083375155">Kopierer <ph name="NUMBER_OF_ITEMS" /> elementer til <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Type</translation>
-<translation id="2453576648990281505">Filen eksisterer allerede</translation>
+<translation id="2452444014801043526">Person med megafon</translation>
 <translation id="2464079411014186876">Iskrem</translation>
+<translation id="2464089476039395325">HTTP-proxy-tjener</translation>
+<translation id="2467267713099745100"><ph name="NETWORK_TYPE" />-nettverk – av</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2470939964922472929">Feil PIN-kode ble tastet inn for mange ganger. For å sette opp en ny PIN-kode, skriv inn den åttesifrede PUK-koden som leveres av operatøren din.</translation>
 <translation id="2500392669976258912">Gujarati, fonetisk</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2534155362429831547">Slettet <ph name="NUMBER_OF_ITEMS" /> elementer</translation>
+<translation id="2517472476991765520">Skann</translation>
+<translation id="252641322760726369">Trykk og hold på en fil, trykk på <ph name="ICON" />, og velg «<ph name="PIN_COMMAND" />» for å få rask tilgang til filene dine på hyllen.</translation>
+<translation id="2534460670861217804">Sikker HTTP-proxy-tjener</translation>
 <translation id="2541377937973966830">Innholdet i denne mappen er skrivebeskyttet. Noen aktiviteter støttes ikke.</translation>
 <translation id="2542049655219295786">Google-tabell</translation>
-<translation id="2547921442987553570">Legg til i <ph name="EXTENSION_NAME" /></translation>
+<translation id="2544853746127077729">Autentiseringssertifikatet ble avvist av nettverket</translation>
 <translation id="255937426064304553">USA internasjonalt</translation>
-<translation id="2562685439590298522">Google Dokumenter</translation>
 <translation id="2563185590376525700">Frosk</translation>
 <translation id="2578394532502990878">Tamil, fonetisk</translation>
 <translation id="2579959351793446050">Oriya</translation>
+<translation id="2602810353103180630">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – blokkert av administratoren din – detaljer</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
 <translation id="2620090360073999360">Google Disk kan ikke nås for øyeblikket.</translation>
+<translation id="2621713457727696555">Sikret</translation>
 <translation id="2638942478653899953">Google Disk kan ikke nås. <ph name="BEGIN_LINK" />Logg av<ph name="END_LINK" /> og på igjen.</translation>
 <translation id="2649120831653069427">Regnbuefisk</translation>
-<translation id="2661146741306740526">16 x 9</translation>
+<translation id="2653059201992392941">Du har <ph name="RETRIES" /> forsøk igjen.</translation>
 <translation id="2663066752008346276">Burmesisk/myanmarsk med Myansan-tastatur</translation>
 <translation id="2664412712123763093">Filplassering</translation>
-<translation id="2672394958563893062">Det oppsto en feil. Klikk for å starte på nytt fra begynnelsen.</translation>
-<translation id="2676946222714718093">Spilles av på</translation>
 <translation id="2718540689505416944">Installér app med Linux</translation>
+<translation id="2719020180254996569">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="CONNECTION_STATUS" /> – detaljer</translation>
 <translation id="2724954091494693138">Tyrkisk med F-tastatur</translation>
 <translation id="2732839045120506979">Vietnamesisk VNI</translation>
 <translation id="2735623501230989521">Gi Parallels Desktop tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Du har brukt opp den individuelle Google Workspace-lagringsplassen din.</translation>
 <translation id="2771816809568414714">Ost</translation>
 <translation id="2781645665747935084">Belgisk</translation>
 <translation id="2782104745158847185">Feil ved installasjon av Linux-programmet</translation>
-<translation id="2787047795752739979">Overskriv originalen</translation>
+<translation id="2803375539583399270">Skriv inn PIN-koden</translation>
+<translation id="2820957248982571256">Skanner …</translation>
 <translation id="2830077785865012357">Kinesisk zhuyin</translation>
 <translation id="2843806747483486897">Endre standardhandling</translation>
-<translation id="2850124913210091882">Sikkerhetskopiér</translation>
 <translation id="2873951654529031587">Papirkurv</translation>
 <translation id="288024221176729610">Tsjekkisk</translation>
 <translation id="2887525882758501333">PDF-dokument</translation>
 <translation id="2888807692577297075">Ingen elementer samsvarer med &lt;b&gt;«<ph name="SEARCH_STRING" />»&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informasjon</translation>
-<translation id="2902312830803030883">Flere handlinger</translation>
 <translation id="2902734494705624966">Amerikansk utvidet</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estisk</translation>
-<translation id="2925966894897775835">Regneark</translation>
 <translation id="2938685643439809023">Mongolsk</translation>
-<translation id="2943400156390503548">Lysbilder</translation>
 <translation id="2943503720238418293">Bruk et kortere navn</translation>
 <translation id="2949781154072577687">Formaterer <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Stormanet</translation>
+<translation id="2958458230122209142">Lite lagringsplass – <ph name="REMAINING_PERCENTAGE" /> % igjen av den individuelle lagringsplassen din på <ph name="TOTAL_SPACE" />.</translation>
+<translation id="2977940621473452797">Denne filen er laget for datamaskiner som kjører Macintosh-programvare. Den er ikke kompatibel med enheten din, som kjører ChromeOS. Søk etter en passende erstatningsapp i Chrome Nettmarked.</translation>
 <translation id="2984337792991268709">I dag kl. <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994320653639462337">Gjenoppretter <ph name="COUNT" /> elementer …</translation>
-<translation id="2994669386200004489">Kunne ikke sikkerhetskopiere <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">Fransk (Canada)</translation>
+<translation id="3003189754374775221">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="NETWORK_PROVIDER_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – koble til</translation>
 <translation id="3003633581067744647">Bytt til miniatyrbildevisning</translation>
-<translation id="3007214526293698309">Fast høyde/bredde-forhold</translation>
+<translation id="3016566519832145558">Advarsel: Disse filene er midlertidige og kan bli slettet automatisk for å frigjøre diskplass.</translation>
 <translation id="3029114385395636667">Slå på Google Dokumenter uten nett for å gjøre Dokumenter, Regneark og Presentasjoner tilgjengelig uten nett.</translation>
 <translation id="303198083543495566">Geografi</translation>
+<translation id="3044404008258011032">For å gjenopprette disse elementene, dra dem til en ny mappe utenfor papirkurven. Den opprinnelige mappen «<ph name="PARENT_FOLDER_NAME" />» for dette elementet er slettet.</translation>
 <translation id="3047197340186497470">Kinesisk dayi</translation>
-<translation id="3057861065630527966">Sikkerhetskopiér bildene og videoene dine</translation>
 <translation id="3067790092342515856">Windows-filer</translation>
-<translation id="3078461028045006476">Del med <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit-enheter</translation>
+<translation id="3085752524577180175">SOCKS-vert</translation>
+<translation id="3104793765551262433">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – blokkert av administratoren din – detaljer</translation>
+<translation id="3113153474486991170">Kunne ikke åpne «<ph name="PATH" />» fra denne plasseringen. Kopiér filen til «Mine filer» for å åpne den.</translation>
+<translation id="3113592018909187986">Du har ett forsøk igjen. Du kan ikke bruke dette nettverket før du har satt opp en ny PIN-kode.</translation>
+<translation id="3124404833828281817">Person som dagdrømmer</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3144126448740580210">FERDIG</translation>
+<translation id="3138624403379688522">Ugyldig PIN-kode. Du har <ph name="RETRIES" /> forsøk igjen.</translation>
+<translation id="3157931365184549694">Gjenopprett</translation>
+<translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (maskinvarestøttet)</translation>
 <translation id="3188257591659621405">Mine filer</translation>
+<translation id="3194553149358267393">Ingen nylige lydfiler</translation>
 <translation id="3197563288998582412">Britisk Dvorak</translation>
 <translation id="3202131003361292969">Bane</translation>
 <translation id="3205852408225871810">Portugisisk (Brasil)</translation>
 <translation id="3224239078034945833">Flerspråklig canadisk</translation>
 <translation id="3236289833370040187">Eierskapet overføres til <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Irsk</translation>
-<translation id="3245321423178950146">Ukjent artist</translation>
 <translation id="3248185426436836442">Venter</translation>
 <translation id="3252266817569339921">Fransk</translation>
+<translation id="3253225298092156258">Ikke tilgjengelig</translation>
 <translation id="3254434849914415189">Velg standardapp for <ph name="FILE_TYPE" />-filer:</translation>
 <translation id="3255159654094949700">Arabisk</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3272909651715601089">Kunne ikke åpne «<ph name="PATH" />»</translation>
 <translation id="3280431534455935878">Forbereder</translation>
 <translation id="3280987981688031357">Vinylplate</translation>
+<translation id="3290356915286466215">Usikret</translation>
+<translation id="3291218047831493686">Koble til dette nettverket for å endre innstillingen for SIM-lås</translation>
+<translation id="3293023191599135697">WEP-nettverk støttes ikke</translation>
+<translation id="3295357220137379386">Enheten er opptatt</translation>
 <translation id="3296763833017966289">Georgisk</translation>
 <translation id="3307875152560779385">Ukrainsk</translation>
 <translation id="3326821416087822643">Til zip: <ph name="FILE_NAME" /> ...</translation>
@@ -221,40 +268,49 @@
 <translation id="3353984535370177728">Velg mappen du vil laste opp</translation>
 <translation id="3356580349448036450">Fullført</translation>
 <translation id="3358452157379365236">Gitar</translation>
+<translation id="3368922792935385530">Tilkoblet</translation>
 <translation id="3382143449143186018">Nepali med InScript-tastatur</translation>
+<translation id="338691029516748599">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – koble til</translation>
+<translation id="3408072735282270043">Aktivér, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Tysk (Tyskland) med NEO 2-tastatur</translation>
 <translation id="3414856743105198592">Hvis du formaterer den flyttbare medieenheten, blir alle dataene slettet. Vil du fortsette?</translation>
 <translation id="3437801641691368414">Opprettet</translation>
 <translation id="343907260260897561">Instantkamera</translation>
 <translation id="3455931012307786678">Estisk</translation>
-<translation id="3466147780910026086">Skanner medieenheten din ...</translation>
-<translation id="3468522857997926824"><ph name="FILE_COUNT" /> bilder ble sikkerhetskopiert til <ph name="BEGIN_LINK" />Google Disk<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Google-regneark</translation>
 <translation id="3479552764303398839">Ikke nå</translation>
 <translation id="3486821258960016770">Mongolsk</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> feil.</translation>
+<translation id="3495810061346586977">Denne filen er konfidensiell og underlagt begrensninger via administratorregler. <ph name="BEGIN_LINK_HELP" />Finn ut mer<ph name="END_LINK_HELP" /></translation>
+<translation id="3509680540198371098">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – detaljer</translation>
 <translation id="3522708245912499433">Portugisisk</translation>
 <translation id="3524311639100184459">Advarsel: Disse filene er midlertidige og kan bli slettet automatisk for å frigjøre diskplass.  <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mappe</translation>
+<translation id="3548125359243647069">Feil PIN-kode ble tastet inn for mange ganger.</translation>
 <translation id="3549797760399244642">Gå til drive.google.com</translation>
 <translation id="3553048479571901246">For å åpne filer med <ph name="APP_NAME" />, kopiér dem til mappen for Windows-filer først.</translation>
 <translation id="3556731189587832921">Engelsk (USA) med internasjonalt datamaskintastatur</translation>
+<translation id="3557414470514932909">Legger <ph name="FILE_NAME" /> i papirkurven</translation>
+<translation id="3567221313191587603">Velg en fil, og slå på <ph name="OFFLINE_CHECKBOX_NAME" /> for å ha tilgang til filene dine uten nett.</translation>
 <translation id="357479282490346887">Litauisk</translation>
+<translation id="3587482841069643663">Alle</translation>
 <translation id="3592251141500063301">Kunne ikke gjøre <ph name="FILE_NAME" /> tilgjengelig uten nett</translation>
+<translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Canadisk fransk</translation>
 <translation id="3606220979431771195">Tyrkisk F</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
-<translation id="3620292326130836921">Alt er sikkerhetskopiert!</translation>
-<translation id="3626281679859535460">Lysstyrke</translation>
-<translation id="3644896802912593514">Bredde</translation>
+<translation id="3619593063686672873">Ingen nylige videoer</translation>
+<translation id="3634507049637220048">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="CONNECTION_STATUS" /> – administreres av administratoren din</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementer er flyttet.</translation>
-<translation id="3645531960514756307">Løsne mappen</translation>
 <translation id="3685122418104378273">Google Disk-synkronisering er deaktivert som standard ved bruk av mobile data.</translation>
 <translation id="3689865792480713551">Avbryt <ph name="ACTIVITY_DESCRIPTION" />.</translation>
+<translation id="3690128548376345212">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktivert, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, detaljer</translation>
 <translation id="3691184985318546178">Singalesisk</translation>
+<translation id="3722341589402358578">Det oppsto en feil. Noen elementer er kanskje ikke lagt i papirkurven.</translation>
 <translation id="3726463242007121105">Denne enheten kan ikke åpnes fordi den har et filsystem som ikke støttes.</translation>
-<translation id="3741243925913727067">Sikkerhetskopiér bilder og videoer på medieenheten din til Google Disk.</translation>
+<translation id="3727148787322499904">Endringer i denne innstillingen påvirker alle delte nettverk</translation>
+<translation id="3737576078404241332">Fjern fra sidefeltet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
 <translation id="3780536599611287598">Du har ikke tillatelse til å flytte filer til «<ph name="FOLDER_NAME" />».</translation>
 <translation id="3786301125658655746">Du er ikke tilkoblet Internett</translation>
@@ -265,28 +321,39 @@
 <translation id="3809272675881623365">Kanin</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="3811494700605067549">1 fil er valgt</translation>
-<translation id="38275787300541712">Trykk på Enter når du er ferdig</translation>
+<translation id="3817579325494460411">Ikke angitt</translation>
+<translation id="3819448694985509187">Feil PIN-kode. Du har ett forsøk igjen.</translation>
+<translation id="3822559385185038546">Administratoren din kontrollerer denne proxy-tjeneren</translation>
 <translation id="3830674330436234648">Ingen avspillinger er tilgjengelige</translation>
 <translation id="383652340667548381">Serbisk</translation>
 <translation id="385051799172605136">Tilbake</translation>
+<translation id="3851491607336266896">Tilkoblet – begrenset tilkobling</translation>
 <translation id="3855472144336161447">Tysk Neo 2</translation>
-<translation id="386548886866354912">Pakk med <ph name="EXTENSION_NAME" /></translation>
+<translation id="3858860766373142691">Navn</translation>
 <translation id="3866249974567520381">Beskrivelse</translation>
 <translation id="3899991606604168269">Fransk (Canada) med flerspråklig tastatur</translation>
+<translation id="3901991538546252627">Kobler til <ph name="NAME" /></translation>
+<translation id="3906232975181435906">Installerer mobilprofil, nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Spill av på</translation>
 <translation id="3943857333388298514">Lim inn</translation>
 <translation id="3952872973865944257">Telugu, fonetisk</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Audio Player</translation>
+<translation id="3971140002794351170">Last ned mobilprofilen, nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engelsk (Storbritannia)</translation>
 <translation id="3975895378829046965">Bengali, fonetisk</translation>
 <translation id="4002066346123236978">Tittel</translation>
 <translation id="4017788180641807848">Engelsk (USA) med Workman-tastatur</translation>
+<translation id="4019998208269143058">Fest til hurtigfiler</translation>
+<translation id="4040753847560036377">Feil PUK-kode.</translation>
+<translation id="4057991113334098539">Aktiverer ...</translation>
 <translation id="4092890906744441904">Irsk</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
-<translation id="4158739975813877944">Åpne spillelisteen</translation>
+<translation id="4131235941541910880">Flytt elementer du ikke trenger, til papirkurven</translation>
+<translation id="4153015322587141338">Høyreklikk på en fil, og velg «<ph name="PIN_COMMAND" />» for å få rask tilgang til filene dine på hyllen.</translation>
+<translation id="4157569377477607576">Administratorreglene anbefaler ikke at du gjør følgende:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> er flyttet.</translation>
+<translation id="4176286497474237543">Tøm papirkurven nå</translation>
+<translation id="4179621117429069925">Dette elementet ligger i papirkurven din</translation>
 <translation id="4186579485882418952">Gjør tilgjengelig uten nett</translation>
 <translation id="4193154014135846272">Google-dokument</translation>
 <translation id="4197674956721858839">Zip-utvalg</translation>
@@ -294,53 +361,74 @@
 <translation id="4202977638116331303">Georgisk</translation>
 <translation id="421017592316736757">Du må ha internettilkobling for å få tilgang til denne filen.</translation>
 <translation id="4212740939091998969">Det finnes allerede en mappe som heter «<ph name="FOLDER_NAME" />». Velg et annet navn.</translation>
-<translation id="4215448920900139318">Sikkerhetskopierer <ph name="FILE_COUNT" /></translation>
+<translation id="4218274196133425560">Fjern unntak for <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Google-presentasjon</translation>
+<translation id="4277536868133419688"><ph name="FILTER_NAME" />-filteret er på.</translation>
 <translation id="4290535918735525311">1 mappe er delt med Linux</translation>
 <translation id="4299729908419173967">Brasiliansk</translation>
+<translation id="4302605047395093221">Alle som bruker denne enheten, må oppgi PIN-koden for å koble til dette mobilnettverket</translation>
+<translation id="4303531889494116116">Dette nettverket er utilgjengelig. Prøv på nytt senere.</translation>
 <translation id="4309915981827077375">Generell informasjon</translation>
 <translation id="432252891123397018">Rumensk med standardtastatur</translation>
 <translation id="4325128273762811722">Slovensk</translation>
 <translation id="4326142238881453352">Botaniker</translation>
 <translation id="4326192123064055915">Kaffe</translation>
 <translation id="4336032328163998280">Kopieringshandlingen mislyktes. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Legg til i sidefeltet</translation>
 <translation id="4348495354623233847">Sorani-kurdisk med arabisk-basert tastatur</translation>
+<translation id="434941167647142660">Opprinnelig plassering</translation>
 <translation id="4363958938297989186">Russisk med fonetisk tastatur</translation>
 <translation id="4364327530094270451">Melon</translation>
-<translation id="4372884569765913867">1 x 1</translation>
+<translation id="4378551569595875038">Kobler til …</translation>
+<translation id="4380245540200674032">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="NETWORK_PROVIDER_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – detaljer</translation>
+<translation id="4387004326333427325">Autentiseringssertifikatet ble avvist eksternt</translation>
 <translation id="4394214039309501350">Ekstern link</translation>
+<translation id="4394980935660306080">Tidligere denne uken</translation>
+<translation id="4398096759193130964">Gjenopprett elementene eller dra dem til en ny mappe utenfor papirkurven</translation>
+<translation id="4401287888955153199">Pakk ut alt</translation>
+<translation id="4410695710508688828">Utpakkingsoperasjonen mislyktes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Opprett en snarvei til filene dine</translation>
 <translation id="4425149324548788773">Min disk</translation>
+<translation id="4439427728133035643">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – koble til</translation>
+<translation id="4442424173763614572">DNS-søk mislyktes</translation>
+<translation id="4462159676511157176">Egendefinerte navnetjenere</translation>
+<translation id="4465725236958772856">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – administreres av administratoren din – koble til</translation>
 <translation id="4470564870223067757">Hangul 2-sett</translation>
 <translation id="4477002475007461989">Rumensk</translation>
 <translation id="4477219268485577442">Bulgarsk fonetisk</translation>
+<translation id="4508265954913339219">Aktiveringen mislyktes</translation>
 <translation id="4509667233588080747">Engelsk (USA) med internasjonalt Workman-tastatur</translation>
 <translation id="4522570452068850558">Detaljer</translation>
 <translation id="4527800702232535228">Denne mappen deles med Parallels Desktop</translation>
 <translation id="4552678318981539154">Kjøp mer lagringsplass</translation>
-<translation id="4559318885353833501"><ph name="FILE_NAME" /> er slettet</translation>
+<translation id="4552759165874948005"><ph name="NETWORK_TYPE" />-nettverk – signalstyrke <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-fil</translation>
 <translation id="457386861538956877">Mer</translation>
 <translation id="4579744207439506346">La til <ph name="ENTRY_NAME" /> i utvalget.</translation>
+<translation id="4583436353463424810">Ingen nylige dokumenter</translation>
 <translation id="4594543368593301662">Viser resultater for <ph name="SEARCH_TERM" />.</translation>
+<translation id="4599600860674643278">Filteret er tilbakestilt.</translation>
 <translation id="4603392156942865207">Kopierer <ph name="FILE_NAME" /> til <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artist</translation>
+<translation id="4642769377300286600">Installerer mobilprofil, nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tsjekkisk med QWERTY-tastatur</translation>
-<translation id="4656293982926141856">Denne datamaskinen</translation>
+<translation id="4656777537938206294">Gjør filer tilgjengelige uten nett</translation>
+<translation id="4658782175094886150">Person i snøen</translation>
 <translation id="4669606053856530811">Medlemmer av «<ph name="SOURCE_NAME" />» mister tilgangen, med mindre disse elementene deles med dem.</translation>
+<translation id="467809019005607715">Google Presentasjoner</translation>
 <translation id="4690246192099372265">Svensk</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Ape</translation>
 <translation id="469612310041132144">Kinesisk quick</translation>
 <translation id="4697043402264950621">Fillisten er sortert etter <ph name="COLUMN_NAME" /> i stigende rekkefølge.</translation>
+<translation id="469897186246626197">Denne filen er laget for datamaskiner som kjører Windows-programvare. Den er ikke kompatibel med enheten din, som kjører ChromeOS. <ph name="BEGIN_LINK_HELP" />Finn ut mer<ph name="END_LINK_HELP" /> om å åpne filer i ChromeOS.</translation>
 <translation id="4706042980341760088">Tamil med skrivemaskintastatur</translation>
 <translation id="4711094779914110278">Tyrkisk</translation>
 <translation id="4712283082407695269">Åpner «<ph name="PATH" />»</translation>
-<translation id="4724850507808590449"><ph name="FILE_COUNT" /> bilder ble sikkerhetskopiert</translation>
+<translation id="4720185134442950733">Mobildatanettverk</translation>
+<translation id="4725096204469550614">Tidligere i år</translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Beklager. Denne videoen støttes ikke av castenheten din.</translation>
-<translation id="4734518477988699048">Inndataverdien er ugyldig.</translation>
 <translation id="4737050008115666127">Landing</translation>
 <translation id="4747271164117300400">Makedonsk</translation>
 <translation id="4759238208242260848">Nedlastinger</translation>
@@ -349,8 +437,10 @@
 <translation id="4784330909746505604">PowerPoint-presentasjon</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
 <translation id="4789067489790477934">Gi Parallels Desktop tilgang til filer i Google Disk. Endringer synkroniseres med de andre enhetene dine.</translation>
+<translation id="4790766916287588578">Hindi med InScript-tastatur</translation>
 <translation id="4801956050125744859">Behold begge</translation>
 <translation id="4804827417948292437">Avokado</translation>
+<translation id="4805966553127040832">Gjenoppretter <ph name="COUNT" /> elementer</translation>
 <translation id="4823651846660089135">Enheten er skrivebeskyttet</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elementer valgt</translation>
@@ -359,15 +449,18 @@
 <translation id="485316830061041779">Tysk</translation>
 <translation id="4867079195717347957">Klikk for å sortere kolonnen i synkende rekkefølge.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
+<translation id="4874569719830985133">Slett for godt</translation>
 <translation id="4880214202172289027">Volumbryter</translation>
-<translation id="4880520557730313061">Autokorrigering</translation>
 <translation id="4881695831933465202">Åpne</translation>
+<translation id="4891091358278567964">For å gjenopprette disse elementene, dra dem til en ny mappe utenfor papirkurven. De opprinnelige mappene for disse elementene er slettet.</translation>
 <translation id="4900532980794411603">Del med Parallels Desktop</translation>
-<translation id="4905417359854579806">Klar til å sikkerhetskopiere <ph name="FILE_COUNT" /></translation>
-<translation id="4924638091161556692">Fikset</translation>
+<translation id="4902546322522096650">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – koble til</translation>
+<translation id="4906580650526544301">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – <ph name="PROVIDER_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – detaljer</translation>
+<translation id="4929673617759421391">Innliming av denne filen er blokkert på grunn av en administratorregel</translation>
 <translation id="4935975195727477204">Gazania-blomst</translation>
 <translation id="4943368462779413526">Fotball</translation>
 <translation id="4961158930123534723">1 mappe er delt med Parallels Desktop</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> er gjenopprettet</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Bruk et navn på <ph name="MAX_LENGTH" /> eller færre tegn</translation>
 <translation id="4973970068702235170">Zippingen mislyktes på grunn av en uventet feil: <ph name="ERROR_MESSAGE" /></translation>
@@ -375,20 +468,20 @@
 <translation id="4988205478593450158">Er du sikker på at du vil slette «<ph name="FILE_NAME" />»?</translation>
 <translation id="498902553138568924">Rød sommerfugl</translation>
 <translation id="4992066212339426712">Slå på lyden</translation>
-<translation id="5004584466530475658"><ph name="FILE_COUNT" /> nye bilder</translation>
 <translation id="5010406651457630570">Datamaskiner</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">En handling tar lengre tid enn vanlig. Vil du avbryte den?</translation>
 <translation id="5036159836254554629">Administrer Parallels Desktop-deling</translation>
 <translation id="5038625366300922036">Se flere</translation>
 <translation id="5044852990838351217">Armensk</translation>
+<translation id="5045550434625856497">Feil passord</translation>
 <translation id="5059127710849015030">Nepali, translitterasjon</translation>
-<translation id="5061708541166515394">Kontrast</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> med filer blir slettet</translation>
 <translation id="508423945471810158">Flytter <ph name="NUMBER_OF_ITEMS" /> elementer til <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Det oppsto en feil.</translation>
 <translation id="5098629044894065541">Hebraisk</translation>
+<translation id="5102922915594634436">Administrer synkroniserte mapper</translation>
 <translation id="5109254780565519649">Det oppsto en feil. Noen elementer er kanskje ikke gjenopprettet.</translation>
 <translation id="5110329002213341433">Engelsk (Canada)</translation>
 <translation id="5123433949759960244">Basketball</translation>
@@ -396,14 +489,14 @@
 <translation id="5144820558584035333">Hangul 3-sett (390)</translation>
 <translation id="5145331109270917438">Dato endret</translation>
 <translation id="515594325917491223">Sjakk</translation>
-<translation id="5158593464696388225">Kunne ikke lagre bildet.</translation>
+<translation id="5158983316805876233">Bruk samme proxy-tjener for alle protokoller</translation>
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Ikke fjern enheten ennå.<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        Fjerning av enheten mens den er i bruk kan resultere i tap av data. Vent til handlingen er utført før du mater ut enheten ved bruk av Filer-appen.</translation>
 <translation id="5163869187418756376">Delingen mislyktes. Sjekk tilkoblingen din og prøv på nytt senere.</translation>
 <translation id="516592729076796170">Amerikansk programmeringstastatur (Dvorak)</translation>
-<translation id="5170477580121653719">Ledig lagringsplass på Google Disk: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Miniatyrbildevisning</translation>
+<translation id="5181896909298187506">Ingen nylige filer</translation>
 <translation id="5194713942430106590">Klikk for å sortere kolonnen i stigende rekkefølge.</translation>
 <translation id="5211614973734216083">Færøysk</translation>
 <translation id="5218183485292899140">Sveitsisk fransk</translation>
@@ -417,24 +510,35 @@
         <ph name="MARKUP_7" />Del, skap og samarbeid<ph name="MARKUP_8" />
         med andre om filer – alt på ett sted.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Gjenopprettede filer fra Google Disk</translation>
+<translation id="5278111733643988471">For å gjenopprette dette elementet, dra det til en ny mappe utenfor papirkurven. Den opprinnelige mappen «<ph name="PARENT_FOLDER_NAME" />» for dette elementet er slettet.</translation>
+<translation id="5286194356314741248">Skanning</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5293615890992542006">Flytting av denne filen er blokkert på grunn av en administratorregel</translation>
+<translation id="5305688511332277257">Ingen installert</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5318819489018851358">Del med Linux</translation>
 <translation id="5323213332664049067">Latinamerikansk</translation>
-<translation id="5327248766486351172">Navn</translation>
 <translation id="5330145655348521461">Disse filene ble åpnet på et annet skrivebord. Flytt til <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) for å se dem.</translation>
 <translation id="5330512191124428349">Få informasjon</translation>
-<translation id="5335458522276292100">Sikkerhetskopierer <ph name="FILE_COUNT" /> til <ph name="BEGIN_LINK" />Google Disk<ph name="END_LINK" /></translation>
+<translation id="5337538975554986899">Filtilgang for alle nettadresser unntatt <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="535792325654997756">Person med katter</translation>
 <translation id="5358764674931277">Bildefrekvens</translation>
+<translation id="5363339716524495120">Skrivespråket er kinesisk</translation>
+<translation id="5364067326287025678">Papirkurven er tom</translation>
 <translation id="5368191757080475556">Del mappe med Linux</translation>
 <translation id="5402367795255837559">Punktskrift</translation>
+<translation id="5411472733320185105">Ikke bruk proxy-tjenerinnstillinger for følgende tjenere og domener:</translation>
 <translation id="541890217011173530">Sorani-kurdisk med engelsk-basert tastatur</translation>
+<translation id="5422221874247253874">Tilgangspunkt</translation>
 <translation id="5428105026674456456">Spansk</translation>
 <translation id="5438282218546237410">Det er ingen resultater for <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Ugyldig passord</translation>
+<translation id="5463231940765244860">Skriv inn</translation>
 <translation id="5469868506864199649">Italiensk</translation>
+<translation id="5473333559083690127">Skriv inn den nye PIN-koden på nytt</translation>
 <translation id="5489067830765222292">Latvisk</translation>
+<translation id="5489965683297092283"><ph name="FILTER_NAME" />-filteret er av.</translation>
 <translation id="5494920125229734069">Velg alle</translation>
 <translation id="5500122897333236901">Islandsk</translation>
 <translation id="5508696409934741614">Prikker</translation>
@@ -443,35 +547,46 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> bilde</translation>
 <translation id="5534520101572674276">Beregner størrelse</translation>
 <translation id="554153475311314364">Gresk, translitterasjon</translation>
+<translation id="5580591966435005537">virtuell maskin</translation>
 <translation id="5583640892426849032">Tilbake-tasten</translation>
+<translation id="5583664733673201137">Tegnsettingsbredden er Full</translation>
 <translation id="5602622065581044566">Bulgarsk med fonetisk tastatur</translation>
 <translation id="5605830556594064952">Amerikansk Dvorak</translation>
+<translation id="5618330573454123917">Denne filen er laget for datamaskiner som kjører Macintosh-programvare. Den er ikke kompatibel med enheten din, som kjører ChromeOS. <ph name="BEGIN_LINK_HELP" />Finn ut mer<ph name="END_LINK_HELP" /> om å åpne filer i ChromeOS.</translation>
 <translation id="5625294776298156701">Tamil med Tamil99-tastatur</translation>
+<translation id="5633226425545095130">Hvis du flytter dette elementet, deles det med alle som kan se den delte mappen «<ph name="DESTINATION_NAME" />».</translation>
 <translation id="5649768706273821470">Lytt</translation>
+<translation id="5669691691057771421">Skriv inn en ny PIN-kode</translation>
 <translation id="5678784840044122290">Linux-appen blir tilgjengelig i terminalen din og kan også vise et ikon i appoversikten.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Kan ikke koble fra et arkiv eller en virtuell disk<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Lukk alle filene i arkivet eller på den virtuelle disken, og prøv på nytt.</translation>
 <translation id="5691596662111998220">Beklager, <ph name="FILE_NAME" /> eksisterer ikke lenger.</translation>
+<translation id="5698411045597658393"><ph name="NETWORK_NAME" />, lås opp</translation>
 <translation id="5700087501958648444">Lydinformasjon</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> er lagt i papirkurven</translation>
 <translation id="5724172041621205163">Thai med Pattachote-tastatur</translation>
-<translation id="5731409020711461763">1 nytt bilde</translation>
-<translation id="5752453871435543420">Skybaserte sikkerhetskopier for Chrome OS</translation>
 <translation id="5756666464756035725">Ungarsk QWERTY</translation>
 <translation id="5763377084591234761">Tysk (Sveits)</translation>
+<translation id="5769519078756170258">Vert eller domene som skal ekskluderes</translation>
 <translation id="5775750595919327203">Urdu</translation>
 <translation id="5776325638577448643">Tøm og formatér</translation>
 <translation id="57838592816432529">Kutt lyden</translation>
 <translation id="5788127256798019331">Play-filer</translation>
 <translation id="5790193330357274855">Kasakhisk</translation>
 <translation id="5804245609861364054">Kannada, translitterasjon</translation>
+<translation id="5814126672212206791">Tilkoblingstype</translation>
 <translation id="5817397429773072584">Kinesisk (tradisjonell)</translation>
 <translation id="5818003990515275822">Koreansk</translation>
 <translation id="5819442873484330149">Hangul 3-sett (endelig)</translation>
+<translation id="5832976493438355584">Låst</translation>
 <translation id="5833610766403489739">Denne filen har vandret av gårde. Sjekk innstillingen din for nedlastingsplassering, og prøv på nytt.</translation>
 <translation id="5838451609423551646">Fjernet alle oppføringene fra utvalget.</translation>
 <translation id="5838825566232597749">Internasjonalt Workman (USA)</translation>
-<translation id="5851063901794976166">Her var det tomt</translation>
+<translation id="5845721951356578987">Sykepleier</translation>
+<translation id="5861477046012235702">Gamer</translation>
+<translation id="5864471791310927901">DHCP-oppslag mislyktes</translation>
+<translation id="5896749729057314184">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktivert, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, detaljer</translation>
 <translation id="5911887972742538906">Det oppsto en feil under installasjon av Linux-appen.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Kopieringshandlingen mislyktes på grunn av en uventet feil: <ph name="ERROR_MESSAGE" /></translation>
@@ -481,150 +596,188 @@
 <translation id="5957366693331451795">Chromebox-enheter</translation>
 <translation id="5982621672636444458">Sorteringsalternativer</translation>
 <translation id="6007237601604674381">Flytting mislyktes. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6019169947004469866">Beskjær</translation>
+<translation id="6011074160056912900">Ethernet-nettverk</translation>
 <translation id="60357267506638014">Tsjekkisk QWERTY</translation>
-<translation id="604001903249547235">Skybasert sikkerhetskopiering</translation>
+<translation id="603895874132768835">Du ka nikke bruke dette nettverket før du har satt opp en ny PIN-kode.</translation>
 <translation id="6040143037577758943">Lukk</translation>
+<translation id="6055907707645252013"><ph name="NETWORK_TYPE" />-nettverk – ikke tilkoblet</translation>
 <translation id="6074825444536523002">Google-skjema</translation>
 <translation id="6079871810119356840">Ungarsk med QWERTY-tastatur</translation>
 <translation id="6096979789310008754">Søketeksten er fjernet. Viser alle filer og mapper.</translation>
 <translation id="610101264611565198">Flytter <ph name="FILE_NAME" /> til <ph name="FOLDER_NAME" /></translation>
+<translation id="61118516107968648">CSV-tekst</translation>
 <translation id="6129953537138746214">Mellomrom</translation>
 <translation id="6133173853026656527">Flytter <ph name="FILE_NAME" /> ...</translation>
+<translation id="6133877453787250710">Administratoren overvåker følgende:</translation>
 <translation id="613750717151263950">Japansk med amerikansk tastatur</translation>
+<translation id="6138894911715675297"><ph name="NETWORK_TYPE" /> – ingen nettverk</translation>
 <translation id="6146563240635539929">Videoer</translation>
 <translation id="6150853954427645995">For å lagre denne filen for bruk utenfor Internett, går du på nettet, høyreklikker på filen og velger <ph name="OFFLINE_CHECKBOX_NAME" />-alternativet.</translation>
 <translation id="6164412158936057769">Sommerfugler</translation>
+<translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6170470584681422115">Smørbrød</translation>
 <translation id="6187719147498869044">Ungarsk</translation>
-<translation id="6189412234224385711">Åpne med <ph name="EXTENSION_NAME" /></translation>
+<translation id="6198252989419008588">Endre personlig kode</translation>
 <translation id="6199801702437275229">Venter på informasjon om lagringsplass …</translation>
 <translation id="6205710420833115353">Noen handlinger tar lengre tid enn vanlig. Vil du avbryte dem?</translation>
 <translation id="6220423280121890987">Panjabi</translation>
 <translation id="6224240818060029162">Dansk</translation>
 <translation id="6224253798271602650">Formatér <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Denne filen kan ikke spilles av.</translation>
 <translation id="6241349547798190358">Nederlandsk (Belgia)</translation>
-<translation id="6248400709929739064">Slå på undertekster</translation>
+<translation id="6267547857941397424">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – koble til</translation>
 <translation id="6269630227984243955">Malayisk</translation>
 <translation id="6287852322318138013">Velg en app for å åpne denne filen</translation>
+<translation id="6295542640242147836">Lås SIM-kortet</translation>
+<translation id="6296410173147755564">Ugyldig PUK-kode.</translation>
+<translation id="6308243004861726558">Denne filen er konfidensiell og underlagt administratorregler. Følgende filtilgangs- og overføringshandlinger gjelder.</translation>
+<translation id="6312403991423642364">Ukjent nettverksfeil</translation>
+<translation id="6317608858038767920">Egendefinert navneserver <ph name="INPUT_INDEX" /></translation>
+<translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arkiv</translation>
 <translation id="6321303798550928047">Vinker</translation>
+<translation id="6327785803543103246">Automatisk oppdagelse av proxy-tjenere</translation>
+<translation id="6337014272874260727">Løsne fra hurtigfiler</translation>
 <translation id="6339145975392024142">USA internasjonalt (PC)</translation>
 <translation id="6346310558342052870">Tilgangsbegrenset</translation>
 <translation id="6356685157277930264">Tilbakemeldingsvindu for Filer</translation>
 <translation id="6358884629796491903">Drage</translation>
+<translation id="636254897931573416">Ugyldig verdi i listen over samsvarende domenesuffikser</translation>
+<translation id="6364301859968397756">Organisasjonens lagringsplass er oppbrukt</translation>
 <translation id="6367976544441405720">Varebil</translation>
 <translation id="637062427944097960">Denne filen ble åpnet på et annet skrivebord. Flytt til <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) for å se den.</translation>
 <translation id="6394388407447716302">Skrivebeskyttet</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementer</translation>
-<translation id="6398765197997659313">Avslutt fullskjerm</translation>
 <translation id="642282551015776456">Dette navnet kan ikke brukes som fil- eller mappenavn</translation>
 <translation id="6423031066725912715">Vietnamesisk med TCVN-tastatur</translation>
+<translation id="6430271654280079150">Du har ett forsøk igjen.</translation>
+<translation id="643243556292470964">Slettede filer flyttes nå til papirkurven</translation>
 <translation id="6485131920355264772">Kunne ikke hente informasjon om lagringsplass</translation>
+<translation id="6495925982925244349">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – detaljer</translation>
+<translation id="649877868557234318">Pakker ut <ph name="FILE_NAME" /> i <ph name="FOLDER_NAME" /></translation>
+<translation id="6499681088828539489">Ikke tillat proxy-tjenere for delte nettverk</translation>
 <translation id="6509122719576673235">Norsk</translation>
-<translation id="6527303717912515753">Del</translation>
+<translation id="6528513914570774834">La andre brukere av denne enheten bruke dette nettverket</translation>
 <translation id="653019979737152879">Synkroniserer <ph name="FILE_NAME" /> …</translation>
 <translation id="6549689063733911810">Siste</translation>
-<translation id="6556866813142980365">Gjør om</translation>
 <translation id="6558280019477628686">Det oppsto en feil. Enkelte elementer ble muligens ikke slettet.</translation>
 <translation id="656398493051028875">Sletter «<ph name="FILENAME" />» ...</translation>
 <translation id="6581162200855843583">Google Disk-link</translation>
 <translation id="6594855146910089723">Denne mappen deles med Linux og Parallels Desktop</translation>
 <translation id="6607272825297743757">Filinformasjon</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med Parallels Desktop</translation>
-<translation id="6629841649550503054">Alt er sikkerhetskopiert til <ph name="BEGIN_LINK" />Google Disk<ph name="END_LINK" /></translation>
+<translation id="6629518321609546825">Skriv inn de fire siste tallene</translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6650726141019353908">Rosa sommerfugl</translation>
 <translation id="6657585470893396449">Passord</translation>
+<translation id="6658865850469097484">Filer som har ligget i papirkurven i mer enn 30 dager, blir automatisk slettet.</translation>
 <translation id="6673674183150363784">Fransk (Frankrike) med Bépo-tastatur</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Forrige</translation>
+<translation id="6732801395666424405">Sertifikater er ikke lastet inn</translation>
+<translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">1 mappe er valgt</translation>
+<translation id="6755827872271341378">ChromeOS Flex-enhet</translation>
 <translation id="6790428901817661496">Spill av</translation>
+<translation id="6794539005637808366">Gjenopprett elementet eller dra det til en ny mappe utenfor papirkurven</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Administrer Linux-deling</translation>
 <translation id="6806796368146926706">Alfanumerisk med japansk tastatur</translation>
 <translation id="6808193438228982088">Rev</translation>
-<translation id="6820687829547641339">Komprimert tar-arkiv for Gzip</translation>
 <translation id="6823166707458800069">Alle filene som lagres i denne mappen, blir automatisk sikkerhetskopiert på nettet.</translation>
 <translation id="6825883775269213504">Russisk</translation>
-<translation id="6827236167376090743">Denne videoen fortsetter å spilles av til Dovre faller.</translation>
 <translation id="6847101934483209767">Fjernet <ph name="ENTRY_NAME" /> fra utvalget.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> har brukt opp all Google Workspace-lagringsplassen sin.</translation>
+<translation id="6856459657722366306">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="NETWORK_PROVIDER_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – detaljer</translation>
 <translation id="6861394552169064235">Persisk</translation>
 <translation id="6862635236584086457">Alle filene som lagres i denne mappen, blir automatisk sikkerhetskopiert på nettet</translation>
 <translation id="6864328437977279120">Sanskrit</translation>
+<translation id="6874758081814639712">Person som driver med tai chi</translation>
 <translation id="6876155724392614295">Sykkel</translation>
 <translation id="6878261347041253038">Devanagari-tastatur (fonetisk)</translation>
+<translation id="6881853403185175088">Office</translation>
 <translation id="6885780034956018177">Snegle</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6898028766943174120">Flere undermapper</translation>
-<translation id="691516599546977041">Kan ikke lagre noe i <ph name="FOLDER_NAME" />. Redigerte bilder lagres i nedlastingsmappen.</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Workman (USA)</translation>
 <translation id="6930242544192836755">Varighet</translation>
-<translation id="6934241953272494177">Skanner medieenheten din …
-    <ph name="LINE_BREAK1" />
-    <ph name="FILE_COUNT" /> ble funnet</translation>
 <translation id="6935521024859866267">Opp-ned</translation>
+<translation id="6943836128787782965">Henting av HTTP mislyktes</translation>
 <translation id="6949408524333579394">Serbisk, translitterasjon</translation>
+<translation id="6960565108681981554">Ikke aktivert. Kontakt operatøren din.</translation>
 <translation id="696203921837389374">Aktivér synkronisering via mobildata</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965648386495488594">Port</translation>
 <translation id="6970230597523682626">Bulgarsk</translation>
 <translation id="6973630695168034713">Mapper</translation>
 <translation id="6976795442547527108">Løve</translation>
-<translation id="6978611942794658017">Denne filen er utviklet for datamaskiner med Windows-maskinvare. Den er ikke kompatibel med enheten din (som kjører Chrome OS). Søk etter en passende erstatningsapp i Chrome Nettmarked.</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6989942356279143254">Svensk</translation>
 <translation id="6990081529015358884">Du har ikke tilgjengelig lagringsplass</translation>
+<translation id="6993826899923627728">Disse elementene ligger i papirkurven din</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> mapper er valgt</translation>
+<translation id="7008426324576352165">Organisasjonen din trenger mer lagringsplass for å fullføre opplastingen.</translation>
+<translation id="7009985720488544166">Flytting av <ph name="COUNT" /> filer er blokkert på grunn av en administratorregel</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Installeringen mislyktes.</translation>
 <translation id="7031639531908619281">Tyrkisk</translation>
 <translation id="7037472120706603960">Tamil, translitterasjon</translation>
 <translation id="7040138676081995583">Åpne med</translation>
+<translation id="7048024426273850086">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – <ph name="PROVIDER_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – koble til</translation>
+<translation id="7070804685954057874">Direkte inndata</translation>
 <translation id="7075931588889865715">Thai med TIS 820-2531-tastatur</translation>
+<translation id="708278670402572152">Koble fra for å slå på skanning</translation>
 <translation id="7086590977277044826">Tamil med InScript-tastatur</translation>
-<translation id="7100897339030255923"><ph name="COUNT" /> elementer er valgt</translation>
+<translation id="7088615885725309056">Eldre</translation>
 <translation id="7103992300314999525">Makedonsk</translation>
 <translation id="7106346894903675391">Kjøp mer lagringsplass</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;søk i Disk&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada, fonetisk</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7165320105431587207">Kunne ikke konfigurere nettverket</translation>
+<translation id="7170041865419449892">Utenfor rekkevidde</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Lagre filen som</translation>
+<translation id="7229570126336867161">Krever EVDO</translation>
+<translation id="7230898482850090046">Administratoren har bedt deg slå av innstillingen «Lås SIM-kortet»</translation>
 <translation id="7238097264433196391">Navn på disken</translation>
+<translation id="7238643356913091553"><ph name="NETWORK_NAME" /> – detaljer</translation>
+<translation id="7246947237293279874">FTP-proxy-tjener</translation>
 <translation id="7248671827512403053">App</translation>
+<translation id="7256405249507348194">Ukjent feil: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Tilgjengelige tjenester</translation>
-<translation id="7283041136720745563">Google Disk-kvoten din er ikke stor nok.</translation>
+<translation id="7292816689782057017">Administratorreglene begrenser lagring på enkelte steder.</translation>
 <translation id="7294063083760278948">Telugu, translitterasjon</translation>
 <translation id="7295662345261934369">Del med andre</translation>
+<translation id="7297443947353982503">Brukernavn/passord er galt, eller så mislyktes EAP-autorisasjonen</translation>
 <translation id="7309413087278791451">Tysk (Belgia)</translation>
 <translation id="7339898014177206373">Nytt vindu</translation>
 <translation id="7343393116438664539">Vietnamesisk telex</translation>
+<translation id="7357762654218998920">Denne filtypen støttes ikke. <ph name="BEGIN_LINK_HELP" />Finn ut mer<ph name="END_LINK_HELP" /> om å åpne filer i ChromeOS.</translation>
 <translation id="7359359531237882347">Kopierer <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
 <translation id="7375951387215729722">Fillisten er sortert etter <ph name="COLUMN_NAME" /> i synkende rekkefølge.</translation>
+<translation id="7402503521691663770">ChromeOS Flex-enheter</translation>
 <translation id="7408870451288633753">Tsjekkisk</translation>
 <translation id="7417453074306512035">Etiopisk tastatur</translation>
 <translation id="7417705661718309329">Google Maps</translation>
+<translation id="7419668828140929293">Gjenoppretter «<ph name="FILENAME" />»</translation>
+<translation id="7458955835361612701">Ingen nylige bilder</translation>
 <translation id="7460898608667578234">Ukrainsk</translation>
-<translation id="7489215562877293245"><ph name="FILE_COUNT" /> ble funnet
-    <ph name="LINE_BREAK1" />
-    Klar for å sikkerhetskopiere til <ph name="BEGIN_LINK" />Google Disk<ph name="END_LINK" /></translation>
+<translation id="7469894403370665791">Koble til dette nettverket automatisk</translation>
+<translation id="7486315294984620427">For å slippe filer i Parallels Desktop må du kopiere filen til Windows-filene.</translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam, fonetisk</translation>
 <translation id="7505167922889582512">Vis skjulte filer</translation>
-<translation id="7508545000531937079">Lysbildefremvisning</translation>
+<translation id="7514365320538308">Last ned</translation>
 <translation id="751507702149411736">Hviterussisk</translation>
+<translation id="7521790570754130607">Du trenger en PIN-kode for å bruke mobildata</translation>
 <translation id="7532029025027028521">Persisk, translitterasjon</translation>
 <translation id="7544830582642184299">Gi Linux-apper tilgang til filer på Google Disk. Endringer synkroniseres med de andre enhetene dine.</translation>
-<translation id="7544853251252956727">Spill i tilfeldig rekkefølge</translation>
 <translation id="7547009467130558110">Snøresko</translation>
 <translation id="7547780573915868306">Litauisk</translation>
 <translation id="7547811415869834682">Nederlandsk</translation>
 <translation id="7551643184018910560">Fest til hyllen</translation>
 <translation id="7553492409867692754">Gi Linux-apper tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
-<translation id="7575645593344061397">Gjenoppretter «<ph name="FILENAME" />» …</translation>
-<translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Vent et øyeblikk</translation>
 <translation id="7592775719802218421">Gjør <ph name="FILE_NAME" /> tilgjengelig uten nett</translation>
 <translation id="7600126690270271294">Serbisk</translation>
@@ -636,17 +789,23 @@
 <translation id="7655441028674523381">Enkel tilgang til Google Foto</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> elementer er lagt i papirkurven</translation>
 <translation id="7693909743393669729">Når du formaterer stasjoner, slettes alle data som er lagret på dem, og alle eksisterende partisjoner fjernes, inkludert partisjoner som kanskje ikke er synlige. Denne handlingen kan ikke angres.</translation>
 <translation id="7695430100978772476">Kunne ikke formatere <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">Kunne ikke tømme papirkurven.</translation>
 <translation id="770015031906360009">Gresk</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> er kopiert.</translation>
+<translation id="7708271999969613024">For å bruke dette nettverket må du skrive inn den åttesifrede PUK-koden fra operatøren.</translation>
 <translation id="7711920809702896782">Bildeinformasjon</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
-<translation id="7730494089396812859">Vis detaljer for skybasert sikkerhetskopiering</translation>
+<translation id="7732111077498238432">Nettverket er kontrollert av regler</translation>
+<translation id="7736003208887389532">Vil du slette disse filene for godt?</translation>
 <translation id="7748626145866214022">Flere alternativer er tilgjengelige på handlingslinjen. Trykk på Alt + A for å fokusere på handlingslinjen.</translation>
 <translation id="7760449188139285140">Kinesisk wubi</translation>
 <translation id="7765158879357617694">Flytt</translation>
 <translation id="7774365994322694683">Fugl</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> elementer ble gjenopprettet</translation>
+<translation id="7781829728241885113">I går</translation>
 <translation id="7788080748068240085">Hvis du vil lagre <ph name="FILE_NAME" /> for bruk uten nett, må du frigjøre ytterligere <ph name="TOTAL_FILE_SIZE" /> lagringsplass:<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />Løsne filer du ikke trenger å bruke uten nett lenger.<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />Slett filer du har i Nedlastinger-mappen.<ph name="MARKUP_5" /></translation>
@@ -656,85 +815,101 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">Hebraisk</translation>
 <translation id="78104721049218340">Thai med Kedmanee-tastatur</translation>
-<translation id="7821462174190887129"><ph name="FILE_COUNT" /> ble funnet.
-    <ph name="LINE_BREAK1" />
-    Google Disk-kvoten din er ikke stor nok. Du trenger <ph name="FILE_SIZE" /> til.
-    <ph name="LINE_BREAK2" />
-    Prøv å velge færre bilder.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
+<translation id="7831491651892296503">En feil oppsto under konfigureringen av nettverket</translation>
 <translation id="7839804798877833423">Henting av disse filene kommer til å bruke ca. <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="7846076177841592234">Opphev valget</translation>
 <translation id="7853966320808728790">Fransk BÉPO</translation>
+<translation id="7857117644404132472">Legg til unntak</translation>
 <translation id="7868774406711971383">Polsk</translation>
-<translation id="7873831373602885875">Kan ikke lagre noe i <ph name="FOLDER_NAME" />. Alle endringer lagres i <ph name="DOWNLOADS_FOLDER" /> i nedlastingsmappen.</translation>
 <translation id="7874321682039004450">Filippinsk</translation>
-<translation id="7881969471599061635">Slå av undertekstene</translation>
 <translation id="78946041517601018">Delte disker</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatering av partisjonen sletter alle data som er lagret på den. Denne handlingen kan ikke angres.</translation>
+<translation id="7911118814695487383">Linux</translation>
+<translation id="7925247922861151263">AAA-kontroll mislyktes</translation>
 <translation id="7925686952655276919">Ikke bruk mobildata ved synkronisering</translation>
 <translation id="7928710562641958568">Løs ut enhet</translation>
 <translation id="7943385054491506837">USA Colemak</translation>
 <translation id="7953739707111622108">Denne enheten kan ikke åpnes fordi filsystemet ikke ble gjenkjent.</translation>
 <translation id="7969525169268594403">Slovensk</translation>
 <translation id="7972920761225148017">Fransk (Sveits)</translation>
+<translation id="7973962044839454485">PPP-autentiseringen mislyktes på grunn av feil brukernavn eller passord</translation>
 <translation id="7980421588063892270">Engelsk (USA) med Colemak-tastatur</translation>
-<translation id="7982283708762922719">Høyde</translation>
-<translation id="79907182588096956">Denne filen er laget for datamaskiner som kjører Windows. Den er ikke kompatibel med enheten din, som kjører Chrome OS. <ph name="BEGIN_LINK_HELP" />Finn ut mer<ph name="END_LINK_HELP" /> om å åpne filer i Chrome OS.</translation>
+<translation id="8000066093800657092">Ingen nettverk</translation>
 <translation id="8008366997883261463">Jack Russell-terrier</translation>
 <translation id="8028993641010258682">Størrelse</translation>
 <translation id="803771048473350947">Fil</translation>
 <translation id="8038111231936746805">(standard)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-lyd</translation>
 <translation id="8045462269890919536">Rumensk</translation>
-<translation id="8066773524873206594">Alle endringer lagres i <ph name="DOWNLOADS_FOLDER" />.</translation>
-<translation id="8079530767338315840">Gjenta</translation>
+<translation id="8049184478152619004">Skriv inn PUK-kode</translation>
+<translation id="807187749540895545">Pakker ut <ph name="FILE_NAME" /> …</translation>
+<translation id="8087576439476816834">Last ned, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Delt med meg</translation>
 <translation id="8116072619078571545">Isvann</translation>
 <translation id="8128733386027980860">Engelsk (Storbritannia) med Dvorak-tastatur</translation>
 <translation id="8137331602592933310">«<ph name="FILENAME" />» er delt med deg. Du kan ikke slette filen fordi du ikke eier den.</translation>
+<translation id="813913629614996137">Initialiserer …</translation>
+<translation id="8147028810663464959">Tegnbredden er Full</translation>
 <translation id="8151638057146502721">Konfigurer</translation>
-<translation id="8153607920959057464">Denne filen kan ikke vises.</translation>
 <translation id="8154842056504218462">Valgte alle oppføringene.</translation>
 <translation id="8157684860301034423">Kunne ikke hente appinfo.</translation>
-<translation id="8157939133946352716">7 x 5</translation>
 <translation id="8175731104491895765">Fransk (Belgia)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Enhetsmodell</translation>
-<translation id="8208580316430297579">Albumforside</translation>
 <translation id="8223479393428528563">For å lagre disse filene for bruk utenfor Internett, går du på nettet, høyreklikker på filene og velger <ph name="OFFLINE_CHECKBOX_NAME" />-alternativet.</translation>
 <translation id="8249296373107784235">Avbryt</translation>
+<translation id="8250690786522693009">Latin</translation>
+<translation id="8250920743982581267">Dokumenter</translation>
+<translation id="8255595130163158297">Alle elementene i papirkurven blir slettet, og du kan ikke gjenopprette dem.</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="8261561378965667560">Kinesisk array</translation>
+<translation id="8262872909443689080">Administratorregler</translation>
+<translation id="8264024885325823677">Denne innstillingen administreres av administratoren.</translation>
 <translation id="8269755669432358899">Skjul tilbakemeldingspaneler på filer</translation>
 <translation id="8280151743281770066">Armensk fonetisk</translation>
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8297012244086013755">Hangul 3-sett (ikke skift)</translation>
 <translation id="8299269255470343364">Japansk</translation>
+<translation id="8300849813060516376">OTASP mislyktes</translation>
 <translation id="8312871300878166382">Lim inn i mappen</translation>
 <translation id="8329978297633540474">Ren tekst</translation>
 <translation id="8335587457941836791">Løsne fra hyllen</translation>
 <translation id="8335837413233998004">Hviterussisk</translation>
 <translation id="8336153091935557858">I går kl. <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Det finnes allerede en fil eller en katalog med det samme navnet.</translation>
+<translation id="8372369524088641025">Feil WEP-nøkkel</translation>
 <translation id="8372852072747894550">Gresk</translation>
+<translation id="8386903983509584791">Skanningen er fullført</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> er pakket ut.</translation>
 <translation id="8395901698320285466">Dimensjoner</translation>
+<translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-nettverk – kobler til</translation>
+<translation id="8425213833346101688">Endre</translation>
+<translation id="8431909052837336408">Endre PIN-koden for SIM-kortet</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
+<translation id="8452135315243592079">SIM-kort mangler</translation>
 <translation id="8456681095658380701">Ugyldig navn</translation>
-<translation id="8461467696380332069">Høyreklikk på en fil, og velg «Fest til hyllen» for rask tilgang til filene dine på hyllen.</translation>
+<translation id="8457767749626250697">SIM-kortet ditt er låst</translation>
+<translation id="8459404855768962328">Hvis du kopierer dette elementet, deles det med alle som kan se den delte mappen «<ph name="DESTINATION_NAME" />».</translation>
+<translation id="8461914792118322307">Proxy-tjener</translation>
 <translation id="8463494891489624050">Vietnamesisk VIQR</translation>
-<translation id="8466234950814670489">Tar-arkiv</translation>
 <translation id="8475647382427415476">Google Disk kunne ikke synkronisere «<ph name="FILENAME" />» akkurat nå. Vi prøver igjen senere.</translation>
 <translation id="8477649328507734757">Spinn</translation>
 <translation id="8484284835977497781">Velg blant nylige bilder.</translation>
 <translation id="8487700953926739672">Tilgjengelig utenfor nettet</translation>
+<translation id="8492972329130824181">Hjemmenettverket er ikke tilgjengelig. Mobildata-roaming må være påslått for at du skal kunne koble til.</translation>
+<translation id="8499098729323186194">Pakker ut <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
 <translation id="8521441079177373948">Britisk</translation>
-<translation id="8525306231823319788">Full skjerm</translation>
 <translation id="853494022971700746">Fransk (Frankrike)</translation>
+<translation id="8540608333167683902">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – detaljer</translation>
 <translation id="8545476925160229291">Engelsk (USA)</translation>
+<translation id="854655314928502177">Nettadresse for automatisk oppdagelse av proxy-tjener</translation>
 <translation id="8549186985808798022">Italiensk</translation>
 <translation id="8551494947769799688">Latvisk</translation>
 <translation id="8560515948038859357">Kantonesisk</translation>
 <translation id="8561206103590473338">Elefant</translation>
+<translation id="8566466896628108558">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – blokkert av administratoren din – detaljer</translation>
 <translation id="8569764466147087991">Velg en fil du vil åpne</translation>
 <translation id="8577897833047451336">Kroatisk</translation>
 <translation id="8578308463707544055">Indonesisk</translation>
@@ -742,57 +917,79 @@
 <translation id="8600173386174225982">Fillisten vises nå i miniatyrbildevisning.</translation>
 <translation id="8601932370724196034">Crostini-bildefil</translation>
 <translation id="8609695766746872526">Islandsk</translation>
+<translation id="863903787380594467">Feil PIN-kode. Du har <ph name="RETRIES" /> forsøk igjen.</translation>
+<translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
+<translation id="8656768832129462377">Ikke merk av</translation>
+<translation id="8688591111840995413">Feil passord</translation>
 <translation id="8698464937041809063">Google-tegning</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8713112442029511308">Maltesisk</translation>
 <translation id="8714406895390098252">Sykkel</translation>
 <translation id="8719721339511222681">Valgte <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Kroatisk</translation>
-<translation id="8750438273876807512">Trykk og hold på en fil, trykk på <ph name="ICON" />, og velg «Fest til hyllen» for rask tilgang til filer på hyllen.</translation>
-<translation id="8775404590947523323">Endringene dine lagres automatisk.<ph name="BREAKS" />For å beholde en kopi av originalbildet, må du fjerne avmerkingen for «Overskriv originalen»</translation>
+<translation id="8743164338060742337">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="NETWORK_PROVIDER_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – koble til</translation>
+<translation id="8787254343425541995">Gi tillatelse til proxy-tjenere for delte nettverk</translation>
+<translation id="8790981080411996443">Person som vanner blomster</translation>
+<translation id="8798099450830957504">Standard</translation>
 <translation id="8808686172382650546">Katt</translation>
 <translation id="8810671769985673465">Kunne ikke opprette ZIP-filen – elementet finnes allerede: «<ph name="FILE_NAME" />»</translation>
 <translation id="8813284582615685103">Spansk (Spania)</translation>
 <translation id="8834164572807951958">Medlemmer av «<ph name="DESTINATION_NAME" />» får tilgang til kopier av disse elementene.</translation>
+<translation id="8849389110234859568">Administratorreglene begrenser tilgangen til enkelte filer.</translation>
 <translation id="8857149712089373752">Nepali med fonetisk tastatur</translation>
 <translation id="8860454412039442620">Excel-regneark</translation>
 <translation id="8866284467018526531">Arabisk, translitterasjon</translation>
+<translation id="8873014196523807561">For å gjenopprette disse elementene, dra dem til en ny mappe. De opprinnelige mappene for noen av disse elementene er slettet.</translation>
+<translation id="8874184842967597500">Ikke tilkoblet</translation>
 <translation id="8900820606136623064">Ungarsk</translation>
 <translation id="8903931173357132290">Avgangselev</translation>
+<translation id="8912078710089354287">Hund som logrer med halen</translation>
 <translation id="8919081441417203123">Dansk</translation>
+<translation id="8949925099261528566">Tilkoblet – ingen internettilgang</translation>
 <translation id="8965697826696209160">Du har ikke nok ledig plass.</translation>
-<translation id="8970501467542182729">Denne filen er utviklet for datamaskiner som kjører Macintosh-programvare. Den er ikke kompatibel med enheten din, som kjører Chrome OS. <ph name="BEGIN_LINK_HELP" />Finn ut mer<ph name="END_LINK_HELP" /> om å åpne filer i Chrome OS.</translation>
 <translation id="8997962250644902079">Kinesisk (tradisjonell) pinyin</translation>
+<translation id="8998871447376656508">Det er ikke nok ledig plass på Google Disk til å fullføre opplastingen.</translation>
+<translation id="9003940392834790328">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – detaljer</translation>
 <translation id="9017798300203431059">Russisk fonetisk</translation>
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9035012421917565900">Disse elementene kan ikke flyttes tilbake til «<ph name="DESTINATION_NAME" />», så du kan ikke angre denne handlingen.</translation>
+<translation id="9035689366572880647">Skriv inn gjeldende PIN-kode</translation>
 <translation id="9038620279323455325">Filnavnet «<ph name="FILE_NAME" />» finnes allerede. Velg et annet navn.</translation>
-<translation id="9065203028668620118">Endre</translation>
+<translation id="9046895021617826162">Tilkoblingen mislyktes</translation>
+<translation id="9065512565307033593">Hvis du ikke verifiserer SIM-kortet, blir nettverkstilgangen din slått av.</translation>
 <translation id="908378762078012445">Russisk med fonetisk AATSEEL-tastatur</translation>
 <translation id="9099674669267916096">Antall sider</translation>
+<translation id="9100610230175265781">Det kreves en passordfrase</translation>
 <translation id="9110990317705400362">Vi jobber kontinuerlig for å gjøre surfingen din tryggere. Tidligere kunne et hvilket som helst nettsted be deg å legge til en utvidelse i nettleseren din. I de nyeste versjonene av Google Chrome må du gi Chrome uttrykkelig beskjed om at du ønsker å installere disse utvidelsene ved å legge dem til via Utvidelser-siden. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Lås opp</translation>
+<translation id="9116909380156770361">Filoverføring til <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Fest mappe</translation>
 <translation id="9130775360844693113">Medlemmer av «<ph name="DESTINATION_NAME" />» får tilgang til disse elementene.</translation>
 <translation id="9131598836763251128">Velg én eller flere filer</translation>
 <translation id="9133055936679483811">Opprettelsen av zip-filen mislyktes. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Denne filen er utviklet for en datamaskin som kjører Macintosh-programvare. Den er ikke kompatibel med enheten din (som kjører Chrome OS). Søk etter en passende erstatningsapp på Chrome Nettmarked.</translation>
 <translation id="9144340019284012223">Katalansk</translation>
-<translation id="9148058034647219655">Avslutt</translation>
-<translation id="9154418932169119429">Dette bildet er ikke tilgjengelig utenfor Internett.</translation>
+<translation id="914873105831852105">Ugyldig PIN-kode. Du har ett forsøk igjen.</translation>
+<translation id="9153934054460603056">Lagre identitet og passord</translation>
+<translation id="9171921933192916600">Lesehest</translation>
 <translation id="9172592259078059678">Gujarati, translitterasjon</translation>
 <translation id="9173120999827300720">Engelsk (USA) med internasjonalt tastatur</translation>
+<translation id="9183302530794969518">Google Dokumenter</translation>
 <translation id="9189836632794948435">Kasakhisk</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementer er pakket ut.</translation>
+<translation id="9210751050717126865">Innliming av <ph name="COUNT" /> filer er blokkert på grunn av en administratorregel</translation>
 <translation id="9213073329713032541">Installeringen er startet.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Månelandskap</translation>
+<translation id="938470336146445890">Installer et brukersertifikat.</translation>
 <translation id="939736085109172342">Ny mappe</translation>
-<translation id="942954117721265519">Det fins ingen bilder i denne katalogen.</translation>
 <translation id="943972244133411984">Endret av</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="947144732524271678">Valgte et område med <ph name="ENTRY_COUNT" /> oppføringer – fra <ph name="FROM_ENTRY_NAME" /> til <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Administratorreglene forhindrer følgende:</translation>
+<translation id="965477715979482472">Engelsk (Sør-Afrika)</translation>
+<translation id="976666271385981812">Legger <ph name="NUMBER_OF_ITEMS" /> elementer i papirkurven</translation>
 <translation id="981121421437150478">Uten nett</translation>
 <translation id="988685240266037636">Filnavnet «<ph name="FILE_NAME" />» finnes allerede. Vil du erstatte filen med dette navnet?</translation>
+<translation id="992401651319295351">Du har <ph name="RETRIES" /> forsøk igjen. Du kan ikke bruke dette nettverket før du har satt opp en ny PIN-kode.</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>
 </translationbundle>

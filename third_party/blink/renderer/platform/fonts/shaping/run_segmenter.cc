@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,28 +12,23 @@
 #include "third_party/blink/renderer/platform/fonts/symbols_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/utf16_text_iterator.h"
 #include "third_party/blink/renderer/platform/text/character.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
 RunSegmenter::RunSegmenter(const UChar* buffer,
                            unsigned buffer_size,
-                           FontOrientation run_orientation,
-                           unsigned start_offset)
+                           FontOrientation run_orientation)
     : buffer_size_(buffer_size),
-      start_offset_(start_offset),
-      candidate_range_(NullRange(start_offset)),
+      candidate_range_(NullRange()),
       script_run_iterator_(
-          std::make_unique<ScriptRunIterator>(buffer + start_offset,
-                                              buffer_size)),
+          std::make_unique<ScriptRunIterator>(buffer, buffer_size)),
       orientation_iterator_(
           run_orientation == FontOrientation::kVerticalMixed
-              ? std::make_unique<OrientationIterator>(buffer + start_offset,
+              ? std::make_unique<OrientationIterator>(buffer,
                                                       buffer_size,
                                                       run_orientation)
               : nullptr),
-      symbols_iterator_(std::make_unique<SymbolsIterator>(buffer + start_offset,
-                                                          buffer_size)),
+      symbols_iterator_(std::make_unique<SymbolsIterator>(buffer, buffer_size)),
       last_split_(0),
       script_run_iterator_position_(0),
       orientation_iterator_position_(
@@ -77,10 +72,10 @@ bool RunSegmenter::Consume(RunSegmenterRange* next_range) {
   last_split_ = *std::min_element(std::begin(positions), std::end(positions));
 
   candidate_range_.start = candidate_range_.end;
-  candidate_range_.end = last_split_ + start_offset_;
+  candidate_range_.end = last_split_;
   *next_range = candidate_range_;
 
-  at_end_ = (last_split_ == buffer_size_);
+  at_end_ = last_split_ == buffer_size_;
   return true;
 }
 

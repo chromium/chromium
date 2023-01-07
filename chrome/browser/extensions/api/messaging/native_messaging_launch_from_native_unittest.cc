@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_test_util.h"
@@ -42,7 +43,7 @@ class MockEventRouter : public EventRouter {
   }
 
  private:
-  const bool* has_listener_result_;
+  raw_ptr<const bool> has_listener_result_;
 };
 
 std::unique_ptr<KeyedService> BuildMockEventRouter(
@@ -90,7 +91,7 @@ class ExtensionSupportsConnectionFromNativeAppTest : public ::testing::Test {
           ScopedTestNativeMessagingHost::
               kSupportsNativeInitiatedConnectionsHostName);
       manifest_builder.Set(manifest_keys::kNativelyConnectable,
-                           natively_connectable_hosts.Build());
+                           natively_connectable_hosts.BuildList());
     }
 
     ListBuilder permissions;
@@ -100,15 +101,17 @@ class ExtensionSupportsConnectionFromNativeAppTest : public ::testing::Test {
     if (native_messaging_permission) {
       permissions.Append("nativeMessaging");
     }
-    manifest_builder.Set(manifest_keys::kPermissions, permissions.Build());
+    manifest_builder.Set(manifest_keys::kPermissions, permissions.BuildList());
 
     base::FilePath path;
     EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));
 
     std::string error;
-    scoped_refptr<Extension> extension(Extension::Create(
-        path, mojom::ManifestLocation::kInternal, *manifest_builder.Build(),
-        Extension::NO_FLAGS, &error));
+    scoped_refptr<Extension> extension(
+        Extension::Create(path, mojom::ManifestLocation::kInternal,
+                          base::Value::AsDictionaryValue(
+                              base::Value(manifest_builder.BuildDict())),
+                          Extension::NO_FLAGS, &error));
     ASSERT_TRUE(extension.get()) << error;
     ExtensionRegistry::Get(&profile_)->AddEnabled(extension);
     extension_id_ = extension->id();
@@ -143,7 +146,8 @@ TEST_F(ExtensionSupportsConnectionFromNativeAppTest, NoOnConnectNative) {
 }
 
 TEST_F(ExtensionSupportsConnectionFromNativeAppTest, OffTheRecordProfile) {
-  auto* off_the_record_profile = profile_.GetPrimaryOTRProfile();
+  auto* off_the_record_profile =
+      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_NO_FATAL_FAILURE(RegisterExtension(true, true, true));
 
   EXPECT_FALSE(ExtensionSupportsConnectionFromNativeApp(

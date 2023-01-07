@@ -1,0 +1,8 @@
+{
+  "NetworkConfigurations": [ ],
+  "GlobalNetworkConfiguration": {
+    "DisableNetworkTypes": [ "WiFi" ]
+  },
+  "Type": "UnencryptedConfiguration"
+}
+

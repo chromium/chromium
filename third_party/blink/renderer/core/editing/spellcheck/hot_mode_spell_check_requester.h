@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_HOT_MODE_SPELL_CHECK_REQUESTER_H_
 
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -21,15 +22,16 @@ class HotModeSpellCheckRequester {
 
  public:
   explicit HotModeSpellCheckRequester(SpellCheckRequester&);
+  HotModeSpellCheckRequester(const HotModeSpellCheckRequester&) = delete;
+  HotModeSpellCheckRequester& operator=(const HotModeSpellCheckRequester&) =
+      delete;
   void CheckSpellingAt(const Position&);
 
  private:
   HeapVector<Member<const Element>> processed_root_editables_;
   SpellCheckRequester* requester_;
-
-  DISALLOW_COPY_AND_ASSIGN(HotModeSpellCheckRequester);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_HOT_MODE_SPELL_CHECK_REQUESTER_H_

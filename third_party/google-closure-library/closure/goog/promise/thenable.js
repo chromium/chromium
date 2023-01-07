@@ -1,21 +1,13 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.provide('goog.Thenable');
 
-/** @suppress {extraRequire} */
-goog.forwardDeclare('goog.Promise'); // for the type reference.
+/** @suppress {extraRequire} used in complex type */
+goog.requireType('goog.Promise');  // for the type reference.
 
 
 
@@ -40,9 +32,10 @@ goog.Thenable = function() {};
  * an exception, the child Promise will be rejected with the thrown value
  * instead.
  *
- * If the Thenable is rejected, the `onRejected` callback will be invoked
- * with the rejection reason as argument, and the child Promise will be rejected
- * with the return value of the callback or thrown value.
+ * If the Thenable is rejected, the `onRejected` callback will be invoked with
+ * the rejection reason as argument. Similar to the fulfilled case, the child
+ * Promise will then be resolved with the return value of the callback, or
+ * rejected with the thrown value if the callback throws an exception.
  *
  * @param {?(function(this:THIS, TYPE): VALUE)=} opt_onFulfilled A
  *     function that will be invoked with the fulfillment value if the Promise
@@ -98,6 +91,7 @@ goog.Thenable.IMPLEMENTED_BY_PROP = '$goog_Thenable';
  *     corresponding class must have already implemented the interface.
  */
 goog.Thenable.addImplementation = function(ctor) {
+  'use strict';
   if (COMPILED) {
     ctor.prototype[goog.Thenable.IMPLEMENTED_BY_PROP] = true;
   } else {
@@ -113,6 +107,7 @@ goog.Thenable.addImplementation = function(ctor) {
  *     The class/superclass of the instance must call `addImplementation`.
  */
 goog.Thenable.isImplementedBy = function(object) {
+  'use strict';
   if (!object) {
     return false;
   }

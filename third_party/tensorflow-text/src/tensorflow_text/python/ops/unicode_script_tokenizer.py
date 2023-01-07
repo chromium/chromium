@@ -42,7 +42,31 @@ _tf_text_unicode_script_tokenizer_create_counter = monitoring.Counter(
 
 
 class UnicodeScriptTokenizer(TokenizerWithOffsets):
-  """Tokenizes a tensor of UTF-8 strings on Unicode script boundaries."""
+  r"""Tokenizes UTF-8 by splitting when there is a change in Unicode script.
+
+  By default, this tokenizer leaves out scripts matching the whitespace unicode
+  property (use the `keep_whitespace` argument to keep it), so in this case the
+  results are similar to the `WhitespaceTokenizer`. Any punctuation
+  will get its own token (since it is in a different script), and any script
+  change in the input string will be the location of a split.
+
+  Example:
+  >>> tokenizer = tf_text.UnicodeScriptTokenizer()
+  >>> tokens = tokenizer.tokenize(["xy.,z de", "fg?h", "abαβ"])
+  >>> print(tokens.to_list())
+  [[b'xy', b'.,', b'z', b'de'], [b'fg', b'?', b'h'],
+   [b'ab', b'\xce\xb1\xce\xb2']]
+
+  >>> tokens = tokenizer.tokenize(u"累計7239人")
+  >>> print(tokens)
+  tf.Tensor([b'\xe7\xb4\xaf\xe8\xa8\x88' b'7239' b'\xe4\xba\xba'], shape=(3,),
+            dtype=string)
+
+  Both the punctuation and the whitespace in the first string have been split,
+  but the punctuation run is present as a token while the whitespace isn't
+  emitted (by default). The third example shows the case of a script change
+  without any whitespace. This results in a split at that boundary point.
+  """
 
   def __init__(self, keep_whitespace=False):
     """Initializes a new instance.
@@ -56,7 +80,7 @@ class UnicodeScriptTokenizer(TokenizerWithOffsets):
     self._keep_whitespace = keep_whitespace
 
   def tokenize(self, input):  # pylint: disable=redefined-builtin
-    """Tokenizes a tensor of UTF-8 strings on Unicode script boundaries.
+    """Tokenizes UTF-8 by splitting when there is a change in Unicode script.
 
     The strings are split when successive tokens change their Unicode script
     or change being whitespace or not. The script codes used correspond to
@@ -77,7 +101,7 @@ class UnicodeScriptTokenizer(TokenizerWithOffsets):
     return tokens
 
   def tokenize_with_offsets(self, input):  # pylint: disable=redefined-builtin
-    """Tokenizes a tensor of UTF-8 strings on Unicode script boundaries.
+    r"""Tokenizes UTF-8 by splitting when there is a change in Unicode script.
 
     The strings are split when a change in the Unicode script is detected
     between sequential tokens. The script codes used correspond to International
@@ -86,6 +110,29 @@ class UnicodeScriptTokenizer(TokenizerWithOffsets):
 
     ICU defined whitespace characters are dropped, unless the keep_whitespace
     option was specified at construction time.
+
+    Example:
+    >>> tokenizer = tf_text.UnicodeScriptTokenizer()
+    >>> tokens = tokenizer.tokenize_with_offsets(["xy.,z de", "abαβ"])
+    >>> print(tokens[0].to_list())
+    [[b'xy', b'.,', b'z', b'de'], [b'ab', b'\xce\xb1\xce\xb2']]
+    >>> print(tokens[1].to_list())
+    [[0, 2, 4, 6], [0, 2]]
+    >>> print(tokens[2].to_list())
+    [[2, 4, 5, 8], [2, 6]]
+
+    >>> tokens = tokenizer.tokenize_with_offsets(u"累計7239人")
+    >>> print(tokens[0])
+    tf.Tensor([b'\xe7\xb4\xaf\xe8\xa8\x88' b'7239' b'\xe4\xba\xba'],
+        shape=(3,), dtype=string)
+    >>> print(tokens[1])
+    tf.Tensor([ 0  6 10], shape=(3,), dtype=int64)
+    >>> print(tokens[2])
+    tf.Tensor([ 6 10 13], shape=(3,), dtype=int64)
+
+    The start_offsets and end_offsets are in byte indices of the original
+    string. When calling with multiple string inputs, the offset indices will
+    be relative to the individual source strings.
 
     Args:
       input: A `RaggedTensor`or `Tensor` of UTF-8 strings with any shape.

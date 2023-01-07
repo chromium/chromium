@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace policy {
@@ -26,6 +27,18 @@ class PolicyConversionsClient;
 
 extern const POLICY_EXPORT webui::LocalizedString
     kPolicySources[POLICY_SOURCE_COUNT];
+
+extern const POLICY_EXPORT char kIdKey[];
+extern const POLICY_EXPORT char kNameKey[];
+extern const POLICY_EXPORT char kPoliciesKey[];
+extern const POLICY_EXPORT char kPolicyNamesKey[];
+extern const POLICY_EXPORT char kChromePoliciesId[];
+extern const POLICY_EXPORT char kChromePoliciesName[];
+
+#if !BUILDFLAG(IS_CHROMEOS)
+extern const POLICY_EXPORT char kPrecedencePoliciesId[];
+extern const POLICY_EXPORT char kPrecedencePoliciesName[];
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // A convenience class to retrieve all policies values.
 class POLICY_EXPORT PolicyConversions {
@@ -38,85 +51,118 @@ class POLICY_EXPORT PolicyConversions {
   // |client| provides embedder-specific policy information and must not be
   // nullptr.
   explicit PolicyConversions(std::unique_ptr<PolicyConversionsClient> client);
+  PolicyConversions(const PolicyConversions&) = delete;
+  PolicyConversions& operator=(const PolicyConversions&) = delete;
   virtual ~PolicyConversions();
 
   // Set to get policy types as human friendly string instead of enum integer.
   // Policy types includes policy source, policy scope and policy level.
   // Enabled by default.
-  PolicyConversions& EnableConvertTypes(bool enabled);
+  virtual PolicyConversions& EnableConvertTypes(bool enabled);
   // Set to get dictionary policy value as JSON string.
   // Disabled by default.
-  PolicyConversions& EnableConvertValues(bool enabled);
+  virtual PolicyConversions& EnableConvertValues(bool enabled);
   // Set to get device local account policies on ChromeOS.
   // Disabled by default.
-  PolicyConversions& EnableDeviceLocalAccountPolicies(bool enabled);
+  virtual PolicyConversions& EnableDeviceLocalAccountPolicies(bool enabled);
   // Set to get device basic information on ChromeOS.
   // Disabled by default.
-  PolicyConversions& EnableDeviceInfo(bool enabled);
+  virtual PolicyConversions& EnableDeviceInfo(bool enabled);
   // Set to enable pretty print for all JSON string.
   // Enabled by default.
-  PolicyConversions& EnablePrettyPrint(bool enabled);
+  virtual PolicyConversions& EnablePrettyPrint(bool enabled);
   // Set to get all user scope policies.
   // Enabled by default.
-  PolicyConversions& EnableUserPolicies(bool enabled);
-
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Sets the updater policies.
-  PolicyConversions& WithUpdaterPolicies(std::unique_ptr<PolicyMap> policies);
-
-  // Sets the updater policy schemas.
-  PolicyConversions& WithUpdaterPolicySchemas(PolicyToSchemaMap schemas);
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-  // Returns the policy data as a base::Value object.
-  virtual base::Value ToValue() = 0;
+  virtual PolicyConversions& EnableUserPolicies(bool enabled);
+  // Set to drop the policies of which value is a default one set by the policy
+  // provider. Disabled by default.
+  virtual PolicyConversions& SetDropDefaultValues(bool enabled);
 
   // Returns the policy data as a JSON string;
-  virtual std::string ToJSON();
+  virtual std::string ToJSON() = 0;
 
  protected:
   PolicyConversionsClient* client() { return client_.get(); }
 
  private:
   std::unique_ptr<PolicyConversionsClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyConversions);
 };
 
 class POLICY_EXPORT DictionaryPolicyConversions : public PolicyConversions {
  public:
   explicit DictionaryPolicyConversions(
       std::unique_ptr<PolicyConversionsClient> client);
+  DictionaryPolicyConversions(const DictionaryPolicyConversions&) = delete;
+  DictionaryPolicyConversions& operator=(const DictionaryPolicyConversions&) =
+      delete;
   ~DictionaryPolicyConversions() override;
 
-  base::Value ToValue() override;
+  DictionaryPolicyConversions& EnableConvertTypes(bool enabled) override;
+
+  DictionaryPolicyConversions& EnableConvertValues(bool enabled) override;
+
+  DictionaryPolicyConversions& EnableDeviceLocalAccountPolicies(
+      bool enabled) override;
+
+  DictionaryPolicyConversions& EnableDeviceInfo(bool enabled) override;
+
+  DictionaryPolicyConversions& EnablePrettyPrint(bool enabled) override;
+
+  DictionaryPolicyConversions& EnableUserPolicies(bool enabled) override;
+
+  DictionaryPolicyConversions& SetDropDefaultValues(bool enabled) override;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  base::Value::Dict GetExtensionPolicies();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  std::string ToJSON() override;
+
+  base::Value::Dict ToValueDict();
 
  private:
-  base::Value GetExtensionPolicies(PolicyDomain policy_domain);
+  base::Value::Dict GetExtensionPolicies(PolicyDomain policy_domain);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::Value GetDeviceLocalAccountPolicies();
+  base::Value::Dict GetDeviceLocalAccountPolicies();
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DictionaryPolicyConversions);
 };
 
-class POLICY_EXPORT ArrayPolicyConversions : public PolicyConversions {
+// PolicyConversions implementation that retrieves Chrome policies. The
+// retrieved policies include precedence policies for non-ChromeOS and device
+// local account policies and identity fields for ChromeOS Ash.
+class POLICY_EXPORT ChromePolicyConversions : public PolicyConversions {
  public:
-  explicit ArrayPolicyConversions(
+  explicit ChromePolicyConversions(
       std::unique_ptr<PolicyConversionsClient> client);
-  ~ArrayPolicyConversions() override;
+  ChromePolicyConversions(const ChromePolicyConversions&) = delete;
+  ChromePolicyConversions& operator=(const ChromePolicyConversions&) = delete;
+  ~ChromePolicyConversions() override;
 
-  base::Value ToValue() override;
+  ChromePolicyConversions& EnableConvertTypes(bool enabled) override;
+
+  ChromePolicyConversions& EnableConvertValues(bool enabled) override;
+
+  ChromePolicyConversions& EnableDeviceLocalAccountPolicies(
+      bool enabled) override;
+
+  ChromePolicyConversions& EnableDeviceInfo(bool enabled) override;
+
+  ChromePolicyConversions& EnablePrettyPrint(bool enabled) override;
+
+  ChromePolicyConversions& EnableUserPolicies(bool enabled) override;
+
+  ChromePolicyConversions& SetDropDefaultValues(bool enabled) override;
+
+  std::string ToJSON() override;
+
+  base::Value::Dict ToValueDict();
 
  private:
-  base::Value GetChromePolicies();
-
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::Value GetUpdaterPolicies();
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-  DISALLOW_COPY_AND_ASSIGN(ArrayPolicyConversions);
+  base::Value::Dict GetChromePolicies();
+#if !BUILDFLAG(IS_CHROMEOS)
+  base::Value::Dict GetPrecedencePolicies();
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace policy

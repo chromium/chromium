@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL setParameters() with modified rtcp.cname should reject with InvalidModificationError Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
-FAIL setParameters() with modified rtcp.reducedSize should reject with InvalidModificationError Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
-Harness: the test ran to completion.
-

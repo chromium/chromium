@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@ import android.os.Message;
 import android.os.Messenger;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.VerifiedHandler;
+import org.chromium.components.version_info.VersionInfo;
 
 /**
  * A bound service that does nothing. Kept here to prevent old clients relying on it being
@@ -26,9 +26,8 @@ public class ChromePrerenderServiceImpl extends ChromePrerenderService.Impl {
     static class IncomingHandler extends VerifiedHandler {
         IncomingHandler(Context context) {
             super(context, ExternalAuthUtils.getInstance(),
-                    ChromeVersionInfo.isLocalBuild()
-                            ? 0
-                            : ExternalAuthUtils.FLAG_SHOULD_BE_GOOGLE_SIGNED);
+                    VersionInfo.isLocalBuild() ? 0
+                                               : ExternalAuthUtils.FLAG_SHOULD_BE_GOOGLE_SIGNED);
         }
 
         @Override

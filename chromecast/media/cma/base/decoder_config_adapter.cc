@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,26 +21,30 @@ namespace {
 // unsupported codec will be converted to chromecast::media::kCodecUnknown.
 AudioCodec ToAudioCodec(const ::media::AudioCodec audio_codec) {
   switch (audio_codec) {
-    case ::media::kCodecAAC:
+    case ::media::AudioCodec::kAAC:
       return kCodecAAC;
-    case ::media::kCodecMP3:
+    case ::media::AudioCodec::kMP3:
       return kCodecMP3;
-    case ::media::kCodecPCM:
+    case ::media::AudioCodec::kPCM:
       return kCodecPCM;
-    case ::media::kCodecPCM_S16BE:
+    case ::media::AudioCodec::kPCM_S16BE:
       return kCodecPCM_S16BE;
-    case ::media::kCodecVorbis:
+    case ::media::AudioCodec::kVorbis:
       return kCodecVorbis;
-    case ::media::kCodecOpus:
+    case ::media::AudioCodec::kOpus:
       return kCodecOpus;
-    case ::media::kCodecFLAC:
+    case ::media::AudioCodec::kFLAC:
       return kCodecFLAC;
-    case ::media::kCodecEAC3:
+    case ::media::AudioCodec::kEAC3:
       return kCodecEAC3;
-    case ::media::kCodecAC3:
+    case ::media::AudioCodec::kAC3:
       return kCodecAC3;
-    case ::media::kCodecMpegHAudio:
+    case ::media::AudioCodec::kMpegHAudio:
       return kCodecMpegHAudio;
+    case ::media::AudioCodec::kDTS:
+      return kCodecDTS;
+    case ::media::AudioCodec::kDTSXP2:
+      return kCodecDTSXP2;
     default:
       LOG(ERROR) << "Unsupported audio codec " << audio_codec;
   }
@@ -52,7 +56,10 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
     case ::media::kUnknownSampleFormat:
     case ::media::kSampleFormatAc3:
     case ::media::kSampleFormatEac3:
+    case ::media::kSampleFormatDts:
+    case ::media::kSampleFormatDtsxP2:
     case ::media::kSampleFormatMpegHAudio:
+    case ::media::kSampleFormatIECDts:
       return kUnknownSampleFormat;
     case ::media::kSampleFormatU8:
       return kSampleFormatU8;
@@ -64,6 +71,8 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
       return kSampleFormatS32;
     case ::media::kSampleFormatF32:
       return kSampleFormatF32;
+    case ::media::kSampleFormatPlanarU8:
+      return kSampleFormatPlanarU8;
     case ::media::kSampleFormatPlanarS16:
       return kSampleFormatPlanarS16;
     case ::media::kSampleFormatPlanarF32:
@@ -89,6 +98,8 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
       return ::media::kSampleFormatS32;
     case kSampleFormatF32:
       return ::media::kSampleFormatF32;
+    case kSampleFormatPlanarU8:
+      return ::media::kSampleFormatPlanarU8;
     case kSampleFormatPlanarS16:
       return ::media::kSampleFormatPlanarS16;
     case kSampleFormatPlanarF32:
@@ -105,29 +116,33 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
     const chromecast::media::AudioCodec codec) {
   switch (codec) {
     case kAudioCodecUnknown:
-      return ::media::kUnknownAudioCodec;
+      return ::media::AudioCodec::kUnknown;
     case kCodecAAC:
-      return ::media::kCodecAAC;
+      return ::media::AudioCodec::kAAC;
     case kCodecMP3:
-      return ::media::kCodecMP3;
+      return ::media::AudioCodec::kMP3;
     case kCodecPCM:
-      return ::media::kCodecPCM;
+      return ::media::AudioCodec::kPCM;
     case kCodecPCM_S16BE:
-      return ::media::kCodecPCM_S16BE;
+      return ::media::AudioCodec::kPCM_S16BE;
     case kCodecVorbis:
-      return ::media::kCodecVorbis;
+      return ::media::AudioCodec::kVorbis;
     case kCodecOpus:
-      return ::media::kCodecOpus;
+      return ::media::AudioCodec::kOpus;
     case kCodecFLAC:
-      return ::media::kCodecFLAC;
+      return ::media::AudioCodec::kFLAC;
     case kCodecEAC3:
-      return ::media::kCodecEAC3;
+      return ::media::AudioCodec::kEAC3;
     case kCodecAC3:
-      return ::media::kCodecAC3;
+      return ::media::AudioCodec::kAC3;
     case kCodecMpegHAudio:
-      return ::media::kCodecMpegHAudio;
+      return ::media::AudioCodec::kMpegHAudio;
+    case kCodecDTS:
+      return ::media::AudioCodec::kDTS;
+    case kCodecDTSXP2:
+      return ::media::AudioCodec::kDTSXP2;
     default:
-      return ::media::kUnknownAudioCodec;
+      return ::media::AudioCodec::kUnknown;
   }
 }
 
@@ -227,12 +242,12 @@ AudioConfig DecoderConfigAdapter::ToCastAudioConfig(
   audio_config.encryption_scheme =
       ToEncryptionScheme(config.encryption_scheme());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, Chromium's mp4 parser adds extra data for AAC, but we don't
   // need this with CMA.
   if (audio_config.codec == kCodecAAC)
     audio_config.extra_data.clear();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return audio_config;
 }
@@ -332,7 +347,7 @@ VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
   video_config.matrix = static_cast<MatrixID>(config.color_space_info().matrix);
   video_config.range = static_cast<RangeID>(config.color_space_info().range);
 
-  base::Optional<::gfx::HDRMetadata> hdr_metadata = config.hdr_metadata();
+  absl::optional<::gfx::HDRMetadata> hdr_metadata = config.hdr_metadata();
   if (hdr_metadata) {
     video_config.have_hdr_metadata = true;
     video_config.hdr_metadata.max_content_light_level =
@@ -340,8 +355,8 @@ VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
     video_config.hdr_metadata.max_frame_average_light_level =
         hdr_metadata->max_frame_average_light_level;
 
-    const auto& mm1 = hdr_metadata->mastering_metadata;
-    auto& mm2 = video_config.hdr_metadata.mastering_metadata;
+    const auto& mm1 = hdr_metadata->color_volume_metadata;
+    auto& mm2 = video_config.hdr_metadata.color_volume_metadata;
     mm2.primary_r_chromaticity_x = mm1.primary_r.x();
     mm2.primary_r_chromaticity_y = mm1.primary_r.y();
     mm2.primary_g_chromaticity_x = mm1.primary_g.x();

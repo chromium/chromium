@@ -1,0 +1,13 @@
+Verifies that Network.emulateNetworkConditions affects web sockets when offline is enabled.
+
+Running test: setUp
+
+Running test: testNoSocketOpenWhenOffline
+onerror onclose 
+
+Running test: testNoMessageSentWhenOffline
+onopen onmessage Offline
+
+Running test: testNoMessageRecievedWhenOffline
+onmessage Hit me
+

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CC_LAYERS_SCROLLBAR_LAYER_IMPL_BASE_H_
 
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "cc/cc_export.h"
 #include "cc/input/scrollbar.h"
 #include "cc/layers/layer.h"
@@ -42,7 +43,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   }
 
   ScrollbarOrientation orientation() const { return orientation_; }
-  bool is_left_side_vertical_scrollbar() {
+  bool is_left_side_vertical_scrollbar() const {
     return is_left_side_vertical_scrollbar_;
   }
 
@@ -51,7 +52,8 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   void PushPropertiesTo(LayerImpl* layer) override;
 
   // Thumb quad rect in layer space.
-  gfx::Rect ComputeThumbQuadRect() const;
+  virtual gfx::Rect ComputeThumbQuadRect() const;
+  virtual gfx::Rect ComputeHitTestableThumbQuadRect() const;
   gfx::Rect ComputeExpandedThumbQuadRect() const;
 
   float thumb_thickness_scale_factor() {
@@ -84,6 +86,8 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   // opacity. This method will return the user visible opacity of an overlay
   // scrollbar regardless of the underlying mechanism or platform.
   virtual float OverlayScrollbarOpacity() const;
+
+  bool IsFluentScrollbarEnabled() const;
 
  protected:
   ScrollbarLayerImplBase(LayerTreeImpl* tree_impl,

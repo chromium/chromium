@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,8 +84,8 @@ void WebGLQuery::ScheduleAllowAvailabilityUpdate() {
     return;
   task_handle_ =
       PostCancellableTask(*task_runner_, FROM_HERE,
-                          WTF::Bind(&WebGLQuery::AllowAvailabilityUpdate,
-                                    WrapWeakPersistent(this)));
+                          WTF::BindOnce(&WebGLQuery::AllowAvailabilityUpdate,
+                                        WrapWeakPersistent(this)));
 }
 
 void WebGLQuery::AllowAvailabilityUpdate() {

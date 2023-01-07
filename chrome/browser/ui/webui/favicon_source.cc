@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,9 @@
 
 namespace {
 
+// Generous cap to guard against out-of-memory issues.
+constexpr int kMaxDesiredSizeInPixel = 2048;
+
 // web_contents->GetLastCommittedURL in general will not necessarily yield the
 // original URL that started the request, but we're only interested in verifying
 // if it was issued by a history page, for whom this is the case. If it is not
@@ -67,8 +70,7 @@ FaviconSource::FaviconSource(Profile* profile,
                              chrome::FaviconUrlFormat url_format)
     : profile_(profile->GetOriginalProfile()), url_format_(url_format) {}
 
-FaviconSource::~FaviconSource() {
-}
+FaviconSource::~FaviconSource() {}
 
 std::string FaviconSource::GetSource() {
   switch (url_format_) {
@@ -105,7 +107,18 @@ void FaviconSource::StartDataRequest(
   GURL page_url(parsed.page_url);
   GURL icon_url(parsed.icon_url);
   if (!page_url.is_valid() && !icon_url.is_valid()) {
-    SendDefaultResponse(std::move(callback), wc_getter);
+    SendDefaultResponse(std::move(callback), wc_getter,
+                        parsed.force_light_mode);
+    return;
+  }
+
+  const int desired_size_in_pixel =
+      std::ceil(parsed.size_in_dip * parsed.device_scale_factor);
+
+  // Guard against out-of-memory issues.
+  if (desired_size_in_pixel > kMaxDesiredSizeInPixel) {
+    SendDefaultResponse(std::move(callback), wc_getter,
+                        parsed.force_light_mode);
     return;
   }
 
@@ -120,9 +133,6 @@ void FaviconSource::StartDataRequest(
                                     extensions::Manifest::NUM_LOAD_TYPES);
     }
   }
-
-  int desired_size_in_pixel =
-      std::ceil(parsed.size_in_dip * parsed.device_scale_factor);
 
   if (parsed.page_url.empty()) {
     // Request by icon url.
@@ -142,8 +152,8 @@ void FaviconSource::StartDataRequest(
     if (top_sites) {
       for (const auto& prepopulated_page : top_sites->GetPrepopulatedPages()) {
         if (page_url == prepopulated_page.most_visited.url) {
-          ui::ScaleFactor resource_scale_factor =
-              ui::GetSupportedScaleFactor(parsed.device_scale_factor);
+          ui::ResourceScaleFactor resource_scale_factor =
+              ui::GetSupportedResourceScaleFactor(parsed.device_scale_factor);
           std::move(callback).Run(
               ui::ResourceBundle::GetSharedInstance()
                   .LoadDataResourceBytesForScale(prepopulated_page.favicon_id,
@@ -190,7 +200,7 @@ void FaviconSource::StartDataRequest(
   }
 }
 
-std::string FaviconSource::GetMimeType(const std::string&) {
+std::string FaviconSource::GetMimeType(const GURL&) {
   // We need to explicitly return a mime type, otherwise if the user tries to
   // drag the image they get no extension.
   return "image/png";
@@ -243,7 +253,9 @@ void FaviconSource::SendDefaultResponse(
   if (!parsed.show_fallback_monogram) {
     SendDefaultResponse(std::move(callback), parsed.size_in_dip,
                         parsed.device_scale_factor,
-                        GetNativeTheme(wc_getter)->ShouldUseDarkColors());
+                        parsed.force_light_mode
+                            ? false
+                            : GetNativeTheme(wc_getter)->ShouldUseDarkColors());
     return;
   }
   int icon_size = std::ceil(parsed.size_in_dip * parsed.device_scale_factor);
@@ -257,9 +269,12 @@ void FaviconSource::SendDefaultResponse(
 
 void FaviconSource::SendDefaultResponse(
     content::URLDataSource::GotDataCallback callback,
-    const content::WebContents::Getter& wc_getter) {
+    const content::WebContents::Getter& wc_getter,
+    bool force_light_mode) {
   SendDefaultResponse(std::move(callback), 16, 1.0f,
-                      GetNativeTheme(wc_getter)->ShouldUseDarkColors());
+                      force_light_mode
+                          ? false
+                          : GetNativeTheme(wc_getter)->ShouldUseDarkColors());
 }
 
 void FaviconSource::SendDefaultResponse(
@@ -287,5 +302,5 @@ void FaviconSource::SendDefaultResponse(
 base::RefCountedMemory* FaviconSource::LoadIconBytes(float scale_factor,
                                                      int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-      resource_id, ui::GetSupportedScaleFactor(scale_factor));
+      resource_id, ui::GetSupportedResourceScaleFactor(scale_factor));
 }

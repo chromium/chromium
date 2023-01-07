@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_UPDATE_TIME_ESTIMATOR_H_
 
 #include "base/time/time.h"
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 
 namespace base {
 class TickClock;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Helper class that gives time left expectations.
 class UpdateTimeEstimator {
@@ -75,6 +75,6 @@ class UpdateTimeEstimator {
   const base::TickClock* tick_clock_ = nullptr;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_UPDATE_TIME_ESTIMATOR_H_

@@ -1,0 +1,20 @@
+{
+  "GUID": "guid",
+  "Type": "vpn",
+  "Name": "MyWireGuard",
+  "Provider.Host": "wireguard",
+  "Provider.Type": "wireguard",
+  "StaticIPConfig": {
+      "Address": "10.20.30.101",
+      "NameServers": [ "8.8.8.8", "8.8.4.4", "0.0.0.0", "0.0.0.0" ]
+  },
+  "WireGuard.Peers": [
+      {
+          "AllowedIPs": "0.0.0.0/0",
+          "Endpoint": "2.2.2.2:54321",
+          "PersistentKeepalive": "",
+          "PublicKey": "placeholder_peer_public_key"
+      }
+  ],
+  "WireGuard.PrivateKey": "placeholder_private_key"
+}

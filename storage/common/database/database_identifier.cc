@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "url/url_canon.h"
@@ -20,8 +18,7 @@ namespace {
 // If the passed string is of the form "[1::2:3]", returns "[1__2_3]".
 std::string EscapeIPv6Hostname(const std::string& hostname) {
   // Shortest IPv6 hostname would be "[::1]".
-  if (hostname.length() < 5 || hostname.front() != '[' ||
-      hostname.back() != ']')
+  if (hostname.size() < 5 || hostname.front() != '[' || hostname.back() != ']')
     return hostname;
 
   // Should be canonicalized before it gets this far.
@@ -35,8 +32,7 @@ std::string EscapeIPv6Hostname(const std::string& hostname) {
 
 // If the passed string is of the form "[1__2_3]", returns "[1::2:3]".
 std::string UnescapeIPv6Hostname(const std::string& hostname) {
-  if (hostname.length() < 5 || hostname.front() != '[' ||
-      hostname.back() != ']')
+  if (hostname.size() < 5 || hostname.front() != '[' || hostname.back() != ']')
     return hostname;
 
   std::string copy = hostname;
@@ -88,9 +84,10 @@ DatabaseIdentifier DatabaseIdentifier::CreateFromOrigin(
 
 // static
 DatabaseIdentifier DatabaseIdentifier::CreateFromOrigin(const GURL& origin) {
-  if (!origin.is_valid() || origin.is_empty() ||
-      !origin.IsStandard() || SchemeIsUnique(origin.scheme()))
+  if (!origin.is_valid() || origin.is_empty() || !origin.IsStandard() ||
+      SchemeIsUnique(origin.scheme())) {
     return DatabaseIdentifier();
+  }
 
   if (origin.SchemeIsFile())
     return UniqueFileIdentifier();
@@ -117,8 +114,8 @@ DatabaseIdentifier DatabaseIdentifier::Parse(const std::string& identifier) {
     return DatabaseIdentifier();
   if (identifier.find("..") != std::string::npos)
     return DatabaseIdentifier();
-  char forbidden[] = {'\\', '/', ':' ,'\0'};
-  if (identifier.find_first_of(forbidden, 0, base::size(forbidden)) !=
+  static const char kForbidden[] = {'\\', '/', ':', '\0'};
+  if (identifier.find_first_of(kForbidden, 0, std::size(kForbidden)) !=
       std::string::npos) {
     return DatabaseIdentifier();
   }
@@ -130,8 +127,9 @@ DatabaseIdentifier DatabaseIdentifier::Parse(const std::string& identifier) {
   size_t last_underscore = identifier.find_last_of('_');
   if (last_underscore == std::string::npos ||
       last_underscore == first_underscore ||
-      last_underscore == identifier.length() - 1)
+      last_underscore == identifier.size() - 1) {
     return DatabaseIdentifier();
+  }
 
   std::string scheme(identifier.data(), first_underscore);
   if (scheme == "file")
@@ -144,7 +142,8 @@ DatabaseIdentifier DatabaseIdentifier::Parse(const std::string& identifier) {
   auto port_str = base::MakeStringPiece(
       identifier.begin() + last_underscore + 1, identifier.end());
   int port = 0;
-  if (!base::StringToInt(port_str, &port) || port < 0 || port >= 1 << 16)
+  constexpr int kMaxPort = 65535;
+  if (!base::StringToInt(port_str, &port) || port < 0 || port > kMaxPort)
     return DatabaseIdentifier();
 
   std::string hostname =
@@ -154,7 +153,7 @@ DatabaseIdentifier DatabaseIdentifier::Parse(const std::string& identifier) {
   GURL url(scheme + "://" + hostname + "/");
 
   if (!url.IsStandard())
-    hostname = "";
+    hostname.clear();
 
   // If a url doesn't parse cleanly or doesn't round trip, reject it.
   if (!url.is_valid() || url.scheme() != scheme || url.host() != hostname)

@@ -1,11 +1,11 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import(
-    "//chrome/browser/resources/chromeos/accessibility/common/run_jsbundler.gni")
+    "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//testing/test.gni")
@@ -73,7 +73,6 @@ source_set("browser_tests") {
     # The test uses data from the original location, not the copied one.
     "//chrome/browser/resources/chromeos/accessibility/common/",
     "//chrome/browser/resources/chromeos/accessibility/select_to_speak/",
-    "//ui/webui/resources/js/cr.js",
   ]
   data += js2gtest_js_libraries
 }
@@ -83,6 +82,7 @@ js2gtest("select_to_speak_extjs_tests") {
   sources = [
     # These are end-to-end tests.
     "paragraph_utils_overflow_test.js",
+    "select_to_speak_enhanced_voices_test.js",
     "select_to_speak_keystroke_selection_test.js",
     "select_to_speak_mouse_selection_test.js",
     "select_to_speak_navigation_control_test.js",
@@ -102,16 +102,15 @@ js2gtest("select_to_speak_extjs_tests") {
     "word_utils_unittest.js",
   ]
   gen_include_files = [
+    "../common/testing/accessibility_test_base.js",
     "../common/testing/callback_helper.js",
     "../common/testing/e2e_test_base.js",
-    "mock_storage.js",
-    "mock_tts.js",
+    "../common/testing/fake_chrome_event.js",
+    "../common/testing/fake_settings_private.js",
+    "../common/testing/mock_storage.js",
+    "../common/testing/mock_tts.js",
     "select_to_speak_e2e_test_base.js",
     "pipe.jpg",
-  ]
-  extra_js_files = [
-    "fake_settings_private.js",
-    "//chrome/test/data/webui/fake_chrome_event.js",
   ]
 
   # The test base classes generate C++ code with these deps.
@@ -119,7 +118,8 @@ js2gtest("select_to_speak_extjs_tests") {
     "//ash",
     "//ash/keyboard/ui",
     "//base",
-    "//chrome/browser/chromeos",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash/crosapi",
     "//chrome/common",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

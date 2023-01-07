@@ -37,15 +37,15 @@ MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
 FAKE_SOURCE_REPO_DIR = '/blink'
 
 FAKE_FILES = {
-    MOCK_WEB_TESTS + 'external/OWNERS': '',
-    '/blink/w3c/dir/run.bat': '',
-    '/blink/w3c/dir/has_shebang.txt': '#!',
-    '/blink/w3c/dir/README.txt': '',
-    '/blink/w3c/dir/OWNERS': '',
-    '/blink/w3c/dir/DIR_METADATA': '',
-    '/blink/w3c/dir/reftest.list': '',
-    MOCK_WEB_TESTS + 'external/README.txt': '',
-    MOCK_WEB_TESTS + 'W3CImportExpectations': '',
+    MOCK_WEB_TESTS + 'external/OWNERS': b'',
+    '/blink/w3c/dir/run.bat': b'',
+    '/blink/w3c/dir/has_shebang.txt': b'#!',
+    '/blink/w3c/dir/README.txt': b'',
+    '/blink/w3c/dir/OWNERS': b'',
+    '/blink/w3c/dir/DIR_METADATA': b'',
+    '/blink/w3c/dir/reftest.list': b'',
+    MOCK_WEB_TESTS + 'external/README.txt': b'',
+    MOCK_WEB_TESTS + 'W3CImportExpectations': b'',
 }
 
 
@@ -114,23 +114,24 @@ class TestCopierTest(LoggingTestCase):
         host.filesystem = MockFileSystem(
             files={
                 '/blink/w3c/dir1/my-ref-test.html':
-                '<html><head><link rel="match" href="ref-file.html" />test</head></html>',
+                b'<html><head><link rel="match" href="ref-file.html" />test</head></html>',
                 '/blink/w3c/dir1/ref-file.html':
-                '<html><head>test</head></html>',
+                b'<html><head>test</head></html>',
                 MOCK_WEB_TESTS + 'W3CImportExpectations':
-                '',
+                b'',
             })
         copier = TestCopier(host, FAKE_SOURCE_REPO_DIR)
         copier.find_importable_tests()
-        self.assertEqual(copier.import_list, [{
-            'copy_list': [{
-                'src': '/blink/w3c/dir1/ref-file.html',
-                'dest': 'ref-file.html'
-            },
-                          {
-                              'src': '/blink/w3c/dir1/my-ref-test.html',
-                              'dest': 'my-ref-test.html'
-                          }],
-            'dirname':
-            '/blink/w3c/dir1',
-        }])
+        self.assertEqual(len(copier.import_list), 1)
+        # The order of copy_list depends on the implementation of
+        # filesystem.walk, so don't check the order
+        self.assertCountEqual(copier.import_list[0]['copy_list'],
+                              [{
+                                  'src': '/blink/w3c/dir1/ref-file.html',
+                                  'dest': 'ref-file.html'
+                              }, {
+                                  'src': '/blink/w3c/dir1/my-ref-test.html',
+                                  'dest': 'my-ref-test.html'
+                              }])
+        self.assertEqual(copier.import_list[0]['dirname'],
+                         '/blink/w3c/dir1')

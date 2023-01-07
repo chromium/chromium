@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>secureConnectionStart on non-https localhost</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+      window.onload = () => {
+          test(t => {
+              const entry = performance.getEntriesByType("navigation")[0];
+              assert_equals(entry.secureConnectionStart, 0, "secureConnectionStart is non-zero");
+          }, "Test that secureConnectionStart is zero");
+      };
+    </script>
+  </body>
+</html>

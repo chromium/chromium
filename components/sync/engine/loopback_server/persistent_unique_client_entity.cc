@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/loopback_server/persistent_permanent_entity.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/loopback_server.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 namespace syncer {
 
@@ -30,7 +31,7 @@ PersistentUniqueClientEntity::PersistentUniqueClientEntity(
   SetSpecifics(specifics);
 }
 
-PersistentUniqueClientEntity::~PersistentUniqueClientEntity() {}
+PersistentUniqueClientEntity::~PersistentUniqueClientEntity() = default;
 
 // static
 std::unique_ptr<LoopbackServerEntity>

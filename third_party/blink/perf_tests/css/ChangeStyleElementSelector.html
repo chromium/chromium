@@ -11,7 +11,7 @@
         PerfTestRunner.measureTime({
             description: "Measures the performance of applying a style on all divs.",
             run: function() {
-                var rule = applyCSSRule("div { color: red; }");
+                var rule = applyCSSRule("div { cursor: crosshair; }");
                 forceStyleRecalc(document.body);
                 rule.remove();
                 forceStyleRecalc(document.body);

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "ash/assistant/ui/base/assistant_button.h"
 #include "ash/assistant/ui/dialog_plate/mic_view.h"
 #include "ash/assistant/util/animation_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
@@ -22,8 +23,13 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -47,14 +53,11 @@ constexpr int kPaddingHorizontalDip = 16;
 constexpr int kPaddingTopDip = 12;
 
 // Animation.
-constexpr base::TimeDelta kAnimationFadeInDelay =
-    base::TimeDelta::FromMilliseconds(83);
-constexpr base::TimeDelta kAnimationFadeInDuration =
-    base::TimeDelta::FromMilliseconds(100);
-constexpr base::TimeDelta kAnimationFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(83);
+constexpr base::TimeDelta kAnimationFadeInDelay = base::Milliseconds(83);
+constexpr base::TimeDelta kAnimationFadeInDuration = base::Milliseconds(100);
+constexpr base::TimeDelta kAnimationFadeOutDuration = base::Milliseconds(83);
 constexpr base::TimeDelta kAnimationTransformInDuration =
-    base::TimeDelta::FromMilliseconds(333);
+    base::Milliseconds(333);
 constexpr int kAnimationTranslationDip = 30;
 
 using keyboard::KeyboardUIController;
@@ -62,9 +65,7 @@ using keyboard::KeyboardUIController;
 // Textfield used for inputting text based Assistant queries.
 class AssistantTextfield : public views::Textfield {
  public:
-  AssistantTextfield() : views::Textfield() {
-    SetID(AssistantViewID::kTextQueryField);
-  }
+  AssistantTextfield() { SetID(AssistantViewID::kTextQueryField); }
 
   // views::Textfield overrides:
   const char* GetClassName() const override { return "AssistantTextfield"; }
@@ -82,6 +83,24 @@ void HideKeyboardIfEnabled() {
 
   if (keyboard_controller->IsEnabled())
     keyboard_controller->HideKeyboardImplicitlyByUser();
+}
+
+// Returns the primary color adjusted for enabled features.
+ui::ColorId GetPrimaryColor() {
+  if (features::IsDarkLightModeEnabled())
+    return cros_tokens::kColorPrimary;
+
+  // The dark color is used by default.
+  return cros_tokens::kColorPrimaryDark;
+}
+
+// Returns the secondary color adjusted for enabled features.
+ui::ColorId GetSecondaryColor() {
+  if (features::IsDarkLightModeEnabled())
+    return cros_tokens::kColorSecondary;
+
+  // The dark color is used by default.
+  return cros_tokens::kColorSecondaryDark;
 }
 
 }  // namespace
@@ -115,10 +134,6 @@ AssistantDialogPlate::~AssistantDialogPlate() {
 
   if (AssistantInteractionController::Get())
     AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
-}
-
-const char* AssistantDialogPlate::GetClassName() const {
-  return "AssistantDialogPlate";
 }
 
 gfx::Size AssistantDialogPlate::CalculatePreferredSize() const {
@@ -273,17 +288,22 @@ void AssistantDialogPlate::OnCommittedQueryChanged(
 void AssistantDialogPlate::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
-  if (new_visibility == AssistantVisibility::kVisible) {
-    UpdateModalityVisibility();
-    UpdateKeyboardVisibility();
-  } else {
-    // When the Assistant UI is no longer visible we need to clear the dialog
-    // plate so that text does not persist across Assistant launches.
-    textfield_->SetText(std::u16string());
-
-    HideKeyboardIfEnabled();
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
+  switch (new_visibility) {
+    case AssistantVisibility::kVisible:
+      UpdateModalityVisibility();
+      UpdateKeyboardVisibility();
+      break;
+    case AssistantVisibility::kClosed:
+      // When the Assistant UI is no longer visible we need to clear the dialog
+      // plate so that text does not persist across Assistant launches.
+      textfield_->SetText(std::u16string());
+      HideKeyboardIfEnabled();
+      break;
+    case AssistantVisibility::kClosing:
+      // No action.
+      break;
   }
 }
 
@@ -291,6 +311,14 @@ void AssistantDialogPlate::RequestFocus() {
   views::View* view = FindFirstFocusableView();
   if (view)
     view->RequestFocus();
+}
+
+void AssistantDialogPlate::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  textfield_->SetTextColor(GetColorProvider()->GetColor(GetPrimaryColor()));
+  textfield_->set_placeholder_text_color(
+      GetColorProvider()->GetColor(GetSecondaryColor()));
 }
 
 views::View* AssistantDialogPlate::FindFirstFocusableView() {
@@ -307,8 +335,8 @@ void AssistantDialogPlate::InitLayout() {
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(kPaddingTopDip, kPaddingHorizontalDip, kPaddingBottomDip,
-                      kPaddingHorizontalDip)));
+          gfx::Insets::TLBR(kPaddingTopDip, kPaddingHorizontalDip,
+                            kPaddingBottomDip, kPaddingHorizontalDip)));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -349,7 +377,7 @@ void AssistantDialogPlate::InitKeyboardLayoutContainer() {
       keyboard_layout_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kHorizontal,
-              gfx::Insets(0, kLeftPaddingDip, 0, 0)));
+              gfx::Insets::TLBR(0, kLeftPaddingDip, 0, 0)));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -369,8 +397,6 @@ void AssistantDialogPlate::InitKeyboardLayoutContainer() {
       l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_DIALOG_PLATE_HINT);
   textfield->SetPlaceholderText(textfield_hint);
   textfield->SetAccessibleName(textfield_hint);
-  textfield->set_placeholder_text_color(kTextColorSecondary);
-  textfield->SetTextColor(kTextColorPrimary);
   textfield_ = keyboard_layout_container->AddChildView(std::move(textfield));
 
   layout_manager->SetFlexForView(textfield_, 1);
@@ -437,11 +463,13 @@ void AssistantDialogPlate::InitVoiceLayoutContainer() {
   AssistantButton::InitParams params;
   params.size_in_dip = kButtonSizeDip;
   params.icon_size_in_dip = kIconSizeDip;
+  params.icon_color_type = GetPrimaryColor();
   params.accessible_name_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_ACCNAME;
   params.tooltip_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_TOOLTIP;
   keyboard_input_toggle_ =
       voice_layout_container->AddChildView(AssistantButton::Create(
-          this, kKeyboardIcon, AssistantButtonId::kKeyboardInputToggle,
+          this, vector_icons::kKeyboardIcon,
+          AssistantButtonId::kKeyboardInputToggle,
           std::move(params)));
   keyboard_input_toggle_->SetID(AssistantViewID::kKeyboardInputToggle);
 
@@ -501,5 +529,8 @@ bool AssistantDialogPlate::OnAnimationEnded(
 InputModality AssistantDialogPlate::input_modality() const {
   return AssistantInteractionController::Get()->GetModel()->input_modality();
 }
+
+BEGIN_METADATA(AssistantDialogPlate, views::View)
+END_METADATA
 
 }  // namespace ash

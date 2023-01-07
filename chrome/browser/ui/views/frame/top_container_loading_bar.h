@@ -1,15 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_LOADING_BAR_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_LOADING_BAR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class Browser;
@@ -62,7 +63,7 @@ class TopContainerLoadingBar : public LoadingBarView,
   // content::WebContentsObserver:
   void LoadProgressChanged(double progress) override;
 
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   TabNetworkState network_state_ = TabNetworkState::kNone;
 };
 

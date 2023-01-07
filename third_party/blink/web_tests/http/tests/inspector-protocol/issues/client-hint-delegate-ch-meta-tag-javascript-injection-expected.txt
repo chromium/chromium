@@ -1,0 +1,18 @@
+Test JS Injection Delegate-CH
+Inspector issue: {
+    issue : {
+        code : ClientHintIssue
+        details : {
+            clientHintIssueDetails : {
+                clientHintIssueReason : MetaTagModifiedHTML
+                sourceCodeLocation : {
+                    columnNumber : 33
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : https://devtools.test:8443/inspector-protocol/resources/client-hint-delegate-ch-meta-tag-javascript-injection.html
+                }
+            }
+        }
+    }
+}
+

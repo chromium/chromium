@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8" />
+<title>CSS Pseudo-Elements Test: Set property in ::spelling-error</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo/#selectordef-spelling-error">
+<meta name="assert" content="This test checks that setting a property in ::spelling-error pseudo element, the spelling error marker color is still the default one.">
+<link rel="match" href="spelling-error-color-003-ref.html">
+<script src="../support/markers.js"></script>
+<style>
+  ::spelling-error {
+    background: transparent;
+  }
+</style>
+
+<p>The test passes if "quikc" has a spelling error marker that is in the default color (usually red).</p>
+<div id="target" contenteditable spellcheck>The quikc brown fox.</div>
+
+<script>
+  target.focus();
+  addSpellingMarker(target, 4, 9);
+</script>
+</html>

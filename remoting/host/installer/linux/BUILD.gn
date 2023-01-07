@@ -1,10 +1,11 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//remoting/build/config/remoting_build.gni")
-
 import("//build/config/zip.gni")
+import("//remoting/build/config/remoting_build.gni")
+import("//remoting/remoting_locales.gni")
+import("//remoting/remoting_options.gni")
 
 build_deb_script = "build_deb.py"
 deb_filename =
@@ -53,10 +54,39 @@ action("remoting_me2me_host_deb_installer") {
     "debian/control",
     "debian/copyright",
     "debian/postinst",
+    "debian/postrm",
     "debian/preinst",
+    "debian/prerm",
     "debian/rules",
     "debian/triggers",
+
+    # Files to be packaged into the deb.
+    "//remoting/host/installer/linux/Xsession",
+    "//remoting/host/installer/linux/is-remoting-session",
+    "//remoting/host/linux/configure_url_forwarder.py",
+    "//remoting/host/linux/linux_me2me_host.py",
+    "$root_gen_dir/remoting/CREDITS.txt",
+    "$root_out_dir/icudtl.dat",
+    "$root_out_dir/libremoting_core.so",
+    "$root_out_dir/remote_assistance_host",
+    "$root_out_dir/remote_open_url",
+    "$root_out_dir/remote_webauthn",
+    "$root_out_dir/remoting_me2me_host",
+    "$root_out_dir/remoting_native_messaging_host",
+    "$root_out_dir/remoting_start_host",
+    "$root_out_dir/remoting_user_session",
+    "$root_out_dir/remoting/com.google.chrome.remote_assistance-firefox.json",
+    "$root_out_dir/remoting/com.google.chrome.remote_assistance.json",
+    "$root_out_dir/remoting/com.google.chrome.remote_desktop-firefox.json",
+    "$root_out_dir/remoting/com.google.chrome.remote_desktop.json",
+    "$root_out_dir/remoting/com.google.chrome.remote_webauthn.json",
+    "$root_out_dir/remoting/crd-url-forwarder.desktop",
   ]
+
+  inputs += process_file_template(
+          remoting_locales,
+          [ "$root_gen_dir/remoting/resources/{{source_name_part}}.pak" ])
+
   outputs = packaging_outputs
   sources = [ "build-deb.sh" ]
   args = [
@@ -65,14 +95,28 @@ action("remoting_me2me_host_deb_installer") {
     "-o",
     ".",
   ]
+  if (remoting_use_wayland) {
+    inputs += [
+      "//remoting/host/installer/linux/chrome-remote-desktop-wayland@.service",
+    ]
+    args += [ "--remoting_use_wayland" ]
+  } else {
+    inputs +=
+        [ "//remoting/host/installer/linux/chrome-remote-desktop@.service" ]
+  }
 
   deps = [
+    "//remoting/host:remoting_core",
     "//remoting/host:remoting_me2me_host",
     "//remoting/host:remoting_native_messaging_host",
     "//remoting/host:remoting_native_messaging_manifests",
     "//remoting/host:remoting_start_host",
+    "//remoting/host/installer:credits",
     "//remoting/host/it2me:remote_assistance_host",
     "//remoting/host/linux:remoting_user_session",
+    "//remoting/host/linux:url_forwarder_desktop_entry",
+    "//remoting/host/remote_open_url",
+    "//remoting/host/webauthn:remote_webauthn",
     "//remoting/resources",
     "//third_party/icu:icudata",
   ]

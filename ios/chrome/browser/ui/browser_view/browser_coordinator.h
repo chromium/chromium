@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,12 @@
 
 #include "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 
 @class BrowserViewController;
 
 // Coordinator for BrowserViewController.
-@interface BrowserCoordinator : ChromeCoordinator
+@interface BrowserCoordinator : ChromeCoordinator <SyncPresenter>
 
 // The main view controller.
 @property(nonatomic, strong, readonly) BrowserViewController* viewController;

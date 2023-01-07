@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace predictors {
 
@@ -25,9 +23,7 @@ LoadingPredictorFactory* LoadingPredictorFactory::GetInstance() {
 }
 
 LoadingPredictorFactory::LoadingPredictorFactory()
-    : BrowserContextKeyedServiceFactory(
-          "LoadingPredictor",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("LoadingPredictor") {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(PredictorDatabaseFactory::GetInstance());
 }

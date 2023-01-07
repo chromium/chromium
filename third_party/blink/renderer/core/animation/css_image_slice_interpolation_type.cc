@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -282,7 +282,7 @@ void CSSImageSliceInterpolationType::ApplyStandardPropertyValue(
       To<CSSImageSliceNonInterpolableValue>(non_interpolable_value)->Types();
   const auto& convert_side = [&types, &list, &style](wtf_size_t index) {
     float value =
-        clampTo<float>(To<InterpolableNumber>(list.Get(index))->Value(), 0);
+        ClampTo<float>(To<InterpolableNumber>(list.Get(index))->Value(), 0);
     return types.is_number[index] ? Length::Fixed(value * style.EffectiveZoom())
                                   : Length::Percent(value);
   };

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_data_channel_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
@@ -35,11 +36,13 @@ namespace blink {
 class MockStreamCollection : public webrtc::StreamCollectionInterface {
  public:
   size_t count() override { return streams_.size(); }
-  MediaStreamInterface* at(size_t index) override { return streams_[index]; }
+  MediaStreamInterface* at(size_t index) override {
+    return streams_[index].get();
+  }
   MediaStreamInterface* find(const std::string& id) override {
     for (size_t i = 0; i < streams_.size(); ++i) {
       if (streams_[i]->id() == id)
-        return streams_[i];
+        return streams_[i].get();
     }
     return nullptr;
   }
@@ -47,7 +50,7 @@ class MockStreamCollection : public webrtc::StreamCollectionInterface {
       const std::string& id) override {
     for (size_t i = 0; i < streams_.size(); ++i) {
       webrtc::MediaStreamTrackInterface* track =
-          streams_.at(i)->FindAudioTrack(id);
+          streams_.at(i)->FindAudioTrack(id).get();
       if (track)
         return track;
     }
@@ -57,13 +60,15 @@ class MockStreamCollection : public webrtc::StreamCollectionInterface {
       const std::string& id) override {
     for (size_t i = 0; i < streams_.size(); ++i) {
       webrtc::MediaStreamTrackInterface* track =
-          streams_.at(i)->FindVideoTrack(id);
+          streams_.at(i)->FindVideoTrack(id).get();
       if (track)
         return track;
     }
     return nullptr;
   }
-  void AddStream(MediaStreamInterface* stream) { streams_.push_back(stream); }
+  void AddStream(MediaStreamInterface* stream) {
+    streams_.emplace_back(stream);
+  }
   void RemoveStream(MediaStreamInterface* stream) {
     auto it = streams_.begin();
     for (; it != streams_.end(); ++it) {
@@ -116,8 +121,8 @@ FakeRtpSender::FakeRtpSender(
 FakeRtpSender::~FakeRtpSender() {}
 
 bool FakeRtpSender::SetTrack(webrtc::MediaStreamTrackInterface* track) {
-  NOTIMPLEMENTED();
-  return false;
+  track_ = track;
+  return true;
 }
 
 rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> FakeRtpSender::track()
@@ -149,6 +154,10 @@ std::vector<std::string> FakeRtpSender::stream_ids() const {
   return stream_ids_;
 }
 
+void FakeRtpSender::SetStreams(const std::vector<std::string>& stream_ids) {
+  stream_ids_ = stream_ids;
+}
+
 std::vector<webrtc::RtpEncodingParameters> FakeRtpSender::init_send_encodings()
     const {
   return {};
@@ -167,7 +176,8 @@ webrtc::RTCError FakeRtpSender::SetParameters(
 
 rtc::scoped_refptr<webrtc::DtmfSenderInterface> FakeRtpSender::GetDtmfSender()
     const {
-  return new rtc::RefCountedObject<MockDtmfSender>();
+  return rtc::scoped_refptr<webrtc::DtmfSenderInterface>(
+      new rtc::RefCountedObject<MockDtmfSender>());
 }
 
 FakeRtpReceiver::FakeRtpReceiver(
@@ -238,10 +248,10 @@ FakeRtpTransceiver::FakeRtpTransceiver(
     cricket::MediaType media_type,
     rtc::scoped_refptr<FakeRtpSender> sender,
     rtc::scoped_refptr<FakeRtpReceiver> receiver,
-    base::Optional<std::string> mid,
+    absl::optional<std::string> mid,
     bool stopped,
     webrtc::RtpTransceiverDirection direction,
-    base::Optional<webrtc::RtpTransceiverDirection> current_direction)
+    absl::optional<webrtc::RtpTransceiverDirection> current_direction)
     : media_type_(media_type),
       sender_(std::move(sender)),
       receiver_(std::move(receiver)),
@@ -284,6 +294,11 @@ bool FakeRtpTransceiver::stopped() const {
   return stopped_;
 }
 
+bool FakeRtpTransceiver::stopping() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 webrtc::RtpTransceiverDirection FakeRtpTransceiver::direction() const {
   return direction_;
 }
@@ -296,10 +311,6 @@ void FakeRtpTransceiver::SetDirection(
 absl::optional<webrtc::RtpTransceiverDirection>
 FakeRtpTransceiver::current_direction() const {
   return current_direction_;
-}
-
-void FakeRtpTransceiver::Stop() {
-  NOTIMPLEMENTED();
 }
 
 void FakeRtpTransceiver::SetTransport(
@@ -375,26 +386,40 @@ MockPeerConnectionImpl::AddTrack(
       local_stream_ids_.push_back(stream_id);
     }
   }
-  auto* sender = new rtc::RefCountedObject<FakeRtpSender>(track, stream_ids);
+  rtc::scoped_refptr<FakeRtpSender> sender(
+      new rtc::RefCountedObject<FakeRtpSender>(track, stream_ids));
   senders_.push_back(sender);
+  // This mock is dumb. It creates an audio transceiver without checking the
+  // kind of the sender track.
+  rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> dummy_receiver_track(
+      blink::MockWebRtcAudioTrack::Create("dummy_track").get());
+  rtc::scoped_refptr<FakeRtpReceiver> dummy_receiver(
+      new rtc::RefCountedObject<FakeRtpReceiver>(dummy_receiver_track));
+  rtc::scoped_refptr<FakeRtpTransceiver> transceiver(
+      new rtc::RefCountedObject<FakeRtpTransceiver>(
+          cricket::MediaType::MEDIA_TYPE_AUDIO, sender, dummy_receiver,
+          absl::nullopt, false, webrtc::RtpTransceiverDirection::kSendRecv,
+          absl::nullopt));
+  transceivers_.push_back(transceiver);
   return rtc::scoped_refptr<webrtc::RtpSenderInterface>(sender);
 }
 
-bool MockPeerConnectionImpl::RemoveTrack(webrtc::RtpSenderInterface* s) {
-  rtc::scoped_refptr<FakeRtpSender> sender = static_cast<FakeRtpSender*>(s);
-  auto it = std::find(senders_.begin(), senders_.end(), sender);
-  if (it == senders_.end())
-    return false;
-  senders_.erase(it);
-  auto track = sender->track();
+webrtc::RTCError MockPeerConnectionImpl::RemoveTrackOrError(
+    rtc::scoped_refptr<webrtc::RtpSenderInterface> s) {
+  rtc::scoped_refptr<FakeRtpSender> sender(
+      static_cast<FakeRtpSender*>(s.get()));
+  if (!base::Contains(senders_, sender)) {
+    return webrtc::RTCError(webrtc::RTCErrorType::INVALID_PARAMETER,
+                            "Mock: sender not found in senders");
+  }
+  sender->SetTrack(nullptr);
 
   for (const auto& stream_id : sender->stream_ids()) {
-    auto local_stream_it = std::find(local_stream_ids_.begin(),
-                                     local_stream_ids_.end(), stream_id);
+    auto local_stream_it = base::ranges::find(local_stream_ids_, stream_id);
     if (local_stream_it != local_stream_ids_.end())
       local_stream_ids_.erase(local_stream_it);
   }
-  return true;
+  return webrtc::RTCError::OK();
 }
 
 std::vector<rtc::scoped_refptr<webrtc::RtpSenderInterface>>
@@ -410,22 +435,31 @@ MockPeerConnectionImpl::GetReceivers() const {
   std::vector<rtc::scoped_refptr<webrtc::RtpReceiverInterface>> receivers;
   for (size_t i = 0; i < remote_streams_->count(); ++i) {
     for (const auto& audio_track : remote_streams_->at(i)->GetAudioTracks()) {
-      receivers.push_back(
+      receivers.emplace_back(
           new rtc::RefCountedObject<FakeRtpReceiver>(audio_track));
     }
     for (const auto& video_track : remote_streams_->at(i)->GetVideoTracks()) {
-      receivers.push_back(
+      receivers.emplace_back(
           new rtc::RefCountedObject<FakeRtpReceiver>(video_track));
     }
   }
   return receivers;
 }
 
+std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
+MockPeerConnectionImpl::GetTransceivers() const {
+  std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> transceivers;
+  for (const auto& transceiver : transceivers_)
+    transceivers.push_back(transceiver);
+  return transceivers;
+}
+
 rtc::scoped_refptr<webrtc::DataChannelInterface>
 MockPeerConnectionImpl::CreateDataChannel(
     const std::string& label,
     const webrtc::DataChannelInit* config) {
-  return new rtc::RefCountedObject<blink::MockDataChannel>(label, config);
+  return rtc::scoped_refptr<webrtc::DataChannelInterface>(
+      new rtc::RefCountedObject<blink::MockDataChannel>(label, config));
 }
 
 bool MockPeerConnectionImpl::GetStats(webrtc::StatsObserver* observer,

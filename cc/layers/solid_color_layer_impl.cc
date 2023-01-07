@@ -1,10 +1,11 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/layers/solid_color_layer_impl.h"
 
 #include <algorithm>
+#include <limits>
 
 #include "cc/layers/append_quads_data.h"
 #include "cc/trees/effect_node.h"
@@ -21,7 +22,7 @@ SolidColorLayerImpl::SolidColorLayerImpl(LayerTreeImpl* tree_impl, int id)
 SolidColorLayerImpl::~SolidColorLayerImpl() = default;
 
 std::unique_ptr<LayerImpl> SolidColorLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return SolidColorLayerImpl::Create(tree_impl, id());
 }
 
@@ -30,7 +31,7 @@ void SolidColorLayerImpl::AppendSolidQuads(
     const Occlusion& occlusion_in_layer_space,
     viz::SharedQuadState* shared_quad_state,
     const gfx::Rect& visible_layer_rect,
-    SkColor color,
+    SkColor4f color,
     bool force_anti_aliasing_off,
     SkBlendMode effect_blend_mode,
     AppendQuadsData* append_quads_data) {
@@ -44,8 +45,7 @@ void SolidColorLayerImpl::AppendSolidQuads(
   // mask, but will not work in complex blend mode situations. This bug is
   // tracked in crbug.com/939168.
   if (effect_blend_mode == SkBlendMode::kSrcOver) {
-    float alpha =
-        (SkColorGetA(color) * (1.0f / 255.0f)) * shared_quad_state->opacity;
+    float alpha = color.fA * shared_quad_state->opacity;
 
     if (alpha < std::numeric_limits<float>::epsilon())
       return;

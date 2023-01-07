@@ -23,7 +23,7 @@ fi
 source "${ABSEIL_ROOT}/ci/cmake_common.sh"
 
 if [[ -z ${ABSL_CMAKE_CXX_STANDARDS:-} ]]; then
-  ABSL_CMAKE_CXX_STANDARDS="11 14 17 20"
+  ABSL_CMAKE_CXX_STANDARDS="14 17 20"
 fi
 
 if [[ -z ${ABSL_CMAKE_BUILD_TYPES:-} ]]; then
@@ -54,7 +54,7 @@ for std in ${ABSL_CMAKE_CXX_STANDARDS}; do
           cmake /abseil-cpp \
             -DABSL_GOOGLETEST_DOWNLOAD_URL=${ABSL_GOOGLETEST_DOWNLOAD_URL} \
             -DBUILD_SHARED_LIBS=${build_shared} \
-            -DBUILD_TESTING=ON \
+            -DABSL_BUILD_TESTING=ON \
             -DCMAKE_BUILD_TYPE=${compilation_mode} \
             -DCMAKE_CXX_STANDARD=${std} \
             -DCMAKE_MODULE_LINKER_FLAGS=\"-Wl,--no-undefined\" && \

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -111,16 +111,6 @@ void Http2PushPromiseIndex::ClaimPushedStream(
     }
     ++it;
   }
-}
-
-size_t Http2PushPromiseIndex::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(unclaimed_pushed_streams_);
-}
-
-size_t Http2PushPromiseIndex::UnclaimedPushedStream::EstimateMemoryUsage()
-    const {
-  return base::trace_event::EstimateMemoryUsage(url) +
-         sizeof(spdy::SpdyStreamId) + sizeof(Delegate*);
 }
 
 bool Http2PushPromiseIndex::CompareByUrl::operator()(

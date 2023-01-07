@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,28 +7,40 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace {
 
 ArcAppListPrefs::AppInfo CreateAppInfoForPackage(
     const std::string package_name) {
-  return ArcAppListPrefs::AppInfo(package_name, package_name, "", "", "",
-                                  base::Time(), base::Time(), true, true,
-                                  arc::mojom::ArcResizeLockState::UNDEFINED,
-                                  true, true, true, true, true);
+  return ArcAppListPrefs::AppInfo(
+      package_name, package_name, "" /* activity */, "" /* intent_uri */,
+      "" /* icon_resource_id */, absl::nullopt /* version_name */,
+      base::Time() /* last_launch_time */, base::Time() /* install_time */,
+      true /* sticky */, true /* notifications_enabled */,
+      arc::mojom::ArcResizeLockState::UNDEFINED,
+      true /* resize_lock_needs_confirmation */,
+      ArcAppListPrefs::WindowLayout(), true /* ready */, true /* suspended */,
+      true /* show_in_launcher */, true /* shortcut */, true /* launchable */,
+      false /* need_fixup */, absl::nullopt /* app_size_in_bytes */,
+      absl::nullopt /* data_size_in_bytes */);
 }
 
 class ArcAppLaunchThrottleObserverTest : public testing::Test {
  public:
   using testing::Test::Test;
+
+  ArcAppLaunchThrottleObserverTest(const ArcAppLaunchThrottleObserverTest&) =
+      delete;
+  ArcAppLaunchThrottleObserverTest& operator=(
+      const ArcAppLaunchThrottleObserverTest&) = delete;
 
  protected:
   ArcAppLaunchThrottleObserver* observer() { return &app_launch_observer_; }
@@ -39,8 +51,6 @@ class ArcAppLaunchThrottleObserverTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ArcAppLaunchThrottleObserver app_launch_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppLaunchThrottleObserverTest);
 };
 
 TEST_F(ArcAppLaunchThrottleObserverTest, TestConstructDestruct) {}

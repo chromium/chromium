@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ class DevToolsVideoConsumerTest : public ContentBrowserTest {
   }
 
   void WaitUntilFrameReceived() {
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

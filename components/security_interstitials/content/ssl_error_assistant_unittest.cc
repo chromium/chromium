@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,9 +74,12 @@ const char kMisconfigSoftwareRegexCheckCert[] =
 
 class SSLErrorAssistantTest : public content::RenderViewHostTestHarness {
  public:
+  SSLErrorAssistantTest(const SSLErrorAssistantTest&) = delete;
+  SSLErrorAssistantTest& operator=(const SSLErrorAssistantTest&) = delete;
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    error_assistant_.reset(new SSLErrorAssistant());
+    error_assistant_ = std::make_unique<SSLErrorAssistant>();
 
     ssl_info_.cert = net::ImportCertFromFile(
         net::GetTestCertsDirectory(), "subjectAltName_www_example_com.pem");
@@ -94,7 +97,8 @@ class SSLErrorAssistantTest : public content::RenderViewHostTestHarness {
                                        const std::string& match_result) {
     net::CertificateList certs =
         net::X509Certificate::CreateCertificateListFromBytes(
-            cert.data(), cert.size(), net::X509Certificate::FORMAT_AUTO);
+            base::as_bytes(base::make_span(cert)),
+            net::X509Certificate::FORMAT_AUTO);
     ASSERT_FALSE(certs.empty());
     EXPECT_EQ(match_result,
               error_assistant()->MatchKnownMITMSoftware(certs[0]));
@@ -129,8 +133,6 @@ class SSLErrorAssistantTest : public content::RenderViewHostTestHarness {
 
   std::unique_ptr<SSLErrorAssistant> error_assistant_;
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorAssistantTest);
 };
 
 // Test to see if IsKnownCaptivePortalCertificate() returns the correct value.
@@ -152,7 +154,8 @@ TEST_F(SSLErrorAssistantTest, CaptivePortalCertificateList) {
   error_assistant()->ResetForTesting();
 
   // Test with the known captive portal certificate in config_proto.
-  config_proto.reset(new chrome_browser_ssl::SSLErrorAssistantConfig());
+  config_proto =
+      std::make_unique<chrome_browser_ssl::SSLErrorAssistantConfig>();
   config_proto->set_version_id(kLargeVersionId);
 
   config_proto->add_captive_portal_cert()->set_sha256_hash("sha256/boxfish");
@@ -192,7 +195,8 @@ TEST_F(SSLErrorAssistantTest, MitMSoftwareMatching) {
   error_assistant()->ResetForTesting();
 
   // Tests for no matches.
-  config_proto.reset(new chrome_browser_ssl::SSLErrorAssistantConfig());
+  config_proto =
+      std::make_unique<chrome_browser_ssl::SSLErrorAssistantConfig>();
   config_proto->set_version_id(kLargeVersionId);
 
   filter = config_proto->add_mitm_software();
@@ -250,7 +254,7 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListMatch) {
 
   error_assistant()->SetErrorAssistantProto(std::move(config_proto));
 
-  base::Optional<DynamicInterstitialInfo> dynamic_interstitial =
+  absl::optional<DynamicInterstitialInfo> dynamic_interstitial =
       error_assistant()->MatchDynamicInterstitial(ssl_info());
   ASSERT_TRUE(dynamic_interstitial);
   EXPECT_EQ(chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_SSL,
@@ -296,7 +300,7 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListComplexRegexMatch) {
 
   error_assistant()->SetErrorAssistantProto(std::move(config_proto));
 
-  base::Optional<DynamicInterstitialInfo> dynamic_interstitial =
+  absl::optional<DynamicInterstitialInfo> dynamic_interstitial =
       error_assistant()->MatchDynamicInterstitial(ssl_info());
   ASSERT_TRUE(dynamic_interstitial);
   EXPECT_EQ(chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_SSL,
@@ -340,7 +344,7 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListMatchUnknownCertError) {
 
   error_assistant()->SetErrorAssistantProto(std::move(config_proto));
 
-  base::Optional<DynamicInterstitialInfo> dynamic_interstitial =
+  absl::optional<DynamicInterstitialInfo> dynamic_interstitial =
       error_assistant()->MatchDynamicInterstitial(ssl_info());
   EXPECT_TRUE(dynamic_interstitial);
   EXPECT_EQ(chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_SSL,
@@ -385,7 +389,7 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListNoCommonName) {
 
   error_assistant()->SetErrorAssistantProto(std::move(config_proto));
 
-  base::Optional<DynamicInterstitialInfo> dynamic_interstitial =
+  absl::optional<DynamicInterstitialInfo> dynamic_interstitial =
       error_assistant()->MatchDynamicInterstitial(ssl_info());
   ASSERT_TRUE(dynamic_interstitial);
   EXPECT_EQ(chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_SSL,
@@ -430,7 +434,7 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListNoOrganizationRegex) {
 
   error_assistant()->SetErrorAssistantProto(std::move(config_proto));
 
-  base::Optional<DynamicInterstitialInfo> dynamic_interstitial =
+  absl::optional<DynamicInterstitialInfo> dynamic_interstitial =
       error_assistant()->MatchDynamicInterstitial(ssl_info());
   ASSERT_TRUE(dynamic_interstitial);
   EXPECT_EQ(chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_SSL,
@@ -471,7 +475,7 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListNoCertHashes) {
 
   error_assistant()->SetErrorAssistantProto(std::move(config_proto));
 
-  base::Optional<DynamicInterstitialInfo> dynamic_interstitial =
+  absl::optional<DynamicInterstitialInfo> dynamic_interstitial =
       error_assistant()->MatchDynamicInterstitial(ssl_info());
   ASSERT_TRUE(dynamic_interstitial);
   EXPECT_EQ(chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_SSL,
@@ -496,7 +500,7 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListMatchBlank) {
 
   error_assistant()->SetErrorAssistantProto(std::move(config_proto));
 
-  base::Optional<DynamicInterstitialInfo> dynamic_interstitial =
+  absl::optional<DynamicInterstitialInfo> dynamic_interstitial =
       error_assistant()->MatchDynamicInterstitial(ssl_info());
   ASSERT_TRUE(dynamic_interstitial);
   EXPECT_EQ(chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_SSL,

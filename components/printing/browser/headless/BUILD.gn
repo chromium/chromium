@@ -1,0 +1,25 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//printing/buildflags/buildflags.gni")
+
+assert(enable_basic_printing)
+
+static_library("headless") {
+  sources = [
+    "headless_print_manager.cc",
+    "headless_print_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/printing/browser",
+    "//components/printing/browser/print_to_pdf",
+    "//printing",
+    "//printing/buildflags",
+    "//printing/mojom",
+  ]
+
+  public_deps = [ "//components/printing/common:mojo_interfaces" ]
+}

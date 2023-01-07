@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,10 @@ class KernelObject {
   typedef std::map<std::string, ScopedFilesystem> FsMap_t;
 
   KernelObject();
+
+  KernelObject(const KernelObject&) = delete;
+  KernelObject& operator=(const KernelObject&) = delete;
+
   virtual ~KernelObject();
 
   // Attach the given Filesystem object at the specified path.
@@ -119,8 +123,6 @@ class KernelObject {
   sdk_util::SimpleLock cwd_lock_;
   // Lock to protect umask_.
   sdk_util::SimpleLock umask_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(KernelObject);
 };
 
 }  // namespace nacl_io

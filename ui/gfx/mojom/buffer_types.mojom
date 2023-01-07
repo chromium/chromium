@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ enum BufferFormat {
   R_8,
   R_16,
   RG_88,
+  RG_1616,
   BGR_565,
   RGBA_4444,
   RGBX_8888,
@@ -37,6 +38,7 @@ enum BufferUsage {
   GPU_READ_CPU_READ_WRITE,
   SCANOUT_VEA_CPU_READ,
   VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+  SCANOUT_FRONT_RENDERING,
 };
 
 struct BufferUsageAndFormat {
@@ -44,7 +46,16 @@ struct BufferUsageAndFormat {
   BufferFormat format;
 };
 
+enum BufferPlane {
+  DEFAULT,
+  Y,
+  UV,
+  U,
+  V,
+};
+
 // gfx::GpuMemoryBufferId
+[Stable]
 struct GpuMemoryBufferId {
   int32 id;
 };

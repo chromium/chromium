@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -38,7 +39,7 @@ class ProgressBarTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  ProgressBar* bar_;
+  raw_ptr<ProgressBar> bar_;
   std::unique_ptr<Widget> widget_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;

@@ -1,103 +1,10 @@
 <!DOCTYPE html>
-<style media="print">
-#myfooter
-{
-    position: fixed;
-    bottom: 0;
-}
-#myheader
-{
-    position: fixed;
-    top: 0;
-}
-</style>
 <script>
-if (window.testRunner)
+  if (window.testRunner)
     testRunner.setPrinting();
 </script>
-<div id="myheader">
-    <div align="center">
-        crbug.com/303728: Fixed-position header Line should be repeated on every page.
-        <hr/>
-    </div>
-</div>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<p>Filler lines</p>
-<div id="myfooter">
-    <div align="center">
-        <hr/>
-        crbug.com/303728: Footer Line should be repeated on every page.
-    </div>
-</div>
+<div style="position:fixed; top:0;">Should repeat at the top on every page</div>
+<div style="height:100px;"></div>
+<div style="break-before:page; height:100px;"></div>
+<div style="break-before:page; height:100px;"></div>
+<div style="position:fixed; bottom:0;">Should repeat at the bottom on every page</div>

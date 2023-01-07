@@ -1,4 +1,4 @@
-// Copyright 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,22 +10,23 @@ namespace cc {
 
 scoped_refptr<VideoLayer> VideoLayer::Create(
     VideoFrameProvider* provider,
-    media::VideoRotation video_rotation) {
-  return base::WrapRefCounted(new VideoLayer(provider, video_rotation));
+    media::VideoTransformation transform) {
+  return base::WrapRefCounted(new VideoLayer(provider, transform));
 }
 
 VideoLayer::VideoLayer(VideoFrameProvider* provider,
-                       media::VideoRotation video_rotation)
-    : provider_(provider), video_rotation_(video_rotation) {
+                       media::VideoTransformation transform)
+    : provider_(provider), transform_(transform) {
   SetMayContainVideo(true);
-  DCHECK(provider_);
+  DCHECK(provider_.Read(*this));
 }
 
 VideoLayer::~VideoLayer() = default;
 
 std::unique_ptr<LayerImpl> VideoLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
-  return VideoLayerImpl::Create(tree_impl, id(), provider_, video_rotation_);
+    LayerTreeImpl* tree_impl) const {
+  return VideoLayerImpl::Create(tree_impl, id(), provider_.Read(*this),
+                                transform_);
 }
 
 bool VideoLayer::Update() {
@@ -42,7 +43,7 @@ bool VideoLayer::Update() {
 }
 
 void VideoLayer::StopUsingProvider() {
-  provider_ = nullptr;
+  provider_.Write(*this) = nullptr;
 }
 
 }  // namespace cc

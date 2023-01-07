@@ -1,8 +1,10 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "sandbox/win/src/job.h"
+
+#include <windows.h>
 
 #include <stddef.h>
 #include <utility>
@@ -34,31 +36,28 @@ DWORD Job::Init(JobLevel security_level,
   // Set the settings for the different security levels. Note: The higher levels
   // inherit from the lower levels.
   switch (security_level) {
-    case JOB_LOCKDOWN: {
+    case JobLevel::kLockdown: {
       jeli.BasicLimitInformation.LimitFlags |=
           JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION;
-      FALLTHROUGH;
-    }
-    case JOB_RESTRICTED: {
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_WRITECLIPBOARD;
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_READCLIPBOARD;
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_HANDLES;
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_GLOBALATOMS;
-      FALLTHROUGH;
+      [[fallthrough]];
     }
-    case JOB_LIMITED_USER: {
+    case JobLevel::kLimitedUser: {
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_DISPLAYSETTINGS;
       jeli.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_ACTIVE_PROCESS;
       jeli.BasicLimitInformation.ActiveProcessLimit = 1;
-      FALLTHROUGH;
+      [[fallthrough]];
     }
-    case JOB_INTERACTIVE: {
+    case JobLevel::kInteractive: {
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS;
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_DESKTOP;
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_EXITWINDOWS;
-      FALLTHROUGH;
+      [[fallthrough]];
     }
-    case JOB_UNPROTECTED: {
+    case JobLevel::kUnprotected: {
       if (memory_limit) {
         jeli.BasicLimitInformation.LimitFlags |=
             JOB_OBJECT_LIMIT_PROCESS_MEMORY;
@@ -69,7 +68,9 @@ DWORD Job::Init(JobLevel security_level,
           JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
       break;
     }
-    default: { return ERROR_BAD_ARGUMENTS; }
+    case JobLevel::kNone: {
+      return ERROR_BAD_ARGUMENTS;
+    }
   }
 
   if (!::SetInformationJobObject(job_handle_.Get(),
@@ -88,6 +89,14 @@ DWORD Job::Init(JobLevel security_level,
   return ERROR_SUCCESS;
 }
 
+bool Job::IsValid() {
+  return job_handle_.IsValid();
+}
+
+HANDLE Job::GetHandle() {
+  return job_handle_.Get();
+}
+
 DWORD Job::UserHandleGrantAccess(HANDLE handle) {
   if (!job_handle_.IsValid())
     return ERROR_NO_DATA;
@@ -100,10 +109,6 @@ DWORD Job::UserHandleGrantAccess(HANDLE handle) {
   return ERROR_SUCCESS;
 }
 
-base::win::ScopedHandle Job::Take() {
-  return std::move(job_handle_);
-}
-
 DWORD Job::AssignProcessToJob(HANDLE process_handle) {
   if (!job_handle_.IsValid())
     return ERROR_NO_DATA;
@@ -114,23 +119,25 @@ DWORD Job::AssignProcessToJob(HANDLE process_handle) {
   return ERROR_SUCCESS;
 }
 
-// static
-DWORD Job::SetActiveProcessLimit(base::win::ScopedHandle* job_handle,
-                                 DWORD processes) {
+DWORD Job::SetActiveProcessLimit(DWORD processes) {
   JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = {};
 
-  if (!::QueryInformationJobObject(job_handle->Get(),
-                                   JobObjectExtendedLimitInformation, &jeli,
-                                   sizeof(jeli), nullptr))
-    return ::GetLastError();
+  if (!job_handle_.IsValid())
+    return ERROR_NO_DATA;
 
+  if (!::QueryInformationJobObject(job_handle_.Get(),
+                                   JobObjectExtendedLimitInformation, &jeli,
+                                   sizeof(jeli), nullptr)) {
+    return ::GetLastError();
+  }
   jeli.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_ACTIVE_PROCESS;
   jeli.BasicLimitInformation.ActiveProcessLimit = processes;
 
-  if (!::SetInformationJobObject(job_handle->Get(),
+  if (!::SetInformationJobObject(job_handle_.Get(),
                                  JobObjectExtendedLimitInformation, &jeli,
-                                 sizeof(jeli)))
+                                 sizeof(jeli))) {
     return ::GetLastError();
+  }
 
   return ERROR_SUCCESS;
 }

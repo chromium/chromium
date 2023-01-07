@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_card/save_card_infobar_modal_interaction_handler.h"
 
-#include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_card/save_card_infobar_modal_overlay_request_callback_installer.h"
-#include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

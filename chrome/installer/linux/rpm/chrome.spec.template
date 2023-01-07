@@ -111,6 +111,8 @@ exit 0
 #------------------------------------------------------------------------------
 %post
 
+@@include@@../common/variables.include
+
 @@include@@../common/postinst.include
 
 @@include@@../common/rpm.include
@@ -122,7 +124,6 @@ add_nss_symlinks
 
 remove_udev_symlinks
 
-DEFAULTS_FILE="/etc/default/@@PACKAGE@@"
 if [ ! -e "$DEFAULTS_FILE" ]; then
   echo 'repo_add_once="true"' > "$DEFAULTS_FILE"
 fi

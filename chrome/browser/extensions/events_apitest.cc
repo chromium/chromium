@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,19 @@
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
-#include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
 
@@ -35,8 +39,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventsAreUnregistered) {
   EventRouter* event_router = EventRouter::Get(profile());
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
 
-  std::string test_extension_name = "events_are_unregistered";
-  ASSERT_TRUE(RunExtensionSubtest(test_extension_name, "page1.html"))
+  static constexpr char test_extension_name[] = "events_are_unregistered";
+  ASSERT_TRUE(
+      RunExtensionTest(test_extension_name, {.extension_url = "page1.html"}))
       << message_;
 
   // Find the extension we just installed by looking for the path.
@@ -74,7 +79,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventsAreUnregistered) {
 // Test that listeners for webview-related events are not stored (even for lazy
 // contexts). See crbug.com/736381.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WebViewEventRegistration) {
-  ASSERT_TRUE(RunPlatformAppTest("events/webview_events")) << message_;
+  ASSERT_TRUE(RunExtensionTest("events/webview_events",
+                               {.launch_as_platform_app = true}))
+      << message_;
   EventRouter* event_router = EventRouter::Get(profile());
   // We should not register lazy listeners for any webview-related events.
   EXPECT_FALSE(
@@ -104,9 +111,94 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WebViewEventRegistration) {
       event_router->HasLazyEventListenerForTesting("app.runtime.onLaunched"));
 }
 
+namespace {
+
+class ProfileDestructionWatcher : public ProfileObserver {
+ public:
+  ProfileDestructionWatcher() = default;
+
+  ProfileDestructionWatcher(const ProfileDestructionWatcher&) = delete;
+  ProfileDestructionWatcher& operator=(const ProfileDestructionWatcher&) =
+      delete;
+
+  ~ProfileDestructionWatcher() override = default;
+
+  void Watch(Profile* profile) { observed_profiles_.AddObservation(profile); }
+  void WaitForDestruction() { run_loop_.Run(); }
+  bool will_be_destroyed() const { return will_be_destroyed_; }
+
+ private:
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    DCHECK(!will_be_destroyed_) << "Double profile destruction";
+    will_be_destroyed_ = true;
+    observed_profiles_.RemoveObservation(profile);
+    run_loop_.Quit();
+
+    // Broadcast an event to the event router. Since a shutdown is occurring, it
+    // should be ignored and cause no problems.
+    EventRouter* event_router = EventRouter::Get(profile);
+    event_router->BroadcastEvent(std::make_unique<Event>(
+        events::FOR_TEST, "tabs.onActivated", base::Value::List()));
+  }
+
+  bool will_be_destroyed_ = false;
+  base::RunLoop run_loop_;
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
+};
+
+}  // namespace
+
+// Tests that events broadcast right after a profile has started to be destroyed
+// do not cause a crash. Regression test for crbug.com/1335837.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, DispatchEventDuringShutdown) {
+  // Minimize background page expiration time for testing purposes.
+  ProcessManager::SetEventPageIdleTimeForTesting(1);
+  ProcessManager::SetEventPageSuspendingTimeForTesting(1);
+
+  // Load extension.
+  constexpr char kManifest[] = R"({
+    "name": "Test",
+    "manifest_version": 2,
+    "version": "1.0",
+    "background": {"scripts": ["background.js"], "persistent": false}
+  })";
+  constexpr char kBackground[] = R"(
+    chrome.tabs.onActivated.addListener(activeInfo => {});
+    chrome.test.notifyPass();
+  )";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  ChromeTestExtensionLoader loader(profile());
+  loader.set_pack_extension(true);
+  ResultCatcher catcher;
+  auto extension = loader.LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(catcher.GetNextResult());
+
+  // Verify that an event was registered.
+  EventRouter* event_router = EventRouter::Get(profile());
+  EXPECT_TRUE(event_router->ExtensionHasEventListener(extension->id(),
+                                                      "tabs.onActivated"));
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundClosed();
+
+  // Dispatch event after starting profile destruction.
+  ProfileDestructionWatcher watcher;
+  watcher.Watch(profile());
+  profile()->MaybeSendDestroyedNotification();
+  watcher.WaitForDestruction();
+  ASSERT_TRUE(watcher.will_be_destroyed());
+}
+
 class EventsApiTest : public ExtensionApiTest {
  public:
   EventsApiTest() {}
+
+  EventsApiTest(const EventsApiTest&) = delete;
+  EventsApiTest& operator=(const EventsApiTest&) = delete;
 
  protected:
   void SetUpOnMainThread() override {
@@ -137,8 +229,6 @@ class EventsApiTest : public ExtensionApiTest {
 
  private:
   base::ScopedTempDir scoped_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventsApiTest);
 };
 
 // Tests that updating an extension sends runtime.onInstalled event to the
@@ -211,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(EventsApiTest,
 
 // This test is OK on Windows, but times out on other platforms.
 // https://crbug.com/833854
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_NewlyIntroducedListener NewlyIntroducedListener
 #else
 #define MAYBE_NewlyIntroducedListener DISABLED_NewlyIntroducedListener
@@ -261,6 +351,10 @@ class ChromeUpdatesEventsApiTest : public EventsApiTest,
     ChromeExtensionsBrowserClient::set_did_chrome_update_for_testing(true);
   }
 
+  ChromeUpdatesEventsApiTest(const ChromeUpdatesEventsApiTest&) = delete;
+  ChromeUpdatesEventsApiTest& operator=(const ChromeUpdatesEventsApiTest&) =
+      delete;
+
   void SetUpOnMainThread() override {
     EventsApiTest::SetUpOnMainThread();
     ProcessManager* process_manager = ProcessManager::Get(profile());
@@ -291,8 +385,6 @@ class ChromeUpdatesEventsApiTest : public EventsApiTest,
 
  private:
   std::set<std::string> observed_extension_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeUpdatesEventsApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeUpdatesEventsApiTest, PRE_ChromeUpdates) {

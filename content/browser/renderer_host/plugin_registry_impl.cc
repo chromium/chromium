@@ -1,36 +1,35 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/plugin_registry_impl.h"
 
 #include "base/bind.h"
-#include "base/no_destructor.h"
+#include "base/containers/contains.h"
 #include "content/browser/plugin_service_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/plugin_service_filter.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/webplugininfo.h"
 
 namespace content {
 
 namespace {
-constexpr auto kPluginRefreshThreshold = base::TimeDelta::FromSeconds(3);
+constexpr auto kPluginRefreshThreshold = base::Seconds(3);
 }  // namespace
 
 PluginRegistryImpl::PluginRegistryImpl(int render_process_id)
     : render_process_id_(render_process_id) {}
 
-PluginRegistryImpl::~PluginRegistryImpl() {}
+PluginRegistryImpl::~PluginRegistryImpl() = default;
 
 void PluginRegistryImpl::Bind(
     mojo::PendingReceiver<blink::mojom::PluginRegistry> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 
-void PluginRegistryImpl::GetPlugins(bool refresh,
-                                    const url::Origin& main_frame_origin,
-                                    GetPluginsCallback callback) {
+void PluginRegistryImpl::GetPlugins(bool refresh, GetPluginsCallback callback) {
   auto* plugin_service = PluginServiceImpl::GetInstance();
 
   // Don't refresh if the specified threshold has not been passed.  Note that
@@ -48,13 +47,12 @@ void PluginRegistryImpl::GetPlugins(bool refresh,
     }
   }
 
-  plugin_service->GetPlugins(base::BindOnce(
-      &PluginRegistryImpl::GetPluginsComplete, weak_factory_.GetWeakPtr(),
-      main_frame_origin, std::move(callback)));
+  plugin_service->GetPlugins(
+      base::BindOnce(&PluginRegistryImpl::GetPluginsComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PluginRegistryImpl::GetPluginsComplete(
-    const url::Origin& main_frame_origin,
     GetPluginsCallback callback,
     const std::vector<WebPluginInfo>& all_plugins) {
   PluginServiceFilter* filter = PluginServiceImpl::GetInstance()->GetFilter();
@@ -69,14 +67,9 @@ void PluginRegistryImpl::GetPluginsComplete(
       GetContentClient()->browser()->GetPluginMimeTypesWithExternalHandlers(
           rph->GetBrowserContext());
 
-  const int routing_id = MSG_ROUTING_NONE;
-  // In this loop, copy the WebPluginInfo (and do not use a reference) because
-  // the filter might mutate it.
-  for (WebPluginInfo plugin : all_plugins) {
-    // TODO(crbug.com/621724): Pass an url::Origin instead of a GURL.
-    if (!filter || filter->IsPluginAvailable(render_process_id_, routing_id,
-                                             main_frame_origin.GetURL(),
-                                             main_frame_origin, &plugin)) {
+  for (const auto& plugin : all_plugins) {
+    if (!filter ||
+        filter->IsPluginAvailable(rph->GetBrowserContext(), plugin)) {
       auto plugin_blink = blink::mojom::PluginInfo::New();
       plugin_blink->name = plugin.name;
       plugin_blink->description = plugin.desc;

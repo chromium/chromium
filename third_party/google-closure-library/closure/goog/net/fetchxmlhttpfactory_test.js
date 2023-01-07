@@ -1,16 +1,8 @@
-// Copyright 2015 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.net.FetchXmlHttpFactoryTest');
 goog.setTestOnly();
@@ -18,6 +10,7 @@ goog.setTestOnly();
 const FetchXmlHttp = goog.require('goog.net.FetchXmlHttp');
 const FetchXmlHttpFactory = goog.require('goog.net.FetchXmlHttpFactory');
 const MockControl = goog.require('goog.testing.MockControl');
+const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const isVersion = goog.require('goog.userAgent.product.isVersion');
 const product = goog.require('goog.userAgent.product');
 const recordFunction = goog.require('goog.testing.recordFunction');
@@ -26,7 +19,7 @@ const testSuite = goog.require('goog.testing.testSuite');
 /** @type {!MockControl} */
 let mockControl;
 
-/** @type {!goog.testing.FunctionMock} */
+/** @type {?} */
 let fetchMock;
 
 /** @type {!FetchXmlHttpFactory} */
@@ -35,17 +28,21 @@ let factory;
 /** @type {!WorkerGlobalScope} */
 let worker;
 
+/** @type {!PropertyReplacer} */
+let stubs;
+
 /**
  * Util function to verify send method.
  * @param {string} sendMethod
  * @param {number=} expectedStatusCode
  * @param {boolean=} isStream
  * @param {boolean=} isArrayBuffer
+ * @param {boolean=} isStreamBinaryChunks
  * @return {!Promise<void>}
  */
 function verifySend(
     sendMethod, expectedStatusCode = 200, isStream = false,
-    isArrayBuffer = false) {
+    isArrayBuffer = false, isStreamBinaryChunks = false) {
   return new Promise((resolve, reject) => {
     const xhr = factory.createInstance();
     const expectedBody = 'responseBody';
@@ -56,6 +53,10 @@ function verifySend(
     let lastState;
     let lastBufferSize = 0;
     let numberOfUpdates = 0;
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     xhr.onreadystatechange = () => {
       if (xhr.readyState === FetchXmlHttp.RequestState.HEADER_RECEIVED) {
         lastState = xhr.readyState;
@@ -65,13 +66,13 @@ function verifySend(
           expectedHeaders =
               `content-type: text/plain;charset=UTF-8\r\n${expectedHeaders}`;
         }
-        assertEquals(0, xhr.status);
+        assertEquals(expectedStatusCode, xhr.status);
         assertEquals('', xhr.responseText);
         assertEquals('dummyHeaderValue', xhr.getResponseHeader('dummyHeader'));
         assertEquals(expectedHeaders, xhr.getAllResponseHeaders());
       } else if (xhr.readyState === FetchXmlHttp.RequestState.LOADING) {
         lastState = xhr.readyState;
-        assertEquals(0, xhr.status);
+        assertEquals(expectedStatusCode, xhr.status);
         assertEquals(0, expectedBody.indexOf(xhr.responseText));
         if (isStream && xhr.responseText) {
           assertTrue(xhr.responseText.length > lastBufferSize);
@@ -84,10 +85,17 @@ function verifySend(
         if (isArrayBuffer) {
           assertTrue(xhr.response instanceof ArrayBuffer);
           assertEquals(8, xhr.response.byteLength);
-        } else {
+        } else if (!isStreamBinaryChunks) {
           assertEquals(expectedBody, xhr.responseText);
         }
-        if (isStream) {
+        if (isStreamBinaryChunks) {
+          const bytes = new TextEncoder().encode('responseBody');
+          assertEquals(bytes.length, xhr.response.length);
+          assertTrue((xhr.response)[0] instanceof Uint8Array);
+          for (let i = 0; i < bytes.length; i++) {
+            assertTrue(bytes[i] === xhr.response[i][0]);
+          }
+        } else if (isStream) {
           assertEquals(expectedBody.length, numberOfUpdates);
         }
         resolve();
@@ -167,19 +175,28 @@ testSuite({
     return product.CHROME && isVersion(43);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   setUp() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     mockControl = new MockControl();
+    /** @suppress {checkTypes} suppression added to enable type checking */
     worker = {};
     fetchMock = mockControl.createFunctionMock('fetch');
     worker.fetch = fetchMock;
-    factory = new FetchXmlHttpFactory(worker);
+    stubs = new PropertyReplacer();
+    stubs.replace(globalThis, 'fetch', fetchMock);
+    factory = new FetchXmlHttpFactory({worker: worker});
   },
 
   tearDown() {
     mockControl.$tearDown();
+    stubs.reset();
   },
 
-  /** Verifies the open method. */
+  /**
+     Verifies the open method. @suppress {checkTypes} suppression added to
+     enable type checking
+   */
   testOpen() {
     mockControl.$replayAll();
 
@@ -188,6 +205,7 @@ testSuite({
     assertEquals('', xhr.responseText);
     assertEquals(xhr.readyState, FetchXmlHttp.RequestState.UNSENT);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const onReadyStateChangeHandler = new recordFunction();
     xhr.onreadystatechange = onReadyStateChangeHandler;
     xhr.open('GET', 'https://www.google.com', true /* opt_async */);
@@ -238,6 +256,21 @@ testSuite({
   },
 
   /**
+   * Verifies the send method without Service Worker.
+   * @return {!Promise<void>}
+   */
+  testSend_nonServiceWorker() {
+    fetchMock(new Request('https://www.google.com', {
+      headers: new Headers(),
+      method: 'GET',
+    })).$returns(Promise.resolve(createSuccessResponse()));
+
+    mockControl.$replayAll();
+    factory = new FetchXmlHttpFactory({});
+    return verifySend('GET');
+  },
+
+  /**
    * Verifies the send method with POST mode.
    * @return {!Promise<void>}
    */
@@ -256,7 +289,6 @@ testSuite({
    * @return {!Promise<void>}
    */
   testSend_includeCredentials() {
-    factory = new FetchXmlHttpFactory(worker);
     factory.setCredentialsMode(/** @type {RequestCredentials} */ ('include'));
     fetchMock(new Request('https://www.google.com', {
       headers: new Headers(),
@@ -273,7 +305,6 @@ testSuite({
    * @return {!Promise<void>}
    */
   testSend_setCacheMode() {
-    factory = new FetchXmlHttpFactory(worker);
     factory.setCacheMode(/** @type {RequestCache} */ ('no-cache'));
     fetchMock(new Request('https://www.google.com', {
       headers: new Headers(),
@@ -313,6 +344,25 @@ testSuite({
     mockControl.$replayAll();
     return verifySend(
         'POST', 200 /* expectedStatusCode */, true /* isStream */);
+  },
+
+  /**
+   * Tests that streaming binary responses are properly handled.
+   * @return {!Promise<void>}
+   */
+  testSend_streamBinaryChunks() {
+    fetchMock(new Request('https://www.google.com', {
+      headers: new Headers(),
+      method: 'POST',
+    })).$returns(Promise.resolve(createSuccessStreamingResponse()));
+
+    mockControl.$replayAll();
+
+    factory =
+        new FetchXmlHttpFactory({worker: worker, streamBinaryChunks: true});
+    return verifySend(
+        'POST', 200 /* expectedStatusCode */, true /* isStream */,
+        false /* isArrayBuffer */, true /* isStreamBinaryCrunks */);
   },
 
   /**
@@ -359,4 +409,47 @@ testSuite({
       mockControl.$verifyAll();
     });
   },
+
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
+  testWithCredentials_set() {
+    const xhr = factory.createInstance();
+
+    assertEquals(xhr.getCredentialsMode(), undefined);
+
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
+    xhr.withCredentials = true;
+    assertEquals(xhr.getCredentialsMode(), 'include');
+
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
+    xhr.withCredentials = false;
+    assertEquals(xhr.getCredentialsMode(), 'same-origin');
+  },
+
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
+  testWithCredentials_get() {
+    const xhr = factory.createInstance();
+
+    assertEquals(xhr.withCredentials, false);
+
+    xhr.setCredentialsMode('include');
+    assertEquals(xhr.withCredentials, true);
+
+    xhr.setCredentialsMode('same-origin');
+    assertEquals(xhr.withCredentials, false);
+
+    xhr.setCredentialsMode('omit');
+    assertEquals(xhr.withCredentials, false);
+  }
 });

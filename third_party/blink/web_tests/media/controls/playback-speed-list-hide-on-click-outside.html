@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<title>Clicking on the overflow playback speed button shows the playback speeds list menu.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<script src="../overflow-menu.js"></script>
+
+<!--Padding ensures the overflow menu is visible for the tests. -->
+<body style="padding-top: 200px; padding-left: 100px">
+<video controls></video>
+<script>
+async_test(function(t) {
+  // Set up video
+  var video = document.querySelector("video");
+  video.src = '../content/test.ogv';
+  video.setAttribute("width", "60");
+  video.setAttribute("height", "100");
+
+  video.onloadeddata = t.step_func_done(function() {
+    var overflowList = getOverflowList(video);
+    var overflowMenu = getOverflowMenuButton(video);
+
+    // Get the menu that displays the list of playback speeds
+    var playbackSpeedsList = mediaControlsElement(internals.shadowRoot(video).firstChild, "-internal-media-controls-playback-speed-list");
+
+    // Initially the list should not be visible
+    assert_equals(getComputedStyle(playbackSpeedsList).display, "none");
+
+    // Click on the overflow menu button
+    var coords = elementCoordinates(overflowMenu);
+    clickAtCoordinates(coords[0], coords[1]);
+
+    // Click on the playback speed button
+    var coords = elementCoordinates(overflowList.children[OverflowMenuButtons.PLAYBACK_SPEED]);
+    clickAtCoordinates(coords[0], coords[1]);
+
+    // Click on anywhere outside the playback speeds list will close the list
+    var coords = coordinatesOutsideElement(playbackSpeedsList);
+    clickAtCoordinates(coords[0], coords[1]);
+    assert_equals(getComputedStyle(playbackSpeedsList).display, "none");
+  });
+});
+</script>
+</body>

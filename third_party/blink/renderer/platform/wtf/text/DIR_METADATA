@@ -1,4 +1,0 @@
-monorail {
-  component: "Blink>Internals>WTF"
-}
-team_email: "platform-architecture-dev@chromium.org"

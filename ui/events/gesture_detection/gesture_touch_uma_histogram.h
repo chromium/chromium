@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_EVENTS_GESTURE_DETECTION_GESTURE_TOUCH_UMA_HISTOGRAM_H_
 #define UI_EVENTS_GESTURE_DETECTION_GESTURE_TOUCH_UMA_HISTOGRAM_H_
 
-#include "base/time/time.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/gesture_event_data.h"
 #include "ui/events/gesture_detection/motion_event.h"
@@ -50,8 +49,9 @@ enum UMAEventType {
   UMA_ET_GESTURE_SHOW_PRESS = 32,
   UMA_ET_GESTURE_TAP_CANCEL = 33,
   UMA_ET_GESTURE_WIN8_EDGE_SWIPE = 34,  // Deprecated. Do not remove.
-  UMA_ET_GESTURE_SWIPE_1 = 35,  // Swipe with 1 finger
+  UMA_ET_GESTURE_SWIPE_1 = 35,          // Swipe with 1 finger
   UMA_ET_GESTURE_TAP_UNCONFIRMED = 36,
+  UMA_ET_GESTURE_SHORT_PRESS = 37,
   // NOTE: Add new event types only immediately above this line. Make sure to
   // update the UIEventType enum in tools/metrics/histograms/histograms.xml
   // accordingly.
@@ -62,23 +62,20 @@ enum UMAEventType {
 // targetted to which components etc.)
 class GESTURE_DETECTION_EXPORT GestureTouchUMAHistogram {
  public:
-  GestureTouchUMAHistogram();
-  ~GestureTouchUMAHistogram();
-
   static void RecordGestureEvent(const ui::GestureEventData& gesture);
   void RecordTouchEvent(const ui::MotionEvent& event);
 
  private:
   static UMAEventType UMAEventTypeFromEvent(const GestureEventData& gesture);
 
-  // The first finger's press time.
-  base::TimeTicks start_time_;
-  // The first finger's press location.
+  // The first touch point's tool type.
+  ui::MotionEvent::ToolType tool_type_ = ui::MotionEvent::ToolType::UNKNOWN;
+  // The first touch point's initial location.
   gfx::Point start_touch_position_;
   // The maximum distance the first touch point travelled from its starting
   // location in pixels.
-  float max_distance_from_start_squared_;
-  bool is_single_finger_;
+  float max_distance_from_start_squared_ = 0.f;
+  bool is_single_finger_ = false;
 };
 
 }  // namespace ui

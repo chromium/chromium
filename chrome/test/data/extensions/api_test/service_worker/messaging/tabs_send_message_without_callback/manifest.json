@@ -1,0 +1,11 @@
+{
+  "name": "Calls chrome.tabs.sendMessage without callback, https://crbug.com/1218569",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "service worker",
+  "content_scripts": [{
+    "matches": ["*://*/*"],
+    "js": ["content_script.js"]
+  }],
+  "background": {"service_worker": "service_worker_background.js"}
+}

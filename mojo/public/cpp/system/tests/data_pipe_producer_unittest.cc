@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -45,6 +45,10 @@ class DataPipeReader {
                    base::BindRepeating(&DataPipeReader::OnDataAvailable,
                                        base::Unretained(this)));
   }
+
+  DataPipeReader(const DataPipeReader&) = delete;
+  DataPipeReader& operator=(const DataPipeReader&) = delete;
+
   ~DataPipeReader() = default;
 
   const std::string& data() const { return data_; }
@@ -79,13 +83,14 @@ class DataPipeReader {
   base::OnceClosure on_read_done_;
   SimpleWatcher watcher_;
   std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeReader);
 };
 
 class DataPipeProducerTest : public testing::Test {
  public:
   DataPipeProducerTest() { CHECK(temp_dir_.CreateUniqueTempDir()); }
+
+  DataPipeProducerTest(const DataPipeProducerTest&) = delete;
+  DataPipeProducerTest& operator=(const DataPipeProducerTest&) = delete;
 
   ~DataPipeProducerTest() override = default;
 
@@ -135,8 +140,6 @@ class DataPipeProducerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   int tmp_file_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeProducerTest);
 };
 
 struct DataPipeObserverData {
@@ -149,6 +152,9 @@ class TestObserver : public FilteredDataSource::Filter {
  public:
   explicit TestObserver(DataPipeObserverData* observer_data)
       : observer_data_(observer_data) {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
 
   // FilteredDataSource::Filter:
   void OnRead(base::span<char> buffer,
@@ -166,11 +172,9 @@ class TestObserver : public FilteredDataSource::Filter {
   }
 
  private:
-  DataPipeObserverData* observer_data_;
+  raw_ptr<DataPipeObserverData> observer_data_;
   // Observer may be called on any sequence.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 TEST_F(DataPipeProducerTest, WriteFromFile) {

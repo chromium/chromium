@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,13 @@
 // Called when item is tapped.
 - (void)didSelectItem:(TableViewItem*)item;
 
-// Determines if selection animation should be shown for |item|.
+// Determines if selection animation should be shown for `item`.
 - (BOOL)isItemClickable:(TableViewItem*)item;
 
-// Checks if |item| should have an error popover.
+// Checks if `item` should have an error popover.
 - (BOOL)isItemWithErrorInfo:(TableViewItem*)item;
 
-// Notifies the mediator that an info button was tapped for |itemType|.
+// Notifies the mediator that an info button was tapped for `itemType`.
 - (void)infoButtonWasTapped:(UIButton*)buttonView
               usingItemType:(NSInteger)itemType;
 

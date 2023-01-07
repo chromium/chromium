@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -37,8 +36,8 @@ TEST(OcclusionTest, HasOcclusion) {
 #define EXPECT_OCCLUSION(occlusion, rects, ...)              \
   {                                                          \
     bool expected[] = {__VA_ARGS__};                         \
-    ASSERT_EQ(base::size(rects), base::size(expected));      \
-    for (size_t i = 0; i < base::size(rects); ++i)           \
+    ASSERT_EQ(std::size(rects), std::size(expected));        \
+    for (size_t i = 0; i < std::size(rects); ++i)            \
       EXPECT_EQ(expected[i], occlusion.IsOccluded(rects[i])) \
           << "Test failed for index " << i << ".";           \
   }

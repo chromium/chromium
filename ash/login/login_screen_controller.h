@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,9 @@
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
-#include "ash/public/cpp/system_tray_focus_observer.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 class PrefRegistrySimple;
@@ -34,7 +33,7 @@ enum class SupervisedAction;
 // LoginScreen interface.
 class ASH_EXPORT LoginScreenController : public LoginScreen,
                                          public KioskAppMenu,
-                                         public SystemTrayFocusObserver {
+                                         public SystemTrayObserver {
  public:
   // The current authentication stage. Used to get more verbose logging.
   enum class AuthenticationStage {
@@ -48,9 +47,13 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   // authentication check did not run, otherwise it is true/false if auth
   // succeeded/failed.
   using OnAuthenticateCallback =
-      base::OnceCallback<void(base::Optional<bool> success)>;
+      base::OnceCallback<void(absl::optional<bool> success)>;
 
   explicit LoginScreenController(SystemTrayNotifier* system_tray_notifier);
+
+  LoginScreenController(const LoginScreenController&) = delete;
+  LoginScreenController& operator=(const LoginScreenController&) = delete;
+
   ~LoginScreenController() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test);
@@ -81,9 +84,11 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   void SignOutUser();
   void CancelAddUser();
   void LoginAsGuest();
+  void ShowGuestTosScreen();
   void OnMaxIncorrectPasswordAttempted(const AccountId& account_id);
   void FocusLockScreenApps(bool reverse);
   void ShowGaiaSignin(const AccountId& prefilled_account);
+  void ShowOsInstallScreen();
   void OnRemoveUserWarningShown();
   void RemoveUser(const AccountId& account_id);
   void LaunchPublicSession(const AccountId& account_id,
@@ -93,7 +98,7 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
                                            const std::string& locale);
   void HandleAccelerator(ash::LoginAcceleratorAction action);
   void ShowAccountAccessHelpApp(gfx::NativeWindow parent_window);
-  void ShowParentAccessHelpApp(gfx::NativeWindow parent_window);
+  void ShowParentAccessHelpApp();
   void ShowLockScreenNotificationSettings();
   void FocusOobeDialog();
   void NotifyUserActivity();
@@ -123,14 +128,11 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
 
   void RequestSecurityTokenPin(SecurityTokenPinRequest request) override;
   void ClearSecurityTokenPinRequest() override;
-  bool SetLoginShelfGestureHandler(const std::u16string& nudge_text,
-                                   const base::RepeatingClosure& fling_callback,
-                                   base::OnceClosure exit_callback) override;
-  void ClearLoginShelfGestureHandler() override;
+  views::Widget* GetLoginWindowWidget() override;
 
   // KioskAppMenu:
-  void SetKioskApps(
-      const std::vector<KioskAppMenuEntry>& kiosk_apps,
+  void SetKioskApps(const std::vector<KioskAppMenuEntry>& kiosk_apps) override;
+  void ConfigureKioskCallbacks(
       const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app,
       const base::RepeatingClosure& on_show_menu) override;
 
@@ -151,8 +153,9 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   // Common code that is called when the login/lock screen is shown.
   void OnShow();
 
-  // SystemTrayFocusObserver:
+  // SystemTrayObserver:
   void OnFocusLeavingSystemTray(bool reverse) override;
+  void OnSystemTrayBubbleShown() override;
 
   LoginDataDispatcher login_data_dispatcher_;
 
@@ -168,8 +171,6 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   ForceFailAuth force_fail_auth_for_debug_overlay_ = ForceFailAuth::kOff;
 
   base::WeakPtrFactory<LoginScreenController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenController);
 };
 
 }  // namespace ash

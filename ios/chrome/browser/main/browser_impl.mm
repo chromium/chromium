@@ -1,17 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/main/browser_impl.h"
 
-#include "base/check.h"
-#include "base/memory/ptr_util.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/check.h"
+#import "base/memory/ptr_util.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser_agent_util.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
@@ -30,36 +29,21 @@ BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state)
       std::make_unique<WebStateList>(web_state_list_delegate_.get());
 }
 
-void BrowserImpl::CreateTabModel() {
-  tab_model_ = [[TabModel alloc] initWithBrowser:this];
-}
-
-BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state,
-                         std::unique_ptr<WebStateList> web_state_list)
-    : browser_state_(browser_state),
-      web_state_list_(std::move(web_state_list)) {
-  DCHECK(browser_state_);
-}
-
 BrowserImpl::~BrowserImpl() {
   for (auto& observer : observers_) {
     observer.BrowserDestroyed(this);
   }
 }
 
-ChromeBrowserState* BrowserImpl::GetBrowserState() const {
+ChromeBrowserState* BrowserImpl::GetBrowserState() {
   return browser_state_;
 }
 
-TabModel* BrowserImpl::GetTabModel() const {
-  return tab_model_;
-}
-
-WebStateList* BrowserImpl::GetWebStateList() const {
+WebStateList* BrowserImpl::GetWebStateList() {
   return web_state_list_.get();
 }
 
-CommandDispatcher* BrowserImpl::GetCommandDispatcher() const {
+CommandDispatcher* BrowserImpl::GetCommandDispatcher() {
   return command_dispatcher_;
 }
 
@@ -76,6 +60,5 @@ std::unique_ptr<Browser> Browser::Create(ChromeBrowserState* browser_state) {
   std::unique_ptr<BrowserImpl> browser =
       std::make_unique<BrowserImpl>(browser_state);
   AttachBrowserAgents(browser.get());
-  browser->CreateTabModel();
   return browser;
 }

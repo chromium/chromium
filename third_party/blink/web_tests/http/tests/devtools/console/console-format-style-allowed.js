@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
     `Tests that console logging dumps properly styled messages, and that the whole message gets the same style, regardless of multiple %c settings.\n`
   );
 
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     console.log('%cColors are awesome.', 'color: blue;');

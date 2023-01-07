@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/base64.h"
 #include "base/big_endian.h"
@@ -67,8 +66,8 @@ void GCMEncryptionProvider::Init(
   if (!store_path.empty())
     encryption_store_path = store_path.Append(kEncryptionDirectoryName);
 
-  key_store_.reset(
-      new GCMKeyStore(encryption_store_path, blocking_task_runner));
+  key_store_ = std::make_unique<GCMKeyStore>(encryption_store_path,
+                                             blocking_task_runner);
 }
 
 void GCMEncryptionProvider::GetEncryptionInfo(

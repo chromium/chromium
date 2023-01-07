@@ -1,0 +1,10 @@
+<template is="dom-if"
+    if="[[shouldShowFeature_(pageContentData)]]"
+    restamp>
+  <settings-multidevice-feature-item id="smartLockItem"
+      feature="[[MultiDeviceFeature.SMART_LOCK]]"
+      page-content-data="[[pageContentData]]"
+      subpage-route="[[getSubpageRoute_()]]"
+      is-feature-icon-hidden>
+  </settings-multidevice-feature-item>
+</template>

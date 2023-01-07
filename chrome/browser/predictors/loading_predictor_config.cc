@@ -1,19 +1,19 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/predictors/loading_predictor_config.h"
 
 #include "base/metrics/field_trial_params.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/predictors/predictors_features.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace predictors {
 
-const char kSpeculativePreconnectFeatureName[] = "SpeculativePreconnect";
-const base::Feature kSpeculativePreconnectFeature{
-    kSpeculativePreconnectFeatureName, base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSpeculativePreconnectFeature,
+             "SpeculativePreconnect",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns whether the speculative preconnect feature is enabled.
 bool IsPreconnectFeatureEnabled() {
@@ -36,7 +36,7 @@ bool IsPreconnectAllowed(Profile* profile) {
 
   // Checks that the preconnect is allowed by user settings.
   return profile && profile->GetPrefs() &&
-         chrome_browser_net::CanPreresolveAndPreconnectUI(profile->GetPrefs());
+         prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
 }
 
 std::string GetStringNameForHintOrigin(HintOrigin hint_origin) {

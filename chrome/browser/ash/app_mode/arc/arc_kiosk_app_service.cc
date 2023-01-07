@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ constexpr int kNonComplianceReasonAppNotInstalled = 5;
 
 // Timeout maintenance session after 30 minutes.
 constexpr base::TimeDelta kArcKioskMaintenanceSessionTimeout =
-    base::TimeDelta::FromMinutes(30);
+    base::Minutes(30);
 
 // static
 ArcKioskAppService* ArcKioskAppService::Create(Profile* profile) {
@@ -194,7 +194,7 @@ void ArcKioskAppService::RequestNameAndIconUpdate() {
   app_icon_ = std::make_unique<ArcAppIcon>(
       profile_, app_id_,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(), this);
-  app_icon_->image_skia().GetRepresentation(ui::GetSupportedScaleFactor(
+  app_icon_->image_skia().GetRepresentation(ui::GetSupportedResourceScaleFactor(
       display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor()));
   // Apply default image now and in case icon is updated then OnIconUpdated()
   // will be called additionally.

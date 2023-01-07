@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ TEST(LoggingScope, Serialization) {
   LogBuffer buffer;
   buffer << LoggingScope::kContext;
   std::string json;
-  EXPECT_TRUE(base::JSONWriter::Write(buffer.RetrieveResult(), &json));
+  EXPECT_TRUE(base::JSONWriter::Write(*buffer.RetrieveResult(), &json));
   EXPECT_EQ(R"({"attributes":{"class":"log-entry","scope":"Context"},)"
             R"("type":"element","value":"div"})",
             json);

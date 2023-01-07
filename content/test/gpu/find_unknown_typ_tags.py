@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2021 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Script for comparing known typ tags to what's generated on the bots.
@@ -16,8 +16,8 @@ import json
 import os
 import subprocess
 
-from gpu_tests import path_util
-path_util.SetupTelemetryPaths()
+from gpu_path_util import setup_typ_paths  # pylint: disable=unused-import
+
 from gpu_tests import gpu_integration_test
 
 from typ import expectations_parser
@@ -49,13 +49,12 @@ def ParseArgs():
                       required=True,
                       help='The billing project to use for BigQuery queries. '
                       'Must have access to the ResultDB BQ tables, e.g. '
-                      '"luci-resultdb.chromium.gpu_ci_test_results".')
+                      '"chrome-luci-data.chromium.gpu_ci_test_results".')
   return parser.parse_args()
 
 
-def main():
-  args = ParseArgs()
-
+def _GetUsedTags():
+  """Helper function to get all currently used tags."""
   # Get the list of tags in expectation files. Any expectation file will do
   # since tags are synced between all of them.
   expectation_file_path = os.path.join(os.path.dirname(__file__), 'gpu_tests',
@@ -66,15 +65,15 @@ def main():
   used_tags = set()
   for tag_set in list_parser.tag_sets:
     used_tags |= set(tag_set)
+  return used_tags
 
-  # Get the list of ignored tags from the GPU tests.
-  ignored_tags = set(gpu_integration_test.GpuIntegrationTest.IgnoredTags())
 
-  # Get the list of all tags being generated on the bots.
+def _GetGeneratedTags(args):
+  """Helper function to get all currently generated tags from bots."""
   generated_tags = set()
   for table in [
-      'luci-resultdb.chromium.gpu_ci_test_results',
-      'luci-resultdb.chromium.gpu_try_test_results'
+      'chrome-luci-data.chromium.gpu_ci_test_results',
+      'chrome-luci-data.chromium.gpu_try_test_results'
   ]:
     query = BQ_QUERY_TEMPLATE.format(table=table)
     cmd = [
@@ -90,29 +89,38 @@ def main():
       try:
         stdout = subprocess.check_output(cmd, stderr=devnull)
       except subprocess.CalledProcessError as e:
-        print e.output
+        print(e.output)
         raise
     results = json.loads(stdout)
     for pair in results:
       generated_tags |= set(pair.values())
+  return generated_tags
 
+
+def main():
+  args = ParseArgs()
+
+  used_tags = _GetUsedTags()
+  # Get the list of ignored tags from the GPU tests.
+  ignored_tags = set(gpu_integration_test.GpuIntegrationTest.IgnoredTags())
+  generated_tags = _GetGeneratedTags(args)
   known_tags = used_tags | ignored_tags
-
   unused_tags = generated_tags - known_tags
+
   if unused_tags:
-    print 'Tags that were generated but unused:'
+    print('Tags that were generated but unused:')
     for t in unused_tags:
-      print t
-    print ''
+      print(t)
+    print('')
 
   stale_tags = known_tags - generated_tags
   if stale_tags:
-    print 'Tags that are known but not generated:'
+    print('Tags that are known but not generated:')
     for t in stale_tags:
-      print t
+      print(t)
 
   if not (unused_tags or stale_tags):
-    print 'Known and generated tags are in sync.'
+    print('Known and generated tags are in sync.')
 
 
 if __name__ == '__main__':

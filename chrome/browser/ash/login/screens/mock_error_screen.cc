@@ -1,15 +1,16 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/mock_error_screen.h"
 
+namespace ash {
+
 using ::testing::AtLeast;
 using ::testing::_;
 
-namespace chromeos {
-
-MockErrorScreen::MockErrorScreen(ErrorScreenView* view) : ErrorScreen(view) {}
+MockErrorScreen::MockErrorScreen(base::WeakPtr<ErrorScreenView> view)
+    : ErrorScreen(std::move(view)) {}
 
 MockErrorScreen::~MockErrorScreen() {}
 
@@ -29,24 +30,8 @@ void MockErrorScreen::SetErrorState(NetworkError::ErrorState error_state,
   MockSetErrorState(error_state, network);
 }
 
-MockErrorScreenView::MockErrorScreenView() {
-  EXPECT_CALL(*this, MockBind(_)).Times(AtLeast(1));
-  EXPECT_CALL(*this, MockUnbind()).Times(AtLeast(1));
-}
+MockErrorScreenView::MockErrorScreenView() = default;
 
-MockErrorScreenView::~MockErrorScreenView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+MockErrorScreenView::~MockErrorScreenView() = default;
 
-void MockErrorScreenView::Bind(ErrorScreen* screen) {
-  screen_ = screen;
-  MockBind(screen);
-}
-
-void MockErrorScreenView::Unbind() {
-  screen_ = nullptr;
-  MockUnbind();
-}
-
-}  // namespace chromeos
+}  // namespace ash

@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_SLIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_SLIDER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_mock_object.h"
 
@@ -41,19 +40,21 @@ class HTMLInputElement;
 class AXSlider : public AXLayoutObject {
  public:
   AXSlider(LayoutObject*, AXObjectCacheImpl&);
+
+  AXSlider(const AXSlider&) = delete;
+  AXSlider& operator=(const AXSlider&) = delete;
+
   ~AXSlider() override = default;
 
  private:
   HTMLInputElement* GetInputElement() const;
 
-  ax::mojom::Role DetermineAccessibilityRole() final;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const final;
   bool IsSlider() const final { return true; }
   bool IsControl() const final { return true; }
 
   bool OnNativeSetValueAction(const String&) final;
   AccessibilityOrientation Orientation() const final;
-
-  DISALLOW_COPY_AND_ASSIGN(AXSlider);
 };
 
 }  // namespace blink

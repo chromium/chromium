@@ -1,55 +1,181 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/signin_manager.h"
 
+#include <memory>
+
+#include "base/bind.h"
+#include "base/callback.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
-SigninManager::SigninManager(signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager) {
-  if (identity_manager_->AreRefreshTokensLoaded()) {
-    UpdateUnconsentedPrimaryAccount();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/signin_helper_lacros.h"
+#include "components/signin/public/base/signin_client.h"
+#include "google_apis/gaia/core_account_id.h"
+#endif
+
+namespace {
+
+class AccountSelectionInProgressHandleInternal
+    : public AccountSelectionInProgressHandle {
+ public:
+  explicit AccountSelectionInProgressHandleInternal(
+      base::OnceClosure on_destroy)
+      : on_destroy_(std::move(on_destroy)) {
+    DCHECK(on_destroy_);
   }
 
-  identity_manager_->AddObserver(this);
+  AccountSelectionInProgressHandleInternal(
+      const AccountSelectionInProgressHandleInternal&) = delete;
+  AccountSelectionInProgressHandleInternal& operator=(
+      const AccountSelectionInProgressHandleInternal&) = delete;
+
+  ~AccountSelectionInProgressHandleInternal() override {
+    std::move(on_destroy_).Run();
+  }
+
+ private:
+  base::OnceClosure on_destroy_;
+};
+}  // namespace
+
+SigninManager::SigninManager(PrefService* prefs,
+                             signin::IdentityManager* identity_manager,
+                             SigninClient* client)
+    : prefs_(prefs), identity_manager_(identity_manager) {
+  signin_allowed_.Init(
+      prefs::kSigninAllowed, prefs_,
+      base::BindRepeating(&SigninManager::OnSigninAllowedPrefChanged,
+                          base::Unretained(this)));
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  is_main_profile_ = client->GetInitialPrimaryAccount().has_value();
+#endif
+
+  UpdateUnconsentedPrimaryAccount();
+  identity_manager_observation_.Observe(identity_manager_);
 }
 
-SigninManager::~SigninManager() {
-  identity_manager_->RemoveObserver(this);
+SigninManager::~SigninManager() = default;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void SigninManager::StartLacrosSigninFlow(
+    const base::FilePath& profile_path,
+    AccountProfileMapper* account_profile_mapper,
+    signin::ConsistencyCookieManager* consistency_cookie_manager,
+    account_manager::AccountManagerFacade::AccountAdditionSource source,
+    base::OnceCallback<void(const CoreAccountId&)> on_completion_callback) {
+  // If there is already a flow in progress, cancel it.
+  signin_helper_lacros_.reset();
+
+  signin_helper_lacros_ = std::make_unique<SigninHelperLacros>(
+      profile_path, account_profile_mapper, identity_manager_,
+      consistency_cookie_manager, source,
+      // Using `base::Unretained()` is fine because this owns the helper.
+      base::BindOnce(&SigninManager::OnSigninHelperLacrosComplete,
+                     base::Unretained(this),
+                     std::move(on_completion_callback)));
+}
+#endif
+
+std::unique_ptr<AccountSelectionInProgressHandle>
+SigninManager::CreateAccountSelectionInProgressHandle() {
+  ++live_account_selection_handles_count_;
+  return std::make_unique<AccountSelectionInProgressHandleInternal>(
+      base::BindOnce(
+          &SigninManager::OnAccountSelectionInProgressHandleDestroyed,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SigninManager::UpdateUnconsentedPrimaryAccount() {
-  base::Optional<CoreAccountInfo> account =
-      ComputeUnconsentedPrimaryAccountInfo();
+  if (live_account_selection_handles_count_ > 0) {
+    // Don't update the unconsented primary account while some UI flow is also
+    // manipulating it.
+    return;
+  }
 
-  DCHECK(!account || !account->IsEmpty());
-  if (account) {
+  // Only update the unconsented primary account only after accounts are loaded.
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
+    return;
+  }
+
+  CoreAccountInfo account = ComputeUnconsentedPrimaryAccountInfo();
+
+  if (!account.IsEmpty()) {
     if (identity_manager_->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin) != account) {
       DCHECK(
           !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
-      identity_manager_->GetPrimaryAccountMutator()
-          ->SetUnconsentedPrimaryAccount(account->account_id);
+      identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          account.account_id, signin::ConsentLevel::kSignin);
     }
   } else if (identity_manager_->HasPrimaryAccount(
                  signin::ConsentLevel::kSignin)) {
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     DCHECK(!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
+#endif
     identity_manager_->GetPrimaryAccountMutator()->ClearPrimaryAccount(
         signin_metrics::USER_DELETED_ACCOUNT_COOKIES,
-        signin_metrics::SignoutDelete::IGNORE_METRIC);
+        signin_metrics::SignoutDelete::kIgnoreMetric);
   }
 }
 
-base::Optional<CoreAccountInfo>
-SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
+CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
+  DCHECK(identity_manager_->AreRefreshTokensLoaded());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool has_primary_account_with_refresh_token =
+      identity_manager_->HasPrimaryAccountWithRefreshToken(
+          signin::ConsentLevel::kSignin);
+
+  if (is_main_profile_) {
+    if (!has_primary_account_with_refresh_token) {
+      DLOG(ERROR)
+          << "The device account should not be removed from the main profile.";
+    }
+    return identity_manager_->GetPrimaryAccountInfo(
+        signin::ConsentLevel::kSignin);
+  }
+
+  // Secondary profile.
+  // Unless the user signs out, removes the account, the UPA will stay the same.
+  if (has_primary_account_with_refresh_token) {
+    return identity_manager_->GetPrimaryAccountInfo(
+        signin::ConsentLevel::kSignin);
+  }
+
+  // No primary account or the user has turned sync off or signed out.
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // Clear primary account.
+    return CoreAccountInfo();
+  }
+
+  // Local profile.
+  std::vector<CoreAccountInfo> accounts =
+      identity_manager_->GetAccountsWithRefreshTokens();
+  return accounts.empty() ? CoreAccountInfo() : accounts[0];
+#else
   // UPA is equal to the primary account with sync consent if it exists.
   if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return identity_manager_->GetPrimaryAccountInfo(
         signin::ConsentLevel::kSync);
   }
+
+  // Clearing the primary sync account when sign-in is not allowed is handled
+  // by PrimaryAccountPolicyManager. That flow is extremely hard to follow
+  // especially for the case when the user is syncing with a managed account
+  // as in that case the whole profile needs to be deleted.
+  //
+  // It was considered simpler to keep the logic to update the unconsented
+  // primary account in a single place.
+  if (!signin_allowed_.GetValue())
+    return CoreAccountInfo();
 
   signin::AccountsInCookieJarInfo cookie_info =
       identity_manager_->GetAccountsInCookieJar();
@@ -57,68 +183,57 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   std::vector<gaia::ListedAccount> cookie_accounts =
       cookie_info.signed_in_accounts;
 
-  bool are_refresh_tokens_loaded = identity_manager_->AreRefreshTokensLoaded();
-
   // Fresh cookies and loaded tokens are needed to compute the UPA.
-  if (are_refresh_tokens_loaded && cookie_info.accounts_are_fresh) {
+  if (cookie_info.accounts_are_fresh) {
     // Cookies are fresh and tokens are loaded, UPA is the first account
     // in cookies if it exists and has a refresh token.
     if (cookie_accounts.empty()) {
       // Cookies are empty, the UPA is empty.
-      return base::nullopt;
+      return CoreAccountInfo();
     }
 
-    base::Optional<AccountInfo> account_info =
-        identity_manager_
-            ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-                cookie_accounts[0].id);
-
-    // Verify the first account in cookies has a refresh token that is valid.
-    bool error_state =
-        !account_info.has_value() ||
-        identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-            account_info->account_id);
-
-    return error_state ? base::nullopt : account_info;
+    AccountInfo account_info =
+        identity_manager_->FindExtendedAccountInfoByAccountId(
+            cookie_accounts[0].id);
+    return IsValidUnconsentedPrimaryAccount(account_info) ? account_info
+                                                          : CoreAccountInfo();
   }
 
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin))
-    return base::nullopt;
+    return CoreAccountInfo();
 
   // If cookies or tokens are not loaded, it is not possible to fully compute
   // the unconsented primary account. However, if the current unconsented
   // primary account is no longer valid, it has to be removed.
-  CoreAccountId current_account =
-      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-
-  if (are_refresh_tokens_loaded &&
-      !identity_manager_->HasAccountWithRefreshToken(current_account)) {
-    // Tokens are loaded, but the current UPA doesn't have a refresh token.
-    // Clear the current UPA.
-    return base::nullopt;
-  }
-
-  if (!are_refresh_tokens_loaded &&
-      unconsented_primary_account_revoked_during_load_) {
-    // Tokens are not loaded, but the current UPA's refresh token has been
-    // revoked. Clear the current UPA.
-    return base::nullopt;
-  }
-
-  if (cookie_info.accounts_are_fresh) {
-    if (cookie_accounts.empty() || cookie_accounts[0].id != current_account) {
-      // The current UPA is not the first in fresh cookies. It needs to be
-      // cleared.
-      return base::nullopt;
-    }
-  }
-
-  // No indication that the current UPA is invalid, return current UPA.
-  return identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kSignin);
+  CoreAccountInfo current_primary_account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  return IsValidUnconsentedPrimaryAccount(current_primary_account)
+             ? current_primary_account
+             : CoreAccountInfo();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-// signin::IdentityManager::Observer implementation.
+bool SigninManager::IsValidUnconsentedPrimaryAccount(
+    const CoreAccountInfo& account) const {
+  DCHECK(identity_manager_->AreRefreshTokensLoaded());
+  if (account.IsEmpty())
+    return false;
+
+  const CoreAccountId& account_id = account.account_id;
+  return identity_manager_->HasAccountWithRefreshToken(account_id) &&
+         !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+             account_id);
+}
+
+void SigninManager::Shutdown() {
+  // Unsubscribe to all notifications to stop calling the identity manager.
+  signin_allowed_.Destroy();
+  identity_manager_observation_.Reset();
+  identity_manager_ = nullptr;
+}
+
+// Lacros does not use cookies to compute the unconsented primary account.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void SigninManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   // This is needed for the case where the user chooses to start syncing
@@ -140,20 +255,9 @@ void SigninManager::OnPrimaryAccountChanged(
       FROM_HERE, base::BindOnce(&SigninManager::UpdateUnconsentedPrimaryAccount,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-void SigninManager::OnRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info) {
-  UpdateUnconsentedPrimaryAccount();
-}
-
-void SigninManager::OnRefreshTokenRemovedForAccount(
-    const CoreAccountId& account_id) {
-  if (!identity_manager_->AreRefreshTokensLoaded() &&
-      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      account_id == identity_manager_->GetPrimaryAccountId(
-                        signin::ConsentLevel::kSignin)) {
-    unconsented_primary_account_revoked_during_load_ = true;
-  }
+void SigninManager::OnEndBatchOfRefreshTokenStateChanges() {
   UpdateUnconsentedPrimaryAccount();
 }
 
@@ -188,3 +292,24 @@ void SigninManager::OnErrorStateOfRefreshTokenUpdatedForAccount(
   if (should_update)
     UpdateUnconsentedPrimaryAccount();
 }
+
+void SigninManager::OnSigninAllowedPrefChanged() {
+  UpdateUnconsentedPrimaryAccount();
+}
+
+void SigninManager::OnAccountSelectionInProgressHandleDestroyed() {
+  DCHECK_GT(live_account_selection_handles_count_, 0);
+  --live_account_selection_handles_count_;
+
+  // We should reset the primary account in case we missed some relevant events.
+  UpdateUnconsentedPrimaryAccount();
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void SigninManager::OnSigninHelperLacrosComplete(
+    base::OnceCallback<void(const CoreAccountId&)> on_completion_callback,
+    const CoreAccountId& account_id) {
+  std::move(on_completion_callback).Run(account_id);
+  signin_helper_lacros_.reset();
+}
+#endif

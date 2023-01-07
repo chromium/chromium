@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,7 +49,7 @@ ActiveSheetsChange CompareActiveStyleSheets(
     // The old stylesheet vector is a prefix of the new vector in terms of
     // StyleSheets. If none of the RuleSets changed, we only need to add the new
     // sheets to the ScopedStyleResolver (ActiveSheetsAppended).
-    bool rule_sets_changed_in_common_prefix = !changed_rule_sets.IsEmpty();
+    bool rule_sets_changed_in_common_prefix = !changed_rule_sets.empty();
     for (; index < new_style_sheet_count; index++) {
       if (new_style_sheets[index].second)
         changed_rule_sets.insert(new_style_sheets[index].second);
@@ -58,7 +58,7 @@ ActiveSheetsChange CompareActiveStyleSheets(
     }
     if (rule_sets_changed_in_common_prefix)
       return kActiveSheetsChanged;
-    if (changed_rule_sets.IsEmpty() && !adds_non_matching_mq)
+    if (changed_rule_sets.empty() && !adds_non_matching_mq)
       return kNoActiveSheetsChanged;
     return kActiveSheetsAppended;
   }
@@ -71,7 +71,7 @@ ActiveSheetsChange CompareActiveStyleSheets(
       else if (old_style_sheets[index].first->HasMediaQueryResults())
         adds_non_matching_mq = true;
     }
-    return changed_rule_sets.IsEmpty() && !adds_non_matching_mq
+    return changed_rule_sets.empty() && !adds_non_matching_mq
                ? kNoActiveSheetsChanged
                : kActiveSheetsChanged;
   }
@@ -84,8 +84,8 @@ ActiveSheetsChange CompareActiveStyleSheets(
   // merged vector of old and new sheets.
 
   ActiveStyleSheetVector merged_sorted;
-  merged_sorted.ReserveCapacity(old_style_sheet_count + new_style_sheet_count -
-                                2 * index);
+  merged_sorted.reserve(old_style_sheet_count + new_style_sheet_count -
+                        2 * index);
   merged_sorted.AppendRange(old_style_sheets.begin() + index,
                             old_style_sheets.end());
   merged_sorted.AppendRange(new_style_sheets.begin() + index,
@@ -119,7 +119,7 @@ ActiveSheetsChange CompareActiveStyleSheets(
     if (sheet2.second)
       changed_rule_sets.insert(sheet2.second);
   }
-  return changed_rule_sets.IsEmpty() && !adds_non_matching_mq
+  return changed_rule_sets.empty() && !adds_non_matching_mq
              ? kNoActiveSheetsChanged
              : kActiveSheetsChanged;
 }
@@ -130,7 +130,7 @@ bool HasMediaQueries(const ActiveStyleSheetVector& active_style_sheets) {
   for (const auto& active_sheet : active_style_sheets) {
     if (const MediaQuerySet* media_queries =
             active_sheet.first->MediaQueries()) {
-      if (!media_queries->QueryVector().IsEmpty())
+      if (!media_queries->QueryVector().empty())
         return true;
     }
     StyleSheetContents* contents = active_sheet.first->Contents();
@@ -154,12 +154,31 @@ bool HasSizeDependentMediaQueries(
   return false;
 }
 
+bool HasDynamicViewportDependentMediaQueries(
+    const ActiveStyleSheetVector& active_style_sheets) {
+  for (const auto& active_sheet : active_style_sheets) {
+    if (active_sheet.first->HasDynamicViewportDependentMediaQueries())
+      return true;
+    StyleSheetContents* contents = active_sheet.first->Contents();
+    if (!contents->HasRuleSet())
+      continue;
+    if (contents->GetRuleSet()
+            .Features()
+            .HasDynamicViewportDependentMediaQueries()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 bool AffectedByMediaValueChange(const ActiveStyleSheetVector& active_sheets,
                                 MediaValueChange change) {
   if (change == MediaValueChange::kSize)
     return HasSizeDependentMediaQueries(active_sheets);
+  if (change == MediaValueChange::kDynamicViewport)
+    return HasDynamicViewportDependentMediaQueries(active_sheets);
 
   DCHECK(change == MediaValueChange::kOther);
   return HasMediaQueries(active_sheets);

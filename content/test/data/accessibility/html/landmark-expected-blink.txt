@@ -7,13 +7,13 @@ rootWebArea
 ++++++complementary
 ++++++++staticText name='This is an aside element.'
 ++++++++++inlineTextBox name='This is an aside element.'
-++++++genericContainer
+++++++group
 ++++++++staticText name='This is an address element.'
 ++++++++++inlineTextBox name='This is an address element.'
 ++++++footer
 ++++++++staticText name='This is a footer element.'
 ++++++++++inlineTextBox name='This is a footer element.'
-++++++form
+++++++section
 ++++++++staticText name='This is a form element.'
 ++++++++++inlineTextBox name='This is a form element.'
 ++++++main
@@ -73,8 +73,9 @@ rootWebArea
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='Details'
 ++++++++++++++inlineTextBox name='Details'
-++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
 ++++++++++headerAsNonLandmark ignored invisible
+++++++++++++staticText ignored invisible name='This should NOT header role.'
 ++++++group
 ++++++++headerAsNonLandmark
 ++++++++++staticText name='This should NOT have banner role.'
@@ -126,8 +127,10 @@ rootWebArea
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='Details'
 ++++++++++++++inlineTextBox name='Details'
-++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
 ++++++++++genericContainer ignored invisible
+++++++++++++headerAsNonLandmark ignored invisible
+++++++++++++++staticText ignored invisible name='This should NOT header role.'
 ++++++group
 ++++++++genericContainer ignored
 ++++++++++headerAsNonLandmark
@@ -178,8 +181,9 @@ rootWebArea
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='Details'
 ++++++++++++++inlineTextBox name='Details'
-++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
 ++++++++++footerAsNonLandmark ignored invisible
+++++++++++++staticText ignored invisible name='This should NOT footer role.'
 ++++++group
 ++++++++footerAsNonLandmark
 ++++++++++staticText name='This should NOT have footer role.'
@@ -231,8 +235,10 @@ rootWebArea
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='Details'
 ++++++++++++++inlineTextBox name='Details'
-++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
 ++++++++++genericContainer ignored invisible
+++++++++++++footerAsNonLandmark ignored invisible
+++++++++++++++staticText ignored invisible name='This should NOT footer role.'
 ++++++group
 ++++++++genericContainer ignored
 ++++++++++footerAsNonLandmark

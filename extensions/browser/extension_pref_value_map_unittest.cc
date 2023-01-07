@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/pref_store_observer_mock.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -48,12 +48,9 @@ class ExtensionPrefValueMapTestBase : public BASECLASS {
 
   // Returns an empty string if the key is not set.
   std::string GetValue(const char * key, bool incognito) const {
-    const base::Value *value =
-        epvm_.GetEffectivePrefValue(key, incognito, NULL);
-    std::string string_value;
-    if (value)
-      value->GetAsString(&string_value);
-    return string_value;
+    const base::Value* value =
+        epvm_.GetEffectivePrefValue(key, incognito, nullptr);
+    return (value && value->is_string()) ? value->GetString() : std::string();
   }
 
   // Registers the extension as enabled but without incognito permission.
@@ -76,14 +73,17 @@ class ExtensionPrefValueMapObserverMock
     : public ExtensionPrefValueMap::Observer {
  public:
   ExtensionPrefValueMapObserverMock() {}
+
+  ExtensionPrefValueMapObserverMock(const ExtensionPrefValueMapObserverMock&) =
+      delete;
+  ExtensionPrefValueMapObserverMock& operator=(
+      const ExtensionPrefValueMapObserverMock&) = delete;
+
   ~ExtensionPrefValueMapObserverMock() override {}
 
   MOCK_METHOD1(OnPrefValueChanged, void(const std::string&));
   MOCK_METHOD0(OnInitializationCompleted, void());
   MOCK_METHOD0(OnExtensionPrefValueMapDestruction, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefValueMapObserverMock);
 };
 
 TEST_F(ExtensionPrefValueMapTest, SetAndGetPrefValue) {
@@ -124,18 +124,18 @@ TEST_F(ExtensionPrefValueMapTest, OverrideChecks) {
   RegisterExtension(kExt2, CreateTime(20));
   RegisterExtension(kExt3, CreateTime(30));
 
-  EXPECT_FALSE(epvm_.DoesExtensionControlPref(kExt1, kPref1, NULL));
-  EXPECT_FALSE(epvm_.DoesExtensionControlPref(kExt2, kPref1, NULL));
-  EXPECT_FALSE(epvm_.DoesExtensionControlPref(kExt3, kPref1, NULL));
+  EXPECT_FALSE(epvm_.DoesExtensionControlPref(kExt1, kPref1, nullptr));
+  EXPECT_FALSE(epvm_.DoesExtensionControlPref(kExt2, kPref1, nullptr));
+  EXPECT_FALSE(epvm_.DoesExtensionControlPref(kExt3, kPref1, nullptr));
   EXPECT_TRUE(epvm_.CanExtensionControlPref(kExt1, kPref1, false));
   EXPECT_TRUE(epvm_.CanExtensionControlPref(kExt2, kPref1, false));
   EXPECT_TRUE(epvm_.CanExtensionControlPref(kExt3, kPref1, false));
 
   epvm_.SetExtensionPref(kExt2, kPref1, kRegular, CreateVal("val1"));
 
-  EXPECT_FALSE(epvm_.DoesExtensionControlPref(kExt1, kPref1, NULL));
-  EXPECT_TRUE(epvm_.DoesExtensionControlPref(kExt2, kPref1, NULL));
-  EXPECT_FALSE(epvm_.DoesExtensionControlPref(kExt3, kPref1, NULL));
+  EXPECT_FALSE(epvm_.DoesExtensionControlPref(kExt1, kPref1, nullptr));
+  EXPECT_TRUE(epvm_.DoesExtensionControlPref(kExt2, kPref1, nullptr));
+  EXPECT_FALSE(epvm_.DoesExtensionControlPref(kExt3, kPref1, nullptr));
   EXPECT_FALSE(epvm_.CanExtensionControlPref(kExt1, kPref1, false));
   EXPECT_TRUE(epvm_.CanExtensionControlPref(kExt2, kPref1, false));
   EXPECT_TRUE(epvm_.CanExtensionControlPref(kExt3, kPref1, false));

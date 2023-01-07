@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/activity_database.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
@@ -50,7 +49,7 @@ const char* const FullStreamUIPolicy::kTableFieldTypes[] = {
   "LONGVARCHAR", "LONGVARCHAR", "LONGVARCHAR", "LONGVARCHAR"
 };
 const int FullStreamUIPolicy::kTableFieldCount =
-    base::size(FullStreamUIPolicy::kTableContentFields);
+    std::size(FullStreamUIPolicy::kTableContentFields);
 
 FullStreamUIPolicy::FullStreamUIPolicy(Profile* profile)
     : ActivityLogDatabasePolicy(
@@ -63,7 +62,7 @@ bool FullStreamUIPolicy::InitDatabase(sql::Database* db) {
   // Create the unified activity log entry table.
   return ActivityDatabase::InitializeTable(db, kTableName, kTableContentFields,
                                            kTableFieldTypes,
-                                           base::size(kTableContentFields));
+                                           std::size(kTableContentFields));
 }
 
 bool FullStreamUIPolicy::FlushDatabase(sql::Database* db) {
@@ -195,11 +194,10 @@ std::unique_ptr<Action::ActionVector> FullStreamUIPolicy::DoReadFilteredData(
         query.ColumnString(3), query.ColumnInt64(9));
 
     if (query.GetColumnType(4) != sql::ColumnType::kNull) {
-      std::unique_ptr<base::Value> parsed_value =
-          base::JSONReader::ReadDeprecated(query.ColumnString(4));
+      absl::optional<base::Value> parsed_value =
+          base::JSONReader::Read(query.ColumnString(4));
       if (parsed_value && parsed_value->is_list()) {
-        action->set_args(base::WrapUnique(
-            static_cast<base::ListValue*>(parsed_value.release())));
+        action->set_args(std::move(*parsed_value).TakeList());
       }
     }
 
@@ -208,11 +206,10 @@ std::unique_ptr<Action::ActionVector> FullStreamUIPolicy::DoReadFilteredData(
     action->ParseArgUrl(query.ColumnString(7));
 
     if (query.GetColumnType(8) != sql::ColumnType::kNull) {
-      std::unique_ptr<base::Value> parsed_value =
-          base::JSONReader::ReadDeprecated(query.ColumnString(8));
+      absl::optional<base::Value> parsed_value =
+          base::JSONReader::Read(query.ColumnString(8));
       if (parsed_value && parsed_value->is_dict()) {
-        action->set_other(base::WrapUnique(
-            static_cast<base::DictionaryValue*>(parsed_value.release())));
+        action->set_other(std::move(*parsed_value).TakeDict());
       }
     }
     actions->push_back(action);

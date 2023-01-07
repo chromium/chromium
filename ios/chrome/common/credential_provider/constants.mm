@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/common/credential_provider/constants.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/check.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
-#include "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
+#import "base/check.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,6 +29,21 @@ NSString* const kCredentialProviderContainer = @"credential_provider";
 NSString* const kUserDefaultsCredentialProviderManagedUserID =
     @"kUserDefaultsCredentialProviderManagedUserID";
 
+// Used to generate the key for the app group user defaults containing the
+// managed user email.
+NSString* const kUserDefaultsCredentialProviderManagedUserEmail =
+    @"kUserDefaultsCredentialProviderManagedUserEmail";
+
+// Used to generate the key for the app group user defaults containing the
+// the metadata for credentials created in the extension.
+NSString* const kUserDefaultsCredentialProviderNewCredentials =
+    @"kUserDefaultsCredentialProviderNewCredentials";
+
+// Used to generate the key for the app group user defaults containg whether
+// saving passwords is currently enabled.
+NSString* const kUserDefaulsCredentialProviderSavingPasswordsEnabled =
+    @"kUserDefaulsCredentialProviderSavingPasswordsEnabled";
+
 // Used to generate a unique AppGroupPrefix to differentiate between different
 // versions of Chrome running in the same device.
 NSString* AppGroupPrefix() {
@@ -45,6 +60,16 @@ NSString* AppGroupPrefix() {
 NSURL* CredentialProviderSharedArchivableStoreURL() {
   NSURL* groupURL = [[NSFileManager defaultManager]
       containerURLForSecurityApplicationGroupIdentifier:ApplicationGroup()];
+
+  // As of 2021Q4, Earl Grey build don't support security groups in their
+  // entitlements.
+  if (!groupURL) {
+    NSNumber* isEarlGreyTest =
+        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CRIsEarlGreyTest"];
+    if ([isEarlGreyTest boolValue])
+      groupURL = [NSURL fileURLWithPath:NSTemporaryDirectory()];
+  }
+
   NSURL* credentialProviderURL =
       [groupURL URLByAppendingPathComponent:kCredentialProviderContainer];
   NSString* filename =
@@ -52,9 +77,25 @@ NSURL* CredentialProviderSharedArchivableStoreURL() {
   return [credentialProviderURL URLByAppendingPathComponent:filename];
 }
 
-NSString* AppGroupUserDefaultsCredentialProviderManagedUserID() {
+NSString* AppGroupUserDefaultsCredentialProviderUserID() {
   return [AppGroupPrefix()
       stringByAppendingString:kUserDefaultsCredentialProviderManagedUserID];
+}
+
+NSString* AppGroupUserDefaultsCredentialProviderUserEmail() {
+  return [AppGroupPrefix()
+      stringByAppendingString:kUserDefaultsCredentialProviderManagedUserEmail];
+}
+
+NSString* AppGroupUserDefaultsCredentialProviderNewCredentials() {
+  return [AppGroupPrefix()
+      stringByAppendingString:kUserDefaultsCredentialProviderNewCredentials];
+}
+
+NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled() {
+  return [AppGroupPrefix()
+      stringByAppendingString:
+          kUserDefaulsCredentialProviderSavingPasswordsEnabled];
 }
 
 NSArray<NSString*>* UnusedUserDefaultsCredentialProviderKeys() {
@@ -69,6 +110,3 @@ NSString* const kUserDefaultsCredentialProviderASIdentityStoreSyncCompleted =
 
 NSString* const kUserDefaultsCredentialProviderFirstTimeSyncCompleted =
     @"UserDefaultsCredentialProviderFirstTimeSyncCompleted.V1";
-
-NSString* const kUserDefaultsCredentialProviderConsentVerified =
-    @"UserDefaultsCredentialProviderConsentVerified";

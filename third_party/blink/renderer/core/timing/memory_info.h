@@ -31,9 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_MEMORY_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_MEMORY_INFO_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace base {
@@ -54,11 +54,11 @@ class CORE_EXPORT MemoryInfo final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Precision of the performance.memory() attribute. A Precise value means that
-  // the numbers will not be bucketized and only cached for a small amount of
-  // time (50 ms). A Bucketized value means that the numbers will be bucketized
-  // and cached for a long period of time (20 minutes).
-  enum class Precision { Precise, Bucketized };
+  // Precision of the performance.memory() attribute. A kPrecise value means
+  // that the numbers will not be bucketized and only cached for a small amount
+  // of time (50 ms). A kBucketized value means that the numbers will be
+  // bucketized and cached for a long period of time (20 minutes).
+  enum class Precision { kPrecise, kBucketized };
 
   explicit MemoryInfo(Precision precision);
 

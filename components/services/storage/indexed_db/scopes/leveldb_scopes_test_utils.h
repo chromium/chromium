@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/services/storage/indexed_db/leveldb/fake_leveldb_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
-#include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/scopes_metadata.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
@@ -84,13 +84,13 @@ class LevelDBScopesTestBase : public testing::Test {
 
   // Creates a shared lock request from |simple_lock_begin_| to
   // |simple_lock_end_|.
-  ScopesLockManager::ScopeLockRequest CreateSimpleSharedLock();
+  PartitionedLockManager::PartitionedLockRequest CreateSimpleSharedLock();
   // Creates a exclusive lock request from |simple_lock_begin_| to
   // |simple_lock_end_|.
-  ScopesLockManager::ScopeLockRequest CreateSimpleExclusiveLock();
+  PartitionedLockManager::PartitionedLockRequest CreateSimpleExclusiveLock();
 
-  ScopesLockManager::ScopeLockRequest CreateSharedLock(int i);
-  ScopesLockManager::ScopeLockRequest CreateExclusiveLock(int i);
+  PartitionedLockManager::PartitionedLockRequest CreateSharedLock(int i);
+  PartitionedLockManager::PartitionedLockRequest CreateExclusiveLock(int i);
 
   const base::FilePath& DatabaseDirFilePath();
 

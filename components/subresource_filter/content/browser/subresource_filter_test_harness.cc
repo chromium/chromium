@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,14 @@
 
 #include "base/feature_list.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
@@ -54,8 +57,6 @@ void SubresourceFilterTestHarness::SetUp() {
       mojom::ActivationLevel::kEnabled, ActivationScope::ACTIVATION_LIST,
       ActivationList::SUBRESOURCE_FILTER));
 
-  NavigateAndCommit(GURL("https://example.first"));
-
   // Set up the ruleset service.
   ASSERT_TRUE(ruleset_service_dir_.CreateUniqueTempDir());
   IndexedRulesetVersion::RegisterPrefs(pref_service_.registry());
@@ -86,23 +87,35 @@ void SubresourceFilterTestHarness::SetUp() {
 
   VerifiedRulesetDealer::Handle* dealer =
       ruleset_service_.get()->GetRulesetDealer();
-  auto client = std::make_unique<TestSubresourceFilterClient>(web_contents());
-  client_ = client.get();
-  client_->CreateSafeBrowsingDatabaseManager();
-  ContentSubresourceFilterThrottleManager::CreateForWebContents(
-      web_contents(), std::move(client), dealer);
+  throttle_manager_test_support_ =
+      std::make_unique<ThrottleManagerTestSupport>(web_contents());
+  database_manager_ = base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
+  infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
+  ContentSubresourceFilterWebContentsHelper::CreateForWebContents(
+      web_contents(), throttle_manager_test_support_->profile_context(),
+      database_manager_, dealer);
 
   // Observe web_contents() to add subresource filter navigation throttles at
   // the start of navigations.
   Observe(web_contents());
 
+  NavigateAndCommit(GURL("https://example.first"));
+
   base::RunLoop().RunUntilIdle();
+#if BUILDFLAG(IS_ANDROID)
+  message_dispatcher_bridge_.SetMessagesEnabledForEmbedder(true);
+  messages::MessageDispatcherBridge::SetInstanceForTesting(
+      &message_dispatcher_bridge_);
+#endif
 }
 
 void SubresourceFilterTestHarness::TearDown() {
   ruleset_service_.reset();
 
   content::RenderViewHostTestHarness::TearDown();
+#if BUILDFLAG(IS_ANDROID)
+  messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
+#endif
 }
 
 // content::WebContentsObserver:
@@ -112,7 +125,8 @@ void SubresourceFilterTestHarness::DidStartNavigation(
     return;
 
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-  ContentSubresourceFilterThrottleManager::FromWebContents(web_contents())
+  ContentSubresourceFilterThrottleManager::FromNavigationHandle(
+      *navigation_handle)
       ->MaybeAppendNavigationThrottles(navigation_handle, &throttles);
 
   AppendCustomNavigationThrottles(navigation_handle, &throttles);
@@ -158,14 +172,15 @@ void SubresourceFilterTestHarness::RemoveURLFromBlocklist(const GURL& url) {
 
 SubresourceFilterContentSettingsManager*
 SubresourceFilterTestHarness::GetSettingsManager() {
-  return client_->profile_context()->settings_manager();
+  return throttle_manager_test_support_->profile_context()->settings_manager();
 }
 
-void SubresourceFilterTestHarness::SetIsAdSubframe(
+void SubresourceFilterTestHarness::SetIsAdFrame(
     content::RenderFrameHost* render_frame_host,
-    bool is_ad_subframe) {
-  ContentSubresourceFilterThrottleManager::FromWebContents(web_contents())
-      ->SetIsAdSubframeForTesting(render_frame_host, is_ad_subframe);
+    bool is_ad_frame) {
+  ContentSubresourceFilterThrottleManager::FromPage(
+      render_frame_host->GetPage())
+      ->SetIsAdFrameForTesting(render_frame_host, is_ad_frame);
 }
 
 }  // namespace subresource_filter

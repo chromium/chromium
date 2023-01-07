@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_APP_MENU_NOTIFICATION_MENU_HEADER_VIEW_H_
 #define ASH_APP_MENU_NOTIFICATION_MENU_HEADER_VIEW_H_
 
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -19,6 +18,10 @@ namespace ash {
 class NotificationMenuHeaderView : public views::View {
  public:
   NotificationMenuHeaderView();
+
+  NotificationMenuHeaderView(const NotificationMenuHeaderView&) = delete;
+  NotificationMenuHeaderView& operator=(const NotificationMenuHeaderView&) =
+      delete;
 
   ~NotificationMenuHeaderView() override;
 
@@ -40,8 +43,6 @@ class NotificationMenuHeaderView : public views::View {
   // Holds a numeric string that indicates how many notifications are active.
   // Owned by the views hierarchy.
   views::Label* counter_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationMenuHeaderView);
 };
 
 }  // namespace ash

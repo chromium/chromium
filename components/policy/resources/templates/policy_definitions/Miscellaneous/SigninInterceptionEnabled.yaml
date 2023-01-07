@@ -1,0 +1,31 @@
+caption: Enable signin interception
+default: null
+desc: |-
+  This settings enables or disables signin interception.
+
+        When this policy not set or is enabled, the signin interception dialog triggers when a Google account is added on the web, and the user may benefit from moving this account to another (new or existing) profile.
+
+        When this is disabled, the signin interception dialog does not trigger.
+        When this is disabled, a dialog will still be shown if managed account profile separation is enforced by <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME">ManagedAccountsSigninRestriction</ph>.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Enable signin interception
+  value: true
+- caption: Disable signin interception
+  value: false
+- caption: Enable signin interception
+  value: null
+owners:
+- ydago@chromium.org
+- pastarmovj@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:89-
+tags: []
+type: main

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,14 @@
 #include <set>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_util.h"
 
 namespace invalidation {
 
-class SingleObjectInvalidationSet;
+class SingleTopicInvalidationSet;
 class TopicInvalidationMap;
 class AckHandle;
 class UnackedInvalidationSet;
@@ -43,7 +43,7 @@ class INVALIDATION_EXPORT UnackedInvalidationSet {
   void Add(const Invalidation& invalidation);
 
   // Adds many new invalidations to the set awaiting acknowledgement.
-  void AddSet(const SingleObjectInvalidationSet& invalidations);
+  void AddSet(const SingleTopicInvalidationSet& invalidations);
 
   // Exports the set of invalidations awaiting acknowledgement as an
   // TopicInvalidationMap. Each of these invalidations will be associated
@@ -56,28 +56,6 @@ class INVALIDATION_EXPORT UnackedInvalidationSet {
       base::WeakPtr<AckHandler> ack_handler,
       scoped_refptr<base::SingleThreadTaskRunner> ack_handler_task_runner,
       TopicInvalidationMap* out) const;
-
-  // Removes all stored invalidations from this object.
-  void Clear();
-
-  // Indicates that a handler has registered to handle these invalidations.
-  //
-  // Registrations with the invalidations server persist across restarts, but
-  // registrations from InvalidationHandlers to the InvalidationService are not.
-  // In the time immediately after a restart, it's possible that the server
-  // will send us invalidations, and we won't have a handler to send them to.
-  //
-  // The SetIsRegistered() call indicates that this period has come to an end.
-  // There is now a handler that can receive these invalidations.  Once this
-  // function has been called, the kMaxBufferedInvalidations limit will be
-  // ignored.  It is assumed that the handler will manage its own buffer size.
-  void SetHandlerIsRegistered();
-
-  // Indicates that the handler has now unregistered itself.
-  //
-  // This causes the object to resume enforcement of the
-  // kMaxBufferedInvalidations limit.
-  void SetHandlerIsUnregistered();
 
   // Given an AckHandle belonging to one of the contained invalidations, finds
   // the invalidation and drops it from the list.  It is considered to be
@@ -98,7 +76,6 @@ class INVALIDATION_EXPORT UnackedInvalidationSet {
   // dropped.
   void Truncate(size_t max_size);
 
-  bool registered_;
   const Topic topic_;
   InvalidationsSet invalidations_;
 };

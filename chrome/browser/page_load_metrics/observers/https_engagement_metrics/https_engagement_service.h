@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_HTTPS_ENGAGEMENT_METRICS_HTTPS_ENGAGEMENT_SERVICE_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_HTTPS_ENGAGEMENT_METRICS_HTTPS_ENGAGEMENT_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/metrics/metrics_provider.h"
@@ -19,6 +18,10 @@ class HttpsEngagementService : public KeyedService {
   enum PageScheme { HTTP, HTTPS, OTHER };
 
   HttpsEngagementService();
+
+  HttpsEngagementService(const HttpsEngagementService&) = delete;
+  HttpsEngagementService& operator=(const HttpsEngagementService&) = delete;
+
   ~HttpsEngagementService() override;
 
   // Save that the user spent |time| on either HTTPS or HTTP.
@@ -30,8 +33,6 @@ class HttpsEngagementService : public KeyedService {
  private:
   base::TimeDelta time_on_https_;
   base::TimeDelta time_on_http_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpsEngagementService);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_HTTPS_ENGAGEMENT_METRICS_HTTPS_ENGAGEMENT_SERVICE_H_

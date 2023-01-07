@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import static org.chromium.components.embedder_support.util.UrlUtilities.stripScheme;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -19,8 +20,8 @@ import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabViewBinder.ElementViewHolder;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.ListModel;
-import org.chromium.ui.widget.ChipView;
 
 /**
  * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>}
@@ -55,10 +56,10 @@ class PasswordAccessorySheetModernViewBinder {
 
         @Override
         protected void bind(KeyboardAccessoryData.UserInfo info, PasswordAccessoryInfoView view) {
-            bindChipView(view.getUsername(), info.getFields().get(0));
-            bindChipView(view.getPassword(), info.getFields().get(1));
+            bindChipView(view.getUsername(), info.getFields().get(0), view.getContext());
+            bindChipView(view.getPassword(), info.getFields().get(1), view.getContext());
 
-            view.getTitle().setVisibility(info.isPslMatch() ? View.VISIBLE : View.GONE);
+            view.getTitle().setVisibility(info.isExactMatch() ? View.GONE : View.VISIBLE);
             // Strip the trailing slash (for aesthetic reasons):
             view.getTitle().setText(stripScheme(info.getOrigin()).replaceFirst("/$", ""));
 
@@ -76,14 +77,20 @@ class PasswordAccessorySheetModernViewBinder {
             if (requestOrigin.equals(mFaviconRequestOrigin)) view.setIconForBitmap(drawable);
         }
 
-        void bindChipView(ChipView chip, UserInfoField field) {
+        void bindChipView(ChipView chip, UserInfoField field, Context context) {
             chip.getPrimaryTextView().setTransformationMethod(
                     field.isObfuscated() ? new PasswordTransformationMethod() : null);
             chip.getPrimaryTextView().setText(field.getDisplayText());
             chip.getPrimaryTextView().setContentDescription(field.getA11yDescription());
-            chip.setOnClickListener(!field.isSelectable() ? null : src -> field.triggerSelection());
-            chip.setClickable(field.isSelectable());
-            chip.setEnabled(field.isSelectable());
+            View.OnClickListener listener = null;
+            if (field.isSelectable()) {
+                listener = src -> field.triggerSelection();
+            } else if (field.isObfuscated()) {
+                listener = src -> PasswordAccessoryInfoView.showWarningDialog(context);
+            }
+            chip.setOnClickListener(listener);
+            chip.setClickable(listener != null);
+            chip.setEnabled(listener != null);
         }
     }
 

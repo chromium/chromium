@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,7 @@ ScopedJavaLocalRef<jobject> JNI_ValidationTestUtil_ParseData(
   }
   ScopedJavaLocalRef<jobject> byte_buffer(
       env, env->NewDirectByteBuffer(data_ptr, data.size()));
+  base::android::CheckException(env);
   return Java_ValidationTestUtil_buildData(env, byte_buffer, num_handles,
                                            nullptr);
 }

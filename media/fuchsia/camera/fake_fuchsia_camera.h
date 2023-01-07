@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,15 @@
 #include <vector>
 
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
-class FakeCameraStream : public fuchsia::camera3::testing::Stream_TestBase,
-                         public base::MessagePumpForIO::ZxHandleWatcher {
+class FakeCameraStream final
+    : public fuchsia::camera3::testing::Stream_TestBase,
+      public base::MessagePumpForIO::ZxHandleWatcher {
  public:
   static const gfx::Size kMaxFrameSize;
   static const gfx::Size kDefaultFrameSize;
@@ -47,7 +48,7 @@ class FakeCameraStream : public fuchsia::camera3::testing::Stream_TestBase,
                                 uint8_t salt);
 
   FakeCameraStream();
-  ~FakeCameraStream() final;
+  ~FakeCameraStream() override;
 
   FakeCameraStream(const FakeCameraStream&) = delete;
   FakeCameraStream& operator=(const FakeCameraStream&) = delete;
@@ -75,16 +76,22 @@ class FakeCameraStream : public fuchsia::camera3::testing::Stream_TestBase,
   struct Buffer;
 
   // fuchsia::camera3::Stream implementation.
-  void WatchResolution(WatchResolutionCallback callback) final;
-  void WatchOrientation(WatchOrientationCallback callback) final;
+  void WatchResolution(WatchResolutionCallback callback) override;
+  void WatchOrientation(WatchOrientationCallback callback) override;
   void SetBufferCollection(
       fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
-          token_handle) final;
-  void WatchBufferCollection(WatchBufferCollectionCallback callback) final;
-  void GetNextFrame(GetNextFrameCallback callback) final;
+          token_handle) override;
+  void WatchBufferCollection(WatchBufferCollectionCallback callback) override;
+  void GetNextFrame(GetNextFrameCallback callback) override;
 
   // fuchsia::camera3::testing::Stream_TestBase override.
   void NotImplemented_(const std::string& name) override;
+
+  void OnBufferCollectionSyncDone(
+      fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
+          token_for_client,
+      fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
+          failed_token);
 
   void OnBufferCollectionError(zx_status_t status);
 
@@ -110,7 +117,7 @@ class FakeCameraStream : public fuchsia::camera3::testing::Stream_TestBase,
 
   // ZxHandleWatcher interface. Used to wait for frame release_fences to get
   // notified when the client releases a buffer.
-  void OnZxHandleSignalled(zx_handle_t handle, zx_signals_t signals) final;
+  void OnZxHandleSignalled(zx_handle_t handle, zx_signals_t signals) override;
 
   fidl::Binding<fuchsia::camera3::Stream> binding_;
 
@@ -118,26 +125,28 @@ class FakeCameraStream : public fuchsia::camera3::testing::Stream_TestBase,
   fuchsia::camera3::Orientation orientation_ =
       fuchsia::camera3::Orientation::UP;
 
-  base::Optional<fuchsia::math::Size> resolution_update_ = fuchsia::math::Size{
+  absl::optional<fuchsia::math::Size> resolution_update_ = fuchsia::math::Size{
       kDefaultFrameSize.width(), kDefaultFrameSize.height()};
   WatchResolutionCallback watch_resolution_callback_;
 
-  base::Optional<fuchsia::camera3::Orientation> orientation_update_ =
+  absl::optional<fuchsia::camera3::Orientation> orientation_update_ =
       fuchsia::camera3::Orientation::UP;
   WatchOrientationCallback watch_orientation_callback_;
 
-  base::Optional<fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>>
-      new_buffer_collection_token_;
+  fuchsia::sysmem::BufferCollectionTokenPtr new_buffer_collection_token_;
+
+  absl::optional<fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>>
+      new_buffer_collection_token_for_client_;
   WatchBufferCollectionCallback watch_buffer_collection_callback_;
 
-  base::Optional<fuchsia::camera3::FrameInfo> next_frame_;
+  absl::optional<fuchsia::camera3::FrameInfo> next_frame_;
   GetNextFrameCallback get_next_frame_callback_;
 
   fuchsia::sysmem::AllocatorPtr sysmem_allocator_;
   fuchsia::sysmem::BufferCollectionPtr buffer_collection_;
 
-  base::Optional<base::RunLoop> wait_buffers_allocated_run_loop_;
-  base::Optional<base::RunLoop> wait_free_buffer_run_loop_;
+  absl::optional<base::RunLoop> wait_buffers_allocated_run_loop_;
+  absl::optional<base::RunLoop> wait_free_buffer_run_loop_;
 
   std::vector<std::unique_ptr<Buffer>> buffers_;
   size_t num_used_buffers_ = 0;
@@ -147,10 +156,11 @@ class FakeCameraStream : public fuchsia::camera3::testing::Stream_TestBase,
   SysmemFailMode first_buffer_collection_fail_mode_ = SysmemFailMode::kNone;
 };
 
-class FakeCameraDevice : public fuchsia::camera3::testing::Device_TestBase {
+class FakeCameraDevice final
+    : public fuchsia::camera3::testing::Device_TestBase {
  public:
   FakeCameraDevice();
-  ~FakeCameraDevice() final;
+  ~FakeCameraDevice() override;
 
   FakeCameraDevice(const FakeCameraDevice&) = delete;
   FakeCameraDevice& operator=(const FakeCameraDevice&) = delete;
@@ -166,11 +176,11 @@ class FakeCameraDevice : public fuchsia::camera3::testing::Device_TestBase {
 
  private:
   // fuchsia::camera3::Device implementation.
-  void GetIdentifier(GetIdentifierCallback callback) final;
-  void GetConfigurations(GetConfigurationsCallback callback) final;
+  void GetIdentifier(GetIdentifierCallback callback) override;
+  void GetConfigurations(GetConfigurationsCallback callback) override;
   void ConnectToStream(
       uint32_t index,
-      fidl::InterfaceRequest<fuchsia::camera3::Stream> request) final;
+      fidl::InterfaceRequest<fuchsia::camera3::Stream> request) override;
 
   // fuchsia::camera3::testing::Device_TestBase override.
   void NotImplemented_(const std::string& name) override;
@@ -203,10 +213,11 @@ class FakeCameraDeviceWatcher {
   std::unique_ptr<FakeCameraDevice> RemoveDevice(uint64_t device_id);
 
  private:
-  class Client : public fuchsia::camera3::testing::DeviceWatcher_TestBase {
+  class Client final
+      : public fuchsia::camera3::testing::DeviceWatcher_TestBase {
    public:
     explicit Client(FakeCameraDeviceWatcher* device_watcher);
-    ~Client() final;
+    ~Client() override;
 
     Client(const Client&) = delete;
     Client& operator=(const Client&) = delete;
@@ -214,13 +225,13 @@ class FakeCameraDeviceWatcher {
     void QueueEvent(fuchsia::camera3::WatchDevicesEvent event);
 
     // fuchsia::camera3::testing::DeviceWatcher_TestBase override.
-    void NotImplemented_(const std::string& name) final;
+    void NotImplemented_(const std::string& name) override;
 
     // fuchsia::camera3::DeviceWatcher implementation.
-    void WatchDevices(WatchDevicesCallback callback) final;
+    void WatchDevices(WatchDevicesCallback callback) override;
     void ConnectToDevice(
         uint64_t id,
-        fidl::InterfaceRequest<fuchsia::camera3::Device> request) final;
+        fidl::InterfaceRequest<fuchsia::camera3::Device> request) override;
 
    private:
     bool initial_list_sent_ = false;

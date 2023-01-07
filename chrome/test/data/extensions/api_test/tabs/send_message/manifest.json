@@ -1,0 +1,17 @@
+{
+  "name": "chrome.tabs.sendMessage test",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "end-to-end browser test for chrome.tabs.sendMessage API",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*"],
+      "js": ["echo.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

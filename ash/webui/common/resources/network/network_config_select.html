@@ -1,0 +1,44 @@
+<style include="cr-shared-style network-shared md-select">
+  .md-select {
+    color: var(--cr-primary-text-color);
+    width: 100%;
+  }
+
+  #outer {
+    align-items: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: var(--cr-form-field-bottom-spacing);
+    padding: 0;
+  }
+
+  #inner {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  cr-policy-network-indicator-mojo {
+    --cr-tooltip-icon-margin-start: var(--cr-controlled-by-spacing);
+  }
+</style>
+
+<div id="outer">
+  <div id="label" class="cr-form-field-label">[[label]]</div>
+  <div id="inner">
+    <select class="md-select"
+        disabled="[[getDisabled_(disabled, property)]]"
+        value="{{value::change}}" aria-label$="[[label]]">
+      <template is="dom-repeat" items="[[items]]">
+        <option value="[[getItemValue_(item)]]"
+            disabled="[[!getItemEnabled_(item, deviceCertsOnly)]]">
+          [[getItemLabel_(item, key, oncPrefix)]]
+        </option>
+      </template>
+    </select>
+    <cr-policy-network-indicator-mojo
+        property="[[property]]" tooltip-position="left">
+    </cr-policy-network-indicator-mojo>
+  </div>
+</div>

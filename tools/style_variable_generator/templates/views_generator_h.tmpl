@@ -1,0 +1,52 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- set header_guard = "%s_"|format(
+        out_file_path|upper|replace("/","_")|replace(".","_")|
+            replace("-", "_")) %}
+
+// This file is generated from:
+{%- for path in in_files %}
+//   {{path}}
+{%-  endfor %}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "base/component_export.h"
+#include "third_party/skia/include/core/SkColor.h"
+
+namespace {{namespace_name}} {
+
+COMPONENT_EXPORT({{namespace_name}}) bool DarkModeEnabled();
+COMPONENT_EXPORT({{namespace_name}}) bool DebugColorsEnabled();
+COMPONENT_EXPORT({{namespace_name}}) void SetDarkModeEnabled(bool enabled);
+COMPONENT_EXPORT({{namespace_name}}) void SetDebugColorsEnabled(bool enabled);
+
+enum class ColorName {
+{%- for obj in colors %}
+  {{obj.name | to_const_name}},
+{%-  endfor %}
+};
+
+{%- if opacities %}
+
+enum class OpacityName {
+{%-   for name in opacities.keys() %}
+  {{name | to_const_name}},
+{%-   endfor %}
+};
+
+COMPONENT_EXPORT({{namespace_name}}) SkAlpha GetOpacity(
+    OpacityName opacity_name,
+    bool is_dark_mode = DarkModeEnabled());
+{%- endif %}
+
+COMPONENT_EXPORT({{namespace_name}}) SkColor ResolveColor(
+    ColorName color_name,
+    bool is_dark_mode = DarkModeEnabled(),
+    bool use_debug_colors = DebugColorsEnabled());
+
+}  // namespace {{namespace_name}}
+#endif  // {{header_guard}}

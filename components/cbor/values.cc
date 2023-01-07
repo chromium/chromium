@@ -1,15 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/cbor/values.h"
 
 #include <new>
+#include <ostream>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/cbor/constants.h"
 
@@ -113,7 +115,7 @@ Value::Value(base::StringPiece in_string, Type type) : type_(type) {
   switch (type_) {
     case Type::STRING:
       new (&string_value_) std::string();
-      string_value_ = in_string.as_string();
+      string_value_ = std::string(in_string);
       DCHECK(base::IsStringUTF8(string_value_));
       break;
     case Type::BYTE_STRING:

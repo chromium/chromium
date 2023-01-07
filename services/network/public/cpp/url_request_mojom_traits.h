@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,40 +20,26 @@
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "net/base/request_priority.h"
 #include "net/url_request/referrer_policy.h"
+#include "services/network/public/cpp/cookie_manager_shared_mojom_traits.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/network_isolation_key_mojom_traits.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "services/network/public/cpp/site_for_cookies_mojom_traits.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
-#include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
-#include "services/network/public/mojom/trust_tokens.mojom.h"
-#include "services/network/public/mojom/url_loader.mojom-shared.h"
-#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
-#include "services/network/public/mojom/url_request.mojom.h"
-#include "services/network/public/mojom/web_bundle_handle.mojom-shared.h"
+#include "services/network/public/mojom/devtools_observer.mojom-forward.h"
+#include "services/network/public/mojom/ip_address_space.mojom-forward.h"
+#include "services/network/public/mojom/trust_tokens.mojom-forward.h"
+#include "services/network/public/mojom/url_loader.mojom-forward.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
+#include "services/network/public/mojom/url_request.mojom-forward.h"
+#include "services/network/public/mojom/web_bundle_handle.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
-    EnumTraits<network::mojom::RequestPriority, net::RequestPriority> {
-  static network::mojom::RequestPriority ToMojom(net::RequestPriority priority);
-  static bool FromMojom(network::mojom::RequestPriority in,
-                        net::RequestPriority* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
-    EnumTraits<network::mojom::URLRequestReferrerPolicy, net::ReferrerPolicy> {
-  static network::mojom::URLRequestReferrerPolicy ToMojom(
-      net::ReferrerPolicy policy);
-  static bool FromMojom(network::mojom::URLRequestReferrerPolicy in,
-                        net::ReferrerPolicy* out);
-};
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
@@ -110,6 +96,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest::TrustedParams& trusted_params) {
     return trusted_params.client_security_state;
   }
+  static mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
+  accept_ch_frame_observer(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    if (!trusted_params.accept_ch_frame_observer)
+      return mojo::NullRemote();
+    return std::move(
+        const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
+            .accept_ch_frame_observer);
+  }
 
   static bool Read(network::mojom::TrustedUrlRequestParamsDataView data,
                    network::ResourceRequest::TrustedParams* out);
@@ -146,6 +141,23 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    StructTraits<network::mojom::NetLogSourceDataView, net::NetLogSource> {
+  static uint32_t source_id(const net::NetLogSource& params) {
+    return params.id;
+  }
+  static uint32_t source_type(const net::NetLogSource& params) {
+    return static_cast<uint32_t>(params.type);
+  }
+  static base::TimeTicks start_time(const net::NetLogSource& params) {
+    return params.start_time;
+  }
+
+  static bool Read(network::mojom::NetLogSourceDataView data,
+                   net::NetLogSource* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::URLRequestDataView, network::ResourceRequest> {
   static const std::string& method(const network::ResourceRequest& request) {
     return request.method;
@@ -161,11 +173,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.update_first_party_url_on_redirect;
   }
-  static const base::Optional<url::Origin>& request_initiator(
+  static const absl::optional<url::Origin>& request_initiator(
       const network::ResourceRequest& request) {
     return request.request_initiator;
   }
-  static const base::Optional<url::Origin>& isolated_world_origin(
+  static const std::vector<GURL> navigation_redirect_chain(
+      const network::ResourceRequest& request) {
+    return request.navigation_redirect_chain;
+  }
+  static const absl::optional<url::Origin>& isolated_world_origin(
       const network::ResourceRequest& request) {
     return request.isolated_world_origin;
   }
@@ -193,12 +209,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static net::RequestPriority priority(
       const network::ResourceRequest& request) {
     return request.priority;
-  }
-  static bool should_reset_appcache(const network::ResourceRequest& request) {
-    return request.should_reset_appcache;
-  }
-  static bool is_external_request(const network::ResourceRequest& request) {
-    return request.is_external_request;
   }
   static network::mojom::CorsPreflightPolicy cors_preflight_policy(
       const network::ResourceRequest& request) {
@@ -253,14 +263,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool do_not_prompt_for_login(const network::ResourceRequest& request) {
     return request.do_not_prompt_for_login;
   }
-  static bool is_main_frame(const network::ResourceRequest& request) {
-    return request.is_main_frame;
+  static bool is_outermost_main_frame(const network::ResourceRequest& request) {
+    return request.is_outermost_main_frame;
   }
   static int32_t transition_type(const network::ResourceRequest& request) {
     return request.transition_type;
-  }
-  static bool report_raw_headers(const network::ResourceRequest& request) {
-    return request.report_raw_headers;
   }
   static int32_t previews_state(const network::ResourceRequest& request) {
     return request.previews_state;
@@ -271,7 +278,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool is_revalidating(const network::ResourceRequest& request) {
     return request.is_revalidating;
   }
-  static const base::Optional<base::UnguessableToken>& throttling_profile_id(
+  static const absl::optional<base::UnguessableToken>& throttling_profile_id(
       const network::ResourceRequest& request) {
     return request.throttling_profile_id;
   }
@@ -283,21 +290,17 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.custom_proxy_post_cache_headers;
   }
-  static const base::Optional<base::UnguessableToken>& fetch_window_id(
+  static const absl::optional<base::UnguessableToken>& fetch_window_id(
       const network::ResourceRequest& request) {
     return request.fetch_window_id;
   }
-  static const base::Optional<std::string>& devtools_request_id(
+  static const absl::optional<std::string>& devtools_request_id(
       const network::ResourceRequest& request) {
     return request.devtools_request_id;
   }
-  static const base::Optional<std::string>& devtools_stack_id(
+  static const absl::optional<std::string>& devtools_stack_id(
       const network::ResourceRequest& request) {
     return request.devtools_stack_id;
-  }
-  static bool is_signed_exchange_prefetch_cache_enabled(
-      const network::ResourceRequest& request) {
-    return request.is_signed_exchange_prefetch_cache_enabled;
   }
   static bool is_fetch_like_api(const network::ResourceRequest& request) {
     return request.is_fetch_like_api;
@@ -305,18 +308,19 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool is_favicon(const network::ResourceRequest& request) {
     return request.is_favicon;
   }
-  static bool obey_origin_policy(const network::ResourceRequest& request) {
-    return request.obey_origin_policy;
+  static network::mojom::RequestDestination original_destination(
+      const network::ResourceRequest& request) {
+    return request.original_destination;
   }
-  static const base::Optional<std::vector<net::SourceStream::SourceType>>&
+  static const absl::optional<std::vector<net::SourceStream::SourceType>>&
   devtools_accepted_stream_types(const network::ResourceRequest& request) {
     return request.devtools_accepted_stream_types;
   }
-  static const base::Optional<network::ResourceRequest::TrustedParams>&
+  static const absl::optional<network::ResourceRequest::TrustedParams>&
   trusted_params(const network::ResourceRequest& request) {
     return request.trusted_params;
   }
-  static const base::Optional<base::UnguessableToken>& recursive_prefetch_token(
+  static const absl::optional<base::UnguessableToken>& recursive_prefetch_token(
       const network::ResourceRequest& request) {
     return request.recursive_prefetch_token;
   }
@@ -324,9 +328,21 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.trust_token_params.as_ptr();
   }
-  static const base::Optional<network::ResourceRequest::WebBundleTokenParams>&
+  static const absl::optional<network::ResourceRequest::WebBundleTokenParams>&
   web_bundle_token_params(const network::ResourceRequest& request) {
     return request.web_bundle_token_params;
+  }
+  static const absl::optional<net::NetLogSource>& net_log_create_info(
+      const network::ResourceRequest& request) {
+    return request.net_log_create_info;
+  }
+  static const absl::optional<net::NetLogSource>& net_log_reference_info(
+      const network::ResourceRequest& request) {
+    return request.net_log_reference_info;
+  }
+  static network::mojom::IPAddressSpace target_ip_address_space(
+      const network::ResourceRequest& request) {
+    return request.target_ip_address_space;
   }
 
   static bool Read(network::mojom::URLRequestDataView data,

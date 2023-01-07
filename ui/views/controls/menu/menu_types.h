@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,18 @@
 namespace views {
 
 // Where a popup menu should be anchored to for non-RTL languages. The opposite
-// position will be used if base::i18n:IsRTL() is true. The BUBBLE flags are
-// used when the menu should get enclosed by a bubble. The Fixed flags are
-// used for the menus that have a fixed anchor position.
+// position will be used if base::i18n::IsRTL() is true. The Bubble flags are
+// used when the menu should get enclosed by a bubble.
 enum class MenuAnchorPosition {
   kTopLeft,
   kTopRight,
   kBottomCenter,
-  kBubbleAbove,
+  kBubbleTopLeft,
+  kBubbleTopRight,
   kBubbleLeft,
   kBubbleRight,
-  kBubbleBelow,
+  kBubbleBottomLeft,
+  kBubbleBottomRight,
 };
 
 }  // namespace views

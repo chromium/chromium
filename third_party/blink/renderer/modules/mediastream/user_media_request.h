@@ -32,9 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_USER_MEDIA_REQUEST_H_
 
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_navigator_user_media_error_callback.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_navigator_user_media_success_callback.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -45,8 +46,11 @@ namespace blink {
 class LocalDOMWindow;
 class MediaErrorState;
 class MediaStreamConstraints;
-class MediaStreamDescriptor;
-class UserMediaController;
+class ScriptWrappable;
+class TransferredMediaStreamTrack;
+class UserMediaClient;
+
+enum class UserMediaRequestType { kUserMedia, kDisplayMedia, kDisplayMediaSet };
 
 class MODULES_EXPORT UserMediaRequest final
     : public GarbageCollected<UserMediaRequest>,
@@ -65,23 +69,17 @@ class MODULES_EXPORT UserMediaRequest final
     kTrackStart,
     kFailedDueToShutdown,
     kKillSwitchOn,
-    kSystemPermissionDenied
-  };
-
-  enum class MediaType {
-    kUserMedia,
-    kDisplayMedia,
-    kGetCurrentBrowsingContextMedia,
+    kSystemPermissionDenied,
+    kDeviceInUse
   };
 
   class Callbacks : public GarbageCollected<Callbacks> {
    public:
     virtual ~Callbacks() = default;
 
-    virtual void OnSuccess(ScriptWrappable* callback_this_value,
-                           MediaStream*) = 0;
+    virtual void OnSuccess(const MediaStreamVector&) = 0;
     virtual void OnError(ScriptWrappable* callback_this_value,
-                         DOMExceptionOrOverconstrainedError) = 0;
+                         const V8MediaStreamError* error) = 0;
 
     virtual void Trace(Visitor*) const {}
 
@@ -92,27 +90,22 @@ class MODULES_EXPORT UserMediaRequest final
   class V8Callbacks;
 
   static UserMediaRequest* Create(ExecutionContext*,
-                                  UserMediaController*,
-                                  MediaType media_type,
+                                  UserMediaClient*,
+                                  UserMediaRequestType media_type,
                                   const MediaStreamConstraints* options,
                                   Callbacks*,
-                                  MediaErrorState&,
-                                  IdentifiableSurface surface);
-  static UserMediaRequest* Create(ExecutionContext*,
-                                  UserMediaController*,
-                                  const MediaStreamConstraints* options,
-                                  V8NavigatorUserMediaSuccessCallback*,
-                                  V8NavigatorUserMediaErrorCallback*,
                                   MediaErrorState&,
                                   IdentifiableSurface surface);
   static UserMediaRequest* CreateForTesting(const MediaConstraints& audio,
                                             const MediaConstraints& video);
 
   UserMediaRequest(ExecutionContext*,
-                   UserMediaController*,
-                   MediaType media_type,
+                   UserMediaClient*,
+                   UserMediaRequestType media_type,
                    MediaConstraints audio,
                    MediaConstraints video,
+                   bool should_prefer_current_tab,
+                   bool auto_select_all_screens,
                    Callbacks*,
                    IdentifiableSurface surface);
   ~UserMediaRequest() override;
@@ -121,16 +114,23 @@ class MODULES_EXPORT UserMediaRequest final
 
   void Start();
 
-  void Succeed(MediaStreamDescriptor*);
+  void Succeed(const MediaStreamDescriptorVector& streams);
   void OnMediaStreamInitialized(MediaStream* stream);
+  void OnMediaStreamsInitialized(MediaStreamVector streams);
   void FailConstraint(const String& constraint_name, const String& message);
   void Fail(Error name, const String& message);
 
-  MediaType MediaRequestType() const;
+  UserMediaRequestType MediaRequestType() const;
   bool Audio() const;
   bool Video() const;
   MediaConstraints AudioConstraints() const;
   MediaConstraints VideoConstraints() const;
+  // The MediaStreamType for the audio part of a request with audio. Returns
+  // NO_SERVICE for requests where Audio() == false.
+  mojom::blink::MediaStreamType AudioMediaStreamType() const;
+  // The MediaStreamType for the video part of a request with video. Returns
+  // NO_SERVICE for requests where Video() == false.
+  mojom::blink::MediaStreamType VideoMediaStreamType() const;
 
   // Flag tied to whether or not the similarly named Origin Trial is
   // enabled. Will be removed at end of trial. See: http://crbug.com/789152.
@@ -143,8 +143,8 @@ class MODULES_EXPORT UserMediaRequest final
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
 
-  void set_request_id(int id) { request_id_ = id; }
-  int request_id() { return request_id_; }
+  void set_request_id(int32_t id) { request_id_ = id; }
+  int32_t request_id() { return request_id_; }
 
   void set_has_transient_user_activation(bool value) {
     has_transient_user_activation_ = value;
@@ -153,21 +153,82 @@ class MODULES_EXPORT UserMediaRequest final
     return has_transient_user_activation_;
   }
 
+  bool should_prefer_current_tab() const { return should_prefer_current_tab_; }
+
+  void set_exclude_system_audio(bool value) { exclude_system_audio_ = value; }
+  bool exclude_system_audio() const { return exclude_system_audio_; }
+  void set_exclude_self_browser_surface(bool value) {
+    exclude_self_browser_surface_ = value;
+  }
+  bool exclude_self_browser_surface() const {
+    return exclude_self_browser_surface_;
+  }
+  void set_preferred_display_surface(
+      mojom::blink::PreferredDisplaySurface value) {
+    preferred_display_surface_ = value;
+  }
+  mojom::blink::PreferredDisplaySurface preferred_display_surface() const {
+    return preferred_display_surface_;
+  }
+  void set_dynamic_surface_switching_requested(bool value) {
+    dynamic_surface_switching_requested_ = value;
+  }
+  bool dynamic_surface_switching_requested() const {
+    return dynamic_surface_switching_requested_;
+  }
+
+  bool auto_select_all_screens() const { return auto_select_all_screens_; }
+
+  // Mark this request as an GetOpenDevice request for initializing a
+  // TransferredMediaStreamTrack from the deviced identified by session_id.
+  void SetTransferData(const base::UnguessableToken& session_id,
+                       const base::UnguessableToken& transfer_id,
+                       TransferredMediaStreamTrack* track) {
+    transferred_track_session_id_ = session_id;
+    transferred_track_transfer_id_ = transfer_id;
+    transferred_track_ = track;
+  }
+  absl::optional<base::UnguessableToken> GetSessionId() const {
+    return transferred_track_session_id_;
+  }
+  absl::optional<base::UnguessableToken> GetTransferId() const {
+    return transferred_track_transfer_id_;
+  }
+  bool IsTransferredTrackRequest() const {
+    return !!transferred_track_session_id_;
+  }
+  void SetTransferredTrackComponent(MediaStreamComponent* component);
+  // Completes the re-creation of the transferred MediaStreamTrack by
+  // constructing the MediaStreamTrackImpl object.
+  void FinalizeTransferredTrackInitialization(
+      const MediaStreamDescriptorVector& streams_descriptors);
+
   void Trace(Visitor*) const override;
 
  private:
-  MediaType media_type_;
+  UserMediaRequestType media_type_;
   MediaConstraints audio_;
   MediaConstraints video_;
+  const bool should_prefer_current_tab_ = false;
+  bool exclude_system_audio_ = false;
+  bool exclude_self_browser_surface_ = false;
+  mojom::blink::PreferredDisplaySurface preferred_display_surface_ =
+      mojom::blink::PreferredDisplaySurface::NO_PREFERENCE;
+  bool dynamic_surface_switching_requested_ = true;
+  const bool auto_select_all_screens_ = false;
   bool should_disable_hardware_noise_suppression_;
   bool has_transient_user_activation_ = false;
-  int request_id_ = -1;
+  int32_t request_id_ = -1;
 
-  Member<UserMediaController> controller_;
+  Member<UserMediaClient> client_;
 
   Member<Callbacks> callbacks_;
   IdentifiableSurface surface_;
   bool is_resolved_ = false;
+
+  absl::optional<base::UnguessableToken> transferred_track_session_id_;
+  absl::optional<base::UnguessableToken> transferred_track_transfer_id_;
+  Member<TransferredMediaStreamTrack> transferred_track_;
 };
 
 }  // namespace blink

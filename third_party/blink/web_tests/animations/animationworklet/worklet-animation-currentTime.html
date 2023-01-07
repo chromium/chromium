@@ -41,4 +41,22 @@ promise_test(async t => {
   // http://crbug.com/937382
   assert_approx_equals(effect.getComputedTiming().localTime, animation.currentTime, 0.001);
 }, 'The animator instance in the worklet scope gets currentTime that is equal to WorkletAnimation.currentTime.');
+
+promise_test(async t => {
+  await runInAnimationWorklet(document.getElementById('passthrough').textContent);
+  const effect = new KeyframeEffect(target, [{ width: 100 }], { duration: 1000 });
+  const animation = new WorkletAnimation('passthrough_animator', effect);
+  animation.pause();
+  assert_equals(animation.currentTime, 0);
+}, 'Initial current time pausing an idle animation worklet.');
+
+promise_test(async t => {
+  await runInAnimationWorklet(document.getElementById('passthrough').textContent);
+  const effect = new KeyframeEffect(target, [{ width: 100 }], { duration: 1000 });
+  const animation = new WorkletAnimation('passthrough_animator', effect);
+  animation.play();
+  animation.pause();
+  assert_equals(animation.currentTime, 0);
+}, 'Initial current time pausing a play-pending animation worklet.');
+
 </script>

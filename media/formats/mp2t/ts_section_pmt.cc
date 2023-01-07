@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,7 +82,6 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   std::map<int, PidMapValue> pid_map;
   while (bit_reader->bits_available() > 8 * pid_map_end_marker) {
     int stream_type;
-    int reserved;
     int pid_es;
     int es_info_length;
     RCHECK(bit_reader->ReadBits(8, &stream_type));
@@ -106,8 +105,10 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   RCHECK(bit_reader->ReadBits(32, &crc32));
 
   // Once the PMT has been proved to be correct, register the PIDs.
-  for (const auto& it : pid_map)
-    register_pes_cb_.Run(it.first, it.second.first, it.second.second);
+  for (const auto& [pid_es, stream_info] : pid_map) {
+    const auto& [stream_type, descriptors] = stream_info;
+    register_pes_cb_.Run(pid_es, stream_type, descriptors);
+  }
 
   return true;
 }

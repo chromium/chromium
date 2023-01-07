@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 
 namespace leveldb {
@@ -51,6 +51,10 @@ class LevelDBWrapper {
   class Iterator {
    public:
     explicit Iterator(LevelDBWrapper* db);
+
+    Iterator(const Iterator&) = delete;
+    Iterator& operator=(const Iterator&) = delete;
+
     ~Iterator();
 
     bool Valid();
@@ -66,14 +70,16 @@ class LevelDBWrapper {
     // Advances internal iterators to be valid.
     void AdvanceIterators();
 
-    LevelDBWrapper* db_;  // do not own
+    raw_ptr<LevelDBWrapper> db_;  // do not own
     std::unique_ptr<leveldb::Iterator> db_iterator_;
     PendingOperationMap::iterator map_iterator_;
-
-    DISALLOW_COPY_AND_ASSIGN(Iterator);
   };
 
   explicit LevelDBWrapper(std::unique_ptr<leveldb::DB> db);
+
+  LevelDBWrapper(const LevelDBWrapper&) = delete;
+  LevelDBWrapper& operator=(const LevelDBWrapper&) = delete;
+
   ~LevelDBWrapper();
 
   // Wrapping methods of leveldb::WriteBatch
@@ -108,8 +114,6 @@ class LevelDBWrapper {
   PendingOperationMap pending_;
   int64_t num_puts_;
   int64_t num_deletes_;
-
-  DISALLOW_COPY_AND_ASSIGN(LevelDBWrapper);
 };
 
 }  // namespace drive_backend

@@ -1,0 +1,21 @@
+<style include="common">
+  iron-list {
+    height: 100%;
+    /* 516px is the total width + padding for all 3 options */
+    width: 516px;
+  }
+</style>
+
+<h3 id="animationThemeDescription" class="ambient-subpage-element-title">
+  $i18n{ambientModeAnimationTitle}
+</h3>
+<iron-list items="[[animationThemes]]" as="theme" grid
+    role="radiogroup" aria-describedby="animationThemeDescription">
+  <template>
+    <animation-theme-item tabindex$="[[tabIndex]]"
+        role="radio"
+        animation-theme="[[theme]]"
+        aria-checked$="[[getAriaChecked_(theme, selectedAnimationTheme)]]">
+      </animation-theme-item>
+  </template>
+</iron-list>

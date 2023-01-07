@@ -1,4 +1,4 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -108,17 +108,17 @@ def LogFull(results, test_type, test_package, annotation=None,
     logging.critical('*' * 80)
     logging.critical('Summary')
     logging.critical('*' * 80)
-    for line in results.GetGtestForm().splitlines():
-      color = black_on_white
-      if 'FAILED' in line:
-        # Red on white, dim.
-        color = (logging_utils.BACK.WHITE, logging_utils.FORE.RED,
-                 logging_utils.STYLE.DIM)
-      elif 'PASSED' in line:
-        # Green on white, dim.
-        color = (logging_utils.BACK.WHITE, logging_utils.FORE.GREEN,
-                 logging_utils.STYLE.DIM)
-      with logging_utils.OverrideColor(logging.CRITICAL, color):
+    # Assign uniform color, depending on presence of 'FAILED' over lines.
+    if any('FAILED' in line for line in results.GetGtestForm().splitlines()):
+      # Red on white, dim.
+      color = (logging_utils.BACK.WHITE, logging_utils.FORE.RED,
+               logging_utils.STYLE.DIM)
+    else:
+      # Green on white, dim.
+      color = (logging_utils.BACK.WHITE, logging_utils.FORE.GREEN,
+               logging_utils.STYLE.DIM)
+    with logging_utils.OverrideColor(logging.CRITICAL, color):
+      for line in results.GetGtestForm().splitlines():
         logging.critical(line)
     logging.critical('*' * 80)
 

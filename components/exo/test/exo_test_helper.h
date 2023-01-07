@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "ui/gfx/buffer_types.h"
@@ -33,7 +32,8 @@ class ClientControlledShellSurfaceDelegate
     : public ClientControlledShellSurface::Delegate {
  public:
   explicit ClientControlledShellSurfaceDelegate(
-      ClientControlledShellSurface* shell_surface);
+      ClientControlledShellSurface* shell_surface,
+      bool delay_commit = false);
   ~ClientControlledShellSurfaceDelegate() override;
   ClientControlledShellSurfaceDelegate(
       const ClientControlledShellSurfaceDelegate&) = delete;
@@ -54,14 +54,20 @@ class ClientControlledShellSurfaceDelegate
   void OnDragStarted(int component) override;
   void OnDragFinished(int x, int y, bool canceled) override;
   void OnZoomLevelChanged(ZoomChange zoom_change) override;
+  void Commit();
 
   ClientControlledShellSurface* shell_surface_;
+  bool delay_commit_;
 };
 
 // A helper class that does common initialization required for Exosphere.
 class ExoTestHelper {
  public:
   ExoTestHelper();
+
+  ExoTestHelper(const ExoTestHelper&) = delete;
+  ExoTestHelper& operator=(const ExoTestHelper&) = delete;
+
   ~ExoTestHelper();
 
   // Creates a GpuMemoryBuffer instance that can be used for tests.
@@ -72,7 +78,7 @@ class ExoTestHelper {
   std::unique_ptr<ClientControlledShellSurface>
   CreateClientControlledShellSurface(Surface* surface,
                                      bool is_modal = false,
-                                     bool default_scale_cancellation = true);
+                                     bool default_scale_cancellation = false);
   std::unique_ptr<InputMethodSurface> CreateInputMethodSurface(
       Surface* surface,
       InputMethodSurfaceManager* surface_manager,
@@ -81,9 +87,6 @@ class ExoTestHelper {
       Surface* surface,
       ToastSurfaceManager* surface_manager,
       bool default_scale_cancellation = true);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExoTestHelper);
 };
 
 }  // namespace test

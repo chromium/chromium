@@ -1,41 +1,123 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "pdf/pdfium/pdfium_font_linux.h"
 
-#include <algorithm>
+#include <memory>
 #include <string>
 
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
+#include "base/files/file.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
-#include "base/notreached.h"
-#include "base/numerics/ranges.h"
-#include "base/stl_util.h"
+#include "base/no_destructor.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
-#include "ppapi/cpp/instance.h"
-#include "ppapi/cpp/module.h"
-#include "ppapi/cpp/private/pdf.h"
-#include "ppapi/cpp/trusted/browser_font_trusted.h"
+#include "components/services/font/public/cpp/font_loader.h"
+#include "pdf/font_table_linux.h"
+#include "pdf/pdfium/pdfium_engine.h"
+#include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/pdfium/public/fpdf_sysfontinfo.h"
 
 namespace chrome_pdf {
 
 namespace {
 
-PP_Instance g_last_instance_id;
+// Maps font description and charset to `FontId` as requested by PDFium, with
+// `FontId` as an opaque type that PDFium works with. Based on the `FontId`,
+// PDFium can read from the font files using GetFontData(). Properly frees the
+// underlying resource type when PDFium is done with the mapped font.
+class BlinkFontMapper {
+ public:
+  // Defined as the type most convenient for use with PDFium's
+  // `FPDF_SYSFONTINFO` functions.
+  using FontId = void*;
 
-PP_BrowserFont_Trusted_Weight WeightToBrowserFontTrustedWeight(int weight) {
-  static_assert(PP_BROWSERFONT_TRUSTED_WEIGHT_100 == 0,
-                "PP_BrowserFont_Trusted_Weight min");
-  static_assert(PP_BROWSERFONT_TRUSTED_WEIGHT_900 == 8,
-                "PP_BrowserFont_Trusted_Weight max");
+  BlinkFontMapper() = default;
+  ~BlinkFontMapper() = delete;
+
+  // Returns a handle to the font mapped based on `desc` and `charset`, for use
+  // as the `font_id` in GetFontData() and DeleteFont() below. Returns nullptr
+  // on failure.
+  // TODO(thestig): Document how this handles TTC files.
+  FontId MapFont(const blink::WebFontDescription& desc, int charset) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // If there was never a SkFontConfigInterface::SetGlobal() call, then `fci`
+    // defaults to the direct interface, which is not suitable, as it does not
+    // provide MatchFontWithFallback(). This only happens in unit tests, so just
+    // refuse to map fonts there.
+    auto* fci = SkFontConfigInterface::RefGlobal().get();
+    if (fci == SkFontConfigInterface::GetSingletonDirectInterface())
+      return nullptr;
+
+    auto font_file = std::make_unique<base::File>();
+    // In RendererBlinkPlatform, SkFontConfigInterface::SetGlobal() only ever
+    // sets the global to a FontLoader. Thus it is safe to assume the returned
+    // result is just that.
+    auto* font_loader = reinterpret_cast<font_service::FontLoader*>(fci);
+    font_loader->MatchFontWithFallback(
+        desc.family.Utf8(),
+        desc.weight >= blink::WebFontDescription::kWeightBold, desc.italic,
+        charset, desc.generic_family, font_file.get());
+    if (!font_file->IsValid())
+      return nullptr;
+
+    // Release to PDFium. PDFium will free `font_file` in DeleteFont() below.
+    return font_file.release();
+  }
+
+  // Releases the font file that `font_id` points to.
+  void DeleteFont(FontId font_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    delete FileFromFontId(font_id);
+  }
+
+  // Reads data from the `font_id` handle for `table` into a `buffer` of
+  // `buf_size`. Returns the amount of data read on success, or 0 on failure.
+  // If `buffer` is null, then just return the required size for the buffer.
+  // See content::GetFontTable() for information on the `table_tag` parameter.
+  unsigned long GetFontData(FontId font_id,
+                            unsigned int table_tag,
+                            unsigned char* buffer,
+                            unsigned long buf_size) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // TODO(thestig): cache?
+    base::PlatformFile platform_file =
+        FileFromFontId(font_id)->GetPlatformFile();
+    size_t size = buf_size;
+    if (!pdf::GetFontTable(platform_file, table_tag, /*offset=*/0, buffer,
+                           &size)) {
+      return 0;
+    }
+    return size;
+  }
+
+ private:
+  static base::File* FileFromFontId(FontId font_id) {
+    return reinterpret_cast<base::File*>(font_id);
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+BlinkFontMapper& GetBlinkFontMapper() {
+  static base::NoDestructor<BlinkFontMapper> mapper;
+  return *mapper;
+}
+
+blink::WebFontDescription::Weight WeightToBlinkWeight(int weight) {
+  static_assert(blink::WebFontDescription::kWeight100 == 0, "Blink Weight min");
+  static_assert(blink::WebFontDescription::kWeight900 == 8, "Blink Weight max");
   constexpr int kMinimumWeight = 100;
   constexpr int kMaximumWeight = 900;
-  int normalized_weight =
-      base::ClampToRange(weight, kMinimumWeight, kMaximumWeight);
+  int normalized_weight = base::clamp(weight, kMinimumWeight, kMaximumWeight);
   normalized_weight = (normalized_weight / 100) - 1;
-  return static_cast<PP_BrowserFont_Trusted_Weight>(normalized_weight);
+  return static_cast<blink::WebFontDescription::Weight>(normalized_weight);
 }
 
 // This list is for CPWL_FontMap::GetDefaultFontByCharset().
@@ -57,23 +139,25 @@ void* MapFont(FPDF_SYSFONTINFO*,
               int pitch_family,
               const char* face,
               int* exact) {
-  // Do not attempt to map fonts if PPAPI is not initialized (for Privet local
-  // printing).
-  // TODO(noamsml): Real font substitution (http://crbug.com/391978)
-  if (!pp::Module::Get())
+  // The code below is Blink-specific, return early in non-Blink mode to avoid
+  // crashing.
+  if (PDFiumEngine::GetFontMappingMode() != FontMappingMode::kBlink) {
+    DCHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kNoMapping);
     return nullptr;
-
-  pp::BrowserFontDescription description;
+  }
 
   // Pretend the system does not have the Symbol font to force a fallback to
   // the built in Symbol font in CFX_FontMapper::FindSubstFont().
   if (strcmp(face, "Symbol") == 0)
     return nullptr;
 
+  blink::WebFontDescription desc;
   if (pitch_family & FXFONT_FF_FIXEDPITCH) {
-    description.set_family(PP_BROWSERFONT_TRUSTED_FAMILY_MONOSPACE);
+    desc.generic_family = blink::WebFontDescription::kGenericFamilyMonospace;
   } else if (pitch_family & FXFONT_FF_ROMAN) {
-    description.set_family(PP_BROWSERFONT_TRUSTED_FAMILY_SERIF);
+    desc.generic_family = blink::WebFontDescription::kGenericFamilySerif;
+  } else {
+    desc.generic_family = blink::WebFontDescription::kGenericFamilyStandard;
   }
 
   static const struct {
@@ -123,26 +207,26 @@ void* MapFont(FPDF_SYSFONTINFO*,
 
   // Map from the standard PDF fonts to TrueType font names.
   size_t i;
-  for (i = 0; i < base::size(kPdfFontSubstitutions); ++i) {
+  for (i = 0; i < std::size(kPdfFontSubstitutions); ++i) {
     if (strcmp(face, kPdfFontSubstitutions[i].pdf_name) == 0) {
-      description.set_face(kPdfFontSubstitutions[i].face);
+      desc.family = blink::WebString::FromUTF8(kPdfFontSubstitutions[i].face);
       if (kPdfFontSubstitutions[i].bold)
-        description.set_weight(PP_BROWSERFONT_TRUSTED_WEIGHT_BOLD);
+        desc.weight = blink::WebFontDescription::kWeightBold;
       if (kPdfFontSubstitutions[i].italic)
-        description.set_italic(true);
+        desc.italic = true;
       break;
     }
   }
 
-  if (i == base::size(kPdfFontSubstitutions)) {
-    // Convert to UTF-8 before calling set_face().
+  if (i == std::size(kPdfFontSubstitutions)) {
+    // Convert to UTF-8 and make sure it is valid.
     std::string face_utf8;
     if (base::IsStringUTF8(face)) {
       face_utf8 = face;
     } else {
       std::string encoding;
       if (base::DetectEncoding(face, &encoding)) {
-        // ConvertToUtf8AndNormalize() clears |face_utf8| on failure.
+        // ConvertToUtf8AndNormalize() clears `face_utf8` on failure.
         base::ConvertToUtf8AndNormalize(face, encoding, &face_utf8);
       }
     }
@@ -150,22 +234,12 @@ void* MapFont(FPDF_SYSFONTINFO*,
     if (face_utf8.empty())
       return nullptr;
 
-    description.set_face(face_utf8);
-    description.set_weight(WeightToBrowserFontTrustedWeight(weight));
-    description.set_italic(italic > 0);
+    desc.family = blink::WebString::FromUTF8(face_utf8);
+    desc.weight = WeightToBlinkWeight(weight);
+    desc.italic = italic > 0;
   }
 
-  if (!pp::PDF::IsAvailable()) {
-    NOTREACHED();
-    return nullptr;
-  }
-
-  PP_Resource font_resource = pp::PDF::GetFontFileWithFallback(
-      pp::InstanceHandle(g_last_instance_id),
-      &description.pp_font_description(),
-      static_cast<PP_PrivateFontCharset>(charset));
-  long res_id = font_resource;
-  return reinterpret_cast<void*>(res_id);
+  return GetBlinkFontMapper().MapFont(desc, charset);
 }
 
 unsigned long GetFontData(FPDF_SYSFONTINFO*,
@@ -173,21 +247,13 @@ unsigned long GetFontData(FPDF_SYSFONTINFO*,
                           unsigned int table,
                           unsigned char* buffer,
                           unsigned long buf_size) {
-  if (!pp::PDF::IsAvailable()) {
-    NOTREACHED();
-    return 0;
-  }
-
-  uint32_t size = buf_size;
-  long res_id = reinterpret_cast<long>(font_id);
-  if (!pp::PDF::GetFontTableForPrivateFontFile(res_id, table, buffer, &size))
-    return 0;
-  return size;
+  DCHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kBlink);
+  return GetBlinkFontMapper().GetFontData(font_id, table, buffer, buf_size);
 }
 
 void DeleteFont(FPDF_SYSFONTINFO*, void* font_id) {
-  long res_id = reinterpret_cast<long>(font_id);
-  pp::Module::Get()->core()->ReleaseResource(res_id);
+  DCHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kBlink);
+  GetBlinkFontMapper().DeleteFont(font_id);
 }
 
 FPDF_SYSFONTINFO g_font_info = {1,           0, EnumFonts, MapFont,   0,
@@ -197,11 +263,6 @@ FPDF_SYSFONTINFO g_font_info = {1,           0, EnumFonts, MapFont,   0,
 
 void InitializeLinuxFontMapper() {
   FPDF_SetSystemFontInfo(&g_font_info);
-}
-
-void SetLastInstance(pp::Instance* last_instance) {
-  if (last_instance)
-    g_last_instance_id = last_instance->pp_instance();
 }
 
 }  // namespace chrome_pdf

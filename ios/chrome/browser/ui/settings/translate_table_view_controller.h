@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,15 @@
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 class PrefService;
+@protocol SnackbarCommands;
 
 // Controller for the UI that allows the user to control Translate settings.
 @interface TranslateTableViewController : SettingsRootTableViewController
 
-// |prefs| must not be nil.
+// SnackbarCommands handler.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
+
+// `prefs` must not be nil.
 - (instancetype)initWithPrefs:(PrefService*)prefs NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

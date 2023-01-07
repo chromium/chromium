@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -45,6 +44,10 @@ enum class ConsentStatus { NOT_GIVEN, GIVEN };
 class ConsentAuditor : public KeyedService {
  public:
   ConsentAuditor() = default;
+
+  ConsentAuditor(const ConsentAuditor&) = delete;
+  ConsentAuditor& operator=(const ConsentAuditor&) = delete;
+
   ~ConsentAuditor() override = default;
 
   // Records the ARC Play |consent| for the signed-in GAIA account with the ID
@@ -86,6 +89,12 @@ class ConsentAuditor : public KeyedService {
       const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent) = 0;
 
+  // Records the `consent` to use Autofill Assistant for the signed-in GAIA
+  // account and the current user profile.
+  virtual void RecordAutofillAssistantConsent(
+      const CoreAccountId& account_id,
+      const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent) = 0;
+
   // Records that the user consented to a |feature|. The user was presented with
   // |description_text| and accepted it by interacting |confirmation_text|
   // (e.g. clicking on a button; empty if not applicable).
@@ -97,9 +106,6 @@ class ConsentAuditor : public KeyedService {
   // Returns the underlying Sync integration point.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConsentAuditor);
 };
 
 }  // namespace consent_auditor

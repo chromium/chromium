@@ -532,9 +532,9 @@ if not opt_intrinsics.disabled()
     endif # opt_rtcd
   else
     if opt_intrinsics.enabled()
-      error('intrinsics option enabled, but no intrinsics support for ' + host_machine.get_cpu())
+      error('intrinsics option enabled, but no intrinsics support for ' + host_cpu_family)
     endif
-    warning('No intrinsics support for ' + host_machine.get_cpu())
+    warning('No intrinsics support for ' + host_cpu_family)
   endif
 endif
 

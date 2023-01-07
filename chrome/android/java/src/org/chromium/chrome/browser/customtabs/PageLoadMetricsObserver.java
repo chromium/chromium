@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,11 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.os.Bundle;
 
+import androidx.browser.customtabs.CustomTabsSessionToken;
+
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
-import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
-
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 /**
  * Notifies the provided {@link CustomTabsConnection} of page load metrics, such as time until first
@@ -48,28 +47,26 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
         args.putLong(PageLoadMetrics.EFFECTIVE_CONNECTION_TYPE, effectiveConnectionType);
         args.putLong(PageLoadMetrics.HTTP_RTT, httpRttMs);
         args.putLong(PageLoadMetrics.TRANSPORT_RTT, transportRttMs);
-        args.putBoolean(CustomTabsConnection.DATA_REDUCTION_ENABLED,
-                DataReductionProxySettings.getInstance().isDataReductionProxyEnabled());
         mConnection.notifyPageLoadMetrics(mSession, args);
     }
 
     @Override
     public void onFirstContentfulPaint(WebContents webContents, long navigationId,
-            long navigationStartTick, long firstContentfulPaintMs) {
+            long navigationStartMicros, long firstContentfulPaintMs) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
         mConnection.notifySinglePageLoadMetric(mSession, PageLoadMetrics.FIRST_CONTENTFUL_PAINT,
-                navigationStartTick, firstContentfulPaintMs);
+                navigationStartMicros, firstContentfulPaintMs);
     }
 
     @Override
     public void onLargestContentfulPaint(WebContents webContents, long navigationId,
-            long navigationStartTick, long largestContentfulPaintMs,
+            long navigationStartMicros, long largestContentfulPaintMs,
             long largestContentfulPaintSize) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
         Bundle args = mConnection.createBundleWithNavigationStartAndPageLoadMetric(
-                PageLoadMetrics.LARGEST_CONTENTFUL_PAINT, navigationStartTick,
+                PageLoadMetrics.LARGEST_CONTENTFUL_PAINT, navigationStartMicros,
                 largestContentfulPaintMs);
         args.putLong(PageLoadMetrics.LARGEST_CONTENTFUL_PAINT_SIZE, largestContentfulPaintSize);
         mConnection.notifyPageLoadMetrics(mSession, args);
@@ -77,11 +74,11 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
 
     @Override
     public void onLoadEventStart(WebContents webContents, long navigationId,
-            long navigationStartTick, long loadEventStartMs) {
+            long navigationStartMicros, long loadEventStartMs) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
-        mConnection.notifySinglePageLoadMetric(
-                mSession, PageLoadMetrics.LOAD_EVENT_START, navigationStartTick, loadEventStartMs);
+        mConnection.notifySinglePageLoadMetric(mSession, PageLoadMetrics.LOAD_EVENT_START,
+                navigationStartMicros, loadEventStartMs);
     }
 
     @Override

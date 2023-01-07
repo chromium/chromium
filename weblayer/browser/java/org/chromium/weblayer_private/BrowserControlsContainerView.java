@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@ package org.chromium.weblayer_private;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
+import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
@@ -369,7 +371,7 @@ class BrowserControlsContainerView extends FrameLayout {
         int width = right - left;
         int height = bottom - top;
         boolean heightChanged = height != mLastHeight;
-        if (!heightChanged && width == mLastWidth) return;
+        if (!heightChanged && width == mLastWidth && mViewResourceAdapter != null) return;
 
         int prevHeight = mLastHeight;
         mLastWidth = width;
@@ -429,6 +431,31 @@ class BrowserControlsContainerView extends FrameLayout {
         // Cancel the runnable when detached as calls to removeCallback() after this completes will
         // attempt to remove from the wrong handler.
         cancelDelayedFullscreenRunnable();
+    }
+
+    // Don't forward any events to the ContentView as the BrowserControlsContainerView should be
+    // considered opaque and shouldn't pass position based events to views below it. Website content
+    // has been moved to not overlap BrowserControlsContainerView anyway.
+    @Override
+    public boolean onDragEvent(DragEvent event) {
+        return onEventCommon();
+    }
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        return onEventCommon();
+    }
+    @Override
+    public boolean onHoverEvent(MotionEvent event) {
+        return onEventCommon();
+    }
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return onEventCommon();
+    }
+    private boolean onEventCommon() {
+        // "Opaque" to events (ie return true as handled) only if visible.
+        return mView != null && mView.getVisibility() == View.VISIBLE;
     }
 
     /* package */ State getState() {

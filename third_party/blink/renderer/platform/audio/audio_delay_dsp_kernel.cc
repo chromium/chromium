@@ -150,7 +150,7 @@ int AudioDelayDSPKernel::ProcessARateScalar(unsigned start,
   DCHECK_GE(write_index_, 0);
   DCHECK_LT(write_index_, buffer_length);
 
-  float sample_rate = this->SampleRate();
+  float sample_rate = SampleRate();
   const float* delay_times = delay_times_.Data();
 
   for (unsigned i = start; i < frames_to_process; ++i) {
@@ -158,16 +158,18 @@ int AudioDelayDSPKernel::ProcessARateScalar(unsigned start,
     double desired_delay_frames = delay_time * sample_rate;
 
     double read_position = w_index + buffer_length - desired_delay_frames;
-    if (read_position >= buffer_length)
+    if (read_position >= buffer_length) {
       read_position -= buffer_length;
+    }
 
     // Linearly interpolate in-between delay times.
     int read_index1 = static_cast<int>(read_position);
     DCHECK_GE(read_index1, 0);
     DCHECK_LT(read_index1, buffer_length);
     int read_index2 = read_index1 + 1;
-    if (read_index2 >= buffer_length)
+    if (read_index2 >= buffer_length) {
       read_index2 -= buffer_length;
+    }
     DCHECK_GE(read_index2, 0);
     DCHECK_LT(read_index2, buffer_length);
 
@@ -177,8 +179,9 @@ int AudioDelayDSPKernel::ProcessARateScalar(unsigned start,
     float sample2 = buffer[read_index2];
 
     ++w_index;
-    if (w_index >= buffer_length)
+    if (w_index >= buffer_length) {
       w_index -= buffer_length;
+    }
 
     destination[i] = sample1 + interpolation_factor * (sample2 - sample1);
   }
@@ -231,7 +234,7 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
   DCHECK_GE(write_index_, 0);
   DCHECK_LT(write_index_, buffer_length);
 
-  float sample_rate = this->SampleRate();
+  float sample_rate = SampleRate();
   double max_time = MaxDelayTime();
 
   // This is basically the same as above, but optimized for the case where the
@@ -244,15 +247,16 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
   // |write_index_| to be different from |read_index1| or |read_index2| which
   // simplifies the loop a bit.
 
-  double delay_time = this->DelayTime(sample_rate);
+  double delay_time = DelayTime(sample_rate);
   // Make sure the delay time is in a valid range.
-  delay_time = clampTo(delay_time, 0.0, max_time);
+  delay_time = ClampTo(delay_time, 0.0, max_time);
   double desired_delay_frames = delay_time * sample_rate;
   int w_index = write_index_;
   double read_position = w_index + buffer_length - desired_delay_frames;
 
-  if (read_position >= buffer_length)
+  if (read_position >= buffer_length) {
     read_position -= buffer_length;
+  }
 
   // Linearly interpolate in-between delay times.  |read_index1| and
   // |read_index2| are the indices of the frames to be used for
@@ -273,21 +277,22 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
   CopyToCircularBuffer(buffer, write_index_, buffer_length, source,
                        frames_to_process);
   w_index += frames_to_process;
-  if (w_index >= buffer_length)
+  if (w_index >= buffer_length) {
     w_index -= buffer_length;
+  }
   write_index_ = w_index;
 
   // Now copy out the samples from the buffer, starting at the read pointer,
   // carefully handling wrapping of the read pointer.
   float* read_pointer = &buffer[read_index1];
 
-  int remainder = buffer_end - read_pointer;
+  uint32_t remainder = static_cast<uint32_t>(buffer_end - read_pointer);
   memcpy(sample1, read_pointer,
-         sizeof(*sample1) *
-             std::min(static_cast<int>(frames_to_process), remainder));
-  memcpy(sample1 + remainder, buffer,
-         sizeof(*sample1) *
-             std::max(0, static_cast<int>(frames_to_process) - remainder));
+         sizeof(*sample1) * std::min(frames_to_process, remainder));
+  if (frames_to_process > remainder) {
+    memcpy(sample1 + remainder, buffer,
+           sizeof(*sample1) * (frames_to_process - remainder));
+  }
 
   // If interpolation_factor = 0, we don't need to do any interpolation and
   // sample1 contains the desried values.  We can skip the following code.
@@ -298,13 +303,13 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
     float* sample2 = temp_buffer_.Data();
 
     read_pointer = &buffer[read_index2];
-    remainder = buffer_end - read_pointer;
+    remainder = static_cast<uint32_t>(buffer_end - read_pointer);
     memcpy(sample2, read_pointer,
-           sizeof(*sample1) *
-               std::min(static_cast<int>(frames_to_process), remainder));
-    memcpy(sample2 + remainder, buffer,
-           sizeof(*sample1) *
-               std::max(0, static_cast<int>(frames_to_process) - remainder));
+           sizeof(*sample1) * std::min(frames_to_process, remainder));
+    if (frames_to_process > remainder) {
+      memcpy(sample2 + remainder, buffer,
+             sizeof(*sample1) * (frames_to_process - remainder));
+    }
 
     // Interpolate samples, where f = interpolation_factor
     //   dest[k] = sample1[k] + f*(sample2[k] - sample1[k]);

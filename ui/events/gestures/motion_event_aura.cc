@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,7 +100,7 @@ bool MotionEventAura::OnTouch(const TouchEvent& touch) {
     case ET_TOUCH_PRESSED:
       if (!AddTouch(touch))
         return false;
-      FALLTHROUGH;
+      [[fallthrough]];
     case ET_TOUCH_RELEASED:
     case ET_TOUCH_CANCELLED:
       // Removing these touch points needs to be postponed until after the

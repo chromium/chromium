@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ class InterfaceBase {
   virtual void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
                                         GLsizei count) = 0;
   virtual void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) = 0;
+  virtual void ShallowFlushCHROMIUM() = 0;
 };
 
 }  // namespace gpu

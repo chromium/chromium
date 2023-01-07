@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -33,12 +34,9 @@ void AbortPaymentRespondWithObserver::OnResponseRejected(
 void AbortPaymentRespondWithObserver::OnResponseFulfilled(
     ScriptState* script_state,
     const ScriptValue& value,
-    ExceptionState::ContextType context_type,
-    const char* interface_name,
-    const char* property_name) {
+    const ExceptionContext& exception_context) {
   DCHECK(GetExecutionContext());
-  ExceptionState exception_state(script_state->GetIsolate(), context_type,
-                                 interface_name, property_name);
+  ExceptionState exception_state(script_state->GetIsolate(), exception_context);
   bool response =
       ToBoolean(script_state->GetIsolate(), value.V8Value(), exception_state);
   if (exception_state.HadException()) {
@@ -47,11 +45,16 @@ void AbortPaymentRespondWithObserver::OnResponseFulfilled(
     return;
   }
 
+  if (response) {
+    UseCounter::Count(ExecutionContext::From(script_state),
+                      WebFeature::kAbortPaymentRespondWithTrue);
+  }
+
   To<ServiceWorkerGlobalScope>(GetExecutionContext())
       ->RespondToAbortPaymentEvent(event_id_, response);
 }
 
-void AbortPaymentRespondWithObserver::OnNoResponse() {
+void AbortPaymentRespondWithObserver::OnNoResponse(ScriptState*) {
   DCHECK(GetExecutionContext());
   To<ServiceWorkerGlobalScope>(GetExecutionContext())
       ->RespondToAbortPaymentEvent(event_id_, false);

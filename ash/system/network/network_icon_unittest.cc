@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,16 @@
 #include <set>
 
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/network/active_network_icon.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/test/ash_test_base.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/network/tether_constants.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/tether_constants.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,6 +38,10 @@ namespace network_icon {
 class NetworkIconTest : public AshTestBase {
  public:
   NetworkIconTest() = default;
+
+  NetworkIconTest(const NetworkIconTest&) = delete;
+  NetworkIconTest& operator=(const NetworkIconTest&) = delete;
+
   ~NetworkIconTest() override = default;
 
   void SetUp() override {
@@ -88,7 +93,7 @@ class NetworkIconTest : public AshTestBase {
       NetworkType type,
       ConnectionStateType connection_state,
       int signal_strength) {
-    return helper().CreateStandaloneNetworkProperties(
+    return network_config_helper_.CreateStandaloneNetworkProperties(
         id, type, connection_state, signal_strength);
   }
 
@@ -135,13 +140,12 @@ class NetworkIconTest : public AshTestBase {
 
     base::RunLoop().RunUntilIdle();
 
-    ASSERT_EQ(
-        chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
-        helper().network_state_handler()->GetTechnologyState(
-            chromeos::NetworkTypePattern::Cellular()));
+    ASSERT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+              helper().network_state_handler()->GetTechnologyState(
+                  NetworkTypePattern::Cellular()));
   }
 
-  chromeos::NetworkStateTestHelper& helper() {
+  NetworkStateTestHelper& helper() {
     return network_config_helper_.network_state_helper();
   }
 
@@ -160,8 +164,6 @@ class NetworkIconTest : public AshTestBase {
   std::string wifi1_path_;
   std::string wifi2_path_;
   std::string cellular_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkIconTest);
 };
 
 // This tests that the correct icons are being generated for the correct
@@ -265,6 +267,28 @@ TEST_F(NetworkIconTest, DefaultImageWifiConnecting) {
                                         ConnectionStateType::kConnecting, 45);
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(default_image), ImageForNetwork(reference_network.get())));
+}
+
+TEST_F(NetworkIconTest, ConnectingIconChangesInDarkMode) {
+  SetServiceProperty(wifi1_path(), shill::kStateProperty,
+                     base::Value(shill::kStateAssociation));
+
+  DarkLightModeController::Get()->SetDarkModeEnabledForTest(true);
+
+  bool animating = false;
+  gfx::ImageSkia default_image = GetDefaultNetworkImage(icon_type_, &animating);
+  ASSERT_FALSE(default_image.isNull());
+  EXPECT_TRUE(animating);
+
+  DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);
+
+  gfx::ImageSkia light_mode_image =
+      GetDefaultNetworkImage(icon_type_, &animating);
+  ASSERT_FALSE(light_mode_image.isNull());
+  EXPECT_TRUE(animating);
+
+  EXPECT_FALSE(gfx::test::AreImagesEqual(gfx::Image(default_image),
+                                         gfx::Image(light_mode_image)));
 }
 
 // Tests that the default network image is a cellular network icon when cellular

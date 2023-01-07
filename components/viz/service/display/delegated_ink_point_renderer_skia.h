@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ namespace viz {
 // trail never sticks around for longer than intended.
 //
 // For more information on the feature, please see the explainer:
-// https://github.com/WICG/ink-enhancement/blob/master/README.md
+// https://github.com/WICG/ink-enhancement/blob/main/README.md
 class VIZ_SERVICE_EXPORT DelegatedInkPointRendererSkia
     : public DelegatedInkPointRendererBase {
  public:

@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Script for new ChromeDriver release cut out.
+
+set -eu
+
+notes_arg=''
+build_type=''
+version=''
+this_script_dir="$(dirname $(realpath "$0"))"
+
+while [ $# -gt 0 ]
+do
+  case "$1" in
+    stable|beta)
+      build_type="$1"
+      ;;
+    --notes=*)
+      notes_arg="$1"
+      ;;
+    *)
+      version="$1"
+      ;;
+  esac
+  shift
+done
+
+function show_usage {
+  echo "Usage: $0 [--notes=path-to-notes] build-type version" >&2
+}
+
+if [ -z "$build_type" ]
+then
+  echo "Build type is not defined" >&2
+  show_usage
+  exit 1
+fi
+
+if [ -z "$version" ]
+then
+  echo "Version is not defined" >&2
+  show_usage
+  exit 1
+fi
+
+"$this_script_dir/nest" create "$build_type" "$version"
+cd "$version"
+"$this_script_dir/nest" pull
+if [ -z "$notes_arg" ]
+then
+  "$this_script_dir/nest" pack
+else
+  "$this_script_dir/nest" pack "$notes_arg"
+fi
+"$this_script_dir/nest" push
+"$this_script_dir/nest" verify
+
+echo 'Success!!!' >&2

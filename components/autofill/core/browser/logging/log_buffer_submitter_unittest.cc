@@ -1,8 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/logging/log_buffer_submitter.h"
+
+#include <tuple>
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -18,21 +20,21 @@ namespace autofill {
 
 class MockLogReceiver : public LogReceiver {
  public:
-  MOCK_METHOD1(LogEntry, void(const base::Value&));
+  MOCK_METHOD(void, LogEntry, (const base::Value::Dict&), (override));
 };
 
 TEST(LogBufferSubmitter, VerifySubmissionOnDestruction) {
   LogBuffer buffer;
   buffer << 42;
-  base::Value expected = buffer.RetrieveResult();
+  absl::optional<base::Value::Dict> expected = buffer.RetrieveResult();
 
   MockLogReceiver receiver;
   LogRouter router;
-  ignore_result(router.RegisterReceiver(&receiver));
+  router.RegisterReceiver(&receiver);
   std::unique_ptr<LogManager> log_manager =
       LogManager::Create(&router, base::NullCallback());
 
-  EXPECT_CALL(receiver, LogEntry(testing::Eq(testing::ByRef(expected))));
+  EXPECT_CALL(receiver, LogEntry(testing::Eq(testing::ByRef(*expected))));
   log_manager->Log() << 42;
   log_manager.reset();
   router.UnregisterReceiver(&receiver);
@@ -41,7 +43,7 @@ TEST(LogBufferSubmitter, VerifySubmissionOnDestruction) {
 TEST(LogBufferSubmitter, NoEmptySubmission) {
   MockLogReceiver receiver;
   LogRouter router;
-  ignore_result(router.RegisterReceiver(&receiver));
+  router.RegisterReceiver(&receiver);
   std::unique_ptr<LogManager> log_manager =
       LogManager::Create(&router, base::NullCallback());
 
@@ -58,7 +60,7 @@ TEST(LogBufferSubmitter, CorrectActivation) {
 
   LogRouter router;
   MockLogReceiver receiver;
-  ignore_result(router.RegisterReceiver(&receiver));
+  router.RegisterReceiver(&receiver);
   std::unique_ptr<LogManager> log_manager_2 =
       LogManager::Create(&router, base::NullCallback());
   EXPECT_TRUE(log_manager_2->Log().buffer().active());

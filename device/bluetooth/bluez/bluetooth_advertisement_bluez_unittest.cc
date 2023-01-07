@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -74,16 +73,11 @@ class BluetoothAdvertisementBlueZTest : public testing::Test {
     std::unique_ptr<BluetoothAdvertisement::Data> data =
         std::make_unique<BluetoothAdvertisement::Data>(
             BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
-    data->set_service_uuids(
-        std::make_unique<BluetoothAdvertisement::UUIDList>());
-    data->set_manufacturer_data(
-        std::make_unique<BluetoothAdvertisement::ManufacturerData>());
-    data->set_solicit_uuids(
-        std::make_unique<BluetoothAdvertisement::UUIDList>());
-    data->set_service_data(
-        std::make_unique<BluetoothAdvertisement::ServiceData>());
-    data->set_scan_response_data(
-        std::make_unique<BluetoothAdvertisement::ScanResponseData>());
+    data->set_service_uuids(BluetoothAdvertisement::UUIDList());
+    data->set_manufacturer_data(BluetoothAdvertisement::ManufacturerData());
+    data->set_solicit_uuids(BluetoothAdvertisement::UUIDList());
+    data->set_service_data(BluetoothAdvertisement::ServiceData());
+    data->set_scan_response_data(BluetoothAdvertisement::ScanResponseData());
     return data;
   }
 
@@ -235,7 +229,8 @@ TEST_F(BluetoothAdvertisementBlueZTest, UnregisterAfterReleasedFailed) {
   ExpectSuccess();
   EXPECT_TRUE(advertisement);
 
-  observer_.reset(new TestBluetoothAdvertisementObserver(advertisement));
+  observer_ =
+      std::make_unique<TestBluetoothAdvertisementObserver>(advertisement);
   TriggerReleased(advertisement);
   EXPECT_TRUE(observer_->released());
 

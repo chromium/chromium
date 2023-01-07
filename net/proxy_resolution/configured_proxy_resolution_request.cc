@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ ConfiguredProxyResolutionRequest::ConfiguredProxyResolutionRequest(
     ConfiguredProxyResolutionService* service,
     const GURL& url,
     const std::string& method,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* results,
     CompletionOnceCallback user_callback,
     const NetLogWithSource& net_log)
@@ -28,8 +28,7 @@ ConfiguredProxyResolutionRequest::ConfiguredProxyResolutionRequest(
       results_(results),
       url_(url),
       method_(method),
-      network_isolation_key_(network_isolation_key),
-      resolve_job_(nullptr),
+      network_anonymization_key_(network_anonymization_key),
       net_log_(net_log),
       creation_time_(base::TimeTicks::Now()) {
   DCHECK(!user_callback_.is_null());
@@ -62,7 +61,7 @@ int ConfiguredProxyResolutionRequest::Start() {
     return OK;
 
   return service_->GetProxyResolver()->GetProxyForURL(
-      url_, network_isolation_key_, results_,
+      url_, network_anonymization_key_, results_,
       base::BindOnce(&ConfiguredProxyResolutionRequest::QueryComplete,
                      base::Unretained(this)),
       &resolve_job_, net_log_);

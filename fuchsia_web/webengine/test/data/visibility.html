@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+  <head><title>unset</title></head>
+  <body>
+    <script>
+        document.title = document.visibilityState;
+        document.addEventListener('visibilitychange', function(e) {
+          document.title = document.visibilityState;
+        });
+    </script>
+  </body>
+</html>

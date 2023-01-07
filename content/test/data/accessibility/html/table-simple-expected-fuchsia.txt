@@ -1,0 +1,26 @@
+UNKNOWN focusable has_input_focus label='Table example'
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++TABLE number_of_rows=3 number_of_columns=2
+++++++++ROW_GROUP hidden
+++++++++++TABLE_ROW
+++++++++++++COLUMN_HEADER label='Pair' cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Pair'
+++++++++++++++++UNKNOWN label='Pair'
+++++++++++++COLUMN_HEADER label='Single' cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Single'
+++++++++++++++++UNKNOWN label='Single'
+++++++++++TABLE_ROW row_index=1
+++++++++++++CELL label='AB' cell_row_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='AB'
+++++++++++++++++UNKNOWN label='AB'
+++++++++++++CELL label='B' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='B'
+++++++++++++++++UNKNOWN label='B'
+++++++++++TABLE_ROW row_index=2
+++++++++++++CELL label='CD' cell_row_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='CD'
+++++++++++++++++UNKNOWN label='CD'
+++++++++++++CELL label='D' cell_row_index=2 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='D'
+++++++++++++++++UNKNOWN label='D'

@@ -1,6 +1,8 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//printing/buildflags/buildflags.gni")
 
 source_set("renderer") {
   sources = [
@@ -29,8 +31,6 @@ source_set("renderer") {
   ]
 
   deps = [
-    "//android_webview:generate_aw_resources",
-    "//android_webview:generate_aw_strings",
     "//android_webview/common",
     "//android_webview/common:mojom",
     "//base",
@@ -43,12 +43,9 @@ source_set("renderer") {
     "//components/js_injection/renderer",
     "//components/page_load_metrics/renderer",
     "//components/power_scheduler",
-    "//components/printing/common",
-    "//components/printing/renderer",
     "//components/resources",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/content/renderer:throttles",
-    "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/common",
     "//components/security_interstitials/content/renderer:security_interstitial_page_controller",
     "//components/security_interstitials/core",
@@ -64,4 +61,11 @@ source_set("renderer") {
     "//ui/base",
     "//url",
   ]
+
+  if (enable_basic_printing) {
+    deps += [
+      "//components/printing/common",
+      "//components/printing/renderer",
+    ]
+  }
 }

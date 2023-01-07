@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/endpoint_fetcher",
+  "+components/session_proto_db",
+]

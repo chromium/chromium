@@ -27,13 +27,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_SHEET_CANDIDATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_SHEET_CANDIDATE_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class Document;
 class Node;
 class StyleSheet;
 
@@ -46,7 +45,6 @@ class StyleSheetCandidate {
   StyleSheetCandidate(Node& node) : node_(&node), type_(TypeOf(node)) {}
 
   bool IsXSL() const;
-  bool IsImport() const;
   bool IsAlternate() const;
   bool IsEnabledViaScript() const;
   bool IsEnabledAndLoading() const;
@@ -55,7 +53,6 @@ class StyleSheetCandidate {
 
   StyleSheet* Sheet() const;
   AtomicString Title() const;
-  Document* ImportedDocument() const;
 
  private:
   bool IsElement() const { return type_ != kPi; }
@@ -70,4 +67,4 @@ class StyleSheetCandidate {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_SHEET_CANDIDATE_H_

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,13 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "content/browser/sms/sms_provider.h"
 #include "content/public/common/content_switches.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/sms/sms_provider_gms.h"
 #endif
 
@@ -22,7 +23,7 @@ SmsProvider::~SmsProvider() = default;
 
 // static
 std::unique_ptr<SmsProvider> SmsProvider::Create() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::make_unique<SmsProviderGms>();
 #else
   return nullptr;

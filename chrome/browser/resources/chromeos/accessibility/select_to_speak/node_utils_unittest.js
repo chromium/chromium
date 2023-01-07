@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,22 +9,18 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
  */
 SelectToSpeakNodeUtilsUnitTest = class extends SelectToSpeakE2ETest {
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async function() {
-      await importModule('NodeUtils', '/select_to_speak/node_utils.js');
-      await importModule(
-          'ParagraphUtils', '/select_to_speak/paragraph_utils.js');
-      await importModule('WordUtils', '/select_to_speak/word_utils.js');
-      await importModule(
-          ['createMockNode', 'generateTestNodeGroup'],
-          '/select_to_speak/test_node_generator.js');
-      runTest();
-    })();
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('NodeUtils', '/select_to_speak/node_utils.js');
+    await importModule('ParagraphUtils', '/select_to_speak/paragraph_utils.js');
+    await importModule('WordUtils', '/select_to_speak/word_utils.js');
+    await importModule(
+        ['createMockNode', 'generateTestNodeGroup'],
+        '/select_to_speak/test_node_generator.js');
   }
 };
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'GetNodeVisibilityState', function() {
       const nodeWithoutRoot1 = {root: null};
       const nodeWithoutRoot2 = {root: null, state: {invisible: true}};
@@ -38,14 +34,14 @@ SYNC_TEST_F(
       const invisibleNode1 = {
         root: {},
         parent: {role: ''},
-        state: {invisible: true}
+        state: {invisible: true},
       };
       // Currently nodes aren't actually marked 'invisible', so we need to
       // navigate up their tree.
       const invisibleNode2 = {
         root: {},
         parent: {role: 'window', state: {invisible: true}},
-        state: {}
+        state: {},
       };
       const invisibleNode3 = {root: {}, parent: invisibleNode2, state: {}};
       const invisibleNode4 = {root: {}, parent: invisibleNode3, state: {}};
@@ -62,7 +58,7 @@ SYNC_TEST_F(
       const normalNode1 = {
         root: {},
         parent: {role: 'window', state: {}},
-        state: {}
+        state: {},
       };
       const normalNode2 = {root: {}, parent: {normalNode1}, state: {}};
       assertEquals(
@@ -73,7 +69,7 @@ SYNC_TEST_F(
           NodeUtils.NodeState.NODE_STATE_NORMAL);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'GetNodeVisibilityStateWithRootWebArea',
     function() {
       // Currently nodes aren't actually marked 'invisible', so we need to
@@ -124,14 +120,14 @@ SYNC_TEST_F(
           NodeUtils.NodeState.NODE_STATE_NORMAL);
     });
 
-SYNC_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
+AX_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
   const rect = {left: 0, top: 0, width: 100, height: 100};
   const rootNode = {
     root: {},
     state: {},
     role: 'rootWebArea',
     state: {},
-    location: {left: 0, top: 0, width: 600, height: 600}
+    location: {left: 0, top: 0, width: 600, height: 600},
   };
   const container1 = {
     root: rootNode,
@@ -139,14 +135,14 @@ SYNC_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
     role: 'staticText',
     name: 'one two',
     state: {},
-    location: {left: 0, top: 0, width: 200, height: 200}
+    location: {left: 0, top: 0, width: 200, height: 200},
   };
   const container2 = {
     root: rootNode,
     parent: rootNode,
     state: {},
     role: 'genericContainer',
-    location: {left: 0, top: 0, width: 200, height: 200}
+    location: {left: 0, top: 0, width: 200, height: 200},
   };
   const node1 = {
     root: rootNode,
@@ -154,7 +150,7 @@ SYNC_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
     name: 'one',
     role: 'inlineTextBox',
     state: {},
-    location: {left: 50, top: 0, width: 50, height: 50}
+    location: {left: 50, top: 0, width: 50, height: 50},
   };
   const node2 = {
     root: rootNode,
@@ -162,7 +158,7 @@ SYNC_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
     name: 'two',
     role: 'inlineTextBox',
     state: {},
-    location: {left: 0, top: 50, width: 50, height: 50}
+    location: {left: 0, top: 50, width: 50, height: 50},
   };
   const node3 = {
     root: rootNode,
@@ -170,7 +166,7 @@ SYNC_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
     value: 'text',
     role: 'textField',
     state: {},
-    location: {left: 0, top: 0, width: 25, height: 25}
+    location: {left: 0, top: 0, width: 25, height: 25},
   };
 
   // Set up relationships between nodes.
@@ -234,7 +230,7 @@ SYNC_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
     parent: container2,
     name: 'four',
     state: {},
-    location: {left: 0, top: 50, width: 50, height: 50}
+    location: {left: 0, top: 50, width: 50, height: 50},
   };
   container2.firstChild = node4;
   assertTrue(NodeUtils.findAllMatching(rootNode, rect, result));
@@ -258,14 +254,14 @@ SYNC_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
   assertEquals(container2, result[0]);
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'findAllMatchingWithInputs', function() {
       const rect = {left: 0, top: 0, width: 100, height: 100};
       const rootNode = {
         root: {},
         state: {},
         role: 'rootWebArea',
-        location: {left: 0, top: 0, width: 600, height: 600}
+        location: {left: 0, top: 0, width: 600, height: 600},
       };
       const checkbox = {
         root: rootNode,
@@ -273,7 +269,7 @@ SYNC_TEST_F(
         role: 'checkBox',
         state: {},
         location: {left: 0, top: 0, width: 200, height: 200},
-        checked: 'true'
+        checked: 'true',
       };
       rootNode.children = [checkbox];
       rootNode.firstChild = checkbox;
@@ -284,7 +280,7 @@ SYNC_TEST_F(
       assertEquals(checkbox, result[0]);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getDeepEquivalentForSelectionDeprecatedNoChildren', function() {
       const node = {name: 'Hello, world', children: []};
@@ -297,7 +293,7 @@ SYNC_TEST_F(
       assertEquals(6, result.offset);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getDeepEquivalentForSelectionDeprecatedSimpleChildren', function() {
       const child1 =
@@ -308,7 +304,7 @@ SYNC_TEST_F(
         name: 'Hello, world',
         children: [child1, child2],
         role: 'staticText',
-        state: {}
+        state: {},
       };
       child1.parent = root;
       child2.parent = root;
@@ -333,7 +329,7 @@ SYNC_TEST_F(
       assertEquals(3, result.offset);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getDeepEquivalentForSelectionDeprecatedComplexChildren', function() {
       const child1 =
@@ -349,7 +345,7 @@ SYNC_TEST_F(
         role: 'staticText',
         state: {},
         firstChild: child1,
-        lastChild: child3
+        lastChild: child3,
       };
       child1.parent = child4;
       child2.parent = child4;
@@ -365,7 +361,7 @@ SYNC_TEST_F(
         role: 'staticText',
         state: {},
         firstChild: child5,
-        lastChild: child6
+        lastChild: child6,
       };
       child5.parent = child7;
       child6.parent = child7;
@@ -376,7 +372,7 @@ SYNC_TEST_F(
         role: 'genericContainer',
         state: {},
         firstChild: child4,
-        lastChild: child7
+        lastChild: child7,
       };
       child4.parent = root;
       child7.parent = root;
@@ -406,36 +402,36 @@ SYNC_TEST_F(
       assertEquals(0, result.offset);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'sortSvgNodesByReadingOrder', function() {
       const svgRootNode = {role: 'svgRoot'};
       const gNode1 = {
         role: 'genericContainer',
         parent: svgRootNode,
-        unclippedLocation: {left: 300, top: 10, width: 100, height: 50}
+        unclippedLocation: {left: 300, top: 10, width: 100, height: 50},
       };
       const gNode2 = {
         role: 'genericContainer',
         parent: svgRootNode,
-        unclippedLocation: {left: 20, top: 10, width: 100, height: 50}
+        unclippedLocation: {left: 20, top: 10, width: 100, height: 50},
       };
       const textNode1 = {
         role: 'staticText',
         parent: gNode2,
         unclippedLocation: {left: 50, top: 10, width: 20, height: 50},
-        name: 'one'
+        name: 'one',
       };
       const textNode2 = {
         role: 'staticText',
         parent: gNode1,
         unclippedLocation: {left: 300, top: 10, width: 20, height: 50},
-        name: 'two'
+        name: 'two',
       };
       const textNode3 = {
         role: 'staticText',
         parent: gNode1,
         unclippedLocation: {left: 350, top: 10, width: 20, height: 50},
-        name: 'three'
+        name: 'three',
       };
 
       const nodes = [textNode3, textNode2, textNode1];
@@ -445,7 +441,7 @@ SYNC_TEST_F(
       assertEquals(nodes[2].name, 'three');
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'sortNodesByReadingOrderMultipleSVGs',
     function() {
       const textNode1 = {role: 'staticText', name: 'Text Node 1'};
@@ -454,13 +450,13 @@ SYNC_TEST_F(
         role: 'staticText',
         parent: svg1RootNode,
         unclippedLocation: {left: 0, top: 10, width: 20, height: 50},
-        name: 'SVG 1 Node 1'
+        name: 'SVG 1 Node 1',
       };
       const svg1Node2 = {
         role: 'staticText',
         parent: svg1RootNode,
         unclippedLocation: {left: 50, top: 10, width: 20, height: 50},
-        name: 'SVG 1 Node 2'
+        name: 'SVG 1 Node 2',
       };
       const textNode2 = {role: 'staticText', name: 'Text Node 2'};
       const svg2RootNode = {role: 'svgRoot'};
@@ -468,19 +464,24 @@ SYNC_TEST_F(
         role: 'staticText',
         parent: svg2RootNode,
         unclippedLocation: {left: 300, top: 10, width: 20, height: 50},
-        name: 'SVG 2 Node 1'
+        name: 'SVG 2 Node 1',
       };
       const svg2Node2 = {
         role: 'staticText',
         parent: svg2RootNode,
         unclippedLocation: {left: 350, top: 10, width: 20, height: 50},
-        name: 'SVG 2 Node 2'
+        name: 'SVG 2 Node 2',
       };
       const textNode3 = {role: 'staticText', name: 'Text Node 3'};
 
       const nodes = [
-        textNode1, svg1Node2, svg1Node1, textNode2, svg2Node2, svg2Node1,
-        textNode3
+        textNode1,
+        svg1Node2,
+        svg1Node1,
+        textNode2,
+        svg2Node2,
+        svg2Node1,
+        textNode3,
       ];
       NodeUtils.sortSvgNodesByReadingOrder(nodes);
 
@@ -493,7 +494,7 @@ SYNC_TEST_F(
       assertEquals(nodes[6].name, 'Text Node 3');
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'GetAllNodesInParagraph', function() {
       const root = createMockNode({role: 'rootWebArea'});
       const paragraph1 = createMockNode(
@@ -540,7 +541,7 @@ SYNC_TEST_F(
       assertEquals(result[2], text5);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'getPositionFromNodeGroup', function() {
       // The nodeGroup has four inline text nodes and one static text node.
       // Their starting indexes are 0, 9, 20, 30, and 51. The first and the
@@ -608,7 +609,7 @@ SYNC_TEST_F(
       assertEquals(testPosition.offset, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'getDirectionBetweenPositions',
     function() {
       // The nodeGroup has four inline text nodes and one static text node.

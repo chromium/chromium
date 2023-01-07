@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "components/arc/mojom/kiosk.mojom.h"
+#include "ash/components/arc/mojom/kiosk.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -42,6 +41,10 @@ class ArcKioskBridge : public KeyedService,
 
   ArcKioskBridge(content::BrowserContext* context,
                  ArcBridgeService* bridge_service);
+
+  ArcKioskBridge(const ArcKioskBridge&) = delete;
+  ArcKioskBridge& operator=(const ArcKioskBridge&) = delete;
+
   ~ArcKioskBridge() override;
 
   // mojom::KioskHost overrides.
@@ -58,8 +61,6 @@ class ArcKioskBridge : public KeyedService,
 
   // Tracks current maintenance session id.
   int32_t session_id_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskBridge);
 };
 
 }  // namespace arc

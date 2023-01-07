@@ -1,16 +1,41 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/metrics/average_lag_tracking_manager.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
-#include "ui/latency/latency_info.h"
 
 namespace cc {
+namespace {
+
+void AddEventInfoFromEventMetricsList(
+    const EventMetrics::List& events_metrics,
+    std::vector<AverageLagTracker::EventInfo>* event_infos) {
+  for (const std::unique_ptr<EventMetrics>& event_metrics : events_metrics) {
+    EventMetrics::EventType type = event_metrics->type();
+    if (type != EventMetrics::EventType::kFirstGestureScrollUpdate &&
+        type != EventMetrics::EventType::kGestureScrollUpdate) {
+      continue;
+    }
+
+    auto* scroll_update_metrics = event_metrics->AsScrollUpdate();
+    DCHECK(scroll_update_metrics);
+    event_infos->emplace_back(
+        scroll_update_metrics->delta(),
+        scroll_update_metrics->predicted_delta(),
+        scroll_update_metrics->last_timestamp(),
+        type == EventMetrics::EventType::kFirstGestureScrollUpdate
+            ? AverageLagTracker::EventType::ScrollBegin
+            : AverageLagTracker::EventType::ScrollUpdate);
+  }
+}
+
+}  // namespace
 
 AverageLagTrackingManager::AverageLagTrackingManager() = default;
 
@@ -23,81 +48,77 @@ AverageLagTrackingManager::~AverageLagTrackingManager() {
 
 void AverageLagTrackingManager::CollectScrollEventsFromFrame(
     uint32_t frame_token,
-    const std::vector<ui::LatencyInfo>& latency_infos) {
+    const EventMetricsSet& events_metrics) {
   std::vector<AverageLagTracker::EventInfo> event_infos;
 
-  for (ui::LatencyInfo latency_info : latency_infos) {
-    if (latency_info.source_event_type() != ui::SourceEventType::TOUCH)
-      continue;
-
-    bool found_scroll_begin = latency_info.FindLatency(
-        ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
-        nullptr);
-    bool found_scroll_update = latency_info.FindLatency(
-        ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT, nullptr);
-
-    if (!found_scroll_begin && !found_scroll_update)
-      continue;
-
-    base::TimeTicks event_timestamp;
-    bool found_event = latency_info.FindLatency(
-        ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
-        &event_timestamp);
-    DCHECK(found_event);
-
-    AverageLagTracker::EventInfo event_info(
-        latency_info.trace_id(), latency_info.scroll_update_delta(),
-        latency_info.predicted_scroll_update_delta(), event_timestamp,
-        found_scroll_begin == true
-            ? AverageLagTracker::EventType::ScrollBegin
-            : AverageLagTracker::EventType::ScrollUpdate);
-
-    event_infos.push_back(event_info);
-  }
+  // A scroll event can be handled either on the main or the compositor thread
+  // (not both). So, both lists of metrics from the main and the compositor
+  // thread might contain interesting scroll events and we should collect
+  // information about scroll events from both. We are not worried about
+  // ordering of the events at this point. If the frame is presented, events
+  // for the frame will be sorted and fed into `AverageLagTracker` in order.
+  AddEventInfoFromEventMetricsList(events_metrics.main_event_metrics,
+                                   &event_infos);
+  AddEventInfoFromEventMetricsList(events_metrics.impl_event_metrics,
+                                   &event_infos);
 
   if (event_infos.size() > 0)
-    frame_token_to_info_.push_back(std::make_pair(frame_token, event_infos));
+    frame_token_to_info_.emplace_back(frame_token, std::move(event_infos));
 }
 
 void AverageLagTrackingManager::DidPresentCompositorFrame(
     uint32_t frame_token,
     const viz::FrameTimingDetails& frame_details) {
-  // Erase all previous frames that haven't received a feedback and get the
-  // current |frame_token| list of events.
-  std::vector<AverageLagTracker::EventInfo> infos;
-  while (!frame_token_to_info_.empty() &&
-         !viz::FrameTokenGT(frame_token_to_info_.front().first, frame_token)) {
-    if (frame_token_to_info_.front().first == frame_token)
-      infos = frame_token_to_info_.front().second;
+  if (frame_details.presentation_feedback.failed()) {
+    // When presentation fails, remove the current frame from (potentially, the
+    // middle of) the queue; but, leave earlier frames in the queue as they
+    // still might end up being presented successfully.
+    for (auto submitted_frame = frame_token_to_info_.begin();
+         submitted_frame != frame_token_to_info_.end(); submitted_frame++) {
+      if (viz::FrameTokenGT(submitted_frame->first, frame_token))
+        break;
+      if (submitted_frame->first == frame_token) {
+        frame_token_to_info_.erase(submitted_frame);
+        break;
+      }
+    }
+    return;
+  }
 
+  // When presentation succeeds, consider earlier frames as failed and remove
+  // them from the front of the queue. Then take the list of events for the
+  // current frame and remove it from the front of the queue, too.
+  std::vector<AverageLagTracker::EventInfo> infos;
+  while (!frame_token_to_info_.empty()) {
+    auto& submitted_frame = frame_token_to_info_.front();
+    if (viz::FrameTokenGT(submitted_frame.first, frame_token))
+      break;
+    if (submitted_frame.first == frame_token)
+      infos = std::move(submitted_frame.second);
     frame_token_to_info_.pop_front();
   }
 
-  if (infos.size() == 0)
+  // If there is no event, there is nothing to report.
+  if (infos.empty())
     return;
 
-  if (!frame_details.presentation_feedback.failed()) {
-    DCHECK(!frame_details.swap_timings.is_null());
+  DCHECK(!frame_details.swap_timings.is_null());
 
-    // Sorts data by trace_id because |infos| can be in non-asceding order
-    // (ascending order of trace_id/time is required by AverageLagTracker).
-    std::sort(infos.begin(), infos.end(),
-              [](const AverageLagTracker::EventInfo& a,
-                 const AverageLagTracker::EventInfo& b) {
-                return a.trace_id < b.trace_id;
-              });
+  // AverageLagTracker expects events' info to be in ascending order.
+  std::sort(infos.begin(), infos.end(),
+            [](const AverageLagTracker::EventInfo& a,
+               const AverageLagTracker::EventInfo& b) {
+              return a.event_timestamp < b.event_timestamp;
+            });
 
-    for (AverageLagTracker::EventInfo info : infos) {
-      info.finish_timestamp = frame_details.swap_timings.swap_start;
-      lag_tracker_gpu_swap_.AddScrollEventInFrame(info);
-
-      info.finish_timestamp = frame_details.presentation_feedback.timestamp;
-      lag_tracker_presentation_.AddScrollEventInFrame(info);
-    }
+  for (AverageLagTracker::EventInfo& info : infos) {
+    info.finish_timestamp = frame_details.presentation_feedback.timestamp;
+    lag_tracker_.AddScrollEventInFrame(info);
   }
 }
 
 void AverageLagTrackingManager::Clear() {
   frame_token_to_info_.clear();
 }
+
 }  // namespace cc

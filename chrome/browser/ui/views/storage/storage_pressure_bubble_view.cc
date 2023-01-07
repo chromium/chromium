@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -16,8 +17,8 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -114,7 +115,7 @@ void StoragePressureBubbleView::Init() {
           url_formatter::kFormatUrlOmitTrivialSubdomains |
           url_formatter::kFormatUrlOmitHTTPS |
           url_formatter::kFormatUrlOmitTrailingSlashOnBareHostname,
-      net::UnescapeRule::NONE, nullptr, nullptr, nullptr);
+      base::UnescapeRule::NONE, nullptr, nullptr, nullptr);
   auto text_label = std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
       IDS_SETTINGS_STORAGE_PRESSURE_BUBBLE_VIEW_MESSAGE, origin_string));
   text_label->SetMultiLine(true);

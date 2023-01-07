@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ LearningTaskControllerHelper::~LearningTaskControllerHelper() = default;
 void LearningTaskControllerHelper::BeginObservation(
     base::UnguessableToken id,
     FeatureVector features,
-    base::Optional<ukm::SourceId> source_id) {
+    absl::optional<ukm::SourceId> source_id) {
   auto& pending_example = pending_examples_[id];
 
   if (source_id)

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <istream>
 #include <memory>
 #include <ostream>
-#include <string>
 
 #include "components/subresource_filter/tools/ruleset_converter/ruleset_format.h"
 #include "components/url_pattern_index/proto/rules.pb.h"

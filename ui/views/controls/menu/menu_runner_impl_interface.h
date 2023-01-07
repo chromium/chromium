@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback_forward.h"
-#include "base/containers/flat_set.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace views {
@@ -40,7 +39,8 @@ class MenuRunnerImplInterface {
                          MenuButtonController* button_controller,
                          const gfx::Rect& bounds,
                          MenuAnchorPosition anchor,
-                         int32_t run_types) = 0;
+                         int32_t run_types,
+                         gfx::NativeView native_view_for_gestures) = 0;
 
   // Hides and cancels the menu.
   virtual void Cancel() = 0;

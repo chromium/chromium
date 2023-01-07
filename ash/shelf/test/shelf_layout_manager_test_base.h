@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/workspace/workspace_types.h"
+#include "base/time/time.h"
 
 namespace ui {
 class Layer;
@@ -48,7 +49,7 @@ class ShelfLayoutManagerTestBase : public AshTestBase {
 
   int64_t GetPrimaryDisplayId();
   void StartScroll(gfx::Point start);
-  void UpdateScroll(float delta_y);
+  void UpdateScroll(const gfx::Vector2d& delta);
   void EndScroll(bool is_fling, float velocity_y);
   void IncreaseTimestamp();
   WorkspaceWindowState GetWorkspaceWindowState() const;
@@ -70,15 +71,19 @@ class ShelfLayoutManagerTestBase : public AshTestBase {
   // Move mouse to show Shelf in auto-hide mode.
   void MouseMouseToShowAutoHiddenShelf();
 
-  // Move mouse to |location| and do a two-finger vertical scroll.
-  void DoTwoFingerVerticalScrollAtLocation(gfx::Point location,
-                                           int y_offset,
-                                           bool reverse_scroll);
+  // Move mouse to |location| and do a two-finger scroll.
+  void DoTwoFingerScrollAtLocation(gfx::Point location,
+                                   int x_offset,
+                                   int y_offset,
+                                   bool reverse_scroll);
 
   // Move mouse to |location| and do a mousewheel scroll.
   void DoMouseWheelScrollAtLocation(gfx::Point location,
                                     int delta_y,
                                     bool reverse_scroll);
+
+  // Do a fling gesture event from |start| to |end|.
+  void FlingBetweenLocations(gfx::Point start, gfx::Point end);
 
   // Run the |visibility_update_for_tray_callback_| if set in
   // ShelfLayoutManager and return true. Otherwise, return false.

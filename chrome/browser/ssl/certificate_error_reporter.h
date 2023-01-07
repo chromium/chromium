@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "url/gurl.h"
 
@@ -38,6 +37,9 @@ class CertificateErrorReporter {
       const GURL& upload_url,
       const uint8_t server_public_key[/* 32 */],
       const uint32_t server_public_key_version);
+
+  CertificateErrorReporter(const CertificateErrorReporter&) = delete;
+  CertificateErrorReporter& operator=(const CertificateErrorReporter&) = delete;
 
   virtual ~CertificateErrorReporter();
 
@@ -75,8 +77,6 @@ class CertificateErrorReporter {
 
   const uint8_t* server_public_key_;
   const uint32_t server_public_key_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateErrorReporter);
 };
 
 #endif  // CHROME_BROWSER_SSL_CERTIFICATE_ERROR_REPORTER_H_

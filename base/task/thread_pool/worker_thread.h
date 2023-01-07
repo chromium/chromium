@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
@@ -48,10 +49,10 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
     POOLED,
     SHARED,
     DEDICATED,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     SHARED_COM,
     DEDICATED_COM,
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   };
 
   // Delegate interface for WorkerThread. All methods are called from the
@@ -65,7 +66,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
     virtual ThreadLabel GetThreadLabel() const = 0;
 
     // Called by |worker|'s thread when it enters its main function.
-    virtual void OnMainEntry(const WorkerThread* worker) = 0;
+    virtual void OnMainEntry(WorkerThread* worker) = 0;
 
     // Called by |worker|'s thread to get a TaskSource from which to run a Task.
     virtual RegisteredTaskSource GetWork(WorkerThread* worker) = 0;
@@ -91,18 +92,20 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
     // guaranteed that WorkerThread won't access the Delegate or the
     // TaskTracker after calling OnMainExit() on the Delegate.
     virtual void OnMainExit(WorkerThread* worker) {}
+
+    static constexpr TimeDelta kPurgeThreadCacheIdleDelay = Seconds(1);
   };
 
   // Creates a WorkerThread that runs Tasks from TaskSources returned by
   // |delegate|. No actual thread will be created for this WorkerThread
-  // before Start() is called. |priority_hint| is the preferred thread priority;
-  // the actual thread priority depends on shutdown state and platform
+  // before Start() is called. |thread_type_hint| is the preferred thread type;
+  // the actual thread type depends on shutdown state and platform
   // capabilities. |task_tracker| is used to handle shutdown behavior of Tasks.
   // |predecessor_lock| is a lock that is allowed to be held when calling
   // methods on this WorkerThread. |backward_compatibility| indicates
   // whether backward compatibility is enabled. Either JoinForTesting() or
   // Cleanup() must be called before releasing the last external reference.
-  WorkerThread(ThreadPriority priority_hint,
+  WorkerThread(ThreadType thread_type_hint,
                std::unique_ptr<Delegate> delegate,
                TrackedRef<TaskTracker> task_tracker,
                const CheckedLock* predecessor_lock = nullptr);
@@ -112,11 +115,14 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   // Creates a thread to back the WorkerThread. The thread will be in a wait
   // state pending a WakeUp() call. No thread will be created if Cleanup() was
-  // called. If specified, |worker_thread_observer| will be notified when the
-  // worker enters and exits its main function. It must not be destroyed before
-  // JoinForTesting() has returned (must never be destroyed in production).
-  // Returns true on success.
-  bool Start(WorkerThreadObserver* worker_thread_observer = nullptr);
+  // called. `io_thread_task_runner` is used to setup FileDescriptorWatcher on
+  // worker threads. `io_thread_task_runner` must refer to a Thread with
+  // MessgaePumpType::IO. If specified, |worker_thread_observer| will be
+  // notified when the worker enters and exits its main function. It must not be
+  // destroyed before JoinForTesting() has returned (must never be destroyed in
+  // production). Returns true on success.
+  bool Start(scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_,
+             WorkerThreadObserver* worker_thread_observer = nullptr);
 
   // Wakes up this WorkerThread if it wasn't already awake. After this is
   // called, this WorkerThread will run Tasks from TaskSources returned by
@@ -149,6 +155,11 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   //   worker_ = nullptr;
   void Cleanup();
 
+  // Possibly updates the thread type to the appropriate type based on the
+  // thread type hint, current shutdown state, and platform capabilities.
+  // Must be called on the thread managed by |this|.
+  void MaybeUpdateThreadType();
+
   // Informs this WorkerThread about periods during which it is not being
   // used. Thread-safe.
   void BeginUnusedPeriod();
@@ -169,13 +180,13 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   bool ShouldExit() const;
 
-  // Returns the thread priority to use based on the priority hint, current
+  // Returns the thread type to use based on the thread type hint, current
   // shutdown state, and platform capabilities.
-  ThreadPriority GetDesiredThreadPriority() const;
+  ThreadType GetDesiredThreadType() const;
 
-  // Changes the thread priority to |desired_thread_priority|. Must be called on
-  // the thread managed by |this|.
-  void UpdateThreadPriority(ThreadPriority desired_thread_priority);
+  // Changes the thread type to |desired_thread_type|. Must be called on the
+  // thread managed by |this|.
+  void UpdateThreadType(ThreadType desired_thread_type);
 
   // PlatformThread::Delegate:
   void ThreadMain() override;
@@ -188,16 +199,16 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   void RunBackgroundSharedWorker();
   void RunDedicatedWorker();
   void RunBackgroundDedicatedWorker();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void RunSharedCOMWorker();
   void RunBackgroundSharedCOMWorker();
   void RunDedicatedCOMWorker();
   void RunBackgroundDedicatedCOMWorker();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // The real main, invoked through :
   //     ThreadMain() -> RunLabeledWorker() -> RunWorker().
-  // "RunLabeledWorker()" is a dummy frame based on ThreadLabel+ThreadPriority
+  // "RunLabeledWorker()" is a dummy frame based on ThreadLabel+ThreadType
   // and used to easily identify threads in stack traces.
   void NOT_TAIL_CALLED RunWorker();
 
@@ -228,21 +239,24 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   // Optional observer notified when a worker enters and exits its main
   // function. Set in Start() and never modified afterwards.
-  WorkerThreadObserver* worker_thread_observer_ = nullptr;
+  raw_ptr<WorkerThreadObserver> worker_thread_observer_ = nullptr;
 
-  // Desired thread priority.
-  const ThreadPriority priority_hint_;
+  // Desired thread type.
+  const ThreadType thread_type_hint_;
 
-  // Actual thread priority. Can be different than |priority_hint_| depending on
-  // system capabilities and shutdown state. No lock required because all post-
-  // construction accesses occur on the thread.
-  ThreadPriority current_thread_priority_;
+  // Actual thread type. Can be different than |thread_type_hint_|
+  // depending on system capabilities and shutdown state. No lock required
+  // because all post-construction accesses occur on the thread.
+  ThreadType current_thread_type_;
 
   // Set once JoinForTesting() has been called.
   AtomicFlag join_called_for_testing_;
 
   // Whether operations on this worker thread may be unordered when recording/replaying.
   bool record_replay_unordered_ = false;
+
+  // Service thread task runner.
+  scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_;
 };
 
 }  // namespace internal

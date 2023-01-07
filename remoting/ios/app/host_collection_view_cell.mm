@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,8 @@ static const CGFloat kLinePadding = 2.f;
 static const CGFloat kHostCardIconInset = 10.f;
 static const CGFloat kHostCardPadding = 4.f;
 static const CGFloat kHostCardIconSize = 45.f;
+static const CGFloat kTitleOpacity = 0.87f;
+static const CGFloat kCaptionOpacity = 0.54f;
 
 static NSString* const kSuccessExitOfflineReason = @"SUCCESS_EXIT";
 
@@ -91,15 +93,22 @@ static NSDictionary<NSString*, NSNumber*>* const kOfflineReasonL10nId = @{
 
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _titleLabel.font = [MDCTypography boldFontFromFont:MDCTypography.subheadFont];
-  _titleLabel.alpha = MDCTypography.subheadFontOpacity;
+  UIFont* subheadFont = MDCTypography.subheadFont;
+  UIFontDescriptor* subheadFontDescriptor = [subheadFont.fontDescriptor
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  subheadFontDescriptor = subheadFontDescriptor ?: subheadFont.fontDescriptor;
+  UIFont* boldSubheadFont = [UIFont fontWithDescriptor:subheadFontDescriptor
+                                                  size:subheadFont.pointSize];
+
+  _titleLabel.font = boldSubheadFont;
+  _titleLabel.alpha = kTitleOpacity;
   _titleLabel.textColor = RemotingTheme.hostCellTitleColor;
   [_labelView addSubview:_titleLabel];
 
   _statusLabel = [[UILabel alloc] init];
   _statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _statusLabel.font = MDCTypography.captionFont;
-  _statusLabel.alpha = MDCTypography.captionFontOpacity;
+  _statusLabel.alpha = kCaptionOpacity;
   _statusLabel.textColor = RemotingTheme.hostCellStatusTextColor;
   [_labelView addSubview:_statusLabel];
 
@@ -136,7 +145,7 @@ static NSDictionary<NSString*, NSNumber*>* const kOfflineReasonL10nId = @{
     [[_labelView bottomAnchor]
         constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor],
 
-    // Put titleLable and statusLable symmetrically around centerY.
+    // Put titleLabel and statusLabel symmetrically around centerY.
     [[_titleLabel leadingAnchor]
         constraintEqualToAnchor:[_labelView leadingAnchor]],
     [[_titleLabel trailingAnchor]

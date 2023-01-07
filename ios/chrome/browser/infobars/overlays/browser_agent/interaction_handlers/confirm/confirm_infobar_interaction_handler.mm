@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@ ConfirmInfobarInteractionHandler::ConfirmInfobarInteractionHandler()
     : InfobarInteractionHandler(
           InfobarType::kInfobarTypeConfirm,
           std::make_unique<ConfirmInfobarBannerInteractionHandler>(),
-          /*sheet_handler=*/nullptr,
           /*modal_handler=*/nullptr) {}
 
 ConfirmInfobarInteractionHandler::~ConfirmInfobarInteractionHandler() = default;

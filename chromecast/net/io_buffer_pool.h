@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/io_buffer.h"
 
@@ -27,6 +26,9 @@ class IOBufferPool : public base::RefCountedThreadSafe<IOBufferPool> {
   IOBufferPool(size_t buffer_size, size_t max_buffers, bool threadsafe = false);
   // If |max_buffers| is not specified, the maximum value of size_t is used.
   explicit IOBufferPool(size_t buffer_size);
+
+  IOBufferPool(const IOBufferPool&) = delete;
+  IOBufferPool& operator=(const IOBufferPool&) = delete;
 
   size_t buffer_size() const { return buffer_size_; }
   size_t max_buffers() const { return max_buffers_; }
@@ -59,8 +61,6 @@ class IOBufferPool : public base::RefCountedThreadSafe<IOBufferPool> {
   const size_t max_buffers_;
   const bool threadsafe_;
   Internal* internal_;  // Manages its own lifetime.
-
-  DISALLOW_COPY_AND_ASSIGN(IOBufferPool);
 };
 
 }  // namespace chromecast

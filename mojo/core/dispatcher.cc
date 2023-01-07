@@ -1,10 +1,12 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/core/dispatcher.h"
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
+#include "base/threading/thread_local.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/data_pipe_consumer_dispatcher.h"
 #include "mojo/core/data_pipe_producer_dispatcher.h"
@@ -16,12 +18,31 @@
 namespace mojo {
 namespace core {
 
+namespace {
+
+base::ThreadLocalBoolean& IsExtractingHandlesFromMessage() {
+  static base::NoDestructor<base::ThreadLocalBoolean> flag;
+  return *flag;
+}
+
+}  // namespace
+
 Dispatcher::DispatcherInTransit::DispatcherInTransit() = default;
 
 Dispatcher::DispatcherInTransit::DispatcherInTransit(
     const DispatcherInTransit& other) = default;
 
 Dispatcher::DispatcherInTransit::~DispatcherInTransit() = default;
+
+// static
+void Dispatcher::SetExtractingHandlesFromMessage(bool extracting) {
+  IsExtractingHandlesFromMessage().Set(extracting);
+}
+
+// static
+void Dispatcher::AssertNotExtractingHandlesFromMessage() {
+  DCHECK(!IsExtractingHandlesFromMessage().Get());
+}
 
 MojoResult Dispatcher::WatchDispatcher(scoped_refptr<Dispatcher> dispatcher,
                                        MojoHandleSignals signals,
@@ -88,7 +109,8 @@ MojoResult Dispatcher::WriteData(const void* elements,
 }
 
 MojoResult Dispatcher::BeginWriteData(void** buffer,
-                                      uint32_t* buffer_num_bytes) {
+                                      uint32_t* buffer_num_bytes,
+                                      MojoBeginWriteDataFlags flags) {
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 

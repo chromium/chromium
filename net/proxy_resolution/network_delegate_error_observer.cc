@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate.h"
 
@@ -21,6 +21,9 @@ class NetworkDelegateErrorObserver::Core
   Core(NetworkDelegate* network_delegate,
        base::SingleThreadTaskRunner* origin_runner);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   void NotifyPACScriptError(int line_number, const std::u16string& error);
 
   void Shutdown();
@@ -30,10 +33,8 @@ class NetworkDelegateErrorObserver::Core
 
   virtual ~Core();
 
-  NetworkDelegate* network_delegate_;
+  raw_ptr<NetworkDelegate> network_delegate_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 NetworkDelegateErrorObserver::Core::Core(
@@ -68,8 +69,7 @@ void NetworkDelegateErrorObserver::Core::Shutdown() {
 NetworkDelegateErrorObserver::NetworkDelegateErrorObserver(
     NetworkDelegate* network_delegate,
     base::SingleThreadTaskRunner* origin_runner)
-    : core_(new Core(network_delegate, origin_runner)) {
-}
+    : core_(base::MakeRefCounted<Core>(network_delegate, origin_runner)) {}
 
 NetworkDelegateErrorObserver::~NetworkDelegateErrorObserver() {
   core_->Shutdown();

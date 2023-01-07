@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ const CTRequiredPolicies& GetCTRequiredPolicies() {
       {
           kSymantecRoots, kSymantecRootsLength,
           // 1 June 2016, 00:00:00 GMT.
-          base::TimeDelta::FromSeconds(1464739200),
+          base::Seconds(1464739200),
           kSymantecExceptions, kSymantecExceptionsLength,
       },
       {

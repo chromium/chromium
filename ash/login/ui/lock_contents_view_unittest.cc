@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,13 @@
 
 #include "ash/child_accounts/parent_access_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/fake_login_detachable_base_model.h"
+#include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/lock_screen_media_controls_view.h"
 #include "ash/login/ui/login_auth_user_view.h"
@@ -30,16 +32,18 @@
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/scrollable_users_list_view.h"
 #include "ash/login/ui/views_utils.h"
-#include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/reauth_reason.h"
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_button_controller.h"
@@ -53,9 +57,12 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/known_user.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
@@ -76,7 +83,7 @@ void PressAndReleasePowerButton() {
   base::SimpleTestTickClock tick_clock;
   auto dispatch_power_button_event_after_delay =
       [&](const base::TimeDelta& delta, bool down) {
-        tick_clock.Advance(delta + base::TimeDelta::FromMilliseconds(1));
+        tick_clock.Advance(delta + base::Milliseconds(1));
         Shell::Get()->power_button_controller()->OnPowerButtonEvent(
             down, tick_clock.NowTicks());
         base::RunLoop().RunUntilIdle();
@@ -108,15 +115,57 @@ void SimulateMediaSessionChanged(
 // important.
 AuthDisabledData GetTestDisabledAuthData() {
   return AuthDisabledData(ash::AuthDisabledReason::kTimeWindowLimit,
-                          base::Time::Now() + base::TimeDelta::FromHours(8),
-                          base::TimeDelta::FromHours(1),
+                          base::Time::Now() + base::Hours(8), base::Hours(1),
                           true /*disable_lock_screen_media*/);
 }
 
 }  // namespace
 
-using LockContentsViewUnitTest = LoginTestBase;
 using LockContentsViewKeyboardUnitTest = LoginKeyboardTestBase;
+
+class LockContentsViewUnitTest : public LoginTestBase {
+ public:
+  LockContentsViewUnitTest() { set_start_session(true); }
+  LockContentsViewUnitTest(LockContentsViewUnitTest&) = delete;
+  LockContentsViewUnitTest& operator=(LockContentsViewUnitTest&) = delete;
+  ~LockContentsViewUnitTest() override = default;
+
+  // Returns true if the easy unlock icon is displayed for |view|.
+  bool IsEasyUnlockIconShowing(LoginBigUserView* view) {
+    if (!view->auth_user())
+      return false;
+
+    views::View* icon =
+        LoginPasswordView::TestApi(
+            LoginAuthUserView::TestApi(view->auth_user()).password_view())
+            .easy_unlock_icon();
+    return icon->GetVisible();
+  }
+
+  // Change the active LoginBigUserView by sending a mouse click event.
+  void MakeAuthViewActive(LoginBigUserView* view) {
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    // Send event to swap users.
+    LoginUserView* user_view = view->GetUserView();
+    generator->MoveMouseTo(user_view->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+  }
+
+  void VerifyUpdatingSmartLockStateSetsAuthMethod(
+      LoginBigUserView* view,
+      SmartLockState smart_lock_state,
+      bool should_have_auth_method) {
+    ASSERT_TRUE(view);
+    LoginAuthUserView* auth_user_view = view->auth_user();
+    ASSERT_TRUE(auth_user_view);
+    LoginAuthUserView::TestApi test_api(auth_user_view);
+    AccountId account_id = view->GetCurrentUser().basic_user_info.account_id;
+
+    DataDispatcher()->SetSmartLockState(account_id, smart_lock_state);
+    EXPECT_EQ(should_have_auth_method,
+              test_api.HasAuthMethod(LoginAuthUserView::AUTH_SMART_LOCK));
+  }
+};
 
 TEST_F(LockContentsViewUnitTest, DisplayMode) {
   // Build lock screen with 1 user.
@@ -278,9 +327,9 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutAfterRotation) {
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   LockContentsView::TestApi lock_contents(contents);
   SetUserCount(3);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
   // Returns the distance between the auth user view and the user view.
   auto calculate_distance = [&]() {
@@ -298,11 +347,13 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutAfterRotation) {
           widget->GetNativeWindow());
   for (int i = 2; i < 10; ++i) {
     SetUserCount(i);
+    SCOPED_TRACE(testing::Message() << "User count: " << i);
 
     // Start at 0 degrees (landscape).
     display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_0,
         display::Display::RotationSource::ACTIVE);
+    widget->LayoutRootViewIfNecessary();
     int distance_0deg = calculate_distance();
     EXPECT_NE(distance_0deg, 0);
 
@@ -310,16 +361,18 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutAfterRotation) {
     display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_90,
         display::Display::RotationSource::ACTIVE);
+    widget->LayoutRootViewIfNecessary();
     int distance_90deg = calculate_distance();
-    EXPECT_GT(distance_0deg, distance_90deg);
+    EXPECT_LT(distance_90deg, distance_0deg);
 
     // Rotate the display back to 0 degrees (landscape).
     display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_0,
         display::Display::RotationSource::ACTIVE);
-    int distance_180deg = calculate_distance();
-    EXPECT_EQ(distance_0deg, distance_180deg);
-    EXPECT_NE(distance_0deg, distance_90deg);
+    widget->LayoutRootViewIfNecessary();
+    int distance_0deg_2 = calculate_distance();
+    EXPECT_EQ(distance_0deg_2, distance_0deg);
+    EXPECT_NE(distance_0deg_2, distance_90deg);
   }
 }
 
@@ -329,10 +382,10 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutExtraSmallUsersListAfterRotation) {
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   SetUserCount(9);
   ScrollableUsersListView* users_list =
       LockContentsView::TestApi(contents).users_list();
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
   // Users list in extra small layout should adjust its height to parent.
   EXPECT_EQ(contents->height(), users_list->height());
@@ -366,10 +419,10 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutSmallUsersListAfterRotation) {
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   SetUserCount(4);
   ScrollableUsersListView* users_list =
       LockContentsView::TestApi(contents).users_list();
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
   // Calculate top spacing between users list and lock screen contents.
   auto top_margin = [&]() {
@@ -547,11 +600,11 @@ TEST_F(LockContentsViewUnitTest, SwapUserListToPrimaryAuthUser) {
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   LockContentsView::TestApi lock_contents(contents);
   SetUserCount(5);
   ScrollableUsersListView::TestApi users_list(lock_contents.users_list());
   EXPECT_EQ(users().size() - 1, users_list.user_views().size());
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
   LoginBigUserView* auth_view = lock_contents.primary_big_view();
 
@@ -743,13 +796,13 @@ TEST_F(LockContentsViewUnitTest, AltVTogglesHiddenSystemInfo) {
   EXPECT_FALSE(test_api.system_info()->GetVisible());
 
   // Alt-V shows hidden system info.
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_V, ui::EF_ALT_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_V, ui::EF_ALT_DOWN);
   EXPECT_TRUE(test_api.system_info()->GetVisible());
   // System info is not empty, ie, it is actually being displayed.
   EXPECT_FALSE(test_api.system_info()->bounds().IsEmpty());
 
   // Alt-V again hides the system info.
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_V, ui::EF_ALT_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_V, ui::EF_ALT_DOWN);
   EXPECT_FALSE(test_api.system_info()->GetVisible());
 }
 
@@ -820,25 +873,13 @@ TEST_F(LockContentsViewUnitTest, ShowStatusIndicatorIfAdbSideloadingEnabled) {
   EXPECT_TRUE(test_api.bottom_status_indicator()->GetVisible());
 }
 
-class LockContentsViewUnitTestWithDeviceDisclosureEnabled
-    : public LockContentsViewUnitTest {
- public:
-  LockContentsViewUnitTestWithDeviceDisclosureEnabled()
-      : LockContentsViewUnitTest() {
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kLoginDeviceManagementDisclosure}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Show bottom status indicator if device is enrolled
-TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
-       ShowStatusIndicatorIfEnrolledDevice) {
+TEST_F(LockContentsViewUnitTest, ShowStatusIndicatorIfEnrolledDevice) {
   // If the device is enrolled, bottom_status_indicator should be visible.
-  Shell::Get()->system_tray_model()->SetEnterpriseDomainInfo("BestCompanyEver",
-                                                             false);
+  Shell::Get()->system_tray_model()->SetDeviceEnterpriseInfo(
+      DeviceEnterpriseInfo{"BestCompanyEver",
+                           /*active_directory_managed=*/false,
+                           ManagementDeviceMode::kNone});
 
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
@@ -860,11 +901,12 @@ TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
 }
 
 // Show bottom status indicator if device is enrolled
-TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
-       ShowManagementBubbleOnClickIfEnrolledDevice) {
+TEST_F(LockContentsViewUnitTest, ShowManagementBubbleOnClickIfEnrolledDevice) {
   // If the device is enrolled, bottom_status_indicator should be visible.
-  Shell::Get()->system_tray_model()->SetEnterpriseDomainInfo("BestCompanyEver",
-                                                             false);
+  Shell::Get()->system_tray_model()->SetDeviceEnterpriseInfo(
+      DeviceEnterpriseInfo{"BestCompanyEver",
+                           /*active_directory_managed=*/false,
+                           ManagementDeviceMode::kNone});
 
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
@@ -896,11 +938,12 @@ TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
 
 // Do not show the management bubble on click if ADB sideloading is enabled and
 // device is enrolled.
-TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
-       DoNotShowManagementBubbleOnClickIfAdb) {
+TEST_F(LockContentsViewUnitTest, DoNotShowManagementBubbleOnClickIfAdb) {
   // If the device is enrolled, bottom_status_indicator should be visible.
-  Shell::Get()->system_tray_model()->SetEnterpriseDomainInfo("BestCompanyEver",
-                                                             false);
+  Shell::Get()->system_tray_model()->SetDeviceEnterpriseInfo(
+      DeviceEnterpriseInfo{"BestCompanyEver",
+                           /*active_directory_managed=*/false,
+                           ManagementDeviceMode::kNone});
 
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
@@ -933,128 +976,6 @@ TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
   EXPECT_FALSE(test_api.management_bubble()->GetVisible());
 }
 
-// Verifies the easy unlock tooltip is automatically displayed when requested.
-TEST_F(LockContentsViewUnitTest, EasyUnlockForceTooltipCreatesTooltipWidget) {
-  auto* lock = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
-      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-
-  SetUserCount(1);
-  SetWidget(CreateWidgetWithContent(lock));
-
-  LockContentsView::TestApi test_api(lock);
-  // Creating lock screen does not show tooltip bubble.
-  EXPECT_FALSE(test_api.tooltip_bubble()->GetVisible());
-
-  // Show an icon with |autoshow_tooltip| is false. Tooltip bubble is not
-  // activated.
-  EasyUnlockIconOptions icon;
-  icon.icon = EasyUnlockIconId::LOCKED;
-  icon.autoshow_tooltip = false;
-  DataDispatcher()->ShowEasyUnlockIcon(users()[0].basic_user_info.account_id,
-                                       icon);
-  EXPECT_FALSE(test_api.tooltip_bubble()->GetVisible());
-
-  // Show icon with |autoshow_tooltip| set to true. Tooltip bubble is shown.
-  icon.autoshow_tooltip = true;
-  DataDispatcher()->ShowEasyUnlockIcon(users()[0].basic_user_info.account_id,
-                                       icon);
-  EXPECT_TRUE(test_api.tooltip_bubble()->GetVisible());
-}
-
-// Verifies that easy unlock icon state persists when changing auth user.
-TEST_F(LockContentsViewUnitTest, EasyUnlockIconUpdatedDuringUserSwap) {
-  // Build lock screen with two users.
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
-      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  SetUserCount(2);
-  SetWidget(CreateWidgetWithContent(contents));
-
-  LockContentsView::TestApi test_api(contents);
-  LoginBigUserView* primary = test_api.primary_big_view();
-  LoginBigUserView* secondary = test_api.opt_secondary_big_view();
-
-  // Returns true if the easy unlock icon is displayed for |view|.
-  auto showing_easy_unlock_icon = [&](LoginBigUserView* view) {
-    if (!view->auth_user())
-      return false;
-
-    views::View* icon =
-        LoginPasswordView::TestApi(
-            LoginAuthUserView::TestApi(view->auth_user()).password_view())
-            .easy_unlock_icon();
-    return icon->GetVisible();
-  };
-
-  // Enables easy unlock icon for |view|.
-  auto enable_icon = [&](LoginBigUserView* view) {
-    EasyUnlockIconOptions icon;
-    icon.icon = EasyUnlockIconId::LOCKED;
-    DataDispatcher()->ShowEasyUnlockIcon(
-        view->GetCurrentUser().basic_user_info.account_id, icon);
-  };
-
-  // Disables easy unlock icon for |view|.
-  auto disable_icon = [&](LoginBigUserView* view) {
-    EasyUnlockIconOptions icon;
-    icon.icon = EasyUnlockIconId::NONE;
-    DataDispatcher()->ShowEasyUnlockIcon(
-        view->GetCurrentUser().basic_user_info.account_id, icon);
-  };
-
-  // Makes |view| the active auth view so it will can show auth methods.
-  auto make_active_auth_view = [&](LoginBigUserView* view) {
-    // Send event to swap users.
-    ui::test::EventGenerator* generator = GetEventGenerator();
-    LoginUserView* user_view = view->GetUserView();
-    generator->MoveMouseTo(user_view->GetBoundsInScreen().CenterPoint());
-    generator->ClickLeftButton();
-  };
-
-  // NOTE: we cannot assert on non-active auth views because the easy unlock
-  // icon is lazily updated, ie, if we're not showing the view we will not
-  // update icon state.
-
-  // No easy unlock icons are shown.
-  make_active_auth_view(primary);
-  EXPECT_FALSE(showing_easy_unlock_icon(primary));
-
-  // Activate icon for primary.
-  enable_icon(primary);
-  EXPECT_TRUE(showing_easy_unlock_icon(primary));
-
-  // Secondary does not have easy unlock enabled; swapping auth hides the icon.
-  make_active_auth_view(secondary);
-  EXPECT_FALSE(showing_easy_unlock_icon(secondary));
-
-  // Switching back enables the icon again.
-  make_active_auth_view(primary);
-  EXPECT_TRUE(showing_easy_unlock_icon(primary));
-
-  // Activate icon for secondary. Primary visiblity does not change.
-  enable_icon(secondary);
-  EXPECT_TRUE(showing_easy_unlock_icon(primary));
-
-  // Swap to secondary, icon still visible.
-  make_active_auth_view(secondary);
-  EXPECT_TRUE(showing_easy_unlock_icon(secondary));
-
-  // Deactivate secondary, icon hides.
-  disable_icon(secondary);
-  EXPECT_FALSE(showing_easy_unlock_icon(secondary));
-
-  // Deactivate primary, icon still hidden.
-  disable_icon(primary);
-  EXPECT_FALSE(showing_easy_unlock_icon(secondary));
-
-  // Enable primary, icon still hidden.
-  enable_icon(primary);
-  EXPECT_FALSE(showing_easy_unlock_icon(secondary));
-}
-
 TEST_F(LockContentsViewUnitTest, ShowErrorBubbleOnAuthFailure) {
   // Build lock screen with a single user.
   auto* contents = new LockContentsView(
@@ -1073,20 +994,19 @@ TEST_F(LockContentsViewUnitTest, ShowErrorBubbleOnAuthFailure) {
                            users()[0].basic_user_info.account_id, _, false, _));
 
   // Submit password.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
 
   // The error bubble is expected to close on a user action - e.g. if they start
   // typing the password again.
-  generator->PressKey(ui::KeyboardCode::VKEY_B, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_B);
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 }
 
-TEST_F(LockContentsViewUnitTest, AuthErrorButtonClickable) {
+TEST_F(LockContentsViewUnitTest, AuthErrorLockscreenLearnMoreButton) {
   // Build lock screen with a single user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -1108,17 +1028,26 @@ TEST_F(LockContentsViewUnitTest, AuthErrorButtonClickable) {
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 
   // Submit password.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   // Auth Error button should be visible as an incorrect password was given.
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
 
   // Find button in auth_error_bubble children.
-  views::View* button = FindTopButton(test_api.auth_error_bubble());
-  ASSERT_TRUE(button);
+  views::View* learn_more_button = nullptr;
+  for (views::View* child :
+       test_api.auth_error_bubble()->GetContent()->children()) {
+    if (views::Button::AsButton(child)) {
+      // The bubble should only have one button ("learn more") on the lock
+      // screen.
+      EXPECT_FALSE(learn_more_button);
+      learn_more_button = child;
+    }
+  }
+
+  EXPECT_TRUE(learn_more_button);
 
   // Expect ShowAccountAccessHelp() to be called due to button click.
   EXPECT_CALL(*client, ShowAccountAccessHelpApp(widget()->GetNativeWindow()))
@@ -1126,11 +1055,77 @@ TEST_F(LockContentsViewUnitTest, AuthErrorButtonClickable) {
 
   // Move mouse to AuthError's ShowAccountAccessHelp button and click it.
   // Should result in ShowAccountAccessHelpApp().
-  generator->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(learn_more_button->GetBoundsInScreen().CenterPoint());
   generator->ClickLeftButton();
 
-  // AuthErrorButton should go away after button press.
+  // The error bubble should go away after button press.
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
+}
+
+TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenForgotPasswordButton) {
+  // Enable the "forgot password" button.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kCryptohomeRecoveryFlowUI, features::kCryptohomeRecoveryFlow},
+      {});
+
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetUserCount(1);
+
+  SetWidget(CreateWidgetWithContent(contents));
+
+  LockContentsView::TestApi test_api(contents);
+
+  // Password submit runs mojo.
+  auto client = std::make_unique<MockLoginScreenClient>();
+  client->set_authenticate_user_callback_result(false);
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
+                           users()[0].basic_user_info.account_id, _, false, _));
+
+  // AuthErrorButton should not be visible yet.
+  EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
+
+  // Submit password.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  base::RunLoop().RunUntilIdle();
+
+  // Auth Error button should be visible as an incorrect password was given.
+  EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
+
+  // There should be two buttons in the error bubble: The "learn more" button
+  // and the "forgot password" button, in that order.
+  std::vector<views::Button*> buttons;
+  for (views::View* child :
+       test_api.auth_error_bubble()->GetContent()->children()) {
+    if (views::Button* button = views::Button::AsButton(child)) {
+      buttons.push_back(button);
+    }
+  }
+  EXPECT_EQ(2u, buttons.size());
+  views::Button* forgot_password_button = buttons[1];
+
+  // Expect the ShowGaiaSignin to be called due to button click.
+  EXPECT_CALL(*client, ShowGaiaSignin(users()[0].basic_user_info.account_id))
+      .Times(1);
+
+  // Move mouse to the "Forgot password" button and click it.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(
+      forgot_password_button->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+
+  // The error bubble should be hidden because of the button press.
+  EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
+
+  absl::optional<int> reauth_reason =
+      user_manager::KnownUser(Shell::Get()->local_state())
+          .FindReauthReason(users()[0].basic_user_info.account_id);
+  EXPECT_EQ(reauth_reason, static_cast<int>(ReauthReason::kForgotPassword));
 }
 
 // Gaia is never shown on lock, no mater how many times auth fails.
@@ -1147,9 +1142,8 @@ TEST_F(LockContentsViewUnitTest, GaiaNeverShownOnLockAfterFailedAuth) {
   client->set_authenticate_user_callback_result(false);
 
   auto submit_password = [&]() {
-    ui::test::EventGenerator* generator = GetEventGenerator();
-    generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-    generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
     base::RunLoop().RunUntilIdle();
   };
 
@@ -1157,6 +1151,50 @@ TEST_F(LockContentsViewUnitTest, GaiaNeverShownOnLockAfterFailedAuth) {
   EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
   for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog + 1; ++i)
     submit_password();
+}
+
+// Gaia should not be shown after first failed login attempt for a user, even if
+// there are many failed login attempts made by other users on the same device.
+TEST_F(LockContentsViewUnitTest, GaiaNeverShownAfterFirstFailedLoginAttempt) {
+  // Build lock screen with two users.
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetUserCount(2);
+  SetWidget(CreateWidgetWithContent(contents));
+
+  auto client = std::make_unique<MockLoginScreenClient>();
+  client->set_authenticate_user_callback_result(false);
+
+  auto submit_password = [&]() {
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+    base::RunLoop().RunUntilIdle();
+  };
+
+  // ShowGaiaSignin is never triggered.
+  EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
+  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog - 1; ++i)
+    submit_password();
+  Mock::VerifyAndClearExpectations(client.get());
+
+  // Simulate a button click on the secondary UserView.
+  LoginAuthUserView::TestApi secondary_user(LockContentsView::TestApi(contents)
+                                                .opt_secondary_big_view()
+                                                ->auth_user());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(
+      secondary_user.user_view()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+  EXPECT_TRUE(LoginPasswordView::TestApi(secondary_user.password_view())
+                  .textfield()
+                  ->HasFocus());
+
+  // Verify ShowGaiaSignin is not triggered for other users.
+  EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
+  submit_password();
+  Mock::VerifyAndClearExpectations(client.get());
 }
 
 // Gaia is shown in login on the 4th bad password attempt.
@@ -1173,9 +1211,8 @@ TEST_F(LockContentsViewUnitTest, ShowGaiaAuthAfterManyFailedLoginAttempts) {
   client->set_authenticate_user_callback_result(false);
 
   auto submit_password = [&]() {
-    ui::test::EventGenerator* generator = GetEventGenerator();
-    generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-    generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
     base::RunLoop().RunUntilIdle();
   };
 
@@ -1226,7 +1263,7 @@ TEST_F(LockContentsViewUnitTest, ErrorBubbleOnUntrustedDetachableBase) {
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
 
   // Verify that the bubble is not hidden if the user starts typing.
-  generator->PressKey(ui::KeyboardCode::VKEY_B, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_B);
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
 
   // Switching to the user that doesn't have previously used detachable base
@@ -1263,8 +1300,8 @@ TEST_F(LockContentsViewUnitTest, ErrorBubbleOnUntrustedDetachableBase) {
 
   // Submit password.
   primary_test_api.password_view()->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ("5678",
@@ -1302,7 +1339,7 @@ TEST_F(LockContentsViewUnitTest, ErrorBubbleForUnauthenticatedDetachableBase) {
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
 
   // Verify that the bubble is not hidden if the user starts typing.
-  generator->PressKey(ui::KeyboardCode::VKEY_B, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_B);
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
 
   // Switching to another user should not hide the error bubble.
@@ -1324,8 +1361,8 @@ TEST_F(LockContentsViewUnitTest, ErrorBubbleForUnauthenticatedDetachableBase) {
 
   // Submit password.
   secondary_test_api.password_view()->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ("", detachable_base_model->GetLastUsedBase(kFirstUserAccountId));
@@ -1392,7 +1429,6 @@ TEST_F(LockContentsViewUnitTest, DetachableBaseErrorClearsAuthError) {
   SetWidget(CreateWidgetWithContent(contents));
 
   LockContentsView::TestApi test_api(contents);
-  ui::test::EventGenerator* generator = GetEventGenerator();
 
   EXPECT_FALSE(test_api.detachable_base_error_bubble()->GetVisible());
 
@@ -1403,8 +1439,8 @@ TEST_F(LockContentsViewUnitTest, DetachableBaseErrorClearsAuthError) {
               AuthenticateUserWithPasswordOrPin_(kUserAccountId, _, false, _));
 
   // Submit password.
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
@@ -1443,7 +1479,6 @@ TEST_F(LockContentsViewUnitTest, AuthErrorDoesNotRemoveDetachableBaseError) {
       DetachableBasePairingStatus::kAuthenticated, "1234");
 
   LockContentsView::TestApi test_api(contents);
-  ui::test::EventGenerator* generator = GetEventGenerator();
 
   EXPECT_FALSE(test_api.detachable_base_error_bubble()->GetVisible());
 
@@ -1466,8 +1501,8 @@ TEST_F(LockContentsViewUnitTest, AuthErrorDoesNotRemoveDetachableBaseError) {
   LoginAuthUserView::TestApi(test_api.primary_big_view()->auth_user())
       .password_view()
       ->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
@@ -1475,7 +1510,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorDoesNotRemoveDetachableBaseError) {
 
   // User action, like pressing a key should close the auth error bubble, but
   // not the detachable base error bubble.
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
 
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
@@ -1490,6 +1525,10 @@ TEST_F(LockContentsViewKeyboardUnitTest, SwitchPinAndVirtualKeyboard) {
   // Add user who can use pin authentication.
   const std::string email = "user@domain.com";
   AddUserByEmail(email);
+  // When the user gets added, the password textfield is shown by default and
+  // automatically gets focused, resulting in the virtual keyboard being shown
+  // if enabled.
+  ASSERT_NO_FATAL_FAILURE(HideKeyboard());
   contents->OnPinEnabledForUserChanged(AccountId::FromUserEmail(email), true);
   LoginBigUserView* big_view =
       LockContentsView::TestApi(contents).primary_big_view();
@@ -1618,6 +1657,10 @@ TEST_F(LockContentsViewKeyboardUnitTest, PinSubmitWithVirtualKeyboardShown) {
   // Add user who can use pin authentication.
   const std::string email = "user@domain.com";
   AddUserByEmail(email);
+  // When the user gets added, the password textfield is shown by default and
+  // automatically gets focused, resulting in the virtual keyboard being shown
+  // if enabled.
+  ASSERT_NO_FATAL_FAILURE(HideKeyboard());
   contents->OnPinEnabledForUserChanged(AccountId::FromUserEmail(email), true);
   LoginBigUserView* big_view =
       LockContentsView::TestApi(contents).primary_big_view();
@@ -1628,9 +1671,9 @@ TEST_F(LockContentsViewKeyboardUnitTest, PinSubmitWithVirtualKeyboardShown) {
   EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
                            _, "1111", true /*authenticated_by_pin*/, _));
 
-  // Hide the PIN keyboard.
   LoginPinView* pin_view =
       LoginAuthUserView::TestApi(big_view->auth_user()).pin_view();
+  // Hide the PIN keyboard when the virtual keyboard is shown.
   EXPECT_TRUE(pin_view->GetVisible());
   ASSERT_NO_FATAL_FAILURE(ShowKeyboard());
   EXPECT_FALSE(pin_view->GetVisible());
@@ -1639,12 +1682,11 @@ TEST_F(LockContentsViewKeyboardUnitTest, PinSubmitWithVirtualKeyboardShown) {
   LoginAuthUserView::TestApi(big_view->auth_user())
       .password_view()
       ->RequestFocus();
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_1, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_1, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_1, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_1, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, 0);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1853,7 +1895,7 @@ TEST_F(LockContentsViewUnitTest, AuthUserSwapFocusesPassword) {
     // user, which shows and focuses the password.
     test_api.user_view()->RequestFocus();
     EXPECT_FALSE(HasFocusInAnyChildView(password));
-    GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
     EXPECT_TRUE(HasFocusInAnyChildView(password));
   };
 
@@ -1882,10 +1924,10 @@ TEST_F(LockContentsViewUnitTest, TapOnAuthUserFocusesPassword) {
 
     // Activate |auth_target|.
     auth_user_test_api.user_view()->RequestFocus();
-    GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
     // Move focus off of |auth_target|'s password.
     ASSERT_TRUE(HasFocusInAnyChildView(password));
-    GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_TAB, 0);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
     EXPECT_FALSE(HasFocusInAnyChildView(password));
 
     // Click the user view, verify the password was focused.
@@ -1912,9 +1954,9 @@ TEST_F(LockContentsViewUnitTest, UserListUserSwapFocusesPassword) {
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   LockContentsView::TestApi contents_test_api(contents);
   AddUsers(3);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
   LoginPasswordView* password_view =
       LoginAuthUserView::TestApi(
@@ -1926,7 +1968,7 @@ TEST_F(LockContentsViewUnitTest, UserListUserSwapFocusesPassword) {
   // user view, verify the password now has focus.
   user_view->RequestFocus();
   EXPECT_FALSE(HasFocusInAnyChildView(password_view));
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_TRUE(HasFocusInAnyChildView(password_view));
 }
 
@@ -1938,8 +1980,8 @@ TEST_F(LockContentsViewUnitTest, BadDetachableBaseUnfocusesPasswordView) {
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(), std::move(fake_detachable_base_model));
-  SetUserCount(3);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
+  SetUserCount(3);
 
   LockContentsView::TestApi test_api(contents);
   LoginBigUserView* primary_view = test_api.primary_big_view();
@@ -1956,7 +1998,7 @@ TEST_F(LockContentsViewUnitTest, BadDetachableBaseUnfocusesPasswordView) {
   // Swapping to another user should still not focus password view.
   LoginUserView* first_list_user = test_api.users_list()->user_view_at(0);
   first_list_user->RequestFocus();
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_FALSE(
       login_views_utils::HasFocusInAnyChildView(primary_password_view));
 }
@@ -1984,7 +2026,7 @@ TEST_F(LockContentsViewUnitTest, ExpandedPublicSessionView) {
 
   // Open the expanded public session view.
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
 
   EXPECT_FALSE(main_view->GetVisible());
   EXPECT_TRUE(expanded_view->GetVisible());
@@ -2051,6 +2093,60 @@ TEST_F(LockContentsViewUnitTest, OnAuthEnabledForUserChanged) {
   EXPECT_TRUE(password_view->GetVisible());
   EXPECT_TRUE(pin_view->GetVisible());
   EXPECT_FALSE(disabled_auth_message->GetVisible());
+}
+
+TEST_F(LockContentsViewUnitTest, ShowReasonOnAuthDisabled) {
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetUserCount(1);
+  SetWidget(CreateWidgetWithContent(contents));
+
+  const AccountId& kFirstUserAccountId = users()[0].basic_user_info.account_id;
+  LockContentsView::TestApi contents_test_api(contents);
+  LoginAuthUserView::TestApi auth_test_api(
+      contents_test_api.primary_big_view()->auth_user());
+  LoginPasswordView* password_view = auth_test_api.password_view();
+  LoginPinView* pin_view = auth_test_api.pin_view();
+  views::View* disabled_auth_message = auth_test_api.disabled_auth_message();
+
+  // The password field is shown by default.
+  EXPECT_TRUE(password_view->GetVisible());
+  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_FALSE(disabled_auth_message->GetVisible());
+  // Setting auth disabled due to time window limit.
+  DataDispatcher()->DisableAuthForUser(
+      kFirstUserAccountId,
+      AuthDisabledData(ash::AuthDisabledReason::kTimeWindowLimit,
+                       base::Time::Now().LocalMidnight() + base::Hours(8),
+                       base::Hours(1), true /*disable_lock_screen_media*/));
+  EXPECT_FALSE(password_view->GetVisible());
+  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_COME_BACK_MESSAGE, u"8:00 AM"),
+      auth_test_api.GetDisabledAuthMessageContent());
+  // Setting auth disabled due to time usage limit.
+  DataDispatcher()->DisableAuthForUser(
+      kFirstUserAccountId,
+      AuthDisabledData(ash::AuthDisabledReason::kTimeUsageLimit,
+                       base::Time::Now(), base::Minutes(30),
+                       true /*disable_lock_screen_media*/));
+  EXPECT_FALSE(password_view->GetVisible());
+  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_SCREEN_TIME_USED_MESSAGE,
+                                       u"30 minutes"),
+            auth_test_api.GetDisabledAuthMessageContent());
+  // Setting auth disabled due to time limit override.
+  DataDispatcher()->DisableAuthForUser(
+      kFirstUserAccountId,
+      AuthDisabledData(ash::AuthDisabledReason::kTimeLimitOverride,
+                       base::Time::Now(), base::Minutes(30),
+                       true /*disable_lock_screen_media*/));
+  EXPECT_FALSE(password_view->GetVisible());
+  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_LOGIN_MANUAL_LOCK_MESSAGE),
+            auth_test_api.GetDisabledAuthMessageContent());
 }
 
 TEST_F(LockContentsViewUnitTest,
@@ -2154,8 +2250,7 @@ TEST_F(LockContentsViewUnitTest, DisableAuthAfterMediaSessionChanged) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(8),
-                       base::TimeDelta::FromHours(1),
+                       base::Time::Now() + base::Hours(8), base::Hours(1),
                        true /*disable_lock_screen_media*/));
   EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
 }
@@ -2180,8 +2275,7 @@ TEST_F(LockContentsViewUnitTest, DisableAuthBeforeMediaSessionChanged) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(8),
-                       base::TimeDelta::FromHours(1),
+                       base::Time::Now() + base::Hours(8), base::Hours(1),
                        true /*disable_lock_screen_media*/));
   EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
 
@@ -2216,8 +2310,7 @@ TEST_F(LockContentsViewUnitTest, DisableAuthAllowMediaControls) {
   DataDispatcher()->DisableAuthForUser(
       kFirstUserAccountId,
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
-                       base::Time::Now() + base::TimeDelta::FromHours(8),
-                       base::TimeDelta::FromHours(1),
+                       base::Time::Now() + base::Hours(8), base::Hours(1),
                        false /*disable_lock_screen_media*/));
   EXPECT_TRUE(lock_contents.media_controls_view()->IsDrawn());
 }
@@ -2345,11 +2438,10 @@ TEST_F(LockContentsViewUnitTest, ArrowNavSingleUser) {
       LockContentsView::TestApi(lock_contents).primary_big_view();
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_big_view));
 
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_RIGHT, 0);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_big_view));
 
-  generator->PressKey(ui::VKEY_LEFT, 0);
+  PressAndReleaseKey(ui::VKEY_LEFT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_big_view));
 }
 
@@ -2369,17 +2461,16 @@ TEST_F(LockContentsViewUnitTest, ArrowNavTwoUsers) {
   ASSERT_NE(nullptr, secondary_user_view);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_RIGHT, 0);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(secondary_user_view));
 
-  generator->PressKey(ui::VKEY_RIGHT, 0);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 
-  generator->PressKey(ui::VKEY_LEFT, 0);
+  PressAndReleaseKey(ui::VKEY_LEFT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(secondary_user_view));
 
-  generator->PressKey(ui::VKEY_LEFT, 0);
+  PressAndReleaseKey(ui::VKEY_LEFT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 }
 
@@ -2396,23 +2487,22 @@ TEST_F(LockContentsViewUnitTest, ArrowNavThreeUsers) {
   LoginUserView* second_list_user = lock_contents.users_list()->user_view_at(1);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_RIGHT, 0);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(first_list_user));
 
-  generator->PressKey(ui::VKEY_RIGHT, 0);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(second_list_user));
 
-  generator->PressKey(ui::VKEY_RIGHT, 0);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 
-  generator->PressKey(ui::VKEY_LEFT, 0);
+  PressAndReleaseKey(ui::VKEY_LEFT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(second_list_user));
 
-  generator->PressKey(ui::VKEY_LEFT, 0);
+  PressAndReleaseKey(ui::VKEY_LEFT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(first_list_user));
 
-  generator->PressKey(ui::VKEY_LEFT, 0);
+  PressAndReleaseKey(ui::VKEY_LEFT);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 }
 
@@ -2428,8 +2518,7 @@ TEST_F(LockContentsViewUnitTest, UserSwapFocusesBigView) {
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 
   lock_contents.users_list()->user_view_at(0)->RequestFocus();
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_TRUE(login_views_utils::HasFocusInAnyChildView(primary_password_view));
 }
 
@@ -2445,10 +2534,8 @@ TEST_F(LockContentsViewUnitTest, PowerwashShortcutSendsMojoCall) {
   EXPECT_CALL(*client,
               HandleAccelerator(ash::LoginAcceleratorAction::kShowResetScreen));
 
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_R, ui::EF_CONTROL_DOWN |
-                                                    ui::EF_ALT_DOWN |
-                                                    ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_R,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -2487,7 +2574,6 @@ TEST_F(LockContentsViewUnitTest, ShowHideWarningBannerBubble) {
   const AccountId& kUserAccountId = users()[0].basic_user_info.account_id;
 
   LockContentsView::TestApi test_api(lock);
-  ui::test::EventGenerator* generator = GetEventGenerator();
 
   // Creating lock screen does not show warning banner bubble.
   EXPECT_FALSE(test_api.warning_banner_bubble()->GetVisible());
@@ -2515,8 +2601,8 @@ TEST_F(LockContentsViewUnitTest, ShowHideWarningBannerBubble) {
   LoginAuthUserView::TestApi(test_api.primary_big_view()->auth_user())
       .password_view()
       ->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
@@ -2544,17 +2630,15 @@ TEST_F(LockContentsViewUnitTest, RemoveUserFocusMovesBackToPrimaryUser) {
       test_api.opt_secondary_big_view()->auth_user());
   LoginUserView::TestApi user_test_api(secondary_test_api.user_view());
 
-  // Remove the user.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  // Focus the dropdown to raise the bubble.
+  // Remove the user. First, focus the dropdown to raise the bubble.
   user_test_api.dropdown()->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
   // Focus the remove user bubble, tap twice to remove the user.
-  user_test_api.menu()->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  user_test_api.remove_account_dialog()->RequestFocus();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
 
   // Secondary user was removed.
@@ -2688,8 +2772,8 @@ TEST_F(LockContentsViewUnitTest, LoginNotReactingOnEventsWithOobeDialogShown) {
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  SetUserCount(3);
   SetWidget(CreateWidgetWithContent(contents));
+  SetUserCount(3);
 
   LockContentsView::TestApi lock_contents(contents);
   ScrollableUsersListView::TestApi users_list(lock_contents.users_list());
@@ -2776,7 +2860,7 @@ TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsHiddenAfterDelay) {
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Simulate media session stopping and delay.
-  lock_contents.media_controls_view()->MediaSessionChanged(base::nullopt);
+  lock_contents.media_controls_view()->MediaSessionChanged(absl::nullopt);
   mock_timer->Fire();
   base::RunLoop().RunUntilIdle();
 
@@ -2833,7 +2917,7 @@ TEST_F(LockContentsViewUnitTest, KeepMediaControlsShownWithinDelay) {
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Simulate media session stopping.
-  lock_contents.media_controls_view()->MediaSessionChanged(base::nullopt);
+  lock_contents.media_controls_view()->MediaSessionChanged(absl::nullopt);
 
   // Simulate new media session starting within timer delay.
   SimulateMediaSessionChanged(
@@ -2995,6 +3079,270 @@ TEST_F(LockContentsViewUnitTest, ToggleGaiaOnUsersChanged) {
   EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(1);
   AddUsers(0);
   Mock::VerifyAndClearExpectations(client.get());
+}
+
+TEST_F(LockContentsViewUnitTest, UpdatingSmartLockStateSetsAuthMethod) {
+  // Build login screen with 1 user.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  AddUsers(1);
+  SetWidget(CreateWidgetWithContent(contents));
+  LoginBigUserView* big_view =
+      LockContentsView::TestApi(contents).primary_big_view();
+
+  std::pair<SmartLockState, bool> state_and_is_auth_method_expected[] = {
+      {SmartLockState::kDisabled, false},
+      {SmartLockState::kInactive, false},
+      {SmartLockState::kBluetoothDisabled, true},
+      {SmartLockState::kPhoneNotLockable, true},
+      {SmartLockState::kPhoneNotFound, true},
+      {SmartLockState::kConnectingToPhone, true},
+      {SmartLockState::kPhoneNotAuthenticated, true},
+      {SmartLockState::kPhoneFoundLockedAndDistant, true},
+      {SmartLockState::kPhoneFoundLockedAndProximate, true},
+      {SmartLockState::kPhoneFoundUnlockedAndDistant, true},
+      {SmartLockState::kPhoneAuthenticated, true},
+      {SmartLockState::kPasswordReentryRequired, true},
+      {SmartLockState::kPrimaryUserAbsent, true}
+
+  };
+
+  for (const auto& it : state_and_is_auth_method_expected) {
+    VerifyUpdatingSmartLockStateSetsAuthMethod(
+        big_view, /*smart_lock_state=*/it.first,
+        /*should_have_auth_method=*/it.second);
+  }
+}
+
+TEST_F(LockContentsViewUnitTest, SmartLockStateHidesPasswordView) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Build login screen with 1 user.
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  LockContentsView::TestApi test_api(contents);
+  AddUsers(1);
+  const AccountId account_id = test_api.users()[0].account_id;
+  SetWidget(CreateWidgetWithContent(contents));
+  LoginBigUserView* big_view =
+      LockContentsView::TestApi(contents).primary_big_view();
+  ASSERT_TRUE(big_view);
+  LoginAuthUserView* auth_user_view = big_view->auth_user();
+  ASSERT_TRUE(auth_user_view);
+
+  EXPECT_TRUE(auth_user_view->password_view()->GetVisible());
+
+  // Check that password view is still visible when auth
+  // factor is in kReady state.
+  DataDispatcher()->SetSmartLockState(
+      account_id, SmartLockState::kPhoneFoundLockedAndProximate);
+  EXPECT_TRUE(auth_user_view->password_view()->GetVisible());
+
+  // Check that password view is no longer visible when auth
+  // factor is in kClickRequired state.
+  DataDispatcher()->SetSmartLockState(account_id,
+                                      SmartLockState::kPhoneAuthenticated);
+  EXPECT_FALSE(auth_user_view->password_view()->GetVisible());
+
+  // Check that password view becomes visible when auth
+  // factor is in kErrorPermanent state.
+  DataDispatcher()->SetSmartLockState(account_id,
+                                      SmartLockState::kPasswordReentryRequired);
+  EXPECT_TRUE(auth_user_view->password_view()->GetVisible());
+}
+
+TEST_F(LockContentsViewUnitTest, SmartLockStateHidesAuthErrorMessage) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  ASSERT_NO_FATAL_FAILURE(ShowLockScreen());
+  LockContentsView* contents =
+      LockScreen::TestApi(LockScreen::Get()).contents_view();
+  LockContentsView::TestApi test_api(contents);
+  SetUserCount(1);
+  const AccountId account_id = test_api.users()[0].account_id;
+  SetWidget(CreateWidgetWithContent(contents));
+
+  // Submit incorrect password to show auth error bubble.
+  auto client = std::make_unique<MockLoginScreenClient>();
+  client->set_authenticate_user_callback_result(false);
+  EXPECT_CALL(*client,
+              AuthenticateUserWithPasswordOrPin_(account_id, _, false, _));
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
+
+  // Check that the auth_error_bubble is no longer visible when the auth factor
+  // hides the password. Updating auth factor state to kAuthenticated by
+  // notifying a successful auth result will hide the password field.
+  DataDispatcher()->NotifySmartLockAuthResult(account_id, /*successful=*/true);
+  EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
+}
+
+class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
+ protected:
+  LockContentsViewWithKioskLicenseTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kCryptohomeRecoveryFlowUI);
+  }
+  LockContentsViewWithKioskLicenseTest(LockContentsViewWithKioskLicenseTest&) =
+      delete;
+  LockContentsViewWithKioskLicenseTest& operator=(
+      LockContentsViewWithKioskLicenseTest&) = delete;
+  ~LockContentsViewWithKioskLicenseTest() override = default;
+
+  void SetUp() override {
+    LoginTestBase::SetUp();
+    login_shelf_view_ = GetPrimaryShelf()->shelf_widget()->GetLoginShelfView();
+    // Set initial states.
+    NotifySessionStateChanged(session_manager::SessionState::OOBE);
+  }
+
+  void SetNumberOfKioskApps(int number_apps) {
+    std::vector<KioskAppMenuEntry> kiosk_apps(number_apps);
+    login_shelf_view_->SetKioskApps(kiosk_apps);
+  }
+
+  void NotifySessionStateChanged(session_manager::SessionState state) {
+    GetSessionControllerClient()->SetSessionState(state);
+    GetSessionControllerClient()->FlushForTest();
+  }
+
+  LoginShelfView* login_shelf_view_ = nullptr;  // Unowned.
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Checks default message hides if device is with kiosk license but with apps.
+TEST_F(LockContentsViewWithKioskLicenseTest,
+       ShouldNotShowKioskDefaultMessageWithApps) {
+  // Set up
+  const bool is_kiosk_license_mode = true;
+  login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
+  // Show login screen with no user.
+  ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
+  LockContentsView* lock_contents_view =
+      LockScreen::TestApi(LockScreen::Get()).contents_view();
+  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
+  LockContentsView::TestApi test_api(lock_contents_view);
+  SetUserCount(0);
+  std::unique_ptr<views::Widget> widget =
+      CreateWidgetWithContent(lock_contents_view);
+
+  NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
+  SetNumberOfKioskApps(1);
+
+  EXPECT_TRUE(test_api.kiosk_default_message());
+  EXPECT_FALSE(test_api.kiosk_default_message()->GetVisible());
+}
+
+// Checks default message hidden if device is not with kiosk license and has
+// no apps.
+TEST_F(LockContentsViewWithKioskLicenseTest, ShouldHideKioskDefaultMessage) {
+  // Set up
+  const bool is_kiosk_license_mode = false;
+  login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
+  // Show login screen with no user.
+  ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
+  LockContentsView* lock_contents_view =
+      LockScreen::TestApi(LockScreen::Get()).contents_view();
+  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
+  LockContentsView::TestApi test_api(lock_contents_view);
+  SetUserCount(0);
+  std::unique_ptr<views::Widget> widget =
+      CreateWidgetWithContent(lock_contents_view);
+
+  NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
+  SetNumberOfKioskApps(0);
+
+  EXPECT_FALSE(test_api.kiosk_default_message());
+}
+
+// Checks default message appeared if device is with kiosk license and no
+// kiosk app is set up.
+TEST_F(LockContentsViewWithKioskLicenseTest,
+       ShouldShowKioskDefaultMessageWithoutApps) {
+  // Set up
+  const bool is_kiosk_license_mode = true;
+  login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
+  // Show login screen with no user.
+  ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
+  LockContentsView* lock_contents_view =
+      LockScreen::TestApi(LockScreen::Get()).contents_view();
+  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
+  LockContentsView::TestApi test_api(lock_contents_view);
+  SetUserCount(0);
+  std::unique_ptr<views::Widget> widget =
+      CreateWidgetWithContent(lock_contents_view);
+
+  NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
+  SetNumberOfKioskApps(0);
+
+  EXPECT_TRUE(test_api.kiosk_default_message());
+  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
+}
+
+// Checks default message appeared if device is with kiosk license, no
+// kiosk app is set up and has users.
+TEST_F(LockContentsViewWithKioskLicenseTest,
+       ShouldShowKioskDefaultMessageWithoutAppsWithUsers) {
+  // Set up
+  const bool is_kiosk_license_mode = true;
+  login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
+  // Show login screen with one user.
+  ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
+  LockContentsView* lock_contents_view =
+      LockScreen::TestApi(LockScreen::Get()).contents_view();
+  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
+  LockContentsView::TestApi test_api(lock_contents_view);
+  SetUserCount(1);
+  std::unique_ptr<views::Widget> widget =
+      CreateWidgetWithContent(lock_contents_view);
+
+  NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
+  SetNumberOfKioskApps(0);
+
+  EXPECT_TRUE(test_api.kiosk_default_message());
+  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
+}
+
+// Checks default message appeared if device is with kiosk license and no
+// kiosk app is set up. After some kiosk app is set up, the default message
+// shall disappear.
+TEST_F(LockContentsViewWithKioskLicenseTest,
+       ShouldShowAndHideKioskDefaultMessageWithAppChanges) {
+  // Set up
+  const bool is_kiosk_license_mode = true;
+  login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
+  // Show login screen with no user.
+  ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
+  LockContentsView* lock_contents_view =
+      LockScreen::TestApi(LockScreen::Get()).contents_view();
+  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
+  LockContentsView::TestApi test_api(lock_contents_view);
+  SetUserCount(0);
+  std::unique_ptr<views::Widget> widget =
+      CreateWidgetWithContent(lock_contents_view);
+
+  NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
+  SetNumberOfKioskApps(0);
+
+  EXPECT_TRUE(test_api.kiosk_default_message());
+  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
+
+  SetNumberOfKioskApps(1);
+
+  EXPECT_TRUE(test_api.kiosk_default_message());
+  EXPECT_FALSE(test_api.kiosk_default_message()->GetVisible());
 }
 
 }  // namespace ash

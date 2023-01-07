@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,9 @@ class BlobStorageBrowserTest : public ContentBrowserTest {
     limits_.max_file_size = kTestBlobStorageMaxFileSizeBytes;
   }
 
+  BlobStorageBrowserTest(const BlobStorageBrowserTest&) = delete;
+  BlobStorageBrowserTest& operator=(const BlobStorageBrowserTest&) = delete;
+
   scoped_refptr<ChromeBlobStorageContext> GetBlobContext() {
     return ChromeBlobStorageContext::GetFor(
         shell()->web_contents()->GetBrowserContext());
@@ -79,19 +82,13 @@ class BlobStorageBrowserTest : public ContentBrowserTest {
     std::string result =
         the_browser->web_contents()->GetLastCommittedURL().ref();
     if (result != "pass") {
-      std::string js_result;
-      ASSERT_TRUE(ExecuteScriptAndExtractString(
-          the_browser, "window.domAutomationController.send(getLog())",
-          &js_result));
+      std::string js_result = EvalJs(the_browser, "getLog()").ExtractString();
       FAIL() << "Failed: " << js_result;
     }
   }
 
  protected:
   storage::BlobStorageLimits limits_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlobStorageBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BlobStorageBrowserTest, BlobCombinations) {

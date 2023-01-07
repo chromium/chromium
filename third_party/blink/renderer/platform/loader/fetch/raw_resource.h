@@ -25,7 +25,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
@@ -49,9 +48,6 @@ class PLATFORM_EXPORT RawResource final : public Resource {
   static RawResource* Fetch(FetchParameters&,
                             ResourceFetcher*,
                             RawResourceClient*);
-  static RawResource* FetchImport(FetchParameters&,
-                                  ResourceFetcher*,
-                                  RawResourceClient*);
   static RawResource* FetchMedia(FetchParameters&,
                                  ResourceFetcher*,
                                  RawResourceClient*);
@@ -81,7 +77,6 @@ class PLATFORM_EXPORT RawResource final : public Resource {
               const ResourceLoaderOptions&);
 
   // Resource implementation
-  MatchStatus CanReuse(const FetchParameters&) const override;
   bool WillFollowRedirect(const ResourceRequest&,
                           const ResourceResponse&) override;
 
@@ -107,9 +102,9 @@ class PLATFORM_EXPORT RawResource final : public Resource {
   // Resource implementation
   void DidAddClient(ResourceClient*) override;
   void AppendData(const char*, size_t) override;
-  bool ShouldIgnoreHTTPStatusCodeErrors() const override {
-    return !IsLinkPreload();
-  }
+
+  bool ShouldIgnoreHTTPStatusCodeErrors() const override { return true; }
+
   void WillNotFollowRedirect() override;
   void ResponseReceived(const ResourceResponse&) override;
   void ResponseBodyReceived(
@@ -135,8 +130,7 @@ class PLATFORM_EXPORT RawResource final : public Resource {
 inline bool IsRawResource(ResourceType type) {
   return type == ResourceType::kRaw || type == ResourceType::kTextTrack ||
          type == ResourceType::kAudio || type == ResourceType::kVideo ||
-         type == ResourceType::kManifest ||
-         type == ResourceType::kImportResource;
+         type == ResourceType::kManifest;
 }
 inline bool IsRawResource(const Resource& resource) {
   return IsRawResource(resource.GetType());
@@ -225,9 +219,10 @@ class PLATFORM_EXPORT RawResourceClientStateChecker final {
     kDataReceived,
     kDataDownloaded,
     kDidDownloadToBlob,
-    kNotifyFinished
+    kNotifyFinished,
+    kDetached,
   };
-  State state_;
+  State state_ = kNotAddedAsClient;
 };
 
 }  // namespace blink

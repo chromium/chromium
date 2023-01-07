@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge.h"
-#include "components/arc/session/connection_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace arc {
@@ -24,6 +23,12 @@ class ArcInputMethodManagerBridgeImpl
  public:
   ArcInputMethodManagerBridgeImpl(Delegate* delegate,
                                   ArcBridgeService* bridge_service);
+
+  ArcInputMethodManagerBridgeImpl(const ArcInputMethodManagerBridgeImpl&) =
+      delete;
+  ArcInputMethodManagerBridgeImpl& operator=(
+      const ArcInputMethodManagerBridgeImpl&) = delete;
+
   ~ArcInputMethodManagerBridgeImpl() override;
 
   // ArcInputMethodManagerBridge overrides:
@@ -49,8 +54,6 @@ class ArcInputMethodManagerBridgeImpl
  private:
   Delegate* const delegate_;
   ArcBridgeService* const bridge_service_;  // Owned by ArcServiceManager
-
-  DISALLOW_COPY_AND_ASSIGN(ArcInputMethodManagerBridgeImpl);
 };
 
 }  // namespace arc

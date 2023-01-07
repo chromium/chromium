@@ -1,4 +1,3 @@
-CONSOLE WARNING: Unknown constraint named valid_but_unsupported_1 rejected
 Tests webkitGetUserMedia.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -30,11 +29,11 @@ PASS navigator.getUserMedia({audio:{mandatory:{}, optional:[]}, video:true}, got
 PASS Stream generated.
 PASS stream.getAudioTracks().length is 1
 PASS stream.getVideoTracks().length is 1
-PASS Error callback called.
-PASS errorArg.name is "OverconstrainedError"
-PASS errorArg.constraint is "valid_but_unsupported_1"
-PASS navigator.getUserMedia({audio:{mandatory:{'valid_and_supported_1':1}, optional:[{'valid_but_unsupported_1':0}]}, video:true}, gotStream5, error); did not throw exception.
-PASS navigator.getUserMedia({audio:{mandatory:{'valid_but_unsupported_1':0}, optional:[]}, video:true}, gotStreamInError, error1); did not throw exception.
+PASS navigator.getUserMedia({audio:{mandatory:{'valid_but_unsupported_1':0}, optional:[]}, video:true}, gotStream5, error); did not throw exception.
+PASS Stream generated.
+PASS stream.getAudioTracks().length is 1
+PASS stream.getVideoTracks().length is 1
+PASS navigator.getUserMedia({audio:{mandatory:{'valid_and_supported_1':1}, optional:[{'valid_but_unsupported_1':0}]}, video:true}, gotStream6, error); did not throw exception.
 PASS Stream generated.
 PASS stream.getAudioTracks().length is 1
 PASS stream.getVideoTracks().length is 1

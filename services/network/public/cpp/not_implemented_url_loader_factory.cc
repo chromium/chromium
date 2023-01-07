@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,9 +23,7 @@ void NotImplementedURLLoaderFactory::CreateLoaderAndStart(
     const network::ResourceRequest& url_request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  // TODO(https://crbug.com/1184292): Add a NOTREACHED assertion here once we
-  // know of no more cases when the assertion may fire.
-
+  NOTREACHED();
   network::URLLoaderCompletionStatus status;
   status.error_code = net::ERR_NOT_IMPLEMENTED;
   mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))

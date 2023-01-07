@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <map>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
@@ -29,11 +29,16 @@ namespace password_manager {
 class ContentPasswordManagerDriver;
 
 // Creates and owns ContentPasswordManagerDrivers. There is one
-// factory per WebContents, and one driver per render frame.
+// factory per WebContents, and one driver per RenderFrameHost.
 class ContentPasswordManagerDriverFactory
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ContentPasswordManagerDriverFactory> {
  public:
+  ContentPasswordManagerDriverFactory(
+      const ContentPasswordManagerDriverFactory&) = delete;
+  ContentPasswordManagerDriverFactory& operator=(
+      const ContentPasswordManagerDriverFactory&) = delete;
+
   ~ContentPasswordManagerDriverFactory() override;
 
   static void BindPasswordManagerDriver(
@@ -41,6 +46,8 @@ class ContentPasswordManagerDriverFactory
           pending_receiver,
       content::RenderFrameHost* render_frame_host);
 
+  // Note that this may return null if the RenderFrameHost does not have a
+  // live RenderFrame (e.g. it represents a crashed RenderFrameHost).
   ContentPasswordManagerDriver* GetDriverForFrame(
       content::RenderFrameHost* render_frame_host);
 
@@ -51,6 +58,7 @@ class ContentPasswordManagerDriverFactory
  private:
   friend class content::WebContentsUserData<
       ContentPasswordManagerDriverFactory>;
+  friend class ContentPasswordManagerDriverFactoryTestApi;
 
   ContentPasswordManagerDriverFactory(
       content::WebContents* web_contents,
@@ -65,12 +73,10 @@ class ContentPasswordManagerDriverFactory
   std::map<content::RenderFrameHost*, ContentPasswordManagerDriver>
       frame_driver_map_;
 
-  PasswordManagerClient* password_client_;
-  autofill::AutofillClient* autofill_client_;
+  raw_ptr<PasswordManagerClient> password_client_;
+  raw_ptr<autofill::AutofillClient> autofill_client_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ContentPasswordManagerDriverFactory);
 };
 
 }  // namespace password_manager

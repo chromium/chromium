@@ -1,36 +1,35 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="cr_radio_button_behavior.html">
-<link rel="import" href="cr_radio_button_style_css.html">
-<link rel="import" href="../icons.html">
-<link rel="import" href="../shared_vars_css.html">
-
-<dom-module id="cr-card-radio-button">
-  <template>
     <style include="cr-radio-button-style">
       :host {
         background-color: var(--cr-card-background-color);
-        border: solid 2px;
         border-radius: 8px;
         box-shadow: var(--cr-elevation-1);
         margin: var(--cr-card-radio-button-margin, 8px);
         width: var(--cr-card-radio-button-width, 200px);
+        --focus-shadow-color: rgba(var(--google-blue-600-rgb), .4);
+        --hover-bg-color: rgba(var(--google-blue-500-rgb), .04);
       }
 
-      /* TODO(crbug/1148515): Reenable the ripple effect after fixing
-       * paper-ripple to accomodate for cr-card-radio-button.
-       */
+      @media (prefers-color-scheme: dark) {
+        :host {
+          --focus-shadow-color: rgba(var(--google-blue-300-rgb), .5);
+          --hover-bg-color: rgba(var(--google-blue-300-rgb), .08);
+        }
+      }
+
+      /* Overwrite paper-ripple defined in cr-radio-button-style
+       * to ensure it extends to the entire button. */
+      .disc-wrapper,
       paper-ripple {
-        --paper-ripple-opacity: 0;
+        border-radius: inherit; /* Defined in :host above. */
       }
 
-      :host([checked]) {
-        border-color: var(--cr-checked-color);
-      }
-
-      :host(:not([checked])) {
-        border-color: var(--cr-card-background-color);
+      paper-ripple {
+        height: var(--paper-ripple-height);
+        /* Fallback to 0 to match the values in paper-ripple.html. Falls back
+         * to auto without this. */
+        left: var(--paper-ripple-left, 0);
+        top: var(--paper-ripple-top, 0);
+        width: var(--paper-ripple-width);
       }
 
       #button {
@@ -40,11 +39,25 @@
         width: 100%;
       }
 
+      :host-context(.focus-outline-visible) #button:focus {
+        box-shadow: 0 0 0 2px var(--focus-shadow-color);
+      }
+
+      #button:hover {
+        background-color: var(--hover-bg-color);
+      }
+
       #checkMark {
         left: var(--cr-card-radio-button-checkmark-left, auto);
         position: absolute;
         right: var(--cr-card-radio-button-checkmark-right, var(--cr-button-edge-spacing));
         top: var(--cr-card-radio-button-checkmark-top, var(--cr-button-edge-spacing));
+      }
+
+      :host-context([dir=rtl]) #checkMark {
+        left: var(--cr-card-radio-button-checkmark-right,
+                  var(--cr-button-edge-spacing));
+        right: var(--cr-card-radio-button-checkmark-left, auto);
       }
 
       :host(:not([checked])) #checkMark {
@@ -63,6 +76,7 @@
         aria-checked$="[[getAriaChecked_(checked)]]"
         aria-describedby="slotted-content"
         aria-disabled$="[[getAriaDisabled_(disabled)]]"
+        class="disc-wrapper"
         tabindex$="[[buttonTabIndex_]]"
         aria-labelledby="slotted-content"
         on-keydown="onInputKeydown_">
@@ -71,6 +85,3 @@
         <slot></slot>
       </span>
     </div>
-  </template>
-  <script src="cr_card_radio_button.js"></script>
-</dom-module>

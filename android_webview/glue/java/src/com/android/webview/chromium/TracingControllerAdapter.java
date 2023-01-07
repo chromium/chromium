@@ -1,15 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package com.android.webview.chromium;
 
-import android.annotation.SuppressLint;
+import android.os.Build;
 import android.webkit.TracingConfig;
 import android.webkit.TracingController;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import java.io.OutputStream;
 import java.util.concurrent.Executor;
@@ -18,8 +19,7 @@ import java.util.concurrent.Executor;
  * Chromium implementation of TracingController -- forwards calls to
  * the shared internal implementation.
  */
-@SuppressLint({"NewApi", // TracingController is new in API level 28.
-        "Override"}) // Remove this once lint is targeting API level 28.
+@RequiresApi(Build.VERSION_CODES.P)
 public class TracingControllerAdapter extends TracingController {
     private final SharedTracingControllerAdapter mTracingController;
 

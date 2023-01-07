@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -32,6 +32,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/trace_util.h"
 
@@ -46,9 +47,9 @@ const int kMaxBytesPerCopyOperation = 1024 * 1024 * 4;
 // at normal thread priority.
 // TODO(crbug.com/1072756): Cleanup the feature when the Stable experiment is
 // complete, on November 25, 2020.
-const base::Feature kOneCopyRasterBufferPlaybackNormalThreadPriority{
-    "OneCopyRasterBufferPlaybackNormalThreadPriority",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOneCopyRasterBufferPlaybackNormalThreadPriority,
+             "OneCopyRasterBufferPlaybackNormalThreadPriority",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -81,7 +82,7 @@ class OneCopyRasterBufferProvider::OneCopyGpuBacking
   }
 
   // The ContextProvider used to clean up the mailbox
-  viz::RasterContextProvider* worker_context_provider = nullptr;
+  raw_ptr<viz::RasterContextProvider> worker_context_provider = nullptr;
 };
 
 OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
@@ -265,6 +266,11 @@ uint64_t OneCopyRasterBufferProvider::SetReadyToDrawCallback(
   return callback_id;
 }
 
+void OneCopyRasterBufferProvider::SetShutdownEvent(
+    base::WaitableEvent* shutdown_event) {
+  shutdown_event_ = shutdown_event;
+}
+
 void OneCopyRasterBufferProvider::Shutdown() {
   staging_pool_.Shutdown();
 }
@@ -287,6 +293,8 @@ gpu::SyncToken OneCopyRasterBufferProvider::PlaybackAndCopyOnWorkerThread(
   std::unique_ptr<StagingBuffer> staging_buffer =
       staging_pool_.AcquireStagingBuffer(resource_size, resource_format,
                                          previous_content_id);
+  DCHECK(staging_buffer->size.width() >= raster_full_rect.width() &&
+         staging_buffer->size.height() >= raster_full_rect.height());
 
   PlaybackToStagingBuffer(staging_buffer.get(), raster_source, raster_full_rect,
                           raster_dirty_rect, transform, resource_format,
@@ -317,7 +325,8 @@ void OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
     staging_buffer->gpu_memory_buffer =
         gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
             staging_buffer->size, BufferFormat(format),
-            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE, gpu::kNullSurfaceHandle);
+            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
+            shutdown_event_);
   }
 
   gfx::Rect playback_rect = raster_full_rect;
@@ -387,19 +396,24 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     return gpu::SyncToken();
   }
 
+  bool needs_clear = false;
+
   if (mailbox->IsZero()) {
     uint32_t usage =
-        gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_RASTER;
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_RASTER;
     if (mailbox_texture_is_overlay_candidate)
       usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     *mailbox = sii->CreateSharedImage(
         resource_format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, usage, gpu::kNullSurfaceHandle);
+    // Clear the resource if we're not going to initialize it fully from the
+    // copy due to non-exact resource reuse.  See https://crbug.com/1313091
+    needs_clear = rect_to_copy.size() != resource_size;
   }
 
   // Create staging shared image.
   if (staging_buffer->mailbox.IsZero()) {
-    const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER;
+    const uint32_t usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE;
     staging_buffer->mailbox = sii->CreateSharedImage(
         staging_buffer->gpu_memory_buffer.get(), gpu_memory_buffer_manager_,
         color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
@@ -444,6 +458,22 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
       ri->GenQueriesEXT(1, &staging_buffer->query_id);
 
     ri->BeginQueryEXT(query_target, staging_buffer->query_id);
+  }
+
+  // Clear to ensure the resource is fully initialized and BeginAccess succeeds.
+  if (needs_clear) {
+    int clear_bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
+        resource_size.width(), resource_format);
+    SkImageInfo dst_info = SkImageInfo::MakeN32Premul(resource_size.width(),
+                                                      resource_size.height());
+    SkBitmap bitmap;
+    if (bitmap.tryAllocPixels(dst_info, clear_bytes_per_row)) {
+      // SkBitmap.cpp doesn't yet have an interface for SkColor4fs
+      // https://bugs.chromium.org/p/skia/issues/detail?id=13329
+      bitmap.eraseColor(raster_source->background_color().toSkColor());
+      ri->WritePixels(*mailbox, 0, 0, mailbox_texture_target,
+                      clear_bytes_per_row, dst_info, bitmap.getPixels());
+    }
   }
 
   int bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(

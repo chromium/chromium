@@ -1,17 +1,17 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_STRINGS_SAFE_SPRINTF_H_
 #define BASE_STRINGS_SAFE_SPRINTF_H_
 
-#include "build/build_config.h"
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // For ssize_t
 #include <unistd.h>
 #endif
@@ -167,7 +167,7 @@ struct Arg {
     integer.width = sizeof(long);
   }
   Arg(unsigned long j) : type(UINT) {
-    integer.i = j;
+    integer.i = static_cast<int64_t>(j);
     integer.width = sizeof(long);
   }
   Arg(signed long long j) : type(INT) {
@@ -175,7 +175,7 @@ struct Arg {
     integer.width = sizeof(long long);
   }
   Arg(unsigned long long j) : type(UINT) {
-    integer.i = j;
+    integer.i = static_cast<int64_t>(j);
     integer.width = sizeof(long long);
   }
 

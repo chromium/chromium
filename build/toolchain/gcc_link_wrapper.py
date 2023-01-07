@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -68,13 +68,10 @@ def main():
     exe_file = args.output
     if args.unstripped_file:
       exe_file = args.unstripped_file
-    # Suppress output here because it doesn't seem to be useful. The most
-    # common error is a segfault, which will happen if files are missing.
-    with open(os.devnull, "w") as devnull:
-      dwp_proc = subprocess.Popen(wrapper_utils.CommandToRun(
-          [args.dwp, '-e', exe_file, '-o', exe_file + '.dwp']),
-                                  stdout=devnull,
-                                  stderr=subprocess.STDOUT)
+    # Suppress warnings about duplicate CU entries (https://crbug.com/1264130)
+    dwp_proc = subprocess.Popen(wrapper_utils.CommandToRun(
+        [args.dwp, '-e', exe_file, '-o', exe_file + '.dwp']),
+                                stderr=subprocess.DEVNULL)
 
   # Finally, strip the linked executable (if desired).
   if args.strip:

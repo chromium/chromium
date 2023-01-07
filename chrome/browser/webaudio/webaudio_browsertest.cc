@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -16,7 +16,7 @@
 
 // TODO(crbug.com/1173300): Investigate why different macOS versions have
 // different fingerprints.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_VerifyDynamicsCompressorFingerprint \
   DISABLED_VerifyDynamicsCompressorFingerprint
 #else
@@ -37,7 +37,7 @@ class WebAudioBrowserTest : public PlatformBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebAudioBrowserTest,
                        MAYBE_VerifyDynamicsCompressorFingerprint) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::DOMMessageQueue messages;
+  content::DOMMessageQueue messages(web_contents());
   base::RunLoop run_loop;
 
   ASSERT_TRUE(content::NavigateToURL(
@@ -54,12 +54,12 @@ IN_PROC_BROWSER_TEST_F(WebAudioBrowserTest,
   // NOTE: Changes to Web Audio code that alter the below fingerprints are
   // fine, and are cause for updating these expectations -- the issue is if
   // different devices return different fingerprints.
-#if defined(OS_ANDROID) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
   // TODO(crbug.com/1156752): Investigate why this fingerprint is different.
   EXPECT_EQ("13.13046550525678", fingerprint);
 #else
   EXPECT_EQ("13.130926895706125", fingerprint);
-#endif  // defined(OS_ANDROID) && defined(ARCH_CPU_ARM64)
+#endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
 }
 
 }  // namespace

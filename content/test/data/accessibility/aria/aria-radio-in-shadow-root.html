@@ -1,0 +1,70 @@
+<!--
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@MAC-ALLOW:AXLinkedUIElements*
+-->
+<div role="radiogroup" aria-labelledby="group-1">
+    <h1 id="group-1">Group One</h1>
+    <div id="radio-1a" role="radio" aria-checked="true" tabindex="0">
+        Red
+    </div>
+    <div id="radio-2a" role="radio" aria-checked="false" tabindex="0">
+        Green
+    </div>
+    <my-item id="radio-3a" role="radio" aria-checked="false" tabindex="0">
+        Blue
+    </my-item>
+</div>
+
+<new-el role="radiogroup" aria-labelledby="group-2">
+    <h1 id="group-2">Group Two</h1>
+    <div id="radio-1b" role="radio" aria-checked="true" tabindex="0">
+        Red
+    </div>
+    <div id="radio-2b" role="radio" aria-checked="false" tabindex="0">
+        Green
+    </div>
+    <my-item id="radio-3b" role="radio" aria-checked="false" tabindex="0">
+        Blue
+    </my-item>
+</new-el>
+
+<new-el role="radiogroup" aria-labelledby="group-2a">
+    <h1 id="group-2a">Group with aria-setsize and aria-posinset</h1>
+    <div id="radio-1b" role="radio" aria-checked="true" tabindex="0" aria-posinset="5" aria-setsize="8">
+        Red
+    </div>
+    <div id="radio-2b" role="radio" aria-checked="false" tabindex="0" aria-posinset="6" aria-setsize="8">
+        Green
+    </div>
+    <my-item id="radio-3b" role="radio" aria-checked="false" tabindex="0" aria-posinset="7" aria-setsize="8">
+        Blue
+    </my-item>
+</new-el>
+
+
+<new-el role="group" aria-labelledby="group-3">
+    <h1 id="group-3">Checkbox Group One</h1>
+    <div id="radio-1b" role="checkbox" aria-checked="true" tabindex="0">
+        Red
+    </div>
+    <div id="radio-2b" role="checkbox" aria-checked="false" tabindex="0">
+        Green
+    </div>
+    <my-item id="radio-3b" role="checkbox" aria-checked="false" tabindex="0">
+        Blue
+    </my-item>
+</new-el>
+
+<script>
+    class SlottedElement extends HTMLElement {
+        constructor() {
+            super();
+            this.attachShadow({mode: 'open'});
+            this.shadowRoot.innerHTML = '<slot></slot>';
+        }
+    }
+    customElements.define('new-el', class extends SlottedElement {});
+    customElements.define('my-item', class extends SlottedElement {});
+</script>
+

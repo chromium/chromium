@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,13 @@
 #define BASE_CHECK_OP_H_
 
 #include <cstddef>
+#include <string>
 #include <type_traits>
 
+#include "base/base_export.h"
 #include "base/check.h"
+#include "base/dcheck_is_on.h"
+#include "base/debug/debugging_buildflags.h"
 #include "base/template_util.h"
 
 // This header defines the (DP)CHECK_EQ etc. macros.
@@ -42,6 +46,7 @@ BASE_EXPORT char* CheckOpValueStr(unsigned long long v);
 BASE_EXPORT char* CheckOpValueStr(const void* v);
 BASE_EXPORT char* CheckOpValueStr(std::nullptr_t v);
 BASE_EXPORT char* CheckOpValueStr(double v);
+BASE_EXPORT char* CheckOpValueStr(const std::string& v);
 
 // Convert a streamable value to string out-of-line to avoid <sstream>.
 BASE_EXPORT char* StreamValToStr(const void* v,
@@ -135,7 +140,7 @@ class CheckOpResult {
   char* message_ = nullptr;
 };
 
-#if defined(OFFICIAL_BUILD) && defined(NDEBUG)
+#if !CHECK_WILL_STREAM()
 
 // Discard log strings to reduce code bloat.
 #define CHECK_OP(name, op, val1, val2) CHECK((val1)op(val2))

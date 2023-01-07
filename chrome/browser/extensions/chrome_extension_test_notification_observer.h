@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "extensions/test/extension_test_notification_observer.h"
 
@@ -27,6 +27,12 @@ class ChromeExtensionTestNotificationObserver
   explicit ChromeExtensionTestNotificationObserver(Browser* browser);
   explicit ChromeExtensionTestNotificationObserver(
       content::BrowserContext* browser_context);
+
+  ChromeExtensionTestNotificationObserver(
+      const ChromeExtensionTestNotificationObserver&) = delete;
+  ChromeExtensionTestNotificationObserver& operator=(
+      const ChromeExtensionTestNotificationObserver&) = delete;
+
   ~ChromeExtensionTestNotificationObserver() override;
 
   // Waits for the number of visible page actions to change to |count|.
@@ -50,9 +56,7 @@ class ChromeExtensionTestNotificationObserver
       content::WebContents* web_contents,
       content::BrowserContext* browser_context) override;
 
-  Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionTestNotificationObserver);
+  const raw_ptr<Browser> browser_;
 };
 
 }  // namespace extensions

@@ -26,9 +26,8 @@ function runTest() {
     }
 }
 
-function scaleFactorIsSet(useZoomForDsfEnabled) {
+function scaleFactorIsSet() {
     sessionStorage.scaleFactorIsSet = true;
-    sessionStorage.useZoomForDsfEnabled = useZoomForDsfEnabled;
 }
 
 window.addEventListener("load", runTest, false);

@@ -20,11 +20,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_SEGMENTED_STRING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_SEGMENTED_STRING_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -114,12 +117,24 @@ class PLATFORM_EXPORT SegmentedSubstring {
     return data_.string8_ptr < data_last_char_;
   }
 
+  // Advances up to `delta` characters, returning how many characters were
+  // advanced. This will not advance past the last character.
+  unsigned Advance(unsigned delta) {
+    DCHECK_NE(0, length());
+    delta = std::min(static_cast<unsigned>(length()) - 1, delta);
+    if (is_8bit_)
+      data_.string8_ptr += delta;
+    else
+      data_.string16_ptr += delta;
+    return delta;
+  }
+
   ALWAYS_INLINE UChar Advance() {
     return is_8bit_ ? *++data_.string8_ptr : *++data_.string16_ptr;
   }
 
-  String CurrentSubString(unsigned len) const {
-    return string_.Substring(offset(), len);
+  StringView CurrentSubString(unsigned len) const {
+    return StringView(string_, offset(), len);
   }
 
   ALWAYS_INLINE int offset() const {
@@ -142,7 +157,6 @@ class PLATFORM_EXPORT SegmentedSubstring {
   union {
     const LChar* string8_ptr;
     const UChar* string16_ptr;
-    const void* void_ptr;
   } data_;
   const LChar* data_start_;
   // |data_last_char_| points to the last character (or nullptr). This is to
@@ -183,6 +197,13 @@ class PLATFORM_EXPORT SegmentedString {
   };
   void Prepend(const SegmentedString&, PrependType);
 
+  const SegmentedString* NextSegmentedString() const {
+    return next_segmented_string_;
+  }
+  void SetNextSegmentedString(const SegmentedString* next) {
+    next_segmented_string_ = next;
+  }
+
   bool ExcludeLineNumbers() const {
     return current_string_.ExcludeLineNumbers();
   }
@@ -207,6 +228,12 @@ class PLATFORM_EXPORT SegmentedString {
   LookAheadResult LookAheadIgnoringCase(const String& string) {
     return LookAheadInline(string, kTextCaseASCIIInsensitive);
   }
+
+  // Used to advance by multiple characters. Specifically this advances by
+  // `num_chars` and `num_lines`. This function advances without analyzing the
+  // input string in anyway. As a result, the caller must know `num_lines` and
+  // `current_column`.
+  void Advance(unsigned num_chars, unsigned num_lines, int current_column);
 
   ALWAYS_INLINE UChar Advance() {
     if (LIKELY(current_string_.CanAdvance())) {
@@ -291,9 +318,9 @@ class PLATFORM_EXPORT SegmentedString {
   inline LookAheadResult LookAheadInline(const String& string,
                                          TextCaseSensitivity case_sensitivity) {
     if (string.length() <= static_cast<unsigned>(current_string_.length())) {
-      String current_substring =
+      StringView current_substring =
           current_string_.CurrentSubString(string.length());
-      if (current_substring.StartsWith(string, case_sensitivity))
+      if (string.StartsWith(current_substring, case_sensitivity))
         return kDidMatch;
       return kDidNotMatch;
     }
@@ -316,7 +343,7 @@ class PLATFORM_EXPORT SegmentedString {
     return result;
   }
 
-  bool IsComposite() const { return !substrings_.IsEmpty(); }
+  bool IsComposite() const { return !substrings_.empty(); }
 
   SegmentedSubstring current_string_;
   int number_of_characters_consumed_prior_to_current_string_;
@@ -325,8 +352,9 @@ class PLATFORM_EXPORT SegmentedString {
   Deque<SegmentedSubstring> substrings_;
   bool closed_;
   bool empty_;
+  const SegmentedString* next_segmented_string_ = nullptr;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_SEGMENTED_STRING_H_

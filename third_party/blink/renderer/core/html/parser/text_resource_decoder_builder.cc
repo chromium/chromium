@@ -32,8 +32,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -79,9 +77,9 @@ static const LegacyEncoding kEncodings[] = {
 static const WTF::TextEncoding GetEncodingFromDomain(const KURL& url) {
   Vector<String> tokens;
   url.Host().Split(".", tokens);
-  if (!tokens.IsEmpty()) {
+  if (!tokens.empty()) {
     auto tld = tokens.back();
-    for (size_t i = 0; i < base::size(kEncodings); i++) {
+    for (size_t i = 0; i < std::size(kEncodings); i++) {
       if (tld == kEncodings[i].domain)
         return WTF::TextEncoding(kEncodings[i].encoding);
     }
@@ -102,14 +100,13 @@ TextResourceDecoderOptions::ContentType DetermineContentType(
 
 }  // namespace
 
-std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoderFor(
-    Document* document,
+std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoder(
+    LocalFrame* frame,
+    const KURL& url,
     const AtomicString& mime_type,
     const AtomicString& encoding) {
-  const WTF::TextEncoding encoding_from_domain =
-      GetEncodingFromDomain(document->Url());
+  const WTF::TextEncoding encoding_from_domain = GetEncodingFromDomain(url);
 
-  LocalFrame* frame = document->GetFrame();
   LocalFrame* parent_frame = nullptr;
   if (frame)
     parent_frame = DynamicTo<LocalFrame>(frame->Tree().Parent());
@@ -152,7 +149,7 @@ std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoderFor(
       decoder = std::make_unique<TextResourceDecoder>(
           TextResourceDecoderOptions::CreateWithAutoDetection(
               DetermineContentType(mime_type), default_encoding, hint_encoding,
-              document->Url()));
+              url));
     }
   } else {
     decoder = std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
@@ -160,7 +157,7 @@ std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoderFor(
   }
   DCHECK(decoder);
 
-  if (!encoding.IsEmpty()) {
+  if (!encoding.empty()) {
     decoder->SetEncoding(WTF::TextEncoding(encoding.GetString()),
                          TextResourceDecoder::kEncodingFromHTTPHeader);
   } else if (use_hint_encoding) {

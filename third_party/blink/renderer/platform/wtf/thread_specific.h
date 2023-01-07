@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREAD_SPECIFIC_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREAD_SPECIFIC_H_
 
-#include "base/macros.h"
-#include "base/record_replay.h"
 #include "base/threading/thread_local_storage.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -42,6 +40,8 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
+#include "base/record_replay.h"
+
 namespace WTF {
 
 template <typename T>
@@ -50,6 +50,8 @@ class ThreadSpecific {
 
  public:
   ThreadSpecific() : slot_(&Destroy) {}
+  ThreadSpecific(const ThreadSpecific&) = delete;
+  ThreadSpecific& operator=(const ThreadSpecific&) = delete;
   bool
   IsSet();  // Useful as a fast check to see if this thread has set this value.
   T* operator->();
@@ -77,8 +79,6 @@ class ThreadSpecific {
   // This member must only be accessed or modified on the main thread.
   T* main_thread_storage_ = nullptr;
   base::ThreadLocalStorage::Slot slot_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSpecific);
 };
 
 template <typename T>
@@ -114,7 +114,7 @@ inline bool ThreadSpecific<T>::IsSet() {
 template <typename T>
 inline ThreadSpecific<T>::operator T*() {
   T* off_thread_ptr;
-#if defined(__GLIBC__) || defined(OS_ANDROID) || defined(OS_FREEBSD)
+#if defined(__GLIBC__) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FREEBSD)
   // TLS is fast on these platforms.
   // TODO(csharrison): Qualify this statement for Android.
   const bool kMainThreadAlwaysChecksTLS = true;
@@ -143,7 +143,7 @@ inline ThreadSpecific<T>::operator T*() {
     }
 
     Set(*ptr);
-    new (NotNull, *ptr) T;
+    new (NotNullTag::kNotNull, *ptr) T;
   }
   return *ptr;
 }

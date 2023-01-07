@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,24 @@
 #include <memory>
 
 #include "ash/system/unified/detailed_view_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 
-namespace tray {
-class VPNListView;
-}  // namespace tray
-
 class DetailedViewDelegate;
 class UnifiedSystemTrayController;
+class VPNListView;
 
 // Controller of VPN detailed view in UnifiedSystemTray.
 class UnifiedVPNDetailedViewController : public DetailedViewController {
  public:
   explicit UnifiedVPNDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UnifiedVPNDetailedViewController(const UnifiedVPNDetailedViewController&) =
+      delete;
+  UnifiedVPNDetailedViewController& operator=(
+      const UnifiedVPNDetailedViewController&) = delete;
+
   ~UnifiedVPNDetailedViewController() override;
 
   // DetailedViewControllerBase:
@@ -33,9 +35,7 @@ class UnifiedVPNDetailedViewController : public DetailedViewController {
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  tray::VPNListView* view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedVPNDetailedViewController);
+  VPNListView* view_ = nullptr;
 };
 
 }  // namespace ash

@@ -1,0 +1,10 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++TEXT_FIELD_WITH_COMBO_BOX focusable actions='{DEFAULT, SET_VALUE}'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN
+++++++++++LIST_ELEMENT hidden
+++++++++++++LIST_ELEMENT_MARKER hidden
+++++++++++++++STATIC_TEXT hidden label='%E2%96%BE'

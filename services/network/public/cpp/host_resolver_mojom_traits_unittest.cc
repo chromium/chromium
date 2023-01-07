@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "services/network/public/cpp/ip_address_mojom_traits.h"
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
@@ -33,15 +35,14 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverridesRoundtrip_FullySpecified) {
   original.search.emplace({std::string("str")});
   original.append_to_multi_label_name = true;
   original.ndots = 2;
-  original.fallback_period = base::TimeDelta::FromHours(4);
+  original.fallback_period = base::Hours(4);
   original.attempts = 1;
   original.rotate = true;
   original.use_local_ipv6 = false;
-  original.dns_over_https_servers.emplace(
-      {net::DnsOverHttpsServerConfig("example.com", false)});
+  original.dns_over_https_config =
+      *net::DnsOverHttpsConfig::FromString("https://example.com/");
   original.secure_dns_mode = net::SecureDnsMode::kSecure;
   original.allow_dns_over_https_upgrade = true;
-  original.disabled_upgrade_providers.emplace({std::string("provider_name")});
   original.clear_hosts = true;
 
   net::DnsConfigOverrides deserialized;
@@ -65,12 +66,29 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverrides_BadInt) {
 
 TEST(HostResolverMojomTraitsTest, DnsConfigOverrides_OnlyDnsOverHttpsServers) {
   net::DnsConfigOverrides original;
-  original.dns_over_https_servers.emplace(
-      {net::DnsOverHttpsServerConfig("example.com", false)});
+  original.dns_over_https_config =
+      *net::DnsOverHttpsConfig::FromString("https://example.com/");
 
   net::DnsConfigOverrides deserialized;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DnsConfigOverrides>(
       original, deserialized));
+
+  EXPECT_EQ(original, deserialized);
+}
+
+TEST(HostResolverMojomTraitsTest, DnsOverHttpsServerConfig_Roundtrip) {
+  net::DnsOverHttpsServerConfig::Endpoints endpoints{
+      {{192, 0, 2, 1},
+       {0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
+      {{192, 0, 2, 2},
+       {0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}}};
+  auto original = *net::DnsOverHttpsServerConfig::FromString(
+      "https://example.com/", endpoints);
+
+  net::DnsOverHttpsServerConfig deserialized;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::DnsOverHttpsServerConfig>(
+          original, deserialized));
 
   EXPECT_EQ(original, deserialized);
 }

@@ -1,8 +1,10 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/speech/tts_utterance_impl.h"
+
+#include <memory>
 
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"
@@ -10,16 +12,10 @@
 
 namespace content {
 
-namespace {
-
-// Returns true if this event type is one that indicates an utterance
-// is finished and can be destroyed.
 bool IsFinalTtsEventType(TtsEventType event_type) {
   return (event_type == TTS_EVENT_END || event_type == TTS_EVENT_INTERRUPTED ||
           event_type == TTS_EVENT_CANCELLED || event_type == TTS_EVENT_ERROR);
 }
-
-}  // namespace
 
 //
 // UtteranceContinuousParameters
@@ -46,9 +42,10 @@ std::unique_ptr<TtsUtterance> TtsUtterance::Create(WebContents* web_contents) {
 
 // static
 std::unique_ptr<TtsUtterance> TtsUtterance::Create(
-    BrowserContext* browser_context) {
-  DCHECK(browser_context);
-  return std::make_unique<TtsUtteranceImpl>(browser_context, nullptr);
+    BrowserContext* browser_context,
+    bool should_always_be_spoken) {
+  return std::make_unique<TtsUtteranceImpl>(browser_context,
+                                            should_always_be_spoken);
 }
 
 // static
@@ -58,15 +55,22 @@ std::unique_ptr<TtsUtterance> TtsUtterance::Create() {
 
 TtsUtteranceImpl::TtsUtteranceImpl(BrowserContext* browser_context,
                                    WebContents* web_contents)
-    : WebContentsObserver(web_contents),
-      browser_context_(browser_context),
+    : browser_context_(browser_context),
       was_created_with_web_contents_(web_contents != nullptr),
       id_(next_utterance_id_++),
       src_id_(-1),
       should_clear_queue_(true),
       char_index_(0),
       finished_(false) {
-  options_.reset(new base::DictionaryValue());
+  if (web_contents) {
+    web_contents_ = web_contents->GetWeakPtr();
+  }
+}
+
+TtsUtteranceImpl::TtsUtteranceImpl(BrowserContext* browser_context,
+                                   bool should_always_be_spoken)
+    : TtsUtteranceImpl(browser_context, nullptr) {
+  should_always_be_spoken_ = should_always_be_spoken;
 }
 
 TtsUtteranceImpl::~TtsUtteranceImpl() {
@@ -84,11 +88,13 @@ void TtsUtteranceImpl::OnTtsEvent(TtsEventType event_type,
   if (IsFinalTtsEventType(event_type))
     finished_ = true;
 
-  if (event_delegate_)
-    event_delegate_->OnTtsEvent(this, event_type, char_index, length,
-                                error_message);
+  UtteranceEventDelegate* delegate = event_delegate_;
+
   if (finished_)
     event_delegate_ = nullptr;
+
+  if (delegate)
+    delegate->OnTtsEvent(this, event_type, char_index, length, error_message);
 }
 
 void TtsUtteranceImpl::Finish() {
@@ -103,12 +109,12 @@ const std::string& TtsUtteranceImpl::GetText() {
   return text_;
 }
 
-void TtsUtteranceImpl::SetOptions(const base::Value* options) {
-  options_.reset(options->DeepCopy());
+void TtsUtteranceImpl::SetOptions(base::Value::Dict options) {
+  options_ = std::move(options);
 }
 
-const base::Value* TtsUtteranceImpl::GetOptions() {
-  return options_.get();
+const base::Value::Dict* TtsUtteranceImpl::GetOptions() {
+  return &options_;
 }
 
 void TtsUtteranceImpl::SetSrcId(int src_id) {
@@ -211,6 +217,14 @@ int TtsUtteranceImpl::GetId() {
 
 bool TtsUtteranceImpl::IsFinished() {
   return finished_;
+}
+
+WebContents* TtsUtteranceImpl::GetWebContents() {
+  return web_contents_.get();
+}
+
+bool TtsUtteranceImpl::ShouldAlwaysBeSpoken() {
+  return should_always_be_spoken_;
 }
 
 }  // namespace content

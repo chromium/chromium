@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,8 @@ enum class TaskSwitchSource {
   // should NOT be used outside of TaskSwitchMetricsRecorder.
   ANY,
   // Task switches caused by the user activating a task window by clicking or
-  // tapping on it.
+  // tapping on it, or moving the mouse over the window while focus follows
+  // cursor is enabled.
   DESKTOP,
   // Task switches caused by selecting a window from overview mode which is
   // different from the previously-active window.

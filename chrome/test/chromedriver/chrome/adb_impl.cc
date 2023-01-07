@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,14 +13,15 @@
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/constants/version.h"
@@ -204,8 +205,7 @@ Status AdbImpl::SetCommandLineFile(const std::string& device_serial,
       FROM_HERE,
       base::BindOnce(&SendFileOnIOThread, device_serial, command_line_file,
                      command, response_buffer, port_));
-  Status status =
-      response_buffer->GetResponse(&response, base::TimeDelta::FromSeconds(30));
+  Status status = response_buffer->GetResponse(&response, base::Seconds(30));
   return status;
 }
 
@@ -322,7 +322,7 @@ Status AdbImpl::GetSocketByPattern(const std::string& device_serial,
         base::SPLIT_WANT_NONEMPTY);
     if (tokens.size() != 8)
       continue;
-    *socket_name = tokens[7].as_string();
+    *socket_name = std::string(tokens[7]);
     return Status(kOk);
   }
 
@@ -337,8 +337,7 @@ Status AdbImpl::ExecuteCommand(
   io_task_runner_->PostTask(FROM_HERE,
                             base::BindOnce(&ExecuteCommandOnIOThread, command,
                                            response_buffer, port_));
-  Status status = response_buffer->GetResponse(
-      response, base::TimeDelta::FromSeconds(30));
+  Status status = response_buffer->GetResponse(response, base::Seconds(30));
   if (status.IsOk()) {
     VLOG(1) << "Received adb response: " << *response;
   }

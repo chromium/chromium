@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,12 +7,11 @@ import("//build/config/android/rules.gni")
 
 android_library("net_java") {
   sources = [
-    "java/src/org/chromium/net/AndroidCellularSignalStrength.java",
     "java/src/org/chromium/net/AndroidCertVerifyResult.java",
     "java/src/org/chromium/net/AndroidKeyStore.java",
     "java/src/org/chromium/net/AndroidNetworkLibrary.java",
-    "java/src/org/chromium/net/AndroidTelephonyManagerBridge.java",
     "java/src/org/chromium/net/AndroidTrafficStats.java",
+    "java/src/org/chromium/net/ChromiumNetworkAdapter.java",
     "java/src/org/chromium/net/DnsStatus.java",
     "java/src/org/chromium/net/GURLUtils.java",
     "java/src/org/chromium/net/HttpNegotiateAuthenticator.java",
@@ -20,9 +19,10 @@ android_library("net_java") {
     "java/src/org/chromium/net/HttpUtil.java",
     "java/src/org/chromium/net/MimeTypeFilter.java",
     "java/src/org/chromium/net/NetStringUtil.java",
-    "java/src/org/chromium/net/NetworkActivationRequest.java",
+    "java/src/org/chromium/net/NetworkActiveNotifier.java",
     "java/src/org/chromium/net/NetworkChangeNotifier.java",
     "java/src/org/chromium/net/NetworkChangeNotifierAutoDetect.java",
+    "java/src/org/chromium/net/NetworkTrafficAnnotationTag.java",
     "java/src/org/chromium/net/ProxyBroadcastReceiver.java",
     "java/src/org/chromium/net/ProxyChangeListener.java",
     "java/src/org/chromium/net/RegistrationPolicyAlwaysRegister.java",
@@ -32,6 +32,8 @@ android_library("net_java") {
   deps = [
     ":net_thread_stats_uid_java",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -57,13 +59,14 @@ android_aidl("embedded_test_server_aidl") {
 
 android_library("embedded_test_server_aidl_java") {
   testonly = true
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  deps = []
   srcjar_deps = [ ":embedded_test_server_aidl" ]
 }
 
 android_library("net_java_test_support") {
   testonly = true
   sources = [
+    "../test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
     "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServer.java",
     "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerRule.java",
     "../test/android/javatests/src/org/chromium/net/test/util/CertTestUtil.java",
@@ -76,6 +79,7 @@ android_library("net_java_test_support") {
     ":net_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -100,6 +104,7 @@ android_library("net_java_test_support_provider") {
     ":net_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
   ]
 
   data_deps = [ "//net:test_support" ]
@@ -146,7 +151,6 @@ android_apk("net_test_support_apk") {
   deps = [
     ":net_java_test_support",
     ":net_java_test_support_provider",
-    "//base:base_java",
   ]
   android_manifest = "../test/android/javatests/AndroidManifest.xml"
   apk_name = "ChromiumNetTestSupport"
@@ -170,7 +174,6 @@ android_library("net_javatests") {
   sources = [
     "javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
     "javatests/src/org/chromium/net/AndroidNetworkLibraryTest.java",
-    "javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
     "javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
     "javatests/src/org/chromium/net/AndroidProxySelectorTest.java",
     "javatests/src/org/chromium/net/EmbeddedTestServerTest.java",
@@ -187,6 +190,7 @@ android_library("net_javatests") {
     ":net_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//third_party/android_sdk:android_test_mock_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
@@ -212,7 +216,6 @@ java_cpp_enum("net_android_java_enums_srcjar") {
   sources = [
     "../base/network_change_notifier.h",
     "../socket/socket_tag.cc",
-    "cellular_signal_strength.cc",
     "cert_verify_result_android.h",
     "keystore.h",
     "network_change_notifier_android.cc",
@@ -220,8 +223,11 @@ java_cpp_enum("net_android_java_enums_srcjar") {
   ]
 }
 
-junit_binary("net_junit_tests") {
-  sources = [ "junit/src/org/chromium/net/HttpNegotiateAuthenticatorTest.java" ]
+robolectric_binary("net_junit_tests") {
+  sources = [
+    "junit/src/org/chromium/net/HttpNegotiateAuthenticatorTest.java",
+    "junit/src/org/chromium/net/NetworkTrafficAnnotationTagTest.java",
+  ]
   deps = [
     ":net_java",
     "//base:base_java",

@@ -1,12 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_ACTIVE_WEB_STATE_OBSERVATION_FORWARDER_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_ACTIVE_WEB_STATE_OBSERVATION_FORWARDER_H_
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state.h"
@@ -17,11 +16,17 @@
 // changes.
 class ActiveWebStateObservationForwarder : public WebStateListObserver {
  public:
-  // Creates an object which forwards observation methods to |observer| and
-  // tracks |web_state_list| to keep track of the currently-active WebState.
-  // |web_state_list| and |observer| must both outlive this object.
+  // Creates an object which forwards observation methods to `observer` and
+  // tracks `web_state_list` to keep track of the currently-active WebState.
+  // `web_state_list` and `observer` must both outlive this object.
   ActiveWebStateObservationForwarder(WebStateList* web_state_list,
                                      web::WebStateObserver* observer);
+
+  ActiveWebStateObservationForwarder(
+      const ActiveWebStateObservationForwarder&) = delete;
+  ActiveWebStateObservationForwarder& operator=(
+      const ActiveWebStateObservationForwarder&) = delete;
+
   ~ActiveWebStateObservationForwarder() override;
 
   // WebStateListObserver.
@@ -32,11 +37,10 @@ class ActiveWebStateObservationForwarder : public WebStateListObserver {
                            ActiveWebStateChangeReason reason) override;
 
  private:
-  ScopedObserver<WebStateList, WebStateListObserver> web_state_list_observer_{
-      this};
-  ScopedObserver<web::WebState, web::WebStateObserver> web_state_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveWebStateObservationForwarder);
+  base::ScopedObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_ACTIVE_WEB_STATE_OBSERVATION_FORWARDER_H_

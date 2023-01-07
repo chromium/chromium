@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,12 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/mac/foundation_util.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/ui/history/history_ui_delegate.h"
+#import "ios/chrome/browser/ui/history/history_ui_delegate.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_delegate.h"
-#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller_delegate.h"
@@ -63,15 +62,11 @@
   self.historyClearBrowsingDataNavigationController.toolbarHidden = YES;
 
   BOOL useCustomPresentation = YES;
-  if (IsCollectionsCardPresentationStyleEnabled()) {
-    if (@available(iOS 13, *)) {
-      [self.historyClearBrowsingDataNavigationController
-          setModalPresentationStyle:UIModalPresentationFormSheet];
-      self.historyClearBrowsingDataNavigationController.presentationController
-          .delegate = self.clearBrowsingDataTableViewController;
-      useCustomPresentation = NO;
-    }
-  }
+  [self.historyClearBrowsingDataNavigationController
+      setModalPresentationStyle:UIModalPresentationFormSheet];
+  self.historyClearBrowsingDataNavigationController.presentationController
+      .delegate = self.clearBrowsingDataTableViewController;
+  useCustomPresentation = NO;
 
   if (useCustomPresentation) {
     // Stacks on top of history "bubble" for non-compact devices.
@@ -130,6 +125,12 @@
 
 - (void)dismissClearBrowsingData {
   DCHECK(self.historyClearBrowsingDataNavigationController);
+  [self stopWithCompletion:nil];
+}
+
+- (void)clearBrowsingDataTableViewControllerWasRemoved:
+    (ClearBrowsingDataTableViewController*)controller {
+  DCHECK_EQ(self.clearBrowsingDataTableViewController, controller);
   [self stopWithCompletion:nil];
 }
 

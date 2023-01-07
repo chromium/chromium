@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -199,6 +199,12 @@ typedef uint32_t MojoSendInvitationFlags;
 // |MOJO_ACCEPT_INVITATION_FLAG_ISOLATED| flag set, and may only have a single
 // message pipe attached with a name of exactly four zero-bytes ("\0\0\0\0").
 #define MOJO_SEND_INVITATION_FLAG_ISOLATED ((MojoSendInvitationFlags)1)
+
+// Indicates that the invitation is being sent to a process which should be
+// considered "untrusted."" This may impose various security constraints on what
+// can be transferred by Mojo between e.g. a broker process and the remote
+// process in question.
+#define MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS ((MojoSendInvitationFlags)2)
 
 // Options passed to |MojoSendInvitation()|.
 struct MOJO_ALIGNAS(8) MojoSendInvitationOptions {

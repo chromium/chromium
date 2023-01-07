@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,13 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
 namespace base {
@@ -47,7 +47,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   using ValueMap = std::map<std::vector<uint8_t>, std::vector<uint8_t>>;
   using ValueMapCallback = base::OnceCallback<void(std::unique_ptr<ValueMap>)>;
   using Change =
-      std::pair<std::vector<uint8_t>, base::Optional<std::vector<uint8_t>>>;
+      std::pair<std::vector<uint8_t>, absl::optional<std::vector<uint8_t>>>;
   using KeysOnlyMap = std::map<std::vector<uint8_t>, size_t>;
 
   class Delegate {
@@ -58,11 +58,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
         std::vector<DomStorageDatabase::KeyValuePair>* extra_entries_to_add,
         std::vector<DomStorageDatabase::Key>* extra_keys_to_delete);
     virtual void DidCommit(leveldb::Status error) = 0;
-    // Called during loading if no data was found. Needs to call |callback|.
-    virtual void MigrateData(ValueMapCallback callback);
-    // Called during loading to give delegate a chance to modify the data as
-    // stored in the database.
-    virtual std::vector<Change> FixUpData(const ValueMap& data);
     virtual void OnMapLoaded(leveldb::Status status);
   };
 
@@ -100,6 +95,9 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
                   std::vector<uint8_t> prefix,
                   Delegate* delegate,
                   const Options& options);
+
+  StorageAreaImpl(const StorageAreaImpl&) = delete;
+  StorageAreaImpl& operator=(const StorageAreaImpl&) = delete;
 
   ~StorageAreaImpl() override;
 
@@ -185,11 +183,11 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
       mojo::PendingRemote<blink::mojom::StorageAreaObserver> observer) override;
   void Put(const std::vector<uint8_t>& key,
            const std::vector<uint8_t>& value,
-           const base::Optional<std::vector<uint8_t>>& client_old_value,
+           const absl::optional<std::vector<uint8_t>>& client_old_value,
            const std::string& source,
            PutCallback callback) override;
   void Delete(const std::vector<uint8_t>& key,
-              const base::Optional<std::vector<uint8_t>>& client_old_value,
+              const absl::optional<std::vector<uint8_t>>& client_old_value,
               const std::string& source,
               DeleteCallback callback) override;
   void DeleteAll(
@@ -245,7 +243,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
 
     bool clear_all_first = false;
     // Prefix copying is performed before applying changes.
-    base::Optional<std::vector<uint8_t>> copy_to_prefix;
+    absl::optional<std::vector<uint8_t>> copy_to_prefix;
     // Used if the map_type_ is LOADED_KEYS_ONLY.
     std::map<std::vector<uint8_t>, std::vector<uint8_t>> changed_values;
     // Used if the map_type_ is LOADED_KEYS_AND_VALUES.
@@ -286,7 +284,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   void LoadMap(base::OnceClosure completion_callback);
   void OnMapLoaded(leveldb::Status status,
                    std::vector<DomStorageDatabase::KeyValuePair> data);
-  void OnGotMigrationData(std::unique_ptr<ValueMap> data);
   void CalculateStorageAndMemoryUsed();
   void OnLoadComplete();
 
@@ -324,8 +321,8 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   std::vector<uint8_t> prefix_;
   mojo::ReceiverSet<blink::mojom::StorageArea> receivers_;
   mojo::RemoteSet<blink::mojom::StorageAreaObserver> observers_;
-  Delegate* delegate_;
-  AsyncDomStorageDatabase* database_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<AsyncDomStorageDatabase> database_;
 
   // For commits to work correctly the map loaded state (keys vs keys & values)
   // must stay consistent for a given commit batch.
@@ -352,8 +349,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   base::WeakPtrFactory<StorageAreaImpl> weak_ptr_factory_{this};
 
   static bool s_aggressive_flushing_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageAreaImpl);
 };
 
 }  // namespace storage

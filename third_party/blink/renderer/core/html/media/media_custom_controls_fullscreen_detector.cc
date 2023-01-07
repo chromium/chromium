@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,16 +51,16 @@ constexpr float kMaxAllowedPortionOfVideoOffScreen = 0.25;
 // In a nutshell:
 //  1. The video should occupy most of the viewport in at least one dimension.
 //  2. The video should be almost fully visible on the screen.
-bool IsFullscreenVideoOfDifferentRatio(const IntSize& video_size,
-                                       const IntSize& viewport_size,
-                                       const IntSize& intersection_size) {
+bool IsFullscreenVideoOfDifferentRatio(const gfx::Size& video_size,
+                                       const gfx::Size& viewport_size,
+                                       const gfx::Size& intersection_size) {
   if (video_size.IsEmpty() || viewport_size.IsEmpty())
     return false;
 
   const float x_occupation_proportion =
-      1.0f * intersection_size.Width() / viewport_size.Width();
+      1.0f * intersection_size.width() / viewport_size.width();
   const float y_occupation_proportion =
-      1.0f * intersection_size.Height() / viewport_size.Height();
+      1.0f * intersection_size.height() / viewport_size.height();
 
   // The video should occupy most of the viewport in at least one dimension.
   if (std::max(x_occupation_proportion, y_occupation_proportion) <
@@ -69,8 +69,8 @@ bool IsFullscreenVideoOfDifferentRatio(const IntSize& video_size,
   }
 
   // The video should be almost fully visible on the screen.
-  return video_size.Area() * (1.0 - kMaxAllowedPortionOfVideoOffScreen) <=
-         intersection_size.Area();
+  return video_size.Area64() * (1.0 - kMaxAllowedPortionOfVideoOffScreen) <=
+         intersection_size.Area64();
 }
 
 }  // anonymous namespace
@@ -159,7 +159,7 @@ void MediaCustomControlsFullscreenDetector::ReportEffectivelyFullscreen(
 
   // Picture-in-Picture can be disabled by the website when the API is enabled.
   bool picture_in_picture_allowed =
-      !RuntimeEnabledFeatures::PictureInPictureEnabled() &&
+      !RuntimeEnabledFeatures::PictureInPictureEnabled() ||
       !VideoElement().FastHasAttribute(
           html_names::kDisablepictureinpictureAttr);
 
@@ -172,45 +172,71 @@ void MediaCustomControlsFullscreenDetector::ReportEffectivelyFullscreen(
   }
 }
 
+void MediaCustomControlsFullscreenDetector::UpdateDominantAndFullscreenStatus(
+    bool is_dominant_visible_content,
+    bool is_effectively_fullscreen) {
+  DCHECK(viewport_intersection_observer_);
+
+  auto update_dominant_and_fullscreen =
+      [](MediaCustomControlsFullscreenDetector* self,
+         bool is_dominant_visible_content, bool is_effectively_fullscreen) {
+        if (!self || !self->viewport_intersection_observer_)
+          return;
+
+        self->VideoElement().SetIsDominantVisibleContent(
+            is_dominant_visible_content);
+        self->ReportEffectivelyFullscreen(is_effectively_fullscreen);
+      };
+
+  // Post these updates, since callbacks from |viewport_intersection_observer_|
+  // are not allowed to synchronously modify DOM elements.
+  VideoElement()
+      .GetDocument()
+      .GetTaskRunner(TaskType::kInternalMedia)
+      ->PostTask(FROM_HERE, WTF::BindOnce(update_dominant_and_fullscreen,
+                                          WrapWeakPersistent(this),
+                                          is_dominant_visible_content,
+                                          is_effectively_fullscreen));
+}
+
 void MediaCustomControlsFullscreenDetector::OnIntersectionChanged(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  if (!viewport_intersection_observer_ || entries.IsEmpty())
+  if (!viewport_intersection_observer_ || entries.empty())
     return;
 
   auto* layout = VideoElement().GetLayoutObject();
   if (!layout || entries.back()->intersectionRatio() <
                      kMinPossibleFullscreenIntersectionThreshold) {
     // Video is not shown at all.
-    VideoElement().SetIsDominantVisibleContent(false);
-    ReportEffectivelyFullscreen(false);
+    UpdateDominantAndFullscreenStatus(false, false);
     return;
   }
 
   const bool is_mostly_filling_viewport =
       entries.back()->intersectionRatio() >=
       kMostlyFillViewportIntersectionThreshold;
-  VideoElement().SetIsDominantVisibleContent(is_mostly_filling_viewport);
 
   if (!IsVideoOrParentFullscreen()) {
     // The video is outside of a fullscreen element.
     // This is definitely not a fullscreen video experience.
-    ReportEffectivelyFullscreen(false);
+    UpdateDominantAndFullscreenStatus(is_mostly_filling_viewport, false);
     return;
   }
 
   if (is_mostly_filling_viewport) {
     // Video takes most part (85%) of the screen, report fullscreen.
-    ReportEffectivelyFullscreen(true);
+    UpdateDominantAndFullscreenStatus(true, true);
     return;
   }
 
   const IntersectionGeometry& geometry = entries.back()->GetGeometry();
-  IntSize target_size = RoundedIntSize(geometry.TargetRect().size);
-  IntSize intersection_size = RoundedIntSize(geometry.IntersectionRect().size);
-  IntSize root_size = RoundedIntSize(geometry.RootRect().size);
+  gfx::Size target_size = ToRoundedSize(geometry.TargetRect().size);
+  gfx::Size intersection_size = ToRoundedSize(geometry.IntersectionRect().size);
+  gfx::Size root_size = ToRoundedSize(geometry.RootRect().size);
 
-  ReportEffectivelyFullscreen(IsFullscreenVideoOfDifferentRatio(
-      target_size, root_size, intersection_size));
+  UpdateDominantAndFullscreenStatus(
+      false, IsFullscreenVideoOfDifferentRatio(target_size, root_size,
+                                               intersection_size));
 }
 
 void MediaCustomControlsFullscreenDetector::TriggerObservation() {
@@ -241,9 +267,9 @@ void MediaCustomControlsFullscreenDetector::Trace(Visitor* visitor) const {
 // static
 bool MediaCustomControlsFullscreenDetector::
     IsFullscreenVideoOfDifferentRatioForTesting(
-        const IntSize& video_size,
-        const IntSize& viewport_size,
-        const IntSize& intersection_size) {
+        const gfx::Size& video_size,
+        const gfx::Size& viewport_size,
+        const gfx::Size& intersection_size) {
   return IsFullscreenVideoOfDifferentRatio(video_size, viewport_size,
                                            intersection_size);
 }

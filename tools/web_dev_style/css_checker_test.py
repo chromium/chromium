@@ -1,9 +1,9 @@
-#!/usr/bin/env python
-# Copyright 2015 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import css_checker
+from . import css_checker
 from os import path as os_path
 import re
 from sys import path as sys_path
@@ -307,11 +307,13 @@ div {
     rule: value; rule: value;""")
 
   def testCssOneSelectorPerLine(self):
-    self.VerifyContentsProducesOutput("""
+    self.VerifyContentsProducesOutput(
+        """
 a,
 div,a,
 div,/* Hello! */ span,
-#id.class([dir=rtl):not(.class):any(a, b, d) {
+#id.class([dir=rtl]):not(.class):any(a, b, d),
+div :is(:not(a), #b, .c) {
   rule: value;
 }
 

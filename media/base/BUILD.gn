@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -73,6 +73,7 @@ source_set("base") {
     "audio_power_monitor.h",
     "audio_processing.cc",
     "audio_processing.h",
+    "audio_processor_controls.h",
     "audio_pull_fifo.cc",
     "audio_pull_fifo.h",
     "audio_push_fifo.cc",
@@ -94,6 +95,8 @@ source_set("base") {
     "bit_reader.h",
     "bit_reader_core.cc",
     "bit_reader_core.h",
+    "bitrate.cc",
+    "bitrate.h",
     "bitstream_buffer.cc",
     "bitstream_buffer.h",
     "buffering_state.cc",
@@ -104,6 +107,7 @@ source_set("base") {
     "callback_registry.h",
     "cdm_callback_promise.cc",
     "cdm_callback_promise.h",
+    "cdm_config.cc",
     "cdm_config.h",
     "cdm_context.cc",
     "cdm_context.h",
@@ -129,12 +133,13 @@ source_set("base") {
     "container_names.h",
     "content_decryption_module.cc",
     "content_decryption_module.h",
+    "converting_audio_fifo.cc",
+    "converting_audio_fifo.h",
+    "crc_16.h",
     "data_buffer.cc",
     "data_buffer.h",
     "data_source.cc",
     "data_source.h",
-    "decode_status.cc",
-    "decode_status.h",
     "decoder.cc",
     "decoder.h",
     "decoder_buffer.cc",
@@ -143,6 +148,8 @@ source_set("base") {
     "decoder_buffer_queue.h",
     "decoder_factory.cc",
     "decoder_factory.h",
+    "decoder_status.cc",
+    "decoder_status.h",
     "decrypt_config.cc",
     "decrypt_config.h",
     "decryptor.cc",
@@ -155,6 +162,7 @@ source_set("base") {
     "djb2.cc",
     "djb2.h",
     "eme_constants.h",
+    "encoder_status.h",
     "encryption_pattern.cc",
     "encryption_pattern.h",
     "encryption_scheme.cc",
@@ -167,10 +175,10 @@ source_set("base") {
     "format_utils.h",
     "frame_rate_estimator.cc",
     "frame_rate_estimator.h",
+    "key_system_info.cc",
+    "key_system_info.h",
     "key_system_names.cc",
     "key_system_names.h",
-    "key_system_properties.cc",
-    "key_system_properties.h",
     "key_systems.cc",
     "key_systems.h",
     "localized_strings.cc",
@@ -200,6 +208,8 @@ source_set("base") {
     "media_observer.h",
     "media_permission.cc",
     "media_permission.h",
+    "media_player_logging_id.cc",
+    "media_player_logging_id.h",
     "media_resource.cc",
     "media_resource.h",
     "media_serializers.h",
@@ -280,8 +290,6 @@ source_set("base") {
     "sinc_resampler.h",
     "status.cc",
     "status.h",
-    "status_codes.cc",
-    "status_codes.h",
     "stream_parser.cc",
     "stream_parser.h",
     "stream_parser_buffer.cc",
@@ -290,9 +298,10 @@ source_set("base") {
     "subsample_entry.h",
     "supported_types.cc",
     "supported_types.h",
-    "supported_types.h",
     "supported_video_decoder_config.cc",
     "supported_video_decoder_config.h",
+    "svc_scalability_mode.cc",
+    "svc_scalability_mode.h",
     "text_cue.cc",
     "text_cue.h",
     "text_ranges.cc",
@@ -308,11 +317,11 @@ source_set("base") {
     "timestamp_constants.h",
     "tuneable.cc",
     "tuneable.h",
-    "unaligned_shared_memory.cc",
-    "unaligned_shared_memory.h",
     "use_after_free_checker.h",
     "user_input_monitor.cc",
     "user_input_monitor.h",
+    "video_aspect_ratio.cc",
+    "video_aspect_ratio.h",
     "video_bitrate_allocation.cc",
     "video_bitrate_allocation.h",
     "video_codecs.cc",
@@ -356,33 +365,33 @@ source_set("base") {
     ":video_facing",
     "//media:media_buildflags",
     "//media:shared_memory_support",
+    "//media/gpu:buildflags",
     "//ui/gfx:color_space",
     "//ui/gl",
   ]
   deps = [
+    "//base",
     "//base/allocator:buildflags",
-    "//base/util/values:values_util",
     "//build:chromeos_buildflags",
     "//components/system_media_controls/linux/buildflags",
     "//gpu/command_buffer/client:interface_base",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common:common",
+    "//net",
     "//skia",
     "//third_party/libyuv",
     "//third_party/widevine/cdm:headers",
     "//ui/display:display",
     "//ui/events:events",
     "//ui/events:events_base",
+    "//ui/events:keyboard_hook",
     "//url:url",
   ]
 
   libs = []
   configs += [
     "//build/config:precompiled_headers",
-
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
 
     "//media:subcomponent_config",
   ]
@@ -394,18 +403,16 @@ source_set("base") {
     ]
   }
 
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
+
   if (media_use_libvpx) {
     deps += [ "//third_party/libvpx" ]
   }
 
-  if (use_x11 || ozone_platform_x11) {
+  if (is_linux && !is_castos) {
     sources += [ "user_input_monitor_linux.cc" ]
-    deps += [
-      "//ui/base:features",
-      "//ui/events:events_base",
-      "//ui/events/devices/x11",
-      "//ui/gfx/x",
-    ]
   } else if (is_mac) {
     sources += [ "user_input_monitor_mac.cc" ]
     frameworks = [
@@ -418,9 +425,6 @@ source_set("base") {
     sources += [ "user_input_monitor_win.cc" ]
   } else {
     defines += [ "DISABLE_USER_INPUT_MONITOR" ]
-  }
-  if (use_x11) {
-    deps += [ "//ui/base/x" ]
   }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
@@ -435,14 +439,20 @@ source_set("base") {
   }
 
   if (is_win) {
-    public_deps += [ "//media/base/win:mf_cdm_proxy" ]
+    public_deps += [
+      "//media/base/win:dcomp_texture_wrapper",
+      "//media/base/win:mf_cdm_proxy",
+      "//media/base/win:overlay_state_observer_subscription",
+    ]
+    sources += [
+      "win/mf_feature_checks.cc",
+      "win/mf_feature_checks.h",
+    ]
   }
 
-  # TODO(ziyangch): Check |is_chromecast| first when using cast media pipeline
-  # on Android cast devices.
   if (is_android) {
     sources += [ "demuxer_memory_limit_android.cc" ]
-  } else if (is_chromecast) {
+  } else if (is_castos) {
     sources += [ "demuxer_memory_limit_cast.cc" ]
   } else if (is_fuchsia) {
     sources += [ "demuxer_memory_limit_low.cc" ]
@@ -470,6 +480,7 @@ source_set("video_facing") {
 if (is_android) {
   java_cpp_enum("java_enums") {
     sources = [
+      "audio_parameters.h",
       "container_names.h",
       "encryption_scheme.h",
       "video_codecs.h",
@@ -511,6 +522,8 @@ static_library("test_support") {
     "mock_filters.h",
     "mock_media_log.cc",
     "mock_media_log.h",
+    "mock_video_renderer_sink.cc",
+    "mock_video_renderer_sink.h",
     "test_data_util.cc",
     "test_data_util.h",
     "test_helpers.cc",
@@ -527,6 +540,7 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//testing/gmock",
     "//ui/gfx:test_support",
     "//url",
@@ -561,11 +575,14 @@ source_set("unit_tests") {
     "audio_shifter_unittest.cc",
     "audio_timestamp_helper_unittest.cc",
     "bit_reader_unittest.cc",
+    "bitrate_unittest.cc",
     "callback_holder_unittest.cc",
     "callback_registry_unittest.cc",
     "channel_mixer_unittest.cc",
     "channel_mixing_matrix_unittest.cc",
     "container_names_unittest.cc",
+    "converting_audio_fifo_unittest.cc",
+    "crc_16_unittest.cc",
     "data_buffer_unittest.cc",
     "decoder_buffer_queue_unittest.cc",
     "decoder_buffer_unittest.cc",
@@ -602,9 +619,9 @@ source_set("unit_tests") {
     "text_renderer_unittest.cc",
     "time_delta_interpolator_unittest.cc",
     "tuneable_unittest.cc",
-    "unaligned_shared_memory_unittest.cc",
     "user_input_monitor_unittest.cc",
     "vector_math_unittest.cc",
+    "video_aspect_ratio_unittest.cc",
     "video_bitrate_allocation_unittest.cc",
     "video_codecs_unittest.cc",
     "video_color_space_unittest.cc",
@@ -613,21 +630,19 @@ source_set("unit_tests") {
     "video_frame_pool_unittest.cc",
     "video_frame_unittest.cc",
     "video_thumbnail_decoder_unittest.cc",
+    "video_transformation_unittest.cc",
     "video_types_unittest.cc",
     "video_util_unittest.cc",
     "wall_clock_time_source_unittest.cc",
   ]
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//media:media_config",
-  ]
+  configs += [ "//media:media_config" ]
   deps = [
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/viz/common",
     "//gpu/command_buffer/common",
     "//media:test_support",
+    "//net",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libyuv",
@@ -651,7 +666,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_chromecast && !is_android) {
+  if (is_castos) {
     sources += [ "demuxer_memory_limit_cast_unittest.cc" ]
   }
 }
@@ -665,11 +680,7 @@ source_set("perftests") {
     "sinc_resampler_perftest.cc",
     "vector_math_perftest.cc",
   ]
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//media:media_config",
-  ]
+  configs += [ "//media:media_config" ]
   deps = [
     "//base",
     "//base/test:test_support",

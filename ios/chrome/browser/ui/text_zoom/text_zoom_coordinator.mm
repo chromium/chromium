@@ -1,14 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_coordinator.h"
 
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
-#include "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
+#import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_mediator.h"
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/common/ui/colors/dynamic_color_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -50,8 +49,7 @@
       initWithWebStateList:self.browser->GetWebStateList()
             commandHandler:self.textZoomCommandHandler];
 
-  self.textZoomViewController = [[TextZoomViewController alloc]
-      initWithDarkAppearance:self.browser->GetBrowserState()->IsOffTheRecord()];
+  self.textZoomViewController = [[TextZoomViewController alloc] init];
   self.textZoomViewController.commandHandler = self.textZoomCommandHandler;
 
   self.textZoomViewController.zoomHandler = self.mediator;

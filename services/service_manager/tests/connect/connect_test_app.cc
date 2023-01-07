@@ -1,12 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_executor.h"
@@ -20,6 +18,7 @@
 #include "services/service_manager/public/mojom/connector.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/tests/connect/connect.test-mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 
@@ -27,9 +26,9 @@ namespace {
 
 void OnConnectResult(base::OnceClosure closure,
                      mojom::ConnectResult* out_result,
-                     base::Optional<Identity>* out_resolved_identity,
+                     absl::optional<Identity>* out_resolved_identity,
                      mojom::ConnectResult result,
-                     const base::Optional<Identity>& resolved_identity) {
+                     const absl::optional<Identity>& resolved_identity) {
   std::move(closure).Run();
   *out_result = result;
   *out_resolved_identity = resolved_identity;
@@ -52,6 +51,9 @@ class ConnectTestApp : public Service,
  public:
   explicit ConnectTestApp(mojo::PendingReceiver<mojom::Service> receiver)
       : service_receiver_(this, std::move(receiver)) {}
+
+  ConnectTestApp(const ConnectTestApp&) = delete;
+  ConnectTestApp& operator=(const ConnectTestApp&) = delete;
 
   ~ConnectTestApp() override = default;
 
@@ -179,7 +181,7 @@ class ConnectTestApp : public Service,
       const ServiceFilter& filter,
       ConnectToClassAppWithFilterCallback callback) override {
     mojom::ConnectResult result;
-    base::Optional<Identity> resolved_identity;
+    absl::optional<Identity> resolved_identity;
     base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
     service_receiver_.GetConnector()->WarmService(
         filter, base::BindOnce(&OnConnectResult, loop.QuitClosure(), &result,
@@ -207,8 +209,6 @@ class ConnectTestApp : public Service,
   mojo::ReceiverSet<test::mojom::BlockedInterface> blocked_receivers_;
   mojo::ReceiverSet<test::mojom::IdentityTest> identity_test_receivers_;
   mojo::Remote<test::mojom::ExposedInterface> caller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectTestApp);
 };
 
 }  // namespace service_manager

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,10 +116,10 @@ FakeBluetoothLEAdvertisementWinrt::FakeBluetoothLEAdvertisementWinrt() =
     default;
 
 FakeBluetoothLEAdvertisementWinrt::FakeBluetoothLEAdvertisementWinrt(
-    base::Optional<std::string> local_name,
-    base::Optional<uint8_t> flags,
+    absl::optional<std::string> local_name,
+    absl::optional<uint8_t> flags,
     BluetoothDevice::UUIDList advertised_uuids,
-    base::Optional<int8_t> tx_power,
+    absl::optional<int8_t> tx_power,
     BluetoothDevice::ServiceDataMap service_data,
     BluetoothDevice::ManufacturerDataMap manufacturer_data)
     : local_name_(std::move(local_name)),
@@ -206,7 +206,7 @@ HRESULT FakeBluetoothLEAdvertisementWinrt::GetSectionsByType(
   std::vector<ComPtr<IBluetoothLEAdvertisementDataSection>> data_sections;
   if (type == BluetoothDeviceWinrt::kTxPowerLevelDataSection && tx_power_) {
     data_sections.push_back(Make<FakeBluetoothLEAdvertisementDataSectionWinrt>(
-        std::vector<uint8_t>({*tx_power_})));
+        std::vector<uint8_t>({static_cast<uint8_t>(*tx_power_)})));
   }
 
   // For simplicity we only implement querying 128 Bit UUID Service Data.

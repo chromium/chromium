@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,7 +90,7 @@ public class CreditCardAccessoryIntegrationTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
-    public void testCreditCardSheetAvailable() {
+    public void testCreditCardSheetAvailable_whenManualFallbackEnabled() {
         mHelper.loadTestPage(false);
 
         CriteriaHelper.pollUiThread(() -> {
@@ -100,8 +100,24 @@ public class CreditCardAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
-    public void testCreditCardSheetUnavailableWithoutFeature() {
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS})
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY,
+            ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
+    public void
+    testCreditCardSheetAvailable_whenManualFallbackForVirtualCardsEnabled() {
+        mHelper.loadTestPage(false);
+
+        CriteriaHelper.pollUiThread(() -> {
+            return mHelper.getOrCreateCreditCardAccessorySheet() != null;
+        }, "Credit Card sheet should be bound to accessory sheet.");
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID,
+            ChromeFeatureList.AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS})
+    public void
+    testCreditCardSheetUnavailableWithoutFeature() {
         mHelper.loadTestPage(false);
 
         Assert.assertNull("Credit Card sheet should not have been created.",
@@ -138,10 +154,10 @@ public class CreditCardAccessoryIntegrationTest {
         DOMUtils.focusNode(mActivityTestRule.getWebContents(), "CREDIT_CARD_NAME_FULL");
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
-        // Scroll to last element and click the second icon:
+        // Scroll to last element and click the first icon:
         whenDisplayed(withId(R.id.bar_items_view))
                 .perform(scrollTo(isKeyboardAccessoryTabLayout()),
-                        actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(1)));
+                        actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
 
         // Wait for the sheet to come up and be stable.
         whenDisplayed(withId(R.id.credit_card_sheet));

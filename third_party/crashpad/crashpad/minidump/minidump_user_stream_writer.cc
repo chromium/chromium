@@ -1,4 +1,4 @@
-// Copyright 2016 The Crashpad Authors. All rights reserved.
+// Copyright 2016 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 
 #include "minidump/minidump_user_stream_writer.h"
 
+#include "base/check_op.h"
 #include "util/file/file_writer.h"
 
 namespace crashpad {
@@ -31,6 +32,9 @@ class MinidumpUserStreamWriter::SnapshotContentsWriter final
  public:
   explicit SnapshotContentsWriter(const MemorySnapshot* snapshot)
       : snapshot_(snapshot), writer_(nullptr) {}
+
+  SnapshotContentsWriter(const SnapshotContentsWriter&) = delete;
+  SnapshotContentsWriter& operator=(const SnapshotContentsWriter&) = delete;
 
   bool WriteContents(FileWriterInterface* writer) override {
     DCHECK(!writer_);
@@ -51,8 +55,6 @@ class MinidumpUserStreamWriter::SnapshotContentsWriter final
  private:
   const MemorySnapshot* snapshot_;
   FileWriterInterface* writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapshotContentsWriter);
 };
 
 class MinidumpUserStreamWriter::ExtensionStreamContentsWriter final
@@ -62,6 +64,10 @@ class MinidumpUserStreamWriter::ExtensionStreamContentsWriter final
   explicit ExtensionStreamContentsWriter(
       std::unique_ptr<MinidumpUserExtensionStreamDataSource> data_source)
       : data_source_(std::move(data_source)), writer_(nullptr) {}
+
+  ExtensionStreamContentsWriter(const ExtensionStreamContentsWriter&) = delete;
+  ExtensionStreamContentsWriter& operator=(
+      const ExtensionStreamContentsWriter&) = delete;
 
   bool WriteContents(FileWriterInterface* writer) override {
     DCHECK(!writer_);
@@ -79,8 +85,6 @@ class MinidumpUserStreamWriter::ExtensionStreamContentsWriter final
  private:
   std::unique_ptr<MinidumpUserExtensionStreamDataSource> data_source_;
   FileWriterInterface* writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionStreamContentsWriter);
 };
 
 MinidumpUserStreamWriter::MinidumpUserStreamWriter() : stream_type_() {}

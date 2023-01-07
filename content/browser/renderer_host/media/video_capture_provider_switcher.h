@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,13 @@
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_PROVIDER_SWITCHER_H_
 
 #include "content/browser/renderer_host/media/video_capture_provider.h"
-#include "services/video_capture/public/mojom/device_factory.mojom.h"
 
 namespace content {
 
 // Routes requests for media devices, e.g. cameras, to
 // |media_device_capture_provider| and for all other types of capture, e.g.
 // screen or tab capture, to the given |other_types_capture_provider|.
-class CONTENT_EXPORT VideoCaptureProviderSwitcher
-    : public VideoCaptureProvider {
+class VideoCaptureProviderSwitcher : public VideoCaptureProvider {
  public:
   VideoCaptureProviderSwitcher(
       std::unique_ptr<VideoCaptureProvider> media_device_capture_provider,

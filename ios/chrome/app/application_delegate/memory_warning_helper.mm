@@ -1,13 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 
-#include "base/memory/memory_pressure_listener.h"
-#include "base/metrics/histogram_macros.h"
+#import "base/memory/memory_pressure_listener.h"
+#import "base/metrics/histogram_macros.h"
 #import "components/previous_session_info/previous_session_info.h"
-#include "ios/chrome/browser/crash_report/crash_keys_helper.h"
+#import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -43,7 +43,7 @@ const CFTimeInterval kOutOfMemoryResetTimeInterval = 5;
 
   ++_foregroundMemoryWarningCount;
   // Register that we might die because of memory. If we are still alive in
-  // |kOutOfMemoryResetTimeInterval| seconds, reset the flag.
+  // `kOutOfMemoryResetTimeInterval` seconds, reset the flag.
   [[PreviousSessionInfo sharedInstance] setMemoryWarningFlag];
   _outOfMemoryResetTime =
       CFAbsoluteTimeGetCurrent() + kOutOfMemoryResetTimeInterval;

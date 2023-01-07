@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,28 +33,23 @@ namespace extensions {
 
 void GetExtensionBasicInfo(const Extension* extension,
                            bool enabled,
-                           base::DictionaryValue* info) {
-  info->SetString(kInfoIdKey, extension->id());
-  info->SetString(kInfoNameKey, extension->name());
-  info->SetBoolean(kEnabledKey, enabled);
-  info->SetBoolean(kKioskEnabledKey,
-                   KioskModeInfo::IsKioskEnabled(extension));
-  info->SetBoolean(kKioskOnlyKey,
-                   KioskModeInfo::IsKioskOnly(extension));
-  info->SetBoolean(kOfflineEnabledKey,
-                   OfflineEnabledInfo::IsOfflineEnabled(extension));
-  info->SetString(kInfoVersionKey, extension->GetVersionForDisplay());
-  info->SetString(kDescriptionKey, extension->description());
-  info->SetString(
-      kOptionsUrlKey,
-      OptionsPageInfo::GetOptionsPage(extension).possibly_invalid_spec());
-  info->SetString(
-      kHomepageUrlKey,
-      ManifestURL::GetHomepageURL(extension).possibly_invalid_spec());
-  info->SetString(
-      kDetailsUrlKey,
-      ManifestURL::GetDetailsURL(extension).possibly_invalid_spec());
-  info->SetBoolean(kPackagedAppKey, extension->is_platform_app());
+                           base::Value::Dict* info) {
+  info->Set(kInfoIdKey, extension->id());
+  info->Set(kInfoNameKey, extension->name());
+  info->Set(kEnabledKey, enabled);
+  info->Set(kKioskEnabledKey, KioskModeInfo::IsKioskEnabled(extension));
+  info->Set(kKioskOnlyKey, KioskModeInfo::IsKioskOnly(extension));
+  info->Set(kOfflineEnabledKey,
+            OfflineEnabledInfo::IsOfflineEnabled(extension));
+  info->Set(kInfoVersionKey, extension->GetVersionForDisplay());
+  info->Set(kDescriptionKey, extension->description());
+  info->Set(kOptionsUrlKey,
+            OptionsPageInfo::GetOptionsPage(extension).possibly_invalid_spec());
+  info->Set(kHomepageUrlKey,
+            ManifestURL::GetHomepageURL(extension).possibly_invalid_spec());
+  info->Set(kDetailsUrlKey,
+            ManifestURL::GetDetailsURL(extension).possibly_invalid_spec());
+  info->Set(kPackagedAppKey, extension->is_platform_app());
 }
 
 }  // namespace extensions

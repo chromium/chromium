@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_executor.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
@@ -20,12 +19,14 @@ class PackagedService : public service_manager::Service {
   explicit PackagedService(
       mojo::PendingReceiver<service_manager::mojom::Service> receiver)
       : service_receiver_(this, std::move(receiver)) {}
+
+  PackagedService(const PackagedService&) = delete;
+  PackagedService& operator=(const PackagedService&) = delete;
+
   ~PackagedService() override = default;
 
  private:
   service_manager::ServiceReceiver service_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(PackagedService);
 };
 
 class Embedder : public service_manager::Service {
@@ -33,6 +34,10 @@ class Embedder : public service_manager::Service {
   explicit Embedder(
       mojo::PendingReceiver<service_manager::mojom::Service> receiver)
       : service_receiver_(this, std::move(receiver)) {}
+
+  Embedder(const Embedder&) = delete;
+  Embedder& operator=(const Embedder&) = delete;
+
   ~Embedder() override = default;
 
  private:
@@ -49,14 +54,12 @@ class Embedder : public service_manager::Service {
       std::move(callback).Run(base::GetCurrentProcId());
     } else {
       LOG(ERROR) << "Failed to create unknown service " << service_name;
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
     }
   }
 
   service_manager::ServiceReceiver service_receiver_;
   std::unique_ptr<service_manager::Service> packaged_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(Embedder);
 };
 
 }  // namespace

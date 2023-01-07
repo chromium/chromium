@@ -1,0 +1,3 @@
+per-file bitmap_cursor.*=file://ui/base/cursor/OWNERS
+per-file bitmap_cursor_factory.*=file://ui/base/cursor/OWNERS
+per-file bitmap_cursor_factory_unittest.cc=file://ui/base/cursor/OWNERS

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,6 @@
 #include "third_party/blink/renderer/core/css/resolver/transform_builder.h"
 
 namespace blink {
-
-// static
-std::unique_ptr<InterpolableTransformList> InterpolableTransformList::Create(
-    TransformOperations&& operations) {
-  return std::make_unique<InterpolableTransformList>(std::move(operations));
-}
 
 // static
 std::unique_ptr<InterpolableTransformList>
@@ -27,7 +21,7 @@ InterpolableTransformList::ConvertCSSValue(const CSSValue& css_value,
 void InterpolableTransformList::PreConcat(
     const InterpolableTransformList& underlying) {
   Vector<scoped_refptr<TransformOperation>> result;
-  result.ReserveCapacity(underlying.operations_.size() + operations_.size());
+  result.reserve(underlying.operations_.size() + operations_.size());
   result.AppendVector(underlying.operations_.Operations());
   result.AppendVector(operations_.Operations());
   operations_.Operations() = result;

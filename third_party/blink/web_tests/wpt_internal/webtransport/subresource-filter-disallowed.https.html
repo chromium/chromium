@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/webtransport/resources/webtransport-test-helpers.sub.js"></script>
+<script>
+if (window.testRunner) {
+  testRunner.setDisallowedSubresourcePathSuffixes(
+      ['headers.py'], true /* block_subresources */);
+}
+
+promise_test(async t => {
+  const wt =
+      new WebTransport(webtransport_url('custom-response.py?:status=200'));
+  await wt.ready;
+}, 'WebTransport session is established with status code 200');
+
+promise_test(async t => {
+  const wt =
+      new WebTransport(webtransport_url('echo-request-headers.py'));
+  return promise_rejects_dom(t, 'NetworkError', wt.ready);
+}, 'Request suffixed with "headers.py" should be blocked.');
+</script>

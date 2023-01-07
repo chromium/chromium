@@ -1,12 +1,10 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_METRICS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_METRICS_HANDLER_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -19,13 +17,13 @@
 // dashboard with the action names you use, as our processor won't catch that
 // information (treat it as RecordComputedMetrics)
 
-namespace base {
-class ListValue;
-}
-
 class MetricsHandler : public content::WebUIMessageHandler {
  public:
   MetricsHandler();
+
+  MetricsHandler(const MetricsHandler&) = delete;
+  MetricsHandler& operator=(const MetricsHandler&) = delete;
+
   ~MetricsHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -33,7 +31,7 @@ class MetricsHandler : public content::WebUIMessageHandler {
 
   // Callback for the "metricsHandler:recordAction" message. This records a
   // user action.
-  void HandleRecordAction(const base::ListValue* args);
+  void HandleRecordAction(const base::Value::List& args);
 
   // TODO(dbeam): http://crbug.com/104338
 
@@ -42,25 +40,27 @@ class MetricsHandler : public content::WebUIMessageHandler {
   // and the maximum allowed value, which can be at most 4000. The histogram
   // will use at most 100 buckets, one for each 1, 10, or 100 different values,
   // depending on the maximum value.
-  void HandleRecordInHistogram(const base::ListValue* args);
+  void HandleRecordInHistogram(const base::Value::List& args);
 
   // Callback for the "metricsHandler:recordBooleanHistogram" message. This
   // records into a boolean histogram. |args| contains the histogram name, and
   // the value to record.
-  void HandleRecordBooleanHistogram(const base::ListValue* args);
+  void HandleRecordBooleanHistogram(const base::Value::List& args);
 
   // Records a millisecond time value in a histogram, similar to
   // UMA_HISTOGRAM_TIMES. Handles times between 1ms and 10sec. |args|
   // contains the histogram name and a value in milliseconds.
-  void HandleRecordTime(const base::ListValue* args);
+  void HandleRecordTime(const base::Value::List& args);
 
   // Records a millisecond time value in a histogram, similar to
   // UmaHistogramMedium. Handles times up to 3 minutes. |args| contains the
   // histogram name and a value in milliseconds.
-  void HandleRecordMediumTime(const base::ListValue* args);
+  void HandleRecordMediumTime(const base::Value::List& args);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricsHandler);
+  // Callback for the "metricsHandler:recordSparseHistogram" message. This
+  // records into a sparse histogram. |args| contains the histogram name and
+  // the sample value to record.
+  void HandleRecordSparseHistogram(const base::Value::List& args);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_METRICS_HANDLER_H_

@@ -1,0 +1,25 @@
+Document
+++DataGrid Grid.ColumnCount=5 Grid.RowCount=4 Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Table.RowOrColumnMajor='RowMajor'
+++++DataItem
+++++++DataItem Name='Month' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++Text Name='Month' IsControlElement=false
+++++++DataItem Name='Day' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++Text Name='Day' IsControlElement=false
+++++++DataItem Name='Weather' GridItem.Column=4 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++Text Name='Weather' IsControlElement=false
+++++DataItem
+++++++DataItem Name='January' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++Text Name='January' IsControlElement=false
+++++++DataItem Name='01' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++Text Name='01' IsControlElement=false
+++++++DataItem Name='Sunny' GridItem.Column=4 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++Text Name='Sunny' IsControlElement=false
+++++DataItem
+++++++DataItem Name='January' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=3 GridItem.RowSpan=1
+++++++++Text Name='January' IsControlElement=false
+++++++DataItem Name='02' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=3 GridItem.RowSpan=1
+++++++++Text Name='02' IsControlElement=false
+++++++DataItem Name='Rainy' GridItem.Column=4 GridItem.ColumnSpan=1 GridItem.Row=3 GridItem.RowSpan=1
+++++++++Text Name='Rainy' IsControlElement=false
+++Group IsControlElement=false
+++++Text Name='done'

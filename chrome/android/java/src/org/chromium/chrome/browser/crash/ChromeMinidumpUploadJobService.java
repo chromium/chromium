@@ -1,16 +1,25 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.crash;
 
+import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatMinidumpUploadJobService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
+import org.chromium.chrome.browser.metrics.UmaUtils;
 
 /** See {@link ChromeMinidumpUploadJobServiceImpl}. */
 public class ChromeMinidumpUploadJobService extends SplitCompatMinidumpUploadJobService {
+    @IdentifierNameString
+    private static String sImplClassName =
+            "org.chromium.chrome.browser.crash.ChromeMinidumpUploadJobServiceImpl";
+
     public ChromeMinidumpUploadJobService() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.crash.ChromeMinidumpUploadJobServiceImpl"));
+        super(sImplClassName);
+    }
+
+    @Override
+    protected void recordMinidumpUploadingTime(long taskDurationMs) {
+        UmaUtils.recordMinidumpUploadingTime(taskDurationMs);
     }
 }

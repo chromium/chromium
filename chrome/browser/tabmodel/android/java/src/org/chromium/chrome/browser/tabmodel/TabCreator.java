@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -43,13 +44,14 @@ public abstract class TabCreator {
      * On restore, allows us to create a frozen version of a tab using saved tab state we read
      * from disk.
      * @param state    The tab state that the tab can be restored from.
-     * @param criticalPersistedTabData serialized {@link CriticalPersistedTabData}
+     * @param serializedCriticalPersistedTabData serialized {@link CriticalPersistedTabData}
      * @param id       The id to give the new tab.
      * @param isIncognito if the {@link Tab} is incognito or not
      * @param index    The index for where to place the tab.
      */
-    public abstract Tab createFrozenTab(TabState state, byte[] serializedCriticalPersistedTabData,
-            int id, boolean isIncognito, int index);
+    public abstract Tab createFrozenTab(TabState state,
+            SerializedCriticalPersistedTabData serializedCriticalPersistedTabData, int id,
+            boolean isIncognito, int index);
 
     /**
      * Creates a new tab and loads the specified URL in it. This is a convenience method for

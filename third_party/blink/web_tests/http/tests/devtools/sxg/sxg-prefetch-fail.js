@@ -1,17 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 (async function() {
   TestRunner.addResult('Tests the signed exchange information are available when the prefetch failed.\n');
   await TestRunner.loadTestModule('network_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
-  SDK.NetworkLog.instance().reset();
+  NetworkTestRunner.networkLog().reset();
 
   const promise = new Promise(resolve => {
     TestRunner.addSniffer(SDK.NetworkDispatcher.prototype, 'loadingFailed', loadingFailed, true);
     function loadingFailed(requestId, time, localizedDescription, canceled) {
-      var request = SDK.NetworkLog.instance().requestByManagerAndId(TestRunner.networkManager, requestId);
+      var request = NetworkTestRunner.networkLog().requestByManagerAndId(
+          TestRunner.networkManager, requestId);
       if (/sxg-invalid-validity-url\.sxg/.exec(request.url()))
         resolve();
     }

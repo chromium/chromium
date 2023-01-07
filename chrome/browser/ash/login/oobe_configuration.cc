@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,21 +9,17 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/oobe_configuration_client.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
+#include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_util.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 OobeConfiguration* OobeConfiguration::instance = nullptr;
 bool OobeConfiguration::skip_check_for_testing_ = false;
 
-OobeConfiguration::OobeConfiguration()
-    : check_completed_(false),
-      configuration_(
-          std::make_unique<base::Value>(base::Value::Type::DICTIONARY)) {
+OobeConfiguration::OobeConfiguration() : check_completed_(false) {
   DCHECK(!OobeConfiguration::Get());
   OobeConfiguration::instance = this;
 }
@@ -49,16 +45,12 @@ void OobeConfiguration::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-const base::Value& OobeConfiguration::GetConfiguration() const {
-  return *configuration_.get();
-}
-
 bool OobeConfiguration::CheckCompleted() const {
   return check_completed_;
 }
 
 void OobeConfiguration::ResetConfiguration() {
-  configuration_ = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+  configuration_ = base::Value::Dict();
   if (check_completed_) {
     NotifyObservers();
   }
@@ -67,11 +59,8 @@ void OobeConfiguration::ResetConfiguration() {
 void OobeConfiguration::CheckConfiguration() {
   if (skip_check_for_testing_)
     return;
-  DBusThreadManager::Get()
-      ->GetOobeConfigurationClient()
-      ->CheckForOobeConfiguration(
-          base::BindOnce(&OobeConfiguration::OnConfigurationCheck,
-                         weak_factory_.GetWeakPtr()));
+  OobeConfigurationClient::Get()->CheckForOobeConfiguration(base::BindOnce(
+      &OobeConfiguration::OnConfigurationCheck, weak_factory_.GetWeakPtr()));
 }
 
 void OobeConfiguration::OnConfigurationCheck(bool has_configuration,
@@ -82,33 +71,30 @@ void OobeConfiguration::OnConfigurationCheck(bool has_configuration,
     return;
   }
 
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          configuration, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!parsed_json.value) {
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      configuration,
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS | base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!parsed_json.has_value()) {
     LOG(ERROR) << "Error parsing OOBE configuration: "
-               << parsed_json.error_message;
-  } else if (!chromeos::configuration::ValidateConfiguration(
-                 *parsed_json.value)) {
+               << parsed_json.error().message;
+  } else if (!parsed_json->is_dict()) {
+    LOG(ERROR) << "Configuration should be a dictionary";
+  } else if (!configuration::ValidateConfiguration(parsed_json->GetDict())) {
     LOG(ERROR) << "Invalid OOBE configuration";
   } else {
-    configuration_ =
-        base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
+    configuration_ = std::move(*parsed_json).TakeDict();
     UpdateConfigurationValues();
   }
   NotifyObservers();
 }
 
 void OobeConfiguration::UpdateConfigurationValues() {
-  auto* ime_value = configuration_->FindKeyOfType(configuration::kInputMethod,
-                                                  base::Value::Type::STRING);
+  auto* ime_value = configuration_.FindString(configuration::kInputMethod);
   if (ime_value) {
-    chromeos::input_method::InputMethodManager* imm =
-        chromeos::input_method::InputMethodManager::Get();
-    configuration_->SetKey(
+    auto* imm = input_method::InputMethodManager::Get();
+    configuration_.Set(
         configuration::kInputMethod,
-        base::Value(imm->GetInputMethodUtil()->MigrateInputMethod(
-            ime_value->GetString())));
+        imm->GetInputMethodUtil()->MigrateInputMethod(*ime_value));
   }
 }
 
@@ -117,4 +103,4 @@ void OobeConfiguration::NotifyObservers() {
     observer.OnOobeConfigurationChanged();
 }
 
-}  // namespace chromeos
+}  // namespace ash

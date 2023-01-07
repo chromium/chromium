@@ -41,23 +41,20 @@ function doubleRafCheckScroll() {
 .spacer {
   height: 10000px;
 }
-.matchable {
-  subtree-visibility: hidden-matchable;
-}
 </style>
 
 <body onload="doubleRafCheckScroll()">
 <div class=spacer></div>
-<div class=matchable>
+<div hidden=until-found>
   <div id=text>hiddentext</div>
 </div>
 <div class=spacer></div>
 <div id=text2and3ancestor>
-  <div class=matchable>
+  <div hidden=until-found>
     <div id=text2>start</div>
   </div>
   <div class=spacer></div>
-  <div class=matchable>
+  <div hidden=until-found>
     <div id=text3>end</div>
   </div>
 </div>

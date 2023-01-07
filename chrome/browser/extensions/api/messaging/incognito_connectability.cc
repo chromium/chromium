@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability_infobar_delegate.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
@@ -65,7 +66,7 @@ void IncognitoConnectability::Query(const Extension* extension,
                                     content::WebContents* web_contents,
                                     const GURL& url,
                                     base::OnceCallback<void(bool)> callback) {
-  GURL origin = url.GetOrigin();
+  GURL origin = url.DeprecatedGetOriginAsURL();
   if (origin.is_empty()) {
     std::move(callback).Run(false);
     return;
@@ -83,9 +84,9 @@ void IncognitoConnectability::Query(const Extension* extension,
 
   PendingOrigin& pending_origin =
       pending_origins_[make_pair(extension->id(), origin)];
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  TabContext& tab_context = pending_origin[infobar_service];
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  TabContext& tab_context = pending_origin[infobar_manager];
   tab_context.callbacks.push_back(std::move(callback));
   if (tab_context.infobar) {
     // This tab is already displaying an infobar for this extension and origin.
@@ -103,20 +104,20 @@ void IncognitoConnectability::Query(const Extension* extension,
               ? IDS_EXTENSION_PROMPT_APP_CONNECT_FROM_INCOGNITO
               : IDS_EXTENSION_PROMPT_EXTENSION_CONNECT_FROM_INCOGNITO;
       tab_context.infobar = IncognitoConnectabilityInfoBarDelegate::Create(
-          infobar_service,
+          infobar_manager,
           l10n_util::GetStringFUTF16(template_id,
                                      base::UTF8ToUTF16(origin.spec()),
                                      base::UTF8ToUTF16(extension->name())),
           base::BindOnce(&IncognitoConnectability::OnInteractiveResponse,
                          weak_factory_.GetWeakPtr(), extension->id(), origin,
-                         infobar_service));
+                         infobar_manager));
       break;
     }
 
     // Testing code can override to always allow or deny.
     case ScopedAlertTracker::ALWAYS_ALLOW:
     case ScopedAlertTracker::ALWAYS_DENY:
-      OnInteractiveResponse(extension->id(), origin, infobar_service,
+      OnInteractiveResponse(extension->id(), origin, infobar_manager,
                             g_alert_mode);
       break;
   }
@@ -130,7 +131,7 @@ IncognitoConnectability::TabContext::~TabContext() = default;
 void IncognitoConnectability::OnInteractiveResponse(
     const std::string& extension_id,
     const GURL& origin,
-    InfoBarService* infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager,
     ScopedAlertTracker::Mode response) {
   switch (response) {
     case ScopedAlertTracker::ALWAYS_ALLOW:
@@ -149,29 +150,29 @@ void IncognitoConnectability::OnInteractiveResponse(
       pending_origins_.find(make_pair(extension_id, origin));
   DCHECK(origin_it != pending_origins_.end());
   PendingOrigin& pending_origin = origin_it->second;
-  DCHECK(base::Contains(pending_origin, infobar_service));
+  DCHECK(base::Contains(pending_origin, infobar_manager));
 
   std::vector<base::OnceCallback<void(bool)>> callbacks;
   if (response == ScopedAlertTracker::INTERACTIVE) {
     // No definitive answer for this extension and origin. Execute only the
     // callbacks associated with this tab.
-    TabContext& tab_context = pending_origin[infobar_service];
+    TabContext& tab_context = pending_origin[infobar_manager];
     callbacks.swap(tab_context.callbacks);
-    pending_origin.erase(infobar_service);
+    pending_origin.erase(infobar_manager);
   } else {
     // We have a definitive answer for this extension and origin. Close all
     // other infobars and answer all the callbacks.
     for (auto& map_entry : pending_origin) {
-      InfoBarService* other_infobar_service = map_entry.first;
+      infobars::ContentInfoBarManager* other_infobar_manager = map_entry.first;
       TabContext& other_tab_context = map_entry.second;
-      if (other_infobar_service != infobar_service) {
+      if (other_infobar_manager != infobar_manager) {
         // Disarm the delegate so that it doesn't think the infobar has been
         // dismissed.
         IncognitoConnectabilityInfoBarDelegate* delegate =
             static_cast<IncognitoConnectabilityInfoBarDelegate*>(
                 other_tab_context.infobar->delegate());
         delegate->set_answered();
-        other_infobar_service->RemoveInfoBar(other_tab_context.infobar);
+        other_infobar_manager->RemoveInfoBar(other_tab_context.infobar);
       }
       callbacks.insert(
           callbacks.end(),
@@ -190,7 +191,7 @@ void IncognitoConnectability::OnInteractiveResponse(
 bool IncognitoConnectability::IsInMap(const Extension* extension,
                                       const GURL& origin,
                                       const ExtensionToOriginsMap& map) {
-  DCHECK_EQ(origin, origin.GetOrigin());
+  DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
   auto it = map.find(extension->id());
   return it != map.end() && it->second.count(origin) > 0;
 }

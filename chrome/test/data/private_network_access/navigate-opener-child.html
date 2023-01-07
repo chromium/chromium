@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <!-- Disable extra network request for /favicon.ico -->
+    <link rel="icon" href="data:,">
+
+    <script>
+      // Navigates a child of the opener window to the given url.
+      //
+      // `url` is where the child should be navigated to.
+      window.addEventListener("message", (event) => {
+        const { url, initiatorBehavior } = event.data;
+        window.opener.mainChild.contentWindow.location = url;
+        if (initiatorBehavior == "close") {
+          window.close();
+        } else if (initiatorBehavior == "navigate") {
+          window.location = "about:blank";
+        }
+      });
+    </script>
+  </head>
+  <body></body>
+</html>

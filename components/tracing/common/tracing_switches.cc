@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ const char kTraceStartupFile[] = "trace-startup-file";
 const char kEnableTracingOutput[] = "enable-tracing-output";
 
 // Sets the output format for the trace, valid values are "json" and "proto".
-// If not set, the current default is "json".
+// If not set, the current default is "proto".
 // "proto", unlike json, supports writing the trace into the output file
 // incrementally and is more likely to retain more data if the browser process
 // unexpectedly terminates.
@@ -96,9 +96,15 @@ const char kTraceStartupEnablePrivacyFiltering[] =
 const char kPerfettoDisableInterning[] = "perfetto-disable-interning";
 
 // Sends a pretty-printed version of tracing info to the console.
-const char kTraceToConsole[]                = "trace-to-console";
+const char kTraceToConsole[] = "trace-to-console";
 
-// Sets the target URL for uploading tracing data.
-const char kTraceUploadURL[]                = "trace-upload-url";
+// Sets a local file destination for tracing data. This is only used if
+// kEnableBackgroundTracing is also specified.
+const char kBackgroundTracingOutputFile[] = "background-tracing-output-file";
+
+// Configures the size of the shared memory buffer used for tracing. Value is
+// provided in kB. Defaults to 4096. Should be a multiple of the SMB page size
+// (currently 32kB on Desktop or 4kB on Android).
+const char kTraceSmbSize[] = "trace-smb-size";
 
 }  // namespace switches

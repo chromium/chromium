@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,22 +10,24 @@
 #include <sstream>
 
 #include "base/check_op.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
+#include "build/build_config.h"
+#include "build/config/compiler/compiler_buildflags.h"
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <pthread.h>
+
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <pthread.h>
 #endif
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(__GLIBC__)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__)
 extern "C" void* __libc_stack_end;
 #endif
 
@@ -47,6 +49,27 @@ constexpr size_t kStackFrameAdjustment = sizeof(uintptr_t);
 constexpr size_t kStackFrameAdjustment = 0;
 #endif
 
+// On Arm-v8.3+ systems with pointer authentication codes (PAC), signature bits
+// are set in the top bits of the pointer, which confuses test assertions.
+// Because the signature size can vary based on the system configuration, use
+// the xpaclri instruction to remove the signature.
+static uintptr_t StripPointerAuthenticationBits(uintptr_t ptr) {
+#if defined(ARCH_CPU_ARM64)
+  // A single Chromium binary currently spans all Arm systems (including those
+  // with and without pointer authentication). xpaclri is used here because it's
+  // in the HINT space and treated as a no-op on older Arm cores (unlike the
+  // more generic xpaci which has a new encoding). The downside is that ptr has
+  // to be moved to x30 to use this instruction. TODO(richard.townsend@arm.com):
+  // replace with an intrinsic once that is available.
+  register uintptr_t x30 __asm("x30") = ptr;
+  asm("xpaclri" : "+r"(x30));
+  return x30;
+#else
+  // No-op on other platforms.
+  return ptr;
+#endif
+}
+
 uintptr_t GetNextStackFrame(uintptr_t fp) {
   const uintptr_t* fp_addr = reinterpret_cast<const uintptr_t*>(fp);
   MSAN_UNPOISON(fp_addr, sizeof(uintptr_t));
@@ -56,7 +79,7 @@ uintptr_t GetNextStackFrame(uintptr_t fp) {
 uintptr_t GetStackFramePC(uintptr_t fp) {
   const uintptr_t* fp_addr = reinterpret_cast<const uintptr_t*>(fp);
   MSAN_UNPOISON(&fp_addr[1], sizeof(uintptr_t));
-  return fp_addr[1];
+  return StripPointerAuthenticationBits(fp_addr[1]);
 }
 
 bool IsStackFrameValid(uintptr_t fp, uintptr_t prev_fp, uintptr_t stack_end) {
@@ -144,7 +167,7 @@ void* LinkStackFrames(void* fpp, void* parent_fp) {
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 uintptr_t GetStackEnd() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Bionic reads proc/maps on every call to pthread_getattr_np() when called
   // from the main thread. So we need to cache end of stack in that case to get
   // acceptable performance.
@@ -173,36 +196,69 @@ uintptr_t GetStackEnd() {
     main_stack_end = stack_end;
   }
   return stack_end;  // 0 in case of error
+#elif BUILDFLAG(IS_APPLE)
+  // No easy way to get end of the stack for non-main threads,
+  // see crbug.com/617730.
+  return reinterpret_cast<uintptr_t>(pthread_get_stackaddr_np(pthread_self()));
+#else
 
-#elif (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(__GLIBC__)
-
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__)
   if (GetCurrentProcId() == PlatformThread::CurrentId()) {
     // For the main thread we have a shortcut.
     return reinterpret_cast<uintptr_t>(__libc_stack_end);
   }
-
-// No easy way to get end of the stack for non-main threads,
-// see crbug.com/617730.
-#elif defined(OS_APPLE)
-  return reinterpret_cast<uintptr_t>(pthread_get_stackaddr_np(pthread_self()));
 #endif
 
   // Don't know how to get end of the stack.
   return 0;
+#endif
 }
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
-StackTrace::StackTrace() : StackTrace(base::size(trace_)) {}
+StackTrace::StackTrace() : StackTrace(std::size(trace_)) {}
 
 StackTrace::StackTrace(size_t count) {
-  count_ = CollectStackTrace(trace_, std::min(count, base::size(trace_)));
+  count_ = CollectStackTrace(trace_, std::min(count, std::size(trace_)));
 }
 
 StackTrace::StackTrace(const void* const* trace, size_t count) {
-  count = std::min(count, base::size(trace_));
+  count = std::min(count, std::size(trace_));
   if (count)
     memcpy(trace_, trace, count * sizeof(trace_[0]));
   count_ = count;
+}
+
+// static
+bool StackTrace::WillSymbolizeToStreamForTesting() {
+#if BUILDFLAG(SYMBOL_LEVEL) == 0
+  // Symbols are not expected to be reliable when gn args specifies
+  // symbol_level=0.
+  return false;
+#elif defined(__UCLIBC__) || defined(_AIX)
+  // StackTrace::OutputToStream() is not implemented under uclibc, nor AIX.
+  // See https://crbug.com/706728
+  return false;
+#elif defined(OFFICIAL_BUILD) && \
+    ((BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)) || BUILDFLAG(IS_FUCHSIA))
+  // On some platforms stack traces require an extra data table that bloats our
+  // binaries, so they're turned off for official builds.
+  return false;
+#elif defined(OFFICIAL_BUILD) && BUILDFLAG(IS_APPLE)
+  // Official Mac OS X builds contain enough information to unwind the stack,
+  // but not enough to symbolize the output.
+  return false;
+#elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
+  // Under Fuchsia and Android, StackTrace emits executable build-Ids and
+  // address offsets which are symbolized on the test host system, rather than
+  // being symbolized in-process.
+  return false;
+#elif defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
+  // Sanitizer configurations (ASan, TSan, MSan) emit unsymbolized stacks.
+  return false;
+#else
+  return true;
+#endif
 }
 
 const void *const *StackTrace::Addresses(size_t* count) const {
@@ -232,7 +288,7 @@ std::string StackTrace::ToStringWithPrefix(const char* prefix_string) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const StackTrace& s) {
-#if !defined(__UCLIBC__) & !defined(_AIX)
+#if !defined(__UCLIBC__) && !defined(_AIX)
   s.OutputToStream(&os);
 #else
   os << "StackTrace::OutputToStream not implemented.";
@@ -251,64 +307,27 @@ bool IsWithinRange(uintptr_t address, const AddressRange& range) {
   return address >= range.start && address <= range.end;
 }
 
-size_t TraceStackFramePointersInternal(
-    base::Optional<uintptr_t> fp,
+// We force this function to be inlined into its callers (e.g.
+// TraceStackFramePointers()) in all build modes so we don't have to worry about
+// conditionally skipping a frame based on potential inlining or tail calls.
+__attribute__((always_inline)) size_t TraceStackFramePointersInternal(
+    uintptr_t fp,
     uintptr_t stack_end,
     size_t max_depth,
     size_t skip_initial,
     bool enable_scanning,
-    base::Optional<AddressRange> caller_function_range,
     const void** out_trace) {
-  // If |fp| is not provided then try to unwind the current stack. In this case
-  // the caller function cannot pass in it's own frame pointer to unwind
-  // because the frame pointer may not be valid here. The compiler can optimize
-  // the tail function call from the caller to skip to the previous frame of the
-  // caller directly, making it's frame pointer invalid when we reach this
-  // function.
-  if (!fp) {
-    // Usage of __builtin_frame_address() enables frame pointers in this
-    // function even if they are not enabled globally. So 'fp' will always
-    // be valid.
-    fp = reinterpret_cast<uintptr_t>(__builtin_frame_address(0)) -
-         kStackFrameAdjustment;
-  }
-
   size_t depth = 0;
   while (depth < max_depth) {
-    uintptr_t pc = GetStackFramePC(*fp);
-    // Case 1: If we are unwinding on a copied stack, then
-    // |caller_function_range| will not exist.
-    //
-    // Case 2: If we are unwinding the current stack from this function's frame,
-    // the next frame could be either the caller (TraceStackFramePointers()) or
-    // the function that called TraceStackFramePointers() (say Fn()).
-    //
-    // 2a. If the current function (depending on optimization of the build) is
-    // inlined, or the tail call to this function from TraceStackFramePointers()
-    // causes the frame pointer to skip directly to Fn(), the stack will look
-    // like this:
-    //    1st Frame: TraceStackFramePointersInternal()
-    //               TraceStackFramePointers() has no frame
-    //    2nd Frame: Fn()
-    //    ...
-    //  In this case we do not want to skip the caller from the output.
-    //
-    //  2b. Otherwise the stack will look like this:
-    //    1st Frame: TraceStackFramePointersInternal()
-    //    2nd Frame: <stack space of TraceStackFramePointers()>   <- Skip
-    //    3rd Frame: Fn()
-    //  In this case, the next pc will be within the caller function's
-    //  addresses, so skip the frame.
-    if (!caller_function_range || !IsWithinRange(pc, *caller_function_range)) {
-      if (skip_initial != 0) {
-        skip_initial--;
-      } else {
-        out_trace[depth++] = reinterpret_cast<const void*>(pc);
-      }
+    uintptr_t pc = GetStackFramePC(fp);
+    if (skip_initial != 0) {
+      skip_initial--;
+    } else {
+      out_trace[depth++] = reinterpret_cast<const void*>(pc);
     }
 
-    uintptr_t next_fp = GetNextStackFrame(*fp);
-    if (IsStackFrameValid(next_fp, *fp, stack_end)) {
+    uintptr_t next_fp = GetNextStackFrame(fp);
+    if (IsStackFrameValid(next_fp, fp, stack_end)) {
       fp = next_fp;
       continue;
     }
@@ -316,7 +335,7 @@ size_t TraceStackFramePointersInternal(
     if (!enable_scanning)
       break;
 
-    next_fp = ScanStackForNextFrame(*fp, stack_end);
+    next_fp = ScanStackForNextFrame(fp, stack_end);
     if (next_fp) {
       fp = next_fp;
     } else {
@@ -327,35 +346,24 @@ size_t TraceStackFramePointersInternal(
   return depth;
 }
 
-size_t TraceStackFramePointers(const void** out_trace,
-                               size_t max_depth,
-                               size_t skip_initial,
-                               bool enable_scanning) {
-  // This function's frame can be skipped by the compiler since the callee
-  // function can jump to caller of this function directly while execution.
-  // Since there is no way to guarantee that the first frame the trace stack
-  // function finds will be this function or the previous function, skip the
-  // current function if it is found.
-TraceStackFramePointers_start:
-  AddressRange current_fn_range = {
-      reinterpret_cast<uintptr_t>(&&TraceStackFramePointers_start),
-      reinterpret_cast<uintptr_t>(&&TraceStackFramePointers_end)};
-  size_t depth = TraceStackFramePointersInternal(
-      /*fp=*/base::nullopt, GetStackEnd(), max_depth, skip_initial,
-      enable_scanning, current_fn_range, out_trace);
-TraceStackFramePointers_end:
-  return depth;
+NOINLINE size_t TraceStackFramePointers(const void** out_trace,
+                                        size_t max_depth,
+                                        size_t skip_initial,
+                                        bool enable_scanning) {
+  return TraceStackFramePointersInternal(
+      reinterpret_cast<uintptr_t>(__builtin_frame_address(0)) -
+          kStackFrameAdjustment,
+      GetStackEnd(), max_depth, skip_initial, enable_scanning, out_trace);
 }
 
-size_t TraceStackFramePointersFromBuffer(uintptr_t fp,
-                                         uintptr_t stack_end,
-                                         const void** out_trace,
-                                         size_t max_depth,
-                                         size_t skip_initial,
-                                         bool enable_scanning) {
+NOINLINE size_t TraceStackFramePointersFromBuffer(uintptr_t fp,
+                                                  uintptr_t stack_end,
+                                                  const void** out_trace,
+                                                  size_t max_depth,
+                                                  size_t skip_initial,
+                                                  bool enable_scanning) {
   return TraceStackFramePointersInternal(fp, stack_end, max_depth, skip_initial,
-                                         enable_scanning, base::nullopt,
-                                         out_trace);
+                                         enable_scanning, out_trace);
 }
 
 ScopedStackFrameLinker::ScopedStackFrameLinker(void* fp, void* parent_fp)

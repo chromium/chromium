@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,17 @@
 
 #include <set>
 
-#include "base/macros.h"
+#include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
-#import "ios/web/download/download_task_impl.h"
-#import "ios/web/public/download/download_controller.h"
+#include "ios/web/download/download_task_impl.h"
+#include "ios/web/public/download/download_controller.h"
+#include "ios/web/public/download/download_task_observer.h"
 #include "ui/base/page_transition_types.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace web {
 
@@ -23,9 +28,13 @@ class WebState;
 
 class DownloadControllerImpl : public DownloadController,
                                public base::SupportsUserData::Data,
-                               public DownloadTaskImpl::Delegate {
+                               public DownloadTaskObserver {
  public:
   DownloadControllerImpl();
+
+  DownloadControllerImpl(const DownloadControllerImpl&) = delete;
+  DownloadControllerImpl& operator=(const DownloadControllerImpl&) = delete;
+
   ~DownloadControllerImpl() override;
 
   // DownloadController overrides:
@@ -36,23 +45,33 @@ class DownloadControllerImpl : public DownloadController,
                           const std::string& content_disposition,
                           int64_t total_bytes,
                           const std::string& mime_type) override;
+
+  void CreateNativeDownloadTask(WebState* web_state,
+                                NSString* identifier,
+                                const GURL& original_url,
+                                NSString* http_method,
+                                const std::string& content_disposition,
+                                int64_t total_bytes,
+                                const std::string& mime_type,
+                                DownloadNativeTaskBridge* download) override
+      API_AVAILABLE(ios(15));
+
   void SetDelegate(DownloadControllerDelegate* delegate) override;
   DownloadControllerDelegate* GetDelegate() const override;
 
-  // DownloadTaskImpl::Delegate overrides:
-  void OnTaskDestroyed(DownloadTaskImpl* task) override;
-  NSURLSession* CreateSession(NSString* identifier,
-                              NSArray<NSHTTPCookie*>* cookies,
-                              id<NSURLSessionDataDelegate> delegate,
-                              NSOperationQueue* delegate_queue) override;
+  // DownloadTaskObserver overrides:
+  void OnDownloadDestroyed(DownloadTask* task) override;
 
  private:
-  // Set of tasks which are currently alive.
-  std::set<DownloadTaskImpl*> alive_tasks_;
-  DownloadControllerDelegate* delegate_ = nullptr;
-  SEQUENCE_CHECKER(my_sequence_checker_);
+  // Called when a new task is created.
+  void OnDownloadCreated(std::unique_ptr<DownloadTaskImpl> task);
 
-  DISALLOW_COPY_AND_ASSIGN(DownloadControllerImpl);
+  // Set of tasks which are currently alive.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::set<DownloadTask*> alive_tasks_;
+  DownloadControllerDelegate* delegate_ = nullptr;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace web

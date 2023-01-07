@@ -1,17 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
-#include "third_party/blink/public/platform/web_content_security_policy_struct.h"
-#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -37,7 +32,7 @@ SchemeMatchingResult SchemeMatches(
     const String& self_protocol) {
   DCHECK_EQ(protocol, protocol.DeprecatedLower());
   const String& scheme =
-      (source.scheme.IsEmpty() ? self_protocol : source.scheme);
+      (source.scheme.empty() ? self_protocol : source.scheme);
 
   if (scheme == protocol)
     return SchemeMatchingResult::kMatchingExact;
@@ -53,7 +48,7 @@ SchemeMatchingResult SchemeMatches(
 bool HostMatches(const network::mojom::blink::CSPSource& source,
                  const String& host) {
   if (source.is_host_wildcard) {
-    if (source.host.IsEmpty()) {
+    if (source.host.empty()) {
       // host-part = "*"
       return true;
     }
@@ -68,7 +63,7 @@ bool HostMatches(const network::mojom::blink::CSPSource& source,
 
 bool PathMatches(const network::mojom::blink::CSPSource& source,
                  const String& url_path) {
-  if (source.path.IsEmpty() || (source.path == "/" && url_path.IsEmpty()))
+  if (source.path.empty() || (source.path == "/" && url_path.empty()))
     return true;
 
   String path =
@@ -94,7 +89,7 @@ PortMatchingResult PortMatches(const network::mojom::blink::CSPSource& source,
   }
 
   bool is_scheme_http;  // needed for detecting an upgrade when the port is 0
-  is_scheme_http = source.scheme.IsEmpty()
+  is_scheme_http = source.scheme.empty()
                        ? EqualIgnoringASCIICase("http", self_protocol)
                        : EqualIgnoringASCIICase("http", source.scheme);
 
@@ -150,8 +145,9 @@ bool CSPSourceMatches(const network::mojom::blink::CSPSource& source,
     return false;
   if (CSPSourceIsSchemeOnly(source))
     return true;
-  bool paths_match = (redirect_status == RedirectStatus::kFollowedRedirect) ||
-                     PathMatches(source, url.GetPath());
+  bool paths_match =
+      (redirect_status == ResourceRequest::RedirectStatus::kFollowedRedirect) ||
+      PathMatches(source, url.GetPath());
   PortMatchingResult ports_match = PortMatches(
       source, self_protocol, url.HasPort() ? url.Port() : url::PORT_UNSPECIFIED,
       url.Protocol());
@@ -175,6 +171,16 @@ bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
   // Step 4.
   SchemeMatchingResult schemes_match =
       SchemeMatches(source, url.Protocol(), source.scheme);
+
+  if (url.Protocol() == "file" &&
+      schemes_match == SchemeMatchingResult::kMatchingExact) {
+    // Determining the origin of a file URL is left as an exercise to the reader
+    // https://url.spec.whatwg.org/#concept-url-origin. Let's always match file
+    // URLs against 'self' delivered from a file. This avoids inconsistencies
+    // between file:/// and file://localhost/.
+    return true;
+  }
+
   bool hosts_match = HostMatches(source, url.Host());
   PortMatchingResult ports_match = PortMatches(
       source, source.scheme, url.HasPort() ? url.Port() : url::PORT_UNSPECIFIED,
@@ -200,7 +206,7 @@ bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
 }
 
 bool CSPSourceIsSchemeOnly(const network::mojom::blink::CSPSource& source) {
-  return source.host.IsEmpty() && (!source.is_host_wildcard);
+  return source.host.empty() && (!source.is_host_wildcard);
 }
 
 }  // namespace blink

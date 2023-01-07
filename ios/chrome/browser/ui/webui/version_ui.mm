@@ -1,31 +1,33 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/webui/version_ui.h"
+#import "ios/chrome/browser/ui/webui/version_ui.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/command_line.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "build/build_config.h"
-#include "components/grit/components_resources.h"
-#include "components/strings/grit/components_chromium_strings.h"
-#include "components/strings/grit/components_google_chrome_strings.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/version_info/version_info.h"
-#include "components/version_ui/version_ui_constants.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/chrome/browser/ui/webui/version_handler.h"
-#include "ios/chrome/common/channel_info.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/web/public/web_client.h"
-#include "ios/web/public/webui/web_ui_ios.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "base/command_line.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/stringprintf.h"
+#import "base/time/time.h"
+#import "build/build_config.h"
+#import "components/grit/components_resources.h"
+#import "components/grit/components_scaled_resources.h"
+#import "components/strings/grit/components_chromium_strings.h"
+#import "components/strings/grit/components_google_chrome_strings.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/version_info/version_info.h"
+#import "components/version_ui/version_ui_constants.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/webui/version_handler.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/common/channel_info.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/web/public/web_client.h"
+#import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -52,6 +54,8 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
 
   html_source->AddLocalizedString(version_ui::kCompany,
                                   IDS_IOS_ABOUT_VERSION_COMPANY_NAME);
+  html_source->AddLocalizedString(version_ui::kCopyLabel,
+                                  IDS_VERSION_UI_COPY_LABEL);
   base::Time::Exploded exploded_time;
   base::Time::Now().LocalExplode(&exploded_time);
   html_source->AddString(
@@ -62,7 +66,8 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
                                   IDS_VERSION_UI_REVISION);
   std::string last_change = version_info::GetLastChange();
   // Shorten the git hash to display it correctly on small devices.
-  if (!IsIPadIdiom() && last_change.length() > 12) {
+  if ((ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) &&
+      last_change.length() > 12) {
     last_change =
         base::StringPrintf("%s...", last_change.substr(0, 12).c_str());
   }
@@ -87,8 +92,7 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
   const ArgvList& argv = base::CommandLine::ForCurrentProcess()->argv();
   for (ArgvList::const_iterator iter = argv.begin(); iter != argv.end(); iter++)
     command_line += " " + *iter;
-  // TODO(viettrungluu): |command_line| could really have any encoding, whereas
-  // below we assumes it's UTF-8.
+  // This assumes that `command_line` uses UTF-8 encoding.
   html_source->AddString(version_ui::kCommandLine, command_line);
 
   html_source->AddLocalizedString(version_ui::kVariationsName,
@@ -98,16 +102,15 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
 
   html_source->AddString(version_ui::kSanitizer, version_info::GetSanitizerList());
 
-#if defined(__apple_build_version__)
-  html_source->AddString(version_ui::kCompiler, "Apple Clang");
-#else
-  html_source->AddString(version_ui::kCompiler, "LLVM clang");
-#endif
-
   html_source->UseStringsJs();
   html_source->AddResourcePath(version_ui::kVersionJS, IDR_VERSION_UI_JS);
   html_source->AddResourcePath(version_ui::kAboutVersionCSS,
                                IDR_VERSION_UI_CSS);
+  html_source->AddResourcePath(version_ui::kAboutVersionMobileCSS,
+                               IDR_VERSION_UI_MOBILE_CSS);
+  html_source->AddResourcePath("images/product_logo.png", IDR_PRODUCT_LOGO);
+  html_source->AddResourcePath("images/product_logo_white.png",
+                               IDR_PRODUCT_LOGO_WHITE);
   html_source->SetDefaultResource(IDR_VERSION_UI_HTML);
   return html_source;
 }

@@ -1,7 +1,8 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #include <stddef.h>
@@ -57,7 +58,7 @@ class MockChannelReader : public ChannelReader {
   }
 
  private:
-  Message* last_dispatched_message_;
+  raw_ptr<Message> last_dispatched_message_;
   std::string data_;
 };
 

@@ -1,23 +1,24 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
 
-#include "base/memory/ptr_util.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_manager.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
+#import "base/memory/ptr_util.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_manager.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,18 +27,25 @@
 using web::WebState;
 
 // Test fixture for BlockedPopupTabHelper class.
-class BlockedPopupTabHelperTest : public ChromeWebTest {
+class BlockedPopupTabHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
-    ChromeWebTest::SetUp();
-    web_state()->SetDelegate(&web_state_delegate_);
+    PlatformTest::SetUp();
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
+    web_state_->SetDelegate(&web_state_delegate_);
+
     BlockedPopupTabHelper::CreateForWebState(web_state());
     InfoBarManagerImpl::CreateForWebState(web_state());
   }
 
   // Returns true if InfoBarManager is being observed.
   bool IsObservingSources() {
-    return GetBlockedPopupTabHelper()->scoped_observer_.IsObservingSources();
+    return GetBlockedPopupTabHelper()->scoped_observation_.IsObserving();
   }
 
   // Returns BlockedPopupTabHelper that is being tested.
@@ -45,11 +53,16 @@ class BlockedPopupTabHelperTest : public ChromeWebTest {
     return BlockedPopupTabHelper::FromWebState(web_state());
   }
 
-  // Returns InfoBarManager attached to |web_state()|.
+  // Returns InfoBarManager attached to `web_state()`.
   infobars::InfoBarManager* GetInfobarManager() {
     return InfoBarManagerImpl::FromWebState(web_state());
   }
 
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
   web::FakeWebStateDelegate web_state_delegate_;
 };
 
@@ -60,10 +73,10 @@ TEST_F(BlockedPopupTabHelperTest, ShouldBlockPopup) {
   const GURL source_url1("https://source-url1");
   EXPECT_TRUE(GetBlockedPopupTabHelper()->ShouldBlockPopup(source_url1));
 
-  // Allow popups for |source_url1|.
+  // Allow popups for `source_url1`.
   scoped_refptr<HostContentSettingsMap> settings_map(
       ios::HostContentSettingsMapFactory::GetForBrowserState(
-          chrome_browser_state_.get()));
+          browser_state_.get()));
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURL(source_url1),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
@@ -100,7 +113,7 @@ TEST_F(BlockedPopupTabHelperTest, AllowBlockedPopup) {
   ASSERT_FALSE(web_state_delegate_.last_open_url_request());
   delegate->Accept();
 
-  // Verify that popups are allowed for |test_url|.
+  // Verify that popups are allowed for `test_url`.
   EXPECT_FALSE(GetBlockedPopupTabHelper()->ShouldBlockPopup(source_url));
 
   // Verify that child window was open.
@@ -128,7 +141,7 @@ TEST_F(BlockedPopupTabHelperTest, DestroyWebState) {
   GetBlockedPopupTabHelper()->HandlePopup(target_url, referrer);
 
   // Verify that destroying WebState does not crash.
-  DestroyWebState();
+  web_state_.reset();
 }
 
 // Tests that an infobar is added to the infobar manager when
@@ -138,7 +151,7 @@ TEST_F(BlockedPopupTabHelperTest, ShowAndDismissInfoBar) {
   EXPECT_EQ(0U, GetInfobarManager()->infobar_count());
   EXPECT_FALSE(IsObservingSources());
 
-  // Call |HandlePopup| to show an infobar.
+  // Call `HandlePopup` to show an infobar.
   const GURL test_url("https://popups.example.com");
   GetBlockedPopupTabHelper()->HandlePopup(test_url, web::Referrer());
   ASSERT_EQ(1U, GetInfobarManager()->infobar_count());
@@ -156,7 +169,7 @@ TEST_F(BlockedPopupTabHelperTest, ShowAndDismissInfoBar) {
 TEST_F(BlockedPopupTabHelperTest, RecordDismissMetrics) {
   base::HistogramTester histogram_tester;
 
-  // Call |HandlePopup| to show an infobar and check that the Presented
+  // Call `HandlePopup` to show an infobar and check that the Presented
   // histogram was recorded correctly.
   const GURL test_url("https://popups.example.com");
   GetBlockedPopupTabHelper()->HandlePopup(test_url, web::Referrer());

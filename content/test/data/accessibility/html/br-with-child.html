@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<!-- Test that content appended as a <br>'s child is not in AX tree. -->
+<html>
+<body>
+<p>Text line 1<br>Text line 2</p>
+</body>
+<script>
+  document.querySelector('br').appendChild(document.createElement('p'));
+  document.querySelector('br > p').appendChild(document.createTextNode('not shown'));
+  document.querySelector('br > p').appendChild(document.createTextNode('more'));
+</script>
+</html>

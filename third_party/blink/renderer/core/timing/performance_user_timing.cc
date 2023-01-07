@@ -25,7 +25,9 @@
 
 #include "third_party/blink/renderer/core/timing/performance_user_timing.h"
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_string.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
@@ -74,14 +76,20 @@ bool IsTracingEnabled() {
 UserTiming::UserTiming(Performance& performance) : performance_(&performance) {}
 
 void UserTiming::AddMarkToPerformanceTimeline(PerformanceMark& mark) {
-  if (performance_->timing()) {
-    TRACE_EVENT_COPY_MARK1("blink.user_timing", mark.name().Utf8().c_str(),
-                           "data",
-                           performance_->timing()->GetNavigationTracingData());
-  } else {
-    TRACE_EVENT_COPY_MARK("blink.user_timing", mark.name().Utf8().c_str());
-  }
   InsertPerformanceEntry(marks_map_, mark);
+  if (!IsTracingEnabled()) {
+    return;
+  }
+
+  std::unique_ptr<TracedValue> traced_value;
+  if (performance_->timing()) {
+    traced_value = performance_->timing()->GetNavigationTracingData();
+  } else {
+    traced_value = std::make_unique<TracedValue>();
+  }
+  traced_value->SetDouble("startTime", mark.startTime());
+  TRACE_EVENT_COPY_MARK1("blink.user_timing", mark.name().Utf8().c_str(),
+                         "data", std::move(traced_value));
 }
 
 void UserTiming::ClearMarks(const AtomicString& mark_name) {
@@ -107,9 +115,9 @@ double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
     return mark->startTime();
   }
 
-  PerformanceTiming::PerformanceTimingGetter timing_function =
-      PerformanceTiming::GetAttributeMapping().at(mark_name);
-  if (!timing_function) {
+  // Although there was no mark with the given name in UserTiming, we need to
+  // support measuring with respect to |PerformanceTiming| attributes.
+  if (!PerformanceTiming::IsAttributeName(mark_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "The mark '" + mark_name + "' does not exist.");
@@ -128,7 +136,9 @@ double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
     return 0.0;
   }
 
-  double value = static_cast<double>((timing->*timing_function)());
+  // Because we know |PerformanceTiming::IsAttributeName(mark_name)| is true
+  // (from above), we know calling |GetNamedAttribute| won't fail.
+  double value = static_cast<double>(timing->GetNamedAttribute(mark_name));
   if (!value) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "'" + mark_name +
@@ -138,64 +148,65 @@ double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
     return 0.0;
   }
 
+  // Count the usage of PerformanceTiming attribute names in performance
+  // measure. See crbug.com/1318445.
+  blink::UseCounter::Count(performance_->GetExecutionContext(),
+                           WebFeature::kPerformanceMeasureFindExistingName);
+
   return value - timing->navigationStart();
 }
 
-double UserTiming::GetTimeOrFindMarkTime(const AtomicString& measure_name,
-                                         const StringOrDouble& mark_or_time,
-                                         ExceptionState& exception_state) {
-  if (mark_or_time.IsString()) {
-    return FindExistingMarkStartTime(AtomicString(mark_or_time.GetAsString()),
-                                     exception_state);
+double UserTiming::GetTimeOrFindMarkTime(
+    const AtomicString& measure_name,
+    const V8UnionDoubleOrString* mark_or_time,
+    ExceptionState& exception_state) {
+  DCHECK(mark_or_time);
+
+  switch (mark_or_time->GetContentType()) {
+    case V8UnionDoubleOrString::ContentType::kDouble: {
+      const double time = mark_or_time->GetAsDouble();
+      if (time < 0.0) {
+        exception_state.ThrowTypeError("'" + measure_name +
+                                       "' cannot have a negative time stamp.");
+      }
+      return time;
+    }
+    case V8UnionDoubleOrString::ContentType::kString:
+      return FindExistingMarkStartTime(
+          AtomicString(mark_or_time->GetAsString()), exception_state);
   }
-  DCHECK(mark_or_time.IsDouble());
-  const double time = mark_or_time.GetAsDouble();
-  if (time < 0.0) {
-    exception_state.ThrowTypeError("'" + measure_name +
-                                   "' cannot have a negative time stamp.");
-  }
-  return time;
+
+  NOTREACHED();
+  return 0;
 }
 
 base::TimeTicks UserTiming::GetPerformanceMarkUnsafeTimeForTraces(
     double start_time,
-    const base::Optional<StringOrDouble>& maybe_mark_name) {
-  if (maybe_mark_name.has_value() && maybe_mark_name.value().IsString()) {
+    const V8UnionDoubleOrString* maybe_mark_name) {
+  if (maybe_mark_name && maybe_mark_name->IsString()) {
     const PerformanceMark* mark =
-        FindExistingMark(AtomicString(maybe_mark_name.value().GetAsString()));
+        FindExistingMark(AtomicString(maybe_mark_name->GetAsString()));
     if (mark) {
-      return (mark->UnsafeTimeForTraces());
+      return mark->UnsafeTimeForTraces();
     }
   }
-
-  // User timing events are stored as integer milliseconds from the start of
-  // navigation.
-  // GetTimeOrigin() returns seconds from the monotonic clock's origin..
-  // Trace events timestamps accept seconds (as a double) based on
-  // CurrentTime::monotonicallyIncreasingTime().
-  double start_time_in_seconds = start_time / 1000.0;
-  return trace_event::ToTraceTimestamp(performance_->GetTimeOrigin() +
-                                       start_time_in_seconds);
+  return performance_->GetTimeOriginInternal() + base::Milliseconds(start_time);
 }
 
-PerformanceMeasure* UserTiming::Measure(
-    ScriptState* script_state,
-    const AtomicString& measure_name,
-    const base::Optional<StringOrDouble>& start,
-    const base::Optional<double>& duration,
-    const base::Optional<StringOrDouble>& end,
-    const ScriptValue& detail,
-    ExceptionState& exception_state) {
+PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
+                                        const AtomicString& measure_name,
+                                        const V8UnionDoubleOrString* start,
+                                        const absl::optional<double>& duration,
+                                        const V8UnionDoubleOrString* end,
+                                        const ScriptValue& detail,
+                                        ExceptionState& exception_state) {
   double start_time =
-      start.has_value()
-          ? GetTimeOrFindMarkTime(measure_name, start.value(), exception_state)
-          : 0;
+      start ? GetTimeOrFindMarkTime(measure_name, start, exception_state) : 0;
   if (exception_state.HadException())
     return nullptr;
 
   double end_time =
-      end.has_value()
-          ? GetTimeOrFindMarkTime(measure_name, end.value(), exception_state)
+      end ? GetTimeOrFindMarkTime(measure_name, end, exception_state)
           : performance_->now();
   if (exception_state.HadException())
     return nullptr;
@@ -222,9 +233,9 @@ PerformanceMeasure* UserTiming::Measure(
     WTF::AddFloatToHash(hash, start_time);
     WTF::AddFloatToHash(hash, end_time);
 
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
         "blink.user_timing", measure_name.Utf8().c_str(), hash,
-        unsafe_start_time);
+        unsafe_start_time, "startTime", start_time);
     TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
         "blink.user_timing", measure_name.Utf8().c_str(), hash,
         unsafe_end_time);

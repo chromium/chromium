@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -50,14 +50,26 @@ class SecurityStatePageLoadMetricsObserver
 
   explicit SecurityStatePageLoadMetricsObserver(
       site_engagement::SiteEngagementService* engagement_service);
+
+  SecurityStatePageLoadMetricsObserver(
+      const SecurityStatePageLoadMetricsObserver&) = delete;
+  SecurityStatePageLoadMetricsObserver& operator=(
+      const SecurityStatePageLoadMetricsObserver&) = delete;
+
   ~SecurityStatePageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
+  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
+  void DidActivatePrerenderedPage(
+      content::NavigationHandle* navigation_handle) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
@@ -65,16 +77,16 @@ class SecurityStatePageLoadMetricsObserver
   void DidChangeVisibleSecurityState() override;
 
  private:
-  // If the SiteEngagementService does not exist, this will be null.
-  site_engagement::SiteEngagementService* engagement_service_ = nullptr;
+  void RecordSecurityLevelHistogram(
+      content::NavigationHandle* navigation_handle);
 
-  SecurityStateTabHelper* security_state_tab_helper_ = nullptr;
+  // If the SiteEngagementService does not exist, this will be null.
+  raw_ptr<site_engagement::SiteEngagementService> engagement_service_ = nullptr;
+
+  raw_ptr<SecurityStateTabHelper> security_state_tab_helper_ = nullptr;
   double initial_engagement_score_ = 0.0;
   security_state::SecurityLevel initial_security_level_ = security_state::NONE;
   security_state::SecurityLevel current_security_level_ = security_state::NONE;
-  ukm::SourceId source_id_ = ukm::kInvalidSourceId;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityStatePageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_SECURITY_STATE_PAGE_LOAD_METRICS_OBSERVER_H_

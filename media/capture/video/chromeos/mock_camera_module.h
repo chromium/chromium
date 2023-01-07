@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,10 @@ class MockCameraModule : public cros::mojom::CameraModule {
  public:
   MockCameraModule();
 
-  ~MockCameraModule();
+  MockCameraModule(const MockCameraModule&) = delete;
+  MockCameraModule& operator=(const MockCameraModule&) = delete;
+
+  ~MockCameraModule() override;
 
   void OpenDevice(
       int32_t camera_id,
@@ -100,8 +103,6 @@ class MockCameraModule : public cros::mojom::CameraModule {
   base::Thread mock_module_thread_;
   mojo::Receiver<cros::mojom::CameraModule> receiver_{this};
   mojo::AssociatedRemote<cros::mojom::CameraModuleCallbacks> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCameraModule);
 };
 
 }  // namespace unittest_internal

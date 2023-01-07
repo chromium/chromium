@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,13 @@ EncodedVideoFrameCB MockMediaStreamVideoSink::GetDeliverEncodedVideoFrameCB() {
                          weak_factory_.GetWeakPtr()));
 }
 
+VideoCaptureNotifyFrameDroppedCB
+MockMediaStreamVideoSink::GetNotifyFrameDroppedCB() {
+  return media::BindToCurrentLoop(
+      WTF::BindRepeating(&MockMediaStreamVideoSink::NotifyFrameDropped,
+                         weak_factory_.GetWeakPtr()));
+}
+
 void MockMediaStreamVideoSink::DeliverVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
@@ -45,6 +52,10 @@ void MockMediaStreamVideoSink::DeliverEncodedVideoFrame(
     scoped_refptr<EncodedVideoFrame> frame,
     base::TimeTicks estimated_capture_time) {
   OnEncodedVideoFrame(estimated_capture_time);
+}
+
+void MockMediaStreamVideoSink::NotifyFrameDropped() {
+  OnNotifyFrameDropped();
 }
 
 void MockMediaStreamVideoSink::OnReadyStateChanged(

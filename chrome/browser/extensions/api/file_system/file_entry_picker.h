@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,9 @@ class FileEntryPicker : public ui::SelectFileDialog::Listener {
       FileSystemDelegate::FilesSelectedCallback files_selected_callback,
       base::OnceClosure file_selection_canceled_callback);
 
+  FileEntryPicker(const FileEntryPicker&) = delete;
+  FileEntryPicker& operator=(const FileEntryPicker&) = delete;
+
  private:
   ~FileEntryPicker() override;  // FileEntryPicker deletes itself.
 
@@ -58,8 +61,6 @@ class FileEntryPicker : public ui::SelectFileDialog::Listener {
   FileSystemDelegate::FilesSelectedCallback files_selected_callback_;
   base::OnceClosure file_selection_canceled_callback_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileEntryPicker);
 };
 
 }  // namespace extensions

@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_FILTERS_VP9_UNCOMPRESSED_HEADER_PARSER_H_
 #define MEDIA_FILTERS_VP9_UNCOMPRESSED_HEADER_PARSER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/filters/vp9_parser.h"
 #include "media/filters/vp9_raw_bits_reader.h"
 
@@ -15,6 +16,10 @@ namespace media {
 class MEDIA_EXPORT Vp9UncompressedHeaderParser {
  public:
   Vp9UncompressedHeaderParser(Vp9Parser::Context* context);
+
+  Vp9UncompressedHeaderParser(const Vp9UncompressedHeaderParser&) = delete;
+  Vp9UncompressedHeaderParser& operator=(const Vp9UncompressedHeaderParser&) =
+      delete;
 
   // Parses VP9 uncompressed header in |stream| with |frame_size| into |fhdr|.
   // Returns true if no error.
@@ -44,9 +49,7 @@ class MEDIA_EXPORT Vp9UncompressedHeaderParser {
   // Raw bits reader for uncompressed frame header.
   Vp9RawBitsReader reader_;
 
-  Vp9Parser::Context* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(Vp9UncompressedHeaderParser);
+  raw_ptr<Vp9Parser::Context> context_;
 };
 
 }  // namespace media

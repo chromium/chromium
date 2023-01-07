@@ -1,2 +1,2 @@
-CONSOLE DEBUG: line 13: Preconnect triggered for http://preconnect.com.test/
+CONSOLE DEBUG: Preconnect triggered for http://preconnect.com.test/
 This test verifies that a preconnect request is sent and logged when a link element is added dynamically.

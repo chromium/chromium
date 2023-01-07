@@ -1,8 +1,0 @@
-include_rules = [
-]
-
-specific_include_rules = {
-  "account_manager_facade_android.cc": [
-    "+components/signin/public/android/jni_headers/AccountManagerFacadeProvider_jni.h",
-  ],
-}

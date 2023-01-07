@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,13 @@ enum VulkanImplementationName {
   kLast = kSwiftshader,
 };
 
+// Corresponds to gpu::WebGPUAdapterName.
+enum WebGPUAdapterName {
+  kDefault = 0,
+  kCompat = 1,
+  kSwiftShader = 2,
+};
+
 // Corresponds to gpu::GrContextType.
 enum GrContextType {
   kGL = 0,
@@ -26,6 +33,13 @@ enum GrContextType {
   kMetal = 2,
   kDawn = 3,
   kLast = kDawn,
+};
+
+// Corresponds to gpu::DawnBackendValidationLevel
+enum DawnBackendValidationLevel {
+  kDisabled = 0,
+  kPartial = 1,
+  kFull = 2,
 };
 
 // gpu::GpuPreferences
@@ -62,7 +76,6 @@ struct GpuPreferences {
   bool disable_gpu_shader_disk_cache;
   bool enable_threaded_texture_mailboxes;
   bool gl_shader_interm_output;
-  bool emulate_shader_precision;
   bool enable_android_surface_control;
   bool enable_gpu_service_logging;
   bool enable_gpu_service_tracing;
@@ -71,14 +84,10 @@ struct GpuPreferences {
   array<gfx.mojom.BufferUsageAndFormat> texture_target_exception_list;
 
   bool ignore_gpu_blocklist;
-  bool enable_oop_rasterization;
-  bool disable_oop_rasterization;
-  bool enable_oop_rasterization_ddl;
   bool watchdog_starts_backgrounded;
   GrContextType gr_context_type;
   VulkanImplementationName use_vulkan;
   bool enable_vulkan_protected_memory;
-  bool enforce_vulkan_protected_memory;
   bool disable_vulkan_surface;
   bool disable_vulkan_fallback_to_gl_for_testing;
   uint32 vulkan_heap_memory_limit;
@@ -86,7 +95,9 @@ struct GpuPreferences {
   bool enable_metal;
   bool enable_gpu_benchmarking_extension;
   bool enable_webgpu;
-  bool enable_dawn_backend_validation;
+  bool enable_unsafe_webgpu;
+  WebGPUAdapterName use_webgpu_adapter;
+  DawnBackendValidationLevel enable_dawn_backend_validation;
   array<string> enabled_dawn_features_list;
   array<string> disabled_dawn_features_list;
   bool enable_gpu_blocked_time_metric;
@@ -97,6 +108,6 @@ struct GpuPreferences {
 
   bool enable_native_gpu_memory_buffers;
 
-  [EnableIf=is_chromeos_device]
+  [EnableIf=is_chromeos]
   bool enable_chromeos_direct_video_decoder;
 };

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,7 @@ content::WebUIDataSource* CreateSignInInternalsHTMLSource() {
 
   source->UseStringsJs();
   source->AddResourcePath("signin_internals.js", IDR_SIGNIN_INTERNALS_INDEX_JS);
+  source->AddResourcePath("signin_index.css", IDR_SIGNIN_INTERNALS_INDEX_CSS);
   source->SetDefaultResource(IDR_SIGNIN_INTERNALS_INDEX_HTML);
   return source;
 }
@@ -44,6 +45,22 @@ SignInInternalsUI::SignInInternalsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, CreateSignInInternalsHTMLSource());
+  web_ui->AddMessageHandler(std::make_unique<SignInInternalsHandler>());
+}
+
+SignInInternalsUI::~SignInInternalsUI() = default;
+
+SignInInternalsHandler::SignInInternalsHandler() = default;
+
+SignInInternalsHandler::~SignInInternalsHandler() {
+  // This handler can be destroyed without OnJavascriptDisallowed() ever being
+  // called (https://crbug.com/1199198). Call it to ensure that `this` is
+  // removed as an observer.
+  OnJavascriptDisallowed();
+}
+
+void SignInInternalsHandler::OnJavascriptAllowed() {
+  Profile* profile = Profile::FromWebUI(web_ui());
   if (profile) {
     AboutSigninInternals* about_signin_internals =
         AboutSigninInternalsFactory::GetForProfile(profile);
@@ -52,7 +69,7 @@ SignInInternalsUI::SignInInternalsUI(content::WebUI* web_ui)
   }
 }
 
-SignInInternalsUI::~SignInInternalsUI() {
+void SignInInternalsHandler::OnJavascriptDisallowed() {
   Profile* profile = Profile::FromWebUI(web_ui());
   if (profile) {
     AboutSigninInternals* about_signin_internals =
@@ -63,50 +80,54 @@ SignInInternalsUI::~SignInInternalsUI() {
   }
 }
 
-bool SignInInternalsUI::OverrideHandleWebUIMessage(
-    const GURL& source_url,
-    const std::string& name,
-    const base::ListValue& content) {
-  if (name == "getSigninInfo") {
-    Profile* profile = Profile::FromWebUI(web_ui());
-    if (!profile)
-      return false;
+void SignInInternalsHandler::RegisterMessages() {
+  web_ui()->RegisterMessageCallback(
+      "getSigninInfo",
+      base::BindRepeating(&SignInInternalsHandler::HandleGetSignInInfo,
+                          base::Unretained(this)));
+}
 
-    AboutSigninInternals* about_signin_internals =
-        AboutSigninInternalsFactory::GetForProfile(profile);
-    // TODO(vishwath): The UI would look better if we passed in a dict with some
-    // reasonable defaults, so the about:signin-internals page doesn't look
-    // empty in incognito mode. Alternatively, we could force about:signin to
-    // open in non-incognito mode always (like about:settings for ex.).
-    if (about_signin_internals) {
-      web_ui()->CallJavascriptFunctionUnsafe(
-          "chrome.signin.getSigninInfo.handleReply",
-          *about_signin_internals->GetSigninStatus());
+void SignInInternalsHandler::HandleGetSignInInfo(
+    const base::Value::List& args) {
+  std::string callback_id = args[0].GetString();
+  AllowJavascript();
 
-      signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(profile);
-      signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
-          identity_manager->GetAccountsInCookieJar();
-      if (accounts_in_cookie_jar.accounts_are_fresh) {
-        about_signin_internals->OnAccountsInCookieUpdated(
-            accounts_in_cookie_jar,
-            GoogleServiceAuthError(GoogleServiceAuthError::NONE));
-      }
-
-      return true;
-    }
+  Profile* profile = Profile::FromWebUI(web_ui());
+  if (!profile) {
+    ResolveJavascriptCallback(base::Value(callback_id), base::Value());
+    return;
   }
-  return false;
+
+  AboutSigninInternals* about_signin_internals =
+      AboutSigninInternalsFactory::GetForProfile(profile);
+  if (!about_signin_internals) {
+    ResolveJavascriptCallback(base::Value(callback_id), base::Value());
+    return;
+  }
+
+  // TODO(vishwath): The UI would look better if we passed in a dict with some
+  // reasonable defaults, so the about:signin-internals page doesn't look
+  // empty in incognito mode. Alternatively, we could force about:signin to
+  // open in non-incognito mode always (like about:settings for ex.).
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            about_signin_internals->GetSigninStatus());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
+      identity_manager->GetAccountsInCookieJar();
+  if (accounts_in_cookie_jar.accounts_are_fresh) {
+    about_signin_internals->OnAccountsInCookieUpdated(
+        accounts_in_cookie_jar,
+        GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+  }
 }
 
-void SignInInternalsUI::OnSigninStateChanged(
-    const base::DictionaryValue* info) {
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "chrome.signin.onSigninInfoChanged.fire", *info);
+void SignInInternalsHandler::OnSigninStateChanged(
+    const base::Value::Dict& info) {
+  FireWebUIListener("signin-info-changed", info);
 }
 
-void SignInInternalsUI::OnCookieAccountsFetched(
-    const base::DictionaryValue* info) {
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "chrome.signin.onCookieAccountsFetched.fire", *info);
+void SignInInternalsHandler::OnCookieAccountsFetched(
+    const base::Value::Dict& info) {
+  FireWebUIListener("update-cookie-accounts", info);
 }

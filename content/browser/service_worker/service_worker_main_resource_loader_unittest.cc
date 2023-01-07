@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -22,7 +24,6 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -38,9 +39,12 @@
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 namespace service_worker_main_resource_loader_unittest {
@@ -98,6 +102,13 @@ blink::mojom::FetchAPIResponsePtr HeadersResponse(
   return response;
 }
 
+// ServiceWorkerMainResourceLoader::RecordTimingMetrics() records the metrics
+// only when the consistent high-resolution timer is used among processes.
+bool LoaderRecordsTimingMetrics() {
+  return base::TimeTicks::IsHighResolution() &&
+         base::TimeTicks::IsConsistentAcrossProcesses();
+}
+
 // Simulates a service worker handling fetch events. The response can be
 // customized via RespondWith* functions.
 class FetchEventServiceWorker : public FakeServiceWorker {
@@ -109,6 +120,10 @@ class FetchEventServiceWorker : public FakeServiceWorker {
       : FakeServiceWorker(helper),
         task_environment_(task_environment),
         embedded_worker_instance_client_(embedded_worker_instance_client) {}
+
+  FetchEventServiceWorker(const FetchEventServiceWorker&) = delete;
+  FetchEventServiceWorker& operator=(const FetchEventServiceWorker&) = delete;
+
   ~FetchEventServiceWorker() override = default;
 
   // Tells this worker to dispatch a fetch event 1s after the fetch event is
@@ -152,9 +167,9 @@ class FetchEventServiceWorker : public FakeServiceWorker {
   }
 
   // Tells this worker to respond to fetch events with the redirect response.
-  void RespondWithRedirectResponse(const std::string& location_header) {
+  void RespondWithRedirectResponse(const GURL& new_url) {
     response_mode_ = ResponseMode::kRedirect;
-    location_header_ = location_header;
+    redirected_url_ = new_url;
   }
 
   // Tells this worker to simulate failure to dispatch the fetch event to the
@@ -252,7 +267,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
             std::move(finish_callback));
         break;
       case ResponseMode::kDispatchAfter1sDelay:
-        task_environment_->AdvanceClock(base::TimeDelta::FromSeconds(1));
+        task_environment_->AdvanceClock(base::Seconds(1));
         FakeServiceWorker::DispatchFetchEventForMainResource(
             std::move(params), response_callback.Unbind(),
             std::move(finish_callback));
@@ -275,7 +290,8 @@ class FetchEventServiceWorker : public FakeServiceWorker {
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
       case ResponseMode::kFallbackResponse:
-        response_callback->OnFallback(std::move(timing));
+        response_callback->OnFallback(/*request_body=*/absl::nullopt,
+                                      std::move(timing));
         std::move(finish_callback)
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
@@ -314,7 +330,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
         // Now the caller must call FinishWaitUntil() to finish the event.
         break;
       case ResponseMode::kRedirect:
-        response_callback->OnResponse(RedirectResponse(location_header_),
+        response_callback->OnResponse(RedirectResponse(redirected_url_.spec()),
                                       std::move(timing));
         std::move(finish_callback)
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
@@ -346,7 +362,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
     kHeaders
   };
 
-  BrowserTaskEnvironment* const task_environment_;
+  const raw_ptr<BrowserTaskEnvironment> task_environment_;
 
   ResponseMode response_mode_ = ResponseMode::kDefault;
   scoped_refptr<network::ResourceRequestBody> request_body_;
@@ -364,7 +380,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
       response_callback_;
 
   // For ResponseMode::kRedirect.
-  std::string location_header_;
+  GURL redirected_url_;
 
   // For ResponseMode::kHeaders
   base::flat_map<std::string, std::string> headers_;
@@ -372,15 +388,14 @@ class FetchEventServiceWorker : public FakeServiceWorker {
   bool has_received_fetch_event_ = false;
   base::OnceClosure quit_closure_for_fetch_event_;
 
-  FakeEmbeddedWorkerInstanceClient* const embedded_worker_instance_client_;
+  const raw_ptr<FakeEmbeddedWorkerInstanceClient>
+      embedded_worker_instance_client_;
 
   network::mojom::FetchResponseSource response_source_ =
       network::mojom::FetchResponseSource::kUnspecified;
 
   std::string cache_storage_cache_name_;
   base::Time response_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(FetchEventServiceWorker);
 };
 
 // Returns typical response info for a resource load that went through a service
@@ -388,7 +403,6 @@ class FetchEventServiceWorker : public FakeServiceWorker {
 network::mojom::URLResponseHeadPtr CreateResponseInfoFromServiceWorker() {
   auto head = network::mojom::URLResponseHead::New();
   head->was_fetched_via_service_worker = true;
-  head->was_fallback_required_by_service_worker = false;
   head->url_list_via_service_worker = std::vector<GURL>();
   head->response_type = network::mojom::FetchResponseType::kDefault;
   head->cache_storage_cache_name = std::string();
@@ -419,7 +433,8 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = GURL("https://example.com/");
     registration_ = CreateNewServiceWorkerRegistration(
-        helper_->context()->registry(), options);
+        helper_->context()->registry(), options,
+        blink::StorageKey(url::Origin::Create(options.scope)));
     version_ = CreateNewServiceWorkerVersion(
         helper_->context()->registry(), registration_.get(),
         GURL("https://example.com/service_worker.js"),
@@ -429,14 +444,14 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
         GetStorageControl(), version_->script_url(), {} /* headers */,
         "I'm the body", "I'm the meta data"));
     version_->script_cache_map()->SetResources(records);
-    version_->set_fetch_handler_existence(
-        ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+    version_->set_fetch_handler_type(
+        ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
     version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
     registration_->SetActiveVersion(version_);
 
     // Make the registration findable via storage functions.
     registration_->set_last_update_check(base::Time::Now());
-    base::Optional<blink::ServiceWorkerStatusCode> status;
+    absl::optional<blink::ServiceWorkerStatusCode> status;
     base::RunLoop run_loop;
     registry()->StoreRegistration(
         registration_.get(), version_.get(),
@@ -458,7 +473,6 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     // create a response. The main script response is set when the first
     // TransferInstalledScript().
     {
-      base::Optional<blink::ServiceWorkerStatusCode> status;
       base::RunLoop loop;
       version_->StartWorker(
           ServiceWorkerMetrics::EventType::UNKNOWN,
@@ -483,12 +497,13 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     // ServiceWorkerControlleeRequestHandler does to assign it a controller.
     if (!container_host_) {
       container_host_ = CreateContainerHostForWindow(
-          helper_->mock_render_process_id(),
+          GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                                  /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
           &container_endpoints_);
-      container_host_->UpdateUrls(request->url,
-                                  net::SiteForCookies::FromUrl(request->url),
-                                  url::Origin::Create(request->url));
+      container_host_->UpdateUrls(
+          request->url, url::Origin::Create(request->url),
+          blink::StorageKey(url::Origin::Create(request->url)));
       container_host_->AddMatchingRegistration(registration_.get());
       container_host_->SetControllerRegistration(
           registration_, /*notify_controllerchange=*/false);
@@ -499,8 +514,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
         base::BindOnce(&ServiceWorkerMainResourceLoaderTest::Fallback,
                        base::Unretained(this)),
         container_host_,
-        base::WrapRefCounted<URLLoaderFactoryGetter>(
-            helper_->context()->loader_factory_getter()));
+        /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId);
 
     // Load |request.url|.
     loader_->StartRequest(*request, loader_remote_.BindNewPipeAndPassReceiver(),
@@ -532,8 +546,6 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
       const network::mojom::URLResponseHead& expected_info) {
     EXPECT_EQ(expected_info.was_fetched_via_service_worker,
               info.was_fetched_via_service_worker);
-    EXPECT_EQ(expected_info.was_fallback_required_by_service_worker,
-              info.was_fallback_required_by_service_worker);
     EXPECT_EQ(expected_info.url_list_via_service_worker,
               info.url_list_via_service_worker);
     EXPECT_EQ(expected_info.response_type, info.response_type);
@@ -578,7 +590,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
   scoped_refptr<ServiceWorkerRegistration> registration_;
   scoped_refptr<ServiceWorkerVersion> version_;
-  FetchEventServiceWorker* service_worker_;
+  raw_ptr<FetchEventServiceWorker> service_worker_;
   storage::BlobStorageContext blob_context_;
   network::TestURLLoaderClient client_;
   std::unique_ptr<ServiceWorkerMainResourceLoader> loader_;
@@ -609,10 +621,13 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, Basic) {
 
   histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "ResponseReceivedToCompleted2",
-      1);
+
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        1);
+  }
 }
 
 TEST_F(ServiceWorkerMainResourceLoaderTest, NoActiveWorker) {
@@ -620,12 +635,14 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, NoActiveWorker) {
 
   // Make a container host without a controller.
   container_host_ = CreateContainerHostForWindow(
-      helper_->mock_render_process_id(), /*is_parent_frame_secure=*/true,
-      helper_->context()->AsWeakPtr(), &container_endpoints_);
+      GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                              /*mock frame_routing_id=*/1),
+      /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
+      &container_endpoints_);
   container_host_->UpdateUrls(
       GURL("https://example.com/"),
-      net::SiteForCookies::FromUrl(GURL("https://example.com/")),
-      url::Origin::Create(GURL("https://example.com/")));
+      url::Origin::Create(GURL("https://example.com/")),
+      blink::StorageKey(url::Origin::Create(GURL("https://example.com/"))));
 
   // Perform the request.
   StartRequest(CreateRequest());
@@ -634,10 +651,12 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, NoActiveWorker) {
 
   // No fetch event was dispatched.
   histogram_tester.ExpectTotalCount(kHistogramMainResourceFetchEvent, 0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "StartToForwardServiceWorker",
+        0);
+  }
 }
 
 // Test that the request body is passed to the fetch event.
@@ -707,11 +726,13 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, BlobResponse) {
   EXPECT_EQ(kResponseBody, body);
   EXPECT_EQ(net::OK, client_.completion_status().error_code);
 
-  // Test histogram of reading body.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "ResponseReceivedToCompleted2",
-      1);
+  if (LoaderRecordsTimingMetrics()) {
+    // Test histogram of reading body.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        1);
+  }
 }
 
 // Tell the helper to respond with a non-existent Blob.
@@ -744,15 +765,17 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, BrokenBlobResponse) {
   client_.RunUntilComplete();
   EXPECT_EQ(net::ERR_OUT_OF_MEMORY, client_.completion_status().error_code);
 
-  // Timing histograms shouldn't be recorded on broken response.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "ResponseReceivedToCompleted2",
-      0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing histograms shouldn't be recorded on broken response.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "StartToForwardServiceWorker",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        0);
+  }
 }
 
 TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponse) {
@@ -797,11 +820,13 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponse) {
       mojo::BlockingCopyToString(client_.response_body_release(), &response));
   EXPECT_EQ(kResponseBody, response);
 
-  // Test histogram of reading body.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "ResponseReceivedToCompleted2",
-      1);
+  if (LoaderRecordsTimingMetrics()) {
+    // Test histogram of reading body.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        1);
+  }
 }
 
 // Test when a stream response body is aborted.
@@ -845,15 +870,17 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponse_Abort) {
       mojo::BlockingCopyToString(client_.response_body_release(), &response));
   EXPECT_EQ(kResponseBody, response);
 
-  // Timing histograms shouldn't be recorded on abort.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "ResponseReceivedToCompleted2",
-      0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing histograms shouldn't be recorded on abort.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "StartToForwardServiceWorker",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        0);
+  }
 }
 
 // Test when the loader is cancelled while a stream response is being written.
@@ -901,15 +928,17 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponseAndCancel) {
   client_.RunUntilComplete();
   EXPECT_EQ(net::ERR_ABORTED, client_.completion_status().error_code);
 
-  // Timing histograms shouldn't be recorded on cancel.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "ResponseReceivedToCompleted2",
-      0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing histograms shouldn't be recorded on cancel.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "StartToForwardServiceWorker",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        0);
+  }
 }
 
 // Test when the service worker responds with network fallback.
@@ -930,12 +959,13 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, FallbackResponse) {
   EXPECT_TRUE(container_host_->controller());
   histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
-
-  // Test histogram of network fallback.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "FetchHandlerEndToFallbackNetwork",
-      1);
+  if (LoaderRecordsTimingMetrics()) {
+    // Test histogram of network fallback.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "FetchHandlerEndToFallbackNetwork",
+        1);
+  }
 }
 
 // Test when the service worker rejects the FetchEvent.
@@ -951,11 +981,13 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, ErrorResponse) {
   // Event dispatch still succeeded.
   histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
-  // Timing UMAs shouldn't be recorded when we receive an error response.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing UMAs shouldn't be recorded when we receive an error response.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "StartToForwardServiceWorker",
+        0);
+  }
 }
 
 // Test when dispatching the fetch event to the service worker failed.
@@ -974,11 +1006,13 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, FailFetchDispatch) {
   histogram_tester.ExpectUniqueSample(
       kHistogramMainResourceFetchEvent,
       blink::ServiceWorkerStatusCode::kErrorFailed, 1);
-  // Timing UMAs shouldn't be recorded when failed to dispatch an event.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing UMAs shouldn't be recorded when failed to dispatch an event.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "StartToForwardServiceWorker",
+        0);
+  }
 }
 
 // Test when the respondWith() promise resolves before the waitUntil() promise
@@ -1005,7 +1039,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, EarlyResponse) {
 TEST_F(ServiceWorkerMainResourceLoaderTest, Redirect) {
   base::HistogramTester histogram_tester;
   GURL new_url("https://example.com/redirected");
-  service_worker_->RespondWithRedirectResponse(new_url.spec());
+  service_worker_->RespondWithRedirectResponse(new_url);
 
   // Perform the request.
   StartRequest(CreateRequest());
@@ -1019,29 +1053,6 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, Redirect) {
   EXPECT_EQ(301, redirect_info.status_code);
   EXPECT_EQ("GET", redirect_info.new_method);
   EXPECT_EQ(new_url, redirect_info.new_url);
-
-  histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
-                                      blink::ServiceWorkerStatusCode::kOk, 1);
-}
-
-// Synthetic response lack a base URL, so relative redirects turn into a
-// redirect to an invalid URL. See https://crbug.com/1170379.
-TEST_F(ServiceWorkerMainResourceLoaderTest, RedirectRelativeNoBaseURL) {
-  base::HistogramTester histogram_tester;
-  service_worker_->RespondWithRedirectResponse("/foo.html");
-
-  // Perform the request.
-  StartRequest(CreateRequest());
-  client_.RunUntilRedirectReceived();
-
-  auto& info = client_.response_head();
-  EXPECT_EQ(301, info->headers->response_code());
-  ExpectResponseInfo(*info, *CreateResponseInfoFromServiceWorker());
-
-  const net::RedirectInfo& redirect_info = client_.redirect_info();
-  EXPECT_EQ(301, redirect_info.status_code);
-  EXPECT_EQ("GET", redirect_info.new_method);
-  EXPECT_FALSE(redirect_info.new_url.is_valid());
 
   histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
@@ -1114,15 +1125,35 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, TimingInfo) {
   auto& info = client_.response_head();
   EXPECT_EQ(200, info->headers->response_code());
   ExpectResponseInfo(*info, *CreateResponseInfoFromServiceWorker());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
-            info->load_timing.service_worker_ready_time -
-                info->load_timing.service_worker_start_time);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
-            info->load_timing.service_worker_fetch_start -
-                info->load_timing.service_worker_start_time);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
+  EXPECT_EQ(base::Seconds(1), info->load_timing.service_worker_ready_time -
+                                  info->load_timing.service_worker_start_time);
+  EXPECT_EQ(base::Seconds(1), info->load_timing.service_worker_fetch_start -
+                                  info->load_timing.service_worker_start_time);
+  EXPECT_EQ(base::Seconds(1),
             info->load_timing.service_worker_respond_with_settled -
                 info->load_timing.service_worker_start_time);
+}
+
+TEST_F(ServiceWorkerMainResourceLoaderTest, FencedFrameNavigationPreload) {
+  registration_->EnableNavigationPreload(true);
+
+  std::unique_ptr<network::ResourceRequest> request = CreateRequest();
+  request->destination = network::mojom::RequestDestination::kFencedframe;
+
+  // Perform the request.
+  StartRequest(std::move(request));
+  client_.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  const auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+  EXPECT_FALSE(info->load_timing.receive_headers_start.is_null());
+  EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
+  EXPECT_LE(info->load_timing.receive_headers_start,
+            info->load_timing.receive_headers_end);
+  auto expected_info = CreateResponseInfoFromServiceWorker();
+  expected_info->did_service_worker_navigation_preload = true;
+  ExpectResponseInfo(*info, *expected_info);
 }
 
 }  // namespace service_worker_main_resource_loader_unittest

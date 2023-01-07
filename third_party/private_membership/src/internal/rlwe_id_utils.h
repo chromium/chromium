@@ -15,8 +15,11 @@
 #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_RLWE_ID_UTILS_H_
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_RLWE_ID_UTILS_H_
 
+#include <string>
+
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
 #include "third_party/private_membership/src/private_membership.pb.h"
+#include "third_party/private_membership/base/private_membership_export.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "third_party/shell-encryption/src/statusor.h"
 
@@ -28,27 +31,32 @@ namespace rlwe {
 //
 // Returns an error when the cryptographic functions fails or the parameters are
 // invalid.
-::rlwe::StatusOr<std::string> ComputeBucketStoredEncryptedId(
-    RlwePlaintextId id, const EncryptedBucketsParameters& params,
-    private_join_and_compute::ECCommutativeCipher* ec_cipher, private_join_and_compute::Context* ctx);
+PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string>
+ComputeBucketStoredEncryptedId(const RlwePlaintextId& id,
+                               const EncryptedBucketsParameters& params,
+                               private_join_and_compute::ECCommutativeCipher* ec_cipher,
+                               private_join_and_compute::Context* ctx);
 
 // Computes the representation of an encrypted ID stored within buckets using
 // the encrypted ID.
 //
 // Returns an error when the cryptographic functions fails or the parameters are
 // invalid.
-::rlwe::StatusOr<std::string> ComputeBucketStoredEncryptedId(
-    const std::string& encrypted_id, const EncryptedBucketsParameters& params,
-    private_join_and_compute::Context* ctx);
+PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string>
+ComputeBucketStoredEncryptedId(absl::string_view encrypted_id,
+                               const EncryptedBucketsParameters& params,
+                               private_join_and_compute::Context* ctx);
 
 // Function used to injectively hash RlwePlaintextId proto to string. This hash
 // is not cryptographically secure, nor very compact.
-std::string HashRlwePlaintextId(const RlwePlaintextId& id);
+PRIVATE_MEMBERSHIP_EXPORT std::string HashRlwePlaintextId(
+    const RlwePlaintextId& id);
 
 // Function used to hash the nonsensitive portion of a RlwePlaintextId, using a
 // salt to force adversaries to recompute rainbow tables.
-::rlwe::StatusOr<std::string> HashNonsensitiveIdWithSalt(
-    absl::string_view nsid, HashType hash_type, private_join_and_compute::Context* ctx);
+PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string>
+HashNonsensitiveIdWithSalt(absl::string_view nsid, HashType hash_type,
+                           private_join_and_compute::Context* ctx);
 
 }  // namespace rlwe
 }  // namespace private_membership

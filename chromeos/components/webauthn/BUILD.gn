@@ -1,0 +1,15 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("webauthn") {
+  output_name = "chromeos_webauthn"
+  defines = [ "IS_CHROMEOS_WEBAUTHN_IMPL" ]
+  sources = [
+    "webauthn_request_registrar.cc",
+    "webauthn_request_registrar.h",
+  ]
+  deps = [ "//base" ]
+}

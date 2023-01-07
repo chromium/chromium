@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!-- Snackbars -->
+  <dimen name="snackbar_background_tablet_elev">@dimen/default_elevation_4</dimen>
+</resources>

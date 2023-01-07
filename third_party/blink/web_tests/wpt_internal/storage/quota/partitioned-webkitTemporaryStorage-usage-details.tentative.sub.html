@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<meta name=help href="https://privacycg.github.io/storage-partitioning/">
+<title>Partitioned webkitTemporaryStorage usage details test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+  <script>
+    const usageDetails = () => {
+      return new Promise((resolve, reject) => {
+        navigator.webkitTemporaryStorage.queryUsageAndQuota(
+          (usage, quota) => resolve({ usage: usage, quota: quota }), reject)
+      }).then(details => details).catch(error => { throw error; });
+    }
+
+    const requestFileSystemAndWriteDummyFile = () => {
+      return new Promise((resolve, reject) =>
+        webkitRequestFileSystem(TEMPORARY, 512, resolve, reject)
+      ).then(filesystem =>
+        new Promise((resolve, reject) => filesystem.root.getFile("dummy-file",
+          { create: true }, resolve, reject))
+      ).then(entry =>
+        new Promise((resolve, reject) => entry.createWriter(resolve, reject))
+      ).then(writer => {
+        return new Promise((resolve, reject) => {
+          writer.onwriteend = resolve;
+          writer.error = reject;
+          writer.write(new Blob(['Dummy text for some file weight...']));
+        });
+      });
+    }
+
+    const testPath = () => location.pathname.split("/").slice(0, -1).join("/");
+
+    let alt_origin = "http://{{hosts[alt][]}}:{{ports[http][0]}}";
+    let details = {};
+
+    const iframe = document.createElement("iframe");
+    iframe.src = `http://{{host}}:{{ports[http][0]}}${testPath()}/resources/` +
+      `partitioned-webkitTemporaryStorage-query-usage-helper-frame.html`
+    document.body.appendChild(iframe);
+
+    async_test(test => {
+      if (location.origin === alt_origin)
+        return;
+
+      test.step(async () => {
+        details.init = await usageDetails();
+        await requestFileSystemAndWriteDummyFile();
+        details.after = await usageDetails();
+        assert_greater_than(details.after.usage, details.init.usage);
+
+        iframe.contentWindow.postMessage("get-details", iframe.origin);
+      });
+
+      window.addEventListener("message", test.step_func(event => {
+        if (event.data.source === "same-site") {
+          details.same_site = event.data;
+
+          const cross_site_window = window
+            .open(`${alt_origin}${location.pathname}`, "", "noopener=false");
+          test.add_cleanup(() => cross_site_window.close());
+        }
+        if (event.data.source === "cross-site") {
+          details.cross_site = event.data;
+          test.step(() => {
+            assert_true(details.cross_site.init.usage == 0,
+              "Usage should be 0");
+            assert_equals(details.same_site.init.usage, details.after.usage);
+          });
+
+          test.done();
+        }
+      }));
+    }, "Partitioned webkitTemporaryStorage usage details test.");
+  </script>
+</body>

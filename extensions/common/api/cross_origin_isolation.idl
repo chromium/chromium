@@ -1,0 +1,16 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Stub namespace for manifest keys relating to the cross origin isolation
+// response headers.
+namespace crossOriginIsolation {
+  dictionary ResponseHeader {
+    DOMString? value;
+  };
+
+  dictionary ManifestKeys {
+    ResponseHeader? cross_origin_embedder_policy;
+    ResponseHeader? cross_origin_opener_policy;
+  };
+};

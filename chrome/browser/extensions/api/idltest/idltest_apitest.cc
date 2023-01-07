@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,8 @@ class ExtensionIdltestApiTest : public extensions::ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionIdltestApiTest, IdlCompiler) {
-  EXPECT_TRUE(RunExtensionSubtest("idltest/binary_data", "binary.html"));
-  EXPECT_TRUE(RunExtensionSubtest("idltest/nocompile", "nocompile.html"));
+  EXPECT_TRUE(RunExtensionTest("idltest/binary_data",
+                               {.extension_url = "binary.html"}));
+  EXPECT_TRUE(RunExtensionTest("idltest/nocompile",
+                               {.extension_url = "nocompile.html"}));
 }

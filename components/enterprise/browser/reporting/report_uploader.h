@@ -1,17 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_UPLOADER_H_
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_UPLOADER_H_
 
-#include <memory>
-#include <queue>
-
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "components/enterprise/browser/reporting/report_request_definition.h"
+#include "components/enterprise/browser/reporting/report_request.h"
 #include "net/base/backoff_entry.h"
 
 namespace base {
@@ -43,18 +40,21 @@ class ReportUploader {
                        // invalid dm token.
   };
 
-  using ReportRequest = definition::ReportRequest;
-  using ReportRequests = std::queue<std::unique_ptr<ReportRequest>>;
   // A callback to notify the upload result.
   using ReportCallback = base::OnceCallback<void(ReportStatus status)>;
 
   ReportUploader(policy::CloudPolicyClient* client,
                  int maximum_number_of_retries);
+
+  ReportUploader(const ReportUploader&) = delete;
+  ReportUploader& operator=(const ReportUploader&) = delete;
+
   virtual ~ReportUploader();
 
   // Sets a list of requests and upload it. Request will be uploaded one after
   // another.
-  virtual void SetRequestAndUpload(ReportRequests requests,
+  virtual void SetRequestAndUpload(ReportType report_type,
+                                   ReportRequestQueue requests,
                                    ReportCallback callback);
 
  private:
@@ -75,16 +75,16 @@ class ReportUploader {
   // Moves to the next request if exist, or notifies the accomplishments.
   void NextRequest();
 
-  policy::CloudPolicyClient* client_;
+  raw_ptr<policy::CloudPolicyClient> client_;
   ReportCallback callback_;
-  ReportRequests requests_;
+  ReportRequestQueue requests_;
+  ReportType report_type_;
 
   net::BackoffEntry backoff_entry_;
   base::OneShotTimer backoff_request_timer_;
   const int maximum_number_of_retries_;
 
   base::WeakPtrFactory<ReportUploader> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ReportUploader);
 };
 
 enum ReportResponseMetricsStatus {

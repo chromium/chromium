@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,11 +90,6 @@ TEST_F(AudioDecoderPipelineNodeTests, TestAudioDecoderCalls) {
       .WillOnce(testing::Return(false));
   EXPECT_EQ(test_node.RequiresDecryption(), true);
   EXPECT_EQ(test_node.RequiresDecryption(), false);
-  testing::Mock::VerifyAndClearExpectations(child_node_.get());
-
-  // SetDelegate.
-  EXPECT_CALL(*child_node_, SetObserver(nullptr));
-  test_node.SetObserver(nullptr);
   testing::Mock::VerifyAndClearExpectations(child_node_.get());
 }
 

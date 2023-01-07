@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("safe_browsing") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "safe_browsing_coordinator.h",
+    "safe_browsing_coordinator.mm",
+  ]
+  deps = [
+    "//components/safe_browsing/core/common",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/safe_browsing:safe_browsing",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/components/security_interstitials/safe_browsing",
+  ]
+}

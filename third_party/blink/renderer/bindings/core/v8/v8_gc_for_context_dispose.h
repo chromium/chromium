@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_GC_FOR_CONTEXT_DISPOSE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_GC_FOR_CONTEXT_DISPOSE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 
@@ -45,6 +44,9 @@ class V8GCForContextDispose {
  public:
   CORE_EXPORT static V8GCForContextDispose& Instance();
 
+  V8GCForContextDispose(const V8GCForContextDispose&) = delete;
+  V8GCForContextDispose& operator=(const V8GCForContextDispose&) = delete;
+
   // Notification for context disposal.
   void NotifyContextDisposed(bool is_main_frame, WindowProxy::FrameReuseStatus);
 
@@ -57,8 +59,6 @@ class V8GCForContextDispose {
   V8GCForContextDispose() = default;  // Use Instance() instead.
 
   bool force_page_navigation_gc_{false};
-
-  DISALLOW_COPY_AND_ASSIGN(V8GCForContextDispose);
 };
 
 }  // namespace blink

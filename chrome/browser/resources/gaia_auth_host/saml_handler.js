@@ -1,25 +1,18 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="post_message_channel.js">
-// <include src="webview_event_manager.js">
-// <include src="saml_password_attributes.js">
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
-// clang-format off
-// #import {Channel} from './channel.m.js';
-// #import {PostMessageChannel} from './post_message_channel.m.js';
-// #import {WebviewEventManager} from './webview_event_manager.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js'
-// #import {PasswordAttributes, readPasswordAttributes} from './saml_password_attributes.m.js';
-// clang-format on
+import {Channel} from './channel.js';
+import {PostMessageChannel} from './post_message_channel.js';
+import {PasswordAttributes, readPasswordAttributes} from './saml_password_attributes.js';
+import {maybeAutofillUsername} from './saml_username_autofill.js';
+import {WebviewEventManager} from './webview_event_manager.js';
 
 /**
  * @fileoverview Saml support for webview based auth.
  */
-
-cr.define('cr.login', function() {
-  /* #ignore */ 'use strict';
 
   /**
    * The lowest version of the credentials passing API supported.
@@ -45,6 +38,9 @@ cr.define('cr.login', function() {
   const SAML_HEADER = 'google-accounts-saml';
 
   /** @const */
+  const SAML_DEVICE_TRUST_HEADER = 'x-device-trust';
+
+  /** @const */
   const SAML_VERIFIED_ACCESS_CHALLENGE_HEADER = 'x-verified-access-challenge';
   /** @const */
   const SAML_VERIFIED_ACCESS_RESPONSE_HEADER =
@@ -63,7 +59,7 @@ cr.define('cr.login', function() {
    * The script to inject into webview and its sub frames.
    * @type {string}
    */
-  const injectedJs = 'webview_saml_injected.js';
+  const injectedJs = 'gaia_auth_host/saml_injected.rollup.js';
 
   /**
    * @typedef {{
@@ -93,7 +89,7 @@ cr.define('cr.login', function() {
    * }}
    * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onBeforeRequest#details
    */
-  /* #export */ let OnBeforeRequestDetails;
+  export let OnBeforeRequestDetails;
 
   /**
    * Details of the request.
@@ -104,7 +100,7 @@ cr.define('cr.login', function() {
    * }}
    * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived#details
    */
-  /* #export */ let OnHeadersReceivedDetails;
+  export let OnHeadersReceivedDetails;
 
   /**
    * Creates a new URL by striping all query parameters.
@@ -119,7 +115,7 @@ cr.define('cr.login', function() {
    * A handler to provide saml support for the given webview that hosts the
    * auth IdP pages.
    */
-  /* #export */ class SamlHandler extends cr.EventTarget {
+  export class SamlHandler extends EventTarget {
     /**
      * @param {!WebView} webview
      * @param {boolean} startsOnSamlPage - whether initial URL is already SAML
@@ -146,6 +142,9 @@ cr.define('cr.login', function() {
         // original Redirect is being followed with the response included in a
         // HTTP header.
         NAVIGATING_TO_REDIRECT_PAGE: 4,
+        // The attestation flow belongs to Device Trust. It should be ignored by
+        // the Verified Access for SAML feature implemented in this file.
+        DEVICE_TRUST_FLOW: 5,
       };
 
       /**
@@ -261,10 +260,22 @@ cr.define('cr.login', function() {
        * any. (Doesn't contain the password itself).
        * @private {!PasswordAttributes}
        */
-      this.passwordAttributes_ =
-          samlPasswordAttributes.PasswordAttributes.EMPTY;
+      this.passwordAttributes_ = PasswordAttributes.EMPTY;
 
-      this.webviewEventManager_ = WebviewEventManager.create();
+      /**
+       * User's email.
+       * @public {?string}
+       */
+      this.email = null;
+
+      /**
+       * Url parameter name for SAML IdP web page which is used to autofill the
+       * username.
+       * @public {?string}
+       */
+      this.urlParameterToAutofillSAMLUsername = null;
+
+      this.webviewEventManager_ = new WebviewEventManager();
 
       this.webviewEventManager_.addEventListener(
           this.webview_, 'contentload', this.onContentLoad_.bind(this));
@@ -284,6 +295,11 @@ cr.define('cr.login', function() {
           this.onMainFrameWebRequest.bind(this),
           {urls: ['http://*/*', 'https://*/*'], types: ['main_frame']},
           ['requestBody']);
+
+      this.webviewEventManager_.addWebRequestEventListener(
+          this.webview_.request.onBeforeRequest,
+          this.onMainFrameHttpsWebRequest_.bind(this),
+          {urls: ['https://*/*'], types: ['main_frame']}, ['blocking']);
 
       if (!this.startsOnSamlPage_) {
         this.webviewEventManager_.addEventListener(
@@ -313,7 +329,7 @@ cr.define('cr.login', function() {
         matches: ['http://*/*', 'https://*/*'],
         js: {files: [injectedJs]},
         all_frames: true,
-        run_at: 'document_start'
+        run_at: 'document_start',
       }]);
 
       PostMessageChannel.runAsDaemon(this.onConnected_.bind(this));
@@ -333,8 +349,8 @@ cr.define('cr.login', function() {
      */
     get apiPasswordBytes() {
       if (this.confirmToken_ != null &&
-          typeof (this.apiTokenStore_[this.confirmToken_]) == 'object' &&
-          typeof (this.apiTokenStore_[this.confirmToken_]['passwordBytes']) ==
+          typeof (this.apiTokenStore_[this.confirmToken_]) === 'object' &&
+          typeof (this.apiTokenStore_[this.confirmToken_]['passwordBytes']) ===
               'string') {
         return this.apiTokenStore_[this.confirmToken_]['passwordBytes'];
       }
@@ -358,6 +374,10 @@ cr.define('cr.login', function() {
       return this.getConsolidatedScrapedPasswords_().length;
     }
 
+    get scrapedPasswords() {
+      return this.getConsolidatedScrapedPasswords_();
+    }
+
     /**
      * Gets the list of passwords which have matching passwordProperty and
      * are scraped exactly |times| times.
@@ -372,7 +392,7 @@ cr.define('cr.login', function() {
         const key = this.passwordStore_[property];
         passwords[key] = (passwords[key] + 1) || 1;
       }
-      return Object.keys(passwords).filter(key => passwords[key] == times);
+      return Object.keys(passwords).filter(key => passwords[key] === times);
     }
 
     /**
@@ -432,9 +452,11 @@ cr.define('cr.login', function() {
       this.apiTokenStore_ = {};
       this.confirmToken_ = null;
       this.lastApiPasswordBytes_ = null;
-      this.passwordAttributes_ =
-          samlPasswordAttributes.PasswordAttributes.EMPTY;
+      this.passwordAttributes_ = PasswordAttributes.EMPTY;
       this.x509certificate = null;
+
+      this.email = null;
+      this.urlParameterToAutofillSAMLUsername = null;
     }
 
     /**
@@ -451,7 +473,7 @@ cr.define('cr.login', function() {
      * @return {boolean}
      */
     isIntentionalAbort() {
-      return this.deviceAttestationStage_ ==
+      return this.deviceAttestationStage_ ===
           SamlHandler.DeviceAttestationStage.ORIGINAL_REDIRECT_CANCELED;
     }
 
@@ -531,7 +553,7 @@ cr.define('cr.login', function() {
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(samlResponse, 'text/xml');
       let certificate = xmlDoc.getElementsByTagName('ds:X509Certificate');
-      if (!certificate || certificate.length == 0) {
+      if (!certificate || certificate.length === 0) {
         // tag 'ds:X509Certificate' doesn't exist
         certificate = xmlDoc.getElementsByTagName('X509Certificate');
       }
@@ -555,7 +577,7 @@ cr.define('cr.login', function() {
       if (!this.extractSamlPasswordAttributes) {
         return;
       }
-      if (!this.isSamlPage_ || details.method != 'POST') {
+      if (!this.isSamlPage_ || details.method !== 'POST') {
         return;
       }
 
@@ -578,8 +600,28 @@ cr.define('cr.login', function() {
 
       this.setX509certificate_(samlResponse);
 
-      this.passwordAttributes_ =
-          samlPasswordAttributes.readPasswordAttributes(samlResponse);
+      this.passwordAttributes_ = readPasswordAttributes(samlResponse);
+    }
+
+    /**
+     * Handler for webRequest.onBeforeRequest, used to optionally add a url
+     * parameter to the IdP login page in order to autofill the username field.
+     * @param {OnBeforeRequestDetails} details The web-request details.
+     * @return {BlockingResponse} Allows the event handler to modify network
+     *     requests.
+     * @private
+     */
+    onMainFrameHttpsWebRequest_(details) {
+      // Ignore GAIA page - we are only interested in 3P IdP page here.
+      if (!this.isSamlPage_ && !this.pendingIsSamlPage_) {
+        return {};
+      }
+      const urlToAutofillUsername = maybeAutofillUsername(
+          details.url, this.urlParameterToAutofillSAMLUsername, this.email);
+      if (urlToAutofillUsername) {
+        return {redirectUrl: urlToAutofillUsername};
+      }
+      return {};
     }
 
     /**
@@ -593,7 +635,7 @@ cr.define('cr.login', function() {
      * @private
      */
     continueDelayedRedirect_(url, challengeResponse) {
-      if (this.deviceAttestationStage_ !=
+      if (this.deviceAttestationStage_ !==
           SamlHandler.DeviceAttestationStage.ORIGINAL_REDIRECT_CANCELED) {
         console.error(
             'SamlHandler.continueDelayedRedirect_: incorrect attestation stage');
@@ -622,17 +664,17 @@ cr.define('cr.login', function() {
      */
     onBeforeRequest_(details) {
       // Default case without Verified Access.
-      if (this.deviceAttestationStage_ ==
+      if (this.deviceAttestationStage_ ===
           SamlHandler.DeviceAttestationStage.NONE) {
         return {};
       }
 
-      if (this.deviceAttestationStage_ ==
+      if (this.deviceAttestationStage_ ===
           SamlHandler.DeviceAttestationStage.NAVIGATING_TO_REDIRECT_PAGE) {
         return {};
       }
 
-      if ((this.deviceAttestationStage_ ==
+      if ((this.deviceAttestationStage_ ===
            SamlHandler.DeviceAttestationStage.CHALLENGE_RECEIVED) &&
           (this.verifiedAccessChallenge_ !== null)) {
         // Ask backend to compute response for device attestation challenge.
@@ -640,8 +682,8 @@ cr.define('cr.login', function() {
           detail: {
             url: details.url,
             challenge: this.verifiedAccessChallenge_,
-            callback: this.continueDelayedRedirect_.bind(this, details.url)
-          }
+            callback: this.continueDelayedRedirect_.bind(this, details.url),
+          },
         }));
 
         this.verifiedAccessChallenge_ = null;
@@ -661,7 +703,9 @@ cr.define('cr.login', function() {
     }
 
     /**
-     * Attaches challenge response during device attestation flow.
+     * Checks if the attestation flow belongs to Device Trust and if so skip
+     * Verified Access. Otherwise attaches challenge response during device
+     * attestation flow.
      * @param {Object} details The web-request details.
      * @return {BlockingResponse} Allows the event handler to modify network
      *     requests.
@@ -669,12 +713,28 @@ cr.define('cr.login', function() {
      */
     onBeforeSendHeaders_(details) {
       // Default case without Verified Access.
-      if (this.deviceAttestationStage_ ==
+      if (this.deviceAttestationStage_ ===
           SamlHandler.DeviceAttestationStage.NONE) {
+        // Check if the attestation flow was initiated by device trust.
+        const headersRequest = details.requestHeaders;
+
+        if (!headersRequest) {
+          return {};
+        }
+
+        // TODO(b/246818937): Remove this for loop.
+        for (const headerRequest of headersRequest) {
+          const headerRequestName = headerRequest.name.toLowerCase();
+          if (headerRequestName === SAML_DEVICE_TRUST_HEADER) {
+            this.deviceAttestationStage_ =
+                SamlHandler.DeviceAttestationStage.DEVICE_TRUST_FLOW;
+            return {};
+          }
+        }
         return {};
       }
 
-      if (this.deviceAttestationStage_ ==
+      if (this.deviceAttestationStage_ ===
           SamlHandler.DeviceAttestationStage.NAVIGATING_TO_REDIRECT_PAGE) {
         // Send extra header only if no error was encountered during challenge
         // key procedure.
@@ -686,7 +746,7 @@ cr.define('cr.login', function() {
 
         details.requestHeaders.push({
           'name': SAML_VERIFIED_ACCESS_RESPONSE_HEADER,
-          'value': this.verifiedAccessChallengeResponse_
+          'value': this.verifiedAccessChallengeResponse_,
         });
 
         this.verifiedAccessChallengeResponse_ = null;
@@ -707,6 +767,11 @@ cr.define('cr.login', function() {
      * @private
      */
     onHeadersReceived_(details) {
+      if (this.deviceAttestationStage_ ===
+          SamlHandler.DeviceAttestationStage.DEVICE_TRUST_FLOW) {
+        return {};
+      }
+
       const headers = details.responseHeaders;
 
       // Check whether GAIA headers indicating the start or end of a SAML
@@ -715,11 +780,11 @@ cr.define('cr.login', function() {
         const header = headers[i];
         const headerName = header.name.toLowerCase();
 
-        if (headerName == SAML_HEADER) {
+        if (headerName === SAML_HEADER) {
           const action = header.value.toLowerCase();
-          if (action == 'start') {
+          if (action === 'start') {
             this.pendingIsSamlPage_ = true;
-          } else if (action == 'end') {
+          } else if (action === 'end') {
             this.pendingIsSamlPage_ = false;
           }
         }
@@ -730,7 +795,7 @@ cr.define('cr.login', function() {
         // |SAML_VERIFIED_ACCESS_CHALLENGE_HEADER| name contains challenge from
         // Verified Access Web API.
         if ((details.statusCode >= 300) && (details.statusCode <= 399) &&
-            (headerName == SAML_VERIFIED_ACCESS_CHALLENGE_HEADER)) {
+            (headerName === SAML_VERIFIED_ACCESS_CHALLENGE_HEADER)) {
           this.deviceAttestationStage_ =
               SamlHandler.DeviceAttestationStage.CHALLENGE_RECEIVED;
           this.verifiedAccessChallenge_ = header.value;
@@ -744,7 +809,7 @@ cr.define('cr.login', function() {
      * Invoked when the injected JS makes a connection.
      */
     onConnected_(port) {
-      if (port.targetWindow != this.webview_.contentWindow) {
+      if (port.targetWindow !== this.webview_.contentWindow) {
         return;
       }
 
@@ -768,8 +833,8 @@ cr.define('cr.login', function() {
         response: {
           result: 'initialized',
           version: this.apiVersion_,
-          keyTypes: API_KEY_TYPES
-        }
+          keyTypes: API_KEY_TYPES,
+        },
       });
     }
 
@@ -786,7 +851,7 @@ cr.define('cr.login', function() {
      */
     onAPICall_(channel, msg) {
       const call = msg.call;
-      if (call.method == 'initialize') {
+      if (call.method === 'initialize') {
         if (!Number.isInteger(call.requestedVersion) ||
             call.requestedVersion < MIN_API_VERSION_VERSION) {
           this.sendInitializationFailure_(channel);
@@ -800,8 +865,8 @@ cr.define('cr.login', function() {
         return;
       }
 
-      if (call.method == 'add') {
-        if (API_KEY_TYPES.indexOf(call.keyType) == -1) {
+      if (call.method === 'add') {
+        if (API_KEY_TYPES.indexOf(call.keyType) === -1) {
           console.error('SamlHandler.onAPICall_: unsupported key type');
           return;
         }
@@ -811,11 +876,12 @@ cr.define('cr.login', function() {
         this.lastApiPasswordBytes_ = call.passwordBytes;
 
         this.dispatchEvent(new CustomEvent('apiPasswordAdded'));
-      } else if (call.method == 'confirm') {
+      } else if (call.method === 'confirm') {
         if (!(call.token in this.apiTokenStore_)) {
           console.error('SamlHandler.onAPICall_: token mismatch');
         } else {
           this.confirmToken_ = call.token;
+          this.dispatchEvent(new CustomEvent('apiPasswordConfirmed'));
         }
       } else {
         console.error('SamlHandler.onAPICall_: unknown message');
@@ -862,7 +928,3 @@ cr.define('cr.login', function() {
       return this.isSamlPage_;
     }
   }
-
-  // #cr_define_end
-  return {SamlHandler: SamlHandler};
-});

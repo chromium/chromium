@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,11 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Decrypts the secret that should be used to login from `wrapped_secret` using
@@ -162,4 +161,4 @@ void EasyUnlockAuthAttempt::Cancel(const AccountId& account_id) {
                          std::string());
 }
 
-}  // namespace chromeos
+}  // namespace ash

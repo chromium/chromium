@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -32,7 +31,7 @@ constexpr const char* kGpuTraceSourceNames[] = {
     "TraceCmd",       // kTraceDecoder,
     "Disjoint",       // kTraceDisjoint, // Used internally.
 };
-static_assert(NUM_TRACER_SOURCES == base::size(kGpuTraceSourceNames),
+static_assert(NUM_TRACER_SOURCES == std::size(kGpuTraceSourceNames),
               "Trace source names must match enumeration.");
 
 TraceMarker::TraceMarker(const std::string& category, const std::string& name)

@@ -1,0 +1,52 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("merchant_signal_db") {
+  sources = [
+    "merchant_signal_db.cc",
+    "merchant_signal_db.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//chrome/browser/commerce/merchant_viewer/android:jni_headers",
+    "//chrome/browser/persisted_state_db:persisted_state_db",
+    "//components/commerce/core:merchant_signal_db_proto",
+    "//components/commerce/core:persisted_state_db_content_proto",
+    "//components/keyed_service/content",
+    "//components/leveldb_proto",
+    "//components/session_proto_db:session_proto_db",
+    "//content/public/browser:browser",
+    "//third_party/leveldatabase",
+  ]
+}
+
+source_set("merchant_viewer_data_manager") {
+  sources = [
+    "merchant_viewer_data_manager.cc",
+    "merchant_viewer_data_manager.h",
+    "merchant_viewer_data_manager_factory.cc",
+    "merchant_viewer_data_manager_factory.h",
+  ]
+
+  deps = [
+    ":merchant_signal_db",
+    "//base:base",
+    "//chrome/browser/persisted_state_db:persisted_state_db",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:merchant_signal_db_proto",
+    "//components/commerce/core:persisted_state_db_content_proto",
+    "//components/keyed_service/content",
+    "//components/leveldb_proto",
+    "//components/session_proto_db:session_proto_db",
+    "//content/public/browser:browser",
+    "//third_party/leveldatabase",
+  ]
+}

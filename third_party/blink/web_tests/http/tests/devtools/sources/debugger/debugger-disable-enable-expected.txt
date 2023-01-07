@@ -3,9 +3,11 @@ Tests that breakpoints are successfully restored after debugger disabling.
 Main resource was shown.
 Debugger disabled.
 Evaluating test function.
-function evaluated without a pause on the breakpoint.
-Debugger was enabled
+Function evaluated without a pause on the breakpoint.
+Enabling debugger.
+Breakpoint was set after re-enabling.
 Set timer for test function.
 Script execution paused.
+Function evaluated and paused on breakpoint.
 Script execution resumed.
 

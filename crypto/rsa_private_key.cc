@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ std::unique_ptr<RSAPrivateKey> RSAPrivateKey::CreateFromPrivateKeyInfo(
 // static
 std::unique_ptr<RSAPrivateKey> RSAPrivateKey::CreateFromKey(EVP_PKEY* key) {
   DCHECK(key);
-  if (EVP_PKEY_type(key->type) != EVP_PKEY_RSA)
+  if (EVP_PKEY_id(key) != EVP_PKEY_RSA)
     return nullptr;
   std::unique_ptr<RSAPrivateKey> copy(new RSAPrivateKey);
   copy->key_ = bssl::UpRef(key);

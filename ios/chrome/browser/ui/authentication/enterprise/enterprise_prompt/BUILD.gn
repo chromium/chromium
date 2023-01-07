@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("enterprise_prompt") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "enterprise_prompt_coordinator.h",
+    "enterprise_prompt_coordinator.mm",
+    "enterprise_prompt_type.h",
+    "enterprise_prompt_view_controller.h",
+    "enterprise_prompt_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/policy/resources:enterprise_grey_icon_large",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ui/base",
+  ]
+}

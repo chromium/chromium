@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -41,10 +41,8 @@ const std::string kTestDigest(
     "\x77\x1a\xfb\x32\x00\x51\x7e\x63\x7d\x3b\x2e\x46\x63\xf6",
     32);
 
-constexpr base::TimeDelta kTimeToSaveMhtml =
-    base::TimeDelta::FromMilliseconds(1000);
-constexpr base::TimeDelta kTimeToComputeDigest =
-    base::TimeDelta::FromMilliseconds(10);
+constexpr base::TimeDelta kTimeToSaveMhtml = base::Milliseconds(1000);
+constexpr base::TimeDelta kTimeToComputeDigest = base::Milliseconds(10);
 
 class TestMHTMLArchiver : public OfflinePageMHTMLArchiver {
  public:
@@ -57,6 +55,10 @@ class TestMHTMLArchiver : public OfflinePageMHTMLArchiver {
   TestMHTMLArchiver(const GURL& url,
                     const TestScenario test_scenario,
                     TestScopedOfflineClock* clock);
+
+  TestMHTMLArchiver(const TestMHTMLArchiver&) = delete;
+  TestMHTMLArchiver& operator=(const TestMHTMLArchiver&) = delete;
+
   ~TestMHTMLArchiver() override;
 
  private:
@@ -67,9 +69,7 @@ class TestMHTMLArchiver : public OfflinePageMHTMLArchiver {
   const GURL url_;
   const TestScenario test_scenario_;
   // Not owned.
-  TestScopedOfflineClock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMHTMLArchiver);
+  raw_ptr<TestScopedOfflineClock> clock_;
 };
 
 TestMHTMLArchiver::TestMHTMLArchiver(const GURL& url,
@@ -124,6 +124,11 @@ class OfflinePageMHTMLArchiverTest : public testing::Test {
           "OfflinePages.SavePage.ComputeDigestTime");
 
   OfflinePageMHTMLArchiverTest();
+
+  OfflinePageMHTMLArchiverTest(const OfflinePageMHTMLArchiverTest&) = delete;
+  OfflinePageMHTMLArchiverTest& operator=(const OfflinePageMHTMLArchiverTest&) =
+      delete;
+
   ~OfflinePageMHTMLArchiverTest() override;
 
   void SetUp() override;
@@ -173,8 +178,6 @@ class OfflinePageMHTMLArchiverTest : public testing::Test {
   base::OnceClosure async_operation_completed_callback_;
 
   TestScopedOfflineClock clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageMHTMLArchiverTest);
 };
 
 OfflinePageMHTMLArchiverTest::OfflinePageMHTMLArchiverTest()

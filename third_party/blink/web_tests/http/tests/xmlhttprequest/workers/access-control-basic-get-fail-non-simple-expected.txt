@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 37: Access to XMLHttpRequest at 'http://localhost:8000/xmlhttprequest/resources/access-control-basic-get-fail-non-simple.cgi' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+CONSOLE ERROR: Access to XMLHttpRequest at 'http://localhost:8000/xmlhttprequest/resources/access-control-basic-get-fail-non-simple.cgi' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
 GET should not trigger a preflight request from a worker unless it has non-simple headers.
 
 PASS: Cross-domain access allowed for simple get.

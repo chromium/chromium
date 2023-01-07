@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "components/favicon/core/favicon_driver_observer.h"
-#include "content/public/browser/navigation_entry.h"
 
 class ProcessResourceUsage;
 
@@ -35,6 +34,8 @@ class RendererTask : public Task,
   RendererTask(const std::u16string& title,
                const gfx::ImageSkia* icon,
                content::RenderFrameHost* subframe);
+  RendererTask(const RendererTask&) = delete;
+  RendererTask& operator=(const RendererTask&) = delete;
   ~RendererTask() override;
 
   // An abstract method that will be called when the event
@@ -106,10 +107,10 @@ class RendererTask : public Task,
                content::RenderProcessHost* render_process_host);
 
   // The WebContents of the task this object represents.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // The render process host of the task this object represents.
-  content::RenderProcessHost* render_process_host_;
+  raw_ptr<content::RenderProcessHost> render_process_host_;
 
   // The Mojo service wrapper that will provide us with the V8 memory usage and
   // the WebCache resource stats of the render process represented by this
@@ -132,8 +133,6 @@ class RendererTask : public Task,
 
   base::TerminationStatus termination_status_;
   int termination_error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererTask);
 };
 
 }  // namespace task_manager

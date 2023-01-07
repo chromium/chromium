@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include <cmath>
 
-#include "base/macros.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/test_event_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,6 +49,10 @@ const PointInfo kDefaultPointInfo = {kDefaultXCoord, kDefaultYCoord,
 }  // namespace
 
 class TouchInputScalerTest : public ::testing::Test {
+ public:
+  TouchInputScalerTest(const TouchInputScalerTest&) = delete;
+  TouchInputScalerTest& operator=(const TouchInputScalerTest&) = delete;
+
  protected:
   TouchInputScalerTest() : touch_input_scaler_(&mock_stub_) {}
 
@@ -89,8 +92,6 @@ class TouchInputScalerTest : public ::testing::Test {
 
  private:
   std::vector<PointInfo> point_infos_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchInputScalerTest);
 };
 
 // TouchInputFilter require both input and output dimensions.

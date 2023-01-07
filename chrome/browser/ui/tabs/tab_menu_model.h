@@ -1,14 +1,16 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_
 
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class TabStripModel;
+class TabMenuModelDelegate;
 
 // A menu model that builds the contents of the tab context menu. To make sure
 // the menu reflects the real state of the tab a new TabMenuModel should be
@@ -21,15 +23,17 @@ class TabStripModel;
 // likely having to expand it later on:
 //   ExistingTabGroupSubMenuModel
 //   ExistingWindowSubMenuModel
-//   SendTabToSelfSubMenuModel
 class TabMenuModel : public ui::SimpleMenuModel {
  public:
   TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+               TabMenuModelDelegate* tab_menu_model_delegate,
                TabStripModel* tab_strip,
                int index);
   TabMenuModel(const TabMenuModel&) = delete;
   TabMenuModel& operator=(const TabMenuModel&) = delete;
   ~TabMenuModel() override;
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddToNewGroupItemIdentifier);
 
  private:
   void Build(TabStripModel* tab_strip, int index);
@@ -37,9 +41,7 @@ class TabMenuModel : public ui::SimpleMenuModel {
   std::unique_ptr<ui::SimpleMenuModel> add_to_existing_group_submenu_;
   std::unique_ptr<ui::SimpleMenuModel> add_to_existing_window_submenu_;
 
-  // Send tab to self submenu.
-  std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
-      send_tab_to_self_sub_menu_model_;
+  raw_ptr<TabMenuModelDelegate> tab_menu_model_delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_

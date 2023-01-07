@@ -1,20 +1,15 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_DEFAULT_BROWSER_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_DEFAULT_BROWSER_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 class WebUI;
@@ -28,6 +23,10 @@ namespace settings {
 class DefaultBrowserHandler : public SettingsPageUIHandler {
  public:
   DefaultBrowserHandler();
+
+  DefaultBrowserHandler(const DefaultBrowserHandler&) = delete;
+  DefaultBrowserHandler& operator=(const DefaultBrowserHandler&) = delete;
+
   ~DefaultBrowserHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -43,10 +42,10 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
   std::string check_default_callback_id_;
 
   // Called from WebUI to request the current state.
-  void RequestDefaultBrowserState(const base::ListValue* args);
+  void RequestDefaultBrowserState(const base::Value::List& args);
 
   // Makes this the default browser. Called from WebUI.
-  void SetAsDefaultBrowser(const base::ListValue* args);
+  void SetAsDefaultBrowser(const base::Value::List& args);
 
   // Called with the default browser state when the DefaultBrowserWorker is
   // done.
@@ -62,8 +61,6 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
 
   // Used to invalidate the DefaultBrowserWorker callback.
   base::WeakPtrFactory<DefaultBrowserHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultBrowserHandler);
 };
 
 }  // namespace settings

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,8 +142,13 @@ enum MetricEnrollment {
   kMetricEnrollmentTooManyRequests = 62,
   // Enrollment failed: illegal account for packaged EDU license.
   kMetricEnrollmentIllegalAccountForPackagedEDULicense = 63,
+  // Enrollment failed: dev mode would be blocked but this is prevented by a
+  // command-line switch.
+  kMetricEnrollmentMayNotBlockDevMode = 64,
+  // Enrollment failed: Packaged license device invalid for KIOSK.
+  kMetricEnrollmentInvalidPackagedDeviceForKIOSK = 65,
   // Max value for use with enumeration histogram UMA functions.
-  kMaxValue = kMetricEnrollmentIllegalAccountForPackagedEDULicense
+  kMaxValue = kMetricEnrollmentInvalidPackagedDeviceForKIOSK
 };
 
 // Events related to policy refresh.
@@ -240,28 +245,19 @@ POLICY_EXPORT extern const char
     kMetricRemoteCommandInvalidationsRegistrationResult[];
 
 POLICY_EXPORT extern const char kMetricUserRemoteCommandReceived[];
-POLICY_EXPORT extern const char kMetricUserUnsignedRemoteCommandReceived[];
 POLICY_EXPORT extern const char kMetricUserRemoteCommandExecutedTemplate[];
-POLICY_EXPORT extern const char
-    kMetricUserUnsignedRemoteCommandExecutedTemplate[];
 
 POLICY_EXPORT extern const char kMetricDeviceRemoteCommandReceived[];
-POLICY_EXPORT extern const char kMetricDeviceUnsignedRemoteCommandReceived[];
 POLICY_EXPORT extern const char kMetricDeviceRemoteCommandExecutedTemplate[];
-POLICY_EXPORT extern const char
-    kMetricDeviceUnsignedRemoteCommandExecutedTemplate[];
 
 POLICY_EXPORT extern const char kMetricCBCMRemoteCommandReceived[];
-POLICY_EXPORT extern const char kMetricCBCMUnsignedRemoteCommandReceived[];
 POLICY_EXPORT extern const char kMetricCBCMRemoteCommandExecutedTemplate[];
-POLICY_EXPORT extern const char
-    kMetricCBCMUnsignedRemoteCommandExecutedTemplate[];
 
 // Private set membership UMA histogram names.
-POLICY_EXPORT extern const char kUMAPsmHashDanceComparison[];
-POLICY_EXPORT extern const char kUMAPsmHashDanceDifferentResultsComparison[];
 POLICY_EXPORT extern const char kUMAPsmSuccessTime[];
-POLICY_EXPORT extern const char kUMAPsmRequestStatus[];
+POLICY_EXPORT extern const char kUMAPsmResult[];
+POLICY_EXPORT extern const char kUMAPsmNetworkErrorCode[];
+POLICY_EXPORT extern const char kUMAPsmDmServerRequestStatus[];
 
 // DeviceAutoEnrollmentRequest i.e. hash dance request UMA histogram names.
 POLICY_EXPORT extern const char kUMAHashDanceSuccessTime[];
@@ -272,10 +268,12 @@ POLICY_EXPORT extern const char kUMAHashDanceBucketDownloadTime[];
 POLICY_EXPORT extern const char kUMAHashDanceExtraTime[];
 POLICY_EXPORT extern const char kUMAHashDanceRequestStatus[];
 POLICY_EXPORT extern const char kUMAHashDanceNetworkErrorCode[];
+
+// The following UMA suffixes are used by Hash dance and PSM protocols.
 // Suffix for initial enrollment.
-POLICY_EXPORT extern const char kUMAHashDanceSuffixInitialEnrollment[];
+POLICY_EXPORT extern const char kUMASuffixInitialEnrollment[];
 // Suffix for Forced Re-Enrollment.
-POLICY_EXPORT extern const char kUMAHashDanceSuffixFRE[];
+POLICY_EXPORT extern const char kUMASuffixFRE[];
 
 }  // namespace policy
 

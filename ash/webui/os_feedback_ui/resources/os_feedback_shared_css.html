@@ -1,0 +1,210 @@
+<template>
+  <style include="cr-shared-style md-select">
+    :host {
+      --feedback-google-sans-font-family: "Google Sans", Roboto, sans-serif;
+      --feedback-regular-font-weight: 400;
+      --feedback-roboto-font-family: Roboto, sans-serif;
+      --feedback-medium-font-weight: 500;
+    }
+
+    :host-context([dir='rtl']) .dialog-back-arrow {
+      transform: rotate(180deg);
+    }
+
+    html {
+      background-color: var(--cros-bg-color);
+    }
+
+    a {
+      color: var(--cros-link-color);
+      text-decoration: none;
+    }
+
+    a:focus,
+    a:hover {
+      text-decoration: underline;
+    }
+
+    #container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    #header {
+      display: flex;
+      height: 68px;
+      margin: 0 0 24px 0;
+    }
+
+    #content {
+      display: flex;
+      flex-direction: column;
+      height: 456px;
+    }
+
+    .page-title {
+      color: var(--cros-text-color-primary);
+      font-family: var(--feedback-google-sans-font-family);
+      font-size: 22px;
+      font-weight: var(--feedback-medium-font-weight);
+      line-height: 28px;
+      margin: auto 0 0 0;
+      margin-block-end: 0;
+    }
+
+    .overflow-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .image-preview {
+      display: block;
+      height: auto;
+      margin: auto;
+      max-height: 100%;
+      max-width: 100%;
+      position: relative;
+      width: auto;
+    }
+
+    cr-dialog::part(dialog) {
+      --cr-dialog-body-padding-horizontal: 0px;
+      --cr-dialog-title-slot-padding-start: 0px;
+      --cr-icon-button-margin-end: 20px;
+      width: 590px;
+    }
+
+    h2 {
+      color: var(--cros-text-color-secondary);
+      font-family: var(--feedback-google-sans-font-family);
+      font-size: 15px;
+      font-weight: var(--feedback-medium-font-weight);
+      line-height: 22px;
+    }
+
+    #navButtons {
+      align-self: flex-end;
+      display: flex;
+      margin: auto 0 40px 0;
+    }
+
+    cr-button {
+      line-height: 20px;
+    }
+
+    cr-checkbox {
+      --cr-checkbox-label-padding-start: 0;
+      --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
+      margin-inline-end: 12px;
+      padding: 2px;
+    }
+
+    dialog {
+      background-color: transparent;
+      border: none;
+      font-size: 100%;
+      height: 100%;
+      margin: 0;
+      max-height: initial;
+      max-width: initial;
+      opacity: 0;
+      outline: none;
+      overflow: hidden;
+      padding: 0;
+      width: 100%;
+    }
+
+    dialog[open] {
+      opacity: 1;
+      transition: opacity 200ms;
+    }
+
+    .focusable:focus {
+      border-radius: 4px;
+      outline: 2px solid var(--cros-focus-ring-color);
+    }
+
+    .dialog-toolbar {
+      align-items: center;
+      background-color: var(--cros-bg-color);
+      border-bottom: 1px solid var(--cros-separator-color);
+      color: var(--cros-text-color-primary);
+      display: flex;
+      font-family: var(--feedback-google-sans-font-family);
+      font-size: 15px;
+      font-weight: var(--feedback-medium-font-weight);
+      height: 56px;
+      line-height: 48px;
+      opacity: 1;
+      white-space: nowrap;
+      z-index: 1;
+    }
+
+    .dialog-main-panel {
+      background-color: transparent;
+      bottom: 0;
+      position: absolute;
+      /* The top value here should be the total height of the #toolbar including
+      the height and the border-width */
+      top: 56px;
+      width: 100%;
+    }
+
+    .dialog-content-panel {
+      background-color: var(--cros-app-shield-60);
+      color: var(--cros-text-color-primary);
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 16px);
+      justify-content: center;
+      outline: none;
+      padding: 8px 44px 8px 44px;
+      position: relative;
+      text-align: center;
+      width: calc(100% - 88px);
+    }
+
+    .close-dialog-button {
+      border: none;
+      height: 48px;
+      margin-bottom: 4px;
+      margin-inline-end: 8px;
+      margin-top: 4px;
+      min-width: 48px;
+      padding: 0;
+      width: 48px;
+    }
+
+    .dialog-back-arrow {
+      --iron-icon-fill-color: var(--cros-icon-color-primary);
+      height: 20px;
+      width: 20px;
+    }
+
+    paper-tooltip::part(tooltip) {
+      border-radius: 2px;
+      font-family: var(--feedback-roboto-font-family);
+      font-size: 12px;
+      font-weight: var(--feedback-regular-font-weight);
+      line-height: 18px;
+      margin: auto 6px 0 6px;
+      padding: 3px 8px;
+    }
+
+    paper-tooltip {
+      --paper-tooltip-background: var(--cros-tooltip-background-color);
+      --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+    }
+
+    cr-checkbox {
+      --cr-checkbox-ripple-opacity: 0;
+      --cr-checkbox-ripple-size: 32px;
+    }
+
+    :host-context(.focus-outline-visible) cr-checkbox:focus-within {
+      --cr-checkbox-ripple-ring: 2px solid var(--cros-focus-ring-color);
+    }
+  </style>
+</template>

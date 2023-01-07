@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ AccessibilityConfirmationDialog::AccessibilityConfirmationDialog(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::TEXT, views::TEXT)));
+          views::DialogContentType::kText, views::DialogContentType::kText)));
   std::unique_ptr<views::Label> label =
       std::make_unique<views::Label>(dialog_text);
   label->SetMultiLine(true);
@@ -66,6 +66,10 @@ AccessibilityConfirmationDialog::AccessibilityConfirmationDialog(
 }
 
 AccessibilityConfirmationDialog::~AccessibilityConfirmationDialog() = default;
+
+bool AccessibilityConfirmationDialog::ShouldShowCloseButton() const {
+  return false;
+}
 
 base::WeakPtr<AccessibilityConfirmationDialog>
 AccessibilityConfirmationDialog::GetWeakPtr() {

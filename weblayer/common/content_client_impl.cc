@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,14 @@
 
 #include "build/build_config.h"
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
-#include "content/app/resources/grit/content_resources.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_util.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(OS_ANDROID)
-#include "components/embedder_support/android/common/url_constants.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "content/public/common/url_constants.h"
 #endif
 
 namespace weblayer {
@@ -35,7 +34,7 @@ std::u16string ContentClientImpl::GetLocalizedString(
 
 base::StringPiece ContentClientImpl::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }
@@ -43,6 +42,11 @@ base::StringPiece ContentClientImpl::GetDataResource(
 base::RefCountedMemory* ContentClientImpl::GetDataResourceBytes(
     int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
+      resource_id);
+}
+
+std::string ContentClientImpl::GetDataResourceString(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
       resource_id);
 }
 
@@ -67,9 +71,9 @@ blink::OriginTrialPolicy* ContentClientImpl::GetOriginTrialPolicy() {
 }
 
 void ContentClientImpl::AddAdditionalSchemes(Schemes* schemes) {
-#if defined(OS_ANDROID)
-  schemes->standard_schemes.push_back(embedder_support::kAndroidAppScheme);
-  schemes->referrer_schemes.push_back(embedder_support::kAndroidAppScheme);
+#if BUILDFLAG(IS_ANDROID)
+  schemes->standard_schemes.push_back(content::kAndroidAppScheme);
+  schemes->referrer_schemes.push_back(content::kAndroidAppScheme);
 #endif
 }
 

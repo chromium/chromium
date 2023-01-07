@@ -1,0 +1,33 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+[Extensible, Stable]
+enum WallpaperLayout {
+  kNone = 0,
+  kStretch = 1,
+  kCenter = 2,
+  kCenterCropped = 3,
+};
+
+[Stable, Uuid="a2940756-55ef-4fc7-af10-f74a5bba6716"]
+struct WallpaperSettings {
+ array<uint8> data@0;      // The jpeg or png encoded wallpaper image.
+ WallpaperLayout layout@1; // Layout of the wallpaper on the desktop.
+ string filename@2;        // The file name of the saved wallpaper.
+};
+
+// Interface for wallpaper. Implemented by ash-chrome.
+// |extension_id| and |extension_name| are from the extension that is setting
+// the wallpaper (ie, using the wallpaper API). This information is used
+// internally to notify the Wallpaper Manager about the change.
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="e2529a0d-9b3d-4ca3-9cca-23bc94a709e9"]
+interface Wallpaper {
+  // Sets the wallpaper.
+  SetWallpaper@0(WallpaperSettings wallpaper, string extension_id,
+      string extension_name) => (array<uint8> thumbnail_data);
+};

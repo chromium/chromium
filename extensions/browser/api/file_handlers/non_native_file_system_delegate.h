@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -38,7 +38,7 @@ class NonNativeFileSystemDelegate {
   virtual void GetNonNativeLocalPathMimeType(
       content::BrowserContext* context,
       const base::FilePath& path,
-      base::OnceCallback<void(const base::Optional<std::string>&)>
+      base::OnceCallback<void(const absl::optional<std::string>&)>
           callback) = 0;
 
   // Checks whether |path| points to a non-local filesystem directory and calls

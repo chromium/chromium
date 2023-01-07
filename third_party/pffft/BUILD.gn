@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 config("common_config") {
+  cflags = [ "-Wno-shadow" ]
+
   if (is_win) {
     defines = [
       # Required to use math constants from math.h.
@@ -17,7 +19,8 @@ config("common_config") {
   # PFFFT doesn't support SIMD on some cpus, so build a scalar version.
   if ((current_cpu == "arm" && !arm_use_neon) || current_cpu == "mipsel" ||
       current_cpu == "mips64el" || current_cpu == "ppc64" ||
-      current_cpu == "s390x") {
+      current_cpu == "riscv64" || current_cpu == "s390x" ||
+      current_cpu == "loong64") {
     defines = [ "PFFFT_SIMD_DISABLE" ]
   }
 }

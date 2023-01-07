@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -18,22 +19,18 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/test/test_platform_native_widget.h"
+#include "ui/views/view_test_api.h"
 
 #if defined(USE_AURA)
 #include "ui/views/widget/native_widget_aura.h"
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_MAC)
 #include "ui/views/widget/native_widget_mac.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/base/x/x11_util.h"
-#endif
-
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_gl_egl_utility.h"
 #endif
@@ -44,14 +41,9 @@ namespace {
 
 bool DoesVisualHaveAlphaForTest() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    const auto* const egl_utility =
-        ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
-    return egl_utility ? egl_utility->X11DoesVisualHaveAlphaForTest() : false;
-  }
-#endif
-#if defined(USE_X11)
-  return ui::DoesVisualHaveAlphaForTest();
+  const auto* const egl_utility =
+      ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
+  return egl_utility ? egl_utility->X11DoesVisualHaveAlphaForTest() : false;
 #else
   return false;
 #endif
@@ -80,7 +72,7 @@ void ViewsTestBase::SetUp() {
   testing::Test::SetUp();
   setup_called_ = true;
 
-  base::Optional<ViewsDelegate::NativeWidgetFactory> factory;
+  absl::optional<ViewsDelegate::NativeWidgetFactory> factory;
   if (native_widget_type_ == NativeWidgetType::kDesktop) {
     factory = base::BindRepeating(&ViewsTestBase::CreateNativeWidgetForTest,
                                   base::Unretained(this));
@@ -131,8 +123,13 @@ Widget::InitParams ViewsTestBase::CreateParams(Widget::InitParams::Type type) {
 
 std::unique_ptr<Widget> ViewsTestBase::CreateTestWidget(
     Widget::InitParams::Type type) {
+  return CreateTestWidget(CreateParamsForTestWidget(type));
+}
+
+std::unique_ptr<Widget> ViewsTestBase::CreateTestWidget(
+    Widget::InitParams params) {
   std::unique_ptr<Widget> widget = AllocateTestWidget();
-  widget->Init(CreateParamsForTestWidget(type));
+  widget->Init(std::move(params));
   return widget;
 }
 
@@ -144,7 +141,7 @@ void ViewsTestBase::SimulateNativeDestroy(Widget* widget) {
   test_helper_->SimulateNativeDestroy(widget);
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_MAC)
 int ViewsTestBase::GetSystemReservedHeightAtTopOfScreen() {
   return 0;
 }
@@ -157,7 +154,7 @@ gfx::NativeWindow ViewsTestBase::GetContext() {
 NativeWidget* ViewsTestBase::CreateNativeWidgetForTest(
     const Widget::InitParams& init_params,
     internal::NativeWidgetDelegate* delegate) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
   return new test::TestPlatformNativeWidget<NativeWidgetMac>(delegate, false,
                                                              nullptr);
 #elif defined(USE_AURA)

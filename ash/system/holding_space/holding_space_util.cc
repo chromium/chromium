@@ -1,23 +1,48 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/holding_space/holding_space_util.h"
 
-#include "ash/style/ash_color_provider.h"
+#include <memory>
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/painter.h"
+#include "ui/views/view.h"
 
-namespace ash {
-namespace holding_space_util {
+namespace ash::holding_space_util {
 
 namespace {
+
+// CallbackPathGenerator -------------------------------------------------------
+
+class CallbackPathGenerator : public views::HighlightPathGenerator {
+ public:
+  using Callback = base::RepeatingCallback<gfx::RRectF()>;
+
+  explicit CallbackPathGenerator(Callback callback)
+      : callback_(std::move(callback)) {}
+  CallbackPathGenerator(const CallbackPathGenerator&) = delete;
+  CallbackPathGenerator& operator=(const CallbackPathGenerator&) = delete;
+  ~CallbackPathGenerator() override = default;
+
+ private:
+  // views::HighlightPathGenerator:
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+    return callback_.Run();
+  }
+
+  Callback callback_;
+};
 
 // CirclePainter ---------------------------------------------------------------
 
@@ -56,8 +81,8 @@ class CirclePainter : public views::Painter {
   }
 
   const SkColor color_;
-  const base::Optional<size_t> fixed_size_;
-  const base::Optional<gfx::InsetsF> insets_;
+  const absl::optional<size_t> fixed_size_;
+  const absl::optional<gfx::InsetsF> insets_;
 };
 
 // Helpers ---------------------------------------------------------------------
@@ -119,38 +144,6 @@ void AnimateOut(views::View* view,
             observer);
 }
 
-void ApplyStyle(views::Label* label, LabelStyle style) {
-  label->SetAutoColorReadabilityEnabled(false);
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-
-  switch (style) {
-    case LabelStyle::kBadge:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
-                                       gfx::Font::Weight::MEDIUM));
-      break;
-    case LabelStyle::kBody:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
-                                       gfx::Font::Weight::NORMAL));
-      break;
-    case LabelStyle::kChip:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 13,
-                                       gfx::Font::Weight::NORMAL));
-      break;
-    case LabelStyle::kHeader:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 16,
-                                       gfx::Font::Weight::MEDIUM));
-      break;
-  }
-}
-
-std::unique_ptr<views::Label> CreateLabel(LabelStyle style,
-                                          const std::u16string& text) {
-  auto label = std::make_unique<views::Label>(text);
-  ApplyStyle(label.get(), style);
-  return label;
-}
-
 std::unique_ptr<views::Background> CreateCircleBackground(SkColor color,
                                                           size_t fixed_size) {
   return views::CreateBackgroundFromPainter(
@@ -164,5 +157,9 @@ std::unique_ptr<views::Background> CreateCircleBackground(
       std::make_unique<CirclePainter>(color, insets));
 }
 
-}  // namespace holding_space_util
-}  // namespace ash
+std::unique_ptr<views::HighlightPathGenerator> CreateHighlightPathGenerator(
+    base::RepeatingCallback<gfx::RRectF()> callback) {
+  return std::make_unique<CallbackPathGenerator>(std::move(callback));
+}
+
+}  // namespace ash::holding_space_util

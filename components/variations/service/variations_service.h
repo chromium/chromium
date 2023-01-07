@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/observer_list.h"
@@ -27,8 +27,6 @@
 #include "components/variations/variations_seed_store.h"
 #include "components/version_info/version_info.h"
 #include "components/web_resource/resource_request_allowed_notifier.h"
-#include "net/url_request/redirect_info.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -61,12 +59,8 @@ namespace variations {
 class DeviceVariationsRestrictionByPolicyApplicator;
 #endif
 
-// If enabled, seed fetches will be retried over HTTP after an HTTPS request
-// fails.
-extern const base::Feature kHttpRetryFeature;
-
-// Used to setup field trials based on stored variations seed data, and fetch
-// new seed data from the variations server.
+// Used to (a) set up field trials based on stored variations seed data and (b)
+// fetch new seed data from the variations server.
 class VariationsService
     : public web_resource::ResourceRequestAllowedNotifier::Observer {
  public:
@@ -88,6 +82,9 @@ class VariationsService
    protected:
     virtual ~Observer() {}
   };
+
+  VariationsService(const VariationsService&) = delete;
+  VariationsService& operator=(const VariationsService&) = delete;
 
   ~VariationsService() override;
 
@@ -189,16 +186,14 @@ class VariationsService
     return resource_request_allowed_notifier_.get();
   }
 
-  // Wrapper around VariationsFieldTrialCreator::SetupFieldTrials().
-  bool SetupFieldTrials(
-      const char* kEnableGpuBenchmarking,
-      const char* kEnableFeatures,
-      const char* kDisableFeatures,
+  // Wrapper around VariationsFieldTrialCreator::SetUpFieldTrials().
+  bool SetUpFieldTrials(
       const std::vector<std::string>& variation_ids,
+      const std::string& command_line_variation_ids,
       const std::vector<base::FeatureList::FeatureOverrideInfo>&
           extra_overrides,
       std::unique_ptr<base::FeatureList> feature_list,
-      variations::PlatformFieldTrials* platform_field_trials);
+      PlatformFieldTrials* platform_field_trials);
 
   // Overrides cached UI strings on the resource bundle once it is initialized.
   void OverrideCachedUIStrings();
@@ -218,6 +213,9 @@ class VariationsService
                         const std::string& osname_server_param_override);
 
  protected:
+  // Gets the serial number of the most recent Finch seed. Virtual for testing.
+  virtual const std::string& GetLatestSerialNumber();
+
   // Starts the fetching process once, where |OnURLFetchComplete| is called with
   // the response. This calls DoFetchToURL with the set url.
   virtual void DoActualFetch();
@@ -229,18 +227,18 @@ class VariationsService
 
   // Stores the seed to prefs. Set as virtual and protected so that it can be
   // overridden by tests.
-  virtual bool StoreSeed(const std::string& seed_data,
-                         const std::string& seed_signature,
-                         const std::string& country_code,
+  // Note: Strings are passed by value to support std::move() semantics.
+  virtual void StoreSeed(std::string seed_data,
+                         std::string seed_signature,
+                         std::string country_code,
                          base::Time date_fetched,
                          bool is_delta_compressed,
                          bool is_gzip_compressed);
 
-  // Create an entropy provider based on low entropy. This is used to create
-  // trials for studies that should only depend on low entropy, such as studies
-  // that send experiment IDs to Google web properties. Virtual for testing.
-  virtual std::unique_ptr<const base::FieldTrial::EntropyProvider>
-  CreateLowEntropyProvider();
+  // Processes the result of StoreSeed().
+  void OnSeedStoreResult(bool is_delta_compressed,
+                         bool store_success,
+                         VariationsSeed seed);
 
   // Creates the VariationsService with the given |local_state| prefs service
   // and |state_manager|. Does not take ownership of |state_manager|. Caller
@@ -316,22 +314,10 @@ class VariationsService
   void FetchVariationsSeed();
 
   // Notify any observers of this service based on the simulation |result|.
-  void NotifyObservers(
-      const variations::VariationsSeedSimulator::Result& result);
+  void NotifyObservers(const VariationsSeedSimulator::Result& result);
 
   // Called by SimpleURLLoader when |pending_seed_request_| load completes.
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
-
-  // Called by SimpleURLLoader when |pending_seed_request_| load is redirected.
-  void OnSimpleLoaderRedirect(
-      const net::RedirectInfo& redirect_info,
-      const network::mojom::URLResponseHead& response_head,
-      std::vector<std::string>* to_be_removed_headers);
-
-  // Handles post-fetch events.
-  void OnSimpleLoaderCompleteOrRedirect(
-      std::unique_ptr<std::string> response_body,
-      bool was_redirect);
 
   // Retry the fetch over HTTP, called by OnSimpleLoaderComplete when a request
   // fails. Returns true is the fetch was successfully started, this does not
@@ -343,9 +329,8 @@ class VariationsService
 
   // Performs a variations seed simulation with the given |seed| and |version|
   // and logs the simulation results as histograms.
-  void PerformSimulationWithVersion(
-      std::unique_ptr<variations::VariationsSeed> seed,
-      const base::Version& version);
+  void PerformSimulationWithVersion(const VariationsSeed& seed,
+                                    const base::Version& version);
 
   // Encrypts a string using the encrypted_messages component, input is passed
   // in as |plaintext|, outputs a serialized EncryptedMessage protobuf as
@@ -365,15 +350,15 @@ class VariationsService
   std::unique_ptr<VariationsServiceClient> client_;
 
   // The pref service used to store persist the variations seed.
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 
   // Used for instantiating entropy providers for variations seed simulation.
   // Weak pointer.
-  metrics::MetricsStateManager* state_manager_;
+  raw_ptr<metrics::MetricsStateManager> state_manager_;
 
   // Used to obtain policy-related preferences. Depending on the platform, will
   // either be Local State or Profile prefs.
-  PrefService* policy_pref_service_;
+  raw_ptr<PrefService> policy_pref_service_;
 
   // Contains the scheduler instance that handles timing for requests to the
   // server. Initially NULL and instantiated when the initial fetch is
@@ -397,12 +382,11 @@ class VariationsService
   GURL insecure_variations_server_url_;
 
   // Tracks whether the initial request to the variations server had completed.
-  bool initial_request_completed_;
+  bool initial_request_completed_ = false;
 
-  // Indicates that the next request to the variations service shouldn't specify
-  // that it supports delta compression. Set to true when a delta compressed
-  // response encountered an error.
-  bool disable_deltas_for_next_request_;
+  // Tracks whether any errors resolving delta compression were encountered
+  // since the last time a seed was fetched successfully.
+  bool delta_error_since_last_success_ = false;
 
   // Helper class used to tell this service if it's allowed to make network
   // resource requests.
@@ -414,7 +398,7 @@ class VariationsService
   base::TimeTicks last_request_started_time_;
 
   // The number of requests to the variations server that have been performed.
-  int request_count_;
+  int request_count_ = 0;
 
   // List of observers of the VariationsService.
   base::ObserverList<Observer>::Unchecked observer_list_;
@@ -426,7 +410,7 @@ class VariationsService
   VariationsFieldTrialCreator field_trial_creator_;
 
   // True if the last request was a retry over http.
-  bool last_request_was_http_retry_;
+  bool last_request_was_http_retry_ = false;
 
   // When not empty, contains an override for the os name in the variations
   // server url.
@@ -440,8 +424,6 @@ class VariationsService
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<VariationsService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsService);
 };
 
 }  // namespace variations

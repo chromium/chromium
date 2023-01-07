@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,11 +30,11 @@ import java.io.FileOutputStream;
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ThreadStrictModeInterceptorTest {
     /**
-     * Test that the penalty is not notified about whitelisted strict mode exceptions.
+     * Test that the penalty is not notified about permitted strict mode exceptions.
      */
     @Test
     @SmallTest
-    public void testWhitelisted() {
+    public void testPermitted() {
         CallbackHelper strictModeDetector = new CallbackHelper();
         ThreadStrictModeInterceptor.Builder threadInterceptor =
                 new ThreadStrictModeInterceptor.Builder();
@@ -52,11 +52,11 @@ public class ThreadStrictModeInterceptorTest {
     }
 
     /**
-     * Test that the penalty is notified about non-whitelisted strict mode exceptions.
+     * Test that the penalty is notified about unpermitted strict mode exceptions.
      */
     @Test
     @SmallTest
-    public void testNotWhitelisted() {
+    public void testNotPermitted() {
         CallbackHelper strictModeDetector = new CallbackHelper();
         ThreadStrictModeInterceptor.Builder threadInterceptor =
                 new ThreadStrictModeInterceptor.Builder();

@@ -1,0 +1,35 @@
+caption: Control use of the Web Bluetooth API
+default: null
+desc: |-
+  Setting the policy to 3 lets websites ask for access to nearby Bluetooth devices. Setting the policy to 2 denies access to nearby Bluetooth devices.
+
+        Leaving the policy unset lets sites ask for access, but users can change this setting.
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Do not allow any site to request access to Bluetooth devices via the Web
+    Bluetooth API
+  name: BlockWebBluetooth
+  value: 2
+- caption: Allow sites to ask the user to grant access to a nearby Bluetooth device
+  name: AskWebBluetooth
+  value: 3
+owners:
+- engedy@chromium.org
+- file://components/permissions/PERMISSIONS_OWNERS
+schema:
+  enum:
+  - 2
+  - 3
+  type: integer
+supported_on:
+- chrome_os:50-
+- android:50-
+- chrome.*:50-
+tags:
+- website-sharing
+type: int-enum

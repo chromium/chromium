@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,11 +66,16 @@ TEST_F(LayoutTableTest, OverflowWithCollapsedBorders) {
 
   auto* table = GetTableByElementId("table");
 
-  // The table's border box rect covers all collapsed borders of the first
-  // row, and bottom collapsed borders of the last row.
   auto expected_border_box_rect = table->PhysicalContentBoxRect();
-  expected_border_box_rect.ExpandEdges(LayoutUnit(2), LayoutUnit(5),
-                                       LayoutUnit(0), LayoutUnit(1));
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    expected_border_box_rect.ExpandEdges(LayoutUnit(2), LayoutUnit(10),
+                                         LayoutUnit(0), LayoutUnit(10));
+  } else {
+    // The table's border box rect covers all collapsed borders of the first
+    // row, and bottom collapsed borders of the last row.
+    expected_border_box_rect.ExpandEdges(LayoutUnit(2), LayoutUnit(5),
+                                         LayoutUnit(0), LayoutUnit(1));
+  }
   EXPECT_EQ(expected_border_box_rect, table->PhysicalBorderBoxRect());
 
   // The table's self visual overflow rect covers all collapsed borders, but
@@ -80,16 +85,7 @@ TEST_F(LayoutTableTest, OverflowWithCollapsedBorders) {
                                             LayoutUnit(0), LayoutUnit(10));
   EXPECT_EQ(expected_self_visual_overflow,
             table->PhysicalSelfVisualOverflowRect());
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
-    EXPECT_EQ(table->PhysicalContentBoxRect(),
-              table->PhysicalLayoutOverflowRect());
-  } else {
-    // In Legacy, visual overflow incorrectly does not include borders
-    // that extend beyond table boundaries.
-    // For this table, its layout overflow equals self visual overflow.
-    EXPECT_EQ(expected_self_visual_overflow,
-              table->PhysicalLayoutOverflowRect());
-  }
+  EXPECT_EQ(expected_self_visual_overflow, table->PhysicalLayoutOverflowRect());
   // The table's visual overflow covers self visual overflow and content visual
   // overflows.
   auto expected_visual_overflow = table->PhysicalContentBoxRect();
@@ -140,15 +136,15 @@ TEST_F(LayoutTableTest, CollapsedBorders) {
 
   // Cells have wider borders.
   auto* table3 = GetTableByElementId("table3");
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     // Cell E's border-top won.
     EXPECT_EQ(LayoutUnit(7.5), table3->BorderBefore());
     // Cell H's border-bottom won.
     EXPECT_EQ(20, table3->BorderAfter());
-    // Cell E's border-left won.
-    EXPECT_EQ(LayoutUnit(10.5), table3->BorderStart());
-    // Cell F's border-bottom won.
-    EXPECT_EQ(LayoutUnit(12.5), table3->BorderEnd());
+    // Cell G's border-left won.
+    EXPECT_EQ(LayoutUnit(15), table3->BorderStart());
+    // Cell H's border-right won.
+    EXPECT_EQ(LayoutUnit(20), table3->BorderEnd());
   } else {
     // Cell E's border-top won.
     EXPECT_EQ(7, table3->BorderBefore());
@@ -293,20 +289,33 @@ TEST_F(LayoutTableTest, OutOfOrderHeadAndBody) {
     <table>
   )HTML");
   auto* table = GetTableInterfaceByElementId("table");
-  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                GetLayoutObjectByElementId("head")),
-            table->TopSectionInterface());
-  // TablesNG does not implement these APIs. They are only used by Legacy.
-  if (!RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("body")),
-              table->TopNonEmptySectionInterface());
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("body")),
-              table->BottomSectionInterface());
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("body")),
-              table->BottomNonEmptySectionInterface());
+  auto* head_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("head"));
+  auto* body_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("body"));
+  ASSERT_TRUE(table);
+  ASSERT_TRUE(head_section);
+  ASSERT_TRUE(body_section);
+
+  EXPECT_EQ(head_section, table->FirstSectionInterface());
+  EXPECT_EQ(body_section, table->LastSectionInterface());
+
+  EXPECT_EQ(body_section,
+            table->NextSectionInterface(head_section, kDoNotSkipEmptySections));
+  EXPECT_EQ(nullptr,
+            table->NextSectionInterface(body_section, kDoNotSkipEmptySections));
+
+  EXPECT_EQ(body_section, table->FirstNonEmptySectionInterface());
+  EXPECT_EQ(body_section, table->LastNonEmptySectionInterface());
+
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    // Legacy does not implement this API. It is only used by TablesNG.
+    EXPECT_EQ(nullptr, table->PreviousSectionInterface(head_section,
+                                                       kSkipEmptySections));
+    EXPECT_EQ(nullptr, table->PreviousSectionInterface(body_section,
+                                                       kSkipEmptySections));
+    EXPECT_EQ(head_section, table->PreviousSectionInterface(
+                                body_section, kDoNotSkipEmptySections));
   }
 }
 
@@ -318,20 +327,33 @@ TEST_F(LayoutTableTest, OutOfOrderFootAndBody) {
     <table>
   )HTML");
   auto* table = GetTableInterfaceByElementId("table");
-  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                GetLayoutObjectByElementId("body")),
-            table->TopSectionInterface());
-  // TablesNG does not implement these APIs. They are only used by Legacy.
-  if (!RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("body")),
-              table->TopNonEmptySectionInterface());
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("foot")),
-              table->BottomSectionInterface());
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("body")),
-              table->BottomNonEmptySectionInterface());
+  auto* body_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("body"));
+  auto* foot_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("foot"));
+  ASSERT_TRUE(table);
+  ASSERT_TRUE(body_section);
+  ASSERT_TRUE(foot_section);
+
+  EXPECT_EQ(body_section, table->FirstSectionInterface());
+  EXPECT_EQ(foot_section, table->LastSectionInterface());
+
+  EXPECT_EQ(nullptr,
+            table->NextSectionInterface(body_section, kSkipEmptySections));
+  EXPECT_EQ(foot_section,
+            table->NextSectionInterface(body_section, kDoNotSkipEmptySections));
+  EXPECT_EQ(nullptr,
+            table->NextSectionInterface(foot_section, kDoNotSkipEmptySections));
+
+  EXPECT_EQ(body_section, table->FirstNonEmptySectionInterface());
+  EXPECT_EQ(body_section, table->LastNonEmptySectionInterface());
+
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    // Legacy does not implement this API. It is only used by TablesNG.
+    EXPECT_EQ(body_section, table->PreviousSectionInterface(
+                                foot_section, kSkipEmptySections));
+    EXPECT_EQ(nullptr, table->PreviousSectionInterface(body_section,
+                                                       kSkipEmptySections));
   }
 }
 
@@ -344,20 +366,34 @@ TEST_F(LayoutTableTest, OutOfOrderHeadFootAndBody) {
     <table>
   )HTML");
   auto* table = GetTableInterfaceByElementId("table");
-  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                GetLayoutObjectByElementId("head")),
-            table->TopSectionInterface());
-  // TablesNG does not implement these APIs. They are only used by Legacy.
-  if (!RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("head")),
-              table->TopNonEmptySectionInterface());
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("foot")),
-              table->BottomSectionInterface());
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("foot")),
-              table->BottomNonEmptySectionInterface());
+  auto* head_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("head"));
+  auto* body_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("body"));
+  auto* foot_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("foot"));
+  ASSERT_TRUE(table);
+  ASSERT_TRUE(head_section);
+  ASSERT_TRUE(body_section);
+  ASSERT_TRUE(foot_section);
+
+  EXPECT_EQ(head_section, table->FirstSectionInterface());
+  EXPECT_EQ(foot_section, table->LastSectionInterface());
+
+  EXPECT_EQ(body_section,
+            table->NextSectionInterface(head_section, kSkipEmptySections));
+  EXPECT_EQ(foot_section,
+            table->NextSectionInterface(body_section, kSkipEmptySections));
+
+  EXPECT_EQ(head_section, table->FirstNonEmptySectionInterface());
+  EXPECT_EQ(foot_section, table->LastNonEmptySectionInterface());
+
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    // Legacy does not implement this API. It is only used by TablesNG.
+    EXPECT_EQ(body_section, table->PreviousSectionInterface(
+                                foot_section, kSkipEmptySections));
+    EXPECT_EQ(head_section, table->PreviousSectionInterface(
+                                body_section, kSkipEmptySections));
   }
 }
 
@@ -380,7 +416,7 @@ TEST_F(LayoutTableTest, VisualOverflowCleared) {
 
 TEST_F(LayoutTableTest, HasNonCollapsedBorderDecoration) {
   // TablesNG does not support DirtiedRowsAndEffectiveColumns.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
 
   SetBodyInnerHTML("<table id='table'></table>");

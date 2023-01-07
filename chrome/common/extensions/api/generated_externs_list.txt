@@ -1,5 +1,6 @@
 # All APIs that have their externs generated.
-# TODO(rdevlin.cronin): Add more!
+# TODO(crbug.com/1368872): Remove these as we migrate all consumers towards
+# typescript definitions.
 accessibility_features.json
 accessibility_private.json
 activity_log_private.json

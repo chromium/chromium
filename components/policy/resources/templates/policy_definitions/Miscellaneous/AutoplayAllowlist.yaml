@@ -1,0 +1,25 @@
+caption: Allow media autoplay on a allowlist of URL patterns
+desc: |-
+  Setting the policy lets videos play automatically (without user consent) with audio content in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If <ph name="AUTOPLAY_ALLOWED_POLICY_NAME">AutoplayAllowed</ph> policy is set to True, then this policy has no effect. If <ph name="AUTOPLAY_ALLOWED_POLICY_NAME">AutoplayAllowed</ph> is set to False, then any URL patterns set in this policy can still play. If this policy changes while <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is running, it only applies to newly opened tabs.
+
+        For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- fbeaufort@chromium.org
+- beccahughes@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:86-
+- chrome_os:86-
+tags: []
+type: list

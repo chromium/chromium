@@ -1,8 +1,10 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "crypto/signature_verifier.h"
+
+#include <memory>
 
 #include "base/check_op.h"
 #include "crypto/openssl_util.h"
@@ -49,7 +51,7 @@ bool SignatureVerifier::VerifyInit(SignatureAlgorithm signature_algorithm,
   if (verify_context_)
     return false;
 
-  verify_context_.reset(new VerifyContext);
+  verify_context_ = std::make_unique<VerifyContext>();
   signature_.assign(signature.data(), signature.data() + signature.size());
 
   CBS cbs;

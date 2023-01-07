@@ -20,7 +20,7 @@ function postMessageToMain(t, c) {
 }
 self.onmessage = function(e) {
     var aCanvas = new OffscreenCanvas(10, 10);
-    var ctx = aCanvas.getContext('2d');
+    var ctx = aCanvas.getContext('2d', {willReadFrequently: true});
     
     // createImageData(sx, sy)
     try {

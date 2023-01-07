@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,8 +96,11 @@ DWORD DesktopDropTargetWin::OnDrop(IDataObject* data_object,
   std::unique_ptr<ui::DropTargetEvent> event;
   DragDropDelegate* delegate;
   Translate(data_object, key_state, position, effect, &data, &event, &delegate);
-  if (delegate)
-    drag_operation = delegate->OnPerformDrop(*event, std::move(data));
+  if (delegate) {
+    auto drop_cb = delegate->GetDropCallback(*event);
+    if (drop_cb)
+      std::move(drop_cb).Run(std::move(data), drag_operation);
+  }
   if (target_window_) {
     target_window_->RemoveObserver(this);
     target_window_ = nullptr;

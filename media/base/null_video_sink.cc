@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace media {
 
@@ -80,7 +80,7 @@ void NullVideoSink::CallRender() {
   } else {
     // If we're behind, find the next nearest on time interval.
     delay = current_render_time_ - now;
-    if (delay < base::TimeDelta())
+    if (delay.is_negative())
       delay = interval_ + (delay % interval_);
     current_render_time_ = now + delay;
     last_now_ = now;

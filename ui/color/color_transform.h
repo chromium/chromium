@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_utils.h"
@@ -59,8 +59,8 @@ COMPONENT_EXPORT(COLOR)
 ColorTransform BlendForMinContrast(
     ColorTransform foreground_transform,
     ColorTransform background_transform,
-    base::Optional<ColorTransform> high_contrast_foreground_transform =
-        base::nullopt,
+    absl::optional<ColorTransform> high_contrast_foreground_transform =
+        absl::nullopt,
     float contrast_ratio = color_utils::kMinimumReadableContrastRatio);
 
 // A transform which blends the result of |transform| toward the color with max
@@ -85,10 +85,6 @@ COMPONENT_EXPORT(COLOR) ColorTransform ContrastInvert(ColorTransform transform);
 COMPONENT_EXPORT(COLOR)
 ColorTransform DeriveDefaultIconColor(ColorTransform transform);
 
-// A transform which returns the color |id| from set |set_id|.
-COMPONENT_EXPORT(COLOR)
-ColorTransform FromOriginalColorFromSet(ColorId id, ColorSetId set_id);
-
 // A transform which returns the transform's input color (i.e. does nothing).
 // This is useful to supply as an argument to other transforms to control how
 // the input color is routed.
@@ -98,6 +94,11 @@ COMPONENT_EXPORT(COLOR) ColorTransform FromTransformInput();
 // |transform|.
 COMPONENT_EXPORT(COLOR)
 ColorTransform GetColorWithMaxContrast(ColorTransform transform);
+
+// A transform which returns the end point color with min contrast against the
+// result of |transform|.
+COMPONENT_EXPORT(COLOR)
+ColorTransform GetEndpointColorWithMinContrast(ColorTransform transform);
 
 // A transform which returns the resulting paint color of the result of
 // |foreground_transform| over the result of |background_transform|.
@@ -117,7 +118,19 @@ ColorTransform SelectBasedOnDarkInput(
 COMPONENT_EXPORT(COLOR)
 ColorTransform SetAlpha(ColorTransform transform, SkAlpha alpha);
 
-#if defined(OS_MAC)
+// A transform that gets a Google color that matches the hue of `color` and
+// contrasts similarly against `background_color`, subject to being at least
+// `min_contrast`. If `color` isn't very saturated, grey will be used instead.
+COMPONENT_EXPORT(COLOR)
+ColorTransform PickGoogleColor(ColorTransform color,
+                               ColorTransform background_color,
+                               float min_contrast = 0.0f);
+
+// A transform that returns the HSL shifted color given the input color.
+COMPONENT_EXPORT(COLOR)
+ColorTransform HSLShift(ColorTransform color, color_utils::HSL hsl);
+
+#if BUILDFLAG(IS_MAC)
 COMPONENT_EXPORT(COLOR)
 ColorTransform ApplySystemControlTintIfNeeded();
 #endif

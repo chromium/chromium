@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,9 +69,9 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }  // namespace
 
 QuicChromiumPacketWriter::ReusableIOBuffer::ReusableIOBuffer(size_t capacity)
-    : IOBuffer(capacity), capacity_(capacity), size_(0) {}
+    : IOBuffer(capacity), capacity_(capacity) {}
 
-QuicChromiumPacketWriter::ReusableIOBuffer::~ReusableIOBuffer() {}
+QuicChromiumPacketWriter::ReusableIOBuffer::~ReusableIOBuffer() = default;
 
 void QuicChromiumPacketWriter::ReusableIOBuffer::Set(const char* buffer,
                                                      size_t buf_len) {
@@ -81,24 +81,18 @@ void QuicChromiumPacketWriter::ReusableIOBuffer::Set(const char* buffer,
   std::memcpy(data(), buffer, buf_len);
 }
 
-QuicChromiumPacketWriter::QuicChromiumPacketWriter() {}
-
 QuicChromiumPacketWriter::QuicChromiumPacketWriter(
     DatagramClientSocket* socket,
     base::SequencedTaskRunner* task_runner)
     : socket_(socket),
-      delegate_(nullptr),
-      packet_(
-          base::MakeRefCounted<ReusableIOBuffer>(quic::kMaxOutgoingPacketSize)),
-      write_in_progress_(false),
-      force_write_blocked_(false),
-      retry_count_(0) {
+      packet_(base::MakeRefCounted<ReusableIOBuffer>(
+          quic::kMaxOutgoingPacketSize)) {
   retry_timer_.SetTaskRunner(task_runner);
   write_callback_ = base::BindRepeating(
       &QuicChromiumPacketWriter::OnWriteComplete, weak_factory_.GetWeakPtr());
 }
 
-QuicChromiumPacketWriter::~QuicChromiumPacketWriter() {}
+QuicChromiumPacketWriter::~QuicChromiumPacketWriter() = default;
 
 void QuicChromiumPacketWriter::set_force_write_blocked(
     bool force_write_blocked) {
@@ -198,6 +192,10 @@ void QuicChromiumPacketWriter::SetWritable() {
   write_in_progress_ = false;
 }
 
+absl::optional<int> QuicChromiumPacketWriter::MessageTooBigErrorCode() const {
+  return ERR_MSG_TOO_BIG;
+}
+
 void QuicChromiumPacketWriter::OnWriteComplete(int rv) {
   DCHECK_NE(rv, ERR_IO_PENDING);
   write_in_progress_ = false;
@@ -242,7 +240,7 @@ bool QuicChromiumPacketWriter::MaybeRetryAfterWriteError(int rv) {
   }
 
   retry_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(UINT64_C(1) << retry_count_),
+      FROM_HERE, base::Milliseconds(UINT64_C(1) << retry_count_),
       base::BindOnce(&QuicChromiumPacketWriter::RetryPacketAfterNoBuffers,
                      weak_factory_.GetWeakPtr()));
   retry_count_++;

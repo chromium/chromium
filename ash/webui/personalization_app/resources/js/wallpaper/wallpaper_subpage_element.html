@@ -1,0 +1,64 @@
+<style include="common">
+  #wallpaperContainer {
+    display: grid;
+    grid-template-areas:
+      '. leftspacer selected   rightspacer .'
+      '. leftspacer .          rightspacer .'
+      '. leftspacer imagegrid  rightspacer .'
+      '. leftspacer .          rightspacer .';
+    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
+    grid-template-rows: 172px 12px minmax(0, 1fr) 32px;
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  #leftspacer {
+    grid-area: leftspacer;
+  }
+
+  #rightspacer {
+    grid-area: rightspacer;
+  }
+
+  wallpaper-selected {
+    background-color: var(--cros-bg-color);
+    grid-area: selected;
+    position: sticky;
+    top: 56px;
+    z-index: 1;
+  }
+
+  wallpaper-collections,
+  wallpaper-images,
+  google-photos-collection,
+  local-images {
+    grid-area: imagegrid;
+  }
+</style>
+<div id="wallpaperContainer">
+  <!-- Prevent left margin from collapsing on narrow window in RTL -->
+  <div id="leftspacer"></div>
+  <wallpaper-selected path="[[path]]" collection-id="[[queryParams.id]]"
+      google-photos-album-id="[[queryParams.googlePhotosAlbumId]]"">
+  </wallpaper-selected>
+  <!-- do not use hidden$ here - need to listen on property change in
+          these elements. -->
+  <wallpaper-collections hidden="[[!shouldShowCollections_(path)]]">
+  </wallpaper-collections>
+  <template is="dom-if" if="[[shouldShowCollectionImages_(path)]]" restamp>
+    <wallpaper-images collection-id="[[queryParams.id]]"></wallpaper-images>
+  </template>
+  <template is="dom-if" if="[[isGooglePhotosIntegrationEnabled_()]]">
+    <google-photos-collection path="[[path]]"
+        album-id="[[queryParams.googlePhotosAlbumId]]"
+        hidden="[[!shouldShowGooglePhotosCollection_(path)]]">
+    </google-photos-collection>
+  </template>
+  <local-images hidden="[[!shouldShowLocalCollection_(path)]]">
+  </local-images>
+  <!-- Prevent the right margin from collapsing when window gets very
+           narrow -->
+  <div id="rightspacer"></div>
+  <wallpaper-fullscreen></wallpaper-fullscreen>
+</div>

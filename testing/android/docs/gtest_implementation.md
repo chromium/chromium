@@ -23,7 +23,7 @@ test("sample_gtest") {
 ```
 
 This uses gn's native
-[shared_library](https://chromium.googlesource.com/chromium/src/+/master/tools/gn/docs/reference.md#shared_library_Declare-a-shared-library-target)
+[shared_library](https://chromium.googlesource.com/chromium/src/+/main/tools/gn/docs/reference.md#shared_library_Declare-a-shared-library-target)
 target type along with the
 [unittest_apk](https://codesearch.chromium.org/chromium/src/build/config/android/rules.gni?type=cs&q=file:%5Esrc%5C/build%5C/config%5C/android%5C/rules.gni$+template%5C(%5C"unittest_apk%5C"%5C)&sq=package:chromium)
 template to build an APK containing:
@@ -111,7 +111,7 @@ test("sample_gtest_executable") {
 ```
 
 This uses gn's native
-[executable](https://chromium.googlesource.com/chromium/src/+/master/tools/gn/docs/reference.md#executable_Declare-an-executable-target)
+[executable](https://chromium.googlesource.com/chromium/src/+/main/tools/gn/docs/reference.md#executable_Declare-an-executable-target)
 target type, then copies the resulting executable and any requisite shared libraries
 to ```${root_out_dir}/${target_name}__dist``` (e.g. ```out/Debug/breakpad_unittests__dist```).
 

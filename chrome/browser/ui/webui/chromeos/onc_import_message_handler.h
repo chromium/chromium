@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,16 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/onc/onc_certificate_importer_impl.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace net {
 class NSSCertDatabase;
 }
 
 namespace chromeos {
-
-namespace onc {
-class CertificateImporterImpl;
-}
 
 class OncImportMessageHandler : public content::WebUIMessageHandler {
  public:
@@ -38,7 +33,7 @@ class OncImportMessageHandler : public content::WebUIMessageHandler {
   void Respond(const std::string& callback_id,
                const std::string& result,
                bool is_error);
-  void OnImportONC(const base::ListValue* list);
+  void OnImportONC(const base::Value::List& list);
   void ImportONCToNSSDB(const std::string& callback_id,
                         const std::string& onc_blob,
                         net::NSSCertDatabase* nssdb);

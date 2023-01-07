@@ -1,0 +1,176 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Cros histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Cros.CrOSActionRecorderEvent" enum="CrOSActionRecorderEvent"
+    expires_after="2022-05-01">
+  <owner>charleszhao@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    This histogram is emitted each time when CrOSAction is recorded by the
+    CrOSActionRecorder. For each CrOSAction multiple values can be emitted,
+    corresponding to different events happened during the action processing by
+    CrOSActionRecorder.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.ArchiveType" enum="CrosDisksArchiveType"
+    expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Archive type that the ChromeOS cros-disks daemon is requested to mount.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.DeviceMediaType" enum="CrosDisksDeviceMediaType"
+    expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Media type of removable device that the ChromeOS cros-disks daemon is
+    requested to mount.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.FilesystemType" enum="CrosDisksFilesystemType"
+    expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    File system type of external media that the ChromeOS cros-disks daemon is
+    requested to mount.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.Fuse.FuseArchive" enum="FuseArchiveError"
+    expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the fuse-archive program, which is called every time a
+    user opens various archive files in ChromeOS Files App.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.Fuse.FuseZip" enum="FuseZipError"
+    expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the ZIP mounting program mount-zip, which is called every
+    time a user opens a ZIP archive in ChromeOS Files App.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.Fuse.Rar2fs" enum="Rar2fsError"
+    expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the RAR mounting program rar2fs, which is called every
+    time a user opens a RAR archive in ChromeOS Files App.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.ReadOnlyFileSystemAfterError"
+    enum="CrosDisksFilesystemType" expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    File system type of external media that the ChromeOS cros-disks daemon had
+    to mount in read-only mode because there was an error when trying to mount
+    them in read-write mode. See crbug.com/1366204.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisksClient.FormatCompletedError"
+    enum="CrosDisksClientFormatError" expires_after="2023-04-09">
+  <owner>austinct@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the ChromeOS cros-disks daemon when formatting an external
+    drive.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisksClient.FormatTime" units="ms"
+    expires_after="2023-03-19">
+  <owner>austinct@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time taken by the ChromeOS cros-disks daemon to format an external drive.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisksClient.MountCompletedError"
+    enum="CrosDisksClientMountError" expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the ChromeOS cros-disks daemon when mounting a file
+    system.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisksClient.MountErrorMountType"
+    enum="CrosDisksMountTypeError" expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Combination of (mount type, mount error) returned by the ChromeOS cros-disks
+    daemon.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisksClient.MountTime" units="ms"
+    expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time taken by the ChromeOS cros-disks daemon to mount a file system.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisksClient.UnmountError" enum="CrosDisksClientMountError"
+    expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the ChromeOS cros-disks daemon when unmounting a file
+    system.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisksClient.UnmountTime" units="ms"
+    expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time taken by the ChromeOS cros-disks daemon to unmount a file system.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -26,7 +26,7 @@ authorization from the authors.
 -->
 <!-- This file describes version 4 of XFixes. -->
 <xcb header="xfixes" extension-xname="XFIXES" extension-name="XFixes"
-    major-version="5" minor-version="0">
+    major-version="6" minor-version="0">
   <import>xproto</import>
   <import>render</import>
   <import>shape</import>
@@ -359,4 +359,24 @@ authorization from the authors.
   <request name="DeletePointerBarrier" opcode="32">
     <field type="BARRIER" name="barrier" />
   </request>
+
+  <!-- Version 6 -->
+
+  <enum name="ClientDisconnectFlags">
+    <item name="Default"><value>0</value></item>
+    <item name="Terminate"><bit>0</bit></item>
+  </enum>
+
+  <request name="SetClientDisconnectMode" opcode="33">
+    <field type="CARD32" name="disconnect_mode" mask="ClientDisconnectFlags" />
+  </request>
+
+  <request name="GetClientDisconnectMode" opcode="34">
+    <reply>
+      <pad bytes="1" />
+      <field type="CARD32" name="disconnect_mode" mask="ClientDisconnectFlags" />
+      <pad bytes="20" />
+    </reply>
+  </request>
+
 </xcb>

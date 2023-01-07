@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,8 @@ class UploadBytesElementReaderTest : public PlatformTest {
  protected:
   void SetUp() override {
     bytes_.assign({'1', '2', '3', 'a', 'b', 'c'});
-    reader_.reset(new UploadBytesElementReader(&bytes_[0], bytes_.size()));
+    reader_ =
+        std::make_unique<UploadBytesElementReader>(&bytes_[0], bytes_.size());
     ASSERT_THAT(reader_->Init(CompletionOnceCallback()), IsOk());
     EXPECT_EQ(bytes_.size(), reader_->GetContentLength());
     EXPECT_EQ(bytes_.size(), reader_->BytesRemaining());

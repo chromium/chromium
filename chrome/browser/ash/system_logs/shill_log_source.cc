@@ -1,20 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/system_logs/shill_log_source.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
-#include "chromeos/dbus/shill/shill_device_client.h"
-#include "chromeos/dbus/shill/shill_ipconfig_client.h"
-#include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/network_event_log.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chrome/browser/ash/system_logs/shill_log_pii_identifiers.h"
+#include "chromeos/ash/components/dbus/shill/shill_device_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -35,41 +36,10 @@ std::string GetString(const base::Value* value) {
   return value->GetString();
 }
 
-// Masked properties match src/platform2/modem-utilities/connectivity.
-// Note: We rely on intelligent anonymous replacements for IP and MAC addresses
-// and BSSID in components/feedback/anonymizer_tool.cc.
-constexpr std::array<const char*, 20> kMaskedList = {
-    // Masked for devices only in ScrubAndExpandProperties:
-    // shill::kAddress,
-    shill::kCellularPPPUsernameProperty,
-    shill::kEapAnonymousIdentityProperty,
-    shill::kEapIdentityProperty,
-    shill::kEapPinProperty,
-    shill::kEapSubjectAlternativeNameMatchProperty,
-    shill::kEapSubjectMatchProperty,
-    shill::kEquipmentIdProperty,
-    shill::kEsnProperty,
-    shill::kIccidProperty,
-    shill::kImeiProperty,
-    shill::kImsiProperty,
-    shill::kMdnProperty,
-    shill::kMeidProperty,
-    shill::kMinProperty,
-    // Replaced with logging id for services only in ScrubAndExpandProperties:
-    // shill::kName,
-    shill::kPPPoEUsernameProperty,
-    shill::kSSIDProperty,
-    shill::kUsageURLProperty,
-    shill::kWifiHexSsid,
-    // UIData extracts properties into sub dictionaries, so look for the base
-    // property names.
-    "HexSSID",
-    "Identity",
-};
-
 constexpr char kMaskedString[] = "*** MASKED ***";
 
-// Recursively scrubs dictionaries, masking any values in kMaskedList.
+// Recursively scrubs dictionaries, masking any values in
+// system_logs::MakeFixedFlatMap.
 void ScrubDictionary(base::Value* dict) {
   if (!dict->is_dict())
     return;
@@ -77,7 +47,9 @@ void ScrubDictionary(base::Value* dict) {
     base::Value& value = entry.second;
     if (value.is_dict()) {
       ScrubDictionary(&entry.second);
-    } else if (base::Contains(kMaskedList, entry.first) &&
+    } else if (base::Contains(system_logs::kShillPIIMaskedMap, entry.first) &&
+               system_logs::kShillPIIMaskedMap.at(entry.first) !=
+                   feedback::PIIType::kNone &&
                (!value.is_string() || !value.GetString().empty())) {
       entry.second = base::Value(kMaskedString);
     }
@@ -98,12 +70,12 @@ void ShillLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK(callback_.is_null());
   callback_ = std::move(callback);
 
-  chromeos::ShillManagerClient::Get()->GetProperties(base::BindOnce(
+  ash::ShillManagerClient::Get()->GetProperties(base::BindOnce(
       &ShillLogSource::OnGetManagerProperties, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ShillLogSource::OnGetManagerProperties(
-    base::Optional<base::Value> result) {
+    absl::optional<base::Value> result) {
   if (!result) {
     LOG(ERROR) << "ManagerPropertiesCallback Failed";
     std::move(callback_).Run(std::make_unique<SystemLogsResponse>());
@@ -117,7 +89,7 @@ void ShillLogSource::OnGetManagerProperties(
       if (path.empty())
         continue;
       device_paths_.insert(path);
-      chromeos::ShillDeviceClient::Get()->GetProperties(
+      ash::ShillDeviceClient::Get()->GetProperties(
           dbus::ObjectPath(path),
           base::BindOnce(&ShillLogSource::OnGetDevice,
                          weak_ptr_factory_.GetWeakPtr(), path));
@@ -131,7 +103,7 @@ void ShillLogSource::OnGetManagerProperties(
       if (path.empty())
         continue;
       service_paths_.insert(path);
-      chromeos::ShillServiceClient::Get()->GetProperties(
+      ash::ShillServiceClient::Get()->GetProperties(
           dbus::ObjectPath(path),
           base::BindOnce(&ShillLogSource::OnGetService,
                          weak_ptr_factory_.GetWeakPtr(), path));
@@ -142,7 +114,7 @@ void ShillLogSource::OnGetManagerProperties(
 }
 
 void ShillLogSource::OnGetDevice(const std::string& device_path,
-                                 base::Optional<base::Value> properties) {
+                                 absl::optional<base::Value> properties) {
   if (!properties) {
     LOG(ERROR) << "Get Device Properties Failed for : " << device_path;
   } else {
@@ -168,7 +140,7 @@ void ShillLogSource::AddDeviceAndRequestIPConfigs(
     if (ip_config_path.empty())
       continue;
     ip_config_paths_.insert(ip_config_path);
-    chromeos::ShillIPConfigClient::Get()->GetProperties(
+    ash::ShillIPConfigClient::Get()->GetProperties(
         dbus::ObjectPath(ip_config_path),
         base::BindOnce(&ShillLogSource::OnGetIPConfig,
                        weak_ptr_factory_.GetWeakPtr(), device_path,
@@ -182,7 +154,7 @@ void ShillLogSource::AddDeviceAndRequestIPConfigs(
 
 void ShillLogSource::OnGetIPConfig(const std::string& device_path,
                                    const std::string& ip_config_path,
-                                   base::Optional<base::Value> properties) {
+                                   absl::optional<base::Value> properties) {
   if (!properties) {
     LOG(ERROR) << "Get IPConfig Properties Failed for : " << device_path << ": "
                << ip_config_path;
@@ -206,7 +178,7 @@ void ShillLogSource::AddIPConfig(const std::string& device_path,
 }
 
 void ShillLogSource::OnGetService(const std::string& service_path,
-                                  base::Optional<base::Value> properties) {
+                                  absl::optional<base::Value> properties) {
   if (!properties) {
     LOG(ERROR) << "Get Service Properties Failed for : " << service_path;
   } else {
@@ -236,7 +208,7 @@ base::Value ShillLogSource::ScrubAndExpandProperties(
 
   if (base::StartsWith(object_path, kServicePrefix,
                        base::CompareCase::SENSITIVE)) {
-    std::string log_name = chromeos::NetworkPathId(object_path);  // Not PII
+    std::string log_name = ash::NetworkPathId(object_path);  // Not PII
     dict.SetStringKey(shill::kNameProperty, log_name);
   } else if (base::StartsWith(object_path, kDevicePrefix,
                               base::CompareCase::SENSITIVE)) {

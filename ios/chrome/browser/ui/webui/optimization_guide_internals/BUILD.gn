@@ -1,0 +1,43 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("optimization_guide_internals") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "optimization_guide_internals_ui.h",
+    "optimization_guide_internals_ui.mm",
+  ]
+  deps = [
+    "//components/optimization_guide/core:prediction",
+    "//components/optimization_guide/optimization_guide_internals/resources",
+    "//components/optimization_guide/optimization_guide_internals/webui",
+    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
+    "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/optimization_guide",
+    "//ios/web/public",
+    "//ios/web/public/webui",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  sources = [ "optimization_guide_internals_page_egtest.mm" ]
+  testonly = true
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core:eg_test_support+eg2",
+    "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
+    "//ios/chrome/browser/optimization_guide:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/webui:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+}

@@ -1,0 +1,80 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module chromeos.cfm.mojom;
+
+// Interface defined by chromium specifically for the ChromeboxForMeetings
+// platform to leverage required chromium services/APIS.
+interface CfmBrowser {
+  // Returns a persistent representation of active FieldTrial information, which
+  // can be used to replicate the current state of the experimentation framework
+  // in another process.
+  GetVariationsData@0()=>(string field_trial_parameters,
+                          string field_trial_states,
+                          string enabled_features,
+                          string disabled_features);
+
+  // Returns detailed information on running processes as well system-wide
+  // graphics driver memory (-1 if error).
+  GetMemoryDetails@1()=>(array<ProcessData> process_data,
+                         int64 gpu_memory_size);
+};
+
+struct ExtensionData {
+  string name@0;
+  string version@1;
+  string id@2;
+  string hashed_id@3;
+  string description@4;
+};
+
+// The data pertaining to an individual browser process.
+struct ProcessMemoryInformation {
+  // The process id.
+  int32 pid@0;
+
+  // The process version
+  string version@1;
+
+  // The process product name.
+  string product_name@2;
+
+  // The number of processes which this memory represents.
+  int32 num_processes@3;
+
+  // If this is a child process of Chrome, what type (i.e. plugin) it is.
+  string process_type@4;
+
+  // Number of open file descriptors in this process.
+  int32 num_open_fds@5;
+
+  // Maximum number of file descriptors that can be opened in this process.
+  int32 open_fds_soft_limit@6;
+
+  // If this is a renderer process, what type it is.
+  string renderer_type@7;
+
+  // A collection of titles used, i.e. for a tab it'll show all the page titles.
+  array<string> titles@8;
+
+  // Consistent memory metric for all platforms.
+  int32 private_memory_footprint_kb@9;
+
+  // iff process is process_type extension add additional info
+  array<ExtensionData> extension_info@10;
+};
+
+// Browser Process Information.
+struct ProcessData {
+  // The qualified name of the browser
+  string name@0;
+
+  // The name of the process running
+  string process_name@1;
+
+  // List of child processes.
+  array<ProcessMemoryInformation> processes@2;
+};

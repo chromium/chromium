@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,23 @@
 
 #include <stdint.h>
 #include <algorithm>
-#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_database.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetch_throttler.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/android_affiliation/facet_manager.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory_impl.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
@@ -45,6 +47,7 @@ void AffiliationBackend::Initialize(
         pending_url_loader_factory,
     network::NetworkConnectionTracker* network_connection_tracker,
     const base::FilePath& db_path) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::Initialize");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!throttler_);
   throttler_ = std::make_unique<AffiliationFetchThrottler>(
@@ -65,8 +68,9 @@ void AffiliationBackend::Initialize(
 void AffiliationBackend::GetAffiliationsAndBranding(
     const FacetURI& facet_uri,
     StrategyOnCacheMiss cache_miss_strategy,
-    AndroidAffiliationService::ResultCallback callback,
+    AffiliationService::ResultCallback callback,
     const scoped_refptr<base::TaskRunner>& callback_task_runner) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::GetAffiliationsAndBranding");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   FacetManager* facet_manager = GetOrCreateFacetManager(facet_uri);
@@ -80,6 +84,7 @@ void AffiliationBackend::GetAffiliationsAndBranding(
 
 void AffiliationBackend::Prefetch(const FacetURI& facet_uri,
                                   const base::Time& keep_fresh_until) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::Prefetch");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   FacetManager* facet_manager = GetOrCreateFacetManager(facet_uri);
@@ -92,6 +97,7 @@ void AffiliationBackend::Prefetch(const FacetURI& facet_uri,
 
 void AffiliationBackend::CancelPrefetch(const FacetURI& facet_uri,
                                         const base::Time& keep_fresh_until) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::CancelPrefetch");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto facet_manager_it = facet_managers_.find(facet_uri);
@@ -103,12 +109,60 @@ void AffiliationBackend::CancelPrefetch(const FacetURI& facet_uri,
     facet_managers_.erase(facet_uri);
 }
 
+void AffiliationBackend::KeepPrefetchForFacets(
+    std::vector<FacetURI> facet_uris) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::KeepPrefetchForFacets");
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Firstly, check which facets are missing from the |facet_managers_| and
+  // schedule Prefetch() for them.
+  for (const auto& facet : facet_uris) {
+    if (facet_managers_.find(facet) == facet_managers_.end()) {
+      Prefetch(facet, base::Time::Max());
+    }
+  }
+
+  // Now remove facets which which aren't retained anymore.
+  auto retained_facets = base::MakeFlatSet<std::string>(
+      facet_uris, {}, &FacetURI::potentially_invalid_spec);
+
+  std::vector<FacetURI> facets_to_remove;
+  for (const auto& facet_manager_pair : facet_managers_) {
+    if (retained_facets.contains(
+            facet_manager_pair.first.potentially_invalid_spec())) {
+      continue;
+    }
+
+    facet_manager_pair.second->CancelPrefetch(base::Time::Max());
+
+    if (facet_manager_pair.second->CanBeDiscarded())
+      facets_to_remove.push_back(facet_manager_pair.first);
+  }
+
+  for (const auto& facet : facets_to_remove) {
+    facet_managers_.erase(facet);
+    TrimCacheForFacetURI(facet);
+  }
+}
+
 void AffiliationBackend::TrimCacheForFacetURI(const FacetURI& facet_uri) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::TrimCacheForFacetURI");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AffiliatedFacetsWithUpdateTime affiliation;
   if (cache_->GetAffiliationsAndBrandingForFacetURI(facet_uri, &affiliation))
     DiscardCachedDataIfNoLongerNeeded(affiliation.facets);
+}
+
+void AffiliationBackend::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::TrimUnusedCache");
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  cache_->RemoveMissingFacetURI(facet_uris);
+}
+
+std::vector<GroupedFacets> AffiliationBackend::GetAllGroups() const {
+  return cache_->GetAllGroups();
 }
 
 // static
@@ -189,13 +243,27 @@ void AffiliationBackend::OnFetchSucceeded(
   fetcher_.reset();
   throttler_->InformOfNetworkRequestComplete(true);
 
+  std::map<std::string, const GroupedFacets*> map_facet_to_group;
+  for (const GroupedFacets& grouped_facets : result->groupings) {
+    for (const Facet& facet : grouped_facets.facets) {
+      map_facet_to_group[facet.uri.canonical_spec()] = &grouped_facets;
+    }
+  }
+
   for (const AffiliatedFacets& affiliated_facets : result->affiliations) {
     AffiliatedFacetsWithUpdateTime affiliation;
     affiliation.facets = affiliated_facets;
     affiliation.last_update_time = clock_->Now();
-
     std::vector<AffiliatedFacetsWithUpdateTime> obsoleted_affiliations;
-    cache_->StoreAndRemoveConflicting(affiliation, &obsoleted_affiliations);
+    GroupedFacets group;
+    if (base::FeatureList::IsEnabled(features::kPasswordsGrouping) &&
+        map_facet_to_group.count(affiliated_facets[0].uri.canonical_spec())) {
+      // Affiliations are subset of group. So |map_facet_to_group| must hold a
+      // vector to the whole group.
+      group = *map_facet_to_group[affiliated_facets[0].uri.canonical_spec()];
+    }
+    cache_->StoreAndRemoveConflicting(affiliation, group,
+                                      &obsoleted_affiliations);
 
     // Cached data in contradiction with newly stored data automatically gets
     // removed from the DB, and will be stored into |obsoleted_affiliations|.
@@ -279,12 +347,12 @@ void AffiliationBackend::ReportStatistics(size_t requested_facet_uri_count) {
     base::TimeDelta delay = clock_->Now() - construction_time_;
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "PasswordManager.AffiliationBackend.FirstFetchDelay", delay,
-        base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(3), 50);
+        base::Seconds(1), base::Days(3), 50);
   } else {
     base::TimeDelta delay = clock_->Now() - last_request_time_;
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "PasswordManager.AffiliationBackend.SubsequentFetchDelay", delay,
-        base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(3), 50);
+        base::Seconds(1), base::Days(3), 50);
   }
   last_request_time_ = clock_->Now();
 }

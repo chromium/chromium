@@ -1,0 +1,6 @@
+Name: unindent
+URL: https://crates.io/crates/unindent
+Description: Remove a column of leading whitespace from a string
+Version: 0.1.7
+Security Critical: no
+License: Apache 2.0

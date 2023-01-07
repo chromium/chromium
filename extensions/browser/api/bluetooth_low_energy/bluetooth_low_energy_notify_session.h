@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/bluetooth_gatt_notify_session.h"
 #include "extensions/browser/api/api_resource.h"
@@ -23,6 +22,12 @@ class BluetoothLowEnergyNotifySession : public ApiResource {
       bool persistent,
       const std::string& owner_extension_id,
       std::unique_ptr<device::BluetoothGattNotifySession> session);
+
+  BluetoothLowEnergyNotifySession(const BluetoothLowEnergyNotifySession&) =
+      delete;
+  BluetoothLowEnergyNotifySession& operator=(
+      const BluetoothLowEnergyNotifySession&) = delete;
+
   ~BluetoothLowEnergyNotifySession() override;
 
   // Returns a pointer to the underlying session object.
@@ -47,8 +52,6 @@ class BluetoothLowEnergyNotifySession : public ApiResource {
   // The session is owned by this instance and will automatically stop when
   // deleted.
   std::unique_ptr<device::BluetoothGattNotifySession> session_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyNotifySession);
 };
 
 }  // namespace extensions

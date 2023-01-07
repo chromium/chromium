@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,7 @@ namespace safeBrowsingPrivate {
     DOMString? url;
   };
 
-  // From ReferrerChainEntry in //src/components/safe_browsing/core/proto/csd.proto
+  // From ReferrerChainEntry in //src/components/safe_browsing/core/common/proto/csd.proto
   dictionary ReferrerChainEntry {
     // URL of this entry.
     DOMString url;
@@ -116,6 +116,17 @@ namespace safeBrowsingPrivate {
 
     // Whether this entry may have been launched by an external application.
     boolean? maybeLaunchedByExternalApp;
+
+    // Whether subframe URLs are removed due to user consent restriction.
+    boolean? isSubframeUrlRemoved;
+
+    // Whether subframe referrer URLs are removed due to user consent
+    // restriction.
+    boolean? isSubframeReferrerUrlRemoved;
+
+    // Whether any of the URLs are removed because the URL matches the
+    // SafeBrowsingAllowlistDomains enterprise policy in Chrome.
+    boolean isUrlRemovedByPolicy;
   };
 
   callback GetReferrerChainCallback = void(ReferrerChainEntry[] entries);
@@ -124,7 +135,9 @@ namespace safeBrowsingPrivate {
     // Gets referrer chain for the specified tab.
     // |tabId|: Id of the tab from which to retrieve the referrer.
     // |callback|: Called with the list of referrer chain entries.
-    static void getReferrerChain(long tabId, GetReferrerChainCallback callback);
+    [supportsPromises] static void getReferrerChain(
+        long tabId,
+        GetReferrerChainCallback callback);
   };
 
   interface Events {

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,7 @@
 
 #include "base/base_export.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 // Obtains an AuthorizationRef for the rights indicated by |rights|.  If
 // necessary, prompts the user for authentication. If the user is prompted,
@@ -76,7 +75,6 @@ OSStatus ExecuteWithPrivilegesAndWait(AuthorizationRef authorization,
                                       FILE** pipe,
                                       int* exit_status);
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_AUTHORIZATION_UTIL_H_

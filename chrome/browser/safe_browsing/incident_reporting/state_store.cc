@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/incident_reporting/state_store.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
@@ -31,21 +32,16 @@ StateStore::Transaction::~Transaction() {
   store_->has_transaction_ = false;
 #endif
   if (pref_update_)
-    platform_state_store::Store(store_->profile_, store_->incidents_sent_);
+    platform_state_store::Store(store_->profile_, *store_->incidents_sent_);
 }
 
 void StateStore::Transaction::MarkAsReported(IncidentType type,
                                              const std::string& key,
                                              IncidentDigest digest) {
   std::string type_string(base::NumberToString(static_cast<int>(type)));
-  base::DictionaryValue* incidents_sent = GetPrefDict();
-  base::Value* type_dict =
-      incidents_sent->FindKeyOfType(type_string, base::Value::Type::DICTIONARY);
-  if (!type_dict) {
-    type_dict = incidents_sent->SetKey(
-        type_string, base::Value(base::Value::Type::DICTIONARY));
-  }
-  type_dict->SetKey(key, base::Value(base::NumberToString(digest)));
+  base::Value::Dict& incidents_sent = GetPrefDict();
+  base::Value::Dict* type_dict = incidents_sent.EnsureDict(type_string);
+  type_dict->Set(key, base::NumberToString(digest));
 }
 
 void StateStore::Transaction::Clear(IncidentType type, const std::string& key) {
@@ -58,13 +54,12 @@ void StateStore::Transaction::Clear(IncidentType type, const std::string& key) {
   // will result in a full serialize-and-write operation on the preferences
   // store.
   std::string type_string(base::NumberToString(static_cast<int>(type)));
-  const base::DictionaryValue* const_type_dict = nullptr;
-  if (store_->incidents_sent_->GetDictionaryWithoutPathExpansion(
-          type_string, &const_type_dict) &&
-      const_type_dict->GetWithoutPathExpansion(key, nullptr)) {
-    base::DictionaryValue* type_dict = nullptr;
-    GetPrefDict()->GetDictionaryWithoutPathExpansion(type_string, &type_dict);
-    type_dict->RemoveKey(key);
+
+  const base::Value::Dict* const_type_dict =
+      store_->incidents_sent_->FindDict(type_string);
+  if (const_type_dict && const_type_dict->Find(key)) {
+    base::Value::Dict* type_dict = GetPrefDict().FindDict(type_string);
+    type_dict->Remove(key);
   }
 }
 
@@ -78,36 +73,31 @@ void StateStore::Transaction::ClearForType(IncidentType type) {
   // will result in a full serialize-and-write operation on the preferences
   // store.
   std::string type_string(base::NumberToString(static_cast<int>(type)));
-  const base::DictionaryValue* type_dict = nullptr;
-  if (store_->incidents_sent_->GetDictionaryWithoutPathExpansion(type_string,
-                                                                 &type_dict)) {
-    GetPrefDict()->RemoveKey(type_string);
-  }
+  if (store_->incidents_sent_->FindDict(type_string))
+    GetPrefDict().Remove(type_string);
 }
 
 void StateStore::Transaction::ClearAll() {
   // Clear the preference if it exists and contains any values.
   if (store_->incidents_sent_ && !store_->incidents_sent_->empty())
-    GetPrefDict()->Clear();
+    GetPrefDict().clear();
 }
 
-base::DictionaryValue* StateStore::Transaction::GetPrefDict() {
+base::Value::Dict& StateStore::Transaction::GetPrefDict() {
   if (!pref_update_) {
-    pref_update_.reset(new DictionaryPrefUpdate(
-        store_->profile_->GetPrefs(), prefs::kSafeBrowsingIncidentsSent));
+    pref_update_ = std::make_unique<ScopedDictPrefUpdate>(
+        store_->profile_->GetPrefs(), prefs::kSafeBrowsingIncidentsSent);
     // Getting the dict will cause it to be created if it doesn't exist.
     // Unconditionally refresh the store's read-only view on the preference so
     // that it will always be correct.
-    store_->incidents_sent_ = pref_update_->Get();
+    store_->incidents_sent_ = &pref_update_->Get();
   }
   return pref_update_->Get();
 }
 
-void StateStore::Transaction::ReplacePrefDict(
-    std::unique_ptr<base::DictionaryValue> pref_dict) {
-  GetPrefDict()->Swap(pref_dict.get());
+void StateStore::Transaction::ReplacePrefDict(base::Value::Dict pref_dict) {
+  GetPrefDict() = std::move(pref_dict);
 }
-
 
 // StateStore ------------------------------------------------------------------
 
@@ -120,24 +110,20 @@ StateStore::StateStore(Profile* profile)
 #endif
 {
   // Cache a read-only view of the preference.
-  const base::Value* value =
-      profile_->GetPrefs()->GetUserPrefValue(prefs::kSafeBrowsingIncidentsSent);
-  if (value)
-    value->GetAsDictionary(&incidents_sent_);
+  incidents_sent_ =
+      &profile_->GetPrefs()->GetDict(prefs::kSafeBrowsingIncidentsSent);
 
   // Apply the platform data.
   Transaction transaction(this);
-  std::unique_ptr<base::DictionaryValue> value_dict(
-      platform_state_store::Load(profile_));
+  absl::optional<base::Value> value_dict(platform_state_store::Load(profile_));
   if (value_dict) {
-    if (value_dict->empty())
+    if (value_dict->DictEmpty())
       transaction.ClearAll();
-    else if (!incidents_sent_ || !incidents_sent_->Equals(value_dict.get()))
-      transaction.ReplacePrefDict(std::move(value_dict));
+    else if (!incidents_sent_ || *incidents_sent_ != *value_dict)
+      transaction.ReplacePrefDict(std::move(value_dict.value()).TakeDict());
   }
 
-  if (incidents_sent_)
-    CleanLegacyValues(&transaction);
+  CleanLegacyValues(&transaction);
 }
 
 StateStore::~StateStore() {
@@ -149,13 +135,14 @@ StateStore::~StateStore() {
 bool StateStore::HasBeenReported(IncidentType type,
                                  const std::string& key,
                                  IncidentDigest digest) {
-  const base::DictionaryValue* type_dict = nullptr;
-  std::string digest_string;
-  return (incidents_sent_ &&
-          incidents_sent_->GetDictionaryWithoutPathExpansion(
-              base::NumberToString(static_cast<int>(type)), &type_dict) &&
-          type_dict->GetStringWithoutPathExpansion(key, &digest_string) &&
-          digest_string == base::NumberToString(digest));
+  const base::Value::Dict* type_dict =
+      incidents_sent_ ? incidents_sent_->FindDict(
+                            base::NumberToString(static_cast<int>(type)))
+                      : nullptr;
+  if (!type_dict)
+    return false;
+  const std::string* digest_string = type_dict->FindString(key);
+  return (digest_string && *digest_string == base::NumberToString(digest));
 }
 
 void StateStore::CleanLegacyValues(Transaction* transaction) {

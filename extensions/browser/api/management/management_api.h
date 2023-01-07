@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/api/management/management_api_delegate.h"
@@ -278,6 +278,10 @@ class ManagementInstallReplacementWebAppFunction : public ExtensionFunction {
 class ManagementEventRouter : public ExtensionRegistryObserver {
  public:
   explicit ManagementEventRouter(content::BrowserContext* context);
+
+  ManagementEventRouter(const ManagementEventRouter&) = delete;
+  ManagementEventRouter& operator=(const ManagementEventRouter&) = delete;
+
   ~ManagementEventRouter() override;
 
  private:
@@ -299,18 +303,20 @@ class ManagementEventRouter : public ExtensionRegistryObserver {
                       events::HistogramValue histogram_value,
                       const char* event_name);
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementEventRouter);
 };
 
 class ManagementAPI : public BrowserContextKeyedAPI,
                       public EventRouter::Observer {
  public:
   explicit ManagementAPI(content::BrowserContext* context);
+
+  ManagementAPI(const ManagementAPI&) = delete;
+  ManagementAPI& operator=(const ManagementAPI&) = delete;
+
   ~ManagementAPI() override;
 
   // KeyedService implementation.
@@ -343,7 +349,7 @@ class ManagementAPI : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<ManagementAPI>;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "ManagementAPI"; }
@@ -356,8 +362,6 @@ class ManagementAPI : public BrowserContextKeyedAPI,
   std::unique_ptr<ManagementAPIDelegate> delegate_;
   std::unique_ptr<SupervisedUserExtensionsDelegate>
       supervised_user_extensions_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementAPI);
 };
 
 }  // namespace extensions

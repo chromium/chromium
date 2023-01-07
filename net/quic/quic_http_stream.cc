@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/quic/quic_http_stream.h"
 
+#include <set>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -23,13 +24,14 @@
 #include "net/quic/quic_http_utils.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/ssl/ssl_info.h"
-#include "net/third_party/quiche/src/quic/core/http/quic_client_promised_info.h"
-#include "net/third_party/quiche/src/quic/core/http/spdy_utils.h"
-#include "net/third_party/quiche/src/quic/core/quic_stream_sequencer.h"
-#include "net/third_party/quiche/src/quic/core/quic_utils.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_frame_builder.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_framer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_promised_info.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/spdy_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_stream_sequencer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -37,10 +39,10 @@ namespace {
 
 base::Value NetLogQuicPushStreamParams(quic::QuicStreamId stream_id,
                                        const GURL& url) {
-  base::DictionaryValue dict;
-  dict.SetInteger("stream_id", stream_id);
-  dict.SetString("url", url.spec());
-  return std::move(dict);
+  base::Value::Dict dict;
+  dict.Set("stream_id", static_cast<int>(stream_id));
+  dict.Set("url", url.spec());
+  return base::Value(std::move(dict));
 }
 
 void NetLogQuicPushStream(const NetLogWithSource& net_log1,
@@ -58,28 +60,8 @@ void NetLogQuicPushStream(const NetLogWithSource& net_log1,
 
 QuicHttpStream::QuicHttpStream(
     std::unique_ptr<QuicChromiumClientSession::Handle> session,
-    std::vector<std::string> dns_aliases)
+    std::set<std::string> dns_aliases)
     : MultiplexedHttpStream(std::move(session)),
-      next_state_(STATE_NONE),
-      stream_(nullptr),
-      request_info_(nullptr),
-      can_send_early_(false),
-      request_body_stream_(nullptr),
-      priority_(MINIMUM_PRIORITY),
-      response_info_(nullptr),
-      has_response_status_(false),
-      response_status_(ERR_UNEXPECTED),
-      response_headers_received_(false),
-      trailing_headers_received_(false),
-      headers_bytes_received_(0),
-      headers_bytes_sent_(0),
-      closed_stream_received_bytes_(0),
-      closed_stream_sent_bytes_(0),
-      closed_is_first_stream_(false),
-      user_buffer_len_(0),
-      session_error_(ERR_UNEXPECTED),
-      found_promise_(false),
-      in_loop_(false),
       dns_aliases_(std::move(dns_aliases)) {}
 
 QuicHttpStream::~QuicHttpStream() {
@@ -108,21 +90,27 @@ HttpResponseInfo::ConnectionInfo QuicHttpStream::ConnectionInfoFromQuicVersion(
       return HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1;
     case quic::QUIC_VERSION_RESERVED_FOR_NEGOTIATION:
       return HttpResponseInfo::CONNECTION_INFO_QUIC_999;
-    case quic::QUIC_VERSION_51:
-      return HttpResponseInfo::CONNECTION_INFO_QUIC_T051;
+    case quic::QUIC_VERSION_IETF_2_DRAFT_01:
+      DCHECK(quic_version.UsesTls());
+      return HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_1;
   }
   NOTREACHED();
   return HttpResponseInfo::CONNECTION_INFO_QUIC_UNKNOWN_VERSION;
 }
 
-int QuicHttpStream::InitializeStream(const HttpRequestInfo* request_info,
-                                     bool can_send_early,
+void QuicHttpStream::RegisterRequest(const HttpRequestInfo* request_info) {
+  DCHECK(request_info);
+  DCHECK(request_info->traffic_annotation.is_valid());
+  request_info_ = request_info;
+}
+
+int QuicHttpStream::InitializeStream(bool can_send_early,
                                      RequestPriority priority,
                                      const NetLogWithSource& stream_net_log,
                                      CompletionOnceCallback callback) {
   CHECK(callback_.is_null());
+  DCHECK(request_info_);
   DCHECK(!stream_);
-  DCHECK(request_info->traffic_annotation.is_valid());
 
   // HttpNetworkTransaction will retry any request that fails with
   // ERR_QUIC_HANDSHAKE_FAILED. It will retry any request with
@@ -140,14 +128,13 @@ int QuicHttpStream::InitializeStream(const HttpRequestInfo* request_info,
       static_cast<int>(quic_session()->connection_migration_mode()));
 
   stream_net_log_ = stream_net_log;
-  request_info_ = request_info;
   can_send_early_ = can_send_early;
   request_time_ = base::Time::Now();
   priority_ = priority;
 
   SaveSSLInfo();
 
-  std::string url(request_info->url.spec());
+  std::string url(request_info_->url.spec());
   quic::QuicClientPromisedInfo* promised =
       quic_session()->GetPushPromiseIndex()->GetPromised(url);
   if (promised) {
@@ -252,7 +239,12 @@ int QuicHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
   // Store the response info.
   response_info_ = response;
 
-  int rv;
+  // Put the peer's IP address and port into the response.
+  IPEndPoint address;
+  int rv = quic_session()->GetPeerAddress(&address);
+  if (rv != OK)
+    return rv;
+  response_info_->remote_endpoint = address;
 
   if (!found_promise_) {
     next_state_ = STATE_SET_REQUEST_PRIORITY;
@@ -389,6 +381,8 @@ bool QuicHttpStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
     is_first_stream = stream_->IsFirstStream();
     load_timing_info->first_early_hints_time =
         stream_->first_early_hints_time();
+    load_timing_info->receive_headers_start =
+        stream_->headers_received_start_time();
   }
 
   if (is_first_stream) {
@@ -403,7 +397,7 @@ bool QuicHttpStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
 bool QuicHttpStream::GetAlternativeService(
     AlternativeService* alternative_service) const {
   alternative_service->protocol = kProtoQUIC;
-  const HostPortPair& destination = quic_session()->destination();
+  const url::SchemeHostPort& destination = quic_session()->destination();
   alternative_service->host = destination.host();
   alternative_service->port = destination.port();
   return true;
@@ -434,7 +428,7 @@ void QuicHttpStream::OnReadResponseHeadersComplete(int rv) {
   }
 }
 
-const std::vector<std::string>& QuicHttpStream::GetDnsAliases() const {
+const std::set<std::string>& QuicHttpStream::GetDnsAliases() const {
   return dns_aliases_;
 }
 
@@ -443,8 +437,7 @@ base::StringPiece QuicHttpStream::GetAcceptChViaAlps() const {
     return {};
   }
 
-  const url::Origin origin = url::Origin::Create(request_info_->url);
-  return session()->GetAcceptChViaAlpsForOrigin(origin);
+  return session()->GetAcceptChViaAlps(url::SchemeHostPort(request_info_->url));
 }
 
 void QuicHttpStream::ReadTrailingHeaders() {
@@ -693,10 +686,10 @@ int QuicHttpStream::DoSendBodyComplete(int rv) {
 
 int QuicHttpStream::ProcessResponseHeaders(
     const spdy::Http2HeaderBlock& headers) {
-  const bool header_valid = SpdyHeadersToHttpResponse(headers, response_info_);
+  const int rv = SpdyHeadersToHttpResponse(headers, response_info_);
   base::UmaHistogramBoolean("Net.QuicHttpStream.ProcessResponseHeaderSuccess",
-                            header_valid);
-  if (!header_valid) {
+                            rv == OK);
+  if (rv != OK) {
     DLOG(WARNING) << "Invalid headers";
     return ERR_QUIC_PROTOCOL_ERROR;
   }
@@ -707,17 +700,8 @@ int QuicHttpStream::ProcessResponseHeaders(
     return OK;
   }
 
-  // Put the peer's IP address and port into the response.
-  IPEndPoint address;
-  int rv = quic_session()->GetPeerAddress(&address);
-  if (rv != OK)
-    return rv;
-
-  response_info_->remote_endpoint = address;
   response_info_->connection_info =
       ConnectionInfoFromQuicVersion(quic_session()->GetQuicVersion());
-  response_info_->vary_data.Init(*request_info_,
-                                 *response_info_->headers.get());
   response_info_->was_alpn_negotiated = true;
   response_info_->alpn_negotiated_protocol =
       HttpResponseInfo::ConnectionInfoToString(response_info_->connection_info);

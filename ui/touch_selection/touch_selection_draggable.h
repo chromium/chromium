@@ -1,9 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_TOUCH_SELECTION_DRAG_DRAGGABLE_H_
-#define UI_TOUCH_SELECTION_DRAG_DRAGGABLE_H_
+#ifndef UI_TOUCH_SELECTION_TOUCH_SELECTION_DRAGGABLE_H_
+#define UI_TOUCH_SELECTION_TOUCH_SELECTION_DRAGGABLE_H_
 
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
@@ -49,4 +49,4 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionDraggable {
 
 }  // namespace ui
 
-#endif  // UI_TOUCH_SELECTION_DRAG_DRAGGABLE_H_
+#endif  // UI_TOUCH_SELECTION_TOUCH_SELECTION_DRAGGABLE_H_

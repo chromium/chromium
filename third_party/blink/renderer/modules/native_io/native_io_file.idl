@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,11 @@
 
   [
     CallWith=ScriptState, RaisesException, MeasureAs=StorageFoundationRead
-  ] Promise<unsigned long long> read([AllowShared] ArrayBufferView buffer,
+  ] Promise<NativeIOReadResult> read(ArrayBufferView buffer,
                                      unsigned long long file_offset);
   [
     CallWith=ScriptState, RaisesException, MeasureAs=StorageFoundationWrite
-  ] Promise<unsigned long long> write([AllowShared] ArrayBufferView buffer,
+  ] Promise<NativeIOWriteResult> write(ArrayBufferView buffer,
                                       unsigned long long file_offset);
   [
     CallWith=ScriptState, RaisesException, MeasureAs=StorageFoundationFlush

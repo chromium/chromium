@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.i18n.MessageFormatTest');
 goog.setTestOnly();
@@ -210,6 +202,7 @@ testSuite({
     assertEquals('a\'5\'b', fmt.format({'NUM_COWS': '5'}));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testSerbianSimpleSelect() {
     stubs.set(pluralRules, 'select', pluralRules.beSelect_);
 
@@ -222,6 +215,7 @@ testSuite({
     assertEquals('Njen bicikl je crven.', fmt.format({'GENDER': 'female'}));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testSerbianSimplePlural() {
     stubs.set(pluralRules, 'select', pluralRules.beSelect_);
 
@@ -252,6 +246,7 @@ testSuite({
         fmt.format({'NUM_PEOPLE': 100, 'PERSON': 'Cibua', 'PLACE': 'bazenu'}));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testSerbianSimplePluralNoOffset() {
     stubs.set(pluralRules, 'select', pluralRules.beSelect_);
 
@@ -282,6 +277,7 @@ testSuite({
         fmt.format({'NUM_PEOPLE': 100, 'PERSON': 'Cibua', 'PLACE': 'bazenu'}));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testSerbianSelectNestedInPlural() {
     stubs.set(pluralRules, 'select', pluralRules.beSelect_);
     stubs.set(goog.i18n, 'NumberFormatSymbols', NumberFormatSymbols_hr);
@@ -315,6 +311,7 @@ testSuite({
         fmt.format({'GENDER': 'male', 'WHO': 'Milan', 'CIRCLES': 1235}));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testFallbackToOtherOptionInPlurals() {
     // Use Arabic plural rules since they have all six cases.
     // Only locale and numbers matter, the actual language of the message

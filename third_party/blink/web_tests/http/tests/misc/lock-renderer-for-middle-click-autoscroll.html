@@ -18,7 +18,7 @@
   var scrollOffset;
 
   async_test(t => {
-    // On document load, perform middle click just above the container
+    // On document load, perform middle click 20px above the container
     // of iframe and start moving mouse in vertical direction such that cursor
     // is over OOPIF. If the bug repros (crbug.com/872832), cursor changes
     // back to pointer once mouse move over OOPIF and will not scroll the root
@@ -26,20 +26,20 @@
      window.addEventListener('load', async () => {
        container = document.getElementById('container');
        var subFrame = document.getElementsByTagName('iframe')[0];
-       var startx = subFrame.offsetLeft + (subFrame.offsetWidth / 2);
-       var starty = subFrame.offsetTop;
-       var endX =  startx;
-       var endY = starty + 20;
+       var startX = subFrame.offsetLeft + (subFrame.offsetWidth / 2);
+       var startY = subFrame.offsetTop - 20;
+       var endX =  startX;
+       var endY = subFrame.offsetTop + subFrame.offsetHeight / 2;
 
-       await mouseMoveTo(startx, starty);
-       // middle click at startx starty
-       await mouseClickOn(startx, starty, 1);
-       await mouseMoveTo(endX, endY + 50);
+       await mouseMoveTo(startX, startY);
+       // middle click at startX startY
+       await mouseClickOn(startX, startY, 1);
+       await mouseMoveTo(endX, endY);
        await waitFor(() => {
          return (container.scrollTop > 0);
        });
        // Left click to cancel middle click autoscroll.
-       await mouseClickOn(endX,endY + 50);
+       await mouseClickOn(endX, endY);
        // Wait for the cursor shape to go back to normal.
        await waitFor(() => {
          var cursorInfo = internals.getCurrentCursorInfo();

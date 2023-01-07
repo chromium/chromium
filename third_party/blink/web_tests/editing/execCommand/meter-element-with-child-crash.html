@@ -11,7 +11,7 @@ selection_test(
     [
       '<div contenteditable>',
         '<div style="text-align: center;"></div>',
-        '^<meter><isindex></isindex></meter>|',
+        '<div style="text-align: center;">|<meter></meter></div>',
       '</div>',
     ],
     'JustifyCenter with METER should not crash');

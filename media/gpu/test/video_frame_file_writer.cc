@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/gpu/test/video_frame_file_writer.h"
 
+#include <sys/mman.h>
 #include <utility>
 #include <vector>
 
@@ -41,10 +42,25 @@ VideoFrameFileWriter::VideoFrameFileWriter(
 }
 
 VideoFrameFileWriter::~VideoFrameFileWriter() {
-  base::AutoLock auto_lock(frame_writer_lock_);
-  DCHECK_EQ(0u, num_frames_writing_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(writer_sequence_checker_);
+  if (frame_writer_thread_.task_runner()) {
+    // It's safe to use base::Unretained(this) because we own
+    // |frame_writer_thread_|, so |this| should be valid until at least the
+    // frame_writer_thread_.Stop() returns below which won't happen until
+    // CleanUpOnWriterThread() returns.
+    frame_writer_thread_.task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&VideoFrameFileWriter::CleanUpOnWriterThread,
+                                  base::Unretained(this)));
+  }
 
   frame_writer_thread_.Stop();
+  base::AutoLock auto_lock(frame_writer_lock_);
+  DCHECK_EQ(0u, num_frames_writing_);
+}
+
+void VideoFrameFileWriter::CleanUpOnWriterThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
+  video_frame_mapper_.reset();
 }
 
 // static
@@ -81,6 +97,7 @@ std::unique_ptr<VideoFrameFileWriter> VideoFrameFileWriter::Create(
 }
 
 bool VideoFrameFileWriter::Initialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(writer_sequence_checker_);
   if (!frame_writer_thread_.Start()) {
     LOG(ERROR) << "Failed to start file writer thread";
     return false;
@@ -191,7 +208,8 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
     CHECK(video_frame_mapper_);
-    mapped_frame = video_frame_mapper_->Map(std::move(video_frame));
+    mapped_frame = video_frame_mapper_->Map(std::move(video_frame),
+                                            PROT_READ | PROT_WRITE);
   }
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
@@ -234,7 +252,8 @@ void VideoFrameFileWriter::WriteVideoFrameYUV(
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
     CHECK(video_frame_mapper_);
-    mapped_frame = video_frame_mapper_->Map(std::move(video_frame));
+    mapped_frame = video_frame_mapper_->Map(std::move(video_frame),
+                                            PROT_READ | PROT_WRITE);
   }
 #endif
   if (!mapped_frame) {

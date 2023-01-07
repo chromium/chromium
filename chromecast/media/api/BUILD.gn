@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,8 +6,12 @@ import("//chromecast/chromecast.gni")
 
 cast_source_set("api") {
   sources = [
+    "audio_clock_simulator.h",
+    "audio_provider.h",
     "cast_audio_decoder.h",
+    "cast_audio_demuxer.h",
     "cast_audio_resampler.h",
+    "cast_channel_mixer.h",
     "cast_sounds_manager.h",
     "cma_backend.h",
     "cma_backend_factory.h",

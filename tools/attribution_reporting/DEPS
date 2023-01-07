@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/version_info",
+  "+content/public/browser",
+  "+content/public/test",
+]

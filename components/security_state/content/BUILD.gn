@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,42 +6,13 @@ static_library("content") {
   sources = [
     "content_utils.cc",
     "content_utils.h",
-    "ssl_status_input_event_data.cc",
-    "ssl_status_input_event_data.h",
   ]
 
-  public_deps = [
-    "//components/security_interstitials/core",
-    "//components/security_state/core",
-  ]
+  public_deps = [ "//components/security_state/core" ]
 
   deps = [
-    "//base",
     "//components/dom_distiller/core",
-    "//components/strings",
     "//content/public/browser",
     "//content/public/common",
-    "//net",
-    "//third_party/blink/public:blink_headers",
-    "//ui/base",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "content_utils_unittest.cc" ]
-
-  deps = [
-    ":content",
-    "//base",
-    "//base/test:test_support",
-    "//components/security_state/core",
-    "//components/strings",
-    "//content/public/browser",
-    "//content/public/common",
-    "//content/test:test_support",
-    "//net",
-    "//net:test_support",
-    "//testing/gtest",
   ]
 }

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    html, body {
+      height: 100%;
+    }
+    body {
+      display: flex;
+      margin: 0;
+    }
+    video {
+      background-color: black;
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <video src="data:cast_streaming_receiver">
+
+  <script>
+    // The Cast Streaming session must stop when the stream is no longer visible. crbug.com/1111886
+    document.addEventListener('visibilitychange', function(e) {
+      if (document.hidden) {
+        window.close();
+      }
+    });
+
+    var video = document.querySelector('video');
+    video.addEventListener('ended', window.close);
+    video.addEventListener('error', window.close);
+    video.play().catch(window.close);
+  </script>
+</body>
+</html>

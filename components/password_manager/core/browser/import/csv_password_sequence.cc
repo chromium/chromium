@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,15 +31,22 @@ const CSVPassword::Label* NameToLabel(base::StringPiece name) {
           {"website", Label::kOrigin},
           {"origin", Label::kOrigin},
           {"hostname", Label::kOrigin},
+          {"login_uri", Label::kOrigin},
 
           {"username", Label::kUsername},
           {"user", Label::kUsername},
           {"login", Label::kUsername},
           {"account", Label::kUsername},
+          {"login_username", Label::kUsername},
 
           {"password", Label::kPassword},
+          {"login_password", Label::kPassword},
       });
-  auto* it = kLabelMap.find(base::ToLowerASCII(name));
+
+  std::string trimmed_name;
+  // Trim leading/trailing whitespaces from |name|.
+  base::TrimString(name, " ", &trimmed_name);
+  auto* it = kLabelMap.find(base::ToLowerASCII(trimmed_name));
   return it != kLabelMap.end() ? &it->second : nullptr;
 }
 

@@ -1,0 +1,55 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//chrome/test/base/js2gtest.gni")
+import("//tools/typescript/ts_library.gni")
+
+assert(is_chromeos_ash)
+
+static_library("human_presence") {
+  sources = [
+    "human_presence_configuration.cc",
+    "human_presence_configuration.h",
+    "human_presence_internals.cc",
+    "human_presence_internals.h",
+  ]
+
+  deps = [ "//ash/constants:constants" ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/human_presence",
+    "//chromeos/ash/components/dbus/human_presence:hps_proto",
+  ]
+}
+
+ts_library("human_presence_internals_ts") {
+  root_dir = "."
+  in_files = [ "resources/human_presence_internals.ts" ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "human_presence_configuration_unittest.cc" ]
+  deps = [
+    ":human_presence",
+    "//ash/constants:constants",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+js2gtest("browser_tests_js") {
+  test_type = "webui"
+
+  sources = [ "test/human_presence_internals_browsertest.js" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}

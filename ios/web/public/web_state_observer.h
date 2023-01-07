@@ -1,21 +1,24 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_PUBLIC_WEB_STATE_OBSERVER_H_
 #define IOS_WEB_PUBLIC_WEB_STATE_OBSERVER_H_
 
+#include <Foundation/Foundation.h>
+
 #include <stddef.h>
 
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/observer_list_types.h"
 
 namespace web {
 
 struct FaviconURL;
 class NavigationContext;
+enum Permission : NSUInteger;
 class WebFrame;
 class WebState;
 
@@ -23,19 +26,22 @@ enum class PageLoadCompletionStatus : bool { SUCCESS = 0, FAILURE = 1 };
 
 // An observer API implemented by classes which are interested in various page
 // load events from WebState.
-class WebStateObserver {
+class WebStateObserver : public base::CheckedObserver {
  public:
-  virtual ~WebStateObserver();
+  WebStateObserver(const WebStateObserver&) = delete;
+  WebStateObserver& operator=(const WebStateObserver&) = delete;
+
+  ~WebStateObserver() override;
 
   // These methods are invoked every time the WebState changes visibility.
   virtual void WasShown(WebState* web_state) {}
   virtual void WasHidden(WebState* web_state) {}
 
   // Called when a navigation started in the WebState for the main frame.
-  // |navigation_context| is unique to a specific navigation. The same
+  // `navigation_context` is unique to a specific navigation. The same
   // NavigationContext will be provided on subsequent call to
   // DidFinishNavigation() when related to this navigation. Observers should
-  // clear any references to |navigation_context| in DidFinishNavigation(), just
+  // clear any references to `navigation_context` in DidFinishNavigation(), just
   // before it is destroyed.
   //
   // This is also fired by same-document navigations, such as fragment
@@ -50,10 +56,10 @@ class WebStateObserver {
   virtual void DidStartNavigation(WebState* web_state,
                                   NavigationContext* navigation_context) {}
 
-  // Called when an in-progress main-frame navigation in |web_state| receives
+  // Called when an in-progress main-frame navigation in `web_state` receives
   // a server redirect to a different URL. At the point where this is called,
-  // |navigation_context|'s URL has already been updated, so calling GetUrl()
-  // on |navigation_context| will return the redirect URL rather than the
+  // `navigation_context`'s URL has already been updated, so calling GetUrl()
+  // on `navigation_context` will return the redirect URL rather than the
   // original URL.
   virtual void DidRedirectNavigation(WebState* web_state,
                                      NavigationContext* navigation_context) {}
@@ -64,7 +70,7 @@ class WebStateObserver {
   // NavigationContext::GetError().
   //
   // If this is called because the navigation committed, then the document load
-  // will still be ongoing in the WebState returned by |navigation_context|.
+  // will still be ongoing in the WebState returned by `navigation_context`.
   // Use the document loads events such as DidStopLoading
   // and related methods to listen for continued events from this
   // WebState.
@@ -73,7 +79,7 @@ class WebStateObserver {
   // navigations or pushState/replaceState, which will not result in a document
   // change. To filter these out, use NavigationContext::IsSameDocument().
   //
-  // |navigation_context| will be destroyed at the end of this call, so do not
+  // `navigation_context` will be destroyed at the end of this call, so do not
   // keep a reference to it afterward.
   virtual void DidFinishNavigation(WebState* web_state,
                                    NavigationContext* navigation_context) {}
@@ -105,7 +111,7 @@ class WebStateObserver {
                           PageLoadCompletionStatus load_completion_status) {}
 
   // Notifies the observer that the page has made some progress loading.
-  // |progress| is a value between 0.0 (nothing loaded) to 1.0 (page fully
+  // `progress` is a value between 0.0 (nothing loaded) to 1.0 (page fully
   // loaded).
   virtual void LoadProgressChanged(WebState* web_state, double progress) {}
 
@@ -122,17 +128,22 @@ class WebStateObserver {
   virtual void FaviconUrlUpdated(WebState* web_state,
                                  const std::vector<FaviconURL>& candidates) {}
 
+  // Invoked when the state of a certain permission has changed.
+  virtual void PermissionStateChanged(WebState* web_state,
+                                      Permission permission)
+      API_AVAILABLE(ios(15.0)) {}
+
   // Called when a frame was created or navigated to a new document.
-  // Receivers can keep references to |web_frame| until
-  // |WebFrameWillBecomeUnavailable| is called but must not assume that the
-  // web Frame described by |web_frame| still exist.
+  // Receivers can keep references to `web_frame` until
+  // `WebFrameWillBecomeUnavailable` is called but must not assume that the
+  // web Frame described by `web_frame` still exist.
   virtual void WebFrameDidBecomeAvailable(WebState* web_state,
                                           WebFrame* web_frame) {}
 
   // Called when a frame was deleted or navigated away from the document and
   // will be removed from the WebFramesManager.
   // Receivers of this callback should clear all references to
-  // |web_frame|.
+  // `web_frame`.
   virtual void WebFrameWillBecomeUnavailable(WebState* web_state,
                                              WebFrame* web_frame) {}
 
@@ -140,15 +151,16 @@ class WebStateObserver {
   // possibly by other means).
   virtual void RenderProcessGone(WebState* web_state) {}
 
+  // Invoked when the WebState becomes realized (e.g. when it becomes fully
+  // operational after being restored).
+  virtual void WebStateRealized(WebState* web_state) {}
+
   // Invoked when the WebState is being destroyed. Gives subclasses a chance
   // to cleanup.
   virtual void WebStateDestroyed(WebState* web_state) {}
 
  protected:
   WebStateObserver();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateObserver);
 };
 
 }  // namespace web

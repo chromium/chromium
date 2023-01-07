@@ -1,0 +1,30 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module video_capture.mojom;
+
+import "url/mojom/origin.mojom";
+
+// The MultiCaptureService is used as a communication channel between the
+// browser process and ash to inform about new / ending
+// multi capture events so that appropriate usage indicators can
+// be shown to the users.
+[EnableIf=is_chromeos_ash]
+interface MultiCaptureService {
+  // Adds an observer for multi capture events.
+  AddObserver(pending_remote<MultiCaptureServiceClient> observer);
+};
+
+// The MultiCaptureServiceClient is used to receive new / ending multi
+// capture events in ash.
+[EnableIf=is_chromeos_ash]
+interface MultiCaptureServiceClient {
+  // Called when a new multi capture is started. This event provides a unique
+  // label and the origin that triggered the capture.
+  MultiCaptureStarted(string label, url.mojom.Origin origin);
+  // Callend when an existing multi capture is stopped. This event provides a
+  // unique label. A multi capture is considered to be stopped when all used
+  // devices are closed.
+  MultiCaptureStopped(string label);
+};

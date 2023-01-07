@@ -5,8 +5,7 @@
 <translation id="104962181688258143">De app Bestanden openen</translation>
 <translation id="1122869341872663659">Er worden <ph name="N" /> zoekresultaten voor <ph name="QUERY" /> getoond</translation>
 <translation id="1195667586424773550">Sleep de link naar de adresbalk van het tabblad</translation>
-<translation id="1204450209689312104">Een nieuw venster openen in de incognitomodus</translation>
-<translation id="1251638888133819822">'Volledig scherm vergroten' in- of uitschakelen</translation>
+<translation id="1251638888133819822">Vergrootglas voor volledig scherm aan- en uitzetten</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">De huidige pagina afdrukken</translation>
@@ -15,8 +14,10 @@
 <translation id="1477442857810932985">Naar het einde van de regel gaan</translation>
 <translation id="1499072997694708844">Geopende zoekvensters sluiten of het laden van de huidige pagina stoppen</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1516966594427080024">Een nieuw venster openen in de incognitomodus</translation>
 <translation id="152892567002884378">Volume omhoog</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, en dan <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Naar bureau 1 tot en met 8 gaan</translation>
 <translation id="1652741121070700329">Naar het begin van het vorige woord gaan</translation>
 <translation id="1679841710523778799">Helderheid verhogen</translation>
 <translation id="168356808214100546">Houd <ph name="ALT" /> ingedrukt en tik op <ph name="TAB" /> totdat het venster verschijnt dat je wilt openen. Laat de toetsen vervolgens los.</translation>
@@ -34,25 +35,24 @@
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> of <ph name="F" /></translation>
 <translation id="2145908266289632567">Tekst bewerken</translation>
 <translation id="215292019801409139"><ph name="SEARCH" /><ph name="SEPARATOR" /> 1 tot en met =</translation>
-<translation id="2181097965834437145">Bookmarkbalk tonen of verbergen</translation>
+<translation id="2181097965834437145">Bookmarkbalk bekijken of verbergen</translation>
 <translation id="2185166372312820725">Naar het vorige tabblad gaan</translation>
 <translation id="2194790690264064655">Druk op <ph name="CTRL" /> en klik op een link</translation>
 <translation id="2246352309084894470">De Launcher op volledig scherm openen/sluiten</translation>
 <translation id="2354531887393764880">punt</translation>
 <translation id="2382644247745281995">Niet ondersteund met de huidige toetsenbordindeling</translation>
-<translation id="2397416548179033562">Chrome-menu tonen</translation>
-<translation id="2424073332829844142">Caps Lock in- en uitschakelen</translation>
+<translation id="2397416548179033562">Chrome-menu bekijken</translation>
+<translation id="2424073332829844142">Caps Lock aan- en uitzetten</translation>
 <translation id="2441202986792279177">Snel schakelen tussen vensters</translation>
 <translation id="2454251766545114447">Uitzoomen scherm</translation>
-<translation id="2478303094958140141">ChromeVox (gesproken feedback) in- of uitschakelen</translation>
+<translation id="2478303094958140141">ChromeVox (gesproken feedback) aan- of uitzetten</translation>
 <translation id="2480851840841871861">Google Assistent openen</translation>
 <translation id="2488661730534396940">Het bureaublad aan de linkerkant activeren</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">App voor diagnostische gegevens openen</translation>
 <translation id="2530339807289914946">Omlaag bladeren op de webpagina</translation>
-<translation id="2530896289327917474">Browsen met navigatietoetsen in- of uitschakelen</translation>
+<translation id="2530896289327917474">Browsen met navigatietoetsen aan- of uitzetten</translation>
 <translation id="2574014812750545982">Zoomniveau op de pagina resetten</translation>
-<translation id="2596078834055697711">Een screenshot van het venster maken</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, en dan <ph name="TAB" /> of <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">De huidige pagina opnieuw laden</translation>
 <translation id="2764005613199379871">De focus in de zoek-/adresbalk plaatsen</translation>
@@ -62,21 +62,23 @@
 <translation id="2830827904629746450">Een venster aan de rechterkant docken</translation>
 <translation id="2840766858109427815">Ga verder naar de volgende pagina</translation>
 <translation id="2872353916818027657">Primaire monitor omwisselen</translation>
-<translation id="2914313326123580426">Deelvenster 'Hulpprogramma's voor ontwikkelaars' tonen of verbergen</translation>
-<translation id="292495055542441795">Volledig scherm in-/uitschakelen</translation>
+<translation id="2914313326123580426">Deelvenster 'Hulpprogramma's voor ontwikkelaars' bekijken of verbergen</translation>
+<translation id="292495055542441795">Volledig scherm aan- en uitzetten</translation>
 <translation id="3020183492814296499">Snelkoppelingen</translation>
 <translation id="3084301071537457911">Het volgende item op de plank markeren</translation>
 <translation id="309173601632226815">De Launcher-knop op de plank markeren</translation>
-<translation id="3105917916468784889">Screenshot maken</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Adresbalk activeren</translation>
 <translation id="3256109297135787951">De markering voor een item op je plank verwijderen</translation>
 <translation id="3288816184963444640">Het huidige venster sluiten</translation>
-<translation id="3407560819924487926">Taakbeheer tonen</translation>
+<translation id="3322797428033495633">De focus op het scherm-in-scherm-venster zetten</translation>
+<translation id="3350805006883559974">Actief venster altijd bovenaan</translation>
+<translation id="3407560819924487926">Taakbeheer bekijken</translation>
+<translation id="3417835166382867856">Tabbladen doorzoeken</translation>
 <translation id="3422679037938588196">Naar de vorige term gaan die overeenkomt met je zoekopdracht</translation>
 <translation id="353037708190149633">Alle geopende pagina's in je huidige venster als bookmarks opslaan in een nieuwe map</translation>
 <translation id="355103131818127604">De link openen op een nieuw tabblad op de achtergrond</translation>
-<translation id="3622741593887335780">Inzoomen (indien gedockt OF wanneer 'Volledig scherm vergroten' is ingeschakeld)</translation>
+<translation id="3622741593887335780">Inzoomen (als vastgezet vergrootglas OF vergrootglas voor volledig scherm aanstaat)</translation>
 <translation id="3633851487917460983">Klembord openen</translation>
 <translation id="3649256019230929621">Venster minimaliseren</translation>
 <translation id="3655154169297074232">Tabbladen en vensters</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">komma</translation>
 <translation id="3976863468609830880">Klikken op het laatste icoon op de plank</translation>
 <translation id="3994783594793697310">Zoomniveau scherm resetten</translation>
+<translation id="4026837045671473537">Modus voor kleurinversie aanzetten</translation>
 <translation id="4026843240379844265">Actief venster verplaatsen tussen schermen</translation>
 <translation id="4035482366624727273">Alles op de pagina selecteren</translation>
 <translation id="4060703249685950734">Het laatste tabblad of venster dat je hebt gesloten, opnieuw openen</translation>
@@ -108,37 +111,37 @@
 <translation id="4556221320735744018">Hulp voor sneltoetsen openen</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> of <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Het statusgedeelte openen (waar je je accountafbeelding ziet)</translation>
-<translation id="4642092649622328492">Gedeeltelijk screenshot maken</translation>
-<translation id="4698850295812410683">Stylustools tonen</translation>
+<translation id="4698850295812410683">Stylustools bekijken</translation>
 <translation id="4801989101741319327">Naar het eind van het volgende woord gaan</translation>
 <translation id="4866066940972151697">Het bureaublad aan de rechterkant activeren</translation>
 <translation id="4916163929714267752">De link openen in een nieuw venster</translation>
 <translation id="492453977506755176">Toets voor opnamemodus</translation>
-<translation id="5030659775136592441">Bookmarkmanager tonen</translation>
+<translation id="5030659775136592441">Bookmarkmanager bekijken</translation>
 <translation id="5034421018520995080">Naar bovenkant van pagina gaan</translation>
 <translation id="5042305953558921026">Toets voor de overzichtsmodus</translation>
 <translation id="5104462712192763270">De huidige pagina opslaan</translation>
 <translation id="5121628974188116412">Naar onderkant van pagina gaan</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
-<translation id="5236674127086649162">De huidige pagina opnieuw laden en content in het cachegeheugen negeren</translation>
+<translation id="5236674127086649162">De huidige pagina opnieuw laden en gecachete content negeren</translation>
 <translation id="526651782186312376">Tekst tot het begin van de regel selecteren</translation>
 <translation id="5316716239522500219">Monitoren spiegelen</translation>
-<translation id="539072479502328326">'Vastgezet vergrootglas' in- of uitschakelen</translation>
+<translation id="539072479502328326">Vastgezet vergrootglas aan- en uitzetten</translation>
+<translation id="5466615362193675484">Het menu voor de formaatvergrendelingsmodus aan-/uitzetten</translation>
 <translation id="5541719484267030947">Druk op <ph name="ESC" /> tijdens het slepen van het tabblad</translation>
 <translation id="5554139136362089836">Zoeken op de huidige pagina</translation>
 <translation id="5563050856984839829">Druk op <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> en klik op een link</translation>
 <translation id="561814908794220892">De webpagina openen op een nieuw tabblad</translation>
 <translation id="5620219513321115856">Actief venster verplaatsen naar het bureaublad aan de rechterkant</translation>
+<translation id="5699366815052349604">Actief venster toewijzen aan alle bureaus</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> of <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">De link openen op het tabblad</translation>
 <translation id="5757474750054631686">Toetsenbord dimmen (alleen voor toetsenborden met achtergrondverlichting)</translation>
 <translation id="587531134027443617">Het vorige woord verwijderen</translation>
-<translation id="5899919361772749550">Developer Tools-console tonen of verbergen</translation>
-<translation id="5919628958418675842">Privacyscherm in- of uitschakelen</translation>
+<translation id="5899919361772749550">Developer Tools-console bekijken of verbergen</translation>
+<translation id="5919628958418675842">Privacyscherm aan- en uitzetten</translation>
 <translation id="5921745308587794300">Venster draaien</translation>
 <translation id="5926306472221400972">Screenshot van volledig scherm maken</translation>
 <translation id="6022924867608035986">Tekst in zoekvak wissen</translation>
-<translation id="6045998054441862242">Modus voor hoog contrast inschakelen</translation>
 <translation id="6052614013050385269">Rechtsklikken op een link</translation>
 <translation id="6129953537138746214">Spatie</translation>
 <translation id="6143669479988153888">Inzoomen op de pagina</translation>
@@ -147,20 +150,22 @@
 <translation id="6276708887952587684">Paginabron bekijken</translation>
 <translation id="6321940490215594447">De pagina Geschiedenis openen</translation>
 <translation id="6340769215862220182">Inzoomen scherm</translation>
+<translation id="634687982629734605">Focus schakelen tussen: statusgedeelte (waar je je accountafbeelding ziet), Launcher, adresbalk, bookmarkbalk (indien zichtbaar), de geopende webpagina en de downloadbalk (indien zichtbaar). Als een dialoogvenster wordt getoond waarop de focus kan worden gezet, wordt de focus daar naartoe verplaatst.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Tekst tot het einde van de regel selecteren</translation>
 <translation id="6425378783626925378">Klikken op icoon 1-8 op de plank</translation>
 <translation id="6435207348963613811">Het vorige item op de plank markeren</translation>
 <translation id="6445033640292336367">Het tabblad terugzetten op zijn oorspronkelijke positie</translation>
-<translation id="6474744297082284761">Uitzoomen (indien gedockt OF wanneer 'Volledig scherm vergroten' is ingeschakeld)</translation>
+<translation id="6474744297082284761">Uitzoomen (als vastgezet vergrootglas OF vergrootglas voor volledig scherm aanstaat)</translation>
 <translation id="649811797655257835">Selecteer het bestand en druk op <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">De Agenda-widget openen of sluiten.</translation>
 <translation id="6551886416582667425">Gedeeltelijk screenshot/gedeeltelijke opname maken</translation>
 <translation id="6556040137485212400">Het venster openen dat het langst ongebruikt is geweest</translation>
 <translation id="666343722268997814">Het menu dat met de rechtermuisknop worden geopend, openen voor het gemarkeerde item</translation>
 <translation id="6671538777808758331">Naar de volgende term gaan die overeenkomt met je zoekopdracht</translation>
 <translation id="6681606577947445973"><ph name="REFRESH" /> of <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="R" /></translation>
 <translation id="6690765639083431875">Een venster aan de linkerkant docken</translation>
-<translation id="6692847073476874842">Voorbeeld van een bestand in de app Bestanden tonen</translation>
+<translation id="6692847073476874842">Voorbeeld van een bestand in de app Bestanden bekijken</translation>
 <translation id="671928215901716392">Scherm vergrendelen</translation>
 <translation id="6727005317916125192">Vorig venster</translation>
 <translation id="6740781404993465795">Het volgende woord of de volgende letter selecteren</translation>
@@ -190,26 +195,26 @@
 <translation id="8026334261755873520">Browsegegevens wissen</translation>
 <translation id="8130528849632411619">Naar het begin van het document gaan</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> of <ph name="E" /></translation>
-<translation id="8232835244134740473">Focus schakelen tussen: statusgedeelte (waar je je accountafbeelding ziet), Launcher, adresbalk, bookmarkbalk (indien zichtbaar), de geopende webpagina en de downloadbalk (indien zichtbaar).</translation>
 <translation id="8234414138295101081">Scherm 90 graden draaien</translation>
 <translation id="8241665785394195545">rechte haak rechts</translation>
-<translation id="8264941229485248811">Developer Tools-inspector tonen of verbergen</translation>
+<translation id="8264941229485248811">Developer Tools-inspector bekijken of verbergen</translation>
 <translation id="836869401750819675">De pagina Downloads openen</translation>
 <translation id="8388247778047144397">Sleep de link naar een blanco gedeelte van de tabbladstrook</translation>
 <translation id="8389638407792712197">Nieuw venster openen</translation>
 <translation id="8429696719963529183">De F-toetsen gebruiken (F1 tot en met F12)</translation>
-<translation id="8537650670971624753">Zoekmodus afsluiten</translation>
 <translation id="85690795166292698">De link openen op een nieuw tabblad</translation>
 <translation id="8609384513243082612">Nieuw tabblad openen</translation>
-<translation id="8644639153978066712">Verborgen bestanden in de app Bestanden weergeven</translation>
+<translation id="8644639153978066712">Verborgen bestanden in de app Bestanden bekijken</translation>
 <translation id="8717459106217102612">Het vorige woord of de vorige letter selecteren</translation>
 <translation id="8727232706774971183">Je meldingen bekijken</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 tot en met 8</translation>
 <translation id="8855885154700222542">Toets voor volledig scherm</translation>
 <translation id="8881584919399569791">Actief venster verplaatsen naar het bureaublad aan de linkerkant</translation>
 <translation id="88986195241502842">Page Down</translation>
 <translation id="8924883688469390268">Overschakelen naar de vorige gebruiker</translation>
+<translation id="8941626538514548667">Webcontent in de browser highlighten</translation>
 <translation id="8977648847395357314">De content in de adresbalk selecteren</translation>
-<translation id="8982190978301344584">Menu met beschikbare IME's tonen</translation>
+<translation id="8982190978301344584">Menu met beschikbare IME's bekijken</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 tot en met 8</translation>
 <translation id="9005984960510803406">Crosh-venster openen</translation>
 <translation id="9041599225465145264">Content vanaf het klembord plakken</translation>

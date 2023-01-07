@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test that trial is enabled by third-party token, injected by a source-mapped classic script</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/origintrials.js"></script>
+<script src="http://localhost:8000/origin_trials/resources/inject-third-party-token-sourcemapped.js"></script>
+<script>
+  // The trial is enabled, by the third party token added in
+  // inject-third-party-token-sourcemapped.js, which is an external classic script, served
+  // from a different origin.
+  expect_success_third_party();
+</script>

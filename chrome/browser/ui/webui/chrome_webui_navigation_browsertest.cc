@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "ipc/ipc_security_test_util.h"
@@ -21,31 +23,16 @@
 
 // Tests embedder specific behavior of WebUIs.
 class ChromeWebUINavigationBrowserTest : public InProcessBrowserTest {
- public:
-  ChromeWebUINavigationBrowserTest() {
-    content::WebUIControllerFactory::RegisterFactory(&factory_);
-    content::WebUIControllerFactory::RegisterFactory(&untrusted_factory_);
-  }
-
-  ~ChromeWebUINavigationBrowserTest() override {
-    content::WebUIControllerFactory::UnregisterFactoryForTesting(
-        &untrusted_factory_);
-    content::WebUIControllerFactory::UnregisterFactoryForTesting(&factory_);
-  }
-
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
-    return untrusted_factory_;
-  }
-
  private:
   content::TestWebUIControllerFactory factory_;
-  ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
+  content::ScopedWebUIControllerFactoryRegistration factory_registration_{
+      &factory_};
 };
 
 // Verify that a browser check stops websites from embeding chrome:// iframes.
@@ -56,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUINavigationBrowserTest,
                        DisallowEmbeddingChromeSchemeFromWebFrameBrowserCheck) {
   GURL main_frame_url(embedded_test_server()->GetURL("/title1.html"));
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
   // Add iframe but don't navigate it to a chrome:// URL yet.
@@ -89,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(
     DisallowEmbeddingChromeUntrustedSchemeFromWebFrameBrowserCheck) {
   GURL main_frame_url(embedded_test_server()->GetURL("/title1.html"));
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
   // Add iframe but don't navigate it to a chrome-untrusted:// URL yet.
@@ -103,10 +90,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("about:blank", child->GetLastCommittedURL());
 
   content::TestNavigationObserver observer(web_contents);
-  content::TestUntrustedDataSourceCSP csp;
-  csp.no_xfo = true;
-  untrusted_factory().add_web_ui_config(
-      std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host", csp));
+  content::TestUntrustedDataSourceHeaders headers;
+  headers.no_xfo = true;
+  content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host",
+                                                     headers));
 
   content::PwnMessageHelper::OpenURL(
       child, content::GetChromeUntrustedUIURL("test-iframe-host/title1.html"));

@@ -25,9 +25,9 @@ test(() => {
   });
 
   animation.currentTime = 0;
-  assert_equals(getComputedStyle(target).getPropertyValue('--a'), '100', '--a at 0%');
-  assert_equals(getComputedStyle(target).getPropertyValue('--b'), '100', '--b at 0%');
-  assert_equals(getComputedStyle(target).getPropertyValue('--c'), '100', '--c at 0%');
+  assert_equals(getComputedStyle(target).getPropertyValue('--a'), 'initial-value', '--a at 0%');
+  assert_equals(getComputedStyle(target).getPropertyValue('--b'), 'initial-value', '--b at 0%');
+  assert_equals(getComputedStyle(target).getPropertyValue('--c'), 'initial-value', '--c at 0%');
 
   animation.currentTime = 25;
   assert_equals(getComputedStyle(target).getPropertyValue('--a'), 'initial-value', '--a at 25%');
@@ -35,9 +35,9 @@ test(() => {
   assert_equals(getComputedStyle(target).getPropertyValue('--c'), 'initial-value', '--c at 25%');
 
   animation.currentTime = 50;
-  assert_equals(getComputedStyle(target).getPropertyValue('--a'), '200', '--a at 50%');
-  assert_equals(getComputedStyle(target).getPropertyValue('--b'), '200', '--b at 50%');
-  assert_equals(getComputedStyle(target).getPropertyValue('--c'), '200', '--c at 50%');
+  assert_equals(getComputedStyle(target).getPropertyValue('--a'), 'initial-value', '--a at 50%');
+  assert_equals(getComputedStyle(target).getPropertyValue('--b'), 'initial-value', '--b at 50%');
+  assert_equals(getComputedStyle(target).getPropertyValue('--c'), 'initial-value', '--c at 50%');
 
   animation.currentTime = 75;
   assert_equals(getComputedStyle(target).getPropertyValue('--a'), 'initial-value', '--a at 75%');
@@ -45,8 +45,8 @@ test(() => {
   assert_equals(getComputedStyle(target).getPropertyValue('--c'), 'initial-value', '--c at 75%');
 
   animation.currentTime = 100;
-  assert_equals(getComputedStyle(target).getPropertyValue('--a'), '300', '--a at 100%');
-  assert_equals(getComputedStyle(target).getPropertyValue('--b'), '300', '--b at 100%');
-  assert_equals(getComputedStyle(target).getPropertyValue('--c'), '300', '--c at 100%');
+  assert_equals(getComputedStyle(target).getPropertyValue('--a'), 'initial-value', '--a at 100%');
+  assert_equals(getComputedStyle(target).getPropertyValue('--b'), 'initial-value', '--b at 100%');
+  assert_equals(getComputedStyle(target).getPropertyValue('--c'), 'initial-value', '--c at 100%');
 }, 'Animated registered custom properties are invalid at computed-value time when there is a cyclic var() dependency between them.');
 </script>

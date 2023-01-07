@@ -1,15 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_SIGNALING_MESSAGE_RECEPTION_CHANNEL_H_
 #define REMOTING_SIGNALING_MESSAGE_RECEPTION_CHANNEL_H_
 
-#include <list>
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 
 namespace remoting {
@@ -34,6 +32,10 @@ class MessageReceptionChannel {
       base::OnceCallback<void(const ProtobufHttpStatus& status)>;
 
   MessageReceptionChannel() = default;
+
+  MessageReceptionChannel(const MessageReceptionChannel&) = delete;
+  MessageReceptionChannel& operator=(const MessageReceptionChannel&) = delete;
+
   virtual ~MessageReceptionChannel() = default;
 
   virtual void Initialize(const StreamOpener& stream_opener,
@@ -54,9 +56,6 @@ class MessageReceptionChannel {
 
   // Returns true if the streaming channel is open.
   virtual bool IsReceivingMessages() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessageReceptionChannel);
 };
 
 }  // namespace remoting

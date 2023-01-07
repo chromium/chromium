@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "url/gurl.h"
@@ -70,20 +71,21 @@ const std::string& ReplacementAppsInfo::GetReplacementAndroidApp(
 
 bool ReplacementAppsInfo::LoadWebApp(const Extension* extension,
                                      std::u16string* error) {
-  const base::Value* app_value = nullptr;
-  if (!extension->manifest()->Get(keys::kReplacementWebApp, &app_value)) {
+  const base::Value* app_value =
+      extension->manifest()->FindPath(keys::kReplacementWebApp);
+  if (app_value == nullptr) {
     return true;
   }
 
   DCHECK(app_value);
   if (!app_value->is_string()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidReplacementWebApp);
+    *error = errors::kInvalidReplacementWebApp;
     return false;
   }
 
   const GURL web_app_url(app_value->GetString());
   if (!web_app_url.is_valid() || !web_app_url.SchemeIs(url::kHttpsScheme)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidReplacementWebApp);
+    *error = errors::kInvalidReplacementWebApp;
     return false;
   }
 
@@ -93,18 +95,19 @@ bool ReplacementAppsInfo::LoadWebApp(const Extension* extension,
 
 bool ReplacementAppsInfo::LoadAndroidApp(const Extension* extension,
                                          std::u16string* error) {
-  const base::Value* app_value = nullptr;
-  if (!extension->manifest()->Get(keys::kReplacementAndroidApp, &app_value)) {
+  const base::Value* app_value =
+      extension->manifest()->FindPath(keys::kReplacementAndroidApp);
+  if (app_value == nullptr) {
     return true;
   }
 
   DCHECK(app_value);
   if (!app_value->is_string()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidReplacementAndroidApp);
+    *error = errors::kInvalidReplacementAndroidApp;
     return false;
   }
 
-  replacement_android_app = std::move(app_value->GetString());
+  replacement_android_app = app_value->GetString();
   return true;
 }
 

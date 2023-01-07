@@ -35,22 +35,22 @@
 #include "pitch.h"
 #include "main.h"
 
-#if !defined(OPUS_X86_PRESUME_SSE4_1)
+#if defined(OPUS_HAVE_RTCD) && !defined(OPUS_X86_PRESUME_SSE4_1)
 
 #if defined(FIXED_POINT)
 
 #include "fixed/main_FIX.h"
 
-opus_int64 (*const SILK_INNER_PROD16_ALIGNED_64_IMPL[ OPUS_ARCHMASK + 1 ] )(
+opus_int64 (*const SILK_INNER_PROD16_IMPL[ OPUS_ARCHMASK + 1 ] )(
     const opus_int16 *inVec1,
     const opus_int16 *inVec2,
     const opus_int   len
 ) = {
-  silk_inner_prod16_aligned_64_c,                  /* non-sse */
-  silk_inner_prod16_aligned_64_c,
-  silk_inner_prod16_aligned_64_c,
-  MAY_HAVE_SSE4_1( silk_inner_prod16_aligned_64 ), /* sse4.1 */
-  MAY_HAVE_SSE4_1( silk_inner_prod16_aligned_64 )  /* avx */
+  silk_inner_prod16_c,                  /* non-sse */
+  silk_inner_prod16_c,
+  silk_inner_prod16_c,
+  MAY_HAVE_SSE4_1( silk_inner_prod16 ), /* sse4.1 */
+  MAY_HAVE_SSE4_1( silk_inner_prod16 )  /* avx */
 };
 
 #endif
@@ -66,23 +66,22 @@ opus_int (*const SILK_VAD_GETSA_Q8_IMPL[ OPUS_ARCHMASK + 1 ] )(
   MAY_HAVE_SSE4_1( silk_VAD_GetSA_Q8 )  /* avx */
 };
 
-#if 0 /* FIXME: SSE disabled until the NSQ code gets updated. */
 void (*const SILK_NSQ_IMPL[ OPUS_ARCHMASK + 1 ] )(
-    const silk_encoder_state    *psEncC,                                    /* I    Encoder State                   */
-    silk_nsq_state              *NSQ,                                       /* I/O  NSQ state                       */
-    SideInfoIndices             *psIndices,                                 /* I/O  Quantization Indices            */
-    const opus_int32            x_Q3[],                                     /* I    Prefiltered input signal        */
-    opus_int8                   pulses[],                                   /* O    Quantized pulse signal          */
-    const opus_int16            PredCoef_Q12[ 2 * MAX_LPC_ORDER ],          /* I    Short term prediction coefs     */
-    const opus_int16            LTPCoef_Q14[ LTP_ORDER * MAX_NB_SUBFR ],    /* I    Long term prediction coefs      */
-    const opus_int16            AR2_Q13[ MAX_NB_SUBFR * MAX_SHAPE_LPC_ORDER ], /* I Noise shaping coefs             */
-    const opus_int              HarmShapeGain_Q14[ MAX_NB_SUBFR ],          /* I    Long term shaping coefs         */
-    const opus_int              Tilt_Q14[ MAX_NB_SUBFR ],                   /* I    Spectral tilt                   */
-    const opus_int32            LF_shp_Q14[ MAX_NB_SUBFR ],                 /* I    Low frequency shaping coefs     */
-    const opus_int32            Gains_Q16[ MAX_NB_SUBFR ],                  /* I    Quantization step sizes         */
-    const opus_int              pitchL[ MAX_NB_SUBFR ],                     /* I    Pitch lags                      */
-    const opus_int              Lambda_Q10,                                 /* I    Rate/distortion tradeoff        */
-    const opus_int              LTP_scale_Q14                               /* I    LTP state scaling               */
+    const silk_encoder_state    *psEncC,                                      /* I    Encoder State                   */
+    silk_nsq_state              *NSQ,                                         /* I/O  NSQ state                       */
+    SideInfoIndices             *psIndices,                                   /* I/O  Quantization Indices            */
+    const opus_int16            x16[],                                        /* I    Input                           */
+    opus_int8                   pulses[],                                     /* O    Quantized pulse signal          */
+    const opus_int16            PredCoef_Q12[ 2 * MAX_LPC_ORDER ],            /* I    Short term prediction coefs     */
+    const opus_int16            LTPCoef_Q14[ LTP_ORDER * MAX_NB_SUBFR ],      /* I    Long term prediction coefs      */
+    const opus_int16            AR_Q13[ MAX_NB_SUBFR * MAX_SHAPE_LPC_ORDER ], /* I    Noise shaping coefs             */
+    const opus_int              HarmShapeGain_Q14[ MAX_NB_SUBFR ],            /* I    Long term shaping coefs         */
+    const opus_int              Tilt_Q14[ MAX_NB_SUBFR ],                     /* I    Spectral tilt                   */
+    const opus_int32            LF_shp_Q14[ MAX_NB_SUBFR ],                   /* I    Low frequency shaping coefs     */
+    const opus_int32            Gains_Q16[ MAX_NB_SUBFR ],                    /* I    Quantization step sizes         */
+    const opus_int              pitchL[ MAX_NB_SUBFR ],                       /* I    Pitch lags                      */
+    const opus_int              Lambda_Q10,                                   /* I    Rate/distortion tradeoff        */
+    const opus_int              LTP_scale_Q14                                 /* I    LTP state scaling               */
 ) = {
   silk_NSQ_c,                  /* non-sse */
   silk_NSQ_c,
@@ -90,21 +89,20 @@ void (*const SILK_NSQ_IMPL[ OPUS_ARCHMASK + 1 ] )(
   MAY_HAVE_SSE4_1( silk_NSQ ), /* sse4.1 */
   MAY_HAVE_SSE4_1( silk_NSQ )  /* avx */
 };
-#endif
 
-#if 0 /* FIXME: SSE disabled until silk_VQ_WMat_EC_sse4_1() gets updated. */
 void (*const SILK_VQ_WMAT_EC_IMPL[ OPUS_ARCHMASK + 1 ] )(
     opus_int8                   *ind,                           /* O    index of best codebook vector               */
-    opus_int32                  *rate_dist_Q14,                 /* O    best weighted quant error + mu * rate       */
+    opus_int32                  *res_nrg_Q15,                   /* O    best residual energy                        */
+    opus_int32                  *rate_dist_Q8,                  /* O    best total bitrate                          */
     opus_int                    *gain_Q7,                       /* O    sum of absolute LTP coefficients            */
-    const opus_int16            *in_Q14,                        /* I    input vector to be quantized                */
-    const opus_int32            *W_Q18,                         /* I    weighting matrix                            */
+    const opus_int32            *XX_Q17,                        /* I    correlation matrix                          */
+    const opus_int32            *xX_Q17,                        /* I    correlation vector                          */
     const opus_int8             *cb_Q7,                         /* I    codebook                                    */
     const opus_uint8            *cb_gain_Q7,                    /* I    codebook effective gain                     */
     const opus_uint8            *cl_Q5,                         /* I    code length for each codebook vector        */
-    const opus_int              mu_Q9,                          /* I    tradeoff betw. weighted error and rate      */
+    const opus_int              subfr_len,                      /* I    number of samples per subframe              */
     const opus_int32            max_gain_Q7,                    /* I    maximum sum of absolute LTP coefficients    */
-    opus_int                    L                               /* I    number of vectors in codebook               */
+    const opus_int              L                               /* I    number of vectors in codebook               */
 ) = {
   silk_VQ_WMat_EC_c,                  /* non-sse */
   silk_VQ_WMat_EC_c,
@@ -112,25 +110,23 @@ void (*const SILK_VQ_WMAT_EC_IMPL[ OPUS_ARCHMASK + 1 ] )(
   MAY_HAVE_SSE4_1( silk_VQ_WMat_EC ), /* sse4.1 */
   MAY_HAVE_SSE4_1( silk_VQ_WMat_EC )  /* avx */
 };
-#endif
 
-#if 0 /* FIXME: SSE disabled until the NSQ code gets updated. */
 void (*const SILK_NSQ_DEL_DEC_IMPL[ OPUS_ARCHMASK + 1 ] )(
-    const silk_encoder_state    *psEncC,                                    /* I    Encoder State                   */
-    silk_nsq_state              *NSQ,                                       /* I/O  NSQ state                       */
-    SideInfoIndices             *psIndices,                                 /* I/O  Quantization Indices            */
-    const opus_int32            x_Q3[],                                     /* I    Prefiltered input signal        */
-    opus_int8                   pulses[],                                   /* O    Quantized pulse signal          */
-    const opus_int16            PredCoef_Q12[ 2 * MAX_LPC_ORDER ],          /* I    Short term prediction coefs     */
-    const opus_int16            LTPCoef_Q14[ LTP_ORDER * MAX_NB_SUBFR ],    /* I    Long term prediction coefs      */
-    const opus_int16            AR2_Q13[ MAX_NB_SUBFR * MAX_SHAPE_LPC_ORDER ], /* I Noise shaping coefs             */
-    const opus_int              HarmShapeGain_Q14[ MAX_NB_SUBFR ],          /* I    Long term shaping coefs         */
-    const opus_int              Tilt_Q14[ MAX_NB_SUBFR ],                   /* I    Spectral tilt                   */
-    const opus_int32            LF_shp_Q14[ MAX_NB_SUBFR ],                 /* I    Low frequency shaping coefs     */
-    const opus_int32            Gains_Q16[ MAX_NB_SUBFR ],                  /* I    Quantization step sizes         */
-    const opus_int              pitchL[ MAX_NB_SUBFR ],                     /* I    Pitch lags                      */
-    const opus_int              Lambda_Q10,                                 /* I    Rate/distortion tradeoff        */
-    const opus_int              LTP_scale_Q14                               /* I    LTP state scaling               */
+    const silk_encoder_state    *psEncC,                                      /* I    Encoder State                   */
+    silk_nsq_state              *NSQ,                                         /* I/O  NSQ state                       */
+    SideInfoIndices             *psIndices,                                   /* I/O  Quantization Indices            */
+    const opus_int16            x16[],                                        /* I    Input                           */
+    opus_int8                   pulses[],                                     /* O    Quantized pulse signal          */
+    const opus_int16            PredCoef_Q12[ 2 * MAX_LPC_ORDER ],            /* I    Short term prediction coefs     */
+    const opus_int16            LTPCoef_Q14[ LTP_ORDER * MAX_NB_SUBFR ],      /* I    Long term prediction coefs      */
+    const opus_int16            AR_Q13[ MAX_NB_SUBFR * MAX_SHAPE_LPC_ORDER ], /* I    Noise shaping coefs             */
+    const opus_int              HarmShapeGain_Q14[ MAX_NB_SUBFR ],            /* I    Long term shaping coefs         */
+    const opus_int              Tilt_Q14[ MAX_NB_SUBFR ],                     /* I    Spectral tilt                   */
+    const opus_int32            LF_shp_Q14[ MAX_NB_SUBFR ],                   /* I    Low frequency shaping coefs     */
+    const opus_int32            Gains_Q16[ MAX_NB_SUBFR ],                    /* I    Quantization step sizes         */
+    const opus_int              pitchL[ MAX_NB_SUBFR ],                       /* I    Pitch lags                      */
+    const opus_int              Lambda_Q10,                                   /* I    Rate/distortion tradeoff        */
+    const opus_int              LTP_scale_Q14                                 /* I    LTP state scaling               */
 ) = {
   silk_NSQ_del_dec_c,                  /* non-sse */
   silk_NSQ_del_dec_c,
@@ -138,7 +134,6 @@ void (*const SILK_NSQ_DEL_DEC_IMPL[ OPUS_ARCHMASK + 1 ] )(
   MAY_HAVE_SSE4_1( silk_NSQ_del_dec ), /* sse4.1 */
   MAY_HAVE_SSE4_1( silk_NSQ_del_dec )  /* avx */
 };
-#endif
 
 #if defined(FIXED_POINT)
 

@@ -1,82 +1,56 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/ime/init/input_method_initializer.h"
 
-#include <ostream>
-
+#include "base/bind.h"
+#include "base/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#elif defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "base/check.h"
-#include "ui/base/ime/linux/fake_input_method_context_factory.h"
-#elif defined(OS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#include "ui/base/ime/linux/fake_input_method_context.h"
+#include "ui/base/ime/linux/linux_input_method_context_factory.h"
+#elif BUILDFLAG(IS_WIN)
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/win/tsf_bridge.h"
 #endif
 
-namespace {
-
-#if defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-const ui::LinuxInputMethodContextFactory*
-    g_linux_input_method_context_factory_for_testing;
-#endif
-
-}  // namespace
-
 namespace ui {
 
 void InitializeInputMethod() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  IMEBridge::Initialize();
-#elif defined(OS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(IS_WIN)
   TSFBridge::Initialize();
 #endif
 }
 
 void ShutdownInputMethod() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  IMEBridge::Shutdown();
-#elif defined(OS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(IS_WIN)
   TSFBridge::Shutdown();
 #endif
 }
 
 void InitializeInputMethodForTesting() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  IMEBridge::Initialize();
-#elif defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-  if (!g_linux_input_method_context_factory_for_testing)
-    g_linux_input_method_context_factory_for_testing =
-        new FakeInputMethodContextFactory();
-  const LinuxInputMethodContextFactory* factory =
-      LinuxInputMethodContextFactory::instance();
-  CHECK(!factory || factory == g_linux_input_method_context_factory_for_testing)
-      << "LinuxInputMethodContextFactory was already initialized somewhere "
-      << "else.";
-  LinuxInputMethodContextFactory::SetInstance(
-      g_linux_input_method_context_factory_for_testing);
-#elif defined(OS_WIN)
+#if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
+  GetInputMethodContextFactoryForTest() =
+      base::BindRepeating([](LinuxInputMethodContextDelegate* delegate)
+                              -> std::unique_ptr<LinuxInputMethodContext> {
+        return std::make_unique<FakeInputMethodContext>();
+      });
+#elif BUILDFLAG(IS_WIN)
   TSFBridge::InitializeForTesting();
 #endif
 }
 
 void ShutdownInputMethodForTesting() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  IMEBridge::Shutdown();
-#elif defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-  const LinuxInputMethodContextFactory* factory =
-      LinuxInputMethodContextFactory::instance();
-  CHECK(!factory || factory == g_linux_input_method_context_factory_for_testing)
-      << "An unknown LinuxInputMethodContextFactory was set.";
-  LinuxInputMethodContextFactory::SetInstance(nullptr);
-  delete g_linux_input_method_context_factory_for_testing;
-  g_linux_input_method_context_factory_for_testing = nullptr;
-#elif defined(OS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+  // The function owns the factory (as a static variable that's returned by
+  // reference), so setting this to an empty factory will free the old one.
+  GetInputMethodContextFactoryForTest() = LinuxInputMethodContextFactory();
+#elif BUILDFLAG(IS_WIN)
   TSFBridge::Shutdown();
 #endif
 }

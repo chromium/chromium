@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,13 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "v8/include/v8.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "v8/include/v8-forward.h"
+
+namespace base {
+class Value;
+}
 
 namespace gin {
 class Arguments;
@@ -57,18 +63,25 @@ class OneTimeMessageHandler {
  public:
   explicit OneTimeMessageHandler(
       NativeExtensionBindingsSystem* bindings_system);
+
+  OneTimeMessageHandler(const OneTimeMessageHandler&) = delete;
+  OneTimeMessageHandler& operator=(const OneTimeMessageHandler&) = delete;
+
   ~OneTimeMessageHandler();
 
   // Returns true if the given context has a port with the specified id.
   bool HasPort(ScriptContext* script_context, const PortId& port_id);
 
-  // Initiates a flow to send a message from the given |script_context|.
-  void SendMessage(ScriptContext* script_context,
-                   const PortId& new_port_id,
-                   const MessageTarget& target_id,
-                   const std::string& method_name,
-                   const Message& message,
-                   v8::Local<v8::Function> response_callback);
+  // Initiates a flow to send a message from the given |script_context|. Returns
+  // the associated promise if this is a promise based request, otherwise
+  // returns an empty promise.
+  v8::Local<v8::Promise> SendMessage(ScriptContext* script_context,
+                                     const PortId& new_port_id,
+                                     const MessageTarget& target_id,
+                                     const std::string& method_name,
+                                     const Message& message,
+                                     binding::AsyncResponseType async_type,
+                                     v8::Local<v8::Function> response_callback);
 
   // Adds a receiving port port to the given |script_context| in preparation
   // for receiving a message to post to the onMessage event.
@@ -92,6 +105,10 @@ class OneTimeMessageHandler {
                   const PortId& port_id,
                   const std::string& error_message);
 
+  // Gets the number of pending callbacks on the associated per context data for
+  // testing purposes.
+  int GetPendingCallbackCountForTest(ScriptContext* script_context);
+
  private:
   // Helper methods to deliver a message to an opener/receiver.
   bool DeliverMessageToReceiver(ScriptContext* script_context,
@@ -111,22 +128,25 @@ class OneTimeMessageHandler {
   void OnOneTimeMessageResponse(const PortId& port_id,
                                 gin::Arguments* arguments);
 
-  // Triggered when the callback to reply is garbage collected.
+  // Triggered when the callback for replying is garbage collected. Used to
+  // clean up data that was stored for the callback and for closing the
+  // associated message port. |raw_callback| is a raw pointer to the associated
+  // OneTimeMessageCallback, needed for finding and erasing it from the
+  // OneTimeMessageContextData.
   void OnResponseCallbackCollected(ScriptContext* script_context,
-                                   const PortId& port_id);
+                                   const PortId& port_id,
+                                   void* raw_callback);
 
   // Called when the messaging event has been dispatched with the result of the
   // listeners.
   void OnEventFired(const PortId& port_id,
                     v8::Local<v8::Context> context,
-                    v8::MaybeLocal<v8::Value> result);
+                    absl::optional<base::Value> result);
 
   // The associated bindings system. Outlives this object.
   NativeExtensionBindingsSystem* const bindings_system_;
 
   base::WeakPtrFactory<OneTimeMessageHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OneTimeMessageHandler);
 };
 
 }  // namespace extensions

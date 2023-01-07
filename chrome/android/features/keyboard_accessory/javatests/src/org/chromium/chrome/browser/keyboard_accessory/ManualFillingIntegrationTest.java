@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,8 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -138,6 +140,24 @@ public class ManualFillingIntegrationTest {
         onView(allOf(isDisplayed(), isKeyboardAccessoryTabLayout()))
                 .perform(selectTabAtPosition(0));
         mHelper.waitForKeyboardToDisappear();
+        whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet)));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
+    public void testAccessorySheetShown() throws TimeoutException {
+        mHelper.loadTestPage(false);
+        // Register a sheet data provider so that sheet is available when needed.
+        mHelper.registerSheetDataProvider(AccessoryTabType.CREDIT_CARDS);
+
+        // Show the passwords accessory sheet without focusing on any fields.
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mHelper.getManualFillingCoordinator().showAccessorySheetTab(
+                                AccessoryTabType.CREDIT_CARDS));
+
+        // Verify that the accessory sheet is shown.
         whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet)));
     }
 
@@ -246,8 +266,8 @@ public class ManualFillingIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown();
         whenDisplayed(allOf(isDisplayed(), isKeyboardAccessoryTabLayout()));
 
-        // Clicking the email field hides the accessory again.
-        mHelper.clickEmailField(false);
+        // Clicking a field without completion hides the accessory again.
+        mHelper.clickFieldWithoutCompletion();
         mHelper.waitForKeyboardAccessoryToDisappear();
     }
 
@@ -267,10 +287,11 @@ public class ManualFillingIntegrationTest {
         mHelper.waitForKeyboardToDisappear();
         whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet)));
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivityTestRule.getActivity().getLayoutManager().showOverview(false); });
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivityTestRule.getActivity().getLayoutManager().hideOverview(false); });
+        LayoutTestUtils.startShowingAndWaitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
+
+        LayoutTestUtils.startShowingAndWaitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
 
         waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet)));
     }
@@ -347,7 +368,8 @@ public class ManualFillingIntegrationTest {
 
         // Initialize and wait for the infobar.
         InfoBarTestAnimationListener listener = new InfoBarTestAnimationListener();
-        mActivityTestRule.getInfoBarContainer().addAnimationListener(listener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getInfoBarContainer().addAnimationListener(listener));
         final String kInfoBarText = "SomeInfoBar";
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             SimpleConfirmInfoBarBuilder.create(
@@ -391,7 +413,8 @@ public class ManualFillingIntegrationTest {
 
         // Initialize and wait for the infobar.
         InfoBarTestAnimationListener listener = new InfoBarTestAnimationListener();
-        mActivityTestRule.getInfoBarContainer().addAnimationListener(listener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getInfoBarContainer().addAnimationListener(listener));
         final String kInfoBarText = "SomeInfoBar";
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             SimpleConfirmInfoBarBuilder.create(
@@ -463,8 +486,8 @@ public class ManualFillingIntegrationTest {
         whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet)));
         onView(withText(kSnackbarText)).check(matches(isCompletelyDisplayed()));
 
-        // Click into the email field to dismiss the keyboard accessory.
-        mHelper.clickEmailField(false);
+        // Click into a field without completion to dismiss the keyboard accessory.
+        mHelper.clickFieldWithoutCompletion();
         mHelper.waitForKeyboardAccessoryToDisappear();
         onView(withText(kSnackbarText)).check(matches(isCompletelyDisplayed()));
     }
@@ -480,7 +503,8 @@ public class ManualFillingIntegrationTest {
 
         // Initialize and wait for the infobar.
         InfoBarTestAnimationListener listener = new InfoBarTestAnimationListener();
-        mActivityTestRule.getInfoBarContainer().addAnimationListener(listener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getInfoBarContainer().addAnimationListener(listener));
         final String kInfoBarText = "SomeInfoBar";
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             SimpleConfirmInfoBarBuilder.create(

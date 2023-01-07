@@ -1,33 +1,36 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
 
+#include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/logging.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
 namespace {
 
-base::TimeDelta response_delay = base::TimeDelta::FromSeconds(0);
+base::TimeDelta response_delay = base::Seconds(0);
 
 }  // namespace
 
 safe_browsing::BinaryUploadService::Result
     FakeContentAnalysisDelegate::result_ =
         safe_browsing::BinaryUploadService::Result::SUCCESS;
+bool FakeContentAnalysisDelegate::dialog_shown_ = false;
+bool FakeContentAnalysisDelegate::dialog_canceled_ = false;
 
 FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
     base::RepeatingClosure delete_closure,
     StatusCallback status_callback,
-    EncryptionStatusCallback encryption_callback,
     std::string dm_token,
     content::WebContents* web_contents,
     Data data,
@@ -38,7 +41,6 @@ FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
                               safe_browsing::DeepScanAccessPoint::UPLOAD),
       delete_closure_(delete_closure),
       status_callback_(status_callback),
-      encryption_callback_(encryption_callback),
       dm_token_(std::move(dm_token)) {}
 
 FakeContentAnalysisDelegate::~FakeContentAnalysisDelegate() {
@@ -53,17 +55,37 @@ void FakeContentAnalysisDelegate::SetResponseResult(
 }
 
 // static
+void FakeContentAnalysisDelegate::ResetDialogFlags() {
+  dialog_shown_ = false;
+  dialog_canceled_ = false;
+}
+
+// static
+bool FakeContentAnalysisDelegate::WasDialogShown() {
+  return dialog_shown_;
+}
+
+// static
+bool FakeContentAnalysisDelegate::WasDialogCanceled() {
+  return dialog_canceled_;
+}
+
+// static
 std::unique_ptr<ContentAnalysisDelegate> FakeContentAnalysisDelegate::Create(
     base::RepeatingClosure delete_closure,
     StatusCallback status_callback,
-    EncryptionStatusCallback encryption_callback,
     std::string dm_token,
     content::WebContents* web_contents,
     Data data,
     CompletionCallback callback) {
   auto ret = std::make_unique<FakeContentAnalysisDelegate>(
-      delete_closure, status_callback, encryption_callback, std::move(dm_token),
-      web_contents, std::move(data), std::move(callback));
+      delete_closure, status_callback, std::move(dm_token), web_contents,
+      std::move(data), std::move(callback));
+  FilesRequestHandler::SetFactoryForTesting(base::BindRepeating(
+      &FakeFilesRequestHandler::Create,
+      base::BindRepeating(
+          &FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning,
+          base::Unretained(ret.get()))));
   return ret;
 }
 
@@ -151,16 +173,35 @@ FakeContentAnalysisDelegate::MalwareAndDlpResponse(
 
 void FakeContentAnalysisDelegate::Response(
     base::FilePath path,
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    absl::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
+        file_request_callback) {
   auto response =
       (status_callback_.is_null() ||
        result_ != safe_browsing::BinaryUploadService::Result::SUCCESS)
           ? enterprise_connectors::ContentAnalysisResponse()
           : status_callback_.Run(path);
-  if (path.empty())
+  if (request->IsAuthRequest()) {
     StringRequestCallback(result_, response);
-  else
-    FileRequestCallback(path, result_, response);
+    return;
+  }
+
+  switch (request->analysis_connector()) {
+    case AnalysisConnector::BULK_DATA_ENTRY:
+      StringRequestCallback(result_, response);
+      break;
+    case AnalysisConnector::FILE_ATTACHED:
+    case AnalysisConnector::FILE_DOWNLOADED:
+      DCHECK(file_request_callback.has_value());
+      std::move(file_request_callback.value()).Run(path, result_, response);
+      break;
+    case AnalysisConnector::PRINT:
+      PageRequestCallback(result_, response);
+      break;
+    case AnalysisConnector::FILE_TRANSFER:
+    case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
+      NOTREACHED();
+  }
 }
 
 void FakeContentAnalysisDelegate::UploadTextForDeepScanning(
@@ -172,23 +213,51 @@ void FakeContentAnalysisDelegate::UploadTextForDeepScanning(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
                      weakptr_factory_.GetWeakPtr(), base::FilePath(),
-                     std::move(request)),
+                     std::move(request), absl::nullopt),
       response_delay);
 }
 
-void FakeContentAnalysisDelegate::UploadFileForDeepScanning(
+void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
     safe_browsing::BinaryUploadService::Result result,
     const base::FilePath& path,
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    FakeFilesRequestHandler::FakeFileRequestCallback callback) {
   DCHECK(!path.empty());
+  if (GetDataForTesting()
+          .settings.cloud_or_local_settings.is_cloud_analysis()) {
+    DCHECK_EQ(dm_token_, request->device_token());
+  }
+
+  // Simulate a response.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FakeContentAnalysisDelegate::Response,
+                     weakptr_factory_.GetWeakPtr(), path, std::move(request),
+                     std::move(callback)),
+      response_delay);
+}
+
+void FakeContentAnalysisDelegate::UploadPageForDeepScanning(
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
   DCHECK_EQ(dm_token_, request->device_token());
 
   // Simulate a response.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
-                     weakptr_factory_.GetWeakPtr(), path, std::move(request)),
+                     weakptr_factory_.GetWeakPtr(), base::FilePath(),
+                     std::move(request), absl::nullopt),
       response_delay);
+}
+
+bool FakeContentAnalysisDelegate::ShowFinalResultInDialog() {
+  dialog_shown_ = true;
+  return ContentAnalysisDelegate::ShowFinalResultInDialog();
+}
+
+bool FakeContentAnalysisDelegate::CancelDialog() {
+  dialog_canceled_ = true;
+  return ContentAnalysisDelegate::CancelDialog();
 }
 
 }  // namespace enterprise_connectors

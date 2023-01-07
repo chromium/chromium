@@ -27,6 +27,8 @@
 
 #include <stdio.h>
 #include <ostream>  // NOLINT
+
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -45,7 +47,7 @@ bool CanBeAnchorNode<EditingStrategy>(Node* node) {
 template <>
 bool CanBeAnchorNode<EditingInFlatTreeStrategy>(Node* node) {
   return CanBeAnchorNode<EditingStrategy>(node) &&
-         (!node || node->CanParticipateInFlatTree());
+         (!node || !node->IsShadowRoot());
 }
 #endif
 
@@ -148,10 +150,11 @@ PositionTemplate<Strategy>::PositionTemplate(const Node& anchor_node,
     : PositionTemplate(&anchor_node, offset) {}
 
 template <typename Strategy>
-PositionTemplate<Strategy>::PositionTemplate(const PositionTemplate& other)
-    : anchor_node_(other.anchor_node_),
-      offset_(other.offset_),
-      anchor_type_(other.anchor_type_) {}
+PositionTemplate<Strategy>::PositionTemplate(const PositionTemplate&) = default;
+
+template <typename Strategy>
+PositionTemplate<Strategy>& PositionTemplate<Strategy>::operator=(
+    const PositionTemplate&) = default;
 
 // static
 template <typename Strategy>
@@ -574,8 +577,9 @@ PositionTemplate<Strategy>::FirstPositionInOrBeforeNode(const Node& node) {
 template <typename Strategy>
 PositionTemplate<Strategy>
 PositionTemplate<Strategy>::LastPositionInOrAfterNode(const Node& node) {
-  return EditingIgnoresContent(node) ? AfterNode(node)
-                                     : LastPositionInNode(node);
+  return EditingIgnoresContent(node) && Strategy::Parent(node)
+             ? AfterNode(node)
+             : LastPositionInNode(node);
 }
 
 PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
@@ -586,7 +590,6 @@ PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
   if (pos.IsOffsetInAnchor()) {
     if (anchor->IsCharacterDataNode())
       return PositionInFlatTree(anchor, pos.ComputeOffsetInContainerNode());
-    DCHECK(!anchor->IsElementNode() || anchor->CanParticipateInFlatTree());
     int offset = pos.ComputeOffsetInContainerNode();
     if (!offset) {
       Node* node = anchor->IsShadowRoot() ? anchor->OwnerShadowHost() : anchor;
@@ -597,7 +600,7 @@ PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
       Node* node = anchor->IsShadowRoot() ? anchor->OwnerShadowHost() : anchor;
       return PositionInFlatTree::LastPositionInNode(*node);
     }
-    if (!child->CanParticipateInFlatTree()) {
+    if (child->IsShadowRoot()) {
       if (anchor->IsShadowRoot())
         return PositionInFlatTree(anchor->OwnerShadowHost(), offset);
       return PositionInFlatTree(anchor, offset);
@@ -615,7 +618,6 @@ PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
 
   if (anchor->IsShadowRoot())
     return PositionInFlatTree(anchor->OwnerShadowHost(), pos.AnchorType());
-  DCHECK(anchor->CanParticipateInFlatTree());
   if (pos.IsBeforeAnchor() || pos.IsAfterAnchor()) {
     if (!FlatTreeTraversal::Parent(*anchor)) {
       // For Before/AfterAnchor, if |anchor| doesn't have parent in the flat
@@ -762,11 +764,11 @@ template class CORE_TEMPLATE_EXPORT PositionTemplate<EditingInFlatTreeStrategy>;
 
 #if DCHECK_IS_ON()
 
-void showTree(const blink::Position& pos) {
+void ShowTree(const blink::Position& pos) {
   pos.ShowTreeForThis();
 }
 
-void showTree(const blink::Position* pos) {
+void ShowTree(const blink::Position* pos) {
   if (pos)
     pos->ShowTreeForThis();
   else

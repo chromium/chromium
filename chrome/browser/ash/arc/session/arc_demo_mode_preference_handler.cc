@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
-#include "components/arc/arc_util.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {
@@ -48,14 +48,13 @@ void ArcDemoModePreferenceHandler::OnPreferenceChanged() {
   if (!IsArcVmEnabled())
     return;
 
-  chromeos::DemoSession::DemoModeConfig config =
-      static_cast<chromeos::DemoSession::DemoModeConfig>(
-          pref_service_->GetInteger(prefs::kDemoModeConfig));
+  auto config = static_cast<ash::DemoSession::DemoModeConfig>(
+      pref_service_->GetInteger(prefs::kDemoModeConfig));
   switch (config) {
-    case chromeos::DemoSession::DemoModeConfig::kNone:
+    case ash::DemoSession::DemoModeConfig::kNone:
+    case ash::DemoSession::DemoModeConfig::kOfflineDeprecated:
       return;
-    case chromeos::DemoSession::DemoModeConfig::kOnline:
-    case chromeos::DemoSession::DemoModeConfig::kOffline:
+    case ash::DemoSession::DemoModeConfig::kOnline:
       break;
   }
 

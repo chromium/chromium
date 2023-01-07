@@ -52,4 +52,4 @@ class SVGAnimatedPointList final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ANIMATED_POINT_LIST_H_

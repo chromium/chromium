@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,36 @@
 #include <memory>
 
 #include "ash/public/cpp/media_controller.h"
-#include "base/optional.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/media_player_api.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/media_keys_listener.h"
+
+// Gmock matchers and actions that are used below.
+using ::testing::AnyOf;
 
 namespace {
 
 class TestMediaController : public ash::MediaController {
  public:
   TestMediaController() = default;
+
+  TestMediaController(const TestMediaController&) = delete;
+  TestMediaController& operator=(const TestMediaController&) = delete;
+
   ~TestMediaController() override = default;
 
   // ash::MediaController:
@@ -40,29 +58,29 @@ class TestMediaController : public ash::MediaController {
 
  private:
   bool force_media_client_key_handling_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaController);
 };
 
 class TestMediaKeysDelegate : public ui::MediaKeysListener::Delegate {
  public:
   TestMediaKeysDelegate() = default;
+
+  TestMediaKeysDelegate(const TestMediaKeysDelegate&) = delete;
+  TestMediaKeysDelegate& operator=(const TestMediaKeysDelegate&) = delete;
+
   ~TestMediaKeysDelegate() override = default;
 
   void OnMediaKeysAccelerator(const ui::Accelerator& accelerator) override {
     last_media_key_ = accelerator;
   }
 
-  base::Optional<ui::Accelerator> ConsumeLastMediaKey() {
-    base::Optional<ui::Accelerator> key = last_media_key_;
+  absl::optional<ui::Accelerator> ConsumeLastMediaKey() {
+    absl::optional<ui::Accelerator> key = last_media_key_;
     last_media_key_.reset();
     return key;
   }
 
  private:
-  base::Optional<ui::Accelerator> last_media_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaKeysDelegate);
+  absl::optional<ui::Accelerator> last_media_key_;
 };
 
 }  // namespace
@@ -70,6 +88,10 @@ class TestMediaKeysDelegate : public ui::MediaKeysListener::Delegate {
 class MediaClientTest : public BrowserWithTestWindowTest {
  public:
   MediaClientTest() = default;
+
+  MediaClientTest(const MediaClientTest&) = delete;
+  MediaClientTest& operator=(const MediaClientTest&) = delete;
+
   ~MediaClientTest() override = default;
 
   void SetUp() override {
@@ -93,7 +115,7 @@ class MediaClientTest : public BrowserWithTestWindowTest {
     BrowserList::SetLastActive(browser());
 
     ASSERT_FALSE(test_media_controller_->force_media_client_key_handling());
-    ASSERT_EQ(base::nullopt, delegate()->ConsumeLastMediaKey());
+    ASSERT_EQ(absl::nullopt, delegate()->ConsumeLastMediaKey());
   }
 
   void TearDown() override {
@@ -113,7 +135,9 @@ class MediaClientTest : public BrowserWithTestWindowTest {
 
   TestMediaController* controller() { return test_media_controller_.get(); }
 
-  Profile* alt_profile() { return profile()->GetPrimaryOTRProfile(); }
+  Profile* alt_profile() {
+    return profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
 
   Browser* alt_browser() { return alt_browser_.get(); }
 
@@ -128,8 +152,68 @@ class MediaClientTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<Browser> alt_browser_;
   std::unique_ptr<BrowserWindow> alt_window_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(MediaClientTest);
+class MediaClientAppUsingCameraTest : public testing::Test {
+ public:
+  MediaClientAppUsingCameraTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        apps::kAppServiceCapabilityAccessWithoutMojom);
+  }
+  MediaClientAppUsingCameraTest(const MediaClientAppUsingCameraTest&) = delete;
+  MediaClientAppUsingCameraTest& operator=(
+      const MediaClientAppUsingCameraTest&) = delete;
+  ~MediaClientAppUsingCameraTest() override = default;
+
+  void SetUp() override {
+    registry_cache_.SetAccountId(account_id_);
+    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id_,
+                                                             &registry_cache_);
+    capability_access_cache_.SetAccountId(account_id_);
+    apps::AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
+        account_id_, &capability_access_cache_);
+  }
+
+ protected:
+  static apps::AppPtr MakeApp(const char* app_id, const char* name) {
+    apps::AppPtr app =
+        std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
+    app->name = name;
+    app->short_name = name;
+    return app;
+  }
+
+  static apps::CapabilityAccessPtr MakeCapabilityAccess(
+      const char* app_id,
+      absl::optional<bool> camera) {
+    apps::CapabilityAccessPtr access =
+        std::make_unique<apps::CapabilityAccess>(app_id);
+    access->camera = camera;
+    access->microphone = false;
+    return access;
+  }
+
+  void LaunchApp(const char* id,
+                 const char* name,
+                 absl::optional<bool> use_camera) {
+    std::vector<apps::AppPtr> registry_deltas;
+    registry_deltas.push_back(MakeApp(id, name));
+    registry_cache_.OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
+                           /* should_notify_initialized = */ false);
+
+    std::vector<apps::CapabilityAccessPtr> capability_access_deltas;
+    capability_access_deltas.push_back(MakeCapabilityAccess(id, use_camera));
+    capability_access_cache_.OnCapabilityAccesses(
+        std::move(capability_access_deltas));
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  const std::string kPrimaryProfileName = "primary_profile";
+  const AccountId account_id_ = AccountId::FromUserEmail(kPrimaryProfileName);
+
+  apps::AppRegistryCache registry_cache_;
+  apps::AppCapabilityAccessCache capability_access_cache_;
 };
 
 TEST_F(MediaClientTest, HandleMediaAccelerators) {
@@ -166,8 +250,8 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
     SCOPED_TRACE(::testing::Message()
                  << "accelerator key:" << test.accelerator.key_code());
 
-    // Enable custom media key handling for the current browser. Ensure that the
-    // client set the override on the controller.
+    // Enable custom media key handling for the current browser. Ensure that
+    // the client set the override on the controller.
     client()->EnableCustomMediaKeyHandler(profile(), delegate());
     EXPECT_TRUE(controller()->force_media_client_key_handling());
 
@@ -181,7 +265,7 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
 
     // Simulate the media key and check that the delegate did not receive it.
     test.client_handler.Run();
-    EXPECT_EQ(base::nullopt, delegate()->ConsumeLastMediaKey());
+    EXPECT_EQ(absl::nullopt, delegate()->ConsumeLastMediaKey());
 
     // Change the active browser back and ensure the override was enabled.
     BrowserList::SetLastActive(browser());
@@ -191,13 +275,55 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
     test.client_handler.Run();
     EXPECT_EQ(test.accelerator, delegate()->ConsumeLastMediaKey());
 
-    // Disable custom media key handling for the current browser and ensure the
-    // override was disabled.
+    // Disable custom media key handling for the current browser and ensure
+    // the override was disabled.
     client()->DisableCustomMediaKeyHandler(profile(), delegate());
     EXPECT_FALSE(controller()->force_media_client_key_handling());
 
     // Simulate the media key and check the delegate did not receive it.
     test.client_handler.Run();
-    EXPECT_EQ(base::nullopt, delegate()->ConsumeLastMediaKey());
+    EXPECT_EQ(absl::nullopt, delegate()->ConsumeLastMediaKey());
   }
+}
+
+TEST_F(MediaClientAppUsingCameraTest, NoAppsLaunched) {
+  // Should return an empty string.
+  std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
+      &capability_access_cache_, &registry_cache_);
+  EXPECT_TRUE(app_name.empty());
+}
+
+TEST_F(MediaClientAppUsingCameraTest, AppLaunchedNotUsingCamaera) {
+  LaunchApp("id_rose", "name_rose", /*use_camera=*/false);
+
+  // Should return an empty string.
+  std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
+      &capability_access_cache_, &registry_cache_);
+  EXPECT_TRUE(app_name.empty());
+}
+
+TEST_F(MediaClientAppUsingCameraTest, AppLaunchedUsingCamera) {
+  LaunchApp("id_rose", "name_rose", /*use_camera=*/true);
+
+  // Should return the name of our app.
+  std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
+      &capability_access_cache_, &registry_cache_);
+  std::string app_name_utf8 = base::UTF16ToUTF8(app_name);
+  EXPECT_STREQ(app_name_utf8.c_str(), "name_rose");
+}
+
+TEST_F(MediaClientAppUsingCameraTest, MultipleAppsLaunchedUsingCamera) {
+  LaunchApp("id_rose", "name_rose", /*use_camera=*/true);
+  LaunchApp("id_mars", "name_mars", /*use_camera=*/true);
+  LaunchApp("id_zara", "name_zara", /*use_camera=*/true);
+  LaunchApp("id_oscar", "name_oscar", /*use_camera=*/false);
+
+  // Because AppCapabilityAccessCache::GetAppsAccessingCamera (invoked by
+  // GetNameOfAppAccessingCamera) returns a set, we have no guarantee of
+  // which app will be found first.  So we verify that the app name is one of
+  // our camera-users.
+  std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
+      &capability_access_cache_, &registry_cache_);
+  std::string app_name_utf8 = base::UTF16ToUTF8(app_name);
+  EXPECT_THAT(app_name_utf8, AnyOf("name_rose", "name_mars", "name_zara"));
 }

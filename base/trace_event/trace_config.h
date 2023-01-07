@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,7 +102,7 @@ class BASE_EXPORT TraceConfig {
     void Merge(const ProcessFilterConfig&);
 
     void InitializeFromConfigDict(const Value&);
-    void ToDict(Value*) const;
+    void ToDict(Value::Dict& dict) const;
 
     bool IsEnabled(base::ProcessId) const;
     const std::unordered_set<base::ProcessId>& included_process_ids() const {
@@ -130,7 +130,7 @@ class BASE_EXPORT TraceConfig {
 
     void SetCategoryFilter(const TraceConfigCategoryFilter& category_filter);
 
-    void ToDict(Value* filter_dict) const;
+    void ToDict(Value::Dict& filter_dict) const;
 
     bool GetArgAsSet(const char* key, std::unordered_set<std::string>*) const;
 
@@ -261,6 +261,13 @@ class BASE_EXPORT TraceConfig {
   // filters, or memory dump configs.
   std::string ToTraceOptionsString() const;
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  // Write the serialized perfetto::TrackEventConfig corresponding to this
+  // TraceConfig.
+  std::string ToPerfettoTrackEventConfigRaw(
+      bool privacy_filtering_enabled) const;
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
   // Returns true if at least one category in the list is enabled by this
   // trace config. This is used to determine if the category filters are
   // enabled in the TRACE_* macros.
@@ -290,6 +297,16 @@ class BASE_EXPORT TraceConfig {
   const EventFilters& event_filters() const { return event_filters_; }
   void SetEventFilters(const EventFilters& filter_configs) {
     event_filters_ = filter_configs;
+  }
+
+  // Returns true if event names should not contain package names.
+  bool IsEventPackageNameFilterEnabled() const {
+    return enable_event_package_name_filter_;
+  }
+
+  // If `enabled` is true, event names will not contain package names.
+  void SetEventPackageNameFilterEnabled(bool enabled) {
+    enable_event_package_name_filter_ = enabled;
   }
 
   const std::unordered_set<std::string>& systrace_events() const {
@@ -340,6 +357,7 @@ class BASE_EXPORT TraceConfig {
   ProcessFilterConfig process_filter_config_;
 
   EventFilters event_filters_;
+  bool enable_event_package_name_filter_ : 1;
   std::unordered_set<std::string> histogram_names_;
   std::unordered_set<std::string> systrace_events_;
 };

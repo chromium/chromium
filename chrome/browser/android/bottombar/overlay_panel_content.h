@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,7 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/android/contextualsearch/contextual_search_context.h"
 
 namespace content {
 class WebContents;
@@ -27,6 +25,10 @@ class OverlayPanelContent {
  public:
   // Constructs a native manager associated with the Java manager.
   OverlayPanelContent(JNIEnv* env, jobject obj);
+
+  OverlayPanelContent(const OverlayPanelContent&) = delete;
+  OverlayPanelContent& operator=(const OverlayPanelContent&) = delete;
+
   virtual ~OverlayPanelContent();
 
   // Called by the Java OverlayPanelContent when it is being destroyed.
@@ -82,8 +84,6 @@ class OverlayPanelContent {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<web_contents_delegate_android::WebContentsDelegateAndroid>
       web_contents_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayPanelContent);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_BOTTOMBAR_OVERLAY_PANEL_CONTENT_H_

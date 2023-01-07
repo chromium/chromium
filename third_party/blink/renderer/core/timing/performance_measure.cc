@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -19,7 +20,10 @@ PerformanceMeasure::PerformanceMeasure(
     double end_time,
     scoped_refptr<SerializedScriptValue> serialized_detail,
     ExceptionState& exception_state)
-    : PerformanceEntry(name, start_time, end_time),
+    : PerformanceEntry(name,
+                       start_time,
+                       end_time,
+                       PerformanceEntry::GetNavigationId(script_state)),
       serialized_detail_(serialized_detail) {}
 
 // static
@@ -54,9 +58,9 @@ ScriptValue PerformanceMeasure::detail(ScriptState* script_state) {
   TraceWrapperV8Reference<v8::Value>& relevant_data =
       result.stored_value->value;
   if (!result.is_new_entry)
-    return ScriptValue(isolate, relevant_data.NewLocal(isolate));
+    return ScriptValue(isolate, relevant_data.Get(isolate));
   v8::Local<v8::Value> value = serialized_detail_->Deserialize(isolate);
-  relevant_data.Set(isolate, value);
+  relevant_data.Reset(isolate, value);
   return ScriptValue(isolate, value);
 }
 

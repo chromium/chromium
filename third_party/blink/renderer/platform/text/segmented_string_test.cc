@@ -104,4 +104,42 @@ TEST(SegmentedStringTest, AdvanceSubstringConsumesCharacters) {
   EXPECT_EQ(s1.NumberOfCharactersConsumed(), 3);
 }
 
+TEST(SegmentedStringTest, AdvanceCurrentString) {
+  SegmentedString s("0123456789");
+
+  s.Advance(4, 0, 4);
+  EXPECT_EQ(6u, s.length());
+  EXPECT_EQ(4, s.NumberOfCharactersConsumed());
+  EXPECT_EQ(4, s.CurrentColumn().ZeroBasedInt());
+  EXPECT_EQ(0, s.CurrentLine().ZeroBasedInt());
+  EXPECT_EQ('4', static_cast<char>(s.CurrentChar()));
+}
+
+TEST(SegmentedStringTest, AdvanceThroughMultipleStrings) {
+  SegmentedString s("a");
+  s.Append(SegmentedString("b"));
+  s.Append(SegmentedString("c"));
+  s.Advance(2, 0, 0);
+  EXPECT_EQ(1u, s.length());
+  EXPECT_EQ(2, s.NumberOfCharactersConsumed());
+  EXPECT_EQ(0, s.CurrentColumn().ZeroBasedInt());
+  EXPECT_EQ(0, s.CurrentLine().ZeroBasedInt());
+  EXPECT_EQ('c', static_cast<char>(s.CurrentChar()));
+}
+
+TEST(SegmentedStringTest, AdvanceThroughNextString) {
+  SegmentedString s("0123456789");
+  s.Append(SegmentedString("\nabcdefg"));
+
+  // Advance through the first character
+  s.Advance();
+  // Advance through first string.
+  s.Advance(11, 1, 2);
+  EXPECT_EQ(6u, s.length());
+  EXPECT_EQ(12, s.NumberOfCharactersConsumed());
+  EXPECT_EQ(2, s.CurrentColumn().ZeroBasedInt());
+  EXPECT_EQ(1, s.CurrentLine().ZeroBasedInt());
+  EXPECT_EQ('b', static_cast<char>(s.CurrentChar()));
+}
+
 }  // namespace blink

@@ -35,15 +35,6 @@ GestureEvent* GestureEvent::Create(AbstractView* view,
   AtomicString event_type;
 
   switch (event.GetType()) {
-    case WebInputEvent::Type::kGestureScrollBegin:
-      event_type = event_type_names::kGesturescrollstart;
-      break;
-    case WebInputEvent::Type::kGestureScrollEnd:
-      event_type = event_type_names::kGesturescrollend;
-      break;
-    case WebInputEvent::Type::kGestureScrollUpdate:
-      event_type = event_type_names::kGesturescrollupdate;
-      break;
     case WebInputEvent::Type::kGestureTap:
       event_type = event_type_names::kGesturetap;
       break;

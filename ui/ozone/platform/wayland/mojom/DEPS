@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "wayland_overlay_config_mojom_traits.*" : [
+    "+components/crash/core/common/crash_key.h",
+    "+skia/public/mojom/skcolor4f_mojom_traits.h",
+  ],
+}

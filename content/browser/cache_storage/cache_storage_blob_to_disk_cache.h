@@ -1,14 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_BLOB_TO_DISK_CACHE_H_
 #define CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_BLOB_TO_DISK_CACHE_H_
 
-#include <memory>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/cache_storage/scoped_writable_entry.h"
@@ -16,8 +13,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/net_adapters.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
-#include "url/origin.h"
 
 namespace storage {
 class QuotaManagerProxy;
@@ -37,7 +34,12 @@ class CONTENT_EXPORT CacheStorageBlobToDiskCache
 
   CacheStorageBlobToDiskCache(
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      const url::Origin& origin);
+      const blink::StorageKey& storage_key);
+
+  CacheStorageBlobToDiskCache(const CacheStorageBlobToDiskCache&) = delete;
+  CacheStorageBlobToDiskCache& operator=(const CacheStorageBlobToDiskCache&) =
+      delete;
+
   ~CacheStorageBlobToDiskCache() override;
 
   // Writes the body of |blob_remote| to |entry| with index
@@ -58,7 +60,7 @@ class CONTENT_EXPORT CacheStorageBlobToDiskCache
   // Virtual for testing.
   virtual void ReadFromBlob();
   void DidWriteDataToEntry(int expected_bytes, int rv);
-  const url::Origin& origin() const { return origin_; }
+  const blink::StorageKey& storage_key() const { return storage_key_; }
 
  private:
   void RunCallback(bool success);
@@ -81,11 +83,9 @@ class CONTENT_EXPORT CacheStorageBlobToDiskCache
   bool data_pipe_closed_ = false;
 
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
-  const url::Origin origin_;
+  const blink::StorageKey storage_key_;
 
   base::WeakPtrFactory<CacheStorageBlobToDiskCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageBlobToDiskCache);
 };
 
 }  // namespace content

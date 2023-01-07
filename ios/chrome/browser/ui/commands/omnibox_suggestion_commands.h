@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 // omnibox.
 @protocol OmniboxSuggestionCommands<NSObject>
 
-// Moves the highlight up.
-- (void)highlightPreviousSuggestion;
 // Moves the highlight down.
 - (void)highlightNextSuggestion;
+// Moves the highlight up.
+- (void)highlightPreviousSuggestion;
 
 @end
 

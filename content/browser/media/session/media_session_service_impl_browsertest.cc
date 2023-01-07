@@ -1,10 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/media/session/media_session_service_impl.h"
 
+#include <memory>
+
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/media_session_impl.h"
@@ -59,10 +62,11 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnExitPictureInPicture(int player_id) override {}
   void OnSetAudioSinkId(int player_id,
                         const std::string& raw_device_id) override {}
+  void OnSetMute(int player_id, bool mute) override {}
 
-  base::Optional<media_session::MediaPosition> GetPosition(
+  absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   bool IsPictureInPictureAvailable(int player_id) const override {
@@ -78,12 +82,16 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     return false;
   }
 
+  media::MediaContentType GetMediaContentType() const override {
+    return media::MediaContentType::Persistent;
+  }
+
   RenderFrameHost* render_frame_host() const override {
     return render_frame_host_;
   }
 
  private:
-  RenderFrameHost* render_frame_host_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 };
 
 void NavigateToURLAndWaitForFinish(Shell* window, const GURL& url) {
@@ -125,12 +133,11 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
     if (player_)
       return;
 
-    player_.reset(new MockMediaSessionPlayerObserver(
-        shell()->web_contents()->GetMainFrame()));
+    player_ = std::make_unique<MockMediaSessionPlayerObserver>(
+        shell()->web_contents()->GetPrimaryMainFrame());
 
     MediaSessionImpl::Get(shell()->web_contents())
-        ->AddPlayer(player_.get(), kPlayerId,
-                    media::MediaContentType::Persistent);
+        ->AddPlayer(player_.get(), kPlayerId);
   }
 
   MediaSessionImpl* GetSession() {
@@ -138,16 +145,17 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
   }
 
   MediaSessionServiceImpl* GetService() {
-    RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
-    const auto main_frame_id = main_frame->GetGlobalFrameRoutingId();
+    RenderFrameHost* main_frame =
+        shell()->web_contents()->GetPrimaryMainFrame();
+    const auto main_frame_id = main_frame->GetGlobalId();
     if (GetSession()->services_.count(main_frame_id))
       return GetSession()->services_[main_frame_id];
 
     return nullptr;
   }
 
-  bool ExecuteScriptToSetUpMediaSessionSync() {
-    bool result = ExecuteScript(shell(), kSetUpMediaSessionScript);
+  void ExecuteScriptToSetUpMediaSessionSync() {
+    ASSERT_TRUE(ExecJs(shell(), kSetUpMediaSessionScript));
     media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
 
     std::set<media_session::mojom::MediaSessionAction> expected_actions;
@@ -160,7 +168,6 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
         media_session::mojom::MediaSessionAction::kSeekForward);
 
     observer.WaitForExpectedActions(expected_actions);
-    return result;
   }
 
  private:
@@ -193,8 +200,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
 // TODO(crbug.com/850870) Plug the leaks.
 #define MAYBE_ResetServiceWhenNavigatingAway \
   DISABLED_ResetServiceWhenNavigatingAway
-#elif defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC) || \
-    defined(OS_ANDROID)
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_ANDROID)
 // crbug.com/927234.
 #define MAYBE_ResetServiceWhenNavigatingAway \
   DISABLED_ResetServiceWhenNavigatingAway
@@ -206,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
-  EXPECT_TRUE(ExecuteScriptToSetUpMediaSessionSync());
+  ExecuteScriptToSetUpMediaSessionSync();
 
   EXPECT_EQ(blink::mojom::MediaSessionPlaybackState::PLAYING,
             GetService()->playback_state());
@@ -237,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
-  EXPECT_TRUE(ExecuteScriptToSetUpMediaSessionSync());
+  ExecuteScriptToSetUpMediaSessionSync();
 
   // Start a fragment navigation and check the playback state, metadata,
   // actions are not reset.
@@ -261,8 +268,8 @@ class MediaSessionServiceImplWebRTCBrowserTest
     feature_list_.InitAndEnableFeature(media::kMediaSessionWebRTC);
   }
 
-  bool ExecuteScriptToSetUpWebRTCMediaSessionSync() {
-    bool result = ExecuteScript(shell(), kSetUpWebRTCMediaSessionScript);
+  void ExecuteScriptToSetUpWebRTCMediaSessionSync() {
+    ASSERT_TRUE(ExecJs(shell(), kSetUpWebRTCMediaSessionScript));
     media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
 
     std::set<media_session::mojom::MediaSessionAction> expected_actions;
@@ -278,7 +285,6 @@ class MediaSessionServiceImplWebRTCBrowserTest
     expected_actions.insert(media_session::mojom::MediaSessionAction::kHangUp);
 
     observer.WaitForExpectedActions(expected_actions);
-    return result;
   }
 
  private:
@@ -290,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplWebRTCBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
-  EXPECT_TRUE(ExecuteScriptToSetUpMediaSessionSync());
+  ExecuteScriptToSetUpMediaSessionSync();
 
   media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
   observer.WaitForMicrophoneState(
@@ -303,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplWebRTCBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
-  EXPECT_TRUE(ExecuteScriptToSetUpWebRTCMediaSessionSync());
+  ExecuteScriptToSetUpWebRTCMediaSessionSync();
 
   media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
   observer.WaitForMicrophoneState(

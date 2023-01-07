@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace cert_provisioning {
@@ -77,8 +77,8 @@ bool DeserializeBoolValue(const base::Value& parent_value,
 bool DeserializeRenewalPeriod(const base::Value& parent_value,
                               const char* value_name,
                               base::TimeDelta* dst) {
-  base::Optional<int> serialized_time = parent_value.FindIntKey(value_name);
-  *dst = base::TimeDelta::FromSeconds(serialized_time.value_or(0));
+  absl::optional<int> serialized_time = parent_value.FindIntKey(value_name);
+  *dst = base::Seconds(serialized_time.value_or(0));
   return true;
 }
 
@@ -154,24 +154,21 @@ bool DeserializePublicKey(const base::Value& parent_value,
 void CertProvisioningSerializer::SerializeWorkerToPrefs(
     PrefService* pref_service,
     const CertProvisioningWorkerImpl& worker) {
-  DictionaryPrefUpdate scoped_dict_updater(
+  ScopedDictPrefUpdate scoped_dict_updater(
       pref_service, GetPrefNameForSerialization(worker.cert_scope_));
-  base::Value* saved_workers = scoped_dict_updater.Get();
-  DCHECK(saved_workers);
-  saved_workers->SetKey(worker.cert_profile_.profile_id,
-                        SerializeWorker(worker));
+  base::Value::Dict& saved_workers = scoped_dict_updater.Get();
+  saved_workers.Set(worker.cert_profile_.profile_id, SerializeWorker(worker));
 }
 
 void CertProvisioningSerializer::DeleteWorkerFromPrefs(
     PrefService* pref_service,
     const CertProvisioningWorkerImpl& worker) {
-  DictionaryPrefUpdate scoped_dict_updater(
+  ScopedDictPrefUpdate scoped_dict_updater(
       pref_service, GetPrefNameForSerialization(worker.cert_scope_));
 
-  base::Value* saved_workers = scoped_dict_updater.Get();
-  DCHECK(saved_workers);
+  base::Value::Dict& saved_workers = scoped_dict_updater.Get();
 
-  saved_workers->RemoveKey(worker.cert_profile_.profile_id);
+  saved_workers.Remove(worker.cert_profile_.profile_id);
 }
 
 // Serialization scheme:

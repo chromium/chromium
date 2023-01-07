@@ -1,10 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/base/scoped_bundle_swizzler_mac.h"
 
 #import <Foundation/Foundation.h>
+
+#include <memory>
 
 #include "base/check.h"
 #include "base/mac/foundation_util.h"
@@ -56,8 +58,8 @@ ScopedBundleSwizzlerMac::ScopedBundleSwizzlerMac() {
   g_swizzled_main_bundle =
       [[TestBundle alloc] initWithRealBundle:original_main_bundle];
 
-  class_swizzler_.reset(new base::mac::ScopedObjCClassSwizzler(
-      [NSBundle class], [TestBundle class], @selector(mainBundle)));
+  class_swizzler_ = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+      [NSBundle class], [TestBundle class], @selector(mainBundle));
 }
 
 ScopedBundleSwizzlerMac::~ScopedBundleSwizzlerMac() {

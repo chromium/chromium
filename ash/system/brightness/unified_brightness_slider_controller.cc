@@ -1,13 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/shell.h"
 #include "ash/system/brightness/unified_brightness_view.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 namespace {
@@ -21,7 +23,7 @@ constexpr double kMinBrightnessPercent = 5.0;
 }  // namespace
 
 UnifiedBrightnessSliderController::UnifiedBrightnessSliderController(
-    UnifiedSystemTrayModel* model)
+    scoped_refptr<UnifiedSystemTrayModel> model)
     : model_(model) {}
 
 UnifiedBrightnessSliderController::~UnifiedBrightnessSliderController() =
@@ -31,6 +33,10 @@ views::View* UnifiedBrightnessSliderController::CreateView() {
   DCHECK(!slider_);
   slider_ = new UnifiedBrightnessView(this, model_);
   return slider_;
+}
+
+QsSliderCatalogName UnifiedBrightnessSliderController::GetCatalogName() {
+  return QsSliderCatalogName::kBrightness;
 }
 
 void UnifiedBrightnessSliderController::SliderValueChanged(
@@ -53,6 +59,11 @@ void UnifiedBrightnessSliderController::SliderValueChanged(
       previous_percent_ < kMinBrightnessPercent) {
     return;
   }
+
+  if (previous_percent_ != percent) {
+    TrackValueChangeUMA(/*going_up=*/percent > previous_percent_);
+  }
+
   // We have to store previous manually set value because |old_value| might be
   // set by UnifiedSystemTrayModel::Observer.
   previous_percent_ = percent;

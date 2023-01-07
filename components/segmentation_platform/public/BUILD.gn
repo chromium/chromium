@@ -1,0 +1,91 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
+source_set("public") {
+  sources = [
+    "config.cc",
+    "config.h",
+    "constants.cc",
+    "constants.h",
+    "features.cc",
+    "features.h",
+    "field_trial_register.h",
+    "input_context.cc",
+    "input_context.h",
+    "input_delegate.cc",
+    "input_delegate.h",
+    "local_state_helper.h",
+    "model_provider.cc",
+    "model_provider.h",
+    "segment_selection_result.cc",
+    "segment_selection_result.h",
+    "segmentation_platform_service.cc",
+    "segmentation_platform_service.h",
+    "service_proxy.cc",
+    "service_proxy.h",
+    "trigger.h",
+    "types/processed_value.cc",
+    "types/processed_value.h",
+  ]
+
+  public_deps = [ "//components/segmentation_platform/public/proto" ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/segmentation_platform_conversion_bridge.cc",
+      "android/segmentation_platform_conversion_bridge.h",
+    ]
+    deps += [ ":jni_headers" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  # IMPORTANT NOTE: When adding new tests, also remember to update the list of
+  # tests in //components/segmentation_platform/components_unittests.filter
+  sources = []
+
+  deps = [
+    ":public",
+    "//testing/gtest",
+  ]
+}
+
+if (is_android) {
+  android_library("public_java") {
+    sources = [
+      "android/java/src/org/chromium/components/segmentation_platform/SegmentSelectionResult.java",
+      "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
+      "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformService.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
+    ]
+
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+    public_deps = [ "//components/segmentation_platform/public/proto:segmentation_platform_proto_java" ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [ ":*" ]
+
+    sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java" ]
+  }
+}

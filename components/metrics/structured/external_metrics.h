@@ -1,20 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_METRICS_STRUCTURED_EXTERNAL_METRICS_H_
 #define COMPONENTS_METRICS_STRUCTURED_EXTERNAL_METRICS_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/values.h"
 
 namespace metrics {
 namespace structured {
@@ -24,7 +19,7 @@ class ExternalMetricsTest;
 
 // ExternalMetrics reads structured metrics saved by Chrome OS and uploads them
 // to the UMA server on its behalf. This is structured metrics' equivalent of
-// chromeos::ExternalMetrics.
+// `ash::ExternalMetrics`.
 //
 // Chrome periodically reads a directory of protos and adds their content into
 // the StructuredMetricProvider's regular metrics upload. After reading each

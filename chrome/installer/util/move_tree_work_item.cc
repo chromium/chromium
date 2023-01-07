@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/win/shlwapi.h"
 #include "chrome/installer/util/duplicate_tree_detector.h"
-#include "chrome/installer/util/logging_installer.h"
 
 MoveTreeWorkItem::~MoveTreeWorkItem() {}
 

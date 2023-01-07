@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_RECENTLY_AUDIBLE_HELPER_H_
 
 #include "base/callback_list.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -26,12 +26,14 @@ class RecentlyAudibleHelper
  public:
   // This corresponds to the amount of time that the "audio playing" icon will
   // persist in the tab strip after audio has stopped playing.
-  static constexpr base::TimeDelta kRecentlyAudibleTimeout =
-      base::TimeDelta::FromSeconds(2);
+  static constexpr base::TimeDelta kRecentlyAudibleTimeout = base::Seconds(2);
 
   using CallbackList =
       base::RepeatingCallbackList<void(bool was_recently_audible)>;
   using Callback = CallbackList::CallbackType;
+
+  RecentlyAudibleHelper(const RecentlyAudibleHelper&) = delete;
+  RecentlyAudibleHelper& operator=(const RecentlyAudibleHelper&) = delete;
 
   ~RecentlyAudibleHelper() override;
 
@@ -92,11 +94,9 @@ class RecentlyAudibleHelper
   CallbackList callback_list_;
 
   // The tick clock this object is using.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(RecentlyAudibleHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_RECENTLY_AUDIBLE_HELPER_H_

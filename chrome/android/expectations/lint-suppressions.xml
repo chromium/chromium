@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
 Please refer to the lint doc for how to use this file and what should go in it:
-https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.md
+https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
 -->
 <lint>
   <!-- Ignore all lint errors in clank code. -->
@@ -23,7 +23,7 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <!-- This is intentional to reduce APK size. See: http://crrev/c/1352161 -->
     <ignore regexp="chrome/android/features/autofill_assistant/java/res/drawable-*"/>
     <!-- Originals are gone, so ignore these specific ones: crbug.com/457918 -->
-    <ignore regexp="btn_bg_holo_active_normal.png, btn_bg_holo_active_pressed.png, btn_bg_holo_pressed.png, logo_card_back.png"/>
+    <ignore regexp="btn_bg_holo_active_normal.png, btn_bg_holo_active_pressed.png, btn_bg_holo_pressed.png"/>
     <!-- This is intentional to save on WebAPKs' size. -->
     <ignore regexp="chrome/android/webapk/shell_apk/res/drawable-*"/>
   </issue>
@@ -44,6 +44,7 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="components/embedder_support/android/java/res"/>
   </issue>
   <issue id="ImpliedQuantity">
+    <ignore regexp="chrome/android/features/tab_ui/java_strings_grd"/>
     <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd"/>
     <ignore regexp="components/browser_ui/strings/android/browser_ui_strings_grd"/>
   </issue>
@@ -65,7 +66,6 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
   </issue>
   <issue id="MissingPermission" severity="ignore"/>
   <issue id="MissingQuantity" severity="ignore"/>
-  <issue id="MissingRegistered" severity="ignore"/>
   <issue id="MissingTranslation">
     <ignore regexp="restriction_values.xml.*"/>
   </issue>
@@ -106,7 +106,6 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
   </issue>
   <issue id="Recycle" severity="ignore"/>
   <issue id="Registered" severity="ignore"/>
-  <issue id="ResourceAsColor" severity="ignore"/>
   <issue id="RtlCompat" severity="ignore"/>
   <issue id="RtlEnabled" severity="ignore"/>
   <issue id="RtlSymmetry" severity="ignore"/>
@@ -127,12 +126,12 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
        https://crbug.com/941164 -->
   <issue id="StringFormatInvalid" severity="ignore"/>
   <issue id="StringFormatMatches" severity="ignore"/>
-  <!-- Code is usually committed in English for all languages and later
-       translated. This avoids blocking translation updates. -->
-  <issue id="Typos" severity="ignore"/>
   <issue id="TypographyDashes">
     <!-- The double dash in the following file is a command line flag. -->
     <ignore regexp="chrome/app/policy/android/values-v21/restriction_values.xml"/>
+  </issue>
+  <issue id="TypographyEllipsis">
+    <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-uz/android_chrome_strings.xml"/>
   </issue>
   <issue id="UnusedIds" severity="ignore"/>
   <issue id="UnusedQuantity" severity="ignore"/>
@@ -191,33 +190,22 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="The resource `R.string.accessibility_close_tab_group_button` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_close_tab_group_button_with_group_name` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_expand_tab_group_with_group_name` appears to be unused"/>
+    <!-- crbug.com/1277400 remove this line and the following 4 lines after the bug is resolved -->
+    <ignore regexp="The resource `R.string.feature_notification_guide_tooltip_message_incognito_tab` appears to be unused"/>
+    <ignore regexp="The resource `R.string.feature_notification_guide_tooltip_message_ntp_suggestion_card` appears to be unused"/>
+    <ignore regexp="The resource `R.string.feature_notification_guide_tooltip_message_voice_search` appears to be unused"/>
+    <ignore regexp="The resource `R.string.feature_notification_guide_tooltip_message_sign_in` appears to be unused"/>
 
-    <!-- crbug.com/1127531 remove this line and following 18 lines after the bug is resolved -->
+    <!-- crbug.com/1127531 remove this line and following 9 lines after the bug is resolved -->
     <ignore regexp="The resource `R.string.languages_content_description` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_content_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_infobar_ready` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_infobar_restart` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_select_suggested` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_select_other` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_settings_advanced` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_settings_automatic` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_settings_automatic_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_settings_dont_offer_langs` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_settings_dont_offer_sites` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_settings_never_langs_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_settings_never_sites_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_settings_target` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_split_downloading` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_split_ready` appears to be unused"/>
     <ignore regexp="The resource `R.string.translate_dont_offer_site` appears to be unused"/>
     <ignore regexp="The resource `R.string.translate_dont_offer_lang` appears to be unused"/>
-
-    <!-- crbug.com/1192802 remove this line and following 5 lines after the bug is resolved -->
-    <ignore regexp="The resource `R.string.languages_srp_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_srp_subtitle` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_srp_cancel_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_srp_accept_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_srp_loading_text` appears to be unused"/>
 
     <!-- Old-style and new-style WebAPKs use same resources for simplicity. Old-style WebAPKs do
          not use R.style.SplashTheme but new-style WebAPKs do.
@@ -258,14 +246,55 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="The resource `R.string.hide_content` appears to be unused"/>
     <!-- 1: TODO(crbug.com/1137985) resource is used in downstream image editor. -->
     <ignore regexp="The resource `R.string.clear` appears to be unused"/>
-    <!-- 1: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1169845. -->
-    <ignore regexp="The resource `R.string.notification_category_price_drop` appears to be unused"/>
-    <!-- 5: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1166702 -->
-    <ignore regexp="The resource `R.string.price_drop_alerts_card_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.price_drop_alerts_card_get_notified_content` appears to be unused"/>
-    <ignore regexp="The resource `R.string.price_drop_alerts_card_get_notified` appears to be unused"/>
-    <ignore regexp="The resource `R.string.price_drop_alerts_card_go_to_settings_content` appears to be unused"/>
-    <ignore regexp="The resource `R.string.price_drop_alerts_card_go_to_settings` appears to be unused"/>
+    <!-- 5: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1195477 -->
+    <ignore regexp="The resource `R.string.merchant_viewer_message_description_rating` appears to be unused"/>
+    <ignore regexp="The resource `R.string.merchant_viewer_message_rating_word` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.accessibility_merchant_viewer_message_description` appears to be unused"/>
+    <ignore regexp="The resource `R.string.accessibility_merchant_viewer_message_announcement` appears to be unused"/>
+    <ignore regexp="The resource `R.string.merchant_viewer_message_rating_numerical` appears to be unused"/>
+    <!-- 2: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1295484 -->
+    <ignore regexp="The resource `R.string.merchant_viewer_message_title_see_reviews` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.merchant_viewer_message_description_reviews_from_google` appears to be unused"/>
+    <!-- 4: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1251446 -->
+    <ignore regexp="The resource `R.string.price_drop_notification_content_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_notification_content_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_notification_action_visit_site` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_notification_action_turn_off_alert` appears to be unused"/>
+
+    <!-- crbug.com/1208536 remove this line and following 4 lines after the bug is resolved -->
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_new_tab_iph` appears to be unused"/>
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_share_iph` appears to be unused"/>
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_voice_search_iph` appears to be unused"/>
+    <ignore regexp="The resource `R.string.adaptive_toolbar_menu_edit_shortcut` appears to be unused"/>
+
+    <!-- 3: TODO(crbug.com/1208528) Backup strings until implementation is ready. -->
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_new_tab_iph_settings` appears to be unused"/>
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_share_iph_settings` appears to be unused"/>
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_voice_search_iph_settings` appears to be unused"/>
+
+    <!-- 3: TODO(crbug.com/1213541) Remove when Shortcuts Widget is ready to ship. -->
+    <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_google_lens` appears to be unused"/>
+    <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_incognito` appears to be unused"/>
+    <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_voice_search` appears to be unused"/>
+
+    <!-- 1: TODO(crbug.com/1268473): Remove when error is shown in UI.  -->
+    <ignore regexp="The resource `R.string.lightweight_reactions_error_screenshot` appears to be unused"/>
+    <!-- 1: TODO(crbug.com/1268474): Remove when error is shown in UI.  -->
+    <ignore regexp="The resource `R.string.lightweight_reactions_error_asset_fetch` appears to be unused"/>
+
+    <!--TODO(crbug.com/1278431): Remove unused resources when UX is finalized. -->
+    <ignore regexp="The resource `R.string.price_tracking_title` appears to be unused"/>
+
+    <!-- Temporarily suppressed until impelmentation is ready, see: https://crbug.com/1330631 -->
+    <ignore regexp="The resource `R.string.price_drop_spotted_iph` appears to be unused"/>
+
+    <!-- TODO(https://crbug.com/1332596): Remove unused resources when UX is finalized. -->
+    <ignore regexp="The resource `R.string.search_resumption_module_title_short` appears to be unused"/>
+
+    <!-- TODO(https://crbug.com/1324357): Remove the following 2 lines after the bug is resolved. -->
+    <ignore regexp="The resource `R.string.iph_translate_message_dismissed_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.iph_translate_message_dismissed_accessibility_text` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>

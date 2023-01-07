@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/favicon/core/favicon_backend.h"
 #include "components/favicon/core/favicon_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,7 +115,7 @@ TEST_F(FaviconBackendWrapperTest, ExpireWithOneRemaining) {
   // Fast forward such the first entry is expired and should be removed, but
   // not the second.
   task_environment_.FastForwardBy(kTimeDeltaWhenEntriesAreRemoved +
-                                  base::TimeDelta::FromDays(1));
+                                  base::Days(1));
   EXPECT_FALSE(db->GetFaviconHeader(favicon_id1, nullptr, nullptr));
   EXPECT_FALSE(db->HasMappingFor(favicon_id1));
   EXPECT_TRUE(db->GetFaviconHeader(favicon_id2, nullptr, nullptr));
@@ -122,7 +123,7 @@ TEST_F(FaviconBackendWrapperTest, ExpireWithOneRemaining) {
 
   // Fast forward enough such that second is removed.
   task_environment_.FastForwardBy(kTimeDeltaWhenEntriesAreRemoved +
-                                  base::TimeDelta::FromDays(1));
+                                  base::Days(1));
   EXPECT_FALSE(db->GetFaviconHeader(favicon_id2, nullptr, nullptr));
   EXPECT_FALSE(db->HasMappingFor(favicon_id2));
 }

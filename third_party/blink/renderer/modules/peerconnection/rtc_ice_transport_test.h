@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/test/mock_ice_transport_adapter.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_transport.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 

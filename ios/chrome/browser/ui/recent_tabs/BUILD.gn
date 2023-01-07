@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,15 +18,16 @@ source_set("recent_tabs") {
   ]
   deps = [
     ":recent_tabs_ui",
+    ":synced_sessions",
     "resources:show_history",
     "//base",
     "//components/sessions",
     "//components/signin/public/identity_manager",
     "//components/sync",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/main",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
@@ -34,13 +35,13 @@ source_set("recent_tabs") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/browser/ui/menu:context_menu_delegate",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:feature_flags",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ui/base",
   ]
   public_deps = [ "//components/sync_sessions" ]
@@ -66,14 +67,14 @@ source_set("recent_tabs_ui") {
     "recent_tabs_transitioning_delegate.h",
     "recent_tabs_transitioning_delegate.mm",
     "sessions_sync_user_state.h",
-    "synced_sessions.h",
-    "synced_sessions.mm",
   ]
   deps = [
     ":recent_tabs_ui_constants",
+    ":synced_sessions",
     "resources:recent_tabs_other_devices_empty",
     "//base",
     "//components/prefs",
+    "//components/search_engines",
     "//components/sessions",
     "//components/strings",
     "//components/sync",
@@ -83,30 +84,49 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:serialisation",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/tabs_search",
+    "//ios/chrome/browser/tabs_search:tabs_search_factory",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/icons:action_icons",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/resources",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:presentation",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view:utils",
-    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
-    "//ios/public/provider/chrome/browser/signin",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ui/base",
   ]
+}
+
+source_set("synced_sessions") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "synced_sessions.h",
+    "synced_sessions.mm",
+  ]
+  deps = [ "//ios/chrome/browser/sync" ]
   public_deps = [ "//components/sync_sessions" ]
 }
 
@@ -121,12 +141,14 @@ source_set("unit_tests") {
     "//components/browser_sync",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
-    "//components/sync:test_support_model",
+    "//components/sync:test_support",
     "//components/sync_sessions",
     "//components/sync_user_events",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/ui:feature_flags",
@@ -140,8 +162,7 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
+source_set("eg_app_support+eg2") {
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -160,19 +181,23 @@ source_set("app_support+eg2") {
   ]
 }
 
-source_set("test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
+source_set("eg_test_support+eg2") {
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "recent_tabs_app_interface.h" ]
-  deps = [ "//base" ]
+  sources = [
+    "recent_tabs_app_interface.h",
+    "recent_tabs_app_interface_stub.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -180,18 +205,20 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "recent_tabs_egtest.mm" ]
   deps = [
+    ":eg_test_support+eg2",
     ":recent_tabs_ui_constants",
-    ":test_support+eg2",
     "//base/test:test_support",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common:common_constants",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/authentication/cells:constants",
     "//ios/chrome/browser/ui/history:constants",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/table_view:constants",
-    "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/testing/earl_grey:eg_test_support+eg2",

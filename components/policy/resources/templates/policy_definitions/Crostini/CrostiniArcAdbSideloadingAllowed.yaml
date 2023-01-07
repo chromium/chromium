@@ -1,0 +1,34 @@
+caption: Control usage of Android apps from untrusted sources for the user
+default: 0
+desc: |-
+  This policy controls the usage of Android apps from untrusted sources (other than Google Play Store) on a per-user basis.
+
+        If the value for this policy is not set, then the functionality is treated as disallowed.
+
+        If the user's device is managed, the availability of this functionality is additionally dependant on the corresponding device policy.
+
+        If the user's device is not managed, the availability of this functionality is additionally dependant on whether the user is the device owner.
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- chrome_os
+items:
+- caption: Prevent the user from using Android apps from untrusted sources
+  name: Disallow
+  value: 0
+- caption: Allow the user to use Android apps from untrusted sources
+  name: Allow
+  value: 1
+owners:
+- janagrill@google.com
+- okalitova@chromium.org
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+tags:
+- system-security
+type: int-enum

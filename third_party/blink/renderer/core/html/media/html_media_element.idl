@@ -76,7 +76,6 @@ enum CanPlayTypeResult { "" /* empty string */, "maybe", "probably" };
     void pause();
     [RuntimeEnabled=MediaLatencyHint, CEReactions]
     attribute double latencyHint;
-    [RuntimeEnabled=MediaPreservesPitch]
     attribute boolean preservesPitch;
 
     // controls

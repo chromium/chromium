@@ -1,0 +1,433 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Privacy histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Privacy.AboutThisSite.PageLoadValidation"
+    enum="AboutThisSiteStatus" expires_after="2023-04-09">
+  <owner>dullweber@chromium.org</owner>
+  <owner>olesiamarukhno@chromium.org</owner>
+  <summary>
+    Whether AboutThisSite had a valid proto. Recorded when optimization hints
+    are available on pageload.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.AccessContextAudit.CookieDomainCount" units="units"
+    expires_after="2022-01-30">
+  <owner>msramek@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <summary>
+    The number of unique cookie domains for which accesses has been recorded for
+    in the Access Context Audit database. Logged on initialization of the Access
+    Context Audit DB on 1% of starts.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.AccessContextAudit.DatabaseSize" units="KiB"
+    expires_after="2022-01-30">
+  <owner>msramek@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <summary>
+    Size of the Access Context Audit database file in KiB. Determined by
+    directly inspecting the database file. Logged on initialization of the
+    Access Context Audit DB on 1% of starts.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.AccessContextAudit.RecordCount" units="units"
+    expires_after="2022-01-30">
+  <owner>msramek@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <summary>
+    The total number of access records stored in the Access Context Audit
+    database. Logged on initialization of the Acceess Context Audit DB on 1% of
+    starts.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.AccessContextAudit.StorageOriginCount" units="units"
+    expires_after="2022-01-30">
+  <owner>msramek@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <summary>
+    The number of unique origins associated with origin keyed storage APIs
+    recorded in the Access Context Audit database. Logged on initialization of
+    the Access Context Audit DB on 1% of starts.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.AccessContextAudit.TopFrameOriginCount" units="units"
+    expires_after="2022-01-30">
+  <owner>msramek@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <summary>
+    The number of unique top frame origins for which access to storage APIs has
+    been recorded in the Access Context Audit database. Logged on initialization
+    of the Acceess Context Audit DB on 1% of starts.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.AccuracyTip.AccuracyTipInteraction"
+    enum="AccuracyTipInteraction" expires_after="2022-08-21">
+  <owner>dullweber@chromium.org</owner>
+  <owner>eokoyomon@chromium.org</owner>
+  <summary>
+    The interaction performed on the accuracy tip UI. Recorded when UI is
+    closed.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.AccuracyTip.AccuracyTipTimeOpen" units="ms"
+    expires_after="M105">
+  <owner>dullweber@chromium.org</owner>
+  <owner>eokoyomon@chromium.org</owner>
+  <summary>
+    The amount of time the accuracy tip UI was shown. Recorded when UI is
+    closed.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.AccuracyTip.NumDialogsShown" units="dialogs"
+    expires_after="2022-08-28">
+  <owner>dullweber@chromium.org</owner>
+  <owner>eokoyomon@chromium.org</owner>
+  <summary>
+    The number of accuracy tip dialogs that have been shown to the user.
+    Recorded when UI is closed.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.AccuracyTip.PageStatus" enum="AccuracyTipStatus"
+    expires_after="2022-10-09">
+  <owner>dullweber@chromium.org</owner>
+  <owner>eokoyomon@chromium.org</owner>
+  <summary>The accuracy status of a page. Recorded on each page load.</summary>
+</histogram>
+
+<histogram name="Privacy.ClearOnExitSyncEvent" enum="ClearOnExitSyncEvent"
+    expires_after="M103">
+  <owner>sauski@google.com</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Interactions between sync and the cookies clear on exit setting. Only
+    recorded when the user has cookies clear on exit enabled.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.ConsentAuditor.ConsentGiven.Feature"
+    enum="ConsentAuditorFeature" expires_after="M85">
+  <owner>markusheintz@google.com</owner>
+  <owner>msramek@google.com</owner>
+  <summary>
+    Logged each time the user grants a consent for a feature integrated with the
+    consent auditor. The value indicates which feature.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.ConsentAuditor.ConsentNotGiven.Feature"
+    enum="ConsentAuditorFeature" expires_after="M85">
+  <owner>markusheintz@google.com</owner>
+  <owner>msramek@google.com</owner>
+  <summary>
+    Logged each time the user denies or revokes a consent for a feature
+    integrated with the consent auditor. The value indicates which feature.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.CookieControlsSetting" enum="CookieControlsMode"
+    expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
+  <owner>dullweber@chromium.org</owner>
+  <owner>huanzhong@chromium.org</owner>
+  <summary>
+    Whether third-party cookies are blocked in incognito mode or completely.
+    Recorded at the Profile startup. In case that &quot;Block all cookies&quot;
+    is selected in settings, this metric records BlockThirdParty.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.CookiesInUseDialog.Action"
+    enum="CookiesInUseDialogActions" expires_after="2023-04-09">
+  <owner>alimariam@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <summary>
+    Logging actions done by the user while interacting with the &quot;Cookies in
+    use&quot; dialog.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
+    enum="DIPSRedirectCategory" expires_after="2022-12-01">
+  <owner>bcl@chromium.org</owner>
+  <owner>rtarpine@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    Whether a {DIPSRedirectType} redirect accessed cookies and whether its
+    origin previously had user engagement. Recorded when redirecting between
+    different sites, {DIPSCookieMode}.
+  </summary>
+  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
+  <token key="DIPSRedirectType" variants="DIPSRedirectType"/>
+</histogram>
+
+<histogram name="Privacy.DIPS.CookieAccessFilterResult{DIPSCookieMode}"
+    enum="Boolean" expires_after="2022-12-01">
+  <owner>bcl@chromium.org</owner>
+  <owner>rtarpine@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    The return value of CookieAccessFilter::Filter(). Recorded once per
+    navigation, {DIPSCookieMode}.
+  </summary>
+  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
+</histogram>
+
+<histogram name="Privacy.DIPS.TimeFromInteractionToStorage{DIPSCookieMode}"
+    units="ms" expires_after="2022-12-01">
+  <owner>bcl@chromium.org</owner>
+  <owner>jdh@chromium.org</owner>
+  <owner>rtarpine@chromium.org</owner>
+  <summary>
+    The amount of time after a user interacts with a site until the site
+    persists state (e.g. cookies), {DIPSCookieMode} (where site = eTLD+1). Not
+    recorded if state is written before interaction takes place (see analogous
+    histogram below).
+  </summary>
+  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
+</histogram>
+
+<histogram name="Privacy.DIPS.TimeFromNavigationCommitToClientBounce"
+    units="ms" expires_after="2023-02-12">
+  <owner>bcl@chromium.org</owner>
+  <owner>jdh@chromium.org</owner>
+  <owner>rtarpine@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    The amount of time after a navigation to a site commits until a renderer
+    initiated navigation (without user activation) is started to a different
+    site. Not recorded if the redirecting site does not access state (e.g.
+    cookies) or takes longer than 10 seconds to initiate the redirect (bounce).
+  </summary>
+</histogram>
+
+<histogram name="Privacy.DIPS.TimeFromStorageToInteraction{DIPSCookieMode}"
+    units="ms" expires_after="2022-12-01">
+  <owner>bcl@chromium.org</owner>
+  <owner>jdh@chromium.org</owner>
+  <owner>rtarpine@chromium.org</owner>
+  <summary>
+    The amount of time after a site persists state (e.g. cookies) until the user
+    interacts with the site, {DIPSCookieMode} (where site = eTLD+1). Not
+    recorded if interaction takes place before state is written (see analogous
+    histogram above).
+  </summary>
+  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
+</histogram>
+
+<histogram name="Privacy.DoNotTrackSetting" enum="BooleanEnabled"
+    expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
+  <owner>mkwst@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Whether the Do Not Track setting is enabled. Recorded at the Profile
+    startup.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.ThirdPartyCookieBlockingEnabledForSite" enum="Boolean"
+    expires_after="2022-04-10">
+  <obsolete>
+    Removed in M96. Replaced by
+    Navigation.MainFrame.ThirdPartyCookieBlockingEnabled.
+  </obsolete>
+  <owner>dullweber@chromium.org</owner>
+  <owner>huanzhong@chromium.org</owner>
+  <summary>
+    Records whether third party cookie blocking was enabled for a site on page
+    load. Only recorded for users who enabled the cookie controls ui.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.ThirdPartyCookieBlockingSetting" enum="BooleanEnabled"
+    expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
+  <owner>mkwst@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <summary>
+    Whether the third party cookie blocking setting is enabled. Recorded at the
+    Profile startup.
+
+    Previously recorded as the &quot;ThirdPartyCookieBlockingEnabled&quot; and
+    &quot;ThirdPartyCookieBlockingDisabled&quot; actions.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.AggregationService.KeyFetcher.HttpResponseOrNetErrorCode"
+    enum="NetErrorCodes" expires_after="2023-02-23">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Error info for fetching public keys from the processing server. Recorded for
+    each fetch request. The HTTP response code is recorded if there is no net
+    error code for the request.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.KeyFetcher.Status"
+    enum="PrivacySandboxAggregationServiceKeyFetcherStatus"
+    expires_after="2022-08-23">
+  <obsolete>
+    Replaced with PrivacySandbox.AggregationService.KeyFetcher.Status2, 06/2022.
+  </obsolete>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the high level status of each key network fetch request.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.KeyFetcher.Status2"
+    enum="PrivacySandboxAggregationServiceKeyFetcherStatus"
+    expires_after="2023-03-05">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the high level status of each key network fetch request.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.ReportAssembler.Status"
+    enum="PrivacySandboxAggregationServiceReportAssemblerStatus"
+    expires_after="2023-03-05">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the high level status of each aggregatable report assembly request.
+    Recorded for reports requested from any API (e.g. Attribution Reporting
+    API).
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.AggregationService.ReportSender.HttpResponseOrNetErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-02-23">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Error info for sending an aggregatable report to a reporting endpoint,
+    recorded for every aggregatable report sent. The HTTP response code is
+    recorded if there is no net error code for the request.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.ReportSender.Status"
+    enum="PrivacySandboxAggregationServiceReportSenderStatus"
+    expires_after="2023-02-23">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the high level request status for each aggregatable report being
+    sent to a reporting endpoint. Recorded for reports requested from any API
+    (e.g. Attribution Reporting API).
+
+    Recorded for every aggregatable report sent. It might retry in case of
+    failure but only the final status will be counted for each report.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.ReportStatus"
+    enum="PrivacySandboxAggregationServiceReportSenderStatus"
+    expires_after="2022-07-16">
+  <obsolete>
+    Replaced with PrivacySandbox.AggregationService.ReportSender.Status,
+    02/2022.
+  </obsolete>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the high level request status of each aggregatable report. These
+    reports are requested by APIs that rely on private, secure aggregation (e.g.
+    Attribution Reporting API).
+
+    Recorded for every aggregatable report sent. It might retry in case of
+    failure but only the final status will be counted for each report.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.Storage.Sql.CreationTime"
+    units="ms" expires_after="2023-02-23">
+  <obsolete>
+    PrivacySandbox.AggregationService.Storage.Sql.CreationTime2 which only
+    records when Threadticks is supported, 10/2022.
+  </obsolete>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the time it took to initialize a new aggregation service database
+    from scratch. Recorded when the aggregation service database finishes
+    initialization. Note that 0 is recorded if `ThreadTicks` is not supported.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.Storage.Sql.CreationTime2"
+    units="ms" expires_after="2023-02-23">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the time it took to initialize a new aggregation service database
+    from scratch. Recorded when the aggregation service database finishes
+    initialization. Note that no event is recorded if `ThreadTicks` is not
+    supported.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.Storage.Sql.InitStatus"
+    enum="PrivacySandboxAggregationServiceStorageSqlInitStatus"
+    expires_after="2022-10-23">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records initialization statuses of AggregationServiceStorageSql. Note:
+    currently AggregationServiceStorageSql is initialized lazily.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity"
+    enum="Boolean" expires_after="2023-02-24">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records whether there was sufficient capacity to store the request, i.e.
+    that the per-reporting origin limit had not been reached. Recorded for each
+    StoreRequest attempt.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

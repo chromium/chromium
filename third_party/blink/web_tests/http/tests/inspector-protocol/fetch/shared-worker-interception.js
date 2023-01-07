@@ -16,7 +16,7 @@
 
   globalFetcher.onceRequest().fulfill({
     responseCode: 200,
-    responseHeaders: [],
+    responseHeaders: [{name: 'Content-Type', value: 'application/javascript'}],
     body: btoa(workerBody)
   });
 
@@ -38,7 +38,7 @@
 
   globalFetcher.onceRequest().fulfill({
     responseCode: 200,
-    responseHeaders: [],
+    responseHeaders: [{name: 'Content-Type', value: 'application/javascript'}],
     body: btoa("overriden fetch body")
   });
 

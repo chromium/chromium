@@ -47,11 +47,14 @@ test(function() {
 
 test(function() {
     var url = new URL('http://abc.de:8080/path/file?query#fragment');
-    url.href = 'invalid';
-    assert_equals(url.search, '');
+    var expected = '?query';
+    assert_equals(url.search, expected);
+
+    assert_throws_js(TypeError, () => { url.href = 'invalid'; });
+    assert_equals(url.search, expected);
 
     url.search = 'changed';
-    assert_equals(url.search, '');
-    assert_equals(url.href, 'invalid');
+    assert_equals(url.search, '?changed');
+    assert_equals(url.href, 'http://abc.de:8080/path/file?changed#fragment');
 }, 'search property invalid URL');
 </script>

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,7 +10,7 @@ import("//build/config/compiler/compiler.gni")
 # Android requires frame pointers for unwinding, unwind tables aren't shipped in
 # official builds.
 supported_platform =
-    is_mac || (is_win && current_cpu == "x64") ||
+    is_linux || is_chromeos || is_mac || (is_win && current_cpu == "x64") ||
     (is_android && !is_component_build && enable_frame_pointers)
 
 declare_args() {

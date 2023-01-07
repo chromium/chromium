@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"
@@ -37,29 +36,31 @@ class InternalsUIHandler : public web::WebUIIOSMessageHandler,
 
   explicit InternalsUIHandler(std::string call_on_load,
                               GetLogRouterFunction get_log_router_function);
+
+  InternalsUIHandler(const InternalsUIHandler&) = delete;
+  InternalsUIHandler& operator=(const InternalsUIHandler&) = delete;
+
   ~InternalsUIHandler() override;
 
  private:
   void RegisterMessages() override;
 
   // LogReceiver implementation.
-  void LogEntry(const base::Value& entry) override;
+  void LogEntry(const base::Value::Dict& entry) override;
 
   void StartSubscription();
   void EndSubscription();
 
   // JavaScript call handler.
-  void OnLoaded(const base::ListValue* args);
+  void OnLoaded(const base::Value::List& args);
 
  private:
   // JavaScript function to be called on load.
   std::string call_on_load_;
   GetLogRouterFunction get_log_router_function_;
 
-  // Whether |this| is registered as a log receiver with the LogRouter.
+  // Whether `this` is registered as a log receiver with the LogRouter.
   bool registered_with_log_router_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalsUIHandler);
 };
 
 }  // namespace autofill

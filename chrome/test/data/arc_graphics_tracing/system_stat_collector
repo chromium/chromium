@@ -1,0 +1,34 @@
+{
+   "max_interval": "3000000",
+   "samples": [ {
+      "cpu_frequency": 2400,
+      "cpu_power": 1000,
+      "cpu_temperature": 70000,
+      "gem_objects": 5000,
+      "gem_size_kb": 500000,
+      "gpu_power": 300,
+      "mem_total_kb": 4000000,
+      "mem_used_kb": 3000000,
+      "memory_power": 200,
+      "package_power_constraint": 15000,
+      "swap_sectors_read": 1,
+      "swap_sectors_write": 2,
+      "swap_waiting_time_ms": 16,
+      "timestamp": "10000"
+   }, {
+      "cpu_frequency": 2100,
+      "cpu_power": 800,
+      "cpu_temperature": 75000,
+      "gem_objects": 3000,
+      "gem_size_kb": 350000,
+      "gpu_power": 100,
+      "mem_total_kb": 4000000,
+      "mem_used_kb": 3300000,
+      "memory_power": 60,
+      "package_power_constraint": 15000,
+      "swap_sectors_read": 5,
+      "swap_sectors_write": 12,
+      "swap_waiting_time_ms": 33,
+      "timestamp": "20000"
+   } ]
+}

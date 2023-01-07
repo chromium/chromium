@@ -19,6 +19,7 @@
     "input",
     "inputMethodPrivate",
     "metricsPrivate",
+    "notifications",
     "system.display",
     "tabs",
     "tts",
@@ -30,14 +31,6 @@
     "persistent": false
   },
   "content_scripts": [
-    {
-      "matches": [
-        "https://www.googleapis.com/auth/imesync*"
-      ],
-      "js": [
-        "chos_inject-debug.js"
-      ]
-    }
   ],
   "ime_path": "/usr/share/chromeos-assets/input_methods/input_tools",
   "input_components": [
@@ -616,6 +609,19 @@
         "gb(extd)"
       ],
       "options_page": "hmm_options.html?code=xkb:gb:extd:eng"
+    },
+    {
+      "name": "__MSG_keyboard_english_south_africa__",
+      "id": "xkb:za:gb:eng",
+      "indicator": "ZA",
+      "language": [
+        "en",
+        "en-ZA"
+      ],
+      "layouts": [
+        "gb(extd)"
+      ],
+      "options_page": "hmm_options.html?code=xkb:za:gb:eng"
     },
     {
       "name": "__MSG_keyboard_uk_dvorak__",
@@ -1241,6 +1247,17 @@
       ]
     },
     {
+      "name": "__MSG_keyboard_hindi_inscript__",
+      "id": "vkd_hi_inscript",
+      "indicator": "\u0939\u093f",
+      "language": [
+        "hi"
+      ],
+      "layouts": [
+        "us"
+      ]
+    },
+    {
       "name": "__MSG_keyboard_kannada_phonetic__",
       "id": "vkd_kn_phone",
       "language": [
@@ -1678,16 +1695,6 @@
       ],
       "layouts": [
         "dk"
-      ]
-    },
-    {
-      "name": "Catalan with Spanish keyboard",
-      "id": "experimental_layout-es_lang-ca",
-      "language": [
-        "ca"
-      ],
-      "layouts": [
-        "es"
       ]
     }
   ],

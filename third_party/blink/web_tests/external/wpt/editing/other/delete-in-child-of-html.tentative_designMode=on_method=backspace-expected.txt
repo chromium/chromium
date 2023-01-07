@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL delete in <div> elements after <body> should join them promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL delete should merge <div> after <body> into the <body> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL delete should merge <div> after <body> into the <div> in the <body> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL delete should merge <div> after <body> into the empty <body> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL delete should merge <div> before <body> into the <body> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL delete should merge <div> before <body> into the <div> in the <body> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL delete should merge <div> before <body> into the empty <body> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL delete from <div> following invisible <head> element shouldn't delete the <head> element promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL delete from <div> around invisible <head> element should not delete the <head> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL delete from <div> following visible <head> element should be merged with the <div> in the <head> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL delete from <div> following visible <head> element should be merged with the visible <style> in the <head> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL delete from <div> following visible <script> element should be merged with the visible <script> in the <head> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+Harness: the test ran to completion.
+

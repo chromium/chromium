@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@ package org.chromium.device;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Provides an API for querying the status of Device Service Features.
@@ -16,6 +16,7 @@ import org.chromium.base.annotations.NativeMethods;
 @JNINamespace("features")
 @MainDex
 public class DeviceFeatureList {
+    public static final String ASYNC_SENSOR_CALLS = "AsyncSensorCalls";
     public static final String GENERIC_SENSOR_EXTRA_CLASSES = "GenericSensorExtraClasses";
 
     private DeviceFeatureList() {}

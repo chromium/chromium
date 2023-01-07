@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,12 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/search_engines/template_url_service.h"
 
 // This class provides an extension on top of BrowserWithTestWindowTest, and
@@ -24,6 +26,8 @@ class InstantUnitTestBase : public BrowserWithTestWindowTest {
   void SetUp() override;
   void TearDown() override;
 
+  ntp_tiles::MostVisitedSites* most_visited_sites();
+
   // Adds and sets the default search provider using the base_url.
   // The base_url should have the http[s]:// prefix and a trailing / after the
   // TLD.
@@ -31,9 +35,9 @@ class InstantUnitTestBase : public BrowserWithTestWindowTest {
   // search_terms_replacement_key.
   void SetUserSelectedDefaultSearchProvider(const std::string& base_url);
 
-  InstantService* instant_service_;
-  TemplateURLService* template_url_service_;
-  base::SimpleTestClock* clock_;
+  raw_ptr<InstantService> instant_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
+  raw_ptr<base::SimpleTestClock> clock_;
 
  private:
   // BrowserWithTestWindowTest override:

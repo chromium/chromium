@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "device/udev_linux/scoped_udev.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -44,13 +44,16 @@ class UdevWatcher {
     const char* subsystem() const;
 
    private:
-    base::Optional<std::string> subsystem_;
-    base::Optional<std::string> devtype_;
+    absl::optional<std::string> subsystem_;
+    absl::optional<std::string> devtype_;
   };
 
   static std::unique_ptr<UdevWatcher> StartWatching(
       Observer* observer,
       const std::vector<Filter>& filters = {});
+
+  UdevWatcher(const UdevWatcher&) = delete;
+  UdevWatcher& operator=(const UdevWatcher&) = delete;
 
   ~UdevWatcher();
 
@@ -69,12 +72,10 @@ class UdevWatcher {
 
   ScopedUdevPtr udev_;
   ScopedUdevMonitorPtr udev_monitor_;
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
   const std::vector<Filter> udev_filters_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> file_watcher_;
-  base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(UdevWatcher);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace device

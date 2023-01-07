@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "android_webview/browser/network_service/aw_web_resource_request.h"
-#include "components/safe_browsing/content/base_blocking_page.h"
+#include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 
 namespace security_interstitials {
@@ -35,6 +35,10 @@ class AwSafeBrowsingBlockingPage : public safe_browsing::BaseBlockingPage {
       std::unique_ptr<AwWebResourceRequest> resource_request);
 
   ~AwSafeBrowsingBlockingPage() override;
+
+  // safe_browsing::BaseBlockingPage:
+  void CreatedPostCommitErrorPageNavigation(
+      content::NavigationHandle* error_page_navigation_handle) override;
 
  protected:
   // Used to specify which BaseSafeBrowsingErrorUI to instantiate, and

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,17 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -31,18 +32,17 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 ToolbarActionsModel::ToolbarActionsModel(
     Profile* profile,
@@ -55,34 +55,17 @@ ToolbarActionsModel::ToolbarActionsModel(
       extension_action_manager_(
           extensions::ExtensionActionManager::Get(profile_)),
       actions_initialized_(false),
-      highlight_type_(HIGHLIGHT_NONE),
       has_active_bubble_(false) {
   extensions::ExtensionSystem::Get(profile_)->ready().Post(
       FROM_HERE, base::BindOnce(&ToolbarActionsModel::OnReady,
                                 weak_ptr_factory_.GetWeakPtr()));
-  visible_icon_count_ =
-      prefs_->GetInteger(extensions::pref_names::kToolbarSize);
 
   // We only care about watching toolbar-order prefs if not in incognito mode.
-  const bool watch_toolbar_order = !profile_->IsOffTheRecord();
-  const bool watch_pinned_extensions =
-      base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu);
-  if (watch_toolbar_order || watch_pinned_extensions) {
-    pref_change_registrar_.Init(prefs_);
-    pref_change_callback_ =
-        base::BindRepeating(&ToolbarActionsModel::OnActionToolbarPrefChange,
-                            base::Unretained(this));
-
-    if (watch_toolbar_order) {
-      pref_change_registrar_.Add(extensions::pref_names::kToolbar,
-                                 pref_change_callback_);
-    }
-
-    if (watch_pinned_extensions) {
-      pref_change_registrar_.Add(extensions::pref_names::kPinnedExtensions,
-                                 pref_change_callback_);
-    }
-  }
+  pref_change_registrar_.Init(prefs_);
+  pref_change_registrar_.Add(
+      extensions::pref_names::kPinnedExtensions,
+      base::BindRepeating(&ToolbarActionsModel::UpdatePinnedActionIds,
+                          base::Unretained(this)));
 }
 
 ToolbarActionsModel::~ToolbarActionsModel() {}
@@ -100,60 +83,6 @@ void ToolbarActionsModel::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void ToolbarActionsModel::MoveActionIcon(const ActionId& id, size_t index) {
-  auto pos = action_ids_.begin();
-  while (pos != action_ids_.end() && *pos != id)
-    ++pos;
-  if (pos == action_ids_.end()) {
-    NOTREACHED();
-    return;
-  }
-
-  ActionId action = *pos;
-  action_ids_.erase(pos);
-
-  auto pos_id =
-      std::find(last_known_positions_.begin(), last_known_positions_.end(), id);
-  if (pos_id != last_known_positions_.end())
-    last_known_positions_.erase(pos_id);
-
-  if (index < action_ids_.size()) {
-    // If the index is not at the end, find the action currently at |index|, and
-    // insert |action| before it in |action_ids_| and |action|'s id in
-    // |last_known_positions_|.
-    auto iter = action_ids_.begin() + index;
-    last_known_positions_.insert(std::find(last_known_positions_.begin(),
-                                           last_known_positions_.end(), *iter),
-                                 id);
-    action_ids_.insert(iter, action);
-  } else {
-    // Otherwise, put |action| and |id| at the end.
-    DCHECK_EQ(action_ids_.size(), index);
-    action_ids_.push_back(action);
-    last_known_positions_.push_back(id);
-  }
-
-  for (Observer& observer : observers_)
-    observer.OnToolbarActionMoved(id, index);
-  UpdatePrefs();
-}
-
-void ToolbarActionsModel::SetVisibleIconCount(size_t count) {
-  visible_icon_count_ = (count >= action_ids_.size()) ? -1 : count;
-
-  // Only set the prefs if we're not in highlight mode and the profile is not
-  // incognito. Highlight mode is designed to be a transitory state, and should
-  // not persist across browser restarts (though it may be re-entered), and we
-  // don't store anything in incognito.
-  if (!is_highlighting() && !profile_->IsOffTheRecord()) {
-    prefs_->SetInteger(extensions::pref_names::kToolbarSize,
-                       visible_icon_count_);
-  }
-
-  for (Observer& observer : observers_)
-    observer.OnToolbarVisibleCountChanged();
-}
-
 void ToolbarActionsModel::OnExtensionActionUpdated(
     extensions::ExtensionAction* extension_action,
     content::WebContents* web_contents,
@@ -165,123 +94,77 @@ void ToolbarActionsModel::OnExtensionActionUpdated(
   }
 }
 
-std::vector<std::unique_ptr<ToolbarActionViewController>>
-ToolbarActionsModel::CreateActions(Browser* browser,
-                                   ExtensionsContainer* main_bar,
-                                   bool in_overflow_mode) {
-  DCHECK(browser);
-  DCHECK(main_bar);
-  std::vector<std::unique_ptr<ToolbarActionViewController>> action_list;
-
-  // action_ids() might not equate to |action_ids_| in the case where a
-  // subset is highlighted.
-  for (const ActionId& action_id : action_ids()) {
-    action_list.push_back(
-        CreateActionForId(browser, main_bar, in_overflow_mode, action_id));
-  }
-
-  return action_list;
-}
-
-std::unique_ptr<ToolbarActionViewController>
-ToolbarActionsModel::CreateActionForId(Browser* browser,
-                                       ExtensionsContainer* main_bar,
-                                       bool in_overflow_mode,
-                                       const ActionId& action_id) {
-  // We should never have uninitialized actions in action_ids().
-  DCHECK(!action_id.empty());
-  // Get the extension.
-  const extensions::Extension* extension = GetExtensionById(action_id);
-  DCHECK(extension);
-
-  // Create and add an ExtensionActionViewController for the extension.
-  return std::make_unique<ExtensionActionViewController>(
-      extension, browser,
-      extension_action_manager_->GetExtensionAction(*extension), main_bar,
-      in_overflow_mode);
-}
-
 void ToolbarActionsModel::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
   // We don't want to add the same extension twice. It may have already been
   // added by EXTENSION_BROWSER_ACTION_VISIBILITY_CHANGED below, if the user
   // hides the browser action and then disables and enables the extension.
-  if (!HasAction(extension->id()))
-    AddExtension(extension);
+  if (!HasAction(extension->id()) && ShouldAddExtension(extension))
+    AddAction(extension->id());
 }
 
 void ToolbarActionsModel::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
-  bool was_visible_and_has_overflow =
-      IsActionVisible(extension->id()) && !all_icons_visible();
-  RemoveExtension(extension);
-  // If the extension was previously visible and there are overflowed
-  // extensions, and this extension is being uninstalled, we reduce the visible
-  // count so that we don't pop out a previously-hidden extension.
-  if (was_visible_and_has_overflow &&
-      reason == extensions::UnloadedExtensionReason::UNINSTALL)
-    SetVisibleIconCount(visible_icon_count() - 1);
+  RemoveAction(extension->id());
 }
 
 void ToolbarActionsModel::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UninstallReason reason) {
+  if (profile_->IsOffTheRecord()) {
+    // The on-the-record version will update the prefs; incognito is read-only.
+    return;
+  }
+
   // Remove the extension id from the ordered list, if it exists (the extension
   // might not be represented in the list because it might not have an icon).
   RemovePref(extension->id());
 }
 
-void ToolbarActionsModel::OnLoadFailure(
-    content::BrowserContext* browser_context,
-    const base::FilePath& extension_path,
-    const std::string& error) {
-  for (ToolbarActionsModel::Observer& observer : observers_) {
-    observer.OnToolbarActionLoadFailed();
+void ToolbarActionsModel::OnExtensionManagementSettingsChanged() {
+  UpdatePinnedActionIds();
+}
+
+void ToolbarActionsModel::OnExtensionPermissionsUpdated(
+    const extensions::Extension& extension,
+    const extensions::PermissionSet& permissions,
+    extensions::PermissionsManager::UpdateReason reason) {
+  if (HasAction(extension.id())) {
+    for (Observer& observer : observers_)
+      observer.OnToolbarActionUpdated(extension.id());
   }
 }
 
-void ToolbarActionsModel::OnExtensionManagementSettingsChanged() {
-  OnActionToolbarPrefChange();
+void ToolbarActionsModel::Shutdown() {
+  permissions_manager_observation_.Reset();
 }
 
 void ToolbarActionsModel::RemovePref(const ActionId& action_id) {
-  auto pos = std::find(last_known_positions_.begin(),
-                       last_known_positions_.end(), action_id);
-
-  if (pos != last_known_positions_.end()) {
-    last_known_positions_.erase(pos);
-    UpdatePrefs();
-  }
-
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    // The extension is already unloaded at this point, and so shouldn't be in
-    // the active pinned set.
-    DCHECK(!IsActionPinned(action_id));
-    auto stored_pinned_actions = extension_prefs_->GetPinnedExtensions();
-    auto iter = std::find(stored_pinned_actions.begin(),
-                          stored_pinned_actions.end(), action_id);
-    if (iter != stored_pinned_actions.end()) {
-      stored_pinned_actions.erase(iter);
-      extension_prefs_->SetPinnedExtensions(stored_pinned_actions);
-    }
+  // The extension is already unloaded at this point, and so shouldn't be in
+  // the active pinned set.
+  DCHECK(!IsActionPinned(action_id));
+  auto stored_pinned_actions = extension_prefs_->GetPinnedExtensions();
+  auto iter = base::ranges::find(stored_pinned_actions, action_id);
+  if (iter != stored_pinned_actions.end()) {
+    stored_pinned_actions.erase(iter);
+    extension_prefs_->SetPinnedExtensions(stored_pinned_actions);
   }
 }
 
 void ToolbarActionsModel::OnReady() {
   InitializeActionList();
 
-  load_error_reporter_observation_.Observe(
-      extensions::LoadErrorReporter::GetInstance());
-
   // Wait until the extension system is ready before observing any further
   // changes so that the toolbar buttons can be shown in their stable ordering
   // taken from prefs.
-  extension_registry_observation_.Observe(extension_registry_);
-  extension_action_observation_.Observe(extension_action_api_);
+  extension_registry_observation_.Observe(extension_registry_.get());
+  extension_action_observation_.Observe(extension_action_api_.get());
+  permissions_manager_observation_.Observe(
+      extensions::PermissionsManager::Get(profile_));
 
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
@@ -290,29 +173,6 @@ void ToolbarActionsModel::OnReady() {
   actions_initialized_ = true;
   for (Observer& observer : observers_)
     observer.OnToolbarModelInitialized();
-}
-
-size_t ToolbarActionsModel::FindNewPositionFromLastKnownGood(
-    const ActionId& action) {
-  // See if we have last known good position for this action.
-  size_t new_index = 0;
-  // Loop through the ID list of known positions, to count the number of
-  // visible action icons preceding |action|'s id.
-  for (const ActionId& last_pos_id : last_known_positions_) {
-    if (last_pos_id == action)
-      return new_index;  // We've found the right position.
-    // Found an action, need to see if it is visible.
-    for (const ActionId& action_id : action_ids_) {
-      if (action_id == last_pos_id) {
-        // This extension is visible, update the index value.
-        ++new_index;
-        break;
-      }
-    }
-  }
-
-  // Position not found.
-  return action_ids_.size();
 }
 
 bool ToolbarActionsModel::ShouldAddExtension(
@@ -327,123 +187,28 @@ bool ToolbarActionsModel::ShouldAddExtension(
   return extension_action_manager_->GetExtensionAction(*extension) != nullptr;
 }
 
-void ToolbarActionsModel::AddExtension(const extensions::Extension* extension) {
-  if (!ShouldAddExtension(extension))
-    return;
-
-  AddAction(extension->id());
-}
-
 void ToolbarActionsModel::AddAction(const ActionId& action_id) {
   // We only use AddAction() once the system is initialized.
   CHECK(actions_initialized_);
 
-  // See if we have a last known good position for this extension.
-  bool is_new_extension = !base::Contains(last_known_positions_, action_id);
+  action_ids_.insert(action_id);
 
-  // New extensions go at the right (end) of the visible extensions. Other
-  // extensions go at their previous position.
-  size_t new_index = 0;
-  if (is_new_extension) {
-    new_index = visible_icon_count();
-    // For the last-known position, we use the index of the extension that is
-    // just before this extension, plus one. (Note that this isn't the same
-    // as new_index + 1, because last_known_positions_ can include disabled
-    // extensions.)
-    int new_last_known_index = new_index == 0
-                                   ? 0
-                                   : std::find(last_known_positions_.begin(),
-                                               last_known_positions_.end(),
-                                               action_ids_[new_index - 1]) -
-                                         last_known_positions_.begin() + 1;
-    // In theory, the extension before this one should always
-    // be in last known positions, but if something funny happened with prefs,
-    // make sure we handle it.
-    // TODO(devlin): Track down these cases so we can CHECK this.
-    new_last_known_index =
-        std::min<int>(new_last_known_index, last_known_positions_.size());
-    last_known_positions_.insert(
-        last_known_positions_.begin() + new_last_known_index, action_id);
-    UpdatePrefs();
-  } else {
-    new_index = FindNewPositionFromLastKnownGood(action_id);
-  }
-
-  action_ids_.insert(action_ids_.begin() + new_index, action_id);
-
-  // If we're currently highlighting, then even though we add a browser action
-  // to the full list (|action_ids_|, there won't be another *visible*
-  // browser action, which was what the observers care about.
-  if (!is_highlighting()) {
-    for (Observer& observer : observers_)
-      observer.OnToolbarActionAdded(action_id, new_index);
-
-    int visible_count_delta = 0;
-    if (is_new_extension && !all_icons_visible()) {
-      // If this is a new extension (and not all extensions are visible), we
-      // expand the toolbar out so that the new one can be seen.
-      visible_count_delta = 1;
-    } else if (profile_->IsOffTheRecord()) {
-      // If this is an incognito profile, we also have to check to make sure the
-      // overflow matches the main bar's status.
-      ToolbarActionsModel* main_model =
-          ToolbarActionsModel::Get(profile_->GetOriginalProfile());
-      // Find what the index will be in the main bar. Because Observer calls are
-      // nondeterministic, we can't just assume the main bar will have the
-      // extension and look it up.
-      size_t main_index =
-          main_model->FindNewPositionFromLastKnownGood(action_id);
-      bool visible =
-          is_new_extension || main_index < main_model->visible_icon_count();
-      // We may need to adjust the visible count if the incognito bar isn't
-      // showing all icons and this one is visible, or if it is showing all
-      // icons and this is hidden.
-      if (visible && !all_icons_visible())
-        visible_count_delta = 1;
-      else if (!visible && all_icons_visible())
-        visible_count_delta = -1;
-    }
-
-    if (visible_count_delta)
-      SetVisibleIconCount(visible_icon_count() + visible_count_delta);
-  }
+  for (Observer& observer : observers_)
+    observer.OnToolbarActionAdded(action_id);
 
   UpdatePinnedActionIds();
 }
 
 void ToolbarActionsModel::RemoveAction(const ActionId& action_id) {
-  auto pos = std::find(action_ids_.begin(), action_ids_.end(), action_id);
-
-  if (pos == action_ids_.end())
+  const bool did_erase = action_ids_.erase(action_id) > 0;
+  // TODO(devlin): Can we DCHECK did_erase?
+  if (!did_erase)
     return;
-
-  // If our visible count is set to the current size, we need to decrement it.
-  if (visible_icon_count_ == static_cast<int>(action_ids_.size()))
-    SetVisibleIconCount(action_ids_.size() - 1);
-
-  action_ids_.erase(pos);
 
   UpdatePinnedActionIds();
 
-  // If we're in highlight mode, we also have to remove the action from
-  // the highlighted list.
-  if (is_highlighting()) {
-    pos = std::find(highlighted_action_ids_.begin(),
-                    highlighted_action_ids_.end(), action_id);
-    if (pos != highlighted_action_ids_.end()) {
-      highlighted_action_ids_.erase(pos);
-      for (Observer& observer : observers_)
-        observer.OnToolbarActionRemoved(action_id);
-      // If the highlighted list is now empty, we stop highlighting.
-      if (highlighted_action_ids_.empty())
-        StopHighlighting();
-    }
-  } else {
-    for (Observer& observer : observers_)
-      observer.OnToolbarActionRemoved(action_id);
-  }
-
-  UpdatePrefs();
+  for (Observer& observer : observers_)
+    observer.OnToolbarActionRemoved(action_id);
 }
 
 std::unique_ptr<extensions::ExtensionMessageBubbleController>
@@ -457,13 +222,32 @@ ToolbarActionsModel::GetExtensionMessageBubbleController(Browser* browser) {
   return controller;
 }
 
+const std::u16string ToolbarActionsModel::GetExtensionName(
+    const ActionId& action_id) const {
+  return base::UTF8ToUTF16(
+      extension_registry_->enabled_extensions().GetByID(action_id)->name());
+}
+
+bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {
+  // We consider a site to be restricted if it's restricted for every
+  // extension in the toolbar. This can vary based on the extensions
+  // installed - if the user has an extension that can execute script
+  // everywhere and has an icon in the toolbar (like the non-ChromeOS version
+  // of ChromeVox), then otherwise-restricted sites may not be.
+  // If nay extension has access, we want to properly message that (since
+  // saying "No extensions can run..." is inaccurate). Other extensions
+  // will still be properly attributed in UI.
+  return base::ranges::all_of(action_ids(), [this, url](ActionId id) {
+    return GetExtensionById(id)->permissions_data()->IsRestrictedUrl(
+        url, /*error=*/nullptr);
+  });
+}
+
 bool ToolbarActionsModel::IsActionPinned(const ActionId& action_id) const {
-  DCHECK(base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
   return base::Contains(pinned_action_ids_, action_id);
 }
 
 bool ToolbarActionsModel::IsActionForcePinned(const ActionId& action_id) const {
-  DCHECK(base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
   return base::Contains(management->GetForcePinnedList(), action_id);
@@ -471,36 +255,108 @@ bool ToolbarActionsModel::IsActionForcePinned(const ActionId& action_id) const {
 
 void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
                                            size_t target_index) {
-  DCHECK(base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
+  // TODO(crbug.com/1266952): This code assumes all actions are in
+  // stored_pinned_actions, which force-pinned actions aren't; so, always keep
+  // them 'to the right' of other actions. Remove this guard if we ever add
+  // force-pinned actions to the pref.
+  if (IsActionForcePinned(action_id))
+    return;
 
-  auto new_pinned_action_ids = pinned_action_ids_;
+  // If pinned actions are empty, we're going to have a real bad time (with
+  // out Keep this a hard CHECK (not a DCHECK).
+  CHECK(!pinned_action_ids_.empty());
+  DCHECK(!profile_->IsOffTheRecord())
+      << "Changing action position is disallowed in incognito.";
 
-  auto current_position = std::find(new_pinned_action_ids.begin(),
-                                    new_pinned_action_ids.end(), action_id);
-  DCHECK(current_position != new_pinned_action_ids.end());
+  auto current_position_on_toolbar =
+      base::ranges::find(pinned_action_ids_, action_id);
+  DCHECK(current_position_on_toolbar != pinned_action_ids_.end());
+  size_t current_index_on_toolbar =
+      current_position_on_toolbar - pinned_action_ids_.begin();
 
-  const bool move_to_end = size_t{target_index} >= new_pinned_action_ids.size();
-  auto target_position =
-      move_to_end ? std::prev(new_pinned_action_ids.end())
-                  : std::next(new_pinned_action_ids.begin(), target_index);
+  if (current_index_on_toolbar == target_index)
+    return;
 
-  // Rotate |action_id| to be in the target position.
-  if (target_position < current_position) {
-    std::rotate(target_position, current_position, std::next(current_position));
+  bool is_left_to_right_move = target_index > current_index_on_toolbar;
+
+  // Moving pinned actions is a bit tricky (unless we move it to the end - in
+  // which case it's trivial). We need to store the updated state in prefs, but
+  // the prefs also contain pin state information for unloaded (but still
+  // installed) extensions. Thus, we can't just reorder the pinned_action_ids_
+  // (which only include loaded extensions), and set those directly.
+  //
+  // Instead, we look at the destination of the action in the toolbar, and
+  // find the ID of the action to its right (if any). Then in the stored prefs,
+  // find that action, and insert the moved action to its left.
+  //
+  // To further complicate things, force-pinned actions are stored in
+  // |pinned_action_ids_| but not in the pref (crbug.com/1266952). So we have to
+  // find the ID not just of the action to its right, but the first action to
+  // its right that is *not* force-pinned.
+  //
+  // For example:
+  // Consider the pinned extension order in prefs is "A [B C] D E", where
+  // B and C are unloaded extensions. Assume we want to A to index 1 on the
+  // toolbar (swapping A and D). We would look for the new action to its
+  // right (E), and insert it in prefs to the left of it. Thus, the new pref
+  // order would be "[B C] D A E".
+
+  // Force-pinned neighbors aren't saved in the pref, so find the preceding,
+  // non-force-pinned neighbor. This basically keeps force-pinned actions on the
+  // right at all times.
+  //
+  // TODO(crbug.com/1266952): Simplify this logic when force-pinned extensions
+  // are saved in the pref.
+  std::vector<ActionId>::iterator non_force_pinned_neighbor =
+      pinned_action_ids_.end();
+  if (is_left_to_right_move) {
+    // LTR move. Starting with the extension to the right of the desired
+    // location, do an RTL search for the first non-force-pinned extension.
+    // Note: there's always an extension that matches these criteria (this
+    // one!).
+
+    // Avoid array bounds shenanigans when target_index >= n.
+    auto search_start = std::max(pinned_action_ids_.rend() - target_index - 1,
+                                 pinned_action_ids_.rbegin());
+    auto reverse_iter = std::find_if(
+        search_start, pinned_action_ids_.rend(),
+        [this](const ActionId& id) { return !this->IsActionForcePinned(id); });
+    non_force_pinned_neighbor = reverse_iter.base();
   } else {
-    std::rotate(current_position, std::next(current_position),
-                std::next(target_position));
+    // RTL move. Starting with the extension to the left of the desired
+    // location, do an LTR search for the first non-force-pinned extension.
+    // Note: there's always an extension that matches these criteria (this
+    // one!).
+    non_force_pinned_neighbor = std::find_if(
+        pinned_action_ids_.begin() + target_index, pinned_action_ids_.end(),
+        [this](const ActionId& id) { return !this->IsActionForcePinned(id); });
   }
 
-  extension_prefs_->SetPinnedExtensions(new_pinned_action_ids);
+  auto stored_pinned_actions = extension_prefs_->GetPinnedExtensions();
+  const bool move_to_end =
+      non_force_pinned_neighbor == pinned_action_ids_.end();
+  auto target_position = move_to_end
+                             ? stored_pinned_actions.end()
+                             : base::ranges::find(stored_pinned_actions,
+                                                  *non_force_pinned_neighbor);
+
+  auto current_position_in_prefs =
+      base::ranges::find(stored_pinned_actions, action_id);
+  DCHECK(current_position_in_prefs != stored_pinned_actions.end());
+
+  // Rotate |action_id| to be in the target position.
+  if (is_left_to_right_move) {
+    std::rotate(current_position_in_prefs, std::next(current_position_in_prefs),
+                target_position);
+  } else {
+    std::rotate(target_position, current_position_in_prefs,
+                std::next(current_position_in_prefs));
+  }
+
+  extension_prefs_->SetPinnedExtensions(stored_pinned_actions);
   // The |pinned_action_ids_| should be updated as a result of updating the
   // preference.
-  DCHECK(pinned_action_ids_ == new_pinned_action_ids);
-}
-
-void ToolbarActionsModel::RemoveExtension(
-    const extensions::Extension* extension) {
-  RemoveAction(extension->id());
+  DCHECK(pinned_action_ids_ == GetFilteredPinnedActionIds());
 }
 
 // Combine the currently enabled extensions that have browser actions (which
@@ -513,40 +369,35 @@ void ToolbarActionsModel::RemoveExtension(
 void ToolbarActionsModel::InitializeActionList() {
   CHECK(action_ids_.empty());  // We shouldn't have any actions yet.
 
-  last_known_positions_ = extension_prefs_->GetToolbarOrder();
-
   if (profile_->IsOffTheRecord())
     IncognitoPopulate();
   else
     Populate();
 
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    // Set |pinned_action_ids_| directly to avoid notifying observers that they
-    // have changed even though they haven't.
-    pinned_action_ids_ = GetFilteredPinnedActionIds();
+  // Set |pinned_action_ids_| directly to avoid notifying observers that they
+  // have changed even though they haven't.
+  pinned_action_ids_ = GetFilteredPinnedActionIds();
 
-    if (!profile_->IsOffTheRecord() && !action_ids_.empty()) {
+  if (!profile_->IsOffTheRecord()) {
+    // Prefixed with "ExtensionToolbarModel" rather than
+    // "Extensions.Toolbar" for historical reasons.
+    base::UmaHistogramCounts100("ExtensionToolbarModel.BrowserActionsCount",
+                                action_ids_.size());
+    if (!action_ids_.empty()) {
       base::UmaHistogramCounts100("Extensions.Toolbar.PinnedExtensionCount2",
                                   pinned_action_ids_.size());
-      double percentage_double = double{pinned_action_ids_.size()} /
-                                 double{action_ids_.size()} * 100.0;
-      int percentage = int{percentage_double};
+      double percentage_double =
+          static_cast<double>(pinned_action_ids_.size()) / action_ids_.size() *
+          100.0;
       base::UmaHistogramPercentageObsoleteDoNotUse(
-          "Extensions.Toolbar.PinnedExtensionPercentage3", percentage);
+          "Extensions.Toolbar.PinnedExtensionPercentage3",
+          base::ClampRound(percentage_double));
     }
   }
 }
 
 void ToolbarActionsModel::Populate() {
   DCHECK(!profile_->IsOffTheRecord());
-
-  std::vector<ActionId> all_actions;
-  // Ids of actions that have explicit positions.
-  std::vector<ActionId> sorted(last_known_positions_.size(), ActionId());
-  // Ids of actions that don't have explicit positions.
-  std::vector<ActionId> unsorted;
-
-  // Populate the lists.
 
   // Add the extension action ids to all_actions.
   const extensions::ExtensionSet& extensions =
@@ -555,69 +406,7 @@ void ToolbarActionsModel::Populate() {
        extensions) {
     if (!ShouldAddExtension(extension.get()))
       continue;
-
-    all_actions.push_back(extension->id());
-  }
-
-  // Add each action id to the appropriate list. Since the |sorted| list is
-  // created with enough room for each id in |positions| (which helps with
-  // proper order insertion), holes can be present if there isn't an action
-  // for each id. This is handled below when we add the actions to
-  // |action_ids_| to ensure that there are never any holes in
-  // |action_ids_| itself (or, relatedly, CreateActions()).
-  for (const ActionId& action : all_actions) {
-    std::vector<ActionId>::const_iterator pos = std::find(
-        last_known_positions_.begin(), last_known_positions_.end(), action);
-    if (pos != last_known_positions_.end()) {
-      sorted[pos - last_known_positions_.begin()] = action;
-    } else {
-      // Unknown action - push it to the back of unsorted, and add it to the
-      // list of ids at the end.
-      unsorted.push_back(action);
-      last_known_positions_.push_back(action);
-    }
-  }
-
-  // Merge the lists.
-  sorted.insert(sorted.end(), unsorted.begin(), unsorted.end());
-  action_ids_.reserve(sorted.size());
-
-  // We don't notify observers of the added extension yet. Rather, observers
-  // should wait for the "OnToolbarModelInitialized" notification, and then
-  // bulk-update. (This saves a lot of bouncing-back-and-forth here, and allows
-  // observers to ensure that the extension system is always initialized before
-  // using the extensions).
-  for (const ActionId& action : sorted) {
-    // Since |sorted| can have holes in it, they will be empty ActionIds.
-    // Ignore them.
-    if (action.empty())
-      continue;
-
-    // It's possible for the extension order to contain actions that aren't
-    // actually loaded on this machine.  For example, when extension sync is
-    // on, we sync the extension order as-is but double-check with the user
-    // before syncing NPAPI-containing extensions, so if one of those is not
-    // actually synced, we'll get a NULL in the list.  This sort of case can
-    // also happen if some error prevents an extension from loading.
-    if (!GetExtensionById(action))
-      continue;
-
-    action_ids_.push_back(action);
-  }
-
-  // Histogram names are prefixed with "ExtensionToolbarModel" rather than
-  // "ToolbarActionsModel" for historical reasons.
-  UMA_HISTOGRAM_COUNTS_100("ExtensionToolbarModel.BrowserActionsCount",
-                           action_ids_.size());
-
-  if (!action_ids_.empty()) {
-    // Visible count can be -1, meaning: 'show all'. Since UMA converts negative
-    // values to 0, this would be counted as 'show none' unless we convert it to
-    // max.
-    UMA_HISTOGRAM_COUNTS_100("ExtensionToolbarModel.BrowserActionsVisible",
-                             visible_icon_count_ == -1
-                                 ? base::HistogramBase::kSampleType_MAX
-                                 : visible_icon_count_);
+    action_ids_.insert(extension->id());
   }
 }
 
@@ -630,188 +419,34 @@ void ToolbarActionsModel::IncognitoPopulate() {
   const ToolbarActionsModel* original_model =
       ToolbarActionsModel::Get(profile_->GetOriginalProfile());
 
-  // Find the absolute value of the original model's count.
-  int original_visible = original_model->visible_icon_count();
-
-  // In incognito mode, we show only those actions that are incognito-enabled
-  // Further, any actions that were overflowed in regular mode are still
-  // overflowed. Order is the same as in regular mode.
-  visible_icon_count_ = 0;
-
-  for (auto iter = original_model->action_ids_.begin();
-       iter != original_model->action_ids_.end(); ++iter) {
-    // We should never have an uninitialized action in the model.
-    DCHECK(!iter->empty());
-    // The extension might not be shown in incognito mode.
-    if (!ShouldAddExtension(GetExtensionById(*iter)))
-      continue;
-    action_ids_.push_back(*iter);
-    if (iter - original_model->action_ids_.begin() < original_visible)
-      ++visible_icon_count_;
-  }
-}
-
-void ToolbarActionsModel::UpdatePrefs() {
-  if (!extension_prefs_ || profile_->IsOffTheRecord())
-    return;
-
-  // Don't observe change caused by self.
-  pref_change_registrar_.Remove(extensions::pref_names::kToolbar);
-  extension_prefs_->SetToolbarOrder(last_known_positions_);
-  pref_change_registrar_.Add(extensions::pref_names::kToolbar,
-                             pref_change_callback_);
+  // Only extensions enabled in incognito mode are added to the incognito mode
+  // toolbar.
+  base::flat_set<ActionId> incognito_ids = original_model->action_ids_;
+  base::EraseIf(incognito_ids, [this](const ActionId& id) {
+    return !ShouldAddExtension(GetExtensionById(id));
+  });
+  action_ids_ = std::move(incognito_ids);
 }
 
 void ToolbarActionsModel::SetActionVisibility(const ActionId& action_id,
                                               bool is_now_visible) {
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    DCHECK_NE(is_now_visible, IsActionPinned(action_id));
-    DCHECK(!IsActionForcePinned(action_id));
-    auto new_pinned_action_ids = pinned_action_ids_;
-    if (is_now_visible) {
-      new_pinned_action_ids.push_back(action_id);
-    } else {
-      base::Erase(new_pinned_action_ids, action_id);
-    }
-    extension_prefs_->SetPinnedExtensions(new_pinned_action_ids);
-    // The |pinned_action_ids_| should be updated as a result of updating the
-    // preference.
-    DCHECK(pinned_action_ids_ == new_pinned_action_ids);
-    return;
-  }
+  DCHECK_NE(is_now_visible, IsActionPinned(action_id));
+  DCHECK(!IsActionForcePinned(action_id));
+  DCHECK(!profile_->IsOffTheRecord())
+      << "Changing action pin state is disallowed in incognito.";
 
-  DCHECK(HasAction(action_id));
-
-  int new_size = 0;
-  int new_index = 0;
+  auto stored_pinned_action_ids = extension_prefs_->GetPinnedExtensions();
+  DCHECK_NE(is_now_visible,
+            base::Contains(stored_pinned_action_ids, action_id));
   if (is_now_visible) {
-    // If this action used to be hidden, we can't possibly be showing all.
-    DCHECK_LT(visible_icon_count(), action_ids_.size());
-    // Grow the bar by one and move the action to the end of the visibles.
-    new_size = visible_icon_count() + 1;
-    new_index = new_size - 1;
+    stored_pinned_action_ids.push_back(action_id);
   } else {
-    // If we're hiding one, we must be showing at least one.
-    DCHECK_GE(visible_icon_count(), 0u);
-    // Shrink the bar by one and move the action to the beginning of the
-    // overflow menu.
-    new_size = visible_icon_count() - 1;
-    new_index = new_size;
+    base::Erase(stored_pinned_action_ids, action_id);
   }
-  SetVisibleIconCount(new_size);
-  MoveActionIcon(action_id, new_index);
-}
-
-void ToolbarActionsModel::OnActionToolbarPrefChange() {
-  // If extensions are not ready, defer to later Populate() call.
-  if (!actions_initialized_)
-    return;
-
-  UpdatePinnedActionIds();
-
-  // Recalculate |last_known_positions_| to be |pref_positions| followed by
-  // ones that are only in |last_known_positions_|.
-  std::vector<ActionId> pref_positions = extension_prefs_->GetToolbarOrder();
-  size_t pref_position_size = pref_positions.size();
-  for (size_t i = 0; i < last_known_positions_.size(); ++i) {
-    if (!base::Contains(pref_positions, last_known_positions_[i])) {
-      pref_positions.push_back(last_known_positions_[i]);
-    }
-  }
-  last_known_positions_.swap(pref_positions);
-
-  // Loop over the updated list of last known positions, moving any extensions
-  // that are in the wrong place.
-  auto desired_pos = action_ids_.begin();
-  for (const ActionId& id : last_known_positions_) {
-    auto current_pos = std::find_if(
-        action_ids_.begin(), action_ids_.end(),
-        [&id](const ActionId& action_id) { return action_id == id; });
-    if (current_pos == action_ids_.end())
-      continue;
-
-    if (current_pos != desired_pos) {
-      if (current_pos < desired_pos)
-        std::rotate(current_pos, current_pos + 1, desired_pos + 1);
-      else
-        std::rotate(desired_pos, current_pos, current_pos + 1);
-      // Notify the observers to keep them up to date, unless we're highlighting
-      // (in which case we're deliberately only showing a subset of actions).
-      if (!is_highlighting()) {
-        for (Observer& observer : observers_) {
-          observer.OnToolbarActionMoved(id, desired_pos - action_ids_.begin());
-        }
-      }
-    }
-    ++desired_pos;
-  }
-
-  if (last_known_positions_.size() > pref_position_size) {
-    // Need to update pref because we have extra icons. But can't call
-    // UpdatePrefs() directly within observation closure.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&ToolbarActionsModel::UpdatePrefs,
-                                  weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
-bool ToolbarActionsModel::HighlightActions(
-    const std::vector<ActionId>& ids_to_highlight,
-    HighlightType highlight_type) {
-  highlighted_action_ids_.clear();
-
-  for (const ActionId& id_to_highlight : ids_to_highlight) {
-    for (const ActionId& action_id : action_ids_) {
-      if (action_id == id_to_highlight)
-        highlighted_action_ids_.push_back(action_id);
-    }
-  }
-
-  // If we have any actions in |highlighted_action_ids_|, then we entered
-  // highlighting mode.
-  if (!highlighted_action_ids_.empty()) {
-    // It's important that |highlight_type_| is changed immediately before the
-    // observers are notified since it changes the result of action_ids().
-    highlight_type_ = highlight_type;
-    for (Observer& observer : observers_)
-      observer.OnToolbarHighlightModeChanged(true);
-
-    // We set the visible icon count after the highlight mode change because
-    // the UI actions are created/destroyed during highlight, and doing that
-    // prior to changing the size allows us to still have smooth animations.
-    if (visible_icon_count() < ids_to_highlight.size())
-      SetVisibleIconCount(ids_to_highlight.size());
-
-    return true;
-  }
-
-  // Otherwise, we didn't enter highlighting mode (and, in fact, exited it if
-  // we were otherwise in it).
-  if (is_highlighting())
-    StopHighlighting();
-  return false;
-}
-
-void ToolbarActionsModel::StopHighlighting() {
-  if (is_highlighting()) {
-    // It's important that |highlight_type_| is changed immediately before the
-    // observers are notified since it changes the result of action_ids().
-    highlight_type_ = HIGHLIGHT_NONE;
-    for (Observer& observer : observers_)
-      observer.OnToolbarHighlightModeChanged(false);
-
-    // For the same reason, we don't clear |highlighted_action_ids_| until after
-    // the mode changed.
-    highlighted_action_ids_.clear();
-
-    // We set the visible icon count after the highlight mode change because
-    // the UI actions are created/destroyed during highlight, and doing that
-    // prior to changing the size allows us to still have smooth animations.
-    int saved_icon_count =
-        prefs_->GetInteger(extensions::pref_names::kToolbarSize);
-    if (saved_icon_count != visible_icon_count_)
-      SetVisibleIconCount(saved_icon_count);
-  }
+  extension_prefs_->SetPinnedExtensions(stored_pinned_action_ids);
+  // The |pinned_action_ids_| should be updated as a result of updating the
+  // preference.
+  DCHECK(pinned_action_ids_ == GetFilteredPinnedActionIds());
 }
 
 const extensions::Extension* ToolbarActionsModel::GetExtensionById(
@@ -819,16 +454,11 @@ const extensions::Extension* ToolbarActionsModel::GetExtensionById(
   return extension_registry_->enabled_extensions().GetByID(action_id);
 }
 
-bool ToolbarActionsModel::IsActionVisible(const ActionId& action_id) const {
-  size_t index = 0u;
-  while (action_ids().size() > index && action_ids()[index] != action_id)
-    ++index;
-  return index < visible_icon_count();
-}
-
 void ToolbarActionsModel::UpdatePinnedActionIds() {
-  if (!base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu))
+  // If extensions are not ready, defer to later Populate() call.
+  if (!actions_initialized_)
     return;
+
   std::vector<ActionId> pinned_extensions = GetFilteredPinnedActionIds();
   if (pinned_extensions == pinned_action_ids_)
     return;

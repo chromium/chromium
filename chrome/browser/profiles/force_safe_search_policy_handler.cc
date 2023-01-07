@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,23 +27,28 @@ void ForceSafeSearchPolicyHandler::ApplyPolicySettings(
   // These three policies take precedence over |kForceGoogleSafeSearch|. If any
   // of them is set, their handlers will set the proper prefs.
   // https://crbug.com/476908, https://crbug.com/590478.
-  if (policies.GetValue(key::kForceGoogleSafeSearch) ||
-      policies.GetValue(key::kForceYouTubeSafetyMode) ||
-      policies.GetValue(key::kForceYouTubeRestrict)) {
+  if (policies.GetValue(key::kForceGoogleSafeSearch,
+                        base::Value::Type::BOOLEAN) ||
+      policies.GetValue(key::kForceYouTubeSafetyMode,
+                        base::Value::Type::BOOLEAN) ||
+      policies.GetValue(key::kForceYouTubeRestrict,
+                        base::Value::Type::INTEGER)) {
     return;
   }
-  const base::Value* value = policies.GetValue(policy_name());
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (value) {
     prefs->SetValue(prefs::kForceGoogleSafeSearch, value->Clone());
 
     // Note that ForceYouTubeRestrict is an int policy, we cannot simply deep
     // copy value, which is a boolean.
-    bool enabled = false;
-    if (value->GetAsBoolean(&enabled)) {
+    if (value->is_bool()) {
       prefs->SetValue(
           prefs::kForceYouTubeRestrict,
-          base::Value(enabled ? safe_search_util::YOUTUBE_RESTRICT_MODERATE
-                              : safe_search_util::YOUTUBE_RESTRICT_OFF));
+          base::Value(value->GetBool()
+                          ? safe_search_util::YOUTUBE_RESTRICT_MODERATE
+                          : safe_search_util::YOUTUBE_RESTRICT_OFF));
     }
   }
 }

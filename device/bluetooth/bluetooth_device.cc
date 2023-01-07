@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/bluetooth/bluetooth_device.h"
 
 #include <array>
+#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -15,10 +16,10 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
@@ -30,6 +31,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace device {
+
+using BatteryInfo = BluetoothDevice::BatteryInfo;
+using BatteryType = BluetoothDevice::BatteryType;
 
 BluetoothDevice::DeviceUUIDs::DeviceUUIDs() = default;
 
@@ -110,8 +114,36 @@ BluetoothDevice::ConnectionInfo::ConnectionInfo(int rssi,
 
 BluetoothDevice::ConnectionInfo::~ConnectionInfo() = default;
 
+BatteryInfo::BatteryInfo()
+    : BatteryInfo(BatteryType::kDefault, absl::nullopt) {}
+
+BatteryInfo::BatteryInfo(BatteryType type, absl::optional<uint8_t> percentage)
+    : BatteryInfo(type, percentage, BatteryInfo::ChargeState::kUnknown) {}
+
+BatteryInfo::BatteryInfo(BatteryType type,
+                         absl::optional<uint8_t> percentage,
+                         ChargeState charge_state)
+    : type(type),
+      percentage(std::move(percentage)),
+      charge_state(charge_state) {}
+
+BatteryInfo::BatteryInfo(const BatteryInfo&) = default;
+
+BatteryInfo& BatteryInfo::operator=(const BatteryInfo&) = default;
+
+BatteryInfo::BatteryInfo(BatteryInfo&&) = default;
+
+BatteryInfo& BatteryInfo::operator=(BatteryInfo&&) = default;
+
+bool BatteryInfo::operator==(const BatteryInfo& other) {
+  return type == other.type && percentage == other.percentage &&
+         charge_state == other.charge_state;
+}
+
+BatteryInfo::~BatteryInfo() = default;
+
 std::u16string BluetoothDevice::GetNameForDisplay() const {
-  base::Optional<std::string> name = GetName();
+  absl::optional<std::string> name = GetName();
   if (name && HasGraphicCharacter(name.value())) {
     return base::UTF8ToUTF16(name.value());
   } else {
@@ -203,7 +235,6 @@ BluetoothDeviceType BluetoothDevice::GetDeviceType() const {
         default:
           return BluetoothDeviceType::AUDIO;
       }
-      break;
     case 0x05:
       // Peripheral major device class.
       switch ((bluetooth_class & 0xc0) >> 6) {
@@ -219,7 +250,6 @@ BluetoothDeviceType BluetoothDevice::GetDeviceType() const {
             default:
               return BluetoothDeviceType::PERIPHERAL;
           }
-          break;
         case 0x01:
           // Keyboard.
           return BluetoothDeviceType::KEYBOARD;
@@ -233,7 +263,6 @@ BluetoothDeviceType BluetoothDevice::GetDeviceType() const {
               // Mouse.
               return BluetoothDeviceType::MOUSE;
           }
-          break;
         case 0x03:
           // Combo device.
           return BluetoothDeviceType::KEYBOARD_MOUSE_COMBO;
@@ -281,7 +310,7 @@ bool BluetoothDevice::IsPairable() const {
   BluetoothDeviceType type = GetDeviceType();
 
   // Get the vendor part of the address: "00:11:22" for "00:11:22:33:44:55"
-  std::string vendor = GetAddress().substr(0, 8);
+  std::string vendor = GetOuiPortionOfBluetoothAddress();
 
   // Verbatim "Bluetooth Mouse", model 96674
   if (type == BluetoothDeviceType::MOUSE && vendor == "00:12:A1")
@@ -298,6 +327,18 @@ bool BluetoothDevice::IsPairable() const {
 BluetoothDevice::UUIDSet BluetoothDevice::GetUUIDs() const {
   return device_uuids_.GetUUIDs();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void BluetoothDevice::SetIsBlockedByPolicy(bool is_blocked_by_policy) {
+  is_blocked_by_policy_ = is_blocked_by_policy;
+  GetAdapter()->NotifyDeviceIsBlockedByPolicyChanged(this,
+                                                     is_blocked_by_policy);
+}
+
+bool BluetoothDevice::IsBlockedByPolicy() const {
+  return is_blocked_by_policy_;
+}
+#endif
 
 const BluetoothDevice::ServiceDataMap& BluetoothDevice::GetServiceData() const {
   return service_data_;
@@ -343,30 +384,28 @@ const std::vector<uint8_t>* BluetoothDevice::GetManufacturerDataForID(
   return nullptr;
 }
 
-base::Optional<int8_t> BluetoothDevice::GetInquiryRSSI() const {
+absl::optional<int8_t> BluetoothDevice::GetInquiryRSSI() const {
   return inquiry_rssi_;
 }
 
-base::Optional<uint8_t> BluetoothDevice::GetAdvertisingDataFlags() const {
+absl::optional<uint8_t> BluetoothDevice::GetAdvertisingDataFlags() const {
   return advertising_data_flags_;
 }
 
-base::Optional<int8_t> BluetoothDevice::GetInquiryTxPower() const {
+absl::optional<int8_t> BluetoothDevice::GetInquiryTxPower() const {
   return inquiry_tx_power_;
 }
 
 void BluetoothDevice::CreateGattConnection(
     GattConnectionCallback callback,
-    ConnectErrorCallback error_callback,
-    base::Optional<BluetoothUUID> service_uuid) {
+    absl::optional<BluetoothUUID> service_uuid) {
   if (!supports_service_specific_discovery_)
     service_uuid.reset();
 
   const bool connection_already_pending =
-      !create_gatt_connection_success_callbacks_.empty();
+      !create_gatt_connection_callbacks_.empty();
 
-  create_gatt_connection_success_callbacks_.push_back(std::move(callback));
-  create_gatt_connection_error_callbacks_.push_back(std::move(error_callback));
+  create_gatt_connection_callbacks_.push_back(std::move(callback));
 
   // If a service-specific discovery was originally requested, but this request
   // is for a different or non-specific discovery, then the previous discovery
@@ -379,7 +418,7 @@ void BluetoothDevice::CreateGattConnection(
 
   if (IsGattConnected()) {
     DCHECK(!connection_already_pending);
-    return DidConnectGatt();
+    return DidConnectGatt(/*error_code=*/absl::nullopt);
   }
 
   if (connection_already_pending) {
@@ -420,11 +459,16 @@ std::string BluetoothDevice::GetIdentifier() const {
   return GetAddress();
 }
 
+std::string BluetoothDevice::GetOuiPortionOfBluetoothAddress() const {
+  // Get the vendor part of the address: "00:11:22" for "00:11:22:33:44:55".
+  return GetAddress().substr(0, 8);
+}
+
 void BluetoothDevice::UpdateAdvertisementData(
     int8_t rssi,
-    base::Optional<uint8_t> flags,
+    absl::optional<uint8_t> flags,
     UUIDList advertised_uuids,
-    base::Optional<int8_t> tx_power,
+    absl::optional<int8_t> tx_power,
     ServiceDataMap service_data,
     ManufacturerDataMap manufacturer_data) {
   UpdateTimestamp();
@@ -472,17 +516,59 @@ BluetoothDevice::GetPrimaryServicesByUUID(const BluetoothUUID& service_uuid) {
   return services;
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
-void BluetoothDevice::SetBatteryPercentage(
-    base::Optional<uint8_t> battery_percentage) {
-  if (battery_percentage)
-    DCHECK_LE(battery_percentage.value(), 100);
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+void BluetoothDevice::SetBatteryInfo(const BatteryInfo& info) {
+  if (info.percentage) {
+    DCHECK_GE(info.percentage.value(), 0);
+    DCHECK_LE(info.percentage.value(), 100);
+  }
 
-  if (battery_percentage_ == battery_percentage)
+  auto result = battery_info_map_.emplace(info.type, info);
+
+  // New info was inserted.
+  if (result.second) {
+    GetAdapter()->NotifyDeviceBatteryChanged(this, info.type);
+    return;
+  }
+
+  DCHECK_EQ(result.first->first, info.type);
+
+  // Existing item is the same as the item we are inserting, return early.
+  if (result.first->second == info)
     return;
 
-  battery_percentage_ = battery_percentage;
-  GetAdapter()->NotifyDeviceBatteryChanged(this);
+  // Otherwise override existing element.
+  result.first->second = info;
+  GetAdapter()->NotifyDeviceBatteryChanged(this, info.type);
+}
+
+bool BluetoothDevice::RemoveBatteryInfo(const BatteryType& type) {
+  if (battery_info_map_.erase(type)) {
+    GetAdapter()->NotifyDeviceBatteryChanged(this, type);
+    return true;
+  }
+
+  return false;
+}
+
+absl::optional<BatteryInfo> BluetoothDevice::GetBatteryInfo(
+    const BatteryType& type) const {
+  auto it = battery_info_map_.find(type);
+
+  if (it == battery_info_map_.end())
+    return absl::nullopt;
+
+  return it->second;
+}
+
+std::vector<BatteryType> BluetoothDevice::GetAvailableBatteryTypes() {
+  std::vector<BatteryType> types;
+
+  for (auto& key_value : battery_info_map_) {
+    types.push_back(key_value.first);
+  }
+
+  return types;
 }
 #endif
 
@@ -501,32 +587,37 @@ BluetoothDevice::CreateBluetoothGattConnectionObject() {
   return std::make_unique<BluetoothGattConnection>(adapter_, GetAddress());
 }
 
-void BluetoothDevice::DidConnectGatt() {
-  for (auto& callback : create_gatt_connection_success_callbacks_)
-    std::move(callback).Run(CreateBluetoothGattConnectionObject());
+void BluetoothDevice::DidConnectGatt(absl::optional<ConnectErrorCode> error) {
+  if (error.has_value()) {
+    // Connection request should only be made if there are no active
+    // connections.
+    DCHECK(gatt_connections_.empty());
 
-  create_gatt_connection_success_callbacks_.clear();
-  create_gatt_connection_error_callbacks_.clear();
+    target_service_.reset();
+
+    // Callbacks may call back into this code. Move the callback list onto the
+    // stack to avoid potential re-entrancy bugs.
+    auto callbacks = std::move(create_gatt_connection_callbacks_);
+    for (auto& callback : callbacks)
+      std::move(callback).Run(/*connection=*/nullptr, error.value());
+    return;
+  }
+
+  // Callbacks may call back into this code. Move the callback list onto the
+  // stack to avoid potential re-entrancy bugs.
+  auto callbacks = std::move(create_gatt_connection_callbacks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(CreateBluetoothGattConnectionObject(),
+                            /*error_code=*/absl::nullopt);
+  }
+
   GetAdapter()->NotifyDeviceChanged(this);
-}
-
-void BluetoothDevice::DidFailToConnectGatt(ConnectErrorCode error) {
-  // Connection request should only be made if there are no active
-  // connections.
-  DCHECK(gatt_connections_.empty());
-
-  target_service_.reset();
-
-  for (auto& error_callback : create_gatt_connection_error_callbacks_)
-    std::move(error_callback).Run(error);
-  create_gatt_connection_success_callbacks_.clear();
-  create_gatt_connection_error_callbacks_.clear();
 }
 
 void BluetoothDevice::DidDisconnectGatt() {
   // Pending calls to connect GATT are not expected, if they were then
-  // DidFailToConnectGatt should have been called.
-  DCHECK(create_gatt_connection_error_callbacks_.empty());
+  // DidConnectGatt should have been called.
+  DCHECK(create_gatt_connection_callbacks_.empty());
 
   target_service_.reset();
 
@@ -552,14 +643,12 @@ void BluetoothDevice::RemoveGattConnection(
 }
 
 void BluetoothDevice::SetAsExpiredForTesting() {
-  last_update_time_ =
-      base::Time::NowFromSystemTime() -
-      (BluetoothAdapter::timeoutSec + base::TimeDelta::FromSeconds(1));
+  last_update_time_ = base::Time::NowFromSystemTime() -
+                      (BluetoothAdapter::timeoutSec + base::Seconds(1));
 }
 
 void BluetoothDevice::Pair(PairingDelegate* pairing_delegate,
-                           base::OnceClosure callback,
-                           ConnectErrorCallback error_callback) {
+                           ConnectCallback callback) {
   NOTREACHED();
 }
 

@@ -1,0 +1,23 @@
+<!doctype html>
+<title>CSS Test: Custom scrollbars for viewport - moving body to a different document</title>
+<style>
+  html::-webkit-scrollbar {
+    width: 20px;
+    background-color: green;
+  }
+  body::-webkit-scrollbar {
+    width: 20px;
+    background-color: red;
+  }
+  .scroll { overflow: scroll }
+</style>
+<body class="scroll"></body>
+<script>
+  document.body.offsetTop;
+  document.documentElement.classList.toggle("scroll");
+  document.body.classList.toggle("scroll");
+  let new_doc = document.implementation.createDocument("ns", null);
+  let body = document.body;
+  body.remove();
+  new_doc.adoptNode(body);
+</script>

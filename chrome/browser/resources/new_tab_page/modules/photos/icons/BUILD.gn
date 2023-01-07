@@ -1,0 +1,20 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(!is_android)
+
+generate_grd("build_grdp") {
+  grd_prefix = "photos"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files = [
+    "explore_icon.svg",
+    "shape_1.svg",
+    "shape_2.svg",
+    "shape_3.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  resource_path_prefix = "modules/photos/icons"
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 struct wl_client;
 struct wl_display;
@@ -24,6 +24,10 @@ class GlobalObject {
   GlobalObject(const wl_interface* interface,
                const void* implementation,
                uint32_t version);
+
+  GlobalObject(const GlobalObject&) = delete;
+  GlobalObject& operator=(const GlobalObject&) = delete;
+
   virtual ~GlobalObject();
 
   // Creates a global object.
@@ -54,12 +58,10 @@ class GlobalObject {
 
   std::unique_ptr<wl_global, Deleter> global_;
 
-  const wl_interface* interface_;
-  const void* implementation_;
+  raw_ptr<const wl_interface> interface_;
+  raw_ptr<const void> implementation_;
   const uint32_t version_;
-  wl_resource* resource_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalObject);
+  raw_ptr<wl_resource> resource_ = nullptr;
 };
 
 }  // namespace wl

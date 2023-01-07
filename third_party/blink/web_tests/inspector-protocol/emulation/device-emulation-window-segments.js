@@ -1,5 +1,5 @@
 (async function(testRunner) {
-  let {page, session, dp} = await testRunner.startBlank('Tests that device emulation of window segments is propagated and powers getWindowSegments API.');
+  let {page, session, dp} = await testRunner.startBlank('Tests that device emulation of viewport segments is propagated and powers VisualViewport segments API.');
 
   let deviceMetrics = {
     width: 800,

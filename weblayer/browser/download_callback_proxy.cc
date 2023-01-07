@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/browser/download_callback_proxy.h"
 
 #include "base/android/jni_string.h"
+#include "base/trace_event/trace_event.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "weblayer/browser/download_impl.h"
@@ -54,7 +55,7 @@ void DownloadCallbackProxy::AllowDownload(
     Tab* tab,
     const GURL& url,
     const std::string& request_method,
-    base::Optional<url::Origin> request_initiator,
+    absl::optional<url::Origin> request_initiator,
     AllowDownloadCallback callback) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> jstring_url(

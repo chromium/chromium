@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
@@ -27,6 +26,10 @@ namespace crashpad {
 //! \brief Common functions used by command line tools.
 class ToolSupport {
  public:
+  ToolSupport() = delete;
+  ToolSupport(const ToolSupport&) = delete;
+  ToolSupport& operator=(const ToolSupport&) = delete;
+
   //! \brief Handles `--version`.
   //!
   //! \param[in] me The tool’s name, the basename of `argv[0]`.
@@ -45,7 +48,7 @@ class ToolSupport {
   //!     Optional, may be `nullptr`, in which case no hint will be presented.
   static void UsageHint(const base::FilePath& me, const char* hint);
 
-#if defined(OS_POSIX) || DOXYGEN
+#if BUILDFLAG(IS_POSIX) || DOXYGEN
   //! \copydoc Version
   static void Version(const std::string& me);
 
@@ -54,15 +57,15 @@ class ToolSupport {
 
   //! \copydoc UsageHint
   static void UsageHint(const std::string& me, const char* hint);
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_WIN) || DOXYGEN
+#if BUILDFLAG(IS_WIN) || DOXYGEN
   //! \brief Converts \a argv `wchar_t` UTF-16 to UTF-8, and passes onwards to a
   //!     UTF-8 entry point.
   //!
   //! \return The return value of \a entry.
   static int Wmain(int argc, wchar_t* argv[], int (*entry)(int, char*[]));
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   //! \brief Converts a command line argument to the string type suitable for
   //!     base::FilePath.
@@ -83,9 +86,6 @@ class ToolSupport {
   //! Wmain().
   static std::string FilePathToCommandLineArgument(
       const base::FilePath& file_path);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ToolSupport);
 };
 
 }  // namespace crashpad

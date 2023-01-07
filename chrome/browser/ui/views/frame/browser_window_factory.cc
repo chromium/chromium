@@ -1,28 +1,36 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/views/frame/custom_tab_browser_frame.h"
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/views/frame/browser_frame_lacros.h"
-#endif
 #include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
 #include "chrome/grit/chromium_strings.h"
-#include "components/safe_browsing/core/password_protection/metrics_util.h"
+#include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/widget/widget.h"
+
 #if defined(USE_AURA)
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #endif
-#include "build/chromeos_buildflags.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/views/frame/custom_tab_browser_frame.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/views/frame/browser_frame_lacros.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/common/chrome_features.h"
+#endif
 
 // static
 BrowserWindow* BrowserWindow::CreateBrowserWindow(
@@ -53,8 +61,18 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
     browser_frame->SetTabDragKind(TabDragKind::kAllTabs);
   browser_frame->InitBrowserFrame();
 
-  view->GetWidget()->non_client_view()->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
+#if BUILDFLAG(IS_MAC)
+  if (view->UsesImmersiveFullscreenMode()) {
+    // This needs to happen after BrowserFrame has been initialized. It creates
+    // a new Widget that copies the theme from BrowserFrame.
+    view->CreateMacOverlayView();
+  }
+#endif  // IS_MAC
+
+  if (view->GetIsPictureInPictureType() && view->GetLockAspectRatio()) {
+    gfx::SizeF aspect_ratio(view->GetInitialAspectRatio(), 1.0f);
+    view->GetWidget()->SetAspectRatio(aspect_ratio);
+  }
 
 #if defined(USE_AURA)
   // For now, all browser windows are true. This only works when USE_AURA
@@ -62,5 +80,8 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
   view->GetWidget()->GetNativeWindow()->SetProperty(
       aura::client::kCreatedByUserGesture, user_gesture);
 #endif
+  if (profiles::IsKioskSession())
+    view->SetForceFullscreen(true);
+
   return view;
 }

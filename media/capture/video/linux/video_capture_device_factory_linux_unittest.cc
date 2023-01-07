@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/capture/video/linux/video_capture_device_factory_linux.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -35,9 +36,11 @@ class VideoCaptureDeviceFactoryLinuxTest
                                            std::move(fake_device_provider));
   }
 
+  void TearDown() override { task_environment_.RunUntilIdle(); }
+
   base::test::TaskEnvironment task_environment_;
-  FakeV4L2Impl* fake_v4l2_;
-  FakeDeviceProvider* fake_device_provider_;
+  raw_ptr<FakeV4L2Impl> fake_v4l2_;
+  raw_ptr<FakeDeviceProvider> fake_device_provider_;
   std::unique_ptr<VideoCaptureDeviceFactoryLinux> factory_;
 };
 
@@ -100,7 +103,7 @@ TEST_F(VideoCaptureDeviceFactoryLinuxTest,
   fake_v4l2_->AddDevice(stub_device_id, FakeV4L2DeviceConfig(descriptor));
 
   // Exercise
-  auto device = factory_->CreateDevice(descriptor);
+  auto device = factory_->CreateDevice(descriptor).ReleaseDevice();
   VideoCaptureParams arbitrary_params;
   arbitrary_params.requested_format.frame_size = gfx::Size(1280, 720);
   arbitrary_params.requested_format.frame_rate = 30.0f;

@@ -32,6 +32,7 @@
 
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/crypto/normalize_algorithm.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -49,8 +50,9 @@ WebCryptoAlgorithm NormalizeCryptoAlgorithm(
   ExceptionState exception_state(isolate, ExceptionState::kQueryContext,
                                  "WebCryptoAlgorithm", "NormalizeAlgorithm");
 
-  AlgorithmIdentifier algorithm_identifier;
-  algorithm_identifier.SetObject(ScriptValue(isolate, algorithm_object));
+  V8AlgorithmIdentifier* algorithm_identifier =
+      MakeGarbageCollected<V8AlgorithmIdentifier>(
+          ScriptValue(isolate, algorithm_object));
 
   WebCryptoAlgorithm algorithm;
   if (!NormalizeAlgorithm(isolate, algorithm_identifier, operation, algorithm,

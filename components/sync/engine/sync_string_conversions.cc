@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,16 +35,6 @@ const char* PassphraseTypeToString(PassphraseType type) {
 
   NOTREACHED();
   return "INVALID_PASSPHRASE_TYPE";
-}
-
-const char* BootstrapTokenTypeToString(BootstrapTokenType type) {
-  switch (type) {
-    ENUM_CASE(PASSPHRASE_BOOTSTRAP_TOKEN);
-    ENUM_CASE(KEYSTORE_BOOTSTRAP_TOKEN);
-  }
-
-  NOTREACHED();
-  return "INVALID_BOOTSTRAP_TOKEN_TYPE";
 }
 
 const char* KeyDerivationMethodToString(KeyDerivationMethod method) {

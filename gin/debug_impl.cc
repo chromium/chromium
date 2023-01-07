@@ -1,8 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gin/debug_impl.h"
+
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "v8/include/v8-initialization.h"
+#endif
 
 namespace gin {
 
@@ -15,7 +21,7 @@ void Debug::SetJitCodeEventHandler(v8::JitCodeEventHandler event_handler) {
   g_jit_code_event_handler = event_handler;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // static
 void Debug::SetUnhandledExceptionCallback(
     v8::UnhandledExceptionCallback callback) {

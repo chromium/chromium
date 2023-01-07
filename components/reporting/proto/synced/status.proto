@@ -1,0 +1,18 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+// Wire-format representation for a Status object.
+message StatusProto {
+  // Numeric error code.
+  optional int32 code = 1;
+
+  // Detailed error message explaining the error.
+  optional string error_message = 2;
+}

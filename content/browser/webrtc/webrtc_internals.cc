@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/webrtc/webrtc_internals_connections_observer.h"
 #include "content/browser/webrtc/webrtc_internals_ui_observer.h"
@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webrtc_event_logger.h"
 #include "content/public/common/content_client.h"
@@ -49,28 +50,26 @@ const base::FilePath::CharType kEventLogFilename[] =
 // of many getUserMedia() calls. See https://crbug.com/804440.
 const size_t kMaxGetUserMediaEntries = 1000;
 
-// Makes sure that |dict| has a ListValue under path "log".
-base::ListValue* EnsureLogList(base::DictionaryValue* dict) {
-  base::ListValue* log = nullptr;
-  if (!dict->GetList("log", &log))
-    log = dict->SetList("log", std::make_unique<base::ListValue>());
-  return log;
+// Makes sure that |dict| has a List under path "log".
+base::Value::List& EnsureLogList(base::Value::Dict& dict) {
+  base::Value::List* log = dict.FindList("log");
+  if (log)
+    return *log;
+  return dict.Set("log", base::Value::List())->GetList();
 }
 
 // Removes the log entry associated with a given record.
 void FreeLogList(base::Value* value) {
   DCHECK(value->is_dict());
-  auto* dict = static_cast<base::DictionaryValue*>(value);
-  dict->Remove("log", nullptr);
+  value->GetDict().Remove("log");
 }
 
 }  // namespace
 
 WebRTCInternals* WebRTCInternals::g_webrtc_internals = nullptr;
 
-WebRTCInternals::PendingUpdate::PendingUpdate(
-    const std::string& event_name,
-    std::unique_ptr<base::Value> event_data)
+WebRTCInternals::PendingUpdate::PendingUpdate(const std::string& event_name,
+                                              base::Value event_data)
     : event_name_(event_name), event_data_(std::move(event_data)) {}
 
 WebRTCInternals::PendingUpdate::PendingUpdate(PendingUpdate&& other)
@@ -88,14 +87,17 @@ const std::string& WebRTCInternals::PendingUpdate::event_name() const {
 
 const base::Value* WebRTCInternals::PendingUpdate::event_data() const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return event_data_.get();
+  return event_data_.is_none() ? nullptr : &event_data_;
 }
 
-WebRTCInternals::WebRTCInternals() : WebRTCInternals(500, true) {}
+WebRTCInternals::WebRTCInternals() : WebRTCInternals(500, true) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
 
 WebRTCInternals::WebRTCInternals(int aggregate_updates_ms,
                                  bool should_block_power_saving)
-    : selection_type_(SelectionType::kAudioDebugRecordings),
+    : peer_connection_data_(base::Value::List()),
+      selection_type_(SelectionType::kAudioDebugRecordings),
       command_line_derived_logging_path_(
           base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
               switches::kWebRtcLocalEventLogging)),
@@ -141,21 +143,28 @@ WebRTCInternals::WebRTCInternals(int aggregate_updates_ms,
 }
 
 WebRTCInternals::~WebRTCInternals() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(g_webrtc_internals);
   g_webrtc_internals = nullptr;
 }
 
 WebRTCInternals* WebRTCInternals::CreateSingletonInstance() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!g_webrtc_internals);
   g_webrtc_internals = new WebRTCInternals;
   return g_webrtc_internals;
 }
 
 WebRTCInternals* WebRTCInternals::GetInstance() {
+  // TODO(crbug.com/1322082): DCHECK calling from UI thread.
+  // Currently, some unit tests call this from outside of the UI thread,
+  // but that's not a real issue as these tests neglect setting
+  // `g_webrtc_internals` to begin with, and therefore just ignore it.
+  DCHECK(!g_webrtc_internals || BrowserThread::CurrentlyOn(BrowserThread::UI));
   return g_webrtc_internals;
 }
 
-void WebRTCInternals::OnPeerConnectionAdded(GlobalFrameRoutingId frame_id,
+void WebRTCInternals::OnPeerConnectionAdded(GlobalRenderFrameHostId frame_id,
                                             int lid,
                                             ProcessId pid,
                                             const string& url,
@@ -166,20 +175,20 @@ void WebRTCInternals::OnPeerConnectionAdded(GlobalFrameRoutingId frame_id,
   // TODO(tommi): Consider changing this design so that webrtc-internals has
   // minimal impact if chrome://webrtc-internals isn't open.
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetInteger("rid", frame_id.child_id);
-  dict->SetInteger("lid", lid);
-  dict->SetInteger("pid", static_cast<int>(pid));
-  dict->SetString("rtcConfiguration", rtc_configuration);
-  dict->SetString("constraints", constraints);
-  dict->SetString("url", url);
-  dict->SetBoolean("isOpen", true);
-  dict->SetBoolean("connected", false);
+  base::Value::Dict dict;
+  dict.Set("rid", frame_id.child_id);
+  dict.Set("lid", lid);
+  dict.Set("pid", static_cast<int>(pid));
+  dict.Set("rtcConfiguration", rtc_configuration);
+  dict.Set("constraints", constraints);
+  dict.Set("url", url);
+  dict.Set("isOpen", true);
+  dict.Set("connected", false);
 
   if (!observers_.empty())
-    SendUpdate("add-peer-connection", dict->CreateDeepCopy());
+    SendUpdate("add-peer-connection", dict.Clone());
 
-  peer_connection_data_.Append(std::move(dict));
+  peer_connection_data().Append(std::move(dict));
 
   if (render_process_id_set_.insert(frame_id.child_id).second) {
     RenderProcessHost* host = RenderProcessHost::FromID(frame_id.child_id);
@@ -188,129 +197,208 @@ void WebRTCInternals::OnPeerConnectionAdded(GlobalFrameRoutingId frame_id,
   }
 }
 
-void WebRTCInternals::OnPeerConnectionRemoved(GlobalFrameRoutingId frame_id,
+void WebRTCInternals::OnPeerConnectionRemoved(GlobalRenderFrameHostId frame_id,
                                               int lid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  size_t index;
-  base::DictionaryValue* dict = FindRecord(frame_id, lid, &index);
-  if (dict) {
-    MaybeClosePeerConnection(dict);
-    peer_connection_data_.Remove(index, nullptr);
+  auto it = FindRecord(frame_id, lid);
+  if (it != peer_connection_data().end()) {
+    MaybeClosePeerConnection(*it);
+    peer_connection_data().erase(it);
   }
 
   if (!observers_.empty()) {
-    std::unique_ptr<base::DictionaryValue> id(new base::DictionaryValue());
-    id->SetInteger("rid", frame_id.child_id);
-    id->SetInteger("lid", lid);
+    base::Value::Dict id;
+    id.Set("rid", frame_id.child_id);
+    id.Set("lid", lid);
     SendUpdate("remove-peer-connection", std::move(id));
   }
 }
 
-void WebRTCInternals::OnPeerConnectionUpdated(GlobalFrameRoutingId frame_id,
+void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
                                               int lid,
                                               const string& type,
                                               const string& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::DictionaryValue* record = FindRecord(frame_id, lid);
-  if (!record)
+  auto it = FindRecord(frame_id, lid);
+  if (it == peer_connection_data().end())
     return;
 
-  if (type == "iceConnectionStateChange") {
+  if (type == "iceconnectionstatechange") {
     if (value == "connected" || value == "checking" || value == "completed") {
-      MaybeMarkPeerConnectionAsConnected(record);
+      MaybeMarkPeerConnectionAsConnected(*it);
     } else if (value == "failed" || value == "disconnected" ||
                value == "closed" || value == "new") {
-      MaybeMarkPeerConnectionAsNotConnected(record);
+      MaybeMarkPeerConnectionAsNotConnected(*it);
     }
-  } else if (type == "stop") {
-    MaybeClosePeerConnection(record);
+  } else if (type == "close") {
+    MaybeClosePeerConnection(*it);
   } else if (type == "setConfiguration") {
     // Update the configuration we have for this connection.
-    record->SetString("rtcConfiguration", value);
+    it->GetDict().Set("rtcConfiguration", value);
   }
 
   // Don't update entries if there aren't any observers.
   if (observers_.empty())
     return;
 
-  auto log_entry = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict log_entry;
 
   double epoch_time = base::Time::Now().ToJsTime();
   string time = base::NumberToString(epoch_time);
-  log_entry->SetString("time", time);
-  log_entry->SetString("type", type);
-  log_entry->SetString("value", value);
+  log_entry.Set("time", time);
+  log_entry.Set("type", type);
+  log_entry.Set("value", value);
 
-  auto update = std::make_unique<base::DictionaryValue>();
-  update->SetInteger("rid", frame_id.child_id);
-  update->SetInteger("lid", lid);
-  update->MergeDictionary(log_entry.get());
+  base::Value::Dict update;
+  update.Set("rid", frame_id.child_id);
+  update.Set("lid", lid);
+  update.Merge(log_entry.Clone());
 
   SendUpdate("update-peer-connection", std::move(update));
 
   // Append the update to the end of the log.
-  EnsureLogList(record)->Append(std::move(log_entry));
+  EnsureLogList(it->GetDict()).Append(std::move(log_entry));
 }
 
-void WebRTCInternals::OnAddStandardStats(GlobalFrameRoutingId frame_id,
+void WebRTCInternals::OnAddStandardStats(GlobalRenderFrameHostId frame_id,
                                          int lid,
-                                         base::Value value) {
+                                         base::Value::List value) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   if (observers_.empty())
     return;
 
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetInteger("rid", frame_id.child_id);
-  dict->SetInteger("lid", lid);
+  base::Value::Dict dict;
+  dict.Set("rid", frame_id.child_id);
+  dict.Set("lid", lid);
 
-  dict->SetKey("reports", std::move(value));
+  dict.Set("reports", std::move(value));
 
   SendUpdate("add-standard-stats", std::move(dict));
 }
 
-void WebRTCInternals::OnAddLegacyStats(GlobalFrameRoutingId frame_id,
+void WebRTCInternals::OnAddLegacyStats(GlobalRenderFrameHostId frame_id,
                                        int lid,
-                                       base::Value value) {
+                                       base::Value::List value) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   if (observers_.empty())
     return;
 
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetInteger("rid", frame_id.child_id);
-  dict->SetInteger("lid", lid);
+  base::Value::Dict dict;
+  dict.Set("rid", frame_id.child_id);
+  dict.Set("lid", lid);
 
-  dict->SetKey("reports", std::move(value));
+  dict.Set("reports", std::move(value));
 
   SendUpdate("add-legacy-stats", std::move(dict));
 }
 
-void WebRTCInternals::OnGetUserMedia(GlobalFrameRoutingId frame_id,
+void WebRTCInternals::OnGetUserMedia(GlobalRenderFrameHostId frame_id,
                                      base::ProcessId pid,
-                                     const std::string& origin,
+                                     int request_id,
                                      bool audio,
                                      bool video,
                                      const std::string& audio_constraints,
                                      const std::string& video_constraints) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (get_user_media_requests_.GetList().size() >= kMaxGetUserMediaEntries) {
+  if (get_user_media_requests_.size() >= kMaxGetUserMediaEntries) {
     LOG(WARNING) << "Maximum number of tracked getUserMedia() requests reached "
                     "in webrtc-internals.";
     return;
   }
 
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetInteger("rid", frame_id.child_id);
-  dict->SetInteger("pid", static_cast<int>(pid));
-  dict->SetString("origin", origin);
-  dict->SetDouble("timestamp", base::Time::Now().ToJsTime());
+  RenderFrameHost* rfh = RenderFrameHost::FromID(frame_id);
+  // Frame may be gone (and does not exist in tests).
+  std::string origin = rfh ? rfh->GetLastCommittedOrigin().Serialize() : "";
+
+  base::Value::Dict dict;
+  dict.Set("rid", frame_id.child_id);
+  dict.Set("pid", static_cast<int>(pid));
+  dict.Set("request_id", request_id);
+  dict.Set("origin", origin);
+  dict.Set("timestamp", base::Time::Now().ToJsTime());
   if (audio)
-    dict->SetString("audio", audio_constraints);
+    dict.Set("audio", audio_constraints);
   if (video)
-    dict->SetString("video", video_constraints);
+    dict.Set("video", video_constraints);
 
   if (!observers_.empty())
-    SendUpdate("add-get-user-media", dict->CreateDeepCopy());
+    SendUpdate("add-get-user-media", dict.Clone());
+
+  get_user_media_requests_.Append(std::move(dict));
+
+  if (render_process_id_set_.insert(frame_id.child_id).second) {
+    RenderProcessHost* rph = RenderProcessHost::FromID(frame_id.child_id);
+    if (rph)
+      rph->AddObserver(this);
+  }
+}
+
+void WebRTCInternals::OnGetUserMediaSuccess(
+    GlobalRenderFrameHostId frame_id,
+    base::ProcessId pid,
+    int request_id,
+    const std::string& stream_id,
+    const std::string& audio_track_info,
+    const std::string& video_track_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (get_user_media_requests_.size() >= kMaxGetUserMediaEntries) {
+    LOG(WARNING) << "Maximum number of tracked getUserMedia() requests reached "
+                    "in webrtc-internals.";
+    return;
+  }
+
+  base::Value::Dict dict;
+  dict.Set("rid", frame_id.child_id);
+  dict.Set("pid", static_cast<int>(pid));
+  dict.Set("request_id", request_id);
+  dict.Set("timestamp", base::Time::Now().ToJsTime());
+  dict.Set("stream_id", stream_id);
+  if (!audio_track_info.empty())
+    dict.Set("audio_track_info", audio_track_info);
+  if (!video_track_info.empty())
+    dict.Set("video_track_info", video_track_info);
+
+  if (!observers_.empty())
+    SendUpdate("update-get-user-media", dict.Clone());
+
+  get_user_media_requests_.Append(std::move(dict));
+
+  if (render_process_id_set_.insert(frame_id.child_id).second) {
+    RenderProcessHost* host = RenderProcessHost::FromID(frame_id.child_id);
+    if (host)
+      host->AddObserver(this);
+  }
+}
+
+void WebRTCInternals::OnGetUserMediaFailure(GlobalRenderFrameHostId frame_id,
+                                            base::ProcessId pid,
+                                            int request_id,
+                                            const std::string& error,
+                                            const std::string& error_message) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (get_user_media_requests_.size() >= kMaxGetUserMediaEntries) {
+    LOG(WARNING) << "Maximum number of tracked getUserMedia() requests reached "
+                    "in webrtc-internals.";
+    return;
+  }
+
+  base::Value::Dict dict;
+  dict.Set("rid", frame_id.child_id);
+  dict.Set("pid", static_cast<int>(pid));
+  dict.Set("request_id", request_id);
+  dict.Set("timestamp", base::Time::Now().ToJsTime());
+  dict.Set("error", error);
+  dict.Set("error_message", error_message);
+
+  if (!observers_.empty())
+    SendUpdate("update-get-user-media", dict.Clone());
 
   get_user_media_requests_.Append(std::move(dict));
 
@@ -335,10 +423,14 @@ void WebRTCInternals::RemoveObserver(WebRTCInternalsUIObserver* observer) {
   // Disables event log and audio debug recordings if enabled and the last
   // webrtc-internals page is going away.
   DisableAudioDebugRecordings();
-  DisableLocalEventLogRecordings();
+  if (CanToggleEventLogRecordings()) {
+    // Do not disable event log recording when the browser was started
+    // with the flag to enable the recordings on the command line.
+    DisableLocalEventLogRecordings();
+  }
 
-  // TODO(tommi): Consider removing all the peer_connection_data_.
-  for (auto& dictionary : peer_connection_data_)
+  // TODO(tommi): Consider removing all the peer_connection_data().
+  for (auto& dictionary : peer_connection_data())
     FreeLogList(&dictionary);
 }
 
@@ -356,22 +448,30 @@ void WebRTCInternals::RemoveConnectionsObserver(
 
 void WebRTCInternals::UpdateObserver(WebRTCInternalsUIObserver* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (peer_connection_data_.GetSize() > 0)
+  if (peer_connection_data().size() > 0)
     observer->OnUpdate("update-all-peer-connections", &peer_connection_data_);
 
   for (const auto& request : get_user_media_requests_) {
-    observer->OnUpdate("add-get-user-media", &request);
+    // If there is a stream_id key or an error key this is an update.
+    if (request.GetDict().FindString("stream_id") ||
+        request.GetDict().FindString("error")) {
+      observer->OnUpdate("update-get-user-media", &request);
+    } else {
+      observer->OnUpdate("add-get-user-media", &request);
+    }
   }
 }
 
 void WebRTCInternals::EnableAudioDebugRecordings(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EnableAudioDebugRecordingsOnAllRenderProcessHosts();
 #else
+  if (select_file_dialog_) {
+    return;
+  }
   selection_type_ = SelectionType::kAudioDebugRecordings;
-  DCHECK(!select_file_dialog_);
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       GetContentClient()->browser()->CreateSelectFilePolicy(web_contents));
@@ -413,15 +513,19 @@ const base::FilePath& WebRTCInternals::GetAudioDebugRecordingsFilePath() const {
 void WebRTCInternals::EnableLocalEventLogRecordings(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(web_contents);
   DCHECK(CanToggleEventLogRecordings());
-#if defined(OS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
   WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
   if (logger) {
     logger->EnableLocalLogging(event_log_recordings_file_path_);
   }
 #else
-  DCHECK(web_contents);
-  DCHECK(!select_file_dialog_);
+  if (select_file_dialog_) {
+    return;
+  }
+
   selection_type_ = SelectionType::kRtcEventLogs;
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
@@ -434,6 +538,8 @@ void WebRTCInternals::EnableLocalEventLogRecordings(
 }
 
 void WebRTCInternals::DisableLocalEventLogRecordings() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   event_log_recordings_ = false;
   // Tear down the dialog since the user has unchecked the event log checkbox.
   select_file_dialog_ = nullptr;
@@ -450,11 +556,12 @@ bool WebRTCInternals::IsEventLogRecordingsEnabled() const {
 }
 
 bool WebRTCInternals::CanToggleEventLogRecordings() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return command_line_derived_logging_path_.empty();
 }
 
 void WebRTCInternals::SendUpdate(const std::string& event_name,
-                                 std::unique_ptr<base::Value> event_data) {
+                                 base::Value event_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!observers_.empty());
 
@@ -466,8 +573,13 @@ void WebRTCInternals::SendUpdate(const std::string& event_name,
         FROM_HERE,
         base::BindOnce(&WebRTCInternals::ProcessPendingUpdates,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(aggregate_updates_ms_));
+        base::Milliseconds(aggregate_updates_ms_));
   }
+}
+
+void WebRTCInternals::SendUpdate(const std::string& event_name,
+                                 base::Value::Dict event_data) {
+  SendUpdate(event_name, base::Value(std::move(event_data)));
 }
 
 void WebRTCInternals::RenderProcessExited(
@@ -506,10 +618,12 @@ void WebRTCInternals::FileSelectionCanceled(void* params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   switch (selection_type_) {
     case SelectionType::kRtcEventLogs:
-      SendUpdate("event-log-recordings-file-selection-cancelled", nullptr);
+      SendUpdate("event-log-recordings-file-selection-cancelled",
+                 base::Value());
       break;
     case SelectionType::kAudioDebugRecordings:
-      SendUpdate("audio-debug-recordings-file-selection-cancelled", nullptr);
+      SendUpdate("audio-debug-recordings-file-selection-cancelled",
+                 base::Value());
       break;
     default:
       NOTREACHED();
@@ -521,26 +635,23 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Iterates from the end of the list to remove the PeerConnections created
-  // by the exitting renderer.
-  for (int i = peer_connection_data_.GetSize() - 1; i >= 0; --i) {
-    base::DictionaryValue* record = nullptr;
-    peer_connection_data_.GetDictionary(i, &record);
+  // by the exiting renderer.
+  for (int i = peer_connection_data().size() - 1; i >= 0; --i) {
+    DCHECK(peer_connection_data()[i].is_dict());
 
-    int this_rid, this_lid = 0;
-    record->GetInteger("rid", &this_rid);
-    record->GetInteger("lid", &this_lid);
+    absl::optional<int> this_rid, this_lid;
+    this_rid = peer_connection_data()[i].GetDict().FindInt("rid");
+    this_lid = peer_connection_data()[i].GetDict().FindInt("lid");
 
-    if (this_rid == render_process_id) {
+    if (this_rid.value_or(0) == render_process_id) {
       if (!observers_.empty()) {
-
-        std::unique_ptr<base::DictionaryValue> update(
-            new base::DictionaryValue());
-        update->SetInteger("rid", this_rid);
-        update->SetInteger("lid", this_lid);
+        base::Value::Dict update;
+        update.Set("rid", this_rid.value_or(0));
+        update.Set("lid", this_lid.value_or(0));
         SendUpdate("remove-peer-connection", std::move(update));
       }
-      MaybeClosePeerConnection(record);
-      peer_connection_data_.Remove(i, nullptr);
+      MaybeClosePeerConnection(peer_connection_data()[i]);
+      peer_connection_data().erase(peer_connection_data().begin() + i);
     }
   }
   UpdateWakeLock();
@@ -548,22 +659,21 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
   bool found_any = false;
   // Iterates from the end of the list to remove the getUserMedia requests
   // created by the exiting renderer.
-  for (int i = get_user_media_requests_.GetSize() - 1; i >= 0; --i) {
-    base::DictionaryValue* record = nullptr;
-    get_user_media_requests_.GetDictionary(i, &record);
+  for (int i = get_user_media_requests_.size() - 1; i >= 0; --i) {
+    DCHECK(get_user_media_requests_[i].is_dict());
 
-    int this_rid = 0;
-    record->GetInteger("rid", &this_rid);
+    absl::optional<int> this_rid =
+        get_user_media_requests_[i].GetDict().FindInt("rid");
 
-    if (this_rid == render_process_id) {
-      get_user_media_requests_.Remove(i, nullptr);
+    if (this_rid.value_or(0) == render_process_id) {
+      get_user_media_requests_.erase(get_user_media_requests_.begin() + i);
       found_any = true;
     }
   }
 
   if (found_any && !observers_.empty()) {
-    std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue());
-    update->SetInteger("rid", render_process_id);
+    base::Value::Dict update;
+    update.Set("rid", render_process_id);
     SendUpdate("remove-get-user-media-for-renderer", std::move(update));
   }
 }
@@ -585,24 +695,23 @@ void WebRTCInternals::EnableAudioDebugRecordingsOnAllRenderProcessHosts() {
   }
 }
 
-void WebRTCInternals::MaybeClosePeerConnection(base::DictionaryValue* record) {
-  bool is_open;
-  bool did_read = record->GetBoolean("isOpen", &is_open);
-  DCHECK(did_read);
-  if (!is_open)
+void WebRTCInternals::MaybeClosePeerConnection(base::Value& record) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  absl::optional<bool> is_open = record.GetDict().FindBool("isOpen");
+  DCHECK(is_open.has_value());
+  if (!*is_open)
     return;
 
-  record->SetBoolean("isOpen", false);
+  record.GetDict().Set("isOpen", false);
   MaybeMarkPeerConnectionAsNotConnected(record);
 }
 
-void WebRTCInternals::MaybeMarkPeerConnectionAsConnected(
-    base::DictionaryValue* record) {
-  bool was_connected = true;
-  record->GetBoolean("connected", &was_connected);
+void WebRTCInternals::MaybeMarkPeerConnectionAsConnected(base::Value& record) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  bool was_connected = record.GetDict().FindBool("connected").value_or(true);
   if (!was_connected) {
     ++num_connected_connections_;
-    record->SetBoolean("connected", true);
+    record.GetDict().Set("connected", true);
     UpdateWakeLock();
     for (auto& observer : connections_observers_)
       observer.OnConnectionsCountChange(num_connected_connections_);
@@ -610,11 +719,11 @@ void WebRTCInternals::MaybeMarkPeerConnectionAsConnected(
 }
 
 void WebRTCInternals::MaybeMarkPeerConnectionAsNotConnected(
-    base::DictionaryValue* record) {
-  bool was_connected = false;
-  record->GetBoolean("connected", &was_connected);
+    base::Value& record) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  bool was_connected = record.GetDict().FindBool("connected").value_or(false);
   if (was_connected) {
-    record->SetBoolean("connected", false);
+    record.GetDict().Set("connected", false);
     --num_connected_connections_;
     DCHECK_GE(num_connected_connections_, 0);
     UpdateWakeLock();
@@ -642,6 +751,7 @@ void WebRTCInternals::UpdateWakeLock() {
 }
 
 device::mojom::WakeLock* WebRTCInternals::GetWakeLock() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Here is a lazy binding, and will not reconnect after connection error.
   if (!wake_lock_) {
     mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
@@ -666,26 +776,21 @@ void WebRTCInternals::ProcessPendingUpdates() {
   }
 }
 
-base::DictionaryValue* WebRTCInternals::FindRecord(
-    GlobalFrameRoutingId frame_id,
-    int lid,
-    size_t* index /*= nullptr*/) {
+base::Value::List::iterator WebRTCInternals::FindRecord(
+    GlobalRenderFrameHostId frame_id,
+    int lid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::DictionaryValue* record = nullptr;
-  for (size_t i = 0; i < peer_connection_data_.GetSize(); ++i) {
-    peer_connection_data_.GetDictionary(i, &record);
+  for (auto it = peer_connection_data().begin();
+       it != peer_connection_data().end(); ++it) {
+    DCHECK(it->is_dict());
 
-    int this_rid = 0, this_lid = 0;
-    record->GetInteger("rid", &this_rid);
-    record->GetInteger("lid", &this_lid);
+    int this_rid = it->GetDict().FindInt("rid").value_or(0);
+    int this_lid = it->GetDict().FindInt("lid").value_or(0);
 
-    if (this_rid == frame_id.child_id && this_lid == lid) {
-      if (index)
-        *index = i;
-      return record;
-    }
+    if (this_rid == frame_id.child_id && this_lid == lid)
+      return it;
   }
-  return nullptr;
+  return peer_connection_data().end();
 }
 }  // namespace content

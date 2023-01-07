@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,10 @@ class WallpaperView : public WallpaperBaseView,
                       public views::ContextMenuController {
  public:
   explicit WallpaperView(float blur_sigma);
+
+  WallpaperView(const WallpaperView&) = delete;
+  WallpaperView& operator=(const WallpaperView&) = delete;
+
   ~WallpaperView() override;
 
   // Clears cached image. Must be called when wallpaper image is changed.
@@ -31,6 +35,8 @@ class WallpaperView : public WallpaperBaseView,
 
   void set_blur_sigma(float blur_sigma) { blur_sigma_ = blur_sigma; }
   float blur_sigma() const { return blur_sigma_; }
+
+  views::View* shield_view_for_testing() { return shield_view_; }
 
  private:
   // views::View:
@@ -59,9 +65,7 @@ class WallpaperView : public WallpaperBaseView,
 
   // A cached downsampled image of the wallpaper image. It will help wallpaper
   // blur/brightness animations be more performant.
-  base::Optional<gfx::ImageSkia> small_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperView);
+  absl::optional<gfx::ImageSkia> small_image_;
 };
 
 std::unique_ptr<views::Widget> CreateWallpaperWidget(

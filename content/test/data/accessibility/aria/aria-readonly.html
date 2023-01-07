@@ -40,6 +40,15 @@
   <div role="textbox" aria-readonly="false" tabindex="0" aria-label="Readonly-false contenteditable textbox"></div>
   <div role="textbox" aria-readonly="true" tabindex="0" aria-label="Readonly-true contenteditable textbox"></div>
 
+  <!-- Gridcell -->
+  <table role="grid">
+    <tr role="row">
+      <td tabindex="0" role="gridcell" aria-readonly="false" aria-label="Readonly-false gridcell"></td>
+      <td tabindex="0" role="gridcell" aria-readonly="true"  aria-label="Readonly-true gridcell"></td>
+      <td tabindex="0" role="gridcell" aria-label="Readonly not specified gridcell"></td> <!-- Default should be false -->
+    </tr>
+  </table>
+
   <!-- Other roles -->
   <div role="checkbox" aria-readonly="true" aria-label="Readonly checkbox"></div>
   <input role="combobox" aria-readonly="true" aria-label="Readonly combobox">
@@ -51,6 +60,5 @@
   <div role="menuitemradio" aria-readonly="true" aria-label="Readonly menuitemradio"></div>
   <div role="searchbox" aria-readonly="true" aria-label="Readonly searchbox"></div>
   <div role="switch" aria-readonly="true" aria-label="Readonly switch"></div>
-
 </body>
 </html>

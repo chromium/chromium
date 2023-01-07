@@ -50,6 +50,7 @@ The possible keys are:
       certificate in the chain (i.e. whether it is a trust anchor or not). This
       maps to the CertificateTrustType enum. Possible values are:
           "TRUSTED_ANCHOR"
+          "TRUSTED_ANCHOR_WITH_EXPIRATION"
           "TRUSTED_ANCHOR_WITH_CONSTRAINTS"
           "UNSPECIFIED"
           "DISTRUSTED"

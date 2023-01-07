@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,10 @@ import java.util.Date;
 /** A set of helper utility methods for the UI. */
 public final class UiUtils {
     private UiUtils() {}
+
+    static {
+        CalendarFactory.warmUp();
+    }
 
     /**
      * Builds the accessibility text to be used for a given chip on the chips row.
@@ -105,7 +109,7 @@ public final class UiUtils {
         Context context = ContextUtils.getApplicationContext();
         String displaySize = Formatter.formatFileSize(context, item.totalSizeBytes);
         String displayUrl = UrlFormatter.formatUrlForSecurityDisplay(
-                item.originalUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+                item.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         return context.getString(
                 R.string.download_manager_prefetch_caption, displayUrl, displaySize);
     }
@@ -118,7 +122,7 @@ public final class UiUtils {
     public static CharSequence generateGenericCaption(OfflineItem item) {
         Context context = ContextUtils.getApplicationContext();
         String displayUrl = UrlFormatter.formatUrlForSecurityDisplay(
-                item.pageUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+                item.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
         if (item.totalSizeBytes == 0) {
             return context.getString(
@@ -358,7 +362,7 @@ public final class UiUtils {
     /** @return The domain associated with the given {@link OfflineItem}. */
     public static String getDomainForItem(OfflineItem offlineItem) {
         String formattedUrl = UrlFormatter.formatUrlForSecurityDisplay(
-                offlineItem.pageUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+                offlineItem.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         return formattedUrl;
     }
 }

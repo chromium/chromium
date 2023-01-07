@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,10 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_PROFILE_ATTRIBUTES_UPDATER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class ProfileAttributesStorage;
@@ -19,15 +18,18 @@ class ProfileAttributesStorage;
 // fields of ProfileAttributes.
 class SigninProfileAttributesUpdater
     : public KeyedService,
-      public SigninErrorController::Observer,
       public signin::IdentityManager::Observer {
  public:
   SigninProfileAttributesUpdater(
       signin::IdentityManager* identity_manager,
-      SigninErrorController* signin_error_controller,
       ProfileAttributesStorage* profile_attributes_storage,
       const base::FilePath& profile_path,
       PrefService* prefs);
+
+  SigninProfileAttributesUpdater(const SigninProfileAttributesUpdater&) =
+      delete;
+  SigninProfileAttributesUpdater& operator=(
+      const SigninProfileAttributesUpdater&) = delete;
 
   ~SigninProfileAttributesUpdater() override;
 
@@ -38,24 +40,17 @@ class SigninProfileAttributesUpdater
   // Updates the profile attributes on signin and signout events.
   void UpdateProfileAttributes();
 
-  // SigninErrorController::Observer:
-  void OnErrorChanged() override;
-
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
-  signin::IdentityManager* identity_manager_;
-  SigninErrorController* signin_error_controller_;
-  ProfileAttributesStorage* profile_attributes_storage_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   const base::FilePath profile_path_;
-  PrefService* prefs_;
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_{this};
-  ScopedObserver<SigninErrorController, SigninErrorController::Observer>
-      signin_error_controller_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SigninProfileAttributesUpdater);
+  raw_ptr<PrefService> prefs_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_PROFILE_ATTRIBUTES_UPDATER_H_

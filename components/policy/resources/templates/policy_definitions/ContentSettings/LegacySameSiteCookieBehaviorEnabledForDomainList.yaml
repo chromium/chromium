@@ -1,0 +1,31 @@
+caption: Revert to legacy <ph name="ATTRIBUTE_SAMESITE_NAME">SameSite</ph> behavior
+  for cookies on these sites
+desc: |-
+  Cookies set for domains matching these patterns will revert to legacy <ph name="ATTRIBUTE_SAMESITE_NAME">SameSite</ph> behavior. Reverting to legacy behavior causes cookies that don't specify a <ph name="ATTRIBUTE_SAMESITE_NAME">SameSite</ph> attribute to be treated as if they were "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE">SameSite=None</ph>", removes the requirement for "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE">SameSite=None</ph>" cookies to carry the "<ph name="ATTRIBUTE_SECURE_NAME">Secure</ph>" attribute, and skips the scheme comparison when evaluating if two sites are same-site. See https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies for full description.
+
+            For cookies on domains not covered by the patterns specified here, or for all cookies if this policy is not set, the global default value will be the user's personal configuration.
+
+            For detailed information on valid patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+            Note that patterns you list here are treated as domains, not URLs, so you should not specify a scheme or port.
+example_value:
+- www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- bingler@chromium.org
+- file://net/cookies/OWNERS
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:79-
+- chrome_os:79-
+- android:79-
+tags: []
+type: list

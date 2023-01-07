@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,12 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -131,7 +130,7 @@ std::string MakeRegistrationKey(const std::string& app_id) {
 }
 
 std::string ParseRegistrationKey(const std::string& key) {
-  return key.substr(base::size(kRegistrationKeyStart) - 1);
+  return key.substr(std::size(kRegistrationKeyStart) - 1);
 }
 
 std::string MakeIncomingKey(const std::string& persistent_id) {
@@ -151,7 +150,7 @@ std::string MakeOutgoingKey(const std::string& persistent_id) {
 }
 
 std::string ParseOutgoingKey(const std::string& key) {
-  return key.substr(base::size(kOutgoingMsgKeyStart) - 1);
+  return key.substr(std::size(kOutgoingMsgKeyStart) - 1);
 }
 
 std::string MakeGServiceSettingKey(const std::string& setting_name) {
@@ -159,7 +158,7 @@ std::string MakeGServiceSettingKey(const std::string& setting_name) {
 }
 
 std::string ParseGServiceSettingKey(const std::string& key) {
-  return key.substr(base::size(kGServiceSettingKeyStart) - 1);
+  return key.substr(std::size(kGServiceSettingKeyStart) - 1);
 }
 
 std::string MakeAccountKey(const CoreAccountId& account_id) {
@@ -167,8 +166,7 @@ std::string MakeAccountKey(const CoreAccountId& account_id) {
 }
 
 CoreAccountId ParseAccountKey(const std::string& key) {
-  return CoreAccountId::FromString(
-      key.substr(base::size(kAccountKeyStart) - 1));
+  return CoreAccountId::FromString(key.substr(std::size(kAccountKeyStart) - 1));
 }
 
 std::string MakeHeartbeatKey(const std::string& scope) {
@@ -176,7 +174,7 @@ std::string MakeHeartbeatKey(const std::string& scope) {
 }
 
 std::string ParseHeartbeatKey(const std::string& key) {
-  return key.substr(base::size(kHeartbeatKeyStart) - 1);
+  return key.substr(std::size(kHeartbeatKeyStart) - 1);
 }
 
 std::string MakeInstanceIDKey(const std::string& app_id) {
@@ -184,7 +182,7 @@ std::string MakeInstanceIDKey(const std::string& app_id) {
 }
 
 std::string ParseInstanceIDKey(const std::string& key) {
-  return key.substr(base::size(kInstanceIDKeyStart) - 1);
+  return key.substr(std::size(kInstanceIDKeyStart) - 1);
 }
 
 // Note: leveldb::Slice keeps a pointer to the data in |s|, which must therefore
@@ -713,19 +711,19 @@ void GCMStoreImpl::Backend::SetGServicesSettings(
   // Remove all existing settings.
   leveldb::ReadOptions read_options;
   read_options.verify_checksums = true;
-  std::unique_ptr<leveldb::Iterator> iter(db_->NewIterator(read_options));
-  for (iter->Seek(MakeSlice(kGServiceSettingKeyStart));
-       iter->Valid() && iter->key().ToString() < kGServiceSettingKeyEnd;
-       iter->Next()) {
-    write_batch.Delete(iter->key());
+  std::unique_ptr<leveldb::Iterator> db_it(db_->NewIterator(read_options));
+  for (db_it->Seek(MakeSlice(kGServiceSettingKeyStart));
+       db_it->Valid() && db_it->key().ToString() < kGServiceSettingKeyEnd;
+       db_it->Next()) {
+    write_batch.Delete(db_it->key());
   }
 
   // Add the new settings.
-  for (std::map<std::string, std::string>::const_iterator iter =
+  for (std::map<std::string, std::string>::const_iterator map_it =
            settings.begin();
-       iter != settings.end(); ++iter) {
-    write_batch.Put(MakeSlice(MakeGServiceSettingKey(iter->first)),
-                    MakeSlice(iter->second));
+       map_it != settings.end(); ++map_it) {
+    write_batch.Put(MakeSlice(MakeGServiceSettingKey(map_it->first)),
+                    MakeSlice(map_it->second));
   }
 
   // Update the settings digest.
@@ -1012,16 +1010,15 @@ bool GCMStoreImpl::Backend::LoadIncomingMessages(
       std::string persistent_id = data.substr(0, found);
       int64_t expiration_time = 0LL;
       if (!base::StringToInt64(
-              data.substr(found + base::size(kIncomingMsgSeparator) - 1),
+              data.substr(found + std::size(kIncomingMsgSeparator) - 1),
               &expiration_time)) {
         LOG(ERROR)
             << "Failed to parse expiration time from the incoming message "
             << data;
         expiration_time = 0LL;
       }
-      if (base::Time::Now() <
-          base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(expiration_time))) {
+      if (base::Time::Now() < base::Time::FromDeltaSinceWindowsEpoch(
+                                  base::Microseconds(expiration_time))) {
         incoming_messages->push_back(std::move(persistent_id));
       } else {
         expired_incoming_messages.push_back(std::move(persistent_id));
@@ -1165,8 +1162,7 @@ bool GCMStoreImpl::Backend::LoadAccountMappingInfo(
                   account_mapping.account_id.IsEmail();
     base::UmaHistogramBoolean("GCM.RemoveAccountMappingWhenLoading", remove);
     if (remove) {
-      RemoveAccountMapping(account_mapping.account_id,
-                           base::DoNothing::Repeatedly<bool>());
+      RemoveAccountMapping(account_mapping.account_id, base::DoNothing());
     } else {
       account_mappings->push_back(account_mapping);
     }

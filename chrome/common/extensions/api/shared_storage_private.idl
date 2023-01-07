@@ -1,0 +1,30 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Used by gnubbyd in ash and lacros.  Stores small amounts of data in ash prefs
+// which is shared by ash and lacros versions of the extension.
+// TODO(b/231890240): Once Terminal SWA runs in lacros rather than ash, we can
+// migrate gnubbyd back to using chrome.storage.local and remove this private
+// API.
+[platforms=("chromeos", "lacros"),
+ implemented_in="chrome/browser/extensions/api/shared_storage/shared_storage_private_api.h"]
+namespace sharedStoragePrivate {
+
+  callback GetCallback = void (object items);
+  callback SetCallback = void ();
+  callback RemoveCallback = void ();
+
+  interface Functions {
+    // Gets all items from shared extension local storage.
+    [supportsPromises] static void get(GetCallback callback);
+
+    // Sets given items into shared extension local storage.
+    [supportsPromises] static void set(object items, SetCallback callback);
+
+    // Removes item from shared extension local storage.
+    [supportsPromises] static void remove(
+        DOMString[] keys, RemoveCallback callback);
+  };
+};
+

@@ -1,7 +1,7 @@
 (async function(testRunner) {
   const {session, dp, page} = await testRunner.startBlank(
       `Check that multiple attached sessions don't crash the Log domain.`);
-  const url = 'quic-transport://localhost';
+  const url = 'https://localhost';
 
   await dp.Log.enable();
   testRunner.log('Log in session 1 enabled');
@@ -23,8 +23,8 @@
   dp.Log.onEntryAdded(onEntryAddedHandler);
   dp2.Log.onEntryAdded(onEntryAddedHandler);
 
-  // Taken from 'quic-transport-handshake-failure.js', failure to establish a connection
+  // Taken from 'web-transport-handshake-failure.js', failure to establish a connection
   // causes a error message to be logged to the DevTools console.
-  testRunner.log('Trigger browser originating log message by instantiating QuicTransport.');
-  session.evaluate(`new QuicTransport('${url}');`);
+  testRunner.log('Trigger browser originating log message by instantiating WebTransport.');
+  session.evaluate(`new WebTransport('${url}');`);
 })

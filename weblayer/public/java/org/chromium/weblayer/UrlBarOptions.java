@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ import org.chromium.weblayer_private.interfaces.UrlBarOptionsKeys;
 /**
  * Class containing options to tweak the URL bar.
  */
-public final class UrlBarOptions {
+final class UrlBarOptions {
     public static Builder builder() {
         return new Builder();
     }

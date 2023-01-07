@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/manifest_handler.h"
 
 namespace extensions {
@@ -22,6 +21,10 @@ namespace extensions {
 class BluetoothManifestHandler : public ManifestHandler {
  public:
   BluetoothManifestHandler();
+
+  BluetoothManifestHandler(const BluetoothManifestHandler&) = delete;
+  BluetoothManifestHandler& operator=(const BluetoothManifestHandler&) = delete;
+
   ~BluetoothManifestHandler() override;
 
   // ManifestHandler overrides.
@@ -33,8 +36,6 @@ class BluetoothManifestHandler : public ManifestHandler {
  private:
   // ManifestHandler overrides.
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothManifestHandler);
 };
 
 }  // namespace extensions

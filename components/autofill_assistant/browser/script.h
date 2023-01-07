@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,10 +21,8 @@ struct ScriptHandle {
   ScriptHandle(const ScriptHandle& orig);
   ~ScriptHandle();
 
-  Chip chip;
   DirectAction direct_action;
   std::string path;
-  std::string initial_prompt;
   std::string start_message;
   bool needs_ui = false;
 

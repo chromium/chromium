@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -152,25 +152,27 @@ function testPromise(promise) {
 function launchWithEntries(isolatedEntries) {
   // TODO(mtomasz): Remove this hack once chrome.FileManager API can work on
   // isolated entries.
-  return new Promise(
-      function(fulfill, reject) {
-        chrome.fileManagerPrivate.resolveIsolatedEntries(
-            isolatedEntries,
-            function(entries) {
-              fulfill(entries);
-            });
-      })
+  return new Promise(function(fulfill, reject) {
+           chrome.fileManagerPrivate.resolveIsolatedEntries(
+               isolatedEntries, function(entries) {
+                 fulfill(entries);
+               });
+         })
       .then(
           function(entries) {
             var tasksPromise = new Promise(function(fulfill) {
-              chrome.fileManagerPrivate.getFileTasks(entries, fulfill);
-            }).then(function(tasks) {
+                                 chrome.fileManagerPrivate.getFileTasks(
+                                     entries, fulfill);
+                               }).then(function(resultingTasks) {
+              const tasks = resultingTasks.tasks;
               chrome.test.assertEq(1, tasks.length);
               chrome.test.assertEq("ChromeOS File handler extension",
                                    tasks[0].title);
               chrome.test.assertEq(
-                  'pkplfbidichfdicaijlchgnapepdginl|app|textAction',
-                  tasks[0].taskId);
+                  'pkplfbidichfdicaijlchgnapepdginl',
+                  tasks[0].descriptor.appId);
+              chrome.test.assertEq('app', tasks[0].descriptor.taskType);
+              chrome.test.assertEq('textAction', tasks[0].descriptor.actionId);
               return tasks[0];
             });
             var launchDataPromise = new Promise(function(fulfill) {
@@ -183,15 +185,14 @@ function launchWithEntries(isolatedEntries) {
             var taskExecutedPromise = tasksPromise.then(function(task) {
               return new Promise(function(fulfill, reject) {
                 chrome.fileManagerPrivate.executeTask(
-                    task.taskId,
-                    entries,
+                  task.descriptor, entries,
                     function(result) {
                       if (result)
                         fulfill();
                       else
                         reject();
                     });
-                });
+              });
             });
             var resolvedEntriesPromise = launchDataPromise.then(
                 function(launchData) {

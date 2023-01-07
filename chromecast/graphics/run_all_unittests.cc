@@ -1,9 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "mojo/core/embedder/embedder.h"
@@ -15,6 +14,10 @@ class ChromecastGraphicsTestSuite : public base::TestSuite {
  public:
   ChromecastGraphicsTestSuite(int argc, char** argv)
       : base::TestSuite(argc, argv) {}
+
+  ChromecastGraphicsTestSuite(const ChromecastGraphicsTestSuite&) = delete;
+  ChromecastGraphicsTestSuite& operator=(const ChromecastGraphicsTestSuite&) =
+      delete;
 
  protected:
   void Initialize() override {
@@ -31,7 +34,6 @@ class ChromecastGraphicsTestSuite : public base::TestSuite {
 
  private:
   std::unique_ptr<aura::Env> env_;
-  DISALLOW_COPY_AND_ASSIGN(ChromecastGraphicsTestSuite);
 };
 
 int main(int argc, char** argv) {

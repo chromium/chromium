@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,9 @@ PP_Bool PPB_URLUtil_Shared::IsSameSecurityOrigin(PP_Var url_a, PP_Var url_b) {
   if (!gurl_a.is_valid() || !gurl_b.is_valid())
     return PP_FALSE;
 
-  return gurl_a.GetOrigin() == gurl_b.GetOrigin() ? PP_TRUE : PP_FALSE;
+  return gurl_a.DeprecatedGetOriginAsURL() == gurl_b.DeprecatedGetOriginAsURL()
+             ? PP_TRUE
+             : PP_FALSE;
 }
 
 // Used for returning the given GURL from a PPAPI function, with an optional

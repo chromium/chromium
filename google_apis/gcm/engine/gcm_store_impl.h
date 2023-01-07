@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gcm/base/gcm_export.h"
@@ -34,6 +33,10 @@ class GCM_EXPORT GCMStoreImpl : public GCMStore {
                bool remove_account_mappings_with_email_key,
                scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
                std::unique_ptr<Encryptor> encryptor);
+
+  GCMStoreImpl(const GCMStoreImpl&) = delete;
+  GCMStoreImpl& operator=(const GCMStoreImpl&) = delete;
+
   ~GCMStoreImpl() override;
 
   // Load the directory and pass the initial state back to caller.
@@ -151,8 +154,6 @@ class GCM_EXPORT GCMStoreImpl : public GCMStore {
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   base::WeakPtrFactory<GCMStoreImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GCMStoreImpl);
 };
 
 }  // namespace gcm

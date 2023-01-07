@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 #define DEVICE_BLUETOOTH_DBUS_BLUETOOTH_GATT_CHARACTERISTIC_SERVICE_PROVIDER_IMPL_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
@@ -36,12 +38,22 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicServiceProviderImpl
       const std::vector<std::string>& flags,
       const dbus::ObjectPath& service_path);
 
+  BluetoothGattCharacteristicServiceProviderImpl(
+      const BluetoothGattCharacteristicServiceProviderImpl&) = delete;
+  BluetoothGattCharacteristicServiceProviderImpl& operator=(
+      const BluetoothGattCharacteristicServiceProviderImpl&) = delete;
+
   ~BluetoothGattCharacteristicServiceProviderImpl() override;
 
   // BluetoothGattCharacteristicServiceProvider override.
   void SendValueChanged(const std::vector<uint8_t>& value) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BluetoothGattCharacteristicServiceProviderTest,
+                           ReadValueSuccess);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothGattCharacteristicServiceProviderTest,
+                           ReadValueFailure);
+
   // Returns true if the current thread is on the origin thread.
   bool OnOriginThread();
 
@@ -102,19 +114,22 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicServiceProviderImpl
 
   // Called by the Delegate in response to a method to call to read the value
   // of this characteristic.
-  void OnReadValue(dbus::MethodCall* method_call,
-                   dbus::ExportedObject::ResponseSender response_sender,
-                   const std::vector<uint8_t>& value);
+  void OnReadValue(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender,
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
 
   // Called by the Delegate in response to a method to call to write the value
   // of this characteristic.
   void OnWriteValue(dbus::MethodCall* method_call,
                     dbus::ExportedObject::ResponseSender response_sender);
 
-  // Called by the Delegate in response to a failed method call to get or set
+  // Called by the Delegate in response to a failed method call to set
   // the characteristic value.
-  void OnFailure(dbus::MethodCall* method_call,
-                 dbus::ExportedObject::ResponseSender response_sender);
+  void OnWriteValueFailure(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
 
   const dbus::ObjectPath& object_path() const override;
 
@@ -129,7 +144,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicServiceProviderImpl
 
   // D-Bus bus object is exported on, not owned by this object and must
   // outlive it.
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus> bus_;
 
   // Incoming methods to get and set the "Value" property are passed on to the
   // delegate and callbacks passed to generate a reply. |delegate_| is generally
@@ -153,8 +168,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicServiceProviderImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothGattCharacteristicServiceProviderImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattCharacteristicServiceProviderImpl);
 };
 
 }  // namespace bluez

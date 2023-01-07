@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -23,6 +23,10 @@ namespace metrics {
 class DataUseTracker {
  public:
   explicit DataUseTracker(PrefService* local_state);
+
+  DataUseTracker(const DataUseTracker&) = delete;
+  DataUseTracker& operator=(const DataUseTracker&) = delete;
+
   virtual ~DataUseTracker();
 
   // Returns an instance of |DataUseTracker| with provided |local_state| if
@@ -80,11 +84,9 @@ class DataUseTracker {
   // Returns the current date as a string with a proper formatting.
   virtual std::string GetCurrentMeasurementDateAsString() const;
 
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DataUseTracker);
 };
 
 }  // namespace metrics

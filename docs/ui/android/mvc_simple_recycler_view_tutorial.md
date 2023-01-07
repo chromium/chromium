@@ -6,6 +6,7 @@ prerequisites to this tutorial, see [Additional Resources](#Additional-Resources
 
 Using ```RecyclerViews``` in a basic way in MVC is now very similar to how basic non-recycler
 lists work. The general flow is as follows:
+
 * Build and maintain a [```ModelList```][model_list_link].
 * Create a [```SimpleRecyclerViewAdapter```][simple_rva_link].
 * Register each type of view with the adapter.
@@ -52,9 +53,8 @@ mRecyclerView.setRecyclerListener(recyclerListener);
 
 ````
 
-[model_list_link]:(https://codesearch.chromium.org/chromium/src/ui/android/java/src/org/chromium/ui/modelutil/MVCListAdapter.java?rcl=d22c9731463bad77645cb0f1a928dec7da79bff9&l=38)
-[simple_rva_link]:(https://codesearch.chromium.org/chromium/src/ui/android/java/src/org/chromium/ui/modelutil/SimpleRecyclerViewAdapter.java)
+[model_list_link]:https://codesearch.chromium.org/chromium/src/ui/android/java/src/org/chromium/ui/modelutil/MVCListAdapter.java?rcl=d22c9731463bad77645cb0f1a928dec7da79bff9&l=38
+[simple_rva_link]:https://codesearch.chromium.org/chromium/src/ui/android/java/src/org/chromium/ui/modelutil/SimpleRecyclerViewAdapter.java
 [mvc_tutorial_link]:https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_architecture_tutorial.md
 [mvc_list_tutorial_link]:https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md
 [fast_lookup_frame_layout_link]:https://codesearch.chromium.org/chromium/src/ui/android/java/src/org/chromium/ui/widget/ViewLookupCachingFrameLayout.java
-

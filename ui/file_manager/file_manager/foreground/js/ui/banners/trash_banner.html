@@ -1,0 +1,38 @@
+<style>
+  state-banner {
+    --icon-src: none;
+  }
+
+  #trash-icon {
+    -webkit-mask-image: url(/foreground/images/files/ui/delete_ng.svg);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    background-color: var(--cros-color-prominent);
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+  }
+
+  #trash-icon-background {
+    align-items: center;
+    background-color: var(--cros-highlight-color);
+    border-radius: 16px;
+    display: flex;
+    height: 32px;
+    justify-content: center;
+    margin-inline-end: 10px;
+    margin-inline-start: 10px;
+    width: 32px;
+  }
+</style>
+<state-banner>
+  <div slot="state-icon-holder">
+    <div id="trash-icon-background">
+      <span id="trash-icon"></span>
+    </div>
+  </div>
+  <span slot="text">$i18n{TRASH_DELETED_FOREVER}</span>
+  <cr-button slot="extra-button" command="#empty-trash">
+    $i18n{EMPTY_TRASH_BUTTON_LABEL}
+  </cr-button>
+</state-banner>

@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 
 #import <GTXiLib/GTXiLib.h>
 
-#include "ios/chrome/test/earl_grey/accessibility_util.h"
+#import "ios/chrome/test/earl_grey/accessibility_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,7 +19,7 @@ BOOL VerifyAccessibilityForCurrentScreen(NSError* error) {
   // run, but may not be the correct long-term solution.
   [GTXAnalytics setEnabled:NO];
 
-  GTXToolKit* toolkit = [[GTXToolKit alloc] init];
+  GTXToolKit* toolkit = [GTXToolKit defaultToolkit];
   for (UIWindow* window in [[UIApplication sharedApplication] windows]) {
     // Run the checks on all elements on the screen.
     BOOL success = [toolkit checkAllElementsFromRootElements:@[ window ]

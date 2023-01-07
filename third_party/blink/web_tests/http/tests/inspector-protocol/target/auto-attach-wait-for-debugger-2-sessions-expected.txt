@@ -1,0 +1,38 @@
+Tests that setAutoAttach honors updated waitForDebuggerOnStart.
+[
+    [0] : {
+        method : Target.attachedToTarget
+        params : {
+            sessionId : <string>
+            targetInfo : {
+                attached : true
+                browserContextId : <string>
+                canAccessOpener : false
+                targetId : <string>
+                title : 
+                type : iframe
+                url : 
+            }
+            waitingForDebugger : false
+        }
+        sessionId : <string>
+    }
+    [1] : {
+        method : Target.attachedToTarget
+        params : {
+            sessionId : <string>
+            targetInfo : {
+                attached : true
+                browserContextId : <string>
+                canAccessOpener : false
+                targetId : <string>
+                title : 
+                type : iframe
+                url : 
+            }
+            waitingForDebugger : true
+        }
+        sessionId : <string>
+    }
+]
+

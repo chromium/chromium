@@ -1,14 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_EXTENSION_LOADER_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_EXTENSION_LOADER_H_
 
-#include <memory>
-#include <string>
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/extension_registrar.h"
@@ -31,6 +28,10 @@ class Extension;
 class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
  public:
   explicit ShellExtensionLoader(content::BrowserContext* browser_context);
+
+  ShellExtensionLoader(const ShellExtensionLoader&) = delete;
+  ShellExtensionLoader& operator=(const ShellExtensionLoader&) = delete;
+
   ~ShellExtensionLoader() override;
 
   // Loads an unpacked extension from a directory synchronously. Returns the
@@ -64,7 +65,7 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
   bool CanDisableExtension(const Extension* extension) override;
   bool ShouldBlockExtension(const Extension* extension) override;
 
-  content::BrowserContext* browser_context_;  // Not owned.
+  raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
 
   // Registers and unregisters extensions.
   ExtensionRegistrar extension_registrar_;
@@ -78,8 +79,6 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
   bool did_schedule_reload_ = false;
 
   base::WeakPtrFactory<ShellExtensionLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionLoader);
 };
 
 }  // namespace extensions

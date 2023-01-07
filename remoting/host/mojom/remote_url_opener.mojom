@@ -1,0 +1,35 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+import "url/mojom/url.mojom";
+
+// The outcome of opening the URL remotely.
+// Must be synced with remoting/proto/remote_open_url.proto
+enum OpenUrlResult {
+  UNSPECIFIED_OPEN_URL_RESULT = 0,
+
+  // The URL was successfully opened.
+  SUCCESS = 1,
+
+  // The URL failed to open, and the requester should not try to open the
+  // URL locally.
+  FAILURE = 2,
+
+  // The remote end has decided that the URL should be opened locally by the
+  // requester.
+  LOCAL_FALLBACK = 3,
+};
+
+// Interface to allow a standalone library to open a URL on the client by
+// sending an IPC to the main host process.
+// The server (remoting host) and the client (a standalone binary) are updated
+// in the same package so version skew isn't a concern.
+// The standalone binary runs in user context and passes URL to the host who
+// validates it and forwards it to the client website.
+interface RemoteUrlOpener {
+  // Requests the client to open |url|.
+  OpenUrl(url.mojom.Url url) => (OpenUrlResult result);
+};

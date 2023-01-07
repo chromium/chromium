@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2017 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Layout for the control group representing Chrome's URL bar on small devices.
+     This file is used for different LocationBarLayout subclasses and should remain generic.
+-->
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- This space will be expanded when the location bar is focused on phone and tablet
+         form factor. Or its width will be expanded when initialized in search widget location
+         bar on phone form factor.
+    -->
+    <Space android:id="@+id/location_bar_status_view_left_space"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:focusable="false" />
+
+    <include layout="@layout/location_status" />
+
+    <!-- This space will be expanded when the location bar is focused on phone form factor.
+         Or its width will be expanded when initialized in search widget location bar on
+         phone form factor
+    -->
+    <Space android:id="@+id/location_bar_status_view_right_space"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:focusable="false" />
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginStart="@dimen/location_bar_icon_width"
+        android:layout_gravity="center_vertical"
+        android:nextFocusForward="@+id/tab_switcher_button"
+        layout="@layout/url_bar" />
+
+    <include layout="@layout/url_action_container" />
+
+</merge>

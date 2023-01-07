@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -123,7 +123,7 @@ bool TransformFeedback::GetVerticesNeededForDraw(GLenum mode,
       break;
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case GL_POINTS:
       checked_vertices += checked_primcount * checked_count;
   }

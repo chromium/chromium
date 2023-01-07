@@ -1,0 +1,27 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "tabs.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "tabs.mojom.TabAlertState"
+          cpp = "::TabAlertState"
+        },
+      ]
+      traits_headers = [ "tabs_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//chrome/browser/ui/tabs:tab_enums",
+      ]
+    },
+  ]
+}

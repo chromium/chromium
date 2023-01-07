@@ -1,0 +1,71 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("./launcher_internals.gni")
+
+assert(is_chromeos, "Launcher internals is Chrome OS only.")
+
+resources_grd_file = "$target_gen_dir/resources.grd"
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
+}
+
+copy("copy_src") {
+  sources = ts_files
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+copy("copy_mojo") {
+  deps = [
+    "//chrome/browser/ui/webui/ash/launcher_internals:mojo_bindings_webui_js",
+  ]
+  mojom_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/launcher_internals/"
+  sources = [ "$mojom_folder/launcher_internals.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  deps = [ "//third_party/polymer/v3_0:library" ]
+  extra_deps = [
+    ":copy_mojo",
+    ":copy_src",
+    ":html_wrapper_files",
+  ]
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files =
+      ts_files + html_wrapper_files + [ "launcher_internals.mojom-webui.js" ]
+}
+
+generate_grd("build_grd") {
+  deps = [ ":build_ts" ]
+  input_files = [ "index.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+
+  grd_prefix = "launcher_internals"
+  out_grd = resources_grd_file
+}
+
+grit("resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/launcher_internals_resources.h",
+    "grit/launcher_internals_resources_map.cc",
+    "grit/launcher_internals_resources_map.h",
+    "launcher_internals_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}

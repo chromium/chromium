@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@ public class TranslateTabLayout extends TabLayout {
         super(context, attrs);
 
         TypedArray a = context.obtainStyledAttributes(
-                attrs, R.styleable.TabLayout, 0, R.style.Widget_Design_TabLayout);
+                attrs, R.styleable.TabLayout, 0, R.style.Widget_MaterialComponents_TabLayout);
         mTabPaddingStart = mTabPaddingEnd =
                 a.getDimensionPixelSize(R.styleable.TabLayout_tabPadding, 0);
         mTabPaddingStart =

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
 #include "content/public/common/process_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // ModuleInfoKey and ModuleInfoData are used in pair by the ModuleDatabase to
 // maintain information about a module, usually in a std::map.
@@ -26,6 +25,8 @@ struct ModuleInfoKey {
 
   // Less-than operator allowing this object to be used in std::map.
   bool operator<(const ModuleInfoKey& mi) const;
+  // Allows comparing keys in DCHECKs.
+  bool operator==(const ModuleInfoKey& mi) const;
 
   // Full path to the module on disk. Part of the key for a ModuleInfo.
   base::FilePath module_path;
@@ -109,7 +110,7 @@ struct ModuleInfoData {
   uint32_t module_properties;
 
   // The inspection result obtained via InspectModule().
-  base::Optional<ModuleInspectionResult> inspection_result;
+  absl::optional<ModuleInspectionResult> inspection_result;
 };
 
 // Given a module located at |module_path|, returns a populated

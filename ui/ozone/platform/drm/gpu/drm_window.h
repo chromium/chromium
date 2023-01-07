@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -53,6 +52,9 @@ class DrmWindow {
             DrmDeviceManager* device_manager,
             ScreenManager* screen_manager);
 
+  DrmWindow(const DrmWindow&) = delete;
+  DrmWindow& operator=(const DrmWindow&) = delete;
+
   ~DrmWindow();
 
   gfx::Rect bounds() const { return bounds_; }
@@ -88,8 +90,9 @@ class DrmWindow {
   OverlayStatusList TestPageFlip(
       const OverlaySurfaceCandidateList& overlay_params);
 
-  // Returns the last buffer associated with this window.
-  const DrmOverlayPlane* GetLastModesetBuffer() const;
+  const DrmOverlayPlaneList& last_submitted_planes() const {
+    return last_submitted_planes_;
+  }
 
  private:
   // Draw next frame in an animated cursor.
@@ -122,8 +125,6 @@ class DrmWindow {
   DrmOverlayPlaneList last_submitted_planes_;
 
   bool force_buffer_reallocation_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmWindow);
 };
 
 }  // namespace ui

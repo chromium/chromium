@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -43,6 +42,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.TestParams;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -105,7 +105,7 @@ public class IncognitoPermissionLeakageTest {
 
     private void requestLocationPermission(Tab tab) throws TimeoutException, ExecutionException {
         // If tab is frozen then getWebContents may return null
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.loadIfNeeded());
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.loadIfNeeded(LoadIfNeededCaller.OTHER));
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(tab.getWebContents(), Matchers.notNullValue()));
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
@@ -141,7 +141,7 @@ public class IncognitoPermissionLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(RegularAndIncognito.class)
-    @FlakyTest(message = "https://crbug.com/1103488")
+    @DisabledTest(message = "https://crbug.com/1103488")
     public void testAllowPermissionDoNotLeakBetweenRegularAndIncognito(
             String activityType1, String activityType2) throws Exception {
         ActivityType activity1 = ActivityType.valueOf(activityType1);
@@ -251,7 +251,7 @@ public class IncognitoPermissionLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.IncognitoToRegular.class)
-    @FlakyTest(message = "https://crbug.com/1103488")
+    @DisabledTest(message = "https://crbug.com/1103488")
     public void testBlockPermissionDoNotLeakFromIncognitoToRegular(
             String incognitoActivityType, String regularActivityType) throws Exception {
         ActivityType incognitoActivity = ActivityType.valueOf(incognitoActivityType);

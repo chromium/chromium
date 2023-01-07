@@ -167,7 +167,7 @@ static OPUS_INLINE short SHR16_(int a, int shift, char *file, int line)
 #define SHL16(a, shift) SHL16_(a, shift, __FILE__, __LINE__)
 static OPUS_INLINE short SHL16_(int a, int shift, char *file, int line)
 {
-   int res;
+   opus_int32 res;
    if (!VERIFY_SHORT(a) || !VERIFY_SHORT(shift))
    {
       fprintf (stderr, "SHL16: inputs are not short: %d %d in %s: line %d\n", a, shift, file, line);
@@ -175,7 +175,7 @@ static OPUS_INLINE short SHL16_(int a, int shift, char *file, int line)
       celt_assert(0);
 #endif
    }
-   res = a<<shift;
+   res = (opus_int32)((opus_uint32)a<<shift);
    if (!VERIFY_SHORT(res))
    {
       fprintf (stderr, "SHL16: output is not short: %d in %s: line %d\n", res, file, line);
@@ -214,15 +214,15 @@ static OPUS_INLINE int SHL32_(opus_int64 a, int shift, char *file, int line)
    opus_int64  res;
    if (!VERIFY_INT(a) || !VERIFY_SHORT(shift))
    {
-      fprintf (stderr, "SHL32: inputs are not int: %lld %d in %s: line %d\n", a, shift, file, line);
+      fprintf (stderr, "SHL32: inputs are not int: %lld %d in %s: line %d\n", (long long)a, shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
       celt_assert(0);
 #endif
    }
-   res = a<<shift;
+   res = (opus_int64)((opus_uint64)a<<shift);
    if (!VERIFY_INT(res))
    {
-      fprintf (stderr, "SHL32: output is not int: %lld<<%d = %lld in %s: line %d\n", a, shift, res, file, line);
+      fprintf (stderr, "SHL32: output is not int: %lld<<%d = %lld in %s: line %d\n", (long long)a, shift, (long long)res, file, line);
 #ifdef FIXED_DEBUG_ASSERT
       celt_assert(0);
 #endif
@@ -339,7 +339,7 @@ static OPUS_INLINE unsigned int UADD32_(opus_uint64 a, opus_uint64 b, char *file
    opus_uint64 res;
    if (!VERIFY_UINT(a) || !VERIFY_UINT(b))
    {
-      fprintf (stderr, "UADD32: inputs are not uint32: %llu %llu in %s: line %d\n", a, b, file, line);
+      fprintf (stderr, "UADD32: inputs are not uint32: %llu %llu in %s: line %d\n", (unsigned long long)a, (unsigned long long)b, file, line);
 #ifdef FIXED_DEBUG_ASSERT
       celt_assert(0);
 #endif
@@ -347,7 +347,7 @@ static OPUS_INLINE unsigned int UADD32_(opus_uint64 a, opus_uint64 b, char *file
    res = a+b;
    if (!VERIFY_UINT(res))
    {
-      fprintf (stderr, "UADD32: output is not uint32: %llu in %s: line %d\n", res, file, line);
+      fprintf (stderr, "UADD32: output is not uint32: %llu in %s: line %d\n", (unsigned long long)res, file, line);
 #ifdef FIXED_DEBUG_ASSERT
       celt_assert(0);
 #endif
@@ -363,14 +363,14 @@ static OPUS_INLINE unsigned int USUB32_(opus_uint64 a, opus_uint64 b, char *file
    opus_uint64 res;
    if (!VERIFY_UINT(a) || !VERIFY_UINT(b))
    {
-      fprintf (stderr, "USUB32: inputs are not uint32: %llu %llu in %s: line %d\n", a, b, file, line);
+      fprintf (stderr, "USUB32: inputs are not uint32: %llu %llu in %s: line %d\n", (unsigned long long)a, (unsigned long long)b, file, line);
 #ifdef FIXED_DEBUG_ASSERT
       celt_assert(0);
 #endif
    }
    if (a<b)
    {
-      fprintf (stderr, "USUB32: inputs underflow: %llu < %llu in %s: line %d\n", a, b, file, line);
+      fprintf (stderr, "USUB32: inputs underflow: %llu < %llu in %s: line %d\n", (unsigned long long)a, (unsigned long long)b, file, line);
 #ifdef FIXED_DEBUG_ASSERT
       celt_assert(0);
 #endif
@@ -378,7 +378,7 @@ static OPUS_INLINE unsigned int USUB32_(opus_uint64 a, opus_uint64 b, char *file
    res = a-b;
    if (!VERIFY_UINT(res))
    {
-      fprintf (stderr, "USUB32: output is not uint32: %llu - %llu = %llu in %s: line %d\n", a, b, res, file, line);
+      fprintf (stderr, "USUB32: output is not uint32: %llu - %llu = %llu in %s: line %d\n", (unsigned long long)a, (unsigned long long)b, (unsigned long long)res, file, line);
 #ifdef FIXED_DEBUG_ASSERT
       celt_assert(0);
 #endif
@@ -416,7 +416,7 @@ static OPUS_INLINE int MULT32_32_32(opus_int64 a, opus_int64 b)
    opus_int64 res;
    if (!VERIFY_INT(a) || !VERIFY_INT(b))
    {
-      fprintf (stderr, "MULT32_32_32: inputs are not int: %d %d\n", a, b);
+      fprintf (stderr, "MULT32_32_32: inputs are not int: %lld %lld\n", (long long)a, (long long)b);
 #ifdef FIXED_DEBUG_ASSERT
       celt_assert(0);
 #endif
@@ -424,7 +424,7 @@ static OPUS_INLINE int MULT32_32_32(opus_int64 a, opus_int64 b)
    res = a*b;
    if (!VERIFY_INT(res))
    {
-      fprintf (stderr, "MULT32_32_32: output is not int: %d\n", res);
+      fprintf (stderr, "MULT32_32_32: output is not int: %lld\n", (long long)res);
 #ifdef FIXED_DEBUG_ASSERT
       celt_assert(0);
 #endif
@@ -438,7 +438,7 @@ static OPUS_INLINE int MULT32_32_Q16(opus_int64 a, opus_int64 b)
    opus_int64 res;
    if (!VERIFY_INT(a) || !VERIFY_INT(b))
    {
-      fprintf (stderr, "MULT32_32_Q16: inputs are not int: %d %d\n", a, b);
+      fprintf (stderr, "MULT32_32_Q16: inputs are not int: %lld %lld\n", (long long)a, (long long)b);
 #ifdef FIXED_DEBUG_ASSERT
       celt_assert(0);
 #endif
@@ -446,7 +446,7 @@ static OPUS_INLINE int MULT32_32_Q16(opus_int64 a, opus_int64 b)
    res = ((opus_int64)(a)*(opus_int64)(b)) >> 16;
    if (!VERIFY_INT(res))
    {
-      fprintf (stderr, "MULT32_32_Q16: output is not int: %d*%d=%d\n", a, b, (int)res);
+      fprintf (stderr, "MULT32_32_Q16: output is not int: %lld*%lld=%lld\n", (long long)a, (long long)b, (long long)res);
 #ifdef FIXED_DEBUG_ASSERT
       celt_assert(0);
 #endif
@@ -491,7 +491,7 @@ static OPUS_INLINE int MULT16_32_QX_(int a, opus_int64 b, int Q, char *file, int
       celt_assert(0);
 #endif
    }
-   if (ABS32(b)>=((opus_val32)(1)<<(15+Q)))
+   if (ABS32(b)>=((opus_int64)(1)<<(16+Q)))
    {
       fprintf (stderr, "MULT16_32_Q%d: second operand too large: %d %d in %s: line %d\n", Q, (int)a, (int)b, file, line);
 #ifdef FIXED_DEBUG_ASSERT
@@ -524,7 +524,7 @@ static OPUS_INLINE int MULT16_32_PX_(int a, opus_int64 b, int Q, char *file, int
       celt_assert(0);
 #endif
    }
-   if (ABS32(b)>=((opus_int64)(1)<<(15+Q)))
+   if (ABS32(b)>=((opus_int64)(1)<<(16+Q)))
    {
       fprintf (stderr, "MULT16_32_Q%d: second operand too large: %d %d in %s: line %d\n\n", Q, (int)a, (int)b,file, line);
 #ifdef FIXED_DEBUG_ASSERT
@@ -831,6 +831,6 @@ static OPUS_INLINE opus_val16 SIG2WORD16_generic(celt_sig x)
 
 
 #undef PRINT_MIPS
-#define PRINT_MIPS(file) do {fprintf (file, "total complexity = %llu MIPS\n", celt_mips);} while (0);
+#define PRINT_MIPS(file) do {fprintf (file, "total complexity = %llu MIPS\n", (unsigned long long)celt_mips);} while (0);
 
 #endif

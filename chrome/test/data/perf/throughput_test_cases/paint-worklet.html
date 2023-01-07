@@ -1,0 +1,124 @@
+<style>
+body {
+  bottom: 0;
+  left: 0;
+  overflow-y: scroll;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#content {
+  background-image: paint(bezier);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  --progress: 0;
+}
+
+</style>
+<body>
+	Please press any key to start the animation.
+  <div id="content"></div>
+</body>
+
+<script>
+CSS.registerProperty({
+  name: '--progress',
+  syntax: '<number>',
+  initialValue: 0,
+  inherits: false
+});
+
+const blob = new Blob([`
+  class BezierPainter {
+    static get inputProperties() { return ['--progress']}
+    paint(ctx, geom, properties) {
+      const width = geom.width;
+      const height = geom.height;
+      const t = properties.get('--progress');
+      const p0 = { x: 0.1, y: 0.9 };
+      const p1 = { x: 0.4, y: 0.1 };
+      const p2 = { x: 0.6, y: 0.1 };
+      const p3 = { x: 0.9, y: 0.9 };
+      const moveTo = (pt) => {
+        ctx.moveTo(pt.x * width, pt.y * height);
+      };
+      const lineTo = (pt) => {
+        ctx.lineTo(pt.x * width, pt.y * height);
+      };
+      const vertex = (pt) => {
+        ctx.fillStyle = 'black';
+        ctx.beginPath();
+        ctx.arc(pt.x * width, pt.y * height, 5, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      const bezier = () => {
+         ctx.strokeStyle = 'black';
+         ctx.lineWidth = 2;
+         ctx.beginPath();
+         moveTo(p0);
+         ctx.bezierCurveTo(
+           p1.x * width, p1.y * height,
+           p2.x * width, p2.y * height,
+           p3.x * width, p3.y * height);
+         ctx.stroke();
+      };
+      const interpolate = (pt1, pt2) => {
+        return {
+          x: pt1.x + (pt2.x - pt1.x) * t,
+          y: pt1.y + (pt2.y - pt1.y) * t
+        };
+      };
+      ctx.fillStyle = 'white';
+      ctx.beginPath();
+      ctx.rect(0, 0, width, height);
+      ctx.fill();
+
+      ctx.strokeStyle = 'black';
+      ctx.beginPath();
+      moveTo(p0);
+      lineTo(p1);
+      lineTo(p2);
+      lineTo(p3);
+      ctx.stroke();
+
+      const p4 = interpolate(p0, p1);
+      const p5 = interpolate(p1, p2);
+      const p6 = interpolate(p2, p3);
+      const p7 = interpolate(p4, p5);
+      const p8 = interpolate(p5, p6);
+      const p9 = interpolate(p7, p8);
+
+      ctx.strokeStyle = 'gray';
+      ctx.beginPath();
+      moveTo(p4);
+      lineTo(p5);
+      lineTo(p6);
+      ctx.stroke();
+
+      ctx.beginPath();
+      moveTo(p7);
+      lineTo(p8);
+      ctx.stroke();
+
+      vertex(p9);
+      bezier();
+    }
+  }
+   registerPaint('bezier', BezierPainter);
+`], {type: 'application/javascript'});
+
+CSS.paintWorklet.addModule(URL.createObjectURL(blob));
+
+window.onkeypress = () => {
+	const elem = document.getElementById('content');
+	const effect = new KeyframeEffect(elem, { '--progress': [0, 1] },
+		{iterations: Infinity, duration: 1000, fill: 'forwards'});
+	const animation = new Animation(effect);
+	animation.play();
+};
+
+</script>

@@ -106,14 +106,17 @@ if you call IAccessible::get_accRole, it returns ROLE_SYSTEM_DOCUMENT,
 and if you call IAccessible::get_accName, it returns "How old are you?".
 Other methods let you walk the tree.
 
+The Linux accessibility API, [ATK](https://gnome.pages.gitlab.gnome.org/atk/),
+is similar to [IAccessible2](https://wiki.linuxfoundation.org/accessibility/iaccessible2/start),
+aka IA2. Historical note: IA2 was developed to extend MSAA/IAccessible to add
+richer document support, in a way that was harmonious with ATK, in order to
+simplify implementing them both within the same product. Both APIs are
+maintained by the Linux Foundation.
+
 On macOS, the root node implements the NSAccessibility protocol and
 if you call [NSAccessibility accessibilityRole], it returns @"AXWebArea",
 and if you call [NSAccessibility accessibilityLabel], it returns
 "How old are you?".
-
-The Linux accessibility API, ATK, is more similar to the Windows APIs;
-they were developed together. (Chrome's support for desktop Linux
-accessibility is unfinished.)
 
 The Android accessibility API is of course based on Java. The main
 data structure is AccessibilityNodeInfo. It doesn't have a role, but
@@ -205,16 +208,27 @@ Developers can inspect the accessibility tree in several ways:
 and inspecting a tree directly. Note that you may want to enable the
 'Internal' option. Click 'show accessibility tree' for a particular tab,
 then click again to refresh that tree.
-* Using the [https://developer.chrome.com/extensions/automation](
-Automation API).
-* Installing the [https://github.com/google/automation-inspector](
-Automation Inspector Chrome extension).
+* Using the [Automation API](
+https://developer.chrome.com/extensions/automation).
+* Installing the [Automation Inspector Chrome extension](
+https://github.com/google/automation-inspector).
+* Building and using [ax_dump_tree or ax_dump_events](../../tools/accessibility/inspect/README.md).
+These can be used to view accessibility trees and events from any application on
+Windows, Mac or Linux.
 * Or by using native tools:
 
   - Android: UIAutomatorViewer
   - macOS: Accessibility Inspector
   - Windows: Inspect, AViewer, accProbe (and many others)
 
+### Supported Platforms and APIs
+
+* Windows: IAccessible (also known as Microsoft Active Accessibility or MSAA),
+  IAccessible2, [UI Automation](browser/uiautomation.md). Chromium also supports
+  [mapping between IAccessible2 and UI Automation nodes](browser/ia2_to_uia.md).
+* Mac: NSAccessibility
+* Linux: ATK
+* Android: [AccessibilityNodeInfo and AccessibilityNodeProvider](browser/android.md)
 
 ## Chromium's multi-process architecture
 
@@ -346,7 +360,7 @@ queries in the accessibility tree.
 To compactly store the bounding box of every character on the page, we
 split the text into *inline text boxes*, sometimes called *text runs*.
 For example, in a typical paragraph, each line of text would be its own
-inline text box. In general, an inline text box or text run contians a
+inline text box. In general, an inline text box or text run contains a
 sequence of text characters that are all oriented in the same direction,
 in a line, with the same font, size, and style.
 
@@ -454,14 +468,14 @@ events from Blink to the embedding content layer.
 ## The content layer
 
 The content layer lives on both sides of the renderer/browser split. The content
-layer translates WebAXObjects into [AXContentNodeData], which is a subclass of
-[ui::AXNodeData]. The ui::AXNodeData class and related classes are Chromium's
-cross-platform accessibility tree. The translation is implemented in
-[BlinkAXTreeSource]. This translation happens on the renderer side, so the
-ui::AXNodeData tree now needs to be sent to the browser, which is done by
-calling the remote method [ax.mojom.RenderAccessibilityHost::HandleAXEvents()]
-with the payload being serialized delta-updates to the tree, so that changes
-that happen on the renderer side can be reflected on the browser side.
+layer translates WebAXObjects into [ui::AXNodeData]. The ui::AXNodeData class
+and related classes are Chromium's cross-platform accessibility tree. The
+translation is implemented in [BlinkAXTreeSource]. This translation happens on
+the renderer side, so the ui::AXNodeData tree now needs to be sent to the
+browser, which is done by calling the remote method
+[ax.mojom.RenderAccessibilityHost::HandleAXEvents()] with the payload being
+serialized delta-updates to the tree, so that changes that happen on the
+renderer side can be reflected on the browser side.
 
 On the browser side, these IPCs are received by [RenderFrameHostImpl], and then
 usually forwarded to [BrowserAccessibilityManager] which is responsible for:
@@ -475,8 +489,8 @@ usually forwarded to [BrowserAccessibilityManager] which is responsible for:
    APIs. This is done in the platform-specific subclasses of
    BrowserAccessibilityManager, in a method named `NotifyAccessibilityEvent`.
 3. Dispatching incoming accessibility actions to the appropriate recipient, via
-   [BrowserAccessibilityDelegate]. For messages destined for a renderer,
-   [RenderFrameHostImpl], which is a BrowserAccessibilityDelegate, is
+   [AXPlatformTreeManagerDelegate]. For messages destined for a renderer,
+   [RenderFrameHostImpl], which is a WebAXPlatformTreeManagerDelegate, is
    responsible for calling the remote method
    [ax.mojom.RenderAccessibility.PerformAction()], implemented by the renderer,
    with the appropriate payload (of type [ax.mojom.AXActionData]). This IPC call
@@ -510,11 +524,16 @@ which is renderer-side code, and in JavaScript by the [automation API]. The API
 is defined by [automation.idl], which must be kept synchronized with
 [ax_enums.mojom].
 
-[ax.mojom.AXActionData]: https://source.chromium.org/chromium/chromium/src/+/master:ui/accessibility/mojom/ax_action_data.mojom;l=13
-[ax.mojom.RenderAccessibilityHost::HandleAXEvents()]: https://source.chromium.org/chromium/chromium/src/+/master:content/common/render_accessibility.mojom;l=47
-[ax.mojom.RenderAccessibility.PerformAction()]: https://source.chromium.org/chromium/chromium/src/+/master:content/common/render_accessibility.mojom;l=86
+## Further reading
+
+For more detail on Chrome web contents and platform accessibility, read [How Chrome Accessibility Works](browser/how_a11y_works.md).
+
+For more detail on Chrome OS accessibility, read [How Chrome OS Accessibility Works](os/how_a11y_works.md).
+
+[ax.mojom.AXActionData]: https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/mojom/ax_action_data.mojom;l=13
+[ax.mojom.RenderAccessibilityHost::HandleAXEvents()]: https://source.chromium.org/chromium/chromium/src/+/main:content/common/render_accessibility.mojom;l=47
+[ax.mojom.RenderAccessibility.PerformAction()]: https://source.chromium.org/chromium/chromium/src/+/main:content/common/render_accessibility.mojom;l=86
 [AutomationInternalCustomBindings]: https://cs.chromium.org/chromium/src/extensions/renderer/api/automation/automation_internal_custom_bindings.h
-[AXContentNodeData]: https://cs.chromium.org/chromium/src/content/common/ax_content_node_data.h
 [AXLayoutObject]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/accessibility/ax_layout_object.h
 [AXNodeObject]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/accessibility/ax_node_object.h
 [AXObject]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/accessibility/ax_object.h
@@ -524,13 +543,14 @@ is defined by [automation.idl], which must be kept synchronized with
 [AXTreeSerializer]: https://cs.chromium.org/chromium/src/ui/accessibility/ax_tree_serializer.h
 [BlinkAXTreeSource]: https://cs.chromium.org/chromium/src/content/renderer/accessibility/blink_ax_tree_source.h
 [BrowserAccessibility]: https://cs.chromium.org/chromium/src/content/browser/accessibility/browser_accessibility.h
-[BrowserAccessibilityDelegate]: https://cs.chromium.org/chromium/src/content/browser/accessibility/browser_accessibility_manager.h?sq=package:chromium&l=64
 [BrowserAccessibilityManager]: https://cs.chromium.org/chromium/src/content/browser/accessibility/browser_accessibility_manager.h
+[WebAXPlatformTreeManagerDelegate]: https://cs.chromium.org/chromium/src/content/browser/accessibility/web_ax_platform_tree_manager_delegate.h
 [LayoutObject]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/layout/layout_object.h
+[AXPlatformTreeManagerDelegate]: https://cs.chromium.org/chromium/src/ui/accessibility/platform/ax_platform_tree_manager_delegate.h
 [ViewAccessibility]: https://cs.chromium.org/chromium/src/ui/views/accessibility/view_accessibility.h
 [Node]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/dom/node.h
 [RenderAccessibilityImpl]: https://cs.chromium.org/chromium/src/content/renderer/accessibility/render_accessibility_impl.h
-[RenderAccessibilityManager]: https://source.chromium.org/chromium/chromium/src/+/master:content/renderer/accessibility/render_accessibility_manager.h
+[RenderAccessibilityManager]: https://source.chromium.org/chromium/chromium/src/+/main:content/renderer/accessibility/render_accessibility_manager.h
 [RenderFrameHostImpl]: https://cs.chromium.org/chromium/src/content/browser/renderer_host/render_frame_host_impl.h
 [ui::AXNodeData]: https://cs.chromium.org/chromium/src/ui/accessibility/ax_node_data.h
 [WebAXObject]: https://cs.chromium.org/chromium/src/third_party/blink/public/web/web_ax_object.h

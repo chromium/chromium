@@ -93,7 +93,7 @@ links: {
   }
   links: {
     text: "customize"
-    url: "https://chromium.googlesource.com/chromium/src/+/master/infra/config/luci-milo-dev.cfg"
+    url: "https://chromium.googlesource.com/chromium/src/+/HEAD/infra/config/generated/luci/luci-milo-dev.cfg"
       alt: "Customize this console"
   }
 }

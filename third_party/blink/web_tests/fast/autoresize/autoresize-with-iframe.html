@@ -1,24 +1,43 @@
 <!doctype html>
 <html>
 <head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.enableAutoResizeMode(10, 10, 1000, 1000);
-    testRunner.dumpAsText();
-    testRunner.dumpChildFrames();
-    testRunner.waitUntilDone();
+function responseMessage() {
+  return new Promise(resolve => {
+  window.addEventListener("message", (e) => {
+    resolve(e.data);
+  }, {once: true})});
 }
 
-function run()
-{
+function onLoad() {
+  promise_test(async () => {
+    testRunner.enableAutoResizeMode(10, 10, 1000, 1000);
+
+    // We cannot just wait for the resize event because that fires when
+    // the innerWidth changes (which happens first). We need to wait for the
+    // outerWidth to change.
+    while(window.outerWidth < 901) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+
     var frameWindow = window.frames['frame'];
-    frameWindow.postMessage("shouldBe('document.scrollingElement.scrollWidth', 400)", "*");
-    frameWindow.postMessage("shouldBe('document.scrollingElement.scrollHeight', 200)", "*");
-    frameWindow.postMessage("log('DONE'); if (window.testRunner) testRunner.notifyDone();", "*");
+
+    var width_promise = responseMessage();
+    frameWindow.postMessage('document.scrollingElement.scrollWidth', "*");
+    var width = await width_promise;
+    assert_equals(width, 901);
+
+    var height_promise = responseMessage();
+    frameWindow.postMessage('document.scrollingElement.scrollHeight', "*");
+    var height = await height_promise;
+    assert_equals(height, 201);
+  });
 }
 </script>
 </head>
-<body onload="run()" style="width:400px; height:200px; background-color:yellow;">
+<body onLoad="onLoad()" style="width:901px; height:201px; background-color:yellow;">
 <iframe name="frame" style="width:100%; height:100%;" src="resources/iframe.html">
 </iframe>
 </body>

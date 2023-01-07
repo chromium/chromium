@@ -1,8 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/display/touch_calibrator_view.h"
+
+#include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -10,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
@@ -27,9 +30,9 @@ namespace {
 constexpr char kWidgetName[] = "TouchCalibratorOverlay";
 
 constexpr int kAnimationFrameRate = 100;
-constexpr auto kFadeDuration = base::TimeDelta::FromMilliseconds(150);
-constexpr auto kPointMoveDuration = base::TimeDelta::FromMilliseconds(400);
-constexpr auto kPointMoveDurationLong = base::TimeDelta::FromMilliseconds(500);
+constexpr auto kFadeDuration = base::Milliseconds(150);
+constexpr auto kPointMoveDuration = base::Milliseconds(400);
+constexpr auto kPointMoveDurationLong = base::Milliseconds(500);
 
 const SkColor kExitLabelColor = SkColorSetARGB(255, 138, 138, 138);
 constexpr int kExitLabelWidth = 300;
@@ -45,8 +48,7 @@ constexpr int kHintBoxSublabelTextSize = 3;
 constexpr int kThrobberCircleViewWidth = 64;
 constexpr float kThrobberCircleRadiusFactor = 3.f / 8.f;
 
-constexpr auto kFinalMessageTransitionDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr auto kFinalMessageTransitionDuration = base::Milliseconds(200);
 constexpr int kCompleteMessageViewWidth = 427;
 constexpr int kCompleteMessageViewHeight = kThrobberCircleViewWidth;
 constexpr int kCompleteMessageTextSize = 16;
@@ -62,8 +64,7 @@ const SkColor kHintSublabelTextColor = SkColorSetARGB(255, 161, 161, 161);
 const SkColor kInnerCircleColor = SK_ColorWHITE;
 const SkColor kOuterCircleColor = SkColorSetA(kInnerCircleColor, 255 * 0.2);
 
-constexpr auto kCircleAnimationDuration =
-    base::TimeDelta::FromMilliseconds(900);
+constexpr auto kCircleAnimationDuration = base::Milliseconds(900);
 
 constexpr int kHintRectBorderRadius = 4;
 
@@ -88,7 +89,7 @@ views::Widget::InitParams GetWidgetParams(aura::Window* root_window) {
   params.name = kWidgetName;
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.accept_events = true;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent =
       Shell::GetContainer(root_window, kShellWindowId_OverlayContainer);
@@ -129,6 +130,8 @@ class CircularThrobberView : public views::View,
                        const SkColor& inner_circle_color,
                        const SkColor& outer_circle_color,
                        base::TimeDelta animation_duration);
+  CircularThrobberView(const CircularThrobberView&) = delete;
+  CircularThrobberView& operator=(const CircularThrobberView&) = delete;
   ~CircularThrobberView() override;
 
   // views::View:
@@ -157,8 +160,6 @@ class CircularThrobberView : public views::View,
 
   // Center of the concentric circles.
   const gfx::Point center_;
-
-  DISALLOW_COPY_AND_ASSIGN(CircularThrobberView);
 };
 
 CircularThrobberView::CircularThrobberView(int width,
@@ -181,7 +182,7 @@ CircularThrobberView::CircularThrobberView(int width,
   outer_circle_flags_.setAntiAlias(true);
   outer_circle_flags_.setStyle(cc::PaintFlags::kFill_Style);
 
-  animation_.reset(new gfx::ThrobAnimation(this));
+  animation_ = std::make_unique<gfx::ThrobAnimation>(this);
   animation_->SetThrobDuration(animation_duration);
   animation_->StartThrobbing(-1);
 
@@ -211,6 +212,8 @@ class TouchTargetThrobberView : public CircularThrobberView {
                           const SkColor& outer_circle_color,
                           const SkColor& hand_icon_color,
                           base::TimeDelta animation_duration);
+  TouchTargetThrobberView(const TouchTargetThrobberView&) = delete;
+  TouchTargetThrobberView& operator=(const TouchTargetThrobberView&) = delete;
   ~TouchTargetThrobberView() override;
 
   // views::View:
@@ -222,8 +225,6 @@ class TouchTargetThrobberView : public CircularThrobberView {
   const int icon_width_;
 
   gfx::ImageSkia hand_icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchTargetThrobberView);
 };
 
 TouchTargetThrobberView::TouchTargetThrobberView(
@@ -269,6 +270,8 @@ void TouchTargetThrobberView::OnPaint(gfx::Canvas* canvas) {
 class HintBox : public views::View {
  public:
   HintBox(const gfx::Rect& bounds, int border_radius);
+  HintBox(const HintBox&) = delete;
+  HintBox& operator=(const HintBox&) = delete;
   ~HintBox() override;
 
   // views::View:
@@ -303,16 +306,16 @@ class HintBox : public views::View {
   gfx::Rect sublabel_text_bounds_;
 
   cc::PaintFlags flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(HintBox);
 };
 
 HintBox::HintBox(const gfx::Rect& bounds, int border_radius)
     : border_radius_(border_radius) {
-  SetBorder(std::make_unique<views::BubbleBorder>(
+  auto border = std::make_unique<views::BubbleBorder>(
       base::i18n::IsRTL() ? views::BubbleBorder::RIGHT_CENTER
                           : views::BubbleBorder::LEFT_CENTER,
-      views::BubbleBorder::NO_SHADOW, SK_ColorWHITE));
+      views::BubbleBorder::NO_SHADOW);
+  border->SetColor(SK_ColorWHITE);
+  SetBorder(std::move(border));
 
   arrow_width_ = (GetInsets().right() - GetInsets().left()) *
                  (base::i18n::IsRTL() ? 1 : -1);
@@ -405,6 +408,8 @@ void HintBox::OnPaint(gfx::Canvas* canvas) {
 class CompletionMessageView : public views::View {
  public:
   CompletionMessageView(const gfx::Rect& bounds, const std::u16string& message);
+  CompletionMessageView(const CompletionMessageView&) = delete;
+  CompletionMessageView& operator=(const CompletionMessageView&) = delete;
   ~CompletionMessageView() override;
 
   // views::View:
@@ -419,8 +424,6 @@ class CompletionMessageView : public views::View {
   gfx::ImageSkia check_icon_;
 
   cc::PaintFlags flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompletionMessageView);
 };
 
 CompletionMessageView::CompletionMessageView(const gfx::Rect& bounds,

@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Event observer.
@@ -35,6 +27,7 @@ goog.provide('goog.testing.events.EventObserver');
 
 goog.require('goog.array');
 goog.require('goog.events.Event');
+goog.requireType('goog.events.EventId');
 
 
 
@@ -47,7 +40,7 @@ goog.require('goog.events.Event');
  * @final
  */
 goog.testing.events.EventObserver = function() {
-
+  'use strict';
   /**
    * A list of events handled by the observer in order of handling, oldest to
    * newest.
@@ -66,6 +59,7 @@ goog.testing.events.EventObserver = function() {
  * @param {!goog.events.Event} e Event to handle.
  */
 goog.testing.events.EventObserver.prototype.handleEvent = function(e) {
+  'use strict';
   this.events_.push(e);
 };
 
@@ -76,10 +70,12 @@ goog.testing.events.EventObserver.prototype.handleEvent = function(e) {
  * @return {!Array<!goog.events.Event>} The events handled, oldest to newest.
  */
 goog.testing.events.EventObserver.prototype.getEvents = function(opt_type) {
-  var events = goog.array.clone(this.events_);
+  'use strict';
+  let events = goog.array.clone(this.events_);
 
   if (opt_type) {
-    events = goog.array.filter(events, function(event) {
+    events = events.filter(function(event) {
+      'use strict';
       return event.type == String(opt_type);
     });
   }
@@ -90,5 +86,6 @@ goog.testing.events.EventObserver.prototype.getEvents = function(opt_type) {
 
 /** Clears the list of events seen by this observer. */
 goog.testing.events.EventObserver.prototype.clear = function() {
+  'use strict';
   this.events_ = [];
 };

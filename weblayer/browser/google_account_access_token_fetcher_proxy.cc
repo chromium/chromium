@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,18 @@ void GoogleAccountAccessTokenFetcherProxy::FetchAccessToken(
       env, java_delegate_,
       base::android::ToJavaArrayOfStrings(env, scopes_as_vector),
       reinterpret_cast<jlong>(callback_id));
+}
+
+void GoogleAccountAccessTokenFetcherProxy::OnAccessTokenIdentifiedAsInvalid(
+    const std::set<std::string>& scopes,
+    const std::string& token) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::string> scopes_as_vector(scopes.begin(), scopes.end());
+
+  Java_GoogleAccountAccessTokenFetcherProxy_onAccessTokenIdentifiedAsInvalid(
+      env, java_delegate_,
+      base::android::ToJavaArrayOfStrings(env, scopes_as_vector),
+      base::android::ConvertUTF8ToJavaString(env, token));
 }
 
 static jlong

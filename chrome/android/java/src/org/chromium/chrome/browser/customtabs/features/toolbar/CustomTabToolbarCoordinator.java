@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,9 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.ui.util.TokenHolder;
+import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -125,8 +127,6 @@ public class CustomTabToolbarCoordinator {
             manager.setToolbarShadowVisibility(View.GONE);
         }
         showCustomButtonsOnToolbar();
-        CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
-        toolbar.setIncognitoIconHidden(mIntentDataProvider.shouldHideIncognitoIconOnToolbarInCct());
     }
 
     /**
@@ -144,12 +144,13 @@ public class CustomTabToolbarCoordinator {
         Tab tab = mTabProvider.getTab();
         if (tab == null) return;
 
-        sendButtonPendingIntentWithUrlAndTitle(params, tab.getUrlString(), tab.getTitle());
+        sendButtonPendingIntentWithUrlAndTitle(params, tab.getOriginalUrl(), tab.getTitle());
 
         RecordUserAction.record("CustomTabsCustomActionButtonClick");
         Resources resources = mActivity.getResources();
         if (mIntentDataProvider.shouldEnableEmbeddedMediaExperience()
                 && TextUtils.equals(params.getDescription(), resources.getString(R.string.share))) {
+            ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.ANDROID_SHARE_SHEET);
             RecordUserAction.record("CustomTabsCustomActionButtonClick.DownloadsUI.Share");
         }
     }
@@ -162,9 +163,9 @@ public class CustomTabToolbarCoordinator {
      * @param title The title to attach as additional data to the {@link PendingIntent}.
      */
     private void sendButtonPendingIntentWithUrlAndTitle(
-            CustomButtonParams params, String url, String title) {
+            CustomButtonParams params, GURL url, String title) {
         Intent addedIntent = new Intent();
-        addedIntent.setData(Uri.parse(url));
+        addedIntent.setData(Uri.parse(url.getSpec()));
         addedIntent.putExtra(Intent.EXTRA_SUBJECT, title);
         try {
             params.getPendingIntent().send(

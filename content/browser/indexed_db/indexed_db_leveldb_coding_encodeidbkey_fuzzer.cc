@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #include <stdint.h>
 
 #include <fuzzer/FuzzedDataProvider.h>
+
+#include <tuple>
 
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -99,7 +101,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Ensure that |result| can be decoded back into the original key.
   auto decoded_key = std::make_unique<IndexedDBKey>();
   auto result_str_piece = base::StringPiece(result);
-  ignore_result(content::DecodeIDBKey(&result_str_piece, &decoded_key));
+  std::ignore = content::DecodeIDBKey(&result_str_piece, &decoded_key);
   assert(decoded_key->Equals(key));
   return 0;
 }

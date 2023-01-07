@@ -1,0 +1,4 @@
+per-file BottomSheetManager.java=mdjones@chromium.org
+per-file RootUiCoordinator.java=mdjones@chromium.org
+
+per-file IncognitoRestore*=file://chrome/browser/incognito/OWNERS

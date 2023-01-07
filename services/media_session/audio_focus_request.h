@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define SERVICES_MEDIA_SESSION_AUDIO_FOCUS_REQUEST_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -33,6 +32,9 @@ class AudioFocusRequest : public mojom::AudioFocusRequestClient {
       const std::string& source_name,
       const base::UnguessableToken& group_id,
       const base::UnguessableToken& identity);
+
+  AudioFocusRequest(const AudioFocusRequest&) = delete;
+  AudioFocusRequest& operator=(const AudioFocusRequest&) = delete;
 
   ~AudioFocusRequest() override;
 
@@ -102,7 +104,7 @@ class AudioFocusRequest : public mojom::AudioFocusRequestClient {
   mojo::Receiver<mojom::AudioFocusRequestClient> receiver_;
 
   // The action to apply when the transient hold is released.
-  base::Optional<mojom::MediaSessionAction> delayed_action_;
+  absl::optional<mojom::MediaSessionAction> delayed_action_;
 
   // The ID of the audio focus request.
   base::UnguessableToken const id_;
@@ -119,8 +121,6 @@ class AudioFocusRequest : public mojom::AudioFocusRequestClient {
 
   // Weak pointer to the owning |AudioFocusManager| instance.
   const base::WeakPtr<AudioFocusManager> owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFocusRequest);
 };
 
 }  // namespace media_session

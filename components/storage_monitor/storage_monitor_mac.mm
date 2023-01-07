@@ -1,10 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/storage_monitor/storage_monitor_mac.h"
 
 #include <stdint.h>
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/mac/foundation_util.h"
@@ -24,7 +26,7 @@ namespace storage_monitor {
 
 namespace {
 
-const char kDiskImageModelName[] = "Disk Image";
+const char16_t kDiskImageModelName[] = u"Disk Image";
 
 std::u16string GetUTF16FromDictionary(CFDictionaryRef dictionary,
                                       CFStringRef key) {
@@ -188,7 +190,7 @@ void StorageMonitorMac::Init() {
   DASessionScheduleWithRunLoop(
       session_, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
 
-  image_capture_device_manager_.reset(new ImageCaptureDeviceManager);
+  image_capture_device_manager_ = std::make_unique<ImageCaptureDeviceManager>();
   image_capture_device_manager_->SetNotifications(receiver());
 }
 
@@ -351,9 +353,8 @@ bool StorageMonitorMac::ShouldPostNotificationForDisk(
     const StorageInfo& info) const {
   // Only post notifications about disks that have no empty fields and
   // are removable. Also exclude disk images (DMGs).
-  return !info.device_id().empty() &&
-         !info.location().empty() &&
-         info.model_name() != base::ASCIIToUTF16(kDiskImageModelName) &&
+  return !info.device_id().empty() && !info.location().empty() &&
+         info.model_name() != kDiskImageModelName &&
          StorageInfo::IsMassStorageDevice(info.device_id());
 }
 

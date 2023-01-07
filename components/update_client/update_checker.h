@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,22 +11,22 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "components/update_client/component.h"
 #include "components/update_client/protocol_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace update_client {
 
 class Configurator;
 class PersistedData;
+struct UpdateContext;
 
 class UpdateChecker {
  public:
   using UpdateCheckCallback = base::OnceCallback<void(
-      const base::Optional<ProtocolParser::Results>& results,
+      const absl::optional<ProtocolParser::Results>& results,
       ErrorCategory error_category,
       int error,
       int retry_after_sec)>;
@@ -35,20 +35,18 @@ class UpdateChecker {
       std::unique_ptr<UpdateChecker> (*)(scoped_refptr<Configurator> config,
                                          PersistedData* persistent);
 
+  UpdateChecker(const UpdateChecker&) = delete;
+  UpdateChecker& operator=(const UpdateChecker&) = delete;
+
   virtual ~UpdateChecker() = default;
 
   // Initiates an update check for the components specified by their ids.
-  // |additional_attributes| provides a way to customize the <request> element.
-  // |is_foreground| controls the value of "X-Goog-Update-Interactivity"
-  // header which is sent with the update check.
-  // On completion, the state of |components| is mutated as required by the
-  // server response received.
+  // `update_context` contains the updateable apps. `additional_attributes`
+  // specifies any extra request data to send. On completion, the state of
+  // `components` is mutated as required by the server response received.
   virtual void CheckForUpdates(
-      const std::string& session_id,
-      const std::vector<std::string>& ids_to_check,
-      const IdToComponentPtrMap& components,
+      scoped_refptr<UpdateContext> update_context,
       const base::flat_map<std::string, std::string>& additional_attributes,
-      bool enabled_component_updates,
       UpdateCheckCallback update_check_callback) = 0;
 
   static std::unique_ptr<UpdateChecker> Create(
@@ -57,9 +55,6 @@ class UpdateChecker {
 
  protected:
   UpdateChecker() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdateChecker);
 };
 
 }  // namespace update_client

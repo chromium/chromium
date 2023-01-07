@@ -7,9 +7,9 @@
 
 /*
  * Standard styling for menus created by goog.ui.SubMenuRenderer.
- *
  */
 
+@provide 'goog.css.submenu';
 
 /* State: resting. */
 /* @noflip */

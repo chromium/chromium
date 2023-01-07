@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,10 @@ namespace {
 class ScopedTimeoutThread : public Thread {
  public:
   ScopedTimeoutThread() : join_sem_(0) {}
+
+  ScopedTimeoutThread(const ScopedTimeoutThread&) = delete;
+  ScopedTimeoutThread& operator=(const ScopedTimeoutThread&) = delete;
+
   ~ScopedTimeoutThread() { EXPECT_TRUE(JoinWithTimeout(5.0)); }
 
  protected:
@@ -55,14 +59,15 @@ class ScopedTimeoutThread : public Thread {
   }
 
   Semaphore join_sem_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTimeoutThread);
 };
 
 class RunBrokerThread : public ScopedTimeoutThread {
  public:
   RunBrokerThread(PtraceBroker* broker)
       : ScopedTimeoutThread(), broker_(broker) {}
+
+  RunBrokerThread(const RunBrokerThread&) = delete;
+  RunBrokerThread& operator=(const RunBrokerThread&) = delete;
 
   ~RunBrokerThread() {}
 
@@ -73,14 +78,15 @@ class RunBrokerThread : public ScopedTimeoutThread {
   }
 
   PtraceBroker* broker_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunBrokerThread);
 };
 
 class BlockOnReadThread : public ScopedTimeoutThread {
  public:
   BlockOnReadThread(int readfd, int writefd)
       : ScopedTimeoutThread(), readfd_(readfd), writefd_(writefd) {}
+
+  BlockOnReadThread(const BlockOnReadThread&) = delete;
+  BlockOnReadThread& operator=(const BlockOnReadThread&) = delete;
 
   ~BlockOnReadThread() {}
 
@@ -98,13 +104,15 @@ class BlockOnReadThread : public ScopedTimeoutThread {
 
   int readfd_;
   int writefd_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockOnReadThread);
 };
 
 class SameBitnessTest : public Multiprocess {
  public:
   SameBitnessTest() : Multiprocess(), mapping_() {}
+
+  SameBitnessTest(const SameBitnessTest&) = delete;
+  SameBitnessTest& operator=(const SameBitnessTest&) = delete;
+
   ~SameBitnessTest() {}
 
  protected:
@@ -151,8 +159,7 @@ class SameBitnessTest : public Multiprocess {
     broker_thread.Start();
 
     PtraceClient client;
-    ASSERT_TRUE(client.Initialize(
-        client_sock.get(), ChildPID(), /* try_direct_memory= */ false));
+    ASSERT_TRUE(client.Initialize(client_sock.get(), ChildPID()));
 
     EXPECT_EQ(client.GetProcessID(), ChildPID());
 
@@ -177,32 +184,26 @@ class SameBitnessTest : public Multiprocess {
     ASSERT_TRUE(client.GetThreadInfo(child2_tid, &info2));
     EXPECT_EQ(info2.thread_specific_data_address, child2_tls);
 
-    ProcessMemory* memory = client.Memory();
-    ASSERT_TRUE(memory);
-
-    auto buffer = std::make_unique<char[]>(mapping_.len());
-    ASSERT_TRUE(memory->Read(
-        mapping_.addr_as<VMAddress>(), mapping_.len(), buffer.get()));
     auto expected_buffer = mapping_.addr_as<char*>();
-    for (size_t index = 0; index < mapping_.len(); ++index) {
-      EXPECT_EQ(buffer[index], expected_buffer[index]);
-    }
-
     char first;
-    ASSERT_TRUE(
-        memory->Read(mapping_.addr_as<VMAddress>(), sizeof(first), &first));
+    ASSERT_EQ(
+        client.ReadUpTo(mapping_.addr_as<VMAddress>(), sizeof(first), &first),
+        1);
     EXPECT_EQ(first, expected_buffer[0]);
 
     char last;
-    ASSERT_TRUE(memory->Read(mapping_.addr_as<VMAddress>() + mapping_.len() - 1,
-                             sizeof(last),
-                             &last));
+    ASSERT_EQ(
+        client.ReadUpTo(mapping_.addr_as<VMAddress>() + mapping_.len() - 1,
+                        sizeof(last),
+                        &last),
+        1);
     EXPECT_EQ(last, expected_buffer[mapping_.len() - 1]);
 
     char unmapped;
-    EXPECT_FALSE(memory->Read(mapping_.addr_as<VMAddress>() + mapping_.len(),
+    EXPECT_EQ(client.ReadUpTo(mapping_.addr_as<VMAddress>() + mapping_.len(),
                               sizeof(unmapped),
-                              &unmapped));
+                              &unmapped),
+              -1);
 
     std::string file_root = file_dir.value() + '/';
     broker.SetFileRoot(file_root.c_str());
@@ -274,8 +275,6 @@ class SameBitnessTest : public Multiprocess {
   }
 
   ScopedMmap mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(SameBitnessTest);
 };
 
 TEST(PtraceBroker, SameBitness) {

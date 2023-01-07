@@ -1,0 +1,78 @@
+# This ignore list is the subset of ignorelist.txt that's needed in
+# is_ubsan_security builds. is_ubsan_security builds also use
+# vptr_ignorelist.txt. This file does not duplicate the contents of that file.
+
+#############################################################################
+# UBSan security ignorelist.
+
+#############################################################################
+# YASM does some funny things that UBsan doesn't like.
+# https://crbug.com/489901
+src:*/third_party/yasm/*
+
+#############################################################################
+# V8 gives too many false positives. Ignore them for now.
+src:*/v8/*
+
+#############################################################################
+# Ignore system libraries.
+src:*/usr/*
+
+#############################################################################
+# V8 UBsan supressions, commented out for now since we are ignorning v8
+# completely.
+# fun:*v8*internal*FastD2I*
+# fun:*v8*internal*ComputeIntegerHash*
+# fun:*v8*internal*ComputeLongHash*
+# fun:*v8*internal*ComputePointerHash*
+# src:*/v8/src/base/bits.cc
+# src:*/v8/src/base/functional.cc
+# Undefined behaviour (integer overflow) is expected but ignored in this
+# function.
+# fun:*JsonParser*ParseJsonNumber*
+
+# Runtime numeric functions.
+# src:*/v8/src/runtime/runtime-numbers.cc
+
+# Shifts of negative numbers
+# fun:*v8*internal*HPositionInfo*TagPosition*
+# fun:*v8*internal*Range*Shl*
+# fun:*v8*internal*RelocInfoWriter*WriteTaggedData*
+
+#############################################################################
+# Undefined arithmetic that can be safely ignored.
+src:*/ppapi/shared_impl/id_assignment.h
+
+#############################################################################
+# ICU supressions. Mostly hash functions where integer overflow is OK.
+fun:*hashEntry*
+fun:*LocaleCacheKey*hashCode*
+fun:*google*protobuf*hash*
+fun:*(hash|Hash)*
+
+#############################################################################
+# Bounds ignorelist.
+# Array at the end of struct pattern:
+# Maybe UBSan itself can be improved here?
+# e.g.
+# struct blah {
+#   int a;
+#   char foo[2]; // not actually 2
+# }
+src:*/net/disk_cache/blockfile/backend_impl.cc
+src:*/net/disk_cache/blockfile/entry_impl.cc
+src:*/third_party/icu/source/common/rbbi.cpp
+src:*/third_party/icu/source/common/rbbitblb.cpp
+src:*/third_party/icu/source/common/ucmndata.c
+
+#############################################################################
+# Delete in destructor on a this where this == nullptr
+fun:*re2*RegexpD*
+
+#############################################################################
+# Harmless float division by zero.
+fun:*RendererFrameManager*CullUnlockedFrames*
+
+#############################################################################
+# -fsanitize=vptr suppressions should go in vptr_ignorelist.txt, not here.
+#############################################################################

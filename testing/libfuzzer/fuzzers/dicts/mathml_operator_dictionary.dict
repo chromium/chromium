@@ -1,0 +1,18 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Item from Operators_2_ascii_chars table
+":="
+# U+007C VERTICAL LINE
+"\x7C"
+# U+0338 COMBINING LONG SOLIDUS OVERLAY
+"\xCC\xB8"
+# U+1EEF0 ARABIC MATHEMATICAL OPERATOR MEEM WITH HAH WITH TATWEEL
+"\xF0\x9E\xBB\xB0"
+# U+1EEF1 ARABIC MATHEMATICAL OPERATOR HAH WITH DAL
+"\xF0\x9E\xBB\xB1"
+# U+20D2 COMBINING LONG VERTICAL LINE OVERLAY
+"\xE2\x83\x92"
+# U+223C TILDE OPERATOR
+"\xE2\x88\xBC"

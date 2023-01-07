@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace metrics {
 TEST(MachineIdProviderNonWinTest, GetId) {
   const bool has_machine_name = !base::SysInfo::HardwareModelName().empty();
 
-#if defined(OS_ANDROID) || defined(OS_APPLE)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
   DCHECK(has_machine_name);
 #endif
 

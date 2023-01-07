@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
+#include "chrome/browser/extensions/scoped_database_manager_for_test.h"
 
 namespace extensions {
 
@@ -48,6 +49,9 @@ class TestBlocklist {
 
   explicit TestBlocklist(Blocklist* blocklist);
 
+  TestBlocklist(const TestBlocklist&) = delete;
+  TestBlocklist& operator=(const TestBlocklist&) = delete;
+
   ~TestBlocklist();
 
   void Attach(Blocklist* blocklist);
@@ -77,7 +81,7 @@ class TestBlocklist {
   const BlocklistStateFetcherMock* fetcher() { return &state_fetcher_mock_; }
 
  private:
-  Blocklist* blocklist_;
+  raw_ptr<Blocklist> blocklist_;
 
   // The BlocklistStateFetcher object is normally managed by Blocklist. Because
   // of this, we need to prevent this object from being deleted with Blocklist.
@@ -86,9 +90,7 @@ class TestBlocklist {
 
   scoped_refptr<FakeSafeBrowsingDatabaseManager> blocklist_db_;
 
-  Blocklist::ScopedDatabaseManagerForTest scoped_blocklist_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBlocklist);
+  ScopedDatabaseManagerForTest scoped_blocklist_db_;
 };
 
 }  // namespace extensions

@@ -20,7 +20,6 @@
 
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
 namespace blink {
@@ -80,7 +79,7 @@ float LayoutTextCombine::Width(unsigned from,
                                LayoutUnit x_position,
                                TextDirection direction,
                                HashSet<const SimpleFontData*>* fallback_fonts,
-                               FloatRect* glyph_bounds,
+                               gfx::RectF* glyph_bounds,
                                float) const {
   NOT_DESTROYED();
   if (!length)
@@ -150,7 +149,7 @@ void LayoutTextCombine::TransformToInlineCoordinates(
   }
 
   if (clip)
-    context.Clip(FloatRect(box_rect.X(), box_rect.Y(), width, cell_height));
+    context.Clip(gfx::RectF(box_rect.X(), box_rect.Y(), width, cell_height));
 }
 
 void LayoutTextCombine::UpdateIsCombined() {
@@ -173,8 +172,9 @@ void LayoutTextCombine::UpdateFontStyleForCombinedText() {
                                  *style, style->Direction());
   FontDescription description = style->GetFont().GetFontDescription();
   float em_width = description.ComputedSize();
-  if (!EnumHasFlags(style->TextDecorationsInEffect(),
-                    TextDecoration::kUnderline | TextDecoration::kOverline))
+  if (!EnumHasFlags(
+          style->TextDecorationsInEffect(),
+          TextDecorationLine::kUnderline | TextDecorationLine::kOverline))
     em_width *= kTextCombineMargin;
 
   // We are going to draw combined text horizontally.
@@ -192,7 +192,7 @@ void LayoutTextCombine::UpdateFontStyleForCombinedText() {
     // Need to try compressed glyphs.
     static const FontWidthVariant kWidthVariants[] = {kHalfWidth, kThirdWidth,
                                                       kQuarterWidth};
-    for (size_t i = 0; i < base::size(kWidthVariants); ++i) {
+    for (size_t i = 0; i < std::size(kWidthVariants); ++i) {
       description.SetWidthVariant(kWidthVariants[i]);
       Font compressed_font(description, font_selector);
       float run_width = compressed_font.Width(run);

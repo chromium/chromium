@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
@@ -43,7 +42,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
  public:
   TileManagerPerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   void InitializeFrameSink() override {
@@ -93,7 +92,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
       std::unique_ptr<RasterTilePriorityQueue> queue(
           host_impl()->BuildRasterQueue(priorities[priority_count],
                                         RasterTilePriorityQueue::Type::ALL));
-      priority_count = (priority_count + 1) % base::size(priorities);
+      priority_count = (priority_count + 1) % std::size(priorities);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -124,7 +123,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
         ASSERT_TRUE(queue->Top().tile());
         queue->Pop();
       }
-      priority_count = (priority_count + 1) % base::size(priorities);
+      priority_count = (priority_count + 1) % std::size(priorities);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -153,7 +152,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
     do {
       std::unique_ptr<EvictionTilePriorityQueue> queue(
           host_impl()->BuildEvictionQueue(priorities[priority_count]));
-      priority_count = (priority_count + 1) % base::size(priorities);
+      priority_count = (priority_count + 1) % std::size(priorities);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -190,7 +189,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
         ASSERT_TRUE(queue->Top().tile());
         queue->Pop();
       }
-      priority_count = (priority_count + 1) % base::size(priorities);
+      priority_count = (priority_count + 1) % std::size(priorities);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -268,7 +267,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
 
     timer_.Reset();
     do {
-      host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+      host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
       for (auto* layer : layers)
         layer->UpdateTiles();
 

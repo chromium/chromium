@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,21 +33,20 @@ bool LayoutNGTextControlMultiLine::NodeAtPoint(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
-    HitTestAction hit_test_action) {
-  if (!LayoutNGBlockFlow::NodeAtPoint(result, hit_test_location,
-                                      accumulated_offset, hit_test_action))
-    return false;
+    HitTestPhase phase) {
+  bool stop_hit_testing = LayoutNGBlockFlow::NodeAtPoint(
+      result, hit_test_location, accumulated_offset, phase);
 
   const LayoutObject* stop_node = result.GetHitTestRequest().GetStopNode();
   if (stop_node && stop_node->NodeForHitTest() == result.InnerNode())
-    return true;
+    return stop_hit_testing;
 
   HTMLElement* inner_editor = InnerEditorElement();
   if (result.InnerNode() == GetNode() || result.InnerNode() == inner_editor) {
     LayoutTextControl::HitInnerEditorElement(
         *this, *inner_editor, result, hit_test_location, accumulated_offset);
   }
-  return true;
+  return stop_hit_testing;
 }
 
 }  // namespace blink

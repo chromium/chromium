@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@ extern const char kContentPackManualBehaviorURLs[];
 extern const char kCookiesAlwaysAllowed[];
 extern const char kForceSafeSearch[];
 extern const char kGeolocationDisabled[];
-extern const char kRecordHistory[];
 extern const char kSafeSitesEnabled[];
 extern const char kSigninAllowed[];
 extern const char kUserName[];
@@ -26,11 +25,13 @@ extern const char kUserName[];
 extern const char kChildAccountSUID[];
 
 // Keys for supervised user shared settings. These can be configured remotely or
-// locally, and are mapped to preferences by the
 // SupervisedUserPrefMappingService.
 extern const char kChromeAvatarIndex[];
 extern const char kChromeOSAvatarIndex[];
 extern const char kChromeOSPasswordData[];
+
+// A group of preferences of both primary and secondary custodians.
+extern const char* const kCustodianInfoPrefs[10];
 
 }  // namespace supervised_users
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,13 +29,16 @@ class PepperVpnProviderResourceHostProxyImpl
       base::WeakPtr<content::PepperVpnProviderMessageFilter>
           vpn_message_filter);
 
+  PepperVpnProviderResourceHostProxyImpl(
+      const PepperVpnProviderResourceHostProxyImpl&) = delete;
+  PepperVpnProviderResourceHostProxyImpl& operator=(
+      const PepperVpnProviderResourceHostProxyImpl&) = delete;
+
   void SendOnPacketReceived(const std::vector<char>& packet) override;
   void SendOnUnbind() override;
 
  private:
   base::WeakPtr<content::PepperVpnProviderMessageFilter> vpn_message_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperVpnProviderResourceHostProxyImpl);
 };
 
 PepperVpnProviderResourceHostProxyImpl::PepperVpnProviderResourceHostProxyImpl(

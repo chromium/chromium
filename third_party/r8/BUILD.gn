@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,4 +12,8 @@ java_library("custom_d8_java") {
   # Avoid using java_prebuilt() to ensure all uses go through the checked-in
   # version.
   input_jars_paths = [ "//third_party/r8/lib/r8.jar" ]
+}
+
+java_prebuilt("r8_java") {
+  jar_path = "//third_party/r8/lib/r8.jar"
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
@@ -15,13 +16,15 @@ import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.widget.Toast;
 
 /**
  * Handles the long screenshot action in the Sharing Hub and launches the screenshot editor.
  */
 public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
-    private Activity mActivity;
-    private EntryManager mEntryManager;
+    private final Activity mActivity;
+    private final EntryManager mEntryManager;
+    private final Tab mTab;
     private LongScreenshotsMediator mMediator;
 
     /**
@@ -30,6 +33,7 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
      *
      * @param activity The parent activity.
      * @param tab The Tab which contains the content to share.
+     * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
      * @param imageEditorModuleProvider An interface to install and/or instantiate the image editor.
@@ -38,14 +42,17 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
      * screenshots dialog behavior.
      * @param shouldWarmupCompositor If the PaintPreview compositor should be warmed up.
      */
-    private LongScreenshotsCoordinator(Activity activity, Tab tab,
+    private LongScreenshotsCoordinator(Activity activity, Tab tab, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider, EntryManager manager,
             @Nullable LongScreenshotsMediator mediator, boolean shouldWarmupCompositor) {
-        super(activity, tab, chromeOptionShareCallback, sheetController, imageEditorModuleProvider);
+        super(activity, tab.getWindowAndroid(), shareUrl, chromeOptionShareCallback,
+                sheetController, imageEditorModuleProvider);
         mActivity = activity;
-        mEntryManager = manager == null ? new EntryManager(mActivity, mTab) : manager;
+        mTab = tab;
+        mEntryManager =
+                manager == null ? new EntryManager(mActivity, mTab, /*inMemory=*/false) : manager;
         mMediator = mediator;
 
         if (shouldWarmupCompositor) {
@@ -54,21 +61,21 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
     }
 
     /** Public interface used to create a {@link LongScreenshotsCoordinator}. */
-    public static LongScreenshotsCoordinator create(Activity activity, Tab tab,
+    public static LongScreenshotsCoordinator create(Activity activity, Tab tab, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider) {
-        return new LongScreenshotsCoordinator(activity, tab, chromeOptionShareCallback,
+        return new LongScreenshotsCoordinator(activity, tab, shareUrl, chromeOptionShareCallback,
                 sheetController, imageEditorModuleProvider, null, null, true);
     }
 
     /** Called by tests to create a {@link LongScreenshotsCoordinator}. */
     public static LongScreenshotsCoordinator createForTests(Activity activity, Tab tab,
-            ChromeOptionShareCallback chromeOptionShareCallback,
+            String shareUrl, ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider, EntryManager manager,
             LongScreenshotsMediator mediator) {
-        return new LongScreenshotsCoordinator(activity, tab, chromeOptionShareCallback,
+        return new LongScreenshotsCoordinator(activity, tab, shareUrl, chromeOptionShareCallback,
                 sheetController, imageEditorModuleProvider, manager, mediator, false);
     }
 
@@ -84,7 +91,9 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
         mMediator.capture(() -> {
             mScreenshot = mMediator.getScreenshot();
             if (mScreenshot == null) {
-                // TODO(crbug/1024586): Show error message
+                Toast.makeText(mActivity, R.string.sharing_long_screenshot_unknown_error,
+                             Toast.LENGTH_LONG)
+                        .show();
             } else {
                 super.handleScreenshot();
             }

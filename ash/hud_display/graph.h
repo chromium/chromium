@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
+struct SkPoint;
+
 namespace gfx {
 class Canvas;
 }
@@ -25,7 +27,7 @@ class Graph {
   // Graph screen size (that is used in Layout()) should match (ring buffer
   // size - 1) to prevent scaling, because RingBuffer always keeps one element
   // unused.
-  using Data = base::RingBuffer<float, kDefaultGraphWidth + 1>;
+  using Data = base::RingBuffer<float, kHUDGraphWidth + 1>;
 
   enum class Baseline {
     BASELINE_BOTTOM,  // Positive values will be drawn from the bottom border

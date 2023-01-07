@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verifier.h"
@@ -50,12 +49,13 @@ namespace {
 //
 // The verifier should rollback until it just tries A(B) alone, at which point
 // it will pull B(F) & F(E) from the keychain and succeed.
-TEST(CertVerifyProcMacTest, MacCRLIntermediate) {
-  if (base::mac::IsAtLeastOS10_12()) {
-    // TODO(crbug.com/671889): Investigate SecTrustSetKeychains issue on Sierra.
-    LOG(INFO) << "Skipping test, SecTrustSetKeychains does not work on 10.12";
-    return;
-  }
+
+// A SecTrustSetKeychains issue was discovered on macOS back when macOS 10.12
+// was new, so this test was disabled on >=10.12. A bug was filed, but no action
+// was ever taken. Six years later, we're removing 10.12 support, and it's
+// unclear if this remains broken, or if this test can be re-enabled.
+// TODO(crbug.com/671889): Figure this out.
+TEST(CertVerifyProcMacTest, DISABLED_MacCRLIntermediate) {
   CertificateList path_2_certs;
   ASSERT_TRUE(
       LoadCertificateFiles({"multi-root-A-by-B.pem", "multi-root-B-by-C.pem",
@@ -84,6 +84,12 @@ TEST(CertVerifyProcMacTest, MacCRLIntermediate) {
       TestKeychainSearchList::Create());
   ASSERT_TRUE(test_keychain_search_list);
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
   base::FilePath keychain_path(
       GetTestCertsDirectory().AppendASCII("multi-root-BFE.keychain"));
   // SecKeychainOpen does not fail if the file doesn't exist, so assert it here
@@ -96,6 +102,8 @@ TEST(CertVerifyProcMacTest, MacCRLIntermediate) {
   ASSERT_TRUE(keychain);
   base::ScopedCFTypeRef<SecKeychainRef> scoped_keychain(keychain);
   test_keychain_search_list->AddKeychain(keychain);
+
+#pragma clang diagnostic pop
 
   scoped_refptr<CRLSet> crl_set;
   std::string crl_set_bytes;
@@ -147,6 +155,12 @@ TEST(CertVerifyProcMacTest, DISABLED_MacKeychainReordering) {
       X509Certificate::FORMAT_AUTO);
   ASSERT_TRUE(cert);
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
   // Create a test keychain search list that will Always Trust the SHA1
   // cross-signed VeriSign Class 3 Public Primary Certification Authority - G5
   std::unique_ptr<TestKeychainSearchList> test_keychain_search_list(
@@ -166,6 +180,8 @@ TEST(CertVerifyProcMacTest, DISABLED_MacKeychainReordering) {
   base::ScopedCFTypeRef<SecKeychainRef> scoped_keychain(keychain);
   test_keychain_search_list->AddKeychain(keychain);
 
+#pragma clang diagnostic pop
+
   int flags = 0;
   CertVerifyResult verify_result;
   scoped_refptr<CertVerifyProc> verify_proc =
@@ -184,6 +200,12 @@ TEST(CertVerifyProcMacTest, DISABLED_MacKeychainReordering) {
   ASSERT_EQ(2U, verified_intermediates.size());
 }
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 // Test that the system root certificate keychain is in the expected location
 // and can be opened. Other tests would fail if this was not true, but this
 // test makes the reason for the failure obvious.
@@ -197,6 +219,8 @@ TEST(CertVerifyProcMacTest, MacSystemRootCertificateKeychainLocation) {
   ASSERT_EQ(errSecSuccess, status);
   CFRelease(keychain);
 }
+
+#pragma clang diagnostic pop
 
 // Test that CertVerifyProcMac reacts appropriately when Apple's certificate
 // verifier rejects a certificate with a fatal error. This is a regression

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
 
@@ -24,6 +23,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattNotifySession {
  public:
   explicit BluetoothGattNotifySession(
       base::WeakPtr<BluetoothRemoteGattCharacteristic> characteristic);
+
+  BluetoothGattNotifySession(const BluetoothGattNotifySession&) = delete;
+  BluetoothGattNotifySession& operator=(const BluetoothGattNotifySession&) =
+      delete;
 
   // Destructor automatically stops this session.
   virtual ~BluetoothGattNotifySession();
@@ -51,8 +54,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattNotifySession {
   base::WeakPtr<BluetoothRemoteGattCharacteristic> characteristic_;
   std::string characteristic_id_;
   bool active_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattNotifySession);
 };
 
 }  // namespace device

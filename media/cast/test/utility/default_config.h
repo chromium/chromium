@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,13 +28,6 @@ FrameSenderConfig GetDefaultAudioSenderConfig();
 // Returns a FrameSenderConfig initialized to default values. This means
 // 30 Hz VP8 coded code. Default values for SSRCs and payload type.
 FrameSenderConfig GetDefaultVideoSenderConfig();
-
-// Returns a callback that does nothing.
-CreateVideoEncodeAcceleratorCallback
-    CreateDefaultVideoEncodeAcceleratorCallback();
-
-// Returns a callback that does nothing.
-CreateVideoEncodeMemoryCallback CreateDefaultVideoEncodeMemoryCallback();
 
 }  // namespace cast
 }  // namespace media

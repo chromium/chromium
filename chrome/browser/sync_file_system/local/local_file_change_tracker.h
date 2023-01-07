@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,9 @@
 
 #include <map>
 #include <memory>
-#include <string>
 
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/sync_file_system/file_change.h"
@@ -50,6 +47,10 @@ class LocalFileChangeTracker : public storage::FileUpdateObserver,
   LocalFileChangeTracker(const base::FilePath& base_path,
                          leveldb::Env* env_override,
                          base::SequencedTaskRunner* file_task_runner);
+
+  LocalFileChangeTracker(const LocalFileChangeTracker&) = delete;
+  LocalFileChangeTracker& operator=(const LocalFileChangeTracker&) = delete;
+
   ~LocalFileChangeTracker() override;
 
   // FileUpdateObserver overrides.
@@ -189,8 +190,6 @@ class LocalFileChangeTracker : public storage::FileUpdateObserver,
   // This can be accessed on any threads (with num_changes_lock_).
   int64_t num_changes_;
   mutable base::Lock num_changes_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileChangeTracker);
 };
 
 }  // namespace sync_file_system

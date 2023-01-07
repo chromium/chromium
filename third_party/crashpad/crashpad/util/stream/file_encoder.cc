@@ -1,4 +1,4 @@
-// Copyright 2019 The Crashpad Authors. All rights reserved.
+// Copyright 2019 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 #include "util/stream/file_encoder.h"
 
 #include <memory>
+#include <tuple>
 
-#include "base/macros.h"
 #include "util/file/file_io.h"
 #include "util/file/file_reader.h"
 #include "util/file/scoped_remove_file.h"
@@ -77,7 +77,7 @@ bool FileEncoder::Process() {
   if (!output->Flush())
     return false;
 
-  ignore_result(file_remover.release());
+  std::ignore = file_remover.release();
   return true;
 }
 

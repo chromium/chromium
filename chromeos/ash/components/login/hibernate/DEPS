@@ -1,0 +1,15 @@
+noparent = True
+
+include_rules = [
+  "+base",
+  "+chromeos/ash/components/cryptohome",
+  "+chromeos/ash/components/hibernate/buildflags.h",
+  "+chromeos/ash/components/login/auth/public",
+  "+chromeos/ash/components/dbus/hiberman",
+]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+testing/gtest",
+  ]
+}

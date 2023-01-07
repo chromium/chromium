@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,14 @@ import android.text.TextUtils;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
-import org.chromium.content_public.browser.SelectionMetricsLogger;
+import org.chromium.content_public.browser.SelectionEventProcessor;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
@@ -51,7 +53,7 @@ public class SmartSelectionClient implements SelectionClient {
     private long mNativeSmartSelectionClient;
     private SmartSelectionProvider mProvider;
     private ResultCallback mCallback;
-    private SmartSelectionMetricsLogger mSmartSelectionMetricsLogger;
+    private SmartSelectionEventProcessor mSmartSelectionEventProcessor;
 
     /**
      * Creates the SmartSelectionClient. Returns null in case SmartSelectionProvider does not exist
@@ -71,11 +73,12 @@ public class SmartSelectionClient implements SelectionClient {
 
     private SmartSelectionClient(ResultCallback callback, WebContents webContents) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-        mProvider = new SmartSelectionProvider(callback, webContents);
         mCallback = callback;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            mSmartSelectionMetricsLogger = SmartSelectionMetricsLogger.create(webContents);
+            mSmartSelectionEventProcessor = SmartSelectionEventProcessor.create(webContents);
         }
+        mProvider =
+                new SmartSelectionProvider(callback, webContents, mSmartSelectionEventProcessor);
         mNativeSmartSelectionClient =
                 SmartSelectionClientJni.get().init(SmartSelectionClient.this, webContents);
     }
@@ -95,7 +98,7 @@ public class SmartSelectionClient implements SelectionClient {
     public void onSelectionEvent(@SelectionEventType int eventType, float posXPix, float posYPix) {}
 
     @Override
-    public void selectWordAroundCaretAck(boolean didSelect, int startAdjust, int endAdjust) {}
+    public void selectAroundCaretAck(@Nullable SelectAroundCaretResult result) {}
 
     @Override
     public boolean requestSelectionPopupUpdates(boolean shouldSuggest) {
@@ -115,8 +118,8 @@ public class SmartSelectionClient implements SelectionClient {
     }
 
     @Override
-    public SelectionMetricsLogger getSelectionMetricsLogger() {
-        return mSmartSelectionMetricsLogger;
+    public SelectionEventProcessor getSelectionEventProcessor() {
+        return mSmartSelectionEventProcessor;
     }
 
     @Override

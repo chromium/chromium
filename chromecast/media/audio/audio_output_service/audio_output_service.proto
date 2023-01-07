@@ -1,0 +1,94 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package chromecast.media.audio_output_service;
+
+import "chromecast/media/audio/net/common.proto";
+
+message ApplicationMediaInfo {
+  optional string application_session_id = 1;
+}
+
+message AudioDecoderConfig {
+  optional audio_service.AudioCodec audio_codec = 1;
+  optional audio_service.ChannelLayout channel_layout = 2;
+  optional audio_service.SampleFormat sample_format = 3;
+  optional int32 num_channels = 4;
+  optional int32 sample_rate = 5;
+  optional bytes extra_data = 6;
+}
+
+message CmaBackendParams {
+  optional ApplicationMediaInfo application_media_info = 1;
+  optional AudioDecoderConfig audio_decoder_config = 2;
+}
+
+// Indicates that we want to start playing the sample with PTS |start_pts|
+// at audio clock timestamp |start_timestamp| in microseconds. May be sent
+// multiple times to restart playback at a new timestamp (ie for hard
+// corrections).
+message SetStartTimestamp {
+  optional int64 start_timestamp = 1;
+  optional int64 start_pts = 2;
+}
+
+// Informs the backend how fast the PTS increases per frame. For example if the
+// playback rate is 2.0, then each frame increases the PTS by 2.0 / sample_rate
+// seconds.
+message SetPlaybackRate {
+  optional float playback_rate = 1;
+}
+
+// Changes the volume multiplier for an audio output stream.
+message StreamVolume {
+  optional float volume = 1;
+}
+
+// Indicates that EOS for an audio output stream has been played out.
+message EosPlayedOut {}
+
+// Current media pts, the corresponding reference timestamp, rendering delay and
+// the timestamp when the delay was measured.
+// TODO(b/173250111): Rename this message to RenderingDelay when all users of
+// |media_timestamp_microseconds| and |reference_timestamp_microseconds| have
+// migrated to using delay information.
+message CurrentMediaTimestamp {
+  optional int64 media_timestamp_microseconds = 1;
+  optional int64 reference_timestamp_microseconds = 2;
+  optional int64 delay_microseconds = 3;
+  optional int64 delay_timestamp_microseconds = 4;
+}
+
+// Informs the backend to stop the playback.
+message StopPlayback {}
+
+// Indicates the status of the initialization of the audio pipeline backend.
+message BackendInitializationStatus {
+  enum Status {
+    // Audio pipeline backend is successfully initialized.
+    SUCCESS = 0;
+    // There was an error during the initialization of audio pipeline backend.
+    ERROR = 1;
+  }
+  optional Status status = 1;
+}
+
+// Used to keep the socket connection active.
+message Heartbeat {}
+
+message Generic {
+  optional CmaBackendParams backend_params = 1;
+  optional SetStartTimestamp set_start_timestamp = 2;
+  optional SetPlaybackRate set_playback_rate = 3;
+  optional StreamVolume set_stream_volume = 4;
+  optional EosPlayedOut eos_played_out = 5;
+  optional CurrentMediaTimestamp current_media_timestamp = 6;
+  optional StopPlayback stop_playback = 7;
+  optional BackendInitializationStatus backend_initialization_status = 8;
+  optional Heartbeat heartbeat = 9;
+}

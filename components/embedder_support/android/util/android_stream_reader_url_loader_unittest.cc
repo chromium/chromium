@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -150,6 +150,12 @@ class TestResponseDelegate
 };
 
 class AndroidStreamReaderURLLoaderTest : public ::testing::Test {
+ public:
+  AndroidStreamReaderURLLoaderTest(const AndroidStreamReaderURLLoaderTest&) =
+      delete;
+  AndroidStreamReaderURLLoaderTest& operator=(
+      const AndroidStreamReaderURLLoaderTest&) = delete;
+
  protected:
   AndroidStreamReaderURLLoaderTest() {}
   ~AndroidStreamReaderURLLoaderTest() override = default;
@@ -174,7 +180,7 @@ class AndroidStreamReaderURLLoaderTest : public ::testing::Test {
         request, client->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::make_unique<TestResponseDelegate>(std::move(input_stream)),
-        base::nullopt);
+        absl::nullopt);
   }
 
   // helper method for creating loaders given a stream and MIME type
@@ -188,7 +194,7 @@ class AndroidStreamReaderURLLoaderTest : public ::testing::Test {
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::make_unique<TestResponseDelegate>(std::move(input_stream),
                                                custom_mime_type),
-        base::nullopt);
+        absl::nullopt);
   }
 
   // helper method for creating loaders given a stream and response header
@@ -206,7 +212,7 @@ class AndroidStreamReaderURLLoaderTest : public ::testing::Test {
         std::make_unique<TestResponseDelegate>(
             std::move(input_stream), custom_status, custom_header_name,
             custom_header_value),
-        base::nullopt);
+        absl::nullopt);
   }
 
   // Extracts the body data that is present in the consumer pipe
@@ -232,8 +238,6 @@ class AndroidStreamReaderURLLoaderTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidStreamReaderURLLoaderTest);
 };
 
 TEST_F(AndroidStreamReaderURLLoaderTest, ReadFakeStream) {

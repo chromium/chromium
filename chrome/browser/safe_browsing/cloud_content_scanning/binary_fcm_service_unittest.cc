@@ -1,8 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
+
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/callback_helpers.h"
@@ -28,6 +33,7 @@
 namespace safe_browsing {
 
 using ::testing::Invoke;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace {
@@ -40,13 +46,12 @@ std::unique_ptr<KeyedService> BuildFakeGCMProfileService(
 class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
  public:
   MockInstanceIDDriver() : InstanceIDDriver(/*gcm_driver=*/nullptr) {}
+  MockInstanceIDDriver(const MockInstanceIDDriver&) = delete;
+  MockInstanceIDDriver& operator=(const MockInstanceIDDriver&) = delete;
   ~MockInstanceIDDriver() override = default;
 
   MOCK_METHOD1(GetInstanceID,
                instance_id::InstanceID*(const std::string& app_id));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInstanceIDDriver);
 };
 
 class MockInstanceID : public instance_id::InstanceID {
@@ -174,89 +179,6 @@ TEST_F(BinaryFCMServiceTest, RoutesMessages) {
   EXPECT_EQ(response2.request_token(), "");
 }
 
-TEST_F(BinaryFCMServiceTest, EmitsHasKeyHistogram) {
-  {
-    base::HistogramTester histograms;
-    gcm::IncomingMessage incoming_message;
-
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageHasKey", false, 1);
-  }
-  {
-    base::HistogramTester histograms;
-    gcm::IncomingMessage incoming_message;
-
-    incoming_message.data["proto"] = "proto";
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageHasKey", true, 1);
-  }
-}
-
-TEST_F(BinaryFCMServiceTest, EmitsMessageParsedHistogram) {
-  {
-    base::HistogramTester histograms;
-    gcm::IncomingMessage incoming_message;
-
-    incoming_message.data["proto"] = "invalid base 64";
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageParsedBase64", false, 1);
-  }
-  {
-    base::HistogramTester histograms;
-    gcm::IncomingMessage incoming_message;
-
-    incoming_message.data["proto"] = "invalid+proto+data==";
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageParsedBase64", true, 1);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageParsedProto", false, 1);
-  }
-  {
-    base::HistogramTester histograms;
-    gcm::IncomingMessage incoming_message;
-    enterprise_connectors::ContentAnalysisResponse message;
-    std::string serialized_message;
-
-    ASSERT_TRUE(message.SerializeToString(&serialized_message));
-    base::Base64Encode(serialized_message, &serialized_message);
-    incoming_message.data["proto"] = serialized_message;
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageParsedBase64", true, 1);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageParsedProto", true, 1);
-  }
-}
-
-TEST_F(BinaryFCMServiceTest, EmitsMessageHasValidTokenHistogram) {
-  gcm::IncomingMessage incoming_message;
-  enterprise_connectors::ContentAnalysisResponse message;
-
-  message.set_request_token("token1");
-  std::string serialized_message;
-  ASSERT_TRUE(message.SerializeToString(&serialized_message));
-  base::Base64Encode(serialized_message, &serialized_message);
-  incoming_message.data["proto"] = serialized_message;
-
-  {
-    base::HistogramTester histograms;
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageHasValidToken", false, 1);
-  }
-  {
-    binary_fcm_service_->SetCallbackForToken("token1", base::DoNothing());
-    base::HistogramTester histograms;
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageHasValidToken", true, 1);
-  }
-}
-
 TEST_F(BinaryFCMServiceTest, UnregisterToken) {
   // Get an instance ID
   std::string received_instance_id = BinaryFCMService::kInvalidId;
@@ -327,7 +249,7 @@ TEST_F(BinaryFCMServiceTest, UnregistersTokensOnShutdown) {
 }
 
 TEST_F(BinaryFCMServiceTest, UnregisterOneTokensOneCall) {
-  MockInstanceIDDriver driver;
+  NiceMock<MockInstanceIDDriver> driver;
   MockInstanceID instance_id;
   ON_CALL(driver, GetInstanceID).WillByDefault(Return(&instance_id));
   binary_fcm_service_.reset();
@@ -375,7 +297,7 @@ TEST_F(BinaryFCMServiceTest, UnregisterOneTokensOneCall) {
 }
 
 TEST_F(BinaryFCMServiceTest, UnregisterTwoTokensTwoCalls) {
-  MockInstanceIDDriver driver;
+  NiceMock<MockInstanceIDDriver> driver;
   MockInstanceID instance_id;
   ON_CALL(driver, GetInstanceID).WillByDefault(Return(&instance_id));
   binary_fcm_service_.reset();
@@ -430,7 +352,7 @@ TEST_F(BinaryFCMServiceTest, UnregisterTwoTokensTwoCalls) {
 }
 
 TEST_F(BinaryFCMServiceTest, UnregisterTwoTokenConflict) {
-  MockInstanceIDDriver driver;
+  NiceMock<MockInstanceIDDriver> driver;
   MockInstanceID instance_id;
   ON_CALL(driver, GetInstanceID).WillByDefault(Return(&instance_id));
   binary_fcm_service_.reset();
@@ -491,7 +413,7 @@ TEST_F(BinaryFCMServiceTest, UnregisterTwoTokenConflict) {
 }
 
 TEST_F(BinaryFCMServiceTest, QueuesGetInstanceIDOnRetriableError) {
-  MockInstanceIDDriver driver;
+  NiceMock<MockInstanceIDDriver> driver;
   MockInstanceID instance_id;
   ON_CALL(driver, GetInstanceID).WillByDefault(Return(&instance_id));
   binary_fcm_service_.reset();

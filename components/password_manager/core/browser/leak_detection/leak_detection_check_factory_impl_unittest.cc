@@ -1,13 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory_impl.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_delegate.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,6 +22,7 @@ namespace {
 using ::testing::StrictMock;
 
 constexpr char kTestAccount[] = "user@gmail.com";
+constexpr version_info::Channel kChannel = version_info::Channel::UNKNOWN;
 
 class LeakDetectionCheckFactoryImplTest : public testing::Test {
  public:
@@ -48,7 +52,16 @@ class LeakDetectionCheckFactoryImplTest : public testing::Test {
 TEST_F(LeakDetectionCheckFactoryImplTest, SignedOut) {
   EXPECT_CALL(delegate(), OnError(LeakDetectionError::kNotSignIn));
   EXPECT_FALSE(request_factory().TryCreateLeakCheck(
-      &delegate(), identity_env().identity_manager(), url_loader_factory()));
+      &delegate(), identity_env().identity_manager(), url_loader_factory(),
+      kChannel));
+}
+
+TEST_F(LeakDetectionCheckFactoryImplTest, SignedOutWithFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kLeakDetectionUnauthenticated);
+  EXPECT_TRUE(request_factory().TryCreateLeakCheck(
+      &delegate(), identity_env().identity_manager(), url_loader_factory(),
+      kChannel));
 }
 
 TEST_F(LeakDetectionCheckFactoryImplTest, BulkCheck_SignedOut) {
@@ -63,7 +76,8 @@ TEST_F(LeakDetectionCheckFactoryImplTest, SignedIn) {
   identity_env().SetCookieAccounts({{info.email, info.gaia}});
   identity_env().SetRefreshTokenForAccount(info.account_id);
   EXPECT_TRUE(request_factory().TryCreateLeakCheck(
-      &delegate(), identity_env().identity_manager(), url_loader_factory()));
+      &delegate(), identity_env().identity_manager(), url_loader_factory(),
+      kChannel));
 }
 
 TEST_F(LeakDetectionCheckFactoryImplTest, BulkCheck_SignedIn) {
@@ -76,13 +90,14 @@ TEST_F(LeakDetectionCheckFactoryImplTest, BulkCheck_SignedIn) {
 }
 
 TEST_F(LeakDetectionCheckFactoryImplTest, SignedInAndSyncing) {
-  identity_env().SetPrimaryAccount(kTestAccount);
+  identity_env().SetPrimaryAccount(kTestAccount, signin::ConsentLevel::kSync);
   EXPECT_TRUE(request_factory().TryCreateLeakCheck(
-      &delegate(), identity_env().identity_manager(), url_loader_factory()));
+      &delegate(), identity_env().identity_manager(), url_loader_factory(),
+      kChannel));
 }
 
 TEST_F(LeakDetectionCheckFactoryImplTest, BulkCheck_SignedInAndSyncing) {
-  identity_env().SetPrimaryAccount(kTestAccount);
+  identity_env().SetPrimaryAccount(kTestAccount, signin::ConsentLevel::kSync);
   EXPECT_TRUE(request_factory().TryCreateBulkLeakCheck(
       &bulk_delegate(), identity_env().identity_manager(),
       url_loader_factory()));

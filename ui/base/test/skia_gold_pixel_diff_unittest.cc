@@ -1,12 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/test/skia_gold_pixel_diff.h"
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
-#include "base/test/scoped_environment_variable_override.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/test/test_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,6 +38,9 @@ class SkiaGoldPixelDiffTest : public ::testing::Test {
     CreateTestBitmap();
   }
 
+  SkiaGoldPixelDiffTest(const SkiaGoldPixelDiffTest&) = delete;
+  SkiaGoldPixelDiffTest& operator=(const SkiaGoldPixelDiffTest&) = delete;
+
   ~SkiaGoldPixelDiffTest() override {}
 
   SkBitmap GetTestBitmap() { return test_bitmap_; }
@@ -50,7 +52,6 @@ class SkiaGoldPixelDiffTest : public ::testing::Test {
   }
 
  protected:
-  DISALLOW_COPY_AND_ASSIGN(SkiaGoldPixelDiffTest);
 
  private:
   SkBitmap test_bitmap_;
@@ -109,7 +110,7 @@ TEST_F(SkiaGoldPixelDiffTest, LocalNoLuciAuth) {
   MockSkiaGoldPixelDiff mock_pixel;
   auto* cmd_line = base::CommandLine::ForCurrentProcess();
   cmd_line->RemoveSwitch(switches::kTestLauncherBotMode);
-  base::test::ScopedEnvironmentVariableOverride env_override(
+  base::ScopedEnvironmentVariableOverride env_override(
       "CHROMIUM_TEST_LAUNCHER_BOT_MODE");
 
   EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
@@ -272,87 +273,10 @@ TEST_F(SkiaGoldPixelDiffTest, ExplicitCodeReviewSystem) {
   EXPECT_TRUE(ret);
 }
 
-TEST_F(SkiaGoldPixelDiffTest, DoNotMakeGerritCommentHasRetryLeft) {
-  auto* cmd_line = base::CommandLine::ForCurrentProcess();
-  cmd_line->AppendSwitchASCII("gerrit-issue", "1");
-  cmd_line->AppendSwitchASCII("gerrit-patchset", "2");
-  cmd_line->AppendSwitchASCII("buildbucket-id", "3");
-  cmd_line->AppendSwitchASCII(switches::kTestLauncherRetriesLeft, "1");
-
-  MockSkiaGoldPixelDiff mock_pixel;
-  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      mock_pixel,
-      LaunchProcess(AllOf(Property(
-          &base::CommandLine::GetCommandLineString,
-          HasSubstr(FILE_PATH_LITERAL("--add-test-optional-key=ignore:1"))))))
-      .Times(1);
-  mock_pixel.Init("Prefix");
-  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
-  EXPECT_TRUE(ret);
-}
-
-TEST_F(SkiaGoldPixelDiffTest, DoNotMakeGerritCommentForCIJob) {
-  auto* cmd_line = base::CommandLine::ForCurrentProcess();
-  cmd_line->AppendSwitchASCII(switches::kTestLauncherRetriesLeft, "0");
-
-  MockSkiaGoldPixelDiff mock_pixel;
-  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      mock_pixel,
-      LaunchProcess(AllOf(Property(&base::CommandLine::GetCommandLineString,
-                                   Not(HasSubstr(FILE_PATH_LITERAL(
-                                       "--add-test-optional-key=ignore:1")))))))
-      .Times(3);
-  mock_pixel.Init("Prefix");
-  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
-  EXPECT_TRUE(ret);
-}
-
-TEST_F(SkiaGoldPixelDiffTest, MakeGerritCommentNoRetryLeft) {
-  auto* cmd_line = base::CommandLine::ForCurrentProcess();
-  cmd_line->AppendSwitchASCII("gerrit-issue", "1");
-  cmd_line->AppendSwitchASCII("gerrit-patchset", "2");
-  cmd_line->AppendSwitchASCII("buildbucket-id", "3");
-  cmd_line->AppendSwitchASCII(switches::kTestLauncherRetriesLeft, "0");
-
-  MockSkiaGoldPixelDiff mock_pixel;
-  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      mock_pixel,
-      LaunchProcess(AllOf(Property(&base::CommandLine::GetCommandLineString,
-                                   Not(HasSubstr(FILE_PATH_LITERAL(
-                                       "--add-test-optional-key=ignore:1")))))))
-      .Times(3);
-  mock_pixel.Init("Prefix");
-  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
-  EXPECT_TRUE(ret);
-}
-
-TEST_F(SkiaGoldPixelDiffTest, MakeGerritCommentInvalidFlag) {
-  auto* cmd_line = base::CommandLine::ForCurrentProcess();
-  cmd_line->AppendSwitchASCII("gerrit-issue", "1");
-  cmd_line->AppendSwitchASCII("gerrit-patchset", "2");
-  cmd_line->AppendSwitchASCII("buildbucket-id", "3");
-  cmd_line->AppendSwitchASCII(switches::kTestLauncherRetriesLeft, "NotANumber");
-
-  MockSkiaGoldPixelDiff mock_pixel;
-  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      mock_pixel,
-      LaunchProcess(AllOf(Property(&base::CommandLine::GetCommandLineString,
-                                   Not(HasSubstr(FILE_PATH_LITERAL(
-                                       "--add-test-optional-key=ignore:1")))))))
-      .Times(3);
-  mock_pixel.Init("Prefix");
-  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
-  EXPECT_TRUE(ret);
-}
-
 TEST_F(SkiaGoldPixelDiffTest, DryRunLocally) {
   auto* cmd_line = base::CommandLine::ForCurrentProcess();
   cmd_line->RemoveSwitch(switches::kTestLauncherBotMode);
-  base::test::ScopedEnvironmentVariableOverride env_override(
+  base::ScopedEnvironmentVariableOverride env_override(
       "CHROMIUM_TEST_LAUNCHER_BOT_MODE");
 
   MockSkiaGoldPixelDiff mock_pixel;

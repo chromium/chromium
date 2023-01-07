@@ -1,17 +1,17 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/mock_eula_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 using ::testing::AtLeast;
 using ::testing::_;
 
-MockEulaScreen::MockEulaScreen(EulaView* view,
+MockEulaScreen::MockEulaScreen(base::WeakPtr<EulaView> view,
                                const ScreenExitCallback& exit_callback)
-    : EulaScreen(view, exit_callback) {}
+    : EulaScreen(std::move(view), exit_callback) {}
 
 MockEulaScreen::~MockEulaScreen() {}
 
@@ -19,23 +19,8 @@ void MockEulaScreen::ExitScreen(Result result) {
   exit_callback()->Run(result);
 }
 
-MockEulaView::MockEulaView() {
-  EXPECT_CALL(*this, MockBind(_)).Times(AtLeast(1));
-}
+MockEulaView::MockEulaView() = default;
 
-MockEulaView::~MockEulaView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+MockEulaView::~MockEulaView() = default;
 
-void MockEulaView::Bind(EulaScreen* screen) {
-  screen_ = screen;
-  MockBind(screen);
-}
-
-void MockEulaView::Unbind() {
-  screen_ = nullptr;
-  MockUnbind();
-}
-
-}  // namespace chromeos
+}  // namespace ash

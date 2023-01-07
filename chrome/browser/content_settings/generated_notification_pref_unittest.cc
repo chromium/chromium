@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -167,10 +167,10 @@ void SetupManagedTestConditions(
     sync_preferences::TestingPrefServiceSyncable* prefs,
     const NotificationSettingManagedTestCase& test_case) {
   auto provider = std::make_unique<content_settings::MockProvider>();
-  provider->SetWebsiteSetting(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(test_case.default_content_setting));
+  provider->SetWebsiteSetting(ContentSettingsPattern::Wildcard(),
+                              ContentSettingsPattern::Wildcard(),
+                              ContentSettingsType::NOTIFICATIONS,
+                              base::Value(test_case.default_content_setting));
   HostContentSettingsMap::ProviderType provider_type;
   switch (test_case.default_content_setting_source) {
     case content_settings::SETTING_SOURCE_POLICY:
@@ -223,7 +223,7 @@ void ValidateManagedPreference(
   if (pref->user_selectable_values) {
     for (const auto& value : *pref->user_selectable_values) {
       pref_user_selectable_values.push_back(
-          static_cast<NotificationSetting>(value->GetInt()));
+          static_cast<NotificationSetting>(value.GetInt()));
     }
   }
   EXPECT_EQ(pref_user_selectable_values.size(),
@@ -316,10 +316,10 @@ TEST_F(GeneratedNotificationPrefTest, UpdatePreferenceInvalidAction) {
 
   // Make notification content setting not user modifiable.
   auto provider = std::make_unique<content_settings::MockProvider>();
-  provider->SetWebsiteSetting(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ASK));
+  provider->SetWebsiteSetting(ContentSettingsPattern::Wildcard(),
+                              ContentSettingsPattern::Wildcard(),
+                              ContentSettingsType::NOTIFICATIONS,
+                              base::Value(ContentSetting::CONTENT_SETTING_ASK));
 
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);

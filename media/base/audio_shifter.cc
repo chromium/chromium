@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 
@@ -91,14 +91,11 @@ AudioShifter::AudioShifter(base::TimeDelta max_buffer_size,
       input_clock_smoother_(new ClockSmoother(clock_accuracy)),
       output_clock_smoother_(new ClockSmoother(clock_accuracy)),
       running_(false),
-      position_(0),
-      previous_requested_samples_(0),
       resampler_(channels,
                  1.0,
                  96,
                  base::BindRepeating(&AudioShifter::ResamplerCallback,
-                                     base::Unretained(this))),
-      current_ratio_(1.0) {}
+                                     base::Unretained(this))) {}
 
 AudioShifter::~AudioShifter() = default;
 
@@ -106,10 +103,11 @@ void AudioShifter::Push(std::unique_ptr<AudioBus> input,
                         base::TimeTicks playout_time) {
   TRACE_EVENT1("audio", "AudioShifter::Push", "time (ms)",
                (playout_time - base::TimeTicks()).InMillisecondsF());
+  DCHECK_EQ(input->channels(), channels_);
+  frames_pushed_for_testing_ += input->frames();
   if (!queue_.empty()) {
     playout_time = input_clock_smoother_->Smooth(
-        playout_time,
-        base::TimeDelta::FromSecondsD(queue_.back().audio->frames() / rate_));
+        playout_time, base::Seconds(queue_.back().audio->frames() / rate_));
   }
   queue_.push_back(AudioQueueEntry(playout_time, std::move(input)));
   while (!queue_.empty() &&
@@ -128,11 +126,9 @@ void AudioShifter::Pull(AudioBus* output,
   // Add the kernel size since we incur some internal delay in resampling. All
   // resamplers incur some delay, and for the SincResampler (used by
   // MultiChannelResampler), this is (currently) kKernelSize / 2 frames.
-  playout_time +=
-      base::TimeDelta::FromSecondsD(SincResampler::kKernelSize / 2 / rate_);
+  playout_time += base::Seconds(SincResampler::kKernelSize / 2 / rate_);
   playout_time = output_clock_smoother_->Smooth(
-      playout_time,
-      base::TimeDelta::FromSecondsD(previous_requested_samples_ / rate_));
+      playout_time, base::Seconds(previous_requested_samples_ / rate_));
   previous_requested_samples_ = output->frames();
 
   base::TimeTicks stream_time;
@@ -145,21 +141,19 @@ void AudioShifter::Pull(AudioBus* output,
     stream_time = queue_.front().target_playout_time;
     buffer_end_time = queue_.back().target_playout_time;
   }
-  stream_time += base::TimeDelta::FromSecondsD(
-      (position_ - resampler_.BufferedFrames()) / rate_);
+  stream_time +=
+      base::Seconds((position_ - resampler_.BufferedFrames()) / rate_);
 
-  if (!running_ && base::TimeDelta::FromSecondsD(output->frames() * 2 / rate_) +
-                           clock_accuracy_ >
-                       buffer_end_time - stream_time) {
+  if (!running_ &&
+      base::Seconds(output->frames() * 2 / rate_) + clock_accuracy_ >
+          buffer_end_time - stream_time) {
     // We're not running right now, and we don't really have enough data
     // to satisfy output reliably. Wait.
     Zero(output);
     return;
   }
-  if (playout_time <
-      stream_time -
-          base::TimeDelta::FromSecondsD(output->frames() / rate_ / 2) -
-          (running_ ? clock_accuracy_ : base::TimeDelta())) {
+  if (playout_time < stream_time - base::Seconds(output->frames() / rate_ / 2) -
+                         (running_ ? clock_accuracy_ : base::TimeDelta())) {
     // |playout_time| is too far before the earliest known audio sample.
     Zero(output);
     return;
@@ -172,7 +166,7 @@ void AudioShifter::Pull(AudioBus* output,
     // bias to avoid buffer underruns in the future.
     if (bias_.is_zero()) {
       bias_ = playout_time - stream_time + clock_accuracy_ +
-              base::TimeDelta::FromSecondsD(output->frames() / rate_);
+              base::Seconds(output->frames() / rate_);
     }
     stream_time += bias_;
   } else {
@@ -205,13 +199,13 @@ void AudioShifter::Pull(AudioBus* output,
   // This is the ratio we would need to get perfect sync after
   // |adjustment_time_| has passed.
   double slow_ratio = steady_ratio + time_difference / adjustment_time_;
-  slow_ratio = base::ClampToRange(slow_ratio, 0.9, 1.1);
+  slow_ratio = base::clamp(slow_ratio, 0.9, 1.1);
   const base::TimeDelta adjustment_time =
-      base::TimeDelta::FromSecondsD(output->frames() / rate_);
+      base::Seconds(output->frames() / rate_);
   // This is ratio we we'd need get perfect sync at the end of the
   // current output audiobus.
   double fast_ratio = steady_ratio + time_difference / adjustment_time;
-  fast_ratio = base::ClampToRange(fast_ratio, 0.9, 1.1);
+  fast_ratio = base::clamp(fast_ratio, 0.9, 1.1);
 
   // If the current ratio is somewhere between the slow and the fast
   // ratio, then keep it. This means we don't have to recalculate the
@@ -225,7 +219,7 @@ void AudioShifter::Pull(AudioBus* output,
       // perfect sync in the alloted time. Clamp.
       double max_ratio = std::max(fast_ratio, slow_ratio);
       double min_ratio = std::min(fast_ratio, slow_ratio);
-      current_ratio_ = base::ClampToRange(current_ratio_, min_ratio, max_ratio);
+      current_ratio_ = base::clamp(current_ratio_, min_ratio, max_ratio);
     } else {
       // The "direction" has changed. (From speed up to slow down or
       // vice versa, so we just take the slow ratio.
@@ -260,7 +254,7 @@ void AudioShifter::ResamplerCallback(int frame_delay, AudioBus* destination) {
     if (position_ >= static_cast<size_t>(queue_.front().audio->frames())) {
       end_of_last_consumed_audiobus_ =
           queue_.front().target_playout_time +
-          base::TimeDelta::FromSecondsD(queue_.front().audio->frames() / rate_);
+          base::Seconds(queue_.front().audio->frames() / rate_);
       position_ -= queue_.front().audio->frames();
       queue_.pop_front();
     }

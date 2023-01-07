@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,7 +9,7 @@ The lexer uses the PLY library to build a tokenizer which understands
 Web IDL tokens.
 
 Web IDL, and Web IDL regular expressions can be found at:
-   http://heycam.github.io/webidl/
+   http://webidl.spec.whatwg.org/
 PLY can be found at:
    http://www.dabeaz.com/ply/
 """
@@ -83,6 +83,7 @@ class IDLLexer(object):
       'NaN': 'NAN',
       'null': 'NULL',
       'object': 'OBJECT',
+      'ObservableArray': 'OBSERVABLEARRAY',
       'octet': 'OCTET',
       'optional': 'OPTIONAL',
       'or': 'OR',
@@ -99,6 +100,7 @@ class IDLLexer(object):
       'stringifier': 'STRINGIFIER',
       'true': 'TRUE',
       'typedef': 'TYPEDEF',
+      'undefined': 'UNDEFINED',
       'unrestricted': 'UNRESTRICTED',
       'unsigned': 'UNSIGNED',
       'USVString': 'USVSTRING',
@@ -250,8 +252,6 @@ class IDLLexer(object):
     return self.tokens
 
   def Lexer(self):
-    if not self._lexobj:
-      self._lexobj = lex.lex(object=self, lextab=None, optimize=0)
     return self._lexobj
 
   def _AddToken(self, token):
@@ -274,7 +274,7 @@ class IDLLexer(object):
       self.tokens.remove(key.upper())
       del self.keywords[key]
 
-  def __init__(self):
+  def __init__(self, optimize=True):
     self.index = [0]
     self._lex_errors = 0
     self.linex = []
@@ -283,7 +283,7 @@ class IDLLexer(object):
     self.tokens = []
     self._AddTokens(IDLLexer.tokens)
     self._AddKeywords(IDLLexer.keywords)
-    self._lexobj = None
+    self._lexobj = lex.lex(object=self, lextab=False, optimize=optimize)
     self.last = None
     self.lines = None
 

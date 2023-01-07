@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 
@@ -32,6 +31,8 @@ class FakeSubresourceFilter : public blink::WebDocumentSubresourceFilter {
   LoadPolicy GetLoadPolicy(const blink::WebURL& resource_url,
                            blink::mojom::RequestContextType) override;
   LoadPolicy GetLoadPolicyForWebSocketConnect(
+      const blink::WebURL& url) override;
+  LoadPolicy GetLoadPolicyForWebTransportConnect(
       const blink::WebURL& url) override;
   void ReportDisallowedLoad() override;
   bool ShouldLogToConsole() override;

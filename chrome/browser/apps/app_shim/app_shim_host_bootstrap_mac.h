@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,6 +70,9 @@ class AppShimHostBootstrap : public chrome::mojom::AppShimHostBootstrap {
 
   // Indicates if the app launched during OS login.
   chrome::mojom::AppShimLoginItemRestoreState GetLoginItemRestoreState() const;
+
+  // If non-empty, holds an array of urls given as arguments.
+  const std::vector<GURL>& GetLaunchUrls() const;
 
   // Returns true if this app supports multiple profiles. If so, it will not be
   // required that GetProfilePath be a valid profile path.

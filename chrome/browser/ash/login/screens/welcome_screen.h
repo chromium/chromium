@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,29 +9,31 @@
 #include <string>
 
 #include "ash/public/cpp/locale_update_controller.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/callback_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/timer/timer.h"
-#include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
+// TODO(https://crbug.com/1164001): forward declare LanguageSwitchResult
+// after this file is moved to ash.
+#include "chrome/browser/ash/base/locale_util.h"
+#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/chromevox_hint/chromevox_hint_detector.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/ui/input_events_blocker.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
-namespace chromeos {
-
-class InputEventsBlocker;
-class WelcomeView;
-
-namespace locale_util {
-struct LanguageSwitchResult;
-}
+namespace ash {
 
 class WelcomeScreen : public BaseScreen,
                       public input_method::InputMethodManager::Observer,
-                      public DemoModeDetector::Observer {
+                      public ChromeVoxHintDetector::Observer,
+                      public ash::SystemTrayObserver {
  public:
   using TView = WelcomeView;
 
@@ -59,17 +61,27 @@ class WelcomeScreen : public BaseScreen,
 
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when language list is reloaded.
     virtual void OnLanguageListReloaded() = 0;
   };
 
-  enum class Result { NEXT, START_DEMO, SETUP_DEMO, ENABLE_DEBUGGING };
+  enum class Result {
+    NEXT,
+    NEXT_OS_INSTALL,
+    SETUP_DEMO,
+    ENABLE_DEBUGGING,
+    QUICK_START
+  };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
   WelcomeScreen(WelcomeView* view, const ScreenExitCallback& exit_callback);
+
+  WelcomeScreen(const WelcomeScreen&) = delete;
+  WelcomeScreen& operator=(const WelcomeScreen&) = delete;
+
   ~WelcomeScreen() override;
 
   static std::string GetResultString(Result result);
@@ -81,7 +93,7 @@ class WelcomeScreen : public BaseScreen,
   const std::string& language_list_locale() const {
     return language_list_locale_;
   }
-  const base::ListValue* language_list() const { return language_list_.get(); }
+  const base::Value::List& language_list() const { return language_list_; }
 
   void UpdateLanguageList();
 
@@ -93,7 +105,7 @@ class WelcomeScreen : public BaseScreen,
   std::string GetApplicationLocale();
   std::string GetInputMethod() const;
 
-  void SetApplicationLocale(const std::string& locale);
+  void SetApplicationLocale(const std::string& locale, const bool is_from_ui);
   void SetInputMethod(const std::string& input_method);
   void SetTimezone(const std::string& timezone_id);
   std::string GetTimezone() const;
@@ -103,18 +115,12 @@ class WelcomeScreen : public BaseScreen,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  base::Value* GetConfigurationForTesting() {
-    return &(context()->configuration);
+  const base::Value::Dict& GetConfigurationForTesting() const {
+    return context()->configuration;
   }
 
-  void CancelChromeVoxHintTimer();
-  void GiveChromeVoxHintForTesting();
-  bool GetChromeVoxHintTimerCancelledForTesting() {
-    return chromevox_hint_timer_cancelled_for_testing_;
-  }
-  bool GetChromeVoxHintTimerActivatedForTesting() {
-    return chromevox_hint_timer_activated_;
-  }
+  // ChromeVox hint.
+  ChromeVoxHintDetector* GetChromeVoxHintDetectorForTesting();
 
  protected:
   // Exposes exit callback to test overrides.
@@ -124,16 +130,24 @@ class WelcomeScreen : public BaseScreen,
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
-  bool HandleAccelerator(ash::LoginAcceleratorAction action) override;
+  void OnUserActionDeprecated(const std::string& action_id) override;
+  bool HandleAccelerator(LoginAcceleratorAction action) override;
 
-  // DemoModeDetector::Observer:
-  void OnShouldStartDemoMode() override;
+  void CancelChromeVoxHintIdleDetection();
+  // ChromeVoxHintDetector::Observer:
+  void OnShouldGiveChromeVoxHint() override;
+
+  // SystemTrayObserver:
+  void OnFocusLeavingSystemTray(bool reverse) override;
+  void OnSystemTrayBubbleShown() override;
 
   // InputMethodManager::Observer:
   void InputMethodChanged(input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
+
+  void OnFeatureSupportStatusDetermined(
+      quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status);
 
   // Handlers for various user actions:
   // Proceed with common user flow.
@@ -155,26 +169,34 @@ class WelcomeScreen : public BaseScreen,
           language_switch_result);
 
   // Callback for chromeos::ResolveUILanguageList() (from l10n_util).
-  void OnLanguageListResolved(
-      std::unique_ptr<base::ListValue> new_language_list,
-      const std::string& new_language_list_locale,
-      const std::string& new_selected_language);
+  void OnLanguageListResolved(base::Value::List new_language_list,
+                              const std::string& new_language_list_locale,
+                              const std::string& new_selected_language);
 
   // Callback when the system timezone settings is changed.
   void OnSystemTimezoneChanged();
 
-  // Notifies locale change via ash::LocaleUpdateController.
+  // Notifies locale change via LocaleUpdateController.
   void NotifyLocaleChange();
-  void OnLocaleChangeResult(ash::LocaleNotificationResult result);
+  void OnLocaleChangeResult(LocaleNotificationResult result);
 
-  // ChromeVox hint.
-  void StartChromeVoxHintTimer();
-  void GiveChromeVoxHint();
+  // Updates the local variable according to the existence of the Chromad
+  // migration flag file. Then, simulates a user action, if the flag is set and
+  // the screen is not hidden.
+  void UpdateChromadMigrationOobeFlow(bool exists);
+
+  void OnAccessibilityStatusChanged(
+      const ash::AccessibilityStatusEventDetails& details);
+  void UpdateA11yState();
+
+  // Adds data to the OOBE.WelcomeScreen.UserChangedLocale metric and calls
+  // exit_callback with given Result
+  void Exit(Result result) const;
 
   WelcomeView* view_ = nullptr;
   ScreenExitCallback exit_callback_;
 
-  std::unique_ptr<DemoModeDetector> demo_mode_detector_;
+  std::unique_ptr<ChromeVoxHintDetector> chromevox_hint_detector_;
 
   std::string input_method_;
   std::string timezone_;
@@ -182,24 +204,42 @@ class WelcomeScreen : public BaseScreen,
   // Creation of language list happens on Blocking Pool, so we cache
   // resolved data.
   std::string language_list_locale_;
-  std::unique_ptr<base::ListValue> language_list_;
+  base::Value::List language_list_;
 
   // The exact language code selected by user in the menu.
   std::string selected_language_code_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::OneShotTimer chromevox_hint_timer_;
+  // This local flag should be true if the OOBE flow is operating as part of the
+  // Chromad to cloud device migration. If so, this screen should be skipped.
+  bool is_chromad_migration_oobe_flow_ = false;
 
-  bool chromevox_hint_timer_activated_ = false;
+  base::CallbackListSubscription accessibility_subscription_;
 
-  bool chromevox_hint_timer_cancelled_for_testing_ = false;
+  base::WeakPtr<ash::quick_start::TargetDeviceBootstrapController>
+      bootstrap_controller_;
 
-  base::WeakPtrFactory<WelcomeScreen> weak_factory_{this};
+  // WeakPtrFactory used to schedule and cancel tasks related to language update
+  // in this object.
+  base::WeakPtrFactory<WelcomeScreen> language_weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WelcomeScreen);
+  // WeakPtrFactory used to schedule other tasks in this object.
+  base::WeakPtrFactory<WelcomeScreen> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::WelcomeScreen;
+}
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::WelcomeScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_WELCOME_SCREEN_H_

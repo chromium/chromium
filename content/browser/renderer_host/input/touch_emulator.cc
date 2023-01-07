@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/input/touch_emulator.h"
+
+#include <memory>
 
 #include "base/containers/queue.h"
 #include "base/time/time.h"
@@ -60,8 +62,7 @@ int ModifiersWithoutMouseButtons(const WebInputEvent& event) {
 
 // Time between two consecutive mouse moves, during which second mouse move
 // is not converted to touch.
-constexpr base::TimeDelta kMouseMoveDropInterval =
-    base::TimeDelta::FromMilliseconds(5);
+constexpr base::TimeDelta kMouseMoveDropInterval = base::Milliseconds(5);
 
 } // namespace
 
@@ -107,8 +108,8 @@ void TouchEmulator::Enable(Mode mode,
       mode_ != mode) {
     mode_ = mode;
     gesture_provider_config_type_ = config_type;
-    gesture_provider_.reset(new ui::FilteredGestureProvider(
-        GetEmulatorGestureProviderConfig(config_type, mode), this));
+    gesture_provider_ = std::make_unique<ui::FilteredGestureProvider>(
+        GetEmulatorGestureProviderConfig(config_type, mode), this);
     gesture_provider_->SetDoubleTapSupportForPageEnabled(double_tap_enabled_);
     // TODO(dgozman): Use synthetic secondary touch to support multi-touch.
     gesture_provider_->SetMultiTouchZoomSupportEnabled(
@@ -359,9 +360,10 @@ void TouchEmulator::OnViewDestroyed(RenderWidgetHostViewBase* destroyed_view) {
     return;
 
   emulated_stream_active_sequence_count_ = 0;
-  // If we aren't enabled, just reset out target.
-  if (!gesture_provider_) {
-    last_emulated_start_target_ = nullptr;
+  last_emulated_start_target_ = nullptr;
+
+  // If we aren't enabled, we can just stop here.
+  if (!enabled()) {
     return;
   }
 

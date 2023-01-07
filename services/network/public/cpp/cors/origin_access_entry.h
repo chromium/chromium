@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom-shared.h"
@@ -25,9 +24,14 @@ class CorsOriginPattern;
 
 namespace cors {
 
-// A class to hold a protocol and domain pair and to provide methods to
-// determine if a given origin or domain matches to the pair. The class can have
-// a setting to control if the matching methods accept a partial match.
+// Returns true if the host and subdomain are the same, or if subdomain is a
+// subdomain of host. (e.g., bar.foo.com is a subdomain of foo.com).
+bool COMPONENT_EXPORT(NETWORK_CPP)
+    IsSubdomainOfHost(const std::string& subdomain, const std::string& host);
+
+// A class to hold a protocol and domain and port triple and to provide methods
+// to determine if a given origin or domain matches. The class can have a
+// setting to control if the matching methods accept a partial match.
 class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessEntry final {
  public:
   enum MatchResult {
@@ -51,6 +55,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessEntry final {
                     const mojom::CorsPortMatchMode port_match_mode,
                     const mojom::CorsOriginAccessMatchPriority priority =
                         mojom::CorsOriginAccessMatchPriority::kDefaultPriority);
+
+  OriginAccessEntry(const OriginAccessEntry&) = delete;
+  OriginAccessEntry& operator=(const OriginAccessEntry&) = delete;
+
   OriginAccessEntry(OriginAccessEntry&& from);
 
   // MatchesOrigin requires a protocol match (e.g. 'http' != 'https'), and a
@@ -78,8 +86,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessEntry final {
 
   std::string registrable_domain_;
   bool host_is_public_suffix_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginAccessEntry);
 };
 
 }  // namespace cors

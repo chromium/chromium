@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/keyed_service/core/keyed_service_export.h"
@@ -26,6 +25,15 @@ class RefcountedKeyedService;
 // destruction can happen anywhere.
 class KEYED_SERVICE_EXPORT RefcountedKeyedServiceFactory
     : public KeyedServiceBaseFactory {
+ public:
+  RefcountedKeyedServiceFactory(const RefcountedKeyedServiceFactory&) = delete;
+  RefcountedKeyedServiceFactory& operator=(
+      const RefcountedKeyedServiceFactory&) = delete;
+
+  // Returns the number of RefCountedKeyedServices that are currently active for
+  // a given context.
+  static int GetServicesCount(void* context);
+
  protected:
   RefcountedKeyedServiceFactory(const char* name,
                                 DependencyManager* manager,
@@ -83,6 +91,7 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedServiceFactory
   void SetEmptyTestingFactory(void* context) override;
   bool HasTestingFactory(void* context) override;
   void CreateServiceNow(void* context) override;
+  bool IsServiceCreated(void* context) const override;
 
  private:
   // The mapping between a context and its refcounted service.
@@ -90,8 +99,6 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedServiceFactory
 
   // The mapping between a context and its overridden TestingFactory.
   std::map<void*, TestingFactory> testing_factories_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefcountedKeyedServiceFactory);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_REFCOUNTED_KEYED_SERVICE_FACTORY_H_

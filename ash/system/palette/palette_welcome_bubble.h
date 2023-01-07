@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -30,6 +29,10 @@ class ASH_EXPORT PaletteWelcomeBubble : public SessionObserver,
                                         public ui::EventHandler {
  public:
   explicit PaletteWelcomeBubble(PaletteTray* tray);
+
+  PaletteWelcomeBubble(const PaletteWelcomeBubble&) = delete;
+  PaletteWelcomeBubble& operator=(const PaletteWelcomeBubble&) = delete;
+
   ~PaletteWelcomeBubble() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -48,7 +51,7 @@ class ASH_EXPORT PaletteWelcomeBubble : public SessionObserver,
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   // Returns the bubble view for tests, or null when the bubble is not showing.
   views::View* GetBubbleViewForTesting();
@@ -61,6 +64,9 @@ class ASH_EXPORT PaletteWelcomeBubble : public SessionObserver,
   void Show();
   void Hide();
 
+  // Disconnects from the observers and pre-target handlers.
+  void DisconnectObservers();
+
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
@@ -72,8 +78,6 @@ class ASH_EXPORT PaletteWelcomeBubble : public SessionObserver,
   PrefService* active_user_pref_service_ = nullptr;  // Not owned.
 
   WelcomeBubbleView* bubble_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PaletteWelcomeBubble);
 };
 
 }  // namespace ash

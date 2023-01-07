@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL EventSource always UTF-8 assert_unreached: Got error event Reached unreachable code
+Harness: the test ran to completion.
+

@@ -1,0 +1,115 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/closure_args.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos, "Desk API is ChromeOS only.")
+
+resources_grd_file = "$target_gen_dir/resources.grd"
+
+ts_files = [
+  "background.ts",
+  "desk_api_impl.ts",
+  "message_type.ts",
+  "notification_api_impl.ts",
+  "service_worker.ts",
+]
+
+type_files = [
+  "chrome_type_extension.d.ts",
+  "desk_api_types.d.ts",
+  "types.d.ts",
+]
+
+# Copy definition files to output folder, so they can import relatively the
+# generated definitions.
+copy("copy_definition") {
+  sources = type_files
+  outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
+}
+
+copy("copy_src") {
+  sources = ts_files
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  deps = []
+  extra_deps = [
+    ":copy_definition",
+    ":copy_src",
+  ]
+  root_dir = "$target_gen_dir"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = ts_files
+  definitions = [
+    "$target_gen_dir/chrome_type_extension.d.ts",
+    "$target_gen_dir/desk_api_types.d.ts",
+    "$target_gen_dir/types.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/notifications.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+  ]
+}
+
+js_library("js_from_ts") {
+  sources = []
+  foreach(_t, ts_files) {
+    sources += [ "$target_gen_dir/tsc/" + string_replace(_t, ".ts", ".js") ]
+  }
+  extra_deps = [ ":build_ts" ]
+}
+
+# Generate a bundle that contains all external dependencies and source used by
+# the extension.
+js_binary("generate_desk_api_bundle") {
+  deps = [ ":js_from_ts" ]
+  sources = [ "$externs_path/chrome_extensions.js" ]
+  outputs = [ "${target_gen_dir}/desk_api_bundle.js" ]
+  closure_flags = default_closure_args + [
+                    "generate_exports=true",
+                    "jscomp_warning=checkTypes",
+                    "jscomp_warning=deprecatedAnnotations",
+                    "jscomp_warning=deprecated",
+                  ]
+}
+
+generate_grd("build_grd") {
+  deps = [
+    ":build_ts",
+    ":generate_desk_api_bundle",
+  ]
+  input_files = [
+    "index.html",
+    "templates_icon.png",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files =
+      filter_include(get_target_outputs(":generate_desk_api_bundle"),
+                     [ "*.manifest" ])
+
+  grd_prefix = "desk_api"
+  out_grd = resources_grd_file
+}
+
+grit("resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/desk_api_resources.h",
+    "grit/desk_api_resources_map.cc",
+    "grit/desk_api_resources_map.h",
+    "desk_api_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}

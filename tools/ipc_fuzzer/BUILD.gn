@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,9 +6,7 @@ import("//build/config/nacl/config.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
 config("ipc_fuzzer_config") {
-  if (!is_nacl_nonsfi) {
-    defines = [ "ENABLE_IPC_FUZZER" ]
-  }
+  defines = [ "ENABLE_IPC_FUZZER" ]
 }
 
 config("ipc_fuzzer_tool_config") {
@@ -29,7 +27,11 @@ if (enable_ipc_fuzzer) {
     testonly = true
     deps = [
       "//tools/ipc_fuzzer/fuzzer:ipc_fuzzer",
-      "//tools/ipc_fuzzer/message_dump:ipc_message_dump",
+
+      # Disable this until build is fixed.
+      # TODO(1241274): Fix the build issue and reenable this.
+      # "//tools/ipc_fuzzer/message_dump:ipc_message_dump",
+
       "//tools/ipc_fuzzer/message_replay:ipc_fuzzer_replay",
       "//tools/ipc_fuzzer/message_tools:ipc_message_list",
       "//tools/ipc_fuzzer/message_tools:ipc_message_util",

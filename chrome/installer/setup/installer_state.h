@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/version.h"
 #include "base/win/windows_types.h"
 #include "build/build_config.h"
@@ -39,6 +38,9 @@ class InstallerState {
 
   // Constructs an initialized but empty instance.
   explicit InstallerState(Level level);
+
+  InstallerState(const InstallerState&) = delete;
+  InstallerState& operator=(const InstallerState&) = delete;
 
   ~InstallerState();
 
@@ -128,9 +130,6 @@ class InstallerState {
   HKEY root_key_;
   bool msi_;
   bool verbose_logging_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstallerState);
 };
 
 }  // namespace installer

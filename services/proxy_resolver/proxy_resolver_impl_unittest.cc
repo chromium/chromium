@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -58,7 +60,7 @@ class TestRequestClient : public mojom::ProxyResolverRequestClient {
   void ResolveDns(
       const std::string& hostname,
       net::ProxyResolveDnsOperation operation,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<mojom::HostResolverRequestClient> client) override;
 
   void OnDisconnect();
@@ -104,7 +106,7 @@ void TestRequestClient::OnError(int32_t line_number,
 void TestRequestClient::ResolveDns(
     const std::string& hostname,
     net::ProxyResolveDnsOperation operation,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     mojo::PendingRemote<mojom::HostResolverRequestClient> client) {}
 
 void TestRequestClient::OnDisconnect() {
@@ -117,8 +119,8 @@ class MockProxyResolverV8Tracing : public ProxyResolverV8Tracing {
   // aren't allowed to have private members. Fix that.
   struct Job {
     GURL url;
-    net::NetworkIsolationKey network_isolation_key;
-    net::ProxyInfo* results;
+    net::NetworkAnonymizationKey network_anonymization_key;
+    raw_ptr<net::ProxyInfo> results;
     bool cancelled = false;
 
     void Complete(int result) {
@@ -154,19 +156,20 @@ class MockProxyResolverV8Tracing : public ProxyResolverV8Tracing {
     }
 
    private:
-    Job* job_;
-    MockProxyResolverV8Tracing* resolver_;
+    raw_ptr<Job> job_;
+    raw_ptr<MockProxyResolverV8Tracing> resolver_;
   };
 
   MockProxyResolverV8Tracing() {}
 
   // ProxyResolverV8Tracing overrides.
-  void GetProxyForURL(const GURL& url,
-                      const net::NetworkIsolationKey& network_isolation_key,
-                      net::ProxyInfo* results,
-                      net::CompletionOnceCallback callback,
-                      std::unique_ptr<net::ProxyResolver::Request>* request,
-                      std::unique_ptr<Bindings> bindings) override;
+  void GetProxyForURL(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      net::ProxyInfo* results,
+      net::CompletionOnceCallback callback,
+      std::unique_ptr<net::ProxyResolver::Request>* request,
+      std::unique_ptr<Bindings> bindings) override;
 
   void WaitForCancel();
 
@@ -181,7 +184,7 @@ class MockProxyResolverV8Tracing : public ProxyResolverV8Tracing {
 
 void MockProxyResolverV8Tracing::GetProxyForURL(
     const GURL& url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     net::ProxyInfo* results,
     net::CompletionOnceCallback callback,
     std::unique_ptr<net::ProxyResolver::Request>* request,
@@ -189,17 +192,14 @@ void MockProxyResolverV8Tracing::GetProxyForURL(
   pending_jobs_.push_back(std::make_unique<Job>());
   auto* pending_job = pending_jobs_.back().get();
   pending_job->url = url;
-  pending_job->network_isolation_key = network_isolation_key;
+  pending_job->network_anonymization_key = network_anonymization_key;
   pending_job->results = results;
   pending_job->SetCallback(std::move(callback));
   *request = std::make_unique<RequestImpl>(pending_job, this);
 }
 
 void MockProxyResolverV8Tracing::WaitForCancel() {
-  while (std::find_if(pending_jobs_.begin(), pending_jobs_.end(),
-                      [](const std::unique_ptr<Job>& job) {
-                        return job->cancelled;
-                      }) != pending_jobs_.end()) {
+  while (base::ranges::any_of(pending_jobs_, &Job::cancelled)) {
     base::RunLoop run_loop;
     cancel_callback_ = run_loop.QuitClosure();
     run_loop.Run();
@@ -223,10 +223,10 @@ class ProxyResolverImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  MockProxyResolverV8Tracing* mock_proxy_resolver_;
+  raw_ptr<MockProxyResolverV8Tracing> mock_proxy_resolver_;
 
   std::unique_ptr<ProxyResolverImpl> resolver_impl_;
-  mojom::ProxyResolver* resolver_;
+  raw_ptr<mojom::ProxyResolver> resolver_;
 };
 
 TEST_F(ProxyResolverImplTest, GetProxyForUrl) {
@@ -234,7 +234,7 @@ TEST_F(ProxyResolverImplTest, GetProxyForUrl) {
   TestRequestClient client(remote_client.InitWithNewPipeAndPassReceiver());
 
   resolver_->GetProxyForUrl(GURL("http://example.com"),
-                            net::NetworkIsolationKey(),
+                            net::NetworkAnonymizationKey(),
                             std::move(remote_client));
   ASSERT_EQ(1u, mock_proxy_resolver_->pending_jobs().size());
   MockProxyResolverV8Tracing::Job* job =
@@ -278,20 +278,21 @@ TEST_F(ProxyResolverImplTest, GetProxyForUrl) {
   EXPECT_EQ(net::ProxyServer::SCHEME_DIRECT, servers[5].scheme());
 }
 
-TEST_F(ProxyResolverImplTest, GetProxyForUrlWithNetworkIsolationKey) {
-  const url::Origin kOrigin(url::Origin::Create(GURL("https://origin.test/")));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+TEST_F(ProxyResolverImplTest, GetProxyForUrlWithNetworkAnonymizationKey) {
+  const net::SchemefulSite kSite(
+      net::SchemefulSite(GURL("https://site.test/")));
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
 
   mojo::PendingRemote<mojom::ProxyResolverRequestClient> remote_client;
   TestRequestClient client(remote_client.InitWithNewPipeAndPassReceiver());
 
-  resolver_->GetProxyForUrl(GURL("http://example.com"), kNetworkIsolationKey,
-                            std::move(remote_client));
+  resolver_->GetProxyForUrl(GURL("http://example.com"),
+                            kNetworkAnonymizationKey, std::move(remote_client));
   ASSERT_EQ(1u, mock_proxy_resolver_->pending_jobs().size());
   MockProxyResolverV8Tracing::Job* job =
       mock_proxy_resolver_->pending_jobs()[0].get();
   EXPECT_EQ(GURL("http://example.com"), job->url);
-  EXPECT_EQ(kNetworkIsolationKey, job->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey, job->network_anonymization_key);
 }
 
 TEST_F(ProxyResolverImplTest, GetProxyForUrlFailure) {
@@ -299,7 +300,7 @@ TEST_F(ProxyResolverImplTest, GetProxyForUrlFailure) {
   TestRequestClient client(remote_client.InitWithNewPipeAndPassReceiver());
 
   resolver_->GetProxyForUrl(GURL("http://example.com"),
-                            net::NetworkIsolationKey(),
+                            net::NetworkAnonymizationKey(),
                             std::move(remote_client));
   ASSERT_EQ(1u, mock_proxy_resolver_->pending_jobs().size());
   MockProxyResolverV8Tracing::Job* job =
@@ -321,10 +322,10 @@ TEST_F(ProxyResolverImplTest, GetProxyForUrlMultiple) {
   TestRequestClient client2(remote_client2.InitWithNewPipeAndPassReceiver());
 
   resolver_->GetProxyForUrl(GURL("http://example.com"),
-                            net::NetworkIsolationKey(),
+                            net::NetworkAnonymizationKey(),
                             std::move(remote_client1));
   resolver_->GetProxyForUrl(GURL("https://example.com"),
-                            net::NetworkIsolationKey(),
+                            net::NetworkAnonymizationKey(),
                             std::move(remote_client2));
   ASSERT_EQ(2u, mock_proxy_resolver_->pending_jobs().size());
   MockProxyResolverV8Tracing::Job* job1 =
@@ -365,7 +366,7 @@ TEST_F(ProxyResolverImplTest, DestroyClient) {
       remote_client.InitWithNewPipeAndPassReceiver());
 
   resolver_->GetProxyForUrl(GURL("http://example.com"),
-                            net::NetworkIsolationKey(),
+                            net::NetworkAnonymizationKey(),
                             std::move(remote_client));
   ASSERT_EQ(1u, mock_proxy_resolver_->pending_jobs().size());
   const MockProxyResolverV8Tracing::Job* job =
@@ -381,7 +382,7 @@ TEST_F(ProxyResolverImplTest, DestroyService) {
   TestRequestClient client(remote_client.InitWithNewPipeAndPassReceiver());
 
   resolver_->GetProxyForUrl(GURL("http://example.com"),
-                            net::NetworkIsolationKey(),
+                            net::NetworkAnonymizationKey(),
                             std::move(remote_client));
   ASSERT_EQ(1u, mock_proxy_resolver_->pending_jobs().size());
   resolver_impl_.reset();

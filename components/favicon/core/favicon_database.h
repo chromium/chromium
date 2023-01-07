@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,22 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "components/favicon/core/favicon_types.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
 class RefCountedMemory;
 class Time;
 }  // namespace base
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace favicon {
 
@@ -146,9 +150,19 @@ class FaviconDatabase {
   // Returns true if successful.
   bool TouchOnDemandFavicon(const GURL& icon_url, base::Time time);
 
-  // Returns the id of the entry in the favicon database with the specified url
-  // and icon type.
-  // Returns 0 if no entry exists for the specified url.
+  // Returns the id of the entry in the favicon database with the specified
+  // `icon_url` and `icon_type` that has an existing mapping to `page_origin`
+  // (and 0 if no entry exists). See crbug.com/1300214 for more context.
+  favicon_base::FaviconID GetFaviconIDForFaviconURL(
+      const GURL& icon_url,
+      favicon_base::IconType icon_type,
+      const url::Origin& page_origin);
+
+  // Returns the id of the entry in the favicon database with the specified
+  // `icon_url` and `icon_type` (and 0 if no entry exists). This function does
+  // not respect cross-origin partitioning and returns an entry from the cache
+  // without verifying it was stored for the origin requesting it. This can leak
+  // navigation history, see crbug.com/1300214 for more context.
   favicon_base::FaviconID GetFaviconIDForFaviconURL(
       const GURL& icon_url,
       favicon_base::IconType icon_type);
@@ -203,7 +217,7 @@ class FaviconDatabase {
   // |url| = http://www.google.com would match
   // |page_url| = https://www.google.com/search. The returned optional will be
   // empty if no such |page_url| exists.
-  base::Optional<GURL> FindFirstPageURLForHost(
+  absl::optional<GURL> FindFirstPageURLForHost(
       const GURL& url,
       const favicon_base::IconTypeSet& required_icon_types);
 
@@ -238,6 +252,10 @@ class FaviconDatabase {
   class IconMappingEnumerator {
    public:
     IconMappingEnumerator();
+
+    IconMappingEnumerator(const IconMappingEnumerator&) = delete;
+    IconMappingEnumerator& operator=(const IconMappingEnumerator&) = delete;
+
     ~IconMappingEnumerator();
 
     // Get the next icon mapping, return false if no more are available.
@@ -249,8 +267,6 @@ class FaviconDatabase {
     // Used to query database and return the data for filling IconMapping in
     // each call of GetNextIconMapping().
     sql::Statement statement_;
-
-    DISALLOW_COPY_AND_ASSIGN(IconMappingEnumerator);
   };
 
   // Return all icon mappings of the given |icon_type|.

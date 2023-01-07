@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,11 +62,7 @@ SocketBIOAdapter::SocketBIOAdapter(StreamSocket* socket,
                                    Delegate* delegate)
     : socket_(socket),
       read_buffer_capacity_(read_buffer_capacity),
-      read_offset_(0),
-      read_result_(0),
       write_buffer_capacity_(write_buffer_capacity),
-      write_buffer_used_(0),
-      write_error_(OK),
       delegate_(delegate) {
   bio_.reset(BIO_new(&kBIOMethod));
   bio_->ptr = this;

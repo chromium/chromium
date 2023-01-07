@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -53,7 +53,7 @@ void QueuedTaskPosterTest::SetUp() {
   target_thread_.StartAndWaitForTesting();
   main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
   target_task_runner_ = target_thread_.task_runner();
-  poster_.reset(new QueuedTaskPoster(target_task_runner_));
+  poster_ = std::make_unique<QueuedTaskPoster>(target_task_runner_);
 }
 
 void QueuedTaskPosterTest::TearDown() {

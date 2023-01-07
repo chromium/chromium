@@ -1,0 +1,20 @@
+caption: Disable TLS False Start
+deprecated: true
+desc: |-
+  Specifies whether the <ph name="TLS_FALSE_START">TLS False Start</ph> optimization should be disabled. For historical reasons, this policy is named DisableSSLRecordSplitting.
+
+        If the policy is not set, or is set to false, then <ph name="TLS_FALSE_START">TLS False Start</ph> will be enabled. If it is set to true, <ph name="TLS_FALSE_START">TLS False Start</ph> will be disabled.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- file://crypto/OWNERS
+- agl@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:18-46
+- chrome_os:18-46
+tags: []
+type: main

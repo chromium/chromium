@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:top="@dimen/app_menu_shadow_length"
+        android:left="@dimen/app_menu_shadow_length"
+        android:bottom="@dimen/app_menu_shadow_length"
+        android:right="@dimen/app_menu_shadow_length">
+        <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
+            android:shape="rectangle"
+            app:surfaceElevation="@dimen/menu_bg_color_elev">
+            <corners android:radius="@dimen/app_menu_corner_size" />
+            <padding
+                android:top="@dimen/app_menu_shadow_length"
+                android:left="@dimen/app_menu_shadow_length"
+                android:bottom="@dimen/app_menu_shadow_length"
+                android:right="@dimen/app_menu_shadow_length" />
+        </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
+    </item>
+</layer-list>

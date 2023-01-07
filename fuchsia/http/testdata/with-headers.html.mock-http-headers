@@ -1,5 +1,0 @@
-HTTP/1.1 200 OK
-Cache-Control: private
-Content-Type: text/html; charset=ISO-8859-1
-X-Multiple-Entries: a
-X-Multiple-Entries: b

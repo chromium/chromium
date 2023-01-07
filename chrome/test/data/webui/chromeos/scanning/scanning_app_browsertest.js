@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,22 +30,31 @@ function ScanningAppBrowserTest() {}
 
 ScanningAppBrowserTest.prototype = {
   __proto__: PolymerTest.prototype,
-
   browsePreload: 'chrome://scanning/test_loader.html?module=chromeos/' +
-      'scanning/scanning_app_unified_test.js',
-
-  featureList: {enabled: ['chromeos::features::kScanAppMediaLink']},
+      'scanning/scanning_app_unified_test.js&host=test',
 };
 
 // List of names of suites in unified test to register for individual debugging.
 // You must register all suites in unified test here as well for consistency,
 // although technically is not necessary.
 const debug_suites_list = [
-  'ColorModeSelect', 'FileTypeSelect', 'LoadingPage', 'PageSizeSelect',
-  'ResolutionSelect', 'ScanApp', 'ScanDoneSection', 'ScannerSelect',
-  'ScanPreview', 'ScanToSelect', 'SourceSelect'
+  'ActionToolbar',
+  'ColorModeSelect',
+  'FileTypeSelect',
+  'LoadingPage',
+  'MultiPageCheckbox',
+  'MultiPageScan',
+  'PageSizeSelect',
+  'ResolutionSelect',
+  'ScanApp',
+  'ScanDoneSection',
+  'ScannerSelect',
+  'ScanPreview',
+  'ScanToSelect',
+  'SourceSelect',
 ];
 
+// Flaky. See crbug.com/1334465
 TEST_F('ScanningAppBrowserTest', 'All', function() {
   assertDeepEquals(
       debug_suites_list, test_suites_list,

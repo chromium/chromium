@@ -1,11 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 
 #include <utility>
-#include "third_party/blink/renderer/core/inspector/protocol/Protocol.h"
+
+#include "base/numerics/safe_conversions.h"
+#include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 
@@ -31,10 +33,10 @@ std::unique_ptr<v8_inspector::StringBuffer> ToV8InspectorStringBuffer(
 String ToCoreString(const v8_inspector::StringView& string) {
   if (string.is8Bit()) {
     return String(reinterpret_cast<const LChar*>(string.characters8()),
-                  SafeCast<wtf_size_t>(string.length()));
+                  base::checked_cast<wtf_size_t>(string.length()));
   }
   return String(reinterpret_cast<const UChar*>(string.characters16()),
-                SafeCast<wtf_size_t>(string.length()));
+                base::checked_cast<wtf_size_t>(string.length()));
 }
 
 String ToCoreString(std::unique_ptr<v8_inspector::StringBuffer> buffer) {
@@ -125,7 +127,7 @@ Binary Binary::fromVector(Vector<uint8_t> in) {
 // static
 Binary Binary::fromSpan(const uint8_t* data, size_t size) {
   Vector<uint8_t> in;
-  in.Append(data, size);
+  in.Append(data, base::checked_cast<wtf_size_t>(size));
   return Binary::fromVector(std::move(in));
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,13 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
-#include "chrome/browser/chromeos/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_state_tracker.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -51,12 +48,7 @@ class EduCoexistenceLoginHandlerBrowserTest
       const EduCoexistenceLoginHandlerBrowserTest&) = delete;
   ~EduCoexistenceLoginHandlerBrowserTest() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        supervised_users::kEduCoexistenceFlowV2);
-
-    MixinBasedInProcessBrowserTest::SetUp();
-  }
+  void SetUp() override { MixinBasedInProcessBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
@@ -78,9 +70,8 @@ class EduCoexistenceLoginHandlerBrowserTest
                                     const std::string& call_type) {
     EXPECT_EQ(call_type, data.function_name());
 
-    std::string callback_id;
-    ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-    EXPECT_EQ(event_name, callback_id);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(event_name, data.arg1()->GetString());
   }
 
   void SimulateAccessTokenFetched(EduCoexistenceLoginHandler* handler,
@@ -91,9 +82,8 @@ class EduCoexistenceLoginHandlerBrowserTest
 
     handler->OnOAuthAccessTokensFetched(
         GoogleServiceAuthError(state),
-        signin::AccessTokenInfo(
-            "access_token", base::Time::Now() + base::TimeDelta::FromMinutes(1),
-            ""));
+        signin::AccessTokenInfo("access_token",
+                                base::Time::Now() + base::Minutes(1), ""));
   }
 
   void ExpectEduCoexistenceState(
@@ -115,11 +105,9 @@ class EduCoexistenceLoginHandlerBrowserTest
   content::TestWebUI* web_ui() { return &web_ui_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
-      embedded_test_server(), this};
+  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
+                                          LoggedInUserMixin::LogInType::kChild,
+                                          embedded_test_server(), this};
 
   base::HistogramTester histograms_;
 
@@ -133,9 +121,9 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
 
   ExpectEduCoexistenceState(EduCoexistenceStateTracker::FlowResult::kLaunched);
 
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(kCallbackId);
-  web_ui()->HandleReceivedMessage("initializeEduArgs", &list_args);
+  web_ui()->HandleReceivedMessage("initializeEduArgs", list_args);
   SimulateAccessTokenFetched(handler.get());
 
   EXPECT_EQ(web_ui()->call_data().size(), 1u);
@@ -156,10 +144,10 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
                        ErrorCallsFromWebUI) {
   std::unique_ptr<EduCoexistenceLoginHandler> handler = SetUpHandler();
 
-  base::ListValue call_args;
+  base::Value::List call_args;
   call_args.Append("error message 1");
   call_args.Append("error message 2");
-  web_ui()->HandleReceivedMessage("error", &call_args);
+  web_ui()->HandleReceivedMessage("error", call_args);
 
   EXPECT_TRUE(handler->in_error_state());
 
@@ -178,9 +166,9 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   // C++ handler.
   EXPECT_EQ(web_ui()->call_data().size(), 0u);
 
-  base::ListValue call_args;
+  base::Value::List call_args;
   call_args.Append("coexistence-data-init");
-  web_ui()->HandleReceivedMessage("initializeEduArgs", &call_args);
+  web_ui()->HandleReceivedMessage("initializeEduArgs", call_args);
 
   EXPECT_EQ(web_ui()->call_data().size(), 1u);
   EXPECT_EQ(web_ui()->call_data()[0]->function_name(),
@@ -205,15 +193,15 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
 
   SimulateAccessTokenFetched(handler.get());
 
-  base::ListValue call_args;
+  base::Value::List call_args;
   call_args.Append(FakeGaiaMixin::kFakeUserEmail);
   call_args.Append(kToSVersion);
 
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(kConsentLoggedCallback);
   list_args.Append(std::move(call_args));
 
-  web_ui()->HandleReceivedMessage("consentLogged", &list_args);
+  web_ui()->HandleReceivedMessage("consentLogged", list_args);
 
   const EduCoexistenceStateTracker::FlowState* tracker =
       EduCoexistenceStateTracker::Get()->GetInfoForWebUIForTest(web_ui());
@@ -231,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   account.gaia = FakeGaiaMixin::kFakeUserGaiaId;
   handler->OnRefreshTokenUpdatedForAccount(account);
 
-  const std::string& accepted_tos = edu_coexistence::GetAcceptedToSVersion(
+  const std::string& accepted_tos = ash::edu_coexistence::GetAcceptedToSVersion(
       ProfileManager::GetActiveUserProfile(), FakeGaiaMixin::kFakeUserGaiaId);
   EXPECT_EQ(accepted_tos, std::string(kToSVersion));
 
@@ -258,33 +246,33 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
-  edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, edu_coexistence::UserConsentInfo(kUser1GaiaId, kVersion1));
-  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
+  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, ash::edu_coexistence::UserConsentInfo(kUser1GaiaId, kVersion1));
+  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
             std::string(kVersion1));
 
-  edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, edu_coexistence::UserConsentInfo(kUser2GaiaId, kVersion1));
-  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser2GaiaId),
+  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, ash::edu_coexistence::UserConsentInfo(kUser2GaiaId, kVersion1));
+  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser2GaiaId),
             std::string(kVersion1));
 
-  edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, edu_coexistence::UserConsentInfo(kUser3GaiaId, kVersion1));
-  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser3GaiaId),
+  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, ash::edu_coexistence::UserConsentInfo(kUser3GaiaId, kVersion1));
+  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser3GaiaId),
             std::string(kVersion1));
 
-  edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, edu_coexistence::UserConsentInfo(kUser2GaiaId, kVersion2));
-  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser2GaiaId),
+  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, ash::edu_coexistence::UserConsentInfo(kUser2GaiaId, kVersion2));
+  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser2GaiaId),
             std::string(kVersion2));
-  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
+  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
             std::string(kVersion1));
-  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser3GaiaId),
+  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser3GaiaId),
             std::string(kVersion1));
 
-  edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, edu_coexistence::UserConsentInfo(kUser1GaiaId, kVersion2));
-  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
+  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, ash::edu_coexistence::UserConsentInfo(kUser1GaiaId, kVersion2));
+  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
             std::string(kVersion2));
 }
 

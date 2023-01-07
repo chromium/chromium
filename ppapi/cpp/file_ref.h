@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,6 +58,7 @@ class FileRef : public Resource {
   ///
   /// @param[in] other A pointer to a <code>FileRef</code>.
   FileRef(const FileRef& other);
+  FileRef& operator=(const FileRef& other);
 
   /// GetFileSystemType() returns the type of the file system.
   ///

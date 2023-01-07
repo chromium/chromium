@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,8 +43,9 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
                 ActivityType.CUSTOM_TAB, false);
 
         // Instantiate TabPersistentStore
+        mTabPersistencePolicy = persistencePolicy;
         mTabPersistentStore =
-                new TabPersistentStore(persistencePolicy, mTabModelSelector, tabCreatorManager);
+                new TabPersistentStore(mTabPersistencePolicy, mTabModelSelector, tabCreatorManager);
 
         wireSelectorAndStore();
         markTabModelsInitialized();

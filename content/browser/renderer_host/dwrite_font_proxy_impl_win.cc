@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,17 +20,18 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/dwrite_font_file_util_win.h"
 #include "content/browser/renderer_host/dwrite_font_uma_logging_win.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_unique_name_table.pb.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
@@ -208,7 +209,7 @@ void DWriteFontProxyImpl::GetFamilyNames(UINT32 family_index,
     }
     CHECK_EQ(L'\0', name[length - 1]);
 
-    family_names.emplace_back(base::in_place, base::WideToUTF16(locale.data()),
+    family_names.emplace_back(absl::in_place, base::WideToUTF16(locale.data()),
                               base::WideToUTF16(name.data()));
   }
   std::move(callback).Run(std::move(family_names));
@@ -251,8 +252,8 @@ void DWriteFontProxyImpl::GetFontFiles(uint32_t family_index,
     }
 
     uint32_t dummy_ttc_index = 0;
-    if (!AddFilesForFont(font.Get(), windows_fonts_path_, &path_set,
-                         &custom_font_path_set, &dummy_ttc_index)) {
+    if (FAILED(AddFilesForFont(font.Get(), windows_fonts_path_, &path_set,
+                               &custom_font_path_set, &dummy_ttc_index))) {
       if (IsLastResortFallbackFont(family_index))
         LogMessageFilterError(
             MessageFilterError::LAST_RESORT_FONT_ADD_FILES_FAILED);
@@ -264,13 +265,16 @@ void DWriteFontProxyImpl::GetFontFiles(uint32_t family_index,
   // as file handles. The renderer would be unable to open the files directly
   // due to sandbox policy (it would get ERROR_ACCESS_DENIED instead). Passing
   // handles allows the renderer to bypass the restriction and use the fonts.
+  // TODO(jam): if kDWriteFontProxyOnIO is removed also remove the exception
+  // for this class from thread_restrictions.h
+  base::ScopedAllowBlocking allow_io;
   for (const auto& custom_font_path : custom_font_path_set) {
-    // Specify FLAG_EXCLUSIVE_WRITE to prevent base::File from opening the file
-    // with FILE_SHARE_WRITE access. FLAG_EXCLUSIVE_WRITE doesn't actually open
-    // the file for write access.
+    // Specify FLAG_WIN_EXCLUSIVE_WRITE to prevent base::File from opening the
+    // file with FILE_SHARE_WRITE access. FLAG_WIN_EXCLUSIVE_WRITE doesn't
+    // actually open the file for write access.
     base::File file(base::FilePath(custom_font_path),
                     base::File::FLAG_OPEN | base::File::FLAG_READ |
-                        base::File::FLAG_EXCLUSIVE_WRITE);
+                        base::File::FLAG_WIN_EXCLUSIVE_WRITE);
     if (file.IsValid()) {
       file_handles.push_back(std::move(file));
     }
@@ -578,7 +582,7 @@ void DWriteFontProxyImpl::InitializeDirectWrite() {
   }
 
   // Temp code to help track down crbug.com/561873
-  for (size_t font = 0; font < base::size(kLastResortFontNames); font++) {
+  for (size_t font = 0; font < std::size(kLastResortFontNames); font++) {
     uint32_t font_index = 0;
     BOOL exists = FALSE;
     if (SUCCEEDED(collection_->FindFamilyName(kLastResortFontNames[font],

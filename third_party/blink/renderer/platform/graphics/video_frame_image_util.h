@@ -1,19 +1,22 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIDEO_FRAME_IMAGE_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIDEO_FRAME_IMAGE_UTIL_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_transformation.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 // Note: Don't include "media/base/video_frame.h" here without good reason,
 // since it includes a lot of non-blink types which can pollute the namespace.
+struct SkImageInfo;
 
 namespace media {
 class PaintCanvasVideoRenderer;
@@ -23,6 +26,11 @@ class VideoFrame;
 namespace viz {
 class RasterContextProvider;
 }
+
+namespace cc {
+class PaintCanvas;
+class PaintFlags;
+}  // namespace cc
 
 namespace blink {
 class CanvasResourceProvider;
@@ -62,6 +70,8 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame(
 // If |prefer_tagged_orientation| is true, CreateImageFromVideoFrame() will just
 // tag the StaticBitmapImage with the correct orientation ("soft flip") instead
 // of drawing the frame with the correct orientation ("hard flip").
+//
+// Returns nullptr if a StaticBitmapImage can't be created.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     bool allow_zero_copy_images = true,
@@ -89,13 +99,23 @@ PLATFORM_EXPORT bool DrawVideoFrameIntoResourceProvider(
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
     bool ignore_video_transformation = false);
 
+PLATFORM_EXPORT void DrawVideoFrameIntoCanvas(
+    scoped_refptr<media::VideoFrame> frame,
+    cc::PaintCanvas* canvas,
+    cc::PaintFlags& flags,
+    bool ignore_video_transformation = false);
+
+// Extract a RasterContextProvider from the current SharedGpuContext.
+PLATFORM_EXPORT scoped_refptr<viz::RasterContextProvider>
+GetRasterContextProvider();
+
 // Creates a CanvasResourceProvider which is appropriate for drawing VideoFrame
 // objects into. Some callers to CreateImageFromVideoFrame() may choose to cache
 // their resource providers. If |raster_context_provider| is null a software
 // resource provider will be returned.
 PLATFORM_EXPORT std::unique_ptr<CanvasResourceProvider>
 CreateResourceProviderForVideoFrame(
-    IntSize size,
+    const SkImageInfo& info,
     viz::RasterContextProvider* raster_context_provider);
 
 }  // namespace blink

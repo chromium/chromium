@@ -1,15 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/external_arc/overlay/arc_overlay_controller_impl.h"
+#include "base/bind.h"
 #include "base/logging.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 
 namespace {
@@ -17,6 +19,21 @@ namespace {
 ash::ArcOverlayManager* singleton = nullptr;
 
 const char* kBillingIdPrefix = "billing_id:";
+
+absl::optional<std::string> GetOverlayTokenForArcWindow(aura::Window* window) {
+  auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
+  DCHECK(shell_surface_base);
+  auto* shell_root_surface = shell_surface_base->root_surface();
+  DCHECK(shell_root_surface);
+
+  // If the client_surface_id doesn't have a particular prefix, it is not an
+  // overlay candidate.
+  std::string client_surface_id = shell_root_surface->GetClientSurfaceId();
+  if (!base::StartsWith(client_surface_id, kBillingIdPrefix))
+    return {};
+
+  return client_surface_id.substr(strlen(kBillingIdPrefix));
+}
 
 }  // namespace
 
@@ -71,6 +88,15 @@ void ArcOverlayManager::OnWindowInitialized(aura::Window* window) {
   if (!window->delegate() || !ash::IsArcWindow(window))
     return;
 
+  // See if a potentially valid overlay token is set on the window, to confirm
+  // that it is intended to be an overlay window.
+  absl::optional<std::string> token = GetOverlayTokenForArcWindow(window);
+  if (!token)
+    return;
+
+  // Disable animations on overlay windows.
+  window->SetProperty(aura::client::kAnimationsDisabledKey, true);
+
   window_observations_.AddObservation(window);
 }
 
@@ -91,22 +117,14 @@ void ArcOverlayManager::OnWindowVisibilityChanged(aura::Window* window,
   // We do not need to keep observing the window.
   window_observations_.RemoveObservation(window);
 
-  auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
-  DCHECK(shell_surface_base);
-  auto* shell_root_surface = shell_surface_base->root_surface();
-  DCHECK(shell_root_surface);
-
-  // If the client_surface_id doesn't have a particular prefix, it is not an
-  // overlay candidate.
-  std::string client_surface_id = shell_root_surface->GetClientSurfaceId();
-  if (!base::StartsWith(client_surface_id, kBillingIdPrefix))
+  // Get the overlay token.
+  absl::optional<std::string> token = GetOverlayTokenForArcWindow(window);
+  if (!token)
     return;
 
-  std::string overlay_token =
-      client_surface_id.substr(strlen(kBillingIdPrefix));
-
   // Find and attach the overlay to the host window.
-  RegisterOverlayWindow(std::move(overlay_token), shell_surface_base);
+  auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
+  RegisterOverlayWindow(std::move(token).value(), shell_surface_base);
 }
 
 void ArcOverlayManager::RegisterOverlayWindow(
@@ -121,7 +139,10 @@ void ArcOverlayManager::RegisterOverlayWindow(
   // Use the shell surface widget window as the overlay
   DCHECK(shell_surface_base->GetWidget());
   DCHECK(shell_surface_base->GetWidget()->GetNativeWindow());
-  it->second->AttachOverlay(shell_surface_base->GetWidget()->GetNativeWindow());
+  auto* window = shell_surface_base->GetWidget()->GetNativeWindow();
+  it->second->AttachOverlay(window);
+
+  window->SetProperty(aura::client::kSkipImeProcessing, true);
 }
 
 }  // namespace ash

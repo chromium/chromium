@@ -1,20 +1,30 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed(Window WebGPU, Worker WebGPU)
+    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    SecureContext
 ] interface GPUComputePassEncoder {
     void setPipeline(GPUComputePipeline pipeline);
-    void dispatch(GPUSize32 x,
-                  optional GPUSize32 y = 1,
-                  optional GPUSize32 z = 1);
+    void dispatchWorkgroups(GPUSize32 workgroupCountX,
+                            optional GPUSize32 workgroupCountY = 1,
+                            optional GPUSize32 workgroupCountZ = 1);
+    void dispatchWorkgroupsIndirect(GPUBuffer indirectBuffer,
+                                    GPUSize64 indirectOffset);
+    void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
+
+    void end();
+    void endPass(); // TODO(dawn:1286): Remove after deprecation period.
+
+    // TODO(dawn:22): Remove after deprecation period.
+    void dispatch(GPUSize32 workgroupCountX,
+                  optional GPUSize32 workgroupCountY = 1,
+                  optional GPUSize32 workgroupCountZ = 1);
     void dispatchIndirect(GPUBuffer indirectBuffer,
                           GPUSize64 indirectOffset);
-    void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
-    void endPass();
 };
 GPUComputePassEncoder includes GPUObjectBase;
 GPUComputePassEncoder includes GPUProgrammablePassEncoder;

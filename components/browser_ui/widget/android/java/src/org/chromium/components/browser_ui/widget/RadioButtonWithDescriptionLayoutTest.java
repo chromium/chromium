@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -59,7 +60,8 @@ public class RadioButtonWithDescriptionLayoutTest {
 
     @Before
     public void setUp() {
-        mContext = InstrumentationRegistry.getTargetContext();
+        mContext = new ContextThemeWrapper(
+                InstrumentationRegistry.getTargetContext(), R.style.Theme_BrowserUI_DayNight);
     }
 
     @Test

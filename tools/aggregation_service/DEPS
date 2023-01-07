@@ -1,0 +1,9 @@
+include_rules = [
+  "+content/public/browser",
+  "+content/public/test",
+  "+mojo/core/embedder",
+  "+mojo/public/cpp",
+  "+services/cert_verifier/public/mojom",
+  "+services/data_decoder/public/cpp",
+  "+services/network",
+]

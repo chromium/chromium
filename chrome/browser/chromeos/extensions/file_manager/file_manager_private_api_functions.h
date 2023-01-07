@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_dialog.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_drive.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_file_system.h"
+#include "chrome/browser/chromeos/extensions/file_manager/private_api_guest_os.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_holding_space.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_media_parser.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_misc.h"

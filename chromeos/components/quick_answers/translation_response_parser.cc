@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "chromeos/components/quick_answers/search_result_parsers/result_parser.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 
-namespace chromeos {
 namespace quick_answers {
 
 TranslationResponseParser::TranslationResponseParser(
@@ -37,13 +36,13 @@ void TranslationResponseParser::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   DCHECK(complete_callback_);
 
-  if (!result.value) {
-    LOG(ERROR) << "JSON parsing failed: " << *result.error;
+  if (!result.has_value()) {
+    LOG(ERROR) << "JSON parsing failed: " << result.error();
     std::move(complete_callback_).Run(nullptr);
     return;
   }
 
-  auto* translations = result.value->FindListPath("data.translations");
+  auto* translations = result->FindListPath("data.translations");
   if (!translations) {
     LOG(ERROR) << "Can't find translations result list.";
     std::move(complete_callback_).Run(nullptr);
@@ -71,4 +70,3 @@ void TranslationResponseParser::OnJsonParsed(
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos

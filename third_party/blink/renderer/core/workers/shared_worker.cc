@@ -31,12 +31,14 @@
 
 #include "third_party/blink/renderer/core/workers/shared_worker.h"
 
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_workeroptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_worker_options.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -71,11 +73,18 @@ SharedWorker::SharedWorker(ExecutionContext* context)
           SchedulingPolicy::Feature::kSharedWorker,
           {SchedulingPolicy::DisableBackForwardCache()})) {}
 
-SharedWorker* SharedWorker::Create(ExecutionContext* context,
-                                   const String& url,
-                                   const StringOrWorkerOptions& name_or_options,
-                                   ExceptionState& exception_state) {
+SharedWorker* SharedWorker::Create(
+    ExecutionContext* context,
+    const String& url,
+    const V8UnionStringOrWorkerOptions* name_or_options,
+    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
+
+  if (context->IsContextDestroyed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The context provided is invalid.");
+    return nullptr;
+  }
 
   // We don't currently support nested workers, so workers can only be created
   // from windows.
@@ -110,21 +119,23 @@ SharedWorker* SharedWorker::Create(ExecutionContext* context,
   }
 
   auto options = mojom::blink::WorkerOptions::New();
-  if (name_or_options.IsString()) {
-    options->name = name_or_options.GetAsString();
-  } else if (name_or_options.IsWorkerOptions()) {
-    WorkerOptions* worker_options = name_or_options.GetAsWorkerOptions();
-    options->name = worker_options->name();
-    base::Optional<mojom::blink::ScriptType> type_result =
-        Script::ParseScriptType(worker_options->type());
-    DCHECK(type_result);
-    options->type = type_result.value();
-    base::Optional<network::mojom::CredentialsMode> credentials_result =
-        Request::ParseCredentialsMode(worker_options->credentials());
-    DCHECK(credentials_result);
-    options->credentials = credentials_result.value();
-  } else {
-    NOTREACHED();
+  switch (name_or_options->GetContentType()) {
+    case V8UnionStringOrWorkerOptions::ContentType::kString:
+      options->name = name_or_options->GetAsString();
+      break;
+    case V8UnionStringOrWorkerOptions::ContentType::kWorkerOptions: {
+      WorkerOptions* worker_options = name_or_options->GetAsWorkerOptions();
+      options->name = worker_options->name();
+      absl::optional<mojom::blink::ScriptType> type_result =
+          Script::ParseScriptType(worker_options->type());
+      DCHECK(type_result);
+      options->type = type_result.value();
+      absl::optional<network::mojom::CredentialsMode> credentials_result =
+          Request::ParseCredentialsMode(worker_options->credentials());
+      DCHECK(credentials_result);
+      options->credentials = credentials_result.value();
+      break;
+    }
   }
   DCHECK(!options->name.IsNull());
   if (options->type == mojom::blink::ScriptType::kClassic)

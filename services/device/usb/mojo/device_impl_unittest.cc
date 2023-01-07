@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -56,6 +55,9 @@ class ConfigBuilder {
   explicit ConfigBuilder(uint8_t value)
       : config_(BuildUsbConfigurationInfoPtr(value, false, false, 0)) {}
 
+  ConfigBuilder(const ConfigBuilder&) = delete;
+  ConfigBuilder& operator=(const ConfigBuilder&) = delete;
+
   ConfigBuilder& AddInterface(uint8_t interface_number,
                               uint8_t alternate_setting,
                               uint8_t class_code,
@@ -71,8 +73,6 @@ class ConfigBuilder {
 
  private:
   mojom::UsbConfigurationInfoPtr config_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigBuilder);
 };
 
 void ExpectOpenAndThen(mojom::UsbOpenDeviceError expected,
@@ -93,7 +93,7 @@ void ExpectTransferInAndThen(mojom::UsbTransferStatus expected_status,
                              const std::vector<uint8_t>& expected_bytes,
                              base::OnceClosure continuation,
                              mojom::UsbTransferStatus actual_status,
-                             const std::vector<uint8_t>& actual_bytes) {
+                             base::span<const uint8_t> actual_bytes) {
   EXPECT_EQ(expected_status, actual_status);
   ASSERT_EQ(expected_bytes.size(), actual_bytes.size());
   for (size_t i = 0; i < actual_bytes.size(); ++i) {
@@ -121,7 +121,7 @@ void ExpectPacketsInAndThen(
     const std::vector<uint8_t>& expected_bytes,
     const std::vector<uint32_t>& expected_packets,
     base::OnceClosure continuation,
-    const std::vector<uint8_t>& actual_bytes,
+    base::span<const uint8_t> actual_bytes,
     std::vector<UsbIsochronousPacketPtr> actual_packets) {
   ASSERT_EQ(expected_packets.size(), actual_packets.size());
   for (size_t i = 0; i < expected_packets.size(); ++i) {
@@ -166,6 +166,9 @@ class MockUsbDeviceClient : public mojom::UsbDeviceClient {
 class USBDeviceImplTest : public testing::Test {
  public:
   USBDeviceImplTest() : is_device_open_(false), allow_reset_(false) {}
+
+  USBDeviceImplTest(const USBDeviceImplTest&) = delete;
+  USBDeviceImplTest& operator=(const USBDeviceImplTest&) = delete;
 
   ~USBDeviceImplTest() override = default;
 
@@ -289,7 +292,7 @@ class USBDeviceImplTest : public testing::Test {
     // Simulate the asynchronous device opening process.
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(callback), mock_handle_),
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
   }
 
   void CloseMockHandle() {
@@ -467,8 +470,6 @@ class USBDeviceImplTest : public testing::Test {
   base::queue<std::vector<UsbIsochronousPacketPtr>> mock_outbound_packets_;
 
   std::set<uint8_t> claimed_interfaces_;
-
-  DISALLOW_COPY_AND_ASSIGN(USBDeviceImplTest);
 };
 
 }  // namespace

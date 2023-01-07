@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
 
 namespace blink {
 
@@ -19,37 +18,18 @@ DawnObjectBase::GetDawnControlClient() const {
   return dawn_control_client_;
 }
 
-gpu::webgpu::WebGPUInterface* DawnObjectBase::GetInterface() const {
-  return dawn_control_client_->GetInterface();
-}
-
-const DawnProcTable& DawnObjectBase::GetProcs() const {
-  return dawn_control_client_->GetProcs();
-}
-
 void DawnObjectBase::setLabel(const String& value) {
   // TODO: Relay label changes to Dawn
   label_ = value;
+  setLabelImpl(value);
 }
 
-void DawnObjectBase::EnsureFlush() {
-  bool needs_flush = false;
-  GetInterface()->EnsureAwaitingFlush(&needs_flush);
-  if (!needs_flush) {
-    // We've already enqueued a task to flush, or the command buffer
-    // is empty. Do nothing.
-    return;
-  }
-  Microtask::EnqueueMicrotask(WTF::Bind(
-      [](scoped_refptr<DawnControlClientHolder> dawn_control_client) {
-        dawn_control_client->GetInterface()->FlushAwaitingCommands();
-      },
-      dawn_control_client_));
+void DawnObjectBase::EnsureFlush(scheduler::EventLoop& event_loop) {
+  dawn_control_client_->EnsureFlush(event_loop);
 }
 
-// Flush commands up until now on this object's parent device immediately.
 void DawnObjectBase::FlushNow() {
-  GetInterface()->FlushCommands();
+  dawn_control_client_->Flush();
 }
 
 DawnObjectImpl::DawnObjectImpl(GPUDevice* device)

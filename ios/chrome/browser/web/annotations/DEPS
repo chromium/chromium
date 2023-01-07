@@ -1,0 +1,4 @@
+# TODO(crbug.com/1350974): create public headers for TextManager.
+include_rules = [
+  "+ios/web/annotations",
+]

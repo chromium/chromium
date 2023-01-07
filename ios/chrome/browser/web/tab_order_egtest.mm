@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,16 +26,16 @@ namespace {
 // URL for a test page that contains a link.
 const char kLinksTestURL1[] = "/links.html";
 
-// Some text in |kLinksTestURL1|.
+// Some text in `kLinksTestURL1`.
 const char kLinksTestURL1Text[] = "Normal Link";
 
-// ID of the <a> link in |kLinksTestURL1|.
+// ID of the <a> link in `kLinksTestURL1`.
 const char kLinkSelectorID[] = "normal-link";
 
 // URL for a different test page.
 const char kLinksTestURL2[] = "/destination.html";
 
-// Some text in |kLinksTestURL2|.
+// Some text in `kLinksTestURL2`.
 const char kLinksTestURL2Text[] = "arrived";
 
 }  // namespace
@@ -65,7 +65,7 @@ const char kLinksTestURL2Text[] = "arrived";
   [ChromeEarlGrey waitForMainTabCount:2U];
   NSString* childTab1ID = [ChromeEarlGrey nextTabID];
 
-  // New child tab should be inserted after the tab with |childTab1ID|.
+  // New child tab should be inserted after the tab with `childTab1ID`.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
                         [ElementSelector selectorWithElementID:kLinkSelectorID],
@@ -76,7 +76,7 @@ const char kLinksTestURL2Text[] = "arrived";
   GREYAssertEqualObjects(childTab1ID, [ChromeEarlGrey nextTabID],
                          @"Unexpected next tab");
 
-  // Navigate the parent tab away and again to |kLinksTestURL1| to break
+  // Navigate the parent tab away and again to `kLinksTestURL1` to break
   // grouping with the current child tabs. Total number of tabs should not
   // change.
   const GURL URL2 = self.testServer->GetURL(kLinksTestURL2);
@@ -90,7 +90,7 @@ const char kLinksTestURL2Text[] = "arrived";
   GREYAssertEqual(3U, [ChromeEarlGrey mainTabCount],
                   @"Unexpected number of tabs");
 
-  // New child tab should be inserted before the tab with |childTab1ID|.
+  // New child tab should be inserted before the tab with `childTab1ID`.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
                         [ElementSelector selectorWithElementID:kLinkSelectorID],
@@ -102,7 +102,7 @@ const char kLinksTestURL2Text[] = "arrived";
 
   GREYAssertNotEqualObjects(childTab1ID, childTab3ID, @"Unexpected next tab");
 
-  // New child tab should be inserted after the tab with |childTab3ID|.
+  // New child tab should be inserted after the tab with `childTab3ID`.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
                         [ElementSelector selectorWithElementID:kLinkSelectorID],
@@ -113,7 +113,7 @@ const char kLinksTestURL2Text[] = "arrived";
   GREYAssertEqualObjects(childTab3ID, [ChromeEarlGrey nextTabID],
                          @"Unexpected next web state");
 
-  // Verify that tab with |childTab1ID| is now at index 3.
+  // Verify that tab with `childTab1ID` is now at index 3.
   [ChromeEarlGrey selectTabAtIndex:3];
   GREYAssertEqualObjects(childTab1ID, [ChromeEarlGrey currentTabID],
                          @"Unexpected current web state");
@@ -126,7 +126,7 @@ const char kLinksTestURL2Text[] = "arrived";
   GREYAssertEqualObjects(parentTabID, [ChromeEarlGrey nextTabID],
                          @"Unexpected next web state");
 
-  // Verify that tab with |anotherTabID| is at index 5.
+  // Verify that tab with `anotherTabID` is at index 5.
   NSString* anotherTabID = [ChromeEarlGrey currentTabID];
   [ChromeEarlGrey selectTabAtIndex:5];
   GREYAssertEqualObjects(anotherTabID, [ChromeEarlGrey currentTabID],

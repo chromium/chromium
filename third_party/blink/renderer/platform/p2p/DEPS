@@ -1,7 +1,7 @@
 include_rules = [
     "+base/observer_list_threadsafe.h",
     "+crypto/random.h",
-    "+jingle/glue/utils.h",
+    "+components/webrtc/net_address_utils.h",
     "+media/base/media_permission.h",
     "+net/base/ip_address.h",
     "+net/base/ip_endpoint.h",

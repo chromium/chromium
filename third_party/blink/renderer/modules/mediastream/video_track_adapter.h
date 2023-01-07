@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/media_stream_types.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc_overrides/low_precision_timer.h"
 
 namespace blink {
 
@@ -44,6 +45,9 @@ class MODULES_EXPORT VideoTrackAdapter
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);
 
+  VideoTrackAdapter(const VideoTrackAdapter&) = delete;
+  VideoTrackAdapter& operator=(const VideoTrackAdapter&) = delete;
+
   // Register |track| to receive video frames in and |encoded_frame_callback|
   // and in |frame_callback| with a resolution within the boundaries of the
   // arguments, and settings updates in |settings_callback|. Must be called on
@@ -52,7 +56,9 @@ class MODULES_EXPORT VideoTrackAdapter
   // |on_muted_state_callback|.
   void AddTrack(const MediaStreamVideoTrack* track,
                 VideoCaptureDeliverFrameCB frame_callback,
+                VideoCaptureNotifyFrameDroppedCB notify_frame_dropped_callback,
                 EncodedVideoFrameCB encoded_frame_callback,
+                VideoCaptureCropVersionCB crop_version_callback,
                 VideoTrackSettingsCallback settings_callback,
                 VideoTrackFormatCallback track_callback,
                 const VideoTrackAdapterSettings& settings);
@@ -71,6 +77,11 @@ class MODULES_EXPORT VideoTrackAdapter
   // Must be called on the IO-thread.
   void DeliverEncodedVideoFrameOnIO(scoped_refptr<EncodedVideoFrame> frame,
                                     base::TimeTicks estimated_capture_time);
+
+  // Called when it is guaranteed that all subsequent frames delivered
+  // over DeliverFrameOnIO() will have a crop version that is
+  // equal-to-or-greater-than the given crop version.
+  void NewCropVersionOnIO(uint32_t crop_version);
 
   base::SingleThreadTaskRunner* io_task_runner() const {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -97,7 +108,7 @@ class MODULES_EXPORT VideoTrackAdapter
                                    const VideoTrackAdapterSettings& settings,
                                    gfx::Size* desired_size);
 
-  base::Optional<gfx::Size> source_frame_size() const {
+  absl::optional<gfx::Size> source_frame_size() const {
     return source_frame_size_;
   }
 
@@ -112,10 +123,14 @@ class MODULES_EXPORT VideoTrackAdapter
           scoped_refptr<media::VideoFrame> video_frame,
           std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
           base::TimeTicks estimated_capture_time)>;
+  using VideoCaptureNotifyFrameDroppedInternalCallback =
+      WTF::CrossThreadFunction<void()>;
   using DeliverEncodedVideoFrameInternalCallback =
       WTF::CrossThreadFunction<void(
           scoped_refptr<EncodedVideoFrame> video_frame,
           base::TimeTicks estimated_capture_time)>;
+  using VideoCaptureCropVersionInternalCallback =
+      WTF::CrossThreadFunction<void(uint32_t)>;
   using VideoTrackSettingsInternalCallback =
       WTF::CrossThreadFunction<void(gfx::Size frame_size, double frame_rate)>;
   using VideoTrackFormatInternalCallback =
@@ -123,7 +138,10 @@ class MODULES_EXPORT VideoTrackAdapter
   void AddTrackOnIO(
       const MediaStreamVideoTrack* track,
       VideoCaptureDeliverFrameInternalCallback frame_callback,
+      VideoCaptureNotifyFrameDroppedInternalCallback
+          notify_frame_dropped_callback,
       DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
+      VideoCaptureCropVersionInternalCallback crop_version_callback,
       VideoTrackSettingsInternalCallback settings_callback,
       VideoTrackFormatInternalCallback track_callback,
       const VideoTrackAdapterSettings& settings);
@@ -139,10 +157,9 @@ class MODULES_EXPORT VideoTrackAdapter
   void StopFrameMonitoringOnIO();
   void SetSourceFrameSizeOnIO(const gfx::Size& frame_size);
 
-  // Compare |frame_counter_snapshot| with the current |frame_counter_|, and
-  // inform of the situation (muted, not muted) via |set_muted_state_callback|.
-  void CheckFramesReceivedOnIO(OnMutedInternalCallback set_muted_state_callback,
-                               uint64_t old_frame_counter_snapshot);
+  // Compare |old_frame_counter_snapshot_| with the current |frame_counter_|,
+  // and inform of the situation (muted, not muted) via |on_muted_callback_|.
+  void CheckFramesReceivedOnIO();
 
   // |thread_checker_| is bound to the main render thread.
   THREAD_CHECKER(thread_checker_);
@@ -162,9 +179,9 @@ class MODULES_EXPORT VideoTrackAdapter
   using FrameAdapters = WTF::Vector<scoped_refptr<VideoFrameResolutionAdapter>>;
   FrameAdapters adapters_;
 
-  // Set to true if frame monitoring has been started. It is only accessed on
-  // the IO-thread.
-  bool monitoring_frame_rate_;
+  // Is non-null while frame monitoring. It is only accessed on the IO-thread.
+  std::unique_ptr<LowPrecisionTimer> monitoring_frame_rate_timer_;
+  OnMutedInternalCallback on_muted_callback_;
 
   // Keeps track of it frames have been received. It is only accessed on the
   // IO-thread.
@@ -172,14 +189,13 @@ class MODULES_EXPORT VideoTrackAdapter
 
   // Running frame counter, accessed on the IO-thread.
   uint64_t frame_counter_;
+  uint64_t old_frame_counter_snapshot_;
 
   // Frame rate configured on the video source, accessed on the IO-thread.
   float source_frame_rate_;
 
   // Resolution configured on the video source, accessed on the IO-thread.
-  base::Optional<gfx::Size> source_frame_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoTrackAdapter);
+  absl::optional<gfx::Size> source_frame_size_;
 };
 
 }  // namespace blink

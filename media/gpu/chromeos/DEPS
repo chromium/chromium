@@ -1,0 +1,5 @@
+include_rules = [
+  "+chromeos/components/cdm_factory_daemon",
+  "+mojo/public/cpp/bindings",
+  "+third_party/cros_system_api/constants/cdm_oemcrypto.h",
+]

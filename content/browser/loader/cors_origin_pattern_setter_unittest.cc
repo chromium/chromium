@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,8 +44,7 @@ TEST(CorsOriginPatternSetter, InitialEmptyList) {
 
   {
     content::TestBrowserContext browser_context;
-    shared_list = content::BrowserContext::GetSharedCorsOriginAccessList(
-        &browser_context);
+    shared_list = browser_context.GetSharedCorsOriginAccessList();
     ASSERT_TRUE(shared_list);
 
     // The list is empty (in absence of calls to CorsOriginPatternSetter::Set).
@@ -108,8 +107,7 @@ TEST(CorsOriginPatternSetter, Set) {
     run_loop.Run();
 
     // Verify that the results got properly stored.
-    shared_list = content::BrowserContext::GetSharedCorsOriginAccessList(
-        &browser_context);
+    shared_list = browser_context.GetSharedCorsOriginAccessList();
     ASSERT_TRUE(shared_list);
     std::vector<network::mojom::CorsOriginAccessPatternsPtr> patterns =
         shared_list->GetOriginAccessList().CreateCorsOriginAccessPatternsList();

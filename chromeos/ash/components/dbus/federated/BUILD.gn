@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+component("federated") {
+  defines = [ "IS_FEDERATED_IMPL" ]
+
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_federated_client.cc",
+    "fake_federated_client.h",
+    "federated_client.cc",
+    "federated_client.h",
+  ]
+}

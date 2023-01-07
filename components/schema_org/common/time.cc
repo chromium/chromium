@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,16 @@
 
 namespace schema_org {
 
-base::Optional<base::TimeDelta> ParseISO8601Duration(const std::string& str) {
+absl::optional<base::TimeDelta> ParseISO8601Duration(const std::string& str) {
   if (str.empty() || str[0] != 'P')
-    return base::nullopt;
+    return absl::nullopt;
 
   base::TimeDelta duration;
 
   std::string time = "";
   int time_index = str.find("T");
   if (time_index == -1)
-    return base::nullopt;
+    return absl::nullopt;
 
   time = str.substr(time_index + 1);
   std::stringstream t(time);
@@ -28,16 +28,16 @@ base::Optional<base::TimeDelta> ParseISO8601Duration(const std::string& str) {
     t >> unit;
     switch (unit) {
       case 'H':
-        duration = duration + base::TimeDelta::FromHours(amount);
+        duration = duration + base::Hours(amount);
         break;
       case 'M':
-        duration = duration + base::TimeDelta::FromMinutes(amount);
+        duration = duration + base::Minutes(amount);
         break;
       case 'S':
-        duration = duration + base::TimeDelta::FromSeconds(amount);
+        duration = duration + base::Seconds(amount);
         break;
       default:
-        return base::nullopt;
+        return absl::nullopt;
     }
   }
 

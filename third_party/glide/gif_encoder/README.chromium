@@ -1,0 +1,17 @@
+Name: Android GIF Encoder
+URL: https://github.com/bumptech/glide/tree/master/third_party/gif_encoder
+Version: a7b254c42888db691b7339b2165abcd462473fcf
+License: Notice
+License File: LICENSE
+License Android Compatible: yes
+Security Critical: yes
+CPEPrefix: unknown
+
+Description:
+  This contains the GIF encoder classes from the Glide library, which were themselves based on the
+  GIF encoding logic found here: http://java2s.com/Code/Java/2D-Graphics-GUI/AnimatedGifEncoder.htm.
+  The README.third_party file in the Glide repo has more info.
+
+Local Modifications:
+- Changed the name of the top-level package from "com.bumptech.glide.gifencoder" to
+  "org.chromium.third_party.glide.gif_encoder" to avoid potential conflicts with the Glide library.

@@ -1,0 +1,35 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+// Information about an installed Android app.
+struct AndroidAppInfo {
+  // Unique name to identify a specific app.
+  string package_name;
+
+  // Version number of the app.
+  int32 version;
+
+  // Localized app name.
+  string localized_app_name;
+
+  // Intent data to operate on.
+  string intent;
+
+  // Status of the app.
+  AndroidAppStatus status = kUnknown;
+
+  // The general action to be performed, such as ACTION_VIEW, ACTION_MAIN, etc.
+  string action;
+};
+
+// Models status of an app.
+enum AndroidAppStatus {
+  kUnknown,
+  kAvailable,
+  kUnavailable,
+  kVersionMismatch,
+  kDisabled,
+};

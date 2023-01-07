@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/nacl/config.gni")
-import("//build/config/python.gni")
 
 # Generate a nmf file
 #
@@ -20,8 +19,7 @@ template("generate_nmf") {
   assert(defined(invoker.executables), "Must define executables")
   assert(defined(invoker.nmf), "Must define nmf")
 
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(target_name) {
+  action(target_name) {
     forward_variables_from(invoker,
                            [
                              "deps",
@@ -127,56 +125,6 @@ template("generate_nmf") {
            ] + nmfflags + rebase_path(sources, root_build_dir)
     if (is_nacl_glibc && current_cpu == "arm") {
       deps += [ "//native_client/src/untrusted/elf_loader:elf_loader" ]
-    }
-  }
-}
-
-# Generate a nmf file for Non-SFI tests
-#
-# Non-SFI tests use a different manifest format from regular Native Client and
-# as such requires a different generator.
-#
-# Variables:
-#   executable: Non-SFI .nexe executable to generate nmf for
-#   nmf: the name and the path of the output file
-#   nmfflags: additional flags for the nmf generator
-template("generate_nonsfi_test_nmf") {
-  assert(defined(invoker.executable), "Must define executable")
-  assert(defined(invoker.nmf), "Must define nmf")
-
-  action(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "deps",
-                             "data_deps",
-                             "executable",
-                             "nmf",
-                             "testonly",
-                             "public_deps",
-                             "visibility",
-                           ])
-
-    script = "//ppapi/tests/create_nonsfi_test_nmf.py"
-    sources = [ executable ]
-    outputs = [ nmf ]
-
-    # NOTE: We use target_cpu rather than current_cpu on purpose because
-    # current_cpu is always going to be pnacl for Non-SFI, but the Non-SFI
-    # .nexe executable is always translated to run on the target machine.
-    if (target_cpu == "x86") {
-      arch = "x86-32"
-    } else if (target_cpu == "x64") {
-      arch = "x86-64"
-    } else {
-      arch = target_cpu
-    }
-    args = [
-      "--program=" + rebase_path(executable, root_build_dir),
-      "--arch=${arch}",
-      "--output=" + rebase_path(nmf, root_build_dir),
-    ]
-    if (defined(invoker.nmfflags)) {
-      args += invoker.nmfflags
     }
   }
 }

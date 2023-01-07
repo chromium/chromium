@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+// Shared structs and shared values require crossOriginIsolated to be
+// postMessaged, just like SABs.
+test(() => {
+  const Box = new SharedStructType(['payload']);
+  let box = new Box();
+  box.payload = 'foo';
+  assert_throws_dom("DataCloneError", () => postMessage(box));
+});
+</script>

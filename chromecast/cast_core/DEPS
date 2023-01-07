@@ -1,0 +1,6 @@
+include_rules = [
+  "+chromecast/cast_core",
+  "+chromecast/app",
+  "+chromecast/base",
+  "+content/public/app",
+]

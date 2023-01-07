@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
+import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IClientDownload;
 import org.chromium.weblayer_private.interfaces.IDownload;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IGoogleAccountAccessTokenFetcherClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IOpenUrlCallbackClient;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IProfileClient;
 import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
@@ -35,7 +37,7 @@ import java.util.Set;
  * Profile holds state (typically on disk) needed for browsing. Create a
  * Profile via WebLayer.
  */
-public class Profile {
+class Profile {
     private static final Map<String, Profile> sProfiles = new HashMap<>();
     private static final Map<String, Profile> sIncognitoProfiles = new HashMap<>();
 
@@ -76,6 +78,13 @@ public class Profile {
         profiles.addAll(sProfiles.values());
         profiles.addAll(sIncognitoProfiles.values());
         return profiles;
+    }
+
+    static String sanitizeProfileName(String profileName) {
+        if ("".equals(profileName)) {
+            throw new IllegalArgumentException("Profile path cannot be empty");
+        }
+        return profileName == null ? "" : profileName;
     }
 
     private final String mName;
@@ -451,15 +460,33 @@ public class Profile {
         }
     }
 
+    /**
+     * Sets a callback which is invoked to open a new tab that is not associated with any open tab.
+     *
+     * This will be called in cases where a service worker tries to open a tab, e.g. via the Web API
+     * clients.openWindow. If set to null, all such navigation requests will be rejected.
+     *
+     * @since 91
+     */
+    public void setTablessOpenUrlCallback(@Nullable OpenUrlCallback callback) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 91) {
+            throw new UnsupportedOperationException();
+        }
+
+        try {
+            mImpl.setTablessOpenUrlCallbackClient(
+                    callback == null ? null : new OpenUrlCallbackClientImpl(callback));
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     static final class DownloadCallbackClientImpl extends IDownloadCallbackClient.Stub {
         private final DownloadCallback mCallback;
 
         DownloadCallbackClientImpl(DownloadCallback callback) {
             mCallback = callback;
-        }
-
-        public DownloadCallback getCallback() {
-            return mCallback;
         }
 
         @Override
@@ -563,6 +590,40 @@ public class Profile {
                     ObjectWrapper.unwrap(onTokenFetchedWrapper, ValueCallback.class);
 
             mFetcher.fetchAccessToken(scopes, (token) -> valueCallback.onReceiveValue(token));
+        }
+
+        @Override
+        public void onAccessTokenIdentifiedAsInvalid(
+                IObjectWrapper scopesWrapper, IObjectWrapper tokenWrapper) {
+            StrictModeWorkaround.apply();
+            Set<String> scopes = ObjectWrapper.unwrap(scopesWrapper, Set.class);
+            String token = ObjectWrapper.unwrap(tokenWrapper, String.class);
+
+            mFetcher.onAccessTokenIdentifiedAsInvalid(scopes, token);
+        }
+    }
+
+    private static final class OpenUrlCallbackClientImpl extends IOpenUrlCallbackClient.Stub {
+        private final OpenUrlCallback mCallback;
+
+        OpenUrlCallbackClientImpl(OpenUrlCallback callback) {
+            mCallback = callback;
+        }
+
+        @Override
+        public IBrowser getBrowserForNewTab() {
+            StrictModeWorkaround.apply();
+            Browser browser = mCallback.getBrowserForNewTab();
+            return browser == null ? null : browser.getIBrowser();
+        }
+
+        @Override
+        public void onTabAdded(int tabId) {
+            StrictModeWorkaround.apply();
+            Tab tab = Tab.getTabById(tabId);
+            // Tab should have already been created by way of BrowserClient.
+            assert tab != null;
+            mCallback.onTabAdded(tab);
         }
     }
 

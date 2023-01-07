@@ -1,0 +1,5 @@
+Verifies that Expect-CT deprecation issue is created from subresource with Expect-CT header.
+
+DeprecationIssue
+ExpectCTHeader
+

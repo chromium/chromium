@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- disabled -->
+    <item android:alpha="@dimen/chip_outline_disabled_alpha" android:color="@macro/chip_outline_color"
+        android:state_enabled="false"/>
+
+    <!-- unselected & focused -->
+    <item android:alpha="@dimen/chip_outline_focused_alpha" android:color="@macro/chip_outline_focused_color"
+        android:state_selected="false"
+        android:state_focused="true"/>
+
+    <!-- unselected -->
+    <item android:alpha="@dimen/chip_outline_alpha" android:color="@macro/chip_outline_color"
+        android:state_selected="false"/>
+
+    <item android:color="@android:color/transparent" />
+</selector>

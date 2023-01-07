@@ -84,7 +84,7 @@ static void InvalidateStyleForAllLinksRecursively(
 
 void VisitedLinkState::InvalidateStyleForAllLinks(
     bool invalidate_visited_link_hashes) {
-  if (!links_checked_for_visited_state_.IsEmpty() && GetDocument().firstChild())
+  if (!links_checked_for_visited_state_.empty() && GetDocument().firstChild())
     InvalidateStyleForAllLinksRecursively(*GetDocument().firstChild(),
                                           invalidate_visited_link_hashes);
 }
@@ -124,7 +124,7 @@ EInsideLink VisitedLinkState::DetermineLinkStateSlowCase(
   // visited. It is useful to check this explicitly so that visited
   // links can be tested in platform independent manner, without
   // explicit support in the test harness.
-  if (attribute.IsEmpty())
+  if (attribute.empty())
     return EInsideLink::kInsideVisitedLink;
 
   if (LinkHash hash = LinkHashForElement(element, attribute)) {

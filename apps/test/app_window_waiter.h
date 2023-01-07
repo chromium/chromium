@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 
@@ -56,11 +57,11 @@ class AppWindowWaiter : public extensions::AppWindowRegistry::Observer {
     WAIT_FOR_ACTIVATED,
   };
 
-  extensions::AppWindowRegistry* const registry_;
+  const raw_ptr<extensions::AppWindowRegistry> registry_;
   const std::string app_id_;
   std::unique_ptr<base::RunLoop> run_loop_;
   WaitType wait_type_ = WAIT_FOR_NONE;
-  extensions::AppWindow* window_ = nullptr;
+  raw_ptr<extensions::AppWindow> window_ = nullptr;
 };
 
 }  // namespace apps

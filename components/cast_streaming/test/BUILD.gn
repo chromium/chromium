@@ -1,0 +1,66 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+visibility = [ ":*" ]
+
+# MessagePort cannot be used on Windows due to intersection of its PostMessage
+# method with a macro of the same name, so hide the targets that use it and all
+# that depend on it behind a platform check.
+# TODO(crbug.com/1357085): Resolve this and remove this exception.
+if (!is_win) {
+  source_set("test_sender") {
+    testonly = true
+    visibility += [ "*" ]
+    public_deps = [ ":test_sender_without_socket_deps" ]
+    deps = [
+      # Complete implementation of the platform API used by
+      # :test_sender_without_socket_deps.
+      "//components/openscreen_platform",
+    ]
+  }
+
+  # cast_streaming_shell cannot depend on the Network Service and thus uses
+  # //components/openscreen_platform:openscreen_platform_using_net_sockets.
+  # Because //components/openscreen_platform has a conflicing implementation,
+  # this target, which contains only the needed symbols, is provided.
+  source_set("test_sender_using_net_sockets") {
+    testonly = true
+    visibility += [ "//fuchsia_web/shell:cast_streaming_shell_exe" ]
+    public_deps = [ ":test_sender_without_socket_deps" ]
+    deps = [
+      # Complete implementation of the platform API used by
+      # :test_sender_without_socket_deps.
+      "//components/openscreen_platform:openscreen_platform_using_net_sockets",
+    ]
+  }
+
+  source_set("test_sender_without_socket_deps") {
+    testonly = true
+    public = [
+      "cast_message_port_sender_impl.h",
+      "cast_streaming_test_sender.h",
+    ]
+    sources = [
+      "cast_message_port_sender_impl.cc",
+      "cast_streaming_test_sender.cc",
+    ]
+    deps = [
+      "//components/cast_streaming/common:message_serialization",
+      "//components/cast_streaming/public:config_conversions",
+
+      # Partial implementation of the platform API used by
+      # //third_party/openscreen/src/cast/*.
+      "//components/openscreen_platform:openscreen_platform_without_sockets",
+      "//third_party/openscreen/src/cast/streaming:common",
+      "//third_party/openscreen/src/platform:base",
+    ]
+    public_deps = [
+      "//base",
+      "//components/cast/message_port",
+      "//net",
+      "//third_party/openscreen/src/cast/common:public",
+      "//third_party/openscreen/src/cast/streaming:sender",
+    ]
+  }
+}

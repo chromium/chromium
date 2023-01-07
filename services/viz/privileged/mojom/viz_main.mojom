@@ -1,11 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module viz.mojom;
 
 import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
-import "services/network/public/mojom/tcp_socket.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom";
 import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
@@ -35,12 +36,11 @@ struct FrameSinkManagerParams {
   DebugRendererSettings debug_renderer_settings;
 };
 
-struct VizDevToolsParams {
-  // Socket for viz devtools server.
-  pending_remote<network.mojom.TCPServerSocket> server_socket;
-
-  // Port the devtools server socket is bound to.
-  uint16 server_port;
+// This interface provides mechanism for the Viz Debugger to output data.
+[EnableIf=use_viz_debugger]
+interface VizDebugOutput {
+ // Called by the VizDebugger instance at the end of each frame.
+ LogFrame(mojo_base.mojom.Value frameData);
 };
 
 // This is the primordial interface used to (re)start the viz services.
@@ -52,7 +52,7 @@ interface VizMain {
       pending_remote<GpuHost> gpu_host,
       pending_remote<discardable_memory.mojom.DiscardableSharedMemoryManager>
           discardable_memory_manager,
-      handle<shared_buffer>? activity_flags,
+      mojo_base.mojom.UnsafeSharedMemoryRegion? activity_flags,
       gfx.mojom.SubpixelRendering subpixel_rendering);
 
   // Create a GPU info collection service provided by the info-collection GPU
@@ -61,8 +61,23 @@ interface VizMain {
   CreateInfoCollectionGpuService(
       pending_receiver<InfoCollectionGpuService> info_collection_gpu_service);
 
-  // The viz devtools server is for use by developers to observe the
-  // FrameSinkManager in the viz compositor. This is only called if the flag
+  // Pass the process ID of the browser process to the viz process. Used for
+  // Android performance hinting.
+  [EnableIf=is_android]
+  SetHostProcessId(int32 pid);
+
+  // Initiates the devtools enabled stream connection for the Viz Debugger.
+  // This is only called if the flag --enable-viz-devtools is used.
+  [EnableIf=use_viz_debugger]
+  StartDebugStream(pending_remote<VizDebugOutput> viz_debug);
+
+  // Sends debug filtering information to the active Viz Debugger instance.
+  // This is only called if the flag --enable-viz-devtools is used.
+  [EnableIf=use_viz_debugger]
+  FilterDebugStream(mojo_base.mojom.Value filterData);
+
+  // Ends the Viz debugging session. This is only called if the flag
   // --enable-viz-devtools is used.
-  CreateVizDevTools(VizDevToolsParams params);
+  [EnableIf=use_viz_debugger]
+  StopDebugStream();
 };

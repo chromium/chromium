@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,10 @@
 @property(nonatomic, assign) BOOL presentsModal;
 @property(nonatomic, copy) NSString* titleText;
 @property(nonatomic, copy) NSString* subtitleText;
+@property(nonatomic, strong) UIColor* iconBackgroundColor;
+@property(nonatomic, strong) UIColor* iconImageTintColor;
 @property(nonatomic, assign) BOOL useIconBackgroundTint;
+@property(nonatomic, assign) BOOL restrictSubtitleTextToSingleLine;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_BANNERS_TEST_FAKE_INFOBAR_BANNER_CONSUMER_H_

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,15 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/fido/auth_token_requester.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ElapsedTimer;
@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
  public:
   using CompletionCallback = base::OnceCallback<void(
       GetAssertionStatus,
-      base::Optional<std::vector<AuthenticatorGetAssertionResponse>>,
+      absl::optional<std::vector<AuthenticatorGetAssertionResponse>>,
       const FidoAuthenticator*)>;
 
   GetAssertionRequestHandler(
@@ -67,7 +67,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
       CtapGetAssertionOptions request_options,
       bool allow_skipping_pin_touch,
       CompletionCallback completion_callback);
+
+  GetAssertionRequestHandler(const GetAssertionRequestHandler&) = delete;
+  GetAssertionRequestHandler& operator=(const GetAssertionRequestHandler&) =
+      delete;
+
   ~GetAssertionRequestHandler() override;
+
+  // Filters the allow list of the get assertion request to the given
+  // |credential_id|. This is only valid to call for empty allow list requests.
+  void PreselectAccount(std::vector<uint8_t> credential_id);
+
+  base::WeakPtr<GetAssertionRequestHandler> GetWeakPtr();
 
  private:
   enum class State {
@@ -86,11 +97,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   void DispatchRequest(FidoAuthenticator* authenticator) override;
   void AuthenticatorRemoved(FidoDiscoveryBase* discovery,
                             FidoAuthenticator* authenticator) override;
-  void FillHasRecognizedPlatformCredential(
-      base::OnceCallback<void()> done_callback) override;
+  void GetPlatformCredentialStatus(
+      FidoAuthenticator* platform_authenticator) override;
 
   // AuthTokenRequester::Delegate:
-  void AuthenticatorSelectedForPINUVAuthToken(
+  bool AuthenticatorSelectedForPINUVAuthToken(
       FidoAuthenticator* authenticator) override;
   void CollectPIN(pin::PINEntryReason reason,
                   pin::PINEntryError error,
@@ -101,7 +112,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   void HavePINUVAuthTokenResultForAuthenticator(
       FidoAuthenticator* authenticator,
       AuthTokenRequester::Result result,
-      base::Optional<pin::TokenResponse> response) override;
+      absl::optional<pin::TokenResponse> response) override;
 
   void ObtainPINUVAuthToken(FidoAuthenticator* authenticator,
                             std::set<pin::Permissions> permissions,
@@ -112,12 +123,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
       CtapGetAssertionRequest request,
       base::ElapsedTimer request_timer,
       CtapDeviceResponseCode response_code,
-      base::Optional<AuthenticatorGetAssertionResponse> response);
+      absl::optional<AuthenticatorGetAssertionResponse> response);
   void HandleNextResponse(
       FidoAuthenticator* authenticator,
       CtapGetAssertionRequest request,
       CtapDeviceResponseCode response_code,
-      base::Optional<AuthenticatorGetAssertionResponse> response);
+      absl::optional<AuthenticatorGetAssertionResponse> response);
   void TerminateUnsatisfiableRequestPostTouch(FidoAuthenticator* authenticator);
   void DispatchRequestWithToken(pin::TokenResponse token);
   void OnGetAssertionSuccess(FidoAuthenticator* authenticator,
@@ -125,20 +136,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   void OnReadLargeBlobs(
       FidoAuthenticator* authenticator,
       CtapDeviceResponseCode status,
-      base::Optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>
-          blobs);
+      absl::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>> blobs);
   void OnWriteLargeBlob(FidoAuthenticator* authenticator,
                         CtapDeviceResponseCode status);
-  void OnHasPlatformCredential(
-      base::OnceCallback<void()> done_callback,
-      std::vector<PublicKeyCredentialUserEntity> credentials,
-      bool has_credential);
 
   CompletionCallback completion_callback_;
   State state_ = State::kWaitingForTouch;
   CtapGetAssertionRequest request_;
   CtapGetAssertionOptions options_;
-  base::Optional<pin::TokenResponse> pin_token_;
+  absl::optional<pin::TokenResponse> pin_token_;
 
   // If true, and if at the time the request is dispatched to the first
   // authenticator no other authenticators are available, the request handler
@@ -150,7 +156,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   // that was tapped by the user while requesting a pinUvAuthToken from
   // connected authenticators. The object is owned by the underlying discovery
   // object and this pointer is cleared if it's removed during processing.
-  FidoAuthenticator* selected_authenticator_for_pin_uv_auth_token_ = nullptr;
+  raw_ptr<FidoAuthenticator> selected_authenticator_for_pin_uv_auth_token_ =
+      nullptr;
 
   // responses_ holds the set of responses while they are incrementally read
   // from the device. Only used when more than one response is returned.
@@ -165,10 +172,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   std::map<FidoAuthenticator*, std::unique_ptr<AuthTokenRequester>>
       auth_token_requester_map_;
 
+  // preselected_credential_ is set when the UI invokes `PreselectAccount()`. It
+  // contains the ID of a platform authenticator credential chosen by the user
+  // during a resident key request prior to dispatching to that platform
+  // authenticator.
+  absl::optional<std::vector<uint8_t>> preselected_credential_;
+
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<GetAssertionRequestHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GetAssertionRequestHandler);
 };
 
 }  // namespace device

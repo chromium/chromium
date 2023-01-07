@@ -1,0 +1,35 @@
+caption: Do not set <ph name="WINDOW_OPENER_PROPERTY">window.opener</ph> for links
+  targeting <ph name="BLANK_PAGE_NAME">_blank</ph>
+default: true
+deprecated: true
+desc: |-
+  Setting the policy to Disabled allows pop-ups targeting <ph name="BLANK_PAGE_NAME">_blank</ph> to access (via JavaScript) the page that requested to open the pop-up.
+
+        Setting the policy to Enabled or leaving it unset causes the <ph name="WINDOW_OPENER_PROPERTY">window.opener</ph> property to be set to <ph name="NULL_VALUE">null</ph> unless the anchor specifies <ph name="REL_OPENER_ATTRIBUTE">rel="opener"</ph>.
+
+        This policy was removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 102.
+
+        See https://chromestatus.com/feature/6140064063029248.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Only allow pop-ups opened with a target of <ph name="BLANK_PAGE_NAME">_blank</ph>
+    to interact with the page that opened the pop-up if the opener page explicitly
+    opts-in to such interaction
+  value: true
+- caption: 'Allow all pop-ups opened with a target of <ph name="BLANK_PAGE_NAME">_blank</ph>
+    to interact the page that requested to open the pop-up unless the opener page
+    explicitly opts-out of such interaction '
+  value: false
+owners:
+- ericlaw@microsoft.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:88-102
+- chrome_os:88-102
+- android:88-102
+tags: []
+type: main

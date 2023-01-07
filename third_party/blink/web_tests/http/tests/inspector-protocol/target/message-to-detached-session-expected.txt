@@ -1,0 +1,11 @@
+Tests that sending message to detached session will return an error.
+removed frames from dom
+PASS: got protocolerror: {
+    code : -32001
+    message : Session with given id not found.
+}
+PASS: got protocolerror: {
+    code : -32001
+    message : Session with given id not found.
+}
+

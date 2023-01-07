@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "ash/public/cpp/smartlock_state.h"
 #include "base/callback.h"
 #include "base/time/time.h"
-#include "base/token.h"
-#include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
+#include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
 
@@ -34,7 +34,7 @@ enum class OobeDialogState {
   WRONG_HWID_WARNING = 3,
 
   // Showing supervised user creation screen.
-  SUPERVISED_USER_CREATION_FLOW = 4,
+  DEPRECATED_SUPERVISED_USER_CREATION_FLOW = 4,
 
   // Showing SAML password confirmation screen.
   SAML_PASSWORD_CONFIRM = 5,
@@ -43,7 +43,7 @@ enum class OobeDialogState {
   PASSWORD_CHANGED = 6,
 
   // Showing device enrollment screen.
-  ENROLLMENT = 7,
+  ENROLLMENT_CANCEL_DISABLED = 7,
 
   // Showing error screen.
   ERROR = 8,
@@ -69,6 +69,29 @@ enum class OobeDialogState {
 
   // Showing user creation screen.
   USER_CREATION = 15,
+
+  // Showing enrollment screen with the possibility to cancel.
+  ENROLLMENT_CANCEL_ENABLED = 16,
+
+  // Showing enrollment success step.
+  ENROLLMENT_SUCCESS = 17,
+  // Showing theme selection screen.
+  THEME_SELECTION = 18,
+
+  // Showing marketing opt-in screen.
+  MARKETING_OPT_IN = 19,
+
+};
+
+// Modes of the managed device, which is used to update the visibility of
+// license-specific components.
+enum class ManagementDeviceMode {
+  kNone = 0,
+  kChromeEnterprise = 1,
+  kChromeEducation = 2,
+  kKioskSku = 3,
+  kOther = 4,
+  kMaxValue = kOther,
 };
 
 // Supported multi-profile user behavior values.
@@ -80,8 +103,8 @@ enum class MultiProfileUserBehavior {
   OWNER_PRIMARY_ONLY = 3,
 };
 
-// Easy unlock icon choices.
-enum class EasyUnlockIconId {
+// Easy unlock icon states.
+enum class EasyUnlockIconState {
   // No icon shown.
   NONE,
   // The user has clicked the easy unlock icon and disabled easy unlock for this
@@ -122,17 +145,17 @@ enum class FingerprintState {
 };
 
 // Information about the custom icon in the user pod.
-struct ASH_PUBLIC_EXPORT EasyUnlockIconOptions {
-  EasyUnlockIconOptions();
-  EasyUnlockIconOptions(const EasyUnlockIconOptions& other);
-  EasyUnlockIconOptions(EasyUnlockIconOptions&& other);
-  ~EasyUnlockIconOptions();
+struct ASH_PUBLIC_EXPORT EasyUnlockIconInfo {
+  EasyUnlockIconInfo();
+  EasyUnlockIconInfo(const EasyUnlockIconInfo& other);
+  EasyUnlockIconInfo(EasyUnlockIconInfo&& other);
+  ~EasyUnlockIconInfo();
 
-  EasyUnlockIconOptions& operator=(const EasyUnlockIconOptions& other);
-  EasyUnlockIconOptions& operator=(EasyUnlockIconOptions&& other);
+  EasyUnlockIconInfo& operator=(const EasyUnlockIconInfo& other);
+  EasyUnlockIconInfo& operator=(EasyUnlockIconInfo&& other);
 
   // Icon that should be displayed.
-  EasyUnlockIconId icon = EasyUnlockIconId::NONE;
+  EasyUnlockIconState icon_state = EasyUnlockIconState::NONE;
   // Tooltip that is associated with the icon. This is shown automatically if
   // |autoshow_tooltip| is true. The user can always see the tooltip if they
   // hover over the icon. The tooltip should be used for the accessibility label
@@ -151,6 +174,24 @@ struct ASH_PUBLIC_EXPORT EasyUnlockIconOptions {
   // display via a separate EasyUnlockIconsOption update. See
   // LoginScreenClient::HardlockPod.
   bool hardlock_on_click = false;
+};
+
+// Enterprise information about a managed device.
+struct ASH_PUBLIC_EXPORT DeviceEnterpriseInfo {
+  bool operator==(const DeviceEnterpriseInfo& other) const;
+
+  // The name of the entity that manages the device and current account user.
+  //       For standard Dasher domains, this will be the domain name (foo.com).
+  //       For FlexOrgs, this will be the admin's email (user@foo.com).
+  //       For Active Directory or not enterprise enrolled, this will be an
+  //       empty string.
+  std::string enterprise_domain_manager;
+
+  // Whether this is an Active Directory managed enterprise device.
+  bool active_directory_managed = false;
+
+  // Which mode a managed device is enrolled in.
+  ManagementDeviceMode management_device_mode = ManagementDeviceMode::kNone;
 };
 
 // Information of each input method. This is used to populate keyboard layouts
@@ -195,7 +236,7 @@ struct ASH_PUBLIC_EXPORT LocaleItem {
   std::string title;
 
   // Group name of the locale.
-  base::Optional<std::string> group_name;
+  absl::optional<std::string> group_name;
 };
 
 // Information about a public account user.
@@ -211,7 +252,7 @@ struct ASH_PUBLIC_EXPORT PublicAccountInfo {
   // The name of the device manager displayed in the login screen UI for
   // device-level management. May be either a domain (foo.com) or an email
   // address (user@foo.com).
-  base::Optional<std::string> device_enterprise_manager;
+  absl::optional<std::string> device_enterprise_manager;
 
   // A list of available user locales.
   std::vector<LocaleItem> available_locales;
@@ -262,6 +303,10 @@ struct ASH_PUBLIC_EXPORT LoginUserInfo {
   // LoginScreenModel::SetFingerprintState) which update the current state.
   FingerprintState fingerprint_state = FingerprintState::UNAVAILABLE;
 
+  // The initial Smart Lock state. There are other methods (i.e.,
+  // LoginScreenModel::SetSmartLockState) which update the current state.
+  SmartLockState smart_lock_state = SmartLockState::kDisabled;
+
   // True if multi-profiles sign in is allowed for this user.
   bool is_multiprofile_allowed = false;
 
@@ -283,10 +328,10 @@ struct ASH_PUBLIC_EXPORT LoginUserInfo {
   // login screen UI for user-level management. Will be either a domain name
   // (foo.com) or the email address of the admin (some_user@foo.com).
   // This is only set if the relevant user is managed.
-  base::Optional<std::string> user_account_manager;
+  absl::optional<std::string> user_account_manager;
 
   // Contains the public account information if user type is PUBLIC_ACCOUNT.
-  base::Optional<PublicAccountInfo> public_account_info;
+  absl::optional<PublicAccountInfo> public_account_info;
 
   // True if this user chooses to use 24 hour clock in preference.
   bool use_24hour_clock = false;

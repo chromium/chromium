@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,12 +22,9 @@ bool IsDevToolsURL(const GURL& url) {
 }  // namespace
 
 ContextMenuContentType::ContextMenuContentType(
-    content::WebContents* web_contents,
     const content::ContextMenuParams& params,
     bool supports_custom_items)
-    : params_(params),
-      source_web_contents_(web_contents),
-      supports_custom_items_(supports_custom_items) {}
+    : params_(params), supports_custom_items_(supports_custom_items) {}
 
 ContextMenuContentType::~ContextMenuContentType() {
 }
@@ -125,6 +122,9 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
     case ITEM_GROUP_COPY:
       return !params_.is_editable && has_selection;
 
+    case ITEM_GROUP_PARTIAL_TRANSLATE:
+      return has_selection;
+
     case ITEM_GROUP_EXISTING_LINK_TO_TEXT:
       return params_.opened_from_highlight;
 
@@ -158,6 +158,10 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
     case ITEM_GROUP_PASSWORD:
       return params_.input_field_type ==
              blink::mojom::ContextMenuDataInputFieldType::kPassword;
+
+    case ITEM_GROUP_AUTOFILL:
+      return params_.input_field_type !=
+             blink::mojom::ContextMenuDataInputFieldType::kNone;
 
     default:
       NOTREACHED();

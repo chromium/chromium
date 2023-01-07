@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
  * Served from chrome://bluetooth-internals/.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
 
 /**
  * A fieldset that lists the properties of a given object. These properties

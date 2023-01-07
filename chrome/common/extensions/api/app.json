@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,18 +47,16 @@
         "name": "installState",
         "description": "TODO",
         "type": "function",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "$ref": "InstallState",
-                "name": "state"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "$ref": "InstallState",
+              "name": "state"
+            }
+          ]
+        }
       },
       {
         "name": "runningState",

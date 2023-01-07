@@ -1,7 +1,2 @@
-monorail {
-  component: "Upboarding>QueryTiles"
-}
+mixins: "//components/query_tiles/COMMON_METADATA"
 
-team_email: "chrome-upboarding-eng@google.com"
-
-os: ANDROID

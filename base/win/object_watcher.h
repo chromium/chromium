@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 namespace win {
@@ -65,6 +64,10 @@ class BASE_EXPORT ObjectWatcher {
   };
 
   ObjectWatcher();
+
+  ObjectWatcher(const ObjectWatcher&) = delete;
+  ObjectWatcher& operator=(const ObjectWatcher&) = delete;
+
   ~ObjectWatcher();
 
   // When the object is signaled, the given delegate is notified on the sequence
@@ -130,8 +133,6 @@ class BASE_EXPORT ObjectWatcher {
   bool run_once_ = true;
 
   WeakPtrFactory<ObjectWatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ObjectWatcher);
 };
 
 }  // namespace win

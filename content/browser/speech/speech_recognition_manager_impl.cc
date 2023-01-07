@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"
@@ -22,10 +22,10 @@
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/browser/speech/speech_recognizer_impl.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
@@ -41,11 +41,9 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/speech/speech_recognizer_impl_android.h"
 #endif
-
-using base::Callback;
 
 namespace content {
 
@@ -59,153 +57,77 @@ SpeechRecognitionManagerImpl* g_speech_recognition_manager_impl;
 
 int SpeechRecognitionManagerImpl::next_requester_id_ = 0;
 
-class SpeechRecognitionManagerImpl::FrameDeletionObserver {
+class FrameSessionTracker
+    : public content::DocumentUserData<FrameSessionTracker> {
  public:
   using FrameDeletedCallback =
       base::RepeatingCallback<void(int /* session_id */)>;
-  explicit FrameDeletionObserver(FrameDeletedCallback frame_deleted_callback);
 
-  void CreateObserverForSession(int render_process_id,
-                                int render_frame_id,
-                                int session_id);
+  ~FrameSessionTracker() override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  void RemoveObserverForSession(int render_process_id,
-                                int render_frame_id,
-                                int session_id);
-
- private:
-  class ContentsObserver;
-  friend class ContentsObserver;
-
-  friend struct BrowserThread::DeleteOnThread<BrowserThread::UI>;
-  friend class base::DeleteHelper<FrameDeletionObserver>;
-
-  ~FrameDeletionObserver();
-
-  FrameDeletedCallback frame_deleted_callback_;
-  std::map<WebContents*, std::unique_ptr<ContentsObserver>> contents_observers_;
-};
-
-class SpeechRecognitionManagerImpl::FrameDeletionObserver::ContentsObserver
-    : public WebContentsObserver {
- public:
-  ContentsObserver(WebContents* web_contents,
-                   FrameDeletionObserver* parent_observer)
-      : WebContentsObserver(web_contents), parent_observer_(parent_observer) {}
-
-  void AddObservedFrame(RenderFrameHost* render_frame_host, int session_id);
-  void RemoveObservedFrame(RenderFrameHost* render_frame_host, int session_id);
-
-  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
-
- private:
-  FrameDeletionObserver* parent_observer_;
-
-  // A multimap from the frame to the session_ids started by that frame.
-  // Although a rare case, theoretically a frame can start multiple sessions.
-  std::multimap<RenderFrameHost*, int> observed_frames_;
-};
-
-SpeechRecognitionManagerImpl::FrameDeletionObserver::FrameDeletionObserver(
-    FrameDeletedCallback frame_deleted_callback)
-    : frame_deleted_callback_(std::move(frame_deleted_callback)) {}
-
-void SpeechRecognitionManagerImpl::FrameDeletionObserver::
-    CreateObserverForSession(int render_process_id,
-                             int render_frame_id,
-                             int session_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  RenderFrameHost* render_frame_host =
-      RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (!render_frame_host)
-    return;
-
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host);
-  if (!web_contents)
-    return;
-
-  auto& observer = contents_observers_[web_contents];
-  if (!observer)
-    observer = std::make_unique<ContentsObserver>(web_contents, this);
-
-  observer->AddObservedFrame(render_frame_host, session_id);
-}
-
-void SpeechRecognitionManagerImpl::FrameDeletionObserver::
-    RemoveObserverForSession(int render_process_id,
-                             int render_frame_id,
-                             int session_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  RenderFrameHost* render_frame_host =
-      RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (!render_frame_host)
-    return;
-
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host);
-  if (!web_contents)
-    return;
-
-  auto it = contents_observers_.find(web_contents);
-  if (it == contents_observers_.end())
-    return;
-
-  it->second->RemoveObservedFrame(render_frame_host, session_id);
-}
-
-SpeechRecognitionManagerImpl::FrameDeletionObserver::~FrameDeletionObserver() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  DCHECK_EQ(0u, contents_observers_.size());
-}
-
-void SpeechRecognitionManagerImpl::FrameDeletionObserver::ContentsObserver::
-    AddObservedFrame(RenderFrameHost* render_frame_host, int session_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  observed_frames_.emplace(render_frame_host, session_id);
-}
-
-void SpeechRecognitionManagerImpl::FrameDeletionObserver::ContentsObserver::
-    RemoveObservedFrame(RenderFrameHost* render_frame_host, int session_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  auto iters = observed_frames_.equal_range(render_frame_host);
-  auto it = std::find_if(iters.first, iters.second,
-                         [render_frame_host, session_id](
-                             std::pair<RenderFrameHost* const, int>& map_pair) {
-                           return map_pair.first == render_frame_host &&
-                                  map_pair.second == session_id;
-                         });
-
-  if (it == iters.second)
-    return;
-
-  observed_frames_.erase(it);
-  if (!observed_frames_.size())
-    parent_observer_->contents_observers_.erase(web_contents());
-
-  // |this| may be deleted.
-}
-
-void SpeechRecognitionManagerImpl::FrameDeletionObserver::ContentsObserver::
-    RenderFrameDeleted(RenderFrameHost* render_frame_host) {
-  auto iters = observed_frames_.equal_range(render_frame_host);
-  for (auto it = iters.first; it != iters.second; ++it) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(parent_observer_->frame_deleted_callback_, it->second));
+    for (auto session : sessions_) {
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(frame_deleted_callback_, session));
+    }
   }
 
-  observed_frames_.erase(iters.first, iters.second);
-  if (!observed_frames_.size())
-    parent_observer_->contents_observers_.erase(web_contents());
+  static void CreateObserverForSession(int render_process_id,
+                                       int render_frame_id,
+                                       int session_id,
+                                       FrameDeletedCallback callback) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // |this| is likely deleted.
-}
+    RenderFrameHost* render_frame_host =
+        RenderFrameHost::FromID(render_process_id, render_frame_id);
+    if (!render_frame_host)
+      return;
+
+    FrameSessionTracker* tracker =
+        GetOrCreateForCurrentDocument(render_frame_host);
+
+    // This will clobber any previously set callback but it will always
+    // be the same binding.
+    tracker->SetCallback(std::move(callback));
+    tracker->AddSession(session_id);
+  }
+
+  static void RemoveObserverForSession(int render_process_id,
+                                       int render_frame_id,
+                                       int session_id) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    RenderFrameHost* render_frame_host =
+        RenderFrameHost::FromID(render_process_id, render_frame_id);
+    if (!render_frame_host)
+      return;
+
+    FrameSessionTracker* tracker = GetForCurrentDocument(render_frame_host);
+    if (!tracker)
+      return;
+    tracker->RemoveSession(session_id);
+  }
+
+ private:
+  explicit FrameSessionTracker(content::RenderFrameHost* rfh)
+      : DocumentUserData<FrameSessionTracker>(rfh) {}
+
+  friend class content::DocumentUserData<FrameSessionTracker>;
+  DOCUMENT_USER_DATA_KEY_DECL();
+
+  void AddSession(int session_id) { sessions_.insert(session_id); }
+
+  void RemoveSession(int session_id) { sessions_.erase(session_id); }
+
+  void SetCallback(FrameDeletedCallback callback) {
+    frame_deleted_callback_ = std::move(callback);
+  }
+
+  FrameDeletedCallback frame_deleted_callback_;
+  std::set<int> sessions_;
+};
+
+DOCUMENT_USER_DATA_KEY_IMPL(FrameSessionTracker);
 
 SpeechRecognitionManager* SpeechRecognitionManager::GetInstance() {
   if (manager_for_tests_)
@@ -236,10 +158,6 @@ SpeechRecognitionManagerImpl::SpeechRecognitionManagerImpl(
       requester_id_(next_requester_id_++) {
   DCHECK(!g_speech_recognition_manager_impl);
   g_speech_recognition_manager_impl = this;
-
-  frame_deletion_observer_.reset(new FrameDeletionObserver(
-      base::BindRepeating(&SpeechRecognitionManagerImpl::AbortSessionImpl,
-                          weak_factory_.GetWeakPtr())));
 }
 
 SpeechRecognitionManagerImpl::~SpeechRecognitionManagerImpl() {
@@ -262,7 +180,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
   session->config = config;
   session->context = config.initial_context;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // A SpeechRecognitionEngine (and corresponding Config) is required only
   // when using SpeechRecognizerImpl, which performs the audio capture and
   // endpointing in the browser. This is not the case of Android where, not
@@ -299,15 +217,14 @@ int SpeechRecognitionManagerImpl::CreateSession(
 
   sessions_[session_id] = std::move(session);
 
-  // The deletion observer is owned by this class, so it's safe to use
-  // Unretained.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&SpeechRecognitionManagerImpl::FrameDeletionObserver::
-                         CreateObserverForSession,
-                     base::Unretained(frame_deletion_observer_.get()),
-                     config.initial_context.render_process_id,
-                     config.initial_context.render_frame_id, session_id));
+      base::BindOnce(
+          &FrameSessionTracker::CreateObserverForSession,
+          config.initial_context.render_process_id,
+          config.initial_context.render_frame_id, session_id,
+          base::BindRepeating(&SpeechRecognitionManagerImpl::AbortSessionImpl,
+                              weak_factory_.GetWeakPtr())));
 
   return session_id;
 }
@@ -378,7 +295,7 @@ void SpeechRecognitionManagerImpl::RecognitionAllowedCallback(int session_id,
 
 void SpeechRecognitionManagerImpl::MediaRequestPermissionCallback(
     int session_id,
-    const blink::MediaStreamDevices& devices,
+    const blink::mojom::StreamDevicesSet& stream_devices_set,
     std::unique_ptr<MediaStreamUIProxy> stream_ui) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -386,10 +303,18 @@ void SpeechRecognitionManagerImpl::MediaRequestPermissionCallback(
   if (iter == sessions_.end())
     return;
 
-  bool is_allowed = !devices.empty();
+  // The SpeechRecognictionManager is not used with multiple streams
+  // which is only supported in combination with the getDisplayMediaSet API.
+  // The |stream_devices| vector can be empty e.g. if the permission
+  // was denied.
+  DCHECK_LE(stream_devices_set.stream_devices.size(), 1u);
+
+  blink::MediaStreamDevices devices_list =
+      blink::ToMediaStreamDevicesList(stream_devices_set);
+  const bool is_allowed = !devices_list.empty();
   if (is_allowed) {
     // Copy the approved devices array to the context for UI indication.
-    iter->second->context.devices = devices;
+    iter->second->context.devices = devices_list;
 
     // Save the UI object.
     iter->second->ui = std::move(stream_ui);
@@ -408,13 +333,9 @@ void SpeechRecognitionManagerImpl::AbortSession(int session_id) {
   if (iter == sessions_.end())
     return;
 
-  // The deletion observer is owned by this class, so it's safe to use
-  // Unretained.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&SpeechRecognitionManagerImpl::FrameDeletionObserver::
-                         RemoveObserverForSession,
-                     base::Unretained(frame_deletion_observer_.get()),
+      base::BindOnce(&FrameSessionTracker::RemoveObserverForSession,
                      iter->second->config.initial_context.render_process_id,
                      iter->second->config.initial_context.render_frame_id,
                      session_id));
@@ -449,13 +370,9 @@ void SpeechRecognitionManagerImpl::StopAudioCaptureForSession(int session_id) {
   if (iter == sessions_.end())
     return;
 
-  // The deletion observer is owned by this class, so it's safe to use
-  // Unretained.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&SpeechRecognitionManagerImpl::FrameDeletionObserver::
-                         RemoveObserverForSession,
-                     base::Unretained(frame_deletion_observer_.get()),
+      base::BindOnce(&FrameSessionTracker::RemoveObserverForSession,
                      iter->second->config.initial_context.render_process_id,
                      iter->second->config.initial_context.render_frame_id,
                      session_id));

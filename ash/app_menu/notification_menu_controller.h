@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,10 @@ class APP_MENU_EXPORT NotificationMenuController
   NotificationMenuController(const std::string& app_id,
                              views::MenuItemView* root_menu,
                              AppMenuModelAdapter* app_menu_model_adapter);
+
+  NotificationMenuController(const NotificationMenuController&) = delete;
+  NotificationMenuController& operator=(const NotificationMenuController&) =
+      delete;
 
   ~NotificationMenuController() override;
 
@@ -72,8 +76,6 @@ class APP_MENU_EXPORT NotificationMenuController
   base::ScopedObservation<message_center::MessageCenter,
                           message_center::MessageCenterObserver>
       message_center_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationMenuController);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ namespace media {
 FakeAudioRendererSink::FakeAudioRendererSink()
     : FakeAudioRendererSink(
           AudioParameters(AudioParameters::AUDIO_FAKE,
-                          CHANNEL_LAYOUT_STEREO,
+                          ChannelLayoutConfig::Stereo(),
                           AudioParameters::kTelephoneSampleRate,
                           1)) {}
 
@@ -62,7 +62,6 @@ void FakeAudioRendererSink::Pause() {
 
 void FakeAudioRendererSink::Play() {
   DCHECK(state_ == kStarted || state_ == kPaused) << "state_ " << state_;
-  DCHECK_EQ(state_, kPaused);
   ChangeState(kPlaying);
 }
 

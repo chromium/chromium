@@ -1,0 +1,4 @@
+[document web]
+++[check box] checkable brailleroledescription:aria braille role description checkable:true
+++[check box] checkable checkable:true
+++[check box] checkable checkable:true

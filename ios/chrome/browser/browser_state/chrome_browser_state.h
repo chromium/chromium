@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ios/chrome/browser/net/net_types.h"
 #include "ios/web/public/browser_state.h"
@@ -36,6 +35,10 @@ namespace web {
 class WebUIIOS;
 }
 
+namespace policy {
+class UserCloudPolicyManager;
+}
+
 enum class ChromeBrowserStateType {
   REGULAR_BROWSER_STATE,
   INCOGNITO_BROWSER_STATE,
@@ -44,6 +47,9 @@ enum class ChromeBrowserStateType {
 // This class is a Chrome-specific extension of the BrowserState interface.
 class ChromeBrowserState : public web::BrowserState {
  public:
+  ChromeBrowserState(const ChromeBrowserState&) = delete;
+  ChromeBrowserState& operator=(const ChromeBrowserState&) = delete;
+
   ~ChromeBrowserState() override;
 
   // Returns the ChromeBrowserState corresponding to the given BrowserState.
@@ -57,7 +63,7 @@ class ChromeBrowserState : public web::BrowserState {
   virtual scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner();
 
   // Returns the original "recording" ChromeBrowserState. This method returns
-  // |this| if the ChromeBrowserState is not incognito.
+  // `this` if the ChromeBrowserState is not incognito.
   virtual ChromeBrowserState* GetOriginalChromeBrowserState() = 0;
 
   // Returns true if the ChromeBrowserState is off-the-record or if the
@@ -80,28 +86,28 @@ class ChromeBrowserState : public web::BrowserState {
   // for this BrowserState. May return nullptr if policy is disabled.
   virtual BrowserStatePolicyConnector* GetPolicyConnector() = 0;
 
-  // Retrieves a pointer to the PrefService that manages the preferences.
-  virtual PrefService* GetPrefs() = 0;
+  // Returns a pointer to the UserCloudPolicyManager that is a facade for the
+  // user cloud policy system.
+  virtual policy::UserCloudPolicyManager* GetUserCloudPolicyManager() = 0;
 
-  // Retrieves a pointer to the PrefService that manages the preferences
-  // for OffTheRecord browser states.
-  virtual PrefService* GetOffTheRecordPrefs() = 0;
+  // Retrieves a pointer to the PrefService that manages the preferences.
+  virtual PrefService* GetPrefs();
+
+  // Retrieves a pointer to the PrefService that manages the preferences as
+  // a sync_preferences::PrefServiceSyncable.
+  virtual sync_preferences::PrefServiceSyncable* GetSyncablePrefs() = 0;
 
   // Allows access to ChromeBrowserStateIOData without going through
   // ResourceContext that is not compiled on iOS. This method must be called on
   // UI thread, but the returned object must only be accessed on the IO thread.
   virtual ChromeBrowserStateIOData* GetIOData() = 0;
 
-  // Retrieves a pointer to the PrefService that manages the preferences as
-  // a sync_preferences::PrefServiceSyncable.
-  virtual sync_preferences::PrefServiceSyncable* GetSyncablePrefs();
-
-  // Deletes all network related data since |time|. It deletes transport
-  // security state since |time| and it also deletes HttpServerProperties data.
-  // Works asynchronously, however if the |completion| callback is non-null, it
+  // Deletes all network related data since `time`. It deletes transport
+  // security state since `time` and it also deletes HttpServerProperties data.
+  // Works asynchronously, however if the `completion` callback is non-null, it
   // will be posted on the UI thread once the removal process completes.
-  // Be aware that theoretically it is possible that |completion| will be
-  // invoked after the Profile instance has been destroyed.
+  // Be aware that theoretically it is possible that `completion` will be
+  // invoked after the BrowserState instance has been destroyed.
   virtual void ClearNetworkingHistorySince(base::Time time,
                                            base::OnceClosure completion) = 0;
 
@@ -132,8 +138,6 @@ class ChromeBrowserState : public web::BrowserState {
 
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   scoped_refptr<net::URLRequestContextGetter> request_context_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserState);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_H_

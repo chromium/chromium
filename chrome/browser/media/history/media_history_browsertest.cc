@@ -1,29 +1,27 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media/history/media_history_playback_table.h"
 #include "chrome/browser/media/history/media_history_store.h"
 
 #include "base/callback_helpers.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/media/feeds/media_feeds_service.h"
-#include "chrome/browser/media/feeds/media_feeds_service_factory.h"
-#include "chrome/browser/media/history/media_history_feed_items_table.h"
-#include "chrome/browser/media/history/media_history_feeds_table.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/media/history/media_history_contents_observer.h"
 #include "chrome/browser/media/history/media_history_images_table.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/history/media_history_keyed_service_factory.h"
 #include "chrome/browser/media/history/media_history_origin_table.h"
 #include "chrome/browser/media/history/media_history_session_images_table.h"
 #include "chrome/browser/media/history/media_history_session_table.h"
-#include "chrome/browser/media/history/media_history_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -33,20 +31,23 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/media_session.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace media_history {
 
 namespace {
 
-constexpr base::TimeDelta kTestClipDuration =
-    base::TimeDelta::FromMilliseconds(26771);
+constexpr base::TimeDelta kTestClipDuration = base::Milliseconds(26771);
 
 enum class TestState {
   kNormal,
@@ -64,15 +65,11 @@ enum class TestState {
 class MediaHistoryBrowserTest : public InProcessBrowserTest,
                                 public testing::WithParamInterface<TestState> {
  public:
-  MediaHistoryBrowserTest() = default;
-  ~MediaHistoryBrowserTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {media::kUseMediaHistoryStore, media::kMediaFeeds}, {});
-
-    InProcessBrowserTest::SetUp();
+  MediaHistoryBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(media::kUseMediaHistoryStore);
   }
+
+  ~MediaHistoryBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -82,7 +79,7 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
   }
 
   static bool SetupPageAndStartPlaying(Browser* browser, const GURL& url) {
-    ui_test_utils::NavigateToURL(browser, url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
 
     bool played = false;
     EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -93,7 +90,7 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
 
   static bool SetupPageAndStartPlayingAudioOnly(Browser* browser,
                                                 const GURL& url) {
-    ui_test_utils::NavigateToURL(browser, url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
 
     bool played = false;
     EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -104,7 +101,7 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
 
   static bool SetupPageAndStartPlayingVideoOnly(Browser* browser,
                                                 const GURL& url) {
-    ui_test_utils::NavigateToURL(browser, url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
 
     bool played = false;
     EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -294,23 +291,11 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
 
   void SimulateNavigationToCommit(Browser* browser) {
     // Navigate to trigger the session to be saved.
-    ui_test_utils::NavigateToURL(browser,
-                                 embedded_test_server()->GetURL("/empty.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, embedded_test_server()->GetURL("/empty.html")));
 
     // Wait until the session has finished saving.
     WaitForDB(GetMediaHistoryService(browser));
-  }
-
-  media_history::MediaHistoryKeyedService::MediaFeedFetchResult FetchResult(
-      MediaHistoryKeyedService* service,
-      const int64_t feed_id) {
-    media_history::MediaHistoryKeyedService::MediaFeedFetchResult result;
-    result.feed_id = feed_id;
-    result.items = GetExpectedItems();
-    result.status = media_feeds::mojom::FetchResult::kSuccess;
-    result.display_name = "Test";
-    result.reset_token = test::GetResetTokenSync(service, feed_id);
-    return result;
   }
 
   const GURL GetTestURL() const {
@@ -332,37 +317,13 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
 
   static MediaHistoryKeyedService* GetOTRMediaHistoryService(Browser* browser) {
     return MediaHistoryKeyedServiceFactory::GetForProfile(
-        browser->profile()->GetPrimaryOTRProfile());
-  }
-
-  static media_feeds::MediaFeedsService* GetMediaFeedsService(
-      Browser* browser) {
-    return media_feeds::MediaFeedsServiceFactory::GetInstance()->GetForProfile(
-        browser->profile());
+        browser->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   }
 
   static void WaitForDB(MediaHistoryKeyedService* service) {
     base::RunLoop run_loop;
     service->PostTaskToDBForTest(run_loop.QuitClosure());
     run_loop.Run();
-  }
-
-  static std::vector<media_feeds::mojom::MediaFeedItemPtr> GetExpectedItems() {
-    std::vector<media_feeds::mojom::MediaFeedItemPtr> items;
-
-    {
-      auto item = media_feeds::mojom::MediaFeedItem::New();
-      item->type = media_feeds::mojom::MediaFeedItemType::kVideo;
-      item->name = u"The Video";
-      item->date_published = base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMinutes(20));
-      item->is_family_friendly = media_feeds::mojom::IsFamilyFriendly::kNo;
-      item->action_status =
-          media_feeds::mojom::MediaFeedItemActionStatus::kActive;
-      items.push_back(std::move(item));
-    }
-
-    return items;
   }
 
   Browser* CreateBrowserFromParam() {
@@ -378,7 +339,6 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
 
   bool IsReadOnly() const { return GetParam() != TestState::kNormal; }
 
- private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -569,7 +529,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
 IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DoNotRecordSessionIfNotActive) {
   auto* browser = CreateBrowserFromParam();
 
-  ui_test_utils::NavigateToURL(browser, GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GetTestURL()));
   EXPECT_TRUE(SetMediaMetadata(browser));
 
   media_session::MediaMetadata expected_metadata = GetExpectedDefaultMetadata();
@@ -773,16 +733,8 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DISABLED_GetPlaybackSessions) {
               GetPlaybackSessionsSync(GetOTRMediaHistoryService(browser), 2));
   }
 }
-
-// TODO(crbug.com/1176025): Flaking on Linux.
-#if defined(OS_LINUX)
-#define MAYBE_SaveImagesWithDifferentSessions \
-  DISABLED_SaveImagesWithDifferentSessions
-#else
-#define MAYBE_SaveImagesWithDifferentSessions SaveImagesWithDifferentSessions
-#endif
 IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
-                       MAYBE_SaveImagesWithDifferentSessions) {
+                       DISABLED_SaveImagesWithDifferentSessions) {
   auto* browser = CreateBrowserFromParam();
   auto expected_metadata = GetExpectedMetadata();
   auto expected_artwork = GetExpectedArtwork();
@@ -859,7 +811,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
             GetPlaybackSessionsSync(GetOTRMediaHistoryService(browser), 2));
 }
 
-#if defined(OS_MAC) && !defined(NDEBUG)
+#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
 // TODO(crbug.com/1152073): This test has flaky timeouts on Mac Debug.
 #define MAYBE_RecordWatchtime_AudioVideo DISABLED_RecordWatchtime_AudioVideo
 #else
@@ -869,6 +821,12 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
                        MAYBE_RecordWatchtime_AudioVideo) {
   auto* browser = CreateBrowserFromParam();
 
+  // The test assumes the previous page gets deleted after navigation, which
+  // will trigger the recording. Disable back-forward cache to ensure that it
+  // doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      browser->tab_strip_model()->GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   // Start a page and wait for significant playback so we record watchtime.
   EXPECT_TRUE(SetupPageAndStartPlaying(browser, GetTestURL()));
   EXPECT_TRUE(WaitForSignificantPlayback(browser));
@@ -886,7 +844,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
       EXPECT_TRUE(playbacks[0]->has_audio);
       EXPECT_TRUE(playbacks[0]->has_video);
       EXPECT_EQ(GetTestURL(), playbacks[0]->url);
-      EXPECT_GE(base::TimeDelta::FromSeconds(7), playbacks[0]->watchtime);
+      EXPECT_GE(base::Seconds(7), playbacks[0]->watchtime);
 
       EXPECT_EQ(1u, origins.size());
       EXPECT_EQ(url::Origin::Create(GetTestURL()), origins[0]->origin);
@@ -939,6 +897,12 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, RecordWatchtime_AudioOnly) {
   auto* browser = CreateBrowserFromParam();
+  // The test assumes the previous page gets deleted after navigation, which
+  // will trigger the recording. Disable back-forward cache to ensure that it
+  // doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      browser->tab_strip_model()->GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Start a page and wait for significant playback so we record watchtime.
   EXPECT_TRUE(SetupPageAndStartPlayingAudioOnly(browser, GetTestURL()));
@@ -958,7 +922,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, RecordWatchtime_AudioOnly) {
       EXPECT_TRUE(playbacks[0]->has_audio);
       EXPECT_FALSE(playbacks[0]->has_video);
       EXPECT_EQ(GetTestURL(), playbacks[0]->url);
-      EXPECT_GE(base::TimeDelta::FromSeconds(7), playbacks[0]->watchtime);
+      EXPECT_GE(base::Seconds(7), playbacks[0]->watchtime);
 
       EXPECT_EQ(1u, origins.size());
       EXPECT_EQ(url::Origin::Create(GetTestURL()), origins[0]->origin);
@@ -1003,6 +967,12 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, RecordWatchtime_AudioOnly) {
 
 IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, RecordWatchtime_VideoOnly) {
   auto* browser = CreateBrowserFromParam();
+  // The test assumes the previous page gets deleted after navigation, which
+  // will trigger the recording. Disable back-forward cache to ensure that it
+  // doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      browser->tab_strip_model()->GetActiveWebContents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Start a page and wait for significant playback so we record watchtime.
   EXPECT_TRUE(SetupPageAndStartPlayingVideoOnly(browser, GetTestURL()));
@@ -1022,7 +992,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, RecordWatchtime_VideoOnly) {
       EXPECT_FALSE(playbacks[0]->has_audio);
       EXPECT_TRUE(playbacks[0]->has_video);
       EXPECT_EQ(GetTestURL(), playbacks[0]->url);
-      EXPECT_GE(base::TimeDelta::FromSeconds(7), playbacks[0]->watchtime);
+      EXPECT_GE(base::Seconds(7), playbacks[0]->watchtime);
 
       EXPECT_EQ(1u, origins.size());
       EXPECT_EQ(url::Origin::Create(GetTestURL()), origins[0]->origin);
@@ -1101,8 +1071,10 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   EXPECT_TRUE(sessions.empty());
 }
 
-IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
-                       DoNotRecordSessionForVideoOnlyInPictureInPicture) {
+// TODO(crbug.com/1310805): Fix flakiness and re-enable this test.
+IN_PROC_BROWSER_TEST_P(
+    MediaHistoryBrowserTest,
+    DISABLED_DoNotRecordSessionForVideoOnlyInPictureInPicture) {
   auto* browser = CreateBrowserFromParam();
 
   ASSERT_TRUE(SetupPageAndStartPlayingVideoOnly(browser, GetTestURL()));
@@ -1124,165 +1096,16 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   EXPECT_TRUE(sessions.empty());
 }
 
+// TODO(crbug.com/1086828): Test is flaky on Linux, Windows, Mac and Lacros.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_DoNotRecordWatchtime_Background \
+  DISABLED_DoNotRecordWatchtime_Background
+#else
+#define MAYBE_DoNotRecordWatchtime_Background DoNotRecordWatchtime_Background
+#endif
 IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
-                       ResetFeedsWhenBrowsingDataCleared) {
-  auto* browser = CreateBrowserFromParam();
-  auto* service = GetMediaHistoryService(browser);
-
-  // Discover a test feed.
-  if (auto* feeds_service = GetMediaFeedsService(browser)) {
-    feeds_service->DiscoverMediaFeed(
-        GURL("https://www.google.com/media-feed.json"));
-    WaitForDB(service);
-  }
-
-  // Store the feed data.
-  service->StoreMediaFeedFetchResult(FetchResult(service, 1),
-                                     base::DoNothing());
-  WaitForDB(service);
-
-  {
-    // Check that the tables have the right count in them.
-    auto stats = GetStatsSync(service);
-
-    if (IsReadOnly()) {
-      EXPECT_EQ(0, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    } else {
-      EXPECT_EQ(1, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          1, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    }
-  }
-
-  // Clear the browsing data.
-  content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(browser->profile());
-  content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
-  remover->RemoveAndReply(
-      base::Time(), base::Time::Max(),
-      content::BrowsingDataRemover::DATA_TYPE_CACHE,
-      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-      &completion_observer);
-  completion_observer.BlockUntilCompletion();
-
-  {
-    // Check that the tables have the right count in them.
-    auto stats = GetStatsSync(service);
-
-    if (IsReadOnly()) {
-      EXPECT_EQ(0, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    } else {
-      EXPECT_EQ(1, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    }
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
-                       ResetFeedsWhenBrowsingDataClearedWithFilter) {
-  const GURL feed_url("https://www.google.com/media-feed.json");
-
-  auto* browser = CreateBrowserFromParam();
-  auto* service = GetMediaHistoryService(browser);
-
-  // Discover a test feed.
-  if (auto* feeds_service = GetMediaFeedsService(browser)) {
-    feeds_service->DiscoverMediaFeed(
-        GURL("https://www.google.com/media-feed.json"));
-    WaitForDB(service);
-  }
-
-  // Store the feed data.
-  service->StoreMediaFeedFetchResult(FetchResult(service, 1),
-                                     base::DoNothing());
-  WaitForDB(service);
-
-  {
-    // Check that the tables have the right count in them.
-    auto stats = GetStatsSync(service);
-
-    if (IsReadOnly()) {
-      EXPECT_EQ(0, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    } else {
-      EXPECT_EQ(1, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          1, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    }
-  }
-
-  {
-    // Clear the browsing data for another origin.
-    auto filter = content::BrowsingDataFilterBuilder::Create(
-        content::BrowsingDataFilterBuilder::Mode::kDelete);
-    filter->AddOrigin(url::Origin::Create(GURL("https://www.example.org")));
-    content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(browser->profile());
-    content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
-    remover->RemoveWithFilterAndReply(
-        base::Time(), base::Time::Max(),
-        content::BrowsingDataRemover::DATA_TYPE_CACHE,
-        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-        std::move(filter), &completion_observer);
-    completion_observer.BlockUntilCompletion();
-  }
-
-  {
-    // Check that the tables have the right count in them (nothing should have
-    // been deleted).
-    auto stats = GetStatsSync(service);
-
-    if (IsReadOnly()) {
-      EXPECT_EQ(0, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    } else {
-      EXPECT_EQ(1, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          1, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    }
-  }
-
-  {
-    // Clear the browsing data for the feed origin.
-    auto filter = content::BrowsingDataFilterBuilder::Create(
-        content::BrowsingDataFilterBuilder::Mode::kDelete);
-    filter->AddOrigin(url::Origin::Create(feed_url));
-    content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(browser->profile());
-    content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
-    remover->RemoveWithFilterAndReply(
-        base::Time(), base::Time::Max(),
-        content::BrowsingDataRemover::DATA_TYPE_CACHE,
-        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-        std::move(filter), &completion_observer);
-    completion_observer.BlockUntilCompletion();
-  }
-
-  {
-    // Check that the tables have the right count in them.
-    auto stats = GetStatsSync(service);
-
-    if (IsReadOnly()) {
-      EXPECT_EQ(0, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    } else {
-      EXPECT_EQ(1, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-      EXPECT_EQ(
-          0, stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-    }
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
-                       DoNotRecordWatchtime_Background) {
+                       MAYBE_DoNotRecordWatchtime_Background) {
   auto* browser = CreateBrowserFromParam();
   auto* service = GetMediaHistoryService(browser);
 
@@ -1299,6 +1122,17 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
       web_contents, "waitForSignificantPlayback();", &seeked));
   ASSERT_TRUE(seeked);
 
+  // Create another browser. This is important in the incognito case as
+  // destroying `browser` (which happens from CloseAllTabs()) will delete the
+  // incognito profile, which deletes MediaHistoryKeyedService.. Creating
+  // another browser referencing the incognito profile ensure the profiles is
+  // not destroyed. Note that this is only done for incognito as for
+  // non-incognito CreateBrowserFromParam() does not create it a new Browser,
+  // it returns browser().
+  Browser* incognito_browser_to_prevent_early_shutdown = nullptr;
+  if (GetParam() == TestState::kIncognito)
+    incognito_browser_to_prevent_early_shutdown = CreateBrowserFromParam();
+
   // Close all the tabs to trigger any saving.
   browser->tab_strip_model()->CloseAllTabs();
 
@@ -1309,7 +1143,12 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   auto playbacks = GetPlaybacksSync(service);
   if (!playbacks.empty()) {
     ASSERT_EQ(1u, playbacks.size());
-    EXPECT_GE(base::TimeDelta::FromSeconds(2), playbacks[0]->watchtime);
+    EXPECT_GE(base::Seconds(2), playbacks[0]->watchtime);
+  }
+
+  if (incognito_browser_to_prevent_early_shutdown) {
+    incognito_browser_to_prevent_early_shutdown->tab_strip_model()
+        ->CloseAllTabs();
   }
 }
 
@@ -1319,7 +1158,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DoNotRecordWatchtime_Muted) {
 
   // Setup the test page and mute the player.
   auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser, GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GetTestURL()));
   ASSERT_TRUE(content::ExecuteScript(web_contents, "mute();"));
 
   // Start playing the video.
@@ -1331,6 +1170,17 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DoNotRecordWatchtime_Muted) {
   // Wait for significant playback in the muted tab.
   WaitForSignificantPlayback(browser);
 
+  // Create another browser. This is important in the incognito case as
+  // destroying `browser` (which happens from CloseAllTabs()) will delete the
+  // incognito profile, which deletes MediaHistoryKeyedService.. Creating
+  // another browser referencing the incognito profile ensure the profiles is
+  // not destroyed. Note that this is only done for incognito as for
+  // non-incognito CreateBrowserFromParam() does not create it a new Browser,
+  // it returns browser().
+  Browser* incognito_browser_to_prevent_early_shutdown = nullptr;
+  if (GetParam() == TestState::kIncognito)
+    incognito_browser_to_prevent_early_shutdown = CreateBrowserFromParam();
+
   // Close all the tabs to trigger any saving.
   browser->tab_strip_model()->CloseAllTabs();
 
@@ -1340,6 +1190,53 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DoNotRecordWatchtime_Muted) {
   // No playbacks should have been saved since we were muted.
   auto playbacks = GetPlaybacksSync(service);
   EXPECT_TRUE(playbacks.empty());
+
+  if (incognito_browser_to_prevent_early_shutdown) {
+    incognito_browser_to_prevent_early_shutdown->tab_strip_model()
+        ->CloseAllTabs();
+  }
+}
+
+class MediaHistoryForPrerenderBrowserTest : public MediaHistoryBrowserTest {
+ public:
+  MediaHistoryForPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &MediaHistoryForPrerenderBrowserTest::web_contents,
+            base::Unretained(this))) {
+  }
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    MediaHistoryBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+    MediaHistoryBrowserTest::SetUpOnMainThread();
+  }
+
+  content::WebContents* web_contents() { return web_contents_; }
+
+ protected:
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(MediaHistoryForPrerenderBrowserTest,
+                       KeepRecordingMediaSession) {
+  // Start a page and wait for significant playback so we record watchtime.
+  ASSERT_TRUE(SetupPageAndStartPlaying(browser(), GetTestURL()));
+  EXPECT_TRUE(WaitForSignificantPlayback(browser()));
+
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+
+  // We should not fetch the URL while prerendering.
+  prerender_helper_.AddPrerender(prerender_url);
+
+  auto* observer =
+      MediaHistoryContentsObserver::FromWebContents(web_contents());
+  EXPECT_EQ(GetTestURL(), observer->GetCurrentUrlForTesting());
 }
 
 }  // namespace media_history

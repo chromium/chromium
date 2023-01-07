@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<title>COLRv1 test font visual rendering test</title>
+<link
+  rel="help"
+  href="https://www.w3.org/TR/css-fonts-4/#font-face-src-parsing"
+/>
+<link rel="author" href="drott@chromium.org" />
+<meta
+  name="assert"
+  content="Checks that COLRv1 glyphs are displayed in color."
+/>
+<meta charset="utf8" />
+<style>
+  @font-face {
+    font-family: colrv1_samples;
+    src: url(resources/test_glyphs-glyf_colr_1.ttf);
+  }
+
+  .colrv1 {
+    font: 40px/1 colrv1_samples, monospace;
+  }
+
+  .columns {
+    column-count: 3;
+    height: 80vh;
+  }
+</style>
+<div style="margin-bottom: 15px">
+  Test passes if only color glyphs are seen below. Basic sanity check for COLRv1
+  rendering, additional testing is done in the Skia GM test for COLRv1, see
+  Skia's gm/colrv1.cpp for details.
+</div>
+<div class="columns">
+  The following two rows must feature purple (first row) and green (second row)
+  in the glyph gradients.
+  <div class="colrv1 foreground" style="color: purple"></div>
+  <div class="colrv1 foreground" style="color: green"></div>
+  <div class="colrv1 remainder"></div>
+</div>
+<script src="resources/colrv1-test-glyphs.js"></script>
+<script>
+  document.querySelectorAll(".foreground").forEach((aNode) => {
+    aNode.innerText =
+      glyph_descriptions["foreground_color"]["codepoints"].join("\u200B");
+  });
+  var hidden = ["util_contours", "circle_contours"];
+  var remainderEl = document.querySelector(".remainder");
+  for (const [key, value] of Object.entries(glyph_descriptions)) {
+    if (hidden.includes(key)) continue;
+    remainderEl.innerText += value.codepoints.join("\u200B") + " ";
+  }
+</script>

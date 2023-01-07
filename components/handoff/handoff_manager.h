@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 @class NSUserActivity;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -23,7 +23,7 @@ class PrefRegistrySyncable;
 // hand off the current active URL to other devices.
 @interface HandoffManager : NSObject
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Registers preferences related to Handoff.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 #endif
@@ -33,11 +33,19 @@ class PrefRegistrySyncable;
 // method is idempotent.
 - (void)updateActiveURL:(const GURL&)url;
 
+// The active title is defined as the title of the most recently accessed tab.
+// This method should be called any time the active title might have changed.
+// This method is idempotent.
+// -updateActiveURL: should be called prior since the URL identifier is
+// required while the title is optional.
+- (void)updateActiveTitle:(const std::u16string&)title;
+
 @end
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 @interface HandoffManager (TestingOnly)
 - (NSURL*)userActivityWebpageURL;
+- (NSString*)userActivityTitle;
 @end
 #endif
 

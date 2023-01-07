@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
-#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace mojo {
 
 class AssociatedGroupController;
+class ScopedInterfaceEndpointHandle;
 
 // AssociatedGroup refers to all the interface endpoints running at one end of a
 // message pipe.

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <map>
 
 #include "base/android/jni_android.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/viz_utils.h"

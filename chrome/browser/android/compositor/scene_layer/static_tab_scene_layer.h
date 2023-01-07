@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,9 @@
 
 #include <jni.h>
 
-#include <memory>
-
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "ui/gfx/geometry/point.h"
@@ -28,6 +26,10 @@ class TabContentManager;
 class StaticTabSceneLayer : public SceneLayer {
  public:
   StaticTabSceneLayer(JNIEnv* env, const base::android::JavaRef<jobject>& jobj);
+
+  StaticTabSceneLayer(const StaticTabSceneLayer&) = delete;
+  StaticTabSceneLayer& operator=(const StaticTabSceneLayer&) = delete;
+
   ~StaticTabSceneLayer() override;
 
   bool ShouldShowBackground() override;
@@ -54,12 +56,10 @@ class StaticTabSceneLayer : public SceneLayer {
  private:
   scoped_refptr<android::ContentLayer> content_layer_;
 
-  TabContentManager* tab_content_manager_;
+  raw_ptr<TabContentManager> tab_content_manager_;
   int last_set_tab_id_;
   int background_color_;
   float brightness_;
-
-  DISALLOW_COPY_AND_ASSIGN(StaticTabSceneLayer);
 };
 
 }  // namespace android

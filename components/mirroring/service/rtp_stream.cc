@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "media/base/video_frame.h"
@@ -23,12 +22,7 @@ namespace {
 
 // The maximum time since the last video frame was received from the video
 // source, before requesting refresh frames.
-constexpr base::TimeDelta kRefreshInterval =
-    base::TimeDelta::FromMilliseconds(250);
-
-// The maximum number of refresh video frames to request/receive.  After this
-// limit (60 * 250ms = 15 seconds), refresh frame requests will stop being made.
-constexpr int kMaxConsecutiveRefreshFrames = 60;
+constexpr base::TimeDelta kRefreshInterval = base::Milliseconds(250);
 
 }  // namespace
 
@@ -37,7 +31,6 @@ VideoRtpStream::VideoRtpStream(
     base::WeakPtr<RtpStreamClient> client)
     : video_sender_(std::move(video_sender)),
       client_(client),
-      consecutive_refresh_count_(0),
       expecting_a_refresh_frame_(false) {
   DCHECK(video_sender_);
   DCHECK(client);
@@ -52,7 +45,7 @@ VideoRtpStream::~VideoRtpStream() {}
 void VideoRtpStream::InsertVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame) {
   DCHECK(client_);
-  if (!video_frame->metadata().reference_time.has_value()) {
+  if (!video_frame->metadata().reference_time) {
     client_->OnError("Missing REFERENCE_TIME.");
     return;
   }
@@ -66,13 +59,13 @@ void VideoRtpStream::InsertVideoFrame(
     // behavior resulting from this logic will be correct.
     expecting_a_refresh_frame_ = false;
   } else {
-    consecutive_refresh_count_ = 0;
     // The following re-starts the timer, scheduling it to fire at
     // kRefreshInterval from now.
     refresh_timer_.Reset();
   }
 
   if (!(video_frame->format() == media::PIXEL_FORMAT_I420 ||
+        video_frame->format() == media::PIXEL_FORMAT_NV12 ||
         video_frame->format() == media::PIXEL_FORMAT_YV12 ||
         video_frame->format() == media::PIXEL_FORMAT_I420A)) {
     client_->OnError("Incompatible video frame format.");
@@ -92,14 +85,12 @@ void VideoRtpStream::SetTargetPlayoutDelay(base::TimeDelta playout_delay) {
   video_sender_->SetTargetPlayoutDelay(playout_delay);
 }
 
-void VideoRtpStream::OnRefreshTimerFired() {
-  ++consecutive_refresh_count_;
-  if (consecutive_refresh_count_ >= kMaxConsecutiveRefreshFrames)
-    refresh_timer_.Stop();  // Stop timer until receiving a non-refresh frame.
+base::TimeDelta VideoRtpStream::GetTargetPlayoutDelay() const {
+  return video_sender_->GetTargetPlayoutDelay();
+}
 
-  DVLOG(1) << "CastVideoSink is requesting another refresh frame "
-              "(consecutive count="
-           << consecutive_refresh_count_ << ").";
+void VideoRtpStream::OnRefreshTimerFired() {
+  DVLOG(1) << "VideoRtpStream is requesting another refresh frame.";
   expecting_a_refresh_frame_ = true;
   client_->RequestRefreshFrame();
 }
@@ -119,12 +110,20 @@ AudioRtpStream::AudioRtpStream(
 AudioRtpStream::~AudioRtpStream() {}
 
 void AudioRtpStream::InsertAudio(std::unique_ptr<media::AudioBus> audio_bus,
-                                 const base::TimeTicks& capture_time) {
+                                 base::TimeTicks capture_time) {
   audio_sender_->InsertAudio(std::move(audio_bus), capture_time);
 }
 
 void AudioRtpStream::SetTargetPlayoutDelay(base::TimeDelta playout_delay) {
   audio_sender_->SetTargetPlayoutDelay(playout_delay);
+}
+
+base::TimeDelta AudioRtpStream::GetTargetPlayoutDelay() const {
+  return audio_sender_->GetTargetPlayoutDelay();
+}
+
+int AudioRtpStream::GetEncoderBitrate() const {
+  return audio_sender_->GetEncoderBitrate();
 }
 
 }  // namespace mirroring

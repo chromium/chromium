@@ -1,0 +1,30 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package content.proto;
+
+// EmbedderDownloadData contains data that is stored in the download history
+// database.
+message EmbedderDownloadData {
+  optional StoragePartitionConfig storage_partition_config = 1;
+}
+
+// StoragePartitionConfig stores data from the content::StoragePartitionConfig
+// class. It enables this data to be serialized for storage in the download
+// history database.
+message StoragePartitionConfig {
+  enum FallbackMode {
+    kNone = 0;
+    kPartitionOnDisk = 1;
+    kPartitionInMemory = 2;
+  }
+
+  required string partition_domain = 1;
+  required string partition_name = 2;
+  required bool in_memory = 3;
+  required FallbackMode fallback_mode = 4;
+}

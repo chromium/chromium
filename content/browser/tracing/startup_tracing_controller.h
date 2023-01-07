@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_TRACING_STARTUP_TRACING_CONTROLLER_H_
 #define CONTENT_BROWSER_TRACING_STARTUP_TRACING_CONTROLLER_H_
 
+#include "base/files/file_path.h"
 #include "base/threading/sequence_bound.h"
 #include "content/common/content_export.h"
 
@@ -30,6 +31,7 @@ class CONTENT_EXPORT StartupTracingController {
 
   void StartIfNeeded();
   void WaitUntilStopped();
+  void ShutdownAndWaitForStopIfNeeded();
 
   // By default, a trace is written into a temporary file which then is renamed,
   // however this can lead to data loss when the browser process crashes.
@@ -67,6 +69,10 @@ class CONTENT_EXPORT StartupTracingController {
 
   bool is_finished_for_testing() const { return state_ == State::kStopped; }
 
+  void set_continue_on_shutdown_for_testing() {
+    should_continue_on_shutdown_ = true;
+  }
+
  private:
   void Stop(base::OnceClosure on_finished_callback);
 
@@ -91,6 +97,8 @@ class CONTENT_EXPORT StartupTracingController {
 
   std::string default_basename_;
   bool basename_for_test_set_ = false;
+  // Used for testing only
+  bool should_continue_on_shutdown_ = false;
 
   TempFilePolicy temp_file_policy_ = TempFilePolicy::kUseTemporaryFile;
 };

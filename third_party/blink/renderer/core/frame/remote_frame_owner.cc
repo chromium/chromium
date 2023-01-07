@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be found
-// in the LICENSE file.
+// Copyright 2015 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/frame/remote_frame_owner.h"
 
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -20,8 +21,7 @@ namespace blink {
 
 RemoteFrameOwner::RemoteFrameOwner(
     const FramePolicy& frame_policy,
-    const WebFrameOwnerProperties& frame_owner_properties,
-    mojom::blink::FrameOwnerElementType frame_owner_element_type)
+    const WebFrameOwnerProperties& frame_owner_properties)
     : frame_policy_(frame_policy),
       browsing_context_container_name_(
           static_cast<String>(frame_owner_properties.name)),
@@ -32,9 +32,7 @@ RemoteFrameOwner::RemoteFrameOwner(
       allow_payment_request_(frame_owner_properties.allow_payment_request),
       is_display_none_(frame_owner_properties.is_display_none),
       color_scheme_(frame_owner_properties.color_scheme),
-      needs_occlusion_tracking_(false),
-      required_csp_(frame_owner_properties.required_csp),
-      frame_owner_element_type_(frame_owner_element_type) {}
+      needs_occlusion_tracking_(false) {}
 
 void RemoteFrameOwner::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
@@ -69,15 +67,6 @@ void RemoteFrameOwner::DispatchLoad() {
   local_frame_host.DispatchLoad();
 }
 
-void RemoteFrameOwner::RenderFallbackContent(Frame* failed_frame) {
-  if (frame_owner_element_type_ != mojom::blink::FrameOwnerElementType::kObject)
-    return;
-  DCHECK(failed_frame->IsLocalFrame());
-  LocalFrame* local_frame = To<LocalFrame>(failed_frame);
-  DCHECK(local_frame->IsProvisional() || ContentFrame() == local_frame);
-  local_frame->GetLocalFrameHostRemote().RenderFallbackContentInParentProcess();
-}
-
 void RemoteFrameOwner::IntrinsicSizingInfoChanged() {
   LocalFrame& local_frame = To<LocalFrame>(*frame_);
   IntrinsicSizingInfo intrinsic_sizing_info;
@@ -88,8 +77,7 @@ void RemoteFrameOwner::IntrinsicSizingInfoChanged() {
   DCHECK(result);
 
   auto sizing_info = mojom::blink::IntrinsicSizingInfo::New(
-      gfx::SizeF(intrinsic_sizing_info.size),
-      gfx::SizeF(intrinsic_sizing_info.aspect_ratio),
+      intrinsic_sizing_info.size, intrinsic_sizing_info.aspect_ratio,
       intrinsic_sizing_info.has_width, intrinsic_sizing_info.has_height);
   WebLocalFrameImpl::FromFrame(local_frame)
       ->FrameWidgetImpl()

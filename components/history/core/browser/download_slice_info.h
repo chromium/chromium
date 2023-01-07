@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_DOWNLOAD_SLICE_INFO_H_
 
 #include <stdint.h>
-#include <string>
 
 #include "components/history/core/browser/download_types.h"
 

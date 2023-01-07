@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,8 +47,22 @@ typedef std::unique_ptr<std::remove_reference<decltype(*((cap_t)0))>::type,
 bool WorkingDirectoryIsRoot() {
   char current_dir[PATH_MAX];
   char* cwd = getcwd(current_dir, sizeof(current_dir));
-  PCHECK(cwd);
-  if (strcmp("/", cwd)) return false;
+
+  // Kernel commit 7bc3e6e55acf ("proc: Use a list of inodes to flush from
+  // proc"), present in 5.6 and later, changed how procfs inodes are cleaned up
+  // when a process exits. Credentials::DropFileSystemAccess() relies forking a
+  // child process which shares the same file system information (using
+  // clone(CLONE_FS)), and chroot()'ing to /proc/self/fdinfo/ in that process.
+  // However, when that child process exits, its procfs directories are
+  // unlinked, causing getcwd() to return ENOENT. getcwd() has been documented
+  // as returning ENOENT when the directory has been unlinked since at least
+  // 2004 (man-pages commit fea681daf).
+  if (cwd) {
+    if (strcmp("/", cwd))
+      return false;
+  } else {
+    PCHECK(errno == ENOENT);
+  }
 
   // The current directory is the root. Add a few paranoid checks.
   struct stat current;
@@ -147,7 +161,8 @@ SANDBOX_TEST(Credentials, CanDetectRoot) {
 
 // Disabled on ASAN because of crbug.com/451603.
 // Disabled on MSAN due to crbug.com/1180105
-SANDBOX_TEST(Credentials, DISABLE_ON_SANITIZERS(DropFileSystemAccessIsSafe)) {
+SANDBOX_TEST_ALLOW_NOISE(Credentials,
+                         DISABLE_ON_SANITIZERS(DropFileSystemAccessIsSafe)) {
   CHECK(Credentials::HasFileSystemAccess());
   CHECK(Credentials::DropAllCapabilities());
   // Probably missing kernel support.

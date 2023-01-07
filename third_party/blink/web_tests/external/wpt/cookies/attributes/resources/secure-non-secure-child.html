@@ -6,10 +6,13 @@
     <meta name=help href="https://tools.ietf.org/html/rfc6265#section-5.2.5">
     <meta name="timeout" content="long">
     <script src="/resources/testharness.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
     <script src="/cookies/resources/cookie-test.js"></script>
   </head>
   <body>
     <script>
+      setTestContextUsingRootWindow();
       // These tests are the non-secure analog to secure.https.html.
       // They're not in the /cookies/attributes folder because they shouldn't
       // be run by themselves. Instead, /cookies/attributes/secure.https.html

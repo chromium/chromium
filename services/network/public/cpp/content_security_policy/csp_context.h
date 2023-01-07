@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,15 +40,19 @@ class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
   // - triggering the "SecurityPolicyViolation" javascript event.
   // - sending a JSON report to any uri defined with the "report-uri" directive.
   // Returns true when the request can proceed, false otherwise.
+  // Note that when |is_opaque_fenced_frame| is true only https scheme source
+  // will be matched and |url| might be disregarded.
   bool IsAllowedByCsp(
       const std::vector<mojom::ContentSecurityPolicyPtr>& policies,
       mojom::CSPDirectiveName directive_name,
       const GURL& url,
+      const GURL& url_before_redirects,
       bool has_followed_redirect,
       bool is_response_check,
       const mojom::SourceLocationPtr& source_location,
       CheckCSPDisposition check_csp_disposition,
-      bool is_form_submission);
+      bool is_form_submission,
+      bool is_opaque_fenced_frame = false);
 
   // Called when IsAllowedByCsp return false. Implementer of CSPContext must
   // display an error message and send reports using |violation|.
@@ -64,7 +68,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
   // without the round trip in the renderer process.
   // See https://crbug.com/721329
   virtual void SanitizeDataForUseInCspViolation(
-      bool has_followed_redirect,
       mojom::CSPDirectiveName directive,
       GURL* blocked_url,
       mojom::SourceLocation* source_location) const;

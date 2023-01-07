@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "skia/ext/platform_canvas.h"
 #include "ui/accessibility/ax_tree_update.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -31,7 +31,7 @@ namespace printing {
 struct MetafileSkiaData;
 
 // This class uses Skia graphics library to generate a PDF or MSKP document.
-class PRINTING_EXPORT MetafileSkia : public Metafile {
+class COMPONENT_EXPORT(PRINTING_METAFILE) MetafileSkia : public Metafile {
  public:
   // Default constructor, for mojom::SkiaDocumentType::kPDF type only.
   // TODO(weili): we should split up this use case into a different class, see
@@ -55,17 +55,19 @@ class PRINTING_EXPORT MetafileSkia : public Metafile {
 
   uint32_t GetDataSize() const override;
   bool GetData(void* dst_buffer, uint32_t dst_buffer_size) const override;
+  bool ShouldCopySharedMemoryRegionData() const override;
+  mojom::MetafileDataType GetDataType() const override;
 
   gfx::Rect GetPageBounds(unsigned int page_number) const override;
   unsigned int GetPageCount() const override;
 
   printing::NativeDrawingContext context() const override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool Playback(printing::NativeDrawingContext hdc,
                 const RECT* rect) const override;
   bool SafePlayback(printing::NativeDrawingContext hdc) const override;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   bool RenderPage(unsigned int page_number,
                   printing::NativeDrawingContext context,
                   const CGRect& rect,
@@ -73,11 +75,11 @@ class PRINTING_EXPORT MetafileSkia : public Metafile {
                   bool fit_to_page) const override;
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool SaveToFileDescriptor(int fd) const override;
 #else
   bool SaveTo(base::File* file) const override;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Unlike FinishPage() or FinishDocument(), this is for out-of-process
   // subframe printing. It will just serialize the content into SkPicture

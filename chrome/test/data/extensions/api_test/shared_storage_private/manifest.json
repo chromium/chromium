@@ -1,0 +1,8 @@
+{
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDGoDQBIKdoGu4vjQZMeEqsqRzk2tXjoOmt1wYYZIa9Y7qYZs6FA1KqmKb0hvEsKFk1oP8HAu13eyTND7Znf3TloOgEB4oQ1U0sBmRIf8jCvIkyBdMnmMu2t50QPt22LiI/AUDsdCqsHHQBo2lM4c4OTYi2jDD452bPVMeb6xpleQIDAQAB",
+  "name": "chrome.sharedStoragePrivate API Test Extension - using key from shared dev",
+  "version": "0.1",
+  "manifest_version": 3,
+  "background": { "service_worker": "background.js" },
+  "permissions": ["sharedStoragePrivate"]
+}

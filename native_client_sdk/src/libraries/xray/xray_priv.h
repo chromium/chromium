@@ -1,4 +1,4 @@
-/* Copyright (c) 2013 The Chromium Authors. All rights reserved.
+/* Copyright 2013 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -204,4 +204,4 @@ XRAY_NO_INSTRUMENT struct XRayTimestampPair XRayGenerateTimestampsNow(void);
 }
 #endif
 
-#endif  /* LIBRARIES_XRAY_XRAY_PRIV_H_ */
+#endif  // LIBRARIES_XRAY_XRAY_PRIV_H_

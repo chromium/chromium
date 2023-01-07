@@ -59,12 +59,8 @@ class CORE_EXPORT WebMouseEventBuilder : public WebMouseEvent {
   // NOTE: This is only implemented for mousemove, mouseover, mouseout,
   // mousedown and mouseup. If the event mapping fails, the event type will
   // be set to Undefined.
-  WebMouseEventBuilder(const LocalFrameView*,
-                       const LayoutObject*,
-                       const MouseEvent&);
-  WebMouseEventBuilder(const LocalFrameView*,
-                       const LayoutObject*,
-                       const TouchEvent&);
+  WebMouseEventBuilder(const LayoutObject*, const MouseEvent&);
+  WebMouseEventBuilder(const LayoutObject*, const TouchEvent&);
 };
 
 // Converts a KeyboardEvent to a corresponding WebKeyboardEvent.
@@ -98,4 +94,4 @@ Vector<WebPointerEvent> CORE_EXPORT TransformWebPointerEventVector(
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_WEB_INPUT_EVENT_CONVERSION_H_

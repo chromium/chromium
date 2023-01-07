@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -26,13 +26,14 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/table_model_observer.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -46,11 +47,11 @@
 #include "ui/gfx/image/image_skia.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/shell_integration_win.h"
 #include "ui/base/win/shell.h"
 #include "ui/views/win/hwnd_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace task_manager {
 
@@ -62,7 +63,7 @@ TaskManagerView* g_task_manager_view = nullptr;
 
 TaskManagerView::~TaskManagerView() {
   // Delete child views now, while our table model still exists.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 // static
@@ -83,7 +84,7 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(Browser* browser) {
   CreateDialogWidget(g_task_manager_view, context, nullptr);
   g_task_manager_view->InitAlwaysOnTopState();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Set the app id for the task manager to the app id of its parent browser. If
   // no parent is specified, the app id will default to that of the initial
   // process.
@@ -123,6 +124,12 @@ bool TaskManagerView::IsColumnVisible(int column_id) const {
 }
 
 void TaskManagerView::SetColumnVisibility(int column_id, bool new_visibility) {
+  // Check if there is at least 1 visible column before changing the visibility.
+  // If this column would be the last column to be visible and its hiding, then
+  // prevent this column visibility change. see crbug.com/1320307 for details.
+  if (!new_visibility && tab_table_->visible_columns().size() <= 1)
+    return;
+
   tab_table_->SetColumnVisibility(column_id, new_visibility);
 }
 
@@ -151,7 +158,11 @@ void TaskManagerView::SetSortDescriptor(const TableSortDescriptor& descriptor) {
 }
 
 gfx::Size TaskManagerView::CalculatePreferredSize() const {
-  return gfx::Size(460, 270);
+  // The TaskManagerView's preferred size is used to size the hosting Widget
+  // when the Widget does not have `initial_restored_bounds_` set. The minimum
+  // width below ensures that there is sufficient space for the task manager's
+  // columns when the above restored bounds have not been set.
+  return gfx::Size(640, 270);
 }
 
 bool TaskManagerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -175,13 +186,13 @@ bool TaskManagerView::ExecuteWindowsCommand(int command_id) {
   return false;
 }
 
-gfx::ImageSkia TaskManagerView::GetWindowIcon() {
+ui::ImageModel TaskManagerView::GetWindowIcon() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1162514): Move apps::CreateStandardIconImage to some
   // where lower in the stack.
-  return apps::CreateStandardIconImage(
+  return ui::ImageModel::FromImageSkia(apps::CreateStandardIconImage(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_ASH_SHELF_ICON_TASK_MANAGER));
+          IDR_ASH_SHELF_ICON_TASK_MANAGER)));
 #else
   return views::DialogDelegateView::GetWindowIcon();
 #endif
@@ -194,9 +205,8 @@ std::string TaskManagerView::GetWindowName() const {
 bool TaskManagerView::Accept() {
   using SelectedIndices = ui::ListSelectionModel::SelectedIndices;
   SelectedIndices selection(tab_table_->selection_model().selected_indices());
-  for (SelectedIndices::const_reverse_iterator i = selection.rbegin();
-       i != selection.rend(); ++i) {
-    table_model_->KillTask(*i);
+  for (int index : base::Reversed(selection)) {
+    table_model_->KillTask(index);
   }
 
   // Just kill the process, don't close the task manager dialog.
@@ -226,7 +236,8 @@ void TaskManagerView::WindowClosing() {
   table_model_->StoreColumnsSettings();
 }
 
-void TaskManagerView::GetGroupRange(int model_index, views::GroupRange* range) {
+void TaskManagerView::GetGroupRange(size_t model_index,
+                                    views::GroupRange* range) {
   table_model_->GetRowsGroupRange(model_index, &range->start, &range->length);
 }
 
@@ -299,7 +310,6 @@ TaskManagerView::TaskManagerView()
   SetCloseCallback(base::DoNothing());
 
   Init();
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::TASK_MANAGER);
 }
 
 // static
@@ -340,7 +350,7 @@ void TaskManagerView::Init() {
       provider->GetInsetsMetric(views::INSETS_DIALOG);
   // We don't use ChromeLayoutProvider::GetDialogInsetsForContentType because we
   // don't have a title.
-  const gfx::Insets content_insets(
+  const auto content_insets = gfx::Insets::TLBR(
       dialog_insets.top(), dialog_insets.left(),
       provider->GetDistanceMetric(
           views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
@@ -362,9 +372,10 @@ void TaskManagerView::InitAlwaysOnTopState() {
 }
 
 void TaskManagerView::ActivateSelectedTab() {
-  const int active_row = tab_table_->selection_model().active();
-  if (active_row != ui::ListSelectionModel::kUnselectedIndex)
-    table_model_->ActivateTask(active_row);
+  const absl::optional<size_t> active_row =
+      tab_table_->selection_model().active();
+  if (active_row.has_value())
+    table_model_->ActivateTask(active_row.value());
 }
 
 void TaskManagerView::SelectTaskOfActiveTab(Browser* browser) {
@@ -380,10 +391,9 @@ void TaskManagerView::RetrieveSavedAlwaysOnTopState() {
   if (!g_browser_process->local_state())
     return;
 
-  const base::DictionaryValue* dictionary =
-      g_browser_process->local_state()->GetDictionary(GetWindowName());
-  if (dictionary)
-    dictionary->GetBoolean("always_on_top", &is_always_on_top_);
+  const base::Value::Dict& dictionary =
+      g_browser_process->local_state()->GetDict(GetWindowName());
+  is_always_on_top_ = dictionary.FindBool("always_on_top").value_or(false);
 }
 
 BEGIN_METADATA(TaskManagerView, views::DialogDelegateView)
@@ -393,7 +403,7 @@ END_METADATA
 
 namespace chrome {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // These are used by the Mac versions of |ShowTaskManager| and |HideTaskManager|
 // if they decide to show the Views task manager instead of the Cocoa one.
 task_manager::TaskManagerTableModel* ShowTaskManagerViews(Browser* browser) {

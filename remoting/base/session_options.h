@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -32,20 +32,20 @@ class SessionOptions final {
 
   // Retrieves the value of |key|. Returns a true Optional if |key| has been
   // found, value of the Optional will be set to corresponding value.
-  base::Optional<std::string> Get(const std::string& key) const;
+  absl::optional<std::string> Get(const std::string& key) const;
 
   // Retrieves the value of |key|. Returns a true Optional if |key| has been
   // found and the corresponding value can be converted to a boolean value.
   // "true", "1" or empty will be converted to true, "false" or "0" will be
   // converted to false.
-  base::Optional<bool> GetBool(const std::string& key) const;
+  absl::optional<bool> GetBool(const std::string& key) const;
 
   // Equivalent to GetBool(key).value_or(false).
   bool GetBoolValue(const std::string& key) const;
 
   // Retrieves the value of |key|. Returns a true Optional if |key| has been
   // found and the corresponding value can be converted to an integer.
-  base::Optional<int> GetInt(const std::string& key) const;
+  absl::optional<int> GetInt(const std::string& key) const;
 
   // Returns a string to represent current instance. Consumers can rebuild an
   // exactly same instance with Import() function.

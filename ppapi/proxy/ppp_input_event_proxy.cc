@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ namespace proxy {
 
 namespace {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 PP_Bool HandleInputEvent(PP_Instance instance, PP_Resource input_event) {
   EnterResourceNoLock<PPB_InputEvent_API> enter(input_event, false);
   if (enter.failed()) {
@@ -53,7 +53,7 @@ static const PPP_InputEvent input_event_interface = {
 #else
 // The NaCl plugin doesn't need the host side interface - stub it out.
 static const PPP_InputEvent input_event_interface = {};
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace
 

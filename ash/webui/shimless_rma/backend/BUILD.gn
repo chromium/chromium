@@ -1,0 +1,73 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+static_library("backend") {
+  sources = [
+    "shimless_rma_delegate.h",
+    "shimless_rma_service.cc",
+    "shimless_rma_service.h",
+    "version_updater.cc",
+    "version_updater.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp:cpp",
+    "//ash/webui/shimless_rma/mojom",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/rmad",
+    "//chromeos/ash/components/dbus/rmad:rmad_proto",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//chromeos/ash/components/dbus/update_engine:proto",
+    "//chromeos/ash/components/network",
+    "//chromeos/dbus/power",
+    "//chromeos/services/network_config:in_process_instance",
+    "//chromeos/services/network_config/public/mojom:mojom",
+    "//chromeos/version",
+    "//components/qr_code_generator",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "shimless_rma_service_unittest.cc",
+    "version_updater_unittest.cc",
+  ]
+
+  deps = [
+    ":backend",
+    "//ash/public/cpp:cpp",
+    "//ash/webui/shimless_rma/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus:test_support",
+    "//chromeos/ash/components/dbus/rmad",
+    "//chromeos/ash/components/dbus/rmad:rmad_proto",
+    "//chromeos/ash/components/dbus/update_engine:update_engine",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/dbus/power",
+    "//chromeos/login/login_state:login_state",
+    "//chromeos/services/network_config/public/cpp:test_support",
+    "//chromeos/services/network_config/public/mojom:mojom",
+    "//chromeos/services/network_config/public/mojom:network_types_shared_cpp_sources",
+    "//components/onc:onc",
+    "//components/prefs:test_support",
+    "//components/proxy_config:proxy_config",
+    "//components/qr_code_generator",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/device/public/cpp:test_support",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/shell_dialogs",
+    "//ui/webui",
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,11 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
@@ -36,17 +37,17 @@ class FlakyDB : public leveldb::DB {
   ~FlakyDB() override = default;
 
   // Returns a FlakePoint if the current operation is flaky with the flake
-  // information. Otherwise it returns a base::nullopt.
+  // information. Otherwise it returns a absl::nullopt.
   // This call is threadsafe.
-  base::Optional<FakeLevelDBFactory::FlakePoint> FlakePointForNextOperation() {
+  absl::optional<FakeLevelDBFactory::FlakePoint> FlakePointForNextOperation() {
     base::AutoLock lock(lock_);
     if (flake_points_.empty())
-      return base::nullopt;
+      return absl::nullopt;
     DCHECK_GE(flake_points_.front().calls_before_flake, 0);
     flake_points_.front().calls_before_flake--;
     FakeLevelDBFactory::FlakePoint flake_point = flake_points_.front();
     if (flake_point.calls_before_flake >= 0)
-      return base::nullopt;
+      return absl::nullopt;
     flake_points_.pop();
     return flake_point;
   }
@@ -55,7 +56,7 @@ class FlakyDB : public leveldb::DB {
   leveldb::Status Put(const leveldb::WriteOptions& options,
                       const leveldb::Slice& key,
                       const leveldb::Slice& value) override {
-    base::Optional<FakeLevelDBFactory::FlakePoint> flake_status =
+    absl::optional<FakeLevelDBFactory::FlakePoint> flake_status =
         FlakePointForNextOperation();
     if (flake_status.has_value())
       return flake_status->flake_status;
@@ -63,7 +64,7 @@ class FlakyDB : public leveldb::DB {
   }
   leveldb::Status Delete(const leveldb::WriteOptions& options,
                          const leveldb::Slice& key) override {
-    base::Optional<FakeLevelDBFactory::FlakePoint> flake_status =
+    absl::optional<FakeLevelDBFactory::FlakePoint> flake_status =
         FlakePointForNextOperation();
     if (flake_status.has_value())
       return flake_status->flake_status;
@@ -71,7 +72,7 @@ class FlakyDB : public leveldb::DB {
   }
   leveldb::Status Write(const leveldb::WriteOptions& options,
                         leveldb::WriteBatch* updates) override {
-    base::Optional<FakeLevelDBFactory::FlakePoint> flake_status =
+    absl::optional<FakeLevelDBFactory::FlakePoint> flake_status =
         FlakePointForNextOperation();
     if (flake_status.has_value())
       return flake_status->flake_status;
@@ -80,7 +81,7 @@ class FlakyDB : public leveldb::DB {
   leveldb::Status Get(const leveldb::ReadOptions& options,
                       const leveldb::Slice& key,
                       std::string* value) override {
-    base::Optional<FakeLevelDBFactory::FlakePoint> flake_status =
+    absl::optional<FakeLevelDBFactory::FlakePoint> flake_status =
         FlakePointForNextOperation();
     if (flake_status.has_value()) {
       if (flake_status->flake_status.ok())
@@ -169,11 +170,11 @@ class FlakyIterator : public leveldb::Iterator {
  private:
   // The raw pointer is safe because iterators must be deleted before their
   // databases.
-  FlakyDB* const db_;
+  const raw_ptr<FlakyDB> db_;
 
   // The current flake is cleared & optionally set on every call to Seek*, Next,
   // and Prev.
-  base::Optional<FakeLevelDBFactory::FlakePoint> current_flake_;
+  absl::optional<FakeLevelDBFactory::FlakePoint> current_flake_;
   std::unique_ptr<leveldb::Iterator> delegate_;
 };
 
@@ -353,7 +354,7 @@ class BreakOnCallbackDB : public leveldb::DB {
  private:
   base::Lock lock_;
   const std::unique_ptr<leveldb::DB> db_;
-  base::Optional<leveldb::Status> broken_status_ GUARDED_BY(lock_);
+  absl::optional<leveldb::Status> broken_status_ GUARDED_BY(lock_);
 };
 
 }  // namespace

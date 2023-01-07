@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/inspector_contrast.h"
 
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "base/trace_event/trace_event.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_embed_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_snapshot_agent.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
@@ -43,7 +45,7 @@ void BlendWithColorsFromGradient(cssvalue::CSSGradientValue* gradient,
   const ComputedStyle& style = layout_object.StyleRef();
 
   Vector<Color> stop_colors = gradient->GetStopColors(document, style);
-  if (colors.IsEmpty()) {
+  if (colors.empty()) {
     colors.AppendRange(stop_colors.begin(), stop_colors.end());
   } else {
     if (colors.size() > 1) {
@@ -138,22 +140,25 @@ void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
   if (!layout_view)
     return;
 
+  DeferredShapingController::From(*document_)
+      ->ReshapeAllDeferred(ReshapeReason::kInspector);
   if (!layout_view->GetFrameView()->UpdateLifecycleToPrePaintClean(
           DocumentUpdateReason::kInspector)) {
     return;
   }
 
   InspectorDOMAgent::CollectNodes(
-      document_, INT_MAX, true,
+      document_, INT_MAX, true, InspectorDOMAgent::IncludeWhitespaceEnum::NONE,
       WTF::BindRepeating(&NodeIsElementWithLayoutObject), &elements_);
   SortElementsByPaintOrder(elements_, document_);
   rtree_.Build(
       elements_,
       [](const HeapVector<Member<Node>>& items, size_t index) {
-        return PixelSnappedIntRect(GetNodeRect(items[index]));
+        return ToPixelSnappedRect(
+            GetNodeRect(items[static_cast<wtf_size_t>(index)]));
       },
       [](const HeapVector<Member<Node>>& items, size_t index) {
-        return items[index];
+        return items[static_cast<wtf_size_t>(index)];
       });
 
   rtree_built_ = true;
@@ -205,7 +210,7 @@ ContrastInfo InspectorContrast::GetContrast(Element* top_element) {
     return result;
 
   const String& text = text_node->data().StripWhiteSpace();
-  if (text.IsEmpty())
+  if (text.empty())
     return result;
 
   const LayoutObject* layout_object = top_element->GetLayoutObject();
@@ -223,12 +228,13 @@ ContrastInfo InspectorContrast::GetContrast(Element* top_element) {
     return result;
 
   Color text_color =
-      static_cast<const cssvalue::CSSColorValue*>(text_color_value)->Value();
+      static_cast<const cssvalue::CSSColor*>(text_color_value)->Value();
 
   text_color = text_color.CombineWithAlpha(text_opacity);
 
   float contrast_ratio = color_utils::GetContrastRatio(
-      SkColor(bgcolors.at(0).Blend(text_color)), SkColor(bgcolors.at(0)));
+      bgcolors.at(0).Blend(text_color).ToSkColorDeprecated(),
+      bgcolors.at(0).ToSkColorDeprecated());
 
   auto text_info = GetTextInfo(top_element);
   bool is_large_font = IsLargeFont(text_info);
@@ -269,6 +275,11 @@ Vector<Color> InspectorContrast::GetBackgroundColors(Element* element,
     return colors;
   }
 
+  if (RuntimeEnabledFeatures::DeferredShapingEnabled()) {
+    if (auto* ds_controller = DeferredShapingController::From(*document_))
+      ds_controller->ReshapeAllDeferred(ReshapeReason::kInspector);
+    document_->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
+  }
   PhysicalRect content_bounds = GetNodeRect(text_node);
   LocalFrameView* view = text_node->GetDocument().View();
   if (!view)
@@ -284,12 +295,11 @@ Vector<Color> InspectorContrast::GetBackgroundColors(Element* element,
 }
 
 // Get the elements which overlap the given rectangle.
-std::vector<Member<Node>> InspectorContrast::ElementsFromRect(
-    const PhysicalRect& rect,
-    Document& document) {
+std::vector<Node*> InspectorContrast::ElementsFromRect(const PhysicalRect& rect,
+                                                       Document& document) {
   CollectNodesAndBuildRTreeIfNeeded();
-  std::vector<Member<Node>> overlapping_elements;
-  rtree_.Search(PixelSnappedIntRect(rect), &overlapping_elements);
+  std::vector<Node*> overlapping_elements;
+  rtree_.Search(ToPixelSnappedRect(rect), &overlapping_elements);
   return overlapping_elements;
 }
 
@@ -298,8 +308,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
                                           Element* top_element,
                                           Vector<Color>& colors,
                                           float* text_opacity) {
-  std::vector<Member<Node>> elements_under_rect =
-      ElementsFromRect(rect, document);
+  std::vector<Node*> elements_under_rect = ElementsFromRect(rect, document);
 
   bool found_opaque_color = false;
   bool found_top_element = false;
@@ -308,7 +317,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
 
   for (auto e = elements_under_rect.begin();
        !found_top_element && e != elements_under_rect.end(); ++e) {
-    const Element* element = To<Element>(e->Get());
+    const Element* element = To<Element>(*e);
     if (element == top_element)
       found_top_element = true;
 
@@ -350,7 +359,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
     if (background_color.Alpha() != 0) {
       found_non_transparent_color = true;
       if (background_color.HasAlpha()) {
-        if (colors.IsEmpty()) {
+        if (colors.empty()) {
           colors.push_back(background_color);
         } else {
           for (auto& color : colors)
@@ -366,7 +375,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
     AddColorsFromImageStyle(*style, *layout_object, colors, found_opaque_color,
                             found_non_transparent_color);
 
-    bool contains = found_top_element || GetNodeRect(e->Get()).Contains(rect);
+    bool contains = found_top_element || GetNodeRect(*e).Contains(rect);
     if (!contains && found_non_transparent_color) {
       // Only return colors if some opaque element covers up this one.
       colors.clear();
@@ -380,7 +389,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
 void InspectorContrast::SortElementsByPaintOrder(
     HeapVector<Member<Node>>& unsorted_elements,
     Document* document) {
-  std::unique_ptr<InspectorDOMSnapshotAgent::PaintOrderMap> paint_layer_tree =
+  InspectorDOMSnapshotAgent::PaintOrderMap* paint_layer_tree =
       InspectorDOMSnapshotAgent::BuildPaintLayerTree(document);
 
   std::stable_sort(

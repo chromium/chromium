@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,14 @@
 
 #include <string>
 
+#include "base/feature_list.h"
+#include "base/time/time.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 using base::Time;
-using base::TimeDelta;
 namespace web_cache {
 
 class WebCacheManagerTest : public testing::Test {
@@ -27,6 +29,13 @@ class WebCacheManagerTest : public testing::Test {
 
   WebCacheManagerTest() = default;
 
+  void SetUp() override {
+    if (base::FeatureList::IsEnabled(
+            blink::features::kNoCentralWebCacheLimitControl)) {
+      GTEST_SKIP();
+    }
+  }
+
   // Thunks to access protected members of WebCacheManager
   static std::map<int, WebCacheManager::RendererInfo>& stats(
         WebCacheManager* h) {
@@ -34,8 +43,9 @@ class WebCacheManagerTest : public testing::Test {
   }
 
   static void SimulateInactivity(WebCacheManager* h, int renderer_id) {
-    stats(h)[renderer_id].access = Time::Now() - TimeDelta::FromMinutes(
-        WebCacheManager::kRendererInactiveThresholdMinutes);
+    stats(h)[renderer_id].access =
+        Time::Now() -
+        base::Minutes(WebCacheManager::kRendererInactiveThresholdMinutes);
     h->FindInactiveRenderers();
   }
 

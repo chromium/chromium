@@ -1,23 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {TestStore} from 'chrome://test/test_store.m.js';
-// #import {AppManagementStore, createEmptyState, reduceAction} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
+import {AppManagementStore, createEmptyState, reduceAction} from 'chrome://os-settings/chromeos/os_settings.js';
+import {TestStore} from 'chrome://test/chromeos/test_store.js';
 
-cr.define('app_management', function() {
-  /* #export */ class TestAppManagementStore extends cr.ui.TestStore {
-    constructor(data) {
-      super(
-          data, app_management.AppManagementStore,
-          app_management.util.createEmptyState(), app_management.reduceAction);
-    }
+export class TestAppManagementStore extends TestStore {
+  constructor(data) {
+    super(data, AppManagementStore, createEmptyState(), reduceAction);
   }
 
-  // #cr_define_end
-  return {
-    TestAppManagementStore: TestAppManagementStore,
-  };
-});
+  /**
+   * Replaces the global store instance with this TestStore. Overrides the
+   * default implementation by using the setInstance() static method
+   * @override
+   */
+  replaceSingleton() {
+    AppManagementStore.setInstanceForTesting(this);
+  }
+}

@@ -1,17 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ProgressCenterItem} from '../../common/js/progress_center_common.m.js';
-// #import {ProgressCenterPanelInterface} from '../progress_center_panel.m.js';
-// clang-format on
+import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
+import {ProgressCenterPanelInterface} from '../progress_center_panel.js';
 
 /**
  * Progress center at the background page.
  * @interface
  */
-/* #export */ class ProgressCenter {
+export class ProgressCenter {
   /**
    * Turns off sending updates when a file operation reaches 'completed' state.
    * Used for testing UI that can be ephemeral otherwise.

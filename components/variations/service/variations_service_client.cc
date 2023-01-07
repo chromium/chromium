@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "components/variations/variations_switches.h"
 #include "ui/base/device_form_factor.h"
@@ -43,6 +44,11 @@ Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
   }
   NOTREACHED();
   return Study::DESKTOP;
+}
+
+std::unique_ptr<SeedResponse>
+VariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
+  return nullptr;
 }
 
 }  // namespace variations

@@ -2,7 +2,7 @@ Test that WebSocket opened in iframe is closed when the iframe is unloaded even 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS ws on master document is ready.
+PASS ws on main document is ready.
 PASS insert a iframe, where open ws called 'socket1'
 PASS document.childWebSocket is non-null.
 PASS 'socket1' is sent to the server. unload the iframe. expect receiving 'socket1' on ws...

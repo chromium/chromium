@@ -1,0 +1,25 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Sync protocol datatype extension for printer data.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// Represents trusted Authorization Server for printers.
+message PrintersAuthorizationServerSpecifics {
+  // Universal Resource Identifier for the authorization server on the network.
+  // The scheme must be https. Example: https://address.example:port/path/path.
+  // This field must be unique and is required.
+  optional string uri = 1;
+}

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -70,6 +69,9 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
 
   UploadList();
 
+  UploadList(const UploadList&) = delete;
+  UploadList& operator=(const UploadList&) = delete;
+
   // Starts loading the upload list. OnUploadListAvailable will be called when
   // loading is complete. If this is called twice, the second |callback| will
   // overwrite the previously supplied one, and the first will not be called.
@@ -120,14 +122,12 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
 
   // Ensures that this class' thread unsafe state is only accessed from the
   // sequence that owns this UploadList.
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::OnceClosure load_callback_;
   base::OnceClosure clear_callback_;
 
   std::vector<UploadInfo> uploads_;
-
-  DISALLOW_COPY_AND_ASSIGN(UploadList);
 };
 
 #endif  // COMPONENTS_UPLOAD_LIST_UPLOAD_LIST_H_

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 
 namespace content {
@@ -27,10 +27,6 @@ void Append(blink::WebVector<blink::WebString>* data,
 
 bool IsASCIIAlpha(char ch) {
   return base::IsAsciiLower(ch | 0x20);
-}
-
-bool IsNotASCIIAlpha(char ch) {
-  return !IsASCIIAlpha(ch);
 }
 
 }  // namespace
@@ -65,7 +61,7 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
     // If the given string doesn't include any ASCII characters, we can treat
     // the string as valid one.
     std::u16string::iterator first_char =
-        std::find_if(string_text.begin(), string_text.end(), IsASCIIAlpha);
+        base::ranges::find_if(string_text, IsASCIIAlpha);
     if (first_char == string_text.end())
       return true;
     int word_offset = std::distance(string_text.begin(), first_char);
@@ -87,7 +83,7 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
       if (word == misspelled_words_.at(i) &&
           (static_cast<int>(string_text.length()) ==
                word_offset + word_length ||
-           IsNotASCIIAlpha(string_text[word_offset + word_length]))) {
+           !IsASCIIAlpha(string_text[word_offset + word_length]))) {
         *misspelled_offset = word_offset + skipped_length;
         *misspelled_length = word_length;
         break;
@@ -97,8 +93,8 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
     if (*misspelled_length > 0)
       break;
 
-    std::u16string::iterator last_char = std::find_if(
-        string_text.begin() + word_offset, string_text.end(), IsNotASCIIAlpha);
+    std::u16string::iterator last_char = std::find_if_not(
+        string_text.begin() + word_offset, string_text.end(), IsASCIIAlpha);
     if (last_char == string_text.end())
       word_length = static_cast<int>(string_text.length()) - word_offset;
     else
@@ -155,17 +151,20 @@ bool WebTestSpellChecker::InitializeIfNeeded() {
   // well-spelled words, it is easier to compare the given word with misspelled
   // ones than to compare with well-spelled ones.
   static const char* misspelled_words[] = {
-      // These words are known misspelled words in webkit tests.
-      // If there are other misspelled words in webkit tests, please add them in
+      // These words are known misspelled words in web tests.
+      // If there are other misspelled words in web tests, please add them in
       // this array.
       "foo", "Foo", "baz", "fo", "LibertyF", "chello", "xxxtestxxx", "XXxxx",
       "Textx", "blockquoted", "asd", "Lorem", "Nunc", "Curabitur", "eu", "adlj",
-      "adaasj", "sdklj", "jlkds", "jsaada", "jlda", "zz", "contentEditable",
+      "adaasj", "sdklj", "jlkds", "jsaada", "jlda", "contentEditable",
+      // Prefer to match the full word than a partial word when there's an
+      // ambiguous boundary.
+      "zz't", "zz",
       // The following words are used by unit tests.
       "ifmmp", "qwertyuiopasd", "qwertyuiopasdf", "upper case", "wellcome"};
 
   misspelled_words_.clear();
-  for (size_t i = 0; i < base::size(misspelled_words); ++i)
+  for (size_t i = 0; i < std::size(misspelled_words); ++i)
     misspelled_words_.push_back(
         std::u16string(misspelled_words[i],
                        misspelled_words[i] + strlen(misspelled_words[i])));

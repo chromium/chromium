@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_SERVICES_IPP_PARSER_PUBLIC_CPP_BROWSER_IPP_PARSER_LAUNCHER_H_
 
 #include "base/callback.h"
-#include "chrome/services/ipp_parser/public/mojom/ipp_parser.mojom.h"
+#include "chrome/services/ipp_parser/public/mojom/ipp_parser.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

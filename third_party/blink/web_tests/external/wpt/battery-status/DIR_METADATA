@@ -1,2 +1,7 @@
+monorail {
+  component: "Blink>BatteryStatus"
+}
 team_email: "device-dev@chromium.org"
-
+wpt {
+  notify: YES
+}

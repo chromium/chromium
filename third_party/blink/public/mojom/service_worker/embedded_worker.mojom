@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/service_manager/public/mojom/interface_provider.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
-import "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom";
+import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/renderer_preference_watcher.mojom";
@@ -18,15 +19,17 @@ import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "third_party/blink/public/mojom/script/script_type.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker.mojom";
-import "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
+import "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom";
 import "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom";
 import "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom";
-import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
 import "url/mojom/url.mojom";
 
 // Parameters to launch a service worker. This is passed from the browser to the
@@ -86,8 +89,20 @@ struct EmbeddedWorkerStartParams {
   // Used to set up fetch requests.
   RendererPreferences renderer_preferences;
 
+  // List of blink runtime features (based on their names) to enable for this
+  // renderer process. To avoid exposing dangerous features to other sites, this
+  // is only populated if the renderer process is isolated.
+  //
+  // Ideally this would be part of content.mojom.Renderer, but
+  // EmbedderWorkerInstanceClient and content.mojom.Renderer use separate pipes
+  // so a ServiceWorker could be started before the features are enabled.
+  array<string> forced_enabled_runtime_features;
+
   // Used to talk to the service worker from the browser process.
   pending_receiver<ServiceWorker> service_worker_receiver;
+
+  // Used by the browser to request interfaces exposed by the renderer.
+  pending_receiver<service_manager.mojom.InterfaceProvider> interface_provider;
 
   // Cloned and passed to each controllee to directly dispatch events from the
   // controllees.
@@ -132,6 +147,9 @@ struct EmbeddedWorkerStartParams {
   // Valid only when the service worker is new and the script needs to be loaded
   // from the network.
   WorkerMainScriptLoadParams? main_script_load_params;
+
+  // A container for several security policies to be applied to the worker.
+  PolicyContainer? policy_container;
 };
 
 // Holds timing information about the start worker sequence for UMA.
@@ -209,10 +227,11 @@ interface EmbeddedWorkerInstanceHost {
   // for the browser process to start enforcing timeouts on script execution.
   OnScriptEvaluationStart();
   // Indicates that the worker has started. |thread_id| is the platform
-  // thread id the worker runs on. |has_fetch_handler| is true when the fetch
-  // event handler exists after initial script evaluation.
+  // thread id the worker runs on. |fetch_handler_type| represents the fetch
+  // handler type. The type is decided after initial script evaluation, and
+  // it can also represents the fetch event handler does not exist.
   OnStarted(ServiceWorkerStartStatus status,
-            bool has_fetch_handler,
+            blink.mojom.ServiceWorkerFetchHandlerType fetch_handler_type,
             int32 thread_id,
             EmbeddedWorkerStartTiming start_timing);
 

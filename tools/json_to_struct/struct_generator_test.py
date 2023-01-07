@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -34,10 +34,13 @@ class StructGeneratorTest(unittest.TestCase):
                        'contents': {'type': 'int'}}))
 
   def testGenerateClassField(self):
-    self.assertEquals('const base::Optional<bool> bar',
-        GenerateField({'type': 'class',
-                       'field': 'bar',
-                       'ctype': 'base::Optional<bool>'}))
+    self.assertEquals(
+        'const absl::optional<bool> bar',
+        GenerateField({
+            'type': 'class',
+            'field': 'bar',
+            'ctype': 'absl::optional<bool>'
+        }))
 
   def testGenerateStruct(self):
     schema = [

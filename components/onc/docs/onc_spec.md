@@ -158,6 +158,19 @@ fetching new policy or logging in.
 A [Help Center article](https://support.google.com/chrome/a/answer/6326250)
 warns admins of the implications of mis-using this policy for Chrome OS.
 
+* **AllowCellularSimLock**
+    * (optional, defaults to true) - **boolean**
+    * When this field is present and set to false, a SIM cannot be PIM Locked on
+      a managed device. If the currently active SIM is already PIN Locked when
+      this field turns false, the managed user will be guided to PIN unlock the
+      SIM.
+
+* **AllowOnlyPolicyCellularNetworks**
+    * (optional, defaults to false) - **boolean**
+    * When this field is present and set to true, only cellular networks present
+      in policy may be connected to. No new cellular networks may be added or
+      configured. This allows admins to ensure that only policy configured
+      cellular networks are accessible.
 
 * **AllowOnlyPolicyNetworksToAutoconnect**
     * (optional, defaults to false) - **boolean**
@@ -182,7 +195,7 @@ warns admins of the implications of mis-using this policy for Chrome OS.
       enabled and a network scan shows a new policy managed network, the device
       will automatically switch to the managed network.
 
-* **BlacklistedHexSSIDs**
+* **BlacklistedHexSSIDs** <!--- nocheck -->
     * DEPRECATED, use **BlockedHexSSIDs** instead.<br/>
     * (optional) - **array of string**
     * List of strings containing blocked hex SSIDs. Networks included in
@@ -204,7 +217,9 @@ warns admins of the implications of mis-using this policy for Chrome OS.
         * *Tether*
         * *VPN*
     * List of strings containing disabled network interfaces.
-    * Adding *VPN* to the list will only disable Chrome OS built-in VPN.
+    * Adding *VPN* to the list will disable all VPN types. Android VPN
+      connections may still be established successfully but will be
+      closed shortly after that by the Chrome OS connection manager.
 
 ## Network Configuration
 
@@ -231,7 +246,9 @@ Field **NetworkConfigurations** is an array of
         * *DHCP*
         * *Static*
     * Determines whether the IP Address configuration is statically configured,
-      see **StaticIPConfig**, or automatically configured using DHCP.
+      see **StaticIPConfig**, or automatically configured. Note that *DHCP*
+      here includes the case of configuring through other dynamic IP allocating
+      protocols (e.g. SLAAC) as well.
 
 * **Metered**
     * (optional, defaults to "false") - **boolean**
@@ -246,7 +263,9 @@ Field **NetworkConfigurations** is an array of
         * *DHCP*
         * *Static*
     * Determines whether the NameServers configuration is statically configured,
-      see **StaticIPConfig**, or automatically configured using DHCP.
+      see **StaticIPConfig**, or automatically configured. Note that *DHCP*
+      here includes the case of configuration through other dynamic nameserver
+      configuring protocols (e.g. IPv6 RDNSS option) as well.
 
 * **IPConfigs**
     * (optional for connected networks, read-only) -
@@ -580,6 +599,7 @@ field **VPN** must be set to an object of type [VPN](#VPN-type).
     * (required) - **string**
     * Allowed values are:
         * *ARCVPN*
+        * *IPsec*
         * *L2TP-IPsec*
         * *OpenVPN*
         * *ThirdPartyVPN*
@@ -593,9 +613,18 @@ field **VPN** must be set to an object of type [VPN](#VPN-type).
     * (required) - **string**
     * Allowed values are:
         * *Cert*
+        * *EAP*
         * *PSK*
     * If *Cert* is used, **ClientCertType** and *ServerCARefs* (or the
       deprecated *ServerCARef*) must be set.
+    * *EAP* is only valid if **IKEVersion** is 2.
+
+* **ClientCertProvisioningProfileId**
+    * (required if **ClientCertType** is *ProvisioningProfileId*, otherwise
+      ignored) - **string**
+    * Id of the client certificate to be used. On Chrome OS, this corresponds
+      to the "cert_profile_id" field in the RequiredClientCertificateForUser or
+      RequiredClientCertificateForDevice policy.
 
 * **ClientCertPKCS11Id**
     * (required if **ClientCertType** is *PKCS11Id*, otherwise ignored) -
@@ -617,8 +646,9 @@ field **VPN** must be set to an object of type [VPN](#VPN-type).
       * *PKCS11Id*
       * *Pattern*
       * *Ref*
-    * *Ref* and *Pattern* indicate that the associated property should be used
-      to identify the client certificate.
+      * *ProvisioningProfileId*
+    * *Ref*, *Pattern* and *ProvisioningProfileId* indicate that the associated
+      property should be used to identify the client certificate.
     * *PKCS11Id* is used when representing a certificate in a local store and is
       only valid when describing a local configuration.
 
@@ -635,12 +665,20 @@ field **VPN** must be set to an object of type [VPN](#VPN-type).
     * (required) - **integer**
     * Version of IKE protocol to use.
 
+* **LocalIdentity**
+    * (optional if **IKEVersion** is 2, otherwise ignored) - **string**
+    * The local identity used in IKE authentication.
+
 * **PSK**
     * (optional if **AuthenticationType** is *PSK*, otherwise ignored)
       - **string**
     * Pre-Shared Key. If not specified, the user is prompted when connecting.
       If the value is saved but not known, this may be set to an empty value,
       indicating that the UI does not need to provide it.
+
+* **RemoteIdentity**
+    * (optional if **IKEVersion** is 2, otherwise ignored) - **string**
+    * The remote identity used in IKE authentication.
 
 * **SaveCredentials**
     * (optional if **AuthenticationType**
@@ -800,7 +838,7 @@ L2TP over IPsec with pre-shared key:
 
 * **CompLZO**
     * (optional, defaults to *adaptive*) - **string**
-    * DEPRECATED, use **Compress** with *lzo* option instead.
+    * DEPRECATED, use **CompressionAlgorithm** with *lzo* option instead.
     * Decides to fast LZO compression with *true*
       and *false* as other values.
 
@@ -809,7 +847,7 @@ L2TP over IPsec with pre-shared key:
     * DEPRECATED, do not use.
     * Disables adaptive compression.
 
-* **Compress**
+* **CompressionAlgorithm**
     * (optional, defaults to *None*) - **string**
     * Specifies the compression algorithm to be used.
     * Allowed values are:
@@ -1021,6 +1059,48 @@ L2TP over IPsec with pre-shared key:
         * *subject*
       See OpenVPN's documentation for "--verify-x509-name" for the meaning of
       each value. Defaults to OpenVPN's default if not specified.
+
+## WireGuard connections and types
+
+**VPN.Type** must be *WireGuard*.
+
+### WireGuard type
+
+* **PrivateKey**
+    * (optional) - **string**
+    * The base64 private key of the wireguard client peer. If not set, a random
+      one will be generated.
+
+* **Peers**
+    * (required) - **array of** [WireGuardPeer](#WireGuard-peer-type)
+    * The list of remote peers.
+
+### WireGuardPeer type
+
+* **PublicKey**
+    * (required) - **string**
+    * The base64 public key of the remote peer.
+
+* **PresharedKey**
+    * (optional) - **string**
+    * A base64 preshared key between client and remote peer for an additional
+      layer of symmetric-key cryptography.
+
+* **AllowedIPs**
+    * (required) - **string**
+    * A comma-separated list of IPv4 prefixes which controls the allowed
+      incoming traffic and set outgoing route for this peer.
+
+* **Endpoint**
+    * (required) - **string**
+    * The physical IP or hostname and port of the peer, separated by a colon.
+
+* **PersistentKeepalive**
+    * (optional, default to *0*) - **integer**
+    * A second interval between 1 and 65535 inclusive, of how often an
+      authenticated empty packet will be sent to the peer for the purpose of
+      keeping a stateful firewall or NAT mapping valid persistently. Set to *0*
+      will disable this feature.
 
 ## Third-party VPN provider based connections and types
 
@@ -1237,6 +1317,7 @@ type exists to configure the authentication.
         * *EAP-TTLS*
         * *EAP-SIM*
         * *PEAP*
+        * *MSCHAPv2* (only valid for IPsec-IKEv2 VPNs)
 
 * **Password**
     * (optional) - **string**
@@ -1282,6 +1363,14 @@ type exists to configure the authentication.
 	* (optional) - [array of AlternativeSubjectName](#AlternativeSubjectName-type)
 	* WiFi only. A list of alternative subject names to be matched against the
     alternative subject name of an authentication server certificate.
+
+* **DomainSuffixMatch**
+    * (optional) - **array of string**
+    * WiFi only. A list of constraints for the server domain name. If set, the
+      entries will be used as suffix match requirements against the DNS name
+      element(s) of the alternative subject name of an authentication server
+      certificate. When multiple match strings are specified, a match with any one
+      of the values is considered a sufficient match for the server certificate.
 
 * **TLSVersionMax**
     * (optional) - **string**
@@ -1457,6 +1546,7 @@ ONC configuration of of **Cellular** networks is not yet supported.
         * *LTE*
         * *LTEAdvanced*
         * *UMTS*
+        * *5GNR*
 
 * **PaymentPortal**
     * (optional, read-only) - [PaymentPortal](#PaymentPortal-type)
@@ -1498,6 +1588,11 @@ ONC configuration of of **Cellular** networks is not yet supported.
         or **NetworkTechnology**
         is *LTE*) - **boolean**
     * For GSM or LTE modems, indicates whether a SIM card is present or not.
+
+* **SMDPAddress**
+    * (optional, read-only) - **string**
+    * When set with the address of an SMDP+ server, indicates that eSIM profile
+      for this network should be downloaded and installed using this address.
 
 * **SupportNetworkScan**
     * (optional, read-only) - **boolean**
@@ -1853,9 +1948,10 @@ expansions. These allow one ONC to have basic user-specific variations.
 
 
 ## String Substitutions
-The value of **WiFi.EAP.Password** is subject to string substitution. These
-differ from the **String Expansions** section above in that an exact match of
-the substitution variable is required in order to substitute the real value.
+The values of **WiFi.EAP.Password** and **VPN.L2TP.Password** are subject to
+string substitution. These differ from the **String Expansions** section above
+in that an exact match of the substitution variable is required in order to
+substitute the real value.
 
 ### Example expansions, assuming the user password was *helloworld*:
 
@@ -2181,7 +2277,7 @@ setting selected as the effective setting.
 ## Mojo format
 
 Chrome provides a mojo API for ONC properties:
-https://source.chromium.org/chromium/chromium/src/+/master:chromeos/services/network_config/public/mojom/cros_network_config.mojom
+https://source.chromium.org/chromium/chromium/src/+/main:chromeos/services/network_config/public/mojom/cros_network_config.mojom
 
 The mojo API uses a simplified structure for managed properties based on the
 following assumptions:
@@ -2196,7 +2292,7 @@ In this simplified format, a descriptive enum is used to describe the effective
 policy source and whether it is enforced or recommended.
 
 The conversion code can be found in cros_network_config.cc:GetManagedDictionary
-https://source.chromium.org/chromium/chromium/src/+/master:chromeos/services/network_config/cros_network_config.cc
+https://source.chromium.org/chromium/chromium/src/+/main:chromeos/services/network_config/cros_network_config.cc
 
 ```
 enum PolicySource {

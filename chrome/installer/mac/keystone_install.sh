@@ -1,6 +1,6 @@
 #!/bin/bash -p
 
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -851,6 +851,9 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   if [[ -n "${GOOGLE_CHROME_UPDATER_TEST_PATH}" ]]; then
     note "test mode: not calling Keystone, installed_app is from environment"
     installed_app="${GOOGLE_CHROME_UPDATER_TEST_PATH}"
+  elif [[ -n "${KS_TICKET_XC_PATH}" ]]; then
+    note "installed_app is from KS_TICKET_XC_PATH"
+    installed_app="${KS_TICKET_XC_PATH}"
   elif ! installed_app="$(ksadmin -pP "${product_id}" | sed -Ene \
       "s%^[[:space:]]+xc=<KSPathExistenceChecker:.* path=(/.+)>\$%\\1%p")" ||
       [[ -z "${installed_app}" ]]; then
@@ -1003,8 +1006,7 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
     exit 5
   fi
 
-  local new_versioned_dir
-  new_versioned_dir="${installed_versions_dir}/${update_version_app}"
+  local new_versioned_dir="${installed_versions_dir}/${update_version_app}"
   note "new_versioned_dir = ${new_versioned_dir}"
 
   # If there's an entry at ${new_versioned_dir} but it's not a directory
@@ -1216,9 +1218,6 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
     exit 9
   fi
   note "new_version_app = ${new_version_app}"
-
-  local new_versioned_dir="${installed_versions_dir}/${new_version_app}"
-  note "new_versioned_dir = ${new_versioned_dir}"
 
   local new_ks_plist="${installed_app_plist}"
   note "new_ks_plist = ${new_ks_plist}"

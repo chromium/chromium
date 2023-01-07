@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
+#include "extensions/renderer/bindings/binding_access_checker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
 
 namespace base {
 class Value;
-class ListValue;
 }
 
 namespace extensions {
@@ -30,18 +29,50 @@ enum class PromisesAllowed {
   kDisallowed,
 };
 
-// A representation of the expected signature for an API method, along with the
+// A representation of the expected signature for an API, along with the
 // ability to match provided arguments and convert them to base::Values.
+// This is primarily used for API methods, but can also be used for API event
+// signatures.
 class APISignature {
  public:
-  APISignature(const base::Value& specification_list,
-               const base::Value* returns_async,
-               BindingAccessChecker* access_checker);
-  explicit APISignature(std::vector<std::unique_ptr<ArgumentSpec>> signature);
+  // Struct that bundles all the details about an asynchronous return.
+  struct ReturnsAsync {
+    ReturnsAsync();
+    ~ReturnsAsync();
+
+    // The list of expected arguments for the asynchronous return. Can be
+    // nullopt if response validation isn't enabled, as it is only used when
+    // validating a response from the API.
+    absl::optional<std::vector<std::unique_ptr<ArgumentSpec>>> signature;
+    // Indicates if passing the callback when calling the API is optional for
+    // contexts or APIs which do not support promises (passing the callback is
+    // always inheriently optional if promises are supported).
+    bool optional = false;
+    // Indicates if this API supports allowing promises for the asynchronous
+    // return. Note that this is distinct from whether an actual call to the API
+    // is allowed to use the promise based form, as that also depends on if the
+    // calling context being checked by the access_checker.
+    binding::APIPromiseSupport promise_support =
+        binding::APIPromiseSupport::kUnsupported;
+  };
+
   APISignature(std::vector<std::unique_ptr<ArgumentSpec>> signature,
-               bool api_supports_promises,
+               std::unique_ptr<APISignature::ReturnsAsync> returns_async,
                BindingAccessChecker* access_checker);
+
+  APISignature(const APISignature&) = delete;
+  APISignature& operator=(const APISignature&) = delete;
+
   ~APISignature();
+
+  // Creates an APISignature object from the raw Value representations of an
+  // API schema.
+  static std::unique_ptr<APISignature> CreateFromValues(
+      const base::Value& specification_list,
+      const base::Value* returns_async,
+      BindingAccessChecker* access_checker,
+      const std::string& api_name,
+      bool is_event_signature);
 
   struct V8ParseResult {
     // Appease the Chromium style plugin (out of line ctor/dtor).
@@ -56,13 +87,13 @@ class APISignature {
     // since it will include null-filled optional arguments. Populated if
     // parsing was successful. Note that the callback, if any, is included in
     // this list.
-    base::Optional<std::vector<v8::Local<v8::Value>>> arguments;
+    absl::optional<std::vector<v8::Local<v8::Value>>> arguments;
 
     // Whether the asynchronous response is handled by a callback or a promise.
     binding::AsyncResponseType async_type = binding::AsyncResponseType::kNone;
 
     // The parse error, if parsing failed.
-    base::Optional<std::string> error;
+    absl::optional<std::string> error;
   };
 
   struct JSONParseResult {
@@ -72,12 +103,12 @@ class APISignature {
     JSONParseResult(JSONParseResult&& other);
     JSONParseResult& operator=(JSONParseResult&& other);
 
-    bool succeeded() const { return !!arguments; }
+    bool succeeded() const { return !!arguments_list; }
 
     // The parsed JSON arguments, with null-filled optional arguments filled in.
     // Populated if parsing was successful. Does not include the callback (if
     // any).
-    std::unique_ptr<base::ListValue> arguments;
+    std::unique_ptr<base::Value> arguments_list;
 
     // The callback, if one was provided.
     v8::Local<v8::Function> callback;
@@ -86,7 +117,7 @@ class APISignature {
     binding::AsyncResponseType async_type = binding::AsyncResponseType::kNone;
 
     // The parse error, if parsing failed.
-    base::Optional<std::string> error;
+    absl::optional<std::string> error;
   };
 
   // Parses |arguments| against this signature, returning the result and
@@ -119,33 +150,42 @@ class APISignature {
                         const APITypeReferenceMap& type_refs,
                         std::string* error) const;
 
+  // Same as `ValidateResponse`, but verifies the given `arguments` against the
+  // `signature_` instead of the `returns_async_` types. This can be used when
+  // validating that APIs return proper values to an event (which has a
+  // signature, but no return).
+  bool ValidateCall(v8::Local<v8::Context> context,
+                    const std::vector<v8::Local<v8::Value>>& arguments,
+                    const APITypeReferenceMap& type_refs,
+                    std::string* error) const;
+
   // Returns a developer-readable string of the expected signature. For
   // instance, if this signature expects a string 'someStr' and an optional int
   // 'someInt', this would return "string someStr, optional integer someInt".
   std::string GetExpectedSignature() const;
 
-  bool has_callback() const { return has_callback_; }
+  bool has_async_return() const { return returns_async_ != nullptr; }
+  bool has_async_return_signature() const {
+    return has_async_return() && returns_async_->signature.has_value();
+  }
 
  private:
   // Checks if promises are allowed to be used for a call to an API from a given
   // |context|.
   PromisesAllowed CheckPromisesAllowed(v8::Local<v8::Context> context) const;
 
-  // The list of expected arguments.
+  // The list of expected arguments for the API signature.
   std::vector<std::unique_ptr<ArgumentSpec>> signature_;
 
-  binding::APIPromiseSupport api_promise_support_ =
-      binding::APIPromiseSupport::kUnsupported;
+  // The details of any asynchronous return an API method may have. This will be
+  // nullptr if the the API doesn't have an asynchronous return.
+  std::unique_ptr<APISignature::ReturnsAsync> returns_async_;
 
   // The associated access checker; required to outlive this object.
   const BindingAccessChecker* access_checker_;
 
-  bool has_callback_ = false;
-
-  // A developer-readable signature string, lazily set.
+  // A developer-readable method signature string, lazily set.
   mutable std::string expected_signature_;
-
-  DISALLOW_COPY_AND_ASSIGN(APISignature);
 };
 
 }  // namespace extensions

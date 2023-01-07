@@ -30,9 +30,14 @@
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
+#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -163,7 +168,7 @@ void ExceptionState::RethrowV8Exception(v8::Local<v8::Value> value) {
 void ExceptionState::ClearException() {
   code_ = 0;
   message_ = String();
-  exception_.Clear();
+  exception_.Reset();
 }
 
 void ExceptionState::SetException(ExceptionCode exception_code,
@@ -174,16 +179,16 @@ void ExceptionState::SetException(ExceptionCode exception_code,
   code_ = exception_code;
   message_ = message;
   if (exception.IsEmpty()) {
-    exception_.Clear();
+    exception_.Reset();
   } else {
     DCHECK(isolate_);
-    exception_.Set(isolate_, exception);
+    exception_.Reset(isolate_, exception);
   }
 }
 
 void ExceptionState::SetExceptionCode(ExceptionCode exception_code) {
   CHECK(exception_code);
-  DCHECK(message_.IsEmpty());
+  DCHECK(message_.empty());
   DCHECK(exception_.IsEmpty());
   code_ = exception_code;
 }
@@ -194,7 +199,7 @@ void ExceptionState::PushContextScope(ContextScope* scope) {
 }
 
 void ExceptionState::PopContextScope() {
-  DCHECK(!context_stack_top_);
+  DCHECK(context_stack_top_);
   context_stack_top_ = context_stack_top_->GetParent();
 }
 
@@ -207,31 +212,35 @@ String AddContextToMessage(const String& message,
   const String& m = message;
 
   switch (context.GetContext()) {
-    case ExceptionState::kConstructionContext:
+    case ExceptionContext::Context::kConstructorOperationInvoke:
       return ExceptionMessages::FailedToConstruct(c, m);
-    case ExceptionState::kExecutionContext:
+    case ExceptionContext::Context::kOperationInvoke:
       return ExceptionMessages::FailedToExecute(p, c, m);
-    case ExceptionState::kGetterContext:
+    case ExceptionContext::Context::kAttributeGet:
       return ExceptionMessages::FailedToGet(p, c, m);
-    case ExceptionState::kSetterContext:
+    case ExceptionContext::Context::kAttributeSet:
       return ExceptionMessages::FailedToSet(p, c, m);
-    case ExceptionState::kEnumerationContext:
+    case ExceptionContext::Context::kNamedPropertyEnumerate:
       return ExceptionMessages::FailedToEnumerate(c, m);
-    case ExceptionState::kQueryContext:
+    case ExceptionContext::Context::kNamedPropertyQuery:
       break;
-    case ExceptionState::kIndexedGetterContext:
+    case ExceptionContext::Context::kIndexedPropertyGet:
       return ExceptionMessages::FailedToGetIndexed(c, m);
-    case ExceptionState::kIndexedSetterContext:
+    case ExceptionContext::Context::kIndexedPropertySet:
       return ExceptionMessages::FailedToSetIndexed(c, m);
-    case ExceptionState::kIndexedDeletionContext:
+    case ExceptionContext::Context::kIndexedPropertyDelete:
       return ExceptionMessages::FailedToDeleteIndexed(c, m);
-    case ExceptionState::kNamedGetterContext:
+    case ExceptionContext::Context::kNamedPropertyGet:
       return ExceptionMessages::FailedToGetNamed(c, m);
-    case ExceptionState::kNamedSetterContext:
+    case ExceptionContext::Context::kNamedPropertySet:
       return ExceptionMessages::FailedToSetNamed(c, m);
-    case ExceptionState::kNamedDeletionContext:
+    case ExceptionContext::Context::kNamedPropertyDelete:
       return ExceptionMessages::FailedToDeleteNamed(c, m);
-    case ExceptionState::kUnknownContext:
+    case ExceptionContext::Context::kDictionaryMemberGet:
+      return ExceptionMessages::FailedToGet(p, c, m);
+    case ExceptionContext::Context::kDictionaryMemberSet:
+      return ExceptionMessages::FailedToSet(p, c, m);
+    case ExceptionContext::Context::kUnknown:
       break;
     default:
       NOTREACHED();
@@ -244,7 +253,7 @@ String AddContextToMessage(const String& message,
 
 String ExceptionState::AddExceptionContext(
     const String& original_message) const {
-  if (original_message.IsEmpty())
+  if (original_message.empty())
     return original_message;
 
   String message = original_message;
@@ -254,6 +263,15 @@ String ExceptionState::AddExceptionContext(
   }
   message = AddContextToMessage(message, main_context_);
   return message;
+}
+
+void ExceptionState::PropagateException() {
+  // This is the non-inlined part of the destructor. Not inlining this part
+  // deoptimizes use cases where exceptions are thrown, but it reduces binary
+  // size and results in better performance due to improved code locality in
+  // the bindings for the most frequently used code path (cases where no
+  // exception is thrown).
+  V8ThrowException::ThrowException(isolate_, exception_.Get(isolate_));
 }
 
 NonThrowableExceptionState::NonThrowableExceptionState()

@@ -1,0 +1,7 @@
+googleo@chromium.org
+yipingchen@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+# Internal Component: b/components/1210432

@@ -1,15 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIND_PROPERTIES_NEEDING_UPDATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIND_PROPERTIES_NEEDING_UPDATE_H_
 
+#include "base/dcheck_is_on.h"
+
 #if DCHECK_IS_ON()
 
-#include <memory>
-
-#include "base/optional.h"
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
@@ -43,8 +43,7 @@ class FindPropertiesNeedingUpdateScope {
       return;
 
     // Mark the properties as needing an update to ensure they are rebuilt.
-    object.GetMutableForPainting()
-        .SetOnlyThisNeedsPaintPropertyUpdateForTesting();
+    object.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
 
     if (const auto* properties = fragment_data_.PaintProperties()) {
       had_original_properties_ = true;

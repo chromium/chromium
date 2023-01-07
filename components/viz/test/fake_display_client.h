@@ -1,11 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_VIZ_TEST_FAKE_DISPLAY_CLIENT_H_
 #define COMPONENTS_VIZ_TEST_FAKE_DISPLAY_CLIENT_H_
-
-#include <vector>
 
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -17,29 +15,31 @@ namespace viz {
 class FakeDisplayClient : public mojom::DisplayClient {
  public:
   FakeDisplayClient();
+
+  FakeDisplayClient(const FakeDisplayClient&) = delete;
+  FakeDisplayClient& operator=(const FakeDisplayClient&) = delete;
+
   ~FakeDisplayClient() override;
 
   mojo::PendingRemote<mojom::DisplayClient> BindRemote();
 
   // mojom::DisplayClient implementation.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   void OnDisplayReceivedCALayerParams(
       const gfx::CALayerParams& ca_layer_params) override;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void CreateLayeredWindowUpdater(
       mojo::PendingReceiver<mojom::LayeredWindowUpdater> receiver) override;
 #endif
 
-#if defined(USE_X11)
+#if BUILDFLAG(IS_LINUX)
   void DidCompleteSwapWithNewSize(const gfx::Size& size) override;
 #endif
 
  private:
   mojo::Receiver<mojom::DisplayClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDisplayClient);
 };
 
 }  // namespace viz

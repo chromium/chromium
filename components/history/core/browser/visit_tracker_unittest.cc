@@ -1,10 +1,9 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/history/core/browser/visit_tracker.h"
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history {
@@ -26,21 +25,24 @@ struct VisitToTest {
   VisitID referring_visit_id;
 };
 
+void AddVisitToTracker(const VisitToTest& test_data, VisitTracker* tracker) {
+  // Our host pointer is actually just an int, convert it (it will not get
+  // dereferenced).
+  ContextID context_id = reinterpret_cast<ContextID>(test_data.context_id_int);
+
+  // Check the referrer for this visit.
+  VisitID ref_visit = tracker->GetLastVisit(context_id, test_data.nav_entry_id,
+                                            GURL(test_data.referrer));
+  EXPECT_EQ(test_data.referring_visit_id, ref_visit);
+
+  // Now add this visit.
+  tracker->AddVisit(context_id, test_data.nav_entry_id, GURL(test_data.url),
+                    test_data.visit_id);
+}
+
 void RunTest(VisitTracker* tracker, VisitToTest* test, int test_count) {
-  for (int i = 0; i < test_count; i++) {
-    // Our host pointer is actually just an int, convert it (it will not get
-    // dereferenced).
-    ContextID context_id = reinterpret_cast<ContextID>(test[i].context_id_int);
-
-    // Check the referrer for this visit.
-    VisitID ref_visit = tracker->GetLastVisit(context_id, test[i].nav_entry_id,
-                                              GURL(test[i].referrer));
-    EXPECT_EQ(test[i].referring_visit_id, ref_visit);
-
-    // Now add this visit.
-    tracker->AddVisit(
-        context_id, test[i].nav_entry_id, GURL(test[i].url), test[i].visit_id);
-  }
+  for (int i = 0; i < test_count; i++)
+    AddVisitToTracker(test[i], tracker);
 }
 
 }  // namespace
@@ -58,7 +60,7 @@ TEST(VisitTracker, SimpleTransitions) {
   };
 
   VisitTracker tracker;
-  RunTest(&tracker, test_simple, base::size(test_simple));
+  RunTest(&tracker, test_simple, std::size(test_simple));
 }
 
 // Test that referrer is properly computed when there are different frame
@@ -80,7 +82,7 @@ TEST(VisitTracker, Frames) {
   };
 
   VisitTracker tracker;
-  RunTest(&tracker, test_frames, base::size(test_frames));
+  RunTest(&tracker, test_frames, std::size(test_frames));
 }
 
 // Test frame navigation to make sure that the referrer is properly computed
@@ -102,7 +104,7 @@ TEST(VisitTracker, MultiProcess) {
   };
 
   VisitTracker tracker;
-  RunTest(&tracker, test_processes, base::size(test_processes));
+  RunTest(&tracker, test_processes, std::size(test_processes));
 }
 
 // Test that processes get removed properly.
@@ -114,7 +116,7 @@ TEST(VisitTracker, ProcessRemove) {
   };
 
   VisitTracker tracker;
-  RunTest(&tracker, part1, base::size(part1));
+  RunTest(&tracker, part1, std::size(part1));
 
   // Say that context has been invalidated.
   tracker.ClearCachedDataForContextID(reinterpret_cast<ContextID>(1));
@@ -124,7 +126,71 @@ TEST(VisitTracker, ProcessRemove) {
   VisitToTest part2[] = {
       {1, 1, "http://images.google.com/", 2, "http://www.google.com/", 0},
   };
-  RunTest(&tracker, part2, base::size(part2));
+  RunTest(&tracker, part2, std::size(part2));
+}
+
+TEST(VisitTracker, RemoveVisitById) {
+  VisitToTest test_simple[] = {
+      {1, 1, "http://www.google.com/", 2, "", 0},
+      {1, 2, "http://www.google2.com/", 3, "", 0},
+      {1, 3, "http://www.google3.com/", 4, "", 0},
+  };
+
+  VisitTracker tracker;
+  RunTest(&tracker, test_simple, std::size(test_simple));
+
+  // Remove the first visit.
+  const VisitToTest& removed = test_simple[0];
+  tracker.RemoveVisitById(removed.visit_id);
+
+  // The first visit should no longer be in the tracker.
+  EXPECT_EQ(0, tracker.GetLastVisit(
+                   reinterpret_cast<ContextID>(removed.context_id_int),
+                   removed.nav_entry_id, GURL(removed.url)));
+  // The second and third should still be present.
+  EXPECT_EQ(test_simple[1].visit_id,
+            tracker.GetLastVisit(
+                reinterpret_cast<ContextID>(test_simple[1].context_id_int),
+                test_simple[1].nav_entry_id, GURL(test_simple[1].url)));
+  EXPECT_EQ(test_simple[2].visit_id,
+            tracker.GetLastVisit(
+                reinterpret_cast<ContextID>(test_simple[2].context_id_int),
+                test_simple[2].nav_entry_id, GURL(test_simple[2].url)));
+
+  // Add back the first one, reusing the id and verify it is present.
+  AddVisitToTracker(removed, &tracker);
+  EXPECT_EQ(
+      removed.visit_id,
+      tracker.GetLastVisit(reinterpret_cast<ContextID>(removed.context_id_int),
+                           removed.nav_entry_id, GURL(removed.url)));
+
+  // Remove the first one again, and verify state.
+  tracker.RemoveVisitById(removed.visit_id);
+  EXPECT_EQ(0, tracker.GetLastVisit(
+                   reinterpret_cast<ContextID>(removed.context_id_int),
+                   removed.nav_entry_id, GURL(removed.url)));
+  EXPECT_EQ(test_simple[1].visit_id,
+            tracker.GetLastVisit(
+                reinterpret_cast<ContextID>(test_simple[1].context_id_int),
+                test_simple[1].nav_entry_id, GURL(test_simple[1].url)));
+  EXPECT_EQ(test_simple[2].visit_id,
+            tracker.GetLastVisit(
+                reinterpret_cast<ContextID>(test_simple[2].context_id_int),
+                test_simple[2].nav_entry_id, GURL(test_simple[2].url)));
+}
+
+TEST(VisitTracker, Clear) {
+  VisitToTest test_simple[] = {
+      {1, 1, "http://www.google.com/", 2, "", 0},
+      {1, 2, "http://www.google2.com/", 3, "", 0},
+      {1, 3, "http://www.google3.com/", 4, "", 0},
+  };
+
+  VisitTracker tracker;
+  RunTest(&tracker, test_simple, std::size(test_simple));
+  EXPECT_FALSE(tracker.IsEmpty());
+  tracker.Clear();
+  EXPECT_TRUE(tracker.IsEmpty());
 }
 
 }  // namespace history

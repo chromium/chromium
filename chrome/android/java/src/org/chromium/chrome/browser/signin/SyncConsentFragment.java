@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.signin;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -12,28 +11,19 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
-import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
+import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Implementation of {@link SyncConsentFragmentBase} for {@link SigninActivity}. */
+/** Implementation of {@link SyncConsentFragmentBase} for {@link SyncConsentActivity}. */
 public class SyncConsentFragment extends SyncConsentFragmentBase {
     private static final String ARGUMENT_PERSONALIZED_PROMO_ACTION =
-            "SigninFragment.PersonalizedPromoAction";
+            "SyncConsentFragment.PersonalizedPromoAction";
 
     @IntDef({PromoAction.NONE, PromoAction.WITH_DEFAULT, PromoAction.NOT_DEFAULT,
             PromoAction.NEW_ACCOUNT})
@@ -92,58 +82,27 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
     }
 
     @Override
-    protected void onSigninRefused() {
+    protected void onSyncRefused() {
         getActivity().finish();
     }
 
     @Override
-    protected void onSigninAccepted(String accountName, boolean isDefaultAccount,
-            boolean settingsClicked, Runnable callback) {
-        // TODO(https://crbug.com/1002056): Change onSigninAccepted to get CoreAccountInfo.
-        Account account = AccountUtils.findAccountByName(
-                AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(), accountName);
-        if (account == null) {
-            callback.run();
-            return;
+    protected void onSyncAccepted(String accountName, boolean settingsClicked, Runnable callback) {
+        signinAndEnableSync(accountName, settingsClicked, callback);
+    }
+
+    @Override
+    protected void closeAndMaybeOpenSyncSettings(boolean settingsClicked) {
+        if (settingsClicked) {
+            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+            settingsLauncher.launchSettingsActivity(getActivity(), ManageSyncSettings.class,
+                    ManageSyncSettings.createArguments(true));
         }
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
-        signinManager.signinAndEnableSync(
-                mSigninAccessPoint, account, new SigninManager.SignInCallback() {
-                    @Override
-                    public void onSignInComplete() {
-                        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                                Profile.getLastUsedRegularProfile(), true);
-                        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                        if (settingsClicked) {
-                            if (ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-                                settingsLauncher.launchSettingsActivity(getActivity(),
-                                        ManageSyncSettings.class,
-                                        ManageSyncSettings.createArguments(true));
-                            } else {
-                                settingsLauncher.launchSettingsActivity(getActivity(),
-                                        SyncAndServicesSettings.class,
-                                        SyncAndServicesSettings.createArguments(true));
-                            }
-                        } else {
-                            ProfileSyncService.get().setFirstSetupComplete(
-                                    SyncFirstSetupCompleteSource.BASIC_FLOW);
-                        }
 
-                        recordSigninCompletedHistogramAccountInfo();
+        recordSigninCompletedHistogramAccountInfo();
 
-                        Activity activity = getActivity();
-                        if (activity != null) activity.finish();
-
-                        callback.run();
-                    }
-
-                    @Override
-                    public void onSignInAborted() {
-                        callback.run();
-                    }
-                });
+        Activity activity = getActivity();
+        if (activity != null) activity.finish();
     }
 
     private void recordSigninCompletedHistogramAccountInfo() {

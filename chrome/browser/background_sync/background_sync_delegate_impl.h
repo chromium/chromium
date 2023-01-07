@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/background_sync/background_sync_delegate.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
@@ -39,7 +40,7 @@ class BackgroundSyncDelegateImpl
   explicit BackgroundSyncDelegateImpl(Profile* profile);
   ~BackgroundSyncDelegateImpl() override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   class BackgroundSyncEventKeepAliveImpl
       : public content::BackgroundSyncController::BackgroundSyncEventKeepAlive {
    public:
@@ -48,10 +49,10 @@ class BackgroundSyncDelegateImpl
 
    private:
     std::unique_ptr<ScopedKeepAlive, content::BrowserThread::DeleteOnUIThread>
-        keepalive_ = nullptr;
+        keepalive_;
     std::unique_ptr<ScopedProfileKeepAlive,
                     content::BrowserThread::DeleteOnUIThread>
-        profile_keepalive_ = nullptr;
+        profile_keepalive_;
   };
 
   std::unique_ptr<
@@ -60,7 +61,7 @@ class BackgroundSyncDelegateImpl
 #endif
 
   void GetUkmSourceId(const url::Origin& origin,
-                      base::OnceCallback<void(base::Optional<ukm::SourceId>)>
+                      base::OnceCallback<void(absl::optional<ukm::SourceId>)>
                           callback) override;
   void Shutdown() override;
   HostContentSettingsMap* GetHostContentSettingsMap() override;
@@ -68,14 +69,14 @@ class BackgroundSyncDelegateImpl
   void NoteSuspendedPeriodicSyncOrigins(
       std::set<url::Origin> suspended_origins) override;
   int GetSiteEngagementPenalty(const GURL& url) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ScheduleBrowserWakeUpWithDelay(
       blink::mojom::BackgroundSyncType sync_type,
       base::TimeDelta delay) override;
   void CancelBrowserWakeup(blink::mojom::BackgroundSyncType sync_type) override;
   bool ShouldDisableBackgroundSync() override;
   bool ShouldDisableAndroidNetworkDetection() override;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // SiteEngagementObserver overrides.
   void OnEngagementEvent(
@@ -85,11 +86,11 @@ class BackgroundSyncDelegateImpl
       site_engagement::EngagementType engagement_type) override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   bool off_the_record_;
-  ukm::UkmBackgroundRecorderService* ukm_background_service_;
+  raw_ptr<ukm::UkmBackgroundRecorderService> ukm_background_service_;
   // Same lifetime as |profile_|.
-  site_engagement::SiteEngagementService* site_engagement_service_;
+  raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
   std::set<url::Origin> suspended_periodic_sync_origins_;
 };
 

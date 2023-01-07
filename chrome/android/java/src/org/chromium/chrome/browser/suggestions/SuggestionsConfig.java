@@ -1,18 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.suggestions;
 
-import android.content.res.Resources;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 
 import java.lang.annotation.Retention;
@@ -40,27 +36,9 @@ public final class SuggestionsConfig {
      * It must be kept in sync with //components/ntp_suggestions/features.cc
      */
     private static final String DEFAULT_CONTENT_SUGGESTIONS_REFERRER_URL =
-            "https://www.googleapis.com/auth/chrome-content-suggestions";
+            "https://www.google.com/";
 
     private SuggestionsConfig() {}
-
-    /**
-     * @return Whether scrolling to the bottom of suggestions triggers a load.
-     */
-    public static boolean scrollToLoad() {
-        // The scroll to load feature does not work well for users who require accessibility mode.
-        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()) return false;
-
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTENT_SUGGESTIONS_SCROLL_TO_LOAD);
-    }
-
-    /**
-     * @param resources The resources to fetch the color from.
-     * @return The background color for the suggestions sheet content.
-     */
-    public static int getBackgroundColor(Resources resources) {
-        return ApiCompatibilityUtils.getColor(resources, R.color.suggestions_modern_bg);
-    }
 
     /**
      * Returns the current tile style, that depends on the enabled features and the screen size.

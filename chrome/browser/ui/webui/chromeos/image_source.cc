@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,8 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -87,9 +85,9 @@ void ImageSource::StartDataRequestAfterPathExists(
   }
 }
 
-std::string ImageSource::GetMimeType(const std::string& path) {
+std::string ImageSource::GetMimeType(const GURL& url) {
   std::string mime_type;
-  std::string ext = base::FilePath(path).Extension();
+  std::string ext = base::FilePath(url.path_piece()).Extension();
   if (!ext.empty())
     net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type);
   return mime_type;
@@ -101,12 +99,11 @@ bool ImageSource::IsAllowlisted(const std::string& path) const {
     return false;
 
   // Check if the path starts with a allowlisted directory.
-  std::vector<std::string> components;
-  file_path.GetComponents(&components);
+  std::vector<std::string> components = file_path.GetComponents();
   if (components.empty())
     return false;
 
-  for (size_t i = 0; i < base::size(kAllowlistedDirectories); i++) {
+  for (size_t i = 0; i < std::size(kAllowlistedDirectories); i++) {
     if (components[0] == kAllowlistedDirectories[i])
       return true;
   }

@@ -4,13 +4,15 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Default: '
 ++++++++++inlineTextBox name='Default: '
-++++++++textField editable name='Default:' editableRoot=true
+++++++++textField editable name='Default:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Button: '
 ++++++++++inlineTextBox name='Button: '
 ++++++++button name='Button:'
-++++++checkBox name='Checkbox:' checkedState=false
+++++++labelText ignored
+++++++++staticText ignored name='Checkbox: '
+++++++++checkBox name='Checkbox:' checkedState=false
 ++++++labelText
 ++++++++staticText name='Color: '
 ++++++++++inlineTextBox name='Color: '
@@ -20,7 +22,7 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Email: '
 ++++++++++inlineTextBox name='Email: '
-++++++++textField editable name='Email:' editableRoot=true
+++++++++textField editable name='Email:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='File: '
@@ -41,21 +43,20 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Number: '
 ++++++++++inlineTextBox name='Number: '
-++++++++spinButton editable name='Number:' editableRoot=true
-++++++++++genericContainer ignored
-++++++++++++genericContainer ignored
-++++++++++++++genericContainer editable
-++++++++++++genericContainer ignored
+++++++++spinButton editable name='Number:'
+++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Password: '
 ++++++++++inlineTextBox name='Password: '
-++++++++textField editable protected name='Password:' editableRoot=true
+++++++++textField editable protected name='Password:'
 ++++++++++genericContainer editable
-++++++radioButton name='Radio:' checkedState=false
+++++++labelText ignored
+++++++++staticText ignored name='Radio: '
+++++++++radioButton name='Radio:' checkedState=false
 ++++++labelText
 ++++++++staticText name='Range: '
 ++++++++++inlineTextBox name='Range: '
-++++++++slider horizontal name='Range:' value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++slider horizontal name='Range:' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
 ++++++labelText
 ++++++++staticText name='Reset: '
 ++++++++++inlineTextBox name='Reset: '
@@ -65,11 +66,8 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Search: '
 ++++++++++inlineTextBox name='Search: '
-++++++++searchBox editable name='Search:' editableRoot=true
-++++++++++genericContainer ignored
-++++++++++++genericContainer ignored
-++++++++++++++genericContainer editable
-++++++++++++genericContainer ignored
+++++++++searchBox editable name='Search:'
+++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Submit: '
 ++++++++++inlineTextBox name='Submit: '
@@ -79,15 +77,15 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Tel: '
 ++++++++++inlineTextBox name='Tel: '
-++++++++textField editable name='Tel:' editableRoot=true
+++++++++textField editable name='Tel:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Text: '
 ++++++++++inlineTextBox name='Text: '
-++++++++textField editable name='Text:' editableRoot=true
+++++++++textField editable name='Text:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Url: '
 ++++++++++inlineTextBox name='Url: '
-++++++++textField editable name='Url:' editableRoot=true
+++++++++textField editable name='Url:'
 ++++++++++genericContainer editable

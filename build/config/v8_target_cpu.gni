@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -44,6 +44,9 @@ if (v8_target_cpu == "") {
   } else if (current_toolchain ==
              "//build/toolchain/linux:clang_x86_v8_mipsel") {
     v8_target_cpu = "mipsel"
+  } else if (current_toolchain ==
+             "//build/toolchain/linux:clang_x64_v8_riscv64") {
+    v8_target_cpu = "riscv64"
   } else if (is_msan) {
     # If we're running under a sanitizer, if we configure v8 to generate
     # code that will be run under a simulator, then the generated code

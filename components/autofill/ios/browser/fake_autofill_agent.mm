@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "components/autofill/ios/browser/fake_autofill_agent.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 
@@ -63,30 +62,31 @@ using autofill::FieldRendererId;
 
 - (void)checkIfSuggestionsAvailableForForm:
             (FormSuggestionProviderQuery*)formQuery
-                               isMainFrame:(BOOL)isMainFrame
                             hasUserGesture:(BOOL)hasUserGesture
                                   webState:(web::WebState*)webState
                          completionHandler:
                              (SuggestionsAvailableCompletion)completion {
-  base::PostTask(
-      FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-        NSString* key = [self keyForFormName:formQuery.formName
-                             fieldIdentifier:formQuery.fieldIdentifier
-                                     frameID:formQuery.frameID];
-        completion([_suggestionsByFormAndFieldName[key] count] ? YES : NO);
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        NSArray<FormSuggestion*>* formSuggestions =
+            [self suggestionsForFormName:formQuery.formName
+                         fieldIdentifier:formQuery.fieldIdentifier
+                                 frameID:formQuery.frameID];
+        completion([formSuggestions count] ? YES : NO);
       }));
 }
 
 - (void)retrieveSuggestionsForForm:(FormSuggestionProviderQuery*)formQuery
                           webState:(web::WebState*)webState
                  completionHandler:(SuggestionsReadyCompletion)completion {
-  base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                   NSString* key =
-                       [self keyForFormName:formQuery.formName
-                            fieldIdentifier:formQuery.fieldIdentifier
-                                    frameID:formQuery.frameID];
-                   completion(_suggestionsByFormAndFieldName[key], self);
-                 }));
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        NSArray<FormSuggestion*>* formSuggestions =
+            [self suggestionsForFormName:formQuery.formName
+                         fieldIdentifier:formQuery.fieldIdentifier
+                                 frameID:formQuery.frameID];
+        completion(formSuggestions, self);
+      }));
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
@@ -96,13 +96,14 @@ using autofill::FieldRendererId;
               uniqueFieldID:(FieldRendererId)uniqueFieldID
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion {
-  base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                   NSString* key = [self keyForFormName:formName
-                                        fieldIdentifier:fieldIdentifier
-                                                frameID:frameID];
-                   _selectedSuggestionByFormAndFieldName[key] = suggestion;
-                   completion();
-                 }));
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [self selectSuggestion:suggestion
+                   forFormName:formName
+               fieldIdentifier:fieldIdentifier
+                       frameID:frameID];
+        completion();
+      }));
 }
 
 #pragma mark - Private Methods
@@ -113,6 +114,25 @@ using autofill::FieldRendererId;
   // Uniqueness ensured because spaces are not allowed in html name attributes.
   return [NSString
       stringWithFormat:@"%@ %@ %@", formName, fieldIdentifier, frameID];
+}
+
+- (NSArray<FormSuggestion*>*)suggestionsForFormName:(NSString*)formName
+                                    fieldIdentifier:(NSString*)fieldIdentifier
+                                            frameID:(NSString*)frameID {
+  NSString* key = [self keyForFormName:formName
+                       fieldIdentifier:fieldIdentifier
+                               frameID:frameID];
+  return _suggestionsByFormAndFieldName[key];
+}
+
+- (void)selectSuggestion:(FormSuggestion*)formSuggestion
+             forFormName:(NSString*)formName
+         fieldIdentifier:(NSString*)fieldIdentifier
+                 frameID:(NSString*)frameID {
+  NSString* key = [self keyForFormName:formName
+                       fieldIdentifier:fieldIdentifier
+                               frameID:frameID];
+  _selectedSuggestionByFormAndFieldName[key] = formSuggestion;
 }
 
 @end

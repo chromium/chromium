@@ -1,12 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_TEST_SUITE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_TEST_SUITE_H_
 
-#include <memory>
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -17,6 +16,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
 
@@ -63,10 +63,10 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   MOCK_CONST_METHOD0(IsThrottled, bool());
   MOCK_CONST_METHOD1(ScrollSize, int(ScrollbarOrientation));
   MOCK_CONST_METHOD0(IsScrollCornerVisible, bool());
-  MOCK_CONST_METHOD0(ScrollCornerRect, IntRect());
+  MOCK_CONST_METHOD0(ScrollCornerRect, gfx::Rect());
   MOCK_CONST_METHOD0(EnclosingScrollableArea, ScrollableArea*());
-  MOCK_CONST_METHOD1(VisibleContentRect, IntRect(IncludeScrollbarsInRect));
-  MOCK_CONST_METHOD0(ContentsSize, IntSize());
+  MOCK_CONST_METHOD1(VisibleContentRect, gfx::Rect(IncludeScrollbarsInRect));
+  MOCK_CONST_METHOD0(ContentsSize, gfx::Size());
   MOCK_CONST_METHOD0(LayerForHorizontalScrollbar, cc::Layer*());
   MOCK_CONST_METHOD0(LayerForVerticalScrollbar, cc::Layer*());
   MOCK_CONST_METHOD0(HorizontalScrollbar, Scrollbar*());
@@ -74,20 +74,24 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   MOCK_CONST_METHOD0(ScrollbarsHiddenIfOverlay, bool());
   MOCK_METHOD0(ScheduleAnimation, bool());
   MOCK_CONST_METHOD0(UsedColorScheme, mojom::blink::ColorScheme());
+  MOCK_CONST_METHOD0(UsesCompositedScrolling, bool());
 
   bool UserInputScrollable(ScrollbarOrientation) const override { return true; }
   bool ScrollbarsCanBeActive() const override { return true; }
   bool ShouldPlaceVerticalScrollbarOnLeft() const override { return false; }
   void UpdateScrollOffset(const ScrollOffset& offset,
                           mojom::blink::ScrollType) override {
-    scroll_offset_ = offset.ShrunkTo(maximum_scroll_offset_);
+    scroll_offset_ = offset;
+    scroll_offset_.SetToMin(maximum_scroll_offset_);
   }
-  IntSize ScrollOffsetInt() const override {
-    return FlooredIntSize(scroll_offset_);
+  gfx::Vector2d ScrollOffsetInt() const override {
+    return gfx::ToFlooredVector2d(scroll_offset_);
   }
-  IntSize MinimumScrollOffsetInt() const override { return IntSize(); }
-  IntSize MaximumScrollOffsetInt() const override {
-    return ExpandedIntSize(maximum_scroll_offset_);
+  gfx::Vector2d MinimumScrollOffsetInt() const override {
+    return gfx::Vector2d();
+  }
+  gfx::Vector2d MaximumScrollOffsetInt() const override {
+    return gfx::ToFlooredVector2d(maximum_scroll_offset_);
   }
   int VisibleHeight() const override { return 768; }
   int VisibleWidth() const override { return 1024; }
@@ -97,12 +101,13 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   bool ScrollAnimatorEnabled() const override { return true; }
   int PageStep(ScrollbarOrientation) const override { return 0; }
   void ScrollControlWasSetNeedsPaintInvalidation() override {}
-  IntPoint ConvertFromRootFrame(const IntPoint& point_in_root_frame) const {
+  gfx::Point ConvertFromRootFrame(
+      const gfx::Point& point_in_root_frame) const override {
     return point_in_root_frame;
   }
-  IntPoint ConvertFromContainingEmbeddedContentViewToScrollbar(
+  gfx::Point ConvertFromContainingEmbeddedContentViewToScrollbar(
       const Scrollbar& scrollbar,
-      const IntPoint& parent_point) const {
+      const gfx::Point& parent_point) const override {
     return parent_point;
   }
 
@@ -118,6 +123,11 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
 
   ScrollbarTheme& GetPageScrollbarTheme() const override {
     return ScrollbarTheme::GetTheme();
+  }
+
+  float ScaleFromDIP() const override { return scale_from_dip_; }
+  void SetScaleFromDIP(float scale_from_dip) {
+    scale_from_dip_ = scale_from_dip;
   }
 
   using ScrollableArea::ClearNeedsPaintInvalidationForScrollControls;
@@ -139,8 +149,9 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   ScrollOffset scroll_offset_;
   ScrollOffset maximum_scroll_offset_;
   Member<MockPlatformChromeClient> chrome_client_;
+  float scale_from_dip_ = 1.f;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_TEST_SUITE_H_

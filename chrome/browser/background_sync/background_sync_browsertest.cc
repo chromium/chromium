@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/callback_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -33,6 +33,11 @@ const char kSuccessfulOperationPrefix[] = "ok - ";
 class BackgroundSyncBrowserTest : public InProcessBrowserTest {
  public:
   BackgroundSyncBrowserTest() = default;
+
+  BackgroundSyncBrowserTest(const BackgroundSyncBrowserTest&) = delete;
+  BackgroundSyncBrowserTest& operator=(const BackgroundSyncBrowserTest&) =
+      delete;
+
   ~BackgroundSyncBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -48,7 +53,8 @@ class BackgroundSyncBrowserTest : public InProcessBrowserTest {
 
   void SetUpBrowser(Browser* browser) {
     // Load the helper page that helps drive these tests.
-    ui_test_utils::NavigateToURL(browser, https_server_->GetURL(kHelperPage));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, https_server_->GetURL(kHelperPage)));
 
     // Register the Service Worker that's required for Background Sync. The
     // behaviour without an activated worker is covered by layout tests.
@@ -64,9 +70,11 @@ class BackgroundSyncBrowserTest : public InProcessBrowserTest {
 
   // Runs the |script| in the current tab and writes the output to |*result|.
   bool RunScript(const std::string& script, std::string* result) {
-    return content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-        script, result);
+    return content::ExecuteScriptAndExtractString(browser()
+                                                      ->tab_strip_model()
+                                                      ->GetActiveWebContents()
+                                                      ->GetPrimaryMainFrame(),
+                                                  script, result);
   }
 
   // Intercepts all requests.
@@ -102,7 +110,6 @@ class BackgroundSyncBrowserTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, VerifyShutdownBehavior) {

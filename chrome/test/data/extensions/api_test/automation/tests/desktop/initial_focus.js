@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,12 @@ var allTests = [
       rootNode.addEventListener('focus', function(event) {
         if (event.target.root.url == url) {
           chrome.automation.getFocus(function(focus) {
-            assertEq('textField', focus.role);
+            if (focus.role !== 'textField') {
+              // If the page is particularly slow in loading, the root may have
+              // focus first. Wait for subsequent focus events.
+              return;
+            }
+
             assertEq('abc', focus.name);
             chrome.test.succeed();
           });

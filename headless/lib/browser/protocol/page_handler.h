@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,12 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "headless/lib/browser/protocol/domain_handler.h"
-#include "headless/lib/browser/protocol/dp_page.h"
+#include "headless/lib/browser/protocol/page.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
-#include "headless/lib/browser/headless_print_manager.h"
+#include "components/printing/browser/headless/headless_print_manager.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "headless/public/headless_export.h"
 #endif
 
@@ -27,6 +28,10 @@ class PageHandler : public DomainHandler, public Page::Backend {
  public:
   PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
               content::WebContents* web_contents);
+
+  PageHandler(const PageHandler&) = delete;
+  PageHandler& operator=(const PageHandler&) = delete;
+
   ~PageHandler() override;
 
   // DomainHandler implementation
@@ -45,7 +50,6 @@ class PageHandler : public DomainHandler, public Page::Backend {
                   Maybe<double> margin_left,
                   Maybe<double> margin_right,
                   Maybe<String> page_ranges,
-                  Maybe<bool> ignore_invalid_page_ranges,
                   Maybe<String> header_template,
                   Maybe<String> footer_template,
                   Maybe<bool> prefer_css_page_size,
@@ -54,15 +58,16 @@ class PageHandler : public DomainHandler, public Page::Backend {
 
  private:
 #if BUILDFLAG(ENABLE_PRINTING)
-  void PDFCreated(bool returnAsStream,
-                  std::unique_ptr<PageHandler::PrintToPDFCallback> callback,
-                  HeadlessPrintManager::PrintResult print_result,
+  void PDFCreated(bool return_as_stream,
+                  std::unique_ptr<PrintToPDFCallback> callback,
+                  print_to_pdf::PdfPrintResult print_result,
                   scoped_refptr<base::RefCountedMemory> data);
 #endif
+
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
-  content::WebContents* web_contents_;
+  base::WeakPtr<content::WebContents> web_contents_;
+
   base::WeakPtrFactory<PageHandler> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PageHandler);
 };
 
 }  // namespace protocol

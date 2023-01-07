@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/time/time.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/common/content_export.h"
@@ -27,12 +27,12 @@ class QueuedWebMouseWheelEvent : public MouseWheelEventWithLatencyInfo {
     TRACE_EVENT_ASYNC_BEGIN0("input", "MouseWheelEventQueue::QueueEvent", this);
   }
 
+  QueuedWebMouseWheelEvent(const QueuedWebMouseWheelEvent&) = delete;
+  QueuedWebMouseWheelEvent& operator=(const QueuedWebMouseWheelEvent&) = delete;
+
   ~QueuedWebMouseWheelEvent() {
     TRACE_EVENT_ASYNC_END0("input", "MouseWheelEventQueue::QueueEvent", this);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueuedWebMouseWheelEvent);
 };
 
 // Interface with which MouseWheelEventQueue can forward mouse wheel events,
@@ -78,6 +78,9 @@ class CONTENT_EXPORT MouseWheelEventQueue {
   // generate Scroll[Begin|Update|End] on unhandled acknowledge events.
   MouseWheelEventQueue(MouseWheelEventQueueClient* client);
 
+  MouseWheelEventQueue(const MouseWheelEventQueue&) = delete;
+  MouseWheelEventQueue& operator=(const MouseWheelEventQueue&) = delete;
+
   ~MouseWheelEventQueue();
 
   // Adds an event to the queue. The event may be coalesced with previously
@@ -92,7 +95,7 @@ class CONTENT_EXPORT MouseWheelEventQueue {
   // gestures.
   void OnGestureScrollEvent(const GestureEventWithLatencyInfo& gesture_event);
 
-  bool has_pending() const WARN_UNUSED_RESULT {
+  [[nodiscard]] bool has_pending() const {
     return !wheel_queue_.empty() || event_sent_for_gesture_ack_;
   }
 
@@ -112,14 +115,13 @@ class CONTENT_EXPORT MouseWheelEventQueue {
   void SendScrollEnd(blink::WebGestureEvent update_event, bool synthetic);
   void SendScrollBegin(const blink::WebGestureEvent& gesture_update,
                        bool synthetic);
-  void RecordLatchingUmaMetric(bool latched);
 
   // True if gesture scroll events can be generated for the wheel event sent for
   // ack.
   bool CanGenerateGestureScroll(
       blink::mojom::InputEventResultState ack_result) const;
 
-  MouseWheelEventQueueClient* client_;
+  raw_ptr<MouseWheelEventQueueClient> client_;
 
   base::circular_deque<std::unique_ptr<QueuedWebMouseWheelEvent>> wheel_queue_;
   std::unique_ptr<QueuedWebMouseWheelEvent> event_sent_for_gesture_ack_;
@@ -130,8 +132,6 @@ class CONTENT_EXPORT MouseWheelEventQueue {
   bool send_wheel_events_async_;
 
   blink::WebGestureDevice scrolling_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseWheelEventQueue);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ui/display/display.h"
 
 namespace aura {
 class Window;
@@ -52,12 +53,23 @@ void MoveCursorTo(AshWindowTreeHost* ash_host,
 void ShowDisplayErrorNotification(const std::u16string& message,
                                   bool allow_feedback);
 
+// Returns whether `rect_in_screen` is contained by any display.
+bool IsRectContainedByAnyDisplay(const gfx::Rect& rect_in_screen);
+
 // Takes a refresh rate represented as a float and rounds it to two decimal
 // places. If the rounded refresh rate is a whole number, the mantissa is
 // removed. Ex: 54.60712 -> "54.61"
 ASH_EXPORT std::u16string ConvertRefreshRateToString16(float refresh_rate);
 
 ASH_EXPORT std::u16string GetDisplayErrorNotificationMessageForTest();
+
+// Returns whether the rotation of the source display (internal display) should
+// be undone in the destination display (external display). Returning true makes
+// the destination display to show in an orientation independent of the source
+// display. Currently, this returns true when mirror mode is enabled in tablet
+// mode (https://crbug.com/824417), or the device is in physical tablet mode
+// (https://crbug.com/1180809).
+bool ShouldUndoRotationForMirror();
 
 }  // namespace ash
 

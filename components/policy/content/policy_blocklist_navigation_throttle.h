@@ -1,15 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_
 #define COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_
 
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
-#include "components/policy/core/common/policy_namespace.h"
-#include "components/policy/core/common/policy_service.h"
 #include "content/public/browser/navigation_throttle.h"
 
 class GURL;
@@ -22,14 +18,11 @@ class PrefService;
 // navigation. Otherwise, the URL will be checked against the Safe Search API if
 // the SafeSitesFilterBehavior policy is enabled. This final check may be
 // asynchronous if the result hasn't been cached yet.
-class PolicyBlocklistNavigationThrottle
-    : public content::NavigationThrottle,
-      public policy::PolicyService::Observer {
+class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
  public:
   PolicyBlocklistNavigationThrottle(
       content::NavigationHandle* navigation_handle,
-      content::BrowserContext* context,
-      policy::PolicyService* policy_service);
+      content::BrowserContext* context);
   PolicyBlocklistNavigationThrottle(const PolicyBlocklistNavigationThrottle&) =
       delete;
   PolicyBlocklistNavigationThrottle& operator=(
@@ -41,15 +34,11 @@ class PolicyBlocklistNavigationThrottle
   ThrottleCheckResult WillRedirectRequest() override;
   const char* GetNameForLogging() override;
 
-  // policy::PolicyService::Observer overrides.
-  void OnFirstPoliciesLoaded(policy::PolicyDomain domain) override;
-
-  void OnFirstPoliciesLoadedTimeout();
-
-  void OnFirstPoliciesLoadedImpl(bool timeout);
-
  private:
-  ThrottleCheckResult GetUrlThrottleResult(const GURL& url);
+  // Returns TRUE if this navigation is to view-source: and view-source is on
+  // the URLBlocklist.
+  bool IsBlockedViewSourceNavigation();
+
   // To ensure both allow and block policies override Safe Sites,
   // SafeSitesNavigationThrottle must be consulted as part of this throttle
   // rather than added separately to the list of throttles.
@@ -58,22 +47,9 @@ class PolicyBlocklistNavigationThrottle
                                  ThrottleCheckResult cancel_result);
   SafeSitesNavigationThrottle safe_sites_navigation_throttle_;
 
-  PolicyBlocklistService* blocklist_service_;
+  raw_ptr<PolicyBlocklistService> blocklist_service_;
 
-  // While this is not null, we are not sure policies from all the possible
-  // sources have been loaded. This is null if policies have been loaded.
-  policy::PolicyService* policy_service_;
-
-  PrefService* prefs_;
-
-  // Time where the navigation was deferred because all policies were not
-  // loaded.
-  base::TimeTicks policy_load_throttle_start_time_;
-
-  // Timer to try and continue the deferred navigation in case we are waiting
-  // for policies to be loaded and |OnFirstPoliciesLoaded| has not been called
-  // before a timeout.
-  base::OneShotTimer wait_for_policy_timer_;
+  raw_ptr<PrefService> prefs_;
 };
 
 #endif  // COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialUtils;
 import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics;
 import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics.UserAction;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;

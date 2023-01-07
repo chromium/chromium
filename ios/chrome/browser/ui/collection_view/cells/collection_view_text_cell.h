@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@
 // The second line of detail text to display.
 @property(nonatomic, readonly, strong, nullable) UILabel* detailTextLabel;
 
-// Returns the height needed for a cell contained in |width| to display
-// |titleLabel| and |detailTextLabel|.
+// Returns the height needed for a cell contained in `width` to display
+// `titleLabel` and `detailTextLabel`.
 + (CGFloat)heightForTitleLabel:(nullable UILabel*)titleLabel
                detailTextLabel:(nullable UILabel*)detailTextLabel
                          width:(CGFloat)width;

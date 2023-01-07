@@ -9,7 +9,7 @@
   </message>
 
   <!-- Captive portal interstitial -->
-  <message name="IDS_CAPTIVE_PORTAL_AUTHORIZATION_DIALOG_NAME" desc="Name of the modal Web dialog (displayed in the title) displaying captive portal login page on Chrome OS.">
+  <message name="IDS_CAPTIVE_PORTAL_AUTHORIZATION_DIALOG_NAME" desc="Name of the modal Web dialog (displayed in the title) displaying captive portal login page on ChromeOS.">
     Captive Portal Authorization
   </message>
   <message name="IDS_CAPTIVE_PORTAL_HEADING_WIRED" desc="Heading in the error page when a secure request is blocked because a captive portal is manipulating a wired connection (e.g. ethernet)">
@@ -128,7 +128,7 @@
   </if>
   <if expr="_google_chrome">
     <message name="IDS_CLOCK_ERROR_EXPLANATION" desc="Body text under an 'Advanced' button. Context: error shown when the browser can't load a page because the device's clock is wrong. This paragraph explains why a correct clock is necessary.">
-      To establish a secure connection, your clock needs to be set correctly. This is because the certificates that websites use to identify themselves are only valid for specific periods of time. Since your device's clock is incorrect, Google Chrome cannot verify these certificates.
+      To establish a secure connection, your clock needs to be set correctly. This is because the certificates that websites use to identify themselves are only valid for specific periods of time. Since your device's clock is incorrect, Chrome cannot verify these certificates.
     </message>
   </if>
   <if expr="not _google_chrome">
@@ -177,10 +177,10 @@
   </message>
   <if expr="_google_chrome">
     <message name="IDS_SSL_NONOVERRIDABLE_MORE" desc="Body text for the explanation shown if user clicks on the Details button.">
-      <ph name="SITE">$1<ex>google.com</ex></ph> normally uses encryption to protect your information. When Google Chrome tried to connect to <ph name="SITE">$1<ex>google.com</ex></ph> this time, the website sent back unusual and incorrect credentials. This may happen when an attacker is trying to pretend to be <ph name="SITE">$1<ex>google.com</ex></ph>, or a Wi-Fi sign-in screen has interrupted the connection. Your information is still secure because Google Chrome stopped the connection before any data was exchanged.
+      <ph name="SITE">$1<ex>google.com</ex></ph> normally uses encryption to protect your information. When Chrome tried to connect to <ph name="SITE">$1<ex>google.com</ex></ph> this time, the website sent back unusual and incorrect credentials. This may happen when an attacker is trying to pretend to be <ph name="SITE">$1<ex>google.com</ex></ph>, or a Wi-Fi sign-in screen has interrupted the connection. Your information is still secure because Chrome stopped the connection before any data was exchanged.
     </message>
     <message name="IDS_SSL_NONOVERRIDABLE_INVALID" desc="A sentence to explain why the user can't proceed.">
-      You cannot visit <ph name="SITE">$1<ex>google.com</ex></ph> right now because the website sent scrambled credentials that Google Chrome cannot process. Network errors and attacks are usually temporary, so this page will probably work later.
+      You cannot visit <ph name="SITE">$1<ex>google.com</ex></ph> right now because the website sent scrambled credentials that Chrome cannot process. Network errors and attacks are usually temporary, so this page will probably work later.
     </message>
   </if>
   <if expr="not _google_chrome">
@@ -419,51 +419,6 @@
     Proceed
   </message>
 
-  <!-- Origin Policy Error Interstial -->
-  <message name="IDS_ORIGIN_POLICY_TITLE"
-    desc="Title of the Origin Policy Error interstitial.">
-    Origin Policy Error
-  </message>
-  <message name="IDS_ORIGIN_POLICY_HEADING"
-    desc="The large heading at the top of the Origin Policy Error Interstitial">
-    Blocked according to <ph name="ORIGIN">$2</ph>'s origin policy.
-  </message>
-  <message name="IDS_ORIGIN_POLICY_INFO"
-    desc="The primary explanatory paragraph for the Origin Policy Error interstitial.">
-    The site <ph name="ORIGIN">$2</ph> has requested that an origin policy
-    apply to all requests to it, but this policy cannot presently be applied.
-  </message>
-  <message name="IDS_ORIGIN_POLICY_INFO2" desc="The second paragraph of the text of the Origin Policy Error Interstitial. (Presently intentionally left blank.)" />
-  <message name="IDS_ORIGIN_POLICY_BUTTON"
-    desc="The text for the Origin Policy Error Interstitial button that takes the user back to the previous page">
-    Back to safety
-  </message>
-  <message name="IDS_ORIGIN_POLICY_DETAILS"
-    desc="The text for the Origin Policy Error Interstitial button that contains additional information.">
-    Advanced
-  </message>
-  <message name="IDS_ORIGIN_POLICY_EXPLANATION_CANNOT_LOAD" desc="The text of the Origin Policy Error Interstitial that will be displayed when the user presses the 'Advanced' button for additional information, for the case where the policy was requested but could not be loaded.">
-    The server you are going to, <ph name="ORIGIN">$2</ph>, has requested that
-    an origin policy be applied to all requests to it. But it has now failed to
-    deliver a policy, which prevents the browser from fulfilling your request
-    for <ph name="SITE">$1</ph>. Origin policies can be used by site operators
-    to configure security and other properties for a site.
-  </message>
-  <message name="IDS_ORIGIN_POLICY_EXPLANATION_CANNOT_PARSE_HEADER" desc="The text of the Origin Policy Error Interstitial that will be displayed when the user presses the 'Advanced' button for additional information, for the case where the policy header could not be parsed.">
-    The server you are going to, <ph name="ORIGIN">$2</ph>, has set a header
-    requiring that an origin policy be applied to all requests to it. But
-    the header is malformed, which prevents the browser from fulfilling
-    your request for <ph name="SITE">$1</ph>. Origin policies can be used by
-    site operators to configure security and other properties for a site.
-  </message>
-  <message name="IDS_ORIGIN_POLICY_FINAL_PARAGRAPH"
-    desc="The text of the Origin Policy Error Interstitial that a user can click to proceed to the site, despite the error.">
-    <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>Proceed to <ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_ORIGIN_POLICY_CLOSE" desc="The text of the Origin Policy Error Interstitial that will hide the 'advanced' section again.">
-    Hide advanced
-  </message>
-
   <if expr="not is_ios">
     <!-- Blocked interception interstitial strings -->
     <message name="IDS_BLOCKED_INTERCEPTION_HEADING" desc="Large heading of the known interception interstitial.">
@@ -531,6 +486,23 @@
   </message>
   <message name="IDS_INSECURE_FORM_SUBMIT_BUTTON" desc="Text for the button in the insecure form warning that bypasses the warning and submits the form">
     Send anyway
+  </message>
+
+  <!-- HTTPS-Only Mode interstitial-->
+  <message name="IDS_HTTPS_ONLY_MODE_TITLE" desc="Tab title for HTTPS-only mode warning">
+    Site is not secure
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_HEADING" desc="Large heading of the warning shown when an http only site is loaded with https-only mode active">
+    The connection to <ph name="SITE">$1<ex>example.com</ex></ph> is not secure
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS.">
+    You are seeing this warning because this site does not support HTTPS. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_BACK_BUTTON" desc="Text for the button in the HTTPS-only mode warning that takes the user back to the previous page">
+    Go back
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_SUBMIT_BUTTON" desc="Text for the button in the HTTPS-only mode warning that bypasses the warning and loads the page">
+    Continue to site
   </message>
 
 </grit-part>

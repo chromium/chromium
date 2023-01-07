@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/shell/browser/shell_app_window_client.h"
+
+#include <memory>
 
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/shell/browser/desktop_controller.h"
@@ -10,11 +12,11 @@
 
 namespace extensions {
 
-NativeAppWindow* ShellAppWindowClient::CreateNativeAppWindow(
+std::unique_ptr<NativeAppWindow> ShellAppWindowClient::CreateNativeAppWindow(
     AppWindow* window,
     AppWindow::CreateParams* params) {
-  ShellNativeAppWindow* native_app_window =
-      new ShellNativeAppWindowAura(window, *params);
+  auto native_app_window =
+      std::make_unique<ShellNativeAppWindowAura>(window, *params);
   DesktopController::instance()->AddAppWindow(
       window, native_app_window->GetNativeWindow());
   return native_app_window;

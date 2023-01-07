@@ -2,6 +2,8 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include <string.h>
 
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+
 namespace blink {
 
 %}

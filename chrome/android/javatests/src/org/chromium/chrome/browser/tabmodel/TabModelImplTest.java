@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,6 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /**
  * Tests for {@link TabModelImpl}.
@@ -51,8 +50,6 @@ public class TabModelImplTest {
             new ChromeTabbedActivityTestRule();
     @ClassRule
     public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);

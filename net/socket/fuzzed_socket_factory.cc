@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,10 @@ namespace {
 class FailingSSLClientSocket : public SSLClientSocket {
  public:
   FailingSSLClientSocket() = default;
+
+  FailingSSLClientSocket(const FailingSSLClientSocket&) = delete;
+  FailingSSLClientSocket& operator=(const FailingSSLClientSocket&) = delete;
+
   ~FailingSSLClientSocket() override = default;
 
   // Socket implementation:
@@ -73,14 +77,6 @@ class FailingSSLClientSocket : public SSLClientSocket {
 
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
 
-  void GetConnectionAttempts(ConnectionAttempts* out) const override {
-    out->clear();
-  }
-
-  void ClearConnectionAttempts() override {}
-
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
-
   int64_t GetTotalReceivedBytes() const override { return 0; }
 
   void GetSSLCertRequestInfo(
@@ -98,16 +94,20 @@ class FailingSSLClientSocket : public SSLClientSocket {
     return 0;
   }
 
+  // SSLClientSocket implementation:
+  std::vector<uint8_t> GetECHRetryConfigs() override {
+    NOTREACHED();
+    return {};
+  }
+
  private:
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(FailingSSLClientSocket);
 };
 
 }  // namespace
 
 FuzzedSocketFactory::FuzzedSocketFactory(FuzzedDataProvider* data_provider)
-    : data_provider_(data_provider), fuzz_connect_result_(true) {}
+    : data_provider_(data_provider) {}
 
 FuzzedSocketFactory::~FuzzedSocketFactory() = default;
 
@@ -126,8 +126,7 @@ FuzzedSocketFactory::CreateTransportClientSocket(
     NetworkQualityEstimator* network_quality_estimator,
     NetLog* net_log,
     const NetLogSource& source) {
-  std::unique_ptr<FuzzedSocket> socket(
-      new FuzzedSocket(data_provider_, net_log));
+  auto socket = std::make_unique<FuzzedSocket>(data_provider_, net_log);
   socket->set_fuzz_connect_result(fuzz_connect_result_);
   // Just use the first address.
   socket->set_remote_address(*addresses.begin());
@@ -140,21 +139,6 @@ std::unique_ptr<SSLClientSocket> FuzzedSocketFactory::CreateSSLClientSocket(
     const HostPortPair& host_and_port,
     const SSLConfig& ssl_config) {
   return std::make_unique<FailingSSLClientSocket>();
-}
-
-std::unique_ptr<ProxyClientSocket> FuzzedSocketFactory::CreateProxyClientSocket(
-    std::unique_ptr<StreamSocket> stream_socket,
-    const std::string& user_agent,
-    const HostPortPair& endpoint,
-    const ProxyServer& proxy_server,
-    HttpAuthController* http_auth_controller,
-    bool tunnel,
-    bool using_spdy,
-    NextProto negotiated_protocol,
-    ProxyDelegate* proxy_delegate,
-    const NetworkTrafficAnnotationTag& traffic_annotation) {
-  NOTIMPLEMENTED();
-  return nullptr;
 }
 
 }  // namespace net

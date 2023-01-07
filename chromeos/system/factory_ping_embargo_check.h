@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,7 @@ class StatisticsProvider;
 
 // An embargo end date is considered invalid if it's more than this many
 // days in the future.
-constexpr base::TimeDelta kEmbargoEndDateGarbageDateThreshold =
-    base::TimeDelta::FromDays(14);
+constexpr base::TimeDelta kEmbargoEndDateGarbageDateThreshold = base::Days(14);
 
 enum class FactoryPingEmbargoState {
   // There is no correctly formatted factory ping embargo end date value in

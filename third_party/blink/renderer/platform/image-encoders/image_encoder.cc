@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,14 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <basetsd.h>  // Included before jpeglib.h because of INT32 clash
-#endif                // OS_WIN
+#endif
 #include <stdio.h>    // Needed by jpeglib.h
 
 #include "jpeglib.h"  // for JPEG_MAX_DIMENSION
 
-#include "third_party/libwebp/src/webp/encode.h"  // for WEBP_MAX_DIMENSION
+#include "third_party/libwebp/src/src/webp/encode.h"  // for WEBP_MAX_DIMENSION
 
 namespace blink {
 

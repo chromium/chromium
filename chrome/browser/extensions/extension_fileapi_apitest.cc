@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileAPI) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, XHROnPersistentFileSystem) {
-  ASSERT_TRUE(RunPlatformAppTest("xhr_persistent_fs")) << message_;
+  ASSERT_TRUE(
+      RunExtensionTest("xhr_persistent_fs", {.launch_as_platform_app = true}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, RequestQuotaInBackgroundPage) {

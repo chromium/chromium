@@ -50,6 +50,13 @@ class SubmitInputType final : public BaseButtonInputType {
   void ValueAttributeChanged() override;
 };
 
+template <>
+struct DowncastTraits<SubmitInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsSubmitInputType();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_SUBMIT_INPUT_TYPE_H_

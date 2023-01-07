@@ -31,9 +31,11 @@
 
 #include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
 
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+
 namespace blink {
 
-LayoutRubyText::LayoutRubyText(Element* element) : LayoutBlockFlow(element) {}
+LayoutRubyText::LayoutRubyText(ContainerNode* node) : LayoutBlockFlow(node) {}
 
 LayoutRubyText::~LayoutRubyText() = default;
 

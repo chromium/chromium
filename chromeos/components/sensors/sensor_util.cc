@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
@@ -28,16 +28,16 @@ bool BindSensorHalClient(mojo::PendingRemote<mojom::SensorHalClient> remote) {
   dispatcher->RegisterClient(std::move(remote));
   return true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  if (!lacros_chrome_service) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service) {
     // In unit tests.
     return false;
   }
 
-  if (!lacros_chrome_service->IsSensorHalClientAvailable())
+  if (!lacros_service->IsSensorHalClientAvailable())
     return false;
 
-  lacros_chrome_service->BindSensorHalClient(std::move(remote));
+  lacros_service->BindSensorHalClient(std::move(remote));
   return true;
 #else
 #error "This file should only be used in either Ash-Chrome or Lacros-Chrome"

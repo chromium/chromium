@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
   {
     "namespace": "fileBrowserHandlerInternal",
     "compiler_options": {
-      "implemented_in": "chrome/browser/chromeos/extensions/file_manager/file_browser_handler_api.h"
+      "implemented_in": "chrome/browser/extensions/api/file_manager/file_browser_handler_api.h"
     },
     "description": "none",
     "types": [
@@ -25,6 +25,25 @@
             "type": "string"
           },
           "fileIsDirectory": {
+            "type": "boolean"
+          }
+        }
+      },
+      {
+        "id": "FileEntryInfoForGetFile",
+        "type": "object",
+        "description": "Information needed to build a file entry using DirectoryEntry.getFile() that will be returned through the API.",
+        "properties": {
+          "fileSystemId": {
+            "type": "string"
+          },
+          "baseName": {
+            "type": "string"
+          },
+          "entryId": {
+            "type": "string"
+          },
+          "isDirectory": {
             "type": "boolean"
           }
         }
@@ -53,31 +72,35 @@
                   "description": "List of file extensions that the selected file can have. The list is also used to specify what files to be shown in the select file dialog. Files with the listed extensions are only shown in the dialog. Extensions should not include the leading '.'. Example: ['jpg', 'png']"
               }
             }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Function called upon completion.",
-            "parameters": [
-              {
-                "name": "result",
-                "description": "Result of the method.",
-                "type": "object",
-                "properties": {
-                  "success": {
-                    "type": "boolean",
-                    "description": "Has the file been selected."
-                  },
-                  "entry": {
-                    "$ref": "FileEntryInfo",
-                    "optional": true,
-                    "description": "Selected file entry."
-                  }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Function called upon completion.",
+          "parameters": [
+            {
+              "name": "result",
+              "description": "Result of the method.",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Has the file been selected."
+                },
+                "entry": {
+                  "$ref": "FileEntryInfo",
+                  "optional": true,
+                  "description": "Selected file entry."
+                },
+                "entryForGetFile": {
+                  "$ref": "FileEntryInfoForGetFile",
+                  "optional": true,
+                  "description": "Selected file entry for DirectoryEngry.getFile() consumption."
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ]
   }

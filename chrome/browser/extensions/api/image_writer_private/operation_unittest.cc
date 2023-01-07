@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/test/base/testing_profile.h"
@@ -169,7 +169,7 @@ TEST_F(ImageWriterOperationTest, ExtractZipFile) {
   EXPECT_TRUE(base::ContentsEqual(image_path_, operation_->GetImagePath()));
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(ImageWriterOperationTest, WriteImageToDevice) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   auto set_up_utility_client_progress =
@@ -198,7 +198,7 @@ TEST_F(ImageWriterOperationTest, WriteImageToDevice) {
   operation_->Write(run_loop.QuitClosure());
   run_loop.Run();
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Chrome OS doesn't support verification in the ImageBurner, so these two tests

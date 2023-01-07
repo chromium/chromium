@@ -1,0 +1,33 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+static_library("connectivity_diagnostics") {
+  sources = [
+    "connectivity_diagnostics_ui.cc",
+    "connectivity_diagnostics_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//ash/webui/network_ui:network_diagnostics_resource_provider",
+    "//ash/webui/network_ui:network_health_resource_provider",
+    "//ash/webui/resources:connectivity_diagnostics_resources",
+    "//ash/webui/web_applications",
+    "//chromeos/services/network_health/public/mojom:mojom",
+    "//chromeos/strings/",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/resources",
+    "//ui/webui",
+  ]
+}
+
+group("closure_compile") {
+  deps = [ "resources:closure_compile_module" ]
+}

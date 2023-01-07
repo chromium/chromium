@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,11 @@
 #include "components/viz/common/frame_timing_details.h"
 
 namespace cc {
-base::TimeDelta INTERVAL = base::TimeDelta::FromMilliseconds(16);
+base::TimeDelta INTERVAL = base::Milliseconds(16);
 
 FakeCompositorFrameReportingController::FakeCompositorFrameReportingController()
-    : CompositorFrameReportingController(/*should_report_metrics=*/true,
+    : CompositorFrameReportingController(/*should_report_histograms=*/false,
+                                         /*should_report_ukm=*/false,
                                          /*layer_tree_host_id=*/1) {}
 
 void FakeCompositorFrameReportingController::WillBeginMainFrame(
@@ -24,7 +25,8 @@ void FakeCompositorFrameReportingController::WillBeginMainFrame(
 }
 
 void FakeCompositorFrameReportingController::BeginMainFrameAborted(
-    const viz::BeginFrameId& id) {
+    const viz::BeginFrameId& id,
+    CommitEarlyOutReason reason) {
   if (!HasReporterAt(PipelineStage::kBeginMainFrame)) {
     viz::BeginFrameArgs args = viz::BeginFrameArgs();
     args.frame_id = id;
@@ -32,16 +34,19 @@ void FakeCompositorFrameReportingController::BeginMainFrameAborted(
     args.interval = INTERVAL;
     WillBeginMainFrame(args);
   }
-  CompositorFrameReportingController::BeginMainFrameAborted(id);
+  CompositorFrameReportingController::BeginMainFrameAborted(id, reason);
 }
 
 void FakeCompositorFrameReportingController::WillCommit() {
-  if (!HasReporterAt(PipelineStage::kBeginMainFrame)) {
-    viz::BeginFrameArgs args = viz::BeginFrameArgs();
-    args.frame_id = viz::BeginFrameId();
-    args.frame_time = Now();
-    args.interval = INTERVAL;
-    WillBeginMainFrame(args);
+  if (!HasReporterAt(PipelineStage::kReadyToCommit)) {
+    if (!HasReporterAt(PipelineStage::kBeginMainFrame)) {
+      viz::BeginFrameArgs args = viz::BeginFrameArgs();
+      args.frame_id = viz::BeginFrameId();
+      args.frame_time = Now();
+      args.interval = INTERVAL;
+      WillBeginMainFrame(args);
+    }
+    NotifyReadyToCommit(nullptr);
   }
   CompositorFrameReportingController::WillCommit();
 }
@@ -72,12 +77,13 @@ void FakeCompositorFrameReportingController::DidActivate() {
 
 void FakeCompositorFrameReportingController::DidSubmitCompositorFrame(
     uint32_t frame_token,
+    base::TimeTicks submit_time,
     const viz::BeginFrameId& current_frame_id,
     const viz::BeginFrameId& last_activated_frame_id,
     EventMetricsSet events_metrics,
     bool has_missing_content) {
   CompositorFrameReportingController::DidSubmitCompositorFrame(
-      frame_token, current_frame_id, last_activated_frame_id,
+      frame_token, submit_time, current_frame_id, last_activated_frame_id,
       std::move(events_metrics), has_missing_content);
 
   viz::FrameTimingDetails details;

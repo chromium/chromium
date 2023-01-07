@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -36,15 +36,39 @@ source_set("observing_scene_agent") {
 source_set("scene_state_header") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "connection_information.h",
+    "scene_controller.h",
     "scene_state.h",
     "scene_state_browser_agent.h",
   ]
   public_deps = [
     ":scene_state_observer",
+    "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
+    "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/window_activities",
   ]
+}
+
+source_set("default_browser_scene_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "default_browser_scene_agent.h",
+    "default_browser_scene_agent.mm",
+  ]
+  deps = [
+    ":observing_scene_agent",
+    ":scene_state_header",
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/default_promo",
+    "//ios/chrome/browser/ui/default_promo:utils",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("incognito_blocker_scene_agent") {
@@ -60,14 +84,41 @@ source_set("incognito_blocker_scene_agent") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("layout_guide_scene_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "layout_guide_scene_agent.h",
+    "layout_guide_scene_agent.mm",
+  ]
+  deps = [
+    ":observing_scene_agent",
+    "//base",
+    "//ios/chrome/browser/ui/util:util_swift",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("layout_guide_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "layout_guide_util.h",
+    "layout_guide_util.mm",
+  ]
+  deps = [
+    ":layout_guide_scene_agent",
+    ":scene_state_header",
+    "//ios/chrome/browser/browser_state",
+  ]
+}
+
+source_set("scene_ui_provider") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "scene_ui_provider.h" ]
+}
+
 source_set("scene") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "connection_information.h",
-    "default_browser_scene_agent.h",
-    "default_browser_scene_agent.mm",
-    "policy_signout_scene_agent.h",
-    "policy_signout_scene_agent.mm",
     "scene_controller.h",
     "scene_controller.mm",
     "scene_delegate.h",
@@ -78,16 +129,27 @@ source_set("scene") {
   ]
 
   deps = [
+    ":default_browser_scene_agent",
     ":incognito_blocker_scene_agent",
+    ":layout_guide_scene_agent",
     ":main",
     ":observing_scene_agent",
+    ":scene_state_header",
     ":scene_testing",
     "//base",
     "//base/ios",
+    "//components/breadcrumbs/core",
+    "//components/breadcrumbs/core:feature_flags",
     "//components/infobars/core",
+    "//components/prefs",
+    "//components/prefs/ios",
     "//components/previous_session_info",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
     "//components/url_formatter",
+    "//components/url_param_filter/core",
+    "//components/version_info",
     "//components/web_resource",
     "//ios/chrome/app:app",
     "//ios/chrome/app:blocking_scene_commands",
@@ -96,46 +158,64 @@ source_set("scene") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/app/application_delegate:url_opener_params",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser",
-    "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browsing_data",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/crash_report/breadcrumbs",
-    "//ios/chrome/browser/crash_report/breadcrumbs:feature_flags",
+    "//ios/chrome/browser/default_browser",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/mailto_handler",
+    "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/screenshot",
     "//ios/chrome/browser/sessions:scene_util",
+    "//ios/chrome/browser/sessions:session_saving",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/app_store_rating",
+    "//ios/chrome/browser/ui/app_store_rating:features",
     "//ios/chrome/browser/ui/appearance",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/authentication/signed_in_accounts",
     "//ios/chrome/browser/ui/authentication/signin",
-    "//ios/chrome/browser/ui/authentication/signin/user_signin:user_signin",
     "//ios/chrome/browser/ui/blocking_overlay",
     "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/browser/ui/commands:commands",
+    "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/first_run",
-    "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/history",
+    "//ios/chrome/browser/ui/incognito_interstitial:incognito_interstitial",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/ui/main:browser_interface_provider",
+    "//ios/chrome/browser/ui/ntp:feature_flags",
+    "//ios/chrome/browser/ui/policy:user_policy_scene_agent",
+    "//ios/chrome/browser/ui/promos_manager:promos_manager_scene_agent",
+    "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/sync",
     "//ios/chrome/browser/ui/start_surface",
+    "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid",
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/whats_new:util",
+    "//ios/chrome/browser/ui/whats_new/promo",
+    "//ios/chrome/browser/url",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:agents",
@@ -144,14 +224,16 @@ source_set("scene") {
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/mailto",
     "//ios/public/provider/chrome/browser/signin",
-    "//ios/public/provider/chrome/browser/user_feedback",
+    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
+    "//ios/third_party/material_components_ios",
     "//ui/base:base",
   ]
   public_deps = [
     ":scene_state_header",
     ":scene_state_observer",
+    ":scene_ui_provider",
   ]
   allow_circular_includes_from = [
     ":main",
@@ -220,16 +302,18 @@ source_set("main") {
     "//ios/chrome/browser/ui/reading_list",
     "//ios/chrome/browser/ui/recent_tabs",
     "//ios/chrome/browser/ui/settings/sync",
+    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/snackbar",
+    "//ios/chrome/browser/ui/tabs:constants",
     "//ios/chrome/browser/ui/thumb_strip",
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/thumb_strip:public",
-    "//ios/chrome/browser/ui/translate:legacy_translate",
     "//ios/chrome/browser/url_loading:url_loading_params_header",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:tab_helper_delegates",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/common/ui/colors",
     "//ios/public/provider/chrome/browser",
     "//net",
   ]
@@ -251,11 +335,13 @@ source_set("unit_tests") {
   sources = [
     "browser_view_wrangler_unittest.mm",
     "incognito_blocker_scene_agent_unittest.mm",
+    "layout_guide_scene_agent_unittest.mm",
     "scene_controller_unittest.mm",
     "scene_state_browser_agent_unittest.mm",
   ]
   deps = [
     ":incognito_blocker_scene_agent",
+    ":layout_guide_scene_agent",
     ":main",
     ":scene",
     "//base",
@@ -265,8 +351,12 @@ source_set("unit_tests") {
     "//ios/chrome/app/startup",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/history",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/prerender",
+    "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:scene_util_test_support",
     "//ios/chrome/browser/sessions:test_support",

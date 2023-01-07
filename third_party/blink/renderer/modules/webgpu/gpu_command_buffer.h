@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,14 @@ class GPUCommandBuffer : public DawnObject<WGPUCommandBuffer> {
   explicit GPUCommandBuffer(GPUDevice* device,
                             WGPUCommandBuffer command_buffer);
 
+  GPUCommandBuffer(const GPUCommandBuffer&) = delete;
+  GPUCommandBuffer& operator=(const GPUCommandBuffer&) = delete;
+
  private:
-  DISALLOW_COPY_AND_ASSIGN(GPUCommandBuffer);
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().commandBufferSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

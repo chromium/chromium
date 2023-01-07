@@ -7,10 +7,9 @@
 
 /*
  * The CSS definition for everything inside equation editor dialog.
- *
- * Author: yoah@google.com (Yoah Bar-David)
- * Author: kfk@google.com (Ming Zhang)
  */
+
+@provide 'goog.css.editor.equationeditor';
 
 .ee-modal-dialog {
   width: 475px;

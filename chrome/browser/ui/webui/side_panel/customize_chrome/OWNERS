@@ -1,0 +1,4 @@
+file://chrome/browser/resources/new_tab_page/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

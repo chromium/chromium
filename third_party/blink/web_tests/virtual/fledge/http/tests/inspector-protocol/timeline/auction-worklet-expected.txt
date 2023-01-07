@@ -1,0 +1,11 @@
+Tracing of FLEDGE worklets.
+Recording started
+Auction winner:urn:uuid:(randomized)
+Tracing complete
+Saw enough bidders
+Saw enough sellers
+Saw process assignment for bidder for host:a.test
+Saw process assignment for seller for host:a.test
+Saw process release for bidder for host:a.test
+Saw process release for seller for host:a.test
+

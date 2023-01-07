@@ -1,0 +1,72 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tabs_search") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tabs_search_service.h",
+    "tabs_search_service.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/sync_sessions",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/ui/history:history_driver",
+    "//ios/chrome/browser/ui/recent_tabs:synced_sessions",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/web/public",
+  ]
+}
+
+source_set("tabs_search_factory") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tabs_search_service_factory.h",
+    "tabs_search_service_factory.mm",
+  ]
+
+  deps = [
+    ":tabs_search",
+    "//base",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "tabs_search_service_unittest.mm" ]
+  deps = [
+    ":tabs_search",
+    ":tabs_search_factory",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//url",
+  ]
+}

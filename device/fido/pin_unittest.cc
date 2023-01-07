@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ class PINProtocolTest : public ::testing::TestWithParam<PINUVAuthProtocol> {
                                 POINT_CONVERSION_UNCOMPRESSED, peer_x962.data(),
                                 peer_x962.size(), nullptr /* BN_CTX */),
              peer_x962.size());
-    const base::Optional<pin::KeyAgreementResponse> peer_response =
+    const absl::optional<pin::KeyAgreementResponse> peer_response =
         pin::KeyAgreementResponse::ParseFromCOSE(
             pin::EncodeCOSEPublicKey(peer_x962));
     CHECK(peer_response);

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gl/gl_surface.h"
@@ -21,16 +20,19 @@ namespace ui {
 class X11SurfaceFactory : public SurfaceFactoryOzone {
  public:
   explicit X11SurfaceFactory(std::unique_ptr<x11::Connection> connection);
+
+  X11SurfaceFactory(const X11SurfaceFactory&) = delete;
+  X11SurfaceFactory& operator=(const X11SurfaceFactory&) = delete;
+
   ~X11SurfaceFactory() override;
 
   // SurfaceFactoryOzone:
-  std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
+  std::vector<gl::GLImplementationParts> GetAllowedGLImplementations() override;
   GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
       bool use_swiftshader,
-      bool allow_protected_memory,
-      bool enforce_protected_memory) override;
+      bool allow_protected_memory) override;
 #endif
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
       gfx::AcceleratedWidget widget) override;
@@ -40,21 +42,25 @@ class X11SurfaceFactory : public SurfaceFactoryOzone {
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      base::Optional<gfx::Size> framebuffer_size = base::nullopt) override;
+      absl::optional<gfx::Size> framebuffer_size = absl::nullopt) override;
+  bool CanCreateNativePixmapForFormat(gfx::BufferFormat format) override;
   void CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
                                VkDevice vk_device,
                                gfx::Size size,
                                gfx::BufferFormat format,
                                gfx::BufferUsage usage,
                                NativePixmapCallback callback) override;
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandle(
+      gfx::AcceleratedWidget widget,
+      gfx::Size size,
+      gfx::BufferFormat format,
+      gfx::NativePixmapHandle handle) override;
 
  private:
   std::unique_ptr<GLOzone> glx_implementation_;
   std::unique_ptr<GLOzone> egl_implementation_;
 
   std::unique_ptr<x11::Connection> connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(X11SurfaceFactory);
 };
 
 }  // namespace ui

@@ -1,0 +1,39 @@
+<html>
+    <body onload="runTest();">
+        Test passes if it does not hit DCHECK
+        !EventDispatchForbiddenScope::IsEventDispatchForbidden().
+
+        See https://crbug.com/1267896
+
+        <!-- Having a div which is displayed to insert the video element seeems
+             to be required to hit the DCHECK -->
+        <div id="video_container">
+        </div>
+
+        <script>
+            if (window.testRunner) {
+                testRunner.dumpAsText();
+                testRunner.waitUntilDone();
+            }
+
+            function runTest() {
+                videoElement = document.createElement("video");
+                document.getElementById('video_container').appendChild(videoElement);
+
+                // Both pausing and adding controls is needed in order to hit
+                // the DCHECK. This seems to force MediaControls to add nodes
+                // to the DOM.
+                videoElement.controls = true;
+                videoElement.pause();
+
+                source = document.createElement("source");
+                source.src = 'content/bear_rotate_0.mp4'
+                videoElement.appendChild(source);
+
+                if (window.testRunner)
+                    setTimeout("testRunner.notifyDone()", 0);
+            }
+        </script>
+    </body>
+</html>
+

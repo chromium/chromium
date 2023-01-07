@@ -31,54 +31,14 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_CLIENT_H_
 
-#include "base/optional.h"
-#include "base/strings/string_piece.h"
-#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
-#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
-#include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
-#include "third_party/blink/public/platform/web_impression.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/web/web_ax_enums.h"
-#include "third_party/blink/public/web/web_frame.h"
-#include "third_party/blink/public/web/web_navigation_policy.h"
-#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
-
-class WebPagePopup;
-class WebURLRequest;
-class WebView;
-struct WebWindowFeatures;
 
 class WebViewClient {
  public:
   virtual ~WebViewClient() = default;
   // Factory methods -----------------------------------------------------
-
-  // Create a new related WebView.  This method must clone its session storage
-  // so any subsequent calls to createSessionStorageNamespace conform to the
-  // WebStorage specification.
-  // The request parameter is only for the client to check if the request
-  // could be fulfilled.  The client should not load the request.
-  // The policy parameter indicates how the new view will be displayed in
-  // LocalMainFrameHost::ShowCreatedWidget.
-  virtual WebView* CreateView(
-      WebLocalFrame* creator,
-      const WebURLRequest& request,
-      const WebWindowFeatures& features,
-      const WebString& name,
-      WebNavigationPolicy policy,
-      network::mojom::WebSandboxFlags,
-      const SessionStorageNamespaceId& session_storage_namespace_id,
-      bool& consumed_user_gesture,
-      const base::Optional<WebImpression>&) {
-    return nullptr;
-  }
-
-  // Create a new popup WebWidget.
-  virtual WebPagePopup* CreatePopup(WebLocalFrame*) { return nullptr; }
 
   // Misc ----------------------------------------------------------------
 
@@ -86,28 +46,9 @@ class WebViewClient {
   // for non-composited WebViews that exist to contribute to a "parent" WebView
   // painting. Otherwise invalidations are transmitted to the compositor through
   // the layers.
-  virtual void DidInvalidateRect(const gfx::Rect&) {}
-
-  // Called when script in the page calls window.print().  If frame is
-  // non-null, then it selects a particular frame, including its
-  // children, to print.  Otherwise, the main frame and its children
-  // should be printed.
-  virtual void PrintPage(WebLocalFrame*) {}
-
-  virtual void OnPageVisibilityChanged(mojom::PageVisibilityState visibility) {}
-
-  virtual void OnPageFrozenChanged(bool frozen) {}
-
-  virtual void DidUpdateRendererPreferences() {}
+  virtual void InvalidateContainer() {}
 
   // UI ------------------------------------------------------------------
-
-  // Called to determine if drag-n-drop operations may initiate a page
-  // navigation.
-  virtual bool AcceptsLoadDrops() { return true; }
-
-  // Called to check if layout update should be processed.
-  virtual bool CanUpdateLayout() { return false; }
 
   // Called when the View has changed size as a result of an auto-resize.
   virtual void DidAutoResize(const gfx::Size& new_size) {}
@@ -115,8 +56,10 @@ class WebViewClient {
   // Called when the View acquires focus.
   virtual void DidFocus() {}
 
+  // Called when the WebView is destroying itself.
+  virtual void OnDestruct() {}
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_CLIENT_H_

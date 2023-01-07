@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,7 +12,6 @@ group("resources") {
     ":ui_resources_grd",
     ":ui_unscaled_resources_grd",
     ":webui_generated_resources_grd",
-    ":webui_resources_grd",
   ]
 }
 
@@ -33,23 +32,6 @@ grit("ui_unscaled_resources_grd") {
   outputs = [
     "grit/ui_unscaled_resources.h",
     "ui_unscaled_resources.rc",
-  ]
-}
-
-grit("webui_resources_grd") {
-  defines = [ "optimize_webui=$optimize_webui" ]
-  source = "../webui/resources/webui_resources.grd"
-
-  deps = [ "//ui/webui/resources:modulize" ]
-  if (is_chromeos_ash) {
-    deps += [ "//ui/chromeos/colors:cros_colors_css" ]
-  }
-
-  outputs = [
-    "grit/webui_resources.h",
-    "grit/webui_resources_map.cc",
-    "grit/webui_resources_map.h",
-    "webui_resources.pak",
   ]
 }
 
@@ -149,17 +131,10 @@ repack("repack_ui_test_pak_100_percent") {
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/webui_generated_resources.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_100_percent.pak",
-      "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_en-US.pak",
-    ]
-  }
 
   output = "$root_out_dir/ui_test.pak"
 
@@ -177,11 +152,15 @@ repack("repack_ui_test_pak_100_percent") {
     deps += [ ":copy_ui_resources_100_percent" ]
   }
 
+  if (is_chromeos) {
+    sources +=
+        [ "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_en-US.pak" ]
+    deps += [ "//ui/chromeos/strings" ]
+  }
+
   if (is_chromeos_ash) {
-    deps += [
-      "//ui/chromeos/resources",
-      "//ui/chromeos/strings",
-    ]
+    sources += [ "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_100_percent.pak" ]
+    deps += [ "//ui/chromeos/resources" ]
   }
 
   if (toolkit_views) {
@@ -189,13 +168,6 @@ repack("repack_ui_test_pak_100_percent") {
     sources += [
       "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
       "$root_gen_dir/ui/views/resources/views_resources_100_percent.pak",
-    ]
-  }
-
-  if (use_aura && toolkit_views) {
-    deps += [ "//ash/app_list/resources" ]
-    sources += [
-      "$root_gen_dir/ash/app_list/resources/app_list_resources_100_percent.pak",
     ]
   }
 }
@@ -225,6 +197,7 @@ repack("repack_ui_test_mac_locale_pack") {
 
   sources = [
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
 

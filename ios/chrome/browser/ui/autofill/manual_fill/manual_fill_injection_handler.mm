@@ -1,38 +1,38 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 
-#include <memory>
-#include <string>
-#include <vector>
+#import <memory>
+#import <string>
+#import <vector>
 
-#include "base/bind.h"
-#include "base/json/string_escape.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
+#import "base/bind.h"
+#import "base/json/string_escape.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
-#include "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/form_observer_helper.h"
 #import "ios/chrome/browser/ui/commands/security_alert_commands.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
-#include "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "url/gurl.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,20 +40,12 @@
 
 using base::UmaHistogramEnumeration;
 
-namespace {
-// The timeout for any JavaScript call in this file.
-const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
-}
-
 @interface ManualFillInjectionHandler ()<FormActivityObserver>
 
 // The object in charge of listening to form events and reporting back.
 @property(nonatomic, strong) FormObserverHelper* formHelper;
 
-// Convenience getter for the current suggestion manager.
-@property(nonatomic, readonly) autofill::JsSuggestionManager* suggestionManager;
-
-// Interface for |reauthenticationModule|, handling mostly the case when no
+// Interface for `reauthenticationModule`, handling mostly the case when no
 // hardware for authentication is available.
 @property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
 
@@ -73,7 +65,8 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
 @property(nonatomic, assign) std::string lastFocusedElementFrameIdentifier;
 
 // The last seen focused element identifier.
-@property(nonatomic, assign) std::string lastFocusedElementIdentifier;
+@property(nonatomic, assign)
+    autofill::FieldRendererId lastFocusedElementUniqueId;
 
 // Used to present alerts.
 @property(nonatomic, weak) id<SecurityAlertCommands> securityAlertHandler;
@@ -169,25 +162,13 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
   self.lastFocusedElementSecure =
       autofill::IsContextSecureForWebState(webState);
   self.lastFocusedElementPasswordField = params.field_type == "password";
-  self.lastFocusedElementIdentifier = params.field_identifier;
+  self.lastFocusedElementUniqueId = params.unique_field_id;
   DCHECK(frame);
   self.lastFocusedElementFrameIdentifier = frame->GetFrameId();
   const GURL frameSecureOrigin = frame->GetSecurityOrigin();
   if (!frameSecureOrigin.SchemeIsCryptographic()) {
     self.lastFocusedElementSecure = NO;
   }
-}
-
-#pragma mark - Getters
-
-- (autofill::JsSuggestionManager*)suggestionManager {
-  autofill::JsSuggestionManager* suggestionManager = nullptr;
-  web::WebState* webState = self.webStateList->GetActiveWebState();
-  if (webState) {
-    suggestionManager =
-        autofill::JsSuggestionManager::GetOrCreateForWebState(webState);
-  }
-  return suggestionManager;
 }
 
 #pragma mark - Private
@@ -204,25 +185,21 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
     return;
   }
 
-  base::DictionaryValue data = base::DictionaryValue();
-  data.SetString("identifier", self.lastFocusedElementIdentifier);
-  data.SetString("value", base::SysNSStringToUTF16(string));
-  std::vector<base::Value> parameters;
-  parameters.push_back(std::move(data));
-
-  activeWebFrame->CallJavaScriptFunction(
-      "autofill.fillActiveFormField", parameters,
-      base::BindOnce(^(const base::Value*) {
+  base::Value::Dict data;
+  data.Set("unique_renderer_id",
+           static_cast<int>(self.lastFocusedElementUniqueId.value()));
+  data.Set("value", base::SysNSStringToUTF16(string));
+  autofill::AutofillJavaScriptFeature::GetInstance()->FillActiveFormField(
+      activeWebFrame, std::move(data), base::BindOnce(^(BOOL success) {
         [self jumpToNextField];
-      }),
-      base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
+      }));
 }
 
 // Attempts to jump to the next field in the current form.
 - (void)jumpToNextField {
   FormInputAccessoryViewHandler* handler =
       [[FormInputAccessoryViewHandler alloc] init];
-  handler.JSSuggestionManager = self.suggestionManager;
+  handler.webState = self.webStateList->GetActiveWebState();
   [handler setLastFocusFormActivityWebFrameID:
                base::SysUTF8ToNSString(self.lastFocusedElementFrameIdentifier)];
   [handler selectNextElementWithoutButtonPress];

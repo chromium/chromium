@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,16 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
@@ -25,13 +28,15 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/daily_event.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/ukm/content/source_url_recorder.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/visibility.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -48,8 +53,7 @@ namespace {
 
 // The interval at which the DailyEvent::CheckInterval function should be
 // called.
-constexpr base::TimeDelta kDailyEventIntervalTimeDelta =
-    base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kDailyEventIntervalTimeDelta = base::Minutes(30);
 
 // The intervals at which we report the number of unused tabs. This is used for
 // all the tab usage histograms listed below.
@@ -57,18 +61,11 @@ constexpr base::TimeDelta kDailyEventIntervalTimeDelta =
 // The 'Tabs.TabUsageIntervalLength' histogram suffixes entry in histograms.xml
 // should be kept in sync with these values.
 constexpr base::TimeDelta kTabUsageReportingIntervals[] = {
-    base::TimeDelta::FromSeconds(30), base::TimeDelta::FromMinutes(1),
-    base::TimeDelta::FromMinutes(10), base::TimeDelta::FromHours(1),
-    base::TimeDelta::FromHours(5),    base::TimeDelta::FromHours(12)};
-
-#if defined(OS_WIN)
-const base::TimeDelta kNativeWindowOcclusionCalculationInterval =
-    base::TimeDelta::FromMinutes(10);
-#endif
+    base::Seconds(30), base::Minutes(1), base::Minutes(10),
+    base::Hours(1),    base::Hours(5),   base::Hours(12)};
 
 // The interval at which the heartbeat tab metrics should be reported.
-const base::TimeDelta kTabsHeartbeatReportingInterval =
-    base::TimeDelta::FromMinutes(5);
+const base::TimeDelta kTabsHeartbeatReportingInterval = base::Minutes(5);
 
 // The global TabStatsTracker instance.
 TabStatsTracker* g_tab_stats_tracker_instance = nullptr;
@@ -124,10 +121,19 @@ const char
 const char
     TabStatsTracker::UmaStatsReportingDelegate::kWindowCountHistogramName[] =
         "Tabs.WindowCount";
-
 const char
     TabStatsTracker::UmaStatsReportingDelegate::kWindowWidthHistogramName[] =
         "Tabs.WindowWidth";
+
+// Daily discard/reload histograms.
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kDailyDiscardsExternalHistogramName[] = "Discarding.DailyDiscards.External";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kDailyDiscardsUrgentHistogramName[] = "Discarding.DailyDiscards.Urgent";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kDailyReloadsExternalHistogramName[] = "Discarding.DailyReloads.External";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kDailyReloadsUrgentHistogramName[] = "Discarding.DailyReloads.Urgent";
 
 const TabStatsDataStore::TabsStats& TabStatsTracker::tab_stats() const {
   return tab_stats_data_store_->tab_stats();
@@ -135,7 +141,6 @@ const TabStatsDataStore::TabsStats& TabStatsTracker::tab_stats() const {
 
 TabStatsTracker::TabStatsTracker(PrefService* pref_service)
     : reporting_delegate_(std::make_unique<UmaStatsReportingDelegate>()),
-      delegate_(std::make_unique<TabStatsTrackerDelegate>()),
       tab_stats_data_store_(std::make_unique<TabStatsDataStore>(pref_service)),
       daily_event_(
           std::make_unique<DailyEvent>(pref_service,
@@ -189,24 +194,18 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
     usage_interval_timers_.push_back(std::move(timer));
   }
 
-// The native window occlusion calculation is specific to Windows.
-#if defined(OS_WIN)
-  native_window_occlusion_timer_.Start(
-      FROM_HERE, kNativeWindowOcclusionCalculationInterval,
-      base::BindRepeating(
-          &TabStatsTracker::CalculateAndRecordNativeWindowVisibilities,
-          base::Unretained(this)));
-#endif
-
   heartbeat_timer_.Start(FROM_HERE, kTabsHeartbeatReportingInterval,
                          base::BindRepeating(&TabStatsTracker::OnHeartbeatEvent,
                                              base::Unretained(this)));
+
+  g_browser_process->GetTabManager()->AddObserver(this);
 }
 
 TabStatsTracker::~TabStatsTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserList::GetInstance()->RemoveObserver(this);
   base::PowerMonitor::RemovePowerSuspendObserver(this);
+  g_browser_process->GetTabManager()->RemoveObserver(this);
 }
 
 // static
@@ -237,7 +236,7 @@ void TabStatsTracker::AddObserverAndSetInitialState(
         observer->OnVideoStartedPlaying(wc);
       if (wc->IsCurrentlyAudible())
         observer->OnTabIsAudibleChanged(wc);
-      if (wc->IsFullscreen() && wc->HasActiveEffectivelyFullscreenVideo())
+      if (wc->HasActiveEffectivelyFullscreenVideo())
         observer->OnMediaEffectivelyFullscreenChanged(wc, true);
     }
   }
@@ -248,17 +247,19 @@ void TabStatsTracker::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(::prefs::kTabStatsMaxTabsPerWindow, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsWindowCountMax, 0);
   DailyEvent::RegisterPref(registry, ::prefs::kTabStatsDailySample);
-}
 
-void TabStatsTracker::SetDelegateForTesting(
-    std::unique_ptr<TabStatsTrackerDelegate> new_delegate) {
-  delegate_ = std::move(new_delegate);
+  // Preferences for saving discard/reload counts.
+  registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsExternal, 0);
+  registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsUrgent, 0);
+  registry->RegisterIntegerPref(::prefs::kTabStatsReloadsExternal, 0);
+  registry->RegisterIntegerPref(::prefs::kTabStatsReloadsUrgent, 0);
 }
 
 void TabStatsTracker::TabStatsDailyObserver::OnDailyEvent(
     DailyEvent::IntervalType type) {
   reporting_delegate_->ReportDailyMetrics(data_store_->tab_stats());
   data_store_->ResetMaximumsToCurrentState();
+  data_store_->ClearTabDiscardAndReloadCounts();
 }
 
 class TabStatsTracker::WebContentsUsageObserver
@@ -268,7 +269,11 @@ class TabStatsTracker::WebContentsUsageObserver
                            TabStatsTracker* tab_stats_tracker)
       : content::WebContentsObserver(web_contents),
         tab_stats_tracker_(tab_stats_tracker),
-        ukm_source_id_(ukm::GetSourceIdForWebContentsDocument(web_contents)) {}
+        ukm_source_id_(
+            web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()) {}
+
+  WebContentsUsageObserver(const WebContentsUsageObserver&) = delete;
+  WebContentsUsageObserver& operator=(const WebContentsUsageObserver&) = delete;
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -280,24 +285,17 @@ class TabStatsTracker::WebContentsUsageObserver
         tab_stats_observer.OnTabInteraction(web_contents());
       }
     }
-  }
-
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    if (!navigation_handle->HasCommitted() ||
-        !navigation_handle->IsInMainFrame() ||
-        navigation_handle->IsSameDocument()) {
-      return;
-    }
     // Update navigation time for UKM reporting.
     navigation_time_ = navigation_handle->NavigationStart();
-    ukm_source_id_ = ukm::ConvertToSourceId(
-        navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+  }
+
+  void PrimaryPageChanged(content::Page& page) override {
+    ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
 
     // Update observers.
     for (TabStatsObserver& tab_stats_observer :
          tab_stats_tracker_->tab_stats_observers_) {
-      tab_stats_observer.OnMainFrameNavigationCommitted(web_contents());
+      tab_stats_observer.OnPrimaryMainFrameNavigationCommitted(web_contents());
     }
   }
 
@@ -372,16 +370,19 @@ class TabStatsTracker::WebContentsUsageObserver
     }
   }
 
+  void MediaDestroyed(const content::MediaPlayerId& id) override {
+    for (auto& tab_stats_observer : tab_stats_tracker_->tab_stats_observers_)
+      tab_stats_observer.OnMediaDestroyed(web_contents());
+  }
+
  private:
-  TabStatsTracker* tab_stats_tracker_;
+  raw_ptr<TabStatsTracker> tab_stats_tracker_;
   // The last navigation time associated with this tab.
   base::TimeTicks navigation_time_ = base::TimeTicks::Now();
   // Updated when a navigation is finished.
   ukm::SourceId ukm_source_id_ = 0;
   // The number of video currently playing in this tab.
-  size_t video_playing_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsUsageObserver);
+  int video_playing_count_ = 0;
 };
 
 void TabStatsTracker::OnBrowserAdded(Browser* browser) {
@@ -433,6 +434,19 @@ void TabStatsTracker::OnResume() {
   reporting_delegate_->ReportTabCountOnResume(
       tab_stats_data_store_->tab_stats().total_tab_count);
 }
+
+// resource_coordinator::TabLifecycleObserver:
+void TabStatsTracker::OnDiscardedStateChange(
+    content::WebContents* contents,
+    ::mojom::LifecycleUnitDiscardReason reason,
+    bool is_discarded) {
+  // Increment the count in the data store for tabs metrics reporting.
+  tab_stats_data_store_->OnTabDiscardStateChange(reason, is_discarded);
+}
+
+void TabStatsTracker::OnAutoDiscardableStateChange(
+    content::WebContents* contents,
+    bool is_auto_discardable) {}
 
 void TabStatsTracker::OnInterval(
     base::TimeDelta interval,
@@ -501,6 +515,20 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportDailyMetrics(
       kMaxTabsPerWindowInADayHistogramName, tab_stats.max_tab_per_window);
   UmaHistogramCounts10000WithBatteryStateVariant(kMaxWindowsInADayHistogramName,
                                                  tab_stats.window_count_max);
+
+  // Reports the discard/reload counts.
+  const size_t external_index =
+      static_cast<size_t>(LifecycleUnitDiscardReason::EXTERNAL);
+  const size_t urgent_index =
+      static_cast<size_t>(LifecycleUnitDiscardReason::URGENT);
+  base::UmaHistogramCounts10000(kDailyDiscardsExternalHistogramName,
+                                tab_stats.tab_discard_counts[external_index]);
+  base::UmaHistogramCounts10000(kDailyDiscardsUrgentHistogramName,
+                                tab_stats.tab_discard_counts[urgent_index]);
+  base::UmaHistogramCounts10000(kDailyReloadsExternalHistogramName,
+                                tab_stats.tab_reload_counts[external_index]);
+  base::UmaHistogramCounts10000(kDailyReloadsUrgentHistogramName,
+                                tab_stats.tab_reload_counts[urgent_index]);
 }
 
 void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
@@ -514,7 +542,6 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
                                                  tab_stats.total_tab_count);
   UmaHistogramCounts10000WithBatteryStateVariant(kWindowCountHistogramName,
                                                  tab_stats.window_count);
-
   // Record the width of all open browser windows with tabs.
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->type() != Browser::TYPE_NORMAL)

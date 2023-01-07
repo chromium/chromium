@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Merge results from code-coverage/pgo swarming runs.
@@ -19,11 +19,10 @@ import subprocess
 import sys
 
 import merge_lib as profile_merger
-import merge_js_lib as javascript_merger
 
 def _MergeAPIArgumentParser(*args, **kwargs):
   """Parameters passed to this merge script, as per:
-  https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/slave/recipe_modules/swarming/resources/merge_api.py
+  https://chromium.googlesource.com/chromium/tools/build/+/main/scripts/slave/recipe_modules/swarming/resources/merge_api.py
   """
   parser = argparse.ArgumentParser(*args, **kwargs)
   parser.add_argument('--build-properties', help=argparse.SUPPRESS)
@@ -96,19 +95,27 @@ def main():
     profile_merger.merge_java_exec_files(
         params.task_output_dir, output_path, params.jacococli_path)
 
+  failed = False
+
   if params.javascript_coverage_dir:
-    if not params.merged_js_cov_filename:
-      parser.error('--merged-js-cov-filename required when merging '
-                   'JavaScript coverage')
+    current_dir = os.path.dirname(__file__)
+    merge_js_results_script = os.path.join(current_dir, 'merge_js_results.py')
+    args = [
+      sys.executable,
+      merge_js_results_script,
+      '--task-output-dir',
+      params.task_output_dir,
+      '--javascript-coverage-dir',
+      params.javascript_coverage_dir,
+      '--merged-js-cov-filename',
+      params.merged_js_cov_filename,
+    ]
 
-    # Ensure JavaScript coverage dir exists.
-    if not os.path.exists(params.javascript_coverage_dir):
-      os.makedirs(params.javascript_coverage_dir)
-
-    output_path = os.path.join(params.javascript_coverage_dir,
-        '%s_javascript.json' % params.merged_js_cov_filename)
-    logging.info('Merging v8 coverage output to %s', output_path)
-    javascript_merger.merge_coverage_files(params.task_output_dir, output_path)
+    rc = subprocess.call(args)
+    if rc != 0:
+      failed = True
+      logging.warning('%s exited with %s' %
+                      (merge_js_results_script, rc))
 
   # Name the output profdata file name as {test_target}.profdata or
   # default.profdata.
@@ -138,8 +145,6 @@ def main():
     with open(os.path.join(params.profdata_dir, 'invalid_profiles.json'),
               'w') as f:
       json.dump(invalid_profiles, f)
-
-  failed = False
 
   # If given, always run the additional merge script, even if we only have one
   # output json. Merge scripts sometimes upload artifacts to cloud storage, or
@@ -177,7 +182,8 @@ def main():
         'This script was told to merge test results, but no additional merge '
         'script was given.')
 
-  return 1 if (failed or bool(invalid_profiles)) else 0
+  # TODO(crbug.com/1369158): Return non-zero if invalid_profiles is not None
+  return 1 if failed else 0
 
 
 if __name__ == '__main__':

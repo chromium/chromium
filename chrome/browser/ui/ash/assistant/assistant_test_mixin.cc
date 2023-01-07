@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,20 +12,19 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
 #include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/assistant/test_support/fake_s3_server.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -33,8 +32,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -49,10 +47,9 @@ LoginManagerMixin::TestUserInfo GetTestUserInfo() {
 // Waiter that blocks in the |Wait| method until a given |AssistantStatus|
 // is reached, or until a timeout is hit.
 // On timeout this will abort the test with a useful error message.
-class AssistantStatusWaiter : private ash::AssistantStateObserver {
+class AssistantStatusWaiter : private AssistantStateObserver {
  public:
-  AssistantStatusWaiter(ash::AssistantState* state,
-                        chromeos::assistant::AssistantStatus expected_status)
+  AssistantStatusWaiter(AssistantState* state, AssistantStatus expected_status)
       : state_(state), expected_status_(expected_status) {
     state_->AddObserver(this);
   }
@@ -74,14 +71,13 @@ class AssistantStatusWaiter : private ash::AssistantStateObserver {
   }
 
  private:
-  void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus status) override {
+  void OnAssistantStatusChanged(AssistantStatus status) override {
     if (status == expected_status_ && quit_loop_)
       std::move(quit_loop_).Run();
   }
 
-  ash::AssistantState* const state_;
-  chromeos::assistant::AssistantStatus const expected_status_;
+  AssistantState* const state_;
+  AssistantStatus const expected_status_;
 
   base::OnceClosure quit_loop_;
 };
@@ -151,7 +147,7 @@ class ResponseWaiter : private views::ViewObserver {
   }
 
   std::string GetResponseTextRecursive(views::View* view) const {
-    base::Optional<std::string> response_maybe = GetResponseTextOfView(view);
+    absl::optional<std::string> response_maybe = GetResponseTextOfView(view);
     if (response_maybe) {
       return response_maybe.value() + "\n";
     } else {
@@ -162,7 +158,7 @@ class ResponseWaiter : private views::ViewObserver {
     }
   }
 
-  virtual base::Optional<std::string> GetResponseTextOfView(
+  virtual absl::optional<std::string> GetResponseTextOfView(
       views::View* view) const = 0;
 
   views::View* parent_view_;
@@ -220,13 +216,12 @@ class TypedResponseWaiter : public ResponseWaiter {
 
  private:
   // ResponseWaiter overrides:
-  base::Optional<std::string> GetResponseTextOfView(
+  absl::optional<std::string> GetResponseTextOfView(
       views::View* view) const override {
     if (view->GetClassName() == class_name_) {
-      return static_cast<ash::AssistantUiElementView*>(view)
-          ->ToStringForTesting();
+      return static_cast<AssistantUiElementView*>(view)->ToStringForTesting();
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const std::string class_name_;
@@ -248,13 +243,11 @@ class TypedExpectedResponseWaiter : public ExpectedResponseWaiter {
 
  private:
   // ExpectedResponseWaiter overrides:
-  base::Optional<std::string> GetResponseTextOfView(
+  absl::optional<std::string> GetResponseTextOfView(
       views::View* view) const override {
-    if (view->GetClassName() == class_name_) {
-      return static_cast<ash::AssistantUiElementView*>(view)
-          ->ToStringForTesting();
-    }
-    return base::nullopt;
+    if (view->GetClassName() == class_name_)
+      return static_cast<AssistantUiElementView*>(view)->ToStringForTesting();
+    return absl::nullopt;
   }
 
   const std::string class_name_;
@@ -311,7 +304,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
       : InProcessBrowserTestMixin(host),
         login_manager_(host, {user}),
         test_server_(host, embedded_test_server),
-        fake_gaia_(host, embedded_test_server),
+        fake_gaia_(host),
         user_(user),
         test_base_(test_base),
         user_context_(LoginManagerMixin::CreateDefaultUserContext(user)) {
@@ -379,7 +372,7 @@ AssistantTestMixin::AssistantTestMixin(
     : InProcessBrowserTestMixin(host),
       fake_s3_server_(test_data_version),
       mode_(mode),
-      test_api_(ash::AssistantTestApi::Create()),
+      test_api_(AssistantTestApi::Create()),
       user_mixin_(std::make_unique<LoggedInUserMixin>(host,
                                                       test_base,
                                                       GetTestUserInfo(),
@@ -421,7 +414,7 @@ void AssistantTestMixin::StartAssistantAndWaitForReady(
   SetPreferVoice(false);
 
   AssistantStatusWaiter waiter(test_api_->GetAssistantState(),
-                               chromeos::assistant::AssistantStatus::READY);
+                               AssistantStatus::READY);
   waiter.RunUntilExpectedStatus();
 }
 
@@ -460,8 +453,8 @@ T AssistantTestMixin::SyncCall(
   return result;
 }
 
-template base::Optional<double> AssistantTestMixin::SyncCall(
-    base::OnceCallback<void(base::OnceCallback<void(base::Optional<double>)>)>
+template absl::optional<double> AssistantTestMixin::SyncCall(
+    base::OnceCallback<void(base::OnceCallback<void(absl::optional<double>)>)>
         func);
 
 void AssistantTestMixin::ExpectCardResponse(
@@ -539,14 +532,14 @@ std::vector<base::TimeDelta> AssistantTestMixin::ExpectAndReturnTimersResponse(
                  [](const std::string& timer_as_string) {
                    int seconds_remaining = 0;
                    base::StringToInt(timer_as_string, &seconds_remaining);
-                   return base::TimeDelta::FromSeconds(seconds_remaining);
+                   return base::Seconds(seconds_remaining);
                  });
 
   return timers;
 }
 
 void AssistantTestMixin::PressAssistantKey() {
-  SendKeyPress(ui::VKEY_ASSISTANT);
+  SendKeyPress(::ui::VKEY_ASSISTANT);
 }
 
 bool AssistantTestMixin::IsVisible() {
@@ -581,9 +574,9 @@ PrefService* AssistantTestMixin::GetUserPreferences() {
   return ProfileManager::GetPrimaryUserProfile()->GetPrefs();
 }
 
-void AssistantTestMixin::SendKeyPress(ui::KeyboardCode key) {
-  ui::test::EventGenerator event_generator(test_api_->root_window());
-  event_generator.PressKey(key, /*flags=*/ui::EF_NONE);
+void AssistantTestMixin::SendKeyPress(::ui::KeyboardCode key) {
+  ::ui::test::EventGenerator event_generator(test_api_->root_window());
+  event_generator.PressKey(key, /*flags=*/::ui::EF_NONE);
 }
 
 void AssistantTestMixin::DisableAssistant() {
@@ -592,9 +585,8 @@ void AssistantTestMixin::DisableAssistant() {
 
   // Then wait for the Service to shutdown.
   AssistantStatusWaiter waiter(test_api_->GetAssistantState(),
-                               chromeos::assistant::AssistantStatus::NOT_READY);
+                               AssistantStatus::NOT_READY);
   waiter.RunUntilExpectedStatus();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

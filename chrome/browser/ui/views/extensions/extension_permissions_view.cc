@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/expandable_container_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 ExtensionPermissionsView::ExtensionPermissionsView(int available_width)
     : available_width_(available_width) {
@@ -34,8 +34,7 @@ void ExtensionPermissionsView::AddItem(
     // If we have more details to provide, show them in collapsed form.
     std::vector<std::u16string> details_container;
     details_container.push_back(permission_details);
-    AddChildView(std::make_unique<ExpandableContainerView>(details_container,
-                                                           available_width_));
+    AddChildView(std::make_unique<ExpandableContainerView>(details_container));
   }
 }
 

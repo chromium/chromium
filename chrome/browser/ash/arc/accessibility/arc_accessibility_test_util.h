@@ -1,20 +1,22 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ARC_ACCESSIBILITY_TEST_UTIL_H_
 #define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ARC_ACCESSIBILITY_TEST_UTIL_H_
 
+#include <string>
+#include <vector>
+
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
-#include "components/arc/mojom/accessibility_helper.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
 template <class PropType, class ValueType>
 void SetProperty(
-    base::Optional<base::flat_map<PropType, ValueType>>& properties,
+    absl::optional<base::flat_map<PropType, ValueType>>& properties,
     PropType prop,
     const ValueType& value) {
   if (!properties.has_value())
@@ -22,6 +24,14 @@ void SetProperty(
 
   properties->insert_or_assign(prop, value);
 }
+
+void AddStandardAction(mojom::AccessibilityNodeInfoData* node,
+                       mojom::AccessibilityActionType action_type,
+                       absl::optional<std::string> label = absl::nullopt);
+
+void AddCustomAction(mojom::AccessibilityNodeInfoData* node,
+                     int id,
+                     std::string label);
 
 #define DEF_SET_PROP(data_type, prop_type, data_member_name, value_type) \
   inline void SetProperty(data_type* data, prop_type prop,               \

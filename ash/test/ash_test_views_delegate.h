@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_TEST_ASH_TEST_VIEWS_DELEGATE_H_
 #define ASH_TEST_ASH_TEST_VIEWS_DELEGATE_H_
 
-#include "base/macros.h"
 #include "ui/views/test/test_views_delegate.h"
 
 namespace ash {
@@ -16,6 +15,10 @@ namespace ash {
 class AshTestViewsDelegate : public views::TestViewsDelegate {
  public:
   AshTestViewsDelegate();
+
+  AshTestViewsDelegate(const AshTestViewsDelegate&) = delete;
+  AshTestViewsDelegate& operator=(const AshTestViewsDelegate&) = delete;
+
   ~AshTestViewsDelegate() override;
 
   // Overriden from TestViewsDelegate.
@@ -34,8 +37,6 @@ class AshTestViewsDelegate : public views::TestViewsDelegate {
   // ProcessAcceleratorWhileMenuShowing returns CLOSE_MENU if passed accelerator
   // matches with this.
   ui::Accelerator close_menu_accelerator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshTestViewsDelegate);
 };
 
 }  // namespace ash

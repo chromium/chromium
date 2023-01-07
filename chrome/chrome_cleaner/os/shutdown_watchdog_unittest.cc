@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,7 @@ TEST(ShutdownWatchdogTestDeathTest, Alarm) {
   EXPECT_EXIT(
       {
         chrome_cleaner::ShutdownWatchdog watchdog(
-            base::TimeDelta::FromMilliseconds(1),
-            base::BindOnce(ReturnAnInt, 47));
+            base::Milliseconds(1), base::BindOnce(ReturnAnInt, 47));
         watchdog.Arm();
         // We won't actually sleep this long since the watchdog will terminate
         // the process much sooner.
@@ -33,8 +32,7 @@ TEST(ShutdownWatchdogTestDeathTest, Alarm) {
   EXPECT_EXIT(
       {
         chrome_cleaner::ShutdownWatchdog watchdog(
-            base::TimeDelta::FromMilliseconds(1),
-            base::BindOnce(ReturnAnInt, 30));
+            base::Milliseconds(1), base::BindOnce(ReturnAnInt, 30));
         watchdog.Arm();
         // We won't actually sleep this long since the watchdog will terminate
         // the process much sooner.

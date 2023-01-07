@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -28,8 +28,8 @@ static bool ElementRepresentsNothing(const Element& element) {
   // attribute, so consider the element to represent text in those cases as
   // well.
   bool alt_is_set = !html_element.AltText().IsNull();
-  bool alt_is_empty = alt_is_set && html_element.AltText().IsEmpty();
-  bool src_is_set = !element.getAttribute(html_names::kSrcAttr).IsEmpty();
+  bool alt_is_empty = alt_is_set && html_element.AltText().empty();
+  bool src_is_set = !element.getAttribute(html_names::kSrcAttr).empty();
   if (src_is_set && alt_is_empty)
     return true;
   return !src_is_set && (!alt_is_set || alt_is_empty);
@@ -152,6 +152,7 @@ void HTMLImageFallbackHelper::CustomStyleForAltText(Element& element,
   if (!fallback.HasContentElements())
     return;
 
+  // TODO(crbug.com/953707):
   // This method is called during style recalc, and it is generally not allowed
   // to mark nodes style dirty during recalc. The code below modifies inline
   // style in the UA shadow tree below based on the computed style for the image
@@ -179,7 +180,7 @@ void HTMLImageFallbackHelper::CustomStyleForAltText(Element& element,
       !new_style.AspectRatio().IsAuto() &&
       (!new_style.Width().IsAuto() || !new_style.Height().IsAuto());
   bool has_no_alt_attribute =
-      element.getAttribute(html_names::kAltAttr).IsEmpty();
+      element.getAttribute(html_names::kAltAttr).empty();
   bool treat_as_replaced =
       (has_intrinsic_dimensions || has_dimensions_from_ar) &&
       (element.GetDocument().InQuirksMode() || has_no_alt_attribute);

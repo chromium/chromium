@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<title>Makes sure that the ad iframe loading are triggered</title>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="../../../../../http/tests/resources/get-host-info.js"></script>
+<script src="./resources/lazyload-helper.js"></script>
+
+<body>
+  <div id="atf_div"></div>
+  <div style="height:1000vh;"></div>
+  <div id="btf_div"></div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      promise_test(async t => {
+        const btf = document.querySelector('#btf_div');
+        appendAdFrame('btf', btf);
+
+        const timeoutMs = 1000;
+
+        let result = isElementLoaded('btf');
+        await new Promise(resolve => {
+          t.step_timeout(() => {
+            result = isElementLoaded('btf')
+            resolve();
+          }, timeoutMs);
+        });
+        assert_false(result, "iframe is not loaded until the timeout");
+
+        await waitUntilIdle();
+        result = await waitForElementLoad("btf");
+        assert_true(result, "iframe is loaded after the timeout and idle");
+      }, "Trigger loading after the timeout");
+    })
+  </script>
+</body>

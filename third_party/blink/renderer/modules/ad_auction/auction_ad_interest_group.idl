@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Name, origin owner, and metadata for ad interest groups.
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
+
+enum WorkletExecutionMode {
+  "compatibility",
+  "groupByOrigin",
+  // "frozenContext",
+};
+
+dictionary AuctionAdInterestGroup {
+  required USVString owner;
+  required USVString name;
+
+  double priority;
+  boolean enableBiddingSignalsPrioritization;
+  record<USVString, double> priorityVector;
+  record<USVString, double> prioritySignalsOverrides;
+
+  WorkletExecutionMode executionMode;
+  USVString biddingLogicUrl;
+  USVString biddingWasmHelperUrl;
+  USVString dailyUpdateUrl;
+  USVString trustedBiddingSignalsUrl;
+  sequence<USVString> trustedBiddingSignalsKeys;
+  any userBiddingSignals;
+  sequence<AuctionAd> ads;
+  sequence<AuctionAd> adComponents;
+};

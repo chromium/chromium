@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     private final WebContents mWebContents;
     private final PaymentRequestSpec mSpec;
     private final PaymentUiService mPaymentUiService;
-    private final boolean mGoogleBridgeEligible;
     private final PaymentOptions mOptions;
     private JourneyLogger mJourneyLogger;
     private String mSupportedMethod = "https://www.chromium.org";
@@ -88,7 +87,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
         mDetails.total = new PaymentItem();
         mOptions = new PaymentOptions();
         mSpec = Mockito.mock(PaymentRequestSpec.class);
-        mGoogleBridgeEligible = false;
     }
 
     public PaymentRequest buildAndInit() {
@@ -108,8 +106,9 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
 
         PaymentRequest request = new MojoPaymentRequestGateKeeper(
                 (client, onClosed)
-                        -> new PaymentRequestService(mRenderFrameHost, client, onClosed, this));
-        request.init(mClient, mMethodData, mDetails, mOptions, mGoogleBridgeEligible);
+                        -> new PaymentRequestService(
+                                mRenderFrameHost, client, onClosed, this, () -> null));
+        request.init(mClient, mMethodData, mDetails, mOptions);
         return request;
     }
 
@@ -126,11 +125,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     public PaymentRequestParamsBuilder setJourneyLogger(JourneyLogger journeyLogger) {
         mJourneyLogger = journeyLogger;
         return this;
-    }
-
-    @Override
-    public boolean skipUiForBasicCard() {
-        return false;
     }
 
     @Override
@@ -238,21 +232,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     @Override
     public PaymentAppFactoryInterface createAndroidPaymentAppFactory() {
         return null;
-    }
-
-    @Override
-    public PaymentAppFactoryInterface createServiceWorkerPaymentAppFactory() {
-        return null;
-    }
-
-    @Override
-    public PaymentAppFactoryInterface createAutofillPaymentAppFactory() {
-        return null;
-    }
-
-    @Override
-    public boolean canMakeAutofillPayment(Map<String, PaymentMethodData> methodData) {
-        return false;
     }
 
     @Override

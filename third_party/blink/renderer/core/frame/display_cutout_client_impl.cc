@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
-
-namespace {
-
-const char kSafeAreaInsetTopName[] = "safe-area-inset-top";
-const char kSafeAreaInsetLeftName[] = "safe-area-inset-left";
-const char kSafeAreaInsetBottomName[] = "safe-area-inset-bottom";
-const char kSafeAreaInsetRightName[] = "safe-area-inset-right";
-
-}  // namespace
 
 DisplayCutoutClientImpl::DisplayCutoutClientImpl(
     LocalFrame* frame,
@@ -33,18 +24,17 @@ void DisplayCutoutClientImpl::BindMojoReceiver(
   MakeGarbageCollected<DisplayCutoutClientImpl>(frame, std::move(receiver));
 }
 
-void DisplayCutoutClientImpl::SetSafeArea(
-    mojom::blink::DisplayCutoutSafeAreaPtr safe_area) {
+void DisplayCutoutClientImpl::SetSafeArea(const gfx::Insets& safe_area) {
   DocumentStyleEnvironmentVariables& vars =
       frame_->GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
-  vars.SetVariable(kSafeAreaInsetTopName,
-                   StyleEnvironmentVariables::FormatPx(safe_area->top));
-  vars.SetVariable(kSafeAreaInsetLeftName,
-                   StyleEnvironmentVariables::FormatPx(safe_area->left));
-  vars.SetVariable(kSafeAreaInsetBottomName,
-                   StyleEnvironmentVariables::FormatPx(safe_area->bottom));
-  vars.SetVariable(kSafeAreaInsetRightName,
-                   StyleEnvironmentVariables::FormatPx(safe_area->right));
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetTop,
+                   StyleEnvironmentVariables::FormatPx(safe_area.top()));
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetLeft,
+                   StyleEnvironmentVariables::FormatPx(safe_area.left()));
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetBottom,
+                   StyleEnvironmentVariables::FormatPx(safe_area.bottom()));
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetRight,
+                   StyleEnvironmentVariables::FormatPx(safe_area.right()));
 }
 
 void DisplayCutoutClientImpl::Trace(Visitor* visitor) const {

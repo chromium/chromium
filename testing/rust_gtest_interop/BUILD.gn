@@ -1,0 +1,83 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/mixed_static_library.gni")
+import("//build/rust/rust_macro.gni")
+import("//testing/test.gni")
+
+if (enable_rust) {
+  mixed_static_library("rust_gtest_interop") {
+    testonly = true
+    sources = [
+      "rust_gtest_interop.cc",
+      "rust_gtest_interop.h",
+    ]
+    if (enable_rust) {
+      rs_crate_root = "rust_gtest_interop.rs"
+      rs_sources = [
+        "expect_macros.rs",
+        "rust_gtest_interop.rs",
+      ]
+      rs_cxx_bindings = [ "rust_gtest_interop.rs" ]
+      rs_deps = [
+        # Macros re-exported from the rust_gtest_interop crate. Can only be
+        # accessed through the crate, so not public_deps.
+        ":gtest_attribute",
+
+        # This is re-exported for the gtest_attribute macros.
+        "//third_party/rust/small_ctor/v0_1:test_support",
+      ]
+      deps = [
+        "//build/rust:cxx_cppdeps",
+        "//testing/gtest",
+      ]
+    }
+  }
+
+  rust_macro("gtest_attribute") {
+    testonly = true
+
+    crate_root = "gtest_attribute.rs"
+    sources = [ "gtest_attribute.rs" ]
+    deps = [
+      "//third_party/rust/proc_macro2/v1:lib",
+      "//third_party/rust/quote/v1:lib",
+      "//third_party/rust/syn/v1:lib",
+    ]
+
+    # This target's contents are exposed as part of :rust_gtest_interop.
+    visibility = [ ":*" ]
+  }
+
+  mixed_static_library("test_support") {
+    rs_crate_name = "rust_gtest_interop_test_support"
+
+    testonly = true
+    sources = [
+      "test/test_subclass.cc",
+      "test/test_subclass.h",
+    ]
+    rs_crate_root = "test/test_subclass.rs"
+    rs_sources = [ "test/test_subclass.rs" ]
+    rs_cxx_bindings = [ "test/test_subclass.rs" ]
+    rs_deps = [ ":rust_gtest_interop" ]
+    public_deps = [
+      ":rust_gtest_interop",
+      "//testing/gtest",
+    ]
+  }
+
+  test("rust_gtest_interop_unittests") {
+    sources = [ "rust_gtest_interop_unittest_main.cc" ]
+    deps = [
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//testing/gtest",
+    ]
+
+    rs_deps = [ ":test_support" ]
+    rs_sources = [ "rust_gtest_interop_unittest.rs" ]
+  }
+}

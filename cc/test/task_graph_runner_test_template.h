@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
 #include "cc/raster/task_category.h"
@@ -73,7 +73,7 @@ class TaskGraphRunnerTestBase {
     ~FakeTaskImpl() override {}
 
    private:
-    TaskGraphRunnerTestBase* test_;
+    raw_ptr<TaskGraphRunnerTestBase> test_;
     int namespace_index_;
     int id_;
   };
@@ -95,7 +95,7 @@ class TaskGraphRunnerTestBase {
     ~FakeDependentTaskImpl() override {}
   };
 
-  TaskGraphRunner* task_graph_runner_;
+  raw_ptr<TaskGraphRunner> task_graph_runner_;
   NamespaceToken namespace_token_[kNamespaceCount];
   Task::Vector tasks_[kNamespaceCount];
   Task::Vector dependents_[kNamespaceCount];
@@ -280,8 +280,8 @@ TYPED_TEST_P(SingleThreadTaskGraphRunnerTest, Priority) {
         TaskInfo(i, 0u, 2u, 1u, 0u, 1u),  // Priority 1
         TaskInfo(i, 1u, 3u, 1u, 0u, 0u)   // Priority 0
     };
-    this->ScheduleTasks(
-        i, std::vector<TaskInfo>(tasks, tasks + base::size(tasks)));
+    this->ScheduleTasks(i,
+                        std::vector<TaskInfo>(tasks, tasks + std::size(tasks)));
   }
 
   for (int i = 0; i < kNamespaceCount; ++i) {

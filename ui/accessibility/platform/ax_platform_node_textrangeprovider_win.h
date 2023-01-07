@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,12 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
 
   // Creates an instance of the class.
   static ITextRangeProvider* CreateTextRangeProvider(
+      AXNodePosition::AXPositionInstance start,
+      AXNodePosition::AXPositionInstance end);
+
+  // Creates an instance of the class for unit tests, where AXPlatformNodes
+  // cannot be queried automatically from endpoints.
+  static ITextRangeProvider* CreateTextRangeProviderForTesting(
       AXPlatformNodeWin* owner,
       AXNodePosition::AXPositionInstance start,
       AXNodePosition::AXPositionInstance end);
@@ -81,6 +87,9 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
   IFACEMETHODIMP ScrollIntoView(BOOL align_to_top) override;
   IFACEMETHODIMP GetChildren(SAFEARRAY** children) override;
 
+  AXPlatformNodeWin* GetOwner() const;
+  void SetOwnerForTesting(AXPlatformNodeWin* owner);
+
  private:
   using AXPositionInstance = AXNodePosition::AXPositionInstance;
   using AXPositionInstanceType = typename AXPositionInstance::element_type;
@@ -96,7 +105,7 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
   static AXPositionInstance GetNextTextBoundaryPosition(
       const AXPositionInstance& position,
       ax::mojom::TextBoundary boundary_type,
-      AXBoundaryBehavior boundary_behavior,
+      AXMovementOptions options,
       ax::mojom::MoveDirection boundary_direction);
 
   // Prefer these *Impl methods when functionality is needed internally. We
@@ -111,7 +120,6 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
 
   std::u16string GetString(int max_count,
                            size_t* appended_newlines_count = nullptr);
-  AXPlatformNodeWin* owner() const;
   const AXPositionInstance& start() const { return endpoints_.GetStart(); }
   const AXPositionInstance& end() const { return endpoints_.GetEnd(); }
   AXPlatformNodeDelegate* GetDelegate(
@@ -145,6 +153,7 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
                                         const int count,
                                         int* units_moved);
   AXPositionInstance MoveEndpointByFormat(const AXPositionInstance& endpoint,
+                                          const bool is_start_endpoint,
                                           const int count,
                                           int* units_moved);
   AXPositionInstance MoveEndpointByDocument(const AXPositionInstance& endpoint,
@@ -167,7 +176,6 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
   //   endpoints are on the same anchor.
   // Normalization never updates the internal endpoints directly. Instead, it
   // normalizes the endpoints passed by parameter.
-  // TODO(vicfei): Make static.
   void NormalizeTextRange(AXPositionInstance& start, AXPositionInstance& end);
   static void NormalizeAsUnignoredPosition(AXPositionInstance& position);
   static void NormalizeAsUnignoredTextRange(AXPositionInstance& start,
@@ -177,9 +185,11 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
   AXNode* GetSelectionCommonAnchor();
   void RemoveFocusFromPreviousSelectionIfNeeded(
       const AXNodeRange& new_selection);
+  AXPlatformNodeWin* GetPlatformNodeFromAXNode(const AXNode* node) const;
   AXPlatformNodeWin* GetLowestAccessibleCommonPlatformNode() const;
-  bool HasCaretOrSelectionInPlainTextField(
-      const AXPositionInstance& position) const;
+  bool HasTextRangeOrSelectionInAtomicTextField(
+      const AXPositionInstance& start_position,
+      const AXPositionInstance& end_position) const;
 
   void SetStart(AXPositionInstance start);
   void SetEnd(AXPositionInstance end);
@@ -191,8 +201,50 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
       TEXTATTRIBUTEID attribute_id,
       const base::win::VariantVector& vector);
 
-  Microsoft::WRL::ComPtr<AXPlatformNodeWin> owner_;
+  Microsoft::WRL::ComPtr<AXPlatformNodeWin> owner_for_test_;
 
+  // The TextRangeEndpoints class has the responsibility of keeping the
+  // endpoints of the range valid or nullify them when it can't find a valid
+  // alternative.
+  //
+  // An endpoint can become invalid when
+  //   A. the node it's on gets deleted,
+  //   B. when an ancestor node gets deleted, deleting the subtree our endpoint
+  //      is on, or
+  //   C. when a descendant node gets deleted, potentially rendering the
+  //      position invalid due to a smaller MaxTextOffset value (for a text
+  //      position) or fewer child nodes (for a tree position).
+  //
+  // In all cases, our approach to resolve the endpoints to valid positions
+  // takes two steps:
+  //   1. Move the endpoint to an equivalent ancestor position before the node
+  //      gets deleted - we can't move the position once the node it's on is
+  //      deleted since this position would already be considered invalid.
+  //   2. Call AsValidPosition on that new position once the node is deleted -
+  //      calling this function before the node gets deleted wouldn't do much
+  //      since our position would still be considered valid at this point.
+  //
+  // Because AsValidPosition can potentially be expensive, we only want to run
+  // it when necessary. For this reason, we store the node ID and tree ID that
+  // causes the first step to happen and only run the second step in
+  // OnNodeDeleted for the corresponding node deletion. When OnNodeDeleted is
+  // called, the |start_| and |end_| endpoints have already been moved up to an
+  // ancestor that is still part of the tree. This is to ensure that we don't
+  // have to read the node/tree structure of the deleted node in that function -
+  // which would likely result in a crash.
+  //
+  // Both scenarios A and B are fixed by this approach (by the implementation of
+  // OnSubtreeWillBeDeleted), but we still have work to do to fix scenario C.
+  // This case, in theory, would only require the second step to ensure that the
+  // position is always valid but computing whether node is part of the subtree
+  // of the endpoint we're on would be very expensive. Furthermore, because the
+  // endpoints are generally on leaf nodes, the scenario is unlikely - we
+  // haven't heard of issues caused by this scenario yet. Eventually, we might
+  // be able to scope the fix to specific use cases, like when the range is on
+  // UIA embedded object (e.g. button, select, etc.)
+  //
+  // ***
+  //
   // Why we can't use a ScopedObserver here:
   // We tried using a ScopedObserver instead of a simple observer in this case,
   // but there appears to be a problem with the lifetime of the referenced
@@ -211,12 +263,25 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
 
     void AddObserver(const AXTreeID tree_id);
     void RemoveObserver(const AXTreeID tree_id);
-    void OnNodeWillBeDeleted(AXTree* tree, AXNode* node) override;
+    void OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) override;
+    void OnNodeDeleted(AXTree* tree, AXNodeID node_id) override;
     void OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) override;
 
    private:
+    struct DeletionOfInterest {
+      AXTreeID tree_id;
+      AXNodeID node_id;
+    };
+
+    void AdjustEndpointForSubtreeDeletion(AXTree* tree,
+                                          const AXNode* const node,
+                                          bool is_start_endpoint);
+
     AXPositionInstance start_;
     AXPositionInstance end_;
+
+    absl::optional<DeletionOfInterest> validation_necessary_for_start_;
+    absl::optional<DeletionOfInterest> validation_necessary_for_end_;
   };
   TextRangeEndpoints endpoints_;
 };

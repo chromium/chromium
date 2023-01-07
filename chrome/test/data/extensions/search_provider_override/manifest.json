@@ -4,6 +4,7 @@
   "version": "0.1",
   "description": "A simple extension that overrides the search engine",
   "default_locale": "en",
+  "permissions": ["storage"],
   "chrome_settings_overrides": {
     "search_provider": {
       "search_url": "https://www.example.__MSG_url_domain__/?q={searchTerms}",

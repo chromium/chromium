@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/modules/webdatabase/database_tracker.h"
 #include "third_party/blink/renderer/modules/webdatabase/storage_log.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -63,7 +63,8 @@ DatabaseContext* DatabaseManager::ExistingDatabaseContextFor(
   DCHECK_LE(database_context_registered_count_,
             database_context_instance_count_);
 #endif
-  return context_map_->at(context);
+  auto it = context_map_->find(context);
+  return (it == context_map_->end()) ? nullptr : it->value;
 }
 
 DatabaseContext* DatabaseManager::DatabaseContextFor(
@@ -85,7 +86,7 @@ void DatabaseManager::RegisterDatabaseContext(
 void DatabaseManager::UnregisterDatabaseContext(
     DatabaseContext* database_context) {
   ExecutionContext* context = database_context->GetExecutionContext();
-  DCHECK(context_map_->at(context));
+  DCHECK(context_map_->Contains(context));
 #if DCHECK_IS_ON()
   database_context_registered_count_--;
 #endif

@@ -1,9 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/chrome_cleaner/os/initializer.h"
 
+#include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/command_line.h"
@@ -11,6 +13,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
@@ -35,8 +38,8 @@ std::unique_ptr<base::WaitableEvent> SignalInitializationDone() {
 
   std::unique_ptr<base::WaitableEvent> notifier_event;
   if (init_done_notifier.IsValid()) {
-    notifier_event.reset(
-        new base::WaitableEvent(std::move(init_done_notifier)));
+    notifier_event =
+        std::make_unique<base::WaitableEvent>(std::move(init_done_notifier));
 
     // Wake up the test that is waiting on this event.
     notifier_event->Signal();
@@ -56,7 +59,7 @@ bool InitializeOSUtils() {
 
   // Call into the random number generator to initialize it. This must be done
   // once before lowering the token in the sandbox target process.
-  ANALYZER_ALLOW_UNUSED(base::RandUint64());
+  std::ignore = base::RandUint64();
 
   return true;
 }
@@ -74,7 +77,7 @@ void NotifyInitializationDoneForTesting() {
     // immediately reset. Wait at most 5 seconds for the test to signal that
     // it's ready using the same event before continuing. If the test takes
     // longer than that stop waiting to prevent hangs.
-    notifier_event->TimedWait(base::TimeDelta::FromSeconds(5));
+    notifier_event->TimedWait(base::Seconds(5));
   }
 }
 

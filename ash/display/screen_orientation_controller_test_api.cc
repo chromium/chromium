@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,18 +23,22 @@ void ScreenOrientationControllerTestApi::SetRotationLocked(bool locked) {
   controller_->SetRotationLockedInternal(locked);
 }
 
-OrientationLockType ScreenOrientationControllerTestApi::UserLockedOrientation()
-    const {
+chromeos::OrientationType
+ScreenOrientationControllerTestApi::UserLockedOrientation() const {
   return controller_->user_locked_orientation_;
 }
 
-OrientationLockType ScreenOrientationControllerTestApi::GetCurrentOrientation()
-    const {
+chromeos::OrientationType
+ScreenOrientationControllerTestApi::GetCurrentOrientation() const {
   return controller_->GetCurrentOrientation();
 }
 
 void ScreenOrientationControllerTestApi::UpdateNaturalOrientation() {
   controller_->UpdateNaturalOrientationForTest();
+}
+
+bool ScreenOrientationControllerTestApi::IsAutoRotationAllowed() const {
+  return controller_->IsAutoRotationAllowed();
 }
 
 }  // namespace ash

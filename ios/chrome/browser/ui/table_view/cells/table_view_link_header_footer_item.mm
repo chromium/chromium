@@ -1,17 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 
 #import "base/check_op.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "base/containers/contains.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,7 +27,7 @@ const CGFloat kVerticalPadding = 8;
 }  // namespace
 
 @implementation TableViewLinkHeaderFooterItem {
-  std::vector<GURL> urls_;
+  NSArray<CrURL*>* urls_;
 }
 
 - (instancetype)initWithType:(NSInteger)type {
@@ -39,13 +40,13 @@ const CGFloat kVerticalPadding = 8;
 
 #pragma mark Properties
 
-- (const std::vector<GURL>&)urls {
+- (NSArray<CrURL*>*)urls {
   return urls_;
 }
 
-- (void)setUrls:(const std::vector<GURL>&)urls {
-  for (const GURL& url : urls_) {
-    DCHECK(url.is_valid());
+- (void)setUrls:(NSArray<CrURL*>*)urls {
+  for (CrURL* url in urls_) {
+    DCHECK(url.gurl.is_valid());
   }
   urls_ = urls;
 }
@@ -56,11 +57,8 @@ const CGFloat kVerticalPadding = 8;
                        withStyler:(ChromeTableViewStyler*)styler {
   [super configureHeaderFooterView:headerFooter withStyler:styler];
 
-  if (self.urls.empty()) {
-    headerFooter.accessibilityTraits &= ~UIAccessibilityTraitLink;
-  } else {
+  if ([self.urls count] != 0) {
     headerFooter.urls = self.urls;
-    headerFooter.accessibilityTraits |= UIAccessibilityTraitLink;
   }
   [headerFooter setText:self.text];
 }
@@ -69,13 +67,13 @@ const CGFloat kVerticalPadding = 8;
 
 @interface TableViewLinkHeaderFooterView ()<UITextViewDelegate>
 
-// UITextView corresponding to |text| from the item.
+// UITextView corresponding to `text` from the item.
 @property(nonatomic, readonly, strong) UITextView* textView;
 
 @end
 
 @implementation TableViewLinkHeaderFooterView {
-  std::vector<GURL> urls_;
+  NSArray<CrURL*>* urls_;
 }
 
 @synthesize textView = _textView;
@@ -83,9 +81,8 @@ const CGFloat kVerticalPadding = 8;
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithReuseIdentifier:reuseIdentifier];
   if (self) {
-    self.isAccessibilityElement = YES;
-
-    _textView = [[UITextView alloc] init];
+    urls_ = @[];
+    _textView = CreateUITextViewWithTextKit1();
     _textView.scrollEnabled = NO;
     _textView.editable = NO;
     _textView.delegate = self;
@@ -120,7 +117,7 @@ const CGFloat kVerticalPadding = 8;
   [super prepareForReuse];
   self.textView.text = nil;
   self.delegate = nil;
-  self.urls = std::vector<GURL>();
+  self.urls = @[];
 }
 
 #pragma mark - Properties
@@ -131,18 +128,18 @@ const CGFloat kVerticalPadding = 8;
   NSDictionary* textAttributes = @{
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
-    NSForegroundColorAttributeName : UIColor.cr_secondaryLabelColor
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
   };
 
   NSMutableAttributedString* attributedText =
       [[NSMutableAttributedString alloc] initWithString:parsedString.string
                                              attributes:textAttributes];
 
-  DCHECK_EQ(parsedString.ranges.size(), self.urls.size());
+  DCHECK_EQ(parsedString.ranges.size(), [self.urls count]);
   size_t index = 0;
-  for (const GURL& url : self.urls) {
+  for (CrURL* url in self.urls) {
     [attributedText addAttribute:NSLinkAttributeName
-                           value:net::NSURLWithGURL(url)
+                           value:url.nsurl
                            range:parsedString.ranges[index]];
     index += 1;
   }
@@ -150,13 +147,13 @@ const CGFloat kVerticalPadding = 8;
   self.textView.attributedText = attributedText;
 }
 
-- (const std::vector<GURL>&)urls {
+- (NSArray<CrURL*>*)urls {
   return urls_;
 }
 
-- (void)setUrls:(const std::vector<GURL>&)urls {
-  for (const GURL& url : urls_) {
-    DCHECK(url.is_valid());
+- (void)setUrls:(NSArray<CrURL*>*)urls {
+  for (CrURL* url in urls_) {
+    DCHECK(url.gurl.is_valid());
   }
   urls_ = urls;
 }
@@ -168,18 +165,19 @@ const CGFloat kVerticalPadding = 8;
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
   DCHECK(self.textView == textView);
-  const GURL gURL = net::GURLWithNSURL(URL);
-  DCHECK(gURL.is_valid());
-  DCHECK(base::Contains(self.urls, gURL));
-  [self.delegate view:self didTapLinkURL:gURL];
+  CrURL* crurl = [[CrURL alloc] initWithNSURL:URL];
+  DCHECK(crurl.gurl.is_valid());
+  // DCHECK(base::Contains(self.urls, gURL));
+  [self.delegate view:self didTapLinkURL:crurl];
   // Returns NO as the app is handling the opening of the URL.
   return NO;
 }
 
-#pragma mark - NSObject(Accessibility)
-
-- (NSString*)accessibilityLabel {
-  return [self.textView.attributedText string];
+- (void)textViewDidChangeSelection:(UITextView*)textView {
+  // Always force the `selectedTextRange` to `nil` to prevent users from
+  // selecting text. Setting the `selectable` property to `NO` doesn't help
+  // since it makes links inside the text view untappable.
+  textView.selectedTextRange = nil;
 }
 
 @end

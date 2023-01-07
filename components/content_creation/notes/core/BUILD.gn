@@ -1,0 +1,70 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("core") {
+  sources = [
+    "note_service.cc",
+    "note_service.h",
+  ]
+
+  deps = [
+    ":features",
+    "//base",
+    "//components/content_creation/notes/core/server",
+    "//components/content_creation/notes/core/templates",
+    "//components/keyed_service/core",
+  ]
+}
+
+static_library("features") {
+  sources = [
+    "note_features.cc",
+    "note_features.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+static_library("prefs") {
+  sources = [
+    "note_prefs.cc",
+    "note_prefs.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/content_creation/notes/core/templates:types",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "note_service_unittest.cc",
+    "server/note_data_unittest.cc",
+    "server/notes_repository_unittest.cc",
+    "templates/template_fetcher_unittest.cc",
+    "templates/template_store_unittest.cc",
+  ]
+
+  deps = [
+    ":core",
+    ":features",
+    "//base",
+    "//base/test:test_support",
+    "//components/content_creation/notes/core/server",
+    "//components/content_creation/notes/core/templates",
+    "//components/content_creation/notes/core/templates:template_storage_proto",
+    "//components/content_creation/notes/core/templates:types",
+    "//components/content_creation/notes/core/test:test_support",
+    "//components/prefs:test_support",
+    "//components/version_info",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

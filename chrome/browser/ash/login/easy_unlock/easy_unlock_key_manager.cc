@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,25 +10,24 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "base/values.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_names.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager_factory.h"
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
+namespace ash {
 
-EasyUnlockKeyManager::EasyUnlockKeyManager() {}
+EasyUnlockKeyManager::EasyUnlockKeyManager() = default;
 
-EasyUnlockKeyManager::~EasyUnlockKeyManager() {}
+EasyUnlockKeyManager::~EasyUnlockKeyManager() = default;
 
 void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
-                                       const base::ListValue& remote_devices,
+                                       const base::Value::List& remote_devices,
                                        RefreshKeysCallback callback) {
   EasyUnlockTpmKeyManager* tpm_key_manager =
-      EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForUser(
-          user_context.GetAccountId().GetUserEmail());
+      EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForAccountId(
+          user_context.GetAccountId());
   if (!tpm_key_manager) {
     PA_LOG(ERROR) << "No TPM key manager.";
     std::move(callback).Run(false);
@@ -40,7 +39,7 @@ void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
   auto do_refresh_keys = base::BindRepeating(
       &EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent,
       weak_ptr_factory_.GetWeakPtr(), user_context,
-      base::Owned(remote_devices.DeepCopy()), base::Passed(&callback));
+      base::Passed(remote_devices.Clone()), base::Passed(&callback));
 
   // Private TPM key is needed only when adding new keys.
   if (remote_devices.empty() ||
@@ -60,16 +59,16 @@ void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
 
 void EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent(
     const UserContext& user_context,
-    base::ListValue* remote_devices,
+    base::Value::List remote_devices,
     RefreshKeysCallback callback) {
   EasyUnlockTpmKeyManager* tpm_key_manager =
-      EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForUser(
-          user_context.GetAccountId().GetUserEmail());
+      EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForAccountId(
+          user_context.GetAccountId());
   const std::string tpm_public_key =
       tpm_key_manager->GetPublicTpmKey(user_context.GetAccountId());
 
   EasyUnlockDeviceKeyDataList devices;
-  if (!RemoteDeviceRefListToDeviceDataList(*remote_devices, &devices))
+  if (!RemoteDeviceRefListToDeviceDataList(remote_devices, &devices))
     devices.clear();
 
   write_operation_queue_.push_back(
@@ -94,57 +93,52 @@ void EasyUnlockKeyManager::GetDeviceDataList(
 void EasyUnlockKeyManager::DeviceDataToRemoteDeviceDictionary(
     const AccountId& account_id,
     const EasyUnlockDeviceKeyData& data,
-    base::DictionaryValue* dict) {
-  dict->SetString(key_names::kKeyBluetoothAddress, data.bluetooth_address);
-  dict->SetString(key_names::kKeyPsk, data.psk);
-  std::unique_ptr<base::DictionaryValue> permit_record(
-      new base::DictionaryValue);
+    base::Value::Dict* dict) {
+  dict->Set(key_names::kKeyBluetoothAddress, data.bluetooth_address);
+  dict->Set(key_names::kKeyPsk, data.psk);
+  base::Value::Dict permit_record;
   dict->Set(key_names::kKeyPermitRecord, std::move(permit_record));
-  dict->SetString(key_names::kKeyPermitId, data.public_key);
-  dict->SetString(key_names::kKeyPermitData, data.public_key);
-  dict->SetString(key_names::kKeyPermitType, key_names::kPermitTypeLicence);
-  dict->SetString(key_names::kKeyPermitPermitId,
-                  base::StringPrintf(key_names::kPermitPermitIdFormat,
-                                     account_id.GetUserEmail().c_str()));
-  dict->SetString(key_names::kKeySerializedBeaconSeeds,
-                  data.serialized_beacon_seeds);
-  dict->SetBoolean(key_names::kKeyUnlockKey, data.unlock_key);
+  dict->Set(key_names::kKeyPermitId, data.public_key);
+  dict->Set(key_names::kKeyPermitData, data.public_key);
+  dict->Set(key_names::kKeyPermitType, key_names::kPermitTypeLicence);
+  dict->Set(key_names::kKeyPermitPermitId,
+            base::StringPrintf(key_names::kPermitPermitIdFormat,
+                               account_id.GetUserEmail().c_str()));
+  dict->Set(key_names::kKeySerializedBeaconSeeds, data.serialized_beacon_seeds);
+  dict->Set(key_names::kKeyUnlockKey, data.unlock_key);
 }
 
 // static
 bool EasyUnlockKeyManager::RemoteDeviceDictionaryToDeviceData(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     EasyUnlockDeviceKeyData* data) {
-  std::string bluetooth_address;
-  std::string public_key;
-  std::string psk;
+  const std::string* bluetooth_address_ptr =
+      dict.FindString(key_names::kKeyBluetoothAddress);
+  const std::string* public_key_ptr =
+      dict.FindStringByDottedPath(key_names::kKeyPermitId);
+  const std::string* psk_ptr = dict.FindString(key_names::kKeyPsk);
 
-  if (!dict.GetString(key_names::kKeyBluetoothAddress, &bluetooth_address) ||
-      !dict.GetString(key_names::kKeyPermitId, &public_key) ||
-      !dict.GetString(key_names::kKeyPsk, &psk)) {
+  if (!bluetooth_address_ptr || !public_key_ptr || !psk_ptr)
     return false;
-  }
 
-  std::string serialized_beacon_seeds;
-  if (dict.GetString(key_names::kKeySerializedBeaconSeeds,
-                     &serialized_beacon_seeds)) {
-    data->serialized_beacon_seeds = serialized_beacon_seeds;
+  const std::string* serialized_beacon_seeds =
+      dict.FindString(key_names::kKeySerializedBeaconSeeds);
+  if (serialized_beacon_seeds) {
+    data->serialized_beacon_seeds = *serialized_beacon_seeds;
   } else {
     PA_LOG(ERROR) << "Failed to parse key data: "
                   << "expected serialized_beacon_seeds.";
   }
 
-  bool unlock_key;
-  if (!dict.GetBoolean(key_names::kKeyUnlockKey, &unlock_key)) {
-    // If GetBoolean() fails, that means we're reading a Dictionary from
-    // user prefs which did not include the bool when it was stored. That means
-    // it's an older Dictionary that didn't include this `unlock_key` field --
-    // only one device was persisted, and it was implicitly assumed to be the
-    // unlock key -- thus `unlock_key` should default to being true.
-    unlock_key = true;
-  }
-  data->unlock_key = unlock_key;
-
+  std::string bluetooth_address = *bluetooth_address_ptr;
+  std::string public_key = *public_key_ptr;
+  std::string psk = *psk_ptr;
+  // If FindBoolPath() fails, that means we're reading a Dictionary from
+  // user prefs which did not include the bool when it was stored. That means
+  // it's an older Dictionary that didn't include this `unlock_key` field --
+  // only one device was persisted, and it was implicitly assumed to be the
+  // unlock key -- thus `unlock_key` should default to being true.
+  data->unlock_key = dict.FindBool(key_names::kKeyUnlockKey).value_or(true);
   data->bluetooth_address.swap(bluetooth_address);
   data->public_key.swap(public_key);
   data->psk.swap(psk);
@@ -155,30 +149,26 @@ bool EasyUnlockKeyManager::RemoteDeviceDictionaryToDeviceData(
 void EasyUnlockKeyManager::DeviceDataListToRemoteDeviceList(
     const AccountId& account_id,
     const EasyUnlockDeviceKeyDataList& data_list,
-    base::ListValue* device_list) {
-  device_list->Clear();
-  for (size_t i = 0; i < data_list.size(); ++i) {
-    std::unique_ptr<base::DictionaryValue> device_dict(
-        new base::DictionaryValue);
-    DeviceDataToRemoteDeviceDictionary(account_id, data_list[i],
-                                       device_dict.get());
+    base::Value::List* device_list) {
+  device_list->clear();
+  for (const auto& data : data_list) {
+    base::Value::Dict device_dict;
+    DeviceDataToRemoteDeviceDictionary(account_id, data, &device_dict);
     device_list->Append(std::move(device_dict));
   }
 }
 
 // static
 bool EasyUnlockKeyManager::RemoteDeviceRefListToDeviceDataList(
-    const base::ListValue& device_list,
+    const base::Value::List& device_list,
     EasyUnlockDeviceKeyDataList* data_list) {
   EasyUnlockDeviceKeyDataList parsed_devices;
-  for (base::ListValue::const_iterator it = device_list.begin();
-       it != device_list.end(); ++it) {
-    const base::DictionaryValue* dict;
-    if (!it->GetAsDictionary(&dict) || !dict)
+  for (const auto& entry : device_list) {
+    if (!entry.is_dict())
       return false;
 
     EasyUnlockDeviceKeyData data;
-    if (!RemoteDeviceDictionaryToDeviceData(*dict, &data))
+    if (!RemoteDeviceDictionaryToDeviceData(entry.GetDict(), &data))
       return false;
 
     parsed_devices.push_back(data);
@@ -230,4 +220,4 @@ void EasyUnlockKeyManager::OnKeysFetched(
   RunNextOperation();
 }
 
-}  // namespace chromeos
+}  // namespace ash

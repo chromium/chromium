@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,7 @@ void UDPSocketEventDispatcher::StartReceive(const ReceiveParams& params) {
 
   ResumableUDPSocket* socket =
       params.sockets->Get(params.extension_id, params.socket_id);
-  if (socket == NULL) {
+  if (socket == nullptr) {
     // This can happen if the socket is closed while our callback is active.
     return;
   }
@@ -123,8 +123,7 @@ void UDPSocketEventDispatcher::ReceiveCallback(
     receive_info.data.assign(io_buffer->data(), io_buffer->data() + bytes_read);
     receive_info.remote_address = address;
     receive_info.remote_port = port;
-    std::unique_ptr<base::ListValue> args =
-        sockets_udp::OnReceive::Create(receive_info);
+    auto args = sockets_udp::OnReceive::Create(receive_info);
     std::unique_ptr<Event> event(new Event(events::SOCKETS_UDP_ON_RECEIVE,
                                            sockets_udp::OnReceive::kEventName,
                                            std::move(args)));
@@ -147,8 +146,7 @@ void UDPSocketEventDispatcher::ReceiveCallback(
     sockets_udp::ReceiveErrorInfo receive_error_info;
     receive_error_info.socket_id = params.socket_id;
     receive_error_info.result_code = bytes_read;
-    std::unique_ptr<base::ListValue> args =
-        sockets_udp::OnReceiveError::Create(receive_error_info);
+    auto args = sockets_udp::OnReceiveError::Create(receive_error_info);
     std::unique_ptr<Event> event(
         new Event(events::SOCKETS_UDP_ON_RECEIVE_ERROR,
                   sockets_udp::OnReceiveError::kEventName, std::move(args)));
@@ -187,8 +185,17 @@ void UDPSocketEventDispatcher::DispatchEvent(void* browser_context_id,
   if (!extensions::ExtensionsBrowserClient::Get()->IsValidContext(context))
     return;
   EventRouter* router = EventRouter::Get(context);
-  if (router)
+  if (router) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Terminal app is the only non-extension to use sockets
+    // (crbug.com/1350479).
+    if (extension_id == kCrOSTerminal) {
+      router->DispatchEventToURL(GURL(extension_id), std::move(event));
+      return;
+    }
+#endif
     router->DispatchEventToExtension(extension_id, std::move(event));
+  }
 }
 
 }  // namespace api

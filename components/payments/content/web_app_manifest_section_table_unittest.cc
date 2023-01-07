@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,12 @@ namespace {
 class WebAppManifestSectionTableTest : public testing::Test {
  public:
   WebAppManifestSectionTableTest() {}
+
+  WebAppManifestSectionTableTest(const WebAppManifestSectionTableTest&) =
+      delete;
+  WebAppManifestSectionTableTest& operator=(
+      const WebAppManifestSectionTableTest&) = delete;
+
   ~WebAppManifestSectionTableTest() override {}
 
  protected:
@@ -48,9 +54,6 @@ class WebAppManifestSectionTableTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<WebAppManifestSectionTable> table_;
   std::unique_ptr<WebDatabase> db_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppManifestSectionTableTest);
 };
 
 TEST_F(WebAppManifestSectionTableTest, GetNonExistManifest) {

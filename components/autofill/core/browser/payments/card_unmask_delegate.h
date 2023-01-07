@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,9 +25,6 @@ class CardUnmaskDelegate {
 
     // Four digit year.
     std::u16string exp_year;
-
-    // State of "copy to this device" checkbox.
-    bool should_store_pan;
 
     // User is opting-in for FIDO Authentication for future card unmasking.
     bool enable_fido_auth = false;

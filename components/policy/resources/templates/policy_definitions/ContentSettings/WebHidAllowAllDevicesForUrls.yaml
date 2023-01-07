@@ -1,0 +1,30 @@
+caption: Automatically grant permission to sites to connect to any HID device.
+desc: |-
+  Setting the policy allows you to list sites which are automatically granted permission to access all available devices.
+
+        The URLs must be valid, otherwise the policy is ignored. Only the origin (scheme, host and port) of the URL is considered.
+
+        On ChromeOS, this policy only applies to affiliated users.
+
+        This policy overrides <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME">DefaultWebHidGuardSetting</ph>, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME">WebHidAskForUrls</ph>, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME">WebHidBlockedForUrls</ph> and the user's preferences.
+example_value:
+- https://google.com
+- https://chromium.org
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+owners:
+- mattreynolds@chromium.org
+- file://third_party/blink/renderer/modules/hid/OWNERS
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:100-
+- chrome.*:100-
+tags:
+- website-sharing
+type: list

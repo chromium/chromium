@@ -1,13 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_VIDEO_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
 #define MEDIA_VIDEO_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "media/base/video_frame.h"
 
 namespace base {
@@ -38,17 +37,21 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
       const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       GpuVideoAcceleratorFactories* gpu_factories);
+
+  GpuMemoryBufferVideoFramePool(const GpuMemoryBufferVideoFramePool&) = delete;
+  GpuMemoryBufferVideoFramePool& operator=(
+      const GpuMemoryBufferVideoFramePool&) = delete;
+
   virtual ~GpuMemoryBufferVideoFramePool();
 
   // Callback used by MaybeCreateHardwareFrame to deliver a new VideoFrame
   // after it has been copied to GpuMemoryBuffers.
   using FrameReadyCB = base::OnceCallback<void(scoped_refptr<VideoFrame>)>;
 
-  // Calls |cb| on |media_worker_pool| with a new VideoFrame containing only
-  // mailboxes to native resources. |cb| will be destroyed on
-  // |media_worker_pool|.
-  // The content of the new object is copied from the software-allocated
-  // |video_frame|.
+  // Calls |cb| with a new VideoFrame containing only mailboxes to native
+  // resources. The content of the new object is copied from the
+  // software-allocated |video_frame|.
+  //
   // If it's not possible to create a new hardware VideoFrame, |video_frame|
   // itself will passed to |cb|.
   virtual void MaybeCreateHardwareFrame(scoped_refptr<VideoFrame> video_frame,
@@ -61,11 +64,13 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
   // Allows injection of a base::SimpleTestClock for testing.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
+  // Returns true if SharedImages should be bound for each individual plane
+  // of a multiplanar GpuMemoryBuffer. Exposed externally for testing.
+  static bool MultiPlaneVideoSharedImagesEnabled();
+
  private:
   class PoolImpl;
   scoped_refptr<PoolImpl> pool_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferVideoFramePool);
 };
 
 }  // namespace media

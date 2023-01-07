@@ -1,0 +1,568 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of others histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="LanguageDetection.TFLiteModel.LanguageDetectionModelState"
+    enum="LanguageDetectionModelState" expires_after="2023-06-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The state of the language detection model used by a TranslateAgent. Recorded
+    once per model load attempt for each renderer process.
+  </summary>
+</histogram>
+
+<histogram name="LanguageDetection.TFLiteModel.WasModelAvailableForDetection"
+    enum="BooleanAvailable" expires_after="2023-06-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether the TFLite-based language detection model was available when page
+    content was extracted and a language determination was needed. Recorded once
+    per page load.
+  </summary>
+</histogram>
+
+<histogram name="LanguageDetection.TFLiteModel.WasModelRequestDeferred"
+    enum="BooleanDeferred" expires_after="2023-06-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether the request to load the TFLite-based language detection model
+    deferred because the associated frame was hidden. This is recorded once per
+    render frame only in frames that the model is not already available.
+  </summary>
+</histogram>
+
+<histogram
+    name="LanguageDetection.TFLiteModel.WasModelUnavailableDueToDeferredLoad"
+    enum="Boolean" expires_after="2023-06-30">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether the model was unavilable for detecting the page language because the
+    request to load the model was deferred because the frame was hidden when the
+    translate agent was initialized. This is recorded once per page load.
+  </summary>
+</histogram>
+
+<histogram name="LanguageSettings.Actions" enum="LanguageSettingsActionType"
+    expires_after="2023-08-31">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The actions on the languages settings page that result in a preference
+    change. This histogram will record every single event that happens
+    separately. See LanguageSettings.PageImpressions for how often language
+    settings sections are seen.
+  </summary>
+</histogram>
+
+<histogram name="LanguageSettings.AppLanguagePrompt.Action"
+    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The action taken by a user from the app language prompt shown on second run.
+    Each option can only be taken once for each time the prompt is shown. An
+    action must be taken if the prompt is shown, unless the application is
+    closed while the prompt is displayed. Recorded when the prompt is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="LanguageSettings.AppLanguagePrompt.HasTopULPMatch"
+    enum="BooleanYesNo" expires_after="2023-01-15">
+  <obsolete>
+    Replaced by LanguageSettings.AppLanguagePrompt.HasTopULPMatchOrEmpty
+  </obsolete>
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether or not the Chrome UI language matches the top ULP language when the
+    AppLanguagePrompt should be shown. Logged when checking if the prompt should
+    be shown and it has not already been shown.
+
+    Only the base languages are compared so pt-PT is considered equal to pt-BR.
+  </summary>
+</histogram>
+
+<histogram name="LanguageSettings.AppLanguagePrompt.IsOnline"
+    enum="BooleanYesNo" expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether or not the device is online when the App Language Prompt should be
+    shown. If offline the prompt is not shown and will be shown the next time
+    Chrome starts and is online.
+
+    Reported each time all other conditions for showing the App Language Prompt
+    have been met.
+  </summary>
+</histogram>
+
+<histogram name="LanguageSettings.AppLanguagePrompt.IsTopLanguageSelected"
+    enum="BooleanYesNo" expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether or not the language selected for the app language prompt is one of
+    the top suggested languages or not.
+
+    Reported after the OK button is selected on the prompt. Only reported if the
+    language is changed. Not recorded if the current app language is selected.
+    Not reported if the Cancel button is pressed.
+  </summary>
+</histogram>
+
+<histogram name="LanguageSettings.AppLanguagePrompt.Language"
+    enum="LocaleCodeISO639" expires_after="2023-08-31">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The ISO-639 language code for the selected language from the app language
+    prompt shown at second run. The default system language is recorded as the
+    &quot;empty string&quot;.
+
+    Reported after the OK button is selected on the prompt. Reported even if the
+    OK button is pressed but there is no language change. Not reported if the
+    Cancel button is pressed.
+  </summary>
+</histogram>
+
+<histogram name="LanguageSettings.AppLanguagePrompt.OpenDuration.{ActionType}"
+    units="ms" expires_after="2022-06-30">
+  <obsolete>
+    Deleted May 2022
+  </obsolete>
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The length of time between showing the app lanugage prompt and the user
+    pressing {ActionType}.
+
+    An action must be taken if the prompt is shown, unless the application is
+    closed while the prompt is displayed. Reported when the prompt is dismissed.
+  </summary>
+  <token key="ActionType">
+    <variant name="Back" summary="system back"/>
+    <variant name="Cancel" summary="the cancel button"/>
+    <variant name="Change" summary="OK changing the app language"/>
+    <variant name="Same" summary="OK for the current app language"/>
+  </token>
+</histogram>
+
+<histogram name="LanguageSettings.AppLanguagePrompt.OtherLanguagesShown"
+    enum="BooleanYesNo" expires_after="2023-08-31">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether or not the &quot;Other Languages&quot; have been shown for the
+    AppLanguagePrompt was displayed.
+
+    Reported when the AppLanguagePrompt dialog is dismissed for any reason.
+  </summary>
+</histogram>
+
+<histogram name="LanguageSettings.AppLanguagePrompt.TopLanguageCount"
+    units="count" expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The count of top languages not hidden behind the &quot;Other languages&quot;
+    button.
+
+    Logged once when the AppLanguagePrompt is shown.
+  </summary>
+</histogram>
+
+<histogram name="LanguageSettings.AppLanguagePrompt.TopULPMatchStatus"
+    enum="ULPTopLanguageMatch" expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether or not the Chrome UI language matches the top ULP language when the
+    AppLanguagePrompt should be shown. Logged when checking if the prompt should
+    be shown and it has not already been shown.
+
+    Only the base languages are compared so pt-PT is considered equal to pt-BR.
+  </summary>
+</histogram>
+
+<histogram name="LanguageSettings.PageImpression"
+    enum="LanguageSettingsPageType" expires_after="2023-03-19">
+  <owner>googleo@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Impressions of pages, sections, or dialogs viewed from language settings.
+    Page impressions do not result in preferences changes. See
+    LanguageSettings.Actions for preference change counts.
+  </summary>
+</histogram>
+
+<histogram name="LanguageSettings.SplitInstallFinalStatus"
+    enum="LanguageSettingsSplitInstallStatus" expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the status of a language split install when it has reached a final
+    status.
+
+    Recorded once per attempted install.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.AcceptLanguage" enum="LanguageName"
+    expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Accept languages with country codes removed. Recorded once per profile
+    intitalization. Incognito profiles are ignored.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.AcceptLanguage.Count" units="count"
+    expires_after="2023-03-19">
+  <owner>dvallet@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of accepted languages in the user preferences recored once per
+    profile initialization. Incognito profiles are ignored.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.AcceptLanguageAndContentLanguageUsage"
+    enum="AcceptLanguageAndContentLanguageUsage" expires_after="2023-03-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>potassium-katabolism@google.com</owner>
+  <summary>
+    Metrics that record matches between the Content-Language response header and
+    Accept-Language request header values. This is recorded every time
+    DocumentLoader commit navigation.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.AcceptLanguageAndXmlHtmlLangUsage"
+    enum="AcceptLanguageAndXmlHtmlLangUsage" expires_after="2023-03-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>potassium-katabolism@google.com</owner>
+  <summary>
+    Metrics that record matches between the xml:lang, html lang and
+    Accept-Language request header values. This is recorded every time the
+    translate agent captures the page.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ApplicationLanguage" enum="LanguageName"
+    expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Application languages used for UI recorded once per profile initialization.
+    Incognito profiles are ignored.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageName"
+    expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the source page languages from the UrlLanguageHistogram service.
+
+    The UrlLanguageHistogram service saves a dict pref of the page language to
+    frequency for the last 1000 page loads. This histogram is emitted once for
+    all languages that appear in at least 5% of previous page loads. If a
+    profile has 10 or fewer page loads no languages are recorded.
+
+    This histogram is recorded once per profile per eligible language during
+    initialization. Incognito profiles are ignored and it is not recorded on
+    ChromeOS.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.UI.Android.Availability"
+    enum="LanguageUsage.UI.Android.Availability" expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The availability status of Android system languages for use as the Chromium
+    UI language. If the Chromium UI language is overridden, it must be
+    avaliable. The default language is the one used by the JVM for localization.
+    This will be different from the top Android language if the top Android
+    language is not available for localization in Chromium. For more info, see
+    the Android documentation on LocaleList.getDefault().
+
+    This histogram is recorded during onForgroundStart() for Android.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.UI.Android.Correctness"
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2023-08-31">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The status of the current Chromium UI. It is correct when the UI matches
+    what the JVM default language is set to.
+
+    This histogram is recorded during onForgroundStart() for Android.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.UI.Android.Correctness.NoOverride"
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The status of the current Chromium UI when the UI language is not
+    overridden. The UI language is correct when it matches the default Android
+    system language. If no Android language is available as the Chromium
+    language, then the UI is by definition incorrect.
+
+    This histogram is recorded during onForgroundStart() for Android.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.UI.Android.Correctness.Override"
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The status of the current Chromium UI when the UI language is overridden.
+    The UI language is correct when it matches the override UI value set as the
+    default locale. The Native UI language can be different from the Java UI
+    language if Play Store daily hygiene has not run since an override language
+    was set.
+
+    This histogram is recorded during onForgroundStart() for Android.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.UI.Android.IsLocaleUpdated"
+    enum="LanguageUsage.UI.Android.LocaleUpdateStatus"
+    expires_after="2023-02-12">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records if and how the system or override locale has changed. The status is
+    found by comparing the current system locale to the previous system locale.
+    The system locale is a list of locales and if overriden the override locale
+    is prepended to the front.
+
+    This histogram is recorded during onForgroundStart() for Android.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.UI.Android.OverrideLanguage"
+    enum="LocaleCodeISO639" expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The ISO-639 language code for the Android override language. If no override
+    is set the empty string is recorded. Before M93 the empty string was also
+    recorded if the overide language exactly matched the system language.
+
+    Reported once per application start on Android.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.UI.Android.OverrideLanguage.IsSystemLanguage"
+    enum="LanguageUsage.UI.Android.OverrideLanguage.IsSystemLanguage"
+    expires_after="2023-03-19">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether or not the Chrome override language matches the Android system
+    language. An exact match means that the full locale tag matches (e.g.
+    en-GB). The same base language means that only the language part of the
+    locale matches. Since Android requires a country in the locale but Chrome
+    only has country variants for a few languages an exact match is rare.
+
+    Reported once per application start on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="LanguageUsage.ULP.Initiation.AcceptLanguagesPageLanguageOverlap.Base"
+    units="%" expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The ratio of page languages in the user's Accept Languages over the total
+    number of languages in their LanguageProfile. This answers the question:
+    &quot;What percentage of Accept Languages are page languages?&quot;.
+
+    Only base languages are compared (e.g. pt-BR == pt-MZ).
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap"
+    units="%" expires_after="2022-07-22">
+  <obsolete>
+    Replaced by LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap.Base
+  </obsolete>
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The ratio of ULP languages in the user's Accept Languages over the total
+    number of languages in their LanguageProfile. This answers the question of
+    &quot;How many of the predicted ULP languages have already been added by the
+    user?&quot;.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap.Base"
+    units="%" expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The ratio of ULP languages in the user's Accept Languages over the total
+    number of languages in their LanguageProfile. This answers the question:
+    &quot;What percentage of Accept Languages are ULP languages?&quot;.
+
+    Only base languages are compared (e.g. pt-BR == pt-MZ).
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.ChromeUILanguageInULP"
+    enum="ULPLanguageStatus" expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records whether Chrome's UI language exists in the user's ULP
+    LanguageProfile and if it is the top language. Also records if it is an
+    exact match (e.g. pt-BR != pt-PT) or only a base match (e.g. pt-BR = pt-PT).
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.Count" units="count"
+    expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of unique languages present in the user's LanguageProfile.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.NeverLanguagesMissingFromULP"
+    enum="LocaleCodeISO639" expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The language code of each Never Translate language that is not in a users
+    ULP.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram
+    name="LanguageUsage.ULP.Initiation.NeverLanguagesMissingFromULP.Count"
+    units="count" expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Count of Never Translate languages that are not in a users ULP.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.PageLanguagesMissingFromULP"
+    enum="LocaleCodeISO639" expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The language code of each page language that is not in a users ULP.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram
+    name="LanguageUsage.ULP.Initiation.PageLanguagesMissingFromULP.Count"
+    units="count" expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Count of page languages that are not in a users ULP.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.Status{AccountType}"
+    enum="ULPInitiationStatus" expires_after="2023-08-31">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The result of initializing ULP, including {AccountType}.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+  <token key="AccountType">
+    <variant name="" summary="all account types"/>
+    <variant name=".DefaultAccount" summary="only signed-out users"/>
+    <variant name=".SignedIn" summary="only signed-in users"/>
+  </token>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.TopAcceptLanguageInULP"
+    enum="ULPLanguageStatus" expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records whether the first accept language exists in the user's ULP
+    LanguageProfile and if it is the top language. Also records if it is an
+    exact match (e.g. pt-BR != pt-PT) or only a base match (e.g. pt-BR = pt-PT).
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.TranslateTargetInULP"
+    enum="ULPLanguageStatus" expires_after="2023-03-19">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records whether the current translate target language exists in the user's
+    ULP LanguageProfile and if it is the top language. Also records if it is an
+    exact match (e.g. pt-BR != pt-PT) or only a base match (e.g. pt-BR = pt-PT).
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

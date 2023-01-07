@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test that FCP after opacity change is not a larger value than LCP assert_less_than_equal: LCP is not smaller than FCP expected a number less than or equal to 337.9 but got 337.9000000000233
+Harness: the test ran to completion.
+

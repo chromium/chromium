@@ -7,9 +7,11 @@
 
 /*
  * Standard styling for buttons created by goog.ui.MenuButtonRenderer.
- *
  */
 
+@provide 'goog.css.menubutton';
+
+@require './common';
 
 /* State: resting. */
 .goog-menu-button {

@@ -1,0 +1,105 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script src="spellcheck_test.js"></script>
+<script>
+// This test asserts that in an editor with a large amount of text, spell
+// checker does not repeatedly check the editor in full after trivial
+// operations (e.g., selection move), and does so only after significant
+// changes have taken place.
+
+const n = 100;
+const text = 'zz zz zz zz.';
+const checkedText = '#zz# #zz# #zz# #zz#.'
+const markup = `<div>${text}</div>`;
+const checkedMarkup = `<div>${checkedText}</div>`;
+
+let checkedTextLengthBefore = 0;
+
+const step1 = () => spellcheck_test(
+    `<div contenteditable>${markup.repeat(n)}</div>`,
+    document => document.querySelector('div').focus(),
+    `<div contenteditable>${checkedMarkup.repeat(n)}</div>`,
+    {
+      title: 'Step 1: Cold mode checks full contenteditable for the first pass',
+      needsFullCheck: true,
+      callback: step2,
+    }
+);
+
+const step2 = sample => spellcheck_test(
+    sample,
+    () => {
+      checkedTextLengthBefore =
+        internals.spellCheckedTextLength(sample.document);
+      sample.selection.modify('move', 'forward', 'line');
+    },
+    `<div contenteditable>${checkedMarkup.repeat(n)}</div>`,
+    {
+      title: 'Step 2: Selection move',
+      // Note: needsFullCheck means spinning spellchecker lifecycle until idle,
+      // not forcing spellchecker to check the editor in full.
+      needsFullCheck: true,
+      callback: step3,
+    }
+);
+
+const step3 = sample => spellcheck_test(
+    sample,
+    () => {
+      let recheckedTextLength =
+          internals.spellCheckedTextLength(sample.document) - checkedTextLengthBefore;
+      assert_equals(recheckedTextLength, 0);
+    },
+    `<div contenteditable>${checkedMarkup.repeat(n)}</div>`,
+    {
+      title: 'Step 3: Spell checker does not recheck a fully-checked contenteditable on selection move',
+      callback: step4,
+    }
+);
+
+const step4 = sample => spellcheck_test(
+    sample,
+    () => {
+      checkedTextLengthBefore =
+        internals.spellCheckedTextLength(sample.document);
+      sample.selection.modify('extend', 'forward', 'line');
+      sample.document.execCommand('delete')
+    },
+    `<div contenteditable>${checkedMarkup.repeat(n - 1)}</div>`,
+    {
+      title: 'Step 4: Minor modification - delete one paragraph of text',
+      callback: step5,
+    }
+);
+
+const step5 = sample => spellcheck_test(
+    sample,
+    () => {
+      let recheckedTextLength =
+          internals.spellCheckedTextLength(sample.document) - checkedTextLengthBefore;
+      assert_less_than_equal(recheckedTextLength, text.length);
+    },
+    `<div contenteditable>${checkedMarkup.repeat(n - 1)}</div>`,
+    {
+      title: 'Step 5: Hot mode does not recheck more than one paragraph',
+      callback: step6,
+    }
+);
+
+const step6 = sample => spellcheck_test(
+    sample,
+    () => {
+      const document = sample.document;
+      document.execCommand('InsertText', false, (text + '\n').repeat(n));
+    },
+    `<div contenteditable>${checkedMarkup.repeat(n * 2 - 1)}</div>`,
+    {
+      title: 'Step 6: Spell checker rechecks text in full after significant changes',
+      needsFullCheck: true,
+    }
+);
+
+step1();
+</script>

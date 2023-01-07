@@ -1,0 +1,8 @@
+include_rules = [
+  "+ash/constants",
+  "+mojo/public",
+  "+ui/gfx/range",
+  "+third_party/re2",
+  "+sandbox",
+  "+sandbox/policy",
+]

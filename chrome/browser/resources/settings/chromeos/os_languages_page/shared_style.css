@@ -1,0 +1,57 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+cr-search-field {
+  --cr-search-field-clear-icon-fill: var(--cros-icon-color-primary);
+  --cr-search-field-clear-icon-margin-end: 8px;
+  --cr-search-field-clear-icon-size: 18px;
+  --cr-search-field-input-border-bottom: none;
+  --cr-search-field-input-min-height: 32px;
+  --cr-search-field-input-padding-bottom: 0;
+  --cr-search-field-input-padding-start: 8px;
+  --cr-search-field-input-padding-top: 0;
+  --cr-search-field-input-underline-border-radius: 4px;
+  --cr-search-field-input-underline-height: 4px;
+  --cr-search-field-input-width: 100%;
+  --cr-search-field-search-icon-display: none;
+  --cr-search-field-search-icon-fill: var(--cros-icon-color-primary);
+  --cr-search-field-search-icon-inline-display: block;
+  --cr-search-field-search-icon-inline-margin-start: 6px;
+  background-color: var(--cros-textfield-background-color);
+  border-radius: 4px;
+}
+
+cr-dialog [slot=title] {
+  padding-inline-end: var(--dialog-horizontal-padding);
+  padding-inline-start: var(--dialog-horizontal-padding);
+  padding-top: var(--dialog-horizontal-padding);
+}
+
+cr-dialog [slot=body] {
+  padding-inline-end: var(--dialog-horizontal-padding);
+  padding-inline-start: var(--dialog-horizontal-padding);
+}
+
+cr-dialog [slot=button-container] {
+  padding-bottom: 20px;
+  padding-inline-end: var(--dialog-horizontal-padding);
+  padding-inline-start: var(--dialog-horizontal-padding);
+  padding-top: 20px;
+}
+
+.centered-message {
+  align-items: center;
+  color: var(--md-loading-message-color);
+  display: flex;
+  flex: 1;
+  font-size: 108%;
+  font-weight: 500;
+  height: 100%;
+  justify-content: center;
+}

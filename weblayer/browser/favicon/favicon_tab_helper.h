@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -38,8 +39,8 @@ class FaviconTabHelper : public content::WebContentsUserData<FaviconTabHelper>,
     ObserverSubscription(FaviconTabHelper* helper,
                          FaviconFetcherDelegate* delegate);
 
-    FaviconTabHelper* helper_;
-    FaviconFetcherDelegate* delegate_;
+    raw_ptr<FaviconTabHelper> helper_;
+    raw_ptr<FaviconFetcherDelegate> delegate_;
   };
 
   FaviconTabHelper(const FaviconTabHelper&) = delete;
@@ -70,10 +71,9 @@ class FaviconTabHelper : public content::WebContentsUserData<FaviconTabHelper>,
                         const gfx::Image& image) override;
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   // Number of observers attached.
   int observer_count_ = 0;
   base::ObserverList<FaviconFetcherDelegate> delegates_;

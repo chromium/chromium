@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script src="../../resources/ahem.js"></script>
+<html>
+  <head>
+    <title>presentation attributes with MathML disabled</title>
+    <meta charset="utf-8"/>
+    <style>
+      math {
+          font: 25px/1 Ahem;
+      }
+      math, mtext {
+          display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Presentation attributes should have no effects when MathML is disabled:</p>
+    <math dir="rtl"><mtext>X</mtext><mtext>p</mtext></math>
+    <math><mtext mathsize="200%">X</mtext></math>
+    <math mathbackground="red"><mtext>p</mtext></math>
+    <math mathcolor="red"><mtext>p</mtext></math>
+    <math style="text-transform: lowercase"><mtext mathvariant="normal">P</mtext></math>
+    <math><mtext style="font-size: math" scriptlevel="+1">X</mtext></math>
+  </body>
+</html>

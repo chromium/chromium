@@ -5,4 +5,6 @@ include_rules = [
   "+base/test/android/junit",
   "+chrome/browser/tab/java",
   "+chrome/browser/tabmodel/android/java",
+  "+chrome/test/android/javatests/src/org/chromium/chrome/test/util/browser/Features.java",
+  "+testing/android/junit/java/src/org/chromium/testing/local/LocalRobolectricTestRunner.java",
 ]

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,58 +7,30 @@
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/reset_screen.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace chromeos {
 
 constexpr StaticOobeScreenId ResetView::kScreenId;
 
-ResetScreenHandler::ResetScreenHandler(JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_user_acted_method_path("login.ResetScreen.userActed");
-}
+ResetScreenHandler::ResetScreenHandler() : BaseScreenHandler(kScreenId) {}
 
-ResetScreenHandler::~ResetScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void ResetScreenHandler::Bind(ResetScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
-}
-
-void ResetScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
-}
+ResetScreenHandler::~ResetScreenHandler() = default;
 
 void ResetScreenHandler::Show() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
-  ShowScreen(kScreenId);
-}
-
-void ResetScreenHandler::Hide() {
+  ShowInWebUI();
 }
 
 void ResetScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("resetScreenAccessibleTitle", IDS_RESET_SCREEN_TITLE);
   builder->Add("resetScreenIconTitle", IDS_RESET_SCREEN_ICON_TITLE);
-  builder->Add("resetScreenIllustrationTitle",
-               IDS_RESET_SCREEN_ILLUSTRATION_TITLE);
   builder->Add("cancelButton", IDS_CANCEL);
 
   builder->Add("resetButtonRestart", IDS_RELAUNCH_BUTTON);
@@ -82,6 +54,7 @@ void ResetScreenHandler::DeclareLocalizedValues(
   // Variants for screen title.
   builder->AddF("resetWarningTitle", IDS_RESET_SCREEN_WARNING_MSG,
                 ui::GetChromeOSDeviceName());
+  builder->Add("resetRollbackErrorTitle", IDS_RESET_SCREEN_REVERT_ERROR);
 
   // Variants for screen message.
   builder->AddF("resetPowerwashWarningDetails",
@@ -90,6 +63,9 @@ void ResetScreenHandler::DeclareLocalizedValues(
   builder->AddF("resetPowerwashRollbackWarningDetails",
                 IDS_RESET_SCREEN_WARNING_POWERWASH_AND_ROLLBACK_MSG,
                 ui::GetChromeOSDeviceName());
+  builder->AddF("resetRollbackErrorMessageBody",
+                IDS_RESET_SCREEN_REVERT_ERROR_EXPLANATION,
+                IDS_SHORT_PRODUCT_NAME);
 
   builder->Add("confirmPowerwashTitle", IDS_RESET_SCREEN_POPUP_POWERWASH_TITLE);
   builder->Add("confirmRollbackTitle", IDS_RESET_SCREEN_POPUP_ROLLBACK_TITLE);
@@ -97,26 +73,12 @@ void ResetScreenHandler::DeclareLocalizedValues(
                IDS_RESET_SCREEN_POPUP_POWERWASH_TEXT);
   builder->Add("confirmRollbackMessage", IDS_RESET_SCREEN_POPUP_ROLLBACK_TEXT);
   builder->Add("confirmResetButton", IDS_RESET_SCREEN_POPUP_CONFIRM_BUTTON);
-}
-
-void ResetScreenHandler::DeclareJSCallbacks() {
-  AddCallback("ResetScreen.setTpmFirmwareUpdateChecked",
-              &ResetScreenHandler::HandleSetTpmFirmwareUpdateChecked);
-}
-
-void ResetScreenHandler::Initialize() {
-  if (!page_is_ready())
-    return;
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
+  builder->Add("okButton", IDS_APP_OK);
 }
 
 void ResetScreenHandler::SetIsRollbackAvailable(bool value) {
   is_rollback_available_ = value;
-  CallJS("login.ResetScreen.setIsRollbackAvailable", value);
+  CallExternalAPI("setIsRollbackAvailable", value);
 }
 
 // Only serve the request if the confirmation dialog isn't being shown.
@@ -125,31 +87,32 @@ void ResetScreenHandler::SetIsRollbackRequested(bool value) {
     return;
 
   is_rollback_requested_ = value;
-  CallJS("login.ResetScreen.setIsRollbackRequested", value);
+
+  CallExternalAPI("setIsRollbackRequested", value);
 }
 
 void ResetScreenHandler::SetIsTpmFirmwareUpdateAvailable(bool value) {
-  CallJS("login.ResetScreen.setIsTpmFirmwareUpdateAvailable", value);
+  CallExternalAPI("setIsTpmFirmwareUpdateAvailable", value);
 }
 
 void ResetScreenHandler::SetIsTpmFirmwareUpdateChecked(bool value) {
   is_tpm_firmware_update_checked_ = value;
-  CallJS("login.ResetScreen.setIsTpmFirmwareUpdateChecked", value);
+  CallExternalAPI("setIsTpmFirmwareUpdateChecked", value);
 }
 
 void ResetScreenHandler::SetIsTpmFirmwareUpdateEditable(bool value) {
-  CallJS("login.ResetScreen.setIsTpmFirmwareUpdateEditable", value);
+  CallExternalAPI("setIsTpmFirmwareUpdateEditable", value);
 }
 
 void ResetScreenHandler::SetTpmFirmwareUpdateMode(
     tpm_firmware_update::Mode value) {
   mode_ = value;
-  CallJS("login.ResetScreen.setTpmFirmwareUpdateMode", static_cast<int>(value));
+  CallExternalAPI("setTpmFirmwareUpdateMode", static_cast<int>(value));
 }
 
 void ResetScreenHandler::SetShouldShowConfirmationDialog(bool value) {
   is_showing_confirmation_dialog_ = value;
-  CallJS("login.ResetScreen.setShouldShowConfirmationDialog", value);
+  CallExternalAPI("setShouldShowConfirmationDialog", value);
 }
 
 void ResetScreenHandler::SetConfirmationDialogClosed() {
@@ -158,7 +121,7 @@ void ResetScreenHandler::SetConfirmationDialogClosed() {
 
 void ResetScreenHandler::SetScreenState(State value) {
   state_ = value;
-  CallJS("login.ResetScreen.setScreenState", static_cast<int>(value));
+  CallExternalAPI("setScreenState", static_cast<int>(value));
 }
 
 ResetView::State ResetScreenHandler::GetScreenState() {

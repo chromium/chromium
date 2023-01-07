@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadJobImpl : public DownloadJob {
   DownloadJobImpl(DownloadItem* download_item,
                   CancelRequestCallback cancel_request_callback,
                   bool is_parallizable);
+
+  DownloadJobImpl(const DownloadJobImpl&) = delete;
+  DownloadJobImpl& operator=(const DownloadJobImpl&) = delete;
+
   ~DownloadJobImpl() override;
 
   // DownloadJob implementation.
@@ -25,8 +29,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadJobImpl : public DownloadJob {
  private:
   // Whether the download can be parallized.
   bool is_parallizable_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadJobImpl);
 };
 
 }  //  namespace download

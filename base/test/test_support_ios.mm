@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,8 +94,6 @@ bool IsSceneStartupEnabled() {
     willConnectToSession:(UISceneSession*)session
                  options:(UISceneConnectionOptions*)connectionOptions
     API_AVAILABLE(ios(13)) {
-  // Unittests do not support multiple scenes.
-  DCHECK(![[UIApplication sharedApplication] supportsMultipleScenes]);
   // Yes, this is leaked, it's just to make what's running visible.
   _window.reset([[UIWindow alloc]
       initWithWindowScene:static_cast<UIWindowScene*>(scene)]);
@@ -104,6 +102,19 @@ bool IsSceneStartupEnabled() {
 
 - (void)sceneDidDisconnect:(UIScene*)scene API_AVAILABLE(ios(13)) {
   _window.reset();
+}
+
+- (UIWindow*)window {
+  // Required for backwards compatibility with ScopedKeyWindow.
+  // Note that from iOS 15 the concept of key window is deprecated.
+  NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
+  for (UIWindow* window in windows) {
+    if (window.isKeyWindow)
+      return window;
+  }
+  // Returns a weak pointer to _window, ChromeUnitTestSceneDelegate retains
+  // ownership of the object.
+  return _window.get();
 }
 
 @end
@@ -119,7 +130,10 @@ bool IsSceneStartupEnabled() {
   // calls override this behavior by ensuring that the software keyboard is
   // always shown.
   [[UIKeyboardImpl sharedInstance] setAutomaticMinimizationEnabled:NO];
-  [[UIKeyboardImpl sharedInstance] setSoftwareKeyboardShownByTouch:YES];
+  if (@available(iOS 15, *)) {
+  } else {
+    [[UIKeyboardImpl sharedInstance] setSoftwareKeyboardShownByTouch:YES];
+  }
 #endif  // TARGET_IPHONE_SIMULATOR
 
   if (!IsSceneStartupEnabled()) {

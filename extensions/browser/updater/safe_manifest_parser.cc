@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -168,15 +168,15 @@ bool ParseSingleAppTag(const base::Value& app_element,
 void ParseXmlDone(ParseUpdateManifestCallback callback,
                   data_decoder::DataDecoder::ValueOrError result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!result.value) {
-    ManifestParseFailure failure("Failed to parse XML: " + *result.error,
+  if (!result.has_value()) {
+    ManifestParseFailure failure("Failed to parse XML: " + result.error(),
                                  ManifestInvalidError::XML_PARSING_FAILED);
     ReportError(std::move(callback), failure);
     return;
   }
 
   auto results = std::make_unique<UpdateManifestResults>();
-  base::Value& root = *result.value;
+  base::Value& root = *result;
 
   // Look for the required namespace declaration.
   std::string gupdate_ns;
@@ -225,12 +225,13 @@ void ParseXmlDone(ParseUpdateManifestCallback callback,
   std::string error_msg;
   int prodversionmin_count = 0;
   for (const auto* app : apps) {
-    UpdateManifestResult result;
-    ParseSingleAppTag(*app, gupdate_ns, &result, &prodversionmin_count);
-    results->update_list.push_back(result);
+    UpdateManifestResult manifest_result;
+    ParseSingleAppTag(*app, gupdate_ns, &manifest_result,
+                      &prodversionmin_count);
+    results->update_list.push_back(manifest_result);
   }
   // Parsing error corresponding to each extension are stored in the results.
-  std::move(callback).Run(std::move(results), base::nullopt);
+  std::move(callback).Run(std::move(results), absl::nullopt);
 }
 
 }  // namespace
@@ -275,7 +276,8 @@ void ParseUpdateManifest(const std::string& xml,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback);
   data_decoder::DataDecoder::ParseXmlIsolated(
-      xml, base::BindOnce(&ParseXmlDone, std::move(callback)));
+      xml, data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
+      base::BindOnce(&ParseXmlDone, std::move(callback)));
 }
 
 }  // namespace extensions

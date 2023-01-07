@@ -1,4 +1,4 @@
-/* Copyright 2015 The Chromium Authors. All rights reserved.
+/* Copyright 2015 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  *
@@ -381,7 +381,7 @@
       var toText = isNeutralKeyframe(params.to) ? 'neutral' : `${params.toComposite} [${params.to}]`;
       var description = `Interpolate attribute <${params.property}> ${underlyingText}from ${fromText} to ${toText}`;
 
-    if (rebaselineTests) {
+      if (rebaselineTests) {
         var rebaseline = createElement('pre', rebaselineContainer);
 
         var assertionCode =

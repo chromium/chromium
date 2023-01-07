@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/deferred_sequenced_task_runner.h"
-#include "base/macros.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 
 class ChromeBrowserState;
@@ -31,6 +30,10 @@ class BookmarkClientImpl : public bookmarks::BookmarkClient {
       ChromeBrowserState* browser_state,
       bookmarks::ManagedBookmarkService* managed_bookmark_service,
       sync_bookmarks::BookmarkSyncService* bookmark_sync_service);
+
+  BookmarkClientImpl(const BookmarkClientImpl&) = delete;
+  BookmarkClientImpl& operator=(const BookmarkClientImpl&) = delete;
+
   ~BookmarkClientImpl() override;
 
   // bookmarks::BookmarkClient:
@@ -68,8 +71,6 @@ class BookmarkClientImpl : public bookmarks::BookmarkClient {
   // Pointer to the BookmarkSyncService responsible for encoding and decoding
   // sync metadata persisted together with the bookmarks model.
   sync_bookmarks::BookmarkSyncService* bookmark_sync_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkClientImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_CLIENT_IMPL_H_

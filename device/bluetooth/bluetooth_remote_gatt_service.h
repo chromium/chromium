@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 
@@ -34,6 +33,10 @@ class BluetoothUUID;
 class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattService
     : public virtual BluetoothGattService {
  public:
+  BluetoothRemoteGattService(const BluetoothRemoteGattService&) = delete;
+  BluetoothRemoteGattService& operator=(const BluetoothRemoteGattService&) =
+      delete;
+
   ~BluetoothRemoteGattService() override;
 
   // Returns the BluetoothDevice that this GATT service was received from, which
@@ -79,8 +82,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattService
  private:
   // Is true if all the characteristics have been discovered.
   bool discovery_complete_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattService);
 };
 
 }  // namespace device

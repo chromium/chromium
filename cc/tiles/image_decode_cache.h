@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CC_TILES_IMAGE_DECODE_CACHE_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/cc_export.h"
 #include "cc/paint/decoded_draw_image.h"
@@ -78,6 +79,8 @@ class CC_EXPORT ImageDecodeCache {
     using ScopedImageType =
         devtools_instrumentation::ScopedImageDecodeTask::ImageType;
     switch (image_type) {
+      case ImageType::kJXL:
+        return ScopedImageType::kJxl;
       case ImageType::kAVIF:
         return ScopedImageType::kAvif;
       case ImageType::kBMP:

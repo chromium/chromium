@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,8 @@ std::ostream& operator<<(std::ostream& stream,
       return stream << "AC3";
     case ::chromecast::media::kCodecDTS:
       return stream << "DTS";
+    case ::chromecast::media::kCodecDTSXP2:
+      return stream << "DTS:X Profile 2";
     case ::chromecast::media::kCodecFLAC:
       return stream << "FLAC";
     case ::chromecast::media::kCodecMpegHAudio:
@@ -59,6 +61,8 @@ std::ostream& operator<<(std::ostream& stream,
       return stream << "planar signed 32-bit int";
     case ::chromecast::media::kSampleFormatS24:
       return stream << "interleaved signed 24-bit int";
+    case ::chromecast::media::kSampleFormatPlanarU8:
+      return stream << "planar unsigned 8-bit int";
   }
   NOTREACHED();
   return stream << "UNKNOWN";

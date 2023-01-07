@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,27 @@
 
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
-template class WorkletThreadHolder<RealtimeAudioWorkletThread>;
+namespace {
 
-int RealtimeAudioWorkletThread::s_ref_count_ = 0;
+// Use for ref-counting of all RealtimeAudioWorkletThread instances in a
+// process. Incremented by the constructor and decremented by destructor.
+int ref_count = 0;
+
+void EnsureSharedBackingThread(const ThreadCreationParams& params) {
+  DCHECK(IsMainThread());
+  DCHECK_EQ(ref_count, 1);
+  WorkletThreadHolder<RealtimeAudioWorkletThread>::EnsureInstance(params);
+}
+
+}  // namespace
+
+template class WorkletThreadHolder<RealtimeAudioWorkletThread>;
 
 RealtimeAudioWorkletThread::RealtimeAudioWorkletThread(
     WorkerReportingProxy& worker_reporting_proxy)
@@ -26,28 +39,32 @@ RealtimeAudioWorkletThread::RealtimeAudioWorkletThread(
   ThreadCreationParams params =
       ThreadCreationParams(ThreadType::kRealtimeAudioWorkletThread);
 
-  // Use a higher priority thread only when it is allowed by Finch.
+  // The real-time priority thread is enabled by default. A normal priority
+  // thread is used when it is blocked by a field trial.
   if (base::FeatureList::IsEnabled(
           features::kAudioWorkletThreadRealtimePriority)) {
     // TODO(crbug.com/1022888): The worklet thread priority is always NORMAL on
     // Linux and Chrome OS regardless of this thread priority setting.
-    params.thread_priority = base::ThreadPriority::REALTIME_AUDIO;
+    params.base_thread_type = base::ThreadType::kRealtimeAudio;
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
-                 "RealtimeAudioWorkletThread() - REALTIME_AUDIO");
+                 "RealtimeAudioWorkletThread() - kRealtimeAudio");
   } else {
-    params.thread_priority = base::ThreadPriority::NORMAL;
+    params.base_thread_type = base::ThreadType::kDefault;
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
-                 "RealtimeAudioWorkletThread() - NORMAL");
+                 "RealtimeAudioWorkletThread() - kNormal");
   }
 
-  if (++s_ref_count_ == 1)
+  if (++ref_count == 1) {
     EnsureSharedBackingThread(params);
+  }
 }
 
 RealtimeAudioWorkletThread::~RealtimeAudioWorkletThread() {
   DCHECK(IsMainThread());
-  if (--s_ref_count_ == 0)
+  DCHECK_GT(ref_count, 0);
+  if (--ref_count == 0) {
     ClearSharedBackingThread();
+  }
 }
 
 WorkerBackingThread& RealtimeAudioWorkletThread::GetWorkerBackingThread() {
@@ -55,15 +72,9 @@ WorkerBackingThread& RealtimeAudioWorkletThread::GetWorkerBackingThread() {
       ->GetThread();
 }
 
-void RealtimeAudioWorkletThread::EnsureSharedBackingThread(
-    const ThreadCreationParams& params) {
-  DCHECK(IsMainThread());
-  WorkletThreadHolder<RealtimeAudioWorkletThread>::EnsureInstance(params);
-}
-
 void RealtimeAudioWorkletThread::ClearSharedBackingThread() {
   DCHECK(IsMainThread());
-  CHECK_EQ(s_ref_count_, 0);
+  CHECK_EQ(ref_count, 0);
   WorkletThreadHolder<RealtimeAudioWorkletThread>::ClearInstance();
 }
 

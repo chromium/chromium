@@ -1,0 +1,19 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<html>
+<title>Bar</title>
+<script src="/main.js" type="module"></script>
+<iframe id="bar" src="chrome-untrusted://bar/"></iframe>
+<script nonce="test">
+// Browsertest needs to wait until bar is loaded before executing scripts in it.
+window.barLoadedPromise = new Promise(resolve => {
+  document.getElementById('bar').addEventListener('load', e => {
+    resolve('loaded');
+  });
+})
+</script>
+</html>

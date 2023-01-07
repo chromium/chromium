@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include "base/file_descriptor_posix.h"
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ppapi/nacl_irt/manifest_service.h"
@@ -28,15 +28,9 @@ base::Thread* g_io_thread = NULL;
 ManifestService* g_manifest_service = NULL;
 
 bool IsValidChannelHandle(IPC::ChannelHandle* handle) {
-  // In SFI mode the underlying handle is wrapped by a NaClIPCAdapter, which is
-  // exposed as an FD. Otherwise, the handle is the underlying mojo message
-  // pipe.
-  return handle &&
-#if defined(OS_NACL_SFI)
-         handle->socket.fd != -1;
-#else
-         handle->is_mojo_channel_handle();
-#endif
+  // The underlying handle is wrapped by a NaClIPCAdapter, which is exposed as
+  // an FD.
+  return handle && handle->socket.fd != -1;
 }
 
 // Creates the manifest service on IO thread so that its Listener's thread and

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,10 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/battery/battery_dispatcher.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -26,8 +27,15 @@ ScriptPromise BatteryManager::getBattery(ScriptState* script_state,
   // Check to see if this request would be blocked according to the Battery
   // Status API specification.
   LocalDOMWindow* window = navigator.DomWindow();
-  if (!window->IsSecureContext())
-    UseCounter::Count(window, WebFeature::kBatteryStatusInsecureOrigin);
+  // TODO(crbug.com/1007264, crbug.com/1290231): remove fenced frame specific
+  // code when permission policy implements the battery status API support.
+  if (window->GetFrame()->IsInFencedFrameTree()) {
+    return ScriptPromise::RejectWithDOMException(
+        script_state,
+        DOMException::Create(
+            "getBattery is not allowed in a fenced frame tree.",
+            DOMException::GetErrorName(DOMExceptionCode::kNotAllowedError)));
+  }
   window->GetFrame()->CountUseIfFeatureWouldBeBlockedByPermissionsPolicy(
       WebFeature::kBatteryStatusCrossOrigin,
       WebFeature::kBatteryStatusSameOriginABA);
@@ -73,11 +81,11 @@ bool BatteryManager::charging() {
 }
 
 double BatteryManager::chargingTime() {
-  return battery_status_.charging_time();
+  return battery_status_.charging_time().InSecondsF();
 }
 
 double BatteryManager::dischargingTime() {
-  return battery_status_.discharging_time();
+  return battery_status_.discharging_time().InSecondsF();
 }
 
 double BatteryManager::level() {

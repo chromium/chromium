@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/assistant/util/deep_link_util.h"
-#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
@@ -17,7 +16,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
@@ -27,7 +27,7 @@ namespace app_list {
 
 namespace {
 
-using chromeos::assistant::AssistantAllowedState;
+using ::ash::assistant::AssistantAllowedState;
 
 constexpr char kIdPrefix[] = "googleassistant_text://";
 
@@ -50,17 +50,20 @@ class AssistantTextSearchResult : public ChromeSearchResult {
       : action_url_(ash::assistant::util::CreateAssistantQueryDeepLink(
             base::UTF16ToUTF8(text))) {
     set_id(kIdPrefix + base::UTF16ToUTF8(text));
+    SetCategory(Category::kSearchAndAssistant);
     SetDisplayType(ash::SearchResultDisplayType::kList);
     SetResultType(ash::AppListSearchResultType::kAssistantText);
     SetMetricsType(ash::SearchResultType::ASSISTANT_OMNIBOX_RESULT);
     SetTitle(text);
+    SetDetails(l10n_util::GetStringUTF16(IDS_APP_LIST_START_ASSISTANT));
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_ASSISTANT_QUERY_ACCESSIBILITY_ANNOUNCEMENT, text));
-    SetIcon(gfx::CreateVectorIcon(
-        chromeos::kAssistantIcon,
-        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-        gfx::kPlaceholderColor));
+    SetIcon(IconInfo(
+        gfx::CreateVectorIcon(chromeos::kAssistantIcon, kSystemIconDimension,
+                              gfx::kPlaceholderColor),
+        kSystemIconDimension));
 
+    SetSkipUpdateAnimation(true);
     set_dismiss_view_on_open(false);
   }
 
@@ -87,13 +90,13 @@ AssistantTextSearchProvider::AssistantTextSearchProvider() {
   UpdateResults();
 
   // Bind observers.
-  assistant_controller_observer_.Add(ash::AssistantController::Get());
-  assistant_state_observer_.Add(ash::AssistantState::Get());
+  assistant_controller_observation_.Observe(ash::AssistantController::Get());
+  assistant_state_observation_.Observe(ash::AssistantState::Get());
 }
 
 AssistantTextSearchProvider::~AssistantTextSearchProvider() = default;
 
-ash::AppListSearchResultType AssistantTextSearchProvider::ResultType() {
+ash::AppListSearchResultType AssistantTextSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kAssistantText;
 }
 
@@ -103,12 +106,16 @@ void AssistantTextSearchProvider::Start(const std::u16string& query) {
 }
 
 void AssistantTextSearchProvider::OnAssistantControllerDestroying() {
-  assistant_state_observer_.Remove(ash::AssistantState::Get());
-  assistant_controller_observer_.Remove(ash::AssistantController::Get());
+  DCHECK(assistant_state_observation_.IsObservingSource(
+      ash::AssistantState::Get()));
+  assistant_state_observation_.Reset();
+  DCHECK(assistant_controller_observation_.IsObservingSource(
+      ash::AssistantController::Get()));
+  assistant_controller_observation_.Reset();
 }
 
 void AssistantTextSearchProvider::OnAssistantFeatureAllowedChanged(
-    chromeos::assistant::AssistantAllowedState allowed_state) {
+    AssistantAllowedState allowed_state) {
   UpdateResults();
 }
 
@@ -117,7 +124,15 @@ void AssistantTextSearchProvider::OnAssistantSettingsEnabled(bool enabled) {
 }
 
 void AssistantTextSearchProvider::UpdateResults() {
-  if (!AreResultsAllowed() || query_.empty()) {
+  if (!AreResultsAllowed()) {
+    // ClearResults() does not clear the search controller when categorical
+    // search is enabled. Use SwapResults() to ensure the results are gone
+    // everywhere.
+    SearchProvider::Results empty;
+    SwapResults(&empty);
+    return;
+  }
+  if (query_.empty()) {
     ClearResults();
     return;
   }

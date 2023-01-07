@@ -1,10 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/task_manager/providers/child_process_task.h"
@@ -49,9 +48,10 @@ class ChildProcessTaskTest
     : public testing::Test,
       public TaskProviderObserver {
  public:
-  ChildProcessTaskTest() {}
-
-  ~ChildProcessTaskTest() override {}
+  ChildProcessTaskTest() = default;
+  ChildProcessTaskTest(const ChildProcessTaskTest&) = delete;
+  ChildProcessTaskTest& operator=(const ChildProcessTaskTest&) = delete;
+  ~ChildProcessTaskTest() override = default;
 
   // task_manager::TaskProviderObserver:
   void TaskAdded(Task* task) override {
@@ -78,8 +78,6 @@ class ChildProcessTaskTest
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessTaskTest);
 };
 
 // Performs a basic test.
@@ -139,7 +137,7 @@ TEST_F(ChildProcessTaskTest, TestAll) {
 
   const int64_t bytes_read = 1024;
   task->OnNetworkBytesRead(bytes_read);
-  task->Refresh(base::TimeDelta::FromSeconds(1), REFRESH_TYPE_NETWORK_USAGE);
+  task->Refresh(base::Seconds(1), REFRESH_TYPE_NETWORK_USAGE);
 
   EXPECT_EQ(bytes_read, task->GetNetworkUsageRate());
 

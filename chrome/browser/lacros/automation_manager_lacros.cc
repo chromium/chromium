@@ -1,40 +1,30 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 
-#include "base/pickle.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/browser/api/automation_internal/automation_internal_api.h"
-#include "extensions/common/extension_messages.h"
 #include "ui/accessibility/ax_tree_id.h"
-#include "ui/aura/window.h"
-#include "ui/aura/window_tree_host.h"
-#include "ui/aura/window_tree_host_platform.h"
-#include "ui/platform_window/platform_window.h"
 
 AutomationManagerLacros::AutomationManagerLacros() {
-  chromeos::LacrosChromeServiceImpl* impl =
-      chromeos::LacrosChromeServiceImpl::Get();
-  if (!impl->IsAutomationAvailable())
+  chromeos::LacrosService* impl = chromeos::LacrosService::Get();
+  if (!impl->IsAvailable<crosapi::mojom::AutomationFactory>())
     return;
-  id_ = base::UnguessableToken::Create();
-  impl->automation_remote()->RegisterAutomationClient(
-      receiver_.BindNewPipeAndPassRemote(), id_);
+
+  impl->GetRemote<crosapi::mojom::AutomationFactory>()->BindAutomation(
+      automation_client_receiver_.BindNewPipeAndPassRemoteWithVersion(),
+      automation_remote_.BindNewPipeAndPassReceiver());
 
   extensions::AutomationEventRouter::GetInstance()->RegisterRemoteRouter(this);
 }
 
 AutomationManagerLacros::~AutomationManagerLacros() {
-  chromeos::LacrosChromeServiceImpl* impl =
-      chromeos::LacrosChromeServiceImpl::Get();
-  if (!impl->IsAutomationAvailable())
+  chromeos::LacrosService* impl = chromeos::LacrosService::Get();
+  if (!impl->IsAvailable<crosapi::mojom::AutomationFactory>())
     return;
 
   extensions::AutomationEventRouter::GetInstance()->RegisterRemoteRouter(
@@ -46,63 +36,58 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
     std::vector<ui::AXTreeUpdate> updates,
     const gfx::Point& mouse_location,
     std::vector<ui::AXEvent> events) {
-  ExtensionMsg_AccessibilityEventBundleParams event_bundle;
-  event_bundle.tree_id = tree_id;
-  event_bundle.updates = std::move(updates);
-  event_bundle.mouse_location = mouse_location;
-  event_bundle.events = std::move(events);
+  if (!tree_id.token())
+    return;
 
-  // TODO(https://crbug.com/1185764): We'll likely want to push this up to
-  // AutomationManagerAura/AXTreeViews where we can directly retrieve the root
-  // window given a view or widget on which we're serializing accessibility
-  // data.
-  BrowserList* list = BrowserList::GetInstance();
-  std::string window_id;
-  if (!list->empty()) {
-    Browser* browser = list->get(0);
-    aura::Window* window = browser->window()->GetNativeWindow();
-
-    // On desktop aura there is one WindowTreeHost per top-level window.
-    aura::WindowTreeHost* window_tree_host = window->GetHost();
-    DCHECK(window_tree_host);
-    // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
-    // aura::WindowTreeHostPlatform.
-    aura::WindowTreeHostPlatform* window_tree_host_platform =
-        static_cast<aura::WindowTreeHostPlatform*>(window_tree_host);
-    window_id =
-        window_tree_host_platform->platform_window()->GetWindowUniqueId();
+  // TODO: we probably don't want to check every time but only once and cache
+  // the value(s). Also, we need to check all accessibility enums, structs
+  // reachable from AXTreeUpdate and AXEvent.
+  int remote_version = chromeos::LacrosService::Get()->GetInterfaceVersion(
+      crosapi::mojom::Automation::Uuid_);
+  if (remote_version < 0 ||
+      crosapi::mojom::Automation::kDispatchAccessibilityEventsMinVersion >
+          static_cast<uint32_t>(remote_version)) {
+    return;
   }
-  bool is_root =
-      tree_id ==
-      AutomationManagerAura::GetInstance()->get_root_tree_id_deprecated();
-  base::Pickle pickle;
-  IPC::ParamTraits<ExtensionMsg_AccessibilityEventBundleParams>::Write(
-      &pickle, event_bundle);
-  std::string result(static_cast<const char*>(pickle.data()), pickle.size());
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->automation_remote()
-      ->ReceiveEventPrototype(std::move(result), is_root, id_, window_id);
+
+  DCHECK(automation_remote_);
+  automation_remote_->DispatchAccessibilityEvents(*tree_id.token(), updates,
+                                                  mouse_location, events);
 }
 
 void AutomationManagerLacros::DispatchAccessibilityLocationChange(
     const ExtensionMsg_AccessibilityLocationChangeParams& params) {
-  // TODO(https://crbug.com/1185764): Implement me.
+  ui::AXTreeID tree_id = params.tree_id;
+  if (!tree_id.token())
+    return;
+
+  DCHECK(automation_remote_);
+  automation_remote_->DispatchAccessibilityLocationChange(
+      *tree_id.token(), params.id, params.new_location);
 }
+
 void AutomationManagerLacros::DispatchTreeDestroyedEvent(
     ui::AXTreeID tree_id,
     content::BrowserContext* browser_context) {
-  // TODO(https://crbug.com/1185764): Implement me.
+  if (!tree_id.token())
+    return;
+
+  DCHECK(automation_remote_);
+  automation_remote_->DispatchTreeDestroyedEvent(*(tree_id.token()));
 }
+
 void AutomationManagerLacros::DispatchActionResult(
     const ui::AXActionData& data,
     bool result,
     content::BrowserContext* browser_context) {
-  // TODO(https://crbug.com/1185764): Implement me.
+  DCHECK(automation_remote_);
+  automation_remote_->DispatchActionResult(data, result);
 }
+
 void AutomationManagerLacros::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
-    const base::Optional<gfx::Rect>& rect) {
-  // TODO(https://crbug.com/1185764): Implement me.
+    const absl::optional<gfx::Rect>& rect) {
+  // Unsupported by Laros.
 }
 
 void AutomationManagerLacros::Enable() {
@@ -115,16 +100,29 @@ void AutomationManagerLacros::EnableTree(const base::UnguessableToken& token) {
       tree_id, /*extension_id=*/"");
 }
 
-void AutomationManagerLacros::PerformActionPrototype(
+void AutomationManagerLacros::Disable() {
+  AutomationManagerAura::GetInstance()->Disable();
+}
+
+void AutomationManagerLacros::PerformActionDeprecated(
     const base::UnguessableToken& token,
     int32_t automation_node_id,
     const std::string& action_type,
     int32_t request_id,
-    base::Value optional_args) {
-  ui::AXTreeID tree_id = ui::AXTreeID::FromToken(token);
-  const base::DictionaryValue& dict =
-      base::Value::AsDictionaryValue(optional_args);
+    base::Value optional_args) {}
+
+void AutomationManagerLacros::PerformAction(
+    const ui::AXActionData& action_data) {
   extensions::AutomationInternalPerformActionFunction::PerformAction(
-      tree_id, automation_node_id, action_type, request_id, dict,
-      /*extension_id=*/"", /*extension=*/nullptr, /*automation_info=*/nullptr);
+      action_data, /*extension=*/nullptr, /*automation_info=*/nullptr);
+}
+
+void AutomationManagerLacros::NotifyAllAutomationExtensionsGone() {
+  extensions::AutomationEventRouter::GetInstance()
+      ->NotifyAllAutomationExtensionsGone();
+}
+
+void AutomationManagerLacros::NotifyExtensionListenerAdded() {
+  extensions::AutomationEventRouter::GetInstance()
+      ->NotifyExtensionListenerAdded();
 }

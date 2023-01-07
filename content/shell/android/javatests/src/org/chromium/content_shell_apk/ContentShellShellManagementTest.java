@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_shell.Shell;
@@ -34,6 +35,7 @@ public class ContentShellShellManagementTest {
     @Test
     @SmallTest
     @Feature({"Main"})
+    @DisabledTest(message = "https://crbug.com/1371971")
     public void testMultipleShellsLaunched() throws ExecutionException {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl(TEST_PAGE_1);

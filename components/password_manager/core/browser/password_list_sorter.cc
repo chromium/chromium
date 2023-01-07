@@ -1,16 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_list_sorter.h"
 
 #include <algorithm>
-#include <tuple>
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
@@ -28,12 +28,23 @@ constexpr char kSortKeyNoFederationSymbol = '-';
 }  // namespace
 
 std::string CreateSortKey(const PasswordForm& form, IgnoreStore ignore_store) {
-  std::string shown_origin;
-  GURL link_url;
-  std::tie(shown_origin, link_url) = GetShownOriginAndLinkUrl(form);
+  std::string key = CreateSortKey(CredentialUIEntry(form));
+
+  if (ignore_store)
+    return key;
+
+  if (form.in_store == PasswordForm::Store::kAccountStore) {
+    return key + kSortKeyPartsSeparator + std::string("account");
+  }
+
+  return key;
+}
+
+std::string CreateSortKey(const CredentialUIEntry& credential) {
+  std::string shown_origin = GetShownOrigin(credential);
 
   const auto facet_uri =
-      FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+      FacetURI::FromPotentiallyInvalidSpec(credential.GetFirstSignonRealm());
   const bool is_android_uri = facet_uri.IsValidAndroidFacetURI();
 
   if (is_android_uri) {
@@ -60,24 +71,41 @@ std::string CreateSortKey(const PasswordForm& form, IgnoreStore ignore_store) {
   key += is_android_uri ? facet_uri.canonical_spec()
                         : SplitByDotAndReverse(shown_origin);
 
+  if (!credential.blocked_by_user) {
+    key += kSortKeyPartsSeparator + base::UTF16ToUTF8(credential.username) +
+           kSortKeyPartsSeparator + base::UTF16ToUTF8(credential.password);
+
+    key += kSortKeyPartsSeparator;
+    if (!credential.federation_origin.opaque())
+      key += credential.federation_origin.host();
+    else
+      key += kSortKeyNoFederationSymbol;
+  }
+
+  // To separate HTTP/HTTPS credentials, add the scheme to the key.
+  key += kSortKeyPartsSeparator + GetShownUrl(credential).scheme();
+
+  return key;
+}
+
+std::string CreateUsernamePasswordSortKey(const PasswordForm& form) {
+  std::string key;
+  // The origin isn't taken into account for normal credentials since we want to
+  // group them together.
   if (!form.blocked_by_user) {
-    key += kSortKeyPartsSeparator + base::UTF16ToUTF8(form.username_value) +
-           kSortKeyPartsSeparator + base::UTF16ToUTF8(form.password_value);
+    key += base::UTF16ToUTF8(form.username_value) + kSortKeyPartsSeparator +
+           base::UTF16ToUTF8(form.password_value);
 
     key += kSortKeyPartsSeparator;
     if (!form.federation_origin.opaque())
       key += form.federation_origin.host();
     else
       key += kSortKeyNoFederationSymbol;
+  } else {
+    // Key for blocked by user credential since it does not store username and
+    // password. These credentials are not grouped together.
+    key = GetShownOrigin(CredentialUIEntry(form));
   }
-
-  // To separate HTTP/HTTPS credentials, add the scheme to the key.
-  key += kSortKeyPartsSeparator + link_url.scheme();
-
-  if (!ignore_store && form.in_store == PasswordForm::Store::kAccountStore) {
-    key += kSortKeyPartsSeparator + std::string("account");
-  }
-
   return key;
 }
 
@@ -88,7 +116,7 @@ void SortEntriesAndHideDuplicates(
       keys_to_forms;
   keys_to_forms.reserve(list->size());
   for (auto& form : *list) {
-    std::string key = CreateSortKey(*form);
+    std::string key = CreateSortKey(*form, IgnoreStore(false));
     keys_to_forms.emplace_back(std::move(key), std::move(form));
   }
 

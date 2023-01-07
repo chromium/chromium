@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -51,19 +51,35 @@ if (enable_me2me_host) {
     }
   }
 
+  remoting_localize("url_forwarder_desktop_entry") {
+    sources = [ "crd-url-forwarder.desktop.jinja2" ]
+    locale_list = remoting_locales_without_pseudolocales
+    locale_dir = resources_locale_dir
+    output = "$root_build_dir/remoting/{{source_name_part}}"
+  }
+
+  copy("remoting_me2me_host_copy_setup_url_forwarder_script") {
+    sources = [ "configure_url_forwarder.py" ]
+    outputs = [ "$root_build_dir/remoting/setup-url-forwarder" ]
+  }
+
   group("remoting_dev_me2me_host") {
     deps = [
       ":remoting_me2me_host_copy_host_wrapper",
       ":remoting_me2me_host_copy_script",
+      ":remoting_me2me_host_copy_setup_url_forwarder_script",
       ":remoting_me2me_host_copy_user_session",
       ":remoting_me2me_host_copy_user_session_wrapper",
       ":remoting_native_messaging_host",
+      ":url_forwarder_desktop_entry",
       "//remoting/host:remoting_me2me_host",
+      "//remoting/host/remote_open_url",
+      "//remoting/host/webauthn:remote_webauthn",
     ]
   }
 }
 
-if (use_x11) {
+if (remoting_use_x11) {
   source_set("x11") {
     sources = [
       "unicode_to_keysym.cc",
@@ -81,44 +97,24 @@ if (use_x11) {
     deps = [
       "//base",
       "//remoting/base",
+      "//remoting/base:logging",
       "//third_party/webrtc_overrides:webrtc_component",
     ]
   }
 }
 
-executable("remoting_native_messaging_host") {
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+if (!is_chromeos) {
+  executable("remoting_native_messaging_host") {
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  sources = [
-    "//remoting/host/setup/me2me_native_messaging_host_entry_point.cc",
-    "//remoting/host/setup/me2me_native_messaging_host_main.cc",
-    "//remoting/host/setup/me2me_native_messaging_host_main.h",
-  ]
+    sources =
+        [ "//remoting/host/setup/me2me_native_messaging_host_entry_point.cc" ]
 
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-    "//mojo/core/embedder",
-    "//net",
-    "//remoting/base",
-    "//remoting/base:authorization",
-    "//remoting/base:breakpad",
-    "//remoting/host",
-    "//remoting/host:base",
-    "//remoting/host:remoting_infoplist_strings",
-    "//remoting/host/native_messaging",
-    "//remoting/host/setup",
-    "//services/network:network_service",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-  ]
-
-  # The |major|, |build| and |patch| versions are inherited from Chrome.
-  # Since Chrome's |minor| version is always '0', we replace it with a
-  # Chromoting-specific patch version.
-  defines =
-      [ "VERSION=" + "$chrome_version_major" + "." + "$remoting_version_patch" +
-        "." + "$chrome_version_build" + "." + "$chrome_version_patch" ]
+    deps = [
+      "//remoting/host:remoting_core",
+      "//remoting/host/setup:native_messaging_host_main_headers",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -132,9 +128,10 @@ source_set("unit_tests") {
     "x_server_clipboard_unittest.cc",
   ]
 
-  if (!use_x11) {
+  if (!remoting_use_x11) {
     sources -= [
       "unicode_to_keysym_unittest.cc",
+      "x11_character_injector_unittest.cc",
       "x_server_clipboard_unittest.cc",
     ]
   }
@@ -155,7 +152,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (use_x11) {
+  if (remoting_use_x11) {
     deps += [ ":x11" ]
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,6 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -31,11 +30,9 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordHistogramJni;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
@@ -49,11 +46,8 @@ import org.chromium.ui.test.util.modelutil.FakeViewProvider;
  * Controller tests for the keyboard accessory bottom sheet component.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {CustomShadowAsyncTask.class, ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
 public class AccessorySheetControllerTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
     @Mock
     private PropertyObservable.PropertyObserver<PropertyKey> mMockPropertyObserver;
     @Mock
@@ -62,8 +56,6 @@ public class AccessorySheetControllerTest {
     private AccessorySheetView mMockView;
     @Mock
     private RecyclerView mMockRecyclerView;
-    @Mock
-    private RecordHistogram.Natives mMockRecordHistogramNatives;
 
     private final Tab[] mTabs = new Tab[] {new Tab("Passwords", null, null, 0, 0, null),
             new Tab("Passwords", null, null, 0, 0, null),
@@ -76,9 +68,8 @@ public class AccessorySheetControllerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
-        mocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogramNatives);
         when(mMockView.getLayoutParams()).thenReturn(new ViewGroup.LayoutParams(0, 0));
         mCoordinator = new AccessorySheetCoordinator(new FakeViewProvider<>(mMockView));
         mMediator = mCoordinator.getMediatorForTesting();

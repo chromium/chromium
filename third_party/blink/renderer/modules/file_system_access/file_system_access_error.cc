@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 namespace file_system_access_error {
@@ -31,7 +31,7 @@ void ResolveOrReject(ScriptPromiseResolver* resolver,
 
   // Convert empty message to a null string, to make sure we get the default
   // error message if no custom error message is provided.
-  const String message = error.message.IsEmpty() ? String() : error.message;
+  const String message = error.message.empty() ? String() : error.message;
 
   switch (error.status) {
     case mojom::blink::FileSystemAccessStatus::kOk:
@@ -40,6 +40,10 @@ void ResolveOrReject(ScriptPromiseResolver* resolver,
     case mojom::blink::FileSystemAccessStatus::kPermissionDenied:
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           isolate, DOMExceptionCode::kNotAllowedError, message));
+      break;
+    case mojom::blink::FileSystemAccessStatus::kNoModificationAllowedError:
+      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+          isolate, DOMExceptionCode::kNoModificationAllowedError, message));
       break;
     case mojom::blink::FileSystemAccessStatus::kSecurityError:
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(

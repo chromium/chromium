@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,28 +87,6 @@ std::unique_ptr<ECPrivateKey> ECPrivateKey::CreateFromEncryptedPrivateKeyInfo(
   return result;
 }
 
-// static
-std::unique_ptr<ECPrivateKey> ECPrivateKey::DeriveFromSecret(
-    base::span<const uint8_t> secret) {
-  bssl::UniquePtr<EC_GROUP> group(
-      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-  if (!group)
-    return nullptr;
-
-  bssl::UniquePtr<EC_KEY> ec_key(
-      EC_KEY_derive_from_secret(group.get(), secret.data(), secret.size()));
-  if (!ec_key)
-    return nullptr;
-
-  std::unique_ptr<ECPrivateKey> result(new ECPrivateKey());
-  result->key_.reset(EVP_PKEY_new());
-  if (!result->key_ || !EVP_PKEY_set1_EC_KEY(result->key_.get(), ec_key.get()))
-    return nullptr;
-
-  CHECK_EQ(EVP_PKEY_EC, EVP_PKEY_id(result->key_.get()));
-  return result;
-}
-
 std::unique_ptr<ECPrivateKey> ECPrivateKey::Copy() const {
   std::unique_ptr<ECPrivateKey> copy(new ECPrivateKey());
   copy->key_ = bssl::UpRef(key_);
@@ -173,22 +151,16 @@ bool ECPrivateKey::ExportPublicKey(std::vector<uint8_t>* output) const {
 bool ECPrivateKey::ExportRawPublicKey(std::string* output) const {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
-  // Export the x and y field elements as 32-byte, big-endian numbers. (This is
-  // the same as X9.62 uncompressed form without the leading 0x04 byte.)
+  std::array<uint8_t, 65> buf;
   EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(key_.get());
-  bssl::UniquePtr<BIGNUM> x(BN_new());
-  bssl::UniquePtr<BIGNUM> y(BN_new());
-  uint8_t buf[64];
-  if (!x || !y ||
-      !EC_POINT_get_affine_coordinates_GFp(EC_KEY_get0_group(ec_key),
-                                           EC_KEY_get0_public_key(ec_key),
-                                           x.get(), y.get(), nullptr) ||
-      !BN_bn2bin_padded(buf, 32, x.get()) ||
-      !BN_bn2bin_padded(buf + 32, 32, y.get())) {
+  if (!EC_POINT_point2oct(EC_KEY_get0_group(ec_key),
+                          EC_KEY_get0_public_key(ec_key),
+                          POINT_CONVERSION_UNCOMPRESSED, buf.data(), buf.size(),
+                          /*ctx=*/nullptr)) {
     return false;
   }
 
-  output->assign(reinterpret_cast<const char*>(buf), sizeof(buf));
+  output->assign(buf.begin(), buf.end());
   return true;
 }
 

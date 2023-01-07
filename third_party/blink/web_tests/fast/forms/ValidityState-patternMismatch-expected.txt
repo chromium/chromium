@@ -1,11 +1,11 @@
-CONSOLE ERROR: line 84: Pattern attribute value )foo( is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /)foo(/: Unmatched ')'
-CONSOLE ERROR: line 84: Pattern attribute value )foo( is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /)foo(/: Unmatched ')'
-CONSOLE ERROR: line 84: Pattern attribute value )foo( is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /)foo(/: Unmatched ')'
-CONSOLE ERROR: line 84: Pattern attribute value foo\ is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /foo\/: \ at end of pattern
-CONSOLE ERROR: line 84: Pattern attribute value [0-9 is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[0-9/: Unterminated character class
-CONSOLE ERROR: line 84: Pattern attribute value [0-9 is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[0-9/: Unterminated character class
-CONSOLE ERROR: line 84: Pattern attribute value \@ is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /\@/: Invalid escape
-CONSOLE ERROR: line 84: Pattern attribute value \p is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /\p/: Invalid property name
+CONSOLE ERROR: Pattern attribute value )foo( is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /)foo(/: Unmatched ')'
+CONSOLE ERROR: Pattern attribute value )foo( is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /)foo(/: Unmatched ')'
+CONSOLE ERROR: Pattern attribute value )foo( is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /)foo(/: Unmatched ')'
+CONSOLE ERROR: Pattern attribute value foo\ is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /foo\/: \ at end of pattern
+CONSOLE ERROR: Pattern attribute value [0-9 is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[0-9/: Unterminated character class
+CONSOLE ERROR: Pattern attribute value [0-9 is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[0-9/: Unterminated character class
+CONSOLE ERROR: Pattern attribute value \@ is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /\@/: Invalid escape
+CONSOLE ERROR: Pattern attribute value \p is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /\p/: Invalid property name
 This test checks validity.patternMismatch.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

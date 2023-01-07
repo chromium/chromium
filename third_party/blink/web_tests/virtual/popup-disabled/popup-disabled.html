@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src='../../resources/testharness.js'></script>
+
+<div id=elements>
+  <div popup=auto>This content should be visible, if HTMLPopupAttribute is disabled</div>
+  <div popup=hint>This content should be visible, if HTMLPopupAttribute is disabled</div>
+  <div popup=async>This content should be visible, if HTMLPopupAttribute is disabled</div>
+  <div popup=invalid>This content should be visible, if HTMLPopupAttribute is disabled</div>
+  <div popup="">This content should be visible, if HTMLPopupAttribute is disabled</div>
+  <div popup id=foo>This content should be visible, if HTMLPopupAttribute is disabled</div>
+</div>
+
+<script>
+  if (window.testRunner)
+    testRunner.dumpAsText();
+
+  function popupVisible(popup) {
+    return !!(popup.offsetWidth || popup.offsetHeight || popup.getClientRects().length);
+  }
+
+  const elements = document.getElementById('elements').children;
+  test(() => {
+    assert_throws_dom("SyntaxError",() => {elements[0].matches(':open')},"The :popup-open pseudo class shouldn't be available");
+  },'Basic tests');
+
+  for(let el of elements) {
+    test(() => {
+      assert_true(!!el);
+      assert_true(popupVisible(el));
+      assert_equals(el.popup,undefined);
+      assert_not_equals(window.getComputedStyle(el).display,'none');
+    },`${el.outerHTML} should be stylable/visible and not display:none`);
+  }
+
+  function supportsPopup() {
+    return Element.prototype.hasOwnProperty("popup");
+  }
+
+  test(() => {
+    assert_false(supportsPopup());
+  },`The popup IDL attribute should not be present on Element`);
+
+</script>

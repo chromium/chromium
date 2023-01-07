@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,14 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/win/conflicts/module_blocklist_cache_updater.h"
 #include "chrome/browser/win/conflicts/module_database_observer.h"
 #include "chrome/browser/win/conflicts/module_list_component_updater.h"
 #include "chrome/chrome_elf/third_party_dlls/packed_list_format.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class IncompatibleApplicationsUpdater;
 class InstalledApplications;
@@ -63,6 +62,11 @@ class ThirdPartyConflictsManager : public ModuleDatabaseObserver {
   // |module_database_event_source| must outlive this.
   explicit ThirdPartyConflictsManager(
       ModuleDatabaseEventSource* module_database_event_source);
+
+  ThirdPartyConflictsManager(const ThirdPartyConflictsManager&) = delete;
+  ThirdPartyConflictsManager& operator=(const ThirdPartyConflictsManager&) =
+      delete;
+
   ~ThirdPartyConflictsManager() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -232,7 +236,7 @@ class ThirdPartyConflictsManager : public ModuleDatabaseObserver {
       incompatible_applications_updater_;
 
   // The final state of this instance.
-  base::Optional<State> terminal_state_;
+  absl::optional<State> terminal_state_;
 
   // The callback that is invoked when |state_| changes.
   OnInitializationCompleteCallback on_initialization_complete_callback_;
@@ -244,8 +248,6 @@ class ThirdPartyConflictsManager : public ModuleDatabaseObserver {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ThirdPartyConflictsManager> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyConflictsManager);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_THIRD_PARTY_CONFLICTS_MANAGER_H_

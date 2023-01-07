@@ -1,0 +1,18 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+// option optimize_for = LITE_RUNTIME;
+package proto2.bridge;
+
+option java_outer_classname = "MessageSetProtos";
+option java_multiple_files = true;
+option cc_enable_arenas = true;
+
+// This is proto2's version of MessageSet.
+message MessageSet {
+  option message_set_wire_format = true;
+
+  extensions 4 to max;
+}

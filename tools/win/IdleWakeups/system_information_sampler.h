@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,8 @@ typedef std::vector<ThreadData> ThreadsVector;
 // Contains per process data stored in each data snapshot.
 struct ProcessData {
   ULONGLONG cpu_time;
-  ULONGLONG working_set;
+  ULONGLONG memory;  // Private commit
+  DWORD handle_count;
   ThreadsVector threads;
 };
 

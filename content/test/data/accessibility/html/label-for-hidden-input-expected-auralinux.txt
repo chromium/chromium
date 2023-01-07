@@ -1,0 +1,4 @@
+[document web]
+++[section]
+++++[label]
+++++++[static] name='This label should be visible'

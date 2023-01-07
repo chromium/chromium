@@ -30,20 +30,31 @@
 
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 
+#include <algorithm>
+
 #include "cc/animation/animation_host.h"
+#include "cc/animation/animation_timeline.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 
 namespace blink {
 
@@ -75,7 +86,7 @@ void DocumentAnimations::AddTimeline(AnimationTimeline& timeline) {
 }
 
 void DocumentAnimations::UpdateAnimationTimingForAnimationFrame() {
-  // https://drafts.csswg.org/web-animations-1/#timelines.
+  // https://w3.org/TR/web-animations-1/#timelines
 
   // 1. Update the current time of all timelines associated with doc passing now
   //    as the timestamp.
@@ -91,7 +102,7 @@ void DocumentAnimations::UpdateAnimationTimingForAnimationFrame() {
   // This is to ensure that any microtasks queued up as a result of resolving or
   // rejecting Promise objects as part of updating timelines run their callbacks
   // prior to dispatching animation events and generating the next main frame.
-  Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
+  document_->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
 }
 
 bool DocumentAnimations::NeedsAnimationTimingUpdate() {
@@ -110,8 +121,12 @@ void DocumentAnimations::UpdateAnimationTimingIfNeeded() {
 
 void DocumentAnimations::UpdateAnimations(
     DocumentLifecycle::LifecycleState required_lifecycle_state,
-    const PaintArtifactCompositor* paint_artifact_compositor) {
+    const PaintArtifactCompositor* paint_artifact_compositor,
+    bool compositor_properties_updated) {
   DCHECK(document_->Lifecycle().GetState() >= required_lifecycle_state);
+
+  if (compositor_properties_updated)
+    MarkPendingIfCompositorPropertyAnimationChanges(paint_artifact_compositor);
 
   if (document_->GetPendingAnimations().Update(paint_artifact_compositor)) {
     DCHECK(document_->View());
@@ -121,6 +136,14 @@ void DocumentAnimations::UpdateAnimations(
   document_->GetWorkletAnimationController().UpdateAnimationStates();
   for (auto& timeline : timelines_)
     timeline->ScheduleNextService();
+}
+
+void DocumentAnimations::MarkPendingIfCompositorPropertyAnimationChanges(
+    const PaintArtifactCompositor* paint_artifact_compositor) {
+  for (auto& timeline : timelines_) {
+    timeline->MarkPendingIfCompositorPropertyAnimationChanges(
+        paint_artifact_compositor);
+  }
 }
 
 size_t DocumentAnimations::GetAnimationsCount() {
@@ -146,9 +169,7 @@ HeapVector<Member<Animation>> DocumentAnimations::getAnimations(
     const TreeScope& tree_scope) {
   // This method implements the Document::getAnimations method defined in the
   // web-animations-1 spec.
-  // https://drafts.csswg.org/web-animations-1/#dom-document-getanimations
-  // TODO(crbug.com/1046916): refactoring work to create a shared implementation
-  // of getAnimations for Documents and ShadowRoots.
+  // https://w3.org/TR/web-animations-1/#extensions-to-the-documentorshadowroot-interface-mixin
   document_->UpdateStyleAndLayoutTree();
   HeapVector<Member<Animation>> animations;
   if (document_->GetPage())
@@ -160,30 +181,42 @@ HeapVector<Member<Animation>> DocumentAnimations::getAnimations(
   return animations;
 }
 
-void DocumentAnimations::ValidateTimelines() {
+bool DocumentAnimations::ValidateTimelines() {
+  bool all_timelines_valid = true;
   for (auto& timeline : unvalidated_timelines_) {
-    if (auto* scroll_timeline = DynamicTo<CSSScrollTimeline>(timeline.Get()))
-      scroll_timeline->ValidateState();
+    if (auto* scroll_timeline = DynamicTo<ScrollTimeline>(timeline.Get())) {
+      bool timeline_valid = scroll_timeline->ValidateState();
+      all_timelines_valid &= timeline_valid;
+    }
   }
 
   unvalidated_timelines_.clear();
+  return all_timelines_valid;
 }
 
-void DocumentAnimations::CacheCSSScrollTimeline(CSSScrollTimeline& timeline) {
-  // We cache the least seen CSSScrollTimeline for a given name.
-  cached_css_timelines_.Set(timeline.Name(), &timeline);
-}
+void DocumentAnimations::DetachCompositorTimelines() {
+  if (!Platform::Current()->IsThreadedAnimationEnabled() ||
+      !document_->GetSettings()->GetAcceleratedCompositingEnabled() ||
+      !document_->GetPage())
+    return;
 
-CSSScrollTimeline* DocumentAnimations::FindCachedCSSScrollTimeline(
-    const AtomicString& name) {
-  return To<CSSScrollTimeline>(cached_css_timelines_.at(name));
+  for (auto& timeline : timelines_) {
+    cc::AnimationTimeline* compositor_timeline = timeline->CompositorTimeline();
+    if (!compositor_timeline)
+      continue;
+
+    if (cc::AnimationHost* host =
+            document_->GetPage()->GetChromeClient().GetCompositorAnimationHost(
+                *document_->GetFrame())) {
+      host->RemoveAnimationTimeline(compositor_timeline);
+    }
+  }
 }
 
 void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(timelines_);
   visitor->Trace(unvalidated_timelines_);
-  visitor->Trace(cached_css_timelines_);
 }
 
 void DocumentAnimations::GetAnimationsTargetingTreeScope(
@@ -251,13 +284,18 @@ void DocumentAnimations::RemoveReplacedAnimations(
         animations_to_remove.push_back(*anim_it);
     }
   }
+  scoped_refptr<scheduler::EventLoop> event_loop =
+      document_->GetAgent()->event_loop();
 
   // The list of animations for removal is constructed in reverse composite
   // ordering for efficiency. Flip the ordering to ensure that events are
-  // dispatched in composite order.
+  // dispatched in composite order.  Queue as a microtask so that the finished
+  // event is dispatched ahead of the remove event.
   for (auto it = animations_to_remove.rbegin();
        it != animations_to_remove.rend(); it++) {
-    (*it)->RemoveReplacedAnimation();
+    Animation* animation = *it;
+    event_loop->EnqueueMicrotask(WTF::BindOnce(
+        &Animation::RemoveReplacedAnimation, WrapWeakPersistent(animation)));
   }
 }
 

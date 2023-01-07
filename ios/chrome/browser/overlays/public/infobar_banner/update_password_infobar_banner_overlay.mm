@@ -1,13 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/public/infobar_banner/update_password_infobar_banner_overlay.h"
 
-#include "base/check.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/infobars/core/infobar.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
+#import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/infobars/core/infobar.h"
+#import "components/password_manager/core/common/password_manager_features.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 
@@ -19,6 +20,7 @@ using infobars::InfoBar;
 
 namespace {
 // The name of the icon image for the update passwords banner.
+NSString* const kLegacyIconImageName = @"legacy_password_key";
 NSString* const kIconImageName = @"password_key";
 }
 
@@ -35,7 +37,11 @@ UpdatePasswordInfobarBannerOverlayRequestConfig::
   username_ = delegate->GetUserNameText();
   button_text_ = base::SysUTF16ToNSString(
       delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
-  icon_image_name_ = kIconImageName;
+  icon_image_name_ =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
+          ? kIconImageName
+          : kLegacyIconImageName;
   password_length_ = delegate->GetPasswordText().length;
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -139,8 +139,8 @@ void GetLastModifiedTime(IPortableDeviceValues* properties_values,
   // Some PTP devices don't provide an mtime. Try using the ctime instead.
   if (last_modified_date.get().vt != VT_DATE) {
     last_modified_date.Reset();
-    HRESULT hr = properties_values->GetValue(WPD_OBJECT_DATE_CREATED,
-                                             last_modified_date.Receive());
+    hr = properties_values->GetValue(WPD_OBJECT_DATE_CREATED,
+                                     last_modified_date.Receive());
     if (FAILED(hr))
       return;
   }
@@ -399,13 +399,9 @@ DWORD CopyDataChunkToLocalFile(IStream* stream,
   if (FAILED(hr))
     return 0U;
   DCHECK_GT(bytes_read, 0U);
-  CHECK_LE(bytes_read, buffer.length());
-  int data_len =
-      base::checked_cast<int>(
-          std::min(bytes_read,
-                   base::checked_cast<DWORD>(buffer.length())));
-  return base::AppendToFile(local_path, buffer.c_str(), data_len) ? data_len
-                                                                  : 0;
+  CHECK_LE(bytes_read, buffer.size());
+  buffer.resize(bytes_read);
+  return base::AppendToFile(local_path, buffer) ? buffer.size() : 0;
 }
 
 std::wstring GetObjectIdFromName(IPortableDevice* device,

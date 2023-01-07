@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace content {
@@ -52,6 +52,10 @@ class MimeTypeCollector {
       base::OnceCallback<void(std::unique_ptr<std::vector<std::string>>)>;
 
   explicit MimeTypeCollector(content::BrowserContext* context);
+
+  MimeTypeCollector(const MimeTypeCollector&) = delete;
+  MimeTypeCollector& operator=(const MimeTypeCollector&) = delete;
+
   virtual ~MimeTypeCollector();
 
   // Collects all mime types asynchronously for a vector of URLs and upon
@@ -68,13 +72,11 @@ class MimeTypeCollector {
   // Called, when the |index|-th input file (or URL) got processed.
   void OnMimeTypeCollected(size_t index, const std::string& mime_type);
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
   std::unique_ptr<std::vector<std::string>> result_;
   size_t left_;
   CompletionCallback callback_;
   base::WeakPtrFactory<MimeTypeCollector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MimeTypeCollector);
 };
 
 }  // namespace app_file_handler_util

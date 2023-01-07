@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace configuration {
 
 // Configuration keys that are used to automate OOBE screens go here.
@@ -14,12 +14,6 @@ namespace configuration {
 // All keys should be listed here, even if they are used in JS code only.
 // These keys are used in
 // chrome/browser/resources/chromeos/login/components/oobe_types.js
-
-// == HID Detection screen:
-
-// Boolean value indicating if we should skip HID detection screen altogether.
-
-const char kSkipHIDDetection[] = "skipHIDDetection";
 
 // == Welcome screen:
 
@@ -57,6 +51,10 @@ const char kNetworkOfflineDemo[] = "networkOfflineDemo";
 // selected automatically.
 const char kNetworkUseConnected[] = "networkUseConnected";
 
+// String that holds network configuration preserved during rollback.
+const char kNetworkConfig[] = "networkConfig";
+
+
 // == EULA screen:
 
 // Boolean value indicating if device should send usage statistics.
@@ -71,31 +69,15 @@ const char kEULAAutoAccept[] = "eulaAutoAccept";
 // automatically.
 const char kArcTosAutoAccept[] = "arcTosAutoAccept";
 
-// == Update screen:
-
-// Boolean value, indicating that all non-critical updates should be skipped.
-// This should be used only during rollback scenario, when Chrome version is
-// known not to have any critical issues.
-const char kUpdateSkipUpdate[] = "updateSkipNonCritical";
-
 // == Wizard controller:
-
-// Boolean value, controls if WizardController should automatically start
-// enrollment at appropriate moment.
-const char kWizardAutoEnroll[] = "wizardAutoEnroll";
 
 // String value, containing device requisition parameter.
 const char kDeviceRequisition[] = "deviceRequisition";
 
 // == Enrollment screen
 
-// Boolean value, indicates that device is actually enrolled, so we only need
-// to perform specific enrollment-time actions (e.g. create robot accounts).
+// Boolean value, indicates that device was enrolled before rollback.
 const char kRestoreAfterRollback[] = "enrollmentRestoreAfterRollback";
-
-// String value containing an enrollment token that would be used during
-// enrollment to identify organization device is enrolled into.
-const char kEnrollmentToken[] = "enrollmentToken";
 
 // String value indicating what value would be propagated to Asset ID field
 // on Device Attributes step.
@@ -116,8 +98,6 @@ constexpr struct {
   ValueType type;
   ConfigurationHandlerSide side;
 } kAllConfigurationKeys[] = {
-    {kSkipHIDDetection, ValueType::BOOLEAN,
-     ConfigurationHandlerSide::HANDLER_CPP},
     {kWelcomeNext, ValueType::BOOLEAN, ConfigurationHandlerSide::HANDLER_JS},
     {kLanguage, ValueType::STRING, ConfigurationHandlerSide::HANDLER_JS},
     {kInputMethod, ValueType::STRING, ConfigurationHandlerSide::HANDLER_JS},
@@ -125,18 +105,13 @@ constexpr struct {
      ConfigurationHandlerSide::HANDLER_JS},
     {kNetworkUseConnected, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_JS},
+    {kNetworkConfig, ValueType::STRING, ConfigurationHandlerSide::HANDLER_CPP},
     {kEULASendUsageStatistics, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_JS},
     {kEULAAutoAccept, ValueType::BOOLEAN, ConfigurationHandlerSide::HANDLER_JS},
-    {kUpdateSkipUpdate, ValueType::BOOLEAN,
-     ConfigurationHandlerSide::HANDLER_CPP},
-    {kWizardAutoEnroll, ValueType::BOOLEAN,
-     ConfigurationHandlerSide::HANDLER_CPP},
     {kRestoreAfterRollback, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_CPP},
     {kDeviceRequisition, ValueType::STRING,
-     ConfigurationHandlerSide::HANDLER_CPP},
-    {kEnrollmentToken, ValueType::STRING,
      ConfigurationHandlerSide::HANDLER_CPP},
     {kEnrollmentLocation, ValueType::STRING,
      ConfigurationHandlerSide::HANDLER_CPP},
@@ -154,44 +129,41 @@ constexpr struct {
     {"testValue", ValueType::STRING, ConfigurationHandlerSide::HANDLER_BOTH},
 };
 
-bool ValidateConfiguration(const base::Value& configuration) {
-  if (configuration.type() != ValueType::DICTIONARY) {
-    LOG(ERROR) << "Configuration should be a dictionary";
-    return false;
-  }
-  base::Value clone = configuration.Clone();
+bool ValidateConfiguration(const base::Value::Dict& configuration) {
+  base::Value::Dict clone = configuration.Clone();
   bool valid = true;
   for (const auto& key : kAllConfigurationKeys) {
-    auto* value = clone.FindKey(key.key);
+    auto* value = clone.Find(key.key);
     if (value) {
       if (value->type() != key.type) {
         valid = false;
         LOG(ERROR) << "Invalid configuration: key " << key.key
                    << " type is invalid";
       }
-      clone.RemoveKey(key.key);
+      clone.Remove(key.key);
     }
   }
-  for (const auto& item : clone.DictItems())
+  for (const auto item : clone)
     LOG(WARNING) << "Unknown configuration key " << item.first;
   return valid;
 }
 
-void FilterConfiguration(const base::Value& configuration,
-                         ConfigurationHandlerSide side,
-                         base::Value& filtered_result) {
+base::Value::Dict FilterConfiguration(const base::Value::Dict& configuration,
+                                      ConfigurationHandlerSide side) {
   DCHECK(side == ConfigurationHandlerSide::HANDLER_CPP ||
          side == ConfigurationHandlerSide::HANDLER_JS);
+  base::Value::Dict filtered_result;
   for (const auto& key : kAllConfigurationKeys) {
     if (key.side == side ||
         key.side == ConfigurationHandlerSide::HANDLER_BOTH) {
-      auto* value = configuration.FindKey(key.key);
+      auto* value = configuration.Find(key.key);
       if (value) {
-        filtered_result.SetKey(key.key, value->Clone());
+        filtered_result.Set(key.key, value->Clone());
       }
     }
   }
+  return filtered_result;
 }
 
 }  // namespace configuration
-}  // namespace chromeos
+}  // namespace ash

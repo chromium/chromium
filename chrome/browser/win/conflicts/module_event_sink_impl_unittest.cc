@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,10 @@ const uint64_t kInvalidLoadAddress = 0xDEADBEEF;
 }  // namespace
 
 class ModuleEventSinkImplTest : public testing::Test {
+ public:
+  ModuleEventSinkImplTest(const ModuleEventSinkImplTest&) = delete;
+  ModuleEventSinkImplTest& operator=(const ModuleEventSinkImplTest&) = delete;
+
  protected:
   ModuleEventSinkImplTest() = default;
   ~ModuleEventSinkImplTest() override = default;
@@ -57,9 +61,6 @@ class ModuleEventSinkImplTest : public testing::Test {
   std::unique_ptr<ModuleEventSinkImpl> module_event_sink_impl_;
 
   int module_event_count_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ModuleEventSinkImplTest);
 };
 
 TEST_F(ModuleEventSinkImplTest, CallsForwardedAsExpected) {

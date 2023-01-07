@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/notifications/scheduler/internal/icon_store.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_entry.h"

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_cert_types.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -109,14 +110,13 @@ class NET_EXPORT X509Certificate
 
   // Create an X509Certificate from the DER-encoded representation.
   // Returns NULL on failure.
-  static scoped_refptr<X509Certificate> CreateFromBytes(const char* data,
-                                                        size_t length);
+  static scoped_refptr<X509Certificate> CreateFromBytes(
+      base::span<const uint8_t> data);
 
   // Create an X509Certificate with non-standard parsing options.
   // Do not use without consulting //net owners.
   static scoped_refptr<X509Certificate> CreateFromBytesUnsafeOptions(
-      const char* data,
-      size_t length,
+      base::span<const uint8_t> data,
       UnsafeCreateOptions options);
 
   // Create an X509Certificate from the representation stored in the given
@@ -137,9 +137,12 @@ class NET_EXPORT X509Certificate
   // bit-wise OR of Format, indicating the possible formats the
   // certificates may have been serialized as. If an error occurs, an empty
   // collection will be returned.
-  static CertificateList CreateCertificateListFromBytes(const char* data,
-                                                        size_t length,
-                                                        int format);
+  static CertificateList CreateCertificateListFromBytes(
+      base::span<const uint8_t> data,
+      int format);
+
+  X509Certificate(const X509Certificate&) = delete;
+  X509Certificate& operator=(const X509Certificate&) = delete;
 
   // Appends a representation of this object to the given pickle.
   // The Pickle contains the certificate and any certificates that were
@@ -243,13 +246,13 @@ class NET_EXPORT X509Certificate
   // checking to reject obviously invalid inputs.
   // Returns NULL on failure.
   static bssl::UniquePtr<CRYPTO_BUFFER> CreateCertBufferFromBytes(
-      const char* data,
-      size_t length);
+      base::span<const uint8_t> data);
 
   // Creates all possible CRYPTO_BUFFERs from |data| encoded in a specific
   // |format|. Returns an empty collection on failure.
-  static std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>
-  CreateCertBuffersFromBytes(const char* data, size_t length, Format format);
+  static std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> CreateCertBuffersFromBytes(
+      base::span<const uint8_t> data,
+      Format format);
 
   // Calculates the SHA-256 fingerprint of the certificate.  Returns an empty
   // (all zero) fingerprint on failure.
@@ -317,8 +320,6 @@ class NET_EXPORT X509Certificate
   // Untrusted intermediate certificates associated with this certificate
   // that may be needed for chain building.
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediate_ca_certs_;
-
-  DISALLOW_COPY_AND_ASSIGN(X509Certificate);
 };
 
 }  // namespace net

@@ -1,23 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chromeos/components/quick_answers/result_loader.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/search_result_loader.h"
 #include "chromeos/components/quick_answers/translation_result_loader.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace chromeos {
 namespace quick_answers {
 namespace {
 
 using network::ResourceRequest;
-using network::mojom::URLLoaderFactory;
+using network::SharedURLLoaderFactory;
 
 // TODO(llin): Update the policy detail after finalizing on the consent check.
 constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
@@ -26,41 +26,54 @@ constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
             sender: "ChromeOS Quick Answers"
             description:
               "ChromeOS requests quick answers based on the currently selected "
-              "text."
+              "text to look up a translation, dictionary definition, "
+              "or unit conversion."
             trigger:
               "Right click to trigger context menu."
+            data: "Currently selected text, device language and "
+                  "source language of the selected text "
+                  "is sent to Google API only for translation."
             destination: GOOGLE_OWNED_SERVICE
           }
           policy: {
             cookies_allowed: YES
+            cookies_store: "system"
             setting:
               "Quick Answers can be enabled/disabled in Chrome Settings and is "
               "subject to eligibility requirements. The user may also "
               "separately opt out of sharing screen context with Assistant."
+            chrome_policy {
+                QuickAnswersEnabled {
+                    QuickAnswersEnabled: false
+                }
+                QuickAnswersTranslationEnabled {
+                    QuickAnswersTranslationEnabled: true
+                }
+            }
           })");
 
 }  // namespace
 
-ResultLoader::ResultLoader(URLLoaderFactory* url_loader_factory,
-                           ResultLoaderDelegate* delegate)
-    : network_loader_factory_(url_loader_factory), delegate_(delegate) {}
+ResultLoader::ResultLoader(
+    scoped_refptr<SharedURLLoaderFactory> url_loader_factory,
+    ResultLoaderDelegate* delegate)
+    : url_loader_factory_(url_loader_factory), delegate_(delegate) {}
 
 ResultLoader::~ResultLoader() = default;
 
 // static
 std::unique_ptr<ResultLoader> ResultLoader::Create(
     IntentType intent_type,
-    URLLoaderFactory* url_loader_factory,
+    scoped_refptr<SharedURLLoaderFactory> url_loader_factory,
     ResultLoader::ResultLoaderDelegate* delegate) {
-  if (features::IsQuickAnswersTranslationCloudAPIEnabled() &&
-      intent_type == IntentType::kTranslation)
+  if (intent_type == IntentType::kTranslation)
     return std::make_unique<TranslationResultLoader>(url_loader_factory,
                                                      delegate);
   return std::make_unique<SearchResultLoader>(url_loader_factory, delegate);
 }
 
 void ResultLoader::Fetch(const PreprocessedOutput& preprocessed_output) {
-  DCHECK(network_loader_factory_);
+  DCHECK(url_loader_factory_);
   DCHECK(!preprocessed_output.query.empty());
 
   // Load the resource.
@@ -78,9 +91,13 @@ void ResultLoader::OnBuildRequestComplete(
   if (!request_body.empty())
     loader_->AttachStringForUpload(request_body, "application/json");
 
+  loader_->SetRetryOptions(
+      /*max_retries=*/5, network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
+                             network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+
   fetch_start_time_ = base::TimeTicks::Now();
   loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      network_loader_factory_,
+      url_loader_factory_.get(),
       base::BindOnce(&ResultLoader::OnSimpleURLLoaderComplete,
                      weak_factory_.GetWeakPtr(), preprocessed_output));
 }
@@ -92,8 +109,13 @@ void ResultLoader::OnSimpleURLLoaderComplete(
 
   if (!response_body || loader_->NetError() != net::OK ||
       !loader_->ResponseInfo() || !loader_->ResponseInfo()->headers) {
+    int response_code = -1;
+    if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers) {
+      response_code = loader_->ResponseInfo()->headers->response_code();
+    }
     RecordLoadingStatus(LoadStatus::kNetworkError, duration);
-    RecordNetworkError(preprocessed_output.intent_info.intent_type);
+    RecordNetworkError(preprocessed_output.intent_info.intent_type,
+                       response_code);
     delegate_->OnNetworkError();
     return;
   }
@@ -114,4 +136,3 @@ void ResultLoader::OnResultParserComplete(
   delegate_->OnQuickAnswerReceived(std::move(quick_answer));
 }
 }  // namespace quick_answers
-}  // namespace chromeos

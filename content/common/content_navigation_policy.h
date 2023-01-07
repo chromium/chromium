@@ -1,20 +1,35 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_COMMON_CONTENT_NAVIGATION_POLICY_H_
 #define CONTENT_COMMON_CONTENT_NAVIGATION_POLICY_H_
 
+#include "base/feature_list.h"
 #include "content/common/content_export.h"
 
 #include <array>
 #include <string>
 
+namespace features {
+
+// The BackForwardCache_NoMemoryLimit_Trial feature flag's sole purpose is to
+// make it possible to get a group for "all devices except when BackForwardCache
+// feature is specifically disabled due to non-memory-control reasons". This is
+// done by querying the flag if and only if the device satisifes one of the
+// following:
+// 1) The device does not have enough memory for BackForwardCache, or
+// 2) The device has enough memory and the BackForwardCache feature is enabled.
+// With that, we will include the devices that don't have enough memory while
+// avoiding activating the BackForwardCache experiment, and won’t include
+// devices that do have enough memory but have the BackForwardCache flag
+// disabled.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCache_NoMemoryLimit_Trial);
+}  // namespace features
+
 namespace content {
 
 CONTENT_EXPORT bool IsBackForwardCacheEnabled();
-CONTENT_EXPORT bool IsSameSiteBackForwardCacheEnabled();
-CONTENT_EXPORT bool ShouldSkipSameSiteBackForwardCacheForPageWithUnload();
 CONTENT_EXPORT bool IsBackForwardCacheDisabledByCommandLine();
 CONTENT_EXPORT bool DeviceHasEnoughMemoryForBackForwardCache();
 
@@ -61,7 +76,7 @@ CONTENT_EXPORT bool IsProactivelySwapBrowsingInstanceWithProcessReuseEnabled();
 // or not. Will return true if the value is set to kSameSite.
 // Note that even if this returns false, we might still trigger proactive
 // BrowsingInstance swaps on same-site navigations if
-// IsSameSiteBackForwardCacheEnabled() is true.
+// IsBackForwardCacheEnabled() is true.
 CONTENT_EXPORT bool
 IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled();
 
@@ -75,8 +90,11 @@ enum class RenderDocumentLevel {
   kCrashedFrame = 1,
   // Also do not reuse RenderFrameHosts when navigating subframes.
   kSubframe = 2,
+  // Do not reuse RenderFrameHosts when navigating any frame.
+  kAllFrames = 3,
 };
 CONTENT_EXPORT bool ShouldCreateNewHostForSameSiteSubframe();
+CONTENT_EXPORT bool ShouldCreateNewHostForAllFrames();
 CONTENT_EXPORT RenderDocumentLevel GetRenderDocumentLevel();
 CONTENT_EXPORT std::string GetRenderDocumentLevelName(
     RenderDocumentLevel level);

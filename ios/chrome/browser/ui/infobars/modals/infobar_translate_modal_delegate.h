@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 
 // Indicates the user chose to undo the translation (i.e. show the page in its
 // original language).
-- (void)showOriginalLanguage;
+- (void)showSourceLanguage;
 
 // Indicates the user changed the source/target language and wishes to Translate
 // again.

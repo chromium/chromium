@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,18 @@
 
 #include <vector>
 
-@class ChromeIdentity;
 @class UnifiedConsentCoordinator;
+@protocol SystemIdentity;
 
 // Delegate protocol for UnifiedConsentCoordinator.
 @protocol UnifiedConsentCoordinatorDelegate<NSObject>
 
 // Called when the user taps on the settings link.
 - (void)unifiedConsentCoordinatorDidTapSettingsLink:
+    (UnifiedConsentCoordinator*)coordinator;
+
+// Called when the user taps on the 'Learn More' link.
+- (void)unifiedConsentCoordinatorDidTapLearnMoreLink:
     (UnifiedConsentCoordinator*)coordinator;
 
 // Called when the user scrolls down to the bottom (or when the view controller
@@ -40,20 +44,18 @@
 // a sub view controller to ask for the user consent before the user can
 // sign-in.
 // All the string ids displayed by the view are available with
-// |consentStringIds| and |openSettingsStringId|. Those can be used to record
-// the consent agreed by the user.
+// `consentStringIds`. Those can be used to record the consent agreed by the
+// user.
 @interface UnifiedConsentCoordinator : ChromeCoordinator
 
 @property(nonatomic, weak) id<UnifiedConsentCoordinatorDelegate> delegate;
-// Identity selected by the user to sign-in. By default, the first identity from
-// GetAllIdentitiesSortedForDisplay() is used.
-// Must be non-nil if at least one identity exists.
-@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
+// Identity selected by the user to sign-in. By default, the identity returned
+// by `GetDefaultIdentity()` is used. Must be non-nil if at least one identity
+// exists.
+@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 // Informs the coordinator whether the identity picker should automatically be
 // open when the UnifiedConsent view appears.
 @property(nonatomic) BOOL autoOpenIdentityPicker;
-// String id for text to open the settings (related to record the user consent).
-@property(nonatomic, readonly) int openSettingsStringId;
 // View controller used to display the view.
 @property(nonatomic, strong, readonly) UIViewController* viewController;
 // Returns YES if the consent view is scrolled to the bottom.
@@ -62,6 +64,21 @@
 @property(nonatomic, readonly) BOOL settingsLinkWasTapped;
 // If YES, the UI elements are disabled.
 @property(nonatomic, assign, getter=isUIDisabled) BOOL uiDisabled;
+// Returns true if there are policies disabling Sync for at least one data type.
+@property(nonatomic, readonly) BOOL hasManagedSyncDataType;
+// Returns true if there are account restrictions.
+@property(nonatomic, readonly) BOOL hasAccountRestrictions;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Initializes the instance.
+// `postRestoreSigninPromoView` should be set to YES, if the dialog is used for
+// post restore sign-in promo.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                    postRestoreSigninPromo:(BOOL)postRestoreSigninPromo
+    NS_DESIGNATED_INITIALIZER;
 
 // List of string ids used for the user consent. The string ids order matches
 // the way they appear on the screen.

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 // Web page.
 @interface LinkToTextPayload : NSObject
 
-// Initializes an object with the |URL| of the Web page containing text
-// fragments, the page's |title|, the |selectedText| itself, the |sourceView|
-// which contains the text, and |sourceRect| showing where that text is located.
+// Initializes an object with the `URL` of the Web page containing text
+// fragments, the page's `title`, the `selectedText` itself, the `sourceView`
+// which contains the text, and `sourceRect` showing where that text is located.
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
                selectedText:(NSString*)selectedText

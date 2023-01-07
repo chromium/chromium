@@ -1,14 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.content.browser.accessibility;
 
+import static org.chromium.content.browser.accessibility.AccessibilityContentShellActivityTestRule.EVENTS_ERROR;
+import static org.chromium.content.browser.accessibility.AccessibilityContentShellActivityTestRule.RESULTS_NULL;
+
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
 
 import androidx.test.filters.SmallTest;
 
@@ -17,56 +17,26 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.base.test.util.UrlUtils;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
+import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 
 /**
- * Tests for WebContentsAccessibilityImpl integration with AT.
+ * Tests for WebContentsAccessibilityImpl integration with accessibility services.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ContentJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("VisibleForTests")
+@Batch(Batch.PER_CLASS)
 public class WebContentsAccessibilityEventsTest {
-    // Test output error messages.
-    private static final String EVENTS_ERROR =
-            "Generated events and actions did not match expectations.";
-    private static final String EXPECTATIONS_NULL =
-            "Test expectations were null, perhaps the file is missing?";
-    private static final String RESULTS_NULL =
-            "Test results were null, did you remember to add the tracker to WCAI?";
-
-    // Member variables required for testing framework
-    private static final String BASE_DIRECTORY = "/chromium_tests_root";
+    // File path that holds all the relevant tests.
     private static final String BASE_FILE_PATH = "content/test/data/accessibility/event/";
     private static final String EMPTY_EXPECTATIONS_FILE = "EmptyExpectationsFile";
 
     @Rule
     public AccessibilityContentShellActivityTestRule mActivityTestRule =
             new AccessibilityContentShellActivityTestRule();
-
-    /**
-     * Helper methods for setup of a basic web contents accessibility unit test.
-     *
-     * This method replaces the usual setUp() method annotated with @Before because we wish to
-     * load different data with each test, but the process is the same for all tests.
-     *
-     * Leaving a commented @Before annotation on each method as a reminder/context clue.
-     */
-    /* @Before */
-    protected void setupTestFromFile(String filepath) {
-        mActivityTestRule.launchContentShellWithUrl(UrlUtils.getIsolatedTestFileUrl(filepath));
-        mActivityTestRule.waitForActiveShellToBeDoneLoading();
-        mActivityTestRule.setupTestFramework();
-        mActivityTestRule.setAccessibilityDelegate();
-    }
 
     /**
      * Perform a single test which will:
@@ -84,6 +54,31 @@ public class WebContentsAccessibilityEventsTest {
     /**
      * Perform a single test which will:
      *      1. Open the given HTML file
+     *      2. Execute the javascript method "go()"
+     *      3. Repeat above step a total of |count| times
+     *      4. Read expectations file and compare with results
+     *
+     * @param inputFile                     HTML test input file
+     * @param expectationFile               TXT expectations file
+     * @param count                         Number of times to run method.
+     */
+    private void performTestWithRepeatCounter(String inputFile, String expectationFile, int count) {
+        // Build page from given file and enable testing framework, set a tracker.
+        mActivityTestRule.setupTestFromFile(BASE_FILE_PATH + inputFile);
+
+        // Execute method a given number of times.
+        for (int i = 0; i < count; i++) {
+            mActivityTestRule.executeJS("go()");
+        }
+
+        // Send an "end of test" signal, then check results.
+        mActivityTestRule.sendEndOfTestSignal();
+        assertResults(expectationFile);
+    }
+
+    /**
+     * Perform a single test which will:
+     *      1. Open the given HTML file
      *      2. Execute the given javascript method
      *      3. Read expectations file and compare with results
      *
@@ -94,7 +89,7 @@ public class WebContentsAccessibilityEventsTest {
     private void performTestWithJavascriptMethod(
             String inputFile, String expectationFile, String javascriptMethod) {
         // Build page from given file and enable testing framework, set a tracker.
-        setupTestFromFile(BASE_FILE_PATH + inputFile);
+        mActivityTestRule.setupTestFromFile(BASE_FILE_PATH + inputFile);
 
         // Execute given javascript function.
         executeJS(javascriptMethod);
@@ -116,56 +111,21 @@ public class WebContentsAccessibilityEventsTest {
         if (expectationFile.equals(EMPTY_EXPECTATIONS_FILE)) {
             expectedResults = "";
         } else {
-            expectedResults = readExpectationFile(expectationFile);
+            expectedResults =
+                    mActivityTestRule.readExpectationFile(BASE_FILE_PATH + expectationFile);
         }
-        Assert.assertNotNull(EXPECTATIONS_NULL, expectedResults);
 
         String actualResults = getTrackerResults();
         Assert.assertNotNull(RESULTS_NULL, actualResults);
 
-        Assert.assertEquals(EVENTS_ERROR, expectedResults, actualResults);
-    }
-
-    /**
-     * Read the contents of a file, and return as a String.
-     *
-     * @param fileName              Filename to read
-     * @return String               Contents of the given file.
-     */
-    private String readExpectationFile(String fileName) {
-        String directory = Environment.getExternalStorageDirectory().getPath() + BASE_DIRECTORY;
-
-        try {
-            File expectedFile = new File(directory, "/" + BASE_FILE_PATH + fileName);
-            FileInputStream fis = new FileInputStream(expectedFile);
-
-            byte[] data = new byte[(int) expectedFile.length()];
-            fis.read(data);
-            fis.close();
-
-            return new String(data);
-        } catch (IOException e) {
-            return null;
-        }
+        Assert.assertEquals(EVENTS_ERROR + "\n\nExpected:\n" + expectedResults + "\n\nActual:\n"
+                        + actualResults + "\n\n",
+                expectedResults, actualResults);
     }
 
     // Helper pass-through methods to make tests easier to read.
-    private <T> int waitForNodeMatching(
-            AccessibilityContentShellTestUtils.AccessibilityNodeInfoMatcher<T> matcher, T element) {
-        return mActivityTestRule.waitForNodeMatching(matcher, element);
-    }
-
-    private boolean performActionOnUiThread(int viewId, int action, Bundle args)
-            throws ExecutionException {
-        return mActivityTestRule.performActionOnUiThread(viewId, action, args);
-    }
-
     private void executeJS(String method) {
         mActivityTestRule.executeJS(method);
-    }
-
-    private void focusNode(int virtualViewId) throws Throwable {
-        mActivityTestRule.focusNode(virtualViewId);
     }
 
     private String getTrackerResults() {
@@ -174,9 +134,22 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1186376")
+    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_addAlert() {
         performTest("add-alert.html", "add-alert-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_addAlertWithRoleChange() {
+        performTest("add-alert-with-role-change.html",
+                "add-alert-with-role-change-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_addAlertContent() {
+        performTest("add-alert-content.html", "add-alert-content-expected-android.txt");
     }
 
     @Test
@@ -189,6 +162,27 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     public void test_addChildOfBody() {
         performTest("add-child-of-body.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void test_addDialog() {
+        performTest("add-dialog.html", "add-dialog-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void test_addDialog_describedBy() {
+        performTest("add-dialog-described-by.html", "add-dialog-described-by-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void test_addDialog_noInfo() {
+        performTest("add-dialog-no-info.html", "add-dialog-no-info-expected-android.txt");
     }
 
     @Test
@@ -211,8 +205,20 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_anonymousBlockChildrenChanged() {
+        performTest("anonymous-block-children-changed.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaAtomicChanged() {
         performTest("aria-atomic-changed.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaAtomicChanged2() {
+        performTest("aria-atomic-changed2.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
@@ -230,7 +236,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaCheckedChanged() {
-        performTest("aria-checked-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-checked-changed.html", "aria-checked-changed-expected-android.txt");
     }
 
     @Test
@@ -254,7 +260,8 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaComboboxExpand() {
-        performTest("aria-combo-box-expand.html", "aria-combo-box-expand-expected-android.txt");
+        performTestWithRepeatCounter(
+                "aria-combo-box-expand.html", "aria-combo-box-expand-expected-android.txt", 3);
     }
 
     @Test
@@ -374,7 +381,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_ariaMenuItemFocus() {
         performTest("aria-menuitem-focus.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -400,7 +407,14 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaPressedChanged() {
-        performTest("aria-pressed-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-pressed-changed.html", "aria-pressed-changed-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaPressedChangesButtonRole() {
+        performTest("aria-pressed-changes-button-role.html",
+                "aria-pressed-changes-button-role-expected-android.txt");
     }
 
     @Test
@@ -413,6 +427,12 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     public void test_ariaRelevantChanged() {
         performTest("aria-relevant-changed.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaRelevantChanged2() {
+        performTest("aria-relevant-changed2.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
@@ -480,6 +500,24 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_ariaTextboxChildrenChange() {
+        performTest("aria-textbox-children-change.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTextboxEditabilityChanges() {
+        performTest("aria-textbox-editability-changes.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTextboxWithFocusableChildren() {
+        performTest("aria-textbox-with-focusable-children.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaTreeCollapse() {
         performTest("aria-tree-collapse.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -492,7 +530,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_ariaTreeItemFocus() {
         performTest("aria-treeitem-focus.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -523,21 +561,21 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1186376")
+    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_caretHide() {
         performTest("caret-hide.html", "caret-hide-expected-android.txt");
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1186376")
+    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_caretMoveHiddenInput() {
         performTest("caret-move-hidden-input.html", "caret-move-hidden-input-expected-android.txt");
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1186376")
+    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_caretMove() {
         performTest("caret-move.html", "caret-move-expected-android.txt");
     }
@@ -646,14 +684,14 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_focusListbox() {
         performTest("focus-listbox.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_focusListboxMultiselect() {
         performTest("focus-listbox-multiselect.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -672,8 +710,38 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_immediateRefresh() {
+        performTest("immediate-refresh.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
     public void test_innerHtmlChanged() {
         performTest("inner-html-change.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    public void test_iframeSrcChanged() {
+        performTest("iframe-src-changed.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    public void test_inputCombobox() {
+        performTest("input-combobox.html", "input-combobox-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_inputComboboxAria1() {
+        performTest("input-combobox-aria1.html", "input-combobox-aria1-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_inputComboboxDialog() {
+        performTest("input-combobox-dialog.html", "input-combobox-dialog-expected-android.txt");
     }
 
     @Test
@@ -684,7 +752,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_listboxFocus() {
         performTest("listbox-focus.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -749,8 +817,20 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_liveRegionOff() {
+        performTest("live-region-off.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
     public void test_liveRegionRemove() {
         performTest("live-region-remove.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
+    public void test_menuBarShowHideMenus() {
+        performTest("menubar-show-hide-menus.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
@@ -773,7 +853,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_menulistFocus() {
         performTest("menulist-focus.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -782,12 +862,6 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     public void test_menulistNext() {
         performTest("menulist-next.html", EMPTY_EXPECTATIONS_FILE);
-    }
-
-    @Test
-    @SmallTest
-    public void test_menulistPopup() {
-        performTest("menulist-popup.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
@@ -816,8 +890,14 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_navigationApi() {
+        performTest("navigation-api.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
     public void test_pressedStateChanged() {
-        performTest("pressed-state-change.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("pressed-state-changed.html", "pressed-state-changed-expected-android.txt");
     }
 
     @Test
@@ -877,6 +957,12 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_reparentElementWithActiveDescendant() {
+        performTest("reparent-element-with-active-descendant.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
     public void test_reportValidityInvalidField() {
         performTest("report-validity-invalid-field.html",
                 "report-validity-invalid-field-expected-android.txt");
@@ -884,7 +970,14 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1186376")
+    public void test_samePageLinkNavigation() {
+        performTest(
+                "same-page-link-navigation.html", "same-page-link-navigation-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_scrollHorizontalScrollPercentChanged() {
         performTest("scroll-horizontal-scroll-percent-change.html",
                 "scroll-horizontal-scroll-percent-change-expected-android.txt");
@@ -892,7 +985,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1186376")
+    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_scrollVerticalScrollPercentChanged() {
         performTest("scroll-vertical-scroll-percent-change.html",
                 "scroll-vertical-scroll-percent-change-expected-android.txt");
@@ -954,7 +1047,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_tbodyFocus() {
         performTest("tbody-focus.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -1005,14 +1098,14 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_tfootFocus() {
         performTest("tfoot-focus.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_theadFocus() {
         performTest("thead-focus.html", EMPTY_EXPECTATIONS_FILE);
     }

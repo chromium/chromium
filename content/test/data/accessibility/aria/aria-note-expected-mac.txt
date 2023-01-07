@@ -1,2 +1,2 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='note'
+++AXGroup AXSubrole=AXDocumentNote AXRoleDescription='note'

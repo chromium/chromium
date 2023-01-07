@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -235,7 +235,8 @@ class CleanerLoggingServiceTest : public testing::TestWithParam<ExecutionMode> {
 
     registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER);
     // The registry logger must be created after calling OverrideRegistry.
-    registry_logger_.reset(new RegistryLogger(RegistryLogger::Mode::REMOVER));
+    registry_logger_ =
+        std::make_unique<RegistryLogger>(RegistryLogger::Mode::REMOVER);
 
     // By default, tests use the NoOpLoggingService, so individual tests that
     // need logging need to enable it.
@@ -1154,8 +1155,8 @@ TEST_P(CleanerLoggingServiceTest, LogProcessInformation) {
   io_counters.ReadTransferCount = 4;
   io_counters.WriteTransferCount = 5;
   io_counters.OtherTransferCount = 6;
-  SystemResourceUsage usage = {io_counters, base::TimeDelta::FromSeconds(10),
-                               base::TimeDelta::FromSeconds(20), 123456};
+  SystemResourceUsage usage = {io_counters, base::Seconds(10),
+                               base::Seconds(20), 123456};
 
   logging_service_->EnableUploads(true, registry_logger_.get());
   logging_service_->LogProcessInformation(SandboxType::kNonSandboxed, usage);

@@ -1,0 +1,15 @@
+{
+    "Cellular.EID": "12345678901234567890123456789012",
+    "Cellular.ICCID": "1000000000000000000",
+    "Connectable": true,
+    "Device": "/device/cellular1",
+    "GUID": "policy_cellular",
+    "Metered": true,
+    "Name": "policy_cellular",
+    "ONCSource": "DevicePolicy",
+    "Profile": "/profile/default",
+    "State": "idle",
+    "Type": "cellular",
+    "UIData": "{\"onc_source\":\"device_policy\"}",
+    "Visible": true
+ }

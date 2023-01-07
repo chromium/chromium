@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_REQUEST_UTILS_H_
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 
 namespace password_manager {
@@ -82,9 +81,9 @@ void AnalyzeResponse(std::unique_ptr<SingleLookupResponse> response,
 
 // Requests an access token for the API. |callback| is to be called with the
 // result. The caller should keep the returned fetcher alive.
-std::unique_ptr<signin::AccessTokenFetcher> RequestAccessToken(
+[[nodiscard]] std::unique_ptr<signin::AccessTokenFetcher> RequestAccessToken(
     signin::IdentityManager* identity_manager,
-    signin::AccessTokenFetcher::TokenCallback callback) WARN_UNUSED_RESULT;
+    signin::AccessTokenFetcher::TokenCallback callback);
 
 }  // namespace password_manager
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,6 @@ SearchBoxModel::SearchBoxModel() = default;
 
 SearchBoxModel::~SearchBoxModel() = default;
 
-void SearchBoxModel::SetTabletMode(bool is_tablet_mode) {
-  is_tablet_mode_ = is_tablet_mode;
-}
-
 void SearchBoxModel::SetShowAssistantButton(bool show) {
   if (show_assistant_button_ == show)
     return;
@@ -34,24 +30,6 @@ void SearchBoxModel::SetSearchEngineIsGoogle(bool is_google) {
   search_engine_is_google_ = is_google;
   for (auto& observer : observers_)
     observer.SearchEngineChanged();
-}
-
-void SearchBoxModel::Update(const std::u16string& text,
-                            bool initiated_by_user) {
-  if (text_ == text)
-    return;
-
-  if (initiated_by_user) {
-    if (text_.empty() && !text.empty()) {
-      UMA_HISTOGRAM_ENUMERATION("Apps.AppListSearchCommenced", 1, 2);
-      base::RecordAction(base::UserMetricsAction("AppList_EnterSearch"));
-    } else if (!text_.empty() && text.empty()) {
-      base::RecordAction(base::UserMetricsAction("AppList_LeaveSearch"));
-    }
-  }
-  text_ = text;
-  for (auto& observer : observers_)
-    observer.Update();
 }
 
 void SearchBoxModel::AddObserver(SearchBoxModelObserver* observer) {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,8 @@ ArcCustomTabModalDialogHost::~ArcCustomTabModalDialogHost() {
   // WebContentsModalDialogManager::SetDelegate(nullptr)
 }
 
-void ArcCustomTabModalDialogHost::MainFrameWasResized(bool width_changed) {
+void ArcCustomTabModalDialogHost::PrimaryMainFrameWasResized(
+    bool width_changed) {
   for (auto& observer : observer_list_)
     observer.OnPositionRequiresUpdate();
 }

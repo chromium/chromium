@@ -1,0 +1,109 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_static_library.gni")
+import("//build/rust/rust_unit_test.gni")
+import("//build/rust/rust_unit_tests_group.gni")
+
+# Meta target to build everything
+group("rust") {
+  deps = [ ":mojo_rust" ]
+}
+
+# Meta target to build test binaries, if supported.
+rust_unit_tests_group("mojo_rust_tests") {
+  deps = []
+  if (can_build_rust_unit_tests) {
+    deps += [ ":mojo_rust_unittests" ]
+  }
+  if (rustc_can_link) {
+    deps += [ ":mojo_rust_extra_tests" ]
+  }
+}
+
+static_library("c_test_support") {
+  testonly = true
+  sources = [ "test_support.cc" ]
+  deps = [
+    "//base",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings/tests:mojo_public_bindings_test_utils",
+  ]
+  visibility = [ ":*" ]
+}
+
+source_set("mojo_c_system_wrapper") {
+  sources = [ "system/wrapper.h" ]
+  deps = [ "//mojo/public/c/system:headers" ]
+  visibility = [ ":*" ]
+}
+
+rust_bindgen("mojo_c_system_binding") {
+  header = "system/wrapper.h"
+  deps = [ ":mojo_c_system_wrapper" ]
+  visibility = [ ":*" ]
+}
+
+rust_static_library("mojo_rust") {
+  crate_root = "lib.rs"
+  unit_test_target =
+      "mojo_rust_unittests"  # avoids conflict with C++ target elsewhere
+  crate_name = "mojo"
+  edition = "2018"
+
+  # TODO(danakj): Move to a gtest target.
+  build_native_rust_unit_tests = true
+  sources = [
+    "bindings/decoding.rs",
+    "bindings/encoding.rs",
+    "bindings/macros.rs",
+    "bindings/message.rs",
+    "bindings/mod.rs",
+    "bindings/mojom.rs",
+    "bindings/run_loop.rs",
+    "bindings/util.rs",
+    "lib.rs",
+    "system/core.rs",
+    "system/data_pipe.rs",
+    "system/ffi.rs",
+    "system/handle.rs",
+    "system/message_pipe.rs",
+    "system/mod.rs",
+    "system/mojo_types.rs",
+    "system/shared_buffer.rs",
+    "system/trap.rs",
+    "system/wait.rs",
+    "system/wait_set.rs",
+  ]
+
+  deps = [
+    ":mojo_c_system_binding",
+    ":mojo_c_system_wrapper",
+    "//third_party/rust/bitflags/v1:lib",
+  ]
+
+  bindgen_output = get_target_outputs(":mojo_c_system_binding")
+  inputs = bindgen_output
+  rustenv = [ "BINDGEN_RS_FILE=" + rebase_path(bindgen_output[0]) ]
+}
+
+if (rustc_can_link) {
+  rust_unit_test("mojo_rust_extra_tests") {
+    testonly = true
+    crate_root = "tests/lib.rs"
+    edition = "2018"
+    sources = [
+      "tests/integration.rs",
+      "tests/lib.rs",
+    ]
+    deps = [
+      ":c_test_support",
+      ":mojo_rust",
+      "//mojo/public/c/system",
+      "//third_party/rust/lazy_static/v1:lib",
+    ]
+  }
+}

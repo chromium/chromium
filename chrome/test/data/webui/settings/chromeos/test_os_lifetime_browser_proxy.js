@@ -1,47 +1,36 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
-// #import {LifetimeBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
-cr.define('settings', function() {
-  /**
-   * A test version of LifetimeBrowserProxy.
-   *
-   * @implements {settings.LifetimeBrowserProxy}
-   */
-  /* #export */ class TestLifetimeBrowserProxy extends TestBrowserProxy {
-    constructor() {
-      const methodNames = ['restart', 'relaunch'];
-      methodNames.push('signOutAndRestart', 'factoryReset');
-      super(methodNames);
-    }
-
-    /** @override */
-    restart() {
-      this.methodCalled('restart');
-    }
-
-    /** @override */
-    relaunch() {
-      this.methodCalled('relaunch');
-    }
-
-    /** @override */
-    signOutAndRestart() {
-      this.methodCalled('signOutAndRestart');
-    }
-
-    /** @override */
-    factoryReset(requestTpmFirmwareUpdate) {
-      this.methodCalled('factoryReset', requestTpmFirmwareUpdate);
-    }
-
+/**
+ * A test version of LifetimeBrowserProxy.
+ */
+export class TestLifetimeBrowserProxy extends TestBrowserProxy {
+  constructor() {
+    const methodNames = ['restart', 'relaunch'];
+    methodNames.push('signOutAndRestart', 'factoryReset');
+    super(methodNames);
   }
-  
-  // #cr_define_end
-  return {
-    TestLifetimeBrowserProxy: TestLifetimeBrowserProxy,
-  };
-});
+
+  /** @override */
+  restart() {
+    this.methodCalled('restart');
+  }
+
+  /** @override */
+  relaunch() {
+    this.methodCalled('relaunch');
+  }
+
+  /** @override */
+  signOutAndRestart() {
+    this.methodCalled('signOutAndRestart');
+  }
+
+  /** @override */
+  factoryReset(requestTpmFirmwareUpdate) {
+    this.methodCalled('factoryReset', requestTpmFirmwareUpdate);
+  }
+}

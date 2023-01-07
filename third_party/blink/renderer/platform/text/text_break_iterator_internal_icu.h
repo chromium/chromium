@@ -32,4 +32,4 @@ PLATFORM_EXPORT const char* CurrentSearchLocaleID();
 PLATFORM_EXPORT const char* CurrentTextBreakLocaleID();
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_BREAK_ITERATOR_INTERNAL_ICU_H_

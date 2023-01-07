@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,11 @@
 #define COMPONENTS_SYNC_DRIVER_MODEL_TYPE_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
@@ -37,21 +36,17 @@ class ModelTypeController : public DataTypeController {
       ModelType type,
       std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode,
       std::unique_ptr<ModelTypeControllerDelegate> delegate_for_transport_mode);
-  ~ModelTypeController() override;
 
-  // Steals the activation response, only used for Nigori.
-  // TODO(crbug.com/967677): Once all datatypes are in USS, we should redesign
-  // or remove ActivateDataType, and expose the activation response via
-  // LoadModels(), which is more natural in USS.
-  std::unique_ptr<DataTypeActivationResponse> ActivateManuallyForNigori();
+  ModelTypeController(const ModelTypeController&) = delete;
+  ModelTypeController& operator=(const ModelTypeController&) = delete;
+
+  ~ModelTypeController() override;
 
   // DataTypeController implementation.
   void LoadModels(const ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
-  ActivateDataTypeResult ActivateDataType(
-      ModelTypeConfigurer* configurer) override;
-  void DeactivateDataType(ModelTypeConfigurer* configurer) override;
-  void Stop(ShutdownReason shutdown_reason, StopCallback callback) override;
+  std::unique_ptr<DataTypeActivationResponse> Connect() override;
+  void Stop(ShutdownReason reason, StopCallback callback) override;
   State state() const override;
   bool ShouldRunInTransportOnlyMode() const override;
   void GetAllNodes(AllNodesCallback callback) override;
@@ -88,7 +83,7 @@ class ModelTypeController : public DataTypeController {
   State state_ = NOT_RUNNING;
 
   // Owned by |delegate_map_|. Null while NOT_RUNNING.
-  ModelTypeControllerDelegate* delegate_ = nullptr;
+  raw_ptr<ModelTypeControllerDelegate> delegate_ = nullptr;
 
   // Callback for use when starting the datatype (usually MODEL_STARTING, but
   // STOPPING if abort requested while starting).
@@ -105,10 +100,8 @@ class ModelTypeController : public DataTypeController {
 
   // Controller receives |activation_response_| from
   // ClientTagBasedModelTypeProcessor callback and must temporarily own it until
-  // ActivateDataType is called.
+  // Connect is called.
   std::unique_ptr<DataTypeActivationResponse> activation_response_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModelTypeController);
 };
 
 }  // namespace syncer

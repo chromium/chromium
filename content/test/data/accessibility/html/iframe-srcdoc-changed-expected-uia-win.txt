@@ -1,4 +1,4 @@
 Document Name='done'
 ++Group IsControlElement=false
 ++++Document
-++++++Document
+++++++Document Value.Value='about:srcdoc'

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -31,6 +29,11 @@ class PepperPlatformVideoCapture {
   PepperPlatformVideoCapture(int render_frame_id,
                              const std::string& device_id,
                              PepperVideoCaptureHost* handler);
+
+  PepperPlatformVideoCapture(const PepperPlatformVideoCapture&) = delete;
+  PepperPlatformVideoCapture& operator=(const PepperPlatformVideoCapture&) =
+      delete;
+
   virtual ~PepperPlatformVideoCapture();
 
   // Detaches the event handler and stops sending notifications to it.
@@ -69,8 +72,6 @@ class PepperPlatformVideoCapture {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<PepperPlatformVideoCapture> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPlatformVideoCapture);
 };
 
 }  // namespace content

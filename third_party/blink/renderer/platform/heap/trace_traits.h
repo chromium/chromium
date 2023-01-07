@@ -1,23 +1,36 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_TRACE_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_TRACE_TRAITS_H_
 
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include <tuple>
+
+#include "base/notreached.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
-
-#if BUILDFLAG(USE_V8_OILPAN)
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/trace_traits.h"
-#else  // !USE_V8_OILPAN
-#include "third_party/blink/renderer/platform/heap/impl/trace_traits.h"
-#endif  // !USE_V8_OILPAN
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
+#include "v8/include/cppgc/trace-trait.h"
 
 namespace blink {
+
+template <typename T, bool = WTF::IsTraceable<T>::value>
+struct TraceIfNeeded;
+
+template <typename T>
+struct TraceIfNeeded<T, false> {
+  STATIC_ONLY(TraceIfNeeded);
+  static void Trace(Visitor*, const T&) {}
+};
+
+template <typename T>
+struct TraceIfNeeded<T, true> {
+  STATIC_ONLY(TraceIfNeeded);
+  static void Trace(Visitor* visitor, const T& t) { visitor->Trace(t); }
+};
 
 template <WTF::WeakHandlingFlag weakness,
           typename T,
@@ -125,5 +138,31 @@ struct TraceInCollectionTrait<kWeakHandling, blink::WeakMember<T>, Traits> {
 };
 
 }  // namespace WTF
+
+namespace cppgc {
+
+// This trace trait for std::pair will clear WeakMember if their referent is
+// collected. If you have a collection that contain weakness it does not remove
+// entries from the collection that contain nulled WeakMember.
+template <typename T, typename U>
+struct TraceTrait<std::pair<T, U>> {
+  STATIC_ONLY(TraceTrait);
+
+ public:
+  static TraceDescriptor GetTraceDescriptor(const void* self) {
+    // The following code should never be reached as tracing through std::pair
+    // should always happen eagerly by directly invoking `Trace()` below. This
+    // happens e.g. when being used in HeapVector<std::pair<...>>.
+    NOTREACHED();
+    return {nullptr, Trace};
+  }
+
+  static void Trace(Visitor* visitor, const std::pair<T, U>* pair) {
+    blink::TraceIfNeeded<U>::Trace(visitor, pair->second);
+    blink::TraceIfNeeded<T>::Trace(visitor, pair->first);
+  }
+};
+
+}  // namespace cppgc
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_TRACE_TRAITS_H_

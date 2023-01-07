@@ -1,0 +1,46 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.assistant.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// A factory for creating an assistant audio decoder.
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+interface AssistantAudioDecoderFactory {
+  // Creates an AssistantAudioDecoder to decode audio stream data from
+  // |data_source|.
+  // |client|'s methods will be called when certain events happen.
+  CreateAssistantAudioDecoder(
+      pending_receiver<AssistantAudioDecoder> audio_decoder,
+      pending_remote<AssistantAudioDecoderClient> client,
+      pending_remote<AssistantMediaDataSource> data_source);
+};
+
+// Interface to communicate with assistant audio decoder service.
+interface AssistantAudioDecoder {
+  // Reads the audio data format.
+  OpenDecoder() => (bool success,
+                    uint32 bytes_per_sample,
+                    uint32 samples_per_second,
+                    uint32 channels);
+
+  // Reads the audio data and decodes.
+  Decode();
+
+  // Close decoder to clean up.
+  CloseDecoder() => ();
+};
+
+// Interface for assistant audio decoder service to call into client.
+interface AssistantAudioDecoderClient {
+  // Called when new audio buffers have been decoded.
+  // |buffers| are in interleaved format.
+  OnNewBuffers(array<array<uint8>> buffers);
+};
+
+// Interface used to read data from the calling process.
+interface AssistantMediaDataSource {
+  Read(uint32 size) => (array<uint8> data);
+};

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/devices/x11/events_devices_x11_export.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/sequential_id_generator.h"
@@ -38,6 +38,9 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
  public:
   // Returns the TouchFactory singleton.
   static TouchFactory* GetInstance();
+
+  TouchFactory(const TouchFactory&) = delete;
+  TouchFactory& operator=(const TouchFactory&) = delete;
 
   // Sets the touch devices from the command line.
   static void SetTouchDeviceListFromCommandLine();
@@ -148,7 +151,7 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
   std::set<std::pair<int, int>> touchscreen_ids_;
 
   // Device ID of the virtual core keyboard.
-  base::Optional<x11::Input::DeviceId> virtual_core_keyboard_device_;
+  absl::optional<x11::Input::DeviceId> virtual_core_keyboard_device_;
 
   SequentialIDGenerator id_generator_;
 
@@ -157,8 +160,6 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
 
   // The status of the touch screens devices themselves.
   bool touch_screens_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchFactory);
 };
 
 }  // namespace ui

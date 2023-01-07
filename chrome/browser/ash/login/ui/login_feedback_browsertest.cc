@@ -1,59 +1,77 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/ui/login_feedback.h"
 
-#include <memory>
-
-#include "apps/test/app_window_waiter.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/extension_constants.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/app_window/native_app_window.h"
-#include "ui/aura/client/focus_client.h"
-#include "ui/base/base_window.h"
 
-namespace chromeos {
+namespace ash {
 
 class LoginFeedbackTest : public LoginManagerTest {
  public:
   LoginFeedbackTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(2);
   }
+
+  LoginFeedbackTest(const LoginFeedbackTest&) = delete;
+  LoginFeedbackTest& operator=(const LoginFeedbackTest&) = delete;
+
   ~LoginFeedbackTest() override {}
 
  private:
   LoginManagerMixin login_mixin_{&mixin_host_};
-  DISALLOW_COPY_AND_ASSIGN(LoginFeedbackTest);
 };
+
+void EnsureFeedbackAppUIShown(FeedbackDialog* feedback_dialog,
+                              base::OnceClosure callback) {
+  auto* widget = feedback_dialog->GetWidget();
+  ASSERT_NE(nullptr, widget);
+  if (widget->IsActive()) {
+    std::move(callback).Run();
+  } else {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&EnsureFeedbackAppUIShown, feedback_dialog,
+                       std::move(callback)),
+        base::Seconds(1));
+  }
+}
 
 void TestFeedback() {
   Profile* const profile = ProfileHelper::GetSigninProfile();
   std::unique_ptr<LoginFeedback> login_feedback(new LoginFeedback(profile));
 
   base::RunLoop run_loop;
-  login_feedback->Request("Test feedback", run_loop.QuitClosure());
+  // Test that none feedback dialog exists.
+  ASSERT_EQ(nullptr, FeedbackDialog::GetInstanceForTest());
 
-  extensions::AppWindow* feedback_window =
-      apps::AppWindowWaiter(extensions::AppWindowRegistry::Get(profile),
-                            extension_misc::kFeedbackExtensionId)
-          .WaitForShown();
-  ASSERT_NE(nullptr, feedback_window);
-  EXPECT_FALSE(feedback_window->is_hidden());
+  login_feedback->Request("Test feedback");
+  FeedbackDialog* feedback_dialog = FeedbackDialog::GetInstanceForTest();
+  // Test that a feedback dialog object has been created.
+  ASSERT_NE(nullptr, feedback_dialog);
 
-  EXPECT_TRUE(feedback_window->GetBaseWindow()->IsActive());
-
-  feedback_window->GetBaseWindow()->Close();
+  // The feedback app starts invisible until after a screenshot has been taken
+  // via JS on the UI side. Afterward, JS will send a request to show the app
+  // window via a message handler.
+  EnsureFeedbackAppUIShown(feedback_dialog, run_loop.QuitClosure());
   run_loop.Run();
+
+  // Test that the feedback app is visible now.
+  EXPECT_TRUE(feedback_dialog->GetWidget()->IsVisible());
+  // Test that the feedback app window is modal.
+  EXPECT_TRUE(feedback_dialog->GetWidget()->IsModal());
+
+  // Close the feedback dialog.
+  feedback_dialog->GetWidget()->Close();
 }
 
 // Test feedback UI shows up and is active on the Login Screen
@@ -66,4 +84,4 @@ IN_PROC_BROWSER_TEST_F(OobeBaseTest, FeedbackBasic) {
   TestFeedback();
 }
 
-}  // namespace chromeos
+}  // namespace ash

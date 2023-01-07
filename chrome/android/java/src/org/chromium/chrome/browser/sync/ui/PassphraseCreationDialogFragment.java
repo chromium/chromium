@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,9 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
  * Dialog to ask the user to enter a new custom passphrase.
  */
 public class PassphraseCreationDialogFragment extends DialogFragment {
-    public interface Listener { void onPassphraseCreated(String passphrase); }
+    public interface Listener {
+        void onPassphraseCreated(String passphrase);
+    }
 
     private EditText mEnterPassphrase;
     private EditText mConfirmPassphrase;
@@ -60,7 +62,7 @@ public class PassphraseCreationDialogFragment extends DialogFragment {
         instructionsView.setText(getInstructionsText());
 
         AlertDialog dialog =
-                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setView(view)
                         .setTitle(R.string.sync_passphrase_type_custom_dialog_title)
                         .setPositiveButton(R.string.save, null)
@@ -72,8 +74,7 @@ public class PassphraseCreationDialogFragment extends DialogFragment {
 
     private SpannableString getInstructionsText() {
         final Activity activity = getActivity();
-        return SpanApplier.applySpans(
-                activity.getString(R.string.sync_custom_passphrase),
+        return SpanApplier.applySpans(activity.getString(R.string.sync_custom_passphrase),
                 new SpanInfo("<learnmore>", "</learnmore>", new ClickableSpan() {
                     @Override
                     public void onClick(View view) {

@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate/translate_infobar_modal_interaction_handler.h"
 
-#include "components/translate/core/browser/mock_translate_infobar_delegate.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
+#import "components/translate/core/browser/mock_translate_infobar_delegate.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -65,7 +65,7 @@ TEST_F(TranslateInfobarModalInteractionHandlerTest, ToggleNeverTranslateSite) {
       InfobarType::kInfobarTypeTranslate,
       delegate_factory_.CreateMockTranslateInfoBarDelegate(
           translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE));
-  EXPECT_CALL(mock_delegate(infobar.get()), ToggleNeverPrompt());
+  EXPECT_CALL(mock_delegate(infobar.get()), ToggleNeverPromptSite());
   handler_.ToggleNeverTranslateSite(infobar.get());
 }
 

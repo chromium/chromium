@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,23 +17,24 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 
 KioskAppMenuController::KioskAppMenuController() {
-  kiosk_observer_.Add(KioskAppManager::Get());
-  kiosk_observer_.Add(ArcKioskAppManager::Get());
-  kiosk_observer_.Add(WebKioskAppManager::Get());
+  kiosk_observations_.AddObservation(KioskAppManager::Get());
+  kiosk_observations_.AddObservation(ArcKioskAppManager::Get());
+  kiosk_observations_.AddObservation(WebKioskAppManager::Get());
 }
 
 KioskAppMenuController::~KioskAppMenuController() = default;
 
 void KioskAppMenuController::OnKioskAppDataChanged(const std::string& app_id) {
   SendKioskApps();
+  ConfigureKioskCallbacks();
 }
 
 void KioskAppMenuController::OnKioskAppDataLoadFailure(
@@ -46,10 +47,10 @@ void KioskAppMenuController::OnKioskAppsSettingsChanged() {
 }
 
 void KioskAppMenuController::SendKioskApps() {
-  if (!LoginScreenClient::HasInstance())
+  if (!LoginScreenClientImpl::HasInstance())
     return;
 
-  std::vector<ash::KioskAppMenuEntry> output;
+  std::vector<KioskAppMenuEntry> output;
 
   const gfx::ImageSkia default_icon = *ui::ResourceBundle::GetSharedInstance()
                                            .GetImageNamed(IDR_APP_DEFAULT_ICON)
@@ -62,7 +63,7 @@ void KioskAppMenuController::SendKioskApps() {
     std::vector<KioskAppManagerBase::App> apps;
     manager->GetApps(&apps);
     for (const auto& app : apps) {
-      ash::KioskAppMenuEntry menu_entry;
+      KioskAppMenuEntry menu_entry;
       menu_entry.app_id = app.app_id;
       menu_entry.account_id = app.account_id;
       menu_entry.name = base::UTF8ToUTF16(app.name);
@@ -71,12 +72,7 @@ void KioskAppMenuController::SendKioskApps() {
     }
   }
 
-  ash::KioskAppMenu::Get()->SetKioskApps(
-      output,
-      base::BindRepeating(&KioskAppMenuController::LaunchApp,
-                          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&KioskAppMenuController::OnMenuWillShow,
-                          weak_factory_.GetWeakPtr()));
+  KioskAppMenu::Get()->SetKioskApps(output);
   KioskAppLaunchError::Error error = KioskAppLaunchError::Get();
   if (error == KioskAppLaunchError::Error::kNone)
     return;
@@ -84,12 +80,20 @@ void KioskAppMenuController::SendKioskApps() {
   // Clear any old pending Kiosk launch errors
   KioskAppLaunchError::RecordMetricAndClear();
 
-  ash::LoginScreen::Get()->ShowKioskAppError(
+  LoginScreen::Get()->ShowKioskAppError(
       KioskAppLaunchError::GetErrorMessage(error));
 }
 
-void KioskAppMenuController::LaunchApp(const ash::KioskAppMenuEntry& app) {
-  auto* host = chromeos::LoginDisplayHost::default_host();
+void KioskAppMenuController::ConfigureKioskCallbacks() {
+  KioskAppMenu::Get()->ConfigureKioskCallbacks(
+      base::BindRepeating(&KioskAppMenuController::LaunchApp,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&KioskAppMenuController::OnMenuWillShow,
+                          weak_factory_.GetWeakPtr()));
+}
+
+void KioskAppMenuController::LaunchApp(const KioskAppMenuEntry& app) {
+  auto* host = LoginDisplayHost::default_host();
   if (!app.account_id.is_valid())
     return;
 
@@ -123,4 +127,4 @@ void KioskAppMenuController::OnMenuWillShow() {
   WebKioskAppManager::Get()->LoadIcons();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -1,0 +1,11 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/chromebox_for_meetings/buildflags.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "PLATFORM_CFM=$is_cfm" ]
+}

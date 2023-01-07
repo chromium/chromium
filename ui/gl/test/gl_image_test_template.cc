@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 // to be conformant.
 
 #include "ui/gl/test/gl_image_test_template.h"
+#include "base/strings/stringprintf.h"
 
 namespace gl {
 
@@ -137,12 +138,12 @@ void DrawTextureQuad(GLenum target, const gfx::Size& size) {
 
 }  // namespace internal
 
-base::Optional<GLImplementationParts>
+absl::optional<GLImplementationParts>
 GLImageTestDelegateBase::GetPreferedGLImplementation() const {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-bool GLImageTestDelegateBase::SkipTest() const {
+bool GLImageTestDelegateBase::SkipTest(GLDisplay*) const {
   return false;
 }
 

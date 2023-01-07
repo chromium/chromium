@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,6 +28,9 @@ const char kTestSource[] = "test_source";
 class TextLogUploadListTest : public testing::Test {
  public:
   TextLogUploadListTest() = default;
+
+  TextLogUploadListTest(const TextLogUploadListTest&) = delete;
+  TextLogUploadListTest& operator=(const TextLogUploadListTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -49,8 +52,6 @@ class TextLogUploadListTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextLogUploadListTest);
 };
 
 // These tests test that UploadList can parse a vector of log entry strings of

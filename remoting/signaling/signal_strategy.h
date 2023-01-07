@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 
 namespace jingle_xmpp {
@@ -80,6 +79,10 @@ class SignalStrategy {
   };
 
   SignalStrategy() {}
+
+  SignalStrategy(const SignalStrategy&) = delete;
+  SignalStrategy& operator=(const SignalStrategy&) = delete;
+
   virtual ~SignalStrategy() {}
 
   // Starts connection attempt. If connection is currently active
@@ -124,9 +127,6 @@ class SignalStrategy {
   // to sign in. You can get back the actual error by calling GetError().
   // The default implementation always returns false.
   virtual bool IsSignInError() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SignalStrategy);
 };
 
 }  // namespace remoting

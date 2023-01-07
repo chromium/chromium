@@ -136,6 +136,12 @@ public class SwipeRefreshLayout extends ViewGroup {
 
     private boolean mNotify;
 
+    /**
+     * Flag used during duration of pull-refresh animation to reduce the number of calls to
+     * |bringToFront|, and therefore requested layouts. crbug/1335416
+     */
+    private boolean mOptimizeLayouts;
+
     private int mCircleWidth;
 
     private int mCircleHeight;
@@ -564,10 +570,11 @@ public class SwipeRefreshLayout extends ViewGroup {
      * is currently active, the request will be ignored.
      * @return whether a new pull sequence has started.
      */
-    public boolean start() {
+    public boolean start(boolean optimizeLayouts) {
         if (!isEnabled()) return false;
         if (mRefreshing) return false;
         mCircleView.clearAnimation();
+        mOptimizeLayouts = optimizeLayouts;
         mProgress.stop();
         // See ACTION_DOWN handling in {@link #onTouchEvent(...)}.
         setTargetOffsetTopAndBottom(mOriginalOffsetTop - mCircleView.getTop(), true);
@@ -634,6 +641,12 @@ public class SwipeRefreshLayout extends ViewGroup {
         mProgress.setProgressRotation(rotation);
         setTargetOffsetTopAndBottom(targetY - mCurrentTargetOffsetTop,
                 true /* requires update */);
+    }
+
+    @Override
+    public void bringChildToFront(View child) {
+        if (mOptimizeLayouts && indexOfChild(child) == getChildCount() - 1) return;
+        super.bringChildToFront(child);
     }
 
     /**

@@ -1,6 +1,0 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-# Make the files absolute so they can be imported to anywhere.
-bindings_modules_v8_custom_files = get_path_info([], "abspath")

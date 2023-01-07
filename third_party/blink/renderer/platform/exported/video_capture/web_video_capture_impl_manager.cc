@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -23,15 +23,20 @@
 #include <algorithm>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/token.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/video_capture/video_capture_impl.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -92,18 +97,12 @@ base::OnceClosure WebVideoCaptureImplManager::UseDevice(
     BrowserInterfaceBrokerProxy* browser_interface_broker) {
   DVLOG(1) << __func__ << " session id: " << id;
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  auto it = std::find_if(
-      devices_.begin(), devices_.end(),
-      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end()) {
     devices_.emplace_back(DeviceEntry());
     it = devices_.end() - 1;
     it->session_id = id;
-    it->impl = CreateVideoCaptureImplForTesting(id);
-    if (!it->impl) {
-      it->impl = std::make_unique<VideoCaptureImpl>(
-          id, render_main_task_runner_, browser_interface_broker);
-    }
+    it->impl = CreateVideoCaptureImpl(id, browser_interface_broker);
   }
   ++it->client_count;
 
@@ -124,11 +123,10 @@ base::OnceClosure WebVideoCaptureImplManager::StartCapture(
     const media::VideoCaptureSessionId& id,
     const media::VideoCaptureParams& params,
     const VideoCaptureStateUpdateCB& state_update_cb,
-    const VideoCaptureDeliverFrameCB& deliver_frame_cb) {
+    const VideoCaptureDeliverFrameCB& deliver_frame_cb,
+    const VideoCaptureCropVersionCB& crop_version_cb) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = std::find_if(
-      devices_.begin(), devices_.end(),
-      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return base::OnceClosure();
 
@@ -138,7 +136,8 @@ base::OnceClosure WebVideoCaptureImplManager::StartCapture(
   Platform::Current()->GetIOTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoCaptureImpl::StartCapture, it->impl->GetWeakPtr(),
-                     client_id, params, state_update_cb, deliver_frame_cb));
+                     client_id, params, state_update_cb, deliver_frame_cb,
+                     crop_version_cb));
   return base::BindOnce(&WebVideoCaptureImplManager::StopCapture,
                         weak_factory_.GetWeakPtr(), client_id, id);
 }
@@ -146,9 +145,7 @@ base::OnceClosure WebVideoCaptureImplManager::StartCapture(
 void WebVideoCaptureImplManager::RequestRefreshFrame(
     const media::VideoCaptureSessionId& id) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = std::find_if(
-      devices_.begin(), devices_.end(),
-      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
   Platform::Current()->GetIOTaskRunner()->PostTask(
@@ -159,9 +156,7 @@ void WebVideoCaptureImplManager::RequestRefreshFrame(
 void WebVideoCaptureImplManager::Suspend(
     const media::VideoCaptureSessionId& id) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = std::find_if(
-      devices_.begin(), devices_.end(),
-      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
   if (it->is_individually_suspended)
@@ -179,9 +174,7 @@ void WebVideoCaptureImplManager::Suspend(
 void WebVideoCaptureImplManager::Resume(
     const media::VideoCaptureSessionId& id) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = std::find_if(
-      devices_.begin(), devices_.end(),
-      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
   if (!it->is_individually_suspended)
@@ -198,9 +191,7 @@ void WebVideoCaptureImplManager::GetDeviceSupportedFormats(
     const media::VideoCaptureSessionId& id,
     VideoCaptureDeviceFormatsCB callback) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = std::find_if(
-      devices_.begin(), devices_.end(),
-      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
   Platform::Current()->GetIOTaskRunner()->PostTask(
@@ -214,9 +205,7 @@ void WebVideoCaptureImplManager::GetDeviceFormatsInUse(
     const media::VideoCaptureSessionId& id,
     VideoCaptureDeviceFormatsCB callback) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = std::find_if(
-      devices_.begin(), devices_.end(),
-      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
   Platform::Current()->GetIOTaskRunner()->PostTask(
@@ -227,18 +216,18 @@ void WebVideoCaptureImplManager::GetDeviceFormatsInUse(
 }
 
 std::unique_ptr<VideoCaptureImpl>
-WebVideoCaptureImplManager::CreateVideoCaptureImplForTesting(
-    const media::VideoCaptureSessionId& session_id) const {
-  return nullptr;
+WebVideoCaptureImplManager::CreateVideoCaptureImpl(
+    const media::VideoCaptureSessionId& session_id,
+    BrowserInterfaceBrokerProxy* browser_interface_broker) const {
+  return std::make_unique<VideoCaptureImpl>(
+      session_id, render_main_task_runner_, browser_interface_broker);
 }
 
 void WebVideoCaptureImplManager::StopCapture(
     int client_id,
     const media::VideoCaptureSessionId& id) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = std::find_if(
-      devices_.begin(), devices_.end(),
-      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
   Platform::Current()->GetIOTaskRunner()->PostTask(
@@ -249,9 +238,7 @@ void WebVideoCaptureImplManager::StopCapture(
 void WebVideoCaptureImplManager::UnrefDevice(
     const media::VideoCaptureSessionId& id) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = std::find_if(
-      devices_.begin(), devices_.end(),
-      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   // Unlike other methods, this is where the device is deleted, so it must still
   // exist.
   CHECK(it != devices_.end());
@@ -275,9 +262,7 @@ void WebVideoCaptureImplManager::SuspendDevices(
   is_suspending_all_ = suspend;
   for (const MediaStreamDevice& device : video_devices) {
     const media::VideoCaptureSessionId id = device.session_id();
-    const auto it = std::find_if(
-        devices_.begin(), devices_.end(),
-        [id](const DeviceEntry& entry) { return entry.session_id == id; });
+    const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
     if (it == devices_.end())
       return;
     if (it->is_individually_suspended)
@@ -292,9 +277,7 @@ void WebVideoCaptureImplManager::OnFrameDropped(
     const media::VideoCaptureSessionId& id,
     media::VideoCaptureFrameDropReason reason) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = std::find_if(
-      devices_.begin(), devices_.end(),
-      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
   Platform::Current()->GetIOTaskRunner()->PostTask(
@@ -305,9 +288,7 @@ void WebVideoCaptureImplManager::OnFrameDropped(
 void WebVideoCaptureImplManager::OnLog(const media::VideoCaptureSessionId& id,
                                        const WebString& message) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = std::find_if(
-      devices_.begin(), devices_.end(),
-      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
 
@@ -324,24 +305,22 @@ VideoCaptureFeedbackCB WebVideoCaptureImplManager::GetFeedbackCallback(
       &WebVideoCaptureImplManager::ProcessFeedback,
       media::BindToCurrentLoop(base::BindRepeating(
           &WebVideoCaptureImplManager::ProcessFeedbackInternal,
-          weak_factory_.GetWeakPtr(), id)));
+          weak_factory_.GetMutableWeakPtr(), id)));
 }
 
 // static
 void WebVideoCaptureImplManager::ProcessFeedback(
     VideoCaptureFeedbackCB callback_to_io_thread,
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   // process feedback can be called on any thread by the client.
   callback_to_io_thread.Run(feedback);
 }
 
 void WebVideoCaptureImplManager::ProcessFeedbackInternal(
     const media::VideoCaptureSessionId& id,
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = std::find_if(
-      devices_.begin(), devices_.end(),
-      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
   PostCrossThreadTask(*Platform::Current()->GetIOTaskRunner().get(), FROM_HERE,

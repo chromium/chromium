@@ -1,22 +1,24 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_TEXTURE_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_TEXTURE_DRAW_QUAD_H_
 
-#include <stddef.h>
-
-#include <memory>
-
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
 
 namespace viz {
+
+// The priority for a quads to require being promoted to overlay.
+enum class OverlayPriority { kLow, kRegular, kRequired };
 
 class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
  public:
@@ -25,20 +27,22 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   TextureDrawQuad();
   TextureDrawQuad(const TextureDrawQuad& other);
 
+  ~TextureDrawQuad() override;
+
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
               ResourceId resource_id,
-              bool premultiplied_alpha,
-              const gfx::PointF& uv_top_left,
-              const gfx::PointF& uv_bottom_right,
-              SkColor background_color,
-              const float vertex_opacity[4],
-              bool y_flipped,
-              bool nearest_neighbor,
-              bool secure_output_only,
-              gfx::ProtectedVideoType protected_video_type);
+              bool premultiplied,
+              const gfx::PointF& top_left,
+              const gfx::PointF& bottom_right,
+              SkColor4f background,
+              const float opacity[4],
+              bool flipped,
+              bool nearest,
+              bool secure_output,
+              gfx::ProtectedVideoType video_type);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
@@ -46,19 +50,19 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               bool needs_blending,
               ResourceId resource_id,
               gfx::Size resource_size_in_pixels,
-              bool premultiplied_alpha,
-              const gfx::PointF& uv_top_left,
-              const gfx::PointF& uv_bottom_right,
-              SkColor background_color,
-              const float vertex_opacity[4],
-              bool y_flipped,
-              bool nearest_neighbor,
-              bool secure_output_only,
-              gfx::ProtectedVideoType protected_video_type);
+              bool premultiplied,
+              const gfx::PointF& top_left,
+              const gfx::PointF& bottom_right,
+              SkColor4f background,
+              const float opacity[4],
+              bool flipped,
+              bool nearest,
+              bool secure_output,
+              gfx::ProtectedVideoType video_type);
 
   gfx::PointF uv_top_left;
   gfx::PointF uv_bottom_right;
-  SkColor background_color = SK_ColorTRANSPARENT;
+  SkColor4f background_color = SkColors::kTransparent;
   float vertex_opacity[4] = {0, 0, 0, 0};
   bool y_flipped : 1;
   bool nearest_neighbor : 1;
@@ -71,15 +75,22 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // of canvas or webgl content.
   bool is_video_frame : 1;
 
+  // True if this quad is a stream video texture. This mostly affects overlay
+  // creation (e.g. color space, protection type).
+  bool is_stream_video : 1;
+
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
+
   // kClear if the contents do not require any special protection. See enum of a
   // list of protected content types. Protected contents cannot be displayed via
   // regular display path. They need either a protected output or a protected
   // hardware overlay.
   gfx::ProtectedVideoType protected_video_type : 2;
+  // The overlay promotion hint.
+  OverlayPriority overlay_priority_hint = OverlayPriority::kRegular;
 
-  // Identifier passed through by the video decoder that allows us to validate
-  // if a protected surface can still be displayed. Non-zero when valid.
-  uint32_t hw_protected_validation_id = 0;
+  // This optional damage is in target render pass coordinate space.
+  absl::optional<gfx::Rect> damage_rect;
 
   struct OverlayResources {
     OverlayResources();

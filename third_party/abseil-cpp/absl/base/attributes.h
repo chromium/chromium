@@ -131,14 +131,15 @@
 // ABSL_ATTRIBUTE_WEAK
 //
 // Tags a function as weak for the purposes of compilation and linking.
-// Weak attributes currently do not work properly in LLVM's Windows backend,
-// so disable them there. See https://bugs.llvm.org/show_bug.cgi?id=37598
+// Weak attributes did not work properly in LLVM's Windows backend before
+// 9.0.0, so disable them there. See https://bugs.llvm.org/show_bug.cgi?id=37598
 // for further information.
 // The MinGW compiler doesn't complain about the weak attribute until the link
 // step, presumably because Windows doesn't use ELF binaries.
-#if (ABSL_HAVE_ATTRIBUTE(weak) ||                   \
-     (defined(__GNUC__) && !defined(__clang__))) && \
-    !(defined(__llvm__) && defined(_WIN32)) && !defined(__MINGW32__)
+#if (ABSL_HAVE_ATTRIBUTE(weak) ||                                         \
+     (defined(__GNUC__) && !defined(__clang__))) &&                       \
+    (!defined(_WIN32) || (defined(__clang__) && __clang_major__ >= 9)) && \
+    !defined(__MINGW32__)
 #undef ABSL_ATTRIBUTE_WEAK
 #define ABSL_ATTRIBUTE_WEAK __attribute__((weak))
 #define ABSL_HAVE_ATTRIBUTE_WEAK 1
@@ -212,6 +213,9 @@
 // https://gcc.gnu.org/gcc-4.8/changes.html
 #if ABSL_HAVE_ATTRIBUTE(no_sanitize_address)
 #define ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
+#elif defined(_MSC_VER) && _MSC_VER >= 1928
+// https://docs.microsoft.com/en-us/cpp/cpp/no-sanitize-address
+#define ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS __declspec(no_sanitize_address)
 #else
 #define ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
@@ -281,10 +285,7 @@
 // ABSL_ATTRIBUTE_RETURNS_NONNULL
 //
 // Tells the compiler that a particular function never returns a null pointer.
-#if ABSL_HAVE_ATTRIBUTE(returns_nonnull) || \
-    (defined(__GNUC__) && \
-     (__GNUC__ > 5 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) && \
-     !defined(__clang__))
+#if ABSL_HAVE_ATTRIBUTE(returns_nonnull)
 #define ABSL_ATTRIBUTE_RETURNS_NONNULL __attribute__((returns_nonnull))
 #else
 #define ABSL_ATTRIBUTE_RETURNS_NONNULL
@@ -314,14 +315,21 @@
   __attribute__((section(#name))) __attribute__((noinline))
 #endif
 
-
 // ABSL_ATTRIBUTE_SECTION_VARIABLE
 //
 // Tells the compiler/linker to put a given variable into a section and define
 // `__start_ ## name` and `__stop_ ## name` symbols to bracket the section.
 // This functionality is supported by GNU linker.
 #ifndef ABSL_ATTRIBUTE_SECTION_VARIABLE
+#ifdef _AIX
+// __attribute__((section(#name))) on AIX is achived by using the `.csect` psudo
+// op which includes an additional integer as part of its syntax indcating
+// alignment. If data fall under different alignments then you might get a
+// compilation error indicating a `Section type conflict`.
+#define ABSL_ATTRIBUTE_SECTION_VARIABLE(name)
+#else
 #define ABSL_ATTRIBUTE_SECTION_VARIABLE(name) __attribute__((section(#name)))
+#endif
 #endif
 
 // ABSL_DECLARE_ATTRIBUTE_SECTION_VARS
@@ -333,8 +341,8 @@
 // a no-op on ELF but not on Mach-O.
 //
 #ifndef ABSL_DECLARE_ATTRIBUTE_SECTION_VARS
-#define ABSL_DECLARE_ATTRIBUTE_SECTION_VARS(name) \
-  extern char __start_##name[] ABSL_ATTRIBUTE_WEAK;    \
+#define ABSL_DECLARE_ATTRIBUTE_SECTION_VARS(name)   \
+  extern char __start_##name[] ABSL_ATTRIBUTE_WEAK; \
   extern char __stop_##name[] ABSL_ATTRIBUTE_WEAK
 #endif
 #ifndef ABSL_DEFINE_ATTRIBUTE_SECTION_VARS
@@ -395,6 +403,9 @@
 //
 // Tells the compiler to warn about unused results.
 //
+// For code or headers that are assured to only build with C++17 and up, prefer
+// just using the standard `[[nodiscard]]` directly over this macro.
+//
 // When annotating a function, it must appear as the first part of the
 // declaration or definition. The compiler will warn if the return value from
 // such a function is unused:
@@ -421,9 +432,10 @@
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66425
 //
 // Note: past advice was to place the macro after the argument list.
-#if ABSL_HAVE_ATTRIBUTE(nodiscard)
-#define ABSL_MUST_USE_RESULT [[nodiscard]]
-#elif defined(__clang__) && ABSL_HAVE_ATTRIBUTE(warn_unused_result)
+//
+// TODO(b/176172494): Use ABSL_HAVE_CPP_ATTRIBUTE(nodiscard) when all code is
+// compliant with the stricter [[nodiscard]].
+#if defined(__clang__) && ABSL_HAVE_ATTRIBUTE(warn_unused_result)
 #define ABSL_MUST_USE_RESULT __attribute__((warn_unused_result))
 #else
 #define ABSL_MUST_USE_RESULT
@@ -493,7 +505,7 @@
 #define ABSL_XRAY_NEVER_INSTRUMENT [[clang::xray_never_instrument]]
 #if ABSL_HAVE_CPP_ATTRIBUTE(clang::xray_log_args)
 #define ABSL_XRAY_LOG_ARGS(N) \
-    [[clang::xray_always_instrument, clang::xray_log_args(N)]]
+  [[clang::xray_always_instrument, clang::xray_log_args(N)]]
 #else
 #define ABSL_XRAY_LOG_ARGS(N) [[clang::xray_always_instrument]]
 #endif
@@ -524,6 +536,13 @@
 // ABSL_ATTRIBUTE_UNUSED
 //
 // Prevents the compiler from complaining about variables that appear unused.
+//
+// For code or headers that are assured to only build with C++17 and up, prefer
+// just using the standard '[[maybe_unused]]' directly over this macro.
+//
+// Due to differences in positioning requirements between the old, compiler
+// specific __attribute__ syntax and the now standard [[maybe_unused]], this
+// macro does not attempt to take advantage of '[[maybe_unused]]'.
 #if ABSL_HAVE_ATTRIBUTE(unused) || (defined(__GNUC__) && !defined(__clang__))
 #undef ABSL_ATTRIBUTE_UNUSED
 #define ABSL_ATTRIBUTE_UNUSED __attribute__((__unused__))
@@ -544,13 +563,19 @@
 // ABSL_ATTRIBUTE_PACKED
 //
 // Instructs the compiler not to use natural alignment for a tagged data
-// structure, but instead to reduce its alignment to 1. This attribute can
-// either be applied to members of a structure or to a structure in its
-// entirety. Applying this attribute (judiciously) to a structure in its
-// entirety to optimize the memory footprint of very commonly-used structs is
-// fine. Do not apply this attribute to a structure in its entirety if the
-// purpose is to control the offsets of the members in the structure. Instead,
-// apply this attribute only to structure members that need it.
+// structure, but instead to reduce its alignment to 1.
+//
+// Therefore, DO NOT APPLY THIS ATTRIBUTE TO STRUCTS CONTAINING ATOMICS. Doing
+// so can cause atomic variables to be mis-aligned and silently violate
+// atomicity on x86.
+//
+// This attribute can either be applied to members of a structure or to a
+// structure in its entirety. Applying this attribute (judiciously) to a
+// structure in its entirety to optimize the memory footprint of very
+// commonly-used structs is fine. Do not apply this attribute to a structure in
+// its entirety if the purpose is to control the offsets of the members in the
+// structure. Instead, apply this attribute only to structure members that need
+// it.
 //
 // When applying ABSL_ATTRIBUTE_PACKED only to specific structure members the
 // natural alignment of structure members not annotated is preserved. Aligned
@@ -595,31 +620,24 @@
 //    case 42:
 //      ...
 //
-// Notes: when compiled with clang in C++11 mode, the ABSL_FALLTHROUGH_INTENDED
-// macro is expanded to the [[clang::fallthrough]] attribute, which is analysed
-// when  performing switch labels fall-through diagnostic
-// (`-Wimplicit-fallthrough`). See clang documentation on language extensions
-// for details:
+// Notes: When supported, GCC and Clang can issue a warning on switch labels
+// with unannotated fallthrough using the warning `-Wimplicit-fallthrough`. See
+// clang documentation on language extensions for details:
 // https://clang.llvm.org/docs/AttributeReference.html#fallthrough-clang-fallthrough
 //
-// When used with unsupported compilers, the ABSL_FALLTHROUGH_INTENDED macro
-// has no effect on diagnostics. In any case this macro has no effect on runtime
+// When used with unsupported compilers, the ABSL_FALLTHROUGH_INTENDED macro has
+// no effect on diagnostics. In any case this macro has no effect on runtime
 // behavior and performance of code.
 
 #ifdef ABSL_FALLTHROUGH_INTENDED
 #error "ABSL_FALLTHROUGH_INTENDED should not be defined."
-#endif
-
-// TODO(zhangxy): Use c++17 standard [[fallthrough]] macro, when supported.
-#if defined(__clang__) && defined(__has_warning)
-#if __has_feature(cxx_attributes) && __has_warning("-Wimplicit-fallthrough")
+#elif ABSL_HAVE_CPP_ATTRIBUTE(fallthrough)
+#define ABSL_FALLTHROUGH_INTENDED [[fallthrough]]
+#elif ABSL_HAVE_CPP_ATTRIBUTE(clang::fallthrough)
 #define ABSL_FALLTHROUGH_INTENDED [[clang::fallthrough]]
-#endif
-#elif defined(__GNUC__) && __GNUC__ >= 7
+#elif ABSL_HAVE_CPP_ATTRIBUTE(gnu::fallthrough)
 #define ABSL_FALLTHROUGH_INTENDED [[gnu::fallthrough]]
-#endif
-
-#ifndef ABSL_FALLTHROUGH_INTENDED
+#else
 #define ABSL_FALLTHROUGH_INTENDED \
   do {                            \
   } while (0)
@@ -631,6 +649,9 @@
 // declarations. The macro argument is used as a custom diagnostic message (e.g.
 // suggestion of a better alternative).
 //
+// For code or headers that are assured to only build with C++14 and up, prefer
+// just using the standard `[[deprecated("message")]]` directly over this macro.
+//
 // Examples:
 //
 //   class ABSL_DEPRECATED("Use Bar instead") Foo {...};
@@ -641,14 +662,17 @@
 //   ABSL_DEPRECATED("Use DoThat() instead")
 //   void DoThis();
 //
+//   enum FooEnum {
+//     kBar ABSL_DEPRECATED("Use kBaz instead"),
+//   };
+//
 // Every usage of a deprecated entity will trigger a warning when compiled with
-// clang's `-Wdeprecated-declarations` option. This option is turned off by
-// default, but the warnings will be reported by clang-tidy.
-#if defined(__clang__) && defined(__cplusplus) && __cplusplus >= 201103L
+// GCC/Clang's `-Wdeprecated-declarations` option. Google's production toolchain
+// turns this warning off by default, instead relying on clang-tidy to report
+// new uses of deprecated code.
+#if ABSL_HAVE_ATTRIBUTE(deprecated)
 #define ABSL_DEPRECATED(message) __attribute__((deprecated(message)))
-#endif
-
-#ifndef ABSL_DEPRECATED
+#else
 #define ABSL_DEPRECATED(message)
 #endif
 
@@ -658,9 +682,18 @@
 // not compile (on supported platforms) unless the variable has a constant
 // initializer. This is useful for variables with static and thread storage
 // duration, because it guarantees that they will not suffer from the so-called
-// "static init order fiasco".  Prefer to put this attribute on the most visible
-// declaration of the variable, if there's more than one, because code that
-// accesses the variable can then use the attribute for optimization.
+// "static init order fiasco".
+//
+// This attribute must be placed on the initializing declaration of the
+// variable. Some compilers will give a -Wmissing-constinit warning when this
+// attribute is placed on some other declaration but missing from the
+// initializing declaration.
+//
+// In some cases (notably with thread_local variables), `ABSL_CONST_INIT` can
+// also be used in a non-initializing declaration to tell the compiler that a
+// variable is already initialized, reducing overhead that would otherwise be
+// incurred by a hidden guard variable. Thus annotating all declarations with
+// this attribute is recommended to potentially enhance optimization.
 //
 // Example:
 //
@@ -669,14 +702,19 @@
 //     ABSL_CONST_INIT static MyType my_var;
 //   };
 //
-//   MyType MyClass::my_var = MakeMyType(...);
+//   ABSL_CONST_INIT MyType MyClass::my_var = MakeMyType(...);
+//
+// For code or headers that are assured to only build with C++20 and up, prefer
+// just using the standard `constinit` keyword directly over this macro.
 //
 // Note that this attribute is redundant if the variable is declared constexpr.
-#if ABSL_HAVE_CPP_ATTRIBUTE(clang::require_constant_initialization)
+#if defined(__cpp_constinit) && __cpp_constinit >= 201907L
+#define ABSL_CONST_INIT constinit
+#elif ABSL_HAVE_CPP_ATTRIBUTE(clang::require_constant_initialization)
 #define ABSL_CONST_INIT [[clang::require_constant_initialization]]
 #else
 #define ABSL_CONST_INIT
-#endif  // ABSL_HAVE_CPP_ATTRIBUTE(clang::require_constant_initialization)
+#endif
 
 // ABSL_ATTRIBUTE_PURE_FUNCTION
 //
@@ -697,6 +735,65 @@
 #define ABSL_ATTRIBUTE_PURE_FUNCTION __attribute__((pure))
 #else
 #define ABSL_ATTRIBUTE_PURE_FUNCTION
+#endif
+
+// ABSL_ATTRIBUTE_LIFETIME_BOUND indicates that a resource owned by a function
+// parameter or implicit object parameter is retained by the return value of the
+// annotated function (or, for a parameter of a constructor, in the value of the
+// constructed object). This attribute causes warnings to be produced if a
+// temporary object does not live long enough.
+//
+// When applied to a reference parameter, the referenced object is assumed to be
+// retained by the return value of the function. When applied to a non-reference
+// parameter (for example, a pointer or a class type), all temporaries
+// referenced by the parameter are assumed to be retained by the return value of
+// the function.
+//
+// See also the upstream documentation:
+// https://clang.llvm.org/docs/AttributeReference.html#lifetimebound
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::lifetimebound)
+#define ABSL_ATTRIBUTE_LIFETIME_BOUND [[clang::lifetimebound]]
+#elif ABSL_HAVE_ATTRIBUTE(lifetimebound)
+#define ABSL_ATTRIBUTE_LIFETIME_BOUND __attribute__((lifetimebound))
+#else
+#define ABSL_ATTRIBUTE_LIFETIME_BOUND
+#endif
+
+// ABSL_ATTRIBUTE_TRIVIAL_ABI
+// Indicates that a type is "trivially relocatable" -- meaning it can be
+// relocated without invoking the constructor/destructor, using a form of move
+// elision.
+//
+// From a memory safety point of view, putting aside destructor ordering, it's
+// safe to apply ABSL_ATTRIBUTE_TRIVIAL_ABI if an object's location
+// can change over the course of its lifetime: if a constructor can be run one
+// place, and then the object magically teleports to another place where some
+// methods are run, and then the object teleports to yet another place where it
+// is destroyed. This is notably not true for self-referential types, where the
+// move-constructor must keep the self-reference up to date. If the type changed
+// location without invoking the move constructor, it would have a dangling
+// self-reference.
+//
+// The use of this teleporting machinery means that the number of paired
+// move/destroy operations can change, and so it is a bad idea to apply this to
+// a type meant to count the number of moves.
+//
+// Warning: applying this can, rarely, break callers. Objects passed by value
+// will be destroyed at the end of the call, instead of the end of the
+// full-expression containing the call. In addition, it changes the ABI
+// of functions accepting this type by value (e.g. to pass in registers).
+//
+// See also the upstream documentation:
+// https://clang.llvm.org/docs/AttributeReference.html#trivial-abi
+//
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::trivial_abi)
+#define ABSL_ATTRIBUTE_TRIVIAL_ABI [[clang::trivial_abi]]
+#define ABSL_HAVE_ATTRIBUTE_TRIVIAL_ABI 1
+#elif ABSL_HAVE_ATTRIBUTE(trivial_abi)
+#define ABSL_ATTRIBUTE_TRIVIAL_ABI __attribute__((trivial_abi))
+#define ABSL_HAVE_ATTRIBUTE_TRIVIAL_ABI 1
+#else
+#define ABSL_ATTRIBUTE_TRIVIAL_ABI
 #endif
 
 #endif  // ABSL_BASE_ATTRIBUTES_H_

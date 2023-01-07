@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "rlz/lib/rlz_value_store.h"
 
 @class NSDictionary;
@@ -22,6 +21,9 @@ namespace rlz_lib {
 // plist file in the user's Application Support folder.
 class RlzValueStoreMac : public RlzValueStore {
  public:
+  RlzValueStoreMac(const RlzValueStoreMac&) = delete;
+  RlzValueStoreMac& operator=(const RlzValueStoreMac&) = delete;
+
   bool HasAccess(AccessType type) override;
 
   bool WritePingTime(Product product, int64_t time) override;
@@ -73,8 +75,6 @@ class RlzValueStoreMac : public RlzValueStore {
 
   base::scoped_nsobject<NSMutableDictionary> dict_;
   base::scoped_nsobject<NSString> plist_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(RlzValueStoreMac);
 };
 
 }  // namespace rlz_lib

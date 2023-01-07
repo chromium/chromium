@@ -1,0 +1,32 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("jsoncpp_config") {
+  packages = [ "jsoncpp" ]
+
+  # Defining JSON_DLL_BUILD applies public visibility to jsoncpp classes
+  # thus deactivating CFI checks for them. This avoids CFI violations in
+  # virtual calls to system jsoncpp library (https://crbug.com/1365218).
+  defines = [ "JSON_DLL_BUILD" ]
+}
+
+shim_headers("jsoncpp_shim") {
+  root_path = "source/include"
+  headers = [
+    "json/allocator.h",
+    "json/assertions.h",
+    "json/config.h",
+    "json/forwards.h",
+    "json/json.h",
+    "json/json_features.h",
+    "json/reader.h",
+    "json/value.h",
+    "json/version.h",
+    "json/writer.h",
+  ]
+}
+
+source_set("jsoncpp") {
+  deps = [ ":jsoncpp_shim" ]
+  public_configs = [ ":jsoncpp_config" ]
+}

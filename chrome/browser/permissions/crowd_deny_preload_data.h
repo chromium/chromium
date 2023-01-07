@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,10 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/version.h"
 #include "chrome/browser/permissions/crowd_deny.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace base {
@@ -56,6 +55,10 @@ class CrowdDenyPreloadData {
       base::OnceCallback<void(const SiteReputation*)>;
 
   CrowdDenyPreloadData();
+
+  CrowdDenyPreloadData(const CrowdDenyPreloadData&) = delete;
+  CrowdDenyPreloadData& operator=(const CrowdDenyPreloadData&) = delete;
+
   ~CrowdDenyPreloadData();
 
   static CrowdDenyPreloadData* GetInstance();
@@ -73,7 +76,7 @@ class CrowdDenyPreloadData {
   void LoadFromDisk(const base::FilePath& preload_data_path,
                     const base::Version& version);
 
-  inline const base::Optional<base::Version>& version_on_disk() {
+  inline const absl::optional<base::Version>& version_on_disk() {
     return version_on_disk_;
   }
 
@@ -101,10 +104,8 @@ class CrowdDenyPreloadData {
   bool is_ready_to_use_ = true;
   DomainToReputationMap domain_to_reputation_map_;
   scoped_refptr<base::SequencedTaskRunner> loading_task_runner_;
-  base::Optional<base::Version> version_on_disk_;
+  absl::optional<base::Version> version_on_disk_;
   std::queue<PendingOrigin> origins_pending_verification_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrowdDenyPreloadData);
 };
 
 namespace testing {

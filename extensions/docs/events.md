@@ -10,8 +10,8 @@ are registered and how they are dispatched.
 An event listener registered in the renderer process is sent to the browser
 process (via IPC). The browser process stores the listener information in
 `EventListenerMap`. Events are dispatched from the browser process to the
-renderer process via IPC. If browser process requires to persist any listener,
-it does so by storing the listener information in the prefs.
+renderer process via IPC. If the browser process requires persistence of any
+listener, it does so by storing the listener information in `ExtensionPrefs`.
 
 ## Relevant concepts
 
@@ -71,9 +71,9 @@ or service worker scripts)
 
 ### Additional notes about lazy event dispatching
 
-Recall that a lazy listener is like a regular listeners, except that it is
+Recall that a lazy listener is like a regular listener, except that it is
 registered from a lazy context. A lazy context can be shut down. If an
-interesting event ocurrs while a lazy context (with a listener to that event)
+interesting event occurs while a lazy context (with a listener to that event)
 is no longer running, then the lazy context is woken up to dispatch the event.
 
 The following (simplified) steps describe how dispatch is performed.

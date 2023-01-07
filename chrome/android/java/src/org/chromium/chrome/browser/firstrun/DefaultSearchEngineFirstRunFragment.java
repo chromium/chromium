@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,25 +16,17 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.locale.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.locale.LocaleManager.SearchEnginePromoType;
+import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
+import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.widget.RadioButtonLayout;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /** A {@link Fragment} that presents a set of search engines for the user to choose from. */
 public class DefaultSearchEngineFirstRunFragment extends Fragment implements FirstRunFragment {
-    /** FRE page that instantiates this fragment. */
-    public static class Page implements FirstRunPage<DefaultSearchEngineFirstRunFragment> {
-        @Override
-        public DefaultSearchEngineFirstRunFragment instantiateFragment() {
-            return new DefaultSearchEngineFirstRunFragment();
-        }
-    }
-
     @SearchEnginePromoType
-    private int mSearchEnginePromoDialoType;
+    private int mSearchEnginePromoDialogType;
     private boolean mShownRecorded;
 
     /** Layout that displays the available search engines to the user. */
@@ -54,16 +46,11 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
         mButton.setEnabled(false);
 
         assert TemplateUrlServiceFactory.get().isLoaded();
-        mSearchEnginePromoDialoType = LocaleManager.getInstance().getSearchEnginePromoShowType();
-        if (mSearchEnginePromoDialoType != LocaleManager.SearchEnginePromoType.DONT_SHOW) {
-            Runnable dismissRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    getPageDelegate().advanceToNextPage();
-                }
-            };
-            new DefaultSearchEngineDialogHelper(
-                    mSearchEnginePromoDialoType, mEngineLayout, mButton, dismissRunnable);
+        mSearchEnginePromoDialogType = LocaleManager.getInstance().getSearchEnginePromoShowType();
+        if (mSearchEnginePromoDialogType != SearchEnginePromoType.DONT_SHOW) {
+            new DefaultSearchEngineDialogHelper(mSearchEnginePromoDialogType,
+                    LocaleManager.getInstance(), mEngineLayout, mButton,
+                    getPageDelegate()::advanceToNextPage);
         }
 
         return rootView;
@@ -83,7 +70,7 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            if (mSearchEnginePromoDialoType == LocaleManager.SearchEnginePromoType.DONT_SHOW) {
+            if (mSearchEnginePromoDialogType == SearchEnginePromoType.DONT_SHOW) {
                 PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
                     @Override
                     public void run() {
@@ -99,10 +86,9 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
     private void recordShown() {
         if (mShownRecorded) return;
 
-        if (mSearchEnginePromoDialoType == LocaleManager.SearchEnginePromoType.SHOW_NEW) {
+        if (mSearchEnginePromoDialogType == SearchEnginePromoType.SHOW_NEW) {
             RecordUserAction.record("SearchEnginePromo.NewDevice.Shown.FirstRun");
-        } else if (mSearchEnginePromoDialoType
-                == LocaleManager.SearchEnginePromoType.SHOW_EXISTING) {
+        } else if (mSearchEnginePromoDialogType == SearchEnginePromoType.SHOW_EXISTING) {
             RecordUserAction.record("SearchEnginePromo.ExistingDevice.Shown.FirstRun");
         }
 

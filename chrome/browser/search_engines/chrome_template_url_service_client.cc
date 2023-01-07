@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ ChromeTemplateURLServiceClient::ChromeTemplateURLServiceClient(
   // backend can handle automatically adding the search terms as the user
   // navigates.
   if (history_service_)
-    history_service_observer_.Add(history_service_);
+    history_service_observation_.Observe(history_service_.get());
 }
 
 ChromeTemplateURLServiceClient::~ChromeTemplateURLServiceClient() {
@@ -28,7 +28,7 @@ void ChromeTemplateURLServiceClient::Shutdown() {
   // Remove self from |history_service_| observers in the shutdown phase of the
   // two-phases since KeyedService are not supposed to use a dependend service
   // after the Shutdown call.
-  history_service_observer_.RemoveAll();
+  history_service_observation_.Reset();
 }
 
 void ChromeTemplateURLServiceClient::SetOwner(TemplateURLService* owner) {
@@ -53,25 +53,23 @@ void ChromeTemplateURLServiceClient::SetKeywordSearchTermsForURL(
 void ChromeTemplateURLServiceClient::AddKeywordGeneratedVisit(const GURL& url) {
   if (history_service_)
     history_service_->AddPage(
-        url, base::Time::Now(), /*context_id=*/NULL, /*nav_entry_id=*/0,
+        url, base::Time::Now(), /*context_id=*/nullptr, /*nav_entry_id=*/0,
         /*referrer=*/GURL(), history::RedirectList(),
         ui::PAGE_TRANSITION_KEYWORD_GENERATED, history::SOURCE_BROWSED,
-        /*did_replace_entry=*/false, /*publicly_routable=*/false);
+        /*did_replace_entry=*/false);
 }
 
 void ChromeTemplateURLServiceClient::OnURLVisited(
     history::HistoryService* history_service,
-    ui::PageTransition transition,
-    const history::URLRow& row,
-    const history::RedirectList& redirects,
-    base::Time visit_time) {
+    const history::URLRow& url_row,
+    const history::VisitRow& new_visit) {
   DCHECK_EQ(history_service_, history_service);
   if (!owner_)
     return;
 
   TemplateURLService::URLVisitedDetails visited_details;
-  visited_details.url = row.url();
-  visited_details.is_keyword_transition =
-      ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_KEYWORD);
+  visited_details.url = url_row.url();
+  visited_details.is_keyword_transition = ui::PageTransitionCoreTypeIs(
+      new_visit.transition, ui::PAGE_TRANSITION_KEYWORD);
   owner_->OnHistoryURLVisited(visited_details);
 }

@@ -1,23 +1,20 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_BROWSER_ASSOCIATED_INTERFACE_H_
-#define CONTENT_BROWSER_BROWSER_ASSOCIATED_INTERFACE_H_
-
-#include <string>
+#ifndef CONTENT_PUBLIC_BROWSER_BROWSER_ASSOCIATED_INTERFACE_H_
+#define CONTENT_PUBLIC_BROWSER_BROWSER_ASSOCIATED_INTERFACE_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -62,6 +59,10 @@ class BrowserAssociatedInterface : public Interface {
         base::BindOnce(&InternalState::ClearReceivers, internal_state_));
   }
 
+  BrowserAssociatedInterface(const BrowserAssociatedInterface&) = delete;
+  BrowserAssociatedInterface& operator=(const BrowserAssociatedInterface&) =
+      delete;
+
   ~BrowserAssociatedInterface() { internal_state_->ClearReceivers(); }
 
  private:
@@ -70,7 +71,10 @@ class BrowserAssociatedInterface : public Interface {
   class InternalState : public base::RefCountedThreadSafe<InternalState> {
    public:
     explicit InternalState(Interface* impl)
-        : impl_(impl), receivers_(base::in_place) {}
+        : impl_(impl), receivers_(absl::in_place) {}
+
+    InternalState(const InternalState&) = delete;
+    InternalState& operator=(const InternalState&) = delete;
 
     void ClearReceivers() {
       if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
@@ -79,6 +83,10 @@ class BrowserAssociatedInterface : public Interface {
         return;
       }
       receivers_.reset();
+      // `impl_` destructor calls this function, so it must be reset. It isn't
+      // useful anymore, because `BindReceiver` become a no-op after resetting
+      // `receiver_`.
+      impl_ = nullptr;
     }
 
     void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
@@ -96,17 +104,13 @@ class BrowserAssociatedInterface : public Interface {
 
     ~InternalState() {}
 
-    Interface* impl_;
-    base::Optional<mojo::AssociatedReceiverSet<Interface>> receivers_;
-
-    DISALLOW_COPY_AND_ASSIGN(InternalState);
+    raw_ptr<Interface> impl_;
+    absl::optional<mojo::AssociatedReceiverSet<Interface>> receivers_;
   };
 
   scoped_refptr<InternalState> internal_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAssociatedInterface);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_BROWSER_ASSOCIATED_INTERFACE_H_
+#endif  // CONTENT_PUBLIC_BROWSER_BROWSER_ASSOCIATED_INTERFACE_H_

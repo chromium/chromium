@@ -4,14 +4,14 @@ Set timer for test function.
 Script execution paused.
 
 Scope variables sidebar pane:
-Catch
+Catch block
     error: "boom!"
 Local
-    longMap: Map(1) {100 => "hello"}
+    this: Window
+    longMap: Map(1) {100 => 'hello'}
     longObject: {}
     parameter1: 100
     parameter2: "hello"
-    this: Window
 WindowGlobal
     <section collapsed>
 Script execution resumed.

@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "base/containers/contains.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
@@ -15,8 +16,7 @@
 #error "This file requires ARC support."
 #endif
 
-using InsecureCredentialsView =
-    password_manager::InsecureCredentialsManager::CredentialsView;
+using base::SysNSStringToUTF16;
 
 @interface PasswordDetailsMediator () <
     PasswordCheckObserver,
@@ -36,23 +36,23 @@ using InsecureCredentialsView =
 @implementation PasswordDetailsMediator
 
 - (instancetype)initWithPassword:
-                    (const password_manager::PasswordForm&)passwordForm
+                    (const password_manager::CredentialUIEntry&)credential
             passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
   self = [super init];
   if (self) {
     _manager = manager;
-    _password = passwordForm;
+    _credential = credential;
     _passwordCheckObserver.reset(
         new PasswordCheckObserverBridge(self, manager));
     NSMutableSet<NSString*>* usernames = [[NSMutableSet alloc] init];
-    auto forms = manager->GetAllCredentials();
-    for (const auto& form : forms) {
-      if (form.signon_realm == passwordForm.signon_realm) {
-        [usernames addObject:base::SysUTF16ToNSString(form.username_value)];
+    auto credentials =
+        manager->GetSavedPasswordsPresenter()->GetSavedCredentials();
+    for (const auto& cred : credentials) {
+      if (cred.GetFirstSignonRealm() == credential.GetFirstSignonRealm()) {
+        [usernames addObject:base::SysUTF16ToNSString(cred.username)];
       }
     }
-    [usernames
-        removeObject:base::SysUTF16ToNSString(passwordForm.username_value)];
+    [usernames removeObject:base::SysUTF16ToNSString(credential.username)];
     _usernamesWithSameDomain = usernames;
   }
   return self;
@@ -63,7 +63,7 @@ using InsecureCredentialsView =
     return;
   _consumer = consumer;
 
-  [self fetchPasswordWith:_manager->GetCompromisedCredentials()];
+  [self fetchPasswordWith:_manager->GetUnmutedCompromisedCredentials()];
 }
 
 - (void)disconnect {
@@ -76,20 +76,53 @@ using InsecureCredentialsView =
             (PasswordDetailsTableViewController*)viewController
                didEditPasswordDetails:(PasswordDetails*)password {
   if ([password.password length] != 0) {
-    if (_manager->EditPasswordForm(
-            _password, base::SysNSStringToUTF8(password.username),
-            base::SysNSStringToUTF8(password.password))) {
-      _password.username_value = base::SysNSStringToUTF16(password.username);
-      _password.password_value = base::SysNSStringToUTF16(password.password);
+    password_manager::CredentialUIEntry updated_credential = _credential;
+    updated_credential.username = SysNSStringToUTF16(password.username);
+    updated_credential.password = SysNSStringToUTF16(password.password);
+    if (_manager->GetSavedPasswordsPresenter()->EditSavedCredentials(
+            _credential, updated_credential) ==
+        password_manager::SavedPasswordsPresenter::EditResult::kSuccess) {
+      _credential = updated_credential;
       return;
     }
   }
-  [self fetchPasswordWith:_manager->GetCompromisedCredentials()];
+  [self fetchPasswordWith:_manager->GetUnmutedCompromisedCredentials()];
+}
+
+- (void)passwordDetailsViewController:
+            (PasswordDetailsTableViewController*)viewController
+                didAddPasswordDetails:(NSString*)username
+                             password:(NSString*)password {
+  NOTREACHED();
+}
+
+- (void)checkForDuplicates:(NSString*)username {
+  NOTREACHED();
+}
+
+- (void)showExistingCredential:(NSString*)username {
+  NOTREACHED();
+}
+
+- (void)didCancelAddPasswordDetails {
+  NOTREACHED();
+}
+
+- (void)setWebsiteURL:(NSString*)website {
+  NOTREACHED();
+}
+
+- (BOOL)isURLValid {
+  return YES;
+}
+
+- (BOOL)isTLDMissing {
+  return NO;
 }
 
 - (BOOL)isUsernameReused:(NSString*)newUsername {
   // It is more efficient to check set of the usernames for the same origin
-  // instead of delegating this to the |_manager|.
+  // instead of delegating this to the `_manager`.
   return [self.usernamesWithSameDomain containsObject:newUsername];
 }
 
@@ -100,26 +133,18 @@ using InsecureCredentialsView =
   // passwords.
 }
 
-- (void)compromisedCredentialsDidChange:(InsecureCredentialsView)credentials {
-  [self fetchPasswordWith:credentials];
+- (void)compromisedCredentialsDidChange {
+  [self fetchPasswordWith:_manager->GetUnmutedCompromisedCredentials()];
 }
 
 #pragma mark - Private
 
 // Updates password details and sets it to a consumer.
-- (void)fetchPasswordWith:(InsecureCredentialsView)credentials {
+- (void)fetchPasswordWith:
+    (const std::vector<password_manager::CredentialUIEntry>&)credentials {
   PasswordDetails* password =
-      [[PasswordDetails alloc] initWithPasswordForm:_password];
-  password.compromised = NO;
-
-  for (const auto& credential : credentials) {
-    if (std::tie(credential.signon_realm, credential.username,
-                 credential.password) == std::tie(_password.signon_realm,
-                                                  _password.username_value,
-                                                  _password.password_value))
-      password.compromised = YES;
-  }
-
+      [[PasswordDetails alloc] initWithCredential:_credential];
+  password.compromised = base::Contains(credentials, _credential);
   [self.consumer setPassword:password];
 }
 

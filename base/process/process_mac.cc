@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,28 +10,30 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <iterator>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/mac/mach_logging.h"
 #include "base/memory/free_deleter.h"
-#include "base/stl_util.h"
 
 namespace base {
 
 // Enables backgrounding hidden renderers on Mac.
-const Feature kMacAllowBackgroundingProcesses{"MacAllowBackgroundingProcesses",
-                                              FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMacAllowBackgroundingProcesses,
+             "MacAllowBackgroundingProcesses",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 Time Process::CreationTime() const {
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, Pid()};
   size_t len = 0;
-  if (sysctl(mib, size(mib), NULL, &len, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), NULL, &len, NULL, 0) < 0)
     return Time();
 
   std::unique_ptr<struct kinfo_proc, base::FreeDeleter> proc(
       static_cast<struct kinfo_proc*>(malloc(len)));
-  if (sysctl(mib, size(mib), proc.get(), &len, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), proc.get(), &len, NULL, 0) < 0)
     return Time();
   return Time::FromTimeVal(proc->kp_proc.p_un.__p_starttime);
 }
@@ -42,7 +44,7 @@ bool Process::CanBackgroundProcesses() {
 
 bool Process::IsProcessBackgrounded(PortProvider* port_provider) const {
   DCHECK(IsValid());
-  if (port_provider == nullptr || !CanBackgroundProcesses())
+  if (port_provider == nullptr)
     return false;
 
   mach_port_t task_port = port_provider->TaskForPid(Pid());

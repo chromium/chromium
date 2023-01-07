@@ -1,13 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/infobars/overlays/infobar_banner_overlay_request_cancel_handler.h"
 
-#include "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
-#include "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -67,13 +66,11 @@ InfobarBannerOverlayRequestCancelHandler::InsertionObserver::InsertionObserver(
     InfobarOverlayRequestInserter* inserter,
     InfoBarIOS* infobar,
     InfobarBannerOverlayRequestCancelHandler* cancel_handler)
-    : cancel_handler_(cancel_handler),
-      infobar_(infobar),
-      scoped_observer_(this) {
+    : cancel_handler_(cancel_handler), infobar_(infobar) {
   DCHECK(inserter);
   DCHECK(infobar);
   DCHECK(cancel_handler);
-  scoped_observer_.Add(inserter);
+  scoped_observation_.Observe(inserter);
 }
 
 InfobarBannerOverlayRequestCancelHandler::InsertionObserver::
@@ -89,7 +86,8 @@ void InfobarBannerOverlayRequestCancelHandler::InsertionObserver::
 
 void InfobarBannerOverlayRequestCancelHandler::InsertionObserver::
     InserterDestroyed(InfobarOverlayRequestInserter* inserter) {
-  scoped_observer_.Remove(inserter);
+  DCHECK(scoped_observation_.IsObservingSource(inserter));
+  scoped_observation_.Reset();
 }
 
 #pragma mark - InfobarBannerOverlayRequestCancelHandler::ModalCompletionObserver
@@ -99,13 +97,11 @@ InfobarBannerOverlayRequestCancelHandler::ModalCompletionObserver::
         InfobarBannerOverlayRequestCancelHandler* cancel_handler,
         InfobarModalCompletionNotifier* completion_notifier,
         InfoBarIOS* infobar)
-    : cancel_handler_(cancel_handler),
-      infobar_(infobar),
-      scoped_observer_(this) {
+    : cancel_handler_(cancel_handler), infobar_(infobar) {
   DCHECK(cancel_handler_);
   DCHECK(infobar_);
   DCHECK(completion_notifier);
-  scoped_observer_.Add(completion_notifier);
+  scoped_observation_.Observe(completion_notifier);
 }
 
 InfobarBannerOverlayRequestCancelHandler::ModalCompletionObserver::
@@ -124,7 +120,8 @@ void InfobarBannerOverlayRequestCancelHandler::ModalCompletionObserver::
 void InfobarBannerOverlayRequestCancelHandler::ModalCompletionObserver::
     InfobarModalCompletionNotifierDestroyed(
         InfobarModalCompletionNotifier* notifier) {
-  scoped_observer_.Remove(notifier);
+  DCHECK(scoped_observation_.IsObservingSource(notifier));
+  scoped_observation_.Reset();
   cancel_handler_->ModalCompleted();
   // The cancel handler is destroyed after CancelForModalCompletion(), so no
   // code can be added after this call.

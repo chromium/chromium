@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,16 @@
 #include <map>
 #include <memory>
 #include <set>
-#include <unordered_set>
+#include <unordered_map>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/media_router/cast_modes_with_media_sources.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/media_sink_with_cast_modes.h"
+#include "chrome/browser/ui/media_router/media_sink_with_cast_modes_observer.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
@@ -39,7 +40,7 @@ class MediaSinksObserver;
 // Typical use:
 //
 //   url::Origin origin{GURL("https://origin.com")};
-//   QueryResultManager::Observer* observer = ...;
+//   MediaSinkWithCastModesObserver* observer = ...;
 //   QueryResultManager result_manager(router);
 //   result_manager.AddObserver(observer);
 //   result_manager.SetSourcesForCastMode(MediaCastMode::PRESENTATION,
@@ -47,7 +48,7 @@ class MediaSinksObserver;
 //   result_manager.SetSourcesForCastMode(MediaCastMode::TAB_MIRROR,
 //       {MediaSourceForTab(123)}, origin);
 //   ...
-//   [Updates will be received by observer via OnResultsUpdated()]
+//   [Updates will be received by observer via OnSinksUpdated()]
 //   ...
 //   [When info on MediaSource is needed, i.e. when requesting route for a mode]
 //   CastModeSet cast_modes = result_manager.GetSupportedCastModes();
@@ -62,22 +63,16 @@ class MediaSinksObserver;
 // Not thread-safe.  Must be used on the UI thread.
 class QueryResultManager {
  public:
-  class Observer {
-   public:
-    virtual ~Observer() {}
-
-    // Updated results have been received.
-    // |sinks|: List of sinks and the cast modes they are compatible with.
-    virtual void OnResultsUpdated(
-        const std::vector<MediaSinkWithCastModes>& sinks) = 0;
-  };
-
   explicit QueryResultManager(MediaRouter* media_router);
+
+  QueryResultManager(const QueryResultManager&) = delete;
+  QueryResultManager& operator=(const QueryResultManager&) = delete;
+
   ~QueryResultManager();
 
   // Adds/removes an observer that is notified with query results.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void AddObserver(MediaSinkWithCastModesObserver* observer);
+  void RemoveObserver(MediaSinkWithCastModesObserver* observer);
 
   // Requests a list of MediaSinks compatible with |sources| for |cast_mode|
   // from |origin|. |sources| should be in descending order of priority.
@@ -109,6 +104,9 @@ class QueryResultManager {
   // Returns all the sources registered for |cast_mode|.  Returns an empty
   // vector if there is none.
   std::vector<MediaSource> GetSourcesForCastMode(MediaCastMode cast_mode) const;
+
+  // Returns all of the currently known sinks with the cast modes they support
+  std::vector<MediaSinkWithCastModes> GetSinksWithCastModes() const;
 
  private:
   class MediaSourceMediaSinksObserver;
@@ -160,9 +158,12 @@ class QueryResultManager {
   // MediaSinksObservers that listen for compatible MediaSink updates.
   // Each observer is associated with a MediaSource. Results received by
   // observers are propagated back to this class.
-  std::unordered_map<MediaSource,
-                     std::unique_ptr<MediaSinksObserver>,
-                     MediaSource::Hash>
+  // A nullopt for the MediaSource indicates that the observer is
+  // listening for all MediaSink updates regardless of the MediaSource
+  // associated with them.
+  std::map<absl::optional<MediaSource>,
+           std::unique_ptr<MediaSinksObserver>,
+           MediaSource::Cmp>
       sinks_observers_;
 
   // Holds registrations of MediaSources for cast modes.
@@ -180,12 +181,10 @@ class QueryResultManager {
   std::vector<MediaSink> all_sinks_;
 
   // Registered observers.
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<MediaSinkWithCastModesObserver>::Unchecked observers_;
 
   // Not owned by this object.
-  MediaRouter* const router_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryResultManager);
+  const raw_ptr<MediaRouter> router_;
 };
 
 }  // namespace media_router

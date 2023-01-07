@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/referrer.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace content {
@@ -34,6 +35,10 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
    public:
     virtual void CloseUI() = 0;
     virtual void ShowUI() = 0;
+    virtual void ShowCustomContextMenu(
+        gfx::Point point,
+        std::unique_ptr<ui::MenuModel> menu_model) {}
+    virtual void HideCustomContextMenu() {}
     virtual void ResizeDueToAutoResize(content::WebContents* source,
                                        const gfx::Size& new_size) {}
     virtual bool HandleKeyboardEvent(
@@ -41,10 +46,11 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
         const content::NativeWebKeyboardEvent& event);
   };
 
-  BubbleContentsWrapper(content::BrowserContext* browser_context,
+  BubbleContentsWrapper(const GURL& webui_url,
+                        content::BrowserContext* browser_context,
                         int task_manager_string_id,
-                        bool enable_extension_apis,
-                        bool webui_resizes_host);
+                        bool webui_resizes_host,
+                        bool esc_closes_ui);
   ~BubbleContentsWrapper() override;
 
   // content::WebContentsDelegate:
@@ -56,17 +62,21 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
 
   // content::WebContentsObserver:
   void RenderViewHostChanged(content::RenderViewHost* old_host,
                              content::RenderViewHost* new_host) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   // MojoBubbleWebUIController::Embedder:
   void CloseUI() override;
   void ShowUI() override;
+  void ShowContextMenu(gfx::Point point,
+                       std::unique_ptr<ui::MenuModel> menu_model) override;
+  void HideContextMenu() override;
 
   // Reloads the WebContents hosting the WebUI.
   virtual void ReloadWebContents() = 0;
@@ -83,6 +93,8 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   // If true will allow the wrapped WebContents to automatically resize its
   // RenderWidgetHostView and send back updates to `Host` for the new size.
   const bool webui_resizes_host_;
+  // If true will cause the ESC key to close the UI during pre-handling.
+  const bool esc_closes_ui_;
   base::WeakPtr<BubbleContentsWrapper::Host> host_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
@@ -97,12 +109,13 @@ class BubbleContentsWrapperT : public BubbleContentsWrapper {
   BubbleContentsWrapperT(const GURL& webui_url,
                          content::BrowserContext* browser_context,
                          int task_manager_string_id,
-                         bool enable_extension_apis = false,
-                         bool webui_resizes_host = true)
-      : BubbleContentsWrapper(browser_context,
+                         bool webui_resizes_host = true,
+                         bool esc_closes_ui = true)
+      : BubbleContentsWrapper(webui_url,
+                              browser_context,
                               task_manager_string_id,
-                              enable_extension_apis,
-                              webui_resizes_host),
+                              webui_resizes_host,
+                              esc_closes_ui),
         webui_url_(webui_url) {}
 
   void ReloadWebContents() override {
@@ -110,12 +123,19 @@ class BubbleContentsWrapperT : public BubbleContentsWrapper {
                                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                             std::string());
     // Depends on the WebUIController object being constructed synchronously
-    // when the navigation is started in LoadInitialURL().
-    GetWebUIController()->set_embedder(weak_ptr_factory_.GetWeakPtr());
+    // when the navigation is started in LoadInitialURL(). The WebUIController
+    // may not be defined at this point if the content code encounteres an
+    // error during navigation so check here to ensure the pointer is valid.
+    if (T* webui_controller = GetWebUIController())
+      webui_controller->set_embedder(weak_ptr_factory_.GetWeakPtr());
   }
 
+  // May return null.
   T* GetWebUIController() {
-    return web_contents()->GetWebUI()->GetController()->template GetAs<T>();
+    content::WebUI* const webui = web_contents()->GetWebUI();
+    return webui && webui->GetController()
+               ? webui->GetController()->template GetAs<T>()
+               : nullptr;
   }
 
  private:

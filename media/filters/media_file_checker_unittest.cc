@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ static void RunMediaFileChecker(const std::string& filename, bool expectation) {
   ASSERT_TRUE(file.IsValid());
 
   MediaFileChecker checker(std::move(file));
-  const base::TimeDelta check_time = base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta check_time = base::Milliseconds(100);
   bool result = checker.Start(check_time);
   EXPECT_EQ(expectation, result);
 }

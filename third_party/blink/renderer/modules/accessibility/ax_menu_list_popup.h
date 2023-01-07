@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MENU_LIST_POPUP_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MENU_LIST_POPUP_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_mock_object.h"
 
 namespace blink {
@@ -40,6 +39,9 @@ class AXMenuListPopup final : public AXMockObject {
  public:
   explicit AXMenuListPopup(AXObjectCacheImpl&);
 
+  AXMenuListPopup(const AXMenuListPopup&) = delete;
+  AXMenuListPopup& operator=(const AXMenuListPopup&) = delete;
+
   AXRestriction Restriction() const override;
   bool IsOffScreen() const override;
 
@@ -51,9 +53,7 @@ class AXMenuListPopup final : public AXMockObject {
  private:
   bool IsMenuListPopup() const override { return true; }
 
-  ax::mojom::blink::Role DetermineAccessibilityRole() override {
-    return ax::mojom::blink::Role::kMenuListPopup;
-  }
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
 
   bool IsVisible() const override;
   bool OnNativeClickAction() override;
@@ -65,8 +65,6 @@ class AXMenuListPopup final : public AXMockObject {
 
   // Note that this may be -1 if nothing is selected.
   int active_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXMenuListPopup);
 };
 
 template <>

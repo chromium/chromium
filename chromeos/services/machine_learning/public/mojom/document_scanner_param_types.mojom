@@ -1,0 +1,30 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Common datatypes shared between document scanner API and camera app.
+
+// NOTE: This mojom exists in two places and must be kept in sync:
+//       Chromium:  //chromeos/services/machine_learning/public/mojom/
+//       Chrome OS: src/platform2/ml/mojom/
+//       Note: Other repos downstream of Chromium might also use this mojom.
+// Example: A backwards-compatible mojom change (and corresponding
+// implementation change) can be made in Chrome OS first, then replicated to the
+// clients (Chromium, other downstream repos) later.
+// Use //chromeos/services/machine_learning/public/mojom/roll_mojoms.sh to help
+// replicate Chrome OS-side changes over to Chromium.
+
+module chromeos.machine_learning.mojom;
+
+// Image rotation in clockwise direction.
+[Stable, Extensible]
+enum Rotation {
+  // 0 degree rotation (no rotation).
+  ROTATION_0 = 0,
+  // 90 degree rotation.
+  ROTATION_90 = 1,
+  // 180 degree rotation.
+  ROTATION_180 = 2,
+  // 270 degree rotation.
+  ROTATION_270 = 3,
+};

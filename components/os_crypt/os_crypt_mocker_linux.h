@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,18 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "components/os_crypt/key_storage_linux.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Holds and serves a password from memory.
 class OSCryptMockerLinux : public KeyStorageLinux {
  public:
   OSCryptMockerLinux() = default;
+
+  OSCryptMockerLinux(const OSCryptMockerLinux&) = delete;
+  OSCryptMockerLinux& operator=(const OSCryptMockerLinux&) = delete;
+
   ~OSCryptMockerLinux() override = default;
 
   // Get a pointer to the stored password. OSCryptMockerLinux owns the pointer.
@@ -30,12 +33,10 @@ class OSCryptMockerLinux : public KeyStorageLinux {
  protected:
   // KeyStorageLinux
   bool Init() override;
-  base::Optional<std::string> GetKeyImpl() override;
+  absl::optional<std::string> GetKeyImpl() override;
 
  private:
   std::string key_;
-
-  DISALLOW_COPY_AND_ASSIGN(OSCryptMockerLinux);
 };
 
 #endif  // COMPONENTS_OS_CRYPT_OS_CRYPT_MOCKER_LINUX_H_

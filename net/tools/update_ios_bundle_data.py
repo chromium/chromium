@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright (c) 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,6 +20,7 @@ import sys
 
 # This is a bit more expansive than it needs to be (includes README). Meh.
 test_support_bundle_data_globs = [
+    "data/quic_http_response_cache_data/test.example.com/*",
     "data/quic_http_response_cache_data_with_push/test.example.com/*",
     "data/ssl/certificates/*",
 ]
@@ -99,17 +100,17 @@ def resolve_file_globs(rules):
 
 
 def read_file_to_string(path):
-  with open(path, 'r') as f:
+  with open(path, 'r', encoding='utf-8') as f:
     return f.read()
 
 
 def write_string_to_file(data, path):
-  with open(path, 'w') as f:
+  with open(path, 'w', encoding='utf-8') as f:
     f.write(data)
 
 
 def fatal(message):
-  print "FATAL: " + message
+  print("FATAL: " + message)
   sys.exit(1)
 
 
@@ -125,7 +126,7 @@ def format_file_list(files):
 def replace_sources(data, sources_regex, globs):
   m = sources_regex.search(data)
   if not m:
-      fatal("Couldn't find the sources section: %s" % sources_regex.pattern)
+    fatal("Couldn't find the sources section: %s" % sources_regex.pattern)
 
   formatted_files = format_file_list(resolve_file_globs(globs))
   return data[0:m.start(1)] + formatted_files + data[m.end(1):]
@@ -147,7 +148,7 @@ def main():
                          net_unittest_bundle_data_globs)
 
   write_string_to_file(data, path)
-  print "Wrote %s" % path
+  print("Wrote %s" % path)
 
 
 if __name__ == '__main__':

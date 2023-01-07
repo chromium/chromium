@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -144,7 +144,13 @@ chrome.test.runTests([
             chrome.test.assertEq(false, cookie.httpOnly);
             chrome.test.assertEq('unspecified', cookie.sameSite);
             chrome.test.assertEq(false, cookie.session);
-            chrome.test.assertEq(TEST_EXPIRATION_DATE, cookie.expirationDate);
+            // Expiration is clamped to 400 days, so we test if it's within a
+            // minute of 400 days from now.
+            const dateDiffInSec = cookie.expirationDate -
+                                  Math.round(Date.now()/1000);
+            const fourHundredDayInSec = 400 * 24 * 60 * 60;
+            chrome.test.assertTrue(
+              Math.abs(dateDiffInSec - fourHundredDayInSec) <  60);
           }));
     }));
   },

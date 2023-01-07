@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_RENDERER_HOST_DELEGATED_FRAME_HOST_CLIENT_ANDROID_H_
 #define CONTENT_BROWSER_RENDERER_HOST_DELEGATED_FRAME_HOST_CLIENT_ANDROID_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "content/common/content_export.h"
@@ -20,6 +20,12 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
  public:
   explicit DelegatedFrameHostClientAndroid(
       RenderWidgetHostViewAndroid* render_widget_host_view);
+
+  DelegatedFrameHostClientAndroid(const DelegatedFrameHostClientAndroid&) =
+      delete;
+  DelegatedFrameHostClientAndroid& operator=(
+      const DelegatedFrameHostClientAndroid&) = delete;
+
   ~DelegatedFrameHostClientAndroid() override;
 
  private:
@@ -27,10 +33,9 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
   void OnFrameTokenChanged(uint32_t frame_token,
                            base::TimeTicks activation_time) override;
   void WasEvicted() override;
+  void OnSurfaceIdChanged() override;
 
-  RenderWidgetHostViewAndroid* render_widget_host_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegatedFrameHostClientAndroid);
+  raw_ptr<RenderWidgetHostViewAndroid> render_widget_host_view_;
 };
 
 }  // namespace content

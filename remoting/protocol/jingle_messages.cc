@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/protocol/jingle_messages.h"
+
+#include <memory>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -16,8 +18,7 @@
 using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -209,7 +210,7 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
   const XmlElement* attachments_tag =
       jingle_tag->FirstNamed(QName(kChromotingXmlNamespace, "attachments"));
   if (attachments_tag) {
-    attachments.reset(new XmlElement(*attachments_tag));
+    attachments = std::make_unique<XmlElement>(*attachments_tag);
   } else {
     attachments.reset();
   }
@@ -225,7 +226,7 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
     }
     if (child) {
       // session-info is allowed to be empty.
-      info.reset(new XmlElement(*child));
+      info = std::make_unique<XmlElement>(*child);
     } else {
       info.reset();
     }
@@ -271,7 +272,8 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
   const XmlElement* webrtc_transport_tag = content_tag->FirstNamed(
       QName(kWebrtcTransportNamespace, "transport"));
   if (webrtc_transport_tag) {
-    transport_info.reset(new jingle_xmpp::XmlElement(*webrtc_transport_tag));
+    transport_info =
+        std::make_unique<jingle_xmpp::XmlElement>(*webrtc_transport_tag);
   }
 
   description.reset();
@@ -295,7 +297,8 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
     const XmlElement* ice_transport_tag = content_tag->FirstNamed(
         QName(kIceTransportNamespace, "transport"));
     if (ice_transport_tag) {
-      transport_info.reset(new jingle_xmpp::XmlElement(*ice_transport_tag));
+      transport_info =
+          std::make_unique<jingle_xmpp::XmlElement>(*ice_transport_tag);
     }
   }
 
@@ -380,8 +383,8 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessage::ToXml() const {
 void JingleMessage::AddAttachment(std::unique_ptr<XmlElement> attachment) {
   DCHECK(attachment);
   if (!attachments) {
-    attachments.reset(new XmlElement(
-        QName(kChromotingXmlNamespace, "attachments")));
+    attachments = std::make_unique<XmlElement>(
+        QName(kChromotingXmlNamespace, "attachments"));
   }
   attachments->AddElement(attachment.release());
 }
@@ -442,29 +445,29 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReply::ToXml(
       new jingle_xmpp::XmlElement(QName(kJabberNamespace, "error"));
   iq->AddElement(error);
 
-  std::string type;
+  std::string type_attr;
   std::string error_text;
   QName name;
   switch (error_type) {
     case BAD_REQUEST:
-      type = "modify";
+      type_attr = "modify";
       name = QName(kJabberNamespace, "bad-request");
       break;
     case NOT_IMPLEMENTED:
-      type = "cancel";
+      type_attr = "cancel";
       name = QName(kJabberNamespace, "feature-bad-request");
       break;
     case INVALID_SID:
-      type = "modify";
+      type_attr = "modify";
       name = QName(kJabberNamespace, "item-not-found");
       error_text = "Invalid SID";
       break;
     case UNEXPECTED_REQUEST:
-      type = "modify";
+      type_attr = "modify";
       name = QName(kJabberNamespace, "unexpected-request");
       break;
     case UNSUPPORTED_INFO:
-      type = "modify";
+      type_attr = "modify";
       name = QName(kJabberNamespace, "feature-not-implemented");
       break;
     default:
@@ -475,7 +478,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReply::ToXml(
     error_text = text;
   }
 
-  error->SetAttr(QName(kEmptyNamespace, "type"), type);
+  error->SetAttr(QName(kEmptyNamespace, "type"), type_attr);
 
   // If the error name is not in the standard namespace, we have
   // to first add some error from that namespace.
@@ -556,5 +559,4 @@ std::unique_ptr<jingle_xmpp::XmlElement> IceTransportInfo::ToXml() const {
   return result;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

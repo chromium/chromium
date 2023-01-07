@@ -1,0 +1,25 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Configuration that is passed to navigator.runAdAuction().
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
+
+dictionary AuctionAdConfig {
+  required USVString seller;
+  required USVString decisionLogicUrl;
+  USVString trustedScoringSignalsUrl;
+  sequence<USVString> interestGroupBuyers;
+  any auctionSignals;
+  any sellerSignals;
+  USVString directFromSellerSignals;
+  unsigned long long sellerTimeout;
+  unsigned short sellerExperimentGroupId;
+  record<USVString, any> perBuyerSignals;
+  record<USVString, unsigned long long> perBuyerTimeouts;
+  record<USVString, unsigned short> perBuyerGroupLimits;
+  record<USVString, unsigned short> perBuyerExperimentGroupIds;
+  record<USVString, record<USVString, double>> perBuyerPrioritySignals;
+  sequence<AuctionAdConfig> componentAuctions;
+  AbortSignal? signal;
+};

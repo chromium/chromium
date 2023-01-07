@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -25,18 +24,20 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_member.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/base/ime/chromeos/component_extension_ime_manager.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
-#include "ui/base/ime/chromeos/fake_input_method_delegate.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
-#include "ui/base/ime/chromeos/mock_component_extension_ime_manager_delegate.h"
-#include "ui/base/ime/chromeos/mock_input_method_manager.h"
+#include "ash/constants/ash_features.h"
+#include "ui/base/ime/ash/component_extension_ime_manager.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/fake_input_method_delegate.h"
+#include "ui/base/ime/ash/input_method_util.h"
+#include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
+#include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif
 
@@ -70,8 +71,8 @@ MockLanguageSettingsPrivateDelegate::GetHunspellDictionaryStatuses() {
   DictionaryStatus status;
   status.language_code = "fr";
   status.is_ready = false;
-  status.is_downloading = std::make_unique<bool>(true);
-  status.download_failed = std::make_unique<bool>(false);
+  status.is_downloading = true;
+  status.download_failed = false;
   statuses.push_back(std::move(status));
   return statuses;
 }
@@ -109,13 +110,13 @@ class LanguageSettingsPrivateApiTest : public ExtensionServiceTestBase {
   void RunGetLanguageListTest();
 
   virtual void InitFeatures() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Force Windows hybrid spellcheck to be enabled.
     feature_list_.InitAndEnableFeature(spellcheck::kWinUseBrowserSpellChecker);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   virtual void AddSpellcheckLanguagesForTesting(
       const std::vector<std::string>& spellcheck_languages_for_testing) {
     SpellcheckServiceFactory::GetInstance()
@@ -124,7 +125,7 @@ class LanguageSettingsPrivateApiTest : public ExtensionServiceTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   void SetUp() override {
@@ -179,14 +180,14 @@ TEST_F(LanguageSettingsPrivateApiTest, GetSpellcheckDictionaryStatusesTest) {
                                                        profile());
   EXPECT_TRUE(actual) << function->GetError();
 
-  base::ListValue expected;
-  auto expected_status = std::make_unique<base::DictionaryValue>();
-  expected_status->SetString("languageCode", "fr");
-  expected_status->SetBoolean("isReady", false);
-  expected_status->SetBoolean("isDownloading", true);
-  expected_status->SetBoolean("downloadFailed", false);
+  base::Value::List expected;
+  base::Value::Dict expected_status;
+  expected_status.Set("languageCode", "fr");
+  expected_status.Set("isReady", false);
+  expected_status.Set("isDownloading", true);
+  expected_status.Set("downloadFailed", false);
   expected.Append(std::move(expected_status));
-  EXPECT_EQ(expected, *actual);
+  EXPECT_EQ(base::Value(std::move(expected)), *actual);
 }
 
 TEST_F(LanguageSettingsPrivateApiTest, SetLanguageAlwaysTranslateStateTest) {
@@ -261,14 +262,57 @@ TEST_F(LanguageSettingsPrivateApiTest, SetTranslateTargetLanguageTest) {
       api_test_utils::RunFunctionAndReturnSingleResult(function.get(),
                                                        "[\"af\"]", profile());
   ASSERT_EQ(translate_prefs_->GetRecentTargetLanguage(), "af");
-
-  std::vector<std::string> content_languages_after;
-  translate_prefs_->GetLanguageList(&content_languages_after);
-  ASSERT_EQ(std::vector<std::string>({"en-US", "en", "af"}),
-            content_languages_after);
 }
 
-TEST_F(LanguageSettingsPrivateApiTest, GetLanguageListTest) {
+TEST_F(LanguageSettingsPrivateApiTest, GetNeverTranslateLanguagesListTest) {
+  std::unique_ptr<translate::TranslatePrefs> translate_prefs_ =
+      ChromeTranslateClient::CreateTranslatePrefs(profile()->GetPrefs());
+
+  std::vector<std::string> never_translate_languages =
+      translate_prefs_->GetNeverTranslateLanguages();
+  ASSERT_EQ(std::vector<std::string>({"en"}), never_translate_languages);
+  translate_prefs_->BlockLanguage("af");
+  translate_prefs_->BlockLanguage("es");
+  never_translate_languages = translate_prefs_->GetNeverTranslateLanguages();
+  ASSERT_EQ(std::vector<std::string>({"en", "af", "es"}),
+            never_translate_languages);
+
+  auto function = base::MakeRefCounted<
+      LanguageSettingsPrivateGetNeverTranslateLanguagesFunction>();
+
+  std::unique_ptr<base::Value> result =
+      api_test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
+                                                       profile());
+
+  ASSERT_NE(nullptr, result) << function->GetError();
+  EXPECT_TRUE(result->is_list());
+
+  ASSERT_EQ(result->GetList().size(), never_translate_languages.size());
+  for (size_t i = 0; i < result->GetList().size(); i++) {
+    EXPECT_EQ(result->GetList()[i].GetString(), never_translate_languages[i]);
+  }
+}
+
+class LanguageSettingsPrivateApiGetLanguageListTest
+    : public LanguageSettingsPrivateApiTest {
+ public:
+  LanguageSettingsPrivateApiGetLanguageListTest() = default;
+  ~LanguageSettingsPrivateApiGetLanguageListTest() override = default;
+
+ protected:
+  void InitFeatures() override {
+#if BUILDFLAG(IS_WIN)
+    // Force Windows hybrid spellcheck to be enabled, and disable the delayed
+    // init feature since that case is tested in
+    // LanguageSettingsPrivateApiTestDelayInit below.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker},
+        /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
+#endif  // BUILDFLAG(IS_WIN)
+  }
+};
+
+TEST_F(LanguageSettingsPrivateApiGetLanguageListTest, GetLanguageList) {
   translate::TranslateDownloadManager::GetInstance()->ResetForTesting();
   RunGetLanguageListTest();
 }
@@ -303,7 +347,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
   // Windows spellcheck support depending on the OS version. GetLanguageList
   // only reports spellchecking is supported for these languages if the language
   // pack is installed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (spellcheck::WindowsVersionSupportsSpellchecker()) {
     languages_to_test.push_back({"ar", "ar-SA", true, true});
     languages_to_test.push_back({"bn", "bn-IN", false, true});
@@ -314,7 +358,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
 #else
   languages_to_test.push_back({"ar", "ar-SA", true, false});
   languages_to_test.push_back({"bn", "bn-IN", false, false});
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Initialize accept languages prefs.
   std::vector<std::string> accept_languages;
@@ -330,7 +374,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
   profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
                                    accept_languages_string);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Add fake Windows dictionaries using InitWindowsDictionaryLanguages.
   std::vector<std::string> windows_spellcheck_languages_for_testing;
   for (auto& language_to_test : languages_to_test) {
@@ -343,7 +387,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
   }
 
   AddSpellcheckLanguagesForTesting(windows_spellcheck_languages_for_testing);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   auto function =
       base::MakeRefCounted<LanguageSettingsPrivateGetLanguageListFunction>();
@@ -363,7 +407,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
     std::string language_code = *language_code_ptr;
     EXPECT_FALSE(language_code.empty());
 
-    const base::Optional<bool> maybe_supports_spellcheck =
+    const absl::optional<bool> maybe_supports_spellcheck =
         language_val.FindBoolKey("supportsSpellcheck");
     const bool supports_spellcheck = maybe_supports_spellcheck.has_value()
                                          ? maybe_supports_spellcheck.value()
@@ -379,6 +423,15 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
         break;
       }
     }
+
+    // Check that zh and zh-HK aren't shown as supporting UI.
+    if (language_code == "zh" || language_code == "zh-HK") {
+      const absl::optional<bool> maybe_supports_ui =
+          language_val.FindBoolKey("supportsUI");
+      const bool supports_ui =
+          maybe_supports_ui.has_value() ? maybe_supports_ui.value() : false;
+      EXPECT_FALSE(supports_ui) << language_code << " should not support UI";
+    }
   }
 
   EXPECT_EQ(languages_to_test.size(), languages_to_test_found_count);
@@ -387,26 +440,26 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
-namespace input_method = chromeos::input_method;
+namespace input_method = ::ash::input_method;
 using input_method::InputMethodDescriptor;
 using input_method::InputMethodManager;
 using input_method::MockComponentExtensionIMEManagerDelegate;
 
 std::string GetExtensionImeId() {
-  std::string kExtensionImeId = chromeos::extension_ime_util::GetInputMethodID(
+  std::string kExtensionImeId = ash::extension_ime_util::GetInputMethodID(
       crx_file::id_util::GenerateId("test.extension.ime"), "us");
   return kExtensionImeId;
 }
 
 std::string GetComponentExtensionImeId() {
   std::string kComponentExtensionImeId =
-      chromeos::extension_ime_util::GetComponentInputMethodID(
+      ash::extension_ime_util::GetComponentInputMethodID(
           crx_file::id_util::GenerateId("test.component.extension.ime"), "us");
   return kComponentExtensionImeId;
 }
 
 std::string GetArcImeId() {
-  std::string kArcImeId = chromeos::extension_ime_util::GetArcInputMethodID(
+  std::string kArcImeId = ash::extension_ime_util::GetArcInputMethodID(
       crx_file::id_util::GenerateId("test.arc.ime"), "us");
   return kArcImeId;
 }
@@ -424,12 +477,15 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
       InputMethodDescriptor component_extension_ime(
           GetComponentExtensionImeId(), "ComponentExtensionIme", "", layout,
           {"en-US", "en"}, false /* is_login_keyboard */, GURL(), GURL());
-      InputMethodDescriptor arc_ime(
-          GetArcImeId(), "ArcIme", "", layout,
-          {chromeos::extension_ime_util::kArcImeLanguage},
-          false /* is_login_keyboard */, GURL(), GURL());
+      InputMethodDescriptor arc_ime(GetArcImeId(), "ArcIme", "", layout,
+                                    {ash::extension_ime_util::kArcImeLanguage},
+                                    false /* is_login_keyboard */, GURL(),
+                                    GURL());
       input_methods_ = {extension_ime, component_extension_ime, arc_ime};
     }
+
+    TestState(const TestState&) = delete;
+    TestState& operator=(const TestState&) = delete;
 
     void GetInputMethodExtensions(
         input_method::InputMethodDescriptors* descriptors) override {
@@ -442,16 +498,16 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
    protected:
     friend base::RefCounted<InputMethodManager::State>;
     ~TestState() override = default;
-
-    DISALLOW_COPY_AND_ASSIGN(TestState);
   };
 
   TestInputMethodManager() : state_(new TestState), util_(&delegate_) {
     util_.AppendInputMethods(state_->input_methods_);
-    component_ext_mgr_ =
-        std::make_unique<chromeos::ComponentExtensionIMEManager>(
-            std::make_unique<MockComponentExtensionIMEManagerDelegate>());
+    component_ext_mgr_ = std::make_unique<ash::ComponentExtensionIMEManager>(
+        std::make_unique<MockComponentExtensionIMEManagerDelegate>());
   }
+
+  TestInputMethodManager(const TestInputMethodManager&) = delete;
+  TestInputMethodManager& operator=(const TestInputMethodManager&) = delete;
 
   scoped_refptr<InputMethodManager::State> GetActiveIMEState() override {
     return state_;
@@ -461,7 +517,7 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
     return &util_;
   }
 
-  chromeos::ComponentExtensionIMEManager* GetComponentExtensionIMEManager()
+  ash::ComponentExtensionIMEManager* GetComponentExtensionIMEManager()
       override {
     return component_ext_mgr_.get();
   }
@@ -470,9 +526,7 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
   scoped_refptr<TestState> state_;
   input_method::FakeInputMethodDelegate delegate_;
   input_method::InputMethodUtil util_;
-  std::unique_ptr<chromeos::ComponentExtensionIMEManager> component_ext_mgr_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInputMethodManager);
+  std::unique_ptr<ash::ComponentExtensionIMEManager> component_ext_mgr_;
 };
 
 }  // namespace
@@ -516,9 +570,8 @@ TEST_F(LanguageSettingsPrivateApiTest, GetInputMethodListsTest) {
         input_method.FindListKey("languageCodes");
     ASSERT_NE(nullptr, ime_language_codes_ptr);
     for (auto& language_code : ime_language_codes_ptr->GetList()) {
-      std::string language_display_name =
-          base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
-              language_code.GetString(), "en", true));
+      std::u16string language_display_name = l10n_util::GetDisplayNameForLocale(
+          language_code.GetString(), "en", true);
       if (!language_display_name.empty())
         EXPECT_TRUE(base::Contains(ime_tags_ptr->GetList(),
                                    base::Value(language_display_name)));
@@ -538,8 +591,12 @@ TEST_F(LanguageSettingsPrivateApiTest, AddInputMethodTest) {
   enabled_imes.Init(prefs::kLanguageEnabledImes, profile()->GetPrefs());
   StringPrefMember preload_engines;
   preload_engines.Init(prefs::kLanguagePreloadEngines, profile()->GetPrefs());
+  BooleanPrefMember language_menu_enabled;
+  language_menu_enabled.Init(prefs::kLanguageImeMenuActivated,
+                             profile()->GetPrefs());
   enabled_imes.SetValue(std::string());
   preload_engines.SetValue(std::string());
+  language_menu_enabled.SetValue(false);
 
   {
     // Add an extension IME. kLanguageEnabledImes should be updated.
@@ -550,10 +607,12 @@ TEST_F(LanguageSettingsPrivateApiTest, AddInputMethodTest) {
 
     EXPECT_EQ(GetExtensionImeId(), enabled_imes.GetValue());
     EXPECT_TRUE(preload_engines.GetValue().empty());
+    EXPECT_FALSE(language_menu_enabled.GetValue());
   }
 
   enabled_imes.SetValue(std::string());
   preload_engines.SetValue(std::string());
+  language_menu_enabled.SetValue(false);
   {
     // Add a component extension IME. kLanguagePreloadEngines should be
     // updated.
@@ -565,10 +624,12 @@ TEST_F(LanguageSettingsPrivateApiTest, AddInputMethodTest) {
 
     EXPECT_TRUE(enabled_imes.GetValue().empty());
     EXPECT_EQ(GetComponentExtensionImeId(), preload_engines.GetValue());
+    EXPECT_FALSE(language_menu_enabled.GetValue());
   }
 
   enabled_imes.SetValue(std::string());
   preload_engines.SetValue(std::string());
+  language_menu_enabled.SetValue(false);
   {
     // Add an ARC IME. kLanguageEnabledImes should be updated.
     auto function =
@@ -578,6 +639,28 @@ TEST_F(LanguageSettingsPrivateApiTest, AddInputMethodTest) {
 
     EXPECT_EQ(GetArcImeId(), enabled_imes.GetValue());
     EXPECT_TRUE(preload_engines.GetValue().empty());
+    EXPECT_FALSE(language_menu_enabled.GetValue());
+  }
+
+  enabled_imes.SetValue(std::string());
+  preload_engines.SetValue(std::string());
+  language_menu_enabled.SetValue(false);
+  {
+    // Add an extension IME and a component extension IME. Both should be
+    // updated, and the language menu should be enabled.
+    auto function =
+        base::MakeRefCounted<LanguageSettingsPrivateAddInputMethodFunction>();
+    api_test_utils::RunFunctionAndReturnSingleResult(
+        function.get(), "[\"" + GetExtensionImeId() + "\"]", profile());
+    function =
+        base::MakeRefCounted<LanguageSettingsPrivateAddInputMethodFunction>();
+    api_test_utils::RunFunctionAndReturnSingleResult(
+        function.get(), "[\"" + GetComponentExtensionImeId() + "\"]",
+        profile());
+
+    EXPECT_EQ(GetExtensionImeId(), enabled_imes.GetValue());
+    EXPECT_EQ(GetComponentExtensionImeId(), preload_engines.GetValue());
+    EXPECT_TRUE(language_menu_enabled.GetValue());
   }
 
   TestInputMethodManager::Shutdown();
@@ -634,7 +717,7 @@ TEST_F(LanguageSettingsPrivateApiTest, RemoveInputMethodTest) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class LanguageSettingsPrivateApiTestDelayInit
     : public LanguageSettingsPrivateApiTest {
  public:
@@ -662,6 +745,6 @@ class LanguageSettingsPrivateApiTestDelayInit
 TEST_F(LanguageSettingsPrivateApiTestDelayInit, GetLanguageListTest) {
   RunGetLanguageListTest();
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace extensions

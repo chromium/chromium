@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
@@ -56,6 +57,10 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
   WebDialogViewUnitTest()
       : views::test::WidgetTest(std::unique_ptr<base::test::TaskEnvironment>(
             std::make_unique<content::BrowserTaskEnvironment>())) {}
+
+  WebDialogViewUnitTest(const WebDialogViewUnitTest&) = delete;
+  WebDialogViewUnitTest& operator=(const WebDialogViewUnitTest&) = delete;
+
   ~WebDialogViewUnitTest() override = default;
 
   // testing::Test
@@ -100,11 +105,11 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
   WebDialogView* web_dialog_view() { return web_dialog_view_; }
 
   views::WebView* web_view() {
-    return web_dialog_view_ ? web_dialog_view_->web_view_ : nullptr;
+    return web_dialog_view_ ? web_dialog_view_->web_view_.get() : nullptr;
   }
 
   ui::WebDialogDelegate* web_view_delegate() {
-    return web_dialog_view_ ? web_dialog_view_->delegate_ : nullptr;
+    return web_dialog_view_ ? web_dialog_view_->delegate_.get() : nullptr;
   }
 
   TestWebDialogViewWebDialogDelegate* web_dialog_delegate() {
@@ -134,14 +139,12 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
   std::unique_ptr<content::TestBrowserContext> browser_context_;
   // These are raw pointers (vs unique pointers) because the views
   // system does its own internal memory management.
-  views::Widget* widget_ = nullptr;
-  WebDialogView* web_dialog_view_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<WebDialogView> web_dialog_view_ = nullptr;
   base::RepeatingClosure quit_closure_;
 
   std::unique_ptr<TestWebDialogViewWebDialogDelegate> web_dialog_delegate_;
   std::unique_ptr<content::TestWebContents> web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDialogViewUnitTest);
 };
 
 TEST_F(WebDialogViewUnitTest, WebDialogViewClosedOnEscape) {
@@ -177,12 +180,6 @@ TEST_F(WebDialogViewUnitTest, ObservableWebViewOnWebDialogViewClosed) {
   EXPECT_FALSE(web_view_delegate());
 
   ResetWebDialogDelegate();
-  // Calling back to web view's ResourceLoadComplete() should not cause crash.
-  content::RenderFrameHost* rfh = web_view()->web_contents()->GetMainFrame();
-  ASSERT_TRUE(rfh);
-  content::GlobalRequestID request_id;
-  blink::mojom::ResourceLoadInfo resource_load_info;
-  web_view()->ResourceLoadComplete(rfh, request_id, resource_load_info);
 }
 
 TEST_F(WebDialogViewUnitTest, MetadataTest) {

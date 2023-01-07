@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 namespace ntp_header {
 
-const CGFloat kMinHeaderHeight = 62;
 const CGFloat kAnimationDistance = 42;
 const CGFloat kFakeLocationBarTopConstraint = 4;
 const CGFloat kScrolledToTopOmniboxBottomMargin = 4;

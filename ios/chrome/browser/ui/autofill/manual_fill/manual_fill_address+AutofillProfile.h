@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,15 @@ namespace autofill {
 class AutofillProfile;
 }
 
-// Extends |ManualFillAddress| with a convenience initializer from c++
-// |autofill::AutofillProfile|.
+// Extends `ManualFillAddress` with a convenience initializer from c++
+// `autofill::AutofillProfile`.
 @interface ManualFillAddress (AutofillProfile)
 
 // Convenience initializer from an autofill::AutofillProfile.
 - (instancetype)initWithProfile:(const autofill::AutofillProfile&)profile;
 
-// Converts a list of |autofill::AutofillProfile| into a list of
-// |ManualFillAddress|.
+// Converts a list of `autofill::AutofillProfile` into a list of
+// `ManualFillAddress`.
 + (NSArray<ManualFillAddress*>*)manualFillAddressesFromProfiles:
     (std::vector<autofill::AutofillProfile*>)profiles;
 

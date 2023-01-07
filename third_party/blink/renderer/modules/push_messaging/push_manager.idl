@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,5 @@
 
     [CallWith=ScriptState, RaisesException] Promise<PushSubscription> subscribe(optional PushSubscriptionOptionsInit options = {});
     [CallWith=ScriptState] Promise<PushSubscription?> getSubscription();
-    [CallWith=ScriptState, RaisesException] Promise<PushPermissionState> permissionState(optional PushSubscriptionOptionsInit options = {});
-};
-
-enum PushPermissionState {
-  "denied",
-  "granted",
-  "prompt",
+    [CallWith=ScriptState, RaisesException] Promise<PermissionState> permissionState(optional PushSubscriptionOptionsInit options = {});
 };

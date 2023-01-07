@@ -1,0 +1,131 @@
+<style include="settings-shared">
+  :root {
+    --cr-section-indent-width: 60px;
+  }
+
+  .sub-item {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  .settings-box {
+    padding-inline-start: 0;
+  }
+
+  settings-toggle-button,
+  cr-link-row {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .settings-box.indented,
+  settings-toggle-button.indented {
+    margin-inline-start: var(--cr-section-indent-width);
+  }
+
+  #screenMagnifierZoomHintLabel {
+    white-space: pre-line;
+  }
+
+  #dictationLocaleMenuSubtitle {
+    max-width: 450px;
+    overflow-wrap: break-word;
+  }
+</style>
+
+<settings-toggle-button
+    icon="os-settings:on-screen-keyboard"
+    pref="{{prefs.settings.a11y.virtual_keyboard}}"
+    label="$i18n{onScreenKeyboardLabel}"
+    sub-label="$i18n{onScreenKeyboardDescription}"
+    deep-link-focus-id$="[[Setting.kOnScreenKeyboard]]">
+</settings-toggle-button>
+<settings-toggle-button
+    id="enableDictation"
+    class="hr"
+    icon="os-settings:dictation"
+    pref="{{prefs.settings.a11y.dictation}}"
+    label="$i18n{dictationLabel}"
+    sub-label="$i18n{dictationDescription}"
+    deep-link-focus-id$="[[Setting.kDictation]]"
+    learn-more-url="[[dictationLearnMoreUrl_]]">
+</settings-toggle-button>
+<template is="dom-if" if="[[prefs.settings.a11y.dictation.value]]">
+  <div class="settings-box indented">
+    <div class="flex start settings-box-text" id="labelWrapper">
+      <div class="label" aria-hidden="true" id="dictationLocaleMenuLabel">
+          $i18n{dictationLocaleMenuLabel}
+      </div>
+      <div class="secondary label" id="dictationLocaleMenuSubtitle">
+          [[dictationLocaleMenuSubtitle_]]
+      </div>
+    </div>
+    <cr-button on-click="onChangeDictationLocaleButtonClicked_">
+      $i18n{dictationChangeLanguageButton}
+    </cr-button>
+    <template is="dom-if" if="[[showDictationLocaleMenu_]]" restamp>
+      <os-settings-change-dictation-locale-dialog
+        id="changeDictationLocaleDialog"
+        pref="{{prefs.settings.a11y.dictation_locale}}"
+        on-close="onChangeDictationLocalesDialogClosed_"
+        options="[[dictationLocaleOptions_]]">
+      </os-settings-change-dictation-locale-dialog>
+    </template>
+  </div>
+</template>
+<template is="dom-if" if="[[!isKioskModeActive_]]">
+  <settings-toggle-button
+      id="enableSwitchAccess"
+      class="hr"
+      icon="os-settings:switch-access"
+      pref="{{prefs.settings.a11y.switch_access.enabled}}"
+      label="$i18n{switchAccessLabel}"
+      sub-label="$i18n{switchAccessLabelSubtext}"
+      deep-link-focus-id$="[[Setting.kEnableSwitchAccess]]">
+  </settings-toggle-button>
+  <iron-collapse
+      opened="[[prefs.settings.a11y.switch_access.enabled.value]]">
+    <div class="sub-item">
+      <cr-link-row id="switchAccessSubpageButton"
+          class="settings-box"
+          label="$i18n{switchAccessOptionsLabel}"
+          on-click="onSwitchAccessSettingsTap_"
+          role-description="$i18n{subpageArrowRoleDescription}" embedded>
+      </cr-link-row>
+    </div>
+  </iron-collapse>
+</template>
+<settings-toggle-button
+    class="hr"
+    pref="{{prefs.settings.a11y.sticky_keys_enabled}}"
+    label="$i18n{stickyKeysLabel}"
+    sub-label="$i18n{stickyKeysDescription}"
+    deep-link-focus-id$="[[Setting.kStickyKeys]]">
+</settings-toggle-button>
+<settings-toggle-button
+    class="hr"
+    pref="{{prefs.settings.a11y.focus_highlight}}"
+    label="$i18n{focusHighlightLabel}"
+    sub-label="$i18n{focusHighlightLabelSubtext}"
+    deep-link-focus-id$="[[Setting.kHighlightKeyboardFocus]]">
+</settings-toggle-button>
+<settings-toggle-button
+    class="hr"
+    pref="{{prefs.settings.a11y.caret_highlight}}"
+    label="$i18n{caretHighlightLabel}"
+    sub-label="$i18n{caretHighlightLabelSubtext}"
+    deep-link-focus-id$="[[Setting.kHighlightTextCaret]]">
+</settings-toggle-button>
+<settings-toggle-button
+    class="hr"
+    pref="{{prefs.settings.a11y.caretbrowsing.enabled}}"
+    on-change="onA11yCaretBrowsingChange_"
+    label="$i18n{caretBrowsingLabel}"
+    sub-label="$i18n{caretBrowsingLabelSubtext}">
+</settings-toggle-button>
+<template is="dom-if" if="[[!isKioskModeActive_]]">
+  <cr-link-row id="keyboardSubpageButton" class="hr"
+      label="$i18n{keyboardSettingsTitle}" on-click="onKeyboardTap_"
+      sub-label="$i18n{keyboardSettingsDescription}"
+      role-description="$i18n{subpageArrowRoleDescription}" embedded>
+  </cr-link-row>
+</template>

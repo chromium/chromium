@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CHROME_NOTIFICATION_HELPER_NOTIFICATION_HELPER_CRASH_REPORTER_CLIENT_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
 class NotificationHelperCrashReporterClient
@@ -20,6 +19,12 @@ class NotificationHelperCrashReporterClient
       const base::FilePath& exe_path);
 
   NotificationHelperCrashReporterClient();
+
+  NotificationHelperCrashReporterClient(
+      const NotificationHelperCrashReporterClient&) = delete;
+  NotificationHelperCrashReporterClient& operator=(
+      const NotificationHelperCrashReporterClient&) = delete;
+
   ~NotificationHelperCrashReporterClient() override;
 
   // crash_reporter::CrashReporterClient:
@@ -45,9 +50,6 @@ class NotificationHelperCrashReporterClient
   bool ReportingIsEnforcedByPolicy(bool* enabled) override;
   bool ShouldMonitorCrashHandlerExpensively() override;
   bool EnableBreakpadForProcess(const std::string& process_type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationHelperCrashReporterClient);
 };
 
 #endif  // CHROME_NOTIFICATION_HELPER_NOTIFICATION_HELPER_CRASH_REPORTER_CLIENT_H_

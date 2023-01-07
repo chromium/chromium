@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,9 +22,6 @@ namespace crash_reporter {
 
 namespace {
 
-base::LazyInstance<ChildExitObserver>::DestructorAtExit g_instance =
-    LAZY_INSTANCE_INITIALIZER;
-
 void PopulateTerminationInfo(
     const content::ChildProcessTerminationInfo& content_info,
     ChildExitObserver::TerminationInfo* info) {
@@ -32,15 +29,7 @@ void PopulateTerminationInfo(
   info->threw_exception_during_init = content_info.threw_exception_during_init;
   info->was_killed_intentionally_by_browser =
       content_info.was_killed_intentionally_by_browser;
-  info->remaining_process_with_strong_binding =
-      content_info.remaining_process_with_strong_binding;
-  info->remaining_process_with_moderate_binding =
-      content_info.remaining_process_with_moderate_binding;
-  info->remaining_process_with_waived_binding =
-      content_info.remaining_process_with_waived_binding;
   info->best_effort_reverse_rank = content_info.best_effort_reverse_rank;
-  info->was_oom_protected_status =
-      content_info.status == base::TERMINATION_STATUS_OOM_PROTECTED;
   info->renderer_has_visible_clients =
       content_info.renderer_has_visible_clients;
   info->renderer_was_subframe = content_info.renderer_was_subframe;
@@ -54,23 +43,8 @@ ChildExitObserver::TerminationInfo::TerminationInfo(
 ChildExitObserver::TerminationInfo& ChildExitObserver::TerminationInfo::
 operator=(const TerminationInfo& other) = default;
 
-// static
-void ChildExitObserver::Create() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // If this DCHECK fails in a unit test then a previously executing
-  // test that makes use of ChildExitObserver forgot to create a
-  // ShadowingAtExitManager.
-  DCHECK(!g_instance.IsCreated());
-  g_instance.Get();
-}
-
-// static
-ChildExitObserver* ChildExitObserver::GetInstance() {
-  DCHECK(g_instance.IsCreated());
-  return g_instance.Pointer();
-}
-
 ChildExitObserver::ChildExitObserver() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   notification_registrar_.Add(this,
                               content::NOTIFICATION_RENDERER_PROCESS_CREATED,
                               content::NotificationService::AllSources());
@@ -85,6 +59,7 @@ ChildExitObserver::ChildExitObserver() {
 }
 
 ChildExitObserver::~ChildExitObserver() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserChildProcessObserver::Remove(this);
 }
 

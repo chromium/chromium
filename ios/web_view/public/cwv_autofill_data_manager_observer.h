@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class CWVAutofillDataManager;
+@class CWVPassword;
 
 // Protocol to receive change notifications from CWVAutofillDataManager.
 @protocol CWVAutofillDataManagerObserver<NSObject>
@@ -18,6 +19,15 @@ NS_ASSUME_NONNULL_BEGIN
 // have been loaded for the first time, added, deleted, or updated.
 - (void)autofillDataManagerDataDidChange:
     (CWVAutofillDataManager*)autofillDataManager;
+
+// Called whenever CWVAutofillDataManager's passwords have changed.
+// |added| is populated with passwords that have been added.
+// |updated| is populated with passwords that have been updated.
+// |removed| is populated with passwords that have been removed.
+- (void)autofillDataManager:(CWVAutofillDataManager*)autofillDataManager
+    didChangePasswordsByAdding:(NSArray<CWVPassword*>*)added
+                      updating:(NSArray<CWVPassword*>*)updated
+                      removing:(NSArray<CWVPassword*>*)removed;
 
 @end
 

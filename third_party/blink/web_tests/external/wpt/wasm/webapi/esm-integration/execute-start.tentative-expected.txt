@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Importing a WebAssembly module should execute the start function. assert_array_equals: expected property 0 to be "executed" but got "unexpected" (expected array ["executed"] got ["unexpected"])
+Harness: the test ran to completion.
+

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 #include <new>
 
-#include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -17,11 +17,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(USE_TCMALLOC)
-#include "third_party/tcmalloc/chromium/src/config.h"
-#include "third_party/tcmalloc/chromium/src/gperftools/tcmalloc.h"
-#endif
 
 namespace base {
 
@@ -46,10 +41,7 @@ void EnableTerminationOnOutOfMemory() {
   // malloc and friends and make them die on out of memory.
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  allocator::SetCallNewHandlerOnMallocFailure(true);
-#elif defined(USE_TCMALLOC)
-  // For tcmalloc, we need to tell it to behave like new.
-  tc_set_new_mode(1);
+  allocator_shim::SetCallNewHandlerOnMallocFailure(true);
 #endif
 }
 
@@ -61,10 +53,11 @@ void EnableTerminationOnOutOfMemory() {
 // without the class.
 class AdjustOOMScoreHelper {
  public:
-  static bool AdjustOOMScore(ProcessId process, int score);
+  AdjustOOMScoreHelper() = delete;
+  AdjustOOMScoreHelper(const AdjustOOMScoreHelper&) = delete;
+  AdjustOOMScoreHelper& operator=(const AdjustOOMScoreHelper&) = delete;
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AdjustOOMScoreHelper);
+  static bool AdjustOOMScore(ProcessId process, int score);
 };
 
 // static.
@@ -114,16 +107,25 @@ bool AdjustOOMScore(ProcessId process, int score) {
 
 bool UncheckedMalloc(size_t size, void** result) {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  *result = allocator::UncheckedAlloc(size);
-#elif defined(MEMORY_TOOL_REPLACES_ALLOCATOR) || \
-    (!defined(LIBC_GLIBC) && !BUILDFLAG(USE_TCMALLOC))
+  *result = allocator_shim::UncheckedAlloc(size);
+#elif defined(MEMORY_TOOL_REPLACES_ALLOCATOR) || !defined(LIBC_GLIBC)
   *result = malloc(size);
-#elif defined(LIBC_GLIBC) && !BUILDFLAG(USE_TCMALLOC)
-  *result = malloc(size);
-#elif BUILDFLAG(USE_TCMALLOC)
-  *result = tc_malloc_skip_new_handler(size);
+#elif defined(LIBC_GLIBC)
+  // __libc_malloc is an undeclared identifier for some reason.
+  *result = /*__libc_malloc*/malloc(size);
 #endif
   return *result != nullptr;
+}
+
+void UncheckedFree(void* ptr) {
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+  allocator_shim::UncheckedFree(ptr);
+#elif defined(MEMORY_TOOL_REPLACES_ALLOCATOR) || !defined(LIBC_GLIBC)
+  free(ptr);
+#elif defined(LIBC_GLIBC)
+  // __libc_free is an undeclared identifier for some reason.
+  /*__libc_free*/free(ptr);
+#endif
 }
 
 }  // namespace base

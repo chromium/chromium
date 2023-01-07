@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,9 @@ class PasswordAutoSignInView : public PasswordBubbleViewBase {
  public:
   PasswordAutoSignInView(content::WebContents* web_contents,
                          views::View* anchor_view);
+
+  PasswordAutoSignInView(const PasswordAutoSignInView&) = delete;
+  PasswordAutoSignInView& operator=(const PasswordAutoSignInView&) = delete;
 
 #if defined(UNIT_TEST)
   static void set_auto_signin_toast_timeout(int seconds) {
@@ -43,8 +46,6 @@ class PasswordAutoSignInView : public PasswordBubbleViewBase {
 
   // The timeout in seconds for the auto sign-in toast.
   static int auto_signin_toast_timeout_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordAutoSignInView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_AUTO_SIGN_IN_VIEW_H_

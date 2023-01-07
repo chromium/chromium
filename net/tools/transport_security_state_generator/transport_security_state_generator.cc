@@ -1,9 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <iostream>
-
 #include <map>
 #include <set>
 #include <string>
@@ -14,6 +13,8 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "crypto/openssl_util.h"
 #include "net/tools/transport_security_state_generator/input_file_parsers.h"
 #include "net/tools/transport_security_state_generator/pinsets.h"
@@ -209,7 +210,7 @@ int main(int argc, char* argv[]) {
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<std::string> args;
   base::CommandLine::StringVector wide_args = command_line.GetArgs();
   for (const auto& arg : wide_args) {
@@ -251,8 +252,9 @@ int main(int argc, char* argv[]) {
 
   TransportSecurityStateEntries entries;
   Pinsets pinsets;
+  base::Time timestamp;
 
-  if (!ParseCertificatesFile(certs_input, &pinsets) ||
+  if (!ParseCertificatesFile(certs_input, &pinsets, &timestamp) ||
       !ParseJSON(json_input, &entries, &pinsets)) {
     LOG(ERROR) << "Error while parsing the input files.";
     return 1;
@@ -280,7 +282,7 @@ int main(int argc, char* argv[]) {
 
   std::string output;
   PreloadedStateGenerator generator;
-  output = generator.Generate(preload_template, entries, pinsets);
+  output = generator.Generate(preload_template, entries, pinsets, timestamp);
   if (output.empty()) {
     LOG(ERROR) << "Trie generation failed.";
     return 1;

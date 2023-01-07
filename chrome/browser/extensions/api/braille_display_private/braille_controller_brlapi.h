@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
 #include "chrome/browser/extensions/api/braille_display_private/brlapi_connection.h"
 #include "library_loaders/libbrlapi.h"

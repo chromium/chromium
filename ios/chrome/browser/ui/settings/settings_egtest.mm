@@ -1,41 +1,34 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
-#include <map>
-#include <memory>
+#import <map>
+#import <memory>
 
-#include "base/mac/foundation_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "build/branding_buildflags.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "build/branding_buildflags.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(SettingsAppInterface);
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ClearBrowsingDataButton;
@@ -56,8 +49,7 @@ NSString* const kCookieValue = @"value";
 
 enum MetricsServiceType {
   kMetrics,
-  kBreakpad,
-  kBreakpadFirstLaunch,
+  kCrashpad,
 };
 
 // Matcher for the Clear Browsing Data cell on the Privacy screen.
@@ -185,20 +177,11 @@ id<GREYMatcher> ClearBrowsingDataCell() {
       GREYAssertTrue([SettingsAppInterface isMetricsReportingEnabled],
                      @"Metrics reporting should be enabled.");
       break;
-    case kBreakpad:
-      GREYAssertTrue([SettingsAppInterface isBreakpadEnabled],
-                     @"Breakpad should be enabled.");
-      GREYAssertTrue([SettingsAppInterface isBreakpadReportingEnabled],
-                     @"Breakpad reporting should be enabled.");
-      break;
-    case kBreakpadFirstLaunch:
-      // For first launch after upgrade, or after install, uploading of crash
-      // reports is always disabled.  Check that the first launch flag is being
-      // honored.
-      GREYAssertTrue([SettingsAppInterface isBreakpadEnabled],
-                     @"Breakpad should be enabled.");
-      GREYAssertFalse([SettingsAppInterface isBreakpadReportingEnabled],
-                      @"Breakpad reporting should be disabled.");
+    case kCrashpad:
+      GREYAssertTrue([SettingsAppInterface isCrashpadEnabled],
+                     @"Crashpad should be enabled.");
+      GREYAssertTrue([SettingsAppInterface isCrashpadReportingEnabled],
+                     @"Crashpad reporting should be enabled.");
       break;
   }
 }
@@ -213,13 +196,10 @@ id<GREYMatcher> ClearBrowsingDataCell() {
                       @"Metrics reporting should be disabled.");
       break;
     }
-    case kBreakpad:
-    case kBreakpadFirstLaunch: {
-      // Check only whether or not breakpad is enabled.  Disabling
-      // breakpad does stop uploading, and does not change the flag
-      // used to check whether or not it's uploading.
-      GREYAssertFalse([SettingsAppInterface isBreakpadEnabled],
-                      @"Breakpad should be disabled.");
+    case kCrashpad: {
+      // Crashpad is always enabled.
+      GREYAssertTrue([SettingsAppInterface isCrashpadEnabled],
+                     @"Crashpad should be enabled.");
       break;
     }
   }
@@ -238,106 +218,38 @@ id<GREYMatcher> ClearBrowsingDataCell() {
                       @"Metrics reporting should be disabled.");
       break;
     }
-    case kBreakpad:
-    case kBreakpadFirstLaunch: {
-      GREYAssertTrue([SettingsAppInterface isBreakpadEnabled],
-                     @"Breakpad should be enabled.");
-      GREYAssertFalse([SettingsAppInterface isBreakpadReportingEnabled],
-                      @"Breakpad reporting should be disabled.");
+    case kCrashpad: {
+      GREYAssertTrue([SettingsAppInterface isCrashpadEnabled],
+                     @"Crashpad should be enabled.");
+      GREYAssertFalse([SettingsAppInterface isCrashpadReportingEnabled],
+                      @"Crashpad reporting should be disabled.");
       break;
     }
   }
 }
 
 - (void)assertsMetricsPrefsForService:(MetricsServiceType)serviceType {
-  // Two preferences, each with two values - on or off.  Check all four
-  // combinations:
-  // kMetricsReportingEnabled OFF and kMetricsReportingWifiOnly OFF
+  // kMetricsReportingEnabled OFF
   //  - Services do not record data and do not upload data.
+  [SettingsAppInterface setMetricsReportingEnabled:NO];
 
-  // kMetricsReportingEnabled OFF and kMetricsReportingWifiOnly ON
-  //  - Services do not record data and do not upload data.
-  //    Note that if kMetricsReportingEnabled is OFF, the state of
-  //    kMetricsReportingWifiOnly does not matter.
-
-  // kMetricsReportingEnabled ON and kMetricsReportingWifiOnly ON
-  //  - Services record data and upload data only when the device is using
-  //    a wifi connection.  Note:  rather than checking for wifi, the code
-  //    checks for a cellular network (wwan).  wwan != wifi.  So if wwan is
-  //    true, services do not upload any data.
-
-  // kMetricsReportingEnabled ON and kMetricsReportingWifiOnly OFF
-  //  - Services record data and upload data.
-
-  if ([ChromeEarlGrey isUMACellularEnabled]) {
-    // kMetricsReportingEnabled OFF
-    [SettingsAppInterface setMetricsReportingEnabled:NO];
-  } else {
-    // kMetricsReportingEnabled OFF and kMetricsReportingWifiOnly OFF
-    [SettingsAppInterface setMetricsReportingEnabled:NO wifiOnly:NO];
-  }
   // Service should be completely disabled.
   // I.e. no recording of data, and no uploading of what's been recorded.
   [self assertMetricsServiceDisabled:serviceType];
 
-  if ([ChromeEarlGrey isUMACellularEnabled]) {
-    // kMetricsReportingEnabled OFF
-    [SettingsAppInterface setMetricsReportingEnabled:NO];
-  } else {
-    // kMetricsReportingEnabled OFF and kMetricsReportingWifiOnly ON
-    [SettingsAppInterface setMetricsReportingEnabled:NO wifiOnly:YES];
-  }
-  // If kMetricsReportingEnabled is OFF, any service should remain completely
-  // disabled, i.e. no uploading even if kMetricsReportingWifiOnly is ON.
-  [self assertMetricsServiceDisabled:serviceType];
-
-// Split here:  Official build vs. Development build.
-// Official builds allow recording and uploading of data, honoring the
-// metrics prefs.  Development builds should never record or upload data.
+  // kMetricsReportingEnabled ON
+  //  - Services record data and upload data.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Official build.
-  // The values of the prefs and the wwan vs wifi state should be honored by
-  // the services, turning on and off according to the rules laid out above.
-
-  if (![ChromeEarlGrey isUMACellularEnabled]) {
-    // kMetricsReportingEnabled ON and kMetricsReportingWifiOnly ON.
-    [SettingsAppInterface setMetricsReportingEnabled:YES wifiOnly:YES];
-    // Service should be enabled.
-    [self assertMetricsServiceEnabled:serviceType];
-
-    // Set the network to use a cellular network, which should disable uploading
-    // when the wifi-only flag is set.
-    [SettingsAppInterface setCellularNetworkEnabled:YES];
-    [self assertMetricsServiceEnabledButNotUploading:serviceType];
-
-    // Turn off cellular network usage, which should enable uploading.
-    [SettingsAppInterface setCellularNetworkEnabled:NO];
-    [self assertMetricsServiceEnabled:serviceType];
-
-    // kMetricsReportingEnabled ON and kMetricsReportingWifiOnly OFF
-    [SettingsAppInterface setMetricsReportingEnabled:YES wifiOnly:NO];
-    [self assertMetricsServiceEnabled:serviceType];
-  }
-
+  // Official builds allow recording and uploading of data, honoring the
+  // metrics prefs.  Development builds should never record or upload data.
+  [SettingsAppInterface setMetricsReportingEnabled:YES];
+  // Service should be enabled.
+  [self assertMetricsServiceEnabled:serviceType];
 #else
   // Development build.  Do not allow any recording or uploading of data.
-  // Specifically, the kMetricsReportingEnabled preference is completely
-  // disregarded for non-official builds, and checking its value always returns
-  // false (NO).
-  // This tests that no matter the state change, pref or network connection,
-  // services remain disabled.
-
-  if (![ChromeEarlGrey isUMACellularEnabled]) {
-    // kMetricsReportingEnabled ON and kMetricsReportingWifiOnly ON
-    [SettingsAppInterface setMetricsReportingEnabled:YES wifiOnly:YES];
-    // Service should remain disabled.
-    [self assertMetricsServiceDisabled:serviceType];
-
-    // kMetricsReportingEnabled ON and kMetricsReportingWifiOnly OFF
-    [SettingsAppInterface setMetricsReportingEnabled:YES wifiOnly:NO];
-    // Service should remain disabled.
-    [self assertMetricsServiceDisabled:serviceType];
-  }
+  [SettingsAppInterface setMetricsReportingEnabled:YES];
+  // Service should remain disabled.
+  [self assertMetricsServiceDisabled:serviceType];
 #endif
 }
 
@@ -349,7 +261,7 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 - (void)testClearCookies {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
-  // Load |kUrl| and check that cookie is not set.
+  // Load `kUrl` and check that cookie is not set.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
   NSDictionary* cookies = [ChromeEarlGrey cookies];
@@ -388,37 +300,16 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 }
 
 // Verifies that metrics reporting works properly under possible settings of the
-// preferences kMetricsReportingEnabled and kMetricsReportingWifiOnly.
+// preference kMetricsReportingEnabled.
 - (void)testMetricsReporting {
   [self assertsMetricsPrefsForService:kMetrics];
 }
 
-// Verifies that breakpad reporting works properly under possible settings of
-// the preferences |kMetricsReportingEnabled| and |kMetricsReportingWifiOnly|
-// for non-first-launch runs.
-// NOTE: breakpad only allows uploading for non-first-launch runs.
-- (void)testBreakpadReporting {
-  [self setTearDownHandler:^{
-    // Restore the first launch state to previous state.
-    [SettingsAppInterface resetFirstLaunchState];
-  }];
-
-  [SettingsAppInterface setFirstLunchState:NO];
-  [self assertsMetricsPrefsForService:kBreakpad];
-}
-
-// Verifies that breakpad reporting works properly under possible settings of
-// the preferences |kMetricsReportingEnabled| and |kMetricsReportingWifiOnly|
-// for first-launch runs.
-// NOTE: breakpad only allows uploading for non-first-launch runs.
-- (void)testBreakpadReportingFirstLaunch {
-  [self setTearDownHandler:^{
-    // Restore the first launch state to previous state.
-    [SettingsAppInterface resetFirstLaunchState];
-  }];
-
-  [SettingsAppInterface setFirstLunchState:YES];
-  [self assertsMetricsPrefsForService:kBreakpadFirstLaunch];
+// Verifies that crashpad reporting works properly under possible settings of
+// the preference `kMetricsReportingEnabled`.
+// NOTE: crashpad only allows uploading for non-first-launch runs.
+- (void)testCrashpadReporting {
+  [self assertsMetricsPrefsForService:kCrashpad];
 }
 
 // Verifies that the Settings UI registers keyboard commands when presented, but

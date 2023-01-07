@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<title>Test that scrollbars are not painted with scrollbar-width: none</title>
+<link rel="author" title="Felipe Erias Morandeira" href="mailto:felipeerias@gmail.com"/>
+<link rel="help" href="https://www.w3.org/TR/css-scrollbars-1/#scrollbar-width"/>
+<link rel="match" href="scrollbar-width-none-paint-ref.html">
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    .row {
+        display: flex;
+        flex-flow: row wrap;
+    }
+    .container {
+        scrollbar-width: none;
+        overflow: auto;
+        height: 185px;
+        width: 185px;
+        margin: 6px;
+        border: 1px solid black;
+    }
+    .container.color {
+        background-color: #00AA00;
+    }
+    .container.image {
+        background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAIAAAAt/+nTAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfSCgoXAAxz8fXvAAAAB3RJTUUH0goKFwIoqMWQzAAAAAlwSFlzAAALEgAACxIB0t1+/AAAAE5JREFUeNrtzzENACAAwDDAEP5F4QERHA3JpqCbZ+zxc0sDGtCABjSgAQ1oQAMa0IAGNKABDWhAAxrQgAY0oAENaEADGtCABjSgAQ147QLf2QFclo3aNQAAAABJRU5ErkJggg==");
+    }
+    .container.gradient {
+        background-image: linear-gradient(#0000FF, #0000FF);
+    }
+    .container.ltr {
+        direction: ltr;
+    }
+    .container.rtl {
+        direction: rtl;
+    }
+    .container.vertical {
+        writing-mode: vertical-rl;
+    }
+    .content {
+        width: 100px;
+        height: 250px;
+    }
+    .vertical > .content {
+        width: 250px;
+        height: 100px;
+    }
+</style>
+<body>
+    <div class="row">
+        <div class="container ltr color">
+            <div class="content"></div>
+        </div>
+        <div class="container ltr image">
+            <div class="content"></div>
+        </div>
+        <div class="container ltr gradient">
+            <div class="content"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="container rtl color">
+            <div class="content"></div>
+        </div>
+        <div class="container rtl image">
+            <div class="content"></div>
+        </div>
+        <div class="container rtl gradient">
+            <div class="content"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="container vertical color">
+            <div class="content"></div>
+        </div>
+        <div class="container vertical image">
+            <div class="content"></div>
+        </div>
+        <div class="container vertical gradient">
+            <div class="content"></div>
+        </div>
+    </div>
+</body>

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_port_request_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -101,8 +103,8 @@ ScriptPromise Serial::getPorts(ScriptState* script_state,
   get_ports_promises_.insert(resolver);
 
   EnsureServiceConnection();
-  service_->GetPorts(WTF::Bind(&Serial::OnGetPorts, WrapPersistent(this),
-                               WrapPersistent(resolver)));
+  service_->GetPorts(WTF::BindOnce(&Serial::OnGetPorts, WrapPersistent(this),
+                                   WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -162,9 +164,10 @@ ScriptPromise Serial::requestPort(ScriptState* script_state,
   request_port_promises_.insert(resolver);
 
   EnsureServiceConnection();
-  service_->RequestPort(std::move(filters),
-                        WTF::Bind(&Serial::OnRequestPort, WrapPersistent(this),
-                                  WrapPersistent(resolver)));
+  service_->RequestPort(
+      std::move(filters),
+      WTF::BindOnce(&Serial::OnRequestPort, WrapPersistent(this),
+                    WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -177,6 +180,13 @@ void Serial::OpenPort(
   EnsureServiceConnection();
   service_->OpenPort(token, std::move(options), std::move(client),
                      std::move(callback));
+}
+
+void Serial::ForgetPort(
+    const base::UnguessableToken& token,
+    mojom::blink::SerialService::ForgetPortCallback callback) {
+  EnsureServiceConnection();
+  service_->ForgetPort(token, std::move(callback));
 }
 
 void Serial::Trace(Visitor* visitor) const {
@@ -219,8 +229,8 @@ void Serial::EnsureServiceConnection() {
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(task_runner));
-  service_.set_disconnect_handler(
-      WTF::Bind(&Serial::OnServiceConnectionError, WrapWeakPersistent(this)));
+  service_.set_disconnect_handler(WTF::BindOnce(
+      &Serial::OnServiceConnectionError, WrapWeakPersistent(this)));
 
   service_->SetClient(receiver_.BindNewPipeAndPassRemote(task_runner));
 }
@@ -245,11 +255,13 @@ void Serial::OnServiceConnectionError() {
 }
 
 SerialPort* Serial::GetOrCreatePort(mojom::blink::SerialPortInfoPtr info) {
-  SerialPort* port = port_cache_.at(TokenToString(info->token));
-  if (!port) {
-    port = MakeGarbageCollected<SerialPort>(this, std::move(info));
-    port_cache_.insert(TokenToString(port->token()), port);
+  auto it = port_cache_.find(TokenToString(info->token));
+  if (it != port_cache_.end()) {
+    return it->value;
   }
+
+  SerialPort* port = MakeGarbageCollected<SerialPort>(this, std::move(info));
+  port_cache_.insert(TokenToString(port->token()), port);
   return port;
 }
 

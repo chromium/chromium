@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,15 @@
 
 #include <stdint.h>
 
+#include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/clock.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler_observer.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/policy_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -26,6 +30,32 @@ class CloudPolicyService;
 
 // Observes CloudPolicyClient and CloudPolicyStore to trigger periodic policy
 // fetches and issue retries on error conditions.
+//
+// Refreshing non-managed responses:
+// - If there is a cached non-managed response, make sure to only re-query the
+//   server after kUnmanagedRefreshDelayMs.
+//  - NB: For existing policy, an immediate refresh is intentional.
+//
+// Refreshing on mobile platforms:
+// - if no user is signed-in then the |client_| is never registered.
+// - if the user is signed-in but isn't enterprise then the |client_| is
+//   never registered.
+// - if the user is signed-in but isn't registered for policy yet then the
+//   |client_| isn't registered either; the UserPolicySigninService will try
+//   to register, and OnRegistrationStateChanged() will be invoked later.
+// - if the client is signed-in and has policy then its timestamp is used to
+//   determine when to perform the next fetch, which will be once the cached
+//   version is considered "old enough".
+//
+// If there is an old policy cache then a fetch will be performed "soon"; if
+// that fetch fails then a retry is attempted after a delay, with exponential
+// backoff. If those fetches keep failing then the cached timestamp is *not*
+// updated, and another fetch (and subsequent retries) will be attempted
+// again on the next startup.
+//
+// But if the cached policy is considered fresh enough then we try to avoid
+// fetching again on startup; the Android logic differs from the desktop in
+// this aspect.
 class POLICY_EXPORT CloudPolicyRefreshScheduler
     : public CloudPolicyClient::Observer,
       public CloudPolicyStore::Observer,
@@ -51,6 +81,9 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       network::NetworkConnectionTrackerGetter
           network_connection_tracker_getter);
+  CloudPolicyRefreshScheduler(const CloudPolicyRefreshScheduler&) = delete;
+  CloudPolicyRefreshScheduler& operator=(const CloudPolicyRefreshScheduler&) =
+      delete;
   ~CloudPolicyRefreshScheduler() override;
 
   base::Time last_refresh() const { return last_refresh_; }
@@ -93,7 +126,18 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   // Triggered also when the device wakes up.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
-  void set_last_refresh_for_testing(base::Time last_refresh);
+  // Overrides clock or tick clock in tests. Returned closure removes the
+  // override when destroyed.
+  static base::ScopedClosureRunner OverrideClockForTesting(
+      base::Clock* clock_for_testing);
+  static base::ScopedClosureRunner OverrideTickClockForTesting(
+      base::TickClock* tick_clock_for_testing);
+
+  // Registers an observer to be notified.
+  void AddObserver(CloudPolicyRefreshSchedulerObserver* observer);
+
+  // Removes the specified observer.
+  void RemoveObserver(CloudPolicyRefreshSchedulerObserver* observer);
 
  private:
   // Initializes |last_refresh_| to the policy timestamp from |store_| in case
@@ -127,15 +171,15 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   // requested.
   void OnPolicyRefreshed(bool success);
 
-  CloudPolicyClient* client_;
-  CloudPolicyStore* store_;
-  CloudPolicyService* service_;
+  raw_ptr<CloudPolicyClient> client_;
+  raw_ptr<CloudPolicyStore> store_;
+  raw_ptr<CloudPolicyService> service_;
 
   // For scheduling delayed tasks.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // For listening for network connection changes.
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // The delayed refresh callback.
   base::CancelableOnceClosure refresh_callback_;
@@ -170,9 +214,7 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   // its initial status.
   base::Time creation_time_;
 
-  base::WeakPtrFactory<CloudPolicyRefreshScheduler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyRefreshScheduler);
+  base::ObserverList<CloudPolicyRefreshSchedulerObserver, true> observers_;
 };
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,17 +14,17 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/app_service/app_service_metrics.h"
+#include "base/time/time.h"
+#include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
+#include "chrome/browser/ash/release_notes/release_notes_storage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -77,7 +77,8 @@ const std::vector<InternalApp>& GetInternalAppList(const Profile* profile) {
 }
 
 bool IsSuggestionChip(const std::string& app_id) {
-  return base::LowerCaseEqualsASCII(app_id, ash::kInternalAppIdContinueReading);
+  return base::EqualsCaseInsensitiveASCII(app_id,
+                                          ash::kInternalAppIdContinueReading);
 }
 
 const InternalApp* FindInternalApp(const std::string& app_id) {
@@ -134,7 +135,7 @@ bool HasRecommendableForeignTab(
 
         // Only show pages recently opened.
         const base::TimeDelta tab_age = base::Time::Now() - tab->timestamp;
-        if (tab_age > base::TimeDelta::FromMinutes(kMaxForeignTabAgeInMinutes))
+        if (tab_age > base::Minutes(kMaxForeignTabAgeInMinutes))
           continue;
 
         if (latest_timestamp < tab->timestamp) {

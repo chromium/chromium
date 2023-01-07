@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "cc/paint/paint_canvas.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace views {
 
@@ -26,7 +26,7 @@ void RoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
   flags.setStrokeWidth(kBorderWidth);
   flags.setAntiAlias(true);
   gfx::Rect rect(size);
-  rect.Inset(0, 0, kBorderWidth, kBorderWidth);
+  rect.Inset(gfx::Insets::TLBR(0, 0, kBorderWidth, kBorderWidth));
   SkRect skia_rect = gfx::RectToSkRect(rect);
   skia_rect.offset(kBorderWidth / 2.f, kBorderWidth / 2.f);
   canvas->sk_canvas()->drawRoundRect(skia_rect, SkIntToScalar(corner_radius_),

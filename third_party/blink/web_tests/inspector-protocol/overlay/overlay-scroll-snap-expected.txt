@@ -1,0 +1,151 @@
+Verifies that Overlay.setShowScrollSnapOverlays works.
+Overlay not rendered:
+
+Overlay rendered:
+{
+  "name": "drawScrollSnapHighlight",
+  "data": {
+    "snapport": [
+      "M",
+      8,
+      8,
+      "L",
+      143,
+      8,
+      "L",
+      143,
+      158,
+      "L",
+      8,
+      158,
+      "Z"
+    ],
+    "paddingBox": [
+      "M",
+      8,
+      8,
+      "L",
+      143,
+      8,
+      "L",
+      143,
+      158,
+      "L",
+      8,
+      158,
+      "Z"
+    ],
+    "snapAreas": [
+      {
+        "path": [
+          "M",
+          18,
+          8,
+          "L",
+          113,
+          8,
+          "L",
+          113,
+          103,
+          "L",
+          18,
+          103,
+          "Z"
+        ],
+        "borderBox": [
+          "M",
+          18,
+          8,
+          "L",
+          113,
+          8,
+          "L",
+          113,
+          103,
+          "L",
+          18,
+          103,
+          "Z"
+        ],
+        "alignBlock": "start"
+      },
+      {
+        "path": [
+          "M",
+          18,
+          113,
+          "L",
+          113,
+          113,
+          "L",
+          113,
+          208,
+          "L",
+          18,
+          208,
+          "Z"
+        ],
+        "borderBox": [
+          "M",
+          18,
+          113,
+          "L",
+          113,
+          113,
+          "L",
+          113,
+          208,
+          "L",
+          18,
+          208,
+          "Z"
+        ],
+        "alignBlock": "center"
+      },
+      {
+        "path": [
+          "M",
+          18,
+          218,
+          "L",
+          113,
+          218,
+          "L",
+          113,
+          313,
+          "L",
+          18,
+          313,
+          "Z"
+        ],
+        "borderBox": [
+          "M",
+          18,
+          218,
+          "L",
+          113,
+          218,
+          "L",
+          113,
+          313,
+          "L",
+          18,
+          313,
+          "Z"
+        ],
+        "alignBlock": "end"
+      }
+    ],
+    "snapportBorder": {
+      "color": "rgb(0, 0, 0)",
+      "pattern": "solid"
+    },
+    "snapAreaBorder": {
+      "color": "rgb(0, 0, 0)",
+      "pattern": "solid"
+    },
+    "scrollMarginColor": "rgb(0, 0, 0)",
+    "scrollPaddingColor": "rgb(0, 0, 0)"
+  }
+}
+

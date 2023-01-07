@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
 
+import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -28,7 +29,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     private LevelDBPersistedDataStorage mPersistedDataStorage;
     // Callback is only used for synchronization of save and delete in testing.
     // Otherwise it is a no-op.
-    // TODO(crbug.com/1146799) Apply tricks like @CheckDiscard or @RemovableInRelease to improve
+    // TODO(crbug.com/1146799) Apply tricks like @CheckDiscard or proguard rules to improve
     // performance
     private boolean mIsDestroyed;
 
@@ -40,8 +41,30 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
 
     @MainThread
     @Override
-    public void save(int tabId, String dataId, Supplier<byte[]> dataSupplier) {
-        mPersistedDataStorage.save(getKey(tabId, dataId), dataSupplier.get());
+    public void save(int tabId, String dataId, Serializer<ByteBuffer> serializer) {
+        // TODO(crbug.com/1221571) update LevelDB storage in native to use ByteBuffer instead
+        // of byte[] to avoid conversion
+        serializer.preSerialize();
+        mPersistedDataStorage.save(getKey(tabId, dataId), toByteArray(serializer.get()));
+    }
+
+    @Override
+    public void save(int tabId, String dataId, Serializer<ByteBuffer> serializer,
+            Callback<Integer> callback) {
+        assert false : "save with callback unused in LevelDBPersistedTabDataStorage";
+    }
+
+    private static byte[] toByteArray(ByteBuffer buffer) {
+        if (buffer == null) {
+            return null;
+        }
+        if (buffer.hasArray() && buffer.arrayOffset() == 0) {
+            return buffer.array();
+        }
+        byte[] bytes = new byte[buffer.limit()];
+        buffer.rewind();
+        buffer.get(bytes);
+        return bytes;
     }
 
     @MainThread
@@ -51,8 +74,9 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
 
     @MainThread
     @Override
-    public void restore(int tabId, String dataId, Callback<byte[]> callback) {
-        mPersistedDataStorage.load(getKey(tabId, dataId), callback);
+    public void restore(int tabId, String dataId, Callback<ByteBuffer> callback) {
+        mPersistedDataStorage.load(getKey(tabId, dataId),
+                (res) -> { callback.onResult(res == null ? null : ByteBuffer.wrap(res)); });
     }
 
     /**
@@ -62,9 +86,24 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     @Deprecated
     @MainThread
     @Override
-    public byte[] restore(int tabId, String dataId) {
+    public ByteBuffer restore(int tabId, String dataId) {
         assert false : "Synchronous restore is not supported for LevelDBPersistedTabDataStorage";
         return null;
+    }
+
+    @MainThread
+    @Override
+    public <U extends PersistedTabDataResult> U restore(
+            int tabId, String dataId, PersistedTabDataMapper<U> mapper) {
+        assert false : "Restore with mapper currently unused in LevelDBPersistedTabDataStorage";
+        return null;
+    }
+
+    @MainThread
+    @Override
+    public <U extends PersistedTabDataResult> void restore(
+            int tabId, String dataId, Callback<U> callback, PersistedTabDataMapper<U> mapper) {
+        assert false : "Restore with mapper currently unused in LevelDBPersistedTabDataStorage";
     }
 
     @MainThread
@@ -81,6 +120,26 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     @Override
     public String getUmaTag() {
         return "LevelDB";
+    }
+
+    @Override
+    public void performMaintenance(List<Integer> tabIds, String dataId) {
+        mPersistedDataStorage.performMaintenance(getKeysToKeep(tabIds, dataId), dataId);
+    }
+
+    @VisibleForTesting
+    public void performMaintenanceForTesting(
+            List<Integer> tabIds, String dataId, Runnable onComplete) {
+        mPersistedDataStorage.performMaintenanceForTesting(
+                getKeysToKeep(tabIds, dataId), dataId, onComplete); // IN-TEST
+    }
+
+    private static String[] getKeysToKeep(List<Integer> tabIds, String dataId) {
+        String[] keysToKeep = new String[tabIds.size()];
+        for (int i = 0; i < tabIds.size(); i++) {
+            keysToKeep[i] = getKey(tabIds.get(i), dataId);
+        }
+        return keysToKeep;
     }
 
     // TODO(crbug.com/1145785) Implement URL -> byte[] mapping rather

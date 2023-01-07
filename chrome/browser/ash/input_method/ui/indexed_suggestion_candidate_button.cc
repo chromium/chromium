@@ -1,0 +1,115 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/input_method/ui/indexed_suggestion_candidate_button.h"
+
+#include "chrome/browser/ash/input_method/ui/colors.h"
+#include "ui/chromeos/styles/cros_styles.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
+
+namespace ui::ime {
+const int kPadding = 4;
+const int kBetweenSpacing = 8;
+const int kBorderRadius = 2;
+const int kCandidateSquareSide = 20;
+const views::Label::CustomFont kCandidateTextFont = {
+    .font_list = gfx::FontList(gfx::FontList({"Roboto"},
+                                             gfx::Font::NORMAL,
+                                             13,
+                                             gfx::Font::Weight::NORMAL))};
+const views::Label::CustomFont kIndexFont = {
+    .font_list = gfx::FontList(gfx::FontList({"Roboto"},
+                                             gfx::Font::NORMAL,
+                                             11,
+                                             gfx::Font::Weight::NORMAL))};
+
+IndexedSuggestionCandidateButton::IndexedSuggestionCandidateButton(
+    PressedCallback callback,
+    const std::u16string& candidate_text,
+    const std::u16string& index_text,
+    bool create_legacy_candidate)
+    : views::Button(std::move(callback)) {
+  SetAccessibleName(candidate_text);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(kPadding),
+      /* between_child_spacing=*/kBetweenSpacing));
+
+  if (create_legacy_candidate) {
+    // TODO(b/240357416): Remove when emoji suggestions uses horizontal layout.
+    BuildLegacyCandidate(candidate_text);
+  } else {
+    BuildCandidate(candidate_text, index_text);
+  }
+}
+
+void IndexedSuggestionCandidateButton::SetHighlight(bool highlighted) {
+  if (highlighted && !background()) {
+    // Legacy option does not have a rounded border.
+    // TODO(b/240357416): Remove legacy option when emoji suggestions uses
+    // horizontal layout.
+    int border_radius = is_legacy_candidate_ ? 0 : kBorderRadius;
+    SetBackground(views::CreateRoundedRectBackground(
+        ResolveSemanticColor(cros_styles::ColorName::kRippleColor),
+        border_radius));
+  }
+  if (!highlighted && background()) {
+    SetBackground(nullptr);
+  }
+}
+
+void IndexedSuggestionCandidateButton::BuildLegacyCandidate(
+    const std::u16string& candidate_text) {
+  is_legacy_candidate_ = true;
+  AddChildView(
+      std::make_unique<views::Label>(candidate_text, kCandidateTextFont));
+}
+
+void IndexedSuggestionCandidateButton::BuildCandidate(
+    const std::u16string& candidate_text,
+    const std::u16string& index_text) {
+  is_legacy_candidate_ = false;
+
+  // Displaying the candidate text (i.e. the "A" in the diagram below).
+  //   +---+
+  //   | A | <-- label being created
+  //   |   |
+  //   | 1 |
+  //   +---+
+
+  // Wrapper uses views::Label since it doesn't override the hover state of the
+  // button.
+  auto* candidate_wrapper = AddChildView(std::make_unique<views::Label>());
+  views::FlexLayout* candidate_wrapper_layout =
+      candidate_wrapper->SetLayoutManager(
+          std::make_unique<views::FlexLayout>());
+  candidate_wrapper_layout->SetCrossAxisAlignment(
+      views::LayoutAlignment::kCenter);
+  candidate_wrapper_layout->SetMainAxisAlignment(
+      views::LayoutAlignment::kCenter);
+  candidate_wrapper->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded, false)
+          .WithAlignment(views::LayoutAlignment::kCenter));
+  candidate_wrapper->SetPreferredSize(
+      gfx::Size(kCandidateSquareSide, kCandidateSquareSide));
+  candidate_wrapper->AddChildView(
+      std::make_unique<views::Label>(candidate_text, kCandidateTextFont));
+
+  // Displaying the index (i.e. the "1" in the diagram below).
+  //   +---+
+  //   | A |
+  //   |   |
+  //   | 1 | <-- label being created
+  //   +---+
+  AddChildView(std::make_unique<views::Label>(index_text, kIndexFont));
+}
+
+IndexedSuggestionCandidateButton::~IndexedSuggestionCandidateButton() = default;
+
+}  // namespace ui::ime

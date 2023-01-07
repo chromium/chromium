@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,17 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_adbd_monitor_instance.h"
+#include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/components/arc/test/test_browser_context.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chromeos/dbus/upstart/fake_upstart_client.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/arc_session_runner.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_adbd_monitor_instance.h"
-#include "components/arc/test/fake_arc_session.h"
-#include "components/arc/test/test_browser_context.h"
+#include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +36,7 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
       delete;
 
   void SetUp() override {
-    chromeos::UpstartClient::InitializeFake();
+    ash::UpstartClient::InitializeFake();
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
     context_ = std::make_unique<TestBrowserContext>();
     instance_ = std::make_unique<FakeAdbdMonitorInstance>();
@@ -69,7 +70,7 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
   }
 
   void InjectUpstartStopJobFailure(const std::string& job_name_to_fail) {
-    auto* upstart_client = chromeos::FakeUpstartClient::Get();
+    auto* upstart_client = ash::FakeUpstartClient::Get();
     upstart_client->set_stop_job_cb(base::BindLambdaForTesting(
         [job_name_to_fail](const std::string& job_name,
                            const std::vector<std::string>& env) {
@@ -79,7 +80,7 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
   }
 
   void StartRecordingUpstartOperations() {
-    auto* upstart_client = chromeos::FakeUpstartClient::Get();
+    auto* upstart_client = ash::FakeUpstartClient::Get();
     upstart_client->set_start_job_cb(
         base::BindLambdaForTesting([this](const std::string& job_name,
                                           const std::vector<std::string>& env) {
@@ -124,8 +125,8 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdSuccess) {
 
   const auto& ops = upstart_operations();
   // Find the STOP operation for the job.
-  auto it = std::find(ops.begin(), ops.end(),
-                      std::make_pair(std::string(kArcVmAdbdJobName), false));
+  auto it = base::ranges::find(
+      ops, std::make_pair(std::string(kArcVmAdbdJobName), false));
   ASSERT_NE(ops.end(), it);
   ++it;
   ASSERT_NE(ops.end(), it);
@@ -151,9 +152,9 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdFailure) {
 
   const auto& ops = upstart_operations();
   // Find the STOP operation for the job.
-  auto it = std::find(ops.begin(), ops.end(),
-                      std::make_pair(std::string(kArcVmAdbdJobName), false));
-  EXPECT_EQ(ops.size(), 2);
+  auto it = base::ranges::find(
+      ops, std::make_pair(std::string(kArcVmAdbdJobName), false));
+  EXPECT_EQ(ops.size(), 2u);
   ASSERT_NE(ops.end(), it);
   ++it;
   ASSERT_NE(ops.end(), it);
@@ -177,9 +178,9 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStopArcVmAdbdSuccess) {
 
   const auto& ops = upstart_operations();
   // Find the STOP operation for the job.
-  auto it = std::find(ops.begin(), ops.end(),
-                      std::make_pair(std::string(kArcVmAdbdJobName), false));
-  EXPECT_EQ(ops.size(), 1);
+  auto it = base::ranges::find(
+      ops, std::make_pair(std::string(kArcVmAdbdJobName), false));
+  EXPECT_EQ(ops.size(), 1u);
   // The next operation must be START for the job.
   EXPECT_EQ(it->first, kArcVmAdbdJobName);
 }

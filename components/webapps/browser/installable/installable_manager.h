@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,12 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_logging.h"
@@ -25,7 +23,7 @@
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -39,6 +37,10 @@ class InstallableManager
       public content::WebContentsUserData<InstallableManager> {
  public:
   explicit InstallableManager(content::WebContents* web_contents);
+
+  InstallableManager(const InstallableManager&) = delete;
+  InstallableManager& operator=(const InstallableManager&) = delete;
+
   ~InstallableManager() override;
 
   // Returns the minimum icon size in pixels for a site to be installable.
@@ -100,6 +102,12 @@ class InstallableManager
                            CheckWebapp);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerOfflineCapabilityBrowserTest,
                            CheckNotOfflineCapableStartUrl);
+  FRIEND_TEST_ALL_PREFIXES(InstallableManagerInPrerenderingBrowserTest,
+                           InstallableManagerInPrerendering);
+  FRIEND_TEST_ALL_PREFIXES(InstallableManagerInPrerenderingBrowserTest,
+                           NotifyManifestUrlChangedInActivation);
+  FRIEND_TEST_ALL_PREFIXES(InstallableManagerInPrerenderingBrowserTest,
+                           NotNotifyManifestUrlChangedInActivation);
 
   using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 
@@ -114,9 +122,12 @@ class InstallableManager
   };
 
   struct ManifestProperty {
+    ManifestProperty();
+    ~ManifestProperty();
+
     InstallableStatusCode error = NO_ERROR_DETECTED;
     GURL url;
-    blink::Manifest manifest;
+    blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
     bool fetched = false;
   };
 
@@ -138,32 +149,34 @@ class InstallableManager
 
   struct IconProperty {
     IconProperty();
-    IconProperty(IconProperty&& other);
-    ~IconProperty();
+
+    // This class contains a std::unique_ptr and therefore must be move-only.
+    IconProperty(const IconProperty&) = delete;
+    IconProperty& operator=(const IconProperty&) = delete;
+
+    IconProperty(IconProperty&& other) noexcept;
     IconProperty& operator=(IconProperty&& other);
 
-    InstallableStatusCode error;
-    IconPurpose purpose;
+    ~IconProperty();
+
+    InstallableStatusCode error = NO_ERROR_DETECTED;
+    IconPurpose purpose = blink::mojom::ManifestImageResource_Purpose::ANY;
     GURL url;
     std::unique_ptr<SkBitmap> icon;
-    bool fetched;
-
-   private:
-    // This class contains a std::unique_ptr and therefore must be move-only.
-    DISALLOW_COPY_AND_ASSIGN(IconProperty);
+    bool fetched = false;
   };
 
   // Returns true if an icon for the given usage is fetched successfully, or
   // doesn't need to fallback to another icon purpose (i.e. MASKABLE icon
   // allback to ANY icon).
-  bool IsIconFetchComplete(const IconUsage usage) const;
+  bool IsIconFetchComplete(IconUsage usage) const;
 
   // Returns true if we have tried fetching maskable icon. Note that this also
   // returns true if the fallback icon(IconPurpose::ANY) is fetched.
-  bool IsMaskableIconFetched(const IconUsage usage) const;
+  bool IsMaskableIconFetched(IconUsage usage) const;
 
   // Sets the icon matching |usage| as fetched.
-  void SetIconFetched(const IconUsage usage);
+  void SetIconFetched(IconUsage usage);
 
   // Returns a vector with all errors encountered for the resources requested in
   // |params|, or an empty vector if there is no error.
@@ -175,9 +188,9 @@ class InstallableManager
   InstallableStatusCode valid_manifest_error() const;
   void set_valid_manifest_error(InstallableStatusCode error_code);
   InstallableStatusCode worker_error() const;
-  InstallableStatusCode icon_error(const IconUsage usage);
-  GURL& icon_url(const IconUsage usage);
-  const SkBitmap* icon(const IconUsage usage);
+  InstallableStatusCode icon_error(IconUsage usage);
+  GURL& icon_url(IconUsage usage);
+  const SkBitmap* icon(IconUsage usage);
 
   // Returns the WebContents to which this object is attached, or nullptr if the
   // WebContents doesn't exist or is currently being destroyed.
@@ -186,11 +199,11 @@ class InstallableManager
   // Returns true if |params| requires no more work to be done.
   bool IsComplete(const InstallableParams& params) const;
 
-  // Resets members to empty and removes all queued tasks.
+  // Resets members to empty and reports the given |error| to all queued tasks
+  // to run queued callbacks before removing the tasks.
   // Called when navigating to a new page or if the WebContents is destroyed
   // whilst waiting for a callback.
-  // If populated, the given |error| is reported to all queued tasks.
-  void Reset(base::Optional<InstallableStatusCode> error = base::nullopt);
+  void Reset(InstallableStatusCode error);
 
   // Sets the fetched bit on the installable and icon subtasks.
   // Called if no manifest (or an empty manifest) was fetched from the site.
@@ -206,10 +219,10 @@ class InstallableManager
   void CheckEligiblity();
   void FetchManifest();
   void OnDidGetManifest(const GURL& manifest_url,
-                        const blink::Manifest& manifest);
+                        blink::mojom::ManifestPtr manifest);
 
   void CheckManifestValid(bool check_webapp_manifest_display);
-  bool IsManifestValidForWebApp(const blink::Manifest& manifest,
+  bool IsManifestValidForWebApp(const blink::mojom::Manifest& manifest,
                                 bool check_webapp_manifest_display);
   void CheckServiceWorker();
   void OnDidCheckHasServiceWorker(
@@ -223,28 +236,27 @@ class InstallableManager
 
   void CheckAndFetchBestIcon(int ideal_icon_size_in_px,
                              int minimum_icon_size_in_px,
-                             const IconPurpose purpose,
-                             const IconUsage usage);
-  void OnIconFetched(const GURL icon_url,
-                     const IconUsage usage,
-                     const SkBitmap& bitmap);
+                             IconPurpose purpose,
+                             IconUsage usage);
+  void OnIconFetched(GURL icon_url, IconUsage usage, const SkBitmap& bitmap);
 
-  void CheckAndFetchScreenshots();
-  void OnScreenshotFetched(const GURL screenshot_url, const SkBitmap& bitmap);
+  void CheckAndFetchScreenshots(bool check_form_factor = true);
+
+  void OnScreenshotFetched(GURL screenshot_url, const SkBitmap& bitmap);
+  void PopulateScreenshots(bool check_form_factor);
 
   // content::ServiceWorkerContextObserver overrides
   void OnRegistrationCompleted(const GURL& pattern) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
   // content::WebContentsObserver overrides
-  void DidFinishNavigation(content::NavigationHandle* handle) override;
-  void DidUpdateWebManifestURL(
-      content::RenderFrameHost* rfh,
-      const base::Optional<GURL>& manifest_url) override;
+  void PrimaryPageChanged(content::Page& page) override;
+  void DidUpdateWebManifestURL(content::RenderFrameHost* rfh,
+                               const GURL& manifest_url) override;
   void WebContentsDestroyed() override;
 
   const GURL& manifest_url() const;
-  const blink::Manifest& manifest() const;
+  const blink::mojom::Manifest& manifest() const;
   bool valid_manifest();
   bool has_worker();
 
@@ -257,7 +269,7 @@ class InstallableManager
   std::unique_ptr<ValidManifestProperty> valid_manifest_;
   std::unique_ptr<ServiceWorkerProperty> worker_;
   std::map<IconUsage, IconProperty> icons_;
-  std::vector<SkBitmap> screenshots_;
+  std::vector<Screenshot> screenshots_;
 
   // A map of screenshots downloaded. Used temporarily until images are moved to
   // the screenshots_ member.
@@ -271,13 +283,11 @@ class InstallableManager
 
   // Owned by the storage partition attached to the content::WebContents which
   // this object is scoped to.
-  content::ServiceWorkerContext* service_worker_context_;
+  raw_ptr<content::ServiceWorkerContext> service_worker_context_;
 
   base::WeakPtrFactory<InstallableManager> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(InstallableManager);
 };
 
 }  // namespace webapps

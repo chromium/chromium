@@ -1,0 +1,3 @@
+caption: <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> management settings
+desc: Controls settings specific to <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph>
+  managed <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices.

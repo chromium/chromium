@@ -136,7 +136,7 @@ public OS versions (see [note](#Building-for-preview-Android-releases)).
 
 *** note
 **Note:** we only support local development using the latest revision of the
-master branch. Checking out release branches introduces a lot of complexity, and
+main branch. Checking out release branches introduces a lot of complexity, and
 it might not even be possible to build WebView for your device.
 ***
 

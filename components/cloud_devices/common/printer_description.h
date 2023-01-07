@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/cloud_devices/common/description_items.h"
+#include "ui/gfx/geometry/size.h"
 
 // Defines printer options, CDD and CJT items.
 // https://developers.google.com/cloud-print/docs/cdd
@@ -76,6 +77,10 @@ class RangeVendorCapability {
                         const std::string& max_value,
                         const std::string& default_value);
   RangeVendorCapability(RangeVendorCapability&& other);
+
+  RangeVendorCapability(const RangeVendorCapability&) = delete;
+  RangeVendorCapability& operator=(const RangeVendorCapability&) = delete;
+
   ~RangeVendorCapability();
 
   RangeVendorCapability& operator=(RangeVendorCapability&& other);
@@ -86,16 +91,14 @@ class RangeVendorCapability {
   }
 
   bool IsValid() const;
-  bool LoadFrom(const base::Value& dict);
-  void SaveTo(base::Value* dict) const;
+  bool LoadFrom(const base::Value::Dict& dict);
+  void SaveTo(base::Value::Dict* dict) const;
 
  private:
   ValueType value_type_;
   std::string min_value_;
   std::string max_value_;
   std::string default_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(RangeVendorCapability);
 };
 
 struct SelectVendorCapabilityOption {
@@ -128,6 +131,11 @@ class TypedValueVendorCapability {
   TypedValueVendorCapability(ValueType value_type,
                              const std::string& default_value);
   TypedValueVendorCapability(TypedValueVendorCapability&& other);
+
+  TypedValueVendorCapability(const TypedValueVendorCapability&) = delete;
+  TypedValueVendorCapability& operator=(const TypedValueVendorCapability&) =
+      delete;
+
   ~TypedValueVendorCapability();
 
   TypedValueVendorCapability& operator=(TypedValueVendorCapability&& other);
@@ -138,14 +146,12 @@ class TypedValueVendorCapability {
   }
 
   bool IsValid() const;
-  bool LoadFrom(const base::Value& dict);
-  void SaveTo(base::Value* dict) const;
+  bool LoadFrom(const base::Value::Dict& dict);
+  void SaveTo(base::Value::Dict* dict) const;
 
  private:
   ValueType value_type_;
   std::string default_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedValueVendorCapability);
 };
 
 class VendorCapability {
@@ -168,6 +174,10 @@ class VendorCapability {
                    const std::string& display_name,
                    TypedValueVendorCapability typed_value_capability);
   VendorCapability(VendorCapability&& other);
+
+  VendorCapability(const VendorCapability&) = delete;
+  VendorCapability& operator=(const VendorCapability&) = delete;
+
   ~VendorCapability();
 
   bool operator==(const VendorCapability& other) const;
@@ -176,8 +186,8 @@ class VendorCapability {
   }
 
   bool IsValid() const;
-  bool LoadFrom(const base::Value& dict);
-  void SaveTo(base::Value* dict) const;
+  bool LoadFrom(const base::Value::Dict& dict);
+  void SaveTo(base::Value::Dict* dict) const;
 
  private:
   void InternalCleanup();
@@ -192,8 +202,6 @@ class VendorCapability {
     SelectVendorCapability select_capability_;
     TypedValueVendorCapability typed_value_capability_;
   };
-
-  DISALLOW_COPY_AND_ASSIGN(VendorCapability);
 };
 
 enum class ColorType {
@@ -456,14 +464,14 @@ struct Media {
 
   explicit Media(MediaType type);
 
-  Media(MediaType type, int32_t width_um, int32_t height_um);
+  Media(MediaType type, const gfx::Size& size_um);
 
   Media(const std::string& custom_display_name,
         const std::string& vendor_id,
-        int32_t width_um,
-        int32_t height_um);
+        const gfx::Size& size_um);
 
   Media(const Media& other);
+  Media& operator=(const Media& other);
 
   bool MatchBySize();
 
@@ -472,8 +480,7 @@ struct Media {
   bool operator!=(const Media& other) const { return !(*this == other); }
 
   MediaType type;
-  int32_t width_um;
-  int32_t height_um;
+  gfx::Size size_um;
   bool is_continuous_feed;
   std::string custom_display_name;
   std::string vendor_id;
@@ -525,11 +532,11 @@ typedef ValueCapability<Copies, class CopiesCapabilityTraits> CopiesCapability;
 typedef EmptyCapability<class PageRangeTraits> PageRangeCapability;
 typedef BooleanCapability<class CollateTraits> CollateCapability;
 typedef BooleanCapability<class ReverseTraits> ReverseCapability;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This capability is not a part of standard CDD description. It's used for
 // providing PIN printing opportunity in Chrome OS native printing.
 typedef ValueCapability<bool, class PinTraits> PinCapability;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 typedef TicketItem<PwgRasterConfig, PwgRasterConfigTraits>
     PwgRasterConfigTicketItem;

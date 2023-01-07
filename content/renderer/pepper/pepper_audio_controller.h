@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CONTENT_RENDERER_PEPPER_PEPPER_AUDIO_CONTROLLER_H_
 
 #include <set>
-
-#include "base/macros.h"
 
 namespace content {
 
@@ -22,6 +20,10 @@ class PPB_Audio_Impl;
 class PepperAudioController {
  public:
   explicit PepperAudioController(PepperPluginInstanceImpl* instance);
+
+  PepperAudioController(const PepperAudioController&) = delete;
+  PepperAudioController& operator=(const PepperAudioController&) = delete;
+
   virtual ~PepperAudioController();
 
   // Adds an audio instance to the controller.
@@ -60,8 +62,6 @@ class PepperAudioController {
   // The Pepper instance which this controller is for. Will be null after
   // OnPepperInstanceDeleted() is called.
   PepperPluginInstanceImpl* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperAudioController);
 };
 
 }  // namespace content

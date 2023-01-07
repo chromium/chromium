@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ namespace transport_util {
 const char kOptionPacerMaxBurstSize[] = "pacer_max_burst_size";
 const char kOptionPacerTargetBurstSize[] = "pacer_target_burst_size";
 
-int LookupOptionWithDefault(const base::DictionaryValue& options,
+int LookupOptionWithDefault(const base::Value::Dict& options,
                             const std::string& path,
                             int default_value);
 

@@ -1,0 +1,53 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++textField name='not editable' value='focusable: oklink name: <newline>'
+++++++++staticText name='focusable: '
+++++++++++inlineTextBox name='focusable: '
+++++++++button name='ok'
+++++++++++staticText name='ok'
+++++++++++++inlineTextBox name='ok'
+++++++++link name='link'
+++++++++++staticText name='link'
+++++++++++++inlineTextBox name='link'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++labelText
+++++++++++staticText name='name: '
+++++++++++++inlineTextBox name='name: '
+++++++++++textField name='name:'
+++++++++++++genericContainer
+++++++textField multiline name='editable' value='focusable: oklink name: <newline>'
+++++++++staticText name='focusable: '
+++++++++++inlineTextBox name='focusable: '
+++++++++button name='ok'
+++++++++++staticText name='ok'
+++++++++++++inlineTextBox name='ok'
+++++++++link name='link'
+++++++++++staticText name='link'
+++++++++++++inlineTextBox name='link'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++labelText
+++++++++++staticText name='name: '
+++++++++++++inlineTextBox name='name: '
+++++++++++textField name='name:'
+++++++++++++genericContainer
+++++++textField name='not editable or focusable' value='focusable: oklink name: <newline>'
+++++++++staticText name='focusable: '
+++++++++++inlineTextBox name='focusable: '
+++++++++button name='ok'
+++++++++++staticText name='ok'
+++++++++++++inlineTextBox name='ok'
+++++++++link name='link'
+++++++++++staticText name='link'
+++++++++++++inlineTextBox name='link'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++labelText
+++++++++++staticText name='name: '
+++++++++++++inlineTextBox name='name: '
+++++++++++textField name='name:'
+++++++++++++genericContainer
+++++++textField name='not editable, img child'
+++++++++image

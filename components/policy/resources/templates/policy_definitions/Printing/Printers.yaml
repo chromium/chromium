@@ -1,0 +1,71 @@
+caption: Configures a list of printers
+desc: |-
+  Setting the policy lets administrators set up a list of printers for their users. Printer selection occurs the first time users try to print.
+
+        Using the policy:
+
+        * Customize free-form <ph name="PRINTER_DISPLAY_NAME">display_name</ph> and <ph name="PRINTER_DESCRIPTION">description</ph> for ease of printer selection.
+
+        * Help users identify printers using <ph name="PRINTER_MANUFACTURER">manufacturer</ph> and <ph name="PRINTER_MODEL">model</ph>.
+
+        * <ph name="PRINTER_URI">uri</ph> should be an address reachable from a client computer, including the <ph name="URI_SCHEME">scheme</ph>, <ph name="URI_PORT">port</ph>, and <ph name="URI_QUEUE">queue</ph>.
+
+        * Optionally provide <ph name="PRINTER_UUID">uuid</ph> to help deduplicate <ph name="ZEROCONF_DISCOVERY">zeroconf</ph> printers.
+
+        * Either use the model name for <ph name="PRINTER_EFFECTIVE_MODEL">effective_model</ph> or set <ph name="PRINTER_AUTOCONF">autoconf</ph> to True. Printers with both or no properties get ignored.
+
+        PPDs are downloaded after the printer is used, and frequently used PPDs are cached. This policy doesn't affect whether users can configure printers on individual devices.
+
+        Note: For <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> managed devices, this policy supports expansion of <ph name="MACHINE_NAME_VARIABLE">${MACHINE_NAME[,pos[,count]]}</ph> to the <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> machine name or a substring of it. For example, if the machine name is <ph name="MACHINE_NAME_EXAMPLE">CHROMEBOOK</ph>, then <ph name="MACHINE_NAME_VARIABLE_EXAMPLE">${MACHINE_NAME,6,4}</ph> gets replaced by the 4 characters starting after the 6th position, in other words, <ph name="MACHINE_NAME_PART_EXAMPLE">BOOK</ph>. The position is zero-based.
+example_value:
+- '{ "display_name": "Color Laser", "description": "The printer next to the water
+  cooler.", "manufacturer": "Printer Manufacturer", "model": "Color Laser 2004", "uri":
+  "ipps://print-server.intranet.example.com:443/ipp/cl2k4", "uuid": "1c395fdb-5d93-4904-b246-b2c046e79d12",
+  "ppd_resource": { "effective_model": "Printer Manufacturer ColorLaser2k4", "autoconf":
+  false } }'
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://chromeos/printing/OWNERS
+- skau@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:86-
+tags: []
+type: list
+validation_schema:
+  items:
+    id: PrinterTypeInclusive
+    properties:
+      description:
+        type: string
+      display_name:
+        type: string
+      manufacturer:
+        type: string
+      model:
+        type: string
+      ppd_resource:
+        id: PpdResourceInclusive
+        properties:
+          autoconf:
+            description: Boolean flag indicating whether IPP Everywhere should be
+              used to set up the printer.
+            type: boolean
+          effective_model:
+            description: This field must match one of the strings which represent
+              a <ph name="PRODUCT_NAME">$2<ex>Google ChromeOS</ex></ph> supported
+              printer. The string will be used to identify and install the appropriate
+              PPD for the printer. More information can be found at https://support.google.com/chrome?p=noncloudprint.
+            type: string
+        type: object
+      uri:
+        type: string
+      uuid:
+        type: string
+    type: object
+  type: array

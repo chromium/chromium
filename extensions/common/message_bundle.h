@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace base {
-class DictionaryValue;
-class Value;
-}
+#include "base/values.h"
 
 namespace extensions {
 
@@ -24,7 +21,7 @@ namespace extensions {
 class MessageBundle {
  public:
   using SubstitutionMap = std::map<std::string, std::string>;
-  using CatalogVector = std::vector<std::unique_ptr<base::DictionaryValue>>;
+  using CatalogVector = std::vector<base::Value::Dict>;
 
   // JSON keys of interest for messages file.
   static const char kContentKey[];
@@ -133,7 +130,7 @@ class MessageBundle {
                        std::string* error) const;
 
   // Get all placeholders for a given message from JSON subtree.
-  bool GetPlaceholders(const base::DictionaryValue& name_tree,
+  bool GetPlaceholders(const base::Value::Dict& name_tree,
                        const std::string& name_key,
                        SubstitutionMap* placeholders,
                        std::string* error) const;
@@ -147,27 +144,6 @@ class MessageBundle {
   // Holds all messages for application locale.
   SubstitutionMap dictionary_;
 };
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Renderer helper typedefs and functions.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-// A map of message name to message.
-typedef std::map<std::string, std::string> L10nMessagesMap;
-
-// A map of extension ID to l10n message map.
-typedef std::map<std::string, L10nMessagesMap > ExtensionToL10nMessagesMap;
-
-// Returns the extension_id to messages map.
-ExtensionToL10nMessagesMap* GetExtensionToL10nMessagesMap();
-
-// Returns message map that matches given extension_id, or NULL.
-L10nMessagesMap* GetL10nMessagesMap(const std::string& extension_id);
-
-// Erases the L10nMessagesMap for the given |extension_id|.
-void EraseL10nMessagesMap(const std::string& extension_id);
 
 }  // namespace extensions
 

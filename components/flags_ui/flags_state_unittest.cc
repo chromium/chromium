@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace flags_ui {
@@ -74,12 +75,9 @@ const char kTestParam2[] = "param2";
 const char kTestParam3[] = "param:/3";
 const char kTestParamValue[] = "value";
 
-const base::Feature kTestFeature1{"FeatureName1",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kTestFeature2{"FeatureName2",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kTestFeature3{"FeatureName3",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature1, "FeatureName1", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature2, "FeatureName2", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature3, "FeatureName3", base::FEATURE_DISABLED_BY_DEFAULT);
 
 const FeatureEntry::FeatureParam kTestVariationOther1[] = {
     {kTestParam1, kTestParamValue}};
@@ -97,7 +95,7 @@ const FeatureEntry::FeatureVariation kTestVariations2[] = {
 const FeatureEntry::FeatureVariation kTestVariations3[] = {
     {"dummy description 1", kTestVariationOther1, 1, nullptr},
     {"dummy description 2", kTestVariationOther2, 1, nullptr},
-    {"dummy description 3", kTestVariationOther3, 2, nullptr}};
+    {"dummy description 3", kTestVariationOther3, 2, "t123456"}};
 
 const char kTestVariation3Cmdline[] =
     "FeatureName3:param1/value/param%3A%2F3/value";
@@ -174,14 +172,14 @@ class FlagsStateTest : public ::testing::Test,
     prefs_.registry()->RegisterListPref(prefs::kAboutFlagsEntries);
     prefs_.registry()->RegisterDictionaryPref(prefs::kAboutFlagsOriginLists);
 
-    for (size_t i = 0; i < base::size(kEntries); ++i)
+    for (size_t i = 0; i < std::size(kEntries); ++i)
       kEntries[i].supported_platforms = FlagsState::GetCurrentPlatform();
 
     int os_other_than_current = 1;
     while (os_other_than_current == FlagsState::GetCurrentPlatform())
       os_other_than_current <<= 1;
     kEntries[2].supported_platforms = os_other_than_current;
-    flags_state_.reset(new FlagsState(kEntries, this));
+    flags_state_ = std::make_unique<FlagsState>(kEntries, this);
   }
 
   ~FlagsStateTest() override {
@@ -244,43 +242,71 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveOne) {
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, true);
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, true);
 
-  const base::ListValue* entries_list =
-      prefs_.GetList(prefs::kAboutFlagsEntries);
-  ASSERT_TRUE(entries_list != nullptr);
+  {
+    const base::Value::List& entries_list =
+        prefs_.GetList(prefs::kAboutFlagsEntries);
+    ASSERT_EQ(2u, entries_list.size());
 
-  ASSERT_EQ(2u, entries_list->GetSize());
+    std::string s0 = entries_list[0].GetString();
+    std::string s1 = entries_list[1].GetString();
 
-  std::string s0;
-  ASSERT_TRUE(entries_list->GetString(0, &s0));
-  std::string s1;
-  ASSERT_TRUE(entries_list->GetString(1, &s1));
-
-  EXPECT_TRUE(s0 == kFlags1 || s1 == kFlags1);
-  EXPECT_TRUE(s0 == kFlags2 || s1 == kFlags2);
+    EXPECT_TRUE(s0 == kFlags1 || s1 == kFlags1);
+    EXPECT_TRUE(s0 == kFlags2 || s1 == kFlags2);
+  }
 
   // Remove one entry, check the other's still around.
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, false);
 
-  entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
-  ASSERT_TRUE(entries_list != nullptr);
-  ASSERT_EQ(1u, entries_list->GetSize());
-  ASSERT_TRUE(entries_list->GetString(0, &s0));
-  EXPECT_TRUE(s0 == kFlags1);
+  {
+    const base::Value::List& entries_list =
+        prefs_.GetList(prefs::kAboutFlagsEntries);
+    ASSERT_EQ(1u, entries_list.size());
+    std::string s0 = entries_list[0].GetString();
+    EXPECT_TRUE(s0 == kFlags1);
+  }
 }
 
 TEST_F(FlagsStateTest, AddTwoFlagsRemoveBoth) {
   // Add two entries, check the pref exists.
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, true);
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, true);
-  const base::ListValue* entries_list =
-      prefs_.GetList(prefs::kAboutFlagsEntries);
-  ASSERT_TRUE(entries_list != nullptr);
+  {
+    const base::Value::List& entries_list =
+        prefs_.GetList(prefs::kAboutFlagsEntries);
+    ASSERT_EQ(2u, entries_list.size());
+  }
 
   // Remove both, the pref should have been removed completely.
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, false);
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, false);
-  entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
-  EXPECT_TRUE(entries_list == nullptr || entries_list->GetSize() == 0);
+  {
+    const base::Value::List& entries_list =
+        prefs_.GetList(prefs::kAboutFlagsEntries);
+    EXPECT_TRUE(entries_list.empty());
+  }
+}
+
+TEST_F(FlagsStateTest, CombineOriginListValues) {
+  // Add a value in prefs, and on command line.
+  flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags11, true);
+  const std::string prefs_value =
+      "http://a.test,http://c.test,http://dupe.test";
+  flags_state_->SetOriginListFlag(kFlags11, prefs_value, &flags_storage_);
+  ASSERT_EQ(flags_storage_.GetOriginListFlag(kFlags11), prefs_value);
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  const std::string cli_value = "http://dupe.test,http://b.test";
+  command_line.AppendSwitchASCII(kStringSwitch, cli_value);
+  ASSERT_EQ(command_line.GetSwitchValueASCII(kStringSwitch), cli_value);
+
+  flags_state_->ConvertFlagsToSwitches(&flags_storage_, &command_line,
+                                       kNoSentinels, kEnableFeatures,
+                                       kDisableFeatures);
+
+  // Lists are concatenated together with duplicates removed, but are not
+  // sorted.
+  EXPECT_EQ(command_line.GetSwitchValueASCII(kStringSwitch),
+            "http://dupe.test,http://b.test,http://a.test,http://c.test");
 }
 
 TEST_F(FlagsStateTest, ConvertFlagsToSwitches) {
@@ -323,6 +349,11 @@ TEST_F(FlagsStateTest, ConvertFlagsToSwitches) {
   EXPECT_TRUE(command_line3.HasSwitch(kEnableFeatures));
   EXPECT_EQ(command_line3.GetSwitchValueASCII(kEnableFeatures),
             kTestVariation3Cmdline);
+  EXPECT_TRUE(
+      command_line3.HasSwitch(variations::switches::kForceVariationIds));
+  EXPECT_EQ(command_line3.GetSwitchValueASCII(
+                variations::switches::kForceVariationIds),
+            "t123456");
 }
 
 TEST_F(FlagsStateTest, RegisterAllFeatureVariationParameters) {
@@ -420,7 +451,7 @@ TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersWithDefaultTrials) {
 }
 
 base::CommandLine::StringType CreateSwitch(const std::string& value) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::ASCIIToWide(value);
 #else
   return value;
@@ -476,7 +507,7 @@ TEST_F(FlagsStateTest, RemoveFlagSwitches_Features) {
       {2, "A,B", "C", "A,B", "C,FeatureName1"},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf(
         "Test[%" PRIuS "]: %d [%s] [%s]", i, cases[i].enabled_choice,
         cases[i].existing_enable_features ? cases[i].existing_enable_features
@@ -551,15 +582,12 @@ TEST_F(FlagsStateTest, PersistAndPrune) {
   EXPECT_FALSE(command_line.HasSwitch(kSwitch3));
 
   // FeatureEntry 3 should show still be persisted in preferences though.
-  const base::ListValue* entries_list =
+  const base::Value::List& entries_list =
       prefs_.GetList(prefs::kAboutFlagsEntries);
-  ASSERT_TRUE(entries_list);
-  EXPECT_EQ(2U, entries_list->GetSize());
-  std::string s0;
-  ASSERT_TRUE(entries_list->GetString(0, &s0));
+  EXPECT_EQ(2U, entries_list.size());
+  std::string s0 = entries_list[0].GetString();
   EXPECT_EQ(kFlags1, s0);
-  std::string s1;
-  ASSERT_TRUE(entries_list->GetString(1, &s1));
+  std::string s1 = entries_list[1].GetString();
   EXPECT_EQ(kFlags3, s1);
 }
 
@@ -586,7 +614,7 @@ TEST_F(FlagsStateTest, CheckValues) {
   // Confirm that there is no '=' in the command line for simple switches.
   std::string switch1_with_equals =
       std::string("--") + std::string(kSwitch1) + std::string("=");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(std::wstring::npos, command_line.GetCommandLineString().find(
                                     base::ASCIIToWide(switch1_with_equals)));
 #else
@@ -597,7 +625,7 @@ TEST_F(FlagsStateTest, CheckValues) {
   // And confirm there is a '=' for switches with values.
   std::string switch2_with_equals =
       std::string("--") + std::string(kSwitch2) + std::string("=");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_NE(std::wstring::npos, command_line.GetCommandLineString().find(
                                     base::ASCIIToWide(switch2_with_equals)));
 #else
@@ -606,15 +634,12 @@ TEST_F(FlagsStateTest, CheckValues) {
 #endif
 
   // And it should persist.
-  const base::ListValue* entries_list =
+  const base::Value::List& entries_list =
       prefs_.GetList(prefs::kAboutFlagsEntries);
-  ASSERT_TRUE(entries_list);
-  EXPECT_EQ(2U, entries_list->GetSize());
-  std::string s0;
-  ASSERT_TRUE(entries_list->GetString(0, &s0));
+  EXPECT_EQ(2U, entries_list.size());
+  std::string s0 = entries_list[0].GetString();
   EXPECT_EQ(kFlags1, s0);
-  std::string s1;
-  ASSERT_TRUE(entries_list->GetString(1, &s1));
+  std::string s1 = entries_list[1].GetString();
   EXPECT_EQ(kFlags2, s1);
 }
 
@@ -785,7 +810,7 @@ TEST_F(FlagsStateTest, FeatureValues) {
       {2, nullptr, "Foo,Bar", "", "Foo,Bar,FeatureName1"},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf(
         "Test[%" PRIuS "]: %d [%s] [%s]", i, cases[i].enabled_choice,
         cases[i].existing_enable_features ? cases[i].existing_enable_features
@@ -819,16 +844,17 @@ TEST_F(FlagsStateTest, FeatureValues) {
 }
 
 TEST_F(FlagsStateTest, GetFlagFeatureEntries) {
-  base::ListValue supported_entries;
-  base::ListValue unsupported_entries;
+  base::Value::List supported_entries;
+  base::Value::List unsupported_entries;
   flags_state_->GetFlagFeatureEntries(&flags_storage_, kGeneralAccessFlagsOnly,
-                                      &supported_entries, &unsupported_entries,
+                                      supported_entries, unsupported_entries,
                                       base::BindRepeating(&SkipFeatureEntry));
   // All |kEntries| except for |kFlags3| should be supported.
-  EXPECT_EQ(11u, supported_entries.GetSize());
-  EXPECT_EQ(1u, unsupported_entries.GetSize());
-  EXPECT_EQ(base::size(kEntries),
-            supported_entries.GetSize() + unsupported_entries.GetSize());
+  auto supported_count = supported_entries.size();
+  auto unsupported_count = unsupported_entries.size();
+  EXPECT_EQ(11u, supported_count);
+  EXPECT_EQ(1u, unsupported_count);
+  EXPECT_EQ(std::size(kEntries), supported_count + unsupported_count);
 }
 
 }  // namespace flags_ui

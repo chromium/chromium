@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/protocol/pseudotcp_adapter.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -13,11 +14,13 @@
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "base/time/time.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -27,8 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -140,7 +142,7 @@ class FakeSocket : public P2PDatagramSocket {
           base::BindOnce(&FakeSocket::AppendInputPacket,
                          base::Unretained(peer_socket_),
                          std::vector<char>(buf->data(), buf->data() + buf_len)),
-          base::TimeDelta::FromMilliseconds(latency_ms_));
+          base::Milliseconds(latency_ms_));
     }
 
     return buf_len;
@@ -153,8 +155,8 @@ class FakeSocket : public P2PDatagramSocket {
 
   base::circular_deque<std::vector<char>> incoming_packets_;
 
-  FakeSocket* peer_socket_;
-  RateLimiter* rate_limiter_;
+  raw_ptr<FakeSocket> peer_socket_;
+  raw_ptr<RateLimiter> rate_limiter_;
   int latency_ms_;
 };
 
@@ -280,8 +282,8 @@ class TCPChannelTester : public base::RefCountedThreadSafe<TCPChannelTester> {
   friend class base::RefCountedThreadSafe<TCPChannelTester>;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  P2PStreamSocket* host_socket_;
-  P2PStreamSocket* client_socket_;
+  raw_ptr<P2PStreamSocket> host_socket_;
+  raw_ptr<P2PStreamSocket> client_socket_;
   bool done_;
 
   scoped_refptr<net::DrainableIOBuffer> output_buffer_;
@@ -294,7 +296,7 @@ class TCPChannelTester : public base::RefCountedThreadSafe<TCPChannelTester> {
 class PseudoTcpAdapterTest : public testing::Test {
  protected:
   void SetUp() override {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
     host_socket_ = new FakeSocket();
     client_socket_ = new FakeSocket();
@@ -302,13 +304,14 @@ class PseudoTcpAdapterTest : public testing::Test {
     host_socket_->Connect(client_socket_);
     client_socket_->Connect(host_socket_);
 
-    host_pseudotcp_.reset(new PseudoTcpAdapter(base::WrapUnique(host_socket_)));
-    client_pseudotcp_.reset(
-        new PseudoTcpAdapter(base::WrapUnique(client_socket_)));
+    host_pseudotcp_ = std::make_unique<PseudoTcpAdapter>(
+        base::WrapUnique(host_socket_.get()));
+    client_pseudotcp_ = std::make_unique<PseudoTcpAdapter>(
+        base::WrapUnique(client_socket_.get()));
   }
 
-  FakeSocket* host_socket_;
-  FakeSocket* client_socket_;
+  raw_ptr<FakeSocket> host_socket_;
+  raw_ptr<FakeSocket> client_socket_;
 
   std::unique_ptr<PseudoTcpAdapter> host_pseudotcp_;
   std::unique_ptr<PseudoTcpAdapter> client_pseudotcp_;
@@ -384,7 +387,7 @@ class DeleteOnConnected {
         FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
   }
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  std::unique_ptr<PseudoTcpAdapter>* adapter_;
+  raw_ptr<std::unique_ptr<PseudoTcpAdapter>> adapter_;
 };
 
 TEST_F(PseudoTcpAdapterTest, DeleteOnConnected) {
@@ -437,5 +440,4 @@ TEST_F(PseudoTcpAdapterTest, WriteWaitsForSendLetsDataThrough) {
 
 }  // namespace
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

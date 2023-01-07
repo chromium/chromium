@@ -1,3 +1,3 @@
-CONSOLE MESSAGE: line 10: popstate 0
-CONSOLE MESSAGE: line 14: hashchanged 416
+CONSOLE MESSAGE: popstate 0
+CONSOLE MESSAGE: hashchanged 416
 

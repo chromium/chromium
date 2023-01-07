@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_painter.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
@@ -34,12 +31,17 @@ namespace blink {
 // single renderer process share one PaintWorkletPaintDispatcher on the
 // compositor side.
 class PLATFORM_EXPORT PaintWorkletPaintDispatcher {
+  USING_FAST_MALLOC(PaintWorkletPaintDispatcher);
+
  public:
   static std::unique_ptr<PlatformPaintWorkletLayerPainter>
   CreateCompositorThreadPainter(
       base::WeakPtr<PaintWorkletPaintDispatcher>* paintee);
 
   PaintWorkletPaintDispatcher();
+  PaintWorkletPaintDispatcher(const PaintWorkletPaintDispatcher&) = delete;
+  PaintWorkletPaintDispatcher& operator=(const PaintWorkletPaintDispatcher&) =
+      delete;
 
   // Dispatches a set of paint class instances - each represented by a
   // PaintWorkletInput - to the appropriate PaintWorklet threads, asynchronously
@@ -104,8 +106,6 @@ class PLATFORM_EXPORT PaintWorkletPaintDispatcher {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PaintWorkletPaintDispatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaintWorkletPaintDispatcher);
 };
 
 }  // namespace blink

@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_QUERY_TILES_TEST_TEST_UTILS_H_
 #define COMPONENTS_QUERY_TILES_TEST_TEST_UTILS_H_
 
-#include <string>
 #include <vector>
 
 #include "components/query_tiles/internal/tile_group.h"
@@ -16,6 +15,10 @@ namespace test {
 
 // Build and reset the TileGroup for test usage.
 void ResetTestGroup(TileGroup* group);
+
+// Build and reset the TileGroup for test usage, set |last_updated_ts| member
+// variable.
+void ResetTestGroup(TileGroup* group, base::Time last_updated_ts);
 
 // TODO(hesen): Have a better builder with parameters to specify the structure
 // of tree.

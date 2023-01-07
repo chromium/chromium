@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include <unordered_map>
 
 #include "base/logging.h"
+#include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/shared_impl/array_var.h"
 #include "ppapi/shared_impl/dictionary_var.h"

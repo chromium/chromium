@@ -1,3 +1,0 @@
-localhost
-
-PASSED: Navigation succeeded.

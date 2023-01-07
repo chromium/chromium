@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@ extern const char kSecondUserCorpExampleComEmail[];
 extern const char kThirdUserCorpExampleComEmail[];
 extern const char kFourthUserCorpExampleTestEmail[];
 extern const char kFifthUserExampleTestEmail[];
+extern const char kSixthUserCorpExampleTestEmail[];
 
 }  // namespace saml_test_users
 }  // namespace ash

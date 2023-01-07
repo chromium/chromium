@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.features.start_surface.StartSurfaceLayout.ZOOMING_DURATION;
+import static org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -14,8 +14,8 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Pair;
@@ -31,7 +31,6 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -149,6 +148,8 @@ class TabListRecyclerView
     private ImageView mShadowImageView;
     private int mShadowTopOffset;
     private TabListOnScrollListener mScrollListener;
+    // It is null when gts-tab animation is disabled or switching from Start surface to GTS.
+    @Nullable
     private RecyclerView.ItemAnimator mOriginalAnimator;
 
     /**
@@ -169,7 +170,7 @@ class TabListRecyclerView
         mListener = listener;
     }
 
-    void prepareOverview() {
+    void prepareTabSwitcherView() {
         endAllAnimations();
 
         registerDynamicView();
@@ -203,7 +204,12 @@ class TabListRecyclerView
                 mFadeInAnimator = null;
                 mListener.finishedShowing();
                 // Restore the original value.
-                setItemAnimator(mOriginalAnimator);
+                // TODO(crbug.com/1315676): Remove the null check after decoupling Start surface
+                // layout and grid tab switcher layout.
+                if (mOriginalAnimator != null) {
+                    setItemAnimator(mOriginalAnimator);
+                    mOriginalAnimator = null;
+                }
                 setShadowVisibility(computeVerticalScrollOffset() > 0);
                 if (mDynamicView != null) {
                     mDynamicView.dropCachedBitmap();
@@ -222,18 +228,16 @@ class TabListRecyclerView
         if (mShadowImageView == null) {
             Context context = getContext();
             mShadowImageView = new ImageView(context);
-            mShadowImageView.setImageDrawable(AppCompatResources.getDrawable(
-                    context, org.chromium.chrome.R.drawable.modern_toolbar_shadow));
+            Drawable drawable = context.getDrawable(R.drawable.toolbar_hairline);
+            mShadowImageView.setImageDrawable(drawable);
             mShadowImageView.setScaleType(ImageView.ScaleType.FIT_XY);
             mShadowImageView.setTag(SHADOW_VIEW_TAG);
             Resources res = context.getResources();
+            int shadowHeight = res.getDimensionPixelSize(R.dimen.toolbar_hairline_height);
             if (getParent() instanceof FrameLayout) {
                 // Add shadow for grid tab switcher.
-                FrameLayout.LayoutParams params =
-                        new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                                res.getDimensionPixelSize(
-                                        org.chromium.chrome.R.dimen.toolbar_shadow_height),
-                                Gravity.TOP);
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                        LayoutParams.MATCH_PARENT, shadowHeight, Gravity.TOP);
                 mShadowImageView.setLayoutParams(params);
                 mShadowImageView.setTranslationY(mShadowTopOffset);
                 FrameLayout parent = (FrameLayout) getParent();
@@ -244,10 +248,8 @@ class TabListRecyclerView
                 View toolbar = parent.getChildAt(0);
                 if (!(toolbar instanceof TabGroupUiToolbarView)) return;
 
-                RelativeLayout.LayoutParams params =
-                        new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                res.getDimensionPixelSize(
-                                        org.chromium.chrome.R.dimen.toolbar_shadow_height));
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, shadowHeight);
                 params.addRule(RelativeLayout.BELOW, toolbar.getId());
                 parent.addView(mShadowImageView, params);
             }
@@ -330,9 +332,9 @@ class TabListRecyclerView
             }
 
             @Override
-            public Bitmap getBitmap() {
+            public void triggerBitmapCapture() {
                 long startTime = SystemClock.elapsedRealtime();
-                Bitmap bitmap = super.getBitmap();
+                super.triggerBitmapCapture();
                 long elapsed = SystemClock.elapsedRealtime() - startTime;
                 if (elapsed == 0) elapsed = 1;
 
@@ -346,7 +348,6 @@ class TabListRecyclerView
                 mSuppressedUntil = SystemClock.elapsedRealtime() + suppressedFor;
                 Log.d(TAG, "DynamicView: spent %dms on getBitmap, suppress updating for %dms.",
                         elapsed, suppressedFor);
-                return bitmap;
             }
         };
         mDynamicView.setDownsamplingScale(getDownsamplingScale());

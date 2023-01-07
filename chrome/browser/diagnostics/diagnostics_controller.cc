@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,7 +76,7 @@ int DiagnosticsController::RunRecovery(const base::CommandLine& command_line,
 // Separate out recoveries that we execute automatically as a result of a
 // crash from user-run recoveries.
 #if BUILDFLAG(IS_CHROMEOS_ASH)  // Only collecting UMA stats on ChromeOS
-  if (command_line.HasSwitch(chromeos::switches::kLoginUser)) {
+  if (command_line.HasSwitch(ash::switches::kLoginUser)) {
     UMA_HISTOGRAM_ENUMERATION("Diagnostics.RecoveryRun",
                               diagnostics::RECOVERY_CRASH_RUN,
                               diagnostics::RECOVERY_RUN_METRICS_COUNT);

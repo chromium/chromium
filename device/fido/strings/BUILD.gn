@@ -1,13 +1,20 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/grit/repack.gni")
 
 grit("strings") {
   source = "../fido_strings.grd"
   outputs = [ "grit/fido_strings.h" ] +
-            process_file_template(locales_with_pseudolocales,
+            process_file_template(all_chrome_locales,
                                   [ "fido_strings_{{source_name_part}}.pak" ])
+}
+
+repack("fido_test_strings") {
+  sources = [ "$root_gen_dir/device/fido/strings/fido_strings_en-US.pak" ]
+  output = "$root_out_dir/fido_test_strings.pak"
+  deps = [ ":strings" ]
 }

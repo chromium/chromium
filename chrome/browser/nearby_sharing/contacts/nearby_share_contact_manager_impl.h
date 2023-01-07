@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -99,7 +98,9 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
                                 const std::string& contact_upload_hash,
                                 bool success);
   bool SetAllowlist(const std::set<std::string>& new_allowlist);
-  void NotifyMojoObserverContactsDownloaded(
+
+  // Notify the base-class and mojo observers that contacts were downloaded.
+  void NotifyAllObserversContactsDownloaded(
       const std::set<std::string>& allowed_contact_ids,
       const std::vector<nearbyshare::proto::ContactRecord>& contacts,
       uint32_t num_unreachable_contacts_filtered_out);

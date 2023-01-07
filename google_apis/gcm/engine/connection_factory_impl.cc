@@ -1,9 +1,10 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "google_apis/gcm/engine/connection_factory_impl.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -47,8 +48,7 @@ const int kConnectionResetWindowSecs = 10;  // 10 seconds.
 bool ShouldRestorePreviousBackoff(const base::TimeTicks& login_time,
                                   const base::TimeTicks& now_ticks) {
   return !login_time.is_null() &&
-      now_ticks - login_time <=
-          base::TimeDelta::FromSeconds(kConnectionResetWindowSecs);
+         now_ticks - login_time <= base::Seconds(kConnectionResetWindowSecs);
 }
 
 }  // namespace
@@ -113,8 +113,7 @@ ConnectionHandler* ConnectionFactoryImpl::GetConnectionHandler() const {
 void ConnectionFactoryImpl::Connect() {
   if (!connection_handler_) {
     connection_handler_ = CreateConnectionHandler(
-        base::TimeDelta::FromMilliseconds(kReadTimeoutMs), read_callback_,
-        write_callback_,
+        base::Milliseconds(kReadTimeoutMs), read_callback_, write_callback_,
         base::BindRepeating(&ConnectionFactoryImpl::ConnectionHandlerCallback,
                             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -198,19 +197,18 @@ void ConnectionFactoryImpl::SignalConnectionReset(
     return;
   }
 
-  if (listener_)
+  if (listener_) {
+    DVLOG(1) << "Notifying listener of disconnect due to connection reset.";
     listener_->OnDisconnected();
+  }
 
-  UMA_HISTOGRAM_ENUMERATION("GCM.ConnectionResetReason",
-                            reason,
+  UMA_HISTOGRAM_ENUMERATION("GCM.ConnectionResetReason", reason,
                             CONNECTION_RESET_COUNT);
   recorder_->RecordConnectionResetSignaled(reason);
   if (!last_login_time_.is_null()) {
     UMA_HISTOGRAM_CUSTOM_TIMES("GCM.ConnectionUpTime",
-                               NowTicks() - last_login_time_,
-                               base::TimeDelta::FromSeconds(1),
-                               base::TimeDelta::FromHours(24),
-                               50);
+                               NowTicks() - last_login_time_, base::Seconds(1),
+                               base::Hours(24), 50);
     // |last_login_time_| will be reset below, before attempting the new
     // connection.
   }
@@ -362,13 +360,14 @@ void ConnectionFactoryImpl::StartConnection() {
   network::mojom::ProxyResolvingSocketOptionsPtr options =
       network::mojom::ProxyResolvingSocketOptions::New();
   options->use_tls = true;
-  // |current_endpoint| is always a Google URL, so this NetworkIsolationKey will
-  // be the same for all callers, and will allow pooling all connections to GCM
-  // in one socket connection, if an H2 or QUIC proxy is in use.
-  auto origin = url::Origin::Create(current_endpoint);
-  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  // |current_endpoint| is always a Google URL, so this NetworkAnonymizationKey
+  // will be the same for all callers, and will allow pooling all connections to
+  // GCM in one socket connection, if an H2 or QUIC proxy is in use.
+  auto site = net::SchemefulSite(current_endpoint);
+  net::NetworkAnonymizationKey network_anonymization_key(site, site);
   socket_factory_->CreateProxyResolvingSocket(
-      current_endpoint, std::move(network_isolation_key), std::move(options),
+      current_endpoint, std::move(network_anonymization_key),
+      std::move(options),
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
       socket_.BindNewPipeAndPassReceiver(), mojo::NullRemote() /* observer */,
       base::BindOnce(&ConnectionFactoryImpl::OnConnectDone,
@@ -392,7 +391,7 @@ void ConnectionFactoryImpl::InitHandler(
 
 std::unique_ptr<net::BackoffEntry> ConnectionFactoryImpl::CreateBackoffEntry(
     const net::BackoffEntry::Policy* const policy) {
-  return std::unique_ptr<net::BackoffEntry>(new net::BackoffEntry(policy));
+  return std::make_unique<net::BackoffEntry>(policy);
 }
 
 std::unique_ptr<ConnectionHandler>
@@ -412,8 +411,8 @@ base::TimeTicks ConnectionFactoryImpl::NowTicks() {
 
 void ConnectionFactoryImpl::OnConnectDone(
     int result,
-    const base::Optional<net::IPEndPoint>& local_addr,
-    const base::Optional<net::IPEndPoint>& peer_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_NE(net::ERR_IO_PENDING, result);
@@ -470,6 +469,7 @@ void ConnectionFactoryImpl::ConnectionHandlerCallback(int result) {
   if (result != net::OK) {
     // TODO(zea): Consider how to handle errors that may require some sort of
     // user intervention (login page, etc.).
+    LOG(ERROR) << "ConnectionHandler failed with net error: " << result;
     base::UmaHistogramSparse("GCM.ConnectionDisconnectErrorCode", result);
     SignalConnectionReset(SOCKET_FAILURE);
     return;

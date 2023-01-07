@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,15 @@
 #include <stdint.h>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-const base::TimeDelta kRequestDelta = base::TimeDelta::FromMilliseconds(100);
-const base::TimeDelta kLongRequestDelta =
-    base::TimeDelta::FromMilliseconds(200);
-const base::TimeDelta kTinyDelay = base::TimeDelta::FromMilliseconds(1);
-const base::TimeDelta kModerateDelay = base::TimeDelta::FromMilliseconds(25);
-const base::TimeDelta kExcessiveDelay = base::TimeDelta::FromMilliseconds(75);
+const base::TimeDelta kRequestDelta = base::Milliseconds(100);
+const base::TimeDelta kLongRequestDelta = base::Milliseconds(200);
+const base::TimeDelta kTinyDelay = base::Milliseconds(1);
+const base::TimeDelta kModerateDelay = base::Milliseconds(25);
+const base::TimeDelta kExcessiveDelay = base::Milliseconds(75);
 }  // namespace
 
 // Test the basis recording of histograms.

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -214,6 +214,16 @@ MockEGLInterface::Mock_eglExportDMABUFImageQueryMESA(EGLDisplay dpy,
 }
 
 EGLBoolean GL_BINDING_CALL
+MockEGLInterface::Mock_eglExportVkImageANGLE(EGLDisplay dpy,
+                                             EGLImageKHR image,
+                                             void* vk_image,
+                                             void* vk_image_create_info) {
+  MakeEglMockFunctionUnique("eglExportVkImageANGLE");
+  return interface_->ExportVkImageANGLE(dpy, image, vk_image,
+                                        vk_image_create_info);
+}
+
+EGLBoolean GL_BINDING_CALL
 MockEGLInterface::Mock_eglGetCompositorTimingANDROID(EGLDisplay dpy,
                                                      EGLSurface surface,
                                                      EGLint numTimestamps,
@@ -426,6 +436,14 @@ MockEGLInterface::Mock_eglQueryDebugKHR(EGLint attribute, EGLAttrib* value) {
   return interface_->QueryDebugKHR(attribute, value);
 }
 
+EGLBoolean GL_BINDING_CALL
+MockEGLInterface::Mock_eglQueryDeviceAttribEXT(EGLDeviceEXT device,
+                                               EGLint attribute,
+                                               EGLAttrib* value) {
+  MakeEglMockFunctionUnique("eglQueryDeviceAttribEXT");
+  return interface_->QueryDeviceAttribEXT(device, attribute, value);
+}
+
 const char* GL_BINDING_CALL
 MockEGLInterface::Mock_eglQueryDeviceStringEXT(EGLDeviceEXT device,
                                                EGLint name) {
@@ -447,6 +465,36 @@ MockEGLInterface::Mock_eglQueryDisplayAttribANGLE(EGLDisplay dpy,
                                                   EGLAttrib* value) {
   MakeEglMockFunctionUnique("eglQueryDisplayAttribANGLE");
   return interface_->QueryDisplayAttribANGLE(dpy, attribute, value);
+}
+
+EGLBoolean GL_BINDING_CALL
+MockEGLInterface::Mock_eglQueryDisplayAttribEXT(EGLDisplay dpy,
+                                                EGLint attribute,
+                                                EGLAttrib* value) {
+  MakeEglMockFunctionUnique("eglQueryDisplayAttribEXT");
+  return interface_->QueryDisplayAttribEXT(dpy, attribute, value);
+}
+
+EGLBoolean GL_BINDING_CALL
+MockEGLInterface::Mock_eglQueryDmaBufFormatsEXT(EGLDisplay dpy,
+                                                EGLint max_formats,
+                                                EGLint* formats,
+                                                EGLint* num_formats) {
+  MakeEglMockFunctionUnique("eglQueryDmaBufFormatsEXT");
+  return interface_->QueryDmaBufFormatsEXT(dpy, max_formats, formats,
+                                           num_formats);
+}
+
+EGLBoolean GL_BINDING_CALL
+MockEGLInterface::Mock_eglQueryDmaBufModifiersEXT(EGLDisplay dpy,
+                                                  EGLint format,
+                                                  EGLint max_modifiers,
+                                                  EGLuint64KHR* modifiers,
+                                                  EGLBoolean* external_only,
+                                                  EGLint* num_modifiers) {
+  MakeEglMockFunctionUnique("eglQueryDmaBufModifiersEXT");
+  return interface_->QueryDmaBufModifiersEXT(
+      dpy, format, max_modifiers, modifiers, external_only, num_modifiers);
 }
 
 EGLBoolean GL_BINDING_CALL
@@ -701,6 +749,8 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "eglExportDMABUFImageQueryMESA") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglExportDMABUFImageQueryMESA);
+  if (strcmp(name, "eglExportVkImageANGLE") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(Mock_eglExportVkImageANGLE);
   if (strcmp(name, "eglGetCompositorTimingANDROID") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglGetCompositorTimingANDROID);
@@ -764,6 +814,9 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryContext);
   if (strcmp(name, "eglQueryDebugKHR") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryDebugKHR);
+  if (strcmp(name, "eglQueryDeviceAttribEXT") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglQueryDeviceAttribEXT);
   if (strcmp(name, "eglQueryDeviceStringEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglQueryDeviceStringEXT);
@@ -772,6 +825,15 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "eglQueryDisplayAttribANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglQueryDisplayAttribANGLE);
+  if (strcmp(name, "eglQueryDisplayAttribEXT") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglQueryDisplayAttribEXT);
+  if (strcmp(name, "eglQueryDmaBufFormatsEXT") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglQueryDmaBufFormatsEXT);
+  if (strcmp(name, "eglQueryDmaBufModifiersEXT") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglQueryDmaBufModifiersEXT);
   if (strcmp(name, "eglQueryStreamKHR") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryStreamKHR);
   if (strcmp(name, "eglQueryStreamu64KHR") == 0)

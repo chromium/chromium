@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content"
+    style="@style/ListItemContainerV2" >
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/start_icon"
+        android:src="@drawable/price_tracking_enabled_outline"
+        style="@style/ListItemStartIcon" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:text="@string/price_tracking_bookmarks_filter_title"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/end_icon"
+        android:src="@drawable/outline_chevron_right_24dp"
+        style="@style/ListItemEndIcon" />
+
+</LinearLayout>

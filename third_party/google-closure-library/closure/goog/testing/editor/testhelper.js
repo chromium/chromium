@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Class that allows for simple text editing tests.
@@ -26,6 +18,7 @@ goog.require('goog.editor.BrowserFeature');
 goog.require('goog.editor.node');
 goog.require('goog.editor.plugins.AbstractBubblePlugin');
 goog.require('goog.testing.dom');
+goog.requireType('goog.dom.AbstractRange');
 
 
 
@@ -37,6 +30,7 @@ goog.require('goog.testing.dom');
  * @final
  */
 goog.testing.editor.TestHelper = function(root) {
+  'use strict';
   if (!root) {
     throw new Error('Null root');
   }
@@ -64,6 +58,7 @@ goog.inherits(goog.testing.editor.TestHelper, goog.Disposable);
  * @param {Element} root The root editable element.
  */
 goog.testing.editor.TestHelper.prototype.setRoot = function(root) {
+  'use strict';
   if (!root) {
     throw new Error('Null root');
   }
@@ -76,6 +71,7 @@ goog.testing.editor.TestHelper.prototype.setRoot = function(root) {
  * in tearDown.
  */
 goog.testing.editor.TestHelper.prototype.setUpEditableElement = function() {
+  'use strict';
   this.savedHtml_ = this.root_.innerHTML;
   if (goog.editor.BrowserFeature.HAS_CONTENT_EDITABLE) {
     this.root_.contentEditable = true;
@@ -94,6 +90,7 @@ goog.testing.editor.TestHelper.prototype.setUpEditableElement = function() {
  *     purposes.
  */
 goog.testing.editor.TestHelper.prototype.tearDownEditableElement = function() {
+  'use strict';
   if (goog.editor.BrowserFeature.HAS_CONTENT_EDITABLE) {
     this.root_.contentEditable = false;
   } else {
@@ -105,7 +102,7 @@ goog.testing.editor.TestHelper.prototype.tearDownEditableElement = function() {
 
   if (goog.editor.plugins && goog.editor.plugins.AbstractBubblePlugin) {
     // Remove old bubbles.
-    for (var key in goog.editor.plugins.AbstractBubblePlugin.bubbleMap_) {
+    for (let key in goog.editor.plugins.AbstractBubblePlugin.bubbleMap_) {
       goog.editor.plugins.AbstractBubblePlugin.bubbleMap_[key].dispose();
     }
     // Ensure we get a new bubble for each test.
@@ -125,6 +122,7 @@ goog.testing.editor.TestHelper.prototype.tearDownEditableElement = function() {
  */
 goog.testing.editor.TestHelper.prototype.assertHtmlMatches = function(
     htmlPattern) {
+  'use strict';
   goog.testing.dom.assertHtmlContentsMatch(htmlPattern, this.root_);
 };
 
@@ -136,6 +134,7 @@ goog.testing.editor.TestHelper.prototype.assertHtmlMatches = function(
  * @return {Node} The first text node that matches, or null if none is found.
  */
 goog.testing.editor.TestHelper.prototype.findTextNode = function(textOrRegexp) {
+  'use strict';
   return goog.testing.dom.findTextNode(textOrRegexp, this.root_);
 };
 
@@ -156,17 +155,19 @@ goog.testing.editor.TestHelper.prototype.findTextNode = function(textOrRegexp) {
  */
 goog.testing.editor.TestHelper.prototype.select = function(
     from, fromOffset, opt_to, opt_toOffset) {
-  var end;
-  var start = end = (typeof from === 'string') ? this.findTextNode(from) : from;
-  var endOffset;
-  var startOffset = endOffset = fromOffset;
+  'use strict';
+  let end;
+  const start = end =
+      (typeof from === 'string') ? this.findTextNode(from) : from;
+  let endOffset;
+  const startOffset = endOffset = fromOffset;
 
   if (opt_to && typeof opt_toOffset === 'number') {
     end = (typeof opt_to === 'string') ? this.findTextNode(opt_to) : opt_to;
     endOffset = opt_toOffset;
   }
 
-  var range =
+  const range =
       goog.dom.Range.createFromNodes(start, startOffset, end, endOffset);
   range.select();
   return range;
@@ -175,6 +176,7 @@ goog.testing.editor.TestHelper.prototype.select = function(
 
 /** @override */
 goog.testing.editor.TestHelper.prototype.disposeInternal = function() {
+  'use strict';
   if (goog.editor.node.isEditableContainer(this.root_)) {
     this.tearDownEditableElement();
   }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_test_api.h"
 
 namespace views {
@@ -28,11 +29,11 @@ TEST_F(FlexLayoutViewTest, LayoutInvalidationWhenPropertyChanged) {
   auto reset_layout = [&]() {
     EXPECT_TRUE(view_test_api.needs_layout());
     // Call layout() to set layout to a valid state.
-    host()->Layout();
+    test::RunScheduledLayout(host());
   };
 
   // Ensure host() starts with a valid layout.
-  host()->Layout();
+  test::RunScheduledLayout(host());
 
   EXPECT_NE(LayoutOrientation::kVertical, host()->GetOrientation());
   host()->SetOrientation(LayoutOrientation::kVertical);
@@ -46,7 +47,7 @@ TEST_F(FlexLayoutViewTest, LayoutInvalidationWhenPropertyChanged) {
   host()->SetCrossAxisAlignment(LayoutAlignment::kEnd);
   reset_layout();
 
-  constexpr gfx::Insets interior_margin(10, 10);
+  constexpr gfx::Insets interior_margin(10);
   EXPECT_NE(interior_margin, host()->GetInteriorMargin());
   host()->SetInteriorMargin(interior_margin);
   reset_layout();
@@ -84,7 +85,7 @@ TEST_F(FlexLayoutViewTest, NoLayoutInvalidationWhenPropertyUnchanged) {
   ViewTestApi view_test_api(host());
 
   // Ensure view starts with a valid layout.
-  host()->Layout();
+  test::RunScheduledLayout(host());
   host()->SetOrientation(host()->GetOrientation());
   host()->SetMainAxisAlignment(host()->GetMainAxisAlignment());
   host()->SetCrossAxisAlignment(host()->GetCrossAxisAlignment());

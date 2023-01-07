@@ -1,16 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/network_service_instance.h"
@@ -24,16 +27,18 @@
 namespace {
 
 size_t GetInfobarCount(content::WebContents* contents) {
-  InfoBarService* infobar_service = InfoBarService::FromWebContents(contents);
-  if (!infobar_service)
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(contents);
+  if (!infobar_manager)
     return 0;
-  return infobar_service->infobar_count();
+  return infobar_manager->infobar_count();
 }
 
 infobars::InfoBar* GetInfobar(content::WebContents* contents) {
-  InfoBarService* infobar_service = InfoBarService::FromWebContents(contents);
-  DCHECK(infobar_service);
-  return infobar_service->infobar_at(0);
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(contents);
+  DCHECK(infobar_manager);
+  return infobar_manager->infobar_at(0);
 }
 
 // Follows same logic as clicking the "Continue" button would.
@@ -100,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
 
   // Trigger the disclosure infobar by navigating to a page served by a root
   // marked as known interception.
-  ui_test_utils::NavigateToURL(browser(), kInterceptedUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));
   EXPECT_EQ(1u, GetInfobarCount(tab1));
 
   // Test that the infobar is shown on new tabs after it has been triggered
@@ -113,10 +118,10 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
 
   // Close the new tab.
   tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(),
-                                      TabStripModel::CLOSE_USER_GESTURE);
+                                      TabCloseTypes::CLOSE_USER_GESTURE);
 
   // Reload the first page -- infobar should still show.
-  ui_test_utils::NavigateToURL(browser(), kInterceptedUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));
   EXPECT_EQ(1u, GetInfobarCount(tab1));
 
   // Dismiss the infobar.
@@ -124,14 +129,14 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
   EXPECT_EQ(0u, GetInfobarCount(tab1));
 
   // Try to trigger again by reloading the page -- infobar should not show.
-  ui_test_utils::NavigateToURL(browser(), kInterceptedUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));
   EXPECT_EQ(0u, GetInfobarCount(tab1));
 
   // Move clock ahead 8 days.
-  clock->Advance(base::TimeDelta::FromDays(8));
+  clock->Advance(base::Days(8));
 
   // Trigger the infobar again -- infobar should show again.
-  ui_test_utils::NavigateToURL(browser(), kInterceptedUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));
   EXPECT_EQ(1u, GetInfobarCount(tab1));
 }
 
@@ -142,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
   // Trigger the disclosure infobar.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(), kInterceptedUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));
   EXPECT_EQ(1u, GetInfobarCount(tab));
 
   // Dismiss the infobar.
@@ -150,8 +155,15 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
   EXPECT_EQ(0u, GetInfobarCount(tab));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_CooldownResetsOnBrowserRestartDesktop \
+  DISABLED_CooldownResetsOnBrowserRestartDesktop
+#else
+#define MAYBE_CooldownResetsOnBrowserRestartDesktop \
+  CooldownResetsOnBrowserRestartDesktop
+#endif
 IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
-                       CooldownResetsOnBrowserRestartDesktop) {
+                       MAYBE_CooldownResetsOnBrowserRestartDesktop) {
   const GURL kInterceptedUrl(https_server_.GetURL("/ssl/google.html"));
 
   // On restart, no infobar should be shown initially.
@@ -161,6 +173,6 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
 
   // Triggering the disclosure infobar again after browser restart should show
   // the infobar (the cooldown period should no longer apply on Desktop).
-  ui_test_utils::NavigateToURL(browser(), kInterceptedUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInterceptedUrl));
   EXPECT_EQ(1u, GetInfobarCount(tab));
 }

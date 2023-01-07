@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 namespace net {
 
-ResolveErrorInfo::ResolveErrorInfo() {}
+ResolveErrorInfo::ResolveErrorInfo() = default;
 
 ResolveErrorInfo::ResolveErrorInfo(int resolve_error,
                                    bool is_secure_network_error)

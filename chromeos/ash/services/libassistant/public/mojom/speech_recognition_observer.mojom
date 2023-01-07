@@ -1,0 +1,26 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+// Observer that will be informed about all speech related updates from
+// the Libassistant mojom service.
+interface SpeechRecognitionObserver {
+  // Provides periodic updates on the user's speech signal power, when the
+  // microphone is open and streaming to the Assistant backend.
+  OnSpeechLevelUpdated(float speech_level_in_decibels);
+
+  // The recognition has started. This will always be the first event.
+  OnSpeechRecognitionStart();
+
+  // The recognition has a new intermediate result.
+  OnIntermediateResult(string high_confidence_text, string low_confidence_text);
+
+  // The recognizer has decided the user has stopped speaking. This
+  // reflects the "end-of-utterance".
+  OnSpeechRecognitionEnd();
+
+  // The final result of the speech recognition.
+  OnFinalResult(string recognized_text);
+};

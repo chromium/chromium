@@ -1,0 +1,26 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+enum GPUFeatureName {
+    "pipeline-statistics-query",
+    "texture-compression-bc",
+    "texture-compression-etc2",
+    "texture-compression-astc",
+    "timestamp-query",
+    "shader-float16",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "indirect-first-instance",
+    "chromium-experimental-dp4a",
+    "rg11b10ufloat-renderable",
+};
+
+[
+    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    SecureContext
+] interface GPUSupportedFeatures {
+    readonly setlike<DOMString>;
+};

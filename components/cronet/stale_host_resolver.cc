@@ -1,9 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/cronet/stale_host_resolver.h"
 
+#include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,17 +14,20 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_util.h"
-#include "net/dns/host_resolver_source.h"
+#include "net/dns/host_resolver.h"
+#include "net/dns/public/host_resolver_results.h"
+#include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 namespace cronet {
 
@@ -34,7 +39,7 @@ class StaleHostResolver::RequestImpl
   // StaleOptions will be read directly from |resolver|.
   RequestImpl(base::WeakPtr<StaleHostResolver> resolver,
               const net::HostPortPair& host,
-              const net::NetworkIsolationKey& network_isolation_key,
+              const net::NetworkAnonymizationKey& network_anonymization_key,
               const net::NetLogWithSource& net_log,
               const ResolveHostParameters& input_parameters,
               const base::TickClock* tick_clock);
@@ -42,15 +47,15 @@ class StaleHostResolver::RequestImpl
 
   // net::HostResolver::ResolveHostRequest implementation:
   int Start(net::CompletionOnceCallback result_callback) override;
-  const base::Optional<net::AddressList>& GetAddressResults() const override;
-  const base::Optional<std::vector<std::string>>& GetTextResults()
+  const net::AddressList* GetAddressResults() const override;
+  const net::HostResolverEndpointResults* GetEndpointResults() const override;
+  const absl::optional<std::vector<std::string>>& GetTextResults()
       const override;
-  const base::Optional<std::vector<net::HostPortPair>>& GetHostnameResults()
+  const absl::optional<std::vector<net::HostPortPair>>& GetHostnameResults()
       const override;
-  const base::Optional<std::vector<std::string>>& GetDnsAliasResults()
-      const override;
+  const std::set<std::string>* GetDnsAliasResults() const override;
   net::ResolveErrorInfo GetResolveErrorInfo() const override;
-  const base::Optional<net::HostCache::EntryStaleness>& GetStaleInfo()
+  const absl::optional<net::HostCache::EntryStaleness>& GetStaleInfo()
       const override;
   void ChangeRequestPriority(net::RequestPriority priority) override;
 
@@ -75,7 +80,7 @@ class StaleHostResolver::RequestImpl
   base::WeakPtr<StaleHostResolver> resolver_;
 
   const net::HostPortPair host_;
-  const net::NetworkIsolationKey network_isolation_key_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
   const net::NetLogWithSource net_log_;
   const ResolveHostParameters input_parameters_;
 
@@ -102,13 +107,13 @@ class StaleHostResolver::RequestImpl
 StaleHostResolver::RequestImpl::RequestImpl(
     base::WeakPtr<StaleHostResolver> resolver,
     const net::HostPortPair& host,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     const net::NetLogWithSource& net_log,
     const ResolveHostParameters& input_parameters,
     const base::TickClock* tick_clock)
     : resolver_(std::move(resolver)),
       host_(host),
-      network_isolation_key_(network_isolation_key),
+      network_anonymization_key_(network_anonymization_key),
       net_log_(net_log),
       input_parameters_(input_parameters),
       cache_error_(net::ERR_DNS_CACHE_MISS),
@@ -126,7 +131,7 @@ int StaleHostResolver::RequestImpl::Start(
       net::HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED;
   cache_parameters.source = net::HostResolverSource::LOCAL_ONLY;
   cache_request_ = resolver_->inner_resolver_->CreateRequest(
-      host_, network_isolation_key_, net_log_, cache_parameters);
+      host_, network_anonymization_key_, net_log_, cache_parameters);
   int error =
       cache_request_->Start(base::BindOnce([](int error) { NOTREACHED(); }));
   DCHECK_NE(net::ERR_IO_PENDING, error);
@@ -165,7 +170,7 @@ int StaleHostResolver::RequestImpl::Start(
   no_cache_parameters.cache_usage =
       net::HostResolver::ResolveHostParameters::CacheUsage::DISALLOWED;
   network_request_ = resolver_->inner_resolver_->CreateRequest(
-      host_, network_isolation_key_, net_log_, no_cache_parameters);
+      host_, network_anonymization_key_, net_log_, no_cache_parameters);
   int network_rv = network_request_->Start(
       base::BindOnce(&StaleHostResolver::OnNetworkRequestComplete, resolver_,
                      network_request_.get(), weak_ptr_factory_.GetWeakPtr()));
@@ -178,8 +183,8 @@ int StaleHostResolver::RequestImpl::Start(
   return network_rv;
 }
 
-const base::Optional<net::AddressList>&
-StaleHostResolver::RequestImpl::GetAddressResults() const {
+const net::AddressList* StaleHostResolver::RequestImpl::GetAddressResults()
+    const {
   if (network_request_)
     return network_request_->GetAddressResults();
 
@@ -187,7 +192,16 @@ StaleHostResolver::RequestImpl::GetAddressResults() const {
   return cache_request_->GetAddressResults();
 }
 
-const base::Optional<std::vector<std::string>>&
+const net::HostResolverEndpointResults*
+StaleHostResolver::RequestImpl::GetEndpointResults() const {
+  if (network_request_)
+    return network_request_->GetEndpointResults();
+
+  DCHECK(cache_request_);
+  return cache_request_->GetEndpointResults();
+}
+
+const absl::optional<std::vector<std::string>>&
 StaleHostResolver::RequestImpl::GetTextResults() const {
   if (network_request_)
     return network_request_->GetTextResults();
@@ -196,7 +210,7 @@ StaleHostResolver::RequestImpl::GetTextResults() const {
   return cache_request_->GetTextResults();
 }
 
-const base::Optional<std::vector<net::HostPortPair>>&
+const absl::optional<std::vector<net::HostPortPair>>&
 StaleHostResolver::RequestImpl::GetHostnameResults() const {
   if (network_request_)
     return network_request_->GetHostnameResults();
@@ -205,7 +219,7 @@ StaleHostResolver::RequestImpl::GetHostnameResults() const {
   return cache_request_->GetHostnameResults();
 }
 
-const base::Optional<std::vector<std::string>>&
+const std::set<std::string>*
 StaleHostResolver::RequestImpl::GetDnsAliasResults() const {
   if (network_request_)
     return network_request_->GetDnsAliasResults();
@@ -222,7 +236,7 @@ net::ResolveErrorInfo StaleHostResolver::RequestImpl::GetResolveErrorInfo()
   return cache_request_->GetResolveErrorInfo();
 }
 
-const base::Optional<net::HostCache::EntryStaleness>&
+const absl::optional<net::HostCache::EntryStaleness>&
 StaleHostResolver::RequestImpl::GetStaleInfo() const {
   if (network_request_)
     return network_request_->GetStaleInfo();
@@ -329,13 +343,24 @@ void StaleHostResolver::OnShutdown() {
 
 std::unique_ptr<net::HostResolver::ResolveHostRequest>
 StaleHostResolver::CreateRequest(
+    url::SchemeHostPort host,
+    net::NetworkAnonymizationKey network_anonymization_key,
+    net::NetLogWithSource net_log,
+    absl::optional<ResolveHostParameters> optional_parameters) {
+  // TODO(crbug.com/1206799): Propagate scheme.
+  return CreateRequest(net::HostPortPair::FromSchemeHostPort(host),
+                       network_anonymization_key, net_log, optional_parameters);
+}
+
+std::unique_ptr<net::HostResolver::ResolveHostRequest>
+StaleHostResolver::CreateRequest(
     const net::HostPortPair& host,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     const net::NetLogWithSource& net_log,
-    const base::Optional<ResolveHostParameters>& optional_parameters) {
+    const absl::optional<ResolveHostParameters>& optional_parameters) {
   DCHECK(tick_clock_);
   return std::make_unique<RequestImpl>(
-      weak_ptr_factory_.GetWeakPtr(), host, network_isolation_key, net_log,
+      weak_ptr_factory_.GetWeakPtr(), host, network_anonymization_key, net_log,
       optional_parameters.value_or(ResolveHostParameters()), tick_clock_);
 }
 

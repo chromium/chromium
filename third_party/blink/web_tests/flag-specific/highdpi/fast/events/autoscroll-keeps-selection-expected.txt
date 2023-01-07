@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Holding middle button to autoscroll does not clear selected text assert_true: expected true got false
-Harness: the test ran to completion.
-

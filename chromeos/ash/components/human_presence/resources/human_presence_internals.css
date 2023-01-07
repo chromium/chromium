@@ -1,0 +1,185 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+html {
+  background: var(--md-background-color);
+  color: var(--cros-color-primary);
+}
+
+h1 {
+  color: var(--cros-color-prominent);
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+a, button {
+  cursor: pointer;
+}
+
+dialog {
+  filter: drop-shadow(0px 16px 16px rgba(0, 0, 0, 0.2));
+  border-color: var(--cros-color-prominent-inverted);
+  border-radius: 8px;
+}
+
+.flexbar {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin: 5px 0px;
+}
+
+.flexbar-wrap {
+  flex-wrap: wrap;
+}
+
+.flexbar button {
+  padding: 0px 4px;
+}
+
+#connection-error, #enable-error {
+  background-color: rgba(var(--cros-color-warning-rgb), 0.25);
+  border-left: solid 2px var(--cros-color-warning);
+  margin: 32px;
+  padding: 16px;
+}
+
+#sense-state, #notify-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-variant-caps: small-caps;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgb(0, 0, 0, .3);
+  color: var(--cros-color-primary);
+  width: 64px;
+  height: 64px;
+  outline: solid 2px var(--cros-color-primary-inverted);
+  border-radius: 4px;
+  margin-right: 32px;
+  margin-bottom: 32px;
+}
+
+.feature-panel {
+  background-color: var(--cros-bg-color-elevation-5);
+  border-top: solid 4px var(--cros-color-prominent-inverted);
+  margin-right: 16px;
+  padding: 16px;
+  min-width: 544px;
+}
+
+.spacer {
+  flex-grow: 1;
+}
+
+.history {
+  width: 512px;
+  min-height: 32px;
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  outline: solid 2px var(--cros-color-primary-inverted);
+  border-radius: 4px;
+}
+
+.history span {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 4px;
+  height: 32px;
+  border-left: solid 1px rgb(0, 0, 0, .1);
+}
+
+.positive {
+  background: var(--google-green-300);
+}
+
+.negative {
+  background: var(--google-red-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  .positive {
+    background: var(--google-green-600);
+  }
+
+  .negative {
+    background: var(--google-red-600);
+  }
+}
+
+.unknown, .history, .disabled {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--cros-color-primary-inverted),
+    var(--cros-color-primary-inverted) 4px,
+    rgba(var(--cros-color-primary-inverted-rgb), .5) 4px,
+    rgba(var(--cros-color-primary-inverted-rgb), .5) 8px
+  );
+  background-attachment: fixed;
+  color: var(--cros-color-disabled) !important;
+}
+
+.inference-history {
+  height: 128px;
+  background: none;
+  align-items: end;
+}
+
+.inference-history span {
+  background: var(--cros-color-prominent-inverted);
+}
+
+.inference-history span.invalid {
+  background: var(--cros-color-primary-inverted);
+}
+
+#sense-inference-result, #notify-inference-result {
+  align-self: end;
+  margin-left: .5em;
+  margin-bottom: .5em;
+  font-variant-numeric: tabular-nums;
+}
+
+.select_panel {
+  margin-top: 30px;
+}
+
+.apply-button {
+  display: none;
+  cursor: pointer;
+  width: 100px;
+  text-align: center;
+  margin-left: 10px;
+}
+
+.apply-label {
+  display: none;
+  text-align: left;
+  margin-left: 10px;
+}
+
+.filter_config_panel {
+  display: none;
+  margin-left: -90px;
+}
+
+.filter_config_panel label {
+  width: 300px;
+  text-align: right;
+  float: left;
+  margin-top: 2px;
+}
+
+.filter_config_panel input {
+  text-align: right;
+  width: 40px;
+  float: left;
+  margin-left: 10px;
+  margin-top: 2px;
+}

@@ -1,0 +1,78 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{
+  "tap": [
+    {
+      "id": 0,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "TapM",
+      "key": "KeyM",
+      "location": [
+        {
+          "type": "position",
+          "anchor_to_target": [
+            0.5,
+            0.5
+          ]
+        }
+      ],
+      "radius": 0.1
+    },
+    {
+      "id": 1,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "TapN",
+      "key": "KeyN",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.1,
+            -0.1
+          ]
+        }
+      ],
+      "radius": 0.1
+    }
+  ],
+  "move": [
+    {
+      "id": 2,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "Virtual Joystick",
+      "keys": [
+        "KeyW",
+        "KeyA",
+        "KeyS",
+        "KeyD"
+      ],
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.4991762768,
+            -0.1453703704
+          ],
+          "y_on_x": 0.5181518152
+        }
+      ],
+      "radius": 0.11430834
+    }
+  ]
+}

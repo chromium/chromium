@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/ssl/client_cert_identity.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/table/table_view_observer.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -102,10 +102,10 @@ class CertificateSelector : public views::DialogDelegateView,
   bool show_provider_column_ = false;
   std::unique_ptr<CertificateTableModel> model_;
 
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
 
-  views::TableView* table_ = nullptr;
-  views::LabelButton* view_cert_button_ = nullptr;
+  raw_ptr<views::TableView> table_ = nullptr;
+  raw_ptr<views::LabelButton> view_cert_button_ = nullptr;
 };
 
 }  // namespace chrome

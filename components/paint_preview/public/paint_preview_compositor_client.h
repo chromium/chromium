@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #define COMPONENTS_PAINT_PREVIEW_PUBLIC_PAINT_PREVIEW_COMPOSITOR_CLIENT_H_
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace gfx {
@@ -27,7 +27,7 @@ class PaintPreviewCompositorClient {
 
   // Returns the token associated with the client. Will be null if the client
   // isn't started.
-  virtual const base::Optional<base::UnguessableToken>& Token() const = 0;
+  virtual const absl::optional<base::UnguessableToken>& Token() const = 0;
 
   // Adds `closure` as a disconnect handler.
   virtual void SetDisconnectHandler(base::OnceClosure closure) = 0;
@@ -44,8 +44,8 @@ class PaintPreviewCompositorClient {
       const base::UnguessableToken& frame_guid,
       const gfx::Rect& clip_rect,
       float scale_factor,
-      mojom::PaintPreviewCompositor::BitmapForSeparatedFrameCallback
-          callback) = 0;
+      mojom::PaintPreviewCompositor::BitmapForSeparatedFrameCallback callback,
+      bool run_callback_on_default_task_runner = true) = 0;
   virtual void BeginMainFrameComposite(
       mojom::PaintPreviewBeginCompositeRequestPtr request,
       mojom::PaintPreviewCompositor::BeginMainFrameCompositeCallback
@@ -53,7 +53,8 @@ class PaintPreviewCompositorClient {
   virtual void BitmapForMainFrame(
       const gfx::Rect& clip_rect,
       float scale_factor,
-      mojom::PaintPreviewCompositor::BitmapForMainFrameCallback callback) = 0;
+      mojom::PaintPreviewCompositor::BitmapForMainFrameCallback callback,
+      bool run_callback_on_default_task_runner = true) = 0;
   virtual void SetRootFrameUrl(const GURL& url) = 0;
 
   PaintPreviewCompositorClient(const PaintPreviewCompositorClient&) = delete;

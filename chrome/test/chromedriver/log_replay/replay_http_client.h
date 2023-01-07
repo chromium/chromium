@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CHROME_TEST_CHROMEDRIVER_LOG_REPLAY_REPLAY_HTTP_CLIENT_H_
@@ -29,10 +29,7 @@ class ReplayHttpClient : public DevToolsHttpClient {
   // Initializes a DevToolsLogReader with the given log file.
   ReplayHttpClient(const DevToolsEndpoint& endpoint,
                    network::mojom::URLLoaderFactory* factory,
-                   const SyncWebSocketFactory& socket_factory,
-                   std::unique_ptr<DeviceMetrics> device_metrics,
                    std::unique_ptr<std::set<WebViewInfo::Type>> window_types,
-                   std::string page_load_strategy,
                    const base::FilePath& log_file);
   ~ReplayHttpClient() override;
 

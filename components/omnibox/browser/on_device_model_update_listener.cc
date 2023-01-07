@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/omnibox/browser/on_device_model_update_listener.h"
 
 #include "base/files/file_enumerator.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 
@@ -22,11 +22,11 @@ std::string GetModelFilenameFromDirectory(const base::FilePath& model_dir) {
   std::string model_filename;
 
   if (!model_file_path.empty()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     model_filename = base::WideToUTF8(model_file_path.value());
 #else
     model_filename = model_file_path.value();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   return model_filename;

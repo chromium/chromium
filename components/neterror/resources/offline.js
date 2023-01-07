@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ function Runner(outerContainerId, opt_config) {
   // A div to intercept touch events. Only set while (playing && useTouch).
   this.touchController = null;
 
-  this.config = opt_config || Runner.config;
+  this.config = opt_config || Object.assign(Runner.config, Runner.normalConfig);
   // Logical dimensions of the container.
   this.dimensions = Runner.defaultDimensions;
 
@@ -50,6 +50,7 @@ function Runner(outerContainerId, opt_config) {
   this.runningTime = 0;
   this.msPerFrame = 1000 / FPS;
   this.currentSpeed = this.config.SPEED;
+  Runner.slowDown = false;
 
   this.obstacles = [];
 
@@ -118,6 +119,9 @@ const IS_IOS = /CriOS/.test(window.navigator.userAgent);
 const IS_MOBILE = /Android/.test(window.navigator.userAgent) || IS_IOS;
 
 /** @const */
+const IS_RTL = document.querySelector('html').dir == 'rtl';
+
+/** @const */
 const ARCADE_MODE_URL = 'chrome://dino/';
 
 /** @const */
@@ -126,18 +130,22 @@ const RESOURCE_POSTFIX = 'offline-resources-';
 /** @const */
 const A11Y_STRINGS = {
   ariaLabel: 'dinoGameA11yAriaLabel',
+  description: 'dinoGameA11yDescription',
   gameOver: 'dinoGameA11yGameOver',
   highScore: 'dinoGameA11yHighScore',
   jump: 'dinoGameA11yJump',
-  started: 'dinoGameA11yStartGame'
+  started: 'dinoGameA11yStartGame',
+  speedLabel: 'dinoGameA11ySpeedToggle',
 };
 
 /**
  * Default game configuration.
+ * Shared config for all  versions of the game. Additional parameters are
+ * defined in Runner.normalConfig and Runner.slowConfig.
  */
 Runner.config = {
-  ACCELERATION: 0.001,
   AUDIOCUE_PROXIMITY_THRESHOLD: 190,
+  AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 250,
   BG_CLOUD_SPEED: 0.2,
   BOTTOM_PAD: 10,
   // Scroll Y threshold at which the game can be activated.
@@ -147,23 +155,40 @@ Runner.config = {
   FADE_DURATION: 1,
   FLASH_DURATION: 1000,
   GAMEOVER_CLEAR_TIME: 1200,
-  GAP_COEFFICIENT: 0.6,
-  GRAVITY: 0.6,
   INITIAL_JUMP_VELOCITY: 12,
   INVERT_FADE_DURATION: 12000,
-  INVERT_DISTANCE: 700,
   MAX_BLINK_COUNT: 3,
   MAX_CLOUDS: 6,
   MAX_OBSTACLE_LENGTH: 3,
   MAX_OBSTACLE_DUPLICATION: 2,
-  MAX_SPEED: 13,
-  MIN_JUMP_HEIGHT: 35,
-  MOBILE_SPEED_COEFFICIENT: 1.2,
   RESOURCE_TEMPLATE_ID: 'audio-resources',
   SPEED: 6,
   SPEED_DROP_COEFFICIENT: 3,
   ARCADE_MODE_INITIAL_TOP_POSITION: 35,
-  ARCADE_MODE_TOP_POSITION_PERCENT: 0.1
+  ARCADE_MODE_TOP_POSITION_PERCENT: 0.1,
+};
+
+Runner.normalConfig = {
+  ACCELERATION: 0.001,
+  AUDIOCUE_PROXIMITY_THRESHOLD: 190,
+  AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 250,
+  GAP_COEFFICIENT: 0.6,
+  INVERT_DISTANCE: 700,
+  MAX_SPEED: 13,
+  MOBILE_SPEED_COEFFICIENT: 1.2,
+  SPEED: 6,
+};
+
+
+Runner.slowConfig = {
+  ACCELERATION: 0.0005,
+  AUDIOCUE_PROXIMITY_THRESHOLD: 170,
+  AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 220,
+  GAP_COEFFICIENT: 0.3,
+  INVERT_DISTANCE: 350,
+  MAX_SPEED: 9,
+  MOBILE_SPEED_COEFFICIENT: 1.5,
+  SPEED: 4.2,
 };
 
 
@@ -172,7 +197,7 @@ Runner.config = {
  */
 Runner.defaultDimensions = {
   WIDTH: DEFAULT_WIDTH,
-  HEIGHT: 150
+  HEIGHT: 150,
 };
 
 
@@ -189,7 +214,7 @@ Runner.classes = {
   INVERTED: 'inverted',
   SNACKBAR: 'snackbar',
   SNACKBAR_SHOW: 'snackbar-show',
-  TOUCH_CONTROLLER: 'controller'
+  TOUCH_CONTROLLER: 'controller',
 };
 
 
@@ -200,7 +225,7 @@ Runner.classes = {
 Runner.sounds = {
   BUTTON_PRESS: 'offline-sound-press',
   HIT: 'offline-sound-hit',
-  SCORE: 'offline-sound-reached'
+  SCORE: 'offline-sound-reached',
 };
 
 
@@ -210,8 +235,8 @@ Runner.sounds = {
  */
 Runner.keycodes = {
   JUMP: {'38': 1, '32': 1},  // Up, spacebar
-  DUCK: {'40': 1},  // Down
-  RESTART: {'13': 1}  // Enter
+  DUCK: {'40': 1},           // Down
+  RESTART: {'13': 1},        // Enter
 };
 
 
@@ -238,12 +263,14 @@ Runner.events = {
 
 Runner.prototype = {
   /**
-   * Assign a random game type.
+   * Initialize alternative game type.
    */
   initAltGameType() {
-    this.gameType = loadTimeData && loadTimeData.valueExists('altGameType') ?
-        GAME_TYPE[parseInt(loadTimeData.getValue('altGameType'), 10) - 1] :
-        '';
+    if (GAME_TYPE.length > 0) {
+      this.gameType = loadTimeData && loadTimeData.valueExists('altGameType') ?
+          GAME_TYPE[parseInt(loadTimeData.getValue('altGameType'), 10) - 1] :
+          '';
+    }
   },
 
   /**
@@ -389,8 +416,9 @@ Runner.prototype = {
 
     // Reduce the speed on smaller mobile screens.
     if (this.dimensions.WIDTH < DEFAULT_WIDTH) {
-      const mobileSpeed = speed * this.dimensions.WIDTH / DEFAULT_WIDTH *
-          this.config.MOBILE_SPEED_COEFFICIENT;
+      const mobileSpeed = Runner.slowDown ? speed :
+                                            speed * this.dimensions.WIDTH /
+              DEFAULT_WIDTH * this.config.MOBILE_SPEED_COEFFICIENT;
       this.currentSpeed = mobileSpeed > speed ? speed : mobileSpeed;
     } else if (opt_speed) {
       this.currentSpeed = opt_speed;
@@ -408,25 +436,51 @@ Runner.prototype = {
     this.adjustDimensions();
     this.setSpeed();
 
+    const ariaLabel = getA11yString(A11Y_STRINGS.ariaLabel);
     this.containerEl = document.createElement('div');
+    this.containerEl.setAttribute('role', IS_MOBILE ? 'button' : 'application');
+    this.containerEl.setAttribute('tabindex', '0');
+    this.containerEl.setAttribute('title', ariaLabel);
+
     this.containerEl.className = Runner.classes.CONTAINER;
 
     // Player canvas container.
     this.canvas = createCanvas(this.containerEl, this.dimensions.WIDTH,
         this.dimensions.HEIGHT);
 
-    const ariaLabel = getA11yString(A11Y_STRINGS.ariaLabel);
-    this.canvas.setAttribute('title', ariaLabel);
-
     // Live region for game status updates.
     this.a11yStatusEl = document.createElement('span');
+    this.a11yStatusEl.className = 'offline-runner-live-region';
     this.a11yStatusEl.setAttribute('aria-live', 'assertive');
     this.a11yStatusEl.textContent = '';
     Runner.a11yStatusEl = this.a11yStatusEl;
 
-    this.canvas.appendChild(this.a11yStatusEl);
-    this.canvas.setAttribute('role', 'button');
-    this.canvas.setAttribute('tabindex', '0');
+    // Add checkbox to slow down the game.
+    this.slowSpeedCheckboxLabel = document.createElement('label');
+    this.slowSpeedCheckboxLabel.className = 'slow-speed-option hidden';
+    this.slowSpeedCheckboxLabel.textContent =
+        getA11yString(A11Y_STRINGS.speedLabel);
+
+    this.slowSpeedCheckbox = document.createElement('input');
+    this.slowSpeedCheckbox.setAttribute('type', 'checkbox');
+    this.slowSpeedCheckbox.setAttribute(
+        'title', getA11yString(A11Y_STRINGS.speedLabel));
+    this.slowSpeedCheckbox.setAttribute('tabindex', '0');
+    this.slowSpeedCheckbox.setAttribute('checked', 'checked');
+
+    this.slowSpeedToggleEl = document.createElement('span');
+    this.slowSpeedToggleEl.className = 'slow-speed-toggle';
+
+    this.slowSpeedCheckboxLabel.appendChild(this.slowSpeedCheckbox);
+    this.slowSpeedCheckboxLabel.appendChild(this.slowSpeedToggleEl);
+
+    if (IS_IOS) {
+      this.outerContainerEl.appendChild(this.a11yStatusEl);
+    } else {
+      this.containerEl.appendChild(this.a11yStatusEl);
+    }
+
+    announcePhrase(getA11yString(A11Y_STRINGS.description));
 
     this.generatedSoundFx = new GeneratedSoundFx();
 
@@ -448,6 +502,7 @@ Runner.prototype = {
     this.tRex = new Trex(this.canvas, this.spriteDef.TREX);
 
     this.outerContainerEl.appendChild(this.containerEl);
+    this.outerContainerEl.appendChild(this.slowSpeedCheckboxLabel);
 
     this.startListening();
     this.update();
@@ -571,6 +626,7 @@ Runner.prototype = {
     if (this.isArcadeMode()) {
       this.setArcadeMode();
     }
+    this.toggleSpeed();
     this.runningTime = 0;
     this.playingIntro = false;
     this.tRex.playingIntro = false;
@@ -578,6 +634,10 @@ Runner.prototype = {
     this.playCount++;
     this.generatedSoundFx.background();
     announcePhrase(getA11yString(A11Y_STRINGS.started));
+
+    if (Runner.audioCues) {
+      this.containerEl.setAttribute('title', getA11yString(A11Y_STRINGS.jump));
+    }
 
     // Handle tabbing off the page. Pause the current game.
     document.addEventListener(Runner.events.VISIBILITY,
@@ -634,7 +694,7 @@ Runner.prototype = {
     let deltaTime = now - (this.time || now);
 
     // Flashing when switching game modes.
-    if (this.altGameModeFlashTimer < 0) {
+    if (this.altGameModeFlashTimer < 0 || this.altGameModeFlashTimer === 0) {
       this.altGameModeFlashTimer = null;
       this.tRex.setFlashing(false);
       this.enableAltGameMode();
@@ -690,10 +750,11 @@ Runner.prototype = {
             this.horizon.obstacles[0].typeConfig.type != 'COLLECTABLE';
 
         if (!this.horizon.obstacles[0].jumpAlerted) {
-          const adjProximityThreshold =
-              Runner.config.AUDIOCUE_PROXIMITY_THRESHOLD +
-              (Runner.config.AUDIOCUE_PROXIMITY_THRESHOLD *
-               Math.log10(this.currentSpeed / Runner.config.SPEED));
+          const threshold = Runner.isMobileMouseInput ?
+              Runner.config.AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y :
+              Runner.config.AUDIOCUE_PROXIMITY_THRESHOLD;
+          const adjProximityThreshold = threshold +
+              (threshold * Math.log10(this.currentSpeed / Runner.config.SPEED));
 
           if (this.horizon.obstacles[0].xPos < adjProximityThreshold) {
             if (jumpObstacle) {
@@ -793,12 +854,12 @@ Runner.prototype = {
    * @param {Event} e
    */
   handleCanvasKeyPress(e) {
-    if (!this.activated) {
+    if (!this.activated && !Runner.audioCues) {
+      this.toggleSpeed();
       Runner.audioCues = true;
-      this.canvas.setAttribute('aria-label', getA11yString(A11Y_STRINGS.jump));
       this.generatedSoundFx.init();
       Runner.generatedSoundFx = this.generatedSoundFx;
-      Runner.config.CLEAR_TIME *= 1.5;
+      Runner.config.CLEAR_TIME *= 1.2;
     } else if (e.keyCode && Runner.keycodes.JUMP[e.keyCode]) {
       this.onKeyDown(e);
     }
@@ -815,12 +876,64 @@ Runner.prototype = {
   },
 
   /**
+   * Toggle speed setting if toggle is shown.
+   */
+  toggleSpeed() {
+    if (Runner.audioCues) {
+      const speedChange = Runner.slowDown != this.slowSpeedCheckbox.checked;
+
+      if (speedChange) {
+        Runner.slowDown = this.slowSpeedCheckbox.checked;
+        const updatedConfig =
+            Runner.slowDown ? Runner.slowConfig : Runner.normalConfig;
+
+        Runner.config = Object.assign(Runner.config, updatedConfig);
+        this.currentSpeed = updatedConfig.SPEED;
+        this.tRex.enableSlowConfig();
+        this.horizon.adjustObstacleSpeed();
+      }
+      if (this.playing) {
+        this.disableSpeedToggle(true);
+      }
+    }
+  },
+
+  /**
+   * Show the speed toggle.
+   * From focus event or when audio cues are activated.
+   * @param {Event=} e
+   */
+  showSpeedToggle(e) {
+    const isFocusEvent = e && e.type == 'focus';
+    if (Runner.audioCues || isFocusEvent) {
+      this.slowSpeedCheckboxLabel.classList.toggle(
+          HIDDEN_CLASS, isFocusEvent ? false : !this.crashed);
+    }
+  },
+
+  /**
+   * Disable the speed toggle.
+   * @param {boolean} disable
+   */
+  disableSpeedToggle(disable) {
+    if (disable) {
+      this.slowSpeedCheckbox.setAttribute('disabled', 'disabled');
+    } else {
+      this.slowSpeedCheckbox.removeAttribute('disabled');
+    }
+  },
+
+  /**
    * Bind relevant key / mouse / touch listeners.
    */
   startListening() {
     // A11y keyboard / screen reader activation.
-    this.canvas.addEventListener(
+    this.containerEl.addEventListener(
         Runner.events.KEYDOWN, this.handleCanvasKeyPress.bind(this));
+    if (!IS_MOBILE) {
+      this.containerEl.addEventListener(
+          Runner.events.FOCUS, this.showSpeedToggle.bind(this));
+    }
     this.canvas.addEventListener(
         Runner.events.KEYDOWN, this.preventScrolling.bind(this));
     this.canvas.addEventListener(
@@ -873,14 +986,23 @@ Runner.prototype = {
     }
 
     if (this.isCanvasInView()) {
+      // Allow toggling of speed toggle.
+      if (Runner.keycodes.JUMP[e.keyCode] &&
+          e.target == this.slowSpeedCheckbox) {
+        return;
+      }
+
       if (!this.crashed && !this.paused) {
         // For a11y, screen reader activation.
         const isMobileMouseInput = IS_MOBILE &&
-            e.type === Runner.events.POINTERDOWN && e.pointerType == 'mouse' &&
-            e.target == this.canvas;
+                e.type === Runner.events.POINTERDOWN &&
+                e.pointerType == 'mouse' && e.target == this.containerEl ||
+            (IS_IOS && e.pointerType == 'touch' &&
+             document.activeElement == this.containerEl);
 
         if (Runner.keycodes.JUMP[e.keyCode] ||
-            e.type === Runner.events.TOUCHSTART || isMobileMouseInput) {
+            e.type === Runner.events.TOUCHSTART || isMobileMouseInput ||
+            (Runner.keycodes.DUCK[e.keyCode] && this.altGameModeActive)) {
           e.preventDefault();
           // Starting the game for the first time.
           if (!this.playing) {
@@ -901,8 +1023,11 @@ Runner.prototype = {
           }
           // Start jump.
           if (!this.tRex.jumping && !this.tRex.ducking) {
-            this.playSound(this.soundFx.BUTTON_PRESS);
-            this.generatedSoundFx.cancelFootSteps();
+            if (Runner.audioCues) {
+              this.generatedSoundFx.cancelFootSteps();
+            } else {
+              this.playSound(this.soundFx.BUTTON_PRESS);
+            }
             this.tRex.startJump(this.currentSpeed);
           }
           // Ducking is disabled on alt game modes.
@@ -918,11 +1043,6 @@ Runner.prototype = {
             this.tRex.setDuck(true);
           }
         }
-        // iOS only triggers touchstart and no pointer events.
-      } else if (
-          IS_IOS && this.crashed && e.type === Runner.events.TOUCHSTART &&
-          e.currentTarget === this.containerEl) {
-        this.handleGameOverClicks(e);
       }
     }
   },
@@ -1053,19 +1173,21 @@ Runner.prototype = {
    * @param {Event} e
    */
   handleGameOverClicks(e) {
-    e.preventDefault();
-    if (this.distanceMeter.hasClickedOnHighScore(e) && this.highestScore) {
-      if (this.distanceMeter.isHighScoreFlashing()) {
-        // Subsequent click, reset the high score.
-        this.saveHighScore(0, true);
-        this.distanceMeter.resetHighScore();
+    if (e.target != this.slowSpeedCheckbox) {
+      e.preventDefault();
+      if (this.distanceMeter.hasClickedOnHighScore(e) && this.highestScore) {
+        if (this.distanceMeter.isHighScoreFlashing()) {
+          // Subsequent click, reset the high score.
+          this.saveHighScore(0, true);
+          this.distanceMeter.resetHighScore();
+        } else {
+          // First click, flash the high score.
+          this.distanceMeter.startHighScoreFlashing();
+        }
       } else {
-        // First click, flash the high score.
-        this.distanceMeter.startHighScoreFlashing();
+        this.distanceMeter.cancelHighScoreFlashing();
+        this.restart();
       }
-    } else {
-      this.distanceMeter.cancelHighScoreFlashing();
-      this.restart();
     }
   },
 
@@ -1077,7 +1199,9 @@ Runner.prototype = {
    */
   isLeftClickOnCanvas(e) {
     return e.button != null && e.button < 2 &&
-        e.type === Runner.events.POINTERUP && e.target === this.canvas;
+        e.type === Runner.events.POINTERUP &&
+        (e.target === this.canvas ||
+         (IS_MOBILE && Runner.audioCues && e.target === this.containerEl));
   },
 
   /**
@@ -1192,7 +1316,11 @@ Runner.prototype = {
 
                   this.distanceMeter.getActualDistance(this.highestScore)
                       .toString()));
+      this.containerEl.setAttribute(
+          'title', getA11yString(A11Y_STRINGS.ariaLabel));
     }
+    this.showSpeedToggle();
+    this.disableSpeedToggle(false);
   },
 
   stop() {
@@ -1219,6 +1347,7 @@ Runner.prototype = {
       this.playCount++;
       this.runningTime = 0;
       this.setPlayStatus(true);
+      this.toggleSpeed();
       this.paused = false;
       this.crashed = false;
       this.distanceRan = 0;
@@ -1235,6 +1364,7 @@ Runner.prototype = {
       this.update();
       this.gameOverPanel.reset();
       this.generatedSoundFx.background();
+      this.containerEl.setAttribute('title', getA11yString(A11Y_STRINGS.jump));
       announcePhrase(getA11yString(A11Y_STRINGS.started));
     }
   },
@@ -1251,7 +1381,10 @@ Runner.prototype = {
    * @return {boolean}
    */
   isArcadeMode() {
-    return document.title === ARCADE_MODE_URL;
+    // In RTL languages the title is wrapped with the left to right mark
+    // control characters &#x202A; and &#x202C but are invisible.
+    return IS_RTL ? document.title.indexOf(ARCADE_MODE_URL) == 1 :
+                    document.title === ARCADE_MODE_URL;
   },
 
   /**
@@ -1277,8 +1410,10 @@ Runner.prototype = {
         Runner.config.ARCADE_MODE_INITIAL_TOP_POSITION) *
         Runner.config.ARCADE_MODE_TOP_POSITION_PERCENT)) *
         window.devicePixelRatio;
-    this.containerEl.style.transform = 'scale(' + scale + ') translateY(' +
-        translateY + 'px)';
+
+    const cssScale = IS_RTL ? -scale + ',' + scale : scale;
+    this.containerEl.style.transform =
+        'scale(' + cssScale + ') translateY(' + translateY + 'px)';
   },
 
   /**
@@ -1323,7 +1458,7 @@ Runner.prototype = {
       this.inverted = htmlEl.classList.toggle(
           Runner.classes.INVERTED, this.invertTrigger);
     }
-  }
+  },
 };
 
 
@@ -1392,12 +1527,28 @@ Runner.isAltGameModeEnabled = function() {
 function GeneratedSoundFx() {
   this.audioCues = false;
   this.context = null;
+  this.panner = null;
 }
 
 GeneratedSoundFx.prototype = {
   init() {
     this.audioCues = true;
-    this.context = new AudioContext();
+    if (!this.context) {
+      // iOS only supports the webkit version.
+      this.context = window.webkitAudioContext ? new webkitAudioContext() :
+                                                 new AudioContext();
+      if (IS_IOS) {
+        this.context.onstatechange = (function() {
+                                       if (this.context.state != 'running') {
+                                         this.context.resume();
+                                       }
+                                     }).bind(this);
+        this.context.resume();
+      }
+      this.panner = this.context.createStereoPanner ?
+          this.context.createStereoPanner() :
+          null;
+    }
   },
 
   stopAll() {
@@ -1409,9 +1560,10 @@ GeneratedSoundFx.prototype = {
    * @param {number} frequency
    * @param {number} startTime
    * @param {number} duration
-   * @param {number=} opt_vol
+   * @param {?number=} opt_vol
+   * @param {number=} opt_pan
    */
-  playNote(frequency, startTime, duration, opt_vol) {
+  playNote(frequency, startTime, duration, opt_vol, opt_pan) {
     const osc1 = this.context.createOscillator();
     const osc2 = this.context.createOscillator();
     const volume = this.context.createGain();
@@ -1422,17 +1574,24 @@ GeneratedSoundFx.prototype = {
     volume.gain.value = 0.1;
 
     // Set up node routing
-    osc1.connect(volume);
-    osc2.connect(volume);
-    volume.connect(this.context.destination);
+    if (this.panner) {
+      this.panner.pan.value = opt_pan || 0;
+      osc1.connect(volume).connect(this.panner);
+      osc2.connect(volume).connect(this.panner);
+      this.panner.connect(this.context.destination);
+    } else {
+      osc1.connect(volume);
+      osc2.connect(volume);
+      volume.connect(this.context.destination);
+    }
 
     // Detune oscillators for chorus effect
     osc1.frequency.value = frequency + 1;
     osc2.frequency.value = frequency - 2;
 
     // Fade out
-    volume.gain.setValueAtTime(opt_vol || 0.1, startTime + duration - 0.05);
-    volume.gain.linearRampToValueAtTime(0, startTime + duration);
+    volume.gain.setValueAtTime(opt_vol || 0.01, startTime + duration - 0.05);
+    volume.gain.linearRampToValueAtTime(0.00001, startTime + duration);
 
     // Start oscillators
     osc1.start(startTime);
@@ -1454,9 +1613,9 @@ GeneratedSoundFx.prototype = {
   loopFootSteps() {
     if (this.audioCues && !this.bgSoundIntervalId) {
       this.bgSoundIntervalId = setInterval(function() {
-        this.playNote(73.42, this.context.currentTime, 0.05, 0.2);
-        this.playNote(69.30, this.context.currentTime + 0.116, 0.116, 0.2);
-      }.bind(this), 270);
+        this.playNote(73.42, this.context.currentTime, 0.05, 0.16);
+        this.playNote(69.30, this.context.currentTime + 0.116, 0.116, 0.16);
+      }.bind(this), 280);
     }
   },
 
@@ -1464,8 +1623,8 @@ GeneratedSoundFx.prototype = {
     if (this.audioCues && this.bgSoundIntervalId) {
       clearInterval(this.bgSoundIntervalId);
       this.bgSoundIntervalId = null;
-      this.playNote(103.83, this.context.currentTime, 0.116, 0.03);
-      this.playNote(116.54, this.context.currentTime + 0.116, 0.232, 0.03);
+      this.playNote(103.83, this.context.currentTime, 0.232, 0.02);
+      this.playNote(116.54, this.context.currentTime + 0.116, 0.232, 0.02);
     }
   },
 
@@ -1481,8 +1640,8 @@ GeneratedSoundFx.prototype = {
   jump() {
     if (this.audioCues) {
       const now = this.context.currentTime;
-      this.playNote(659.25, now, 0.116);
-      this.playNote(880, now + 0.116, 0.232);
+      this.playNote(659.25, now, 0.116, 0.3, -0.6);
+      this.playNote(880, now + 0.116, 0.232, 0.3, -0.6);
     }
   },
 };
@@ -1640,7 +1799,7 @@ GameOverPanel.FLASH_ITERATIONS = 5;
  */
 GameOverPanel.animConfig = {
   frames: [0, 36, 72, 108, 144, 180, 216, 252],
-  msPerFrame: GameOverPanel.RESTART_ANIM_DURATION / 8
+  msPerFrame: GameOverPanel.RESTART_ANIM_DURATION / 8,
 };
 
 /**
@@ -1653,7 +1812,7 @@ GameOverPanel.dimensions = {
   TEXT_WIDTH: 191,
   TEXT_HEIGHT: 11,
   RESTART_WIDTH: 36,
-  RESTART_HEIGHT: 32
+  RESTART_HEIGHT: 32,
 };
 
 
@@ -1698,11 +1857,20 @@ GameOverPanel.prototype = {
     const spriteSource =
         opt_useAltText ? Runner.altCommonImageSprite : Runner.origImageSprite;
 
+    this.canvasCtx.save();
+
+    if (IS_RTL) {
+      this.canvasCtx.translate(this.canvasDimensions.WIDTH, 0);
+      this.canvasCtx.scale(-1, 1);
+    }
+
     // Game over text from sprite.
     this.canvasCtx.drawImage(
         spriteSource, textSourceX, textSourceY, textSourceWidth,
         textSourceHeight, textTargetX, textTargetY, textTargetWidth,
         textTargetHeight);
+
+    this.canvasCtx.restore();
   },
 
   /**
@@ -1710,7 +1878,7 @@ GameOverPanel.prototype = {
    */
   drawAltGameElements(tRex) {
     // Additional adornments.
-    if (this.altGameModeActive) {
+    if (this.altGameModeActive && Runner.spriteDefinition.ALT_GAME_END_CONFIG) {
       const altGameEndConfig = Runner.spriteDefinition.ALT_GAME_END_CONFIG;
 
       let altGameEndSourceWidth = altGameEndConfig.WIDTH;
@@ -1750,6 +1918,12 @@ GameOverPanel.prototype = {
     }
 
     this.canvasCtx.save();
+
+    if (IS_RTL) {
+      this.canvasCtx.translate(this.canvasDimensions.WIDTH, 0);
+      this.canvasCtx.scale(-1, 1);
+    }
+
     this.canvasCtx.drawImage(
         Runner.origImageSprite, this.restartImgPos.x + framePosX,
         this.restartImgPos.y, restartSourceWidth, restartSourceHeight,
@@ -1781,8 +1955,6 @@ GameOverPanel.prototype = {
   update() {
     const now = getTimeStamp();
     const deltaTime = now - (this.frameTimeStamp || now);
-    const altTextConfig =
-        Runner.spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG;
 
     this.frameTimeStamp = now;
     this.animTimer += deltaTime;
@@ -1801,10 +1973,19 @@ GameOverPanel.prototype = {
         this.currentFrame++;
         this.drawRestartButton();
       }
+    } else if (
+        !this.altGameModeActive &&
+        this.currentFrame == GameOverPanel.animConfig.frames.length) {
+      this.reset();
+      return;
     }
 
     // Game over text
-    if (this.altGameModeActive) {
+    if (this.altGameModeActive &&
+        Runner.spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG) {
+      const altTextConfig =
+          Runner.spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG;
+
       if (this.flashCounter < GameOverPanel.FLASH_ITERATIONS &&
           this.flashTimer > altTextConfig.FLASH_DURATION) {
         this.flashTimer = 0;
@@ -1817,8 +1998,9 @@ GameOverPanel.prototype = {
         } else {
           this.drawGameOverText(altTextConfig, true);
         }
-      } else if (this.flashCounter > GameOverPanel.FLASH_ITERATIONS) {
+      } else if (this.flashCounter >= GameOverPanel.FLASH_ITERATIONS) {
         this.reset();
+        return;
       }
     }
 
@@ -1844,6 +2026,7 @@ GameOverPanel.prototype = {
   reset() {
     if (this.gameOverRafId) {
       cancelAnimationFrame(this.gameOverRafId);
+      this.gameOverRafId = null;
     }
     this.animTimer = 0;
     this.frameTimeStamp = 0;
@@ -1851,7 +2034,7 @@ GameOverPanel.prototype = {
     this.flashTimer = 0;
     this.flashCounter = 0;
     this.originalText = true;
-  }
+  },
 };
 
 
@@ -2017,7 +2200,7 @@ function Obstacle(
   this.canvasCtx = canvasCtx;
   this.spritePos = spriteImgPos;
   this.typeConfig = type;
-  this.gapCoefficient = gapCoefficient;
+  this.gapCoefficient = Runner.slowDown ? gapCoefficient * 2 : gapCoefficient;
   this.size = getRandomNum(1, Obstacle.MAX_OBSTACLE_LENGTH);
   this.dimensions = dimensions;
   this.remove = false;
@@ -2196,7 +2379,7 @@ Obstacle.prototype = {
           collisionBoxes[i].x, collisionBoxes[i].y, collisionBoxes[i].width,
           collisionBoxes[i].height);
     }
-  }
+  },
 };
 
 
@@ -2224,7 +2407,7 @@ function Trex(canvas, spritePos) {
   this.animStartTime = 0;
   this.timer = 0;
   this.msPerFrame = 1000 / FPS;
-  this.config = Trex.config;
+  this.config = Object.assign(Trex.config, Trex.normalJumpConfig);
   // Current status.
   this.status = Trex.status.WAITING;
   this.jumping = false;
@@ -2248,37 +2431,44 @@ Trex.config = {
   DROP_VELOCITY: -5,
   FLASH_OFF: 175,
   FLASH_ON: 100,
-  GRAVITY: 0.6,
   HEIGHT: 47,
   HEIGHT_DUCK: 25,
-  INITIAL_JUMP_VELOCITY: -10,
   INTRO_DURATION: 1500,
-  MAX_JUMP_HEIGHT: 30,
-  MIN_JUMP_HEIGHT: 30,
   SPEED_DROP_COEFFICIENT: 3,
   SPRITE_WIDTH: 262,
   START_X_POS: 50,
   WIDTH: 44,
-  WIDTH_DUCK: 59
+  WIDTH_DUCK: 59,
 };
 
+Trex.slowJumpConfig = {
+  GRAVITY: 0.25,
+  MAX_JUMP_HEIGHT: 50,
+  MIN_JUMP_HEIGHT: 45,
+  INITIAL_JUMP_VELOCITY: -20,
+};
+
+Trex.normalJumpConfig = {
+  GRAVITY: 0.6,
+  MAX_JUMP_HEIGHT: 30,
+  MIN_JUMP_HEIGHT: 30,
+  INITIAL_JUMP_VELOCITY: -10,
+};
 
 /**
  * Used in collision detection.
  * @enum {Array<CollisionBox>}
  */
 Trex.collisionBoxes = {
-  DUCKING: [
-    new CollisionBox(1, 18, 55, 25)
-  ],
+  DUCKING: [new CollisionBox(1, 18, 55, 25)],
   RUNNING: [
     new CollisionBox(22, 0, 17, 16),
     new CollisionBox(1, 18, 30, 9),
     new CollisionBox(10, 35, 14, 8),
     new CollisionBox(1, 24, 29, 5),
     new CollisionBox(5, 30, 21, 4),
-    new CollisionBox(9, 34, 15, 4)
-  ]
+    new CollisionBox(9, 34, 15, 4),
+  ],
 };
 
 
@@ -2291,7 +2481,7 @@ Trex.status = {
   DUCKING: 'DUCKING',
   JUMPING: 'JUMPING',
   RUNNING: 'RUNNING',
-  WAITING: 'WAITING'
+  WAITING: 'WAITING',
 };
 
 /**
@@ -2308,24 +2498,24 @@ Trex.BLINK_TIMING = 7000;
 Trex.animFrames = {
   WAITING: {
     frames: [44, 0],
-    msPerFrame: 1000 / 3
+    msPerFrame: 1000 / 3,
   },
   RUNNING: {
     frames: [88, 132],
-    msPerFrame: 1000 / 12
+    msPerFrame: 1000 / 12,
   },
   CRASHED: {
     frames: [220],
-    msPerFrame: 1000 / 60
+    msPerFrame: 1000 / 60,
   },
   JUMPING: {
     frames: [0],
-    msPerFrame: 1000 / 60
+    msPerFrame: 1000 / 60,
   },
   DUCKING: {
     frames: [264, 323],
-    msPerFrame: 1000 / 8
-  }
+    msPerFrame: 1000 / 8,
+  },
 };
 
 
@@ -2344,6 +2534,16 @@ Trex.prototype = {
     this.update(0, Trex.status.WAITING);
   },
 
+  /**
+   * Assign the appropriate jump parameters based on the game speed.
+   */
+  enableSlowConfig: function() {
+    const jumpConfig =
+        Runner.slowDown ? Trex.slowJumpConfig : Trex.normalJumpConfig;
+    Trex.config = Object.assign(Trex.config, jumpConfig);
+
+    this.adjustAltGameConfigForSlowSpeed();
+  },
 
   /**
    * Enables the alternative game. Redefines the dino config.
@@ -2369,6 +2569,7 @@ Trex.prototype = {
         [spriteDefinition.RUNNING_1.x, spriteDefinition.RUNNING_2.x];
 
     // Update Trex config
+    Trex.config.GRAVITY = spriteDefinition.GRAVITY || Trex.config.GRAVITY;
     Trex.config.HEIGHT = spriteDefinition.RUNNING_1.h,
     Trex.config.INITIAL_JUMP_VELOCITY = spriteDefinition.INITIAL_JUMP_VELOCITY;
     Trex.config.MAX_JUMP_HEIGHT = spriteDefinition.MAX_JUMP_HEIGHT;
@@ -2377,6 +2578,7 @@ Trex.prototype = {
     Trex.config.WIDTH_JUMP = spriteDefinition.JUMPING.w;
     Trex.config.INVERT_JUMP = spriteDefinition.INVERT_JUMP;
 
+    this.adjustAltGameConfigForSlowSpeed(spriteDefinition.GRAVITY);
     this.config = Trex.config;
 
     // Adjust bottom horizon placement.
@@ -2384,6 +2586,22 @@ Trex.prototype = {
         Runner.spriteDefinition['BOTTOM_PAD'];
     this.yPos = this.groundYPos;
     this.reset();
+  },
+
+  /**
+   * Slow speeds adjustments for the alt game modes.
+   * @param {number=} opt_gravityValue
+   */
+  adjustAltGameConfigForSlowSpeed: function(opt_gravityValue) {
+    if (Runner.slowDown) {
+      if (opt_gravityValue) {
+        Trex.config.GRAVITY = opt_gravityValue / 1.5;
+      }
+      Trex.config.MIN_JUMP_HEIGHT *= 1.5;
+      Trex.config.MAX_JUMP_HEIGHT *= 1.5;
+      Trex.config.INITIAL_JUMP_VELOCITY =
+          Trex.config.INITIAL_JUMP_VELOCITY * 1.5;
+    }
   },
 
   /**
@@ -2400,7 +2618,7 @@ Trex.prototype = {
    * @param {number} setting
    */
   setJumpVelocity(setting) {
-    this.config.INIITAL_JUMP_VELOCITY = -setting;
+    this.config.INITIAL_JUMP_VELOCITY = -setting;
     this.config.DROP_VELOCITY = -setting / 2;
   },
 
@@ -2660,7 +2878,7 @@ Trex.prototype = {
     this.midair = false;
     this.speedDrop = false;
     this.jumpCount = 0;
-  }
+  },
 };
 
 
@@ -2699,6 +2917,7 @@ function DistanceMeter(canvas, spritePos, canvasWidth) {
 
   this.config = DistanceMeter.config;
   this.maxScoreUnits = this.config.MAX_DISTANCE_UNITS;
+  this.canvasWidth = canvasWidth;
   this.init(canvasWidth);
 }
 
@@ -2709,7 +2928,7 @@ function DistanceMeter(canvas, spritePos, canvasWidth) {
 DistanceMeter.dimensions = {
   WIDTH: 10,
   HEIGHT: 13,
-  DEST_WIDTH: 11
+  DEST_WIDTH: 11,
 };
 
 
@@ -2742,7 +2961,7 @@ DistanceMeter.config = {
   FLASH_ITERATIONS: 3,
 
   // Padding around the high score hit area.
-  HIGH_SCORE_HIT_AREA_PADDING: 4
+  HIGH_SCORE_HIT_AREA_PADDING: 4,
 };
 
 
@@ -2803,20 +3022,38 @@ DistanceMeter.prototype = {
 
     this.canvasCtx.save();
 
-    if (opt_highScore) {
-      // Left of the current score.
-      const highScoreX = this.x - (this.maxScoreUnits * 2) *
-          DistanceMeter.dimensions.WIDTH;
-      this.canvasCtx.translate(highScoreX, this.y);
+    if (IS_RTL) {
+      if (opt_highScore) {
+        this.canvasCtx.translate(
+            this.canvasWidth -
+                (DistanceMeter.dimensions.WIDTH * (this.maxScoreUnits + 3)),
+            this.y);
+      } else {
+        this.canvasCtx.translate(
+            this.canvasWidth - DistanceMeter.dimensions.WIDTH, this.y);
+      }
+      this.canvasCtx.scale(-1, 1);
     } else {
-      this.canvasCtx.translate(this.x, this.y);
+      const highScoreX =
+          this.x - (this.maxScoreUnits * 2) * DistanceMeter.dimensions.WIDTH;
+      if (opt_highScore) {
+        this.canvasCtx.translate(highScoreX, this.y);
+      } else {
+        this.canvasCtx.translate(this.x, this.y);
+      }
     }
 
-    this.canvasCtx.drawImage(this.image, sourceX, sourceY,
-        sourceWidth, sourceHeight,
-        targetX, targetY,
-        targetWidth, targetHeight
-      );
+    this.canvasCtx.drawImage(
+        this.image,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight,
+        targetX,
+        targetY,
+        targetWidth,
+        targetHeight,
+    );
 
     this.canvasCtx.restore();
   },
@@ -2874,8 +3111,7 @@ DistanceMeter.prototype = {
 
         if (this.flashTimer < this.config.FLASH_DURATION) {
           paint = false;
-        } else if (this.flashTimer >
-            this.config.FLASH_DURATION * 2) {
+        } else if (this.flashTimer > this.config.FLASH_DURATION * 2) {
           this.flashTimer = 0;
           this.flashIterations++;
         }
@@ -2957,14 +3193,13 @@ DistanceMeter.prototype = {
    */
   getHighScoreBounds() {
     return {
-      x: (this.x - (this.maxScoreUnits * 2) *
-          DistanceMeter.dimensions.WIDTH) -
+      x: (this.x - (this.maxScoreUnits * 2) * DistanceMeter.dimensions.WIDTH) -
           DistanceMeter.config.HIGH_SCORE_HIT_AREA_PADDING,
       y: this.y,
       width: DistanceMeter.dimensions.WIDTH * (this.highScore.length + 1) +
           DistanceMeter.config.HIGH_SCORE_HIT_AREA_PADDING,
       height: DistanceMeter.dimensions.HEIGHT +
-          (DistanceMeter.config.HIGH_SCORE_HIT_AREA_PADDING * 2)
+          (DistanceMeter.config.HIGH_SCORE_HIT_AREA_PADDING * 2),
     };
   },
 
@@ -3059,7 +3294,7 @@ DistanceMeter.prototype = {
   reset() {
     this.update(0, 0);
     this.achievement = false;
-  }
+  },
 };
 
 
@@ -3099,7 +3334,7 @@ Cloud.config = {
   MAX_SKY_LEVEL: 30,
   MIN_CLOUD_GAP: 100,
   MIN_SKY_LEVEL: 71,
-  WIDTH: 46
+  WIDTH: 46,
 };
 
 
@@ -3158,7 +3393,7 @@ Cloud.prototype = {
    */
   isVisible() {
     return this.xPos + Cloud.config.WIDTH > 0;
-  }
+  },
 };
 
 
@@ -3202,7 +3437,7 @@ BackgroundEl.config = {
   POS: 0,
   SPEED: 0,
   Y_POS: 0,
-  MS_PER_FRAME: 0  // only needed when BACKGROUND_EL.FIXED is true
+  MS_PER_FRAME: 0,  // only needed when BACKGROUND_EL.FIXED is true
 };
 
 
@@ -3250,18 +3485,21 @@ BackgroundEl.prototype = {
    */
   update(speed) {
     if (!this.remove) {
-      if (!this.spriteConfig.FIXED) {
-        // Fixed speed, regardless of actual game speed.
-        this.xPos -= BackgroundEl.config.SPEED;
-      } else {
+      if (this.spriteConfig.FIXED) {
         this.animTimer += speed;
         if (this.animTimer > BackgroundEl.config.MS_PER_FRAME) {
           this.animTimer = 0;
           this.switchFrames = !this.switchFrames;
         }
 
-        this.yPos = this.switchFrames ? this.spriteConfig.FIXED_Y_POS_1 :
-                                        this.spriteConfig.FIXED_Y_POS_2;
+        if (this.spriteConfig.FIXED_Y_POS_1 &&
+            this.spriteConfig.FIXED_Y_POS_2) {
+          this.yPos = this.switchFrames ? this.spriteConfig.FIXED_Y_POS_1 :
+                                          this.spriteConfig.FIXED_Y_POS_2;
+        }
+      } else {
+        // Fixed speed, regardless of actual game speed.
+        this.xPos -= BackgroundEl.config.SPEED;
       }
       this.draw();
 
@@ -3278,7 +3516,7 @@ BackgroundEl.prototype = {
    */
   isVisible() {
     return this.xPos + this.spriteConfig.WIDTH > 0;
-  }
+  },
 };
 
 
@@ -3318,7 +3556,7 @@ NightMode.config = {
   STAR_SIZE: 9,
   STAR_SPEED: 0.3,
   STAR_MAX_Y: 70,
-  WIDTH: 20
+  WIDTH: 20,
 };
 
 NightMode.phases = [140, 120, 100, 60, 40, 20, 0];
@@ -3440,7 +3678,7 @@ NightMode.prototype = {
     this.currentPhase = 0;
     this.opacity = 0;
     this.update(false);
-  }
+  },
 
 };
 
@@ -3488,7 +3726,7 @@ function HorizonLine(canvas, lineConfig) {
 HorizonLine.dimensions = {
   WIDTH: 600,
   HEIGHT: 12,
-  YPOS: 127
+  YPOS: 127,
 };
 
 
@@ -3579,7 +3817,7 @@ HorizonLine.prototype = {
   reset() {
     this.xPos[0] = 0;
     this.xPos[1] = this.dimensions.WIDTH;
-  }
+  },
 };
 
 
@@ -3633,7 +3871,7 @@ Horizon.config = {
   BUMPY_THRESHOLD: .3,
   CLOUD_FREQUENCY: .5,
   HORIZON_HEIGHT: 16,
-  MAX_CLOUDS: 6
+  MAX_CLOUDS: 6,
 };
 
 
@@ -3655,6 +3893,25 @@ Horizon.prototype = {
   },
 
   /**
+   * Update obstacle definitions based on the speed of the game.
+   */
+  adjustObstacleSpeed: function() {
+    for (let i = 0; i < Obstacle.types.length; i++) {
+      if (Runner.slowDown) {
+        Obstacle.types[i].multipleSpeed = Obstacle.types[i].multipleSpeed / 2;
+        Obstacle.types[i].minGap *= 1.5;
+        Obstacle.types[i].minSpeed = Obstacle.types[i].minSpeed / 2;
+
+        // Convert variable y position obstacles to fixed.
+        if (typeof (Obstacle.types[i].yPos) == 'object') {
+          Obstacle.types[i].yPos = Obstacle.types[i].yPos[0];
+          Obstacle.types[i].yPosMobile = Obstacle.types[i].yPos[0];
+        }
+      }
+    }
+  },
+
+  /**
    * Update sprites to correspond to change in sprite sheet.
    * @param {number} spritePos
    */
@@ -3667,6 +3924,8 @@ Horizon.prototype = {
     this.spritePos = spritePos;
 
     Obstacle.types = Runner.spriteDefinition.OBSTACLES;
+    this.adjustObstacleSpeed();
+
     Obstacle.MAX_GAP_COEFFICIENT = Runner.spriteDefinition.MAX_GAP_COEFFICIENT;
     Obstacle.MAX_OBSTACLE_LENGTH = Runner.spriteDefinition.MAX_OBSTACLE_LENGTH;
 
@@ -3812,8 +4071,9 @@ Horizon.prototype = {
    */
   addNewObstacle(currentSpeed) {
     const obstacleCount =
-        Runner.isAltGameModeEnabled() && !this.altGameModeActive ||
-            this.altGameModeActive ?
+        Obstacle.types[Obstacle.types.length - 1].type != 'COLLECTABLE' ||
+            (Runner.isAltGameModeEnabled() && !this.altGameModeActive ||
+             this.altGameModeActive) ?
         Obstacle.types.length - 1 :
         Obstacle.types.length - 2;
     const obstacleTypeIndex =
@@ -3909,5 +4169,5 @@ Horizon.prototype = {
           this.canvas, this.spritePos.BACKGROUND_EL, this.dimensions.WIDTH,
           type));
     }
-  }
+  },
 };

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,21 @@ class CronetInputStream extends InputStream {
             return bytesRead;
         }
         return -1;
+    }
+
+    @Override
+    public int available() throws IOException {
+        if (mResponseDataCompleted) {
+            if (mException != null) {
+                throw mException;
+            }
+            return 0;
+        }
+        if (hasUnreadData()) {
+            return mBuffer.remaining();
+        } else {
+            return 0;
+        }
     }
 
     /**

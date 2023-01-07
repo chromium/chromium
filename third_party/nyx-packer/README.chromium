@@ -1,0 +1,22 @@
+Name: Nyx Packer
+Short Name: nyx-packer
+URL: https://github.com/nyx-fuzz/packer
+Version: 0
+Date: 2022/08/05
+Revision: a2403befd860415725d0b6d64df69fd000aca541
+License: MIT and GPL2
+License File: NOT_SHIPPED
+Security Critical: no
+CPEPrefix: unknown
+
+Description:
+Nyx Packer is used to create a Nyx sharedir, which contains bundled data
+required to run a virtual machine for a given fuzz testing (fuzzing) target.
+The only file used from this library is 'nyx.h' for the low-level interface
+definitions.
+
+Local Modifications:
+We add 'get.sh', which is an aid for creating a CL to roll our copy of the
+'nyx.h' header file. It fetches the latest version of 'nyx.h' from the upstream
+repository and then updates this README file with the latest commit hash and
+date.

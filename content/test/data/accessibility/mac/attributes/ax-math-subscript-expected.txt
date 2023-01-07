@@ -1,0 +1,6 @@
+sub1.AXMathSubscript.AXChildren.count=1
+sub1.AXMathSubscript.AXChildren[0].AXValue='2'
+sub2.AXMathSubscript=NULL
+subsup1.AXMathSubscript.AXChildren.count=1
+subsup1.AXMathSubscript.AXChildren[0].AXValue='2'
+subsup2.AXMathSubscript=NULL

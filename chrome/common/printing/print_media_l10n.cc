@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,11 +68,19 @@ int VendorIdToTranslatedId(const std::string& vendor_id) {
       {"jpn_chou2_111.1x146mm", PRINT_PREVIEW_MEDIA_JPN_CHOU2_111_1X146MM},
       {"jpn_chou3_120x235mm", PRINT_PREVIEW_MEDIA_JPN_CHOU3_120X235MM},
       {"jpn_chou4_90x205mm", PRINT_PREVIEW_MEDIA_JPN_CHOU4_90X205MM},
+      {"jpn_chou40_90x225mm", PRINT_PREVIEW_MEDIA_JPN_CHOU40_90X225MM},
       {"jpn_hagaki_100x148mm", PRINT_PREVIEW_MEDIA_JPN_HAGAKI_100X148MM},
       {"jpn_kahu_240x322.1mm", PRINT_PREVIEW_MEDIA_JPN_KAHU_240X322_1MM},
+      {"jpn_kaku1_270x382mm", PRINT_PREVIEW_MEDIA_JPN_KAKU1_270X382MM},
       {"jpn_kaku2_240x332mm", PRINT_PREVIEW_MEDIA_JPN_KAKU2_240X332MM},
+      {"jpn_kaku3_216x277mm", PRINT_PREVIEW_MEDIA_JPN_KAKU3_216X277MM},
+      {"jpn_kaku4_197x267mm", PRINT_PREVIEW_MEDIA_JPN_KAKU4_197X267MM},
+      {"jpn_kaku5_190x240mm", PRINT_PREVIEW_MEDIA_JPN_KAKU5_190X240MM},
+      {"jpn_kaku7_142x205mm", PRINT_PREVIEW_MEDIA_JPN_KAKU7_142X205MM},
+      {"jpn_kaku8_119x197mm", PRINT_PREVIEW_MEDIA_JPN_KAKU8_119X197MM},
       {"jpn_oufuku_148x200mm", PRINT_PREVIEW_MEDIA_JPN_OUFUKU_148X200MM},
       {"jpn_you4_105x235mm", PRINT_PREVIEW_MEDIA_JPN_YOU4_105X235MM},
+      {"jpn_you6_98x190mm", PRINT_PREVIEW_MEDIA_JPN_YOU6_98X190MM},
       {"na_10x11_10x11in", PRINT_PREVIEW_MEDIA_NA_10X11_10X11IN},
       {"na_10x13_10x13in", PRINT_PREVIEW_MEDIA_NA_10X13_10X13IN},
       {"na_10x14_10x14in", PRINT_PREVIEW_MEDIA_NA_10X14_10X14IN},
@@ -117,6 +125,9 @@ int VendorIdToTranslatedId(const std::string& vendor_id) {
       {"na_letter-plus_8.5x12.69in",
        PRINT_PREVIEW_MEDIA_NA_LETTER_PLUS_8_5X12_69IN},
       {"na_letter_8.5x11in", PRINT_PREVIEW_MEDIA_NA_LETTER_8_5X11IN},
+      {"na_monarch_3.875x7.5in", PRINT_PREVIEW_MEDIA_NA_MONARCH_3_875X7_5IN},
+      {"na_number-9_3.875x8.875in",
+       PRINT_PREVIEW_MEDIA_NA_NUMBER_9_3_875X8_875IN},
       {"na_number-10_4.125x9.5in",
        PRINT_PREVIEW_MEDIA_NA_NUMBER_10_4_125X9_5IN},
       {"na_number-11_4.5x10.375in",
@@ -127,6 +138,7 @@ int VendorIdToTranslatedId(const std::string& vendor_id) {
       {"na_super-a_8.94x14in", PRINT_PREVIEW_MEDIA_NA_SUPER_A_8_94X14IN},
       {"na_super-b_13x19in", PRINT_PREVIEW_MEDIA_NA_SUPER_B_13X19IN},
       {"na_wide-format_30x42in", PRINT_PREVIEW_MEDIA_NA_WIDE_FORMAT_30X42IN},
+      {"oe_photo-l_3.5x5in", PRINT_PREVIEW_MEDIA_OE_PHOTO_L_3_5X5IN},
       {"om_dai-pa-kai_275x395mm", PRINT_PREVIEW_MEDIA_OM_DAI_PA_KAI_275X395MM},
       {"om_folio-sp_215x315mm", PRINT_PREVIEW_MEDIA_OM_FOLIO_SP_215X315MM},
       {"om_invite_220x220mm", PRINT_PREVIEW_MEDIA_OM_INVITE_220X220MM},

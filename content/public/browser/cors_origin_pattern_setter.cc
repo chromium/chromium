@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,17 +53,16 @@ void CorsOriginPatternSetter::Set(
       base::MakeRefCounted<CorsOriginPatternSetter>(
           PassKey(), source_origin, mojo::Clone(allow_patterns),
           mojo::Clone(block_patterns), barrier_closure);
-  content::BrowserContext::ForEachStoragePartition(
-      browser_context,
+  browser_context->ForEachStoragePartition(
       base::BindRepeating(&CorsOriginPatternSetter::SetForStoragePartition,
                           base::RetainedRef(setter)));
 
   // Keep the per-profile access list up to date so that we can use this to
   // restore NetworkContext settings at anytime, e.g. on restarting the
   // network service.
-  content::BrowserContext::GetSharedCorsOriginAccessList(browser_context)
-      ->SetForOrigin(source_origin, std::move(allow_patterns),
-                     std::move(block_patterns), barrier_closure);
+  browser_context->GetSharedCorsOriginAccessList()->SetForOrigin(
+      source_origin, std::move(allow_patterns), std::move(block_patterns),
+      barrier_closure);
 }
 
 }  // namespace content

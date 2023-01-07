@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,15 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/blocklist_factory.h"
@@ -21,7 +22,8 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/db/util.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_prefs.h"
@@ -78,6 +80,9 @@ class SafeBrowsingClientImpl
   using OnResultCallback =
       base::OnceCallback<void(const std::set<std::string>&)>;
 
+  SafeBrowsingClientImpl(const SafeBrowsingClientImpl&) = delete;
+  SafeBrowsingClientImpl& operator=(const SafeBrowsingClientImpl&) = delete;
+
   // Constructs a client to query the database manager for |extension_ids| and
   // run |callback| with the IDs of those which have been blocklisted.
   static void Start(const std::set<std::string>& extension_ids,
@@ -127,8 +132,6 @@ class SafeBrowsingClientImpl
 
   scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner_;
   OnResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingClientImpl);
 };
 
 void CheckOneExtensionState(Blocklist::IsBlocklistedCallback callback,
@@ -161,16 +164,6 @@ Blocklist::Observer::Observer(Blocklist* blocklist) : blocklist_(blocklist) {
 
 Blocklist::Observer::~Observer() {
   blocklist_->RemoveObserver(this);
-}
-
-Blocklist::ScopedDatabaseManagerForTest::ScopedDatabaseManagerForTest(
-    scoped_refptr<SafeBrowsingDatabaseManager> database_manager)
-    : original_(GetDatabaseManager()) {
-  SetDatabaseManager(database_manager);
-}
-
-Blocklist::ScopedDatabaseManagerForTest::~ScopedDatabaseManagerForTest() {
-  SetDatabaseManager(original_);
 }
 
 Blocklist::Blocklist(ExtensionPrefs* prefs) {
@@ -277,7 +270,7 @@ void Blocklist::RequestExtensionsBlocklistState(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!state_fetcher_)
-    state_fetcher_.reset(new BlocklistStateFetcher());
+    state_fetcher_ = std::make_unique<BlocklistStateFetcher>();
 
   state_requests_.emplace_back(std::vector<std::string>(ids.begin(), ids.end()),
                                std::move(callback));
@@ -300,8 +293,8 @@ void Blocklist::OnBlocklistStateReceived(const std::string& id,
     const std::vector<std::string>& ids = requests_it->first;
 
     bool have_all_in_cache = true;
-    for (const auto& id : ids) {
-      if (!base::Contains(blocklist_state_cache_, id)) {
+    for (const auto& id_str : ids) {
+      if (!base::Contains(blocklist_state_cache_, id_str)) {
         have_all_in_cache = false;
         break;
       }
@@ -329,6 +322,10 @@ void Blocklist::ResetDatabaseUpdatedListenerForTest() {
   database_updated_subscription_ = {};
 }
 
+void Blocklist::ResetBlocklistStateCacheForTest() {
+  blocklist_state_cache_.clear();
+}
+
 void Blocklist::AddObserver(Observer* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   observers_.AddObserver(observer);
@@ -337,6 +334,28 @@ void Blocklist::AddObserver(Observer* observer) {
 void Blocklist::RemoveObserver(Observer* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   observers_.RemoveObserver(observer);
+}
+
+void Blocklist::IsDatabaseReady(DatabaseReadyCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto database_manager = GetDatabaseManager();
+  if (!database_manager) {
+    std::move(callback).Run(false);
+    return;
+  } else {
+    // Check SB database manager IsDatabaseReady on IO thread and after that
+    // additionally check on UI thread if Blocklist is still alive.
+    content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&SafeBrowsingDatabaseManager::IsDatabaseReady,
+                       database_manager),
+        base::BindOnce(
+            [](base::WeakPtr<Blocklist> blocklist_service,
+               DatabaseReadyCallback callback, bool is_ready) {
+              std::move(callback).Run(blocklist_service && is_ready);
+            },
+            AsWeakPtr(), std::move(callback)));
+  }
 }
 
 // static

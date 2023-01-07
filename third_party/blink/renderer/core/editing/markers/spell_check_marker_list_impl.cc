@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,13 @@
 namespace blink {
 
 bool SpellCheckMarkerListImpl::IsEmpty() const {
-  return markers_.IsEmpty();
+  return markers_.empty();
 }
 
 void SpellCheckMarkerListImpl::Add(DocumentMarker* marker) {
   DCHECK_EQ(MarkerType(), marker->GetType());
 
-  if (markers_.IsEmpty() ||
+  if (markers_.empty() ||
       markers_.back()->EndOffset() < marker->StartOffset()) {
     markers_.push_back(marker);
     return;

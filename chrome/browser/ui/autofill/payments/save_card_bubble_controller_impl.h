@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
@@ -19,8 +19,6 @@
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-
-class PrefService;
 
 namespace autofill {
 
@@ -42,6 +40,9 @@ class SaveCardBubbleControllerImpl
     virtual void OnIconShown() = 0;
   };
 
+  SaveCardBubbleControllerImpl(const SaveCardBubbleControllerImpl&) = delete;
+  SaveCardBubbleControllerImpl& operator=(const SaveCardBubbleControllerImpl&) =
+      delete;
   ~SaveCardBubbleControllerImpl() override;
 
   // Sets up the controller and offers to save the |card| locally.
@@ -83,17 +84,28 @@ class SaveCardBubbleControllerImpl
   // just saved and links the user to manage their other cards.
   void ShowBubbleForManageCardsForTesting(const CreditCard& card);
 
-  // Update the icon when card is successfully saved. This will dismiss the icon
-  // and trigger a highlight animation of the avatar button.
+  // TODO(crbug.com/1337392): Revisit the function when card upload feedback is
+  // to be added again. In the new proposal, we may not show feedback via icons
+  // so the functions updating the icon may need to be renamed or removed.
+  // Update the icon when card is successfully saved. This
+  // will dismiss the icon and trigger a highlight animation of the avatar
+  // button.
   void UpdateIconForSaveCardSuccess();
 
+  // TODO(crbug.com/1337392): Revisit the function when card upload feedback is
+  // to be added again. In the new proposal, we may not show feedback via icons
+  // so the functions updating the icon may need to be renamed or removed.
   // Updates the save card icon when credit card upload failed. This will only
   // update the icon image and stop icon from animating. The actual bubble will
   // be shown when users click on the icon.
   void UpdateIconForSaveCardFailure();
 
-  // For testing. Sets up the controller for showing the
-  // save card failure bubble.
+  // TODO(crbug.com/1337392): Revisit the function when card upload feedback is
+  // to be added again. In the new proposal, we may not show feedback via a
+  // failure bubble so the functions showing the bubble may need to be renamed
+  // or removed.
+  // For testing. Sets up the controller for showing the save card failure
+  // bubble.
   void ShowBubbleForSaveCardFailureForTesting();
 
   void ReshowBubble();
@@ -103,7 +115,7 @@ class SaveCardBubbleControllerImpl
   std::u16string GetExplanatoryMessage() const override;
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetDeclineButtonText() const override;
-  const AccountInfo& GetAccountInfo() const override;
+  const AccountInfo& GetAccountInfo() override;
   Profile* GetProfile() const override;
   const CreditCard& GetCard() const override;
   AutofillBubbleBase* GetSaveCardBubbleView() const override;
@@ -165,7 +177,7 @@ class SaveCardBubbleControllerImpl
   }
 
   // Should outlive this object.
-  PersonalDataManager* personal_data_manager_;
+  raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // Is true only if the [Card saved] label animation should be shown.
   bool should_show_card_saved_label_animation_ = false;
@@ -173,9 +185,6 @@ class SaveCardBubbleControllerImpl
   // The type of bubble that is either currently being shown or would
   // be shown when the save card icon is clicked.
   BubbleType current_bubble_type_ = BubbleType::INACTIVE;
-
-  // Weak reference to read & write |kAutofillAcceptSaveCreditCardPromptState|.
-  PrefService* pref_service_;
 
   // Callback to run once the user makes a decision with respect to the credit
   // card upload offer-to-save prompt. Will return the cardholder name
@@ -220,11 +229,9 @@ class SaveCardBubbleControllerImpl
   security_state::SecurityLevel security_level_;
 
   // Observer for when a bubble is created. Initialized only during tests.
-  ObserverForTest* observer_for_testing_ = nullptr;
+  raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleControllerImpl);
 };
 
 }  // namespace autofill

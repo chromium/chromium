@@ -1,2 +1,1 @@
-# BUG: The expected result is 'fancy fruit'
-radioButton name='fruit' nameFrom=relatedElement
+radioButton name='fancy fruit' nameFrom=relatedElement

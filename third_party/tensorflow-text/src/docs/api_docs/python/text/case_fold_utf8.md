@@ -30,14 +30,18 @@ The input is a `Tensor` or `RaggedTensor` of any shape, and the resulting output
 has the same shape as the input. Note that NFKC normalization is implicitly
 applied to the strings.
 
-#### For example:
+#### Examples:
 
-```python
 ```
-
-> > > case_fold_utf8(['The Quick-Brown', ... 'CAT jumped over', ... 'the lazy
-> > > dog !! '] tf.Tensor(['the quick-brown' 'cat jumped over' 'the lazy dog !!
-> > > '], shape=(3,), dtype=string) ` `
+>>> # input: <string>[num_strings]
+>>> case_fold_utf8(['The   Quick-Brown',
+...                 'CAT jumped over',
+...                 'the lazy dog  !!  '])
+>>> # output: <string>[num_strings]
+<tf.Tensor: shape=(3,), dtype=string, numpy=
+  array([b'the   quick-brown', b'cat jumped over', b'the lazy dog  !!  '],
+        dtype=object)>
+```
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">

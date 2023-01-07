@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ const char kGcmInternalsJS[] = "gcm_internals.js";
 
 // Message handlers.
 const char kGetGcmInternalsInfo[] = "getGcmInternalsInfo";
-const char kSetGcmInternalsInfo[] = "gcmInternals.setGcmInternalsInfo";
+const char kSetGcmInternalsInfo[] = "set-gcm-internals-info";
 const char kSetGcmInternalsRecording[] = "setGcmInternalsRecording";
 
 // GCM internal info.

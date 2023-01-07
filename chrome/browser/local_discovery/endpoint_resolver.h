@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,8 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 
 namespace net {
@@ -30,6 +28,10 @@ class EndpointResolver {
       base::OnceCallback<void(const net::IPEndPoint& endpoint)>;
 
   EndpointResolver();
+
+  EndpointResolver(const EndpointResolver&) = delete;
+  EndpointResolver& operator=(const EndpointResolver&) = delete;
+
   ~EndpointResolver();
 
   void Start(const net::HostPortPair& address, ResultCallback callback);
@@ -45,8 +47,6 @@ class EndpointResolver {
   scoped_refptr<ServiceDiscoverySharedClient> service_discovery_client_;
   std::unique_ptr<ServiceResolver> service_resolver_;
   std::unique_ptr<LocalDomainResolver> domain_resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(EndpointResolver);
 };
 
 }  // namespace local_discovery

@@ -1,16 +1,68 @@
-<style include="cr-hidden-style cr-icons">
+<style include="cr-hidden-style cr-icons realbox-dropdown-shared-style">
   :host {
+    display: block;
+    outline: none;
+  }
+
+  #action {
+    margin-inline-start: 40px; /* icon width + text padding */
+  }
+
+  .container {
     align-items: center;
     cursor: default;
     display: flex;
-    outline: none;
+    overflow: hidden;
     padding-bottom: 6px;
     padding-inline-end: 16px;
     padding-inline-start: 12px;
     padding-top: 6px;
+    position: relative;
   }
 
-  #container {
+  .container + .container {
+    padding-bottom: 12px;
+    padding-top: 0;
+  }
+
+  #contents,
+  #description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #ellipsis {
+    inset-inline-end: 0;
+    position: absolute;
+  }
+
+  #focus-indicator {
+    background-color: var(--google-blue-600);
+    border-radius: 3px;
+    display: none;
+    height: 100%;
+    margin-inline-start: -15px; /* -1 * (.container padding + width / 2) */
+    position: absolute;
+    width: 6px;
+  }
+
+  :host(:is(:focus-visible, .selected:not(:focus-within))) #focus-indicator {
+    display: block;
+  }
+
+  #prefix {
+    opacity: 0;
+  }
+
+  #separator {
+    white-space: pre;
+  }
+
+  #tail-suggest-prefix {
+     position: relative;
+  }
+
+  #text-container {
     align-items: center;
     display: flex;
     flex-grow: 1;
@@ -20,64 +72,51 @@
     white-space: nowrap;
   }
 
-  #contents,
-  #description {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  #separator {
-    white-space: pre;
-  }
-
-  :host([has-image]) #container {
+  :host([is-rich-suggestion]) #text-container {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  :host([has-image]) #separator {
+  :host([is-rich-suggestion]) #separator {
     display: none;
   }
 
-  :host([has-image]) #contents {
+  :host([is-rich-suggestion]) #contents,
+  :host([is-rich-suggestion]) #description {
     width: 100%;
   }
 
-  :host([has-image]) #description {
+  /* Deemphasizes description for entities with images. */
+  :host([is-entity-suggestion][has-image]) #description {
     font-size: .875em;
-    width: 100%;
   }
 
   .match {
     font-weight: 500;
   }
 
-  :host([has-image]) #description,
+  /* Uses a dimmed color for description for entities. */
+  :host([is-entity-suggestion]) #description,
   .dim {
-    color: var(--search-box-results-dim, var(--google-grey-refresh-700));
+    color: var(--color-realbox-results-foreground-dimmed);
   }
 
-  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)):host([has-image]) #description,
+  /* Uses a dimmed color for description for entities. */
+  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)):host([is-entity-suggestion]) #description,
   :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) .dim {
-    color: var(--search-box-results-dim-selected, var(--google-grey-refresh-700));
+    color: var(--color-realbox-results-dim-selected);
   }
 
   .url {
-    color: var(--search-box-results-url, var(--google-blue-refresh-700));
+    color: var(--color-realbox-results-url);
   }
 
   :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) .url {
-    color: var(--search-box-results-url-selected, var(--google-blue-refresh-700));
+    color: var(--color-realbox-results-url-selected);
   }
 
   #remove {
-    --cr-icon-button-active-background-color: rgba(var(--google-grey-900-rgb), .16);
-    --cr-icon-button-fill-color: var(--search-box-icon, var(--google-grey-refresh-700));
-    --cr-icon-button-hover-background-color: rgba(var(--google-grey-900-rgb), .1);
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-margin-end: 0;
-    --cr-icon-button-margin-start: 0;
-    --cr-icon-button-size: 24px;
+    margin-inline-end: 1px;
     opacity: 0; /* Hides the button while keeping it in tab order. */
   }
 
@@ -86,19 +125,38 @@
   }
 
   :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) #remove {
-    --cr-icon-button-fill-color: var(--search-box-icon-selected, var(--google-grey-refresh-700));
+    --cr-icon-button-fill-color:
+        var(--color-realbox-results-icon-selected);
     opacity: 1;
   }
 
 </style>
-<ntp-realbox-icon id="icon" match="[[match]]"></ntp-realbox-icon>
-<div id="container">
-  <span id="contents" inner-h-t-m-l="[[contentsHtml_]]"></span>
-  <span id="separator" class="dim">[[separatorText_]]</span>
-  <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>
-</div>
-<cr-icon-button id="remove" class="icon-clear"
+<div class="container" aria-hidden="true">
+  <div id="focus-indicator"></div>
+  <ntp-realbox-icon id="icon" match="[[match]]"></ntp-realbox-icon>
+  <div id="text-container">
+    <span id="tail-suggest-prefix" hidden$="[[!tailSuggestPrefix_]]">
+      <span id="prefix">[[tailSuggestPrefix_]]</span>
+      <!-- This is equivalent to AutocompleteMatch::kEllipsis which is
+           prepended to the match content in other surfaces-->
+      <span id="ellipsis">...&nbsp</span>
+    </span>
+    <span id="contents" inner-h-t-m-l="[[contentsHtml_]]"></span>
+    <span id="separator" class="dim">[[separatorText_]]</span>
+    <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>
+  </div>
+  <cr-icon-button id="remove" class="action-icon icon-clear"
     aria-label="[[removeButtonAriaLabel_]]"
     on-click="onRemoveButtonClick_" on-mousedown="onRemoveButtonMouseDown_"
-    title="[[removeButtonTitle_]]" hidden$="[[!removeButtonIsVisible_]]">
-</cr-icon-button>
+    title="[[removeButtonTitle_]]" hidden$="[[!match.supportsDeletion]]"
+    tabindex="2">
+  </cr-icon-button>
+</div>
+<template is="dom-if" if="[[actionIsVisible_]]">
+  <div class="container" aria-hidden="true">
+    <ntp-realbox-action id="action" action="[[match.action]]"
+                     tabindex="1" on-click="onActionClick_"
+                     on-keydown="onActionKeyDown_">
+    </ntp-realbox-action>
+  </div>
+</template>

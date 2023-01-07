@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -30,15 +32,38 @@ TestPermissionBubbleViewDelegate::Requests() {
 }
 
 GURL TestPermissionBubbleViewDelegate::GetRequestingOrigin() const {
-  return requests_.front()->GetOrigin();
+  return requests_.front()->requesting_origin();
 }
 
 GURL TestPermissionBubbleViewDelegate::GetEmbeddingOrigin() const {
   return GURL("https://embedder.example.com");
 }
 
+absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+TestPermissionBubbleViewDelegate::ReasonForUsingQuietUi() const {
+  return absl::nullopt;
+}
+
+bool TestPermissionBubbleViewDelegate::ShouldCurrentRequestUseQuietUI() const {
+  return false;
+}
+
+bool TestPermissionBubbleViewDelegate::
+    ShouldDropCurrentRequestIfCannotShowQuietly() const {
+  return false;
+}
+
 bool TestPermissionBubbleViewDelegate::WasCurrentRequestAlreadyDisplayed() {
   return false;
+}
+
+bool TestPermissionBubbleViewDelegate::RecreateView() {
+  return false;
+}
+
+base::WeakPtr<permissions::PermissionPrompt::Delegate>
+TestPermissionBubbleViewDelegate::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 PermissionBubbleBrowserTest::PermissionBubbleBrowserTest() = default;
@@ -50,8 +75,7 @@ void PermissionBubbleBrowserTest::SetUpOnMainThread() {
 
   // Add a single permission request.
   requests_.push_back(std::make_unique<permissions::MockPermissionRequest>(
-      "Request 1", l10n_util::GetStringUTF8(IDS_PERMISSION_ALLOW),
-      l10n_util::GetStringUTF8(IDS_PERMISSION_DENY)));
+      permissions::RequestType::kNotifications));
 
   std::vector<permissions::PermissionRequest*> raw_requests;
   raw_requests.push_back(requests_[0].get());
@@ -64,15 +88,13 @@ content::WebContents* PermissionBubbleBrowserTest::OpenExtensionAppWindow() {
   CHECK(extension);
 
   apps::AppLaunchParams params(
-      extension->id(),
-      apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated,
-      WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::AppLaunchSource::kSourceTest);
+      extension->id(), apps::LaunchContainer::kLaunchContainerPanelDeprecated,
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
 
   content::WebContents* app_contents =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(std::move(params));
+          ->LaunchAppWithParamsForTesting(std::move(params));
   CHECK(app_contents);
   return app_contents;
 }

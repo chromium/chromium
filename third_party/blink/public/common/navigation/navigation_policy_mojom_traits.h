@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,11 +47,6 @@ class BLINK_COMMON_EXPORT
 
   static blink::mojom::NavigationDownloadTypesPtr disallowed_types(
       const blink::NavigationDownloadPolicy& download_policy);
-
-  static bool blocking_downloads_in_sandbox_enabled(
-      const blink::NavigationDownloadPolicy& download_policy) {
-    return download_policy.blocking_downloads_in_sandbox_enabled;
-  }
 
   static bool Read(blink::mojom::NavigationDownloadPolicyDataView in,
                    blink::NavigationDownloadPolicy* out);

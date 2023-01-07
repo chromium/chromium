@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/externalauth/android/java/src/org/chromium/components/externalauth/ExternalAuthUtils.java",
+  "+content/public/test/android/javatests/src/org/chromium/content_public/browser/test/util/TestThreadUtils.java",
+]

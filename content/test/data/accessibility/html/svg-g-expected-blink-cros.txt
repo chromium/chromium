@@ -1,0 +1,15 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++svgRoot name='svg'
+++++++++group htmlTag='g'
+++++++++++genericContainer
+++++++++++++staticText name='Group 1 Text 1'
+++++++++++++++inlineTextBox name='Group 1 Text 1'
+++++++++++genericContainer
+++++++++++++staticText name='Group 1 Text 2'
+++++++++++++++inlineTextBox name='Group 1 Text 2'
+++++++++group htmlTag='g'
+++++++++++genericContainer
+++++++++++++staticText name='Group 2 Text 1'
+++++++++++++++inlineTextBox name='Group 2 Text 1'

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,10 @@ class ShareExtensionService : public KeyedService,
  public:
   ShareExtensionService(bookmarks::BookmarkModel* bookmark_model,
                         ReadingListModel* reading_list_model);
+
+  ShareExtensionService(const ShareExtensionService&) = delete;
+  ShareExtensionService& operator=(const ShareExtensionService&) = delete;
+
   ~ShareExtensionService() override;
 
   void Initialize();
@@ -49,8 +53,6 @@ class ShareExtensionService : public KeyedService,
   bookmarks::BookmarkModel* bookmark_model_;
   bool bookmark_model_loaded_;
   __strong ShareExtensionItemReceiver* receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShareExtensionService);
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARE_EXTENSION_SHARE_EXTENSION_SERVICE_H_

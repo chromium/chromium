@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@ class LayoutNGTableCellInterface;
 class LayoutNGTableRowInterface {
  public:
   virtual const LayoutObject* ToLayoutObject() const = 0;
-  virtual const LayoutTableRow* ToLayoutTableRow() const = 0;
   virtual LayoutNGTableInterface* TableInterface() const = 0;
   virtual unsigned RowIndex() const = 0;
   virtual LayoutNGTableSectionInterface* SectionInterface() const = 0;

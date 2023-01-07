@@ -1,15 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_METRICS_FAMILY_USER_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_FAMILY_USER_METRICS_PROVIDER_H_
 
-#include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class Profile;
 
 namespace metrics {
 class ChromeUserMetricsExtension;
@@ -27,7 +29,7 @@ class FamilyUserMetricsProvider
   // These values are logged to UMA. Entries should not be renumbered and
   // numeric values should never be reused. Please keep in sync with
   // "FamilyUserLogSegment" in src/tools/metrics/histograms/enums.xml.
-  enum class LogSegment {
+  enum class FamilyUserLogSegment {
     // User does not fall into any of the below categories.
     kOther = 0,
     // Supervised primary account with no secondary accounts.
@@ -36,8 +38,8 @@ class FamilyUserMetricsProvider
     // account is supervised, then the secondary account must be EDU if one
     // exists.
     kSupervisedStudent = 2,
-    // K-12 EDU primary account on an unmanaged device, regardless of the
-    // secondary account.
+    // Kindergarten-12th grade (K-12) EDU primary account on an unmanaged
+    // device, regardless of the secondary account.
     kStudentAtHome = 3,
     // Regular unmanaged user on any device, regardless of the secondary
     // account.
@@ -62,21 +64,29 @@ class FamilyUserMetricsProvider
   void OnUserSessionStarted(bool is_primary_user) override;
 
   // signin::IdentityManager::Observer:
+  void OnRefreshTokensLoaded() override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
 
-  static const char* GetHistogramNameForTesting();
+  static const char* GetFamilyUserLogSegmentHistogramNameForTesting();
+  static const char* GetNumSecondaryAccountsHistogramNameForTesting();
 
  private:
-  // The only way the |log_segment_| can change during a ChromeOS session is if
-  // a child user adds an EDU secondary account. Since this action doesn't
-  // happen often, cache the log segment.
-  base::Optional<LogSegment> log_segment_;
+  void ObserveIdentityManager(Profile* profile);
+  bool IsSupervisedUser(Profile* profile);
+  bool IsSupervisedStudent(Profile* profile);
 
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_;
+  // The only way the |family_user_log_segment_| can change during a ChromeOS
+  // session is if a child user adds or removes an EDU secondary account. Since
+  // this action doesn't happen often, cache the log segment.
+  absl::optional<FamilyUserLogSegment> family_user_log_segment_;
+  int num_secondary_accounts_ = -1;
+
+  base::ScopedMultiSourceObservation<signin::IdentityManager,
+                                     signin::IdentityManager::Observer>
+      identity_manager_observations_{this};
 };
 
 #endif  // CHROME_BROWSER_METRICS_FAMILY_USER_METRICS_PROVIDER_H_

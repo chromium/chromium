@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
@@ -18,10 +18,6 @@
 
 class Browser;
 class Profile;
-
-namespace content {
-class PageNavigator;
-}
 
 // An interface implemented by an object that performs actions on the actual
 // menu for the controller.
@@ -50,7 +46,6 @@ class BookmarkContextMenuController
   // Creates the bookmark context menu.
   // |browser| is used to open the bookmark manager and is null in tests.
   // |profile| is used for opening urls as well as enabling 'open incognito'.
-  // |get_navigator| is used to get a content::PageNavigator to open bookmarks.
   // Uses a callback since this can be asynchronous. See crbug.com/1161144
   // |parent| is the parent for newly created nodes if |selection| is empty.
   // |selection| is the nodes the context menu operates on and may be empty.
@@ -59,10 +54,14 @@ class BookmarkContextMenuController
       BookmarkContextMenuControllerDelegate* delegate,
       Browser* browser,
       Profile* profile,
-      base::RepeatingCallback<content::PageNavigator*()> get_navigator,
       BookmarkLaunchLocation opened_from,
       const bookmarks::BookmarkNode* parent,
       const std::vector<const bookmarks::BookmarkNode*>& selection);
+
+  BookmarkContextMenuController(const BookmarkContextMenuController&) = delete;
+  BookmarkContextMenuController& operator=(
+      const BookmarkContextMenuController&) = delete;
+
   ~BookmarkContextMenuController() override;
 
   ui::SimpleMenuModel* menu_model() { return menu_model_.get(); }
@@ -92,19 +91,16 @@ class BookmarkContextMenuController
   void BookmarkModelChanged() override;
 
   gfx::NativeWindow parent_window_;
-  BookmarkContextMenuControllerDelegate* delegate_;
-  Browser* const browser_;
-  Profile* profile_;
-  base::RepeatingCallback<content::PageNavigator*()> get_navigator_;
+  raw_ptr<BookmarkContextMenuControllerDelegate> delegate_;
+  const raw_ptr<Browser> browser_;
+  raw_ptr<Profile> profile_;
   const BookmarkLaunchLocation opened_from_;
-  const bookmarks::BookmarkNode* parent_;
+  raw_ptr<const bookmarks::BookmarkNode> parent_;
   std::vector<const bookmarks::BookmarkNode*> selection_;
-  bookmarks::BookmarkModel* model_;
+  raw_ptr<bookmarks::BookmarkModel> model_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   // Used to detect deletion of |this| executing a command.
   base::WeakPtrFactory<BookmarkContextMenuController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkContextMenuController);
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_CONTEXT_MENU_CONTROLLER_H_

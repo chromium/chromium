@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,7 +116,7 @@ WebGraphicsContext3DProviderImpl::GetWebglPreferences() const {
     }
 
     // Set default context limits for WebGL.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     prefs.max_active_webgl_contexts = 8u;
 #else
     prefs.max_active_webgl_contexts = 16u;
@@ -182,8 +182,7 @@ cc::ImageDecodeCache* WebGraphicsContext3DProviderImpl::ImageDecodeCache(
       color_type,
       std::make_unique<cc::GpuImageDecodeCache>(
           provider_.get(), use_transfer_cache, color_type, kMaxWorkingSetBytes,
-          provider_->ContextCapabilities().max_texture_size,
-          cc::PaintImage::kDefaultGeneratorClientId, nullptr));
+          provider_->ContextCapabilities().max_texture_size, nullptr));
   DCHECK(insertion_result.second);
   cache_iterator = insertion_result.first;
   return cache_iterator->second.get();

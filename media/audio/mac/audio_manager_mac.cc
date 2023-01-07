@@ -1,26 +1,27 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/audio/mac/audio_manager_mac.h"
 
-#include <algorithm>
 #include <limits>
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
-#include "base/optional.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/mac/audio_auhal_mac.h"
 #include "media/audio/mac/audio_input_mac.h"
@@ -35,6 +36,7 @@
 #include "media/base/limits.h"
 #include "media/base/mac/audio_latency_mac.h"
 #include "media/base/media_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -138,12 +140,12 @@ static void GetAudioDeviceInfo(bool is_input,
     if (!is_valid_for_direction)
       continue;
 
-    base::Optional<std::string> unique_id =
+    absl::optional<std::string> unique_id =
         core_audio_mac::GetDeviceUniqueID(device_id);
     if (!unique_id)
       continue;
 
-    base::Optional<std::string> label =
+    absl::optional<std::string> label =
         core_audio_mac::GetDeviceLabel(device_id, is_input);
     if (!label)
       continue;
@@ -452,6 +454,9 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
     base::PowerMonitor::AddPowerSuspendObserver(this);
   }
 
+  AudioPowerObserver(const AudioPowerObserver&) = delete;
+  AudioPowerObserver& operator=(const AudioPowerObserver&) = delete;
+
   ~AudioPowerObserver() override {
     DCHECK(thread_checker_.CalledOnValidThread());
     if (!is_monitoring_)
@@ -490,8 +495,8 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
     DVLOG(1) << "OnResume";
     ++num_resume_notifications_;
     is_suspending_ = false;
-    earliest_start_time_ = base::TimeTicks::Now() +
-        base::TimeDelta::FromSeconds(kStartDelayInSecsForPowerEvents);
+    earliest_start_time_ =
+        base::TimeTicks::Now() + base::Seconds(kStartDelayInSecsForPowerEvents);
   }
 
   bool is_suspending_;
@@ -499,8 +504,6 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
   base::TimeTicks earliest_start_time_;
   base::ThreadChecker thread_checker_;
   size_t num_resume_notifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPowerObserver);
 };
 
 AudioManagerMac::AudioManagerMac(std::unique_ptr<AudioThread> audio_thread,
@@ -606,14 +609,14 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
   if (device == kAudioObjectUnknown) {
     DLOG(ERROR) << "Invalid device " << device_id;
     return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                           CHANNEL_LAYOUT_STEREO, kFallbackSampleRate,
+                           ChannelLayoutConfig::Stereo(), kFallbackSampleRate,
                            ChooseBufferSize(true, kFallbackSampleRate));
   }
 
   int channels = 0;
-  ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
+  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
   if (GetDeviceChannels(device, AUElement::INPUT, &channels) && channels <= 2) {
-    channel_layout = GuessChannelLayout(channels);
+    channel_layout_config = ChannelLayoutConfig::Guess(channels);
   } else {
     DLOG(ERROR) << "Failed to get the device channels, use stereo as default "
                 << "for device " << device_id;
@@ -630,8 +633,8 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
 
   // TODO(grunell): query the native channel layout for the specific device.
   AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
-      buffer_size,
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
+      sample_rate, buffer_size,
       AudioParameters::HardwareCapabilities(
           GetMinAudioBufferSizeMacOS(limits::kMinAudioBufferSize, sample_rate),
           limits::kMaxAudioBufferSize));
@@ -640,13 +643,11 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
     params.set_effects(AudioParameters::NOISE_SUPPRESSION);
   }
 
-  // VoiceProcessingIO is only supported on MacOS 10.12 and cannot be used on
-  // aggregate devices, since it creates an aggregate device itself.  It also
-  // only runs in mono, but we allow upmixing to stereo since we can't claim a
-  // device works either in stereo without echo cancellation or mono with echo
-  // cancellation.
-  if (base::mac::IsAtLeastOS10_12() &&
-      (params.channel_layout() == CHANNEL_LAYOUT_MONO ||
+  // VoiceProcessingIO cannot be used on aggregate devices, since it creates an
+  // aggregate device itself.  It also only runs in mono, but we allow upmixing
+  // to stereo since we can't claim a device works either in stereo without echo
+  // cancellation or mono with echo cancellation.
+  if ((params.channel_layout() == CHANNEL_LAYOUT_MONO ||
        params.channel_layout() == CHANNEL_LAYOUT_STEREO) &&
       core_audio_mac::GetDeviceTransportType(device) !=
           kAudioDeviceTransportTypeAggregate) {
@@ -668,10 +669,12 @@ std::string AudioManagerMac::GetAssociatedOutputDeviceID(
   std::vector<AudioObjectID> related_device_ids =
       core_audio_mac::GetRelatedDeviceIDs(input_device_id);
 
-  std::vector<AudioObjectID> related_output_device_ids;
+  // Defined as a set as device IDs might be duplicated in
+  // GetRelatedDeviceIDs().
+  base::flat_set<AudioObjectID> related_output_device_ids;
   for (AudioObjectID device_id : related_device_ids) {
     if (core_audio_mac::GetNumStreams(device_id, false /* is_input */) > 0)
-      related_output_device_ids.push_back(device_id);
+      related_output_device_ids.insert(device_id);
   }
 
   // Return the device ID if there is only one associated device.
@@ -679,8 +682,8 @@ std::string AudioManagerMac::GetAssociatedOutputDeviceID(
   // to detect if a device (e.g. a digital output device) is actually connected
   // to an endpoint, so we cannot randomly pick a device.
   if (related_output_device_ids.size() == 1) {
-    base::Optional<std::string> related_unique_id =
-        core_audio_mac::GetDeviceUniqueID(related_output_device_ids[0]);
+    absl::optional<std::string> related_unique_id =
+        core_audio_mac::GetDeviceUniqueID(*related_output_device_ids.begin());
     if (related_unique_id)
       return std::move(*related_unique_id);
   }
@@ -714,9 +717,9 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
     // even if OSX calls us on the right thread.  Some CoreAudio drivers will
     // fire the callbacks during stream creation, leading to re-entrancy issues
     // otherwise.  See http://crbug.com/349604
-    output_device_listener_.reset(
-        new AudioDeviceListenerMac(BindToCurrentLoop(base::BindRepeating(
-            &AudioManagerMac::HandleDeviceChanges, base::Unretained(this)))));
+    output_device_listener_ = std::make_unique<AudioDeviceListenerMac>(
+        BindToCurrentLoop(base::BindRepeating(
+            &AudioManagerMac::HandleDeviceChanges, base::Unretained(this))));
     device_listener_first_init = true;
   }
 
@@ -825,7 +828,8 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
     return input_params.IsValid()
                ? input_params
                : AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 CHANNEL_LAYOUT_STEREO, kFallbackSampleRate,
+                                 ChannelLayoutConfig::Stereo(),
+                                 kFallbackSampleRate,
                                  ChooseBufferSize(false, kFallbackSampleRate));
   }
 
@@ -870,20 +874,19 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
   }
 
   AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, {channel_layout, output_channels},
       hardware_sample_rate, buffer_size,
       AudioParameters::HardwareCapabilities(
           GetMinAudioBufferSizeMacOS(limits::kMinAudioBufferSize,
                                      hardware_sample_rate),
           limits::kMaxAudioBufferSize));
-  params.set_channels_for_discrete(output_channels);
   return params;
 }
 
 void AudioManagerMac::InitializeOnAudioThread() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   InitializeCoreAudioDispatchOverride();
-  power_observer_.reset(new AudioPowerObserver());
+  power_observer_ = std::make_unique<AudioPowerObserver>();
 }
 
 void AudioManagerMac::HandleDeviceChanges() {
@@ -1121,7 +1124,7 @@ base::TimeDelta AudioManagerMac::GetHardwareLatency(
         << "Could not get audio device stream ids size.";
   }
 
-  return base::TimeDelta::FromSecondsD(audio_unit_latency_sec) +
+  return base::Seconds(audio_unit_latency_sec) +
          AudioTimestampHelper::FramesToTime(
              device_latency_frames + stream_latency_frames, sample_rate);
 }
@@ -1146,7 +1149,7 @@ bool AudioManagerMac::SuppressNoiseReduction(AudioDeviceID device_id) {
 
     if (initially_enabled) {
       const UInt32 disable = 0;
-      OSStatus result =
+      result =
           AudioObjectSetPropertyData(device_id, &kNoiseReductionPropertyAddress,
                                      0, nullptr, sizeof(disable), &disable);
       if (result != noErr) {
@@ -1226,9 +1229,7 @@ void AudioManagerMac::ReleaseOutputStreamUsingRealDevice(
 
 void AudioManagerMac::ReleaseInputStream(AudioInputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  auto stream_it = std::find(basic_input_streams_.begin(),
-                             basic_input_streams_.end(),
-                             stream);
+  auto stream_it = base::ranges::find(basic_input_streams_, stream);
   if (stream_it == basic_input_streams_.end())
     low_latency_input_streams_.remove(static_cast<AUAudioInputStream*>(stream));
   else

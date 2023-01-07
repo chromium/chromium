@@ -1,10 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/accessibility/chromevox/touch_exploration_controller.h"
 
-#include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -16,6 +16,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/cursor_client.h"
@@ -26,7 +27,10 @@
 #include "ui/events/event.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/gesture_detection/gesture_configuration.h"
+#include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 #define SET_STATE(state) SetState(state, __func__)
 #define VLOG_EVENT(event) \
@@ -42,12 +46,24 @@ const int kSoundDelayInMS = 150;
 
 // How long the user must stay in the same anchor point in touch exploration
 // before a right-click is triggered.
-const base::TimeDelta kLongPressTimerDelay = base::TimeDelta::FromSeconds(5);
+const base::TimeDelta kLongPressTimerDelay = base::Seconds(5);
 
 void SetTouchAccessibilityFlag(ui::Event* event) {
   // This flag is used to identify mouse move events that were generated from
   // touch exploration in Chrome code.
   event->set_flags(event->flags() | ui::EF_TOUCH_ACCESSIBILITY);
+}
+
+std::unique_ptr<ui::GestureProviderAura> BuildGestureProviderAura(
+    TouchExplorationController* owner) {
+  // Tune some aspects of gesture detection for ChromeVox.
+  ui::GestureProvider::Config config =
+      GetGestureProviderConfig(ui::GestureProviderConfigType::CURRENT_PLATFORM);
+  config.gesture_detector_config.maximum_swipe_deviation_angle = 45;
+  auto gesture_provider =
+      std::make_unique<ui::GestureProviderAura>(owner, owner);
+  gesture_provider->filtered_gesture_provider().UpdateConfig(config);
+  return gesture_provider;
 }
 
 }  // namespace
@@ -60,7 +76,7 @@ TouchExplorationController::TouchExplorationController(
       delegate_(delegate),
       state_(NO_FINGERS_DOWN),
       anchor_point_state_(ANCHOR_POINT_NONE),
-      gesture_provider_(new ui::GestureProviderAura(this, this)),
+      gesture_provider_(BuildGestureProviderAura(this)),
       prev_state_(NO_FINGERS_DOWN),
       VLOG_on_(true),
       touch_accessibility_enabler_(touch_accessibility_enabler) {
@@ -158,8 +174,8 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     current_touch_ids_.push_back(touch_id);
     touch_locations_.insert(std::pair<int, gfx::PointF>(touch_id, location));
   } else if (type == ui::ET_TOUCH_RELEASED || type == ui::ET_TOUCH_CANCELLED) {
-    std::vector<int>::iterator it = std::find(
-        current_touch_ids_.begin(), current_touch_ids_.end(), touch_id);
+    std::vector<int>::iterator it =
+        base::ranges::find(current_touch_ids_, touch_id);
 
     // Can happen if touch exploration is enabled while fingers were down
     // or if an additional press occurred within the exclusion bounds.
@@ -185,8 +201,8 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     current_touch_ids_.erase(it);
     touch_locations_.erase(touch_id);
   } else if (type == ui::ET_TOUCH_MOVED) {
-    std::vector<int>::iterator it = std::find(
-        current_touch_ids_.begin(), current_touch_ids_.end(), touch_id);
+    std::vector<int>::iterator it =
+        base::ranges::find(current_touch_ids_, touch_id);
 
     // Can happen if touch exploration is enabled while fingers were down.
     if (it == current_touch_ids_.end())
@@ -377,7 +393,7 @@ TouchExplorationController::InSingleTapOrTouchExploreReleased(
     most_recent_press_timestamp_ = event.time_stamp();
     // This will update as the finger moves before a possible passthrough, and
     // will determine the offset.
-    last_unused_finger_event_.reset(new ui::TouchEvent(event));
+    last_unused_finger_event_ = std::make_unique<ui::TouchEvent>(event);
     last_unused_finger_continuation_ = continuation;
     return DiscardEvent(continuation);
   }
@@ -466,8 +482,16 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploration(
     return SendEvent(continuation, &event);
   }
 
+  // |location| is in window DIP coordinates.
+  gfx::PointF location(event.location());
+
+  // APIs taking this point e.g.
+  // chrome.accessibilityPrivate.sendSyntheticMouseEvent,
+  // chrome.automation.AutomationNode.prototype.hitTest, all take screen
+  // coordinates.
+  ::wm::ConvertPointToScreen(root_window_, &location);
   delegate_->HandleAccessibilityGesture(ax::mojom::Gesture::kTouchExplore,
-                                        event.location_f());
+                                        location);
 
   last_touch_exploration_ = std::make_unique<ui::TouchEvent>(event);
   if (anchor_point_state_ != ANCHOR_POINT_EXPLICITLY_SET)
@@ -525,7 +549,6 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploreSecondPress(
     ui::TouchEvent new_event(ui::ET_TOUCH_CANCELLED, gfx::Point(),
                              event.time_stamp(),
                              initial_press_->pointer_details(), event.flags());
-    // TODO(dmazzoni): fix for multiple displays. http://crbug.com/616793
     // |event| locations are in DIP; see |RewriteEvent|. We need to dispatch
     // screen coordinates.
     gfx::PointF location_f(ConvertDIPToPixels(anchor_point_dip_));
@@ -627,18 +650,16 @@ void TouchExplorationController::SendSimulatedClick() {
 
 void TouchExplorationController::SendSimulatedTap(
     const Continuation continuation) {
-  std::unique_ptr<ui::TouchEvent> touch_press;
-  touch_press.reset(new ui::TouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(),
-                                       Now(),
-                                       initial_press_->pointer_details()));
+  auto touch_press = std::make_unique<ui::TouchEvent>(
+      ui::ET_TOUCH_PRESSED, gfx::Point(), Now(),
+      initial_press_->pointer_details());
   touch_press->set_location_f(anchor_point_dip_);
   touch_press->set_root_location_f(anchor_point_dip_);
   DispatchEvent(touch_press.get(), continuation);
 
-  std::unique_ptr<ui::TouchEvent> touch_release;
-  touch_release.reset(new ui::TouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(),
-                                         Now(),
-                                         initial_press_->pointer_details()));
+  auto touch_release = std::make_unique<ui::TouchEvent>(
+      ui::ET_TOUCH_RELEASED, gfx::Point(), Now(),
+      initial_press_->pointer_details());
   touch_release->set_location_f(anchor_point_dip_);
   touch_release->set_root_location_f(anchor_point_dip_);
   DispatchEvent(touch_release.get(), continuation);
@@ -690,8 +711,7 @@ ui::EventDispatchDetails TouchExplorationController::InSlideGesture(
   // This can occur if the user leaves the screen edge and then returns to it to
   // continue adjusting the sound.
   if (!sound_timer_.IsRunning()) {
-    sound_timer_.Start(FROM_HERE,
-                       base::TimeDelta::FromMilliseconds(kSoundDelayInMS), this,
+    sound_timer_.Start(FROM_HERE, base::Milliseconds(kSoundDelayInMS), this,
                        &TouchExplorationController::PlaySoundForTimer);
     delegate_->PlayVolumeAdjustEarcon();
   }
@@ -771,7 +791,7 @@ void TouchExplorationController::OnTapTimerFired() {
       return;
     }
     case SINGLE_TAP_PRESSED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case GESTURE_IN_PROGRESS:
       // If only one finger is down, go into touch exploration.
       if (current_touch_ids_.size() == 1) {
@@ -838,6 +858,11 @@ void TouchExplorationController::DispatchEvent(
 // synchronously), so we ignore this callback.
 void TouchExplorationController::OnGestureEvent(ui::GestureConsumer* consumer,
                                                 ui::GestureEvent* gesture) {}
+
+const std::string& TouchExplorationController::GetName() const {
+  static const std::string name("TouchExplorationController");
+  return name;
+}
 
 void TouchExplorationController::ProcessGestureEvents() {
   std::vector<std::unique_ptr<ui::GestureEvent>> gestures =
@@ -1012,7 +1037,7 @@ void TouchExplorationController::OnSwipeEvent(ui::GestureEvent* swipe_gesture) {
 int TouchExplorationController::FindEdgesWithinInset(gfx::Point point_dip,
                                                      float inset) {
   gfx::RectF inner_bounds_dip(root_window_->bounds());
-  inner_bounds_dip.Inset(inset, inset);
+  inner_bounds_dip.Inset(inset);
 
   // Bitwise manipulation in order to determine where on the screen the point
   // lies. If more than one bit is turned on, then it is a corner where the two
@@ -1044,20 +1069,6 @@ void TouchExplorationController::DispatchKeyWithFlags(
             << "\nKey up: key code : " << key_up.key_code()
             << ", flags: " << key_up.flags();
   }
-}
-
-std::unique_ptr<ui::MouseEvent>
-TouchExplorationController::CreateMouseMoveEvent(const gfx::PointF& location,
-                                                 int flags) {
-  // The "synthesized" flag should be set on all events that don't have a
-  // backing native event.
-  flags |= ui::EF_IS_SYNTHESIZED;
-
-  std::unique_ptr<ui::MouseEvent> event(new ui::MouseEvent(
-      ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(), Now(), flags, 0));
-  event->set_location_f(location);
-  event->set_root_location_f(location);
-  return event;
 }
 
 void TouchExplorationController::EnterTouchToMouseMode() {
@@ -1092,7 +1103,7 @@ void TouchExplorationController::SetState(State new_state,
       max_gesture_touch_points_ = 0;
       break;
     case NO_FINGERS_DOWN:
-      gesture_provider_ = std::make_unique<ui::GestureProviderAura>(this, this);
+      gesture_provider_ = BuildGestureProviderAura(this);
       if (sound_timer_.IsRunning())
         sound_timer_.Stop();
       tap_timer_.Stop();
@@ -1210,7 +1221,7 @@ bool TouchExplorationController::IsTargetedToArcVirtualKeyboard(
   if (!container)
     return false;
 
-  return container->id() == kShellWindowId_ArcVirtualKeyboardContainer;
+  return container->GetId() == kShellWindowId_ArcVirtualKeyboardContainer;
 }
 
 bool TouchExplorationController::ShouldEnableVolumeSlideGesture(

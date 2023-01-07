@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,8 +9,6 @@ mojom("mojom") {
     "blob_storage_context.mojom",
     "cache_storage_control.mojom",
     "file_system_access_context.mojom",
-    "indexed_db_control.mojom",
-    "indexed_db_control_test.mojom",
     "local_storage_control.mojom",
     "origin_context.mojom",
     "partition.mojom",
@@ -24,8 +22,10 @@ mojom("mojom") {
   ]
 
   public_deps = [
+    "//components/services/storage/public/mojom/buckets",
     "//components/services/storage/public/mojom/filesystem",
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//services/network/public/mojom",
     "//third_party/blink/public/mojom:mojom_core",
     "//third_party/blink/public/mojom:mojom_modules",
@@ -40,12 +40,31 @@ mojom("mojom") {
   ]
   component_deps = [ "//third_party/blink/public/common" ]
 
+  enabled_features = []
+  if (is_linux || is_chromeos) {
+    enabled_features += [ "is_linux_or_chromeos" ]
+  }
   if (!is_android) {
-    enabled_features = [ "is_not_android" ]
+    enabled_features += [ "is_not_android" ]
   }
 }
 
 mojom("test_api") {
   testonly = true
   sources = [ "test_api.test-mojom" ]
+}
+
+source_set("tests") {
+  testonly = true
+  sources = [
+    "buckets/bucket_id_mojom_traits_unittest.cc",
+    "buckets/bucket_locator_mojom_traits_unittest.cc",
+  ]
+  deps = [
+    "//components/services/storage/public/cpp/buckets",
+    "//components/services/storage/public/mojom/buckets",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
 }

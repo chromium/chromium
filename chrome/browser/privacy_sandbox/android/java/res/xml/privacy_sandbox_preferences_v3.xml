@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="privacy_sandbox_toggle"
+        android:title="@string/privacy_sandbox_trials_title"
+        android:summary="@string/privacy_sandbox_description"
+        android:persistent="false"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.LearnMoreFragment"
+        android:key="privacy_sandbox_learn_more"
+        app:userAction="Settings.PrivacySandbox.AdPersonalization.LearnMoreClicked"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationFragment"
+        android:title="@string/privacy_sandbox_ad_personalization_title"
+        android:summary="@string/privacy_sandbox_ad_personalization_summary"
+        android:icon="@drawable/gm_ads_click_24"
+        app:userAction="Settings.PrivacySandbox.AdPersonalization.Opened"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment"
+        android:title="@string/privacy_sandbox_ad_measurement_title"
+        android:summary="@string/privacy_sandbox_ad_measurement_summary"
+        android:icon="@drawable/gm_insert_chart_24"
+        app:userAction="Settings.PrivacySandbox.AdMeasurement.Opened"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.SpamFraudFragment"
+        android:title="@string/privacy_sandbox_spam_fraud_title"
+        android:summary="@string/privacy_sandbox_spam_fraud_summary"
+        android:icon="@drawable/ic_spam_reduction_24dp"
+        app:userAction="Settings.PrivacySandbox.SpamFraud.Opened"/>
+
+</PreferenceScreen>

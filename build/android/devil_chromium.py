@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -128,7 +128,7 @@ def _UseLocalBuildProducts(output_directory, devil_dynamic_config):
               for dep_config in dep_configs
           }
       }
-      for dep_name, dep_configs in _DEVIL_BUILD_PRODUCT_DEPS.iteritems()
+      for dep_name, dep_configs in _DEVIL_BUILD_PRODUCT_DEPS.items()
   }
 
 

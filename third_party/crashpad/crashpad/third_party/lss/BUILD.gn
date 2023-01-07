@@ -1,4 +1,4 @@
-# Copyright 2019 The Crashpad Authors. All rights reserved.
+# Copyright 2019 The Crashpad Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ import("../../build/crashpad_buildconfig.gni")
 config("lss_config") {
   if (crashpad_is_in_chromium) {
     defines = [ "CRASHPAD_LSS_SOURCE_EXTERNAL" ]
+  } else if (crashpad_is_in_fuchsia) {
+    defines = [ "CRASHPAD_LSS_SOURCE_FUCHSIA" ]
   } else {
     defines = [ "CRASHPAD_LSS_SOURCE_EMBEDDED" ]
   }

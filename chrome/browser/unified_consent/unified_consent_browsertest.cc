@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,7 +16,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/embedder_support/pref_names.h"
-#include "components/sync/test/fake_server/fake_server_network_resources.h"
+#include "components/sync/test/fake_server_network_resources.h"
 #include "components/unified_consent/unified_consent_metrics.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "content/public/test/browser_test.h"
@@ -27,6 +27,11 @@ namespace {
 class UnifiedConsentBrowserTest : public SyncTest {
  public:
   UnifiedConsentBrowserTest() : SyncTest(TWO_CLIENT) {}
+
+  UnifiedConsentBrowserTest(const UnifiedConsentBrowserTest&) = delete;
+  UnifiedConsentBrowserTest& operator=(const UnifiedConsentBrowserTest&) =
+      delete;
+
   ~UnifiedConsentBrowserTest() override = default;
 
   void EnableSync(int client_id) {
@@ -67,8 +72,6 @@ class UnifiedConsentBrowserTest : public SyncTest {
   }
 
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedConsentBrowserTest);
 };
 
 // Tests that the settings histogram is recorded if unified consent is enabled.

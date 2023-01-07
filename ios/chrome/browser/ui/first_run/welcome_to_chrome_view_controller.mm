@@ -1,59 +1,55 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
+#import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 
-#include "base/check.h"
-#include "base/i18n/rtl.h"
-#include "base/mac/bundle_locations.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_reporting_default_state.h"
-#include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/first_run/first_run_configuration.h"
-#include "ios/chrome/browser/main/browser.h"
+#import "base/check.h"
+#import "base/i18n/rtl.h"
+#import "base/mac/bundle_locations.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/web_resource/web_resource_pref_names.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/first_run/first_run_configuration.h"
+#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
-#include "ios/chrome/browser/ui/commands/application_commands.h"
-#include "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
-#include "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
-#include "ios/chrome/browser/ui/first_run/static_file_view_controller.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/static_file_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/ui/util/terms_util.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/terms_util.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/chrome/common/string_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
-#include "net/base/mac/url_conversions.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/common/string_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "net/base/mac/url_conversions.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Default value for metrics reporting state. "YES" corresponding to "opt-out"
-// state.
-const BOOL kDefaultStatsCheckboxValue = YES;
-}
-
-@interface WelcomeToChromeViewController () <WelcomeToChromeViewDelegate> {
-  Browser* _browser;
-}
+@interface WelcomeToChromeViewController () <WelcomeToChromeViewDelegate>
 
 // The animation which occurs at launch has run.
 @property(nonatomic, assign) BOOL ranLaunchAnimation;
@@ -78,6 +74,12 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 // dismissed.
 @property(nonatomic, copy) void (^interruptCompletion)(void);
 
+// The browser of the interface that is presenting the Welcome to Chrome view.
+@property(nonatomic, readonly) Browser* mainBrowser;
+
+// The main browser that can be used for authentication.
+@property(nonatomic, readonly) Browser* browser;
+
 @end
 
 @implementation WelcomeToChromeViewController
@@ -88,26 +90,11 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 @synthesize dispatcher = _dispatcher;
 
 + (BOOL)defaultStatsCheckboxValue {
-  // Record metrics reporting as opt-in/opt-out only once.
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    // Don't call RecordMetricsReportingDefaultState twice.  This can happen
-    // if the app is quit before accepting the TOS, or via experiment settings.
-    if (metrics::GetMetricsReportingDefaultState(
-            GetApplicationContext()->GetLocalState()) !=
-        metrics::EnableMetricsDefault::DEFAULT_UNKNOWN) {
-      return;
-    }
-
-    metrics::RecordMetricsReportingDefaultState(
-        GetApplicationContext()->GetLocalState(),
-        kDefaultStatsCheckboxValue ? metrics::EnableMetricsDefault::OPT_OUT
-                                   : metrics::EnableMetricsDefault::OPT_IN);
-  });
-  return kDefaultStatsCheckboxValue;
+  return kChromeFirstRunUIDidFinishNotification;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
+                    mainBrowser:(Browser*)mainBrowser
                       presenter:(id<SyncPresenter>)presenter
                      dispatcher:(id<ApplicationCommands, BrowsingDataCommands>)
                                     dispatcher {
@@ -115,6 +102,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _browser = browser;
+    _mainBrowser = mainBrowser;
     _presenter = presenter;
     _dispatcher = dispatcher;
   }
@@ -127,8 +115,8 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   // The sign-in coordinator is part of the navigation controller, so the
   // sign-in coordinator didn't present itself. Therefore the interrupt action
   // must be SigninCoordinatorInterruptActionNoDismiss.
-  // |completion| has to be stored in order to be invoked when
-  // |firstRunDismissedWithPresentingViewController:needsAdvancedSignin:| is
+  // `completion` has to be stored in order to be invoked when
+  // `firstRunDismissedWithPresentingViewController:signinAction:` is
   // called.
   self.interruptCompletion = completion;
   [self.coordinator
@@ -137,6 +125,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 }
 
 - (void)loadView {
+  RecordMetricsReportingDefaultState();
   WelcomeToChromeView* welcomeToChromeView =
       [[WelcomeToChromeView alloc] initWithFrame:CGRectZero];
   [welcomeToChromeView setDelegate:self];
@@ -148,6 +137,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 - (void)viewDidLoad {
   [super viewDidLoad];
   [self.navigationController setNavigationBarHidden:YES];
+  base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kStart);
 }
 
 - (void)viewDidLayoutSubviews {
@@ -179,7 +169,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 - (void)openStaticFileWithURL:(NSURL*)url title:(NSString*)title {
   StaticFileViewController* staticViewController =
       [[StaticFileViewController alloc]
-          initWithBrowserState:_browser->GetBrowserState()
+          initWithBrowserState:self.mainBrowser->GetBrowserState()
                            URL:url];
   [staticViewController setTitle:title];
   [self.navigationController pushViewController:staticViewController
@@ -196,8 +186,16 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 }
 
 - (void)welcomeToChromeViewDidTapOKButton:(WelcomeToChromeView*)view {
-  GetApplicationContext()->GetLocalState()->SetBoolean(
-      metrics::prefs::kMetricsReportingEnabled, view.checkBoxSelected);
+  PrefService* prefs = GetApplicationContext()->GetLocalState();
+
+  prefs->SetBoolean(metrics::prefs::kMetricsReportingEnabled,
+                    view.checkBoxSelected);
+
+  // Sets a LocalState pref marking the TOS EULA as accepted.
+  if (!prefs->GetBoolean(prefs::kEulaAccepted)) {
+    prefs->SetBoolean(prefs::kEulaAccepted, true);
+    prefs->CommitPendingWrite();
+  }
 
   if (view.checkBoxSelected) {
     if (self.didTapTOSLink)
@@ -207,21 +205,31 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   self.firstRunConfig = [[FirstRunConfiguration alloc] init];
   self.firstRunConfig.signInAttemptStatus =
       first_run::SignInAttemptStatus::NOT_ATTEMPTED;
-  ios::ChromeIdentityService* identityService =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  self.firstRunConfig.hasSSOAccount = identityService->HasIdentities();
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          self.mainBrowser->GetBrowserState());
+  self.firstRunConfig.hasSSOAccount = accountManagerService->HasIdentities();
 
-  if (!signin::IsSigninAllowed(_browser->GetBrowserState()->GetPrefs())) {
-    // Sign-in is disabled by policy. Skip the sign-in flow.
+  syncer::SyncService* syncService = SyncServiceFactory::GetForBrowserState(
+      self.mainBrowser->GetBrowserState());
+  BOOL shouldSkipSignInFlow =
+      syncService->GetDisableReasons().Has(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+      !signin::IsSigninAllowedByPolicy();
+
+  if (shouldSkipSignInFlow) {
+    // Sign-in or sync is disabled by policy. Skip the sign-in flow.
     self.firstRunConfig.signInAttemptStatus =
         first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
-    [self completeFirstRunWithNeedsAdvancedSignin:NO];
+    SigninCompletionInfo* completionInfo =
+        [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
+    [self completeFirstRunWithSigninCompletionInfo:completionInfo];
     return;
   }
 
   self.coordinator = [SigninCoordinator
       firstRunCoordinatorWithBaseNavigationController:self.navigationController
-                                              browser:_browser];
+                                              browser:self.mainBrowser];
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(markSigninAttempted:)
@@ -231,47 +239,46 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   self.coordinator.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
         SigninCompletionInfo* signinCompletionInfo) {
-        [weakSelf.coordinator stop];
-        weakSelf.coordinator = nil;
-        [weakSelf signinDidFinishWithResult:signinResult
-                             completionInfo:signinCompletionInfo];
+        [weakSelf signinCompleteResult:signinResult
+                        completionInfo:signinCompletionInfo];
       };
 
   [self.coordinator start];
+  base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kSyncScreenStart);
 }
 
 // Handles the sign-in completion and proceeds to complete the first run
-// operation depending on the |signinResult| state.
-- (void)signinDidFinishWithResult:(SigninCoordinatorResult)signinResult
-                   completionInfo:(SigninCompletionInfo*)signinCompletionInfo {
+// operation depending on the `signinResult` state.
+- (void)signinCompleteResult:(SigninCoordinatorResult)signinResult
+              completionInfo:(SigninCompletionInfo*)signinCompletionInfo {
+  [self.coordinator stop];
+  self.coordinator = nil;
+
   switch (signinResult) {
-    case SigninCoordinatorResultSuccess: {
-      // User is considered done with First Run only after successful sign-in.
-      WriteFirstRunSentinelAndRecordMetrics(
-          _browser->GetBrowserState(),
-          first_run::SignInAttemptStatus::ATTEMPTED,
-          [self.firstRunConfig hasSSOAccount]);
+    case SigninCoordinatorResultCanceledByUser:
+    case SigninCoordinatorResultInterrupted: {
+      base::UmaHistogramEnumeration(
+          "FirstRun.Stage", first_run::kSyncScreenCompletionWithoutSync);
       break;
     }
-    case SigninCoordinatorResultCanceledByUser:
-    case SigninCoordinatorResultInterrupted:
-      // No-op
+    case SigninCoordinatorResultSuccess: {
+      base::UmaHistogramEnumeration("FirstRun.Stage",
+                                    first_run::kSyncScreenCompletionWithSync);
       break;
+    }
   }
 
-  BOOL needsAdvancedSignin = signinCompletionInfo.signinCompletionAction ==
-                             SigninCompletionActionShowAdvancedSettingsSignin;
-  [self completeFirstRunWithNeedsAdvancedSignin:needsAdvancedSignin];
+  [self completeFirstRunWithSigninCompletionInfo:signinCompletionInfo];
 }
 
 // Completes the first run operation by either showing advanced settings
 // sign-in, showing the location permission prompt, or simply dismissing the
 // welcome page.
-- (void)completeFirstRunWithNeedsAdvancedSignin:
-    (BOOL)needsAvancedSettingsSignin {
+- (void)completeFirstRunWithSigninCompletionInfo:
+    (SigninCompletionInfo*)completionInfo {
   web::WebState* currentWebState =
-      _browser->GetWebStateList()->GetActiveWebState();
-  FinishFirstRun(_browser->GetBrowserState(), currentWebState,
+      self.browser->GetWebStateList()->GetActiveWebState();
+  FinishFirstRun(self.mainBrowser->GetBrowserState(), currentWebState,
                  self.firstRunConfig, self.presenter);
 
   __weak __typeof(self) weakSelf = self;
@@ -280,8 +287,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   void (^completion)(void) = ^{
     [weakSelf
         firstRunDismissedWithPresentingViewController:presentingViewController
-                                  needsAdvancedSignin:
-                                      needsAvancedSettingsSignin];
+                                 signinCompletionInfo:completionInfo];
   };
   [presentingViewController dismissViewControllerAnimated:YES
                                                completion:completion];
@@ -290,18 +296,24 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 // Triggers all the events after the first run is dismissed.
 - (void)firstRunDismissedWithPresentingViewController:
             (UIViewController*)presentingViewController
-                                  needsAdvancedSignin:
-                                      (BOOL)needsAvancedSettingsSignin {
+                                 signinCompletionInfo:
+                                     (SigninCompletionInfo*)completionInfo {
+  base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kComplete);
   FirstRunDismissed();
-  if (needsAvancedSettingsSignin) {
-    DCHECK(!self.interruptCompletion);
-    [self.dispatcher
-        showAdvancedSigninSettingsFromViewController:presentingViewController];
-  } else if (self.interruptCompletion) {
-    self.interruptCompletion();
-  } else if (location_permissions_field_trial::IsInFirstRunModalGroup()) {
-    [self.dispatcher
-        showLocationPermissionsFromViewController:presentingViewController];
+  switch (completionInfo.signinCompletionAction) {
+    case SigninCompletionActionNone:
+    case SigninCompletionActionShowManagedLearnMore:
+      if (self.interruptCompletion) {
+        self.interruptCompletion();
+      }
+      if (completionInfo.signinCompletionAction ==
+          SigninCompletionActionShowManagedLearnMore) {
+        OpenNewTabCommand* command = [OpenNewTabCommand
+            commandWithURLFromChrome:GURL(kChromeUIManagementURL)];
+        command.userInitiated = YES;
+        [self.dispatcher openURLInNewTab:command];
+      }
+      break;
   }
 }
 

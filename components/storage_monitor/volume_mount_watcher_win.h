@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,9 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_monitor.h"
 
@@ -30,6 +30,10 @@ class TestVolumeMountWatcherWin;
 class VolumeMountWatcherWin {
  public:
   VolumeMountWatcherWin();
+
+  VolumeMountWatcherWin(const VolumeMountWatcherWin&) = delete;
+  VolumeMountWatcherWin& operator=(const VolumeMountWatcherWin&) = delete;
+
   virtual ~VolumeMountWatcherWin();
 
   // Returns the volume file path of the drive specified by the |drive_number|.
@@ -112,11 +116,9 @@ class VolumeMountWatcherWin {
 
   // The notifications object to use to signal newly attached volumes. Only
   // removable devices will be notified.
-  StorageMonitor::Receiver* notifications_;
+  raw_ptr<StorageMonitor::Receiver> notifications_;
 
   base::WeakPtrFactory<VolumeMountWatcherWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VolumeMountWatcherWin);
 };
 
 }  // namespace storage_monitor

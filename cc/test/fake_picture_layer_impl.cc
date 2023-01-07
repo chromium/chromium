@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ FakePictureLayerImpl::FakePictureLayerImpl(
 }
 
 std::unique_ptr<LayerImpl> FakePictureLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return base::WrapUnique(new FakePictureLayerImpl(tree_impl, id()));
 }
 
@@ -94,6 +94,18 @@ void FakePictureLayerImpl::SetRasterSource(
                      pending_paint_worklet_records);
 }
 
+size_t FakePictureLayerImpl::GetNumberOfTilesWithResources() const {
+  size_t count = 0;
+  for (size_t i = 0; i < num_tilings(); ++i) {
+    PictureLayerTiling::TileIterator tile_iterator(tilings_->tiling_at(i));
+    for (; !tile_iterator.AtEnd(); tile_iterator.Next()) {
+      if (tile_iterator.GetCurrent()->draw_info().has_resource())
+        ++count;
+    }
+  }
+  return count;
+}
+
 void FakePictureLayerImpl::CreateAllTiles() {
   for (size_t i = 0; i < num_tilings(); ++i)
     tilings_->tiling_at(i)->CreateAllTilesForTesting();
@@ -118,7 +130,7 @@ void FakePictureLayerImpl::SetAllTilesReadyInTiling(
 
 void FakePictureLayerImpl::SetTileReady(Tile* tile) {
   TileDrawInfo& draw_info = tile->draw_info();
-  draw_info.SetSolidColorForTesting(true);
+  draw_info.SetSolidColorForTesting(SkColors::kRed);
   DCHECK(draw_info.IsReadyToDraw());
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ class TopControlsSwapPromise : public cc::SwapPromise {
       DidNotSwapReason reason) override {
     return DidNotSwapAction::KEEP_ACTIVE;
   }
-  int64_t TraceId() const override { return 0; }
+  int64_t GetTraceId() const override { return 0; }
 
  private:
   const float height_;
@@ -117,7 +117,8 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
   }
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(
               [](base::OnceCallback<void(const SkBitmap&)> callback,
                  std::unique_ptr<ui::WindowAndroidCompositor::ReadbackRef>
@@ -187,6 +188,19 @@ void DelegatedFrameHostAndroid::EvictDelegatedFrame() {
   client_->WasEvicted();
 }
 
+void DelegatedFrameHostAndroid::ClearFallbackSurfaceForCommitPending() {
+  const absl::optional<viz::SurfaceId> fallback_surface_id =
+      content_layer_->oldest_acceptable_fallback();
+
+  // CommitPending without a target for TakeFallbackContentFrom. Since we cannot
+  // guarantee that Navigation will complete, evict our surfaces which are from
+  // a previous Navigation.
+  if (fallback_surface_id && fallback_surface_id->is_valid()) {
+    EvictDelegatedFrame();
+    content_layer_->SetOldestAcceptableFallback(viz::SurfaceId());
+  }
+}
+
 void DelegatedFrameHostAndroid::ResetFallbackToFirstNavigationSurface() {
   // Don't update the fallback if it's already newer than the first id after
   // navigation.
@@ -203,7 +217,7 @@ void DelegatedFrameHostAndroid::ResetFallbackToFirstNavigationSurface() {
   if (pre_navigation_local_surface_id_.is_valid() &&
       !first_local_surface_id_after_navigation_.is_valid()) {
     EvictDelegatedFrame();
-    content_layer_->SetBackgroundColor(SK_ColorTRANSPARENT);
+    content_layer_->SetBackgroundColor(SkColors::kTransparent);
   }
 
   content_layer_->SetOldestAcceptableFallback(
@@ -264,6 +278,10 @@ void DelegatedFrameHostAndroid::EmbedSurface(
     const gfx::Size& new_size_in_pixels,
     cc::DeadlinePolicy deadline_policy,
     bool is_fullscreen) {
+  TRACE_EVENT2("viz", "DelegatedFrameHostAndroid::EmbedSurface", "surface_id",
+               new_local_surface_id.ToString(), "deadline_policy",
+               deadline_policy.ToString());
+
   // We should never attempt to embed an invalid surface. Catch this here to
   // track down the root cause. Otherwise we will have vague crashes later on
   // at serialization time.
@@ -274,7 +292,7 @@ void DelegatedFrameHostAndroid::EmbedSurface(
   bool has_fallback_surface =
       (content_layer_->oldest_acceptable_fallback() &&
        content_layer_->oldest_acceptable_fallback()->is_valid());
-  local_surface_id_ = new_local_surface_id;
+  SetLocalSurfaceId(new_local_surface_id);
   // The embedding of a new surface completes the navigation process.
   pre_navigation_local_surface_id_ = viz::LocalSurfaceId();
   // Navigations performed while hidden delay embedding until transitioning to
@@ -293,13 +311,19 @@ void DelegatedFrameHostAndroid::EmbedSurface(
     // content. So we advance the fallback forcing viz to fallback to blank
     // screen if renderer won't submit frame in time. See
     // https://crbug.com/1088369 and  https://crbug.com/813157
-    if (surface_size_in_pixels_ != content_layer_->bounds() &&
+    //
+    // An empty content layer bounds indicates this renderer has never been made
+    // visible. This is the case for pre-rendered contents. Don't use the
+    // primary id as fallback since it's guaranteed to have no content. See
+    // crbug.com/1218238.
+    if (!content_layer_->bounds().IsEmpty() &&
+        surface_size_in_pixels_ != content_layer_->bounds() &&
         has_fallback_surface) {
       content_layer_->SetOldestAcceptableFallback(new_primary_surface_id);
 
       // We default to black background for fullscreen case.
-      content_layer_->SetBackgroundColor(is_fullscreen ? SK_ColorBLACK
-                                                       : SK_ColorTRANSPARENT);
+      content_layer_->SetBackgroundColor(
+          is_fullscreen ? SkColors::kBlack : SkColors::kTransparent);
     }
   }
 
@@ -353,6 +377,12 @@ viz::SurfaceId DelegatedFrameHostAndroid::SurfaceId() const {
   return viz::SurfaceId(frame_sink_id_, local_surface_id_);
 }
 
+void DelegatedFrameHostAndroid::SetLocalSurfaceId(
+    const viz::LocalSurfaceId& local_surface_id) {
+  local_surface_id_ = local_surface_id;
+  client_->OnSurfaceIdChanged();
+}
+
 bool DelegatedFrameHostAndroid::HasPrimarySurface() const {
   return content_layer_->surface_id().is_valid();
 }
@@ -368,7 +398,7 @@ void DelegatedFrameHostAndroid::TakeFallbackContentFrom(
     return;
 
   const viz::SurfaceId& other_primary = other->content_layer_->surface_id();
-  const base::Optional<viz::SurfaceId>& other_fallback =
+  const absl::optional<viz::SurfaceId>& other_fallback =
       other->content_layer_->oldest_acceptable_fallback();
   viz::SurfaceId desired_fallback;
   if (!other->HasFallbackSurface() ||
@@ -394,7 +424,7 @@ void DelegatedFrameHostAndroid::OnNavigateToNewPage() {
   // evict it when transitioning to becoming visible.
   pre_navigation_local_surface_id_ = local_surface_id_;
   first_local_surface_id_after_navigation_ = viz::LocalSurfaceId();
-  local_surface_id_ = viz::LocalSurfaceId();
+  SetLocalSurfaceId(viz::LocalSurfaceId());
 }
 
 void DelegatedFrameHostAndroid::SetTopControlsVisibleHeight(float height) {

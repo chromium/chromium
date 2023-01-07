@@ -1,0 +1,99 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.ozone.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "ui/display/mojom/display_configuration_params.mojom";
+import "ui/display/mojom/display_constants.mojom";
+import "ui/display/mojom/display_mode.mojom";
+import "ui/display/mojom/display_snapshot.mojom";
+import "ui/display/mojom/gamma_ramp_rgb_entry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/accelerated_widget.mojom";
+import "ui/ozone/platform/drm/mojom/device_cursor.mojom";
+
+// The viz process on CrOS implements the DrmDevice
+// service to let the viz host and clients manage DRM displays.
+// All functions in DrmDevice are implemented by the lower privilege viz
+// process.
+interface DrmDevice {
+  // Creates scanout capable DRM buffers to back |widget|. |initial_bounds| is
+  // used to calculate the initial size of the DRM bufffer backing |widget| and
+  // it can be modified later by calling SetWindowBounds().
+  CreateWindow(gfx.mojom.AcceleratedWidget widget,
+               gfx.mojom.Rect initial_bounds);
+
+  // Destroys the DRM buffers backing |widget|.
+  DestroyWindow(gfx.mojom.AcceleratedWidget widget);
+
+  // Sets the size of the DRM buffer for |widget|.
+  SetWindowBounds(gfx.mojom.AcceleratedWidget widget, gfx.mojom.Rect bounds);
+
+  // Takes control of the display and invoke a provided callback with a boolean
+  // status.
+  TakeDisplayControl() => (bool success);
+
+  // Releases control of the display and invoke a provided callback with a
+  // boolean status.
+  RelinquishDisplayControl() => (bool success);
+
+  // Requests a callback providing a list of the available displays.
+  RefreshNativeDisplays() =>
+      (array<display.mojom.DisplaySnapshot> display_snapshots);
+
+  // Transfers ownership of a DRM device to the GPU process.
+  AddGraphicsDevice(mojo_base.mojom.FilePath path,
+                    mojo_base.mojom.File file);
+
+  // Instructs the GPU to abandon a DRM device.
+  RemoveGraphicsDevice(mojo_base.mojom.FilePath path);
+
+  // Asks whether or not an incoming udev change event is blocked.
+  // |event_props| is a map of a display UDEV event's property name and its
+  // value. The list of a UDEV event's properties can be seen when running
+  // $ udevadm monitor --property on a DUT.
+  ShouldDisplayEventTriggerConfiguration(map<string, string> event_props) =>
+      (bool should_trigger);
+
+  // Configures (Enables/Disables) DRM displays, returns whether or not the
+  // configuration was successful. Adjusts the behavior of the commit according
+  // to |modeset_flag| (see display::ModesetFlag).
+  ConfigureNativeDisplays(
+      array<display.mojom.DisplayConfigurationParams> config_requests,
+      uint32 modeset_flag) =>
+    (bool config_success);
+
+  // Gets high-definition content protection (HDCP) (DRM as in
+  // digital rights management) state.
+  GetHDCPState(int64 display_id) =>
+      (int64 display_id, bool success, display.mojom.HDCPState state,
+       display.mojom.ContentProtectionMethod protection_method);
+
+  // Sets high-definition content protection (HDCP) (DRM as in
+  // digital rights management) state.
+  SetHDCPState(int64 display_id, display.mojom.HDCPState state,
+               display.mojom.ContentProtectionMethod protection_method) =>
+      (int64 display_id, bool success);
+
+  // Sets a 3x3 color transform matrix on the display hardware.
+  // TODO: Consider using a different type for the color matrix.
+  // https://crbug.com/846975.
+  SetColorMatrix(int64 display_id, array<float, 9> color_matrix);
+
+  // Sets a color correction gamma lookup table.
+  SetGammaCorrection(int64 display_id,
+                     array<display.mojom.GammaRampRGBEntry> degamma_lut,
+                     array<display.mojom.GammaRampRGBEntry> gamma_lut);
+
+  // Sets the state of the privacy screen feature, returns whether or not the
+  // configuration was successful.
+  SetPrivacyScreen(int64 display_id, bool enabled) => (bool success);
+
+  // Provides a DeviceCursor interface. The provided interface needs to be
+  // associated because the AcceleratedWidgets referenced by its methods are
+  // registered via CreateWindow() in this interface.
+  GetDeviceCursor(pending_associated_receiver<DeviceCursor> cursor);
+};

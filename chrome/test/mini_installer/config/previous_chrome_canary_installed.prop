@@ -6,6 +6,7 @@
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\chrome_proxy.exe": {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\chrome.dll": {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\chrome_elf.dll": {"exists": true},
+    "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\chrome_wer.dll": {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\Installer\\chrome.7z": {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe": {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION.manifest": {"exists": true},
@@ -49,6 +50,14 @@
         }
       },
       "wow_key": "KEY_WOW64_32KEY"
+    },
+    "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\RuntimeExceptionHelperModules": {
+      "exists": "required",
+      "values": {
+        "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\chrome_wer.dll": {
+          "type": "DWORD"
+        }
+      }
     },
     "HKEY_CURRENT_USER\\Software\\Classes\\CLSID\\$CHROME_TOAST_ACTIVATOR_CLSID_SXS\\LocalServer32": {
       "exists": "required",

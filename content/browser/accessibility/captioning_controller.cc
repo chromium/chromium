@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/android/jni_string.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/frame_messages.h"
 #include "content/public/android/content_jni_headers/CaptioningController_jni.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
@@ -19,15 +18,6 @@ using base::android::ScopedJavaLocalRef;
 namespace content {
 
 namespace {
-
-int GetRenderProcessIdFromRenderViewHost(RenderViewHost* host) {
-  DCHECK(host);
-  RenderProcessHost* render_process = host->GetProcess();
-  DCHECK(render_process);
-  if (render_process->IsInitializedAndNotDead())
-    return render_process->GetProcess().Handle();
-  return 0;
-}
 
 // Adds !important to all captions styles. They should always override any
 // styles added by the video author or by a user stylesheet. This is because in
@@ -51,27 +41,15 @@ CaptioningController::~CaptioningController() {
     Java_CaptioningController_onDestroy(env, obj);
 }
 
+void CaptioningController::PrimaryPageChanged(Page& page) {
+  CaptioningController::RenderViewReady();
+}
+
 void CaptioningController::RenderViewReady() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (!obj.is_null())
     Java_CaptioningController_onRenderProcessChange(env, obj);
-}
-
-void CaptioningController::RenderViewHostChanged(RenderViewHost* old_host,
-                                                 RenderViewHost* new_host) {
-  int old_pid = 0;
-  if (old_host) {
-    old_pid = GetRenderProcessIdFromRenderViewHost(old_host);
-  }
-  int new_pid =
-      GetRenderProcessIdFromRenderViewHost(web_contents()->GetRenderViewHost());
-  if (new_pid != old_pid) {
-    JNIEnv* env = AttachCurrentThread();
-    ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-    if (!obj.is_null())
-      Java_CaptioningController_onRenderProcessChange(env, obj);
-  }
 }
 
 void CaptioningController::WebContentsDestroyed() {

@@ -1,0 +1,21 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 1
+
+module arc.mojom;
+
+import "services/media_session/public/mojom/audio_focus.mojom";
+
+// Next method ID: 3
+interface MediaSessionInstance {
+  // Enable audio focus integration on the Android side and register the
+  // unified AudioPolicy. The audio policy will send audio focus requests
+  // to |service|.
+  EnableAudioFocus@1(
+      pending_remote<media_session.mojom.AudioFocusManager> service);
+
+  // Disable audio focus integration if it is enabled.
+  DisableAudioFocus@2();
+};

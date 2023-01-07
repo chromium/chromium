@@ -1,8 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/user_model.h"
+
+#include "base/trace_event/trace_event.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
@@ -62,7 +64,7 @@ void UserModel::DidFinishProcessingInputEvent(const base::TimeTicks now) {
 
 base::TimeDelta UserModel::TimeLeftInUserGesture(base::TimeTicks now) const {
   base::TimeDelta escalated_priority_duration =
-      base::TimeDelta::FromMilliseconds(kGestureEstimationLimitMillis);
+      base::Milliseconds(kGestureEstimationLimitMillis);
 
   // If the input event is still pending, go into input prioritized policy and
   // check again later.
@@ -96,12 +98,12 @@ bool UserModel::IsGestureExpectedSoonImpl(
     if (IsGestureExpectedToContinue(now, prediction_valid_duration))
       return false;
     *prediction_valid_duration =
-        base::TimeDelta::FromMilliseconds(kExpectSubsequentGestureMillis);
+        base::Milliseconds(kExpectSubsequentGestureMillis);
     return true;
   } else {
     // If we have finished a gesture then a subsequent gesture is deemed likely.
     base::TimeDelta expect_subsequent_gesture_for =
-        base::TimeDelta::FromMilliseconds(kExpectSubsequentGestureMillis);
+        base::Milliseconds(kExpectSubsequentGestureMillis);
     if (last_continuous_gesture_time_.is_null() ||
         last_continuous_gesture_time_ + expect_subsequent_gesture_for <= now) {
       return false;
@@ -119,7 +121,7 @@ bool UserModel::IsGestureExpectedToContinue(
     return false;
 
   base::TimeDelta median_gesture_duration =
-      base::TimeDelta::FromMilliseconds(kMedianGestureDurationMillis);
+      base::Milliseconds(kMedianGestureDurationMillis);
   base::TimeTicks expected_gesture_end_time =
       last_gesture_start_time_ + median_gesture_duration;
 
@@ -141,7 +143,7 @@ void UserModel::Reset(base::TimeTicks now) {
   pending_input_event_count_ = 0;
 }
 
-void UserModel::WriteIntoTracedValue(perfetto::TracedValue context) const {
+void UserModel::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("pending_input_event_count", pending_input_event_count_);
   dict.Add("last_input_signal_time", last_input_signal_time_);

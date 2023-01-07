@@ -1,0 +1,14 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+import("//build/config/fuchsia/sizes.gni")
+
+compute_fuchsia_package_sizes("fuchsia_sizes") {
+  data_deps = [
+    "//fuchsia_web/runners:cast_runner_pkg",
+    "//fuchsia_web/webengine:web_engine",
+  ]
+}

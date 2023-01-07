@@ -225,7 +225,7 @@ Some of the most important examples:
 
 *   WebView doesn't render any UI elements outside of the content viewport. The
     embedding app is responsible for any UI that may be needed to implement
-    WebView callbacks. 
+    WebView callbacks.
 
 *   Callback APIs exist to trigger permission prompts (though apps may not
     implement them), but there's no current API to render infobars, control how
@@ -480,7 +480,7 @@ behaviour/option is being controlled in each case.
 *** aside
 All common code is only compiled once for both WebView and Chrome for Android,
 for unavoidable packaging reasons, so there is no `WEBVIEW` or similar macro
-defined. Code can use `#if defined(OS_ANDROID)` to exclude it from other
+defined. Code can use `#if BUILDFLAG(IS_ANDROID)` to exclude it from other
 platforms if desired, but this includes Chrome for Android.
 ***
 

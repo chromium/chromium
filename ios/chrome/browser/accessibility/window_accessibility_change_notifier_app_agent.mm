@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
+#import "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,21 +25,21 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
 
 }
 
-@interface WindowAccessibityChangeNotifierAppAgent () <AppStateObserver,
-                                                       SceneStateObserver>
+@interface WindowAccessibilityChangeNotifierAppAgent () <AppStateObserver,
+                                                         SceneStateObserver>
 // Observed app state.
 @property(nonatomic, weak) AppState* appState;
 
 @property(nonatomic, assign) NSUInteger visibleWindowCount;
 
-// If an update is pending, |lastUpdateTime| is the last time that an event
+// If an update is pending, `lastUpdateTime` is the last time that an event
 // occurred that might cause the window count to change. If no update is pending
-// |lastUpdateTime| is nil.
-@property(nonatomic) NSDate* lastUpdateTime;
+// `lastUpdateTime` is nil.
+@property(nonatomic, strong) NSDate* lastUpdateTime;
 
 @end
 
-@implementation WindowAccessibityChangeNotifierAppAgent
+@implementation WindowAccessibilityChangeNotifierAppAgent
 
 #pragma mark - AppStateAgent
 
@@ -82,7 +82,7 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
   // Weakify, since the window count can change in shutdown, so there are
   // likely to be pending notifications that would otherwise keep this object
   // alive.
-  __weak WindowAccessibityChangeNotifierAppAgent* weakSelf = self;
+  __weak WindowAccessibilityChangeNotifierAppAgent* weakSelf = self;
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
                                static_cast<int64_t>(delay * NSEC_PER_SEC)),
                  dispatch_get_main_queue(), ^{
@@ -97,7 +97,7 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
   NSDate* now = [NSDate date];
   NSTimeInterval delta = [now timeIntervalSinceDate:self.lastUpdateTime];
   if (delta < kWindowNotifcationDelay) {
-    // Repost with a delay sufficient to be |kWindowNotifcationDelay| after
+    // Repost with a delay sufficient to be `kWindowNotifcationDelay` after
     // the last update time.
     NSTimeInterval newDelta = kWindowNotifcationDelay - delta;
     [self scheduleWindowCountWithDelay:newDelta];
@@ -136,7 +136,7 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
   }
 }
 
-// Update |self.viisbleWindowCount| with the total number of foregrounded
+// Update `self.visibleWindowCount` with the total number of foregrounded
 // connected scenes.
 - (void)updateWindowCount {
   NSUInteger windowCount = 0;

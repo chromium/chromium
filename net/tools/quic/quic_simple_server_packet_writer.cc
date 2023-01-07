@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,14 @@
 #include "net/base/net_errors.h"
 #include "net/quic/address_utils.h"
 #include "net/socket/udp_server_socket.h"
-#include "net/third_party/quiche/src/quic/core/quic_dispatcher.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_dispatcher.h"
 
 namespace net {
 
 QuicSimpleServerPacketWriter::QuicSimpleServerPacketWriter(
     UDPServerSocket* socket,
     quic::QuicDispatcher* dispatcher)
-    : socket_(socket), dispatcher_(dispatcher), write_blocked_(false) {}
+    : socket_(socket), dispatcher_(dispatcher) {}
 
 QuicSimpleServerPacketWriter::~QuicSimpleServerPacketWriter() = default;
 
@@ -39,6 +39,11 @@ bool QuicSimpleServerPacketWriter::IsWriteBlocked() const {
 
 void QuicSimpleServerPacketWriter::SetWritable() {
   write_blocked_ = false;
+}
+
+absl::optional<int> QuicSimpleServerPacketWriter::MessageTooBigErrorCode()
+    const {
+  return ERR_MSG_TOO_BIG;
 }
 
 quic::WriteResult QuicSimpleServerPacketWriter::WritePacket(

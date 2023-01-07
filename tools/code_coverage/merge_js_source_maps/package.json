@@ -1,0 +1,9 @@
+{
+  "name": "merge_js_source_maps",
+  "version": "0.1",
+  "description": "Merge 2 inline sourcemaps",
+  "main": "merge_js_source_maps.js",
+  "files": [ "merge_js_source_maps.js" ],
+  "license": "SEE LICENSE IN ../../../LICENSE",
+  "type" : "module"
+}

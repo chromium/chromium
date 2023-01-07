@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,170 +7,217 @@
  * text-to-speech settings.
  */
 
-Polymer({
-  is: 'settings-tts-subpage',
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
+import '../../controls/settings_slider.js';
+import '../../settings_shared.css.js';
 
-  behaviors: [
-    DeepLinkingBehavior,
-    I18nBehavior,
-    settings.RouteObserverBehavior,
-    WebUIListenerBehavior,
-  ],
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
+import {routes} from '../os_route.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-    /**
-     * Available languages.
-     * @type {!Array<!{language: string, code: string, preferred: boolean,
-     *     voice: TtsHandlerVoice}>}
-     */
-    languagesToVoices: {
-      type: Array,
-      notify: true,
-    },
+import {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './tts_subpage_browser_proxy.js';
 
-    /**
-     * All voices.
-     * @type {!Array<!TtsHandlerVoice>}
-     */
-    allVoices: {
-      type: Array,
-      value: [],
-      notify: true,
-    },
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsTtsSubpageElementBase = mixinBehaviors(
+    [
+      DeepLinkingBehavior,
+      I18nBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
+    ],
+    PolymerElement);
 
-    /**
-     * Default preview voice.
-     */
-    defaultPreviewVoice: {
-      type: String,
-      notify: true,
-    },
+/** @polymer */
+class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
+  static get is() {
+    return 'settings-tts-subpage';
+  }
 
-    /**
-     * Whether preview is currently speaking.
-     * @private
-     */
-    isPreviewing_: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    previewText_: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
 
-    /** Whether any voices are loaded. */
-    hasVoices: {
-      type: Boolean,
-      computed: 'hasVoices_(allVoices)',
-    },
+      /**
+       * Available languages.
+       * @type {!Array<!{language: string, code: string, preferred: boolean,
+       *     voice: TtsHandlerVoice}>}
+       */
+      languagesToVoices: {
+        type: Array,
+        notify: true,
+      },
 
-    /** Whether the additional languages section has been opened. */
-    languagesOpened: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * All voices.
+       * @type {!Array<!TtsHandlerVoice>}
+       */
+      allVoices: {
+        type: Array,
+        value: [],
+        notify: true,
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kTextToSpeechRate,
-        chromeos.settings.mojom.Setting.kTextToSpeechPitch,
-        chromeos.settings.mojom.Setting.kTextToSpeechVolume,
-        chromeos.settings.mojom.Setting.kTextToSpeechVoice,
-        chromeos.settings.mojom.Setting.kTextToSpeechEngines,
-      ]),
-    },
-  },
+      /**
+       * Default preview voice.
+       */
+      defaultPreviewVoice: {
+        type: String,
+        notify: true,
+      },
 
-  /** @private {?TtsSubpageBrowserProxy} */
-  ttsBrowserProxy_: null,
+      /**
+       * Whether preview is currently speaking.
+       * @private
+       */
+      isPreviewing_: {
+        type: Boolean,
+        value: false,
+      },
 
-  /** @private {?settings.LanguagesBrowserProxy} */
-  langBrowserProxy_: null,
+      /** @private */
+      previewText_: {
+        type: String,
+        value: '',
+      },
+
+      /** Whether any voices are loaded. */
+      hasVoices: {
+        type: Boolean,
+        computed: 'hasVoices_(allVoices)',
+      },
+
+      /** Whether the additional languages section has been opened. */
+      languagesOpened: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          Setting.kTextToSpeechRate,
+          Setting.kTextToSpeechPitch,
+          Setting.kTextToSpeechVolume,
+          Setting.kTextToSpeechVoice,
+          Setting.kTextToSpeechEngines,
+        ]),
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!TtsSubpageBrowserProxy} */
     this.ttsBrowserProxy_ = TtsSubpageBrowserProxyImpl.getInstance();
-    this.langBrowserProxy_ = settings.LanguagesBrowserProxyImpl.getInstance();
-  },
+
+    /** @private {!LanguagesBrowserProxy} */
+    this.langBrowserProxy_ = LanguagesBrowserProxyImpl.getInstance();
+
+    /** @type {Array<!TtsHandlerExtension>} */
+    this.extensions = [];
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     // Populate the preview text with textToSpeechPreviewInput. Users can change
     // this to their own value later.
     this.previewText_ = this.i18n('textToSpeechPreviewInput');
     this.addWebUIListener(
-        'all-voice-data-updated', this.populateVoiceList_.bind(this));
+        'all-voice-data-updated', voices => this.populateVoiceList_(voices));
     this.ttsBrowserProxy_.getAllTtsVoiceData();
     this.addWebUIListener(
-        'tts-extensions-updated', this.populateExtensionList_.bind(this));
+        'tts-extensions-updated',
+        extensions => this.populateExtensionList_(extensions));
     this.addWebUIListener(
-        'tts-preview-state-changed', this.onTtsPreviewStateChanged_.bind(this));
+        'tts-preview-state-changed',
+        isSpeaking => this.onTtsPreviewStateChanged_(isSpeaking));
     this.ttsBrowserProxy_.getTtsExtensions();
-  },
+    this.ttsBrowserProxy_.refreshTtsVoices();
+  }
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.MANAGE_TTS_SETTINGS) {
+    if (route !== routes.MANAGE_TTS_SETTINGS) {
       return;
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /*
    * Ticks for the Speech Rate slider. Valid rates are between 0.1 and 5.
-   * @return {!Array<!cr_slider.SliderTick>}
+   * @return {!Array<!SliderTick>}
    * @private
    */
   speechRateTicks_() {
     return this.buildLinearTicks_(0.1, 5);
-  },
+  }
 
   /**
    * Ticks for the Speech Pitch slider. Valid pitches are between 0.2 and 2.
-   * @return {!Array<!cr_slider.SliderTick>}
+   * @return {!Array<!SliderTick>}
    * @private
    */
   speechPitchTicks_() {
     return this.buildLinearTicks_(0.2, 2);
-  },
+  }
 
   /**
    * Ticks for the Speech Volume slider. Valid volumes are between 0.2 and
    * 1 (100%), but volumes lower than .2 are excluded as being too quiet.
-   * @return {!Array<!cr_slider.SliderTick>}
+   * @return {!Array<!SliderTick>}
    * @private
    */
   speechVolumeTicks_() {
     return this.buildLinearTicks_(0.2, 1);
-  },
+  }
 
   /**
    * A helper to build a set of ticks between |min| and |max| (inclusive) spaced
    * evenly by 0.1.
    * @param {number} min
    * @param {number} max
-   * @return {!Array<!cr_slider.SliderTick>}
+   * @return {!Array<!SliderTick>}
    * @private
    */
   buildLinearTicks_(min, max) {
@@ -184,12 +231,12 @@ Polymer({
       ticks.push(this.initTick_(tickValue / 10));
     }
     return ticks;
-  },
+  }
 
   /**
    * Initializes i18n labels for ticks arrays.
    * @param {number} tick The value to make a tick for.
-   * @return {!cr_slider.SliderTick}
+   * @return {!SliderTick}
    * @private
    */
   initTick_(tick) {
@@ -199,7 +246,7 @@ Polymer({
         this.i18n('defaultPercentage', strValue) :
         this.i18n('percentage', strValue);
     return {label: label, value: tick, ariaValue: value};
-  },
+  }
 
   /**
    * Returns true if any voices are loaded.
@@ -209,7 +256,7 @@ Polymer({
    */
   hasVoices_(voices) {
     return voices.length > 0;
-  },
+  }
 
   /**
    * Returns true if voices are loaded and preview is not currently speaking and
@@ -224,7 +271,7 @@ Polymer({
     const nonWhitespaceRe = /\S+/;
     const hasPreviewText = nonWhitespaceRe.exec(previewText) != null;
     return this.hasVoices_(voices) && !isPreviewing && hasPreviewText;
-  },
+  }
 
   /**
    * Populates the list of languages and voices for the UI to use in display.
@@ -235,7 +282,7 @@ Polymer({
     // Build a map of language code to human-readable language and voice.
     const result = {};
     const languageCodeMap = {};
-    const pref = this.prefs.settings['language']['preferred_languages'];
+    const pref = this.prefs['intl']['accept_languages'];
     const preferredLangs = pref.value.split(',');
     voices.forEach(voice => {
       if (!result[voice.languageCode]) {
@@ -243,7 +290,7 @@ Polymer({
           language: voice.displayLanguage,
           code: voice.languageCode,
           preferred: false,
-          voices: []
+          voices: [],
         };
       }
       // Each voice gets a unique ID from its name and extension.
@@ -264,7 +311,7 @@ Polymer({
     this.set('languagesToVoices', Object.values(result));
     this.set('allVoices', voices);
     this.setDefaultPreviewVoiceForLocale_(voices, languageCodeMap);
-  },
+  }
 
   /**
    * Returns true if the language is a primary language and should be shown by
@@ -276,7 +323,7 @@ Polymer({
    */
   isPrimaryLanguage_(language) {
     return language.preferred;
-  },
+  }
 
   /**
    * Returns true if the language is a secondary language and should be hidden
@@ -288,7 +335,7 @@ Polymer({
    */
   isSecondaryLanguage_(language) {
     return !language.preferred;
-  },
+  }
 
   /**
    * Sets the list of Text-to-Speech extensions for the UI.
@@ -297,7 +344,7 @@ Polymer({
    */
   populateExtensionList_(extensions) {
     this.extensions = extensions;
-  },
+  }
 
   /**
    * Called when the TTS voice preview state changes between speaking and not
@@ -307,7 +354,7 @@ Polymer({
    */
   onTtsPreviewStateChanged_(isSpeaking) {
     this.isPreviewing_ = isSpeaking;
-  },
+  }
 
   /**
    * A function used for sorting languages alphabetically.
@@ -318,7 +365,7 @@ Polymer({
    */
   alphabeticalSort_(first, second) {
     return first.language.localeCompare(second.language);
-  },
+  }
 
   /**
    * Tests whether a language has just once voice.
@@ -328,7 +375,7 @@ Polymer({
    */
   hasOneLanguage_(lang) {
     return lang['voices'].length === 1;
-  },
+  }
 
   /**
    * Returns a list of objects that can be used as drop-down menu options for a
@@ -341,7 +388,7 @@ Polymer({
     return lang.voices.map(voice => {
       return {value: voice.id, name: voice.name};
     });
-  },
+  }
 
   /**
    * Updates the preferences given the current list of voices.
@@ -356,13 +403,13 @@ Polymer({
       return;
     }
     const allCodes = new Set(
-        Object.keys(this.prefs.settings['tts']['lang_to_voice_name'].value));
+        Object.keys(this.prefs['settings']['tts']['lang_to_voice_name'].value));
     for (const code in langToVoices) {
       // Remove from allCodes, to track what we've found a default for.
       allCodes.delete(code);
       const voices = langToVoices[code].voices;
       const defaultVoiceForLang =
-          this.prefs.settings['tts']['lang_to_voice_name'].value[code];
+          this.prefs['settings']['tts']['lang_to_voice_name'].value[code];
       if (!defaultVoiceForLang || defaultVoiceForLang === '') {
         // Initialize prefs that have no value
         this.set(
@@ -386,7 +433,7 @@ Polymer({
     for (const code of allCodes) {
       this.set('prefs.settings.tts.lang_to_voice_name.value.' + code, '');
     }
-  },
+  }
 
   /**
    * Sets the voice to show in the preview drop-down as default, based on the
@@ -419,7 +466,7 @@ Polymer({
             const code = languageCodeMap[prospectiveUILanguage];
             // First try the pref value.
             result =
-                this.prefs.settings['tts']['lang_to_voice_name'].value[code];
+                this.prefs['settings']['tts']['lang_to_voice_name'].value[code];
           }
           if (!result) {
             // If it's not a pref value yet, or the prospectiveUILanguage was
@@ -428,7 +475,7 @@ Polymer({
           }
           this.set('defaultPreviewVoice', result);
         });
-  },
+  }
 
   /**
    * Gets the best voice for the app locale.
@@ -446,13 +493,13 @@ Polymer({
       }
     });
     return bestVoice;
-  },
+  }
 
   /** @private */
   onPreviewTtsClick_() {
     this.ttsBrowserProxy_.previewTtsVoice(
         this.previewText_, this.$.previewVoice.value);
-  },
+  }
 
   /**
    * @param {!{model:Object}} event
@@ -461,5 +508,7 @@ Polymer({
   onEngineSettingsTap_(event) {
     this.ttsBrowserProxy_.wakeTtsEngine();
     window.open(event.model.extension.optionsPage);
-  },
-});
+  }
+}
+
+customElements.define(SettingsTtsSubpageElement.is, SettingsTtsSubpageElement);

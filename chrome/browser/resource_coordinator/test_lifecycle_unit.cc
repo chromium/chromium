@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,7 +70,8 @@ bool TestLifecycleUnit::CanDiscard(mojom::LifecycleUnitDiscardReason reason,
   return can_discard_;
 }
 
-bool TestLifecycleUnit::Discard(LifecycleUnitDiscardReason discard_reason) {
+bool TestLifecycleUnit::Discard(LifecycleUnitDiscardReason discard_reason,
+                                uint64_t resident_set_size_estimate) {
   return false;
 }
 

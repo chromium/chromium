@@ -1,9 +1,9 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_POLICY_LOW_LEVEL_H__
-#define SANDBOX_SRC_POLICY_LOW_LEVEL_H__
+#ifndef SANDBOX_WIN_SRC_POLICY_LOW_LEVEL_H_
+#define SANDBOX_WIN_SRC_POLICY_LOW_LEVEL_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -12,7 +12,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_engine_params.h"
@@ -79,9 +79,14 @@ class PolicyRule;
 // Provides the means to collect rules into a policy store (memory)
 class LowLevelPolicy {
  public:
+  LowLevelPolicy() = delete;
+
   // policy_store: must contain allocated memory and the internal
   // size fields set to correct values.
   explicit LowLevelPolicy(PolicyGlobal* policy_store);
+
+  LowLevelPolicy(const LowLevelPolicy&) = delete;
+  LowLevelPolicy& operator=(const LowLevelPolicy&) = delete;
 
   // Destroys all the policy rules.
   ~LowLevelPolicy();
@@ -102,8 +107,7 @@ class LowLevelPolicy {
     IpcTag service;
   };
   std::list<RuleNode> rules_;
-  PolicyGlobal* policy_store_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LowLevelPolicy);
+  raw_ptr<PolicyGlobal> policy_store_;
 };
 
 // There are 'if' rules and 'if not' comparisons
@@ -178,12 +182,12 @@ class PolicyRule {
                   size_t opcode_size,
                   char* data_start,
                   size_t* data_size) const;
-  PolicyBuffer* buffer_;
-  OpcodeFactory* opcode_factory_;
+  raw_ptr<PolicyBuffer> buffer_;
+  raw_ptr<OpcodeFactory> opcode_factory_;
   EvalResult action_;
   bool done_;
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_POLICY_LOW_LEVEL_H__
+#endif  // SANDBOX_WIN_SRC_POLICY_LOW_LEVEL_H_

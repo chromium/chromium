@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,26 +12,25 @@
 namespace weblayer {
 
 PrerenderTabHelper::PrerenderTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PrerenderTabHelper>(*web_contents) {}
 
 PrerenderTabHelper::~PrerenderTabHelper() = default;
 
-void PrerenderTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
-      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+void PrerenderTabHelper::PrimaryPageChanged(content::Page& page) {
+  if (page.GetMainDocument().IsErrorDocument())
     return;
-  }
 
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
       NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents()->GetBrowserContext());
 
   if (no_state_prefetch_manager &&
-      !no_state_prefetch_manager->IsWebContentsPrerendering(web_contents()))
-    no_state_prefetch_manager->RecordNavigation(navigation_handle->GetURL());
+      !no_state_prefetch_manager->IsWebContentsPrefetching(web_contents()))
+    no_state_prefetch_manager->RecordNavigation(
+        page.GetMainDocument().GetLastCommittedURL());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PrerenderTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrerenderTabHelper);
 
 }  // namespace weblayer

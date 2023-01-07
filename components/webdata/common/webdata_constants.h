@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@ WEBDATA_EXPORT extern const base::FilePath::CharType kWebDataFilename[];
 
 // Note: On desktop, the account-scoped web data store is only stored in memory,
 // so doesn't have a file path. So this constant only exists on mobile.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 WEBDATA_EXPORT extern const base::FilePath::CharType kAccountWebDataFilename[];
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEBDATA_CONSTANTS_H_

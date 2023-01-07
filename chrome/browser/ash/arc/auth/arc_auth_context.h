@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -25,6 +24,10 @@ class ArcAuthContext : public signin::IdentityManager::Observer {
   // Note: |account_id| can be the Device Account or a Secondary Account stored
   // in Chrome OS Account Manager.
   ArcAuthContext(Profile* profile, const CoreAccountId& account_id);
+
+  ArcAuthContext(const ArcAuthContext&) = delete;
+  ArcAuthContext& operator=(const ArcAuthContext&) = delete;
+
   ~ArcAuthContext() override;
 
   // Prepares the context. Calling while an inflight operation exists will
@@ -60,8 +63,6 @@ class ArcAuthContext : public signin::IdentityManager::Observer {
   bool context_prepared_ = false;
 
   base::OneShotTimer refresh_token_timeout_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAuthContext);
 };
 
 }  // namespace arc

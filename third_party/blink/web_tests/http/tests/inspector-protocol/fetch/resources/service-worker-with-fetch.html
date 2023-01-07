@@ -1,0 +1,9 @@
+<script>
+  navigator.serviceWorker.register('service-worker-with-fetch.js');
+  navigator.serviceWorker.addEventListener('message', event => {
+    console.log('main got message', event.data);
+  });
+  navigator.serviceWorker.ready.then(registration => {
+    registration.active.postMessage('init');
+  });
+</script>

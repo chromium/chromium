@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_VIEW_TARGETER_H_
 #define UI_VIEWS_VIEW_TARGETER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_targeter.h"
 #include "ui/views/views_export.h"
 
@@ -29,6 +29,10 @@ class ViewTargeterDelegate;
 class VIEWS_EXPORT ViewTargeter : public ui::EventTargeter {
  public:
   explicit ViewTargeter(ViewTargeterDelegate* delegate);
+
+  ViewTargeter(const ViewTargeter&) = delete;
+  ViewTargeter& operator=(const ViewTargeter&) = delete;
+
   ~ViewTargeter() override;
 
   // A call-through to DoesIntersectRect() on |delegate_|.
@@ -56,9 +60,7 @@ class VIEWS_EXPORT ViewTargeter : public ui::EventTargeter {
 
   // ViewTargeter does not own the |delegate_|, but |delegate_| must
   // outlive the targeter.
-  ViewTargeterDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewTargeter);
+  raw_ptr<ViewTargeterDelegate> delegate_;
 };
 
 }  // namespace views

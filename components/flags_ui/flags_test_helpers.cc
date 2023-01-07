@@ -1,16 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/flags_ui/flags_test_helpers.h"
 
 #include <gtest/gtest.h>
-#include <algorithm>
+
 #include <map>
 #include <string>
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
@@ -93,6 +94,16 @@ std::vector<std::string> LoadFlagNeverExpireList() {
 }
 
 bool IsValidLookingOwner(base::StringPiece owner) {
+  // Never allow ',' or ' ' in owner names, regardless of all other constraints.
+  // It is otherwise too easy to accidentally do this:
+  //   "owners": [ "foo@chromium.org,bar@chromium.org" ]
+  // or this:
+  //   "owners": [ "foo@chromium.org bar@chromium.org" ]
+  // Apologies to those who have spaces in their email addresses or OWNERS file
+  // path names :)
+  if (owner.find_first_of(", ") != std::string::npos)
+    return false;
+
   // Per the specification at the top of flag-metadata.json, an owner is one of:
   // 1) A string containing '@', which is treated as a full email address
   // 2) A string beginning with '//', which is a path to an OWNERS file
@@ -189,11 +200,6 @@ namespace flags_ui {
 
 namespace testing {
 
-void EnsureEveryFlagHasMetadata(const flags_ui::FeatureEntry* entries,
-                                size_t count) {
-  EnsureEveryFlagHasMetadata(base::make_span(entries, count));
-}
-
 void EnsureEveryFlagHasMetadata(
     const base::span<const flags_ui::FeatureEntry>& entries) {
   FlagMetadataMap metadata = LoadFlagMetadata();
@@ -222,8 +228,7 @@ void EnsureOnlyPermittedFlagsNeverExpire() {
 
   for (const auto& entry : metadata) {
     if (entry.second.expiry_milestone == -1 &&
-        std::find(listed_flags.begin(), listed_flags.end(), entry.first) ==
-            listed_flags.end()) {
+        !base::Contains(listed_flags, entry.first)) {
       missing_flags.push_back(entry.first);
     }
   }
@@ -291,7 +296,8 @@ void EnsureFlagsAreListedInAlphabeticalOrder() {
                              FlagFile::kFlagNeverExpire);
 }
 
-// TODO(ellyjones): Does this / should this run on iOS as well?
+// TODO(https://crbug.com/1241068): Call this from the iOS flags unittests once
+// flag expiration is supported there.
 void EnsureRecentUnexpireFlagsArePresent(
     const base::span<const flags_ui::FeatureEntry>& entries,
     int current_milestone) {

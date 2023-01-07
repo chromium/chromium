@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,10 @@ cc::SnapAlignment AdjustForRtlWritingMode(cc::SnapAlignment align) {
 SnapCoordinator::SnapCoordinator() : snap_containers_() {}
 
 SnapCoordinator::~SnapCoordinator() = default;
+
+void SnapCoordinator::Trace(Visitor* visitor) const {
+  visitor->Trace(snap_containers_);
+}
 
 // Returns the layout box's next ancestor that can be a snap container.
 // The origin may be either a snap area or a snap container.
@@ -109,12 +113,12 @@ void SnapCoordinator::AddSnapContainer(LayoutBox& snap_container) {
   SnapAreaSet* snap_areas = ancestor_snap_container->SnapAreas();
   if (!snap_areas)
     return;
-  Vector<LayoutBox*> snap_areas_to_reassign;
-  for (auto* snap_area : *snap_areas) {
+  HeapVector<Member<LayoutBox>> snap_areas_to_reassign;
+  for (const auto& snap_area : *snap_areas) {
     if (FindSnapContainer(*snap_area) == &snap_container)
       snap_areas_to_reassign.push_back(snap_area);
   }
-  for (auto* snap_area : snap_areas_to_reassign)
+  for (const auto& snap_area : snap_areas_to_reassign)
     snap_area->SetSnapContainer(&snap_container);
 
   // The new snap container will not have attached its ScrollableArea yet, so we
@@ -153,8 +157,8 @@ void SnapCoordinator::RemoveSnapContainer(LayoutBox& snap_container) {
 
 void SnapCoordinator::SnapContainerDidChange(LayoutBox& snap_container) {
   // Scroll snap properties have no effect on the document element instead they
-  // are propagated to (See Document::PropagateStyleToViewport) and handled by
-  // the LayoutView.
+  // are propagated to (See StyleResolver::PropagateStyleToViewport) and handled
+  // by the LayoutView.
   if (snap_container.GetNode() ==
       snap_container.GetDocument().documentElement())
     return;
@@ -273,10 +277,9 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   // to keep the area data up to date. So just update the type and skip updating
   // areas as an optimization.
   if (!snap_container_data.scroll_snap_type().is_none) {
-    FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
+    gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
         scrollable_area->MaximumScrollOffset());
-    snap_container_data.set_max_position(
-        gfx::ScrollOffset(max_position.X(), max_position.Y()));
+    snap_container_data.set_max_position(max_position);
 
     // Scroll-padding represents inward offsets from the corresponding edge of
     // the scrollport.
@@ -312,13 +315,13 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
         MinimumValueForLength(container_style->ScrollPaddingLeft(),
                               container_rect.Width()));
     container_rect.Contract(container_padding);
-    snap_container_data.set_rect(FloatRect(container_rect));
+    snap_container_data.set_rect(gfx::RectF(container_rect));
 
     if (snap_container_data.scroll_snap_type().strictness ==
         cc::SnapStrictness::kProximity) {
       PhysicalSize size = container_rect.size;
       size.Scale(kProximityRatio);
-      gfx::ScrollOffset range(size.width.ToFloat(), size.height.ToFloat());
+      gfx::PointF range(size.width.ToFloat(), size.height.ToFloat());
       snap_container_data.set_proximity_range(range);
     }
 
@@ -431,7 +434,7 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
       area_style->ScrollMarginTop(), area_style->ScrollMarginRight(),
       area_style->ScrollMarginBottom(), area_style->ScrollMarginLeft());
   area_rect.Expand(area_margin);
-  snap_area_data.rect = FloatRect(area_rect);
+  snap_area_data.rect = gfx::RectF(area_rect);
 
   PhysicalRect container_rect = snap_container.PhysicalBorderBoxRect();
 
@@ -450,14 +453,14 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
 #ifndef NDEBUG
 
 void SnapCoordinator::ShowSnapAreaMap() {
-  for (auto* const container : snap_containers_)
+  for (const auto& container : snap_containers_)
     ShowSnapAreasFor(container);
 }
 
 void SnapCoordinator::ShowSnapAreasFor(const LayoutBox* container) {
   LOG(INFO) << *container->GetNode();
   if (SnapAreaSet* snap_areas = container->SnapAreas()) {
-    for (auto* const snap_area : *snap_areas) {
+    for (const auto& snap_area : *snap_areas) {
       LOG(INFO) << "    " << *snap_area->GetNode();
     }
   }

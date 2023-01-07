@@ -1,0 +1,51 @@
+<style>
+#container > * {
+  background-color: var(--cros-nudge-background-color);
+  z-index: 999;
+}
+
+#dot {
+  border-radius: 50%;
+  height: 8px;
+  left: -8px;
+  position: fixed;
+  width: 8px;
+}
+
+#bubble {
+  align-items: center;
+  border-radius: 16px;
+  display: flex;
+  left: -296px;
+  max-width: calc(296px - 2 * 16px);
+  padding: 8px 16px;
+  position: fixed;
+  width: fit-content;
+}
+
+#bubble.single-line {
+  border-radius: 18px;
+}
+
+#bubble > .icon {
+  -webkit-mask-image: url(/foreground/images/files/ui/nudge_star_icon.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-button-icon-color-primary);
+  height: 20px;
+  margin-inline-end: 12px;
+  width: 20px;
+}
+
+#bubble > span {
+  color: var(--cros-button-label-color-primary);
+  font: var(--cros-body-2-font);
+}
+</style>
+<div aria-hidden="true" id="container">
+  <div id="dot"></div>
+  <div id="bubble">
+    <span class="icon"></span>
+    <span id="text"></span>
+  </div>
+</div>

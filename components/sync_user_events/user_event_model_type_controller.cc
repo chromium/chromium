@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,13 +30,13 @@ void UserEventModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
                                         StopCallback callback) {
   DCHECK(CalledOnValidThread());
   switch (shutdown_reason) {
-    case syncer::STOP_SYNC:
+    case syncer::ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
       // Special case: For USER_EVENT, we want to clear all data even when Sync
       // is stopped temporarily.
-      shutdown_reason = syncer::DISABLE_SYNC;
+      shutdown_reason = syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
       break;
-    case syncer::DISABLE_SYNC:
-    case syncer::BROWSER_SHUTDOWN:
+    case syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
+    case syncer::ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
       break;
   }
   ModelTypeController::Stop(shutdown_reason, std::move(callback));
@@ -44,7 +44,7 @@ void UserEventModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
 
 DataTypeController::PreconditionState
 UserEventModelTypeController::GetPreconditionState() const {
-  return sync_service_->GetUserSettings()->IsUsingSecondaryPassphrase()
+  return sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()
              ? PreconditionState::kMustStopAndClearData
              : PreconditionState::kPreconditionsMet;
 }

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,6 +14,12 @@ mojom_component("tokens") {
   shared_cpp_typemaps = [
     {
       types = [
+        # DOCUMENT TOKENS
+        {
+          mojom = "blink.mojom.DocumentToken"
+          cpp = "::blink::DocumentToken"
+        },
+
         # FRAME TOKENS
         {
           mojom = "blink.mojom.LocalFrameToken"
@@ -72,6 +78,14 @@ mojom_component("tokens") {
         # them to their own section, in alphabetical order. If adding a new
         # token here, please keep the following list in alphabetic order.
         {
+          mojom = "blink.mojom.AttributionSrcToken"
+          cpp = "::blink::AttributionSrcToken"
+        },
+        {
+          mojom = "blink.mojom.ClipboardSequenceNumberToken"
+          cpp = "::blink::ClipboardSequenceNumberToken"
+        },
+        {
           mojom = "blink.mojom.ExecutionContextToken"
           cpp = "::blink::ExecutionContextToken"
         },
@@ -82,6 +96,10 @@ mojom_component("tokens") {
         {
           mojom = "blink.mojom.V8ContextToken"
           cpp = "::blink::V8ContextToken"
+        },
+        {
+          mojom = "blink.mojom.WebGPUExecutionContextToken"
+          cpp = "::blink::WebGPUExecutionContextToken"
         },
       ]
       traits_headers = [

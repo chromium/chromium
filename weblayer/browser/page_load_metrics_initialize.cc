@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_base.h"
@@ -17,7 +16,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "weblayer/browser/heavy_ad_service_factory.h"
 #include "weblayer/browser/i18n_util.h"
-#include "weblayer/browser/no_state_prefetch/prerender_utils.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_utils.h"
 #include "weblayer/browser/page_load_metrics_observer_impl.h"
 #include "weblayer/browser/weblayer_page_load_metrics_memory_tracker_factory.h"
 
@@ -47,10 +46,14 @@ class PageLoadMetricsEmbedder
 
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   bool IsNewTabPageUrl(const GURL& url) override { return false; }
-  bool IsPrerender(content::WebContents* web_contents) override {
+  bool IsNoStatePrefetch(content::WebContents* web_contents) override {
     return NoStatePrefetchContentsFromWebContents(web_contents);
   }
   bool IsExtensionUrl(const GURL& url) override { return false; }
+  bool IsSidePanel(content::WebContents* web_contents) override {
+    // The side panel is not supported in WebLayer so this always returns false.
+    return false;
+  }
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override {
@@ -67,7 +70,7 @@ class PageLoadMetricsEmbedder
       page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(std::make_unique<PageLoadMetricsObserverImpl>());
 
-    if (!IsPrerendering()) {
+    if (!IsNoStatePrefetch(web_contents())) {
       std::unique_ptr<page_load_metrics::AdsPageLoadMetricsObserver>
           ads_observer =
               page_load_metrics::AdsPageLoadMetricsObserver::CreateIfNeeded(
@@ -81,9 +84,6 @@ class PageLoadMetricsEmbedder
 
     if (g_callback_for_testing)
       (*g_callback_for_testing).Run(tracker);
-  }
-  bool IsPrerendering() const override {
-    return NoStatePrefetchContentsFromWebContents(web_contents());
   }
 };
 

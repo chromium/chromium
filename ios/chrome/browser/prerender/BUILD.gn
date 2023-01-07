@@ -1,18 +1,10 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 source_set("prerender_pref") {
   configs += [ "//build/config/compiler:enable_arc" ]
   public = [ "prerender_pref.h" ]
-  sources = [ "prerender_pref.mm" ]
-
-  deps = [
-    "//base",
-    "//components/pref_registry",
-    "//components/prefs",
-    "//ios/chrome/browser:pref_names",
-  ]
 }
 
 source_set("prerender") {
@@ -44,6 +36,7 @@ source_set("prerender") {
     "//ios/chrome/browser/app_launcher:app_launcher",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/crash_report:crash_report_internal",
+    "//ios/chrome/browser/download:mime_types",
     "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/history:tab_helper",
     "//ios/chrome/browser/itunes_urls:itunes_urls",
@@ -94,7 +87,6 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -103,6 +95,7 @@ source_set("eg2_tests") {
   sources = [ "prerender_egtest.mm" ]
   deps = [
     "//components/version_info",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

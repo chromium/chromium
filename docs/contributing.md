@@ -50,8 +50,12 @@ design docs should follow the process at
 
 ## Legal stuff
 
-All contributors must complete the contributor license agreement. For
-individual contributors, please complete the [Individual Contributor License
+All contributors must have valid Gerrit/Google accounts (which means you must
+be [old enough to manage your own
+account](https://support.google.com/accounts/answer/1350409)) and complete the
+contributor license agreement.
+
+For individual contributors, please complete the [Individual Contributor License
 Agreement][individual-cla] online. Corporate contributors must fill out the
 [Corporate Contributor License Agreement][corporate-cla] and send it to us as
 described on that page.
@@ -103,11 +107,11 @@ contribution can be accepted:
 ## Creating a change
 
 First, create a new branch for your change in git. Here, we create a branch
-called `mychange` (use whatever name you want here), with `origin/master` as
+called `mychange` (use whatever name you want here), with `origin/main` as
 the upstream branch.
 
 ```
-git checkout -b mychange -t origin/master
+git checkout -b mychange -t origin/main
 ```
 
 Write and test your change.
@@ -168,8 +172,7 @@ has more in-depth tips for writing a good commit description.
 ### Chromium-specific description tips
 
 - Links to previous CLs should be formatted as `https://crrev.com/c/NUMBER`,
-  which forwards to [Gitiles][cr-gitiles], rather than linking to the review at
-  <https://chromium-review.googlesource.com>.
+  which is slightly shorter than <https://chromium-review.googlesource.com>.
 
 - If there are instructions for testers to verify the change is correct,
   include them with the `Test:` tag:
@@ -314,6 +317,31 @@ Alternatively, a developer with commit access can [directly
 commit][direct-commit] a change, bypassing the commit queue. This should only
 be used in emergencies because it will bypass all the safety nets.
 
+## Relanding a change
+
+Occasionally changes that pass the [commit queue][commit-queue] and get
+submitted into Chromium will later be reverted. If this happens to your change,
+don't be discouraged! This can be a common part of the Chromium development
+cycle and happens for a variety of reasons, including a conflict with an
+unanticipated change or tests not covered on the commit queue.
+
+If this happens to your change, you're encouraged to pursue a reland. When doing
+so, following these basic steps can streamline the re-review process:
+- **Create the reland**: Click the `CREATE RELAND` button on the original change
+  in Gerrit. This will create a new change whose diff is identical to the
+  original, but has a small paper-trail in the commit message that leads back to
+  the original. This can be useful for sheriffs when debugging regressions.
+- **Append the fix**: If the reland requires file modifications not present in
+  the original change, simply upload these fixes in a subsequent patchset to the
+  reland change. By comparing the first patchset with the latest, this gives
+  reviewers the ability to see the diff of _just_ the reland fix.
+- **Describe the fix**: In the commit message of the reland change, briefly
+  summarize what's changed that makes relanding again safe. Explanations can
+  include: "included needed fix", "disabled failing tests", "crash was fixed
+  elsewhere". Specifically for that last case: if the reland change is identical
+  to the original and the reland fix was handled separately in a preceding
+  change, make sure to link to that change in the commit message of the reland.
+
 ## Code guidelines
 
 In addition to the adhering to the [styleguide][cr-styleguide], the following
@@ -323,13 +351,23 @@ general rules of thumb can be helpful in navigating how to structure changes:
   Chromium project.** This is important so developers can understand the
   constraints informing a design decision. Those constraints should be apparent
   from the scope of code within the boundary of the project and its various
-  repositories. In other words, for each line of code, you should be able to
-  find a product in the Chromium repositories that depends on that line of code
-  or else the line of code should be removed.
+  repositories. In general, for each line of code, you should be able to find a
+  product in the Chromium repositories that depends on that line of code or else
+  the line of code should be removed.
 
-  Completely new additions to the project (for example, support for a new OS
-  or architecture, or a new top-level directory for a new sub-project) must
-  be approved by [//ENG_REVIEW_OWNERS](../ENG_REVIEW_OWNERS).
+  When you are adding support for a new OS, a new architecture, a new port or
+  a new top-level directory, please send an email to
+  chrome-eng-review@google.com and get approval. For long-term maintenance
+  reasons, we will accept only things that are used by the Chromium project
+  (including Chromium-supported projects like V8 and Skia) and things whose
+  benefit to Chromium outweighs any cost increase in maintaining Chromium's
+  supported architectures / platforms (e.g. adding one ifdef branch for an
+  unsupported architecture / platform has negligible cost and is likely fine,
+  but introducing new abstractions or changes to higher level directories has
+  a high cost and would need to provide Chromium with corresponding benefit).
+  Note that an unsupported architecture / platform will not have bots on
+  Google-managed waterfalls (even FYI bots) or maintained by Chromium
+  developers. Please use existing ifdef branches as much as possible.
 
 - **Code should only be moved to a central location (e.g., //base) when
   multiple consumers would benefit.** We should resist the temptation to
@@ -360,6 +398,16 @@ general rules of thumb can be helpful in navigating how to structure changes:
   requirements, and minimizes the learning hurdles for developers to be
   successful contributing across the codebase. Additions of new languages must
   be approved by [//ENG_REVIEW_OWNERS](../ENG_REVIEW_OWNERS).
+
+- **When your team is making API changes or migrating between services, the
+  team mandating the change needs to do at least 80% of the work.** The
+  rationale is to reduce externalities by having the team that requires a
+  change spend the vast majority of the time required to make it happen.
+  This naturally encourages designing to minimize the cost of change, be it
+  through automation, tooling, or pooled centralized expertise. You can find
+  more detailed rationale in [this doc](https://docs.google.com/document/d/1elJisUpOb3h4-7WA4Wn754nzfgeCJ4v2kAFvMOzNfek/edit#)
+  (Google internal). If you need an exception or help, please contact
+  chromium-code-health-rotation@google.com.
 
 ## Tips
 
@@ -420,8 +468,11 @@ formats.
 * **Cq-Include-Trybots:**
   * A comma-separated list of trybots which should be triggered and
     checked by the CQ in addition to the normal set.
-  * Trybots are indicated in `master:builder` format (e.g.
-    `tryserver.chromium.linux:linux_asan_experimental`).
+  * Trybots are indicated in `bucket:builder` format (e.g.
+    `luci.chromium.try:android-asan`).
+  * The "Choose Tryjobs" UI in the "Checks" tab in Gerrit shows (and has
+    a button to copy) the Cq-Include-Trybots syntax for the currently
+    selected tryjobs.
 * **No-Presubmit:**
   * If present, the value should always be the string `true`.
   * Indicates to the CQ that it should not run presubmit checks on the CL.
@@ -460,12 +511,12 @@ formats.
     number.
 * **Cr-Branched-From:**
   * Automatically added by the git-numberer Gerrit plugin on changes
-    which are submitted to non-master branches.
-  * Aids those reading a non-master branch history in finding when a
-    given commit diverged from master.
+    which are submitted to non-main branches.
+  * Aids those reading a non-main branch history in finding when a
+    given commit diverged from main.
 
 [//]: # (the reference link section should be alphabetically sorted)
-[checkout-and-build]: https://chromium.googlesource.com/chromium/src/+/master/docs/#checking-out-and-building
+[checkout-and-build]: https://chromium.googlesource.com/chromium/src/+/main/docs/#checking-out-and-building
 [chrome-dd-review-process]: http://go/chrome-dd-review-process
 [chromium-design-docs]: https://groups.google.com/a/chromium.org/forum/#!forum/chromium-design-docs
 [code-reviews-owners]: code_reviews.md#OWNERS-files
@@ -475,12 +526,11 @@ formats.
 [core-principles]: https://www.chromium.org/developers/core-principles
 [corporate-cla]: https://cla.developers.google.com/about/google-corporate?csw=1
 [cr-authors]: https://chromium.googlesource.com/chromium/src/+/HEAD/AUTHORS
-[cr-gitiles]: https://chromium.googlesource.com/chromium/src/+/master/
-[cr-styleguide]: https://chromium.googlesource.com/chromium/src/+/master/styleguide/styleguide.md
+[cr-styleguide]: https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md
 [crbug-new]: https://bugs.chromium.org/p/chromium/issues/entry
 [crbug]: https://bugs.chromium.org/p/chromium/issues/list
-[cros-authors]: https://chromium.googlesource.com/chromium/src/+/master/AUTHORS
-[cros-dev-guide]: https://chromium.googlesource.com/chromiumos/docs/+/master/developer_guide.md
+[cros-authors]: https://chromium.googlesource.com/chromium/src/+/main/AUTHORS
+[cros-dev-guide]: https://chromium.googlesource.com/chromiumos/docs/+/main/developer_guide.md
 [crrev]: https://chromium-review.googlesource.com
 [depot-tools-setup]: https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up
 [design-doc-template]: https://docs.google.com/document/d/14YBYKgk-uSfjfwpKFlp_omgUq5hwMVazy_M965s_1KA
@@ -489,7 +539,7 @@ formats.
 [github-tutorial]: https://try.github.io
 [good-git-commit-message]: https://chris.beams.io/posts/git-commit/
 [individual-cla]: https://cla.developers.google.com/about/google-individual?csw=1
-[life-of-a-chromium-developer]: https://docs.google.com/a/google.com/present/view?id=0AetfwCoL2lQAZGQ5bXJ0NDVfMGRtdGQ0OWM2
+[life-of-a-chromium-developer]: https://docs.google.com/presentation/d/1abnqM9j6zFodPHA38JG1061rG2iGj_GABxEDgZsdbJg/edit
 [noms-tutorial]: https://meowni.ca/posts/chromium-101
 [review-lag]: https://dev.chromium.org/developers/contributing-code/minimizing-review-lag-across-time-zones
 [skia-dev-guide]: https://skia.org/dev/contrib

@@ -43,11 +43,11 @@ FAIL Object.getOwnPropertyDescriptor(RegExp, '$_').hasOwnProperty('get') should 
 FAIL Object.getOwnPropertyDescriptor(RegExp, '$_').hasOwnProperty('set') should be false. Was true.
 PASS Object.getOwnPropertyDescriptor(RegExp, '$_').enumerable is false
 PASS Object.getOwnPropertyDescriptor(RegExp, '$_').configurable is true
-FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').value should be true. Threw exception TypeError: Cannot read property 'value' of undefined
-FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').hasOwnProperty('get') should be false. Threw exception TypeError: Cannot read property 'hasOwnProperty' of undefined
-FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').hasOwnProperty('set') should be false. Threw exception TypeError: Cannot read property 'hasOwnProperty' of undefined
-FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').enumerable should be false. Threw exception TypeError: Cannot read property 'enumerable' of undefined
-FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').configurable should be false. Threw exception TypeError: Cannot read property 'configurable' of undefined
+FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').value should be true. Threw exception TypeError: Cannot read properties of undefined (reading 'value')
+FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').hasOwnProperty('get') should be false. Threw exception TypeError: Cannot read properties of undefined (reading 'hasOwnProperty')
+FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').hasOwnProperty('set') should be false. Threw exception TypeError: Cannot read properties of undefined (reading 'hasOwnProperty')
+FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').enumerable should be false. Threw exception TypeError: Cannot read properties of undefined (reading 'enumerable')
+FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').configurable should be false. Threw exception TypeError: Cannot read properties of undefined (reading 'configurable')
 PASS Object.getOwnPropertyDescriptor(Node, 'DOCUMENT_POSITION_DISCONNECTED').value is Node.DOCUMENT_POSITION_DISCONNECTED
 PASS Object.getOwnPropertyDescriptor(Node, 'DOCUMENT_POSITION_DISCONNECTED').hasOwnProperty('get') is false
 PASS Object.getOwnPropertyDescriptor(Node, 'DOCUMENT_POSITION_DISCONNECTED').hasOwnProperty('set') is false

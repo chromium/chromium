@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,21 @@
 [
     Exposed=(Window,Worker)
 ] interface AbortSignal : EventTarget {
+    [
+        CallWith=ScriptState,
+        Measure,
+        NewObject
+    ] static AbortSignal abort(optional any reason);
+    [
+        CallWith=ScriptState,
+        MeasureAs=AbortSignalTimeout,
+        NewObject,
+        RuntimeEnabled=AbortSignalTimeout
+    ] static AbortSignal timeout([EnforceRange] unsigned long long milliseconds);
+
     readonly attribute boolean aborted;
+    [CallWith=ScriptState] readonly attribute any reason;
+    [CallWith=ScriptState, MeasureAs=AbortSignalThrowIfAborted, RaisesException, RuntimeEnabled=AbortSignalThrowIfAborted] void throwIfAborted();
 
     attribute EventHandler onabort;
 };

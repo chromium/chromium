@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -15,18 +14,27 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/value_builder.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
+#include "ui/views/test/widget_test.h"
 
 namespace {
 
@@ -37,8 +45,9 @@ const char kReferrerId[] = "chrome-remove-extension-dialog";
 // A preference key storing the url loaded when an extension is uninstalled.
 const char kUninstallUrlPrefKey[] = "uninstall_url";
 
-scoped_refptr<const extensions::Extension> BuildTestExtension() {
-  return extensions::ExtensionBuilder("foo").Build();
+scoped_refptr<const extensions::Extension> BuildTestExtension(
+    const char* extension_name = "foo") {
+  return extensions::ExtensionBuilder(extension_name).Build();
 }
 
 std::string GetActiveUrl(Browser* browser) {
@@ -54,28 +63,45 @@ void SetUninstallURL(extensions::ExtensionPrefs* prefs,
                              std::make_unique<base::Value>(kUninstallUrl));
 }
 
+void CloseUninstallDialog(views::Widget* const bubble_widget) {
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  bubble_widget->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  destroyed_waiter.Wait();
+}
+
 class TestExtensionUninstallDialogDelegate
     : public extensions::ExtensionUninstallDialog::Delegate {
  public:
   explicit TestExtensionUninstallDialogDelegate(
       base::RepeatingClosure quit_closure)
-      : quit_closure_(quit_closure), canceled_(false) {}
+      : quit_closure_(quit_closure) {}
+
+  TestExtensionUninstallDialogDelegate(
+      const TestExtensionUninstallDialogDelegate&) = delete;
+  TestExtensionUninstallDialogDelegate& operator=(
+      const TestExtensionUninstallDialogDelegate&) = delete;
 
   ~TestExtensionUninstallDialogDelegate() override {}
 
-  bool canceled() { return canceled_; }
+  bool canceled() const { return canceled_; }
+  const std::u16string& error() const { return error_; }
 
  private:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
                                         const std::u16string& error) override {
+    ASSERT_FALSE(did_close_)
+        << "OnExtensionUninstallDialogClosed() was called twice!";
+    did_close_ = true;
     canceled_ = !did_start_uninstall;
+    error_ = error;
     quit_closure_.Run();
   }
 
   base::RepeatingClosure quit_closure_;
-  bool canceled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionUninstallDialogDelegate);
+  bool did_close_ = false;
+  bool canceled_ = false;
+  std::u16string error_;
 };
 
 }  // namespace
@@ -88,7 +114,8 @@ typedef InProcessBrowserTest ExtensionUninstallDialogViewBrowserTest;
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
                        TrackParentWindowDestruction) {
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
-  extensions::ExtensionSystem::Get(browser()->profile())->extension_service()
+  extensions::ExtensionSystem::Get(browser()->profile())
+      ->extension_service()
       ->AddExtension(extension.get());
 
   base::RunLoop run_loop;
@@ -113,7 +140,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
                        TrackParentWindowDestructionAfterViewCreation) {
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
-  extensions::ExtensionSystem::Get(browser()->profile())->extension_service()
+  extensions::ExtensionSystem::Get(browser()->profile())
+      ->extension_service()
       ->AddExtension(extension.get());
 
   base::RunLoop run_loop;
@@ -136,6 +164,44 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
   EXPECT_TRUE(delegate.canceled());
 }
 
+// Tests uninstalling the extension while the dialog is active.
+// Regression test for https://1200679.
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
+                       ExtensionUninstalledWhileDialogIsActive) {
+  scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
+  extensions::ExtensionService* const service =
+      extensions::ExtensionSystem::Get(browser()->profile())
+          ->extension_service();
+  service->AddExtension(extension.get());
+
+  base::RunLoop run_loop;
+  TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
+  std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
+      extensions::ExtensionUninstallDialog::Create(
+          browser()->profile(), browser()->window()->GetNativeWindow(),
+          &delegate));
+
+  dialog->ConfirmUninstall(extension.get(),
+                           extensions::UNINSTALL_REASON_FOR_TESTING,
+                           extensions::UNINSTALL_SOURCE_FOR_TESTING);
+  // Wait for the icon to load and dialog to display.
+  base::RunLoop().RunUntilIdle();
+
+  service->UninstallExtension(
+      extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+
+  run_loop.Run();
+  // The dialog should be closed with an appropriate error.
+  EXPECT_TRUE(delegate.canceled());
+  EXPECT_EQ(u"Extension was removed before dialog closed.", delegate.error());
+
+  // Explicitly destroy the dialog. ExtensionUninstallDialog's dtor will close
+  // the view dialog if it's still open (which it shouldn't be), which will
+  // guarantee that the check in the delegate for double-closed calls catches
+  // any cases.
+  dialog = nullptr;
+}
+
 // Test that we don't crash when uninstalling an extension from a web app
 // window in Ash. Context: crbug.com/825554
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
@@ -146,12 +212,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
       ->AddExtension(extension.get());
 
   const GURL start_url = GURL("https://test.com/");
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url;
-  web_app_info->open_as_window = true;
-  web_app::AppId app_id =
-      web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
+  web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  web_app::AppId app_id = web_app::test::InstallWebApp(browser()->profile(),
+                                                       std::move(web_app_info));
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
 
@@ -288,6 +354,116 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
   // The delegate should not be canceled because the user chose to uninstall the
   // extension, which should be successful.
   EXPECT_TRUE(!delegate.canceled());
+}
+
+// Tests the dialog is anchored in the correct place based on whether the
+// extensions container is visible.
+// Regression test for crbug.com/133249.
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
+                       DialogAnchoredInCorrectPlace) {
+  extensions::ExtensionService* extension_service =
+      extensions::ExtensionSystem::Get(browser()->profile())
+          ->extension_service();
+
+  scoped_refptr<const extensions::Extension> extensionA(
+      BuildTestExtension("Extension A"));
+  scoped_refptr<const extensions::Extension> extensionB(
+      BuildTestExtension("Extension B"));
+  extension_service->AddExtension(extensionA.get());
+  extension_service->AddExtension(extensionB.get());
+
+  // Extensions container should be visible since there are enabled
+  // extensions.
+  ExtensionsToolbarContainer* const container =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->toolbar()
+          ->extensions_container();
+  ASSERT_TRUE(container->GetVisible());
+  ASSERT_TRUE(container->GetViewForId(extensionA->id()));
+
+  {
+    base::RunLoop run_loop;
+    TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
+    std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
+        extensions::ExtensionUninstallDialog::Create(
+            browser()->profile(), browser()->window()->GetNativeWindow(),
+            &delegate));
+
+    dialog->ConfirmUninstall(extensionA.get(),
+                             extensions::UNINSTALL_REASON_FOR_TESTING,
+                             extensions::UNINSTALL_SOURCE_FOR_TESTING);
+    // Wait for the icon to load and dialog to display.
+    base::RunLoop().RunUntilIdle();
+
+    // Dialog should be anchored to the container if the container is visible
+    // and the extension has an action view.
+    views::Widget* const bubble_widget =
+        container->GetAnchoredWidgetForExtensionForTesting(extensionA->id());
+    EXPECT_TRUE(bubble_widget);
+
+    CloseUninstallDialog(bubble_widget);
+    EXPECT_FALSE(
+        container->GetAnchoredWidgetForExtensionForTesting(extensionA->id()));
+  }
+
+  // Disable the extension so it doesn't have an action view, but the container
+  // is still visible.
+  extension_service->DisableExtension(
+      extensionA->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+  ASSERT_TRUE(container->GetVisible());
+  ASSERT_FALSE(container->GetViewForId(extensionA->id()));
+
+  {
+    base::RunLoop run_loop;
+    TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
+    std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
+        extensions::ExtensionUninstallDialog::Create(
+            browser()->profile(), browser()->window()->GetNativeWindow(),
+            &delegate));
+
+    dialog->ConfirmUninstall(extensionA.get(),
+                             extensions::UNINSTALL_REASON_FOR_TESTING,
+                             extensions::UNINSTALL_SOURCE_FOR_TESTING);
+    base::RunLoop().RunUntilIdle();
+
+    // Dialog should be anchored to the container if the container is visible
+    // and the extension does not have an action view.
+    views::Widget* const bubble_widget =
+        container->GetAnchoredWidgetForExtensionForTesting(extensionA->id());
+    EXPECT_TRUE(bubble_widget);
+
+    CloseUninstallDialog(bubble_widget);
+    EXPECT_FALSE(
+        container->GetAnchoredWidgetForExtensionForTesting(extensionA->id()));
+  }
+
+  // Disable the second extension to have all extensions disable and the
+  // container hidden.
+  extension_service->DisableExtension(
+      extensionB->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+  views::test::WaitForAnimatingLayoutManager(container);
+  ASSERT_FALSE(container->GetVisible());
+  ASSERT_FALSE(container->GetViewForId(extensionB->id()));
+
+  {
+    base::RunLoop run_loop;
+    TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
+    std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
+        extensions::ExtensionUninstallDialog::Create(
+            browser()->profile(), browser()->window()->GetNativeWindow(),
+            &delegate));
+
+    dialog->ConfirmUninstall(extensionA.get(),
+                             extensions::UNINSTALL_REASON_FOR_TESTING,
+                             extensions::UNINSTALL_SOURCE_FOR_TESTING);
+    base::RunLoop().RunUntilIdle();
+
+    // Dialog should be modal if the container is not visible, which means it is
+    // not anchored to the container.
+    views::Widget* const bubble_widget =
+        container->GetAnchoredWidgetForExtensionForTesting(extensionA->id());
+    EXPECT_FALSE(bubble_widget);
+  }
 }
 
 class ExtensionUninstallDialogViewInteractiveBrowserTest

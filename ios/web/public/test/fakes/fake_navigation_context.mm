@@ -1,13 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 
 #import "ios/web/public/web_state.h"
-#include "net/http/http_response_headers.h"
-#include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
+#import "net/http/http_response_headers.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -76,6 +76,10 @@ net::HttpResponseHeaders* FakeNavigationContext::GetResponseHeaders() const {
 
 bool FakeNavigationContext::IsRendererInitiated() const {
   return renderer_initiated_;
+}
+
+web::HttpsUpgradeType FakeNavigationContext::GetFailedHttpsUpgradeType() const {
+  return web::HttpsUpgradeType::kNone;
 }
 
 void FakeNavigationContext::SetWebState(std::unique_ptr<WebState> web_state) {

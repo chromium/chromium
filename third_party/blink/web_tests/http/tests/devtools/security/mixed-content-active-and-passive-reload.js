@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 
   // At this point, the page has mixed content but no mixed requests have been recorded, so the user should be prompted to refresh.
   var explanations =
-      Security.SecurityPanel._instance()._mainView.contentElement.getElementsByClassName('security-explanation');
+      Security.SecurityPanel.instance().mainView.contentElement.getElementsByClassName('security-explanation');
   for (var i = 0; i < explanations.length; i++)
     TestRunner.dumpDeepInnerHTML(explanations[i]);
 
@@ -32,16 +32,18 @@
         Security.SecurityModel.Events.VisibleSecurityStateChanged,
         pageVisibleSecurityState);
 
-  var passive = new SDK.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
+  var passive = SDK.NetworkRequest.create(
+      0, 'http://foo.test', 'https://foo.test', 0, 0, null);
   passive.mixedContentType = 'optionally-blockable';
   SecurityTestRunner.dispatchRequestFinished(passive);
 
-  var active = new SDK.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
+  var active = SDK.NetworkRequest.create(
+      0, 'http://foo.test', 'https://foo.test', 0, 0, null);
   active.mixedContentType = 'blockable';
   SecurityTestRunner.dispatchRequestFinished(active);
 
   var explanations =
-      Security.SecurityPanel._instance()._mainView.contentElement.getElementsByClassName('security-explanation');
+      Security.SecurityPanel.instance().mainView.contentElement.getElementsByClassName('security-explanation');
   for (var i = 0; i < explanations.length; i++)
     TestRunner.dumpDeepInnerHTML(explanations[i]);
   TestRunner.completeTest();

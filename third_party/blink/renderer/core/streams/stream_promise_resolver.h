@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "v8/include/v8.h"
 
@@ -46,6 +45,12 @@ class CORE_EXPORT StreamPromiseResolver final
   static StreamPromiseResolver* CreateRejected(ScriptState*,
                                                v8::Local<v8::Value> reason);
 
+  // Similar to CreateRejected but marks the promise as silent before rejecting.
+  // https://crbug.com/1132506
+  static StreamPromiseResolver* CreateRejectedAndSilent(
+      ScriptState*,
+      v8::Local<v8::Value> reason);
+
   // Creates an initialised promise.
   explicit StreamPromiseResolver(ScriptState*);
 
@@ -69,6 +74,10 @@ class CORE_EXPORT StreamPromiseResolver final
   // Marks the promise is handled, so if it is rejected it won't be considered
   // an unhandled rejection.
   void MarkAsHandled(v8::Isolate*);
+
+  // Marks the promise as silent so that it doesn't pause the debugger when it
+  // rejects.
+  void MarkAsSilent(v8::Isolate*);
 
   // Returns the state of the promise, one of pending, fulfilled or rejected.
   v8::Promise::PromiseState State(v8::Isolate*) const;

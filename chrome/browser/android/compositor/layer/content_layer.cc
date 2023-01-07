@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ static cc::Layer* GetDrawsContentLeaf(scoped_refptr<cc::Layer> layer) {
   if (layer->opacity() == 0.0f)
     return nullptr;
 
-  if (layer->DrawsContent())
+  if (layer->draws_content())
     return layer.get();
 
   const cc::LayerList& children = layer->children();

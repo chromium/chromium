@@ -43,7 +43,6 @@ async_test(function(t) {
         internals.settings.setTextTrackTextColor("rgb(0, 255, 255)");
         internals.settings.setTextTrackTextSize("14px");
         internals.settings.setTextTrackWindowColor("rgba(0, 0, 0, 0.8)");
-        internals.settings.setTextTrackWindowPadding("5px");
         var video2 = addVideoTo(container);
         video2.oncanplaythrough = t.step_func_done(function() {
             var displayTree = textTrackCueElementByIndex(video2, 0);

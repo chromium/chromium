@@ -1,20 +1,18 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_CERT_CERT_VERIFY_RESULT_H_
 #define NET_CERT_CERT_VERIFY_RESULT_H_
 
-#include <vector>
-
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/ocsp_verify_result.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
-#include "net/cert/x509_cert_types.h"
 
 namespace base {
 class Value;
@@ -77,9 +75,6 @@ class NET_EXPORT CertVerifyResult : public base::SupportsUserData {
 
   // Hash algorithms used by the certificate chain, excluding the trust
   // anchor.
-  bool has_md2;
-  bool has_md4;
-  bool has_md5;
   bool has_sha1;
   bool has_sha1_leaf;
 

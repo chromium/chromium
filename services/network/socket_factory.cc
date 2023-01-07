@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 #include <string>
 #include <utility>
 
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/multi_log_ct_verifier.h"
+#include "net/http/http_network_session.h"
 #include "net/log/net_log.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
@@ -22,6 +22,7 @@
 #include "net/url_request/url_request_context.h"
 #include "services/network/tls_client_socket.h"
 #include "services/network/udp_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -29,7 +30,7 @@ SocketFactory::SocketFactory(net::NetLog* net_log,
                              net::URLRequestContext* url_request_context)
     : net_log_(net_log),
       client_socket_factory_(nullptr),
-      tls_socket_factory_(url_request_context, nullptr /*http_context*/) {
+      tls_socket_factory_(url_request_context) {
   if (url_request_context->GetNetworkSessionContext()) {
     client_socket_factory_ =
         url_request_context->GetNetworkSessionContext()->client_socket_factory;
@@ -59,7 +60,7 @@ void SocketFactory::CreateTCPServerSocket(
   net::IPEndPoint local_addr_out;
   int result = socket->Listen(local_addr, backlog, &local_addr_out);
   if (result != net::OK) {
-    std::move(callback).Run(result, base::nullopt);
+    std::move(callback).Run(result, absl::nullopt);
     return;
   }
   tcp_server_socket_receivers_.Add(std::move(socket), std::move(receiver));
@@ -67,7 +68,7 @@ void SocketFactory::CreateTCPServerSocket(
 }
 
 void SocketFactory::CreateTCPConnectedSocket(
-    const base::Optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -94,7 +95,7 @@ void SocketFactory::CreateTCPBoundSocket(
   net::IPEndPoint local_addr_out;
   int result = socket->Bind(local_addr, &local_addr_out);
   if (result != net::OK) {
-    std::move(callback).Run(result, base::nullopt);
+    std::move(callback).Run(result, absl::nullopt);
     return;
   }
   TCPBoundSocket* socket_ptr = socket.get();

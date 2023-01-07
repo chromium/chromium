@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_VR_ELEMENTS_TRANSIENT_ELEMENT_H_
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 
@@ -15,6 +16,9 @@ namespace vr {
 // point in time. The exacly transience behavior depends on the subclass.
 class VR_UI_EXPORT TransientElement : public UiElement {
  public:
+  TransientElement(const TransientElement&) = delete;
+  TransientElement& operator=(const TransientElement&) = delete;
+
   ~TransientElement() override;
 
   // Sets the elements visibility to the given value. If the visibility is
@@ -35,22 +39,22 @@ class VR_UI_EXPORT TransientElement : public UiElement {
 
  private:
   typedef UiElement super;
-
-  DISALLOW_COPY_AND_ASSIGN(TransientElement);
 };
 
 // An element that hides itself after after a set timeout.
 class VR_UI_EXPORT SimpleTransientElement : public TransientElement {
  public:
   explicit SimpleTransientElement(const base::TimeDelta& timeout);
+
+  SimpleTransientElement(const SimpleTransientElement&) = delete;
+  SimpleTransientElement& operator=(const SimpleTransientElement&) = delete;
+
   ~SimpleTransientElement() override;
 
  private:
   bool OnBeginFrame(const gfx::Transform& head_pose) override;
 
   typedef TransientElement super;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleTransientElement);
 };
 
 // The reason why a transient element hid itself. Note that this is only used by

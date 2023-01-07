@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,14 @@
 
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
-#include "base/numerics/ranges.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
-#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
@@ -26,7 +26,7 @@
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char16_t kDot = '.';
 
 // Build a path from the first |num_components| elements in |path_elements|.
@@ -94,41 +94,7 @@ std::u16string ElideComponentizedPath(
                         available_pixel_width, gfx::ELIDE_TAIL);
 }
 
-// Splits the hostname in the |url| into sub-strings for the full hostname,
-// the domain (TLD+1), and the subdomain (everything leading the domain).
-void SplitHost(const GURL& url,
-               std::u16string* url_host,
-               std::u16string* url_domain,
-               std::u16string* url_subdomain) {
-  // GURL stores IDN hostnames in punycode.  Convert back to Unicode for
-  // display to the user.  (IDNToUnicode() will only perform this conversion
-  // if it's safe to display this host/domain in Unicode.)
-  *url_host = url_formatter::IDNToUnicode(url.host());
-
-  // Get domain and registry information from the URL.
-  std::string domain_puny =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-  *url_domain = domain_puny.empty() ?
-      *url_host : url_formatter::IDNToUnicode(domain_puny);
-
-  // Add port if required.
-  if (!url.port().empty()) {
-    *url_host += base::UTF8ToUTF16(":" + url.port());
-    *url_domain += base::UTF8ToUTF16(":" + url.port());
-  }
-
-  // Get sub domain.
-  const size_t domain_start_index = url_host->find(*url_domain);
-  std::u16string kWwwPrefix = u"www.";
-  if (domain_start_index != std::u16string::npos)
-    *url_subdomain = url_host->substr(0, domain_start_index);
-  if ((*url_subdomain == kWwwPrefix || url_subdomain->empty() ||
-       url.SchemeIsFile())) {
-    url_subdomain->clear();
-  }
-}
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool ShouldShowScheme(base::StringPiece scheme,
                       const url_formatter::SchemeDisplay scheme_display) {
@@ -160,7 +126,7 @@ std::u16string HostForDisplay(base::StringPiece host_in_puny) {
 
 namespace url_formatter {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // TODO(pkasting): http://crbug.com/77883 This whole function gets
 // kerning/ligatures/etc. issues potentially wrong by assuming that the width of
@@ -172,7 +138,7 @@ std::u16string ElideUrl(const GURL& url,
   // Get a formatted string and corresponding parsing of the url.
   url::Parsed parsed;
   const std::u16string url_string = url_formatter::FormatUrl(
-      url, url_formatter::kFormatUrlOmitDefaults, net::UnescapeRule::SPACES,
+      url, url_formatter::kFormatUrlOmitDefaults, base::UnescapeRule::SPACES,
       &parsed, nullptr, nullptr);
   if (available_pixel_width <= 0)
     return url_string;
@@ -211,14 +177,14 @@ std::u16string ElideUrl(const GURL& url,
   std::u16string url_host;
   std::u16string url_domain;
   std::u16string url_subdomain;
-  SplitHost(url, &url_host, &url_domain, &url_subdomain);
+  url_formatter::SplitHost(url, &url_host, &url_domain, &url_subdomain);
 
   // If this is a file type, the path is now defined as everything after ":".
   // For example, "C:/aa/aa/bb", the path is "/aa/bb/cc". Interesting, the
   // domain is now C: - this is a nice hack for eliding to work pleasantly.
   if (url.SchemeIsFile()) {
     // Split the path string using ":"
-    const std::u16string kColon(1, ':');
+    constexpr base::StringPiece16 kColon(u":", 1);
     std::vector<std::u16string> file_path_split = base::SplitString(
         url_path, kColon, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (file_path_split.size() > 1) {  // File is of type "file:///C:/.."
@@ -226,7 +192,8 @@ std::u16string ElideUrl(const GURL& url,
       url_domain.clear();
       url_subdomain.clear();
 
-      url_host = url_domain = file_path_split.at(0).substr(1) + kColon;
+      url_host = url_domain =
+          base::StrCat({file_path_split.at(0).substr(1), kColon});
       url_path_query_etc = url_path = file_path_split.at(1);
     }
   }
@@ -340,7 +307,7 @@ std::u16string ElideHost(const GURL& url,
   std::u16string url_host;
   std::u16string url_domain;
   std::u16string url_subdomain;
-  SplitHost(url, &url_host, &url_domain, &url_subdomain);
+  url_formatter::SplitHost(url, &url_host, &url_domain, &url_subdomain);
 
   const float pixel_width_url_host = gfx::GetStringWidthF(url_host, font_list);
   if (available_pixel_width >= pixel_width_url_host)
@@ -359,47 +326,47 @@ std::u16string ElideHost(const GURL& url,
                         gfx::ELIDE_HEAD);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::u16string FormatUrlForSecurityDisplay(const GURL& url,
                                            const SchemeDisplay scheme_display) {
   if (!url.is_valid() || url.is_empty() || !url.IsStandard())
     return url_formatter::FormatUrl(url);
 
-  const std::u16string colon(u":");
-  const std::u16string scheme_separator(
-      base::ASCIIToUTF16(url::kStandardSchemeSeparator));
+  constexpr base::StringPiece16 colon(u":");
 
   if (url.SchemeIsFile()) {
-    return base::ASCIIToUTF16(url::kFileScheme) + scheme_separator +
-           base::UTF8ToUTF16(url.path());
+    return base::StrCat({url::kFileScheme16, url::kStandardSchemeSeparator16,
+                         base::UTF8ToUTF16(url.path())});
   }
 
   if (url.SchemeIsFileSystem()) {
     const GURL* inner_url = url.inner_url();
     if (inner_url->SchemeIsFile()) {
-      return base::ASCIIToUTF16(url::kFileSystemScheme) + colon +
-             FormatUrlForSecurityDisplay(*inner_url) +
-             base::UTF8ToUTF16(url.path());
+      return base::StrCat({url::kFileSystemScheme16, colon,
+                           FormatUrlForSecurityDisplay(*inner_url),
+                           base::UTF8ToUTF16(url.path())});
     }
-    return base::ASCIIToUTF16(url::kFileSystemScheme) + colon +
-           FormatUrlForSecurityDisplay(*inner_url);
+    return base::StrCat({url::kFileSystemScheme16, colon,
+                         FormatUrlForSecurityDisplay(*inner_url)});
   }
 
-  const GURL origin = url.GetOrigin();
+  const GURL origin = url.DeprecatedGetOriginAsURL();
   base::StringPiece scheme = origin.scheme_piece();
   base::StringPiece host = origin.host_piece();
 
   std::u16string result;
-  if (ShouldShowScheme(scheme, scheme_display))
-    result = base::UTF8ToUTF16(scheme) + scheme_separator;
+  if (ShouldShowScheme(scheme, scheme_display)) {
+    result = base::StrCat(
+        {base::UTF8ToUTF16(scheme), url::kStandardSchemeSeparator16});
+  }
   result += HostForDisplay(host);
 
   const int port = origin.IntPort();
   const int default_port = url::DefaultPortForScheme(
       scheme.data(), static_cast<int>(scheme.length()));
   if (port != url::PORT_UNSPECIFIED && port != default_port)
-    result += colon + base::UTF8ToUTF16(origin.port_piece());
+    result += base::StrCat({colon, base::UTF8ToUTF16(origin.port_piece())});
 
   return result;
 }
@@ -412,22 +379,83 @@ std::u16string FormatOriginForSecurityDisplay(
   if (scheme.empty() && host.empty())
     return std::u16string();
 
-  const std::u16string colon(u":");
-  const std::u16string scheme_separator(
-      base::ASCIIToUTF16(url::kStandardSchemeSeparator));
+  constexpr base::StringPiece16 colon(u":");
 
   std::u16string result;
-  if (ShouldShowScheme(scheme, scheme_display))
-    result = base::UTF8ToUTF16(scheme) + scheme_separator;
+  if (ShouldShowScheme(scheme, scheme_display)) {
+    result = base::StrCat(
+        {base::UTF8ToUTF16(scheme), url::kStandardSchemeSeparator16});
+  }
   result += HostForDisplay(host);
 
   int port = static_cast<int>(origin.port());
   const int default_port = url::DefaultPortForScheme(
       scheme.data(), static_cast<int>(scheme.length()));
   if (port != 0 && port != default_port)
-    result += colon + base::NumberToString16(origin.port());
+    result += base::StrCat({colon, base::NumberToString16(origin.port())});
 
   return result;
+}
+
+std::u16string FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+    const GURL& url) {
+  return url_formatter::FormatUrl(
+      url,
+      url_formatter::kFormatUrlOmitDefaults |
+          url_formatter::kFormatUrlTrimAfterHost |
+          url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlOmitTrivialSubdomains,
+      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+}
+
+#if BUILDFLAG(IS_IOS)
+std::u16string
+FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+    const GURL& url) {
+  return url_formatter::FormatUrl(
+      url,
+      url_formatter::kFormatUrlOmitDefaults |
+          url_formatter::kFormatUrlTrimAfterHost |
+          url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlOmitTrivialSubdomains |
+          url_formatter::kFormatUrlOmitMobilePrefix,
+      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+}
+#endif
+
+void SplitHost(const GURL& url,
+               std::u16string* url_host,
+               std::u16string* url_domain,
+               std::u16string* url_subdomain) {
+  // GURL stores IDN hostnames in punycode.  Convert back to Unicode for
+  // display to the user.  (IDNToUnicode() will only perform this conversion
+  // if it's safe to display this host/domain in Unicode.)
+  *url_host = url_formatter::IDNToUnicode(url.host());
+
+  // Get domain and registry information from the URL.
+  std::string domain_puny =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+  *url_domain = domain_puny.empty() ? *url_host
+                                    : url_formatter::IDNToUnicode(domain_puny);
+
+  // Add port if required.
+  if (!url.port().empty()) {
+    *url_host += base::UTF8ToUTF16(":" + url.port());
+    *url_domain += base::UTF8ToUTF16(":" + url.port());
+  }
+
+  // Get sub domain if requested.
+  if (url_subdomain) {
+    const size_t domain_start_index = url_host->find(*url_domain);
+    constexpr base::StringPiece16 kWwwPrefix = u"www.";
+    if (domain_start_index != std::u16string::npos)
+      *url_subdomain = url_host->substr(0, domain_start_index);
+    if ((*url_subdomain == kWwwPrefix || url_subdomain->empty() ||
+         url.SchemeIsFile())) {
+      url_subdomain->clear();
+    }
+  }
 }
 
 }  // namespace url_formatter

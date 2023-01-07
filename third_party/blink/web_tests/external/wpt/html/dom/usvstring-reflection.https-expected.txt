@@ -17,6 +17,6 @@ PASS sendBeacon URL: unpaired surrogate codepoint should not make any exceptions
 PASS RegisterProtocolHandler URL: unpaired surrogate codepoint should not make any exceptions.
 PASS UnregisterProtocolHandler URL: unpaired surrogate codepoint should not make any exceptions.
 PASS Document URLs: unpaired surrogate codepoint should be replaced with U+FFFD
-FAIL RTCDataChannel.send: unpaired surrogate codepoint should be replaced with U+FFFD. promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'negotiated' of undefined"
+FAIL RTCDataChannel.send: unpaired surrogate codepoint should be replaced with U+FFFD. promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'negotiated')"
 Harness: the test ran to completion.
 

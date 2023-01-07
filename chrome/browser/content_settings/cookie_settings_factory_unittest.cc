@@ -1,8 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -13,6 +14,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+using QueryReason = content_settings::CookieSettings::QueryReason;
 
 class CookieSettingsFactoryTest : public testing::Test {
  public:
@@ -26,7 +29,7 @@ class CookieSettingsFactoryTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  content_settings::CookieSettings* cookie_settings_;
+  raw_ptr<content_settings::CookieSettings> cookie_settings_;
   const GURL kBlockedSite;
   const GURL kAllowedSite;
   const GURL kFirstPartySite;
@@ -35,96 +38,78 @@ class CookieSettingsFactoryTest : public testing::Test {
 
 TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingRules) {
   scoped_refptr<content_settings::CookieSettings> incognito_settings =
-      CookieSettingsFactory::GetForProfile(profile_.GetPrimaryOTRProfile());
+      CookieSettingsFactory::GetForProfile(
+          profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // Modify the regular cookie settings after the incognito cookie settings have
   // been instantiated.
   cookie_settings_->SetCookieSetting(kBlockedSite, CONTENT_SETTING_BLOCK);
 
   // The modification should apply to the regular profile and incognito profile.
-  EXPECT_FALSE(
-      cookie_settings_->IsCookieAccessAllowed(kBlockedSite, kBlockedSite));
-  EXPECT_FALSE(
-      incognito_settings->IsCookieAccessAllowed(kBlockedSite, kBlockedSite));
+  EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
+      kBlockedSite, kBlockedSite, QueryReason::kSetting));
+  EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(
+      kBlockedSite, kBlockedSite, QueryReason::kSetting));
 
   // Modify an incognito cookie setting and check that this does not propagate
   // into regular mode.
   incognito_settings->SetCookieSetting(kHttpsSite, CONTENT_SETTING_BLOCK);
-  EXPECT_TRUE(cookie_settings_->IsCookieAccessAllowed(kHttpsSite, kHttpsSite));
-  EXPECT_FALSE(
-      incognito_settings->IsCookieAccessAllowed(kHttpsSite, kHttpsSite));
+  EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
+      kHttpsSite, kHttpsSite, QueryReason::kSetting));
+  EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(
+      kHttpsSite, kHttpsSite, QueryReason::kSetting));
 }
 
 TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingEverything) {
   scoped_refptr<content_settings::CookieSettings> incognito_settings =
-      CookieSettingsFactory::GetForProfile(profile_.GetPrimaryOTRProfile());
+      CookieSettingsFactory::GetForProfile(
+          profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // Apply the general blocking to the regular profile.
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
   // It should be effective for regular and incognito session.
-  EXPECT_FALSE(cookie_settings_->IsCookieAccessAllowed(kFirstPartySite,
-                                                       kFirstPartySite));
-  EXPECT_FALSE(incognito_settings->IsCookieAccessAllowed(kFirstPartySite,
-                                                         kFirstPartySite));
+  EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
+      kFirstPartySite, kFirstPartySite, QueryReason::kSetting));
+  EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(
+      kFirstPartySite, kFirstPartySite, QueryReason::kSetting));
 
   // A whitelisted item set in incognito mode should only apply to incognito
   // mode.
   incognito_settings->SetCookieSetting(kAllowedSite, CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(
-      incognito_settings->IsCookieAccessAllowed(kAllowedSite, kAllowedSite));
-  EXPECT_FALSE(
-      cookie_settings_->IsCookieAccessAllowed(kAllowedSite, kAllowedSite));
+  EXPECT_TRUE(incognito_settings->IsFullCookieAccessAllowed(
+      kAllowedSite, kAllowedSite, QueryReason::kSetting));
+  EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
+      kAllowedSite, kAllowedSite, QueryReason::kSetting));
 
   // A whitelisted item set in regular mode should apply to regular and
   // incognito mode.
   cookie_settings_->SetCookieSetting(kHttpsSite, CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(
-      incognito_settings->IsCookieAccessAllowed(kHttpsSite, kHttpsSite));
-  EXPECT_TRUE(cookie_settings_->IsCookieAccessAllowed(kHttpsSite, kHttpsSite));
+  EXPECT_TRUE(incognito_settings->IsFullCookieAccessAllowed(
+      kHttpsSite, kHttpsSite, QueryReason::kSetting));
+  EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
+      kHttpsSite, kHttpsSite, QueryReason::kSetting));
 }
 
 // Android does not have guest profiles.
-#if !defined(OS_ANDROID)
-class GuestCookieSettingsFactoryTest
-    : public CookieSettingsFactoryTest,
-      public testing::WithParamInterface<bool> {
- public:
-  GuestCookieSettingsFactoryTest() : is_ephemeral_(GetParam()) {
-    // Change the value if Ephemeral is not supported.
-    is_ephemeral_ &=
-        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-            scoped_feature_list_, is_ephemeral_);
-  }
-
-  bool is_ephemeral() const { return is_ephemeral_; }
-
- private:
-  bool is_ephemeral_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+#if !BUILDFLAG(IS_ANDROID)
 
 // Tests that cookie blocking is not enabled by default for guest profiles.
-TEST_P(GuestCookieSettingsFactoryTest, GuestProfile) {
+TEST_F(CookieSettingsFactoryTest, GuestProfile) {
   TestingProfile::Builder guest_profile_builder;
   guest_profile_builder.SetGuestSession();
   std::unique_ptr<Profile> guest_profile = guest_profile_builder.Build();
-  Profile* profile_to_use = is_ephemeral()
-                                ? guest_profile.get()
-                                : guest_profile->GetPrimaryOTRProfile();
+  Profile* profile_to_use =
+      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   scoped_refptr<content_settings::CookieSettings> guest_settings =
       CookieSettingsFactory::GetForProfile(profile_to_use);
   EXPECT_FALSE(guest_settings->ShouldBlockThirdPartyCookies());
 
   // OTOH, cookie blocking is default for an incognito profile.
-  EXPECT_TRUE(
-      CookieSettingsFactory::GetForProfile(profile_.GetPrimaryOTRProfile())
-          ->ShouldBlockThirdPartyCookies());
+  EXPECT_TRUE(CookieSettingsFactory::GetForProfile(
+                  profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true))
+                  ->ShouldBlockThirdPartyCookies());
 }
-
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         GuestCookieSettingsFactoryTest,
-                         /*is_ephemeral=*/testing::Bool());
 
 #endif
 

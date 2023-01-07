@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
 #include "components/offline_pages/core/offline_store_utils.h"
 #include "components/offline_pages/task/task.h"
@@ -64,6 +65,10 @@ std::vector<ActivityInfo> GetAllActivitiesSync(sql::Database* db) {
 class ClearActivitiesTaskTest : public TaskTestBase {
  public:
   ClearActivitiesTaskTest() = default;
+
+  ClearActivitiesTaskTest(const ClearActivitiesTaskTest&) = delete;
+  ClearActivitiesTaskTest& operator=(const ClearActivitiesTaskTest&) = delete;
+
   ~ClearActivitiesTaskTest() override = default;
 
   void SetUp() override {
@@ -97,8 +102,6 @@ class ClearActivitiesTaskTest : public TaskTestBase {
   bool callback_called_ = false;
   bool success_ = false;
   std::vector<ActivityInfo> activities_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClearActivitiesTaskTest);
 };
 
 void ClearActivitiesTaskTest::PopulateActivities() {

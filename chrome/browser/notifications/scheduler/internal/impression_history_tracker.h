@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -57,7 +58,7 @@ class ImpressionHistoryTracker : public UserActionHandler {
       const std::string& guid,
       const Impression::ImpressionResultMap& impression_map,
       const Impression::CustomData& custom_data,
-      base::Optional<base::TimeDelta> ignore_timeout_duration) = 0;
+      absl::optional<base::TimeDelta> ignore_timeout_duration) = 0;
 
   // Analyzes the impression history for all notification clients, and adjusts
   // the |current_max_daily_show|.
@@ -105,7 +106,7 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
       const std::string& guid,
       const Impression::ImpressionResultMap& impression_mapping,
       const Impression::CustomData& custom_data,
-      base::Optional<base::TimeDelta> ignore_timeout_duration) override;
+      absl::optional<base::TimeDelta> ignore_timeout_duration) override;
   void AnalyzeImpressionHistory() override;
   void GetClientStates(std::map<SchedulerClientType, const ClientState*>*
                            client_states) const override;
@@ -209,10 +210,10 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
   std::map<SchedulerClientType, bool> need_update_db_;
 
   // The clock to provide the current timestamp.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // Delegate object.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<ImpressionHistoryTrackerImpl> weak_ptr_factory_{this};
 };

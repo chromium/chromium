@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/frame/platform_event_controller.h"
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
 namespace blink {
@@ -29,8 +30,8 @@ void PlatformEventController::StartUpdating() {
   if (HasLastData() && !update_callback_handle_.IsActive()) {
     update_callback_handle_ = PostCancellableTask(
         *window_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
-        WTF::Bind(&PlatformEventController::UpdateCallback,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&PlatformEventController::UpdateCallback,
+                      WrapWeakPersistent(this)));
   }
 
   RegisterWithDispatcher();

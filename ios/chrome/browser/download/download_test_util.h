@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,11 @@
 
 namespace testing {
 
+extern const char kCalendarFilePath[];
+extern const char kMobileConfigFilePath[];
 extern const char kPkPassFilePath[];
 extern const char kUsdzFilePath[];
+extern const char kVcardFilePath[];
 
 // Returns contents of the test file at the given relative path in the chrome
 // test directory.

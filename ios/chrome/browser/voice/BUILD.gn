@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,8 +10,8 @@ source_set("voice") {
     "speech_input_locale_config.mm",
     "speech_input_locale_config_impl.h",
     "speech_input_locale_config_impl.mm",
-    "speech_input_locale_match_config.h",
-    "speech_input_locale_match_config.mm",
+    "speech_input_locale_match.h",
+    "speech_input_locale_match.mm",
     "voice_search_availability.h",
     "voice_search_availability.mm",
     "voice_search_navigations_tab_helper.h",
@@ -19,18 +19,28 @@ source_set("voice") {
   ]
 
   deps = [
+    ":voice_search_language",
     "//base",
     "//base/ios",
     "//components/pref_registry",
     "//components/prefs",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/voice",
+    "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/web",
+  ]
+}
+
+source_set("voice_search_language") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "voice_search_language.h",
+    "voice_search_language.mm",
   ]
 }
 
 source_set("prefs") {
   sources = [
+    "voice_search_prefs.cc",
+    "voice_search_prefs.h",
     "voice_search_prefs_registration.cc",
     "voice_search_prefs_registration.h",
   ]
@@ -38,7 +48,6 @@ source_set("prefs") {
   deps = [
     "//components/pref_registry",
     "//components/prefs",
-    "//ios/public/provider/chrome/browser/voice",
   ]
 }
 
@@ -54,15 +63,15 @@ source_set("tts") {
   ]
 
   deps = [
+    ":prefs",
     ":voice",
     "//base",
     "//components/google/core/common",
     "//components/prefs",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
-    "//ios/public/provider/chrome/browser/voice",
     "//ios/web",
-    "//ios/web/public/deprecated",
+    "//ios/web/public/js_messaging:js_messaging",
     "//net",
     "//url",
   ]
@@ -79,8 +88,7 @@ source_set("test_support") {
   deps = [
     ":voice",
     "//base",
-    "//ios/public/provider/chrome/browser:test_support",
-    "//ios/public/provider/chrome/browser/voice:test_support",
+    "//ios/chrome/test/providers/voice_search",
     "//testing/gtest",
   ]
 }
@@ -90,6 +98,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "speech_input_locale_config_impl_unittest.mm",
     "text_to_speech_listener_unittest.mm",
     "text_to_speech_parser_unittest.mm",
     "voice_search_availability_unittest.mm",
@@ -102,6 +111,7 @@ source_set("unit_tests") {
     ":voice",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/web/common",
     "//ios/web/public/test",
     "//testing/gmock",

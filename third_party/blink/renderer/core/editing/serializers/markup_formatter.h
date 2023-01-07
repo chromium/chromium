@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_MARKUP_FORMATTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_MARKUP_FORMATTER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -93,6 +92,8 @@ class MarkupFormatter final {
   static void AppendXMLDeclaration(StringBuilder&, const Document&);
 
   MarkupFormatter(AbsoluteURLs, SerializationType);
+  MarkupFormatter(const MarkupFormatter&) = delete;
+  MarkupFormatter& operator=(const MarkupFormatter&) = delete;
 
   void AppendStartMarkup(StringBuilder&, const Node&);
   void AppendEndMarkup(StringBuilder&, const Element&);
@@ -119,10 +120,8 @@ class MarkupFormatter final {
  private:
   const AbsoluteURLs resolve_urls_method_;
   SerializationType serialization_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MarkupFormatter);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_MARKUP_FORMATTER_H_

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,8 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "base/logging.h"
+#include "base/posix/eintr_wrapper.h"
 
 #define V4L2_CID_PAN_SPEED (V4L2_CID_CAMERA_CLASS_BASE+32)
 #define V4L2_CID_TILT_SPEED (V4L2_CID_CAMERA_CLASS_BASE+33)
@@ -40,15 +39,16 @@
 #define AVER_UVCX_UCAM_PRESET 0x12
 
 namespace {
-const int kLogitechMenuIndexGoHome = 2;
-const int kLogitechMenuIndexSetHome = 0;
-const int kAverMenuIndexGoHome = 1;
-const int kAverMenuIndexSetHome = 0;
+const int kLogitechMenuIndexGoHome = 1;  // {0x02, Go Home}
+const int kLogitechMenuIndexSetHome = 0; // {0x01, Set Home Preset}
+const int kAverMenuIndexGoHome = 1;      // {0x01, Restore preset 0}
+const int kAverMenuIndexSetHome = 0;     // {0x00, Set Preset 0}
 
+// Note: Keep in sync with index constants above i.e kLogitechMenuIndex{Get, Set}Home
 const uvc_menu_info kLogitechCmdMenu[] = {
-    {1, "Set Home Preset"},
-    {2, "Go Home"},
-    {3, "Go Home"},
+    {0x01, "Set Home Preset"},
+    {0x02, "Go Home"},
+    {0x03, "Go Home"},
     {0x04, "Set Preset 1"},
     {0x0C, "Restore Preset 1"},
     {0x05, "Set Preset 2"},
@@ -65,10 +65,10 @@ const uvc_menu_info kLogitechCmdMenu[] = {
     {0x12, "Restore Preset 7"},
     {0x0B, "Set Preset 8"},
     {0x13, "Restore Preset 8"},
-
 };
 
 // Preset 0 is equivalent to HOME in Aver cameras.
+// Note: Keep in sync with index constants above i.e kAverMenuIndex{Go, Set}Home.
 const uvc_menu_info kAverPresetMenu[] = {
     /*0*/ {0x0000, "Set Preset 0"},  /*1*/ {0x0001, "Restore preset 0"},
     /*2*/ {0x0100, "Set Preset 1"},  /*3*/ {0x0101, "Restore preset 1"},
@@ -92,7 +92,7 @@ const uvc_xu_control_mapping kLogitechCmdMapping = {
     V4L2_CTRL_TYPE_MENU,
     UVC_CTRL_DATA_TYPE_ENUM,
     const_cast<uvc_menu_info*>(&kLogitechCmdMenu[0]),
-    base::size(kLogitechCmdMenu),
+    std::size(kLogitechCmdMenu),
 };
 
 const uvc_xu_control_mapping kLogitechPanAbsoluteMapping = {
@@ -127,7 +127,7 @@ const uvc_xu_control_mapping kAverCmdMapping = {
     V4L2_CTRL_TYPE_MENU,
     UVC_CTRL_DATA_TYPE_ENUM,
     const_cast<uvc_menu_info*>(kAverPresetMenu),
-    base::size(kAverPresetMenu),
+    std::size(kAverPresetMenu),
 };
 
 }  // namespace

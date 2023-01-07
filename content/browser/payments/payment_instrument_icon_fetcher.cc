@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "components/payments/content/icon/icon_size.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -25,13 +24,19 @@ namespace content {
 namespace {
 
 void DownloadBestMatchingIcon(
-    WebContents* web_contents,
+    const GURL& scope,
+    std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcher::PaymentInstrumentIconFetcherCallback
         callback);
 
+WebContents* GetWebContentsFromFrameRoutingIds(
+    const GURL& scope,
+    const std::vector<GlobalRenderFrameHostId>& frame_routing_ids);
+
 void OnIconFetched(
-    WebContents* web_contents,
+    const GURL& scope,
+    std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcher::PaymentInstrumentIconFetcherCallback callback,
     const SkBitmap& bitmap) {
@@ -39,14 +44,13 @@ void OnIconFetched(
 
   if (bitmap.drawsNothing()) {
     if (icons.empty()) {
-      BrowserThread::GetTaskRunnerForThread(
-          ServiceWorkerContext::GetCoreThreadId())
-          ->PostTask(FROM_HERE,
-                     base::BindOnce(std::move(callback), std::string()));
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::string()));
     } else {
       // If could not download or decode the chosen image(e.g. not supported,
       // invalid), try it again with remaining icons.
-      DownloadBestMatchingIcon(web_contents, icons, std::move(callback));
+      DownloadBestMatchingIcon(scope, std::move(frame_routing_ids), icons,
+                               std::move(callback));
     }
     return;
   }
@@ -59,22 +63,23 @@ void OnIconFetched(
       base::StringPiece(reinterpret_cast<const char*>(&bitmap_data[0]),
                         bitmap_data.size()),
       &encoded_data);
-  BrowserThread::GetTaskRunnerForThread(ServiceWorkerContext::GetCoreThreadId())
-      ->PostTask(FROM_HERE, base::BindOnce(std::move(callback), encoded_data));
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), encoded_data));
 }
 
 void DownloadBestMatchingIcon(
-    WebContents* web_contents,
+    const GURL& scope,
+    std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcher::PaymentInstrumentIconFetcherCallback
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  WebContents* web_contents =
+      GetWebContentsFromFrameRoutingIds(scope, *frame_routing_ids);
   if (web_contents == nullptr) {
-    BrowserThread::GetTaskRunnerForThread(
-        ServiceWorkerContext::GetCoreThreadId())
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(std::move(callback), std::string()));
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::string()));
     return;
   }
 
@@ -89,10 +94,8 @@ void DownloadBestMatchingIcon(
     // developers in advance unlike when fetching or decoding fails. We already
     // checked whether they are valid in renderer side. So, if the icon url is
     // invalid, it's something wrong.
-    BrowserThread::GetTaskRunnerForThread(
-        ServiceWorkerContext::GetCoreThreadId())
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(std::move(callback), std::string()));
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::string()));
     return;
   }
 
@@ -108,18 +111,18 @@ void DownloadBestMatchingIcon(
       payments::IconSizeCalculator::IdealIconHeight(native_view),
       payments::IconSizeCalculator::MinimumIconHeight(),
       /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
-      base::BindOnce(&OnIconFetched, web_contents, copy_icons,
-                     std::move(callback)),
+      base::BindOnce(&OnIconFetched, scope, std::move(frame_routing_ids),
+                     copy_icons, std::move(callback)),
       false /* square_only */);
   DCHECK(can_download_icon);
 }
 
 WebContents* GetWebContentsFromFrameRoutingIds(
     const GURL& scope,
-    std::unique_ptr<std::vector<GlobalFrameRoutingId>> frame_routing_ids) {
+    const std::vector<GlobalRenderFrameHostId>& frame_routing_ids) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  for (const auto& ids : *frame_routing_ids) {
+  for (const auto& ids : frame_routing_ids) {
     RenderFrameHostImpl* render_frame_host =
         RenderFrameHostImpl::FromID(ids.child_id, ids.frame_routing_id);
     if (!render_frame_host)
@@ -128,8 +131,10 @@ WebContents* GetWebContentsFromFrameRoutingIds(
     WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
         WebContents::FromRenderFrameHost(render_frame_host));
     if (!web_contents || web_contents->IsHidden() ||
-        scope.GetOrigin().spec().compare(
-            web_contents->GetLastCommittedURL().GetOrigin().spec()) != 0) {
+        scope.DeprecatedGetOriginAsURL().spec().compare(
+            web_contents->GetLastCommittedURL()
+                .DeprecatedGetOriginAsURL()
+                .spec()) != 0) {
       continue;
     }
     return web_contents;
@@ -137,33 +142,18 @@ WebContents* GetWebContentsFromFrameRoutingIds(
   return nullptr;
 }
 
-void StartOnUI(
-    const GURL& scope,
-    std::unique_ptr<std::vector<GlobalFrameRoutingId>> frame_routing_ids,
-    const std::vector<blink::Manifest::ImageResource>& icons,
-    PaymentInstrumentIconFetcher::PaymentInstrumentIconFetcherCallback
-        callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  WebContents* web_contents =
-      GetWebContentsFromFrameRoutingIds(scope, std::move(frame_routing_ids));
-  DownloadBestMatchingIcon(web_contents, icons, std::move(callback));
-}
-
 }  // namespace
 
 // static
 void PaymentInstrumentIconFetcher::Start(
     const GURL& scope,
-    std::unique_ptr<std::vector<GlobalFrameRoutingId>> provider_hosts,
+    std::unique_ptr<std::vector<GlobalRenderFrameHostId>> provider_hosts,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcherCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(&StartOnUI, scope, std::move(provider_hosts), icons,
-                     std::move(callback)));
+  DownloadBestMatchingIcon(scope, std::move(provider_hosts), icons,
+                           std::move(callback));
 }
 
 }  // namespace content

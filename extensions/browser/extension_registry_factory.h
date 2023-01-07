@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_EXTENSION_REGISTRY_FACTORY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -18,6 +17,9 @@ class ExtensionRegistry;
 // between an incognito browser context and its original browser context.
 class ExtensionRegistryFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ExtensionRegistryFactory(const ExtensionRegistryFactory&) = delete;
+  ExtensionRegistryFactory& operator=(const ExtensionRegistryFactory&) = delete;
+
   static ExtensionRegistry* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -34,8 +36,6 @@ class ExtensionRegistryFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionRegistryFactory);
 };
 
 }  // namespace extensions

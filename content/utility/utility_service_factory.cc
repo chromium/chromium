@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,8 +27,9 @@ void UtilityServiceFactory::RunService(
   if (trace_log->IsProcessNameEmpty())
     trace_log->set_process_name("Service: " + service_name);
 
-  static auto* service_name_crash_key = base::debug::AllocateCrashKeyString(
-      "service-name", base::debug::CrashKeySize::Size32);
+  static auto* const service_name_crash_key =
+      base::debug::AllocateCrashKeyString("service-name",
+                                          base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(service_name_crash_key, service_name);
 
   if (GetContentClient()->utility()->HandleServiceRequestDeprecated(

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/trace_event/trace_config.h"
 #include "content/public/browser/browser_task_traits.h"
-
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tracing_controller.h"
 
@@ -55,13 +55,14 @@ class AwTraceDataEndpoint
       : received_chunk_callback_(std::move(received_chunk_callback)),
         completed_callback_(std::move(completed_callback)) {}
 
+  AwTraceDataEndpoint(const AwTraceDataEndpoint&) = delete;
+  AwTraceDataEndpoint& operator=(const AwTraceDataEndpoint&) = delete;
+
  private:
   ~AwTraceDataEndpoint() override {}
 
   ReceivedChunkCallback received_chunk_callback_;
   base::OnceClosure completed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwTraceDataEndpoint);
 };
 
 }  // namespace

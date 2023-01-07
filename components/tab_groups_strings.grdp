@@ -26,5 +26,8 @@
       <message name="IDS_TAB_GROUP_COLOR_CYAN" desc="The accessibility label for a button in a color picker that is used to choose the color cyan.">
         Cyan
       </message>
+      <message name="IDS_TAB_GROUP_COLOR_ORANGE" desc="The accessibility label for a button in a color picker that is used to choose the color orange.">
+        Orange
+      </message>
 
 </grit-part>

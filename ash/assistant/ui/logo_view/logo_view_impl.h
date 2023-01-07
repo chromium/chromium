@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,17 @@
 #define ASH_ASSISTANT_UI_LOGO_VIEW_LOGO_VIEW_IMPL_H_
 
 #include <cstdint>
-#include <memory>
 
 #include "ash/assistant/ui/logo_view/logo_view.h"
 #include "ash/assistant/ui/logo_view/shape/mic_part_shape.h"
-#include "base/macros.h"
 #include "chromeos/assistant/internal/logo_view/input_value_provider/sound_level_input_value_provider.h"
 #include "chromeos/assistant/internal/logo_view/logo_model/logo.h"
 #include "chromeos/assistant/internal/logo_view/state_animator.h"
 #include "chromeos/assistant/internal/logo_view/state_animator_timer_delegate.h"
 #include "chromeos/assistant/internal/logo_view/state_model.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace chromeos {
 namespace assistant {

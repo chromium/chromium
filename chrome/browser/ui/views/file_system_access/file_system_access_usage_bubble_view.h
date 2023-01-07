@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,12 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
     std::vector<base::FilePath> writable_files;
     std::vector<base::FilePath> writable_directories;
   };
+
+  FileSystemAccessUsageBubbleView(const FileSystemAccessUsageBubbleView&) =
+      delete;
+  FileSystemAccessUsageBubbleView& operator=(
+      const FileSystemAccessUsageBubbleView&) = delete;
+
   static void ShowBubble(content::WebContents* web_contents,
                          const url::Origin& origin,
                          Usage usage);
@@ -38,25 +44,21 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
  private:
   class FilePathListModel : public ui::TableModel {
    public:
-    FilePathListModel(const views::View* view,
-                      std::vector<base::FilePath> files,
+    FilePathListModel(std::vector<base::FilePath> files,
                       std::vector<base::FilePath> directories);
+    FilePathListModel(const FilePathListModel&) = delete;
+    FilePathListModel& operator=(const FilePathListModel&) = delete;
     ~FilePathListModel() override;
     // ui::TableModel:
-    int RowCount() override;
-    std::u16string GetText(int row, int column_id) override;
-    gfx::ImageSkia GetIcon(int row) override;
-    std::u16string GetTooltip(int row) override;
+    size_t RowCount() override;
+    std::u16string GetText(size_t row, int column_id) override;
+    ui::ImageModel GetIcon(size_t row) override;
+    std::u16string GetTooltip(size_t row) override;
     void SetObserver(ui::TableModelObserver*) override;
 
    private:
-    // The model needs access to the view it is in to access the correct theme
-    // for icon colors.
-    const views::View* const owner_;
-
     const std::vector<base::FilePath> files_;
     const std::vector<base::FilePath> directories_;
-    DISALLOW_COPY_AND_ASSIGN(FilePathListModel);
   };
 
   FileSystemAccessUsageBubbleView(views::View* anchor_view,
@@ -84,8 +86,6 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
   const Usage usage_;
   FilePathListModel readable_paths_model_;
   FilePathListModel writable_paths_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessUsageBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_VIEW_H_

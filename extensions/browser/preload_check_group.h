@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "extensions/browser/preload_check.h"
@@ -20,6 +19,10 @@ namespace extensions {
 class PreloadCheckGroup : public PreloadCheck {
  public:
   PreloadCheckGroup();
+
+  PreloadCheckGroup(const PreloadCheckGroup&) = delete;
+  PreloadCheckGroup& operator=(const PreloadCheckGroup&) = delete;
+
   ~PreloadCheckGroup() override;
 
   // Adds a check to run. Not owned. Must be called before Start().
@@ -51,8 +54,6 @@ class PreloadCheckGroup : public PreloadCheck {
   Errors errors_;
 
   base::WeakPtrFactory<PreloadCheckGroup> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PreloadCheckGroup);
 };
 
 }  // namespace extensions

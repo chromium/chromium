@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`This test verifies the gap information sent to the overlay frontend for flex contains with gaps.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <style>
@@ -17,7 +17,7 @@
         display: flex;
         flex-wrap: wrap;
         flex-direction: row;
-        place-content: start;
+        place-content: flex-start;
         column-gap: 10px;
         row-gap: 20px;
       }

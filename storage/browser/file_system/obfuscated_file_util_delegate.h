@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,11 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilDelegate {
  public:
   ObfuscatedFileUtilDelegate() = default;
+
+  ObfuscatedFileUtilDelegate(const ObfuscatedFileUtilDelegate&) = delete;
+  ObfuscatedFileUtilDelegate& operator=(const ObfuscatedFileUtilDelegate&) =
+      delete;
+
   virtual ~ObfuscatedFileUtilDelegate() = default;
 
   virtual bool DirectoryExists(const base::FilePath& path) = 0;
@@ -30,7 +35,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilDelegate {
       const FileSystemURL& dest_url,
       bool copy) = 0;
   virtual base::File CreateOrOpen(const base::FilePath& path,
-                                  int file_flags) = 0;
+                                  uint32_t file_flags) = 0;
   virtual base::File::Error EnsureFileExists(const base::FilePath& path,
                                              bool* created) = 0;
   virtual base::File::Error CreateDirectory(const base::FilePath& path,
@@ -46,17 +51,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilDelegate {
   virtual base::File::Error CopyOrMoveFile(
       const base::FilePath& src_path,
       const base::FilePath& dest_path,
-      FileSystemOperation::CopyOrMoveOption option,
+      FileSystemOperation::CopyOrMoveOptionSet options,
       NativeFileUtil::CopyOrMoveMode mode) = 0;
   virtual base::File::Error CopyInForeignFile(
       const base::FilePath& src_path,
       const base::FilePath& dest_path,
-      FileSystemOperation::CopyOrMoveOption option,
+      FileSystemOperation::CopyOrMoveOptionSet options,
       NativeFileUtil::CopyOrMoveMode mode) = 0;
   virtual base::File::Error DeleteFile(const base::FilePath& path) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObfuscatedFileUtilDelegate);
 };
 
 }  // namespace storage

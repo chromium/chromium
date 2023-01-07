@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
@@ -69,8 +71,8 @@ class GoogleSearchDomainMixingMetricsEmitter : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  PrefService* const prefs_;                        // Not owned.
-  history::HistoryService* const history_service_;  // Not owned.
+  const raw_ptr<PrefService> prefs_;                        // Not owned.
+  const raw_ptr<history::HistoryService> history_service_;  // Not owned.
   std::unique_ptr<base::Clock> clock_ = std::make_unique<base::DefaultClock>();
   // Timer used to compute domain mixing metrics daily if the emitter is
   // long-lived.
@@ -78,6 +80,8 @@ class GoogleSearchDomainMixingMetricsEmitter : public KeyedService {
       std::make_unique<base::RepeatingTimer>();
   base::CancelableTaskTracker task_tracker_;
   scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner_;
+  base::WeakPtrFactory<GoogleSearchDomainMixingMetricsEmitter>
+      weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_GOOGLE_GOOGLE_SEARCH_DOMAIN_MIXING_METRICS_EMITTER_H_

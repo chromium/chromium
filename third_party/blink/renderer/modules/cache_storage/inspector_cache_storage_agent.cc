@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
-#include "base/macros.h"
+
 #include "base/memory/scoped_refptr.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
@@ -16,10 +17,6 @@
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
@@ -28,7 +25,6 @@
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -125,7 +121,8 @@ ProtocolResponse AssertCacheStorage(
   if (it == caches->end()) {
     mojo::Remote<mojom::blink::CacheStorage> cache_storage_remote;
     context->GetBrowserInterfaceBroker().GetInterface(
-        cache_storage_remote.BindNewPipeAndPassReceiver());
+        cache_storage_remote.BindNewPipeAndPassReceiver(
+            frames->Root()->GetTaskRunner(TaskType::kFileReading)));
     *result = cache_storage_remote.get();
     caches->Set(security_origin, std::move(cache_storage_remote));
   } else {
@@ -230,6 +227,9 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
         cache_remote_(std::move(cache_pending_remote)),
         callback_(std::move(callback)) {}
 
+  ResponsesAccumulator(const ResponsesAccumulator&) = delete;
+  ResponsesAccumulator& operator=(const ResponsesAccumulator&) = delete;
+
   void Dispatch(Vector<mojom::blink::FetchAPIRequestPtr> old_requests) {
     int64_t trace_id = blink::cache_storage::CreateTraceId();
     TRACE_EVENT_WITH_FLOW0("CacheStorage", "ResponsesAccumulator::Dispatch",
@@ -237,7 +237,7 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
                            TRACE_EVENT_FLAG_FLOW_OUT);
 
     Vector<mojom::blink::FetchAPIRequestPtr> requests;
-    if (params_.path_filter.IsEmpty()) {
+    if (params_.path_filter.empty()) {
       requests = std::move(old_requests);
     } else {
       for (auto& request : old_requests) {
@@ -263,15 +263,18 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
       auto request_clone_without_body = mojom::blink::FetchAPIRequest::New(
           request->mode, request->is_main_resource_load, request->destination,
           request->frame_type, request->url, request->method, request->headers,
-          nullptr /* blob */, ResourceRequestBody(), request->referrer.Clone(),
+          nullptr /* blob */, ResourceRequestBody(), request->request_initiator,
+          request->navigation_redirect_chain, request->referrer.Clone(),
           request->credentials_mode, request->cache_mode,
           request->redirect_mode, request->integrity, request->priority,
           request->fetch_window_id, request->keepalive, request->is_reload,
-          request->is_history_navigation, request->devtools_stack_id);
+          request->is_history_navigation, request->devtools_stack_id,
+          request->trust_token_params.Clone(), request->target_address_space);
       cache_remote_->Match(
           std::move(request), mojom::blink::CacheQueryOptions::New(),
-          false /* in_related_fetch_event */, trace_id,
-          WTF::Bind(
+          /*in_related_fetch_event=*/false, /*in_range_fetch_event=*/false,
+          trace_id,
+          WTF::BindOnce(
               [](scoped_refptr<ResponsesAccumulator> accumulator,
                  mojom::blink::FetchAPIRequestPtr request,
                  mojom::blink::MatchResultPtr result) {
@@ -374,8 +377,6 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
   Vector<RequestResponse> responses_;
   mojo::AssociatedRemote<mojom::blink::CacheStorageCache> cache_remote_;
   std::unique_ptr<RequestEntriesCallback> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResponsesAccumulator);
 };
 
 class GetCacheKeysForRequestData {
@@ -391,6 +392,10 @@ class GetCacheKeysForRequestData {
     cache_remote_.Bind(std::move(cache_pending_remote));
   }
 
+  GetCacheKeysForRequestData(const GetCacheKeysForRequestData&) = delete;
+  GetCacheKeysForRequestData& operator=(const GetCacheKeysForRequestData&) =
+      delete;
+
   void Dispatch(std::unique_ptr<GetCacheKeysForRequestData> self) {
     int64_t trace_id = blink::cache_storage::CreateTraceId();
     TRACE_EVENT_WITH_FLOW0(
@@ -398,7 +403,7 @@ class GetCacheKeysForRequestData {
         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
     cache_remote_->Keys(
         nullptr /* request */, mojom::blink::CacheQueryOptions::New(), trace_id,
-        WTF::Bind(
+        WTF::BindOnce(
             [](DataRequestParams params,
                std::unique_ptr<GetCacheKeysForRequestData> self,
                mojom::blink::CacheKeysResultPtr result) {
@@ -410,7 +415,7 @@ class GetCacheKeysForRequestData {
                         CacheStorageErrorString(result->get_status()))
                         .Utf8()));
               } else {
-                if (result->get_keys().IsEmpty()) {
+                if (result->get_keys().empty()) {
                   auto array = std::make_unique<protocol::Array<DataEntry>>();
                   self->callback_->sendSuccess(std::move(array), 0);
                   return;
@@ -430,18 +435,22 @@ class GetCacheKeysForRequestData {
   DataRequestParams params_;
   mojo::AssociatedRemote<mojom::blink::CacheStorageCache> cache_remote_;
   std::unique_ptr<RequestEntriesCallback> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetCacheKeysForRequestData);
 };
 
 class CachedResponseFileReaderLoaderClient final
     : private FileReaderLoaderClient {
  public:
-  static void Load(scoped_refptr<BlobDataHandle> blob,
+  static void Load(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                   scoped_refptr<BlobDataHandle> blob,
                    std::unique_ptr<RequestCachedResponseCallback> callback) {
-    new CachedResponseFileReaderLoaderClient(std::move(blob),
-                                             std::move(callback));
+    new CachedResponseFileReaderLoaderClient(
+        std::move(task_runner), std::move(blob), std::move(callback));
   }
+
+  CachedResponseFileReaderLoaderClient(
+      const CachedResponseFileReaderLoaderClient&) = delete;
+  CachedResponseFileReaderLoaderClient& operator=(
+      const CachedResponseFileReaderLoaderClient&) = delete;
 
   void DidStartLoading() override {}
 
@@ -457,7 +466,7 @@ class CachedResponseFileReaderLoaderClient final
   void DidFail(FileErrorCode error) override {
     callback_->sendFailure(ProtocolResponse::ServerError(
         String::Format("Unable to read the cached response, error code: %d",
-                       error)
+                       static_cast<int>(error))
             .Utf8()));
     dispose();
   }
@@ -469,14 +478,13 @@ class CachedResponseFileReaderLoaderClient final
 
  private:
   CachedResponseFileReaderLoaderClient(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<BlobDataHandle>&& blob,
       std::unique_ptr<RequestCachedResponseCallback>&& callback)
-      // TODO(hajimehoshi): Use a per-ExecutionContext task runner of
-      // TaskType::kFileReading
       : loader_(std::make_unique<FileReaderLoader>(
             FileReaderLoader::kReadByClient,
             static_cast<FileReaderLoaderClient*>(this),
-            ThreadScheduler::Current()->DeprecatedDefaultTaskRunner())),
+            std::move(task_runner))),
         callback_(std::move(callback)),
         data_(SharedBuffer::Create()) {
     loader_->Start(std::move(blob));
@@ -489,8 +497,6 @@ class CachedResponseFileReaderLoaderClient final
   std::unique_ptr<FileReaderLoader> loader_;
   std::unique_ptr<RequestCachedResponseCallback> callback_;
   scoped_refptr<SharedBuffer> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedResponseFileReaderLoaderClient);
 };
 
 }  // namespace
@@ -535,7 +541,7 @@ void InspectorCacheStorageAgent::requestCacheNames(
 
   cache_storage->Keys(
       trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](String security_origin,
              std::unique_ptr<RequestCacheNamesCallback> callback,
              const Vector<String>& caches) {
@@ -580,7 +586,7 @@ void InspectorCacheStorageAgent::requestEntries(
 
   cache_storage->Open(
       cache_name, trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](DataRequestParams params,
              std::unique_ptr<RequestEntriesCallback> callback,
              mojom::blink::OpenResultPtr result) {
@@ -618,7 +624,7 @@ void InspectorCacheStorageAgent::deleteCache(
   }
   cache_storage->Delete(
       cache_name, trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](std::unique_ptr<DeleteCacheCallback> callback,
              mojom::blink::CacheStorageError error) {
             if (error == mojom::blink::CacheStorageError::kSuccess) {
@@ -652,7 +658,7 @@ void InspectorCacheStorageAgent::deleteEntry(
   }
   cache_storage->Open(
       cache_name, trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](String cache_name, String request, int64_t trace_id,
              std::unique_ptr<DeleteEntryCallback> callback,
              mojom::blink::OpenResultPtr result) {
@@ -677,7 +683,7 @@ void InspectorCacheStorageAgent::deleteEntry(
               auto* cache = cache_remote.get();
               cache->Batch(
                   std::move(batch_operations), trace_id,
-                  WTF::Bind(
+                  WTF::BindOnce(
                       [](mojo::AssociatedRemote<mojom::blink::CacheStorageCache>
                              cache_remote,
                          std::unique_ptr<DeleteEntryCallback> callback,
@@ -726,15 +732,18 @@ void InspectorCacheStorageAgent::requestCachedResponse(
     request->headers.insert(header->getName(), header->getValue());
   }
 
+  auto task_runner = frames_->Root()->GetTaskRunner(TaskType::kFileReading);
   auto multi_query_options = mojom::blink::MultiCacheQueryOptions::New();
   multi_query_options->query_options = mojom::blink::CacheQueryOptions::New();
   multi_query_options->cache_name = cache_name;
 
   cache_storage->Match(
       std::move(request), std::move(multi_query_options),
-      false /* in_related_fetch_event */, trace_id,
-      WTF::Bind(
+      /*in_related_fetch_event=*/false, /*in_range_fetch_event=*/false,
+      trace_id,
+      WTF::BindOnce(
           [](std::unique_ptr<RequestCachedResponseCallback> callback,
+             scoped_refptr<base::SingleThreadTaskRunner> task_runner,
              mojom::blink::MatchResultPtr result) {
             if (result->is_status()) {
               callback->sendFailure(ProtocolResponse::ServerError(
@@ -751,9 +760,10 @@ void InspectorCacheStorageAgent::requestCachedResponse(
                 return;
               }
               CachedResponseFileReaderLoaderClient::Load(
+                  std::move(task_runner),
                   std::move(result->get_response()->blob), std::move(callback));
             }
           },
-          std::move(callback)));
+          std::move(callback), std::move(task_runner)));
 }
 }  // namespace blink

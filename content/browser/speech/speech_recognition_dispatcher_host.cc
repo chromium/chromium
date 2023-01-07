@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,7 +92,7 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
   // BackForwardCache.
   // TODO(sreejakshetty): Make SpeechRecognition compatible with
   // BackForwardCache.
-  rfh->OnSchedulerTrackedFeatureUsed(
+  rfh->OnBackForwardCacheDisablingStickyFeatureUsed(
       blink::scheduler::WebSchedulerTrackedFeature::kSpeechRecognizer);
 
   // If the speech API request was from an inner WebContents or a guest, save
@@ -102,7 +102,7 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
   if (outer_web_contents) {
     RenderFrameHost* embedder_frame = nullptr;
 
-    FrameTreeNode* embedder_frame_node = web_contents->GetMainFrame()
+    FrameTreeNode* embedder_frame_node = web_contents->GetPrimaryMainFrame()
                                              ->frame_tree_node()
                                              ->render_manager()
                                              ->GetOuterDelegateNode();
@@ -112,7 +112,7 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
       // The outer web contents is embedded using the browser plugin. Fall back
       // to a simple lookup of the main frame. TODO(avi): When the browser
       // plugin is retired, remove this code.
-      embedder_frame = outer_web_contents->GetMainFrame();
+      embedder_frame = outer_web_contents->GetPrimaryMainFrame();
     }
 
     embedder_render_process_id = embedder_frame->GetProcess()->GetID();
@@ -129,8 +129,8 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
           ->FilterProfanities(embedder_render_process_id);
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  StoragePartition* storage_partition = BrowserContext::GetStoragePartition(
-      browser_context, web_contents->GetSiteInstance());
+  StoragePartition* storage_partition =
+      browser_context->GetStoragePartition(web_contents->GetSiteInstance());
 
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -263,6 +263,8 @@ void SpeechRecognitionSession::OnRecognitionResults(
 void SpeechRecognitionSession::OnRecognitionError(
     int session_id,
     const blink::mojom::SpeechRecognitionError& error) {
+  if (!client_.is_bound())
+    return;
   client_->ErrorOccurred(blink::mojom::SpeechRecognitionError::New(error));
 }
 

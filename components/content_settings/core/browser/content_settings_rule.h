@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,11 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
 namespace content_settings {
@@ -24,19 +25,20 @@ struct Rule {
   Rule(const ContentSettingsPattern& primary_pattern,
        const ContentSettingsPattern& secondary_pattern,
        base::Value value,
-       base::Time expiration,
-       SessionModel session_model);
+       const RuleMetaData& metadata);
+
+  Rule(const Rule&) = delete;
+  Rule& operator=(const Rule&) = delete;
+
   Rule(Rule&& other);
   Rule& operator=(Rule&& other);
+
   ~Rule();
 
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
   base::Value value;
-  base::Time expiration;
-  SessionModel session_model;
-
-  DISALLOW_COPY_AND_ASSIGN(Rule);
+  RuleMetaData metadata;
 };
 
 class RuleIterator {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,7 @@ import androidx.annotation.StringRes;
 
 import com.google.android.material.tabs.TabLayout;
 
-import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
  * A {@link TabLayout} containing the tabs in the keyboard accessory.
@@ -37,8 +36,7 @@ class KeyboardAccessoryTabLayoutView extends TabLayout {
         TabLayout.Tab tab = newTab();
         tab.setIcon(icon.mutate()); // mutate() needed to change the active tint.
         tab.getIcon().setColorFilter(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.default_icon_color),
-                PorterDuff.Mode.SRC_IN);
+                SemanticColorUtils.getDefaultIconColor(getContext()), PorterDuff.Mode.SRC_IN);
         tab.setContentDescription(contentDescription);
         addTab(tab, position, false);
     }

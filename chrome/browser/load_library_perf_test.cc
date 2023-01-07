@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/scoped_native_library.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
@@ -42,8 +41,12 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 void MeasureSizeAndTimeToLoadNativeLibrary(
     const base::FilePath& library_relative_dir,
     const base::FilePath& library_name) {
+  // External ClearKey is a loadable_module used only in tests, and the Widevine
+  // CDM is copied to the output directory. Both can be considered generated
+  // test data even though one is production code.
   base::FilePath output_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &output_dir));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &output_dir));
   output_dir = output_dir.Append(library_relative_dir);
   base::FilePath library_path = output_dir.Append(library_name);
   ASSERT_TRUE(base::PathExists(library_path)) << library_path.value();

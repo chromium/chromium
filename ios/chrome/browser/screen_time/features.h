@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 
 // Feature flag to enable ScreenTime integration.
-extern const base::Feature kScreenTimeIntegration;
+BASE_DECLARE_FEATURE(kScreenTimeIntegration);
 
 // Returns true if ScreenTime integration is enabled.
 bool IsScreenTimeIntegrationEnabled();

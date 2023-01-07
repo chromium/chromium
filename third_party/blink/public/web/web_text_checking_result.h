@@ -67,4 +67,4 @@ struct WebTextCheckingResult {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_TEXT_CHECKING_RESULT_H_

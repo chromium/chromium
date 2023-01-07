@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ namespace offline_pages {
 // eventually deleted if their offline_id does not correspond to an offline
 // item. Two days gives us plenty of time so that the prefetched item can be
 // imported into the offline item database.
-const base::TimeDelta kVisualsExpirationDelta = base::TimeDelta::FromDays(2);
+const base::TimeDelta kVisualsExpirationDelta = base::Days(2);
 
 namespace {
 
@@ -44,7 +44,7 @@ bool StoreThumbnailSync(sql::Database* db,
       "UPDATE page_thumbnails SET expiration=?,thumbnail=? WHERE offline_id=?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
   statement.BindInt64(0, store_utils::ToDatabaseTime(expiration));
-  statement.BindBlob(1, thumbnail.data(), thumbnail.length());
+  statement.BindBlob(1, thumbnail);
   statement.BindInt64(2, offline_id);
   return statement.Run();
 }
@@ -57,7 +57,7 @@ bool StoreFaviconSync(sql::Database* db,
       "UPDATE page_thumbnails SET expiration=?,favicon=? WHERE offline_id=?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
   statement.BindInt64(0, store_utils::ToDatabaseTime(expiration));
-  statement.BindBlob(1, favicon.data(), favicon.length());
+  statement.BindBlob(1, favicon);
   statement.BindInt64(2, offline_id);
   return statement.Run();
 }

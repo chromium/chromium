@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,13 +21,13 @@ define viewg
   else
     set pagination off
     set print elements 0
-    set logging off
+    set logging enabled off
     set logging file ~/state.dot
     set logging overwrite on
     set logging redirect on
-    set logging on
+    set logging enabled on
     printf "%s\n", views::PrintViewGraph(this).c_str()
-    set logging off
+    set logging enabled off
     shell dot -Tsvg -o ~/state.svg ~/state.dot
     set pagination on
   end

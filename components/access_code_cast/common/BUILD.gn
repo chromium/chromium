@@ -1,0 +1,24 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("common") {
+  sources = [
+    "access_code_cast_metrics.cc",
+    "access_code_cast_metrics.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "access_code_cast_metrics_unittest.cc" ]
+  deps = [
+    "//base/test:test_support",
+    "//components/access_code_cast/common",
+    "//testing/gtest",
+  ]
+  data = [
+    "//tools/metrics/histograms/enums.xml",
+  ]
+}

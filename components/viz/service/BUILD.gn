@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,6 +16,10 @@ config("viz_service_implementation") {
 
 viz_component("service") {
   sources = [
+    "debugger/rwlock.cc",
+    "debugger/rwlock.h",
+    "debugger/viz_debugger.cc",
+    "debugger/viz_debugger.h",
     "display/aggregated_frame.cc",
     "display/aggregated_frame.h",
     "display/bsp_tree.cc",
@@ -37,12 +41,12 @@ viz_component("service") {
     "display/display.cc",
     "display/display.h",
     "display/display_client.h",
+    "display/display_compositor_memory_and_task_controller.cc",
+    "display/display_compositor_memory_and_task_controller.h",
     "display/display_damage_tracker.cc",
     "display/display_damage_tracker.h",
     "display/display_resource_provider.cc",
     "display/display_resource_provider.h",
-    "display/display_resource_provider_gl.cc",
-    "display/display_resource_provider_gl.h",
     "display/display_resource_provider_null.cc",
     "display/display_resource_provider_null.h",
     "display/display_resource_provider_skia.cc",
@@ -55,22 +59,10 @@ viz_component("service") {
     "display/display_scheduler_base.h",
     "display/draw_polygon.cc",
     "display/draw_polygon.h",
-    "display/dynamic_geometry_binding.cc",
-    "display/dynamic_geometry_binding.h",
     "display/external_use_client.cc",
     "display/external_use_client.h",
     "display/frame_rate_decider.cc",
     "display/frame_rate_decider.h",
-    "display/geometry_binding.cc",
-    "display/geometry_binding.h",
-    "display/gl_renderer.cc",
-    "display/gl_renderer.h",
-    "display/gl_renderer_copier.cc",
-    "display/gl_renderer_copier.h",
-    "display/gl_renderer_draw_cache.cc",
-    "display/gl_renderer_draw_cache.h",
-    "display/layer_quad.cc",
-    "display/layer_quad.h",
     "display/null_renderer.cc",
     "display/null_renderer.h",
     "display/output_surface.cc",
@@ -80,6 +72,8 @@ viz_component("service") {
     "display/output_surface_frame.h",
     "display/overlay_candidate.cc",
     "display/overlay_candidate.h",
+    "display/overlay_candidate_factory.cc",
+    "display/overlay_candidate_factory.h",
     "display/overlay_candidate_temporal_tracker.cc",
     "display/overlay_candidate_temporal_tracker.h",
     "display/overlay_processor_interface.cc",
@@ -88,21 +82,16 @@ viz_component("service") {
     "display/overlay_processor_on_gpu.h",
     "display/overlay_processor_stub.cc",
     "display/overlay_processor_stub.h",
-    "display/program_binding.cc",
-    "display/program_binding.h",
+    "display/pending_swap_params.cc",
+    "display/pending_swap_params.h",
     "display/record_replay_render.cc",
     "display/record_replay_render.h",
-    "display/render_pass_id_remapper.cc",
-    "display/render_pass_id_remapper.h",
     "display/renderer_utils.cc",
     "display/renderer_utils.h",
+    "display/resolved_frame_data.cc",
+    "display/resolved_frame_data.h",
+    "display/resource_fence.cc",
     "display/resource_fence.h",
-    "display/scoped_gpu_memory_buffer_texture.cc",
-    "display/scoped_gpu_memory_buffer_texture.h",
-    "display/scoped_render_pass_texture.cc",
-    "display/scoped_render_pass_texture.h",
-    "display/shader.cc",
-    "display/shader.h",
     "display/shared_bitmap_manager.h",
     "display/skia_output_surface.cc",
     "display/skia_output_surface.h",
@@ -112,33 +101,46 @@ viz_component("service") {
     "display/software_output_device.h",
     "display/software_renderer.cc",
     "display/software_renderer.h",
-    "display/static_geometry_binding.cc",
-    "display/static_geometry_binding.h",
     "display/surface_aggregator.cc",
     "display/surface_aggregator.h",
-    "display/sync_query_collection.cc",
-    "display/sync_query_collection.h",
-    "display/texture_deleter.cc",
-    "display/texture_deleter.h",
     "display_embedder/buffer_queue.cc",
     "display_embedder/buffer_queue.h",
-    "display_embedder/gl_output_surface.cc",
-    "display_embedder/gl_output_surface.h",
-    "display_embedder/gl_output_surface_buffer_queue.cc",
-    "display_embedder/gl_output_surface_buffer_queue.h",
-    "display_embedder/gl_output_surface_offscreen.cc",
-    "display_embedder/gl_output_surface_offscreen.h",
+    "display_embedder/compositor_gpu_thread.cc",
+    "display_embedder/compositor_gpu_thread.h",
+    "display_embedder/image_context_impl.cc",
+    "display_embedder/image_context_impl.h",
     "display_embedder/in_process_gpu_memory_buffer_manager.cc",
     "display_embedder/in_process_gpu_memory_buffer_manager.h",
+    "display_embedder/output_presenter.cc",
+    "display_embedder/output_presenter.h",
+    "display_embedder/output_presenter_gl.cc",
+    "display_embedder/output_presenter_gl.h",
     "display_embedder/output_surface_provider.h",
     "display_embedder/output_surface_provider_impl.cc",
     "display_embedder/output_surface_provider_impl.h",
     "display_embedder/server_shared_bitmap_manager.cc",
     "display_embedder/server_shared_bitmap_manager.h",
+    "display_embedder/skia_output_device.cc",
+    "display_embedder/skia_output_device.h",
+    "display_embedder/skia_output_device_buffer_queue.cc",
+    "display_embedder/skia_output_device_buffer_queue.h",
+    "display_embedder/skia_output_device_gl.cc",
+    "display_embedder/skia_output_device_gl.h",
+    "display_embedder/skia_output_device_offscreen.cc",
+    "display_embedder/skia_output_device_offscreen.h",
+    "display_embedder/skia_output_device_webview.cc",
+    "display_embedder/skia_output_device_webview.h",
+    "display_embedder/skia_output_surface_dependency.h",
+    "display_embedder/skia_output_surface_dependency_impl.cc",
+    "display_embedder/skia_output_surface_dependency_impl.h",
+    "display_embedder/skia_output_surface_impl.cc",
+    "display_embedder/skia_output_surface_impl.h",
+    "display_embedder/skia_output_surface_impl_on_gpu.cc",
+    "display_embedder/skia_output_surface_impl_on_gpu.h",
+    "display_embedder/skia_render_copy_results.cc",
+    "display_embedder/skia_render_copy_results.h",
     "display_embedder/software_output_surface.cc",
     "display_embedder/software_output_surface.h",
-    "display_embedder/viz_process_context_provider.cc",
-    "display_embedder/viz_process_context_provider.h",
     "display_embedder/vsync_parameter_listener.cc",
     "display_embedder/vsync_parameter_listener.h",
     "frame_sinks/begin_frame_tracker.cc",
@@ -149,9 +151,14 @@ viz_component("service") {
     "frame_sinks/compositor_frame_sink_support.h",
     "frame_sinks/external_begin_frame_source_mojo.cc",
     "frame_sinks/external_begin_frame_source_mojo.h",
+    "frame_sinks/frame_sink_bundle_impl.cc",
+    "frame_sinks/frame_sink_bundle_impl.h",
     "frame_sinks/frame_sink_manager_impl.cc",
     "frame_sinks/frame_sink_manager_impl.h",
     "frame_sinks/frame_sink_observer.h",
+    "frame_sinks/gmb_video_frame_pool_context_provider.h",
+    "frame_sinks/gmb_video_frame_pool_context_provider_impl.cc",
+    "frame_sinks/gmb_video_frame_pool_context_provider_impl.h",
     "frame_sinks/gpu_vsync_begin_frame_source.cc",
     "frame_sinks/gpu_vsync_begin_frame_source.h",
     "frame_sinks/root_compositor_frame_sink_impl.cc",
@@ -163,19 +170,30 @@ viz_component("service") {
     "frame_sinks/video_capture/frame_sink_video_capturer_impl.cc",
     "frame_sinks/video_capture/frame_sink_video_capturer_impl.h",
     "frame_sinks/video_capture/frame_sink_video_capturer_manager.h",
+    "frame_sinks/video_capture/gpu_memory_buffer_video_frame_pool.cc",
+    "frame_sinks/video_capture/gpu_memory_buffer_video_frame_pool.h",
     "frame_sinks/video_capture/in_flight_frame_delivery.cc",
     "frame_sinks/video_capture/in_flight_frame_delivery.h",
-    "frame_sinks/video_capture/interprocess_frame_pool.cc",
-    "frame_sinks/video_capture/interprocess_frame_pool.h",
+    "frame_sinks/video_capture/shared_memory_video_frame_pool.cc",
+    "frame_sinks/video_capture/shared_memory_video_frame_pool.h",
     "frame_sinks/video_capture/video_capture_overlay.cc",
     "frame_sinks/video_capture/video_capture_overlay.h",
+    "frame_sinks/video_capture/video_frame_pool.cc",
+    "frame_sinks/video_capture/video_frame_pool.h",
     "frame_sinks/video_detector.cc",
     "frame_sinks/video_detector.h",
+    "gl/gpu_service_impl.cc",
+    "gl/gpu_service_impl.h",
     "hit_test/hit_test_aggregator.cc",
     "hit_test/hit_test_aggregator.h",
     "hit_test/hit_test_aggregator_delegate.h",
     "hit_test/hit_test_manager.cc",
     "hit_test/hit_test_manager.h",
+    "performance_hint/hint_session.cc",
+    "performance_hint/hint_session.h",
+    "performance_hint/utils.cc",
+    "performance_hint/utils.h",
+    "surfaces/frame_index_constants.h",
     "surfaces/latest_local_surface_id_lookup_delegate.h",
     "surfaces/pending_copy_output_request.cc",
     "surfaces/pending_copy_output_request.h",
@@ -208,8 +226,6 @@ viz_component("service") {
 
   defines = [ "VIZ_SERVICE_IMPLEMENTATION" ]
 
-  allow_circular_includes_from = [ ":gpu_service_dependencies" ]
-
   deps = [
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
@@ -217,12 +233,12 @@ viz_component("service") {
     "//cc/paint",
     "//components/crash/core/common:crash_key",
     "//components/power_scheduler",
-    "//gpu/command_buffer/client:gles2_cmd_helper",
-    "//gpu/command_buffer/client:gles2_implementation",
-    "//gpu/command_buffer/client:raster",
 
     # Note that dependency on //gpu/ipc/client is for GpuMemoryBufferImpl. This
     # dependency should not be in public_deps.
+    "//components/viz/common",
+    "//gpu/command_buffer/client",
+    "//gpu/config",
     "//gpu/ipc/client",
     "//gpu/ipc/common:common",
     "//gpu/ipc/common:surface_handle_type",
@@ -242,38 +258,41 @@ viz_component("service") {
   ]
 
   public_deps = [
-    ":gpu_service_dependencies",
     "//base",
     "//cc",
     "//cc/debug",
     "//components/viz/common",
-    "//gpu/command_buffer/client:gles2_interface",
+    "//gpu/command_buffer/service:gles2",
+    "//gpu/ipc/service",
+    "//gpu/vulkan:buildflags",
+    "//media/gpu/ipc/service",
+    "//media/mojo/services",
     "//services/viz/privileged/mojom/compositing",
+    "//services/viz/privileged/mojom/gl",
     "//services/viz/public/mojom",
+    "//skia",
     "//ui/base/prediction",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/latency",
   ]
 
-  if (use_x11) {
-    sources += [
-      "display_embedder/software_output_device_x11.cc",
-      "display_embedder/software_output_device_x11.h",
-    ]
-    deps += [ "//ui/gfx/x" ]
-  }
-
   if (is_chromeos_ash) {
     sources += [
-      "display_embedder/gl_output_surface_chromeos.cc",
-      "display_embedder/gl_output_surface_chromeos.h",
+      "display_embedder/output_surface_unified.cc",
+      "display_embedder/output_surface_unified.h",
     ]
-    deps += [ "//components/arc/video_accelerator" ]
-  }
 
-  if (is_chromecast) {
-    deps += [ "//chromecast/media/service/mojom" ]
+    deps += [
+      "//components/chromeos_camera:jpeg_encode_accelerator_service",
+      "//components/chromeos_camera:mjpeg_decode_accelerator_service",
+      "//gpu/command_buffer/service:gles2",
+      "//media/mojo/services",
+    ]
+
+    if (use_v4l2_codec || use_vaapi) {
+      deps += [ "//ash/components/arc/video_accelerator" ]
+    }
   }
 
   if (is_mac) {
@@ -292,18 +311,30 @@ viz_component("service") {
 
   if (is_android || use_ozone) {
     sources += [
+      "display/overlay_combination_cache.cc",
+      "display/overlay_combination_cache.h",
+      "display/overlay_processor_strategy.cc",
+      "display/overlay_processor_strategy.h",
       "display/overlay_processor_using_strategy.cc",
       "display/overlay_processor_using_strategy.h",
+      "display/overlay_proposed_candidate.cc",
+      "display/overlay_proposed_candidate.h",
       "display/overlay_strategy_fullscreen.cc",
       "display/overlay_strategy_fullscreen.h",
       "display/overlay_strategy_single_on_top.cc",
       "display/overlay_strategy_single_on_top.h",
       "display/overlay_strategy_underlay.cc",
       "display/overlay_strategy_underlay.h",
+    ]
+  }
+
+  if (enable_cast_overlay_strategy) {
+    sources += [
       "display/overlay_strategy_underlay_cast.cc",
       "display/overlay_strategy_underlay_cast.h",
     ]
-    deps += [ "//media/gpu:buildflags" ]
+
+    deps += [ "//chromecast/media/service/mojom" ]
   }
 
   if (is_android) {
@@ -312,8 +343,6 @@ viz_component("service") {
       "display/overlay_processor_android.h",
       "display/overlay_processor_surface_control.cc",
       "display/overlay_processor_surface_control.h",
-      "display_embedder/gl_output_surface_android.cc",
-      "display_embedder/gl_output_surface_android.h",
       "frame_sinks/external_begin_frame_source_android.cc",
       "frame_sinks/external_begin_frame_source_android.h",
       "gl/throw_uncaught_exception.cc",
@@ -325,6 +354,8 @@ viz_component("service") {
 
   if (use_ozone) {
     sources += [
+      "display/overlay_processor_delegated.cc",
+      "display/overlay_processor_delegated.h",
       "display/overlay_processor_ozone.cc",
       "display/overlay_processor_ozone.h",
       "display_embedder/software_output_device_ozone.cc",
@@ -332,10 +363,6 @@ viz_component("service") {
     ]
 
     public_deps += [ "//ui/ozone" ]
-  }
-
-  if (is_chromecast) {
-    defines += [ "ALWAYS_ENABLE_BLENDING_FOR_PRIMARY" ]
   }
 
   if (is_win) {
@@ -348,83 +375,6 @@ viz_component("service") {
       "display_embedder/output_device_backing.h",
       "display_embedder/software_output_device_win.cc",
       "display_embedder/software_output_device_win.h",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "display_embedder/output_surface_unified.cc",
-      "display_embedder/output_surface_unified.h",
-    ]
-  }
-
-  if (enable_vulkan) {
-    deps += [ "//gpu/vulkan" ]
-  }
-}
-
-# The gpu_service_dependencies source set contains source files that
-# use the service side GL library (ui/gl), while the rest of
-# viz/service use the client side GL library. This split is needed
-# because the two GL libraries are incompatible and can't compile
-# together in jumbo builds.
-#
-# Long term all service code is moving to be in the gpu process and
-# then this build target will no longer be needed.
-viz_source_set("gpu_service_dependencies") {
-  sources = [
-    "display/display_compositor_memory_and_task_controller.cc",
-    "display/display_compositor_memory_and_task_controller.h",
-    "display_embedder/image_context_impl.cc",
-    "display_embedder/image_context_impl.h",
-    "display_embedder/output_presenter.cc",
-    "display_embedder/output_presenter.h",
-    "display_embedder/output_presenter_gl.cc",
-    "display_embedder/output_presenter_gl.h",
-    "display_embedder/skia_output_device.cc",
-    "display_embedder/skia_output_device.h",
-    "display_embedder/skia_output_device_buffer_queue.cc",
-    "display_embedder/skia_output_device_buffer_queue.h",
-    "display_embedder/skia_output_device_gl.cc",
-    "display_embedder/skia_output_device_gl.h",
-    "display_embedder/skia_output_device_offscreen.cc",
-    "display_embedder/skia_output_device_offscreen.h",
-    "display_embedder/skia_output_device_webview.cc",
-    "display_embedder/skia_output_device_webview.h",
-    "display_embedder/skia_output_surface_dependency.h",
-    "display_embedder/skia_output_surface_dependency_impl.cc",
-    "display_embedder/skia_output_surface_dependency_impl.h",
-    "display_embedder/skia_output_surface_impl.cc",
-    "display_embedder/skia_output_surface_impl.h",
-    "display_embedder/skia_output_surface_impl_on_gpu.cc",
-    "display_embedder/skia_output_surface_impl_on_gpu.h",
-    "gl/gpu_service_impl.cc",
-    "gl/gpu_service_impl.h",
-  ]
-
-  public_deps = [
-    "//gpu/command_buffer/service:gles2",
-    "//gpu/ipc:gl_in_process_context",
-    "//gpu/ipc/service",
-    "//gpu/vulkan:buildflags",
-    "//media/gpu/ipc/service",
-    "//media/mojo/services",
-    "//services/viz/privileged/mojom/gl",
-    "//skia",
-    "//ui/latency:latency",
-  ]
-
-  defines = [ "VIZ_SERVICE_IMPLEMENTATION" ]
-
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-    "//gpu/config",
-    "//third_party/libyuv",
-  ]
-
-  if (is_win) {
-    sources += [
       "gl/info_collection_gpu_service_impl.cc",
       "gl/info_collection_gpu_service_impl.h",
     ]
@@ -440,13 +390,10 @@ viz_source_set("gpu_service_dependencies") {
     ]
   }
 
-  if (is_chromeos_ash) {
-    deps += [
-      "//components/arc/video_accelerator",
-      "//components/chromeos_camera:jpeg_encode_accelerator_service",
-      "//components/chromeos_camera:mjpeg_decode_accelerator_service",
-      "//gpu/command_buffer/service:gles2",
-      "//media/mojo/services",
+  if (is_fuchsia) {
+    sources += [
+      "display_embedder/output_presenter_fuchsia.cc",
+      "display_embedder/output_presenter_fuchsia.h",
     ]
   }
 
@@ -454,31 +401,25 @@ viz_source_set("gpu_service_dependencies") {
     deps += [ "//media/gpu/vaapi" ]
   }
 
-  if (use_ozone) {
-    deps += [ "//ui/ozone" ]
-  }
-
   if (enable_vulkan) {
+    deps += [ "//gpu/vulkan" ]
+
     sources += [
       "display_embedder/skia_output_device_vulkan.cc",
       "display_embedder/skia_output_device_vulkan.h",
     ]
 
-    public_deps += [ "//gpu/vulkan" ]
-
     if (is_android) {
       sources += [
         "display_embedder/skia_output_device_vulkan_secondary_cb.cc",
         "display_embedder/skia_output_device_vulkan_secondary_cb.h",
-        "display_embedder/skia_output_device_vulkan_secondary_cb_offscreen.cc",
-        "display_embedder/skia_output_device_vulkan_secondary_cb_offscreen.h",
       ]
     }
 
-    if (use_x11 || ozone_platform_x11) {
+    # TODO(1239521): ideally, ozone_platform_x11 should not be used outside
+    # ui/ozone.
+    if (ozone_platform_x11) {
       sources += [
-        "display_embedder/output_presenter_x11.cc",
-        "display_embedder/output_presenter_x11.h",
         "display_embedder/skia_output_device_x11.cc",
         "display_embedder/skia_output_device_x11.h",
       ]
@@ -486,6 +427,7 @@ viz_source_set("gpu_service_dependencies") {
       libs = [ "xshmfence" ]
 
       deps += [
+        "//ui/base/x",
         "//ui/events/platform/x11",
         "//ui/gfx/x",
       ]
@@ -498,25 +440,12 @@ viz_source_set("gpu_service_dependencies") {
       "display_embedder/skia_output_device_dawn.h",
     ]
 
-    public_deps += [ "//third_party/dawn/src/dawn:dawn_headers" ]
+    public_deps += [ "//third_party/dawn/include/dawn:headers" ]
 
     deps += [
-      "//third_party/dawn/src/dawn:dawn_proc",
-      "//third_party/dawn/src/dawn:dawncpp",
-      "//third_party/dawn/src/dawn_native",
-    ]
-  }
-
-  if (is_fuchsia) {
-    sources += [
-      "display_embedder/output_presenter_fuchsia.cc",
-      "display_embedder/output_presenter_fuchsia.h",
-    ]
-
-    deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.images",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
-      "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
+      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
     ]
   }
 }
@@ -524,30 +453,34 @@ viz_source_set("gpu_service_dependencies") {
 viz_source_set("unit_tests") {
   testonly = true
   sources = [
+    "debugger/viz_debugger_unittests/viz_debugger_internal.cc",
+    "debugger/viz_debugger_unittests/viz_debugger_internal.h",
+    "debugger/viz_debugger_unittests/viz_debugger_multithread_unittest.cc",
+    "debugger/viz_debugger_unittests/viz_debugger_rwlock_unittest.cc",
+    "debugger/viz_debugger_unittests/viz_debugger_unittest.cc",
+    "debugger/viz_debugger_unittests/viz_debugger_unittest_base.cc",
+    "debugger/viz_debugger_unittests/viz_debugger_unittest_base.h",
     "display/bsp_tree_unittest.cc",
     "display/copy_output_scaling_pixeltest.cc",
     "display/delegated_ink_point_pixel_test_helper.cc",
     "display/delegated_ink_point_pixel_test_helper.h",
     "display/display_damage_tracker_unittest.cc",
-    "display/display_resource_provider_gl_unittest.cc",
     "display/display_resource_provider_skia_unittest.cc",
     "display/display_resource_provider_software_unittest.cc",
     "display/display_scheduler_unittest.cc",
     "display/display_unittest.cc",
     "display/draw_polygon_unittest.cc",
     "display/frame_rate_decider_unittest.cc",
-    "display/layer_quad_unittest.cc",
+    "display/overlay_candidate_factory_unittest.cc",
     "display/renderer_pixeltest.cc",
-    "display/shader_unittest.cc",
+    "display/resolved_frame_data_unittest.cc",
     "display/skia_readback_pixeltest.cc",
     "display/software_renderer_unittest.cc",
     "display/surface_aggregator_pixeltest.cc",
     "display/surface_aggregator_unittest.cc",
-    "display/texture_deleter_unittest.cc",
     "display/viz_pixel_test.cc",
     "display/viz_pixel_test.h",
     "display_embedder/buffer_queue_unittest.cc",
-    "display_embedder/gl_output_surface_buffer_queue_unittest.cc",
     "display_embedder/server_shared_bitmap_manager_unittest.cc",
     "display_embedder/skia_output_device_buffer_queue_unittest.cc",
     "display_embedder/skia_output_surface_impl_unittest.cc",
@@ -555,11 +488,12 @@ viz_source_set("unit_tests") {
     "display_embedder/vsync_parameter_listener_unittest.cc",
     "frame_sinks/begin_frame_tracker_unittest.cc",
     "frame_sinks/compositor_frame_sink_support_unittest.cc",
+    "frame_sinks/frame_sink_bundle_impl_unittest.cc",
     "frame_sinks/frame_sink_manager_unittest.cc",
     "frame_sinks/surface_references_unittest.cc",
     "frame_sinks/surface_synchronization_unittest.cc",
     "frame_sinks/video_capture/frame_sink_video_capturer_impl_unittest.cc",
-    "frame_sinks/video_capture/interprocess_frame_pool_unittest.cc",
+    "frame_sinks/video_capture/shared_memory_video_frame_pool_unittest.cc",
     "frame_sinks/video_capture/video_capture_overlay_unittest.cc",
     "frame_sinks/video_detector_unittest.cc",
     "gl/gpu_service_impl_unittest.cc",
@@ -571,22 +505,11 @@ viz_source_set("unit_tests") {
     "transitions/transferable_resource_tracker_unittest.cc",
   ]
 
-  if (enable_gl_backend_tests) {
-    sources += [
-      "display/gl_renderer_copier_pixeltest.cc",
-      "display/gl_renderer_copier_unittest.cc",
-      "display/gl_renderer_unittest.cc",
-    ]
-  }
-
   if (!use_aura && !is_mac) {
     sources -= [ "display_embedder/buffer_queue_unittest.cc" ]
   }
 
-  configs = [
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//third_party/khronos:khronos_headers",
-  ]
+  configs = [ "//third_party/khronos:khronos_headers" ]
 
   deps = [
     ":service",
@@ -602,7 +525,6 @@ viz_source_set("unit_tests") {
     "//components/viz/test:test_suite",
     "//components/viz/test:test_support",
     "//gpu/command_buffer/client",
-    "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/ipc:gl_in_process_context",
     "//gpu/ipc/service",
     "//media",
@@ -619,6 +541,7 @@ viz_source_set("unit_tests") {
 
   if (use_ozone) {
     sources += [
+      "display/overlay_combination_cache_unittest.cc",
       "display/overlay_processor_ozone_unittest.cc",
       "display/overlay_unittest.cc",
       "display_embedder/software_output_device_ozone_unittest.cc",
@@ -652,6 +575,7 @@ viz_source_set("unit_tests") {
 
   if (is_android) {
     sources += [
+      "display/overlay_combination_cache_unittest.cc",
       "display/overlay_processor_surface_control_unittest.cc",
       "display/overlay_unittest.cc",
       "frame_sinks/external_begin_frame_source_android_unittest.cc",
@@ -671,11 +595,10 @@ viz_source_set("perf_tests") {
   sources = [
     "display/bsp_tree_perftest.cc",
     "display/display_perftest.cc",
-    "display/gl_renderer_copier_perftest.cc",
     "display/renderer_perftest.cc",
     "display/surface_aggregator_perftest.cc",
-    "display/viz_perf_test.cc",
-    "display/viz_perf_test.h",
+    "display/viz_perftest.cc",
+    "display/viz_perftest.h",
   ]
 
   deps = [
@@ -689,6 +612,7 @@ viz_source_set("perf_tests") {
     "//components/viz/test:test_support",
     "//testing/gtest",
     "//testing/perf",
+    "//third_party/zlib/google:zip",
   ]
 }
 
@@ -708,6 +632,8 @@ if (is_android) {
   android_library("service_java") {
     deps = [
       "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

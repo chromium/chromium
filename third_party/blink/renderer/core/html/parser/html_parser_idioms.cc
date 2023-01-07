@@ -174,10 +174,11 @@ bool ParseHTMLInteger(const String& input, int& value) {
         DCHECK_LT(position, end);
 
         bool ok;
-        WTF::NumberParsingOptions options(
-            WTF::NumberParsingOptions::kAcceptTrailingGarbage |
-            WTF::NumberParsingOptions::kAcceptLeadingPlus);
-        int wtf_value = CharactersToInt(position, end - position, options, &ok);
+        constexpr auto kOptions = WTF::NumberParsingOptions()
+                                      .SetAcceptTrailingGarbage()
+                                      .SetAcceptLeadingPlus();
+        int wtf_value =
+            CharactersToInt(position, end - position, kOptions, &ok);
         if (ok)
           value = wtf_value;
         return ok;
@@ -213,12 +214,12 @@ static WTF::NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
         DCHECK_LT(position, end);
 
         WTF::NumberParsingResult result;
-        WTF::NumberParsingOptions options(
-            WTF::NumberParsingOptions::kAcceptTrailingGarbage |
-            WTF::NumberParsingOptions::kAcceptLeadingPlus |
-            WTF::NumberParsingOptions::kAcceptMinusZeroForUnsigned);
+        constexpr auto kOptions = WTF::NumberParsingOptions()
+                                      .SetAcceptTrailingGarbage()
+                                      .SetAcceptLeadingPlus()
+                                      .SetAcceptMinusZeroForUnsigned();
         unsigned wtf_value =
-            CharactersToUInt(position, end - position, options, &result);
+            CharactersToUInt(position, end - position, kOptions, &result);
         if (result == WTF::NumberParsingResult::kSuccess)
           value = wtf_value;
         return result;
@@ -417,7 +418,7 @@ inline StringImpl* FindStringIfStatic(const CharType* characters,
   // computeHashAndMaskTop8Bits is the function StringImpl::hash() uses.
   unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(characters, length);
   const WTF::StaticStringsTable& table = StringImpl::AllStaticStrings();
-  DCHECK(!table.IsEmpty());
+  DCHECK(!table.empty());
 
   WTF::StaticStringsTable::const_iterator it = table.find(hash);
   if (it == table.end())

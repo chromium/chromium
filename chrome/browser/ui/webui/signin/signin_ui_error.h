@@ -1,4 +1,4 @@
-/// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/credential_provider/common/gcp_strings.h"
 #endif
 
@@ -51,7 +51,7 @@ class SigninUIError {
   static SigninUIError FromGoogleServiceAuthError(
       const std::string& email,
       const GoogleServiceAuthError& error);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static SigninUIError FromCredentialProviderUiExitCode(
       const std::string& email,
       credential_provider::UiExitCodes exit_code);
@@ -72,7 +72,7 @@ class SigninUIError {
   // `Type::kAccountAlreadyUsedByAnotherProfile`.
   const base::FilePath& another_profile_path() const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Should be called only if `type()` ==
   // `Type::kFromCredentialProviderUiExitCode`.
   credential_provider::UiExitCodes credential_provider_exit_code() const;
@@ -94,7 +94,7 @@ class SigninUIError {
   // Defined only for Type::kAccountAlreadyUsedByAnotherProfile.
   base::FilePath another_profile_path_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Defined only for Type::kFromCredentialProviderUiExitCode.
   credential_provider::UiExitCodes credential_provider_exit_code_ =
       credential_provider::UiExitCodes::kUiecSuccess;

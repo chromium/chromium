@@ -1,9 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
 
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/live_node_list_base.h"
 
@@ -15,7 +17,7 @@ static_assert(kNumNodeListInvalidationTypes <= sizeof(unsigned) * 8,
 void LiveNodeListRegistry::Add(const LiveNodeListBase* list,
                                NodeListInvalidationType type) {
   Entry entry = {list, MaskForInvalidationType(type)};
-  DCHECK(std::find(data_.begin(), data_.end(), entry) == data_.end());
+  DCHECK(!base::Contains(data_, entry));
   data_.push_back(entry);
   mask_ |= entry.second;
 }
@@ -23,7 +25,7 @@ void LiveNodeListRegistry::Add(const LiveNodeListBase* list,
 void LiveNodeListRegistry::Remove(const LiveNodeListBase* list,
                                   NodeListInvalidationType type) {
   Entry entry = {list, MaskForInvalidationType(type)};
-  auto* it = std::find(data_.begin(), data_.end(), entry);
+  auto* it = base::ranges::find(data_, entry);
   DCHECK(it != data_.end());
   data_.erase(it);
   data_.ShrinkToReasonableCapacity();

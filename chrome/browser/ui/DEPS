@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/browser/image_decoder",
+  "+chrome/browser/share",
   "-chrome/browser/ui/views",
   "+chrome/updater",
   "+components/browser_ui/client_certificate",
@@ -7,13 +8,21 @@ include_rules = [
   "+components/country_codes",
   "+components/enterprise",
   "+components/infobars/android",
+  "+components/live_caption",
+  "+components/omnibox",
   "+components/page_load_metrics/browser",
   "+components/qr_code_generator",
   "+components/safety_check",
+  "+components/saved_tab_groups",
+  "+components/segmentation_platform/content",
   "+components/soda",
   "+components/translate/content/android",
+  "+components/user_education/common",
+  "+components/user_education/test",
+  "+components/user_education/webui",
   "+services/content/public",
   "+services/device/public/mojom",
+  "+components/user_notes",
 ]
 
 specific_include_rules = {
@@ -25,10 +34,25 @@ specific_include_rules = {
     "+ash/wm/desks/desks_controller.h",
     "+ash/wm/desks/desks_test_util.h",
   ],
+  "browser_navigator_browsertest\.cc": [
+    "+ash/shell.h",
+  ],
   "fullscreen_controller_interactive_browsertest\.cc": [
+    "+ash/shell.h",
+  ],
+  "popup_browsertest\.cc": [
     "+ash/shell.h",
   ],
   "sad_tab_helper.cc": [
     "+content/common/content_navigation_policy.h",
-  ]
+  ],
+  "startup_browser_creator_browsertest.cc": [
+    "+chrome/browser/ui/views/web_apps/protocol_handler_launch_dialog_view.h",
+  ],
+  "hid_chooser_controller_unittest\.cc": [
+    "+services/device/hid",
+  ],
+  "signin_intercept_first_run_experience_dialog_browsertest.cc": [
+    "+chrome/browser/ui/views/profiles/avatar_toolbar_button.h",
+  ],
 }

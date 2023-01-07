@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,8 +35,6 @@ const asyncInputMethodPrivate = {
   addWordToDictionary:
       wrapAsync(chrome.inputMethodPrivate.addWordToDictionary)
 };
-
-chrome.test.sendMessage('ready');
 
 chrome.test.runTests([
   // Queries the system for basic information needed for tests.

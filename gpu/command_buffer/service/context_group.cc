@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,13 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"
@@ -21,7 +25,7 @@
 #include "gpu/command_buffer/service/sampler_manager.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shader_manager.h"
-#include "gpu/command_buffer/service/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gl/gl_bindings.h"
@@ -72,7 +76,6 @@ ContextGroup::ContextGroup(
     FramebufferCompletenessCache* framebuffer_completeness_cache,
     const scoped_refptr<FeatureInfo>& feature_info,
     bool bind_generates_resource,
-    ImageManager* image_manager,
     gpu::ImageFactory* image_factory,
     gl::ProgressReporter* progress_reporter,
     const GpuFeatureInfo& gpu_feature_info,
@@ -83,7 +86,7 @@ ContextGroup::ContextGroup(
       mailbox_manager_(mailbox_manager),
       memory_tracker_(std::move(memory_tracker)),
       shader_translator_cache_(shader_translator_cache),
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // Framebuffer completeness is not cacheable on OS X because of dynamic
       // graphics switching.
       // http://crbug.com/180876
@@ -115,7 +118,6 @@ ContextGroup::ContextGroup(
       uniform_buffer_offset_alignment_(1u),
       program_cache_(nullptr),
       feature_info_(feature_info),
-      image_manager_(image_manager),
       image_factory_(image_factory),
       use_passthrough_cmd_decoder_(false),
       passthrough_resources_(new PassthroughResources),
@@ -372,16 +374,17 @@ gpu::ContextResult ContextGroup::Initialize(
                     : gpu::ContextResult::kFatalFailure;
   }
 
-  if (feature_info_->workarounds().max_texture_size) {
-    max_texture_size = std::min(
-        max_texture_size,
-        feature_info_->workarounds().max_texture_size);
-    max_rectangle_texture_size = std::min(
-        max_rectangle_texture_size,
-        feature_info_->workarounds().max_texture_size);
+  if (feature_info_->workarounds().webgl_or_caps_max_texture_size &&
+      feature_info_->IsWebGLContext()) {
+    max_texture_size =
+        std::min(max_texture_size,
+                 feature_info_->workarounds().webgl_or_caps_max_texture_size);
+    max_rectangle_texture_size =
+        std::min(max_rectangle_texture_size,
+                 feature_info_->workarounds().webgl_or_caps_max_texture_size);
     max_cube_map_texture_size =
         std::min(max_cube_map_texture_size,
-                 feature_info_->workarounds().max_texture_size);
+                 feature_info_->workarounds().webgl_or_caps_max_texture_size);
   }
 
   if (feature_info_->workarounds().max_3d_array_texture_size) {
@@ -396,11 +399,11 @@ gpu::ContextResult ContextGroup::Initialize(
   // Managers are not used by the passthrough command decoder. Save memory by
   // not allocating them.
   if (!use_passthrough_cmd_decoder_) {
-    texture_manager_.reset(new TextureManager(
+    texture_manager_ = std::make_unique<TextureManager>(
         memory_tracker_.get(), feature_info_.get(), max_texture_size,
         max_cube_map_texture_size, max_rectangle_texture_size,
         max_3d_texture_size, max_array_texture_layers, bind_generates_resource_,
-        progress_reporter_, discardable_manager_));
+        progress_reporter_, discardable_manager_);
   }
 
   const GLint kMinTextureImageUnits = 8;
@@ -562,7 +565,7 @@ class WeakPtrEquals {
   }
 
  private:
-  T* const t_;
+  const raw_ptr<T> t_;
 };
 
 }  // namespace anonymous

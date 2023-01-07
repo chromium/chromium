@@ -1,0 +1,55 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<!-- event source -->
+<meta name=variant content="?method=img&in=0&out=0">
+<meta name=variant content="?method=img&in=1&out=1">
+<meta name=variant content="?method=img&in=2&out=0">
+<meta name=variant content="?method=img&in=3&out=1">
+<!-- navigation source -->
+<meta name=variant content="?method=open&in=0&out=0">
+<meta name=variant content="?method=open&in=1&out=1">
+<meta name=variant content="?method=open&in=2&out=2">
+<meta name=variant content="?method=open&in=3&out=3">
+<meta name=variant content="?method=open&in=4&out=4">
+<meta name=variant content="?method=open&in=5&out=5">
+<meta name=variant content="?method=open&in=6&out=6">
+<meta name=variant content="?method=open&in=7&out=7">
+<meta name=variant content="?method=open&in=8&out=0">
+<meta name=variant content="?method=open&in=9&out=1">
+<meta name=variant content="?method=open&in=10&out=2">
+<meta name=variant content="?method=open&in=11&out=3">
+<meta name=variant content="?method=open&in=12&out=4">
+<meta name=variant content="?method=open&in=13&out=5">
+<meta name=variant content="?method=open&in=14&out=6">
+<meta name=variant content="?method=open&in=15&out=7">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const method = params.get('method');
+const dataIn = params.get('in');
+const dataOut = params.get('out');
+
+attribution_reporting_promise_test(async t => {
+  await registerAttributionSrc(t, {
+    source: {
+      destination: 'https://{{host}}',
+    },
+    method,
+  });
+
+  await registerAttributionSrc(t, {trigger: {
+    event_trigger_data: [{trigger_data: `${dataIn}`}],
+  }});
+
+  const payload = await pollEventLevelReports();
+  assert_equals(payload.reports.length, 1);
+  const report = JSON.parse(payload.reports[0].body);
+
+  assert_equals(report.trigger_data, `${dataOut}`);
+}, `Trigger data ${dataIn} is sanitized for ${method}.`);
+</script>

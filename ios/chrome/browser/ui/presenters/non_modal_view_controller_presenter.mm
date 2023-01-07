@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/presenters/non_modal_view_controller_presenter.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 

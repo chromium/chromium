@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ void HistogramDeltaSerialization::DeserializeAndAddSamples(
     const std::vector<std::string>& serialized_deltas) {
   for (auto it = serialized_deltas.begin(); it != serialized_deltas.end();
        ++it) {
-    Pickle pickle(it->data(), checked_cast<int>(it->size()));
+    Pickle pickle(it->data(), it->size());
     PickleIterator iter(pickle);
     DeserializeHistogramAndAddSamples(&iter);
   }

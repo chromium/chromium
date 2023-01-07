@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@
 #include "chrome/browser/devtools/device/usb/usb_device_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "net/base/io_buffer.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -395,6 +396,9 @@ AndroidDeviceManager::BrowserInfo::BrowserInfo()
 AndroidDeviceManager::BrowserInfo::BrowserInfo(const BrowserInfo& other) =
     default;
 
+AndroidDeviceManager::BrowserInfo& AndroidDeviceManager::BrowserInfo::operator=(
+    const BrowserInfo& other) = default;
+
 AndroidDeviceManager::DeviceInfo::DeviceInfo()
     : model(kModelOffline), connected(false) {
 }
@@ -520,7 +524,7 @@ AndroidDeviceManager::HandlerThread::HandlerThread() {
   thread_ = new base::Thread(kDevToolsAdbBridgeThreadName);
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  if (!thread_->StartWithOptions(options)) {
+  if (!thread_->StartWithOptions(std::move(options))) {
     delete thread_;
     thread_ = nullptr;
   }

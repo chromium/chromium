@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ MockGamepadDataFetcher::MockGamepadDataFetcher(const Gamepads& test_data)
 MockGamepadDataFetcher::~MockGamepadDataFetcher() = default;
 
 GamepadSource MockGamepadDataFetcher::source() {
-  return GAMEPAD_SOURCE_TEST;
+  return GamepadSource::kTest;
 }
 
 void MockGamepadDataFetcher::GetGamepadData(bool devices_changed_hint) {

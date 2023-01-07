@@ -237,6 +237,14 @@ public class BaseGifDrawable extends Drawable implements Runnable, Animatable,
         }
     }
 
+    /**
+     * Posts a RESET_DECODER request to the decoder thread so that the decoder starts decoding back
+     * from the start of the GIF.
+     */
+    public void requestReset() {
+        sDecoderHandler.sendMessage(sDecoderHandler.obtainMessage(RESET_DECODER, this));
+    }
+
     @Override
     protected void onBoundsChange(Rect bounds) {
         super.onBoundsChange(bounds);

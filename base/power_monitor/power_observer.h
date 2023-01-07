@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,14 +40,22 @@ class BASE_EXPORT PowerThermalObserver {
   // equipped with those) or reducing voltage and frequency (oftentimes
   // degrading overall responsiveness). The taxonomy is derived from MacOS (see
   // e.g. [1]) but applies to others e.g. Linux/ChromeOS.
-  // [1] https://developer.apple.com/library/archive/documentation/Performance/Conceptual/power_efficiency_guidelines_osx/RespondToThermalStateChanges.html
+  // [1]
+  // https://developer.apple.com/library/archive/documentation/Performance/Conceptual/power_efficiency_guidelines_osx/RespondToThermalStateChanges.html
+  // Attention: These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused. Keep in sync with
+  // DeviceThermalState
+  // in //tools/metrics/histograms/enums.xml.
   enum class DeviceThermalState {
-    kUnknown,
-    kNominal,
-    kFair,
-    kSerious,
-    kCritical,
+    kUnknown = 0,
+    kNominal = 1,
+    kFair = 2,
+    kSerious = 3,
+    kCritical = 4,
+    kMaxValue = kCritical,
   };
+  // The maximum speed limit in the system.
+  static constexpr int kSpeedLimitMax = 100;
 
   // Notification of a change in the thermal status of the system, such as
   // entering a critical temperature range. Depending on the severity, the SoC
@@ -57,6 +65,11 @@ class BASE_EXPORT PowerThermalObserver {
   // notifying the user. The same |new_state| might be received repeatedly.
   // TODO(crbug.com/1071431): implemented on MacOS, extend to Linux/CrOs.
   virtual void OnThermalStateChange(DeviceThermalState new_state) = 0;
+
+  // Notification of a change in the operating system's advertised speed limit
+  // for CPUs in percent. Values below kSpeedLimitMax indicate that the system
+  // is impairing processing power due to thermal management.
+  virtual void OnSpeedLimitChange(int speed_limit) = 0;
 
  protected:
   virtual ~PowerThermalObserver() = default;

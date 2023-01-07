@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,24 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 
 #include "build/build_config.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 
 namespace blink {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+
+class BlockListBitmapGlyphsTest : public FontTestBase {};
 
 static void TestBitmapGlyphsBlockListed(AtomicString windows_family_name,
                                         bool block_listed_expected) {
-  FontCache* font_cache = FontCache::GetFontCache();
+  FontCache& font_cache = FontCache::Get();
   FontDescription font_description;
   FontFamily font_family;
-  font_family.SetFamily(windows_family_name);
+  font_family.SetFamily(windows_family_name,
+                        FontFamily::InferredTypeFor(windows_family_name));
   font_description.SetFamily(font_family);
   scoped_refptr<SimpleFontData> simple_font_data =
-      font_cache->GetFontData(font_description, windows_family_name);
+      font_cache.GetFontData(font_description, windows_family_name);
   ASSERT_TRUE(simple_font_data);
   const FontPlatformData& font_platform_data = simple_font_data->PlatformData();
   ASSERT_TRUE(font_platform_data.Typeface());
@@ -29,15 +32,15 @@ static void TestBitmapGlyphsBlockListed(AtomicString windows_family_name,
                 *font_platform_data.Typeface()));
 }
 
-TEST(BlockListBitmapGlyphsTest, Simsun) {
+TEST_F(BlockListBitmapGlyphsTest, Simsun) {
   TestBitmapGlyphsBlockListed("Simsun", false);
 }
 
-TEST(BlockListBitmapGlyphsTest, Arial) {
+TEST_F(BlockListBitmapGlyphsTest, Arial) {
   TestBitmapGlyphsBlockListed("Arial", false);
 }
 
-TEST(BlockListBitmapGlyphsTest, Calibri) {
+TEST_F(BlockListBitmapGlyphsTest, Calibri) {
   TestBitmapGlyphsBlockListed("Calibri", true);
 }
 

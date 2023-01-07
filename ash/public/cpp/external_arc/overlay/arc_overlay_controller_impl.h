@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,9 @@ class ASH_PUBLIC_EXPORT ArcOverlayControllerImpl : public ArcOverlayController,
   void UpdateHostBounds();
   void ConvertPointFromWindow(aura::Window* window, gfx::Point* point);
   void EnsureOverlayWindowClosed();
+  void OnOverlayWindowClosed();
   void ResetFocusBehavior();
+  void RestoreHostCanConsumeSystemKeys();
 
   aura::Window* host_window_ = nullptr;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
@@ -65,6 +67,8 @@ class ASH_PUBLIC_EXPORT ArcOverlayControllerImpl : public ArcOverlayController,
   views::NativeViewHost* overlay_container_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       overlay_container_observer_{this};
+
+  bool saved_host_can_consume_system_keys_ = false;
 };
 
 }  // namespace ash

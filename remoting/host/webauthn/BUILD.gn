@@ -1,0 +1,111 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//remoting/build/config/remoting_build.gni")
+
+source_set("webauthn") {
+  sources = [
+    "remote_webauthn_caller_security_utils.cc",
+    "remote_webauthn_caller_security_utils.h",
+    "remote_webauthn_constants.cc",
+    "remote_webauthn_constants.h",
+    "remote_webauthn_delegated_state_change_notifier.cc",
+    "remote_webauthn_delegated_state_change_notifier.h",
+    "remote_webauthn_extension_notifier.cc",
+    "remote_webauthn_extension_notifier.h",
+    "remote_webauthn_message_handler.cc",
+    "remote_webauthn_message_handler.h",
+    "remote_webauthn_native_messaging_host.cc",
+    "remote_webauthn_native_messaging_host.h",
+    "remote_webauthn_state_change_notifier.h",
+  ]
+
+  deps = [
+    "//base",
+    "//extensions/browser/api/messaging:native_messaging",
+    "//remoting/host:chromoting_host_services_client",
+    "//remoting/host/base",
+    "//remoting/host/mojom",
+    "//remoting/host/native_messaging",
+    "//remoting/proto",
+    "//remoting/protocol",
+  ]
+
+  if (is_win) {
+    deps += [ "//remoting/host/win:trust_util" ]
+  }
+}
+
+source_set("remote_webauthn_main_headers") {
+  sources = [ "remote_webauthn_main.h" ]
+  deps = [ "//remoting/host:host_main_headers" ]
+}
+
+source_set("main") {
+  configs += [ "//remoting/build/config:host_implementation" ]
+
+  sources = [ "remote_webauthn_main.cc" ]
+  deps = [
+    ":remote_webauthn_main_headers",
+    ":webauthn",
+    "//base",
+    "//mojo/core/embedder:embedder",
+    "//remoting/base",
+    "//remoting/base:breakpad",
+    "//remoting/host:chromoting_host_services_client",
+    "//remoting/host:common_headers",
+    "//remoting/host/base",
+    "//remoting/host/native_messaging",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "remote_webauthn_extension_notifier_unittest.cc",
+    "remote_webauthn_message_handler_unittest.cc",
+    "remote_webauthn_native_messaging_host_unittest.cc",
+  ]
+
+  deps = [
+    ":webauthn",
+    "//base",
+    "//base/test:test_support",
+    "//extensions/browser/api/messaging:native_messaging",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//remoting/base",
+    "//remoting/host:test_support",
+    "//remoting/host/mojom",
+    "//remoting/host/native_messaging:native_messaging",
+    "//remoting/protocol:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+executable("remote_webauthn") {
+  sources = [ "remote_webauthn_entry_point.cc" ]
+
+  deps = [ ":remote_webauthn_main_headers" ]
+
+  if (is_win || is_linux) {
+    deps += [ "//remoting/host:remoting_core" ]
+  } else {
+    deps += [ ":main" ]
+  }
+
+  if (is_win) {
+    sources += [ "$root_gen_dir/remoting/version.rc" ]
+
+    defines =
+        host_predefines + [ "REMOTING_HOST_BINARY=BINARY_REMOTE_WEBAUTHN" ]
+
+    deps += [
+      "//build/win:default_exe_manifest",
+      "//remoting/host/win:remoting_windows_resources",
+    ]
+  }
+}

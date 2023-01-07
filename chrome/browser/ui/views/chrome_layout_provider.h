@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
 
 enum ChromeInsetsMetric {
@@ -21,6 +19,8 @@ enum ChromeInsetsMetric {
   INSETS_TOAST,
   // Padding used in an omnibox pill button.
   INSETS_OMNIBOX_PILL_BUTTON,
+  // Padding used in an page info hover button.
+  INSETS_PAGE_INFO_HOVER_BUTTON,
 };
 
 enum ChromeDistanceMetric {
@@ -39,6 +39,17 @@ enum ChromeDistanceMetric {
   // Width of the horizontal padding in a dropdown button between the down arrow
   // and the button's border.
   DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN,
+  // Width and height of a button's icon in the extensions menu.
+  DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE,
+  // Width and height of an extension's icon in the extensions menu. This are
+  // larger than menu button's icons because it contains internal padding to
+  // provide space for badging.
+  DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE,
+  // Size difference between the two types of icons in the menu. This is used as
+  // horizontal and vertical margins to align extensions menu rows.
+  DISTANCE_EXTENSIONS_MENU_ICON_SPACING,
+  // Vertical and horizontal margin for menu buttons.
+  DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN,
   // Smaller horizontal spacing between other controls that are logically
   // related.
   DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL,
@@ -75,11 +86,19 @@ enum ChromeDistanceMetric {
   // Vertical padding at the top and bottom of the an omnibox match row for two
   // line layout.
   DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING,
+  // Width and Height of a vector icon in the side panel header.
+  DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE,
+  // Horizontal spacing for separating side panel header border from controls.
+  DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {
  public:
   ChromeLayoutProvider();
+
+  ChromeLayoutProvider(const ChromeLayoutProvider&) = delete;
+  ChromeLayoutProvider& operator=(const ChromeLayoutProvider&) = delete;
+
   ~ChromeLayoutProvider() override;
 
   static ChromeLayoutProvider* Get();
@@ -90,25 +109,12 @@ class ChromeLayoutProvider : public views::LayoutProvider {
   int GetDistanceMetric(int metric) const override;
   int GetSnappedDialogWidth(int min_width) const override;
   const views::TypographyProvider& GetTypographyProvider() const override;
-  gfx::ShadowValues MakeShadowValues(int elevation,
-                                     SkColor color) const override;
-
-  // Returns the alignment used for control labels in a GridLayout; for example,
-  // in this GridLayout:
-  //   ---------------------------
-  //   | Label 1      Checkbox 1 |
-  //   | Label 2      Checkbox 2 |
-  //   ---------------------------
-  // This value controls the alignment used for "Label 1" and "Label 2".
-  virtual views::GridLayout::Alignment GetControlLabelGridAlignment() const;
 
   // Returns whether to show the icon next to the title text on a dialog.
   virtual bool ShouldShowWindowIcon() const;
 
  private:
   const ChromeTypographyProvider typography_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeLayoutProvider);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_LAYOUT_PROVIDER_H_

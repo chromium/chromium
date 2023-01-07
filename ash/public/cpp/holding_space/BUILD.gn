@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_holding_space_client.cc",
+    "mock_holding_space_client.h",
+    "mock_holding_space_model_observer.cc",
+    "mock_holding_space_model_observer.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//testing/gmock",
+  ]
+}

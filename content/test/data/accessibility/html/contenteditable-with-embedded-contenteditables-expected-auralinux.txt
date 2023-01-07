@@ -6,5 +6,5 @@
 ++++[static] name='<newline>'
 ++++[paragraph] editable multi-line selectable-text
 ++++++[static] name='But this one is.' editable
-++++[paragraph] editable
+++++[paragraph] editable multi-line selectable-text
 ++++++[static] name='So is this one.' editable

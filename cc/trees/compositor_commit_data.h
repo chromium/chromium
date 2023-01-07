@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_client.h"
-#include "ui/gfx/geometry/scroll_offset.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/transform.h"
 
 namespace cc {
 
@@ -31,17 +31,17 @@ struct CC_EXPORT CompositorCommitData {
   struct CC_EXPORT ScrollUpdateInfo {
     ScrollUpdateInfo();
     ScrollUpdateInfo(ElementId id,
-                     gfx::ScrollOffset delta,
-                     base::Optional<TargetSnapAreaElementIds> snap_target_ids);
+                     gfx::Vector2dF delta,
+                     absl::optional<TargetSnapAreaElementIds> snap_target_ids);
     ScrollUpdateInfo(const ScrollUpdateInfo& other);
     ScrollUpdateInfo& operator=(const ScrollUpdateInfo&);
     ElementId element_id;
-    gfx::ScrollOffset scroll_delta;
+    gfx::Vector2dF scroll_delta;
 
     // The target snap area element ids of the scrolling element.
     // This will have a value if the scrolled element's scroll node has snap
     // container data and the scroll delta is non-zero.
-    base::Optional<TargetSnapAreaElementIds> snap_target_element_ids;
+    absl::optional<TargetSnapAreaElementIds> snap_target_element_ids;
 
     bool operator==(const ScrollUpdateInfo& other) const {
       return element_id == other.element_id &&

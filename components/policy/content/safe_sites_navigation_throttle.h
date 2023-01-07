@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 #define COMPONENTS_POLICY_CONTENT_SAFE_SITES_NAVIGATION_THROTTLE_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SafeSearchService;
 
@@ -61,13 +62,13 @@ class SafeSitesNavigationThrottle : public content::NavigationThrottle {
   // Creates the result to be returned when navigation is canceled.
   ThrottleCheckResult CreateCancelResult() const;
 
-  SafeSearchService* safe_seach_service_;
+  raw_ptr<SafeSearchService> safe_seach_service_;
 
   const DeferredResultCallback deferred_result_callback_;
 
   // HTML to be displayed when navigation is canceled by the Safe Sites filter.
   // If null, a default error page will be displayed.
-  const base::Optional<std::string> safe_sites_error_page_content_;
+  const absl::optional<std::string> safe_sites_error_page_content_;
 
   // Whether the request was deferred in order to check the Safe Search API.
   bool deferred_ = false;

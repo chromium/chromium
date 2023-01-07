@@ -1,16 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMEOS_UI_FRAME_DEFAULT_FRAME_HEADER_H_
 #define CHROMEOS_UI_FRAME_DEFAULT_FRAME_HEADER_H_
 
-#include <memory>
-
 #include "base/compiler_specific.h"  // override
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/frame_header.h"
 
@@ -30,6 +27,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) DefaultFrameHeader
       views::Widget* target_widget,
       views::View* header_view,
       chromeos::FrameCaptionButtonContainerView* caption_button_container);
+
+  DefaultFrameHeader(const DefaultFrameHeader&) = delete;
+  DefaultFrameHeader& operator=(const DefaultFrameHeader&) = delete;
+
   ~DefaultFrameHeader() override;
 
   SkColor active_frame_color_for_testing() { return active_frame_color_; }
@@ -59,8 +60,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) DefaultFrameHeader
   SkColor inactive_frame_color_ = chromeos::kDefaultFrameColor;
 
   int width_in_pixels_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultFrameHeader);
 };
 
 }  // namespace chromeos

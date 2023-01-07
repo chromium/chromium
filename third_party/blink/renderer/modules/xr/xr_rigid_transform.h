@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -31,6 +30,9 @@ class MODULES_EXPORT XRRigidTransform : public ScriptWrappable {
                                   DOMPointInit*,
                                   ExceptionState&);
 
+  XRRigidTransform(const XRRigidTransform&) = delete;
+  XRRigidTransform& operator=(const XRRigidTransform&) = delete;
+
   ~XRRigidTransform() override = default;
 
   DOMPointReadOnly* position() const { return position_; }
@@ -53,8 +55,6 @@ class MODULES_EXPORT XRRigidTransform : public ScriptWrappable {
   Member<XRRigidTransform> inverse_;
   Member<DOMFloat32Array> matrix_array_;
   std::unique_ptr<TransformationMatrix> matrix_;
-
-  DISALLOW_COPY_AND_ASSIGN(XRRigidTransform);
 };
 
 }  // namespace blink

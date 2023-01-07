@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,14 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/scoped_native_library.h"
 #include "media/base/media_export.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/media_buildflags.h"
+
+#if !BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#error This file only applies to builds that enable_library_cdms.
+#endif
 
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 #include "media/cdm/cdm_host_file.h"
@@ -28,6 +31,9 @@ class MEDIA_EXPORT CdmModule {
 
   // Reset the CdmModule instance so that each test have it's own instance.
   static void ResetInstanceForTesting();
+
+  CdmModule(const CdmModule&) = delete;
+  CdmModule& operator=(const CdmModule&) = delete;
 
   ~CdmModule();
 
@@ -48,10 +54,6 @@ class MEDIA_EXPORT CdmModule {
   // within the sandbox!
   void InitializeCdmModule();
 
-  base::FilePath GetCdmPath() const;
-
-  bool was_initialize_called() const { return was_initialize_called_; }
-
  private:
   using InitializeCdmModuleFunc = decltype(&::INITIALIZE_CDM_MODULE);
   using DeinitializeCdmModuleFunc = decltype(&::DeinitializeCdmModule);
@@ -59,15 +61,13 @@ class MEDIA_EXPORT CdmModule {
 
   CdmModule();
 
-  bool was_initialize_called_ = false;
+  bool initialized_ = false;
   base::FilePath cdm_path_;
   base::ScopedNativeLibrary library_;
   CreateCdmFunc create_cdm_func_ = nullptr;
   InitializeCdmModuleFunc initialize_cdm_module_func_ = nullptr;
   DeinitializeCdmModuleFunc deinitialize_cdm_module_func_ = nullptr;
   GetCdmVersionFunc get_cdm_version_func_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmModule);
 };
 
 }  // namespace media

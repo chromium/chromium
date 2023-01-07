@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
 
 #import "ios/web/public/test/web_test_with_web_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -13,8 +13,8 @@
 #endif
 
 namespace {
-// JavaScript to return a frame's frameId.
-NSString* const kGetFrameIdJs = @"__gCrWeb.message.getFrameId();";
+// JavaScript function to return a frame's frameId.
+const char kGetFrameIdJsFunction[] = "message.getFrameId";
 }  // namespace
 
 namespace web {
@@ -26,26 +26,26 @@ typedef web::WebTestWithWebState MessageJsTest;
 TEST_F(MessageJsTest, FrameId) {
   ASSERT_TRUE(LoadHtml("<p>"));
 
-  NSString* frame_id = ExecuteJavaScript(kGetFrameIdJs);
+  auto result = CallJavaScriptFunction(kGetFrameIdJsFunction, {});
   // Validate frameId.
-  EXPECT_TRUE(frame_id);
-  EXPECT_TRUE([frame_id isKindOfClass:[NSString class]]);
-  EXPECT_GT(frame_id.length, 0ul);
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_GT(result->GetString().length(), 0ul);
 }
 
 // Tests that the frameId is unique between two page loads.
 TEST_F(MessageJsTest, UniqueFrameID) {
   ASSERT_TRUE(LoadHtml("<p>"));
-  NSString* frame_id = ExecuteJavaScript(kGetFrameIdJs);
+  auto frame_id1 = CallJavaScriptFunction(kGetFrameIdJsFunction, {});
 
   ASSERT_TRUE(LoadHtml("<p>"));
-  NSString* frame_id2 = ExecuteJavaScript(kGetFrameIdJs);
+  auto frame_id2 = CallJavaScriptFunction(kGetFrameIdJsFunction, {});
   // Validate second frameId.
-  EXPECT_TRUE(frame_id2);
-  EXPECT_TRUE([frame_id2 isKindOfClass:[NSString class]]);
-  EXPECT_GT(frame_id2.length, 0ul);
+  ASSERT_TRUE(frame_id2);
+  ASSERT_TRUE(frame_id2->is_string());
+  EXPECT_GT(frame_id2->GetString().length(), 0ul);
 
-  EXPECT_NSNE(frame_id, frame_id2);
+  EXPECT_NE(frame_id1->GetString(), frame_id2->GetString());
 }
 
 }  // namespace web

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@ namespace features {
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
-extern const base::Feature kNavigationPredictorPreconnectHoldback;
-extern const base::Feature
-    kNavigationPredictorEnablePreconnectOnSameDocumentNavigations;
+BASE_DECLARE_FEATURE(kNavigationPredictorPreconnectHoldback);
+BASE_DECLARE_FEATURE(
+    kNavigationPredictorEnablePreconnectOnSameDocumentNavigations);
 
 }  // namespace features
 

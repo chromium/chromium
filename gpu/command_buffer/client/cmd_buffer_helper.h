@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -26,7 +26,7 @@ namespace gpu {
 
 class Buffer;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #define CMD_HELPER_PERIODIC_FLUSH_CHECK
 const int kCommandsPerFlushCheck = 100;
 const int kPeriodicFlushDelayInMicroseconds = 500;
@@ -53,6 +53,10 @@ const int kAutoFlushBig = 2;     // 1/2 of the buffer
 class GPU_EXPORT CommandBufferHelper {
  public:
   explicit CommandBufferHelper(CommandBuffer* command_buffer);
+
+  CommandBufferHelper(const CommandBufferHelper&) = delete;
+  CommandBufferHelper& operator=(const CommandBufferHelper&) = delete;
+
   virtual ~CommandBufferHelper();
 
   // Initializes the CommandBufferHelper.
@@ -306,11 +310,11 @@ class GPU_EXPORT CommandBufferHelper {
   // from given command buffer state.
   void UpdateCachedState(const CommandBuffer::State& state);
 
-  CommandBuffer* const command_buffer_;
+  const raw_ptr<CommandBuffer> command_buffer_;
   int32_t ring_buffer_id_ = -1;
   uint32_t ring_buffer_size_ = 0;
   scoped_refptr<gpu::Buffer> ring_buffer_;
-  CommandBufferEntry* entries_ = nullptr;
+  raw_ptr<CommandBufferEntry> entries_ = nullptr;
   int32_t total_entry_count_ = 0;  // the total number of entries
   int32_t immediate_entry_count_ = 0;
   int32_t token_ = 0;
@@ -345,7 +349,6 @@ class GPU_EXPORT CommandBufferHelper {
   uint32_t flush_generation_ = 0;
 
   friend class CommandBufferHelperTest;
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferHelper);
 };
 
 }  // namespace gpu

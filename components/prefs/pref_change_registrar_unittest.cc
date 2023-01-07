@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,7 +57,7 @@ class PrefChangeRegistrarTest : public testing::Test {
 };
 
 void PrefChangeRegistrarTest::SetUp() {
-  service_.reset(new MockPrefService());
+  service_ = std::make_unique<MockPrefService>();
 }
 
 TEST_F(PrefChangeRegistrarTest, AddAndRemove) {
@@ -131,7 +131,7 @@ TEST_F(PrefChangeRegistrarTest, RemoveAll) {
 class ObserveSetOfPreferencesTest : public testing::Test {
  public:
   void SetUp() override {
-    pref_service_.reset(new TestingPrefServiceSimple);
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     PrefRegistrySimple* registry = pref_service_->registry();
     registry->RegisterStringPref(kHomePage, "http://google.com");
     registry->RegisterBooleanPref(kHomePageIsNewTabPage, false);
@@ -156,21 +156,6 @@ TEST_F(ObserveSetOfPreferencesTest, IsObserved) {
   EXPECT_TRUE(pref_set->IsObserved(kHomePage));
   EXPECT_TRUE(pref_set->IsObserved(kHomePageIsNewTabPage));
   EXPECT_FALSE(pref_set->IsObserved(kApplicationLocale));
-}
-
-TEST_F(ObserveSetOfPreferencesTest, IsManaged) {
-  std::unique_ptr<PrefChangeRegistrar> pref_set(CreatePrefChangeRegistrar());
-  EXPECT_FALSE(pref_set->IsManaged());
-  pref_service_->SetManagedPref(kHomePage,
-                                std::make_unique<Value>("http://crbug.com"));
-  EXPECT_TRUE(pref_set->IsManaged());
-  pref_service_->SetManagedPref(kHomePageIsNewTabPage,
-                                std::make_unique<Value>(true));
-  EXPECT_TRUE(pref_set->IsManaged());
-  pref_service_->RemoveManagedPref(kHomePage);
-  EXPECT_TRUE(pref_set->IsManaged());
-  pref_service_->RemoveManagedPref(kHomePageIsNewTabPage);
-  EXPECT_FALSE(pref_set->IsManaged());
 }
 
 TEST_F(ObserveSetOfPreferencesTest, Observe) {

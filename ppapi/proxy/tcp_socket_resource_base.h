@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/ppb_tcp_socket.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
@@ -40,6 +39,9 @@ class PPAPI_PROXY_EXPORT TCPSocketResourceBase : public PluginResource {
                         TCPSocketVersion version,
                         const PP_NetAddress_Private& local_addr,
                         const PP_NetAddress_Private& remote_addr);
+
+  TCPSocketResourceBase(const TCPSocketResourceBase&) = delete;
+  TCPSocketResourceBase& operator=(const TCPSocketResourceBase&) = delete;
 
   virtual ~TCPSocketResourceBase();
 
@@ -127,8 +129,6 @@ class PPAPI_PROXY_EXPORT TCPSocketResourceBase : public PluginResource {
   void RunCallback(scoped_refptr<TrackedCallback> callback, int32_t pp_result);
 
   TCPSocketVersion version_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPSocketResourceBase);
 };
 
 }  // namespace proxy

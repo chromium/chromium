@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ public class PartnerDisableIncognitoModeIntegrationTest {
             new BasePartnerBrowserCustomizationIntegrationTestRule();
 
     private void setParentalControlsEnabled(boolean enabled) {
-        Uri uri = PartnerBrowserCustomizations.buildQueryUri(
+        Uri uri = CustomizationProviderDelegateUpstreamImpl.buildQueryUri(
                 PartnerBrowserCustomizations.PARTNER_DISABLE_INCOGNITO_MODE_PATH);
         Bundle bundle = new Bundle();
         bundle.putBoolean(

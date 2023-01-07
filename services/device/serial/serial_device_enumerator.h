@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "services/device/serial/serial_io_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -41,7 +41,7 @@ class SerialDeviceEnumerator {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  base::Optional<base::FilePath> GetPathFromToken(
+  absl::optional<base::FilePath> GetPathFromToken(
       const base::UnguessableToken& token,
       bool use_alternate_path);
 

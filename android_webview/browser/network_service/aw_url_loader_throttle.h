@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/origin.h"
 
@@ -24,6 +24,10 @@ class AwResourceContext;
 class AwURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   explicit AwURLLoaderThrottle(AwResourceContext* aw_resource_context);
+
+  AwURLLoaderThrottle(const AwURLLoaderThrottle&) = delete;
+  AwURLLoaderThrottle& operator=(const AwURLLoaderThrottle&) = delete;
+
   ~AwURLLoaderThrottle() override;
 
   // blink::URLLoaderThrottle implementation:
@@ -41,11 +45,9 @@ class AwURLLoaderThrottle : public blink::URLLoaderThrottle {
   void AddExtraHeadersIfNeeded(const GURL& url,
                                net::HttpRequestHeaders* headers);
 
-  AwResourceContext* aw_resource_context_;
+  raw_ptr<AwResourceContext> aw_resource_context_;
   std::vector<std::string> added_headers_;
   url::Origin original_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwURLLoaderThrottle);
 };
 
 }  // namespace android_webview

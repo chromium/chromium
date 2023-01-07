@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -16,6 +15,7 @@ namespace blink {
 
 struct SameSizeAsCSSMathFunctionValue : CSSPrimitiveValue {
   Member<void*> expression;
+  ValueRange value_range_in_target_context_;
 };
 ASSERT_SIZE(CSSMathFunctionValue, SameSizeAsCSSMathFunctionValue);
 
@@ -26,15 +26,15 @@ void CSSMathFunctionValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 
 CSSMathFunctionValue::CSSMathFunctionValue(
     const CSSMathExpressionNode* expression,
-    ValueRange range)
-    : CSSPrimitiveValue(kMathFunctionClass), expression_(expression) {
-  is_non_negative_math_function_ = range == kValueRangeNonNegative;
-}
+    CSSPrimitiveValue::ValueRange range)
+    : CSSPrimitiveValue(kMathFunctionClass),
+      expression_(expression),
+      value_range_in_target_context_(range) {}
 
 // static
 CSSMathFunctionValue* CSSMathFunctionValue::Create(
     const CSSMathExpressionNode* expression,
-    ValueRange range) {
+    CSSPrimitiveValue::ValueRange range) {
   if (!expression)
     return nullptr;
   return MakeGarbageCollected<CSSMathFunctionValue>(expression, range);
@@ -45,7 +45,9 @@ CSSMathFunctionValue* CSSMathFunctionValue::Create(const Length& length,
                                                    float zoom) {
   DCHECK(length.IsCalculated());
   auto calc = length.GetCalculationValue().Zoom(1.0 / zoom);
-  return Create(CSSMathExpressionNode::Create(*calc), calc->GetValueRange());
+  return Create(
+      CSSMathExpressionNode::Create(*calc),
+      CSSPrimitiveValue::ValueRangeForLengthValueRange(calc->GetValueRange()));
 }
 
 bool CSSMathFunctionValue::MayHaveRelativeUnit() const {
@@ -65,10 +67,7 @@ double CSSMathFunctionValue::DoubleValue() const {
 
 double CSSMathFunctionValue::ComputeSeconds() const {
   DCHECK_EQ(kCalcTime, expression_->Category());
-  // TODO(crbug.com/984372): We currently use 'ms' as the canonical unit of
-  // <time>. Switch to 's' to follow the spec.
-  return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit() /
-                               1000);
+  return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());
 }
 
 double CSSMathFunctionValue::ComputeDegrees() const {
@@ -77,11 +76,11 @@ double CSSMathFunctionValue::ComputeDegrees() const {
 }
 
 double CSSMathFunctionValue::ComputeLengthPx(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   // |CSSToLengthConversionData| only resolves relative length units, but not
   // percentages.
   DCHECK_EQ(kCalcLength, expression_->Category());
-  return ClampToPermittedRange(expression_->ComputeLengthPx(conversion_data));
+  return ClampToPermittedRange(expression_->ComputeLengthPx(length_resolver));
 }
 
 bool CSSMathFunctionValue::AccumulateLengthArray(CSSLengthArray& length_array,
@@ -90,10 +89,10 @@ bool CSSMathFunctionValue::AccumulateLengthArray(CSSLengthArray& length_array,
 }
 
 Length CSSMathFunctionValue::ConvertToLength(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   if (IsLength())
-    return Length::Fixed(ComputeLengthPx(conversion_data));
-  return Length(ToCalcValue(conversion_data));
+    return Length::Fixed(ComputeLengthPx(length_resolver));
+  return Length(ToCalcValue(length_resolver));
 }
 
 static String BuildCSSText(const String& expression) {
@@ -102,7 +101,7 @@ static String BuildCSSText(const String& expression) {
   result.Append('(');
   result.Append(expression);
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String CSSMathFunctionValue::CustomCSSText() const {
@@ -116,11 +115,22 @@ String CSSMathFunctionValue::CustomCSSText() const {
 }
 
 bool CSSMathFunctionValue::Equals(const CSSMathFunctionValue& other) const {
-  return DataEquivalent(expression_, other.expression_);
+  return base::ValuesEquivalent(expression_, other.expression_);
 }
 
 double CSSMathFunctionValue::ClampToPermittedRange(double value) const {
-  return IsNonNegative() && value < 0 ? 0 : value;
+  switch (PermittedValueRange()) {
+    case CSSPrimitiveValue::ValueRange::kInteger:
+      return RoundHalfTowardsPositiveInfinity(value);
+    case CSSPrimitiveValue::ValueRange::kNonNegativeInteger:
+      return RoundHalfTowardsPositiveInfinity(std::max(value, 0.0));
+    case CSSPrimitiveValue::ValueRange::kPositiveInteger:
+      return RoundHalfTowardsPositiveInfinity(std::max(value, 1.0));
+    case CSSPrimitiveValue::ValueRange::kNonNegative:
+      return std::max(value, 0.0);
+    case CSSPrimitiveValue::ValueRange::kAll:
+      return value;
+  }
 }
 
 bool CSSMathFunctionValue::IsZero() const {
@@ -139,10 +149,18 @@ bool CSSMathFunctionValue::IsComputationallyIndependent() const {
   return expression_->IsComputationallyIndependent();
 }
 
-scoped_refptr<CalculationValue> CSSMathFunctionValue::ToCalcValue(
-    const CSSToLengthConversionData& conversion_data) const {
-  return expression_->ToCalcValue(conversion_data, PermittedValueRange(),
-                                  AllowsNegativePercentageReference());
+scoped_refptr<const CalculationValue> CSSMathFunctionValue::ToCalcValue(
+    const CSSLengthResolver& length_resolver) const {
+  DCHECK_NE(value_range_in_target_context_,
+            CSSPrimitiveValue::ValueRange::kInteger);
+  DCHECK_NE(value_range_in_target_context_,
+            CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
+  DCHECK_NE(value_range_in_target_context_,
+            CSSPrimitiveValue::ValueRange::kPositiveInteger);
+  return expression_->ToCalcValue(
+      length_resolver,
+      CSSPrimitiveValue::ConversionToLengthValueRange(PermittedValueRange()),
+      AllowsNegativePercentageReference());
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,12 @@ import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
+import java.util.List;
+
 /**
  * Manages cookies for a WebLayer profile.
  */
-public class CookieManager {
+class CookieManager {
     private final ICookieManager mImpl;
 
     static CookieManager create(IProfile profile) {
@@ -83,6 +85,29 @@ public class CookieManager {
                 callback.onResult(result);
             };
             mImpl.getCookie(uri.toString(), ObjectWrapper.wrap(valueCallback));
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * Gets the cookies for the given URL in the form of the 'Set-Cookie' HTTP response header.
+     *
+     * @param uri the URI to get cookies for.
+     * @param callback a callback to be executed with a list of cookie strings in the format of the
+     *     'Set-Cookie' HTTP response header.
+     * @since 101
+     */
+    public void getResponseCookies(@NonNull Uri uri, @NonNull Callback<List<String>> callback) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 101) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            ValueCallback<List<String>> valueCallback = (List<String> result) -> {
+                callback.onResult(result);
+            };
+            mImpl.getResponseCookies(uri.toString(), ObjectWrapper.wrap(valueCallback));
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

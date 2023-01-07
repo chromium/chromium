@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.math.SizeTest');
 goog.setTestOnly();
@@ -20,6 +12,7 @@ const testSuite = goog.require('goog.testing.testSuite');
 
 testSuite({
   testSize1() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const s = new Size(undefined, undefined);
     assertUndefined(s.width);
     assertUndefined(s.height);
@@ -41,6 +34,7 @@ testSuite({
   },
 
   testSizeClone() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const s = new Size(undefined, undefined);
     assertEquals(s.toString(), s.clone().toString());
     s.width = 4;
@@ -72,6 +66,7 @@ testSuite({
   },
 
   testSizeAspectRatio() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const s = new Size(undefined, undefined);
     assertNaN(s.aspectRatio());
 
@@ -101,6 +96,7 @@ testSuite({
     const a = new Size(1000, 1600);
     const b = new Size(1600, 1000);
     const c = new Size(500, 800);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const d = new Size(undefined, undefined);
 
     assertEquals('(512 x 819.2)', a.scaleToCover(target).toString());
@@ -118,6 +114,7 @@ testSuite({
     const a = new Size(1600, 1200);
     const b = new Size(1200, 1600);
     const c = new Size(400, 300);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const d = new Size(undefined, undefined);
 
     assertEquals('(512 x 384)', a.scaleToFit(target).toString());
@@ -130,6 +127,7 @@ testSuite({
   },
 
   testSizeIsEmpty() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const s = new Size(undefined, undefined);
     assertTrue(s.isEmpty());
     s.width = 0;
@@ -160,6 +158,7 @@ testSuite({
     assertEquals('(2 x 5)', s.round().toString());
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSizeGetLongest() {
     const s = new Size(3, 4);
     assertEquals(4, s.getLongest());
@@ -173,6 +172,7 @@ testSuite({
     assertNaN(new Size(undefined, undefined).getLongest());
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSizeGetShortest() {
     const s = new Size(3, 4);
     assertEquals(3, s.getShortest());

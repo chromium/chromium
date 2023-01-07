@@ -1,0 +1,8 @@
+{
+  "name": "client_mode: navigate-existing",
+  "start_url": "basic.html?client_mode=navigate-existing",
+  "display": "standalone",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

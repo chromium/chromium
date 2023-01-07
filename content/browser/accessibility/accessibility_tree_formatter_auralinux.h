@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,33 +25,34 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAuraLinux
 
  private:
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node) const override;
+      const base::Value::Dict& node) const override;
 
-  base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
-  base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
-  base::Value BuildTreeForSelector(
+  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* root) const override;
+  base::Value::Dict BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
-  base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
-  AtspiAccessible* FindActiveDocument(AtspiAccessible* root) const;
-  void RecursiveBuildTree(AtspiAccessible* node,
-                          base::DictionaryValue* dict) const;
-  void RecursiveBuildTree(AtkObject*, base::DictionaryValue*) const;
+  std::string EvaluateScript(
+      const AXTreeSelector& selector,
+      const ui::AXInspectScenario& scenario) const override;
 
-  void AddProperties(AtkObject*, base::DictionaryValue*) const;
-  void AddProperties(AtspiAccessible*, base::DictionaryValue*) const;
+  void RecursiveBuildTree(AtspiAccessible* node, base::Value::Dict* dict) const;
+  void RecursiveBuildTree(AtkObject*, base::Value::Dict*) const;
 
-  void AddTextProperties(AtkText* atk_text, base::DictionaryValue* dict) const;
+  void AddProperties(AtkObject*, base::Value::Dict*) const;
+  void AddProperties(AtspiAccessible*, base::Value::Dict*) const;
+
+  void AddTextProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
+  void AddHypertextProperties(AtkObject* atk_object,
+                              base::Value::Dict* dict) const;
   void AddActionProperties(AtkObject* atk_object,
-                           base::DictionaryValue* dict) const;
-  void AddValueProperties(AtkObject* atk_object,
-                          base::DictionaryValue* dict) const;
-  void AddTableProperties(AtkObject* atk_object,
-                          base::DictionaryValue* dict) const;
+                           base::Value::Dict* dict) const;
+  void AddValueProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
+  void AddTableProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
   void AddTableCellProperties(const ui::AXPlatformNodeAuraLinux* node,
                               AtkObject* atk_object,
-                              base::DictionaryValue* dict) const;
+                              base::Value::Dict* dict) const;
 };
 
 }  // namespace content

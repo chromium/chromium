@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:strokeWidth="1"
+      android:pathData="M23.5,11.9999C23.5,18.3512 18.3513,23.4999 12,23.4999C5.6487,23.4999 0.5,18.3512 0.5,11.9999C0.5,5.6486 5.6487,0.4999 12,0.4999C18.3513,0.4999 23.5,5.6486 23.5,11.9999Z"
+      android:strokeColor="@macro/hairline_stroke_color"/>
+  <path
+      android:pathData="M12.5892,14.7487C12.4383,14.9039 12.23,14.9999 12,14.9999C11.77,14.9999 11.5617,14.9039 11.4108,14.7487L7.2442,10.463C7.0933,10.3079 7,10.0936 7,9.857C7,9.3839 7.3733,8.9999 7.8333,8.9999C8.0633,8.9999 8.2717,9.0959 8.4225,9.251L12,12.9307L15.5775,9.251C15.7283,9.0959 15.9367,8.9999 16.1667,8.9999C16.6267,8.9999 17,9.3839 17,9.857C17,10.0936 16.9067,10.3079 16.7558,10.463L12.5892,14.7487Z"
+      android:fillColor="@macro/default_control_color_normal"
+      android:fillType="evenOdd"/>
+</vector>

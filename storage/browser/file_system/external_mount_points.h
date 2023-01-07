@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,21 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "storage/browser/file_system/mount_points.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
-#include "url/origin.h"
+
+class GURL;
 
 namespace base {
 class FilePath;
-}
+}  // namespace base
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 
@@ -39,6 +43,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ExternalMountPoints
  public:
   static ExternalMountPoints* GetSystemInstance();
   static scoped_refptr<ExternalMountPoints> CreateRefCounted();
+
+  ExternalMountPoints(const ExternalMountPoints&) = delete;
+  ExternalMountPoints& operator=(const ExternalMountPoints&) = delete;
 
   // Registers a new named external filesystem.
   // The |path| is registered as the root path of the mount point which
@@ -78,9 +85,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ExternalMountPoints
                         std::string* cracked_id,
                         base::FilePath* path,
                         FileSystemMountOption* mount_option) const override;
-  FileSystemURL CrackURL(const GURL& url) const override;
+  FileSystemURL CrackURL(const GURL& url,
+                         const blink::StorageKey& storage_key) const override;
   FileSystemURL CreateCrackedFileSystemURL(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type,
       const base::FilePath& virtual_path) const override;
 
@@ -107,9 +115,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ExternalMountPoints
   // Returns the virtual root path that looks like /<mount_name>.
   base::FilePath CreateVirtualRootPath(const std::string& mount_name) const;
 
-  FileSystemURL CreateExternalFileSystemURL(const url::Origin& origin,
-                                            const std::string& mount_name,
-                                            const base::FilePath& path) const;
+  FileSystemURL CreateExternalFileSystemURL(
+      const blink::StorageKey& storage_key,
+      const std::string& mount_name,
+      const base::FilePath& path) const;
 
   // Revoke all registered filesystems. Used only by testing (for clean-ups).
   void RevokeAllFileSystems();
@@ -149,8 +158,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ExternalMountPoints
 
   // Reverse map from registered path to its corresponding mount name.
   std::map<base::FilePath, std::string> path_to_name_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalMountPoints);
 };
 
 }  // namespace storage

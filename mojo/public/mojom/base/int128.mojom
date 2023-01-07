@@ -1,0 +1,21 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo_base.mojom;
+
+// Corresponds to |absl::int128| defined in
+// third_party/abseil-cpp/absl/numeric/int128.h
+[Stable]
+struct Int128 {
+  int64 high;
+  uint64 low;
+};
+
+// Corresponds to |absl::uint128| defined in
+// third_party/abseil-cpp/absl/numeric/int128.h
+[Stable]
+struct Uint128 {
+  uint64 high;
+  uint64 low;
+};

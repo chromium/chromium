@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 #define CHROME_SERVICES_QRCODE_GENERATOR_PUBLIC_CPP_QRCODE_GENERATOR_SERVICE_H_
 
 #include "base/callback.h"
-#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace qrcode_generator {

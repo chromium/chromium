@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -21,7 +22,7 @@
 #include "media/base/video_color_space.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 
 // TODO(dalecurtis): This include is not allowed by media/base since
@@ -30,8 +31,7 @@
 #include "media/base/android/media_codec_util.h"  // nogncheck
 #endif
 
-namespace media {
-namespace internal {
+namespace media::internal {
 
 // A map from codec string to MimeUtil::Codec.
 using StringToCodecMap = base::flat_map<std::string, MimeUtil::Codec>;
@@ -91,13 +91,19 @@ const StringToCodecMap& GetStringToCodecMap() {
       {"vp8", MimeUtil::VP8},
       {"vp8.0", MimeUtil::VP8},
       {"theora", MimeUtil::THEORA},
+      {"dtsc", MimeUtil::DTS},
+      {"mp4a.a9", MimeUtil::DTS},
+      {"mp4a.A9", MimeUtil::DTS},
+      {"dtsx", MimeUtil::DTSXP2},
+      {"mp4a.b2", MimeUtil::DTSXP2},
+      {"mp4a.B2", MimeUtil::DTSXP2},
   });
 
   return *kStringToCodecMap;
 }
 
-static bool ParseVp9CodecID(const std::string& mime_type_lower_case,
-                            const std::string& codec_id,
+static bool ParseVp9CodecID(base::StringPiece mime_type_lower_case,
+                            base::StringPiece codec_id,
                             VideoCodecProfile* out_profile,
                             uint8_t* out_level,
                             VideoColorSpace* out_color_space) {
@@ -124,7 +130,8 @@ static bool IsValidH264Level(uint8_t level_idc) {
           (level_idc >= 20 && level_idc <= 22) ||
           (level_idc >= 30 && level_idc <= 32) ||
           (level_idc >= 40 && level_idc <= 42) ||
-          (level_idc >= 50 && level_idc <= 52));
+          (level_idc >= 50 && level_idc <= 52) ||
+          (level_idc >= 60 && level_idc <= 62));
 }
 
 // Make a default ParsedCodecResult. Values should indicate "unspecified"
@@ -139,11 +146,7 @@ static MimeUtil::ParsedCodecResult MakeDefaultParsedCodecResult() {
 }
 
 MimeUtil::MimeUtil() {
-#if defined(OS_ANDROID)
-  // When the unified media pipeline is enabled, we need support for both GPU
-  // video decoders and MediaCodec; indicated by HasPlatformDecoderSupport().
-  // When the Android pipeline is used, we only need access to MediaCodec.
-  platform_info_.has_platform_decoders = HasPlatformDecoderSupport();
+#if BUILDFLAG(IS_ANDROID)
   platform_info_.has_platform_vp8_decoder =
       MediaCodecUtil::IsVp8DecoderAvailable();
   platform_info_.has_platform_vp9_decoder =
@@ -154,7 +157,7 @@ MimeUtil::MimeUtil() {
 #endif
   platform_info_.has_platform_opus_decoder =
       MediaCodecUtil::IsOpusDecoderAvailable();
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
   InitializeMimeTypeMaps();
 }
@@ -164,61 +167,65 @@ MimeUtil::~MimeUtil() = default;
 AudioCodec MimeUtilToAudioCodec(MimeUtil::Codec codec) {
   switch (codec) {
     case MimeUtil::PCM:
-      return kCodecPCM;
+      return AudioCodec::kPCM;
     case MimeUtil::MP3:
-      return kCodecMP3;
+      return AudioCodec::kMP3;
     case MimeUtil::AC3:
-      return kCodecAC3;
+      return AudioCodec::kAC3;
     case MimeUtil::EAC3:
-      return kCodecEAC3;
+      return AudioCodec::kEAC3;
     case MimeUtil::MPEG2_AAC:
     case MimeUtil::MPEG4_AAC:
     case MimeUtil::MPEG4_XHE_AAC:
-      return kCodecAAC;
+      return AudioCodec::kAAC;
     case MimeUtil::MPEG_H_AUDIO:
-      return kCodecMpegHAudio;
+      return AudioCodec::kMpegHAudio;
     case MimeUtil::VORBIS:
-      return kCodecVorbis;
+      return AudioCodec::kVorbis;
     case MimeUtil::OPUS:
-      return kCodecOpus;
+      return AudioCodec::kOpus;
     case MimeUtil::FLAC:
-      return kCodecFLAC;
+      return AudioCodec::kFLAC;
+    case MimeUtil::DTS:
+      return AudioCodec::kDTS;
+    case MimeUtil::DTSXP2:
+      return AudioCodec::kDTSXP2;
     default:
       break;
   }
-  return kUnknownAudioCodec;
+  return AudioCodec::kUnknown;
 }
 
 VideoCodec MimeUtilToVideoCodec(MimeUtil::Codec codec) {
   switch (codec) {
     case MimeUtil::AV1:
-      return kCodecAV1;
+      return VideoCodec::kAV1;
     case MimeUtil::H264:
-      return kCodecH264;
+      return VideoCodec::kH264;
     case MimeUtil::HEVC:
-      return kCodecHEVC;
+      return VideoCodec::kHEVC;
     case MimeUtil::VP8:
-      return kCodecVP8;
+      return VideoCodec::kVP8;
     case MimeUtil::VP9:
-      return kCodecVP9;
+      return VideoCodec::kVP9;
     case MimeUtil::THEORA:
-      return kCodecTheora;
+      return VideoCodec::kTheora;
     case MimeUtil::DOLBY_VISION:
-      return kCodecDolbyVision;
+      return VideoCodec::kDolbyVision;
     default:
       break;
   }
-  return kUnknownVideoCodec;
+  return VideoCodec::kUnknown;
 }
 
 SupportsType MimeUtil::AreSupportedCodecs(
     const std::vector<ParsedCodecResult>& parsed_codecs,
-    const std::string& mime_type_lower_case,
+    base::StringPiece mime_type_lower_case,
     bool is_encrypted) const {
   DCHECK(!parsed_codecs.empty());
   DCHECK_EQ(base::ToLowerASCII(mime_type_lower_case), mime_type_lower_case);
 
-  SupportsType combined_result = IsSupported;
+  SupportsType combined_result = SupportsType::kSupported;
 
   for (const auto& parsed_codec : parsed_codecs) {
     // Make conservative guesses to resolve ambiguity before checking platform
@@ -254,21 +261,21 @@ SupportsType MimeUtil::AreSupportedCodecs(
     SupportsType result = IsCodecSupported(
         mime_type_lower_case, parsed_codec.codec, video_profile, video_level,
         parsed_codec.video_color_space, is_encrypted);
-    if (result == IsNotSupported) {
+    if (result == SupportsType::kNotSupported) {
       DVLOG(2) << __func__ << ": Codec " << parsed_codec.codec
                << " not supported by platform.";
-      return IsNotSupported;
+      return SupportsType::kNotSupported;
     }
 
-    // If any codec is "MayBeSupported", return Maybe for the combined result.
-    if (result == MayBeSupported ||
-        // Downgrade to MayBeSupported if we had to guess the meaning of one of
+    // If any codec is "kMaybeSupported", return Maybe for the combined result.
+    if (result == SupportsType::kMaybeSupported ||
+        // Downgrade to kMaybeSupported if we had to guess the meaning of one of
         // the codec strings. Do not downgrade for VP9 because we historically
         // returned "Probably" for the old "vp9" string and cannot change to
         // returning "Maybe" as this will break sites.
-        (result == IsSupported && parsed_codec.is_ambiguous &&
+        (result == SupportsType::kSupported && parsed_codec.is_ambiguous &&
          parsed_codec.codec != MimeUtil::VP9)) {
-      combined_result = MayBeSupported;
+      combined_result = SupportsType::kMaybeSupported;
     }
   }
 
@@ -341,6 +348,11 @@ void MimeUtil::AddSupportedMediaFormats() {
   mp4_video_codecs.emplace(AV1);
 #endif
 
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  mp4_audio_codecs.emplace(DTS);
+  mp4_audio_codecs.emplace(DTSXP2);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+
   CodecSet mp4_codecs(mp4_audio_codecs);
   mp4_codecs.insert(mp4_video_codecs.begin(), mp4_video_codecs.end());
 
@@ -380,7 +392,7 @@ void MimeUtil::AddSupportedMediaFormats() {
   CodecSet mp2t_codecs{H264, MPEG2_AAC, MPEG4_AAC, MP3};
   AddContainerWithCodecs("video/mp2t", mp2t_codecs);
 #endif  // BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kCanPlayHls)) {
     // HTTP Live Streaming (HLS).
     CodecSet hls_codecs{H264,
@@ -398,21 +410,19 @@ void MimeUtil::AddSupportedMediaFormats() {
     // https://crbug.com/675552 for details and examples.
     AddContainerWithCodecs("audio/x-mpegurl", hls_codecs);
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 }
 
-void MimeUtil::AddContainerWithCodecs(const std::string& mime_type,
-                                      const CodecSet& codecs) {
-  media_format_map_[mime_type] = codecs;
+void MimeUtil::AddContainerWithCodecs(std::string mime_type, CodecSet codecs) {
+  media_format_map_.insert_or_assign(std::move(mime_type), std::move(codecs));
 }
 
-bool MimeUtil::IsSupportedMediaMimeType(const std::string& mime_type) const {
-  return media_format_map_.find(base::ToLowerASCII(mime_type)) !=
-         media_format_map_.end();
+bool MimeUtil::IsSupportedMediaMimeType(base::StringPiece mime_type) const {
+  return media_format_map_.contains(base::ToLowerASCII(mime_type));
 }
 
-void MimeUtil::SplitCodecs(const std::string& codecs,
+void MimeUtil::SplitCodecs(base::StringPiece codecs,
                            std::vector<std::string>* codecs_out) const {
   *codecs_out =
       base::SplitString(base::TrimString(codecs, "\"", base::TRIM_ALL), ",",
@@ -425,15 +435,15 @@ void MimeUtil::SplitCodecs(const std::string& codecs,
 
 void MimeUtil::StripCodecs(std::vector<std::string>* codecs) const {
   // Strip everything past the first '.'
-  for (auto it = codecs->begin(); it != codecs->end(); ++it) {
-    size_t found = it->find_first_of('.');
+  for (auto& codec : *codecs) {
+    size_t found = codec.find_first_of('.');
     if (found != std::string::npos)
-      it->resize(found);
+      codec.resize(found);
   }
 }
 
-bool MimeUtil::ParseVideoCodecString(const std::string& mime_type,
-                                     const std::string& codec_id,
+bool MimeUtil::ParseVideoCodecString(base::StringPiece mime_type,
+                                     base::StringPiece codec_id,
                                      bool* out_is_ambiguous,
                                      VideoCodec* out_codec,
                                      VideoCodecProfile* out_profile,
@@ -449,7 +459,7 @@ bool MimeUtil::ParseVideoCodecString(const std::string& mime_type,
   std::vector<ParsedCodecResult> parsed_results;
   std::vector<std::string> codec_strings;
   if (!codec_id.empty())
-    codec_strings.push_back(codec_id);
+    codec_strings.emplace_back(codec_id);
 
   if (!ParseCodecStrings(base::ToLowerASCII(mime_type), codec_strings,
                          &parsed_results)) {
@@ -466,7 +476,7 @@ bool MimeUtil::ParseVideoCodecString(const std::string& mime_type,
   *out_level = parsed_results[0].video_level;
   *out_color_space = parsed_results[0].video_color_space;
 
-  if (*out_codec == kUnknownVideoCodec) {
+  if (*out_codec == VideoCodec::kUnknown) {
     DVLOG(3) << __func__ << " Codec string " << codec_id
              << " is not a VIDEO codec.";
     return false;
@@ -475,8 +485,8 @@ bool MimeUtil::ParseVideoCodecString(const std::string& mime_type,
   return true;
 }
 
-bool MimeUtil::ParseAudioCodecString(const std::string& mime_type,
-                                     const std::string& codec_id,
+bool MimeUtil::ParseAudioCodecString(base::StringPiece mime_type,
+                                     base::StringPiece codec_id,
                                      bool* out_is_ambiguous,
                                      AudioCodec* out_codec) const {
   DCHECK(out_is_ambiguous);
@@ -486,7 +496,7 @@ bool MimeUtil::ParseAudioCodecString(const std::string& mime_type,
   std::vector<ParsedCodecResult> parsed_results;
   std::vector<std::string> codec_strings;
   if (!codec_id.empty())
-    codec_strings.push_back(codec_id);
+    codec_strings.emplace_back(codec_id);
 
   if (!ParseCodecStrings(base::ToLowerASCII(mime_type), codec_strings,
                          &parsed_results)) {
@@ -500,7 +510,7 @@ bool MimeUtil::ParseAudioCodecString(const std::string& mime_type,
   *out_is_ambiguous = parsed_results[0].is_ambiguous;
   *out_codec = MimeUtilToAudioCodec(parsed_results[0].codec);
 
-  if (*out_codec == kUnknownAudioCodec) {
+  if (*out_codec == AudioCodec::kUnknown) {
     DVLOG(3) << __func__ << " Codec string " << codec_id
              << " is not an AUDIO codec.";
     return false;
@@ -510,7 +520,7 @@ bool MimeUtil::ParseAudioCodecString(const std::string& mime_type,
 }
 
 SupportsType MimeUtil::IsSupportedMediaFormat(
-    const std::string& mime_type,
+    base::StringPiece mime_type,
     const std::vector<std::string>& codecs,
     bool is_encrypted) const {
   const std::string mime_type_lower_case = base::ToLowerASCII(mime_type);
@@ -518,12 +528,12 @@ SupportsType MimeUtil::IsSupportedMediaFormat(
   if (!ParseCodecStrings(mime_type_lower_case, codecs, &parsed_results)) {
     DVLOG(3) << __func__ << " Media format unsupported; codec parsing failed "
              << mime_type << " " << base::JoinString(codecs, ",");
-    return IsNotSupported;
+    return SupportsType::kNotSupported;
   }
 
   if (parsed_results.empty()) {
     NOTREACHED() << __func__ << " Successful parsing should output results.";
-    return IsNotSupported;
+    return SupportsType::kNotSupported;
   }
 
   // We get here if the mime type expects to get a codecs parameter
@@ -533,25 +543,20 @@ SupportsType MimeUtil::IsSupportedMediaFormat(
   if (codecs.empty() && parsed_results.size() == 1 &&
       parsed_results[0].codec == INVALID_CODEC) {
     DCHECK(parsed_results[0].is_ambiguous);
-    return MayBeSupported;
+    return SupportsType::kMaybeSupported;
   }
 
   return AreSupportedCodecs(parsed_results, mime_type_lower_case, is_encrypted);
 }
 
 // static
-bool MimeUtil::IsCodecSupportedOnAndroid(
-    Codec codec,
-    const std::string& mime_type_lower_case,
-    bool is_encrypted,
-    VideoCodecProfile video_profile,
-    const PlatformInfo& platform_info) {
+bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
+                                         base::StringPiece mime_type_lower_case,
+                                         bool is_encrypted,
+                                         VideoCodecProfile video_profile,
+                                         const PlatformInfo& platform_info) {
   DVLOG(3) << __func__;
   DCHECK_NE(mime_type_lower_case, "");
-
-  // Encrypted block support is never available without platform decoders.
-  if (is_encrypted && !platform_info.has_platform_decoders)
-    return false;
 
   // NOTE: We do not account for Media Source Extensions (MSE) within these
   // checks since it has its own isTypeSupported() which will handle platform
@@ -577,21 +582,18 @@ bool MimeUtil::IsCodecSupportedOnAndroid(
       // valid codecs to be used with HLS mime types.
       DCHECK(!base::EndsWith(mime_type_lower_case, "mpegurl",
                              base::CompareCase::SENSITIVE));
-      FALLTHROUGH;
+      [[fallthrough]];
     case PCM:
     case MP3:
     case MPEG4_AAC:
     case FLAC:
     case VORBIS:
       // These codecs are always supported; via a platform decoder (when used
-      // with MSE/EME), a software decoder (the unified pipeline), or with
-      // MediaPlayer.
-      DCHECK(!is_encrypted || platform_info.has_platform_decoders);
+      // with MSE/EME) or with a software decoder (the unified pipeline).
       return true;
 
     case MPEG4_XHE_AAC:
-      // xHE-AAC is only supported via MediaCodec.
-      return platform_info.has_platform_decoders;
+      return true;
 
     case MPEG_H_AUDIO:
       return false;
@@ -607,18 +609,14 @@ bool MimeUtil::IsCodecSupportedOnAndroid(
         return false;
       }
 
-      DCHECK(!is_encrypted || platform_info.has_platform_decoders);
       return true;
 
     case H264:
-      // When content is not encrypted we fall back to MediaPlayer, thus we
-      // always support H264. For EME we need MediaCodec.
-      return !is_encrypted || platform_info.has_platform_decoders;
+      return true;
 
     case HEVC:
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      return platform_info.has_platform_decoders &&
-             platform_info.has_platform_hevc_decoder;
+      return platform_info.has_platform_hevc_decoder;
 #else
       return false;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -649,13 +647,23 @@ bool MimeUtil::IsCodecSupportedOnAndroid(
     }
 
     case DOLBY_VISION:
-      // This function is only called on Android which doesn't support Dolby
-      // Vision.
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+      return true;
+#else
       return false;
+#endif
 
     case AC3:
     case EAC3:
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+      return true;
+#else
+      return false;
+#endif
+
+    case DTS:
+    case DTSXP2:
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
       return true;
 #else
       return false;
@@ -666,7 +674,7 @@ bool MimeUtil::IsCodecSupportedOnAndroid(
 }
 
 bool MimeUtil::ParseCodecStrings(
-    const std::string& mime_type_lower_case,
+    base::StringPiece mime_type_lower_case,
     const std::vector<std::string>& codecs,
     std::vector<ParsedCodecResult>* out_results) const {
   DCHECK(out_results);
@@ -754,8 +762,8 @@ bool MimeUtil::ParseCodecStrings(
   return true;
 }
 
-bool MimeUtil::ParseCodecHelper(const std::string& mime_type_lower_case,
-                                const std::string& codec_id,
+bool MimeUtil::ParseCodecHelper(base::StringPiece mime_type_lower_case,
+                                base::StringPiece codec_id,
                                 ParsedCodecResult* out_result) const {
   DCHECK_EQ(base::ToLowerASCII(mime_type_lower_case), mime_type_lower_case);
   DCHECK(out_result);
@@ -768,7 +776,7 @@ bool MimeUtil::ParseCodecHelper(const std::string& mime_type_lower_case,
     out_result->codec = itr->second;
 
     // Even "simple" video codecs should have an associated profile.
-    if (MimeUtilToVideoCodec(out_result->codec) != kUnknownVideoCodec) {
+    if (MimeUtilToVideoCodec(out_result->codec) != VideoCodec::kUnknown) {
       switch (out_result->codec) {
         case Codec::VP8:
           out_result->video_profile = VP8PROFILE_ANY;
@@ -857,7 +865,7 @@ bool MimeUtil::ParseCodecHelper(const std::string& mime_type_lower_case,
   return false;
 }
 
-SupportsType MimeUtil::IsCodecSupported(const std::string& mime_type_lower_case,
+SupportsType MimeUtil::IsCodecSupported(base::StringPiece mime_type_lower_case,
                                         Codec codec,
                                         VideoCodecProfile video_profile,
                                         uint8_t video_level,
@@ -869,12 +877,12 @@ SupportsType MimeUtil::IsCodecSupported(const std::string& mime_type_lower_case,
   DCHECK_NE(codec, INVALID_CODEC);
 
   VideoCodec video_codec = MimeUtilToVideoCodec(codec);
-  if (video_codec != kUnknownVideoCodec &&
+  if (video_codec != VideoCodec::kUnknown &&
       // Theora and VP8 do not have profiles/levels.
-      video_codec != kCodecTheora && video_codec != kCodecVP8 &&
+      video_codec != VideoCodec::kTheora && video_codec != VideoCodec::kVP8 &&
       // TODO(dalecurtis): AV1 has levels, but they aren't supported yet;
       // http://crbug.com/784993
-      video_codec != kCodecAV1) {
+      video_codec != VideoCodec::kAV1) {
     DCHECK_NE(video_profile, VIDEO_CODEC_PROFILE_UNKNOWN);
     DCHECK_GT(video_level, 0);
   }
@@ -905,35 +913,36 @@ SupportsType MimeUtil::IsCodecSupported(const std::string& mime_type_lower_case,
   }
 
   AudioCodec audio_codec = MimeUtilToAudioCodec(codec);
-  if (audio_codec != kUnknownAudioCodec) {
+  if (audio_codec != AudioCodec::kUnknown) {
     AudioCodecProfile audio_profile = AudioCodecProfile::kUnknown;
     if (codec == MPEG4_XHE_AAC)
       audio_profile = AudioCodecProfile::kXHE_AAC;
 
     if (!IsSupportedAudioType({audio_codec, audio_profile, false}))
-      return IsNotSupported;
+      return SupportsType::kNotSupported;
   }
 
-  if (video_codec != kUnknownVideoCodec) {
+  if (video_codec != VideoCodec::kUnknown) {
     if (!IsSupportedVideoType(
             {video_codec, video_profile, video_level, color_space})) {
-      return IsNotSupported;
+      return SupportsType::kNotSupported;
     }
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(chcunningham): Delete this. Android platform support should be
   // handled by (android specific) media::IsSupportedVideoType() above.
   if (!IsCodecSupportedOnAndroid(codec, mime_type_lower_case, is_encrypted,
                                  video_profile, platform_info_)) {
-    return IsNotSupported;
+    return SupportsType::kNotSupported;
   }
 #endif
 
-  return ambiguous_platform_support ? MayBeSupported : IsSupported;
+  return ambiguous_platform_support ? SupportsType::kMaybeSupported
+                                    : SupportsType::kSupported;
 }
 
-bool MimeUtil::GetDefaultCodec(const std::string& mime_type,
+bool MimeUtil::GetDefaultCodec(base::StringPiece mime_type,
                                Codec* default_codec) const {
   // Codecs below are unambiguously implied by the mime type string. DO NOT add
   // default codecs for ambiguous mime types.
@@ -957,5 +966,4 @@ bool MimeUtil::GetDefaultCodec(const std::string& mime_type,
   return false;
 }
 
-}  // namespace internal
-}  // namespace media
+}  // namespace media::internal

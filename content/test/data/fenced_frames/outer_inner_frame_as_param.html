@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <iframe id="testframe1"></iframe>
+<script>
+  let params = (new URL(document.location)).searchParams;
+  document.getElementById("testframe1").src = params.get("innerFrame");
+</script>
+</body>
+</html>

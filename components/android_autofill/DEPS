@@ -1,0 +1,12 @@
+include_rules = [
+  "+components/autofill",
+  "+content/public/android",
+  "+content/public/browser",
+  "+ui",
+]
+
+specific_include_rules = {
+  "autofill_provider_unittest.cc" : [
+    "+content/public/test",
+  ],
+}

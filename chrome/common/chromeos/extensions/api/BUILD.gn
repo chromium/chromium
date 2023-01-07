@@ -1,0 +1,73 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/chromeos/extensions/api/api_sources.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//tools/json_schema_compiler/json_features.gni")
+import("//tools/json_schema_compiler/json_schema_api.gni")
+
+assert(enable_extensions)
+
+################################################################################
+# Public Targets
+
+group("api") {
+  public_deps = [
+    ":generated_api_json_strings",
+    ":generated_api_types",
+  ]
+}
+
+group("extensions_features") {
+  public_deps = [
+    ":api_features",
+    ":manifest_features",
+    ":permission_features",
+  ]
+}
+
+################################################################################
+# Private Targets
+
+generated_json_strings("generated_api_json_strings") {
+  sources = chromeos_system_extensions_api_schema_sources
+  configs = [ "//build/config:precompiled_headers" ]
+  bundle_name = "ChromeOS"
+  schema_include_rules = chromeos_system_extensions_api_schema_include_rules
+
+  root_namespace = chromeos_system_extensions_api_root_namespace
+  deps = [ "//extensions/common/api" ]
+  visibility = [ ":api" ]
+}
+
+generated_types("generated_api_types") {
+  sources = chromeos_system_extensions_api_schema_sources
+  configs = [ "//build/config:precompiled_headers" ]
+  schema_include_rules = chromeos_system_extensions_api_schema_include_rules
+
+  root_namespace = chromeos_system_extensions_api_root_namespace
+  deps = [ "//extensions/common/api" ]
+  visibility = [ ":api" ]
+}
+
+json_features("api_features") {
+  feature_type = "APIFeature"
+  method_name = "AddChromeOSSystemExtensionsAPIFeatures"
+  sources = [ "_api_features.json" ]
+  visibility = [ ":extensions_features" ]
+}
+
+json_features("manifest_features") {
+  feature_type = "ManifestFeature"
+  method_name = "AddChromeOSSystemExtensionsManifestFeatures"
+  sources = [ "_manifest_features.json" ]
+  visibility = [ ":extensions_features" ]
+}
+
+json_features("permission_features") {
+  feature_type = "PermissionFeature"
+  method_name = "AddChromeOSSystemExtensionsPermissionFeatures"
+  sources = [ "_permission_features.json" ]
+  visibility = [ ":extensions_features" ]
+}

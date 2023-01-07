@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,15 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/url_pattern_index/closed_hash_map.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "components/url_pattern_index/uint64_hasher.h"
+#include "components/url_pattern_index/url_pattern.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 class GURL;
@@ -84,7 +86,7 @@ int CompareDomains(base::StringPiece lhs_domain, base::StringPiece rhs_domain);
 // Increase this value when introducing an incompatible change to the
 // UrlPatternIndex schema (flat/url_pattern_index.fbs). url_pattern_index
 // clients can use this as a signal to rebuild rulesets.
-constexpr int kUrlPatternIndexFormatVersion = 7;
+constexpr int kUrlPatternIndexFormatVersion = 14;
 
 // The class used to construct an index over the URL patterns of a set of URL
 // rules. The rules themselves need to be converted to FlatBuffers format by the
@@ -93,6 +95,10 @@ constexpr int kUrlPatternIndexFormatVersion = 7;
 class UrlPatternIndexBuilder {
  public:
   explicit UrlPatternIndexBuilder(flatbuffers::FlatBufferBuilder* flat_builder);
+
+  UrlPatternIndexBuilder(const UrlPatternIndexBuilder&) = delete;
+  UrlPatternIndexBuilder& operator=(const UrlPatternIndexBuilder&) = delete;
+
   ~UrlPatternIndexBuilder();
 
   // Adds a UrlRule to the index. The caller should have already persisted the
@@ -124,34 +130,8 @@ class UrlPatternIndexBuilder {
   MutableUrlRuleList fallback_rules_;
 
   // Must outlive this instance.
-  flatbuffers::FlatBufferBuilder* flat_builder_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlPatternIndexBuilder);
+  raw_ptr<flatbuffers::FlatBufferBuilder> flat_builder_;
 };
-
-// Returns whether the |origin| matches the domain list of the |rule|. A match
-// means that the longest domain in |domains| that |origin| is a sub-domain of
-// is not an exception OR all the |domains| are exceptions and neither matches
-// the |origin|. Thus, domain filters with more domain components trump filters
-// with fewer domain components, i.e. the more specific a filter is, the higher
-// the priority.
-//
-// A rule whose domain list is empty or contains only negative domains is still
-// considered a "generic" rule. Therefore, if |disable_generic_rules| is set,
-// this function will always return false for such rules.
-bool DoesOriginMatchDomainList(const url::Origin& origin,
-                               const flat::UrlRule& rule,
-                               bool disable_generic_rules);
-
-// Returns whether the request matches flags of the specified |rule|. Takes into
-// account:
-//  - |element_type| of the requested resource, if not *_NONE.
-//  - |activation_type| for a subdocument request, if not *_NONE.
-//  - Whether the resource |is_third_party| w.r.t. its embedding document.
-bool DoesRuleFlagsMatch(const flat::UrlRule& rule,
-                        flat::ElementType element_type,
-                        flat::ActivationType activation_type,
-                        bool is_third_party);
 
 // Encapsulates a read-only index built over the URL patterns of a set of URL
 // rules, and provides fast matching of network requests against these rules.
@@ -169,9 +149,18 @@ class UrlPatternIndexMatcher {
     kAll,
   };
 
+  // Matches the request against `embedder_conditions` and returns true if the
+  // request matched.
+  using EmbedderConditionsMatcher = base::RepeatingCallback<bool(
+      const flatbuffers::Vector<uint8_t>& embedder_conditions)>;
+
   // Creates an instance to access the given |flat_index|. If |flat_index| is
   // nullptr, then all requests return no match.
   explicit UrlPatternIndexMatcher(const flat::UrlPatternIndex* flat_index);
+
+  UrlPatternIndexMatcher(const UrlPatternIndexMatcher&) = delete;
+  UrlPatternIndexMatcher& operator=(const UrlPatternIndexMatcher&) = delete;
+
   ~UrlPatternIndexMatcher();
   UrlPatternIndexMatcher(UrlPatternIndexMatcher&&);
   UrlPatternIndexMatcher& operator=(UrlPatternIndexMatcher&&);
@@ -181,45 +170,52 @@ class UrlPatternIndexMatcher {
   size_t GetRulesCount() const;
 
   // If the index contains one or more UrlRules that match the request, returns
-  // one of them, depending on the |strategy|. Otherwise, returns nullptr.
+  // one of them, depending on the `strategy`. Otherwise, returns nullptr.
   //
   // Notes on parameters:
-  //  - |url| should be valid and not longer than url::kMaxURLChars, otherwise
+  //  - `url` should be valid and not longer than url::kMaxURLChars, otherwise
   //    the return value is nullptr. The length limit is chosen due to
   //    performance implications of matching giant URLs, along with the fact
   //    that in many places in Chrome (e.g. at the IPC layer), URLs longer than
   //    this are dropped already.
-  //  - Exactly one of |element_type| and |activation_type| should be specified,
+  //  - Exactly one of `element_type` and `activation_type` should be specified,
   //    i.e., not equal to *_UNSPECIFIED, otherwise the return value is nullptr.
-  //  - |is_third_party| should be pre-computed by the caller, e.g. using the
+  //  - `request_method` can only be specified when using flat::* types. Matches
+  //    are not filtered by request method when using proto::* types.
+  //  - `is_third_party` should be pre-computed by the caller, e.g. using the
   //    registry_controlled_domains library, to reflect the relation between
-  //    |url| and |first_party_origin|.
+  //    `url` and `first_party_origin`.
   //
   // A rule is deemed to match the request iff all of the following applies:
-  //  - The |url| matches the rule's UrlPattern (see url_pattern.h).
-  //  - The |first_party_origin| matches the rule's targeted domains list.
-  //  - |element_type| or |activation_type| is among the rule's targeted types.
-  //  - The |is_third_party| bit matches the rule's requirement on the requested
-  //    |url| being first-/third-party w.r.t. its |first_party_origin|.
-  //  - The rule is not generic if |disable_generic_rules| is true.
-  const flat::UrlRule* FindMatch(const GURL& url,
-                                 const url::Origin& first_party_origin,
-                                 proto::ElementType element_type,
-                                 proto::ActivationType activation_type,
-                                 bool is_third_party,
-                                 bool disable_generic_rules,
-                                 FindRuleStrategy strategy) const;
+  //  - The `url` matches the rule's UrlPattern (see url_pattern.h).
+  //  - The `first_party_origin` matches the rule's targeted domains list.
+  //  - `element_type` or `activation_type` is among the rule's targeted types.
+  //  - The `is_third_party` bit matches the rule's requirement on the requested
+  //    `url` being first-/third-party w.r.t. its `first_party_origin`.
+  //  - The rule is not generic if `disable_generic_rules` is true.
+  const flat::UrlRule* FindMatch(
+      const GURL& url,
+      const url::Origin& first_party_origin,
+      proto::ElementType element_type,
+      proto::ActivationType activation_type,
+      bool is_third_party,
+      bool disable_generic_rules,
+      const EmbedderConditionsMatcher& embedder_conditions_matcher,
+      FindRuleStrategy strategy) const;
 
   // Helper function to work with flat::*Type(s). If the index contains one or
   // more UrlRules that match the request, returns one of them depending on
   // |strategy|. Otherwise, returns nullptr.
-  const flat::UrlRule* FindMatch(const GURL& url,
-                                 const url::Origin& first_party_origin,
-                                 flat::ElementType element_type,
-                                 flat::ActivationType activation_type,
-                                 bool is_third_party,
-                                 bool disable_generic_rules,
-                                 FindRuleStrategy strategy) const;
+  const flat::UrlRule* FindMatch(
+      const GURL& url,
+      const url::Origin& first_party_origin,
+      flat::ElementType element_type,
+      flat::ActivationType activation_type,
+      flat::RequestMethod request_method,
+      bool is_third_party,
+      bool disable_generic_rules,
+      const EmbedderConditionsMatcher& embedder_conditions_matcher,
+      FindRuleStrategy strategy) const;
 
   // Same as FindMatch, except this function returns all UrlRules that match the
   // request for the index. If no UrlRules match, returns an empty vector.
@@ -229,7 +225,8 @@ class UrlPatternIndexMatcher {
       proto::ElementType element_type,
       proto::ActivationType activation_type,
       bool is_third_party,
-      bool disable_generic_rules) const;
+      bool disable_generic_rules,
+      const EmbedderConditionsMatcher& embedder_conditions_matcher) const;
 
   // Helper function to work with flat::*Type(s). Returns all UrlRules that
   // match the request for the index. If no UrlRules match, returns an empty
@@ -239,18 +236,52 @@ class UrlPatternIndexMatcher {
       const url::Origin& first_party_origin,
       flat::ElementType element_type,
       flat::ActivationType activation_type,
+      flat::RequestMethod request_method,
       bool is_third_party,
-      bool disable_generic_rules) const;
+      bool disable_generic_rules,
+      const EmbedderConditionsMatcher& embedder_conditions_matcher) const;
 
  private:
   // Must outlive this instance.
   const flat::UrlPatternIndex* flat_index_;
 
   // The number of rules in this index. Mutable since this is lazily computed.
-  mutable base::Optional<size_t> rules_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlPatternIndexMatcher);
+  mutable absl::optional<size_t> rules_count_;
 };
+
+// Returns whether the `rule` is considered "generic". A generic rule is one
+// whose initator domain list is either empty or contains only negative domains.
+bool IsRuleGeneric(const flat::UrlRule& rule);
+
+// Returns whether the `origin` matches the initiator domain list of the `rule`.
+// A match means that the longest domain in `domains` that `origin` is a
+// sub-domain of is not an exception OR all the `domains` are exceptions and
+// neither matches the `origin`. Thus, domain filters with more domain
+// components trump filters with fewer domain components, i.e. the more specific
+// a filter is, the higher the priority.
+bool DoesOriginMatchInitiatorDomainList(const url::Origin& origin,
+                                        const flat::UrlRule& rule);
+
+// Returns whether the request URL matches the request domain list of the
+// `rule`. See `DoesOriginMatchInitiatorDomainList` for an explanation of the
+// matching logic.
+bool DoesURLMatchRequestDomainList(const UrlPattern::UrlInfo& url,
+                                   const flat::UrlRule& rule);
+
+// Returns whether the request matches flags of the specified `rule`. Takes into
+// account:
+//  - `element_type` of the requested resource, if not *_NONE.
+//  - `activation_type` for a subdocument request, if not *_NONE.
+//  - `request_method` of the request, if not *_NONE.
+//  - Whether the resource `is_third_party` w.r.t. its embedding document.
+//  - Options specified by the embedder via `embedder_conditions_matcher`.
+bool DoesRuleFlagsMatch(const flat::UrlRule& rule,
+                        flat::ElementType element_type,
+                        flat::ActivationType activation_type,
+                        flat::RequestMethod request_method,
+                        bool is_third_party,
+                        const UrlPatternIndexMatcher::EmbedderConditionsMatcher&
+                            embedder_conditions_matcher);
 
 }  // namespace url_pattern_index
 

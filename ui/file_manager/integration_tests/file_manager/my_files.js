@@ -1,6 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {addEntries, ENTRIES, EntryType, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {expandTreeItem, mountCrostini, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
 
 /**
  * Select My files in directory tree and wait for load.
@@ -18,13 +23,8 @@ async function selectMyFiles(appId) {
   const downloadsRow = ['Downloads', '--', 'Folder'];
   const playFilesRow = ['Play files', '--', 'Folder'];
   const crostiniRow = ['Linux files', '--', 'Folder'];
-  const trashRow = ['Trash', '--', 'Folder'];
-  const expectedRows = [downloadsRow, playFilesRow, crostiniRow, trashRow];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedRows.pop();
-  }
   await remoteCall.waitForFiles(
-      appId, expectedRows,
+      appId, [downloadsRow, playFilesRow, crostiniRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 }
 
@@ -38,14 +38,14 @@ testcase.showMyFiles = async () => {
     'Downloads: SubDirectoryItem',
     'Linux files: FakeItem',
     'Play files: SubDirectoryItem',
-    'Trash: SubDirectoryItem',
     'Google Drive: DriveVolumeItem',
     'My Drive: SubDirectoryItem',
     'Shared with me: SubDirectoryItem',
     'Offline: SubDirectoryItem',
+    'Trash: EntryListItem',
   ];
   if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedElementLabels.splice(5, 1);  // Remove 'Trash: ...'.
+    expectedElementLabels.pop();  // Remove 'Trash: ...'.
   }
 
   // Open Files app on local Downloads.
@@ -71,12 +71,9 @@ testcase.showMyFiles = async () => {
   // Select Downloads folder.
   await remoteCall.callRemoteTestUtil('selectVolume', appId, ['downloads']);
 
-  // Get the breadcrumbs element.
-  const breadcrumbs = await remoteCall.waitForElement(appId, ['bread-crumb']);
-
   // Check that My Files is displayed on breadcrumbs.
-  const expectedBreadcrumbs = 'My files/Downloads';
-  chrome.test.assertEq(expectedBreadcrumbs, breadcrumbs['attributes']['path']);
+  const expectedBreadcrumbs = '/My files/Downloads';
+  remoteCall.waitUntilCurrentDirectoryIsChanged(appId, expectedBreadcrumbs);
 };
 
 /**
@@ -147,7 +144,7 @@ testcase.myFilesUpdatesChildren = async () => {
     lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
     nameText: '.hidden-folder',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   });
 
   // Add a hidden folder.
@@ -219,10 +216,7 @@ testcase.myFilesFolderRename = async () => {
   await selectMyFiles(appId);
 
   // Select Downloads via file list.
-  const downloads = ['Downloads'];
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, downloads),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'Downloads');
 
   // Open Downloads via file list.
   const fileListItem = '#file-list .table-row';
@@ -235,10 +229,7 @@ testcase.myFilesFolderRename = async () => {
   await remoteCall.waitForFiles(appId, [ENTRIES.photos.getExpectedRow()]);
 
   // Select photos via file list.
-  const folder = ['photos'];
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, folder),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'photos');
 
   // Press Ctrl+Enter for start renaming.
   const key2 = [fileListItem, 'Enter', true, false, false];
@@ -251,8 +242,7 @@ testcase.myFilesFolderRename = async () => {
   await remoteCall.waitForElement(appId, textInput);
 
   // Type new name.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [textInput, 'new name']);
+  await remoteCall.inputText(appId, textInput, 'new name');
 
   // Send Enter key to the text input.
   const key3 = [textInput, 'Enter', false, false, false];
@@ -315,7 +305,7 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
   await sendTestMessage({name: 'mountDownloads'});
 
   // Wait until Downloads is mounted.
-  await remoteCall.waitFor('getVolumesCount', null, (count) => count === 1, []);
+  await remoteCall.waitForVolumesCount(1);
 
   // Open Files app on local Downloads.
   const appId =
@@ -326,14 +316,10 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
   const downloadsRow = ['Downloads', '--', 'Folder'];
   const playFilesRow = ['Play files', '--', 'Folder'];
   const crostiniRow = ['Linux files', '--', 'Folder'];
-  const trashRow = ['Trash', '--', 'Folder'];
-  const expectedRows = [downloadsRow, crostiniRow, trashRow];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedRows.pop();
-  }
+  const expectedRows = [downloadsRow, crostiniRow];
   await remoteCall.waitAndClickElement(appId, myFiles);
   await remoteCall.waitForFiles(
-      appId, expectedRows,
+      appId, [downloadsRow, crostiniRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Mount Play files volume.
@@ -344,9 +330,8 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
 
   // Android volume should automatically appear on directory tree and file list.
   await remoteCall.waitForElement(appId, playFilesTreeItem);
-  expectedRows.splice(2, 0, playFilesRow);
   await remoteCall.waitForFiles(
-      appId, expectedRows,
+      appId, [downloadsRow, playFilesRow, crostiniRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Un-mount Play files volume.
@@ -356,9 +341,8 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
   await remoteCall.waitFor('getVolumesCount', null, (count) => count === 1, []);
 
   // Check: Play files should disappear from file list.
-  expectedRows.splice(2, 1);
   await remoteCall.waitForFiles(
-      appId, expectedRows,
+      appId, [downloadsRow, crostiniRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Check: Play files should disappear from directory tree.
@@ -378,16 +362,14 @@ testcase.myFilesToolbarDelete = async () => {
   await selectMyFiles(appId);
 
   // Select Downloads folder in list.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('selectFile', appId, ['Downloads']));
+  await remoteCall.waitUntilSelected(appId, 'Downloads');
 
   // Test that the delete button isn't visible.
   const hiddenDeleteButton = '#delete-button[hidden]';
   await remoteCall.waitForElement(appId, hiddenDeleteButton);
 
   // Select fake entry Linux files folder in list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, ['Linux files']));
+  await remoteCall.waitUntilSelected(appId, 'Linux files');
 
   // Test that the delete button isn't visible.
   await remoteCall.waitForElement(appId, hiddenDeleteButton);
@@ -399,8 +381,7 @@ testcase.myFilesToolbarDelete = async () => {
   await selectMyFiles(appId);
 
   // Select real Linux files folder in list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, ['Linux files']));
+  await remoteCall.waitUntilSelected(appId, 'Linux files');
 
   // Test that the delete button isn't visible.
   await remoteCall.waitForElement(appId, hiddenDeleteButton);

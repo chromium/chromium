@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_PERMISSIONS_UPDATER_H__
 
 #include <memory>
-#include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 
@@ -27,17 +26,6 @@ class URLPatternSet;
 // and notifies interested parties of the changes.
 class PermissionsUpdater {
  public:
-  // Platform specific delegate.
-  class Delegate {
-   public:
-    virtual ~Delegate() {}
-    // Platform specific initialization of |extension|'s permissions (does any
-    // necessary filtering of permissions or similar).
-    virtual void InitializePermissions(
-        const Extension* extension,
-        std::unique_ptr<const PermissionSet>* granted_permissions) = 0;
-  };
-
   // If INIT_FLAG_TRANSIENT is specified, this updater is being used for an
   // extension that is not actually installed (and instead is just being
   // initialized e.g. to display the permission warnings in an install prompt).
@@ -68,12 +56,11 @@ class PermissionsUpdater {
   explicit PermissionsUpdater(content::BrowserContext* browser_context);
   PermissionsUpdater(content::BrowserContext* browser_context,
                      InitFlag init_flag);
-  ~PermissionsUpdater();
 
-  // Sets a delegate to provide platform-specific logic. This should be set
-  // during startup (to ensure all extensions are initialized through the
-  // delegate).
-  static void SetPlatformDelegate(std::unique_ptr<Delegate> delegate);
+  PermissionsUpdater(const PermissionsUpdater&) = delete;
+  PermissionsUpdater& operator=(const PermissionsUpdater&) = delete;
+
+  ~PermissionsUpdater();
 
   // Grants |permissions| that were defined as optional in the manifest to
   // |extension|, updating the active permission set and notifying any
@@ -123,6 +110,10 @@ class PermissionsUpdater {
   // except for removing permissions totally blocklisted by management.
   void RemovePermissionsUnsafe(const Extension* extension,
                                const PermissionSet& permissions);
+
+  // Fetches the policy settings from the ExtensionManagement service and
+  // applies them to the extension.
+  void ApplyPolicyHostRestrictions(const Extension& extension);
 
   // Sets list of hosts |extension| may not interact with (overrides default).
   void SetPolicyHostRestrictions(const Extension* extension,
@@ -179,8 +170,8 @@ class PermissionsUpdater {
   // Issues the relevant events, messages and notifications when the
   // |extension|'s permissions have |changed| (|changed| is the delta).
   // Specifically, this sends the EXTENSION_PERMISSIONS_UPDATED notification,
-  // the ExtensionMsg_UpdatePermissions IPC message, and fires the
-  // onAdded/onRemoved events in the extension.
+  // the UpdatePermissions Mojo message, and fires the onAdded/onRemoved events
+  // in the extension.
   static void NotifyPermissionsUpdated(
       content::BrowserContext* browser_context,
       EventType event_type,
@@ -197,43 +188,41 @@ class PermissionsUpdater {
       const URLPatternSet default_runtime_allowed_hosts);
 
   // Sets the |extension|'s active permissions to |active|, and calculates and
-  // sets the |extension|'s new withheld permissions. If |update_prefs| is true,
-  // also updates the set of active permissions in the extension preferences.
+  // sets the |extension|'s new withheld permissions.
   void SetPermissions(const Extension* extension,
-                      std::unique_ptr<const PermissionSet> active,
-                      bool update_prefs);
+                      std::unique_ptr<const PermissionSet> active);
 
   // Adds the given |active_permissions_to_add| to |extension|'s current
   // active permissions (i.e., the permissions associated with the |extension|
   // object and the extension's process). Updates the preferences according to
-  // |permission_store_mask| with |prefs_permissions_to_add|.
-  // The sets of |prefs_permissions_to_add| and |active_permissions_to_add| may
-  // differ in the case of granting a wider set of permissions than what the
-  // extension explicitly requested, as described in GrantRuntimePermissions().
+  // |permission_store_mask| with |permissions_to_add_to_prefs|.
+  // The sets of |permissions_to_add_to_prefs| and |active_permissions_to_add|
+  // may differ in the case of granting a wider set of permissions than what
+  // the extension explicitly requested, as described in
+  // GrantRuntimePermissions().
   void AddPermissionsImpl(const Extension& extension,
                           const PermissionSet& active_permissions_to_add,
-                          int permission_store_mask,
-                          const PermissionSet& prefs_permissions_to_add,
+                          int prefs_permissions_store_mask,
+                          const PermissionSet& permissions_to_add_to_prefs,
                           base::OnceClosure completion_callback);
 
-  // Removes the given |active_permissions_to_remove| from |extension|'s current
-  // active permissions. Updates the preferences according to
-  // |permission_store_mask| with |prefs_permissions_to_remove|. As above, the
-  // permission sets may be different.
-  void RemovePermissionsImpl(const Extension& extension,
-                             const PermissionSet& active_permissions_to_remove,
-                             int permission_store_mask,
-                             const PermissionSet& prefs_permissions_to_remove,
-                             base::OnceClosure completion_callback);
+  // Sets the given `extension`'s active permissions to the specified
+  // `new_active_permissions`. Also removes `permissions_to_remove_from_prefs`
+  // from the preferences indicated by `prefs_permissions_store_mask`. Invokes
+  // `completion_callback` when done.
+  void RemovePermissionsImpl(
+      const Extension& extension,
+      std::unique_ptr<const PermissionSet> new_active_permissions,
+      const PermissionSet& permissions_to_remove_from_prefs,
+      int prefs_permissions_store_mask,
+      base::OnceClosure completion_callback);
 
   // The associated BrowserContext.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Initialization flag that determines whether prefs is consulted about the
   // extension. Transient extensions should not have entries in prefs.
   InitFlag init_flag_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsUpdater);
 };
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,16 +22,17 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kClearPasswordAfterDelay =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kClearPasswordAfterDelay = base::Seconds(30);
 
-constexpr base::TimeDelta kHidePasswordAfterDelay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kHidePasswordAfterDelay = base::Seconds(5);
 
-constexpr base::TimeDelta kLeftIconDisplayTime =
-    base::TimeDelta::FromSeconds(4);
+constexpr base::TimeDelta kLeftIconDisplayTime = base::Seconds(4);
 
 class LoginPasswordViewTest : public LoginTestBase {
+ public:
+  LoginPasswordViewTest(const LoginPasswordViewTest&) = delete;
+  LoginPasswordViewTest& operator=(const LoginPasswordViewTest&) = delete;
+
  protected:
   LoginPasswordViewTest() = default;
   ~LoginPasswordViewTest() override = default;
@@ -40,7 +41,8 @@ class LoginPasswordViewTest : public LoginTestBase {
   void SetUp() override {
     LoginTestBase::SetUp();
 
-    view_ = new LoginPasswordView(CreateDefaultLoginPalette());
+    view_ = new LoginPasswordView(
+        CreateDefaultLoginPalette(/*color_provider=*/nullptr));
     view_->Init(
         base::BindRepeating(&LoginPasswordViewTest::OnPasswordSubmit,
                             base::Unretained(this)),
@@ -64,13 +66,10 @@ class LoginPasswordViewTest : public LoginTestBase {
   void OnEasyUnlockIconTapped() { easy_unlock_icon_tapped_called_ = true; }
 
   LoginPasswordView* view_ = nullptr;
-  base::Optional<std::u16string> password_;
+  absl::optional<std::u16string> password_;
   bool is_password_field_empty_ = true;
   bool easy_unlock_icon_hovered_called_ = false;
   bool easy_unlock_icon_tapped_called_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginPasswordViewTest);
 };
 
 }  // namespace
@@ -93,7 +92,7 @@ TEST_F(LoginPasswordViewTest, SubmitButtonUpdatesUiState) {
   EXPECT_TRUE(test_api.submit_button()->GetEnabled());
 
   // Clear password. The submit button is disabled.
-  view_->Clear();
+  view_->Reset();
   EXPECT_TRUE(is_password_field_empty_);
   EXPECT_FALSE(test_api.submit_button()->GetEnabled());
 
@@ -221,7 +220,7 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitClearsPassword) {
 
   // Clear password.
   password_.reset();
-  view_->Clear();
+  view_->Reset();
   view_->SetReadOnly(false);
   EXPECT_TRUE(is_password_field_empty_);
 
@@ -235,62 +234,6 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitClearsPassword) {
   EXPECT_EQ(u"b", *password_);
 }
 
-// Verifies that clicking the easy unlock icon fires the click event.
-TEST_F(LoginPasswordViewTest, EasyUnlockClickFiresEvent) {
-  LoginPasswordView::TestApi test_api(view_);
-  ui::test::EventGenerator* generator = GetEventGenerator();
-
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  // Enable icon.
-  view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
-                           std::u16string() /*accessibility_label*/);
-  ASSERT_TRUE(test_api.easy_unlock_icon()->GetVisible());
-
-  // Click to the right of the icon, call is not generated.
-  EXPECT_FALSE(easy_unlock_icon_tapped_called_);
-  generator->MoveMouseTo(
-      test_api.easy_unlock_icon()->GetBoundsInScreen().bottom_right() +
-      gfx::Vector2d(2, 0));
-  generator->ClickLeftButton();
-  EXPECT_FALSE(easy_unlock_icon_tapped_called_);
-
-  // Click the icon.
-  EXPECT_FALSE(easy_unlock_icon_tapped_called_);
-  generator->MoveMouseTo(
-      test_api.easy_unlock_icon()->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
-  EXPECT_TRUE(easy_unlock_icon_tapped_called_);
-
-  // Icon was not hovered (since we did not enable immediate hover).
-  EXPECT_FALSE(easy_unlock_icon_hovered_called_);
-}
-
-// Verifies that hovering the icon fires the hover event.
-TEST_F(LoginPasswordViewTest, EasyUnlockMouseHover) {
-  LoginPasswordView::TestApi test_api(view_);
-  ui::test::EventGenerator* generator = GetEventGenerator();
-
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  // Enable icon, enable immediate hovering.
-  view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
-                           std::u16string() /*accessibility_label*/);
-  test_api.set_immediately_hover_easy_unlock_icon();
-  ASSERT_TRUE(test_api.easy_unlock_icon()->GetVisible());
-
-  // Hover over the icon.
-  EXPECT_FALSE(easy_unlock_icon_hovered_called_);
-  generator->MoveMouseTo(
-      test_api.easy_unlock_icon()->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(easy_unlock_icon_hovered_called_);
-
-  // Icon was not tapped.
-  EXPECT_FALSE(easy_unlock_icon_tapped_called_);
-}
-
 // Checks that the user can't hit Ctrl+Z to revert the password when it has been
 // cleared.
 TEST_F(LoginPasswordViewTest, CtrlZDisabled) {
@@ -299,7 +242,7 @@ TEST_F(LoginPasswordViewTest, CtrlZDisabled) {
 
   generator->PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   EXPECT_FALSE(is_password_field_empty_);
-  view_->Clear();
+  view_->Reset();
   EXPECT_TRUE(is_password_field_empty_);
   generator->PressKey(ui::KeyboardCode::VKEY_Z, ui::EF_CONTROL_DOWN);
   EXPECT_TRUE(is_password_field_empty_);
@@ -316,7 +259,7 @@ TEST_F(LoginPasswordViewTest, DISABLED_SwitchBetweenEasyUnlockAndCapsLock) {
   EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
 
   // Show the easy unlock icon.
-  view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
+  view_->SetEasyUnlockIcon(EasyUnlockIconState::SPINNER,
                            std::u16string() /*accessibility_label*/);
   // The easy unlock icon should be visible.
   EXPECT_TRUE(test_api.easy_unlock_icon()->GetVisible());
@@ -347,7 +290,7 @@ TEST_F(LoginPasswordViewTest, DISABLED_SwitchBetweenEasyUnlockAndCapsLock) {
   EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
 
   // Hide the easy unlock icon.
-  view_->SetEasyUnlockIcon(EasyUnlockIconId::NONE,
+  view_->SetEasyUnlockIcon(EasyUnlockIconState::NONE,
                            std::u16string() /*accessibility_label*/);
   // Nothing should be displayed.
   EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
@@ -359,13 +302,13 @@ TEST_F(LoginPasswordViewTest, DISABLED_SwitchBetweenEasyUnlockAndCapsLock) {
   EXPECT_TRUE(test_api.capslock_icon()->GetVisible());
 
   // Then trigger the easy unlock icon, it should be displayed immediately.
-  view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
+  view_->SetEasyUnlockIcon(EasyUnlockIconState::SPINNER,
                            std::u16string() /*accessibility_label*/);
   EXPECT_TRUE(test_api.easy_unlock_icon()->GetVisible());
   EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
 
   // Hide the easy unlock icon, the capslock icon should be shown.
-  view_->SetEasyUnlockIcon(EasyUnlockIconId::NONE,
+  view_->SetEasyUnlockIcon(EasyUnlockIconState::NONE,
                            std::u16string() /*accessibility_label*/);
   EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
   EXPECT_TRUE(test_api.capslock_icon()->GetVisible());
@@ -473,7 +416,7 @@ TEST_F(LoginPasswordViewTest,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_FALSE(is_password_field_empty_);
   EXPECT_TRUE(test_api.display_password_button()->GetEnabled());
-  view_->Clear();
+  view_->Reset();
   EXPECT_TRUE(is_password_field_empty_);
   EXPECT_FALSE(test_api.display_password_button()->GetEnabled());
 
@@ -495,11 +438,50 @@ TEST_F(LoginPasswordViewTest, FocusReturn) {
   EXPECT_TRUE(test_api.textfield()->HasFocus());
   // Focus on the next element to check that following focus return will not
   // delete what was already inserted into textfield.
-  generator->PressKey(ui::KeyboardCode::VKEY_TAB, ui::EventFlags::EF_NONE);
+  generator->PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
   EXPECT_FALSE(test_api.textfield()->HasFocus());
   view_->InsertNumber(1);
   EXPECT_TRUE(test_api.textfield()->HasFocus());
   EXPECT_EQ(test_api.textfield()->GetText().length(), 2u);
+}
+
+// Verifies that the display password button state does not interact badly with
+// the clearing timer.
+TEST_F(LoginPasswordViewTest, MakePasswordVisibleJustBeforeClearing) {
+  LoginPasswordView::TestApi test_api(view_);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+
+  view_->SetDisplayPasswordButtonVisible(true);
+
+  // Enable the clearing timer by typing something.
+  generator->PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  EXPECT_FALSE(is_password_field_empty_);
+
+  // Click on the display password button just before the password field gets
+  // cleared.
+  auto small_delay = kHidePasswordAfterDelay / 3;
+  task_environment()->FastForwardBy(kClearPasswordAfterDelay - small_delay);
+  generator->MoveMouseTo(
+      test_api.display_password_button()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+  EXPECT_EQ(test_api.textfield()->GetTextInputType(), ui::TEXT_INPUT_TYPE_NULL);
+
+  // Once the clearing delay has passed, the password should get cleared. In
+  // such a case, the input type should be password and the display password
+  // button should be disabled.
+  task_environment()->FastForwardBy(small_delay);
+  EXPECT_TRUE(is_password_field_empty_);
+  EXPECT_EQ(test_api.textfield()->GetTextInputType(),
+            ui::TEXT_INPUT_TYPE_PASSWORD);
+  EXPECT_FALSE(test_api.display_password_button()->GetEnabled());
+
+  // The situation should remain the same once the hide password delay has
+  // passed. Especially since a password reset should reset the hiding timer.
+  task_environment()->FastForwardBy(small_delay);
+  EXPECT_TRUE(is_password_field_empty_);
+  EXPECT_EQ(test_api.textfield()->GetTextInputType(),
+            ui::TEXT_INPUT_TYPE_PASSWORD);
+  EXPECT_FALSE(test_api.display_password_button()->GetEnabled());
 }
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 namespace offline_items_collection {
 
 // static
-base::Optional<UpdateDelta> UpdateDelta::MergeUpdates(
-    const base::Optional<UpdateDelta>& update1,
-    const base::Optional<UpdateDelta>& update2) {
+absl::optional<UpdateDelta> UpdateDelta::MergeUpdates(
+    const absl::optional<UpdateDelta>& update1,
+    const absl::optional<UpdateDelta>& update2) {
   if (!update1.has_value())
     return update2;
 

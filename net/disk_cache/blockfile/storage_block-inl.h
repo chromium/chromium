@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,13 @@
 
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 
 namespace disk_cache {
 
 template <typename T>
 StorageBlock<T>::StorageBlock(MappedFile* file, Addr address)
-    : data_(nullptr),
-      file_(file),
-      address_(address),
-      modified_(false),
-      own_data_(false),
-      extended_(false) {
+    : file_(file), address_(address) {
   if (address.num_blocks() > 1)
     extended_ = true;
   DCHECK(!address.is_initialized() || sizeof(*data_) == address.BlockSize())
@@ -201,10 +197,10 @@ template<typename T> void StorageBlock<T>::AllocateData() {
 template<typename T> void StorageBlock<T>::DeleteData() {
   if (own_data_) {
     if (!extended_) {
-      delete data_;
+      data_.ClearAndDelete();
     } else {
       data_->~T();
-      delete[] reinterpret_cast<char*>(data_);
+      delete[] reinterpret_cast<char*>(data_.ExtractAsDangling().get());
     }
     own_data_ = false;
   }

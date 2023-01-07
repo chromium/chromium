@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -37,6 +38,10 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
         shipping_option_(shipping_option) {
     Init();
   }
+
+  ShippingOptionItem(const ShippingOptionItem&) = delete;
+  ShippingOptionItem& operator=(const ShippingOptionItem&) = delete;
+
   ~ShippingOptionItem() override {}
 
  private:
@@ -76,9 +81,7 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
     NOTREACHED();
   }
 
-  mojom::PaymentShippingOption* shipping_option_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShippingOptionItem);
+  raw_ptr<mojom::PaymentShippingOption> shipping_option_;
 };
 
 }  // namespace

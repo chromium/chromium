@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/compositor/compositor_export.h"
-#include "ui/compositor/layer.h"
 
 namespace ui {
+
+class Layer;
 
 class COMPOSITOR_EXPORT LayerOwner {
  public:
@@ -30,6 +30,10 @@ class COMPOSITOR_EXPORT LayerOwner {
   };
 
   explicit LayerOwner(std::unique_ptr<Layer> layer = nullptr);
+
+  LayerOwner(const LayerOwner&) = delete;
+  LayerOwner& operator=(const LayerOwner&) = delete;
+
   virtual ~LayerOwner();
 
   void AddObserver(Observer* observer);
@@ -73,11 +77,9 @@ class COMPOSITOR_EXPORT LayerOwner {
   // the client may wish to animate the layer beyond the lifetime of the owner,
   // e.g. fading it out when it is destroyed.
   std::unique_ptr<Layer> layer_owner_;
-  Layer* layer_ = nullptr;
+  raw_ptr<Layer> layer_ = nullptr;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerOwner);
 };
 
 }  // namespace ui

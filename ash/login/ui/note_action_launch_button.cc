@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -62,6 +64,9 @@ class BubbleLayerDelegate : public views::BasePaintedLayerDelegate {
   BubbleLayerDelegate(SkColor color, int radius)
       : views::BasePaintedLayerDelegate(color), radius_(radius) {}
 
+  BubbleLayerDelegate(const BubbleLayerDelegate&) = delete;
+  BubbleLayerDelegate& operator=(const BubbleLayerDelegate&) = delete;
+
   ~BubbleLayerDelegate() override = default;
 
   // views::BasePaintedLayerDelegate:
@@ -88,8 +93,6 @@ class BubbleLayerDelegate : public views::BasePaintedLayerDelegate {
  private:
   // The radius of the circle.
   int radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleLayerDelegate);
 };
 
 }  // namespace
@@ -113,6 +116,9 @@ class NoteActionLaunchButton::BackgroundView : public NonAccessibleView {
     layer()->SetVisible(true);
     layer()->SetOpacity(opacity_);
   }
+
+  BackgroundView(const BackgroundView&) = delete;
+  BackgroundView& operator=(const BackgroundView&) = delete;
 
   ~BackgroundView() override = default;
 
@@ -149,8 +155,6 @@ class NoteActionLaunchButton::BackgroundView : public NonAccessibleView {
   int bubble_radius_ = 0;
 
   BubbleLayerDelegate background_layer_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundView);
 };
 
 // The event target delegate used for the note action view. It matches the
@@ -159,6 +163,10 @@ class BubbleTargeterDelegate : public views::MaskedTargeterDelegate {
  public:
   explicit BubbleTargeterDelegate(int view_width, int circle_radius)
       : view_width_(view_width), circle_radius_(circle_radius) {}
+
+  BubbleTargeterDelegate(const BubbleTargeterDelegate&) = delete;
+  BubbleTargeterDelegate& operator=(const BubbleTargeterDelegate&) = delete;
+
   ~BubbleTargeterDelegate() override = default;
 
   bool GetHitTestMask(SkPath* mask) const override {
@@ -171,8 +179,6 @@ class BubbleTargeterDelegate : public views::MaskedTargeterDelegate {
  private:
   int view_width_;
   int circle_radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleTargeterDelegate);
 };
 
 // The action button foreground - an image button with actionable area matching
@@ -208,6 +214,9 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton {
 
     UpdateBubbleRadiusAndOpacity();
   }
+
+  ActionButton(const ActionButton&) = delete;
+  ActionButton& operator=(const ActionButton&) = delete;
 
   ~ActionButton() override = default;
 
@@ -325,8 +334,6 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton {
   // Set when a potention note activation gesture is tracked - i.e. while a
   // scroll gesture (which could lead to a fling) is in progress.
   bool tracking_activation_gesture_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionButton);
 };
 
 NoteActionLaunchButton::TestApi::TestApi(NoteActionLaunchButton* launch_button)

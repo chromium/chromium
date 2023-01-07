@@ -1,11 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_COOKIES_COOKIE_MONSTER_NETLOG_PARAMS_H_
 #define NET_COOKIES_COOKIE_MONSTER_NETLOG_PARAMS_H_
-
-#include <memory>
 
 #include "base/values.h"
 #include "net/cookies/canonical_cookie.h"

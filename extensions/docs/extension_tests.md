@@ -151,7 +151,7 @@ between events.  This class is only useful in browser tests.
 IN_PROC_BROWSER_TEST_F(...) {
   LoadExtension(...);
   GURL url = GetASpecialURL();
-  ExtensionTestMessageListener listener("clicked", /*will_reply=*/true);
+  ExtensionTestMessageListener listener("clicked", ReplyBehavior::kWillReply);
   ClickAction();
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   listener.Reply(url.spec());
@@ -175,7 +175,7 @@ the C++.
 ```c++
 // test.cc:
 IN_PROC_BROWSER_TEST_F(...) {
-  ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
+  ExtensionTestMessageListener listener("ready");
   LoadExtension(...);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   // The extension is now ready!
@@ -213,6 +213,83 @@ IN_PROC_BROWSER_TEST_F(...) {
 ```js
 // extension_script.js:
 chrome.action.onClicked.addListener(() => { chrome.test.notifyPass(); });
+```
+
+#### ScriptResultQueue
+A `ScriptResultQueue` is queue of results passed from
+`chrome.test.sendScriptResult()`. Conceptually, it's somewhat similar to an
+`ExtensionTestMessageListener` (they each allow getting data from running
+JS), with a few key differences:
+- It's one-directional (it does not allow communicating back with the JS),
+- It takes any serializable argument, so can be used to pass objects, ints,
+  etc, and
+- It queues up multiple results.
+
+**Example Usage**
+
+```c++
+// test.cc
+IN_PROC_BROWSER_TEST_F(...) {
+  LoadExtension(...);
+  ScriptResultQueue result_queue;
+  ClickAction();
+  base::Value first_result = result_queue.GetNextResult();
+  ClickAction();
+  base::Value second_result = result_queue.GetNextResult();
+}
+```
+
+```js
+// extension_script.js
+chrome.action.onClicked.addListener((tab) => {
+  chrome.test.sendScriptResult(tab);
+});
+```
+
+#### BackgroundScriptExecutor
+A `BackgroundScriptExecutor` is used to execute Javascript in the context of a
+test extension's background context. This class works with both service
+worker-based and background page-based extensions. It can internally leverage
+`ScriptResultQueue` to capture asynchronous results.
+
+**Example Usage**
+
+```c++
+// test.cc
+IN_PROC_BROWSER_TEST_F(...) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "test ext",
+           "manifest_version": 2,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "permissions": ["scripting"],
+           "host_permissions": ["<all_urls>"]
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// Empty"));
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  SetUpTestPage();
+  static constexpr char kScript[] =
+      R"((async () => {
+           let injectionResults =
+               await chrome.scripting.executeScript(
+                   {
+                     target: {tabId: %d},
+                     func: () => { return document.title; }
+                   });
+           let title = injectionResults[0].result;
+           chrome.test.sendScriptResult(title);
+         })())";
+  base::Value script_result =
+      BackgroundScriptExecutor::ExecuteScript(
+          extension->id(),
+          base::StringPrintf(kScript, GetActiveTabId()),
+          BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  EXPECT_THAT(script_result,
+              base::test::IsJson(R"("My Page Title")"));
+}
 ```
 
 ### Test Suites
@@ -328,3 +405,39 @@ chrome.test.runTests([
 
 See [Using the chrome.test API](/extensions/docs/testing_api.md) for more
 information on how to write extension API tests.
+
+#### Test resources
+
+ExtensionBrowserTest provides a mapping for requests to
+chrome-extension://<id>/_test_resources/<path>, where the resource will be
+loaded from //chrome/test/data/extensions/<path> instead of from the
+extension's directory. This can be used to retrieve files from other
+locations in //chrome/test/data/ and have them be treated as same-origin to
+the extension (which is important for CSP and CORS rules).
+
+One example of when to use this is to share resources between tests: a
+common resource can live at //chrome/test/data/extensions/<common dir>
+and be leveraged by multiple test extensions without needing to duplicate
+the file into each test extension's directory.
+
+Any of the following URLs can be used to access the same resource.html using
+the same origin as extension. This extension lives in the `extension` dir. Note
+that the string representation of the urls are not expected to be identical.
+
+```js
+//chrome/test/data/extensions/api_test/extension/service_worker.js
+const url1 = '_test_resources/api_test/extension/resource.html';
+const url2 = chrome.runtime.getURL('resource.html'),
+const url3 = `chrome-extension://${chrome.runtime.id}/resource.html`;
+```
+
+The following is an example showcasing the use of a shared resource.
+The resource will have the same origin as the extension.
+```js
+//chrome/test/data/extensions/shared/resource.html
+This is a shared resource that lives outside of an extension.
+```
+```js
+//chrome/test/data/extensions/api_test/extension/service_worker.js
+fetch('_test_resources/shared/resource.html');
+```

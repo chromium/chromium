@@ -1,17 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/os_crypt/key_storage_linux.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/environment.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/nix/xdg_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "components/os_crypt/key_storage_config_linux.h"
@@ -145,12 +147,29 @@ std::unique_ptr<KeyStorageLinux> KeyStorageLinux::CreateService(
 std::unique_ptr<KeyStorageLinux> KeyStorageLinux::CreateServiceInternal(
     os_crypt::SelectedLinuxBackend selected_backend,
     const os_crypt::Config& config) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  static const base::NoDestructor<std::string> kDefaultApplicationName("chrome");
+#else
+  static const base::NoDestructor<std::string> kDefaultApplicationName("chromium");
+#endif
+
   std::unique_ptr<KeyStorageLinux> key_storage;
+
+#if defined(USE_LIBSECRET) || defined(USE_KEYRING)
+#if defined(ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE)
+  std::string application_name = config.application_name;
+  if (application_name.empty()) {
+    application_name = *kDefaultApplicationName;
+  }
+#else
+  std::string application_name = *kDefaultApplicationName;
+#endif
+#endif
 
 #if defined(USE_LIBSECRET)
   if (selected_backend == os_crypt::SelectedLinuxBackend::GNOME_ANY ||
       selected_backend == os_crypt::SelectedLinuxBackend::GNOME_LIBSECRET) {
-    key_storage.reset(new KeyStorageLibsecret());
+    key_storage = std::make_unique<KeyStorageLibsecret>(application_name);
     if (key_storage->WaitForInitOnTaskRunner()) {
       VLOG(1) << "OSCrypt using Libsecret as backend.";
       return key_storage;
@@ -162,7 +181,8 @@ std::unique_ptr<KeyStorageLinux> KeyStorageLinux::CreateServiceInternal(
 #if defined(USE_KEYRING)
   if (selected_backend == os_crypt::SelectedLinuxBackend::GNOME_ANY ||
       selected_backend == os_crypt::SelectedLinuxBackend::GNOME_KEYRING) {
-    key_storage.reset(new KeyStorageKeyring(config.main_thread_runner));
+    key_storage = std::make_unique<KeyStorageKeyring>(config.main_thread_runner,
+                                                      application_name);
     if (key_storage->WaitForInitOnTaskRunner()) {
       VLOG(1) << "OSCrypt using Keyring as backend.";
       return key_storage;
@@ -179,8 +199,8 @@ std::unique_ptr<KeyStorageLinux> KeyStorageLinux::CreateServiceInternal(
         selected_backend == os_crypt::SelectedLinuxBackend::KWALLET
             ? base::nix::DESKTOP_ENVIRONMENT_KDE4
             : base::nix::DESKTOP_ENVIRONMENT_KDE5;
-    key_storage.reset(
-        new KeyStorageKWallet(used_desktop_env, config.product_name));
+    key_storage = std::make_unique<KeyStorageKWallet>(used_desktop_env,
+                                                      config.product_name);
     if (key_storage->WaitForInitOnTaskRunner()) {
       VLOG(1) << "OSCrypt using KWallet as backend.";
       return key_storage;
@@ -215,7 +235,7 @@ bool KeyStorageLinux::WaitForInitOnTaskRunner() {
   return success;
 }
 
-base::Optional<std::string> KeyStorageLinux::GetKey() {
+absl::optional<std::string> KeyStorageLinux::GetKey() {
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_sync_primitives;
   base::SequencedTaskRunner* task_runner = GetTaskRunner();
 
@@ -227,7 +247,7 @@ base::Optional<std::string> KeyStorageLinux::GetKey() {
   base::WaitableEvent password_loaded(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  base::Optional<std::string> password;
+  absl::optional<std::string> password;
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&KeyStorageLinux::BlockOnGetKeyImplThenSignal,
@@ -242,7 +262,7 @@ base::SequencedTaskRunner* KeyStorageLinux::GetTaskRunner() {
 
 void KeyStorageLinux::BlockOnGetKeyImplThenSignal(
     base::WaitableEvent* on_password_received,
-    base::Optional<std::string>* password) {
+    absl::optional<std::string>* password) {
   *password = GetKeyImpl();
   on_password_received->Signal();
 }

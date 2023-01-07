@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_tokenizer.h"
 #include "build/build_config.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "extensions/common/switches.h"
 #include "extensions/shell/browser/shell_extension_system.h"
 
@@ -18,7 +19,7 @@
 #include "extensions/shell/browser/shell_desktop_controller_aura.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "extensions/shell/browser/shell_desktop_controller_mac.h"
 #endif
 
@@ -39,7 +40,7 @@ void LoadExtensionsFromCommandLine(ShellExtensionSystem* extension_system) {
       tokenizer(path_list, FILE_PATH_LITERAL(","));
   while (tokenizer.GetNext()) {
     extension_system->LoadExtension(
-        base::MakeAbsoluteFilePath(base::FilePath(tokenizer.token())));
+        base::MakeAbsoluteFilePath(base::FilePath(tokenizer.token_piece())));
   }
 }
 
@@ -62,7 +63,7 @@ void LoadAppsFromCommandLine(ShellExtensionSystem* extension_system,
   const Extension* launch_app = nullptr;
   while (tokenizer.GetNext()) {
     base::FilePath app_absolute_dir =
-        base::MakeAbsoluteFilePath(base::FilePath(tokenizer.token()));
+        base::MakeAbsoluteFilePath(base::FilePath(tokenizer.token_piece()));
 
     const Extension* extension = extension_system->LoadApp(app_absolute_dir);
     if (extension && !launch_app)
@@ -105,7 +106,7 @@ DesktopController* DefaultShellBrowserMainDelegate::CreateDesktopController(
     content::BrowserContext* context) {
 #if defined(USE_AURA)
   return new ShellDesktopControllerAura(context);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return new ShellDesktopControllerMac();
 #else
   return NULL;

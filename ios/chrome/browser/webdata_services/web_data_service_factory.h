@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
@@ -27,7 +26,7 @@ namespace ios {
 // ChromeBrowserState.
 class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the AutofillWebDataService associated with |browser_state|.
+  // Returns the AutofillWebDataService associated with `browser_state`.
   static WebDataServiceWrapper* GetForBrowserState(
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
@@ -35,28 +34,34 @@ class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
 
-  // Returns the AutofillWebDataService associated with |browser_state|.
+  // Returns the AutofillWebDataService associated with `browser_state`.
   static scoped_refptr<autofill::AutofillWebDataService>
   GetAutofillWebDataForBrowserState(ChromeBrowserState* browser_state,
                                     ServiceAccessType access_type);
 
   // Returns the account-scoped AutofillWebDataService associated with the
-  // |browser_state|.
+  // `browser_state`.
   static scoped_refptr<autofill::AutofillWebDataService>
   GetAutofillWebDataForAccount(ChromeBrowserState* browser_state,
                                ServiceAccessType access_type);
 
-  // Returns the KeywordWebDataService associated with |browser_state|.
+  // Returns the KeywordWebDataService associated with `browser_state`.
   static scoped_refptr<KeywordWebDataService> GetKeywordWebDataForBrowserState(
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
 
-  // Returns the TokenWebData associated with |browser_state|.
+  // Returns the TokenWebData associated with `browser_state`.
   static scoped_refptr<TokenWebData> GetTokenWebDataForBrowserState(
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
 
   static WebDataServiceFactory* GetInstance();
+
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
+  WebDataServiceFactory(const WebDataServiceFactory&) = delete;
+  WebDataServiceFactory& operator=(const WebDataServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<WebDataServiceFactory>;
@@ -70,8 +75,6 @@ class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDataServiceFactory);
 };
 
 }  // namespace ios

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/ui/views/status_icons/status_icon_win.h"
@@ -21,6 +21,10 @@
 class StatusTrayStateChangerWinTest : public testing::Test {
  public:
   StatusTrayStateChangerWinTest() {}
+
+  StatusTrayStateChangerWinTest(const StatusTrayStateChangerWinTest&) = delete;
+  StatusTrayStateChangerWinTest& operator=(
+      const StatusTrayStateChangerWinTest&) = delete;
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -81,9 +85,7 @@ class StatusTrayStateChangerWinTest : public testing::Test {
   std::unique_ptr<StatusTrayWin> status_tray_;
   Microsoft::WRL::ComPtr<StatusTrayStateChangerWin> tray_watcher_;
 
-  StatusIconWin* status_icon_win_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTrayStateChangerWinTest);
+  raw_ptr<StatusIconWin> status_icon_win_;
 };
 
 // Test is disabled due to multiple COM initialization errors.  See

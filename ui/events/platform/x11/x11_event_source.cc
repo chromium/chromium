@@ -1,8 +1,7 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <type_traits>
 
@@ -11,6 +10,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
@@ -36,10 +36,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/events/ozone/chromeos/cursor_controller.h"
-#endif
-
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #endif
 
 namespace ui {
@@ -148,14 +144,6 @@ X11EventSource* X11EventSource::GetInstance() {
 ////////////////////////////////////////////////////////////////////////////////
 // X11EventSource, public
 
-void X11EventSource::DispatchXEvents() {
-  continue_stream_ = true;
-  do {
-    connection_->Flush();
-    connection_->ReadResponses();
-  } while (connection_->Dispatch() && continue_stream_);
-}
-
 x11::Time X11EventSource::GetCurrentServerTime() {
   DCHECK(connection_);
 
@@ -201,7 +189,7 @@ x11::Time X11EventSource::GetCurrentServerTime() {
   };
 
   auto& events = connection_->events();
-  auto it = std::find_if(events.begin(), events.end(), pred);
+  auto it = base::ranges::find_if(events, pred);
   if (it != events.end())
     *it = x11::Event();
   return time;
@@ -217,11 +205,11 @@ x11::Time X11EventSource::GetTimestamp() {
   return GetCurrentServerTime();
 }
 
-base::Optional<gfx::Point>
+absl::optional<gfx::Point>
 X11EventSource::GetRootCursorLocationFromCurrentEvent() const {
   auto* event = connection_->dispatching_event();
   if (!event)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto* device = event->As<x11::Input::DeviceEvent>();
   auto* crossing = event->As<x11::Input::CrossingEvent>();
@@ -244,7 +232,7 @@ X11EventSource::GetRootCursorLocationFromCurrentEvent() const {
 
   if (is_valid_event)
     return ui::EventSystemLocationFromXEvent(*event);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -300,10 +288,6 @@ void X11EventSource::OnEvent(const x11::Event& x11_event) {
   }
 }
 
-void X11EventSource::StopCurrentEventStream() {
-  continue_stream_ = false;
-}
-
 void X11EventSource::OnDispatcherListChanged() {
   watcher_->StartWatching();
 
@@ -313,16 +297,5 @@ void X11EventSource::OnDispatcherListChanged() {
     hotplug_event_handler_->OnHotplugEvent();
   }
 }
-
-// static
-#if defined(USE_X11)
-std::unique_ptr<PlatformEventSource> PlatformEventSource::CreateDefault() {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    return nullptr;
-#endif
-  return std::make_unique<X11EventSource>(x11::Connection::Get());
-}
-#endif
 
 }  // namespace ui

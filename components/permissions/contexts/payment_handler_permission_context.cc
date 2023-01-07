@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,6 @@ PaymentHandlerPermissionContext::PaymentHandlerPermissionContext(
 PaymentHandlerPermissionContext::~PaymentHandlerPermissionContext() {}
 
 void PaymentHandlerPermissionContext::DecidePermission(
-    content::WebContents* web_contents,
     const permissions::PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
@@ -31,10 +30,6 @@ void PaymentHandlerPermissionContext::DecidePermission(
     permissions::BrowserPermissionCallback callback) {
   // The user should never be prompted to authorize payment handler.
   NOTREACHED();
-}
-
-bool PaymentHandlerPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
 }
 
 }  // namespace payments

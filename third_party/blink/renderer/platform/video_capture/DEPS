@@ -6,11 +6,12 @@ include_rules = [
     "+third_party/blink/renderer/platform/video_capture",
 
     # Dependencies.
-    "+base/bind_post_task.h",
+    "+base/task/bind_post_task.h",
+    "+base/token.h",
     "+media/base",
     "+media/capture",
-    "+third_party/blink/renderer/platform/wtf",
     "+third_party/blink/renderer/platform/platform_export.h",
+    "+third_party/blink/renderer/platform/wtf",
 
     # Dependencies for GpuMemoryBuffer.
     "+gpu/command_buffer/client/shared_image_interface.h",

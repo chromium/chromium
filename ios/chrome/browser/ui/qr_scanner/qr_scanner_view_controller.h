@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // Returns a view controller to be presented based on the camera state. Returns
-// |self| if the camera is available or an appropriate UIAlertController if
+// `self` if the camera is available or an appropriate UIAlertController if
 // there was an error loading the camera.
 - (UIViewController*)viewControllerToPresent;
 

@@ -1,16 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/browsing_data/same_site_data_remover_impl.h"
 
 #include <memory>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "content/browser/browsing_data/browsing_data_browsertest_utils.h"
 #include "content/browser/browsing_data/browsing_data_test_utils.h"
 #include "content/public/browser/same_site_data_remover.h"
@@ -25,6 +26,8 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using testing::IsEmpty;
 
@@ -33,6 +36,11 @@ namespace content {
 class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
  public:
   SameSiteDataRemoverBrowserTest() {}
+
+  SameSiteDataRemoverBrowserTest(const SameSiteDataRemoverBrowserTest&) =
+      delete;
+  SameSiteDataRemoverBrowserTest& operator=(
+      const SameSiteDataRemoverBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -43,8 +51,8 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
     if (IsOutOfProcessNetworkService())
       browsing_data_browsertest_utils::SetUpMockCertVerifier(net::OK);
 
-    https_server_.reset(new net::EmbeddedTestServer(
-        net::test_server::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     https_server_->RegisterRequestHandler(
         base::BindRepeating(&SameSiteDataRemoverBrowserTest::HandleRequest,
@@ -62,7 +70,7 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
   }
 
   StoragePartition* GetStoragePartition() {
-    return BrowserContext::GetDefaultStoragePartition(GetBrowserContext());
+    return GetBrowserContext()->GetDefaultStoragePartition();
   }
 
   net::EmbeddedTestServer* GetHttpsServer() { return https_server_.get(); }
@@ -73,16 +81,11 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
     run_loop.Run();
   }
 
-  void ClearData(std::set<std::string>& clear_storage_hosts) {
+  void ClearData(std::set<url::Origin> clear_storage_origins) {
     base::RunLoop run_loop;
     ClearSameSiteNoneCookiesAndStorageForOrigins(
         run_loop.QuitClosure(), GetBrowserContext(),
-        base::BindLambdaForTesting(
-            [&clear_storage_hosts](const url::Origin& origin,
-                                   storage::SpecialStoragePolicy* policy) {
-              return clear_storage_hosts.find(origin.host()) !=
-                     clear_storage_hosts.end();
-            }));
+        std::move(clear_storage_origins));
     run_loop.Run();
   }
 
@@ -103,8 +106,6 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SameSiteDataRemoverBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest, TestClearData) {
@@ -131,20 +132,20 @@ IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest, TestClearData) {
 }
 
 IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest,
-                       TestClearDataWithDomains) {
+                       TestClearDataWithOrigins) {
   StoragePartition* storage_partition = GetStoragePartition();
   CreateCookieForTest(
       "TestCookie", "www.google.com", net::CookieSameSite::NO_RESTRICTION,
       net::CookieOptions::SameSiteCookieContext(
           net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
       true /* is_cookie_secure */, GetBrowserContext());
-  browsing_data_browsertest_utils::AddServiceWorker(
+  GURL google_url = browsing_data_browsertest_utils::AddServiceWorker(
       "google.com", storage_partition, GetHttpsServer());
   browsing_data_browsertest_utils::AddServiceWorker(
       "foo.bar.com", storage_partition, GetHttpsServer());
 
-  std::set<std::string> clear_hosts = {"google.com"};
-  ClearData(clear_hosts);
+  std::set<url::Origin> clear_origins = {url::Origin::Create(google_url)};
+  ClearData(std::move(clear_origins));
 
   // Check that cookies were deleted.
   const std::vector<net::CanonicalCookie>& cookies =
@@ -155,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest,
   std::vector<StorageUsageInfo> service_workers =
       browsing_data_browsertest_utils::GetServiceWorkers(storage_partition);
   EXPECT_EQ(service_workers.size(), 1u);
-  EXPECT_EQ(service_workers[0].origin.host(), "foo.bar.com");
+  EXPECT_EQ(service_workers[0].storage_key.origin().host(), "foo.bar.com");
 }
 
 }  // namespace content

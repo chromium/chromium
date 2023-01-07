@@ -1,0 +1,36 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Message format for the MojoLPM fuzzer for the WebrtcVideoPerf interface.
+
+syntax = "proto2";
+
+package media.fuzzing.webrtc_video_perf.proto;
+
+import "media/mojo/mojom/webrtc_video_perf.mojom.mojolpm.proto";
+
+// Update the record for the specified features.
+message UpdateRecordAction {
+  required mojolpm.media.mojom.WebrtcPredictionFeatures features = 1;
+  required mojolpm.media.mojom.WebrtcVideoStats video_stats = 2;
+}
+
+// Get perf info for the specified features.
+message GetPerfInfoAction {
+  required mojolpm.media.mojom.WebrtcPredictionFeatures features = 1;
+  required int32 frames_per_second = 2;
+}
+
+// Actions that can be performed by the fuzzer.
+message Action {
+  oneof action {
+    UpdateRecordAction update_record = 1;
+    GetPerfInfoAction get_perf_info = 2;
+  }
+}
+
+// Testcase is the top-level message type interpreted by the fuzzer.
+message Testcase {
+  repeated Action actions = 1;
+}

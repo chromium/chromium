@@ -1,0 +1,24 @@
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Navigation Timing 2 Transfer Size Prefetch</title>
+</head>
+
+<body>
+  <script>
+    const urlToPrefetch = "../title1.html";
+    function addPrefetch() {
+      return new Promise(resolve => {
+        const link = document.createElement('link');
+        link.onload = function () { resolve(); };
+        link.rel = 'prefetch';
+        link.as = 'document';
+        link.href = urlToPrefetch;
+        document.body.appendChild(link);
+      });
+    }
+  </script>
+</body>
+
+</html>

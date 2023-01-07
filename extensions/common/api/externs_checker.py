@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,7 +15,7 @@ class ExternsChecker(object):
     self._output_api = output_api
     self._api_pairs = api_pairs
 
-    for path in api_pairs.keys() + api_pairs.values():
+    for path in list(api_pairs.keys()) + list(api_pairs.values()):
       if not input_api.os_path.exists(path):
         raise OSError('Path Not Found: %s' % path)
 

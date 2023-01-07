@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CC_TREES_PRESENTATION_TIME_CALLBACK_BUFFER_H_
@@ -6,9 +6,12 @@
 
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/sequence_checker.h"
-#include "cc/trees/layer_tree_host.h"
+#include "base/time/time.h"
+#include "cc/cc_export.h"
+#include "ui/gfx/presentation_feedback.h"
 
 namespace cc {
 
@@ -32,7 +35,20 @@ namespace cc {
 // CC_EXPORT is only needed for testing.
 class CC_EXPORT PresentationTimeCallbackBuffer {
  public:
-  using CallbackType = LayerTreeHost::PresentationTimeCallback;
+  // Maximum expected buffer size for presentation callbacks. We generally
+  // don't expect many frames waiting for a presentation feedback, hence we
+  // don't expect many presentation callbacks waiting for a frame presentation.
+  static constexpr size_t kMaxBufferSize = 60u;
+
+  // TODO(crbug.com/1199373): Compositor thread callbacks are only run for
+  // successful presentations and only need the presentation timestamp. On the
+  // other hand, main thread callbacks can be run on both successful and failed
+  // presentations and need a full `gfx::PresentationFeedback`. Conceptually,
+  // main thread callbacks should only be run for successful presentations, too,
+  // in which case the two callback signatures can be unified.
+  using MainCallback =
+      base::OnceCallback<void(const gfx::PresentationFeedback&)>;
+  using CompositorCallback = base::OnceCallback<void(base::TimeTicks)>;
 
   PresentationTimeCallbackBuffer();
 
@@ -51,20 +67,14 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
   // main thread once they're popped.
   void RegisterMainThreadPresentationCallbacks(
       uint32_t frame_token,
-      std::vector<CallbackType> callbacks);
+      std::vector<MainCallback> callbacks);
 
   // Buffers the given |callbacks| in preparation for a GPU frame swap at or
   // after the given |frame_token|. Calling code invokes these callbacks on the
   // compositor thread once they're popped.
   void RegisterCompositorPresentationCallbacks(
       uint32_t frame_token,
-      std::vector<CallbackType> callbacks);
-
-  // The given |frame_time| is associated with the given |frame_token| and will
-  // be exposed through |PopPendingCallbacks| if there is an exact frame token
-  // match. Note that it is an error to register distinct |frame_time|s against
-  // the same |frame_token|.
-  void RegisterFrameTime(uint32_t frame_token, base::TimeTicks frame_time);
+      std::vector<CompositorCallback> callbacks);
 
   // Structured return value for |PopPendingCallbacks|. CC_EXPORT is only
   // needed for testing.
@@ -81,27 +91,19 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
 
     // Holds callbacks registered through
     // |RegisterMainThreadPresentationCallbacks|.
-    std::vector<CallbackType> main_thread_callbacks;
+    std::vector<MainCallback> main_thread_callbacks;
 
     // Holds callbacks registered through
     // |RegisterCompositorPresentationCallbacks|.
-    std::vector<CallbackType> compositor_thread_callbacks;
-
-    // Note: calling code needs to test against frame_time.is_null() because
-    // frame_time is not always defined. See |PopPendingCallbacks|.
-    base::TimeTicks frame_time;
+    std::vector<CompositorCallback> compositor_thread_callbacks;
   };
 
-  // Call this once the presentation for the given |frame_token| has completed.
+  // Call this once the presentation for the given `frame_token` has completed.
   // Yields any pending callbacks that were registered against a frame token
-  // that was less than or equal to the given |frame_token|. It is the caller's
-  // responsibility to run the callbacks on the right threads/sequences. When
-  // the given |frame_token| is an exact match to a registered entry,
-  // |frame_time| will be set to the frame time supplied through
-  // |RegisterFrameTime|. Otherwise, |frame_time| will be default constructed
-  // and should not be used. Calling code can assume |frame_time| is meaningful
-  // iff frame_time.is_null() returns false.
-  PendingCallbacks PopPendingCallbacks(uint32_t frame_token);
+  // that was less than or equal to the given `frame_token`. If `main_only` is
+  // true, only callbacks for the main thread are returned. It is the caller's
+  // responsibility to run the callbacks on the right threads/sequences.
+  PendingCallbacks PopPendingCallbacks(uint32_t frame_token, bool main_only);
 
  private:
   // Stores information needed once we get a response for a particular
@@ -118,16 +120,11 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
     // presentation feedback with the relevant compositor frame.
     uint32_t token;
 
-    // A copy of the |frame_time| from the |BeginFrameArgs| associated with
-    // frame. Useful for tracking latency between frame requests and frame
-    // presentations.
-    base::TimeTicks frame_time;
-
     // The callbacks to send back to the main thread.
-    std::vector<CallbackType> main_thread_callbacks;
+    std::vector<MainCallback> main_thread_callbacks;
 
     // The callbacks to invoke on the compositor thread.
-    std::vector<CallbackType> compositor_thread_callbacks;
+    std::vector<CompositorCallback> compositor_thread_callbacks;
   };
 
   // Returns a reference to a |FrameTokenInfo| with the given |frame_token|.

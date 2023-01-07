@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/time/time.h"
 
 namespace content {
 
@@ -53,10 +54,7 @@ void MouseCursorOverlayController::OnMouseMoved(const gfx::PointF& location) {
     case kNotMoving:
       set_mouse_move_behavior(kStartingToMove);
       mouse_move_start_location_ = location;
-      mouse_activity_ended_timer_.Start(
-          FROM_HERE, kIdleTimeout,
-          base::BindOnce(&MouseCursorOverlayController::OnMouseHasGoneIdle,
-                         base::Unretained(this)));
+      mouse_activity_ended_timer_.Reset();
       break;
     case kStartingToMove:
       if (std::abs(location.x() - mouse_move_start_location_.x()) >
@@ -80,14 +78,7 @@ void MouseCursorOverlayController::OnMouseMoved(const gfx::PointF& location) {
 void MouseCursorOverlayController::OnMouseClicked(const gfx::PointF& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
-  if (mouse_activity_ended_timer_.IsRunning()) {
-    mouse_activity_ended_timer_.Reset();
-  } else {
-    mouse_activity_ended_timer_.Start(
-        FROM_HERE, kIdleTimeout,
-        base::BindOnce(&MouseCursorOverlayController::OnMouseHasGoneIdle,
-                       base::Unretained(this)));
-  }
+  mouse_activity_ended_timer_.Reset();
   set_mouse_move_behavior(kRecentlyMovedOrClicked);
 
   UpdateOverlay(location);

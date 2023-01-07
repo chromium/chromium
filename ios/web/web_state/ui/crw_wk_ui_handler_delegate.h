@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class WebState;
 // Delegate for the CRWWKUIHandler.
 @protocol CRWWKUIHandlerDelegate <CRWWebViewHandlerDelegate>
 
-// Creates and returns a web view with given |config|, in the |webController|.
+// Creates and returns a web view with given `config`, in the `webController`.
 - (WKWebView*)UIHandler:(CRWWKUIHandler*)UIHandler
     createWebViewWithConfiguration:(WKWebViewConfiguration*)configuration
                        forWebState:(web::WebState*)webState;

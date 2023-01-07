@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,8 @@ import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.version_info.VersionInfo;
 
 import java.util.concurrent.TimeUnit;
 
@@ -131,7 +131,7 @@ public final class SearchEngineChoiceNotification {
     }
 
     private static void updateSearchEngineChoicePresented() {
-        String productVersion = ChromeVersionInfo.getProductVersion();
+        String productVersion = VersionInfo.getProductVersion();
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PRESENTED_VERSION, productVersion);
     }

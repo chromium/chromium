@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,9 @@
 
 #include "ash/public/cpp/assistant/assistant_setup.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/assistant/search_and_assistant_enabled_checker.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 // AssistantSetup is the class responsible for start Assistant OptIn flow.
@@ -22,6 +21,10 @@ class AssistantSetup : public ash::AssistantSetup,
                        public SearchAndAssistantEnabledChecker::Delegate {
  public:
   AssistantSetup();
+
+  AssistantSetup(const AssistantSetup&) = delete;
+  AssistantSetup& operator=(const AssistantSetup&) = delete;
+
   ~AssistantSetup() override;
 
   // ash::AssistantSetup:
@@ -41,7 +44,7 @@ class AssistantSetup : public ash::AssistantSetup,
  private:
   // ash::AssistantStateObserver:
   void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus status) override;
+      ash::assistant::AssistantStatus status) override;
 
   void SyncSettingsState();
   void OnGetSettingsResponse(const std::string& settings);
@@ -50,8 +53,6 @@ class AssistantSetup : public ash::AssistantSetup,
       search_and_assistant_enabled_checker_;
 
   base::WeakPtrFactory<AssistantSetup> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantSetup);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_SETUP_H_

@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_COCOA_SCREENTIME_HISTORY_BRIDGE_FACTORY_H_
 #define CHROME_BROWSER_UI_COCOA_SCREENTIME_HISTORY_BRIDGE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace screentime {
 
@@ -13,7 +13,7 @@ namespace screentime {
 // HistoryBridge instance for each loaded Profile. The HistoryBridge instance is
 // created when the Profile is initially created, so there's no explicit
 // creation step.
-class HistoryBridgeFactory : public BrowserContextKeyedServiceFactory {
+class HistoryBridgeFactory : public ProfileKeyedServiceFactory {
  public:
   HistoryBridgeFactory();
   ~HistoryBridgeFactory() override;

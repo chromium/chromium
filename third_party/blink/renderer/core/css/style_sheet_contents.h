@@ -24,11 +24,14 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -67,7 +70,10 @@ class CORE_EXPORT StyleSheetContents final
   const AtomicString& NamespaceURIFromPrefix(const AtomicString& prefix) const;
 
   void ParseAuthorStyleSheet(const CSSStyleSheetResource*);
-  ParseSheetResult ParseString(const String&, bool allow_import_rules = true);
+  ParseSheetResult ParseString(
+      const String&,
+      bool allow_import_rules = true,
+      std::unique_ptr<CachedCSSTokenizer> tokenizer = nullptr);
 
   bool IsCacheableForResource() const;
   bool IsCacheableForStyleElement() const;
@@ -75,7 +81,10 @@ class CORE_EXPORT StyleSheetContents final
   bool IsLoading() const;
 
   void CheckLoaded();
-  void StartLoadingDynamicSheet();
+
+  // Called if this sheet has finished loading and then a dynamically added
+  // @import rule starts loading a child stylesheet.
+  void SetToPendingState();
 
   StyleSheetContents* RootStyleSheet() const;
   bool HasSingleOwnerNode() const;
@@ -112,9 +121,29 @@ class CORE_EXPORT StyleSheetContents final
 
   void ClearRules();
 
+  // If the given rule exists, replace it with the new one. This is used when
+  // CSSOM wants to modify the rule but cannot do so without reallocating
+  // (see setCssSelectorText()).
+  //
+  // The position_hint variable is a pure hint as of where the old rule can
+  // be found; if it is wrong or out-of-range (for instance because the rule
+  // has been deleted, or some have been moved around), the function is still
+  // safe to call, but will do a linear search for the rule. The return value
+  // is an updated position hint suitable for the next ReplaceRuleIfExists()
+  // call on the same (new) rule. The position_hint is not capable of describing
+  // rules nested within other rules; the result will still be correct, but the
+  // search will be slow for such rules.
+  wtf_size_t ReplaceRuleIfExists(const StyleRuleBase* old_rule,
+                                 StyleRuleBase* new_rule,
+                                 wtf_size_t position_hint);
+
   // Rules other than @import.
   const HeapVector<Member<StyleRuleBase>>& ChildRules() const {
     return child_rules_;
+  }
+  const HeapVector<Member<StyleRuleLayerStatement>>&
+  PreImportLayerStatementRules() const {
+    return pre_import_layer_statement_rules_;
   }
   const HeapVector<Member<StyleRuleImport>>& ImportRules() const {
     return import_rules_;
@@ -207,6 +236,7 @@ class CORE_EXPORT StyleSheetContents final
 
   String original_url_;
 
+  HeapVector<Member<StyleRuleLayerStatement>> pre_import_layer_statement_rules_;
   HeapVector<Member<StyleRuleImport>> import_rules_;
   HeapVector<Member<StyleRuleNamespace>> namespace_rules_;
   HeapVector<Member<StyleRuleBase>> child_rules_;
@@ -237,4 +267,4 @@ class CORE_EXPORT StyleSheetContents final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_SHEET_CONTENTS_H_

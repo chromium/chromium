@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,18 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen_input_methods_controller.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 class UserAddingScreenImpl : public UserAddingScreen {
@@ -39,35 +35,6 @@ class UserAddingScreenImpl : public UserAddingScreen {
  private:
   friend struct base::DefaultSingletonTraits<UserAddingScreenImpl>;
 
-  class LoadTimeReporter : public LoginScreenShownObserver {
-   public:
-    LoadTimeReporter() : start_time_(base::TimeTicks::Now()) {
-      LoginScreenClient::Get()->AddLoginScreenShownObserver(this);
-    }
-    LoadTimeReporter(const LoadTimeReporter&) = delete;
-    LoadTimeReporter& operator=(const LoadTimeReporter&) = delete;
-
-    ~LoadTimeReporter() override {
-      // In tests, LoginScreenClient's instance may be destroyed before
-      // LoadTimeReporterMojo's destructor is called.
-      if (LoginScreenClient::HasInstance())
-        LoginScreenClient::Get()->RemoveLoginScreenShownObserver(this);
-    }
-
-    // LoginScreenShownObserver:
-    void OnLoginScreenShown() override {
-      const base::TimeDelta load_time = base::TimeTicks::Now() - start_time_;
-      UmaHistogramTimes("ChromeOS.UserAddingScreen.LoadTimeViewsBased",
-                        load_time);
-      LoginScreenClient::Get()->RemoveLoginScreenShownObserver(this);
-    }
-
-   private:
-    const base::TimeTicks start_time_;
-  };
-
-  std::unique_ptr<LoadTimeReporter> reporter_;
-
   void OnDisplayHostCompletion();
 
   UserAddingScreenImpl();
@@ -81,9 +48,7 @@ class UserAddingScreenImpl : public UserAddingScreen {
 
 void UserAddingScreenImpl::Start() {
   CHECK(!IsRunning());
-  display_host_ =
-      new chromeos::LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN);
-  reporter_ = std::make_unique<LoadTimeReporter>();
+  display_host_ = new LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN);
 
   // This triggers input method manager to filter login screen methods. This
   // should happen before setting user input method, which happens when focusing
@@ -99,7 +64,6 @@ void UserAddingScreenImpl::Start() {
 
 void UserAddingScreenImpl::Cancel() {
   CHECK(IsRunning());
-  reporter_.reset();
 
   display_host_->CancelUserAdding();
 
@@ -111,7 +75,7 @@ void UserAddingScreenImpl::Cancel() {
 }
 
 bool UserAddingScreenImpl::IsRunning() {
-  return display_host_ != NULL;
+  return display_host_ != nullptr;
 }
 
 void UserAddingScreenImpl::AddObserver(UserAddingScreen::Observer* observer) {
@@ -125,7 +89,7 @@ void UserAddingScreenImpl::RemoveObserver(
 
 void UserAddingScreenImpl::OnDisplayHostCompletion() {
   CHECK(IsRunning());
-  display_host_ = NULL;
+  display_host_ = nullptr;
 
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::ACTIVE);
@@ -139,7 +103,7 @@ UserAddingScreenImpl* UserAddingScreenImpl::GetInstance() {
 }
 
 UserAddingScreenImpl::UserAddingScreenImpl()
-    : display_host_(NULL), im_controller_(this) {}
+    : display_host_(nullptr), im_controller_(this) {}
 
 UserAddingScreenImpl::~UserAddingScreenImpl() {}
 
@@ -152,4 +116,4 @@ UserAddingScreen* UserAddingScreen::Get() {
   return UserAddingScreenImpl::GetInstance();
 }
 
-}  // namespace chromeos
+}  // namespace ash

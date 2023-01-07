@@ -13,7 +13,6 @@ include_rules = [
   "+components/printing/renderer",
   "+components/safe_browsing/content/common",
   "+components/safe_browsing/core/common",
-  "+components/safe_browsing/core/features.h",
   "+components/safe_browsing/content/renderer",
   "+components/security_interstitials/core",
   "+components/security_interstitials/content/renderer",

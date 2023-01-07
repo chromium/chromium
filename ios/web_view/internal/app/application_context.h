@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,16 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "ios/web/public/init/network_context_owner.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+
+namespace component_updater {
+class ComponentUpdateService;
+}
 
 namespace net {
 class NetLog;
@@ -31,6 +35,7 @@ class NetworkContext;
 }  // namespace network
 
 class PrefService;
+class SafeBrowsingService;
 
 namespace ios_web_view {
 
@@ -40,6 +45,9 @@ class WebViewIOThread;
 class ApplicationContext {
  public:
   static ApplicationContext* GetInstance();
+
+  ApplicationContext(const ApplicationContext&) = delete;
+  ApplicationContext& operator=(const ApplicationContext&) = delete;
 
   // Gets the preferences associated with this application.
   PrefService* GetLocalState();
@@ -59,6 +67,9 @@ class ApplicationContext {
   // Gets the NetLog.
   net::NetLog* GetNetLog();
 
+  // Gets the ComponentUpdateService.
+  component_updater::ComponentUpdateService* GetComponentUpdateService();
+
   // Creates state tied to application threads. It is expected this will be
   // called from web::WebMainParts::PreCreateThreads.
   void PreCreateThreads();
@@ -70,6 +81,12 @@ class ApplicationContext {
   // Destroys state tied to application threads. It is expected this will be
   // called from web::WebMainParts::PostDestroyThreads.
   void PostDestroyThreads();
+
+  // Gets the SafeBrowsingService.
+  SafeBrowsingService* GetSafeBrowsingService();
+
+  // Shuts down SafeBrowsingService if it was created.
+  void ShutdownSafeBrowsingServiceIfNecessary();
 
  private:
   friend class base::NoDestructor<ApplicationContext>;
@@ -100,7 +117,9 @@ class ApplicationContext {
   std::unique_ptr<network::NetworkConnectionTracker>
       network_connection_tracker_;
 
-  DISALLOW_COPY_AND_ASSIGN(ApplicationContext);
+  std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
+
+  scoped_refptr<SafeBrowsingService> safe_browsing_service_;
 };
 
 }  // namespace ios_web_view

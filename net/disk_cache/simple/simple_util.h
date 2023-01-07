@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,9 @@
 
 namespace base {
 class FilePath;
-class Time;
 }
 
-namespace disk_cache {
-
-namespace simple_util {
+namespace disk_cache::simple_util {
 
 NET_EXPORT_PRIVATE std::string ConvertEntryHashKeyToHexString(
     uint64_t hash_key);
@@ -74,23 +71,16 @@ NET_EXPORT_PRIVATE int64_t GetFileSizeFromDataSize(size_t key_length,
 // in.
 NET_EXPORT_PRIVATE int GetFileIndexFromStreamIndex(int stream_index);
 
-// Fills |out_time| with the time the file last modified time. Unlike the
-// functions in file.h, the time resolution is milliseconds.
-NET_EXPORT_PRIVATE bool GetMTime(const base::FilePath& path,
-                                 base::Time* out_mtime);
-
 // Deletes a file, insuring POSIX semantics. Provided that all open handles to
-// this file were opened with File::FLAG_SHARE_DELETE, it is possible to delete
-// an open file and continue to use that file. After deleting an open file, it
-// is possible to immediately create a new file with the same name.
+// this file were opened with File::FLAG_WIN_SHARE_DELETE, it is possible to
+// delete an open file and continue to use that file. After deleting an open
+// file, it is possible to immediately create a new file with the same name.
 NET_EXPORT_PRIVATE bool SimpleCacheDeleteFile(const base::FilePath& path);
 
 uint32_t Crc32(const char* data, int length);
 
 uint32_t IncrementalCrc32(uint32_t previous_crc, const char* data, int length);
 
-}  // namespace simple_util
-
-}  // namespace disk_cache
+}  // namespace disk_cache::simple_util
 
 #endif  // NET_DISK_CACHE_SIMPLE_SIMPLE_UTIL_H_

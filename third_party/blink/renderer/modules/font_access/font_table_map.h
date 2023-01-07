@@ -1,21 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FONT_ACCESS_FONT_TABLE_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FONT_ACCESS_FONT_TABLE_MAP_H_
 
-#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
 
 class ScriptState;
 
-class BLINK_EXPORT FontTableMap final : public ScriptWrappable,
-                                        public Maplike<String, Member<Blob>> {
+class BLINK_EXPORT FontTableMap final
+    : public ScriptWrappable,
+      public Maplike<String, IDLString, Member<Blob>, Blob> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -31,9 +33,8 @@ class BLINK_EXPORT FontTableMap final : public ScriptWrappable,
   void Trace(Visitor* visitor) const override;
 
  private:
-  PairIterable<String, Member<Blob>>::IterationSource* StartIteration(
-      ScriptState*,
-      ExceptionState&) override;
+  PairIterable<String, IDLString, Member<Blob>, Blob>::IterationSource*
+  StartIteration(ScriptState*, ExceptionState&) override;
 
   bool GetMapEntry(ScriptState*,
                    const String& key,

@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+PASS Cache.keys() called on an empty cache
+PASS Cache.keys with no matching entries
+PASS Cache.keys with URL
+PASS Cache.keys with Request
+PASS Cache.keys with new Request
+PASS Cache.keys with ignoreSearch option (request with no search parameters)
+PASS Cache.keys with ignoreSearch option (request with search parameters)
+PASS Cache.keys supports ignoreMethod
+PASS Cache.keys supports ignoreVary
+PASS Cache.keys with URL containing fragment
+PASS Cache.keys with string fragment "http" as query
+PASS Cache.keys without parameters
+PASS Cache.keys with explicitly undefined request
+PASS Cache.keys with explicitly undefined request and empty options
+FAIL Cache.keys without parameters and VARY entries assert_equals: Cache.keys without parameters should match all entries. expected 3 but got 1
+PASS Cache.keys with a HEAD Request
+Harness: the test ran to completion.
+

@@ -1,14 +1,15 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/api/file_handlers/mime_util.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_piece.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -78,7 +79,7 @@ void OnGetMimeTypeFromFileForNonNativeLocalPathCompleted(
 void OnGetMimeTypeFromMetadataForNonNativeLocalPathCompleted(
     const base::FilePath& local_path,
     base::OnceCallback<void(const std::string&)> callback,
-    const base::Optional<std::string>& mime_type) {
+    const absl::optional<std::string>& mime_type) {
   if (mime_type) {
     std::move(callback).Run(mime_type.value());
     return;
@@ -195,7 +196,7 @@ void MimeTypeCollector::CollectForLocalPaths(
   callback_ = std::move(callback);
 
   DCHECK(!result_.get());
-  result_.reset(new std::vector<std::string>(local_paths.size()));
+  result_ = std::make_unique<std::vector<std::string>>(local_paths.size());
   left_ = local_paths.size();
 
   if (!left_) {

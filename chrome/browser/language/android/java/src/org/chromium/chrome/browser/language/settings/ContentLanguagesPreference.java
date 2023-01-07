@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
@@ -64,9 +65,9 @@ public class ContentLanguagesPreference extends Preference {
                         : R.drawable.ic_check_googblue_24dp;
                 ListItem item = buildMenuListItemWithEndIcon(
                         R.string.languages_item_option_offer_to_translate, 0, endIconResId,
-                        info.isSupported());
-                item.model.set(
-                        ListMenuItemProperties.TINT_COLOR_ID, R.color.default_icon_color_blue);
+                        info.isTranslateSupported());
+                item.model.set(ListMenuItemProperties.TINT_COLOR_ID,
+                        R.color.default_icon_color_accent1_tint_list);
 
                 // Add checked icon at the end.
                 menuItems.add(item);
@@ -139,7 +140,7 @@ public class ContentLanguagesPreference extends Preference {
     private TextView mAddLanguageButton;
     private RecyclerView mRecyclerView;
     private LanguageListAdapter mAdapter;
-    private AddLanguageFragment.Launcher mLauncher;
+    private SelectLanguageFragment.Launcher mLauncher;
 
     public ContentLanguagesPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -153,17 +154,23 @@ public class ContentLanguagesPreference extends Preference {
         assert mLauncher != null;
 
         mAddLanguageButton = (TextView) holder.findViewById(R.id.add_language);
+        final TintedDrawable tintedDrawable =
+                TintedDrawable.constructTintedDrawable(getContext(), R.drawable.plus);
+        tintedDrawable.setTint(SemanticColorUtils.getDefaultControlColorActive(getContext()));
         mAddLanguageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                TintedDrawable.constructTintedDrawable(
-                        getContext(), R.drawable.plus, R.color.default_control_color_active),
-                null, null, null);
+                tintedDrawable, null, null, null);
         mAddLanguageButton.setOnClickListener(view -> { mLauncher.launchAddLanguage(); });
 
         mRecyclerView = (RecyclerView) holder.findViewById(R.id.language_list);
         LinearLayoutManager layoutMangager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(layoutMangager);
-        mRecyclerView.addItemDecoration(
-                new DividerItemDecoration(getContext(), layoutMangager.getOrientation()));
+
+        // If the RecyclerView is re-bound, adding item decoration a second time adds extra padding
+        // and dividers. Only add the item decoration once.
+        if (mRecyclerView.getItemDecorationCount() == 0) {
+            mRecyclerView.addItemDecoration(
+                    new DividerItemDecoration(getContext(), layoutMangager.getOrientation()));
+        }
 
         // We do not want the RecyclerView to be announced by screen readers every time
         // the view is bound.
@@ -176,10 +183,10 @@ public class ContentLanguagesPreference extends Preference {
     }
 
     /**
-     * Register a launcher for AddLanguageFragment. Preference's host fragment should call
+     * Register a launcher for SelectLanguageFragment. Preference's host fragment should call
      * this in its onCreate().
      */
-    void registerActivityLauncher(AddLanguageFragment.Launcher launcher) {
+    void registerActivityLauncher(SelectLanguageFragment.Launcher launcher) {
         mLauncher = launcher;
     }
 

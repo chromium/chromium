@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,25 +9,20 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/memory/raw_ptr.h"
 #include "components/guest_view/browser/guest_view_event.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/common/guest_view_constants.h"
-#include "components/guest_view/common/guest_view_messages.h"
-#include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 
@@ -41,64 +36,52 @@ using WebContentsGuestViewMap = std::map<const WebContents*, GuestViewBase*>;
 base::LazyInstance<WebContentsGuestViewMap>::Leaky g_webcontents_guestview_map =
     LAZY_INSTANCE_INITIALIZER;
 
+void DestroyGuestIfUnattached(GuestViewBase* guest) {
+  std::unique_ptr<GuestViewBase> owned_guest =
+      guest->GetGuestViewManager()->TransferOwnership(guest);
+  owned_guest.reset();
+}
+
 }  // namespace
 
-SetSizeParams::SetSizeParams() {
-}
-SetSizeParams::~SetSizeParams() {
-}
+SetSizeParams::SetSizeParams() = default;
+SetSizeParams::~SetSizeParams() = default;
 
-// This observer ensures that the GuestViewBase destroys itself when its
-// embedder goes away. It also tracks when the embedder's fullscreen is
-// toggled or when its page scale factor changes so the guest can change
-// itself accordingly.
+// This observer ensures that unattached guests don't outlive their owner
+// WebContents. It also tracks when the embedder's fullscreen is toggled so the
+// guest can change itself accordingly.
 class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
  public:
-  OwnerContentsObserver(GuestViewBase* guest,
-                        WebContents* embedder_web_contents)
-      : WebContentsObserver(embedder_web_contents),
-        is_fullscreen_(false),
-        destroyed_(false),
-        guest_(guest) {}
+  explicit OwnerContentsObserver(base::SafeRef<GuestViewBase> guest,
+                                 WebContents* owner_web_contents)
+      : WebContentsObserver(owner_web_contents), guest_(guest) {}
 
-  ~OwnerContentsObserver() override {}
+  OwnerContentsObserver(const OwnerContentsObserver&) = delete;
+  OwnerContentsObserver& operator=(const OwnerContentsObserver&) = delete;
+
+  ~OwnerContentsObserver() override = default;
 
   // WebContentsObserver implementation.
   void WebContentsDestroyed() override {
-    // If the embedder is destroyed then destroy the guest.
-    Destroy();
-  }
+    // Once attached, the guest can't outlive its owner WebContents.
+    DCHECK_EQ(guest_->element_instance_id(), kInstanceIDNone);
 
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    // If the embedder navigates to a different page then destroy the guest.
-    if (!navigation_handle->IsInMainFrame() ||
-        !navigation_handle->HasCommitted() ||
-        navigation_handle->IsSameDocument()) {
-      return;
-    }
-
-    Destroy();
-  }
-
-  void RenderProcessGone(base::TerminationStatus status) override {
-    if (destroyed_)
-      return;
-    // If the embedder process is destroyed, then destroy the guest.
-    Destroy();
+    // Defensively clear the guest's `owner_web_contents_`, since a unique_ptr
+    // to the guest may be passed through asynchronous calls early in its
+    // initialization, and it's possible that its pointer to
+    // `owner_web_contents_` could become stale during this process.
+    guest_->owner_web_contents_ = nullptr;
+    DestroyGuestIfUnattached(&*guest_);
   }
 
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override {
-    if (destroyed_)
-      return;
-
     is_fullscreen_ = entered_fullscreen;
     guest_->EmbedderFullscreenToggled(is_fullscreen_);
   }
 
-  void MainFrameWasResized(bool width_changed) override {
-    if (destroyed_ || !web_contents()->GetDelegate())
+  void PrimaryMainFrameWasResized(bool width_changed) override {
+    if (!web_contents()->GetDelegate())
       return;
 
     bool current_fullscreen =
@@ -111,102 +94,84 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
   }
 
   void DidUpdateAudioMutingState(bool muted) override {
-    if (destroyed_)
-      return;
-
     guest_->web_contents()->SetAudioMuted(muted);
   }
 
-  void RenderFrameDeleted(content::RenderFrameHost* rfh) override {
-    guest_->OnRenderFrameHostDeleted(rfh->GetProcess()->GetID(),
-                                     rfh->GetRoutingID());
-  }
-
  private:
-  bool is_fullscreen_;
-  bool destroyed_;
-  GuestViewBase* guest_;
-
-  void Destroy() {
-    if (destroyed_)
-      return;
-    destroyed_ = true;
-
-    // The outer WebContents have ownership of attached OOPIF-based guests, so
-    // we are not responsible for their deletion.
-    bool also_delete = !guest_->web_contents()->GetOuterWebContents();
-    guest_->Destroy(also_delete);
-  }
-
-  DISALLOW_COPY_AND_ASSIGN(OwnerContentsObserver);
+  bool is_fullscreen_ = false;
+  const base::SafeRef<GuestViewBase> guest_;
 };
 
-// This observer ensures that the GuestViewBase destroys itself if its opener
+// This observer ensures that a GuestViewBase is destroyed if if its opener
 // WebContents goes away before the GuestViewBase is attached.
+// TODO(mcnee): This behaviour is WebViewGuest specific and could be moved there
+// instead.
 class GuestViewBase::OpenerLifetimeObserver : public WebContentsObserver {
  public:
   explicit OpenerLifetimeObserver(GuestViewBase* guest)
       : WebContentsObserver(guest->GetOpener()->web_contents()),
         guest_(guest) {}
 
-  ~OpenerLifetimeObserver() override {}
+  OpenerLifetimeObserver(const OpenerLifetimeObserver&) = delete;
+  OpenerLifetimeObserver& operator=(const OpenerLifetimeObserver&) = delete;
+
+  ~OpenerLifetimeObserver() override = default;
 
   // WebContentsObserver implementation.
   void WebContentsDestroyed() override {
-    if (guest_->attached())
-      return;
-
-    // If the opener is destroyed then destroy the guest.
-    guest_->Destroy(true);
+    // If the opener is destroyed and the guest has not been attached, then
+    // destroy the guest.
+    // Destroys `this`.
+    DestroyGuestIfUnattached(guest_);
   }
 
  private:
-  GuestViewBase* guest_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenerLifetimeObserver);
+  raw_ptr<GuestViewBase> guest_;
 };
 
 GuestViewBase::GuestViewBase(WebContents* owner_web_contents)
     : owner_web_contents_(owner_web_contents),
       browser_context_(owner_web_contents->GetBrowserContext()),
-      guest_instance_id_(GetGuestViewManager()->GetNextInstanceID()),
-      view_instance_id_(kInstanceIDNone),
-      element_instance_id_(kInstanceIDNone),
-      attach_in_progress_(false),
-      initialized_(false),
-      is_being_destroyed_(false),
-      guest_host_(nullptr),
-      auto_size_enabled_(false),
-      is_full_page_plugin_(false) {
+      guest_instance_id_(GetGuestViewManager()->GetNextInstanceID()) {
   SetOwnerHost();
 }
 
-GuestViewBase::~GuestViewBase() {}
+GuestViewBase::~GuestViewBase() {
+  DCHECK(!is_being_destroyed_);
+  is_being_destroyed_ = true;
 
-void GuestViewBase::Init(const base::DictionaryValue& create_params,
-                         WebContentsCreatedCallback callback) {
-  if (initialized_)
-    return;
-  initialized_ = true;
+  // If `this` was ever attached, it is important to clear `owner_web_contents_`
+  // after the call to StopTrackingEmbedderZoomLevel(), but before the rest of
+  // the statements in this function.
+  StopTrackingEmbedderZoomLevel();
+  owner_web_contents_ = nullptr;
 
+  // This is not necessarily redundant with the removal when the guest contents
+  // is destroyed, since we may never have initialized a guest WebContents.
+  GetGuestViewManager()->RemoveGuest(guest_instance_id_);
+
+  pending_events_.clear();
+}
+
+void GuestViewBase::Init(std::unique_ptr<GuestViewBase> owned_this,
+                         const base::Value::Dict& create_params,
+                         GuestCreatedCallback callback) {
   if (!GetGuestViewManager()->IsGuestAvailableToContext(this)) {
     // The derived class did not create a WebContents so this class serves no
     // purpose. Let's self-destruct.
-    delete this;
+    owned_this.reset();
     std::move(callback).Run(nullptr);
     return;
   }
 
-  std::unique_ptr<base::DictionaryValue> params(create_params.DeepCopy());
-  CreateWebContents(create_params,
+  CreateWebContents(std::move(owned_this), create_params,
                     base::BindOnce(&GuestViewBase::CompleteInit,
                                    weak_ptr_factory_.GetWeakPtr(),
-                                   std::move(params), std::move(callback)));
+                                   create_params.Clone(), std::move(callback)));
 }
 
-void GuestViewBase::InitWithWebContents(
-    const base::DictionaryValue& create_params,
-    WebContents* guest_web_contents) {
+void GuestViewBase::InitWithWebContents(const base::Value::Dict& create_params,
+                                        WebContents* guest_web_contents) {
   DCHECK(guest_web_contents);
 
   // Create a ZoomController to allow the guest's contents to be zoomed.
@@ -221,10 +186,9 @@ void GuestViewBase::InitWithWebContents(
   zoom::ZoomController::CreateForWebContents(guest_web_contents);
 
   // At this point, we have just created the guest WebContents, we need to add
-  // an observer to the owner WebContents. This observer will be responsible
-  // for destroying the guest WebContents if the owner goes away.
-  owner_contents_observer_ =
-      std::make_unique<OwnerContentsObserver>(this, owner_web_contents_);
+  // an observer to the owner WebContents.
+  owner_contents_observer_ = std::make_unique<OwnerContentsObserver>(
+      weak_ptr_factory_.GetSafeRef(), owner_web_contents_);
 
   WebContentsObserver::Observe(guest_web_contents);
   guest_web_contents->SetDelegate(this);
@@ -233,7 +197,8 @@ void GuestViewBase::InitWithWebContents(
   GetGuestViewManager()->AddGuest(guest_instance_id_, guest_web_contents);
 
   // Populate the view instance ID if we have it on creation.
-  create_params.GetInteger(kParameterInstanceId, &view_instance_id_);
+  view_instance_id_ =
+      create_params.FindInt(kParameterInstanceId).value_or(view_instance_id_);
 
   SetUpSizing(create_params);
 
@@ -271,10 +236,9 @@ gfx::Size GuestViewBase::GetDefaultSize() const {
 }
 
 void GuestViewBase::SetSize(const SetSizeParams& params) {
-  bool enable_auto_size =
-      params.enable_auto_size ? *params.enable_auto_size : auto_size_enabled_;
-  gfx::Size min_size = params.min_size ? *params.min_size : min_auto_size_;
-  gfx::Size max_size = params.max_size ? *params.max_size : max_auto_size_;
+  bool enable_auto_size = params.enable_auto_size.value_or(auto_size_enabled_);
+  gfx::Size min_size = params.min_size.value_or(min_auto_size_);
+  gfx::Size max_size = params.max_size.value_or(max_auto_size_);
 
   if (params.normal_size)
     normal_size_ = *params.normal_size;
@@ -329,13 +293,6 @@ void GuestViewBase::SetSize(const SetSizeParams& params) {
 }
 
 // static
-void GuestViewBase::CleanUp(content::BrowserContext* browser_context,
-                            int embedder_process_id,
-                            int view_instance_id) {
-  // TODO(paulmeyer): Add in any general GuestView cleanup work here.
-}
-
-// static
 GuestViewBase* GuestViewBase::FromWebContents(const WebContents* web_contents) {
   WebContentsGuestViewMap* guest_map = g_webcontents_guestview_map.Pointer();
   auto it = guest_map->find(web_contents);
@@ -343,19 +300,26 @@ GuestViewBase* GuestViewBase::FromWebContents(const WebContents* web_contents) {
 }
 
 // static
-GuestViewBase* GuestViewBase::From(int owner_process_id,
-                                   int guest_instance_id) {
+GuestViewBase* GuestViewBase::FromRenderFrameHost(
+    content::RenderFrameHost* rfh) {
+  return FromWebContents(content::WebContents::FromRenderFrameHost(rfh));
+}
+
+// static
+GuestViewBase* GuestViewBase::FromRenderFrameHostId(
+    const content::GlobalRenderFrameHostId& rfh_id) {
+  return FromRenderFrameHost(content::RenderFrameHost::FromID(rfh_id));
+}
+
+// static
+GuestViewBase* GuestViewBase::FromInstanceID(int owner_process_id,
+                                             int guest_instance_id) {
   auto* host = content::RenderProcessHost::FromID(owner_process_id);
   if (!host)
     return nullptr;
 
-  WebContents* guest_web_contents =
-      GuestViewManager::FromBrowserContext(host->GetBrowserContext())
-          ->GetGuestByInstanceIDSafely(guest_instance_id, owner_process_id);
-  if (!guest_web_contents)
-    return nullptr;
-
-  return GuestViewBase::FromWebContents(guest_web_contents);
+  return GuestViewManager::FromBrowserContext(host->GetBrowserContext())
+      ->GetGuestByInstanceIDSafely(guest_instance_id, owner_process_id);
 }
 
 // static
@@ -367,7 +331,17 @@ WebContents* GuestViewBase::GetTopLevelWebContents(WebContents* web_contents) {
 
 // static
 bool GuestViewBase::IsGuest(WebContents* web_contents) {
-  return !!GuestViewBase::FromWebContents(web_contents);
+  return !!FromWebContents(web_contents);
+}
+
+// static
+bool GuestViewBase::IsGuest(content::RenderFrameHost* rfh) {
+  return !!FromRenderFrameHost(rfh);
+}
+
+// static
+bool GuestViewBase::IsGuest(const content::GlobalRenderFrameHostId& rfh_id) {
+  return !!FromRenderFrameHostId(rfh_id);
 }
 
 bool GuestViewBase::IsAutoSizeSupported() const {
@@ -382,17 +356,20 @@ bool GuestViewBase::ZoomPropagatesFromEmbedderToGuest() const {
   return true;
 }
 
+content::NavigationController& GuestViewBase::GetController() {
+  // TODO(crbug/1261928): Migrate the implementation for MPArch.
+  return web_contents()->GetController();
+}
+
 GuestViewManager* GuestViewBase::GetGuestViewManager() {
   return GuestViewManager::FromBrowserContext(browser_context());
 }
 
-WebContents* GuestViewBase::CreateNewGuestWindow(
+std::unique_ptr<WebContents> GuestViewBase::CreateNewGuestWindow(
     const WebContents::CreateParams& create_params) {
   return GetGuestViewManager()->CreateGuestWithWebContentsParams(
       GetViewType(), owner_web_contents(), create_params);
 }
-
-void GuestViewBase::OnRenderFrameHostDeleted(int process_id, int routing_id) {}
 
 void GuestViewBase::DidAttach() {
   DCHECK(attach_in_progress_);
@@ -401,7 +378,7 @@ void GuestViewBase::DidAttach() {
 
   opener_lifetime_observer_.reset();
 
-  SetUpSizing(*attach_params());
+  SetUpSizing(attach_params());
 
   // The guest should have the same muting state as the owner.
   web_contents()->SetAudioMuted(owner_web_contents()->IsAudioMuted());
@@ -417,91 +394,43 @@ WebContents* GuestViewBase::GetOwnerWebContents() {
 }
 
 const GURL& GuestViewBase::GetOwnerSiteURL() const {
-  return owner_web_contents()->GetMainFrame()->GetSiteInstance()->GetSiteURL();
+  return owner_web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetSiteInstance()
+      ->GetSiteURL();
 }
 
-bool GuestViewBase::ShouldDestroyOnDetach() const {
-  return false;
-}
-
-void GuestViewBase::Destroy(bool also_delete) {
-  if (is_being_destroyed_)
-    return;
-
-  is_being_destroyed_ = true;
-
-  // It is important to clear owner_web_contents_ after the call to
-  // StopTrackingEmbedderZoomLevel(), but before the rest of
-  // the statements in this function.
-  StopTrackingEmbedderZoomLevel();
-  owner_web_contents_ = nullptr;
-
-  DCHECK(web_contents());
-
-  // Give the derived class an opportunity to perform some cleanup.
-  WillDestroy();
-
-  // Invalidate weak pointers now so that bound callbacks cannot be called late
-  // into destruction. We must call this after WillDestroy because derived types
-  // may wish to access their openers.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-
-  // Give the content module an opportunity to perform some cleanup.
-  guest_host_->WillDestroy();
-  guest_host_ = nullptr;
-
-  g_webcontents_guestview_map.Get().erase(web_contents());
-  GetGuestViewManager()->RemoveGuest(guest_instance_id_);
-  pending_events_.clear();
-
-  if (also_delete)
-    delete web_contents();
-}
-
-void GuestViewBase::SetAttachParams(const base::DictionaryValue& params) {
-  attach_params_.reset(params.DeepCopy());
-  attach_params_->GetInteger(kParameterInstanceId, &view_instance_id_);
+void GuestViewBase::SetAttachParams(const base::Value::Dict& params) {
+  attach_params_ = params.Clone();
+  view_instance_id_ =
+      attach_params_.FindInt(kParameterInstanceId).value_or(view_instance_id_);
 }
 
 void GuestViewBase::SetOpener(GuestViewBase* guest) {
-  if (guest) {
-    opener_ = guest->weak_ptr_factory_.GetWeakPtr();
-    if (!attached()) {
-      opener_lifetime_observer_ =
-          std::make_unique<OpenerLifetimeObserver>(this);
-    }
-  } else {
-    opener_ = base::WeakPtr<GuestViewBase>();
-    opener_lifetime_observer_.reset();
+  DCHECK(guest);
+  opener_ = guest->weak_ptr_factory_.GetWeakPtr();
+  if (!attached()) {
+    opener_lifetime_observer_ = std::make_unique<OpenerLifetimeObserver>(this);
   }
 }
 
-void GuestViewBase::SetGuestHost(content::GuestHost* guest_host) {
-  guest_host_ = guest_host;
-}
-
-void GuestViewBase::WillAttach(WebContents* embedder_web_contents,
-                               int element_instance_id,
-                               bool is_full_page_plugin,
-                               base::OnceClosure completion_callback) {
-  WillAttach(embedder_web_contents, nullptr, element_instance_id,
-             is_full_page_plugin, std::move(completion_callback));
-}
-
-void GuestViewBase::WillAttach(WebContents* embedder_web_contents,
-                               content::RenderFrameHost* outer_contents_frame,
-                               int element_instance_id,
-                               bool is_full_page_plugin,
-                               base::OnceClosure completion_callback) {
+void GuestViewBase::WillAttach(
+    std::unique_ptr<GuestViewBase> owned_this,
+    WebContents* embedder_web_contents,
+    content::RenderFrameHost* outer_contents_frame,
+    int element_instance_id,
+    bool is_full_page_plugin,
+    base::OnceClosure completion_callback,
+    GuestViewMessageHandler::AttachToEmbedderFrameCallback
+        attachment_callback) {
   // Stop tracking the old embedder's zoom level.
-  if (owner_web_contents())
-    StopTrackingEmbedderZoomLevel();
+  StopTrackingEmbedderZoomLevel();
 
   if (owner_web_contents_ != embedder_web_contents) {
     DCHECK_EQ(owner_contents_observer_->web_contents(), owner_web_contents_);
     owner_web_contents_ = embedder_web_contents;
-    owner_contents_observer_ =
-        std::make_unique<OwnerContentsObserver>(this, embedder_web_contents);
+    owner_contents_observer_ = std::make_unique<OwnerContentsObserver>(
+        weak_ptr_factory_.GetSafeRef(), embedder_web_contents);
     SetOwnerHost();
   }
 
@@ -515,17 +444,30 @@ void GuestViewBase::WillAttach(WebContents* embedder_web_contents,
 
   web_contents()->ResumeLoadingCreatedWebContents();
 
+  // From this point on, `this` is scoped to the guest contents' lifetime. We
+  // self-destruct in WebContentsDestroyed.
+  owned_this.release();
+  self_owned_ = true;
+  std::unique_ptr<WebContents> owned_guest_contents =
+      std::move(owned_guest_contents_);
+  DCHECK_EQ(owned_guest_contents.get(), web_contents());
+
+  // Since this inner WebContents is created from the browser side we do
+  // not have RemoteFrame mojo channels so we pass in
+  // NullAssociatedRemote/Receivers. New channels will be bound when the
+  // `CreateView` IPC is sent.
   owner_web_contents_->AttachInnerWebContents(
-      base::WrapUnique<WebContents>(web_contents()), outer_contents_frame,
+      std::move(owned_guest_contents), outer_contents_frame,
+      /*remote_frame=*/mojo::NullAssociatedRemote(),
+      /*remote_frame_host_receiver=*/mojo::NullAssociatedReceiver(),
       is_full_page_plugin);
-  // TODO(ekaramad): MimeHandlerViewGuest might not need this ACK
-  // (https://crbug.com/659750).
+
   // We don't ACK until after AttachToOuterWebContentsFrame, so that
-  // |outer_contents_frame| gets swapped before the AttachIframeGuest callback
-  // is run. We also need to send the ACK before queued events are sent in
-  // DidAttach.
-  embedder_web_contents->GetMainFrame()->Send(
-      new GuestViewMsg_AttachToEmbedderFrame_ACK(element_instance_id));
+  // |outer_contents_frame| gets swapped before the AttachToEmbedderFrame
+  // callback is run. We also need to send the ACK before queued events are sent
+  // in DidAttach.
+  if (attachment_callback)
+    std::move(attachment_callback).Run();
 
   // Completing attachment will resume suspended resource loads and then send
   // queued events.
@@ -552,7 +494,7 @@ double GuestViewBase::PhysicalPixelsToLogicalPixels(int physical_pixels) const {
 
 void GuestViewBase::DidStopLoading() {
   content::RenderViewHost* rvh =
-      web_contents()->GetMainFrame()->GetRenderViewHost();
+      web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
 
   if (IsPreferredSizeModeEnabled())
     rvh->EnablePreferredSizeMode();
@@ -564,22 +506,23 @@ void GuestViewBase::RenderViewReady() {
 }
 
 void GuestViewBase::WebContentsDestroyed() {
-  Destroy(false);
-
-  // Let the derived class know that its WebContents is in the process of
-  // being destroyed. web_contents() is still valid at this point.
-  // TODO(fsamuel): This allows for reentrant code into WebContents during
-  // destruction. This could potentially lead to bugs. Perhaps we should get rid
-  // of this?
-  GuestDestroyed();
+  g_webcontents_guestview_map.Get().erase(web_contents());
+  GetGuestViewManager()->RemoveGuest(guest_instance_id_);
 
   // Self-destruct.
-  delete this;
+  if (self_owned_) {
+    DCHECK(!is_being_destroyed_);
+    delete this;
+  }
 }
 
 void GuestViewBase::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
+  // TODO(crbug.com/1261928): Due to the use of inner WebContents, a
+  // GuestViewBase's main frame is considered primary. This will no
+  // longer be the case once we migrate guest views to MPArch.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted())
     return;
 
   if (attached() && ZoomPropagatesFromEmbedderToGuest())
@@ -622,23 +565,12 @@ bool GuestViewBase::HandleKeyboardEvent(
 }
 
 void GuestViewBase::LoadingStateChanged(WebContents* source,
-                                        bool to_different_document) {
+                                        bool should_show_loading_ui) {
   if (!attached() || !embedder_web_contents()->GetDelegate())
     return;
 
   embedder_web_contents()->GetDelegate()->LoadingStateChanged(
-      embedder_web_contents(), to_different_document);
-}
-
-content::ColorChooser* GuestViewBase::OpenColorChooser(
-    WebContents* web_contents,
-    SkColor color,
-    const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
-  if (!attached() || !embedder_web_contents()->GetDelegate())
-    return nullptr;
-
-  return embedder_web_contents()->GetDelegate()->OpenColorChooser(
-      web_contents, color, suggestions);
+      embedder_web_contents(), should_show_loading_ui);
 }
 
 void GuestViewBase::ResizeDueToAutoResize(WebContents* web_contents,
@@ -711,6 +643,7 @@ content::RenderWidgetHost* GuestViewBase::GetOwnerRenderWidgetHost() {
   // embedded in a cross-process frame, this method should be overrode for that
   // specific guest type. For all other guests, the owner RenderWidgetHost is
   // that of the owner WebContents.
+  DCHECK(!CanBeEmbeddedInsideCrossProcessFrames());
   auto* owner = GetOwnerWebContents();
   if (owner && owner->GetRenderWidgetHostView())
     return owner->GetRenderWidgetHostView()->GetRenderWidgetHost();
@@ -723,20 +656,25 @@ content::SiteInstance* GuestViewBase::GetOwnerSiteInstance() {
   // embedded in a cross-process frame, this method should be overrode for that
   // specific guest type. For all other guests, the owner site instance can be
   // from the owner WebContents.
+  DCHECK(!CanBeEmbeddedInsideCrossProcessFrames());
   if (auto* owner_contents = GetOwnerWebContents())
     return owner_contents->GetSiteInstance();
   return nullptr;
 }
 
 void GuestViewBase::AttachToOuterWebContentsFrame(
+    std::unique_ptr<GuestViewBase> owned_this,
     content::RenderFrameHost* embedder_frame,
     int32_t element_instance_id,
-    bool is_full_page_plugin) {
+    bool is_full_page_plugin,
+    GuestViewMessageHandler::AttachToEmbedderFrameCallback
+        attachment_callback) {
   auto completion_callback =
       base::BindOnce(&GuestViewBase::DidAttach, weak_ptr_factory_.GetWeakPtr());
-  WillAttach(WebContents::FromRenderFrameHost(embedder_frame), embedder_frame,
+  WillAttach(std::move(owned_this),
+             WebContents::FromRenderFrameHost(embedder_frame), embedder_frame,
              element_instance_id, is_full_page_plugin,
-             std::move(completion_callback));
+             std::move(completion_callback), std::move(attachment_callback));
 }
 
 void GuestViewBase::OnZoomChanged(
@@ -786,18 +724,30 @@ void GuestViewBase::SendQueuedEvents() {
 }
 
 void GuestViewBase::CompleteInit(
-    std::unique_ptr<base::DictionaryValue> create_params,
-    WebContentsCreatedCallback callback,
-    WebContents* guest_web_contents) {
+    base::Value::Dict create_params,
+    GuestCreatedCallback callback,
+    std::unique_ptr<GuestViewBase> owned_this,
+    std::unique_ptr<content::WebContents> guest_web_contents) {
   if (!guest_web_contents) {
     // The derived class did not create a WebContents so this class serves no
     // purpose. Let's self-destruct.
-    delete this;
+    owned_this.reset();
     std::move(callback).Run(nullptr);
     return;
   }
-  InitWithWebContents(*create_params, guest_web_contents);
-  std::move(callback).Run(guest_web_contents);
+  InitWithWebContents(create_params, guest_web_contents.get());
+  TakeGuestContentsOwnership(std::move(guest_web_contents));
+  std::move(callback).Run(std::move(owned_this));
+}
+
+void GuestViewBase::TakeGuestContentsOwnership(
+    std::unique_ptr<WebContents> guest_web_contents) {
+  DCHECK(!owned_guest_contents_);
+  owned_guest_contents_ = std::move(guest_web_contents);
+}
+
+void GuestViewBase::ClearOwnedGuestContents() {
+  owned_guest_contents_.reset();
 }
 
 double GuestViewBase::GetEmbedderZoomFactor() const {
@@ -809,25 +759,24 @@ double GuestViewBase::GetEmbedderZoomFactor() const {
           embedder_web_contents()));
 }
 
-void GuestViewBase::SetUpSizing(const base::DictionaryValue& params) {
+void GuestViewBase::SetUpSizing(const base::Value::Dict& params) {
   // Read the autosize parameters passed in from the embedder.
-  bool auto_size_enabled = auto_size_enabled_;
-  params.GetBoolean(kAttributeAutoSize, &auto_size_enabled);
+  absl::optional<bool> auto_size_enabled_opt =
+      params.FindBool(kAttributeAutoSize);
+  bool auto_size_enabled = auto_size_enabled_opt.value_or(auto_size_enabled_);
 
-  int max_height = max_auto_size_.height();
-  int max_width = max_auto_size_.width();
-  params.GetInteger(kAttributeMaxHeight, &max_height);
-  params.GetInteger(kAttributeMaxWidth, &max_width);
+  int max_height =
+      params.FindInt(kAttributeMaxHeight).value_or(max_auto_size_.height());
+  int max_width =
+      params.FindInt(kAttributeMaxWidth).value_or(max_auto_size_.width());
 
-  int min_height = min_auto_size_.height();
-  int min_width = min_auto_size_.width();
-  params.GetInteger(kAttributeMinHeight, &min_height);
-  params.GetInteger(kAttributeMinWidth, &min_width);
+  int min_height =
+      params.FindInt(kAttributeMinHeight).value_or(min_auto_size_.height());
+  int min_width =
+      params.FindInt(kAttributeMinWidth).value_or(min_auto_size_.width());
 
-  double element_height = 0.0;
-  double element_width = 0.0;
-  params.GetDouble(kElementHeight, &element_height);
-  params.GetDouble(kElementWidth, &element_width);
+  double element_height = params.FindDouble(kElementHeight).value_or(0.0);
+  double element_width = params.FindDouble(kElementWidth).value_or(0.0);
 
   // Set the normal size to the element size so that the guestview will fit
   // the element initially if autosize is disabled.
@@ -835,8 +784,9 @@ void GuestViewBase::SetUpSizing(const base::DictionaryValue& params) {
   int normal_width = normal_size_.width();
   // If the element size was provided in logical units (versus physical), then
   // it will be converted to physical units.
-  bool element_size_is_logical = false;
-  params.GetBoolean(kElementSizeIsLogical, &element_size_is_logical);
+  absl::optional<bool> element_size_is_logical_opt =
+      params.FindBool(kElementSizeIsLogical);
+  bool element_size_is_logical = element_size_is_logical_opt.value_or(false);
   if (element_size_is_logical) {
     // Convert the element size from logical pixels to physical pixels.
     normal_height = LogicalPixelsToPhysicalPixels(element_height);
@@ -847,10 +797,10 @@ void GuestViewBase::SetUpSizing(const base::DictionaryValue& params) {
   }
 
   SetSizeParams set_size_params;
-  set_size_params.enable_auto_size.reset(new bool(auto_size_enabled));
-  set_size_params.min_size.reset(new gfx::Size(min_width, min_height));
-  set_size_params.max_size.reset(new gfx::Size(max_width, max_height));
-  set_size_params.normal_size.reset(new gfx::Size(normal_width, normal_height));
+  set_size_params.enable_auto_size = auto_size_enabled;
+  set_size_params.min_size.emplace(min_width, min_height);
+  set_size_params.max_size.emplace(max_width, max_height);
+  set_size_params.normal_size.emplace(normal_width, normal_height);
 
   // Call SetSize to apply all the appropriate validation and clipping of
   // values.
@@ -887,6 +837,8 @@ void GuestViewBase::StopTrackingEmbedderZoomLevel() {
   // TODO(wjmaclean): Remove the observer any time the GuestWebView transitions
   // from propagating to not-propagating the zoom from the embedder.
 
+  if (!owner_web_contents())
+    return;
   auto* embedder_zoom_controller =
       zoom::ZoomController::FromWebContents(owner_web_contents());
   // Chrome Apps do not have a ZoomController.
@@ -912,8 +864,13 @@ void GuestViewBase::SetOwnerHost() {
                     : std::string();
 }
 
-bool GuestViewBase::CanBeEmbeddedInsideCrossProcessFrames() {
+bool GuestViewBase::CanBeEmbeddedInsideCrossProcessFrames() const {
   return false;
+}
+
+content::RenderFrameHost* GuestViewBase::GetGuestMainFrame() const {
+  // TODO(crbug/1261928): Migrate the implementation for MPArch.
+  return web_contents()->GetPrimaryMainFrame();
 }
 
 }  // namespace guest_view

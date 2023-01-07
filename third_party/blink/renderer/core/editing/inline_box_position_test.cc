@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/editing/inline_box_position.h"
 
 #include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -80,44 +81,6 @@ TEST_F(InlineBoxPositionTest, InFlatTreeAfterInputWithPlaceholderDoesntCrash) {
   const InlineBoxPosition box_position = ComputeInlineBoxPosition(after_input);
   EXPECT_EQ(input_wrapper, box_position.inline_box);
   EXPECT_EQ(1, box_position.offset_in_box);
-}
-
-TEST_F(InlineBoxPositionTest, DownstreamBeforeLineBreakLTR) {
-  // This test is for a bidi caret afinity specific behavior.
-  ScopedBidiCaretAffinityForTest scoped_bidi_affinity(true);
-
-  SetBodyContent("<div id=div>&#x05D0;&#x05D1;&#x05D2<br>ABC</div>");
-  const Element* const div = GetElementById("div");
-  const Node* const rtl_text = div->firstChild();
-  const PositionWithAffinity before_br(Position(rtl_text, 3),
-                                       TextAffinity::kDownstream);
-
-  const Element* const br = GetDocument().QuerySelector("br");
-  const InlineBox* const box =
-      To<LayoutText>(br->GetLayoutObject())->FirstTextBox();
-
-  const InlineBoxPosition box_position = ComputeInlineBoxPosition(before_br);
-  EXPECT_EQ(box, box_position.inline_box);
-  EXPECT_EQ(0, box_position.offset_in_box);
-}
-
-TEST_F(InlineBoxPositionTest, DownstreamBeforeLineBreakRTL) {
-  // This test is for a bidi caret afinity specific behavior.
-  ScopedBidiCaretAffinityForTest scoped_bidi_affinity(true);
-
-  SetBodyContent("<div id=div dir=rtl>ABC<br>&#x05D0;&#x05D1;&#x05D2;</div>");
-  const Element* const div = GetElementById("div");
-  const Node* const rtl_text = div->firstChild();
-  const PositionWithAffinity before_br(Position(rtl_text, 3),
-                                       TextAffinity::kDownstream);
-
-  const Element* const br = GetDocument().QuerySelector("br");
-  const InlineBox* const box =
-      To<LayoutText>(br->GetLayoutObject())->FirstTextBox();
-
-  const InlineBoxPosition box_position = ComputeInlineBoxPosition(before_br);
-  EXPECT_EQ(box, box_position.inline_box);
-  EXPECT_EQ(0, box_position.offset_in_box);
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,9 @@
   auto leakType = password_manager::CreateLeakType(
       password_manager::IsSaved(true),
       password_manager::IsReused(checkButtonPresent),
-      password_manager::IsSyncing(true));
-  [(id<PasswordBreachCommands>)handler
-      showPasswordBreachForLeakType:leakType
-                                URL:GURL("example.com")];
+      password_manager::IsSyncing(true),
+      password_manager::HasChangeScript(false));
+  [(id<PasswordBreachCommands>)handler showPasswordBreachForLeakType:leakType];
 }
 
 @end

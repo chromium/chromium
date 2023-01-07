@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,15 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+
+class GURL;
 
 namespace storage {
 
@@ -161,6 +163,9 @@ class IsolatedContext::Instance {
   // could be registered by IsolatedContext::RegisterDraggedFileSystem().
   Instance(FileSystemType type, const std::set<MountPointInfo>& files);
 
+  Instance(const Instance&) = delete;
+  Instance& operator=(const Instance&) = delete;
+
   ~Instance();
 
   FileSystemType type() const { return type_; }
@@ -191,8 +196,6 @@ class IsolatedContext::Instance {
   // Reference counts. Note that an isolated filesystem is created with ref==0
   // and will get deleted when the ref count reaches <=0.
   int ref_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(Instance);
 };
 
 IsolatedContext::Instance::Instance(FileSystemType type,
@@ -348,8 +351,8 @@ bool IsolatedContext::CrackVirtualPath(
   *mount_option = FileSystemMountOption();
 
   // The virtual_path should comprise <id_or_name> and <relative_path> parts.
-  std::vector<base::FilePath::StringType> components;
-  virtual_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      virtual_path.GetComponents();
   if (components.size() < 1)
     return false;
   auto component_iter = components.begin();
@@ -388,18 +391,22 @@ bool IsolatedContext::CrackVirtualPath(
   return true;
 }
 
-FileSystemURL IsolatedContext::CrackURL(const GURL& url) const {
-  FileSystemURL filesystem_url = FileSystemURL(url);
+FileSystemURL IsolatedContext::CrackURL(
+    const GURL& url,
+    const blink::StorageKey& storage_key) const {
+  FileSystemURL filesystem_url = FileSystemURL(url, storage_key);
   if (!filesystem_url.is_valid())
     return FileSystemURL();
   return CrackFileSystemURL(filesystem_url);
 }
 
 FileSystemURL IsolatedContext::CreateCrackedFileSystemURL(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type,
     const base::FilePath& virtual_path) const {
-  return CrackFileSystemURL(FileSystemURL(origin, type, virtual_path));
+  // TODO(https://crbug.com/1221308): function will have StorageKey param in
+  // future CL; conversion from url::Origin is temporary
+  return CrackFileSystemURL(FileSystemURL(storage_key, type, virtual_path));
 }
 
 void IsolatedContext::RevokeFileSystemByPath(const base::FilePath& path_in) {
@@ -474,7 +481,7 @@ FileSystemURL IsolatedContext::CrackFileSystemURL(
   }
 
   return FileSystemURL(
-      url.origin(), url.mount_type(), url.virtual_path(),
+      url.storage_key(), url.mount_type(), url.virtual_path(),
       !url.filesystem_id().empty() ? url.filesystem_id() : mount_name,
       cracked_type, cracked_path,
       cracked_mount_name.empty() ? mount_name : cracked_mount_name,

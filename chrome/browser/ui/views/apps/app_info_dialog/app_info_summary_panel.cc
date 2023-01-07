@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -17,22 +16,22 @@
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_label.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/app_constants/constants.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/path_util.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 // A model for a combobox selecting the launch options for a hosted app.
@@ -46,8 +45,8 @@ class LaunchOptionsComboboxModel : public ui::ComboboxModel {
   int GetIndexForLaunchType(extensions::LaunchType launch_type) const;
 
   // Overridden from ui::ComboboxModel:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
 
  private:
   // A list of the launch types available in the combobox, in order.
@@ -89,11 +88,11 @@ int LaunchOptionsComboboxModel::GetIndexForLaunchType(
   return 0;
 }
 
-int LaunchOptionsComboboxModel::GetItemCount() const {
+size_t LaunchOptionsComboboxModel::GetItemCount() const {
   return launch_types_.size();
 }
 
-std::u16string LaunchOptionsComboboxModel::GetItemAt(int index) const {
+std::u16string LaunchOptionsComboboxModel::GetItemAt(size_t index) const {
   return launch_type_messages_[index];
 }
 
@@ -110,7 +109,7 @@ AppInfoSummaryPanel::AppInfoSummaryPanel(Profile* profile,
 
 AppInfoSummaryPanel::~AppInfoSummaryPanel() {
   // Destroy view children before their models.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 void AppInfoSummaryPanel::AddDescriptionAndLinksControl(
@@ -176,17 +175,14 @@ void AppInfoSummaryPanel::AddDetailsControl(views::View* vertical_stack) {
   details_list->AddChildView(
       CreateKeyValueField(std::move(size_title), std::move(size_value)));
 
-  // The version doesn't make sense for bookmark apps.
-  if (!app_->from_bookmark()) {
-    auto version_title = std::make_unique<AppInfoLabel>(
-        l10n_util::GetStringUTF16(IDS_APPLICATION_INFO_VERSION_LABEL));
+  auto version_title = std::make_unique<AppInfoLabel>(
+      l10n_util::GetStringUTF16(IDS_APPLICATION_INFO_VERSION_LABEL));
 
-    auto version_value = std::make_unique<AppInfoLabel>(
-        base::UTF8ToUTF16(app_->GetVersionForDisplay()));
+  auto version_value = std::make_unique<AppInfoLabel>(
+      base::UTF8ToUTF16(app_->GetVersionForDisplay()));
 
-    details_list->AddChildView(CreateKeyValueField(std::move(version_title),
-                                                   std::move(version_value)));
-  }
+  details_list->AddChildView(
+      CreateKeyValueField(std::move(version_title), std::move(version_value)));
 
   vertical_stack->AddChildView(std::move(details_list));
 }
@@ -227,7 +223,7 @@ void AppInfoSummaryPanel::AddSubviews() {
 
 void AppInfoSummaryPanel::LaunchOptionsChanged() {
   SetLaunchType(launch_options_combobox_model_->GetLaunchTypeAtIndex(
-      launch_options_combobox_->GetSelectedIndex()));
+      launch_options_combobox_->GetSelectedIndex().value()));
 }
 
 void AppInfoSummaryPanel::StartCalculatingAppSize() {
@@ -260,7 +256,7 @@ bool AppInfoSummaryPanel::CanSetLaunchType() const {
   // V2 apps and extensions don't have a launch type, and neither does the
   // Chrome app.
   return !app_->is_platform_app() && !app_->is_extension() &&
-         app_->id() != extension_misc::kChromeAppId;
+         app_->id() != app_constants::kChromeAppId;
 }
 
 void AppInfoSummaryPanel::ShowAppHomePage() {
@@ -284,7 +280,7 @@ bool AppInfoSummaryPanel::CanDisplayLicenses() const {
   return !GetLicenseUrls().empty();
 }
 
-const std::vector<GURL> AppInfoSummaryPanel::GetLicenseUrls() const {
+std::vector<GURL> AppInfoSummaryPanel::GetLicenseUrls() const {
   if (!extensions::SharedModuleInfo::ImportsModules(app_))
     return std::vector<GURL>();
 

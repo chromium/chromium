@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define EXTENSIONS_SHELL_BROWSER_DEFAULT_SHELL_BROWSER_MAIN_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/shell/browser/shell_browser_main_delegate.h"
 
 namespace extensions {
@@ -16,6 +15,12 @@ namespace extensions {
 class DefaultShellBrowserMainDelegate : public ShellBrowserMainDelegate {
  public:
   DefaultShellBrowserMainDelegate();
+
+  DefaultShellBrowserMainDelegate(const DefaultShellBrowserMainDelegate&) =
+      delete;
+  DefaultShellBrowserMainDelegate& operator=(
+      const DefaultShellBrowserMainDelegate&) = delete;
+
   ~DefaultShellBrowserMainDelegate() override;
 
   // ShellBrowserMainDelegate:
@@ -23,9 +28,6 @@ class DefaultShellBrowserMainDelegate : public ShellBrowserMainDelegate {
   void Shutdown() override;
   DesktopController* CreateDesktopController(
       content::BrowserContext* context) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultShellBrowserMainDelegate);
 };
 
 }  // namespace extensions

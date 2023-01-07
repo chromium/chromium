@@ -3,6 +3,7 @@ include_rules = [
   "+components/autofill/android/provider",
   "+components/background_task_scheduler/android/java",
   "+components/component_updater/android/java",
+  "+components/embedder_support/android/metrics/java",
   "+components/minidump_uploader/android/java",
   "+components/minidump_uploader/android/javatests",
   "+components/policy/android/java",

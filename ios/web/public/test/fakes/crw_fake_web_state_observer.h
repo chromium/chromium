@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,39 +11,51 @@
 // Test implementation of CRWWebStateObserver protocol.
 @interface CRWFakeWebStateObserver : NSObject <CRWWebStateObserver>
 
-// Arguments passed to |webStateWasShown:|.
+// Arguments passed to `webStateWasShown:`.
 @property(nonatomic, readonly) web::TestWasShownInfo* wasShownInfo;
-// Arguments passed to |webStateWasHidden:|.
+// Arguments passed to `webStateWasHidden:`.
 @property(nonatomic, readonly) web::TestWasHiddenInfo* wasHiddenInfo;
-// Arguments passed to |webState:didStartNavigation:|.
+// Arguments passed to `webState:didStartNavigation:`.
 @property(nonatomic, readonly)
     web::TestDidStartNavigationInfo* didStartNavigationInfo;
-// Arguments passed to |webState:didFinishNavigation:|.
+// Arguments passed to `webState:didRedirectNavigation:`.
+@property(nonatomic, readonly)
+    web::TestDidRedirectNavigationInfo* didRedirectNavigationInfo;
+// Arguments passed to `webState:didFinishNavigation:`.
 @property(nonatomic, readonly)
     web::TestDidFinishNavigationInfo* didFinishNavigationInfo;
-// Arguments passed to |webState:didLoadPageWithSuccess:|.
+// Arguments passed to `webStateDidStartLoading:`.
+@property(nonatomic, readonly) web::TestStartLoadingInfo* startLoadingInfo;
+// Arguments passed to `webStateDidStopLoading:`.
+@property(nonatomic, readonly) web::TestStopLoadingInfo* stopLoadingInfo;
+// Arguments passed to `webState:didLoadPageWithSuccess:`.
 @property(nonatomic, readonly) web::TestLoadPageInfo* loadPageInfo;
-// Arguments passed to |webState:didChangeLoadingProgress:|.
+// Arguments passed to `webState:didChangeLoadingProgress:`.
 @property(nonatomic, readonly)
     web::TestChangeLoadingProgressInfo* changeLoadingProgressInfo;
-// Arguments passed to |webStateDidChangeTitle:|.
+// Arguments passed to `webStateDidChangeBackForwardState:`.
+@property(nonatomic, readonly)
+    web::TestDidChangeBackForwardStateInfo* changeBackForwardStateInfo;
+// Arguments passed to `webStateDidChangeTitle:`.
 @property(nonatomic, readonly) web::TestTitleWasSetInfo* titleWasSetInfo;
-// Arguments passed to |webStateDidChangeVisibleSecurityState:|.
+// Arguments passed to `webStateDidChangeVisibleSecurityState:`.
 @property(nonatomic, readonly) web::TestDidChangeVisibleSecurityStateInfo*
     didChangeVisibleSecurityStateInfo;
-// Arguments passed to |webState:didUpdateFaviconURLCandidates|.
+// Arguments passed to `webState:didUpdateFaviconURLCandidates`.
 @property(nonatomic, readonly)
     web::TestUpdateFaviconUrlCandidatesInfo* updateFaviconUrlCandidatesInfo;
-// Arguments passed to |webState:renderProcessGoneForWebState:|.
+// Arguments passed to `renderProcessGoneForWebState:`.
 @property(nonatomic, readonly)
     web::TestRenderProcessGoneInfo* renderProcessGoneInfo;
-// Arguments passed to |webStateDestroyed:|.
+// Arguments passed to `webStateRealized:`.
+@property(nonatomic, readonly)
+    web::TestWebStateRealizedInfo* webStateRealizedInfo;
+// Arguments passed to `webStateDestroyed:`.
 @property(nonatomic, readonly)
     web::TestWebStateDestroyedInfo* webStateDestroyedInfo;
-// Arguments passed to |webStateDidStopLoading:|.
-@property(nonatomic, readonly) web::TestStopLoadingInfo* stopLoadingInfo;
-// Arguments passed to |webStateDidStartLoading:|.
-@property(nonatomic, readonly) web::TestStartLoadingInfo* startLoadingInfo;
+// Arguments passed to `webState:didChangeStateForPermission:`.
+@property(nonatomic, readonly)
+    web::TestWebStatePermissionStateChangedInfo* permissionStateChangedInfo;
 
 @end
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,20 +23,23 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.media.PictureInPicture;
+import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.notifications.WebPlatformNotificationMetrics;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -46,6 +49,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -113,7 +117,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public int getDisplayMode() {
-        return WebDisplayMode.BROWSER;
+        return DisplayMode.BROWSER;
     }
 
     @Override
@@ -173,7 +177,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
         if (success) {
             if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
-                if (mTabModelSelectorSupplier.hasValue()
+                if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()
+                        && mTabModelSelectorSupplier.hasValue()
                         && mTabModelSelectorSupplier.get()
                                         .getTabModelFilterProvider()
                                         .getCurrentTabModelFilter()
@@ -182,10 +187,13 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                                 == 2) {
                     RecordUserAction.record("TabGroup.Created.DeveloperRequestedNewTab");
                 }
+                RecordUserAction.record("LinkNavigationOpenedInForegroundTab");
             } else if (disposition == WindowOpenDisposition.NEW_POPUP) {
                 PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
-                auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
-                        AuditEvent.OPEN_POPUP_URL_SUCCESS, url.getSpec(), "");
+                if (auditor != null) {
+                    auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
+                            AuditEvent.OPEN_POPUP_URL_SUCCESS, url.getSpec(), "");
+                }
             }
         }
 
@@ -216,7 +224,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         TabModel model = mTabModelSelectorSupplier.get().getModel(mTab.isIncognito());
         int index = model.indexOf(mTab);
         if (index == TabModel.INVALID_TAB_INDEX) return;
-        TabModelUtils.setIndex(model, index);
+        TabModelUtils.setIndex(model, index, false);
 
         // Do nothing if the mActivity is visible (STOPPED is the only valid invisible state as we
         // explicitly check isActivityFinishingOrDestroyed above).
@@ -355,10 +363,27 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
-    public void enterFullscreenModeForTab(boolean prefersNavigationBar) {
+    public boolean controlsResizeView() {
+        return mCompositorViewHolderSupplier.hasValue()
+                && mCompositorViewHolderSupplier.get().controlsResizeView();
+    }
+
+    @Override
+    public void enterFullscreenModeForTab(boolean prefersNavigationBar, boolean prefersStatusBar) {
         if (mFullscreenManager != null) {
-            mFullscreenManager.onEnterFullscreen(mTab, new FullscreenOptions(prefersNavigationBar));
+            mFullscreenManager.onEnterFullscreen(
+                    mTab, new FullscreenOptions(prefersNavigationBar, prefersStatusBar));
         }
+    }
+
+    @Override
+    public void fullscreenStateChangedForTab(
+            boolean prefersNavigationBar, boolean prefersStatusBar) {
+        // State-only changes are useful for recursive fullscreen activation. Early out if
+        // fullscreen mode is not on.
+        if (mFullscreenManager == null || !mFullscreenManager.getPersistentFullscreenMode()) return;
+        mFullscreenManager.onEnterFullscreen(
+                mTab, new FullscreenOptions(prefersNavigationBar, prefersStatusBar));
     }
 
     @Override
@@ -375,6 +400,28 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     @Override
     protected boolean isNightModeEnabled() {
         return mActivity != null ? ColorUtils.inNightMode(mActivity) : false;
+    }
+
+    @Override
+    protected boolean isForceDarkWebContentEnabled() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE)) {
+            return true;
+        }
+        if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
+            return false;
+        }
+        WebContents webContents = mTab.getWebContents();
+        if (webContents == null) {
+            return false;
+        }
+        Profile profile = Profile.fromWebContents(mTab.getWebContents());
+        if (profile == null) {
+            return false;
+        }
+        return isNightModeEnabled()
+                && WebContentsDarkModeController.isEnabledForUrl(
+                        profile, webContents.getVisibleUrl());
     }
 
     @Override
@@ -415,7 +462,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                         .with(ModalDialogProperties.CONTROLLER, dialogController)
                         .with(ModalDialogProperties.TITLE, resources,
                                 R.string.http_post_warning_title)
-                        .with(ModalDialogProperties.MESSAGE, resources, R.string.http_post_warning)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                resources.getString(R.string.http_post_warning))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                                 R.string.http_post_warning_resend)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,

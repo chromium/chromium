@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ GURL GetTargetTabUrl(SessionID session_id, int index) {
         }
       }
       if (target_tab)
-        return target_tab->GetURL();
+        return target_tab->GetLastCommittedURL();
     }
   }
 
@@ -79,7 +79,7 @@ void ShowFeedbackDialogForWebUI(WebUIFeedbackSource webui_source,
   std::string category;
   switch (webui_source) {
     case WebUIFeedbackSource::kConnectivityDiagnostics:
-      source = FeedbackSource::kFeedbackSourceNetworkHealthPage;
+      source = FeedbackSource::kFeedbackSourceConnectivityDiagnostics;
       category = "connectivity-diagnostics";
       break;
   }

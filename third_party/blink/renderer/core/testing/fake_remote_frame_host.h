@@ -1,17 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_FAKE_REMOTE_FRAME_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_FAKE_REMOTE_FRAME_HOST_H_
 
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 
 namespace blink {
@@ -24,7 +24,9 @@ class FakeRemoteFrameHost : public mojom::blink::RemoteFrameHost {
  public:
   FakeRemoteFrameHost() = default;
 
-  void Init(blink::AssociatedInterfaceProvider* provider);
+  mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+  BindNewAssociatedRemote();
+
   void SetInheritedEffectiveTouchAction(cc::TouchAction touch_action) override;
   void UpdateRenderThrottlingStatus(bool is_throttled,
                                     bool subtree_throttled,
@@ -37,11 +39,11 @@ class FakeRemoteFrameHost : public mojom::blink::RemoteFrameHost {
       const base::UnguessableToken& guid) override;
   void SetIsInert(bool inert) override;
   void DidChangeOpener(
-      const base::Optional<LocalFrameToken>& opener_frame) override;
+      const absl::optional<LocalFrameToken>& opener_frame) override;
   void AdvanceFocus(blink::mojom::FocusType focus_type,
                     const LocalFrameToken& source_frame_token) override;
   void RouteMessageEvent(
-      const base::Optional<LocalFrameToken>& source_frame_token,
+      const absl::optional<LocalFrameToken>& source_frame_token,
       const String& source_origin,
       const String& target_origin,
       BlinkTransferableMessage message) override;
@@ -50,7 +52,7 @@ class FakeRemoteFrameHost : public mojom::blink::RemoteFrameHost {
   void Detach() override;
   void UpdateViewportIntersection(
       blink::mojom::blink::ViewportIntersectionStatePtr intersection_state,
-      const base::Optional<FrameVisualProperties>& visual_properties) override;
+      const absl::optional<FrameVisualProperties>& visual_properties) override;
 
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& properties) override;
@@ -58,8 +60,6 @@ class FakeRemoteFrameHost : public mojom::blink::RemoteFrameHost {
   void OpenURL(mojom::blink::OpenURLParamsPtr params) override;
 
  private:
-  void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);
-
   mojo::AssociatedReceiver<mojom::blink::RemoteFrameHost> receiver_{this};
 };
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/ip_address.h"
 #include "services/network/public/mojom/p2p.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/async_resolver_interface.h"
 
 namespace sharing {
@@ -33,7 +34,9 @@ class P2PAsyncAddressResolver {
   ~P2PAsyncAddressResolver();
 
   // Start address resolve process.
-  void Start(const rtc::SocketAddress& addr, DoneCallback done_callback);
+  void Start(const rtc::SocketAddress& addr,
+             absl::optional<int> address_family,
+             DoneCallback done_callback);
   // Clients must unregister before exiting for cleanup.
   void Cancel();
 

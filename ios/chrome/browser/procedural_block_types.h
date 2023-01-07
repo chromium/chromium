@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 class GURL;
 
-// A generic procedural block type that takes a |GURL| and returns nothing.
+// A generic procedural block type that takes a GURL and returns nothing.
 typedef void (^ProceduralBlockWithURL)(const GURL&);
 
 // A block that takes a bool and returns nothing, as used for UIView animation

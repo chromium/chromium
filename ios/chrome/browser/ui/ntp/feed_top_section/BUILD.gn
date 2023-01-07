@@ -1,0 +1,35 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("feed_top_section") {
+  sources = [
+    "feed_top_section_consumer.h",
+    "feed_top_section_coordinator.h",
+    "feed_top_section_coordinator.mm",
+    "feed_top_section_mediator.h",
+    "feed_top_section_mediator.mm",
+    "feed_top_section_view_controller.h",
+    "feed_top_section_view_controller.mm",
+    "feed_top_section_view_controller_delegate.h",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    "resources:ntp_feed_signin_promo_icon",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/discover_feed:constants",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication:signin_presenter",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/ntp",
+    "//ios/chrome/browser/ui/ntp:constants",
+    "//ios/chrome/browser/ui/ntp:feature_flags",
+    "//ios/chrome/common/ui/colors",
+  ]
+}

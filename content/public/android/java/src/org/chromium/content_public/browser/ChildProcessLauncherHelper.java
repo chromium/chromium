@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,14 +25,13 @@ public final class ChildProcessLauncherHelper {
     }
 
     /**
-     * Starts the moderate binding management that adjust a process priority in response to various
-     * signals (app sent to background/foreground for example).
-     * Note: WebAPKs and non WebAPKs share the same moderate binding pool, so the size of the
-     * shared moderate binding pool is always set based on the number of sandboxes processes
-     * used by Chrome.
+     * Starts the binding management that adjust a process priority in response to various signals
+     * (app sent to background/foreground for example).
+     * Note: WebAPKs and non WebAPKs share the same binding pool, so the size of the shared binding
+     * pool is always set based on the number of sandboxes processes used by Chrome.
      * @param context Android's context.
      */
-    public static void startModerateBindingManagement(Context context) {
-        ChildProcessLauncherHelperImpl.startModerateBindingManagement(context);
+    public static void startBindingManagement(Context context) {
+        ChildProcessLauncherHelperImpl.startBindingManagement(context);
     }
 }

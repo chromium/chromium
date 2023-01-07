@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,9 @@
 
 #include "base/files/file.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
@@ -51,26 +50,29 @@ PerfDataProto GetExamplePerfDataProto() {
   return proto;
 }
 
-// Perf session ID returned by the GetPerfOutputFd DBus method call.
+// Perf session ID returned by the GetPerfOutputV2 DBus method call.
 const uint64_t kFakePerfSssionId = 101;
-// Profile collection duration is 4 seconds.
-const base::TimeDelta kProfileDuration = base::TimeDelta::FromSeconds(4);
-// Perf command line arguments.
-const std::vector<std::string> kPerfArgs{"perf",   "record", "-a", "-e",
-                                         "cycles", "-g",     "-c", "4000037"};
+// Quipper command line arguments for running perf.
+const std::vector<std::string> kQuipperArgs{
+    "--duration", "4",      "--", "perf", "record", "-a",
+    "-e",         "cycles", "-g", "-c",   "4000037"};
 
 // This fakes DebugDaemonClient by serving example perf data when the profiling
 // duration elapses.
-class FakeDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
+class FakeDebugDaemonClient : public ash::FakeDebugDaemonClient {
  public:
   FakeDebugDaemonClient()
       : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+
+  FakeDebugDaemonClient(const FakeDebugDaemonClient&) = delete;
+  FakeDebugDaemonClient& operator=(const FakeDebugDaemonClient&) = delete;
+
   ~FakeDebugDaemonClient() override {
     EXPECT_FALSE(perf_output_file_.IsValid());
   }
 
-  void GetPerfOutput(base::TimeDelta duration,
-                     const std::vector<std::string>& perf_args,
+  void GetPerfOutput(const std::vector<std::string>& quipper_args,
+                     bool disable_cpu_idle,
                      int file_descriptor,
                      chromeos::DBusMethodCallback<uint64_t> callback) override {
     // We will write perf output to this pipe FD. dup() |file_descriptor|
@@ -119,8 +121,6 @@ class FakeDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
   base::File perf_output_file_;
   chromeos::DBusMethodCallback<uint64_t> get_perf_outjput_callback_;
   bool stop_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDebugDaemonClient);
 };
 
 }  // namespace
@@ -128,6 +128,9 @@ class FakeDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
 class PerfOutputCallTest : public testing::Test {
  public:
   PerfOutputCallTest() = default;
+
+  PerfOutputCallTest(const PerfOutputCallTest&) = delete;
+  PerfOutputCallTest& operator=(const PerfOutputCallTest&) = delete;
 
   void SetUp() override {
     debug_daemon_client_ = std::make_unique<FakeDebugDaemonClient>();
@@ -149,14 +152,12 @@ class PerfOutputCallTest : public testing::Test {
   std::unique_ptr<PerfOutputCall> perf_output_call_;
 
   std::string perf_output_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfOutputCallTest);
 };
 
 // Test getting perf output after profile duration elapses.
 TEST_F(PerfOutputCallTest, GetPerfOutput) {
   perf_output_call_ = std::make_unique<PerfOutputCall>(
-      debug_daemon_client_.get(), kProfileDuration, kPerfArgs,
+      debug_daemon_client_.get(), kQuipperArgs, false,
       base::BindOnce(&PerfOutputCallTest::OnPerfOutputComplete,
                      base::Unretained(this)));
   // Not yet collected.
@@ -176,7 +177,7 @@ TEST_F(PerfOutputCallTest, GetPerfOutput) {
 // Test stopping the perf session and get perf output right away.
 TEST_F(PerfOutputCallTest, Stop) {
   perf_output_call_ = std::make_unique<PerfOutputCall>(
-      debug_daemon_client_.get(), kProfileDuration, kPerfArgs,
+      debug_daemon_client_.get(), kQuipperArgs, false,
       base::BindOnce(&PerfOutputCallTest::OnPerfOutputComplete,
                      base::Unretained(this)));
   // Not yet collected.

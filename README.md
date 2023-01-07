@@ -38,6 +38,7 @@ Only one build configuration is currently supported.
 
    use_goma = true # if using engflow, false otherwise
    is_debug = false # we can't really use most debugging symbols right now
+   dcheck_always_on = false # disable dchecks
    enable_nacl = false  # no native targets
    ```
    * On linux add the following settings to disable the allocator shim.

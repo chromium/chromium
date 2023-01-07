@@ -1,14 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "media/base/subsample_entry.h"
 #include "media/base/test_data_util.h"
 #include "media/video/h265_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,6 +66,7 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
     int num_parsed_nalus = 0;
     while (true) {
       H265NALU nalu;
+      H265SEIMessage sei_msg;
       H265Parser::Result res = parser_.AdvanceToNextNALU(&nalu);
       if (res == H265Parser::kEOStream) {
         DVLOG(1) << "Number of successfully parsed NALUs before EOS: "
@@ -79,8 +80,12 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
       DVLOG(4) << "Found NALU " << nalu.nal_unit_type;
 
       H265SliceHeader shdr;
-      H265SliceHeader prior_shdr;
       switch (nalu.nal_unit_type) {
+        case H265NALU::VPS_NUT:
+          int vps_id;
+          res = parser_.ParseVPS(&vps_id);
+          EXPECT_TRUE(!!parser_.GetVPS(vps_id));
+          break;
         case H265NALU::SPS_NUT:
           int sps_id;
           res = parser_.ParseSPS(&sps_id);
@@ -90,6 +95,10 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
           int pps_id;
           res = parser_.ParsePPS(nalu, &pps_id);
           EXPECT_TRUE(!!parser_.GetPPS(pps_id));
+          break;
+        case H265NALU::PREFIX_SEI_NUT:
+          res = parser_.ParseSEI(&sei_msg);
+          EXPECT_EQ(res, H265Parser::kOk);
           break;
         case H265NALU::TRAIL_N:
         case H265NALU::TRAIL_R:
@@ -107,8 +116,7 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
         case H265NALU::IDR_W_RADL:
         case H265NALU::IDR_N_LP:
         case H265NALU::CRA_NUT:  // fallthrough
-          res = parser_.ParseSliceHeader(nalu, &shdr, &prior_shdr);
-          prior_shdr = shdr;
+          res = parser_.ParseSliceHeader(nalu, &shdr, nullptr);
           break;
         default:
           break;
@@ -116,6 +124,34 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
       EXPECT_EQ(res, H265Parser::kOk);
     }
   }
+}
+
+TEST_F(H265ParserTest, VpsParsing) {
+  LoadParserFile("bear.hevc");
+  H265NALU target_nalu;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::VPS_NUT));
+  int vps_id;
+  EXPECT_EQ(H265Parser::kOk, parser_.ParseVPS(&vps_id));
+  const H265VPS* vps = parser_.GetVPS(vps_id);
+  EXPECT_TRUE(!!vps);
+  EXPECT_TRUE(vps->vps_base_layer_internal_flag);
+  EXPECT_TRUE(vps->vps_base_layer_available_flag);
+  EXPECT_EQ(vps->vps_max_layers_minus1, 0);
+  EXPECT_EQ(vps->vps_max_sub_layers_minus1, 0);
+  EXPECT_TRUE(vps->vps_temporal_id_nesting_flag);
+  EXPECT_EQ(vps->profile_tier_level.general_profile_idc, 1);
+  EXPECT_EQ(vps->profile_tier_level.general_level_idc, 60);
+  EXPECT_EQ(vps->vps_max_dec_pic_buffering_minus1[0], 4);
+  EXPECT_EQ(vps->vps_max_num_reorder_pics[0], 2);
+  EXPECT_EQ(vps->vps_max_latency_increase_plus1[0], 0);
+  for (int i = 1; i < kMaxSubLayers; ++i) {
+    EXPECT_EQ(vps->vps_max_dec_pic_buffering_minus1[i], 0);
+    EXPECT_EQ(vps->vps_max_num_reorder_pics[i], 0);
+    EXPECT_EQ(vps->vps_max_latency_increase_plus1[i], 0);
+  }
+  EXPECT_EQ(vps->vps_max_layer_id, 0);
+  EXPECT_EQ(vps->vps_num_layer_sets_minus1, 0);
+  EXPECT_FALSE(vps->vps_timing_info_present_flag);
 }
 
 TEST_F(H265ParserTest, SpsParsing) {
@@ -227,9 +263,12 @@ TEST_F(H265ParserTest, PpsParsing) {
 TEST_F(H265ParserTest, SliceHeaderParsing) {
   LoadParserFile("bear.hevc");
   H265NALU target_nalu;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::VPS_NUT));
+  int vps_id;
+  // We need to parse the VPS/SPS/PPS so the slice header can find them.
+  EXPECT_EQ(H265Parser::kOk, parser_.ParseVPS(&vps_id));
   EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::SPS_NUT));
   int sps_id;
-  // We need to parse the SPS/PPS so the slice header can find them.
   EXPECT_EQ(H265Parser::kOk, parser_.ParseSPS(&sps_id));
   EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::PPS_NUT));
   int pps_id;
@@ -281,113 +320,79 @@ TEST_F(H265ParserTest, SliceHeaderParsing) {
   EXPECT_TRUE(shdr.slice_loop_filter_across_slices_enabled_flag);
 }
 
-// Verify that GetCurrentSubsamples works.
-TEST_F(H265ParserTest, GetCurrentSubsamplesNormal) {
-  constexpr uint8_t kStream[] = {
-      // First NALU.
-      // Clear bytes = 5.
-      0x00, 0x00, 0x01,  // start code.
-      0x28, 0x00,        // Nalu type = 20, IDR slice.
-      // Below is bogus data.
-      // Encrypted bytes = 15.
-      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03,
-      0x04, 0x05, 0x06,
-      // Clear bytes = 5.
-      0x07, 0x00, 0x01, 0x02, 0x03,
-      // Encrypted until next NALU. Encrypted bytes = 20.
-      0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-      // Note that this is still in the encrypted region but looks like a start
-      // code.
-      0x00, 0x00, 0x01, 0x03, 0x04, 0x05, 0x06, 0x07,
-      // Second NALU. Completely clear.
-      // Clear bytes = 11.
-      0x00, 0x00, 0x01,  // start code.
-      0x42, 0x00,        // nalu type = 33, SPS.
-      // Bogus data.
-      0xff, 0xfe, 0xfd, 0xee, 0x12, 0x33,
-  };
-  std::vector<SubsampleEntry> subsamples;
-  subsamples.emplace_back(5u, 15u);
-  subsamples.emplace_back(5u, 20u);
-  subsamples.emplace_back(11u, 0u);
-  H265Parser parser;
-  parser.SetEncryptedStream(kStream, base::size(kStream), subsamples);
+TEST_F(H265ParserTest, SliceHeaderParsingNoValidationOnFirstSliceInFrame) {
+  LoadParserFile("bear.hevc");
+  H265SliceHeader curr_slice_header;
+  H265SliceHeader last_slice_header;
 
-  H265NALU nalu;
-  EXPECT_EQ(H265Parser::kOk, parser.AdvanceToNextNALU(&nalu));
-  EXPECT_EQ(H265NALU::IDR_N_LP, nalu.nal_unit_type);
-  auto nalu_subsamples = parser.GetCurrentSubsamples();
-  EXPECT_EQ(2u, nalu_subsamples.size());
+  while (true) {
+    H265NALU nalu;
+    H265Parser::Result result = parser_.AdvanceToNextNALU(&nalu);
+    ASSERT_TRUE(result == H265Parser::kOk || result == H265Parser::kEOStream);
+    if (result == H265Parser::kEOStream)
+      break;
 
-  // Note that nalu->data starts from the NALU header, i.e. does not include
-  // the start code.
-  EXPECT_EQ(2u, nalu_subsamples[0].clear_bytes);
-  EXPECT_EQ(15u, nalu_subsamples[0].cypher_bytes);
-  EXPECT_EQ(5u, nalu_subsamples[1].clear_bytes);
-  EXPECT_EQ(20u, nalu_subsamples[1].cypher_bytes);
-
-  // Make sure that it reached the next NALU.
-  EXPECT_EQ(H265Parser::kOk, parser.AdvanceToNextNALU(&nalu));
-  EXPECT_EQ(H265NALU::SPS_NUT, nalu.nal_unit_type);
-  nalu_subsamples = parser.GetCurrentSubsamples();
-  EXPECT_EQ(1u, nalu_subsamples.size());
-
-  EXPECT_EQ(8u, nalu_subsamples[0].clear_bytes);
-  EXPECT_EQ(0u, nalu_subsamples[0].cypher_bytes);
+    switch (nalu.nal_unit_type) {
+      case H265NALU::TRAIL_R:
+        [[fallthrough]];
+      case H265NALU::IDR_W_RADL:
+        result = parser_.ParseSliceHeader(nalu, &curr_slice_header,
+                                          &last_slice_header);
+        EXPECT_EQ(result, H265Parser::kOk);
+        last_slice_header = curr_slice_header;
+        break;
+      case H265NALU::SPS_NUT:
+        int sps_id;
+        EXPECT_EQ(parser_.ParseSPS(&sps_id), H265Parser::kOk);
+        EXPECT_NE(parser_.GetSPS(sps_id), nullptr);
+        break;
+      case H265NALU::PPS_NUT:
+        int pps_id;
+        EXPECT_EQ(parser_.ParsePPS(nalu, &pps_id), H265Parser::kOk);
+        EXPECT_NE(parser_.GetPPS(pps_id), nullptr);
+        break;
+      default:
+        break;
+    }
+  }
 }
 
-// Verify that subsamples starting at non-NALU boundary also works.
-TEST_F(H265ParserTest, GetCurrentSubsamplesSubsampleNotStartingAtNaluBoundary) {
-  constexpr uint8_t kStream[] = {
-      // First NALU.
-      // Clear bytes = 5.
-      0x00, 0x00, 0x01,  // start code.
-      0x28, 0x00,        // Nalu type = 20, IDR slice.
-      // Below is bogus data.
-      // Encrypted bytes = 24.
-      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03,
-      0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-      // Clear bytes = 19. The rest is in the clear. Note that this is not at
-      // a NALU boundary and a NALU starts below.
-      0xaa, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-      // Second NALU. Completely clear.
-      0x00, 0x00, 0x01,  // start code.
-      0x42, 0x00,        // nalu type = 33, SPS.
-      // Bogus data.
-      0xff, 0xfe, 0xfd, 0xee, 0x12, 0x33,
-  };
+TEST_F(H265ParserTest, SEIParsing) {
+  LoadParserFile("bear-1280x720-hevc-10bit-hdr10.hevc");
+  H265NALU target_nalu;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::VPS_NUT));
+  int vps_id;
+  EXPECT_EQ(H265Parser::kOk, parser_.ParseVPS(&vps_id));
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::SPS_NUT));
+  int sps_id;
+  EXPECT_EQ(H265Parser::kOk, parser_.ParseSPS(&sps_id));
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::PPS_NUT));
+  int pps_id;
+  EXPECT_EQ(H265Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
 
-  std::vector<SubsampleEntry> subsamples;
-  subsamples.emplace_back(5u, 24u);
-  subsamples.emplace_back(19u, 0u);
-  H265Parser parser;
-  parser.SetEncryptedStream(kStream, base::size(kStream), subsamples);
+  // Parse the next content light level info SEI
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::PREFIX_SEI_NUT));
+  H265SEIMessage clli_sei;
+  EXPECT_EQ(H265Parser::kOk, parser_.ParseSEI(&clli_sei));
+  EXPECT_EQ(clli_sei.type, H265SEIMessage::kSEIContentLightLevelInfo);
+  EXPECT_EQ(clli_sei.content_light_level_info.max_content_light_level, 1000u);
+  EXPECT_EQ(clli_sei.content_light_level_info.max_picture_average_light_level,
+            400u);
 
-  H265NALU nalu;
-  EXPECT_EQ(H265Parser::kOk, parser.AdvanceToNextNALU(&nalu));
-  EXPECT_EQ(H265NALU::IDR_N_LP, nalu.nal_unit_type);
-  auto nalu_subsamples = parser.GetCurrentSubsamples();
-  EXPECT_EQ(2u, nalu_subsamples.size());
-
-  // Note that nalu->data starts from the NALU header, i.e. does not include
-  // the start code.
-  EXPECT_EQ(2u, nalu_subsamples[0].clear_bytes);
-  EXPECT_EQ(24u, nalu_subsamples[0].cypher_bytes);
-
-  // The nalu ends with 8 more clear bytes. The last 10 bytes should be
-  // associated with the next nalu.
-  EXPECT_EQ(8u, nalu_subsamples[1].clear_bytes);
-  EXPECT_EQ(0u, nalu_subsamples[1].cypher_bytes);
-
-  EXPECT_EQ(H265Parser::kOk, parser.AdvanceToNextNALU(&nalu));
-  EXPECT_EQ(H265NALU::SPS_NUT, nalu.nal_unit_type);
-  nalu_subsamples = parser.GetCurrentSubsamples();
-  EXPECT_EQ(1u, nalu_subsamples.size());
-
-  // Although the input had 10 more bytes, since nalu->data starts from the nalu
-  // header, there's only 7 more bytes left.
-  EXPECT_EQ(8u, nalu_subsamples[0].clear_bytes);
-  EXPECT_EQ(0u, nalu_subsamples[0].cypher_bytes);
+  // Parse the next mastering display colour volume info SEI
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::PREFIX_SEI_NUT));
+  H265SEIMessage mdcv_sei;
+  EXPECT_EQ(H265Parser::kOk, parser_.ParseSEI(&mdcv_sei));
+  EXPECT_EQ(mdcv_sei.type, H265SEIMessage::kSEIMasteringDisplayInfo);
+  EXPECT_EQ(mdcv_sei.mastering_display_info.display_primaries[0][0], 13250u);
+  EXPECT_EQ(mdcv_sei.mastering_display_info.display_primaries[0][1], 34500u);
+  EXPECT_EQ(mdcv_sei.mastering_display_info.display_primaries[1][0], 7500u);
+  EXPECT_EQ(mdcv_sei.mastering_display_info.display_primaries[1][1], 3000u);
+  EXPECT_EQ(mdcv_sei.mastering_display_info.display_primaries[2][0], 34000u);
+  EXPECT_EQ(mdcv_sei.mastering_display_info.display_primaries[2][1], 16000u);
+  EXPECT_EQ(mdcv_sei.mastering_display_info.white_points[0], 15635u);
+  EXPECT_EQ(mdcv_sei.mastering_display_info.white_points[1], 16450u);
+  EXPECT_EQ(mdcv_sei.mastering_display_info.max_luminance, 10000000u);
+  EXPECT_EQ(mdcv_sei.mastering_display_info.min_luminance, 500u);
 }
-
 }  // namespace media

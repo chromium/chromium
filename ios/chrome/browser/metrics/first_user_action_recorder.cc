@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/web/public/thread/web_thread.h"
+#include "ui/base/device_form_factor.h"
 
 const char* kFirstUserActionNewTaskHistogramName[] = {
     "FirstUserAction.BackgroundTimeNewTaskHandset",
@@ -78,6 +77,7 @@ const char* kNewTaskActions[] = {
     "MobileNTPSwitchToBookmarks",
     "MobileNTPSwitchToMostVisited",
     "MobileNTPSwitchToOpenTabs",
+    "MobileNTPShowWhatsNew",
     "MobileTabStripNewTab",
     "MobileToolbarNewTab",
     "MobileToolbarStackViewNewTab",
@@ -96,7 +96,10 @@ const int kDurationHistogramBucketCount = 50;
 
 FirstUserActionRecorder::FirstUserActionRecorder(
     base::TimeDelta background_duration)
-    : device_family_(IsIPadIdiom() ? TABLET : HANDSET),
+    : device_family_(
+          (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+              ? TABLET
+              : HANDSET),
       recorded_action_(false),
       action_pending_(false),
       background_duration_(background_duration),
@@ -128,7 +131,7 @@ void FirstUserActionRecorder::RecordStartOnNTP() {
 void FirstUserActionRecorder::OnUserAction(const std::string& action_name,
                                            base::TimeTicks action_time) {
   if (ShouldProcessAction(action_name, action_time)) {
-    if (ArrayContainsString(kNewTaskActions, base::size(kNewTaskActions),
+    if (ArrayContainsString(kNewTaskActions, std::size(kNewTaskActions),
                             action_name.c_str())) {
       std::string log_message = base::StringPrintf(
           "Recording 'New task' for first user action type"
@@ -190,7 +193,7 @@ bool FirstUserActionRecorder::ShouldProcessAction(
     return false;
 
   if (!action_pending_ &&
-      ArrayContainsString(kRethrownActions, base::size(kRethrownActions),
+      ArrayContainsString(kRethrownActions, std::size(kRethrownActions),
                           action_name.c_str())) {
     rethrow_callback_.Reset(
         base::BindOnce(&FirstUserActionRecorder::OnUserAction,
@@ -205,11 +208,11 @@ bool FirstUserActionRecorder::ShouldProcessAction(
   // inkNewTaskActions.
   bool known_mobile_action =
       base::StartsWith(action_name, "Mobile", base::CompareCase::SENSITIVE) ||
-      ArrayContainsString(kNewTaskActions, base::size(kNewTaskActions),
+      ArrayContainsString(kNewTaskActions, std::size(kNewTaskActions),
                           action_name.c_str());
 
   return known_mobile_action &&
-         !ArrayContainsString(kIgnoredActions, base::size(kIgnoredActions),
+         !ArrayContainsString(kIgnoredActions, std::size(kIgnoredActions),
                               action_name.c_str());
 }
 

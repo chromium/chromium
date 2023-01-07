@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(
       `Tests that when uncaught exception in eval'ed script ending with //# sourceURL=url is logged into console, its stack trace will have the url as the script source. Bug 47252.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -44,7 +44,7 @@
   }
 
   function step3() {
-    if (Console.ConsoleView.instance()._visibleViewMessages.length < 2)
+    if (Console.ConsoleView.instance().visibleViewMessages.length < 2)
       ConsoleTestRunner.addConsoleSniffer(step3);
     else
       step4();

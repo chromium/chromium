@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,25 +15,28 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
-#include "components/cast_channel/cast_message_util.h"
-#include "components/cast_channel/cast_socket.h"
-#include "components/cast_channel/enum_table.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
+#include "components/media_router/common/providers/cast/channel/cast_socket.h"
+#include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "components/media_router/common/route_request_result.h"
 #include "components/mirroring/mojom/session_parameters.mojom-forward.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_address.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using blink::mojom::PresentationConnectionMessagePtr;
 using cast_channel::Result;
@@ -51,79 +54,74 @@ constexpr char kHistogramSessionLaunch[] =
     "MediaRouter.CastStreaming.Session.Launch";
 constexpr char kHistogramSessionLength[] =
     "MediaRouter.CastStreaming.Session.Length";
-constexpr char kHistogramSessionLengthScreen[] =
-    "MediaRouter.CastStreaming.Session.Length.Screen";
-constexpr char kHistogramSessionLengthFile[] =
-    "MediaRouter.CastStreaming.Session.Length.File";
+constexpr char kHistogramSessionLengthAccessCode[] =
+    "MediaRouter.CastStreaming.Session.Length.AccessCode";
 constexpr char kHistogramSessionLengthOffscreenTab[] =
     "MediaRouter.CastStreaming.Session.Length.OffscreenTab";
+constexpr char kHistogramSessionLengthScreen[] =
+    "MediaRouter.CastStreaming.Session.Length.Screen";
 constexpr char kHistogramSessionLengthTab[] =
     "MediaRouter.CastStreaming.Session.Length.Tab";
+constexpr char kHistogramStartFailureAccessCodeManualEntry[] =
+    "MediaRouter.CastStreaming.Start.Failure.AccessCodeManualEntry";
+constexpr char kHistogramStartFailureAccessCodeRememberedDevice[] =
+    "MediaRouter.CastStreaming.Start.Failure.AccessCodeRememberedDevice";
 constexpr char kHistogramStartFailureNative[] =
     "MediaRouter.CastStreaming.Start.Failure.Native";
 constexpr char kHistogramStartSuccess[] =
     "MediaRouter.CastStreaming.Start.Success";
+constexpr char kHistogramStartSuccessAccessCodeManualEntry[] =
+    "MediaRouter.CastStreaming.Start.Success.AccessCodeManualEntry";
+constexpr char kHistogramStartSuccessAccessCodeRememberedDevice[] =
+    "MediaRouter.CastStreaming.Start.Success.AccessCodeRememberedDevice";
 
 constexpr char kLoggerComponent[] = "MirroringService";
 
 using MirroringType = MirroringActivity::MirroringType;
 
-const std::string GetMirroringNamespace(const base::Value& message) {
-  const base::Value* const type_value =
-      message.FindKeyOfType("type", base::Value::Type::STRING);
-
-  if (type_value &&
-      type_value->GetString() ==
-          cast_util::EnumToString<cast_channel::CastMessageType,
-                                  cast_channel::CastMessageType::kRpc>()) {
+const std::string GetMirroringNamespace(const base::Value::Dict& message) {
+  const std::string* type = message.FindString("type");
+  if (type &&
+      *type == cast_util::EnumToString<cast_channel::CastMessageType,
+                                       cast_channel::CastMessageType::kRpc>()) {
     return mirroring::mojom::kRemotingNamespace;
   } else {
     return mirroring::mojom::kWebRtcNamespace;
   }
 }
 
-// Get the mirroring type for a media route.  Note that |target_tab_id| is
-// usually ignored here, because mirroring typically only happens with a special
-// URL that includes the tab ID it needs, which should be the same as the tab ID
-// selected by the media router.
-base::Optional<MirroringActivity::MirroringType> GetMirroringType(
-    const MediaRoute& route,
-    int target_tab_id) {
+absl::optional<MirroringActivity::MirroringType> GetMirroringType(
+    const MediaRoute& route) {
   if (!route.is_local())
-    return base::nullopt;
+    return absl::nullopt;
 
   const auto source = route.media_source();
-  if (source.IsTabMirroringSource() || source.IsLocalFileSource())
+  if (source.IsTabMirroringSource())
     return MirroringActivity::MirroringType::kTab;
   if (source.IsDesktopMirroringSource())
     return MirroringActivity::MirroringType::kDesktop;
 
-  if (source.url().is_valid()) {
-    if (source.IsCastPresentationUrl()) {
-      const auto cast_source = CastMediaSource::FromMediaSource(source);
-      if (cast_source && cast_source->ContainsStreamingApp()) {
-        // This is a weird case.  Normally if the source is a presentation URL,
-        // we use 2-UA mode rather than mirroring, but if the app ID it
-        // specifies is one of the special streaming app IDs, we activate
-        // mirroring instead. This only happens when a Cast SDK client requests
-        // a mirroring app ID, which causes its own tab to be mirrored.  This is
-        // a strange thing to do and it's not officially supported, but some
-        // apps, like, Google Slides rely on it.  Unlike a proper tab-based
-        // MediaSource, this kind of MediaSource doesn't specify a tab in the
-        // URL, so we choose the tab that was active when the request was made.
-        DCHECK_GE(target_tab_id, 0);
-        return MirroringActivity::MirroringType::kTab;
-      } else {
-        NOTREACHED() << "Non-mirroring Cast app: " << source;
-        return base::nullopt;
-      }
-    } else if (source.url().SchemeIsHTTPOrHTTPS()) {
-      return MirroringActivity::MirroringType::kOffscreenTab;
+  if (!source.url().is_valid()) {
+    NOTREACHED() << "Invalid source: " << source;
+    return absl::nullopt;
+  }
+
+  if (source.IsCastPresentationUrl()) {
+    const auto cast_source = CastMediaSource::FromMediaSource(source);
+    if (cast_source && cast_source->ContainsStreamingApp()) {
+      // Site-initiated Mirroring has a Cast Presentatino URL and contains
+      // StreamingApp. We should return Tab Mirroring here.
+      return MirroringActivity::MirroringType::kTab;
+    } else {
+      NOTREACHED() << "Non-mirroring Cast app: " << source;
+      return absl::nullopt;
     }
+  } else if (source.url().SchemeIsHTTPOrHTTPS()) {
+    return MirroringActivity::MirroringType::kOffscreenTab;
   }
 
   NOTREACHED() << "Invalid source: " << source;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -133,16 +131,14 @@ MirroringActivity::MirroringActivity(
     const std::string& app_id,
     cast_channel::CastMessageHandler* message_handler,
     CastSessionTracker* session_tracker,
-    int target_tab_id,
+    int frame_tree_node_id,
     const CastSinkExtraData& cast_data,
     OnStopCallback callback)
     : CastActivity(route, app_id, message_handler, session_tracker),
-      mirroring_type_(GetMirroringType(route, target_tab_id)),
+      mirroring_type_(GetMirroringType(route)),
+      frame_tree_node_id_(frame_tree_node_id),
       cast_data_(cast_data),
-      on_stop_(std::move(callback)) {
-  if (target_tab_id != -1)
-    mirroring_tab_id_ = target_tab_id;
-}
+      on_stop_(std::move(callback)) {}
 
 MirroringActivity::~MirroringActivity() {
   if (!did_start_mirroring_timestamp_) {
@@ -151,11 +147,6 @@ MirroringActivity::~MirroringActivity() {
 
   auto cast_duration = base::Time::Now() - *did_start_mirroring_timestamp_;
   base::UmaHistogramLongTimes(kHistogramSessionLength, cast_duration);
-
-  if (route().media_source().IsLocalFileSource()) {
-    base::UmaHistogramLongTimes(kHistogramSessionLengthFile, cast_duration);
-    return;
-  }
 
   if (!mirroring_type_) {
     // The mirroring activity should always be set by now, but check anyway
@@ -174,6 +165,12 @@ MirroringActivity::~MirroringActivity() {
                                   cast_duration);
       break;
   }
+  CastDiscoveryType discovery_type = cast_data_.discovery_type;
+  if (discovery_type == CastDiscoveryType::kAccessCodeManualEntry ||
+      discovery_type == CastDiscoveryType::kAccessCodeRememberedDevice) {
+    base::UmaHistogramLongTimes(kHistogramSessionLengthAccessCode,
+                                cast_duration);
+  }
 }
 
 void MirroringActivity::CreateMojoBindings(mojom::MediaRouter* media_router) {
@@ -186,13 +183,12 @@ void MirroringActivity::CreateMojoBindings(mojom::MediaRouter* media_router) {
       auto stream_id = route_.media_source().DesktopStreamId();
       DCHECK(stream_id);
       media_router->GetMirroringServiceHostForDesktop(
-          /* tab_id */ -1, *stream_id, host_.BindNewPipeAndPassReceiver());
+          *stream_id, host_.BindNewPipeAndPassReceiver());
       break;
     }
     case MirroringType::kTab:
-      DCHECK(mirroring_tab_id_.has_value());
       media_router->GetMirroringServiceHostForTab(
-          *mirroring_tab_id_, host_.BindNewPipeAndPassReceiver());
+          frame_tree_node_id_, host_.BindNewPipeAndPassReceiver());
       break;
     case MirroringType::kOffscreenTab:
       media_router->GetMirroringServiceHostForOffscreenTab(
@@ -218,6 +214,18 @@ void MirroringActivity::OnError(SessionError error) {
   if (will_start_mirroring_timestamp_) {
     // An error was encountered while attempting to start mirroring.
     base::UmaHistogramEnumeration(kHistogramStartFailureNative, error);
+
+    // Record the error for access code discovery types.
+    CastDiscoveryType discovery_type = cast_data_.discovery_type;
+    if (discovery_type == CastDiscoveryType::kAccessCodeManualEntry) {
+      base::UmaHistogramEnumeration(
+          kHistogramStartFailureAccessCodeManualEntry, error);
+    } else if (discovery_type ==
+               CastDiscoveryType::kAccessCodeRememberedDevice) {
+      base::UmaHistogramEnumeration(
+          kHistogramStartFailureAccessCodeRememberedDevice, error);
+    }
+
     will_start_mirroring_timestamp_.reset();
   }
   // Metrics for general errors are captured by the mirroring service in
@@ -236,6 +244,18 @@ void MirroringActivity::DidStart() {
       *did_start_mirroring_timestamp_ - *will_start_mirroring_timestamp_);
   DCHECK(mirroring_type_);
   base::UmaHistogramEnumeration(kHistogramStartSuccess, *mirroring_type_);
+
+  // Record successes to access code discovery types.
+  CastDiscoveryType discovery_type = cast_data_.discovery_type;
+  if (discovery_type == CastDiscoveryType::kAccessCodeManualEntry) {
+    base::UmaHistogramEnumeration(kHistogramStartSuccessAccessCodeManualEntry,
+                                  *mirroring_type_);
+  } else if (discovery_type ==
+             CastDiscoveryType::kAccessCodeRememberedDevice) {
+    base::UmaHistogramEnumeration(
+        kHistogramStartSuccessAccessCodeRememberedDevice, *mirroring_type_);
+  }
+
   will_start_mirroring_timestamp_.reset();
 }
 
@@ -255,7 +275,7 @@ void MirroringActivity::LogErrorMessage(const std::string& message) {
                     route_.media_source().id(), route_.presentation_id());
 }
 
-void MirroringActivity::Send(mirroring::mojom::CastMessagePtr message) {
+void MirroringActivity::OnMessage(mirroring::mojom::CastMessagePtr message) {
   DCHECK(message);
   DVLOG(2) << "Relaying message to receiver: " << message->json_format_data;
 
@@ -263,16 +283,6 @@ void MirroringActivity::Send(mirroring::mojom::CastMessagePtr message) {
       message->json_format_data,
       base::BindOnce(&MirroringActivity::HandleParseJsonResult,
                      weak_ptr_factory_.GetWeakPtr(), route().media_route_id()));
-}
-
-void MirroringActivity::SendMessageToClient(
-    const std::string& client_id,
-    blink::mojom::PresentationConnectionMessagePtr message) {
-  // A client exists if this is a site-initiated mirroring session. Given client
-  // ID is a Cast SDK concept, the client may not have an ID if it joined by
-  // directly using the Presentation API, and we wouldn't be able to distinguish
-  // them. We also do not expect the mirroring receiver to send any messages, so
-  // we drop them.
 }
 
 void MirroringActivity::OnAppMessage(
@@ -285,26 +295,46 @@ void MirroringActivity::OnAppMessage(
     DVLOG(2) << "Ignoring message with namespace " << message.namespace_();
     return;
   }
+  CastSession* session = GetSession();
+  if (!session) {
+    DVLOG(2) << "No valid session.";
+    return;
+  }
+
+  if (message.destination_id() != session->destination_id() &&
+      message.destination_id() != "*") {
+    // Ignore messages sent to someone else.
+    DVLOG(2) << "Ignoring message intended for destination_id:\""
+             << message.destination_id() << "\" (expected \""
+             << session->destination_id() << "\").";
+    return;
+  }
+
+  if (message.source_id() != message_handler_->source_id()) {
+    // Ignore messages sent by a stranger.
+    DVLOG(2) << "Ignoring message unexpectedly sent by source_id: \""
+             << message.source_id() << "\" (expected \""
+             << message_handler_->source_id() << "\")";
+    return;
+  }
+
   DVLOG(2) << "Relaying app message from receiver: " << message.DebugString();
   DCHECK(message.has_payload_utf8());
   DCHECK_EQ(message.protocol_version(),
             cast::channel::CastMessage_ProtocolVersion_CASTV2_1_0);
   if (message.namespace_() == mirroring::mojom::kWebRtcNamespace) {
-    CastSession* session = GetSession();
     logger_->LogInfo(media_router::mojom::LogCategory::kMirroring,
                      kLoggerComponent,
                      base::StrCat({"Relaying app message from receiver:",
                                    message.payload_utf8()}),
                      route().media_sink_id(), route().media_source().id(),
-                     session ? session->session_id() : "");
+                     route().presentation_id());
   }
 
   mirroring::mojom::CastMessagePtr ptr = mirroring::mojom::CastMessage::New();
   ptr->message_namespace = message.namespace_();
   ptr->json_format_data = message.payload_utf8();
-  // TODO(jrw): Do something with message.source_id() and
-  // message.destination_id()?
-  channel_to_service_->Send(std::move(ptr));
+  channel_to_service_->OnMessage(std::move(ptr));
 }
 
 void MirroringActivity::OnInternalMessage(
@@ -316,20 +346,36 @@ void MirroringActivity::OnInternalMessage(
   ptr->message_namespace = message.message_namespace;
   CHECK(base::JSONWriter::Write(message.message, &ptr->json_format_data));
   if (message.message_namespace == mirroring::mojom::kWebRtcNamespace) {
-    CastSession* session = GetSession();
     logger_->LogInfo(
         media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
         base::StrCat({"Relaying internal WebRTC message from receiver: ",
                       ptr->json_format_data}),
         route().media_sink_id(), route().media_source().id(),
-        session ? session->session_id() : "");
+        route().presentation_id());
   }
-  channel_to_service_->Send(std::move(ptr));
+  channel_to_service_->OnMessage(std::move(ptr));
 }
 
 void MirroringActivity::CreateMediaController(
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer) {}
+
+std::string MirroringActivity::GetRouteDescription(
+    const CastSession& session) const {
+  if (!mirroring_type_) {
+    return CastActivity::GetRouteDescription(session);
+  }
+  switch (*mirroring_type_) {
+    case MirroringActivity::MirroringType::kTab:
+      return l10n_util::GetStringUTF8(IDS_MEDIA_ROUTER_CASTING_TAB);
+    case MirroringActivity::MirroringType::kDesktop:
+      return l10n_util::GetStringUTF8(IDS_MEDIA_ROUTER_CASTING_DESKTOP);
+    case MirroringActivity::MirroringType::kOffscreenTab:
+      return l10n_util::GetStringFUTF8(
+          IDS_MEDIA_ROUTER_PRESENTATION_ROUTE_DESCRIPTION,
+          base::UTF8ToUTF16(route().media_source().url().host()));
+  }
+}
 
 void MirroringActivity::HandleParseJsonResult(
     const std::string& route_id,
@@ -337,29 +383,30 @@ void MirroringActivity::HandleParseJsonResult(
   CastSession* session = GetSession();
   DCHECK(session);
 
-  if (!result.value) {
+  if (!result.has_value() || !result.value().is_dict()) {
     // TODO(crbug.com/905002): Record UMA metric for parse result.
     logger_->LogError(
         media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
-        base::StrCat({"Failed to parse Cast client message:", *result.error}),
+        base::StrCat({"Failed to parse Cast client message:", result.error()}),
         route().media_sink_id(), route().media_source().id(),
-        session->session_id());
+        route().presentation_id());
     return;
   }
 
-  const std::string message_namespace = GetMirroringNamespace(*result.value);
+  const std::string message_namespace =
+      GetMirroringNamespace(result.value().GetDict());
   if (message_namespace == mirroring::mojom::kWebRtcNamespace) {
-    logger_->LogInfo(media_router::mojom::LogCategory::kMirroring,
-                     kLoggerComponent,
-                     base::StrCat({"WebRTC message received: ",
-                                   GetScrubbedLogMessage(*result.value)}),
-                     route().media_sink_id(), route().media_source().id(),
-                     session->session_id());
+    logger_->LogInfo(
+        media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
+        base::StrCat({"WebRTC message received: ",
+                      GetScrubbedLogMessage(result.value().GetDict())}),
+        route().media_sink_id(), route().media_source().id(),
+        route().presentation_id());
   }
 
   cast::channel::CastMessage cast_message = cast_channel::CreateCastMessage(
-      message_namespace, std::move(*result.value),
-      message_handler_->sender_id(), session->transport_id());
+      message_namespace, std::move(*result), message_handler_->source_id(),
+      session->destination_id());
   if (message_handler_->SendCastMessage(cast_data_.cast_channel_id,
                                         cast_message) == Result::kFailed) {
     logger_->LogError(
@@ -368,7 +415,7 @@ void MirroringActivity::HandleParseJsonResult(
             "Failed to send Cast message to channel_id: %d, in namespace: %s",
             cast_data_.cast_channel_id, message_namespace.c_str()),
         route().media_sink_id(), route().media_source().id(),
-        session->session_id());
+        route().presentation_id());
   }
 }
 
@@ -406,11 +453,13 @@ void MirroringActivity::OnSessionSet(const CastSession& session) {
   // called.
   DCHECK(channel_to_service_receiver_);
 
-  host_->Start(SessionParameters::New(
-                   session_type, cast_data_.ip_endpoint.address(),
-                   cast_data_.model_name, cast_source->target_playout_delay()),
-               std::move(observer_remote), std::move(channel_remote),
-               std::move(channel_to_service_receiver_));
+  host_->Start(
+      SessionParameters::New(session_type, cast_data_.ip_endpoint.address(),
+                             cast_data_.model_name, session.destination_id(),
+                             message_handler_->source_id(),
+                             cast_source->target_playout_delay()),
+      std::move(observer_remote), std::move(channel_remote),
+      std::move(channel_to_service_receiver_));
 }
 
 void MirroringActivity::StopMirroring() {
@@ -420,21 +469,25 @@ void MirroringActivity::StopMirroring() {
 }
 
 std::string MirroringActivity::GetScrubbedLogMessage(
-    const base::Value& message) {
+    const base::Value::Dict& message) {
   std::string message_str;
   auto scrubbed_message = message.Clone();
-  auto* streams = scrubbed_message.FindPath("offer.supportedStreams");
-  if (!streams || !streams->is_list()) {
+  base::Value::List* streams =
+      scrubbed_message.FindListByDottedPath("offer.supportedStreams");
+  if (!streams) {
     base::JSONWriter::Write(scrubbed_message, &message_str);
     return message_str;
   }
 
-  for (base::Value& item : streams->GetList()) {
-    if (item.FindStringKey("aesKey")) {
-      item.SetStringKey("aesKey", "AES_KEY");
+  for (base::Value& item : *streams) {
+    if (!item.is_dict()) {
+      continue;
     }
-    if (item.FindStringKey("aesIvMask")) {
-      item.SetStringKey("aesIvMask", "AES_IV_MASK");
+    if (item.GetDict().FindString("aesKey")) {
+      item.GetDict().Set("aesKey", "AES_KEY");
+    }
+    if (item.GetDict().FindString("aesIvMask")) {
+      item.GetDict().Set("aesIvMask", "AES_IV_MASK");
     }
   }
   base::JSONWriter::Write(scrubbed_message, &message_str);

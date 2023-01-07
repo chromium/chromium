@@ -35,7 +35,6 @@ TransformState& TransformState::operator=(const TransformState& other) {
     last_planar_point_ = other.last_planar_point_;
   if (map_quad_)
     last_planar_quad_ = other.last_planar_quad_;
-  accumulating_transform_ = other.accumulating_transform_;
   force_accumulating_transform_ = other.force_accumulating_transform_;
   direction_ = other.direction_;
 
@@ -60,12 +59,12 @@ void TransformState::TranslateTransform(const PhysicalOffset& offset) {
 }
 
 void TransformState::TranslateMappedCoordinates(const PhysicalOffset& offset) {
-  FloatSize adjusted_offset((direction_ == kApplyTransformDirection) ? offset
-                                                                     : -offset);
+  gfx::Vector2dF adjusted_offset(
+      (direction_ == kApplyTransformDirection) ? offset : -offset);
   if (map_point_)
-    last_planar_point_.Move(adjusted_offset);
+    last_planar_point_ += adjusted_offset;
   if (map_quad_)
-    last_planar_quad_.Move(adjusted_offset);
+    last_planar_quad_ += adjusted_offset;
 }
 
 void TransformState::Move(const PhysicalOffset& offset,
@@ -77,7 +76,7 @@ void TransformState::Move(const PhysicalOffset& offset,
     accumulated_offset_ += offset;
   } else {
     ApplyAccumulatedOffset();
-    if (accumulating_transform_ && accumulated_transform_) {
+    if (accumulated_transform_) {
       // If we're accumulating into an existing transform, apply the
       // translation.
       TranslateTransform(offset);
@@ -86,7 +85,6 @@ void TransformState::Move(const PhysicalOffset& offset,
       TranslateMappedCoordinates(offset);
     }
   }
-  accumulating_transform_ = accumulate == kAccumulateTransform;
 }
 
 void TransformState::ApplyAccumulatedOffset() {
@@ -113,8 +111,8 @@ void TransformState::ApplyTransform(
 void TransformState::ApplyTransform(
     const TransformationMatrix& transform_from_container,
     TransformAccumulation accumulate) {
-  if (transform_from_container.IsIntegerTranslation()) {
-    Move(PhysicalOffset::FromFloatSizeRound(
+  if (transform_from_container.IsInteger2DTranslation()) {
+    Move(PhysicalOffset::FromVector2dFRound(
              transform_from_container.To2DTranslation()),
          accumulate);
     return;
@@ -129,7 +127,7 @@ void TransformState::ApplyTransform(
       accumulated_transform_ = std::make_unique<TransformationMatrix>(
           transform_from_container * *accumulated_transform_);
     else
-      accumulated_transform_->Multiply(transform_from_container);
+      accumulated_transform_->PreConcat(transform_from_container);
   } else if (accumulate == kAccumulateTransform) {
     // Make one if we started to accumulate
     accumulated_transform_ =
@@ -146,8 +144,6 @@ void TransformState::ApplyTransform(
       FlattenWithTransform(*final_transform);
     }
   }
-  accumulating_transform_ =
-      accumulate == kAccumulateTransform || force_accumulating_transform_;
 }
 
 void TransformState::Flatten() {
@@ -156,7 +152,6 @@ void TransformState::Flatten() {
   ApplyAccumulatedOffset();
 
   if (!accumulated_transform_) {
-    accumulating_transform_ = false;
     return;
   }
 
@@ -164,23 +159,23 @@ void TransformState::Flatten() {
 }
 
 PhysicalOffset TransformState::MappedPoint() const {
-  FloatPoint point = last_planar_point_;
-  point.Move(FloatSize(direction_ == kApplyTransformDirection
-                           ? accumulated_offset_
-                           : -accumulated_offset_));
+  gfx::PointF point = last_planar_point_;
+  point += gfx::Vector2dF(direction_ == kApplyTransformDirection
+                              ? accumulated_offset_
+                              : -accumulated_offset_);
   if (accumulated_transform_) {
     point = direction_ == kApplyTransformDirection
                 ? accumulated_transform_->MapPoint(point)
                 : accumulated_transform_->Inverse().ProjectPoint(point);
   }
-  return PhysicalOffset::FromFloatPointRound(point);
+  return PhysicalOffset::FromPointFRound(point);
 }
 
-FloatQuad TransformState::MappedQuad() const {
-  FloatQuad quad = last_planar_quad_;
-  quad.Move(FloatSize((direction_ == kApplyTransformDirection)
-                          ? accumulated_offset_
-                          : -accumulated_offset_));
+gfx::QuadF TransformState::MappedQuad() const {
+  gfx::QuadF quad = last_planar_quad_;
+  quad += gfx::Vector2dF((direction_ == kApplyTransformDirection)
+                             ? accumulated_offset_
+                             : -accumulated_offset_);
   if (!accumulated_transform_)
     return quad;
 
@@ -192,7 +187,6 @@ FloatQuad TransformState::MappedQuad() const {
 
 const TransformationMatrix& TransformState::AccumulatedTransform() const {
   DCHECK(force_accumulating_transform_);
-  DCHECK(accumulating_transform_);
   return *accumulated_transform_;
 }
 
@@ -216,7 +210,6 @@ void TransformState::FlattenWithTransform(const TransformationMatrix& t) {
   // preserve-3d and flat elements.
   if (accumulated_transform_)
     accumulated_transform_->MakeIdentity();
-  accumulating_transform_ = false;
 }
 
 }  // namespace blink

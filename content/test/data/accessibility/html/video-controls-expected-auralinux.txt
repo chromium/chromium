@@ -1,16 +1,17 @@
 [document web]
 ++[section]
-++++[video]
+++++[video] name='Unable to play media.'
 ++++++[section]
-++++++++[tool bar] name='video' description='video' horizontal
-++++++++[tool bar] name='video' description='video' horizontal
-++++++++++[tool bar] name='video' description='video' horizontal
-++++++++++++[tool bar] name='video' description='video' horizontal
-++++++++++++++[push button] name='play'
-++++++++++++++[static] name='0:00'
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++++[push button] name='play'
 ++++++++++++++[section]
-++++++++++++++++[section]
-++++++++++++++++[push button] name='mute'
-++++++++++++++[push button] name='enter full screen'
-++++++++++++++[push button] name='show more media controls' description='more options'
-++++++++++++[slider] description='movie time scrubber' horizontal
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++[push button] name='mute'
+++++++++++++[push button] name='enter full screen'
+++++++++++++++[section]
+++++++++++++[push button] name='show more media controls' description='more options' description-from:tooltip haspopup:menu
+++++++++++++++[section]
+++++++++++[slider] name='video time scrubber' description='total time: 0:00' horizontal description:total time: 0:00 description-from:aria-description current=0.000000 minimum=0.000000 maximum=100.000000

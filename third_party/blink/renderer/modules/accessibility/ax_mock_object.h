@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MOCK_OBJECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MOCK_OBJECT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
@@ -44,22 +43,19 @@ class MODULES_EXPORT AXMockObject : public AXObject {
   explicit AXMockObject(AXObjectCacheImpl&);
 
  public:
+  AXMockObject(const AXMockObject&) = delete;
+  AXMockObject& operator=(const AXMockObject&) = delete;
+
   ~AXMockObject() override;
 
   // AXObject overrides.
   AXRestriction Restriction() const override { return kRestrictionNone; }
   bool IsMockObject() const final { return true; }
   Document* GetDocument() const override;
-  AXObject* ComputeParentImpl() const override;
-  ax::mojom::blink::Role DetermineAccessibilityRole() override {
-    NOTREACHED();
-    return ax::mojom::blink::Role::kUnknown;
-  }
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
 
  private:
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AXMockObject);
 };
 
 template <>

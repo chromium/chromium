@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Test search in Timeline FlameChart View.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';
@@ -26,7 +26,7 @@
     },
     {
       'args': {'name': 'Renderer'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': pid,
@@ -35,7 +35,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': pid,
@@ -44,7 +44,7 @@
     },
     {
       'args': {'name': 'CompositorTileWorker'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': pid,
@@ -199,14 +199,14 @@
   ];
 
   var timeline = UI.panels.timeline;
-  var model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
-  timeline._setModel(model);
-  var flameChartView = timeline._flameChart;
+  var model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
+  timeline.setModel(model);
+  var flameChartView = timeline.flameChart;
   var searchConfig = new UI.SearchableView.SearchConfig('Paint', false, false);
   flameChartView.performSearch(searchConfig, true, false);
-  TestRunner.addResult(`Count: ${flameChartView._searchResults.length}`);
-  for (var i = 0; i <= flameChartView._searchResults.length; ++i) {
-    var selection = timeline._selection;
+  TestRunner.addResult(`Count: ${flameChartView.searchResults.length}`);
+  for (var i = 0; i <= flameChartView.searchResults.length; ++i) {
+    var selection = timeline.selection;
     if (!selection || selection.type() !== Timeline.TimelineSelection.Type.TraceEvent) {
       TestRunner.addResult(`Invalid selection type: ${selection && selection.type()}`);
       continue;

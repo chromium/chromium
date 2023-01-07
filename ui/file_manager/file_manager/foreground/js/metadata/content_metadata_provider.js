@@ -1,20 +1,20 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {MetadataItem} from './metadata_item.m.js';
-// #import {MetadataProvider} from './metadata_provider.m.js';
-// #import {ThumbnailLoader} from '../thumbnail_loader.m.js';
-// #import * as wrappedUtil from '../../../common/js/util.m.js'; const {util} = wrappedUtil;
-// #import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.m.js';
-// #import {LoadImageRequest, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.m.js';
-// #import {FileType} from '../../../common/js/file_type.m.js';
-// #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
+import {LoadImageRequest, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+
+import {FileType} from '../../../common/js/file_type.js';
+import {util} from '../../../common/js/util.js';
+import {ThumbnailLoader} from '../thumbnail_loader.js';
+
+import {MetadataItem} from './metadata_item.js';
+import {MetadataProvider} from './metadata_provider.js';
 
 /** @final */
-/* #export */ class ContentMetadataProvider extends MetadataProvider {
+export class ContentMetadataProvider extends MetadataProvider {
   /**
    * @param {!MessagePort=} opt_messagePort Message port overriding the default
    *     worker port.
@@ -50,7 +50,7 @@
     this.dispatcher_ = this.createSharedWorker_(opt_messagePort);
     this.dispatcher_.onmessage = this.onMessage_.bind(this);
     this.dispatcher_.onmessageerror = (error) => {
-      console.error('ContentMetadataProvider worker msg error:', error);
+      console.warn('ContentMetadataProvider worker msg error:', error);
     };
     this.dispatcher_.postMessage({verb: 'init'});
     this.dispatcher_.start();
@@ -77,7 +77,7 @@
 
     const worker = new SharedWorker(script, options);
     worker.onerror = () => {
-      console.error(
+      console.warn(
           'Error to initialize the ContentMetadataProvider ' +
           'SharedWorker: ' + script);
     };
@@ -515,7 +515,6 @@ ContentMetadataProvider.PROPERTY_NAMES = [
  * @const @private {string}
  */
 ContentMetadataProvider.DEFAULT_WORKER_SCRIPT_ =
-    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/' +
     'foreground/js/metadata/metadata_dispatcher.js';
 
 /**
@@ -528,4 +527,4 @@ ContentMetadataProvider.workerScript_ = null;
  * Sets if the SharedWorker should start as a JS Module.
  * @private {boolean}
  */
-ContentMetadataProvider.loadAsModule_ = false;
+ContentMetadataProvider.loadAsModule_ = true;

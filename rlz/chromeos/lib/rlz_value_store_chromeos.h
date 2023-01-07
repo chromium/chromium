@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,9 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "rlz/lib/rlz_value_store.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
 
 namespace rlz_lib {
 
@@ -30,6 +25,10 @@ class RlzValueStoreChromeOS : public RlzValueStore {
 
   // Creates new instance and synchronously reads data from file.
   explicit RlzValueStoreChromeOS(const base::FilePath& store_path);
+
+  RlzValueStoreChromeOS(const RlzValueStoreChromeOS&) = delete;
+  RlzValueStoreChromeOS& operator=(const RlzValueStoreChromeOS&) = delete;
+
   ~RlzValueStoreChromeOS() override;
 
   // RlzValueStore overrides:
@@ -71,25 +70,28 @@ class RlzValueStoreChromeOS : public RlzValueStore {
   void WriteStore();
 
   // Adds |value| to list at |list_name| path in JSON store.
-  bool AddValueToList(const std::string& list_name,
-                      std::unique_ptr<base::Value> value);
+  bool AddValueToList(const std::string& list_name, base::Value value);
+
   // Removes |value| from list at |list_name| path in JSON store.
   bool RemoveValueFromList(const std::string& list_name,
                            const base::Value& value);
+
+  // Returns true if |value| is contained in list at |list_name| path in
+  // JSON store.
+  bool ListContainsValue(const std::string& list_name,
+                         const base::Value& value) const;
 
   // Returns true if the store contains |access_point|.
   bool HasAccessPointRlz(AccessPoint access_point) const;
 
   // In-memory store with RLZ data.
-  std::unique_ptr<base::DictionaryValue> rlz_store_;
+  base::Value rlz_store_;
 
   base::FilePath store_path_;
 
   bool read_only_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RlzValueStoreChromeOS);
 };
 
 }  // namespace rlz_lib

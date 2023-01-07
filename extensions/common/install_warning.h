@@ -1,11 +1,9 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_COMMON_INSTALL_WARNING_H_
 #define EXTENSIONS_COMMON_INSTALL_WARNING_H_
-
-#include "base/macros.h"
 
 #include <ostream>
 #include <string>
@@ -21,6 +19,7 @@ struct InstallWarning {
   InstallWarning(const std::string& message,
                  const std::string& key,
                  const std::string& specific);
+  InstallWarning(const InstallWarning&) = delete;
   InstallWarning(InstallWarning&& other);
   InstallWarning& operator=(InstallWarning&& other);
   ~InstallWarning();
@@ -42,8 +41,6 @@ struct InstallWarning {
   // Optional - for specifying the incorrect portion of a key in the manifest
   // (e.g., an unrecognized permission "foo" in "permissions").
   std::string specific;
-
-  DISALLOW_COPY(InstallWarning);
 };
 
 // Let gtest print InstallWarnings.

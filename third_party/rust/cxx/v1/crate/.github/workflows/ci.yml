@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  schedule: [cron: "40 1 * * *"]
+
+jobs:
+  test:
+    name: ${{matrix.name || format('Rust {0}', matrix.rust)}}
+    runs-on: ${{matrix.os || 'ubuntu'}}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rust: nightly
+          - rust: beta
+          - rust: stable
+          - rust: 1.54.0
+          - rust: 1.48.0
+          - name: macOS
+            rust: nightly
+            os: macos
+          - name: Windows (gnu)
+            rust: nightly-x86_64-pc-windows-gnu
+            os: windows
+          - name: Windows (msvc)
+            rust: nightly-x86_64-pc-windows-msvc
+            os: windows
+            flags: /EHsc
+    env:
+      CXXFLAGS: ${{matrix.flags}}
+      RUSTFLAGS: --cfg deny_warnings -Dwarnings
+    steps:
+      - name: Enable symlinks (windows)
+        if: matrix.os == 'windows'
+        run: git config --global core.symlinks true
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{matrix.rust}}
+      - name: Determine test suite subset
+        # Our Windows and macOS jobs are the longest running, so exclude the
+        # relatively slow compiletest from them to speed up end-to-end CI time,
+        # except during cron builds when no human is presumably waiting on the
+        # build. The extra coverage is not particularly valuable and we can
+        # still ensure the test is kept passing on the basis of the scheduled
+        # builds.
+        run: |
+          echo RUSTFLAGS=$RUSTFLAGS >> $GITHUB_ENV
+          echo ::set-output name=exclude::--exclude cxx-test-suite ${{matrix.rust == '1.48.0' && '--exclude cxxbridge-cmd' || ''}}
+        env:
+          RUSTFLAGS: ${{env.RUSTFLAGS}} ${{matrix.os && github.event_name != 'schedule' && '--cfg skip_ui_tests' || ''}}
+        id: testsuite
+        shell: bash
+      - run: cargo run --manifest-path demo/Cargo.toml
+      - run: cargo test --workspace ${{steps.testsuite.outputs.exclude}}
+      - run: cargo check --no-default-features --features alloc
+        env:
+          RUSTFLAGS: --cfg compile_error_if_std ${{env.RUSTFLAGS}}
+      - run: cargo check --no-default-features
+        env:
+          RUSTFLAGS: --cfg compile_error_if_alloc --cfg cxx_experimental_no_alloc ${{env.RUSTFLAGS}}
+
+  buck:
+    name: Buck
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+          java-package: jre
+      - name: Install Buck
+        run: |
+          mkdir bin
+          wget -q -O bin/buck https://jitpack.io/com/github/facebook/buck/a5f0342ae3/buck-a5f0342ae3-java11.pex # dev branch from 2020.10.11
+          chmod +x bin/buck
+          echo bin >> $GITHUB_PATH
+      - name: Install lld
+        run: sudo apt-get install lld
+      - name: Vendor dependencies
+        run: |
+          cp third-party/Cargo.lock .
+          cargo vendor --versioned-dirs --locked third-party/vendor
+      - run: buck build :cxx#check --verbose=0
+      - run: buck run demo --verbose=0
+      - run: buck test ... --verbose=0
+
+  bazel:
+    name: Bazel
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Bazel
+        run: |
+          wget -q -O install.sh https://github.com/bazelbuild/bazel/releases/download/5.1.1/bazel-5.1.1-installer-linux-x86_64.sh
+          chmod +x install.sh
+          ./install.sh --user
+          echo $HOME/bin >> $GITHUB_PATH
+      - name: Install lld
+        run: sudo apt-get install lld
+      - run: bazel run demo --verbose_failures --noshow_progress
+      - run: bazel test ... --verbose_failures --noshow_progress
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@clippy
+      - run: cargo clippy --workspace --tests -- -Dclippy::all
+
+  clang-tidy:
+    name: Clang Tidy
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install clang-tidy
+        run: sudo apt-get install clang-tidy-11
+      - name: Run clang-tidy
+        run: clang-tidy-11 src/cxx.cc --warnings-as-errors=*
+
+  outdated:
+    name: Outdated
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/install@cargo-outdated
+      - run: cargo outdated --exit-code 1

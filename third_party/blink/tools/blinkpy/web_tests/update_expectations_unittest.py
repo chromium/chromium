@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,7 +12,7 @@ from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.web_tests.update_expectations import ExpectationsRemover
 from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.port.factory import PortFactory
-from blinkpy.web_tests.port.test import WEB_TEST_DIR
+from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 from blinkpy.web_tests.update_expectations import main
 from blinkpy.tool.commands.flaky_tests import FlakyTests
 
@@ -22,7 +22,7 @@ class FakeBotTestExpectations(object):
         self._results = {}
 
         # Make the results distinct like the real BotTestExpectations.
-        for path, results in results_by_path.iteritems():
+        for path, results in results_by_path.items():
             self._results[path] = list(set(results))
 
     def all_results_by_path(self):
@@ -108,7 +108,7 @@ class UpdateTestExpectationsTest(LoggingTestCase):
             'test/e.html', 'test/f.html', 'test/g.html'
         ]
         for test in test_list:
-            path = filesystem.join(WEB_TEST_DIR, test)
+            path = filesystem.join(MOCK_WEB_TESTS, test)
             filesystem.write_binary_file(path, '')
 
     def _create_expectations_remover(self,
@@ -1197,7 +1197,9 @@ class UpdateTestExpectationsTest(LoggingTestCase):
             test/c.html [ Failure ]
             # Keep since there's a failure on debug bot.
             [ Linux ] test/d.html [ Failure ]""")
-        files = {test_expectation_path: test_expectations}
+        files = {
+            test_expectation_path: test_expectations.encode('utf8', 'replace')
+        }
         host.filesystem = MockFileSystem(files)
         self._write_tests_into_filesystem(host.filesystem)
 
@@ -1220,7 +1222,7 @@ class UpdateTestExpectationsTest(LoggingTestCase):
 
         main(host, expectation_factory, [])
         self.assertEqual(
-            host.filesystem.files[test_expectation_path],
+            host.filesystem.read_text_file(test_expectation_path),
             _strip_multiline_string_spaces("""
             # tags: [ Linux ]
             # tags: [ Release ]
@@ -1290,7 +1292,7 @@ class UpdateTestExpectationsTest(LoggingTestCase):
         # Write out a fake TestExpectations file.
         test_expectation_path = (
             host.port_factory.get().path_to_generic_test_expectations_file())
-        test_expectations = """
+        test_expectations = b"""
             # Remove since passing on both bots.
             # tags: [ Linux ]
             # results: [ Failure Pass ]
@@ -1315,7 +1317,7 @@ class UpdateTestExpectationsTest(LoggingTestCase):
 
         self.assertTrue(host.filesystem.isfile(test_expectation_path))
         self.assertEqual(
-            host.filesystem.files[test_expectation_path], """
+            host.filesystem.read_text_file(test_expectation_path), """
             # Remove since passing on both bots.
             # tags: [ Linux ]
             # results: [ Failure Pass ]""")

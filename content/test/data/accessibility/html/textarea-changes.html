@@ -1,0 +1,38 @@
+<!--
+@WAIT-FOR:done
+-->
+<html>
+<head>
+
+  <style>
+    @font-face {
+      font-family: 'Ahem';
+      src: local('Ahem'),
+        url('../../font/Ahem.ttf');
+    }
+    .textarea-width {
+      font-size: 50ch;
+      font-family: "Ahem";
+      letter-spacing: 1ch;
+    }
+  </style>
+</head>
+<body>
+  <textarea class="textarea-width"></textarea>
+</body>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const textarea = document.querySelector('textarea');
+    textarea.role = 'textbox';
+    textarea.innerText = 'xyz';
+    const paragraph = document.createElement('p');
+    paragraph.innerText ='abc';
+    textarea.appendChild(paragraph);
+    document.title = 'done';
+  }, 150);
+});
+</script>
+
+</body>
+</html>

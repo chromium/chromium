@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/modules/webusb/usb_endpoint.h"
 #include "third_party/blink/renderer/modules/webusb/usb_interface.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
@@ -35,6 +36,15 @@ USBAlternateInterface::USBAlternateInterface(const USBInterface* interface,
     : interface_(interface), alternate_index_(alternate_index) {
   DCHECK(interface_);
   DCHECK_LT(alternate_index_, interface_->Info().alternates.size());
+
+  for (wtf_size_t i = 0; i < Info().endpoints.size(); ++i) {
+    // Filter out control endpoints because there is no corresponding enum value
+    // defined in WebUSB.
+    if (Info().endpoints[i]->type !=
+        device::mojom::blink::UsbTransferType::CONTROL) {
+      endpoints_.push_back(USBEndpoint::Create(this, i));
+    }
+  }
 }
 
 const device::mojom::blink::UsbAlternateInterfaceInfo&
@@ -46,20 +56,12 @@ USBAlternateInterface::Info() const {
 }
 
 HeapVector<Member<USBEndpoint>> USBAlternateInterface::endpoints() const {
-  HeapVector<Member<USBEndpoint>> endpoints;
-  for (wtf_size_t i = 0; i < Info().endpoints.size(); ++i) {
-    // Filter out control endpoints because there is no coresponding enum value
-    // defined in WebUSB.
-    if (Info().endpoints[i]->type !=
-        device::mojom::blink::UsbTransferType::CONTROL) {
-      endpoints.push_back(USBEndpoint::Create(this, i));
-    }
-  }
-  return endpoints;
+  return endpoints_;
 }
 
 void USBAlternateInterface::Trace(Visitor* visitor) const {
   visitor->Trace(interface_);
+  visitor->Trace(endpoints_);
   ScriptWrappable::Trace(visitor);
 }
 

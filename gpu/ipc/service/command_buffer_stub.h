@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,24 +13,29 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/gpu_memory_allocation.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/program_cache.h"
+#include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "gpu/command_buffer/service/sequence_id.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/context_url.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
-#include "ipc/ipc_listener.h"
-#include "ipc/ipc_sender.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/shared_associated_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/swap_result.h"
@@ -38,8 +43,6 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_preference.h"
 #include "url/gurl.h"
-
-struct GPUCreateCommandBufferConfig;
 
 namespace gpu {
 class DecoderContext;
@@ -49,11 +52,18 @@ struct WaitForCommandState;
 class GpuChannel;
 class SyncPointClientState;
 
+// CommandBufferStub is a base class for different CommandBuffer backends
+// (e.g. GLES2, Raster, WebGPU) within the GPU service. Each instance lives on
+// the main thread and receives IPCs there, either dispatched to the default
+// main thread TaskRunner, or a specific main-thread sequence on the GPU
+// Scheduler.
+//
+// For every CommandBufferStub instance, there's a corresponding
+// CommandBufferProxyImpl client.
 class GPU_IPC_SERVICE_EXPORT CommandBufferStub
-    : public IPC::Listener,
-      public IPC::Sender,
-      public CommandBufferServiceClient,
+    : public CommandBufferServiceClient,
       public DecoderClient,
+      public mojom::CommandBuffer,
       public base::SupportsWeakPtr<CommandBufferStub> {
  public:
   class DestructionObserver {
@@ -68,30 +78,63 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   };
 
   CommandBufferStub(GpuChannel* channel,
-                    const GPUCreateCommandBufferConfig& init_params,
+                    const mojom::CreateCommandBufferParams& init_params,
                     CommandBufferId command_buffer_id,
                     SequenceId sequence_id,
                     int32_t stream_id,
                     int32_t route_id);
 
+  CommandBufferStub(const CommandBufferStub&) = delete;
+  CommandBufferStub& operator=(const CommandBufferStub&) = delete;
+
   ~CommandBufferStub() override;
+
+  // Exposes a SequencedTaskRunner which can be used to schedule tasks in
+  // sequence with this CommandBufferStub -- that is, on the same gpu::Scheduler
+  // sequence. Does not support nested loops or delayed tasks.
+  scoped_refptr<base::SequencedTaskRunner> task_runner() const {
+    return scheduler_task_runner_;
+  }
 
   // This must leave the GL context associated with the newly-created
   // CommandBufferStub current, so the GpuChannel can initialize
   // the gpu::Capabilities.
   virtual gpu::ContextResult Initialize(
       CommandBufferStub* share_group,
-      const GPUCreateCommandBufferConfig& init_params,
+      const mojom::CreateCommandBufferParams& params,
       base::UnsafeSharedMemoryRegion shared_state_shm) = 0;
+
+  // Establish Mojo bindings for the receiver and client endpoints.
+  void BindEndpoints(
+      mojo::PendingAssociatedReceiver<mojom::CommandBuffer> receiver,
+      mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
   MemoryTracker* GetMemoryTracker() const;
   virtual MemoryTracker* GetContextGroupMemoryTracker() const = 0;
 
-  // IPC::Listener implementation:
-  bool OnMessageReceived(const IPC::Message& message) override;
+  // Executes a DeferredRequest routed to this command buffer by a GpuChannel.
+  void ExecuteDeferredRequest(
+      mojom::DeferredCommandBufferRequestParams& params);
 
-  // IPC::Sender implementation:
-  bool Send(IPC::Message* msg) override;
+  // Instructs the CommandBuffer to wait asynchronously until the reader has
+  // updated the token value to be within the [start, end] range (inclusive).
+  // `callback` is invoked with the last known State once this occurs, or with
+  // an invalid State if the CommandBuffer is destroyed first.
+  using WaitForStateCallback =
+      base::OnceCallback<void(const gpu::CommandBuffer::State&)>;
+  void WaitForTokenInRange(int32_t start,
+                           int32_t end,
+                           WaitForStateCallback callback);
+
+  // Instructs the CommandBuffer to wait asynchronously until the reader has
+  // reached a get offset within the range [start, end] (inclusive). `callback`
+  // is invoked with the last known State once this occurs, or with an invalid
+  // State if the CommandBuffer is destroyed first.
+  void WaitForGetOffsetInRange(uint32_t set_get_buffer_count,
+                               int32_t start,
+                               int32_t end,
+                               WaitForStateCallback callback);
 
   // CommandBufferServiceClient implementation:
   CommandBatchProcessedResult OnCommandBatchProcessed() override;
@@ -99,7 +142,9 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   // DecoderClient implementation:
   void OnConsoleMessage(int32_t id, const std::string& message) override;
-  void CacheShader(const std::string& key, const std::string& shader) override;
+  void CacheBlob(gpu::GpuDiskCacheType type,
+                 const std::string& key,
+                 const std::string& blob) override;
   void OnFenceSyncRelease(uint64_t release) override;
   void OnDescheduleUntilFinished() override;
   void OnRescheduleAfterFinished() override;
@@ -144,7 +189,44 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   scoped_refptr<gl::GLShareGroup> share_group() { return share_group_; }
 
  protected:
-  virtual bool HandleMessage(const IPC::Message& message) = 0;
+  // Scoper to help with setup and teardown boilerplate around operations which
+  // may require the context to be current and which may need to process pending
+  // queries or schedule other delayed work after completion. This makes the
+  // context current on construction if possible.
+  class ScopedContextOperation {
+   public:
+    explicit ScopedContextOperation(CommandBufferStub& stub);
+    ~ScopedContextOperation();
+
+    // Making the context current on construction may fail, in which case the
+    // caller may wish to avoid doing work. This indicates whether it succeeded
+    // or failed.
+    bool is_context_current() const { return cache_use_.has_value(); }
+
+   private:
+    CommandBufferStub& stub_;
+    bool have_context_ = false;
+    absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use_;
+  };
+
+  mojom::CommandBufferClient& client() { return *client_.get(); }
+
+  // mojom::CommandBuffer:
+  void SetGetBuffer(int32_t shm_id) override;
+  void RegisterTransferBuffer(
+      int32_t id,
+      base::UnsafeSharedMemoryRegion transfer_buffer) override;
+  void CreateGpuFenceFromHandle(uint32_t id,
+                                gfx::GpuFenceHandle handle) override;
+  void GetGpuFenceHandle(uint32_t id,
+                         GetGpuFenceHandleCallback callback) override;
+  void SignalSyncToken(const SyncToken& sync_token, uint32_t id) override;
+  void SignalQuery(uint32_t query, uint32_t id) override;
+  void BindMediaReceiver(mojo::GenericPendingAssociatedReceiver receiver,
+                         BindMediaReceiverCallback callback) override;
+
+  virtual void OnTakeFrontBuffer(const Mailbox& mailbox) {}
+  virtual void OnReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) {}
 
   std::unique_ptr<MemoryTracker> CreateMemoryTracker() const;
 
@@ -158,10 +240,12 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   // Sets |active_url_| as the active GPU process URL.
   void UpdateActiveUrl();
 
+  bool MakeCurrent();
+
   // The lifetime of objects of this class is managed by a GpuChannel. The
   // GpuChannels destroy all the CommandBufferStubs that they own when
   // they are destroyed. So a raw pointer is safe.
-  GpuChannel* const channel_;
+  const raw_ptr<GpuChannel> channel_;
 
   ContextType context_type_;
   ContextUrl active_url_;
@@ -184,37 +268,22 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   const CommandBufferId command_buffer_id_;
   const SequenceId sequence_id_;
+  const scoped_refptr<SchedulerTaskRunner> scheduler_task_runner_;
   const int32_t stream_id_;
   const int32_t route_id_;
 
  private:
   void Destroy();
 
-  bool MakeCurrent();
-
   gles2::ProgramCache::ScopedCacheUse CreateCacheUse();
 
   // Message handlers:
-  void OnSetGetBuffer(int32_t shm_id);
-  void OnGetState(IPC::Message* reply_message);
-  void OnWaitForTokenInRange(int32_t start,
-                             int32_t end,
-                             IPC::Message* reply_message);
-  void OnWaitForGetOffsetInRange(uint32_t set_get_buffer_count,
-                                 int32_t start,
-                                 int32_t end,
-                                 IPC::Message* reply_message);
   void OnAsyncFlush(int32_t put_offset,
                     uint32_t flush_id,
                     const std::vector<SyncToken>& sync_token_fences);
-  void OnRegisterTransferBuffer(int32_t id,
-                                base::UnsafeSharedMemoryRegion transfer_buffer);
   void OnDestroyTransferBuffer(int32_t id);
-  void OnGetTransferBuffer(int32_t id, IPC::Message* reply_message);
 
-  void OnSignalSyncToken(const SyncToken& sync_token, uint32_t id);
   void OnSignalAck(uint32_t id);
-  void OnSignalQuery(uint32_t query, uint32_t id);
 
   void ReportState();
 
@@ -250,7 +319,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   base::ObserverList<DestructionObserver>::Unchecked destruction_observers_;
 
-  base::TimeTicks process_delayed_work_time_;
+  base::DeadlineTimer process_delayed_work_timer_;
   uint32_t previous_processed_num_;
   base::TimeTicks last_idle_time_;
 
@@ -258,7 +327,8 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   std::unique_ptr<WaitForCommandState> wait_for_get_offset_;
   uint32_t wait_set_get_buffer_count_;
 
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferStub);
+  mojo::AssociatedReceiver<mojom::CommandBuffer> receiver_{this};
+  mojo::SharedAssociatedRemote<mojom::CommandBufferClient> client_;
 };
 
 }  // namespace gpu

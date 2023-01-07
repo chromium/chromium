@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,14 @@
 #include "media/base/eme_constants.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_system_media_capability.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -218,10 +219,11 @@ void MediaKeySystemAccessInitializerBase::GenerateWarningAndReportMetrics()
   LocalFrame* frame = DomWindow()->GetFrame();
   ukm::builders::Media_EME_RequestMediaKeySystemAccess builder(
       DomWindow()->UkmSourceID());
-  builder.SetKeySystem(KeySystemForUkm::kWidevine);
-  builder.SetIsAdFrame(static_cast<int>(frame->IsAdSubframe()));
-  builder.SetIsCrossOrigin(static_cast<int>(frame->IsCrossOriginToMainFrame()));
-  builder.SetIsTopFrame(static_cast<int>(frame->IsMainFrame()));
+  builder.SetKeySystem(KeySystemForUkmLegacy::kWidevine);
+  builder.SetIsAdFrame(static_cast<int>(frame->IsAdFrame()));
+  builder.SetIsCrossOrigin(
+      static_cast<int>(frame->IsCrossOriginToOutermostMainFrame()));
+  builder.SetIsTopFrame(static_cast<int>(frame->IsOutermostMainFrame()));
   builder.SetVideoCapabilities(static_cast<int>(has_video_capabilities));
   builder.SetVideoCapabilities_HasEmptyRobustness(
       static_cast<int>(has_empty_robustness));

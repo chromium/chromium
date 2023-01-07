@@ -1,4 +1,4 @@
-# Copyright (c) 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,11 +23,27 @@ TEXT_APPEARANCE_STYLE_PATTERN = re.compile(r'^TextAppearance\.')
 INCLUDED_PATHS = [
     r'^(chrome|ui|components|content)[\\/](.*[\\/])?java[\\/]res.+\.xml$'
 ]
+DYNAMIC_COLOR_INCLUDED_PATHS = [
+    r'^(chrome|components)[\\/](.*[\\/])?java[\\/]res.+\.xml$'
+]
 INCLUDED_GRD_PATHS = [
     r'^(chrome|ui|components|content)[\\/](.*[\\/])?android[\\/](.*)\.grd$'
 ]
-# TODO(lazzzis): check color references in java source files
-COLOR_REFERENCE_PATTERN = re.compile('''
+# TODO(lazzzis): Check color references in java source files.
+COLOR_REFERENCE_PATTERN = re.compile(
+    '''
     @color/   # starts with '@color'
-    [\w|_]+   # color name is only composed of numbers, letters and underscore
+    ([\w|_]+)   # color name is only composed of numbers, letters and underscore
 ''', re.VERBOSE)
+
+DYNAMIC_COLOR_SUPPORTING_DIRS = {'components', 'chrome'}
+COLOR_STATE_LIST_DIRS = {
+    # Generated with the command below. When color state lists in new folders
+    # are added, re-run this command and update.
+    # find chrome/ components/ -name *\.xml | grep "/res/color" | xargs grep "<selector" | cut -d: -f1 | xargs dirname | sort | uniq | sed "s/^/'/" | sed "s/$/\/',/"
+    'chrome/browser/feed/android/java/res/color/',
+    'components/browser_ui/styles/android/java/res/color/',
+    'components/browser_ui/styles/android/java/res/color-night/',
+    'components/browser_ui/widget/android/java/res/color/',
+    'components/permissions/android/res/color/',
+}

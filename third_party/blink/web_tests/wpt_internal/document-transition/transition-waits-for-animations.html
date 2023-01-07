@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions waits for the animations to finish</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="match" href="transition-waits-for-animations-ref.html">
+
+<script src="/common/rendering-utils.js"></script>
+<script src="/common/reftest-wait.js"></script>
+
+<style>
+html { background: red; }
+html::page-transition { background: green; }
+html::page-transition-container(*) {
+  animation-duration: 300s;
+  visibility: hidden;
+}
+
+.left { left: 50px; }
+.right { left: 550px; }
+div {
+  position: absolute;
+  contain: paint;
+}
+
+.square {
+  width: 100px;
+  height: 100px;
+  background: green;
+}
+#e1 { page-transition-tag: e1; }
+</style>
+
+<div id=e1 class="square left"></div>
+
+<script>
+async function startTransition() {
+  let t = document.createDocumentTransition();
+  t.start(() => {
+    e1.classList.remove("left");
+    e1.classList.add("right");
+    setTimeout(takeScreenshot, 500);
+  });
+}
+
+onload = startTransition;
+</script>

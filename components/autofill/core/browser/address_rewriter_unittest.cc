@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::UTF8ToUTF16;
 using autofill::AddressRewriter;
 
 TEST(AddressRewriterTest, InvalidCountryCode) {
@@ -41,8 +40,7 @@ TEST(AddressRewriterTest, AD) {
 
 TEST(AddressRewriterTest, AR) {
   AddressRewriter ar = AddressRewriter::ForCountryCode(u"ar");
-  EXPECT_EQ(ar.Rewrite(UTF8ToUTF16(
-                "tierra del fuego antartida e islas del atlantico sur")),
+  EXPECT_EQ(ar.Rewrite(u"tierra del fuego antartida e islas del atlantico sur"),
             ar.Rewrite(u"tierra del fuego"));
   EXPECT_EQ(ar.Rewrite(u"ciudad autonoma de buenos aires"),
             ar.Rewrite(u"capital federal"));
@@ -158,7 +156,7 @@ TEST(AddressRewriterTest, IN) {
   EXPECT_EQ(in.Rewrite(u"cross-road"), in.Rewrite(u"xrd"));
   EXPECT_EQ(in.Rewrite(u"j & k"), in.Rewrite(u"j&k"));
   EXPECT_EQ(in.Rewrite(u"i.n.d.i.a"), in.Rewrite(u"india"));
-  EXPECT_NE(in.Rewrite(UTF8ToUTF16("i\\_n\\_d\\_i\\_a")), in.Rewrite(u"india"));
+  EXPECT_NE(in.Rewrite(u"i\\_n\\_d\\_i\\_a"), in.Rewrite(u"india"));
 }
 
 TEST(AddressRewriterTest, IT) {

@@ -1,10 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.share;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.url.GURL;
 
 /**
@@ -16,6 +19,19 @@ import org.chromium.url.GURL;
  * used in more than one part of the Chromium codebase.
  */
 public class ChromeShareExtras {
+    @IntDef({DetailedContentType.NOT_SPECIFIED, DetailedContentType.IMAGE, DetailedContentType.GIF,
+            DetailedContentType.HIGHLIGHTED_TEXT, DetailedContentType.SCREENSHOT,
+            DetailedContentType.WEB_NOTES, DetailedContentType.LIGHTWEIGHT_REACTION})
+    public @interface DetailedContentType {
+        int NOT_SPECIFIED = 0;
+        int IMAGE = 1;
+        int GIF = 2;
+        int HIGHLIGHTED_TEXT = 3;
+        int SCREENSHOT = 4;
+        int WEB_NOTES = 5;
+        int LIGHTWEIGHT_REACTION = 6;
+    }
+
     /**
      * Whether to save the chosen activity for future direct sharing.
      */
@@ -37,21 +53,39 @@ public class ChromeShareExtras {
      */
     private final GURL mImageSrcUrl;
 
-    /** Indicates if text property is highlighted by user. */
-    private final boolean mIsUserHighlightedText;
+    /** Url of the content being shared. */
+    private final GURL mContentUrl;
 
     /** Whether it is sharing a tab group. */
     private final boolean mSharingTabGroup;
 
+    private final boolean mIsReshareHighlightedText;
+
+    /**
+     * Whether page sharing 1P actions should be added to the share sheet or not.
+     */
+    private final boolean mSkipPageSharingActions;
+
+    private final RenderFrameHost mRenderFrameHost;
+
+    /** The detailed content type that is being shared. */
+    @DetailedContentType
+    private final int mDetailedContentType;
+
     private ChromeShareExtras(boolean saveLastUsed, boolean shareDirectly,
-            boolean isUrlOfVisiblePage, GURL imageSrcUrl, boolean isUserHighlightedText,
-            boolean sharingTabGroup) {
+            boolean isUrlOfVisiblePage, GURL imageSrcUrl, GURL contentUrl, boolean sharingTabGroup,
+            boolean isReshareHighlightedText, boolean skipPageSharingActions,
+            RenderFrameHost renderFrameHost, @DetailedContentType int detailedContentType) {
         mSaveLastUsed = saveLastUsed;
         mShareDirectly = shareDirectly;
         mIsUrlOfVisiblePage = isUrlOfVisiblePage;
         mImageSrcUrl = imageSrcUrl == null ? GURL.emptyGURL() : imageSrcUrl;
-        mIsUserHighlightedText = isUserHighlightedText;
+        mContentUrl = contentUrl == null ? GURL.emptyGURL() : contentUrl;
         mSharingTabGroup = sharingTabGroup;
+        mIsReshareHighlightedText = isReshareHighlightedText;
+        mSkipPageSharingActions = skipPageSharingActions;
+        mRenderFrameHost = renderFrameHost;
+        mDetailedContentType = detailedContentType;
     }
 
     /**
@@ -84,10 +118,10 @@ public class ChromeShareExtras {
     }
 
     /**
-     * @return Whether the URL is of the current visible page.
+     * @return URL of the content being shared.
      */
-    public boolean isUserHighlightedText() {
-        return mIsUserHighlightedText;
+    public GURL getContentUrl() {
+        return mContentUrl;
     }
 
     /**
@@ -95,6 +129,32 @@ public class ChromeShareExtras {
      */
     public boolean sharingTabGroup() {
         return mSharingTabGroup;
+    }
+
+    public boolean isReshareHighlightedText() {
+        return mIsReshareHighlightedText;
+    }
+
+    /**
+     * @return Whether page sharing 1P actions should be added to the share
+     * sheet or not.
+     */
+    public boolean skipPageSharingActions() {
+        return mSkipPageSharingActions;
+    }
+
+    /**
+     * @return The {@link RenderFrameHost} that opened the context menu for sharing.
+     */
+    public RenderFrameHost getRenderFrameHost() {
+        return mRenderFrameHost;
+    }
+
+    /**
+     * @return The {@link DetailedContentType} of the content that is being shared.
+     */
+    public int getDetailedContentType() {
+        return mDetailedContentType;
     }
 
     /**
@@ -105,14 +165,27 @@ public class ChromeShareExtras {
         private boolean mShareDirectly;
         private boolean mIsUrlOfVisiblePage;
         private GURL mImageSrcUrl;
-        private boolean mIsUserHighlightedText;
+        private GURL mContentUrl;
         private boolean mSharingTabGroup;
+        private boolean mIsReshareHighlightedText;
+        private boolean mSkipPageSharingActions;
+        private RenderFrameHost mRenderFrameHost;
+        @DetailedContentType
+        private int mDetailedContentType;
 
         /**
          * Sets whether to save the chosen activity for future direct sharing.
          */
         public Builder setSaveLastUsed(boolean saveLastUsed) {
             mSaveLastUsed = saveLastUsed;
+            return this;
+        }
+
+        /**
+         * Sets {@link RenderFrameHost} that opened the context menu for sharing.
+         */
+        public Builder setRenderFrameHost(RenderFrameHost renderFrameHost) {
+            mRenderFrameHost = renderFrameHost;
             return this;
         }
 
@@ -142,10 +215,10 @@ public class ChromeShareExtras {
         }
 
         /**
-         * Sets whether text property is highlighted by user.
+         * Sets the URL of the content being shared.
          */
-        public Builder setIsUserHighlightedText(boolean isUserHighlightedText) {
-            mIsUserHighlightedText = isUserHighlightedText;
+        public Builder setContentUrl(GURL contentUrl) {
+            mContentUrl = contentUrl;
             return this;
         }
 
@@ -157,9 +230,28 @@ public class ChromeShareExtras {
             return this;
         }
 
+        public Builder setIsReshareHighlightedText(boolean isReshareHighlightedText) {
+            mIsReshareHighlightedText = isReshareHighlightedText;
+            return this;
+        }
+
+        public Builder setSkipPageSharingActions(boolean skipPageSharingActions) {
+            mSkipPageSharingActions = skipPageSharingActions;
+            return this;
+        }
+
+        /**
+         * Sets the {@link DetailedContentType} of the content that is being shared.
+         */
+        public Builder setDetailedContentType(@DetailedContentType int detailedContentType) {
+            mDetailedContentType = detailedContentType;
+            return this;
+        }
+
         public ChromeShareExtras build() {
             return new ChromeShareExtras(mSaveLastUsed, mShareDirectly, mIsUrlOfVisiblePage,
-                    mImageSrcUrl, mIsUserHighlightedText, mSharingTabGroup);
+                    mImageSrcUrl, mContentUrl, mSharingTabGroup, mIsReshareHighlightedText,
+                    mSkipPageSharingActions, mRenderFrameHost, mDetailedContentType);
         }
     }
 }

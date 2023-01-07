@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf_button.h"
 #include "ash/shelf/shelf_button_delegate.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -18,12 +17,12 @@
 #include "ui/views/animation/ink_drop_state.h"
 
 namespace views {
-class DotIndicator;
 class ImageView;
-}
+}  // namespace views
 
 namespace ash {
 struct ShelfItem;
+class DotIndicator;
 class ShelfView;
 
 // Button used for app shortcuts on the shelf..
@@ -63,13 +62,20 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   ShelfAppButton(ShelfView* shelf_view,
                  ShelfButtonDelegate* shelf_button_delegate);
+
+  ShelfAppButton(const ShelfAppButton&) = delete;
+  ShelfAppButton& operator=(const ShelfAppButton&) = delete;
+
   ~ShelfAppButton() override;
 
   // Sets the image to display for this entry.
   void SetImage(const gfx::ImageSkia& image);
 
   // Retrieve the image to show proxy operations.
-  const gfx::ImageSkia& GetImage() const;
+  gfx::ImageSkia GetImage() const;
+
+  // Gets the resized `icon_image_` without the shadow.
+  gfx::ImageSkia GetIconImage() const;
 
   // |state| is or'd into the current state.
   void AddState(State state);
@@ -83,8 +89,10 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Returns the bounds of the icon.
   gfx::Rect GetIconBounds() const;
 
-  // Returns the bounds of the icon in screen coordinates.
-  gfx::Rect GetIconBoundsInScreen() const;
+  // Returns the ideal icon bounds within the button view of the provided size,
+  // and with the provided icon scale.
+  gfx::Rect GetIdealIconBounds(const gfx::Size& button_size,
+                               float icon_scale) const;
 
   views::InkDrop* GetInkDropForTesting();
 
@@ -115,6 +123,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Returns whether the icon size is up to date.
   bool IsIconSizeCurrent();
 
+  // Called when the request for the context menu model is canceled.
+  void OnContextMenuModelRequestCanceled();
+
   bool FireDragTimerForTest();
   void FireRippleActivationTimerForTest();
 
@@ -126,9 +137,6 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
  protected:
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
-
-  // views::Button:
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
@@ -157,12 +165,16 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Invoked when |ripple_activation_timer_| fires to activate the ink drop.
   void OnRippleTimer();
 
+  // Calculates the preferred size of the icon.
+  gfx::Size GetPreferredIconSize() const;
+
   // Scales up app icon if |scale_up| is true, otherwise scales it back to
   // normal size.
   void ScaleAppIcon(bool scale_up);
 
   // Calculates the icon bounds for an icon scaled by |icon_scale|.
-  gfx::Rect GetIconViewBounds(float icon_scale);
+  gfx::Rect GetIconViewBounds(const gfx::Rect& button_bounds,
+                              float icon_scale) const;
 
   // Calculates the notification indicator bounds when scaled by |scale|.
   gfx::Rect GetNotificationIndicatorBounds(float scale);
@@ -174,27 +186,27 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Marks whether the ink drop animation has started or not.
   void SetInkDropAnimationStarted(bool started);
 
+  // Maybe hides the ink drop at the end of gesture handling.
+  void MaybeHideInkDropWhenGestureEnds();
+
   // The icon part of a button can be animated independently of the rest.
-  views::ImageView* icon_view_;
+  views::ImageView* const icon_view_;
 
   // The ShelfView showing this ShelfAppButton. Owned by RootWindowController.
-  ShelfView* shelf_view_;
+  ShelfView* const shelf_view_;
 
   // Draws an indicator underneath the image to represent the state of the
   // application.
-  AppStatusIndicatorView* indicator_;
+  AppStatusIndicatorView* const indicator_;
 
   // Draws an indicator in the top right corner of the image to represent an
   // active notification.
-  views::DotIndicator* notification_indicator_;
+  DotIndicator* notification_indicator_ = nullptr;
 
   // The current application state, a bitfield of State enum values.
-  int state_;
+  int state_ = STATE_NORMAL;
 
   gfx::ShadowValues icon_shadows_;
-
-  // Whether the notification indicator is enabled.
-  const bool is_notification_indicator_enabled_;
 
   // The bitmap image for this app button.
   gfx::ImageSkia icon_image_;
@@ -214,13 +226,16 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // A timer to activate the ink drop ripple during a long press.
   base::OneShotTimer ripple_activation_timer_;
 
+  // The target visibility of the shelf app's context menu.
+  // NOTE: when `context_menu_target_visibility_` is true, the context menu may
+  // not show yet due to the async request for the menu model.
+  bool context_menu_target_visibility_ = false;
+
   std::unique_ptr<ShelfButtonDelegate::ScopedActiveInkDropCount>
       ink_drop_count_;
 
   // Used to track whether the menu was deleted while running. Must be last.
   base::WeakPtrFactory<ShelfAppButton> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfAppButton);
 };
 
 }  // namespace ash

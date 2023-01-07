@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,11 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/domain_reliability_export.h"
 #include "components/domain_reliability/uploader.h"
 #include "net/base/backoff_entry.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace domain_reliability {
 
@@ -55,6 +52,11 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityScheduler {
                              size_t num_collectors,
                              const Params& params,
                              const ScheduleUploadCallback& callback);
+
+  DomainReliabilityScheduler(const DomainReliabilityScheduler&) = delete;
+  DomainReliabilityScheduler& operator=(const DomainReliabilityScheduler&) =
+      delete;
+
   ~DomainReliabilityScheduler();
 
   // If there is no upload pending, schedules an upload based on the provided
@@ -73,8 +75,6 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityScheduler {
   // passed to the upload callback by the Uploader.
   void OnUploadComplete(const DomainReliabilityUploader::UploadResult& result);
 
-  std::unique_ptr<base::Value> GetWebUIData() const;
-
   // Disables jitter in BackoffEntries to make scheduling deterministic for
   // unit tests.
   void MakeDeterministicForTesting();
@@ -86,7 +86,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityScheduler {
                                      base::TimeTicks* upload_time_out,
                                      size_t* collector_index_out);
 
-  const MockableTime* time_;
+  raw_ptr<const MockableTime> time_;
   Params params_;
   ScheduleUploadCallback callback_;
   net::BackoffEntry::Policy backoff_policy_;
@@ -115,18 +115,6 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityScheduler {
 
   // first_beacon_time_ saved during uploads.  Restored if upload fails.
   base::TimeTicks old_first_beacon_time_;
-
-  // Extra bits to return in GetWebUIData.
-  base::TimeTicks scheduled_min_time_;
-  base::TimeTicks scheduled_max_time_;
-  // Whether the other last_upload_* fields are populated.
-  bool last_upload_finished_;
-  base::TimeTicks last_upload_start_time_;
-  base::TimeTicks last_upload_end_time_;
-  size_t last_upload_collector_index_;
-  bool last_upload_success_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityScheduler);
 };
 
 }  // namespace domain_reliability

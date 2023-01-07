@@ -1,4 +1,5 @@
 Common Metadata:
+    elf_algorithm=linker_map
     elf_arch=arm
     elf_build_id=WhatAnAmazingBuildId
     elf_file_name=elf
@@ -6,9 +7,8 @@ Common Metadata:
     elf_relocations_count=394087
     git_revision=abc123
     gn_args=var1=true var2="foo"
-    linker_name=gold
     map_file_name=../../../test.map
-    tool_prefix=tools/binary_size/libsupersize/testdata/mock_toolchain/
+    out_directory=out/Release
 Old Metadata:
 New Metadata:
 
@@ -22,7 +22,7 @@ Section Sizes (Total=0 bytes (0 bytes)):
     .rodata: 0 bytes (0 bytes) (0.0%)
     .text: 0 bytes (0 bytes) (0.0%)
 
-0 symbols added (+), 0 changed (~), 0 removed (-), 77 unchanged (not shown)
+0 symbols added (+), 0 changed (~), 0 removed (-), 78 unchanged (not shown)
 Added/Removed by section: 
 Of changed symbols, 0 grew, 0 shrank
 Number of unique symbols 72 -> 72 (+0)

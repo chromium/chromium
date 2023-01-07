@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,10 +71,7 @@ class AwContentsClientBridge {
   static void Dissociate(content::WebContents* web_contents);
   static AwContentsClientBridge* FromWebContents(
       content::WebContents* web_contents);
-  static AwContentsClientBridge* FromWebContentsGetter(
-      const content::WebContents::Getter& web_contents_getter);
-  static AwContentsClientBridge* FromID(int render_process_id,
-                                        int render_frame_id);
+
   AwContentsClientBridge(JNIEnv* env,
                          const base::android::JavaRef<jobject>& obj);
   ~AwContentsClientBridge();
@@ -100,8 +97,11 @@ class AwContentsClientBridge {
   bool ShouldOverrideUrlLoading(const std::u16string& url,
                                 bool has_user_gesture,
                                 bool is_redirect,
-                                bool is_main_frame,
+                                bool is_outermost_main_frame,
                                 bool* ignore_navigation);
+
+  bool SendBrowseIntent(const std::u16string& url);
+
   void NewDownload(const GURL& url,
                    const std::string& user_agent,
                    const std::string& content_disposition,

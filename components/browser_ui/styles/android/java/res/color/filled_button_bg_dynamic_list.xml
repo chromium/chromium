@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:alpha="@dimen/filled_button_bg_disabled_alpha" android:color="?attr/colorOnSurface"
+        android:state_enabled="false" />
+    <item android:color="?attr/colorPrimary"/>
+</selector>

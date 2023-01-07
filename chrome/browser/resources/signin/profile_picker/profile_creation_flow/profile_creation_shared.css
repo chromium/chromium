@@ -1,0 +1,85 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_icons.css.js
+ * #import=../profile_picker_shared.css.js
+ * #include=cr-icons profile-picker-shared
+ * #css_wrapper_metadata_end */
+
+:host {
+  --avatar-size: 100px;
+  --banner-height: 244px;
+}
+
+#leftBanner {
+  background: url(../images/left_banner_image.svg);
+  left: 0;
+}
+
+#rightBanner {
+  background: url(../images/right_banner_image.svg);
+  right: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  #leftBanner {
+    background: url(../images/dark_mode_left_banner_image.svg);
+  }
+
+  #rightBanner {
+    background: url(../images/dark_mode_right_banner_image.svg);
+  }
+}
+
+#headerContainer {
+  height: var(--banner-height);
+  position: relative;
+  width: 100%;
+}
+
+.banner {
+  height: 400px;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: 169px;
+  z-index: -1;
+}
+
+#backButton {
+  --cr-icon-button-icon-size: 22px;
+  --cr-icon-button-margin-start: 4px;
+  --cr-icon-button-size: 36px;
+  margin-inline-start: 16px;
+  margin-top: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (forced-colors: none) {
+  #backButton {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+  }
+}
+
+#avatarContainer {
+  bottom: calc(var(--avatar-size) / -2);
+  height: calc(var(--avatar-size) + 4px);
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  width: calc(var(--avatar-size) + 4px);
+}
+
+.avatar {
+  border: 2px solid var(--md-background-color);
+  border-radius: 50%;
+  height: var(--avatar-size);
+  width: var(--avatar-size);
+  z-index: 1;
+}

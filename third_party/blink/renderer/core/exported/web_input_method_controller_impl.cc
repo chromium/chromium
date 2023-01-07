@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,7 +90,7 @@ bool WebInputMethodControllerImpl::SetComposition(
   if (range.IsNotNull()) {
     Node* node = range.StartPosition().ComputeContainerNode();
     GetFrame()->GetDocument()->UpdateStyleAndLayoutTree();
-    if (!node || !HasEditableStyle(*node))
+    if (!node || !IsEditable(*node))
       return false;
   }
 
@@ -224,18 +224,21 @@ WebRange WebInputMethodControllerImpl::CompositionRange() {
 
 bool WebInputMethodControllerImpl::GetCompositionCharacterBounds(
     WebVector<gfx::Rect>& bounds) {
-  if (IsEditContextActive())
-    return false;
+  if (IsEditContextActive()) {
+    return GetInputMethodController()
+        .GetActiveEditContext()
+        ->GetCompositionCharacterBounds(bounds);
+  }
 
   WebRange range = CompositionRange();
   if (range.IsEmpty())
     return false;
 
-  size_t character_count = range.length();
-  size_t offset = range.StartOffset();
-  WebVector<gfx::Rect> result(character_count);
+  int character_count = range.length();
+  int offset = range.StartOffset();
+  WebVector<gfx::Rect> result(static_cast<size_t>(character_count));
   gfx::Rect rect;
-  for (size_t i = 0; i < character_count; ++i) {
+  for (int i = 0; i < character_count; ++i) {
     if (!web_frame_->FirstRectForCharacterRange(offset + i, 1, rect)) {
       DLOG(ERROR) << "Could not retrieve character rectangle at " << i;
       return false;

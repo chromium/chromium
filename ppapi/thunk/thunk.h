@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,7 @@
   } }
 
 #include "ppapi/thunk/interfaces_ppb_private.h"
-#include "ppapi/thunk/interfaces_ppb_private_flash.h"
 #include "ppapi/thunk/interfaces_ppb_private_no_permissions.h"
-#include "ppapi/thunk/interfaces_ppb_private_pdf.h"
 #include "ppapi/thunk/interfaces_ppb_public_dev.h"
 #include "ppapi/thunk/interfaces_ppb_public_dev_channel.h"
 #include "ppapi/thunk/interfaces_ppb_public_socket.h"

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,8 +49,6 @@ const char kExtensionBlocklistUrlPrefix[] =
 const char kExtensionBlocklistHttpsUrlPrefix[] =
     "https://www.gstatic.com/chrome/extensions/blocklist";
 
-const char kThumbsWhiteListedExtension[] = "khopmbdjffemhegeeobelklnbglcdgfh";
-
 }  // namespace
 
 ChromeExtensionsClient::ChromeExtensionsClient() {
@@ -79,6 +77,7 @@ void ChromeExtensionsClient::InitializeWebStoreUrls(
         GURL(command_line->GetSwitchValueASCII(switches::kAppsGalleryURL));
   } else {
     webstore_base_url_ = GURL(extension_urls::kChromeWebstoreBaseURL);
+    new_webstore_base_url_ = GURL(extension_urls::kNewChromeWebstoreBaseURL);
   }
   if (command_line->HasSwitch(switches::kAppsGalleryUpdateURL)) {
     webstore_update_url_ = GURL(
@@ -101,8 +100,6 @@ void ChromeExtensionsClient::FilterHostPermissions(
     const URLPatternSet& hosts,
     URLPatternSet* new_hosts,
     PermissionIDSet* permissions) const {
-  // When editing this function, be sure to add the same functionality to
-  // FilterHostPermissions() above.
   for (auto i = hosts.begin(); i != hosts.end(); ++i) {
     // Filters out every URL pattern that matches chrome:// scheme.
     if (i->scheme() == content::kChromeUIScheme) {
@@ -141,19 +138,6 @@ URLPatternSet ChromeExtensionsClient::GetPermittedChromeSchemeHosts(
   hosts.AddPattern(URLPattern(URLPattern::SCHEME_CHROMEUI,
                               chrome::kChromeUIFaviconURL));
 
-  // Experimental extensions are also allowed chrome://thumb.
-  //
-  // TODO: A public API should be created for retrieving thumbnails.
-  // See http://crbug.com/222856. A temporary hack is implemented here to
-  // make chrome://thumbs available to NTP Russia extension as
-  // non-experimental.
-  if ((api_permissions.find(APIPermission::kExperimental) !=
-       api_permissions.end()) ||
-      (extension->id() == kThumbsWhiteListedExtension &&
-       extension->from_webstore())) {
-    hosts.AddPattern(URLPattern(URLPattern::SCHEME_CHROMEUI,
-                                chrome::kChromeUIThumbnailURL));
-  }
   return hosts;
 }
 
@@ -162,10 +146,7 @@ bool ChromeExtensionsClient::IsScriptableURL(
   // The gallery is special-cased as a restricted URL for scripting to prevent
   // access to special JS bindings we expose to the gallery (and avoid things
   // like extensions removing the "report abuse" link).
-  // TODO(erikkay): This seems like the wrong test.  Shouldn't we we testing
-  // against the store app extent?
-  GURL store_url(extension_urls::GetWebstoreLaunchURL());
-  if (url.DomainIs(store_url.host())) {
+  if (extension_urls::IsWebstoreDomain(url)) {
     if (error)
       *error = manifest_errors::kCannotScriptGallery;
     return false;
@@ -177,16 +158,20 @@ const GURL& ChromeExtensionsClient::GetWebstoreBaseURL() const {
   return webstore_base_url_;
 }
 
+const GURL& ChromeExtensionsClient::GetNewWebstoreBaseURL() const {
+  return new_webstore_base_url_;
+}
+
 const GURL& ChromeExtensionsClient::GetWebstoreUpdateURL() const {
   return webstore_update_url_;
 }
 
-bool ChromeExtensionsClient::IsBlacklistUpdateURL(const GURL& url) const {
+bool ChromeExtensionsClient::IsBlocklistUpdateURL(const GURL& url) const {
   // The extension blocklist URL is returned from the update service and
   // therefore not determined by Chromium. If the location of the blocklist file
   // ever changes, we need to update this function. A DCHECK in the
   // ExtensionUpdater ensures that we notice a change. This is the full URL
-  // of a blacklist:
+  // of a blocklist:
   // http://www.gstatic.com/chrome/extensions/blocklist/l_0_0_0_7.txt
   return base::StartsWith(url.spec(), kExtensionBlocklistUrlPrefix,
                           base::CompareCase::SENSITIVE) ||
@@ -202,11 +187,10 @@ std::set<base::FilePath> ChromeExtensionsClient::GetBrowserImagePaths(
   // Theme images
   const base::DictionaryValue* theme_images = ThemeInfo::GetImages(extension);
   if (theme_images) {
-    for (base::DictionaryValue::Iterator it(*theme_images); !it.IsAtEnd();
-         it.Advance()) {
-      std::string path;
-      if (it.value().GetAsString(&path))
-        image_paths.insert(base::FilePath::FromUTF8Unsafe(path));
+    for (const auto item : theme_images->GetDict()) {
+      if (item.second.is_string())
+        image_paths.insert(
+            base::FilePath::FromUTF8Unsafe(item.second.GetString()));
     }
   }
 
@@ -240,10 +224,10 @@ void ChromeExtensionsClient::AddOriginAccessPermissions(
   }
 
   // TODO(jstritar): We should try to remove this special case. Also, these
-  // whitelist entries need to be updated when the kManagement permission
+  // allowed entries need to be updated when the kManagement permission
   // changes.
   if (is_extension_active && extension.permissions_data()->HasAPIPermission(
-                                 extensions::APIPermission::kManagement)) {
+                                 mojom::APIPermissionID::kManagement)) {
     origin_patterns->push_back(network::mojom::CorsOriginPattern::New(
         content::kChromeUIScheme, chrome::kChromeUIExtensionIconHost,
         /*port=*/0, network::mojom::CorsDomainMatchMode::kDisallowSubdomains,
@@ -252,7 +236,7 @@ void ChromeExtensionsClient::AddOriginAccessPermissions(
   }
 }
 
-base::Optional<int> ChromeExtensionsClient::GetExtensionExtendedErrorCode()
+absl::optional<int> ChromeExtensionsClient::GetExtensionExtendedErrorCode()
     const {
   return static_cast<int>(ChromeResourceRequestBlockedReason::kExtension);
 }

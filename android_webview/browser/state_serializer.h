@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -6,8 +6,6 @@
 #define ANDROID_WEBVIEW_BROWSER_STATE_SERIALIZER_H_
 
 #include <cstdint>
-
-#include "base/compiler_specific.h"
 
 namespace base {
 
@@ -19,6 +17,7 @@ class PickleIterator;
 namespace content {
 
 class NavigationEntry;
+class NavigationEntryRestoreContext;
 class WebContents;
 
 }  // namespace content
@@ -32,8 +31,8 @@ namespace android_webview {
 void WriteToPickle(content::WebContents& web_contents, base::Pickle* pickle);
 
 // |web_contents| will not be modified if function returns false.
-bool RestoreFromPickle(base::PickleIterator* iterator,
-                       content::WebContents* web_contents) WARN_UNUSED_RESULT;
+[[nodiscard]] bool RestoreFromPickle(base::PickleIterator* iterator,
+                                     content::WebContents* web_contents);
 
 namespace internal {
 
@@ -45,21 +44,22 @@ const uint32_t AW_STATE_VERSION_DATA_URL = 20151204;
 // tests.
 void WriteHeaderToPickle(base::Pickle* pickle);
 void WriteHeaderToPickle(uint32_t state_version, base::Pickle* pickle);
-uint32_t RestoreHeaderFromPickle(base::PickleIterator* iterator)
-    WARN_UNUSED_RESULT;
-bool IsSupportedVersion(uint32_t state_version) WARN_UNUSED_RESULT;
+[[nodiscard]] uint32_t RestoreHeaderFromPickle(base::PickleIterator* iterator);
+[[nodiscard]] bool IsSupportedVersion(uint32_t state_version);
 void WriteNavigationEntryToPickle(content::NavigationEntry& entry,
                                   base::Pickle* pickle);
 void WriteNavigationEntryToPickle(uint32_t state_version,
                                   content::NavigationEntry& entry,
                                   base::Pickle* pickle);
-bool RestoreNavigationEntryFromPickle(base::PickleIterator* iterator,
-                                      content::NavigationEntry* entry)
-    WARN_UNUSED_RESULT;
-bool RestoreNavigationEntryFromPickle(uint32_t state_version,
-                                      base::PickleIterator* iterator,
-                                      content::NavigationEntry* entry)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] bool RestoreNavigationEntryFromPickle(
+    base::PickleIterator* iterator,
+    content::NavigationEntry* entry,
+    content::NavigationEntryRestoreContext* context);
+[[nodiscard]] bool RestoreNavigationEntryFromPickle(
+    uint32_t state_version,
+    base::PickleIterator* iterator,
+    content::NavigationEntry* entry,
+    content::NavigationEntryRestoreContext* context);
 
 }  // namespace internal
 

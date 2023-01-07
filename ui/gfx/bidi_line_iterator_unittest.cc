@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/gfx/bidi_line_iterator.h"
 
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,12 +16,13 @@ class BiDiLineIteratorTest
  public:
   BiDiLineIteratorTest() = default;
 
+  BiDiLineIteratorTest(const BiDiLineIteratorTest&) = delete;
+  BiDiLineIteratorTest& operator=(const BiDiLineIteratorTest&) = delete;
+
   BiDiLineIterator* iterator() { return &iterator_; }
 
  private:
   BiDiLineIterator iterator_;
-
-  DISALLOW_COPY_AND_ASSIGN(BiDiLineIteratorTest);
 };
 
 TEST_P(BiDiLineIteratorTest, OnlyLTR) {
@@ -121,9 +121,10 @@ TEST_P(BiDiLineIteratorTest, Mixed) {
 
 TEST_P(BiDiLineIteratorTest, RTLPunctuationNoCustomBehavior) {
   // This string features Hebrew characters interleaved with ASCII punctuation.
-  iterator()->Open(base::UTF8ToUTF16("א!ב\"ג#ד$ה%ו&ז'ח(ט)י*ך+כ,ל-ם.מ/"
-                                     "ן:נ;ס<ע=ף>פ?ץ@צ[ק\\ר]ש^ת_א`ב{ג|ד}ה~ו"),
-                   GetParam());
+  iterator()->Open(
+      u"א!ב\"ג#ד$ה%ו&ז'ח(ט)י*ך+כ,ל-ם.מ/"
+      u"ן:נ;ס<ע=ף>פ?ץ@צ[ק\\ר]ש^ת_א`ב{ג|ד}ה~ו",
+      GetParam());
 
   // Expect a single RTL run.
   ASSERT_EQ(1, iterator()->CountRuns());

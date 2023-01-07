@@ -2,6 +2,7 @@ include_rules = [
   "+cc/paint",
   "+mojo/public",
   "+printing/printing_jni_headers",
+  "+services/data_decoder/public/cpp",
   "+skia/ext",
   "+third_party/icu/source/common/unicode",
   "+third_party/icu/source/i18n/unicode",
@@ -12,4 +13,5 @@ include_rules = [
   "+ui/base/resource",
   "+ui/base/text",
   "+ui/gfx",
+  "+ui/linux",
 ]

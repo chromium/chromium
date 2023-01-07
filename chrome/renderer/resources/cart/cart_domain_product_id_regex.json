@@ -1,0 +1,11 @@
+{
+"product_url": {},
+"product_image_url":
+{"www.homesquare.com": "(images.cymax.com/Images/\\d+/(\\w+)-)",
+"www.wish.com": "(\\w+)-\\d+-medium"},
+"product_element":
+{"checkout.iherb.com": "product id: ([\\w|-]+)",
+"www.electronicexpress.com": "<a href=\"#modal-(\\w+)",
+"www.otterbox.com": "sku:\\s*</span>\\s*<span class=\"value\">([\\w|-]+)",
+"www.zappos.com": "StockId</dt><dd class=\"[\\w|-]+\">(\\w+)"}
+}

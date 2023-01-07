@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,22 +18,21 @@ import org.chromium.base.Callback;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.CreditCardScanner;
 import org.chromium.chrome.browser.autofill.CreditCardScanner.Delegate;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorBase;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel.EditorValueIconGenerator;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
-import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.DropdownKeyValue;
-import org.chromium.chrome.browser.payments.AddressEditor;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel.DropdownKeyValue;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel.EditorValueIconGenerator;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.content_public.browser.WebContents;
@@ -171,7 +170,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
     private boolean mIsScanning;
     private int mCurrentMonth;
     private int mCurrentYear;
-    private boolean mIsIncognito;
+    private final boolean mSaveToDisk;
 
     /**
      * Builds a credit card editor.
@@ -181,14 +180,16 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
      *                        billing addresses.
      * @param includeOrgLabel Whether the labels in the billing address dropdown should include the
      *                        organization name.
+     * @param saveToDisk      Whether to allow saving changes to disk after editing.
      */
-    public CardEditor(
-            WebContents webContents, AddressEditor addressEditor, boolean includeOrgLabel) {
+    public CardEditor(WebContents webContents, AddressEditor addressEditor, boolean includeOrgLabel,
+            boolean saveToDisk) {
         assert webContents != null;
         assert addressEditor != null;
 
         mWebContents = webContents;
         mAddressEditor = addressEditor;
+        mSaveToDisk = saveToDisk;
 
         List<AutofillProfile> profiles =
                 PersonalDataManager.getInstance().getBillingAddressesToSuggest(includeOrgLabel);
@@ -291,9 +292,6 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
             }
         };
         mCalendar.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
-        mIsIncognito = activity != null && activity.getCurrentTabModel().isIncognito();
     }
 
     private boolean isCardNumberLengthMaximum(@Nullable CharSequence value) {
@@ -426,7 +424,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
         addBillingAddressDropdown(editor, card);
 
         // Allow saving new cards on disk unless in incognito mode.
-        if (isNewCard && !mIsIncognito) addSaveCardCheckbox(editor);
+        if (isNewCard && mSaveToDisk) addSaveCardCheckbox(editor);
 
         // If the user clicks [Cancel], send |toEdit| card back to the caller (will return original
         // state, which could be null, a full card, or a partial card).
@@ -677,8 +675,8 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
                 builder.append(editMessage);
                 int endIndex = builder.length();
 
-                Object foregroundSpanner = new ForegroundColorSpan(ApiCompatibilityUtils.getColor(
-                        mContext.getResources(), R.color.default_text_color_link));
+                Object foregroundSpanner = new ForegroundColorSpan(
+                        SemanticColorUtils.getDefaultTextColorLink(mContext));
                 builder.setSpan(foregroundSpanner, startIndex, endIndex, 0);
 
                 // The text size in the dropdown is 14dp.
@@ -726,7 +724,8 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
                     profile = findTargetProfile(mProfilesForBillingAddress, eventData.first);
                 }
 
-                final AutofillAddress editAddress = new AutofillAddress(mContext, profile);
+                final AutofillAddress editAddress = new AutofillAddress(
+                        mContext, profile, mAddressEditor.getCompletenessCheckType());
                 mAddressEditor.edit(editAddress, new Callback<AutofillAddress>() {
                     @Override
                     public void onResult(AutofillAddress billingAddress) {
@@ -814,7 +813,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
 
         PersonalDataManager pdm = PersonalDataManager.getInstance();
         if (!card.getIsLocal()) {
-            if (!mIsIncognito) pdm.updateServerCardBillingAddress(card);
+            if (mSaveToDisk) pdm.updateServerCardBillingAddress(card);
             return;
         }
 
@@ -833,12 +832,12 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
         card.setIssuerIconDrawableId(displayableCard.getIssuerIconDrawableId());
 
         if (!isNewCard) {
-            if (!mIsIncognito) pdm.setCreditCard(card);
+            if (mSaveToDisk) pdm.setCreditCard(card);
             return;
         }
 
         if (mSaveCardCheckbox != null && mSaveCardCheckbox.isChecked()) {
-            assert !mIsIncognito;
+            assert mSaveToDisk;
             card.setGUID(pdm.setCreditCard(card));
         }
     }

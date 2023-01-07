@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.labs.net.xhrTest');
 goog.setTestOnly('goog.labs.net.xhrTest');
@@ -47,8 +39,8 @@ const TEST_IMAGE_BYTES = [
  * @param {string=} opt_responseText
  * @param {number=} opt_latency
  *     Milliseconds between sending a request and receiving the response.
- * @return {!XhrLike}
- *     The XHR stub that will be returned from the factory.
+ * @return {!XhrLike} The XHR stub that will be returned from the factory.
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function stubXhrToReturn(status, opt_responseText, opt_latency) {
   if (opt_latency != null) {
@@ -61,38 +53,78 @@ function stubXhrToReturn(status, opt_responseText, opt_latency) {
     status: 0,
     headers: {},
     open: function(method, url, async) {
+      /** @suppress {globalThis} suppression added to enable type checking */
       this.method = method;
+      /** @suppress {globalThis} suppression added to enable type checking */
       this.url = url;
+      /** @suppress {globalThis} suppression added to enable type checking */
       this.async = async;
     },
     setRequestHeader: function(key, value) {
+      /** @suppress {globalThis} suppression added to enable type checking */
       this.headers[key] = value;
     },
     overrideMimeType: function(mimeType) {
+      /** @suppress {globalThis} suppression added to enable type checking */
       this.mimeType = mimeType;
     },
-    abort: function() {
-      this.aborted = true;
-      this.load(0);
-    },
-    send: function(data) {
-      this.data = data;
-      this.sent = true;
+    abort: /**
+              @suppress {globalThis} suppression added to enable type checking
+            */
+        function() {
+          /**
+           * @suppress {globalThis} suppression added to enable type
+           * checking
+           */
+          this.aborted = true;
+          this.load(0);
+        },
+    send: /**
+             @suppress {globalThis} suppression added to enable type checking
+           */
+        function(data) {
+          /**
+           * @suppress {globalThis} suppression added to enable type
+           * checking
+           */
+          this.data = data;
+          /**
+           * @suppress {globalThis} suppression added to enable type
+           * checking
+           */
+          this.sent = true;
 
-      // Fulfill the send asynchronously, or possibly with the MockClock.
-      window.setTimeout(goog.bind(this.load, this, status), opt_latency || 0);
-      if (mockClock) {
-        mockClock.tick(opt_latency);
-      }
-    },
-    load: function(status) {
-      this.status = status;
-      if (opt_responseText != null) {
-        this.responseText = opt_responseText;
-      }
-      this.readyState = 4;
-      if (this.onreadystatechange) this.onreadystatechange();
-    }
+          // Fulfill the send asynchronously, or possibly with the
+          // MockClock.
+          window.setTimeout(
+              goog.bind(this.load, this, status), opt_latency || 0);
+          if (mockClock) {
+            mockClock.tick(opt_latency);
+          }
+        },
+    load: /**
+             @suppress {globalThis} suppression added to enable type checking
+           */
+        function(status) {
+          /**
+           * @suppress {globalThis} suppression added to enable type
+           * checking
+           */
+          this.status = status;
+          if (opt_responseText != null) {
+            /**
+             * @suppress {globalThis} suppression added to enable type
+             * checking
+             */
+            this.responseText = opt_responseText;
+          }
+          /**
+           * @suppress {globalThis} suppression added to enable type
+           * checking
+           */
+          this.readyState = 4;
+          if (this.onreadystatechange) this.onreadystatechange();
+        }
   };
 
   stubXmlHttpWith(stubXhr);
@@ -108,8 +140,8 @@ function stubXhrToThrow(err) {
 
 /**
  * @param {!Error} err Error to be thrown when sending this stub XHR.
- * @return {!XhrLike}
- *     The XHR stub that will be returned from the factory.
+ * @return {!XhrLike} The XHR stub that will be returned from the factory.
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function buildThrowingStubXhr(err) {
   return {
@@ -118,19 +150,31 @@ function buildThrowingStubXhr(err) {
     status: 0,
     headers: {},
     open: function(method, url, async) {
+      /** @suppress {globalThis} suppression added to enable type checking */
       this.method = method;
+      /** @suppress {globalThis} suppression added to enable type checking */
       this.url = url;
+      /** @suppress {globalThis} suppression added to enable type checking */
       this.async = async;
     },
-    setRequestHeader: function(key, value) { this.headers[key] = value; },
-    overrideMimeType: function(mimeType) { this.mimeType = mimeType; },
-    send: function(data) { throw err; }
+    setRequestHeader: function(key, value) {
+      /** @suppress {globalThis} suppression added to enable type checking */
+      this.headers[key] = value;
+    },
+    overrideMimeType: function(mimeType) {
+      /** @suppress {globalThis} suppression added to enable type checking */
+      this.mimeType = mimeType;
+    },
+    send: function(data) {
+      throw err;
+    }
   };
 }
 
 /**
  * Replace XmlHttp with a function that returns a stub XHR.
  * @param {!XhrLike.OrNative} stubXhr
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function stubXmlHttpWith(stubXhr) {
   XmlHttp.setGlobalFactory({
@@ -157,7 +201,7 @@ let mockClock;
  */
 function isRunningLocally() {
   if (window.location.protocol == 'file:') {
-    const testCase = goog.global['G_testRunner'].testCase;
+    const testCase = globalThis['G_testRunner'].testCase;
     testCase.saveMessage('Test skipped while running on local file system.');
     return true;
   }
@@ -178,6 +222,7 @@ testSuite({
     XmlHttp.setGlobalFactory(new DefaultXmlHttpFactory());
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSimpleRequest() {
     if (isRunningLocally()) return;
 
@@ -228,7 +273,7 @@ testSuite({
     if (isRunningLocally()) return;
 
     // IE9 and earlier do not support blobs.
-    if (!('Blob' in goog.global)) {
+    if (!('Blob' in globalThis)) {
       const err = assertThrows(function() {
         xhr.getBlob(TEST_IMAGE);
       });
@@ -301,12 +346,19 @@ testSuite({
     if (isRunningLocally()) return;
 
     return xhr.getJson('unknown-file.dat')
-        .then(fail /* opt_onFulfilled */, function(err) {
-          assertTrue(
-              'Error should be an HTTP error', err instanceof xhr.HttpError);
-          assertEquals(404, err.status);
-          assertNotNull(err.xhr);
-        });
+        .then(
+            fail /* opt_onFulfilled */
+            ,    /**
+                    @suppress {strictMissingProperties} suppression added to
+                    enable type checking
+                  */
+            function(err) {
+              assertTrue(
+                  'Error should be an HTTP error',
+                  err instanceof xhr.HttpError);
+              assertEquals(404, err.status);
+              assertNotNull(err.xhr);
+            });
   },
 
   testBadOriginTriggersOnErrorHandler() {
@@ -319,6 +371,10 @@ testSuite({
                   'XHR to http://www.google.com should\'ve failed due to ' +
                   'same-origin policy.');
             } /* opt_onFulfilled */,
+            /**
+               @suppress {strictMissingProperties} suppression added to enable
+               type checking
+             */
             function(err) {
               // In IE this will be a goog.labs.net.xhr.Error since it is thrown
               //  when calling xhr.open(), other browsers will raise an
@@ -337,37 +393,52 @@ testSuite({
     let called = false;
     stubXhrToReturn(200);
     assertFalse('Callback should not yet have been called', called);
-    return xhr.send('GET', 'test-url', null).then(function(stubXhr) {
-      called = true;
-      assertEquals('GET', stubXhr.method);
-      assertEquals('test-url', stubXhr.url);
-    });
+    return xhr.send('GET', 'test-url', null)
+        .then(/**
+                 @suppress {strictMissingProperties} suppression added to
+                 enable type checking
+               */
+              function(stubXhr) {
+                called = true;
+                assertEquals('GET', stubXhr.method);
+                assertEquals('test-url', stubXhr.url);
+              });
   },
 
   testSendPostSetsDefaultHeader() {
     stubXhrToReturn(200);
-    return xhr.send('POST', 'test-url', null).then(function(stubXhr) {
-      assertEquals('POST', stubXhr.method);
-      assertEquals('test-url', stubXhr.url);
-      assertEquals(
-          'application/x-www-form-urlencoded;charset=utf-8',
-          stubXhr.headers['Content-Type']);
-    });
+    return xhr.send('POST', 'test-url', null)
+        .then(/**
+                 @suppress {strictMissingProperties,missingProperties}
+                 suppression added to enable type checking
+               */
+              function(stubXhr) {
+                assertEquals('POST', stubXhr.method);
+                assertEquals('test-url', stubXhr.url);
+                assertEquals(
+                    'application/x-www-form-urlencoded;charset=utf-8',
+                    stubXhr.headers['Content-Type']);
+              });
   },
 
   testSendPostDoesntSetHeaderWithFormData() {
-    if (!goog.global['FormData']) {
+    if (!globalThis['FormData']) {
       return;
     }
-    const formData = new goog.global['FormData']();
+    const formData = new globalThis['FormData']();
     formData.append('name', 'value');
 
     stubXhrToReturn(200);
-    return xhr.send('POST', 'test-url', formData).then(function(stubXhr) {
-      assertEquals('POST', stubXhr.method);
-      assertEquals('test-url', stubXhr.url);
-      assertEquals(undefined, stubXhr.headers['Content-Type']);
-    });
+    return xhr.send('POST', 'test-url', formData)
+        .then(/**
+                 @suppress {strictMissingProperties,missingProperties}
+                 suppression added to enable type checking
+               */
+              function(stubXhr) {
+                assertEquals('POST', stubXhr.method);
+                assertEquals('test-url', stubXhr.url);
+                assertEquals(undefined, stubXhr.headers['Content-Type']);
+              });
   },
 
   testSendPostHeaders() {
@@ -376,19 +447,23 @@ testSuite({
         .send(
             'POST', 'test-url', null,
             {headers: {'Content-Type': 'text/plain', 'X-Made-Up': 'FooBar'}})
-        .then(function(stubXhr) {
-          assertEquals('POST', stubXhr.method);
-          assertEquals('test-url', stubXhr.url);
-          assertEquals('text/plain', stubXhr.headers['Content-Type']);
-          assertEquals('FooBar', stubXhr.headers['X-Made-Up']);
-        });
+        .then(/**
+                 @suppress {strictMissingProperties,missingProperties}
+                 suppression added to enable type checking
+               */
+              function(stubXhr) {
+                assertEquals('POST', stubXhr.method);
+                assertEquals('test-url', stubXhr.url);
+                assertEquals('text/plain', stubXhr.headers['Content-Type']);
+                assertEquals('FooBar', stubXhr.headers['X-Made-Up']);
+              });
   },
 
   testSendPostHeadersWithFormData() {
-    if (!goog.global['FormData']) {
+    if (!globalThis['FormData']) {
       return;
     }
-    const formData = new goog.global['FormData']();
+    const formData = new globalThis['FormData']();
     formData.append('name', 'value');
 
     stubXhrToReturn(200);
@@ -396,12 +471,16 @@ testSuite({
         .send(
             'POST', 'test-url', formData,
             {headers: {'Content-Type': 'text/plain', 'X-Made-Up': 'FooBar'}})
-        .then(function(stubXhr) {
-          assertEquals('POST', stubXhr.method);
-          assertEquals('test-url', stubXhr.url);
-          assertEquals('text/plain', stubXhr.headers['Content-Type']);
-          assertEquals('FooBar', stubXhr.headers['X-Made-Up']);
-        });
+        .then(/**
+                 @suppress {strictMissingProperties,missingProperties}
+                 suppression added to enable type checking
+               */
+              function(stubXhr) {
+                assertEquals('POST', stubXhr.method);
+                assertEquals('test-url', stubXhr.url);
+                assertEquals('text/plain', stubXhr.headers['Content-Type']);
+                assertEquals('FooBar', stubXhr.headers['X-Made-Up']);
+              });
   },
 
   testSendNullPostHeaders() {
@@ -411,20 +490,24 @@ testSuite({
           headers:
               {'Content-Type': null, 'X-Made-Up': 'FooBar', 'Y-Made-Up': null}
         })
-        .then(function(stubXhr) {
-          assertEquals('POST', stubXhr.method);
-          assertEquals('test-url', stubXhr.url);
-          assertEquals(undefined, stubXhr.headers['Content-Type']);
-          assertEquals('FooBar', stubXhr.headers['X-Made-Up']);
-          assertEquals(undefined, stubXhr.headers['Y-Made-Up']);
-        });
+        .then(/**
+                 @suppress {strictMissingProperties,missingProperties}
+                 suppression added to enable type checking
+               */
+              function(stubXhr) {
+                assertEquals('POST', stubXhr.method);
+                assertEquals('test-url', stubXhr.url);
+                assertEquals(undefined, stubXhr.headers['Content-Type']);
+                assertEquals('FooBar', stubXhr.headers['X-Made-Up']);
+                assertEquals(undefined, stubXhr.headers['Y-Made-Up']);
+              });
   },
 
   testSendNullPostHeadersWithFormData() {
-    if (!goog.global['FormData']) {
+    if (!globalThis['FormData']) {
       return;
     }
-    const formData = new goog.global['FormData']();
+    const formData = new globalThis['FormData']();
     formData.append('name', 'value');
 
     stubXhrToReturn(200);
@@ -433,72 +516,111 @@ testSuite({
           headers:
               {'Content-Type': null, 'X-Made-Up': 'FooBar', 'Y-Made-Up': null}
         })
-        .then(function(stubXhr) {
-          assertEquals('POST', stubXhr.method);
-          assertEquals('test-url', stubXhr.url);
-          assertEquals(undefined, stubXhr.headers['Content-Type']);
-          assertEquals('FooBar', stubXhr.headers['X-Made-Up']);
-          assertEquals(undefined, stubXhr.headers['Y-Made-Up']);
-        });
+        .then(/**
+                 @suppress {strictMissingProperties,missingProperties}
+                 suppression added to enable type checking
+               */
+              function(stubXhr) {
+                assertEquals('POST', stubXhr.method);
+                assertEquals('test-url', stubXhr.url);
+                assertEquals(undefined, stubXhr.headers['Content-Type']);
+                assertEquals('FooBar', stubXhr.headers['X-Made-Up']);
+                assertEquals(undefined, stubXhr.headers['Y-Made-Up']);
+              });
   },
 
   testSendWithCredentials() {
     stubXhrToReturn(200);
     return xhr.send('POST', 'test-url', null, {withCredentials: true})
-        .then(function(stubXhr) {
-          assertTrue('XHR should have been sent', stubXhr.sent);
-          assertTrue(stubXhr.withCredentials);
-        });
+        .then(/**
+                 @suppress {strictMissingProperties} suppression added to
+                 enable type checking
+               */
+              function(stubXhr) {
+                assertTrue('XHR should have been sent', stubXhr.sent);
+                assertTrue(stubXhr.withCredentials);
+              });
   },
 
   testSendWithMimeType() {
     stubXhrToReturn(200);
     return xhr.send('POST', 'test-url', null, {mimeType: 'text/plain'})
-        .then(function(stubXhr) {
-          assertTrue('XHR should have been sent', stubXhr.sent);
-          assertEquals('text/plain', stubXhr.mimeType);
-        });
+        .then(/**
+                 @suppress {strictMissingProperties} suppression added to
+                 enable type checking
+               */
+              function(stubXhr) {
+                assertTrue('XHR should have been sent', stubXhr.sent);
+                assertEquals('text/plain', stubXhr.mimeType);
+              });
   },
 
   testSendWithHttpError() {
     stubXhrToReturn(500);
     return xhr.send('POST', 'test-url', null)
-        .then(fail /* opt_onResolved */, function(err) {
-          assertTrue(err instanceof xhr.HttpError);
-          assertTrue(err.xhr.sent);
-          assertEquals(500, err.status);
-        });
+        .then(
+            fail /* opt_onResolved */
+            ,    /**
+                    @suppress {strictMissingProperties} suppression added to
+                    enable type checking
+                  */
+            function(err) {
+              assertTrue(err instanceof xhr.HttpError);
+              assertTrue(err.xhr.sent);
+              assertEquals(500, err.status);
+            });
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSendWithTimeoutNotHit() {
     stubXhrToReturn(200, null /* opt_responseText */, 1400 /* opt_latency */);
     return xhr.send('POST', 'test-url', null, {timeoutMs: 1500})
-        .then(function(stubXhr) {
-          assertTrue(mockClock.getTimeoutsMade() > 0);
-          assertTrue('XHR should have been sent', stubXhr.sent);
-          assertFalse('XHR should not have been aborted', stubXhr.aborted);
-        });
+        .then(/**
+                 @suppress {strictMissingProperties} suppression added to
+                 enable type checking
+               */
+              function(stubXhr) {
+                assertTrue(mockClock.getTimeoutsMade() > 0);
+                assertTrue('XHR should have been sent', stubXhr.sent);
+                assertFalse(
+                    'XHR should not have been aborted', stubXhr.aborted);
+              });
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSendWithTimeoutHit() {
     stubXhrToReturn(200, null /* opt_responseText */, 50 /* opt_latency */);
     return xhr.send('POST', 'test-url', null, {timeoutMs: 50})
-        .then(fail /* opt_onResolved */, function(err) {
-          assertTrue('XHR should have been sent', err.xhr.sent);
-          assertTrue('XHR should have been aborted', err.xhr.aborted);
-          assertTrue(err instanceof xhr.TimeoutError);
-        });
+        .then(
+            fail /* opt_onResolved */
+            ,    /**
+                    @suppress {strictMissingProperties} suppression added to
+                    enable type checking
+                  */
+            function(err) {
+              assertTrue('XHR should have been sent', err.xhr.sent);
+              assertTrue('XHR should have been aborted', err.xhr.aborted);
+              assertTrue(err instanceof xhr.TimeoutError);
+            });
   },
 
   testCancelRequest() {
     const request = stubXhrToReturn(200);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const promise =
         xhr.send('GET', 'test-url')
-            .then(fail /* opt_onResolved */, function(error) {
-              assertTrue(error instanceof GoogPromise.CancellationError);
-              assertTrue('XHR should have been aborted', request.aborted);
-              return null;  // Return a non-error value for the test runner.
-            });
+            .then(
+                fail /* opt_onResolved */
+                ,    /**
+                        @suppress {strictMissingProperties}
+                        suppression added to enable type
+                        checking
+                      */
+                function(error) {
+                  assertTrue(error instanceof GoogPromise.CancellationError);
+                  assertTrue('XHR should have been aborted', request.aborted);
+                  return null;  // Return a non-error value for the test runner.
+                });
     promise.cancel();
     return promise;
   },
@@ -521,16 +643,23 @@ testSuite({
   testSendWithClientException() {
     stubXhrToThrow(new Error('CORS XHR with file:// schemas not allowed.'));
     return xhr.send('POST', 'file://test-url', null)
-        .then(fail /* opt_onResolved */, function(err) {
-          assertFalse('XHR should not have been sent', err.xhr.sent);
-          assertTrue(err instanceof Error);
-          assertTrue(
-              /CORS XHR with file:\/\/ schemas not allowed./.test(err.message));
-        });
+        .then(
+            fail /* opt_onResolved */
+            ,    /**
+                    @suppress {strictMissingProperties} suppression added to
+                    enable type checking
+                  */
+            function(err) {
+              assertFalse('XHR should not have been sent', err.xhr.sent);
+              assertTrue(err instanceof Error);
+              assertTrue(/CORS XHR with file:\/\/ schemas not allowed./.test(
+                  err.message));
+            });
   },
 
   testSendWithFactory() {
     stubXhrToReturn(200);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const options = {
       xmlHttpFactory: new WrapperXmlHttpFactory(
           goog.partial(buildThrowingStubXhr, new Error('Bad factory')),

@@ -1,22 +1,25 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/tray/tray_detailed_view.h"
 
+#include <cstring>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/time/calendar_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/bind.h"
 #include "base/containers/adapters.h"
-#include "base/strings/string_number_conversions.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -25,6 +28,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_paint_util.h"
@@ -36,7 +40,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_targeter.h"
@@ -61,6 +64,10 @@ class ScrollContentsView : public views::View {
     box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
   }
+
+  ScrollContentsView(const ScrollContentsView&) = delete;
+  ScrollContentsView& operator=(const ScrollContentsView&) = delete;
+
   ~ScrollContentsView() override = default;
 
  protected:
@@ -85,7 +92,7 @@ class ScrollContentsView : public views::View {
       ui::ClipRecorder clip_recorder(paint_info.context());
       gfx::Rect clip_rect = gfx::Rect(paint_info.paint_recording_size()) -
                             paint_info.offset_from_parent();
-      gfx::Insets clip_insets(sticky_header_height, 0, 0, 0);
+      auto clip_insets = gfx::Insets::TLBR(sticky_header_height, 0, 0, 0);
       clip_rect.Inset(gfx::ScaleToFlooredInsets(
           clip_insets, paint_info.paint_recording_scale_x(),
           paint_info.paint_recording_scale_y()));
@@ -155,10 +162,10 @@ class ScrollContentsView : public views::View {
       // header).
       DCHECK_EQ(box_layout_, GetLayoutManager());
       box_layout_->set_inside_border_insets(
-          gfx::Insets(details.child->GetID() == VIEW_ID_STICKY_HEADER
-                          ? 0
-                          : kMenuSeparatorVerticalPadding,
-                      0, kMenuSeparatorVerticalPadding, 0));
+          gfx::Insets::TLBR(details.child->GetID() == VIEW_ID_STICKY_HEADER
+                                ? 0
+                                : kMenuSeparatorVerticalPadding,
+                            0, kMenuSeparatorVerticalPadding, 0));
     }
   }
 
@@ -258,8 +265,6 @@ class ScrollContentsView : public views::View {
 
   // Header child views that stick to the top of visible viewport when scrolled.
   std::vector<Header> headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollContentsView);
 };
 
 }  // namespace
@@ -270,8 +275,7 @@ class ScrollContentsView : public views::View {
 TrayDetailedView::TrayDetailedView(DetailedViewDelegate* delegate)
     : delegate_(delegate) {
   box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      delegate->GetInsetsForDetailedView()));
+      views::BoxLayout::Orientation::kVertical));
   SetBackground(views::CreateSolidBackground(
       delegate_->GetBackgroundColor().value_or(SK_ColorTRANSPARENT)));
 }
@@ -280,6 +284,11 @@ TrayDetailedView::~TrayDetailedView() = default;
 
 void TrayDetailedView::OnViewClicked(views::View* sender) {
   HandleViewClicked(sender);
+}
+
+void TrayDetailedView::OverrideProgressBarAccessibleName(
+    const std::u16string& name) {
+  progress_bar_accessible_name_ = name;
 }
 
 void TrayDetailedView::CreateTitleRow(int string_id) {
@@ -292,7 +301,17 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
   tri_view_->AddView(TriView::Container::START, back_button_);
 
   AddChildViewAt(tri_view_, 0);
-  AddChildViewAt(delegate_->CreateTitleSeparator(), kTitleRowSeparatorIndex);
+
+  // If this view doesn't have a separator, adds an empty view as a placeholder
+  // so that the views below won't move up when the `progress_bar_` becomes
+  // invisible.
+  if (!has_separator_) {
+    auto buffer_view = std::make_unique<views::View>();
+    buffer_view->SetPreferredSize(gfx::Size(1, kTitleRowProgressBarHeight));
+    AddChildViewAt(std::move(buffer_view), kTitleRowSeparatorIndex);
+  } else {
+    AddChildViewAt(delegate_->CreateTitleSeparator(), kTitleRowSeparatorIndex);
+  }
 
   CreateExtraTitleRowButtons();
   Layout();
@@ -344,39 +363,6 @@ HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
                                     enterprise_managed);
 }
 
-void TrayDetailedView::SetupConnectedScrollListItem(HoverHighlightView* view) {
-  SetupConnectedScrollListItem(view, base::nullopt /* battery_percentage */);
-}
-
-void TrayDetailedView::SetupConnectedScrollListItem(
-    HoverHighlightView* view,
-    base::Optional<uint8_t> battery_percentage) {
-  DCHECK(view->is_populated());
-
-  std::u16string status;
-
-  if (battery_percentage) {
-    view->SetSubText(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_WITH_BATTERY_LABEL,
-        base::NumberToString16(battery_percentage.value())));
-  } else {
-    view->SetSubText(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTED));
-  }
-
-  view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
-  view->sub_text_label()->SetEnabledColor(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPositive));
-}
-
-void TrayDetailedView::SetupConnectingScrollListItem(HoverHighlightView* view) {
-  DCHECK(view->is_populated());
-
-  view->SetSubText(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTING));
-}
-
 TriView* TrayDetailedView::AddScrollListSubHeader(const gfx::VectorIcon& icon,
                                                   int text_id) {
   TriView* header = TrayPopupUtils::CreateSubHeaderRowView(true);
@@ -407,7 +393,7 @@ TriView* TrayDetailedView::AddScrollListSubHeader(int text_id) {
 }
 
 void TrayDetailedView::Reset() {
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
   scroller_ = nullptr;
   scroll_content_ = nullptr;
   progress_bar_ = nullptr;
@@ -422,8 +408,8 @@ void TrayDetailedView::ShowProgress(double value, bool visible) {
         std::make_unique<views::ProgressBar>(kTitleRowProgressBarHeight),
         kTitleRowSeparatorIndex + 1);
     progress_bar_->GetViewAccessibility().OverrideName(
-        l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_NETWORK_PROGRESS_ACCESSIBLE_NAME));
+        progress_bar_accessible_name_.value_or(l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME)));
     progress_bar_->SetVisible(false);
     progress_bar_->SetForegroundColor(
         AshColorProvider::Get()->GetContentLayerColor(
@@ -454,10 +440,6 @@ views::Button* TrayDetailedView::CreateHelpButton(
   return delegate_->CreateHelpButton(std::move(callback));
 }
 
-views::Separator* TrayDetailedView::CreateListSubHeaderSeparator() {
-  return delegate_->CreateListSubHeaderSeparator();
-}
-
 void TrayDetailedView::HandleViewClicked(views::View* view) {
   NOTREACHED();
 }
@@ -477,6 +459,10 @@ void TrayDetailedView::CloseBubble() {
   if (widget->IsClosed())
     return;
   delegate_->CloseBubble();
+}
+
+void TrayDetailedView::IgnoreSeparator() {
+  has_separator_ = false;
 }
 
 void TrayDetailedView::Layout() {
@@ -501,6 +487,7 @@ const char* TrayDetailedView::GetClassName() const {
 
 void TrayDetailedView::OnThemeChanged() {
   views::View::OnThemeChanged();
+
   delegate_->UpdateColors();
 
   auto* color_provider = AshColorProvider::Get();

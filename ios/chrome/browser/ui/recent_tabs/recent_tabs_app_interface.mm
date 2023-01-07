@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,21 +15,14 @@
 @implementation RecentTabsAppInterface
 
 + (void)clearCollapsedListViewSectionStates {
-  if (base::ios::IsSceneStartupSupported()) {
-    if (@available(iOS 13, *)) {
-      NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
-      for (UIWindow* window in windows) {
-        UISceneSession* session = window.windowScene.session;
+  NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
+  for (UIWindow* window in windows) {
+    UISceneSession* session = window.windowScene.session;
 
-        NSMutableDictionary* newUserInfo =
-            [NSMutableDictionary dictionaryWithDictionary:session.userInfo];
-        [newUserInfo removeObjectForKey:kListModelCollapsedKey];
-        session.userInfo = newUserInfo;
-      }
-    }
-  } else {
-    [NSUserDefaults.standardUserDefaults setObject:@{}
-                                            forKey:kListModelCollapsedKey];
+    NSMutableDictionary* newUserInfo =
+        [NSMutableDictionary dictionaryWithDictionary:session.userInfo];
+    [newUserInfo removeObjectForKey:kListModelCollapsedKey];
+    session.userInfo = newUserInfo;
   }
 }
 

@@ -1,0 +1,14 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module skia.mojom;
+
+// Mirror of SkColor4f
+[Stable]
+struct SkColor4f {
+    float r;  //!< red component
+    float g;  //!< green component
+    float b;  //!< blue component
+    float a;  //!< alpha component
+};

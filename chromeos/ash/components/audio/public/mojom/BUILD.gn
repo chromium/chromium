@@ -1,0 +1,13 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+mojom("mojom") {
+  sources = [ "cros_audio_config.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/audio"
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<title>Layout Instability: layout shift inside of transformed element</title>
+<link rel="help" href="https://wicg.github.io/layout-instability/" />
+<style>
+body { margin: 50px; }
+#transformed { rotate: 2deg; width: 100px; height: 100px; }
+#child { width: 400px; height: 400px; background: blue; position: relative }
+</style>
+<div id="transformed">
+  <div id="child"></div>
+</div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/layout-instability/resources/util.js"></script>
+<script>
+
+promise_test(async () => {
+  const watcher = new ScoreWatcher;
+
+  // Wait for the initial render to complete.
+  await waitForAnimationFrames(2);
+
+  // Change top margin of child to cause a layout shift.
+  document.getElementById("child").style.top = '20px';
+
+  await waitForAnimationFrames(2);
+  // A shift should be reported.  The area used is the union of the
+  // enclosing rectangles after the transform.
+  let sin = Math.sin(2.0 * Math.PI / 180.0);
+  let cos = Math.cos(2.0 * Math.PI / 180.0);
+  let rect_side = 400 * (1.0 + sin);
+  let rect_x_offset = 20 * sin;
+  let rect_y_offset = 20 * cos;
+  let area = rect_side * rect_side +
+             rect_x_offset * (rect_side - rect_y_offset) +
+             rect_y_offset * (rect_side - rect_x_offset) +
+             rect_x_offset * rect_y_offset;
+  assert_approx_equals(watcher.score, computeExpectedScore(area, 20), 5e-6);
+}, 'layout shift inside of rotate');
+
+</script>

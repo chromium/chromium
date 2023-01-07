@@ -1,0 +1,4 @@
+monorail {
+  component: "Platform>Apps"
+}
+team_email: "apps-dev@chromium.org"

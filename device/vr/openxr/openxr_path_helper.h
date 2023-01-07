@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define DEVICE_VR_OPENXR_OPENXR_PATH_HELPER_H_
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "device/vr/openxr/openxr_interaction_profiles.h"

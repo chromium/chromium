@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <set>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/event_monitor.h"
 
 namespace ui {
@@ -22,6 +22,10 @@ class EventMonitorAura : public EventMonitor {
   EventMonitorAura(ui::EventObserver* event_observer,
                    ui::EventTarget* event_target,
                    const std::set<ui::EventType>& types);
+
+  EventMonitorAura(const EventMonitorAura&) = delete;
+  EventMonitorAura& operator=(const EventMonitorAura&) = delete;
+
   ~EventMonitorAura() override;
 
   // EventMonitor:
@@ -32,10 +36,8 @@ class EventMonitorAura : public EventMonitor {
   void TearDown();
 
  private:
-  ui::EventObserver* event_observer_;  // Weak. Owned by our owner.
-  ui::EventTarget* event_target_;      // Weak.
-
-  DISALLOW_COPY_AND_ASSIGN(EventMonitorAura);
+  raw_ptr<ui::EventObserver> event_observer_;  // Weak. Owned by our owner.
+  raw_ptr<ui::EventTarget> event_target_;      // Weak.
 };
 
 }  // namespace views

@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_DESKTOP_SESSION_DURATION_TRACKER_H_
 #define CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_DESKTOP_SESSION_DURATION_TRACKER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -38,6 +37,10 @@ class DesktopSessionDurationTracker : public AudibleContentsTracker::Observer {
 
   // Returns the |DesktopSessionDurationTracker| instance.
   static DesktopSessionDurationTracker* Get();
+
+  DesktopSessionDurationTracker(const DesktopSessionDurationTracker&) = delete;
+  DesktopSessionDurationTracker& operator=(
+      const DesktopSessionDurationTracker&) = delete;
 
   // Called when user interaction with the browser is caught.
   void OnUserEvent();
@@ -112,8 +115,6 @@ class DesktopSessionDurationTracker : public AudibleContentsTracker::Observer {
   AudibleContentsTracker audio_tracker_;
 
   base::WeakPtrFactory<DesktopSessionDurationTracker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopSessionDurationTracker);
 };
 
 }  // namespace metrics

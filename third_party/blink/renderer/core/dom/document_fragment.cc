@@ -43,10 +43,6 @@ String DocumentFragment::nodeName() const {
   return "#document-fragment";
 }
 
-Node::NodeType DocumentFragment::getNodeType() const {
-  return kDocumentFragmentNode;
-}
-
 bool DocumentFragment::ChildTypeAllowed(NodeType type) const {
   switch (type) {
     case kElementNode:

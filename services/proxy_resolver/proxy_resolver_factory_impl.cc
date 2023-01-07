@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/net_errors.h"
@@ -26,20 +26,22 @@ class ProxyResolverFactoryImpl::Job {
       ProxyResolverV8TracingFactory* proxy_resolver_factory,
       mojo::PendingReceiver<mojom::ProxyResolver> receiver,
       mojo::PendingRemote<mojom::ProxyResolverFactoryRequestClient> client);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job();
 
  private:
   void OnDisconnect();
   void OnProxyResolverCreated(int error);
 
-  ProxyResolverFactoryImpl* const parent_;
+  const raw_ptr<ProxyResolverFactoryImpl> parent_;
   std::unique_ptr<ProxyResolverV8Tracing> proxy_resolver_impl_;
   mojo::PendingReceiver<mojom::ProxyResolver> proxy_receiver_;
-  ProxyResolverV8TracingFactory* factory_;
+  raw_ptr<ProxyResolverV8TracingFactory> factory_;
   std::unique_ptr<net::ProxyResolverFactory::Request> request_;
   mojo::Remote<mojom::ProxyResolverFactoryRequestClient> remote_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 ProxyResolverFactoryImpl::Job::Job(

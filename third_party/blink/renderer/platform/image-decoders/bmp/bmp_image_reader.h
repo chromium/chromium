@@ -33,7 +33,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -61,9 +61,11 @@ class PLATFORM_EXPORT BMPImageReader final {
   // |buffer| points at an empty ImageFrame that we'll initialize and
   // fill with decoded data.
   BMPImageReader(ImageDecoder* parent,
-                 size_t decoded_and_header_offset,
-                 size_t img_data_offset,
+                 wtf_size_t decoded_and_header_offset,
+                 wtf_size_t img_data_offset,
                  bool is_in_ico);
+  BMPImageReader(const BMPImageReader&) = delete;
+  BMPImageReader& operator=(const BMPImageReader&) = delete;
   ~BMPImageReader();
 
   void SetBuffer(ImageFrame* buffer) { buffer_ = buffer; }
@@ -119,7 +121,7 @@ class PLATFORM_EXPORT BMPImageReader final {
     uint8_t rgb_red;
   };
 
-  inline uint8_t ReadUint8(size_t offset) const {
+  inline uint8_t ReadUint8(wtf_size_t offset) const {
     return fast_reader_.GetOneByte(decoded_offset_ + offset);
   }
 
@@ -223,8 +225,8 @@ class PLATFORM_EXPORT BMPImageReader final {
   // the end of the image.  Here "plus" means "toward the end of the
   // image", so downwards for is_top_down_ images and upwards otherwise.
   inline bool PastEndOfImage(int num_rows) {
-    return is_top_down_ ? ((coord_.Y() + num_rows) >= parent_->Size().Height())
-                        : ((coord_.Y() - num_rows) < 0);
+    return is_top_down_ ? ((coord_.y() + num_rows) >= parent_->Size().height())
+                        : ((coord_.y() - num_rows) < 0);
   }
 
   // Returns the pixel data for the current |decoded_offset_| in a uint32_t.
@@ -285,8 +287,8 @@ class PLATFORM_EXPORT BMPImageReader final {
                       unsigned green,
                       unsigned blue,
                       unsigned alpha) {
-    buffer_->SetRGBA(coord_.X(), coord_.Y(), red, green, blue, alpha);
-    coord_.Move(1, 0);
+    buffer_->SetRGBA(coord_.x(), coord_.y(), red, green, blue, alpha);
+    coord_.Offset(1, 0);
   }
 
   // Fills pixels from the current X-coordinate up to, but not including,
@@ -298,7 +300,7 @@ class PLATFORM_EXPORT BMPImageReader final {
                        unsigned green,
                        unsigned blue,
                        unsigned alpha) {
-    while (coord_.X() < end_coord)
+    while (coord_.x() < end_coord)
       SetRGBA(red, green, blue, alpha);
   }
 
@@ -322,16 +324,16 @@ class PLATFORM_EXPORT BMPImageReader final {
   FastSharedBufferReader fast_reader_{nullptr};
 
   // An index into |data_| representing how much we've already decoded.
-  size_t decoded_offset_;
+  wtf_size_t decoded_offset_;
 
   // The file offset at which the BMP info header starts.
-  size_t header_offset_;
+  wtf_size_t header_offset_;
 
   // The file offset at which the actual image bits start.  When decoding
   // ICO files, this is set to 0, since it's not stored anywhere in a
   // header; the reader functions expect the image data to start
   // immediately after the header and (if necessary) color table.
-  size_t img_data_offset_;
+  wtf_size_t img_data_offset_;
 
   // The BMP info header.
   BitmapInfoHeader info_header_;
@@ -378,7 +380,7 @@ class PLATFORM_EXPORT BMPImageReader final {
   Vector<RGBTriple> color_table_;
 
   // The coordinate to which we've decoded the image.
-  IntPoint coord_;
+  gfx::Point coord_;
 
   // Variables that track whether we've seen pixels with alpha values != 0
   // and == 0, respectively.  See comments in ProcessNonRLEData() on how
@@ -395,10 +397,8 @@ class PLATFORM_EXPORT BMPImageReader final {
   // header, thus doubling it). If |is_in_ico_| is true, this variable tracks
   // whether we've begun decoding this mask yet.
   bool decoding_and_mask_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BMPImageReader);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_BMP_BMP_IMAGE_READER_H_

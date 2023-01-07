@@ -20,7 +20,7 @@ which controls the user interactions and duration of the test.
 The [`webrtc.py`](../../../../tools/perf/benchmarks/webrtc.py)
 benchmark specifies which metrics should be collected for the
 test pages, and extra options that we pass to the test to fake the real camera
-and skip assing permission to get access to the video and audio from the user.
+and skip assign permission to get access to the video and audio from the user.
 
 
 ## Running the Tests

@@ -49,7 +49,8 @@
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/crypto.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -525,7 +526,7 @@ bool DOMPatchSupport::RemoveChildAndMoveToNew(Digest* old_digest,
 void DOMPatchSupport::MarkNodeAsUsed(Digest* digest) {
   HeapDeque<Member<Digest>> queue;
   queue.push_back(digest);
-  while (!queue.IsEmpty()) {
+  while (!queue.empty()) {
     Digest* first = queue.TakeFirst();
     unused_nodes_map_.erase(first->sha1_);
     for (wtf_size_t i = 0; i < first->children_.size(); ++i)

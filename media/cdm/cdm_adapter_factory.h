@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_auxiliary_helper.h"
@@ -22,11 +21,14 @@ class MEDIA_EXPORT CdmAdapterFactory final : public CdmFactory {
       base::RepeatingCallback<std::unique_ptr<CdmAuxiliaryHelper>()>;
 
   explicit CdmAdapterFactory(HelperCreationCB helper_creation_cb);
+
+  CdmAdapterFactory(const CdmAdapterFactory&) = delete;
+  CdmAdapterFactory& operator=(const CdmAdapterFactory&) = delete;
+
   ~CdmAdapterFactory() override;
 
   // CdmFactory implementation.
-  void Create(const std::string& key_system,
-              const CdmConfig& cdm_config,
+  void Create(const CdmConfig& cdm_config,
               const SessionMessageCB& session_message_cb,
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,
@@ -36,8 +38,6 @@ class MEDIA_EXPORT CdmAdapterFactory final : public CdmFactory {
  private:
   // Callback to create CdmAuxiliaryHelper for the created CDM.
   HelperCreationCB helper_creation_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmAdapterFactory);
 };
 
 }  // namespace media

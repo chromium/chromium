@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,22 +28,23 @@ class WebThreadImpl : public WebThread {
  public:
   ~WebThreadImpl();
 
-  // Returns the thread name for |identifier|.
+  // Returns the thread name for `identifier`.
   static const char* GetThreadName(WebThread::ID identifier);
 
   // Creates and registers a TaskExecutor that facilitates posting tasks to a
   // WebThread via //base/task/post_task.h.
+  // TODO(crbug.com/1026641): Remove this now that post_task.h is deprecated.
   static void CreateTaskExecutor();
 
   // Unregister and delete the TaskExecutor after a test.
   static void ResetTaskExecutorForTesting();
 
-  // Resets globals for |identifier|. Used in tests to clear global state that
+  // Resets globals for `identifier`. Used in tests to clear global state that
   // would otherwise leak to the next test. Globals are not otherwise fully
   // cleaned up in ~WebThreadImpl() as there are subtle differences between
   // UNINITIALIZED and SHUTDOWN state (e.g. globals.task_runners are kept around
   // on shutdown). Must be called after ~WebThreadImpl() for the given
-  // |identifier|.
+  // `identifier`.
   //
   // Also unregisters and deletes the TaskExecutor.
   static void ResetGlobalsForTesting(WebThread::ID identifier);
@@ -58,7 +59,7 @@ class WebThreadImpl : public WebThread {
   // threads.
   friend class TestWebThread;
 
-  // Binds |identifier| to |task_runner| for the web_thread.h API.
+  // Binds `identifier` to `task_runner` for the web_thread.h API.
   WebThreadImpl(WebThread::ID identifier,
                 scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 

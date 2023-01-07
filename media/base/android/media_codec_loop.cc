@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,16 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/timestamp_constants.h"
 
 namespace media {
 namespace {
 
-constexpr base::TimeDelta kDecodePollDelay =
-    base::TimeDelta::FromMilliseconds(10);
-constexpr base::TimeDelta kNoWaitTimeout = base::TimeDelta::FromMicroseconds(0);
-constexpr base::TimeDelta kIdleTimerTimeout = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kDecodePollDelay = base::Milliseconds(10);
+constexpr base::TimeDelta kNoWaitTimeout = base::Microseconds(0);
+constexpr base::TimeDelta kIdleTimerTimeout = base::Seconds(1);
 
 }  // namespace
 

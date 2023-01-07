@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,12 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/public/cpp/compositing/bitmap_in_shared_memory_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/copy_output_result.mojom-shared.h"
 #include "services/viz/public/mojom/compositing/texture_releaser.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
@@ -31,24 +33,37 @@ struct EnumTraits<viz::mojom::CopyOutputResultFormat,
 };
 
 template <>
+struct EnumTraits<viz::mojom::CopyOutputResultDestination,
+                  viz::CopyOutputResult::Destination> {
+  static viz::mojom::CopyOutputResultDestination ToMojom(
+      viz::CopyOutputResult::Destination destination);
+
+  static bool FromMojom(viz::mojom::CopyOutputResultDestination input,
+                        viz::CopyOutputResult::Destination* out);
+};
+
+template <>
 struct StructTraits<viz::mojom::CopyOutputResultDataView,
                     std::unique_ptr<viz::CopyOutputResult>> {
   static viz::CopyOutputResult::Format format(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
+  static viz::CopyOutputResult::Destination destination(
+      const std::unique_ptr<viz::CopyOutputResult>& result);
+
   static const gfx::Rect& rect(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
-  static base::Optional<viz::CopyOutputResult::ScopedSkBitmap> bitmap(
+  static absl::optional<viz::CopyOutputResult::ScopedSkBitmap> bitmap(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
-  static base::Optional<gpu::Mailbox> mailbox(
+  static mojo::OptionalAsPointer<const gpu::Mailbox> mailbox(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
-  static base::Optional<gpu::SyncToken> sync_token(
+  static mojo::OptionalAsPointer<const gpu::SyncToken> sync_token(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
-  static base::Optional<gfx::ColorSpace> color_space(
+  static mojo::OptionalAsPointer<const gfx::ColorSpace> color_space(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
   static mojo::PendingRemote<viz::mojom::TextureReleaser> releaser(

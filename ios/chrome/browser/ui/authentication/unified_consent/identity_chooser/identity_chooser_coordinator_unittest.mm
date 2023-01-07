@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,8 +28,9 @@
 class IdentityChooserCoordinatorTest : public PlatformTest {
  public:
   IdentityChooserCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     view_controller_ = [[UIViewController alloc] init];
-    browser_ = std::make_unique<TestBrowser>();
     [scoped_key_window_.Get() setRootViewController:view_controller_];
   }
 
@@ -55,7 +56,8 @@ class IdentityChooserCoordinatorTest : public PlatformTest {
  protected:
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_key_window_;
 
   UIViewController* view_controller_;
@@ -83,6 +85,7 @@ TEST_F(IdentityChooserCoordinatorTest, testValidIdentity) {
       identityChooserViewController:presented_view_controller
         didSelectIdentityWithGaiaID:@"1"];
   EXPECT_NSEQ(identity, coordinator_.selectedIdentity);
+  [coordinator_ stop];
 }
 
 TEST_F(IdentityChooserCoordinatorTest, testIdentityInvalidatedDuringSelection) {
@@ -98,4 +101,5 @@ TEST_F(IdentityChooserCoordinatorTest, testIdentityInvalidatedDuringSelection) {
       identityChooserViewController:presented_view_controller
         didSelectIdentityWithGaiaID:@"1"];
   EXPECT_NSEQ(nil, coordinator_.selectedIdentity);
+  [coordinator_ stop];
 }

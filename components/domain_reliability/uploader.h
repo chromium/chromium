@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "url/gurl.h"
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class URLRequest;
 class URLRequestContext;
 }  // namespace net
@@ -60,7 +60,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityUploader {
       const std::string& report_json,
       int max_beacon_depth,
       const GURL& upload_url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       UploadCallback callback) = 0;
 
   // Shuts down the uploader prior to destruction. Currently, terminates pending

@@ -58,4 +58,4 @@ class ReplaceNodeWithSpanCommand final : public SimpleEditCommand {
 
 }  // namespace blink
 
-#endif  // ReplaceNodeWithSpanCommand
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_REPLACE_NODE_WITH_SPAN_COMMAND_H_

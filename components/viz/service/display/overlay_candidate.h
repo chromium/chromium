@@ -1,48 +1,65 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_CANDIDATE_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_CANDIDATE_H_
 
-#include <map>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
+#include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
-#include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
-#include "ui/gfx/transform.h"
 
 namespace gfx {
 class Rect;
 }
 
 namespace viz {
+class AggregatedRenderPassDrawQuad;
 class DisplayResourceProvider;
-class StreamVideoDrawQuad;
-class TextureDrawQuad;
-class VideoHoleDrawQuad;
 
 class VIZ_SERVICE_EXPORT OverlayCandidate {
  public:
-  // Returns true and fills in |candidate| if |draw_quad| is of a known quad
-  // type and contains an overlayable resource. |primary_rect| can be empty in
-  // the case of a null primary plane.
-  static bool FromDrawQuad(DisplayResourceProvider* resource_provider,
-                           SurfaceDamageRectList* surface_damage_rect_list,
-                           const SkMatrix44& output_color_matrix,
-                           const DrawQuad* quad,
-                           const gfx::RectF& primary_rect,
-                           OverlayCandidate* candidate);
+  // When adding or changing these return status' check how the callee uses
+  // these failure codes. Currently, these feed into the logging via the enum
+  // |OverlayProcessorDelegated::DelegationStatus|.
+  enum class CandidateStatus {
+    kSuccess,
+    kFailNotOverlay,
+    kFailNotAxisAligned,
+    kFailNotAxisAligned3dTransform,
+    kFailNotAxisAligned2dShear,
+    kFailNotAxisAligned2dRotation,
+    kFailColorMatrix,
+    kFailOpacity,
+    kFailBlending,
+    kFailQuadNotSupported,
+    kFailVisible,
+    kFailBufferFormat,
+    kFailNearFilter,
+    kFailPriority,
+    kFailNotSharedImage,
+  };
+  using TrackingId = uint32_t;
+  static constexpr TrackingId kDefaultTrackingId{0};
+
   // Returns true if |quad| will not block quads underneath from becoming
   // an overlay.
   static bool IsInvisibleQuad(const DrawQuad* quad);
@@ -53,25 +70,13 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                          QuadList::ConstIterator quad_list_begin,
                          QuadList::ConstIterator quad_list_end);
 
-  // Returns an estimate of this |quad|'s actual visible damage area. This
-  // visible damage is computed by combining from input
-  // |surface_damage_rect_list| with the occluding rects in the quad_list.
-  // This is an estimate since the occluded damage area is calculated on a per
-  // quad basis.
-  static int EstimateVisibleDamage(
-      const DrawQuad* quad,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      QuadList::ConstIterator quad_list_begin,
-      QuadList::ConstIterator quad_list_end);
-
-  // Returns true if any of the quads in the list given by |quad_list_begin|
-  // and |quad_list_end| have a filter associated and occlude |candidate|.
-  static bool IsOccludedByFilteredQuad(
-      const OverlayCandidate& candidate,
-      QuadList::ConstIterator quad_list_begin,
-      QuadList::ConstIterator quad_list_end,
-      const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
-          render_pass_backdrop_filters);
+  // Modifies the |candidate|'s |display_rect| to be clipped within |clip_rect|.
+  // This function will also update the |uv_rect| based on what clipping was
+  // applied to |display_rect|.
+  // |clip_rect| should be in the same space as |candidate|'s |display_rect|,
+  // and |candidate| should not have an arbitrary transform.
+  static void ApplyClip(OverlayCandidate& candidate,
+                        const gfx::RectF& clip_rect);
 
   // Returns true if the |quad| cannot be displayed on the main plane. This is
   // used in conjuction with protected content that can't be GPU composited and
@@ -82,23 +87,38 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   OverlayCandidate(const OverlayCandidate& other);
   ~OverlayCandidate();
 
+  // Transform |content_rect| to target space. I.e. with |transform| applied.
+  // |content_rect| will be the smallest axis aligned bounding rect containing
+  // the transformed rect.
+  // This is a no-op if |transform| is |gfx::OverlayTransform|.
+  void TransformRectToTargetSpace(gfx::RectF& content_rect) const;
+
   // Transformation to apply to layer during composition.
-  gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;
+  // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and
+  // does not affect |display_rect|.
+  absl::variant<gfx::OverlayTransform, gfx::Transform> transform =
+      gfx::OVERLAY_TRANSFORM_NONE;
   // Format of the buffer to scanout.
   gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
   // ColorSpace of the buffer for scanout.
   gfx::ColorSpace color_space;
+  // Optional HDR Metadata for the buffer.
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
   // Size of the resource, in pixels.
   gfx::Size resource_size_in_pixels;
-  // Rect on the display to position the overlay to. Implementer must convert
-  // to integer coordinates if setting |overlay_handled| to true.
+  // Rect in content space that, when combined with |transform|, is the bounds
+  // to position the overlay to. When |transform| is a |gx::OverlayTransform|,
+  // this is the bounds of the quad rect with its transform applied, so that
+  // content and target space for this overlay are the same.
+  //
+  // Implementer must convert to integer coordinates if setting
+  // |overlay_handled| to true.
   gfx::RectF display_rect;
   // Crop within the buffer to be placed inside |display_rect|.
   gfx::RectF uv_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
-  // Clip rect in the target content space after composition.
-  gfx::Rect clip_rect;
-  // If the quad is clipped after composition.
-  bool is_clipped = false;
+  // Clip rect in the target space after composition, or nullopt if the quad is
+  // not clipped.
+  absl::optional<gfx::Rect> clip_rect;
   // If the quad doesn't require blending.
   bool is_opaque = false;
   // If the quad has a mask filter.
@@ -108,11 +128,17 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Mailbox from resource_id. It is used by SkiaRenderer.
   gpu::Mailbox mailbox;
 
-#if defined(OS_ANDROID)
-  // For candidates from StreamVideoDrawQuads, this records whether the quad is
-  // marked as being backed by a SurfaceTexture or not.  If so, it's not really
-  // promotable to an overlay.
+#if BUILDFLAG(IS_ANDROID)
+  // For candidates from TextureDrawQuads with is_stream_video set to true, this
+  // records whether the quad is marked as being backed by a SurfaceTexture or
+  // not.  If so, it's not really promotable to an overlay.
   bool is_backed_by_surface_texture = false;
+  // Crop within the buffer to be placed inside |display_rect| before
+  // |clip_rect| was applied. Valid only for surface control.
+  gfx::RectF unclipped_uv_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
+  // |display_rect| before |clip_rect| was applied. Valid only for surface
+  // control.
+  gfx::RectF unclipped_display_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
 #endif
 
   // Stacking order of the overlay plane relative to the main surface,
@@ -123,12 +149,12 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // an overlay.
   bool overlay_handled = false;
 
-  // Gpu fence to wait for before overlay is ready for display.
-  unsigned gpu_fence_id = 0;
-
   // The total area in square pixels of damage for this candidate's quad. This
   // is an estimate when 'EstimateOccludedDamage' function is used.
-  int damage_area_estimate = 0;
+  float damage_area_estimate = 0.f;
+
+  // Damage in buffer space (extents bound by |resource_size_in_pixels|).
+  gfx::RectF damage_rect;
 
   static constexpr uint32_t kInvalidDamageIndex = UINT_MAX;
   // Damage index for |SurfaceDamageRectList|.
@@ -137,39 +163,40 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Is true if an HW overlay is required for the quad content.
   bool requires_overlay = false;
 
-  // Is true when quad is part of a |shared_quad_state| that has damage.
-  // This is a fallback case for when |overlay_damage_index| is unavailable and
-  // will be absent from the |SurfaceDamageRectList|.
-  bool assume_damaged = false;
+  // Represents either a background of this overlay candidate or a color of a
+  // solid color quad, which can be checked via the |is_solid_color|.
+  absl::optional<SkColor4f> color;
 
-  // Identifier passed through by the video decoder that allows us to validate
-  // if a protected surface can still be displayed. Non-zero when valid.
-  uint32_t hw_protected_validation_id = 0;
+  // Helps to identify whether this is a solid color quad or not.
+  bool is_solid_color = false;
 
- private:
-  static bool FromDrawQuadResource(
-      DisplayResourceProvider* resource_provider,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      const DrawQuad* quad,
-      ResourceId resource_id,
-      bool y_flipped,
-      OverlayCandidate* candidate);
-  static bool FromTextureQuad(DisplayResourceProvider* resource_provider,
-                              SurfaceDamageRectList* surface_damage_rect_list,
-                              const TextureDrawQuad* quad,
-                              const gfx::RectF& primary_rect,
-                              OverlayCandidate* candidate);
-  static bool FromStreamVideoQuad(
-      DisplayResourceProvider* resource_provider,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      const StreamVideoDrawQuad* quad,
-      OverlayCandidate* candidate);
-  static bool FromVideoHoleQuad(DisplayResourceProvider* resource_provider,
-                                SurfaceDamageRectList* surface_damage_rect_list,
-                                const VideoHoleDrawQuad* quad,
-                                OverlayCandidate* candidate);
-  static void HandleClipAndSubsampling(OverlayCandidate* candidate,
-                                       const gfx::RectF& primary_rect);
+  // If |rpdq| is present, then the renderer must draw the filter effects and
+  // copy the result into the buffer backing of a render pass.
+  const AggregatedRenderPassDrawQuad* rpdq = nullptr;
+  // The DDL for generating render pass overlay buffer with SkiaRenderer. This
+  // is the recorded output of rendering the |rpdq|.
+  sk_sp<SkDeferredDisplayList> ddl;
+
+  // Quad |shared_quad_state| opacity is ubiquitous for quad types
+  // AggregateRenderPassDrawQuad, TileDrawQuad, SolidColorDrawQuad. A delegate
+  // context must support non opaque opacity for these types.
+  float opacity = 1.0f;
+
+  // Hints for overlay prioritization when delegated composition is used.
+  gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
+
+  // Specifies the rounded corners of overlay candidate, in target space.
+  gfx::RRectF rounded_corners;
+
+  // A (ideally) unique key used to temporally identify a specific overlay
+  // candidate. This key can have collisions more that would be expected by the
+  // birthday paradox of 32 bits. If two or more candidates come from the same
+  // surface and have the same |DrawQuad::rect| they will have the same
+  // |tracking_id|.
+  TrackingId tracking_id = kDefaultTrackingId;
+
+  // Whether this overlay candidate represents the root render pass.
+  bool is_root_render_pass = false;
 };
 
 using OverlayCandidateList = std::vector<OverlayCandidate>;

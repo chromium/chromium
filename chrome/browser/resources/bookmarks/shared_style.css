@@ -1,0 +1,81 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/cr_shared_style.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./shared_vars.css.js
+ * #include=cr-shared-style
+ * #css_wrapper_metadata_end */
+
+hr {
+  background: rgba(0, 0, 0, 0.11);
+  border-width: 0;
+  height: 1px;
+  margin: 8px 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  hr {
+    background: var(--cr-separator-color);
+  }
+}
+
+.drag-above::before,
+.drag-below::after {
+  background-clip: padding-box;
+  background-color: var(--interactive-color);
+  border: 3px solid var(--interactive-color);
+  border-bottom-color: transparent;
+  border-radius: 0;
+  border-top-color: transparent;
+  box-sizing: border-box;
+  content: '';
+  display: block;
+  height: 8px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  z-index: 1;
+}
+
+.drag-above::before {
+  top: 0;
+  transform: translateY(-50%);
+}
+
+.drag-below::after {
+  bottom: 0;
+  transform: translateY(50%);
+}
+
+.drag-on {
+  background-color: var(--highlight-color);
+}
+
+:host-context([hide-focus-ring]) [tabindex]:focus {
+  outline: none;
+}
+
+.folder-icon {
+  -webkit-mask-image: var(--cr-icon-image);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: var(--cr-icon-size);
+  background-color: var(--iron-icon-fill-color);
+  height: var(--cr-icon-size);
+  width: var(--cr-icon-size);
+}
+
+:host-context([dir=rtl]) .folder-icon {
+  transform: scaleX(-1);
+}
+
+.website-icon {
+  background-repeat: no-repeat;
+  height: 16px;
+  margin: 2px;
+  width: 16px;
+}

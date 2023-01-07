@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/time/time.h"
@@ -25,15 +26,12 @@ class InputPredictor;
 }  // namespace ui
 
 namespace viz {
-// The maximum number of delegated ink points that will be stored at a time.
-// When this is hit, the oldest one will be removed each time a new one is
-// added.
-constexpr int kMaximumDelegatedInkPointsStored = 10;
 
 class VIZ_SERVICE_EXPORT DelegatedInkTrailData {
  public:
   DelegatedInkTrailData();
   ~DelegatedInkTrailData();
+  std::unique_ptr<ui::InputPredictor> CreatePredictor(std::string predictor);
 
   void AddPoint(const gfx::DelegatedInkPoint& point);
   void PredictPoints(std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw,
@@ -74,6 +72,9 @@ class VIZ_SERVICE_EXPORT DelegatedInkTrailData {
 
   // The pointer id associated with these points.
   int32_t pointer_id_;
+
+  // Id for prediction configuration to draw. No value if disabled.
+  absl::optional<int> should_draw_predicted_ink_points_;
 };
 
 }  // namespace viz

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,16 +27,15 @@ const char kZucchini[] = "zucchini";
 
 namespace switches {
 
-// Setting this will delay the operation of setup by the specified number of
-// seconds.  This is used when changing the DisplayVersion registry value
-// only after some time has passed, called by the MSI installer.
-const char kDelay[] = "delay";
-
 // Set the MSI-managed DisplayVersion in the registry to match Chrome's real
 // version number. The parameter to this option specifies the product-id in
 // the registry under HKLM.
 const char kSetDisplayVersionProduct[] = "set-display-version-product";
 const char kSetDisplayVersionValue[] = "set-display-version-value";
+
+// A handle number for an event to be signaled when the process is ready for
+// work.
+const char kStartupEventHandle[] = "startup-event-handle";
 
 // Run setup.exe to conduct a post-update experiment.
 const char kUserExperiment[] = "user-experiment";

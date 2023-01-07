@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SESSION_H_
 #define CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SESSION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/media_player_id.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -18,15 +19,16 @@
 namespace content {
 
 class PictureInPictureServiceImpl;
-class PictureInPictureWindowControllerImpl;
+class VideoPictureInPictureWindowControllerImpl;
 class WebContentsImpl;
 
-// The PicutreInPictureSession communicates with the
-// PictureInPictureWindowController and the WebContents. It is created by the
-// PictureInPictureWindowControllerImpl which also deletes it. When created, the
-// session will be expected to be active (in Picture-in-Picture) and when
-// deleted, it will automatically exit Picture-in-Picture unless another session
-// became active.
+// The PictureInPictureSession is used for video Picture-in-Picture mode. It
+// communicates with the PictureInPictureWindowController and the
+// WebContents. It is created by the VideoPictureInPictureWindowControllerImpl
+// which also deletes it. When created, the session will be expected to be
+// active (in Picture-in-Picture) and when deleted, it will automatically exit
+// Picture-in-Picture unless another session became active.
+//
 // The session MUST be stopped before its dtor runs to avoid unexpected
 // deletion.
 class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
@@ -42,10 +44,12 @@ class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
 
   // blink::mojom::PictureInPictureSession interface.
   void Stop(StopCallback callback) final;
-  void Update(uint32_t player_id,
-              const base::Optional<viz::SurfaceId>& surface_id,
-              const gfx::Size& natural_size,
-              bool show_play_pause_button) final;
+  void Update(
+      uint32_t player_id,
+      mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
+      const viz::SurfaceId& surface_id,
+      const gfx::Size& natural_size,
+      bool show_play_pause_button) final;
 
   void NotifyWindowResized(const gfx::Size& size);
 
@@ -53,7 +57,7 @@ class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
   mojo::AssociatedRemote<media::mojom::MediaPlayer>& GetMediaPlayerRemote();
 
   // Returns the player that is currently in Picture-in-Picture.
-  MediaPlayerId player_id() const { return player_id_; }
+  const absl::optional<MediaPlayerId>& player_id() const { return player_id_; }
 
   // Stops the session without closing the window. It will prevent the session
   // to later trying to shutdown when the PictureInPictureWindowController is
@@ -78,22 +82,26 @@ class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
   // Called when the |receiver_| hits a connection error.
   void OnConnectionError();
 
+  // Called when |media_player_remote_| is disconnected, typically when the
+  // media player is destroyed while the session is still active.
+  void OnPlayerGone();
+
   // Returns the WebContentsImpl associated with this Picture-in-Picture
   // session. It relies on the WebContents associated with the |service_|.
   WebContentsImpl* GetWebContentsImpl();
 
   // Returns the Picture-in-Picture window controller associated with the
   // session.
-  PictureInPictureWindowControllerImpl& GetController();
+  VideoPictureInPictureWindowControllerImpl& GetController();
 
-  // Will notified The PictureInPictureWindowControllerImpl who owns |this| when
-  // it gets destroyed in order for |this| to be destroyed too. Indirectly owns
-  // |this|.
-  PictureInPictureServiceImpl* service_;
+  // Will notified The VideoPictureInPictureWindowControllerImpl who owns |this|
+  // when it gets destroyed in order for |this| to be destroyed too. Indirectly
+  // owns |this|.
+  raw_ptr<PictureInPictureServiceImpl> service_;
 
   mojo::Receiver<blink::mojom::PictureInPictureSession> receiver_;
 
-  MediaPlayerId player_id_;
+  absl::optional<MediaPlayerId> player_id_;
 
   // Whether the session is currently stopping. The final stop of stopping is to
   // be destroyed so once its set to true it will never be set back to false and

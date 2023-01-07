@@ -1,12 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
-#include "base/bind.h"
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -20,10 +24,7 @@
 #include "chrome/browser/ui/views/apps/app_dialog/app_block_dialog_view.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_pause_dialog_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_app_instance.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
 
 class AppDialogViewBrowserTest : public DialogBrowserTest {
@@ -73,23 +74,20 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
   apps::AppServiceProxy* app_service_proxy() { return app_service_proxy_; }
 
   bool IsAppPaused() {
-    app_service_proxy()->FlushMojoCallsForTesting();
-
     bool is_app_paused = false;
     app_service_proxy()->AppRegistryCache().ForOneApp(
         app_id(), [&is_app_paused](const apps::AppUpdate& update) {
-          is_app_paused = (update.Paused() == apps::mojom::OptionalBool::kTrue);
+          is_app_paused = (update.Paused().value_or(false));
         });
     return is_app_paused;
   }
 
   void ShowUi(const std::string& name) override {
-    arc::mojom::AppInfo app;
-    app.name = "Fake App 0";
-    app.package_name = "fake.package.0";
-    app.activity = "fake.app.0.activity";
-    app.sticky = false;
-    app_instance_->SendRefreshAppList(std::vector<arc::mojom::AppInfo>(1, app));
+    std::vector<arc::mojom::AppInfoPtr> apps;
+    apps.emplace_back(arc::mojom::AppInfo::New("Fake App 0", "fake.package.0",
+                                               "fake.app.0.activity",
+                                               false /* sticky */));
+    app_instance_->SendRefreshAppList(apps);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(1u, arc_app_list_pref_->GetAppIds().size());
@@ -100,17 +98,15 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
     ASSERT_TRUE(app_service_proxy_);
 
     base::RunLoop run_loop;
-    app_id_ = arc_app_list_pref_->GetAppId(app.package_name, app.activity);
+    app_id_ =
+        arc_app_list_pref_->GetAppId(apps[0]->package_name, apps[0]->activity);
     if (name == "block") {
-      app.suspended = true;
+      apps[0]->suspended = true;
       app_service_proxy_->SetDialogCreatedCallbackForTesting(
           run_loop.QuitClosure());
-      app_instance_->SendRefreshAppList(
-          std::vector<arc::mojom::AppInfo>(1, app));
-      app_service_proxy_->FlushMojoCallsForTesting();
-      app_service_proxy_->Launch(
-          app_id_, ui::EventFlags::EF_NONE,
-          apps::mojom::LaunchSource::kFromChromeInternal);
+      app_instance_->SendRefreshAppList(apps);
+      app_service_proxy_->Launch(app_id_, ui::EF_NONE,
+                                 apps::LaunchSource::kFromChromeInternal);
     } else {
       std::map<std::string, apps::PauseData> pause_data;
       pause_data[app_id_].hours = 3;
@@ -126,12 +122,11 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
     EXPECT_EQ(ui::DIALOG_BUTTON_OK, ActiveView(name)->GetDialogButtons());
 
     if (name == "block") {
-      app_service_proxy_->FlushMojoCallsForTesting();
       bool state_is_set = false;
       app_service_proxy_->AppRegistryCache().ForOneApp(
           app_id_, [&state_is_set](const apps::AppUpdate& update) {
-            state_is_set = (update.Readiness() ==
-                            apps::mojom::Readiness::kDisabledByPolicy);
+            state_is_set =
+                (update.Readiness() == apps::Readiness::kDisabledByPolicy);
           });
 
       EXPECT_TRUE(state_is_set);

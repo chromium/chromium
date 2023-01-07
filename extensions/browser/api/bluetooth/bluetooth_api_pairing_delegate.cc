@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ void BluetoothApiPairingDelegate::DisplayPinCode(
   bt_private::PairingEvent event;
   PopulatePairingEvent(
       device, bt_private::PAIRING_EVENT_TYPE_DISPLAYPINCODE, &event);
-  event.pincode.reset(new std::string(pincode));
+  event.pincode = pincode;
   DispatchPairingEvent(event);
 }
 
@@ -68,7 +68,7 @@ void BluetoothApiPairingDelegate::DisplayPasskey(
   bt_private::PairingEvent event;
   PopulatePairingEvent(
       device, bt_private::PAIRING_EVENT_TYPE_DISPLAYPASSKEY, &event);
-  event.passkey.reset(new int(passkey));
+  event.passkey = passkey;
   DispatchPairingEvent(event);
 }
 
@@ -77,7 +77,7 @@ void BluetoothApiPairingDelegate::KeysEntered(device::BluetoothDevice* device,
   bt_private::PairingEvent event;
   PopulatePairingEvent(
       device, bt_private::PAIRING_EVENT_TYPE_KEYSENTERED, &event);
-  event.entered_key.reset(new int(entered));
+  event.entered_key = entered;
   DispatchPairingEvent(event);
 }
 
@@ -87,7 +87,7 @@ void BluetoothApiPairingDelegate::ConfirmPasskey(
   bt_private::PairingEvent event;
   PopulatePairingEvent(
       device, bt_private::PAIRING_EVENT_TYPE_CONFIRMPASSKEY, &event);
-  event.passkey.reset(new int(passkey));
+  event.passkey = passkey;
   DispatchPairingEvent(event);
 }
 
@@ -101,8 +101,7 @@ void BluetoothApiPairingDelegate::AuthorizePairing(
 
 void BluetoothApiPairingDelegate::DispatchPairingEvent(
     const bt_private::PairingEvent& pairing_event) {
-  std::unique_ptr<base::ListValue> args =
-      bt_private::OnPairing::Create(pairing_event);
+  auto args = bt_private::OnPairing::Create(pairing_event);
   std::unique_ptr<Event> event(new Event(events::BLUETOOTH_PRIVATE_ON_PAIRING,
                                          bt_private::OnPairing::kEventName,
                                          std::move(args)));

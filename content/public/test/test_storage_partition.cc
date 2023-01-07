@@ -1,8 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/test/test_storage_partition.h"
+
+#include <tuple>
 
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
@@ -26,11 +28,6 @@ TestStoragePartition::GetURLLoaderFactoryForBrowserProcess() {
   return nullptr;
 }
 
-scoped_refptr<network::SharedURLLoaderFactory>
-TestStoragePartition::GetURLLoaderFactoryForBrowserProcessWithCORBEnabled() {
-  return nullptr;
-}
-
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 TestStoragePartition::GetURLLoaderFactoryForBrowserProcessIOThread() {
   return nullptr;
@@ -41,8 +38,8 @@ TestStoragePartition::GetCookieManagerForBrowserProcess() {
   return cookie_manager_for_browser_process_;
 }
 
-void TestStoragePartition::CreateHasTrustTokensAnswerer(
-    mojo::PendingReceiver<network::mojom::HasTrustTokensAnswerer> receiver,
+void TestStoragePartition::CreateTrustTokenQueryAnswerer(
+    mojo::PendingReceiver<network::mojom::TrustTokenQueryAnswerer> receiver,
     const url::Origin& top_frame_origin) {
   NOTREACHED() << "Not implemented.";
 }
@@ -55,16 +52,12 @@ TestStoragePartition::CreateURLLoaderNetworkObserverForFrame(int process_id,
 
 mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
 TestStoragePartition::CreateURLLoaderNetworkObserverForNavigationRequest(
-    int frame_tree_id) {
+    NavigationRequest& navigation_request) {
   return mojo::NullRemote();
 }
 
 storage::QuotaManager* TestStoragePartition::GetQuotaManager() {
   return quota_manager_;
-}
-
-AppCacheService* TestStoragePartition::GetAppCacheService() {
-  return app_cache_service_;
 }
 
 BackgroundSyncContext* TestStoragePartition::GetBackgroundSyncContext() {
@@ -83,20 +76,25 @@ DOMStorageContext* TestStoragePartition::GetDOMStorageContext() {
   return dom_storage_context_;
 }
 
+storage::mojom::LocalStorageControl*
+TestStoragePartition::GetLocalStorageControl() {
+  // Bind and throw away the receiver. If testing is required, then add a method
+  // to set the remote.
+  if (!local_storage_control_.is_bound())
+    std::ignore = local_storage_control_.BindNewPipeAndPassReceiver();
+  return local_storage_control_.get();
+}
+
 storage::mojom::IndexedDBControl& TestStoragePartition::GetIndexedDBControl() {
   // Bind and throw away the receiver. If testing is required, then add a method
   // to set the remote.
   if (!indexed_db_control_.is_bound())
-    ignore_result(indexed_db_control_.BindNewPipeAndPassReceiver());
+    std::ignore = indexed_db_control_.BindNewPipeAndPassReceiver();
   return *indexed_db_control_;
 }
 
 FileSystemAccessEntryFactory*
 TestStoragePartition::GetFileSystemAccessEntryFactory() {
-  return nullptr;
-}
-
-FontAccessContext* TestStoragePartition::GetFontAccessContext() {
   return nullptr;
 }
 
@@ -117,7 +115,7 @@ TestStoragePartition::GetCacheStorageControl() {
   // Bind and throw away the receiver. If testing is required, then add a method
   // to set the remote.
   if (!cache_storage_control_.is_bound())
-    ignore_result(cache_storage_control_.BindNewPipeAndPassReceiver());
+    std::ignore = cache_storage_control_.BindNewPipeAndPassReceiver();
   return cache_storage_control_.get();
 }
 
@@ -129,6 +127,15 @@ TestStoragePartition::GetGeneratedCodeCacheContext() {
 PlatformNotificationContext*
 TestStoragePartition::GetPlatformNotificationContext() {
   return platform_notification_context_;
+}
+
+InterestGroupManager* TestStoragePartition::GetInterestGroupManager() {
+  return nullptr;
+}
+
+BrowsingTopicsSiteDataManager*
+TestStoragePartition::GetBrowsingTopicsSiteDataManager() {
+  return browsing_topics_site_data_manager_;
 }
 
 DevToolsBackgroundServicesContext*
@@ -157,7 +164,6 @@ TestStoragePartition::GetProtoDatabaseProviderForTesting() {
   return nullptr;
 }
 
-#if !defined(OS_ANDROID)
 HostZoomMap* TestStoragePartition::GetHostZoomMap() {
   return host_zoom_map_;
 }
@@ -169,25 +175,25 @@ HostZoomLevelContext* TestStoragePartition::GetHostZoomLevelContext() {
 ZoomLevelDelegate* TestStoragePartition::GetZoomLevelDelegate() {
   return zoom_level_delegate_;
 }
-#endif  // !defined(OS_ANDROID)
 
 void TestStoragePartition::ClearDataForOrigin(
     uint32_t remove_mask,
     uint32_t quota_storage_remove_mask,
-    const GURL& storage_origin) {}
-
-void TestStoragePartition::ClearData(
-    uint32_t remove_mask,
-    uint32_t quota_storage_remove_mask,
     const GURL& storage_origin,
-    const base::Time begin,
-    const base::Time end,
     base::OnceClosure callback) {}
 
+void TestStoragePartition::ClearData(uint32_t remove_mask,
+                                     uint32_t quota_storage_remove_mask,
+                                     const blink::StorageKey& storage_key,
+                                     const base::Time begin,
+                                     const base::Time end,
+                                     base::OnceClosure callback) {}
+
 void TestStoragePartition::ClearData(
     uint32_t remove_mask,
     uint32_t quota_storage_remove_mask,
-    OriginMatcherFunction origin_matcher,
+    BrowsingDataFilterBuilder* filter_builder,
+    StorageKeyPolicyMatcherFunction storage_key_policy_matcher,
     network::mojom::CookieDeletionFilterPtr cookie_deletion_filter,
     bool perform_storage_cleanup,
     const base::Time begin,
@@ -218,6 +224,11 @@ int TestStoragePartition::GetDataRemovalObserverCount() {
 
 void TestStoragePartition::ClearBluetoothAllowedDevicesMapForTesting() {}
 
+void TestStoragePartition::ResetAttributionManagerForTesting(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(/*success=*/true);
+}
+
 void TestStoragePartition::FlushNetworkInterfaceForTesting() {}
 
 void TestStoragePartition::WaitForDeletionTasksForTesting() {}
@@ -227,5 +238,13 @@ void TestStoragePartition::WaitForCodeCacheShutdownForTesting() {}
 void TestStoragePartition::SetNetworkContextForTesting(
     mojo::PendingRemote<network::mojom::NetworkContext>
         network_context_remote) {}
+
+base::WeakPtr<StoragePartition> TestStoragePartition::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void TestStoragePartition::InvalidateWeakPtrs() {
+  weak_factory_.InvalidateWeakPtrs();
+}
 
 }  // namespace content

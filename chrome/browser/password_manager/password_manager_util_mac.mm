@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include "base/mac/authorization_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_authorizationref.h"
-#include "base/stl_util.h"
 #include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace password_manager_util_mac {
@@ -26,7 +26,7 @@ bool AuthenticateUser(password_manager::ReauthPurpose purpose) {
   // kAuthorizationRuleAuthenticateAsSessionUser, to ensure that the session
   // user password, as opposed to an admin's password, is required.
   AuthorizationItem right_items[] = {{"system.login.screensaver", 0, NULL, 0}};
-  AuthorizationRights rights = {base::size(right_items), right_items};
+  AuthorizationRights rights = {std::size(right_items), right_items};
 
   NSString* prompt;
   switch (purpose) {
@@ -54,6 +54,25 @@ bool AuthenticateUser(password_manager::ReauthPurpose purpose) {
           &rights, base::mac::NSToCFCast(prompt),
           kAuthorizationFlagDestroyRights));
   return authorization.get() != NULL;
+}
+
+std::u16string GetMessageForBiometricLoginPrompt(
+    password_manager::ReauthPurpose purpose) {
+  // Depending on the `purpose` different message will be returned.
+  switch (purpose) {
+    case password_manager::ReauthPurpose::VIEW_PASSWORD:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
+    case password_manager::ReauthPurpose::COPY_PASSWORD:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
+    case password_manager::ReauthPurpose::EDIT_PASSWORD:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
+    case password_manager::ReauthPurpose::EXPORT:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
+  }
 }
 
 }  // namespace password_manager_util_mac

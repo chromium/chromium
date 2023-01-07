@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,27 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_observer.h"
-#include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
+#include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/ui/keyboard_util.h"
-#include "ash/public/cpp/ash_constants.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "media/base/media_switches.h"
+#include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/message_center/message_center.h"
 
 using message_center::MessageCenter;
@@ -33,18 +38,36 @@ namespace ash {
 class TestAccessibilityObserver : public AccessibilityObserver {
  public:
   TestAccessibilityObserver() = default;
+  TestAccessibilityObserver(const TestAccessibilityObserver&) = delete;
+  TestAccessibilityObserver& operator=(const TestAccessibilityObserver&) =
+      delete;
   ~TestAccessibilityObserver() override = default;
 
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override { ++status_changed_count_; }
 
   int status_changed_count_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestAccessibilityObserver);
 };
 
-using AccessibilityControllerTest = AshTestBase;
+class AccessibilityControllerTest : public AshTestBase {
+ protected:
+  AccessibilityControllerTest() = default;
+  AccessibilityControllerTest(const AccessibilityControllerTest&) = delete;
+  AccessibilityControllerTest& operator=(const AccessibilityControllerTest&) =
+      delete;
+  ~AccessibilityControllerTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
+         ash::features::kOnDeviceSpeechRecognition},
+        {});
+    AshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
   PrefService* prefs =
@@ -56,11 +79,13 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityCursorHighlightEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityDictationEnabled));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityDictationLocale));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityFocusHighlightEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityHighContrastEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityLargeCursorEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityLargeCursorDipSize));
+  EXPECT_TRUE(prefs->FindPreference(::prefs::kLiveCaptionEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityMonoAudioEnabled));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityScreenMagnifierEnabled));
@@ -73,6 +98,14 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityShortcutsEnabled));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityVirtualKeyboardEnabled));
+  EXPECT_TRUE(prefs->FindPreference(
+      prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed));
+  if (::features::
+          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
+    EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilitySepiaAmount));
+    EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityHueRotationAmount));
+    EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityGreyscaleAmount));
+  }
 }
 
 TEST_F(AccessibilityControllerTest, SetAutoclickEnabled) {
@@ -233,6 +266,60 @@ TEST_F(AccessibilityControllerTest, LargeCursorTrayMenuVisibility) {
       prefs->IsManagedPreference(prefs::kAccessibilityLargeCursorEnabled));
   EXPECT_FALSE(controller->large_cursor().enabled());
   EXPECT_FALSE(controller->IsLargeCursorSettingVisibleInTray());
+}
+
+TEST_F(AccessibilityControllerTest, SetLiveCaptionEnabled) {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  EXPECT_FALSE(controller->live_caption().enabled());
+
+  TestAccessibilityObserver observer;
+  controller->AddObserver(&observer);
+  EXPECT_EQ(0, observer.status_changed_count_);
+
+  controller->live_caption().SetEnabled(true);
+  EXPECT_TRUE(controller->live_caption().enabled());
+  EXPECT_EQ(1, observer.status_changed_count_);
+
+  controller->live_caption().SetEnabled(false);
+  EXPECT_FALSE(controller->live_caption().enabled());
+  EXPECT_EQ(2, observer.status_changed_count_);
+
+  controller->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityControllerTest, LiveCaptionTrayMenuVisibility) {
+  // Check that when the pref isn't being controlled by any policy will be
+  // visible in the accessibility tray menu despite its value.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  // Check when the value is true and not being controlled by any policy.
+  controller->live_caption().SetEnabled(true);
+  EXPECT_TRUE(controller->live_caption().enabled());
+  EXPECT_FALSE(prefs->IsManagedPreference(::prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(controller->IsLiveCaptionSettingVisibleInTray());
+  // Check when the value is false and not being controlled by any policy.
+  controller->live_caption().SetEnabled(false);
+  EXPECT_FALSE(controller->live_caption().enabled());
+  EXPECT_FALSE(prefs->IsManagedPreference(::prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(controller->IsLiveCaptionSettingVisibleInTray());
+
+  // Check that when the pref is managed and being forced on then it will be
+  // visible.
+  static_cast<TestingPrefServiceSimple*>(prefs)->SetManagedPref(
+      ::prefs::kLiveCaptionEnabled, std::make_unique<base::Value>(true));
+  EXPECT_TRUE(prefs->IsManagedPreference(::prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(controller->live_caption().enabled());
+  EXPECT_TRUE(controller->IsLiveCaptionSettingVisibleInTray());
+  // Check that when the pref is managed and only being forced off then it will
+  // be invisible.
+  static_cast<TestingPrefServiceSimple*>(prefs)->SetManagedPref(
+      ::prefs::kLiveCaptionEnabled, std::make_unique<base::Value>(false));
+  EXPECT_TRUE(prefs->IsManagedPreference(::prefs::kLiveCaptionEnabled));
+  EXPECT_FALSE(controller->live_caption().enabled());
+  EXPECT_FALSE(controller->IsLiveCaptionSettingVisibleInTray());
 }
 
 TEST_F(AccessibilityControllerTest, HighContrastTrayMenuVisibility) {
@@ -1004,6 +1091,47 @@ TEST_F(AccessibilityControllerTest, SelectToSpeakStateChanges) {
   controller->RemoveObserver(&observer);
 }
 
+TEST_F(AccessibilityControllerTest,
+       SpeechRecognitionDownloadSucceededNotification) {
+  const std::u16string kSucceededTitle = u"English speech files downloaded";
+  const std::u16string kSucceededDescription =
+      u"Speech is now processed locally and Dictation works offline";
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+
+  controller->ShowSpeechRecognitionDownloadNotificationForDictation(true,
+                                                                    u"English");
+  message_center::NotificationList::Notifications notifications =
+      MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  EXPECT_EQ(kSucceededTitle, (*notifications.begin())->title());
+  EXPECT_EQ(kSucceededDescription, (*notifications.begin())->message());
+  EXPECT_EQ(u"Dictation", (*notifications.begin())->display_source());
+  EXPECT_EQ(message_center::SystemNotificationWarningLevel::NORMAL,
+            (*notifications.begin())->system_notification_warning_level());
+}
+
+TEST_F(AccessibilityControllerTest,
+       SpeechRecognitionDownloadFailedNotification) {
+  const std::u16string kFailedTitle = u"Couldn't download English speech files";
+  const std::u16string kFailedDescription =
+      u"Download will be attempted later. Speech will be sent to Google for "
+      u"processing until download is completed.";
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+
+  controller->ShowSpeechRecognitionDownloadNotificationForDictation(false,
+                                                                    u"English");
+  message_center::NotificationList::Notifications notifications =
+      MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  EXPECT_EQ(kFailedTitle, (*notifications.begin())->title());
+  EXPECT_EQ(kFailedDescription, (*notifications.begin())->message());
+  EXPECT_EQ(u"Dictation", (*notifications.begin())->display_source());
+  EXPECT_EQ(message_center::SystemNotificationWarningLevel::CRITICAL_WARNING,
+            (*notifications.begin())->system_notification_warning_level());
+}
+
 namespace {
 
 enum class TestUserLoginType {
@@ -1017,6 +1145,12 @@ class AccessibilityControllerSigninTest
       public testing::WithParamInterface<TestUserLoginType> {
  public:
   AccessibilityControllerSigninTest() = default;
+
+  AccessibilityControllerSigninTest(const AccessibilityControllerSigninTest&) =
+      delete;
+  AccessibilityControllerSigninTest& operator=(
+      const AccessibilityControllerSigninTest&) = delete;
+
   ~AccessibilityControllerSigninTest() = default;
 
   void SimulateLogin() {
@@ -1035,9 +1169,6 @@ class AccessibilityControllerSigninTest
         break;
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerSigninTest);
 };
 
 }  // namespace
@@ -1053,13 +1184,14 @@ TEST_P(AccessibilityControllerSigninTest, EnableOnLoginScreenAndLogin) {
 
   AccessibilityControllerImpl* accessibility =
       Shell::Get()->accessibility_controller();
-  DockedMagnifierControllerImpl* docked_magnifier =
+  DockedMagnifierController* docked_magnifier =
       Shell::Get()->docked_magnifier_controller();
 
   SessionControllerImpl* session = Shell::Get()->session_controller();
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
             session->GetSessionState());
   EXPECT_FALSE(accessibility->large_cursor().enabled());
+  EXPECT_FALSE(accessibility->live_caption().enabled());
   EXPECT_FALSE(accessibility->spoken_feedback().enabled());
   EXPECT_FALSE(accessibility->high_contrast().enabled());
   EXPECT_FALSE(accessibility->autoclick().enabled());
@@ -1200,6 +1332,33 @@ TEST_P(AccessibilityControllerSigninTest, SwitchAccessPrefsSyncToSignIn) {
   // has no effect on the user profile.
   signin_prefs->Set(kAccessibilitySwitchAccessEnabled, base::Value(false));
   EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilitySwitchAccessEnabled));
+}
+
+TEST_P(AccessibilityControllerSigninTest,
+       UpdatesNonLoginWindowVisibilityOnLogin) {
+  aura::Window* container =
+      Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                          kShellWindowId_NonLockScreenContainersContainer);
+
+  BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
+  EXPECT_TRUE(
+      container->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren));
+
+  UnblockUserSession();
+  EXPECT_FALSE(
+      container->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren));
+
+  BlockUserSession(BLOCKED_BY_LOGIN_SCREEN);
+  EXPECT_TRUE(
+      container->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren));
+
+  UnblockUserSession();
+  EXPECT_FALSE(
+      container->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren));
+
+  BlockUserSession(BLOCKED_BY_USER_ADDING_SCREEN);
+  EXPECT_TRUE(
+      container->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren));
 }
 
 }  // namespace ash

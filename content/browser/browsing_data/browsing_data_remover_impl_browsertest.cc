@@ -1,15 +1,19 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -33,8 +37,11 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -98,8 +105,7 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
 
   void RemoveAndWait(uint64_t remove_mask) {
     content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(
-            shell()->web_contents()->GetBrowserContext());
+        shell()->web_contents()->GetBrowserContext()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     remover->RemoveAndReply(
         base::Time(), base::Time::Max(), remove_mask,
@@ -112,8 +118,7 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
       uint64_t remove_mask,
       std::unique_ptr<BrowsingDataFilterBuilder> filter) {
     content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(
-            shell()->web_contents()->GetBrowserContext());
+        shell()->web_contents()->GetBrowserContext()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     remover->RemoveWithFilterAndReply(
         base::Time(), base::Time::Max(), remove_mask,
@@ -198,7 +203,9 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
     bool login_requested = false;
     ShellContentBrowserClient::Get()->set_login_request_callback(
         base::BindLambdaForTesting(
-            [&](bool is_main_frame /* unused */) { login_requested = true; }));
+            [&](bool is_primary_main_frame /* unused */) {
+              login_requested = true;
+            }));
 
     GURL url = ssl_server_.GetURL(kHttpAuthPath);
     bool navigation_suceeded = NavigateToURL(shell(), url);
@@ -212,15 +219,19 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
   }
 
   network::mojom::URLLoaderFactory* url_loader_factory() {
-    return BrowserContext::GetDefaultStoragePartition(
-               shell()->web_contents()->GetBrowserContext())
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
         ->GetURLLoaderFactoryForBrowserProcess()
         .get();
   }
 
   network::mojom::NetworkContext* network_context() {
-    return BrowserContext::GetDefaultStoragePartition(
-               shell()->web_contents()->GetBrowserContext())
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
         ->GetNetworkContext();
   }
 
@@ -296,23 +307,24 @@ class WithTrustTokensEnabled {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests Trust Tokens clearing by calling HasTrustTokensAnswerer::HasTrustTokens
-// with a HasTrustTokensAnswerer obtained from the provided NetworkContext.
+// Tests Trust Tokens clearing by calling
+// TrustTokenQueryAnswerer::HasTrustTokens with a TrustTokenQueryAnswerer
+// obtained from the provided NetworkContext.
 //
 // The Trust Tokens functionality places a cap of 2 distinct arguments to the
 // |issuer| argument of
-//       HasTrustTokensAnswerer(origin)::HasTrustTokens(issuer)
+//       TrustTokenQueryAnswerer(origin)::HasTrustTokens(issuer)
 // for each top-frame origin |origin|. (This limit is recorded in persistent
 // storage scoped to the origin |origin| and is not related to the lifetime of
-// the specific HasTrustTokensAnswerer object.)
+// the specific TrustTokenQueryAnswerer object.)
 //
-// To add an origin, the tester creates a HasTrustTokensAnswerer parameterized
+// To add an origin, the tester creates a TrustTokenQueryAnswerer parameterized
 // by |origin| and calls HasTrustTokens with two distinct "priming" issuer
 // arguments. This will make the Trust Tokens persistent storage record that
 // |origin| is associated with each of these issuers, with the effect that
 // (barring a data clear) subsequent HasTrustTokens calls with different issuer
 // arguments will fail. To check if an origin is present, the tester calls
-//    HasTrustTokensAnswerer(origin)::HasTrustTokens(issuer)
+//    TrustTokenQueryAnswerer(origin)::HasTrustTokens(issuer)
 // with an |issuer| argument distinct from the two earlier "priming" issuers.
 // This third HasTrustTokens call will error out exactly if |origin| was
 // previously added by AddOrigin.
@@ -327,8 +339,8 @@ class TrustTokensTester {
       : network_context_(network_context) {}
 
   void AddOrigin(const url::Origin& origin) {
-    mojo::Remote<network::mojom::HasTrustTokensAnswerer> answerer;
-    network_context_->GetHasTrustTokensAnswerer(
+    mojo::Remote<network::mojom::TrustTokenQueryAnswerer> answerer;
+    network_context_->GetTrustTokenQueryAnswerer(
         answerer.BindNewPipeAndPassReceiver(), origin);
 
     // Calling HasTrustTokens will associate the issuer argument with the
@@ -355,8 +367,8 @@ class TrustTokensTester {
   }
 
   bool HasOrigin(const url::Origin& origin) {
-    mojo::Remote<network::mojom::HasTrustTokensAnswerer> answerer;
-    network_context_->GetHasTrustTokensAnswerer(
+    mojo::Remote<network::mojom::TrustTokenQueryAnswerer> answerer;
+    network_context_->GetTrustTokenQueryAnswerer(
         answerer.BindNewPipeAndPassReceiver(), origin);
 
     base::RunLoop run_loop;
@@ -392,7 +404,7 @@ class TrustTokensTester {
   }
 
  private:
-  network::mojom::NetworkContext* network_context_;
+  raw_ptr<network::mojom::NetworkContext, DanglingUntriaged> network_context_;
 };
 
 }  // namespace
@@ -469,6 +481,102 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplTrustTokenTest,
   EXPECT_TRUE(tester.HasOrigin(origin));
   EXPECT_TRUE(tester.HasOrigin(sub_origin));
   EXPECT_FALSE(tester.HasOrigin(another_origin));
+}
+
+class BrowsingDataRemoverImplSharedStorageBrowserTest
+    : public BrowsingDataRemoverImplBrowserTest {
+ public:
+  BrowsingDataRemoverImplSharedStorageBrowserTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+  }
+
+  StoragePartition* storage_partition() {
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
+                       Remove) {
+  SharedStorageClearSiteDataTester tester(storage_partition());
+
+  auto origin = url::Origin::Create(GURL("https://topframe.example"));
+
+  tester.AddConsecutiveSharedStorageEntries(origin, u"key", u"value", 10);
+  EXPECT_THAT(tester.GetSharedStorageOrigins(),
+              testing::UnorderedElementsAre(origin));
+  EXPECT_EQ(10, tester.GetSharedStorageTotalEntries());
+
+  RemoveAndWait(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE);
+
+  EXPECT_TRUE(tester.GetSharedStorageOrigins().empty());
+  EXPECT_EQ(0, tester.GetSharedStorageTotalEntries());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
+                       RemoveByDomain) {
+  SharedStorageClearSiteDataTester tester(storage_partition());
+
+  auto origin = url::Origin::Create(GURL("https://topframe.example"));
+  auto sub_origin = url::Origin::Create(GURL("https://sub.topframe.example"));
+  auto another_origin =
+      url::Origin::Create(GURL("https://another-topframe.example"));
+
+  tester.AddConsecutiveSharedStorageEntries(origin, u"key", u"value", 5);
+  tester.AddConsecutiveSharedStorageEntries(sub_origin, u"key", u"value", 10);
+  tester.AddConsecutiveSharedStorageEntries(another_origin, u"key", u"value",
+                                            1);
+  EXPECT_THAT(
+      tester.GetSharedStorageOrigins(),
+      testing::UnorderedElementsAre(origin, sub_origin, another_origin));
+  EXPECT_EQ(16, tester.GetSharedStorageTotalEntries());
+
+  std::unique_ptr<BrowsingDataFilterBuilder> builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete));
+  builder->AddRegisterableDomain("topframe.example");
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE,
+                          std::move(builder));
+
+  EXPECT_THAT(tester.GetSharedStorageOrigins(),
+              testing::UnorderedElementsAre(another_origin));
+  EXPECT_EQ(1, tester.GetSharedStorageTotalEntries());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
+                       PreserveByDomain) {
+  SharedStorageClearSiteDataTester tester(storage_partition());
+
+  auto origin = url::Origin::Create(GURL("https://topframe.example"));
+  auto sub_origin = url::Origin::Create(GURL("https://sub.topframe.example"));
+  auto another_origin =
+      url::Origin::Create(GURL("https://another-topframe.example"));
+
+  tester.AddConsecutiveSharedStorageEntries(origin, u"key", u"value", 5);
+  tester.AddConsecutiveSharedStorageEntries(sub_origin, u"key", u"value", 10);
+  tester.AddConsecutiveSharedStorageEntries(another_origin, u"key", u"value",
+                                            1);
+  EXPECT_THAT(
+      tester.GetSharedStorageOrigins(),
+      testing::UnorderedElementsAre(origin, sub_origin, another_origin));
+  EXPECT_EQ(16, tester.GetSharedStorageTotalEntries());
+
+  // Delete all data *except* that specified by the filter.
+  std::unique_ptr<BrowsingDataFilterBuilder> builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kPreserve));
+  builder->AddRegisterableDomain("topframe.example");
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE,
+                          std::move(builder));
+
+  EXPECT_THAT(tester.GetSharedStorageOrigins(),
+              testing::UnorderedElementsAre(origin, sub_origin));
+  EXPECT_EQ(15, tester.GetSharedStorageTotalEntries());
 }
 
 }  // namespace content

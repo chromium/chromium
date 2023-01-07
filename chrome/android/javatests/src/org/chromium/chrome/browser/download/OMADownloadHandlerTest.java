@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,11 +33,13 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.url.GURL;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashSet;
@@ -71,14 +73,13 @@ public class OMADownloadHandlerTest {
     }
 
     /**
-     * Mock implementation of the DownloadInfoBarController.
+     * Mock implementation of the DownloadMessageUiController.
      */
-    static class TestInfoBarController extends DownloadInfoBarController {
+    static class TestInfoBarController implements DownloadMessageUiController {
         public boolean mDownloadStarted;
         public OfflineItem mLastUpdatedItem;
 
         public TestInfoBarController() {
-            super(/*otrProfileID=*/null);
         }
 
         @Override
@@ -87,8 +88,33 @@ public class OMADownloadHandlerTest {
         }
 
         @Override
+        public void showIncognitoDownloadMessage(Callback<Boolean> callback) {}
+
+        @Override
+        public void addDownloadInterstitialSource(GURL originalUrl) {}
+
+        @Override
+        public boolean isDownloadInterstitialItem(GURL originalUrl, String guid) {
+            return false;
+        }
+
+        @Override
+        public void onItemsAdded(List<OfflineItem> items) {}
+
+        @Override
         public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
             mLastUpdatedItem = item;
+        }
+
+        @Override
+        public void onItemRemoved(ContentId id) {}
+
+        @Override
+        public void onNotificationShown(ContentId id, int notificationId) {}
+
+        @Override
+        public boolean isShowing() {
+            return false;
         }
 
         public OfflineItem getLastUpdatedItem() {
@@ -367,12 +393,15 @@ public class OMADownloadHandlerTest {
 
         try {
             DownloadInfo info = new DownloadInfo.Builder().build();
-            final OMADownloadHandlerForTest omaHandler = new OMADownloadHandlerForTest(context) {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    // Ignore all the broadcasts.
-                }
-            };
+            final OMADownloadHandlerForTest omaHandler =
+                    TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                        return new OMADownloadHandlerForTest(context) {
+                            @Override
+                            public void onReceive(Context context, Intent intent) {
+                                // Ignore all the broadcasts.
+                            }
+                        };
+                    });
 
             omaHandler.clearPendingOMADownloads();
             omaHandler.downloadOMAContent(0, info, omaInfo);

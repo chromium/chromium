@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/bit_reader.h"
+#include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/mp2t/es_parser.h"
 #include "media/formats/mp2t/mp2t_common.h"
@@ -223,11 +224,11 @@ bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
 
   // Convert and unroll the timestamps.
   base::TimeDelta media_pts(kNoTimestamp);
-  DecodeTimestamp media_dts(kNoDecodeTimestamp());
+  DecodeTimestamp media_dts(kNoDecodeTimestamp);
   if (is_pts_valid) {
     int64_t pts = timestamp_unroller_->GetUnrolledTimestamp(
         ConvertTimestampSectionToTimestamp(pts_section));
-    media_pts = base::TimeDelta::FromMicroseconds((1000 * pts) / 90);
+    media_pts = base::Microseconds((1000 * pts) / 90);
   }
   if (is_dts_valid) {
     int64_t dts = timestamp_unroller_->GetUnrolledTimestamp(

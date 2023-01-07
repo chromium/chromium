@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,9 @@
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/largest_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
+#include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -63,16 +63,16 @@ CompositorRenderPass::~CompositorRenderPass() {
 }
 
 void CompositorRenderPass::SetNew(
-    CompositorRenderPassId id,
+    CompositorRenderPassId pass_id,
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
     const gfx::Transform& transform_to_root_target) {
-  DCHECK(id);
+  DCHECK(pass_id);
   DCHECK(damage_rect.IsEmpty() || output_rect.Contains(damage_rect))
       << "damage_rect: " << damage_rect.ToString()
       << " output_rect: " << output_rect.ToString();
 
-  this->id = id;
+  id = pass_id;
   this->output_rect = output_rect;
   this->damage_rect = damage_rect;
   this->transform_to_root_target = transform_to_root_target;
@@ -82,79 +82,49 @@ void CompositorRenderPass::SetNew(
 }
 
 void CompositorRenderPass::SetAll(
-    CompositorRenderPassId id,
+    CompositorRenderPassId pass_id,
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
     const gfx::Transform& transform_to_root_target,
     const cc::FilterOperations& filters,
     const cc::FilterOperations& backdrop_filters,
-    const base::Optional<gfx::RRectF>& backdrop_filter_bounds,
-    SubtreeCaptureId subtree_capture_id,
+    const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
+    SubtreeCaptureId capture_id,
+    gfx::Size subtree_capture_size,
+    SharedElementResourceId resource_id,
     bool has_transparent_background,
     bool cache_render_pass,
     bool has_damage_from_contributing_content,
-    bool generate_mipmap) {
-  DCHECK(id);
+    bool generate_mipmap,
+    bool per_quad_damage) {
+  DCHECK(pass_id);
 
-  this->id = id;
+  id = pass_id;
   this->output_rect = output_rect;
   this->damage_rect = damage_rect;
   this->transform_to_root_target = transform_to_root_target;
   this->filters = filters;
   this->backdrop_filters = backdrop_filters;
   this->backdrop_filter_bounds = backdrop_filter_bounds;
-  this->subtree_capture_id = subtree_capture_id;
+  this->subtree_capture_id = capture_id;
+  this->subtree_size = subtree_capture_size;
+  this->shared_element_resource_id = resource_id;
   this->has_transparent_background = has_transparent_background;
   this->cache_render_pass = cache_render_pass;
   this->has_damage_from_contributing_content =
       has_damage_from_contributing_content;
   this->generate_mipmap = generate_mipmap;
-
+  has_per_quad_damage = per_quad_damage;
   DCHECK(quad_list.empty());
   DCHECK(shared_quad_state_list.empty());
 }
 
 void CompositorRenderPass::AsValueInto(
     base::trace_event::TracedValue* value) const {
-  cc::MathUtil::AddToTracedValue("output_rect", output_rect, value);
-  cc::MathUtil::AddToTracedValue("damage_rect", damage_rect, value);
+  RenderPassInternal::AsValueInto(value);
 
-  value->SetBoolean("has_transparent_background", has_transparent_background);
-  value->SetBoolean("cache_render_pass", cache_render_pass);
-  value->SetBoolean("has_damage_from_contributing_content",
-                    has_damage_from_contributing_content);
-  value->SetBoolean("generate_mipmap", generate_mipmap);
-  value->SetInteger("copy_requests",
-                    base::saturated_cast<int>(copy_requests.size()));
-
-  value->BeginArray("filters");
-  filters.AsValueInto(value);
-  value->EndArray();
-
-  value->BeginArray("backdrop_filters");
-  backdrop_filters.AsValueInto(value);
-  value->EndArray();
-
-  if (backdrop_filter_bounds.has_value()) {
-    cc::MathUtil::AddToTracedValue("backdrop_filter_bounds",
-                                   backdrop_filter_bounds.value(), value);
-  }
-
-  value->BeginArray("shared_quad_state_list");
-  for (auto* shared_quad_state : shared_quad_state_list) {
-    value->BeginDictionary();
-    shared_quad_state->AsValueInto(value);
-    value->EndDictionary();
-  }
-  value->EndArray();
-
-  value->BeginArray("quad_list");
-  for (auto* quad : quad_list) {
-    value->BeginDictionary();
-    quad->AsValueInto(value);
-    value->EndDictionary();
-  }
-  value->EndArray();
+  value->SetString("subtree_capture_id", subtree_capture_id.ToString());
+  cc::MathUtil::AddToTracedValue("subtree_size", subtree_size, value);
 
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
       TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "CompositorRenderPass",
@@ -191,9 +161,6 @@ DrawQuad* CompositorRenderPass::CopyFromAndAppendDrawQuad(
     case DrawQuad::Material::kTiledContent:
       quad_list.AllocateAndCopyFrom(TileDrawQuad::MaterialCast(quad));
       break;
-    case DrawQuad::Material::kStreamVideoContent:
-      quad_list.AllocateAndCopyFrom(StreamVideoDrawQuad::MaterialCast(quad));
-      break;
     case DrawQuad::Material::kSurfaceContent:
       quad_list.AllocateAndCopyFrom(SurfaceDrawQuad::MaterialCast(quad));
       break;
@@ -202,6 +169,9 @@ DrawQuad* CompositorRenderPass::CopyFromAndAppendDrawQuad(
       break;
     case DrawQuad::Material::kYuvVideoContent:
       quad_list.AllocateAndCopyFrom(YUVVideoDrawQuad::MaterialCast(quad));
+      break;
+    case DrawQuad::Material::kSharedElement:
+      quad_list.AllocateAndCopyFrom(SharedElementDrawQuad::MaterialCast(quad));
       break;
     // RenderPass quads need to use specific CopyFrom function.
     case DrawQuad::Material::kAggregatedRenderPass:
@@ -225,9 +195,10 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPass::DeepCopy() const {
                                                 quad_list.size());
   copy_pass->SetAll(id, output_rect, damage_rect, transform_to_root_target,
                     filters, backdrop_filters, backdrop_filter_bounds,
-                    subtree_capture_id, has_transparent_background,
+                    subtree_capture_id, subtree_size,
+                    shared_element_resource_id, has_transparent_background,
                     cache_render_pass, has_damage_from_contributing_content,
-                    generate_mipmap);
+                    generate_mipmap, has_per_quad_damage);
 
   if (shared_quad_state_list.empty()) {
     DCHECK(quad_list.empty());

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ class MockAppActivity : public AppActivity {
   MOCK_METHOD1(SendAppMessageToReceiver,
                cast_channel::Result(const CastInternalMessage& cast_message));
   MOCK_METHOD1(SendMediaRequestToReceiver,
-               base::Optional<int>(const CastInternalMessage& cast_message));
+               absl::optional<int>(const CastInternalMessage& cast_message));
   MOCK_METHOD2(SendSetVolumeRequestToReceiver,
                void(const CastInternalMessage& cast_message,
                     cast_channel::ResultCallback callback));
@@ -48,8 +48,8 @@ class MockAppActivity : public AppActivity {
                void(const std::string& client_id,
                     blink::mojom::PresentationConnectionMessagePtr message));
   MOCK_METHOD2(SendMediaStatusToClients,
-               void(const base::Value& media_status,
-                    base::Optional<int> request_id));
+               void(const base::Value::Dict& media_status,
+                    absl::optional<int> request_id));
   MOCK_METHOD1(
       ClosePresentationConnections,
       void(blink::mojom::PresentationConnectionCloseReason close_reason));

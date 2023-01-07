@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/time/time.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/decoder_context.h"
@@ -33,9 +30,6 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
-
-using base::TimeDelta;
-using base::TimeTicks;
 
 namespace gpu {
 namespace gles2 {
@@ -99,7 +93,7 @@ bool IsBuiltInFragmentVarying(const std::string& name) {
       "gl_FrontFacing",
       "gl_PointCoord"
   };
-  for (size_t ii = 0; ii < base::size(kBuiltInVaryings); ++ii) {
+  for (size_t ii = 0; ii < std::size(kBuiltInVaryings); ++ii) {
     if (name == kBuiltInVaryings[ii])
       return true;
   }
@@ -620,7 +614,7 @@ std::string Program::ProcessLogInfo(const std::string& log) {
       output += hashed_name;
   }
 
-  return output + input.as_string();
+  return output + std::string(input);
 }
 
 void Program::UpdateLogInfo() {
@@ -1244,7 +1238,6 @@ bool Program::Link(ShaderManager* manager,
     return false;
   }
 
-  TimeTicks before_time = TimeTicks::Now();
   bool link = true;
   ProgramCache* cache = manager_->program_cache_;
   // This is called before program linking, so refer to attached_shaders_.
@@ -1367,23 +1360,6 @@ bool Program::Link(ShaderManager* manager,
             effective_transform_feedback_varyings_,
             effective_transform_feedback_buffer_mode_, client);
       }
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "GPU.ProgramCache.BinaryCacheMissTime",
-          static_cast<base::HistogramBase::Sample>(
-              (TimeTicks::Now() - before_time).InMicroseconds()),
-          1,
-          static_cast<base::HistogramBase::Sample>(
-              TimeDelta::FromSeconds(10).InMicroseconds()),
-          50);
-    } else {
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "GPU.ProgramCache.BinaryCacheHitTime",
-          static_cast<base::HistogramBase::Sample>(
-              (TimeTicks::Now() - before_time).InMicroseconds()),
-          1,
-          static_cast<base::HistogramBase::Sample>(
-              TimeDelta::FromSeconds(1).InMicroseconds()),
-          50);
     }
   } else {
     UpdateLogInfo();
@@ -2387,7 +2363,7 @@ bool Program::GetUniformsES3(CommonDecoder::Bucket* bucket) const {
     GL_UNIFORM_IS_ROW_MAJOR,
   };
   const GLint kDefaultValue[] = { -1, -1, -1, -1, 0 };
-  const size_t kNumPnames = base::size(kPname);
+  const size_t kNumPnames = std::size(kPname);
   std::vector<GLuint> indices(count);
   for (GLsizei ii = 0; ii < count; ++ii) {
     indices[ii] = ii;

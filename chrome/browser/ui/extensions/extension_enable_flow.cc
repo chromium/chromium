@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -131,7 +131,8 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
 
   if (profiles::IsProfileLocked(profile_->GetPath())) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileLocked));
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
     return;
@@ -194,13 +195,13 @@ void ExtensionEnableFlow::OnBlockedByParentDialogDone() {
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 void ExtensionEnableFlow::StartObserving() {
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
   load_error_observation_.Observe(extensions::LoadErrorReporter::GetInstance());
 }
 
 void ExtensionEnableFlow::StopObserving() {
-  extension_registry_observer_.RemoveAll();
+  extension_registry_observation_.Reset();
   load_error_observation_.Reset();
 }
 
@@ -264,13 +265,14 @@ void ExtensionEnableFlow::EnableExtension() {
 }
 
 void ExtensionEnableFlow::InstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
-  if (result == ExtensionInstallPrompt::Result::ACCEPTED) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  if (payload.result == ExtensionInstallPrompt::Result::ACCEPTED) {
     EnableExtension();
   } else {
     delegate_->ExtensionEnableFlowAborted(/*user_initiated=*/
-                                          result == ExtensionInstallPrompt::
-                                                        Result::USER_CANCELED);
+                                          payload.result ==
+                                          ExtensionInstallPrompt::Result::
+                                              USER_CANCELED);
     // |delegate_| may delete us.
   }
 }

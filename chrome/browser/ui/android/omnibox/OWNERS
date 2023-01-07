@@ -1,0 +1,5 @@
+file://components/omnibox/browser/android/OWNERS
+
+# For changes to LocationBar:
+pnoland@chromium.org
+wylieb@chromium.org

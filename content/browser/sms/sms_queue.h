@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,19 @@
 #include <map>
 
 #include "base/observer_list.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "url/origin.h"
 
 namespace content {
 
 // SmsQueue manages the queue of pending requests for each origin.
-class CONTENT_EXPORT SmsQueue {
+class SmsQueue {
  public:
   SmsQueue();
+
+  SmsQueue(const SmsQueue&) = delete;
+  SmsQueue& operator=(const SmsQueue&) = delete;
+
   ~SmsQueue();
 
   using FailureType = SmsFetchFailureType;
@@ -35,8 +38,6 @@ class CONTENT_EXPORT SmsQueue {
 
  private:
   std::map<OriginList, base::ObserverList<Subscriber>> subscribers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmsQueue);
 };
 
 }  // namespace content

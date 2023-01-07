@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -15,7 +14,7 @@ namespace blink {
 DrawingRecorder::DrawingRecorder(GraphicsContext& context,
                                  const DisplayItemClient& display_item_client,
                                  DisplayItem::Type display_item_type,
-                                 const IntRect& visual_rect)
+                                 const gfx::Rect& visual_rect)
     : context_(context),
       client_(display_item_client),
       type_(display_item_type),
@@ -29,7 +28,7 @@ DrawingRecorder::DrawingRecorder(GraphicsContext& context,
   DCHECK(DisplayItem::IsDrawingType(display_item_type));
 
   context.SetInDrawingRecorder(true);
-  context.BeginRecording(FloatRect());
+  context.BeginRecording(gfx::RectF());
 
   if (context.NeedsDOMNodeId()) {
     DOMNodeId dom_node_id = display_item_client.OwnerNodeId();
@@ -47,7 +46,9 @@ DrawingRecorder::~DrawingRecorder() {
   context_.SetInDrawingRecorder(false);
 
   context_.GetPaintController().CreateAndAppend<DrawingDisplayItem>(
-      client_, type_, visual_rect_, context_.EndRecording());
+      client_, type_, visual_rect_, context_.EndRecording(),
+      client_.VisualRectOutsetForRasterEffects(),
+      client_.GetPaintInvalidationReason());
 }
 
 }  // namespace blink

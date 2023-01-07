@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <windows.foundation.h>
 #include <wrl/client.h>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -137,7 +138,7 @@ class FakeVectorChangedEventHandler
  private:
   ComPtr<IObservableVector<T>> vector_;
   EventRegistrationToken token_;
-  IObservableVector<T>* sender_ = nullptr;
+  raw_ptr<IObservableVector<T>> sender_ = nullptr;
   CollectionChange change_ = CollectionChange_Reset;
   unsigned int index_ = 0;
 };

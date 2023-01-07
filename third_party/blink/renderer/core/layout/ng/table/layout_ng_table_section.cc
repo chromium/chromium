@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,9 +95,7 @@ void LayoutNGTableSection::StyleDidChange(StyleDifference diff,
   if (LayoutNGTable* table = Table()) {
     if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
         (old_style && old_style->GetWritingDirection() !=
-                          StyleRef().GetWritingDirection()) ||
-        (diff.TextDecorationOrColorChanged() &&
-         StyleRef().HasBorderColorReferencingCurrentColor())) {
+                          StyleRef().GetWritingDirection())) {
       table->GridBordersChanged();
     }
   }

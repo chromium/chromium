@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -44,8 +43,7 @@ bool NormalizeProfileWithValidator(AutofillProfile* profile,
 
   // Create the AddressData from the profile.
   ::i18n::addressinput::AddressData address_data =
-      *autofill::i18n::CreateAddressDataFromAutofillProfile(*profile,
-                                                            app_locale);
+      *i18n::CreateAddressDataFromAutofillProfile(*profile, app_locale);
 
   // Normalize the address.
   if (!address_validator->NormalizeAddress(&address_data))
@@ -65,7 +63,7 @@ bool NormalizeProfileWithValidator(AutofillProfile* profile,
 void FormatPhoneNumberToE164(AutofillProfile* profile,
                              const std::string& region_code,
                              const std::string& app_locale) {
-  const std::string formatted_number = autofill::i18n::FormatPhoneForResponse(
+  const std::string formatted_number = i18n::FormatPhoneForResponse(
       base::UTF16ToUTF8(
           profile->GetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), app_locale)),
       region_code);
@@ -102,8 +100,11 @@ class AddressNormalizerImpl::NormalizationRequest {
                        weak_ptr_factory_.GetWeakPtr(),
                        /*success=*/false,
                        /*address_validator=*/nullptr),
-        base::TimeDelta::FromSeconds(timeout_seconds));
+        base::Seconds(timeout_seconds));
   }
+
+  NormalizationRequest(const NormalizationRequest&) = delete;
+  NormalizationRequest& operator=(const NormalizationRequest&) = delete;
 
   ~NormalizationRequest() {}
 
@@ -141,8 +142,6 @@ class AddressNormalizerImpl::NormalizationRequest {
 
   bool has_responded_ = false;
   base::WeakPtrFactory<NormalizationRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NormalizationRequest);
 };
 
 AddressNormalizerImpl::AddressNormalizerImpl(std::unique_ptr<Source> source,

@@ -27,11 +27,11 @@ rootWebArea
 ++++++++++++++++++++genericContainer
 ++++++++++++++++++++++button name='Show month selection panel'
 ++++++++++++++++++++++++staticText
-++++++++++++++++++++++++svgRoot
+++++++++++++++++++++++++image
 ++++++++++++++++++++button name='Show previous month'
-++++++++++++++++++++++svgRoot
+++++++++++++++++++++++image
 ++++++++++++++++++++button name='Show next month'
-++++++++++++++++++++++svgRoot
+++++++++++++++++++++++image
 ++++++++++++++++++grid activedescendantId=cell
 ++++++++++++++++++++genericContainer
 ++++++++++++++++++++++genericContainer
@@ -140,5 +140,7 @@ rootWebArea
 ++++++++++++++++++++++++++++staticText name='10'
 ++++++++++++++++++++++++++cell name='Saturday, October 11, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='11'
+++++++++++++++++++++button name='Clear'
+++++++++++++++++++++++staticText name='Clear'
 ++++++++++++++++++++button name='Today'
 ++++++++++++++++++++++staticText name='Today'

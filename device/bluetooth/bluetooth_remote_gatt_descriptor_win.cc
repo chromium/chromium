@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,13 +69,12 @@ BluetoothRemoteGattDescriptorWin::GetPermissions() const {
 }
 
 void BluetoothRemoteGattDescriptorWin::ReadRemoteDescriptor(
-    ValueCallback callback,
-    ErrorCallback error_callback) {
+    ValueCallback callback) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
 
   NOTIMPLEMENTED();
-  std::move(error_callback)
-      .Run(BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED);
+  std::move(callback).Run(BluetoothGattService::GattErrorCode::kNotSupported,
+                          /*value=*/std::vector<uint8_t>());
 }
 
 void BluetoothRemoteGattDescriptorWin::WriteRemoteDescriptor(
@@ -86,7 +85,7 @@ void BluetoothRemoteGattDescriptorWin::WriteRemoteDescriptor(
 
   NOTIMPLEMENTED();
   std::move(error_callback)
-      .Run(BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED);
+      .Run(BluetoothGattService::GattErrorCode::kNotSupported);
 }
 
 uint16_t BluetoothRemoteGattDescriptorWin::GetAttributeHandle() const {

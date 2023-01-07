@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,14 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/record_replay.h"
+#include "build/build_config.h"
 #include "mojo/core/broker_host.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/core.h"
 #include "mojo/core/request_context.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {
@@ -35,11 +37,11 @@ enum class MessageType : uint32_t {
   REQUEST_PORT_MERGE,
   REQUEST_INTRODUCTION,
   INTRODUCE,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   RELAY_EVENT_MESSAGE,
 #endif
   BROADCAST_EVENT,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EVENT_MESSAGE_FROM_RELAY,
 #endif
   ACCEPT_PEER,
@@ -88,14 +90,14 @@ using AcceptPeerData = AcceptPeerDataV0;
 // This message may include a process handle on platforms that require it.
 struct alignas(8) AddBrokerClientDataV0 {
   ports::NodeName client_name;
-#if !defined(OS_WIN)
-  uint32_t process_handle = 0;
+#if !BUILDFLAG(IS_WIN)
+  uint32_t process_handle;
 #endif
 };
 
 using AddBrokerClientData = AddBrokerClientDataV0;
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 static_assert(sizeof(base::ProcessHandle) == sizeof(uint32_t),
               "Unexpected pid size");
 static_assert(sizeof(AddBrokerClientData) % kChannelMessageAlignment == 0,
@@ -151,7 +153,7 @@ struct alignas(8) BindBrokerHostDataV0 {};
 
 using BindBrokerHostData = BindBrokerHostDataV0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This struct alignas(8) is followed by the full payload of a message to be
 // relayed.
 // NOTE: Because this field is variable length it cannot be versioned.
@@ -182,7 +184,7 @@ Channel::MessagePtr CreateMessage(MessageType type,
   else
     capacity = std::max(total_size, capacity);
   auto message =
-      std::make_unique<Channel::Message>(capacity, total_size, num_handles);
+      Channel::Message::CreateMessage(capacity, total_size, num_handles);
   Header* header = reinterpret_cast<Header*>(message->mutable_payload());
 
   // Make sure any header padding gets zeroed.
@@ -252,7 +254,7 @@ scoped_refptr<NodeChannel> NodeChannel::Create(
     Channel::HandlePolicy channel_handle_policy,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     const ProcessErrorCallback& process_error_callback) {
-#if defined(OS_NACL_SFI)
+#if BUILDFLAG(IS_NACL)
   LOG(FATAL) << "Multi-process not yet supported on NaCl-SFI";
   return nullptr;
 #else
@@ -272,13 +274,16 @@ Channel::MessagePtr NodeChannel::CreateEventMessage(size_t capacity,
 }
 
 // static
-void NodeChannel::GetEventMessageData(Channel::Message* message,
+bool NodeChannel::GetEventMessageData(Channel::Message& message,
                                       void** data,
                                       size_t* num_data_bytes) {
-  // NOTE: OnChannelMessage guarantees that we never accept a Channel::Message
-  // with a payload of fewer than |sizeof(Header)| bytes.
-  *data = reinterpret_cast<Header*>(message->mutable_payload()) + 1;
-  *num_data_bytes = message->payload_size() - sizeof(Header);
+  // NOTE: Callers must guarantee that the payload in `message` must be at least
+  // large enough to hold a Header.
+  if (message.payload_size() < sizeof(Header))
+    return false;
+  *data = reinterpret_cast<Header*>(message.mutable_payload()) + 1;
+  *num_data_bytes = message.payload_size() - sizeof(Header);
+  return true;
 }
 
 void NodeChannel::Start() {
@@ -374,7 +379,7 @@ void NodeChannel::AddBrokerClient(const ports::NodeName& client_name,
                                   base::Process process_handle) {
   AddBrokerClientData* data;
   std::vector<PlatformHandle> handles;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   handles.emplace_back(base::win::ScopedHandle(process_handle.Release()));
 #endif
   Channel::MessagePtr message =
@@ -382,8 +387,10 @@ void NodeChannel::AddBrokerClient(const ports::NodeName& client_name,
                     handles.size(), &data);
   message->SetHandles(std::move(handles));
   data->client_name = client_name;
-#if !defined(OS_WIN)
-  data->process_handle = process_handle.Handle();
+#if !BUILDFLAG(IS_WIN)
+  // Older clients treat this as a real process handle, but don't actually need
+  // it, so send a valid null handle.
+  data->process_handle = base::kNullProcessHandle;
 #endif
   WriteChannelMessage(std::move(message));
 }
@@ -469,7 +476,7 @@ void NodeChannel::Broadcast(Channel::MessagePtr message) {
 }
 
 void NodeChannel::BindBrokerHost(PlatformHandle broker_host_handle) {
-#if !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
   DCHECK(broker_host_handle.is_valid());
   BindBrokerHostData* data;
   std::vector<PlatformHandle> handles;
@@ -482,7 +489,7 @@ void NodeChannel::BindBrokerHost(PlatformHandle broker_host_handle) {
 #endif
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void NodeChannel::RelayEventMessage(const ports::NodeName& destination,
                                     Channel::MessagePtr message) {
   DCHECK(message->has_handles());
@@ -527,7 +534,7 @@ void NodeChannel::EventMessageFromRelay(const ports::NodeName& source,
   relayed_message->SetHandles(message->TakeHandles());
   WriteChannelMessage(std::move(relayed_message));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 NodeChannel::NodeChannel(
     Delegate* delegate,
@@ -539,7 +546,7 @@ NodeChannel::NodeChannel(
       delegate_(delegate),
       process_error_callback_(process_error_callback),
       channel_lock_("NodeChannel.channel_lock_")
-#if !defined(OS_NACL_SFI)
+#if !BUILDFLAG(IS_NACL)
       ,
       channel_(Channel::Create(this,
                                std::move(connection_params),
@@ -556,7 +563,7 @@ NodeChannel::~NodeChannel() {
 
 void NodeChannel::CreateAndBindLocalBrokerHost(
     PlatformHandle broker_host_handle) {
-#if !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
   // Self-owned.
   ConnectionParams connection_params(
       PlatformChannelEndpoint(std::move(broker_host_handle)));
@@ -609,7 +616,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
     case MessageType::ADD_BROKER_CLIENT: {
       AddBrokerClientData data;
       if (GetMessagePayload(payload, payload_size, &data)) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         if (handles.size() != 1) {
           DLOG(ERROR) << "Dropping invalid AddBrokerClient message.";
           break;
@@ -622,7 +629,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
           break;
         }
         delegate_->OnAddBrokerClient(remote_node_name_, data.client_name,
-                                     data.process_handle);
+                                     base::kNullProcessHandle);
 #endif
         return;
       }
@@ -667,8 +674,8 @@ void NodeChannel::OnChannelMessage(const void* payload,
     }
 
     case MessageType::EVENT_MESSAGE: {
-      Channel::MessagePtr message(
-          new Channel::Message(payload_size, handles.size()));
+      Channel::MessagePtr message =
+          Channel::Message::CreateMessage(payload_size, handles.size());
       message->SetHandles(std::move(handles));
       memcpy(message->mutable_payload(), payload, payload_size);
       delegate_->OnEventMessage(remote_node_name_, std::move(message));
@@ -724,7 +731,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
       break;
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case MessageType::RELAY_EVENT_MESSAGE: {
       base::ProcessHandle from_process;
       {
@@ -733,6 +740,11 @@ void NodeChannel::OnChannelMessage(const void* payload,
         // through the extent of this call because |this| is kept alive and
         // |remote_process_handle_| is never reset once set.
         from_process = remote_process_handle_.Handle();
+
+        // If we don't have a handle to the remote process, we should not be
+        // receiving relay requests from them because we're not the broker.
+        if (from_process == base::kNullProcessHandle)
+          break;
       }
       RelayEventMessageData data;
       if (GetMessagePayload(payload, payload_size, &data)) {
@@ -744,7 +756,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
                                     sizeof(Header) + sizeof(data);
         Channel::MessagePtr message = Channel::Message::Deserialize(
             message_start, payload_size - sizeof(Header) - sizeof(data),
-            from_process);
+            Channel::HandlePolicy::kAcceptHandles, from_process);
         if (!message) {
           DLOG(ERROR) << "Dropping invalid relay message.";
           break;
@@ -763,8 +775,9 @@ void NodeChannel::OnChannelMessage(const void* payload,
       const void* data = static_cast<const void*>(
           reinterpret_cast<const Header*>(payload) + 1);
       Channel::MessagePtr message =
-          Channel::Message::Deserialize(data, payload_size - sizeof(Header));
-      if (!message || message->has_handles()) {
+          Channel::Message::Deserialize(data, payload_size - sizeof(Header),
+                                        Channel::HandlePolicy::kRejectHandles);
+      if (!message) {
         DLOG(ERROR) << "Dropping invalid broadcast message.";
         break;
       }
@@ -772,7 +785,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
       return;
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case MessageType::EVENT_MESSAGE_FROM_RELAY: {
       EventMessageFromRelayData data;
       if (GetMessagePayload(payload, payload_size, &data)) {
@@ -781,8 +794,8 @@ void NodeChannel::OnChannelMessage(const void* payload,
 
         size_t num_bytes = payload_size - sizeof(data) - sizeof(Header);
 
-        Channel::MessagePtr message(
-            new Channel::Message(num_bytes, handles.size()));
+        Channel::MessagePtr message =
+            Channel::Message::CreateMessage(num_bytes, handles.size());
         message->SetHandles(std::move(handles));
         if (num_bytes)
           memcpy(message->mutable_payload(),
@@ -795,7 +808,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
       }
       break;
     }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     case MessageType::ACCEPT_PEER: {
       AcceptPeerData data;
@@ -854,7 +867,7 @@ void NodeChannel::WriteChannelMessage(Channel::MessagePtr message) {
 }
 
 void NodeChannel::OfferChannelUpgrade() {
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   base::AutoLock lock(channel_lock_);
   channel_->OfferChannelUpgrade();
 #endif

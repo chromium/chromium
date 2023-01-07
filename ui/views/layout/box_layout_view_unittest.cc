@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_test_api.h"
 
 namespace views {
@@ -27,11 +28,11 @@ TEST_F(BoxLayoutViewTest, LayoutInvalidationWhenPropertyChanged) {
   auto reset_layout = [&]() {
     EXPECT_TRUE(view_test_api.needs_layout());
     // Call layout() to set layout to a valid state.
-    host()->Layout();
+    test::RunScheduledLayout(host());
   };
 
   // Ensure host() starts with a valid layout.
-  host()->Layout();
+  test::RunScheduledLayout(host());
 
   EXPECT_FALSE(view_test_api.needs_layout());
   EXPECT_NE(BoxLayout::Orientation::kVertical, host()->GetOrientation());
@@ -50,7 +51,7 @@ TEST_F(BoxLayoutViewTest, LayoutInvalidationWhenPropertyChanged) {
   reset_layout();
 
   EXPECT_FALSE(view_test_api.needs_layout());
-  constexpr gfx::Insets inside_border_insets(10, 10);
+  constexpr gfx::Insets inside_border_insets(10);
   EXPECT_NE(inside_border_insets, host()->GetInsideBorderInsets());
   host()->SetInsideBorderInsets(inside_border_insets);
   reset_layout();
@@ -84,7 +85,7 @@ TEST_F(BoxLayoutViewTest, NoLayoutInvalidationWhenPropertyUnchanged) {
   ViewTestApi view_test_api(host());
 
   // Ensure view starts with a valid layout.
-  host()->Layout();
+  test::RunScheduledLayout(host());
   EXPECT_FALSE(view_test_api.needs_layout());
   host()->SetOrientation(host()->GetOrientation());
   host()->SetMainAxisAlignment(host()->GetMainAxisAlignment());

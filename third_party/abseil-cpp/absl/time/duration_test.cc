@@ -17,6 +17,7 @@
 #endif
 
 #include <chrono>  // NOLINT(build/c++11)
+#include <cfloat>
 #include <cmath>
 #include <cstdint>
 #include <ctime>
@@ -348,6 +349,11 @@ TEST(Duration, ToChrono) {
 }
 
 TEST(Duration, FactoryOverloads) {
+#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
+    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
+  GTEST_SKIP();
+#endif
+
   enum E { kOne = 1 };
 #define TEST_FACTORY_OVERLOADS(NAME)                                          \
   EXPECT_EQ(1, NAME(kOne) / NAME(kOne));                                      \
@@ -878,6 +884,11 @@ TEST(Duration, RelationalOperators) {
 }
 
 TEST(Duration, Addition) {
+#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
+    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
+  GTEST_SKIP();
+#endif
+
 #define TEST_ADD_OPS(UNIT)                  \
   do {                                      \
     EXPECT_EQ(UNIT(2), UNIT(1) + UNIT(1));  \
@@ -971,6 +982,11 @@ TEST(Duration, Negation) {
 }
 
 TEST(Duration, AbsoluteValue) {
+#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
+    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
+  GTEST_SKIP();
+#endif
+
   EXPECT_EQ(absl::ZeroDuration(), AbsDuration(absl::ZeroDuration()));
   EXPECT_EQ(absl::Seconds(1), AbsDuration(absl::Seconds(1)));
   EXPECT_EQ(absl::Seconds(1), AbsDuration(absl::Seconds(-1)));
@@ -988,6 +1004,11 @@ TEST(Duration, AbsoluteValue) {
 }
 
 TEST(Duration, Multiplication) {
+#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
+    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
+  GTEST_SKIP();
+#endif
+
 #define TEST_MUL_OPS(UNIT)                                    \
   do {                                                        \
     EXPECT_EQ(UNIT(5), UNIT(2) * 2.5);                        \
@@ -1240,6 +1261,11 @@ TEST(Duration, RoundTripUnits) {
 }
 
 TEST(Duration, TruncConversions) {
+#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
+    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
+  GTEST_SKIP();
+#endif
+
   // Tests ToTimespec()/DurationFromTimespec()
   const struct {
     absl::Duration d;
@@ -1320,7 +1346,7 @@ TEST(Duration, SmallConversions) {
 
   EXPECT_EQ(absl::ZeroDuration(), absl::Seconds(0));
   // TODO(bww): Is the next one OK?
-  EXPECT_EQ(absl::ZeroDuration(), absl::Seconds(0.124999999e-9));
+  EXPECT_EQ(absl::ZeroDuration(), absl::Seconds(std::nextafter(0.125e-9, 0)));
   EXPECT_EQ(absl::Nanoseconds(1) / 4, absl::Seconds(0.125e-9));
   EXPECT_EQ(absl::Nanoseconds(1) / 4, absl::Seconds(0.250e-9));
   EXPECT_EQ(absl::Nanoseconds(1) / 2, absl::Seconds(0.375e-9));
@@ -1330,7 +1356,7 @@ TEST(Duration, SmallConversions) {
   EXPECT_EQ(absl::Nanoseconds(1), absl::Seconds(0.875e-9));
   EXPECT_EQ(absl::Nanoseconds(1), absl::Seconds(1.000e-9));
 
-  EXPECT_EQ(absl::ZeroDuration(), absl::Seconds(-0.124999999e-9));
+  EXPECT_EQ(absl::ZeroDuration(), absl::Seconds(std::nextafter(-0.125e-9, 0)));
   EXPECT_EQ(-absl::Nanoseconds(1) / 4, absl::Seconds(-0.125e-9));
   EXPECT_EQ(-absl::Nanoseconds(1) / 4, absl::Seconds(-0.250e-9));
   EXPECT_EQ(-absl::Nanoseconds(1) / 2, absl::Seconds(-0.375e-9));
@@ -1390,6 +1416,14 @@ void VerifyApproxSameAsMul(double time_as_seconds, int* const misses) {
 // Seconds(point) returns a duration near point * Seconds(1.0). (They may
 // not be exactly equal due to fused multiply/add contraction.)
 TEST(Duration, ToDoubleSecondsCheckEdgeCases) {
+#if (defined(__i386__) || defined(_M_IX86)) && FLT_EVAL_METHOD != 0
+  // We're using an x87-compatible FPU, and intermediate operations can be
+  // performed with 80-bit floats. This means the edge cases are different than
+  // what we expect here, so just skip this test.
+  GTEST_SKIP()
+      << "Skipping the test because we detected x87 floating-point semantics";
+#endif
+
   constexpr uint32_t kTicksPerSecond = absl::time_internal::kTicksPerSecond;
   constexpr auto duration_tick = absl::time_internal::MakeDuration(0, 1u);
   int misses = 0;
@@ -1528,6 +1562,11 @@ TEST(Duration, ConversionSaturation) {
 }
 
 TEST(Duration, FormatDuration) {
+#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
+    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
+  GTEST_SKIP();
+#endif
+
   // Example from Go's docs.
   EXPECT_EQ("72h3m0.5s",
             absl::FormatDuration(absl::Hours(72) + absl::Minutes(3) +
@@ -1662,6 +1701,11 @@ TEST(Duration, FormatDuration) {
 }
 
 TEST(Duration, ParseDuration) {
+#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
+    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
+  GTEST_SKIP();
+#endif
+
   absl::Duration d;
 
   // No specified unit. Should only work for zero and infinity.

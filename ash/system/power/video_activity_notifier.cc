@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,8 +62,7 @@ void VideoActivityNotifier::UpdateTimer() {
   if (!should_notify_power_manager()) {
     notify_timer_.Stop();
   } else {
-    notify_timer_.Start(FROM_HERE,
-                        base::TimeDelta::FromSeconds(kNotifyIntervalSec), this,
+    notify_timer_.Start(FROM_HERE, base::Seconds(kNotifyIntervalSec), this,
                         &VideoActivityNotifier::MaybeNotifyPowerManager);
   }
 }

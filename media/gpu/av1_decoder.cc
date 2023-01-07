@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "media/base/limits.h"
 #include "media/gpu/av1_picture.h"
@@ -55,11 +56,6 @@ bool SequenceUsesScalability(int operating_point_idc) {
   return operating_point_idc != 0;
 }
 
-bool IsYUV420Sequence(const libgav1::ColorConfig& color_config) {
-  return color_config.subsampling_x == 1u && color_config.subsampling_y == 1u &&
-         !color_config.is_monochrome;
-}
-
 bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
   // Spec 6.4.1.
   switch (profile) {
@@ -71,6 +67,28 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
     default:
       NOTREACHED();
       return false;
+  }
+}
+
+VideoChromaSampling GetAV1ChromaSampling(
+    const libgav1::ColorConfig& color_config) {
+  // Spec section 6.4.2
+  int8_t subsampling_x = color_config.subsampling_x;
+  int8_t subsampling_y = color_config.subsampling_y;
+  bool monochrome = color_config.is_monochrome;
+  if (monochrome) {
+    return VideoChromaSampling::k400;
+  } else {
+    if (subsampling_x == 0 && subsampling_y == 0) {
+      return VideoChromaSampling::k444;
+    } else if (subsampling_x == 1u && subsampling_y == 0) {
+      return VideoChromaSampling::k422;
+    } else if (subsampling_x == 1u && subsampling_y == 1u) {
+      return VideoChromaSampling::k420;
+    } else {
+      DLOG(WARNING) << "Unknown chroma sampling format.";
+      return VideoChromaSampling::kUnknown;
+    }
   }
 }
 }  // namespace
@@ -122,6 +140,7 @@ void AV1Decoder::Reset() {
   state_ = std::make_unique<libgav1::DecoderState>();
   ClearReferenceFrames();
   parser_.reset();
+  decrypt_config_.reset();
 
   buffer_pool_ = std::make_unique<libgav1::BufferPool>(
       /*on_frame_buffer_size_changed=*/nullptr,
@@ -147,12 +166,17 @@ void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
 
   if (current_sequence_header_)
     parser_->set_sequence_header(*current_sequence_header_);
+  if (decoder_buffer.decrypt_config())
+    decrypt_config_ = decoder_buffer.decrypt_config()->Clone();
+  else
+    decrypt_config_.reset();
 }
 
 void AV1Decoder::ClearCurrentFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_frame_.reset();
   current_frame_header_.reset();
+  pending_pic_.reset();
 }
 
 AcceleratedVideoDecoder::DecodeResult AV1Decoder::Decode() {
@@ -173,6 +197,19 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
   while (parser_->HasData() || current_frame_header_) {
     base::ScopedClosureRunner clear_current_frame(
         base::BindOnce(&AV1Decoder::ClearCurrentFrame, base::Unretained(this)));
+    if (pending_pic_) {
+      const AV1Accelerator::Status status = DecodeAndOutputPicture(
+          std::move(pending_pic_), parser_->tile_buffers());
+      if (status == AV1Accelerator::Status::kFail)
+        return kDecodeError;
+      if (status == AV1Accelerator::Status::kTryAgain) {
+        clear_current_frame.ReplaceClosure(base::DoNothing());
+        return kTryAgain;
+      }
+      // Continue so that we force |clear_current_frame| to run before moving
+      // on.
+      continue;
+    }
     if (!current_frame_header_) {
       libgav1::StatusCode status_code = parser_->ParseOneFrame(&current_frame_);
       if (status_code != libgav1::kStatusOk) {
@@ -210,7 +247,15 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
         }
 
         current_sequence_header_ = parser_->sequence_header();
-        if (!IsYUV420Sequence(current_sequence_header_->color_config)) {
+        VideoChromaSampling new_chroma_sampling =
+            GetAV1ChromaSampling(current_sequence_header_->color_config);
+        if (new_chroma_sampling != chroma_sampling_) {
+          chroma_sampling_ = new_chroma_sampling;
+          base::UmaHistogramEnumeration(
+              "Media.PlatformVideoDecoding.ChromaSampling", chroma_sampling_);
+        }
+
+        if (chroma_sampling_ != VideoChromaSampling::k420) {
           DVLOG(1) << "Only YUV 4:2:0 is supported";
           return kDecodeError;
         }
@@ -359,9 +404,16 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       pic->set_colorspace(container_color_space_);
 
     pic->frame_header = frame_header;
-    // TODO(hiroh): Set decrypt config.
-    if (!DecodeAndOutputPicture(std::move(pic), parser_->tile_buffers()))
+    if (decrypt_config_)
+      pic->set_decrypt_config(decrypt_config_->Clone());
+    const AV1Accelerator::Status status =
+        DecodeAndOutputPicture(std::move(pic), parser_->tile_buffers());
+    if (status == AV1Accelerator::Status::kFail)
       return kDecodeError;
+    if (status == AV1Accelerator::Status::kTryAgain) {
+      clear_current_frame.ReplaceClosure(base::DoNothing());
+      return kTryAgain;
+    }
   }
   return kRanOutOfStreamData;
 }
@@ -427,7 +479,7 @@ bool AV1Decoder::CheckAndCleanUpReferenceFrames() {
   return true;
 }
 
-bool AV1Decoder::DecodeAndOutputPicture(
+AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
     scoped_refptr<AV1Picture> pic,
     const libgav1::Vector<libgav1::TileBuffer>& tile_buffers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -438,16 +490,19 @@ bool AV1Decoder::DecodeAndOutputPicture(
   if (!CheckAndCleanUpReferenceFrames()) {
     DLOG(ERROR) << "The states of reference frames are different between "
                 << "|ref_frames_| and |state_|";
-    return false;
+    return AV1Accelerator::Status::kFail;
   }
-  if (!accelerator_->SubmitDecode(*pic, *current_sequence_header_, ref_frames_,
-                                  tile_buffers,
-                                  base::make_span(stream_, stream_size_))) {
-    return false;
+  const AV1Accelerator::Status status = accelerator_->SubmitDecode(
+      *pic, *current_sequence_header_, ref_frames_, tile_buffers,
+      base::make_span(stream_, stream_size_));
+  if (status != AV1Accelerator::Status::kOk) {
+    if (status == AV1Accelerator::Status::kTryAgain)
+      pending_pic_ = std::move(pic);
+    return status;
   }
 
   if (pic->frame_header.show_frame && !accelerator_->OutputPicture(*pic))
-    return false;
+    return AV1Accelerator::Status::kFail;
 
   // |current_frame_header_->refresh_frame_flags| should be 0xff if the frame is
   // either a SWITCH_FRAME or a visible KEY_FRAME (Spec 5.9.2).
@@ -456,7 +511,7 @@ bool AV1Decoder::DecodeAndOutputPicture(
             current_frame_header_->show_frame)) ||
          current_frame_header_->refresh_frame_flags == 0xff);
   UpdateReferenceFrames(std::move(pic));
-  return true;
+  return AV1Accelerator::Status::kOk;
 }
 
 gfx::Size AV1Decoder::GetPicSize() const {
@@ -479,6 +534,11 @@ VideoCodecProfile AV1Decoder::GetProfile() const {
 uint8_t AV1Decoder::GetBitDepth() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return bit_depth_;
+}
+
+VideoChromaSampling AV1Decoder::GetChromaSampling() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return chroma_sampling_;
 }
 
 size_t AV1Decoder::GetRequiredNumOfPictures() const {

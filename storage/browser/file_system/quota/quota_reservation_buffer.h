@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -38,6 +37,9 @@ class QuotaReservationBuffer : public base::RefCounted<QuotaReservationBuffer> {
       base::WeakPtr<QuotaReservationManager> reservation_manager,
       const url::Origin& origin,
       FileSystemType type);
+
+  QuotaReservationBuffer(const QuotaReservationBuffer&) = delete;
+  QuotaReservationBuffer& operator=(const QuotaReservationBuffer&) = delete;
 
   scoped_refptr<QuotaReservation> CreateReservation();
   std::unique_ptr<OpenFileHandle> GetOpenFileHandle(
@@ -76,9 +78,7 @@ class QuotaReservationBuffer : public base::RefCounted<QuotaReservationBuffer> {
 
   int64_t reserved_quota_;
 
-  base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaReservationBuffer);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace storage

@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 
+#include "base/observer_list.h"
 #include "components/sync/base/extensions_activity.h"
 
 namespace syncer {
@@ -30,7 +31,8 @@ SyncCycleContext::SyncCycleContext(
       model_type_registry_(model_type_registry),
       invalidator_client_id_(invalidator_client_id),
       cookie_jar_mismatch_(false),
-      single_client_(false),
+      active_devices_invalidation_info_(
+          ActiveDevicesInvalidationInfo::CreateUninitialized()),
       poll_interval_(poll_interval) {
   DCHECK(!poll_interval.is_zero());
   std::vector<SyncEngineEventListener*>::const_iterator it;
@@ -38,10 +40,14 @@ SyncCycleContext::SyncCycleContext(
     listeners_.AddObserver(*it);
 }
 
-SyncCycleContext::~SyncCycleContext() {}
+SyncCycleContext::~SyncCycleContext() = default;
 
-ModelTypeSet SyncCycleContext::GetEnabledTypes() const {
-  return model_type_registry_->GetEnabledTypes();
+ModelTypeSet SyncCycleContext::GetConnectedTypes() const {
+  return model_type_registry_->GetConnectedTypes();
+}
+
+bool SyncCycleContext::proxy_tabs_datatype_enabled() const {
+  return model_type_registry_->proxy_tabs_datatype_enabled();
 }
 
 void SyncCycleContext::set_birthday(const std::string& birthday) {

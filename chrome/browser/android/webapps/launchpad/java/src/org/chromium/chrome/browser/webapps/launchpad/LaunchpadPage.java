@@ -1,10 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.webapps.launchpad;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
@@ -12,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -21,9 +21,6 @@ import java.util.List;
  * Native page for launching WebApks.
  */
 public class LaunchpadPage extends BasicNativePage {
-    @SuppressLint("StaticFieldLeak") // Test only.
-    private static LaunchpadCoordinator sLaunchpadCoordinatorForTesting;
-
     private LaunchpadCoordinator mLaunchpadCoordinator;
     private String mTitle;
 
@@ -34,13 +31,13 @@ public class LaunchpadPage extends BasicNativePage {
      * @param items The list of LaunchpadItems to be displayed.
      */
     public LaunchpadPage(Activity activity, NativePageHost host,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier, List<LaunchpadItem> items) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            SettingsLauncher settingsLauncher, List<LaunchpadItem> items) {
         super(host);
 
         mTitle = host.getContext().getResources().getString(R.string.launchpad_title);
-        mLaunchpadCoordinator = sLaunchpadCoordinatorForTesting != null
-                ? sLaunchpadCoordinatorForTesting
-                : new LaunchpadCoordinator(activity, modalDialogManagerSupplier, items);
+        mLaunchpadCoordinator = new LaunchpadCoordinator(activity, modalDialogManagerSupplier,
+                settingsLauncher, items, false /* isSeparateActivity */);
 
         initWithView(mLaunchpadCoordinator.getView());
     }
@@ -63,7 +60,7 @@ public class LaunchpadPage extends BasicNativePage {
     }
 
     @VisibleForTesting
-    static void setCoordinatorForTesting(LaunchpadCoordinator coordinator) {
-        sLaunchpadCoordinatorForTesting = coordinator;
+    LaunchpadCoordinator getCoordinatorForTesting() {
+        return mLaunchpadCoordinator;
     }
 }

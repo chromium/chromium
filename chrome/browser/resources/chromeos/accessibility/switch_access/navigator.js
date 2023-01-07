@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ export class Navigator {
   static initializeSingletonInstance(desktop) {
     Navigator.item_manager_ = new ItemScanManager(desktop);
     Navigator.point_manager_ = new PointScanManager();
-    window.getTreeForDebugging =
+    globalThis.getTreeForDebugging =
         Navigator.item_manager_.getTreeForDebugging.bind(
             Navigator.item_manager_);
   }

@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MOJO_PUBLIC_CPP_SYSTEM_ISOLATED_CONNECTION_H_
 #define MOJO_PUBLIC_CPP_SYSTEM_ISOLATED_CONNECTION_H_
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
@@ -38,6 +37,10 @@ namespace mojo {
 class MOJO_CPP_SYSTEM_EXPORT IsolatedConnection {
  public:
   IsolatedConnection();
+
+  IsolatedConnection(const IsolatedConnection&) = delete;
+  IsolatedConnection& operator=(const IsolatedConnection&) = delete;
+
   ~IsolatedConnection();
 
   // Connects to a process at the other end of the channel. Returns a primordial
@@ -51,8 +54,6 @@ class MOJO_CPP_SYSTEM_EXPORT IsolatedConnection {
 
  private:
   const base::UnguessableToken token_;
-
-  DISALLOW_COPY_AND_ASSIGN(IsolatedConnection);
 };
 
 }  // namespace mojo

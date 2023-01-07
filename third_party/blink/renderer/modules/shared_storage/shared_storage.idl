@@ -1,0 +1,47 @@
+// The Shared Storage API.
+// https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
+[
+  RuntimeEnabled=SharedStorageAPI,
+  Exposed=(Window)
+] interface SharedStorage {
+  [
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=SharedStorageAPI_Set_Method
+  ] Promise<any> set(DOMString key, DOMString value, optional SharedStorageSetMethodOptions options);
+
+  [
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=SharedStorageAPI_Append_Method
+  ] Promise<any> append(DOMString key, DOMString value);
+
+  [
+    CallWith=ScriptState,
+    ImplementedAs=Delete,
+    RaisesException,
+    MeasureAs=SharedStorageAPI_Delete_Method
+  ] Promise<any> delete(DOMString key);
+
+  [
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=SharedStorageAPI_Clear_Method
+  ] Promise<any> clear();
+
+  [
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=SharedStorageAPI_SelectURL_Method
+  ] Promise<USVString> selectURL(DOMString name,
+                                 FrozenArray<SharedStorageUrlWithMetadata> urls,
+                                 optional SharedStorageRunOperationMethodOptions options);
+
+  [
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=SharedStorageAPI_Run_Method
+  ] Promise<any> run(DOMString name, optional SharedStorageRunOperationMethodOptions options);
+
+  [CallWith=ScriptState, RaisesException] readonly attribute SharedStorageWorklet worklet;
+};

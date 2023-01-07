@@ -1,0 +1,26 @@
+{%- set class_name = enum | get_name_for_kind(flatten_nested_kind=True)
+                                                          ~ "DataGenerator" -%}
+
+std::unique_ptr<{{class_name}}> {{class_name}}::Create(
+    ::ash::cros_healthd::connectivity::Context*) {
+  return std::unique_ptr<{{class_name}}>(new {{class_name}}());
+}
+
+{{enum | get_name_for_kind}} {{class_name}}::Generate() {
+  if (enum_field_counter_ <= {{enum.fields|length}})
+    ++enum_field_counter_;
+  switch(enum_field_counter_ - 1) {
+{%- for field in enum.fields %}
+    case {{loop.index0}}:
+{%-   if loop.last %}
+{#-   For all the addtional call to |Generate()|, return the last enum value. #}
+    default:
+{%    endif %}
+      return {{enum | get_name_for_kind}}::{{field.mojom_name}};
+{%- endfor %}
+  }
+}
+
+bool {{class_name}}::HasNext() {
+  return enum_field_counter_ < {{enum.fields|length}};
+}

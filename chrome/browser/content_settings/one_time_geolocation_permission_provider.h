@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/permissions/last_tab_standing_tracker_observer.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
@@ -20,6 +21,8 @@ class LastTabStandingTracker;
 // Stores one-time per-origin geolocation permissions grants that expire as
 // soon as the last tab from an origin is closed but after one day at the
 // latest.
+// TODO(crbug.com/1226750): Use PermissionUtil::CanPermissionBeAllowedOnce to
+// decide which permissions can have one-time grants.
 class OneTimeGeolocationPermissionProvider
     : public content_settings::UserModifiableProvider,
       LastTabStandingTrackerObserver {
@@ -44,17 +47,16 @@ class OneTimeGeolocationPermissionProvider
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      std::unique_ptr<base::Value>&& value,
+      base::Value&& value,
       const content_settings::ContentSettingConstraints& constraints) override;
 
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
 
   void ShutdownOnUIThread() override;
 
-  base::Time GetWebsiteSettingLastModified(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type) override;
+  bool UpdateLastVisitTime(const ContentSettingsPattern& primary_pattern,
+                           const ContentSettingsPattern& secondary_pattern,
+                           ContentSettingsType content_type) override;
   void SetClockForTesting(base::Clock* clock) override;
 
   // LastTabStandingTrackerObserver:
@@ -64,7 +66,7 @@ class OneTimeGeolocationPermissionProvider
 
  private:
   PatternToGrantTimeMap grants_with_open_tabs_;
-  LastTabStandingTracker* last_tab_standing_tracker_ = nullptr;
+  raw_ptr<LastTabStandingTracker> last_tab_standing_tracker_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_ONE_TIME_GEOLOCATION_PERMISSION_PROVIDER_H_

@@ -1,9 +1,9 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_FILESYSTEM_POLICY_H__
-#define SANDBOX_SRC_FILESYSTEM_POLICY_H__
+#ifndef SANDBOX_WIN_SRC_FILESYSTEM_POLICY_H_
+#define SANDBOX_WIN_SRC_FILESYSTEM_POLICY_H_
 
 #include <stdint.h>
 
@@ -16,8 +16,6 @@
 
 namespace sandbox {
 
-enum IsBroker { BROKER_FALSE, BROKER_TRUE };
-
 // This class centralizes most of the knowledge related to file system policy
 class FileSystemPolicy {
  public:
@@ -27,11 +25,8 @@ class FileSystemPolicy {
   // 'semantics' is the desired semantics for the open or create.
   // 'policy' is the policy generator to which the rules are going to be added.
   static bool GenerateRules(const wchar_t* name,
-                            TargetPolicy::Semantics semantics,
+                            Semantics semantics,
                             LowLevelPolicy* policy);
-
-  // Add basic file system rules.
-  static bool SetInitialRules(LowLevelPolicy* policy);
 
   // Performs the desired policy action on a create request with an
   // API that is compatible with the IPC-received parameters.
@@ -109,4 +104,4 @@ std::wstring FixNTPrefixForMatch(const std::wstring& name);
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_FILESYSTEM_POLICY_H__
+#endif  // SANDBOX_WIN_SRC_FILESYSTEM_POLICY_H_

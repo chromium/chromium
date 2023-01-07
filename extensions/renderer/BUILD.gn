@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,16 +11,12 @@ source_set("renderer") {
   sources = [
     "activity_log_converter_strategy.cc",
     "activity_log_converter_strategy.h",
+    "api/automation/automation_api_converters.cc",
+    "api/automation/automation_api_converters.h",
     "api/automation/automation_api_helper.cc",
     "api/automation/automation_api_helper.h",
-    "api/automation/automation_api_util.cc",
-    "api/automation/automation_api_util.h",
-    "api/automation/automation_ax_tree_wrapper.cc",
-    "api/automation/automation_ax_tree_wrapper.h",
     "api/automation/automation_internal_custom_bindings.cc",
     "api/automation/automation_internal_custom_bindings.h",
-    "api/automation/automation_position.cc",
-    "api/automation/automation_position.h",
     "api_activity_logger.cc",
     "api_activity_logger.h",
     "api_definitions_natives.cc",
@@ -112,6 +108,8 @@ source_set("renderer") {
     "extension_throttle_manager.h",
     "extension_url_loader_throttle.cc",
     "extension_url_loader_throttle.h",
+    "extension_web_view_helper.cc",
+    "extension_web_view_helper.h",
     "extensions_render_frame_observer.cc",
     "extensions_render_frame_observer.h",
     "extensions_renderer_client.cc",
@@ -126,8 +124,6 @@ source_set("renderer") {
     "get_script_context.h",
     "gin_port.cc",
     "gin_port.h",
-    "guest_view/extensions_guest_view_container_dispatcher.cc",
-    "guest_view/extensions_guest_view_container_dispatcher.h",
     "guest_view/guest_view_internal_custom_bindings.cc",
     "guest_view/guest_view_internal_custom_bindings.h",
     "guest_view/mime_handler_view/mime_handler_view_container_manager.cc",
@@ -146,6 +142,8 @@ source_set("renderer") {
     "ipc_message_sender.h",
     "lazy_background_page_native_handler.cc",
     "lazy_background_page_native_handler.h",
+    "localization_peer.cc",
+    "localization_peer.h",
     "logging_native_handler.cc",
     "logging_native_handler.h",
     "message_target.cc",
@@ -190,8 +188,6 @@ source_set("renderer") {
     "script_context_set_iterable.h",
     "script_injection.cc",
     "script_injection.h",
-    "script_injection_callback.cc",
-    "script_injection_callback.h",
     "script_injection_manager.cc",
     "script_injection_manager.h",
     "script_injector.h",
@@ -199,8 +195,12 @@ source_set("renderer") {
     "scripts_run_info.h",
     "service_worker_data.cc",
     "service_worker_data.h",
+    "service_worker_natives.cc",
+    "service_worker_natives.h",
     "set_icon_natives.cc",
     "set_icon_natives.h",
+    "shared_l10n_map.cc",
+    "shared_l10n_map.h",
     "source_map.h",
     "static_v8_external_one_byte_string_resource.cc",
     "static_v8_external_one_byte_string_resource.h",
@@ -210,6 +210,7 @@ source_set("renderer") {
     "test_features_native_handler.h",
     "test_native_handler.cc",
     "test_native_handler.h",
+    "trace_util.h",
     "user_gestures_native_handler.cc",
     "user_gestures_native_handler.h",
     "user_script_injector.cc",
@@ -249,6 +250,7 @@ source_set("renderer") {
     "//chrome:resources",
     "//components/crx_file",
     "//components/guest_view/common",
+    "//components/guest_view/common:mojom",
     "//components/guest_view/renderer",
     "//components/version_info",
     "//content:content_resources",
@@ -265,7 +267,7 @@ source_set("renderer") {
     "//storage/common",
     "//third_party/blink/public:blink",
     "//third_party/blink/public/common",
-    "//third_party/blink/public/strings:strings",
+    "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/cld_3/src/src:cld_3",
     "//third_party/zlib/google:compression_utils",
   ]
@@ -318,6 +320,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "activity_log_converter_strategy_unittest.cc",
+    "api/automation/automation_internal_custom_bindings_unittests.cc",
     "api_activity_logger_unittest.cc",
     "bindings/api_binding_bridge_unittest.cc",
     "bindings/api_binding_hooks_test_delegate.cc",
@@ -341,6 +344,8 @@ source_set("unit_tests") {
     "bindings/event_emitter_unittest.cc",
     "bindings/exception_handler_unittest.cc",
     "bindings/listener_tracker_unittest.cc",
+    "bindings/returns_async_builder.cc",
+    "bindings/returns_async_builder.h",
     "extension_throttle_simulation_unittest.cc",
     "extension_throttle_test_support.cc",
     "extension_throttle_test_support.h",
@@ -348,6 +353,8 @@ source_set("unit_tests") {
     "feature_cache_unittest.cc",
     "gc_callback_unittest.cc",
     "gin_port_unittest.cc",
+    "i18n_hooks_delegate_unittest.cc",
+    "localization_peer_unittest.cc",
     "messaging_util_unittest.cc",
     "module_system_test.cc",
     "module_system_test.h",
@@ -382,5 +389,25 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/public:blink",
     "//ui/base",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "script_context_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":renderer",
+    "//base",
+    "//content/public/renderer",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//extensions/shell:app_shell_lib",
+    "//extensions/shell:browser_tests",
+    "//third_party/blink/public:blink",
+    "//url",
   ]
 }

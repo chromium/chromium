@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_morphology.h"
 
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
@@ -74,10 +75,11 @@ bool FEMorphology::SetRadiusY(float radius_y) {
   return true;
 }
 
-FloatRect FEMorphology::MapEffect(const FloatRect& rect) const {
-  FloatRect result = rect;
-  result.InflateX(GetFilter()->ApplyHorizontalScale(radius_x_));
-  result.InflateY(GetFilter()->ApplyVerticalScale(radius_y_));
+gfx::RectF FEMorphology::MapEffect(const gfx::RectF& rect) const {
+  gfx::RectF result = rect;
+  result.Outset(
+      gfx::OutsetsF::VH(GetFilter()->ApplyVerticalScale(radius_y_),
+                        GetFilter()->ApplyHorizontalScale(radius_x_)));
   return result;
 }
 
@@ -86,14 +88,14 @@ sk_sp<PaintFilter> FEMorphology::CreateImageFilter() {
       InputEffect(0), OperatingInterpolationSpace()));
   float radius_x = GetFilter()->ApplyHorizontalScale(radius_x_);
   float radius_y = GetFilter()->ApplyVerticalScale(radius_y_);
-  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   MorphologyPaintFilter::MorphType morph_type =
       type_ == FEMORPHOLOGY_OPERATOR_DILATE
           ? MorphologyPaintFilter::MorphType::kDilate
           : MorphologyPaintFilter::MorphType::kErode;
   return sk_make_sp<MorphologyPaintFilter>(morph_type, radius_x, radius_y,
                                            std::move(input),
-                                           base::OptionalOrNullptr(crop_rect));
+                                           base::OptionalToPtr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!-- Dynamic color dimensions. -->
+  <dimen name="feed_header_section_tab_bg_elevation_enabled">@dimen/default_elevation_1</dimen>
+  <dimen name="feed_header_tab_selected_bg_elevation">@dimen/default_elevation_4</dimen>
+</resources>

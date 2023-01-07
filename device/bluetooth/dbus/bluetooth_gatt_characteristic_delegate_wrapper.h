@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_gatt_service_bluez.h"
@@ -28,12 +28,15 @@ class BluetoothGattCharacteristicDelegateWrapper
       BluetoothLocalGattServiceBlueZ* service,
       BluetoothLocalGattCharacteristicBlueZ* characteristic);
 
+  BluetoothGattCharacteristicDelegateWrapper(
+      const BluetoothGattCharacteristicDelegateWrapper&) = delete;
+  BluetoothGattCharacteristicDelegateWrapper& operator=(
+      const BluetoothGattCharacteristicDelegateWrapper&) = delete;
+
   // BluetoothGattAttributeValueDelegate overrides:
-  void GetValue(
-      const dbus::ObjectPath& device_path,
-      device::BluetoothLocalGattService::Delegate::ValueCallback callback,
-      device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback)
-      override;
+  void GetValue(const dbus::ObjectPath& device_path,
+                device::BluetoothLocalGattService::Delegate::ValueCallback
+                    callback) override;
   void SetValue(const dbus::ObjectPath& device_path,
                 const std::vector<uint8_t>& value,
                 base::OnceClosure callback,
@@ -53,9 +56,7 @@ class BluetoothGattCharacteristicDelegateWrapper
   void StopNotifications(const dbus::ObjectPath& device_path) override;
 
  private:
-  BluetoothLocalGattCharacteristicBlueZ* characteristic_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattCharacteristicDelegateWrapper);
+  raw_ptr<BluetoothLocalGattCharacteristicBlueZ> characteristic_;
 };
 
 }  // namespace bluez

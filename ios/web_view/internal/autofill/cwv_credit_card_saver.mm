@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -83,15 +82,18 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
   // If the user did not choose, the decision should be marked as ignored.
   if (_saveCardCallback) {
     std::move(_saveCardCallback)
-        .Run(autofill::AutofillClient::IGNORED,
+        .Run(autofill::AutofillClient::SaveCardOfferUserDecision::kIgnored,
              /*user_provided_card_details=*/{});
   }
 }
 
 #pragma mark - Public Methods
 
-- (void)acceptWithRiskData:(nullable NSString*)riskData
-         completionHandler:(void (^_Nullable)(BOOL))completionHandler {
+- (void)acceptWithCardHolderFullName:(NSString*)cardHolderFullName
+                     expirationMonth:(NSString*)expirationMonth
+                      expirationYear:(NSString*)expirationYear
+                            riskData:(NSString*)riskData
+                   completionHandler:(void (^)(BOOL))completionHandler {
   DCHECK(!_decisionMade)
       << "You may only call -acceptWithRiskData:completionHandler: or "
          "-decline: once per instance.";
@@ -101,8 +103,13 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
   _saveCompletionHandler = completionHandler;
   DCHECK(_saveCardCallback);
   std::move(_saveCardCallback)
-      .Run(autofill::AutofillClient::ACCEPTED,
-           /*user_provided_card_details=*/{});
+      .Run(autofill::AutofillClient::SaveCardOfferUserDecision::kAccepted,
+           {
+               .cardholder_name = base::SysNSStringToUTF16(cardHolderFullName),
+               .expiration_date_month =
+                   base::SysNSStringToUTF16(expirationMonth),
+               .expiration_date_year = base::SysNSStringToUTF16(expirationYear),
+           });
   _decisionMade = YES;
 }
 
@@ -112,7 +119,7 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
          "-decline: once per instance.";
   DCHECK(_saveCardCallback);
   std::move(_saveCardCallback)
-      .Run(autofill::AutofillClient::DECLINED,
+      .Run(autofill::AutofillClient::SaveCardOfferUserDecision::kDeclined,
            /*user_provided_card_details=*/{});
   _decisionMade = YES;
 }

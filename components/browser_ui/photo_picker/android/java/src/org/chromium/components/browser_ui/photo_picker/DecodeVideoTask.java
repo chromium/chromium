@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -171,7 +171,11 @@ class DecodeVideoTask extends AsyncTask<List<Bitmap>> {
             mDecodingResult = DecodingResult.IO_ERROR;
             return null;
         } finally {
-            if (retriever != null) retriever.release();
+            try {
+                if (retriever != null) retriever.release();
+                // TODO(crbug.com/1285047): Update to IOException after it go to public.
+            } catch (Exception exception) {
+            }
         }
     }
 

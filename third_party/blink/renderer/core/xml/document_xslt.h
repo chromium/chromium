@@ -1,14 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_DOCUMENT_XSLT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_DOCUMENT_XSLT_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -34,12 +33,11 @@ class DocumentXSLT final : public GarbageCollected<DocumentXSLT>,
   static bool HasTransformSourceDocument(Document&);
 
   explicit DocumentXSLT(Document&);
+  DocumentXSLT(const DocumentXSLT&) = delete;
+  DocumentXSLT& operator=(const DocumentXSLT&) = delete;
   void Trace(Visitor*) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DocumentXSLT);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_DOCUMENT_XSLT_H_

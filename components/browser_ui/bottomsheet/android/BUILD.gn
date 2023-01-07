@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -39,6 +39,7 @@ android_library("manager_java") {
 
   deps = [
     ":java",
+    "//components/browser_ui/widget/android:java",
     "//ui/android:ui_full_java",
   ]
 }
@@ -49,7 +50,6 @@ android_library_factory("factory_java") {
   deps = [
     ":java",
     ":manager_java",
-    "//base:base_java",
     "//components/browser_ui/widget/android:java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",

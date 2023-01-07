@@ -1,214 +1,11 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-
-js_type_check("closure_compile") {
-  deps = [
-    ":adapter_broker",
-    ":adapter_page",
-    ":bluetooth_internals",
-    ":characteristic_list",
-    ":debug_log_page",
-    ":descriptor_list",
-    ":device_broker",
-    ":device_collection",
-    ":device_details_page",
-    ":device_table",
-    ":devices_page",
-    ":expandable_list",
-    ":object_fieldset",
-    ":page",
-    ":page_manager",
-    ":service_list",
-    ":sidebar",
-    ":snackbar",
-    ":value_control",
-  ]
-}
-
-js_library("bluetooth_internals") {
-  deps = [
-    ":adapter_broker",
-    ":adapter_page",
-    ":debug_log_page",
-    ":device_collection",
-    ":device_details_page",
-    ":devices_page",
-    ":page_manager",
-    ":sidebar",
-    ":snackbar",
-    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("adapter_broker") {
-  deps = [
-    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("adapter_page") {
-  deps = [
-    ":object_fieldset",
-    ":page",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("characteristic_list") {
-  deps = [
-    ":descriptor_list",
-    ":device_broker",
-    ":expandable_list",
-    ":object_fieldset",
-    ":snackbar",
-    ":value_control",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-  ]
-}
-
-js_library("debug_log_page") {
-  deps = [
-    ":page",
-    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("descriptor_list") {
-  deps = [
-    ":device_broker",
-    ":expandable_list",
-    ":object_fieldset",
-    ":snackbar",
-    ":value_control",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-  ]
-}
-
-js_library("device_broker") {
-  deps = [
-    ":adapter_broker",
-    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
-  ]
-}
-
-js_library("device_collection") {
-  deps = [
-    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-  ]
-}
-
-js_library("device_details_page") {
-  deps = [
-    ":device_broker",
-    ":device_collection",
-    ":object_fieldset",
-    ":page",
-    ":service_list",
-    ":snackbar",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("device_table") {
-  deps = [
-    ":device_collection",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:ui.m",
-  ]
-}
-
-js_library("devices_page") {
-  deps = [
-    ":device_collection",
-    ":device_table",
-    ":page",
-  ]
-}
-
-js_library("expandable_list") {
-  deps = [
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:list_item.m",
-  ]
-}
-
-js_library("object_fieldset") {
-  deps = [
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:ui.m",
-  ]
-}
-
-js_library("page") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("page_manager") {
-  deps = [
-    ":page",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
-  ]
-}
-
-js_library("service_list") {
-  deps = [
-    ":characteristic_list",
-    ":device_broker",
-    ":expandable_list",
-    ":object_fieldset",
-    ":snackbar",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-  ]
-}
-
-js_library("sidebar") {
-  deps = [
-    ":page_manager",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("snackbar") {
-  deps = [
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:ui.m",
-  ]
-}
-
-js_library("value_control") {
-  deps = [
-    ":device_broker",
-    ":snackbar",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:ui.m",
-  ]
-}
 
 bluetooth_grd_prefix = "bluetooth_internals"
 public_mojo_grdp_file = "$target_gen_dir/public_mojo_resources.grdp"
@@ -219,61 +16,89 @@ generate_grd("build_public_mojo_grdp") {
   grd_prefix = bluetooth_grd_prefix
   out_grd = public_mojo_grdp_file
   input_files = [
-    "adapter.mojom-lite.js",
-    "uuid.mojom-lite.js",
-    "device.mojom-lite.js",
+    "adapter.mojom-webui.js",
+    "uuid.mojom-webui.js",
+    "device.mojom-webui.js",
   ]
   input_files_base_dir =
-      rebase_path("$root_gen_dir/device/bluetooth/public/mojom/",
+      rebase_path("$root_gen_dir/mojom-webui/device/bluetooth/public/mojom/",
                   root_build_dir)
 }
 
 generate_grd("build_internal_mojo_grdp") {
   grd_prefix = bluetooth_grd_prefix
   out_grd = internals_mojo_grdp_file
-  input_files = [ "bluetooth_internals.mojom-lite.js" ]
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/chrome/browser/ui/webui/bluetooth_internals/",
-                  root_build_dir)
+  input_files = [ "bluetooth_internals.mojom-webui.js" ]
+  input_files_base_dir = rebase_path(
+          "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/bluetooth_internals/",
+          root_build_dir)
 }
 
-generate_grd("build_grd") {
-  grd_prefix = bluetooth_grd_prefix
-  out_grd = resources_grd_file
-  deps = [
-    ":build_internal_mojo_grdp",
-    ":build_public_mojo_grdp",
-  ]
-  input_files = [
-    "adapter_broker.js",
-    "adapter_page.js",
-    "debug_log_page.js",
-    "characteristic_list.js",
-    "bluetooth_internals.css",
-    "descriptor_list.js",
-    "device_broker.js",
-    "device_collection.js",
-    "device_details_page.js",
-    "device_table.js",
-    "devices_page.js",
-    "expandable_list.js",
-    "bluetooth_internals.html",
-    "bluetooth_internals.js",
-    "menu.svg",
-    "main.js",
-    "object_fieldset.js",
-    "page_manager.js",
-    "page.js",
-    "service_list.js",
-    "sidebar.js",
-    "snackbar.js",
-    "value_control.js",
-  ]
-  input_files_base_dir = rebase_path("./", "//")
+html_files = [
+  "expandable_list_item.html",
+  "expandable_list.html",
+  "descriptor_list_item.html",
+  "characteristic_list_item.html",
+  "service_list_item.html",
+]
 
-  grdp_files = [
-    public_mojo_grdp_file,
-    internals_mojo_grdp_file,
+# Files generated by html_to_wrapper
+html_wrapper_files = []
+foreach(f, html_files) {
+  html_wrapper_files += [ f + ".ts" ]
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
+  template = "native"
+}
+
+js_files = [
+  "adapter_broker.js",
+  "adapter_page.js",
+  "characteristic_list.js",
+  "characteristic_list_item.js",
+  "debug_log_page.js",
+  "descriptor_list.js",
+  "descriptor_list_item.js",
+  "device_broker.js",
+  "device_collection.js",
+  "device_details_page.js",
+  "device_table.js",
+  "device_utils.js",
+  "devices_page.js",
+  "expandable_list_item.js",
+  "expandable_list.js",
+  "bluetooth_internals.js",
+  "main.js",
+  "object_fieldset.js",
+  "page_manager.js",
+  "page.js",
+  "service_list.js",
+  "service_list_item.js",
+  "sidebar.js",
+  "snackbar.js",
+  "value_control.js",
+]
+
+copy("copy_files") {
+  sources = js_files
+  outputs = [ "${target_gen_dir}/{{source_file_part}}" ]
+}
+
+# TODO(crbug.com/1337318): This page should be converted to TypeScript but this
+# will be a lot of work. Passing the JavaScript files through the TypeScript
+# compiler will provide basic static checks (e.g. syntax) without validating
+# types.
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = js_files + html_wrapper_files
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [
+    ":copy_files",
+    ":html_wrapper_files",
   ]
 }
 
@@ -295,4 +120,28 @@ grit("resources") {
     "bluetooth_internals_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = bluetooth_grd_prefix
+  out_grd = resources_grd_file
+  deps = [
+    ":build_internal_mojo_grdp",
+    ":build_public_mojo_grdp",
+    ":build_ts",
+  ]
+  input_files = [
+    "bluetooth_internals.css",
+    "bluetooth_internals.html",
+    "menu.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  grdp_files = [
+    public_mojo_grdp_file,
+    internals_mojo_grdp_file,
+  ]
+
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

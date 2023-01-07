@@ -1,12 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MANAGER_WEB_CONTENTS_DATA_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MANAGER_WEB_CONTENTS_DATA_H_
 
-#include "base/macros.h"
-#include "base/time/time.h"
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "content/public/browser/navigation_handle.h"
@@ -30,6 +29,10 @@ class TabManager::WebContentsData
   using LoadingState = resource_coordinator::TabLoadTracker::LoadingState;
 
   explicit WebContentsData(content::WebContents* web_contents);
+
+  WebContentsData(const WebContentsData&) = delete;
+  WebContentsData& operator=(const WebContentsData&) = delete;
+
   ~WebContentsData() override;
 
   // WebContentsObserver implementation:
@@ -87,8 +90,6 @@ class TabManager::WebContentsData
 
   // Contains all the needed data for the tab.
   Data tab_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsData);
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

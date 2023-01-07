@@ -1,9 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/chromeos/login/arc_terms_of_service_screen_handler.h"
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
@@ -14,21 +16,24 @@
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
-#include "components/arc/arc_prefs.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -48,21 +53,27 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId ArcTermsOfServiceScreenView::kScreenId;
 
-ArcTermsOfServiceScreenHandler::ArcTermsOfServiceScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container),
+ArcTermsOfServiceScreenHandler::ArcTermsOfServiceScreenHandler()
+    : BaseScreenHandler(kScreenId),
       is_child_account_(
           user_manager::UserManager::Get()->IsLoggedInAsChildUser()) {
-  set_user_acted_method_path("login.ArcTermsOfServiceScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.ArcTermsOfServiceScreen.userActed");
 }
 
 ArcTermsOfServiceScreenHandler::~ArcTermsOfServiceScreenHandler() {
   OobeUI* oobe_ui = GetOobeUI();
   if (oobe_ui)
     oobe_ui->RemoveObserver(this);
-  chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-      this, FROM_HERE);
-  system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  if (network_time_zone_observing_) {
+    network_time_zone_observing_ = false;
+    system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  }
+  if (session_manager_observing_ && session_manager::SessionManager::Get()) {
+    session_manager_observing_ = false;
+    session_manager::SessionManager::Get()->RemoveObserver(this);
+  }
+
   for (auto& observer : observer_list_)
     observer.OnViewDestroyed(this);
 }
@@ -74,14 +85,24 @@ void ArcTermsOfServiceScreenHandler::RegisterMessages() {
               &ArcTermsOfServiceScreenHandler::HandleAccept);
 }
 
-void ArcTermsOfServiceScreenHandler::MaybeLoadPlayStoreToS(
-    bool ignore_network_state) {
-  const chromeos::NetworkState* default_network =
-      chromeos::NetworkHandler::Get()
-          ->network_state_handler()
-          ->DefaultNetwork();
-  if (!ignore_network_state && !default_network)
-    return;
+void ArcTermsOfServiceScreenHandler::MaybeLoadPlayStoreToS(bool is_preload) {
+  if (is_preload) {
+    const chromeos::NetworkState* default_network =
+        chromeos::NetworkHandler::Get()
+            ->network_state_handler()
+            ->DefaultNetwork();
+    if (!default_network)
+      return;
+
+    policy::BrowserPolicyConnectorAsh* policy_connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
+    bool is_managed = policy_connector->IsDeviceEnterpriseManaged();
+    if (is_managed && !arc::IsArcTermsOfServiceOobeNegotiationNeeded())
+      return;
+  }
+
+  // If `loadPlayStoreToS` in the JS side was called before, ARC++ ToS will
+  // only load when the country code has been changed.
   const std::string country_code = base::CountryCodeForCurrentTimezone();
   CallJS("login.ArcTermsOfServiceScreen.loadPlayStoreToS", country_code);
 }
@@ -92,27 +113,38 @@ void ArcTermsOfServiceScreenHandler::OnCurrentScreenChanged(
   if (new_screen != GaiaView::kScreenId)
     return;
 
-  MaybeLoadPlayStoreToS(false);
+  MaybeLoadPlayStoreToS(/*is_preload=*/true);
   StartNetworkAndTimeZoneObserving();
+  StartSessionManagerObserving();
 }
 
 void ArcTermsOfServiceScreenHandler::TimezoneChanged(
     const icu::TimeZone& timezone) {
-  MaybeLoadPlayStoreToS(false);
+  MaybeLoadPlayStoreToS(/*is_preload=*/true);
 }
 
 void ArcTermsOfServiceScreenHandler::DefaultNetworkChanged(
     const NetworkState* network) {
-  MaybeLoadPlayStoreToS(false);
+  MaybeLoadPlayStoreToS(/*is_preload=*/true);
+}
+
+void ArcTermsOfServiceScreenHandler::OnUserProfileLoaded(
+    const AccountId& account_id) {
+  MaybeLoadPlayStoreToS(/*is_preload=*/true);
 }
 
 void ArcTermsOfServiceScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("arcTermsOfServiceScreenHeading", IDS_ARC_OOBE_TERMS_HEADING);
+  builder->Add("arcTermsOfServiceScreenHeadingForChild",
+               IDS_ARC_OOBE_TERMS_HEADING_CHILD);
   builder->Add("arcTermsOfServiceScreenDescription",
-      IDS_ARC_OOBE_TERMS_DESCRIPTION);
+               IDS_ARC_OOBE_TERMS_DESCRIPTION);
+  builder->Add("arcTermsOfServiceScreenDescriptionForChild",
+               IDS_ARC_OOBE_TERMS_DESCRIPTION_CHILD);
   builder->Add("arcTermsOfServiceLoading", IDS_ARC_OOBE_TERMS_LOADING);
-  builder->Add("arcTermsOfServiceErrorTitle", IDS_OOBE_GENERIC_FATAL_ERROR_TITLE);
+  builder->Add("arcTermsOfServiceErrorTitle",
+               IDS_OOBE_GENERIC_FATAL_ERROR_TITLE);
   builder->Add("arcTermsOfServiceErrorMessage", IDS_ARC_OOBE_TERMS_LOAD_ERROR);
   builder->Add("arcTermsOfServiceRetryButton", IDS_ARC_OOBE_TERMS_BUTTON_RETRY);
   builder->Add("arcTermsOfServiceAcceptButton",
@@ -218,8 +250,7 @@ void ArcTermsOfServiceScreenHandler::OnMetricsModeChanged(bool enabled,
       ProfileHelper::Get()->GetUserByProfile(profile);
   CHECK(user);
 
-  const AccountId owner =
-      user_manager::UserManager::Get()->GetOwnerAccountId();
+  const AccountId owner = user_manager::UserManager::Get()->GetOwnerAccountId();
 
   // Owner may not be set in case of initial account setup. Note, in case of
   // enterprise enrolled devices owner is always empty and we need to account
@@ -247,14 +278,16 @@ void ArcTermsOfServiceScreenHandler::OnMetricsModeChanged(bool enabled,
 }
 
 void ArcTermsOfServiceScreenHandler::OnBackupAndRestoreModeChanged(
-    bool enabled, bool managed) {
+    bool enabled,
+    bool managed) {
   backup_restore_managed_ = managed;
   CallJS("login.ArcTermsOfServiceScreen.setBackupAndRestoreMode", enabled,
          managed);
 }
 
 void ArcTermsOfServiceScreenHandler::OnLocationServicesModeChanged(
-    bool enabled, bool managed) {
+    bool enabled,
+    bool managed) {
   location_services_managed_ = managed;
   CallJS("login.ArcTermsOfServiceScreen.setLocationServicesMode", enabled,
          managed);
@@ -271,7 +304,7 @@ void ArcTermsOfServiceScreenHandler::RemoveObserver(
 }
 
 void ArcTermsOfServiceScreenHandler::Show() {
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
@@ -287,25 +320,41 @@ void ArcTermsOfServiceScreenHandler::Show() {
 }
 
 void ArcTermsOfServiceScreenHandler::Hide() {
-  system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  if (network_time_zone_observing_) {
+    network_time_zone_observing_ = false;
+    network_state_handler_observer_.Reset();
+    system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  }
+  if (session_manager_observing_ && session_manager::SessionManager::Get()) {
+    session_manager_observing_ = false;
+    session_manager::SessionManager::Get()->RemoveObserver(this);
+  }
   pref_handler_.reset();
 }
 
 void ArcTermsOfServiceScreenHandler::Bind(ArcTermsOfServiceScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void ArcTermsOfServiceScreenHandler::StartNetworkAndTimeZoneObserving() {
   if (network_time_zone_observing_)
     return;
 
-  chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
-      this, FROM_HERE);
+  network_state_handler_observer_.Observe(
+      chromeos::NetworkHandler::Get()->network_state_handler());
   system::TimezoneSettings::GetInstance()->AddObserver(this);
   network_time_zone_observing_ = true;
 }
 
-void ArcTermsOfServiceScreenHandler::Initialize() {
+void ArcTermsOfServiceScreenHandler::StartSessionManagerObserving() {
+  if (session_manager_observing_ || !session_manager::SessionManager::Get())
+    return;
+
+  session_manager::SessionManager::Get()->AddObserver(this);
+  session_manager_observing_ = true;
+}
+
+void ArcTermsOfServiceScreenHandler::InitializeDeprecated() {
   if (!show_on_init_) {
     // Send time zone information as soon as possible to able to pre-load the
     // Play Store ToS.
@@ -331,13 +380,13 @@ void ArcTermsOfServiceScreenHandler::DoShow() {
 
   action_taken_ = false;
 
-  ShowScreen(kScreenId);
-
+  ShowInWebUI();
   arc_managed_ = arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile);
+  is_child_account_ = user_manager::UserManager::Get()->IsLoggedInAsChildUser();
   CallJS("login.ArcTermsOfServiceScreen.setArcManaged", arc_managed_,
          is_child_account_);
 
-  MaybeLoadPlayStoreToS(true);
+  MaybeLoadPlayStoreToS(/*is_preload=*/false);
   StartNetworkAndTimeZoneObserving();
 
   pref_handler_ = std::make_unique<arc::ArcOptInPreferenceHandler>(
@@ -350,8 +399,8 @@ void ArcTermsOfServiceScreenHandler::DoShowForDemoModeSetup() {
 
   CallJS("login.ArcTermsOfServiceScreen.setupForDemoMode");
   action_taken_ = false;
-  ShowScreen(kScreenId);
-  MaybeLoadPlayStoreToS(true);
+  ShowInWebUI();
+  MaybeLoadPlayStoreToS(/*is_preload=*/false);
   StartNetworkAndTimeZoneObserving();
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ namespace password_manager {
 
 bool ParseLookupAffiliationResponse(
     const std::vector<FacetURI>& requested_facet_uris,
-    const affiliation_pb::LookupAffiliationResponse& response,
+    const affiliation_pb::LookupAffiliationByHashPrefixResponse& response,
     AffiliationFetcherDelegate::Result* result);
 
 }  // namespace password_manager

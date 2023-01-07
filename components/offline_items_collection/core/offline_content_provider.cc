@@ -1,8 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/offline_items_collection/core/offline_content_provider.h"
+#include "base/observer_list.h"
 
 namespace offline_items_collection {
 
@@ -37,7 +38,7 @@ void OfflineContentProvider::NotifyItemRemoved(const ContentId& id) {
 
 void OfflineContentProvider::NotifyItemUpdated(
     const OfflineItem& item,
-    const base::Optional<UpdateDelta>& update_delta) {
+    const absl::optional<UpdateDelta>& update_delta) {
   for (auto& observer : observers_)
     observer.OnItemUpdated(item, update_delta);
 }

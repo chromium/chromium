@@ -1,24 +1,29 @@
-{% from 'templates/macros.tmpl' import license, source_files_for_generated_file, platform_define %}
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file, platform_buildflag %}
 {{license()}}
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
+#include "third_party/blink/public/common/origin_trials/origin_trials.h"
 
-#include <algorithm>
 #include <array>
 #include <iterator>
+
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
+
+// For testing. See OriginTrialsSampleAPIInvalidOS.
+#define BUILDFLAG_INTERNAL_IS_INVALID() (0)
 
 namespace blink {
 
 namespace {
 
 static constexpr size_t kMaxFeaturesPerTrial = {{max_features_per_trial}};
-static constexpr struct {
+static constexpr struct TrialToFeature {
   const char* trial_name;
   unsigned feature_count;
   std::array<OriginTrialFeature, kMaxFeaturesPerTrial> features;
@@ -32,13 +37,12 @@ static constexpr struct {
 
 } // namespace
 
-bool origin_trials::IsTrialValid(const StringView& trial_name) {
-  return std::any_of(
-      std::begin(kTrialToFeaturesMap), std::end(kTrialToFeaturesMap),
-      [&](const auto& entry) { return entry.trial_name == trial_name; });
+bool origin_trials::IsTrialValid(base::StringPiece trial_name) {
+  return base::Contains(kTrialToFeaturesMap, trial_name,
+                        &TrialToFeature::trial_name);
 }
 
-bool origin_trials::IsTrialEnabledForInsecureContext(const StringView& trial_name) {
+bool origin_trials::IsTrialEnabledForInsecureContext(base::StringPiece trial_name) {
   static const char* const kEnabledForInsecureContext[] = {
   {% for trial in origin_trial_features|selectattr('origin_trial_allows_insecure')|map(attribute='origin_trial_feature_name')|unique %}
       "{{trial}}",
@@ -47,7 +51,7 @@ bool origin_trials::IsTrialEnabledForInsecureContext(const StringView& trial_nam
   return base::Contains(kEnabledForInsecureContext, trial_name);
 }
 
-bool origin_trials::IsTrialEnabledForThirdPartyOrigins(const StringView& trial_name) {
+bool origin_trials::IsTrialEnabledForThirdPartyOrigins(base::StringPiece trial_name) {
   static const char* const kEnabledForThirdPartyOrigins[] = {
   {% for trial in origin_trial_features|selectattr('origin_trial_allows_third_party')|map(attribute='origin_trial_feature_name')|unique %}
       "{{trial}}",
@@ -69,20 +73,19 @@ OriginTrialType origin_trials::GetTrialType(OriginTrialFeature feature) {
 
 
 base::span<const OriginTrialFeature> origin_trials::FeaturesForTrial(
-    const StringView& trial_name) {
-  auto it = std::find_if(
-      std::begin(kTrialToFeaturesMap), std::end(kTrialToFeaturesMap),
-      [&](const auto& entry) { return entry.trial_name == trial_name; });
+    base::StringPiece trial_name) {
+  auto it = base::ranges::find(kTrialToFeaturesMap, trial_name,
+                               &TrialToFeature::trial_name);
   DCHECK(it != std::end(kTrialToFeaturesMap));
   return {it->features.begin(), it->feature_count};
 }
 
 base::span<const OriginTrialFeature> origin_trials::GetImpliedFeatures(
     OriginTrialFeature feature) {
-{% for implied_by_name, implied_list in implied_origin_trial_features.items() %}
+{% for implied_by_name, implied_set in implied_origin_trial_features.items() %}
   if (feature == OriginTrialFeature::k{{implied_by_name}}) {
     static constexpr OriginTrialFeature implied_features[] = {
-{%- for implied_name in implied_list %}
+{%- for implied_name in implied_set|sort %}
 OriginTrialFeature::k{{implied_name}},
 {%- endfor %}
 };
@@ -101,7 +104,7 @@ bool origin_trials::FeatureEnabledForOS(OriginTrialFeature feature) {
 #if
   {%- for os in feature.origin_trial_os %}
   {%- if not loop.first %} ||{% endif %}
- {{platform_define(os)}}
+ {{platform_buildflag(os)}}
   {%- endfor %}
 
       return true;

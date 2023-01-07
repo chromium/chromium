@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Cannot close a CLOSED writable stream
+PASS move(name) to rename a file
+PASS get a handle to a moved file
+PASS move(name) to rename a file the same name
+PASS move("") to rename a file fails
+PASS move(name) can be called multiple times
+PASS move(name) with a name with a trailing period should fail
+PASS move(name) with a name with invalid characters should fail
+PASS move(name) while the file has an open writable fails
+FAIL move(name) while the destination file has an open writable fails assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS move(dir, name) to rename a file
+PASS move(dir, name) to rename a file the same name
+PASS move(dir) to move a file to a new directory
+PASS move(dir, "") to move a file to a new directory
+PASS move(dir, name) to move a file to a new directory
+PASS move(dir) can be called multiple times
+PASS move(dir, "") can be called multiple times
+PASS move(dir, name) can be called multiple times
+PASS move(dir, name) with a name with invalid characters should fail
+PASS move(dir) while the file has an open writable fails
+PASS move(dir, name) while the file has an open writable fails
+FAIL move(dir) while the destination file has an open writable fails assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL move(dir, name) while the destination file has an open writable fails assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+

@@ -104,15 +104,18 @@ Splits `doc` into sentence fragments, returns text, start & end offsets.
 
 #### Example:
 
-          1                  1         2         3
-012345678901234    01234567890123456789012345678901234567
+```
+                1                  1         2         3
+      012345678901234    01234567890123456789012345678901234567
+doc: 'Hello...foo bar', 'Welcome to the U.S. don't be surprised'
 
-* <b>`doc`</b>: 'Hello...foo bar', 'Welcome to the U.S. don't be surprised'
-* <b>`fragment_text`</b>: [['Hello...', 'foo bar'], ['Welcome to the U.S.' , 'don't
-be surprised']]
-* <b>`start`</b>: [[0, 8],[0, 20]]
-* <b>`end`</b>: [[8, 15],[19, 38]]
-
+fragment_text: [
+  ['Hello...', 'foo bar'],
+  ['Welcome to the U.S.' , 'don't be surprised']
+]
+start: [[0, 8],[0, 20]]
+end: [[8, 15],[19, 38]]
+```
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -124,12 +127,10 @@ be surprised']]
 `doc`
 </td>
 <td>
-A string `Tensor` of shape [batch] with a batch of documents.
+A string `Tensor` of shape `[batch]` or `[batch, 1]`.
 </td>
 </tr>
 </table>
-
-
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -137,7 +138,7 @@ A string `Tensor` of shape [batch] with a batch of documents.
 <tr><th colspan="2">Returns</th></tr>
 <tr class="alt">
 <td colspan="2">
-A tuple of (fragment_text, start, end) where:
+A tuple of `(fragment_text, start, end)` where:
 </td>
 </tr>
 <tr>
@@ -166,8 +167,3 @@ where each entry is the exclusive ending byte offset of a sentence.
 </td>
 </tr>
 </table>
-
-
-
-
-

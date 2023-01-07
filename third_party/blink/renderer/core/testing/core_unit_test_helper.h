@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "cc/layers/layer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -90,7 +91,7 @@ class RenderingTestChromeClient : public EmptyChromeClient {
   void InjectGestureScrollEvent(LocalFrame& local_frame,
                                 WebGestureDevice device,
                                 const gfx::Vector2dF& delta,
-                                ScrollGranularity granularity,
+                                ui::ScrollGranularity granularity,
                                 CompositorElementId scrollable_area_element_id,
                                 WebInputEvent::Type injected_type) override;
 
@@ -163,20 +164,20 @@ class RenderingTest : public PageTestBase {
 
 // These constructors are for convenience of tests to construct these geometries
 // from integers.
-inline LogicalOffset::LogicalOffset(int inline_offset, int block_offset)
+constexpr LogicalOffset::LogicalOffset(int inline_offset, int block_offset)
     : inline_offset(inline_offset), block_offset(block_offset) {}
-inline LogicalSize::LogicalSize(int inline_size, int block_size)
+constexpr LogicalSize::LogicalSize(int inline_size, int block_size)
     : inline_size(inline_size), block_size(block_size) {}
-inline LogicalRect::LogicalRect(int inline_offset,
-                                int block_offset,
-                                int inline_size,
-                                int block_size)
+constexpr LogicalRect::LogicalRect(int inline_offset,
+                                   int block_offset,
+                                   int inline_size,
+                                   int block_size)
     : offset(inline_offset, block_offset), size(inline_size, block_size) {}
-inline PhysicalOffset::PhysicalOffset(int left, int top)
+constexpr PhysicalOffset::PhysicalOffset(int left, int top)
     : left(left), top(top) {}
-inline PhysicalSize::PhysicalSize(int width, int height)
+constexpr PhysicalSize::PhysicalSize(int width, int height)
     : width(width), height(height) {}
-inline PhysicalRect::PhysicalRect(int left, int top, int width, int height)
+constexpr PhysicalRect::PhysicalRect(int left, int top, int width, int height)
     : offset(left, top), size(width, height) {}
 
 }  // namespace blink

@@ -128,6 +128,6 @@ cause of a crash. You can leave the minimization running locally for a while
 (e.g. overnight) for better results.
 
 
-[File a bug]: https://bugs.chromium.org/p/chromium/issues/entry?component=Tools%3EStability%3ElibFuzzer&comment=What%20problem%20are%20you%20seeing
+[File a bug]: https://bugs.chromium.org/p/chromium/issues/entry?components=Tools%3EStability%3ElibFuzzer&comment=What%20problem%20are%20you%20seeing
 [here]: getting_started.md#symbolizing-a-stacktrace
 [these tips]: https://github.com/google/sanitizers/wiki/AddressSanitizerWindowsPort#debugging

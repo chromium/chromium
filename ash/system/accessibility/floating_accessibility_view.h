@@ -1,18 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_ACCESSIBILITY_FLOATING_ACCESSIBILITY_VIEW_H_
 #define ASH_SYSTEM_ACCESSIBILITY_FLOATING_ACCESSIBILITY_VIEW_H_
 
-#include <vector>
-
 #include "ash/public/cpp/accessibility_controller_enums.h"
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 namespace ash {
@@ -49,7 +48,8 @@ END_VIEW_BUILDER
 // ----  | [Open settings list]
 // ----  | [Change menu location]
 class FloatingAccessibilityView : public views::BoxLayoutView,
-                                  public views::ViewObserver {
+                                  public views::ViewObserver,
+                                  public KeyboardControllerObserver {
  public:
   METADATA_HEADER(FloatingAccessibilityView);
 
@@ -60,6 +60,7 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
     kDictation = 3,
     kSelectToSpeak = 4,
     kVirtualKeyboard = 5,
+    kIme = 6,
   };
   class Delegate {
    public:
@@ -71,7 +72,7 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
     virtual ~Delegate() = default;
   };
 
-  FloatingAccessibilityView(Delegate* delegate);
+  explicit FloatingAccessibilityView(Delegate* delegate);
   FloatingAccessibilityView& operator=(const FloatingAccessibilityView&) =
       delete;
   ~FloatingAccessibilityView() override;
@@ -87,12 +88,18 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
   void FocusOnDetailedViewButton();
 
  private:
+  friend class FloatingAccessibilityControllerTest;
+
   void OnA11yTrayButtonPressed();
   void OnPositionButtonPressed();
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
+
+  // KeyboardControllerObserver:
+  void OnKeyboardVisibilityChanged(bool visible) override;
+
   // Feature buttons:
   TrayBackgroundView* dictation_button_ = nullptr;
   TrayBackgroundView* select_to_speak_button_ = nullptr;
@@ -102,6 +109,8 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
   FloatingMenuButton* a11y_tray_button_ = nullptr;
   // Button to move the view around corners.
   FloatingMenuButton* position_button_ = nullptr;
+  // Button to list all available keyboard languages.
+  ImeMenuTray* ime_button_ = nullptr;
 
   Delegate* const delegate_;
 };

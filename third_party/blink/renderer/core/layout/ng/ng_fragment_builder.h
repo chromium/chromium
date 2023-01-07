@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,10 @@ class CORE_EXPORT NGFragmentBuilder {
   }
   void SetBlockSize(LayoutUnit block_size) { size_.block_size = block_size; }
 
+  bool HasBlockSize() const { return size_.block_size != kIndefiniteSize; }
+
   void SetIsHiddenForPaint(bool value) { is_hidden_for_paint_ = value; }
+  void SetIsOpaque() { is_opaque_ = true; }
 
   void SetHasCollapsedBorders(bool value) { has_collapsed_borders_ = value; }
 
@@ -87,8 +90,9 @@ class CORE_EXPORT NGFragmentBuilder {
   NGStyleVariant style_variant_;
   LogicalSize size_;
   LayoutObject* layout_object_ = nullptr;
-  scoped_refptr<NGBreakToken> break_token_;
+  const NGBreakToken* break_token_ = nullptr;
   bool is_hidden_for_paint_ = false;
+  bool is_opaque_ = false;
   bool has_collapsed_borders_ = false;
   friend class NGPhysicalFragment;
 };

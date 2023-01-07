@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kDefaultTimeout = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kDefaultTimeout = base::Seconds(30);
 
 base::TimeDelta GetTimeoutFromCommandLineOrDefault() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -31,13 +31,10 @@ base::TimeDelta GetTimeoutFromCommandLineOrDefault() {
     LOG(FATAL) << "Timeout value \"" << timeout_string << "\" was parsed as "
                << timeout_in_seconds;
   }
-  return base::TimeDelta::FromSeconds(timeout_in_seconds);
+  return base::Seconds(timeout_in_seconds);
 }
 
 }  // namespace
-
-const char switches::kStatusChangeCheckerTimeoutInSeconds[] =
-    "sync-status-change-checker-timeout";
 
 StatusChangeChecker::StatusChangeChecker()
     : timeout_(GetTimeoutFromCommandLineOrDefault()),

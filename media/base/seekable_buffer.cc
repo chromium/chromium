@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -269,8 +269,7 @@ void SeekableBuffer::UpdateCurrentTime(BufferQueue::iterator buffer,
     int64_t time_offset = ((*buffer)->duration().InMicroseconds() * offset) /
                           (*buffer)->data_size();
 
-    current_time_ = (*buffer)->timestamp() +
-                    base::TimeDelta::FromMicroseconds(time_offset);
+    current_time_ = (*buffer)->timestamp() + base::Microseconds(time_offset);
   }
 }
 

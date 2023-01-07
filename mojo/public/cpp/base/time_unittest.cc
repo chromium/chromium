@@ -1,7 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/time/time.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/time.mojom.h"
@@ -19,7 +20,7 @@ TEST(TimeTest, Time) {
 }
 
 TEST(TimeTest, TimeDelta) {
-  base::TimeDelta in = base::TimeDelta::FromDays(123);
+  base::TimeDelta in = base::Days(123);
   base::TimeDelta out;
 
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::TimeDelta>(in, out));

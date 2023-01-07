@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,13 +13,13 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenu.java",
-    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuAdapter.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuButtonHelperImpl.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuDragHelper.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuHandlerImpl.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemIcon.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinder.java",
   ]
 
   deps = [
@@ -28,10 +28,11 @@ android_library("java") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/appmenu:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.chrome.browser.ui.appmenu.internal"
@@ -39,13 +40,14 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/menu_action_bar_bg.xml",
+    "java/res/drawable-v23/menu_action_bar_bg.xml",
+    "java/res/drawable-v31/menu_action_bar_bg.xml",
     "java/res/layout/icon_row_menu_item.xml",
     "java/res/layout/menu_item.xml",
     "java/res/layout/menu_item_start_with_icon.xml",
     "java/res/layout/title_button_menu_item.xml",
+    "java/res/values-night/dimens.xml",
     "java/res/values/dimens.xml",
-    "java/res/values/ids.xml",
   ]
 
   # Include resource dependencies needed by :java so that resources may
@@ -56,13 +58,13 @@ android_resources("java_resources") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   resources_package = "org.chromium.chrome.browser.ui.appmenu.test"
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuAdapterRenderTest.java",
-    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuAdapterTest.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinderRenderTest.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinderTest.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuTest.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/TestAppMenuDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/TestAppMenuPropertiesDelegate.java",
@@ -76,16 +78,16 @@ android_library("javatests") {
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/appmenu/test:test_support_java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
@@ -97,30 +99,22 @@ android_resources("test_java_resources") {
   testonly = true
 
   sources = [
-    "test/java/res/drawable/test_ic_arrow_downward_black_24dp.xml",
-    "test/java/res/drawable/test_ic_arrow_forward_black_24dp.xml",
-    "test/java/res/drawable/test_ic_info_outline_black_24dp.xml",
-    "test/java/res/drawable/test_ic_more_vert_black_24dp.xml",
-    "test/java/res/drawable/test_ic_refresh_black_24dp.xml",
-    "test/java/res/drawable/test_ic_star_border_black_24dp.xml",
-    "test/java/res/drawable/test_ic_vintage_filter.xml",
     "test/java/res/layout/test_app_menu_activity_layout.xml",
     "test/java/res/layout/test_menu_footer.xml",
     "test/java/res/layout/test_menu_header.xml",
     "test/java/res/menu/test_menu.xml",
   ]
-  deps = [ ":java_resources" ]
+  deps = [
+    ":java_resources",
+    "//components/browser_ui/widget/android:java_test_resources",
+  ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuPopupPositionTest.java" ]
   deps = [
     ":java",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

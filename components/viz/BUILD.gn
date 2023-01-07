@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,11 @@ import("//components/viz/viz.gni")
 import("//testing/test.gni")
 
 viz_test("viz_unittests") {
+  configs = []
+  if (is_chromeos_lacros && is_chromeos_device) {
+    configs += [ "//build/lacros:optional_shared_libgcc" ]
+  }
+
   use_xvfb = use_xvfb_in_this_config
 
   sources = [ "test/run_all_unittests.cc" ]
@@ -36,11 +41,13 @@ viz_test("viz_unittests") {
   }
 
   if (is_fuchsia) {
-    additional_manifest_fragments = [
-      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
-      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+    # TODO(https://crbug.com/1185811): Investigate removing the requirement for
+    # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
 
-      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
+      "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
     ]
   }
 }
@@ -58,6 +65,8 @@ viz_test("viz_perftests") {
     "//mojo/core/embedder",
     "//skia",
   ]
+
+  data = [ "test/data/" ]
 
   # This target should not require the Chrome executable to run.
   assert_no_deps = [ "//chrome" ]

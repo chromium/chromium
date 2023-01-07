@@ -20,57 +20,40 @@ This file specifies browser resources for developer-facing chrome:// pages
     <includes>
       <include name="IDR_ACCESSIBILITY_HTML" file="resources\accessibility\accessibility.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_ACCESSIBILITY_CSS" file="resources\accessibility\accessibility.css" type="BINDATA" />
-      <include name="IDR_ACCESSIBILITY_JS" file="resources\accessibility\accessibility.js" type="BINDATA" />
+      <include name="IDR_ACCESSIBILITY_JS" file="${root_gen_dir}\chrome\browser\resources\accessibility\tsc\accessibility.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_APC_INTERNALS_HTML" file="resources\apc_internals\apc_internals.html" type="BINDATA" />
+      <include name="IDR_APC_INTERNALS_JS" file="resources\apc_internals\apc_internals.js" preprocess="true" type="BINDATA" />
+      <include name="IDR_APC_INTERNALS_CSS" file="resources\apc_internals\apc_internals.css" type="BINDATA" />
       <include name="IDR_COMPONENTS_COMPONENTS_HTML" file="resources\components\components.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_COMPONENTS_COMPONENTS_JS" file="resources\components\components.js" type="BINDATA" />
+      <include name="IDR_COMPONENTS_COMPONENTS_JS" file="${root_gen_dir}\chrome\browser\resources\components\tsc\components.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_DEVICE_LOG_UI_HTML" file="resources\device_log_ui\device_log_ui.html" type="BINDATA" />
       <include name="IDR_DEVICE_LOG_UI_JS" file="resources\device_log_ui\device_log_ui.js" type="BINDATA" />
       <include name="IDR_DEVICE_LOG_UI_CSS" file="resources\device_log_ui\device_log_ui.css" type="BINDATA" />
-      <include name="IDR_DOMAIN_RELIABILITY_INTERNALS_HTML" file="resources\domain_reliability_internals\domain_reliability_internals.html" type="BINDATA" />
-      <include name="IDR_DOMAIN_RELIABILITY_INTERNALS_CSS" file="resources\domain_reliability_internals\domain_reliability_internals.css" type="BINDATA" />
-      <include name="IDR_DOMAIN_RELIABILITY_INTERNALS_JS" file="resources\domain_reliability_internals\domain_reliability_internals.js" type="BINDATA" />
-      <include name="IDR_LOCAL_STATE_HTML" file="resources\local_state\local_state.html" type="BINDATA" />
-      <include name="IDR_LOCAL_STATE_JS" file="resources\local_state\local_state.js" type="BINDATA" />
-      <include name="IDR_MEDIA_DATA_TABLE_JS" file="resources\media\media_data_table.js" type="BINDATA" />
-      <include name="IDR_MEDIA_ENGAGEMENT_HTML" file="resources\media\media_engagement.html" type="BINDATA" />
-      <include name="IDR_MEDIA_ENGAGEMENT_JS" file="resources\media\media_engagement.js" type="BINDATA" />
-      <include name="IDR_MEDIA_ENGAGEMENT_SCORE_DETAILS_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\media\media_engagement_score_details.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_MEDIA_FEEDS_HTML" file="resources\media\media_feeds.html" type="BINDATA" />
-      <include name="IDR_MEDIA_FEEDS_JS" file="resources\media\media_feeds.js" type="BINDATA" />
-      <include name="IDR_MEDIA_FEEDS_STORE_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\media\feeds\media_feeds_store.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_MEDIA_HISTORY_HTML" file="resources\media\media_history.html" type="BINDATA" allowexternalscript="true" />
-      <include name="IDR_MEDIA_HISTORY_JS" file="resources\media\media_history.js" type="BINDATA" />
-      <include name="IDR_MEDIA_HISTORY_STORE_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\media\history\media_history_store.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MEMORY_INTERNALS_HTML" file="resources\memory_internals\memory_internals.html" type="BINDATA" />
-      <include name="IDR_MEMORY_INTERNALS_JS" file="resources\memory_internals\memory_internals.js" type="BINDATA" />
-      <include name="IDR_PREDICTORS_AUTOCOMPLETE_ACTION_PREDICTOR_JS" file="resources\predictors\autocomplete_action_predictor.js" type="BINDATA" />
+      <include name="IDR_MEMORY_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\memory_internals\tsc\memory_internals.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_PREDICTORS_AUTOCOMPLETE_ACTION_PREDICTOR_JS" file="${root_gen_dir}\chrome\browser\resources\predictors\autocomplete_action_predictor.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_PREDICTORS_HTML" file="resources\predictors\predictors.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_PREDICTORS_JS" file="resources\predictors\predictors.js" type="BINDATA" />
-      <include name="IDR_PREDICTORS_RESOURCE_PREFETCH_PREDICTOR_JS" file="resources\predictors\resource_prefetch_predictor.js" type="BINDATA" />
-      <include name="IDR_MEDIA_SESSION_MOJOM_LITE_JS" file="${root_gen_dir}\services\media_session\public\mojom\media_session.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_UI_GEOMETRY_MOJOM_LITE_JS" file="${root_gen_dir}\ui\gfx\geometry\mojom\geometry.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_PREDICTORS_JS" file="${root_gen_dir}\chrome\browser\resources\predictors\predictors.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_PREDICTORS_RESOURCE_PREFETCH_PREDICTOR_JS" file="${root_gen_dir}\chrome\browser\resources\predictors\resource_prefetch_predictor.js" use_base_dir="false" type="BINDATA" />
 
-      <if expr="is_android or is_linux">
+      <if expr="is_android or is_linux or is_chromeos">
         <include name="IDR_SANDBOX_INTERNALS_HTML" file="resources\sandbox_internals\sandbox_internals.html" preprocess="true" type="BINDATA" />
-        <include name="IDR_SANDBOX_INTERNALS_JS" file="resources\sandbox_internals\sandbox_internals.js" preprocess="true" type="BINDATA" />
+        <include name="IDR_SANDBOX_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\sandbox_internals\tsc\sandbox_internals.js" use_base_dir="false" type="BINDATA" />
       </if>
       <if expr="is_win">
         <include name="IDR_SANDBOX_INTERNALS_HTML" file="resources\sandbox_internals\sandbox_internals.html" preprocess="true" type="BINDATA" />
-        <include name="IDR_SANDBOX_INTERNALS_JS" file="resources\sandbox_internals\sandbox_internals_win.js" type="BINDATA" />
+        <include name="IDR_SANDBOX_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\sandbox_internals\tsc\sandbox_internals_win.js" use_base_dir="false" type="BINDATA" />
       </if>
 
       <include name="IDR_SITE_ENGAGEMENT_HTML" file="resources\engagement\site_engagement.html" type="BINDATA" />
-      <include name="IDR_SITE_ENGAGEMENT_JS" file="resources\engagement\site_engagement.js" type="BINDATA" />
-      <include name="IDR_SITE_ENGAGEMENT_DETAILS_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\components\site_engagement\core\mojom\site_engagement_details.mojom-webui.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_SITE_ENGAGEMENT_JS" file="${root_gen_dir}\chrome\browser\resources\engagement\tsc\site_engagement.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_SITE_ENGAGEMENT_DETAILS_MOJOM_WEBUI_JS" file="${root_gen_dir}\chrome\browser\resources\engagement\tsc\site_engagement_details.mojom-webui.js" use_base_dir="false" type="BINDATA" />
 
       <if expr="is_android">
         <include name="IDR_FEED_INTERNALS_HTML" file="resources\feed_internals\feed_internals.html" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_FEED_INTERNALS_CSS" file="resources\feed_internals\feed_internals.css" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_FEED_INTERNALS_JS" file="resources\feed_internals\feed_internals.js" type="BINDATA" />
-        <include name="IDR_FEED_INTERNALS_MOJO_JS" file="${root_gen_dir}\chrome\browser\ui\webui\feed_internals\feed_internals.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_NOTIFICATIONS_INTERNALS_HTML" file="resources\internals\notifications\notifications_internals.html" type="BINDATA" />
-        <include name="IDR_NOTIFICATIONS_INTERNALS_JS" file="resources\internals\notifications\notifications_internals.js" type="BINDATA" />
-        <include name="IDR_NOTIFICATIONS_INTERNALS_BROWSER_PROXY_JS" file="resources\internals\notifications\notifications_internals_browser_proxy.js" type="BINDATA" />
+        <include name="IDR_FEED_INTERNALS_MOJO_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\feed_internals\feed_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_QUERY_TILES_INTERNALS_HTML" file="resources\internals\query_tiles\query_tiles_internals.html" type="BINDATA" />
         <include name="IDR_QUERY_TILES_INTERNALS_JS" file="resources\internals\query_tiles\query_tiles_internals.js" type="BINDATA" />
         <include name="IDR_QUERY_TILES_INTERNALS_BROWSER_PROXY_JS" file="resources\internals\query_tiles\query_tiles_internals_browser_proxy.js" type="BINDATA" />
@@ -85,11 +68,6 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_TRANSLATE_INTERNALS_HTML" file="../../components/translate/translate_internals/translate_internals.html" type="BINDATA" />
       <include name="IDR_TRANSLATE_INTERNALS_JS" file="../../components/translate/translate_internals/translate_internals.js" preprocess="true" type="BINDATA" />
       <include name="IDR_WEB_APP_INTERNALS_HTML" file="resources/web_app_internals/index.html" type="BINDATA" />
-      <include name="IDR_WEB_APP_INTERNALS_JS" file="${root_gen_dir}/chrome/browser/resources/web_app_internals/web_app_internals.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEB_APP_INTERNALS_MOJOM_LITE_JS" file="${root_gen_dir}/chrome/browser/ui/webui/internals/web_app/web_app_internals.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_UKM_INTERNALS_HTML" file="../../components/ukm/debug/ukm_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_UKM_INTERNALS_JS" file="../../components/ukm/debug/ukm_internals.js" type="BINDATA" />
-      <include name="IDR_UKM_INTERNALS_CSS" file="../../components/ukm/debug/ukm_internals.css" type="BINDATA" />
     </includes>
   </release>
 </grit>

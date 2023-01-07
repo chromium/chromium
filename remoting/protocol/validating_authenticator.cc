@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ValidatingAuthenticator::ValidatingAuthenticator(
     const std::string& remote_jid,
@@ -94,23 +92,28 @@ void ValidatingAuthenticator::OnValidateComplete(base::OnceClosure callback,
       return;
 
     case Result::ERROR_INVALID_CREDENTIALS:
-      rejection_reason_ = Authenticator::INVALID_CREDENTIALS;
+      rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
       break;
 
     case Result::ERROR_INVALID_ACCOUNT:
-      rejection_reason_ = Authenticator::INVALID_ACCOUNT;
+      rejection_reason_ = RejectionReason::INVALID_ACCOUNT_ID;
       break;
 
     case Result::ERROR_TOO_MANY_CONNECTIONS:
-      rejection_reason_ = Authenticator::TOO_MANY_CONNECTIONS;
+      rejection_reason_ = RejectionReason::TOO_MANY_CONNECTIONS;
       break;
 
     case Result::ERROR_REJECTED_BY_USER:
-      rejection_reason_ = Authenticator::REJECTED_BY_USER;
+      rejection_reason_ = RejectionReason::REJECTED_BY_USER;
       break;
   }
 
   state_ = Authenticator::REJECTED;
+
+  // Clear the pending message so the signal strategy will generate a new
+  // SESSION_REJECT message in response to this state change.
+  pending_auth_message_.reset();
+
   std::move(callback).Run();
 }
 
@@ -138,5 +141,4 @@ void ValidatingAuthenticator::UpdateState(base::OnceClosure resume_callback) {
   }
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

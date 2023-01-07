@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -17,9 +19,6 @@ class AutocompleteProviderListener;
 namespace history {
 class QueryResults;
 }  // namespace history
-
-extern const int kLocalHistoryZPSAuthenticatedRelevance;
-extern const int kLocalHistoryZPSUnauthenticatedRelevance;
 
 // Autocomplete provider for on-focus zero-prefix query suggestions from local
 // history when Google is the default search engine.
@@ -45,9 +44,6 @@ class LocalHistoryZeroSuggestProvider : public AutocompleteProvider {
   LocalHistoryZeroSuggestProvider& operator=(
       const LocalHistoryZeroSuggestProvider&) = delete;
 
-  // Returns whether the primary account is available. No sync consent required.
-  bool IsSignedIn();
-
   // Queries the keyword search terms table of the in-memory URLDatabase for the
   // recent search terms submitted to the default search provider.
   void QueryURLDatabase(const AutocompleteInput& input);
@@ -63,10 +59,7 @@ class LocalHistoryZeroSuggestProvider : public AutocompleteProvider {
   const size_t max_matches_;
 
   // Client for accessing TemplateUrlService, prefs, etc.
-  AutocompleteProviderClient* const client_;
-
-  // Listener to notify when matches are available.
-  AutocompleteProviderListener* const listener_;
+  const raw_ptr<AutocompleteProviderClient> client_;
 
   // Used for the async tasks querying the HistoryService.
   base::CancelableTaskTracker history_task_tracker_;

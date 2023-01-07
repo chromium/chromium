@@ -1,0 +1,44 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.assistant;
+
+message AssistantDevice {
+  // The type of assistant device.
+  enum Type {
+    CROS = 17;
+  }
+}
+
+message AssistantDeviceSettingsUiUpdate {
+  // A list of assistant device settings update.
+  repeated AssistantDeviceSettingsUpdate assistant_device_settings_update = 1;
+}
+
+// Write only fields should go into AssistantDeviceSettingsUpdate.
+message AssistantDeviceSettingsUpdate {
+  optional string device_id = 1;
+
+  optional AssistantDevice.Type assistant_device_type = 3 [default = CROS];
+
+  optional AssistantDeviceSettings device_settings = 2;
+}
+
+message AssistantDeviceSettings {
+  // Whether this device may display/read out personal info.
+  enum PersonalReadout {
+    // This device may display/read out personal info.
+    PERSONAL_READOUT_ENABLED = 1;
+  }
+  optional PersonalReadout personal_readout = 2;
+
+  optional string locale = 5;
+
+  // Indicates whether the user has enabled speaker-id for this device.
+  optional bool speaker_id_enabled = 7;
+}

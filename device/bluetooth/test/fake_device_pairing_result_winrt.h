@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <windows.devices.enumeration.h>
 #include <wrl/implements.h>
-
-#include "base/macros.h"
 
 namespace device {
 
@@ -20,6 +18,11 @@ class FakeDevicePairingResultWinrt
  public:
   explicit FakeDevicePairingResultWinrt(
       ABI::Windows::Devices::Enumeration::DevicePairingResultStatus status);
+
+  FakeDevicePairingResultWinrt(const FakeDevicePairingResultWinrt&) = delete;
+  FakeDevicePairingResultWinrt& operator=(const FakeDevicePairingResultWinrt&) =
+      delete;
+
   ~FakeDevicePairingResultWinrt() override;
 
   // IDevicePairingResult:
@@ -32,8 +35,6 @@ class FakeDevicePairingResultWinrt
 
  private:
   ABI::Windows::Devices::Enumeration::DevicePairingResultStatus status_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDevicePairingResultWinrt);
 };
 
 }  // namespace device

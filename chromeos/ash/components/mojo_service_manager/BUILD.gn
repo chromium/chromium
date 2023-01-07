@@ -1,0 +1,29 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/features.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+component("mojo_service_manager") {
+  sources = [
+    "connection.cc",
+    "connection.h",
+  ]
+  deps = [
+    "//base",
+    "//chromeos:features",
+    "//mojo/public/cpp/bindings",
+  ]
+  public_deps = [ "//chromeos/ash/components/mojo_service_manager/mojom" ]
+  defines = [ "IS_CHROMEOS_MOJO_SERVICE_MANAGER_IMPL" ]
+
+  if (!use_real_chromeos_services) {
+    sources += [
+      "fake_mojo_service_manager.cc",
+      "fake_mojo_service_manager.h",
+    ]
+  }
+}

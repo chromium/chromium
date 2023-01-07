@@ -1,22 +1,102 @@
-<style include="signin-dialog-shared">
+<style include="signin-shared">
   :host {
     --avatar-size: 100px;
     --banner-height: 244px;
+    --banner-size: auto;
     --footer-margin: 40px;
+    --content-container-margin-inline: auto;
+    --content-container-margin-bottom: calc(48px + var(--footer-margin));
+    --content-container-margin-top: 104px;
+    --info-box-margin-inline: auto;
+    --info-box-margin-top: 32px;
+    --info-box-width: 530px;
     --text-font-size: 1.16em;
     color: var(--cr-primary-text-color);
     display: block;
   }
+
+  :host([is-modal-dialog_]) {
+    --avatar-size: 76px;
+    --banner-height: 128px;
+    --banner-size: 90% 90%;
+    --content-container-margin-inline: 32px;
+    --content-container-margin-bottom: 0;
+    --content-container-margin-top: 72px;
+<if expr="chromeos_lacros">
+    --info-box-margin-inline: 32px;
+</if>
+<if expr="not chromeos_lacros">
+    --info-box-margin-inline: 0;
+</if>
+    --info-box-margin-top: 28px;
+    --info-box-width: auto;
+    --footer-margin: 16px;
+    display: flex;
+    flex-direction: column;
+    min-height: 512px;
+    position: relative;
+    width: 512px;
+  }
+
+  :host([is-modal-dialog_]) #contentContainer h2 {
+    margin-top: 0;
+  }
+
+<if expr="chromeos_lacros">
+  :host {
+    --action-container-padding: 24px;
+    --background-image:
+        url(images/lacros_enterprise_profile_welcome_illustration.svg);
+    --content-container-font-size: 14px;
+    --content-container-line-height: 20px;
+    --content-container-margin-top: 72px;
+    --content-container-width: 382px;
+    --content-container-title-font-size: 24px;
+    --content-container-title-font-weight: 500;
+    --content-container-title-line-height: 32px;
+    --info-box-bottom: 0;
+    --info-box-padding: 24px 8px;
+    --info-box-position: absolute;
+    --info-box-border: none;
+    --info-box-border-radius: 0px;
+    --info-box-font-size: 11px;
+    --info-box-line-height: 16px;
+  }
+</if>
+
+<if expr="not chromeos_lacros">
+  :host {
+    --background-image: url(images/enterprise_profile_welcome_illustration.svg);
+    --content-container-font-size: auto;
+    --content-container-line-height: auto;
+    --content-container-width: auto;
+    --content-container-title-font-size: 1.85em;
+    --content-container-title-font-weight: normal;
+    --content-container-title-line-height: auto;
+    --info-box-position: auto;
+    --info-box-border: 1px solid var(--google-grey-200);
+    --info-box-border-radius: 8px;
+    --info-box-font-size: auto;
+    --info-box-line-height: auto;
+    --info-box-padding: 12px 0;
+  }
+</if>
 
   .secondary {
     color: var(--cr-secondary-text-color);
   }
 
   .action-container {
+    align-items: flex-end;
     bottom: 0;
     box-sizing: border-box;
     position: absolute;
     width: 100%;
+  }
+
+  :host([is-modal-dialog_]) .action-container {
+    margin-top: auto;
+    position: relative;
   }
 
   #headerContainer {
@@ -27,9 +107,10 @@
   }
 
   #banner {
-    background-image: url(images/enterprise_profile_welcome_illustration.svg);
+    background-image: var(--background-image);
     background-position: center;
     background-repeat: no-repeat;
+    background-size: var(--banner-size);
     height: 100%;
     position: absolute;
     top: 0;
@@ -62,8 +143,8 @@
     border-radius: 50%;
     bottom: var(--badge-offset);
     height: var(--badge-width);
+    inset-inline-end: var(--badge-offset);
     position: absolute;
-    right: var(--badge-offset);
     width: var(--badge-width);
   }
 
@@ -79,30 +160,38 @@
   }
 
   #contentContainer {
-    margin-bottom: calc(48px + var(--footer-margin));
-    margin-inline: auto;
-    margin-top: 104px;
+    font-size: var(--content-container-font-size);
+    line-height: var(--content-container-line-height);
+    margin-bottom: var(--content-container-margin-bottom);
+    margin-inline: var(--content-container-margin-inline);
+    margin-top: var(--content-container-margin-top);
     text-align: center;
+    width: var(--content-container-width);
   }
 
   #contentContainer h2 {
-    font-size: 1.85em;
-    font-weight: normal;
+    font-size: var(--content-container-title-font-size);
+    font-weight: var(--content-container-title-font-weight);
+    line-height: var(--content-container-title-line-height);
     margin-bottom: 8px;
   }
 
   .info-box {
     align-items: center;
-    border: 1px solid var(--google-grey-200);
-    border-radius: 8px;
-    color: var(--google-grey-refresh-700);
+    border: var(--info-box-border);
+    border-radius: var(--info-box-border-radius);
+    bottom: var(--info-box-bottom);
+    color: var(--google-grey-700);
     display: flex;
     flex-direction: row;
-    margin-inline: auto;
-    margin-top: 32px;
-    padding-block: 12px;
+    font-size: var(--info-box-font-size);
+    line-height: var(--info-box-line-height);
+    margin-inline: var(--info-box-margin-inline);
+    margin-top: var(--info-box-margin-top);
+    padding: var(--info-box-padding);
     padding-inline-end: 18px;
-    width: 514px;
+    position: var(--info-box-position);
+    width: var(--info-box-width);
   }
 
   .info-box > p {
@@ -114,7 +203,7 @@
   .icon-container {
     --icon-container-size: 28px;
     --icon-container-margin: 16px;
-    background-color: var(--google-grey-refresh-100);
+    background-color: var(--google-grey-100);
     border-radius: 50%;
     height: var(--icon-container-size);
     margin-inline: var(--icon-container-margin);
@@ -128,10 +217,6 @@
     width: var(--icon-size);
   }
 
-  #buttonsContainer {
-    --action-container-padding: var(--footer-margin);
-  }
-
   #buttonsContainer cr-button {
     font-size: var(--text-font-size);
     min-width: 111px;
@@ -139,6 +224,10 @@
 
   #buttonsContainer #cancelButton {
     font-weight: normal;
+  }
+
+  #linkData {
+    margin: 16px 32px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -152,12 +241,11 @@
     }
 
     .info-box {
-      border-color: var(--google-grey-600);
-      color: var(--google-grey-refresh-100);
+      color: var(--google-grey-100);
     }
 
     .icon-container {
-      background-color: var(--google-grey-refresh-700);
+      background-color: var(--google-grey-700);
     }
   }
 </style>
@@ -173,30 +261,53 @@
 </div>
 
 <div id="contentContainer">
-  <h2>
-    $i18n{enterpriseProfileWelcomeTitle}
-  </h2>
-  <template is="dom-if" if="[[enterpriseTitle_]]">
-    <p class="secondary">
-      [[enterpriseTitle_]]
+  <template is="dom-if" if="[[title_]]">
+    <h2 id="title">
+      [[title_]]
+    </h2>
+  </template>
+  <template is="dom-if" if="[[subtitle_]]">
+    <p id="subtitle" class="secondary">
+      [[subtitle_]]
     </p>
   </template>
+  <if expr="not chromeos_lacros">
   <template is="dom-if" if="[[enterpriseInfo_]]">
     <div class="info-box">
       <div class="icon-container">
         <iron-icon icon="cr:domain"></iron-icon>
       </div>
-      <p>
+      <p id="enterpriseInfo" >
         [[enterpriseInfo_]]
       </p>
     </div>
   </template>
+  </if>
 </div>
+<if expr="chromeos_lacros">
+<template is="dom-if" if="[[enterpriseInfo_]]">
+  <div class="info-box">
+    <div class="icon-container">
+      <iron-icon icon="cr:domain"></iron-icon>
+    </div>
+    <p id="enterpriseInfo" >
+      [[enterpriseInfo_]]
+    </p>
+  </div>
+</template>
+</if>
+<template is="dom-if" if="[[showLinkDataCheckbox_]]">
+  <cr-checkbox id="linkData" checked="{{linkData_}}">
+    <div>$i18n{linkDataText}</div>
+  </cr-checkbox>
+</template>
 <div id="buttonsContainer" class="action-container">
-  <cr-button class="action-button" on-click="onProceed_">
+  <cr-button id="proceedButton" class="action-button" on-click="onProceed_"
+      autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
     [[proceedLabel_]]
   </cr-button>
-  <cr-button id="cancelButton" on-click="onCancel_">
+  <cr-button id="cancelButton" on-click="onCancel_"
+      hidden="[[!showCancelButton_]]">
     $i18n{cancelLabel}
   </cr-button>
 </div>

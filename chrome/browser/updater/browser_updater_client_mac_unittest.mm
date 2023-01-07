@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"

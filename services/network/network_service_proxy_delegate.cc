@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -163,9 +163,11 @@ net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
 }
 
 void NetworkServiceProxyDelegate::OnCustomProxyConfigUpdated(
-    mojom::CustomProxyConfigPtr proxy_config) {
+    mojom::CustomProxyConfigPtr proxy_config,
+    OnCustomProxyConfigUpdatedCallback callback) {
   DCHECK(IsValidCustomProxyConfig(*proxy_config));
   proxy_config_ = std::move(proxy_config);
+  std::move(callback).Run();
 }
 
 void NetworkServiceProxyDelegate::MarkProxiesAsBad(

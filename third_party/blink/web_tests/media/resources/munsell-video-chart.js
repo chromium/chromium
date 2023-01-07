@@ -18,7 +18,7 @@ function drawImageToCanvas() {
   canvas.width = image.width;
   canvas.height = image.height;
 
-  canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+  canvas.getContext('2d', {willReadFrequently: true}).drawImage(image, 0, 0, canvas.width, canvas.height);
   chartColorTransform(canvas);
 }
 
@@ -30,7 +30,7 @@ function getCanvasColor(canvas, i) {
   var x = 40 + (i % 6) * (canvas.width / 6);
   var y = 40 + Math.floor(i / 6) * (canvas.height / 4 - 40);
   try {
-    var data = canvas.getContext('2d').getImageData(x, y, 1, 1).data;
+    var data = canvas.getContext('2d', {willReadFrequently: true}).getImageData(x, y, 1, 1).data;
     if (data[3] == 255)
       return { rgb: [data[0], data[1], data[2]] };
     return { rgb: [0, 0, 0] };

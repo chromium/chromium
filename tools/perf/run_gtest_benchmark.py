@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Runs gtest perf tests and process results.
@@ -122,8 +122,7 @@ def main(args):
   process_return_code = ProcessResults(options)
   if process_return_code != 0:
     return process_return_code
-  else:
-    return run_return_code
+  return run_return_code
 
 
 if __name__ == '__main__':

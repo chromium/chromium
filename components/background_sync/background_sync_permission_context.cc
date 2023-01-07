@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@ BackgroundSyncPermissionContext::BackgroundSyncPermissionContext(
 }
 
 void BackgroundSyncPermissionContext::DecidePermission(
-    content::WebContents* web_contents,
     const permissions::PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
@@ -24,8 +23,4 @@ void BackgroundSyncPermissionContext::DecidePermission(
     permissions::BrowserPermissionCallback callback) {
   // The user should never be prompted to authorize background sync.
   NOTREACHED();
-}
-
-bool BackgroundSyncPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
 }

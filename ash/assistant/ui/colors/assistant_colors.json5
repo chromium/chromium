@@ -1,0 +1,29 @@
+/* Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/*
+ * Color palette for Assistant UIs.
+ */
+{
+  options: {
+    // Define options for proto. We are not using it for now. But we define them
+    // as CQ builds it.
+    proto: {
+      field_name: "assistant_colors",
+      // Use 2 as a field id since cros_palette.json5 takes 1.
+      field_id: 2,
+    }
+  },
+  colors: {
+    bg_assistant_plate: {
+      // Those colors are customized colors, i.e. not in cros_palette.json5.
+      light: "#ecefee",
+      dark: "#1c2b3b",
+    },
+  },
+  opacities: {
+    // This is necessary to avoid C++ compile error.
+    fake_opacity: 0.0,
+  }
+}

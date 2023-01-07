@@ -1,0 +1,30 @@
+caption: CECPQ2 post-quantum key-agreement enabled for TLS
+default: true
+desc: |-
+  If this policy is not configured, or is set to enabled, then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will follow the default rollout process for CECPQ2, a post-quantum key-agreement algorithm in TLS.
+
+        CECPQ2 results in larger TLS messages which, in very rare cases, can trigger bugs in some networking hardware. This policy can be set to False to disable CECPQ2 while networking issues are resolved.
+
+        This policy is a temporary measure and will be removed in future versions of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+items:
+- caption: Enable default CECPQ2 rollout process
+  value: true
+- caption: Disable CECPQ2
+  value: false
+owners:
+- file://crypto/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.*:91-
+- chrome_os:91-
+- android:91-
+tags:
+- system-security
+type: main

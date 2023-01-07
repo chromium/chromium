@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,13 @@
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/skia_util.h"
 
 namespace ash {
+
+RoundedImageView::RoundedImageView()
+    : RoundedImageView(/*corner_radius=*/0, Alignment::kLeading) {}
 
 RoundedImageView::RoundedImageView(int corner_radius, Alignment alignment)
     : alignment_(alignment) {
@@ -52,6 +55,10 @@ void RoundedImageView::SetCornerRadii(int top_left,
   corner_radius_[1] = top_right;
   corner_radius_[2] = bottom_right;
   corner_radius_[3] = bottom_left;
+}
+
+void RoundedImageView::SetCornerRadius(int corner_radius) {
+  SetCornerRadii(corner_radius, corner_radius, corner_radius, corner_radius);
 }
 
 gfx::Size RoundedImageView::CalculatePreferredSize() const {

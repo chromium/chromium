@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromecast/browser/devtools/cast_devtools_manager_delegate.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chromecast/app/grit/shell_resources.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -59,7 +58,7 @@ bool CastDevToolsManagerDelegate::HasEnabledWebContents() const {
 }
 
 std::string CastDevToolsManagerDelegate::GetDiscoveryPageHTML() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::string();
 #else
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(

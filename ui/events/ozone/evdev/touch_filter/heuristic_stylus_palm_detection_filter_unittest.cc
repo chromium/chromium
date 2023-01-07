@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include <linux/input.h>
 
-#include "base/macros.h"
 #include "base/test/gtest_util.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/shared_palm_detection_filter_state.h"
@@ -17,6 +17,12 @@ namespace ui {
 class HeuristicStylusPalmDetectionFilterTest : public testing::Test {
  public:
   HeuristicStylusPalmDetectionFilterTest() = default;
+
+  HeuristicStylusPalmDetectionFilterTest(
+      const HeuristicStylusPalmDetectionFilterTest&) = delete;
+  HeuristicStylusPalmDetectionFilterTest& operator=(
+      const HeuristicStylusPalmDetectionFilterTest&) = delete;
+
   void SetUp() override {
     shared_palm_state = std::make_unique<SharedPalmDetectionFilterState>();
     palm_detection_filter_ =
@@ -29,18 +35,15 @@ class HeuristicStylusPalmDetectionFilterTest : public testing::Test {
 
  protected:
   const int hold_sample_count = 5;
-  const base::TimeDelta hold_time = base::TimeDelta::FromSecondsD(1.0);
-  const base::TimeDelta suppress_time = base::TimeDelta::FromSecondsD(0.4);
+  const base::TimeDelta hold_time = base::Seconds(1.0);
+  const base::TimeDelta suppress_time = base::Seconds(0.4);
 
-  const base::TimeDelta sample_interval =
-      base::TimeDelta::FromMillisecondsD(7.5);
+  const base::TimeDelta sample_interval = base::Milliseconds(7.5);
 
   std::unique_ptr<SharedPalmDetectionFilterState> shared_palm_state;
   std::unique_ptr<PalmDetectionFilter> palm_detection_filter_;
   std::vector<InProgressTouchEvdev> touches_;
   base::TimeTicks test_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeuristicStylusPalmDetectionFilterTest);
 };
 
 class HeuristicStylusPalmDetectionFilterDeathTest
@@ -48,17 +51,16 @@ class HeuristicStylusPalmDetectionFilterDeathTest
 
 TEST_F(HeuristicStylusPalmDetectionFilterDeathTest, TestDCheck) {
   // We run with a time where hold_time < suppress_time, which should DCHECK.
-  EXPECT_DCHECK_DEATH(
-      palm_detection_filter_ =
-          std::make_unique<HeuristicStylusPalmDetectionFilter>(
-              shared_palm_state.get(), hold_sample_count, hold_time,
-              hold_time + base::TimeDelta::FromMillisecondsD(0.1)));
+  EXPECT_DCHECK_DEATH(palm_detection_filter_ =
+                          std::make_unique<HeuristicStylusPalmDetectionFilter>(
+                              shared_palm_state.get(), hold_sample_count,
+                              hold_time, hold_time + base::Milliseconds(0.1)));
 }
 
 TEST_F(HeuristicStylusPalmDetectionFilterTest, TestSetsToZero) {
   std::bitset<kNumTouchEvdevSlots> suppress, hold;
-  suppress.set(kNumTouchEvdevSlots - 1, 1);
-  hold.set(0, 1);
+  suppress.set(kNumTouchEvdevSlots - 1, true);
+  hold.set(0, true);
   palm_detection_filter_->Filter(touches_, test_start_time_, &hold, &suppress);
   EXPECT_TRUE(hold.none());
   EXPECT_TRUE(suppress.none());
@@ -87,8 +89,7 @@ TEST_F(HeuristicStylusPalmDetectionFilterTest, TestCancelAfterStylus) {
   EXPECT_TRUE(suppress.none());
 
   // Now, what if we keep going with these strokes for a long time.
-  for (;
-       start_time < test_start_time_ + base::TimeDelta::FromMillisecondsD(1000);
+  for (; start_time < test_start_time_ + base::Milliseconds(1000);
        start_time += sample_interval) {
     palm_detection_filter_->Filter(touches_, start_time, &hold, &suppress);
     EXPECT_TRUE(hold.none());
@@ -156,7 +157,7 @@ TEST_F(HeuristicStylusPalmDetectionFilterTest, TestNothingLongAfterStylus) {
   touches_[0].tool_code = 0;
   touches_[1].touching = true;
   base::TimeTicks start_time =
-      test_start_time_ + hold_time + base::TimeDelta::FromMillisecondsD(1e-2);
+      test_start_time_ + hold_time + base::Milliseconds(1e-2);
   palm_detection_filter_->Filter(touches_, start_time, &hold, &suppress);
   EXPECT_EQ(2u, shared_palm_state->active_finger_touches);
   EXPECT_TRUE(hold.none());
@@ -176,7 +177,7 @@ TEST_F(HeuristicStylusPalmDetectionFilterTest, TestHover) {
   touches_[0].tool_code = 0;
   touches_[0].touching = true;
   base::TimeTicks start_time =
-      test_start_time_ + hold_time - base::TimeDelta::FromMillisecondsD(1e-2);
+      test_start_time_ + hold_time - base::Milliseconds(1e-2);
   palm_detection_filter_->Filter(touches_, start_time, &hold, &suppress);
   EXPECT_TRUE(hold.test(0));
   EXPECT_TRUE(suppress.none());

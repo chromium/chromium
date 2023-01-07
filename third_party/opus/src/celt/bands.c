@@ -901,7 +901,7 @@ static void compute_theta(struct band_ctx *ctx, struct split_ctx *sctx,
    sctx->itheta = itheta;
    sctx->qalloc = qalloc;
 }
-static unsigned quant_band_n1(struct band_ctx *ctx, celt_norm *X, celt_norm *Y, int b,
+static unsigned quant_band_n1(struct band_ctx *ctx, celt_norm *X, celt_norm *Y,
       celt_norm *lowband_out)
 {
    int c;
@@ -926,7 +926,6 @@ static unsigned quant_band_n1(struct band_ctx *ctx, celt_norm *X, celt_norm *Y, 
             sign = ec_dec_bits(ec, 1);
          }
          ctx->remaining_bits -= 1<<BITRES;
-         b-=1<<BITRES;
       }
       if (ctx->resynth)
          x[0] = sign ? -NORM_SCALING : NORM_SCALING;
@@ -1134,7 +1133,7 @@ static unsigned quant_band(struct band_ctx *ctx, celt_norm *X,
    /* Special case for one sample */
    if (N==1)
    {
-      return quant_band_n1(ctx, X, NULL, b, lowband_out);
+      return quant_band_n1(ctx, X, NULL, lowband_out);
    }
 
    if (tf_change>0)
@@ -1256,7 +1255,7 @@ static unsigned quant_band_stereo(struct band_ctx *ctx, celt_norm *X, celt_norm 
    /* Special case for one sample */
    if (N==1)
    {
-      return quant_band_n1(ctx, X, Y, b, lowband_out);
+      return quant_band_n1(ctx, X, Y, lowband_out);
    }
 
    orig_fill = fill;
@@ -1381,6 +1380,7 @@ static unsigned quant_band_stereo(struct band_ctx *ctx, celt_norm *X, celt_norm 
    return cm;
 }
 
+#ifndef DISABLE_UPDATE_DRAFT
 static void special_hybrid_folding(const CELTMode *m, celt_norm *norm, celt_norm *norm2, int start, int M, int dual_stereo)
 {
    int n1, n2;
@@ -1393,6 +1393,7 @@ static void special_hybrid_folding(const CELTMode *m, celt_norm *norm, celt_norm
    if (dual_stereo)
       OPUS_COPY(&norm2[n1], &norm2[2*n1 - n2], n2-n1);
 }
+#endif
 
 void quant_all_bands(int encode, const CELTMode *m, int start, int end,
       celt_norm *X_, celt_norm *Y_, unsigned char *collapse_masks,

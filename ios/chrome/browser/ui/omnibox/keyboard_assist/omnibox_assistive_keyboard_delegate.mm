@@ -1,18 +1,20 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,40 +22,37 @@
 
 @implementation OmniboxAssistiveKeyboardDelegateImpl
 
-@synthesize dispatcher = _dispatcher;
+@synthesize applicationCommandsHandler = _applicationCommandsHandler;
+@synthesize browserCommandsHandler = _browserCommandsHandler;
+@synthesize layoutGuideCenter = _layoutGuideCenter;
+@synthesize qrScannerCommandsHandler = _qrScannerCommandsHandler;
 @synthesize omniboxTextField = _omniboxTextField;
-@synthesize voiceSearchButtonGuide = _voiceSearchButtonGuide;
 
 #pragma mark - Public
 
-- (void)keyboardAccessoryVoiceSearchTouchUpInside:(UIView*)view {
-  if (ios::GetChromeBrowserProvider()
-          ->GetVoiceSearchProvider()
-          ->IsVoiceSearchEnabled()) {
-    [self.dispatcher preloadVoiceSearch];
+- (void)keyboardAccessoryVoiceSearchTapped:(id)sender {
+  if (ios::provider::IsVoiceSearchEnabled()) {
+    [self.browserCommandsHandler preloadVoiceSearch];
     base::RecordAction(base::UserMetricsAction("MobileCustomRowVoiceSearch"));
-    // Since the keyboard accessory view is in a different window than the main
-    // UIViewController upon which Voice Search will be presented, the guide
-    // must be constrained to a frame instead of the view itself.  The keyboard
-    // and its accessory view will be dismissed at the bottom of the screen
-    // before the presentation animation, so bottom-align the view's frame.
-    if (self.voiceSearchButtonGuide) {
-      self.voiceSearchButtonGuide.autoresizingMask =
-          (UIViewAutoresizingFlexibleTopMargin |
-           UIViewAutoresizingFlexibleRightMargin);
-      CGRect frame = view.frame;
-      frame.origin.y =
-          CGRectGetMaxY(self.voiceSearchButtonGuide.owningView.bounds) -
-          CGRectGetHeight(frame);
-      self.voiceSearchButtonGuide.constrainedFrame = frame;
+    // Voice Search will query kVoiceSearchButtonGuide to know from where to
+    // start its animation, so reference the sender under that name. The sender
+    // can be a regular view or a bar button item. Handle both cases.
+    UIView* view;
+    if ([sender isKindOfClass:[UIView class]]) {
+      view = base::mac::ObjCCastStrict<UIView>(sender);
+    } else if ([sender isKindOfClass:[UIBarButtonItem class]]) {
+      view = [sender valueForKey:@"view"];
     }
-    [self.dispatcher startVoiceSearch];
+    DCHECK(view);
+    [self.layoutGuideCenter referenceView:view
+                                underName:kVoiceSearchButtonGuide];
+    [self.applicationCommandsHandler startVoiceSearch];
   }
 }
 
-- (void)keyboardAccessoryCameraSearchTouchUp {
+- (void)keyboardAccessoryCameraSearchTapped {
   base::RecordAction(base::UserMetricsAction("MobileCustomRowCameraSearch"));
-  [self.dispatcher showQRScanner];
+  [self.qrScannerCommandsHandler showQRScanner];
 }
 
 - (void)keyPressed:(NSString*)title {

@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/feature_engagement",
   "+components/google/core/common/google_util.h",
   "+components/grit/components_scaled_resources.h",
   "+components/history/core/browser",
@@ -19,7 +20,7 @@ include_rules = [
   "+components/version_info",
   "+components/webdata/common",
   "+components/webdata_services",
-  "+content/public/test",
+  "+components/messages/android/messages_feature.h",
   "+crypto/hkdf.h",
   "+crypto/random.h",
   "+google_apis/gaia",
@@ -38,6 +39,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  ".*test.(cc|h)": [
+    "+content/public/test",
+  ],
   "autofill_download_manager_unittest\.cc": [
     "+services/network/test",
   ],
@@ -51,17 +55,20 @@ specific_include_rules = {
     "+device/fido/authenticator_selection_criteria.h",
     "+device/fido/fido_constants.h",
     "+device/fido/fido_types.h",
-    "+third_party/blink/public/mojom/webauthn/authenticator.mojom.h",
+    "+third_party/blink/public/mojom/webauthn",
   ],
   "(test_)?internal_authenticator\.h": [
     "+device/fido/fido_constants.h",
-    "+third_party/blink/public/mojom/webauthn/authenticator.mojom.h",
+    "+third_party/blink/public/mojom/webauthn",
   ],
   "autofill_driver\.h": [
-    "+third_party/blink/public/mojom/webauthn/internal_authenticator.mojom.h"
+    "+third_party/blink/public/mojom/webauthn",
   ],
   "test_autofill_driver\.h": [
     "+components/autofill/content/browser/content_autofill_driver.h"
+  ],
+  "credit_card_access_manager_unittest\.cc": [
+    "+content/public/test",
   ],
   "credit_card_save_manager_unittest\.cc": [
     "+components/ukm",
@@ -71,5 +78,8 @@ specific_include_rules = {
   ],
   "password_requirements_spec_fetcher_unittest\.cc": [
     "+services/network/test",
-  ]
+  ],
+  "autofill_image_fetcher(_unittest)?\.cc": [
+    "+components/image_fetcher",
+  ],
 }

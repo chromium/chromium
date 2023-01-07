@@ -1,19 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/base/datagram_buffer.h"
 
-#include <cstring>
+#include "base/memory/ptr_util.h"
 
-#include "net/third_party/quiche/src/quic/platform/api/quic_ptr_util.h"
+#include <cstring>
 
 namespace net {
 
 DatagramBufferPool::DatagramBufferPool(size_t max_buffer_size)
     : max_buffer_size_(max_buffer_size) {}
 
-DatagramBufferPool::~DatagramBufferPool() {}
+DatagramBufferPool::~DatagramBufferPool() = default;
 
 void DatagramBufferPool::Enqueue(const char* buffer,
                                  size_t buf_len,
@@ -21,8 +21,7 @@ void DatagramBufferPool::Enqueue(const char* buffer,
   DCHECK_LE(buf_len, max_buffer_size_);
   std::unique_ptr<DatagramBuffer> datagram_buffer;
   if (free_list_.empty()) {
-    datagram_buffer = quic::QuicWrapUnique<DatagramBuffer>(
-        new DatagramBuffer(max_buffer_size_));
+    datagram_buffer = base::WrapUnique(new DatagramBuffer(max_buffer_size_));
   } else {
     datagram_buffer = std::move(free_list_.front());
     free_list_.pop_front();
@@ -39,9 +38,9 @@ void DatagramBufferPool::Dequeue(DatagramBuffers* buffers) {
 }
 
 DatagramBuffer::DatagramBuffer(size_t max_buffer_size)
-    : data_(new char[max_buffer_size]), length_(0) {}
+    : data_(std::make_unique<char[]>(max_buffer_size)) {}
 
-DatagramBuffer::~DatagramBuffer() {}
+DatagramBuffer::~DatagramBuffer() = default;
 
 void DatagramBuffer::Set(const char* buffer, size_t buf_len) {
   length_ = buf_len;

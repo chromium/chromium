@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -474,6 +474,8 @@ class _IRBuilder(object):
                     # Discard the arguments.
                     arguments = ()
                     name = child.GetName()
+                else:
+                    assert False
 
             return ExtendedAttribute(
                 key=key, values=values, arguments=arguments, name=name)
@@ -608,30 +610,28 @@ class _IRBuilder(object):
         iter_map[Identifier('entries')].is_iterator = True
         iter_ops = list(iter_map.values())
         read_ops = [
-            self._create_operation(
-                Identifier('get'),
-                arguments=self._create_arguments([
-                    (Identifier('key'), key_type),
-                ]),
-                return_type=value_type,
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'getForBinding',
-                },
-                node=node),
-            self._create_operation(
-                Identifier('has'),
-                arguments=self._create_arguments([
-                    (Identifier('key'), key_type),
-                ]),
-                return_type='boolean',
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'hasForBinding',
-                },
-                node=node),
+            self._create_operation(Identifier('get'),
+                                   arguments=self._create_arguments([
+                                       (Identifier('key'), key_type),
+                                   ]),
+                                   return_type='any',
+                                   extended_attributes={
+                                       'CallWith': 'ScriptState',
+                                       'RaisesException': None,
+                                       'ImplementedAs': 'getForBinding',
+                                   },
+                                   node=node),
+            self._create_operation(Identifier('has'),
+                                   arguments=self._create_arguments([
+                                       (Identifier('key'), key_type),
+                                   ]),
+                                   return_type='boolean',
+                                   extended_attributes={
+                                       'CallWith': 'ScriptState',
+                                       'RaisesException': None,
+                                       'ImplementedAs': 'hasForBinding',
+                                   },
+                                   node=node),
         ]
         write_ops = [
             self._create_operation(
@@ -837,6 +837,14 @@ class _IRBuilder(object):
                 extended_attributes=extended_attributes,
                 debug_info=self._build_debug_info(node))
 
+        def build_observable_array_type(node, extended_attributes):
+            assert len(node.GetChildren()) == 1
+            return self._idl_type_factory.observable_array_type(
+                element_type=self._build_type(node.GetChildren()[0]),
+                is_optional=is_optional,
+                extended_attributes=extended_attributes,
+                debug_info=self._build_debug_info(node))
+
         def build_promise_type(node, extended_attributes):
             assert len(node.GetChildren()) == 1
             return self._idl_type_factory.promise_type(
@@ -880,7 +888,7 @@ class _IRBuilder(object):
         def build_simple_type(node, extended_attributes):
             name = node.GetName()
             if name is None:
-                assert node.GetClass() == 'Any'
+                assert node.GetClass() in ('Any', 'Undefined')
                 name = node.GetClass().lower()
             if node.GetProperty('UNRESTRICTED'):
                 name = 'unrestricted {}'.format(name)
@@ -908,9 +916,11 @@ class _IRBuilder(object):
             'Int8Array',
             'Int16Array',
             'Int32Array',
+            'BigInt64Array',
             'Uint8Array',
             'Uint16Array',
             'Uint32Array',
+            'BigUint64Array',
             'Uint8ClampedArray',
             'Float32Array',
             'Float64Array',
@@ -922,12 +932,14 @@ class _IRBuilder(object):
         build_functions = {
             'Any': build_simple_type,
             'FrozenArray': build_frozen_array_type,
+            'ObservableArray': build_observable_array_type,
             'PrimitiveType': build_simple_type,
             'Promise': build_promise_type,
             'Record': build_record_type,
             'Sequence': build_sequence_type,
             'StringType': build_simple_type,
             'Typeref': build_reference_type,
+            'Undefined': build_simple_type,
             'UnionType': build_union_type,
         }
         return build_functions[body_node.GetClass()](

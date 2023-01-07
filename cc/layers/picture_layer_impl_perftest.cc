@@ -1,7 +1,8 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/picture_layer_impl.h"
 
 #include "base/threading/thread_task_runner_handle.h"
@@ -39,7 +40,7 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
  public:
   PictureLayerImplPerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   PictureLayerImplPerfTest(const PictureLayerImplPerfTest&) = delete;
@@ -96,9 +97,9 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
     host_impl()
         ->pending_tree()
         ->property_trees()
-        ->scroll_tree.UpdateScrollOffsetBaseForTesting(
-            pending_layer_->element_id(),
-            gfx::ScrollOffset(viewport.x(), viewport.y()));
+        ->scroll_tree_mutable()
+        .UpdateScrollOffsetBaseForTesting(pending_layer_->element_id(),
+                                          gfx::PointF(viewport.origin()));
     host_impl()->pending_tree()->UpdateDrawProperties();
 
     timer_.Reset();
@@ -144,9 +145,9 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
     host_impl()
         ->pending_tree()
         ->property_trees()
-        ->scroll_tree.UpdateScrollOffsetBaseForTesting(
-            pending_layer_->element_id(),
-            gfx::ScrollOffset(viewport.x(), viewport.y()));
+        ->scroll_tree_mutable()
+        .UpdateScrollOffsetBaseForTesting(pending_layer_->element_id(),
+                                          gfx::PointF(viewport.origin()));
     host_impl()->pending_tree()->UpdateDrawProperties();
 
     timer_.Reset();
@@ -172,7 +173,7 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
     return reporter;
   }
 
-  FakePictureLayerImpl* pending_layer_;
+  raw_ptr<FakePictureLayerImpl> pending_layer_;
   base::LapTimer timer_;
 };
 

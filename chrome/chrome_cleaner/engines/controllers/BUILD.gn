@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -152,7 +152,7 @@ source_set("unittest_sources") {
     "//chrome/chrome_cleaner/engines/broker:engine_client_mock",
     "//chrome/chrome_cleaner/engines/common",
     "//chrome/chrome_cleaner/ipc:chrome_prompt_ipc",
-    "//chrome/chrome_cleaner/ipc:mock_chrome_prompt_ipc",
+    "//chrome/chrome_cleaner/ipc:chrome_prompt_test_util",
     "//chrome/chrome_cleaner/logging:common",
     "//chrome/chrome_cleaner/logging:mock_logging_service",
     "//chrome/chrome_cleaner/logging/proto:removal_status_proto",

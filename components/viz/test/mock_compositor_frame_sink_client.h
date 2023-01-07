@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,11 @@ namespace viz {
 class MockCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
  public:
   MockCompositorFrameSinkClient();
+
+  MockCompositorFrameSinkClient(const MockCompositorFrameSinkClient&) = delete;
+  MockCompositorFrameSinkClient& operator=(
+      const MockCompositorFrameSinkClient&) = delete;
+
   ~MockCompositorFrameSinkClient() override;
 
   void set_disconnect_handler(base::OnceClosure error_handler) {
@@ -32,10 +37,10 @@ class MockCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
 
   // mojom::CompositorFrameSinkClient implementation.
   MOCK_METHOD1(DidReceiveCompositorFrameAck,
-               void(const std::vector<ReturnedResource>&));
+               void(std::vector<ReturnedResource>));
   MOCK_METHOD2(OnBeginFrame,
                void(const BeginFrameArgs&, const FrameTimingDetailsMap&));
-  MOCK_METHOD1(ReclaimResources, void(const std::vector<ReturnedResource>&));
+  MOCK_METHOD1(ReclaimResources, void(std::vector<ReturnedResource>));
   MOCK_METHOD2(WillDrawSurface, void(const LocalSurfaceId&, const gfx::Rect&));
   MOCK_METHOD1(OnBeginFramePausedChanged, void(bool paused));
   MOCK_METHOD1(OnCompositorFrameTransitionDirectiveProcessed,
@@ -43,8 +48,6 @@ class MockCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
 
  private:
   mojo::Receiver<mojom::CompositorFrameSinkClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockCompositorFrameSinkClient);
 };
 
 }  // namespace viz

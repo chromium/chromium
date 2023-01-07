@@ -1,0 +1,20 @@
+<div>
+  <iron-pages attr-for-selected="id" selected="[[currentState_]]">
+    <search-page id="searchPage" on-continue-click="handleContinueClick_"
+        feedback-context="[[feedbackContext_]]"
+        description-template="[[descriptionTemplate_]]"
+        help-content-search-result-count="{{helpContentSearchResultCount_}}"
+        no-help-content-displayed="{{noHelpContentDisplayed_}}">
+    </search-page>
+    <share-data-page id="shareDataPage" feedback-context="[[feedbackContext_]]"
+        should-show-assistant-checkbox="[[shouldShowAssistantCheckbox_]]"
+        should-show-bluetooth-checkbox="[[shouldShowBluetoothCheckbox_]]"
+        on-continue-click="handleContinueClick_"
+        on-go-back-click="handleGoBackClick_">
+    </share-data-page>
+    <confirmation-page id="confirmationPage"
+        send-report-status="[[sendReportStatus_]]"
+        on-go-back-click="handleGoBackClick_">
+    </confirmation-page>
+  </iron-pages>
+</div>

@@ -1,6 +1,6 @@
 ;;; gn-mode.el - A major mode for editing gn files.
 
-;; Copyright 2015 The Chromium Authors. All rights reserved.
+;; Copyright 2015 The Chromium Authors
 ;; Use of this source code is governed by a BSD-style license that can be
 ;; found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 
 ;; A major mode for editing GN files. GN stands for Generate Ninja. GN is the
 ;; meta build system used in Chromium. For more information on GN, see the GN
-;; manual: <https://chromium.googlesource.com/chromium/src/+/master/tools/gn/README.md>
+;; manual: <https://chromium.googlesource.com/chromium/src/+/main/tools/gn/README.md>
 
 ;;; To Do:
 

@@ -20,10 +20,15 @@
 
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -41,6 +46,7 @@
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/lazy_load_frame_observer.h"
 #include "third_party/blink/renderer/core/html/loading_attribute.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -48,17 +54,18 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/loader/url_matcher.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -122,38 +129,116 @@ bool IsFrameLazyLoadable(ExecutionContext* context,
   return true;
 }
 
-bool ShouldLazilyLoadFrame(const Document& document,
-                           bool is_loading_attr_lazy) {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AutomaticLazyLoadFrame {
+  kFeatureNotEnabled = 0,
+  kTargetFramesNotFound = 1,
+  kTargetFramesFound = 2,
+  kMaxValue = kTargetFramesFound,
+};
+
+int GetLazyAdsSkipFrameCount() {
+  DCHECK(
+      base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds));
+  static const int skip_frame_count = features::kSkipFrameCountForLazyAds.Get();
+  return skip_frame_count;
+}
+
+int GetLazyEmbedsSkipFrameCount() {
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kAutomaticLazyFrameLoadingToEmbeds));
+  static const int skip_frame_count =
+      features::kSkipFrameCountForLazyEmbeds.Get();
+  return skip_frame_count;
+}
+
+bool CheckAndRecordIfShouldLazilyLoadFrame(const Document& document,
+                                           bool is_loading_attr_lazy,
+                                           bool is_eligible_for_lazy_embeds,
+                                           bool is_eligible_for_lazy_ads,
+                                           bool record_uma) {
   DCHECK(document.GetSettings());
   if (!RuntimeEnabledFeatures::LazyFrameLoadingEnabled() ||
       !document.GetSettings()->GetLazyLoadEnabled()) {
     return false;
   }
 
-  // Disable explicit and automatic lazyload for backgrounded pages.
+  // Disable explicit lazyload for backgrounded pages.
   if (!document.IsPageVisible())
     return false;
 
   if (is_loading_attr_lazy)
     return true;
-  if (!RuntimeEnabledFeatures::AutomaticLazyFrameLoadingEnabled())
-    return false;
 
-  // If lazy loading is restricted to only Data Saver users, then avoid
-  // lazy loading unless Data Saver is enabled, taking the Data Saver
-  // holdback into consideration.
-  if (RuntimeEnabledFeatures::
-          RestrictAutomaticLazyFrameLoadingToDataSaverEnabled() &&
-      !GetNetworkStateNotifier().SaveDataEnabled()) {
+  Document& top_document = document.TopDocument();
+  if (top_document.Loader() &&
+      top_document.Loader()->IsReloadedOrFormSubmitted()) {
     return false;
   }
 
-  // Skip automatic lazyload when reloading a page.
-  if (!RuntimeEnabledFeatures::AutoLazyLoadOnReloadsEnabled() &&
-      document.Loader() && IsReloadLoadType(document.Loader()->LoadType())) {
-    return false;
+  if (record_uma) {
+    base::UmaHistogramEnumeration(
+        "Blink.AutomaticLazyLoadFrame",
+        !base::FeatureList::IsEnabled(
+            features::kAutomaticLazyFrameLoadingToEmbeds)
+            ? AutomaticLazyLoadFrame::kFeatureNotEnabled
+            : is_eligible_for_lazy_embeds
+                  ? AutomaticLazyLoadFrame::kTargetFramesFound
+                  : AutomaticLazyLoadFrame::kTargetFramesNotFound);
   }
-  return true;
+
+  if (is_eligible_for_lazy_embeds) {
+    top_document.IncrementLazyEmbedsFrameCount();
+    UseCounter::Count(top_document, WebFeature::kAutomaticLazyEmbeds);
+  }
+
+  if (is_eligible_for_lazy_ads) {
+    top_document.IncrementLazyAdsFrameCount();
+    UseCounter::Count(top_document, WebFeature::kAutomaticLazyAds);
+  }
+
+  if (is_eligible_for_lazy_embeds &&
+      base::FeatureList::IsEnabled(
+          features::kAutomaticLazyFrameLoadingToEmbeds) &&
+      document.GetImmediateChildFrameCreationCount() >
+          GetLazyEmbedsSkipFrameCount()) {
+    return true;
+  }
+
+  if (is_eligible_for_lazy_ads &&
+      base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds) &&
+      document.GetImmediateChildFrameCreationCount() >
+          GetLazyAdsSkipFrameCount()) {
+    return true;
+  }
+
+  return false;
+}
+
+// Checks if the passed url is the same origin with the document.
+// This is called in order to limit LazyEmbeds/Ads to apply only cross-origin
+// frames.
+// We're not sure if this is 100% needed, and we should move the check closer
+// to context->GetSecurityOrigin()->CanAccess check.
+bool AreSameOrigin(const Document& document, const KURL& url) {
+  return SecurityOrigin::AreSameOrigin(url, document.Url());
+}
+
+const base::TimeDelta GetLazyEmbedsTimeoutMs() {
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kAutomaticLazyFrameLoadingToEmbeds));
+  static const base::TimeDelta timeout_ms =
+      base::Milliseconds(features::kTimeoutMillisForLazyEmbeds.Get());
+  return timeout_ms;
+}
+
+const base::TimeDelta GetLazyAdsTimeoutMs() {
+  DCHECK(
+      base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds));
+  static const base::TimeDelta timeout_ms =
+      base::Milliseconds(features::kTimeoutMillisForLazyAds.Get());
+  return timeout_ms;
 }
 
 }  // namespace
@@ -182,10 +267,9 @@ void HTMLFrameOwnerElement::PluginDisposeSuspendScope::
 HTMLFrameOwnerElement::HTMLFrameOwnerElement(const QualifiedName& tag_name,
                                              Document& document)
     : HTMLElement(tag_name, document),
-      content_frame_(nullptr),
-      embedded_content_view_(nullptr),
-      should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)),
-      is_swapping_frames_(false) {}
+      should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)) {
+  document.IncrementImmediateChildFrameCreationCount();
+}
 
 LayoutEmbeddedContent* HTMLFrameOwnerElement::GetLayoutEmbeddedContent() const {
   // HTMLObjectElement and HTMLEmbedElement may return arbitrary layoutObjects
@@ -305,16 +389,6 @@ void HTMLFrameOwnerElement::SetSandboxFlags(
   }
 }
 
-void HTMLFrameOwnerElement::SetDisallowDocumentAccesss(bool disallowed) {
-  frame_policy_.disallow_document_access = disallowed;
-  // Don't notify about updates if ContentFrame() is null, for example when
-  // the subframe hasn't been created yet.
-  if (ContentFrame()) {
-    GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeFramePolicy(
-        ContentFrame()->GetFrameToken(), frame_policy_);
-  }
-}
-
 bool HTMLFrameOwnerElement::IsKeyboardFocusable() const {
   return content_frame_ && HTMLElement::IsKeyboardFocusable();
 }
@@ -390,40 +464,12 @@ void HTMLFrameOwnerElement::FrameOwnerPropertiesChanged() {
   properties->allow_payment_request = AllowPaymentRequest();
   properties->is_display_none = IsDisplayNone();
   properties->color_scheme = GetColorScheme();
-  properties->required_csp =
-      RequiredCsp().IsNull() ? WTF::g_empty_string : RequiredCsp();
 
   GetDocument()
       .GetFrame()
       ->GetLocalFrameHostRemote()
       .DidChangeFrameOwnerProperties(ContentFrame()->GetFrameToken(),
                                      std::move(properties));
-}
-
-void HTMLFrameOwnerElement::CSPAttributeChanged() {
-  // Don't notify about updates if ContentFrame() is null, for example when
-  // the subframe hasn't been created yet; or if we are in the middle of
-  // swapping one frame for another, in which case the final state
-  // will be propagated at the end of the swapping operation.
-  if (is_swapping_frames_ || !ContentFrame())
-    return;
-
-  // ParseContentSecurityPolicies needs a url to resolve report endpoints and
-  // for matching the keyword 'self'. However, the csp attribute does not allow
-  // report endpoints. Moreover, in the csp attribute, 'self' should not match
-  // the owner's url, but rather the frame src url. This is taken care by the
-  // Content-Security-Policy Embedded Enforcement algorithm, implemented in the
-  // NavigationRequest. That's why we pass an empty url here.
-  Vector<network::mojom::blink::ContentSecurityPolicyPtr> csp =
-      ParseContentSecurityPolicies(
-          RequiredCsp(),
-          network::mojom::blink::ContentSecurityPolicyType::kEnforce,
-          network::mojom::blink::ContentSecurityPolicySource::kHTTP, KURL());
-  DCHECK_LE(csp.size(), 1u);
-
-  GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeCSPAttribute(
-      ContentFrame()->GetFrameToken(),
-      csp.IsEmpty() ? nullptr : std::move(csp[0]));
 }
 
 void HTMLFrameOwnerElement::AddResourceTiming(const ResourceTimingInfo& info) {
@@ -512,11 +558,123 @@ EmbeddedContentView* HTMLFrameOwnerElement::ReleaseEmbeddedContentView() {
   return embedded_content_view_.Release();
 }
 
+bool HTMLFrameOwnerElement::LoadImmediatelyIfLazy() {
+  if (!lazy_load_frame_observer_)
+    return false;
+
+  bool lazy_load_pending = lazy_load_frame_observer_->IsLazyLoadPending();
+  if (lazy_load_pending)
+    lazy_load_frame_observer_->LoadImmediately();
+  return lazy_load_pending;
+}
+
+bool HTMLFrameOwnerElement::LazyLoadIfPossible(
+    const KURL& url,
+    const ResourceRequestHead& request,
+    WebFrameLoadType frame_load_type) {
+  const auto& loading_attr = FastGetAttribute(html_names::kLoadingAttr);
+  bool loading_lazy_set = EqualIgnoringASCIICase(loading_attr, "lazy");
+
+  if (!IsFrameLazyLoadable(GetExecutionContext(), url, loading_lazy_set,
+                           should_lazy_load_children_)) {
+    return false;
+  }
+
+  // Avoid automatically deferring subresources inside
+  // a lazily loaded frame. This will make it possible
+  // for subresources in hidden frames to load that
+  // will never be visible, as well as make it so that
+  // deferred frames that have multiple layers of
+  // iframes inside them can load faster once they're
+  // near the viewport or visible.
+  should_lazy_load_children_ = false;
+
+  if (lazy_load_frame_observer_)
+    lazy_load_frame_observer_->CancelPendingLazyLoad();
+
+  lazy_load_frame_observer_ = MakeGarbageCollected<LazyLoadFrameObserver>(
+      *this, LazyLoadFrameObserver::LoadType::kSubsequent);
+
+  if (RuntimeEnabledFeatures::LazyFrameVisibleLoadTimeMetricsEnabled())
+    lazy_load_frame_observer_->StartTrackingVisibilityMetrics();
+
+  // TODO(crbug.com/1341892) Remove having multiple booleans here. We eventually
+  // select one reason to decide the timeout, so essentially we don't have to
+  // keep them. But currently we need these two booleans separately to record
+  // UKM in CheckAndRecordIfShouldLazilyLoadFrame. Once we confirm that we can
+  // ignore AutomaticLazyLoadReason::kBothEmbedsAndAds case due to the small
+  // amount of the data size, we remove these booleans and
+  // AutomaticLazyLoadReason::kBothEmbedsAndAds.
+  const bool is_eligible_for_lazy_embeds = IsEligibleForLazyEmbeds(url);
+  const bool is_eligible_for_lazy_ads = IsEligibleForLazyAds(url);
+  AutomaticLazyLoadReason auto_lazy_load_reason;
+  if (is_eligible_for_lazy_embeds && is_eligible_for_lazy_ads) {
+    auto_lazy_load_reason = AutomaticLazyLoadReason::kBothEmbedsAndAds;
+  } else if (is_eligible_for_lazy_embeds) {
+    auto_lazy_load_reason = AutomaticLazyLoadReason::kEmbeds;
+  } else if (is_eligible_for_lazy_ads) {
+    auto_lazy_load_reason = AutomaticLazyLoadReason::kAds;
+  } else {
+    auto_lazy_load_reason = AutomaticLazyLoadReason::kNotEligible;
+  }
+  base::UmaHistogramEnumeration("Blink.AutomaticLazyFrameLoad.Reason",
+                                auto_lazy_load_reason);
+
+  if (CheckAndRecordIfShouldLazilyLoadFrame(GetDocument(), loading_lazy_set,
+                                            is_eligible_for_lazy_embeds,
+                                            is_eligible_for_lazy_ads,
+                                            /*record_uma=*/true)) {
+    lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
+                                                          frame_load_type);
+    MaybeSetTimeoutToStartFrameLoading(url, loading_lazy_set,
+                                       auto_lazy_load_reason);
+
+    return true;
+  }
+  return false;
+}
+
+bool HTMLFrameOwnerElement::IsCurrentlyWithinFrameLimit() const {
+  LocalFrame* frame = GetDocument().GetFrame();
+  if (!frame)
+    return false;
+  Page* page = frame->GetPage();
+  if (!page)
+    return false;
+  return page->SubframeCount() < Page::MaxNumberOfFrames();
+}
+
 bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
     const KURL& url,
     const AtomicString& frame_name,
     bool replace_current_item) {
   TRACE_EVENT0("navigation", "HTMLFrameOwnerElement::LoadOrRedirectSubframe");
+
+  // TODO(crbug.com/1123606): Remove this once we move to the MPArch
+  // implementation. If this is the "top-level" internal <iframe> hosted within
+  // a <fencedframe> element using the ShadowDOM implementation, then we need to
+  // mark |frame_policy_| as `is_fenced=true`, so that the LocalFrame inside
+  // this frame can react accordingly. See
+  // https://docs.google.com/document/d/1ijTZJT3DHQ1ljp4QQe4E4XCCRaYAxmInNzN1SzeJM8s/edit.
+  if (ContainingShadowRoot() && ContainingShadowRoot()->IsUserAgent() &&
+      IsA<HTMLFencedFrameElement>(ContainingShadowRoot()->host())) {
+    // Note that if a fenced frame's `is_fenced`, `mode`, or `sandbox_flags`
+    // attribute ever changes, the browser process will terminate the renderer
+    // since this should never happen. Therefore it is safe to just naively
+    // always set it here because:
+    //   - A fenced frame always has `is_fenced = true`
+    //   - A fenced frame's mode is only settable once, enforced by
+    //     `HTMLFencedFrameElement::ParseAttribute()` as well as the browser
+    //     process
+    //   - A fenced frame's sandbox flags must be set to
+    //     kFencedFrameForcedSandboxFlags
+    frame_policy_.is_fenced = true;
+    frame_policy_.fenced_frame_mode =
+        DynamicTo<HTMLFencedFrameElement>(ContainingShadowRoot()->host())
+            ->GetMode();
+    frame_policy_.sandbox_flags = blink::kFencedFrameForcedSandboxFlags;
+  }
+
   // Update the |should_lazy_load_children_| value according to the "loading"
   // attribute immediately, so that it still gets respected even if the "src"
   // attribute gets parsed in ParseAttribute() before the "loading" attribute
@@ -539,40 +697,32 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   if (trust_token_params)
     request.SetTrustTokenParams(*trust_token_params);
 
-  const auto& loading_attr = FastGetAttribute(html_names::kLoadingAttr);
-  bool loading_lazy_set = EqualIgnoringASCIICase(loading_attr, "lazy");
-
   if (ContentFrame()) {
     FrameLoadRequest frame_load_request(GetDocument().domWindow(), request);
+    // TODO(crbug.com/1123606): This is how we're temporarily restricting the
+    // referrer string on top-level frenced frame requests initiated from
+    // outside of the frame. The intention here is to redact the ultimate value
+    // of `document.referrer` so that it is consistent with what the MPArch
+    // version of fenced frames will show. We'll remove this after we've moved
+    // to the MPArch version and away from the ShadowDOM implementation. The
+    // reason we have this check here is because we only want to take this
+    // action for navigations initiated by the fenced frame's embedder. We don't
+    // need this for the initial about:blank document (i.e., when
+    // `ContentFrame()` is null) because that is taken care of for us with the
+    // shadow DOM.
+    if (frame_policy_.is_fenced) {
+      frame_load_request.GetResourceRequest().SetReferrerString("");
+    }
     frame_load_request.SetClientRedirectReason(
         ClientNavigationReason::kFrameNavigation);
     WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
     if (replace_current_item)
       frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
 
-    if (IsFrameLazyLoadable(GetExecutionContext(), url, loading_lazy_set,
-                            should_lazy_load_children_)) {
-      // Avoid automatically deferring subresources inside a lazily loaded
-      // frame. This will make it possible for subresources in hidden frames to
-      // load that will never be visible, as well as make it so that deferred
-      // frames that have multiple layers of iframes inside them can load faster
-      // once they're near the viewport or visible.
-      should_lazy_load_children_ = false;
-
-      if (lazy_load_frame_observer_)
-        lazy_load_frame_observer_->CancelPendingLazyLoad();
-
-      lazy_load_frame_observer_ = MakeGarbageCollected<LazyLoadFrameObserver>(
-          *this, LazyLoadFrameObserver::LoadType::kSubsequent);
-
-      if (RuntimeEnabledFeatures::LazyFrameVisibleLoadTimeMetricsEnabled())
-        lazy_load_frame_observer_->StartTrackingVisibilityMetrics();
-
-      if (ShouldLazilyLoadFrame(GetDocument(), loading_lazy_set)) {
-        lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
-                                                              frame_load_type);
-        return true;
-      }
+    // Check if the existing frame is eligible to be lazy-loaded. This method
+    // should be called before starting the navigation.
+    if (LazyLoadIfPossible(url, request, frame_load_type)) {
+      return true;
     }
 
     ContentFrame()->Navigate(frame_load_request, frame_load_type);
@@ -593,11 +743,15 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   if (!child_frame)
     return false;
 
-  // Send 'csp' attribute to the browser.
-  CSPAttributeChanged();
+  // Propagate attributes like 'csp' or 'anonymous' to the browser process.
+  DidChangeAttributes();
 
   WebFrameLoadType child_load_type = WebFrameLoadType::kReplaceCurrentItem;
-  if (!GetDocument().LoadEventFinished() &&
+  // If the frame URL is not about:blank, see if it should do a
+  // kReloadBypassingCache navigation, following the parent frame. If the frame
+  // URL is about:blank, it should be committed synchronously as a
+  // kReplaceCurrentItem navigation (see https://crbug.com/778318).
+  if (url != BlankURL() && !GetDocument().LoadEventFinished() &&
       GetDocument().Loader()->LoadType() ==
           WebFrameLoadType::kReloadBypassingCache) {
     child_load_type = WebFrameLoadType::kReloadBypassingCache;
@@ -611,27 +765,11 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   if (IsPlugin())
     request.SetSkipServiceWorker(true);
 
+  // Check if the newly created child frame is eligible to be lazy-loaded.
+  // This method should be called before starting the navigation.
   if (!lazy_load_frame_observer_ &&
-      IsFrameLazyLoadable(GetExecutionContext(), url, loading_lazy_set,
-                          should_lazy_load_children_)) {
-    // Avoid automatically deferring subresources inside a lazily loaded frame.
-    // This will make it possible for subresources in hidden frames to load that
-    // will never be visible, as well as make it so that deferred frames that
-    // have multiple layers of iframes inside them can load faster once they're
-    // near the viewport or visible.
-    should_lazy_load_children_ = false;
-
-    lazy_load_frame_observer_ = MakeGarbageCollected<LazyLoadFrameObserver>(
-        *this, LazyLoadFrameObserver::LoadType::kFirst);
-
-    if (RuntimeEnabledFeatures::LazyFrameVisibleLoadTimeMetricsEnabled())
-      lazy_load_frame_observer_->StartTrackingVisibilityMetrics();
-
-    if (ShouldLazilyLoadFrame(GetDocument(), loading_lazy_set)) {
-      lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
-                                                            child_load_type);
-      return true;
-    }
+      LazyLoadIfPossible(url, request, child_load_type)) {
+    return true;
   }
 
   FrameLoadRequest frame_load_request(GetDocument().domWindow(), request);
@@ -667,8 +805,11 @@ void HTMLFrameOwnerElement::ParseAttribute(
     // loading is disabled.
     if (loading == LoadingAttributeValue::kEager ||
         (GetDocument().GetSettings() &&
-         !ShouldLazilyLoadFrame(GetDocument(),
-                                loading == LoadingAttributeValue::kLazy))) {
+         !CheckAndRecordIfShouldLazilyLoadFrame(
+             GetDocument(), loading == LoadingAttributeValue::kLazy,
+             /*is_eligible_for_lazy_embeds=*/false,
+             /*is_eligible_for_lazy_ads=*/false,
+             /*record_uma=*/false))) {
       should_lazy_load_children_ = false;
       if (lazy_load_frame_observer_ &&
           lazy_load_frame_observer_->IsLazyLoadPending()) {
@@ -680,16 +821,95 @@ void HTMLFrameOwnerElement::ParseAttribute(
   }
 }
 
+bool HTMLFrameOwnerElement::IsEligibleForLazyEmbeds(const KURL& url) const {
+#if DCHECK_IS_ON()
+  if (base::FeatureList::IsEnabled(
+          features::kAutomaticLazyFrameLoadingToEmbeds)) {
+    DCHECK(base::FeatureList::IsEnabled(
+        features::kAutomaticLazyFrameLoadingToEmbedUrls))
+        << "kAutomaticLazyFrameLoadingToEmbedUrls should be enabled when "
+           "kAutomaticLazyFrameLoadingToEmbeds is enabled.";
+  }
+#endif  // DCHECK_IS_ON()
+
+  // LazyEmbeds targets are third-party frames.
+  // Not eligible if the frame url is a same-origin as the parent url.
+  if (AreSameOrigin(GetDocument(), url)) {
+    return false;
+  }
+
+  DEFINE_STATIC_LOCAL(
+      features::AutomaticLazyFrameLoadingToEmbedLoadingStrategy,
+      loading_strategy,
+      (features::kAutomaticLazyFrameLoadingToEmbedLoadingStrategyParam.Get()));
+
+  switch (loading_strategy) {
+    case features::AutomaticLazyFrameLoadingToEmbedLoadingStrategy::
+        kAllowList: {
+      DEFINE_STATIC_LOCAL(UrlMatcher, url_matcher,
+                          (UrlMatcher(base::GetFieldTrialParamValueByFeature(
+                              features::kAutomaticLazyFrameLoadingToEmbedUrls,
+                              "allowed_websites"))));
+      return url_matcher.Match(url);
+    }
+    case features::AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kNonAds:
+      return !IsAdRelated();
+  }
+}
+
 bool HTMLFrameOwnerElement::IsAdRelated() const {
   if (!content_frame_)
     return false;
 
-  return content_frame_->IsAdSubframe();
+  return content_frame_->IsAdFrame();
+}
+
+bool HTMLFrameOwnerElement::IsEligibleForLazyAds(const KURL& url) {
+  // LazyAds targets are third-party frames.
+  // Not eligible if the frame url is a same-origin as the parent url.
+  return IsAdRelated() && !AreSameOrigin(GetDocument(), url);
+}
+
+void HTMLFrameOwnerElement::MaybeSetTimeoutToStartFrameLoading(
+    const KURL& url,
+    bool is_loading_attr_lazy,
+    AutomaticLazyLoadReason auto_lazy_load_reason) {
+  // Even if the frame is ad related, respect the explicit loading="lazy"
+  // attribute and won't set a timeout if the attribute exists.
+  if (is_loading_attr_lazy) {
+    return;
+  }
+
+  base::TimeDelta timeout_ms;
+  switch (auto_lazy_load_reason) {
+    case AutomaticLazyLoadReason::kAds:
+      timeout_ms = GetLazyAdsTimeoutMs();
+      break;
+    // We prioritize LazyEmbeds if the frame is eligible for both reasons, at
+    // least until the LazyEmbeds experiment finishes to secure the chunk of
+    // group size.
+    case AutomaticLazyLoadReason::kBothEmbedsAndAds:
+    case AutomaticLazyLoadReason::kEmbeds:
+      timeout_ms = GetLazyEmbedsTimeoutMs();
+      break;
+    case AutomaticLazyLoadReason::kNotEligible:
+      // If the auto lazy-load is not elibible, do nothing and return.
+      return;
+  }
+
+  GetDocument()
+      .GetTaskRunner(TaskType::kInternalLoading)
+      ->PostDelayedTask(
+          FROM_HERE,
+          WTF::BindOnce(
+              base::IgnoreResult(&HTMLFrameOwnerElement::LoadImmediatelyIfLazy),
+              WrapWeakPersistent(this)),
+          timeout_ms);
 }
 
 mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
   if (const auto* style = GetComputedStyle())
-    return style->UsedColorSchemeForInitialColors();
+    return style->UsedColorScheme();
   return mojom::blink::ColorScheme::kLight;
 }
 

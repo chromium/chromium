@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.customtabs;
 
-import static junit.framework.Assert.assertEquals;
-
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -15,6 +14,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.os.Build;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -50,9 +51,8 @@ import java.util.Stack;
  * Tests for {@link CloseButtonNavigator}.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(sdk = 21, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
 public class CloseButtonNavigatorTest {
-
     @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{true}, {false}});
@@ -103,8 +103,8 @@ public class CloseButtonNavigatorTest {
         NavigationHistory history = new NavigationHistory();
 
         for (GURL url : urls) {
-            history.addEntry(new NavigationEntry(
-                    0, url, GURL.emptyGURL(), GURL.emptyGURL(), GURL.emptyGURL(), "", null, 0, 0));
+            history.addEntry(new NavigationEntry(0, url, GURL.emptyGURL(), GURL.emptyGURL(),
+                    GURL.emptyGURL(), "", null, 0, 0, /* isInitialEntry=*/false));
         }
 
         // Point to the most recent entry in history.
@@ -114,11 +114,9 @@ public class CloseButtonNavigatorTest {
         WebContents webContents = mock(WebContents.class);
         NavigationController navigationController = mock(NavigationController.class);
 
-        when(tab.getUrlString())
+        when(tab.getUrl())
                 .thenAnswer(invocation
-                        -> history.getEntryAtIndex(history.getCurrentEntryIndex())
-                                   .getUrl()
-                                   .getSpec());
+                        -> history.getEntryAtIndex(history.getCurrentEntryIndex()).getUrl());
         when(tab.getWebContents()).thenReturn(webContents);
         when(webContents.getNavigationController()).thenReturn(navigationController);
         when(navigationController.getNavigationHistory()).thenReturn(history);

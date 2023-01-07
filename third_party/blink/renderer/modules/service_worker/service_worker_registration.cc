@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,9 @@
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/navigation_preload_state.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_navigation_preload_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -21,10 +23,9 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_container.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_error.h"
-#include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
@@ -237,13 +238,14 @@ void ServiceWorkerRegistration::EnableNavigationPreload(
     bool enable,
     ScriptPromiseResolver* resolver) {
   host_->EnableNavigationPreload(
-      enable, WTF::Bind(&DidEnableNavigationPreload, WrapPersistent(resolver)));
+      enable,
+      WTF::BindOnce(&DidEnableNavigationPreload, WrapPersistent(resolver)));
 }
 
 void ServiceWorkerRegistration::GetNavigationPreloadState(
     ScriptPromiseResolver* resolver) {
   host_->GetNavigationPreloadState(
-      WTF::Bind(&DidGetNavigationPreloadState, WrapPersistent(resolver)));
+      WTF::BindOnce(&DidGetNavigationPreloadState, WrapPersistent(resolver)));
 }
 
 void ServiceWorkerRegistration::SetNavigationPreloadHeader(
@@ -251,7 +253,7 @@ void ServiceWorkerRegistration::SetNavigationPreloadHeader(
     ScriptPromiseResolver* resolver) {
   host_->SetNavigationPreloadHeader(
       value,
-      WTF::Bind(&DidSetNavigationPreloadHeader, WrapPersistent(resolver)));
+      WTF::BindOnce(&DidSetNavigationPreloadHeader, WrapPersistent(resolver)));
 }
 
 ScriptPromise ServiceWorkerRegistration::update(
@@ -265,10 +267,7 @@ ScriptPromise ServiceWorkerRegistration::update(
     return ScriptPromise();
   }
 
-  // The fetcher is lazily loaded in a worker global scope.
   auto* execution_context = ExecutionContext::From(script_state);
-  if (auto* global_scope = DynamicTo<WorkerGlobalScope>(execution_context))
-    global_scope->EnsureFetcher();
 
   const FetchClientSettingsObject& settings_object =
       execution_context->Fetcher()
@@ -284,9 +283,20 @@ ScriptPromise ServiceWorkerRegistration::update(
           : blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  host_->Update(
-      std::move(mojom_settings_object),
-      WTF::Bind(&DidUpdate, WrapPersistent(resolver), WrapPersistent(this)));
+
+  // Defer update() from a prerendered page until page activation.
+  // https://wicg.github.io/nav-speculation/prerendering.html#patch-service-workers
+  if (GetExecutionContext()->IsWindow()) {
+    Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
+    if (document->IsPrerendering()) {
+      document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+          &ServiceWorkerRegistration::UpdateInternal, WrapWeakPersistent(this),
+          std::move(mojom_settings_object), WrapPersistent(resolver)));
+      return resolver->Promise();
+    }
+  }
+
+  UpdateInternal(std::move(mojom_settings_object), resolver);
   return resolver->Promise();
 }
 
@@ -300,8 +310,22 @@ ScriptPromise ServiceWorkerRegistration::unregister(
                                       "associated provider is available.");
     return ScriptPromise();
   }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  host_->Unregister(WTF::Bind(&DidUnregister, WrapPersistent(resolver)));
+
+  // Defer unregister() from a prerendered page until page activation.
+  // https://wicg.github.io/nav-speculation/prerendering.html#patch-service-workers
+  if (GetExecutionContext()->IsWindow()) {
+    Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
+    if (document->IsPrerendering()) {
+      document->AddPostPrerenderingActivationStep(
+          WTF::BindOnce(&ServiceWorkerRegistration::UnregisterInternal,
+                        WrapWeakPersistent(this), WrapPersistent(resolver)));
+      return resolver->Promise();
+    }
+  }
+
+  UnregisterInternal(resolver);
   return resolver->Promise();
 }
 
@@ -358,6 +382,23 @@ void ServiceWorkerRegistration::SetUpdateViaCache(
 
 void ServiceWorkerRegistration::UpdateFound() {
   DispatchEvent(*Event::Create(event_type_names::kUpdatefound), "ServiceWorkerRegistration::UpdateFound");
+}
+
+void ServiceWorkerRegistration::UpdateInternal(
+    mojom::blink::FetchClientSettingsObjectPtr mojom_settings_object,
+    ScriptPromiseResolver* resolver) {
+  if (!host_)
+    return;
+  host_->Update(std::move(mojom_settings_object),
+                WTF::BindOnce(&DidUpdate, WrapPersistent(resolver),
+                              WrapPersistent(this)));
+}
+
+void ServiceWorkerRegistration::UnregisterInternal(
+    ScriptPromiseResolver* resolver) {
+  if (!host_)
+    return;
+  host_->Unregister(WTF::BindOnce(&DidUnregister, WrapPersistent(resolver)));
 }
 
 }  // namespace blink

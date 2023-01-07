@@ -1,0 +1,32 @@
+{
+  "short_name": "file editor",
+  "name": "super duper file editor",
+  "icons": [
+    {
+      "src": "icon128.png",
+      "sizes": "128x128"
+    }
+  ],
+  "start_url": "icons_app.html",
+  "display": "standalone",
+  "scope": "web_app_file_handling",
+  "file_handlers": [
+    {
+      "action": "icons_app_load.html",
+      "name": "Plain Text!",
+      "accept": {
+        "text/plain": [".txt", ".text"]
+      },
+      "launch-type": "single-client"
+    },
+    {
+      "action": "icons_app_load.html",
+      "name": "spreadsheet",
+      "accept": {
+        "text/csv": [".csv"],
+        "application/x-spreadsheet": [".sps"]
+      },
+      "launch-type": "multiple-clients"
+    }
+  ]
+}

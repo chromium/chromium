@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -753,8 +753,8 @@ const char* const kMachineModelNameForEntry26[4] = {
 };
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry26 = {
-    base::size(kMachineModelNameForEntry26),  // machine model name size
-    kMachineModelNameForEntry26,              // machine model names
+    std::size(kMachineModelNameForEntry26),  // machine model name size
+    kMachineModelNameForEntry26,             // machine model names
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // machine model version
@@ -807,7 +807,7 @@ const char* const kMachineModelNameForEntry27Exception0[1] = {
 };
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry27Exception0 = {
-    base::size(
+    std::size(
         kMachineModelNameForEntry27Exception0),  // machine model name size
     kMachineModelNameForEntry27Exception0,       // machine model names
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -843,8 +843,8 @@ const char* const kMachineModelNameForEntry28[1] = {
 };
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry28 = {
-    base::size(kMachineModelNameForEntry28),  // machine model name size
-    kMachineModelNameForEntry28,              // machine model names
+    std::size(kMachineModelNameForEntry28),  // machine model name size
+    kMachineModelNameForEntry28,             // machine model names
     {GpuControlList::kEQ, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, "7.1",
      nullptr},  // machine model version
@@ -878,8 +878,8 @@ const char* const kMachineModelNameForEntry29[1] = {
 };
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry29 = {
-    base::size(kMachineModelNameForEntry29),  // machine model name size
-    kMachineModelNameForEntry29,              // machine model names
+    std::size(kMachineModelNameForEntry29),  // machine model name size
+    kMachineModelNameForEntry29,             // machine model names
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // machine model version
@@ -2310,14 +2310,73 @@ const int kFeatureListForGpuControlTestingEntry77[1] = {
     TEST_FEATURE_0,
 };
 
-const GpuControlList::DriverInfo kDriverInfoForGpuControlTestingEntry77 = {
-    nullptr,  // driver_vendor
-    {GpuControlList::kLE, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaIntelDriver, "24.20.10.7000",
-     nullptr},  // driver_version
+const GpuControlList::More kMoreForEntry77_1440601243 = {
+    GpuControlList::kGLTypeNone,  // gl_type
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gl_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // pixel_shader_version
+    false,      // in_process_gpu
+    0,          // gl_reset_notification_strategy
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // direct_rendering_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gpu_count
+    GpuControlList::kDontCare,  // hardware_overlay
+    0,                          // test_group
+    GpuControlList::kDontCare,  // subpixel_font_rendering
 };
 
-const GpuControlList::More kMoreForEntry77_1440601243 = {
+const GpuControlList::Device kDevicesForGpuControlTestingEntry77Exception0[2] =
+    {
+        {0x15D8, 0x93},
+        {0x15DD, 0x86},
+};
+
+const GpuControlList::DriverInfo
+    kDriverInfoForGpuControlTestingEntry77Exception0 = {
+        nullptr,  // driver_vendor
+        {GpuControlList::kGE, GpuControlList::kVersionStyleNumerical,
+         GpuControlList::kVersionSchemaCommon, "26.20.15023.6032",
+         nullptr},  // driver_version
+};
+
+const GpuControlList::More kMoreForEntry77_1440601243Exception0 = {
+    GpuControlList::kGLTypeNone,  // gl_type
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gl_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // pixel_shader_version
+    false,      // in_process_gpu
+    0,          // gl_reset_notification_strategy
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // direct_rendering_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gpu_count
+    GpuControlList::kDontCare,  // hardware_overlay
+    0,                          // test_group
+    GpuControlList::kDontCare,  // subpixel_font_rendering
+};
+
+const GpuControlList::Device kDevicesForGpuControlTestingEntry77Exception1[2] =
+    {
+        {0x15D8, 0xE1},
+        {0x15D8, 0xE2},
+};
+
+const GpuControlList::DriverInfo
+    kDriverInfoForGpuControlTestingEntry77Exception1 = {
+        nullptr,  // driver_vendor
+        {GpuControlList::kGE, GpuControlList::kVersionStyleNumerical,
+         GpuControlList::kVersionSchemaCommon, "26.20.12055.1000",
+         nullptr},  // driver_version
+};
+
+const GpuControlList::More kMoreForEntry77_1440601243Exception1 = {
     GpuControlList::kGLTypeNone,  // gl_type
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gl_version
@@ -2340,73 +2399,12 @@ const int kFeatureListForGpuControlTestingEntry78[1] = {
     TEST_FEATURE_0,
 };
 
+const GpuControlList::Device kDevicesForGpuControlTestingEntry78[2] = {
+    {0x15D8, 0x0},
+    {0x15DD, 0x0},
+};
+
 const GpuControlList::More kMoreForEntry78_1440601243 = {
-    GpuControlList::kGLTypeNone,  // gl_type
-    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gl_version
-    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaCommon, nullptr,
-     nullptr},  // pixel_shader_version
-    false,      // in_process_gpu
-    0,          // gl_reset_notification_strategy
-    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaCommon, nullptr,
-     nullptr},  // direct_rendering_version
-    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gpu_count
-    GpuControlList::kDontCare,  // hardware_overlay
-    0,                          // test_group
-    GpuControlList::kDontCare,  // subpixel_font_rendering
-};
-
-const GpuControlList::Device kDevicesForGpuControlTestingEntry78Exception0[2] =
-    {
-        {0x15D8, 0x93},
-        {0x15DD, 0x86},
-};
-
-const GpuControlList::DriverInfo
-    kDriverInfoForGpuControlTestingEntry78Exception0 = {
-        nullptr,  // driver_vendor
-        {GpuControlList::kGE, GpuControlList::kVersionStyleNumerical,
-         GpuControlList::kVersionSchemaCommon, "26.20.15023.6032",
-         nullptr},  // driver_version
-};
-
-const GpuControlList::More kMoreForEntry78_1440601243Exception0 = {
-    GpuControlList::kGLTypeNone,  // gl_type
-    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gl_version
-    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaCommon, nullptr,
-     nullptr},  // pixel_shader_version
-    false,      // in_process_gpu
-    0,          // gl_reset_notification_strategy
-    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaCommon, nullptr,
-     nullptr},  // direct_rendering_version
-    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gpu_count
-    GpuControlList::kDontCare,  // hardware_overlay
-    0,                          // test_group
-    GpuControlList::kDontCare,  // subpixel_font_rendering
-};
-
-const GpuControlList::Device kDevicesForGpuControlTestingEntry78Exception1[2] =
-    {
-        {0x15D8, 0xE1},
-        {0x15D8, 0xE2},
-};
-
-const GpuControlList::DriverInfo
-    kDriverInfoForGpuControlTestingEntry78Exception1 = {
-        nullptr,  // driver_vendor
-        {GpuControlList::kGE, GpuControlList::kVersionStyleNumerical,
-         GpuControlList::kVersionSchemaCommon, "26.20.12055.1000",
-         nullptr},  // driver_version
-};
-
-const GpuControlList::More kMoreForEntry78_1440601243Exception1 = {
     GpuControlList::kGLTypeNone,  // gl_type
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gl_version
@@ -2429,12 +2427,44 @@ const int kFeatureListForGpuControlTestingEntry79[1] = {
     TEST_FEATURE_0,
 };
 
-const GpuControlList::Device kDevicesForGpuControlTestingEntry79[2] = {
-    {0x15D8, 0x0},
-    {0x15DD, 0x0},
+const GpuControlList::DriverInfo kDriverInfoForGpuControlTestingEntry79 = {
+    nullptr,  // driver_vendor
+    {GpuControlList::kLE, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, "24.21.13.9826",
+     nullptr},  // driver_version
 };
 
 const GpuControlList::More kMoreForEntry79_1440601243 = {
+    GpuControlList::kGLTypeNone,  // gl_type
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gl_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // pixel_shader_version
+    false,      // in_process_gpu
+    0,          // gl_reset_notification_strategy
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // direct_rendering_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gpu_count
+    GpuControlList::kDontCare,  // hardware_overlay
+    0,                          // test_group
+    GpuControlList::kDontCare,  // subpixel_font_rendering
+};
+
+const int kFeatureListForGpuControlTestingEntry80[1] = {
+    TEST_FEATURE_0,
+};
+
+const GpuControlList::DriverInfo kDriverInfoForGpuControlTestingEntry80 = {
+    nullptr,  // driver_vendor
+    {GpuControlList::kLE, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, "24.21.13.9826",
+     nullptr},  // driver_version
+};
+
+const GpuControlList::More kMoreForEntry80_1440601243 = {
     GpuControlList::kGLTypeNone,  // gl_type
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gl_version

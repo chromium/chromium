@@ -1,8 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/test/extension_test_notification_observer.h"
+#include "base/memory/raw_ptr.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -19,19 +22,9 @@
 
 namespace extensions {
 
-namespace {
-
 // A callback that returns true if the condition has been met and takes no
 // arguments.
 using ConditionCallback = base::RepeatingCallback<bool(void)>;
-
-const Extension* GetNonTerminatedExtensions(const std::string& id,
-                                            content::BrowserContext* context) {
-  return ExtensionRegistry::Get(context)->GetExtensionById(
-      id, ExtensionRegistry::EVERYTHING & ~ExtensionRegistry::TERMINATED);
-}
-
-}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // NotificationSet::ForwardingWebContentsObserver
@@ -51,7 +44,7 @@ class ExtensionTestNotificationObserver::NotificationSet::
     owner_->WebContentsDestroyed(web_contents());
   }
 
-  ExtensionTestNotificationObserver::NotificationSet* owner_;
+  raw_ptr<ExtensionTestNotificationObserver::NotificationSet> owner_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -133,24 +126,6 @@ void ExtensionTestNotificationObserver::WaitForNotification(
       .Wait();
 }
 
-bool ExtensionTestNotificationObserver::WaitForExtensionCrash(
-    const std::string& extension_id) {
-  if (!GetNonTerminatedExtensions(extension_id, context_)) {
-    // The extension is already unloaded, presumably due to a crash.
-    return true;
-  }
-
-  content::WindowedNotificationObserver(
-      NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
-      content::NotificationService::AllSources())
-      .Wait();
-  // GetNonTerminatedExtensions consults ExtensionRegistry which gets updated
-  // asynchronously in a task posted when
-  // NOTIFICATION_EXTENSION_PROCESS_TERMINATED is handled, so let this task run.
-  base::RunLoop().RunUntilIdle();
-  return (GetNonTerminatedExtensions(extension_id, context_) == NULL);
-}
-
 bool ExtensionTestNotificationObserver::WaitForCrxInstallerDone() {
   int before = crx_installers_done_observed_;
   WaitForNotification(NOTIFICATION_CRX_INSTALLER_DONE);
@@ -162,7 +137,8 @@ void ExtensionTestNotificationObserver::Watch(
     int type,
     const content::NotificationSource& source) {
   CHECK(!observer_);
-  observer_.reset(new content::WindowedNotificationObserver(type, source));
+  observer_ =
+      std::make_unique<content::WindowedNotificationObserver>(type, source);
   registrar_.Add(this, type, source);
 }
 
@@ -231,6 +207,11 @@ void ExtensionTestNotificationObserver::WaitForCondition(
 }
 
 void ExtensionTestNotificationObserver::MaybeQuit() {
+  // We can be called synchronously from any of the events being observed,
+  // so return immediately if the closure has already been run.
+  if (quit_closure_.is_null())
+    return;
+
   if (condition_.Run())
     std::move(quit_closure_).Run();
 }

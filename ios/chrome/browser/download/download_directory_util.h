@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,12 @@ namespace base {
 class FilePath;
 }
 
-// Fills |directory_path| with the FilePath to the temporary downloads
+// Fills `directory_path` with the FilePath to the temporary downloads
 // directory. Returns true if this is successful. This method does not create
 // the directory, it just returns the path.
 bool GetTempDownloadsDirectory(base::FilePath* directory_path);
 
-// Fills |directory_path| with the FilePath to the downloads directory. This
+// Fills `directory_path` with the FilePath to the downloads directory. This
 // method does not create the directory, it just updates the path.
 void GetDownloadsDirectory(base::FilePath* directory_path);
 

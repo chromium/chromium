@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace downgrade {
 
@@ -30,12 +30,11 @@ using ExclusionPredicate = base::RepeatingCallback<bool(const base::FilePath&)>;
 // may or may not exist) for deletion at a later time. Any directories that
 // cannot be moved (most likely due to open files therein) are recursed into.
 // |exclusions_predicate| is an optional callback that evaluates items in
-// |source| to determine whether or not they should be skipped. Returns the
-// number of items within |source| or its subdirectories that could not be
-// moved, or no value if |target| could not be created.
-base::Optional<int> MoveContents(const base::FilePath& source,
-                                 const base::FilePath& target,
-                                 ExclusionPredicate exclusion_predicate);
+// |source| to determine whether or not they should be skipped. Returns true if
+// all items were moved successfully, false otherwise.
+bool MoveContents(const base::FilePath& source,
+                  const base::FilePath& target,
+                  ExclusionPredicate exclusion_predicate);
 
 }  // namespace downgrade
 

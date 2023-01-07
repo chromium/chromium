@@ -1,0 +1,353 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+import("//components/optimization_guide/features.gni")
+
+static_library("internal") {
+  visibility = [
+    ":*",
+    "//chrome/browser",
+    "//chrome/browser/segmentation_platform:*",
+    "//chrome/test:*",
+    "//components/segmentation_platform/embedder/*",
+    "//ios/chrome/browser/segmentation_platform:*",
+  ]
+
+  sources = [
+    "config_parser.cc",
+    "config_parser.h",
+    "constants.cc",
+    "constants.h",
+    "data_collection/dummy_training_data_collector.cc",
+    "data_collection/dummy_training_data_collector.h",
+    "data_collection/training_data_cache.cc",
+    "data_collection/training_data_cache.h",
+    "data_collection/training_data_collector.cc",
+    "data_collection/training_data_collector.h",
+    "data_collection/training_data_collector_impl.cc",
+    "data_collection/training_data_collector_impl.h",
+    "database/database_maintenance.h",
+    "database/database_maintenance_impl.cc",
+    "database/database_maintenance_impl.h",
+    "database/segment_info_cache.cc",
+    "database/segment_info_cache.h",
+    "database/segment_info_database.cc",
+    "database/segment_info_database.h",
+    "database/signal_database.h",
+    "database/signal_database_impl.cc",
+    "database/signal_database_impl.h",
+    "database/signal_key.cc",
+    "database/signal_key.h",
+    "database/signal_key_internal.cc",
+    "database/signal_key_internal.h",
+    "database/signal_storage_config.cc",
+    "database/signal_storage_config.h",
+    "database/storage_service.cc",
+    "database/storage_service.h",
+    "database/ukm_database.cc",
+    "database/ukm_database.h",
+    "database/ukm_database_backend.cc",
+    "database/ukm_database_backend.h",
+    "database/ukm_database_impl.cc",
+    "database/ukm_database_impl.h",
+    "database/ukm_metrics_table.cc",
+    "database/ukm_metrics_table.h",
+    "database/ukm_types.cc",
+    "database/ukm_types.h",
+    "database/ukm_url_table.cc",
+    "database/ukm_url_table.h",
+    "dummy_segmentation_platform_service.cc",
+    "dummy_segmentation_platform_service.h",
+    "dummy_ukm_data_manager.cc",
+    "dummy_ukm_data_manager.h",
+    "execution/default_model_manager.cc",
+    "execution/default_model_manager.h",
+    "execution/execution_request.cc",
+    "execution/execution_request.h",
+    "execution/model_execution_manager.h",
+    "execution/model_execution_manager_impl.cc",
+    "execution/model_execution_manager_impl.h",
+    "execution/model_execution_status.h",
+    "execution/model_executor.h",
+    "execution/model_executor_impl.cc",
+    "execution/model_executor_impl.h",
+    "execution/processing/custom_input_processor.cc",
+    "execution/processing/custom_input_processor.h",
+    "execution/processing/feature_aggregator.h",
+    "execution/processing/feature_aggregator_impl.cc",
+    "execution/processing/feature_aggregator_impl.h",
+    "execution/processing/feature_list_query_processor.cc",
+    "execution/processing/feature_list_query_processor.h",
+    "execution/processing/feature_processor_state.cc",
+    "execution/processing/feature_processor_state.h",
+    "execution/processing/query_processor.h",
+    "execution/processing/sql_feature_processor.cc",
+    "execution/processing/sql_feature_processor.h",
+    "execution/processing/uma_feature_processor.cc",
+    "execution/processing/uma_feature_processor.h",
+    "local_state_helper_impl.cc",
+    "local_state_helper_impl.h",
+    "metadata/metadata_utils.cc",
+    "metadata/metadata_utils.h",
+    "metadata/metadata_writer.cc",
+    "metadata/metadata_writer.h",
+    "platform_options.cc",
+    "platform_options.h",
+    "scheduler/execution_service.cc",
+    "scheduler/execution_service.h",
+    "scheduler/model_execution_scheduler.h",
+    "scheduler/model_execution_scheduler_impl.cc",
+    "scheduler/model_execution_scheduler_impl.h",
+    "segment_id_convertor.cc",
+    "segment_id_convertor.h",
+    "segmentation_platform_service_impl.cc",
+    "segmentation_platform_service_impl.h",
+    "segmentation_ukm_helper.cc",
+    "segmentation_ukm_helper.h",
+    "selection/experimental_group_recorder.cc",
+    "selection/experimental_group_recorder.h",
+    "selection/segment_result_provider.cc",
+    "selection/segment_result_provider.h",
+    "selection/segment_score_provider.cc",
+    "selection/segment_score_provider.h",
+    "selection/segment_selector.h",
+    "selection/segment_selector_impl.cc",
+    "selection/segment_selector_impl.h",
+    "selection/segmentation_result_prefs.cc",
+    "selection/segmentation_result_prefs.h",
+    "service_proxy_impl.cc",
+    "service_proxy_impl.h",
+    "signals/histogram_signal_handler.cc",
+    "signals/histogram_signal_handler.h",
+    "signals/history_delegate_impl.cc",
+    "signals/history_delegate_impl.h",
+    "signals/history_service_observer.cc",
+    "signals/history_service_observer.h",
+    "signals/signal_filter_processor.cc",
+    "signals/signal_filter_processor.h",
+    "signals/signal_handler.cc",
+    "signals/signal_handler.h",
+    "signals/ukm_config.cc",
+    "signals/ukm_config.h",
+    "signals/ukm_observer.cc",
+    "signals/ukm_observer.h",
+    "signals/url_signal_handler.cc",
+    "signals/url_signal_handler.h",
+    "signals/user_action_signal_handler.cc",
+    "signals/user_action_signal_handler.h",
+    "stats.cc",
+    "stats.h",
+    "ukm_data_manager.h",
+    "ukm_data_manager_impl.cc",
+    "ukm_data_manager_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/database_utils:database_utils",
+    "//components/history/core/browser:browser",
+    "//components/keyed_service/core",
+    "//components/leveldb_proto",
+    "//components/prefs",
+    "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public/proto",
+    "//components/ukm:ukm_recorder",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//sql:sql",
+    "//url:url",
+  ]
+
+  public_deps =
+      [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+
+  if (is_android) {
+    sources += [
+      "android/segmentation_platform_service_android.cc",
+      "android/segmentation_platform_service_android.h",
+    ]
+
+    deps += [ ":jni_headers" ]
+  }
+}
+
+if (build_with_tflite_lib) {
+  static_library("optimization_guide_segmentation_handler") {
+    sources = [
+      "execution/optimization_guide/optimization_guide_segmentation_model_handler.cc",
+      "execution/optimization_guide/optimization_guide_segmentation_model_handler.h",
+      "execution/optimization_guide/optimization_guide_segmentation_model_provider.cc",
+      "execution/optimization_guide/optimization_guide_segmentation_model_provider.h",
+      "execution/optimization_guide/segmentation_model_executor.cc",
+      "execution/optimization_guide/segmentation_model_executor.h",
+    ]
+    deps = [
+      ":internal",
+      "//base",
+      "//components/optimization_guide/core",
+      "//components/segmentation_platform/internal/proto",
+      "//components/segmentation_platform/public",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  visibility = [ "//components/segmentation_platform:unit_tests" ]
+
+  # IMPORTANT NOTE: When adding new tests, also remember to update the list of
+  # tests in //components/segmentation_platform/components_unittests.filter
+  sources = [
+    "config_parser_unittest.cc",
+    "data_collection/training_data_cache_unittest.cc",
+    "data_collection/training_data_collector_impl_unittest.cc",
+    "database/database_maintenance_impl_unittest.cc",
+    "database/mock_signal_database.cc",
+    "database/mock_signal_database.h",
+    "database/mock_signal_storage_config.cc",
+    "database/mock_signal_storage_config.h",
+    "database/mock_ukm_database.cc",
+    "database/mock_ukm_database.h",
+    "database/segment_info_cache_unittest.cc",
+    "database/segment_info_database_unittest.cc",
+    "database/signal_database_impl_unittest.cc",
+    "database/signal_key_internal_unittest.cc",
+    "database/signal_key_unittest.cc",
+    "database/signal_storage_config_unittest.cc",
+    "database/test_segment_info_database.cc",
+    "database/test_segment_info_database.h",
+    "database/ukm_database_backend_unittest.cc",
+    "database/ukm_database_test_utils.cc",
+    "database/ukm_database_test_utils.h",
+    "database/ukm_metrics_table_unittest.cc",
+    "database/ukm_url_table_unittest.cc",
+    "dummy_segmentation_platform_service_unittest.cc",
+    "execution/default_model_manager_unittest.cc",
+    "execution/model_execution_manager_impl_unittest.cc",
+    "execution/model_executor_impl_unittest.cc",
+    "execution/processing/custom_input_processor_unittest.cc",
+    "execution/processing/feature_aggregator_impl_unittest.cc",
+    "execution/processing/feature_list_query_processor_unittest.cc",
+    "execution/processing/mock_feature_aggregator.cc",
+    "execution/processing/mock_feature_aggregator.h",
+    "execution/processing/mock_feature_list_query_processor.cc",
+    "execution/processing/mock_feature_list_query_processor.h",
+    "execution/processing/query_processor.h",
+    "execution/processing/sql_feature_processor_unittest.cc",
+    "metadata/metadata_utils_unittest.cc",
+    "mock_ukm_data_manager.cc",
+    "mock_ukm_data_manager.h",
+    "scheduler/model_execution_scheduler_unittest.cc",
+    "segmentation_platform_service_impl_unittest.cc",
+    "segmentation_platform_service_test_base.cc",
+    "segmentation_platform_service_test_base.h",
+    "segmentation_ukm_helper_unittest.cc",
+    "selection/segment_result_provider_unittest.cc",
+    "selection/segment_score_provider_unittest.cc",
+    "selection/segment_selector_unittest.cc",
+    "selection/segmentation_result_prefs_unittest.cc",
+    "service_proxy_impl_unittest.cc",
+    "signals/histogram_signal_handler_unittest.cc",
+    "signals/history_delegate_impl_unittest.cc",
+    "signals/mock_histogram_signal_handler.cc",
+    "signals/mock_histogram_signal_handler.h",
+    "signals/signal_filter_processor_unittest.cc",
+    "signals/ukm_config_unittest.cc",
+    "signals/ukm_observer_unittest.cc",
+    "signals/url_signal_handler_unittest.cc",
+    "signals/user_action_signal_handler_unittest.cc",
+    "stats_unittest.cc",
+    "ukm_data_manager_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":internal",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/history/core/browser:browser",
+    "//components/history/core/test",
+    "//components/leveldb_proto:test_support",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public",
+    "//components/ukm:test_support",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//sql:sql",
+    "//sql:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url:url",
+  ]
+
+  if (build_with_tflite_lib) {
+    # IMPORTANT NOTE: When adding new tests, also remember to update the list of
+    # tests in //components/segmentation_platform/components_unittests.filter
+    sources += [
+      "execution/optimization_guide/optimization_guide_segmentation_model_provider_unittest.cc",
+      "execution/optimization_guide/segmentation_model_executor_unittest.cc",
+    ]
+    deps += [
+      ":optimization_guide_segmentation_handler",
+      ":unit_tests_bundle_data",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "execution/mock_model_provider.cc",
+    "execution/mock_model_provider.h",
+  ]
+  deps = [
+    "//base",
+    "//components/segmentation_platform/public:public",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+bundle_data("unit_tests_bundle_data") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [ "//components/test/data/segmentation_platform/adder.tflite" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
+if (is_android) {
+  android_library("internal_java") {
+    visibility = [ "//chrome/android:chrome_all_java" ]
+    sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformServiceImpl.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
+      "//components/optimization_guide/proto:optimization_guide_proto_java",
+      "//components/segmentation_platform/public:public_java",
+    ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
+
+    sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformServiceImpl.java" ]
+  }
+}

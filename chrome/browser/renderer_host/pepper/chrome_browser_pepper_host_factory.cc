@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ ChromeBrowserPepperHostFactory::CreateResourceHost(
 
   // Make sure the plugin is giving us a valid instance for this resource.
   if (!host_->IsValidInstance(instance))
-    return std::unique_ptr<ResourceHost>();
+    return nullptr;
 
   // Permissions for the following interfaces will be checked at the
   // time of the corresponding instance's methods calls (because
@@ -41,14 +41,13 @@ ChromeBrowserPepperHostFactory::CreateResourceHost(
   // thread). Currently these interfaces are available only for
   // whitelisted apps which may not have access to the other private
   // interfaces.
-  if (message.type() == PpapiHostMsg_IsolatedFileSystem_Create::ID) {
-    PepperIsolatedFileSystemMessageFilter* isolated_fs_filter =
-        PepperIsolatedFileSystemMessageFilter::Create(instance, host_);
-    if (!isolated_fs_filter)
-      return std::unique_ptr<ResourceHost>();
-    return std::unique_ptr<ResourceHost>(
-        new MessageFilterHost(host, instance, resource, isolated_fs_filter));
-  }
+  if (message.type() != PpapiHostMsg_IsolatedFileSystem_Create::ID)
+    return nullptr;
 
-  return std::unique_ptr<ResourceHost>();
+  PepperIsolatedFileSystemMessageFilter* isolated_fs_filter =
+      PepperIsolatedFileSystemMessageFilter::Create(instance, host_);
+  if (!isolated_fs_filter)
+    return nullptr;
+  return std::make_unique<MessageFilterHost>(host, instance, resource,
+                                             isolated_fs_filter);
 }

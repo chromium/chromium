@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,6 +76,21 @@ public abstract class ExperimentalBidirectionalStream extends BidirectionalStrea
          * @return the builder to facilitate chaining.
          */
         public Builder setTrafficStatsUid(int uid) {
+            return this;
+        }
+
+        /**
+         * Binds the request to the specified network handle. Cronet will send this request only
+         * using the network associated to this handle. If this network disconnects the request will
+         * fail, the exact error will depend on the stage of request processing when the network
+         * disconnects. Network handles can be obtained through {@code Network#getNetworkHandle}.
+         * Only available starting from Android Marshmallow.
+         *
+         * @param networkHandle the network handle to bind the request to. Specify
+         *        {@link ExperimentalCronetEngine#UNBIND_NETWORK_HANDLE} to unbind.
+         * @return the builder to facilitate chaining.
+         */
+        public Builder bindToNetwork(long networkHandle) {
             return this;
         }
 

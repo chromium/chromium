@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define UI_COMPOSITOR_CALLBACK_LAYER_ANIMATION_OBSERVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/layer_animation_observer.h"
 
@@ -108,6 +107,11 @@ class COMPOSITOR_EXPORT CallbackLayerAnimationObserver
   explicit CallbackLayerAnimationObserver(
       AnimationEndedCallback animation_ended_callback);
 
+  CallbackLayerAnimationObserver(const CallbackLayerAnimationObserver&) =
+      delete;
+  CallbackLayerAnimationObserver& operator=(
+      const CallbackLayerAnimationObserver&) = delete;
+
   ~CallbackLayerAnimationObserver() override;
 
   bool active() const { return active_; }
@@ -169,8 +173,6 @@ class COMPOSITOR_EXPORT CallbackLayerAnimationObserver
 
   // Used to detect deletion while calling out.
   base::WeakPtrFactory<CallbackLayerAnimationObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackLayerAnimationObserver);
 };
 
 }  // namespace ui

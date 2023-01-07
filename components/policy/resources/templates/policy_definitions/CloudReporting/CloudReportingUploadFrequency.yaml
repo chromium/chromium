@@ -1,0 +1,30 @@
+caption: Frequency of cloud reporting in hours
+default: 24
+desc: "\n      Controls the frequency of Chrome status report uploads.\n\n      This\
+  \ includes reports that are enabled by <ph name=\"CLOUD_REPORTING_ENABLED_POLICY_NAME\"\
+  >CloudReportingEnabled</ph>.\n\n      When the policy is not set, reports are uploaded\
+  \ every 24 hours.\n      When the policy is set, the number of hours between two\
+  \ successive report uploads is defined by this policy.\n      "
+example_value: 12
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+owners:
+- zmin@chromium.org
+- file://components/enterprise/browser/reporting/OWNERS
+schema:
+  maximum: 24
+  minimum: 3
+  type: integer
+supported_on:
+- chrome.*:101-
+- chrome_os:101-
+- android:101-
+- ios:101-
+tags:
+- admin-sharing
+- google-sharing
+type: int

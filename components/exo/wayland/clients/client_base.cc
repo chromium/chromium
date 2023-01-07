@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -8,12 +8,13 @@
 #include "components/exo/wayland/clients/client_base.h"
 
 #include <aura-shell-client-protocol.h>
-#include <color-space-unstable-v1-client-protocol.h>
+#include <chrome-color-management-client-protocol.h>
 #include <fcntl.h>
 #include <fullscreen-shell-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
+#include <stylus-unstable-v2-client-protocol.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #include <wayland-client-core.h>
@@ -27,13 +28,17 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/shared_memory_mapper.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -90,6 +95,12 @@ const char kYInvert[] = "y-invert";
 // Specifies if client should use xdg or zxdg_v6 or rely on wl_shell.
 const char kXdg[] = "xdg";
 
+// In cases where we can't easily change the environment variables, such as tast
+// tests, this flag specifies the socket to pass to wl_display_connect.
+//
+// When attaching to exo, this will usually be: /var/run/chrome/wayland-0
+const char kWaylandSocket[] = "wayland_socket";
+
 }  // namespace switches
 
 namespace {
@@ -113,11 +124,12 @@ ClientBase* CastToClientBase(void* data) {
 
 class MemfdMemoryMapping : public base::SharedMemoryMapping {
  public:
-  MemfdMemoryMapping(void* memory, size_t size)
-      : base::SharedMemoryMapping(memory,
-                                  size,
-                                  size /* mapped_size */,
-                                  base::UnguessableToken::Create()) {}
+  MemfdMemoryMapping(base::span<uint8_t> mapped_span)
+      : base::SharedMemoryMapping(
+            mapped_span,
+            mapped_span.size(),
+            base::UnguessableToken::Create(),
+            base::SharedMemoryMapper::GetDefaultInstance()) {}
 };
 
 void RegistryHandler(void* data,
@@ -144,13 +156,16 @@ void RegistryHandler(void* data,
         wl_registry_bind(registry, id, &wp_presentation_interface, 1)));
   } else if (strcmp(interface, "zaura_shell") == 0) {
     globals->aura_shell.reset(static_cast<zaura_shell*>(
-        wl_registry_bind(registry, id, &zaura_shell_interface, 14)));
+        wl_registry_bind(registry, id, &zaura_shell_interface, 34)));
   } else if (strcmp(interface, "zwp_linux_dmabuf_v1") == 0) {
     globals->linux_dmabuf.reset(static_cast<zwp_linux_dmabuf_v1*>(
         wl_registry_bind(registry, id, &zwp_linux_dmabuf_v1_interface, 2)));
   } else if (strcmp(interface, "wl_subcompositor") == 0) {
     globals->subcompositor.reset(static_cast<wl_subcompositor*>(
         wl_registry_bind(registry, id, &wl_subcompositor_interface, 1)));
+  } else if (strcmp(interface, "zcr_color_manager_v1") == 0) {
+    globals->color_manager.reset(static_cast<zcr_color_manager_v1*>(
+        wl_registry_bind(registry, id, &zcr_color_manager_v1_interface, 1)));
   } else if (strcmp(interface, "zwp_input_timestamps_manager_v1") == 0) {
     globals->input_timestamps_manager.reset(
         static_cast<zwp_input_timestamps_manager_v1*>(wl_registry_bind(
@@ -169,15 +184,23 @@ void RegistryHandler(void* data,
   } else if (strcmp(interface, "zcr_vsync_feedback_v1") == 0) {
     globals->vsync_feedback.reset(static_cast<zcr_vsync_feedback_v1*>(
         wl_registry_bind(registry, id, &zcr_vsync_feedback_v1_interface, 1)));
-  } else if (strcmp(interface, "zcr_color_space_v1") == 0) {
-    globals->color_space.reset(static_cast<zcr_color_space_v1*>(
-        wl_registry_bind(registry, id, &zcr_color_space_v1_interface, 1)));
   } else if (strcmp(interface, "zxdg_shell_v6") == 0) {
     globals->xdg_shell_v6.reset(static_cast<zxdg_shell_v6*>(
         wl_registry_bind(registry, id, &zxdg_shell_v6_interface, version)));
   } else if (strcmp(interface, "xdg_wm_base") == 0) {
     globals->xdg_wm_base.reset(static_cast<xdg_wm_base*>(
         wl_registry_bind(registry, id, &xdg_wm_base_interface, version)));
+  } else if (strcmp(interface, "zcr_stylus_v2") == 0) {
+    globals->stylus.reset(static_cast<zcr_stylus_v2*>(
+        wl_registry_bind(registry, id, &zcr_stylus_v2_interface, version)));
+  } else if (strcmp(interface, zcr_remote_shell_v1_interface.name) == 0) {
+    globals->cr_remote_shell_v1.reset(
+        static_cast<zcr_remote_shell_v1*>(wl_registry_bind(
+            registry, id, &zcr_remote_shell_v1_interface, version)));
+  } else if (strcmp(interface, zcr_remote_shell_v2_interface.name) == 0) {
+    globals->cr_remote_shell_v2.reset(
+        static_cast<zcr_remote_shell_v2*>(wl_registry_bind(
+            registry, id, &zcr_remote_shell_v2_interface, version)));
   }
 }
 
@@ -289,7 +312,8 @@ std::unique_ptr<ScopedVkRenderPass> CreateVkRenderPass(VkDevice vk_device) {
   };
   VkAttachmentReference attachment_reference[]{
       {
-          .attachment = 0, .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+          .attachment = 0,
+          .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
       },
   };
   VkSubpassDescription subpass_description[]{
@@ -400,6 +424,10 @@ bool ClientBase::InitParams::FromCommandLine(
   y_invert = command_line.HasSwitch(switches::kYInvert);
 
   use_xdg = command_line.HasSwitch(switches::kXdg);
+
+  if (command_line.HasSwitch(switches::kWaylandSocket))
+    wayland_socket = command_line.GetSwitchValueASCII(switches::kWaylandSocket);
+
   return true;
 }
 
@@ -444,7 +472,8 @@ bool ClientBase::Init(const InitParams& params) {
   y_invert_ = params.y_invert;
   has_transform_ = params.has_transform;
 
-  display_.reset(wl_display_connect(nullptr));
+  display_.reset(wl_display_connect(
+      params.wayland_socket ? params.wayland_socket->c_str() : nullptr));
   if (!display_) {
     LOG(ERROR) << "wl_display_connect failed";
     return false;
@@ -477,6 +506,23 @@ bool ClientBase::Init(const InitParams& params) {
 
 #if defined(USE_GBM)
   if (params.use_drm) {
+    static struct zwp_linux_dmabuf_v1_listener kLinuxDmabufListener = {
+        .format =
+            [](void* data, struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf_v1,
+               uint32_t format) {
+              CastToClientBase(data)->HandleDmabufFormat(
+                  data, zwp_linux_dmabuf_v1, format);
+            },
+        .modifier =
+            [](void* data, struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf_v1,
+               uint32_t format, uint32_t modifier_hi, uint32_t modifier_lo) {
+              CastToClientBase(data)->HandleDmabufModifier(
+                  data, zwp_linux_dmabuf_v1, format, modifier_hi, modifier_lo);
+            }};
+    zwp_linux_dmabuf_v1_add_listener(globals_.linux_dmabuf.get(),
+                                     &kLinuxDmabufListener, this);
+    wl_display_roundtrip(display_.get());
+
     // Number of files to look for when discovering DRM devices.
     const uint32_t kDrmMaxMinor = 15;
     const uint32_t kRenderNodeStart = 128;
@@ -488,12 +534,16 @@ bool ClientBase::Init(const InitParams& params) {
       base::ScopedFD drm_fd(open(dri_render_node.c_str(), O_RDWR));
       if (drm_fd.get() < 0)
         continue;
+
       drmVersionPtr drm_version = drmGetVersion(drm_fd.get());
       if (!drm_version) {
         LOG(ERROR) << "Can't get version for device: '" << dri_render_node
                    << "'";
         return false;
       }
+      // We can't actually use the virtual GEM, so discard it like we do in CrOS
+      if (base::EqualsCaseInsensitiveASCII("vgem", drm_version->name))
+        continue;
       if (strstr(drm_version->name, params.use_drm_value.c_str())) {
         drm_fd_ = std::move(drm_fd);
         break;
@@ -515,21 +565,22 @@ bool ClientBase::Init(const InitParams& params) {
     ui::OzonePlatform::InitParams ozone_params;
     ozone_params.single_process = true;
     ui::OzonePlatform::InitializeForGPU(ozone_params);
-    bool gl_initialized = gl::init::InitializeGLOneOff();
-    DCHECK(gl_initialized);
-    gl_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    gl::GLDisplayEGL* display = static_cast<gl::GLDisplayEGL*>(
+        gl::init::InitializeGLOneOff(/*system_device_id=*/0));
+    DCHECK(display);
+    gl_surface_ = gl::init::CreateOffscreenGLSurface(display, gfx::Size());
     gl_context_ =
         gl::init::CreateGLContext(nullptr,  // share_group
                                   gl_surface_.get(), gl::GLContextAttribs());
 
-    make_current_.reset(
-        new ui::ScopedMakeCurrent(gl_context_.get(), gl_surface_.get()));
+    make_current_ = std::make_unique<ui::ScopedMakeCurrent>(gl_context_.get(),
+                                                            gl_surface_.get());
 
-    if (gl::GLSurfaceEGL::HasEGLExtension("EGL_EXT_image_flush_external") ||
-        gl::GLSurfaceEGL::HasEGLExtension("EGL_ARM_implicit_external_sync")) {
+    if (display->ext->b_EGL_EXT_image_flush_external ||
+        display->ext->b_EGL_ARM_implicit_external_sync) {
       egl_sync_type_ = EGL_SYNC_FENCE_KHR;
     }
-    if (gl::GLSurfaceEGL::HasEGLExtension("EGL_ANDROID_native_fence_sync")) {
+    if (display->ext->b_EGL_ANDROID_native_fence_sync) {
       egl_sync_type_ = EGL_SYNC_NATIVE_FENCE_ANDROID;
     }
 
@@ -606,7 +657,9 @@ bool ClientBase::Init(const InitParams& params) {
     wl_output_add_listener(globals_.output.get(), &kOutputListener, this);
   } else {
     for (size_t i = 0; i < params.num_buffers; ++i) {
-      auto buffer = CreateBuffer(size_, params.drm_format, params.bo_usage);
+      auto buffer =
+          CreateBuffer(size_, params.drm_format, params.bo_usage,
+                       /*add_buffer_listener=*/!params.use_release_fences);
       if (!buffer) {
         LOG(ERROR) << "Failed to create buffer";
         return false;
@@ -760,6 +813,8 @@ bool ClientBase::Init(const InitParams& params) {
     wl_touch* touch = wl_seat_get_touch(globals_.seat.get());
     wl_touch_add_listener(touch, &kTouchListener, this);
   }
+  if (params.use_stylus)
+    SetupPointerStylus();
 
   return true;
 }
@@ -860,12 +915,36 @@ void ClientBase::HandleScale(void* data,
                              struct wl_output* wl_output,
                              int32_t factor) {}
 
+////////////////////////////////////////////////////////////////////////////////
+// zwp_linux_dmabuf_v1_listener
+
+void ClientBase::HandleDmabufFormat(
+    void* data,
+    struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf_v1,
+    uint32_t format) {}
+
+void ClientBase::HandleDmabufModifier(
+    void* data,
+    struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf_v1,
+    uint32_t format,
+    uint32_t modifier_hi,
+    uint32_t modifier_lo) {}
+
+////////////////////////////////////////////////////////////////////////////////
+// zaura_output_listener
+
+void ClientBase::HandleInsets(const gfx::Insets& insets) {}
+
+void ClientBase::HandleLogicalTransform(int32_t transform) {}
+
+////////////////////////////////////////////////////////////////////////////////
+// helper functions
+
 std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
     const gfx::Size& size,
     int32_t drm_format,
     int32_t bo_usage,
-    wl_buffer_listener* buffer_listener,
-    void* data) {
+    bool add_buffer_listener) {
   std::unique_ptr<Buffer> buffer;
 #if defined(USE_GBM)
   if (device_) {
@@ -882,7 +961,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
 
     if (use_memfd_) {
       // udmabuf_create requires a page aligned buffer.
-      length = base::bits::Align(length, getpagesize());
+      length = base::bits::AlignUp(length,
+                                   base::checked_cast<size_t>(getpagesize()));
       int memfd = memfd_create("memfd", MFD_ALLOW_SEALING);
       if (memfd < 0) {
         PLOG(ERROR) << "memfd_create failed";
@@ -912,7 +992,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
         return nullptr;
       }
 
-      buffer->shared_memory_mapping = MemfdMemoryMapping(mapped_data, length);
+      base::span<uint8_t> mapped_span = base::make_span(mapped_data, length);
+      buffer->shared_memory_mapping = MemfdMemoryMapping(mapped_span);
       buffer->shm_pool.reset(
           wl_shm_create_pool(globals_.shm.get(), memfd, length));
 
@@ -962,9 +1043,10 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
     DCHECK(buffer->sk_surface);
   }
 
-  wl_buffer_add_listener(buffer->buffer.get(),
-                         buffer_listener ? buffer_listener : &g_buffer_listener,
-                         data ? data : buffer.get());
+  if (add_buffer_listener) {
+    wl_buffer_add_listener(buffer->buffer.get(), &g_buffer_listener,
+                           buffer.get());
+  }
   return buffer;
 }
 
@@ -976,6 +1058,11 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
   std::unique_ptr<Buffer> buffer;
 #if defined(USE_GBM)
   if (device_) {
+    if (!gbm_device_is_format_supported(device_.get(), drm_format, bo_usage)) {
+      LOG(ERROR) << "Format/usage not supported";
+      return nullptr;
+    }
+
     buffer = std::make_unique<Buffer>();
     buffer->bo.reset(gbm_bo_create(device_.get(), size.width(), size.height(),
                                    drm_format, bo_usage));
@@ -991,11 +1078,11 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
     for (size_t i = 0;
          i < static_cast<size_t>(gbm_bo_get_plane_count(buffer->bo.get()));
          ++i) {
-      base::ScopedFD fd(gbm_bo_get_plane_fd(buffer->bo.get(), i));
+      base::ScopedFD plane_i_fd(gbm_bo_get_plane_fd(buffer->bo.get(), i));
       uint32_t stride = gbm_bo_get_stride_for_plane(buffer->bo.get(), i);
       uint32_t offset = gbm_bo_get_offset(buffer->bo.get(), i);
-      zwp_linux_buffer_params_v1_add(buffer->params.get(), fd.get(), i, offset,
-                                     stride, modifier >> 32, modifier);
+      zwp_linux_buffer_params_v1_add(buffer->params.get(), plane_i_fd.get(), i,
+                                     offset, stride, modifier >> 32, modifier);
     }
     uint32_t flags = 0;
     if (y_invert)
@@ -1017,22 +1104,22 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
         EGL_LINUX_DRM_FOURCC_EXT,
         drm_format,
         EGL_DMA_BUF_PLANE0_PITCH_EXT,
-        gbm_bo_get_stride_for_plane(buffer->bo.get(), 0),
+        static_cast<EGLint>(gbm_bo_get_stride_for_plane(buffer->bo.get(), 0)),
         EGL_DMA_BUF_PLANE0_OFFSET_EXT,
         0,
         EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
-        modifier,
+        static_cast<EGLint>(modifier),
         EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT,
-        modifier >> 32,
+        static_cast<EGLint>(modifier >> 32),
         EGL_NONE};
     EGLImageKHR image = eglCreateImageKHR(
         eglGetCurrentDisplay(), EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT,
         nullptr /* no client buffer */, khr_image_attrs);
 
-    buffer->egl_image.reset(new ScopedEglImage(image));
+    buffer->egl_image = std::make_unique<ScopedEglImage>(image);
     GLuint texture = 0;
     glGenTextures(1, &texture);
-    buffer->texture.reset(new ScopedTexture(texture));
+    buffer->texture = std::make_unique<ScopedTexture>(texture);
     glBindTexture(GL_TEXTURE_2D, buffer->texture->get());
     glEGLImageTargetTexture2DOES(
         GL_TEXTURE_2D, static_cast<GLeglImageOES>(buffer->egl_image->get()));
@@ -1086,7 +1173,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
             VK_STRUCTURE_TYPE_DMA_BUF_IMAGE_CREATE_INFO_INTEL),
         .fd = vk_image_fd.release(),
         .format = VK_FORMAT_A8B8G8R8_UNORM_PACK32,
-        .extent = (VkExtent3D){size.width(), size.height(), 1},
+        .extent = (VkExtent3D){static_cast<uint32_t>(size.width()),
+                               static_cast<uint32_t>(size.height()), 1},
         .strideInBytes = gbm_bo_get_stride(buffer->bo.get()),
     };
 
@@ -1139,8 +1227,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
         .renderPass = vk_render_pass_->get(),
         .attachmentCount = 1,
         .pAttachments = &buffer->vk_image_view->get(),
-        .width = size.width(),
-        .height = size.height(),
+        .width = static_cast<uint32_t>(size.width()),
+        .height = static_cast<uint32_t>(size.height()),
         .layers = 1,
     };
     buffer->vk_framebuffer.reset(
@@ -1162,10 +1250,7 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
 
 ClientBase::Buffer* ClientBase::DequeueBuffer() {
   auto buffer_it =
-      std::find_if(buffers_.begin(), buffers_.end(),
-                   [](const std::unique_ptr<ClientBase::Buffer>& buffer) {
-                     return !buffer->busy;
-                   });
+      base::ranges::find_if_not(buffers_, &ClientBase::Buffer::busy);
   if (buffer_it == buffers_.end())
     return nullptr;
 
@@ -1184,7 +1269,13 @@ void ClientBase::SetupAuraShellIfAvailable() {
       [](void* data, struct zaura_shell* zaura_shell, uint32_t layout_mode) {},
       [](void* data, struct zaura_shell* zaura_shell, uint32_t id) {
         CastToClientBase(data)->bug_fix_ids_.insert(id);
-      }};
+      },
+      [](void* data, struct zaura_shell* zaura_shell,
+         struct wl_array* desk_names) {},
+      [](void* data, struct zaura_shell* zaura_shell,
+         int32_t active_desk_index) {},
+      [](void* data, struct zaura_shell* zaura_shell,
+         struct wl_surface* gained_active, struct wl_surface* lost_active) {}};
   zaura_shell_add_listener(globals_.aura_shell.get(), &kAuraShellListener,
                            this);
 
@@ -1196,6 +1287,54 @@ void ClientBase::SetupAuraShellIfAvailable() {
   }
 
   zaura_surface_set_frame(aura_surface.get(), ZAURA_SURFACE_FRAME_TYPE_NORMAL);
+
+  static zaura_output_listener kAuraOutputListener = {
+      [](void* data, struct zaura_output* zaura_output, uint32_t flags,
+         uint32_t scale) {},
+      [](void* data, struct zaura_output* zaura_output, uint32_t connection) {},
+      [](void* data, struct zaura_output* zaura_output, uint32_t scale) {},
+      [](void* data, struct zaura_output* zaura_output, int32_t top,
+         int32_t left, int32_t bottom, int32_t right) {
+        CastToClientBase(data)->HandleInsets(
+            gfx::Insets::TLBR(top, left, bottom, right));
+      },
+      [](void* data, struct zaura_output* zaura_output, int32_t transform) {
+        CastToClientBase(data)->HandleLogicalTransform(transform);
+      },
+  };
+
+  std::unique_ptr<zaura_output> aura_output(zaura_shell_get_aura_output(
+      globals_.aura_shell.get(), globals_.output.get()));
+  zaura_output_add_listener(aura_output.get(), &kAuraOutputListener, this);
+  globals_.aura_output = std::move(aura_output);
+}
+
+void ClientBase::SetupPointerStylus() {
+  if (!globals_.stylus) {
+    LOG(ERROR) << "Can't find stylus interface";
+    return;
+  }
+
+  wl_pointer_ = base::WrapUnique(
+      static_cast<wl_pointer*>(wl_seat_get_pointer(globals_.seat.get())));
+
+  zcr_pointer_stylus_ = base::WrapUnique(
+      static_cast<zcr_pointer_stylus_v2*>(zcr_stylus_v2_get_pointer_stylus(
+          globals_.stylus.get(), wl_pointer_.get())));
+  if (!zcr_pointer_stylus_) {
+    LOG(ERROR) << "Can't get pointer stylus";
+    return;
+  }
+
+  static zcr_pointer_stylus_v2_listener kPointerStylusV2Listener = {
+      [](void* data, struct zcr_pointer_stylus_v2* x, uint32_t y) {},
+      [](void* data, struct zcr_pointer_stylus_v2* x, uint32_t y,
+         wl_fixed_t z) {},
+      [](void* data, struct zcr_pointer_stylus_v2* x, uint32_t y, wl_fixed_t z,
+         wl_fixed_t a) {},
+  };
+  zcr_pointer_stylus_v2_add_listener(zcr_pointer_stylus_.get(),
+                                     &kPointerStylusV2Listener, this);
 }
 
 }  // namespace clients

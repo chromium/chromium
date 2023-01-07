@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,21 +13,19 @@
 
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/process/process.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
-#include "content/browser/renderer_host/pepper/pepper_message_filter.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "ipc/ipc_sender.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
 class BrowserChildProcessHostImpl;
-struct PepperPluginInfo;
+struct ContentPluginInfo;
 
 // Process host for PPAPI plugin processes.
 class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
@@ -63,18 +61,21 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
     ~PluginClient() override {}
   };
 
+  PpapiPluginProcessHost(const PpapiPluginProcessHost&) = delete;
+  PpapiPluginProcessHost& operator=(const PpapiPluginProcessHost&) = delete;
+
   ~PpapiPluginProcessHost() override;
 
   static PpapiPluginProcessHost* CreatePluginHost(
-      const PepperPluginInfo& info,
+      const ContentPluginInfo& info,
       const base::FilePath& profile_data_directory,
-      const base::Optional<url::Origin>& origin_lock);
+      const absl::optional<url::Origin>& origin_lock);
 
   // Notification that a PP_Instance has been created and the associated
-  // renderer related data including the RenderView/Process pair for the given
+  // renderer related data including the RenderFrame/Process pair for the given
   // plugin. This is necessary so that when the plugin calls us with a
-  // PP_Instance we can find the RenderView associated with it without trusting
-  // the plugin.
+  // PP_Instance we can find the `RenderFrame` associated with it without
+  // trusting the plugin.
   static void DidCreateOutOfProcessInstance(
       int plugin_process_id,
       int32_t pp_instance,
@@ -98,7 +99,7 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   BrowserPpapiHostImpl* host_impl() { return host_impl_.get(); }
   BrowserChildProcessHostImpl* process() { return process_.get(); }
-  const base::Optional<url::Origin>& origin_lock() const {
+  const absl::optional<url::Origin>& origin_lock() const {
     return origin_lock_;
   }
   const base::FilePath& plugin_path() const { return plugin_path_; }
@@ -113,13 +114,13 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   // Constructors for plugin process hosts.
   // You must call Init before doing anything else.
-  PpapiPluginProcessHost(const PepperPluginInfo& info,
+  PpapiPluginProcessHost(const ContentPluginInfo& info,
                          const base::FilePath& profile_data_directory,
-                         const base::Optional<url::Origin>& origin_lock);
+                         const absl::optional<url::Origin>& origin_lock);
 
   // Actually launches the process with the given plugin info. Returns true
   // on success (the process was spawned).
-  bool Init(const PepperPluginInfo& info);
+  bool Init(const ContentPluginInfo& info);
 
   void RequestPluginChannel(Client* client);
 
@@ -134,9 +135,6 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   // IPC message handlers.
   void OnRendererPluginChannelCreated(const IPC::ChannelHandle& handle);
-
-  // Handles most requests from the plugin. May be NULL.
-  scoped_refptr<PepperMessageFilter> filter_;
 
   ppapi::PpapiPermissions permissions_;
   std::unique_ptr<BrowserPpapiHostImpl> host_impl_;
@@ -160,11 +158,9 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   // Specific origin to which this is bound, omitted to allow any origin to
   // re-use the plugin host.
-  const base::Optional<url::Origin> origin_lock_;
+  const absl::optional<url::Origin> origin_lock_;
 
   std::unique_ptr<BrowserChildProcessHostImpl> process_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpapiPluginProcessHost);
 };
 
 class PpapiPluginProcessHostIterator

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@ namespace media {
 
 StreamParser::InitParameters::InitParameters(base::TimeDelta duration)
     : duration(duration),
-      liveness(DemuxerStream::LIVENESS_UNKNOWN),
       detected_audio_track_count(0),
       detected_video_track_count(0),
       detected_text_track_count(0) {}
@@ -54,7 +53,7 @@ static bool MergeBufferQueuesInternal(
   // buffers must not be less than. If |merged_buffers| already has buffers,
   // initialize |last_decode_timestamp| to the decode timestamp of the last
   // buffer in it.
-  DecodeTimestamp last_decode_timestamp = kNoDecodeTimestamp();
+  DecodeTimestamp last_decode_timestamp = kNoDecodeTimestamp;
   if (!merged_buffers->empty())
     last_decode_timestamp = merged_buffers->back()->GetDecodeTimestamp();
 
@@ -76,7 +75,7 @@ static bool MergeBufferQueuesInternal(
     // Tracks which queue's iterator is pointing to the candidate buffer to
     // append next, or -1 if no candidate buffers found. This indexes |itrs|.
     int index_of_queue_with_next_decode_timestamp = -1;
-    DecodeTimestamp next_decode_timestamp = kNoDecodeTimestamp();
+    DecodeTimestamp next_decode_timestamp = kNoDecodeTimestamp;
 
     // Scan each of the iterators for |buffer_queues| to find the candidate
     // buffer, if any, that has the lowest decode timestamp.
@@ -87,12 +86,12 @@ static bool MergeBufferQueuesInternal(
       // Extract the candidate buffer's decode timestamp.
       DecodeTimestamp ts = (*itrs[i])->GetDecodeTimestamp();
 
-      if (last_decode_timestamp != kNoDecodeTimestamp() &&
+      if (last_decode_timestamp != kNoDecodeTimestamp &&
           ts < last_decode_timestamp)
         return false;
 
       if (ts < next_decode_timestamp ||
-          next_decode_timestamp == kNoDecodeTimestamp()) {
+          next_decode_timestamp == kNoDecodeTimestamp) {
         // Remember the decode timestamp and queue iterator index for this
         // potentially winning candidate buffer.
         next_decode_timestamp = ts;
@@ -126,15 +125,15 @@ bool MergeBufferQueues(const StreamParser::BufferQueueMap& buffer_queue_map,
   // FrameProcessorTest.AudioVideo_Discontinuity currently depends on audio
   // buffers being processed first.
   std::vector<const StreamParser::BufferQueue*> buffer_queues;
-  for (const auto& it : buffer_queue_map) {
-    DCHECK(!it.second.empty());
-    if (it.second[0]->type() == DemuxerStream::AUDIO)
-      buffer_queues.push_back(&it.second);
+  for (const auto& [track_id, buffer_queue] : buffer_queue_map) {
+    DCHECK(!buffer_queue.empty());
+    if (buffer_queue[0]->type() == DemuxerStream::AUDIO)
+      buffer_queues.push_back(&buffer_queue);
   }
-  for (const auto& it : buffer_queue_map) {
-    DCHECK(!it.second.empty());
-    if (it.second[0]->type() != DemuxerStream::AUDIO)
-      buffer_queues.push_back(&it.second);
+  for (const auto& [track_id, buffer_queue] : buffer_queue_map) {
+    DCHECK(!buffer_queue.empty());
+    if (buffer_queue[0]->type() != DemuxerStream::AUDIO)
+      buffer_queues.push_back(&buffer_queue);
   }
 
   // Do the merge.

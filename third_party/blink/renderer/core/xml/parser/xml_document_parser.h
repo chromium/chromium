@@ -28,12 +28,14 @@
 
 #include <libxml/tree.h>
 #include <memory>
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/script/xml_parser_script_runner.h"
 #include "third_party/blink/renderer/core/script/xml_parser_script_runner_host.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_errors.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -137,6 +139,9 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
 
   // XMLParserScriptRunnerHost
   void NotifyScriptExecuted() override;
+  // |kDOMContentLoadedWaitForAsyncScript| experiment is not effective for XML
+  // documents and thus we don't have to do anything here.
+  void NotifyNoRemainingAsyncScripts() final {}
 
   void end();
 
@@ -201,6 +206,12 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   HeapVector<Member<ContainerNode>> current_node_stack_;
 
   Member<Text> leaf_text_node_;
+
+  // Tracks whether we're processing a new input chunk. This is set right before
+  // submitting a new chunk to libxml and is reset by most emitted parse events.
+  // We use this as a signal to merge CDATA sections when they span a chunk
+  // boundary.
+  bool is_start_of_new_chunk_ = false;
 
   bool is_currently_parsing8_bit_chunk_;
   bool saw_error_;

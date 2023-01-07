@@ -1,0 +1,28 @@
+caption: Allow remote access connections to this machine
+default: true
+desc: |-
+  If this policy is Disabled, the remote access host service cannot be started or configured to accept incoming connections.  This policy does not affect remote support scenarios.
+
+            This policy has no effect if it is set to Enabled, left empty, or is not set.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+  platform_only: true
+future_on:
+- fuchsia
+items:
+- caption: Allow remote access connections to this machine
+  value: true
+- caption: Prevent remote access connections to this machine
+  value: false
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+- joedow@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:89-
+tags: []
+type: main

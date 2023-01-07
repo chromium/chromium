@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.os.SystemClock;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.components.external_intents.AuthenticatorNavigationInterceptor;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingAsyncActionType;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
@@ -16,7 +15,6 @@ import org.chromium.components.external_intents.ExternalNavigationHandler.Overri
 import org.chromium.components.external_intents.InterceptNavigationDelegateClient;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.components.external_intents.RedirectHandler;
-import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -38,8 +36,14 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
         mRedirectHandler = RedirectHandler.create();
         mWebContentsObserver = new WebContentsObserver() {
             @Override
-            public void didFinishNavigation(NavigationHandle navigationHandle) {
-                mInterceptNavigationDelegate.onNavigationFinished(navigationHandle);
+            public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {
+                mInterceptNavigationDelegate.onNavigationFinishedInPrimaryMainFrame(
+                        navigationHandle);
+            }
+
+            @Override
+            public void didFinishNavigationNoop(NavigationHandle navigation) {
+                mInterceptNavigationDelegate.onNavigationFinishedNoop(navigation);
             }
         };
     }
@@ -92,11 +96,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public AuthenticatorNavigationInterceptor createAuthenticatorNavigationInterceptor() {
-        return null;
-    }
-
-    @Override
     public boolean isIncognito() {
         return mTab.getProfile().isIncognito();
     }
@@ -107,9 +106,10 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(NavigationParams params) {
-        NavigationImpl navigation =
-                mTab.getNavigationControllerImpl().getNavigationImplFromId(params.navigationId);
+    public boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(
+            NavigationHandle navigationHandle) {
+        NavigationImpl navigation = mTab.getNavigationControllerImpl().getNavigationImplFromId(
+                navigationHandle.getNavigationId());
         if (navigation == null) return false;
 
         return navigation.areIntentLaunchesAllowedInBackground();
@@ -141,17 +141,17 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public void onNavigationStarted(NavigationParams params) {
-        if (params.hasUserGesture || params.hasUserGestureCarryover) {
+    public void onNavigationStarted(NavigationHandle navigationHandle) {
+        if (navigationHandle.hasUserGesture()) {
             mLastNavigationWithUserGestureTime = SystemClock.elapsedRealtime();
         }
     }
 
     @Override
     public void onDecisionReachedForNavigation(
-            NavigationParams params, OverrideUrlLoadingResult overrideUrlLoadingResult) {
-        NavigationImpl navigation =
-                mTab.getNavigationControllerImpl().getNavigationImplFromId(params.navigationId);
+            NavigationHandle navigationHandle, OverrideUrlLoadingResult overrideUrlLoadingResult) {
+        NavigationImpl navigation = mTab.getNavigationControllerImpl().getNavigationImplFromId(
+                navigationHandle.getNavigationId());
 
         // As the navigation is still ongoing at this point there should be a NavigationImpl
         // instance for it.

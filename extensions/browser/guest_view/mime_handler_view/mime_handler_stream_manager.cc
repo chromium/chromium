@@ -1,13 +1,15 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -73,15 +75,14 @@ class MimeHandlerStreamManager::EmbedderObserver
     : public content::WebContentsObserver {
  public:
   EmbedderObserver(MimeHandlerStreamManager* stream_manager,
-                   const std::string& view_id,
-                   int frame_tree_node_id,
-                   int render_process_id,
-                   int render_frame_id);
+                   const std::string& stream_id,
+                   int frame_tree_node_id);
 
  private:
   // WebContentsObserver overrides.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -94,11 +95,10 @@ class MimeHandlerStreamManager::EmbedderObserver
 
   bool IsTrackedRenderFrameHost(content::RenderFrameHost* render_frame_host);
 
-  MimeHandlerStreamManager* const stream_manager_;
-  const std::string view_id_;
+  const raw_ptr<MimeHandlerStreamManager> stream_manager_;
+  const std::string stream_id_;
   int frame_tree_node_id_;
-  int render_process_id_;
-  int render_frame_id_;
+  content::GlobalRenderFrameHostId rfh_id_;
   // We get an initial  load notification for the URL the mime handler is
   // serving. We don't want to clean up the stream here. This field helps us
   // track the first load notification. Defaults to true.
@@ -106,7 +106,7 @@ class MimeHandlerStreamManager::EmbedderObserver
   // If a RFH is swapped with another RFH, this is set to the new RFH. This
   // ensures that we don't inadvarently clean up the stream when the old RFH
   // dies.
-  content::RenderFrameHost* new_host_;
+  raw_ptr<content::RenderFrameHost> new_host_;
 };
 
 MimeHandlerStreamManager::MimeHandlerStreamManager() = default;
@@ -119,29 +119,27 @@ MimeHandlerStreamManager* MimeHandlerStreamManager::Get(
 }
 
 void MimeHandlerStreamManager::AddStream(
-    const std::string& view_id,
+    const std::string& stream_id,
     std::unique_ptr<StreamContainer> stream,
-    int frame_tree_node_id,
-    int render_process_id,
-    int render_frame_id) {
-  streams_by_extension_id_[stream->extension_id()].insert(view_id);
-  auto result = streams_.insert(std::make_pair(view_id, std::move(stream)));
+    int frame_tree_node_id) {
+  streams_by_extension_id_[stream->extension_id()].insert(stream_id);
+  auto result = streams_.insert(std::make_pair(stream_id, std::move(stream)));
   DCHECK(result.second);
-  embedder_observers_[view_id] = std::make_unique<EmbedderObserver>(
-      this, view_id, frame_tree_node_id, render_process_id, render_frame_id);
+  embedder_observers_[stream_id] =
+      std::make_unique<EmbedderObserver>(this, stream_id, frame_tree_node_id);
 }
 
 std::unique_ptr<StreamContainer> MimeHandlerStreamManager::ReleaseStream(
-    const std::string& view_id) {
-  auto stream = streams_.find(view_id);
+    const std::string& stream_id) {
+  auto stream = streams_.find(stream_id);
   if (stream == streams_.end())
     return nullptr;
 
   std::unique_ptr<StreamContainer> result =
       base::WrapUnique(stream->second.release());
-  streams_by_extension_id_[result->extension_id()].erase(view_id);
+  streams_by_extension_id_[result->extension_id()].erase(stream_id);
   streams_.erase(stream);
-  embedder_observers_.erase(view_id);
+  embedder_observers_.erase(stream_id);
   return result;
 }
 
@@ -153,36 +151,24 @@ void MimeHandlerStreamManager::OnExtensionUnloaded(
   if (streams == streams_by_extension_id_.end())
     return;
 
-  for (const auto& view_id : streams->second) {
-    streams_.erase(view_id);
-    embedder_observers_.erase(view_id);
+  for (const auto& stream_id : streams->second) {
+    streams_.erase(stream_id);
+    embedder_observers_.erase(stream_id);
   }
   streams_by_extension_id_.erase(streams);
 }
 
 MimeHandlerStreamManager::EmbedderObserver::EmbedderObserver(
     MimeHandlerStreamManager* stream_manager,
-    const std::string& view_id,
-    int frame_tree_node_id,
-    int render_process_id,
-    int render_frame_id)
-    : stream_manager_(stream_manager),
-      view_id_(view_id),
+    const std::string& stream_id,
+    int frame_tree_node_id)
+    : content::WebContentsObserver(
+          content::WebContents::FromFrameTreeNodeId(frame_tree_node_id)),
+      stream_manager_(stream_manager),
+      stream_id_(stream_id),
       frame_tree_node_id_(frame_tree_node_id),
-      render_process_id_(render_process_id),
-      render_frame_id_(render_frame_id),
       initial_load_for_frame_(true),
-      new_host_(nullptr) {
-  content::WebContents* web_contents = nullptr;
-  if (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId) {
-    web_contents =
-        content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  } else {
-    web_contents = content::WebContents::FromRenderFrameHost(
-        content::RenderFrameHost::FromID(render_process_id, render_frame_id));
-  }
-  content::WebContentsObserver::Observe(web_contents);
-}
+      new_host_(nullptr) {}
 
 void MimeHandlerStreamManager::EmbedderObserver::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
@@ -194,14 +180,14 @@ void MimeHandlerStreamManager::EmbedderObserver::RenderFrameDeleted(
   // picked, a specualtive RenderFrameHost might be deleted. Do not abort the
   // stream in that case.
   if (frame_tree_node_id_ != content::RenderFrameHost::kNoFrameTreeNodeId &&
-      !render_frame_host->IsCurrent())
+      !render_frame_host->IsActive())
     return;
 
   AbortStream();
 }
 
-void MimeHandlerStreamManager::EmbedderObserver::RenderProcessGone(
-    base::TerminationStatus status) {
+void MimeHandlerStreamManager::EmbedderObserver::
+    PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) {
   AbortStream();
 }
 
@@ -217,9 +203,7 @@ void MimeHandlerStreamManager::EmbedderObserver::ReadyToCommitNavigation(
   if (initial_load_for_frame_) {
     initial_load_for_frame_ = false;
     frame_tree_node_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
-    render_frame_id_ = navigation_handle->GetRenderFrameHost()->GetRoutingID();
-    render_process_id_ =
-        navigation_handle->GetRenderFrameHost()->GetProcess()->GetID();
+    rfh_id_ = navigation_handle->GetRenderFrameHost()->GetGlobalId();
     return;
   }
   AbortStream();
@@ -228,7 +212,9 @@ void MimeHandlerStreamManager::EmbedderObserver::ReadyToCommitNavigation(
 void MimeHandlerStreamManager::EmbedderObserver::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // If the top level frame is navigating away, clean up the stream.
-  if (navigation_handle->IsInMainFrame() &&
+  // TODO(mcnee): It's incorrect to assume DidStartNavigation will lead to the
+  // document changing. This could cause the stream to be destroyed prematurely.
+  if (navigation_handle->IsInPrimaryMainFrame() &&
       !navigation_handle->IsSameDocument()) {
     AbortStream();
   }
@@ -245,21 +231,18 @@ void MimeHandlerStreamManager::EmbedderObserver::RenderFrameHostChanged(
   // If this is an unrelated host, ignore.
   if ((frame_tree_node_id_ != content::RenderFrameHost::kNoFrameTreeNodeId &&
        old_host->GetFrameTreeNodeId() != frame_tree_node_id_) ||
-      (render_frame_id_ != -1 &&
-       (old_host->GetRoutingID() != render_frame_id_ ||
-        (old_host->GetProcess()->GetID() != render_process_id_)))) {
+      (rfh_id_ && (old_host->GetGlobalId() != rfh_id_))) {
     return;
   }
 
   new_host_ = new_host;
-  // Update the RFID, RPIDs to those of the new RFH. This ensures
+  // Update the RFH id to that of the new RFH. This ensures
   // that if the new RFH gets deleted before loading the stream, we will
   // abort it.
   DCHECK(
       (frame_tree_node_id_ == content::RenderFrameHost::kNoFrameTreeNodeId) ||
       (frame_tree_node_id_ == new_host_->GetFrameTreeNodeId()));
-  render_frame_id_ = new_host_->GetRoutingID();
-  render_process_id_ = new_host_->GetProcess()->GetID();
+  rfh_id_ = new_host_->GetGlobalId();
   // No need to keep this around anymore since we have valid render frame IDs
   // now.
   frame_tree_node_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
@@ -272,7 +255,7 @@ void MimeHandlerStreamManager::EmbedderObserver::WebContentsDestroyed() {
 void MimeHandlerStreamManager::EmbedderObserver::AbortStream() {
   Observe(nullptr);
   // This will cause the stream to be destroyed.
-  stream_manager_->ReleaseStream(view_id_);
+  stream_manager_->ReleaseStream(stream_id_);
 }
 
 bool MimeHandlerStreamManager::EmbedderObserver::IsTrackedRenderFrameHost(
@@ -285,9 +268,8 @@ bool MimeHandlerStreamManager::EmbedderObserver::IsTrackedRenderFrameHost(
   if (frame_tree_node_id_ != content::RenderFrameHost::kNoFrameTreeNodeId) {
     return render_frame_host->GetFrameTreeNodeId() == frame_tree_node_id_;
   } else {
-    DCHECK((render_frame_id_ != -1) && (render_process_id_ != -1));
-    return render_frame_host->GetRoutingID() == render_frame_id_ &&
-           render_frame_host->GetProcess()->GetID() == render_process_id_;
+    DCHECK(rfh_id_);
+    return render_frame_host->GetGlobalId() == rfh_id_;
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -132,10 +132,6 @@ public class ExploreSitesBridge {
 
     public static boolean isEnabled(@ExploreSitesVariation int variation) {
         return variation == ExploreSitesVariation.ENABLED;
-    }
-
-    public static boolean isExperimental(@ExploreSitesVariation int variation) {
-        return variation == ExploreSitesVariation.EXPERIMENT;
     }
 
     public static boolean isDense(@DenseVariation int variation) {

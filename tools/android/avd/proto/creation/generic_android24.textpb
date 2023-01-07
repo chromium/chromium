@@ -1,0 +1,44 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86 android-24 AVD.
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "KUbHEU8j3yFnPWB_61mplm5-Mpm1bJ-cRDeDzTHK3hkC"  # 31.2.8
+  dest_path: "generic_android24"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-24/google_apis/x86"
+  version: "GWn2zCnRX5fGPkQMCRucE4tNEjCJeS__h0WFMm9_QPgC"  # 27
+  dest_path: "generic_android24"
+}
+system_image_name: "system-images;android-24;google_apis;x86"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-24/google_apis/x86"
+  dest_path: "generic_android24"
+}
+avd_name: "android_24_google_apis_x86"
+
+avd_settings {
+  screen {
+    density: 480
+    height: 1920
+    width: 1080
+  }
+  # crbug.com/1110997: Disable GLDMA for android-24
+  advanced_features {
+    key: "GLDMA"
+    value: "off"
+  }
+  advanced_features {
+    key: "GLESDynamicVersion"
+    value: "on"
+  }
+  # Tests can run into low memory issue with the default ram size 1024MB
+  # Incease to 2048MB, which is the same as that on Nexus 5X
+  ram_size: 2048
+}

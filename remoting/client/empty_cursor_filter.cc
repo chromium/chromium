@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ bool IsVisiblePixel(uint32_t pixel) {
 
 // Returns true if there is at least one visible pixel in the given range.
 bool IsVisibleRow(const uint32_t* begin, const uint32_t* end) {
-  return std::find_if(begin, end, &IsVisiblePixel) != end;
+  return std::any_of(begin, end, &IsVisiblePixel);
 }
 
 }  // namespace

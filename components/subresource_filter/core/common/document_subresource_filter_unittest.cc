@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
@@ -41,6 +40,10 @@ class DocumentSubresourceFilterTest : public ::testing::Test {
  public:
   DocumentSubresourceFilterTest() {}
 
+  DocumentSubresourceFilterTest(const DocumentSubresourceFilterTest&) = delete;
+  DocumentSubresourceFilterTest& operator=(
+      const DocumentSubresourceFilterTest&) = delete;
+
  protected:
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(
@@ -61,8 +64,6 @@ class DocumentSubresourceFilterTest : public ::testing::Test {
  private:
   testing::TestRulesetCreator test_ruleset_creator_;
   scoped_refptr<const MemoryMappedRuleset> ruleset_;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentSubresourceFilterTest);
 };
 
 TEST_F(DocumentSubresourceFilterTest, DryRun) {

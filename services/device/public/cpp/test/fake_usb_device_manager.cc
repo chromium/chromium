@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/cpp/test/fake_usb_device.h"
 #include "services/device/public/cpp/test/mock_usb_mojo_device.h"
@@ -70,7 +70,7 @@ void FakeUsbDeviceManager::GetSecurityKeyDevice(
                    std::move(device_receiver), std::move(device_client));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FakeUsbDeviceManager::RefreshDeviceInfo(
     const std::string& guid,
     RefreshDeviceInfoCallback callback) {
@@ -84,7 +84,7 @@ void FakeUsbDeviceManager::RefreshDeviceInfo(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FakeUsbDeviceManager::CheckAccess(const std::string& guid,
                                        CheckAccessCallback callback) {
   std::move(callback).Run(true);
@@ -99,7 +99,7 @@ void FakeUsbDeviceManager::OpenFileDescriptor(
       base::FilePath(FILE_PATH_LITERAL("/dev/null")),
       base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void FakeUsbDeviceManager::SetClient(
     mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client) {
@@ -154,6 +154,14 @@ void FakeUsbDeviceManager::RemoveAllDevices() {
   for (const auto& device : device_list) {
     RemoveDevice(device);
   }
+}
+
+const device::mojom::UsbDeviceInfo* FakeUsbDeviceManager::GetDeviceInfo(
+    const std::string& guid) {
+  if (!base::Contains(devices_, guid))
+    return nullptr;
+
+  return &devices_[guid]->GetDeviceInfo();
 }
 
 bool FakeUsbDeviceManager::SetMockForDevice(const std::string& guid,

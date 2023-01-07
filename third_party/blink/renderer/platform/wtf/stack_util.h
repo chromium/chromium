@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ WTF_EXPORT extern uintptr_t g_main_thread_underestimated_stack_size;
 
 WTF_EXPORT void InitializeMainThreadStackEstimate();
 
-#if defined(OS_WIN) && defined(COMPILER_MSVC)
+#if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
 size_t ThreadStackSize();
 #endif
 

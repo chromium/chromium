@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -35,6 +34,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWin
  public:
   static scoped_refptr<BluetoothAdapter> CreateAdapter();
   static scoped_refptr<BluetoothAdapter> CreateClassicAdapter();
+
+  BluetoothAdapterWin(const BluetoothAdapterWin&) = delete;
+  BluetoothAdapterWin& operator=(const BluetoothAdapterWin&) = delete;
 
   static bool UseNewBLEWinImplementation();
 
@@ -152,8 +154,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWin
   // NOTE: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdapterWin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterWin);
 };
 
 }  // namespace device

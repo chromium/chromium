@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "device/base/features.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap2_device_operation.h"
@@ -40,10 +41,8 @@ bool SetResponseCredential(
     const std::vector<PublicKeyCredentialDescriptor>& allow_list) {
   if (response->credential) {
     if (!allow_list.empty() &&
-        std::none_of(allow_list.cbegin(), allow_list.cend(),
-                     [&response](const auto& credential) {
-                       return credential.id() == response->credential->id();
-                     })) {
+        !base::Contains(allow_list, response->credential->id,
+                        &PublicKeyCredentialDescriptor::id)) {
       return false;
     }
 
@@ -172,7 +171,9 @@ void GetAssertionTask::GetAssertion() {
         device(), request_,
         base::BindOnce(&GetAssertionTask::HandleResponse,
                        weak_factory_.GetWeakPtr(), request_.allow_list),
-        base::BindOnce(&ReadCTAPGetAssertionResponse), StringFixupPredicate);
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
+        StringFixupPredicate);
     sign_operation_->Start();
     return;
   }
@@ -213,7 +214,9 @@ void GetAssertionTask::GetAssertion() {
         device(), std::move(request),
         base::BindOnce(&GetAssertionTask::HandleResponse,
                        weak_factory_.GetWeakPtr(), request.allow_list),
-        base::BindOnce(&ReadCTAPGetAssertionResponse), StringFixupPredicate);
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
+        StringFixupPredicate);
     sign_operation_->Start();
     return;
   }
@@ -227,7 +230,8 @@ void GetAssertionTask::GetAssertion() {
           device(), NextSilentRequest(),
           base::BindOnce(&GetAssertionTask::HandleResponseToSilentRequest,
                          weak_factory_.GetWeakPtr()),
-          base::BindOnce(&ReadCTAPGetAssertionResponse),
+          base::BindOnce(&ReadCTAPGetAssertionResponse,
+                         device()->DeviceTransport()),
           /*string_fixup_predicate=*/nullptr);
   sign_operation_->Start();
 }
@@ -245,7 +249,7 @@ void GetAssertionTask::U2fSign() {
 void GetAssertionTask::HandleResponse(
     std::vector<PublicKeyCredentialDescriptor> allow_list,
     CtapDeviceResponseCode response_code,
-    base::Optional<AuthenticatorGetAssertionResponse> response_data) {
+    absl::optional<AuthenticatorGetAssertionResponse> response_data) {
   if (canceled_) {
     return;
   }
@@ -268,16 +272,26 @@ void GetAssertionTask::HandleResponse(
   }
 
   if (response_code == CtapDeviceResponseCode::kSuccess) {
+    if (response_data->user_selected && !allow_list.empty()) {
+      // The userSelected signal is only valid if the request had an empty
+      // allowList.
+      FIDO_LOG(DEBUG)
+          << "Assertion response has userSelected for non-empty allowList";
+      std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
+                               absl::nullopt);
+      return;
+    }
+
     if (!SetResponseCredential(&response_data.value(), allow_list)) {
       FIDO_LOG(DEBUG)
           << "Assertion response has invalid credential information";
       std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                               base::nullopt);
+                               absl::nullopt);
       return;
     }
 
     // Decrypt any hmac-secret response.
-    const base::Optional<cbor::Value>& extensions_cbor =
+    const absl::optional<cbor::Value>& extensions_cbor =
         response_data->authenticator_data.extensions();
     if (extensions_cbor) {
       // Parsing has already checked that |extensions_cbor| is a map.
@@ -287,15 +301,15 @@ void GetAssertionTask::HandleResponse(
         if (!hmac_secret_request_ || !it->second.is_bytestring()) {
           FIDO_LOG(DEBUG) << "Unexpected or invalid hmac_secret extension";
           std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                                   base::nullopt);
+                                   absl::nullopt);
           return;
         }
-        base::Optional<std::vector<uint8_t>> plaintext =
+        absl::optional<std::vector<uint8_t>> plaintext =
             hmac_secret_request_->Decrypt(it->second.GetBytestring());
         if (!plaintext) {
           FIDO_LOG(DEBUG) << "Failed to decrypt hmac_secret extension";
           std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                                   base::nullopt);
+                                   absl::nullopt);
           return;
         }
         response_data->hmac_secret = std::move(plaintext.value());
@@ -308,7 +322,7 @@ void GetAssertionTask::HandleResponse(
 
 void GetAssertionTask::HandleResponseToSilentRequest(
     CtapDeviceResponseCode response_code,
-    base::Optional<AuthenticatorGetAssertionResponse> response_data) {
+    absl::optional<AuthenticatorGetAssertionResponse> response_data) {
   DCHECK(request_.allow_list.size() > 0);
   DCHECK(allow_list_batches_.size() > 0);
   DCHECK(0 < current_allow_list_batch_ &&
@@ -331,14 +345,15 @@ void GetAssertionTask::HandleResponseToSilentRequest(
         *response_data->credential;
     request.allow_list = {matching_credential};
     MaybeSetPRFParameters(
-        &request, GetPRFInputForCredential(options_, matching_credential.id()));
+        &request, GetPRFInputForCredential(options_, matching_credential.id));
 
     sign_operation_ = std::make_unique<Ctap2DeviceOperation<
         CtapGetAssertionRequest, AuthenticatorGetAssertionResponse>>(
         device(), std::move(request),
         base::BindOnce(&GetAssertionTask::HandleResponse,
                        weak_factory_.GetWeakPtr(), request.allow_list),
-        base::BindOnce(&ReadCTAPGetAssertionResponse),
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
         /*string_fixup_predicate=*/nullptr);
     sign_operation_->Start();
     return;
@@ -352,7 +367,8 @@ void GetAssertionTask::HandleResponseToSilentRequest(
         device(), NextSilentRequest(),
         base::BindOnce(&GetAssertionTask::HandleResponseToSilentRequest,
                        weak_factory_.GetWeakPtr()),
-        base::BindOnce(&ReadCTAPGetAssertionResponse),
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
         /*string_fixup_predicate=*/nullptr);
     sign_operation_->Start();
     return;
@@ -378,9 +394,9 @@ void GetAssertionTask::HandleResponseToSilentRequest(
 
 void GetAssertionTask::HandleDummyMakeCredentialComplete(
     CtapDeviceResponseCode response_code,
-    base::Optional<AuthenticatorMakeCredentialResponse> response_data) {
+    absl::optional<AuthenticatorMakeCredentialResponse> response_data) {
   std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials,
-                           base::nullopt);
+                           absl::nullopt);
 }
 
 void GetAssertionTask::MaybeSetPRFParameters(
@@ -400,7 +416,7 @@ void GetAssertionTask::MaybeSetPRFParameters(
 
 void GetAssertionTask::MaybeRevertU2fFallbackAndInvokeCallback(
     CtapDeviceResponseCode status,
-    base::Optional<AuthenticatorGetAssertionResponse> response) {
+    absl::optional<AuthenticatorGetAssertionResponse> response) {
   DCHECK_EQ(ProtocolVersion::kU2f, device()->supported_protocol());
   if (device()->device_info()) {
     // This was actually a CTAP2 device, but the protocol version was set to U2F

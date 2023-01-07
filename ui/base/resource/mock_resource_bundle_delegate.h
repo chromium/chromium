@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class MockResourceBundleDelegate : public ResourceBundle::Delegate {
 
   MOCK_METHOD2(GetPathForResourcePack,
                base::FilePath(const base::FilePath& pack_path,
-                              ScaleFactor scale_factor));
+                              ResourceScaleFactor scale_factor));
   MOCK_METHOD2(GetPathForLocalePack,
                base::FilePath(const base::FilePath& pack_path,
                               const std::string& locale));
@@ -25,12 +25,12 @@ class MockResourceBundleDelegate : public ResourceBundle::Delegate {
   MOCK_METHOD1(GetNativeImageNamed, gfx::Image(int resource_id));
   MOCK_METHOD2(LoadDataResourceBytes,
                base::RefCountedMemory*(int resource_id,
-                                       ScaleFactor scale_factor));
+                                       ResourceScaleFactor scale_factor));
   MOCK_METHOD1(LoadDataResourceString,
-               base::Optional<std::string>(int resource_id));
+               absl::optional<std::string>(int resource_id));
   MOCK_CONST_METHOD3(GetRawDataResource,
                      bool(int resource_id,
-                          ScaleFactor scale_factor,
+                          ResourceScaleFactor scale_factor,
                           base::StringPiece* value));
   MOCK_CONST_METHOD2(GetLocalizedString,
                      bool(int message_id, std::u16string* value));

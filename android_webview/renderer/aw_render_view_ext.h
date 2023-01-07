@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,18 @@ namespace android_webview {
 // WebKit directly to implement (and that aren't needed in the chrome app).
 class AwRenderViewExt : public blink::WebViewObserver {
  public:
-  static void WebViewCreated(blink::WebView* web_view);
+  AwRenderViewExt(const AwRenderViewExt&) = delete;
+  AwRenderViewExt& operator=(const AwRenderViewExt&) = delete;
+
+  static void WebViewCreated(blink::WebView* web_view,
+                             bool created_by_renderer);
+
+  static AwRenderViewExt* FromWebView(blink::WebView* web_view);
+
+  bool created_by_renderer() { return created_by_renderer_; }
 
  private:
-  AwRenderViewExt(blink::WebView* web_view);
+  AwRenderViewExt(blink::WebView* web_view, bool created_by_renderer);
   ~AwRenderViewExt() override;
 
   // blink::WebViewObserver overrides.
@@ -39,7 +47,7 @@ class AwRenderViewExt : public blink::WebViewObserver {
   // to be called.
   bool needs_contents_size_update_ = true;
 
-  DISALLOW_COPY_AND_ASSIGN(AwRenderViewExt);
+  bool created_by_renderer_;
 };
 
 }  // namespace android_webview

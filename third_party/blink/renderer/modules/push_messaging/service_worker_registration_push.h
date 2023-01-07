@@ -1,13 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_SERVICE_WORKER_REGISTRATION_PUSH_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_SERVICE_WORKER_REGISTRATION_PUSH_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -23,6 +22,11 @@ class ServiceWorkerRegistrationPush final
 
   explicit ServiceWorkerRegistrationPush(
       ServiceWorkerRegistration* registration);
+
+  ServiceWorkerRegistrationPush(const ServiceWorkerRegistrationPush&) = delete;
+  ServiceWorkerRegistrationPush& operator=(
+      const ServiceWorkerRegistrationPush&) = delete;
+
   virtual ~ServiceWorkerRegistrationPush();
   static ServiceWorkerRegistrationPush& From(
       ServiceWorkerRegistration& registration);
@@ -34,8 +38,6 @@ class ServiceWorkerRegistrationPush final
 
  private:
   Member<PushManager> push_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationPush);
 };
 
 }  // namespace blink

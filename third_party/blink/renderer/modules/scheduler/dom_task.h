@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
+#include "third_party/blink/renderer/modules/scheduler/dom_scheduler.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 namespace blink {
-class DOMScheduler;
-class DOMTaskSignal;
+class AbortSignal;
 class ScriptState;
 class V8SchedulerPostTaskCallback;
 
@@ -22,10 +22,10 @@ class V8SchedulerPostTaskCallback;
 // callback's v8 context is invalid, in which case, the task will not be run.
 class DOMTask final : public GarbageCollected<DOMTask> {
  public:
-  DOMTask(DOMScheduler*,
-          ScriptPromiseResolver*,
+  DOMTask(ScriptPromiseResolver*,
           V8SchedulerPostTaskCallback*,
-          DOMTaskSignal*,
+          AbortSignal*,
+          DOMScheduler::DOMTaskQueue*,
           base::TimeDelta delay);
 
   virtual void Trace(Visitor*) const;
@@ -36,17 +36,21 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   // Internal step of Invoke that handles invoking the callback, including
   // catching any errors and retrieving the result.
   void InvokeInternal(ScriptState*);
-  void Abort();
+  void OnAbort();
 
   void RecordTaskStartMetrics();
 
-  Member<DOMScheduler> scheduler_;
   TaskHandle task_handle_;
   Member<V8SchedulerPostTaskCallback> callback_;
   Member<ScriptPromiseResolver> resolver_;
-  probe::AsyncTaskId async_task_id_;
-  Member<DOMTaskSignal> signal_;
+  probe::AsyncTaskContext async_task_context_;
+  Member<AbortSignal> signal_;
+  // Do not remove. For dynamic priority task queues, |task_queue_| ensures that
+  // the associated WebSchedulingTaskQueue stays alive until after this task
+  // runs, which is necessary to ensure throttling works correctly.
+  Member<DOMScheduler::DOMTaskQueue> task_queue_;
   const base::TimeTicks queue_time_;
+  const base::TimeDelta delay_;
 };
 
 }  // namespace blink

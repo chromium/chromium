@@ -1,10 +1,12 @@
+# mypy: allow-untyped-defs
+
 import requests
 from mozlog.structured.formatters.base import BaseFormatter
 
 DEFAULT_API = "https://wpt.fyi/api/screenshots/hashes"
 
 
-class WptscreenshotFormatter(BaseFormatter):
+class WptscreenshotFormatter(BaseFormatter):  # type: ignore
     """Formatter that outputs screenshots in the format expected by wpt.fyi."""
 
     def __init__(self, api=None):

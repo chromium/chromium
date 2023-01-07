@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,7 +91,7 @@ TEST_P(GLCubeMapTextureTest, ReadPixels) {
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 
   // Make a cube texture complete
-  for (unsigned i = 0; i < base::size(kCubeMapTextureTargets); i++) {
+  for (unsigned i = 0; i < std::size(kCubeMapTextureTargets); i++) {
     glTexImage2D(kCubeMapTextureTargets[i], 0, GL_RGBA, width_, width_, 0,
                  GL_RGBA, GL_UNSIGNED_BYTE, pixels_);
     EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());

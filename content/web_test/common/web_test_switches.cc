@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_split.h"
+#include "build/build_config.h"
 
 namespace switches {
 
@@ -41,10 +42,16 @@ const char kEncodeBinary[] = "encode-binary";
 const char kDisableAutoWPTOriginIsolation[] =
     "disable-auto-wpt-origin-isolation";
 
+// Forces each web test to be run in a new BrowsingInstance. Required for origin
+// isolation web tests where the BrowsingInstance retains state from origin
+// isolation requests, but this flag may benefit other web tests.
+const char kResetBrowsingInstanceBetweenTests[] =
+    "reset-browsing-instance-between-tests";
+
 // This makes us disable some web-platform runtime features so that we test
 // content_shell as if it was a stable release. It is only followed when
 // kRunWebTest is set. For the features' level, see
-// http://dev.chromium.org/blink/runtime-enabled-features.
+// third_party/blink/renderer/platform/RuntimeEnabledFeatures.md
 const char kStableReleaseMode[] = "stable-release-mode";
 
 // Disables the shell from beginning in headless mode. Tests will then attempt
@@ -52,7 +59,7 @@ const char kStableReleaseMode[] = "stable-release-mode";
 // kRunWebTests is set.
 const char kDisableHeadlessMode[] = "disable-headless-mode";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Registers additional font files on Windows (for fonts outside the usual
 // %WINDIR%\Fonts location). Multiple files can be used by separating them
 // with a semicolon (;).

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/location.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -43,8 +42,8 @@ class AutoclickScrollPositionHandler : public gfx::AnimationDelegate {
   void SetScrollPointCenterInScreen(const gfx::Point& scroll_point_center);
 
  private:
-  static constexpr auto kOpaqueTime = base::TimeDelta::FromMilliseconds(500);
-  static constexpr auto kFadeTime = base::TimeDelta::FromMilliseconds(500);
+  static constexpr auto kOpaqueTime = base::Milliseconds(500);
+  static constexpr auto kFadeTime = base::Milliseconds(500);
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;

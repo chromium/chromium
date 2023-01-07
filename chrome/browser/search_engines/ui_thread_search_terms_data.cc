@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ std::string UIThreadSearchTermsData::GetApplicationLocale() const {
 }
 
 // Android implementations are in ui_thread_search_terms_data_android.cc.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
     bool from_app_list) const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
@@ -80,25 +80,29 @@ std::string UIThreadSearchTermsData::GetSearchClient() const {
 }
 #endif
 
-std::string UIThreadSearchTermsData::GetSuggestClient(bool from_ntp) const {
+std::string UIThreadSearchTermsData::GetSuggestClient(
+    bool non_searchbox_ntp) const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
-#if defined(OS_ANDROID)
-  // Android does not send non-searchbox suggest requests from NTP at this time.
-  DCHECK(!from_ntp);
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE ?
-      "chrome" : "chrome-omni";
+#if BUILDFLAG(IS_ANDROID)
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+    return non_searchbox_ntp ? "chrome-android-search-resumption-module"
+                             : "chrome";
+  }
+  return "chrome-omni";
 #else
-  return from_ntp ? "chrome-ntp" : "chrome-omni";
+  return "chrome-omni";
 #endif
 }
 
-std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier() const {
+std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier(
+    bool non_searchbox_ntp) const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
-#if defined(OS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE)
-    return "chrome-mobile-ext-ansg";
+#if BUILDFLAG(IS_ANDROID)
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+    return non_searchbox_ntp ? std::string() : "chrome-mobile-ext-ansg";
+  }
 #endif
   return "chrome-ext-ansg";
 }

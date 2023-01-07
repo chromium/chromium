@@ -1,10 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_manager.h"
 
-#include <algorithm>
 #include <limits>
 #include <string>
 #include <utility>
@@ -15,11 +14,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_renderer_mixer.h"
 #include "media/base/audio_renderer_mixer_input.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace {
@@ -86,12 +86,8 @@ media::AudioParameters GetMixerOutputParams(
   DCHECK_NE(output_buffer_size, 0);
 
   media::AudioParameters params(input_params.format(),
-                                input_params.channel_layout(),
+                                input_params.channel_layout_config(),
                                 output_sample_rate, output_buffer_size);
-
-  // Use the actual channel count when the channel layout is "DISCRETE".
-  if (input_params.channel_layout() == media::CHANNEL_LAYOUT_DISCRETE)
-    params.set_channels_for_discrete(input_params.channels());
 
   // Specify the effects info the passed to the browser side.
   params.set_effects(input_params.effects());
@@ -115,14 +111,6 @@ AudioRendererMixerManager::~AudioRendererMixerManager() {
   // References to AudioRendererMixers may be owned by garbage collected
   // objects.  During process shutdown they may be leaked, so, transitively,
   // |mixers_| may leak (i.e., may be non-empty at this time) as well.
-}
-
-// static
-AudioRendererMixerManager& AudioRendererMixerManager::GetInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      AudioRendererMixerManager, instance,
-      (base::BindRepeating(&WebAudioDeviceFactory::NewAudioRendererMixerSink)));
-  return instance;
 }
 
 scoped_refptr<media::AudioRendererMixerInput>
@@ -210,10 +198,10 @@ media::AudioRendererMixer* AudioRendererMixerManager::GetMixer(
 
 void AudioRendererMixerManager::ReturnMixer(media::AudioRendererMixer* mixer) {
   base::AutoLock auto_lock(mixers_lock_);
-  auto it = std::find_if(
-      mixers_.begin(), mixers_.end(),
-      [mixer](const std::pair<MixerKey, AudioRendererMixerReference>& val) {
-        return val.second.mixer == mixer;
+  auto it = base::ranges::find(
+      mixers_, mixer,
+      [](const std::pair<MixerKey, AudioRendererMixerReference>& val) {
+        return val.second.mixer;
       });
   DCHECK(it != mixers_.end());
 

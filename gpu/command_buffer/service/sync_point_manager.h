@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,14 @@
 #include <functional>
 #include <memory>
 #include <queue>
-#include <unordered_map>
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -40,6 +41,9 @@ class SyncPointManager;
 class GPU_EXPORT SyncPointOrderData
     : public base::RefCountedThreadSafe<SyncPointOrderData> {
  public:
+  SyncPointOrderData(const SyncPointOrderData&) = delete;
+  SyncPointOrderData& operator=(const SyncPointOrderData&) = delete;
+
   void Destroy();
 
   SequenceId sequence_id() { return sequence_id_; }
@@ -110,7 +114,7 @@ class GPU_EXPORT SyncPointOrderData
       uint32_t wait_order_num,
       uint64_t fence_release);
 
-  SyncPointManager* const sync_point_manager_;
+  const raw_ptr<SyncPointManager> sync_point_manager_;
 
   const SequenceId sequence_id_;
 
@@ -140,7 +144,7 @@ class GPU_EXPORT SyncPointOrderData
   // Queue of unprocessed order numbers. Order numbers are enqueued in
   // GenerateUnprocessedOrderNumber, and dequeued in
   // FinishProcessingOrderNumber.
-  std::queue<uint32_t> unprocessed_order_nums_;
+  base::queue<uint32_t> unprocessed_order_nums_;
 
   // In situations where we are waiting on fence syncs that do not exist, we
   // validate by making sure the order number does not pass the order number
@@ -152,13 +156,14 @@ class GPU_EXPORT SyncPointOrderData
   // follow the invariant:
   //   unprocessed_order_nums_.front() < n <= unprocessed_order_nums_.back().
   OrderFenceQueue order_fence_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncPointOrderData);
 };
 
 class GPU_EXPORT SyncPointClientState
     : public base::RefCountedThreadSafe<SyncPointClientState> {
  public:
+  SyncPointClientState(const SyncPointClientState&) = delete;
+  SyncPointClientState& operator=(const SyncPointClientState&) = delete;
+
   void Destroy();
 
   CommandBufferNamespace namespace_id() const { return namespace_id_; }
@@ -232,7 +237,7 @@ class GPU_EXPORT SyncPointClientState
   void ReleaseFenceSyncHelper(uint64_t release);
 
   // Sync point manager is guaranteed to exist in the lifetime of the client.
-  SyncPointManager* sync_point_manager_ = nullptr;
+  raw_ptr<SyncPointManager> sync_point_manager_ = nullptr;
 
   // Global order data where releases will originate from.
   scoped_refptr<SyncPointOrderData> order_data_;
@@ -250,8 +255,6 @@ class GPU_EXPORT SyncPointClientState
   // In well defined fence sync operations, fence syncs are released in order
   // so simply having a priority queue for callbacks is enough.
   ReleaseCallbackQueue release_callback_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncPointClientState);
 };
 
 // This class manages the sync points, which allow cross-channel
@@ -259,6 +262,10 @@ class GPU_EXPORT SyncPointClientState
 class GPU_EXPORT SyncPointManager {
  public:
   SyncPointManager();
+
+  SyncPointManager(const SyncPointManager&) = delete;
+  SyncPointManager& operator=(const SyncPointManager&) = delete;
+
   ~SyncPointManager();
 
   scoped_refptr<SyncPointOrderData> CreateSyncPointOrderData();
@@ -313,13 +320,11 @@ class GPU_EXPORT SyncPointManager {
                                      CommandBufferId command_buffer_id);
 
  private:
-  using ClientStateMap = std::unordered_map<CommandBufferId,
-                                            scoped_refptr<SyncPointClientState>,
-                                            CommandBufferId::Hasher>;
+  using ClientStateMap =
+      base::flat_map<CommandBufferId, scoped_refptr<SyncPointClientState>>;
 
-  using OrderDataMap = std::unordered_map<SequenceId,
-                                          scoped_refptr<SyncPointOrderData>,
-                                          SequenceId::Hasher>;
+  using OrderDataMap =
+      base::flat_map<SequenceId, scoped_refptr<SyncPointOrderData>>;
 
   scoped_refptr<SyncPointOrderData> GetSyncPointOrderData(
       SequenceId sequence_id);
@@ -341,8 +346,6 @@ class GPU_EXPORT SyncPointManager {
   SequenceId::Generator sequence_id_generator_;
 
   mutable base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncPointManager);
 };
 
 }  // namespace gpu

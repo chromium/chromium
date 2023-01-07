@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,18 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/console_message.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 namespace {
@@ -133,17 +134,18 @@ void ServiceWorkerContextWatcher::StoreVersionInfo(
 void ServiceWorkerContextWatcher::SendRegistrationInfo(
     int64_t registration_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     ServiceWorkerRegistrationInfo::DeleteFlag delete_flag) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::unique_ptr<std::vector<ServiceWorkerRegistrationInfo>> registrations =
       std::make_unique<std::vector<ServiceWorkerRegistrationInfo>>();
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(registration_id);
   if (registration) {
     registrations->push_back(registration->GetInfo());
   } else {
-    registrations->push_back(
-        ServiceWorkerRegistrationInfo(scope, registration_id, delete_flag));
+    registrations->push_back(ServiceWorkerRegistrationInfo(
+        scope, key, registration_id, delete_flag));
   }
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -191,10 +193,12 @@ void ServiceWorkerContextWatcher::RunWorkerErrorReportedCallback(
   error_callback_.Run(registration_id, version_id, *error_info.get());
 }
 
-void ServiceWorkerContextWatcher::OnNewLiveRegistration(int64_t registration_id,
-                                                        const GURL& scope) {
+void ServiceWorkerContextWatcher::OnNewLiveRegistration(
+    int64_t registration_id,
+    const GURL& scope,
+    const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  SendRegistrationInfo(registration_id, scope,
+  SendRegistrationInfo(registration_id, scope, key,
                        ServiceWorkerRegistrationInfo::IS_NOT_DELETED);
 }
 
@@ -225,7 +229,8 @@ void ServiceWorkerContextWatcher::OnStarted(
     const GURL& scope,
     int process_id,
     const GURL& script_url,
-    const blink::ServiceWorkerToken& token) {
+    const blink::ServiceWorkerToken& token,
+    const blink::StorageKey& key) {
   OnRunningStateChanged(version_id, EmbeddedWorkerStatus::RUNNING);
 }
 
@@ -240,6 +245,7 @@ void ServiceWorkerContextWatcher::OnStopped(int64_t version_id) {
 void ServiceWorkerContextWatcher::OnVersionStateChanged(
     int64_t version_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     content::ServiceWorkerVersion::Status status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = version_info_map_.find(version_id);
@@ -291,6 +297,7 @@ void ServiceWorkerContextWatcher::OnMainScriptResponseSet(
 void ServiceWorkerContextWatcher::OnErrorReported(
     int64_t version_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     const ServiceWorkerContextObserver::ErrorInfo& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;
@@ -308,6 +315,7 @@ void ServiceWorkerContextWatcher::OnErrorReported(
 void ServiceWorkerContextWatcher::OnReportConsoleMessage(
     int64_t version_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     const ConsoleMessage& message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (message.message_level != blink::mojom::ConsoleMessageLevel::kError)
@@ -336,7 +344,7 @@ void ServiceWorkerContextWatcher::OnControlleeAdded(
     return;
   ServiceWorkerVersionInfo* version = it->second.get();
 
-  base::InsertOrAssign(version->clients, uuid, info);
+  version->clients.insert_or_assign(uuid, info);
 
   SendVersionInfo(*version);
 }
@@ -354,16 +362,21 @@ void ServiceWorkerContextWatcher::OnControlleeRemoved(int64_t version_id,
 
 void ServiceWorkerContextWatcher::OnRegistrationCompleted(
     int64_t registration_id,
-    const GURL& scope) {
+    const GURL& scope,
+    const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  SendRegistrationInfo(registration_id, scope,
+  // TODO(crbug.com/1199077): Pipe in StorageKey when it's available in this
+  // function.
+  SendRegistrationInfo(registration_id, scope, key,
                        ServiceWorkerRegistrationInfo::IS_NOT_DELETED);
 }
 
-void ServiceWorkerContextWatcher::OnRegistrationDeleted(int64_t registration_id,
-                                                        const GURL& scope) {
+void ServiceWorkerContextWatcher::OnRegistrationDeleted(
+    int64_t registration_id,
+    const GURL& scope,
+    const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  SendRegistrationInfo(registration_id, scope,
+  SendRegistrationInfo(registration_id, scope, key,
                        ServiceWorkerRegistrationInfo::IS_DELETED);
 }
 

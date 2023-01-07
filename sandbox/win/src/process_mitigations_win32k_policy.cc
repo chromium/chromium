@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ namespace sandbox {
 
 bool ProcessMitigationsWin32KLockdownPolicy::GenerateRules(
     const wchar_t* name,
-    TargetPolicy::Semantics semantics,
+    Semantics semantics,
     LowLevelPolicy* policy) {
   PolicyRule rule(FAKE_SUCCESS);
   if (!policy->AddRule(IpcTag::GDI_GDIDLLINITIALIZE, &rule))

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.TWA_DISCLOSURE_INITIAL;
-import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.TWA_DISCLOSURE_SUBSEQUENT;
+import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.WEBAPPS;
+import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.WEBAPPS_QUIET;
 
 import android.app.NotificationChannel;
 import android.os.Build;
@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -46,7 +45,6 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.O)
-@Features.EnableFeatures({ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NEW_DISCLOSURE})
 public class DisclosureUiPickerTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -80,14 +78,6 @@ public class DisclosureUiPickerTest {
 
     @Test
     @Feature("TrustedWebActivities")
-    @Features.DisableFeatures({ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NEW_DISCLOSURE})
-    public void picksInfobar_whenFeatureDisabled() {
-        mPicker.onFinishNativeInitialization();
-        verify(mInfobar).showIfNeeded();
-    }
-
-    @Test
-    @Feature("TrustedWebActivities")
     public void pickInfobar_whenRequested() {
         when(mIntentDataProvider.getTwaDisclosureUi()).thenReturn(TwaDisclosureUi.V1_INFOBAR);
 
@@ -108,8 +98,8 @@ public class DisclosureUiPickerTest {
     @Feature("TrustedWebActivities")
     public void picksSnackbar_whenInitialChannelIsDisabled() {
         setNotificationsEnabled(true);
-        setChannelEnabled(TWA_DISCLOSURE_INITIAL, false);
-        setChannelEnabled(TWA_DISCLOSURE_SUBSEQUENT, true);
+        setChannelEnabled(WEBAPPS, false);
+        setChannelEnabled(WEBAPPS_QUIET, true);
 
         mPicker.onFinishNativeInitialization();
         verify(mSnackbar).showIfNeeded();
@@ -119,8 +109,8 @@ public class DisclosureUiPickerTest {
     @Feature("TrustedWebActivities")
     public void picksSnackbar_whenSubsequentChannelIsDisabled() {
         setNotificationsEnabled(true);
-        setChannelEnabled(TWA_DISCLOSURE_INITIAL, true);
-        setChannelEnabled(TWA_DISCLOSURE_SUBSEQUENT, false);
+        setChannelEnabled(WEBAPPS, true);
+        setChannelEnabled(WEBAPPS_QUIET, false);
 
         mPicker.onFinishNativeInitialization();
         verify(mSnackbar).showIfNeeded();
@@ -142,8 +132,8 @@ public class DisclosureUiPickerTest {
     @Feature("TrustedWebActivities")
     public void picksNotification() {
         setNotificationsEnabled(true);
-        setChannelEnabled(TWA_DISCLOSURE_INITIAL, true);
-        setChannelEnabled(TWA_DISCLOSURE_SUBSEQUENT, true);
+        setChannelEnabled(WEBAPPS, true);
+        setChannelEnabled(WEBAPPS_QUIET, true);
 
         mPicker.onFinishNativeInitialization();
         verify(mNotification).onStartWithNative();

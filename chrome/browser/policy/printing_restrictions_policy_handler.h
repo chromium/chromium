@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "printing/backend/printing_restrictions.h"
+#include "printing/buildflags/buildflags.h"
 
 class PrefValueMap;
 
@@ -91,6 +92,7 @@ class PrintingPinDefaultPolicyHandler
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 class PrintingAllowedBackgroundGraphicsModesPolicyHandler
     : public PrintingEnumPolicyHandler<
           printing::BackgroundGraphicsModeRestriction> {
@@ -126,6 +128,20 @@ class PrintingPaperSizeDefaultPolicyHandler : public TypeCheckingPolicyHandler {
                 PolicyErrorMap* errors,
                 const base::Value** result);
 };
+
+class PrintPdfAsImageDefaultPolicyHandler : public TypeCheckingPolicyHandler {
+ public:
+  PrintPdfAsImageDefaultPolicyHandler();
+  ~PrintPdfAsImageDefaultPolicyHandler() override;
+
+  // ConfigurationPolicyHandler implementation:
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+};
+
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 }  // namespace policy
 

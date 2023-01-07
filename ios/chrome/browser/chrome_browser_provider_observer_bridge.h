@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 
 // Objective-C protocol mirroring ChromeBrowserProvider::Observer.
@@ -27,6 +26,12 @@ class ChromeBrowserProviderObserverBridge
  public:
   explicit ChromeBrowserProviderObserverBridge(
       id<ChromeBrowserProviderObserver> observer);
+
+  ChromeBrowserProviderObserverBridge(
+      const ChromeBrowserProviderObserverBridge&) = delete;
+  ChromeBrowserProviderObserverBridge& operator=(
+      const ChromeBrowserProviderObserverBridge&) = delete;
+
   ~ChromeBrowserProviderObserverBridge() override;
 
  private:
@@ -36,11 +41,9 @@ class ChromeBrowserProviderObserverBridge
   void OnChromeBrowserProviderWillBeDestroyed() override;
 
   __weak id<ChromeBrowserProviderObserver> observer_;
-  ScopedObserver<ios::ChromeBrowserProvider,
-                 ios::ChromeBrowserProvider::Observer>
-      scoped_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserProviderObserverBridge);
+  base::ScopedObservation<ios::ChromeBrowserProvider,
+                          ios::ChromeBrowserProvider::Observer>
+      scoped_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_CHROME_BROWSER_PROVIDER_OBSERVER_BRIDGE_H_

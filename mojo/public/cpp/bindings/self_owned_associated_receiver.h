@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
@@ -36,7 +36,7 @@ class SelfOwnedAssociatedReceiver {
   // WeakPtr to the new SelfOwnedAssociatedReceiver instance.
   static SelfOwnedAssociatedReceiverRef<Interface> Create(
       std::unique_ptr<Interface> impl,
-      AssociatedInterfaceRequest<Interface> receiver,
+      PendingAssociatedReceiver<Interface> receiver,
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     SelfOwnedAssociatedReceiver* self_owned = new SelfOwnedAssociatedReceiver(
         std::move(impl), std::move(receiver), std::move(task_runner));
@@ -76,9 +76,19 @@ class SelfOwnedAssociatedReceiver {
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
   // Allows test code to swap the interface implementation.
-  std::unique_ptr<Interface> SwapImplForTesting(
+  //
+  // Returns the existing interface implementation to the caller.
+  //
+  // The caller needs to guarantee that `new_impl` will live longer than `this`
+  // SelfOwnedAssociatedReceiver.  One way to achieve this is to store the
+  // returned old impl and swap it back in when `new_impl` is getting destroyed.
+  // Test code should prefer using `mojo::test::ScopedSwapImplForTesting` if
+  // possible.
+  [[nodiscard]] std::unique_ptr<Interface> SwapImplForTesting(
       std::unique_ptr<Interface> new_impl) {
-    receiver_.SwapImplForTesting(new_impl.get());
+    // impl_ and receiver_ point to the same thing so the return value can
+    // safely be discarded here as it's returned below.
+    std::ignore = receiver_.SwapImplForTesting(new_impl.get());
     impl_.swap(new_impl);
     return new_impl;
   }

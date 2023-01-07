@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_SPACE_UTILS_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
 
-class ComputedStyle;
 struct NGBfcOffset;
 
 // Adjusts {@code offset} to the clearance line.
@@ -29,9 +28,24 @@ CORE_EXPORT bool AdjustToClearance(LayoutUnit clearance_offset,
 // block size.
 //
 // [1] https://www.w3.org/TR/css-writing-modes-3/#orthogonal-auto
-void SetOrthogonalFallbackInlineSizeIfNeeded(const ComputedStyle& parent_style,
-                                             const NGLayoutInputNode child,
-                                             NGConstraintSpaceBuilder* builder);
+void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
+                                     const NGLayoutInputNode child,
+                                     NGConstraintSpaceBuilder* builder);
+
+inline void SetOrthogonalFallbackInlineSizeIfNeeded(
+    const ComputedStyle& parent_style,
+    const NGLayoutInputNode child,
+    NGConstraintSpaceBuilder* builder) {
+  if (LIKELY(IsParallelWritingMode(parent_style.GetWritingMode(),
+                                   child.Style().GetWritingMode())))
+    return;
+  SetOrthogonalFallbackInlineSize(parent_style, child, builder);
+}
+
+// Only to be called if the child is in a writing-mode parallel with its
+// container. Return true if an auto inline-size means that the child should be
+// stretched (rather than being shrink-to-fit).
+bool ShouldBlockContainerChildStretchAutoInlineSize(const NGLayoutInputNode&);
 
 }  // namespace blink
 

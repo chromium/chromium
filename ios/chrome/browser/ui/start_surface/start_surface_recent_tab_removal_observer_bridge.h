@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,11 @@ class WebState;
 // Notifies the receiver that the most recent tab was removed.
 - (void)mostRecentTabWasRemoved:(web::WebState*)web_state;
 // Notifies the receiver that the favicon for the current page of the most
-// recent tab was updated with |image|.
+// recent tab was updated with `image`.
 - (void)mostRecentTabFaviconUpdatedWithImage:(UIImage*)image;
+// Notifies the receiver that the title of the current page of the most recent
+// tab was updated to `title`.
+- (void)mostRecentTabTitleWasUpdated:(NSString*)title;
 @end
 
 // Bridge to use an id<StartSurfaceRecentTabObserving> as a
@@ -43,6 +46,7 @@ class StartSurfaceRecentTabObserverBridge
   // StartSurfaceBrowserAgentObserver.
   void MostRecentTabRemoved(web::WebState* web_state) override;
   void MostRecentTabFaviconUpdated(UIImage* image) override;
+  void MostRecentTabTitleUpdated(const std::u16string& title) override;
 
   __weak id<StartSurfaceRecentTabObserving> delegate_ = nil;
 };

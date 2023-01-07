@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "google_apis/google_api_keys.h"
+#include "base/logging.h"
 
 // Configurable service data.
 // Debug builds should default to the autopush environment (can be configured
@@ -41,10 +41,14 @@ ServiceUrls::ServiceUrls()
     if (command_line->HasSwitch(kFtlServerEndpointSwitch)) {
       ftl_server_endpoint_ =
           command_line->GetSwitchValueASCII(kFtlServerEndpointSwitch);
+    } else {
+      LOG(WARNING) << "CRD: Using autopush (non prod) FTL server";
     }
     if (command_line->HasSwitch(kRemotingServerEndpointSwitch)) {
       remoting_server_endpoint_ =
           command_line->GetSwitchValueASCII(kRemotingServerEndpointSwitch);
+    } else {
+      LOG(WARNING) << "CRD: Using autopush (non prod) remoting server";
     }
   }
 #endif  // !defined(NDEBUG)

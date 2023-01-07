@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,6 +50,10 @@ class InspectionResultsCacheTest : public testing::Test {
   InspectionResultsCacheTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  InspectionResultsCacheTest(const InspectionResultsCacheTest&) = delete;
+  InspectionResultsCacheTest& operator=(const InspectionResultsCacheTest&) =
+      delete;
+
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     scoped_feature_list_.InitAndEnableFeature(kInspectionResultsCache);
@@ -67,8 +71,6 @@ class InspectionResultsCacheTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   base::ScopedTempDir scoped_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectionResultsCacheTest);
 };
 
 TEST_F(InspectionResultsCacheTest, ReadMissingCache) {

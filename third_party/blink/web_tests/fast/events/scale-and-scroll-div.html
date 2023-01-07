@@ -33,7 +33,7 @@
       if (internals.runtimeFlags.fractionalScrollOffsetsEnabled)
           expectedScrollDistance = scrollDistance/scaleFactor;
       else
-          expectedScrollDistance = Math.floor(scrollDistance/scaleFactor);
+          expectedScrollDistance = Math.round(scrollDistance/scaleFactor);
 
       scrollBox.scrollTop = 0;
 
@@ -63,7 +63,7 @@
       if (internals.runtimeFlags.fractionalScrollOffsetsEnabled)
           expectedScrollDistance = 20 - scrollDistance/scaleFactor;
       else
-          expectedScrollDistance = Math.floor(20 - scrollDistance/scaleFactor);
+          expectedScrollDistance = Math.round(20 - scrollDistance/scaleFactor);
 
       assert_approx_equals(scrollBox.scrollTop,
                            expectedScrollDistance,

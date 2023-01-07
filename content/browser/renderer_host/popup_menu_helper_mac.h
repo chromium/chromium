@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/common/content_export.h"
@@ -50,6 +49,10 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
       Delegate* delegate,
       RenderFrameHost* render_frame_host,
       mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client);
+
+  PopupMenuHelper(const PopupMenuHelper&) = delete;
+  PopupMenuHelper& operator=(const PopupMenuHelper&) = delete;
+
   ~PopupMenuHelper() override;
   void Hide();
 
@@ -66,16 +69,15 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
   // Immediately return from ShowPopupMenu.
   CONTENT_EXPORT static void DontShowPopupMenuForTesting();
 
- protected:
-  virtual RenderWidgetHostViewMac* GetRenderWidgetHostView() const;
-
  private:
   // RenderWidgetHostObserver implementation:
   void RenderWidgetHostVisibilityChanged(RenderWidgetHost* widget_host,
                                          bool became_visible) override;
   void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override;
 
-  Delegate* delegate_;  // Weak. Owns |this|.
+  RenderWidgetHostViewMac* GetRenderWidgetHostView() const;
+
+  raw_ptr<Delegate> delegate_;  // Weak. Owns |this|.
 
   base::ScopedObservation<RenderWidgetHost, RenderWidgetHostObserver>
       observation_{this};
@@ -88,8 +90,6 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
   std::unique_ptr<base::ScopedPumpMessagesInPrivateModes> pump_in_fade_;
 
   base::WeakPtrFactory<PopupMenuHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PopupMenuHelper);
 };
 
 }  // namespace content

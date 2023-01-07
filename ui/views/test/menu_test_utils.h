@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/test/test_views_delegate.h"
+#include "ui/views/view.h"
 
 namespace views {
 
@@ -24,6 +25,10 @@ namespace test {
 class TestMenuDelegate : public MenuDelegate {
  public:
   TestMenuDelegate();
+
+  TestMenuDelegate(const TestMenuDelegate&) = delete;
+  TestMenuDelegate& operator=(const TestMenuDelegate&) = delete;
+
   ~TestMenuDelegate() override;
 
   int show_context_menu_count() { return show_context_menu_count_; }
@@ -31,9 +36,12 @@ class TestMenuDelegate : public MenuDelegate {
   int execute_command_id() const { return execute_command_id_; }
   int on_menu_closed_called() const { return on_menu_closed_called_count_; }
   MenuItemView* on_menu_closed_menu() const { return on_menu_closed_menu_; }
-  bool on_perform_drop_called() { return on_perform_drop_called_; }
+  bool is_drop_performed() { return is_drop_performed_; }
   int will_hide_menu_count() { return will_hide_menu_count_; }
   MenuItemView* will_hide_menu() { return will_hide_menu_; }
+  void set_should_execute_command_without_closing_menu(bool val) {
+    should_execute_command_without_closing_menu_ = val;
+  }
 
   // MenuDelegate:
   bool ShowContextMenu(MenuItemView* source,
@@ -42,20 +50,26 @@ class TestMenuDelegate : public MenuDelegate {
                        ui::MenuSourceType source_type) override;
   void ExecuteCommand(int id) override;
   void OnMenuClosed(MenuItemView* menu) override;
-  ui::mojom::DragOperation OnPerformDrop(
+  views::View::DropCallback GetDropCallback(
       MenuItemView* menu,
       DropPosition position,
       const ui::DropTargetEvent& event) override;
   int GetDragOperations(MenuItemView* sender) override;
   void WriteDragData(MenuItemView* sender, OSExchangeData* data) override;
   void WillHideMenu(MenuItemView* menu) override;
+  bool ShouldExecuteCommandWithoutClosingMenu(int id,
+                                              const ui::Event& e) override;
 
  private:
+  // Performs the drop operation and updates |output_drag_op| accordingly.
+  void PerformDrop(const ui::DropTargetEvent& event,
+                   ui::mojom::DragOperation& output_drag_op);
+
   // The number of times ShowContextMenu was called.
   int show_context_menu_count_ = 0;
 
   // The value of the last call to ShowContextMenu.
-  MenuItemView* show_context_menu_source_ = nullptr;
+  raw_ptr<MenuItemView> show_context_menu_source_ = nullptr;
 
   // ID of last executed command.
   int execute_command_id_ = 0;
@@ -64,17 +78,17 @@ class TestMenuDelegate : public MenuDelegate {
   int on_menu_closed_called_count_ = 0;
 
   // The value of the last call to OnMenuClosed.
-  MenuItemView* on_menu_closed_menu_ = nullptr;
+  raw_ptr<MenuItemView> on_menu_closed_menu_ = nullptr;
 
   // The number of times WillHideMenu was called.
   int will_hide_menu_count_ = 0;
 
   // The value of the last call to WillHideMenu.
-  MenuItemView* will_hide_menu_ = nullptr;
+  raw_ptr<MenuItemView> will_hide_menu_ = nullptr;
 
-  bool on_perform_drop_called_ = false;
+  bool is_drop_performed_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(TestMenuDelegate);
+  bool should_execute_command_without_closing_menu_ = false;
 };
 
 // Test api which caches the currently active MenuController. Can be used to
@@ -85,6 +99,10 @@ class TestMenuDelegate : public MenuDelegate {
 class MenuControllerTestApi {
  public:
   MenuControllerTestApi();
+
+  MenuControllerTestApi(const MenuControllerTestApi&) = delete;
+  MenuControllerTestApi& operator=(const MenuControllerTestApi&) = delete;
+
   ~MenuControllerTestApi();
 
   MenuController* controller() { return controller_.get(); }
@@ -99,8 +117,6 @@ class MenuControllerTestApi {
 
  private:
   base::WeakPtr<MenuController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuControllerTestApi);
 };
 
 // On platforms which have menu closure animations, these functions are

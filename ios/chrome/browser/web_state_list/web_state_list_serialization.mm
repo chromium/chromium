@@ -1,22 +1,29 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
 
-#include <stdint.h>
+#import <stdint.h>
 
-#include <memory>
-#include <unordered_map>
+#import <algorithm>
+#import <memory>
+#import <unordered_map>
 
-#include "base/callback.h"
-#include "base/check_op.h"
+#import "base/callback.h"
+#import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,13 +34,53 @@ namespace {
 // the WebStates stored in the WebStateList.
 NSString* const kOpenerIndexKey = @"OpenerIndex";
 NSString* const kOpenerNavigationIndexKey = @"OpenerNavigationIndex";
+
+// Some WebState may have no back/forward history. This can happen for
+// multiple reason (one is when opening a new tab on a slow network session,
+// and terminating the app before the navigation can commit, another is when
+// WKWebView intercepts a new tab navigation to an app navigation; there may
+// be other cases). This function creates a WebStateListRemovingIndexes that
+// records the indexes of the WebStates that should not be saved.
+WebStateListRemovingIndexes GetIndexOfWebStatesToDrop(
+    WebStateList* web_state_list) {
+  std::vector<int> web_state_to_skip_indexes;
+  for (int index = 0; index < web_state_list->count(); ++index) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    bool in_restore =
+        web_state->IsRealized() && web_state->GetNavigationManager() &&
+        web_state->GetNavigationManager()->IsRestoreSessionInProgress();
+    if (!in_restore && web_state->GetNavigationItemCount() == 0) {
+      web_state_to_skip_indexes.push_back(index);
+    }
+  }
+  return WebStateListRemovingIndexes(std::move(web_state_to_skip_indexes));
+}
 }  // namespace
 
-SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
+SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list,
+                                        NSSet* web_states_to_serialize) {
+  const WebStateListRemovingIndexes removing_indexes =
+      GetIndexOfWebStatesToDrop(web_state_list);
+
+  const int web_state_to_save_count =
+      web_state_list->count() - removing_indexes.count();
+
   NSMutableArray<CRWSessionStorage*>* serialized_session =
-      [NSMutableArray arrayWithCapacity:web_state_list->count()];
+      [NSMutableArray arrayWithCapacity:web_state_to_save_count];
+  NSMutableArray<SessionSummary*>* serialized_session_summary = nil;
+  NSMutableDictionary<NSString*, NSData*>* serialized_tab_contents = nil;
+  if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
+    serialized_session_summary =
+        [NSMutableArray arrayWithCapacity:web_state_to_save_count];
+    serialized_tab_contents =
+        [NSMutableDictionary dictionaryWithCapacity:web_state_to_save_count];
+  }
 
   for (int index = 0; index < web_state_list->count(); ++index) {
+    if (removing_indexes.Contains(index)) {
+      continue;
+    }
+
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
     WebStateOpener opener = web_state_list->GetOpenerOfWebStateAt(index);
 
@@ -44,6 +91,11 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
     if (opener.opener) {
       opener_index = web_state_list->GetIndexOfWebState(opener.opener);
       DCHECK_NE(opener_index, WebStateList::kInvalidIndex);
+
+      opener_index = removing_indexes.IndexAfterRemoval(opener_index);
+    }
+
+    if (opener_index != WebStateList::kInvalidIndex) {
       user_data_manager->AddSerializableData(@(opener_index), kOpenerIndexKey);
       user_data_manager->AddSerializableData(@(opener.navigation_index),
                                              kOpenerNavigationIndexKey);
@@ -53,16 +105,57 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
                                              kOpenerNavigationIndexKey);
     }
 
-    [serialized_session addObject:web_state->BuildSessionStorage()];
+    CRWSessionStorage* session_storage = web_state->BuildSessionStorage();
+    [serialized_session addObject:session_storage];
+    if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
+      NSString* web_state_id = web_state->GetStableIdentifier();
+      NSURL* url = net::NSURLWithGURL(web_state->GetVisibleURL());
+      NSString* title = base::SysUTF16ToNSString(web_state->GetTitle());
+      SessionSummary* summary =
+          [[SessionSummary alloc] initWithURL:url
+                                        title:title
+                             stableIdentifier:web_state_id];
+      [serialized_session_summary addObject:summary];
+
+      if (!web_states_to_serialize ||
+          [web_states_to_serialize containsObject:web_state_id]) {
+        NSError* error = nil;
+        NSData* data =
+            [NSKeyedArchiver archivedDataWithRootObject:session_storage
+                                  requiringSecureCoding:NO
+                                                  error:&error];
+        if (!data || error) {
+          DLOG(WARNING) << "Error serializing session : "
+                        << base::SysNSStringToUTF8(web_state_id) << ": "
+                        << base::SysNSStringToUTF8([error description]);
+          serialized_tab_contents[web_state_id] = [NSData data];
+        } else {
+          serialized_tab_contents[web_state_id] = data;
+        }
+
+      } else {
+        serialized_tab_contents[web_state_id] = [NSData data];
+      }
+    }
   }
 
-  NSUInteger selectedIndex =
-      web_state_list->active_index() != WebStateList::kInvalidIndex
-          ? static_cast<NSUInteger>(web_state_list->active_index())
-          : static_cast<NSUInteger>(NSNotFound);
+  WebStateListOrderController order_controller(*web_state_list);
+  const int active_index = order_controller.DetermineNewActiveIndex(
+      web_state_list->active_index(), std::move(removing_indexes));
 
-  return [[SessionWindowIOS alloc] initWithSessions:[serialized_session copy]
-                                      selectedIndex:selectedIndex];
+  NSUInteger selectedIndex = active_index != WebStateList::kInvalidIndex
+                                 ? static_cast<NSUInteger>(active_index)
+                                 : static_cast<NSUInteger>(NSNotFound);
+
+  return [[SessionWindowIOS alloc]
+      initWithSessions:[serialized_session copy]
+       sessionsSummary:[serialized_session_summary copy]
+           tabContents:[serialized_tab_contents copy]
+         selectedIndex:selectedIndex];
+}
+
+SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
+  return SerializeWebStateList(web_state_list, nil);
 }
 
 void DeserializeWebStateList(WebStateList* web_state_list,

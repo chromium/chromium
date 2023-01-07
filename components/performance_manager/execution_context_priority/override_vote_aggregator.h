@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <map>
 
-#include "base/optional.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
@@ -72,8 +72,8 @@ class OverrideVoteAggregator : public VoteObserver {
    private:
     // At least one of these is not null if a vote has been emitted for this
     // execution context.
-    base::Optional<Vote> default_vote_;
-    base::Optional<Vote> override_vote_;
+    absl::optional<Vote> default_vote_;
+    absl::optional<Vote> override_vote_;
   };
 
   using VoteDataMap = std::map<const ExecutionContext*, VoteData>;

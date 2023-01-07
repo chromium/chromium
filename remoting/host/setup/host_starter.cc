@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,10 +81,9 @@ void HostStarter::StartHost(const std::string& host_id,
                                        kMaxGetTokensRetries, this);
 }
 
-void HostStarter::OnGetTokensResponse(
-    const std::string& refresh_token,
-    const std::string& access_token,
-    int expires_in_seconds) {
+void HostStarter::OnGetTokensResponse(const std::string& refresh_token,
+                                      const std::string& access_token,
+                                      int expires_in_seconds) {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
         FROM_HERE,
@@ -108,9 +107,8 @@ void HostStarter::OnGetTokensResponse(
   oauth_client_->GetUserEmail(access_token, 1, this);
 }
 
-void HostStarter::OnRefreshTokenResponse(
-    const std::string& access_token,
-    int expires_in_seconds) {
+void HostStarter::OnRefreshTokenResponse(const std::string& access_token,
+                                         int expires_in_seconds) {
   // We never request a refresh token, so this call is not expected.
   NOTREACHED();
 }
@@ -177,27 +175,27 @@ void HostStarter::OnHostRegistered(const std::string& authorization_code) {
   pending_get_tokens_ = GET_TOKENS_HOST;
 
   oauth_client_info_.client_id =
-      google_apis::GetOAuth2ClientID(
-          google_apis::CLIENT_REMOTING_HOST);
+      google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST);
   oauth_client_info_.client_secret =
-      google_apis::GetOAuth2ClientSecret(
-          google_apis::CLIENT_REMOTING_HOST);
-  oauth_client_info_.redirect_uri = "oob";
-  oauth_client_->GetTokensFromAuthCode(
-      oauth_client_info_, authorization_code, kMaxGetTokensRetries, this);
+      google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST);
+  // Clear the redirect_uri field since it's not needed for robot auth codes.
+  // See b/231442487 for more details.
+  oauth_client_info_.redirect_uri.clear();
+  oauth_client_->GetTokensFromAuthCode(oauth_client_info_, authorization_code,
+                                       kMaxGetTokensRetries, this);
 }
 
 void HostStarter::StartHostProcess() {
   // Start the host.
   std::string host_secret_hash = remoting::MakeHostPinHash(host_id_, host_pin_);
-  std::unique_ptr<base::DictionaryValue> config(new base::DictionaryValue());
-  config->SetString("host_owner", host_owner_);
-  config->SetString("xmpp_login", xmpp_login_);
-  config->SetString("oauth_refresh_token", host_refresh_token_);
-  config->SetString("host_id", host_id_);
-  config->SetString("host_name", host_name_);
-  config->SetString("private_key", key_pair_->ToString());
-  config->SetString("host_secret_hash", host_secret_hash);
+  base::Value::Dict config;
+  config.Set("host_owner", host_owner_);
+  config.Set("xmpp_login", xmpp_login_);
+  config.Set("oauth_refresh_token", host_refresh_token_);
+  config.Set("host_id", host_id_);
+  config.Set("host_name", host_name_);
+  config.Set("private_key", key_pair_->ToString());
+  config.Set("host_secret_hash", host_secret_hash);
   daemon_controller_->SetConfigAndStart(
       std::move(config), consent_to_data_collection_,
       base::BindOnce(&HostStarter::OnHostStarted, base::Unretained(this)));

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -23,14 +22,14 @@ class TimeZoneMonitorWin : public TimeZoneMonitor {
  public:
   TimeZoneMonitorWin()
       : TimeZoneMonitor(),
-        singleton_hwnd_observer_(new gfx::SingletonHwndObserver(
+        singleton_hwnd_observer_(
             base::BindRepeating(&TimeZoneMonitorWin::OnWndProc,
-                                base::Unretained(this)))),
+                                base::Unretained(this))),
         current_platform_timezone_(GetPlatformTimeZone()) {}
   TimeZoneMonitorWin(const TimeZoneMonitorWin&) = delete;
   TimeZoneMonitorWin& operator=(const TimeZoneMonitorWin&) = delete;
 
-  ~TimeZoneMonitorWin() override {}
+  ~TimeZoneMonitorWin() override = default;
 
  private:
   void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
@@ -44,8 +43,7 @@ class TimeZoneMonitorWin : public TimeZoneMonitor {
       // the observers code while the computer is still suspended. The thread
       // controller is not dispatching delayed tasks uuntil the power resume
       // signal is received.
-      constexpr auto kMinimalPostTaskDelay =
-          base::TimeDelta::FromMilliseconds(1);
+      constexpr auto kMinimalPostTaskDelay = base::Milliseconds(1);
       base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&TimeZoneMonitorWin::OnWmTimechangeReceived,
@@ -85,7 +83,7 @@ class TimeZoneMonitorWin : public TimeZoneMonitor {
     pending_update_notification_tasks_ = false;
   }
 
-  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+  gfx::SingletonHwndObserver singleton_hwnd_observer_;
   bool pending_update_notification_tasks_ = false;
   std::string current_platform_timezone_;
   base::WeakPtrFactory<TimeZoneMonitorWin> weak_ptr_factory_{this};
@@ -94,7 +92,7 @@ class TimeZoneMonitorWin : public TimeZoneMonitor {
 // static
 std::unique_ptr<TimeZoneMonitor> TimeZoneMonitor::Create(
     scoped_refptr<base::SequencedTaskRunner> file_task_runner) {
-  return std::unique_ptr<TimeZoneMonitor>(new TimeZoneMonitorWin());
+  return std::make_unique<TimeZoneMonitorWin>();
 }
 
 }  // namespace device

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -27,7 +28,7 @@ namespace blink {
 // multicol implementation).
 //
 // [1] http://www.w3.org/TR/css3-break/#fragmentation-model
-class CORE_EXPORT FragmentationContext {
+class CORE_EXPORT FragmentationContext : public GarbageCollectedMixin {
  public:
   virtual ~FragmentationContext() = default;
 
@@ -56,6 +57,8 @@ class CORE_EXPORT FragmentationContext {
   virtual class LayoutMultiColumnFlowThread* AssociatedFlowThread() {
     return nullptr;
   }
+
+  void Trace(Visitor*) const override {}
 };
 
 }  // namespace blink

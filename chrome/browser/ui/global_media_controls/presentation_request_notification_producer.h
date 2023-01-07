@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,23 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_item.h"
+#include "components/global_media_controls/public/media_item_manager_observer.h"
+#include "components/global_media_controls/public/media_item_producer.h"
+#include "components/global_media_controls/public/media_item_ui_observer.h"
+#include "components/global_media_controls/public/media_item_ui_observer_set.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "content/public/browser/presentation_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace global_media_controls {
+class MediaItemManager;
+}  // namespace global_media_controls
+
+class MediaNotificationService;
 
 // An object that creates and manages media notifications related to
 // presentation requests.
@@ -40,9 +49,10 @@
 // involved; at that point CastMediaNotificationProducer become responsible for
 // managing the notification for an active session.
 class PresentationRequestNotificationProducer final
-    : public MediaNotificationProducer,
-      public media_router::WebContentsPresentationManager::Observer,
-      public MediaNotificationServiceObserver {
+    : public global_media_controls::MediaItemProducer,
+      public content::PresentationObserver,
+      public global_media_controls::MediaItemManagerObserver,
+      public global_media_controls::MediaItemUIObserver {
  public:
   explicit PresentationRequestNotificationProducer(
       MediaNotificationService* notification_service);
@@ -52,11 +62,18 @@ class PresentationRequestNotificationProducer final
       const PresentationRequestNotificationProducer&) = delete;
   ~PresentationRequestNotificationProducer() final;
 
-  // MediaNotificationProducer:
-  base::WeakPtr<media_message_center::MediaNotificationItem>
-  GetNotificationItem(const std::string& id) override;
+  // global_media_controls::MediaItemProducer:
+  base::WeakPtr<media_message_center::MediaNotificationItem> GetMediaItem(
+      const std::string& id) override;
   // Returns the supplemental notification's id if it should be shown.
-  std::set<std::string> GetActiveControllableNotificationIds() const override;
+  std::set<std::string> GetActiveControllableItemIds() const override;
+  bool HasFrozenItems() override;
+  void OnItemShown(const std::string& id,
+                   global_media_controls::MediaItemUI* item_ui) override;
+  bool IsItemActivelyPlaying(const std::string& id) override;
+
+  // global_media_controls::MediaItemUIObserver:
+  void OnMediaItemUIDismissed(const std::string& id) override;
 
   void OnStartPresentationContextCreated(
       std::unique_ptr<media_router::StartPresentationContext> context);
@@ -65,15 +82,21 @@ class PresentationRequestNotificationProducer final
   content::WebContents* GetWebContents();
   base::WeakPtr<PresentationRequestNotificationItem> GetNotificationItem();
 
-  void SetPresentationManagerForTesting(
+  void SetTestPresentationManager(
       base::WeakPtr<media_router::WebContentsPresentationManager>
           presentation_manager);
 
  private:
   friend class PresentationRequestNotificationProducerTest;
+  class PresentationRequestWebContentsObserver;
 
-  // MediaNotificationServiceObserver:
-  void OnNotificationListChanged() final;
+  // An observer for the WebContents associated with |item_| that closes the
+  // dialog when the WebContents is destroyed or navigated.
+  std::unique_ptr<PresentationRequestWebContentsObserver>
+      presentation_request_observer_;
+
+  // global_media_controls::MediaItemManagerObserver:
+  void OnItemListChanged() final;
   void OnMediaDialogOpened() final;
   void OnMediaDialogClosed() final;
 
@@ -82,9 +105,8 @@ class PresentationRequestNotificationProducer final
           presentation_manager);
   void AfterMediaDialogClosed();
 
-  // WebContentsPresentationManager::Observer:
-  void OnMediaRoutesChanged(
-      const std::vector<media_router::MediaRoute>& routes) override;
+  // content::PresentationObserver:
+  void OnPresentationsChanged(bool has_presentation) override;
   void OnDefaultPresentationChanged(
       const content::PresentationRequest* presentation_request) final;
 
@@ -95,28 +117,37 @@ class PresentationRequestNotificationProducer final
 
   // Returns true if there is an item, and the item is for a non-default
   // presentation request.
-  bool HasItemForNonDefaultRequest() const { return item_ && item_->context(); }
+  bool HasItemForNonDefaultRequest() const {
+    return item_ && !item_->is_default_presentation_request();
+  }
 
   // Queries |notification_service_| for active sessions associated with the
   // WebContents that |this| manages and stores the value in |should_hide_|.
   // Show or hide |item_| if the visibility changed.
   void ShowOrHideItem();
 
-  MediaNotificationService* const notification_service_;
+  const raw_ptr<MediaNotificationService> notification_service_;
+
+  const raw_ptr<global_media_controls::MediaItemManager> item_manager_;
 
   // A copy of the WebContentsPresentationManager associated with the web
   // page where the media dialog is opened. The value is nullptr if the media
   // dialog is closed.
   // It is used to remove |this| from |presentation_manager_|'s observers.
   base::WeakPtr<media_router::WebContentsPresentationManager>
-      presentation_manager_ = nullptr;
+      presentation_manager_;
+  //  A copy of the WebContentsPresentationManager used for testing.
+  base::WeakPtr<media_router::WebContentsPresentationManager>
+      test_presentation_manager_;
 
   // The notification managed by this producer, if there is one.
-  base::Optional<PresentationRequestNotificationItem> item_;
+  absl::optional<PresentationRequestNotificationItem> item_;
 
   // True if |notification_service_| should hide |item_| because there are
   // active notifications on WebContents managed by this producer.
   bool should_hide_ = true;
+
+  global_media_controls::MediaItemUIObserverSet item_ui_observer_set_;
 
   base::WeakPtrFactory<PresentationRequestNotificationProducer> weak_factory_{
       this};

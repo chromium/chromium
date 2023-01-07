@@ -3,5 +3,6 @@
 <grit-part>
   <include name="IDR_SECURITY_INTERSTITIAL_UI_HTML"
            file="../security_interstitials/core/browser/resources/list_of_interstitials.html"
+           preprocess="true"
            type="BINDATA" />
 </grit-part>

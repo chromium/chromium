@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "net/base/host_port_pair.h"
@@ -19,6 +19,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_network_session.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_handle.h"
@@ -41,20 +42,20 @@
 #include "net/websockets/websocket_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 using testing::Test;
 using testing::StrictMock;
 using testing::_;
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
  protected:
   WebSocketClientSocketHandleAdapterTest()
-      : host_port_pair_("www.example.org", 443),
-        network_session_(
+      : network_session_(
             SpdySessionDependencies::SpdyCreateSession(&session_deps_)),
         websocket_endpoint_lock_manager_(
             network_session_->websocket_endpoint_lock_manager()) {}
@@ -62,16 +63,18 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
   ~WebSocketClientSocketHandleAdapterTest() override = default;
 
   bool InitClientSocketHandle(ClientSocketHandle* connection) {
+    auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+    ssl_config_for_origin->alpn_protos = {kProtoHTTP11};
     scoped_refptr<ClientSocketPool::SocketParams> socks_params =
         base::MakeRefCounted<ClientSocketPool::SocketParams>(
-            std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-            nullptr /* ssl_config_for_proxy */);
+            std::move(ssl_config_for_origin),
+            /*ssl_config_for_proxy=*/nullptr);
     TestCompletionCallback callback;
     int rv = connection->Init(
         ClientSocketPool::GroupId(
-            host_port_pair_, ClientSocketPool::SocketType::kSsl,
-            PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-            false /* disable_secure_dns */),
+            url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
+            PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+            SecureDnsPolicy::kAllow),
         socks_params, TRAFFIC_ANNOTATION_FOR_TESTS /* proxy_annotation_tag */,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         callback.callback(), ClientSocketPool::ProxyAuthCallback(),
@@ -82,10 +85,9 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
     return rv == OK;
   }
 
-  const HostPortPair host_port_pair_;
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> network_session_;
-  WebSocketEndpointLockManager* websocket_endpoint_lock_manager_;
+  raw_ptr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager_;
 };
 
 TEST_F(WebSocketClientSocketHandleAdapterTest, Uninitialized) {
@@ -287,8 +289,8 @@ class WebSocketSpdyStreamAdapterTest : public TestWithTaskEnvironment {
              PRIVACY_MODE_DISABLED,
              SpdySessionKey::IsProxySession::kFalse,
              SocketTag(),
-             NetworkIsolationKey(),
-             false /* disable_secure_dns */),
+             NetworkAnonymizationKey(),
+             SecureDnsPolicy::kAllow),
         session_(SpdySessionDependencies::SpdyCreateSession(&session_deps_)),
         ssl_(SYNCHRONOUS, OK) {}
 
@@ -1055,6 +1057,4 @@ TEST_F(WebSocketSpdyStreamAdapterTest,
   ASSERT_EQ(ERR_CONNECTION_CLOSED, rv);
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

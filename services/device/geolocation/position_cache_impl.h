@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/network_change_notifier.h"
@@ -36,6 +36,10 @@ class PositionCacheImpl
 
   // |clock| is used to measure time left until kMaximumLifetime.
   explicit PositionCacheImpl(const base::TickClock* clock);
+
+  PositionCacheImpl(const PositionCacheImpl&) = delete;
+  PositionCacheImpl& operator=(const PositionCacheImpl&) = delete;
+
   ~PositionCacheImpl() override;
 
   void CachePosition(const WifiData& wifi_data,
@@ -63,6 +67,10 @@ class PositionCacheImpl
     CacheEntry(const Hash& hash,
                const mojom::Geoposition& position,
                std::unique_ptr<base::OneShotTimer> eviction_timer);
+
+    CacheEntry(const CacheEntry&) = delete;
+    CacheEntry& operator=(const CacheEntry&) = delete;
+
     ~CacheEntry();
     CacheEntry(CacheEntry&&);
     CacheEntry& operator=(CacheEntry&&);
@@ -74,16 +82,14 @@ class PositionCacheImpl
     Hash hash_;
     mojom::Geoposition position_;
     std::unique_ptr<base::OneShotTimer> eviction_timer_;
-    DISALLOW_COPY_AND_ASSIGN(CacheEntry);
   };
 
   static Hash MakeKey(const WifiData& wifi_data);
   void EvictEntry(const Hash& hash);
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
   std::vector<CacheEntry> data_;
   mojom::Geoposition last_used_position_;
-  DISALLOW_COPY_AND_ASSIGN(PositionCacheImpl);
 };
 
 }  // namespace device

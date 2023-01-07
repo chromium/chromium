@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #include <memory>
 
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
@@ -17,9 +18,6 @@ class BookmarkNode;
 class ManagedBookmarkService;
 }  // namespace bookmarks
 class Browser;
-namespace base {
-class ScopedTempDir;
-}  // namespace base
 class TestChromeBrowserState;
 
 // Provides common bookmark testing infrastructure.
@@ -38,12 +36,8 @@ class BookmarkIOSUnitTest : public PlatformTest {
       NSString* title);
   void ChangeTitle(NSString* title, const bookmarks::BookmarkNode* node);
 
-  // A state directory that outlives |task_environment_| is needed because
-  // CreateHistoryService/CreateBookmarkModel use the directory to host
-  // databases. See https://crbug.com/546640 for more details.
-  std::unique_ptr<base::ScopedTempDir> state_dir_;
-
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   bookmarks::BookmarkModel* bookmark_model_;

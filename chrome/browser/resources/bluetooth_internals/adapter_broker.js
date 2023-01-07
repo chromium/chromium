@@ -1,25 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './uuid.mojom-lite.js';
-import './device.mojom-lite.js';
-import './adapter.mojom-lite.js';
-import './bluetooth_internals.mojom-lite.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {AdapterInfo, AdapterObserverInterface, AdapterObserverReceiver, AdapterRemote, ConnectResult, DiscoverySessionRemote} from './adapter.mojom-webui.js';
+import {BluetoothInternalsHandler, BluetoothInternalsHandlerRemote} from './bluetooth_internals.mojom-webui.js';
+import {Device, DeviceInfo, DeviceRemote} from './device.mojom-webui.js';
+
+const SCAN_CLIENT_NAME = 'Bluetooth Internals Page';
 
 /**
  * Javascript for AdapterBroker, served from
  *     chrome://bluetooth-internals/.
  */
-/** @typedef {bluetooth.mojom.AdapterRemote} */
-let AdapterRemote;
-/** @typedef {bluetooth.mojom.DeviceRemote} */
-let DeviceRemote;
-/** @typedef {bluetooth.mojom.DiscoverySessionRemote} */
-let DiscoverySessionRemote;
 
 /**
  * Enum of adapter property names. Used for adapterchanged events.
@@ -39,14 +33,13 @@ export const AdapterProperty = {
  * Provides remote access to Adapter functions. Converts parameters to Mojo
  * handles and back when necessary.
  *
- * @implements {bluetooth.mojom.AdapterObserverInterface}
+ * @implements {AdapterObserverInterface}
  */
 export class AdapterBroker extends EventTarget {
   /** @param {!AdapterRemote} adapter */
   constructor(adapter) {
     super();
-    this.adapterObserverReceiver_ =
-        new bluetooth.mojom.AdapterObserverReceiver(this);
+    this.adapterObserverReceiver_ = new AdapterObserverReceiver(this);
     this.adapter_ = adapter;
     this.adapter_.addObserver(
         this.adapterObserverReceiver_.$.bindNewPipeAndPassRemote());
@@ -57,7 +50,7 @@ export class AdapterBroker extends EventTarget {
       detail: {
         property: AdapterProperty.PRESENT,
         value: present,
-      }
+      },
     }));
   }
 
@@ -66,7 +59,7 @@ export class AdapterBroker extends EventTarget {
       detail: {
         property: AdapterProperty.POWERED,
         value: powered,
-      }
+      },
     }));
   }
 
@@ -75,7 +68,7 @@ export class AdapterBroker extends EventTarget {
       detail: {
         property: AdapterProperty.DISCOVERABLE,
         value: discoverable,
-      }
+      },
     }));
   }
 
@@ -84,7 +77,7 @@ export class AdapterBroker extends EventTarget {
       detail: {
         property: AdapterProperty.DISCOVERING,
         value: discovering,
-      }
+      },
     }));
   }
 
@@ -106,14 +99,13 @@ export class AdapterBroker extends EventTarget {
   /**
    * Creates a GATT connection to the device with |address|.
    * @param {string} address
-   * @return {!Promise<!bluetooth.mojom.Device>}
+   * @return {!Promise<!Device>}
    */
   connectToDevice(address) {
     return this.adapter_.connectToDevice(address).then(function(response) {
-      if (response.result != bluetooth.mojom.ConnectResult.SUCCESS) {
+      if (response.result !== ConnectResult.SUCCESS) {
         // TODO(crbug.com/663394): Replace with more descriptive error
         // messages.
-        const ConnectResult = bluetooth.mojom.ConnectResult;
         const errorString = Object.keys(ConnectResult).find(function(key) {
           return ConnectResult[key] === response.result;
         });
@@ -127,7 +119,7 @@ export class AdapterBroker extends EventTarget {
 
   /**
    * Gets an array of currently detectable devices from the Adapter service.
-   * @return {Promise<{devices: Array<!bluetooth.mojom.DeviceInfo>}>}
+   * @return {Promise<{devices: Array<!DeviceInfo>}>}
    */
   getDevices() {
     return this.adapter_.getDevices();
@@ -135,7 +127,7 @@ export class AdapterBroker extends EventTarget {
 
   /**
    * Gets the current state of the Adapter.
-   * @return {Promise<{info: bluetooth.mojom.AdapterInfo}>}
+   * @return {Promise<{info: AdapterInfo}>}
    */
   getInfo() {
     return this.adapter_.getInfo();
@@ -144,16 +136,17 @@ export class AdapterBroker extends EventTarget {
 
   /**
    * Requests the adapter to start a new discovery session.
-   * @return {!Promise<!bluetooth.mojom.DiscoverySessionRemote>}
+   * @return {!Promise<!DiscoverySessionRemote>}
    */
   startDiscoverySession() {
-    return this.adapter_.startDiscoverySession().then(function(response) {
-      if (!response.session) {
-        throw new Error('Discovery session failed to start');
-      }
+    return this.adapter_.startDiscoverySession(SCAN_CLIENT_NAME)
+        .then(function(response) {
+          if (!response.session) {
+            throw new Error('Discovery session failed to start');
+          }
 
-      return response.session;
-    });
+          return response.session;
+        });
   }
 }
 
@@ -161,7 +154,7 @@ let adapterBroker = null;
 
 /**
  * Initializes an AdapterBroker if one doesn't exist.
- * @param {!mojom.BluetoothInternalsHandlerRemote=}
+ * @param {!BluetoothInternalsHandlerRemote=}
  *     opt_bluetoothInternalsHandler
  * @return {!Promise<!AdapterBroker>} resolves with
  *     AdapterBroker, rejects if Bluetooth is not supported.
@@ -173,7 +166,7 @@ export function getAdapterBroker(opt_bluetoothInternalsHandler) {
 
   const bluetoothInternalsHandler = opt_bluetoothInternalsHandler ?
       opt_bluetoothInternalsHandler :
-      mojom.BluetoothInternalsHandler.getRemote();
+      BluetoothInternalsHandler.getRemote();
 
   // Get an Adapter service.
   return bluetoothInternalsHandler.getAdapter().then(function(response) {

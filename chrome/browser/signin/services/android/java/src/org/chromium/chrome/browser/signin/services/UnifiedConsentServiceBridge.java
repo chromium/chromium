@@ -1,8 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.signin.services;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -11,10 +14,15 @@ import org.chromium.chrome.browser.profiles.Profile;
  * Bridge to UnifiedConsentService.
  */
 public class UnifiedConsentServiceBridge {
+    private static Boolean sUrlKeyedAnonymizedDataCollectionEnabledForTesting;
+
     private UnifiedConsentServiceBridge() {}
 
     /** Returns whether collection of URL-keyed anonymized data is enabled. */
     public static boolean isUrlKeyedAnonymizedDataCollectionEnabled(Profile profile) {
+        if (sUrlKeyedAnonymizedDataCollectionEnabledForTesting != null) {
+            return sUrlKeyedAnonymizedDataCollectionEnabledForTesting;
+        }
         return UnifiedConsentServiceBridgeJni.get().isUrlKeyedAnonymizedDataCollectionEnabled(
                 profile);
     }
@@ -40,8 +48,15 @@ public class UnifiedConsentServiceBridge {
         UnifiedConsentServiceBridgeJni.get().recordSyncSetupDataTypesHistogram(profile);
     }
 
+    /** Sets whether collection of URL-keyed anonymized data is enabled. */
+    public static void setUrlKeyedAnonymizedDataCollectionEnabledForTesting(
+            @Nullable Boolean enabled) {
+        sUrlKeyedAnonymizedDataCollectionEnabledForTesting = enabled;
+    }
+
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         boolean isUrlKeyedAnonymizedDataCollectionEnabled(Profile profile);
         void setUrlKeyedAnonymizedDataCollectionEnabled(Profile profile, boolean enabled);
         boolean isUrlKeyedAnonymizedDataCollectionManaged(Profile profile);

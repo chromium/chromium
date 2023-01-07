@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,10 @@ ImpressionTestData::ImpressionTestData(
     SchedulerClientType type,
     size_t current_max_daily_show,
     std::vector<Impression> impressions,
-    base::Optional<SuppressionInfo> suppression_info,
+    absl::optional<SuppressionInfo> suppression_info,
     size_t negative_events_count,
-    base::Optional<base::Time> last_negative_event_ts,
-    base::Optional<base::Time> last_shown_ts)
+    absl::optional<base::Time> last_negative_event_ts,
+    absl::optional<base::Time> last_shown_ts)
     : type(type),
       current_max_daily_show(current_max_daily_show),
       impressions(std::move(impressions)),
@@ -52,10 +52,10 @@ void AddImpressionTestData(const ImpressionTestData& data,
 }
 
 void AddImpressionTestData(
-    const std::vector<ImpressionTestData>& test_data,
+    const std::vector<ImpressionTestData>& test_data_vec,
     ImpressionHistoryTracker::ClientStates* client_states) {
   DCHECK(client_states);
-  for (const auto& test_data : test_data) {
+  for (const auto& test_data : test_data_vec) {
     auto client_state = std::make_unique<ClientState>();
     AddImpressionTestData(test_data, client_state.get());
     client_states->emplace(test_data.type, std::move(client_state));
@@ -63,10 +63,10 @@ void AddImpressionTestData(
 }
 
 void AddImpressionTestData(
-    const std::vector<ImpressionTestData>& test_data,
+    const std::vector<ImpressionTestData>& test_data_vec,
     std::vector<std::unique_ptr<ClientState>>* client_states) {
   DCHECK(client_states);
-  for (const auto& test_data : test_data) {
+  for (const auto& test_data : test_data_vec) {
     auto client_state = std::make_unique<ClientState>();
     AddImpressionTestData(test_data, client_state.get());
     client_states->emplace_back(std::move(client_state));

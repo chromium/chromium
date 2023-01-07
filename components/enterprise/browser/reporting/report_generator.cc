@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
+#include "components/enterprise/browser/reporting/os_report_generator.h"
+#include "components/enterprise/browser/reporting/report_type.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/wmi.h"
 #endif
 
@@ -31,51 +33,42 @@ ReportGenerator::~ReportGenerator() = default;
 
 void ReportGenerator::Generate(ReportType report_type,
                                ReportCallback callback) {
-  CreateBasicRequest(std::make_unique<ReportRequest>(), report_type,
+  CreateBasicRequest(std::make_unique<ReportRequest>(report_type), report_type,
                      std::move(callback));
-}
-
-void ReportGenerator::SetMaximumReportSizeForTesting(size_t size) {
-  report_request_queue_generator_.SetMaximumReportSizeForTesting(size);
 }
 
 void ReportGenerator::CreateBasicRequest(
     std::unique_ptr<ReportRequest> basic_request,
     ReportType report_type,
     ReportCallback callback) {
-  if (report_type == kExtensionRequest) {
-    basic_request->add_partial_report_types(
-        em::PartialReportType::EXTENSION_REQUEST);
-  } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    delegate_->SetAndroidAppInfos(basic_request.get());
+  delegate_->SetAndroidAppInfos(basic_request.get());
 #else
-    basic_request->set_computer_name(this->GetMachineName());
-    basic_request->set_os_user_name(GetOSUserName());
-    basic_request->set_serial_number(GetSerialNumber());
-    basic_request->set_allocated_os_report(GetOSReport().release());
-    basic_request->set_allocated_browser_device_identifier(
-        policy::GetBrowserDeviceIdentifier().release());
-#if defined(OS_IOS)
-    basic_request->set_device_model(policy::GetDeviceModel());
-    basic_request->set_brand_name(policy::GetDeviceManufacturer());
-#endif  // defined(OS_IOS)
+  basic_request->GetDeviceReportRequest().set_computer_name(
+      this->GetMachineName());
+  basic_request->GetDeviceReportRequest().set_os_user_name(GetOSUserName());
+  basic_request->GetDeviceReportRequest().set_serial_number(GetSerialNumber());
+  basic_request->GetDeviceReportRequest().set_allocated_os_report(
+      GetOSReport().release());
+  basic_request->GetDeviceReportRequest()
+      .set_allocated_browser_device_identifier(
+          policy::GetBrowserDeviceIdentifier().release());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
 
-  browser_report_generator_.Generate(
-      report_type,
-      base::BindOnce(&ReportGenerator::OnBrowserReportReady,
-                     weak_ptr_factory_.GetWeakPtr(), report_type,
-                     std::move(callback), std::move(basic_request)));
-}
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // 1. Async function base::SysInfo::SetHardwareInfo is called.
+  // 2. ReportGenerator::SetHardwareInfo fills basic_report
+  // 3. ReportGenerator::GenerateReport is called
 
-std::unique_ptr<em::OSReport> ReportGenerator::GetOSReport() {
-  auto report = std::make_unique<em::OSReport>();
-  report->set_name(policy::GetOSPlatform());
-  report->set_arch(policy::GetOSArchitecture());
-  report->set_version(policy::GetOSVersion());
-  return report;
+  base::SysInfo::GetHardwareInfo(
+      base::BindOnce(&ReportGenerator::SetHardwareInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(basic_request),
+                     base::BindOnce(&ReportGenerator::GenerateReport,
+                                    weak_ptr_factory_.GetWeakPtr(), report_type,
+                                    std::move(callback))));
+#else
+  GenerateReport(report_type, std::move(callback), std::move(basic_request));
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 std::string ReportGenerator::GetMachineName() {
@@ -87,7 +80,7 @@ std::string ReportGenerator::GetOSUserName() {
 }
 
 std::string ReportGenerator::GetSerialNumber() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(
       base::win::WmiComputerSystemInfo::Get().serial_number());
 #else
@@ -95,25 +88,50 @@ std::string ReportGenerator::GetSerialNumber() {
 #endif
 }
 
-void ReportGenerator::OnBrowserReportReady(
+void ReportGenerator::GenerateReport(
     ReportType report_type,
     ReportCallback callback,
-    std::unique_ptr<ReportRequest> basic_request,
-    std::unique_ptr<em::BrowserReport> browser_report) {
-  basic_request->set_allocated_browser_report(browser_report.release());
+    std::unique_ptr<ReportRequest> basic_request) {
+  browser_report_generator_.Generate(
+      ReportType::kFull,
+      base::BindOnce(&ReportGenerator::OnBrowserReportReady,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(basic_request),
+                     report_type, std::move(callback)));
+}
 
-  if (report_type != kBrowserVersion) {
+void ReportGenerator::OnBrowserReportReady(
+    std::unique_ptr<ReportRequest> basic_request,
+    ReportType report_type,
+    ReportCallback callback,
+    std::unique_ptr<em::BrowserReport> browser_report) {
+  basic_request->GetDeviceReportRequest().set_allocated_browser_report(
+      browser_report.release());
+
+  if (report_type != ReportType::kBrowserVersion) {
     // Generate a queue of requests containing detailed profile information.
     std::move(callback).Run(
-        report_request_queue_generator_.Generate(report_type, *basic_request));
+        report_request_queue_generator_.Generate(*basic_request));
     return;
   }
 
   // Return a queue containing only the basic request and browser report without
   // detailed profile information.
-  ReportRequests requests;
+  ReportRequestQueue requests;
   requests.push(std::move(basic_request));
   std::move(callback).Run(std::move(requests));
+}
+
+void ReportGenerator::SetHardwareInfo(
+    std::unique_ptr<ReportRequest> basic_request,
+    base::OnceCallback<void(std::unique_ptr<ReportRequest>)> callback,
+    base::SysInfo::HardwareInfo hardware_info) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  basic_request->GetDeviceReportRequest().set_brand_name(
+      hardware_info.manufacturer);
+  basic_request->GetDeviceReportRequest().set_device_model(hardware_info.model);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+  std::move(callback).Run(std::move(basic_request));
 }
 
 }  // namespace enterprise_reporting

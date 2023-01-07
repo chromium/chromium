@@ -1,0 +1,25 @@
+caption: Enable sharing from Android apps to Web apps
+default: true
+desc: |-
+  Setting the policy to True enables sharing text/files from Android apps to supported Web Apps, using the built-in Android sharing system.
+        When enabled, this will send metadata for installed Web Apps to Google to generate and install a shim Android app.
+        Setting the policy to False disables this functionality.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable Android to Web App sharing.
+  value: true
+- caption: Disable Android to Web App sharing.
+  value: false
+owners:
+- tsergeant@chromium.org
+- chromeos-apps-foundation-team@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:94-
+tags:
+- google-sharing
+type: main

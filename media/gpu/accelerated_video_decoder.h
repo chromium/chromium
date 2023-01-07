@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_types.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -24,6 +24,10 @@ namespace media {
 class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
  public:
   AcceleratedVideoDecoder() {}
+
+  AcceleratedVideoDecoder(const AcceleratedVideoDecoder&) = delete;
+  AcceleratedVideoDecoder& operator=(const AcceleratedVideoDecoder&) = delete;
+
   virtual ~AcceleratedVideoDecoder() {}
 
   // Set the buffer owned by |decoder_buffer| as the current source of encoded
@@ -35,7 +39,7 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
 
   // Have the decoder flush its state and trigger output of all previously
   // decoded surfaces. Return false on failure.
-  virtual bool Flush() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool Flush() = 0;
 
   // Stop (pause) decoding, discarding all remaining inputs and outputs,
   // but do not flush decoder state, so that playback can be resumed later,
@@ -67,16 +71,18 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
   // Try to decode more of the stream, returning decoded frames asynchronously.
   // Return when more stream is needed, when we run out of free surfaces, when
   // we need a new set of them, or when an error occurs.
-  virtual DecodeResult Decode() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual DecodeResult Decode() = 0;
 
-  // Return dimensions/visible rectangle/profile/bit depth/required number of
-  // pictures that client should be ready to provide for the decoder to function
-  // properly (of which up to GetNumReferenceFrames() might be needed for
-  // internal decoding). To be used after Decode() returns kConfigChange.
+  // Return dimensions/visible rectangle/profile/bit depth/chroma sampling
+  // format/required number of pictures that client should be ready to provide
+  // for the decoder to function properly (of which up to
+  // GetNumReferenceFrames() might be needed for internal decoding). To be used
+  // after Decode() returns kConfigChange.
   virtual gfx::Size GetPicSize() const = 0;
   virtual gfx::Rect GetVisibleRect() const = 0;
   virtual VideoCodecProfile GetProfile() const = 0;
   virtual uint8_t GetBitDepth() const = 0;
+  virtual VideoChromaSampling GetChromaSampling() const = 0;
   virtual size_t GetRequiredNumOfPictures() const = 0;
   virtual size_t GetNumReferenceFrames() const = 0;
 
@@ -87,9 +93,6 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
   // The number is the sweet spot which the decoder can tolerate to handle the
   // missing keyframe by itself. In addition, this situation is exceptional.
   static constexpr size_t kVPxMaxNumOfSizeChangeFailures = 75;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AcceleratedVideoDecoder);
 };
 
 }  //  namespace media

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,14 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
-#include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/metrics/log_store.h"
+#include "components/metrics/metrics_log.h"
+#include "components/metrics/metrics_logs_event_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -46,6 +49,9 @@ class UnsentLogStore : public LogStore {
   // |signing_key| is used to produce an HMAC-SHA256 signature of the logged
   // data, which will be uploaded with the log and used to validate data
   // integrity.
+  //
+  // |logs_event_manager| is used to notify observers of log events. Can be set
+  // to null if observing the events is not necessary.
   UnsentLogStore(std::unique_ptr<UnsentLogStoreMetrics> metrics,
                  PrefService* local_state,
                  const char* log_data_pref_name,
@@ -53,8 +59,51 @@ class UnsentLogStore : public LogStore {
                  size_t min_log_count,
                  size_t min_log_bytes,
                  size_t max_log_size,
-                 const std::string& signing_key);
-  ~UnsentLogStore();
+                 const std::string& signing_key,
+                 MetricsLogsEventManager* logs_event_manager);
+
+  UnsentLogStore(const UnsentLogStore&) = delete;
+  UnsentLogStore& operator=(const UnsentLogStore&) = delete;
+
+  ~UnsentLogStore() override;
+
+  struct LogInfo {
+    LogInfo();
+    LogInfo(const LogInfo& other);
+    ~LogInfo();
+
+    // Initializes the members based on uncompressed |log_data|,
+    // |log_timestamp|, and |signing_key|. |log_data| is the uncompressed
+    // serialized log protobuf. A hash and a signature are computed from
+    // |log_data|. The signature is produced using |signing_key|. |log_data|
+    // will be compressed and stored in |compressed_log_data|. |log_timestamp|
+    // is stored as is. |log_metadata| is any optional metadata that will be
+    // attached to the log.
+    // |metrics| is the parent's metrics_ object, and should not be held.
+    void Init(UnsentLogStoreMetrics* metrics,
+              const std::string& log_data,
+              const std::string& log_timestamp,
+              const std::string& signing_key,
+              const LogMetadata& log_metadata);
+
+    // Compressed log data - a serialized protobuf that's been gzipped.
+    std::string compressed_log_data;
+
+    // The SHA1 hash of the log. Computed in Init and stored to catch errors
+    // from memory corruption.
+    std::string hash;
+
+    // The HMAC-SHA256 signature of the log, used to validate the log came from
+    // Chrome. It's computed in Init and stored, instead of computed on demand,
+    // to catch errors from memory corruption.
+    std::string signature;
+
+    // The timestamp of when the log was created as a time_t value.
+    std::string timestamp;
+
+    // Properties of the log.
+    LogMetadata log_metadata;
+  };
 
   // LogStore:
   bool has_unsent_logs() const override;
@@ -62,29 +111,31 @@ class UnsentLogStore : public LogStore {
   const std::string& staged_log() const override;
   const std::string& staged_log_hash() const override;
   const std::string& staged_log_signature() const override;
+  absl::optional<uint64_t> staged_log_user_id() const override;
   void StageNextLog() override;
   void DiscardStagedLog() override;
   void MarkStagedLogAsSent() override;
-  void TrimAndPersistUnsentLogs() override;
+  void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override;
   void LoadPersistedUnsentLogs() override;
 
-  // Adds a UMA log to the list, |samples_count| is the total number of samples
-  // in the log (if available).
-  void StoreLog(const std::string& log_data,
-                base::Optional<base::HistogramBase::Count> samples_count);
+  // Adds a UMA log to the list. |log_metadata| refers to metadata associated
+  // with the log.
+  void StoreLog(const std::string& log_data, const LogMetadata& log_metadata);
 
   // Gets log data at the given index in the list.
   const std::string& GetLogAtIndex(size_t index);
 
-  // Replaces the compressed log at |index| in the store with given log data
-  // reusing the same timestamp from the original log, and returns old log data.
-  std::string ReplaceLogAtIndex(
-      size_t index,
-      const std::string& new_log_data,
-      base::Optional<base::HistogramBase::Count> samples_count);
+  // Replaces the compressed log at |index| in the store with given log data and
+  // |log_metadata| reusing the same timestamp.
+  std::string ReplaceLogAtIndex(size_t index,
+                                const std::string& new_log_data,
+                                const LogMetadata& log_metadata);
 
   // Deletes all logs, in memory and on disk.
   void Purge();
+
+  // Sets |logs_event_manager_|.
+  void SetLogsEventManager(MetricsLogsEventManager* logs_event_manager);
 
   // Returns the timestamp of the element in the front of the list.
   const std::string& staged_log_timestamp() const;
@@ -92,19 +143,23 @@ class UnsentLogStore : public LogStore {
   // The number of elements currently stored.
   size_t size() const { return list_.size(); }
 
+  // Returns |logs_event_manager_|.
+  MetricsLogsEventManager* GetLogsEventManagerForTesting() const {
+    return logs_event_manager_;
+  }
+
+  // Computes the HMAC for |log_data| using the |signing_key| and returns a bool
+  // indicating whether the signing succeeded. The returned HMAC is written to
+  // the |signature|.
+  static bool ComputeHMACForLog(const std::string& log_data,
+                                const std::string& signing_key,
+                                std::string* signature);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(UnsentLogStoreTest, UnsentLogMetadataMetrics);
 
-  // Keep the most recent logs which are smaller than |max_log_size_|.
-  // We keep at least |min_log_bytes_| and |min_log_count_| of logs before
-  // discarding older logs.
-  void TrimLogs();
-
-  // Writes the list of logs to |list|.
-  void WriteLogsToPrefList(base::ListValue* list) const;
-
   // Reads the list of logs from |list|.
-  void ReadLogsFromPrefList(const base::ListValue& list);
+  void ReadLogsFromPrefList(const base::Value::List& list);
 
   // Writes the unsent log info to the |metadata_pref_name_| preference.
   void WriteToMetricsPref(base::HistogramBase::Count unsent_samples_count,
@@ -112,7 +167,17 @@ class UnsentLogStore : public LogStore {
                           size_t persisted_size) const;
 
   // Records the info in |metadata_pref_name_| as UMA metrics.
-  void RecordMetaDataMertics();
+  void RecordMetaDataMetrics();
+
+  // Wrapper functions for the notify functions of |logs_event_manager_|.
+  void NotifyLogCreated(LogInfo& info);
+  void NotifyLogsCreated(base::span<std::unique_ptr<LogInfo>> logs);
+  void NotifyLogEvent(MetricsLogsEventManager::LogEvent event,
+                      base::StringPiece log_hash,
+                      base::StringPiece message = "");
+  void NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>> logs,
+                       MetricsLogsEventManager::LogEvent event,
+                       base::StringPiece message = "");
 
   // An object for recording UMA metrics.
   std::unique_ptr<UnsentLogStoreMetrics> metrics_;
@@ -120,7 +185,7 @@ class UnsentLogStore : public LogStore {
   // A weak pointer to the PrefService object to read and write the preference
   // from.  Calling code should ensure this object continues to exist for the
   // lifetime of the UnsentLogStore object.
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 
   // The name of the preference to serialize logs to/from.
   const char* log_data_pref_name_;
@@ -142,42 +207,9 @@ class UnsentLogStore : public LogStore {
   // authentic.
   const std::string signing_key_;
 
-  struct LogInfo {
-    LogInfo();
-    LogInfo(const LogInfo& other);
-    ~LogInfo();
+  // Event manager to notify observers of log events.
+  raw_ptr<MetricsLogsEventManager> logs_event_manager_;
 
-    // Initializes the members based on uncompressed |log_data|,
-    // |log_timestamp|, and |signing_key|. |log_data| is the uncompressed
-    // serialized log protobuf. A hash and a signature are computed from
-    // |log_data|. The signature is produced using |signing_key|. |log_data|
-    // will be compressed and stored in |compressed_log_data|. |log_timestamp|
-    // is stored as is.
-    // |metrics| is the parent's metrics_ object, and should not be held.
-    void Init(UnsentLogStoreMetrics* metrics,
-              const std::string& log_data,
-              const std::string& log_timestamp,
-              const std::string& signing_key,
-              base::Optional<base::HistogramBase::Count> samples_count);
-
-    // Compressed log data - a serialized protobuf that's been gzipped.
-    std::string compressed_log_data;
-
-    // The SHA1 hash of the log. Computed in Init and stored to catch errors
-    // from memory corruption.
-    std::string hash;
-
-    // The HMAC-SHA256 signature of the log, used to validate the log came from
-    // Chrome. It's computed in Init and stored, instead of computed on demand,
-    // to catch errors from memory corruption.
-    std::string signature;
-
-    // The timestamp of when the log was created as a time_t value.
-    std::string timestamp;
-
-    // The total number of samples in this log if applicable.
-    base::Optional<base::HistogramBase::Count> samples_count;
-  };
   // A list of all of the stored logs, stored with SHA1 hashes to check for
   // corruption while they are stored in memory.
   std::vector<std::unique_ptr<LogInfo>> list_;
@@ -188,8 +220,6 @@ class UnsentLogStore : public LogStore {
 
   // The total number of samples that have been sent from this LogStore.
   base::HistogramBase::Count total_samples_sent_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(UnsentLogStore);
 };
 
 }  // namespace metrics

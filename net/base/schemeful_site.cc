@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,23 +38,6 @@ SchemefulSite::ObtainASiteResult SchemefulSite::ObtainASite(
   if (IsStandardSchemeWithNetworkHost(origin.scheme())) {
     registerable_domain = GetDomainAndRegistry(
         origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-
-    // For domains in which the eTLD+1 is not canonical, do not use the eTLD+1.
-    // This is for domains like foo.127.1, which has an eTLD+1 of 127.1, but
-    // https://127.1/ == https://127.0.0.1. This is intended as a temporary
-    // hack not to DCHECK for such origins, until the URL spec is updated to
-    // make such domains invalid in URLs.
-    // TODO(https://crbug.com/1157010): Remove once the fetch spec is updated,
-    // and GURL rejects such domains names.
-    url::CanonHostInfo host_info;
-    bool site_domain_is_safe =
-        registerable_domain.empty() || registerable_domain == origin.host() ||
-        registerable_domain ==
-            CanonicalizeHost(registerable_domain, &host_info);
-    if (!site_domain_is_safe)
-      registerable_domain.clear();
-
-    UMA_HISTOGRAM_BOOLEAN("Net.SiteDomainIsSafe", site_domain_is_safe);
   }
 
   // If origin's host's registrable domain is null, then return (origin's
@@ -91,10 +74,11 @@ SchemefulSite::SchemefulSite(const GURL& url)
     : SchemefulSite(url::Origin::Create(url)) {}
 
 SchemefulSite::SchemefulSite(const SchemefulSite& other) = default;
-SchemefulSite::SchemefulSite(SchemefulSite&& other) = default;
+SchemefulSite::SchemefulSite(SchemefulSite&& other) noexcept = default;
 
 SchemefulSite& SchemefulSite::operator=(const SchemefulSite& other) = default;
-SchemefulSite& SchemefulSite::operator=(SchemefulSite&& other) = default;
+SchemefulSite& SchemefulSite::operator=(SchemefulSite&& other) noexcept =
+    default;
 
 // static
 bool SchemefulSite::FromWire(const url::Origin& site_as_origin,
@@ -112,11 +96,11 @@ bool SchemefulSite::FromWire(const url::Origin& site_as_origin,
   return true;
 }
 
-base::Optional<SchemefulSite> SchemefulSite::CreateIfHasRegisterableDomain(
+absl::optional<SchemefulSite> SchemefulSite::CreateIfHasRegisterableDomain(
     const url::Origin& origin) {
   ObtainASiteResult result = ObtainASite(origin);
   if (!result.used_registerable_domain)
-    return base::nullopt;
+    return absl::nullopt;
   return SchemefulSite(std::move(result));
 }
 
@@ -137,8 +121,17 @@ std::string SchemefulSite::Serialize() const {
   return site_as_origin_.Serialize();
 }
 
+std::string SchemefulSite::SerializeFileSiteWithHost() const {
+  DCHECK_EQ(url::kFileScheme, site_as_origin_.scheme());
+  return site_as_origin_.GetTupleOrPrecursorTupleIfOpaque().Serialize();
+}
+
 std::string SchemefulSite::GetDebugString() const {
   return site_as_origin_.GetDebugString();
+}
+
+GURL SchemefulSite::GetURL() const {
+  return site_as_origin_.GetURL();
 }
 
 const url::Origin& SchemefulSite::GetInternalOriginForTesting() const {
@@ -160,20 +153,25 @@ bool SchemefulSite::operator<(const SchemefulSite& other) const {
 }
 
 // static
-base::Optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
+absl::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
     const std::string& value) {
-  base::Optional<url::Origin> result = url::Origin::Deserialize(value);
+  absl::optional<url::Origin> result = url::Origin::Deserialize(value);
   if (!result)
-    return base::nullopt;
+    return absl::nullopt;
   return SchemefulSite(result.value());
 }
 
-base::Optional<std::string> SchemefulSite::SerializeWithNonce() {
+absl::optional<std::string> SchemefulSite::SerializeWithNonce() {
   return site_as_origin_.SerializeWithNonceAndInitIfNeeded();
 }
 
 bool SchemefulSite::SchemelesslyEqual(const SchemefulSite& other) const {
   return site_as_origin_.host() == other.site_as_origin_.host();
+}
+
+std::ostream& operator<<(std::ostream& os, const SchemefulSite& ss) {
+  os << ss.Serialize();
+  return os;
 }
 
 }  // namespace net

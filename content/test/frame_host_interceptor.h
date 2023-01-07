@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 
 namespace content {
 
@@ -30,6 +30,10 @@ class FrameHostInterceptor : public WebContentsObserver {
   // Constructs an instance that will intercept FrameHost calls in any frame of
   // the |web_contents| while the instance is in scope.
   explicit FrameHostInterceptor(WebContents* web_contents);
+
+  FrameHostInterceptor(const FrameHostInterceptor&) = delete;
+  FrameHostInterceptor& operator=(const FrameHostInterceptor&) = delete;
+
   ~FrameHostInterceptor() override;
 
   // Called just before BeginNavigation IPC would be dispatched to
@@ -44,8 +48,8 @@ class FrameHostInterceptor : public WebContentsObserver {
   // original messages and just forwards them to the original implementation).
   virtual bool WillDispatchBeginNavigation(
       RenderFrameHost* render_frame_host,
-      mojom::CommonNavigationParamsPtr* common_params,
-      mojom::BeginNavigationParamsPtr* begin_params,
+      blink::mojom::CommonNavigationParamsPtr* common_params,
+      blink::mojom::BeginNavigationParamsPtr* begin_params,
       mojo::PendingRemote<blink::mojom::BlobURLToken>* blob_url_token,
       mojo::PendingAssociatedRemote<mojom::NavigationClient>*
           navigation_client);
@@ -58,8 +62,6 @@ class FrameHostInterceptor : public WebContentsObserver {
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
 
   std::map<RenderFrameHost*, std::unique_ptr<FrameAgent>> frame_agents_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameHostInterceptor);
 };
 
 }  // namespace content

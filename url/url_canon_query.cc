@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,10 +72,12 @@ void RunConverter(const char* spec,
                   const Component& query,
                   CharsetConverter* converter,
                   CanonOutput* output) {
+  DCHECK(query.is_valid());
   // This function will replace any misencoded values with the invalid
   // character. This is what we want so we don't have to check for error.
   RawCanonOutputW<1024> utf16;
-  ConvertUTF8ToUTF16(&spec[query.begin], query.len, &utf16);
+  ConvertUTF8ToUTF16(&spec[query.begin], static_cast<size_t>(query.len),
+                     &utf16);
   converter->ConvertFromUTF16(utf16.data(), utf16.length(), output);
 }
 
@@ -86,7 +88,9 @@ void RunConverter(const char16_t* spec,
                   const Component& query,
                   CharsetConverter* converter,
                   CanonOutput* output) {
-  converter->ConvertFromUTF16(&spec[query.begin], query.len, output);
+  DCHECK(query.is_valid());
+  converter->ConvertFromUTF16(&spec[query.begin],
+                              static_cast<size_t>(query.len), output);
 }
 
 template<typename CHAR, typename UCHAR>
@@ -109,7 +113,8 @@ void DoConvertToQueryEncoding(const CHAR* spec,
 
     } else {
       // No converter, do our own UTF-8 conversion.
-      AppendStringOfType(&spec[query.begin], query.len, CHAR_QUERY, output);
+      AppendStringOfType(&spec[query.begin], static_cast<size_t>(query.len),
+                         CHAR_QUERY, output);
     }
   }
 }

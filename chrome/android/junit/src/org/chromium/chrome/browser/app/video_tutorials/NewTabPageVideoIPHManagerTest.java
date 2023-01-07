@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,11 +20,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.FeatureList;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
@@ -36,6 +36,8 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.TriggerDetails;
+import org.chromium.components.image_fetcher.ImageFetcher;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,13 +101,13 @@ public class NewTabPageVideoIPHManagerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         Mockito.when(mViewStub.getContext()).thenReturn(mContext);
 
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.VIDEO_TUTORIALS, true);
-        ChromeFeatureList.setTestFeatures(features);
+        FeatureList.setTestFeatures(features);
 
         mTestVideoTutorialService = new TestVideoTutorialService();
         VideoTutorialServiceFactory.setVideoTutorialServiceForTesting(mTestVideoTutorialService);
@@ -121,6 +123,8 @@ public class NewTabPageVideoIPHManagerTest {
         // We have already watched the first tutorial, the second one should show up as IPH card.
         Tutorial testTutorial = mTestVideoTutorialService.getTestTutorials().get(1);
         Mockito.when(mTracker.shouldTriggerHelpUI(Mockito.anyString())).thenReturn(false, true);
+        Mockito.when(mTracker.shouldTriggerHelpUIWithSnooze(Mockito.anyString()))
+                .thenReturn(new TriggerDetails(false, false), new TriggerDetails(true, false));
         mVideoIPHManager = new TestNewTabPageVideoIPHManager(mViewStub, mProfile);
         Mockito.verify(mVideoIPHCoordinator).showVideoIPH(testTutorial);
 
@@ -137,6 +141,10 @@ public class NewTabPageVideoIPHManagerTest {
         // We have already seen all the tutorials. Now summary card should show up.
         Mockito.when(mTracker.shouldTriggerHelpUI(Mockito.anyString()))
                 .thenReturn(false, false, false, true);
+        Mockito.when(mTracker.shouldTriggerHelpUIWithSnooze(Mockito.anyString()))
+                .thenReturn(new TriggerDetails(false, false), new TriggerDetails(false, false),
+                        new TriggerDetails(false, false), new TriggerDetails(true, false));
+
         mVideoIPHManager = new TestNewTabPageVideoIPHManager(mViewStub, mProfile);
 
         ArgumentCaptor<Tutorial> tutorialArgument = ArgumentCaptor.forClass(Tutorial.class);
@@ -154,6 +162,9 @@ public class NewTabPageVideoIPHManagerTest {
         // Show a tutorial IPH.
         Tutorial testTutorial = mTestVideoTutorialService.getTestTutorials().get(0);
         Mockito.when(mTracker.shouldTriggerHelpUI(Mockito.anyString())).thenReturn(true);
+        Mockito.when(mTracker.shouldTriggerHelpUIWithSnooze(Mockito.anyString()))
+                .thenReturn(new TriggerDetails(true, false));
+
         mVideoIPHManager = new TestNewTabPageVideoIPHManager(mViewStub, mProfile);
         Mockito.verify(mVideoIPHCoordinator).showVideoIPH(testTutorial);
 

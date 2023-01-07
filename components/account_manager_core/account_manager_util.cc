@@ -1,12 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/account_manager_core/account_manager_util.h"
 
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace account_manager {
 
@@ -85,13 +87,15 @@ crosapi::mojom::GoogleServiceAuthError::State ToMojoGoogleServiceAuthErrorState(
       return cm::GoogleServiceAuthError::State::kUnexpectedServiceResponse;
     case GoogleServiceAuthError::State::SERVICE_ERROR:
       return cm::GoogleServiceAuthError::State::kServiceError;
+    case GoogleServiceAuthError::State::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
+      return cm::GoogleServiceAuthError::State::kScopeLimitedUnrecoverableError;
     case GoogleServiceAuthError::State::NUM_STATES:
       NOTREACHED();
       return cm::GoogleServiceAuthError::State::kNone;
   }
 }
 
-base::Optional<account_manager::AccountAdditionResult::Status>
+absl::optional<account_manager::AccountAdditionResult::Status>
 FromMojoAccountAdditionStatus(
     crosapi::mojom::AccountAdditionResult::Status mojo_status) {
   switch (mojo_status) {
@@ -106,10 +110,12 @@ FromMojoAccountAdditionStatus(
     case cm::AccountAdditionResult::Status::kUnexpectedResponse:
       return account_manager::AccountAdditionResult::Status::
           kUnexpectedResponse;
+    case cm::AccountAdditionResult::Status::kBlockedByPolicy:
+      return account_manager::AccountAdditionResult::Status::kBlockedByPolicy;
     default:
       LOG(WARNING) << "Unknown crosapi::mojom::AccountAdditionResult::Status: "
                    << mojo_status;
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -126,21 +132,22 @@ crosapi::mojom::AccountAdditionResult::Status ToMojoAccountAdditionStatus(
       return cm::AccountAdditionResult::Status::kNetworkError;
     case account_manager::AccountAdditionResult::Status::kUnexpectedResponse:
       return cm::AccountAdditionResult::Status::kUnexpectedResponse;
+    case account_manager::AccountAdditionResult::Status::kBlockedByPolicy:
+      return cm::AccountAdditionResult::Status::kBlockedByPolicy;
   }
 }
 
 }  // namespace
 
-base::Optional<account_manager::Account> FromMojoAccount(
+absl::optional<account_manager::Account> FromMojoAccount(
     const crosapi::mojom::AccountPtr& mojom_account) {
-  const base::Optional<account_manager::AccountKey> account_key =
+  const absl::optional<account_manager::AccountKey> account_key =
       FromMojoAccountKey(mojom_account->key);
   if (!account_key.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
-  account_manager::Account account;
-  account.key = account_key.value();
-  account.raw_email = mojom_account->raw_email;
+  account_manager::Account account{account_key.value(),
+                                   mojom_account->raw_email};
   return account;
 }
 
@@ -152,29 +159,30 @@ crosapi::mojom::AccountPtr ToMojoAccount(
   return mojom_account;
 }
 
-base::Optional<account_manager::AccountKey> FromMojoAccountKey(
+absl::optional<account_manager::AccountKey> FromMojoAccountKey(
     const crosapi::mojom::AccountKeyPtr& mojom_account_key) {
-  const base::Optional<account_manager::AccountType> account_type =
+  const absl::optional<account_manager::AccountType> account_type =
       FromMojoAccountType(mojom_account_key->account_type);
   if (!account_type.has_value())
-    return base::nullopt;
+    return absl::nullopt;
+  if (mojom_account_key->id.empty())
+    return absl::nullopt;
 
-  account_manager::AccountKey account_key;
-  account_key.id = mojom_account_key->id;
-  account_key.account_type = account_type.value();
-  return account_key;
+  return account_manager::AccountKey(mojom_account_key->id,
+                                     account_type.value());
 }
 
 crosapi::mojom::AccountKeyPtr ToMojoAccountKey(
     const account_manager::AccountKey& account_key) {
   crosapi::mojom::AccountKeyPtr mojom_account_key =
       crosapi::mojom::AccountKey::New();
-  mojom_account_key->id = account_key.id;
-  mojom_account_key->account_type = ToMojoAccountType(account_key.account_type);
+  mojom_account_key->id = account_key.id();
+  mojom_account_key->account_type =
+      ToMojoAccountType(account_key.account_type());
   return mojom_account_key;
 }
 
-base::Optional<account_manager::AccountType> FromMojoAccountType(
+absl::optional<account_manager::AccountType> FromMojoAccountType(
     const crosapi::mojom::AccountType& account_type) {
   switch (account_type) {
     case crosapi::mojom::AccountType::kGaia:
@@ -192,7 +200,7 @@ base::Optional<account_manager::AccountType> FromMojoAccountType(
       // Don't consider this as as error to preserve forwards compatibility with
       // lacros.
       LOG(WARNING) << "Unknown account type: " << account_type;
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -206,7 +214,7 @@ crosapi::mojom::AccountType ToMojoAccountType(
   }
 }
 
-base::Optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
+absl::optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
     const crosapi::mojom::GoogleServiceAuthErrorPtr& mojo_error) {
   switch (mojo_error->state) {
     case cm::GoogleServiceAuthError::State::kNone:
@@ -233,10 +241,13 @@ base::Optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
     case cm::GoogleServiceAuthError::State::kRequestCanceled:
       return GoogleServiceAuthError(
           GoogleServiceAuthError::State::REQUEST_CANCELED);
+    case cm::GoogleServiceAuthError::State::kScopeLimitedUnrecoverableError:
+      return GoogleServiceAuthError(
+          GoogleServiceAuthError::State::SCOPE_LIMITED_UNRECOVERABLE_ERROR);
     default:
       LOG(WARNING) << "Unknown crosapi::mojom::GoogleServiceAuthError::State: "
                    << mojo_error->state;
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -258,38 +269,67 @@ crosapi::mojom::GoogleServiceAuthErrorPtr ToMojoGoogleServiceAuthError(
   return mojo_result;
 }
 
-base::Optional<account_manager::AccountAdditionResult>
+absl::optional<account_manager::AccountAdditionResult>
 FromMojoAccountAdditionResult(
     const crosapi::mojom::AccountAdditionResultPtr& mojo_result) {
-  base::Optional<account_manager::AccountAdditionResult::Status> status =
+  absl::optional<account_manager::AccountAdditionResult::Status> status =
       FromMojoAccountAdditionStatus(mojo_result->status);
-  if (!status.has_value()) {
-    return base::nullopt;
+  if (!status.has_value())
+    return absl::nullopt;
+
+  switch (status.value()) {
+    case account_manager::AccountAdditionResult::Status::kSuccess: {
+      absl::optional<account_manager::Account> account =
+          FromMojoAccount(mojo_result->account);
+      if (!account.has_value())
+        return absl::nullopt;
+      return account_manager::AccountAdditionResult::FromAccount(
+          account.value());
+    }
+    case account_manager::AccountAdditionResult::Status::kNetworkError: {
+      absl::optional<GoogleServiceAuthError> net_error =
+          FromMojoGoogleServiceAuthError(mojo_result->error);
+      if (!net_error.has_value())
+        return absl::nullopt;
+      return account_manager::AccountAdditionResult::FromError(
+          net_error.value());
+    }
+    case account_manager::AccountAdditionResult::Status::kAlreadyInProgress:
+    case account_manager::AccountAdditionResult::Status::kCancelledByUser:
+    case account_manager::AccountAdditionResult::Status::kUnexpectedResponse:
+      return account_manager::AccountAdditionResult::FromStatus(status.value());
+    case account_manager::AccountAdditionResult::Status::kBlockedByPolicy:
+      return account_manager::AccountAdditionResult::FromStatus(status.value());
   }
-  account_manager::AccountAdditionResult result(status.value());
-  result.status = status.value();
-  if (mojo_result->account) {
-    result.account = FromMojoAccount(mojo_result->account);
-  }
-  if (mojo_result->error) {
-    result.error = FromMojoGoogleServiceAuthError(mojo_result->error);
-  }
-  return result;
 }
 
 crosapi::mojom::AccountAdditionResultPtr ToMojoAccountAdditionResult(
     account_manager::AccountAdditionResult result) {
   crosapi::mojom::AccountAdditionResultPtr mojo_result =
       crosapi::mojom::AccountAdditionResult::New();
-  mojo_result->status = ToMojoAccountAdditionStatus(result.status);
-  if (result.account.has_value()) {
+  mojo_result->status = ToMojoAccountAdditionStatus(result.status());
+  if (result.account().has_value()) {
     mojo_result->account =
-        account_manager::ToMojoAccount(result.account.value());
+        account_manager::ToMojoAccount(result.account().value());
   }
-  if (result.error.has_value()) {
-    mojo_result->error = ToMojoGoogleServiceAuthError(result.error.value());
+  if (result.error().state() != GoogleServiceAuthError::NONE) {
+    mojo_result->error = ToMojoGoogleServiceAuthError(result.error());
   }
   return mojo_result;
+}
+
+absl::optional<account_manager::AccountAdditionOptions>
+FromMojoAccountAdditionOptions(
+    const crosapi::mojom::AccountAdditionOptionsPtr& mojo_options) {
+  if (!mojo_options)
+    return absl::nullopt;
+
+  account_manager::AccountAdditionOptions result;
+  result.is_available_in_arc = mojo_options->is_available_in_arc;
+  result.show_arc_availability_picker =
+      mojo_options->show_arc_availability_picker;
+
+  return result;
 }
 
 }  // namespace account_manager

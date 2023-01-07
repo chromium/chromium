@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -12,7 +12,6 @@
 #include <stdint.h>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "media/gpu/v4l2/generic_v4l2_device.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -26,6 +25,9 @@ namespace media {
 class AmlV4L2Device : public GenericV4L2Device {
  public:
   AmlV4L2Device();
+
+  AmlV4L2Device(const AmlV4L2Device&) = delete;
+  AmlV4L2Device& operator=(const AmlV4L2Device&) = delete;
 
   // V4L2Device implementation.
   bool Open(Type type, uint32_t v4l2_pixfmt) override;
@@ -57,8 +59,6 @@ class AmlV4L2Device : public GenericV4L2Device {
   void* context_ = nullptr;
 
   Type type_ = Type::kEncoder;
-
-  DISALLOW_COPY_AND_ASSIGN(AmlV4L2Device);
 };
 
 }  //  namespace media

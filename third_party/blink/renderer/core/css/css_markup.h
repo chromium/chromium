@@ -39,7 +39,7 @@ void SerializeIdentifier(const String& identifier,
 void SerializeString(const String&, StringBuilder& append_to);
 String SerializeString(const String&);
 String SerializeURI(const String&);
-String SerializeFontFamily(const String&);
+String SerializeFontFamily(const AtomicString&);
 
 }  // namespace blink
 

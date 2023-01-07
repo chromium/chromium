@@ -1,25 +1,42 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_METRICS_COMPONENT_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_COMPONENT_METRICS_PROVIDER_H_
 
+#include <vector>
+
 #include "components/metrics/metrics_provider.h"
 
 namespace component_updater {
-class ComponentUpdateService;
+struct ComponentInfo;
 }
 
 namespace metrics {
 
 class SystemProfileProto;
 
+// A delegate that returns a list of components that are loaded in the
+// system.
+class ComponentMetricsProviderDelegate {
+ public:
+  ComponentMetricsProviderDelegate() = default;
+  virtual ~ComponentMetricsProviderDelegate() = default;
+
+  virtual std::vector<component_updater::ComponentInfo> GetComponents() = 0;
+};
+
 // Stores and loads system information to prefs for stability logs.
 class ComponentMetricsProvider : public MetricsProvider {
  public:
   explicit ComponentMetricsProvider(
-      component_updater::ComponentUpdateService* component_update_service);
+      std::unique_ptr<ComponentMetricsProviderDelegate>
+          components_info_delegate);
+
+  ComponentMetricsProvider(const ComponentMetricsProvider&) = delete;
+  ComponentMetricsProvider& operator=(const ComponentMetricsProvider&) = delete;
+
   ~ComponentMetricsProvider() override;
 
   // MetricsProvider:
@@ -27,9 +44,7 @@ class ComponentMetricsProvider : public MetricsProvider {
       SystemProfileProto* system_profile_proto) override;
 
  private:
-  component_updater::ComponentUpdateService* component_update_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentMetricsProvider);
+  std::unique_ptr<ComponentMetricsProviderDelegate> components_info_delegate_;
 };
 
 }  // namespace metrics

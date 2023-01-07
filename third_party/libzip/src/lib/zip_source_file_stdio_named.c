@@ -129,7 +129,8 @@ _zip_stdio_op_create_temp_output(zip_source_file_context_t *ctx) {
     FILE *tfp;
     struct stat st;
 
-    if ((temp = (char *)malloc(strlen(ctx->fname) + 8)) == NULL) {
+    size_t temp_size = strlen(ctx->fname) + 8;
+    if ((temp = (char *)malloc(temp_size)) == NULL) {
 	zip_error_set(&ctx->error, ZIP_ER_MEMORY, 0);
 	return -1;
     }
@@ -141,7 +142,7 @@ _zip_stdio_op_create_temp_output(zip_source_file_context_t *ctx) {
 	mode = -1;
     }
 
-    sprintf(temp, "%s.XXXXXX", ctx->fname);
+    snprintf(temp, temp_size, "%s.XXXXXX", ctx->fname);
 
     if ((tfd = _zip_mkstempm(temp, mode)) == -1) {
 	zip_error_set(&ctx->error, ZIP_ER_TMPOPEN, errno);
@@ -174,11 +175,12 @@ _zip_stdio_op_create_temp_output_cloning(zip_source_file_context_t *ctx, zip_uin
 	return -1;
     }
 
-    if ((temp = (char *)malloc(strlen(ctx->fname) + 8)) == NULL) {
+    size_t temp_size = strlen(ctx->fname) + 8;
+    if ((temp = (char *)malloc(temp_size)) == NULL) {
 	zip_error_set(&ctx->error, ZIP_ER_MEMORY, 0);
 	return -1;
     }
-    sprintf(temp, "%s.XXXXXX", ctx->fname);
+    snprintf(temp, temp_size, "%s.XXXXXX", ctx->fname);
 
 #ifdef HAVE_CLONEFILE
 #ifndef __clang_analyzer__

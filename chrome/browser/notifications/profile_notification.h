@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/notification_common.h"
-#include "chrome/browser/notifications/notification_ui_manager.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+class Profile;
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
 
@@ -21,12 +22,18 @@ class ScopedProfileKeepAlive;
 // notification services have no notion of the profile.
 class ProfileNotification {
  public:
+  using ProfileID = void*;
+
   // Returns a string that uniquely identifies a profile + delegate_id pair.
   // The profile_id is used as an identifier to identify a profile instance; it
   // can be null for system notifications. The ID becomes invalid when a profile
   // is destroyed.
   static std::string GetProfileNotificationId(const std::string& delegate_id,
                                               ProfileID profile_id);
+
+  // Convert a profile pointer into an opaque profile id, which can be safely
+  // used by NotificationUIManager even after a profile may have been destroyed.
+  static ProfileID GetProfileID(Profile* profile);
 
   ProfileNotification(
       Profile* profile,
@@ -46,7 +53,7 @@ class ProfileNotification {
   NotificationHandler::Type type() const { return type_; }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Used for equality comparision in notification maps.
   ProfileID profile_id_;

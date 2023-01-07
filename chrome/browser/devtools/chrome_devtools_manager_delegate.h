@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,7 @@
 #include <set>
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/devtools/device/devtools_device_discovery.h"
-#include "chrome/browser/devtools/protocol/forward.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/devtools_manager_delegate.h"
@@ -33,6 +30,11 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   static const char kTypeBackgroundPage[];
 
   ChromeDevToolsManagerDelegate();
+
+  ChromeDevToolsManagerDelegate(const ChromeDevToolsManagerDelegate&) = delete;
+  ChromeDevToolsManagerDelegate& operator=(
+      const ChromeDevToolsManagerDelegate&) = delete;
+
   ~ChromeDevToolsManagerDelegate() override;
 
   static ChromeDevToolsManagerDelegate* GetInstance();
@@ -79,7 +81,6 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
       content::DevToolsAgentHostClientChannel* channel) override;
   scoped_refptr<content::DevToolsAgentHost> CreateNewTarget(
       const GURL& url) override;
-  std::string GetDiscoveryPageHTML() override;
   bool HasBundledFrontendResources() override;
 
   void DevicesAvailable(
@@ -94,8 +95,6 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   content::DevToolsAgentHost::List remote_agent_hosts_;
   RemoteLocations remote_locations_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeDevToolsManagerDelegate);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_CHROME_DEVTOOLS_MANAGER_DELEGATE_H_

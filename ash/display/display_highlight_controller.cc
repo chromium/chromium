@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/display/display_highlight_controller.h"
 
-#include "ash/accessibility/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
@@ -33,7 +33,7 @@ std::unique_ptr<views::Widget> CreateHighlightWidget(
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = false;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
@@ -56,15 +56,15 @@ std::unique_ptr<views::Widget> CreateHighlightWidget(
       views::CreateSolidBorder(highlight_thickness, kHighlightColor));
 
   auto* window = highlight_widget->GetNativeWindow();
-  window->set_id(kShellWindowId_DisplayIdentificationHighlightWindow);
+  window->SetId(kShellWindowId_DisplayIdentificationHighlightWindow);
   ::wm::SetWindowVisibilityAnimationTransition(window, ::wm::ANIMATE_NONE);
 
-  MagnificationController* magnification_controller =
-      Shell::Get()->magnification_controller();
+  FullscreenMagnifierController* magnification_controller =
+      Shell::Get()->fullscreen_magnifier_controller();
 
   // Forces a redraw of full-screen magnification in order to reverse
   // magnification on display highlight window performed in
-  // MagnificationController::ReDraw(). If redraw is not forced, then the
+  // FullscreenMagnifierController::ReDraw(). If redraw is not forced, then the
   // highlight may not show up around the edges of the display properly until
   // the next redraw.
   if (magnification_controller->IsEnabled()) {

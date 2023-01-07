@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/trees/layer_tree_frame_sink.h"
@@ -22,15 +23,13 @@
 #include "components/viz/test/test_shared_bitmap_manager.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}
-
 namespace viz {
 class CompositorFrameSinkSupport;
 }  // namespace viz
 
 namespace cc {
+
+class TaskRunnerProvider;
 
 class TestLayerTreeFrameSinkClient {
  public:
@@ -38,14 +37,9 @@ class TestLayerTreeFrameSinkClient {
 
   virtual std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
   CreateDisplayController() = 0;
-  virtual std::unique_ptr<viz::SkiaOutputSurface>
-  CreateDisplaySkiaOutputSurface(
+  virtual std::unique_ptr<viz::SkiaOutputSurface> CreateSkiaOutputSurface(
       viz::DisplayCompositorMemoryAndTaskController*) = 0;
-
-  // This passes the ContextProvider being used by LayerTreeHostImpl which
-  // can be used for the OutputSurface optionally.
-  virtual std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurface(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider) = 0;
+  virtual std::unique_ptr<viz::OutputSurface> CreateSoftwareOutputSurface() = 0;
 
   virtual void DisplayReceivedLocalSurfaceId(
       const viz::LocalSurfaceId& local_surface_id) = 0;
@@ -73,7 +67,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       const viz::RendererSettings& renderer_settings,
       const viz::DebugRendererSettings* debug_settings,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      TaskRunnerProvider* task_runner_provider,
       bool synchronous_composite,
       bool disable_display_vsync,
       double refresh_rate,
@@ -93,26 +87,26 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   void SetDisplayColorSpace(const gfx::ColorSpace& output_color_space);
 
   viz::Display* display() const { return display_.get(); }
+  void UnregisterBeginFrameSource();
 
   // LayerTreeFrameSink implementation.
   bool BindToClient(LayerTreeFrameSinkClient* client) override;
   void DetachFromClient() override;
   void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id) override;
   void SubmitCompositorFrame(viz::CompositorFrame frame,
-                             bool hit_test_data_changed,
-                             bool show_hit_test_borders) override;
-  void DidNotProduceFrame(const viz::BeginFrameAck& ack) override;
+                             bool hit_test_data_changed) override;
+  void DidNotProduceFrame(const viz::BeginFrameAck& ack,
+                          FrameSkippedReason reason) override;
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion buffer,
                                const viz::SharedBitmapId& id) override;
   void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override;
 
   // mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
-      const std::vector<viz::ReturnedResource>& resources) override;
+      std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& timing_details) override;
-  void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) override;
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFramePausedChanged(bool paused) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
@@ -145,7 +139,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   const bool synchronous_composite_;
   const bool disable_display_vsync_;
   const viz::RendererSettings renderer_settings_;
-  const viz::DebugRendererSettings* const debug_settings_;
+  const raw_ptr<const viz::DebugRendererSettings> debug_settings_;
   const double refresh_rate_;
 
   viz::FrameSinkId frame_sink_id_;
@@ -163,15 +157,19 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   std::unique_ptr<viz::CompositorFrameSinkSupport> support_;
 
   std::unique_ptr<viz::SyntheticBeginFrameSource> begin_frame_source_;
-  viz::BeginFrameSource* client_provided_begin_frame_source_;    // Not owned.
-  viz::BeginFrameSource* display_begin_frame_source_ = nullptr;  // Not owned.
+  raw_ptr<viz::BeginFrameSource>
+      client_provided_begin_frame_source_;  // Not owned.
+  raw_ptr<viz::BeginFrameSource> display_begin_frame_source_ =
+      nullptr;  // Not owned.
   viz::ExternalBeginFrameSource external_begin_frame_source_;
 
   // Uses surface_manager_, begin_frame_source_, shared_bitmap_manager_.
   std::unique_ptr<viz::Display> display_;
 
-  TestLayerTreeFrameSinkClient* test_client_ = nullptr;
+  raw_ptr<TestLayerTreeFrameSinkClient> test_client_ = nullptr;
   gfx::Size enlarge_pass_texture_amount_;
+
+  raw_ptr<TaskRunnerProvider> task_runner_provider_;
 
   // The set of SharedBitmapIds that have been reported as allocated to this
   // interface. On closing this interface, the display compositor should drop

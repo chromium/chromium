@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -36,6 +36,7 @@ class TestOptimizeBaselines(BaseTestCase):
         self.command.execute(
             optparse.Values({
                 'suffixes': 'txt,wav,png',
+                'all_tests': False,
                 'no_modify_git': True,
                 'platform': 'test-mac-mac10.10'
             }), ['another/test.html'], self.tool)

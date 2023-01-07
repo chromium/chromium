@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/log.h"
 
@@ -39,6 +38,10 @@ class WebDriverLog : public Log {
 
   // Creates a WebDriverLog with the given type and minimum level.
   WebDriverLog(const std::string& type, Level min_level);
+
+  WebDriverLog(const WebDriverLog&) = delete;
+  WebDriverLog& operator=(const WebDriverLog&) = delete;
+
   ~WebDriverLog() override;
 
   // Returns entries accumulated so far, as a ListValue ready for serialization
@@ -75,8 +78,6 @@ class WebDriverLog : public Log {
   // |kMaxReturnedEntries| values in it. This is to avoid HTTP response buffer
   // overflow (crbug.com/681892).
   base::circular_deque<std::unique_ptr<base::ListValue>> batches_of_entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDriverLog);
 };
 
 // Initializes logging system for ChromeDriver. Returns true on success.

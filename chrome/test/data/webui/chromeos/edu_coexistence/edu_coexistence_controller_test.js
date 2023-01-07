@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {EduCoexistenceBrowserProxyImpl} from 'chrome://chrome-signin/edu_coexistence_browser_proxy.js';
 import {EduCoexistenceController} from 'chrome://chrome-signin/edu_coexistence_controller.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TestEduCoexistenceBrowserProxy} from './edu_coexistence_test_util.js';
@@ -59,7 +59,7 @@ suite(edu_coexistence_controller_tests.suiteName, function() {
       assert(edu_coexistence_controller_tests.TestNames.GetSigninTimeDelta),
       function() {
         // Fake Date.now()
-        var realDateNow = Date.now;
+        const realDateNow = Date.now;
         Date.now = () => {
           return FAKE_NOW_MILLISECONDS;
         };

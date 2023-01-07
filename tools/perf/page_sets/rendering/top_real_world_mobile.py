@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from telemetry.page import shared_page_state
@@ -198,6 +198,32 @@ class YahooAnswersMobile2018Page(TopRealWorldMobilePage):
     action_runner.ScrollElement(selector='#page_scrollable')
 
 
+class GoogleDocsMobile2022Page(TopRealWorldMobilePage):
+  """ Why: productivity, top google properties; Sample doc in the link """
+  # pylint: disable=line-too-long
+  URL = 'https://docs.google.com/document/d/1X-IKNjtEnx-WW5JIKRLsyhz5sbsat3mfTpAPUSX3_s4/view'
+  BASE_NAME = 'google_docs_mobile'
+  YEAR = '2022'
+
+  def __init__(self,
+               page_set,
+               name_suffix='',
+               extra_browser_args=None,
+               shared_page_state_class=shared_page_state.SharedMobilePageState):
+    super(GoogleDocsMobile2022Page,
+          self).__init__(page_set=page_set,
+                         name_suffix=name_suffix,
+                         extra_browser_args=extra_browser_args,
+                         shared_page_state_class=shared_page_state_class)
+
+  def RunNavigateSteps(self, action_runner):
+    super(GoogleDocsMobile2022Page, self).RunNavigateSteps(action_runner)
+    # Wait for and close the pop-up window to make sure the entire doc is visible.
+    action_runner.WaitForElement(selector='.docs-ml-promotion-no-button')
+    action_runner.Wait(2)
+    action_runner.TapElement(selector='.docs-ml-promotion-no-button')
+
+
 class GoogleNewsMobile2018Page(TopRealWorldMobilePage):
   """ Why: Google News: accelerated scrolling version """
   BASE_NAME = 'google_news_mobile'
@@ -374,6 +400,13 @@ class GSPMobile2018Page(TopRealWorldMobilePage):
   BASE_NAME = 'gsp.ro_mobile'
   YEAR = '2018'
   URL = 'http://gsp.ro'
+
+  def RunNavigateSteps(self, action_runner):
+    super(GSPMobile2018Page, self).RunNavigateSteps(action_runner)
+
+    # Close a pop-up dialog that occludes a large area of the page.
+    action_runner.WaitForElement(selector='.close-btn')
+    action_runner.TapElement(selector='.close-btn')
 
 
 class TheVergeMobile2018Page(TopRealWorldMobilePage):

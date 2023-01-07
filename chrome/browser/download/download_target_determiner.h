@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,18 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"
 #include "chrome/browser/download/download_target_info.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
-#include "components/safe_browsing/core/proto/download_file_types.pb.h"
+#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "ppapi/buildflags/buildflags.h"
 
@@ -54,6 +55,9 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   using CompletionCallback =
       base::OnceCallback<void(std::unique_ptr<DownloadTargetInfo>)>;
 
+  DownloadTargetDeterminer(const DownloadTargetDeterminer&) = delete;
+  DownloadTargetDeterminer& operator=(const DownloadTargetDeterminer&) = delete;
+
   // Start the process of determing the target of |download|.
   //
   // |initial_virtual_path| if non-empty, defines the initial virtual path for
@@ -82,12 +86,28 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // Returns a .crdownload intermediate path for the |suggested_path|.
   static base::FilePath GetCrDownloadPath(const base::FilePath& suggested_path);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns true if Adobe Reader is up to date. This information refreshed
   // only when Start() gets called for a PDF and Adobe Reader is the default
   // System PDF viewer.
   static bool IsAdobeReaderUpToDate();
 #endif
+
+  // Determine if the file type can be handled safely by the browser if it were
+  // to be opened via a file:// URL. Execute the callback with the determined
+  // value.
+  static void DetermineIfHandledSafelyHelper(
+      download::DownloadItem* download,
+      const base::FilePath& local_path,
+      const std::string& mime_type,
+      base::OnceCallback<void(bool)> callback);
+
+  // Determine if the file type can be handled safely by the browser if it were
+  // to be opened via a file:// URL. Returns the determined value.
+  static bool DetermineIfHandledSafelyHelperSynchronous(
+      download::DownloadItem* download,
+      const base::FilePath& local_path,
+      const std::string& mime_type);
 
  private:
   // The main workflow is controlled via a set of state transitions. Each state
@@ -206,11 +226,14 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
 
   // Callback invoked after the file picker completes. Cancels the download if
   // the user cancels the file picker.
-  void RequestConfirmationDone(
-      DownloadConfirmationResult result,
-      const base::FilePath& virtual_path,
-      base::Optional<download::DownloadSchedule> download_schedule);
+  void RequestConfirmationDone(DownloadConfirmationResult result,
+                               const base::FilePath& virtual_path);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Callback invoked after the incognito message has been accepted/rejected
+  // from the user.
+  void RequestIncognitoWarningConfirmationDone(bool accepted);
+#endif
   // Up until this point, the path that was used is considered to be a virtual
   // path. This step determines the local file system path corresponding to this
   // virtual path. The translation is done by invoking the DetermineLocalPath()
@@ -219,8 +242,12 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // - STATE_DETERMINE_MIME_TYPE.
   Result DoDetermineLocalPath();
 
-  // Callback invoked when the delegate has determined local path.
-  void DetermineLocalPathDone(const base::FilePath& local_path);
+  // Callback invoked when the delegate has determined local path. |file_name|
+  // is supplied in case it cannot be determined from local_path (e.g. local
+  // path is a content Uri: content://media/12345). |file_name| could be empty
+  // if it is the last component of |local_path|.
+  void DetermineLocalPathDone(const base::FilePath& local_path,
+                              const base::FilePath& file_name);
 
   // Determine the MIME type corresponding to the local file path. This is only
   // done if the local path and the virtual path was the same. I.e. The file is
@@ -241,11 +268,9 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // - STATE_DETERMINE_IF_ADOBE_READER_UP_TO_DATE.
   Result DoDetermineIfHandledSafely();
 
-#if BUILDFLAG(ENABLE_PLUGINS)
   // Callback invoked when a decision is available about whether the file type
   // can be handled safely by the browser.
   void DetermineIfHandledSafelyDone(bool is_handled_safely);
-#endif
 
   // Determine if Adobe Reader is up to date. Only do the check on Windows for
   // .pdf file targets.
@@ -253,7 +278,7 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // - STATE_CHECK_DOWNLOAD_URL.
   Result DoDetermineIfAdobeReaderUpToDate();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Callback invoked when a decision is available about whether Adobe Reader
   // is up to date.
   void DetermineIfAdobeReaderUpToDateDone(bool adobe_reader_up_to_date);
@@ -326,6 +351,9 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   safe_browsing::DownloadFileType::DangerLevel GetDangerLevel(
       PriorVisitsToReferrer visits) const;
 
+  // Returns the timestamp of the last download bypass.
+  absl::optional<base::Time> GetLastDownloadBypassTimestamp() const;
+
   // Generates the download file name based on information from URL, response
   // headers and sniffed mime type.
   base::FilePath GenerateFileName() const;
@@ -348,21 +376,18 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   std::string mime_type_;
   bool is_filetype_handled_safely_;
   download::DownloadItem::MixedContentStatus mixed_content_status_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool is_checking_dialog_confirmed_path_;
 #endif
 
-  download::DownloadItem* download_;
+  raw_ptr<download::DownloadItem> download_;
   const bool is_resumption_;
-  DownloadPrefs* download_prefs_;
-  DownloadTargetDeterminerDelegate* delegate_;
+  raw_ptr<DownloadPrefs> download_prefs_;
+  raw_ptr<DownloadTargetDeterminerDelegate> delegate_;
   CompletionCallback completion_callback_;
   base::CancelableTaskTracker history_tracker_;
-  base::Optional<download::DownloadSchedule> download_schedule_;
 
   base::WeakPtrFactory<DownloadTargetDeterminer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTargetDeterminer);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TARGET_DETERMINER_H_

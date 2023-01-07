@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <numeric>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -28,6 +28,7 @@
 #include "media/base/media_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/message_center/message_center.h"
@@ -46,6 +47,9 @@ class DetailedViewContainer : public views::View {
  public:
   DetailedViewContainer() = default;
 
+  DetailedViewContainer(const DetailedViewContainer&) = delete;
+  DetailedViewContainer& operator=(const DetailedViewContainer&) = delete;
+
   ~DetailedViewContainer() override = default;
 
   // views::View:
@@ -56,9 +60,6 @@ class DetailedViewContainer : public views::View {
   }
 
   const char* GetClassName() const override { return "DetailedViewContainer"; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DetailedViewContainer);
 };
 
 class AccessibilityFocusHelperView : public views::View {
@@ -192,8 +193,12 @@ UnifiedSystemTrayView::UnifiedSystemTrayView(
 
   auto add_layered_child = [](views::View* parent, views::View* child) {
     parent->AddChildView(child);
-    child->SetPaintToLayer();
-    child->layer()->SetFillsBoundsOpaquely(false);
+    // In dark light mode, we switch TrayBubbleView to use a textured layer
+    // instead of solid color layer, so no need to create an extra layer here.
+    if (!features::IsDarkLightModeEnabled()) {
+      child->SetPaintToLayer();
+      child->layer()->SetFillsBoundsOpaquely(false);
+    }
   };
 
   SessionControllerImpl* session_controller =
@@ -257,8 +262,6 @@ void UnifiedSystemTrayView::AddFeaturePodButton(FeaturePodButton* button) {
 }
 
 void UnifiedSystemTrayView::AddSliderView(views::View* slider_view) {
-  slider_view->SetPaintToLayer();
-  slider_view->layer()->SetFillsBoundsOpaquely(false);
   sliders_container_->AddChildView(slider_view);
 }
 
@@ -285,7 +288,7 @@ void UnifiedSystemTrayView::SetDetailedView(views::View* detailed_view) {
   auto system_tray_size = system_tray_container_->GetPreferredSize();
   system_tray_container_->SetVisible(false);
 
-  detailed_view_container_->RemoveAllChildViews(true /* delete_children */);
+  detailed_view_container_->RemoveAllChildViews();
   detailed_view_container_->AddChildView(detailed_view);
   detailed_view_container_->SetVisible(true);
   detailed_view_container_->SetPreferredSize(system_tray_size);
@@ -294,7 +297,7 @@ void UnifiedSystemTrayView::SetDetailedView(views::View* detailed_view) {
 }
 
 void UnifiedSystemTrayView::ResetDetailedView() {
-  detailed_view_container_->RemoveAllChildViews(true /* delete_children */);
+  detailed_view_container_->RemoveAllChildViews();
   detailed_view_container_->SetVisible(false);
   if (media_controls_container_)
     media_controls_container_->MaybeShowMediaControls();

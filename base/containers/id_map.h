@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-#include <set>
+#include <iterator>
+#include <ostream>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 
@@ -205,7 +207,7 @@ class IDMap final {
         ++iter_;
     }
 
-    IDMap<V, K>* map_;
+    raw_ptr<IDMap<V, K>> map_;
     typename HashTable::const_iterator iter_;
   };
 
@@ -215,7 +217,13 @@ class IDMap final {
  private:
   // Transforms a map iterator to an iterator on the keys of the map.
   // Used by Clear() to populate |removed_ids_| in bulk.
-  struct KeyIterator : std::iterator<std::forward_iterator_tag, KeyType> {
+  struct KeyIterator {
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = KeyType;
+    using difference_type = std::ptrdiff_t;
+    using pointer = KeyType*;
+    using reference = KeyType&;
+
     using inner_iterator = typename HashTable::iterator;
     inner_iterator iter_;
 

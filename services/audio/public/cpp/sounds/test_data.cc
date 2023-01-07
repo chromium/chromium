@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,8 @@ void TestObserver::OnPlay() {
 void TestObserver::Render() {
   if (!is_playing)
     return;
-  if (callback_->Render(base::TimeDelta::FromSeconds(0), base::TimeTicks::Now(),
-                        0, bus_.get())) {
+  if (callback_->Render(base::Seconds(0), base::TimeTicks::Now(), 0,
+                        bus_.get())) {
     task_runner_->PostTask(FROM_HERE, base::BindOnce(&TestObserver::Render,
                                                      base::Unretained(this)));
   }

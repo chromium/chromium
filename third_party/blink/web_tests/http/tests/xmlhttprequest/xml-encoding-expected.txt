@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 24: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 Test XMLHttpRequest and document.xmlEncoding interaction.
 
 The request body should contain the word "Проверка".

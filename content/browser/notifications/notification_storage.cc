@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "content/browser/notifications/notification_database_conversions.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -47,7 +48,7 @@ NotificationStorage::~NotificationStorage() = default;
 void NotificationStorage::WriteNotificationData(
     const NotificationDatabaseData& data,
     PlatformNotificationContext::WriteResultCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::string serialized_data;
   if (!SerializeNotificationDatabaseData(data, &serialized_data)) {
     DLOG(ERROR) << "Unable to serialize data for a notification belonging "
@@ -56,8 +57,11 @@ void NotificationStorage::WriteNotificationData(
     return;
   }
 
+  // If Push Notification becomes usable from a 3p context then
+  // NotificationDatabaseData should be changed to use StorageKey.
   service_worker_context_->StoreRegistrationUserData(
-      data.service_worker_registration_id, url::Origin::Create(data.origin),
+      data.service_worker_registration_id,
+      blink::StorageKey(url::Origin::Create(data.origin)),
       {{CreateDataKey(data.notification_id), std::move(serialized_data)}},
       base::BindOnce(&NotificationStorage::OnWriteComplete,
                      weak_ptr_factory_.GetWeakPtr(), data,
@@ -81,7 +85,7 @@ void NotificationStorage::ReadNotificationDataAndRecordInteraction(
     const std::string& notification_id,
     PlatformNotificationContext::Interaction interaction,
     PlatformNotificationContext::ReadResultCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   service_worker_context_->GetRegistrationUserData(
       service_worker_registration_id, {CreateDataKey(notification_id)},
       base::BindOnce(&NotificationStorage::OnReadCompleteUpdateInteraction,
@@ -133,10 +137,10 @@ void NotificationStorage::OnReadCompleteUpdateInteraction(
     return;
   }
 
-  url::Origin origin = url::Origin::Create(data->origin);
+  blink::StorageKey key = blink::StorageKey(url::Origin::Create(data->origin));
   std::string notification_id = data->notification_id;
   service_worker_context_->StoreRegistrationUserData(
-      service_worker_registration_id, origin,
+      service_worker_registration_id, key,
       {{CreateDataKey(notification_id), std::move(serialized_data)}},
       base::BindOnce(&NotificationStorage::OnInteractionUpdateComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(data),

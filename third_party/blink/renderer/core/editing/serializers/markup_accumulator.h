@@ -29,11 +29,9 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -50,6 +48,8 @@ class MarkupAccumulator {
                     SerializationType,
                     IncludeShadowRoots,
                     ClosedRootsSet = ClosedRootsSet());
+  MarkupAccumulator(const MarkupAccumulator&) = delete;
+  MarkupAccumulator& operator=(const MarkupAccumulator&) = delete;
   virtual ~MarkupAccumulator();
 
   template <typename Strategy>
@@ -123,8 +123,6 @@ class MarkupAccumulator {
 
   // https://w3c.github.io/DOM-Parsing/#dfn-generated-namespace-prefix-index
   uint32_t prefix_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(MarkupAccumulator);
 };
 
 extern template String MarkupAccumulator::SerializeNodes<EditingStrategy>(
@@ -133,4 +131,4 @@ extern template String MarkupAccumulator::SerializeNodes<EditingStrategy>(
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_MARKUP_ACCUMULATOR_H_

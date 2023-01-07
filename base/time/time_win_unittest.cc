@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -26,7 +27,7 @@ namespace {
 // For TimeDelta::ConstexprInitialization
 constexpr int kExpectedDeltaInMilliseconds = 10;
 constexpr TimeDelta kConstexprTimeDelta =
-    TimeDelta::FromMilliseconds(kExpectedDeltaInMilliseconds);
+    Milliseconds(kExpectedDeltaInMilliseconds);
 
 class MockTimeTicks : public TimeTicks {
  public:
@@ -83,9 +84,8 @@ unsigned __stdcall RolloverTestThreadMain(void* param) {
 // results.
 TimeTicks GetTSC() {
   // Using a fake cycle counter frequency for test purposes.
-  return TimeTicks() +
-         TimeDelta::FromMicroseconds(ReadCycleCounter() *
-                                     Time::kMicrosecondsPerSecond / 10000000);
+  return TimeTicks() + Microseconds(ReadCycleCounter() *
+                                    Time::kMicrosecondsPerSecond / 10000000);
 }
 
 }  // namespace
@@ -250,7 +250,7 @@ TEST(TimeTicks, TimerPerformance) {
 // only used in Chromium for QueryThreadCycleTime, and QueryThreadCycleTime
 // doesn't use a constant-rate timer on ARM64.
 TEST(TimeTicks, TSCTicksPerSecond) {
-  if (ThreadTicks::IsSupported()) {
+  if (time_internal::HasConstantRateTSC()) {
     ThreadTicks::WaitUntilInitialized();
 
     // Read the CPU frequency from the registry.
@@ -264,7 +264,7 @@ TEST(TimeTicks, TSCTicksPerSecond) {
 
     // Expect the measured TSC frequency to be similar to the processor
     // frequency from the registry (0.5% error).
-    double tsc_mhz_measured = ThreadTicks::TSCTicksPerSecond() / 1e6;
+    double tsc_mhz_measured = time_internal::TSCTicksPerSecond() / 1e6;
     EXPECT_NEAR(tsc_mhz_measured, processor_mhz_from_registry,
                 0.005 * processor_mhz_from_registry);
   }
@@ -354,14 +354,13 @@ TEST(TimeDelta, FromFileTime) {
   ft.dwHighDateTime = 0;
 
   // 100100 ns ~= 100 us.
-  EXPECT_EQ(TimeDelta::FromMicroseconds(100), TimeDelta::FromFileTime(ft));
+  EXPECT_EQ(Microseconds(100), TimeDelta::FromFileTime(ft));
 
   ft.dwLowDateTime = 0;
   ft.dwHighDateTime = 1;
 
   // 2^32 * 100 ns ~= 2^32 * 10 us.
-  EXPECT_EQ(TimeDelta::FromMicroseconds((1ull << 32) / 10),
-            TimeDelta::FromFileTime(ft));
+  EXPECT_EQ(Microseconds((1ull << 32) / 10), TimeDelta::FromFileTime(ft));
 }
 
 TEST(TimeDelta, FromWinrtDateTime) {
@@ -374,25 +373,22 @@ TEST(TimeDelta, FromWinrtDateTime) {
   dt.UniversalTime = 101;
 
   // 101 * 100 ns ~= 10.1 microseconds.
-  EXPECT_EQ(TimeDelta::FromMicrosecondsD(10.1),
-            TimeDelta::FromWinrtDateTime(dt));
+  EXPECT_EQ(Microseconds(10.1), TimeDelta::FromWinrtDateTime(dt));
 }
 
 TEST(TimeDelta, ToWinrtDateTime) {
-  auto time_delta = TimeDelta::FromSeconds(0);
+  auto time_delta = Seconds(0);
 
   // No delta since epoch = 0 DateTime.
   EXPECT_EQ(0, time_delta.ToWinrtDateTime().UniversalTime);
 
-  time_delta = TimeDelta::FromMicrosecondsD(10);
+  time_delta = Microseconds(10);
 
   // 10 microseconds = 100 * 100 ns.
   EXPECT_EQ(100, time_delta.ToWinrtDateTime().UniversalTime);
 }
 
 TEST(HighResolutionTimer, GetUsage) {
-  EXPECT_EQ(0.0, Time::GetHighResolutionTimerUsage());
-
   Time::ResetHighResolutionTimerUsage();
 
   // 0% usage since the timer isn't activated regardless of how much time has

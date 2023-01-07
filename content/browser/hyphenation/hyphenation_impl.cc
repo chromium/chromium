@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/hyphenation/hyphenation_impl.h"
 
-#include <algorithm>
 #include <map>
 #include <utility>
 
@@ -13,11 +12,12 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -31,7 +31,7 @@ struct Dictionaries {
     return dictionaries.get();
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void SetDirectory(const base::FilePath& new_dir) {
     DVLOG(1) << __func__ << " " << new_dir;
     DCHECK(hyphenation::HyphenationImpl::GetTaskRunner()
@@ -51,7 +51,7 @@ struct Dictionaries {
 };
 
 bool IsValidLocale(const std::string& locale) {
-  return std::all_of(locale.cbegin(), locale.cend(), [](const char ch) {
+  return base::ranges::all_of(locale, [](const char ch) {
     return base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch) || ch == '-';
   });
 }
@@ -60,7 +60,7 @@ base::File GetDictionaryFile(const std::string& locale) {
   DCHECK(hyphenation::HyphenationImpl::GetTaskRunner()
              ->RunsTasksInCurrentSequence());
   Dictionaries* dictionaries = Dictionaries::Get();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   const base::FilePath& dir = dictionaries->dir;
   if (dir.empty())
     return base::File();
@@ -74,7 +74,7 @@ base::File GetDictionaryFile(const std::string& locale) {
     return file.Duplicate();
   DCHECK(!file.IsValid());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::FilePath dir("/system/usr/hyphen-data");
 #endif
   std::string filename = base::StringPrintf("hyph-%s.hyb", locale.c_str());
@@ -109,7 +109,7 @@ scoped_refptr<base::SequencedTaskRunner> HyphenationImpl::GetTaskRunner() {
   return *runner;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // static
 void HyphenationImpl::RegisterGetDictionary() {
   content::ContentBrowserClient* content_browser_client =

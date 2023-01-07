@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include <limits>
 
-#include "ash/components/account_manager/account_manager_ash.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -15,24 +15,27 @@ namespace signin {
 
 TestProfileOAuth2TokenServiceDelegateChromeOS::
     TestProfileOAuth2TokenServiceDelegateChromeOS(
+        SigninClient* client,
         AccountTrackerService* account_tracker_service,
-        ash::AccountManager* account_manager,
-        crosapi::AccountManagerAsh* account_manager_ash,
-        bool is_regular_profile) {
+        crosapi::AccountManagerMojoService* account_manager_mojo_service,
+        bool is_regular_profile)
+    : ProfileOAuth2TokenServiceDelegate(/*use_backoff=*/true) {
   if (!network::TestNetworkConnectionTracker::HasInstance()) {
     owned_tracker_ = network::TestNetworkConnectionTracker::CreateInstance();
   }
 
   mojo::Remote<crosapi::mojom::AccountManager> remote;
-  account_manager_ash->BindReceiver(remote.BindNewPipeAndPassReceiver());
+  account_manager_mojo_service->BindReceiver(
+      remote.BindNewPipeAndPassReceiver());
   account_manager_facade_ =
       std::make_unique<account_manager::AccountManagerFacadeImpl>(
           std::move(remote),
-          std::numeric_limits<uint32_t>::max() /* remote_version */);
+          /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+          /*account_manager_for_tests=*/nullptr);
 
   delegate_ = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
-      account_tracker_service,
-      network::TestNetworkConnectionTracker::GetInstance(), account_manager,
+      client, account_tracker_service,
+      network::TestNetworkConnectionTracker::GetInstance(),
       account_manager_facade_.get(), is_regular_profile);
   delegate_->AddObserver(this);
 }
@@ -58,8 +61,9 @@ bool TestProfileOAuth2TokenServiceDelegateChromeOS::RefreshTokenIsAvailable(
 
 void TestProfileOAuth2TokenServiceDelegateChromeOS::UpdateAuthError(
     const CoreAccountId& account_id,
-    const GoogleServiceAuthError& error) {
-  delegate_->UpdateAuthError(account_id, error);
+    const GoogleServiceAuthError& error,
+    bool fire_auth_error_changed) {
+  delegate_->UpdateAuthError(account_id, error, fire_auth_error_changed);
 }
 
 GoogleServiceAuthError
@@ -73,8 +77,23 @@ TestProfileOAuth2TokenServiceDelegateChromeOS::GetAccounts() const {
   return delegate_->GetAccounts();
 }
 
+void TestProfileOAuth2TokenServiceDelegateChromeOS::ClearAuthError(
+    const absl::optional<CoreAccountId>& account_id) {
+  delegate_->ClearAuthError(account_id);
+}
+
+GoogleServiceAuthError
+TestProfileOAuth2TokenServiceDelegateChromeOS::BackOffError() const {
+  return delegate_->BackOffError();
+}
+
+void TestProfileOAuth2TokenServiceDelegateChromeOS::ResetBackOffEntry() {
+  delegate_->ResetBackOffEntry();
+}
+
 void TestProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
-    const CoreAccountId& primary_account_id) {
+    const CoreAccountId& primary_account_id,
+    bool is_syncing) {
   // In tests |LoadCredentials| may be called twice, in this case we call
   // |FireRefreshTokensLoaded| again to notify that credentials are loaded.
   if (load_credentials_state() ==
@@ -90,7 +109,7 @@ void TestProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
 
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS);
-  delegate_->LoadCredentials(primary_account_id);
+  delegate_->LoadCredentials(primary_account_id, is_syncing);
 }
 
 void TestProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentials(

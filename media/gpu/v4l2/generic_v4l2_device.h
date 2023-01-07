@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -25,6 +24,9 @@ namespace media {
 class GenericV4L2Device : public V4L2Device {
  public:
   GenericV4L2Device();
+
+  GenericV4L2Device(const GenericV4L2Device&) = delete;
+  GenericV4L2Device& operator=(const GenericV4L2Device&) = delete;
 
   // V4L2Device implementation.
   bool Open(Type type, uint32_t v4l2_pixfmt) override;
@@ -118,12 +120,8 @@ class GenericV4L2Device : public V4L2Device {
   // interrupted.
   base::ScopedFD device_poll_interrupt_fd_;
 
-#if BUILDFLAG(USE_LIBV4L2)
   // Use libv4l2 when operating |device_fd_|.
   bool use_libv4l2_;
-#endif
-
-  DISALLOW_COPY_AND_ASSIGN(GenericV4L2Device);
 
   // Lazily initialize static data after sandbox is enabled.  Return false on
   // init failure.

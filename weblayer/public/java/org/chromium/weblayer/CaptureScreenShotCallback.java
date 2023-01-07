@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 /**
  * Callback for capturing screenshots.
  */
-public interface CaptureScreenShotCallback {
+interface CaptureScreenShotCallback {
     /**
      * @param bitmap The result bitmap. May be null on failure
      * @param errorCode An opaque error code value for debugging. 0 indicates success.

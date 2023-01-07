@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <android/native_window.h>
 #include <jni.h>
-#include <memory>
 
 #include "android_webview/test/shell/src/draw_fn/overlays_manager.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 
 namespace draw_fn {
 
@@ -45,7 +45,7 @@ class ContextManager {
   virtual void CurrentFunctorChanged() = 0;
 
   base::android::ScopedJavaGlobalRef<jobject> java_surface_;
-  ANativeWindow* native_window_ = nullptr;
+  raw_ptr<ANativeWindow> native_window_ = nullptr;
 
   int current_functor_ = 0;
 

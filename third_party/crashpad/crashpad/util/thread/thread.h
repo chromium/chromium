@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,16 @@
 #ifndef CRASHPAD_UTIL_THREAD_THREAD_H_
 #define CRASHPAD_UTIL_THREAD_THREAD_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <pthread.h>
-#elif defined(OS_WIN)
+#include <stdint.h>
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
+
+#include "build/build_config.h"
 
 namespace crashpad {
 
@@ -31,6 +33,10 @@ namespace crashpad {
 class Thread {
  public:
   Thread();
+
+  Thread(const Thread&) = delete;
+  Thread& operator=(const Thread&) = delete;
+
   virtual ~Thread();
 
   //! \brief Create a platform thread, and run ThreadMain() on that thread. Must
@@ -41,25 +47,28 @@ class Thread {
   //!     Must paired with a call to Start().
   void Join();
 
+#if BUILDFLAG(IS_APPLE)
+  //! \brief Returns the thread id of the Thread pthread_t.
+  uint64_t GetThreadIdForTesting();
+#endif  // BUILDFLAG(IS_APPLE)
+
  private:
   //! \brief The thread entry point to be implemented by the subclass.
   virtual void ThreadMain() = 0;
 
   static
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
       void*
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
       DWORD WINAPI
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
       ThreadEntryThunk(void* argument);
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   pthread_t platform_thread_;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   HANDLE platform_thread_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Thread);
 };
 
 }  // namespace crashpad

@@ -31,33 +31,30 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_request_impl.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_session_description.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_init.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
 
 namespace blink {
 
 RTCSessionDescriptionRequestImpl* RTCSessionDescriptionRequestImpl::Create(
     ExecutionContext* context,
-    RTCCreateSessionDescriptionOperation operation,
     RTCPeerConnection* requester,
     V8RTCSessionDescriptionCallback* success_callback,
     V8RTCPeerConnectionErrorCallback* error_callback) {
   return MakeGarbageCollected<RTCSessionDescriptionRequestImpl>(
-      context, operation, requester, success_callback, error_callback);
+      context, requester, success_callback, error_callback);
 }
 
 RTCSessionDescriptionRequestImpl::RTCSessionDescriptionRequestImpl(
     ExecutionContext* context,
-    RTCCreateSessionDescriptionOperation operation,
     RTCPeerConnection* requester,
     V8RTCSessionDescriptionCallback* success_callback,
     V8RTCPeerConnectionErrorCallback* error_callback)
     : ExecutionContextLifecycleObserver(context),
-      operation_(operation),
       success_callback_(success_callback),
       error_callback_(error_callback),
       requester_(requester) {
@@ -71,10 +68,10 @@ void RTCSessionDescriptionRequestImpl::RequestSucceeded(
   bool should_fire_callback =
       requester_ ? requester_->ShouldFireDefaultCallbacks() : false;
   if (should_fire_callback && success_callback_) {
-    requester_->NoteSessionDescriptionRequestCompleted(operation_, true);
     RTCSessionDescriptionInit* description =
         RTCSessionDescriptionInit::Create();
-    description->setType(description_platform->GetType());
+    if (description_platform->GetType())
+      description->setType(description_platform->GetType());
     description->setSdp(description_platform->Sdp());
 
     requester_->NoteSdpCreated(
@@ -89,7 +86,6 @@ void RTCSessionDescriptionRequestImpl::RequestFailed(
   bool should_fire_callback =
       requester_ ? requester_->ShouldFireDefaultCallbacks() : false;
   if (should_fire_callback && error_callback_) {
-    requester_->NoteSessionDescriptionRequestCompleted(operation_, false);
     error_callback_->InvokeAndReportException(
         nullptr, CreateDOMExceptionFromRTCError(error));
   }

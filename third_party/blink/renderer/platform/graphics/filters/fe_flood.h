@@ -23,17 +23,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_FLOOD_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_FLOOD_H_
 
-#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
 
 class PLATFORM_EXPORT FEFlood final : public FilterEffect {
  public:
-  FEFlood(Filter*, const Color&, float);
+  FEFlood(Filter*, const SkColor4f&, float);
 
-  Color FloodColor() const;
-  bool SetFloodColor(const Color&);
+  SkColor4f FloodColor() const;
+  bool SetFloodColor(const SkColor4f&);
 
   float FloodOpacity() const;
   bool SetFloodOpacity(float);
@@ -49,7 +49,7 @@ class PLATFORM_EXPORT FEFlood final : public FilterEffect {
  private:
   sk_sp<PaintFilter> CreateImageFilter() override;
 
-  Color flood_color_;
+  SkColor4f flood_color_;
   float flood_opacity_;
 };
 

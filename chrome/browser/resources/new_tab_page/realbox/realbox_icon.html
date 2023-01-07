@@ -7,30 +7,49 @@
     width: 32px;
   }
 
-  #imageContainer {
+  #container {
     align-items: center;
     border-radius: 8px;
-    display: none;
+    display: flex;
     height: 32px;
     justify-content: center;
     overflow: hidden;
     width: 32px;
   }
 
-  :host-context(ntp-realbox-match[has-image]) #imageContainer {
-    display: flex;
+  /* Entities may feature a dominant color background until image loads. */
+  :host-context(ntp-realbox-match[has-image]) #container {
+    background-color: var(--container-bg-color);
+  }
+
+  /* Calculator answer and suggestion answer icons feature a blue background. */
+  :host-context(ntp-realbox-match[is-rich-suggestion]:not([has-image])) #container {
+    background-color: var(--google-blue-600);
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
   }
 
   #image {
+    display: none;
     max-height: 32px;
     max-width: 32px;
+  }
+
+  :host-context(ntp-realbox-match[has-image]) #image {
+    display: initial;
+  }
+
+  :host([is-answer]) #image {
+    max-height: 24px;
+    max-width: 24px;
   }
 
   #icon {
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 16px;
-    background-color: var(--search-box-icon, var(--google-grey-refresh-700));
+    background-color: var(--color-realbox-search-icon-background);
     background-position: center center;
     background-repeat: no-repeat;
     background-size: 16px;
@@ -42,17 +61,22 @@
     display: none;
   }
 
-  :host([in-searchbox][background-image='google_g.png']) #icon {
-    background-size: 12px;
+  :host-context(ntp-realbox-match[is-rich-suggestion]) #icon {
+    background-color: white;
+  }
+
+  :host([in-searchbox][background-image='realbox/icons/google_g.svg']) #icon {
+    background-size: 24px;
   }
 
   :host([in-searchbox][mask-image='search.svg']) #icon {
     -webkit-mask-size: 20px;  /* Loupe in realbox is larger than in matches. */
   }
 </style>
-<div id="imageContainer" style$="[[imageContainerStyle_]]">
-    <image id="image" src$="[[imageSrc_]]"></image>
+<div id="container" style="--container-bg-color:
+    [[containerBgColor_(imageSrc_, match.imageDominantColor)]];">
+  <image id="image" src="[[imageSrc_]]"></image>
+  <!--Note: Do not remove the '$' in '$=' below, otherwise the 'style' attribute
+      is erroneously removed by the HTML minifier. -->
+  <div id="icon" style$="[[iconStyle_]]"></div>
 </div>
-<div id="icon" style$="[[iconStyle_]]">
-</div>
-

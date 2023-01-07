@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 #define CHROME_CHROME_CLEANER_ENGINES_CONTROLLERS_SCANNER_IMPL_H_
 
 #include <set>
-#include <string>
 
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/chrome_cleaner/engines/broker/engine_client.h"
 #include "chrome/chrome_cleaner/pup_data/pup_data.h"
 #include "chrome/chrome_cleaner/scanner/scanner.h"

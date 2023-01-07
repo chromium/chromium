@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -38,6 +37,12 @@ class PublicIpAddressGeolocationProvider
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       network::NetworkConnectionTracker* network_connection_tracker,
       const std::string& api_key);
+
+  PublicIpAddressGeolocationProvider(
+      const PublicIpAddressGeolocationProvider&) = delete;
+  PublicIpAddressGeolocationProvider& operator=(
+      const PublicIpAddressGeolocationProvider&) = delete;
+
   ~PublicIpAddressGeolocationProvider() override;
 
   // Binds a PublicIpAddressGeolocationProvider request to this instance.
@@ -64,8 +69,6 @@ class PublicIpAddressGeolocationProvider
       provider_receiver_set_;
 
   mojo::UniqueReceiverSet<mojom::Geolocation> geolocation_receiver_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(PublicIpAddressGeolocationProvider);
 };
 
 }  // namespace device

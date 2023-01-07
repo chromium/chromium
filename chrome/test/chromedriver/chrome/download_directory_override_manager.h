@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
@@ -31,7 +30,7 @@ class DownloadDirectoryOverrideManager : public DevToolsEventListener {
 
  private:
   Status ApplyOverride();
-  DevToolsClient* client_;
+  raw_ptr<DevToolsClient> client_;
   bool is_connected_;
   std::unique_ptr<std::string> download_directory_;
 };

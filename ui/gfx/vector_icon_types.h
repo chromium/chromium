@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GFX_VECTOR_ICON_TYPES_H_
 #define UI_GFX_VECTOR_ICON_TYPES_H_
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/animation/tween.h"
 
@@ -87,20 +86,29 @@ struct PathElement {
 // size or range of sizes.
 struct VectorIconRep {
   VectorIconRep() = default;
+  constexpr VectorIconRep(const PathElement* path, size_t path_size)
+      : path(path), path_size(path_size) {}
+
+  VectorIconRep(const VectorIconRep&) = delete;
+  VectorIconRep& operator=(const VectorIconRep&) = delete;
 
   const PathElement* path = nullptr;
 
   // The length of |path|.
   size_t path_size = 0u;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VectorIconRep);
 };
 
 // A vector icon that stores one or more representations to be used for various
 // scale factors and pixel dimensions.
 struct VectorIcon {
   VectorIcon() = default;
+  constexpr VectorIcon(const VectorIconRep* reps,
+                       size_t reps_size,
+                       const char* name)
+      : reps(reps), reps_size(reps_size), name(name) {}
+
+  VectorIcon(const VectorIcon&) = delete;
+  VectorIcon& operator=(const VectorIcon&) = delete;
 
   bool is_empty() const { return !reps; }
 
@@ -113,9 +121,6 @@ struct VectorIcon {
   const char* name = nullptr;
 
   bool operator<(const VectorIcon& other) const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VectorIcon);
 };
 
 }  // namespace gfx

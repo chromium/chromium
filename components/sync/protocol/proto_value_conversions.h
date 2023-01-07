@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,11 +20,12 @@ class AutofillProfileSpecifics;
 class AutofillSpecifics;
 class AutofillOfferSpecifics;
 class AutofillWalletSpecifics;
+class AutofillWalletUsageSpecifics;
 class BookmarkSpecifics;
 class ClientConfigParams;
 class ClientToServerMessage;
 class ClientToServerResponse;
-class DatatypeAssociationStats;
+class ContactInfoSpecifics;
 class DebugEventInfo;
 class DebugInfo;
 class DeviceInfoSpecifics;
@@ -35,9 +36,9 @@ class EntitySpecifics;
 class ExtensionSettingSpecifics;
 class ExtensionSpecifics;
 class HistoryDeleteDirectiveSpecifics;
+class HistorySpecifics;
 class LinkedAppIconInfo;
 class ManagedUserSettingSpecifics;
-class ManagedUserWhitelistSpecifics;
 class NavigationRedirect;
 class NigoriSpecifics;
 class OsPreferenceSpecifics;
@@ -48,10 +49,12 @@ class PaymentsCustomerData;
 class PreferenceSpecifics;
 class PrinterPPDReference;
 class PrinterSpecifics;
+class PrintersAuthorizationServerSpecifics;
 class PriorityPreferenceSpecifics;
 class ReadingListSpecifics;
 class SearchEngineSpecifics;
 class SecurityEventSpecifics;
+class SegmentationSpecifics;
 class SendTabToSelfSpecifics;
 class SessionHeader;
 class SessionSpecifics;
@@ -73,6 +76,7 @@ class WalletMetadataSpecifics;
 class WalletPostalAddress;
 class WebAppSpecifics;
 class WifiConfigurationSpecifics;
+class WorkspaceDeskSpecifics;
 }  // namespace sync_pb
 
 // Keep this file in sync with the .proto files in this directory.
@@ -108,14 +112,18 @@ std::unique_ptr<base::DictionaryValue> AutofillSpecificsToValue(
 std::unique_ptr<base::DictionaryValue> AutofillWalletSpecificsToValue(
     const sync_pb::AutofillWalletSpecifics& autofill_wallet_specifics);
 
+std::unique_ptr<base::DictionaryValue> AutofillWalletUsageSpecificsToValue(
+    const sync_pb::AutofillWalletUsageSpecifics&
+        autofill_wallet_usage_specifics);
+
 std::unique_ptr<base::DictionaryValue> BookmarkSpecificsToValue(
     const sync_pb::BookmarkSpecifics& bookmark_specifics);
 
 std::unique_ptr<base::DictionaryValue> ClientConfigParamsToValue(
     const sync_pb::ClientConfigParams& proto);
 
-std::unique_ptr<base::DictionaryValue> DatatypeAssociationStatsToValue(
-    const sync_pb::DatatypeAssociationStats& proto);
+std::unique_ptr<base::DictionaryValue> ContactInfoSpecificsToValue(
+    const sync_pb::ContactInfoSpecifics& proto);
 
 std::unique_ptr<base::DictionaryValue> DebugEventInfoToValue(
     const sync_pb::DebugEventInfo& proto);
@@ -148,15 +156,14 @@ std::unique_ptr<base::DictionaryValue> HistoryDeleteDirectiveSpecificsToValue(
     const sync_pb::HistoryDeleteDirectiveSpecifics&
         history_delete_directive_specifics);
 
+std::unique_ptr<base::DictionaryValue> HistorySpecificsToValue(
+    const sync_pb::HistorySpecifics& history_specifics);
+
 std::unique_ptr<base::DictionaryValue> LinkedAppIconInfoToValue(
     const sync_pb::LinkedAppIconInfo& linked_app_icon_info);
 
 std::unique_ptr<base::DictionaryValue> ManagedUserSettingSpecificsToValue(
     const sync_pb::ManagedUserSettingSpecifics& managed_user_setting_specifics);
-
-std::unique_ptr<base::DictionaryValue> ManagedUserWhitelistSpecificsToValue(
-    const sync_pb::ManagedUserWhitelistSpecifics&
-        managed_user_whitelist_specifics);
 
 std::unique_ptr<base::DictionaryValue> NavigationRedirectToValue(
     const sync_pb::NavigationRedirect& navigation_redirect);
@@ -188,6 +195,11 @@ std::unique_ptr<base::DictionaryValue> PrinterPPDReferenceToValue(
 std::unique_ptr<base::DictionaryValue> PrinterSpecificsToValue(
     const sync_pb::PrinterSpecifics& printer_specifics);
 
+std::unique_ptr<base::DictionaryValue>
+PrintersAuthorizationServerSpecificsToValue(
+    const sync_pb::PrintersAuthorizationServerSpecifics&
+        printers_authorization_server_specifics);
+
 std::unique_ptr<base::DictionaryValue> PriorityPreferenceSpecificsToValue(
     const sync_pb::PriorityPreferenceSpecifics& proto);
 
@@ -196,6 +208,9 @@ std::unique_ptr<base::DictionaryValue> ReadingListSpecificsToValue(
 
 std::unique_ptr<base::DictionaryValue> SearchEngineSpecificsToValue(
     const sync_pb::SearchEngineSpecifics& search_engine_specifics);
+
+std::unique_ptr<base::DictionaryValue> SegmentationSpecificsToValue(
+    const sync_pb::SegmentationSpecifics& segmentation_specifics);
 
 std::unique_ptr<base::DictionaryValue> SendTabToSelfSpecificsToValue(
     const sync_pb::SendTabToSelfSpecifics& send_tab_specifics);
@@ -260,19 +275,30 @@ std::unique_ptr<base::DictionaryValue> WebAppSpecificsToValue(
 std::unique_ptr<base::DictionaryValue> WifiConfigurationSpecificsToValue(
     const sync_pb::WifiConfigurationSpecifics& wifi_configuration_specifics);
 
-// ToValue functions that allow omitting specifics.
+std::unique_ptr<base::DictionaryValue> WorkspaceDeskSpecificsToValue(
+    const sync_pb::WorkspaceDeskSpecifics& workspace_desk_specifics);
+
+// ToValue functions that allow omitting specifics and other fields.
+
+struct ProtoValueConversionOptions {
+  // Whether to include specifics.
+  bool include_specifics = true;
+
+  // Whether to include default values which are set in GetUpdateTriggers.
+  bool include_full_get_update_triggers = true;
+};
 
 std::unique_ptr<base::DictionaryValue> ClientToServerMessageToValue(
     const sync_pb::ClientToServerMessage& proto,
-    bool include_specifics);
+    const ProtoValueConversionOptions& options);
 
 std::unique_ptr<base::DictionaryValue> ClientToServerResponseToValue(
     const sync_pb::ClientToServerResponse& proto,
-    bool include_specifics);
+    const ProtoValueConversionOptions& options);
 
 std::unique_ptr<base::DictionaryValue> SyncEntityToValue(
     const sync_pb::SyncEntity& entity,
-    bool include_specifics);
+    const ProtoValueConversionOptions& options);
 
 }  // namespace syncer
 

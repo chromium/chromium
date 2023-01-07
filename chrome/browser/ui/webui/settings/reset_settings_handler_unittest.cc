@@ -1,10 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
@@ -54,6 +53,10 @@ class TestingResetSettingsHandler : public ResetSettingsHandler {
     set_web_ui(web_ui);
   }
 
+  TestingResetSettingsHandler(const TestingResetSettingsHandler&) = delete;
+  TestingResetSettingsHandler& operator=(const TestingResetSettingsHandler&) =
+      delete;
+
   size_t resets() const { return resetter_.resets(); }
 
   using settings::ResetSettingsHandler::HandleResetProfileSettings;
@@ -65,8 +68,6 @@ class TestingResetSettingsHandler : public ResetSettingsHandler {
 
 private:
   MockProfileResetter resetter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingResetSettingsHandler);
 };
 
 class ResetSettingsHandlerTest : public testing::Test {
@@ -89,20 +90,21 @@ class ResetSettingsHandlerTest : public testing::Test {
 };
 
 TEST_F(ResetSettingsHandlerTest, HandleResetProfileSettings) {
-  base::ListValue list;
+  base::Value list(base::Value::Type::LIST);
   std::string expected_callback_id("dummyCallbackId");
-  list.AppendString(expected_callback_id);
-  list.AppendBoolean(false);
-  list.AppendString("");
-  handler()->HandleResetProfileSettings(&list);
+  list.Append(expected_callback_id);
+  list.Append(false);
+  list.Append("");
+  handler()->HandleResetProfileSettings(list.GetList());
   // Check that the delegate ProfileResetter was called.
   EXPECT_EQ(1u, handler()->resets());
   // Check that Javascript side is notified after resetting is done.
   EXPECT_EQ("cr.webUIResponse",
             web_ui()->call_data()[0]->function_name());
-  std::string callback_id;
-  EXPECT_TRUE(web_ui()->call_data()[0]->arg1()->GetAsString(&callback_id));
-  EXPECT_EQ(expected_callback_id, callback_id);
+  const std::string* callback_id =
+      web_ui()->call_data()[0]->arg1()->GetIfString();
+  EXPECT_NE(nullptr, callback_id);
+  EXPECT_EQ(expected_callback_id, *callback_id);
 }
 
 }  // namespace

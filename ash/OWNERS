@@ -1,7 +1,6 @@
 set noparent
 afakhry@chromium.org
 jamescook@chromium.org
-mukai@chromium.org
 oshima@chromium.org
 sky@chromium.org
 xiyuan@chromium.org
@@ -16,4 +15,4 @@ per-file ash_switches.*=*
 per-file BUILD.gn=*
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

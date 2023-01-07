@@ -1,0 +1,59 @@
+caption: Configuration policy for the OnSecurityEvent Chrome Enterprise Connector
+desc: |-
+  List of Chrome Enterprise Connectors services settings to be applied to the <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR">OnSecurityEvent</ph> Enterprise Connector, which triggers when a security event occurs in Chrome. This includes negative verdicts from analysis Enterprise Connectors, password reuse, navigations to unsafe pages and other security sensitive user actions.
+
+        The <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD">service_provider</ph> field identifies which reporting service provider the settings correspond to and the <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD">enabled_event_names</ph> field identifies which events are enabled for this provider.
+
+        This policy requires additional setup to take effect, please visit https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting for more information.
+example_value:
+- enabled_event_names:
+  - passwordChangedEvent
+  - sensitiveDataEvent
+  enabled_opt_in_events:
+  - name: loginEvent
+    url_patterns:
+    - '*'
+  - name: passwordBreachEvent
+    url_patterns:
+    - example.com
+    - other.example.com
+  service_provider: google
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- rogerta@chromium.org
+- mad@chromium.org
+- domfc@chromium.org
+schema:
+  items:
+    properties:
+      enabled_event_names:
+        items:
+          type: string
+        type: array
+      enabled_opt_in_events:
+        items:
+          properties:
+            name:
+              type: string
+            url_patterns:
+              items:
+                type: string
+              type: array
+          type: object
+        type: array
+      service_provider:
+        enum:
+        - google
+        type: string
+    type: object
+  type: array
+supported_on:
+- chrome.*:84-
+- chrome_os:84-
+tags: []
+type: dict

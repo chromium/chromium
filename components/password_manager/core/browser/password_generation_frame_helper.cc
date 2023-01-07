@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -20,6 +19,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::FieldSignature;
 using autofill::FormSignature;
@@ -74,8 +74,9 @@ void PasswordGenerationFrameHelper::ProcessPasswordRequirements(
     for (const auto& field : *form) {
       if (field->password_requirements()) {
         password_requirements_service->AddSpec(
-            form->source_url().GetOrigin(), form->form_signature(),
-            field->GetFieldSignature(), field->password_requirements().value());
+            form->source_url().DeprecatedGetOriginAsURL(),
+            form->form_signature(), field->GetFieldSignature(),
+            field->password_requirements().value());
       }
     }
   }
@@ -123,7 +124,8 @@ std::u16string PasswordGenerationFrameHelper::GeneratePassword(
       client_->GetPasswordRequirementsService();
   if (password_requirements_service) {
     spec = password_requirements_service->GetSpec(
-        last_committed_url.GetOrigin(), form_signature, field_signature);
+        last_committed_url.DeprecatedGetOriginAsURL(), form_signature,
+        field_signature);
   }
 
   // Choose the password length as the minimum of default length, what website
@@ -134,6 +136,13 @@ std::u16string PasswordGenerationFrameHelper::GeneratePassword(
   if (spec.has_max_length() && spec.max_length() < target_length)
     target_length = spec.max_length();
   spec.set_max_length(target_length);
+  if (password_manager_util::IsLoggingActive(client_)) {
+    BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
+    logger.LogPasswordRequirements(
+        last_committed_url.DeprecatedGetOriginAsURL(), form_signature,
+        field_signature, spec);
+  }
+
   return autofill::GeneratePassword(spec);
 }
 

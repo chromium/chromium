@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -68,7 +68,7 @@ def ResetACLs(path):
 def SetupWindowsACLs(acl_dir):
   try:
     existing_acls = subprocess.check_output(
-        ['icacls', acl_dir], stderr=subprocess.STDOUT)
+        ['icacls', acl_dir], stderr=subprocess.STDOUT).decode('utf-8')
   except subprocess.CalledProcessError as e:
     logging.error('Failed to retrieve existing ACLs for directory %s', acl_dir)
     logging.error('Command output: %s', e.output)

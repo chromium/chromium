@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,7 +7,7 @@ import os
 from absl import app, flags
 from selenium import webdriver
 
-import test_util
+from test_util import create_chrome_webdriver
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string('user_data_dir', None, 'Need specify user data dir to test')
@@ -29,7 +29,7 @@ def main(argv):
   # Add option for connecting chromedriver with Chrome
   options.add_experimental_option("debuggerAddress", "localhost:9222")
 
-  driver = test_util.create_chrome_webdriver(chrome_options=options)
+  driver = create_chrome_webdriver(chrome_options=options)
 
   try:
     # Verify User Data Dir in chrome://policy page

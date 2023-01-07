@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
@@ -26,32 +27,36 @@ class AuthenticationServiceFake : public AuthenticationService {
 
   ~AuthenticationServiceFake() override;
 
-  void SignIn(ChromeIdentity* identity) override;
+  void SignIn(id<SystemIdentity> identity) override;
 
-  void GrantSyncConsent(ChromeIdentity* identity) override;
+  void GrantSyncConsent(id<SystemIdentity> identity) override;
 
   void SignOut(signin_metrics::ProfileSignout signout_source,
                bool force_clear_browsing_data,
                ProceduralBlock completion) override;
 
-  void SetHaveAccountsChangedWhileInBackground(bool changed);
+  ChromeIdentity* GetPrimaryIdentity(
+      signin::ConsentLevel consent_level) const override;
 
-  bool HaveAccountsChangedWhileInBackground() const override;
-
-  bool IsAuthenticated() const override;
-
-  ChromeIdentity* GetAuthenticatedIdentity() const override;
-
-  bool IsAuthenticatedIdentityManaged() const override;
+  bool HasPrimaryIdentityManaged(
+      signin::ConsentLevel consent_level) const override;
 
  private:
-  AuthenticationServiceFake(PrefService* pref_service,
-                            SyncSetupService* sync_setup_service,
-                            signin::IdentityManager* identity_manager,
-                            syncer::SyncService* sync_service);
+  AuthenticationServiceFake(
+      PrefService* pref_service,
+      SyncSetupService* sync_setup_service,
+      ChromeAccountManagerService* account_manager_service,
+      signin::IdentityManager* identity_manager,
+      syncer::SyncService* sync_service);
 
-  __strong ChromeIdentity* authenticated_identity_;
-  bool have_accounts_changed_while_in_background_;
+  // Internal method effectively signing out the user.
+  void SignOutInternal(ProceduralBlock completion);
+
+  __strong id<SystemIdentity> primary_identity_;
+  signin::ConsentLevel consent_level_ = signin::ConsentLevel::kSignin;
+
+  // WeakPtrFactory should be last.
+  base::WeakPtrFactory<AuthenticationServiceFake> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_AUTHENTICATION_SERVICE_FAKE_H_

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+/* Copyright 2012 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -223,4 +223,4 @@ void nacl_io_set_mount_callback(nacl_io_mount_callback_t callback,
 
 EXTERN_C_END
 
-#endif /* LIBRARIES_NACL_IO_NACL_IO_H_ */
+#endif  // LIBRARIES_NACL_IO_NACL_IO_H_

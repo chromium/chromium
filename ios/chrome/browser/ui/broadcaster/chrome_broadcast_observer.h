@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@
 
 // Observer method for objects that care about whether the main content area is
 // being dragged.  Note that if a drag ends with residual velocity, it's
-// possible for |dragging| to be NO while |scrolling| is still YES.
+// possible for `dragging` to be NO while `scrolling` is still YES.
 - (void)broadcastScrollViewIsDragging:(BOOL)dragging;
 
 #pragma mark - Toolbar UI

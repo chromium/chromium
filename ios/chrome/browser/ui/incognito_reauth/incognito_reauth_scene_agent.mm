@@ -1,24 +1,29 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/ios/crb_protocol_observers.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/application_context.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -87,24 +92,28 @@
     return;
   }
 
+  base::RecordAction(base::UserMetricsAction(
+      "MobileIncognitoBiometricAuthenticationRequested"));
+
   NSString* authReason = l10n_util::GetNSStringF(
       IDS_IOS_INCOGNITO_REAUTH_SYSTEM_DIALOG_REASON,
-      base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
+      base::SysNSStringToUTF16(BiometricAuthenticationTypeString()));
 
   __weak IncognitoReauthSceneAgent* weakSelf = self;
-  [self.reauthModule
-      attemptReauthWithLocalizedReason:authReason
-                  canReusePreviousAuth:false
-                               handler:^(ReauthenticationResult result) {
-                                 BOOL success =
-                                     (result ==
-                                      ReauthenticationResult::kSuccess);
-                                 weakSelf.authenticatedSinceLastForeground =
-                                     success;
-                                 if (completion) {
-                                   completion(success);
-                                 }
-                               }];
+  void (^completionHandler)(ReauthenticationResult) =
+      ^(ReauthenticationResult result) {
+        BOOL success = (result == ReauthenticationResult::kSuccess);
+        base::UmaHistogramBoolean(
+            "IOS.Incognito.BiometricReauthAttemptSuccessful", success);
+
+        weakSelf.authenticatedSinceLastForeground = success;
+        if (completion) {
+          completion(success);
+        }
+      };
+  [self.reauthModule attemptReauthWithLocalizedReason:authReason
+                                 canReusePreviousAuth:false
+                                              handler:completionHandler];
 }
 
 - (void)addObserver:(id<IncognitoReauthObserver>)observer {
@@ -169,10 +178,32 @@
     self.authenticatedSinceLastForeground = NO;
   } else if (level >= SceneActivationLevelForegroundInactive) {
     [self updateWindowHasIncognitoContent:sceneState];
+    [self logEnabledHistogramOnce];
+    // Close media presentations when the app is foregrounded rather than
+    // backgrounded to avoid freezes.
+    [self closeMediaPresentations];
   }
 }
 
 #pragma mark - private
+
+// Log authentication setting histogram to determine the feature usage.
+// This is done once per app launch.
+// Since this agent is created per-scene, guard it with dispatch_once.
+- (void)logEnabledHistogramOnce {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    DCHECK(self.localState)
+        << "Local state is not yet available when trying to log "
+           "IOS.Incognito.BiometricAuthEnabled. This code is called too "
+           "soon.";
+    BOOL settingEnabled =
+        self.localState &&
+        self.localState->GetBoolean(prefs::kIncognitoAuthenticationSetting);
+    base::UmaHistogramBoolean("IOS.Incognito.BiometricAuthEnabled",
+                              settingEnabled);
+  });
+}
 
 - (PrefService*)localState {
   if (!_localState) {
@@ -188,9 +219,26 @@
 // Convenience method to check the pref associated with the reauth setting and
 // the feature flag.
 - (BOOL)featureEnabled {
-  return base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
-         self.localState &&
+  return self.localState &&
          self.localState->GetBoolean(prefs::kIncognitoAuthenticationSetting);
+}
+
+// Closes the media presentations to avoid having the fullscreen video on top of
+// the blocker.
+- (void)closeMediaPresentations {
+  if (![self featureEnabled])
+    return;
+
+  Browser* browser =
+      self.sceneState.interfaceProvider.incognitoInterface.browser;
+  if (browser) {
+    if (browser->GetWebStateList() &&
+        browser->GetWebStateList()->GetActiveWebState()) {
+      browser->GetWebStateList()
+          ->GetActiveWebState()
+          ->CloseMediaPresentations();
+    }
+  }
 }
 
 @end

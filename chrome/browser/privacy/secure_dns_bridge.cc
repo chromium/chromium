@@ -1,15 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <jni.h>
 
+#include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/bind.h"
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "chrome/browser/net/secure_dns_config.h"
@@ -20,19 +26,12 @@
 #include "chrome/common/pref_names.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
-#include "net/dns/public/doh_provider_entry.h"
-#include "net/dns/public/secure_dns_mode.h"
-#include "net/dns/public/util.h"
-
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/network_service_instance.h"
+#include "net/dns/public/dns_over_https_config.h"
+#include "net/dns/public/doh_provider_entry.h"
+#include "net/dns/public/secure_dns_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -43,10 +42,9 @@ namespace secure_dns = chrome_browser_net::secure_dns;
 namespace {
 
 net::DohProviderEntry::List GetFilteredProviders() {
-  const auto local_providers = secure_dns::ProvidersForCountry(
-      net::DohProviderEntry::GetList(), country_codes::GetCurrentCountryID());
-  return secure_dns::RemoveDisabledProviders(
-      local_providers, secure_dns::GetDisabledProviders());
+  return secure_dns::ProvidersForCountry(
+      secure_dns::SelectEnabledProviders(net::DohProviderEntry::GetList()),
+      country_codes::GetCurrentCountryID());
 }
 
 // Runs a DNS probe according to the configuration in |overrides|,
@@ -54,10 +52,13 @@ net::DohProviderEntry::List GetFilteredProviders() {
 // |waiter| when the probe has completed.  Must run on the UI thread.
 void RunProbe(base::WaitableEvent* waiter,
               bool* success,
-              net::DnsConfigOverrides overrides) {
+              const std::string& doh_config) {
+  absl::optional<net::DnsOverHttpsConfig> parsed =
+      net::DnsOverHttpsConfig::FromString(doh_config);
+  DCHECK(parsed.has_value());  // `doh_config` must be valid.
   auto* manager = g_browser_process->system_network_context_manager();
-  auto runner = std::make_unique<DnsProbeRunner>(
-      std::move(overrides),
+  auto runner = secure_dns::MakeProbeRunner(
+      std::move(*parsed),
       base::BindRepeating(&SystemNetworkContextManager::GetContext,
                           base::Unretained(manager)));
   auto* const runner_ptr = runner.get();
@@ -98,34 +99,33 @@ static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_GetProviders(
   std::vector<std::vector<std::u16string>> ret;
   ret.reserve(providers.size());
   std::transform(providers.begin(), providers.end(), std::back_inserter(ret),
-                 [](const auto* entry) {
-                   return std::vector<std::u16string>{
-                       {base::UTF8ToUTF16(entry->ui_name),
-                        base::UTF8ToUTF16(entry->dns_over_https_template),
-                        base::UTF8ToUTF16(entry->privacy_policy)}};
+                 [](const auto* entry) -> std::vector<std::u16string> {
+                   net::DnsOverHttpsConfig config({entry->doh_server_config});
+                   return {base::UTF8ToUTF16(entry->ui_name),
+                           base::UTF8ToUTF16(config.ToString()),
+                           base::UTF8ToUTF16(entry->privacy_policy)};
                  });
   return base::android::ToJavaArrayOfStringArray(env, ret);
 }
 
-static ScopedJavaLocalRef<jstring> JNI_SecureDnsBridge_GetTemplates(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jstring> JNI_SecureDnsBridge_GetConfig(JNIEnv* env) {
   PrefService* local_state = g_browser_process->local_state();
   return base::android::ConvertUTF8ToJavaString(
       env, local_state->GetString(prefs::kDnsOverHttpsTemplates));
 }
 
-static jboolean JNI_SecureDnsBridge_SetTemplates(
+static jboolean JNI_SecureDnsBridge_SetConfig(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jtemplates) {
+    const JavaParamRef<jstring>& jconfig) {
   PrefService* local_state = g_browser_process->local_state();
-  std::string templates = base::android::ConvertJavaStringToUTF8(jtemplates);
-  if (templates.empty()) {
+  std::string config = base::android::ConvertJavaStringToUTF8(jconfig);
+  if (config.empty()) {
     local_state->ClearPref(prefs::kDnsOverHttpsTemplates);
     return true;
   }
 
-  if (secure_dns::IsValidGroup(templates)) {
-    local_state->SetString(prefs::kDnsOverHttpsTemplates, templates);
+  if (net::DnsOverHttpsConfig::FromString(config).has_value()) {
+    local_state->SetString(prefs::kDnsOverHttpsTemplates, config);
     return true;
   }
 
@@ -142,12 +142,12 @@ static jint JNI_SecureDnsBridge_GetManagementMode(JNIEnv* env) {
 
 static void JNI_SecureDnsBridge_UpdateDropdownHistograms(
     JNIEnv* env,
-    const JavaParamRef<jstring>& old_template,
-    const JavaParamRef<jstring>& new_template) {
+    const JavaParamRef<jstring>& old_config,
+    const JavaParamRef<jstring>& new_config) {
   secure_dns::UpdateDropdownHistograms(
       GetFilteredProviders(),
-      base::android::ConvertJavaStringToUTF8(old_template),
-      base::android::ConvertJavaStringToUTF8(new_template));
+      base::android::ConvertJavaStringToUTF8(old_config),
+      base::android::ConvertJavaStringToUTF8(new_config));
 }
 
 static void JNI_SecureDnsBridge_UpdateValidationHistogram(JNIEnv* env,
@@ -155,25 +155,9 @@ static void JNI_SecureDnsBridge_UpdateValidationHistogram(JNIEnv* env,
   secure_dns::UpdateValidationHistogram(valid);
 }
 
-static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_SplitTemplateGroup(
+static jboolean JNI_SecureDnsBridge_ProbeConfig(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jgroup) {
-  std::string group = base::android::ConvertJavaStringToUTF8(jgroup);
-  std::vector<base::StringPiece> templates = secure_dns::SplitGroup(group);
-  std::vector<std::string> templates_copy(templates.begin(), templates.end());
-  return base::android::ToJavaArrayOfStrings(env, templates_copy);
-}
-
-static jboolean JNI_SecureDnsBridge_ProbeServer(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jtemplate) {
-  net::DnsConfigOverrides overrides;
-  overrides.search = std::vector<std::string>();
-  overrides.attempts = 1;
-  overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
-  secure_dns::ApplyTemplate(&overrides,
-                            base::android::ConvertJavaStringToUTF8(jtemplate));
-
+    const JavaParamRef<jstring>& doh_config) {
   // Android recommends converting async functions to blocking when using JNI:
   // https://developer.android.com/training/articles/perf-jni.
   // This function converts the DnsProbeRunner, which can only be created and
@@ -184,7 +168,8 @@ static jboolean JNI_SecureDnsBridge_ProbeServer(
   bool success;
   bool posted = content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(RunProbe, &waiter, &success, std::move(overrides)));
+      base::BindOnce(RunProbe, &waiter, &success,
+                     base::android::ConvertJavaStringToUTF8(doh_config)));
   DCHECK(posted);
   waiter.Wait();
 

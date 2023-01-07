@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -12,6 +12,9 @@
 // no-include-guard-because-multiply-included
 // NOLINT(build/header_guard)
 
+void glAcquireTexturesANGLEFn(GLuint numTextures,
+                              const GLuint* textures,
+                              const GLenum* layouts) override;
 void glActiveShaderProgramFn(GLuint pipeline, GLuint program) override;
 void glActiveTextureFn(GLenum texture) override;
 void glAttachShaderFn(GLuint program, GLuint shader) override;
@@ -1208,6 +1211,9 @@ void glReadPixelsRobustANGLEFn(GLint x,
                                GLsizei* rows,
                                void* pixels) override;
 void glReleaseShaderCompilerFn(void) override;
+void glReleaseTexturesANGLEFn(GLuint numTextures,
+                              const GLuint* textures,
+                              GLenum* layouts) override;
 void glRenderbufferStorageEXTFn(GLenum target,
                                 GLenum internalformat,
                                 GLsizei width,
@@ -1455,7 +1461,8 @@ void glTexStorageMemFlags2DANGLEFn(GLenum target,
                                    GLuint memory,
                                    GLuint64 offset,
                                    GLbitfield createFlags,
-                                   GLbitfield usageFlags) override;
+                                   GLbitfield usageFlags,
+                                   const void* imageCreateInfoPNext) override;
 void glTexSubImage2DFn(GLenum target,
                        GLint level,
                        GLint xoffset,

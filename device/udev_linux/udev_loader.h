@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,8 @@ class UdevLoader {
       udev_device* udev_device,
       const char* subsystem,
       const char* devtype) = 0;
+  virtual udev_list_entry* udev_device_get_properties_list_entry(
+      struct udev_device* udev_device) = 0;
   virtual const char* udev_device_get_property_value(udev_device* udev_device,
                                                      const char* key) = 0;
   virtual const char* udev_device_get_subsystem(udev_device* udev_device) = 0;

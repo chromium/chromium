@@ -1,30 +1,49 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import android.app.Activity;
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /**
  * Tests logic in the OverlayPanelBase.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class OverlayPanelBaseTest {
     private static final float UPWARD_VELOCITY = -1.0f;
     private static final float DOWNWARD_VELOCITY = 1.0f;
@@ -33,6 +52,26 @@ public class OverlayPanelBaseTest {
     private static final float MOCK_EXPANDED_HEIGHT = 400.0f;
     private static final float MOCK_MAXIMIZED_HEIGHT = 600.0f;
 
+    private static final int MOCK_TOOLBAR_HEIGHT = 100;
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock
+    private LayoutManagerImpl mLayoutManager;
+    @Mock
+    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock
+    private ViewGroup mCompositorViewHolder;
+    @Mock
+    private Tab mTab;
+
+    Activity mActivity;
+    ActivityWindowAndroid mWindowAndroid;
     MockOverlayPanel mNoExpandPanel;
     MockOverlayPanel mExpandPanel;
 
@@ -40,8 +79,12 @@ public class OverlayPanelBaseTest {
      * Mock OverlayPanel.
      */
     private static class MockOverlayPanel extends OverlayPanel {
-        public MockOverlayPanel(Context context, OverlayPanelManager manager) {
-            super(context, null, manager);
+        public MockOverlayPanel(Context context, LayoutManagerImpl layoutManager,
+                OverlayPanelManager manager,
+                BrowserControlsStateProvider browserControlsStateProvider,
+                WindowAndroid windowAndroid, ViewGroup compositorViewHolder, Tab tab) {
+            super(context, layoutManager, manager, browserControlsStateProvider, windowAndroid,
+                    compositorViewHolder, MOCK_TOOLBAR_HEIGHT, () -> tab);
         }
 
         /**
@@ -75,77 +118,52 @@ public class OverlayPanelBaseTest {
      * A MockOverlayPanel that does not support the EXPANDED panel state.
      */
     private static class NoExpandMockOverlayPanel extends MockOverlayPanel {
-
-        public NoExpandMockOverlayPanel(Context context, OverlayPanelManager manager) {
-            super(context, manager);
+        public NoExpandMockOverlayPanel(Context context, LayoutManagerImpl layoutManager,
+                OverlayPanelManager manager,
+                BrowserControlsStateProvider browserControlsStateProvider,
+                WindowAndroid windowAndroid, ViewGroup compositorViewHolder, Tab tab) {
+            super(context, layoutManager, manager, browserControlsStateProvider, windowAndroid,
+                    compositorViewHolder, tab);
         }
 
         @Override
         public float getThresholdToNextState() {
             return 0.3f;
         }
+    }
 
-        @Override
-        protected boolean isSupportedState(@PanelState int state) {
-            return state != PanelState.EXPANDED;
-        }
+    @BeforeClass
+    public static void setupSuite() {
+        activityTestRule.launchActivity(null);
     }
 
     @Before
-    public void setUp() {
+    public void setupTest() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivity = activityTestRule.getActivity();
+            mWindowAndroid = new ActivityWindowAndroid(mActivity, /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(mActivity));
             OverlayPanelManager panelManager = new OverlayPanelManager();
-            mExpandPanel =
-                    new MockOverlayPanel(InstrumentationRegistry.getTargetContext(), panelManager);
-            mNoExpandPanel = new NoExpandMockOverlayPanel(
-                    InstrumentationRegistry.getTargetContext(), panelManager);
+            mExpandPanel = new MockOverlayPanel(mActivity, mLayoutManager, panelManager,
+                    mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab);
+            mNoExpandPanel = new NoExpandMockOverlayPanel(mActivity, mLayoutManager, panelManager,
+                    mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab);
         });
     }
 
-    // Start OverlayPanelBase test suite.
-
-    /**
-     * Tests that a panel with the EXPANDED state disabled and a lower movement threshold will move
-     * to the correct state based on current position and swipe velocity.
-     */
-    @Test
-    @SmallTest
-    @Feature({"OverlayPanelBase"})
-    @UiThreadTest
-    public void testNonExpandingPanelMovesToCorrectState() {
-        final float threshold = mNoExpandPanel.getThresholdToNextState();
-        final float height = MOCK_MAXIMIZED_HEIGHT - MOCK_PEEKED_HEIGHT;
-        final float peekToMaxBound = threshold * height + MOCK_PEEKED_HEIGHT;
-        final float maxToPeekBound = (1.0f - threshold) * height + MOCK_PEEKED_HEIGHT;
-
-        // Between PEEKING and MAXIMIZED past the threshold in the up direction.
-        @PanelState
-        int nextState =
-                mNoExpandPanel.findNearestPanelStateFromHeight(peekToMaxBound + 1, UPWARD_VELOCITY);
-        Assert.assertTrue(nextState == PanelState.MAXIMIZED);
-
-        // Between PEEKING and MAXIMIZED before the threshold in the up direction.
-        nextState = mNoExpandPanel.findNearestPanelStateFromHeight(
-                peekToMaxBound - 1, UPWARD_VELOCITY);
-        Assert.assertTrue(nextState == PanelState.PEEKED);
-
-        // Between PEEKING and MAXIMIZED before the threshold in the down direction.
-        nextState = mNoExpandPanel.findNearestPanelStateFromHeight(
-                maxToPeekBound + 1, DOWNWARD_VELOCITY);
-        Assert.assertTrue(nextState == PanelState.MAXIMIZED);
-
-        // Between PEEKING and MAXIMIZED past the threshold in the down direction.
-        nextState = mNoExpandPanel.findNearestPanelStateFromHeight(
-                maxToPeekBound - 1, DOWNWARD_VELOCITY);
-        Assert.assertTrue(nextState == PanelState.PEEKED);
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
     }
+
+    // Start OverlayPanelBase test suite.
 
     /**
      * Tests that a panel will move to the correct state based on current position and swipe
      * velocity.
      */
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanelBase"})
     @UiThreadTest
     public void testExpandingPanelMovesToCorrectState() {
@@ -211,7 +229,7 @@ public class OverlayPanelBaseTest {
      * Tests that a panel will be closed if the desired height is negative.
      */
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"OverlayPanelBase"})
     @UiThreadTest
     public void testNegativeHeightClosesPanel() {
@@ -236,7 +254,7 @@ public class OverlayPanelBaseTest {
      * Tests that a panel is only maximized when desired height is far above the max.
      */
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"OverlayPanelBase"})
     @UiThreadTest
     public void testLargeDesiredHeightIsMaximized() {

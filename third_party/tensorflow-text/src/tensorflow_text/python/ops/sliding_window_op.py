@@ -45,6 +45,63 @@ def sliding_window(data, width, axis=-1, name=None):
   `pad_along_dimension` to add `width - 1` padding elements before calling
   this op.
 
+  #### Examples:
+
+  Sliding window (width=3) across a sequence of tokens:
+
+  >>> # input: <string>[sequence_length]
+  >>> input = tf.constant(["one", "two", "three", "four", "five", "six"])
+  >>> # output: <string>[sequence_length-2, 3]
+  >>> sliding_window(data=input, width=3, axis=0)
+  <tf.Tensor: shape=(4, 3), dtype=string, numpy=
+      array([[b'one', b'two', b'three'],
+             [b'two', b'three', b'four'],
+             [b'three', b'four', b'five'],
+             [b'four', b'five', b'six']], dtype=object)>
+
+  Sliding window (width=2) across the inner dimension of a ragged matrix
+  containing a batch of token sequences:
+
+  >>> # input: <string>[num_sentences, (num_words)]
+  >>> input = tf.ragged.constant(
+  ...     [['Up', 'high', 'in', 'the', 'air'],
+  ...      ['Down', 'under', 'water'],
+  ...      ['Away', 'to', 'outer', 'space']])
+  >>> # output: <string>[num_sentences, (num_word-1), 2]
+  >>> sliding_window(input, width=2, axis=-1)
+  <tf.RaggedTensor [[[b'Up', b'high'], [b'high', b'in'], [b'in', b'the'],
+                     [b'the', b'air']], [[b'Down', b'under'],
+                     [b'under', b'water']],
+                    [[b'Away', b'to'], [b'to', b'outer'],
+                     [b'outer', b'space']]]>
+
+  Sliding window across the second dimension of a 3-D tensor containing
+  batches of sequences of embedding vectors:
+
+  >>> # input: <int32>[num_sequences, sequence_length, embedding_size]
+  >>> input = tf.constant([
+  ...     [[1, 1, 1], [2, 2, 1], [3, 3, 1], [4, 4, 1], [5, 5, 1]],
+  ...     [[1, 1, 2], [2, 2, 2], [3, 3, 2], [4, 4, 2], [5, 5, 2]]])
+  >>> # output: <int32>[num_sequences, sequence_length-1, 2, embedding_size]
+  >>> sliding_window(data=input, width=2, axis=1)
+  <tf.Tensor: shape=(2, 4, 2, 3), dtype=int32, numpy=
+      array([[[[1, 1, 1],
+               [2, 2, 1]],
+              [[2, 2, 1],
+               [3, 3, 1]],
+              [[3, 3, 1],
+               [4, 4, 1]],
+              [[4, 4, 1],
+               [5, 5, 1]]],
+             [[[1, 1, 2],
+               [2, 2, 2]],
+              [[2, 2, 2],
+               [3, 3, 2]],
+              [[3, 3, 2],
+               [4, 4, 2]],
+              [[4, 4, 2],
+               [5, 5, 2]]]], dtype=int32)>
+
   Args:
     data: `<dtype> [O1...ON, A, I1...IM]`
       A potentially ragged K-dimensional tensor with outer dimensions of size
@@ -67,66 +124,6 @@ def sliding_window(data, width, axis=-1, name=None):
     * `result.shape[axis]` = `data.shape[axis] - (width - 1)`
     * `result.shape[axis + 1]` = `width`
     * `result.shape[axis + 2:]` = `data.shape[axis + 1:]`
-
-  #### Examples:
-
-    Sliding window (width=3) across a sequence of tokens:
-
-    ```python
-    >>> # input: <string>[sequence_length]
-    >>> input = tf.constant(["one", "two", "three", "four", "five", "six"])
-    >>> # output: <string>[sequence_length-2, 3]
-    >>> output = sliding_window(data=input, width=3, axis=0)
-    >>> print output.eval()
-    [["one", "two", "three"],
-     ["two", "three", "four"],
-     ["three", "four", "five"],
-     ["four", "five", "six"]]
-    >>> print("Shape: %s -> %s" % (input.shape, output.shape))
-    Shape: (6,) -> (4, 3)
-    ```
-
-    Sliding window (width=2) across the inner dimension of a ragged matrix
-    containing a batch of token sequences:
-
-    ```python
-    >>> # input: <string>[num_sentences, (num_words)]
-    >>> input = tf.ragged.constant(
-    ...     [['Up', 'high', 'in', 'the', 'air'],
-    ...      ['Down', 'under', 'water'],
-    ...      ['Away', 'to', 'outer', 'space']]
-    >>> # output: <string>[num_sentences, (num_word-1), 2]
-    >>> output = sliding_window(input, width=2, axis=-1)
-    >>> print output.eval()
-    [[['Up', 'high'], ['high', 'in'], ['in', 'the'], ['the', 'air']],
-     [['Down', 'under'], ['under', 'water']],
-     [['Away', 'to'], ['to', 'outer'], ['outer', 'space']]]
-    >>> print("Shape: %s -> %s" % (input.shape, output.shape))
-    Shape: (3, ?) -> (3, ?, 2)
-    ```
-
-    Sliding window across the second dimension of a 3-D tensor containing
-    batches of sequences of embedding vectors:
-
-    ```python
-    >>> # input: <int32>[num_sequences, sequence_length, embedding_size]
-    >>> input = tf.constant([
-    ...     [[1, 1, 1], [2, 2, 1], [3, 3, 1], [4, 4, 1], [5, 5, 1]],
-    ...     [[1, 1, 2], [2, 2, 2], [3, 3, 2], [4, 4, 2], [5, 5, 2]]])
-    >>> # output: <int32>[num_sequences, sequence_length-1, 2, embedding_size]
-    >>> output = sliding_window(data=input, width=2, axis=1)
-    >>> print output.eval()
-    [[[[1, 1, 1], [2, 2, 1]],
-      [[2, 2, 1], [3, 3, 1]],
-      [[3, 3, 1], [4, 4, 1]],
-      [[4, 4, 1], [5, 5, 1]]],
-     [[[1, 1, 2], [2, 2, 2]],
-      [[2, 2, 2], [3, 3, 2]],
-      [[3, 3, 2], [4, 4, 2]],
-      [[4, 4, 2], [5, 5, 2]]]]
-    >>> print("Shape: %s -> %s" % (input.shape, output.shape))
-    Shape: (2, 5, 3) -> (2, 4, 2, 3)
-    ```
   """
   with ops.name_scope(name, "SlidingWindow", [data, axis]):
     data = ragged_tensor.convert_to_tensor_or_ragged_tensor(data, name="data")

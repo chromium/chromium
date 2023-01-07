@@ -1,0 +1,15 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("test_bin_crate") {
+  crate_type = "bin"
+  crate_root = "crate/src/main.rs"
+  sources = [ "crate/src/main.rs" ]
+  build_sources = [ "crate/build.rs" ]
+  build_root = "crate/build.rs"
+
+  rustenv = [ "BUILD_SCRIPT_TEST_VARIABLE=123" ]
+}

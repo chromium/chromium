@@ -1,0 +1,370 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of UKM histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="UKM.ActualLogUploadInterval" units="minutes"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    The actual interval between log upload start and previous log upload
+    finished within the same process. A value of 0 indicates there was no
+    previous upload.
+  </summary>
+</histogram>
+
+<histogram name="UKM.BuildAndStoreLogIsEmpty" enum="Boolean"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Emitted when UKM Service attempts to build and store a log. Emits true if it
+    was empty (no sources or entries) which means no log is written, false
+    otherwise.
+  </summary>
+</histogram>
+
+<histogram name="UKM.ConsentObserver.AllowedForAllProfiles" enum="Boolean"
+    expires_after="2020-08-30">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Logged in UpdateUkmAllowedForAllProfiles from the UkmConsentStateObserver
+    which is called when UkmConsentStateObserver starts observing a new profile
+    and every time a URL-keyed anonymized data collection state changes or a
+    sync service state changes. This records whether UKM is allowed for all
+    profiles.
+  </summary>
+</histogram>
+
+<histogram name="UKM.ConsentObserver.Purge" enum="Boolean"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Logged in the UpdateProfileState call from the UkmConsentStateObserver. This
+    records if the UKM allowed change will trigger a purge of the local UKM
+    data.
+  </summary>
+</histogram>
+
+<histogram name="UKM.Entries.Dropped" enum="UkmDataDroppedReason"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Number of UKM entries that are dropped. Categorized by the cause of it being
+    dropped.
+  </summary>
+</histogram>
+
+<histogram name="UKM.Entries.Dropped.ByEntryHash" enum="UkmEventNameHash"
+    expires_after="2023-07-01">
+  <owner>jwd@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    The hashed name of the UKM entry being dropped. The hash is the same hash
+    sent in the UKM log but truncated to 31 bits with &quot;event_hash &amp;
+    0x7fffffff&quot;. Recorded when adding an entry and the UKM recorder decides
+    it should be dropped.
+  </summary>
+</histogram>
+
+<histogram name="UKM.Entries.Dropped.MaxHit.ByEntryHash"
+    enum="UkmEventNameHash" expires_after="2023-05-05">
+  <owner>lucnguyen@google.com</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    The hashed name of the UKM entry being dropped. The hash is the same hash
+    sent in the UKM log but truncated to 31 bits with &quot;event_hash &amp;
+    0x7fffffff&quot;. Recorded when adding an entry and the UKM recorder decides
+    it should be dropped due to reaching the max number of sources allowed in
+    memory.
+  </summary>
+</histogram>
+
+<histogram name="UKM.Entries.Dropped.SampledOut.ByEntryHash"
+    enum="UkmEventNameHash" expires_after="2023-05-05">
+  <owner>lucnguyen@google.com</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    The hashed name of the UKM entry being dropped. The hash is the same hash
+    sent in the UKM log but truncated to 31 bits with &quot;event_hash &amp;
+    0x7fffffff&quot;. Recorded when adding an entry and the UKM recorder decides
+    it should be dropped due to it being sampled out.
+  </summary>
+</histogram>
+
+<histogram name="UKM.Entries.Recorded.ByEntryHash" enum="UkmEventNameHash"
+    expires_after="2023-07-01">
+  <owner>yrsun@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    The hashed name of the UKM entry being recorded. The hash is the same hash
+    sent in the UKM log but truncated to 31 bits with &quot;event_hash &amp;
+    0x7fffffff&quot;. Recorded when an entry is added and accepted by the UKM
+    recorder.
+  </summary>
+</histogram>
+
+<histogram name="UKM.Entries.SerializedCount2" units="entries"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>Number of serialized UKM entries when storing a UKM log.</summary>
+</histogram>
+
+<histogram name="UKM.Entries.SerializedCountFCP" units="entries"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Number of serialized UKM entries that are of type PageLoad that have the
+    metric PaintTiming.NavigationToFirstContentfulPaint. This is recorded every
+    time a UKM log is stored.
+  </summary>
+</histogram>
+
+<histogram name="UKM.InitSequence" enum="UmaInitSequence"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Logged during UkmService initialization whether the init task or the initial
+    log timer completed first. The expectation is the vast majority of the time,
+    the init task should complete first. If metrics show otherwise, then it may
+    indicate there's a bug in the UkmService init sequence and that it should be
+    investigated.
+  </summary>
+</histogram>
+
+<histogram name="UKM.IOSLog.OnSuccess" units="records"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <summary>
+    Number of times when UKM.LogSize.OnSuccess was recorded on iOS. Recorded
+    when the app transitions to the foreground. This histogram should help to
+    figure out the root cause of crbug.com/1154678 (Data loss on UMA in iOS). If
+    total count of UKM.IOSLog.OnSuccess is greater than number of
+    UKM.LogSize.OnSuccess records, then data loss is caused by failure to write
+    the histogram to the disk on background thread. Otherwise (if total sum of
+    UKM.IOSLog.OnSuccess is equal to total count of UKM.LogSize.OnSuccess
+    records) then there is actually no data loss and app simply gets terminated
+    in a short window between UKM reached the server and the API call which
+    records the data.
+  </summary>
+</histogram>
+
+<histogram name="UKM.LogSize.OnSuccess" units="KB" expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Size in kilobytes (after compression) of an uploaded UKM log. Recorded after
+    a successful UKM upload.
+
+    Note: A related metric (UKM.ProtoCompressionRatio) logs the compression
+    ratio.
+  </summary>
+</histogram>
+
+<histogram name="UKM.LogUpload.Canceled.CellularConstraint"
+    enum="BooleanCanceled" expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Logs whether a log was not uploaded due to cellular log throttling logic.
+    Android only.
+  </summary>
+</histogram>
+
+<histogram name="UKM.LogUpload.ResponseOrErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    HTTP response codes and network errors encountered by UKM when attempting to
+    upload logs to the server.
+  </summary>
+</histogram>
+
+<histogram name="UKM.MigratedClientIdInt64ToUInt64" enum="BooleanMigrated"
+    expires_after="2021-07-01">
+  <owner>jwd@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    The client id was migrated from an Int64 pref to a UInt64 pref. Not migrated
+    is recorded when a valid UInt64 value is loaded from prefs. Migration
+    started in M75.
+  </summary>
+</histogram>
+
+<histogram name="UKM.PersistentLogRecall.Status"
+    enum="PersistedLogsLogReadStatus" expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>The status when loading UKM PersistedLogs from Prefs.</summary>
+</histogram>
+
+<histogram name="UKM.ProtoCompressionRatio" units="%"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Compression ratio of the serialized protobuf that will be uploaded to the
+    UKM server. This serialized protobuf is compressed using gzip. See also
+    UKM.LogSize.OnSuccess.
+  </summary>
+</histogram>
+
+<histogram name="UKM.PrunedSources.{Type}" units="sources"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Number of sources pruned after the operation of {Type} type.
+  </summary>
+  <token key="Type">
+    <variant name="AppExpNumAppId"
+        summary="APP_ID only when not in seen/unseen experiment"/>
+    <variant name="AppExpNumNonAppId" summary="All non-APP_ID"/>
+    <variant name="NoExp" summary="Total pruned without experimentation"/>
+    <variant name="NumAppId"
+        summary="APP_ID only under seen/unseen experiment"/>
+    <variant name="NumSeen" summary="Seen only"/>
+    <variant name="NumUnseen" summary="Unseen only"/>
+  </token>
+</histogram>
+
+<histogram name="UKM.ReportSize.NonUkmPercentage" units="%"
+    expires_after="2023-07-01">
+  <owner>yrsun@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Percentage that data non-directly attributed (e.g. system profile info, etc)
+    to UKM take up in a serialized ukm::Report protocol buffer, before
+    compression.
+  </summary>
+</histogram>
+
+<histogram name="UKM.ResetReason" enum="UkmResetReason"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Recorded when a UKM client state (client_id, session_id) is reset. This
+    emits the reason the resetting was triggered.
+  </summary>
+</histogram>
+
+<histogram name="UKM.Sources.Dropped" enum="UkmDataDroppedReason"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Number of UKM sources that are dropped. Categorized by the cause of it being
+    dropped.
+  </summary>
+</histogram>
+
+<histogram name="UKM.Sources.KeptSourcesCount" units="sources"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Number of unsent UKM sources that were kept in-memory to be potentially
+    transmitted in the next log.
+  </summary>
+</histogram>
+
+<histogram name="UKM.Sources.SerializedCount2{UkmSourceIdTypes}"
+    units="sources" expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Number of serialized UKM sources when storing a UKM log. {UkmSourceIdTypes}
+  </summary>
+  <token key="UkmSourceIdTypes">
+    <variant name=""/>
+    <variant name=".App" summary="Restricted to app source id types."/>
+    <variant name=".Default" summary="Restricted to default source id type."/>
+    <variant name=".Navigation"
+        summary="Restricted to navigation source id types."/>
+    <variant name=".Ukm"
+        summary="Restricted to UKM source id types. Deprecated and replaced
+                 by 'Default' in 2020/05."/>
+  </token>
+</histogram>
+
+<histogram name="UKM.Sources.UnmatchedSourcesCount" units="sources"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Number of UKM sources that were not sent because they did not match a
+    navigation source URL.
+  </summary>
+</histogram>
+
+<histogram name="UKM.Sources.UnsentSourcesCount" units="sources"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Number of UKM sources that were not sent because they had no associated
+    entries.
+  </summary>
+</histogram>
+
+<histogram name="UKM.UnsentLogs.DroppedSize" units="bytes"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Number of bytes in an excessively large log that was discarded while
+    persisting UKM logs to disk to retry during next chrome run.
+  </summary>
+</histogram>
+
+<histogram name="UKM.UnsentLogs.NumDropped" units="units"
+    expires_after="2023-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Counter for number of UKM unsent logs removed from persistent storage.
+  </summary>
+</histogram>
+
+<histogram name="UKM.UserDemographics.Status" enum="UserDemographicsStatus"
+    expires_after="2020-07-01">
+  <owner>vincb@google.com</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    The status of the retrieval of user demographics from sync that are reported
+    to UKM. Emitted each time UKM metrics are reported.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_WEB_RESOURCE_LOADING_TASK_RUNNER_HANDLE_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/request_priority.h"
 #include "third_party/blink/public/platform/web_common.h"
 
@@ -38,4 +38,4 @@ class BLINK_PLATFORM_EXPORT WebResourceLoadingTaskRunnerHandle {
 }  // namespace scheduler
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_WEB_RESOURCE_LOADING_TASK_RUNNER_HANDLE_H_

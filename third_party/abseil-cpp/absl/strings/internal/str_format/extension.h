@@ -19,6 +19,7 @@
 #include <limits.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <ostream>
 
@@ -70,7 +71,7 @@ class FormatSinkImpl {
   ~FormatSinkImpl() { Flush(); }
 
   void Flush() {
-    raw_.Write(string_view(buf_, pos_ - buf_));
+    raw_.Write(string_view(buf_, static_cast<size_t>(pos_ - buf_)));
     pos_ = buf_;
   }
 
@@ -120,7 +121,9 @@ class FormatSinkImpl {
   }
 
  private:
-  size_t Avail() const { return buf_ + sizeof(buf_) - pos_; }
+  size_t Avail() const {
+    return static_cast<size_t>(buf_ + sizeof(buf_) - pos_);
+  }
 
   FormatRawSinkImpl raw_;
   size_t size_ = 0;
@@ -128,18 +131,32 @@ class FormatSinkImpl {
   char buf_[1024];
 };
 
-struct Flags {
-  bool basic : 1;     // fastest conversion: no flags, width, or precision
-  bool left : 1;      // "-"
-  bool show_pos : 1;  // "+"
-  bool sign_col : 1;  // " "
-  bool alt : 1;       // "#"
-  bool zero : 1;      // "0"
-  std::string ToString() const;
-  friend std::ostream& operator<<(std::ostream& os, const Flags& v) {
-    return os << v.ToString();
-  }
+enum class Flags : uint8_t {
+  kBasic = 0,
+  kLeft = 1 << 0,
+  kShowPos = 1 << 1,
+  kSignCol = 1 << 2,
+  kAlt = 1 << 3,
+  kZero = 1 << 4,
+  // This is not a real flag. It just exists to turn off kBasic when no other
+  // flags are set. This is for when width/precision are specified.
+  kNonBasic = 1 << 5,
 };
+
+constexpr Flags operator|(Flags a, Flags b) {
+  return static_cast<Flags>(static_cast<uint8_t>(a) | static_cast<uint8_t>(b));
+}
+
+constexpr bool FlagsContains(Flags haystack, Flags needle) {
+  return (static_cast<uint8_t>(haystack) & static_cast<uint8_t>(needle)) ==
+         static_cast<uint8_t>(needle);
+}
+
+std::string FlagsToString(Flags v);
+
+inline std::ostream& operator<<(std::ostream& os, Flags v) {
+  return os << FlagsToString(v);
+}
 
 // clang-format off
 #define ABSL_INTERNAL_CONVERSION_CHARS_EXPAND_(X_VAL, X_SEP) \
@@ -152,7 +169,7 @@ struct Flags {
   X_VAL(f) X_SEP X_VAL(F) X_SEP X_VAL(e) X_SEP X_VAL(E) X_SEP \
   X_VAL(g) X_SEP X_VAL(G) X_SEP X_VAL(a) X_SEP X_VAL(A) X_SEP \
   /* misc */ \
-  X_VAL(n) X_SEP X_VAL(p)
+  X_VAL(n) X_SEP X_VAL(p) X_SEP X_VAL(v)
 // clang-format on
 
 // This type should not be referenced, it exists only to provide labels
@@ -174,7 +191,7 @@ struct FormatConversionCharInternal {
     c, s,                    // text
     d, i, o, u, x, X,        // int
     f, F, e, E, g, G, a, A,  // float
-    n, p,                    // misc
+    n, p, v,                    // misc
     kNone
   };
   // clang-format on
@@ -257,12 +274,16 @@ struct FormatConversionSpecImplFriend;
 class FormatConversionSpecImpl {
  public:
   // Width and precison are not specified, no flags are set.
-  bool is_basic() const { return flags_.basic; }
-  bool has_left_flag() const { return flags_.left; }
-  bool has_show_pos_flag() const { return flags_.show_pos; }
-  bool has_sign_col_flag() const { return flags_.sign_col; }
-  bool has_alt_flag() const { return flags_.alt; }
-  bool has_zero_flag() const { return flags_.zero; }
+  bool is_basic() const { return flags_ == Flags::kBasic; }
+  bool has_left_flag() const { return FlagsContains(flags_, Flags::kLeft); }
+  bool has_show_pos_flag() const {
+    return FlagsContains(flags_, Flags::kShowPos);
+  }
+  bool has_sign_col_flag() const {
+    return FlagsContains(flags_, Flags::kSignCol);
+  }
+  bool has_alt_flag() const { return FlagsContains(flags_, Flags::kAlt); }
+  bool has_zero_flag() const { return FlagsContains(flags_, Flags::kZero); }
 
   FormatConversionChar conversion_char() const {
     // Keep this field first in the struct . It generates better code when
@@ -270,6 +291,8 @@ class FormatConversionSpecImpl {
     static_assert(offsetof(FormatConversionSpecImpl, conv_) == 0, "");
     return conv_;
   }
+
+  void set_conversion_char(FormatConversionChar c) { conv_ = c; }
 
   // Returns the specified width. If width is unspecfied, it returns a negative
   // value.
@@ -306,7 +329,7 @@ struct FormatConversionSpecImplFriend final {
     conv->precision_ = p;
   }
   static std::string FlagsToString(const FormatConversionSpecImpl& spec) {
-    return spec.flags_.ToString();
+    return str_format_internal::FlagsToString(spec.flags_);
   }
 };
 

@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,7 +16,16 @@ process_version_rc_template("version") {
   output = "$root_out_dir/gcp_setup_version.rc"
 }
 
+config("common_config") {
+  visibility = [ ":*" ]
+  defines = [
+    # Make single parameter CString constructors explicit.
+    "_ATL_CSTRING_EXPLICIT_CONSTRUCTORS",
+  ]
+}
+
 source_set("common") {
+  public_configs = [ ":common_config" ]
   sources = [
     "gcpw_files.cc",
     "gcpw_files.h",
@@ -52,7 +61,7 @@ executable("gcp_sfx") {
   deps = [
     ":setup_resources",
     ":version",
-    "//third_party/lzma_sdk/Util/SfxSetup:7zS2_source",
+    "//third_party/lzma_sdk/C/Util/SfxSetup:7zS2_source",
   ]
   configs += [ "//build/config/win:windowed" ]
 }

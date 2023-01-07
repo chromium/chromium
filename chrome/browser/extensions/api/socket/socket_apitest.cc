@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -48,7 +49,8 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketUDPExtension) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser()->profile());
 
-  ExtensionTestMessageListener listener("info_please", true);
+  ExtensionTestMessageListener listener("info_please",
+                                        ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("socket/api")));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -58,7 +60,13 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketUDPExtension) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPExtension) {
+// Flaky on Windows. https://crbug.com/1319604.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SocketTCPExtension DISABLED_SocketTCPExtension
+#else
+#define MAYBE_SocketTCPExtension SocketTCPExtension
+#endif
+IN_PROC_BROWSER_TEST_F(SocketApiTest, MAYBE_SocketTCPExtension) {
   net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTP);
   test_server.AddDefaultHandlers();
   EXPECT_TRUE(test_server.Start());
@@ -73,7 +81,8 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPExtension) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser()->profile());
 
-  ExtensionTestMessageListener listener("info_please", true);
+  ExtensionTestMessageListener listener("info_please",
+                                        ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("socket/api")));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -86,7 +95,8 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPExtension) {
 IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPServerExtension) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser()->profile());
-  ExtensionTestMessageListener listener("info_please", true);
+  ExtensionTestMessageListener listener("info_please",
+                                        ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("socket/api")));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   listener.Reply(base::StringPrintf("tcp_server:127.0.0.1:%d", kPort));
@@ -108,10 +118,17 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPServerUnbindOnUnload) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketMulticast) {
+// Fails on MacOS 11, crbug.com/1211141 .
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SocketMulticast DISABLED_SocketMulticast
+#else
+#define MAYBE_SocketMulticast SocketMulticast
+#endif
+IN_PROC_BROWSER_TEST_F(SocketApiTest, MAYBE_SocketMulticast) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser()->profile());
-  ExtensionTestMessageListener listener("info_please", true);
+  ExtensionTestMessageListener listener("info_please",
+                                        ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("socket/api")));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   listener.Reply(base::StringPrintf("multicast:%s:%d", kHostname, kPort));

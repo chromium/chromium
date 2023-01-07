@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Please see src/ui/android/java/res/values/colors.xml for the shared common colors. -->
+
+    <!-- Omnibox Suggestion colors -->
+    <macro name="suggestion_url_color">@macro/default_text_color_link</macro>
+    <color name="suggestion_url_color_incognito">@color/default_text_color_link_light</color>
+    <color name="answers_description_text_negative">@color/default_red</color>
+    <color name="answers_description_text_positive">@color/default_green</color>
+
+    <!-- LocationBar colors -->
+    <color name="locationbar_dark_hint_text">@color/default_text_color_secondary_list</color>
+    <color name="locationbar_light_hint_text">@color/default_text_color_secondary_light</color>
+
+    <color name="locationbar_status_offline_color_dark">@color/default_text_color_secondary_dark</color>
+    <color name="locationbar_status_offline_color_light">@android:color/white</color>
+    <color name="locationbar_status_offline_color_incognito">@color/default_text_color_secondary_light</color>
+
+    <color name="locationbar_status_preview_color_dark">@color/default_text_color_secondary_dark</color>
+    <color name="locationbar_status_preview_color_light">@android:color/white</color>
+    <color name="locationbar_status_preview_color_incognito">@color/modern_blue_300</color>
+
+    <color name="locationbar_status_separator_color_dark">@color/baseline_neutral_variant_500</color>
+    <color name="locationbar_status_separator_color_light">@color/white_alpha_60</color>
+    <color name="locationbar_status_separator_color_incognito">@color/baseline_neutral_variant_400</color>
+
+    <color name="omnibox_focused_fading_background_color">@color/black_alpha_65</color>
+    <color name="omnibox_focused_fading_background_color_light">@color/white_alpha_65</color>
+
+    <color name="branded_url_text_on_dark_bg">@color/baseline_neutral_0</color>
+    <color name="branded_url_text_on_light_bg">@color/default_text_color_dark</color>
+    <color name="branded_url_text_variant_on_dark_bg">@color/white_alpha_50</color>
+    <color name="branded_url_text_variant_on_light_bg">@color/default_text_color_secondary_dark</color>
+
+    <color name="url_bar_primary_text_incognito">@color/default_text_color_light</color>
+    <color name="url_bar_secondary_text_incognito">@color/default_text_color_secondary_light</color>
+
+    <color name="text_highlight_color_incognito">@color/baseline_primary_200_alpha_20</color>
+
+    <color name="omnibox_suggestion_bg_incognito">@color/default_bg_color_dark</color>
+    <color name="omnibox_dropdown_bg_incognito">@color/default_bg_color_dark_elev_1_baseline</color>
+
+</resources>

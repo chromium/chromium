@@ -1,0 +1,8 @@
+<!--
+  should not be blocked because the rule for `block_main` only affects main
+  frame resources
+-->
+<iframe src="block_main"></iframe>
+
+<!-- should be blocked -->
+<iframe src="block_sub"></iframe>

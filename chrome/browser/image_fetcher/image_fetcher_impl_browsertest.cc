@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,16 +42,21 @@ class ImageFetcherImplBrowserTest : public InProcessBrowserTest {
     test_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
 
+  ImageFetcherImplBrowserTest(const ImageFetcherImplBrowserTest&) = delete;
+  ImageFetcherImplBrowserTest& operator=(const ImageFetcherImplBrowserTest&) =
+      delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     ASSERT_TRUE(test_server_.Start());
   }
 
   ImageFetcher* CreateImageFetcher() {
-    ImageFetcher* fetcher = new ImageFetcherImpl(
-        std::make_unique<ImageDecoderImpl>(),
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile())
-            ->GetURLLoaderFactoryForBrowserProcess());
+    ImageFetcher* fetcher =
+        new ImageFetcherImpl(std::make_unique<ImageDecoderImpl>(),
+                             browser()
+                                 ->profile()
+                                 ->GetDefaultStoragePartition()
+                                 ->GetURLLoaderFactoryForBrowserProcess());
     return fetcher;
   }
 
@@ -99,9 +103,6 @@ class ImageFetcherImplBrowserTest : public InProcessBrowserTest {
   int num_data_callback_null_called_;
 
   net::EmbeddedTestServer test_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherImplBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ImageFetcherImplBrowserTest, NormalFetch) {

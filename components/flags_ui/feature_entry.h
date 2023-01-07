@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,8 @@
 #include <string>
 
 #include "base/containers/span.h"
-
-namespace base {
-struct Feature;
-}
+#include "base/feature_list.h"
+#include "build/chromeos_buildflags.h"
 
 namespace flags_ui {
 
@@ -74,14 +72,38 @@ struct FeatureEntry {
     // passed from the server in a trial config). When set to Enabled, the
     // feature is overriden to be enabled and empty set of parameters is used
     // boiling down to the default behavior in the code.
-    // TODO(crbug.com/805766): The resulting chrome://flags entries will not
-    // work on Chrome OS devices (but will work in the CrOS-emulated build on
-    // Linux).
     FEATURE_WITH_PARAMS_VALUE,
 
-    // Corresponds to a command line switch where the value is treatead as a
-    // list of url::Origins. Default state is disabled like SINGLE_VALUE.
-    ORIGIN_LIST_VALUE
+    // Corresponds to a command line switch where the value is treated as a list
+    // of url::Origins. (Lists will not be reordered.) Default state is
+    // disabled like SINGLE_VALUE.
+    ORIGIN_LIST_VALUE,
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // The below two types are for *platform* features -- that is, those defined
+    // and queried via platform2/featured/feature_library.h. Such features
+    // should be defined outside of the browser (e.g., in platform2 or
+    // platform) using a compile-time-constant default value and name.
+    // See feature_library.h for more documentation.
+
+    // Corresponds to a feature *name*, starting with "CrOSLateBoot", for a
+    // platform feature.
+    //
+    // Broadly similar to FEATURE_VALUE, but we cannot define |base::Feature|s
+    // starting with CrOSLateBoot in the browser directly -- they must instead
+    // be defined and queried outside of the browser, using
+    // platform2/featured/feature_library.h.
+    PLATFORM_FEATURE_NAME_VALUE,
+
+    // Corresponds to a feature *name*, starting with "CrOSLateBoot", for a
+    // platform feature, along with its parameters.
+    //
+    // Broadly similar to FEATURE_WITH_PARAMS_VALUE, but we cannot define
+    // |base::Feature|s starting with CrOSLateBoot in the browser directly --
+    // they must instead be defined and queried outside of the browser, using
+    // platform2/featured/feature_library.h.
+    PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
 
   // Describes state of a feature.
@@ -106,14 +128,14 @@ struct FeatureEntry {
     const char* command_line_value;
   };
 
-  // Configures one parameter for FEATURE_WITH_VARIATIONS_VALUE.
+  // Configures one parameter for FEATURE_WITH_PARAMS_VALUE.
   struct FeatureParam {
     const char* param_name;
     const char* param_value;
   };
 
   // Specified one variation (list of parameter values) for
-  // FEATURE_WITH_VARIATIONS_VALUE.
+  // FEATURE_WITH_PARAMS_VALUE.
   struct FeatureVariation {
     // Text that denotes the variation in chrome://flags. For each variation,
     // the user is shown an option labeled "Enabled <description_text>" (with
@@ -167,21 +189,40 @@ struct FeatureEntry {
     } switches;
 
     struct {
-      // For FEATURE_VALUE or FEATURE_WITH_VARIATIONS_VALUE, the base::Feature
+      // For FEATURE_VALUE or FEATURE_WITH_PARAMS_VALUE, the base::Feature
       // this entry corresponds to. The same feature must not be used in
       // multiple FeatureEntries.
       const base::Feature* feature;
 
-      // This describes the options if type is FEATURE_WITH_VARIATIONS_VALUE.
+      // This describes the options if type is FEATURE_WITH_PARAMS_VALUE.
       // The first variation is the default "Enabled" variation, its
       // description_id is disregarded.
       base::span<const FeatureVariation> feature_variations;
 
       // The name of the FieldTrial in which the selected variation parameters
       // should be registered. This is used if type is
-      // FEATURE_WITH_VARIATIONS_VALUE.
+      // FEATURE_WITH_PARAMS_VALUE.
       const char* feature_trial_name;
     } feature;
+
+    struct {
+      // For PLATFORM_FEATURE_NAME_TYPE or
+      // PLATFORM_FEATURE_WITH_PARAMS_VALUE_TYPE, the name of the feature this
+      // entry corresponds to. The same feature must not be used in multiple
+      // FeatureEntries.
+      const char* name;
+
+      // This describes the options if type is
+      // PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE.
+      // The first variation is the default "Enabled" variation, its
+      // description_id is disregarded.
+      base::span<const FeatureVariation> feature_variations;
+
+      // The name of the FieldTrial in which the selected variation parameters
+      // should be registered. This is used if type is
+      // PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE.
+      const char* feature_trial_name;
+    } platform_feature_name;
 
     // This describes the options if type is MULTI_VALUE.
     base::span<const Choice> choices;
@@ -209,13 +250,21 @@ struct FeatureEntry {
   const FeatureEntry::Choice& ChoiceForOption(int index) const;
 
   // Returns the state of the feature at |index|. Only applicable for types
-  // FEATURE_VALUE and FEATURE_WITH_VARIATIONS_VALUE.
+  // FEATURE_VALUE and FEATURE_WITH_PARAMS_VALUE.
   FeatureEntry::FeatureState StateForOption(int index) const;
 
   // Returns the variation for the option at |index| or nullptr if there is no
   // variation associated at |index|. Only applicable for types FEATURE_VALUE
-  // and FEATURE_WITH_VARIATIONS_VALUE.
+  // and FEATURE_WITH_PARAMS_VALUE.
   const FeatureEntry::FeatureVariation* VariationForOption(int index) const;
+
+  // Returns true if the entry is considered as valid.
+  // See the implenetation for the details of what is valid.
+  bool IsValid() const;
+
+  // Returns the variation list. Type must be either
+  // FEATURE_WITH_PARAMS_VALUE or PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE.
+  const base::span<const FeatureVariation> GetVariations() const;
 };
 
 namespace testing {

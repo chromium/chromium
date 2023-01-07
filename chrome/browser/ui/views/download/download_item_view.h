@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,18 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/icon_loader.h"
+#include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
@@ -32,7 +34,6 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class DownloadShelfView;
@@ -65,12 +66,10 @@ class StyledLabel;
 // DownloadController that receives / writes data which lives in the Renderer.
 class DownloadItemView : public views::View,
                          public views::ContextMenuController,
-                         public DownloadUIModel::Observer,
+                         public DownloadUIModel::Delegate,
                          public views::AnimationDelegateViews {
  public:
   METADATA_HEADER(DownloadItemView);
-
-  enum class Mode;
 
   DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
                    DownloadShelfView* shelf,
@@ -80,6 +79,7 @@ class DownloadItemView : public views::View,
   ~DownloadItemView() override;
 
   // views::View:
+  void AddedToWidget() override;
   void Layout() override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
@@ -91,10 +91,10 @@ class DownloadItemView : public views::View,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override;
 
-  // DownloadUIModel::Observer:
+  // DownloadUIModel::Delegate:
   void OnDownloadUpdated() override;
   void OnDownloadOpened() override;
-  void OnDownloadDestroyed() override;
+  void OnDownloadDestroyed(const ContentId& id) override;
 
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -109,6 +109,9 @@ class DownloadItemView : public views::View,
   // If user hasn't seen SBER opt-in text before, show SBER opt-in dialog first.
   void MaybeSubmitDownloadToFeedbackService(DownloadCommands::Command command);
 
+  std::u16string GetStatusTextForTesting() const;
+  void OpenItemForTesting();
+
  protected:
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -116,18 +119,24 @@ class DownloadItemView : public views::View,
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
+  // ui::LayerDelegate:
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override;
+
  private:
-  // Returns the mode that best reflects the current model state.
-  Mode GetDesiredMode() const;
+  class ContextMenuButton;
 
   // Sets the current mode to |mode| and updates UI appropriately.
-  void SetMode(Mode mode);
-  Mode GetMode() const;
+  void SetMode(download::DownloadItemMode mode);
+  download::DownloadItemMode GetMode() const;
 
   // Updates the file path, and if necessary, begins loading the file icon in
   // various sizes. This may eventually result in a callback to
   // OnFileIconLoaded().
   void UpdateFilePathAndIcons();
+
+  // Begins loading the file icon in various sizes.
+  void StartLoadIcons();
 
   // Updates the visibility, text, size, etc. of all labels.
   void UpdateLabels();
@@ -202,6 +211,7 @@ class DownloadItemView : public views::View,
   void OpenButtonPressed();
   void SaveOrDiscardButtonPressed(DownloadCommands::Command command);
   void DropdownButtonPressed(const ui::Event& event);
+  void ReviewButtonPressed();
 
   // Shows an appropriate prompt dialog when the user hits the "open" button
   // when not in normal mode.
@@ -227,13 +237,13 @@ class DownloadItemView : public views::View,
   const DownloadUIModel::DownloadUIModelPtr model_;
 
   // A utility object to help execute commands on the model.
-  DownloadCommands commands_{model()};
+  DownloadCommands commands_{model()->GetWeakPtr()};
 
   // The download shelf that owns us.
-  DownloadShelfView* const shelf_;
+  const raw_ptr<DownloadShelfView> shelf_;
 
   // Mode of the download item view.
-  Mode mode_;
+  download::DownloadItemMode mode_;
 
   // The "open download" button. This button is visually transparent and fills
   // the entire bounds of the DownloadItemView, to make the DownloadItemView
@@ -241,13 +251,13 @@ class DownloadItemView : public views::View,
   // be a button. This is necessary because buttons are not allowed to have
   // children in macOS Accessibility, and to avoid reimplementing much of the
   // button logic in DownloadItemView.
-  views::Button* open_button_;
+  raw_ptr<views::Button> open_button_;
 
   // Whether we are dragging the download button.
   bool dragging_ = false;
 
   // Position that a possible drag started at.
-  base::Optional<gfx::Point> drag_start_point_;
+  absl::optional<gfx::Point> drag_start_point_;
 
   gfx::ImageSkia file_icon_;
 
@@ -258,16 +268,17 @@ class DownloadItemView : public views::View,
   // used, so that we can detect a change in the path and reload the icon.
   base::FilePath file_path_;
 
-  views::Label* file_name_label_;
-  views::Label* status_label_;
-  views::StyledLabel* warning_label_;
-  views::StyledLabel* deep_scanning_label_;
+  raw_ptr<views::Label> file_name_label_;
+  raw_ptr<views::Label> status_label_;
+  raw_ptr<views::StyledLabel> warning_label_;
+  raw_ptr<views::StyledLabel> deep_scanning_label_;
 
   views::MdTextButton* open_now_button_;
   views::MdTextButton* save_button_;
   views::MdTextButton* discard_button_;
   views::MdTextButton* scan_button_;
-  views::ImageButton* dropdown_button_;
+  views::MdTextButton* review_button_;
+  raw_ptr<views::ImageButton> dropdown_button_;
 
   // Whether the dropdown is currently pressed.
   bool dropdown_pressed_ = false;
@@ -294,7 +305,7 @@ class DownloadItemView : public views::View,
 
   // A hidden view for accessible status alerts that are spoken by screen
   // readers when a download changes state.
-  views::View* const accessible_alert_;
+  const raw_ptr<views::View> accessible_alert_;
 
   // A timer for accessible alerts that helps reduce the number of similar
   // messages spoken in a short period of time.
@@ -303,8 +314,19 @@ class DownloadItemView : public views::View,
   // Forces reading the current alert text the next time it updates.
   bool announce_accessible_alert_soon_ = false;
 
-  base::ScopedObservation<DownloadUIModel, DownloadUIModel::Observer>
-      observation_{this};
+  float current_scale_;
+
+  // Whether or not a histogram has been emitted recording that the dropdown
+  // button shown.
+  bool dropdown_button_shown_recorded_ = false;
+
+  // Whether or not a histogram has been emitted recording that the dropdown
+  // button was pressed.
+  bool dropdown_button_pressed_recorded_ = false;
+
+  // Whether the download's completion has already been logged. This is used to
+  // avoid inaccurate repeated logging.
+  bool has_download_completion_been_logged_ = false;
 
   // Method factory used to delay reenabling of the item when opening the
   // downloaded file.

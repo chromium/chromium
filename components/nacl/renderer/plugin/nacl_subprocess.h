@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/nacl/renderer/plugin/service_runtime.h"
 
 namespace plugin {
@@ -27,6 +26,10 @@ class ServiceRuntime;
 class NaClSubprocess {
  public:
   NaClSubprocess();
+
+  NaClSubprocess(const NaClSubprocess&) = delete;
+  NaClSubprocess& operator=(const NaClSubprocess&) = delete;
+
   virtual ~NaClSubprocess();
 
   ServiceRuntime* service_runtime() const { return service_runtime_.get(); }
@@ -40,8 +43,6 @@ class NaClSubprocess {
  private:
   // The service runtime representing the NaCl module instance.
   std::unique_ptr<ServiceRuntime> service_runtime_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClSubprocess);
 };
 
 }  // namespace plugin

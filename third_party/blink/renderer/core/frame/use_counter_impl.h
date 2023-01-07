@@ -27,14 +27,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_USE_COUNTER_IMPL_H_
 
 #include <bitset>
-#include "base/macros.h"
-#include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-blink.h"
+#include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -87,7 +88,16 @@ class CORE_EXPORT UseCounterImpl final {
   // distinguish them.
   enum class CSSPropertyType { kDefault, kAnimation };
 
+  enum class PermissionsPolicyUsageType {
+    kViolation,  // Feature request denied by permissions policy.
+    kHeader,     // Feature used in either Permissions-Policy or Feature-Policy
+                 // HTTP header.
+    kIframeAttribute,  // Feature used in 'allow' attribute on iframe element.
+  };
+
   explicit UseCounterImpl(Context = kDefaultContext, CommitState = kPreCommit);
+  UseCounterImpl(const UseCounterImpl&) = delete;
+  UseCounterImpl& operator=(const UseCounterImpl&) = delete;
 
   // An interface to observe UseCounterImpl changes. Note that this is never
   // notified when the counter is disabled by |m_muteCount| or when |m_context|
@@ -104,9 +114,18 @@ class CORE_EXPORT UseCounterImpl final {
 
   // Repeated calls are ignored.
   void Count(CSSPropertyID, CSSPropertyType, const LocalFrame*);
-  // Repeated calls are ignored.
   void Count(WebFeature, const LocalFrame*);
+  void CountPermissionsPolicyUsage(mojom::blink::PermissionsPolicyFeature,
+                                   PermissionsPolicyUsageType,
+                                   const LocalFrame&);
+  void CountUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOverrideHistogram,
+      const LocalFrame*);
 
+  // Return whether the feature has been seen since the last page load
+  // (except when muted).  Does include features seen in documents which have
+  // reporting disabled.
+  bool IsCounted(WebFeature) const;
   bool IsCounted(CSSPropertyID unresolved_property, CSSPropertyType) const;
 
   // Retains a reference to the observer to notify of UseCounterImpl changes.
@@ -118,17 +137,6 @@ class CORE_EXPORT UseCounterImpl final {
   // When muted, all calls to "count" functions are ignoed.  May be nested.
   void MuteForInspector();
   void UnmuteForInspector();
-
-  void RecordMeasurement(WebFeature, const LocalFrame&);
-  void ReportAndTraceMeasurementByFeatureId(WebFeature, const LocalFrame&);
-  void ReportAndTraceMeasurementByCSSSampleId(int,
-                                              const LocalFrame*,
-                                              bool /*is_animated*/);
-
-  // Return whether the feature has been seen since the last page load
-  // (except when muted).  Does include features seen in documents which have
-  // reporting disabled.
-  bool HasRecordedMeasurement(WebFeature) const;
 
   void ClearMeasurementForTesting(WebFeature);
 
@@ -144,6 +152,16 @@ class CORE_EXPORT UseCounterImpl final {
 
   void CountFeature(WebFeature) const;
 
+  void Count(const UseCounterFeature&, const LocalFrame*);
+  bool IsCounted(const UseCounterFeature&) const;
+
+  // Reports feature observed event to
+  // components/page_load_metrics/renderer/page_timing_metrics_sender.
+  // Returns whether a report is successfully sent.
+  bool ReportMeasurement(const UseCounterFeature&, const LocalFrame*);
+  // Triggers "blink.feature_usage" event.
+  void TraceMeasurement(const UseCounterFeature&);
+
   // If non-zero, ignore all 'count' calls completely.
   unsigned mute_count_;
 
@@ -156,18 +174,9 @@ class CORE_EXPORT UseCounterImpl final {
   // no corresponding PageVisits).
   CommitState commit_state_;
 
-  // Track what features/properties have been recorded.
-  std::bitset<static_cast<size_t>(WebFeature::kNumberOfFeatures)>
-      features_recorded_;
-
-  static constexpr size_t kMaxSample =
-      static_cast<size_t>(mojom::blink::CSSSampleId::kMaxValue) + 1;
-  std::bitset<kMaxSample> css_recorded_;
-  std::bitset<kMaxSample> animated_css_recorded_;
+  UseCounterFeatureTracker feature_tracker_;
 
   HeapHashSet<Member<Observer>> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(UseCounterImpl);
 };
 
 }  // namespace blink

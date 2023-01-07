@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
@@ -41,6 +41,11 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
       public ui::AXModeObserver {
  public:
   BrowserAccessibilityStateImpl();
+
+  BrowserAccessibilityStateImpl(const BrowserAccessibilityStateImpl&) = delete;
+  BrowserAccessibilityStateImpl& operator=(
+      const BrowserAccessibilityStateImpl&) = delete;
+
   ~BrowserAccessibilityStateImpl() override;
 
   static BrowserAccessibilityStateImpl* GetInstance();
@@ -69,7 +74,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void UpdateUniqueUserHistograms() override;
   void UpdateHistogramsForTesting() override;
   void SetCaretBrowsingState(bool enabled) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetImageLabelsModeForProfile(bool enabled,
                                     BrowserContext* profile) override;
 #endif
@@ -82,6 +87,13 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   // AXModeObserver
   void OnAXModeAdded(ui::AXMode mode) override;
+
+  // The global accessibility mode is automatically enabled based on
+  // usage of accessibility APIs. When we detect a significant amount
+  // of user inputs within a certain time period, but no accessibility
+  // API usage, we automatically disable accessibility.
+  void OnUserInputEvent();
+  void OnAccessibilityApiUsage();
 
   // Accessibility objects can have the "hot tracked" state set when
   // the mouse is hovering over them, but this makes tests flaky because
@@ -116,6 +128,8 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   void OnOtherThreadDone();
 
+  void UpdateAccessibilityActivityTask();
+
   ui::AXMode accessibility_mode_;
 
   base::TimeDelta histogram_delay_;
@@ -127,16 +141,43 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   bool other_thread_done_ = false;
   base::RepeatingClosure background_thread_done_callback_;
 
-  bool disable_hot_tracking_;
+  // Whether there is a pending task to run UpdateAccessibilityActivityTask.
+  bool accessibility_update_task_pending_ = false;
+
+  // Whether the force-renderer-accessibility flag is enabled.
+  // Cached here so that we don't have to check base::CommandLine in
+  // a function that's called frequently.
+  bool force_renderer_accessibility_ = false;
+
+  // Disable hot tracking, i.e. hover state - needed just to avoid flaky tests.
+  bool disable_hot_tracking_ = false;
 
   // Keeps track of whether caret browsing is enabled for the most
   // recently used profile.
   bool caret_browsing_enabled_ = false;
 
+  // The time of the first user input event; if we receive multiple
+  // user input events within a 30-second period and no
+  base::TimeTicks first_user_input_event_time_;
+  int user_input_event_count_ = 0;
+
+  // The time accessibility became active, used to calculate active time.
+  base::TimeTicks accessibility_active_start_time_;
+
+  // The time accessibility became inactive, used to calculate inactive time.
+  base::TimeTicks accessibility_inactive_start_time_;
+
+  // The last time accessibility was active, used to calculate active time.
+  base::TimeTicks accessibility_last_usage_time_;
+
+  // The time accessibility was enabled, for statistics.
+  base::TimeTicks accessibility_enabled_time_;
+
+  // The time accessibility was auto-disabled, for statistics.
+  base::TimeTicks accessibility_disabled_time_;
+
   base::RepeatingCallbackList<void(const FocusedNodeDetails&)>
       focus_changed_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityStateImpl);
 };
 
 }  // namespace content

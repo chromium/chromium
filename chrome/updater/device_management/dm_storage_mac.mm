@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,19 +15,20 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/updater_branding.h"
 
 namespace updater {
-
 namespace {
 
-static const CFStringRef kEnrollmentTokenKey = CFSTR("EnrollmentToken");
-static const CFStringRef kBrowserBundleId =
-    CFSTR(MAC_BROWSER_BUNDLE_IDENTIFIER_STRING);
-
 bool LoadEnrollmentTokenFromPolicy(std::string* enrollment_token) {
+  const CFStringRef kEnrollmentTokenKey = CFSTR("EnrollmentToken");
+  const CFStringRef kBrowserBundleId =
+      CFSTR(MAC_BROWSER_BUNDLE_IDENTIFIER_STRING);
+
   base::ScopedCFTypeRef<CFPropertyListRef> token_value(
       CFPreferencesCopyAppValue(kEnrollmentTokenKey, kBrowserBundleId));
   if (!token_value || CFGetTypeID(token_value) != CFStringGetTypeID() ||
@@ -78,7 +79,7 @@ bool LoadTokenFromFile(const base::FilePath& token_file_path,
     return false;
   }
 
-  *token = base::TrimWhitespaceASCII(token_value, base::TRIM_ALL).as_string();
+  *token = std::string(base::TrimWhitespaceASCII(token_value, base::TRIM_ALL));
   return true;
 }
 
@@ -89,9 +90,14 @@ class TokenService : public TokenServiceInterface {
 
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return device_id_; }
+  bool IsEnrollmentMandatory() const override {
+    // TODO(crbug.com/1345407) : check if enrollment is mandatory.
+    return false;
+  }
   bool StoreEnrollmentToken(const std::string& enrollment_token) override;
   std::string GetEnrollmentToken() const override { return enrollment_token_; }
   bool StoreDmToken(const std::string& dm_token) override;
+  bool DeleteDmToken() override;
   std::string GetDmToken() const override { return dm_token_; }
 
  private:
@@ -137,9 +143,30 @@ bool TokenService::StoreDmToken(const std::string& token) {
   return true;
 }
 
+bool TokenService::DeleteDmToken() {
+  const base::FilePath dm_token_path = GetDmTokenFilePath();
+  if (dm_token_path.empty() || !base::DeleteFile(dm_token_path)) {
+    return false;
+  }
+  dm_token_.clear();
+  return true;
+}
+
 }  // namespace
 
 DMStorage::DMStorage(const base::FilePath& policy_cache_root)
     : DMStorage(policy_cache_root, std::make_unique<TokenService>()) {}
+
+scoped_refptr<DMStorage> GetDefaultDMStorage() {
+  absl::optional<base::FilePath> sys_library_path =
+      GetLibraryFolderPath(UpdaterScope::kSystem);
+  if (!sys_library_path)
+    return nullptr;
+
+  return base::MakeRefCounted<DMStorage>(
+      sys_library_path->AppendASCII(COMPANY_SHORTNAME_STRING)
+          .Append(FILE_PATH_LITERAL(KEYSTONE_NAME))
+          .AppendASCII("DeviceManagement"));
+}
 
 }  // namespace updater

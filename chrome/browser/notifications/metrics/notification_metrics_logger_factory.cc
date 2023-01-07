@@ -1,12 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 
 #include "chrome/browser/notifications/metrics/notification_metrics_logger.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 NotificationMetricsLogger*
@@ -24,17 +22,11 @@ NotificationMetricsLoggerFactory::GetInstance() {
 }
 
 NotificationMetricsLoggerFactory::NotificationMetricsLoggerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "NotificationMetricsLogger",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 KeyedService* NotificationMetricsLoggerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new NotificationMetricsLogger();
-}
-
-content::BrowserContext*
-NotificationMetricsLoggerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

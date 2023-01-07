@@ -57,6 +57,7 @@ XMLPUBFUN void XMLCALL
 /*
  * Library wide APIs.
  */
+XML_DEPRECATED
 XMLPUBFUN void XMLCALL
 			xmlInitThreads	(void);
 XMLPUBFUN void XMLCALL
@@ -67,6 +68,7 @@ XMLPUBFUN int XMLCALL
 			xmlGetThreadId	(void);
 XMLPUBFUN int XMLCALL
 			xmlIsMainThread	(void);
+XML_DEPRECATED
 XMLPUBFUN void XMLCALL
 			xmlCleanupThreads(void);
 XMLPUBFUN xmlGlobalStatePtr XMLCALL

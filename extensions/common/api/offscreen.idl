@@ -1,0 +1,48 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>offscreen</code> API to create and manage offscreen documents.
+namespace offscreen {
+  enum Reason {
+    // A reason used for testing purposes only.
+    TESTING
+  };
+
+  dictionary CreateParameters {
+    // The reason(s) the extension is creating the offscreen document.
+    Reason[] reasons;
+    // The (relative) URL to load in the document.
+    DOMString url;
+    // A developer-provided string that explains, in more detail, the need for
+    // the background context. The user agent _may_ use this in display to the
+    // user.
+    DOMString justification;
+  };
+
+  callback VoidCallback = void();
+  callback BooleanCallback = void(boolean result);
+
+  interface Functions {
+    // Creates a new offscreen document for the extension.
+    // |parameters|: The parameters describing the offscreen document to create.
+    // |callback|: Invoked when the offscreen document is created and has
+    // completed its initial page load.
+    [supportsPromises] static void createDocument(
+        CreateParameters parameters,
+        VoidCallback callback);
+
+    // Closes the currently-open offscreen document for the extension.
+    // |callback|: Invoked when the offscreen document has been closed.
+    [supportsPromises] static void closeDocument(VoidCallback callback);
+
+    // Determines whether the extension has an active document.
+    // TODO(https://crbug.com/1339382): This probably isn't something we want to
+    // ship in its current form (hence the nodoc). Instead of this, we should
+    // integrate offscreen documents into a service worker-compatible getViews()
+    // alternative. But this is pretty useful in testing environments.
+    // |callback|: Invoked with the result of whether the extension has an
+    // active offscreen document.
+    [supportsPromises, nodoc] static void hasDocument(BooleanCallback callback);
+  };
+};

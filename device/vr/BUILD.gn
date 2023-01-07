@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -82,6 +82,8 @@ if (enable_vr) {
       "util/fps_meter.h",
       "util/gamepad_builder.cc",
       "util/gamepad_builder.h",
+      "util/hit_test_subscription_data.cc",
+      "util/hit_test_subscription_data.h",
       "util/sample_queue.cc",
       "util/sample_queue.h",
       "util/sliding_average.cc",
@@ -99,6 +101,21 @@ if (enable_vr) {
       "//device/vr/public/mojom:isolated_xr_service",
       "//ui/gfx",
     ]
+  }
+
+  if (enable_openxr) {
+    source_set("openxr_data") {
+      sources = [
+        "openxr/openxr_defs.h",
+        "openxr/openxr_interaction_profile_type.h",
+      ]
+
+      deps = [
+        "//base",
+        "//device/gamepad/public/cpp:shared_with_blink",
+        "//third_party/openxr:openxr_headers",
+      ]
+    }
   }
 
   # TODO(alcooper): Ultimately, this component should be either deleted entirely
@@ -180,29 +197,46 @@ if (enable_vr) {
         "openxr/openxr_api_wrapper.h",
         "openxr/openxr_controller.cc",
         "openxr/openxr_controller.h",
-        "openxr/openxr_defs.h",
         "openxr/openxr_device.cc",
         "openxr/openxr_device.h",
+        "openxr/openxr_extension_handle.h",
         "openxr/openxr_extension_helper.cc",
         "openxr/openxr_extension_helper.h",
         "openxr/openxr_input_helper.cc",
         "openxr/openxr_input_helper.h",
+        "openxr/openxr_interaction_profiles.cc",
         "openxr/openxr_interaction_profiles.h",
         "openxr/openxr_path_helper.cc",
         "openxr/openxr_path_helper.h",
         "openxr/openxr_render_loop.cc",
         "openxr/openxr_render_loop.h",
+        "openxr/openxr_scene.cc",
+        "openxr/openxr_scene.h",
+        "openxr/openxr_scene_bounds.cc",
+        "openxr/openxr_scene_bounds.h",
+        "openxr/openxr_scene_object.cc",
+        "openxr/openxr_scene_object.h",
+        "openxr/openxr_scene_observer.cc",
+        "openxr/openxr_scene_observer.h",
+        "openxr/openxr_scene_plane.cc",
+        "openxr/openxr_scene_plane.h",
+        "openxr/openxr_scene_understanding_manager.cc",
+        "openxr/openxr_scene_understanding_manager.h",
         "openxr/openxr_statics.cc",
         "openxr/openxr_statics.h",
         "openxr/openxr_util.cc",
         "openxr/openxr_util.h",
+        "openxr/openxr_view_configuration.cc",
+        "openxr/openxr_view_configuration.h",
         "test/test_hook.h",
         "windows/compositor_base.cc",
         "windows/compositor_base.h",
       ]
 
       deps += [
+        ":openxr_data",
         "//components/version_info",
+        "//device/base",
         "//third_party/openxr",
       ]
     }
@@ -282,11 +316,12 @@ if (enable_openxr) {
     include_dirs = [ "//third_party/openxr/src/include" ]
 
     sources = [
-      "openxr/openxr_defs.h",
       "openxr/openxr_extension_helper.cc",
       "openxr/openxr_extension_helper.h",
       "openxr/openxr_util.cc",
       "openxr/openxr_util.h",
+      "openxr/openxr_view_configuration.cc",
+      "openxr/openxr_view_configuration.h",
       "openxr/test/fake_openxr_impl_api.cc",
       "openxr/test/openxr.def",
       "openxr/test/openxr_negotiate.h",
@@ -307,6 +342,8 @@ if (enable_openxr) {
       "//third_party/openxr:openxr_headers",
     ]
 
+    public_deps = [ ":openxr_data" ]
+
     data_deps = [ "//device/vr:json_mock" ]
   }
 }
@@ -324,6 +361,8 @@ if (enable_gvr_services) {
     sources = java_sources_needing_jni
     deps = [
       "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
       "//third_party/gvr-android-sdk:gvr_common_java",
       "//ui/android:ui_java",
     ]

@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.net.impl;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.CronetEngine;
@@ -48,6 +49,7 @@ public class BidirectionalStreamBuilderImpl extends ExperimentalBidirectionalStr
     private int mTrafficStatsTag;
     private boolean mTrafficStatsUidSet;
     private int mTrafficStatsUid;
+    private long mNetworkHandle = CronetEngineBase.DEFAULT_NETWORK_HANDLE;
 
     /**
      * Creates a builder for {@link BidirectionalStream} objects. All callbacks for
@@ -146,11 +148,21 @@ public class BidirectionalStreamBuilderImpl extends ExperimentalBidirectionalStr
     }
 
     @Override
+    public ExperimentalBidirectionalStream.Builder bindToNetwork(long networkHandle) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            throw new UnsupportedOperationException(
+                    "The multi-network API is available starting from Android Marshmallow");
+        }
+        mNetworkHandle = networkHandle;
+        return this;
+    }
+
+    @Override
     @SuppressLint("WrongConstant") // TODO(jbudorick): Remove this after rolling to the N SDK.
     public ExperimentalBidirectionalStream build() {
         return mCronetEngine.createBidirectionalStream(mUrl, mCallback, mExecutor, mHttpMethod,
                 mRequestHeaders, mPriority, mDelayRequestHeadersUntilFirstFlush,
                 mRequestAnnotations, mTrafficStatsTagSet, mTrafficStatsTag, mTrafficStatsUidSet,
-                mTrafficStatsUid);
+                mTrafficStatsUid, mNetworkHandle);
     }
 }

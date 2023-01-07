@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,21 +9,24 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.SwipeRefreshHandler;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.tab.CurrentTabObserver;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
 /**
  * Coordinator object for gesture navigation.
  */
@@ -34,7 +37,7 @@ public class HistoryNavigationCoordinator
     private ViewGroup mParentView;
     private HistoryNavigationLayout mNavigationLayout;
     private InsetObserverView mInsetObserverView;
-    private ActivityTabTabObserver mActivityTabObserver;
+    private CurrentTabObserver mCurrentTabObserver;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private BackActionDelegate mBackActionDelegate;
     private Tab mTab;
@@ -44,28 +47,34 @@ public class HistoryNavigationCoordinator
 
     private OverscrollGlowOverlay mOverscrollGlowOverlay;
 
-    private Runnable mInitRunnable;
-    private Runnable mCleanupRunnable;
+    private Callback<TouchEventObserver> mInitCallback;
+    private Callback<TouchEventObserver> mDestroyCallback;
 
     /**
      * Creates the coordinator for gesture navigation and initializes internal objects.
+     * @param window Window object.
      * @param lifecycleDispatcher Lifecycle dispatcher for the associated activity.
-     * @param compositorViewHolder Parent view for navigation layout.
-     * @param tabProvider Activity tab provider.
+     * @param parentView Parent view of the gesture navigation layout.
+     * @param requestRunnable Runnable executing the renderer update.
+     * @param tabSupplier Activity tab supplier.
      * @param insetObserverView View that provides information about the inset and inset
      *        capabilities of the device.
      * @param backActionDelegate Delegate handling actions for back gesture.
+     * @param initRunnable Runnable to run when Navigation Handler is initialized.
+     * @param destroyRunnable Runnable to run when Navigation Handler is destroyed.
      * @param layoutManager LayoutManager for handling overscroll glow effect as scene layer.
      * @return HistoryNavigationCoordinator object or null if not enabled via feature flag.
      */
     public static HistoryNavigationCoordinator create(WindowAndroid window,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            CompositorViewHolder compositorViewHolder, ActivityTabProvider tabProvider,
+            ActivityLifecycleDispatcher lifecycleDispatcher, ViewGroup parentView,
+            Runnable requestRunnable, ObservableSupplier<Tab> tabSupplier,
             InsetObserverView insetObserverView, BackActionDelegate backActionDelegate,
-            LayoutManagerImpl layoutManager) {
+            Callback<TouchEventObserver> initCallback, Callback<TouchEventObserver> destroyCallback,
+            LayoutManager layoutManager) {
         HistoryNavigationCoordinator coordinator = new HistoryNavigationCoordinator();
-        coordinator.init(window, lifecycleDispatcher, compositorViewHolder, tabProvider,
-                insetObserverView, backActionDelegate, layoutManager);
+        coordinator.init(window, lifecycleDispatcher, parentView, requestRunnable, tabSupplier,
+                insetObserverView, backActionDelegate, initCallback, destroyCallback,
+                layoutManager);
         return coordinator;
     }
 
@@ -78,59 +87,52 @@ public class HistoryNavigationCoordinator
      * Initializes the navigation layout and internal objects.
      */
     private void init(WindowAndroid window, ActivityLifecycleDispatcher lifecycleDispatcher,
-            CompositorViewHolder compositorViewHolder, ActivityTabProvider tabProvider,
+            ViewGroup parentView, Runnable requestRunnable, ObservableSupplier<Tab> tabSupplier,
             InsetObserverView insetObserverView, BackActionDelegate backActionDelegate,
-            LayoutManagerImpl layoutManager) {
-        mOverscrollGlowOverlay = new OverscrollGlowOverlay(window, compositorViewHolder,
-                () -> compositorViewHolder.getLayoutManager().getActiveLayout().requestUpdate());
-        mNavigationLayout = new HistoryNavigationLayout(compositorViewHolder.getContext(),
-                this::isNativePage, mOverscrollGlowOverlay,
-                (direction) -> mNavigationHandler.navigate(direction));
+            Callback<TouchEventObserver> initCallback, Callback<TouchEventObserver> destroyCallback,
+            LayoutManager layoutManager) {
+        mOverscrollGlowOverlay = new OverscrollGlowOverlay(window, parentView, requestRunnable);
+        mNavigationLayout = new HistoryNavigationLayout(parentView.getContext(), this::isNativePage,
+                mOverscrollGlowOverlay, (direction) -> mNavigationHandler.navigate(direction));
 
-        mParentView = compositorViewHolder;
+        mParentView = parentView;
         mActivityLifecycleDispatcher = lifecycleDispatcher;
         mBackActionDelegate = backActionDelegate;
         lifecycleDispatcher.register(this);
 
-        compositorViewHolder.addView(mNavigationLayout);
+        // TODO(crbug.com/1216949): Look into enforcing the z-order of the views.
+        parentView.addView(mNavigationLayout);
 
-        mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(tabProvider) {
-            @Override
-            protected void onObservingDifferentTab(Tab tab, boolean hint) {
-                if (mTab != null && mTab.isInitialized()) {
-                    SwipeRefreshHandler.from(mTab).setNavigationCoordinator(null);
-                }
-                mTab = tab;
-                updateNavigationHandler();
-            }
+        mCurrentTabObserver = new CurrentTabObserver(tabSupplier,
+                new EmptyTabObserver() {
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        updateNavigationHandler();
+                    }
 
-            @Override
-            public void onContentChanged(Tab tab) {
-                updateNavigationHandler();
-            }
+                    @Override
+                    public void onDestroyed(Tab tab) {
+                        mTab = null;
+                        updateNavigationHandler();
+                    }
+                },
+                (tab) -> {
+                    mTab = tab;
+                    updateNavigationHandler();
+                });
 
-            @Override
-            public void onDestroyed(Tab tab) {
-                mTab = null;
-                updateNavigationHandler();
-            }
-        };
-
-        mInitRunnable = () -> {
-            compositorViewHolder.addTouchEventObserver(mNavigationHandler);
-        };
-        mCleanupRunnable = () -> {
-            compositorViewHolder.removeCallbacks(mUpdateNavigationStateRunnable);
-            if (mNavigationHandler != null) {
-                compositorViewHolder.removeTouchEventObserver(mNavigationHandler);
-            }
-        };
+        mInitCallback = initCallback;
+        mDestroyCallback = destroyCallback;
 
         // We wouldn't hear about the first tab until the content changed or we switched tabs
         // if tabProvider.get() != null. Do here what we do when tab switching happens.
-        if (tabProvider.get() != null) {
-            mTab = tabProvider.get();
+        // Otherwise, just initialize |mEnabled| in preparation of the initialization of
+        // NavigationHandler for later tab switching/init.
+        if (tabSupplier.get() != null) {
+            mTab = tabSupplier.get();
             onNavigationStateChanged();
+        } else {
+            mEnabled = isFeatureEnabled();
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -139,6 +141,13 @@ public class HistoryNavigationCoordinator
         }
         layoutManager.addSceneOverlay(mOverscrollGlowOverlay);
         GestureNavMetrics.logGestureType(isFeatureEnabled());
+    }
+
+    /** @return {@link TouchEventObserver} for gesture navigation component. */
+    @Nullable
+    public TouchEventObserver getTouchEventObserver() {
+        // Can be null if gesture navigation was not triggered at all or already destroyed.
+        return mNavigationHandler;
     }
 
     private boolean isNativePage() {
@@ -192,7 +201,6 @@ public class HistoryNavigationCoordinator
                 mNavigationHandler.setTab(isDetached(mTab) ? null : mTab);
             }
         }
-        if (mTab != null) SwipeRefreshHandler.from(mTab).setNavigationCoordinator(this);
     }
 
     /**
@@ -204,7 +212,7 @@ public class HistoryNavigationCoordinator
         PropertyModelChangeProcessor.create(
                 model, mNavigationLayout, GestureNavigationViewBinder::bind);
         mNavigationHandler = new NavigationHandler(model, mNavigationLayout, mBackActionDelegate);
-        mInitRunnable.run();
+        mInitCallback.onResult(mNavigationHandler);
     }
 
     @Override
@@ -269,16 +277,17 @@ public class HistoryNavigationCoordinator
      * Destroy HistoryNavigationCoordinator object.
      */
     public void destroy() {
-        if (mActivityTabObserver != null) {
-            mActivityTabObserver.destroy();
-            mActivityTabObserver = null;
+        if (mCurrentTabObserver != null) {
+            mCurrentTabObserver.destroy();
+            mCurrentTabObserver = null;
         }
         if (mInsetObserverView != null) {
             mInsetObserverView.removeObserver(this);
             mInsetObserverView = null;
         }
-        mCleanupRunnable.run();
         mNavigationLayout = null;
+        mParentView.removeCallbacks(mUpdateNavigationStateRunnable);
+
         if (mOverscrollGlowOverlay != null) {
             mOverscrollGlowOverlay.destroy();
             mOverscrollGlowOverlay = null;
@@ -286,6 +295,7 @@ public class HistoryNavigationCoordinator
         if (mNavigationHandler != null) {
             mNavigationHandler.setTab(null);
             mNavigationHandler.destroy();
+            mDestroyCallback.onResult(mNavigationHandler);
             mNavigationHandler = null;
         }
         if (mActivityLifecycleDispatcher != null) {

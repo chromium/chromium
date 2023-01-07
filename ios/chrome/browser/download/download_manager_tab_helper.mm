@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
 
-#include "base/check_op.h"
-#include "base/memory/ptr_util.h"
-#include "base/notreached.h"
+#import "base/check_op.h"
+#import "base/memory/ptr_util.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper_delegate.h"
 #import "ios/web/public/download/download_task.h"
 
@@ -14,39 +14,34 @@
 #error "This file requires ARC support."
 #endif
 
-DownloadManagerTabHelper::DownloadManagerTabHelper(
-    web::WebState* web_state,
-    id<DownloadManagerTabHelperDelegate> delegate)
-    : web_state_(web_state), delegate_(delegate) {
+DownloadManagerTabHelper::DownloadManagerTabHelper(web::WebState* web_state)
+    : web_state_(web_state) {
   DCHECK(web_state_);
   web_state_->AddObserver(this);
 }
 
 DownloadManagerTabHelper::~DownloadManagerTabHelper() {
-  DCHECK(!task_);
-}
+  if (web_state_) {
+    web_state_->RemoveObserver(this);
+    web_state_ = nullptr;
+  }
 
-void DownloadManagerTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    id<DownloadManagerTabHelperDelegate> delegate) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new DownloadManagerTabHelper(web_state, delegate)));
+  if (task_) {
+    task_->RemoveObserver(this);
+    task_ = nullptr;
   }
 }
 
 void DownloadManagerTabHelper::Download(
     std::unique_ptr<web::DownloadTask> task) {
-  __block std::unique_ptr<web::DownloadTask> block_task = std::move(task);
   // If downloads are persistent, they cannot be lost once completed.
   if (!task_ || task_->GetState() == web::DownloadTask::State::kComplete) {
     // The task is the first download for this web state.
-    DidCreateDownload(std::move(block_task));
+    DidCreateDownload(std::move(task));
     return;
   }
 
+  __block std::unique_ptr<web::DownloadTask> block_task = std::move(task);
   [delegate_ downloadManagerTabHelper:this
               decidePolicyForDownload:block_task.get()
                     completionHandler:^(NewDownloadPolicy policy) {
@@ -56,20 +51,36 @@ void DownloadManagerTabHelper::Download(
                     }];
 }
 
+void DownloadManagerTabHelper::SetDelegate(
+    id<DownloadManagerTabHelperDelegate> delegate) {
+  if (delegate == delegate_)
+    return;
+
+  if (delegate_ && task_ && delegate_started_)
+    [delegate_ downloadManagerTabHelper:this didHideDownload:task_.get()];
+
+  delegate_started_ = false;
+  delegate_ = delegate;
+}
+
 void DownloadManagerTabHelper::WasShown(web::WebState* web_state) {
-  if (task_) {
+  if (task_ && delegate_) {
+    delegate_started_ = true;
     [delegate_ downloadManagerTabHelper:this didShowDownload:task_.get()];
   }
 }
 
 void DownloadManagerTabHelper::WasHidden(web::WebState* web_state) {
-  if (task_) {
+  if (task_ && delegate_) {
+    delegate_started_ = false;
     [delegate_ downloadManagerTabHelper:this didHideDownload:task_.get()];
   }
 }
 
 void DownloadManagerTabHelper::WebStateDestroyed(web::WebState* web_state) {
-  web_state->RemoveObserver(this);
+  DCHECK_EQ(web_state_, web_state);
+  web_state_->RemoveObserver(this);
+  web_state_ = nullptr;
   if (task_) {
     task_->RemoveObserver(this);
     task_ = nullptr;
@@ -84,8 +95,9 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
       task_ = nullptr;
       break;
     case web::DownloadTask::State::kInProgress:
-      break;
     case web::DownloadTask::State::kComplete:
+    case web::DownloadTask::State::kFailed:
+    case web::DownloadTask::State::kFailedNotResumable:
       break;
     case web::DownloadTask::State::kNotStarted:
       // OnDownloadUpdated cannot be called with this state.
@@ -97,12 +109,16 @@ void DownloadManagerTabHelper::DidCreateDownload(
     std::unique_ptr<web::DownloadTask> task) {
   if (task_) {
     task_->RemoveObserver(this);
+    task_ = nullptr;
   }
   task_ = std::move(task);
   task_->AddObserver(this);
-  [delegate_ downloadManagerTabHelper:this
-                    didCreateDownload:task_.get()
-                    webStateIsVisible:web_state_->IsVisible()];
+  if (web_state_->IsVisible() && delegate_) {
+    delegate_started_ = true;
+    [delegate_ downloadManagerTabHelper:this
+                      didCreateDownload:task_.get()
+                      webStateIsVisible:true];
+  }
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(DownloadManagerTabHelper)

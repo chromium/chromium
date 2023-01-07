@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,7 +24,8 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
   TestingPrefServiceSimple pref_service;
   syncer::TestSyncService sync_service;
 
-  PasswordFeatureManagerImpl feature_manager(&pref_service, &sync_service);
+  PasswordFeatureManagerImpl feature_manager(
+      &pref_service, /*local_state=*/nullptr, &sync_service);
 
   pref_service.registry()->RegisterDictionaryPref(
       prefs::kAccountStoragePerAccountSettings);
@@ -45,25 +46,25 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
   account.gaia = "gaia_id";
   account.email = "email@test.com";
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-  sync_service.SetAuthenticatedAccountInfo(account);
-  sync_service.SetIsAuthenticatedAccountPrimary(false);
+  sync_service.SetAccountInfo(account);
+  sync_service.SetHasSyncConsent(false);
   ASSERT_FALSE(sync_service.IsSyncFeatureEnabled());
 
   // Once the SyncService notifies its observers, the watcher should run the
-  // callback: Still not opted in, but saving to the account store by default
-  // now because the user is signed in.
+  // callback: Still not opted in, and the default store now depends on whether
+  // the revised opt-in flow is active.
   EXPECT_CALL(change_callback, Run()).WillOnce([&]() {
     EXPECT_FALSE(feature_manager.IsOptedInForAccountStorage());
+    EXPECT_FALSE(feature_manager.IsDefaultPasswordStoreSet());
     EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
-              PasswordForm::Store::kAccountStore);
+              PasswordForm::Store::kProfileStore);
   });
   sync_service.FireStateChanged();
 
   // Opt in. The watcher should run the callback.
   EXPECT_CALL(change_callback, Run()).WillOnce([&]() {
     EXPECT_TRUE(feature_manager.IsOptedInForAccountStorage());
-    EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
-              PasswordForm::Store::kAccountStore);
+    EXPECT_FALSE(feature_manager.IsDefaultPasswordStoreSet());
   });
   feature_manager.OptInToAccountStorage();
 
@@ -74,6 +75,14 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
               PasswordForm::Store::kProfileStore);
   });
   feature_manager.SetDefaultPasswordStore(PasswordForm::Store::kProfileStore);
+
+  // Switch to saving to the account store. The watcher should run the callback.
+  EXPECT_CALL(change_callback, Run()).WillOnce([&]() {
+    EXPECT_TRUE(feature_manager.IsOptedInForAccountStorage());
+    EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
+              PasswordForm::Store::kAccountStore);
+  });
+  feature_manager.SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
 }
 
 }  // namespace password_manager

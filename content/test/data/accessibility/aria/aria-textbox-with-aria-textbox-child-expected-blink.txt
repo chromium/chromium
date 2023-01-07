@@ -1,0 +1,39 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++textField name='not editable' value='Foo<newline>Bar<newline>Bar<newline>Baz<newline>Baz' nonAtomicTextFieldRoot=true
+++++++++paragraph
+++++++++++staticText name='Foo'
+++++++++++++inlineTextBox name='Foo'
+++++++++textField name='nested, not editable, rich' value='Bar' nonAtomicTextFieldRoot=true
+++++++++++paragraph
+++++++++++++staticText name='Bar'
+++++++++++++++inlineTextBox name='Bar'
+++++++++textField name='nested, not editable, plain' value='Bar' nonAtomicTextFieldRoot=true
+++++++++++staticText name='Bar'
+++++++++++++inlineTextBox name='Bar'
+++++++++textField editable multiline richlyEditable name='nested, editable, rich' value='Baz' nonAtomicTextFieldRoot=true
+++++++++++paragraph editable richlyEditable
+++++++++++++staticText editable richlyEditable name='Baz'
+++++++++++++++inlineTextBox editable richlyEditable name='Baz'
+++++++++textField editable multiline richlyEditable name='nested, editable, plain' value='Baz' nonAtomicTextFieldRoot=true
+++++++++++staticText editable richlyEditable name='Baz'
+++++++++++++inlineTextBox editable richlyEditable name='Baz'
+++++++textField editable multiline richlyEditable name='editable' value='Foo<newline>Bar<newline>Bar<newline>Baz<newline>Baz' nonAtomicTextFieldRoot=true
+++++++++paragraph editable richlyEditable
+++++++++++staticText editable richlyEditable name='Foo'
+++++++++++++inlineTextBox editable richlyEditable name='Foo'
+++++++++textField editable richlyEditable name='nested, not editable, rich' value='Bar' nonAtomicTextFieldRoot=true
+++++++++++paragraph editable richlyEditable
+++++++++++++staticText editable richlyEditable name='Bar'
+++++++++++++++inlineTextBox editable richlyEditable name='Bar'
+++++++++textField editable richlyEditable name='nested, not editable, plain' value='Bar' nonAtomicTextFieldRoot=true
+++++++++++staticText editable richlyEditable name='Bar'
+++++++++++++inlineTextBox editable richlyEditable name='Bar'
+++++++++textField editable multiline richlyEditable name='nested, editable, rich' value='Baz' nonAtomicTextFieldRoot=true
+++++++++++paragraph editable richlyEditable
+++++++++++++staticText editable richlyEditable name='Baz'
+++++++++++++++inlineTextBox editable richlyEditable name='Baz'
+++++++++textField editable multiline richlyEditable name='nested, editable, plain' value='Baz' nonAtomicTextFieldRoot=true
+++++++++++staticText editable richlyEditable name='Baz'
+++++++++++++inlineTextBox editable richlyEditable name='Baz'

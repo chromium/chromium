@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@ class Window;
 namespace ash {
 
 class MultiUserWindowManagerDelegate;
-class MultiUserWindowManagerObserver;
 
 // Used to assign windows to user accounts so that ash shows the appropriate set
 // of windows based on the active user.
@@ -60,9 +59,6 @@ class ASH_EXPORT MultiUserWindowManager {
 
   // Returns the id of the currently active user.
   virtual const AccountId& CurrentAccountId() const = 0;
-
-  virtual void AddObserver(MultiUserWindowManagerObserver* observer) = 0;
-  virtual void RemoveObserver(MultiUserWindowManagerObserver* observer) = 0;
 
  protected:
   MultiUserWindowManager() {}

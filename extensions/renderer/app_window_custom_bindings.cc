@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/switches.h"
@@ -18,7 +17,10 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 

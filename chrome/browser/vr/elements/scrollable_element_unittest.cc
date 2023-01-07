@@ -1,13 +1,12 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/vr/elements/scrollable_element.h"
 
-#include "base/stl_util.h"
-#include "cc/test/geometry_test_utils.h"
 #include "chrome/browser/vr/input_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace vr {
 
@@ -41,7 +40,7 @@ TEST(ScrollableElement, VerticalOnScrollUpdate) {
       {1000.0f, 1000.0f, -0.5f}, {-1000.0f, -1000.0f, 0.5f},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(i);
     element->OnScrollUpdate(
         CreateScrollUpdate(test_cases[i].delta_x, test_cases[i].delta_y), {});
@@ -67,7 +66,7 @@ TEST(ScrollableElement, VerticalTopOnScrollUpdate) {
     float expected;
   } test_cases[] = {{-1000.0f, -1000.0f, 0.5f}, {1000.0f, 1000.0f, -0.5f}};
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(i);
     element->OnScrollUpdate(
         CreateScrollUpdate(test_cases[i].delta_x, test_cases[i].delta_y), {});
@@ -94,7 +93,7 @@ TEST(ScrollableElement, HorizontalScrollUpdate) {
       {1000.0f, 1000.0f, -0.5f}, {-1000.0f, -1000.0f, 0.5f},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(i);
     element->OnScrollUpdate(
         CreateScrollUpdate(test_cases[i].delta_x, test_cases[i].delta_y), {});
@@ -113,13 +112,13 @@ TEST(ScrollableElement, MaxSpan) {
   child->SetSize(1.0f, 2.0f);
   element->AddScrollingChild(std::move(child));
   element->SizeAndLayOut();
-  EXPECT_SIZE_EQ(gfx::SizeF(1.0f, 1.0f), element->size());
+  EXPECT_SIZEF_EQ(gfx::SizeF(1.0f, 1.0f), element->size());
   EXPECT_TRUE(element->scrollable());
 
   // Make the max span bigger so that it can fit the entire child.
   element->set_max_span(3.0f);
   element->SizeAndLayOut();
-  EXPECT_SIZE_EQ(gfx::SizeF(1.0f, 2.0f), element->size());
+  EXPECT_SIZEF_EQ(gfx::SizeF(1.0f, 2.0f), element->size());
   EXPECT_FALSE(element->scrollable());
 }
 

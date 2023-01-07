@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
-#import "media/capture/video/mac/video_capture_device_avfoundation_protocol_mac.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 
@@ -42,7 +40,8 @@ CAPTURE_EXPORT
   int32_t _transportType;
 }
 
-- (id)initWithName:(NSString*)name transportType:(int32_t)transportType;
+- (instancetype)initWithName:(NSString*)name
+               transportType:(int32_t)transportType;
 
 - (NSString*)deviceName;
 - (int32_t)transportType;
@@ -58,6 +57,10 @@ class VideoCaptureDeviceMac
  public:
   explicit VideoCaptureDeviceMac(
       const VideoCaptureDeviceDescriptor& device_descriptor);
+
+  VideoCaptureDeviceMac(const VideoCaptureDeviceMac&) = delete;
+  VideoCaptureDeviceMac& operator=(const VideoCaptureDeviceMac&) = delete;
+
   ~VideoCaptureDeviceMac() override;
 
   // VideoCaptureDevice implementation.
@@ -70,8 +73,7 @@ class VideoCaptureDeviceMac
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override;
   // VideoFrameConsumerFeedbackObserver implementation.
-  void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoFrameFeedback feedback) override;
+  void OnUtilizationReport(media::VideoCaptureFeedback feedback) override;
 
   bool Init(VideoCaptureApi capture_api_type);
 
@@ -123,8 +125,7 @@ class VideoCaptureDeviceMac
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   InternalState state_;
 
-  base::scoped_nsobject<NSObject<VideoCaptureDeviceAVFoundationProtocol>>
-      capture_device_;
+  base::scoped_nsobject<VideoCaptureDeviceAVFoundation> capture_device_;
 
   // To hold on to the TakePhotoCallback while the picture is being taken.
   TakePhotoCallback photo_callback_;
@@ -133,8 +134,6 @@ class VideoCaptureDeviceMac
   // VideoCaptureDeviceMac is destroyed.
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<VideoCaptureDeviceMac> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceMac);
 };
 
 }  // namespace media

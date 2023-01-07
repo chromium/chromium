@@ -1,10 +1,12 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import os
 
-from gpu_tests import path_util
+import gpu_path_util
 
 conformance_relcomps = ('third_party', 'webgl', 'src', 'sdk', 'tests')
 
@@ -12,7 +14,7 @@ extensions_relcomps = ('content', 'test', 'data', 'gpu')
 
 conformance_relpath = os.path.join(*conformance_relcomps)
 extensions_relpath = os.path.join(*extensions_relcomps)
-conformance_path = os.path.join(path_util.GetChromiumSrcDir(),
+conformance_path = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR,
                                 conformance_relpath)
 
 # These URL prefixes are needed because having more than one static

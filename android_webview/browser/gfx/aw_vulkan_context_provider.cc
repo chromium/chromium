@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,14 +40,17 @@ bool InitVulkanForWebView(VkInstance instance,
 
   // If we are re-initing, we don't need to re-load the shared library or
   // re-bind unassociated pointers. These shouldn't change.
-  if (!vulkan_function_pointers->vulkan_loader_library) {
+  if (!vulkan_function_pointers->vkGetInstanceProcAddr) {
     base::NativeLibraryLoadError native_library_load_error;
-    vulkan_function_pointers->vulkan_loader_library = base::LoadNativeLibrary(
+    base::NativeLibrary vulkan_loader_library = base::LoadNativeLibrary(
         base::FilePath("libvulkan.so"), &native_library_load_error);
-    if (!vulkan_function_pointers->vulkan_loader_library)
+    if (!vulkan_loader_library)
       return false;
-    if (!vulkan_function_pointers->BindUnassociatedFunctionPointers())
+    if (!vulkan_function_pointers
+             ->BindUnassociatedFunctionPointersFromLoaderLib(
+                 vulkan_loader_library)) {
       return false;
+    }
   }
 
   // These vars depend on |instance| and |device| and should be
@@ -209,9 +212,9 @@ void AwVulkanContextProvider::EnqueueSecondaryCBPostSubmitTask(
   post_submit_tasks_.push_back(std::move(closure));
 }
 
-base::Optional<uint32_t> AwVulkanContextProvider::GetSyncCpuMemoryLimit()
+absl::optional<uint32_t> AwVulkanContextProvider::GetSyncCpuMemoryLimit()
     const {
-  return base::Optional<uint32_t>();
+  return absl::optional<uint32_t>();
 }
 
 bool AwVulkanContextProvider::Initialize(AwDrawFn_InitVkParams* params) {

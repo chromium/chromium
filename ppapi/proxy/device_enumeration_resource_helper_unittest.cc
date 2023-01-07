@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/proxy/device_enumeration_resource_helper.h"
@@ -74,6 +73,9 @@ class TestResource : public PluginResource {
         device_enumeration_(this) {
   }
 
+  TestResource(const TestResource&) = delete;
+  TestResource& operator=(const TestResource&) = delete;
+
   ~TestResource() override {}
 
   void OnReplyReceived(const ResourceMessageReplyParams& params,
@@ -88,14 +90,16 @@ class TestResource : public PluginResource {
 
  private:
   DeviceEnumerationResourceHelper device_enumeration_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestResource);
 };
 
 class TestCallback {
  public:
   TestCallback() : called_(false), result_(PP_ERROR_FAILED) {
   }
+
+  TestCallback(const TestCallback&) = delete;
+  TestCallback& operator=(const TestCallback&) = delete;
+
   ~TestCallback() {
     CHECK(called_);
   }
@@ -118,8 +122,6 @@ class TestCallback {
 
   bool called_;
   int32_t result_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCallback);
 };
 
 class TestArrayOutput {
@@ -129,6 +131,9 @@ class TestArrayOutput {
         count_(0),
         resource_tracker_(resource_tracker) {
   }
+
+  TestArrayOutput(const TestArrayOutput&) = delete;
+  TestArrayOutput& operator=(const TestArrayOutput&) = delete;
 
   ~TestArrayOutput() {
     if (count_ > 0) {
@@ -167,8 +172,6 @@ class TestArrayOutput {
   PP_Resource* data_;
   uint32_t count_;
   PluginResourceTracker* resource_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestArrayOutput);
 };
 
 class TestMonitorDeviceChange {
@@ -178,6 +181,9 @@ class TestMonitorDeviceChange {
         same_as_expected_(false),
         var_tracker_(var_tracker) {
   }
+
+  TestMonitorDeviceChange(const TestMonitorDeviceChange&) = delete;
+  TestMonitorDeviceChange& operator=(const TestMonitorDeviceChange&) = delete;
 
   ~TestMonitorDeviceChange() {}
 
@@ -217,8 +223,6 @@ class TestMonitorDeviceChange {
   bool same_as_expected_;
   std::vector<DeviceRefData> expected_;
   PluginVarTracker* var_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMonitorDeviceChange);
 };
 
 }  // namespace

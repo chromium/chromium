@@ -1,19 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.payments.ui;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.PaymentPreferencesUtil;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.payments.PaymentApp;
-import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.payments.mojom.PaymentOptions;
 
 import java.util.Comparator;
-
-/** A comparator that is used to rank the payment apps to be listed on the PaymentRequest UI. */
+/**
+   A comparator that is used to rank the payment apps to be listed on the PaymentRequest
+   UI.
+ */
 /* package */ class PaymentAppComparator implements Comparator<PaymentApp> {
     private final PaymentRequestParams mParams;
 
@@ -26,18 +28,18 @@ import java.util.Comparator;
     }
 
     /**
-     * Compares two payment apps by frecency.
-     * Return negative value if a has strictly lower frecency score than b.
-     * Return zero if a and b have the same frecency score.
-     * Return positive value if a has strictly higher frecency score than b.
+     * Compares two payment apps by ranking score.
+     * Return negative value if a has strictly lower ranking score than b.
+     * Return zero if a and b have the same ranking score.
+     * Return positive value if a has strictly higher ranking score than b.
      */
-    private static int compareAppsByFrecency(PaymentApp a, PaymentApp b) {
+    private static int compareAppsByRankingScore(PaymentApp a, PaymentApp b) {
         int aCount = PaymentPreferencesUtil.getPaymentAppUseCount(a.getIdentifier());
         int bCount = PaymentPreferencesUtil.getPaymentAppUseCount(b.getIdentifier());
         long aDate = PaymentPreferencesUtil.getPaymentAppLastUseDate(a.getIdentifier());
         long bDate = PaymentPreferencesUtil.getPaymentAppLastUseDate(a.getIdentifier());
 
-        return Double.compare(getFrecencyScore(aCount, aDate), getFrecencyScore(bCount, bDate));
+        return Double.compare(getRankingScore(aCount, aDate), getRankingScore(bCount, bDate));
     }
 
     /**
@@ -51,32 +53,44 @@ import java.util.Comparator;
     }
 
     /**
-     * The frecency score is calculated according to use count and last use date. The formula is
-     * the same as the one used in GetFrecencyScore in autofill_data_model.cc.
+     * The ranking score is calculated according to use count and last use date. The formula is
+     * the same as the one used in GetRankingScore in autofill_data_model.cc.
      */
-    private static double getFrecencyScore(int count, long date) {
+    private static double getRankingScore(int count, long date) {
         long currentTime = System.currentTimeMillis();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA)) {
+            int usageHalfLife = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA,
+                    ChromeFeatureList.AUTOFILL_RANKING_FORMULA_USAGE_HALF_LIFE, 20);
+
+            // Ensure the usage half life is not zero to avoid division by zero errors;
+            if (usageHalfLife == 0) {
+                // Set to default value of 20.
+                usageHalfLife = 20;
+            }
+
+            // Exponentially decay the use count by the days since the data model was
+            // last used.
+            return Math.log10(count + 1)
+                    * Math.exp(((currentTime - date) / (24 * 60 * 60 * 1000)) / usageHalfLife);
+        }
+
+        // Default to legacy frecency scoring.
         return -Math.log((currentTime - date) / (24 * 60 * 60 * 1000) + 2) / Math.log(count + 2);
     }
 
     /**
      * Sorts the payment apps by several rules:
-     * Rule 1: Non-autofill before autofill.
-     * Rule 2: Complete apps before incomplete apps.
-     * Rule 3: When shipping address is requested, apps which will handle shipping address before
+     * Rule 1: Complete apps before incomplete apps.
+     * Rule 2: When shipping address is requested, apps which will handle shipping address before
      * others.
-     * Rule 4: When payer's contact information is requested, apps which will handle more required
+     * Rule 3: When payer's contact information is requested, apps which will handle more required
      * contact fields (name, email, phone) come before others.
-     * Rule 5: Preselectable apps before non-preselectable apps.
-     * Rule 6: Frequently and recently used apps before rarely and non-recently used apps.
+     * Rule 4: Preselectable apps before non-preselectable apps.
+     * Rule 5: Frequently and recently used apps before rarely and non-recently used apps.
      */
     @Override
     public int compare(PaymentApp a, PaymentApp b) {
-        // Non-autofill apps first.
-        int autofill = (a.getPaymentAppType() == PaymentAppType.AUTOFILL ? 1 : 0)
-                - (b.getPaymentAppType() == PaymentAppType.AUTOFILL ? 1 : 0);
-        if (autofill != 0) return autofill;
-
         // Complete cards before cards with missing information.
         int completeness = compareCompletablesByCompleteness(b, a);
         if (completeness != 0) return completeness;
@@ -119,6 +133,6 @@ import java.util.Comparator;
         if (canPreselect != 0) return canPreselect;
 
         // More frequently and recently used apps first.
-        return compareAppsByFrecency(b, a);
+        return compareAppsByRankingScore(b, a);
     }
 }

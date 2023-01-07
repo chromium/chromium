@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,13 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 // Waits for a dialog window to open and become visible.
 //
@@ -29,6 +28,9 @@ class DialogWindowWaiter : public aura::EnvObserver,
  public:
   // Starts listening for a dialog window to open with title `dialog_title`.
   explicit DialogWindowWaiter(const std::u16string& dialog_title);
+
+  DialogWindowWaiter(const DialogWindowWaiter&) = delete;
+  DialogWindowWaiter& operator=(const DialogWindowWaiter&) = delete;
 
   ~DialogWindowWaiter() override;
 
@@ -51,11 +53,16 @@ class DialogWindowWaiter : public aura::EnvObserver,
   base::RunLoop run_loop_;
 
   std::set<aura::Window*> dialog_windows_;
-  ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DialogWindowWaiter);
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::DialogWindowWaiter;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_DIALOG_WINDOW_WAITER_H_

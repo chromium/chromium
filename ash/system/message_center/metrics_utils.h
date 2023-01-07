@@ -1,11 +1,14 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_METRICS_UTILS_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_METRICS_UTILS_H_
 
+#include "ash/ash_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/views/message_popup_view.h"
 
 namespace ash {
 
@@ -60,13 +63,60 @@ enum NotificationTypeDetailed : int {
   kMaxValue = PHONEHUB_PRIORITY_TWO,
 };
 
+// These are the types of notification view that we are interested in recording
+// metrics. A notification view might contain an image, a set of action buttons,
+// and some of those buttons might enable inline reply. This enum covers all the
+// possible variations for a notification view with image, action buttons and
+// inline reply, and whether it is part of a group notification or not.
+// Note to keep in sync with enum in tools/metrics/histograms/enums.xml.
+enum class NotificationViewType {
+  SIMPLE = 0,  // no image, action buttons and inline reply.
+  GROUPED_SIMPLE = 1,
+  HAS_IMAGE = 2,  // has image, no action buttons and inline reply.
+  GROUPED_HAS_IMAGE = 3,
+  HAS_ACTION = 4,  // has action buttons, no image and inline reply.
+  GROUPED_HAS_ACTION = 5,
+  HAS_INLINE_REPLY = 6,  // has inline reply, no image.
+  GROUPED_HAS_INLINE_REPLY = 7,
+  HAS_IMAGE_AND_ACTION = 8,  // has image and action button, no inline reply.
+  GROUPED_HAS_IMAGE_AND_ACTION = 9,
+  HAS_IMAGE_AND_INLINE_REPLY = 10,  // has image and inline reply.
+  GROUPED_HAS_IMAGE_AND_INLINE_REPLY = 11,
+  kMaxValue = GROUPED_HAS_IMAGE_AND_INLINE_REPLY,
+};
+
+// The actions that was performed after an expand button is clicked. These are
+// used in histograms, do not remove/renumber entries. If you're adding to this
+// enum with the intention that it will be logged, update the
+// ExpandButtonClickAction token variant in enums.xml.
+enum class ExpandButtonClickAction {
+  EXPAND_INDIVIDUAL = 0,
+  COLLAPSE_INDIVIDUAL = 1,
+  EXPAND_GROUP = 2,
+  COLLAPSE_GROUP = 3,
+  kMaxValue = COLLAPSE_GROUP,
+};
+
+// The types of group notification. These are used in histograms, do not
+// remove/renumber entries. If you're adding to this enum with the intention
+// that it will be logged, update the ExpandButtonClickAction token variant in
+// enums.xml.
+enum class GroupNotificationType {
+  GROUP_PARENT = 0,
+  GROUP_CHILD = 1,
+  kMaxValue = GROUP_CHILD,
+};
+
 // Returns the detailed notification type enum for a notification.
 NotificationTypeDetailed GetNotificationType(
     const message_center::Notification& notification);
 
 // Returns the detailed notification type enum for a notification id.
-base::Optional<NotificationTypeDetailed> GetNotificationType(
+absl::optional<NotificationTypeDetailed> GetNotificationType(
     const std::string& notification_id);
+
+// Logs a Hover event on a notification.
+void LogHover(const std::string& notification_id, bool is_popup);
 
 // Logs a ClickedBody event.
 void LogClickedBody(const std::string& notification_id, bool is_popup);
@@ -75,7 +125,8 @@ void LogClickedBody(const std::string& notification_id, bool is_popup);
 void LogClickedActionButton(const std::string& notification_id, bool is_popup);
 
 // Logs an InlineReplySent event.
-void LogInlineReplySent(const std::string& notification_id, bool is_popup);
+ASH_EXPORT void LogInlineReplySent(const std::string& notification_id,
+                                   bool is_popup);
 
 // Logs a ExpireToTray event for a pop-up notification.
 void LogPopupExpiredToTray(const std::string& notification_id);
@@ -98,11 +149,30 @@ void LogSnoozed(const std::string& notification_id,
 // Logs a popup Shown event.
 void LogPopupShown(const std::string& notification_id);
 
+// Logs a popup Closed event.
+void LogPopupClosed(message_center::MessagePopupView* popup);
+
 // Logs a tray ClosedByClearAll event.
 void LogClosedByClearAll(const std::string& notification_id);
 
 // Logs a notification added event.
 void LogNotificationAdded(const std::string& notification_id);
+
+// Logs a system notification added event.
+void LogSystemNotificationAdded(const std::string& notification_id);
+
+// Logs the count of notifications displayed during the first minute after a
+// user logs in.
+void LogNotificationsShownInFirstMinute(int notifications_count);
+
+// Logs the number of notifications contained in a group.
+void LogCountOfNotificationsInOneGroup(int notification_count);
+
+// Logs the action that was performed after an expand button is clicked,
+void LogExpandButtonClickAction(ExpandButtonClickAction action);
+
+// Logs the type of group notification added to the system.
+void LogGroupNotificationAddedType(GroupNotificationType type);
 
 }  // namespace metrics_utils
 

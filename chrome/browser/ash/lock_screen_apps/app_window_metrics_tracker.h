@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 
 #include <map>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -26,6 +25,10 @@ namespace lock_screen_apps {
 class AppWindowMetricsTracker : public content::WebContentsObserver {
  public:
   explicit AppWindowMetricsTracker(const base::TickClock* clock);
+
+  AppWindowMetricsTracker(const AppWindowMetricsTracker&) = delete;
+  AppWindowMetricsTracker& operator=(const AppWindowMetricsTracker&) = delete;
+
   ~AppWindowMetricsTracker() override;
 
   // Register app launch request.
@@ -46,8 +49,7 @@ class AppWindowMetricsTracker : public content::WebContentsObserver {
 
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
  private:
   // NOTE: Used in histograms - do not change order, or remove entries.
@@ -77,9 +79,7 @@ class AppWindowMetricsTracker : public content::WebContentsObserver {
   // The state to which the metrics tracker should move after
   // the window contents is loaded.
   // Should be either kForeground or kBackground.
-  base::Optional<State> state_after_window_contents_load_ = State::kForeground;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowMetricsTracker);
+  absl::optional<State> state_after_window_contents_load_ = State::kForeground;
 };
 
 }  // namespace lock_screen_apps

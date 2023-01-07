@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,6 +60,12 @@ size_t NativePixmapDmaBuf::GetNumberOfPlanes() const {
   return handle_.planes.size();
 }
 
+bool NativePixmapDmaBuf::SupportsZeroCopyWebGPUImport() const {
+  // TODO(crbug.com/1258986): Figure out how to import multi-planar pixmap into
+  // WebGPU without copy.
+  return false;
+}
+
 gfx::Size NativePixmapDmaBuf::GetBufferSize() const {
   return size_;
 }
@@ -70,11 +76,7 @@ uint32_t NativePixmapDmaBuf::GetUniqueId() const {
 
 bool NativePixmapDmaBuf::ScheduleOverlayPlane(
     gfx::AcceleratedWidget widget,
-    int plane_z_order,
-    gfx::OverlayTransform plane_transform,
-    const gfx::Rect& display_bounds,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
+    const gfx::OverlayPlaneData& overlay_plane_data,
     std::vector<gfx::GpuFence> acquire_fences,
     std::vector<gfx::GpuFence> release_fences) {
   return false;

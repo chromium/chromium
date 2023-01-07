@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include "base/files/scoped_file.h"
 #include "base/memory/discardable_shared_memory.h"
+#include "base/memory/page_size.h"
 #include "base/memory/shared_memory_tracker.h"
-#include "base/process/process_metrics.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -262,7 +262,7 @@ TEST(DiscardableSharedMemoryTest, LockShouldAlwaysFailAfterSuccessfulPurge) {
   EXPECT_EQ(DiscardableSharedMemory::FAILED, lock_rv);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST(DiscardableSharedMemoryTest, LockShouldFailIfPlatformLockPagesFails) {
   const uint32_t kDataSize = 1024;
 
@@ -298,7 +298,7 @@ TEST(DiscardableSharedMemoryTest, LockShouldFailIfPlatformLockPagesFails) {
       memory2.Lock(0, base::GetPageSize());
   EXPECT_EQ(DiscardableSharedMemory::FAILED, lock_rv);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST(DiscardableSharedMemoryTest, LockAndUnlockRange) {
   const size_t kDataSize = 32;

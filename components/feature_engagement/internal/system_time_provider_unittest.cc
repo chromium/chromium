@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/feature_engagement/internal/system_time_provider.h"
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,6 +32,9 @@ class TestSystemTimeProvider : public SystemTimeProvider {
  public:
   TestSystemTimeProvider() = default;
 
+  TestSystemTimeProvider(const TestSystemTimeProvider&) = delete;
+  TestSystemTimeProvider& operator=(const TestSystemTimeProvider&) = delete;
+
   // SystemTimeProvider implementation.
   base::Time Now() const override { return current_time_; }
 
@@ -40,19 +42,17 @@ class TestSystemTimeProvider : public SystemTimeProvider {
 
  private:
   base::Time current_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSystemTimeProvider);
 };
 
 class SystemTimeProviderTest : public ::testing::Test {
  public:
   SystemTimeProviderTest() = default;
 
+  SystemTimeProviderTest(const SystemTimeProviderTest&) = delete;
+  SystemTimeProviderTest& operator=(const SystemTimeProviderTest&) = delete;
+
  protected:
   TestSystemTimeProvider time_provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemTimeProviderTest);
 };
 
 }  // namespace
@@ -65,26 +65,26 @@ TEST_F(SystemTimeProviderTest, EpochIs0Days) {
 TEST_F(SystemTimeProviderTest, TestDeltasFromEpoch) {
   base::Time epoch = base::Time::UnixEpoch();
 
-  time_provider_.SetCurrentTime(epoch + base::TimeDelta::FromDays(1));
+  time_provider_.SetCurrentTime(epoch + base::Days(1));
   EXPECT_EQ(1u, time_provider_.GetCurrentDay());
 
-  time_provider_.SetCurrentTime(epoch + base::TimeDelta::FromDays(2));
+  time_provider_.SetCurrentTime(epoch + base::Days(2));
   EXPECT_EQ(2u, time_provider_.GetCurrentDay());
 
-  time_provider_.SetCurrentTime(epoch + base::TimeDelta::FromDays(100));
+  time_provider_.SetCurrentTime(epoch + base::Days(100));
   EXPECT_EQ(100u, time_provider_.GetCurrentDay());
 }
 
 TEST_F(SystemTimeProviderTest, TestNegativeDeltasFromEpoch) {
   base::Time epoch = base::Time::UnixEpoch();
 
-  time_provider_.SetCurrentTime(epoch - base::TimeDelta::FromDays(1));
+  time_provider_.SetCurrentTime(epoch - base::Days(1));
   EXPECT_EQ(0u, time_provider_.GetCurrentDay());
 
-  time_provider_.SetCurrentTime(epoch - base::TimeDelta::FromDays(2));
+  time_provider_.SetCurrentTime(epoch - base::Days(2));
   EXPECT_EQ(0u, time_provider_.GetCurrentDay());
 
-  time_provider_.SetCurrentTime(epoch - base::TimeDelta::FromDays(100));
+  time_provider_.SetCurrentTime(epoch - base::Days(100));
   EXPECT_EQ(0u, time_provider_.GetCurrentDay());
 }
 

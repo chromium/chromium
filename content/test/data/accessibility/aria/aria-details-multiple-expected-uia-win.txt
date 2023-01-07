@@ -1,0 +1,11 @@
+Document
+++Text Name='Some '
+++Text
+++++Text Name='highlighted text'
+++Text Name=' example.'
+++Group Annotation.AnnotationTypeId='Comment' Annotation.AnnotationTypeName='Comment'
+++++Text Name='Good job!'
+++ListItem Annotation.AnnotationTypeId='Footnote' Annotation.AnnotationTypeName='Footnote'
+++++Text Name='Some footnote.'
+++Group Annotation.AnnotationTypeId='Unknown' Annotation.AnnotationTypeName='definition'
+++++Text Name='The meaning is.'

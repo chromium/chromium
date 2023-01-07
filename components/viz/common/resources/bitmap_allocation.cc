@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ namespace {
 void CollectMemoryUsageAndDie(const gfx::Size& size,
                               ResourceFormat format,
                               size_t alloc_size) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DWORD last_error = GetLastError();
   base::debug::Alias(&last_error);
 #endif

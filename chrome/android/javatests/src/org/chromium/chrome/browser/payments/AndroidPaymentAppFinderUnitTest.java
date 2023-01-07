@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import android.os.Bundle;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,16 +29,21 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.components.payments.AndroidPaymentAppFinder;
+import org.chromium.components.payments.AppCreationFailureReason;
+import org.chromium.components.payments.CSPChecker;
 import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryParams;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
+import org.chromium.components.payments.PaymentManifestWebDataService;
 import org.chromium.components.payments.WebAppManifestSection;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -45,8 +51,9 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -58,7 +65,7 @@ import java.util.Map;
 /** Tests for the native Android payment app finder. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(AndroidPaymentAppFinderUnitTest.PAYMENTS_BROWSER_UNIT_TESTS)
-public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
+public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase {
     // Collection of payments unit tests that require the browser process to be initialized.
     static final String PAYMENTS_BROWSER_UNIT_TESTS = "PaymentsBrowserUnitTests";
     private static final IntentArgumentMatcher sPayIntentArgumentMatcher =
@@ -66,6 +73,9 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
 
     @Rule
     public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
+
+    @Rule
+    public HistogramTestRule mHistogramTestRule = new HistogramTestRule();
 
     @Mock
     private PaymentManifestWebDataService mPaymentManifestWebDataService;
@@ -82,8 +92,10 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mWindowAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return new ActivityWindowAndroid(getActivity()); });
+        mWindowAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(getActivity()));
+        });
 
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
     }
@@ -141,10 +153,9 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         Mockito.when(params.getMayCrawl()).thenReturn(false);
         PaymentAppFactoryDelegate delegate = Mockito.mock(PaymentAppFactoryDelegate.class);
         Mockito.when(delegate.getParams()).thenReturn(params);
-        AndroidPaymentAppFinder finder =
-                new AndroidPaymentAppFinder(mPaymentManifestWebDataService, downloader, parser,
-                        packageManagerDelegate, new TwaPackageManagerDelegate(), delegate,
-                        /*factory=*/null);
+        AndroidPaymentAppFinder finder = new AndroidPaymentAppFinder(mPaymentManifestWebDataService,
+                downloader, parser, packageManagerDelegate, delegate,
+                /*factory=*/null);
         finder.bypassIsReadyToPayServiceInTest();
         finder.findAndroidPaymentApps();
         return delegate;
@@ -154,9 +165,32 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         Mockito.verify(delegate, Mockito.never())
                 .onPaymentAppCreated(Mockito.any(PaymentApp.class));
         Mockito.verify(delegate, Mockito.never())
-                .onPaymentAppCreationError(Mockito.any(String.class));
+                .onPaymentAppCreationError(
+                        Mockito.any(String.class), Mockito.eq(AppCreationFailureReason.UNKNOWN));
         Mockito.verify(delegate).onCanMakePaymentCalculated(false);
         Mockito.verify(delegate).onDoneCreatingPaymentApps(/*factory=*/null);
+    }
+
+    /* Verify no metrics were recorded for the number of supported payment methods. */
+    private void verifyNoSupportedPaymentMethodCountMetric() {
+        verifySupportedPaymentMethodCountMetric(/*histograms=*/0, /*methods=*/-1);
+    }
+
+    /* Verify the supported payment method count. */
+    private void verifySupportedPaymentMethodCountMetric(int histograms, int methods) {
+        Assert.assertEquals(
+                String.format("Expected number of histogram recordings: %d.", histograms),
+                /*expected=*/histograms,
+                mHistogramTestRule.getHistogramTotalCount(
+                        "PaymentRequest.NumberOfSupportedMethods.AndroidApp"));
+
+        if (histograms > 0) {
+            Assert.assertEquals(String.format("Expected number of payment methods: %d.", methods),
+                    /*expected=*/histograms,
+                    mHistogramTestRule.getHistogramValueCount(
+                            "PaymentRequest.NumberOfSupportedMethods.AndroidApp",
+                            /*sample=*/methods));
+        }
     }
 
     @SmallTest
@@ -166,6 +200,9 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         verifyNoAppsFound(findApps(new String[] {"unknown-payment-method-name",
                                            "http://not.secure.payment.method.name.com", "https://"},
                 mPaymentManifestDownloader, mPaymentManifestParser, mPackageManagerDelegate));
+
+        // No apps:
+        verifyNoSupportedPaymentMethodCountMetric();
     }
 
     @SmallTest
@@ -182,6 +219,9 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         Mockito.verify(mPackageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
+
+        // No apps:
+        verifyNoSupportedPaymentMethodCountMetric();
     }
 
     @SmallTest
@@ -207,6 +247,9 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         Mockito.verify(mPackageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
+
+        // The installed app declared support for no payment methods:
+        verifySupportedPaymentMethodCountMetric(/*histograms=*/1, /*methods=*/0);
     }
 
     @SmallTest
@@ -235,6 +278,9 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         Mockito.verify(mPackageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
+
+        // The installed app supports only "basic-card" method:
+        verifySupportedPaymentMethodCountMetric(/*histograms=*/1, /*methods=*/1);
     }
 
     @SmallTest
@@ -250,6 +296,9 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         Mockito.verify(packageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
+
+        // The installed app supports only "unsupported-payment-method" method:
+        verifySupportedPaymentMethodCountMetric(/*histograms=*/1, /*methods=*/1);
     }
 
     private PackageManagerDelegate installPaymentApps(String[] packageNames, String[] methodNames) {
@@ -289,6 +338,9 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         Mockito.verify(packageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
+
+        // The installed app supports only "basic-card" method:
+        verifySupportedPaymentMethodCountMetric(/*histograms=*/1, /*methods=*/1);
     }
 
     @SmallTest
@@ -304,26 +356,32 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         Mockito.verify(packageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
+
+        // The installed app supports only "basic-card" method:
+        verifySupportedPaymentMethodCountMetric(/*histograms=*/1, /*methods=*/1);
     }
 
     @SmallTest
     @Test
     @UiThreadTest
-    public void testQueryBasicCardsWithTwoApps() {
-        List<ResolveInfo> activities = new ArrayList<>();
-        ResolveInfo alicePay = new ResolveInfo();
-        alicePay.activityInfo = new ActivityInfo();
-        alicePay.activityInfo.packageName = "com.alicepay.app";
-        alicePay.activityInfo.name = "com.alicepay.app.WebPaymentActivity";
-        alicePay.activityInfo.applicationInfo = new ApplicationInfo();
-        Bundle alicePayMetaData = new Bundle();
-        alicePayMetaData.putString(
-                AndroidPaymentAppFinder.META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME,
-                "basic-card");
-        alicePayMetaData.putInt(AndroidPaymentAppFinder.META_DATA_NAME_OF_PAYMENT_METHOD_NAMES, 1);
-        alicePay.activityInfo.metaData = alicePayMetaData;
-        activities.add(alicePay);
+    public void testHistogramForMutlipleApps() {
+        PackageManagerDelegate packageManagerDelegate =
+                installPaymentApps(new String[] {"com.alicepay.app", "com.bobpay.app"},
+                        new String[] {"https://alicepay.com", "https://bobpay.com"});
 
+        // Trigger app lookup.
+        findApps(new String[] {"https://charliepay.com"}, mPaymentManifestDownloader,
+                mPaymentManifestParser, packageManagerDelegate);
+
+        // Two apps are installed, with one method each.
+        verifySupportedPaymentMethodCountMetric(/*histograms=*/2, /*methods=*/1);
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testHistogramForMutlipleMethods() {
+        List<ResolveInfo> activities = new ArrayList<>();
         ResolveInfo bobPay = new ResolveInfo();
         bobPay.activityInfo = new ActivityInfo();
         bobPay.activityInfo.packageName = "com.bobpay.app";
@@ -332,8 +390,8 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         Bundle bobPayMetaData = new Bundle();
         bobPayMetaData.putString(
                 AndroidPaymentAppFinder.META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME,
-                "basic-card");
-        bobPayMetaData.putInt(AndroidPaymentAppFinder.META_DATA_NAME_OF_PAYMENT_METHOD_NAMES, 2);
+                "https://bobpay.com");
+        bobPayMetaData.putInt(AndroidPaymentAppFinder.META_DATA_NAME_OF_PAYMENT_METHOD_NAMES, 1);
         bobPay.activityInfo.metaData = bobPayMetaData;
         activities.add(bobPay);
 
@@ -342,29 +400,18 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         Mockito.when(mPackageManagerDelegate.getActivitiesThatCanRespondToIntentWithMetaData(
                              ArgumentMatchers.argThat(sPayIntentArgumentMatcher)))
                 .thenReturn(activities);
-        Mockito.when(mPackageManagerDelegate.getServicesThatCanRespondToIntent(
-                             ArgumentMatchers.argThat(new IntentArgumentMatcher(
-                                     new Intent(AndroidPaymentAppFinder.ACTION_IS_READY_TO_PAY)))))
-                .thenReturn(new ArrayList<ResolveInfo>());
 
-        Mockito.when(mPackageManagerDelegate.getStringArrayResourceForApplication(
-                             ArgumentMatchers.eq(alicePay.activityInfo.applicationInfo),
-                             ArgumentMatchers.eq(1)))
-                .thenReturn(new String[] {"https://alicepay.com"});
         Mockito.when(mPackageManagerDelegate.getStringArrayResourceForApplication(
                              ArgumentMatchers.eq(bobPay.activityInfo.applicationInfo),
-                             ArgumentMatchers.eq(2)))
-                .thenReturn(new String[] {"https://bobpay.com"});
+                             ArgumentMatchers.eq(1)))
+                .thenReturn(new String[] {"https://bobpay.com", "https://alicepay.com"});
 
-        PaymentAppFactoryDelegate delegate = findApps(new String[] {"basic-card"},
-                mPaymentManifestDownloader, mPaymentManifestParser, mPackageManagerDelegate);
+        // Trigger app lookup.
+        findApps(new String[] {"https://charliepay.com"}, mPaymentManifestDownloader,
+                mPaymentManifestParser, mPackageManagerDelegate);
 
-        Mockito.verify(delegate).onCanMakePaymentCalculated(true);
-        Mockito.verify(delegate).onPaymentAppCreated(
-                ArgumentMatchers.argThat(Matches.paymentAppIdentifier("com.alicepay.app")));
-        Mockito.verify(delegate).onPaymentAppCreated(
-                ArgumentMatchers.argThat(Matches.paymentAppIdentifier("com.bobpay.app")));
-        Mockito.verify(delegate).onDoneCreatingPaymentApps(/*factory=*/null);
+        // One app is installed. It has two payment methods.
+        verifySupportedPaymentMethodCountMetric(/*histograms=*/1, /*methods=*/2);
     }
 
     @SmallTest
@@ -417,7 +464,7 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
 
         PaymentManifestDownloader downloader = new PaymentManifestDownloader() {
             @Override
-            public void initialize(WebContents webContents) {}
+            public void initialize(WebContents webContents, CSPChecker cspChecker) {}
 
             @Override
             public void downloadPaymentMethodManifest(

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/seekbar_amount"
+            style="@style/PreferenceSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="40sp" />
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="180dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rectangle_surface_1"
+        android:padding="16dp"
+        android:text="@string/font_size_preview_text"
+        android:textAppearance="@style/TextAppearance.AccessibilityTextPreference"
+        android:lineSpacingExtra="6dp" />
+
+</LinearLayout>

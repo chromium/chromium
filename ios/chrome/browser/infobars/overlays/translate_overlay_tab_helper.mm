@@ -1,18 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/infobars/overlays/translate_overlay_tab_helper.h"
 
-#include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
-#include "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/infobars/overlays/translate_infobar_placeholder_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_placeholder_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_queue_util.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_queue_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -123,14 +123,14 @@ void TranslateOverlayTabHelper::UpdateForWebStateDestroyed() {
 
 TranslateOverlayTabHelper::TranslateStepObserver::TranslateStepObserver(
     TranslateOverlayTabHelper* tab_helper)
-    : translate_scoped_observer_(this), tab_helper_(tab_helper) {}
+    : tab_helper_(tab_helper) {}
 
 TranslateOverlayTabHelper::TranslateStepObserver::~TranslateStepObserver() =
     default;
 
 void TranslateOverlayTabHelper::TranslateStepObserver::OnTranslateStepChanged(
     translate::TranslateStep step,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors error_type) {
   switch (step) {
     case translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE: {
       tab_helper_->TranslateDidFinish(translate_infobar_, true);
@@ -165,14 +165,15 @@ bool TranslateOverlayTabHelper::TranslateStepObserver::IsDeclinedByUser() {
 void TranslateOverlayTabHelper::TranslateStepObserver::
     OnTranslateInfoBarDelegateDestroyed(
         translate::TranslateInfoBarDelegate* delegate) {
-  translate_scoped_observer_.Remove(delegate);
+  DCHECK(translate_scoped_observation_.IsObservingSource(delegate));
+  translate_scoped_observation_.Reset();
   translate_infobar_ = nil;
 }
 
 void TranslateOverlayTabHelper::TranslateStepObserver::SetTranslateInfoBar(
     InfoBarIOS* infobar) {
   translate_infobar_ = infobar;
-  translate_scoped_observer_.Add(
+  translate_scoped_observation_.Observe(
       infobar->delegate()->AsTranslateInfoBarDelegate());
 }
 
@@ -181,11 +182,11 @@ void TranslateOverlayTabHelper::TranslateStepObserver::SetTranslateInfoBar(
 TranslateOverlayTabHelper::TranslateInfobarObserver::TranslateInfobarObserver(
     web::WebState* web_state,
     TranslateOverlayTabHelper* tab_helper)
-    : infobar_manager_scoped_observer_(this), tab_helper_(tab_helper) {
+    : tab_helper_(tab_helper) {
   infobars::InfoBarManager* manager =
       InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(manager);
-  infobar_manager_scoped_observer_.Add(manager);
+  infobar_manager_scoped_observation_.Observe(manager);
 }
 
 TranslateOverlayTabHelper::TranslateInfobarObserver::
@@ -202,7 +203,8 @@ void TranslateOverlayTabHelper::TranslateInfobarObserver::OnInfoBarAdded(
 
 void TranslateOverlayTabHelper::TranslateInfobarObserver::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
-  infobar_manager_scoped_observer_.Remove(manager);
+  DCHECK(infobar_manager_scoped_observation_.IsObservingSource(manager));
+  infobar_manager_scoped_observation_.Reset();
 }
 
 #pragma mark - WebStateDestroyedObserver
@@ -210,8 +212,8 @@ void TranslateOverlayTabHelper::TranslateInfobarObserver::OnManagerShuttingDown(
 TranslateOverlayTabHelper::WebStateDestroyedObserver::WebStateDestroyedObserver(
     web::WebState* web_state,
     TranslateOverlayTabHelper* tab_helper)
-    : web_state_scoped_observer_(this), tab_helper_(tab_helper) {
-  web_state_scoped_observer_.Add(web_state);
+    : tab_helper_(tab_helper) {
+  web_state_scoped_observation_.Observe(web_state);
 }
 
 TranslateOverlayTabHelper::WebStateDestroyedObserver::
@@ -219,6 +221,7 @@ TranslateOverlayTabHelper::WebStateDestroyedObserver::
 
 void TranslateOverlayTabHelper::WebStateDestroyedObserver::WebStateDestroyed(
     web::WebState* web_state) {
-  web_state_scoped_observer_.Remove(web_state);
+  DCHECK(web_state_scoped_observation_.IsObservingSource(web_state));
+  web_state_scoped_observation_.Reset();
   tab_helper_->UpdateForWebStateDestroyed();
 }

@@ -1,0 +1,35 @@
+<style include="common">
+  cr-radio-group {
+    width: 100%;
+  }
+  cr-radio-button {
+    height: 48px;
+    padding: 0 var(--cr-section-padding);
+  }
+  cr-radio-button + cr-radio-button {
+    border-top: var(--cr-separator-line);
+  }
+</style>
+<div id="weatherDiv">
+  <h3 id="weatherTitle" class="ambient-subpage-element-title">
+    $i18n{ambientModeWeatherTitle}
+  </h3>
+  <div class="weather-unit-list">
+    <cr-radio-group
+        id="ambientTemperatureUnit"
+        selected="{{selectedTemperatureUnit}}"
+        aria-description="$i18n{ambientModeAriaDescriptionWeather}"
+        aria-labelledby="weatherTitle">
+      <cr-radio-button
+          name="[[temperatureUnit_.kFahrenheit]]"
+          class="weather-unit-item"
+          label="$i18n{ambientModeWeatherUnitFahrenheit}">
+      </cr-radio-button>
+      <cr-radio-button
+          name="[[temperatureUnit_.kCelsius]]"
+          class="weather-unit-item"
+          label="$i18n{ambientModeWeatherUnitCelsius}">
+      </cr-radio-button>
+    </cr-radio-group>
+  </div>
+</div>

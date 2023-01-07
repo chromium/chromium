@@ -1,0 +1,64 @@
+<!--
+Tests that AR session is stable for specified amount of time when all features
+are enabled.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+    <meta name="timeout" content="long">  <!-- this is a long-running test! -->
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>var shouldAutoCreateNonImmersiveSession = false;</script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      immersiveArSessionInit.requiredFeatures = [
+        'anchors', 'camera-access', 'depth-sensing', 'hit-test', 'light-estimation', 'plane-detection',
+      ];
+
+      // Depth sensing needs to be configured:
+      immersiveArSessionInit.depthSensing = {
+        usagePreference: ['cpu-optimized'],
+        dataFormatPreference: ['luminance-alpha'],
+      };
+
+      function disableCameraAccess() {
+        const indexToRemove = immersiveArSessionInit.requiredFeatures.indexOf("camera-access");
+        if(indexToRemove != -1) {
+          immersiveArSessionInit.requiredFeatures.splice(indexToRemove, 1);
+        }
+      }
+
+      function stepStartTest(durationInSeconds) {
+
+        updateSingleTestProgressMessage("state: starting test, will run for: " + durationInSeconds + "s");
+
+        let firstFrameTime = null;
+        let frame_num = 0;
+
+        onARFrameCallback = (session, frame, t) => {
+          if (firstFrameTime == null) {
+            updateSingleTestProgressMessage("state: first frame received, timestamp: " + t);
+            firstFrameTime = t;
+          }
+
+          const timePassedInMs = t - firstFrameTime;
+
+          frame_num++;
+          if (frame_num % 120) {
+            updateSingleTestProgressMessage("state: waiting for tests to finish, time passed (ms): " + timePassedInMs + ", desired duration (s): " + durationInSeconds);
+          }
+
+          if (timePassedInMs > durationInSeconds * 1000) {
+            updateSingleTestProgressMessage("state: test completed");
+
+            onARFrameCallback = null;
+            done();
+          }
+        };
+      }
+    </script>
+  </body>
+</html>

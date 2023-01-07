@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -35,6 +34,10 @@ void WaitForHitTestData(WebContents* guest_web_contents);
 class HitTestRegionObserver : public viz::HitTestRegionObserver {
  public:
   explicit HitTestRegionObserver(const viz::FrameSinkId& frame_sink_id);
+
+  HitTestRegionObserver(const HitTestRegionObserver&) = delete;
+  HitTestRegionObserver& operator=(const HitTestRegionObserver&) = delete;
+
   ~HitTestRegionObserver() override;
 
   // The following functions need to be called in order to wait for the change
@@ -58,8 +61,6 @@ class HitTestRegionObserver : public viz::HitTestRegionObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<base::RunLoop> hit_test_data_change_run_loop_;
   std::vector<viz::AggregatedHitTestRegion> cached_hit_test_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestRegionObserver);
 };
 
 }  // namespace content

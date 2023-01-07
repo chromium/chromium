@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/geolocation/geolocation_impl.h"
 
@@ -25,7 +26,7 @@ void GeolocationContext::Create(
 
 void GeolocationContext::BindGeolocation(
     mojo::PendingReceiver<mojom::Geolocation> receiver,
-    const GURL& requesting_origin) {
+    const GURL& requesting_url) {
   GeolocationImpl* impl = new GeolocationImpl(std::move(receiver), this);
   impls_.push_back(base::WrapUnique<GeolocationImpl>(impl));
   if (geoposition_override_)
@@ -35,10 +36,8 @@ void GeolocationContext::BindGeolocation(
 }
 
 void GeolocationContext::OnConnectionError(GeolocationImpl* impl) {
-  auto it = std::find_if(impls_.begin(), impls_.end(),
-                         [impl](const std::unique_ptr<GeolocationImpl>& gi) {
-                           return impl == gi.get();
-                         });
+  auto it =
+      base::ranges::find(impls_, impl, &std::unique_ptr<GeolocationImpl>::get);
   DCHECK(it != impls_.end());
   impls_.erase(it);
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,11 @@ class TaskRunnerDeferringThrottle : public NavigationThrottle {
                               bool defer_redirect,
                               bool defer_response,
                               NavigationHandle* handle);
+
+  TaskRunnerDeferringThrottle(const TaskRunnerDeferringThrottle&) = delete;
+  TaskRunnerDeferringThrottle& operator=(const TaskRunnerDeferringThrottle&) =
+      delete;
+
   ~TaskRunnerDeferringThrottle() override;
 
   static std::unique_ptr<NavigationThrottle> Create(
@@ -46,7 +51,6 @@ class TaskRunnerDeferringThrottle : public NavigationThrottle {
   bool defer_response_ = true;
   scoped_refptr<base::TaskRunner> task_runner_;
   base::WeakPtrFactory<TaskRunnerDeferringThrottle> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(TaskRunnerDeferringThrottle);
 };
 
 }  // namespace content

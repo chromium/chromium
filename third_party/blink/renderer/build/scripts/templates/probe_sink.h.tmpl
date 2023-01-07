@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,13 @@
 
 #include <atomic>
 
+#include "third_party/blink/renderer/core/inspector/agent_registry.h"
 #include "{{export_header}}"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-{% for agent in agents %}
+{% for agent in agents|sort %}
 class {{ agent | agent_name_to_class }};
 {% endfor %}
 
@@ -27,7 +28,7 @@ class {{export_symbol}} {{sink_class}} final : public GarbageCollected<{{sink_cl
 
  public:
   enum AgentType : unsigned {
-{% for agent in agents %}
+{% for agent in agents|sort %}
     k{{agent}} = 1u << {{loop.index0}},
 {% endfor %}
   };
@@ -39,11 +40,11 @@ class {{export_symbol}} {{sink_class}} final : public GarbageCollected<{{sink_cl
 
   void Trace(Visitor*) const;
 
-{% for agent in agents %}
+{% for agent in agents|sort %}
 {% set class_name = agent | agent_name_to_class %}
 {% set getter_name = agent | to_snake_case %}
   bool Has{{agent}}s() const { return !{{getter_name}}s_.IsEmpty(); }
-  const HeapListHashSet<Member<{{class_name}}>>& {{class_name}}s() const { return {{getter_name}}s_; }
+  const AgentRegistry<{{class_name}}>& {{class_name}}s() const { return {{getter_name}}s_; }
   void Add{{agent}}({{class_name}}* agent);
   void Remove{{agent}}({{class_name}}* agent);
 
@@ -54,16 +55,16 @@ class {{export_symbol}} {{sink_class}} final : public GarbageCollected<{{sink_cl
   }
 
  private:
-{% for agent in agents %}
+{% for agent in agents|sort %}
 {% set class_name = agent | agent_name_to_class %}
 {% set getter_name = agent | to_snake_case %}
-  HeapListHashSet<Member<{{class_name}}>> {{getter_name}}s_;
+  AgentRegistry<{{class_name}}> {{getter_name}}s_;
 {% endfor %}
 
   // Number of sinks with an enabled agent of each type, used to keep
   // |s_existingAgents| up to date.
   // Access must be guarded by AgentCountMutex in the source file.
-{% for agent in agents %}
+{% for agent in agents|sort %}
   static unsigned s_numSinksWith{{agent}};
 {% endfor %}
 

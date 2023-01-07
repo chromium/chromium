@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_LINUX_SUID_SANDBOX_H_
-#define SANDBOX_LINUX_SUID_SANDBOX_H_
+#ifndef SANDBOX_LINUX_SUID_COMMON_SANDBOX_H_
+#define SANDBOX_LINUX_SUID_COMMON_SANDBOX_H_
 
 #if defined(__cplusplus)
 namespace sandbox {
@@ -38,4 +38,4 @@ static const char kSandboxNETNSEnvironmentVarName[] = "SBX_NET_NS";
 }  // namespace sandbox
 #endif
 
-#endif  // SANDBOX_LINUX_SUID_SANDBOX_H_
+#endif  // SANDBOX_LINUX_SUID_COMMON_SANDBOX_H_

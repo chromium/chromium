@@ -22,3 +22,5 @@ Local Modifications:
   - src/dictionaries/
 - patches/0001-fix-build-with-std-c11.patch
   - Fix build with CFLAGS="-std=c11 -D_GNU_SOURCE"
+- patches/0002-fix-shadow-variables.patch
+  - Fix -Wshadow warnings

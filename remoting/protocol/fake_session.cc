@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/protocol/fake_session.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -12,8 +14,7 @@
 #include "remoting/protocol/session_plugin.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 const char kTestJid[] = "host1@gmail.com/chromoting123";
 const char kTestAuthKey[] = "test_auth_key";
@@ -34,14 +35,16 @@ void FakeSession::SimulateConnection(FakeSession* peer) {
   peer->event_handler_->OnSessionStateChange(AUTHENTICATING);
 
   // Initialize transport and authenticator on the client.
-  authenticator_.reset(new FakeAuthenticator(FakeAuthenticator::ACCEPT));
+  authenticator_ =
+      std::make_unique<FakeAuthenticator>(FakeAuthenticator::ACCEPT);
   authenticator_->set_auth_key(kTestAuthKey);
   transport_->Start(authenticator_.get(),
                     base::BindRepeating(&FakeSession::SendTransportInfo,
                                         weak_factory_.GetWeakPtr()));
 
   // Initialize transport and authenticator on the host.
-  peer->authenticator_.reset(new FakeAuthenticator(FakeAuthenticator::ACCEPT));
+  peer->authenticator_ =
+      std::make_unique<FakeAuthenticator>(FakeAuthenticator::ACCEPT);
   peer->authenticator_->set_auth_key(kTestAuthKey);
   peer->transport_->Start(
       peer->authenticator_.get(),
@@ -132,5 +135,4 @@ void FakeSession::SetAttachment(size_t round,
   attachments_[round] = std::move(attachment);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,6 +65,11 @@ const struct {
     {url_pattern_index::proto::ELEMENT_TYPE_FONT, "font"},
     {url_pattern_index::proto::ELEMENT_TYPE_POPUP, "popup"},
     {url_pattern_index::proto::ELEMENT_TYPE_WEBSOCKET, "websocket"},
+    // This is currently not used by EasyList. If EasyList adds blocking support
+    // for webtransport or webbundle, make sure it is compatible with this
+    // spelling.
+    {url_pattern_index::proto::ELEMENT_TYPE_WEBTRANSPORT, "webtransport"},
+    {url_pattern_index::proto::ELEMENT_TYPE_WEBBUNDLE, "webbundle"},
 };
 
 // A mapping from deprecated element type names to active element types.

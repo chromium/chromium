@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
@@ -19,10 +20,11 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/views_delegate.h"
 
 namespace views {
@@ -62,6 +64,7 @@ WebView::ScopedWebContentsCreatorForTesting::
 // WebView, public:
 
 WebView::WebView(content::BrowserContext* browser_context) {
+  set_suppress_default_focus_handling();
   ui::AXPlatformNode::AddAXModeObserver(this);
   SetBrowserContext(browser_context);
 }
@@ -71,11 +74,11 @@ WebView::~WebView() {
   SetWebContents(nullptr);  // Make sure all necessary tear-down takes place.
 }
 
-content::WebContents* WebView::GetWebContents() {
+content::WebContents* WebView::GetWebContents(base::Location creator_location) {
   if (!web_contents()) {
     if (!browser_context_)
       return nullptr;
-    wc_owner_ = CreateWebContents(browser_context_);
+    wc_owner_ = CreateWebContents(browser_context_, creator_location);
     wc_owner_->SetDelegate(this);
     SetWebContents(wc_owner_.get());
   }
@@ -89,13 +92,22 @@ void WebView::SetWebContents(content::WebContents* replacement) {
   SetCrashedOverlayView(nullptr);
   DetachWebContentsNativeView();
   WebContentsObserver::Observe(replacement);
+
+  // Do not remove the observation of the previously hosted WebContents to allow
+  // the WebContents to continue to use the source for colors and receive update
+  // notifications when in the background and not directly part of a UI
+  // hierarchy. This avoids color pop-in if the WebContents is re-inserted into
+  // the same hierarchy at a later point in time.
+  if (replacement)
+    replacement->SetColorProviderSource(GetWidget());
+
   // web_contents() now returns |replacement| from here onwards.
   if (wc_owner_.get() != replacement)
     wc_owner_.reset();
   AttachWebContentsNativeView();
 
-  if (replacement && replacement->GetMainFrame()->IsRenderFrameCreated()) {
-    SetUpNewMainFrame(replacement->GetMainFrame());
+  if (replacement && replacement->GetPrimaryMainFrame()->IsRenderFrameLive()) {
+    SetUpNewMainFrame(replacement->GetPrimaryMainFrame());
   } else {
     LostMainFrame();
   }
@@ -126,8 +138,9 @@ void WebView::EnableSizingFromWebContents(const gfx::Size& min_size,
   DCHECK(!max_size.IsEmpty());
   min_size_ = min_size;
   max_size_ = max_size;
-  if (web_contents() && web_contents()->GetMainFrame()->IsRenderFrameCreated())
-    MaybeEnableAutoResize(web_contents()->GetMainFrame());
+  if (web_contents() &&
+      web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive())
+    MaybeEnableAutoResize(web_contents()->GetPrimaryMainFrame());
 }
 
 void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
@@ -146,7 +159,7 @@ void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
 
   crashed_overlay_view_ = crashed_overlay_view;
   if (crashed_overlay_view_) {
-    AddChildView(crashed_overlay_view_);
+    AddChildView(crashed_overlay_view_.get());
     holder_->SetVisible(false);
     crashed_overlay_view_->SetBoundsRect(gfx::Rect(size()));
   }
@@ -254,10 +267,15 @@ void WebView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void WebView::AddedToWidget() {
+  if (!web_contents())
+    return;
+
+  web_contents()->SetColorProviderSource(GetWidget());
+
   // If added to a widget hierarchy and |holder_| already has a NativeView
   // attached, update the accessible parent here to support reparenting the
   // WebView.
-  if (web_contents() && holder_->native_view())
+  if (holder_->native_view())
     UpdateNativeViewHostAccessibleParent(holder_, parent());
 }
 
@@ -281,7 +299,7 @@ gfx::NativeViewAccessible WebView::GetNativeViewAccessible() {
 }
 
 void WebView::OnAXModeAdded(ui::AXMode mode) {
-  if (!web_contents())
+  if (!GetWidget() || !web_contents())
     return;
 
   // Normally, it is set during AttachWebContentsNativeView when the WebView is
@@ -299,7 +317,7 @@ void WebView::OnAXModeAdded(ui::AXMode mode) {
 
 void WebView::RenderFrameCreated(content::RenderFrameHost* render_frame_host) {
   // Only handle the initial main frame, not speculative ones.
-  if (render_frame_host != web_contents()->GetMainFrame())
+  if (render_frame_host != web_contents()->GetPrimaryMainFrame())
     return;
 
   SetUpNewMainFrame(render_frame_host);
@@ -307,7 +325,7 @@ void WebView::RenderFrameCreated(content::RenderFrameHost* render_frame_host) {
 
 void WebView::RenderFrameDeleted(content::RenderFrameHost* render_frame_host) {
   // Only handle the active main frame, not speculative ones.
-  if (render_frame_host != web_contents()->GetMainFrame())
+  if (render_frame_host != web_contents()->GetPrimaryMainFrame())
     return;
 
   LostMainFrame();
@@ -317,13 +335,13 @@ void WebView::RenderFrameHostChanged(content::RenderFrameHost* old_host,
                                      content::RenderFrameHost* new_host) {
   // Since we skipped speculative main frames in RenderFrameCreated, we must
   // watch for them being swapped in by watching for RenderFrameHostChanged().
-  if (new_host != web_contents()->GetMainFrame())
+  if (new_host != web_contents()->GetPrimaryMainFrame())
     return;
   // Ignore the initial main frame host, as there's no renderer frame for it
   // yet. If the DCHECK fires, then we would need to handle the initial main
   // frame when it its renderer frame is created.
   if (!old_host) {
-    DCHECK(!new_host->IsRenderFrameCreated());
+    DCHECK(!new_host->IsRenderFrameLive());
     return;
   }
 
@@ -345,6 +363,10 @@ void WebView::OnWebContentsFocused(
 
 void WebView::AXTreeIDForMainFrameHasChanged() {
   NotifyAccessibilityWebContentsChanged();
+}
+
+void WebView::WebContentsDestroyed() {
+  SetWebContents(nullptr);
 }
 
 void WebView::ResizeDueToAutoResize(content::WebContents* source,
@@ -370,6 +392,14 @@ void WebView::AttachWebContentsNativeView() {
   if (holder_->native_view() == view_to_attach)
     return;
 
+  const auto* bg_color =
+      WebContentsSetBackgroundColor::FromWebContents(web_contents());
+  if (bg_color) {
+    holder_->SetBackgroundColorWhenClipped(bg_color->color());
+  } else {
+    holder_->SetBackgroundColorWhenClipped(absl::nullopt);
+  }
+
   holder_->Attach(view_to_attach);
 
   // We set the parent accessible of the native view to be our parent.
@@ -385,8 +415,9 @@ void WebView::AttachWebContentsNativeView() {
 
 void WebView::DetachWebContentsNativeView() {
   TRACE_EVENT0("views", "WebView::DetachWebContentsNativeView");
-  if (web_contents())
+  if (web_contents()) {
     holder_->Detach();
+  }
 }
 
 void WebView::UpdateCrashedOverlayView() {
@@ -405,21 +436,23 @@ void WebView::UpdateCrashedOverlayView() {
 
 void WebView::NotifyAccessibilityWebContentsChanged() {
   content::RenderFrameHost* rfh =
-      web_contents() ? web_contents()->GetMainFrame() : nullptr;
+      web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
   GetViewAccessibility().OverrideChildTreeID(rfh ? rfh->GetAXTreeID()
                                                  : ui::AXTreeIDUnknown());
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
 }
 
 std::unique_ptr<content::WebContents> WebView::CreateWebContents(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    base::Location creator_location) {
   std::unique_ptr<content::WebContents> contents;
   if (*GetCreatorForTesting()) {
     contents = GetCreatorForTesting()->Run(browser_context);
   }
 
   if (!contents) {
-    content::WebContents::CreateParams create_params(browser_context, nullptr);
+    content::WebContents::CreateParams create_params(browser_context,
+                                                     creator_location);
     return content::WebContents::Create(create_params);
   }
 
@@ -440,7 +473,7 @@ void WebView::LostMainFrame() {
 }
 
 void WebView::MaybeEnableAutoResize(content::RenderFrameHost* frame_host) {
-  DCHECK(frame_host->IsRenderFrameCreated());
+  DCHECK(frame_host->IsRenderFrameLive());
   if (!max_size_.IsEmpty())
     frame_host->GetView()->EnableAutoResize(min_size_, max_size_);
 }

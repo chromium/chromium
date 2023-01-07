@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/common/url_constants.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -30,7 +31,7 @@
 #include "ppapi/proxy/ppapi_messages.h"                 // nogncheck
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/debug/invalid_access_win.h"
 #endif
 
@@ -49,26 +50,10 @@ const char kAsanHeapOverflow[] = "/browser-heap-overflow";
 const char kAsanHeapUnderflow[] = "/browser-heap-underflow";
 const char kAsanUseAfterFree[] = "/browser-use-after-free";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kAsanCorruptHeapBlock[] = "/browser-corrupt-heap-block";
 const char kAsanCorruptHeap[] = "/browser-corrupt-heap";
 #endif
-
-void HandlePpapiFlashDebugURL(const GURL& url) {
-#if BUILDFLAG(ENABLE_PLUGINS)
-  bool crash = url == kChromeUIPpapiFlashCrashURL;
-
-  std::vector<PpapiPluginProcessHost*> hosts;
-  PpapiPluginProcessHost::FindByName(base::UTF8ToUTF16(kFlashPluginName),
-                                     &hosts);
-  for (auto iter = hosts.begin(); iter != hosts.end(); ++iter) {
-    if (crash)
-      (*iter)->Send(new PpapiMsg_Crash());
-    else
-      (*iter)->Send(new PpapiMsg_Hang());
-  }
-#endif
-}
 
 bool IsAsanDebugURL(const GURL& url) {
   if (!(url.is_valid() && url.SchemeIs(kChromeUIScheme) &&
@@ -82,7 +67,7 @@ bool IsAsanDebugURL(const GURL& url) {
     return true;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (url.path_piece() == kAsanCorruptHeapBlock ||
       url.path_piece() == kAsanCorruptHeap) {
     return true;
@@ -94,7 +79,7 @@ bool IsAsanDebugURL(const GURL& url) {
 
 bool HandleAsanDebugURL(const GURL& url) {
 #if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_HWASAN)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (url.path_piece() == kAsanCorruptHeapBlock) {
     base::debug::AsanCorruptHeapBlock();
     return true;
@@ -102,7 +87,7 @@ bool HandleAsanDebugURL(const GURL& url) {
     base::debug::AsanCorruptHeap();
     return true;
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   if (url.path_piece() == kAsanHeapOverflow) {
     base::debug::AsanHeapOverflow();
@@ -143,36 +128,41 @@ bool HandleDebugURL(const GURL& url,
   if (IsAsanDebugURL(url))
     return HandleAsanDebugURL(url);
 
-  if (url == kChromeUIBrowserCrashURL) {
+  if (url == blink::kChromeUIBrowserCrashURL) {
     // Induce an intentional crash in the browser process.
     CHECK(false);
     return true;
   }
 
-#if defined(OS_WIN)
-  if (url == kChromeUIBrowserHeapCorruptionURL) {
+  if (url == blink::kChromeUIBrowserDcheckURL) {
+    // Induce an intentional DCHECK in the browser process. This is used to
+    // see if a DCHECK will bring down the current process (is FATAL).
+    DCHECK(false);
+    return true;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  if (url == blink::kChromeUIBrowserHeapCorruptionURL) {
     // Induce an intentional heap corruption in the browser process.
     base::debug::win::TerminateWithHeapCorruption();
-    return true;
   }
 #endif
 
-  if (url == kChromeUIBrowserUIHang) {
+  if (url == blink::kChromeUIBrowserUIHang) {
     HangCurrentThread();
     return true;
   }
 
-  if (url == kChromeUIDelayedBrowserUIHang) {
+  if (url == blink::kChromeUIDelayedBrowserUIHang) {
     // Webdriver-safe url to hang the ui thread. Webdriver waits for the onload
     // event in javascript which needs a little more time to fire.
     GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&HangCurrentThread),
-        base::TimeDelta::FromSeconds(2));
+        FROM_HERE, base::BindOnce(&HangCurrentThread), base::Seconds(2));
     return true;
   }
 
-  if (url == kChromeUIGpuCleanURL) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+  if (url == blink::kChromeUIGpuCleanURL) {
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce([](GpuProcessHost* host) {
                                if (host)
@@ -181,8 +171,8 @@ bool HandleDebugURL(const GURL& url,
     return true;
   }
 
-  if (url == kChromeUIGpuCrashURL) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+  if (url == blink::kChromeUIGpuCrashURL) {
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce([](GpuProcessHost* host) {
                                if (host)
@@ -191,9 +181,9 @@ bool HandleDebugURL(const GURL& url,
     return true;
   }
 
-#if defined(OS_ANDROID)
-  if (url == kChromeUIGpuJavaCrashURL) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+#if BUILDFLAG(IS_ANDROID)
+  if (url == blink::kChromeUIGpuJavaCrashURL) {
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce([](GpuProcessHost* host) {
                                if (host)
@@ -203,8 +193,8 @@ bool HandleDebugURL(const GURL& url,
   }
 #endif
 
-  if (url == kChromeUIGpuHangURL) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+  if (url == blink::kChromeUIGpuHangURL) {
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce([](GpuProcessHost* host) {
                                if (host)
@@ -213,19 +203,13 @@ bool HandleDebugURL(const GURL& url,
     return true;
   }
 
-  if (url == kChromeUIPpapiFlashCrashURL || url == kChromeUIPpapiFlashHangURL) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&HandlePpapiFlashDebugURL, url));
-    return true;
-  }
-
-  if (url == kChromeUIMemoryPressureCriticalURL) {
+  if (url == blink::kChromeUIMemoryPressureCriticalURL) {
     base::MemoryPressureListener::NotifyMemoryPressure(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
     return true;
   }
 
-  if (url == kChromeUIMemoryPressureModerateURL) {
+  if (url == blink::kChromeUIMemoryPressureModerateURL) {
     base::MemoryPressureListener::NotifyMemoryPressure(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
     return true;

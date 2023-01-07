@@ -28,11 +28,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_ARRAY_BUFFER_ARRAY_BUFFER_CONTENTS_H_
 
 #include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/macros.h"
+#include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -64,6 +63,10 @@ class CORE_EXPORT ArrayBufferContents {
                       SharingType is_shared,
                       InitializationPolicy);
   ArrayBufferContents(void* data, size_t length, DataDeleter deleter);
+  ArrayBufferContents(
+      const base::subtle::PlatformSharedMemoryRegion& shared_memory_region,
+      uint64_t offset,
+      size_t length);
   ArrayBufferContents(ArrayBufferContents&&) = default;
   ArrayBufferContents(const ArrayBufferContents&) = default;
   explicit ArrayBufferContents(std::shared_ptr<v8::BackingStore> backing_store)
@@ -111,7 +114,9 @@ class CORE_EXPORT ArrayBufferContents {
   static void FreeMemory(void*);
 
  private:
-  static void* AllocateMemoryWithFlags(size_t, InitializationPolicy, int);
+  static void* AllocateMemoryWithFlags(size_t,
+                                       InitializationPolicy,
+                                       unsigned int);
 
   std::shared_ptr<v8::BackingStore> backing_store_;
 };

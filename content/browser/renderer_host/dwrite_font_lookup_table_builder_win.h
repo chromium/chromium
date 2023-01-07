@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,22 +14,18 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/deferred_sequenced_task_runner.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/singleton.h"
-#include "base/optional.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_unique_name_table.pb.h"
 #include "third_party/blink/public/mojom/dwrite_font_proxy/dwrite_font_proxy.mojom.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}
 
 namespace content {
 
@@ -45,6 +41,10 @@ namespace content {
 class CONTENT_EXPORT DWriteFontLookupTableBuilder {
  public:
   static DWriteFontLookupTableBuilder* GetInstance();
+
+  DWriteFontLookupTableBuilder(const DWriteFontLookupTableBuilder&) = delete;
+  DWriteFontLookupTableBuilder& operator=(const DWriteFontLookupTableBuilder&) =
+      delete;
 
   // Retrieve the prepared memory region if it is available.
   // EnsureFontUniqueNameTable() must be checked before.
@@ -97,7 +97,8 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
   // from disk), The DWrite.dll's product version and the Chrome version, as a
   // safety mechanism to refresh the cache for every release. Exposed as a
   // public method to be able to run the hash function in a test.
-  std::string ComputePersistenceHash();
+  // `browser_version` is used in the hash.
+  std::string ComputePersistenceHash(const std::string& browser_version);
 
   // Configures the cache directory in which to store the serialized font table
   // lookup structure. Use only in testing. Normally the directory name is
@@ -131,12 +132,16 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
 
   struct FamilyResult {
     FamilyResult();
+
+    FamilyResult(const FamilyResult&) = delete;
+    FamilyResult& operator=(const FamilyResult&) = delete;
+
     FamilyResult(FamilyResult&& other);
+
     ~FamilyResult();
+
     std::vector<FontFileWithUniqueNames> font_files_with_names;
     HRESULT exit_hresult{S_OK};
-
-    DISALLOW_COPY_AND_ASSIGN(FamilyResult);
   };
 
   // Try to find a serialized lookup table from the cache directory specified at
@@ -154,8 +159,9 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
 
   // Load from cache or construct the font unique name lookup table. If the
   // cache is up to date, do not schedule a run to scan all Windows-enumerated
-  // fonts.
-  void PrepareFontUniqueNameTable();
+  // fonts. `browser_version` is used in the hashing algorithm for the cache
+  // key.
+  void PrepareFontUniqueNameTable(const std::string& browser_version);
 
   // Helper function to perform DWrite operations to retrieve path names, full
   // font name and PostScript name for a font specified by collection + family
@@ -232,7 +238,7 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
   base::FilePath cache_directory_;
 
   bool caching_enabled_ = true;
-  base::Optional<base::WaitableEvent> hang_event_for_testing_;
+  absl::optional<base::WaitableEvent> hang_event_for_testing_;
   base::CancelableOnceCallback<void()> timeout_callback_;
 
   // All responses are serialized through this DeferredSequencedTaskRunner. It
@@ -242,8 +248,6 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
       base::MakeRefCounted<base::DeferredSequencedTaskRunner>();
 
   std::map<HRESULT, unsigned> scanning_error_reasons_;
-
-  DISALLOW_COPY_AND_ASSIGN(DWriteFontLookupTableBuilder);
 };
 
 }  // namespace content

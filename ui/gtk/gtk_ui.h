@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,20 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/component_export.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
-#include "build/buildflag.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/gtk/gtk_ui_delegate.h"
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/gfx/font_render_params.h"
+#include "ui/gtk/gtk_ui_platform.h"
+#include "ui/linux/linux_ui.h"
+#include "ui/linux/window_frame_provider.h"
 #include "ui/views/window/frame_buttons.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "printing/printing_context_linux.h"  // nogncheck
+#endif
 
 typedef struct _GParamSpec GParamSpec;
 typedef struct _GtkParamSpec GtkParamSpec;
@@ -28,23 +32,23 @@ typedef struct _GtkStyle GtkStyle;
 namespace gtk {
 using ColorMap = std::map<int, SkColor>;
 
-class DeviceScaleFactorObserver;
+class GtkKeyBindingsHandler;
 class NativeThemeGtk;
 class SettingsProvider;
 
-#if BUILDFLAG(GTK_VERSION) <= 3
-class GtkKeyBindingsHandler;
-#endif
-
 // Interface to GTK desktop features.
-class GtkUi : public views::LinuxUI {
+class GtkUi : public ui::LinuxUiAndTheme {
  public:
-  explicit GtkUi(ui::GtkUiDelegate* delegate);
+  GtkUi();
+
+  GtkUi(const GtkUi&) = delete;
+  GtkUi& operator=(const GtkUi&) = delete;
+
   ~GtkUi() override;
 
   // Static delegate getter, used by different objects (created by GtkUi), e.g:
   // Dialogs, IME Context, when platform-specific functionality is required.
-  static ui::GtkUiDelegate* GetDelegate();
+  static GtkUiPlatform* GetPlatform();
 
   // Setters used by SettingsProvider:
   void SetWindowButtonOrdering(
@@ -53,28 +57,40 @@ class GtkUi : public views::LinuxUI {
   void SetWindowFrameAction(WindowFrameActionSource source,
                             WindowFrameAction action);
 
-  // ui::LinuxInputMethodContextFactory:
+  // ui::LinuxUi:
+  bool Initialize() override;
+  base::TimeDelta GetCursorBlinkInterval() const override;
+  gfx::Image GetIconForContentType(const std::string& content_type,
+                                   int size,
+                                   float scale) const override;
+  float GetDeviceScaleFactor() const override;
+  base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
+#if BUILDFLAG(ENABLE_PRINTING)
+  printing::PrintDialogLinuxInterface* CreatePrintDialog(
+      printing::PrintingContextLinux* context) override;
+  gfx::Size GetPdfPaperSize(printing::PrintingContextLinux* context) override;
+#endif
+  ui::SelectFileDialog* CreateSelectFileDialog(
+      void* listener,
+      std::unique_ptr<ui::SelectFilePolicy> policy) const override;
+  std::string GetCursorThemeName() override;
+  int GetCursorThemeSize() override;
   std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
-      ui::LinuxInputMethodContextDelegate* delegate,
-      bool is_simple) const override;
-
-  // gfx::LinuxFontDelegate:
+      ui::LinuxInputMethodContextDelegate* delegate) const override;
+  bool GetTextEditCommandsForEvent(
+      const ui::Event& event,
+      std::vector<ui::TextEditCommandAuraLinux>* commands) override;
   gfx::FontRenderParams GetDefaultFontRenderParams() const override;
   void GetDefaultFontDescription(
       std::string* family_out,
       int* size_pixels_out,
       int* style_out,
-      gfx::Font::Weight* weight_out,
+      int* weight_out,
       gfx::FontRenderParams* params_out) const override;
+  bool AnimationsEnabled() const override;
 
-  // ui::ShellDialogLinux:
-  ui::SelectFileDialog* CreateSelectFileDialog(
-      ui::SelectFileDialog::Listener* listener,
-      std::unique_ptr<ui::SelectFilePolicy> policy) const override;
-
-  // views::LinuxUI:
-  void Initialize() override;
-  bool GetTint(int id, color_utils::HSL* tint) const override;
+  // ui::LinuxUiTheme:
+  ui::NativeTheme* GetNativeTheme() const override;
   bool GetColor(int id, SkColor* color, bool use_custom_frame) const override;
   bool GetDisplayProperty(int id, int* result) const override;
   SkColor GetFocusRingColor() const override;
@@ -82,38 +98,11 @@ class GtkUi : public views::LinuxUI {
   SkColor GetActiveSelectionFgColor() const override;
   SkColor GetInactiveSelectionBgColor() const override;
   SkColor GetInactiveSelectionFgColor() const override;
-  base::TimeDelta GetCursorBlinkInterval() const override;
-  ui::NativeTheme* GetNativeTheme(aura::Window* window) const override;
-  void SetUseSystemThemeCallback(UseSystemThemeCallback callback) override;
-  bool GetDefaultUsesSystemTheme() const override;
-  gfx::Image GetIconForContentType(const std::string& content_type,
-                                   int size) const override;
-  std::unique_ptr<views::Border> CreateNativeBorder(
-      views::LabelButton* owning_button,
-      std::unique_ptr<views::LabelButtonBorder> border) override;
-  void AddWindowButtonOrderObserver(
-      views::WindowButtonOrderObserver* observer) override;
-  void RemoveWindowButtonOrderObserver(
-      views::WindowButtonOrderObserver* observer) override;
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
-  void NotifyWindowManagerStartupComplete() override;
-  void UpdateDeviceScaleFactor() override;
-  float GetDeviceScaleFactor() const override;
-  void AddDeviceScaleFactorObserver(
-      views::DeviceScaleFactorObserver* observer) override;
-  void RemoveDeviceScaleFactorObserver(
-      views::DeviceScaleFactorObserver* observer) override;
   bool PreferDarkTheme() const override;
-  bool AnimationsEnabled() const override;
-  std::unique_ptr<views::NavButtonProvider> CreateNavButtonProvider() override;
-  base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
-  std::string GetCursorThemeName() override;
-  int GetCursorThemeSize() override;
-
-  // ui::TextEditKeybindingDelegate:
-  bool MatchEvent(const ui::Event& event,
-                  std::vector<ui::TextEditCommandAuraLinux>* commands) override;
+  std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
+  ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;
 
  private:
   using TintMap = std::map<int, color_utils::HSL>;
@@ -148,12 +137,15 @@ class GtkUi : public views::LinuxUI {
   // Updates |default_font_*|.
   void UpdateDefaultFont();
 
+  // Updates the device scale factor so that the default font size can be
+  // recalculated.
+  void UpdateDeviceScaleFactor();
+
   float GetRawDeviceScaleFactor();
 
-  // Not owned by GtkUi.
-  ui::GtkUiDelegate* const delegate_;
+  std::unique_ptr<GtkUiPlatform> platform_;
 
-  NativeThemeGtk* native_theme_;
+  raw_ptr<NativeThemeGtk> native_theme_;
 
   // Colors calculated by LoadGtkValues() that are given to the
   // caller while |use_gtk_| is true.
@@ -185,42 +177,22 @@ class GtkUi : public views::LinuxUI {
 
   std::unique_ptr<SettingsProvider> settings_provider_;
 
-  // Frame button layout state.  If |nav_buttons_set_| is false, then
-  // |leading_buttons_| and |trailing_buttons_| are meaningless.
-  bool nav_buttons_set_ = false;
-  std::vector<views::FrameButton> leading_buttons_;
-  std::vector<views::FrameButton> trailing_buttons_;
-
-#if BUILDFLAG(GTK_VERSION) <= 3
+  // This is only used on GTK3.
   std::unique_ptr<GtkKeyBindingsHandler> key_bindings_handler_;
-#endif
-
-  // Objects to notify when the window frame button order changes.
-  base::ObserverList<views::WindowButtonOrderObserver>::Unchecked
-      window_button_order_observer_list_;
-
-  // Objects to notify when the device scale factor changes.
-  base::ObserverList<views::DeviceScaleFactorObserver>::Unchecked
-      device_scale_factor_observer_list_;
 
   // The action to take when middle, double, or right clicking the titlebar.
   base::flat_map<WindowFrameActionSource, WindowFrameAction>
       window_frame_actions_;
 
-  // Used to determine whether the system theme should be used for a window.  If
-  // no override is provided or the callback returns true, GtkUi will default
-  // to a NativeThemeGtk instance.
-  UseSystemThemeCallback use_system_theme_callback_;
-
   float device_scale_factor_ = 1.0f;
 
-  DISALLOW_COPY_AND_ASSIGN(GtkUi);
+  // Paints a native window frame.  Typically only one of these will be
+  // non-null.  The exception is when the user starts or stops their compositor
+  // while Chrome is running.
+  std::unique_ptr<ui::WindowFrameProvider> solid_frame_provider_;
+  std::unique_ptr<ui::WindowFrameProvider> transparent_frame_provider_;
 };
 
 }  // namespace gtk
-
-// Access point to the GTK desktop system.
-COMPONENT_EXPORT(GTK)
-views::LinuxUI* BuildGtkUi(ui::GtkUiDelegate* delegate);
 
 #endif  // UI_GTK_GTK_UI_H_

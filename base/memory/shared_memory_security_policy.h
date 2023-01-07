@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 
 namespace mojo {
 namespace core {
@@ -34,7 +33,7 @@ class BASE_EXPORT SharedMemorySecurityPolicy {
 
   // Checks that a mapping with |size| can be created. Returns false if there is
   // an overflow in internal calculations, or the max limit has been reached.
-  static bool AcquireReservationForMapping(size_t size) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool AcquireReservationForMapping(size_t size);
 
   // Releases a reservation that was previously acquired.
   static void ReleaseReservationForMapping(size_t size);

@@ -1,16 +1,12 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 component("ios") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "insecure_input_tab_helper.h",
-    "insecure_input_tab_helper.mm",
     "security_state_utils.h",
     "security_state_utils.mm",
-    "ssl_status_input_event_data.h",
-    "ssl_status_input_event_data.mm",
   ]
   deps = [
     "//base",
@@ -33,5 +29,6 @@ source_set("unit_tests") {
     "//components/security_state/core",
     "//ios/web/public/security",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
   ]
 }

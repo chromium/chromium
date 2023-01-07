@@ -1,0 +1,31 @@
+<style include="cr-shared-style settings-shared">
+  #descriptionItemWrapper {
+    display: flex;
+    margin: 12px 0;
+    padding-inline-end: 12px;
+  }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
+        var(--google-grey-700));
+    display: flex;
+    flex-shrink: 0;
+    padding: 2px 0;
+    padding-inline-end: 10px;
+    width: var(--cr-link-row-icon-width, var(--cr-icon-size));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    iron-icon {
+      --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
+          var(--google-grey-500));
+    }
+  }
+</style>
+<div id="descriptionItemWrapper">
+  <iron-icon icon="[[icon]]" aria-hidden="true"></iron-icon>
+  <div class="secondary">
+    <div inner-h-t-m-l="[[labelHtml]]"></div>
+    [[label]]
+  </div>
+</div>

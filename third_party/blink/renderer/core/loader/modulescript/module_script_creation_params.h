@@ -1,18 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_MODULESCRIPT_MODULE_SCRIPT_CREATION_PARAMS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_MODULESCRIPT_MODULE_SCRIPT_CREATION_PARAMS_H_
 
-#include "base/optional.h"
+#include "base/check_op.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -32,7 +32,7 @@ class ModuleScriptCreationParams {
       ScriptSourceLocationType source_location_type,
       const ModuleType module_type,
       const ParkableString& source_text,
-      SingleCachedMetadataHandler* cache_handler,
+      CachedMetadataHandler* cache_handler,
       ScriptStreamer* script_streamer = nullptr,
       ScriptStreamer::NotStreamingReason not_streaming_reason =
           ScriptStreamer::NotStreamingReason::kStreamingDisabled)
@@ -60,10 +60,10 @@ class ModuleScriptCreationParams {
   ~ModuleScriptCreationParams() = default;
 
   ModuleScriptCreationParams IsolatedCopy() const {
-    String isolated_source_text =
-        isolated_source_text_ ? isolated_source_text_.IsolatedCopy()
-                              : GetSourceText().ToString().IsolatedCopy();
-    return ModuleScriptCreationParams(SourceURL().Copy(), BaseURL().Copy(),
+    String isolated_source_text = isolated_source_text_
+                                      ? isolated_source_text_
+                                      : GetSourceText().ToString();
+    return ModuleScriptCreationParams(SourceURL(), BaseURL(),
                                       source_location_type_, GetModuleType(),
                                       isolated_source_text);
   }
@@ -94,12 +94,9 @@ class ModuleScriptCreationParams {
         ScriptStreamer::NotStreamingReason::kStreamingDisabled);
   }
 
-  SingleCachedMetadataHandler* CacheHandler() const { return cache_handler_; }
+  CachedMetadataHandler* CacheHandler() const { return cache_handler_; }
 
-  bool IsSafeToSendToAnotherThread() const {
-    return source_url_.IsSafeToSendToAnotherThread() &&
-           base_url_.IsSafeToSendToAnotherThread() && is_isolated_;
-  }
+  bool IsSafeToSendToAnotherThread() const { return is_isolated_; }
 
   ScriptStreamer* GetScriptStreamer() const { return script_streamer_; }
   ScriptStreamer::NotStreamingReason NotStreamingReason() const {
@@ -142,7 +139,7 @@ class ModuleScriptCreationParams {
   mutable String isolated_source_text_;
 
   // |cache_handler_| is cleared when crossing thread boundaries.
-  Persistent<SingleCachedMetadataHandler> cache_handler_;
+  Persistent<CachedMetadataHandler> cache_handler_;
 
   // |script_streamer_| is cleared when crossing thread boundaries.
   Persistent<ScriptStreamer> script_streamer_;
@@ -153,8 +150,8 @@ class ModuleScriptCreationParams {
 
 namespace WTF {
 
-// Creates a deep copy because |source_url_|, |source_text_| and
-// |script_streamer_| are not cross-thread-transfer-safe.
+// Creates a deep copy because |script_streamer_| is not
+// cross-thread-transfer-safe.
 template <>
 struct CrossThreadCopier<blink::ModuleScriptCreationParams> {
   static blink::ModuleScriptCreationParams Copy(

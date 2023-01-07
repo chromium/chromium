@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "components/ui_devtools/agent_util.h"
 #include "components/ui_devtools/dom_agent.h"
@@ -39,7 +38,7 @@ class FakeUIElement : public UIElement {
 
  private:
   gfx::Rect bounds_;
-  bool visible_;
+  bool visible_ = false;
 };
 
 class FakeDOMAgent : public DOMAgent {

@@ -1,15 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {MultiDeviceFeature, MultiDeviceFeatureState, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-// #import {MultiDeviceFeature, MultiDeviceFeatureState, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {eventToPromise} from 'chrome://test/test_util.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 suite('Multidevice', function() {
   /** @type {?SettingsMultideviceFeatureItemElement} */
@@ -18,10 +15,10 @@ suite('Multidevice', function() {
   let featureToggle = null;
   /** @type {?CrToggleElement} */
   let crToggle = null;
-  /** @type {?settings.MultiDeviceFeatureState} */
+  /** @type {?MultiDeviceFeatureState} */
   let featureState = null;
 
-  /** @type {!settings.Route} */
+  /** @type {!Route} */
   let initialRoute;
 
   // Fake MultiDeviceFeature enum value
@@ -30,26 +27,13 @@ suite('Multidevice', function() {
 
   /** Resets both the suite and the (fake) feature to on state. */
   function resetFeatureData() {
-    featureState = settings.MultiDeviceFeatureState.ENABLED_BY_USER;
+    featureState = MultiDeviceFeatureState.ENABLED_BY_USER;
     featureItem.pageContentData = {
-      betterTogetherState: settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+      betterTogetherState: MultiDeviceFeatureState.ENABLED_BY_USER,
     };
-    Polymer.dom.flush();
+    flush();
     assertFalse(crToggle.disabled);
     assertTrue(crToggle.checked);
-  }
-
-  /**
-   * Override the cr-toggle's state. Because cr-toggle handles clicks
-   * differently depending on its state (e.g., turns off PointerEvents when it's
-   * disabled), we use this to check that the toggle can't enter a state where
-   * clicking on it causes the page to nagivate away.
-   * @param {boolean} checked
-   * @param {boolean} disabled
-   */
-  function setCrToggle(checked, disabled) {
-    crToggle.checked = checked;
-    crToggle.disabled = disabled;
   }
 
   /**
@@ -61,12 +45,12 @@ suite('Multidevice', function() {
    */
   function checkWhetherClickRoutesAway(element, shouldRouteAway) {
     element.click();
-    Polymer.dom.flush();
+    flush();
     assertEquals(
         shouldRouteAway,
-        initialRoute !== settings.Router.getInstance().getCurrentRoute());
-    settings.Router.getInstance().navigateTo(initialRoute);
-    assertEquals(initialRoute, settings.Router.getInstance().getCurrentRoute());
+        initialRoute !== Router.getInstance().getCurrentRoute());
+    Router.getInstance().navigateTo(initialRoute);
+    assertEquals(initialRoute, Router.getInstance().getCurrentRoute());
   }
 
   setup(function() {
@@ -77,21 +61,21 @@ suite('Multidevice', function() {
     featureItem.feature = FAKE_MULTIDEVICE_FEATURE;
     featureItem.pageContentData = {};
     document.body.appendChild(featureItem);
-    Polymer.dom.flush();
+    flush();
 
-    featureToggle = featureItem.$$('settings-multidevice-feature-toggle');
+    featureToggle = featureItem.shadowRoot.querySelector(
+        'settings-multidevice-feature-toggle');
     featureToggle.getFeatureState = () => featureState;
 
     crToggle = featureToggle.$.toggle;
 
-    initialRoute = settings.routes.MULTIDEVICE_FEATURES;
-    settings.routes.FREE_CANDY =
-        settings.routes.BASIC.createSection('/freeCandy');
-    featureItem.subpageRoute = settings.routes.FREE_CANDY;
+    initialRoute = routes.MULTIDEVICE_FEATURES;
+    routes.FREE_CANDY = routes.BASIC.createSection('/freeCandy');
+    featureItem.subpageRoute = routes.FREE_CANDY;
 
     resetFeatureData();
-    settings.Router.getInstance().navigateTo(initialRoute);
-    Polymer.dom.flush();
+    Router.getInstance().navigateTo(initialRoute);
+    flush();
   });
 
   teardown(function() {
@@ -99,47 +83,42 @@ suite('Multidevice', function() {
   });
 
   test('generic click navigates to subpage', function() {
-    checkWhetherClickRoutesAway(featureItem.$$('#item-text-container'), true);
-    checkWhetherClickRoutesAway(featureItem.$$('iron-icon'), true);
-    checkWhetherClickRoutesAway(featureItem.$$('#featureSecondary'), true);
+    checkWhetherClickRoutesAway(
+        featureItem.shadowRoot.querySelector('#item-text-container'), true);
+    checkWhetherClickRoutesAway(
+        featureItem.shadowRoot.querySelector('iron-icon'), true);
+    checkWhetherClickRoutesAway(
+        featureItem.shadowRoot.querySelector('#featureSecondary'), true);
   });
 
   test('link click does not navigate to subpage', function() {
-    const link =
-        featureItem.$$('#featureSecondary').$.container.querySelector('a');
+    const link = featureItem.shadowRoot.querySelector('#featureSecondary')
+                     .$.container.querySelector('a');
     assertTrue(!!link);
     checkWhetherClickRoutesAway(link, false);
   });
 
   test('row is clickable', async () => {
-    featureItem.feature = settings.MultiDeviceFeature.BETTER_TOGETHER_SUITE;
-    featureState = settings.MultiDeviceFeatureState.ENABLED_BY_USER;
+    featureItem.feature = MultiDeviceFeature.BETTER_TOGETHER_SUITE;
+    featureState = MultiDeviceFeatureState.ENABLED_BY_USER;
     featureItem.subpageRoute = null;
-    Polymer.dom.flush();
+    flush();
 
     const expectedEvent =
-        test_util.eventToPromise('feature-toggle-clicked', featureToggle);
-    featureItem.$$('#linkWrapper').click();
+        eventToPromise('feature-toggle-clicked', featureToggle);
+    featureItem.shadowRoot.querySelector('#linkWrapper').click();
     await expectedEvent;
   });
 
   test('toggle click does not navigate to subpage in any state', function() {
     checkWhetherClickRoutesAway(featureToggle, false);
 
-    // Checked and enabled
-    setCrToggle(true, false);
+    crToggle.checked = true;
+    assertFalse(crToggle.disabled);
     checkWhetherClickRoutesAway(crToggle, false);
 
-    // Checked and disabled
-    setCrToggle(true, true);
-    checkWhetherClickRoutesAway(crToggle, false);
-
-    // Unchecked and enabled
-    setCrToggle(false, false);
-    checkWhetherClickRoutesAway(crToggle, false);
-
-    // Unchecked and disabled
-    setCrToggle(false, true);
+    crToggle.checked = false;
+    assertFalse(crToggle.disabled);
     checkWhetherClickRoutesAway(crToggle, false);
   });
 });

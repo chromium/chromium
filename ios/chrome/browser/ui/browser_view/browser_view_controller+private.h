@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,13 +19,13 @@
 // an inactive BVC should not be visible.
 @property(nonatomic, assign, getter=isActive) BOOL active;
 
-// Dismisses all presented views, excluding the omnibox if |dismissOmnibox| is
-// NO, then calls |completion|.
+// Dismisses all presented views, excluding the omnibox if `dismissOmnibox` is
+// NO, then calls `completion`.
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox;
 
-// Does an animation from |originPoint| when opening a background tab, then
-// calls |completion|.
+// Does an animation from `originPoint` when opening a background tab, then
+// calls `completion`.
 - (void)animateOpenBackgroundTabFromOriginPoint:(CGPoint)originPoint
                                      completion:(void (^)())completion;
 

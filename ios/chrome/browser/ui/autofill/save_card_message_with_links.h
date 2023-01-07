@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 
 class GURL;
 
-// Represents a message with optional links. Each linkRange in |linkRanges|
-// represents the range (in |messageText|) for the corresponding (same index)
-// linkURL in |linkURLS|.
+// Represents a message with optional links. Each linkRange in `linkRanges`
+// represents the range (in `messageText`) for the corresponding (same index)
+// linkURL in `linkURLS`.
 @interface SaveCardMessageWithLinks : NSObject
 
 @property(nonatomic, copy) NSString* messageText;

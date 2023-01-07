@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include <dwmapi.h>
 #include <uxtheme.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/process/process_handle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,11 +21,12 @@
 #include "base/task/thread_pool.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_window_property_manager_win.h"
@@ -93,7 +95,7 @@ class VirtualDesktopHelper
   // last we checked. This is used to tell if the window has moved to a
   // different desktop, and notify listeners. It will only be set if
   // we created |virtual_desktop_helper_|.
-  base::Optional<std::string> workspace_;
+  absl::optional<std::string> workspace_;
 
   bool initial_workspace_remembered_ = false;
 
@@ -233,9 +235,8 @@ BrowserDesktopWindowTreeHostWin::~BrowserDesktopWindowTreeHostWin() {}
 views::NativeMenuWin* BrowserDesktopWindowTreeHostWin::GetSystemMenu() {
   if (!system_menu_.get()) {
     SystemMenuInsertionDelegateWin insertion_delegate;
-    system_menu_.reset(
-        new views::NativeMenuWin(browser_frame_->GetSystemMenuModel(),
-                                 GetHWND()));
+    system_menu_ = std::make_unique<views::NativeMenuWin>(
+        browser_frame_->GetSystemMenuModel(), GetHWND());
     system_menu_->Rebuild(&insertion_delegate);
   }
   return system_menu_.get();
@@ -287,6 +288,16 @@ void BrowserDesktopWindowTreeHostWin::Show(ui::WindowShowState show_state,
   DesktopWindowTreeHostWin::Show(show_state, restore_bounds);
 }
 
+void BrowserDesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(
+    bool restored) {
+  // This is necessary since OnWidgetVisibilityChanged() doesn't get called on
+  // Windows when the window is minimized or restored.
+  if (base::FeatureList::IsEnabled(
+          features::kStopLoadingAnimationForHiddenWindow)) {
+    browser_view_->UpdateLoadingAnimations(restored);
+  }
+}
+
 std::string BrowserDesktopWindowTreeHostWin::GetWorkspace() const {
   return virtual_desktop_helper_ ? virtual_desktop_helper_->GetWorkspace()
                                  : std::string();
@@ -329,8 +340,8 @@ bool BrowserDesktopWindowTreeHostWin::GetClientAreaInsets(
     int top_thickness = 0;
     if (ShouldCustomDrawSystemTitlebar() && GetWidget()->IsMaximized())
       top_thickness = frame_thickness;
-    *insets = gfx::Insets(top_thickness, frame_thickness, frame_thickness,
-                          frame_thickness);
+    *insets = gfx::Insets::TLBR(top_thickness, frame_thickness, frame_thickness,
+                                frame_thickness);
   }
   return true;
 }
@@ -367,8 +378,8 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
     const int inset = (base::win::GetVersion() < base::win::Version::WIN8)
                           ? kWin7GlassInset
                           : 0;
-    *insets = gfx::Insets(tabstrip_region_bounds.bottom() + inset, inset, inset,
-                          inset);
+    *insets = gfx::Insets::TLBR(tabstrip_region_bounds.bottom() + inset, inset,
+                                inset, inset);
   }
   return true;
 }

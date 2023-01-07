@@ -1,0 +1,27 @@
+<style include="cr-shared-style shimless-rma-shared">
+  :host(:not([should-show-warning_])) .icon-message {
+    grid-template-columns: 1fr;
+  }
+</style>
+<base-page equal-panes>
+  <div slot="left-pane">
+    <h1 id="titleText" tabindex="-1">[[getTitleText_(status_)]]</h1>
+    <div class="icon-message">
+      <iron-icon icon="shimless-icon:warning"
+          class="warning-icon small-icon" hidden="[[!shouldShowWarning_]]">
+      </iron-icon>
+      <span id="firmwareUpdateStatus" class="instructions" aria-live="polite">
+        [[statusString_]]
+      </span>
+    </div>
+  </div>
+  <div slot="right-pane">
+    <div class="illustration-wrapper" aria-hidden="true">
+      <img class="illustration" src="[[imgSrc_]]"
+          hidden$="[[shouldShowSpinner_]]" alt="[[imgAlt_]]">
+      <paper-spinner-lite class="large-spinner"
+          hidden$="[[!shouldShowSpinner_]]" active>
+      </paper-spinner-lite>
+    </div>
+  </div>
+</base-page>

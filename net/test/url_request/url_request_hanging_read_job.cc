@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,10 @@ GURL GetMockUrl(const std::string& scheme, const std::string& hostname) {
 class MockJobInterceptor : public URLRequestInterceptor {
  public:
   MockJobInterceptor() = default;
+
+  MockJobInterceptor(const MockJobInterceptor&) = delete;
+  MockJobInterceptor& operator=(const MockJobInterceptor&) = delete;
+
   ~MockJobInterceptor() override = default;
 
   // URLRequestInterceptor implementation
@@ -35,17 +39,12 @@ class MockJobInterceptor : public URLRequestInterceptor {
       URLRequest* request) const override {
     return std::make_unique<URLRequestHangingReadJob>(request);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockJobInterceptor);
 };
 
 }  // namespace
 
 URLRequestHangingReadJob::URLRequestHangingReadJob(URLRequest* request)
-    : URLRequestJob(request),
-      // non-zero content-length
-      content_length_(10) {}
+    : URLRequestJob(request) {}
 
 URLRequestHangingReadJob::~URLRequestHangingReadJob() = default;
 

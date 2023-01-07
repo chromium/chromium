@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/developer_private/show_permissions_dialog_helper.h"
 
+#include <memory>
 #include <utility>
 
 #include "apps/saved_files_service.h"
@@ -51,10 +52,10 @@ void ShowPermissionsDialogHelper::ShowPermissionsDialog(
     content::WebContents* web_contents,
     const Extension* extension) {
   extension_id_ = extension->id();
-  prompt_.reset(new ExtensionInstallPrompt(web_contents));
+  prompt_ = std::make_unique<ExtensionInstallPrompt>(web_contents);
   std::vector<base::FilePath> retained_file_paths;
   if (extension->permissions_data()->HasAPIPermission(
-          APIPermission::kFileSystem)) {
+          mojom::APIPermissionID::kFileSystem)) {
     std::vector<SavedFileEntry> retained_file_entries =
         apps::SavedFilesService::Get(profile_)->GetAllFileEntries(
             extension_id_);
@@ -62,7 +63,8 @@ void ShowPermissionsDialogHelper::ShowPermissionsDialog(
       retained_file_paths.push_back(entry.path);
   }
   std::vector<std::u16string> retained_device_messages;
-  if (extension->permissions_data()->HasAPIPermission(APIPermission::kUsb)) {
+  if (extension->permissions_data()->HasAPIPermission(
+          mojom::APIPermissionID::kUsb)) {
     retained_device_messages =
         DevicePermissionsManager::Get(profile_)
             ->GetPermissionMessageStrings(extension_id_);
@@ -82,8 +84,8 @@ void ShowPermissionsDialogHelper::ShowPermissionsDialog(
 }
 
 void ShowPermissionsDialogHelper::OnInstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
-  if (result == ExtensionInstallPrompt::Result::ACCEPTED) {
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  if (payload.result == ExtensionInstallPrompt::Result::ACCEPTED) {
     // This is true when the user clicks "Revoke File Access."
     const Extension* extension =
         ExtensionRegistry::Get(profile_)

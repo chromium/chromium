@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">すべての画像アニメーションを無効にする。</translation>
 <translation id="1703735871906654364">カーソル ブラウジング</translation>
 <translation id="1791496371305830581">すべての画像アニメーションを許可する。</translation>
+<translation id="1974060860693918893">詳細設定</translation>
 <translation id="1996252509865389616">有効にする</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2179565792157161713">詳しい説明を新しいタブで開く</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">カラー エンハンサー</translation>
 <translation id="633394792577263429">単語単位で移動するには &lt;span class='key'&gt;Control&lt;/span&gt; キーを押したままにします。</translation>
 <translation id="6550675742724504774">オプション</translation>
+<translation id="6699630355767768222">ステップ 3: 色の軸をオーバーライドして補正する。</translation>
 <translation id="6838518108677880446">設定:</translation>
 <translation id="690628312087070417">カーソルが離れた場所に移動した場合:</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -64,5 +66,6 @@
 <translation id="8321034316479930120">アニメーションのポリシー</translation>
 <translation id="8480209185614411573">ハイ コントラスト</translation>
 <translation id="8609925175482059018">&lt;span class='key'&gt;F7&lt;/span&gt; を押すとカーソル ブラウジングがオンになり、もう一度押すとオフになります。</translation>
+<translation id="8798099450830957504">既定</translation>
 <translation id="894241283505723656">Long Descriptions in Context Menu</translation>
 </translationbundle>

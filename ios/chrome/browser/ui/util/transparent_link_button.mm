@@ -1,12 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/util/transparent_link_button.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,22 +40,22 @@ const CGFloat kHighlightViewBackgroundAlpha = 0.25;
 @property(nonatomic, weak) TransparentLinkButton* previousLinkButton;
 @property(nonatomic, weak) TransparentLinkButton* nextLinkButton;
 
-// Designated initializer.  |linkFrame| is the frame of the link text; this may
+// Designated initializer.  `linkFrame` is the frame of the link text; this may
 // differ from the actual frame of the resulting TransparentLinkButton, which is
-// guaranteed to be at least |kLinkTapAreaMinimum| in each dimension, or
-// |lineHeight| * |kMaximumExpansionFactor| for height, whichever is smaller.
-// |URL| is the URL for the associated link.
+// guaranteed to be at least `kLinkTapAreaMinimum` in each dimension, or
+// `lineHeight` * `kMaximumExpansionFactor` for height, whichever is smaller.
+// `URL` is the URL for the associated link.
 - (instancetype)initWithLinkFrame:(CGRect)linkFrame
                               URL:(const GURL&)URL
                        lineHeight:(CGFloat)lineHeight NS_DESIGNATED_INITIALIZER;
 
 // Sets the properties, propogating state to its adjacent link buttons.
-// |sender| is the TransparentLinkButon whose state is being propogated to
-// |self|.
+// `sender` is the TransparentLinkButon whose state is being propagated to
+// `self`.
 - (void)setHighlighted:(BOOL)highlighted sender:(TransparentLinkButton*)sender;
 - (void)setSelected:(BOOL)selected sender:(TransparentLinkButton*)sender;
 
-// Updates the appearance of |highlightView| based on highlighted/selected
+// Updates the appearance of `highlightView` based on highlighted/selected
 // state.
 - (void)updateHighlightView;
 

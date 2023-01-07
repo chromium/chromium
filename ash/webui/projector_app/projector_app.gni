@@ -1,0 +1,12 @@
+import("//ash/webui/media_app_ui/media_app_ui.gni")
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+declare_args() {
+  # Whether to enable the "real" ChromeOS Projector App. When false, a mock app is
+  # bundled for testing integration points.
+  enable_cros_projector_app = is_chromeos_ash && is_chrome_branded
+}
+
+assert(!enable_cros_projector_app || enable_cros_media_app,
+       "Projector App requires enable_cros_media_app for ink dependencies")

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ MockMediaCryptoContext::MockMediaCryptoContext(bool has_media_crypto_context)
     return;
 
   ON_CALL(*this, SetMediaCryptoReadyCB_(_))
-      .WillByDefault(MoveArg<0>(&media_crypto_ready_cb));
+      .WillByDefault(MoveArg<0>(&media_crypto_ready_cb_));
 }
 
 MockMediaCryptoContext::~MockMediaCryptoContext() {}

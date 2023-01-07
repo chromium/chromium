@@ -25,9 +25,9 @@
 
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 
 namespace blink {
 
@@ -42,9 +42,42 @@ bool ScriptableDocumentParser::IsParsingAtLineNumber() const {
   return IsParsing() && !IsWaitingForScripts() && !IsExecutingScript();
 }
 
-void ScriptableDocumentParser::Trace(Visitor* visitor) const {
-  visitor->Trace(inline_script_cache_handler_);
-  DecodedDataDocumentParser::Trace(visitor);
+void ScriptableDocumentParser::AddInlineScriptStreamer(
+    const String& source,
+    scoped_refptr<BackgroundInlineScriptStreamer> streamer) {
+  base::AutoLock lock(streamers_lock_);
+  inline_script_streamers_.insert(source, std::move(streamer));
+}
+
+InlineScriptStreamer* ScriptableDocumentParser::TakeInlineScriptStreamer(
+    const String& source) {
+  scoped_refptr<BackgroundInlineScriptStreamer> streamer;
+  {
+    base::AutoLock lock(streamers_lock_);
+    streamer = inline_script_streamers_.Take(source);
+  }
+  // If the streamer hasn't started yet, cancel and just compile on the main
+  // thread.
+  if (streamer && !streamer->IsStarted()) {
+    streamer->Cancel();
+    streamer = nullptr;
+  }
+  if (streamer)
+    return InlineScriptStreamer::From(std::move(streamer));
+  return nullptr;
+}
+
+void ScriptableDocumentParser::AddCSSTokenizer(
+    const String& source,
+    std::unique_ptr<CachedCSSTokenizer> tokenizer) {
+  base::AutoLock lock(tokenizers_lock_);
+  inline_css_tokenizers_.insert(source, std::move(tokenizer));
+}
+
+std::unique_ptr<CachedCSSTokenizer> ScriptableDocumentParser::TakeCSSTokenizer(
+    const String& source) {
+  base::AutoLock lock(tokenizers_lock_);
+  return inline_css_tokenizers_.Take(source);
 }
 
 }  // namespace blink

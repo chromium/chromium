@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -112,20 +113,20 @@ void WebURLLoaderMockFactoryImpl::UnregisterAllURLsAndClearMemoryCache() {
   url_to_error_info_.clear();
   protocol_to_response_info_.clear();
   if (IsMainThread())
-    GetMemoryCache()->EvictResources();
+    MemoryCache::Get()->EvictResources();
 }
 
 void WebURLLoaderMockFactoryImpl::ServeAsynchronousRequests() {
   // Serving a request might trigger more requests, so we cannot iterate on
   // pending_loaders_ as it might get modified.
-  while (!pending_loaders_.IsEmpty()) {
+  while (!pending_loaders_.empty()) {
     LoaderToRequestMap::iterator iter = pending_loaders_.begin();
     base::WeakPtr<WebURLLoaderMock> loader(iter->key->GetWeakPtr());
     std::unique_ptr<network::ResourceRequest> request = std::move(iter->value);
     pending_loaders_.erase(loader.get());
 
     WebURLResponse response;
-    base::Optional<WebURLError> error;
+    absl::optional<WebURLError> error;
     WebData data;
     LoadRequest(WebURL(KURL(request->url)), &response, &error, &data);
     // Follow any redirects while the loader is still active.
@@ -162,6 +163,7 @@ void WebURLLoaderMockFactoryImpl::FillNavigationParamsResponse(
     auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
     body_loader->Write(*buffer);
     body_loader->Finish();
+    params->is_static_data = true;
     params->body_loader = std::move(body_loader);
     return;
   }
@@ -169,7 +171,7 @@ void WebURLLoaderMockFactoryImpl::FillNavigationParamsResponse(
   if (delegate_ && delegate_->FillNavigationParamsResponse(params))
     return;
 
-  base::Optional<WebURLError> error;
+  absl::optional<WebURLError> error;
   WebData data;
 
   size_t redirects = 0;
@@ -194,11 +196,12 @@ void WebURLLoaderMockFactoryImpl::FillNavigationParamsResponse(
     body_loader->Write(*buffer);
     body_loader->Finish();
   }
+  params->is_static_data = true;
   params->body_loader = std::move(body_loader);
 }
 
 bool WebURLLoaderMockFactoryImpl::IsMockedURL(const blink::WebURL& url) {
-  base::Optional<WebURLError> error;
+  absl::optional<WebURLError> error;
   ResponseInfo response_info;
   return LookupURL(url, &error, &response_info);
 }
@@ -210,7 +213,7 @@ void WebURLLoaderMockFactoryImpl::CancelLoad(WebURLLoaderMock* loader) {
 void WebURLLoaderMockFactoryImpl::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     WebURLResponse* response,
-    base::Optional<WebURLError>* error,
+    absl::optional<WebURLError>* error,
     WebData* data,
     int64_t* encoded_data_length) {
   LoadRequest(WebURL(KURL(request->url)), response, error, data);
@@ -235,7 +238,7 @@ void WebURLLoaderMockFactoryImpl::RunUntilIdle() {
 void WebURLLoaderMockFactoryImpl::LoadRequest(
     const WebURL& url,
     WebURLResponse* response,
-    base::Optional<WebURLError>* error,
+    absl::optional<WebURLError>* error,
     WebData* data) {
   ResponseInfo response_info;
   if (!LookupURL(url, error, &response_info)) {
@@ -253,7 +256,7 @@ void WebURLLoaderMockFactoryImpl::LoadRequest(
 }
 
 bool WebURLLoaderMockFactoryImpl::LookupURL(const WebURL& url,
-                                            base::Optional<WebURLError>* error,
+                                            absl::optional<WebURLError>* error,
                                             ResponseInfo* response_info) {
   URLToErrorMap::const_iterator error_iter = url_to_error_info_.find(url);
   if (error_iter != url_to_error_info_.end())

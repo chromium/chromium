@@ -1,14 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/media/session/pepper_playback_observer.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/session/pepper_player_delegate.h"
-#include "content/common/frame_messages.h"
 #include "ipc/ipc_message_macros.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
@@ -69,14 +70,14 @@ void PepperPlaybackObserver::PepperStartsPlayback(
   if (players_map_.count(id))
     return;
 
-  players_map_[id].reset(new PepperPlayerDelegate(
-      render_frame_host, pp_instance));
-
-  MediaSessionImpl::Get(contents_)->AddPlayer(
-      players_map_[id].get(), PepperPlayerDelegate::kPlayerId,
+  players_map_[id] = std::make_unique<PepperPlayerDelegate>(
+      render_frame_host, pp_instance,
       base::FeatureList::IsEnabled(media::kAudioFocusDuckFlash)
           ? media::MediaContentType::Pepper
           : media::MediaContentType::OneShot);
+
+  MediaSessionImpl::Get(contents_)->AddPlayer(players_map_[id].get(),
+                                              PepperPlayerDelegate::kPlayerId);
 }
 
 void PepperPlaybackObserver::PepperStopsPlayback(

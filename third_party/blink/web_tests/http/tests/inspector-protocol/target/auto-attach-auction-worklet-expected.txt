@@ -1,0 +1,15 @@
+Tests auto-attach to FLEDGE worklets.
+Attached to page target: about:blank
+    (title: )
+    (waiting: false)
+Dettached: about:blank
+Attached to page target: https://a.test:8443/inspector-protocol/resources/fledge_join.html
+    (title: https://a.test:8443/inspector-protocol/resources/fledge_join.html)
+    (waiting: false)
+Auction winner:undefined
+Attached to page target: https://a.test:8443/inspector-protocol/resources/fledge_join.html
+    (title: https://a.test:8443/inspector-protocol/resources/fledge_join.html)
+    (waiting: false)
+Auction winner:undefined
+DONE
+

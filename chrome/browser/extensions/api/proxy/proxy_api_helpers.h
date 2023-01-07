@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,12 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "net/proxy_resolution/proxy_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ProxyConfigDictionary;
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-class Value;
-}
 
 namespace extensions {
 namespace proxy_api_helpers {
@@ -104,37 +100,35 @@ bool GetProxyServer(const base::DictionaryValue* proxy_server,
 
 // Joins a list of URLs (stored as StringValues) in |list| with |joiner|
 // to |out|. Returns true if successful and sets |error| otherwise.
-bool JoinUrlList(const base::ListValue* list,
+bool JoinUrlList(const base::Value::List& list,
                  const std::string& joiner,
                  std::string* out,
                  std::string* error,
                  bool* bad_message);
 
-
 // Helper functions for browser->extension pref transformation:
 
 // Creates and returns a ProxyRules dictionary as defined in the extension API
 // with the values of a ProxyConfigDictionary configured for fixed proxy
-// servers. Returns NULL in case of failures.
-std::unique_ptr<base::DictionaryValue> CreateProxyRulesDict(
+// servers. Returns an empty object in case of failures.
+absl::optional<base::Value::Dict> CreateProxyRulesDict(
     const ProxyConfigDictionary& proxy_config);
 
 // Creates and returns a ProxyServer dictionary as defined in the extension API
-// with values from a net::ProxyServer object. Never returns NULL.
-std::unique_ptr<base::DictionaryValue> CreateProxyServerDict(
-    const net::ProxyServer& proxy);
+// with values from a net::ProxyServer object. Returns an empty dictionary on
+// error.
+base::Value::Dict CreateProxyServerDict(const net::ProxyServer& proxy);
 
 // Creates and returns a PacScript dictionary as defined in the extension API
 // with the values of a ProxyconfigDictionary configured for pac scripts.
-// Returns NULL in case of failures.
-std::unique_ptr<base::DictionaryValue> CreatePacScriptDict(
+// Returns an empty object in case of failures.
+absl::optional<base::Value::Dict> CreatePacScriptDict(
     const ProxyConfigDictionary& proxy_config);
 
-// Tokenizes the |in| at delimiters |delims| and returns a new ListValue with
-// StringValues created from the tokens.
-std::unique_ptr<base::ListValue> TokenizeToStringList(
-    const std::string& in,
-    const std::string& delims);
+// Tokenizes the |in| at delimiters |delims| and returns a new
+// base::Value::List with string values created from the tokens.
+base::Value::List TokenizeToStringList(const std::string& in,
+                                       const std::string& delims);
 
 }  // namespace proxy_api_helpers
 }  // namespace extensions

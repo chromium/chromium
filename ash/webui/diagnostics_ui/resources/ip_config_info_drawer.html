@@ -1,0 +1,47 @@
+<style include="diagnostics-shared">
+  :host {
+    --divider-horizontal-height: 100%;
+  }
+
+  #drawerTitle {
+    color: var(--cros-text-color-primary);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 13px;
+    font-weight: var(--diagnostics-regular-font-weight);
+    line-height: 20px;
+  }
+
+  #drawerToggle {
+    padding-bottom: 16px;
+    padding-inline: 20px;
+    padding-top: 12px;
+  }
+</style>
+<cr-expand-button id="drawerToggle" expanded="{{expanded_}}"
+    aria-labelledby="drawerTitle">
+  <span id="drawerTitle" aria-hidden="true">
+    [[i18n('ipConfigInfoDrawerTitle')]]
+  </span>
+</cr-expand-button>
+<template is="dom-if" if="[[expanded_]]">
+  <div id="ipConfigInfoElement"
+      class="horizontal-data-point-container spacing">
+    <div class="data-point-container">
+      <data-point id="gateway"
+          header="[[i18n('ipConfigInfoDrawerGateway')]]"
+          value="[[gateway_]]" orientation="horizontal">
+      </data-point>
+      <data-point id="subnetMask"
+          header="[[i18n('ipConfigInfoDrawerSubnetMask')]]"
+          value="[[subnetMask_]]" orientation="horizontal">
+      </data-point>
+    </div>
+    <div class="divider-horizontal"></div>
+    <div class="data-point-container">
+      <data-point id="nameServers"
+          header="[[nameServersHeader_]]"
+          value="[[nameServers_]]" orientation="horizontal">
+      </data-point>
+    </div>
+  </div>
+</template>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -118,7 +118,7 @@ SharingMessageBridgeImpl::CreateMetadataChangeList() {
   return std::make_unique<syncer::DummyMetadataChangeList>();
 }
 
-base::Optional<syncer::ModelError> SharingMessageBridgeImpl::MergeSyncData(
+absl::optional<syncer::ModelError> SharingMessageBridgeImpl::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK(entity_data.empty());
@@ -126,7 +126,7 @@ base::Optional<syncer::ModelError> SharingMessageBridgeImpl::MergeSyncData(
   return {};
 }
 
-base::Optional<syncer::ModelError> SharingMessageBridgeImpl::ApplySyncChanges(
+absl::optional<syncer::ModelError> SharingMessageBridgeImpl::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   sync_pb::SharingMessageCommitError no_error_message;
@@ -265,7 +265,7 @@ SharingMessageBridgeImpl::TimedCallback::TimedCallback(
     base::OnceClosure timeout_callback)
     : commit_callback_(std::move(commit_callback)) {
   const base::TimeDelta time_delta =
-      base::TimeDelta::FromSeconds(kSharingMessageBridgeTimeoutSeconds.Get());
+      base::Seconds(kSharingMessageBridgeTimeoutSeconds.Get());
   timer_.Start(FROM_HERE, time_delta, std::move(timeout_callback));
 }
 

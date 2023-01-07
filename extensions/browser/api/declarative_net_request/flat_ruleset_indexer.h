@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/common/api/declarative_net_request.h"
@@ -26,6 +25,10 @@ struct IndexedRule;
 class FlatRulesetIndexer {
  public:
   FlatRulesetIndexer();
+
+  FlatRulesetIndexer(const FlatRulesetIndexer&) = delete;
+  FlatRulesetIndexer& operator=(const FlatRulesetIndexer&) = delete;
+
   ~FlatRulesetIndexer();
 
   // Adds |indexed_rule| to the ruleset.
@@ -56,8 +59,6 @@ class FlatRulesetIndexer {
 
   size_t indexed_rules_count_ = 0;  // Number of rules indexed till now.
   bool finished_ = false;           // Whether Finish() has been called.
-
-  DISALLOW_COPY_AND_ASSIGN(FlatRulesetIndexer);
 };
 
 }  // namespace declarative_net_request

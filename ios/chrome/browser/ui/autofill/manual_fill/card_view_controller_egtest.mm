@@ -1,23 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ios/ios_util.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/autofill_test_utils.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/testing/earl_grey/keyboard_app_interface.h"
-#include "ios/web/public/test/element_selector.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "url/gurl.h"
+#import "ios/web/public/test/element_selector.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -83,7 +82,7 @@ BOOL WaitForKeyboardToAppear() {
                   block:^BOOL {
                     return [EarlGrey isKeyboardShownWithError:nil];
                   }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout];
+  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
 }  // namespace
@@ -251,10 +250,12 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
       performAction:grey_tap()];
 
-  // Try to scroll.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    // Try to scroll on iPhone.
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  }
 
   // Tap the "Add Credit Cards..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackAddCreditCardsMatcher()]
@@ -267,16 +268,6 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the "Add Credit Cards..." action works on OTR.
 - (void)testOTRAddCreditCardsActionOpensAddCreditCardSettings {
-#if TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1163116): Fails for ios14-beta/sdk-simulator.
-  EARL_GREY_TEST_DISABLED(@"Test disabled on simulator.");
-#endif
-  // TODO(crbug.com/1162354): Re-enable this test for iPad after fixing this
-  // issue.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   [AutofillAppInterface saveLocalCreditCard];
 
   // Open a tab in incognito.
@@ -293,10 +284,12 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
       performAction:grey_tap()];
 
-  // Try to scroll.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  // Scroll if not iPad.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  }
 
   // Tap the "Add Credit Cards..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackAddCreditCardsMatcher()]
@@ -453,13 +446,28 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"G")]
       performAction:grey_tap()];
 
-  // Verify the credit card controller table view and the credit card icon is
-  // NOT visible.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
-      assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
-      assertWithMatcher:grey_notVisible()];
+  // As of Xcode 14 beta 2, tapping the keyboard does not dismiss the
+  // accessory view popup.
+  bool systemDismissesView = true;
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+  if (@available(iOS 16, *)) {
+    systemDismissesView = false;
+  }
+#endif  // defined(__IPHONE_16_0)
+
+  if (systemDismissesView) {
+    // Verify the credit card controller table view and the credit card icon is
+    // not visible.
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        assertWithMatcher:grey_notVisible()];
+    [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
+        assertWithMatcher:grey_notVisible()];
+  } else {
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
 }
 
 // Tests that after switching fields the content size of the table view didn't
@@ -519,6 +527,10 @@ BOOL WaitForKeyboardToAppear() {
 - (void)testCreditCardLocalNumberDoesntInjectOnHttp {
   [self verifyCreditCardButtonWithTitle:kLocalNumberObfuscated
                         doesInjectValue:@""];
+
+  // Dismiss the warning alert.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
+      performAction:grey_tap()];
 }
 
 // Tests an alert is shown warning the user when trying to fill a credit card
@@ -529,6 +541,10 @@ BOOL WaitForKeyboardToAppear() {
   // Look for the alert.
   [[EarlGrey selectElementWithMatcher:NotSecureWebsiteAlert()]
       assertWithMatcher:grey_not(grey_nil())];
+
+  // Dismiss the alert.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that credit card cardholder is injected.

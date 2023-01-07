@@ -1,13 +1,15 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 
 namespace {
 
@@ -19,10 +21,10 @@ blink::EUserSelect UsedValueOfUserSelect(const blink::Node& node) {
     return blink::EUserSelect::kNone;
 
   const blink::ComputedStyle* style = node.GetLayoutObject()->Style();
-  if (style->UserModify() != blink::EUserModify::kReadOnly)
+  if (style->UsedUserModify() != blink::EUserModify::kReadOnly)
     return blink::EUserSelect::kText;
 
-  return style->UserSelect();
+  return style->UsedUserSelect();
 }
 
 }  // namespace
@@ -36,8 +38,19 @@ template <typename Traversal>
 int EditingAlgorithm<Traversal>::CaretMaxOffset(const Node& node) {
   // For rendered text nodes, return the last position that a caret could
   // occupy.
-  if (IsA<Text>(node) && node.GetLayoutObject())
-    return To<Text>(node).GetLayoutObject()->CaretMaxOffset();
+  if (IsA<Text>(node) && node.GetLayoutObject()) {
+    LayoutText* layout_object = To<Text>(node).GetLayoutObject();
+
+    // ::first-letter
+    if (auto* first_letter_remaining_part =
+            DynamicTo<LayoutTextFragment>(layout_object)) {
+      return first_letter_remaining_part->Start() +
+             first_letter_remaining_part->CaretMaxOffset();
+    }
+
+    return layout_object->CaretMaxOffset();
+  }
+
   // For containers return the number of children. For others do the same as
   // above.
   return LastOffsetForEditing(&node);

@@ -1,15 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_empty_state_view.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,67 +19,117 @@ namespace {
 const CGFloat kVerticalMargin = 16.0;
 const CGFloat kImageHeight = 150.0;
 const CGFloat kImageWidth = 150.0;
+
+// Returns the image to display for the given grid `page`.
+UIImage* ImageForPage(TabGridPage page) {
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      return [UIImage imageNamed:@"tab_grid_incognito_tabs_empty"];
+    case TabGridPageRegularTabs:
+      return [UIImage imageNamed:@"tab_grid_regular_tabs_empty"];
+    case TabGridPageRemoteTabs:
+      // No-op. Empty page.
+      break;
+  }
+  return nil;
+}
+
+// Returns the title to display for the given grid `page` and `mode`.
+NSString* TitleForPageAndMode(TabGridPage page, TabGridMode mode) {
+  if (mode == TabGridModeSearch) {
+    return l10n_util::GetNSString(IDS_IOS_TAB_GRID_SEARCH_RESULTS_EMPTY_TITLE);
+  }
+
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      return l10n_util::GetNSString(
+          IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_TITLE);
+    case TabGridPageRegularTabs:
+      return l10n_util::GetNSString(IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_TITLE);
+    case TabGridPageRemoteTabs:
+      // No-op. Empty page.
+      break;
+  }
+
+  return nil;
+}
+
+// Returns the message to display for the given grid `page` and `mode`.
+NSString* BodyTextForPageAndMode(TabGridPage page, TabGridMode mode) {
+  if (mode == TabGridModeSearch) {
+    return nil;
+  }
+
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      return l10n_util::GetNSString(
+          IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_MESSAGE);
+    case TabGridPageRegularTabs:
+      return l10n_util::GetNSString(
+          IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_MESSAGE);
+    case TabGridPageRemoteTabs:
+      // No-op. Empty page.
+      break;
+  }
+
+  return nil;
+}
+
 }  // namespace
 
 @interface TabGridEmptyStateView ()
 @property(nonatomic, strong) UIView* container;
 @property(nonatomic, strong) UIScrollView* scrollView;
 @property(nonatomic, strong) NSLayoutConstraint* scrollViewHeight;
-@property(nonatomic, copy, readonly) UIImage* image;
-@property(nonatomic, copy, readonly) NSString* title;
-@property(nonatomic, copy, readonly) NSString* body;
+@property(nonatomic, weak) UIImageView* imageView;
+@property(nonatomic, weak) UILabel* topLabel;
+@property(nonatomic, weak) UILabel* bottomLabel;
 @end
 
 @implementation TabGridEmptyStateView
 // GridEmptyView properties.
 @synthesize scrollViewContentInsets = _scrollViewContentInsets;
+@synthesize activePage = _activePage;
+@synthesize tabGridMode = _tabGridMode;
 
 - (instancetype)initWithPage:(TabGridPage)page {
   if (self = [super initWithFrame:CGRectZero]) {
-    BOOL illustratedEmptyState =
-        base::FeatureList::IsEnabled(kIllustratedEmptyStates);
-    switch (page) {
-      case TabGridPageIncognitoTabs:
-        if (illustratedEmptyState) {
-          _image = [UIImage imageNamed:@"tab_grid_incognito_tabs_empty"];
-        }
-        _title = l10n_util::GetNSString(
-            illustratedEmptyState
-                ? IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_TITLE
-                : IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_STATE_TITLE);
-        _body = l10n_util::GetNSString(
-            illustratedEmptyState
-                ? IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_MESSAGE
-                : IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_STATE_BODY);
-        break;
-      case TabGridPageRegularTabs:
-        if (illustratedEmptyState) {
-          _image = [UIImage imageNamed:@"tab_grid_regular_tabs_empty"];
-        }
-        _title = l10n_util::GetNSString(
-            illustratedEmptyState
-                ? IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_TITLE
-                : IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_STATE_TITLE);
-        _body = l10n_util::GetNSString(
-            illustratedEmptyState
-                ? IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_MESSAGE
-                : IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_STATE_BODY);
-        break;
-      case TabGridPageRemoteTabs:
-        // No-op. Empty page.
-        break;
-    }
+    _activePage = page;
+    _tabGridMode = TabGridModeNormal;
   }
   return self;
 }
 
-#pragma mark - Accessor
+#pragma mark - GridEmptyView
 
 - (void)setScrollViewContentInsets:(UIEdgeInsets)scrollViewContentInsets {
   _scrollViewContentInsets = scrollViewContentInsets;
   self.scrollView.contentInset = scrollViewContentInsets;
   self.scrollViewHeight.constant =
       scrollViewContentInsets.top + scrollViewContentInsets.bottom;
+}
+
+- (void)setTabGridMode:(TabGridMode)tabGridMode {
+  if (_tabGridMode == tabGridMode) {
+    return;
+  }
+
+  _tabGridMode = tabGridMode;
+
+  self.topLabel.text = TitleForPageAndMode(_activePage, _tabGridMode);
+  self.bottomLabel.text = BodyTextForPageAndMode(_activePage, _tabGridMode);
+}
+
+- (void)setActivePage:(TabGridPage)activePage {
+  if (_activePage == activePage) {
+    return;
+  }
+
+  _activePage = activePage;
+
+  self.imageView.image = ImageForPage(_activePage);
+  self.topLabel.text = TitleForPageAndMode(_activePage, _tabGridMode);
+  self.bottomLabel.text = BodyTextForPageAndMode(_activePage, _tabGridMode);
 }
 
 #pragma mark - UIView
@@ -110,8 +160,9 @@ const CGFloat kImageWidth = 150.0;
   self.scrollView = scrollView;
 
   UILabel* topLabel = [[UILabel alloc] init];
+  _topLabel = topLabel;
   topLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  topLabel.text = self.title;
+  topLabel.text = TitleForPageAndMode(_activePage, _tabGridMode);
   topLabel.textColor = UIColorFromRGB(kTabGridEmptyStateTitleTextColor);
   topLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
   topLabel.adjustsFontForContentSizeCategory = YES;
@@ -119,55 +170,41 @@ const CGFloat kImageWidth = 150.0;
   topLabel.textAlignment = NSTextAlignmentCenter;
 
   UILabel* bottomLabel = [[UILabel alloc] init];
+  _bottomLabel = bottomLabel;
   bottomLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  bottomLabel.text = self.body;
+  bottomLabel.text = BodyTextForPageAndMode(_activePage, _tabGridMode);
   bottomLabel.textColor = UIColorFromRGB(kTabGridEmptyStateBodyTextColor);
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
-    bottomLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  } else {
-    bottomLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  }
+  bottomLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   bottomLabel.adjustsFontForContentSizeCategory = YES;
   bottomLabel.numberOfLines = 0;
   bottomLabel.textAlignment = NSTextAlignmentCenter;
 
-  UIImageView* imageView = nil;
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
-    imageView = [[UIImageView alloc] initWithImage:self.image];
-    imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  UIImageView* imageView =
+      [[UIImageView alloc] initWithImage:ImageForPage(_activePage)];
+  _imageView = imageView;
+  imageView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    [container addSubview:imageView];
-  }
+  [container addSubview:imageView];
 
   [container addSubview:topLabel];
   [container addSubview:bottomLabel];
   [scrollView addSubview:container];
   [self addSubview:scrollView];
 
-  NSLayoutConstraint* scrollViewHeightConstraint = [scrollView.heightAnchor
-      constraintEqualToAnchor:container.heightAnchor
-                     constant:(self.scrollViewContentInsets.top +
-                               self.scrollViewContentInsets.bottom)];
-  scrollViewHeightConstraint.priority = UILayoutPriorityDefaultLow;
-  scrollViewHeightConstraint.active = YES;
-  self.scrollViewHeight = scrollViewHeightConstraint;
-
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
-    [NSLayoutConstraint activateConstraints:@[
-      [imageView.topAnchor constraintEqualToAnchor:container.topAnchor],
-      [imageView.widthAnchor constraintEqualToConstant:kImageWidth],
-      [imageView.heightAnchor constraintEqualToConstant:kImageHeight],
-      [imageView.centerXAnchor constraintEqualToAnchor:container.centerXAnchor],
-    ]];
-  }
-
-  auto anchorForTopLabel = base::FeatureList::IsEnabled(kIllustratedEmptyStates)
-                               ? imageView.bottomAnchor
-                               : container.topAnchor;
+  self.scrollViewHeight = VerticalConstraintsWithInset(
+      container, scrollView,
+      self.scrollViewContentInsets.top + self.scrollViewContentInsets.bottom);
 
   [NSLayoutConstraint activateConstraints:@[
-    [topLabel.topAnchor constraintEqualToAnchor:anchorForTopLabel
+    [imageView.topAnchor constraintEqualToAnchor:container.topAnchor],
+    [imageView.widthAnchor constraintEqualToConstant:kImageWidth],
+    [imageView.heightAnchor constraintEqualToConstant:kImageHeight],
+    [imageView.centerXAnchor constraintEqualToAnchor:container.centerXAnchor],
+  ]];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [topLabel.topAnchor constraintEqualToAnchor:imageView.bottomAnchor
                                        constant:kVerticalMargin],
     [topLabel.leadingAnchor constraintEqualToAnchor:container.leadingAnchor],
     [topLabel.trailingAnchor constraintEqualToAnchor:container.trailingAnchor],

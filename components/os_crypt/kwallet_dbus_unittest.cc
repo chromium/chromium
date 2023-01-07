@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,6 +103,9 @@ class KWalletDBusTest
     testing::Mock::VerifyAndClearExpectations(mock_session_bus_.get());
   }
 
+  KWalletDBusTest(const KWalletDBusTest&) = delete;
+  KWalletDBusTest& operator=(const KWalletDBusTest&) = delete;
+
  protected:
   const base::nix::DesktopEnvironment desktop_env_;
   scoped_refptr<dbus::MockBus> mock_session_bus_;
@@ -113,9 +116,6 @@ class KWalletDBusTest
   std::string dbus_service_name_;
   std::string dbus_path_;
   std::string kwalletd_name_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KWalletDBusTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -808,7 +808,7 @@ TEST_P(KWalletDBusTest, ReadPassword) {
           _))
       .WillOnce(Return(ByMove(RespondString("password"))));
 
-  base::Optional<std::string> password;
+  absl::optional<std::string> password;
   EXPECT_EQ(KWalletDBus::Error::SUCCESS,
             kwallet_dbus_.ReadPassword(123, "folder", "key", "app", &password));
   EXPECT_TRUE(password.has_value());
@@ -821,7 +821,7 @@ TEST_P(KWalletDBusTest, ReadPasswordErrorRead) {
       CallMethodAndBlock(Calls(kKWalletInterface, "readPassword"), _))
       .WillOnce(Return(ByMove(dbus::Response::CreateEmpty())));
 
-  base::Optional<std::string> password;
+  absl::optional<std::string> password;
   EXPECT_EQ(KWalletDBus::Error::CANNOT_READ,
             kwallet_dbus_.ReadPassword(123, "folder", "key", "app", &password));
   EXPECT_FALSE(password.has_value());
@@ -833,7 +833,7 @@ TEST_P(KWalletDBusTest, ReadPasswordErrorContact) {
       CallMethodAndBlock(Calls(kKWalletInterface, "readPassword"), _))
       .WillOnce(Return(ByMove(nullptr)));
 
-  base::Optional<std::string> password;
+  absl::optional<std::string> password;
   EXPECT_EQ(KWalletDBus::Error::CANNOT_CONTACT,
             kwallet_dbus_.ReadPassword(123, "folder", "key", "app", &password));
   EXPECT_FALSE(password.has_value());

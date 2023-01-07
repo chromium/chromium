@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 
 #include "content/browser/gpu/gpu_data_manager_testing_autogen.h"
 
+#include <iterator>
+
 #include "content/browser/gpu/gpu_data_manager_testing_arrays_and_structs_autogen.h"
 #include "content/browser/gpu/gpu_data_manager_testing_exceptions_autogen.h"
 
@@ -19,8 +21,8 @@ const GpuControlList::Entry kGpuDataManagerTestingEntries[] = {
     {
         1,  // id
         "GpuDataManagerImplPrivateTest.GpuSideBlocklisting.0",
-        base::size(kFeatureListForGpuManagerTestingEntry1),  // features size
-        kFeatureListForGpuManagerTestingEntry1,              // features
+        std::size(kFeatureListForGpuManagerTestingEntry1),  // features size
+        kFeatureListForGpuManagerTestingEntry1,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -53,8 +55,8 @@ const GpuControlList::Entry kGpuDataManagerTestingEntries[] = {
     {
         2,  // id
         "GpuDataManagerImplPrivateTest.GpuSideBlocklisting.1",
-        base::size(kFeatureListForGpuManagerTestingEntry2),  // features size
-        kFeatureListForGpuManagerTestingEntry2,              // features
+        std::size(kFeatureListForGpuManagerTestingEntry2),  // features size
+        kFeatureListForGpuManagerTestingEntry2,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -87,8 +89,8 @@ const GpuControlList::Entry kGpuDataManagerTestingEntries[] = {
     {
         3,  // id
         "GpuDataManagerImplPrivateTest.GpuSideBlocklistingWebGL.0",
-        base::size(kFeatureListForGpuManagerTestingEntry3),  // features size
-        kFeatureListForGpuManagerTestingEntry3,              // features
+        std::size(kFeatureListForGpuManagerTestingEntry3),  // features size
+        kFeatureListForGpuManagerTestingEntry3,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -121,8 +123,8 @@ const GpuControlList::Entry kGpuDataManagerTestingEntries[] = {
     {
         4,  // id
         "GpuDataManagerImplPrivateTest.GpuSideBlocklistingWebGL.1",
-        base::size(kFeatureListForGpuManagerTestingEntry4),  // features size
-        kFeatureListForGpuManagerTestingEntry4,              // features
+        std::size(kFeatureListForGpuManagerTestingEntry4),  // features size
+        kFeatureListForGpuManagerTestingEntry4,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -155,8 +157,8 @@ const GpuControlList::Entry kGpuDataManagerTestingEntries[] = {
     {
         5,  // id
         "GpuDataManagerImplPrivateTest.GpuSideException",
-        base::size(kFeatureListForGpuManagerTestingEntry5),  // features size
-        kFeatureListForGpuManagerTestingEntry5,              // features
+        std::size(kFeatureListForGpuManagerTestingEntry5),  // features size
+        kFeatureListForGpuManagerTestingEntry5,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -183,14 +185,14 @@ const GpuControlList::Entry kGpuDataManagerTestingEntries[] = {
              nullptr},                  // intel_gpu_generation
             &kMoreForEntry5_572251052,  // more data
         },
-        base::size(kExceptionsForEntry5),  // exceptions count
-        kExceptionsForEntry5,              // exceptions
+        std::size(kExceptionsForEntry5),  // exceptions count
+        kExceptionsForEntry5,             // exceptions
     },
     {
         6,  // id
         "GpuDataManagerImplPrivateTest.BlocklistAllFeatures",
-        base::size(kFeatureListForGpuManagerTestingEntry6),  // features size
-        kFeatureListForGpuManagerTestingEntry6,              // features
+        std::size(kFeatureListForGpuManagerTestingEntry6),  // features size
+        kFeatureListForGpuManagerTestingEntry6,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size

@@ -1,0 +1,20 @@
+caption: Allow users to [enable/configure] Crostini port forwarding
+desc: |-
+  Specifies whether port forwarding into Crostini containers is allowed.
+
+        If this policy is set to True or not set, users will be able to configure port forwarding into their Crostini containers.
+
+        If this policy is set to False, port forwarding into Crostini containers will be disabled.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- danielng@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:85-
+tags:
+- system-security
+type: main

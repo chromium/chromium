@@ -1,0 +1,229 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.camera_app.mojom;
+
+import "ash/components/arc/mojom/camera_intent.mojom";
+import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+// Interface for monitoring tablet mode state of device. The state is detected
+// from Chrome browser process and is notified to Chrome Camera App in renderer
+// process.
+interface TabletModeMonitor {
+  // Updates with the latest changed tablet mode state.
+  Update(bool is_tablet_mode);
+};
+
+// Screen backlight state.
+// Reference from ash/public/cpp/screen_backlight_type.h
+enum ScreenState {
+    ON,
+    OFF,
+    OFF_AUTO,
+};
+
+// Ready state for document scanner.
+enum DocumentScannerReadyState {
+  // The library is not supported on the device.
+  NOT_SUPPORTED,
+  // The library is supported but needs to wait for its installation.
+  SUPPORTED_BUT_NOT_READY,
+  // The library is supported and ready.
+  SUPPORTED_AND_READY,
+};
+
+// Interface for monitoring screen state of device. The state is detected from
+// Chrome browser process and is notified to Chrome Camera App in renderer
+// process.
+interface ScreenStateMonitor {
+  // Updates with the latest changed screen state.
+  Update(ScreenState state);
+};
+
+// Interface for monitoring the existence of external screen. The state is
+// detected from Chrome browser process and is notified to Chrome Camera App in
+// renderer process.
+interface ExternalScreenMonitor {
+  // Updates when the existence of external screen got changed.
+  Update(bool has_external_screen);
+};
+
+// Interface to monitor camera usage ownership changes.
+interface CameraUsageOwnershipMonitor {
+  // Updates when the camera usage ownership is changed.
+  OnCameraUsageOwnershipChanged(bool has_usage) => ();
+};
+
+// The window states that we care about.
+enum WindowStateType {
+  MINIMIZED = 0,
+  MAXIMIZED = 1,
+  FULLSCREEN = 2,
+  REGULAR = 3,  // None of the above.
+};
+
+// Interface for monitoring window states.
+interface WindowStateMonitor {
+  // Updates when any of the window states are changed.
+  OnWindowStateChanged(array<WindowStateType> states);
+};
+
+// The possible result of the file deletion monitor.
+enum FileMonitorResult {
+  // The file is deleted.
+  DELETED = 0,
+
+  // The request is canceled since there is another monitor request.
+  CANCELED = 1,
+
+  // Fails to monitor the file due to errors.
+  ERROR = 2,
+};
+
+// Interface for window controlling.
+interface WindowStateController {
+  // Adds |monitor| for window state changes.
+  AddMonitor(pending_remote<WindowStateMonitor> monitor)
+      => (array<WindowStateType> states);
+
+  // Gets current |states| of the window.
+  GetWindowState() => (array<WindowStateType> states);
+
+  // Minimize the window.
+  Minimize() => ();
+
+  // Restore the window.
+  Restore() => ();
+
+  // Maximize the window.
+  Maximize() => ();
+
+  // Fullscreen the window.
+  Fullscreen() => ();
+
+  // Focus the window.
+  Focus() => ();
+};
+
+enum DocumentOutputFormat {
+  JPEG = 0,
+  PDF = 1,
+};
+
+// Interface for communication between Chrome Camera App (Remote) and Chrome
+// (Receiver).
+interface CameraAppHelper {
+  // Sends the captured result |data| for corresponding intent recognized by
+  // |intent_id| back to ARC. The handler should handle |data| and may notify
+  // the intent caller according to the intention of the |action|. |is_success|
+  // will be set to true if the ARC received the result and set to false for
+  // invalid input.
+  HandleCameraResult(uint32 intent_id,
+                     arc.mojom.CameraIntentAction action,
+                     array<uint8> data) => (bool is_success);
+
+  // Checks if device is under tablet mode currently.
+  IsTabletMode() => (bool is_tablet_mode);
+
+  // Triggers the begin of event tracing for given |event|.
+  StartPerfEventTrace(string event);
+
+  // Triggers the end of event tracing for given |event|.
+  StopPerfEventTrace(string event);
+
+  // Registers a TabletModeMonitor instance and returns the tablet mode
+  // initial state. Calling the Update() whenever the tablet mode state
+  // changes.
+  SetTabletMonitor(pending_remote<TabletModeMonitor> monitor)
+      => (bool is_tablet_mode);
+
+  // Registers a ScreenStateMonitor instance and returns the initial screen
+  // state. Calling the Update() whenever the screen state changes.
+  SetScreenStateMonitor(pending_remote<ScreenStateMonitor> monitor)
+      => (ScreenState initial_state);
+
+  // Checks if the logging consent option is enabled. It is only usable for SWA
+  // version. For platform app version, we use Chrome MetricsPrivate API.
+  IsMetricsAndCrashReportingEnabled() => (bool is_enabled);
+
+  // Registers a ExternalScreenMonitor instance and returns the initial state of
+  // the existence of external screen. Calling the Update() whenever the screen
+  // state changes.
+  SetExternalScreenMonitor(pending_remote<ExternalScreenMonitor> monitor)
+      => (bool has_external_screen);
+
+  // Opens the file in Downloads folder by its |name| in gallery. It is only
+  // usable for SWA version.
+  OpenFileInGallery(string name);
+
+  // Opens the chrome feedback dialog and show |placeholder| in the description
+  // field. It is only usable for SWA version. For platform app version, we send
+  // message to Feedback extension via chrome.runtime API.
+  OpenFeedbackDialog(string placeholder);
+
+  // Opens the given URL in the browser.
+  OpenUrlInBrowser(url.mojom.Url url);
+
+  // Sets the monitor to monitor the camera usage ownership changed. If the
+  // window operation is not supported for current instance, return false.
+  SetCameraUsageMonitor(
+      pending_remote<CameraUsageOwnershipMonitor> usage_monitor)
+          => (bool is_success);
+
+  // Gets the controller to control and monitor the window state of app.
+  GetWindowStateController()
+      => (pending_remote<WindowStateController> controller);
+
+  // Sends broadcast when a picture/video is captured. |is_video| is true if a
+  // video is captured and false for a picture. |name| is the file name which
+  // will be used to generate the URI for the broadcast.
+  SendNewCaptureBroadcast(bool is_video, string name);
+
+  // Monitors the deletion for given file |name| in the camera folder. The
+  // function will return when the deletion happens, or when another monitor
+  // request is raised, or when the error occurs. We can determine the cases
+  // by result.
+  MonitorFileDeletion(string name) => (FileMonitorResult result);
+
+  // Returns the ready type of the document scanner on the device.
+  GetDocumentScannerReadyState() => (DocumentScannerReadyState ready_state);
+
+  // Registers a callback which will be resolved once the document scanner is
+  // ready or when it fails to load. If the document scanner is not supported on
+  // the device, it returns false immediately. If the document scanner fails to
+  // load in the previous round, it retries upon the call.
+  CheckDocumentModeReadiness() => (bool is_loaded);
+
+  // Returns the detected document corners from given |jpeg_data|.
+  // The amount of corners will be either 0, indicating there are no corners
+  // detected, or 4, which are in top-left => bottom-left => bottom-right =>
+  // top-right order. The value of the coordinate of a corner will be in [0, 1).
+  // If there is non-zero orientation info in EXIF of |jpeg_data|, the output
+  // |corners| will be detected on image with orientation corrected.
+  ScanDocumentCorners(array<uint8> jpeg_data)
+      => (array<gfx.mojom.PointF> corners);
+
+  // Does the post processing for document given by its |jpeg_data|, document
+  // |corners|, clockwise rotate in |rotation| degrees and convert the result
+  // to the desired |output_format|. The input |corners| should be the ones
+  // based on the image with corrected orientation.  And it is guaranteed that
+  // the output |doc_data| will have none or corrected
+  // orientation.
+  ConvertToDocument(array<uint8> jpeg_data,
+                    array<gfx.mojom.PointF, 4> corners,
+                    chromeos.machine_learning.mojom.Rotation rotation,
+                    DocumentOutputFormat output_format)
+      => (array<uint8> doc_data);
+
+  // Converts the given |jpegs_data| to PDF format.
+  ConvertToPdf(array<array<uint8>> jpegs_data) => (array<uint8> pdf_data);
+
+  // Triggers HaTS survey for the camera app if all the conditions match:
+  // 1. The camera app session is longer than 15 seconds
+  // 2. The user is chosen to take the survey
+  // 3. The user hasn't done any survey recently
+  MaybeTriggerSurvey();
+};

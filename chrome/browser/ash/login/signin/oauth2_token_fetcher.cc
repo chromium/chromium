@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,19 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using content::BrowserThread;
-
+namespace ash {
 namespace {
+
+using ::content::BrowserThread;
 
 // OAuth token request max retry count.
 const int kMaxRequestAttemptCount = 5;
@@ -26,8 +27,6 @@ const int kMaxRequestAttemptCount = 5;
 const int kRequestRestartDelay = 3000;
 
 }  // namespace
-
-namespace chromeos {
 
 OAuth2TokenFetcher::OAuth2TokenFetcher(
     OAuth2TokenFetcher::Delegate* delegate,
@@ -77,8 +76,7 @@ void OAuth2TokenFetcher::RetryOnError(const GoogleServiceAuthError& error,
   if (error.IsTransientError() && retry_count_ < kMaxRequestAttemptCount) {
     retry_count_++;
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE, std::move(task),
-        base::TimeDelta::FromMilliseconds(kRequestRestartDelay));
+        FROM_HERE, std::move(task), base::Milliseconds(kRequestRestartDelay));
     return;
   }
   LOG(ERROR) << "Unrecoverable error or retry count max reached. State: "
@@ -87,4 +85,4 @@ void OAuth2TokenFetcher::RetryOnError(const GoogleServiceAuthError& error,
   std::move(error_handler).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -5,7 +5,6 @@
 <translation id="104962181688258143">Otvorite aplikaciju Datoteke</translation>
 <translation id="1122869341872663659">Prikazuje rezultate pretrage (<ph name="N" />) za upit <ph name="QUERY" /></translation>
 <translation id="1195667586424773550">Prevucite link u traku za adresu kartice</translation>
-<translation id="1204450209689312104">Otvorite novi prozor u režimu bez arhiviranja</translation>
 <translation id="1251638888133819822">Uključuje ili isključuje lupu za ceo ekran</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -15,8 +14,10 @@
 <translation id="1477442857810932985">Idite na kraj reda</translation>
 <translation id="1499072997694708844">Zatvorite sve prozore za traženje ili zaustavite učitavanje aktuelne stranice</translation>
 <translation id="1510238584712386396">Pokretač</translation>
+<translation id="1516966594427080024">Otvorite novi prozor u režimu bez arhiviranja</translation>
 <translation id="152892567002884378">Pojačajte zvuk</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, pa <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Idite na radne površine od 1 do 8</translation>
 <translation id="1652741121070700329">Pomerite na početak prethodne reči</translation>
 <translation id="1679841710523778799">Povećajte osvetljenost</translation>
 <translation id="168356808214100546">Pritisnite i zadržite <ph name="ALT" />, dodirujte <ph name="TAB" /> dok ne dođete do prozora koji želite da otvorite, pa otpustite.</translation>
@@ -52,7 +53,6 @@
 <translation id="2530339807289914946">Pomerajte se nadole na veb-stranici</translation>
 <translation id="2530896289327917474">Uključite ili isključite navigaciju kursorom</translation>
 <translation id="2574014812750545982">Resetujte nivo zumiranja na stranici</translation>
-<translation id="2596078834055697711">Napravite snimak ekrana prozora</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, pa <ph name="TAB" /> ili <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Ponovo učitajte trenutnu stranicu</translation>
 <translation id="2764005613199379871">Postavite fokus na traku za adresu i pretragu</translation>
@@ -67,12 +67,14 @@
 <translation id="3020183492814296499">Prečice</translation>
 <translation id="3084301071537457911">Istaknite sledeću stavku na polici</translation>
 <translation id="309173601632226815">Istaknite dugme pokretača na polici</translation>
-<translation id="3105917916468784889">Snimi ekran</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Fokusiranje trake za adresu</translation>
 <translation id="3256109297135787951">Uklonite isticanje sa stavke na polici</translation>
 <translation id="3288816184963444640">Zatvorite trenutno otvoreni prozor</translation>
+<translation id="3322797428033495633">Fokusirajte prozor slike u slici</translation>
+<translation id="3350805006883559974">Zadržavanje aktivnog prozora na vrhu</translation>
 <translation id="3407560819924487926">Pokrenite menadžer zadatka</translation>
+<translation id="3417835166382867856">Pretražite kartice</translation>
 <translation id="3422679037938588196">Idite na prethodno podudaranje za pretragu</translation>
 <translation id="353037708190149633">Sačuvajte sve otvorene stranice u trenutnom prozoru kao obeleživače u novom direktorijumu</translation>
 <translation id="355103131818127604">Otvorite link na novoj kartici u pozadini</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">zarez</translation>
 <translation id="3976863468609830880">Kliknite na poslednju ikonu na polici</translation>
 <translation id="3994783594793697310">Resetujte nivo zumiranja prikaza</translation>
+<translation id="4026837045671473537">Uključite režim inverzije boja</translation>
 <translation id="4026843240379844265">Pomera aktivan prozor na različite ekrane</translation>
 <translation id="4035482366624727273">Izaberite sve stavke na stranici</translation>
 <translation id="4060703249685950734">Ponovo otvorite karticu ili prozor koji su poslednji zatvoreni</translation>
@@ -108,7 +111,6 @@
 <translation id="4556221320735744018">Pregledajte pomoć za tasterske prečice</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> ili <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Otvorite oblast statusa (gde je slika naloga)</translation>
-<translation id="4642092649622328492">Napravite delimičan snimak ekrana</translation>
 <translation id="4698850295812410683">Prikažite alatke za pisaljku</translation>
 <translation id="4801989101741319327">Pomerite na kraj sledeće reči</translation>
 <translation id="4866066940972151697">Aktivirajte radnu površinu na desnoj strani</translation>
@@ -124,11 +126,13 @@
 <translation id="526651782186312376">Izaberite tekst do početka reda</translation>
 <translation id="5316716239522500219">Preslikavanje monitora</translation>
 <translation id="539072479502328326">Uključuje ili isključuje montiranu lupu ekrana</translation>
+<translation id="5466615362193675484">Uključite ili isključite meni za zaključan režim promene veličine</translation>
 <translation id="5541719484267030947">Dok prevlačite karticu pritisnite <ph name="ESC" /></translation>
 <translation id="5554139136362089836">Pretražite trenutnu stranicu</translation>
 <translation id="5563050856984839829">Pritisnite <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> i kliknite na link</translation>
 <translation id="561814908794220892">Otvorite veb-stranicu na novoj kartici</translation>
 <translation id="5620219513321115856">Premestite aktivni prozor na radnu površinu na desnoj strani</translation>
+<translation id="5699366815052349604">Dodelite aktivni prozor svim radnim površinama</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> ili <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Otvorite link na kartici</translation>
 <translation id="5757474750054631686">Smanjite osvetljenost tastature (samo za tastature sa pozadinskim osvetljenjem)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">Rotacija prozora</translation>
 <translation id="5926306472221400972">Napravite snimak celog ekrana</translation>
 <translation id="6022924867608035986">Obrišite tekst iz okvira za pretragu</translation>
-<translation id="6045998054441862242">Uključite režim visokog kontrasta</translation>
 <translation id="6052614013050385269">Desni klik na link</translation>
 <translation id="6129953537138746214">Razmak</translation>
 <translation id="6143669479988153888">Uvećajte stranicu</translation>
@@ -147,6 +150,7 @@
 <translation id="6276708887952587684">Pregledajte izvor stranice</translation>
 <translation id="6321940490215594447">Otvorite stranicu Istorija</translation>
 <translation id="6340769215862220182">Uvećajte prikaz</translation>
+<translation id="634687982629734605">Prebacujte fokus između: oblasti statusa (gde se prikazuje slika naloga), Pokretača, trake za adresu, trake sa obeleživačima (ako je vidljiva), veb-stranice koja je otvorena i trake sa preuzimanjima (ako je vidljiva). Ako se prikazuje dijalog koji može da se fokusira, pomerite fokus na njega.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Izaberite tekst do kraja reda</translation>
 <translation id="6425378783626925378">Kliknite na ikone od 1. do 8. na polici</translation>
@@ -154,6 +158,7 @@
 <translation id="6445033640292336367">Vratite karticu na prvobitni položaj</translation>
 <translation id="6474744297082284761">Umanjite (na baznoj stanici ILI kada su omogućene lupe za ceo ekran)</translation>
 <translation id="649811797655257835">Izaberite datoteku, pa pritisnite <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">Otvori ili zatvori vidžet kalendara.</translation>
 <translation id="6551886416582667425">Napravite delimičan snimak ekrana/snimak</translation>
 <translation id="6556040137485212400">Otvorite prozor koji najduže niste koristili</translation>
 <translation id="666343722268997814">Otvorite meni istaknute stavke koji se aktivira desnim tasterom miša</translation>
@@ -190,7 +195,6 @@
 <translation id="8026334261755873520">Obrišite podatke pregledanja</translation>
 <translation id="8130528849632411619">Idite na početak dokumenta</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> ili <ph name="E" /></translation>
-<translation id="8232835244134740473">Prebacujte fokus između: oblasti statusa (gde se prikazuje slika naloga), Pokretača, trake za adresu, trake sa obeleživačima (ako je vidljiva), veb-stranice koja je otvorena i trake sa preuzimanjima (ako je vidljiva).</translation>
 <translation id="8234414138295101081">Rotirajte ekran za 90 stepeni</translation>
 <translation id="8241665785394195545">desna zagrada</translation>
 <translation id="8264941229485248811">Prikažite ili sakrijte inspektor Alatke za programere</translation>
@@ -198,16 +202,17 @@
 <translation id="8388247778047144397">Prevucite link u praznu oblast na traci sa karticama</translation>
 <translation id="8389638407792712197">Otvorite novi prozor</translation>
 <translation id="8429696719963529183">Koristite F tastere (od F1 do F12)</translation>
-<translation id="8537650670971624753">Izađi iz režima pretrage</translation>
 <translation id="85690795166292698">Otvorite link na novoj kartici</translation>
 <translation id="8609384513243082612">Otvorite novu karticu</translation>
 <translation id="8644639153978066712">Prikažite skrivene datoteke u aplikaciji Datoteke</translation>
 <translation id="8717459106217102612">Izaberite prethodnu reč ili slovo</translation>
 <translation id="8727232706774971183">Pregledajte obaveštenja</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> od 1 do 8</translation>
 <translation id="8855885154700222542">Taster za ceo ekran</translation>
 <translation id="8881584919399569791">Premestite aktivni prozor na radnu površinu na levoj strani</translation>
 <translation id="88986195241502842">Stranica nadole</translation>
 <translation id="8924883688469390268">Pređite na prethodnog korisnika</translation>
+<translation id="8941626538514548667">Fokusirajte veb-sadržaj u pregledaču</translation>
 <translation id="8977648847395357314">Izaberite sadržaj iz trake za adresu</translation>
 <translation id="8982190978301344584">Prikažite meni sa listom dostupnih IME-ova</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> od 1 do 8</translation>

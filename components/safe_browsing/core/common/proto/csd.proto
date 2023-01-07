@@ -1,0 +1,2002 @@
+// Copyright 2012 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// This proto file includes:
+// (1) Client side phishing and malware detection request and response
+//   protocol buffers.  Those protocol messages should be kept in sync
+//   with the server implementation.
+//
+// (2) Safe Browsing reporting protocol buffers.
+//   A ClientSafeBrowsingReportRequest is sent when a user opts-in to
+//   sending detailed threat reports from the safe browsing interstitial page.
+//   It is a list of Resource messages, which may contain the url of a
+//   resource such as the page in the address bar or any other resource
+//   that was loaded for this page.
+//   In addition to the url, a resource can contain HTTP request and response
+//   headers and bodies.
+//
+// If you want to change this protocol definition or you have questions
+// regarding its format please contact chrome-anti-phishing@googlegroups.com.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package safe_browsing;
+
+// Protocol buffer describing the Chrome user population of the user reporting
+// data.
+message ChromeUserPopulation {
+  enum UserPopulation {
+    UNKNOWN_USER_POPULATION = 0;
+    SAFE_BROWSING = 1;  // Equivalent to standard protection.
+    EXTENDED_REPORTING = 2;
+    ENHANCED_PROTECTION = 3;
+  }
+  optional UserPopulation user_population = 1;
+
+  // If user enabled history sync.
+  optional bool is_history_sync_enabled = 2;
+
+  // The finch active groups this user belongs to (if any). Active group is
+  // defined by finch trial name and group name. Trial name and group name are
+  // concatenated with separator "|", e.g. "PingOnlyTrial|DefaultGroup".
+  repeated string finch_active_groups = 4;
+
+  // Whether and how the current Chrome profile is being managed.
+  enum ProfileManagementStatus {
+    // Value not set.
+    UNKNOWN = 0;
+
+    // Profile management status is unavailable.
+    UNAVAILABLE = 1;
+
+    // The profile is not managed.
+    NOT_MANAGED = 2;
+
+    // Chrome is being managed by enterprise policies.
+    ENTERPRISE_MANAGED = 3;
+  }
+  optional ProfileManagementStatus profile_management_status = 5
+      [default = UNKNOWN];
+
+  // Indicates if user opted in advanced protection program.
+  optional bool is_under_advanced_protection = 6;
+
+  // Indicates if user is in incognito mode.
+  optional bool is_incognito = 7;
+
+  // If the user is opted in to MBB.
+  optional bool is_mbb_enabled = 8;
+
+  // The simplified user agent string (e.g. Chrome/xy.0.abcd.e/Windows).
+  optional string user_agent = 9;
+
+  // The total number of profiles available on this machine. Some of these may
+  // not be fully initialized so can't be used.
+  optional int32 number_of_profiles = 10;
+
+  // The number of created and fully initialized profiles. Some of these
+  // profiles may be inactive.
+  optional int32 number_of_loaded_profiles = 11;
+
+  // The number of profiles that are currently open, i.e. have open browsers or
+  // were open the last time Chrome was running. Profiles that fail to
+  // initialize are skipped.
+  optional int32 number_of_open_profiles = 12;
+
+  // Server-side only field.
+  reserved 13;
+
+  // Tokens to connect different requests on the same page, used for measuring
+  // the performance of Safe Browsing protections. If two requests have the
+  // same token, it means they are from the same user visiting the same page.
+  // See go/chrome-sb-pageload-tokens.
+  message PageLoadToken {
+    // The source that generates the token.
+    enum TokenSource {
+      SOURCE_UNSPECIFIED = 0;
+      // The token is randomly generated on the client-side. It is 32 bytes
+      // long.
+      CLIENT_GENERATION = 1;
+    }
+    optional TokenSource token_source = 1;
+    // The timestamp when the token is generated or received.
+    optional int64 token_time_msec = 2;
+    // The value of the token.
+    optional bytes token_value = 3;
+  }
+  // Note: This field is set as repeated to support tokens from multiple
+  // sources.
+  repeated PageLoadToken page_load_tokens = 14;
+
+  // The current state of account-level enhanced safe browsing (A-ESB) as is
+  // known by the client. This is an optional field and represents the state of
+  // A-ESB as the client has observed it to be. This value will be set for sync
+  // users as well as signed-in users. The state on the server may be
+  // different from the value that the client has when setting this field.
+  // See: go/esb-mms-integration-dd.
+  optional bool is_aesb_enabled = 15;
+
+  // The time when the account-level enhanced safe browsing (A-ESB) bit state
+  // was last sent updated on the client. This is an optional field.
+  optional int64 aesb_last_update_time_windows_epoch_micros = 16;
+
+  // Server-side only field.
+  reserved 17;
+
+  // If user has signed in. The user may or may not have sync enabled. For sync
+  // status, check is_history_sync_enabled instead.
+  optional bool is_signed_in = 18;
+}
+
+message ClientPhishingRequest {
+  // URL that the client visited.  The CGI parameters are stripped by the
+  // client.
+  optional string url = 1;
+
+  // A 5-byte SHA-256 hash prefix of the URL.  Before hashing the URL is
+  // canonicalized, converted to a suffix-prefix expression and broadened
+  // (www prefix is removed and everything past the last '/' is stripped).
+  //
+  // Marked OBSOLETE because the URL is sent for all users, making the hash
+  // prefix unnecessary.
+  optional bytes OBSOLETE_hash_prefix = 10;
+
+  // Score that was computed on the client.  Value is between 0.0 and 1.0.
+  // The larger the value the more likely the url is phishing.
+  required float client_score = 2;
+
+  // Note: we're skipping tag 3 because it was previously used.
+
+  // Is true if the features for this URL were classified as phishing.
+  // Currently, this will always be true for all client-phishing requests
+  // that are sent to the server.
+  optional bool is_phishing = 4;
+
+  message Feature {
+    // Feature name.  E.g., 'PageHasForms'.
+    required string name = 1;
+
+    // Feature value is always in the range [0.0, 1.0].  Boolean features
+    // have value 1.0.
+    required double value = 2;
+  }
+
+  // List of features that were extracted.  Those are the features that were
+  // sent to the scorer and which resulted in client_score being computed.
+  repeated Feature feature_map = 5;
+
+  // The version of the DOM model used for classification
+  optional int32 dom_model_version = 27;
+
+  // The version number of the model that was used to compute the client-score.
+  // Copied from ClientSideModel.version().
+  optional int32 model_version = 6;
+
+  // Field 7 is only used on the server.
+  reserved 7;
+
+  // List of features that are extracted in the client but are not used in the
+  // machine learning model.
+  repeated Feature non_model_feature_map = 8;
+
+  // The referrer URL.  This field might not be set, for example, in the case
+  // where the referrer uses HTTPs.
+  // OBSOLETE: Use feature 'Referrer=<referrer>' instead.
+  optional string OBSOLETE_referrer_url = 9;
+
+  // Field 11 is only used on the server.
+  reserved 11;
+
+  // List of shingle hashes we extracted.
+  repeated uint32 shingle_hashes = 12 [packed = true];
+
+  // The model filename (basename) that was used by the client. Deprecated.
+  optional string DEPRECATED_model_filename = 13 [deprecated = true];
+
+  // Population that the reporting user is part of.
+  optional ChromeUserPopulation population = 14;
+
+  // Server-side only fields.
+  reserved 15;
+  reserved 16;
+
+  // Deprecated fields
+  reserved 17;
+  reserved 18;
+  reserved 19;
+  reserved 20;
+
+  // Indicates whether the request is due to a match on the DOM features.
+  optional bool is_dom_match = 21;
+
+  // If we can find the complete referrer chain, this field will contains URLs
+  // transitions from landing referrer to event in reverse chronological
+  // order, i.e. event url comes first in this list, and landing referrer
+  // comes last.
+  // For Enhanced Protection users, if the referrer
+  // chain is empty or partially missing, we will add/append recent navigation
+  // events to this list. The type of these entries will be RECENT_NAVIGATION.
+  repeated ReferrerChainEntry referrer_chain = 22;
+
+  // The version of the TFLite model used for classification
+  optional int32 tflite_model_version = 23;
+
+  message CategoryScore {
+    optional string label = 1;
+    optional float value = 2;
+  }
+  // The resulting score from the TFLite model
+  repeated CategoryScore tflite_model_scores = 24;
+
+  // Whether the TFLite model believed the page was phishy.
+  optional bool is_tflite_match = 25;
+
+  // Visual features of the current page. Only filled in for extended reporting
+  // users.
+  optional VisualFeatures visual_features = 26;
+
+  // next available tag number: 28.
+}
+
+message ClientPhishingResponse {
+  required bool phishy = 1;
+
+  // A list of SafeBrowsing host-suffix / path-prefix expressions that
+  // are whitelisted.  The client must match the current top-level URL
+  // against these whitelisted expressions and only apply a positive
+  // phishing verdict above if the URL does not match any expression
+  // on this whitelist.  The client must not cache these whitelisted
+  // expressions.  This whitelist will be empty for the vast majority
+  // of the responses but might contain up to 100 entries in emergency
+  // situations.
+  //
+  // Marked OBSOLETE because the URL is sent for all users, so the server
+  // can do whitelist matching.
+  repeated string OBSOLETE_whitelist_expression = 2;
+}
+
+// The message is used for client request to determine whether the provided URL
+// is safe for the purposes of entering user credentials for logging in.
+message LoginReputationClientRequest {
+  // The top level frame URL of the webpage that hosts the login form.
+  optional string page_url = 1;
+
+  // Type for the request.
+  // It could be low reputation request or password reuse request.
+  enum TriggerType {
+    TRIGGER_TYPE_UNSPECIFIED = 0;
+    UNFAMILIAR_LOGIN_PAGE = 1;
+    PASSWORD_REUSE_EVENT = 2;
+  }
+  optional TriggerType trigger_type = 2;
+
+  // The message contains features which can describe a frame. A frame can be
+  // a top level web page or an iframe.
+  message Frame {
+    // Id of a frame. The frame whose index = 0 is the top level web page.
+    optional int32 frame_index = 1;
+
+    // Id of the parent frame.
+    optional int32 parent_frame_index = 2;
+
+    // Url of the frame. If could be top level url (from web page) or url of
+    // the iframe.
+    optional string url = 3;
+
+    // Whether the frame contains password field.
+    optional bool has_password_field = 4;
+
+    // If we can find the complete referrer chain, this field will contains URLs
+    // transitions from landing referrer to event in reverse chronological
+    // order, i.e. event url comes first in this list, and landing referrer
+    // comes last.
+    // For Safe Browsing Extended Reporting, if the referrer
+    // chain is empty or partially missing, we will add/append recent navigation
+    // events to this list. The type of these entries will be RECENT_NAVIGATION.
+    repeated ReferrerChainEntry referrer_chain = 5;
+
+    // Options and metadata about the above referrer chain.
+    optional ReferrerChainOptions referrer_chain_options = 7;
+
+    // The message contains features of a form.
+    message Form {
+      // Action url of the form.
+      optional string action_url = 1;
+
+      // Whether the form contains password field.
+      optional bool has_password_field = 2;
+    }
+
+    repeated Form forms = 6;
+
+    // next available tag number: 8.
+  }
+
+  repeated Frame frames = 3;
+
+  // The message contains fields needed for a password reuse event.
+  // Next tag: 4
+  message PasswordReuseEvent {
+    // Domains from the Chrome password manager DB that are associated with
+    // the same password as the one triggering this event. The field is filled
+    // in only when TriggerType is PASSWORD_REUSE_EVENT, and only for users
+    // opted in to extended reporting.
+    repeated string domains_matching_password = 1;
+
+    // The frame that the password reuse is detected.
+    optional int32 frame_id = 2;
+
+    // Deprecated field.
+    reserved 3;
+
+    // TODO(crbug/914410): Remove once ReusedPasswordAccountType is implemented.
+    // Sync account type.
+    enum SyncAccountType {
+      // Not a sign-in user.
+      NOT_SIGNED_IN = 0;
+
+      // User signed in with @gmail.com, or @googlemail.com account.
+      GMAIL = 1;
+
+      // User signed in with a G Suite account.
+      GSUITE = 2;
+    }
+    optional SyncAccountType sync_account_type = 4;
+
+    // TODO(crbug/914410): Remove once ReusedPasswordAccountType is implemented.
+    // Type of password being reused.
+    enum ReusedPasswordType {
+      REUSED_PASSWORD_TYPE_UNKNOWN = 0;
+
+      // Password saved in Chrome's password manager.
+      SAVED_PASSWORD = 1;
+
+      // Password used in Chrome sign-in.
+      SIGN_IN_PASSWORD = 2;
+
+      // Other Gaia password used in Chrome's content area other than Chrome's
+      // sign-in password.
+      OTHER_GAIA_PASSWORD = 3;
+
+      // Non-Gaia enterprise password captured from enterprise login page.
+      ENTERPRISE_PASSWORD = 4;
+    }
+    optional ReusedPasswordType reused_password_type = 5
+        [default = REUSED_PASSWORD_TYPE_UNKNOWN];
+
+    message ReusedPasswordAccountType {
+      // Whether the current reused password account is syncing.
+      optional bool is_account_syncing = 1;
+
+      enum AccountType {
+        // User reused a password that is not a signed-in account, saved
+        // password, or a non-GAIA enterprise account.
+        UNKNOWN = 0;
+
+        // User signed in with a dasher account.
+        GSUITE = 1;
+
+        // User signed in with @gmail.com, or @googlemail.com account.
+        GMAIL = 2;
+
+        // Password used for Enterprise login on an Enterprise login page.
+        NON_GAIA_ENTERPRISE = 3;
+
+        // Password saved in Chrome's password manager.
+        SAVED_PASSWORD = 4;
+      }
+      optional AccountType account_type = 2;
+    }
+
+    optional ReusedPasswordAccountType reused_password_account_type = 6;
+  }
+
+  optional PasswordReuseEvent password_reuse_event = 4;
+
+  // The number of verdicts stored on the client.
+  optional int32 stored_verdict_cnt = 5;
+
+  // Chrome user population.
+  optional ChromeUserPopulation population = 6;
+
+  // If user clicked through safe browsing interstitial on this page.
+  optional bool clicked_through_interstitial = 7;
+
+  // The MIME type of the page, e.g. "application/pdf".
+  optional string content_type = 8;
+
+  // Content area height in DIPs. This field should only be filled for extended
+  // reporting users.
+  optional int32 content_area_height = 9;
+
+  // Content area width in DIPs. This field should only be filled for extended
+  // reporting users.
+  optional int32 content_area_width = 10;
+
+  // Visual features of the current page. This field should only be filled for
+  // extended reporting users.
+  optional VisualFeatures visual_features = 11;
+
+  // DOM features of the current page.
+  optional DomFeatures dom_features = 12;
+
+  enum ReportType {
+    UNKNOWN = 0;
+    // Normal/full ping to Safe Browsing containing all the fields in the
+    // PasswordProtectionRequest.
+    FULL_REPORT = 1;
+    // Sample ping to Safe Browsing containing only the stripped URL and
+    // referrer chain.
+    SAMPLE_REPORT = 2;
+  }
+  // Whether the ping sent to Safe Browsing is a normal (full request) ping or a
+  // sample ping for URLs on the allow-list.
+  optional ReportType report_type = 13;
+
+  // Information about Simplified URL display experiments in Chrome.
+  // See go/phishguard-ping-spoof-detection
+  message UrlDisplayExperiment {
+    // True if SafeBrowsingDelayedWarnings is enabled.
+    optional bool delayed_warnings_enabled = 1;
+    // True if the "mouse" parameter of SafeBrowsingDelayedWarnings is enabled.
+    optional bool delayed_warnings_mouse_clicks_enabled = 2;
+
+    // True if RevealSteadyStateUrlPathQueryAndRefOnHover is enabled.
+    optional bool reveal_on_hover = 3;
+    // True if HideSteadyStateUrlPathQueryAndRefOnInteraction is enabled.
+    optional bool hide_on_interaction = 4;
+    // True if OmniboxUIExperimentElideToRegistrableDomain is enabled.
+    optional bool elide_to_registrable_domain = 5;
+    // True if this is the control group. This sent by the finch config.
+    optional bool simplified_url_display_enabled = 6;
+  };
+  optional UrlDisplayExperiment url_display_experiment = 14;
+
+  // The referring app info that launches Chrome. Only used on Android.
+  // This information may be spoofed so do not rely solely on its correctness
+  // for anti-abuse purposes. For more details, see:
+  // go/phishguard-referring-app-android.
+  message ReferringAppInfo {
+    // The source of the referring_app_name.
+    enum ReferringAppSource {
+      REFERRING_APP_SOURCE_UNSPECIFIED = 0;
+      // The referring app is known to Chrome. If the referring app info is from
+      // this source, the referring_app_name is a hardcoded string that is
+      // predefined in Chrome.
+      KNOWN_APP_ID = 1;
+      // The referring app is unknown to Chrome. The referring app name is
+      // obtained from
+      // https://developer.android.com/reference/android/provider/Browser?hl=en#EXTRA_APPLICATION_ID.
+      // If the referring app info is from this source, the referring_app_name
+      // is volatile and can be changed by the referring app.
+      UNKNOWN_APP_ID = 2;
+      // The referring app info is obtained from
+      // https://developer.android.com/reference/android/app/Activity#getReferrer().
+      // If the referring app info is from this source, the referring_app_name
+      // is volatile and can be changed by the referring app.
+      ACTIVITY_REFERRER = 3;
+    }
+
+    optional ReferringAppSource referring_app_source = 1;
+
+    optional string referring_app_name = 2;
+  }
+
+  optional ReferringAppInfo referring_app_info = 15;
+}
+
+// The message is used for client response for login reputation requests.
+message LoginReputationClientResponse {
+  // Type of verdicts issued by the server.
+  enum VerdictType {
+    VERDICT_TYPE_UNSPECIFIED = 0;
+    // No warning will be displayed.
+    SAFE = 1;
+    // The site has low reputation or low popularity.
+    LOW_REPUTATION = 2;
+    // The url matches with blocklist entries.
+    PHISHING = 3;
+  }
+  optional VerdictType verdict_type = 1;
+
+  // TTL of the verdict in seconds.
+  optional int64 cache_duration_sec = 2;
+
+  // A host-suffix/path-prefix expression which defines a collections of pages
+  // with common ownership from the same domain.
+  // Generally, the pattern is defined on the granularity of domains.
+  // For domains managed by multiple parties, especially in the case of large
+  // hosting sites (e.g., geocities.com), we further divide the domains.
+  //
+  // Examples:
+  //    www.google.com/foo/bar?param=val -> google.com
+  //    www.geocities.com/foo/bar.html -> geocities.com/foo
+  //    adwords.blogspot.com/index.html -> adwords.blogspot.com
+  //
+  // The pattern will always match the page_url of the request, and will be
+  // a substring of page_url.
+  optional string cache_expression = 3;
+
+  // Deprecated.
+  optional bool DEPRECATED_cache_expression_exact_match = 4 [deprecated = true];
+
+  // A token unique to each request which correlates response and post-warning
+  // actions.
+  optional bytes verdict_token = 5;
+}
+
+// This message encapsulates all the visual features of the current page.
+message VisualFeatures {
+  reserved 1;
+
+  // Represents the blurred, downsampled image of the login page.
+  message BlurredImage {
+    // The width of the image.
+    optional int32 width = 1;
+
+    // The height of the image.
+    optional int32 height = 2;
+
+    // The image data, stored in RGB order. This will have length
+    // 3*width*height. The bytes are stored in row-major order, starting from
+    // the top most row.
+    optional bytes data = 3;
+  }
+
+  // Blurred, downsampled image of the current page.
+  // Using Rec 2020 color space:
+  // https://en.wikipedia.org/wiki/Rec._2020
+  optional BlurredImage image = 2;
+}
+
+// This message encapsulates all the DOM features of the current page.
+message DomFeatures {
+  message Feature {
+    // Feature name. E.g., 'PageHasForms'
+    optional string name = 1;
+
+    // Feature value is always in the range [0.0, 1.0].  Boolean features
+    // have value 1.0.
+    optional double value = 2;
+  }
+
+  // List of features extracted.
+  repeated Feature feature_map = 1;
+
+  // List of shingle hashes we extracted.
+  repeated uint32 shingle_hashes = 2 [packed = true];
+
+  // The model version used to generate these hashes. This is copied from
+  // ClientSideModel.version(). The model sets the term list, which affects
+  // the feature extraction.
+  optional int32 model_version = 3;
+}
+
+message ClientDownloadRequest {
+  // The final URL of the download (after all redirects).
+  required string url = 1;
+
+  // This message contains various binary digests of the download payload.
+  message Digests {
+    optional bytes sha256 = 1;
+    optional bytes sha1 = 2;
+    optional bytes md5 = 3;
+  }
+  required Digests digests = 2;
+
+  // This is the length in bytes of the download payload.
+  required int64 length = 3;
+
+  // Type of the resources stored below.
+  enum ResourceType {
+    // The final URL of the download payload.  The resource URL should
+    // correspond to the URL field above.
+    DOWNLOAD_URL = 0;
+    // A redirect URL that was fetched before hitting the final DOWNLOAD_URL.
+    DOWNLOAD_REDIRECT = 1;
+    // The final top-level URL of the tab that triggered the download.
+    TAB_URL = 2;
+    // A redirect URL thas was fetched before hitting the final TAB_URL.
+    TAB_REDIRECT = 3;
+    // The document URL for a PPAPI plugin instance that initiated the download.
+    // This is the document.url for the container element for the plugin
+    // instance.
+    PPAPI_DOCUMENT = 4;
+    // The plugin URL for a PPAPI plugin instance that initiated the download.
+    PPAPI_PLUGIN = 5;
+  }
+
+  message Resource {
+    required string url = 1;
+    required ResourceType type = 2;
+    optional bytes remote_ip = 3;
+    // This will only be set if the referrer is available and if the
+    // resource type is either TAB_URL or DOWNLOAD_URL.
+    optional string referrer = 4;
+
+    // TODO(noelutz): add the transition type?
+  }
+
+  // This repeated field will store all the redirects as well as the
+  // final URLs for the top-level tab URL (i.e., the URL that
+  // triggered the download) as well as for the download URL itself.
+  repeated Resource resources = 4;
+
+  // A trust chain of certificates.  Each chain begins with the signing
+  // certificate of the binary, and ends with a self-signed certificate,
+  // typically from a trusted root CA.  This structure is analogous to
+  // CERT_CHAIN_CONTEXT on Windows.
+  message CertificateChain {
+    // A single link in the chain.
+    message Element {
+      // DER-encoded X.509 representation of the certificate.
+      optional bytes certificate = 1;
+      // Fields 2 - 7 are only used on the server.
+      reserved 2 to 7;
+    }
+    repeated Element element = 1;
+  }
+
+  // This is an OS X only message to report extended attribute informations.
+  // Extended attributes on OS X are used for various security mechanisms,
+  // which makes them interesting to Chrome.
+  message ExtendedAttr {
+    // This is the name of the extended attribute.
+    required string key = 1;
+    // This is the value of the extended attribute.
+    optional bytes value = 2;
+  }
+
+  message SignatureInfo {
+    // All certificate chains for each of the binary's signers.  Multiple chains
+    // may be present if the binary or any certificate has multiple signers.
+    // Absence of certificate chains does not imply that the binary is not
+    // signed (in that case, SignedData blobs extracted from the binary may be
+    // preset), but does mean that trust has not been verified.
+    repeated CertificateChain certificate_chain = 1;
+
+    // True if the signature was trusted on the client.
+    optional bool trusted = 2;
+
+    // On Windows, PKCS#7 SignedData blobs extracted from a portable executable
+    // image's attribute certificate table. The presence of these does not imply
+    // that the signatures were deemed trusted by the client.
+    // On Mac, this is the code signature blob referenced by the
+    // LC_CODE_SIGNATURE load command.
+    repeated bytes signed_data = 3;
+
+    // On OS X, code signing data can be contained in the extended attributes of
+    // a file. As Gatekeeper respects this signature, we look for it and collect
+    // it.
+    repeated ExtendedAttr xattr = 4;
+  }
+
+  // This field will only be set if the binary is signed.
+  optional SignatureInfo signature = 5;
+
+  // True if the download was user initiated.
+  optional bool user_initiated = 6;
+
+  // Fields 7 and 8 are only used on the server.
+  reserved 7, 8;
+
+  // Name of the file where the download would be stored if the
+  // download completes.  E.g., "bla.exe".
+  optional string file_basename = 9;
+
+  // Starting with Chrome M19 we're also sending back pings for Chrome
+  // extensions that get downloaded by users.
+  enum DownloadType {
+    WIN_EXECUTABLE = 0;    // Currently all .exe, .cab and .msi files.
+    CHROME_EXTENSION = 1;  // .crx files.
+    ANDROID_APK = 2;       // .apk files.
+    // .zip files containing one of the other executable types.
+    ZIPPED_EXECUTABLE = 3;
+    MAC_EXECUTABLE = 4;  // .dmg, .pkg, etc.
+    ZIPPED_ARCHIVE = 5;  // .zip file containing another archive.
+    ARCHIVE = 6;         // Archive that doesn't have a specific DownloadType.
+    // A .zip that Chrome failed to unpack to the point of finding exe/zips.
+    INVALID_ZIP = 7;
+    // A .dmg, .pkg, etc, that Chrome failed to unpack to the point of finding
+    // Mach O's.
+    MAC_ARCHIVE_FAILED_PARSING = 8;
+    // A download request initiated via PPAPI. Typically the requestor is
+    // a Flash applet.
+    PPAPI_SAVE_REQUEST = 9;
+    // A file we don't support, but we've decided to sample and send
+    // a light-ping.
+    SAMPLED_UNSUPPORTED_FILE = 10;
+    // .rar file containing one of the other executable types.
+    RAR_COMPRESSED_EXECUTABLE = 11;
+    // .rar file containing another archive.
+    RAR_COMPRESSED_ARCHIVE = 12;
+    // .rar file that Chrome failed to unpack to the point of finding
+    // executables or archives.
+    INVALID_RAR = 13;
+    // Office Document or PDF.
+    DOCUMENT = 14;
+
+    // .7z archive
+    SEVEN_ZIP_COMPRESSED_EXECUTABLE = 15;
+    SEVEN_ZIP_COMPRESSED_ARCHIVE = 16;
+    INVALID_SEVEN_ZIP = 17;
+  }
+  optional DownloadType download_type = 10 [default = WIN_EXECUTABLE];
+
+  // Locale of the device, eg en, en_US.
+  optional string locale = 11;
+
+  message PEImageHeaders {
+    // IMAGE_DOS_HEADER.
+    optional bytes dos_header = 1;
+    // IMAGE_FILE_HEADER.
+    optional bytes file_header = 2;
+    // IMAGE_OPTIONAL_HEADER32. Present only for 32-bit PE images.
+    optional bytes optional_headers32 = 3;
+    // IMAGE_OPTIONAL_HEADER64. Present only for 64-bit PE images.
+    optional bytes optional_headers64 = 4;
+    // IMAGE_SECTION_HEADER.
+    repeated bytes section_header = 5;
+    // Contents of the .edata section.
+    optional bytes export_section_data = 6;
+
+    message DebugData {
+      // IMAGE_DEBUG_DIRECTORY.
+      optional bytes directory_entry = 1;
+      optional bytes raw_data = 2;
+    }
+
+    repeated DebugData debug_data = 7;
+  }
+
+  message MachOHeaders {
+    // The mach_header or mach_header_64 struct.
+    required bytes mach_header = 1;
+
+    message LoadCommand {
+      // |command_id| is the first uint32 of |command| as well, but is
+      // extracted for easier processing.
+      required uint32 command_id = 1;
+      // The entire data stream of the load command.
+      required bytes command = 2;
+    }
+
+    // All the load commands of the Mach-O file.
+    repeated LoadCommand load_commands = 2;
+  }
+
+  message ImageHeaders {
+    // Windows Portable Executable image headers.
+    optional PEImageHeaders pe_headers = 1;
+
+    // OS X Mach-O image headers.
+    repeated MachOHeaders mach_o_headers = 2;
+  };
+
+  // Fields 12-17 are reserved for server-side use and are never sent by the
+  // client.
+  reserved 12 to 17;
+
+  optional ImageHeaders image_headers = 18;
+
+  // Fields 19-21 are reserved for server-side use and are never sent by the
+  // client.
+  reserved 19 to 21;
+
+  // A binary or archive contained in an archive (e.g., a .exe in a .zip
+  // archive, or a .zip inside a .zip).
+  message ArchivedBinary {
+    optional string file_basename = 1;
+    optional DownloadType download_type = 2;
+    optional Digests digests = 3;
+    optional int64 length = 4;
+    optional SignatureInfo signature = 5;
+    optional ImageHeaders image_headers = 6;
+
+    // Indicates if the given file is password protected.
+    optional bool is_encrypted = 7;
+
+    // Only used on the client side, since filtering for executable files
+    // happens after the utility process has finished analyzing the archive.
+    optional bool is_executable = 8;
+    optional bool is_archive = 9;
+  }
+
+  repeated ArchivedBinary archived_binary = 22;
+
+  // Population that the reporting user is part of.
+  optional ChromeUserPopulation population = 24;
+
+  // True if the .zip or DMG, etc, was 100% successfully unpacked.
+  // This field is in the process of being deprecated and replaced with
+  // `archive_summary.valid`.
+  optional bool archive_valid = 26;
+
+  // True if this ClientDownloadRequest is from a allowlisted domain.
+  optional bool skipped_url_allowlist = 28;
+
+  // True if this ClientDownloadRequest contains a allowlist certificate.
+  optional bool skipped_certificate_allowlist = 31;
+
+  // PPAPI_SAVE_REQUEST type messages may have more than one suggested filetype.
+  // Each element in this collection indicates an alternate extension including
+  // the leading extension separator.
+  repeated string alternate_extensions = 35;
+
+  // If we can find the complete referrer chain, this field will contains URLs
+  // transitions from landing referrer to event in reverse chronological
+  // order, i.e. event url comes first in this list, and landing referrer
+  // comes last.
+  // For Safe Browsing Extended Reporting, if the referrer chain
+  // is empty or partially missing, we will add/append recent navigation events
+  // to this list. The type of these entries will be RECENT_NAVIGATION.
+  repeated ReferrerChainEntry referrer_chain = 36;
+
+  // Options and metadata about the above referrer chain.
+  optional ReferrerChainOptions referrer_chain_options = 50;
+
+  // Deprecated.
+  optional bool DEPRECATED_download_attribution_finch_enabled = 39
+      [deprecated = true];
+
+  // The Mac disk image code signature.
+  // The underlying structure of code signature is defined at
+  // https://opensource.apple.com/source/xnu/xnu-2782.1.97/bsd/sys/codesign.h
+  optional bytes udif_code_signature = 40;
+
+  // Mac-only. A detached code signature contains the DER-encoded PKCS7 data
+  // of a codesigned artifact. Detached signatures are used for signing files
+  // that are not Mach-O and thus cannot have a LC_CODE_SIGNATURE load command.
+  message DetachedCodeSignature {
+    required string file_name = 1;
+    required bytes contents = 2;
+  }
+  repeated DetachedCodeSignature detached_code_signature = 59;
+
+  // When this is set to true, we expect the server to provide heightened
+  // protection for Advanced Protection users.
+  optional bool request_ap_verdicts = 67;
+
+  // For archives files the number of files and directories contained within the
+  // archive.
+  // These fields are in the process of being deprecated and replaced with
+  // `archive_summary.file_count` or `archive_summary.directory_count`.
+  optional int32 archive_file_count = 68;
+  optional int32 archive_directory_count = 69;
+
+  // Only for display on chrome://safe-browsing. The actual token is sent in the
+  // "Authorization: Bearer" header
+  optional string access_token = 78;
+
+  // next available tag number: 85;
+  message DocumentInfo {
+    optional bool contains_macros = 1;
+  }
+
+  message DocumentProcessingInfo {
+    optional bool processing_successful = 1;
+    // The high-level error type returned from MalDocA when it cannot
+    // successfully process a document.
+    enum MaldocaErrorType {
+      // error codes for gRPC APIs
+      OK = 0;
+      CANCELLED = 1;
+      UNKNOWN = 2;
+      INVALID_ARGUMENT = 3;
+      DEADLINE_EXCEEDED = 4;
+      NOT_FOUND = 5;
+      ALREADY_EXISTS = 6;
+      PERMISSION_DENIED = 7;
+      RESOURCE_EXHAUSTED = 8;
+      FAILED_PRECONDITION = 9;
+      ABORTED = 10;
+      OUT_OF_RANGE = 11;
+      UNIMPLEMENTED = 12;
+      INTERNAL = 13;
+      UNAVAILABLE = 14;
+      DATA_LOSS = 15;
+      UNAUTHENTICATED = 16;
+
+      // MalDocA Error Codes
+      // third_party/maldoca/src/maldoca/base/status_proto.proto
+      DOC_TYPE_INFERENCE_FAILED = 1000;
+      UNSUPPORTED_DOC_TYPE = 1001;
+      SANDBOX_ERROR = 1002;
+      ARCHIVE_CORRUPTED = 1003;
+      OLE_DIR_PARSING_FAILED = 1004;
+      OLE_FAT_HEADER_PARSING_FAILED = 1005;
+      PREFIXED_ANSI_STRING_HEADER_TOO_SHORT = 1006;
+      PREFIXED_ANSI_STRING_CONTENT_TOO_SHORT = 1007;
+      CLIPBOARD_FORMAT_OR_ANSI_STRING_TOO_SHORT = 1008;
+      BOF_HEADER_TOO_SHORT = 1009;
+      NOT_BIFF_FORMAT = 1010;
+      FAIL_PARSE_BIFF_VERSION = 1011;
+      INVALID_DDE_OLE_LINK = 1012;
+      OLE_NATIVE_EMBEDDED_PARSE_SIZE_FAIL = 1013;
+      OLE_NATIVE_EMBEDDED_SIZE_MISMATCH = 1014;
+      OLE_NATIVE_EMBEDDED_PARSE_TYPE_FAIL = 1015;
+      OLE_NATIVE_EMBEDDED_PARSE_FILENAME_FAIL = 1016;
+      OLE_NATIVE_EMBEDDED_PARSE_FILEPATH_FAIL = 1017;
+      OLE_NATIVE_EMBEDDED_PARSE_RESERVED_FAIL = 1018;
+      OLE_NATIVE_EMBEDDED_PARSE_TEMPPATH_FAIL = 1019;
+      OLE_NATIVE_EMBEDDED_PARSE_FILESIZE_FAIL = 1020;
+      OLE_NATIVE_EMBEDDED_FILESIZE_MISMATCH = 1021;
+      OLE_NATIVE_EMBEDDED_PARSE_CONTENT_FAIL = 1022;
+      INVALID_OLE2_HEADER = 1023;
+      INVALID_FAT_HEADER = 1024;
+      EMPTY_FAT_HEADER = 1025;
+      INVALID_ROOT_DIR = 1026;
+      MISSING_FILE_IN_ARCHIVE = 1027;
+      INVALID_XML_DOC = 1028;
+      MISSING_PROPERTIES = 1029;
+      NOT_IMPLEMENTED_FOR_CHROME = 1030;
+      NOT_IMPLEMENTED = 1031;
+      MISSING_ENCODING = 1032;
+    }
+    optional MaldocaErrorType maldoca_error_type = 2;
+    optional string maldoca_error_message = 3;
+  }
+
+  message DocumentSummary {
+    optional DocumentInfo metadata = 1;
+    optional DocumentProcessingInfo processing_info = 2;
+  }
+
+  optional DocumentSummary document_summary = 84;
+
+  message ArchiveSummary {
+    enum Status {
+      UNKNOWN = 0;
+      // The archive was successfully unpacked in its entirety.
+      VALID = 1;
+      // Parsing took too long.
+      PARSER_TIMED_OUT = 2;
+      // The archive was too large to parse.
+      TOO_LARGE = 3;
+    }
+    optional Status parser_status = 1;
+
+    // The number of files and directories contained within.
+    optional int32 file_count = 2;
+    optional int32 directory_count = 3;
+  }
+  optional ArchiveSummary archive_summary = 85;
+
+  // Additional information for the Safe Browsing server to generate tailored
+  // verdicts. See go/tailored-download-proto.
+  message TailoredInfo {
+    // |version| helps the Safe Browsing server understand which tailored
+    // warnings Chrome understands and generate responses accordingly. It should
+    // be incremented by 1 when adding new fields in TailoredVerdict or making
+    // changes to how these fields may be interpreted in Chrome.
+    // Version 0: Client doesn't support tailored warnings. Any info set in
+    // TailoredVerdict is ignored.
+    // Version 1: Client supports CT warnings and suspicious archives. Supported
+    // in M107. See go/tailored-download-v1.
+    optional int32 version = 1;
+  }
+  optional TailoredInfo tailored_info = 86;
+}
+
+message ReferrerChainOptions {
+  // The number of recent navigations we'd like to collect. This number is
+  // controlled by Finch parameter and its default value is 0.
+  optional int32 recent_navigations_to_collect = 1 [default = 0];
+}
+
+// Please update SafeBrowsingNavigationObserverManager::SanitizeReferrerChain()
+// if you're adding more fields to this message.
+message ReferrerChainEntry {
+  enum URLType {
+    // URL of safe browsing events that are at the end of the referrer chain.
+    // e.g. URL of a download, URL of a low reputation login page, etc.
+    EVENT_URL = 1;  // e.g.
+
+    // Landing page is the page user directly interacts with to trigger the
+    // above event, e.g. the page where user clicks a download button.
+    LANDING_PAGE = 2;
+
+    // Landing referrer is the one user directly interacts with right before
+    // navigating to the landing page.
+    LANDING_REFERRER = 3;
+
+    // Client redirect refers to committed navigation between landing page and
+    // the targeted event, or between landing referrer page and landing page.
+    // Client redirect is not triggered by user gesture.
+    CLIENT_REDIRECT = 4;
+
+    DEPRECATED_SERVER_REDIRECT = 5;  // Deprecated
+
+    // For Safe Browsing Extended Reporting, if the referrer
+    // chain is empty or partially missing, we will add/append recent navigation
+    // events to this list. RECENT_NAVIGATION type is set for these cases.
+    RECENT_NAVIGATION = 6;
+
+    // The REFERRER type is used for entries that recede the LANDING_REFERRER in
+    // the referrer chain, when more than two gestures are included in the
+    // referrer chain.
+    REFERRER = 7;
+  }
+
+  enum NavigationInitiation {
+    // Convenient default value, should not be used in real ReferrerChainEntry.
+    UNDEFINED = 0;
+
+    // Navigation is initiated by the browser process. e.g. user enters url into
+    // address bar, or user opens a bookmark. This isn't perfect reliable due to
+    // some edge cases, such as forward/back navigation and opening a link from
+    // context menu.
+    BROWSER_INITIATED = 1;
+
+    // Navigation is initiated by the renderer process and there is no user
+    // gesture associate with this navigation. e.g.
+    // * redirect via the <meta http-equiv="refresh"> tag
+    // * change window.location.href
+    RENDERER_INITIATED_WITHOUT_USER_GESTURE = 2;
+
+    // Navigation is initiated by the renderer process and there is a clear user
+    // gesture associate with this navigation. e.g.
+    //  * <a> link click
+    //  * using window.history.pushState (i.e. back, forward button interaction)
+    RENDERER_INITIATED_WITH_USER_GESTURE = 3;
+  }
+
+  message ServerRedirect {
+    // [required] server redirect url
+    optional string url = 1;
+
+    // Additional fields for future expansion.
+  }
+
+  // [required] The url of this Entry.
+  optional string url = 1;
+
+  // Only set if it is different from |url|.
+  optional string main_frame_url = 9;
+
+  // Type of URLs, such as event url, landing page, etc.
+  optional URLType type = 2 [default = CLIENT_REDIRECT];
+
+  // IP addresses corresponding to this host.
+  repeated string ip_addresses = 3;
+
+  // Referrer url of this entry.
+  optional string referrer_url = 4;
+
+  // Main frame URL of referrer.
+  // Only set if it is different from |referrer_url|.
+  optional string referrer_main_frame_url = 5;
+
+  // If this URL loads in a different tab/frame from previous one.
+  optional bool is_retargeting = 6;
+
+  optional double navigation_time_msec = 7;
+
+  // Set only if server redirects happened in navigation.
+  // The first entry in |server_redirect_chain| should be the original request
+  // url, and the last entry should be the same as |url|.
+  repeated ServerRedirect server_redirect_chain = 8;
+
+  // How this navigation is initiated.
+  optional NavigationInitiation navigation_initiation = 10;
+
+  // Whether we think this entry may have been launched by an external
+  // application. This will have no false negatives, but some false positives
+  // are possible.
+  optional bool maybe_launched_by_external_application = 11;
+
+  // Whether subframe URLs are removed due to user consent restriction.
+  // When this field is set to true, |url| is set to
+  // their relative mainframe URLs and |main_frame_url| is cleared.
+  optional bool is_subframe_url_removed = 12;
+
+  // Whether subframe referrer URLs are removed due to user consent restriction.
+  // When this field is set to true, |referrer_url| is set to
+  // their relative mainframe URLs and |referrer_main_frame_url| is cleared.
+  optional bool is_subframe_referrer_url_removed = 13;
+
+  // Whether any of the URLs in the |url|, |main_frame_url|, |referrer_url|,
+  // |referrer_main_frame_url| fields are removed because the URL matches the
+  // SafeBrowsingAllowlistDomains enterprise policy in Chrome, or the URL is
+  // recorded before the user consent.
+  optional bool is_url_removed_by_policy = 14;
+
+  // next available tag number: 15.
+}  // End of ReferrerChainEntry
+
+message ClientDownloadResponse {
+  enum Verdict {
+    // Download is considered safe.
+    SAFE = 0;
+    // Download is considered dangerous.  Chrome should show a warning to the
+    // user.
+    DANGEROUS = 1;
+    // Download is uncommon.  Chrome should display a less severe warning.
+    UNCOMMON = 2;
+    // The download is potentially unwanted.
+    POTENTIALLY_UNWANTED = 3;
+    // The download is from a dangerous host.
+    DANGEROUS_HOST = 4;
+    // The backend doesn't have confidence in its verdict of this file.
+    // Chrome should show the default warning if configured for this file type.
+    UNKNOWN = 5;
+    // Download is associated with stealing cookies and account compromise.
+    // Chrome should show a severe warning.
+    DANGEROUS_ACCOUNT_COMPROMISE = 8;
+  }
+  optional Verdict verdict = 1 [default = SAFE];
+
+  message MoreInfo {
+    // A human-readable string describing the nature of the warning.
+    // Only if verdict != SAFE. Localized based on request.locale.
+    optional string description = 1;
+
+    // A URL to get more information about this warning, if available.
+    optional string url = 2;
+  }
+  optional MoreInfo more_info = 2;
+
+  // An arbitrary token that should be sent along for further server requests.
+  optional bytes token = 3;
+
+  // Whether the server requests that this binary be uploaded.
+  optional bool upload = 5;
+
+  // Whether or not Chrome should prompt the user for deep scanning
+  optional bool request_deep_scan = 19;
+
+  // Verdict used as supplemental information to decide the tailored warning UI.
+  // The |verdict| field takes precedence over this field (e.g. this field is
+  // ignored if |verdict| is SAFE).
+  message TailoredVerdict {
+    enum TailoredVerdictType {
+      VERDICT_TYPE_UNSPECIFIED = 0;
+      // Download is associated with stealing cookies and account compromise.
+      // Effective if |verdict| is DANGEROUS_ACCOUNT_COMPROMISE. Ignored
+      // otherwise.
+      COOKIE_THEFT = 1;
+      // This archive's metadata indicates tactics used by attackers to
+      // distribute malware and viruses. For example, it is encrypted to prevent
+      // scanning by Safe Browsing. Effective if |verdict| is UNCOMMON. Ignored
+      // otherwise.
+      SUSPICIOUS_ARCHIVE = 2;
+    }
+    optional TailoredVerdictType tailored_verdict_type = 1;
+
+    // This field provides flexibility on testing minor UI adjustments on
+    // warnings. These adjustments are only expected to be set during UX
+    // experiments. Only effective when |tailored_verdict_type| is set.
+    enum ExperimentalWarningAdjustment {
+      ADJUSTMENT_UNSPECIFIED = 0;
+      // Include account information in the warning. Only apply to COOKIE_THEFT
+      // tailored verdict.
+      ACCOUNT_INFO_STRING = 1;
+    }
+    repeated ExperimentalWarningAdjustment adjustments = 2 [packed = true];
+  }
+  optional TailoredVerdict tailored_verdict = 20;
+}
+
+// The following protocol buffer holds the feedback report gathered
+// from the user regarding the download.
+message ClientDownloadReport {
+  // The information of user who provided the feedback.
+  // This is going to be useful for handling appeals.
+  message UserInformation {
+    optional string email = 1;
+  }
+
+  enum Reason {
+    SHARE = 0;
+    FALSE_POSITIVE = 1;
+    APPEAL = 2;
+  }
+
+  // The type of feedback for this report.
+  optional Reason reason = 1;
+
+  // The original download ping
+  optional ClientDownloadRequest download_request = 2;
+
+  // Stores the information of the user who provided the feedback.
+  optional UserInformation user_information = 3;
+
+  // Unstructed comments provided by the user.
+  optional bytes comment = 4;
+
+  // The original download response sent from the verdict server.
+  optional ClientDownloadResponse download_response = 5;
+}
+
+// This is used to send back upload status to the client after upload completion
+message ClientUploadResponse {
+  enum UploadStatus {
+    // The upload was successful and a complete response can be expected
+    SUCCESS = 0;
+
+    // The upload was unsuccessful and the response is incomplete.
+    UPLOAD_FAILURE = 1;
+  }
+
+  // Holds the upload status
+  optional UploadStatus status = 1;
+
+  // Holds the permalink where the results of scanning the binary are available
+  optional string permalink = 2;
+}
+
+message ClientIncidentReport {
+  message IncidentData {
+    message TrackedPreferenceIncident {
+      enum ValueState {
+        UNKNOWN = 0;
+        CLEARED = 1;
+        WEAK_LEGACY_OBSOLETE = 2;
+        CHANGED = 3;
+        UNTRUSTED_UNKNOWN_VALUE = 4;
+        BYPASS_CLEARED = 5;
+        BYPASS_CHANGED = 6;
+      }
+
+      optional string path = 1;
+      optional string atomic_value = 2;
+      repeated string split_key = 3;
+      optional ValueState value_state = 4;
+    }
+
+    message BinaryIntegrityIncident {
+      optional string file_basename = 1;
+      optional ClientDownloadRequest.SignatureInfo signature = 2;
+      optional ClientDownloadRequest.ImageHeaders image_headers = 3;
+      optional int32 sec_error = 4;
+
+      message ContainedFile {
+        optional string relative_path = 1;
+        optional ClientDownloadRequest.SignatureInfo signature = 2;
+        optional ClientDownloadRequest.ImageHeaders image_headers = 3;
+      }
+      repeated ContainedFile contained_file = 5;
+    }
+
+    message ResourceRequestIncident {
+      enum Type {
+        UNKNOWN = 0;
+        TYPE_PATTERN = 3;
+      }
+      optional bytes digest = 1;
+      optional string origin = 2;
+      optional Type type = 3 [default = UNKNOWN];
+    }
+
+    optional int64 incident_time_msec = 1;
+    optional TrackedPreferenceIncident tracked_preference = 2;
+    optional BinaryIntegrityIncident binary_integrity = 3;
+    // Note: skip tag 4,5,6 because they were previously used.
+    reserved 4 to 6;
+    optional ResourceRequestIncident resource_request = 7;
+    // Note: skip tag 8 because it was previously used.
+    reserved 8;
+  }
+
+  repeated IncidentData incident = 1;
+
+  message DownloadDetails {
+    optional bytes token = 1;
+    optional ClientDownloadRequest download = 2;
+    optional int64 download_time_msec = 3;
+    optional int64 open_time_msec = 4;
+  }
+
+  optional DownloadDetails download = 2;
+
+  message EnvironmentData {
+    message OS {
+      optional string os_name = 1;
+      optional string os_version = 2;
+
+      message RegistryValue {
+        optional string name = 1;
+        optional uint32 type = 2;
+        optional bytes data = 3;
+      }
+
+      message RegistryKey {
+        optional string name = 1;
+        repeated RegistryValue value = 2;
+        repeated RegistryKey key = 3;
+      }
+
+      repeated RegistryKey registry_key = 3;
+
+      optional bool is_enrolled_to_domain = 4;
+    }
+    optional OS os = 1;
+    message Machine {
+      optional string cpu_architecture = 1;
+      optional string cpu_vendor = 2;
+      optional uint32 cpuid = 3;
+    }
+    optional Machine machine = 2;
+    message Process {
+      optional string version = 1;
+      repeated string OBSOLETE_dlls = 2;
+      message Patch {
+        optional string function = 1;
+        optional string target_dll = 2;
+      }
+      repeated Patch patches = 3;
+      message NetworkProvider {}
+      repeated NetworkProvider network_providers = 4;
+      enum Channel {
+        CHANNEL_UNKNOWN = 0;
+        CHANNEL_CANARY = 1;
+        CHANNEL_DEV = 2;
+        CHANNEL_BETA = 3;
+        CHANNEL_STABLE = 4;
+      }
+      optional Channel chrome_update_channel = 5;
+      optional int64 uptime_msec = 6;
+      optional bool metrics_consent = 7;
+      // Obsolete: extended consent is now required for incident reporting.
+      optional bool OBSOLETE_extended_consent = 8;
+      message Dll {
+        enum Feature {
+          UNKNOWN = 0;
+          LSP = 1;
+        }
+        optional string path = 1;
+        optional uint64 base_address = 2;
+        optional uint32 length = 3;
+        repeated Feature feature = 4;
+        optional ClientDownloadRequest.ImageHeaders image_headers = 5;
+      }
+      repeated Dll dll = 9;
+      repeated string blocklisted_dll = 10;
+      message ModuleState {
+        enum ModifiedState {
+          UNKNOWN = 0;
+          MODULE_STATE_UNKNOWN = 1;
+          MODULE_STATE_UNMODIFIED = 2;
+          MODULE_STATE_MODIFIED = 3;
+        }
+        optional string name = 1;
+        optional ModifiedState modified_state = 2;
+        repeated string OBSOLETE_modified_export = 3;
+
+        message Modification {
+          optional uint32 file_offset = 1;
+          optional int32 byte_count = 2;
+          optional bytes modified_bytes = 3;
+          optional string export_name = 4;
+        }
+        repeated Modification modification = 4;
+      }
+      repeated ModuleState module_state = 11;
+      // Obsolete: field trials no longer enable incident reporting.
+      optional bool OBSOLETE_field_trial_participant = 12;
+    }
+    optional Process process = 3;
+  }
+
+  message ExtensionData {
+    message ExtensionInfo {
+      enum ExtensionState {
+        STATE_UNKNOWN = 0;
+        STATE_ENABLED = 1;
+        STATE_DISABLED = 2;
+        STATE_BLOCKLISTED = 3;
+        STATE_BLOCKED = 4;
+        STATE_TERMINATED = 5;
+      }
+
+      optional string id = 1;
+      optional string version = 2;
+      optional string name = 3;
+      optional string description = 4;
+      optional ExtensionState state = 5 [default = STATE_UNKNOWN];
+      optional int32 type = 6;
+      optional string update_url = 7;
+      optional bool has_signature_validation = 8;
+      optional bool signature_is_valid = 9;
+      optional bool installed_by_custodian = 10;
+      optional bool installed_by_default = 11;
+      optional bool installed_by_oem = 12;
+      optional bool from_bookmark = 13;
+      optional bool from_webstore = 14;
+      optional bool converted_from_user_script = 15;
+      optional bool may_be_untrusted = 16;
+      optional int64 install_time_msec = 17;
+      optional int32 manifest_location_type = 18;
+      optional string manifest = 19;
+    }
+
+    optional ExtensionInfo last_installed_extension = 1;
+  }
+
+  optional EnvironmentData environment = 3;
+
+  // Population that the reporting user is part of.
+  optional ChromeUserPopulation population = 7;
+
+  optional ExtensionData extension_data = 8;
+
+  message NonBinaryDownloadDetails {
+    optional string file_type = 1;
+    optional bytes url_spec_sha256 = 2;
+    optional string host = 3;
+    optional int64 length = 4;
+  }
+
+  optional NonBinaryDownloadDetails non_binary_download = 9;
+}
+
+message ClientIncidentResponse {
+  optional bytes token = 1;
+  optional bool download_requested = 2;
+
+  message EnvironmentRequest {
+    optional int32 dll_index = 1;
+  }
+
+  repeated EnvironmentRequest environment_requests = 3;
+}
+
+message DownloadMetadata {
+  optional uint32 download_id = 1;
+
+  optional ClientIncidentReport.DownloadDetails download = 2;
+}
+
+// A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
+// only sent by Chrome users who have opted into extended Safe Browsing.
+// This proto is replacing ClientMalwareReportRequest.
+// Next tag: 27
+message ClientSafeBrowsingReportRequest {
+  // Note: A lot of the "optional" fields would make sense to be
+  // "required" instead.  However, having them as optional allows the
+  // clients to send "stripped down" versions of the message in the
+  // future, if we want to.
+
+  enum ReportType {
+    UNKNOWN = 0;
+    URL_PHISHING = 1;
+    URL_MALWARE = 2;
+    URL_UNWANTED = 3;
+    URL_CLIENT_SIDE_PHISHING = 4;
+    URL_CLIENT_SIDE_MALWARE = 5;
+    DANGEROUS_DOWNLOAD_RECOVERY = 6;
+    DANGEROUS_DOWNLOAD_WARNING = 7;
+    DANGEROUS_DOWNLOAD_BY_API = 10;
+    URL_PASSWORD_PROTECTION_PHISHING = 12;
+    DANGEROUS_DOWNLOAD_OPENED = 13;
+    AD_SAMPLE = 14;
+    URL_SUSPICIOUS = 15;
+    BILLING = 16;
+    APK_DOWNLOAD = 17;
+    BLOCKED_AD_REDIRECT = 19;
+    BLOCKED_AD_POPUP = 20;
+  }
+
+  message HTTPHeader {
+    required bytes name = 1;
+    optional bytes value = 2;
+  }
+
+  message HTTPRequest {
+    message FirstLine {
+      optional bytes verb = 1;
+      optional bytes uri = 2;
+      optional bytes version = 3;
+    }
+
+    optional FirstLine firstline = 1;
+    repeated HTTPHeader headers = 2;
+    optional bytes body = 3;
+
+    // bodydigest and bodylength can be useful if the report does not
+    // contain the body itself.
+    optional bytes bodydigest = 4;  // 32-byte hex md5 digest of body.
+    optional int32 bodylength = 5;  // length of body.
+  }
+
+  message HTTPResponse {
+    message FirstLine {
+      optional int32 code = 1;
+      optional bytes message = 2;
+      optional bytes version = 3;
+    }
+
+    optional FirstLine firstline = 1;
+    repeated HTTPHeader headers = 2;
+    optional bytes body = 3;
+    optional bytes bodydigest = 4;  // 32-byte hex md5 digest of body.
+    optional int32 bodylength = 5;  // length of body.
+    optional bytes remote_ip = 6;   // IP of the server.
+  }
+
+  message Resource {
+    required int32 id = 1;
+    optional string url = 2;
+    optional HTTPRequest request = 3;
+    optional HTTPResponse response = 4;
+    optional int32 parent_id = 5;
+    repeated int32 child_ids = 6;
+    optional string tag_name = 7;
+  }
+
+  optional ReportType type = 10;
+
+  // Only set if ReportType is DANGEROUS_DOWNLOAD_RECOVERY,
+  // DANGEROUS_DOWNLOAD_WARNING or DANGEROUS_DOWNLOAD_BY_API.
+  optional ClientDownloadResponse.Verdict download_verdict = 11;
+
+  // URL of the page in the address bar.
+  optional string url = 1;
+
+  // Must be set if the ReportType is not one of DANGEROUS_DOWNLOAD_RECOVERY,
+  // DANGEROUS_DOWNLOAD_WARNING, DANGEROUS_DOWNLOAD_BY_API,
+  // DANGEROUS_DOWNLOAD_OPENED, URL_PASSWORD_PROTECTION_PHISHING.
+  optional string page_url = 2;
+
+  optional string referrer_url = 3;
+
+  repeated Resource resources = 4;
+
+  // Contains the hierarchy of elements on the page (ie: the DOM). Some
+  // elements can be Resources and will refer to the resources list (above).
+  repeated HTMLElement dom = 16;
+
+  // Whether the report is complete.
+  optional bool complete = 5;
+
+  // The ASN and country of the client IP. These fields are filled up by
+  // csd_frontend
+  repeated string client_asn = 6;
+  optional string client_country = 7;
+
+  // Whether user chose to proceed.
+  optional bool did_proceed = 8;
+
+  // Whether user visited this origin before.
+  optional bool repeat_visit = 9;
+
+  // The same token in ClientDownloadResponse or LoginReputationClientResponse.
+  // This field is only set if its report type is DANGEROUS_DOWNLOAD_RECOVERY,
+  // DANGEROUS_DOWNLOAD_WARNING, DANGEROUS_DOWNLOAD_BY_API,
+  // URL_PASSWORD_PROTECTION_PHISHING, or DANGEROUS_DOWNLOAD_OPENED.
+  optional bytes token = 15;
+
+  enum SafeBrowsingUrlApiType {
+    SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED = 0;
+    // Native implementation of Safe Browsing API v3 protocol.
+    // Deprecated as of 2021-1. V3 protocol is not used anymore.
+    PVER3_NATIVE = 1 [deprecated = true];
+    // Native implementation of Safe Browsing API v4 protocol.
+    PVER4_NATIVE = 2;
+    // Android SafetyNet API.
+    // https://developer.android.com/training/safetynet/safebrowsing.html
+    ANDROID_SAFETYNET = 3;
+    // Flywheel (data compression service).
+    // Deprecated as of 2021-1. Data saver has been completely turned down.
+    FLYWHEEL = 4 [deprecated = true];
+    // Safe Browsing real time API.
+    REAL_TIME = 5;
+  }
+
+  // The information propagated from the client about various environment
+  // variables including SDK version, Google Play Services version and so on.
+  message SafeBrowsingClientProperties {
+    optional string client_version = 1;
+    optional int64 google_play_services_version = 2;
+    optional bool is_instant_apps = 3;
+    optional SafeBrowsingUrlApiType url_api_type = 4;
+  }
+  optional SafeBrowsingClientProperties client_properties = 17;
+
+  // Only set if report type is DANGEROUS_DOWNLOAD_EXECUTION.
+  // True means user opened the folder where this download is in via browser.
+  // False means user directly executed this download via download shelf or
+  // other download UIs.
+  optional bool show_download_in_folder = 18;
+
+  // If we can find the complete referrer chain, this field will contains URLs
+  // transitions from landing referrer to event in reverse chronological
+  // order, i.e. event url comes first in this list, and landing referrer
+  // comes last.
+  repeated ReferrerChainEntry referrer_chain = 23;
+
+  message DownloadItemInfo {
+    // URL of the download payload.
+    optional string url = 1;
+
+    // This message contains various binary digests of the download payload.
+    message Digests {
+      optional bytes sha256 = 1;
+    }
+    optional Digests digests = 2;
+
+    // This is the length in bytes of the download payload.
+    optional int64 length = 3;
+
+    // Name of the file where the download would be stored if the
+    // download completes.  E.g., "bla.exe".
+    optional string file_basename = 4;
+  }
+
+  optional DownloadItemInfo download_item_info = 24;
+
+  // The SafetyNet ID of the Android device.
+  // Deprecated, not launched.
+  optional string safety_net_id = 25 [deprecated = true];
+
+  optional ChromeUserPopulation population = 26;
+
+  // Logs user actions on download warnings. This field is useful for analyzing
+  // whether users pay attention to the warning, and why they decide to proceed
+  // or discard.
+  message DownloadWarningAction {
+    // The warning surface this action is performed on. See
+    // go/chrome-download-warning-surfaces for details.
+    enum Surface {
+      SURFACE_UNSPECIFIED = 0;
+      // Applicable actions: DISCARD
+      BUBBLE_MAINPAGE = 1;
+      // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK
+      BUBBLE_SUBPAGE = 2;
+      // Applicable actions: DISCARD, KEEP
+      DOWNLOADS_PAGE = 3;
+      // Applicable actions: PROCEED, CANCEL, CLOSE
+      DOWNLOAD_PROMPT = 4;
+    }
+    optional Surface surface = 1;
+
+    enum Action {
+      ACTION_UNSPECIFIED = 0;
+      // The user clicks proceed, which means the user decides to bypass the
+      // warning.
+      PROCEED = 1;
+      // The user clicks discard, which means the user decides to obey the
+      // warning and the dangerous download is deleted from disk.
+      DISCARD = 2;
+      // The user has clicked the keep button on the surface.
+      KEEP = 3;
+      // The user has clicked the close button on the surface.
+      CLOSE = 4;
+      // The user clicks cancel on the download prompt.
+      CANCEL = 5;
+      // The user has dismissed the bubble by clicking anywhere outside
+      // the bubble.
+      DISMISS = 6;
+      // The user has clicked the back button on the bubble subpage to go back
+      // to the bubble main page.
+      BACK = 7;
+    }
+    optional Action action = 2;
+
+    // Whether the action is terminal (i.e. the warning disappears after this
+    // action is performed).
+    optional bool is_terminal_action = 3;
+
+    // Time intervals between when the download warning is first shown and
+    // when the user performs actions on that warning, measured on the
+    // client-side by the same clock. If the same warning has shown multiple
+    // times, the interval is anchored to the earliest warning. All intervals
+    // are measured in milliseconds.
+    optional int64 interval_msec = 4;
+  }
+  repeated DownloadWarningAction download_warning_actions = 27;
+}
+
+// An HTML Element on the page (eg: iframe, div, script, etc).
+message HTMLElement {
+  // Id of this element.
+  optional int32 id = 1;
+
+  // The tag type of this element (eg: iframe, div, script, etc).
+  optional string tag = 2;
+
+  // IDs of elements that are children of this element.
+  repeated int32 child_ids = 3;
+
+  // If this element represents a Resource then this is the id of the
+  // Resource, which contains additional data about the Resource. Otherwise
+  // unset.
+  optional int32 resource_id = 5;
+
+  // An Attribute of the element (eg: id, border, foo etc) and its value.
+  message Attribute {
+    optional string name = 1;
+    optional string value = 2;
+  }
+  repeated Attribute attribute = 6;
+
+  optional bytes inner_html = 7;
+}
+
+// Protobuf for Chrome extension webstore install request.
+message ExtensionWebStoreInstallRequest {
+  // If we can find the complete referrer chain, this field will contain URL
+  // transitions from landing referrer to event in reverse chronological
+  // order, i.e. event url comes first in this list, and landing referrer
+  // comes last.
+  // For Safe Browsing Extended Reporting, if the referrer
+  // chain is empty or partially missing, we will add/append recent navigation
+  // events to this list. The type of these entries will be RECENT_NAVIGATION.
+  repeated ReferrerChainEntry referrer_chain = 1;
+
+  // Options and metadata about the above referrer chain.
+  optional ReferrerChainOptions referrer_chain_options = 2;
+}
+
+// Protobuf for uploading Chrome extension telemetry reports.
+message ExtensionTelemetryReportRequest {
+  // Information about the Chrome extension.
+  message ExtensionInfo {
+    enum Type {
+      UNKNOWN_TYPE = 0;            // Unknown (hopefully never used)
+      EXTENSION = 1;               // A browser extension
+      THEME = 2;                   // A browser theme
+      USER_SCRIPT = 3;             // An extension converted from a user script
+      HOSTED_APP = 4;              // A hosted app
+      LEGACY_PACKAGED_APP = 5;     // A (deprecated) v1 packaged app
+      PLATFORM_APP = 6;            // A platform app
+      SHARED_MODULE = 7;           // A shared module
+      LOGIN_SCREEN_EXTENSION = 8;  // An extension running on the login screen
+    }
+
+    enum InstallLocation {
+      UNKNOWN_LOCATION = 0;  // Unknown (hopefully never used)
+      INTERNAL = 1;  // A crx file from the internal Extensions directory; most
+                     // webstore-installed extensions fall into this category.
+      EXTERNAL_PREF = 2;  // A crx file from an external directory (via prefs).
+      EXTERNAL_REGISTRY = 3;  // A crx file from an external directory (via the
+                              // Windows registry)
+      UNPACKED = 4;   // An unpacked extension loaded from chrome://extensions.
+      COMPONENT = 5;  // An internal component extension.
+      EXTERNAL_PREF_DOWNLOAD = 6;    // A crx file from an external directory
+                                     // (via prefs), downloaded from an update
+                                     // URL.
+      EXTERNAL_POLICY_DOWNLOAD = 7;  // A crx file from an external directory
+                                     // (via admin policies), downloaded from an
+                                     // update URL.
+      COMMAND_LINE = 8;  // Loaded from the commandline (e.g. --load-extension).
+      EXTERNAL_POLICY = 9;  // A crx file from an external directory (via admin
+                            // policies), cached locally and installed from the
+                            // cache.
+      EXTERNAL_COMPONENT = 10;  // A component extension that was downloaded
+                                // externally via an update url.
+    }
+
+    // The state of the extension as determined by SB blocklist.
+    enum BlocklistState {
+      // The extension is not in the blocklist.
+      NOT_BLOCKLISTED = 0;
+      // The extension is malware.
+      BLOCKLISTED_MALWARE = 1;
+      // The extension has a serious security vulnerability.
+      BLOCKLISTED_SECURITY_VULNERABILITY = 2;
+      // The extension violated CWS policy.
+      BLOCKLISTED_CWS_POLICY_VIOLATION = 3;
+      // The extension is considered potentially unwanted.
+      BLOCKLISTED_POTENTIALLY_UNWANTED = 4;
+      // Used when we couldn't connect to server, e.g. when offline.
+      BLOCKLISTED_UNKNOWN = 5;
+    }
+
+    optional string id = 1;
+    optional string version = 2;
+    optional string name = 3;
+    // Version install time.
+    optional int64 install_timestamp_msec = 4;
+    // If the extension was installed by default when the profile was created.
+    // These extensions are specified by Chrome.
+    optional bool is_default_installed = 5;
+    // If the extension was installed by an OEM. This differs from
+    // "is_default_installed", since these extensions are specified by the OEM
+    // rather than by Chrome. These are specified in a file that is created as
+    // part of the creation of the Chrome image, and can be specific to
+    // different OEMs.
+    optional bool is_oem_installed = 6;
+    // If the extension originated from the Chrome Web Store according to the
+    // prefs. This differs from install_location, which specifies the location
+    // on the user’s machine from where the install originated, but not
+    // whether the extension is hosted in the store. For instance, sideloaded
+    // extensions that are specified via ID in the registry are downloaded from
+    // the store.
+    optional bool is_from_store = 7;
+    // If the extension automatically updates from the Chrome Web Store.
+    optional bool updates_from_store = 8;
+    // If the extension was created from a user script. This is distinct from
+    // install_location, which specifies from where on the user’s machine
+    // the install originated.
+    optional bool is_converted_from_user_script = 9;
+    optional Type type = 10;
+    optional InstallLocation install_location = 11;
+    optional BlocklistState blocklist_state = 12;
+    // Bitmask of reason(s) the Chrome extension is disabled.
+    // Bit positions are defined in extensions::disable_reason::DisableReason
+    // (located in //extensions/browser/disable_reason.h)
+    optional uint32 disable_reasons = 13;
+  }
+
+  // Information about the various telemetry signals.
+  message SignalInfo {
+    message TabsExecuteScriptInfo {
+      message ScriptInfo {
+        optional bytes hash = 1;
+        // Number of times this script has been executed since
+        // last report/browser start. This number is limited to
+        // a configurable maximum (default max is 100).
+        optional uint32 execution_count = 2;
+      }
+      repeated ScriptInfo scripts = 1;
+      // The number of scripts that were not recorded because the max count was
+      // exceeded.
+      optional uint32 max_exceeded_script_count = 2;
+    }
+
+    optional TabsExecuteScriptInfo tabs_execute_script_info = 1;
+
+    message RemoteHostContactedInfo {
+      message RemoteHostInfo {
+        enum ProtocolType {
+          UNSPECIFIED = 0;
+          HTTP_HTTPS = 1;
+          WEBSOCKET = 2;
+        }
+        // Sanitized url (hostname only) of the contacted remote host.
+        optional string url = 1;
+        // Number of times this host has been contacted by the extension
+        // using the `connection_protocol`.
+        optional uint32 contact_count = 2;
+        // Protocol used to make the connection.
+        optional ProtocolType connection_protocol = 3;
+      }
+      repeated RemoteHostInfo remote_host = 1;
+    }
+
+    optional RemoteHostContactedInfo remote_host_contacted_info = 2;
+
+    // Cookies.getAll() API signal information.
+    message CookiesGetAllInfo {
+      // Include all API arguments used. See
+      // https://developer.chrome.com/docs/extensions/reference/cookies/#method-getAll
+      message GetAllArgsInfo {
+        // Restricts the retrieved cookies to those whose domains match or are
+        // subdomains of this one.
+        optional string domain = 1;
+        // Filters the cookies by name.
+        optional string name = 2;
+        // Restricts the retrieved cookies to those whose path exactly matches
+        // this string.
+        optional string path = 3;
+        // Filters the cookies by their Secure property.
+        optional bool secure = 4;
+        // Deprecated.
+        reserved 5;
+        // The cookie store to retrieve cookies from. If omitted, the current
+        // execution context's cookie store will be used.
+        optional string store_id = 6;
+        // Restricts the retrieved cookies to those that would match the given
+        // URL.
+        optional string url = 7;
+
+        // Number of times this set of arguments has been used.
+        optional uint32 count = 8;
+
+        // Filters out session vs. persistent cookies.
+        optional bool is_session = 9;
+      }
+
+      repeated GetAllArgsInfo get_all_args_info = 1;
+
+      // Number of argument sets collected in each signal is limited to a
+      // maximum value (default 100). This field counts the number of argument
+      // sets not recorded after limit is reached, and resets after each
+      // generated report.
+      optional uint32 max_exceeded_args_count = 2;
+    }
+
+    optional CookiesGetAllInfo cookies_get_all_info = 3;
+
+    // Cookies.get() API signal information.
+    message CookiesGetInfo {
+      // Include all API arguments used. See
+      // https://developer.chrome.com/docs/extensions/reference/cookies/#method-get
+      message GetArgsInfo {
+        // The name of the cookie to access.
+        optional string name = 1;
+        // The URL with which the cookie to access is associated.
+        optional string url = 2;
+        // The ID of the cookie store in which to look for the cookie. By
+        // default, the current execution context's cookie store will be used.
+        optional string store_id = 3;
+
+        // Number of times this set of arguments has been used.
+        optional uint32 count = 8;
+      }
+
+      repeated GetArgsInfo get_args_info = 1;
+
+      // Number of argument sets collected in each signal is limited to a
+      // maximum value (default 100). This field counts the number of argument
+      // sets not recorded after limit is reached, and resets after each
+      // generated report.
+      optional uint32 max_exceeded_args_count = 2;
+    }
+
+    optional CookiesGetInfo cookies_get_info = 4;
+
+    // Potential Password Theft signal info.
+    message PotentialPasswordTheftInfo {
+      message RemoteHostInfo {
+        // This information represents a host that an extension contacted within
+        // a specific time window (currently 1 second) after a password-reuse
+        // event was detected on one of that extension's pages.
+        optional string remote_host_url = 1;
+        // Number of times the remote host was contacted.
+        optional uint32 count = 2;
+      }
+      message PasswordReuseInfo {
+        // Domains from the Chrome password manager DB that are associated with
+        // the same password as the one triggering this event.
+        repeated string domains_matching_password = 1;
+
+        // Whether the reused password is used for Chrome signin.
+        optional bool is_chrome_signin_password = 2;
+
+        message ReusedPasswordAccountType {
+          // Whether the current reused password account is syncing.
+          optional bool is_account_syncing = 1;
+
+          enum AccountType {
+            // User reused a password that is not a signed-in account, saved
+            // password, or a non-GAIA enterprise account.
+            UNKNOWN = 0;
+
+            // User signed in with a dasher account.
+            GSUITE = 1;
+
+            // User signed in with @gmail.com, or @googlemail.com account.
+            GMAIL = 2;
+
+            // Password used for Enterprise login on an Enterprise login page.
+            NON_GAIA_ENTERPRISE = 3;
+
+            // Password saved in Chrome's password manager.
+            SAVED_PASSWORD = 4;
+          }
+          optional AccountType account_type = 2;
+        }
+
+        optional ReusedPasswordAccountType reused_password_account_type = 3;
+
+        // Number of times the password was reused in one of this extension's
+        // pages.
+        optional uint32 count = 4;
+      }
+      // The remote host(s) contacted within 1 second of at least one (but not
+      // all) of the password reuse event(s) listed below.
+      repeated RemoteHostInfo remote_hosts = 1;
+      repeated PasswordReuseInfo reused_password_infos = 2;
+    }
+
+    optional PotentialPasswordTheftInfo potential_password_theft_info = 5;
+  }
+
+  // Single report structure consists of all the signals observed for a
+  // single extension.
+  message Report {
+    optional ExtensionInfo extension = 1;
+    repeated SignalInfo signals = 2;
+  }
+
+  // Report creation timestamp.
+  optional int64 creation_timestamp_msec = 1;
+  repeated Report reports = 2;
+}
+
+message ExtensionTelemetryResponse {}

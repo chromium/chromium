@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,15 @@
 
 namespace views {
 
+class AXVirtualView;
 class View;
 
 // AXEventObserver is notified for accessibility events on all views.
 class VIEWS_EXPORT AXEventObserver : public base::CheckedObserver {
  public:
   virtual void OnViewEvent(views::View* view, ax::mojom::Event event_type) = 0;
+  virtual void OnVirtualViewEvent(views::AXVirtualView* virtual_view,
+                                  ax::mojom::Event event_type) {}
 
  protected:
   AXEventObserver();

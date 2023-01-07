@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@macro/default_bg_color"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="bottom"
+    android:gravity="bottom"
+    android:paddingEnd="@dimen/download_interstitial_horizontal_padding"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/download_interstitial_icon"
+        android:contentDescription="@null"
+        android:paddingStart="@dimen/download_interstitial_horizontal_padding"
+        android:paddingBottom="24dp"/>
+
+    <TextView
+        android:id="@+id/heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/download_started"
+        android:textAppearance="@style/TextAppearance.DownloadDialogTitle"
+        android:paddingStart="@dimen/download_interstitial_horizontal_padding"
+        android:paddingBottom="16dp"/>
+
+    <FrameLayout
+        android:id="@+id/file_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:id="@+id/loading_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/download_notification_pending"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:paddingStart="16dp"/>
+    </FrameLayout>
+
+    <org.chromium.components.browser_ui.widget.DualControlLayout
+        android:id="@+id/button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="16dp"
+        android:background="@macro/default_bg_color"
+        app:stackedMargin="24dp"
+        app:buttonAlignment="end"/>
+</LinearLayout>

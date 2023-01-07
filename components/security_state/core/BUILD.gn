@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,13 +9,11 @@ if (is_android) {
 
 static_library("core") {
   sources = [
-    "insecure_input_event_data.h",
     "security_state.cc",
     "security_state.h",
   ]
 
   public_deps = [
-    ":features",
     "//base",
     "//net",
     "//url",
@@ -41,21 +39,7 @@ source_set("unit_tests") {
 
   deps = [
     ":core",
-    ":features",
     "//net:test_support",
     "//testing/gtest",
   ]
-}
-
-component("features") {
-  output_name = "security_state_features"
-
-  defines = [ "IS_SECURITY_STATE_FEATURES_IMPL" ]
-
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-
-  deps = [ "//base" ]
 }

@@ -1,13 +1,11 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_GLES2_CONFORM_TEST_CONFIG_H_
-#define GPU_GLES2_CONFORM_TEST_CONFIG_H_
+#ifndef GPU_GLES2_CONFORM_SUPPORT_EGL_CONFIG_H_
+#define GPU_GLES2_CONFORM_SUPPORT_EGL_CONFIG_H_
 
 #include <EGL/egl.h>
-
-#include "base/macros.h"
 
 namespace gles2_conform_support {
 namespace egl {
@@ -15,6 +13,10 @@ namespace egl {
 class Config {
  public:
   explicit Config(EGLint surface_type);
+
+  Config(const Config&) = delete;
+  Config& operator=(const Config&) = delete;
+
   ~Config();
   bool Matches(const EGLint* attrib_list) const;
   bool GetAttrib(EGLint attribute, EGLint* value) const;
@@ -85,11 +87,9 @@ class Config {
   EGLint transparent_green_value_;
   // Transparent blue value
   EGLint transparent_blue_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(Config);
 };
 
 }  // namespace egl
 }  // namespace gles2_conform_support
 
-#endif  // GPU_GLES2_CONFORM_TEST_CONFIG_H_
+#endif  // GPU_GLES2_CONFORM_SUPPORT_EGL_CONFIG_H_

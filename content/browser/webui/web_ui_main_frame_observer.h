@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -39,11 +40,11 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
   friend class WebUIMainFrameObserverTest;
 
   // Override from WebContentsObserver
-  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(Page& page) override;
 
 // TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
 // thunking issues. Fix & re-enable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On official Google builds, capture and report JavaScript error messages on
   // WebUI surfaces back to Google. This allows us to fix JavaScript errors and
   // exceptions.
@@ -53,17 +54,21 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const base::Optional<std::u16string>& untrusted_stack_trace) override;
+      const absl::optional<std::u16string>& untrusted_stack_trace) override;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
  private:
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  void MaybeEnableWebUIJavaScriptErrorReporting(
+      NavigationHandle* navigation_handle);
+
   // Do we report JavaScript errors ?
   bool error_reporting_enabled_ = false;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-  WebUIImpl* web_ui_;
+  raw_ptr<WebUIImpl> web_ui_;
 };
 
 }  // namespace content

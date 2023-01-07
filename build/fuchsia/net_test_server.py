@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -37,7 +37,7 @@ class SSHPortForwarder(chrome_test_server_spawner.PortForwarder):
     return self._port_mapping[host_port]
 
   def Unmap(self, device_port):
-    for host_port, entry in self._port_mapping.iteritems():
+    for host_port, entry in self._port_mapping.items():
       if entry == device_port:
         forwarding_args = [
             '-NT', '-O', 'cancel', '-R', '0:localhost:%d' % host_port]
@@ -56,10 +56,16 @@ class SSHPortForwarder(chrome_test_server_spawner.PortForwarder):
     raise Exception('Unmap called for unknown port: %d' % device_port)
 
 
-def SetupTestServer(target, test_concurrency, for_package, for_realms=[]):
+def SetupTestServer(target, test_concurrency):
   """Provisions a forwarding test server and configures |target| to use it.
 
-  Returns a Popen object for the test server process."""
+  Args:
+    target: The target to which port forwarding to the test server will be
+      established.
+    test_concurrency: The number of parallel test jobs that will be run.
+
+  Returns a tuple of a Popen object for the test server process and the local
+  url to use on `target` to reach the test server."""
 
   logging.debug('Starting test server.')
   # The TestLauncher can launch more jobs than the limit specified with
@@ -75,16 +81,4 @@ def SetupTestServer(target, test_concurrency, for_package, for_realms=[]):
                 spawning_server.server_port)
   logging.debug('Forwarded port is %d' % forwarded_port)
 
-  config_file = tempfile.NamedTemporaryFile(delete=True)
-
-  config_file.write(json.dumps({
-    'spawner_url_base': 'http://localhost:%d' % forwarded_port
-  }))
-
-  config_file.flush()
-  target.PutFile(config_file.name,
-                 '/tmp/net-test-server-config',
-                 for_package=for_package,
-                 for_realms=for_realms)
-
-  return spawning_server
+  return (spawning_server, 'http://localhost:%d' % forwarded_port)

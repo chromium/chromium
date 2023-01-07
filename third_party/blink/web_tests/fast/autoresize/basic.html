@@ -1,24 +1,27 @@
 <!doctype html>
 <html>
-<script src='resources/autoresize-util.js'></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-function runTest()
-{
-    if (window.testRunner) {
-        testRunner.useUnfortunateSynchronousResizeMode();
-        testRunner.enableAutoResizeMode(10, 10, 1000, 1000);
-        testRunner.dumpAsText();
-    }
-    shouldBe('document.body.clientWidth', 'window.innerWidth');
-    shouldBe('document.body.clientHeight', 'window.innerHeight');
-    shouldBe('document.scrollingElement.scrollWidth', 'window.innerWidth');
-    shouldBe('document.scrollingElement.scrollHeight', 'window.innerHeight');
-    shouldBe('window.innerWidth', 'window.outerWidth');
-    shouldBe('window.innerHeight', 'window.outerHeight');
-    log('DONE');
-}
+promise_test(async () => {
+  testRunner.enableAutoResizeMode(10, 10, 1000, 1000);
+
+  // We cannot just wait for the resize event because that fires when
+  // the innerWidth changes (which happens first). We need to wait for the
+  // outerWidth to change.
+  while(window.outerWidth != 900) {
+    await new Promise(resolve => requestAnimationFrame(resolve));
+  }
+
+  assert_equals(document.body.clientWidth, window.innerWidth);
+  assert_equals(document.body.clientHeight, window.innerHeight);
+  assert_equals(document.scrollingElement.scrollWidth, window.innerWidth);
+  assert_equals(document.scrollingElement.scrollHeight, window.innerHeight);
+  assert_equals(window.innerWidth, window.outerWidth);
+  assert_equals(window.innerHeight, window.outerHeight);
+});
 </script>
-<body onload="runTest()" style="margin:0; width:900px">
+<body style="margin:0; width:900px">
 This test only works in when run in dumprendertree as it relies on having auto-resize enabled its window.
 <br>
 <br>

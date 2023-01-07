@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,13 @@ void WebTestShellPlatformDelegate::DidCreateOrAttachWebContents(
     Shell* shell,
     WebContents* web_contents) {
   WebTestControlHost::Get()->DidCreateOrAttachWebContents(web_contents);
+}
+
+void WebTestShellPlatformDelegate::DidCloseLastWindow() {
+  // Some tests, or some fuzzer's test cases are closing every window. When
+  // this happens, the test runner must run the next test. For this reason, this
+  // do not call Shell::Shutdown(). It will be called manually at the end of:
+  // WebTestBrowserMainRunner::RunBrowserMain().
 }
 
 std::unique_ptr<JavaScriptDialogManager>

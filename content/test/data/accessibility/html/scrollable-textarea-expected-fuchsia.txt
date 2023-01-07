@@ -1,0 +1,33 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='little'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='little'
+++++++++++++UNKNOWN label='little'
+++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text'
+++++++++++++UNKNOWN label='lots+of+text+'
+++++++++++++UNKNOWN label=' '
+++++++++++++UNKNOWN label='lots+of+text+'
+++++++++++++UNKNOWN label=' '
+++++++++++++UNKNOWN label='lots+of+text+'
+++++++++++++UNKNOWN label=' '
+++++++++++++UNKNOWN label='lots+of+text+'
+++++++++++++UNKNOWN label=' '
+++++++++++++UNKNOWN label='lots+of+text+'
+++++++++++++UNKNOWN label=' '
+++++++++++++UNKNOWN label='lots+of+text+'
+++++++++++++UNKNOWN label=' '
+++++++++++++UNKNOWN label='lots+of+text+'
+++++++++++++UNKNOWN label=' '
+++++++++++++UNKNOWN label='lots+of+text+'
+++++++++++++UNKNOWN label=' '
+++++++++++++UNKNOWN label='lots+of+text+'
+++++++++++++UNKNOWN label=' '
+++++++++++++UNKNOWN label='lots+of+text+'
+++++++++++++UNKNOWN label=' '
+++++++++++++UNKNOWN label='lots+of+text+'
+++++++++++++UNKNOWN label=' '
+++++++++++++UNKNOWN label='lots+of+text'

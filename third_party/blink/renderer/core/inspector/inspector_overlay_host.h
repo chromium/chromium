@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_OVERLAY_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_OVERLAY_HOST_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -41,13 +42,14 @@ class CORE_EXPORT InspectorOverlayHost final : public ScriptWrappable {
   class Delegate : public GarbageCollectedMixin {
    public:
     virtual ~Delegate() = default;
-    virtual void Dispatch(const String& message) = 0;
+    virtual void Dispatch(const ScriptValue& message,
+                          ExceptionState& exception_state) = 0;
   };
 
   explicit InspectorOverlayHost(Delegate*);
   void Trace(Visitor*) const override;
 
-  void send(const String& message);
+  void send(const ScriptValue& message, ExceptionState& exception_state);
   void ClearDelegate();
 
  private:

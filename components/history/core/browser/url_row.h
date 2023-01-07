@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/query_parser/snippet.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace history {
@@ -151,37 +151,126 @@ typedef std::vector<URLRow> URLRows;
 
 // Annotations -----------------------------------------------------------------
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-// A structure containing the annotations made to page content for a visit.
-struct VisitContentAnnotations {
+// A set of binary state related to a page visit. To be used for bit masking
+// operations.
+//
+// These values are persisted in database. Entries should not be renumbered and
+// numeric values should never be reused.
+enum VisitContentAnnotationFlag : uint64_t {
+  kNone = 0,
+
+  // No longer used in production code. Only referenced in a database migration
+  // test.
+  kDeprecatedFlocEligibleRelaxed = 1ULL << 0,
+
+  // Indicates that the annotated page can be included in browsing topics
+  // calculation (https://github.com/jkarlin/topics). A page visit is eligible
+  // for browsing topics calculation if all of the conditions hold:
+  // 1. The IP of this visit is publicly routable, i.e. the IP is NOT within
+  // the ranges reserved for "private" internet
+  // (https://tools.ietf.org/html/rfc1918).
+  // 2. The browsing-topics Permissions Policy feature is allowed in the page.
+  // 3. Page opted in: document.browsingTopics() API is used in the page.
+  kBrowsingTopicsEligible = 1ULL << 1,
+};
+
+using VisitContentAnnotationFlags = uint64_t;
+
+// A structure containing annotations computed by ML models to page content
+// for a visit. Be cautious when changing the default values as they may already
+// have been written to the storage.
+struct VisitContentModelAnnotations {
+  static constexpr float kDefaultVisibilityScore = -1;
+  static constexpr int kDefaultPageTopicsModelVersion = -1;
+
   struct Category {
     Category();
-    Category(int id, int weight);
+    Category(const std::string& id, int weight);
+    // |vector| is expected to be of size 2 with the first entry being an ID of
+    // string or int type and the second entry indicating an integer weight.
+    static absl::optional<Category> FromStringVector(
+        const std::vector<std::string>& vector);
+    std::string ToString() const;
     bool operator==(const Category& other) const;
     bool operator!=(const Category& other) const;
 
-    int id = 0;
+    std::string id;
     int weight = 0;
   };
 
-  VisitContentAnnotations();
-  VisitContentAnnotations(float floc_protected_score,
-                          const std::vector<Category>& categories,
-                          int64_t page_topics_model_version);
-  VisitContentAnnotations(const VisitContentAnnotations& other);
-  ~VisitContentAnnotations();
+  VisitContentModelAnnotations();
+  VisitContentModelAnnotations(float visibility_score,
+                               const std::vector<Category>& categories,
+                               int64_t page_topics_model_version,
+                               const std::vector<Category>& entities);
+  VisitContentModelAnnotations(const VisitContentModelAnnotations& other);
+  ~VisitContentModelAnnotations();
 
-  // A value from 0 to 1 that represents whether the page content is
-  // FLoC-protected.
-  float floc_protected_score = -1.0;
+  // Merges `category` into `categories`. It upgrades the weight if it already
+  // exists, and appends it if it doesn't.
+  static void MergeCategoryIntoVector(const Category& category,
+                                      std::vector<Category>* categories);
+
+  // Merges the max-score, categories, and entities from `other`, which is the
+  // content model annotations of a duplicate visit.
+  void MergeFrom(const VisitContentModelAnnotations& other);
+
+  // A value from 0 to 1 that represents how prominent, or visible, the page
+  // might be considered on UI surfaces.
+  float visibility_score = kDefaultVisibilityScore;
   // A vector that contains category IDs and their weights. It is guaranteed
   // that there will not be duplicates in the category IDs contained in this
   // field.
   std::vector<Category> categories;
   // The version of the page topics model that was used to annotate content.
-  int64_t page_topics_model_version = -1;
+  int64_t page_topics_model_version = kDefaultPageTopicsModelVersion;
+  // A vector that contains entity IDs and their weights. It is guaranteed
+  // that there will not be duplicates in the category IDs contained in this
+  // field.
+  std::vector<Category> entities;
+
+  // Any field added here must also update the
+  // `MergeUpdateIntoExistingModelAnnotations` function in history_backend.cc.
 };
-#endif
+
+// A structure containing the annotations made to page content for a visit.
+struct VisitContentAnnotations {
+  // Values are persisted; do not reorder or reuse, and only add new values at
+  // the end.
+  enum class PasswordState {
+    kUnknown = 0,
+    kNoPasswordField = 1,
+    kHasPasswordField = 2,
+  };
+
+  VisitContentAnnotations();
+  VisitContentAnnotations(VisitContentAnnotationFlags annotation_flags,
+                          VisitContentModelAnnotations model_annotations,
+                          const std::vector<std::string>& related_searches,
+                          const GURL& search_normalized_url,
+                          const std::u16string& search_terms,
+                          const std::string& alternative_title,
+                          const std::string& page_language,
+                          PasswordState password_state);
+  VisitContentAnnotations(const VisitContentAnnotations& other);
+  ~VisitContentAnnotations();
+
+  VisitContentAnnotationFlags annotation_flags =
+      VisitContentAnnotationFlag::kNone;
+  VisitContentModelAnnotations model_annotations;
+  // A vector that contains related searches for a Google SRP visit.
+  std::vector<std::string> related_searches;
+  GURL search_normalized_url;
+  std::u16string search_terms;
+  // Alternative page title for the visit.
+  std::string alternative_title;
+  // Language of the content on the page, as an ISO 639 language code (usually
+  // two letters). May be "und" if the language couldn't be determined.
+  std::string page_language;
+  // Whether a password form was found on the page - see also
+  // sessions::SerializedNavigationEntry::PasswordState.
+  PasswordState password_state = PasswordState::kUnknown;
+};
 
 class URLResult : public URLRow {
  public:
@@ -197,18 +286,13 @@ class URLResult : public URLRow {
   base::Time visit_time() const { return visit_time_; }
   void set_visit_time(base::Time visit_time) { visit_time_ = visit_time; }
 
-  bool floc_allowed() const { return floc_allowed_; }
-  void set_floc_allowed(bool floc_allowed) { floc_allowed_ = floc_allowed; }
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  const base::Optional<VisitContentAnnotations>& content_annotations() const {
+  const VisitContentAnnotations& content_annotations() const {
     return content_annotations_;
   }
   void set_content_annotations(
-      const base::Optional<VisitContentAnnotations>& content_annotations) {
+      const VisitContentAnnotations& content_annotations) {
     content_annotations_ = content_annotations;
   }
-#endif
 
   const query_parser::Snippet& snippet() const { return snippet_; }
 
@@ -234,14 +318,8 @@ class URLResult : public URLRow {
   // The time that this result corresponds to.
   base::Time visit_time_;
 
-  // Indicates whether this URL visit can be included in FLoC computation. See
-  // VisitRow::floc_allowed for details.
-  bool floc_allowed_ = false;
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // The annotations made to the page content for this visit.
-  base::Optional<VisitContentAnnotations> content_annotations_;
-#endif
+  VisitContentAnnotations content_annotations_;
 
   // These values are typically set by HistoryBackend.
   query_parser::Snippet snippet_;

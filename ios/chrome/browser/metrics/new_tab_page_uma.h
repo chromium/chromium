@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ enum ActionType {
   ACTION_OPENED_READING_LIST_ENTRY,
   ACTION_OPENED_SUGGESTION,
   ACTION_OPENED_LEARN_MORE,
-  ACTION_OPENED_PROMO,
+  ACTION_OPENED_PROMO,  // Deprecated as of 09/2022.
   ACTION_OPENED_HISTORY_ENTRY,
   ACTION_NAVIGATED_USING_VOICE_SEARCH,
   NUM_ACTION_TYPES,

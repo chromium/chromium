@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,12 @@ class ComboboxModel;
 class COMPONENT_EXPORT(UI_BASE) ComboboxModelObserver
     : public base::CheckedObserver {
  public:
-  // Invoked when |model| has changed in some way. The observer should assume
+  // Invoked when `model` has changed in some way. The observer should assume
   // everything changed.
   virtual void OnComboboxModelChanged(ComboboxModel* model) = 0;
+
+  // Invoked when `model` is destroyed. The observer should stop observing.
+  virtual void OnComboboxModelDestroying(ComboboxModel* model) = 0;
 
  protected:
   ~ComboboxModelObserver() override = default;

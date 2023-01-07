@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.download.DownloadNotificationService.E
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_AUTO_RESUMPTION;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.clearResumptionAttemptLeft;
+import static org.chromium.chrome.browser.notifications.NotificationConstants.EXTRA_NOTIFICATION_ID;
 
 import android.app.DownloadManager;
 import android.app.Service;
@@ -34,7 +35,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.download.DownloadNotificationUmaHelper.UmaDownloadResumption;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -118,7 +118,6 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
      * Cancel any download resumption tasks and reset the number of resumption attempts available.
      */
     void cancelQueuedResumptions() {
-        DownloadResumptionScheduler.getDownloadResumptionScheduler().cancel();
         // Reset number of attempts left if the action is triggered by user.
         clearResumptionAttemptLeft();
     }
@@ -132,34 +131,47 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         if (!immediateNotificationUpdateNeeded(action)) return;
 
         final DownloadSharedPreferenceEntry entry = getDownloadEntryFromIntent(intent);
-        if (entry == null) return;
+        final ContentId contentId = getContentIdFromIntent(intent);
 
         switch (action) {
             case ACTION_DOWNLOAD_PAUSE:
-                mDownloadNotificationService.notifyDownloadPaused(entry.id, entry.fileName, true,
-                        false, entry.otrProfileID, entry.isTransient, null, null, false, true,
-                        false, PendingState.NOT_PENDING);
+                if (entry != null) {
+                    mDownloadNotificationService.notifyDownloadPaused(entry.id, entry.fileName,
+                            true, false, entry.otrProfileID, entry.isTransient, null, null, false,
+                            true, false, PendingState.NOT_PENDING);
+                }
                 break;
 
             case ACTION_DOWNLOAD_CANCEL:
-                mDownloadNotificationService.notifyDownloadCanceled(entry.id, true);
+                int notificationId = IntentUtils.safeGetIntExtra(intent, EXTRA_NOTIFICATION_ID, -1);
+                // For old build, notification needs to be retrieved from the
+                // DownloadSharedPreferenceEntry.
+                if (notificationId < 0 && entry != null) {
+                    notificationId = entry.notificationId;
+                }
+                if (notificationId >= 0 && contentId != null) {
+                    mDownloadNotificationService.notifyDownloadCanceled(
+                            contentId, notificationId, true);
+                }
                 break;
 
             case ACTION_DOWNLOAD_RESUME:
-                // If user manually resumes a download, update the network type if it
-                // is not metered previously.
-                boolean canDownloadWhileMetered = entry.canDownloadWhileMetered
-                        || DownloadManagerService.isActiveNetworkMetered(
-                                ContextUtils.getApplicationContext());
-                // Update the SharedPreference entry.
-                mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
-                        new DownloadSharedPreferenceEntry(entry.id, entry.notificationId,
-                                entry.otrProfileID, canDownloadWhileMetered, entry.fileName, true,
-                                entry.isTransient));
+                if (entry != null) {
+                    // If user manually resumes a download, update the network type if it
+                    // is not metered previously.
+                    boolean canDownloadWhileMetered = entry.canDownloadWhileMetered
+                            || DownloadManagerService.isActiveNetworkMetered(
+                                    ContextUtils.getApplicationContext());
+                    // Update the SharedPreference entry.
+                    mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
+                            new DownloadSharedPreferenceEntry(entry.id, entry.notificationId,
+                                    entry.otrProfileID, canDownloadWhileMetered, entry.fileName,
+                                    true, entry.isTransient));
 
-                mDownloadNotificationService.notifyDownloadPending(entry.id, entry.fileName,
-                        entry.otrProfileID, entry.canDownloadWhileMetered, entry.isTransient, null,
-                        null, false, true, PendingState.PENDING_NETWORK);
+                    mDownloadNotificationService.notifyDownloadPending(entry.id, entry.fileName,
+                            entry.otrProfileID, entry.canDownloadWhileMetered, entry.isTransient,
+                            null, null, false, true, PendingState.PENDING_NETWORK);
+                }
                 break;
 
             default:
@@ -204,8 +216,7 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
             @Override
             public boolean startMinimalBrowser() {
                 if (!LegacyHelpers.isLegacyDownload(id)) return false;
-                return CachedFeatureFlags.isEnabled(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD)
-                        && !ACTION_DOWNLOAD_OPEN.equals(intent.getAction());
+                return !ACTION_DOWNLOAD_OPEN.equals(intent.getAction());
             }
         };
 
@@ -219,11 +230,18 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         DownloadNotificationUmaHelper.recordNotificationInteractionHistogram(action);
         final ContentId id = getContentIdFromIntent(intent);
         final DownloadSharedPreferenceEntry entry = getDownloadEntryFromIntent(intent);
-        boolean isOffTheRecord = entry == null
-                ? IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false)
-                : OTRProfileID.isOffTheRecord(entry.otrProfileID);
-        OTRProfileID otrProfileID = entry == null ? DownloadUtils.getOTRProfileIDFromIntent(intent)
-                                                  : entry.otrProfileID;
+        boolean isOffTheRecord =
+                IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false);
+
+        OTRProfileID otrProfileID;
+        if (entry != null) {
+            otrProfileID = entry.otrProfileID;
+        } else {
+            // If the profile doesn't exist, then do not perform any action.
+            if (!DownloadUtils.doesProfileExistFromIntent(intent)) return;
+            otrProfileID = DownloadUtils.getOTRProfileIDFromIntent(intent);
+        }
+        assert !isOffTheRecord || otrProfileID != null;
 
         // Handle actions that do not require a specific entry or service delegate.
         switch (action) {
@@ -242,11 +260,6 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 return;
         }
 
-        // TODO(crbug.com/1164379): Pass OTRProfileID from intent by adding
-        //  |DownloadNotificationService#EXTRA_OTR_PROFILE_ID|.
-        if (isOffTheRecord && otrProfileID == null) {
-            otrProfileID = OTRProfileID.getPrimaryOTRProfileID();
-        }
         DownloadServiceDelegate downloadServiceDelegate = getServiceDelegate(id);
 
         checkNotNull(downloadServiceDelegate);
@@ -268,13 +281,12 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 break;
 
             case ACTION_DOWNLOAD_RESUME:
-                DownloadItem item = (entry != null)
-                        ? entry.buildDownloadItem()
-                        : new DownloadItem(false,
-                                new DownloadInfo.Builder()
-                                        .setDownloadGuid(id.id)
-                                        .setIsOffTheRecord(isOffTheRecord)
-                                        .build());
+                DownloadItem item = (entry != null) ? entry.buildDownloadItem()
+                                                    : new DownloadItem(false,
+                                                            new DownloadInfo.Builder()
+                                                                    .setDownloadGuid(id.id)
+                                                                    .setOTRProfileId(otrProfileID)
+                                                                    .build());
                 downloadServiceDelegate.resumeDownload(id, item,
                         !IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_AUTO_RESUMPTION, false));
                 break;
@@ -358,7 +370,7 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                     intent.getLongArrayExtra(DownloadManager.EXTRA_NOTIFICATION_CLICK_DOWNLOAD_IDS);
             if (ids == null || ids.length == 0) {
                 DownloadManagerService.openDownloadsPage(
-                        context, otrProfileID, DownloadOpenSource.NOTIFICATION);
+                        otrProfileID, DownloadOpenSource.NOTIFICATION);
                 return;
             }
 
@@ -366,7 +378,7 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
             DownloadManagerBridge.queryDownloadResult(id, result -> {
                 if (result.contentUri == null) {
                     DownloadManagerService.openDownloadsPage(
-                            context, otrProfileID, DownloadOpenSource.NOTIFICATION);
+                            otrProfileID, DownloadOpenSource.NOTIFICATION);
                     return;
                 }
                 openDownloadWithId(context, intent, id, contentId);
@@ -389,12 +401,10 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 intent, DownloadNotificationService.EXTRA_IS_SUPPORTED_MIME_TYPE, false);
         boolean isOffTheRecord = IntentUtils.safeGetBooleanExtra(
                 intent, DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD, false);
+        // If the profile doesn't exist, then do not open the download.
+        if (!DownloadUtils.doesProfileExistFromIntent(intent)) return;
         OTRProfileID otrProfileID = DownloadUtils.getOTRProfileIDFromIntent(intent);
-        // TODO(crbug.com/1164379): Using Primary OTR profile ID for all OTR profiles is not safe,
-        // make sure it is null after adding |DownloadNotificationService#EXTRA_OTR_PROFILE_ID|.
-        if (isOffTheRecord && otrProfileID == null) {
-            otrProfileID = OTRProfileID.getPrimaryOTRProfileID();
-        }
+        assert !isOffTheRecord || otrProfileID != null;
         Uri originalUrl = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_ORIGINATING_URI);
         Uri referrer = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_REFERRER);
         DownloadManagerService.openDownloadedContent(context, downloadFilePath, isSupportedMimeType,

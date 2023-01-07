@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.chrome.browser.safe_browsing;
@@ -75,6 +75,20 @@ public class SafeBrowsingReferringAppBridgeTest {
 
         Assert.assertEquals(ReferringAppSource.UNKNOWN_APP_ID, info.getSource());
         Assert.assertEquals(packageName, info.getName());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.N_MR1)
+    public void testFromIntentExtraActivityReferrerHighVersion() {
+        String appReferrer = "android-app://app.name/";
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.putExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER, appReferrer);
+        when(mActivity.getIntent()).thenReturn(intent);
+
+        ReferringAppInfo info = SafeBrowsingReferringAppBridge.getReferringAppInfo(mWindowAndroid);
+
+        Assert.assertEquals(ReferringAppSource.ACTIVITY_REFERRER, info.getSource());
+        Assert.assertEquals(appReferrer, info.getName());
     }
 
     @Test

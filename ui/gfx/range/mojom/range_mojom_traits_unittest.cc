@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,9 @@ class RangeStructTraitsTest : public testing::Test,
  public:
   RangeStructTraitsTest() {}
 
+  RangeStructTraitsTest(const RangeStructTraitsTest&) = delete;
+  RangeStructTraitsTest& operator=(const RangeStructTraitsTest&) = delete;
+
  protected:
   mojo::Remote<mojom::RangeTraitsTestService> GetTraitsTestRemote() {
     mojo::Remote<mojom::RangeTraitsTestService> remote;
@@ -38,21 +41,22 @@ class RangeStructTraitsTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<RangeTraitsTestService> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(RangeStructTraitsTest);
 };
 
 }  // namespace
 
 TEST_F(RangeStructTraitsTest, Range) {
-  const uint32_t start = 1234;
-  const uint32_t end = 5678;
+  const size_t start = 1234;
+  const size_t end = 5678;
   gfx::Range input(start, end);
   mojo::Remote<mojom::RangeTraitsTestService> remote = GetTraitsTestRemote();
   gfx::Range output;
   remote->EchoRange(input, &output);
   EXPECT_EQ(start, output.start());
   EXPECT_EQ(end, output.end());
+
+  remote->EchoRange(gfx::Range::InvalidRange(), &output);
+  EXPECT_FALSE(output.IsValid());
 }
 
 TEST_F(RangeStructTraitsTest, RangeF) {

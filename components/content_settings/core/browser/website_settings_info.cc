@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,14 +27,13 @@ std::string GetPreferenceName(const std::string& name, const char* prefix) {
 
 namespace content_settings {
 
-WebsiteSettingsInfo::WebsiteSettingsInfo(
-    ContentSettingsType type,
-    const std::string& name,
-    std::unique_ptr<base::Value> initial_default_value,
-    SyncStatus sync_status,
-    LossyStatus lossy_status,
-    ScopingType scoping_type,
-    IncognitoBehavior incognito_behavior)
+WebsiteSettingsInfo::WebsiteSettingsInfo(ContentSettingsType type,
+                                         const std::string& name,
+                                         base::Value initial_default_value,
+                                         SyncStatus sync_status,
+                                         LossyStatus lossy_status,
+                                         ScopingType scoping_type,
+                                         IncognitoBehavior incognito_behavior)
     : type_(type),
       name_(name),
       pref_name_(GetPreferenceName(name, kPrefPrefix)),
@@ -44,13 +43,14 @@ WebsiteSettingsInfo::WebsiteSettingsInfo(
       lossy_status_(lossy_status),
       scoping_type_(scoping_type),
       incognito_behavior_(incognito_behavior) {
-  // For legacy reasons the default value is currently restricted to be an int.
+  // For legacy reasons the default value is currently restricted to be an int
+  // or none.
   // TODO(raymes): We should migrate the underlying pref to be a dictionary
   // rather than an int.
-  DCHECK(!initial_default_value_ || initial_default_value_->is_int());
+  DCHECK(initial_default_value_.is_none() || initial_default_value_.is_int());
 }
 
-WebsiteSettingsInfo::~WebsiteSettingsInfo() {}
+WebsiteSettingsInfo::~WebsiteSettingsInfo() = default;
 
 uint32_t WebsiteSettingsInfo::GetPrefRegistrationFlags() const {
   uint32_t flags = PrefRegistry::NO_REGISTRATION_FLAGS;
@@ -65,9 +65,9 @@ uint32_t WebsiteSettingsInfo::GetPrefRegistrationFlags() const {
 }
 
 bool WebsiteSettingsInfo::SupportsSecondaryPattern() const {
-  return scoping_type_ == COOKIES_SCOPE ||
-         scoping_type_ == STORAGE_ACCESS_SCOPE ||
-         scoping_type_ == SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE;
+  return scoping_type_ == REQUESTING_ORIGIN_WITH_TOP_ORIGIN_EXCEPTIONS_SCOPE ||
+         scoping_type_ == REQUESTING_AND_TOP_ORIGIN_SCOPE ||
+         scoping_type_ == TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE;
 }
 
 }  // namespace content_settings

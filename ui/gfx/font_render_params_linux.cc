@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,9 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/containers/mru_cache.h"
-#include "base/hash/hash.h"
+#include "base/containers/lru_cache.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -23,9 +21,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/font.h"
+#include "ui/gfx/font_render_params_linux.h"
 #include "ui/gfx/linux/fontconfig_util.h"
-#include "ui/gfx/skia_font_delegate.h"
 #include "ui/gfx/switches.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#endif
 
 namespace gfx {
 
@@ -79,9 +81,7 @@ const size_t kCacheSize = 256;
 // Cached result from a call to GetFontRenderParams().
 struct QueryResult {
   QueryResult(const FontRenderParams& params, const std::string& family)
-      : params(params),
-        family(family) {
-  }
+      : params(params), family(family) {}
   ~QueryResult() {}
 
   FontRenderParams params;
@@ -90,7 +90,7 @@ struct QueryResult {
 
 // Keyed by hashes of FontRenderParamQuery structs from
 // HashFontRenderParamsQuery().
-typedef base::MRUCache<uint32_t, QueryResult> Cache;
+typedef base::HashingLRUCache<std::string, QueryResult> Cache;
 
 // A cache and the lock that must be held while accessing it.
 // GetFontRenderParams() is called by both the UI thread and the sandbox IPC
@@ -105,8 +105,16 @@ struct SynchronizedCache {
 base::LazyInstance<SynchronizedCache>::Leaky g_synchronized_cache =
     LAZY_INSTANCE_INITIALIZER;
 
-// Queries Fontconfig for rendering settings and updates |params_out| and
-// |family_out| (if non-NULL). Returns false on failure.
+// Serialize |query| into a string value suitable for use as a cache key.
+std::string GetFontRenderParamsQueryKey(const FontRenderParamsQuery& query) {
+  return base::StringPrintf(
+      "%d|%d|%d|%d|%s|%f", query.pixel_size, query.point_size, query.style,
+      static_cast<int>(query.weight),
+      base::JoinString(query.families, ",").c_str(), query.device_scale_factor);
+}
+
+}  // namespace
+
 bool QueryFontconfig(const FontRenderParamsQuery& query,
                      FontRenderParams* params_out,
                      std::string* family_out) {
@@ -118,15 +126,16 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
   FcPatternAddBool(query_pattern.get(), FC_SCALABLE, FcTrue);
 
   for (auto it = query.families.begin(); it != query.families.end(); ++it) {
-    FcPatternAddString(query_pattern.get(),
-        FC_FAMILY, reinterpret_cast<const FcChar8*>(it->c_str()));
+    FcPatternAddString(query_pattern.get(), FC_FAMILY,
+                       reinterpret_cast<const FcChar8*>(it->c_str()));
   }
   if (query.pixel_size > 0)
     FcPatternAddDouble(query_pattern.get(), FC_PIXEL_SIZE, query.pixel_size);
   if (query.point_size > 0)
     FcPatternAddInteger(query_pattern.get(), FC_SIZE, query.point_size);
   if (query.style >= 0) {
-    FcPatternAddInteger(query_pattern.get(), FC_SLANT,
+    FcPatternAddInteger(
+        query_pattern.get(), FC_SLANT,
         (query.style & Font::ITALIC) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN);
   }
   if (query.weight != Font::Weight::INVALID) {
@@ -173,18 +182,6 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
   return true;
 }
 
-// Serialize |query| into a string and hash it to a value suitable for use as a
-// cache key.
-uint32_t HashFontRenderParamsQuery(const FontRenderParamsQuery& query) {
-  return base::Hash(base::StringPrintf(
-      "%d|%d|%d|%d|%s|%f", query.pixel_size, query.point_size, query.style,
-      static_cast<int>(query.weight),
-      base::JoinString(query.families, ",").c_str(),
-      query.device_scale_factor));
-}
-
-}  // namespace
-
 FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
                                      std::string* family_out) {
   TRACE_EVENT0("fonts", "gfx::GetFontRenderParams");
@@ -193,15 +190,15 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
   if (actual_query.device_scale_factor == 0)
     actual_query.device_scale_factor = device_scale_factor_;
 
-  const uint32_t hash = HashFontRenderParamsQuery(actual_query);
+  std::string query_key = GetFontRenderParamsQueryKey(actual_query);
   SynchronizedCache* synchronized_cache = g_synchronized_cache.Pointer();
 
   {
     // Try to find a cached result so Fontconfig doesn't need to be queried.
     base::AutoLock lock(synchronized_cache->lock);
-    Cache::const_iterator it = synchronized_cache->cache.Get(hash);
+    Cache::const_iterator it = synchronized_cache->cache.Get(query_key);
     if (it != synchronized_cache->cache.end()) {
-      DVLOG(1) << "Returning cached params for " << hash;
+      DVLOG(1) << "Returning cached params for " << query_key;
       const QueryResult& result = it->second;
       if (family_out)
         *family_out = result.family;
@@ -209,15 +206,16 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
     }
   }
 
-  DVLOG(1) << "Computing params for " << hash;
+  DVLOG(1) << "Computing params for " << query_key;
   if (family_out)
     family_out->clear();
 
   // Start with the delegate's settings, but let Fontconfig have the final say.
   FontRenderParams params;
-  const SkiaFontDelegate* delegate = SkiaFontDelegate::instance();
-  if (delegate)
-    params = delegate->GetDefaultFontRenderParams();
+#if BUILDFLAG(IS_LINUX)
+  if (const auto* linux_ui = ui::LinuxUi::instance())
+    params = linux_ui->GetDefaultFontRenderParams();
+#endif
   QueryFontconfig(actual_query, &params, family_out);
   if (!params.antialiasing) {
     // Cairo forces full hinting when antialiasing is disabled, since anything
@@ -228,15 +226,15 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
     params.subpixel_positioning = false;
   } else if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
                  switches::kDisableFontSubpixelPositioning)) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    params.subpixel_positioning = actual_query.device_scale_factor > 1.0f;
-#else
+#if BUILDFLAG(IS_CHROMEOS)
     // We want to enable subpixel positioning for fractional dsf.
     params.subpixel_positioning =
         std::abs(std::round(actual_query.device_scale_factor) -
                  actual_query.device_scale_factor) >
         std::numeric_limits<float>::epsilon();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else
+    params.subpixel_positioning = actual_query.device_scale_factor > 1.0f;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // To enable subpixel positioning, we need to disable hinting.
     if (params.subpixel_positioning)
@@ -251,7 +249,8 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
     // Store the result. It's fine if this overwrites a result that was cached
     // by a different thread in the meantime; the values should be identical.
     base::AutoLock lock(synchronized_cache->lock);
-    synchronized_cache->cache.Put(hash,
+    synchronized_cache->cache.Put(
+        query_key,
         QueryResult(params, family_out ? *family_out : std::string()));
   }
 

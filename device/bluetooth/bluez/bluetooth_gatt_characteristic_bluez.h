@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
@@ -20,6 +19,11 @@ namespace bluez {
 class BluetoothGattCharacteristicBlueZ
     : public virtual device::BluetoothGattCharacteristic {
  public:
+  BluetoothGattCharacteristicBlueZ(const BluetoothGattCharacteristicBlueZ&) =
+      delete;
+  BluetoothGattCharacteristicBlueZ& operator=(
+      const BluetoothGattCharacteristicBlueZ&) = delete;
+
   // device::BluetoothGattCharacteristic overrides.
   std::string GetIdentifier() const override;
 
@@ -38,8 +42,6 @@ class BluetoothGattCharacteristicBlueZ
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothGattCharacteristicBlueZ> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattCharacteristicBlueZ);
 };
 
 }  // namespace bluez

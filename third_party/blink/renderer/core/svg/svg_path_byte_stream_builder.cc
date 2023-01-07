@@ -19,9 +19,10 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_builder.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -44,9 +45,9 @@ class CoalescingBuffer {
 
   void WriteFlag(bool value) { WriteType<bool>(value); }
   void WriteFloat(float value) { WriteType<float>(value); }
-  void WriteFloatPoint(const FloatPoint& point) {
-    WriteType<float>(point.X());
-    WriteType<float>(point.Y());
+  void WritePoint(const gfx::PointF& point) {
+    WriteFloat(point.x());
+    WriteFloat(point.y());
   }
   void WriteSegmentType(uint16_t value) { WriteType<uint16_t>(value); }
 
@@ -54,7 +55,7 @@ class CoalescingBuffer {
   // Adjust size to fit the largest command (in serialized/byte-stream format).
   // Currently a cubic segment.
   wtf_size_t current_offset_;
-  unsigned char bytes_[sizeof(uint16_t) + sizeof(FloatPoint) * 3];
+  unsigned char bytes_[sizeof(uint16_t) + sizeof(gfx::PointF) * 3];
   SVGPathByteStream& byte_stream_;
 };
 
@@ -73,41 +74,41 @@ void SVGPathByteStreamBuilder::EmitSegment(const PathSegmentData& segment) {
     case kPathSegLineToAbs:
     case kPathSegCurveToQuadraticSmoothRel:
     case kPathSegCurveToQuadraticSmoothAbs:
-      buffer.WriteFloatPoint(segment.target_point);
+      buffer.WritePoint(segment.target_point);
       break;
     case kPathSegLineToHorizontalRel:
     case kPathSegLineToHorizontalAbs:
-      buffer.WriteFloat(segment.target_point.X());
+      buffer.WriteFloat(segment.target_point.x());
       break;
     case kPathSegLineToVerticalRel:
     case kPathSegLineToVerticalAbs:
-      buffer.WriteFloat(segment.target_point.Y());
+      buffer.WriteFloat(segment.target_point.y());
       break;
     case kPathSegClosePath:
       break;
     case kPathSegCurveToCubicRel:
     case kPathSegCurveToCubicAbs:
-      buffer.WriteFloatPoint(segment.point1);
-      buffer.WriteFloatPoint(segment.point2);
-      buffer.WriteFloatPoint(segment.target_point);
+      buffer.WritePoint(segment.point1);
+      buffer.WritePoint(segment.point2);
+      buffer.WritePoint(segment.target_point);
       break;
     case kPathSegCurveToCubicSmoothRel:
     case kPathSegCurveToCubicSmoothAbs:
-      buffer.WriteFloatPoint(segment.point2);
-      buffer.WriteFloatPoint(segment.target_point);
+      buffer.WritePoint(segment.point2);
+      buffer.WritePoint(segment.target_point);
       break;
     case kPathSegCurveToQuadraticRel:
     case kPathSegCurveToQuadraticAbs:
-      buffer.WriteFloatPoint(segment.point1);
-      buffer.WriteFloatPoint(segment.target_point);
+      buffer.WritePoint(segment.point1);
+      buffer.WritePoint(segment.target_point);
       break;
     case kPathSegArcRel:
     case kPathSegArcAbs:
-      buffer.WriteFloatPoint(segment.point1);
-      buffer.WriteFloat(segment.point2.X());
+      buffer.WritePoint(segment.point1);
+      buffer.WriteFloat(segment.point2.x());
       buffer.WriteFlag(segment.arc_large);
       buffer.WriteFlag(segment.arc_sweep);
-      buffer.WriteFloatPoint(segment.target_point);
+      buffer.WritePoint(segment.target_point);
       break;
     default:
       NOTREACHED();

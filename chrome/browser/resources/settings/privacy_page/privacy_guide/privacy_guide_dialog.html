@@ -1,0 +1,49 @@
+<style include="cr-shared-style settings-shared">
+  #headerLine {
+    margin: 8px;
+  }
+
+  #backToSettingsButton {
+    /* Centers the ripple on the icon with appropriate margin on right. */
+    margin-inline-end: 10px;
+    margin-inline-start: -10px;
+  }
+
+  #dialog {
+    background-color: var(--cr-card-background-color);
+    border: 0;
+    height: 100vh;
+    margin: 0;
+    max-height: 100vh;
+    max-width: 100vw;
+    padding: 0;
+    width: 100vw;
+  }
+
+  #dialog[open] {
+    display: block;
+  }
+
+  settings-privacy-guide-page::part(privacyGuideCard) {
+    background-color: transparent;
+    box-shadow: none;
+    margin: auto;
+    max-width: 680px;
+    min-width: 550px;
+  }
+</style>
+<dialog id="dialog" on-cancel="onDialogCancel_" on-close="onDialogClose_"
+    aria-label="$i18n{privacyGuideLabel}">
+  <div class="cr-row first" id="headerLine" slot="title">
+    <cr-icon-button class="icon-arrow-back" id="backToSettingsButton"
+        on-click="onSettingsBackClick_"
+        aria-label="$i18n{privacyGuideBackToSettingsAriaLabel}"
+        aria-roledescription=
+        "$i18n{privacyGuideBackToSettingsAriaRoleDescription}">
+    </cr-icon-button>
+    <h1 class="cr-title-text">$i18n{privacyGuideLabel}</h1>
+  </div>
+  <settings-privacy-guide-page on-close="onPrivacyGuidePageClose_"
+      prefs="{{prefs}}" slot="body" is-privacy-guide-v2>
+  </settings-privacy-guide-page>
+</dialog>

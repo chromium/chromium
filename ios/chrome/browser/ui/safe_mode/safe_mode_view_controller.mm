@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,16 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/crash_report/crash_helper.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/safe_mode/safe_mode_crashing_modules_config.h"
 #import "ios/chrome/browser/safe_mode/safe_mode_util.h"
 #import "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -29,9 +30,9 @@ const NSTimeInterval kUploadTotalTime = 5;
 }  // anonymous namespace
 
 @interface SafeModeViewController ()
-// Returns |YES| if any third-party modifications are detected.
+// Returns `YES` if any third-party modifications are detected.
 + (BOOL)detectedThirdPartyMods;
-// Returns |YES| if there are crash reports to upload.
+// Returns `YES` if there are crash reports to upload.
 + (BOOL)hasReportToUpload;
 // Returns a message explaining which, if any, 3rd party modules were detected
 // that may cause Chrome to crash.
@@ -49,7 +50,7 @@ const NSTimeInterval kUploadTotalTime = 5;
 @implementation SafeModeViewController {
   __weak id<SafeModeViewControllerDelegate> _delegate;
   UIView* _innerView;
-  PrimaryActionButton* _startButton;
+  UIButton* _startButton;
   UILabel* _uploadDescription;
   UIProgressView* _uploadProgress;
   NSDate* _uploadStartTime;
@@ -85,7 +86,7 @@ const NSTimeInterval kUploadTotalTime = 5;
   // If uploading is enabled and more than one report has stacked up, then we
   // assume that the app may be in a state that is preventing crash report
   // uploads before crashing again.
-  return crash_helper::UserEnabledUploading() &&
+  return crash_helper::common::UserEnabledUploading() &&
          crash_helper::GetPendingCrashReportCount() > 1;
 }
 
@@ -162,7 +163,10 @@ const NSTimeInterval kUploadTotalTime = 5;
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   const CGFloat kIPadInset =
       (mainBounds.size.width - kIPadWidth - kHorizontalSpacing) / 2;
-  const CGFloat widthInset = IsIPadIdiom() ? kIPadInset : kHorizontalSpacing;
+  const CGFloat widthInset =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? kIPadInset
+          : kHorizontalSpacing;
   _innerView = [[UIView alloc]
       initWithFrame:CGRectInset(mainBounds, widthInset, kVerticalSpacing * 2)];
   [scrollView addSubview:_innerView];
@@ -193,7 +197,10 @@ const NSTimeInterval kUploadTotalTime = 5;
   [description setNumberOfLines:0];
   [description setLineBreakMode:NSLineBreakByWordWrapping];
   CGRect frame = [description frame];
-  frame.size.width = IsIPadIdiom() ? kIPadWidth : kIPhoneWidth;
+  frame.size.width =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? kIPadWidth
+          : kIPhoneWidth;
   CGSize maxSize = CGSizeMake(frame.size.width, 999999.0f);
   frame.size.height =
       [[description text] cr_boundingSizeWithSize:maxSize
@@ -203,14 +210,17 @@ const NSTimeInterval kUploadTotalTime = 5;
   [self centerView:description afterView:awSnap];
   [_innerView addSubview:description];
 
-  _startButton = [[PrimaryActionButton alloc] init];
+  _startButton = CreatePrimaryActionButton();
   NSString* startText =
       NSLocalizedString(@"IDS_IOS_SAFE_MODE_RELOAD_CHROME", @"");
   [_startButton setTitle:startText forState:UIControlStateNormal];
   [_startButton titleLabel].textAlignment = NSTextAlignmentCenter;
   [_startButton titleLabel].lineBreakMode = NSLineBreakByWordWrapping;
   frame = [_startButton frame];
-  frame.size.width = IsIPadIdiom() ? kIPadWidth : kIPhoneWidth;
+  frame.size.width =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? kIPadWidth
+          : kIPhoneWidth;
   maxSize = CGSizeMake(frame.size.width, 999999.0f);
   const CGFloat kButtonBuffer = kVerticalSpacing / 2;
   CGSize startTextBoundingSize =

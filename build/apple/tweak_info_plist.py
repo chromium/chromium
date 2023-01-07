@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -215,6 +215,30 @@ def _RemoveKeystoneKeys(plist):
   _RemoveKeys(plist, *tag_keys)
 
 
+def _AddGTMKeys(plist, platform):
+  """Adds the GTM metadata keys. This must be called AFTER _AddVersionKeys()."""
+  plist['GTMUserAgentID'] = plist['CFBundleName']
+  if platform == 'ios':
+    plist['GTMUserAgentVersion'] = plist['CFBundleVersion']
+  else:
+    plist['GTMUserAgentVersion'] = plist['CFBundleShortVersionString']
+
+
+def _RemoveGTMKeys(plist):
+  """Removes any set GTM metadata keys."""
+  _RemoveKeys(plist, 'GTMUserAgentID', 'GTMUserAgentVersion')
+
+
+def _AddPrivilegedHelperId(plist, privileged_helper_id):
+  plist['SMPrivilegedExecutables'] = {
+      privileged_helper_id: 'identifier ' + privileged_helper_id
+  }
+
+
+def _RemovePrivilegedHelperId(plist):
+  _RemoveKeys(plist, 'SMPrivilegedExecutables')
+
+
 def Main(argv):
   parser = optparse.OptionParser('%prog [options]')
   parser.add_option('--plist',
@@ -269,9 +293,12 @@ def Main(argv):
                     choices=('ios', 'mac'),
                     default='mac',
                     help='The target platform of the bundle')
-  # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-  parser.add_option('--lock-to-version',
-                    help='Set CFBundleVersion to given value + @MAJOR@@PATH@')
+  parser.add_option('--add-gtm-metadata',
+                    dest='add_gtm_info',
+                    action='store',
+                    type='int',
+                    default=False,
+                    help='Add GTM metadata [1 or 0]')
   parser.add_option(
       '--version-overrides',
       action='append',
@@ -289,6 +316,12 @@ def Main(argv):
                     type='string',
                     default=None,
                     help='The version string [major.minor.build.patch]')
+  parser.add_option('--privileged_helper_id',
+                    dest='privileged_helper_id',
+                    action='store',
+                    type='string',
+                    default=None,
+                    help='The id of the privileged helper executable.')
   (options, args) = parser.parse_args(argv)
 
   if len(args) > 0:
@@ -339,25 +372,10 @@ def Main(argv):
         'CFBundleVersion': '@BUILD@.@PATCH@',
     }
   else:
-    # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-    if options.lock_to_version:
-      # Pull in the PATCH number and format it to 3 digits.
-      VERSION_TOOL = os.path.join(TOP, 'build/util/version.py')
-      VERSION_FILE = os.path.join(TOP, 'chrome/VERSION')
-      (stdout,
-       retval) = _GetOutput([VERSION_TOOL, '-f', VERSION_FILE, '-t', '@PATCH@'])
-      if retval != 0:
-        return 2
-      patch = '{:03d}'.format(int(stdout))
-      version_format_for_key = {
-          'CFBundleShortVersionString': '@MAJOR@.@BUILD@.@PATCH@',
-          'CFBundleVersion': options.lock_to_version + '.@MAJOR@' + patch
-      }
-    else:
-      version_format_for_key = {
-          'CFBundleShortVersionString': '@MAJOR@.@BUILD@.@PATCH@',
-          'CFBundleVersion': '@MAJOR@.@MINOR@.@BUILD@.@PATCH@'
-      }
+    version_format_for_key = {
+        'CFBundleShortVersionString': '@MAJOR@.@BUILD@.@PATCH@',
+        'CFBundleVersion': '@MAJOR@.@MINOR@.@BUILD@.@PATCH@'
+    }
 
   if options.use_breakpad:
     version_format_for_key['BreakpadVersion'] = \
@@ -396,6 +414,18 @@ def Main(argv):
   # Adds or removes any SCM keys.
   if not _DoSCMKeys(plist, options.add_scm_info):
     return 3
+
+  # Add GTM metadata keys.
+  if options.add_gtm_info:
+    _AddGTMKeys(plist, options.platform)
+  else:
+    _RemoveGTMKeys(plist)
+
+  # Add SMPrivilegedExecutables keys.
+  if options.privileged_helper_id:
+    _AddPrivilegedHelperId(plist, options.privileged_helper_id)
+  else:
+    _RemovePrivilegedHelperId(plist)
 
   output_path = options.plist_path
   if options.plist_output is not None:

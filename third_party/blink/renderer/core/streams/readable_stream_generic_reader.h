@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,12 +19,6 @@ class ScriptPromise;
 class ScriptState;
 class StreamPromiseResolver;
 
-// The specification sometimes treats ReadableStreamDefaultReader and
-// ReadableStreamBYOBReader generically. Currently ReadableStreamBYOBReader
-// isn't implemented in Blink. In order to make the generic operations align
-// with the standard, ReadableStreamDefaultReader is implemented by the
-// ReadableStreamGenericReader class.
-// TODO(ricea): Refactor this when implementing ReadableStreamBYOBReader.
 class CORE_EXPORT ReadableStreamGenericReader : public ScriptWrappable {
 
  public:

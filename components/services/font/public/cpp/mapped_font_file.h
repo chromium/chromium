@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "third_party/skia/include/core/SkStream.h"
 
@@ -47,7 +48,7 @@ class MappedFontFile : public base::RefCountedThreadSafe<MappedFontFile> {
 
   uint32_t font_id_;
   base::MemoryMappedFile mapped_font_file_;
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
 };
 
 }  // namespace internal

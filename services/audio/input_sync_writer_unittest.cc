@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "base/test/mock_callback.h"
@@ -23,6 +23,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
+#include "services/audio/input_glitch_counter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,6 +49,9 @@ class MockCancelableSyncSocket : public base::CancelableSyncSocket {
         receives_(0),
         buffer_size_(buffer_size),
         read_buffer_index_(0) {}
+
+  MockCancelableSyncSocket(const MockCancelableSyncSocket&) = delete;
+  MockCancelableSyncSocket& operator=(const MockCancelableSyncSocket&) = delete;
 
   size_t Send(const void* buffer, size_t length) override {
     EXPECT_EQ(length, sizeof(uint32_t));
@@ -98,8 +102,18 @@ class MockCancelableSyncSocket : public base::CancelableSyncSocket {
   int receives_;
   int buffer_size_;
   uint32_t read_buffer_index_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(MockCancelableSyncSocket);
+class MockInputGlitchCounter : public InputGlitchCounter {
+ public:
+  explicit MockInputGlitchCounter(
+      base::RepeatingCallback<void(const std::string&)> log_callback)
+      : InputGlitchCounter(std::move(log_callback)) {}
+  MockInputGlitchCounter(const MockInputGlitchCounter&) = delete;
+  MockInputGlitchCounter& operator=(const MockInputGlitchCounter&) = delete;
+
+  MOCK_METHOD1(ReportDroppedData, void(bool));
+  MOCK_METHOD1(ReportMissedReadDeadline, void(bool));
 };
 
 class InputSyncWriterTest : public testing::Test {
@@ -108,7 +122,7 @@ class InputSyncWriterTest : public testing::Test {
     const int sampling_frequency_hz = 16000;
     const int frames = sampling_frequency_hz / 100;  // 10 ms
     const media::AudioParameters audio_params(
-        media::AudioParameters::AUDIO_FAKE, media::CHANNEL_LAYOUT_MONO,
+        media::AudioParameters::AUDIO_FAKE, media::ChannelLayoutConfig::Mono(),
         sampling_frequency_hz, frames);
     const uint32_t data_size =
         ComputeAudioInputBufferSize(audio_params, kSegments);
@@ -118,11 +132,19 @@ class InputSyncWriterTest : public testing::Test {
 
     auto socket = std::make_unique<MockCancelableSyncSocket>(kSegments);
     socket_ = socket.get();
+
+    auto mock_input_glitch_counter =
+        std::make_unique<MockInputGlitchCounter>(mock_logger_.Get());
+    mock_input_glitch_counter_ = mock_input_glitch_counter.get();
+
     writer_ = std::make_unique<InputSyncWriter>(
         mock_logger_.Get(), std::move(shared_memory), std::move(socket),
-        kSegments, audio_params);
+        kSegments, audio_params, std::move(mock_input_glitch_counter));
     audio_bus_ = media::AudioBus::Create(audio_params);
   }
+
+  InputSyncWriterTest(const InputSyncWriterTest&) = delete;
+  InputSyncWriterTest& operator=(const InputSyncWriterTest&) = delete;
 
   ~InputSyncWriterTest() override {}
 
@@ -131,7 +153,7 @@ class InputSyncWriterTest : public testing::Test {
   // with a glitch summary from the destructor. Besides that only for errors
   // and fifo info.
   int GetTotalNumberOfExpectedLogCalls(int expected_calls_due_to_error) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return expected_calls_due_to_error + 1;
 #else
     return expected_calls_due_to_error + 2;
@@ -158,16 +180,16 @@ class InputSyncWriterTest : public testing::Test {
   base::test::TaskEnvironment env_;
   MockLogger mock_logger_;
   std::unique_ptr<InputSyncWriter> writer_;
-  MockCancelableSyncSocket* socket_;
+  raw_ptr<MockCancelableSyncSocket> socket_;
+  raw_ptr<MockInputGlitchCounter> mock_input_glitch_counter_;
   std::unique_ptr<media::AudioBus> audio_bus_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputSyncWriterTest);
 };
 
 TEST_F(InputSyncWriterTest, SingleWriteAndRead) {
   EXPECT_CALL(mock_logger_, Run(_)).Times(GetTotalNumberOfExpectedLogCalls(0));
 
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false));
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
   writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   EXPECT_TRUE(TestSocketAndFifoExpectations(1, 0, 0));
 
@@ -179,6 +201,8 @@ TEST_F(InputSyncWriterTest, MultipleWritesAndReads) {
   EXPECT_CALL(mock_logger_, Run(_)).Times(GetTotalNumberOfExpectedLogCalls(0));
 
   for (int i = 1; i <= 2 * kSegments; ++i) {
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false));
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
     writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
     EXPECT_TRUE(TestSocketAndFifoExpectations(1, 0, 0));
     socket_->Read(1);
@@ -191,6 +215,8 @@ TEST_F(InputSyncWriterTest, MultipleWritesNoReads) {
 
   // Fill the ring buffer.
   for (int i = 1; i <= kSegments; ++i) {
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false));
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
     writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
     EXPECT_TRUE(TestSocketAndFifoExpectations(i, 0, 0));
   }
@@ -198,6 +224,7 @@ TEST_F(InputSyncWriterTest, MultipleWritesNoReads) {
   // Now the ring buffer is full, do more writes. We should start filling the
   // fifo and should get one extra log call for that.
   for (size_t i = 1; i <= kSegments; ++i) {
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(true));
     writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
     EXPECT_TRUE(TestSocketAndFifoExpectations(kSegments, 0, i));
   }
@@ -208,6 +235,8 @@ TEST_F(InputSyncWriterTest, FillAndEmptyRingBuffer) {
 
   // Fill the ring buffer.
   for (int i = 1; i <= kSegments; ++i) {
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false));
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
     writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   }
   EXPECT_TRUE(TestSocketAndFifoExpectations(kSegments, 0, 0));
@@ -221,12 +250,15 @@ TEST_F(InputSyncWriterTest, FillAndEmptyRingBuffer) {
   // Fill up again. The first write should do receive until that queue is
   // empty.
   for (int i = kSegments - buffers_to_read + 1; i <= kSegments; ++i) {
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false));
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
     writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
     EXPECT_TRUE(TestSocketAndFifoExpectations(i, 0, 0));
   }
 
   // Another write, should put the data in the fifo, and render an extra log
   // call.
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(true));
   writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   EXPECT_TRUE(TestSocketAndFifoExpectations(kSegments, 0, 1));
 
@@ -237,6 +269,8 @@ TEST_F(InputSyncWriterTest, FillAndEmptyRingBuffer) {
 
   // Another write, should do receive until that queue is empty and write both
   // the data in the fifo and the new data, and render a log call.
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false)).Times(2);
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
   writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   EXPECT_TRUE(TestSocketAndFifoExpectations(2, 0, 0));
 
@@ -250,6 +284,8 @@ TEST_F(InputSyncWriterTest, FillRingBufferAndFifo) {
 
   // Fill the ring buffer.
   for (int i = 1; i <= kSegments; ++i) {
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false));
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
     writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   }
   EXPECT_TRUE(TestSocketAndFifoExpectations(kSegments, 0, 0));
@@ -257,11 +293,14 @@ TEST_F(InputSyncWriterTest, FillRingBufferAndFifo) {
   // Fill the fifo. Should render one log call for starting filling it.
   const size_t max_fifo_size = InputSyncWriter::kMaxOverflowBusesSize;
   for (size_t i = 1; i <= max_fifo_size; ++i) {
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(true));
     writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   }
   EXPECT_TRUE(TestSocketAndFifoExpectations(kSegments, 0, max_fifo_size));
 
   // Another write, data should be dropped and render one log call.
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(true));
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(true));
   writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   EXPECT_TRUE(TestSocketAndFifoExpectations(kSegments, 0, max_fifo_size));
 }
@@ -271,6 +310,8 @@ TEST_F(InputSyncWriterTest, MultipleFillAndEmptyRingBufferAndPartOfFifo) {
 
   // Fill the ring buffer.
   for (int i = 1; i <= kSegments; ++i) {
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false));
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
     writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   }
   EXPECT_TRUE(TestSocketAndFifoExpectations(kSegments, 0, 0));
@@ -278,6 +319,7 @@ TEST_F(InputSyncWriterTest, MultipleFillAndEmptyRingBufferAndPartOfFifo) {
   // Write more data, should be put in the fifo and render one log call for
   // starting filling it.
   for (size_t i = 1; i <= 2 * kSegments; ++i) {
+    EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(true));
     writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   }
   EXPECT_TRUE(TestSocketAndFifoExpectations(kSegments, 0, 2 * kSegments));
@@ -289,6 +331,9 @@ TEST_F(InputSyncWriterTest, MultipleFillAndEmptyRingBufferAndPartOfFifo) {
 
   // Another write should fill up the ring buffer with data from the fifo and
   // put this data into the fifo.
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false))
+      .Times(kSegments);
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
   writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   EXPECT_TRUE(TestSocketAndFifoExpectations(kSegments, 0, kSegments + 1));
 
@@ -299,6 +344,9 @@ TEST_F(InputSyncWriterTest, MultipleFillAndEmptyRingBufferAndPartOfFifo) {
 
   // Another write should fill up the ring buffer with data from the fifo and
   // put this data into the fifo.
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false))
+      .Times(kSegments);
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
   writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   EXPECT_TRUE(TestSocketAndFifoExpectations(kSegments, 0, 2));
 
@@ -309,6 +357,8 @@ TEST_F(InputSyncWriterTest, MultipleFillAndEmptyRingBufferAndPartOfFifo) {
 
   // Another write should put the remaining data in the fifo in the ring buffer
   // together with this data. Should render a log call for emptying the fifo.
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false)).Times(3);
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
   writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   EXPECT_TRUE(TestSocketAndFifoExpectations(3, 0, 0));
 
@@ -319,12 +369,20 @@ TEST_F(InputSyncWriterTest, MultipleFillAndEmptyRingBufferAndPartOfFifo) {
   // Fill the ring buffer and part of the fifo. Should render one log call for
   // starting filling it.
   for (int i = 1; i <= kSegments + 2; ++i) {
+    if (i <= kSegments) {
+      EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false));
+      EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
+    } else {
+      EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(true));
+    }
     writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   }
   EXPECT_TRUE(TestSocketAndFifoExpectations(kSegments, 0, 2));
 
   // Empty both. Should render a log call for emptying the fifo.
   socket_->Read(kSegments);
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false)).Times(3);
+  EXPECT_CALL(*mock_input_glitch_counter_, ReportMissedReadDeadline(false));
   writer_->Write(audio_bus_.get(), 0, false, base::TimeTicks::Now());
   socket_->Read(3);
   EXPECT_TRUE(TestSocketAndFifoExpectations(0, 3 * sizeof(uint32_t), 0));

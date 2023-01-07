@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -155,30 +155,6 @@ public class SessionDataHolder {
             @Nullable CustomTabsSessionToken token, Uri referrer) {
         SessionHandler handler = getActiveHandler(token);
         return handler != null && handler.canUseReferrer(referrer);
-    }
-
-    /**
-     * @return The url for the page displayed using the current {@link
-     * SessionHandler}.
-     *
-     * @deprecated This will be removed once downstream usages change.
-     */
-    @Deprecated
-    public String getCurrentUrlForActiveBrowserSession() {
-        if (mActiveSessionHandler == null) return null;
-        return mActiveSessionHandler.getCurrentUrl();
-    }
-
-    /**
-     * @return The pending url for the page about to be displayed using the current {@link
-     * SessionHandler}.
-     *
-     * @deprecated This will be removed once downstream usages change.
-     */
-    @Deprecated
-    public String getPendingUrlForActiveBrowserSession() {
-        if (mActiveSessionHandler == null) return null;
-        return mActiveSessionHandler.getPendingUrl();
     }
 
     private void ensureSessionCleanUpOnDisconnects() {

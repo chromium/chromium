@@ -20,11 +20,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_RESOURCES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_RESOURCES_H_
 
+#include "third_party/blink/renderer/core/style/style_difference.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+namespace gfx {
+class RectF;
+}
 
 namespace blink {
 
@@ -42,20 +46,22 @@ class SVGResources {
 
  public:
   static SVGElementResourceClient* GetClient(const LayoutObject&);
-  static FloatRect ReferenceBoxForEffects(const LayoutObject&);
+  static gfx::RectF ReferenceBoxForEffects(const LayoutObject&);
 
-  static void UpdateClipPathFilterMask(SVGElement&,
-                                       const ComputedStyle* old_style,
-                                       const ComputedStyle&);
-  static void ClearClipPathFilterMask(SVGElement&, const ComputedStyle*);
-  static void UpdatePaints(SVGElement&,
+  static void UpdateEffects(LayoutObject&,
+                            StyleDifference,
+                            const ComputedStyle* old_style);
+  static void ClearEffects(const LayoutObject&);
+  static void UpdatePaints(const LayoutObject&,
                            const ComputedStyle* old_style,
-                           const ComputedStyle&);
-  static void ClearPaints(SVGElement&, const ComputedStyle*);
-  static void UpdateMarkers(SVGElement&,
-                            const ComputedStyle* old_style,
-                            const ComputedStyle&);
-  static void ClearMarkers(SVGElement&, const ComputedStyle*);
+                           const ComputedStyle& style);
+  static void ClearPaints(const LayoutObject&, const ComputedStyle* style);
+  static void UpdateMarkers(const LayoutObject&,
+                            const ComputedStyle* old_style);
+  static void ClearMarkers(const LayoutObject&, const ComputedStyle* style);
+
+ private:
+  static SVGElementResourceClient& EnsureClient(const LayoutObject&);
 };
 
 class SVGElementResourceClient final
@@ -108,4 +114,4 @@ class SVGResourceInvalidator {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_RESOURCES_H_

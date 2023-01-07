@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@
 namespace app_list {
 namespace {
 
-using base::Optional;
+using absl::optional;
 using base::Value;
 
 using FakePredictorConfig = RecurrencePredictorConfigProto::FakePredictorConfig;
@@ -42,40 +42,40 @@ using ExponentialWeightsEnsembleConfig =
 // Conversion utilities
 //---------------------
 
-base::Optional<const Value*> GetNestedField(const Value* value,
+absl::optional<const Value*> GetNestedField(const Value* value,
                                             const std::string& key) {
   const Value* field = value->FindKey(key);
   if (!field || !field->is_dict())
-    return base::nullopt;
-  return base::Optional<const Value*>(field);
+    return absl::nullopt;
+  return absl::optional<const Value*>(field);
 }
 
-Optional<const Value*> GetList(const Value* value, const std::string& key) {
+optional<const Value*> GetList(const Value* value, const std::string& key) {
   const Value* field = value->FindKey(key);
   if (!field || !field->is_list())
-    return base::nullopt;
-  return base::Optional<const Value*>(field);
+    return absl::nullopt;
+  return absl::optional<const Value*>(field);
 }
 
-Optional<int> GetInt(const Value* value, const std::string& key) {
+optional<int> GetInt(const Value* value, const std::string& key) {
   const Value* field = value->FindKey(key);
   if (!field || !field->is_int())
-    return base::nullopt;
+    return absl::nullopt;
   return field->GetInt();
 }
 
-base::Optional<double> GetDouble(const Value* value, const std::string& key) {
+absl::optional<double> GetDouble(const Value* value, const std::string& key) {
   const Value* field = value->FindKey(key);
   if (!field || !field->is_double())
-    return base::nullopt;
+    return absl::nullopt;
   return field->GetDouble();
 }
 
-base::Optional<std::string> GetString(const Value* value,
+absl::optional<std::string> GetString(const Value* value,
                                       const std::string& key) {
   const Value* field = value->FindKey(key);
   if (!field || !field->is_string())
-    return base::nullopt;
+    return absl::nullopt;
   return field->GetString();
 }
 
@@ -254,10 +254,10 @@ void JsonConfigConverter::OnJsonParsed(
     const std::string& model_identifier,
     data_decoder::DataDecoder::ValueOrError result) {
   RecurrenceRankerConfigProto proto;
-  if (result.value && ConvertRecurrenceRanker(&result.value.value(), &proto)) {
+  if (result.has_value() && ConvertRecurrenceRanker(&*result, &proto)) {
     std::move(callback).Run(std::move(proto));
   } else {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   }
 }
 

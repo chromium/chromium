@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,12 @@
 #include <fuchsia/ui/input/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
-#include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/fuchsia/virtual_keyboard_controller_fuchsia.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/input_method_base.h"
-#include "ui/base/ime/input_method_delegate.h"
 #include "ui/events/fuchsia/input_event_dispatcher.h"
 #include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/gfx/native_widget_types.h"
@@ -25,7 +24,8 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) InputMethodFuchsia
     : public InputMethodBase {
  public:
-  InputMethodFuchsia(internal::InputMethodDelegate* delegate,
+  InputMethodFuchsia(bool enable_virtual_keyboard,
+                     ImeKeyEventDispatcher* ime_key_event_dispatcher,
                      fuchsia::ui::views::ViewRef view_ref);
   ~InputMethodFuchsia() override;
 
@@ -35,12 +35,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) InputMethodFuchsia
   // InputMethodBase interface implementation.
   VirtualKeyboardController* GetVirtualKeyboardController() final;
   ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event) final;
-  void OnCaretBoundsChanged(const TextInputClient* client) final;
   void CancelComposition(const TextInputClient* client) final;
+  void OnTextInputTypeChanged(TextInputClient* client) final;
+  void OnCaretBoundsChanged(const TextInputClient* client) final;
   bool IsCandidatePopupOpen() const final;
 
  private:
-  VirtualKeyboardControllerFuchsia virtual_keyboard_controller_;
+  absl::optional<VirtualKeyboardControllerFuchsia> virtual_keyboard_controller_;
 };
 
 }  // namespace ui

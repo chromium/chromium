@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,22 +11,18 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
-#include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {
 
-// The Manifest structure is an internal representation of the Manifest file
-// described in the "Manifest for Web Application" document:
-// http://w3c.github.io/manifest/
-struct BLINK_COMMON_EXPORT Manifest {
+class BLINK_COMMON_EXPORT Manifest {
+ public:
   // Structure representing an icon as per the Manifest specification, see:
   // https://w3c.github.io/manifest/#dom-imageresource
   struct BLINK_COMMON_EXPORT ImageResource {
@@ -61,14 +57,18 @@ struct BLINK_COMMON_EXPORT Manifest {
     ShortcutItem();
     ~ShortcutItem();
 
+    bool operator==(const ShortcutItem& other) const;
+
     std::u16string name;
-    base::Optional<std::u16string> short_name;
-    base::Optional<std::u16string> description;
+    absl::optional<std::u16string> short_name;
+    absl::optional<std::u16string> description;
     GURL url;
     std::vector<ImageResource> icons;
   };
 
   struct BLINK_COMMON_EXPORT FileFilter {
+    bool operator==(const FileFilter& other) const;
+
     std::u16string name;
     std::vector<std::u16string> accept;
   };
@@ -78,9 +78,11 @@ struct BLINK_COMMON_EXPORT Manifest {
     ShareTargetParams();
     ~ShareTargetParams();
 
-    base::Optional<std::u16string> title;
-    base::Optional<std::u16string> text;
-    base::Optional<std::u16string> url;
+    bool operator==(const ShareTargetParams& other) const;
+
+    absl::optional<std::u16string> title;
+    absl::optional<std::u16string> text;
+    absl::optional<std::u16string> url;
     std::vector<FileFilter> files;
   };
 
@@ -88,6 +90,8 @@ struct BLINK_COMMON_EXPORT Manifest {
   struct BLINK_COMMON_EXPORT ShareTarget {
     ShareTarget();
     ~ShareTarget();
+
+    bool operator==(const ShareTarget& other) const;
 
     // The URL used for sharing. Query parameters are added to this comprised of
     // keys from |params| and values from the shared data.
@@ -102,34 +106,17 @@ struct BLINK_COMMON_EXPORT Manifest {
     ShareTargetParams params;
   };
 
-  // Structure representing a File Handler.
-  struct BLINK_COMMON_EXPORT FileHandler {
-    // The URL which will be opened when the file handler is invoked.
-    GURL action;
-    std::u16string name;
-    std::map<std::u16string, std::vector<std::u16string>> accept;
-  };
-
-  // Structure representing a Protocol Handler.
-  struct BLINK_COMMON_EXPORT ProtocolHandler {
-    std::u16string protocol;
-    GURL url;
-  };
-
-  struct BLINK_COMMON_EXPORT UrlHandler {
-    url::Origin origin;
-    bool has_origin_wildcard;
-  };
-
   // Structure representing a related application.
   struct BLINK_COMMON_EXPORT RelatedApplication {
     RelatedApplication();
     ~RelatedApplication();
 
+    bool operator==(const RelatedApplication& other) const;
+
     // The platform on which the application can be found. This can be any
     // string, and is interpreted by the consumer of the object. Empty if the
     // parsing failed.
-    base::Optional<std::u16string> platform;
+    absl::optional<std::u16string> platform;
 
     // URL at which the application can be found. One of |url| and |id| must be
     // present. Empty if the parsing failed or the field was not present.
@@ -138,104 +125,71 @@ struct BLINK_COMMON_EXPORT Manifest {
     // An id which is used to represent the application on the platform. One of
     // |url| and |id| must be present. Empty if the parsing failed or the field
     // was not present.
-    base::Optional<std::u16string> id;
+    absl::optional<std::u16string> id;
   };
 
-  Manifest();
-  Manifest(const Manifest& other);
-  ~Manifest();
+  // This struct replicates ManifestLaunchHandler with an added copy
+  // constructor, this enables containing classes to have a default copy
+  // constructor.
+  // TODO(crbug.com/1236358): Use mojom::blink::ManifestLaunchHandler directly
+  // when it can support copy/move.
+  // See ManifestLaunchHandler for class comments.
+  struct BLINK_COMMON_EXPORT LaunchHandler {
+    using ClientMode = mojom::ManifestLaunchHandler_ClientMode;
 
-  // Returns whether this Manifest had no attribute set. A newly created
-  // Manifest is always empty.
-  bool IsEmpty() const;
+    bool operator==(const LaunchHandler& other) const;
+    bool operator!=(const LaunchHandler& other) const;
 
-  // Null if the parsing failed or the field was not present.
-  base::Optional<std::u16string> name;
+    ClientMode client_mode = ClientMode::kAuto;
+  };
 
-  // Null if the parsing failed or the field was not present.
-  base::Optional<std::u16string> short_name;
+  // Structure containing translations for the translatable manifest fields.
+  struct BLINK_COMMON_EXPORT TranslationItem {
+    TranslationItem();
+    ~TranslationItem();
 
-  // Null if the parsing failed or the field was not present.
-  base::Optional<std::u16string> description;
+    bool operator==(const TranslationItem& other) const;
 
-  // Empty if the parsing failed or the field was not present.
-  GURL start_url;
+    absl::optional<std::string> name;
+    absl::optional<std::string> short_name;
+    absl::optional<std::string> description;
+  };
 
-  // Set to DisplayMode::kUndefined if the parsing failed or the field was not
-  // present.
-  blink::mojom::DisplayMode display = blink::mojom::DisplayMode::kUndefined;
+  // Parameters for the home tab customisation to the tab strip.
+  struct BLINK_COMMON_EXPORT HomeTabParams {
+    HomeTabParams();
+    ~HomeTabParams();
 
-  // Empty if the parsing failed, the field was not present, or all the
-  // values inside the JSON array were invalid.
-  std::vector<blink::mojom::DisplayMode> display_override;
+    bool operator==(const HomeTabParams& other) const;
 
-  // Set to device::mojom::ScreenOrientationLockType::DEFAULT if the parsing
-  // failed or the field was not present.
-  device::mojom::ScreenOrientationLockType orientation =
-      device::mojom::ScreenOrientationLockType::DEFAULT;
+    std::vector<ImageResource> icons;
+  };
 
-  // Empty if the parsing failed, the field was not present, or all the
-  // icons inside the JSON array were invalid.
-  std::vector<ImageResource> icons;
+  // Parameters for the new tab button customisation to the tab strip.
+  struct BLINK_COMMON_EXPORT NewTabButtonParams {
+    NewTabButtonParams();
+    ~NewTabButtonParams();
 
-  // Empty if the parsing failed, the field was not present, or all the
-  // screenshots inside the JSON array were invalid.
-  std::vector<ImageResource> screenshots;
+    bool operator==(const NewTabButtonParams& other) const;
 
-  // Empty if the parsing failed, the field was not present, or all the
-  // icons inside the JSON array were invalid.
-  std::vector<ShortcutItem> shortcuts;
+    absl::optional<GURL> url;
+  };
 
-  // Null if parsing failed or the field was not present.
-  base::Optional<ShareTarget> share_target;
+  // Structure containing customisations for the tab strip.
+  struct BLINK_COMMON_EXPORT TabStrip {
+    TabStrip();
+    ~TabStrip();
 
-  // Empty if parsing failed or the field was not present.
-  // TODO(crbug.com/829689): This field is non-standard and part of a Chrome
-  // experiment. See:
-  // https://github.com/WICG/file-handling/blob/master/explainer.md
-  std::vector<FileHandler> file_handlers;
+    bool operator==(const TabStrip& other) const;
 
-  // Empty if parsing failed or the field was not present.
-  // TODO(crbug.com/1019239): This is going into the mainline manifest spec,
-  // remove the TODO once that PR goes in.
-  // The URLProtocolHandler explainer can be found here:
-  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/URLProtocolHandler/explainer.md
-  std::vector<ProtocolHandler> protocol_handlers;
+    using Visibility = blink::mojom::TabStripMemberVisibility;
+    using HomeTab = absl::variant<Visibility, blink::Manifest::HomeTabParams>;
+    using NewTabButton =
+        absl::variant<Visibility, blink::Manifest::NewTabButtonParams>;
 
-  // TODO(crbug.com/1072058): This field is non-standard and part of an
-  // experiment. See:
-  // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
-  // Empty if the parsing failed, the field was not present, empty or all the
-  // entries inside the array were invalid.
-  std::vector<UrlHandler> url_handlers;
-
-  // Empty if the parsing failed, the field was not present, empty or all the
-  // applications inside the array were invalid. The order of the array
-  // indicates the priority of the application to use.
-  std::vector<RelatedApplication> related_applications;
-
-  // A boolean that is used as a hint for the user agent to say that related
-  // applications should be preferred over the web application. False if missing
-  // or there is a parsing failure.
-  bool prefer_related_applications = false;
-
-  // Null if field is not present or parsing failed.
-  base::Optional<SkColor> theme_color;
-
-  // Null if field is not present or parsing failed.
-  base::Optional<SkColor> background_color;
-
-  // This is a proprietary extension of the web Manifest, double-check that it
-  // is okay to use this entry.
-  // Null if parsing failed or the field was not present.
-  base::Optional<std::u16string> gcm_sender_id;
-
-  // Empty if the parsing failed. Otherwise defaults to the start URL (or
-  // document URL if start URL isn't present) with filename, query, and fragment
-  // removed.
-  GURL scope;
-
-  mojom::CaptureLinks capture_links = mojom::CaptureLinks::kUndefined;
+    HomeTab home_tab;
+    NewTabButton new_tab_button;
+  };
 };
 
 }  // namespace blink

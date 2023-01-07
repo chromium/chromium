@@ -1,33 +1,33 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "build/build_config.h"
 #include "headless/public/headless_shell.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/public/app/sandbox_helper_win.h"
-#include "sandbox/win/src/sandbox_types.h"
-#elif defined(OS_MAC)
+#include "sandbox/win/src/sandbox_types.h"  // nogncheck
+#elif BUILDFLAG(IS_MAC)
 #include "base/check.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #endif
 
 int main(int argc, const char** argv) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
   return headless::HeadlessShellMain(0, &sandbox_info);
 #else
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   sandbox::SeatbeltExecServer::CreateFromArgumentsResult seatbelt =
       sandbox::SeatbeltExecServer::CreateFromArguments(
           argv[0], argc, const_cast<char**>(argv));
   if (seatbelt.sandbox_required) {
     CHECK(seatbelt.server->InitializeSandbox());
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   return headless::HeadlessShellMain(argc, argv);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }

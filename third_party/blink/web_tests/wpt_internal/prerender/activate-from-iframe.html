@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<title>Activate a prerendered page from iframe via window.parent.location</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<script>
+
+promise_test(async t => {
+  const uid = token();
+  const channel = new PrerenderChannel('result-channel', uid);
+  const messageQueue = new BroadcastMessageQueue(channel);
+  t.add_cleanup(_ => channel.close());
+
+  const url = `resources/activate-from-iframe.html?mode=triggering&uid=${uid}`;
+  window.open(url, '_blank', 'noopener');
+
+  const messages = [];
+  messages.push(await messageQueue.nextMessage());
+  messages.push(await messageQueue.nextMessage());
+  // Sort them for the assertion. These messages come from separate frames
+  // (prerendered frame and navigated frame), so the message order is not
+  // guaranteed.
+  messages.sort();
+
+  assert_array_equals(
+      messages,
+      ['attempting prerender activation', 'loaded from scratch']);
+}, `Navigation on the main frame initiated by window opened by an ` +
+    `iframe opening via window.parent.location should not activate a ` +
+    `prerendered page`);
+
+</script>

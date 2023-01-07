@@ -80,6 +80,7 @@ promise_test(async t => {
   const pc = createPeerConnectionWithCleanup(t);
   const [track, stream] = await createTrackAndStreamWithCleanup(t);
   const transceiver = findTransceiverForSender(pc, pc.addTrack(track, stream));
+  // `stopped` is non-standard. Move to external/wpt/webrtc/legacy/?
   assert_false(transceiver.stopped);
 }, 'addTrack: transceiver is not stopped');
 
@@ -200,6 +201,7 @@ promise_test(async t => {
   pc1.addTrack(... await createTrackAndStreamWithCleanup(t));
   const pc2 = createPeerConnectionWithCleanup(t);
   const trackEvent = await exchangeOfferAndListenToOntrack(t, pc1, pc2);
+  // `stopped` is non-standard. Move to external/wpt/webrtc/legacy/?
   assert_false(trackEvent.transceiver.stopped);
 }, 'setRemoteDescription(offer): transceiver.stopped is false');
 
@@ -389,6 +391,7 @@ promise_test(async t => {
   const pc = createPeerConnectionWithCleanup(t);
   const [track, stream] = await createTrackAndStreamWithCleanup(t);
   const transceiver = pc.addTransceiver('audio');
+  // `stopped` is non-standard. Move to external/wpt/webrtc/legacy/?
   assert_false(transceiver.stopped);
 }, 'addTransceiver(\'audio\'): transceiver.stopped is false');
 
@@ -447,9 +450,10 @@ promise_test(async t => {
   await exchangeOffer(pc1, pc2);
   await exchangeAnswer(pc1, pc2);
   assert_equals(transceiver.currentDirection, 'sendonly');
+  // `stopped` is non-standard. Move to external/wpt/webrtc/legacy/?
   assert_false(transceiver.stopped);
   pc1.close();
-  assert_equals(transceiver.currentDirection, null);
+  assert_equals(transceiver.currentDirection, 'stopped');
   assert_true(transceiver.stopped);
 }, 'Closing the PC stops the transceivers');
 
@@ -479,7 +483,8 @@ promise_test(async t => {
     .then((offer) => { return pc1.setRemoteDescription(offer); })
     .then(() => { return pc1.createAnswer(); })
     .then((answer) => { return pc1.setLocalDescription(answer); });
-  const pc1Promise = pc1.createOffer({ offerToReceiveAudio: true})
+  pc1.addTransceiver('audio', { direction: 'recvonly' });
+  const pc1Promise = pc1.createOffer()
     .then(() => { pc1.addTrack(pc1.getReceivers()[0].track); });
   await Promise.all([pc1Promise, pc2Promise]);
   assert_equals(pc1.getSenders()[0].track, pc1.getReceivers()[0].track);
@@ -494,7 +499,8 @@ promise_test(async t => {
   const pc2Promise = pc2.createOffer()
     .then((offer) => { return pc1.setRemoteDescription(offer); })
     .then(() => { return pc1.createAnswer(); });
-  const pc1Promise = pc1.createOffer({ offerToReceiveAudio: true})
+  pc1.addTransceiver('audio', { direction: 'recvonly' });
+  const pc1Promise = pc1.createOffer()
     .then(() => { pc1.getTransceivers()[0].direction = 'inactive'; });
   await Promise.all([pc1Promise, pc2Promise]);
   assert_equals(pc1.getTransceivers()[0].direction, 'inactive');

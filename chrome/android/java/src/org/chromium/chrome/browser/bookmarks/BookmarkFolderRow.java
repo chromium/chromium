@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@ import android.util.AttributeSet;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 
 /**
@@ -41,8 +41,9 @@ public class BookmarkFolderRow extends BookmarkRow {
     }
 
     @Override
-    BookmarkItem setBookmarkId(BookmarkId bookmarkId, @Location int location) {
-        BookmarkItem item = super.setBookmarkId(bookmarkId, location);
+    BookmarkItem setBookmarkId(
+            BookmarkId bookmarkId, @Location int location, boolean fromFilterView) {
+        BookmarkItem item = super.setBookmarkId(bookmarkId, location, fromFilterView);
         mTitleView.setText(item.getTitle());
 
         // Set description and icon.

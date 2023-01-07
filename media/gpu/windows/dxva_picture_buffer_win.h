@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,10 @@ class DXVAPictureBuffer {
       const DXVAVideoDecodeAccelerator& decoder,
       const PictureBuffer& buffer,
       EGLConfig egl_config);
+
+  DXVAPictureBuffer(const DXVAPictureBuffer&) = delete;
+  DXVAPictureBuffer& operator=(const DXVAPictureBuffer&) = delete;
+
   virtual ~DXVAPictureBuffer();
 
   virtual bool ReusePictureBuffer() = 0;
@@ -122,8 +126,6 @@ class DXVAPictureBuffer {
   scoped_refptr<gl::GLImage> gl_image_;
 
   std::vector<scoped_refptr<Picture::ScopedSharedImage>> shared_images_;
-
-  DISALLOW_COPY_AND_ASSIGN(DXVAPictureBuffer);
 };
 
 // Copies the video result into an RGBA EGL pbuffer.

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,13 @@
 #include <atomic>
 #include <cstddef>
 
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/base_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 
-namespace base {
+namespace partition_alloc {
 
 // PartitionAlloc supports setting hooks to observe allocations/frees as they
 // occur as well as 'override' hooks that allow overriding those operations.
-class BASE_EXPORT PartitionAllocHooks {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocHooks {
  public:
   // Log allocation and free events.
   typedef void AllocationObserverHook(void* address,
@@ -26,7 +25,7 @@ class BASE_EXPORT PartitionAllocHooks {
   // If it returns true, the allocation has been overridden with the pointer in
   // *out.
   typedef bool AllocationOverrideHook(void** out,
-                                      int flags,
+                                      unsigned int flags,
                                       size_t size,
                                       const char* type_name);
   // If it returns true, then the allocation was overridden and has been freed.
@@ -53,7 +52,7 @@ class BASE_EXPORT PartitionAllocHooks {
                                               size_t size,
                                               const char* type_name);
   static bool AllocationOverrideHookIfEnabled(void** out,
-                                              int flags,
+                                              unsigned int flags,
                                               size_t size,
                                               const char* type_name);
 
@@ -81,6 +80,6 @@ class BASE_EXPORT PartitionAllocHooks {
   static std::atomic<ReallocOverrideHook*> realloc_override_hook_;
 };
 
-}  // namespace base
+}  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_HOOKS_H_

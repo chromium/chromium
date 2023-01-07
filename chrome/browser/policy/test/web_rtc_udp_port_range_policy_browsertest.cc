@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
@@ -52,9 +52,10 @@ IN_PROC_BROWSER_TEST_F(WebRtcUdpPortRangeEnabledPolicyTest,
                        WebRtcUdpPortRangeEnabled) {
   std::string port_range;
   const PrefService::Preference* pref =
-      user_prefs::UserPrefs::Get(browser()->profile())
+      user_prefs::UserPrefs::Get(chrome_test_utils::GetProfile(this))
           ->FindPreference(prefs::kWebRTCUDPPortRange);
-  pref->GetValue()->GetAsString(&port_range);
+  if (pref->GetValue()->is_string())
+    port_range = pref->GetValue()->GetString();
   EXPECT_EQ(kTestWebRtcUdpPortRange, port_range);
 }
 
@@ -62,9 +63,10 @@ IN_PROC_BROWSER_TEST_F(WebRtcUdpPortRangeDisabledPolicyTest,
                        WebRtcUdpPortRangeDisabled) {
   std::string port_range;
   const PrefService::Preference* pref =
-      user_prefs::UserPrefs::Get(browser()->profile())
+      user_prefs::UserPrefs::Get(chrome_test_utils::GetProfile(this))
           ->FindPreference(prefs::kWebRTCUDPPortRange);
-  pref->GetValue()->GetAsString(&port_range);
+  if (pref->GetValue()->is_string())
+    port_range = pref->GetValue()->GetString();
   EXPECT_TRUE(port_range.empty());
 }
 

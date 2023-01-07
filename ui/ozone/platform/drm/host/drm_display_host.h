@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -26,6 +25,10 @@ class DrmDisplayHost : public GpuThreadObserver {
   DrmDisplayHost(GpuThreadAdapter* sender,
                  std::unique_ptr<display::DisplaySnapshot> params,
                  bool is_dummy);
+
+  DrmDisplayHost(const DrmDisplayHost&) = delete;
+  DrmDisplayHost& operator=(const DrmDisplayHost&) = delete;
+
   ~DrmDisplayHost() override;
 
   display::DisplaySnapshot* snapshot() const { return snapshot_.get(); }
@@ -40,7 +43,8 @@ class DrmDisplayHost : public GpuThreadObserver {
   void SetGammaCorrection(
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut);
-  void SetPrivacyScreen(bool enabled);
+  void SetPrivacyScreen(bool enabled,
+                        display::SetPrivacyScreenCallback callback);
 
   // Called when the IPC from the GPU process arrives to answer the above
   // commands.
@@ -68,8 +72,6 @@ class DrmDisplayHost : public GpuThreadObserver {
 
   display::GetHDCPStateCallback get_hdcp_callback_;
   display::SetHDCPStateCallback set_hdcp_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDisplayHost);
 };
 
 }  // namespace ui

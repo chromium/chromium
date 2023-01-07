@@ -120,8 +120,10 @@ struct IntHash {
 template <typename T>
 struct FloatHash {
   typedef typename IntTypes<sizeof(T)>::UnsignedType Bits;
-  static unsigned GetHash(T key) { return HashInt(bit_cast<Bits>(key)); }
-  static bool Equal(T a, T b) { return bit_cast<Bits>(a) == bit_cast<Bits>(b); }
+  static unsigned GetHash(T key) { return HashInt(base::bit_cast<Bits>(key)); }
+  static bool Equal(T a, T b) {
+    return base::bit_cast<Bits>(a) == base::bit_cast<Bits>(b);
+  }
   static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 

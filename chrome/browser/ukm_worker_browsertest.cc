@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,9 +28,9 @@ namespace {
 
 class UkmWorkerBrowserTest : public PlatformBrowserTest {
  public:
-  UkmWorkerBrowserTest() {
-    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
-  }
+  UkmWorkerBrowserTest()
+      : privacy_budget_config_(
+            test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling) {}
 
   void SetUpOnMainThread() override {
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(UkmWorkerBrowserTest,
         return response;
       }));
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::DOMMessageQueue messages;
+  content::DOMMessageQueue messages(web_contents());
 
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL(

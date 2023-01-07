@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 
 #define FILE_TRACING_PREFIX "File"
 
@@ -79,7 +80,7 @@ class BASE_EXPORT FileTracing {
    private:
     // The ID of this trace. Based on the |file| passed to |Initialize()|. Must
     // outlive this class.
-    const void* id_ = nullptr;
+    raw_ptr<const void> id_ = nullptr;
 
     // The name of the event to trace (e.g. "Read", "Write"). Prefixed with
     // "File".

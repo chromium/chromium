@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2015 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -33,7 +33,7 @@ class BlinkGcPluginTest(plugin_testing.ClangPluginTest):
     if os.path.exists('%s.graph.json' % test_name):
       try:
         actual = subprocess.check_output([
-            'python', '../process-graph.py', '-c',
+            sys.executable, '../process-graph.py', '-c',
             '%s.graph.json' % test_name
         ],
                                          stderr=subprocess.STDOUT,
@@ -80,9 +80,9 @@ def main():
       'blink-gc-plugin',
       args.reset_results).Run()
 
-  print "\nBlink GC Plugin Summary: %d tests failed without USE_V8_OILPAN, " \
+  print("\nBlink GC Plugin Summary: %d tests failed without USE_V8_OILPAN, " \
    "%d tests failed with USE_V8_OILPAN" % (
-      num_faliures_blink, num_faliures_cppgc)
+      num_faliures_blink, num_faliures_cppgc))
   return num_faliures_blink + num_faliures_cppgc
 
 

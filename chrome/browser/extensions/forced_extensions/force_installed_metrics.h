@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_METRICS_H_
 #define CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_METRICS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -46,9 +47,7 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
     // Session with Regular new user, which has a user name and password.
     USER_TYPE_REGULAR_NEW = 2,
     USER_TYPE_PUBLIC_ACCOUNT = 3,
-    // TODO(crbug/1155729): Legacy supervised users are deprecated. Use
-    // USER_TYPE_CHILD instead. Remove this enum.
-    USER_TYPE_SUPERVISED_DEPRECATED = 4,
+    // USER_TYPE_SUPERVISED_DEPRECATED = 4,
     USER_TYPE_KIOSK_APP = 5,
     USER_TYPE_CHILD = 6,
     USER_TYPE_ARC_KIOSK_APP = 7,
@@ -75,9 +74,6 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
       ExtensionDownloaderDelegate::CacheStatus cache_status) override;
 
  private:
-  // Returns false if the extension status corresponds to a missing extension
-  // which is not yet installed or loaded.
-  bool IsStatusGood(ForceInstalledTracker::ExtensionStatus status);
 
   // Reports disable reasons for the extensions which are installed but not
   // loaded.
@@ -92,11 +88,12 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
   // for use.
   void ReportMetricsOnExtensionsReady();
 
-  ExtensionRegistry* const registry_;
-  Profile* const profile_;
-  ForceInstalledTracker* const tracker_;
+  const raw_ptr<ExtensionRegistry> registry_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<ForceInstalledTracker> tracker_;
 
-  // Moment when the class was initialized.
+  // Tracks the moment when the class was initialized and used as timer start
+  // for reporting metrics related to extensions not loaded after 5 minutes.
   base::Time start_time_;
 
   // Tracks whether extensions load stats were already for the session.

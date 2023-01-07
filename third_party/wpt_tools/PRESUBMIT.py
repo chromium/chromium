@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,6 +8,7 @@ This PRESUBMIT guards against rolling a broken version of WPT tooling. It does
 some smoke checks of WPT functionality.
 """
 
+USE_PYTHON3 = True
 
 def _TestWPTLint(input_api, output_api):
   # We test 'wpt lint' by deferring to the web_tests/external presubmit test,
@@ -36,7 +37,7 @@ def _TestWPTManifest(input_api, output_api):
 
   base_manifest = input_api.os_path.join(
       blink_path, 'web_tests', 'external', 'WPT_BASE_MANIFEST_8.json')
-  with input_api.CreateTemporaryFile() as f:
+  with input_api.CreateTemporaryFile(mode = 'wt') as f:
     f.write(input_api.ReadFile(base_manifest))
     f.close()
 

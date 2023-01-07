@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,11 +40,13 @@ public class LocaleManagerReferralTest {
         mDefaultLocale = Locale.getDefault();
         Locale.setDefault(new Locale("ru", "RU"));
 
-        LocaleManager.setInstanceForTest(new LocaleManager() {
-            @Override
-            protected String getYandexReferralId() {
-                return mYandexReferralId;
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
+                @Override
+                public String getYandexReferralId() {
+                    return mYandexReferralId;
+                }
+            });
         });
 
         TestThreadUtils.runOnUiThreadBlocking(new Callable<Void>() {

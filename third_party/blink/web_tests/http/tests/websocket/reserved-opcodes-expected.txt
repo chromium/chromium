@@ -1,13 +1,3 @@
-CONSOLE ERROR: line 30: WebSocket connection to 'ws://localhost:8880/reserved-opcodes?opcode=3' failed: Unrecognized frame opcode: 3
-CONSOLE ERROR: line 30: WebSocket connection to 'ws://localhost:8880/reserved-opcodes?opcode=4' failed: Unrecognized frame opcode: 4
-CONSOLE ERROR: line 30: WebSocket connection to 'ws://localhost:8880/reserved-opcodes?opcode=5' failed: Unrecognized frame opcode: 5
-CONSOLE ERROR: line 30: WebSocket connection to 'ws://localhost:8880/reserved-opcodes?opcode=6' failed: Unrecognized frame opcode: 6
-CONSOLE ERROR: line 30: WebSocket connection to 'ws://localhost:8880/reserved-opcodes?opcode=7' failed: Unrecognized frame opcode: 7
-CONSOLE ERROR: line 30: WebSocket connection to 'ws://localhost:8880/reserved-opcodes?opcode=11' failed: Unrecognized frame opcode: 11
-CONSOLE ERROR: line 30: WebSocket connection to 'ws://localhost:8880/reserved-opcodes?opcode=12' failed: Unrecognized frame opcode: 12
-CONSOLE ERROR: line 30: WebSocket connection to 'ws://localhost:8880/reserved-opcodes?opcode=13' failed: Unrecognized frame opcode: 13
-CONSOLE ERROR: line 30: WebSocket connection to 'ws://localhost:8880/reserved-opcodes?opcode=14' failed: Unrecognized frame opcode: 14
-CONSOLE ERROR: line 30: WebSocket connection to 'ws://localhost:8880/reserved-opcodes?opcode=15' failed: Unrecognized frame opcode: 15
 Tests whether WebSocket ignores frames with reserved opcode.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

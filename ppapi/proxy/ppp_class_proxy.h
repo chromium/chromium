@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/proxy/interface_proxy.h"
@@ -30,6 +29,10 @@ class PPP_Class_Proxy : public InterfaceProxy {
   // PPP_Class isn't a normal interface that you can query for, so this
   // constructor doesn't take an interface pointer.
   explicit PPP_Class_Proxy(Dispatcher* dispatcher);
+
+  PPP_Class_Proxy(const PPP_Class_Proxy&) = delete;
+  PPP_Class_Proxy& operator=(const PPP_Class_Proxy&) = delete;
+
   ~PPP_Class_Proxy() override;
 
   // Factory function used for registration (normal code can just use the
@@ -100,8 +103,6 @@ class PPP_Class_Proxy : public InterfaceProxy {
   bool ValidateUserData(int64_t ppp_class,
                         int64_t class_data,
                         SerializedVarOutParam* exception);
-
-  DISALLOW_COPY_AND_ASSIGN(PPP_Class_Proxy);
 };
 
 }  // namespace proxy

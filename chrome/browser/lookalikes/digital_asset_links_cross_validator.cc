@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/time/clock.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 const char* kDigitalAssetLinkRecordType = "lookalikes/allowlist";
@@ -63,7 +64,7 @@ void DigitalAssetLinkCrossValidator::Start() {
   start_time_ = clock_->Now();
   asset_link_handler_->SetTimeoutDuration(timeout_);
   asset_link_handler_->CheckDigitalAssetLinkRelationship(
-      lookalike_domain_.Serialize(), kDigitalAssetLinkRecordType, base::nullopt,
+      lookalike_domain_.Serialize(), kDigitalAssetLinkRecordType, absl::nullopt,
       {{"namespace", {"web"}}, {"site", {target_domain_.Serialize()}}},
       base::BindOnce(
           &DigitalAssetLinkCrossValidator::OnFetchLookalikeManifestComplete,
@@ -100,7 +101,7 @@ void DigitalAssetLinkCrossValidator::OnFetchLookalikeManifestComplete(
   target_manifest_timeout_ = timeout_ - elapsed;
   asset_link_handler_->SetTimeoutDuration(target_manifest_timeout_);
   asset_link_handler_->CheckDigitalAssetLinkRelationship(
-      target_domain_.Serialize(), kDigitalAssetLinkRecordType, base::nullopt,
+      target_domain_.Serialize(), kDigitalAssetLinkRecordType, absl::nullopt,
       {{"namespace", {"web"}},
        {"site", GetLookalikeOrigins(lookalike_domain_)}},
       base::BindOnce(

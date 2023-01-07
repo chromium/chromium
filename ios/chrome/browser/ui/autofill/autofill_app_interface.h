@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,10 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Returns the number of profiles (addresses) in the data manager.
 + (NSInteger)profilesCount;
 
+// Used to automatically import addresses without a prompt when `autoAccept` is
+// YES.
++ (void)setAutoAcceptAddressImports:(BOOL)autoAccept;
+
 // Clears the profiles (addresses) in the data manager.
 + (void)clearProfilesStore;
 
@@ -51,7 +55,7 @@ enum CreditCardSaveManagerObserverEvent : int {
 + (void)clearCreditCardStore;
 
 // Saves a local credit card that doesn't require CVC to be used.
-// Returns the |card.NetworkAndLastFourDigits| of the card used in the UIs.
+// Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
 + (NSString*)saveLocalCreditCard;
 
 // Returns the number of credit cards in the local store.
@@ -77,9 +81,9 @@ enum CreditCardSaveManagerObserverEvent : int {
                           timeout:(NSTimeInterval)timeout;
 
 // Wait until all expected events are triggered.
-+ (BOOL)waitForEvents WARN_UNUSED_RESULT;
++ (BOOL)waitForEvents [[nodiscard]];
 
-// Sets the next response of the payments server for |request|.
+// Sets the next response of the payments server for `request`.
 + (void)setPaymentsResponse:(NSString*)response
                  forRequest:(NSString*)request
               withErrorCode:(int)error;

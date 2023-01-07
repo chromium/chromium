@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/display_embedder/software_output_surface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -80,7 +80,7 @@ class PNGSoftwareOutputDevice : public SoftwareOutputDevice {
 }  // namespace
 
 FuzzerSoftwareOutputSurfaceProvider::FuzzerSoftwareOutputSurfaceProvider(
-    base::Optional<base::FilePath> png_dir_path)
+    absl::optional<base::FilePath> png_dir_path)
     : png_dir_path_(png_dir_path) {}
 
 FuzzerSoftwareOutputSurfaceProvider::~FuzzerSoftwareOutputSurfaceProvider() =
@@ -89,8 +89,7 @@ FuzzerSoftwareOutputSurfaceProvider::~FuzzerSoftwareOutputSurfaceProvider() =
 std::unique_ptr<DisplayCompositorMemoryAndTaskController>
 FuzzerSoftwareOutputSurfaceProvider::CreateGpuDependency(
     bool gpu_compositing,
-    gpu::SurfaceHandle surface_handle,
-    const RendererSettings& renderer_settings) {
+    gpu::SurfaceHandle surface_handle) {
   return nullptr;
 }
 

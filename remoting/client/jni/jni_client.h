@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/chromoting_session.h"
 #include "remoting/protocol/connection_to_host.h"
@@ -27,6 +27,10 @@ struct ConnectToHostInfo;
 class JniClient : public ChromotingSession::Delegate {
  public:
   JniClient(base::android::ScopedJavaGlobalRef<jobject> java_client);
+
+  JniClient(const JniClient&) = delete;
+  JniClient& operator=(const JniClient&) = delete;
+
   ~JniClient() override;
 
   // Initiates a connection with the specified host. To skip the attempt at
@@ -161,7 +165,7 @@ class JniClient : public ChromotingSession::Delegate {
   base::WeakPtr<JniClient> GetWeakPtr();
 
  private:
-  ChromotingClientRuntime* runtime_;
+  raw_ptr<ChromotingClientRuntime> runtime_;
 
   // Reference to the Java client object.
   base::android::ScopedJavaGlobalRef<jobject> java_client_;
@@ -179,8 +183,6 @@ class JniClient : public ChromotingSession::Delegate {
   // Holds pointer for the UI thread.
   base::WeakPtr<JniClient> weak_ptr_;
   base::WeakPtrFactory<JniClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JniClient);
 };
 
 }  // namespace remoting

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -66,10 +65,15 @@ class EnterBase;
 class PPAPI_SHARED_EXPORT TrackedCallback
     : public base::RefCountedThreadSafe<TrackedCallback> {
  public:
+  TrackedCallback() = delete;
+
   // Create a tracked completion callback and register it with the tracker. The
   // resource pointer is not stored. If |resource| is NULL, this callback will
   // not be added to the callback tracker.
   TrackedCallback(Resource* resource, const PP_CompletionCallback& callback);
+
+  TrackedCallback(const TrackedCallback&) = delete;
+  TrackedCallback& operator=(const TrackedCallback&) = delete;
 
   // These run the callback in an abortive manner, or post a task to do so (but
   // immediately marking the callback as to be aborted).
@@ -193,8 +197,6 @@ class PPAPI_SHARED_EXPORT TrackedCallback
   // callback. Note that in-process, there is no lock, blocking callbacks are
   // not allowed, and therefore this pointer will be NULL.
   std::unique_ptr<base::ConditionVariable> operation_completed_condvar_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TrackedCallback);
 };
 
 }  // namespace ppapi

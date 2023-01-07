@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,9 @@ class CC_EXPORT NinePatchLayer : public UIResourceLayer {
   NinePatchLayer(const NinePatchLayer&) = delete;
   NinePatchLayer& operator=(const NinePatchLayer&) = delete;
 
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state) override;
 
   // |border| is the space around the center rectangular region in layer space
   // (known as aperture in image space).  |border.x()| and |border.y()| are the
@@ -49,19 +51,20 @@ class CC_EXPORT NinePatchLayer : public UIResourceLayer {
  private:
   NinePatchLayer();
   ~NinePatchLayer() override;
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
 
-  gfx::Rect border_;
-  bool fill_center_;
-  bool nearest_neighbor_;
+  ProtectedSequenceReadable<gfx::Rect> border_;
+  ProtectedSequenceReadable<bool> fill_center_;
+  ProtectedSequenceReadable<bool> nearest_neighbor_;
 
   // The transparent center region that shows the parent layer's contents in
   // image space.
-  gfx::Rect image_aperture_;
+  ProtectedSequenceReadable<gfx::Rect> image_aperture_;
 
   // The occluded region in layer space set by SetLayerOcclusion. It is
   // usually larger than |image_aperture_|.
-  gfx::Rect layer_occlusion_;
+  ProtectedSequenceReadable<gfx::Rect> layer_occlusion_;
 };
 
 }  // namespace cc

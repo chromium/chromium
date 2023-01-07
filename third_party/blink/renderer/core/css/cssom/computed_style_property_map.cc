@@ -1,4 +1,4 @@
-// Copyright 2016 the Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,7 +92,7 @@ const CSSValue* ComputedStylePropertyMap::GetProperty(
 }
 
 const CSSValue* ComputedStylePropertyMap::GetCustomProperty(
-    AtomicString property_name) const {
+    const AtomicString& property_name) const {
   const ComputedStyle* style = UpdateStyle();
   if (!style)
     return nullptr;
@@ -101,8 +101,7 @@ const CSSValue* ComputedStylePropertyMap::GetCustomProperty(
       *style, nullptr /* layout_object */, false /* allow_visited_style */);
 }
 
-void ComputedStylePropertyMap::ForEachProperty(
-    const IterationCallback& callback) {
+void ComputedStylePropertyMap::ForEachProperty(IterationFunction visitor) {
   const ComputedStyle* style = UpdateStyle();
   if (!style)
     return;
@@ -135,17 +134,15 @@ void ComputedStylePropertyMap::ForEachProperty(
   });
 
   for (const auto& value : values)
-    callback(value.first, *value.second);
+    visitor(value.first, *value.second);
 }
 
 String ComputedStylePropertyMap::SerializationForShorthand(
     const CSSProperty& property) const {
   DCHECK(property.IsShorthand());
   const ComputedStyle* style = UpdateStyle();
-  if (!style) {
-    NOTREACHED();
+  if (!style)
     return "";
-  }
 
   if (const CSSValue* value = property.CSSValueFromComputedStyle(
           *style, nullptr /* layout_object */, false)) {

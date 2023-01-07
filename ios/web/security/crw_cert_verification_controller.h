@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,27 +49,27 @@ typedef void (^StatusQueryHandler)(web::SecurityStyle, net::CertStatus);
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Initializes CRWCertVerificationController with the given |browserState| which
+// Initializes CRWCertVerificationController with the given `browserState` which
 // cannot be null and must outlive CRWCertVerificationController.
 - (instancetype)initWithBrowserState:(web::BrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 
-// Decides the policy for the given |trust| and for the given |host| and calls
-// |completionHandler| on completion. |completionHandler| is guaranteed to be
-// called even if this object is deallocated. |host| should be in ASCII
+// Decides the policy for the given `trust` and for the given `host` and calls
+// `completionHandler` on completion. `completionHandler` is guaranteed to be
+// called even if this object is deallocated. `host` should be in ASCII
 // compatible form (e.g. for "http://名がドメイン.com", it should be
-// "xn--v8jxj3d1dzdz08w.com"). |completionHandler| cannot be null and will be
+// "xn--v8jxj3d1dzdz08w.com"). `completionHandler` cannot be null and will be
 // called asynchronously on the UI thread.
 // Note: Certificate errors may be bypassed by calling
-// |allowCert:forHost:status:| with the host, certificate, and certificate
+// `allowCert:forHost:status:` with the host, certificate, and certificate
 // error to ignore.
 - (void)decideLoadPolicyForTrust:(base::ScopedCFTypeRef<SecTrustRef>)trust
                             host:(NSString*)host
                completionHandler:(web::PolicyDecisionHandler)completionHandler;
 
 // Asynchronously provides web::SecurityStyle and net::CertStatus for the given
-// |trust| and |host|. |host| should be in ASCII compatible form.
-// |completionHandler| is guaranteed to be called even if this object is
+// `trust` and `host`. `host` should be in ASCII compatible form.
+// `completionHandler` is guaranteed to be called even if this object is
 // deallocated.
 // Note: The web::SecurityStyle determines whether the certificate is trusted.
 // It is possible for an untrusted certificate to return a net::CertStatus with
@@ -79,11 +79,11 @@ typedef void (^StatusQueryHandler)(web::SecurityStyle, net::CertStatus);
                           host:(NSString*)host
              completionHandler:(web::StatusQueryHandler)completionHandler;
 
-// Records that |cert| is permitted to be used for |host| in future calls to
-// |decideLoadPolicyForTrust:host:completionHandler:|. |host| should be in an
+// Records that `cert` is permitted to be used for `host` in future calls to
+// `decideLoadPolicyForTrust:host:completionHandler:`. `host` should be in an
 // ASCII-compatible form. Subsequent calls to
-// |decideLoadPolicyForTrust:host:completionHandler:| for the same
-// |cert|/|host| tuple and same |status| (or a subset of the given |status|)
+// `decideLoadPolicyForTrust:host:completionHandler:` for the same
+// `cert|/|host` tuple and same `status` (or a subset of the given `status`)
 // will return CERT_ACCEPT_POLICY_RECOVERABLE_ERROR_ACCEPTED_BY_USER.
 - (void)allowCert:(scoped_refptr<net::X509Certificate>)cert
           forHost:(NSString*)host

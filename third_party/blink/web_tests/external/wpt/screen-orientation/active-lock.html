@@ -4,22 +4,17 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <p id="#fragment"></p>
-<script>
-  promise_test(async t => {
-    await test_driver.bless("request full screen", () => {
-      return document.documentElement.requestFullscreen();
-    });
-    const fragment = document.createElement("p");
-    fragment.id = "fragment";
-    document.body.appendChild(fragment);
-    const { type: preType } = screen.orientation;
-    const isPortrait = preType.startsWith("portrait");
-    const newType = `${isPortrait ? "landscape" : "portrait"}-primary`;
-    const p = screen.orientation.lock(newType);
-    screen.orientation.onchange = t.unreached_func(
-      "change event must not fire"
-    );
+<script type="module">
+  import { makeCleanup } from "./resources/orientation-utils.js";
+  promise_test(async (t) => {
+    t.add_cleanup(makeCleanup());
+    await test_driver.bless("request full screen");
+    await document.documentElement.requestFullscreen();
+    const orientation = screen.orientation.type.startsWith("portrait")
+      ? "landscape"
+      : "portrait";
+    const p = screen.orientation.lock(orientation);
     window.location.href = "#fragment";
     await p;
-  }, "When performing a fragment navigation, the orientation must not change or unlock");
+  }, "When performing a fragment navigation, the change must not abort");
 </script>

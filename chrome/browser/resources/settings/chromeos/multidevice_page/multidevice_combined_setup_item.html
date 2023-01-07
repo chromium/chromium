@@ -1,0 +1,25 @@
+<style include="settings-shared">
+  cr-button {
+    white-space: nowrap;
+  }
+</style>
+<settings-multidevice-feature-item id="phoneHubCombinedSetupItem"
+    page-content-data="[[pageContentData]]" is-sub-feature>
+  <div id="featureName" slot="feature-name">
+    [[setupName_]]
+  </div>
+  <localized-link
+      class="secondary"
+      id="featureSecondary"
+      slot="feature-summary"
+      localized-string="[[setupSummary_]]">
+  </localized-link>
+  <cr-button
+      slot="feature-controller"
+      on-click="handlePhoneHubSetupClick_"
+      aria-labelledby="featureName"
+      aria-describedby="featureSecondary"
+      disabled="[[getButtonDisabledState_(pageContentData)]]">
+    $i18n{multideviceSetupButton}
+  </cr-button>
+</settings-multidevice-feature-item>

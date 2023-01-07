@@ -1,0 +1,63 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Models an Assistant notification. This should be kept in sync with
+// |ash::assistant::AssistantNotification|. For now we only include
+// entries that are currently in use.
+struct AssistantNotification {
+  // Title of the notification.
+  string title;
+
+  // Body text of the notification.
+  string message;
+
+  // Optional URL to open when the tap action is invoked on the notification
+  // main UI.
+  url.mojom.Url action_url;
+
+  // An id that uniquely identifies a notification on the client.
+  string client_id;
+
+  // An id that uniquely identifies a notification on the server.
+  string server_id;
+
+  // Used to fetch notification contents.
+  string consistency_token;
+  string opaque_token;
+
+  // Key that can be used to group multiple notifications together.
+  string grouping_key;
+
+  // Obfuscated Gaia id of the intended recipient of the user.
+  string obfuscated_gaia_id;
+
+  // When the notification should expire.
+  // Expressed as milliseconds since Unix Epoch.
+  mojo_base.mojom.Time? expiry_time;
+
+  // List of buttons in the notification.
+  array<AssistantNotificationButton> buttons;
+
+  // If |true|, this notification was sent from the server. Clicking a
+  // notification that was sent from the server may result in a request to the
+  // server to retrieve the notification payload. One example of this would be
+  // notifications triggered by an Assistant reminder.
+  bool from_server = false;
+};
+
+struct AssistantNotificationButton {
+  // Display text of the button.
+  string label;
+
+  // Optional URL to open when the tap action is invoked on the button.
+  url.mojom.Url action_url;
+
+  // If |true|, the associated notification will be removed on button click.
+  bool remove_notification_on_click = true;
+};

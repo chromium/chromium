@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,12 +52,12 @@ TEST_F(HashPasswordManagerTest, SavingPasswordHashData) {
   EXPECT_TRUE(prefs_.HasPrefPath(prefs::kPasswordHashDataList));
 
   // Saves the same password again won't change password hash, length or salt.
-  base::Optional<PasswordHashData> current_password_hash_data =
+  absl::optional<PasswordHashData> current_password_hash_data =
       hash_password_manager.RetrievePasswordHash(username,
                                                  /*is_gaia_password=*/true);
   hash_password_manager.SavePasswordHash(username, password,
                                          /*is_gaia_password=*/true);
-  base::Optional<PasswordHashData> existing_password_data =
+  absl::optional<PasswordHashData> existing_password_data =
       hash_password_manager.RetrievePasswordHash(username,
                                                  /*is_gaia_password=*/true);
   EXPECT_EQ(current_password_hash_data->hash, existing_password_data->hash);
@@ -90,7 +90,7 @@ TEST_F(HashPasswordManagerTest, SavingPasswordHashDataNotCanonicalized) {
   hash_password_manager.SavePasswordHash(canonical_username, password,
                                          /*is_gaia_password=*/true);
   ASSERT_TRUE(prefs_.HasPrefPath(prefs::kPasswordHashDataList));
-  EXPECT_EQ(1u, prefs_.GetList(prefs::kPasswordHashDataList)->GetList().size());
+  EXPECT_EQ(1u, prefs_.GetList(prefs::kPasswordHashDataList).size());
   EXPECT_EQ(
       canonical_username,
       hash_password_manager
@@ -99,16 +99,16 @@ TEST_F(HashPasswordManagerTest, SavingPasswordHashDataNotCanonicalized) {
 
   // Saves the same password with not canonicalized username should not change
   // password hash.
-  base::Optional<PasswordHashData> current_password_hash_data =
+  absl::optional<PasswordHashData> current_password_hash_data =
       hash_password_manager.RetrievePasswordHash(username,
                                                  /*is_gaia_password=*/true);
   hash_password_manager.SavePasswordHash(username, password,
                                          /*is_gaia_password=*/true);
-  base::Optional<PasswordHashData> existing_password_data =
+  absl::optional<PasswordHashData> existing_password_data =
       hash_password_manager.RetrievePasswordHash(username,
                                                  /*is_gaia_password=*/true);
   EXPECT_EQ(current_password_hash_data->hash, existing_password_data->hash);
-  EXPECT_EQ(1u, prefs_.GetList(prefs::kPasswordHashDataList)->GetList().size());
+  EXPECT_EQ(1u, prefs_.GetList(prefs::kPasswordHashDataList).size());
   EXPECT_EQ(canonical_username,
             hash_password_manager
                 .RetrievePasswordHash(username, /*is_gaia_password=*/true)
@@ -120,7 +120,7 @@ TEST_F(HashPasswordManagerTest, SavingPasswordHashDataNotCanonicalized) {
                 .RetrievePasswordHash(gmail_prefix,
                                       /*is_gaia_password=*/true)
                 ->hash);
-  EXPECT_EQ(1u, prefs_.GetList(prefs::kPasswordHashDataList)->GetList().size());
+  EXPECT_EQ(1u, prefs_.GetList(prefs::kPasswordHashDataList).size());
   EXPECT_EQ(canonical_username,
             hash_password_manager
                 .RetrievePasswordHash(gmail_prefix, /*is_gaia_password=*/true)
@@ -130,7 +130,7 @@ TEST_F(HashPasswordManagerTest, SavingPasswordHashDataNotCanonicalized) {
   // full gmail user name.
   hash_password_manager.SavePasswordHash("user.name", password,
                                          /*is_gaia_password=*/true);
-  EXPECT_EQ(2u, prefs_.GetList(prefs::kPasswordHashDataList)->GetList().size());
+  EXPECT_EQ(2u, prefs_.GetList(prefs::kPasswordHashDataList).size());
   EXPECT_EQ("username@gmail.com",
             hash_password_manager
                 .RetrievePasswordHash("user.name", /*is_gaia_password=*/true)
@@ -247,7 +247,7 @@ TEST_F(HashPasswordManagerTest, RetrievingPasswordHashData) {
                                          /*is_gaia_password=*/true);
   EXPECT_EQ(1u, hash_password_manager.RetrieveAllPasswordHashes().size());
 
-  base::Optional<PasswordHashData> password_hash_data =
+  absl::optional<PasswordHashData> password_hash_data =
       hash_password_manager.RetrievePasswordHash("username@gmail.com",
                                                  /*is_gaia_password=*/false);
   ASSERT_FALSE(password_hash_data);
@@ -269,7 +269,7 @@ TEST_F(HashPasswordManagerTest, RetrievingPasswordHashData) {
       hash_password_manager.RetrievePasswordHash("USER.NAME@gmail.com",
                                                  /*is_gaia_password=*/true));
 
-  base::Optional<PasswordHashData> non_existing_data =
+  absl::optional<PasswordHashData> non_existing_data =
       hash_password_manager.RetrievePasswordHash("non_existing_user", true);
   ASSERT_FALSE(non_existing_data);
 }

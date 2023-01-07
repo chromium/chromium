@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,8 +64,7 @@ bool LoadValueEvents(const base::Value* value, ValueEvents* value_events) {
       return false;
     if (!entry.GetList()[2].is_int())
       return false;
-    const int value = entry.GetList()[2].GetInt();
-    value_events->emplace_back(timestamp, type, value);
+    value_events->emplace_back(timestamp, type, entry.GetList()[2].GetInt());
     previous_timestamp = timestamp;
   }
 

@@ -1,20 +1,23 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PERFORMANCE_MONITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PERFORMANCE_MONITOR_H_
 
-#include "base/macros.h"
-#include "base/record_replay.h"
 #include "base/task/sequence_manager/task_time_observer.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "v8/include/v8.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -107,7 +110,9 @@ class CORE_EXPORT PerformanceMonitor final
   void UnsubscribeAll(Client*);
   void Shutdown();
 
-  explicit PerformanceMonitor(LocalFrame*);
+  PerformanceMonitor(LocalFrame*, v8::Isolate*);
+  PerformanceMonitor(const PerformanceMonitor&) = delete;
+  PerformanceMonitor& operator=(const PerformanceMonitor&) = delete;
   ~PerformanceMonitor() override;
 
   virtual void Trace(Visitor*) const;
@@ -158,6 +163,8 @@ class CORE_EXPORT PerformanceMonitor final
 
   Member<LocalFrame> local_root_;
   Member<ExecutionContext> task_execution_context_;
+  // This is needed for calling v8::metrics::LongTaskStats::Reset.
+  v8::Isolate* const isolate_;
   bool task_has_multiple_contexts_ = false;
   bool task_should_be_reported_ = false;
   using ClientThresholds = HeapHashMap<WeakMember<Client>, base::TimeDelta>;
@@ -166,8 +173,6 @@ class CORE_EXPORT PerformanceMonitor final
               typename DefaultHash<size_t>::Hash,
               WTF::UnsignedWithZeroKeyHashTraits<size_t>>
       subscriptions_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceMonitor);
 };
 
 }  // namespace blink

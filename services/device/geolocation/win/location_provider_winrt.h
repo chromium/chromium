@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <wrl/client.h>
 
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
@@ -18,6 +19,10 @@ namespace device {
 class LocationProviderWinrt : public LocationProvider {
  public:
   LocationProviderWinrt();
+
+  LocationProviderWinrt(const LocationProviderWinrt&) = delete;
+  LocationProviderWinrt& operator=(const LocationProviderWinrt&) = delete;
+
   ~LocationProviderWinrt() override;
 
   // LocationProvider implementation.
@@ -34,8 +39,8 @@ class LocationProviderWinrt : public LocationProvider {
 
   bool permission_granted_ = false;
   bool enable_high_accuracy_ = false;
-  base::Optional<EventRegistrationToken> position_changed_token_;
-  base::Optional<EventRegistrationToken> status_changed_token_;
+  absl::optional<EventRegistrationToken> position_changed_token_;
+  absl::optional<EventRegistrationToken> status_changed_token_;
 
  private:
   void HandleErrorCondition(mojom::Geoposition::ErrorCode position_error_code,
@@ -63,8 +68,6 @@ class LocationProviderWinrt : public LocationProvider {
   base::TimeTicks position_callback_initialized_time_;
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<LocationProviderWinrt> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocationProviderWinrt);
 };
 
 }  // namespace device

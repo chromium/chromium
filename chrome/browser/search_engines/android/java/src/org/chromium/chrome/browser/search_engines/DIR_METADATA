@@ -1,4 +1,1 @@
-monorail {
-  component: "UI>Browser>Search"
-}
 os: ANDROID

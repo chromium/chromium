@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ PipeMessagingChannel::~PipeMessagingChannel() {
 
 // static
 void PipeMessagingChannel::ReopenStdinStdout() {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::FilePath dev_null("/dev/null");
   int new_stdin =
       base::File(dev_null, base::File::FLAG_OPEN | base::File::FLAG_READ)
@@ -40,7 +40,7 @@ void PipeMessagingChannel::ReopenStdinStdout() {
       base::File(dev_null, base::File::FLAG_OPEN | base::File::FLAG_WRITE)
           .TakePlatformFile();
   DCHECK_EQ(new_stdout, STDOUT_FILENO);
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
 void PipeMessagingChannel::Start(EventHandler* event_handler) {

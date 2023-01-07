@@ -15,7 +15,7 @@
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ఎక్స్‌టెన్ష‌న్‌ ID "<ph name="EXTENSION_ID" />") నిర్వాహకుల ద్వారా బ్లాక్ చేయబడింది. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">ప్యాకేజీని ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> విక్రేత నుండి తెలియని ఉత్పత్తి <ph name="PRODUCT_ID" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="3144135466825225871">crx ఫైల్ భర్తీ విఫలమైంది. ఫైల్ వినియోగంలో ఉందా అని తనిఖీ చేయండి.</translation>
+<translation id="3144135466825225871">crx ఫైల్ భర్తీ విఫలమైంది. ఫైల్ వినియోగంలో ఉందా అని చెక్ చేయండి.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> నుండి <ph name="PRODUCT_ID" /> తెలియని ఉత్పత్తి</translation>
 <translation id="3302709122321372472">కంటెంట్ స్క్రిప్ట్‌కు css '<ph name="RELATIVE_PATH" />'ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="3369521687965833290">ఎక్స్‌టెన్షన్‌ను అన్‌ప్యాక్ చేయడం సాధ్యపడలేదు. ఒక ఎక్స్‌టెన్షన్‌‌ను సురక్షితంగా అన్‌ప్యాక్ చేయడానికి, మీ ప్రొఫైల్ డైరెక్టరీకి ఒక డ్రైవ్ అక్షరంతో ప్రారంభమయ్యే మరియు జంక్షన్, మౌంట్ పాయింట్ లేదా సింలింక్ ఉండని పాత్ తప్పనిసరిగా ఉండాలి. మీ ప్రొఫైల్‌కు అటువంటి పాత్ లేదు.</translation>
@@ -32,9 +32,9 @@
 <translation id="4988792151665380515">పబ్లిక్ కీని ఎగుమతి చేయడానికి విఫలమైంది.</translation>
 <translation id="5026754133087629784">వెబ్ వీక్షణ: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">ప్యాక్ చేయడానికి డైరెక్టరీకి ఖచ్చితమైన పాథ్‌ను కనుగొనడం సాధ్యపడదు.</translation>
-<translation id="5356315618422219272">అనువర్తన వీక్షణ: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5356315618422219272">యాప్‌ వీక్షణ: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">ఆకృతీకరించిన విండోలకు మద్దతు లేదు.</translation>
-<translation id="5456409301717116725">ఈ పొడిగింపు '<ph name="KEY_PATH" />' కీ ఫైల్‌ను కలిగి ఉంది. బహుశా మీరు దాన్ని చేయకూడదు.</translation>
+<translation id="5456409301717116725">ఈ ఎక్స్‌టెన్షన్‌ '<ph name="KEY_PATH" />' కీ ఫైల్‌ను కలిగి ఉంది. బహుశా మీరు దాన్ని చేయకూడదు.</translation>
 <translation id="5486326529110362464">ప్రైవేట్ కీ కోసం ఇన్‌పుట్ విలువ తప్పనిసరిగా ఉండాలి.</translation>
 <translation id="5972529113578162692"><ph name="EXTENSION_NAME" />ని ఇన్‌స్టాల్ చేయడం ఈ మెషిన్‌ నిర్వాహకుడికి అవసరం. ఇది అన్ఇన్‌స్టాల్ చేయబడదు.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> నుండి తెలియని ఉత్పత్తి <ph name="PRODUCT_ID" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
@@ -42,17 +42,17 @@
 <translation id="6143635259298204954">ఎక్స్‌టెన్షన్‌ను అన్‌ప్యాక్ చేయడం సాధ్యపడలేదు. ఒక ఎక్స్‌టెన్షన్‌‌ను సురక్షితంగా అన్‌ప్యాక్ చేయడానికి, మీ ప్రొఫైల్ డైరెక్టరీకి సింలింక్ ఉండని పాత్ తప్పనిసరిగా ఉండాలి. మీ ప్రొఫైల్‌కు అటువంటి పాత్ లేదు.</translation>
 <translation id="6322279351188361895">ప్రైవేట్ కీని చదవడంలో విఫలమైంది.</translation>
 <translation id="6391538222494443604">ఇన్‌పుట్ డైరెక్టరీ తప్పనిసరిగా ఉనికిలో ఉండాలి.</translation>
-<translation id="641087317769093025">పొడిగింపు అన్‌జిప్ చేయబడదు</translation>
+<translation id="641087317769093025">ఎక్స్‌టెన్షన్‌ అన్‌జిప్ చేయబడదు</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" మీ ఒకటి లేదా అంతకంటే ఎక్కువ పరికరాలకు యాక్సెస్‌ను అభ్యర్థిస్తోంది:</translation>
 <translation id="657064425229075395">'<ph name="BACKGROUND_SCRIPT" />' నేపథ్య స్క్రిప్ట్‌ను లోడ్ చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> నుండి <ph name="PRODUCT_NAME" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mime హ్యాండ్లర్: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
-<translation id="6840444547062817500">ఈ పొడిగింపు దానికదే చాలా తరచుగా రీలోడ్ అయ్యింది.</translation>
+<translation id="6840444547062817500">ఈ ఎక్స్‌టెన్షన్‌ దానికదే చాలా తరచుగా రీలోడ్ అయ్యింది.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> నుండి తెలియని ఉత్పత్తి <ph name="PRODUCT_ID" /></translation>
 <translation id="7068383018033524534">మానిఫెస్ట్ ఫైల్ చెల్లదు</translation>
-<translation id="7217838517480956708">ఈ మెషిన్‌ యొక్క నిర్వాహకుడికి <ph name="EXTENSION_NAME" /> ఇన్‌స్టాల్ చేయబడి ఉండటం అవసరం. దీన్ని తీసివేయడం లేదా సవరించడం సాధ్యపడదు.</translation>
+<translation id="7217838517480956708">ఈ మెషిన్‌ యొక్క నిర్వాహకుడికి <ph name="EXTENSION_NAME" /> ఇన్‌స్టాల్ చేయబడి ఉండటం అవసరం. దీన్ని తీసివేయడం లేదా ఎడిట్ చేయడం సాధ్యపడదు.</translation>
 <translation id="7612608473764576263">ప్రైవేట్ కీ కోసం ఇన్‌పుట్ విలువ తప్పనిసరిగా చెల్లుబాటు అయ్యే ఫార్మాట్‌లో ఉండాలి. (PKCS#8-ఫార్మాట్‌లో, PEM-ఎన్‌కోడ్ చేసిన RSA కీ)</translation>
-<translation id="7939686037314084444">ఎక్స్‌టెన్షన్ సరిగా లోడ్ అవ్వడంలో విఫలం అయ్యింది. కనుక ఇది నెట్‌వర్క్ అభ్యర్థనలను అడ్డగించలేకపోవచ్చు.</translation>
+<translation id="7939686037314084444">ఎక్స్‌టెన్షన్ సరిగా లోడ్ అవ్వడంలో విఫలం అయ్యింది. కనుక ఇది నెట్‌వర్క్ రిక్వెస్ట్‌లను అడ్డగించలేకపోవచ్చు.</translation>
 <translation id="7972881773422714442">ఎంపికలు: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">వినియోగదారు వైపుగా</translation>
 <translation id="8047248493720652249">ఈ ఎక్స్‌టెన్ష‌న్‌ డౌన్‌లోడ్ యొక్క పేరును "<ph name="ATTEMPTED_FILENAME" />"గా పేర్కొనడంలో విఫలమైంది. ఎందుకంటే మరో ఎక్స్‌టెన్ష‌న్‌ (<ph name="EXTENSION_NAME" />) "<ph name="ACTUAL_FILENAME" />" అనే వేరే ఫైల్ పేరును నిశ్చయించింది.</translation>

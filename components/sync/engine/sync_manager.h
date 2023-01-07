@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,16 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "components/sync/base/invalidation_interface.h"
+#include "base/time/time.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/weak_handle.h"
+#include "components/sync/base/sync_invalidation.h"
+#include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/engine_components_factory.h"
@@ -35,14 +36,11 @@
 namespace syncer {
 
 class CancelationSignal;
-class DataTypeDebugInfoListener;
 class EngineComponentsFactory;
 class ExtensionsActivity;
-class JsBackend;
-class JsEventHandler;
 class ProtocolEvent;
 class SyncCycleSnapshot;
-class SyncStatusObserver;
+struct SyncStatus;
 
 // Unless stated otherwise, all methods of SyncManager should be called on the
 // same thread.
@@ -62,25 +60,14 @@ class SyncManager {
     // changed.
     virtual void OnConnectionStatusChange(ConnectionStatus status) = 0;
 
-    // Called when initialization is complete to the point that SyncManager can
-    // process changes. This does not necessarily mean authentication succeeded
-    // or that the SyncManager is online.
-    // IMPORTANT: Creating any type of transaction before receiving this
-    // notification is illegal!
-    // WARNING: Calling methods on the SyncManager before receiving this
-    // message, unless otherwise specified, produces undefined behavior.
-
-    virtual void OnInitializationComplete(
-        const WeakHandle<JsBackend>& js_backend,
-        const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-        bool success) = 0;
-
     virtual void OnActionableError(
         const SyncProtocolError& sync_protocol_error) = 0;
 
     virtual void OnMigrationRequested(ModelTypeSet types) = 0;
 
     virtual void OnProtocolEvent(const ProtocolEvent& event) = 0;
+
+    virtual void OnSyncStatusChanged(const SyncStatus&) = 0;
 
    protected:
     virtual ~Observer();
@@ -90,9 +77,6 @@ class SyncManager {
   struct InitArgs {
     InitArgs();
     ~InitArgs();
-
-    // Used to propagate events to chrome://sync-internals.  Optional.
-    WeakHandle<JsEventHandler> event_handler;
 
     // URL of the sync server.
     GURL service_url;
@@ -108,7 +92,7 @@ class SyncManager {
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
 
     // Must outlive SyncManager.
-    ExtensionsActivity* extensions_activity;
+    raw_ptr<ExtensionsActivity> extensions_activity;
 
     // Unqiuely identifies this client to the invalidation notification server.
     std::string invalidator_client_id;
@@ -116,13 +100,13 @@ class SyncManager {
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
 
     // Must outlive SyncManager.
-    SyncEncryptionHandler* encryption_handler;
+    raw_ptr<SyncEncryptionHandler> encryption_handler;
 
     // Carries shutdown requests across threads and will be used to cut short
     // any network I/O and tell the syncer to exit early.
     //
     // Must outlive SyncManager.
-    CancelationSignal* cancelation_signal;
+    raw_ptr<CancelationSignal> cancelation_signal;
 
     // Define the polling interval. Must not be zero.
     base::TimeDelta poll_interval;
@@ -131,9 +115,6 @@ class SyncManager {
     std::string cache_guid;
     std::string birthday;
     std::string bag_of_chips;
-
-    // List of observers to be added to AllStatus.
-    std::vector<SyncStatusObserver*> sync_status_observers;
   };
 
   // The state of sync the feature. If the user turned on sync explicitly, it
@@ -152,7 +133,7 @@ class SyncManager {
 
   virtual ModelTypeSet InitialSyncEndedTypes() = 0;
 
-  virtual ModelTypeSet GetEnabledTypes() = 0;
+  virtual ModelTypeSet GetConnectedTypes() = 0;
 
   // Update tokens that we're using in Sync. Email must stay the same.
   virtual void UpdateCredentials(const SyncCredentials& credentials) = 0;
@@ -183,7 +164,7 @@ class SyncManager {
   // Inform the syncer that its cached information about a type is obsolete.
   virtual void OnIncomingInvalidation(
       ModelType type,
-      std::unique_ptr<InvalidationInterface> invalidation) = 0;
+      std::unique_ptr<SyncInvalidation> invalidation) = 0;
 
   // Adds a listener to be notified of sync events.
   // NOTE: It is OK (in fact, it's probably a good idea) to call this before
@@ -239,12 +220,9 @@ class SyncManager {
   // Updates invalidation client id.
   virtual void UpdateInvalidationClientId(const std::string& client_id) = 0;
 
-  // Notifies SyncManager that there are no other known active devices.
-  virtual void UpdateSingleClientStatus(bool single_client) = 0;
-
-  // Updates the list of known active device FCM registration tokens.
-  virtual void UpdateActiveDeviceFCMRegistrationTokens(
-      std::vector<std::string> fcm_registration_tokens) = 0;
+  // Updates the invalidation information from known active devices.
+  virtual void UpdateActiveDevicesInvalidationInfo(
+      ActiveDevicesInvalidationInfo active_devices_invalidation_info) = 0;
 };
 
 }  // namespace syncer

@@ -36,39 +36,94 @@
 
 namespace blink {
 
+namespace {
+
 // Salt to separate otherwise identical string hashes so a class-selector like
 // .article won't match <article> elements.
-enum { kTagNameSalt = 13, kIdAttributeSalt = 17, kClassAttributeSalt = 19 };
+enum { kTagNameSalt = 13, kIdSalt = 17, kClassSalt = 19, kAttributeSalt = 23 };
 
-static inline void CollectElementIdentifierHashes(
+inline bool IsExcludedAttribute(const AtomicString& name) {
+  return name == html_names::kClassAttr.LocalName() ||
+         name == html_names::kIdAttr.LocalName() ||
+         name == html_names::kStyleAttr.LocalName();
+}
+
+inline void CollectElementIdentifierHashes(
     const Element& element,
     Vector<unsigned, 4>& identifier_hashes) {
   identifier_hashes.push_back(
       element.LocalNameForSelectorMatching().Impl()->ExistingHash() *
       kTagNameSalt);
-  if (element.HasID())
+  if (element.HasID()) {
     identifier_hashes.push_back(
-        element.IdForStyleResolution().Impl()->ExistingHash() *
-        kIdAttributeSalt);
+        element.IdForStyleResolution().Impl()->ExistingHash() * kIdSalt);
+  }
+
   if (element.IsStyledElement() && element.HasClass()) {
     const SpaceSplitString& class_names = element.ClassNames();
     wtf_size_t count = class_names.size();
     for (wtf_size_t i = 0; i < count; ++i) {
-      DCHECK(class_names[i].Impl());
-      // Speculative fix for https://crbug.com/646026
-      if (class_names[i].Impl())
-        identifier_hashes.push_back(class_names[i].Impl()->ExistingHash() *
-                                    kClassAttributeSalt);
+      identifier_hashes.push_back(class_names[i].Impl()->ExistingHash() *
+                                  kClassSalt);
     }
+  }
+  AttributeCollection attributes = element.AttributesWithoutUpdate();
+  for (const auto& attribute_item : attributes) {
+    auto attribute_name = attribute_item.LocalName();
+    if (IsExcludedAttribute(attribute_name))
+      continue;
+    auto lower = attribute_name.IsLowerASCII() ? attribute_name
+                                               : attribute_name.LowerASCII();
+    identifier_hashes.push_back(lower.Impl()->ExistingHash() * kAttributeSalt);
   }
 }
 
+inline void CollectDescendantSelectorIdentifierHashes(
+    const CSSSelector& selector,
+    unsigned*& hash) {
+  switch (selector.Match()) {
+    case CSSSelector::kId:
+      if (!selector.Value().empty())
+        (*hash++) = selector.Value().Impl()->ExistingHash() * kIdSalt;
+      break;
+    case CSSSelector::kClass:
+      if (!selector.Value().empty())
+        (*hash++) = selector.Value().Impl()->ExistingHash() * kClassSalt;
+      break;
+    case CSSSelector::kTag:
+      if (selector.TagQName().LocalName() !=
+          CSSSelector::UniversalSelectorAtom()) {
+        (*hash++) = selector.TagQName().LocalName().Impl()->ExistingHash() *
+                    kTagNameSalt;
+      }
+      break;
+    case CSSSelector::kAttributeExact:
+    case CSSSelector::kAttributeSet:
+    case CSSSelector::kAttributeList:
+    case CSSSelector::kAttributeContain:
+    case CSSSelector::kAttributeBegin:
+    case CSSSelector::kAttributeEnd:
+    case CSSSelector::kAttributeHyphen: {
+      auto attribute_name = selector.Attribute().LocalName();
+      if (IsExcludedAttribute(attribute_name))
+        break;
+      auto lower_name = attribute_name.IsLowerASCII()
+                            ? attribute_name
+                            : attribute_name.LowerASCII();
+      (*hash++) = lower_name.Impl()->ExistingHash() * kAttributeSalt;
+    } break;
+    default:
+      break;
+  }
+}
+
+}  // namespace
+
 void SelectorFilter::PushParentStackFrame(Element& parent) {
   DCHECK(ancestor_identifier_filter_);
-  DCHECK(parent_stack_.IsEmpty() ||
-         parent_stack_.back().element ==
-             FlatTreeTraversal::ParentElement(parent));
-  DCHECK(!parent_stack_.IsEmpty() || !FlatTreeTraversal::ParentElement(parent));
+  DCHECK(parent_stack_.empty() || parent_stack_.back().element ==
+                                      FlatTreeTraversal::ParentElement(parent));
+  DCHECK(!parent_stack_.empty() || !FlatTreeTraversal::ParentElement(parent));
   parent_stack_.push_back(ParentStackFrame(parent));
   ParentStackFrame& parent_frame = parent_stack_.back();
   // Mix tags, class names and ids into some sort of weird bouillabaisse.
@@ -80,14 +135,14 @@ void SelectorFilter::PushParentStackFrame(Element& parent) {
 }
 
 void SelectorFilter::PopParentStackFrame() {
-  DCHECK(!parent_stack_.IsEmpty());
+  DCHECK(!parent_stack_.empty());
   DCHECK(ancestor_identifier_filter_);
   const ParentStackFrame& parent_frame = parent_stack_.back();
   wtf_size_t count = parent_frame.identifier_hashes.size();
   for (wtf_size_t i = 0; i < count; ++i)
     ancestor_identifier_filter_->Remove(parent_frame.identifier_hashes[i]);
   parent_stack_.pop_back();
-  if (parent_stack_.IsEmpty()) {
+  if (parent_stack_.empty()) {
 #if DCHECK_IS_ON()
     DCHECK(ancestor_identifier_filter_->LikelyEmpty());
 #endif
@@ -98,7 +153,7 @@ void SelectorFilter::PopParentStackFrame() {
 void SelectorFilter::PushParent(Element& parent) {
   DCHECK(parent.GetDocument().InStyleRecalc());
   DCHECK(parent.InActiveDocument());
-  if (parent_stack_.IsEmpty()) {
+  if (parent_stack_.empty()) {
     DCHECK_EQ(parent, parent.GetDocument().documentElement());
     DCHECK(!ancestor_identifier_filter_);
     ancestor_identifier_filter_ = std::make_unique<IdentifierFilter>();
@@ -121,30 +176,6 @@ void SelectorFilter::PopParent(Element& parent) {
   if (!ParentStackIsConsistent(&parent))
     return;
   PopParentStackFrame();
-}
-
-static inline void CollectDescendantSelectorIdentifierHashes(
-    const CSSSelector& selector,
-    unsigned*& hash) {
-  switch (selector.Match()) {
-    case CSSSelector::kId:
-      if (!selector.Value().IsEmpty())
-        (*hash++) = selector.Value().Impl()->ExistingHash() * kIdAttributeSalt;
-      break;
-    case CSSSelector::kClass:
-      if (!selector.Value().IsEmpty())
-        (*hash++) =
-            selector.Value().Impl()->ExistingHash() * kClassAttributeSalt;
-      break;
-    case CSSSelector::kTag:
-      if (selector.TagQName().LocalName() !=
-          CSSSelector::UniversalSelectorAtom())
-        (*hash++) = selector.TagQName().LocalName().Impl()->ExistingHash() *
-                    kTagNameSalt;
-      break;
-    default:
-      break;
-  }
 }
 
 void SelectorFilter::CollectIdentifierHashes(
@@ -175,6 +206,12 @@ void SelectorFilter::CollectIdentifierHashes(
       case CSSSelector::kShadowPart:
         skip_over_subselectors = false;
         CollectDescendantSelectorIdentifierHashes(*current, hash);
+        break;
+      case CSSSelector::kRelativeDescendant:
+      case CSSSelector::kRelativeChild:
+      case CSSSelector::kRelativeDirectAdjacent:
+      case CSSSelector::kRelativeIndirectAdjacent:
+        NOTREACHED();
         break;
     }
     if (hash == end)

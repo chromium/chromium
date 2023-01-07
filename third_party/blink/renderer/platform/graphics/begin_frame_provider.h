@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,27 +7,27 @@
 
 #include <string>
 
+#include "base/notreached.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
-struct PLATFORM_EXPORT BeginFrameProviderParams final {
-  viz::FrameSinkId parent_frame_sink_id;
-  viz::FrameSinkId frame_sink_id;
-};
+struct BeginFrameProviderParams;
 
 class PLATFORM_EXPORT BeginFrameProviderClient : public GarbageCollectedMixin {
  public:
   virtual void BeginFrame(const viz::BeginFrameArgs&) = 0;
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  GetCompositorTaskRunner() = 0;
   virtual ~BeginFrameProviderClient() = default;
 };
 
@@ -36,10 +36,10 @@ class PLATFORM_EXPORT BeginFrameProvider
       public viz::mojom::blink::CompositorFrameSinkClient,
       public mojom::blink::EmbeddedFrameSinkClient {
  public:
-  explicit BeginFrameProvider(
+  BeginFrameProvider(
       const BeginFrameProviderParams& begin_frame_provider_params,
-      BeginFrameProviderClient*,
-      ContextLifecycleNotifier*);
+      BeginFrameProviderClient* client,
+      ContextLifecycleNotifier* context);
 
   void CreateCompositorFrameSinkIfNeeded();
 
@@ -48,15 +48,14 @@ class PLATFORM_EXPORT BeginFrameProvider
 
   // viz::mojom::blink::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
-      const WTF::Vector<viz::ReturnedResource>& resources) final {
+      WTF::Vector<viz::ReturnedResource> resources) final {
     NOTIMPLEMENTED();
   }
   void OnBeginFrame(
       const viz::BeginFrameArgs&,
       const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&) final;
   void OnBeginFramePausedChanged(bool paused) final {}
-  void ReclaimResources(
-      const WTF::Vector<viz::ReturnedResource>& resources) final {
+  void ReclaimResources(WTF::Vector<viz::ReturnedResource> resources) final {
     NOTIMPLEMENTED();
   }
   void OnCompositorFrameTransitionDirectiveProcessed(

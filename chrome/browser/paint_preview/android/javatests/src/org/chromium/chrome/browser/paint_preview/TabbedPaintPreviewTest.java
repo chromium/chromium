@@ -1,16 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.paint_preview;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.Callback;
@@ -33,7 +34,6 @@ import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.components.paintpreview.player.PlayerManager;
@@ -52,6 +52,9 @@ import java.util.concurrent.TimeoutException;
 public class TabbedPaintPreviewTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    // Tell R8 not to break the ability to mock the class.
+    @Mock
+    private PaintPreviewTabService mUnused;
 
     private static final String TEST_URL = "/chrome/test/data/android/about.html";
 
@@ -64,14 +67,14 @@ public class TabbedPaintPreviewTest {
                 String directoryKey, boolean mainFrameMode,
                 @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
-            return new TestCompositorDelegate(service, null, url, directoryKey, mainFrameMode,
+            return new TestCompositorDelegate(service, 0, url, directoryKey, mainFrameMode,
                     compositorListener, compositorErrorCallback);
         }
 
         @Override
-        public PlayerCompositorDelegate createForProto(NativePaintPreviewServiceProvider service,
-                @Nullable PaintPreviewProto proto, GURL url, String directoryKey,
-                boolean mainFrameMode,
+        public PlayerCompositorDelegate createForCaptureResult(
+                NativePaintPreviewServiceProvider service, long nativeCaptureResultPtr, GURL url,
+                String directoryKey, boolean mainFrameMode,
                 @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
             Assert.fail("createForProto shouldn't be called");
@@ -324,10 +327,10 @@ public class TabbedPaintPreviewTest {
         private int mNextRequestId;
 
         TestCompositorDelegate(NativePaintPreviewServiceProvider service,
-                @Nullable PaintPreviewProto proto, GURL url, String directoryKey,
-                boolean mainFrameMode, @NonNull CompositorListener compositorListener,
+                long nativeCaptureResultPtr, GURL url, String directoryKey, boolean mainFrameMode,
+                @NonNull CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
-            Assert.assertNull(proto);
+            Assert.assertEquals(nativeCaptureResultPtr, 0);
             Assert.assertFalse(mainFrameMode);
             new Handler().postDelayed(() -> {
                 Parcel parcel = Parcel.obtain();
@@ -336,7 +339,7 @@ public class TabbedPaintPreviewTest {
                 parcel.setDataPosition(0);
                 UnguessableToken token = UnguessableToken.CREATOR.createFromParcel(parcel);
                 compositorListener.onCompositorReady(token, new UnguessableToken[] {token},
-                        new int[] {500, 500}, new int[] {0, 0}, new int[] {0}, null, null, 0);
+                        new int[] {500, 500}, new int[] {0, 0}, new int[] {0}, null, null, 0f, 0);
             }, 250);
         }
 
@@ -378,6 +381,11 @@ public class TabbedPaintPreviewTest {
         }
 
         @Override
+        public Point getRootFrameOffsets() {
+            return new Point();
+        }
+
+        @Override
         public void setCompressOnClose(boolean compressOnClose) {}
 
         @Override
@@ -413,5 +421,8 @@ public class TabbedPaintPreviewTest {
         public boolean isAccessibilityEnabled() {
             return false;
         }
+
+        @Override
+        public void onAccessibilityNotSupported() {}
     }
 }

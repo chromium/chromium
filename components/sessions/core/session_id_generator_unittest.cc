@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <limits>
 
-#include "base/macros.h"
 #include "base/test/mock_callback.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +19,10 @@ using testing::Return;
 const int kExpectedIdPadding = 50;
 
 class SessionIdGeneratorTest : public testing::Test {
+ public:
+  SessionIdGeneratorTest(const SessionIdGeneratorTest&) = delete;
+  SessionIdGeneratorTest& operator=(const SessionIdGeneratorTest&) = delete;
+
  protected:
   SessionIdGeneratorTest() {
     // Call Shutdown() in case other tests outside this file have forgotten to
@@ -41,9 +44,6 @@ class SessionIdGeneratorTest : public testing::Test {
   }
 
   TestingPrefServiceSimple prefs_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionIdGeneratorTest);
 };
 
 TEST_F(SessionIdGeneratorTest, ShouldGenerateContiguousIds) {

@@ -1,4 +1,4 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,9 +10,8 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//gpu/vulkan/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
-import("//third_party/libgifcodec/libgifcodec.gni")
 import("//third_party/skia/gn/shared_sources.gni")
-import("//third_party/skia/third_party/skcms/skcms.gni")
+import("//third_party/skia/modules/skcms/skcms.gni")
 import("//tools/grit/grit_rule.gni")
 import("features.gni")
 
@@ -25,44 +24,38 @@ if (current_cpu == "mipsel" || current_cpu == "mips64el") {
 
 skia_support_gpu = !is_ios
 skia_support_pdf = !is_ios && enable_basic_printing
-skia_support_skottie = true
 
-declare_args() {
-  enable_skia_wuffs_gif = true
-}
-
-# Generate a buildflag header for compile-time checking of Dawn support.
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "SKIA_USE_DAWN=$skia_use_dawn" ]
+  flags = [
+    "SKIA_SUPPORT_SKOTTIE=$skia_support_skottie",
+    "SKIA_USE_DAWN=$skia_use_dawn",
+  ]
 }
 
 # External-facing config for dependent code.
 config("skia_config") {
-  defines = [ "SK_UNTIL_CRBUG_1187654_IS_FIXED" ]
+  defines = [
+    "SK_CODEC_DECODES_PNG",
+    "SK_CODEC_DECODES_WEBP",
+    "SK_ENCODE_PNG",
+    "SK_ENCODE_WEBP",
+    "SK_ENABLE_SKSL",
+    "SK_UNTIL_CRBUG_1187654_IS_FIXED",
+    "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
+    "SK_WIN_FONTMGR_NO_SIMULATIONS",
+  ]
+
   include_dirs = [ "//third_party/skia" ]
 
   if (!is_ios) {
-    if (enable_skia_wuffs_gif) {
-      defines += [ "SK_FAVOR_WUFFS_V_0_3_OVER_V_0_2" ]
-      include_dirs += [ "//third_party/wuffs/src/release/c" ]
-    } else {
-      include_dirs += [ "//third_party/libgifcodec" ]
-    }
+    include_dirs += [ "//third_party/wuffs/src/release/c" ]
   }
   if (enable_vulkan) {
     include_dirs += [ "//third_party/vulkan/include" ]
     configs =
         [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers_config" ]
   }
-
-  defines += [
-    "SK_CODEC_DECODES_PNG",
-    "SK_CODEC_DECODES_WEBP",
-    "SK_ENCODE_PNG",
-    "SK_ENCODE_WEBP",
-    "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
-  ]
 
   if (skia_use_gl) {
     defines += [ "SK_GL" ]
@@ -72,18 +65,11 @@ config("skia_config") {
     defines += [
       "SK_CODEC_DECODES_JPEG",
       "SK_ENCODE_JPEG",
+      "SK_HAS_WUFFS_LIBRARY",
     ]
-    if (enable_skia_wuffs_gif) {
-      defines += [ "SK_HAS_WUFFS_LIBRARY" ]
-    } else {
-      defines += [ "SK_USE_LIBGIFCODEC" ]
-    }
   }
   if (enable_vulkan) {
-    defines += [
-      "SK_VULKAN_HEADER=\"../../skia/config/SkVulkanConfig.h\"",
-      "SK_VULKAN=1",
-    ]
+    defines += [ "SK_VULKAN=1" ]
   }
   if (skia_use_dawn) {
     defines += [ "SK_DAWN" ]
@@ -130,6 +116,11 @@ config("skia_config") {
 # Internal-facing config for Skia library code.
 config("skia_library_config") {
   defines = []
+
+  # Skia uses C++17 language features in its internal code. Previously Skia was built with
+  # "-std=c++17". See http://crbug.com/1257145 for why this was a bad idea.
+  cflags_cc = [ "-Wno-c++17-extensions" ]
+  cflags_objcc = [ "-Wno-c++17-extensions" ]
 
   if (!is_ios && !use_system_freetype) {
     defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION=(((FREETYPE_MAJOR) * 0x01000000) | ((FREETYPE_MINOR) * 0x00010000) | ((FREETYPE_PATCH) * 0x00000100))" ]
@@ -187,25 +178,6 @@ config("skia_library_config") {
       # fairly small size. http://crbug.com/314387
       "SK_DEFAULT_FONT_CACHE_COUNT_LIMIT=256",
     ]
-
-    cflags = [
-      "/wd4244",  # conversion from 'type1( __int64)' to 'type2 (unsigned int)'
-      "/wd4267",  # conversion from 'size_t' (64 bit) to 'type'(32 bit).
-      "/wd4341",  # signed value is out of range for enum constant.
-      "/wd4345",  # Object is default-initialized if initialization is omitted.
-      "/wd4390",  # ';'empty statement found in looping;is it what was intended?
-      "/wd4554",  # 'operator' : check operator precedence for possible error
-      "/wd4748",  # compiler will disable optimizations if a function has inline
-                  # assembly code contains flow control(jmp or jcc) statements.
-
-      "/wd4800",  # forcing value to bool 'true/false'(assigning int to bool).
-      "/wd5041",  # out-of-line definition for constexpr static data member is
-                  # not needed and is deprecated in C++17
-    ]
-    cflags_cc = [ "/std:c++17" ]
-  } else {
-    cflags_cc = [ "-std=c++17" ]
-    cflags_objcc = [ "-std=c++17" ]
   }
 }
 
@@ -225,10 +197,9 @@ source_set("skcms") {
     cflags += [ "-mfp16-format=ieee" ]
   }
 
-  public = [ "//third_party/skia/include/third_party/skcms/skcms.h" ]
-  include_dirs = [ "//third_party/skia/include/third_party/skcms" ]
-  sources =
-      rebase_path(skcms_sources, ".", "//third_party/skia/third_party/skcms")
+  public = [ "//third_party/skia/modules/skcms/skcms.h" ]
+  include_dirs = [ "//third_party/skia/modules/skcms" ]
+  sources = rebase_path(skcms_sources, ".", "//third_party/skia/modules/skcms")
 }
 
 component("skia") {
@@ -243,6 +214,8 @@ component("skia") {
     "ext/SkMemory_new_handler.cpp",
     "ext/benchmarking_canvas.cc",
     "ext/benchmarking_canvas.h",
+    "ext/cicp.cc",
+    "ext/cicp.h",
     "ext/convolver.cc",
     "ext/convolver.h",
     "ext/event_tracer_impl.cc",
@@ -256,6 +229,11 @@ component("skia") {
     "ext/opacity_filter_canvas.h",
     "ext/recursive_gaussian_convolution.cc",
     "ext/recursive_gaussian_convolution.h",
+    "ext/rgba_to_yuva.cc",
+    "ext/rgba_to_yuva.h",
+    "ext/skcolorspace_primaries.cc",
+    "ext/skcolorspace_primaries.h",
+    "ext/skcolorspace_trfn.h",
     "ext/skia_histogram.cc",
     "ext/skia_histogram.h",
     "ext/skia_memory_dump_provider.cc",
@@ -339,7 +317,7 @@ component("skia") {
   sources += skia_effects_imagefilter_public
 
   # The imported Skia gni source paths are made absolute by gn.
-  defines = skia_core_defines
+  defines = []
   sources += skia_sksl_sources
   sources += skia_utils_sources
   sources += skia_xps_sources
@@ -376,23 +354,15 @@ component("skia") {
       "//third_party/skia/src/codec/SkParseEncodedOrigin.cpp",
       "//third_party/skia/src/codec/SkPngCodec.cpp",
       "//third_party/skia/src/codec/SkSampler.cpp",
-      "//third_party/skia/src/codec/SkStreamBuffer.cpp",
       "//third_party/skia/src/codec/SkSwizzler.cpp",
       "//third_party/skia/src/codec/SkWbmpCodec.cpp",
       "//third_party/skia/src/codec/SkWebpCodec.cpp",
+      "//third_party/skia/src/codec/SkWuffsCodec.cpp",
       "//third_party/skia/src/images/SkJPEGWriteUtility.cpp",
       "//third_party/skia/src/images/SkJpegEncoder.cpp",
       "//third_party/skia/src/ports/SkImageGenerator_skia.cpp",
     ]
-
-    if (enable_skia_wuffs_gif) {
-      deps += [ "//third_party/wuffs" ]
-      sources += [ "//third_party/skia/src/codec/SkWuffsCodec.cpp" ]
-    } else {
-      sources += rebase_path(libgifcodec_sources + libgifcodec_public,
-                             ".",
-                             "//third_party/libgifcodec")
-    }
+    deps += [ "//third_party/wuffs" ]
   }
 
   if (current_cpu == "arm") {
@@ -400,22 +370,10 @@ component("skia") {
   }
 
   # Remove unused util sources.
-  sources -= [
-    "//third_party/skia/src/utils/SkInterpolator.cpp",
-    "//third_party/skia/src/utils/SkParsePath.cpp",
-  ]
+  sources -= [ "//third_party/skia/src/utils/SkParsePath.cpp" ]
 
   if (is_win) {
-    sources -= [
-      # Keeping _win.cpp
-      "//third_party/skia/src/utils/SkThreadUtils_pthread.cpp",
-    ]
     libs = [ "fontsub.lib" ]
-  } else {
-    sources -= [
-      # Keeping _pthread.cpp
-      "//third_party/skia/src/utils/SkThreadUtils_win.cpp",
-    ]
   }
 
   # need separate win section to handle chromes auto gn filter
@@ -445,14 +403,10 @@ component("skia") {
       "//third_party/skia/src/ports/SkOSFile_win.cpp",
       "//third_party/skia/src/ports/SkRemotableFontMgr_win_dw.cpp",
       "//third_party/skia/src/ports/SkScalerContext_win_dw.cpp",
-      "//third_party/skia/src/ports/SkTLS_win.cpp",
       "//third_party/skia/src/ports/SkTypeface_win_dw.cpp",
     ]
   } else {
-    sources += [
-      "//third_party/skia/src/ports/SkOSFile_posix.cpp",
-      "//third_party/skia/src/ports/SkTLS_pthread.cpp",
-    ]
+    sources += [ "//third_party/skia/src/ports/SkOSFile_posix.cpp" ]
   }
 
   if (is_apple) {
@@ -539,11 +493,11 @@ component("skia") {
     ":skia_core_and_effects",
   ]
   if (skia_use_dawn) {
-    public_deps += [ "//third_party/dawn/src/dawn:dawncpp_headers" ]
+    public_deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
     deps += [
-      "//third_party/dawn/src/dawn:dawn_proc",
-      "//third_party/dawn/src/dawn:dawncpp",
-      "//third_party/dawn/src/dawn_native",
+      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
     ]
   }
 
@@ -601,11 +555,13 @@ component("skia") {
     sources += skia_gpu_sources
     sources += skia_null_gpu_sources
     sources += skia_sksl_gpu_sources
+    sources += skia_shared_gpu_sources
     if (skia_use_gl) {
       sources += skia_gl_gpu_sources
     }
     if (enable_vulkan) {
       sources += skia_vk_sources
+      sources += skia_shared_vk_sources
     }
     deps += [ "//gpu/config:workaround_list" ]
   }
@@ -677,7 +633,7 @@ template("skia_source_set") {
 
 # Split out for targeted removal of the afdo_optimize_size config on Android.
 skia_source_set("skia_core_and_effects") {
-  defines = skia_core_defines
+  defines = []
   sources = skia_core_sources
   sources += skia_effects_sources
   sources += skia_effects_imagefilter_sources
@@ -685,7 +641,7 @@ skia_source_set("skia_core_and_effects") {
     deps = [ "//gpu/config:workaround_list" ]
   }
   if (skia_use_dawn) {
-    deps += [ "//third_party/dawn/src/dawn:dawncpp_headers" ]
+    deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
   }
 
   visibility = [ ":skia" ]
@@ -707,16 +663,6 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     }
     if (is_win) {
       defines = [ "SK_CPU_SSE_LEVEL=31" ]
-    }
-    visibility = [ ":skia_opts" ]
-  }
-  skia_source_set("skia_opts_sse41") {
-    sources = skia_opts.sse41_sources
-    if (!is_win || is_clang) {
-      cflags = [ "-msse4.1" ]
-    }
-    if (is_win) {
-      defines = [ "SK_CPU_SSE_LEVEL=41" ]
     }
     visibility = [ ":skia_opts" ]
   }
@@ -775,13 +721,11 @@ skia_source_set("skia_opts") {
   deps = [ "//base" ]
 
   if (current_cpu == "x86" || current_cpu == "x64") {
-    sources = skia_opts.sse2_sources
     deps += [
       ":skia_opts_avx",
       ":skia_opts_hsw",
       ":skia_opts_skx",
       ":skia_opts_sse3",
-      ":skia_opts_sse41",
       ":skia_opts_sse42",
     ]
   } else if (current_cpu == "arm") {
@@ -792,10 +736,7 @@ skia_source_set("skia_opts") {
     }
 
     if (arm_version >= 7) {
-      sources = skia_opts.armv7_sources
       if (arm_use_neon || arm_optionally_use_neon) {
-        sources += skia_opts.neon_sources
-
         # Root build config sets -mfpu=$arm_fpu, which we expect to be neon
         # when running this.
         if (!arm_use_neon) {
@@ -803,29 +744,21 @@ skia_source_set("skia_opts") {
           cflags += [ "-mfpu=neon" ]
         }
       }
-    } else {
-      sources = skia_opts.none_sources
     }
   } else if (current_cpu == "arm64") {
-    sources = skia_opts.arm64_sources
     deps += [ ":skia_opts_crc32" ]
   } else if (current_cpu == "mipsel") {
     cflags += [ "-fomit-frame-pointer" ]
-
-    if (mips_dsp_rev >= 1) {
-      sources = skia_opts.mips_dsp_sources
-    } else {
-      sources = skia_opts.none_sources
-    }
   } else if (current_cpu == "mips64el") {
     cflags += [ "-fomit-frame-pointer" ]
-    sources = skia_opts.none_sources
   } else if (current_cpu == "ppc64") {
-    sources = skia_opts.none_sources
+    # Conditional and empty body needed to avoid assert() below.
   } else if (current_cpu == "s390x") {
-    sources = skia_opts.none_sources
+    # Conditional and empty body needed to avoid assert() below.
+  } else if (current_cpu == "riscv64") {
+    # Conditional and empty body needed to avoid assert() below.
   } else {
-    assert(false, "Need to port cpu specific stuff from skia_library_opts.gyp")
+    assert(false, "Unknown cpu target")
   }
 
   visibility = [ ":skia" ]
@@ -842,7 +775,7 @@ if (is_mac) {
     ]
     deps = [ "//gpu/config:workaround_list" ]
     if (skia_use_dawn) {
-      deps += [ "//third_party/dawn/src/dawn:dawncpp_headers" ]
+      deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
     }
   }
 }
@@ -851,7 +784,7 @@ if (is_mac) {
 if (is_fuchsia) {
   copy("copy_fuchsia_fonts_manifest") {
     sources = [ "ext/data/test_fonts/fuchsia_test_fonts_manifest.json" ]
-    outputs = [ "$root_out_dir/test_fonts/{{source_file_part}}" ]
+    outputs = [ "$root_out_dir/test_fonts/all.font_manifest.json" ]
   }
 }
 if (is_apple) {
@@ -868,6 +801,7 @@ if (is_apple) {
 }
 
 group("test_fonts_resources") {
+  testonly = true
   deps = []
   data_deps = []
 
@@ -888,27 +822,61 @@ group("test_fonts_resources") {
 source_set("test_fonts") {
   testonly = true
 
-  sources = [ "ext/test_fonts.h" ]
-  deps = [
-    ":test_fonts_resources",
-    "//base/test:test_support",
-    "//skia",
-  ]
+  deps = [ ":test_fonts_resources" ]
 
   if (is_fuchsia) {
-    sources += [
-      "ext/test_fonts_fuchsia.cc",
+    public = [
+      "ext/test_fonts.h",
       "ext/test_fonts_fuchsia.h",
     ]
+    sources = [
+      "ext/test_fonts_fuchsia.cc",
+      "ext/test_fonts_fuchsia_cfv1.cc",
+    ]
+    public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts" ]
     deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
+      "//base",
+      "//skia",
+      "//third_party/abseil-cpp:absl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
+      "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp_base",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
   if (is_mac) {
-    sources += [ "ext/test_fonts_mac.mm" ]
+    public = [ "ext/test_fonts.h" ]
+    sources = [ "ext/test_fonts_mac.mm" ]
+    deps += [ "//base" ]
+  }
+}
+
+# Fuchsia components that use the test fonts must include
+# "//build/config/fuchsia/test/test_fonts.shard.test-cml" in their
+# `additional_manifest_fragments`.
+# TODO(https://crbug.com/1287051): Once all consumers are migrated to CFv2,
+# move the `is_fuchsia` section below up into `test_fonts` above and remove this
+# target.
+source_set("test_fonts_cfv2") {
+  testonly = true
+
+  deps = [ ":test_fonts_resources" ]
+
+  if (is_fuchsia) {
+    public = [
+      "ext/test_fonts.h",
+      "ext/test_fonts_fuchsia.h",
+    ]
+    sources = [
+      "ext/test_fonts_fuchsia.cc",
+      "ext/test_fonts_fuchsia_cfv2.cc",
+    ]
+    public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts" ]
+    deps += [
+      "//base",
+      "//skia",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    ]
   }
 }
 
@@ -918,6 +886,7 @@ test("skia_unittests") {
     "ext/image_operations_unittest.cc",
     "ext/platform_canvas_unittest.cc",
     "ext/recursive_gaussian_convolution_unittest.cc",
+    "ext/skcolorspace_primaries_unittest.cc",
     "ext/skia_memory_dump_provider_unittest.cc",
     "ext/skia_utils_base_unittest.cc",
   ]
@@ -934,7 +903,6 @@ test("skia_unittests") {
 
   deps = [
     ":skia",
-    ":test_fonts",
     "//base",
     "//base/test:test_support",
     "//mojo/core/test:run_all_unittests",
@@ -942,6 +910,8 @@ test("skia_unittests") {
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
+
+  data_deps = [ "//testing/buildbot/filters:skia_unittests_filters" ]
 
   if (!is_ios) {
     sources += [ "public/mojom/test/mojom_traits_unittest.cc" ]
@@ -955,10 +925,13 @@ test("skia_unittests") {
   if (is_fuchsia) {
     sources += [ "ext/fontmgr_fuchsia_unittest.cc" ]
     deps += [
+      ":test_fonts_cfv2",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
-      "//third_party/test_fonts",
     ]
-    data_deps = [ "//third_party/test_fonts" ]
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/test_fonts.shard.test-cml" ]
+  } else {
+    deps += [ ":test_fonts" ]
   }
 
   if (skia_support_skottie) {

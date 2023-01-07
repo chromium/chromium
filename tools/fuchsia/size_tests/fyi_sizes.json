@@ -1,0 +1,12 @@
+{
+  "far_files" : [
+    "gen/fuchsia_web/webengine/web_engine/web_engine.far",
+    "gen/fuchsia_web/runners/cast_runner/cast_runner.far"
+  ],
+  "far_total_name" : "chrome_fuchsia",
+  "size_limits" : {
+    "chrome_fuchsia_compressed": 1e12,
+    "cast_runner_compressed": 1e12,
+    "web_engine_compressed": 1e12
+  }
+}

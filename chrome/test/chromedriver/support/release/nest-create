@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Script for preparing of new ChromeDriver release workspace.
+
+set -eu
+
+source "$(dirname "$0")/common.sh"
+ensure_linux $0
+
+this_script_name="$0"
+release_type="${1:-''}"
+version="${2:-''}"
+
+case "$release_type" in
+  'beta' | 'stable')
+    ;;
+  *)
+    echo "Usage: $this_script_name beta|stable version" >&2
+    exit 1
+    ;;
+esac
+
+mkdir "$version"
+cd "$version"
+echo "$release_type" > '.type'
+echo "$version" > '.version'

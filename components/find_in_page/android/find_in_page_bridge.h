@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define COMPONENTS_FIND_IN_PAGE_ANDROID_FIND_IN_PAGE_BRIDGE_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents.h"
 
 namespace find_in_page {
@@ -16,6 +16,10 @@ class FindInPageBridge {
   FindInPageBridge(JNIEnv* env,
                    const base::android::JavaRef<jobject>& obj,
                    const base::android::JavaRef<jobject>& j_web_contents);
+
+  FindInPageBridge(const FindInPageBridge&) = delete;
+  FindInPageBridge& operator=(const FindInPageBridge&) = delete;
+
   void Destroy(JNIEnv*, const base::android::JavaParamRef<jobject>&);
 
   void StartFinding(JNIEnv* env,
@@ -47,10 +51,8 @@ class FindInPageBridge {
       const base::android::JavaParamRef<jobject>& obj);
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   JavaObjectWeakGlobalRef weak_java_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindInPageBridge);
 };
 
 }  // namespace find_in_page

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,9 @@
 
 namespace ash {
 
-PersistentWindowInfo::PersistentWindowInfo(aura::Window* window) {
+PersistentWindowInfo::PersistentWindowInfo(aura::Window* window,
+                                           bool is_landscape_before_rotation)
+    : is_landscape(is_landscape_before_rotation) {
   const auto& display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);
   window_bounds_in_screen = window->GetBoundsInScreen();

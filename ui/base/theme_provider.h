@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,9 +40,6 @@ class COMPONENT_EXPORT(UI_BASE) ThemeProvider {
   // have its own source of ids (e.g. an enum, or external resource bundle).
   virtual gfx::ImageSkia* GetImageSkiaNamed(int id) const = 0;
 
-  // Get the color specified by |id|.
-  virtual SkColor GetColor(int id) const = 0;
-
   // Get the HSL shift specified by |id|.
   virtual color_utils::HSL GetTint(int id) const = 0;
 
@@ -58,15 +55,12 @@ class COMPONENT_EXPORT(UI_BASE) ThemeProvider {
   // doesn't provide a certain image, but custom themes might (badges, etc).
   virtual bool HasCustomImage(int id) const = 0;
 
-  // Returns true if the theme has defined a custom color for color |id|.
-  virtual bool HasCustomColor(int id) const = 0;
-
   // Reads the image data from the theme file into the specified vector. Only
   // valid for un-themed resources and the themed IDR_THEME_NTP_* in most
   // implementations of ThemeProvider. Returns NULL on error.
   virtual base::RefCountedMemory* GetRawData(
       int id,
-      ui::ScaleFactor scale_factor) const = 0;
+      ui::ResourceScaleFactor scale_factor) const = 0;
 };
 
 }  // namespace ui

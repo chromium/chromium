@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,7 +10,7 @@ from blinkpy.tool.commands.rebaseline_unittest import BaseTestCase
 
 
 class _FakeOptimizer(BaselineOptimizer):
-    def read_results_by_directory(self, baseline_name):
+    def read_results_by_directory(self, test_name, baseline_name):
         if baseline_name.endswith('txt'):
             return {'web_tests/passes/text.html': '123456'}
         return {}

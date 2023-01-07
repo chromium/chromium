@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,9 @@ class FileStreamForwarder {
                       base::ScopedFD fd_dest,
                       ResultCallback callback);
 
+  FileStreamForwarder(const FileStreamForwarder&) = delete;
+  FileStreamForwarder& operator=(const FileStreamForwarder&) = delete;
+
   // Posts a task to destruct this object on the IO thread.
   // Must not be called multiple times for the same object.
   void Destroy();
@@ -79,8 +82,6 @@ class FileStreamForwarder {
   std::unique_ptr<storage::FileStreamReader> stream_reader_;
 
   base::WeakPtrFactory<FileStreamForwarder> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileStreamForwarder);
 };
 
 // FileStreamForwarderPtr is unique_ptr with a custom deleter. Use this to

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/public/test/earl_grey/web_view_actions.h"
-#include "ios/web/public/test/element_selector.h"
+#import "ios/web/public/test/element_selector.h"
 #import "ios/web/shell/test/app/web_shell_test_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

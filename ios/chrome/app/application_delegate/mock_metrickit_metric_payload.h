@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,6 @@
 //   @"histogrammedTimeToFirstDrawKey" : @{@5 : @2, @15 : @4}
 //   will report 2 startup in bucket [0,10] and 4 in bucket [10,20].
 // Only the values currently reported in Chrome are mocked.
-id MockMetricPayload(NSDictionary* dictionary) API_AVAILABLE(ios(13.0));
+id MockMetricPayload(NSDictionary* dictionary);
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_MOCK_METRICKIT_METRIC_PAYLOAD_H_

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,17 +15,17 @@
 
 namespace content {
 
-struct PepperPluginInfo;
+struct ContentPluginInfo;
 struct WebPluginInfo;
 
-// Constructs a PepperPluginInfo from a WebPluginInfo. Returns false if
-// the operation is not possible, in particular the WebPluginInfo::type
-// must be one of the pepper types.
+// Constructs a Pepper-specific `ContentPluginInfo` from a `WebPluginInfo`.
+// Returns false if the operation is not possible, in particular the
+// `WebPluginInfo::type` must be one of the Pepper types.
 bool MakePepperPluginInfo(const WebPluginInfo& webplugin_info,
-                          PepperPluginInfo* pepper_info);
+                          ContentPluginInfo* pepper_info);
 
 // Computes the list of known pepper plugins.
-void ComputePepperPluginList(std::vector<PepperPluginInfo>* plugins);
+void ComputePepperPluginList(std::vector<ContentPluginInfo>* plugins);
 
 }  // namespace content
 

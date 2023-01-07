@@ -1,0 +1,21 @@
+/* This file is generated from:
+ *  tests/colors_test.json5
+ *  tests/colors_test_palette.json5
+ */
+
+syntax = "proto3";
+
+package chromeos;
+
+// Non-premultiplied 8-bit ARGB values.
+message Color {
+  // Color value to use in light mode.
+  uint32 light_value = 1;
+  // Color value to use in dark mode.
+  uint32 dark_value = 2;
+}
+
+message Colors {
+  map<string, Color> palette_colors = 1;
+  map<string, Color> test_colors = 2;
+}

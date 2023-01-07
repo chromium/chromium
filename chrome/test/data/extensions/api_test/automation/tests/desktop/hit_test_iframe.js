@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,19 +15,19 @@ var allTests = [
             chrome.test.succeed();
         });
 
-        // Wait for the inner frame to load, then find the button inside it
-        // and do a hit test on it.
-        rootNode.addEventListener(EventType.LOAD_COMPLETE, function(event) {
-          if (event.target.url.indexOf('iframe_inner.html') >= 0) {
-            // Find the inner button.
-            var innerButton = event.target.find(
-                { attributes: { name: 'Inner' } });
-            var bounds = innerButton.location;
-            var x = Math.floor(bounds.left + bounds.width / 2);
-            var y = Math.floor(bounds.top + bounds.height / 2);
-            rootNode.hitTest(x, y, EventType.HOVER);
+        const id = setInterval(() => {
+          var innerButton =
+              rootNode.find({attributes: {name: 'Inner'}, role: 'button'});
+          if (!innerButton) {
+            return;
           }
-        });
+
+          var bounds = innerButton.location;
+          var x = Math.floor(bounds.left + bounds.width / 2);
+          var y = Math.floor(bounds.top + bounds.height / 2);
+          rootNode.hitTest(x, y, EventType.HOVER);
+          clearInterval(id);
+        }, 100);
       });
     });
   },

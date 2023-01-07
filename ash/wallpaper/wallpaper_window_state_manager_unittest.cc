@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "ui/aura/window.h"
 
@@ -27,13 +26,15 @@ class WallpaperWindowStateManagerTest : public AshTestBase {
       : window_state_manager_(std::make_unique<WallpaperWindowStateManager>()) {
   }
 
+  WallpaperWindowStateManagerTest(const WallpaperWindowStateManagerTest&) =
+      delete;
+  WallpaperWindowStateManagerTest& operator=(
+      const WallpaperWindowStateManagerTest&) = delete;
+
   ~WallpaperWindowStateManagerTest() override = default;
 
  protected:
   std::unique_ptr<WallpaperWindowStateManager> window_state_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WallpaperWindowStateManagerTest);
 };
 
 TEST_F(WallpaperWindowStateManagerTest, HideAndRestoreWindows) {

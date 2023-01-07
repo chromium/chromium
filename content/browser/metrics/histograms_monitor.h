@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ class CONTENT_EXPORT HistogramsMonitor {
 
   // Gets the histogram diffs between the current histograms and the snapshot
   // recorded in StartMonitoring().
-  base::ListValue GetDiff();
+  base::Value::List GetDiff();
 
  private:
   // Imports histograms from the StatisticsRecorder.
@@ -40,7 +40,7 @@ class CONTENT_EXPORT HistogramsMonitor {
 
   // Gets the difference between the histograms argument and the stored snapshot
   // recorded in StartMonitoring().
-  base::ListValue GetDiffInternal(
+  base::Value::List GetDiffInternal(
       const base::StatisticsRecorder::Histograms& histograms);
 
   std::string query_;

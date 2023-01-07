@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
 
 namespace {

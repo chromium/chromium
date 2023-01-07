@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "components/variations/entropy_provider.h"
-#include "components/variations/variations_seed_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // These tests mirror testSimulateTrialAssignments and
@@ -18,11 +17,11 @@
 namespace variations {
 namespace {
 
+using AssignmentCounts = std::map<std::string, std::map<std::string, int>>;
+
 // These studies must match the ones in crosstalk_test.py.
 const char* const kDnsStudyName = "DnsProbe-Attempts";
 const char* const kInstantStudyName = "InstantExtended";
-constexpr int kDnsGroups = 2;
-constexpr int kInstantGroups = 7;
 constexpr size_t kMaxLowEntropySize = 8000;
 
 scoped_refptr<base::FieldTrial> CreateDnsStudy(double value) {
@@ -50,61 +49,91 @@ scoped_refptr<base::FieldTrial> CreateInstantStudy(double value) {
 // study. Populate |counts| such that count[x][y] is the number of users in both
 // DnsProbe-Attempts' group x and InstantExtended's group y. If |salt|, add salt
 // to InstantExtended's name.
-void countAssignments(int (&counts)[kDnsGroups][kInstantGroups], bool salt) {
-  // Must pass |counts| by reference, to prevent decay, for sizeof() to work.
-  memset(counts, 0, sizeof(counts));
+AssignmentCounts CountAssignments(bool salt) {
+  AssignmentCounts counts;
 
   for (uint16_t source = 0; source < kMaxLowEntropySize; source++) {
     NormalizedMurmurHashEntropyProvider provider(source, kMaxLowEntropySize);
 
     double dns_value = provider.GetEntropyForTrial(kDnsStudyName, 0);
-    int dns_group = CreateDnsStudy(dns_value)->group();
-    ASSERT_GE(dns_group, 0);
-    ASSERT_LT(dns_group, kDnsGroups);
+    std::string dns_name = CreateDnsStudy(dns_value)->group_name();
 
     std::string instant_study_name = kInstantStudyName;
     if (salt)
       instant_study_name += "abcdefghijklmnop";
     double instant_value = provider.GetEntropyForTrial(instant_study_name, 0);
-    int instant_group = CreateInstantStudy(instant_value)->group();
-    ASSERT_GE(instant_group, 0);
-    ASSERT_LT(instant_group, kInstantGroups);
+    std::string instant_name = CreateInstantStudy(instant_value)->group_name();
 
-    counts[dns_group][instant_group]++;
+    counts[dns_name][instant_name]++;
   }
+  return counts;
 }
 
 }  // namespace
 
 TEST(SimulateForCrosstalkTest, WithoutSalt) {
   // These must match crosstalk_test.py's testSimulateTrialAssignments.
-  int expected[kDnsGroups][kInstantGroups] = {
-      {5053, 360, 365, 355, 347, 366, 354},
-      {547, 40, 35, 45, 53, 34, 46}};
-  int actual[kDnsGroups][kInstantGroups];
-  countAssignments(actual, false);
-  for (int i = 0; i < kDnsGroups; i++) {
-    for (int j = 0; j < kInstantGroups; j++) {
-      EXPECT_EQ(expected[i][j], actual[i][j])
-          << " at groups " << i << " and " << j;
-    }
-  }
+  AssignmentCounts expected = {
+      {
+          "default",
+          {
+              {"Group1", 360},
+              {"Control1", 365},
+              {"Group2", 355},
+              {"Control2", 347},
+              {"Group3", 366},
+              {"Control3", 354},
+              {"DefaultGroup", 5053},
+          },
+      },
+      {
+          "1",
+          {
+              {"Group1", 40},
+              {"Control1", 35},
+              {"Group2", 45},
+              {"Control2", 53},
+              {"Group3", 34},
+              {"Control3", 46},
+              {"DefaultGroup", 547},
+          },
+      },
+  };
+  AssignmentCounts actual = CountAssignments(false);
+  ASSERT_EQ(expected, actual);
 }
 
 TEST(SimulateForCrosstalkTest, WithSalt) {
   // These must match crosstalk_test.py's
   // testSimulateTrialAssignmentsWithForcedSalt.
-  int expected[kDnsGroups][kInstantGroups] = {
-      {5029, 362, 372, 365, 360, 357, 355},
-      {571, 38, 28, 35, 40, 43, 45}};
-  int actual[kDnsGroups][kInstantGroups];
-  countAssignments(actual, true);
-  for (int i = 0; i < kDnsGroups; i++) {
-    for (int j = 0; j < kInstantGroups; j++) {
-      EXPECT_EQ(expected[i][j], actual[i][j])
-          << " at groups " << i << " and " << j;
-    }
-  }
+  AssignmentCounts expected = {
+      {
+          "default",
+          {
+              {"Group1", 362},
+              {"Control1", 372},
+              {"Group2", 365},
+              {"Control2", 360},
+              {"Group3", 357},
+              {"Control3", 355},
+              {"DefaultGroup", 5029},
+          },
+      },
+      {
+          "1",
+          {
+              {"Group1", 38},
+              {"Control1", 28},
+              {"Group2", 35},
+              {"Control2", 40},
+              {"Group3", 43},
+              {"Control3", 45},
+              {"DefaultGroup", 571},
+          },
+      },
+  };
+  AssignmentCounts actual = CountAssignments(true);
+  ASSERT_EQ(expected, actual);
 }
 
 }  // namespace variations

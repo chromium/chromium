@@ -34,6 +34,19 @@ post-normalized string offsets to pre-normalized string offsets.
 
 See http://unicode.org/reports/tr15/
 
+#### Examples:
+
+```
+>>> # input: <string>[num_strings]
+>>> normalize_utf8_with_offsets_map(["株式会社", "ＫＡＤＯＫＡＷＡ"])
+>>> # output: <string>[num_strings], <variant>[num_strings]
+NormalizeUTF8WithOffsetsMap(output=<tf.Tensor: shape=(2,), dtype=string,
+numpy=
+array([b'\xe6\xa0\xaa\xe5\xbc\x8f\xe4\xbc\x9a\xe7\xa4\xbe', b'KADOKAWA'],
+      dtype=object)>, offsets_map=<tf.Tensor: shape=(2,), dtype=variant,
+      numpy=<unprintable>>)
+```
+
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>
@@ -45,8 +58,10 @@ See http://unicode.org/reports/tr15/
 </td>
 <td>
 A `Tensor` or `RaggedTensor` of type string. (Must be UTF-8.)
-normalization_form: One of the following string values ('NFC', 'NFKC').
-Default is 'NFKC'.
+normalization_form: One of the following string values ('NFC', 'NFKC',
+'NFD', 'NFKD'). Default is 'NFKC'. NOTE: `NFD` and `NFKD` for
+  `normalize_utf8_with_offsets_map` will not be available until the
+  tf.text release w/ ICU 69 (scheduled after 4/2021).
 </td>
 </tr><tr>
 <td>
@@ -57,8 +72,6 @@ The name for this op (optional).
 </td>
 </tr>
 </table>
-
-
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">

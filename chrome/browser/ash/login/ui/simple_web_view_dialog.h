@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_SIMPLE_WEB_VIEW_DIALOG_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
@@ -17,8 +15,8 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "url/gurl.h"
 
 class CommandUpdaterImpl;
@@ -32,7 +30,7 @@ class Widget;
 class WidgetDelegate;
 }  // namespace views
 
-namespace chromeos {
+namespace ash {
 
 class StubBubbleModelDelegate;
 
@@ -69,7 +67,7 @@ class SimpleWebViewDialog : public views::View,
   void NavigationStateChanged(content::WebContents* source,
                               content::InvalidateTypes changed_flags) override;
   void LoadingStateChanged(content::WebContents* source,
-                           bool to_different_document) override;
+                           bool should_show_loading_ui) override;
 
   // Implements LocationBarView::Delegate:
   content::WebContents* GetWebContents() override;
@@ -122,6 +120,6 @@ class SimpleWebViewDialog : public views::View,
   base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_SIMPLE_WEB_VIEW_DIALOG_H_

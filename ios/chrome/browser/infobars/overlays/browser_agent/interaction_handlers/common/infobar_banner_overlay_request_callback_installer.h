@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,8 @@ class InfobarBannerOverlayRequestCallbackInstaller
     : public OverlayRequestCallbackInstaller {
  public:
   // Constructor for an instance that installs callbacks for OverlayRequests
-  // supported by |request_support| that forward interaction events to
-  // |interaction_handler|.
+  // supported by `request_support` that forward interaction events to
+  // `interaction_handler`.
   InfobarBannerOverlayRequestCallbackInstaller(
       const OverlayRequestSupport* request_support,
       InfobarBannerInteractionHandler* interaction_handler);
@@ -28,34 +28,34 @@ class InfobarBannerOverlayRequestCallbackInstaller
   void InstallCallbacksInternal(OverlayRequest* request) override;
 
  private:
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager.  The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with an
+  // OverlayResponseSupport that guarantees that `response` is created with an
   // InfobarBannerMainActionResponse.
   void MainActionButtonTapped(OverlayRequest* request,
                               OverlayResponse* response);
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager.  The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with an
+  // OverlayResponseSupport that guarantees that `response` is created with an
   // InfobarBannerShowModalResponse.
   void ShowModalButtonTapped(OverlayRequest* request,
                              OverlayResponse* response);
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager.  The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with an
+  // OverlayResponseSupport that guarantees that `response` is created with an
   // InfobarBannerUserInitiatedDismissalResponse.
   void BannerDismissedByUser(OverlayRequest* request,
                              OverlayResponse* response);
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager.  The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with an
+  // OverlayResponseSupport that guarantees that `response` is created with an
   // InfobarBannerRemoveInfobarResponse.
   void RemoveInfobar(OverlayRequest* request, OverlayResponse* response);
 
   // OverlayRequestCallbackInstaller:
   const OverlayRequestSupport* GetRequestSupport() const override;
 
-  // The request support for |interaction_handler_|.
+  // The request support for `interaction_handler_`.
   const OverlayRequestSupport* request_support_ = nullptr;
   // The handler for received responses.
   InfobarBannerInteractionHandler* interaction_handler_ = nullptr;

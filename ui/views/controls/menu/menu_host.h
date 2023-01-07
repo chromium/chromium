@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "ui/base/owned_window_anchor.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -40,15 +41,32 @@ class MenuControllerTest;
 // to the MenuHost.
 class MenuHost : public Widget, public WidgetObserver {
  public:
+  struct InitParams {
+    Widget* parent = nullptr;
+    gfx::Rect bounds;
+    View* contents_view = nullptr;
+    bool do_capture = false;
+    gfx::NativeView native_view_for_gestures;
+    ui::MenuType menu_type = ui::MenuType::kRootContextMenu;
+    // Window that is stacked below a new menu window (can be different from the
+    // |parent|).
+    Widget* context = nullptr;
+
+    // Additional information that helps to position anchored windows in such
+    // backends as Wayland.
+    ui::OwnedWindowAnchor owned_window_anchor;
+  };
+
   explicit MenuHost(SubmenuView* submenu);
+
+  MenuHost(const MenuHost&) = delete;
+  MenuHost& operator=(const MenuHost&) = delete;
+
   ~MenuHost() override;
 
   // Initializes and shows the MenuHost.
-  // WARNING: |parent| may be NULL.
-  void InitMenuHost(Widget* parent,
-                    const gfx::Rect& bounds,
-                    View* contents_view,
-                    bool do_capture);
+  // WARNING: |init_params.parent| may be NULL.
+  void InitMenuHost(const InitParams& init_params);
 
   // Returns true if the menu host is visible.
   bool IsMenuHostVisible();
@@ -66,6 +84,9 @@ class MenuHost : public Widget, public WidgetObserver {
   // Sets the bounds of the menu host.
   void SetMenuHostBounds(const gfx::Rect& bounds);
 
+  // Sets the anchor of the menu host.
+  void SetMenuHostOwnedWindowAnchor(const ui::OwnedWindowAnchor& anchor);
+
   // Releases a mouse grab installed by |ShowMenuHost|.
   void ReleaseMenuHostCapture();
 
@@ -79,15 +100,18 @@ class MenuHost : public Widget, public WidgetObserver {
   void OnOwnerClosing() override;
   void OnDragWillStart() override;
   void OnDragComplete() override;
+  Widget* GetPrimaryWindowWidget() override;
 
   // WidgetObserver:
   void OnWidgetDestroying(Widget* widget) override;
 
   // Parent of the MenuHost widget.
-  Widget* owner_ = nullptr;
+  raw_ptr<Widget> owner_ = nullptr;
+
+  gfx::NativeView native_view_for_gestures_ = nullptr;
 
   // The view we contain.
-  SubmenuView* submenu_;
+  raw_ptr<SubmenuView> submenu_;
 
   // If true, DestroyMenuHost has been invoked.
   bool destroying_;
@@ -95,12 +119,10 @@ class MenuHost : public Widget, public WidgetObserver {
   // If true and capture is lost we don't notify the delegate.
   bool ignore_capture_lost_;
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_MAC)
   // Handles raw touch events at the moment.
   std::unique_ptr<internal::PreMenuEventDispatchHandler> pre_dispatch_handler_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(MenuHost);
 };
 
 }  // namespace views

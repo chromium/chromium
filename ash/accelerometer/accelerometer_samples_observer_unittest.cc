@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/accelerometer/accelerometer_constants.h"
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/sensors/fake_sensor_device.h"
@@ -57,16 +58,8 @@ class AccelerometerSamplesObserverTest : public ::testing::Test {
     ++num_samples_;
   }
 
-  void DisableFirstChannel() {
-    sensor_device_->SetChannelsEnabled(
-        {0}, false,
-        base::BindOnce(
-            &AccelerometerSamplesObserverTest::SetChannelsEnabledCallback,
-            base::Unretained(this)));
-  }
-
-  void SetChannelsEnabledCallback(const std::vector<int32_t>& failed_indices) {
-    EXPECT_EQ(failed_indices.size(), 0u);
+  void DisableFirstChannel(mojo::ReceiverId id) {
+    sensor_device_->SetChannelsEnabledWithId(id, {0}, false);
   }
 
   std::unique_ptr<chromeos::sensors::FakeSensorDevice> sensor_device_;
@@ -113,7 +106,8 @@ TEST_F(AccelerometerSamplesObserverTest, GetSamples) {
   SetChannels(kNumberOfAxes);
 
   mojo::Remote<chromeos::sensors::mojom::SensorDevice> accelerometer;
-  sensor_device_->AddReceiver(accelerometer.BindNewPipeAndPassReceiver());
+  auto id =
+      sensor_device_->AddReceiver(accelerometer.BindNewPipeAndPassReceiver());
 
   SetObserver(std::move(accelerometer));
   observer_->SetEnabled(true);
@@ -124,7 +118,7 @@ TEST_F(AccelerometerSamplesObserverTest, GetSamples) {
   EXPECT_TRUE(sensor_device_->HasReceivers());
   EXPECT_EQ(num_samples_, 1);
 
-  DisableFirstChannel();
+  DisableFirstChannel(id);
 
   // Wait until a sample is received.
   base::RunLoop().RunUntilIdle();
@@ -134,13 +128,13 @@ TEST_F(AccelerometerSamplesObserverTest, GetSamples) {
   EXPECT_EQ(num_samples_, 1);
 
   // Simulate a disconnection of the observer's mojo channel in IIO Service.
-  sensor_device_->StopReadingSamples();
+  sensor_device_->ResetObserverRemote(id);
 
   // Wait until the disconnection is done.
   base::RunLoop().RunUntilIdle();
 
   // OnObserverDisconnect shouldn't reset SensorDevice's mojo endpoint so that
-  // LightProviderMojo can get the disconnection.
+  // AccelerometerProviderMojo can get the disconnection.
   EXPECT_TRUE(sensor_device_->HasReceivers());
 }
 

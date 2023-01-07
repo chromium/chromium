@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,14 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
-import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.provider.Settings;
 
-import org.chromium.android_webview.devui.util.WebViewPackageHelper;
+import org.chromium.android_webview.devui.util.SafeIntentUtils;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.base.Log;
+import org.chromium.base.PackageManagerUtils;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -90,7 +90,7 @@ public class WebViewPackageError {
                 String.format(Locale.US, DIFFERENT_WEBVIEW_PROVIDER_DIALOG_MESSAGE, label));
 
         boolean canOpenCurrentProvider = canOpenCurrentWebViewProviderDevTools();
-        boolean canChangeProvider = canChangeWebViewProvider();
+        boolean canChangeProvider = canAccessWebViewProviderDeveloperSetting();
         if (canChangeProvider) {
             mErrorMessage.setActionButton(
                     CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT, v -> openChangeWebViewProviderSettings());
@@ -128,7 +128,7 @@ public class WebViewPackageError {
                                 + "provider.",
                         systemWebViewPackage.packageName));
 
-        if (canChangeWebViewProvider()) {
+        if (canAccessWebViewProviderDeveloperSetting()) {
             builder.setPositiveButton(CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT,
                     (dialog, id) -> openChangeWebViewProviderSettings());
         }
@@ -145,12 +145,8 @@ public class WebViewPackageError {
             Log.e(TAG, "Could not find a valid WebView implementation");
             return false;
         }
-        Intent intent = buildWebViewDevUiIntent(systemWebViewPackage.packageName);
-        // Check if the intent is resolved, i.e current system WebView package has a developer
-        // UI that responds to "com.android.webview.SHOW_DEV_UI" action.
-        List<ResolveInfo> resolveInfo =
-                mContext.getPackageManager().queryIntentActivities(intent, 0);
-        return !resolveInfo.isEmpty();
+        return PackageManagerUtils.canResolveActivity(
+                buildWebViewDevUiIntent(systemWebViewPackage.packageName));
     }
 
     private void openCurrentWebViewProviderDevTools() {
@@ -180,12 +176,21 @@ public class WebViewPackageError {
         return intent;
     }
 
-    private boolean canChangeWebViewProvider() {
+    /**
+     * Check if the user can open the settings activity to change WebView providers or not.
+     */
+    public static boolean canAccessWebViewProviderDeveloperSetting() {
         // Switching WebView providers is possible from API >= 24.
-        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        // The activity to change WebView provider is only enabled for admin user, see
+        // https://crbug.com/1347418#comment8.
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                && PackageManagerUtils.canResolveActivity(
+                        new Intent(Settings.ACTION_WEBVIEW_SETTINGS));
     }
 
     private void openChangeWebViewProviderSettings() {
-        mContext.startActivity(new Intent(Settings.ACTION_WEBVIEW_SETTINGS));
+        SafeIntentUtils.startActivityOrShowError(mContext,
+                new Intent(Settings.ACTION_WEBVIEW_SETTINGS),
+                SafeIntentUtils.WEBVIEW_SETTINGS_ERROR);
     }
 }

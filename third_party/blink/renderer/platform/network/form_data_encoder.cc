@@ -41,7 +41,7 @@ static inline void Append(Vector<char>& buffer, const char* string) {
 }
 
 static inline void Append(Vector<char>& buffer, const std::string& string) {
-  buffer.Append(string.data(), string.length());
+  buffer.Append(string.data(), base::checked_cast<wtf_size_t>(string.length()));
 }
 
 static inline void AppendPercentEncoded(Vector<char>& buffer, unsigned char c) {
@@ -51,21 +51,30 @@ static inline void AppendPercentEncoded(Vector<char>& buffer, unsigned char c) {
 }
 
 static void AppendQuotedString(Vector<char>& buffer,
-                               const std::string& string) {
+                               const std::string& string,
+                               FormDataEncoder::Mode mode) {
   // Append a string as a quoted value, escaping quotes and line breaks.
-  // FIXME: Is it correct to use percent escaping here? Other browsers do not
-  // encode these characters yet, so we should test popular servers to find out
-  // if there is an encoding form they can handle.
   size_t length = string.length();
   for (size_t i = 0; i < length; ++i) {
     char c = string.data()[i];
 
     switch (c) {
       case 0x0a:
-        Append(buffer, "%0A");
+        if (mode == FormDataEncoder::kNormalizeCRLF) {
+          Append(buffer, "%0D%0A");
+        } else {
+          Append(buffer, "%0A");
+        }
         break;
       case 0x0d:
-        Append(buffer, "%0D");
+        if (mode == FormDataEncoder::kNormalizeCRLF) {
+          Append(buffer, "%0D%0A");
+          if (i + 1 < length && string.data()[i + 1] == 0x0a) {
+            ++i;
+          }
+        } else {
+          Append(buffer, "%0D");
+        }
         break;
       case '"':
         Append(buffer, "%22");
@@ -75,6 +84,23 @@ static void AppendQuotedString(Vector<char>& buffer,
     }
   }
 }
+
+namespace {
+
+inline void AppendNormalized(Vector<char>& buffer, const std::string& string) {
+  size_t length = string.length();
+  for (size_t i = 0; i < length; ++i) {
+    char c = string.data()[i];
+    if (c == '\n' ||
+        (c == '\r' && (i + 1 >= length || string.data()[i + 1] != '\n'))) {
+      Append(buffer, "\r\n");
+    } else if (c != '\r') {
+      Append(buffer, c);
+    }
+  }
+}
+
+}  // namespace
 
 WTF::TextEncoding FormDataEncoder::EncodingFromAcceptCharset(
     const String& accept_charset,
@@ -139,7 +165,7 @@ void FormDataEncoder::BeginMultiPartHeader(Vector<char>& buffer,
   // FIXME: This loses data irreversibly if the input name includes characters
   // you can't encode in the website's character set.
   Append(buffer, "Content-Disposition: form-data; name=\"");
-  AppendQuotedString(buffer, name);
+  AppendQuotedString(buffer, name, kNormalizeCRLF);
   Append(buffer, '"');
 }
 
@@ -181,14 +207,15 @@ void FormDataEncoder::AddFilenameToMultiPartHeader(
   // See also:
   //
   // https://html.spec.whatwg.org/C/#multipart-form-data
-  // https://www.chromestatus.com/features/5634575908732928
+  // https://www.chromestatus.com/feature/5634575908732928
   // https://crbug.com/661819
   // https://encoding.spec.whatwg.org/#concept-encoding-process
   // https://tools.ietf.org/html/rfc7578#section-4.2
   // https://tools.ietf.org/html/rfc5987#section-3.2
   Append(buffer, "; filename=\"");
   AppendQuotedString(buffer,
-                     encoding.Encode(filename, WTF::kEntitiesForUnencodables));
+                     encoding.Encode(filename, WTF::kEntitiesForUnencodables),
+                     kDoNotNormalizeCRLF);
   Append(buffer, '"');
 }
 
@@ -209,12 +236,13 @@ void FormDataEncoder::AddKeyValuePairAsFormData(
     EncodedFormData::EncodingType encoding_type,
     Mode mode) {
   if (encoding_type == EncodedFormData::kTextPlain) {
-    Append(buffer, key);
+    DCHECK_EQ(mode, kNormalizeCRLF);
+    AppendNormalized(buffer, key);
     Append(buffer, '=');
-    Append(buffer, value);
+    AppendNormalized(buffer, value);
     Append(buffer, "\r\n");
   } else {
-    if (!buffer.IsEmpty())
+    if (!buffer.empty())
       Append(buffer, '&');
     EncodeStringAsFormData(buffer, key, mode);
     Append(buffer, '=');
@@ -229,8 +257,8 @@ void FormDataEncoder::EncodeStringAsFormData(Vector<char>& buffer,
   static const char kSafeCharacters[] = "-._*";
 
   // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
-  unsigned length = string.length();
-  for (unsigned i = 0; i < length; ++i) {
+  size_t length = string.length();
+  for (size_t i = 0; i < length; ++i) {
     unsigned char c = string.data()[i];
 
     if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||

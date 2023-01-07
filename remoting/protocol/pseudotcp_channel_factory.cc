@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,12 @@
 #include "remoting/protocol/p2p_datagram_socket.h"
 #include "remoting/protocol/pseudotcp_adapter.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
-// Value is chosen to balance the extra latency against the reduced
-// load due to ACK traffic.
+// Value is chosen to balance the extra latency against the reduced load due to
+// ACK traffic.
 const int kTcpAckDelayMilliseconds = 10;
 
 // Values for the TCP send and receive buffer size. This should be tuned to
@@ -95,5 +94,4 @@ void PseudoTcpChannelFactory::OnPseudoTcpConnected(
   std::move(callback).Run(std::move(socket));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

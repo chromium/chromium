@@ -1,14 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef PPAPI_PROXY_GAMEPAD_RESOURCE_H_
 #define PPAPI_PROXY_GAMEPAD_RESOURCE_H_
 
-#include <memory>
-
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "device/gamepad/public/mojom/gamepad_hardware_buffer.h"
 #include "ppapi/c/ppb_gamepad.h"
@@ -30,6 +27,10 @@ class PPAPI_PROXY_EXPORT GamepadResource
         public thunk::PPB_Gamepad_API {
  public:
   GamepadResource(Connection connection, PP_Instance instance);
+
+  GamepadResource(const GamepadResource&) = delete;
+  GamepadResource& operator=(const GamepadResource&) = delete;
+
   ~GamepadResource() override;
 
   // Resource implementation.
@@ -46,8 +47,6 @@ class PPAPI_PROXY_EXPORT GamepadResource
 
   // Last data returned so we can use this in the event of a read failure.
   PP_GamepadsSampleData last_read_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadResource);
 };
 
 }  // namespace proxy

@@ -1,13 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "chrome/browser/chromeos/ui/idle_app_name_notification_view.h"
+#include "chrome/browser/ash/notifications/idle_app_name_notification_view.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -31,7 +33,7 @@ const int kMessageVisibilityTimeMs = 3000;
 const int kMessageAnimationTimeMs = 200;
 
 // Our global instance of the Kiosk mode message.
-KioskModeIdleAppNameNotification* g_kiosk_mode_idle_app_message = NULL;
+KioskModeIdleAppNameNotification* g_kiosk_mode_idle_app_message = nullptr;
 
 }  // namespace
 
@@ -45,7 +47,7 @@ void KioskModeIdleAppNameNotification::Initialize() {
 void KioskModeIdleAppNameNotification::Shutdown() {
   if (g_kiosk_mode_idle_app_message) {
     delete g_kiosk_mode_idle_app_message;
-    g_kiosk_mode_idle_app_message = NULL;
+    g_kiosk_mode_idle_app_message = nullptr;
   }
 }
 
@@ -85,10 +87,10 @@ void KioskModeIdleAppNameNotification::OnUserActivity(const ui::Event* event) {
       const std::string app_id =
           command_line->GetSwitchValueASCII(::switches::kAppId);
       Profile* profile = ProfileManager::GetActiveUserProfile();
-      notification_.reset(new IdleAppNameNotificationView(
+      notification_ = std::make_unique<IdleAppNameNotificationView>(
           kMessageVisibilityTimeMs, kMessageAnimationTimeMs,
           extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
-              app_id)));
+              app_id));
     }
     show_notification_upon_next_user_activity_ = false;
   }
@@ -117,11 +119,10 @@ void KioskModeIdleAppNameNotification::ResetTimer() {
   } else {
     // OneShotTimer destroys the posted task after running it, so Reset()
     // isn't safe to call on a timer that's already fired.
-    timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kIdleAppNameNotificationTimeoutMs),
-        base::BindOnce(&KioskModeIdleAppNameNotification::OnTimeout,
-                       base::Unretained(this)));
+    timer_.Start(FROM_HERE,
+                 base::Milliseconds(kIdleAppNameNotificationTimeoutMs),
+                 base::BindOnce(&KioskModeIdleAppNameNotification::OnTimeout,
+                                base::Unretained(this)));
   }
 }
 

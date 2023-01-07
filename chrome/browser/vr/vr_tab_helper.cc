@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #else
@@ -24,7 +24,7 @@ using content::WebContents;
 namespace vr {
 
 VrTabHelper::VrTabHelper(content::WebContents* contents)
-    : web_contents_(contents) {}
+    : content::WebContentsUserData<VrTabHelper>(*contents) {}
 
 VrTabHelper::~VrTabHelper() {}
 
@@ -35,9 +35,9 @@ void VrTabHelper::SetIsInVr(bool is_in_vr) {
   is_in_vr_ = is_in_vr;
 
   blink::web_pref::WebPreferences web_prefs =
-      web_contents_->GetOrCreateWebPreferences();
+      GetWebContents().GetOrCreateWebPreferences();
   web_prefs.immersive_mode_enabled = is_in_vr_;
-  web_contents_->SetWebPreferences(web_prefs);
+  GetWebContents().SetWebPreferences(web_prefs);
 }
 
 /* static */
@@ -80,7 +80,7 @@ void VrTabHelper::SetIsContentDisplayedInHeadset(content::WebContents* contents,
   bool old_state = vr_tab_helper->IsContentDisplayedInHeadset(contents);
   vr_tab_helper->SetIsContentDisplayedInHeadset(state);
   if (old_state != state) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     Browser* browser = chrome::FindBrowserWithWebContents(contents);
     if (browser) {
       TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -96,7 +96,7 @@ void VrTabHelper::SetIsContentDisplayedInHeadset(content::WebContents* contents,
 
 /* static */
 void VrTabHelper::ExitVrPresentation() {
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   content::XRRuntimeManager::ExitImmersivePresentation();
 #endif
 }
@@ -137,6 +137,6 @@ bool VrTabHelper::IsUiSuppressedInVr(content::WebContents* contents,
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(VrTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(VrTabHelper);
 
 }  // namespace vr

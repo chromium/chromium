@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/test_extension_event_observer.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/common/extensions/api/safe_browsing_private.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +29,7 @@ TestExtensionEventObserver::TestExtensionEventObserver(
 }
 
 base::Value TestExtensionEventObserver::PassEventArgs() {
-  return std::move(latest_event_args_);
+  return base::Value(std::move(latest_event_args_));
 }
 
 void TestExtensionEventObserver::OnBroadcastEvent(
@@ -38,7 +39,7 @@ void TestExtensionEventObserver::OnBroadcastEvent(
       event.event_name == OnPolicySpecifiedPasswordReuseDetected::kEventName ||
       event.event_name == OnPolicySpecifiedPasswordChanged::kEventName ||
       event.event_name == OnDangerousDownloadOpened::kEventName) {
-    latest_event_args_ = event.event_args->Clone();
+    latest_event_args_ = event.event_args.Clone();
     latest_event_name_ = event.event_name;
   }
 }
@@ -50,7 +51,7 @@ void TestExtensionEventObserver::VerifyLatestSecurityInterstitialEvent(
     const std::string& expected_username,
     int expected_net_error_code) {
   EXPECT_EQ(expected_event_name, latest_event_name_);
-  auto captured_args = PassEventArgs().GetList()[0].Clone();
+  auto captured_args = PassEventArgs().GetListDeprecated()[0].Clone();
   EXPECT_EQ(expected_page_url.spec(),
             captured_args.FindKey("url")->GetString());
   EXPECT_EQ(expected_reason, captured_args.FindKey("reason")->GetString());
@@ -68,6 +69,12 @@ std::unique_ptr<KeyedService> BuildSafeBrowsingPrivateEventRouter(
     content::BrowserContext* context) {
   return std::unique_ptr<KeyedService>(
       new extensions::SafeBrowsingPrivateEventRouter(context));
+}
+
+std::unique_ptr<KeyedService> BuildRealtimeReportingClient(
+    content::BrowserContext* context) {
+  return std::unique_ptr<KeyedService>(
+      new enterprise_connectors::RealtimeReportingClient(context));
 }
 
 }  // namespace safe_browsing

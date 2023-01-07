@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ std::vector<gfx::Size> ShellContentIndexProvider::GetIconSizes(
 void ShellContentIndexProvider::OnContentAdded(ContentIndexEntry entry) {
   entries_[entry.description->id] = {
       entry.service_worker_registration_id,
-      url::Origin::Create(entry.launch_url.GetOrigin())};
+      url::Origin::Create(entry.launch_url.DeprecatedGetOriginAsURL())};
 }
 
 void ShellContentIndexProvider::OnContentDeleted(

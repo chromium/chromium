@@ -1,0 +1,6 @@
+PASS picker.selectElement_.options[0].label is "いろはにほへと"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+いろはにほへと

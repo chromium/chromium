@@ -1,12 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/events/platform/platform_event_source.h"
 
 #include <algorithm>
+#include <ostream>
 
 #include "base/lazy_instance.h"
+#include "base/observer_list.h"
 #include "base/threading/thread_local.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/events/platform/platform_event_observer.h"
@@ -71,9 +73,6 @@ std::unique_ptr<ScopedEventDispatcher> PlatformEventSource::OverrideDispatcher(
                                                  dispatcher);
 }
 
-void PlatformEventSource::StopCurrentEventStream() {
-}
-
 void PlatformEventSource::AddPlatformEventObserver(
     PlatformEventObserver* observer) {
   CHECK(observer);
@@ -104,14 +103,6 @@ uint32_t PlatformEventSource::DispatchEvent(PlatformEvent platform_event) {
   }
   for (PlatformEventObserver& observer : observers_)
     observer.DidProcessEvent(platform_event);
-
-  // If an overridden dispatcher has been destroyed, then the platform
-  // event-source should halt dispatching the current stream of events, and wait
-  // until the next message-loop iteration for dispatching events. This lets any
-  // nested message-loop to unwind correctly and any new dispatchers to receive
-  // the correct sequence of events.
-  if (overridden_dispatcher_restored_)
-    StopCurrentEventStream();
 
   overridden_dispatcher_restored_ = false;
 

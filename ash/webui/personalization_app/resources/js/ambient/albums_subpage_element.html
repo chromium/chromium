@@ -1,0 +1,72 @@
+<style include="cr-shared-style common">
+  :host {
+    height: 100%;
+  }
+
+  #pageDescription,
+  #descPlaceholderContainer {
+    display: flex;
+    margin-inline-start: 8px;
+    min-height: 32px;
+  }
+
+  #descriptionPlaceholder {
+    height: 20px;
+    width: 50%;
+  }
+
+  #albumsPlaceholderContainer {
+    display: grid;
+    gap: calc(var(--personalization-app-grid-item-spacing)) calc(var(--personalization-app-grid-item-spacing) / 2);
+    grid-template-columns: repeat(3, 1fr 0.34px);
+    grid-template-rows: repeat(auto-fit, calc(var(--personalization-app-grid-item-height)));
+    height: 100%;
+    overflow: hidden;
+    padding: calc(var(--personalization-app-grid-item-spacing) / 2);
+  }
+
+  @media(min-width: 720px) {
+    #albumsPlaceholderContainer {
+      grid-template-columns: repeat(4, 1fr 0.25px);
+    }
+  }
+
+  #albumItemPlaceholder {
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+</style>
+<template is="dom-if" if="[[shouldShowContent_(ambientModeEnabled_)]]">
+  <template is="dom-if" if="[[loadingAlbums_(albums, topicSource)]]">
+    <div id="descPlaceholderContainer">
+      <div id="descriptionPlaceholder" class="placeholder"></div>
+    </div>
+    <div id="albumsPlaceholderContainer">
+      <template is="dom-repeat" items="[[getLoadingTiles_()]]">
+        <div id="albumItemPlaceholder" class="placeholder"></div>
+        <div class="filler"></div>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[!loadingAlbums_(albums, topicSource)]]">
+    <localized-link id="pageDescription"
+        localized-string="[[getTitleInnerHtml_(topicSource)]]">
+    </localized-link>
+
+    <!-- Only Google Photos may not have albums -->
+    <template is="dom-if" if="[[showNoGoogleAlbums_(topicSource, albums)]]">
+      <localized-link class="cr-row first"
+          localized-string=
+              "[[i18nAdvanced('ambientModeAlbumsSubpageGooglePhotosNoAlbum')]]">
+      </localized-link>
+    </template>
+
+    <template is="dom-if" if="[[showArtAlbumDialog_]]" restamp>
+      <art-album-dialog on-close="onArtAlbumDialogClose_"></art-album-dialog>
+    </template>
+
+    <album-list albums="[[albums]]" topic-source="[[topicSource]]"></album-list>
+  </template>
+</template>

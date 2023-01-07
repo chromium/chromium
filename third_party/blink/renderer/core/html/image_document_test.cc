@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,13 +19,14 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
 namespace {
 
-// An image of size 50x50.
+// A non-animated jpeg image of size 50x50.
 Vector<unsigned char> JpegImage() {
   Vector<unsigned char> jpeg;
 
@@ -60,7 +61,30 @@ Vector<unsigned char> JpegImage() {
   jpeg.Append(kData, sizeof(kData));
   return jpeg;
 }
+
+// An animated webp image of size 50x50.
+Vector<unsigned char> AnimatedWebpImage() {
+  Vector<unsigned char> animated_webp;
+
+  static const unsigned char kData[] = {
+      0x52, 0x49, 0x46, 0x46, 0x90, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50,
+      0x56, 0x50, 0x38, 0x58, 0x0a, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
+      0x31, 0x00, 0x00, 0x31, 0x00, 0x00, 0x41, 0x4e, 0x49, 0x4d, 0x06, 0x00,
+      0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x41, 0x4e, 0x4d, 0x46,
+      0x2e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x31, 0x00,
+      0x00, 0x31, 0x00, 0x00, 0x64, 0x00, 0x00, 0x02, 0x56, 0x50, 0x38, 0x4c,
+      0x15, 0x00, 0x00, 0x00, 0x2f, 0x31, 0x40, 0x0c, 0x00, 0x07, 0x10, 0xe5,
+      0x8f, 0xfe, 0x07, 0x80, 0x84, 0xf0, 0x7f, 0xbd, 0x18, 0xd1, 0xff, 0x94,
+      0x0b, 0x00, 0x41, 0x4e, 0x4d, 0x46, 0x2e, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x31, 0x00, 0x00, 0x31, 0x00, 0x00, 0x64, 0x00,
+      0x00, 0x00, 0x56, 0x50, 0x38, 0x4c, 0x15, 0x00, 0x00, 0x00, 0x2f, 0x31,
+      0x40, 0x0c, 0x00, 0x07, 0xd0, 0xbf, 0x88, 0xfe, 0x07, 0x80, 0x84, 0xf0,
+      0x7f, 0xbd, 0x18, 0xd1, 0xff, 0x94, 0x0b, 0x00};
+
+  animated_webp.Append(kData, sizeof(kData));
+  return animated_webp;
 }
+}  // namespace
 
 class WindowToViewportScalingChromeClient : public EmptyChromeClient {
  public:
@@ -82,8 +106,12 @@ class ImageDocumentTest : public testing::Test {
     ThreadState::Current()->CollectAllGarbageForTesting();
   }
 
-  void CreateDocumentWithoutLoadingImage(int view_width, int view_height);
-  void CreateDocument(int view_width, int view_height);
+  void CreateDocumentWithoutLoadingImage(int view_width,
+                                         int view_height,
+                                         bool is_animated);
+  void CreateDocument(int view_width,
+                      int view_height,
+                      bool is_animated = false);
 
   ImageDocument& GetDocument() const;
 
@@ -99,18 +127,16 @@ class ImageDocumentTest : public testing::Test {
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   float page_zoom_factor_ = 0.0f;
   float viewport_scaling_factor_ = 0.0f;
-  base::Optional<bool> force_zero_layout_height_;
+  absl::optional<bool> force_zero_layout_height_;
 };
 
 void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,
-                                                          int view_height) {
-  Page::PageClients page_clients;
-  FillWithEmptyClients(page_clients);
+                                                          int view_height,
+                                                          bool is_animated) {
   chrome_client_ = MakeGarbageCollected<WindowToViewportScalingChromeClient>();
-  page_clients.chrome_client = chrome_client_;
   dummy_page_holder_ = nullptr;
   dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-      IntSize(view_width, view_height), &page_clients);
+      gfx::Size(view_width, view_height), chrome_client_);
 
   if (page_zoom_factor_)
     dummy_page_holder_->GetFrame().SetPageZoomFactor(page_zoom_factor_);
@@ -122,19 +148,22 @@ void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,
   }
 
   auto params = std::make_unique<WebNavigationParams>();
-  params->url = KURL("http://www.example.com/image.jpg");
-  params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
+  params->url = is_animated ? KURL("http://www.example.com/image.webp")
+                            : KURL("http://www.example.com/image.jpg");
 
-  const Vector<unsigned char>& data = JpegImage();
+  const Vector<unsigned char>& data =
+      is_animated ? AnimatedWebpImage() : JpegImage();
   WebNavigationParams::FillStaticResponse(
-      params.get(), "image/jpeg", "UTF-8",
+      params.get(), is_animated ? "image/webp" : "image/jpeg", "UTF-8",
       base::make_span(reinterpret_cast<const char*>(data.data()), data.size()));
   dummy_page_holder_->GetFrame().Loader().CommitNavigation(std::move(params),
                                                            nullptr);
 }
 
-void ImageDocumentTest::CreateDocument(int view_width, int view_height) {
-  CreateDocumentWithoutLoadingImage(view_width, view_height);
+void ImageDocumentTest::CreateDocument(int view_width,
+                                       int view_height,
+                                       bool is_animated /*=false*/) {
+  CreateDocumentWithoutLoadingImage(view_width, view_height, is_animated);
   blink::test::RunPendingTasks();
 }
 
@@ -241,12 +270,26 @@ TEST_F(ImageDocumentTest, DomInteractive) {
 }
 
 TEST_F(ImageDocumentTest, ImageSrcChangedBeforeFinish) {
-  CreateDocumentWithoutLoadingImage(80, 70);
+  CreateDocumentWithoutLoadingImage(80, 70, /*is_animated*/ false);
   GetDocument().ImageElement()->removeAttribute(html_names::kSrcAttr);
   blink::test::RunPendingTasks();
 }
 
-#if defined(OS_ANDROID)
+TEST_F(ImageDocumentTest, ImageStyleContainsTransitionForNonAnimatedImage) {
+  CreateDocument(50, 50);
+  auto& style =
+      GetDocument().ImageElement()->getAttribute(html_names::kStyleAttr);
+  EXPECT_NE(style.Find("transition:"), kNotFound);
+}
+
+TEST_F(ImageDocumentTest, ImageStyleDoesNotContainTransitionForAnimatedImage) {
+  CreateDocument(50, 50, /*is_animated*/ true);
+  auto& style =
+      GetDocument().ImageElement()->getAttribute(html_names::kStyleAttr);
+  EXPECT_EQ(style.Find("transition:"), kNotFound);
+}
+
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE(test) DISABLED_##test
 #else
 #define MAYBE(test) test
@@ -260,8 +303,8 @@ TEST_F(ImageDocumentTest, MAYBE(ImageCenteredAtDeviceScaleFactor)) {
   GetDocument().ImageClicked(15, 27);
   ScrollOffset offset =
       GetDocument().GetFrame()->View()->LayoutViewport()->GetScrollOffset();
-  EXPECT_EQ(20, offset.Width());
-  EXPECT_EQ(20, offset.Height());
+  EXPECT_EQ(20, offset.x());
+  EXPECT_EQ(20, offset.y());
 
   GetDocument().ImageClicked(20, 20);
 
@@ -269,11 +312,11 @@ TEST_F(ImageDocumentTest, MAYBE(ImageCenteredAtDeviceScaleFactor)) {
   offset =
       GetDocument().GetFrame()->View()->LayoutViewport()->GetScrollOffset();
   if (RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled()) {
-    EXPECT_EQ(11.25f, offset.Width());
-    EXPECT_EQ(20, offset.Height());
+    EXPECT_EQ(11.25f, offset.x());
+    EXPECT_EQ(20, offset.y());
   } else {
-    EXPECT_EQ(11, offset.Width());
-    EXPECT_EQ(20, offset.Height());
+    EXPECT_EQ(11, offset.x());
+    EXPECT_EQ(20, offset.y());
   }
 }
 
@@ -306,7 +349,8 @@ class ImageDocumentViewportTest : public SimTest {
 // Tests that hiding the URL bar doesn't cause a "jump" when viewing an image
 // much wider than the viewport.
 TEST_F(ImageDocumentViewportTest, HidingURLBarDoesntChangeImageLocation) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
 
   // Initialize with the URL bar showing. Make the viewport very thin so that
   // we load an image much wider than the viewport but fits vertically. The
@@ -347,8 +391,9 @@ TEST_F(ImageDocumentViewportTest, HidingURLBarDoesntChangeImageLocation) {
   EXPECT_EQ(125, rect->y());
 }
 
-TEST_F(ImageDocumentViewportTest, ZoomForDSFScaleImage) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+TEST_F(ImageDocumentViewportTest, ScaleImage) {
+  v8::HandleScope handle_scope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");
 
@@ -387,8 +432,9 @@ TEST_F(ImageDocumentViewportTest, ZoomForDSFScaleImage) {
 
 // Tests that with zoom factor for device scale factor, image with different
 // size fit in the viewport correctly.
-TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSF) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+TEST_F(ImageDocumentViewportTest, DivWidth) {
+  v8::HandleScope handle_scope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");
 

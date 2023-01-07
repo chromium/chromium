@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ class NotificationPlatformBridgeChromeOs
   void HandleNotificationButtonClicked(
       const std::string& id,
       int button_index,
-      const base::Optional<std::u16string>& reply) override;
+      const absl::optional<std::u16string>& reply) override;
   void HandleNotificationSettingsButtonClicked(const std::string& id) override;
   void DisableNotification(const std::string& id) override;
 

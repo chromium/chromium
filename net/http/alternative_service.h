@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,30 +14,13 @@
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
-#include "net/base/port_util.h"
+#include "net/http/alternate_protocol_usage.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/socket/next_proto.h"
-#include "net/third_party/quiche/src/quic/core/quic_versions.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
 namespace net {
-
-enum AlternateProtocolUsage {
-  // Alternate Protocol was used without racing a normal connection.
-  ALTERNATE_PROTOCOL_USAGE_NO_RACE = 0,
-  // Alternate Protocol was used by winning a race with a normal connection.
-  ALTERNATE_PROTOCOL_USAGE_WON_RACE = 1,
-  // Alternate Protocol was not used by losing a race with a normal connection.
-  ALTERNATE_PROTOCOL_USAGE_LOST_RACE = 2,
-  // Alternate Protocol was not used because no Alternate-Protocol information
-  // was available when the request was issued, but an Alternate-Protocol header
-  // was present in the response.
-  ALTERNATE_PROTOCOL_USAGE_MAPPING_MISSING = 3,
-  // Alternate Protocol was not used because it was marked broken.
-  ALTERNATE_PROTOCOL_USAGE_BROKEN = 4,
-  // Maximum value for the enum.
-  ALTERNATE_PROTOCOL_USAGE_MAX,
-};
 
 // Log a histogram to reflect |usage|.
 NET_EXPORT void HistogramAlternateProtocolUsage(AlternateProtocolUsage usage,

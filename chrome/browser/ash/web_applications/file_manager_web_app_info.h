@@ -1,19 +1,32 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_FILE_MANAGER_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_FILE_MANAGER_WEB_APP_INFO_H_
 
-#include <memory>
+#include <vector>
 
-#if defined(OFFICIAL_BUILD)
-#error File Manager should only be included in unofficial builds.
-#endif
+#include "ash/webui/shortcut_customization_ui/url_constants.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
-// Return a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager();
+class FileManagerSystemAppDelegate : public ash::SystemWebAppDelegate {
+ public:
+  explicit FileManagerSystemAppDelegate(Profile* profile);
+
+  // ash::SystemWebAppDelegate overrides:
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
+  bool ShouldCaptureNavigations() const override;
+  bool ShouldReuseExistingWindow() const override;
+  bool ShouldShowNewWindowMenuOption() const override;
+  bool IsAppEnabled() const override;
+  std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
+};
+
+// Return a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFileManager();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_FILE_MANAGER_WEB_APP_INFO_H_

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,57 +9,53 @@ UNDEFINED_INTERVAL_DELAY = -1;
 /** Test fixture for auto scan manager. */
 SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async () => {
-      await importModule(
-          'BackButtonNode', '/switch_access/nodes/back_button_node.js');
-      await importModule(
-          ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
-      await importModule(
-          'AutoScanManager', '/switch_access/auto_scan_manager.js');
-      await importModule('Navigator', '/switch_access/navigator.js');
-      AutoScanManager.instance.primaryScanTime_ = 1000;
-      // Use intervalCount and intervalDelay to check how many intervals are
-      // currently running (should be no more than 1) and the current delay.
-      window.intervalCount = 0;
-      window.intervalDelay = UNDEFINED_INTERVAL_DELAY;
-      window.defaultSetInterval = window.setInterval;
-      window.defaultClearInterval = window.clearInterval;
-      this.defaultMoveForward =
-          Navigator.byItem.moveForward.bind(Navigator.byItem);
-      this.moveForwardCount = 0;
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'BackButtonNode', '/switch_access/nodes/back_button_node.js');
+    await importModule(
+        ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
+    await importModule(
+        'AutoScanManager', '/switch_access/auto_scan_manager.js');
+    await importModule('Navigator', '/switch_access/navigator.js');
+    AutoScanManager.instance.primaryScanTime_ = 1000;
+    // Use intervalCount and intervalDelay to check how many intervals are
+    // currently running (should be no more than 1) and the current delay.
+    globalThis.intervalCount = 0;
+    globalThis.intervalDelay = UNDEFINED_INTERVAL_DELAY;
+    globalThis.defaultSetInterval = setInterval;
+    globalThis.defaultClearInterval = clearInterval;
+    this.defaultMoveForward =
+        Navigator.byItem.moveForward.bind(Navigator.byItem);
+    this.moveForwardCount = 0;
 
-      window.setInterval = function(func, delay) {
-        window.intervalCount++;
-        window.intervalDelay = delay;
+    setInterval = function(func, delay) {
+      globalThis.intervalCount++;
+      globalThis.intervalDelay = delay;
 
-        // Override the delay for testing.
-        return window.defaultSetInterval(func, 0);
-      };
+      // Override the delay for testing.
+      return globalThis.defaultSetInterval(func, 0);
+    };
 
-      window.clearInterval = function(intervalId) {
-        if (intervalId) {
-          window.intervalCount--;
-        }
-        window.defaultClearInterval(intervalId);
-      };
+    clearInterval = function(intervalId) {
+      if (intervalId) {
+        globalThis.intervalCount--;
+      }
+      globalThis.defaultClearInterval(intervalId);
+    };
 
-      Navigator.byItem.moveForward = () => {
-        this.moveForwardCount++;
-        this.onMoveForward_ && this.onMoveForward_();
-        this.defaultMoveForward();
-      };
+    Navigator.byItem.moveForward = () => {
+      this.moveForwardCount++;
+      this.onMoveForward_ && this.onMoveForward_();
+      this.defaultMoveForward();
+    };
 
-      this.onMoveForward_ = null;
-
-      runTest();
-    })();
+    this.onMoveForward_ = null;
   }
 };
 
 TEST_F('SwitchAccessAutoScanManagerTest', 'SetEnabled', function() {
-  this.runWithLoadedTree('', () => {
+  this.runWithLoadedDesktop(() => {
     assertFalse(
         AutoScanManager.instance.isRunning_(),
         'Auto scan manager is running prematurely');

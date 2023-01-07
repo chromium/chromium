@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,10 +17,7 @@ class SerialPortInfo;
 }  // namespace mojom
 }  // namespace device
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
+class PrefRegistrySimple;
 class PrefService;
 
 // This class is used to maintain and interpret the SerialAllowForUrls and
@@ -35,7 +32,7 @@ class SerialPolicyAllowedPorts {
   SerialPolicyAllowedPorts& operator=(SerialPolicyAllowedPorts& other) = delete;
   ~SerialPolicyAllowedPorts();
 
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Checks if |origin| is allowed to use the port with |port_info|.
   bool HasPortPermission(const url::Origin& origin,

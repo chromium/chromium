@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,50 +10,17 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId AutoEnrollmentCheckScreenView::kScreenId;
-
-AutoEnrollmentCheckScreenHandler::AutoEnrollmentCheckScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-}
-
-AutoEnrollmentCheckScreenHandler::~AutoEnrollmentCheckScreenHandler() {
-  if (delegate_)
-    delegate_->OnViewDestroyed(this);
-}
+AutoEnrollmentCheckScreenHandler::AutoEnrollmentCheckScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
 void AutoEnrollmentCheckScreenHandler::Show() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
-  ShowScreen(kScreenId);
-}
-
-void AutoEnrollmentCheckScreenHandler::SetDelegate(Delegate* delegate) {
-  delegate_ = delegate;
-  if (page_is_ready())
-    Initialize();
+  ShowInWebUI();
 }
 
 void AutoEnrollmentCheckScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("autoEnrollmentCheckScreenHeader",
-               IDS_AUTO_ENROLLMENT_CHECK_SCREEN_HEADER);
   builder->Add("autoEnrollmentCheckMessage",
                IDS_AUTO_ENROLLMENT_CHECK_SCREEN_MESSAGE);
 }
-
-void AutoEnrollmentCheckScreenHandler::Initialize() {
-  if (!page_is_ready() || !delegate_)
-    return;
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
-void AutoEnrollmentCheckScreenHandler::RegisterMessages() {}
 
 }  // namespace chromeos

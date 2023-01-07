@@ -1,0 +1,193 @@
+    <style include="cr-shared-style md-select">
+      cr-dialog::part(wrapper) {
+        /* Subtract the internal padding in <cr-dialog>. */
+        padding: calc(24px - 20px);
+      }
+
+      [slot='button-container']  {
+        padding-bottom: 20px;
+        padding-top: 32px;
+      }
+
+      #dialog [slot=body] {
+        height: 390px;
+      }
+
+      .md-select {
+        --md-select-bg-color: var(--cros-textfield-background-color);
+        --md-select-focus-shadow-color: var(--cros-focus-ring-color);
+        --md-select-text-color: var(--cros-text-color-primary);
+        width: 100%;
+      }
+
+      cr-searchable-drop-down {
+        --cr-searchable-drop-down-bg-color: var(--cros-bg-color-elevation-2);
+        --cr-searchable-drop-down-icon-color-focus:
+          var(--cros-textfield-label-color);
+        --cr-searchable-drop-down-list-item-color: var(--cros-text-color-primary);
+        --cr-searchable-drop-down-list-bg-color-selected:
+          var(--cros-ripple-color);
+        --cr-searchable-drop-down-list-bg-color-active:
+          var(--cros-ripple-color);
+        --cr-searchable-drop-down-shadow: var(--cros-elevation-2-shadow);
+        --cr-searchable-drop-down-spinner-color: var(--cros-icon-color-prominent);
+        /* cr_searchable_drop_down will hard code its width without this variable */
+        --cr-searchable-drop-down-width: auto;
+        --cr-secondary-text-color: var(--cros-text-color-secondary);
+        --iron-icon-fill-color: var(--cros-textfield-label-color);
+        display: block;
+      }
+
+      cr-input,
+      cr-searchable-drop-down::part(input) {
+        --cr-form-field-label-color: var(--cros-textfield-label-color);
+        --cr-input-background-color: var(--cros-textfield-background-color);
+        --cr-input-color: var(--cros-textfield-input-color);
+        --cr-input-error-color: var(--cros-textfield-label-color-error);
+        --cr-input-focus-color: var(--cros-textfield-label-color-focus);
+      }
+
+      .md-select,
+      cr-input:not(:last-child),
+      cr-searchable-drop-down {
+        margin-bottom: var(--cr-form-field-bottom-spacing);
+      }
+
+      #saveCredentialsCheckbox {
+        --cr-checkbox-checked-box-color: var(--cros-icon-color-prominent);
+        --cr-checkbox-label-color: var(--cros-textfield-label-color);
+        --cr-checkbox-mark-color: var(--cros-bg-color);
+        --cr-checkbox-ripple-checked-color: var(--cros-focus-aura-color);
+        --cr-checkbox-ripple-opacity: 1;
+        --cr-checkbox-ripple-unchecked-color: var(--cros-ripple-color);
+        --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
+      }
+
+      :host-context(.focus-outline-visible) #saveCredentialsCheckbox:focus-within {
+        --cr-checkbox-ripple-ring: 2px solid var(--cros-focus-ring-color);
+      }
+
+      cr-button {
+        --active-bg: transparent;
+        --active-shadow:
+          0 1px 2px var(--cros-button-active-shadow-color-key-secondary),
+          0 1px 3px var(--cros-button-active-shadow-color-ambient-secondary);
+        --active-shadow-action:
+          0 1px 2px var(--cros-button-active-shadow-color-key-primary),
+          0 1px 3px var(--cros-button-active-shadow-color-ambient-primary);
+        --bg-action: var(--cros-button-background-color-primary);
+        --border-color: var(--cros-button-stroke-color-secondary);
+        --disabled-bg-action:
+          var(--cros-button-background-color-primary-disabled);
+        --disabled-bg: var(--cros-button-background-color-primary-disabled);
+        --disabled-border-color:
+          var(--cros-button-stroke-color-secondary-disabled);
+        --disabled-text-color: var(--cros-button-label-color-secondary-disabled);
+        --hover-bg-action: var(--cros-button-background-color-primary-hover-preblended);
+        --hover-bg-color: var(--cros-button-background-color-secondary-hover);
+        --hover-border-color: var(--cros-button-stroke-color-secondary-hover);
+        --ink-color: var(--cros-button-ripple-color-secondary);
+        --ripple-opacity-action: var(--cros-button-primary-ripple-opacity);
+        --ripple-opacity: var(--cros-button-secondary-ripple-opacity);
+        --text-color-action: var(--cros-button-label-color-primary);
+        --text-color: var(--cros-button-label-color-secondary);
+        position: relative;
+      }
+
+      cr-button.action-button {
+        --ink-color: var(--cros-button-ripple-color-primary);
+      }
+
+      :host-context(.focus-outline-visible) cr-button:focus {
+        /* disable the focus shadow because we use outline below */
+        box-shadow: none;
+        outline: 2px solid var(--cros-focus-ring-color);
+        outline-offset: 2px;
+      }
+
+      .action-button:not(:active):hover {
+        box-shadow: none;
+      }
+
+      #name,
+      #username {
+        --cr-input-error-display: none;
+      }
+
+      #general-error-container {
+        height: 32px;
+      }
+
+      #general-error-icon {
+       --iron-icon-fill-color: var(--cros-icon-color-alert);
+      }
+
+      #general-error-message {
+        color: var(--cros-text-color-alert);
+        display: inline-block;
+        font-size: 10px;
+      }
+    </style>
+
+    <cr-dialog id="dialog" exportparts="dialog">
+      <div slot="title" part="title">[[i18n('addSmbShare')]]</div>
+      <div slot="body" spellcheck="false">
+        <div id="general-error-container">
+          <div hidden="[[!shouldShowGeneralError_(currentMountError_)]]">
+            <iron-icon id="general-error-icon" icon="cr:warning"></iron-icon>
+            <div id="general-error-message">[[generalErrorText_]]</div>
+          </div>
+        </div>
+        <cr-searchable-drop-down id="address" label="[[i18n('smbShareUrl')]]"
+            value="{{mountUrl_}}" items="[[discoveredShares_]]"
+            placeholder="\\\\server\\share"
+            error-message-allowed
+            update-value-on-input autofocus
+            show-loading="[[discoveryActive_]]"
+            loading-message="[[i18n('smbShareDiscoveryMessage')]]">
+        </cr-searchable-drop-down>
+        <cr-input id="name" label="[[i18n('smbShareName')]]"
+            value="{{mountName_}}" maxlength="64">
+        </cr-input>
+        <div id="authentication-method"
+            hidden="[[!shouldShowAuthenticationUI_(isActiveDirectory_,
+                isKerberosEnabled_, isGuest_)]]">
+          <label id="authentication-label" class="cr-form-field-label">
+            [[i18n('smbShareAuthenticationMethod')]]
+          </label>
+          <select class="md-select" aria-labelledby="authentication-label"
+              value="{{authenticationMethod_::change}}">
+            <option value="kerberos">
+              [[i18n('smbShareKerberosAuthentication')]]
+            </option>
+            <option value="credentials">
+              [[i18n('smbShareStandardAuthentication')]]
+            </option>
+          </select>
+        </div>
+        <div id="credentials"
+            hidden="[[!shouldShowCredentialUI_(authenticationMethod_)]]">
+          <cr-input id="username" label="[[i18n('smbShareUsername')]]"
+              value="{{username_}}"
+              invalid="[[shouldShowCredentialError_(currentMountError_)]]">
+          </cr-input>
+          <cr-input id="password" type="password"
+              label="[[i18n('smbSharePassword')]]" value="{{password_}}"
+              invalid="[[shouldShowCredentialError_(currentMountError_)]]">
+          </cr-input>
+          <cr-checkbox id="saveCredentialsCheckbox" checked>
+            [[i18n('smbShareSaveCredentials')]]
+          </cr-checkbox>
+        </div>
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="cancel_" id="cancel">
+          [[i18n('cancel')]]
+        </cr-button>
+        <cr-button class="action-button" on-click="onAddButtonTap_"
+            disabled="[[!canAddShare_(mountUrl_, inProgress_,
+                currentMountError_)]]">
+          [[i18n('add')]]
+        </cr-button>
+      </div>
+    </cr-dialog>

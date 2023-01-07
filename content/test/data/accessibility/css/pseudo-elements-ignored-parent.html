@@ -1,0 +1,11 @@
+<!--
+@BLINK-ALLOW:className*
+-->
+<!-- Elements with ::before/::after children are included in the tree -->
+<style>
+.before::before { content:"["; }
+.after::after { content:"]"; }
+</style>
+<div role="none" class="none">Parent div not included</div>
+<div role="none" class="before">Has ::before</div>
+<div role="none" class="after">Has ::after</div>

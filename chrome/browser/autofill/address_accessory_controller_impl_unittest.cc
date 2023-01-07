@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <vector>
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/autofill/accessory_controller.h"
 #include "chrome/browser/autofill/mock_manual_filling_controller.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -30,11 +31,11 @@ using base::ASCIIToUTF16;
 using testing::_;
 using testing::ByMove;
 using testing::Mock;
-using testing::NiceMock;
 using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
 using FillingSource = ManualFillingController::FillingSource;
+using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 
 std::u16string addresses_empty_str() {
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SHEET_EMPTY_MESSAGE);
@@ -92,6 +93,8 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
+  base::MockCallback<AccessoryController::FillingSourceObserver>
+      filling_source_observer_;
 };
 
 TEST_F(AddressAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
@@ -101,6 +104,20 @@ TEST_F(AddressAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
   AddressAccessoryControllerImpl::CreateForWebContents(web_contents());
   EXPECT_EQ(AddressAccessoryControllerImpl::FromWebContents(web_contents()),
             initial_controller);
+}
+
+TEST_F(AddressAccessoryControllerTest, ProvidesNoSheetBeforeInitialRefresh) {
+  AutofillProfile canadian = test::GetFullValidProfileForCanada();
+  personal_data_manager()->AddProfile(canadian);
+  controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
+
+  EXPECT_FALSE(controller()->GetSheetData().has_value());
+
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  controller()->RefreshSuggestions();
+
+  EXPECT_TRUE(controller()->GetSheetData().has_value());
 }
 
 TEST_F(AddressAccessoryControllerTest, RefreshSuggestionsCallsUI) {
@@ -113,7 +130,8 @@ TEST_F(AddressAccessoryControllerTest, RefreshSuggestionsCallsUI) {
 
   controller()->RefreshSuggestions();
 
-  ASSERT_EQ(
+  EXPECT_EQ(result, controller()->GetSheetData());
+  EXPECT_EQ(
       result,
       AddressAccessorySheetDataBuilder(std::u16string())
           .AddUserInfo()
@@ -145,7 +163,8 @@ TEST_F(AddressAccessoryControllerTest, ProvidesEmptySuggestionsMessage) {
 
   controller()->RefreshSuggestions();
 
-  ASSERT_EQ(result,
+  EXPECT_EQ(result, controller()->GetSheetData());
+  EXPECT_EQ(result,
             AddressAccessorySheetDataBuilder(addresses_empty_str()).Build());
 }
 
@@ -156,13 +175,16 @@ TEST_F(AddressAccessoryControllerTest, TriggersRefreshWhenDataChanges) {
 
   // A refresh without data stores an empty sheet and registers an observer.
   controller()->RefreshSuggestions();
-  ASSERT_EQ(result,
+
+  EXPECT_EQ(result, controller()->GetSheetData());
+  EXPECT_EQ(result,
             AddressAccessorySheetDataBuilder(addresses_empty_str()).Build());
 
   // When new data is added, a refresh is automatically triggered.
   AutofillProfile email = test::GetIncompleteProfile2();
   personal_data_manager()->AddProfile(email);
-  ASSERT_EQ(result, AddressAccessorySheetDataBuilder(std::u16string())
+  EXPECT_EQ(result, controller()->GetSheetData());
+  EXPECT_EQ(result, AddressAccessorySheetDataBuilder(std::u16string())
                         .AddUserInfo()
                         /*name full:*/
                         .AppendSimpleField(std::u16string())

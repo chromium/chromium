@@ -1,9 +1,10 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/compile_ts.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("context_menu") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -13,6 +14,7 @@ source_set("context_menu") {
     "//base",
     "//components/url_formatter",
     "//ios/web/common",
+    "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -28,18 +30,24 @@ source_set("context_menu") {
   ]
 }
 
-js_compile_bundle("all_frames_context_menu_js") {
+optimize_js("all_frames_context_menu_js") {
   visibility = [ ":context_menu" ]
-  closure_entry_point = "__crWeb.allFramesContextMenu"
 
+  primary_script = "resources/all_frames_context_menu.js"
   sources = [ "resources/all_frames_context_menu.js" ]
+  deps = [ ":surrounding_text_js" ]
 }
 
-js_compile_bundle("main_frame_context_menu_js") {
+optimize_js("main_frame_context_menu_js") {
   visibility = [ ":context_menu" ]
-  closure_entry_point = "__crWeb.mainFrameContextMenu"
 
+  primary_script = "resources/main_frame_context_menu.js"
   sources = [ "resources/main_frame_context_menu.js" ]
+}
+
+compile_ts("surrounding_text_js") {
+  allow_js = true
+  sources = [ "resources/surrounding_text.js" ]
 }
 
 source_set("unittests") {
@@ -53,9 +61,10 @@ source_set("unittests") {
     "//components/url_formatter",
     "//ios/web/common",
     "//ios/web/common:web_view_creation_util",
+    "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",
-    "//ios/web/js_messaging:js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/test/fakes",
     "//testing/gtest",
   ]

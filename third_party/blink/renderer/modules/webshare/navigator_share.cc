@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,14 @@
 #include <stdint.h>
 #include <utility>
 
+#include "base/files/safe_base_name.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_share_data.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -22,9 +25,8 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 
 namespace blink {
@@ -35,7 +37,7 @@ constexpr size_t kMaxSharedFileCount = 10;
 constexpr uint32_t kMaxSharedFileBytes = 50U * 1024 * 1024;
 
 constexpr uint32_t kMaxTitleLength = 16U * 1024;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr uint32_t kMaxTextLength = 120U * 1024;
 #else
 constexpr uint32_t kMaxTextLength = 1U * 1024 * 1024;
@@ -64,7 +66,7 @@ bool HasFiles(const ShareData& data) {
   if (!data.hasFiles())
     return false;
 
-  return !data.files().IsEmpty();
+  return !data.files().empty();
 }
 
 // Returns true unless |share(data)| would reject with TypeError.
@@ -144,8 +146,8 @@ NavigatorShare::ShareClientImpl::ShareClientImpl(
 
 void NavigatorShare::ShareClientImpl::Callback(mojom::blink::ShareError error) {
   if (navigator_) {
-    DCHECK_EQ(navigator_->client_, this);
-    navigator_->client_ = nullptr;
+    DCHECK(navigator_->clients_.Contains(this));
+    navigator_->clients_.erase(this);
   }
 
   if (error == mojom::blink::ShareError::OK) {
@@ -185,7 +187,7 @@ NavigatorShare& NavigatorShare::From(Navigator& navigator) {
 
 void NavigatorShare::Trace(Visitor* visitor) const {
   visitor->Trace(service_remote_);
-  visitor->Trace(client_);
+  visitor->Trace(clients_);
   Supplement<Navigator>::Trace(visitor);
 }
 
@@ -227,17 +229,30 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
                        ? WebFeature::kWebSharePolicyAllow
                        : WebFeature::kWebSharePolicyDisallow);
 
-  if (client_) {
+// This is due to a limitation on Android, where we sometimes are not advised
+// when the share completes. This goes against the web share spec to work around
+// the platform-specific bug, it is explicitly skipping section §2.1.2 step 2 of
+// the Web Share spec. https://www.w3.org/TR/web-share/#share-method
+#if !BUILDFLAG(IS_ANDROID)
+  if (!clients_.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "A earlier share had not yet completed.");
     return ScriptPromise();
   }
+#endif
 
   if (!LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
     VLOG(1) << "Share without transient activation (user gesture)";
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Must be handling a user gesture to perform a share request.");
+    return ScriptPromise();
+  }
+
+  if (window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Web Share is not allowed in a fenced frame tree.");
     return ScriptPromise();
   }
 
@@ -252,7 +267,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
     window->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
         service_remote_.BindNewPipeAndPassReceiver(
             window->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-    service_remote_.set_disconnect_handler(WTF::Bind(
+    service_remote_.set_disconnect_handler(WTF::BindOnce(
         &NavigatorShare::OnConnectionError, WrapWeakPersistent(this)));
     DCHECK(service_remote_.is_bound());
   }
@@ -274,9 +289,20 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   if (has_files) {
     files.ReserveInitialCapacity(data->files().size());
     for (const blink::Member<blink::File>& file : data->files()) {
+      absl::optional<base::SafeBaseName> name =
+          base::SafeBaseName::Create(StringToFilePath(file->name()));
+      if (!name) {
+        execution_context->AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning, "Unsafe file name");
+        exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                          "Permission denied");
+        return ScriptPromise();
+      }
+
       total_bytes += file->size();
-      files.push_back(mojom::blink::SharedFile::New(file->name(),
-                                                    file->GetBlobDataHandle()));
+      files.push_back(
+          mojom::blink::SharedFile::New(*name, file->GetBlobDataHandle()));
     }
 
     if (files.size() > kMaxSharedFileCount ||
@@ -290,14 +316,28 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
     }
   }
 
+  if (has_files)
+    UseCounter::Count(execution_context, WebFeature::kWebShareContainingFiles);
+  if (data->hasTitle())
+    UseCounter::Count(execution_context, WebFeature::kWebShareContainingTitle);
+  if (data->hasText())
+    UseCounter::Count(execution_context, WebFeature::kWebShareContainingText);
+  if (data->hasUrl())
+    UseCounter::Count(execution_context, WebFeature::kWebShareContainingUrl);
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  client_ = MakeGarbageCollected<ShareClientImpl>(this, has_files, resolver);
+
+  ShareClientImpl* client =
+      MakeGarbageCollected<ShareClientImpl>(this, has_files, resolver);
+  clients_.insert(client);
+  ScriptPromise promise = resolver->Promise();
+
   service_remote_->Share(
       data->hasTitle() ? data->title() : g_empty_string,
       data->hasText() ? data->text() : g_empty_string, url, std::move(files),
-      WTF::Bind(&ShareClientImpl::Callback, WrapPersistent(client_.Get())));
+      WTF::BindOnce(&ShareClientImpl::Callback, WrapPersistent(client)));
 
-  return resolver->Promise();
+  return promise;
 }
 
 ScriptPromise NavigatorShare::share(ScriptState* script_state,
@@ -308,9 +348,10 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
 }
 
 void NavigatorShare::OnConnectionError() {
-  if (client_) {
-    client_->OnConnectionError();
-    client_ = nullptr;
+  HeapHashSet<Member<ShareClientImpl>> clients;
+  clients_.swap(clients);
+  for (auto& client : clients) {
+    client->OnConnectionError();
   }
   service_remote_.reset();
 }

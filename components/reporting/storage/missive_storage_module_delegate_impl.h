@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define COMPONENTS_REPORTING_STORAGE_MISSIVE_STORAGE_MODULE_DELEGATE_IMPL_H_
 
 #include "base/callback.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/missive_storage_module.h"
 #include "components/reporting/util/status.h"
 
@@ -18,42 +18,26 @@ class MissiveStorageModuleDelegateImpl
     : public MissiveStorageModule::MissiveStorageModuleDelegateInterface {
  public:
   using AddRecordCallback = base::RepeatingCallback<
-      void(const Priority, const Record&, base::OnceCallback<void(Status)>)>;
+      void(Priority, Record, MissiveStorageModule::EnqueueCallback)>;
   using FlushCallback =
-      base::RepeatingCallback<void(const Priority,
-                                   base::OnceCallback<void(Status)>)>;
-  using ReportSuccessCallback =
-      base::RepeatingCallback<void(const SequencingInformation&, bool)>;
-  using UpdateEncryptionKeyCallback =
-      base::RepeatingCallback<void(const SignedEncryptionInfo&)>;
+      base::RepeatingCallback<void(Priority,
+                                   MissiveStorageModule::FlushCallback)>;
 
-  MissiveStorageModuleDelegateImpl(
-      AddRecordCallback add_record,
-      FlushCallback flush,
-      ReportSuccessCallback report_success,
-      UpdateEncryptionKeyCallback update_encryption_key);
+  MissiveStorageModuleDelegateImpl(AddRecordCallback add_record,
+                                   FlushCallback flush);
   ~MissiveStorageModuleDelegateImpl() override;
 
-  void AddRecord(const Priority priority,
-                 const Record& record,
-                 base::OnceCallback<void(Status)> callback) override;
+  void AddRecord(Priority priority,
+                 Record record,
+                 MissiveStorageModule::EnqueueCallback callback) override;
 
-  void Flush(const Priority priority,
-             base::OnceCallback<void(Status)> callback) override;
-
-  void ReportSuccess(const SequencingInformation& sequencing_information,
-                     bool force) override;
-
-  void UpdateEncryptionKey(
-      const SignedEncryptionInfo& signed_encryption_key) override;
+  void Flush(Priority priority,
+             MissiveStorageModule::FlushCallback callback) override;
 
  private:
   const AddRecordCallback add_record_;
   const FlushCallback flush_;
-  const ReportSuccessCallback report_success_;
-  const UpdateEncryptionKeyCallback update_encryption_key_;
 };
 
 }  // namespace reporting
-
 #endif  // COMPONENTS_REPORTING_STORAGE_MISSIVE_STORAGE_MODULE_DELEGATE_IMPL_H_

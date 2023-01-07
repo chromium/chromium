@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -32,6 +31,11 @@ namespace network {
 class TestSocketDataPumpDelegate : public SocketDataPump::Delegate {
  public:
   TestSocketDataPumpDelegate() {}
+
+  TestSocketDataPumpDelegate(const TestSocketDataPumpDelegate&) = delete;
+  TestSocketDataPumpDelegate& operator=(const TestSocketDataPumpDelegate&) =
+      delete;
+
   ~TestSocketDataPumpDelegate() {}
 
   // Waits for read error. Returns the error observed.
@@ -69,8 +73,6 @@ class TestSocketDataPumpDelegate : public SocketDataPump::Delegate {
   base::RunLoop read_loop_;
   base::RunLoop write_loop_;
   base::RunLoop shutdown_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketDataPumpDelegate);
 };
 
 class SocketDataPumpTest : public testing::Test,
@@ -78,6 +80,10 @@ class SocketDataPumpTest : public testing::Test,
  public:
   SocketDataPumpTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+
+  SocketDataPumpTest(const SocketDataPumpTest&) = delete;
+  SocketDataPumpTest& operator=(const SocketDataPumpTest&) = delete;
+
   ~SocketDataPumpTest() override {}
 
   // Initializes the test case with a socket data provider, which will be used
@@ -140,8 +146,6 @@ class SocketDataPumpTest : public testing::Test,
   TestSocketDataPumpDelegate test_delegate_;
   std::unique_ptr<net::StreamSocket> socket_;
   std::unique_ptr<SocketDataPump> data_pump_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketDataPumpTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -158,14 +162,13 @@ TEST_P(SocketDataPumpTest, ReadAndWriteMultiple) {
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
     for (size_t i = 0; i < kMsgSize; ++i) {
-      reads.push_back(net::MockRead(mode, &kTestMsg[i], 1, sequence_number++));
+      reads.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
     }
     if (j == kNumIterations - 1) {
-      reads.push_back(net::MockRead(mode, net::OK, sequence_number++));
+      reads.emplace_back(mode, net::OK, sequence_number++);
     }
     for (size_t i = 0; i < kMsgSize; ++i) {
-      writes.push_back(
-          net::MockWrite(mode, &kTestMsg[i], 1, sequence_number++));
+      writes.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);
@@ -199,14 +202,13 @@ TEST_P(SocketDataPumpTest, PartialStreamSocketWrite) {
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
     for (size_t i = 0; i < kMsgSize; ++i) {
-      reads.push_back(net::MockRead(mode, &kTestMsg[i], 1, sequence_number++));
+      reads.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
     }
     if (j == kNumIterations - 1) {
-      reads.push_back(net::MockRead(mode, net::OK, sequence_number++));
+      reads.emplace_back(mode, net::OK, sequence_number++);
     }
     for (size_t i = 0; i < kMsgSize; ++i) {
-      writes.push_back(
-          net::MockWrite(mode, &kTestMsg[i], 1, sequence_number++));
+      writes.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);

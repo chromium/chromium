@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SEARCH_NTP_CUSTOM_BACKGROUND_ENABLED_POLICY_HANDLER_H_
 #define CHROME_BROWSER_SEARCH_NTP_CUSTOM_BACKGROUND_ENABLED_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefValueMap;
@@ -20,15 +19,18 @@ class NtpCustomBackgroundEnabledPolicyHandler
     : public policy::TypeCheckingPolicyHandler {
  public:
   NtpCustomBackgroundEnabledPolicyHandler();
+
+  NtpCustomBackgroundEnabledPolicyHandler(
+      const NtpCustomBackgroundEnabledPolicyHandler&) = delete;
+  NtpCustomBackgroundEnabledPolicyHandler& operator=(
+      const NtpCustomBackgroundEnabledPolicyHandler&) = delete;
+
   ~NtpCustomBackgroundEnabledPolicyHandler() override;
 
  protected:
   // ConfigurationPolicyHandler:
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NtpCustomBackgroundEnabledPolicyHandler);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_NTP_CUSTOM_BACKGROUND_ENABLED_POLICY_HANDLER_H_

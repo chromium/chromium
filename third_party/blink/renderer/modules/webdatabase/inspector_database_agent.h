@@ -29,12 +29,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_INSPECTOR_DATABASE_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_INSPECTOR_DATABASE_AGENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Database.h"
+#include "third_party/blink/renderer/core/inspector/protocol/database.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -47,6 +46,10 @@ class MODULES_EXPORT InspectorDatabaseAgent final
     : public InspectorBaseAgent<protocol::Database::Metainfo> {
  public:
   explicit InspectorDatabaseAgent(Page*);
+
+  InspectorDatabaseAgent(const InspectorDatabaseAgent&) = delete;
+  InspectorDatabaseAgent& operator=(const InspectorDatabaseAgent&) = delete;
+
   ~InspectorDatabaseAgent() override;
   void Trace(Visitor*) const override;
 
@@ -80,8 +83,6 @@ class MODULES_EXPORT InspectorDatabaseAgent final
       DatabaseResourcesHeapMap;
   DatabaseResourcesHeapMap resources_;
   InspectorAgentState::Boolean enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectorDatabaseAgent);
 };
 
 }  // namespace blink

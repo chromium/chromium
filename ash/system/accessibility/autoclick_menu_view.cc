@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,13 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "base/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -24,7 +26,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -39,101 +40,100 @@ const int kSeparatorHeight = 16;
 
 AutoclickMenuView::AutoclickMenuView(AutoclickEventType type,
                                      FloatingMenuPosition position) {
-  int total_height = kUnifiedTopShortcutSpacing * 2 + kTrayItemSize;
-  int separator_spacing = (total_height - kSeparatorHeight) / 2;
+  const int total_height = kUnifiedTopShortcutSpacing * 2 + kTrayItemSize;
+  const int separator_spacing = (total_height - kSeparatorHeight) / 2;
   views::Builder<AutoclickMenuView>(this)
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kEnd)
       .AddChildren(
-          {views::Builder<views::BoxLayoutView>()
-               .SetInsideBorderInsets(kUnifiedMenuItemPadding)
-               .SetBetweenChildSpacing(kUnifiedTopShortcutSpacing)
-               .AddChildren(
-                   {views::Builder<FloatingMenuButton>()
-                        .CopyAddressTo(&left_click_button_)
-                        .SetID(static_cast<int>(ButtonId::kLeftClick))
-                        .SetVectorIcon(kAutoclickLeftClickIcon)
-                        .SetTooltipText(l10n_util::GetStringUTF16(
-                            IDS_ASH_AUTOCLICK_OPTION_LEFT_CLICK))
-                        .SetCallback(base::BindRepeating(
-                            &AutoclickMenuView::OnAutoclickButtonPressed,
-                            base::Unretained(this),
-                            base::Unretained(left_click_button_))),
-                    views::Builder<FloatingMenuButton>()
-                        .CopyAddressTo(&right_click_button_)
-                        .SetID(static_cast<int>(ButtonId::kRightClick))
-                        .SetVectorIcon(kAutoclickRightClickIcon)
-                        .SetTooltipText(l10n_util::GetStringUTF16(
-                            IDS_ASH_AUTOCLICK_OPTION_RIGHT_CLICK))
-                        .SetCallback(base::BindRepeating(
-                            &AutoclickMenuView::OnAutoclickButtonPressed,
-                            base::Unretained(this),
-                            base::Unretained(right_click_button_))),
-                    views::Builder<FloatingMenuButton>()
-                        .CopyAddressTo(&double_click_button_)
-                        .SetID(static_cast<int>(ButtonId::kDoubleClick))
-                        .SetVectorIcon(kAutoclickDoubleClickIcon)
-                        .SetTooltipText(l10n_util::GetStringUTF16(
-                            IDS_ASH_AUTOCLICK_OPTION_DOUBLE_CLICK))
-                        .SetCallback(base::BindRepeating(
-                            &AutoclickMenuView::OnAutoclickButtonPressed,
-                            base::Unretained(this),
-                            base::Unretained(double_click_button_))),
-                    views::Builder<FloatingMenuButton>()
-                        .CopyAddressTo(&drag_button_)
-                        .SetID(static_cast<int>(ButtonId::kDragAndDrop))
-                        .SetVectorIcon(kAutoclickDragIcon)
-                        .SetTooltipText(l10n_util::GetStringUTF16(
-                            IDS_ASH_AUTOCLICK_OPTION_DRAG_AND_DROP))
-                        .SetCallback(base::BindRepeating(
-                            &AutoclickMenuView::OnAutoclickButtonPressed,
-                            base::Unretained(this),
-                            base::Unretained(drag_button_))),
-                    views::Builder<FloatingMenuButton>()
-                        .CopyAddressTo(&scroll_button_)
-                        .SetID(static_cast<int>(ButtonId::kScroll))
-                        .SetVectorIcon(kAutoclickScrollIcon)
-                        .SetTooltipText(l10n_util::GetStringUTF16(
-                            IDS_ASH_AUTOCLICK_OPTION_SCROLL))
-                        .SetCallback(base::BindRepeating(
-                            &AutoclickMenuView::OnAutoclickButtonPressed,
-                            base::Unretained(this),
-                            base::Unretained(scroll_button_))),
-                    views::Builder<FloatingMenuButton>()
-                        .CopyAddressTo(&pause_button_)
-                        .SetID(static_cast<int>(ButtonId::kPause))
-                        .SetVectorIcon(kAutoclickPauseIcon)
-                        .SetTooltipText(l10n_util::GetStringUTF16(
-                            IDS_ASH_AUTOCLICK_OPTION_NO_ACTION))
-                        .SetCallback(base::BindRepeating(
-                            &AutoclickMenuView::OnAutoclickButtonPressed,
-                            base::Unretained(this),
-                            base::Unretained(pause_button_)))}),
-           views::Builder<views::Separator>()
-               .SetColor(AshColorProvider::Get()->GetContentLayerColor(
-                   AshColorProvider::ContentLayerType::kSeparatorColor))
-               .SetPreferredHeight(kSeparatorHeight)
-               .SetBorder(views::CreateEmptyBorder(
-                   separator_spacing - kUnifiedTopShortcutSpacing, 0,
-                   separator_spacing, 0)),
-           views::Builder<views::BoxLayoutView>()
-               .SetInsideBorderInsets(gfx::Insets(
-                   0, kPanelPositionButtonPadding, kPanelPositionButtonPadding,
-                   kPanelPositionButtonPadding))
-               .SetBetweenChildSpacing(kPanelPositionButtonPadding)
-               .AddChildren(
-                   {views::Builder<FloatingMenuButton>()
-                        .CopyAddressTo(&position_button_)
-                        .SetID(static_cast<int>(ButtonId::kPosition))
-                        .SetVectorIcon(kAutoclickPositionBottomLeftIcon)
-                        .SetPreferredSize(gfx::Size(kPanelPositionButtonSize,
-                                                    kPanelPositionButtonSize))
-                        .SetTooltipText(l10n_util::GetStringUTF16(
-                            IDS_ASH_AUTOCLICK_OPTION_CHANGE_POSITION))
-                        .SetDrawHighlight(false)
-                        .SetA11yTogglable(false)
-                        .SetCallback(base::BindRepeating(
-                            &AutoclickMenuView::OnPositionButtonPressed,
-                            base::Unretained(this)))})})
+          views::Builder<views::BoxLayoutView>()
+              .SetInsideBorderInsets(kUnifiedMenuItemPadding)
+              .SetBetweenChildSpacing(kUnifiedTopShortcutSpacing)
+              .AddChildren(views::Builder<FloatingMenuButton>()
+                               .CopyAddressTo(&left_click_button_)
+                               .SetID(static_cast<int>(ButtonId::kLeftClick))
+                               .SetVectorIcon(kAutoclickLeftClickIcon)
+                               .SetTooltipText(l10n_util::GetStringUTF16(
+                                   IDS_ASH_AUTOCLICK_OPTION_LEFT_CLICK))
+                               .SetCallback(base::BindRepeating(
+                                   &AutoclickMenuView::OnAutoclickButtonPressed,
+                                   base::Unretained(this),
+                                   base::Unretained(left_click_button_))),
+                           views::Builder<FloatingMenuButton>()
+                               .CopyAddressTo(&right_click_button_)
+                               .SetID(static_cast<int>(ButtonId::kRightClick))
+                               .SetVectorIcon(kAutoclickRightClickIcon)
+                               .SetTooltipText(l10n_util::GetStringUTF16(
+                                   IDS_ASH_AUTOCLICK_OPTION_RIGHT_CLICK))
+                               .SetCallback(base::BindRepeating(
+                                   &AutoclickMenuView::OnAutoclickButtonPressed,
+                                   base::Unretained(this),
+                                   base::Unretained(right_click_button_))),
+                           views::Builder<FloatingMenuButton>()
+                               .CopyAddressTo(&double_click_button_)
+                               .SetID(static_cast<int>(ButtonId::kDoubleClick))
+                               .SetVectorIcon(kAutoclickDoubleClickIcon)
+                               .SetTooltipText(l10n_util::GetStringUTF16(
+                                   IDS_ASH_AUTOCLICK_OPTION_DOUBLE_CLICK))
+                               .SetCallback(base::BindRepeating(
+                                   &AutoclickMenuView::OnAutoclickButtonPressed,
+                                   base::Unretained(this),
+                                   base::Unretained(double_click_button_))),
+                           views::Builder<FloatingMenuButton>()
+                               .CopyAddressTo(&drag_button_)
+                               .SetID(static_cast<int>(ButtonId::kDragAndDrop))
+                               .SetVectorIcon(kAutoclickDragIcon)
+                               .SetTooltipText(l10n_util::GetStringUTF16(
+                                   IDS_ASH_AUTOCLICK_OPTION_DRAG_AND_DROP))
+                               .SetCallback(base::BindRepeating(
+                                   &AutoclickMenuView::OnAutoclickButtonPressed,
+                                   base::Unretained(this),
+                                   base::Unretained(drag_button_))),
+                           views::Builder<FloatingMenuButton>()
+                               .CopyAddressTo(&scroll_button_)
+                               .SetID(static_cast<int>(ButtonId::kScroll))
+                               .SetVectorIcon(kAutoclickScrollIcon)
+                               .SetTooltipText(l10n_util::GetStringUTF16(
+                                   IDS_ASH_AUTOCLICK_OPTION_SCROLL))
+                               .SetCallback(base::BindRepeating(
+                                   &AutoclickMenuView::OnAutoclickButtonPressed,
+                                   base::Unretained(this),
+                                   base::Unretained(scroll_button_))),
+                           views::Builder<FloatingMenuButton>()
+                               .CopyAddressTo(&pause_button_)
+                               .SetID(static_cast<int>(ButtonId::kPause))
+                               .SetVectorIcon(kAutoclickPauseIcon)
+                               .SetTooltipText(l10n_util::GetStringUTF16(
+                                   IDS_ASH_AUTOCLICK_OPTION_NO_ACTION))
+                               .SetCallback(base::BindRepeating(
+                                   &AutoclickMenuView::OnAutoclickButtonPressed,
+                                   base::Unretained(this),
+                                   base::Unretained(pause_button_)))),
+          views::Builder<views::Separator>()
+              .CopyAddressTo(&separator_)
+              .SetPreferredLength(kSeparatorHeight)
+              .SetColorId(ui::kColorAshSystemUIMenuSeparator)
+              .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+                  separator_spacing - kUnifiedTopShortcutSpacing, 0,
+                  separator_spacing, 0))),
+          views::Builder<views::BoxLayoutView>()
+              .SetInsideBorderInsets(gfx::Insets::TLBR(
+                  0, kPanelPositionButtonPadding, kPanelPositionButtonPadding,
+                  kPanelPositionButtonPadding))
+              .SetBetweenChildSpacing(kPanelPositionButtonPadding)
+              .AddChildren(
+                  views::Builder<FloatingMenuButton>()
+                      .CopyAddressTo(&position_button_)
+                      .SetID(static_cast<int>(ButtonId::kPosition))
+                      .SetVectorIcon(kAutoclickPositionBottomLeftIcon)
+                      .SetPreferredSize(gfx::Size(kPanelPositionButtonSize,
+                                                  kPanelPositionButtonSize))
+                      .SetTooltipText(l10n_util::GetStringUTF16(
+                          IDS_ASH_AUTOCLICK_OPTION_CHANGE_POSITION))
+                      .SetDrawHighlight(false)
+                      .SetA11yTogglable(false)
+                      .SetCallback(base::BindRepeating(
+                          &AutoclickMenuView::OnPositionButtonPressed,
+                          base::Unretained(this)))))
       .BuildChildren();
   UpdateEventType(type);
   UpdatePosition(position);

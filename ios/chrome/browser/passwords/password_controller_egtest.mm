@@ -1,41 +1,33 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#include <memory>
+#import <memory>
 
 #import "base/test/ios/wait_util.h"
-#include "components/strings/grit/components_strings.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/password_manager_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-#if defined(CHROME_EARL_GREY_2)
-// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(PasswordManagerAppInterface);
-#endif  // defined(CHROME_EARL_GREY_2)
 
 constexpr char kFormUsername[] = "un";
 constexpr char kFormPassword[] = "pw";
@@ -52,7 +44,7 @@ using chrome_test_util::UseSuggestedPasswordMatcher;
 
 id<GREYMatcher> PasswordInfobar(int prompt_id) {
   NSString* bannerLabel =
-      [NSString stringWithFormat:@"%@, %@", l10n_util::GetNSString(prompt_id),
+      [NSString stringWithFormat:@"%@,%@", l10n_util::GetNSString(prompt_id),
                                  kSavedCredentialLabel];
   return grey_allOf(grey_accessibilityID(kInfobarBannerViewIdentifier),
                     grey_accessibilityLabel(bannerLabel), nil);
@@ -74,7 +66,7 @@ BOOL WaitForKeyboardToAppear() {
                   block:^BOOL {
                     return [EarlGrey isKeyboardShownWithError:nil];
                   }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout];
+  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
 }  // namespace
@@ -109,7 +101,8 @@ BOOL WaitForKeyboardToAppear() {
 #pragma mark - Tests
 
 // Tests that save password prompt is shown on new login.
-- (void)testSavePromptAppearsOnFormSubmission {
+// TODO(crbug.com/1192446): Reenable this test.
+- (void)DISABLED_testSavePromptAppearsOnFormSubmission {
   [self loadLoginPage];
 
   // Simulate user interacting with fields.
@@ -141,7 +134,15 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that update password prompt is shown on submitting the new password
 // for an already stored login.
-- (void)testUpdatePromptAppearsOnFormSubmission {
+// TODO(crbug.com/1330896): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testUpdatePromptAppearsOnFormSubmission \
+  DISABLED_testUpdatePromptAppearsOnFormSubmission
+#else
+#define MAYBE_testUpdatePromptAppearsOnFormSubmission \
+  testUpdatePromptAppearsOnFormSubmission
+#endif
+- (void)MAYBE_testUpdatePromptAppearsOnFormSubmission {
   // Load the page the first time an store credentials.
   [self loadLoginPage];
   [PasswordManagerAppInterface storeCredentialWithUsername:@"Eguser"
@@ -180,8 +181,15 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests password generation flow.
-- (void)testPasswordGeneration {
-  [SigninEarlGreyUI signinWithFakeIdentity:[SigninEarlGrey fakeIdentity1]];
+// TODO(crbug.com/1221635) This fails on iPhone 14.5+
+- (void)DISABLED_testPasswordGeneration {
+#if TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1194134): Reenable this test.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (test is flaky)");
+  }
+#endif
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];

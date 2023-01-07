@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "components/prefs/pref_registry_simple.h"
 
-namespace chromeos {
 namespace quick_answers {
 namespace prefs {
 
@@ -14,7 +13,31 @@ namespace prefs {
 const char kQuickAnswersNoticed[] = "settings.quick_answers.consented";
 
 // A preference that indicates the user has enabled the Quick Answers services.
+// This preference can be overridden by the administrator policy.
 const char kQuickAnswersEnabled[] = "settings.quick_answers.enabled";
+
+// A preference that indicates the user consent status for the Quick
+// Answers feature.
+const char kQuickAnswersConsentStatus[] =
+    "settings.quick_answers.consent_status";
+
+// A preference that indicates the user has enabled the Quick Answers definition
+// services.
+// This preference can be overridden by the administrator policy.
+const char kQuickAnswersDefinitionEnabled[] =
+    "settings.quick_answers.definition.enabled";
+
+// A preference that indicates the user has enabled the Quick Answers
+// translation services.
+// This preference can be overridden by the administrator policy.
+const char kQuickAnswersTranslationEnabled[] =
+    "settings.quick_answers.translation.enabled";
+
+// A preference that indicates the user has enabled the Quick Answers unit
+// conversion services.
+// This preference can be overridden by the administrator policy.
+const char kQuickAnswersUnitConversionEnabled[] =
+    "settings.quick_answers.unit_conversion.enabled";
 
 // A preference to keep track of the number of Quick Answers notice impression.
 const char kQuickAnswersNoticeImpressionCount[] =
@@ -28,10 +51,14 @@ const char kQuickAnswersNoticeImpressionDuration[] =
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kQuickAnswersNoticed, false);
   registry->RegisterBooleanPref(kQuickAnswersEnabled, false);
+  registry->RegisterIntegerPref(kQuickAnswersConsentStatus,
+                                ConsentStatus::kUnknown);
+  registry->RegisterBooleanPref(kQuickAnswersDefinitionEnabled, true);
+  registry->RegisterBooleanPref(kQuickAnswersTranslationEnabled, true);
+  registry->RegisterBooleanPref(kQuickAnswersUnitConversionEnabled, true);
   registry->RegisterIntegerPref(kQuickAnswersNoticeImpressionCount, 0);
   registry->RegisterIntegerPref(kQuickAnswersNoticeImpressionDuration, 0);
 }
 
 }  // namespace prefs
 }  // namespace quick_answers
-}  // namespace chromeos

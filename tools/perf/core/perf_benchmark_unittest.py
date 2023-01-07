@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import unittest
 from telemetry.core import util
 from telemetry.internal.browser import browser_finder
 from telemetry.testing import options_for_unittests
+from telemetry import decorators
 
 from core import perf_benchmark
 
@@ -58,7 +59,8 @@ class PerfBenchmarkTest(unittest.TestCase):
     self.assertEqual(num_expected_matches, len(local_state_to_copy))
     self.assertEqual(num_expected_matches, len(ruleset_data_to_copy))
 
-
+  @decorators.Disabled('android-nougat'  # Flaky: https://crbug.com/1342706
+                       )
   def testVariationArgs(self):
     benchmark = perf_benchmark.PerfBenchmark()
     options = options_for_unittests.GetCopy()
@@ -97,12 +99,21 @@ class PerfBenchmarkTest(unittest.TestCase):
 
     benchmark.CustomizeOptions(options)
 
-    expected_args = [
-      "--enable-features=Feature1<TestStudy,Feature2<TestStudy",
-      "--disable-features=Feature3<TestStudy,Feature4<TestStudy",
-      "--force-fieldtrials=TestStudy/TestFeature",
-      "--force-fieldtrial-params=TestStudy.TestFeature:param1/value1"
-    ]
+    # For non-Android, we expect to just pass the "--enable-field-trial-config"
+    # flag. For Android, due to binary size constraints, the flag cannot be
+    # used. We instead expect generated browser args from the testing config
+    # file. See the FIELDTRIAL_TESTING_ENABLED buildflag definition in
+    # components/variations/service/BUILD.gn for more details.
+    if not perf_benchmark.PerfBenchmark.IsAndroid(possible_browser):
+      expected_args = ['--enable-field-trial-config']
+    else:
+      expected_args = [
+          "--enable-features=Feature1<TestStudy,Feature2<TestStudy",
+          "--disable-features=Feature3<TestStudy,Feature4<TestStudy",
+          "--force-fieldtrials=TestStudy/TestFeature",
+          "--force-fieldtrial-params=TestStudy.TestFeature:param1/value1"
+      ]
+
     for arg in expected_args:
       self.assertIn(arg, options.browser_options.extra_browser_args)
 

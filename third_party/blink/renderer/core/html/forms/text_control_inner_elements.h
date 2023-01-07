@@ -41,7 +41,6 @@ class EditingViewPortElement final : public HTMLDivElement {
       const StyleRecalcContext&) override;
 
  private:
-  bool TypeShouldForceLegacyLayout() const final;
   bool SupportsFocus() const override { return false; }
 };
 
@@ -57,7 +56,6 @@ class TextControlInnerEditorElement final : public HTMLDivElement {
 
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
-  bool TypeShouldForceLegacyLayout() const final;
   scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
       const StyleRecalcContext&) override;
   bool SupportsFocus() const override { return false; }
@@ -72,7 +70,6 @@ class SearchFieldCancelButtonElement final : public HTMLDivElement {
   bool WillRespondToMouseClickEvents() override;
 
  private:
-  bool TypeShouldForceLegacyLayout() const final;
   bool SupportsFocus() const override { return false; }
 };
 
@@ -89,4 +86,4 @@ class PasswordRevealButtonElement final : public HTMLDivElement {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_TEXT_CONTROL_INNER_ELEMENTS_H_

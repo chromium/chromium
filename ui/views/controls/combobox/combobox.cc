@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,26 +10,30 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/menu_source_utils.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_utils.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/combobox/combobox_menu_model.h"
 #include "ui/views/controls/combobox/combobox_util.h"
 #include "ui/views/controls/combobox/empty_combobox_model.h"
 #include "ui/views/controls/focus_ring.h"
@@ -38,31 +42,19 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/prefix_selector.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
 
 namespace {
 
-// Used to indicate that no item is currently selected by the user.
-constexpr int kNoSelection = -1;
-
 SkColor GetTextColorForEnableState(const Combobox& combobox, bool enabled) {
   const int style = enabled ? style::STYLE_PRIMARY : style::STYLE_DISABLED;
   return style::GetColor(combobox, style::CONTEXT_TEXTFIELD, style);
-}
-
-gfx::ImageSkia GetImageSkiaFromImageModel(const ui::ImageModel* model,
-                                          const ui::NativeTheme* native_theme) {
-  DCHECK(model);
-  DCHECK(!model->IsEmpty());
-  return model->IsImage() ? model->GetImage().AsImageSkia()
-                          : ui::ThemedVectorIcon(model->GetVectorIcon())
-                                .GetImageSkia(native_theme);
 }
 
 // The transparent button which holds a button state but is not rendered.
@@ -74,13 +66,35 @@ class TransparentButton : public Button {
     button_controller()->set_notify_action(
         ButtonController::NotifyAction::kOnPress);
 
-    SetInkDropMode(InkDropMode::ON);
+    InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
+    InkDrop::UseInkDropForSquareRipple(InkDrop::Get(this),
+                                       /*highlight_on_hover=*/false);
+    views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
+        [](Button* host) {
+          // This button will be used like a LabelButton, so use the same
+          // foreground base color as a label button.
+          return color_utils::DeriveDefaultIconColor(
+              views::style::GetColor(*host, views::style::CONTEXT_BUTTON,
+                                     views::style::STYLE_PRIMARY));
+        },
+        this));
+    InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
+        [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
+          return std::make_unique<views::FloodFillInkDropRipple>(
+              host->size(),
+              InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
+              host->GetColorProvider()->GetColor(ui::kColorLabelForeground),
+              InkDrop::Get(host)->GetVisibleOpacity());
+        },
+        this));
   }
+  TransparentButton(const TransparentButton&) = delete;
+  TransparentButton& operator&=(const TransparentButton&) = delete;
   ~TransparentButton() override = default;
 
   bool OnMousePressed(const ui::MouseEvent& mouse_event) override {
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_MAC)
     // On Mac, comboboxes do not take focus on mouse click, but on other
     // platforms they do.
     parent()->RequestFocus();
@@ -92,141 +106,21 @@ class TransparentButton : public Button {
     return hover_animation().GetCurrentValue();
   }
 
-  // Overridden from InkDropHost:
-  std::unique_ptr<InkDrop> CreateInkDrop() override {
-    std::unique_ptr<views::InkDropImpl> ink_drop = CreateDefaultInkDropImpl();
-    ink_drop->SetShowHighlightOnHover(false);
-    return std::move(ink_drop);
+  void UpdateInkDrop(bool show_on_press_and_hover) {
+    if (show_on_press_and_hover) {
+      // We must use UseInkDropForFloodFillRipple here because
+      // UseInkDropForSquareRipple hides the InkDrop when the ripple effect is
+      // active instead of layering underneath it causing flashing.
+      InkDrop::UseInkDropForFloodFillRipple(InkDrop::Get(this),
+                                            /*highlight_on_hover=*/true);
+    } else {
+      InkDrop::UseInkDropForSquareRipple(InkDrop::Get(this),
+                                         /*highlight_on_hover=*/false);
+    }
   }
-
-  std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override {
-    return std::unique_ptr<views::InkDropRipple>(
-        new views::FloodFillInkDropRipple(
-            size(), GetInkDropCenterBasedOnLastEvent(),
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_LabelEnabledColor),
-            GetInkDropVisibleOpacity()));
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TransparentButton);
 };
-
-#if !defined(OS_APPLE)
-// Returns the next or previous valid index (depending on |increment|'s value).
-// Skips separator or disabled indices. Returns -1 if there is no valid adjacent
-// index.
-int GetAdjacentIndex(ui::ComboboxModel* model, int increment, int index) {
-  DCHECK(increment == -1 || increment == 1);
-
-  index += increment;
-  while (index >= 0 && index < model->GetItemCount()) {
-    if (!model->IsItemSeparatorAt(index) || !model->IsItemEnabledAt(index))
-      return index;
-    index += increment;
-  }
-  return kNoSelection;
-}
-#endif
 
 }  // namespace
-
-// Adapts a ui::ComboboxModel to a ui::MenuModel.
-class Combobox::ComboboxMenuModel : public ui::MenuModel {
- public:
-  ComboboxMenuModel(Combobox* owner, ui::ComboboxModel* model)
-      : owner_(owner), model_(model) {}
-  ~ComboboxMenuModel() override = default;
-
- private:
-  bool UseCheckmarks() const {
-    return MenuConfig::instance().check_selected_combobox_item;
-  }
-
-  // Overridden from MenuModel:
-  bool HasIcons() const override {
-    for (int i = 0; i < GetItemCount(); ++i) {
-      if (!GetIconAt(i).IsEmpty())
-        return true;
-    }
-    return false;
-  }
-
-  int GetItemCount() const override { return model_->GetItemCount(); }
-
-  ItemType GetTypeAt(int index) const override {
-    if (model_->IsItemSeparatorAt(index))
-      return TYPE_SEPARATOR;
-    return UseCheckmarks() ? TYPE_CHECK : TYPE_COMMAND;
-  }
-
-  ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override {
-    return ui::NORMAL_SEPARATOR;
-  }
-
-  int GetCommandIdAt(int index) const override {
-    // Define the id of the first item in the menu (since it needs to be > 0)
-    constexpr int kFirstMenuItemId = 1000;
-    return index + kFirstMenuItemId;
-  }
-
-  std::u16string GetLabelAt(int index) const override {
-    // Inserting the Unicode formatting characters if necessary so that the
-    // text is displayed correctly in right-to-left UIs.
-    std::u16string text = model_->GetDropDownTextAt(index);
-    base::i18n::AdjustStringForLocaleDirection(&text);
-    return text;
-  }
-
-  std::u16string GetSecondaryLabelAt(int index) const override {
-    std::u16string text = model_->GetDropDownSecondaryTextAt(index);
-    base::i18n::AdjustStringForLocaleDirection(&text);
-    return text;
-  }
-
-  bool IsItemDynamicAt(int index) const override { return true; }
-
-  const gfx::FontList* GetLabelFontListAt(int index) const override {
-    return &owner_->GetFontList();
-  }
-
-  bool GetAcceleratorAt(int index,
-                        ui::Accelerator* accelerator) const override {
-    return false;
-  }
-
-  bool IsItemCheckedAt(int index) const override {
-    return UseCheckmarks() && index == owner_->selected_index_;
-  }
-
-  int GetGroupIdAt(int index) const override { return -1; }
-
-  ui::ImageModel GetIconAt(int index) const override {
-    return model_->GetDropDownIconAt(index);
-  }
-
-  ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override {
-    return nullptr;
-  }
-
-  bool IsEnabledAt(int index) const override {
-    return model_->IsItemEnabledAt(index);
-  }
-
-  void ActivatedAt(int index) override {
-    owner_->SetSelectedIndex(index);
-    owner_->OnPerformAction();
-  }
-
-  void ActivatedAt(int index, int event_flags) override { ActivatedAt(index); }
-
-  MenuModel* GetSubmenuModelAt(int index) const override { return nullptr; }
-
-  Combobox* owner_;           // Weak. Owns this.
-  ui::ComboboxModel* model_;  // Weak.
-
-  DISALLOW_COPY_AND_ASSIGN(ComboboxMenuModel);
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Combobox, public:
@@ -248,23 +142,24 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
           base::BindRepeating(&Combobox::ArrowButtonPressed,
                               base::Unretained(this)))) {
   SetModel(model);
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 #else
   SetFocusBehavior(FocusBehavior::ALWAYS);
 #endif
 
+  SetBackgroundColorId(ui::kColorTextfieldBackground);
   UpdateBorder();
 
-  arrow_button_->SetVisible(true);
-  AddChildView(arrow_button_);
+  arrow_button_->SetVisible(should_show_arrow_);
+  AddChildView(arrow_button_.get());
 
   // A layer is applied to make sure that canvas bounds are snapped to pixel
   // boundaries (for the sake of drawing the arrow).
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  focus_ring_ = FocusRing::Install(this);
+  FocusRing::Install(this);
 }
 
 Combobox::~Combobox() {
@@ -278,9 +173,10 @@ const gfx::FontList& Combobox::GetFontList() const {
   return style::GetFont(text_context_, text_style_);
 }
 
-void Combobox::SetSelectedIndex(int index) {
+void Combobox::SetSelectedIndex(absl::optional<size_t> index) {
   if (selected_index_ == index)
     return;
+  // TODO(pbos): Add (D)CHECKs to validate the selected index.
   selected_index_ = index;
   if (size_to_largest_label_) {
     OnPropertyChanged(&selected_index_, kPropertyEffectsPaint);
@@ -290,8 +186,13 @@ void Combobox::SetSelectedIndex(int index) {
   }
 }
 
+base::CallbackListSubscription Combobox::AddSelectedIndexChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&selected_index_, std::move(callback));
+}
+
 bool Combobox::SelectValue(const std::u16string& value) {
-  for (int i = 0; i < GetModel()->GetItemCount(); ++i) {
+  for (size_t i = 0; i < GetModel()->GetItemCount(); ++i) {
     if (value == GetModel()->GetItemAt(i)) {
       SetSelectedIndex(i);
       return true;
@@ -307,18 +208,22 @@ void Combobox::SetOwnedModel(std::unique_ptr<ui::ComboboxModel> model) {
 }
 
 void Combobox::SetModel(ui::ComboboxModel* model) {
-  DCHECK(model) << "After construction, the model must not be null.";
+  if (!model) {
+    SetOwnedModel(std::make_unique<internal::EmptyComboboxModel>());
+    return;
+  }
 
   if (model_) {
-    DCHECK(observation_.IsObservingSource(model_));
+    DCHECK(observation_.IsObservingSource(model_.get()));
     observation_.Reset();
   }
 
   model_ = model;
 
   if (model_) {
+    model_ = model;
     menu_model_ = std::make_unique<ComboboxMenuModel>(this, model_);
-    observation_.Observe(model_);
+    observation_.Observe(model_.get());
     SetSelectedIndex(model_->GetDefaultIndex());
     OnComboboxModelChanged(model_);
   }
@@ -349,11 +254,27 @@ void Combobox::SetInvalid(bool invalid) {
 
   invalid_ = invalid;
 
-  if (focus_ring_)
-    focus_ring_->SetInvalid(invalid);
+  if (views::FocusRing::Get(this))
+    views::FocusRing::Get(this)->SetInvalid(invalid);
 
   UpdateBorder();
   OnPropertyChanged(&selected_index_, kPropertyEffectsPaint);
+}
+
+void Combobox::SetBorderColorId(ui::ColorId color_id) {
+  border_color_id_ = color_id;
+  UpdateBorder();
+}
+
+void Combobox::SetBackgroundColorId(ui::ColorId color_id) {
+  SetBackground(CreateThemedRoundedRectBackground(
+      color_id, FocusableBorder::kCornerRadiusDp));
+}
+
+void Combobox::SetEventHighlighting(bool should_highlight) {
+  should_highlight_ = should_highlight;
+  AsViewClass<TransparentButton>(arrow_button_)
+      ->UpdateInkDrop(should_highlight);
 }
 
 void Combobox::SetSizeToLargestLabel(bool size_to_largest_label) {
@@ -365,31 +286,31 @@ void Combobox::SetSizeToLargestLabel(bool size_to_largest_label) {
   OnPropertyChanged(&selected_index_, kPropertyEffectsPreferredSizeChanged);
 }
 
-void Combobox::OnThemeChanged() {
-  View::OnThemeChanged();
-  SetBackground(
-      CreateBackgroundFromPainter(Painter::CreateSolidRoundRectPainter(
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_TextfieldDefaultBackground),
-          FocusableBorder::kCornerRadiusDp)));
+bool Combobox::IsMenuRunning() const {
+  return menu_runner_ && menu_runner_->IsRunning();
 }
 
-int Combobox::GetRowCount() {
+void Combobox::OnThemeChanged() {
+  View::OnThemeChanged();
+  OnContentSizeMaybeChanged();
+}
+
+size_t Combobox::GetRowCount() {
   return GetModel()->GetItemCount();
 }
 
-int Combobox::GetSelectedRow() {
+absl::optional<size_t> Combobox::GetSelectedRow() {
   return selected_index_;
 }
 
-void Combobox::SetSelectedRow(int row) {
-  int prev_index = selected_index_;
+void Combobox::SetSelectedRow(absl::optional<size_t> row) {
+  absl::optional<size_t> prev_index = selected_index_;
   SetSelectedIndex(row);
   if (selected_index_ != prev_index)
     OnPerformAction();
 }
 
-std::u16string Combobox::GetTextForRow(int row) {
+std::u16string Combobox::GetTextForRow(size_t row) {
   return GetModel()->IsItemSeparatorAt(row) ? std::u16string()
                                             : GetModel()->GetItemAt(row);
 }
@@ -403,14 +324,20 @@ gfx::Size Combobox::CalculatePreferredSize() const {
 
   // The preferred size will drive the local bounds which in turn is used to set
   // the minimum width for the dropdown list.
-  gfx::Insets insets = GetInsets();
-  const LayoutProvider* provider = LayoutProvider::Get();
-  insets += gfx::Insets(
-      provider->GetDistanceMetric(DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
-      provider->GetDistanceMetric(DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING));
-  int total_width = std::max(kMinComboboxWidth, content_size_.width()) +
-                    insets.width() + kComboboxArrowContainerWidth;
-  return gfx::Size(total_width, content_size_.height() + insets.height());
+  int width = std::max(kMinComboboxWidth, content_size_.width()) +
+              LayoutProvider::Get()->GetDistanceMetric(
+                  DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING) *
+                  2 +
+              GetInsets().width();
+
+  // If an arrow is being shown, add extra width to include that arrow.
+  if (should_show_arrow_) {
+    width += kComboboxArrowContainerWidth;
+  }
+
+  const int height = LayoutProvider::GetControlHeightForFont(
+      text_context_, text_style_, GetFontList());
+  return gfx::Size(width, height);
 }
 
 void Combobox::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -430,74 +357,89 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   // TODO(oshima): handle IME.
   DCHECK_EQ(e.type(), ui::ET_KEY_PRESSED);
 
-  DCHECK_GE(selected_index_, 0);
-  DCHECK_LT(selected_index_, GetModel()->GetItemCount());
-  if (selected_index_ < 0 || selected_index_ > GetModel()->GetItemCount())
-    SetSelectedIndex(0);
+  DCHECK(selected_index_.has_value());
+  DCHECK_LT(selected_index_.value(), GetModel()->GetItemCount());
 
-  bool show_menu = false;
-  int new_index = kNoSelection;
-  switch (e.key_code()) {
-#if defined(OS_APPLE)
-    case ui::VKEY_DOWN:
-    case ui::VKEY_UP:
-    case ui::VKEY_SPACE:
-    case ui::VKEY_HOME:
-    case ui::VKEY_END:
-      // On Mac, navigation keys should always just show the menu first.
-      show_menu = true;
-      break;
+#if BUILDFLAG(IS_MAC)
+  if (e.key_code() != ui::VKEY_DOWN && e.key_code() != ui::VKEY_UP &&
+      e.key_code() != ui::VKEY_SPACE && e.key_code() != ui::VKEY_HOME &&
+      e.key_code() != ui::VKEY_END) {
+    return false;
+  }
+  ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
+  return true;
 #else
+  const auto index_at_or_after = [](ui::ComboboxModel* model,
+                                    size_t index) -> absl::optional<size_t> {
+    for (; index < model->GetItemCount(); ++index) {
+      if (!model->IsItemSeparatorAt(index) && model->IsItemEnabledAt(index))
+        return index;
+    }
+    return absl::nullopt;
+  };
+  const auto index_before = [](ui::ComboboxModel* model,
+                               size_t index) -> absl::optional<size_t> {
+    for (; index > 0; --index) {
+      const auto prev = index - 1;
+      if (!model->IsItemSeparatorAt(prev) && model->IsItemEnabledAt(prev))
+        return prev;
+    }
+    return absl::nullopt;
+  };
+
+  absl::optional<size_t> new_index;
+  switch (e.key_code()) {
     // Show the menu on F4 without modifiers.
     case ui::VKEY_F4:
       if (e.IsAltDown() || e.IsAltGrDown() || e.IsControlDown())
         return false;
-      show_menu = true;
-      break;
+      ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
+      return true;
 
     // Move to the next item if any, or show the menu on Alt+Down like Windows.
     case ui::VKEY_DOWN:
-      if (e.IsAltDown())
-        show_menu = true;
-      else
-        new_index = GetAdjacentIndex(GetModel(), 1, selected_index_);
+      if (e.IsAltDown()) {
+        ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
+        return true;
+      }
+      new_index = index_at_or_after(GetModel(), selected_index_.value() + 1);
       break;
 
     // Move to the end of the list.
     case ui::VKEY_END:
     case ui::VKEY_NEXT:  // Page down.
-      new_index = GetAdjacentIndex(GetModel(), -1, GetModel()->GetItemCount());
+      new_index = index_before(GetModel(), GetModel()->GetItemCount());
       break;
 
     // Move to the beginning of the list.
     case ui::VKEY_HOME:
     case ui::VKEY_PRIOR:  // Page up.
-      new_index = GetAdjacentIndex(GetModel(), 1, -1);
+      new_index = index_at_or_after(GetModel(), 0);
       break;
 
     // Move to the previous item if any.
     case ui::VKEY_UP:
-      new_index = GetAdjacentIndex(GetModel(), -1, selected_index_);
+      new_index = index_before(GetModel(), selected_index_.value());
       break;
 
     case ui::VKEY_RETURN:
     case ui::VKEY_SPACE:
-      show_menu = true;
-      break;
-#endif  // OS_APPLE
+      ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
+      return true;
+
     default:
       return false;
   }
 
-  if (show_menu) {
-    ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
-  } else if (new_index != selected_index_ && new_index != kNoSelection) {
-    DCHECK(!GetModel()->IsItemSeparatorAt(new_index));
+  if (new_index.has_value()) {
+    if (menu_selection_at_callback_)
+      menu_selection_at_callback_.Run(new_index.value());
+
     SetSelectedIndex(new_index);
     OnPerformAction();
   }
-
   return true;
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void Combobox::OnPaint(gfx::Canvas* canvas) {
@@ -530,16 +472,21 @@ void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // an editable text field, which views::Combobox does not have. Use
   // ax::mojom::Role::kPopUpButton to match an HTML <select> element.
   node_data->role = ax::mojom::Role::kPopUpButton;
+  if (menu_runner_) {
+    node_data->AddState(ax::mojom::State::kExpanded);
+  } else {
+    node_data->AddState(ax::mojom::State::kCollapsed);
+  }
 
   node_data->SetName(accessible_name_);
-  node_data->SetValue(model_->GetItemAt(selected_index_));
+  node_data->SetValue(model_->GetItemAt(selected_index_.value()));
   if (GetEnabled()) {
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
   }
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
-                             selected_index_);
+                             base::checked_cast<int>(selected_index_.value()));
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
-                             model_->GetItemCount());
+                             base::checked_cast<int>(model_->GetItemCount()));
 }
 
 bool Combobox::HandleAccessibleAction(const ui::AXActionData& action_data) {
@@ -563,13 +510,15 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
   // default index.
   if (selected_index_ >= model_->GetItemCount() ||
       model_->GetItemCount() == 0 ||
-      model_->IsItemSeparatorAt(selected_index_)) {
+      model_->IsItemSeparatorAt(selected_index_.value())) {
     SetSelectedIndex(model_->GetDefaultIndex());
   }
 
-  content_size_ = GetContentSize();
-  PreferredSizeChanged();
-  SchedulePaint();
+  OnContentSizeMaybeChanged();
+}
+
+void Combobox::OnComboboxModelDestroying(ui::ComboboxModel* model) {
+  SetModel(nullptr);
 }
 
 const base::RepeatingClosure& Combobox::GetCallback() const {
@@ -582,8 +531,10 @@ const std::unique_ptr<ui::ComboboxModel>& Combobox::GetOwnedModel() const {
 
 void Combobox::UpdateBorder() {
   std::unique_ptr<FocusableBorder> border(new FocusableBorder());
+  if (border_color_id_.has_value())
+    border->SetColorId(border_color_id_.value());
   if (invalid_)
-    border->SetColorId(ui::NativeTheme::kColorId_AlertSeverityHigh);
+    border->SetColorId(ui::kColorAlertHighSeverity);
   SetBorder(std::move(border));
 }
 
@@ -593,8 +544,8 @@ void Combobox::AdjustBoundsForRTLUI(gfx::Rect* rect) const {
 
 void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   gfx::Insets insets = GetInsets();
-  insets += gfx::Insets(0, LayoutProvider::Get()->GetDistanceMetric(
-                               DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING));
+  insets += gfx::Insets::VH(0, LayoutProvider::Get()->GetDistanceMetric(
+                                   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING));
 
   gfx::ScopedCanvas scoped_canvas(canvas);
   canvas->ClipRect(GetContentsBounds());
@@ -603,44 +554,53 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   int y = insets.top();
   int contents_height = height() - insets.height();
 
+  DCHECK(selected_index_.has_value());
+  DCHECK_LT(selected_index_.value(), GetModel()->GetItemCount());
+
   // Draw the icon.
-  ui::ImageModel icon = GetModel()->GetIconAt(selected_index_);
+  ui::ImageModel icon = GetModel()->GetIconAt(selected_index_.value());
   if (!icon.IsEmpty()) {
-    gfx::ImageSkia icon_skia =
-        GetImageSkiaFromImageModel(&icon, GetNativeTheme());
+    gfx::ImageSkia icon_skia = icon.Rasterize(GetColorProvider());
     int icon_y = y + (contents_height - icon_skia.height()) / 2;
     gfx::Rect icon_bounds(x, icon_y, icon_skia.width(), icon_skia.height());
     AdjustBoundsForRTLUI(&icon_bounds);
     canvas->DrawImageInt(icon_skia, icon_bounds.x(), icon_bounds.y());
-    x += icon_skia.width() + LayoutProvider::Get()->GetDistanceMetric(
-                                 DISTANCE_RELATED_LABEL_HORIZONTAL);
+    x += icon_skia.width();
   }
 
   // Draw the text.
   SkColor text_color = GetTextColorForEnableState(*this, GetEnabled());
-  if (selected_index_ < 0 || selected_index_ > GetModel()->GetItemCount()) {
-    NOTREACHED();
-    SetSelectedIndex(0);
-  }
-  std::u16string text = GetModel()->GetItemAt(selected_index_);
-
-  int disclosure_arrow_offset = width() - kComboboxArrowContainerWidth;
-
+  std::u16string text = GetModel()->GetItemAt(selected_index_.value());
   const gfx::FontList& font_list = GetFontList();
+
+  // If the text is not empty, add padding between it and the icon. If there
+  // was an empty icon, this padding is not necessary.
+  if (!text.empty() && !icon.IsEmpty()) {
+    x += LayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_RELATED_LABEL_HORIZONTAL);
+  }
+
+  // The total width of the text is the minimum of either the string width,
+  // or the available space, accounting for optional arrow.
   int text_width = gfx::GetStringWidth(text, font_list);
-  text_width =
-      std::min(text_width, disclosure_arrow_offset - insets.right() - x);
+  int available_width = width() - x - insets.right();
+  if (should_show_arrow_) {
+    available_width -= kComboboxArrowContainerWidth;
+  }
+  text_width = std::min(text_width, available_width);
 
   gfx::Rect text_bounds(x, y, text_width, contents_height);
   AdjustBoundsForRTLUI(&text_bounds);
   canvas->DrawStringRect(text, font_list, text_color, text_bounds);
 
-  gfx::Rect arrow_bounds(disclosure_arrow_offset, 0,
-                         kComboboxArrowContainerWidth, height());
-  arrow_bounds.ClampToCenteredSize(ComboboxArrowSize());
-  AdjustBoundsForRTLUI(&arrow_bounds);
-
-  PaintComboboxArrow(text_color, arrow_bounds, canvas);
+  // Draw the arrow.
+  if (should_show_arrow_) {
+    gfx::Rect arrow_bounds(width() - kComboboxArrowContainerWidth, 0,
+                           kComboboxArrowContainerWidth, height());
+    arrow_bounds.ClampToCenteredSize(ComboboxArrowSize());
+    AdjustBoundsForRTLUI(&arrow_bounds);
+    PaintComboboxArrow(text_color, arrow_bounds, canvas);
+  }
 }
 
 void Combobox::ArrowButtonPressed(const ui::Event& event) {
@@ -666,26 +626,48 @@ void Combobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
   View::ConvertPointToScreen(this, &menu_position);
 
   gfx::Rect bounds(menu_position, lb.size());
+  // If check marks exist in the combobox, adjust with bounds width to account
+  // for them.
+  if (!size_to_largest_label_)
+    bounds.set_width(MaybeAdjustWidthForCheckmarks(bounds.width()));
 
   Button::ButtonState original_state = arrow_button_->GetState();
   arrow_button_->SetState(Button::STATE_PRESSED);
 
   // Allow |menu_runner_| to be set by the testing API, but if this method is
   // ever invoked recursively, ensure the old menu is closed.
-  if (!menu_runner_ || menu_runner_->IsRunning()) {
+  if (!menu_runner_ || IsMenuRunning()) {
     menu_runner_ = std::make_unique<MenuRunner>(
         menu_model_.get(), MenuRunner::COMBOBOX,
         base::BindRepeating(&Combobox::OnMenuClosed, base::Unretained(this),
                             original_state));
   }
+  if (should_highlight_) {
+    InkDrop::Get(arrow_button_)
+        ->AnimateToState(InkDropState::ACTIVATED, nullptr);
+  }
   menu_runner_->RunMenuAt(GetWidget(), nullptr, bounds,
                           MenuAnchorPosition::kTopLeft, source_type);
+  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
 }
 
 void Combobox::OnMenuClosed(Button::ButtonState original_button_state) {
+  if (should_highlight_) {
+    InkDrop::Get(arrow_button_)
+        ->AnimateToState(InkDropState::DEACTIVATED, nullptr);
+    InkDrop::Get(arrow_button_)->GetInkDrop()->SetHovered(IsMouseHovered());
+  }
   menu_runner_.reset();
   arrow_button_->SetState(original_button_state);
   closed_time_ = base::TimeTicks::Now();
+  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+}
+
+void Combobox::MenuSelectionAt(size_t index) {
+  if (!menu_selection_at_callback_ || !menu_selection_at_callback_.Run(index)) {
+    SetSelectedIndex(index);
+    OnPerformAction();
+  }
 }
 
 void Combobox::OnPerformAction() {
@@ -702,25 +684,53 @@ gfx::Size Combobox::GetContentSize() const {
   const gfx::FontList& font_list = GetFontList();
   int height = font_list.GetHeight();
   int width = 0;
-  for (int i = 0; i < GetModel()->GetItemCount(); ++i) {
+  for (size_t i = 0; i < GetModel()->GetItemCount(); ++i) {
     if (model_->IsItemSeparatorAt(i))
       continue;
 
     if (size_to_largest_label_ || i == selected_index_) {
-      int item_width = gfx::GetStringWidth(GetModel()->GetItemAt(i), font_list);
+      int item_width = 0;
       ui::ImageModel icon = GetModel()->GetIconAt(i);
+      std::u16string text = GetModel()->GetItemAt(i);
       if (!icon.IsEmpty()) {
-        gfx::ImageSkia icon_skia =
-            GetImageSkiaFromImageModel(&icon, GetNativeTheme());
-        item_width +=
-            icon_skia.width() + LayoutProvider::Get()->GetDistanceMetric(
-                                    DISTANCE_RELATED_LABEL_HORIZONTAL);
+        gfx::ImageSkia icon_skia;
+        if (GetWidget())
+          icon_skia = icon.Rasterize(GetColorProvider());
+        item_width += icon_skia.width();
         height = std::max(height, icon_skia.height());
+
+        // If both the text and icon are not empty, include padding between.
+        // We do not include this padding if there is no icon present.
+        if (!text.empty()) {
+          item_width += LayoutProvider::Get()->GetDistanceMetric(
+              DISTANCE_RELATED_LABEL_HORIZONTAL);
+        }
       }
+
+      // If text is not empty, the content size needs to include the text width
+      if (!text.empty()) {
+        item_width += gfx::GetStringWidth(GetModel()->GetItemAt(i), font_list);
+      }
+
+      if (size_to_largest_label_)
+        item_width = MaybeAdjustWidthForCheckmarks(item_width);
       width = std::max(width, item_width);
     }
   }
   return gfx::Size(width, height);
+}
+
+int Combobox::MaybeAdjustWidthForCheckmarks(int original_width) const {
+  return MenuConfig::instance().check_selected_combobox_item
+             ? original_width + kMenuCheckSize +
+                   LayoutProvider::Get()->GetDistanceMetric(
+                       DISTANCE_RELATED_BUTTON_HORIZONTAL)
+             : original_width;
+}
+
+void Combobox::OnContentSizeMaybeChanged() {
+  content_size_ = GetContentSize();
+  PreferredSizeChanged();
 }
 
 PrefixSelector* Combobox::GetPrefixSelector() {
@@ -733,7 +743,7 @@ BEGIN_METADATA(Combobox, View)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, Callback)
 ADD_PROPERTY_METADATA(std::unique_ptr<ui::ComboboxModel>, OwnedModel)
 ADD_PROPERTY_METADATA(ui::ComboboxModel*, Model)
-ADD_PROPERTY_METADATA(int, SelectedIndex)
+ADD_PROPERTY_METADATA(absl::optional<size_t>, SelectedIndex)
 ADD_PROPERTY_METADATA(bool, Invalid)
 ADD_PROPERTY_METADATA(bool, SizeToLargestLabel)
 ADD_PROPERTY_METADATA(std::u16string, AccessibleName)

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ void ChromeExtensionPolicyMigrator::CopyPoliciesIfUnset(
     if (policy_namespace.domain == PolicyDomain::POLICY_DOMAIN_EXTENSIONS &&
         extensions::HashedExtensionId(policy_namespace.component_id).value() ==
             hashed_extension_id_uppercase) {
-      extension_map = policy.second.get();
+      extension_map = &policy.second;
       break;
     }
   }

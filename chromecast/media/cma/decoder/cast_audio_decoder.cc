@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,7 @@
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "chromecast/media/cma/base/decoder_config_adapter.h"
@@ -32,6 +30,7 @@
 #include "media/base/sample_format.h"
 #include "media/base/status.h"
 #include "media/filters/ffmpeg_audio_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace media {
@@ -49,7 +48,7 @@ class DecoderBuffer : public ::media::DecoderBuffer {
             std::unique_ptr<uint8_t[]>(const_cast<uint8_t*>(buffer->data())),
             buffer->data_size()),
         buffer_(std::move(buffer)) {
-    set_timestamp(::base::TimeDelta::FromMicroseconds(buffer_->timestamp()));
+    set_timestamp(::base::Microseconds(buffer_->timestamp()));
   }
 
  private:
@@ -93,6 +92,9 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
     // Unfortunately there is no result from decoder_->Initialize() until later
     // (the pipeline status callback is posted to the task runner).
   }
+
+  CastAudioDecoderImpl(const CastAudioDecoderImpl&) = delete;
+  CastAudioDecoderImpl& operator=(const CastAudioDecoderImpl&) = delete;
 
   // CastAudioDecoder implementation:
   const AudioConfig& GetOutputConfig() const override { return output_config_; }
@@ -144,8 +146,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
     }
 
     // FFmpegAudioDecoder requires a timestamp to be set.
-    base::TimeDelta timestamp =
-        base::TimeDelta::FromMicroseconds(data->timestamp());
+    base::TimeDelta timestamp = base::Microseconds(data->timestamp());
     if (timestamp == ::media::kNoTimestamp)
       data->set_timestamp(base::TimeDelta());
 
@@ -156,7 +157,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
                                          weak_this_, timestamp));
   }
 
-  void OnInitialized(::media::Status status) {
+  void OnInitialized(::media::DecoderStatus status) {
     DCHECK(!initialized_);
     initialized_ = true;
     if (status.is_ok()) {
@@ -184,7 +185,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
   }
 
   void OnDecodeStatus(base::TimeDelta buffer_timestamp,
-                      ::media::Status status) {
+                      ::media::DecoderStatus status) {
     DCHECK(pending_decode_callback_);
 
     Status result_status = kDecodeOk;
@@ -227,10 +228,18 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
       output_config_.samples_per_second = decoded->sample_rate();
     }
 
-    if (decoded->channel_count() != output_config_.channel_number) {
+    ChannelLayout decoded_channel_layout =
+        DecoderConfigAdapter::ToChannelLayout(decoded->channel_layout());
+    if (decoded->channel_count() != output_config_.channel_number ||
+        decoded_channel_layout != output_config_.channel_layout) {
       LOG(WARNING) << "channel_count changed to " << decoded->channel_count()
-                   << " from " << output_config_.channel_number;
+                   << " from " << output_config_.channel_number
+                   << ", channel_layout changed to "
+                   << static_cast<int>(decoded_channel_layout) << " from "
+                   << static_cast<int>(output_config_.channel_layout);
       output_config_.channel_number = decoded->channel_count();
+      output_config_.channel_layout =
+          DecoderConfigAdapter::ToChannelLayout(decoded->channel_layout());
       decoded_bus_.reset();
     }
 
@@ -280,9 +289,9 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
       NOTREACHED();
     }
 
-    result->set_duration(base::TimeDelta::FromMicroseconds(
-        num_frames * base::Time::kMicrosecondsPerSecond /
-        output_config_.samples_per_second));
+    result->set_duration(
+        base::Microseconds(num_frames * base::Time::kMicrosecondsPerSecond /
+                           output_config_.samples_per_second));
     return base::MakeRefCounted<media::DecoderBufferAdapter>(output_config_.id,
                                                              result);
   }
@@ -306,8 +315,6 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
 
   base::WeakPtr<CastAudioDecoderImpl> weak_this_;
   base::WeakPtrFactory<CastAudioDecoderImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastAudioDecoderImpl);
 };
 
 }  // namespace

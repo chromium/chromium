@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/test_chrome_payment_request_delegate.h"
@@ -21,7 +21,8 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/payments/content/payment_request.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/payments/core/const_csp_checker.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -94,6 +95,12 @@ class PaymentRequestBrowserTestBase
     PAYMENT_HANDLER_WINDOW_OPENED,
   };
 
+  PaymentRequestBrowserTestBase(const PaymentRequestBrowserTestBase&) = delete;
+  PaymentRequestBrowserTestBase& operator=(
+      const PaymentRequestBrowserTestBase&) = delete;
+
+  base::WeakPtr<PaymentRequestBrowserTestBase> GetWeakPtr();
+
  protected:
   PaymentRequestBrowserTestBase();
   ~PaymentRequestBrowserTestBase() override;
@@ -104,6 +111,7 @@ class PaymentRequestBrowserTestBase
   // Test will open a browser window to |file_path| (relative to
   // components/test/data/payments).
   void NavigateTo(const std::string& file_path);
+  void NavigateTo(const std::string& hostname, const std::string& file_path);
 
   void SetIncognito();
   void SetInvalidSsl();
@@ -121,6 +129,7 @@ class PaymentRequestBrowserTestBase
 
   // PaymentRequestDialogView::ObserverForTest:
   void OnDialogOpened() override;
+  void OnDialogClosed() override;
   void OnOrderSummaryOpened() override;
   void OnPaymentMethodOpened() override;
   void OnShippingAddressSectionOpened() override;
@@ -139,9 +148,18 @@ class PaymentRequestBrowserTestBase
   void OnProcessingSpinnerHidden() override;
   void OnPaymentHandlerWindowOpened() override;
 
+  void InstallPaymentApp(const std::string& hostname,
+                         const std::string& service_worker_filename,
+                         std::string* url_method_output);
+
+  void InstallPaymentAppWithoutIcon(const std::string& hostname,
+                                    const std::string& service_worker_filename,
+                                    std::string* url_method_output);
+
   // Will call JavaScript to invoke the PaymentRequest dialog and verify that
   // it's open and ready for input.
   void InvokePaymentRequestUI();
+  void InvokePaymentRequestUIWithJs(const std::string& script);
 
   // Will expect that all strings in |expected_strings| are present in output.
   void ExpectBodyContains(const std::vector<std::string>& expected_strings);
@@ -161,10 +179,8 @@ class PaymentRequestBrowserTestBase
 
   content::WebContents* GetActiveWebContents();
 
-  // Convenience method to get a list of PaymentRequest associated with
-  // |web_contents|.
-  const std::vector<PaymentRequest*> GetPaymentRequests(
-      content::WebContents* web_contents);
+  // Convenience method to get all the `PaymentRequest`s that are still alive.
+  const std::vector<PaymentRequest*> GetPaymentRequests();
 
   autofill::PersonalDataManager* GetDataManager();
   // Adds the various models to the database, waiting until the personal data
@@ -270,19 +286,24 @@ class PaymentRequestBrowserTestBase
   // Wait for the event(s) passed to ResetEventWaiter*() to occur.
   void WaitForObservedEvent();
 
+  // Return a weak pointer to a Content Security Policy (CSP) checker for tests.
+  base::WeakPtr<CSPChecker> GetCSPCheckerForTests();
+
  private:
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   // Weak, owned by the PaymentRequest object.
-  TestChromePaymentRequestDelegate* delegate_ = nullptr;
+  raw_ptr<TestChromePaymentRequestDelegate> delegate_ = nullptr;
   syncer::TestSyncService sync_service_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   bool is_incognito_ = false;
   bool is_valid_ssl_ = true;
   bool is_browser_window_active_ = true;
   bool skip_ui_for_basic_card_ = false;
+  std::vector<base::WeakPtr<PaymentRequest>> requests_;
+  ConstCSPChecker const_csp_checker_{/*allow=*/true};
 
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestBrowserTestBase);
+  base::WeakPtrFactory<PaymentRequestBrowserTestBase> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

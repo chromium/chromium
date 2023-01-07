@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,9 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/events/event.h"
 #include "ui/events/event_rewriter.h"
@@ -190,6 +189,11 @@ class ASH_EXPORT TouchExplorationController
       aura::Window* root_window,
       TouchExplorationControllerDelegate* delegate,
       base::WeakPtr<TouchAccessibilityEnabler> touch_accessibility_enabler);
+
+  TouchExplorationController(const TouchExplorationController&) = delete;
+  TouchExplorationController& operator=(const TouchExplorationController&) =
+      delete;
+
   ~TouchExplorationController() override;
 
   // Make synthesized touch events are anchored at this point. This is
@@ -273,6 +277,9 @@ class ASH_EXPORT TouchExplorationController
   void OnGestureEvent(ui::GestureConsumer* raw_input_consumer,
                       ui::GestureEvent* gesture) override;
 
+  // ui::GestureConsumer:
+  const std::string& GetName() const override;
+
   // Process the gesture events that have been created.
   void ProcessGestureEvents();
 
@@ -284,10 +291,6 @@ class ASH_EXPORT TouchExplorationController
   void DispatchKeyWithFlags(const ui::KeyboardCode key,
                             int flags,
                             const Continuation continuation);
-
-  std::unique_ptr<ui::MouseEvent> CreateMouseMoveEvent(
-      const gfx::PointF& location,
-      int flags);
 
   void EnterTouchToMouseMode();
 
@@ -555,8 +558,6 @@ class ASH_EXPORT TouchExplorationController
 
   // The maximum touch points seen in the current gesture.
   size_t max_gesture_touch_points_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationController);
 };
 
 }  // namespace ash

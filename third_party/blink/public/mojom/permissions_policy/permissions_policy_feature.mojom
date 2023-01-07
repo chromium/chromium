@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@ module blink.mojom;
 // Not all listed features are supported in Blink, and many are gated by runtime
 // flags. See renderer/core/permissions_policy/permissions_policy_features.json5 for the
 // feature names which will be recognized in policy declarations.
+// For more details on adding a new permissions policy, see:
+// https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/common/permissions_policy/README.md
 enum PermissionsPolicyFeature {
   kNotFound = 0,
   // Controls access to media autoplay.
@@ -70,7 +72,6 @@ enum PermissionsPolicyFeature {
   kClientHintDeviceMemory = 54,
   kClientHintDownlink = 55,
   kClientHintECT = 56,
-  kClientHintLang = 57,
   kClientHintRTT = 58,
   kClientHintUA = 59,
   kClientHintUAArch = 60,
@@ -97,8 +98,8 @@ enum PermissionsPolicyFeature {
   // Trust Token API redemption and request signing operations
   kTrustTokenRedemption = 72,
 
-  // Controls use of Conversion Measurement API
-  kConversionMeasurement = 73,
+  // Controls use of Attribution Reporting API
+  kAttributionReporting = 73,
 
   // Client Hint for UA platform version.
   kClientHintUAPlatformVersion = 74,
@@ -121,13 +122,107 @@ enum PermissionsPolicyFeature {
   // Controls use of WebOTP API.
   kOTPCredentials = 80,
 
-  // Controls access to getDisplayMedia() and getCurrentBrowsingContextMedia().
+  // Controls access to screen capture via getDisplayMedia().
   kDisplayCapture = 81,
 
-  // Controls the access to the interest cohort as well as the eligibility for
-  // the navigation history entry to be included in the interest cohort
-  // computation. (https://github.com/WICG/floc)
-  kInterestCohort = 82,
+  // [Deprecated]
+  // kInterestCohort = 82,
+
+  // Controls whether Autofill may fill fields in that frame when triggered on
+  // a field with the main frame's origin.
+  kSharedAutofill = 83,
+
+  // Controls access to Direct Sockets.
+  kDirectSockets = 84,
+
+  // Client Hint for the preferred color scheme.
+  kClientHintPrefersColorScheme = 85,
+
+  // Controls use of Multi-Screen Window Placement API.
+  kWindowPlacement = 86,
+
+  kClientHintUABitness = 87,
+
+  // Client hint for indicating that the User-Agent header contains the reduced
+  // user agent string.
+  //
+  // The `Sec-CH-UA-Reduced` header field is a temporary client hint, which
+  // will only be sent in the presence of a valid Origin Trial token.  It was
+  // introduced to enable safely experimenting with sending a reduced user
+  // agent string in the `User-Agent` header.
+  //
+  // See https://www.chromestatus.com/feature/5704553745874944 for the
+  // User-Agent reduction Chrome feature and the design doc
+  // https://docs.google.com/document/d/1feIxK9S7oNgT2oGGebbxE9X0O-4wTKcsP_gRaY99tq4
+  // for details on the use of Client Hints guarded by an Origin Trial to
+  // enable experimenting with the reduced user agent string.
+  kClientHintUAReduced = 88,
+
+  // Client Hint for viewport height.
+  kClientHintViewportHeight = 89,
+
+  // Controls access to the Keyboard API.
+  // https://wicg.github.io/keyboard-map/
+  kKeyboardMap = 90,
+
+  // Controls FLEDGE's runAdAuction API.
+  //
+  // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
+  // for the API.
+  kRunAdAuction = 91,
+
+  // Controls FLEDGE's joinAdInterestGroup and updateAdInterestGroups APIs.
+  //
+  // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
+  // for the API.
+  kJoinAdInterestGroup = 92,
+
+  // Client Hint for the full version for each brand.
+  kClientHintUAFullVersionList = 93,
+
+  // Client hint for indicating that the User-Agent header contains the full
+  // user agent string.
+  //
+  // The `Sec-CH-UA-Full` header field is a temporary client hint, which
+  // will only be sent in the presence of a valid Origin Trial token.  It was
+  // introduced to enable sites to register for the deprecation UA reduction
+  // origin trial and continue to receive the full UA string for some period, once
+  // UA reduction rolls out.
+  kClientHintUAFull = 94,
+
+  // Client Hint for Sec-CH-UA-WoW64.
+  kClientHintUAWoW64 = 95,
+
+  // "browsing-topics" permissions policy that controls the use of Topics API.
+  // https://github.com/jkarlin/topics
+  kBrowsingTopics = 97,
+
+  // "interest-cohort" permissions policy that controls the use of Topics API.
+  // https://github.com/jkarlin/topics
+  kBrowsingTopicsBackwardCompatible = 98,
+
+  // Client Hint for Save-Data.
+  kClientHintSaveData = 99,
+
+  // Controls access to local fonts.
+  // https://wicg.github.io/local-font-access/#permissions-policy
+  kLocalFonts = 100,
+
+  // Controls access to Bluetooth API.
+  kBluetooth = 101,
+
+  // Controls use of FedCM API.
+  kIdentityCredentialsGet = 102,
+
+  // "shared-storage" permissions policy that controls the use of Shared Storage
+  // API.
+  kSharedStorage = 103,
+
+  // Controls use of unload handlers.
+  kUnload = 104,
+
+  // Client Hint for the preferred reduced motion.
+  kClientHintPrefersReducedMotion = 105,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

@@ -4,13 +4,17 @@ Usage of Chromium's [lldbinit.py](../tools/lldb/lldbinit.py) is recommended when
 debugging with lldb. This is necessary for source-level debugging when
 `strip_absolute_paths_from_debug_symbols` is enabled [this is the default].
 
+To install, run `sudo apt-get install lldb`.
+
 To use, add the following to your `~/.lldbinit`
 
 ```
 # So that lldbinit.py takes precedence.
-script sys.path[:0] = ['<.../path/to/chromium/src/tools/lldb>']
+script sys.path[:0] = ['/<your-path>/chromium/src/tools/lldb']
 script import lldbinit
 ```
+
+Make sure the build configurations include `is_debug=true`, this will set `symbol_level=2` by default, which is required if need to view the content of frame-level local variables.
 
 ## How to attach to a process with lldb and start debugging
 
@@ -26,8 +30,10 @@ script import lldbinit
 - In the lldb shell:
     - Execute `process attach -p PID`. PID is the process ID of the tab (process) you want to debug.
         - Note: it might take a while. Once lldb attaches to the process, you will see a message `Process PID stopped` and some stack traces.
+        - If you an error message such as `attach failed: Operation not permitted`, it is probably due to [ptrace Protection](https://wiki.ubuntu.com/SecurityTeam/Roadmap/KernelHardening#ptrace_Protection). You can disable this feature using `echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope`.
     - Now you can set breakpoints, for example, `breakpoint set -f inspector_overlay_agent.cc -l 627`.
     - Execute `cont` to continue the execution of the process.
     - Perform the actions which would trigger the breakpoint. lldb will stop the execution for you to inspect.
     - You can pause the execution at any time by pressing Ctrl + C.
     - Type `help` to learn more about different lldb commands.
+    - More open-source documentation could be found [here](https://developer.apple.com/library/archive/documentation/IDEs/Conceptual/gdb_to_lldb_transition_guide/document/lldb-basics.html#//apple_ref/doc/uid/TP40012917-CH2-SW1).

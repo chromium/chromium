@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,7 +102,8 @@ public class WebApkInitializationTest {
                     tabContentManagerSupplier, activityTabStartupMetricsTrackerSupplier,
                     compositorViewHolderInitializer, chromeActivityNativeDelegate,
                     modalDialogManagerSupplier, browserControlsStateProvider,
-                    savedInstanceStateSupplier) -> {
+                    savedInstanceStateSupplier, autofillUiBottomInsetSupplier,
+                    shareDelegateSupplier, tabModelInitializer, activityType) -> {
                 mTrackingActivityLifecycleDispatcher.init(lifecycleDispatcher);
                 return new ChromeActivityCommonsModule(activity, bottomSheetControllerSupplier,
                         tabModelSelectorSupplier, browserControlsManager,
@@ -115,7 +116,8 @@ public class WebApkInitializationTest {
                         tabContentManagerSupplier, activityTabStartupMetricsTrackerSupplier,
                         compositorViewHolderInitializer, chromeActivityNativeDelegate,
                         modalDialogManagerSupplier, browserControlsStateProvider,
-                        savedInstanceStateSupplier);
+                        savedInstanceStateSupplier, autofillUiBottomInsetSupplier,
+                        shareDelegateSupplier, tabModelInitializer, activityType);
             });
 
     private final WebApkActivityTestRule mActivityRule = new WebApkActivityTestRule();

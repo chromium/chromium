@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,10 +50,8 @@ TEST_F(FileSelectionDialogsPolicyTest, DisableFileSelectionDialogs) {
   const base::Value* value = NULL;
   EXPECT_TRUE(prefs_.GetValue(prefs::kPromptForDownload, &value));
   ASSERT_TRUE(value);
-  bool prompt_for_download = true;
-  bool result = value->GetAsBoolean(&prompt_for_download);
-  EXPECT_TRUE(result);
-  EXPECT_FALSE(prompt_for_download);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
 }
 
 }  // namespace policy

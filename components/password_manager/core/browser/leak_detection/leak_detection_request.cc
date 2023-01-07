@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -38,6 +39,7 @@ void RecordLookupResponseResult(
       "PasswordManager.LeakDetection.LookupSingleLeakResponseResult", result);
 }
 
+constexpr char kAuthHeaderApiKey[] = "x-goog-api-key";
 constexpr char kAuthHeaderBearer[] = "Bearer ";
 constexpr char kPostMethod[] = "POST";
 constexpr char kProtobufContentType[] = "application/x-protobuf";
@@ -62,7 +64,8 @@ LeakDetectionRequest::~LeakDetectionRequest() = default;
 
 void LeakDetectionRequest::LookupSingleLeak(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    const std::string& access_token,
+    const absl::optional<std::string>& access_token,
+    const absl::optional<std::string>& api_key,
     LookupSingleLeakPayload payload,
     LookupSingleLeakCallback callback) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -111,9 +114,14 @@ void LeakDetectionRequest::LookupSingleLeak(
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = kPostMethod;
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAuthorization,
-      base::StrCat({kAuthHeaderBearer, access_token}));
+  if (access_token.has_value()) {
+    resource_request->headers.SetHeader(
+        net::HttpRequestHeaders::kAuthorization,
+        base::StrCat({kAuthHeaderBearer, access_token.value()}));
+  }
+  if (api_key.has_value()) {
+    resource_request->headers.SetHeader(kAuthHeaderApiKey, api_key.value());
+  }
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
@@ -150,9 +158,6 @@ void LeakDetectionRequest::OnLookupSingleLeakResponse(
 
     int net_error = simple_url_loader_->NetError();
     DLOG(ERROR) << "Net Error: " << net::ErrorToString(net_error);
-    // Network error codes are negative. See: src/net/base/net_error_list.h.
-    base::UmaHistogramSparse("PasswordManager.LeakDetection.NetErrorCode",
-                             -net_error);
 
     std::move(callback).Run(nullptr, error);
     return;
@@ -183,7 +188,7 @@ void LeakDetectionRequest::OnLookupSingleLeakResponse(
   base::UmaHistogramCounts100000(
       "PasswordManager.LeakDetection.SingleLeakResponsePrefixes",
       single_lookup_response->encrypted_leak_match_prefixes.size());
-  std::move(callback).Run(std::move(single_lookup_response), base::nullopt);
+  std::move(callback).Run(std::move(single_lookup_response), absl::nullopt);
 }
 
 }  // namespace password_manager

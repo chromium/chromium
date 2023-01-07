@@ -1,4 +1,4 @@
-// Copyright 2019 The Crashpad Authors. All rights reserved.
+// Copyright 2019 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "gtest/gtest.h"
 #include "test/scoped_temp_dir.h"
 #include "util/file/file_io.h"

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/files/file.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -60,6 +59,10 @@ class DeviceInfoSetTraits {
  public:
   typedef HDEVINFO Handle;
 
+  DeviceInfoSetTraits() = delete;
+  DeviceInfoSetTraits(const DeviceInfoSetTraits&) = delete;
+  DeviceInfoSetTraits& operator=(const DeviceInfoSetTraits&) = delete;
+
   static bool CloseHandle(HDEVINFO handle) {
     return ::SetupDiDestroyDeviceInfoList(handle) != FALSE;
   }
@@ -69,9 +72,6 @@ class DeviceInfoSetTraits {
   }
 
   static HDEVINFO NullHandle() { return INVALID_HANDLE_VALUE; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DeviceInfoSetTraits);
 };
 
 typedef base::win::GenericScopedHandle<DeviceInfoSetTraits,

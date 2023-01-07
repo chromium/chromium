@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -26,7 +26,7 @@
 
 namespace net {
 class NetLog;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }
 
 namespace network {
@@ -69,6 +69,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
       ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory,
       P2PMessageThrottler* throttler);
 
+  P2PSocket(const P2PSocket&) = delete;
+  P2PSocket& operator=(const P2PSocket&) = delete;
+
   ~P2PSocket() override;
 
   // Initializes the socket. Returns false when initialization fails.
@@ -81,11 +84,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
   // If |local_address.port()| is nonzero and not in the valid range,
   // initialization will fail.
   // |network_isolation_key| specifies the network stack cache shard to used.
-  virtual void Init(const net::IPEndPoint& local_address,
-                    uint16_t min_port,
-                    uint16_t max_port,
-                    const P2PHostAndIPEndPoint& remote_address,
-                    const net::NetworkIsolationKey& network_isolation_key) = 0;
+  virtual void Init(
+      const net::IPEndPoint& local_address,
+      uint16_t min_port,
+      uint16_t max_port,
+      const P2PHostAndIPEndPoint& remote_address,
+      const net::NetworkAnonymizationKey& network_isolation_key) = 0;
 
   mojo::PendingRemote<mojom::P2PSocketClient> ReleaseClientForTesting();
   mojo::PendingReceiver<mojom::P2PSocket> ReleaseReceiverForTesting();
@@ -153,7 +157,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
   void IncrementDelayedBytes(uint32_t size);
   void DecrementDelayedBytes(uint32_t size);
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   mojo::Remote<mojom::P2PSocketClient> client_;
   mojo::Receiver<mojom::P2PSocket> receiver_;
 
@@ -171,8 +175,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
   int32_t send_bytes_delayed_cur_ = 0;
 
   base::WeakPtrFactory<P2PSocket> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocket);
 };
 
 }  // namespace network

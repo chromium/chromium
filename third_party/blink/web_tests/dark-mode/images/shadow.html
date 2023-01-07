@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<style>
+.box {
+  margin: auto;
+  padding: 50px;
+  height: 50px;
+  width: 200px;
+}
+
+.white-on-black {
+    background-color: black;
+}
+
+.black-on-white {
+    background-color: white;
+}
+
+.white-on-black .shadow {
+    box-shadow: 0 20px 10px 40px #fff;
+}
+
+.black-on-white .shadow{
+    box-shadow: 0 20px 10px 40px #000;
+}
+</style>
+<div class="box white-on-black"><div class="shadow"></div></div>
+<div class="box black-on-white"><div class="shadow"></div></div>

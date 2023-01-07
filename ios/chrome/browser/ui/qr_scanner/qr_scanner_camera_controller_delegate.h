@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 
 // Called when the scanner detects a valid code. The camera controller stops
 // recording when a result is scanned. A valid code is any non-empty string. If
-// |load| is YES, the result should be loaded immediately without requiring
-// additional user input. The value of |load| will only be YES for barcodes
+// `load` is YES, the result should be loaded immediately without requiring
+// additional user input. The value of `load` will only be YES for barcodes
 // which can only encode digits.
 - (void)receiveQRScannerResult:(NSString*)result loadImmediately:(BOOL)load;
 

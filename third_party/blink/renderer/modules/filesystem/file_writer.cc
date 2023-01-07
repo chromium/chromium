@@ -43,7 +43,7 @@ namespace blink {
 
 static const int kMaxRecursionDepth = 3;
 static const base::TimeDelta kProgressNotificationInterval =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 static constexpr uint64_t kMaxTruncateLength =
     std::numeric_limits<uint64_t>::max();
 
@@ -225,8 +225,9 @@ void FileWriter::DidFailImpl(base::File::Error error) {
 
 void FileWriter::DoTruncate(const KURL& path, int64_t offset) {
   FileSystemDispatcher::From(GetExecutionContext())
-      .Truncate(path, offset, &request_id_,
-                WTF::Bind(&FileWriter::DidFinish, WrapWeakPersistent(this)));
+      .Truncate(
+          path, offset, &request_id_,
+          WTF::BindOnce(&FileWriter::DidFinish, WrapWeakPersistent(this)));
 }
 
 void FileWriter::DoWrite(const KURL& path,
@@ -236,13 +237,13 @@ void FileWriter::DoWrite(const KURL& path,
       .Write(
           path, blob_id, offset, &request_id_,
           WTF::BindRepeating(&FileWriter::DidWrite, WrapWeakPersistent(this)),
-          WTF::Bind(&FileWriter::DidFinish, WrapWeakPersistent(this)));
+          WTF::BindOnce(&FileWriter::DidFinish, WrapWeakPersistent(this)));
 }
 
 void FileWriter::DoCancel() {
   FileSystemDispatcher::From(GetExecutionContext())
       .Cancel(request_id_,
-              WTF::Bind(&FileWriter::DidFinish, WrapWeakPersistent(this)));
+              WTF::BindOnce(&FileWriter::DidFinish, WrapWeakPersistent(this)));
 }
 
 void FileWriter::CompleteAbort() {
@@ -254,8 +255,7 @@ void FileWriter::CompleteAbort() {
 }
 
 void FileWriter::DoOperation(Operation operation) {
-  probe::AsyncTaskScheduled(GetExecutionContext(), "FileWriter",
-                            &async_task_id_);
+  async_task_context_.Schedule(GetExecutionContext(), "FileWriter");
   switch (operation) {
     case kOperationWrite:
       DCHECK_EQ(kOperationNone, operation_in_progress_);
@@ -305,11 +305,11 @@ void FileWriter::SignalCompletion(base::File::Error error) {
   }
   FireEvent(event_type_names::kWriteend);
 
-  probe::AsyncTaskCanceled(GetExecutionContext(), &async_task_id_);
+  async_task_context_.Cancel();
 }
 
 void FileWriter::FireEvent(const AtomicString& type) {
-  probe::AsyncTask async_task(GetExecutionContext(), &async_task_id_);
+  probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_);
   ++recursion_depth_;
   DispatchEvent(
       *ProgressEvent::Create(type, true, bytes_written_, bytes_to_write_), "FileWriter::FireEvent");

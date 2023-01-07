@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/zoom/zoom_controller.h"
 
 #include "base/bind.h"
+#include "base/observer_list.h"
 #include "components/zoom/zoom_event_manager.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/browser_thread.h"
@@ -38,6 +39,7 @@ double ZoomController::GetZoomLevelForWebContents(
 
 ZoomController::ZoomController(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ZoomController>(*web_contents),
       browser_context_(web_contents->GetBrowserContext()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   host_zoom_map_ = content::HostZoomMap::GetForWebContents(web_contents);
@@ -109,7 +111,7 @@ bool ZoomController::SetZoomLevelByClient(
   // Cannot zoom in disabled mode. Also, don't allow changing zoom level on
   // a crashed tab, an error page or an interstitial page.
   if (zoom_mode_ == ZOOM_MODE_DISABLED ||
-      !web_contents()->GetMainFrame()->GetRenderViewHost()->IsRenderViewLive())
+      !web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive())
     return false;
 
   // Store client data so the |client| can be attributed when the zoom
@@ -155,12 +157,14 @@ bool ZoomController::SetZoomLevelByClient(
       web_contents(), GetZoomLevel(), zoom_level, zoom_mode_,
       false /* can_show_bubble */);
   int process_id = web_contents()
-                       ->GetMainFrame()
+                       ->GetPrimaryMainFrame()
                        ->GetRenderViewHost()
                        ->GetProcess()
                        ->GetID();
-  int view_id =
-      web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID();
+  int view_id = web_contents()
+                    ->GetPrimaryMainFrame()
+                    ->GetRenderViewHost()
+                    ->GetRoutingID();
   if (zoom_mode_ == ZOOM_MODE_ISOLATED ||
       zoom_map->UsesTemporaryZoomLevel(process_id, view_id)) {
     zoom_map->SetTemporaryZoomLevel(process_id, view_id, zoom_level);
@@ -191,12 +195,14 @@ void ZoomController::SetZoomMode(ZoomMode new_mode) {
       content::HostZoomMap::GetForWebContents(web_contents());
   DCHECK(zoom_map);
   int process_id = web_contents()
-                       ->GetMainFrame()
+                       ->GetPrimaryMainFrame()
                        ->GetRenderViewHost()
                        ->GetProcess()
                        ->GetID();
-  int view_id =
-      web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID();
+  int view_id = web_contents()
+                    ->GetPrimaryMainFrame()
+                    ->GetRenderViewHost()
+                    ->GetRoutingID();
   double original_zoom_level = GetZoomLevel();
 
   DCHECK(!event_data_);
@@ -287,12 +293,14 @@ void ZoomController::ResetZoomModeOnNavigationIfNeeded(const GURL& url) {
     return;
 
   int process_id = web_contents()
-                       ->GetMainFrame()
+                       ->GetPrimaryMainFrame()
                        ->GetRenderViewHost()
                        ->GetProcess()
                        ->GetID();
-  int view_id =
-      web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID();
+  int view_id = web_contents()
+                    ->GetPrimaryMainFrame()
+                    ->GetRenderViewHost()
+                    ->GetRoutingID();
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetForWebContents(web_contents());
   zoom_level_ = zoom_map->GetDefaultZoomLevel();
@@ -315,8 +323,10 @@ void ZoomController::ResetZoomModeOnNavigationIfNeeded(const GURL& url) {
 void ZoomController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
     return;
+  }
 
   if (navigation_handle->IsErrorPage())
     content::HostZoomMap::SendErrorPageZoomLevelRefresh(web_contents());
@@ -328,6 +338,7 @@ void ZoomController::DidFinishNavigation(
   // zoom level from the old one.
   UpdateState(std::string());
   DCHECK(!event_data_);
+  last_page_scale_factor_was_one_ = PageScaleFactorIsOne();
 }
 
 void ZoomController::WebContentsDestroyed() {
@@ -351,6 +362,16 @@ void ZoomController::RenderFrameHostChanged(
   zoom_subscription_ =
       host_zoom_map_->AddZoomLevelChangedCallback(base::BindRepeating(
           &ZoomController::OnZoomLevelChanged, base::Unretained(this)));
+}
+
+void ZoomController::OnPageScaleFactorChanged(float page_scale_factor) {
+  const bool is_one = page_scale_factor == 1.f;
+  if (is_one != last_page_scale_factor_was_one_) {
+    // We send a no-op zoom change to inform observers that PageScaleFactorIsOne
+    // has changed.
+    UpdateState(std::string());
+    last_page_scale_factor_was_one_ = is_one;
+  }
 }
 
 void ZoomController::OnZoomLevelChanged(
@@ -402,21 +423,23 @@ void ZoomController::UpdateState(const std::string& host) {
 }
 
 void ZoomController::SetPageScaleFactorIsOneForTesting(bool is_one) {
-  int process_id = web_contents()
-                       ->GetMainFrame()
-                       ->GetRenderViewHost()
-                       ->GetProcess()
-                       ->GetID();
-  int view_id =
-      web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID();
-  host_zoom_map_->SetPageScaleFactorIsOneForView(process_id, view_id, is_one);
+  page_scale_factor_is_one_for_testing_ = is_one;
+
+  if (is_one != last_page_scale_factor_was_one_) {
+    // See OnPageScaleFactorChanged for why this is done.
+    UpdateState(std::string());
+    last_page_scale_factor_was_one_ = is_one;
+  }
 }
 
 bool ZoomController::PageScaleFactorIsOne() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return content::HostZoomMap::PageScaleFactorIsOne(web_contents());
+  if (page_scale_factor_is_one_for_testing_.has_value())
+    return page_scale_factor_is_one_for_testing_.value();
+
+  return web_contents()->GetPrimaryPage().IsPageScaleFactorOne();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ZoomController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ZoomController);
 
 }  // namespace zoom

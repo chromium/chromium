@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,11 @@ namespace speech {
 
 class SpeechRecognitionService : public KeyedService {
  public:
-  virtual void Create(
+  virtual void BindSpeechRecognitionContext(
       mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
+          receiver) = 0;
+  virtual void BindAudioSourceSpeechRecognitionContext(
+      mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
           receiver) = 0;
 };
 

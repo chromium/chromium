@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ HttpAuthHandlerImpl::HttpAuthHandlerImpl(
     content::WebContents* web_contents,
     bool first_auth_attempt,
     LoginAuthRequiredCallback callback)
-    : WebContentsObserver(web_contents), callback_(std::move(callback)) {
+    : callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   url_ = auth_info.challenger.GetURL().Resolve(auth_info.path);
@@ -67,7 +67,7 @@ void HttpAuthHandlerImpl::Proceed(
 void HttpAuthHandlerImpl::Cancel(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (callback_)
-    std::move(callback_).Run(base::nullopt);
+    std::move(callback_).Run(absl::nullopt);
 
   CloseDialog();
 }

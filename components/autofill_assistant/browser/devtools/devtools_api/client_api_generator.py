@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -435,7 +435,7 @@ def InitializeDomainDependencies(json_api):
 
     if not isinstance(json, dict):
       return
-    for value in json.itervalues():
+    for value in json.values():
       GetDomainDepsFromRefs(domain_name, value)
 
     if '$ref' in json:

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
-#include "ash/capture_mode/view_with_ink_drop.h"
+#include "ash/style/ash_color_id.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -22,20 +23,18 @@ namespace ash {
 // toggle between image and video capture, and between fullscreen, window, and
 // region capture sources.
 class ASH_EXPORT CaptureModeToggleButton
-    : public ViewWithInkDrop<views::ToggleImageButton>,
+    : public views::ToggleImageButton,
       public CaptureModeSessionFocusCycler::HighlightableView {
  public:
   METADATA_HEADER(CaptureModeToggleButton);
 
   CaptureModeToggleButton(views::Button::PressedCallback callback,
-                          const gfx::VectorIcon& icon);
+                          const gfx::VectorIcon& icon,
+                          ui::ColorId toggled_background_color_id =
+                              kColorAshControlBackgroundColorActive);
   CaptureModeToggleButton(const CaptureModeToggleButton&) = delete;
   CaptureModeToggleButton& operator=(const CaptureModeToggleButton&) = delete;
   ~CaptureModeToggleButton() override = default;
-
-  void set_toggled_background_color(SkColor color) {
-    toggled_background_color_ = color;
-  }
 
   // views::ToggleImageButton:
   void OnPaintBackground(gfx::Canvas* canvas) override;
@@ -45,12 +44,12 @@ class ASH_EXPORT CaptureModeToggleButton
   views::View* GetView() override;
 
  private:
-  // Called by the constructor to set the icon in both normal and toggled
-  // states.
+  // Called to set the icon in both normal and toggled states.
   void SetIcon(const gfx::VectorIcon& icon);
 
-  // The color of the button background when the button is in a toggled state.
-  SkColor toggled_background_color_;
+  // The color id of the button background when the button is in a toggled
+  // state.
+  ui::ColorId toggled_background_color_id_;
 };
 
 }  // namespace ash

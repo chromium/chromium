@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_BROWSER_RENDERER_PRELAUNCHER_H_
 #define CHROMECAST_BROWSER_RENDERER_PRELAUNCHER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ipc/ipc_listener.h"
 #include "url/gurl.h"
@@ -26,6 +25,10 @@ class RendererPrelauncher : private IPC::Listener {
  public:
   RendererPrelauncher(content::BrowserContext* browser_context,
                       const GURL& gurl);
+
+  RendererPrelauncher(const RendererPrelauncher&) = delete;
+  RendererPrelauncher& operator=(const RendererPrelauncher&) = delete;
+
   ~RendererPrelauncher() override;
 
   virtual void Prelaunch();
@@ -44,8 +47,6 @@ class RendererPrelauncher : private IPC::Listener {
   scoped_refptr<content::SiteInstance> site_instance_;
   const GURL gurl_;
   int32_t rph_routing_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererPrelauncher);
 };
 
 }  // namespace chromecast

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 namespace media_session {
 namespace features {
 
+COMPONENT_EXPORT(MEDIA_SESSION_CPP) BASE_DECLARE_FEATURE(kMediaSessionService);
 COMPONENT_EXPORT(MEDIA_SESSION_CPP)
-extern const base::Feature kMediaSessionService;
+BASE_DECLARE_FEATURE(kAudioFocusEnforcement);
 COMPONENT_EXPORT(MEDIA_SESSION_CPP)
-extern const base::Feature kAudioFocusEnforcement;
-COMPONENT_EXPORT(MEDIA_SESSION_CPP)
-extern const base::Feature kAudioFocusSessionGrouping;
+BASE_DECLARE_FEATURE(kAudioFocusSessionGrouping);
 
 }  // namespace features
 }  // namespace media_session

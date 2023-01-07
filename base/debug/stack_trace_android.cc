@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <ostream>
 
 #include "base/debug/proc_maps_linux.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 
@@ -31,7 +31,7 @@ struct StackCrawlState {
         max_depth(max_depth),
         have_skipped_self(false) {}
 
-  uintptr_t* frames;
+  raw_ptr<uintptr_t> frames;
   size_t frame_count;
   size_t max_depth;
   bool have_skipped_self;

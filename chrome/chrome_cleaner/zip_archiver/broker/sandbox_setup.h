@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/chrome_cleaner/ipc/mojo_sandbox_hooks.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
 #include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
@@ -26,6 +26,11 @@ class ZipArchiverSandboxSetupHooks : public MojoSandboxSetupHooks {
  public:
   ZipArchiverSandboxSetupHooks(scoped_refptr<MojoTaskRunner> mojo_task_runner,
                                base::OnceClosure connection_error_handler);
+
+  ZipArchiverSandboxSetupHooks(const ZipArchiverSandboxSetupHooks&) = delete;
+  ZipArchiverSandboxSetupHooks& operator=(const ZipArchiverSandboxSetupHooks&) =
+      delete;
+
   ~ZipArchiverSandboxSetupHooks() override;
 
   // SandboxSetupHooks
@@ -39,8 +44,6 @@ class ZipArchiverSandboxSetupHooks : public MojoSandboxSetupHooks {
   scoped_refptr<MojoTaskRunner> mojo_task_runner_;
   base::OnceClosure connection_error_handler_;
   RemoteZipArchiverPtr zip_archiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZipArchiverSandboxSetupHooks);
 };
 
 }  // namespace chrome_cleaner

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -15,8 +17,8 @@
         android:layout="@layout/context_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/revamped_context_menu_lateral_margin"
-        android:layout_marginVertical="@dimen/revamped_context_menu_vertical_margin"
+        android:layout_marginHorizontal="@dimen/context_menu_lateral_margin"
+        android:layout_marginVertical="@dimen/context_menu_vertical_margin"
         android:layout_gravity="center"/>
 
     <!-- Anchor point for AnchoredPopupWindow displaying optional chip. -->

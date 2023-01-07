@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@ import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
+
+import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -100,10 +102,8 @@ public class VideoFullscreenOrientationLockChromeTest {
     }
 
     @Test
-    // Test is disabled due to flakiness - crbug.com/888161
-    // @MediumTest
-    // crbug.com/711005.
-    @DisabledTest
+    @MediumTest
+    @DisabledTest(message = "Flaky - crbug.com/888161")
     public void testUnlockWithDownloadViewerActivity() throws Exception {
         if (mActivityTestRule.getActivity().isTablet()) {
             return;
@@ -124,8 +124,8 @@ public class VideoFullscreenOrientationLockChromeTest {
         // Orientation lock should be disabled when download viewer activity is started.
         Uri fileUri = Uri.parse(UrlUtils.getIsolatedTestFileUrl(VIDEO_URL));
         String mimeType = "video/mp4";
-        Intent intent = MediaViewerUtils.getMediaViewerIntent(
-                fileUri, fileUri, mimeType, true /* allowExternalAppHandlers */);
+        Intent intent = MediaViewerUtils.getMediaViewerIntent(fileUri, fileUri, mimeType,
+                true /* allowExternalAppHandlers */, mActivityTestRule.getActivity());
         IntentHandler.startActivityForTrustedIntent(intent);
         waitUntilUnlocked();
 

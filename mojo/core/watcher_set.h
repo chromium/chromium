@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,13 @@
 #define MOJO_CORE_WATCHER_SET_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
-#include "base/record_replay.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/watcher_dispatcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {
@@ -25,6 +26,10 @@ class WatcherSet {
  public:
   // |owner| is the Dispatcher who owns this WatcherSet.
   explicit WatcherSet(Dispatcher* owner);
+
+  WatcherSet(const WatcherSet&) = delete;
+  WatcherSet& operator=(const WatcherSet&) = delete;
+
   ~WatcherSet();
 
   // Notifies all watchers of the handle's current signals state.
@@ -46,23 +51,23 @@ class WatcherSet {
 
   struct Entry {
     Entry(const scoped_refptr<WatcherDispatcher>& dispatcher);
+
+    Entry(const Entry&) = delete;
+    Entry& operator=(const Entry&) = delete;
+
     Entry(Entry&& other);
+
     ~Entry();
 
     Entry& operator=(Entry&& other);
 
     scoped_refptr<WatcherDispatcher> dispatcher;
     ContextSet contexts;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Entry);
   };
 
-  Dispatcher* const owner_;
+  const raw_ptr<Dispatcher> owner_;
   base::flat_map<WatcherDispatcher*, Entry, recordreplay::CompareByPointerId> watchers_;
-  base::Optional<HandleSignalsState> last_known_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatcherSet);
+  absl::optional<HandleSignalsState> last_known_state_;
 };
 
 }  // namespace core

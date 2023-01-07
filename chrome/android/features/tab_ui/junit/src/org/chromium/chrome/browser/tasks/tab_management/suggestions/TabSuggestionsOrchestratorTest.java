@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowProcess;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -39,7 +41,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUnitTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -50,7 +51,7 @@ import java.util.List;
  * Tests functionality of {@link TabSuggestionsOrchestrator}.
  */
 @SuppressWarnings({"ResultOfMethodCallIgnored", "ArraysAsListWithZeroOrOneArgument"})
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = ShadowProcess.class)
 public class TabSuggestionsOrchestratorTest {
     private static final int[] TAB_IDS = {0, 1, 2, 3, 4};
@@ -83,11 +84,10 @@ public class TabSuggestionsOrchestratorTest {
     private static Tab mockTab(int id) {
         TabImpl tab = TabUiUnitTestUtils.prepareTab(id);
         WebContents webContents = mock(WebContents.class);
-        GURL gurl = mock(GURL.class);
-        doReturn("").when(gurl).getSpec();
-        doReturn(gurl).when(webContents).getVisibleUrl();
+        doReturn(GURL.emptyGURL()).when(webContents).getVisibleUrl();
         doReturn(webContents).when(tab).getWebContents();
         doReturn(GURL.emptyGURL()).when(tab).getOriginalUrl();
+        doReturn(GURL.emptyGURL()).when(tab).getUrl();
         return tab;
     }
 
@@ -115,8 +115,9 @@ public class TabSuggestionsOrchestratorTest {
         for (int idx = 0; idx < TAB_IDS.length; idx++) {
             doReturn(sTabs[idx]).when(mTabModelFilter).getTabAt(eq(idx));
         }
-        TabSuggestionsOrchestrator tabSuggestionsOrchestrator = new TabSuggestionsOrchestrator(
-                mTabModelSelector, mDispatcher, new InMemorySharedPreferences());
+        TabSuggestionsOrchestrator tabSuggestionsOrchestrator =
+                new TabSuggestionsOrchestrator(ContextUtils.getApplicationContext(),
+                        mTabModelSelector, mDispatcher, new InMemorySharedPreferences());
         tabSuggestionsOrchestrator.setFetchersForTesting();
         List<TabSuggestion> suggestions = new LinkedList<>();
         TabSuggestionsObserver tabSuggestionsObserver = new TabSuggestionsObserver() {
@@ -141,11 +142,12 @@ public class TabSuggestionsOrchestratorTest {
 
     @Test
     public void testRegisterUnregister() {
-        TabSuggestionsOrchestrator tabSuggestionsOrchestrator = new TabSuggestionsOrchestrator(
-                mTabModelSelector, mDispatcher, new InMemorySharedPreferences());
+        TabSuggestionsOrchestrator tabSuggestionsOrchestrator =
+                new TabSuggestionsOrchestrator(ContextUtils.getApplicationContext(),
+                        mTabModelSelector, mDispatcher, new InMemorySharedPreferences());
         tabSuggestionsOrchestrator.setFetchersForTesting();
         verify(mDispatcher, times(1)).register(eq(tabSuggestionsOrchestrator));
-        tabSuggestionsOrchestrator.destroy();
+        tabSuggestionsOrchestrator.onDestroy();
         verify(mDispatcher, times(1)).unregister(eq(tabSuggestionsOrchestrator));
     }
 
@@ -153,8 +155,9 @@ public class TabSuggestionsOrchestratorTest {
     public void testTabFiltering() {
         doReturn(1).when(mTabModelFilter).getCount();
         doReturn(sTabs[0]).when(mTabModelFilter).getTabAt(eq(0));
-        TabSuggestionsOrchestrator tabSuggestionsOrchestrator = new TabSuggestionsOrchestrator(
-                mTabModelSelector, mDispatcher, new InMemorySharedPreferences());
+        TabSuggestionsOrchestrator tabSuggestionsOrchestrator =
+                new TabSuggestionsOrchestrator(ContextUtils.getApplicationContext(),
+                        mTabModelSelector, mDispatcher, new InMemorySharedPreferences());
         tabSuggestionsOrchestrator.setFetchersForTesting();
         List<TabSuggestion> suggestions = new LinkedList<>();
         @SuppressWarnings("unused")
@@ -177,8 +180,9 @@ public class TabSuggestionsOrchestratorTest {
     public void testOrchestratorCallback() {
         doReturn(1).when(mTabModelFilter).getCount();
         doReturn(sTabs[0]).when(mTabModelFilter).getTabAt(eq(0));
-        TabSuggestionsOrchestrator tabSuggestionsOrchestrator = new TabSuggestionsOrchestrator(
-                mTabModelSelector, mDispatcher, new InMemorySharedPreferences());
+        TabSuggestionsOrchestrator tabSuggestionsOrchestrator =
+                new TabSuggestionsOrchestrator(ContextUtils.getApplicationContext(),
+                        mTabModelSelector, mDispatcher, new InMemorySharedPreferences());
         tabSuggestionsOrchestrator.setFetchersForTesting();
         TabSuggestionsObserver tabSuggestionsObserver = new TabSuggestionsObserver() {
             @Override
@@ -248,8 +252,9 @@ public class TabSuggestionsOrchestratorTest {
         for (int idx = 0; idx < TAB_IDS.length; idx++) {
             doReturn(sTabs[idx]).when(mTabModelFilter).getTabAt(eq(idx));
         }
-        TabSuggestionsOrchestrator tabSuggestionsOrchestrator = new TabSuggestionsOrchestrator(
-                mTabModelSelector, mDispatcher, new InMemorySharedPreferences());
+        TabSuggestionsOrchestrator tabSuggestionsOrchestrator =
+                new TabSuggestionsOrchestrator(ContextUtils.getApplicationContext(),
+                        mTabModelSelector, mDispatcher, new InMemorySharedPreferences());
         tabSuggestionsOrchestrator.setFetchersForTesting();
         tabSuggestionsOrchestrator.setMinTimeBetweenPreFetchesForTesting(minTimeBetweenPreFetches);
         final List<TabSuggestion> suggestions = new LinkedList<>();

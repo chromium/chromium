@@ -1,190 +1,110 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/build_webui.gni")
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+assert(!is_chromeos_ash && !is_android)
 
-generate_grd("build_grd") {
+if (is_chrome_branded) {
+  generate_grd("build_icons_grdp") {
+    grd_prefix = "welcome_images"
+    out_grd = "$target_gen_dir/icon_resources.grdp"
+    input_files = [
+      "module_icons/add_bookmarks.svg",
+      "module_icons/pick_a_background.svg",
+      "module_icons/set_default_dark.svg",
+      "module_icons/set_default_light.svg",
+      "ntp_thumbnails/art.jpg",
+      "ntp_thumbnails/cityscape.jpg",
+      "ntp_thumbnails/earth.jpg",
+      "ntp_thumbnails/geometric_shapes.jpg",
+      "ntp_thumbnails/landscape.jpg",
+      "set_default_dark.svg",
+      "set_default_light.svg",
+    ]
+    input_files_base_dir =
+        rebase_path("//chrome/app/theme/google_chrome/welcome/", "//")
+    resource_path_prefix = "images"
+  }
+}
+
+build_webui("build") {
   grd_prefix = "welcome"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "images/background_svgs/blue_circle.svg",
-    "images/background_svgs/green_rectangle.svg",
-    "images/background_svgs/grey_oval.svg",
-    "images/background_svgs/grey_rounded_rectangle.svg",
-    "images/background_svgs/red_triangle.svg",
-    "images/background_svgs/yellow_dots.svg",
-    "images/background_svgs/yellow_semicircle.svg",
+
+  static_files = [
+    "images/background_svgs/bookmarks_background.svg",
+    "images/background_svgs/bookmarks_foreground.svg",
+    "images/background_svgs/devices_check.svg",
+    "images/background_svgs/devices.svg",
+    "images/background_svgs/hexagon.svg",
+    "images/background_svgs/lozenge.svg",
+    "images/background_svgs/password_field.svg",
+    "images/background_svgs/password.svg",
+    "images/background_svgs/square.svg",
+    "images/background_svgs/streamer_circle.svg",
+    "images/background_svgs/streamer_line.svg",
+    "images/background_svgs/triangle.svg",
     "welcome.html",
     "welcome.css",
   ]
-  input_files_base_dir = rebase_path(".", "//")
 
-  deps = [
-    ":preprocess",
-    ":preprocess_generated",
+  if (is_chrome_branded) {
+    # Additional static files that need to be passed separately since they have
+    # a different |input_files_base_dir|
+    extra_grdp_deps = [ ":build_icons_grdp" ]
+    extra_grdp_files = [ "$target_gen_dir/icon_resources.grdp" ]
+  }
+
+  # Files holding a Polymer element definition AND have an equivalent .html file.
+  web_component_files = [
+    "google_apps/nux_google_apps.ts",
+    "landing_view.ts",
+    "ntp_background/nux_ntp_background.ts",
+    "set_as_default/nux_set_as_default.ts",
+    "shared/onboarding_background.ts",
+    "shared/step_indicator.ts",
+    "signin_view.ts",
+    "welcome_app.ts",
   ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_manifest",
-    "$target_gen_dir/$preprocess_gen_manifest",
+
+  non_web_component_files = [
+    "google_apps/google_app_proxy.ts",
+    "google_apps/google_apps_metrics_proxy.ts",
+    "landing_view_proxy.ts",
+    "navigation_mixin.ts",
+    "ntp_background/ntp_background_metrics_proxy.ts",
+    "ntp_background/ntp_background_proxy.ts",
+    "set_as_default/nux_set_as_default_proxy.ts",
+    "shared/bookmark_proxy.ts",
+    "shared/module_metrics_proxy.ts",
+    "shared/nux_types.ts",
+    "signin_view_proxy.ts",
+    "welcome_browser_proxy.ts",
   ]
-}
 
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [
-    "google_apps/google_app_proxy.js",
-    "google_apps/google_apps_metrics_proxy.js",
-    "landing_view_proxy.js",
-    "navigation_behavior.js",
-    "ntp_background/ntp_background_metrics_proxy.js",
-    "ntp_background/ntp_background_proxy.js",
-    "set_as_default/nux_set_as_default_proxy.js",
-    "shared/bookmark_proxy.js",
-    "shared/module_metrics_proxy.js",
-    "shared/nux_types.js",
-    "signin_view_proxy.js",
-    "welcome_browser_proxy.js",
-    "welcome.js",
+  # Files that are passed as input to css_to_wrapper().
+  css_files = [
+    "shared/action_link_style.css",
+    "shared/animations.css",
+    "shared/chooser_shared.css",
+    "shared/navi_colors.css",
+    "shared/splash_pages_shared.css",
   ]
-}
 
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [
-    "google_apps/nux_google_apps.js",
-    "landing_view.js",
-    "ntp_background/nux_ntp_background.js",
-    "set_as_default/nux_set_as_default.js",
-    "shared/action_link_style_css.js",
-    "shared/animations_css.js",
-    "shared/chooser_shared_css.js",
-    "shared/navi_colors_css.js",
-    "shared/onboarding_background.js",
-    "shared/splash_pages_shared_css.js",
-    "shared/step_indicator.js",
-    "signin_view.js",
-    "welcome_app.js",
+  icons_html_files = [ "shared/icons.html" ]
+
+  ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
   ]
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/welcome_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/welcome_resources.h",
-    "grit/welcome_resources_map.cc",
-    "grit/welcome_resources_map.h",
-    "welcome_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-group("closure_compile") {
-  deps = [
-    ":welcome_files",
-    "./google_apps:closure_compile",
-    "./ntp_background:closure_compile",
-    "./set_as_default:closure_compile",
-  ]
-}
-
-js_type_check("welcome_files") {
-  is_polymer3 = true
-  deps = [
-    ":landing_view",
-    ":signin_view",
-    ":welcome_app",
-  ]
-}
-
-js_library("landing_view") {
-  deps = [
-    ":landing_view_proxy",
-    ":navigation_behavior",
-    ":welcome_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("landing_view_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("signin_view") {
-  deps = [
-    ":navigation_behavior",
-    ":signin_view_proxy",
-    ":welcome_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("signin_view_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("navigation_behavior") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("welcome_app") {
-  deps = [
-    ":navigation_behavior",
-    ":welcome_browser_proxy",
-    "./set_as_default/:nux_set_as_default_proxy",
-    "./shared:bookmark_proxy",
-    "./shared:nux_types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("welcome_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-group("web_components") {
-  public_deps = [
-    ":web_components_local",
-    "./google_apps:web_components",
-    "./ntp_background:web_components",
-    "./set_as_default:web_components",
-    "./shared:web_components",
-  ]
-}
-
-html_to_js("web_components_local") {
-  js_files = [
-    "landing_view.js",
-    "signin_view.js",
-    "welcome_app.js",
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
   ]
 }

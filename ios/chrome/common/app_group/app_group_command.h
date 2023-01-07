@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,18 +18,18 @@ typedef void (^URLOpenerBlock)(NSURL* URL);
 // Prepares a command without argument.
 - (void)prepareWithCommandID:(NSString*)commandID;
 
-// Prepares a command to open |URL|.
+// Prepares a command to open `URL`.
 - (void)prepareToOpenURL:(NSURL*)URL;
 
 // Prepares a command to open an item in a list.
-// |URL| is the URL in the item, and |index| is the index of the item in the
+// `URL` is the URL in the item, and `index` is the index of the item in the
 // list.
 - (void)prepareToOpenItem:(NSURL*)URL index:(NSNumber*)index;
 
-// Prepares a command to search for |text|.
+// Prepares a command to search for `text`.
 - (void)prepareToSearchText:(NSString*)text;
 
-// Prepares a command to search for |image|.
+// Prepares a command to search for `image`.
 - (void)prepareToSearchImage:(UIImage*)image;
 
 // Launches the main app and execute the receiver.

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ui/commands/bookmark_page_command.h"
+#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -75,6 +77,15 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 }
 
 - (UIImage*)activityImage {
+  if (UseSymbols()) {
+    if (self.bookmarked) {
+      return DefaultSymbolWithPointSize(kEditActionSymbol,
+                                        kSymbolActionPointSize);
+    }
+    return DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
+                                      kSymbolActionPointSize);
+  }
+
   if (self.bookmarked)
     return [UIImage imageNamed:@"activity_services_edit_bookmark"];
   return [UIImage imageNamed:@"activity_services_add_bookmark"];
@@ -94,10 +105,15 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 }
 
 - (void)performActivity {
-  BookmarkPageCommand* command =
-      [[BookmarkPageCommand alloc] initWithURL:self.URL title:self.title];
-  [self.handler bookmarkPage:command];
+  // Activity must be marked finished first, otherwise it may dismiss UI
+  // presented by the bookmark command below.
   [self activityDidFinish:YES];
+
+  BookmarkAddCommand* command =
+      [[BookmarkAddCommand alloc] initWithURL:self.URL
+                                        title:self.title
+                         presentFolderChooser:NO];
+  [self.handler bookmark:command];
 }
 
 #pragma mark - Private

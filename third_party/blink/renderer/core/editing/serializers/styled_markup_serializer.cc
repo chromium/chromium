@@ -29,7 +29,6 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/styled_markup_serializer.h"
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -43,6 +42,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -87,6 +87,8 @@ class StyledMarkupTraverser {
  public:
   StyledMarkupTraverser();
   StyledMarkupTraverser(StyledMarkupAccumulator*, Node*);
+  StyledMarkupTraverser(const StyledMarkupTraverser&) = delete;
+  StyledMarkupTraverser& operator=(const StyledMarkupTraverser&) = delete;
 
   Node* Traverse(Node*, Node*);
   void WrapWithNode(ContainerNode&, EditingStyle*);
@@ -107,7 +109,6 @@ class StyledMarkupTraverser {
   StyledMarkupAccumulator* accumulator_;
   Node* last_closed_;
   EditingStyle* wrapping_style_;
-  DISALLOW_COPY_AND_ASSIGN(StyledMarkupTraverser);
 };
 
 template <typename Strategy>
@@ -395,7 +396,7 @@ Node* StyledMarkupTraverser<Strategy>::Traverse(Node* start_node,
       continue;
 
     // Close up the ancestors.
-    while (!ancestors_to_close.IsEmpty()) {
+    while (!ancestors_to_close.empty()) {
       ContainerNode* ancestor = ancestors_to_close.back();
       DCHECK(ancestor);
       if (next && next != past_end &&

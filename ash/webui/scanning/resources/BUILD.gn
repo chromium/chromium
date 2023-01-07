@@ -1,0 +1,217 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/repack.gni")
+import("//tools/polymer/html_to_js.gni")
+
+assert(is_chromeos_ash)
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":action_toolbar",
+    ":color_mode_select",
+    ":file_type_select",
+    ":loading_page",
+    ":mojo_interface_provider",
+    ":multi_page_checkbox",
+    ":multi_page_scan",
+    ":page_size_select",
+    ":resolution_select",
+    ":scan_done_section",
+    ":scan_preview",
+    ":scan_to_select",
+    ":scanner_select",
+    ":scanning_app",
+    ":scanning_app_types",
+    ":scanning_app_util",
+    ":scanning_browser_proxy",
+    ":select_behavior",
+    ":source_select",
+  ]
+}
+
+js_library("action_toolbar") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("color_mode_select") {
+  deps = [
+    ":scanning_app_util",
+    ":select_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("loading_page") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("file_type_select") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("page_size_select") {
+  deps = [
+    ":scanning_app_util",
+    ":select_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("resolution_select") {
+  deps = [
+    ":select_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("scan_done_section") {
+  deps = [
+    ":scanning_app_types",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("scan_preview") {
+  deps = [
+    ":action_toolbar",
+    ":scanning_app_types",
+    ":scanning_app_util",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("scan_to_select") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("scanner_select") {
+  deps = [
+    ":scanning_app_types",
+    ":scanning_app_util",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("multi_page_checkbox") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("multi_page_scan") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("scanning_app") {
+  deps = [
+    ":color_mode_select",
+    ":file_type_select",
+    ":loading_page",
+    ":mojo_interface_provider",
+    ":multi_page_checkbox",
+    ":multi_page_scan",
+    ":page_size_select",
+    ":resolution_select",
+    ":scan_preview",
+    ":scan_to_select",
+    ":scanner_select",
+    ":scanning_app_types",
+    ":scanning_app_util",
+    ":scanning_browser_proxy",
+    ":source_select",
+    "//ash/webui/common/resources:cr_container_shadow_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_toast/cr_toast_externs.js" ]
+}
+
+js_library("scanning_app_types") {
+}
+
+js_library("scanning_app_util") {
+}
+
+js_library("select_behavior") {
+}
+
+js_library("source_select") {
+  deps = [
+    ":scanning_app_util",
+    ":select_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("scanning_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_library("mojo_interface_provider") {
+  deps = [
+    "//ash/webui/common/mojom:mojom_js_library_for_compile",
+    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "action_toolbar.js",
+    "color_mode_select.js",
+    "file_type_select.js",
+    "loading_page.js",
+    "multi_page_checkbox.js",
+    "multi_page_scan.js",
+    "page_size_select.js",
+    "resolution_select.js",
+    "scan_preview.js",
+    "scan_done_section.js",
+    "scan_settings_section.js",
+    "scanner_select.js",
+    "scan_to_select.js",
+    "scanning_app.js",
+    "scanning_fonts_css.js",
+    "scanning_shared_css.js",
+    "source_select.js",
+  ]
+}

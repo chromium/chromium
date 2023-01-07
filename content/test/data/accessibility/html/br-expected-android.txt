@@ -1,5 +1,5 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View name='<newline>'
 ++android.widget.TextView name='Text line 1'
-++android.view.View name='Text line 2<newline>Text line 3'
+++android.widget.TextView name='Text line 2<newline>Text line 3'
 ++android.view.View name='<newline>'

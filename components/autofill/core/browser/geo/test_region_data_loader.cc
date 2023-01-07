@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ TestRegionDataLoader::~TestRegionDataLoader() = default;
 
 void TestRegionDataLoader::LoadRegionData(
     const std::string& country_code,
-    autofill::RegionDataLoader::RegionDataLoaded callback) {
+    RegionDataLoader::RegionDataLoaded callback) {
   if (synchronous_callback_) {
     SendRegionData(regions_, callback);
   } else {
@@ -42,10 +42,10 @@ void TestRegionDataLoader::SendAsynchronousData(
 
 void TestRegionDataLoader::SendRegionData(
     const std::vector<std::pair<std::string, std::string>>& regions,
-    autofill::RegionDataLoader::RegionDataLoaded callback) {
+    RegionDataLoader::RegionDataLoaded callback) {
   ::i18n::addressinput::RegionData root_region("");
-  for (const auto& region : regions)
-    root_region.AddSubRegion(region.first, region.second);
+  for (const auto& [key, value] : regions)
+    root_region.AddSubRegion(key, value);
 
   callback.Run(root_region.sub_regions());
 }

@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/crash/core/app/crash_switches.h"
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace crash_reporter {
@@ -17,7 +18,7 @@ namespace switches {
 // is a standalone executable.
 const char kCrashpadHandler[] = "crashpad-handler";
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // The process ID of the Crashpad handler.
 const char kCrashpadHandlerPid[] = "crashpad-handler-pid";
 #endif

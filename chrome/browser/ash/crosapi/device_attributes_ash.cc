@@ -1,21 +1,23 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 
+#include <string>
 #include <utility>
 
+#include "chrome/browser/ash/crosapi/crosapi_util.h"
+#include "chrome/browser/ash/policy/core/device_attributes.h"
+#include "chrome/browser/ash/policy/core/device_attributes_fake.h"
+#include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/hostname_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
-#include "chromeos/system/statistics_provider.h"
 #include "components/user_manager/user.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -23,24 +25,11 @@ namespace {
 
 const char kAccessDenied[] = "Access denied.";
 
-// Whether device attributes can be accessed for the current profile.
-bool CanGetDeviceAttributes() {
-  const Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
-    return true;
-
-  if (!profile->IsRegularProfile())
-    return false;
-
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  return user->IsAffiliated();
-}
-
 }  // namespace
 
-DeviceAttributesAsh::DeviceAttributesAsh() = default;
+DeviceAttributesAsh::DeviceAttributesAsh()
+    : attributes_(std::make_unique<policy::DeviceAttributesImpl>()) {}
+
 DeviceAttributesAsh::~DeviceAttributesAsh() = default;
 
 void DeviceAttributesAsh::BindReceiver(
@@ -50,13 +39,13 @@ void DeviceAttributesAsh::BindReceiver(
 
 void DeviceAttributesAsh::GetDirectoryDeviceId(
     GetDirectoryDeviceIdCallback callback) {
-  if (!CanGetDeviceAttributes()) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
     return;
   }
-  std::string result = g_browser_process->platform_part()
-                           ->browser_policy_connector_chromeos()
-                           ->GetDirectoryApiID();
+  std::string result = attributes_->GetDirectoryApiID();
   if (result.empty()) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
   } else {
@@ -66,12 +55,13 @@ void DeviceAttributesAsh::GetDirectoryDeviceId(
 
 void DeviceAttributesAsh::GetDeviceSerialNumber(
     GetDeviceSerialNumberCallback callback) {
-  if (!CanGetDeviceAttributes()) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
     return;
   }
-  std::string result = chromeos::system::StatisticsProvider::GetInstance()
-                           ->GetEnterpriseMachineID();
+  std::string result = attributes_->GetDeviceSerialNumber();
   if (result.empty()) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
   } else {
@@ -80,13 +70,13 @@ void DeviceAttributesAsh::GetDeviceSerialNumber(
 }
 
 void DeviceAttributesAsh::GetDeviceAssetId(GetDeviceAssetIdCallback callback) {
-  if (!CanGetDeviceAttributes()) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
     return;
   }
-  std::string result = g_browser_process->platform_part()
-                           ->browser_policy_connector_chromeos()
-                           ->GetDeviceAssetID();
+  std::string result = attributes_->GetDeviceAssetID();
   if (result.empty()) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
   } else {
@@ -96,13 +86,13 @@ void DeviceAttributesAsh::GetDeviceAssetId(GetDeviceAssetIdCallback callback) {
 
 void DeviceAttributesAsh::GetDeviceAnnotatedLocation(
     GetDeviceAnnotatedLocationCallback callback) {
-  if (!CanGetDeviceAttributes()) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
     return;
   }
-  std::string result = g_browser_process->platform_part()
-                           ->browser_policy_connector_chromeos()
-                           ->GetDeviceAnnotatedLocation();
+  std::string result = attributes_->GetDeviceAnnotatedLocation();
   if (result.empty()) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
   } else {
@@ -112,19 +102,23 @@ void DeviceAttributesAsh::GetDeviceAnnotatedLocation(
 
 void DeviceAttributesAsh::GetDeviceHostname(
     GetDeviceHostnameCallback callback) {
-  if (!CanGetDeviceAttributes()) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
     return;
   }
-  std::string result = g_browser_process->platform_part()
-                           ->browser_policy_connector_chromeos()
-                           ->GetHostnameHandler()
-                           ->GetDeviceHostname();
-  if (result.empty()) {
+  absl::optional<std::string> result = attributes_->GetDeviceHostname();
+  if (!result) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
   } else {
-    std::move(callback).Run(StringResult::NewContents(result));
+    std::move(callback).Run(StringResult::NewContents(*result));
   }
+}
+
+void DeviceAttributesAsh::SetDeviceAttributesForTesting(
+    std::unique_ptr<policy::FakeDeviceAttributes> attributes) {
+  attributes_ = std::move(attributes);
 }
 
 }  // namespace crosapi

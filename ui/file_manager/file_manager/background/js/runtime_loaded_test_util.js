@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,18 @@
  * @fileoverview Script loaded into the background page of a component
  * extension under test at runtime to populate testing functionality.
  */
+
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {metrics} from '../../common/js/metrics.js';
+import {util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
+
+import {test} from './test_util_base.js';
+
+/** @type {!FileManagerBaseInterface} */
+window.background;
 
 /**
  * @typedef {{
@@ -26,7 +38,7 @@
  *   scrollHeight: (number|undefined),
  *  }}
  */
-let ElementObject;
+export let ElementObject;
 
 /**
  * Object containing common key modifiers: shift, alt, and ctrl.
@@ -37,7 +49,7 @@ let ElementObject;
  *   ctrl: (boolean|undefined),
  * }}
  */
-let KeyModifiers;
+export let KeyModifiers;
 
 /**
  * @typedef {{
@@ -73,7 +85,7 @@ function extractElementInfo(element, contentWindow, opt_styleNames) {
     // The hidden attribute is not in the element.attributes even if
     // element.hasAttribute('hidden') is true.
     hidden: !!element.hidden,
-    hasShadowRoot: !!element.shadowRoot
+    hasShadowRoot: !!element.shadowRoot,
   };
 
   const styleNames = opt_styleNames || [];
@@ -110,98 +122,23 @@ function extractElementInfo(element, contentWindow, opt_styleNames) {
 }
 
 /**
- * Obtains window information.
- *
- * @return {Object<{innerWidth:number, innerHeight:number}>} Map window
- *     ID and window information.
- */
-test.util.sync.getWindows = () => {
-  const windows = {};
-  for (const id in window.appWindows) {
-    const windowWrapper = window.appWindows[id];
-    windows[id] = {
-      outerWidth: windowWrapper.contentWindow.outerWidth,
-      outerHeight: windowWrapper.contentWindow.outerHeight
-    };
-  }
-  for (const id in window.background.dialogs) {
-    windows[id] = {
-      outerWidth: window.background.dialogs[id].outerWidth,
-      outerHeight: window.background.dialogs[id].outerHeight
-    };
-  }
-  return windows;
-};
-
-/**
- * Closes the specified window.
- *
- * @param {string} appId AppId of window to be closed.
- * @return {boolean} Result: True if success, false otherwise.
- */
-test.util.sync.closeWindow = appId => {
-  if (appId in window.appWindows && window.appWindows[appId].contentWindow) {
-    window.appWindows[appId].close();
-    return true;
-  }
-  return false;
-};
-
-/**
  * Gets total Javascript error count from background page and each app window.
  * @return {number} Error count.
  */
 test.util.sync.getErrorCount = () => {
-  let totalCount = window.JSErrorCount;
-  for (const appId in window.appWindows) {
-    const contentWindow = window.appWindows[appId].contentWindow;
-    if (contentWindow.JSErrorCount) {
-      totalCount += contentWindow.JSErrorCount;
-    }
-  }
-  return totalCount;
+  return window.JSErrorCount;
 };
 
 /**
  * Resizes the window to the specified dimensions.
  *
- * @param {Window} contentWindow Window to be tested.
  * @param {number} width Window width.
  * @param {number} height Window height.
  * @return {boolean} True for success.
  */
-test.util.sync.resizeWindow = (contentWindow, width, height) => {
-  window.appWindows[contentWindow.appID].resizeTo(width, height);
+test.util.sync.resizeWindow = (width, height) => {
+  window.resizeTo(width, height);
   return true;
-};
-
-/**
- * Maximizes the window.
- * @param {Window} contentWindow Window to be tested.
- * @return {boolean} True for success.
- */
-test.util.sync.maximizeWindow = contentWindow => {
-  window.appWindows[contentWindow.appID].maximize();
-  return true;
-};
-
-/**
- * Restores the window state (maximized/minimized/etc...).
- * @param {Window} contentWindow Window to be tested.
- * @return {boolean} True for success.
- */
-test.util.sync.restoreWindow = contentWindow => {
-  window.appWindows[contentWindow.appID].restore();
-  return true;
-};
-
-/**
- * Returns whether the window is miximized or not.
- * @param {Window} contentWindow Window to be tested.
- * @return {boolean} True if the window is maximized now.
- */
-test.util.sync.isWindowMaximized = contentWindow => {
-  return window.appWindows[contentWindow.appID].isMaximized();
 };
 
 /**
@@ -303,31 +240,6 @@ test.util.sync.deepQuerySelectorAll_ = (root, targetQuery) => {
 };
 
 /**
- * Executes a script in the context of the first <webview> element contained in
- * the window, including shadow DOM subtrees if given, and returns the script
- * result via the callback.
- *
- * @param {Window} contentWindow Window to be tested.
- * @param {!Array<string>} targetQuery Query for the <webview> element.
- *   |targetQuery[0]| specifies the first element. |targetQuery[1]| specifies
- *   an element inside the shadow DOM of the first element, etc. The last
- *   targetQuery item must return the <webview> element.
- * @param {string} script Javascript code to be executed within the <webview>.
- * @param {function(*)} callback Callback function to be called with the
- *   result of the |script|.
- */
-test.util.async.deepExecuteScriptInWebView =
-    (contentWindow, targetQuery, script, callback) => {
-      const webviews = test.util.sync.deepQuerySelectorAll_(
-          contentWindow.document, targetQuery);
-      if (!webviews || webviews.length !== 1) {
-        throw new Error('<webview> not found: [' + targetQuery.join(',') + ']');
-      }
-      const webview = /** @type {WebView} */ (webviews[0]);
-      webview.executeScript({code: script}, callback);
-    };
-
-/**
  * Gets the information of the active element.
  *
  * @param {Window} contentWindow Window to be tested.
@@ -383,6 +295,7 @@ test.util.sync.deepGetActiveElement = (contentWindow, opt_styleNames) => {
  *     |query[1]| specifies elements inside the shadow DOM of the first element,
  *     and so on.
  * @param {string} text Text to be assigned.
+ * @return {boolean} Whether or not the text was assigned.
  */
 test.util.sync.inputText = (contentWindow, query, text) => {
   if (typeof query === 'string') {
@@ -393,12 +306,13 @@ test.util.sync.inputText = (contentWindow, query, text) => {
       test.util.sync.deepQuerySelectorAll_(contentWindow.document, query);
   if (elems.length === 0) {
     console.error(`Input element not found: [${query.join(',')}]`);
-    return;
+    return false;
   }
 
   const input = elems[0];
   input.value = text;
   input.dispatchEvent(new Event('change'));
+  return true;
 };
 
 /**
@@ -406,10 +320,11 @@ test.util.sync.inputText = (contentWindow, query, text) => {
  * @param {Window} contentWindow Window to be tested.
  * @param {string} query Query for the test element.
  * @param {number} position scrollLeft position to set.
+ * @return {boolean} True if operation was successful.
  */
 test.util.sync.setScrollLeft = (contentWindow, query, position) => {
-  const scrollablElement = contentWindow.document.querySelector(query);
-  scrollablElement.scrollLeft = position;
+  contentWindow.document.querySelector(query).scrollLeft = position;
+  return true;
 };
 
 /**
@@ -417,10 +332,11 @@ test.util.sync.setScrollLeft = (contentWindow, query, position) => {
  * @param {Window} contentWindow Window to be tested.
  * @param {string} query Query for the test element.
  * @param {number} position scrollTop position to set.
+ * @return {boolean} True if operation was successful.
  */
 test.util.sync.setScrollTop = (contentWindow, query, position) => {
-  const scrollablElement = contentWindow.document.querySelector(query);
-  scrollablElement.scrollTop = position;
+  contentWindow.document.querySelector(query).scrollTop = position;
+  return true;
 };
 
 /**
@@ -428,12 +344,18 @@ test.util.sync.setScrollTop = (contentWindow, query, position) => {
  * @param {Window} contentWindow Window to be tested.
  * @param {string} query Query for the test element.
  * @param {!Object<?, string>} properties CSS Property name/values to set.
+ * @return {boolean} Whether styles were set or not.
  */
 test.util.sync.setElementStyles = (contentWindow, query, properties) => {
   const element = contentWindow.document.querySelector(query);
+  if (element === null) {
+    console.error(`Failed to locate element using query "${query}"`);
+    return false;
+  }
   for (const [key, value] of Object.entries(properties)) {
     element.style[key] = value;
   }
+  return true;
 };
 
 /**
@@ -492,6 +414,10 @@ test.util.sync.fakeEvent =
           /** @type {!EventInit} */ (opt_additionalProperties || {}));
       if (opt_additionalProperties) {
         for (const name in opt_additionalProperties) {
+          if (name === 'bubbles') {
+            // bubbles is a read-only which, causes an error when assigning.
+            continue;
+          }
           event[name] = opt_additionalProperties[name];
         }
       }
@@ -950,6 +876,40 @@ test.util.async.fakeDragLeaveOrDrop =
     };
 
 /**
+ * Sends a drop event to simulate dropping a file originating in the browser to
+ * a target.
+ *
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} fileName File name.
+ * @param {string} fileContent File content.
+ * @param {string} fileMimeType File mime type.
+ * @param {string} targetQuery Query to specify the target element.
+ * @param {function(boolean)} callback Function called with result
+ *    true on success, or false on failure.
+ */
+test.util.async.fakeDropBrowserFile =
+    (contentWindow, fileName, fileContent, fileMimeType, targetQuery,
+     callback) => {
+      const target = contentWindow.document.querySelector(targetQuery);
+
+      if (!target) {
+        setTimeout(() => callback(false));
+        return;
+      }
+
+      const file = new File([fileContent], fileName, {type: fileMimeType});
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      // The value for the callback is true if the event has been handled, i.e.
+      // event has been received and preventDefault() called.
+      callback(target.dispatchEvent(new DragEvent('drop', {
+        bubbles: true,
+        composed: true,
+        dataTransfer: dataTransfer,
+      })));
+    };
+
+/**
  * Sends a resize event to the content window.
  *
  * @param {Window} contentWindow Window to be tested.
@@ -992,22 +952,6 @@ test.util.async.getNotificationIDs = callback => {
 };
 
 /**
- * Opens the file URL. It emulates the interaction that Launcher search does
- * from a search result, it triggers the background page's event listener that
- * listens to evens from launcher_search_provider API.
- *
- * @param {string} fileURL File URL to open by Files app background dialog.
- * @suppress {accessControls|missingProperties} Closure disallow calling private
- * launcherSearch_, but here we just want to emulate the behaviour, so we don't
- * need to make this attribute public. Also the interface
- * "FileBrowserBackground" doesn't define the attributes "launcherSearch_" so we
- * need to suppress missingProperties.
- */
-test.util.sync.launcherSearchOpenResult = fileURL => {
-  window.background.launcherSearch_.onOpenResult_(fileURL);
-};
-
-/**
  * Gets file entries just under the volume.
  *
  * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
@@ -1017,8 +961,19 @@ test.util.sync.launcherSearchOpenResult = fileURL => {
  */
 test.util.async.getFilesUnderVolume = async (volumeType, names, callback) => {
   const volumeManager = await window.background.getVolumeManager();
-  const volumeInfo = volumeManager.getCurrentProfileVolumeInfo(volumeType);
-  const displayRoot = await volumeInfo.resolveDisplayRoot();
+  let volumeInfo = null;
+  let displayRoot = null;
+
+  // Wait for the volume to initialize.
+  while (!(volumeInfo && displayRoot)) {
+    volumeInfo = volumeManager.getCurrentProfileVolumeInfo(volumeType);
+    if (volumeInfo) {
+      displayRoot = await volumeInfo.resolveDisplayRoot();
+    }
+    if (!displayRoot) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
 
   const filesPromise = names.map(name => {
     // TODO(crbug.com/880130): Remove this conditional.
@@ -1063,7 +1018,8 @@ test.util.async.unmount = async (volumeType, callback) => {
  * Remote call API handler. When loaded, this replaces the declaration in
  * test_util_base.js.
  * @param {*} request
- * @param {function(*):void} sendResponse
+ * @param {function(*): void} sendResponse
+ * @return {boolean|undefined}
  */
 test.util.executeTestMessage = (request, sendResponse) => {
   window.IN_TEST = true;
@@ -1078,10 +1034,10 @@ test.util.executeTestMessage = (request, sendResponse) => {
 
   const args = request.args.slice();  // shallow copy
   if (request.appId) {
-    if (window.appWindows[request.appId]) {
-      args.unshift(window.appWindows[request.appId].contentWindow);
-    } else if (window.background.dialogs[request.appId]) {
-      args.unshift(window.background.dialogs[request.appId]);
+    if (request.contentWindow) {
+      // request.contentWindow is present if this function was called via
+      // test.swaTestMessageListener.
+      args.unshift(request.contentWindow);
     } else {
       console.error('Specified window not found: ' + request.appId);
       return false;
@@ -1097,10 +1053,15 @@ test.util.executeTestMessage = (request, sendResponse) => {
     test.util.async[request.func].apply(null, args);
     return true;
   } else if (test.util.sync[request.func]) {
-    sendResponse(test.util.sync[request.func].apply(null, args));
+    try {
+      sendResponse(test.util.sync[request.func].apply(null, args));
+    } catch (e) {
+      console.error(`Failure executing ${request.func}: ${e}`);
+      sendResponse(null);
+    }
     return false;
   } else {
-    console.error('Invalid function name.');
+    console.error('Invalid function name: ' + request.func);
     return false;
   }
 };
@@ -1197,6 +1158,7 @@ test.util.sync.forceErrorsOnFileOperations = (contentWindow, enable) => {
  */
 test.util.sync.setPreferences = preferences => {
   chrome.fileManagerPrivate.setPreferences(preferences);
+  return true;
 };
 
 /**
@@ -1209,15 +1171,7 @@ test.util.sync.setPreferences = preferences => {
  */
 test.util.sync.recordEnumMetric = (name, value, validValues) => {
   metrics.recordEnum(name, value, validValues);
-};
-
-/**
- * Reloads the Files app (Background & Foreground).
- * NOTE: Any foreground window opened before the reload will be killed, so any
- * appId/windowId won't be usable after the reload.
- */
-test.util.sync.reload = () => {
-  chrome.runtime.reload();
+  return true;
 };
 
 /**
@@ -1227,13 +1181,76 @@ test.util.sync.reload = () => {
  */
 test.util.sync.progressCenterNeverNotifyCompleted = () => {
   window.background.progressCenter.neverNotifyCompleted();
+  return true;
 };
 
 /**
  * Waits for the background page to initialize.
  * @param {function()} callback Callback function called when background page
  *      has finished initializing.
+ * @suppress {missingProperties}: ready() isn't available for Audio and Video
+ * Player.
  */
 test.util.async.waitForBackgroundReady = callback => {
   window.background.ready(callback);
+};
+
+/**
+ * Isolates a specific banner to be shown. Useful when testing functionality of
+ * a banner in isolation.
+ *
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} bannerTagName Tag name of the banner to isolate.
+ * @param {function(boolean)} callback Callback function to be called with a
+ *    boolean indicating success or failure.
+ * @suppress {missingProperties} banners is only defined for foreground
+ *    Window so it isn't visible in the background.
+ */
+test.util.async.isolateBannerForTesting =
+    async (contentWindow, bannerTagName, callback) => {
+  try {
+    await contentWindow.fileManager.ui_.banners.isolateBannerForTesting(
+        bannerTagName);
+    callback(true);
+    return;
+  } catch (e) {
+    console.error(`Error isolating banner with tagName ${
+        bannerTagName} for testing: ${e}`);
+  }
+  callback(false);
+};
+
+/**
+ * Disable banners from attaching themselves to the DOM.
+ *
+ * @param {Window} contentWindow Window the banner controller exists.
+ * @param {function(boolean)} callback Callback function to be called with a
+ *    boolean indicating success or failure.
+ * @suppress {missingProperties} banners is only defined for foreground
+ *    Window so it isn't visible in the background.
+ */
+test.util.async.disableBannersForTesting = async (contentWindow, callback) => {
+  try {
+    await contentWindow.fileManager.ui_.banners.disableBannersForTesting();
+    callback(true);
+    return;
+  } catch (e) {
+    console.error(`Error disabling banners for testing: ${e}`);
+  }
+  callback(false);
+};
+
+/**
+ * Disables the nudge expiry period for testing.
+ *
+ * @param {Window} contentWindow Window the banner controller exists.
+ * @param {function(boolean)} callback Callback function to be called with a
+ *    boolean indicating success or failure.
+ * @suppress {missingProperties} nudgeContainer is only defined for foreground
+ *    Window so it isn't visible in the background.
+ */
+test.util.async.disableNudgeExpiry = async (contentWindow, callback) => {
+  contentWindow.fileManager.ui_.nudgeContainer
+      .setExpiryPeriodEnabledForTesting = false;
+  callback(true);
 };

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,38 +9,44 @@
 #include <tuple>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
-#include "ash/shortcut_viewer/keyboard_shortcut_item.h"
+#include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "base/hash/md5.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 
 namespace {
 
 // The total number of Ash accelerators.
-constexpr int kAshAcceleratorsTotalNum = 121;
+constexpr int kAshAcceleratorsTotalNum = 142;
 // The hash of Ash accelerators.
-constexpr char kAshAcceleratorsHash[] = "aa34869ec61a802b073fc23884f3c39d";
+constexpr char kAshAcceleratorsHash[] = "315a877b9ba123c29d1fe7019efc7069";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Internal builds add an extra accelerator for the Feedback app.
 // The total number of Chrome accelerators (available on Chrome OS).
-constexpr int kChromeAcceleratorsTotalNum = 97;
+constexpr int kChromeAcceleratorsTotalNum = 102;
 // The hash of Chrome accelerators (available on Chrome OS).
-constexpr char kChromeAcceleratorsHash[] = "ae0381db45f4d0fde37ff78948963369";
+constexpr char kChromeAcceleratorsHash[] = "672b2d00632c66337b6323da9c75e3a2";
 #else
 // The total number of Chrome accelerators (available on Chrome OS).
-constexpr int kChromeAcceleratorsTotalNum = 96;
+constexpr int kChromeAcceleratorsTotalNum = 101;
 // The hash of Chrome accelerators (available on Chrome OS).
-constexpr char kChromeAcceleratorsHash[] = "a4be06225eea30653044ea033b8b702d";
+constexpr char kChromeAcceleratorsHash[] = "7143dc8ef5efe3fc6047e864f589386f";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 const char* BooleanToString(bool value) {
   return value ? "true" : "false";
+}
+
+bool ShouldDesksKeyboardShortcutsBeEnabled() {
+  return ::features::IsImprovedKeyboardShortcutsEnabled() &&
+         ash::features::IsImprovedDesksKeyboardShortcutsEnabled();
 }
 
 std::string ModifiersToString(int modifiers) {
@@ -106,15 +112,13 @@ std::string HashChromeAcceleratorMapping(
   return MD5DigestToBase16(digest);
 }
 
-std::string AcceleratorIdToString(
-    const keyboard_shortcut_viewer::AcceleratorId& accelerator_id) {
+std::string AcceleratorIdToString(const ash::AcceleratorId& accelerator_id) {
   return base::StringPrintf("keycode=%d ", accelerator_id.keycode) +
          ModifiersToString(accelerator_id.modifiers);
 }
 
 std::string AcceleratorIdsToString(
-    const std::vector<keyboard_shortcut_viewer::AcceleratorId>&
-        accelerator_ids) {
+    const std::vector<ash::AcceleratorId>& accelerator_ids) {
   std::vector<std::string> msgs;
   for (const auto& id : accelerator_ids)
     msgs.emplace_back(AcceleratorIdToString(id));
@@ -124,12 +128,29 @@ std::string AcceleratorIdsToString(
 class KeyboardShortcutViewerMetadataTest : public testing::Test {
  public:
   KeyboardShortcutViewerMetadataTest() = default;
+
+  KeyboardShortcutViewerMetadataTest(
+      const KeyboardShortcutViewerMetadataTest&) = delete;
+  KeyboardShortcutViewerMetadataTest& operator=(
+      const KeyboardShortcutViewerMetadataTest&) = delete;
+
   ~KeyboardShortcutViewerMetadataTest() override = default;
 
   void SetUp() override {
     for (size_t i = 0; i < ash::kAcceleratorDataLength; ++i) {
       const ash::AcceleratorData& accel_data = ash::kAcceleratorData[i];
       ash_accelerator_ids_.insert({accel_data.keycode, accel_data.modifiers});
+    }
+
+    if (ShouldDesksKeyboardShortcutsBeEnabled()) {
+      for (size_t i = 0;
+           i <
+           ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength;
+           ++i) {
+        const ash::AcceleratorData& accel_data =
+            ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData[i];
+        ash_accelerator_ids_.insert({accel_data.keycode, accel_data.modifiers});
+      }
     }
 
     for (const auto& accel_mapping : GetAcceleratorList()) {
@@ -142,13 +163,10 @@ class KeyboardShortcutViewerMetadataTest : public testing::Test {
 
  protected:
   // Ash accelerator ids.
-  std::set<keyboard_shortcut_viewer::AcceleratorId> ash_accelerator_ids_;
+  std::set<ash::AcceleratorId> ash_accelerator_ids_;
 
   // Chrome accelerator ids.
-  std::set<keyboard_shortcut_viewer::AcceleratorId> chrome_accelerator_ids_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardShortcutViewerMetadataTest);
+  std::set<ash::AcceleratorId> chrome_accelerator_ids_;
 };
 
 }  // namespace
@@ -185,7 +203,7 @@ TEST_F(KeyboardShortcutViewerMetadataTest, CheckAcceleratorIdHasAccelerator) {
 
 // Test that AcceleratorIds have no duplicates.
 TEST_F(KeyboardShortcutViewerMetadataTest, CheckAcceleratorIdsNoDuplicates) {
-  std::set<keyboard_shortcut_viewer::AcceleratorId> accelerator_ids;
+  std::set<ash::AcceleratorId> accelerator_ids;
   for (const auto& shortcut_item :
        keyboard_shortcut_viewer::GetKeyboardShortcutItemList()) {
     for (const auto& accelerator_id : shortcut_item.accelerator_ids) {
@@ -239,6 +257,16 @@ TEST_F(KeyboardShortcutViewerMetadataTest,
         ash::kDisableWithNewMappingAcceleratorData[i]);
   for (const auto& accel_mapping : GetAcceleratorList())
     chrome_accelerators.emplace_back(accel_mapping);
+
+  if (ShouldDesksKeyboardShortcutsBeEnabled()) {
+    for (size_t i = 0;
+         i <
+         ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength;
+         ++i) {
+      ash_accelerators.emplace_back(
+          ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData[i]);
+    }
+  }
 
   const char kCommonMessage[] =
       "If you are modifying Chrome OS available shortcuts, please update "

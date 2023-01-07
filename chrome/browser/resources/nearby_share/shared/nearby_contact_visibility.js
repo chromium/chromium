@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,25 @@
  * embedded in the nearby_visibility_page as well as the settings pop-up dialog.
  */
 
-'use strict';
-(function() {
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_card_radio_button.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import './nearby_page_template.js';
+import './nearby_shared_icons.html.js';
+
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getContactManager, observeContactManager} from './nearby_contact_manager.js';
+import {getTemplate} from './nearby_contact_visibility.html.js';
+import {NearbySettings} from './nearby_share_settings_behavior.js';
 
 /** @enum {string} */
 const ContactsState = {
@@ -56,6 +73,18 @@ const visibilityValueToString = function(visibility) {
 };
 
 /**
+ * @type {string}
+ */
+const DEVICE_VISIBILITY_LIGHT_ICON =
+    'nearby-images:nearby-device-visibility-light';
+
+/**
+ * @type {string}
+ */
+const DEVICE_VISIBILITY_DARK_ICON =
+    'nearby-images:nearby-device-visibility-dark';
+
+/**
  * @typedef {{
  *            id:string,
  *            name:string,
@@ -63,102 +92,136 @@ const visibilityValueToString = function(visibility) {
  *            checked:boolean,
  *          }}
  */
-/* #export */ let NearbyVisibilityContact;
+export let NearbyVisibilityContact;
 
-Polymer({
-  is: 'nearby-contact-visibility',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NearbyContactVisibilityElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class NearbyContactVisibilityElement extends
+    NearbyContactVisibilityElementBase {
+  static get is() {
+    return 'nearby-contact-visibility';
+  }
 
-  properties: {
-    /** @type {Object} */
-    ContactsState: {
-      type: Object,
-      value: ContactsState,
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /** @type {string} */
-    contactsState: {
-      type: String,
-      value: ContactsState.PENDING,
-    },
+  static get properties() {
+    return {
+      /** @type {Object} */
+      ContactsState: {
+        type: Object,
+        value: ContactsState,
+      },
 
-    /** @type {?nearby_share.NearbySettings} */
-    settings: {
-      type: Object,
-      notify: true,
-    },
+      /** @type {string} */
+      contactsState: {
+        type: String,
+        value: ContactsState.PENDING,
+      },
 
-    /**
-     * @type {?string} Which of visibility setting is selected as a string or
-     *      null for no selection. ('all', 'some', 'none', null).
-     */
-    selectedVisibility: {
-      type: String,
-      value: null,
-      notify: true,
-    },
+      /** @type {?NearbySettings} */
+      settings: {
+        type: Object,
+        notify: true,
+      },
 
-    /**
-     * @type {?Array<NearbyVisibilityContact>} The user's contacts re-formatted
-     *     for binding.
-     */
-    contacts: {
-      type: Array,
-      value: null,
-    },
+      /**
+       * @type {?string} Which of visibility setting is selected as a string or
+       *      null for no selection. ('all', 'some', 'none', null).
+       */
+      selectedVisibility: {
+        type: String,
+        value: null,
+        notify: true,
+      },
 
-    /** @private */
-    numUnreachable_: {
-      type: Number,
-      value: 0,
-      observer: 'updateNumUnreachableMessage_',
-    },
+      /**
+       * @type {?Array<NearbyVisibilityContact>} The user's contacts
+       *     re-formatted for binding.
+       */
+      contacts: {
+        type: Array,
+        value: null,
+      },
 
-    /** @private */
-    numUnreachableMessage_: {
-      type: String,
-      value: '',
-      notify: true,
-    },
+      /** @private */
+      numUnreachable_: {
+        type: Number,
+        value: 0,
+        observer: 'updateNumUnreachableMessage_',
+      },
 
-    isVisibilitySelected: {
-      type: Boolean,
-      computed: 'isVisibilitySelected_(selectedVisibility)',
-      notify: true,
-    },
-  },
+      /** @private */
+      numUnreachableMessage_: {
+        type: String,
+        value: '',
+        notify: true,
+      },
 
-  /** @private {?nearbyShare.mojom.ContactManagerInterface} */
-  contactManager_: null,
+      isVisibilitySelected: {
+        type: Boolean,
+        computed: 'isVisibilitySelected_(selectedVisibility)',
+        notify: true,
+      },
 
-  /** @private {?nearbyShare.mojom.DownloadContactsObserverReceiver} */
-  downloadContactsObserverReceiver_: null,
+      /**
+       * Whether the contact visibility page is being rendered in dark mode.
+       * @private {boolean}
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  /** @private {?number} */
-  downloadTimeoutId_: null,
+  static get observers() {
+    return [
+      'settingsChanged_(settings.visibility)',
+    ];
+  }
 
-  observers: [
-    'settingsChanged_(settings.visibility)',
-  ],
+  constructor() {
+    super();
+    /** @private {?nearbyShare.mojom.ContactManagerInterface} */
+    this.contactManager_ = null;
+
+    /** @private {?nearbyShare.mojom.DownloadContactsObserverReceiver} */
+    this.downloadContactsObserverReceiver_ = null;
+
+    /** @private {?number} */
+    this.downloadTimeoutId_ = null;
+  }
 
   /** @override */
-  attached() {
-    this.contactManager_ = nearby_share.getContactManager();
-    this.downloadContactsObserverReceiver_ = nearby_share.observeContactManager(
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.contactManager_ = getContactManager();
+    this.downloadContactsObserverReceiver_ = observeContactManager(
         /** @type {!nearbyShare.mojom.DownloadContactsObserverInterface} */ (
             this));
     // Start a contacts download now so we have it by the time the component is
     // shown.
     this.downloadContacts_();
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     if (this.downloadContactsObserverReceiver_) {
       this.downloadContactsObserverReceiver_.$.close();
     }
-  },
+  }
 
   /**
    * Used to show/hide parts of the UI based on current visibility selection.
@@ -169,7 +232,7 @@ Polymer({
    */
   isVisibilitySelected_(selectedVisibility) {
     return this.selectedVisibility !== null;
-  },
+  }
 
   /**
    * Used to show/hide parts of the UI based on current visibility selection.
@@ -181,7 +244,7 @@ Polymer({
    */
   isVisibility_(selectedVisibility, visibilityString) {
     return this.selectedVisibility === visibilityString;
-  },
+  }
 
   /**
    * Makes a mojo request to download the latest version of contacts.
@@ -197,7 +260,7 @@ Polymer({
     // response.
     this.downloadTimeoutId_ =
         setTimeout(this.onContactsDownloadFailed.bind(this), 30 * 1000);
-  },
+  }
 
   /**
    * @param {boolean} allowed
@@ -220,7 +283,7 @@ Polymer({
       name: contactRecord.personName,
       checked: allowed,
     };
-  },
+  }
 
   /**
    * From nearbyShare.mojom.DownloadContactsObserver, called when contacts have
@@ -255,7 +318,7 @@ Polymer({
     this.contactsState = items.length > 0 ? ContactsState.HAS_CONTACTS :
                                             ContactsState.ZERO_CONTACTS;
     this.numUnreachable_ = numUnreachableExcluded;
-  },
+  }
 
   /**
    * From nearbyShare.mojom.DownloadContactsObserver, called when contacts have
@@ -264,28 +327,7 @@ Polymer({
   onContactsDownloadFailed() {
     this.contactsState = ContactsState.FAILED;
     clearTimeout(this.downloadTimeoutId_);
-  },
-
-  /**
-   * TODO(crbug.com/1128256): Remove after specs/a11y.
-   * Call from the JS debug console to test scrolling.
-   * @param {number} numContacts
-   * @private
-   */
-  genFakeContacts_(numContacts) {
-    clearTimeout(this.downloadTimeoutId_);
-    const fakeContacts = [];
-    for (let i = 0; i < numContacts; i++) {
-      fakeContacts.push({
-        id: String(-i),
-        description: String(i) + '@google.com',
-        name: 'Person ' + i,
-        checked: false,
-      });
-    }
-    this.contacts = fakeContacts;
-    this.contactsState = ContactsState.HAS_CONTACTS;
-  },
+  }
 
   /**
    * Used to show/hide parts of the UI based on current visibility selection.
@@ -296,7 +338,7 @@ Polymer({
   showContactCheckBoxes_() {
     return this.selectedVisibility === 'some' ||
         this.selectedVisibility === 'none';
-  },
+  }
 
   /**
    * When the contact check boxes are visible, the contact name and description
@@ -310,7 +352,7 @@ Polymer({
       return 'true';
     }
     return undefined;
-  },
+  }
 
   /**
    * Used to show/hide ui elements based on the contacts download state.
@@ -321,10 +363,10 @@ Polymer({
    */
   inContactsState_(contactsState, expectedState) {
     return contactsState === expectedState;
-  },
+  }
 
   /**
-   * @param {?nearby_share.NearbySettings} settings
+   * @param {?NearbySettings} settings
    * @private
    */
   settingsChanged_(settings) {
@@ -334,7 +376,7 @@ Polymer({
     } else {
       this.selectedVisibility = null;
     }
-  },
+  }
 
   /**
    * @param {string} contactsState
@@ -344,7 +386,7 @@ Polymer({
   disableRadioGroup_(contactsState) {
     return contactsState === ContactsState.PENDING ||
         contactsState === ContactsState.FAILED;
-  },
+  }
 
   /**
    * @param {string} selectedVisibility
@@ -355,7 +397,7 @@ Polymer({
   showZeroState_(selectedVisibility, contactsState) {
     return !selectedVisibility && contactsState !== ContactsState.PENDING &&
         contactsState !== ContactsState.FAILED;
-  },
+  }
 
   /**
    * @param {string} selectedVisibility
@@ -366,7 +408,7 @@ Polymer({
   showContactsContainer_(selectedVisibility, contactsState) {
     return this.showExplanationState_(selectedVisibility, contactsState) ||
         this.showContactList_(selectedVisibility, contactsState);
-  },
+  }
 
   /**
    * @param {string} selectedVisibility
@@ -382,7 +424,7 @@ Polymer({
 
     return selectedVisibility === 'none' ||
         contactsState === ContactsState.HAS_CONTACTS;
-  },
+  }
 
   /**
    * @param {string} selectedVisibility
@@ -393,7 +435,7 @@ Polymer({
   showEmptyState_(selectedVisibility, contactsState) {
     return (selectedVisibility === 'all' || selectedVisibility === 'some') &&
         contactsState === ContactsState.ZERO_CONTACTS;
-  },
+  }
 
   /**
    * @param {string} selectedVisibility
@@ -404,7 +446,7 @@ Polymer({
   showContactList_(selectedVisibility, contactsState) {
     return (selectedVisibility === 'all' || selectedVisibility === 'some') &&
         contactsState === ContactsState.HAS_CONTACTS;
-  },
+  }
 
   /**
    * Builds the html for the download retry message, applying the appropriate
@@ -418,7 +460,8 @@ Polymer({
    * @private
    */
   domChangeDownloadFailed_() {
-    const contactsFailedMessage = this.$$('#contactsFailedMessage');
+    const contactsFailedMessage =
+        this.shadowRoot.querySelector('#contactsFailedMessage');
     if (!contactsFailedMessage) {
       return;
     }
@@ -430,7 +473,7 @@ Polymer({
     contactsFailedMessage.childNodes.forEach((node, index) => {
       // Text nodes should be aria-hidden and associated with an element id
       // that the anchor element can be aria-labelledby.
-      if (node.nodeType == Node.TEXT_NODE) {
+      if (node.nodeType === Node.TEXT_NODE) {
         const spanNode = document.createElement('span');
         spanNode.textContent = node.textContent;
         spanNode.id = `contactsFailedMessage${index}`;
@@ -441,7 +484,7 @@ Polymer({
       }
       // The single element node with anchor tags should also be aria-labelledby
       // itself in-order with respect to the entire string.
-      if (node.nodeType == Node.ELEMENT_NODE && node.nodeName == 'A') {
+      if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === 'A') {
         node.id = `tryAgainLink`;
         ariaLabelledByIds.push(node.id);
         return;
@@ -455,13 +498,14 @@ Polymer({
     const anchorTags = contactsFailedMessage.getElementsByTagName('a');
     // In the event the localizedString contains only text nodes, populate the
     // contents with the localizedString.
-    if (anchorTags.length == 0) {
+    if (anchorTags.length === 0) {
       contactsFailedMessage.innerHTML = localizedString;
       return;
     }
 
     assert(
-        anchorTags.length == 1, 'string should contain exactly one anchor tag');
+        anchorTags.length === 1,
+        'string should contain exactly one anchor tag');
     const anchorTag = anchorTags[0];
     anchorTag.setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
     anchorTag.href = '#';
@@ -470,12 +514,12 @@ Polymer({
       event.preventDefault();
       this.downloadContacts_();
     });
-  },
+  }
 
   /**
    * Builds the html for the zero state help text, applying the appropriate aria
    * labels, and setting the href of the link. This function is largely copied
-   * from getAriaLabelledContent_ in <settings-localized-link>, which can't be
+   * from getAriaLabelledContent_ in <localized-link>, which can't be
    * used directly because this is Polymer element is used outside settings.
    * TODO(crbug.com/1170849): Extract this logic into a general method.
    * @return {string}
@@ -492,7 +536,7 @@ Polymer({
     tempEl.childNodes.forEach((node, index) => {
       // Text nodes should be aria-hidden and associated with an element id
       // that the anchor element can be aria-labelledby.
-      if (node.nodeType == Node.TEXT_NODE) {
+      if (node.nodeType === Node.TEXT_NODE) {
         const spanNode = document.createElement('span');
         spanNode.textContent = node.textContent;
         spanNode.id = `zeroStateText${index}`;
@@ -503,7 +547,7 @@ Polymer({
       }
       // The single element node with anchor tags should also be aria-labelledby
       // itself in-order with respect to the entire string.
-      if (node.nodeType == Node.ELEMENT_NODE && node.nodeName == 'A') {
+      if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === 'A') {
         node.id = `zeroStateHelpLink`;
         ariaLabelledByIds.push(node.id);
         return;
@@ -517,12 +561,12 @@ Polymer({
     const anchorTags = tempEl.getElementsByTagName('a');
     // In the event the localizedString contains only text nodes, populate the
     // contents with the localizedString.
-    if (anchorTags.length == 0) {
+    if (anchorTags.length === 0) {
       return localizedString;
     }
 
     assert(
-        anchorTags.length == 1,
+        anchorTags.length === 1,
         'nearbyShareContactVisibilityZeroStateText should contain exactly' +
             ' one anchor tag');
     const anchorTag = anchorTags[0];
@@ -531,7 +575,7 @@ Polymer({
     anchorTag.target = '_blank';
 
     return tempEl.innerHTML;
-  },
+  }
 
   /**
    * @return {boolean} true if the unreachable contacts message should be shown
@@ -539,7 +583,7 @@ Polymer({
    */
   showUnreachableContactsMessage_() {
     return this.numUnreachable_ > 0;
-  },
+  }
 
   /** @private */
   updateNumUnreachableMessage_() {
@@ -551,14 +595,14 @@ Polymer({
     // Template: "# contacts are not available." with correct plural of
     // "contact".
     const labelTemplate =
-        cr.sendWithPromise(
-              'getPluralString', 'nearbyShareContactVisibilityNumUnreachable',
-              this.numUnreachable_)
+        sendWithPromise(
+            'getPluralString', 'nearbyShareContactVisibilityNumUnreachable',
+            this.numUnreachable_)
             .then((labelTemplate) => {
               this.numUnreachableMessage_ = loadTimeData.substituteString(
                   labelTemplate, this.numUnreachable_);
             });
-  },
+  }
 
   /**
    * @param {string} selectedVisibility
@@ -576,7 +620,7 @@ Polymer({
       default:
         return '';
     }
-  },
+  }
 
   /**
    * Save visibility setting and sync allowed contacts with contact manager.
@@ -597,6 +641,30 @@ Polymer({
       }
     }
     this.contactManager_.setAllowedContacts(allowedContacts);
-  },
-});
-})();
+  }
+
+  /**
+   * Return the selected visibility as a enum to nearby_visibiity_page when
+   * logging metric to avoid potential race condition
+   *
+   * @return {?nearbyShare.mojom.Visibility}
+   *
+   * @public
+   */
+  getSelectedVisibility() {
+    return visibilityStringToValue(this.selectedVisibility);
+  }
+
+  /**
+   * Returns the icon based on Light/Dark mode.
+   * @returns {string}
+   * @private
+   */
+  getDeviceVisibilityIcon_() {
+    return this.isDarkModeActive_ ? DEVICE_VISIBILITY_DARK_ICON :
+                                    DEVICE_VISIBILITY_LIGHT_ICON;
+  }
+}
+
+customElements.define(
+    NearbyContactVisibilityElement.is, NearbyContactVisibilityElement);

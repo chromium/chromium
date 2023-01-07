@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,23 +18,23 @@ class NavigationContextImpl;
 enum class WKNavigationState : int {
   // Navigation does not exist.
   NONE = 0,
-  // WKNavigation returned from |loadRequest:|, |goToBackForwardListItem:|,
-  // |loadFileURL:allowingReadAccessToURL:|, |loadHTMLString:baseURL:|,
-  // |loadData:MIMEType:characterEncodingName:baseURL:|, |goBack|, |goForward|,
-  // |reload| or |reloadFromOrigin|.
+  // WKNavigation returned from `loadRequest:`, `goToBackForwardListItem:`,
+  // `loadFileURL:allowingReadAccessToURL:`, `loadHTMLString:baseURL:`,
+  // `loadData:MIMEType:characterEncodingName:baseURL:`, `goBack`, `goForward`,
+  // `reload` or `reloadFromOrigin`.
   REQUESTED,
-  // WKNavigation passed to |webView:didStartProvisionalNavigation:|.
+  // WKNavigation passed to `webView:didStartProvisionalNavigation:`.
   STARTED,
   // WKNavigation passed to
-  // |webView:didReceiveServerRedirectForProvisionalNavigation:|.
+  // `webView:didReceiveServerRedirectForProvisionalNavigation:`.
   REDIRECTED,
-  // WKNavigation passed to |webView:didFailProvisionalNavigation:|.
+  // WKNavigation passed to `webView:didFailProvisionalNavigation:`.
   PROVISIONALY_FAILED,
-  // WKNavigation passed to |webView:didCommitNavigation:|.
+  // WKNavigation passed to `webView:didCommitNavigation:`.
   COMMITTED,
-  // WKNavigation passed to |webView:didFinishNavigation:|.
+  // WKNavigation passed to `webView:didFinishNavigation:`.
   FINISHED,
-  // WKNavigation passed to |webView:didFailNavigation:withError:|.
+  // WKNavigation passed to `webView:didFailNavigation:withError:`.
   FAILED,
 };
 
@@ -49,18 +49,18 @@ enum class WKNavigationState : int {
 
 // Adds a new navigation if it was not added yet. If navigation was already
 // added then updates state for existing navigation. Updating state does not
-// affect the result of |lastAddedNavigation| method. New added navigations
+// affect the result of `lastAddedNavigation` method. New added navigations
 // should have WKNavigationState::REQUESTED, WKNavigationState::STARTED or
-// WKNavigationState::COMMITTED state. |navigation| will be held as a weak
-// reference and will not be retained. No-op if |navigation| is null.
+// WKNavigationState::COMMITTED state. `navigation` will be held as a weak
+// reference and will not be retained. No-op if `navigation` is null.
 - (void)setState:(web::WKNavigationState)state
     forNavigation:(WKNavigation*)navigation;
 
-// Returns state for a given |navigation| or NONE if navigation does not exist.
+// Returns state for a given `navigation` or NONE if navigation does not exist.
 - (web::WKNavigationState)stateForNavigation:(WKNavigation*)navigation;
 
-// Removes given |navigation| and returns ownership of the associated navigation
-// context. Fails if |navigation| does not exist. |navigation| can be null.
+// Removes given `navigation` and returns ownership of the associated navigation
+// context. Fails if `navigation` does not exist. `navigation` can be null.
 // Cliens don't have to call this method for non-null navigations because
 // non-null navigations are weak and will be automatically removed when system
 // releases finished navigaitons. This method must always be called for
@@ -70,27 +70,27 @@ enum class WKNavigationState : int {
 
 // Adds a new navigation if it was not added yet. If navigation was already
 // added then updates context for existing navigation. Updating context does not
-// affect the result of |lastAddedNavigation| method. |navigation| will be held
-// as a weak reference and will not be retained. No-op if |navigation| is null.
+// affect the result of `lastAddedNavigation` method. `navigation` will be held
+// as a weak reference and will not be retained. No-op if `navigation` is null.
 - (void)setContext:(std::unique_ptr<web::NavigationContextImpl>)context
      forNavigation:(WKNavigation*)navigation;
 
-// Returns context if one was previously associated with given |navigation|.
-// Returns null if |navigation| is null.
+// Returns context if one was previously associated with given `navigation`.
+// Returns null if `navigation` is null.
 - (web::NavigationContextImpl*)contextForNavigation:(WKNavigation*)navigation;
 
-// WKNavigation which was added the most recently via |setState:forNavigation:|.
-// Updating navigation state via |setState:forNavigation:| does not change the
+// WKNavigation which was added the most recently via `setState:forNavigation:`.
+// Updating navigation state via `setState:forNavigation:` does not change the
 // last added navigation. Returns nil if there are no stored navigations or
 // last navigation was null.
 - (WKNavigation*)lastAddedNavigation;
 
-// WKNavigation which was added the most recently via |setState:forNavigation:|
+// WKNavigation which was added the most recently via `setState:forNavigation:`
 // and has associated navigation context with pending item.
 - (WKNavigation*)lastNavigationWithPendingItemInNavigationContext;
 
 // State of WKNavigation which was added the most recently via
-// |setState:forNavigation:|. WKNavigationState::NONE if CRWWKNavigationStates
+// `setState:forNavigation:`. WKNavigationState::NONE if CRWWKNavigationStates
 // is empty.
 - (web::WKNavigationState)lastAddedNavigationState;
 

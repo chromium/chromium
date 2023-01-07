@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,12 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifDrawable;
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
@@ -101,8 +101,8 @@ public class ProbabilisticCryptidRenderer {
             return;
         }
 
-        ImageFetcher fetcher =
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY, profile);
+        ImageFetcher fetcher = ImageFetcherFactory.createImageFetcher(
+                ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey());
 
         // If no asset key is provided, an empty asset with key "empty" will be fetched; this allows
         // end-to-end execution without any visible change. To test with visible changes, the asset
@@ -222,7 +222,7 @@ public class ProbabilisticCryptidRenderer {
      * enterprise policies are active).
      */
     private boolean isBlocked(Profile profile) {
-        return profile.isOffTheRecord() || ManagedBrowserUtils.hasBrowserPoliciesApplied(profile);
+        return profile.isOffTheRecord() || ManagedBrowserUtils.isBrowserManaged(profile);
     }
 
     /**

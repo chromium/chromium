@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,23 +12,23 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/font_util.h"
 #include "ui/gfx/render_text.h"
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_ANDROID) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "base/test/test_discardable_memory_allocator.h"
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 #endif
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kFontDescription[] = "Segoe UI, 13px";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 const char kFontDescription[] = "serif, 13px";
 #else
 const char kFontDescription[] = "sans, 13px";
@@ -40,23 +40,21 @@ struct Environment {
                           TestTimeouts::Initialize(),
                           base::test::TaskEnvironment::MainThreadType::UI)) {
     logging::SetMinLogLevel(logging::LOG_FATAL);
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_ANDROID) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+
     // Some platforms require discardable memory to use bitmap fonts.
     base::DiscardableMemoryAllocator::SetInstance(
         &discardable_memory_allocator);
-#endif
+
     CHECK(base::i18n::InitializeICU());
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    test_fonts::SetUpFontconfig();
+#endif
+    gfx::InitializeFonts();
     gfx::FontList::SetDefaultFontDescription(kFontDescription);
   }
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_ANDROID) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   base::TestDiscardableMemoryAllocator discardable_memory_allocator;
-#endif
-
   base::AtExitManager at_exit_manager;
   base::test::TaskEnvironment task_environment;
 };
@@ -161,24 +159,44 @@ gfx::WordWrapBehavior ConsumeWordWrap(FuzzedDataProvider* fdp) {
   }
 }
 
-gfx::ElideBehavior ConsumeElideBehavior(FuzzedDataProvider* fdp) {
-  switch (fdp->ConsumeIntegralInRange(0, 7)) {
-    case 0:
-      return gfx::NO_ELIDE;
-    case 1:
-      return gfx::TRUNCATE;
-    case 2:
-      return gfx::ELIDE_HEAD;
-    case 3:
-      return gfx::ELIDE_MIDDLE;
-    case 4:
-      return gfx::ELIDE_TAIL;
-    case 5:
-      return gfx::ELIDE_EMAIL;
-    case 6:
-      return gfx::FADE_TAIL;
-    default:
-      return gfx::NO_ELIDE;
+gfx::ElideBehavior ConsumeElideBehavior(FuzzedDataProvider* fdp,
+                                        bool generate_only_homogeneous_styles) {
+  if (generate_only_homogeneous_styles) {
+    // The styles are guaranteed to be homogenous and it is safe to generate
+    // any eliding behavior.
+    switch (fdp->ConsumeIntegralInRange(0, 7)) {
+      case 0:
+        return gfx::NO_ELIDE;
+      case 1:
+        return gfx::TRUNCATE;
+      case 2:
+        return gfx::ELIDE_HEAD;
+      case 3:
+        return gfx::ELIDE_MIDDLE;
+      case 4:
+        return gfx::ELIDE_TAIL;
+      case 5:
+        return gfx::ELIDE_EMAIL;
+      case 6:
+        return gfx::FADE_TAIL;
+      default:
+        return gfx::NO_ELIDE;
+    }
+  } else {
+    // Only generate eliding behaviors that are compatible with non homogeneous
+    // text. Remove this when http://crbug.com/1085014 is fixed.
+    switch (fdp->ConsumeIntegralInRange(0, 4)) {
+      case 0:
+        return gfx::NO_ELIDE;
+      case 1:
+        return gfx::TRUNCATE;
+      case 2:
+        return gfx::ELIDE_TAIL;
+      case 3:
+        return gfx::FADE_TAIL;
+      default:
+        return gfx::NO_ELIDE;
+    }
   }
 }
 
@@ -208,6 +226,16 @@ gfx::Range ConsumeRange(FuzzedDataProvider* fdp, size_t max) {
   return gfx::Range(start, end);
 }
 
+// Eliding behaviors are not all fully supported by RenderText. Ignore
+// unsupported cases. This is causing clusterfuzz to fail with invalid
+// tests (http://crbug.com/1185542). Remove when https://crbug.com/1085014 is
+// fixed.
+bool DoesDisplayRangeSupportElideBehavior(const gfx::RenderText* render_text) {
+  const gfx::ElideBehavior behavior = render_text->elide_behavior();
+  return behavior != gfx::ELIDE_HEAD && behavior != gfx::ELIDE_MIDDLE &&
+         behavior != gfx::ELIDE_EMAIL;
+}
+
 const int kMaxStringLength = 128;
 
 }  // anonymous namespace
@@ -220,6 +248,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   gfx::Canvas canvas;
 
   FuzzedDataProvider fdp(data, size);
+  if (size == 0)
+    return 0;
+
+  // Eliding and Styles are not well supported by RenderText. DCHECKs are
+  // present in RenderText code to avoid any incorrect uses but the fuzzer
+  // should not generate them until full support (http://crbug.com/1283159).
+  const bool generate_only_homogeneous_styles = fdp.ConsumeBool();
+
   while (fdp.remaining_bytes() != 0) {
     const RenderTextAPI command = fdp.ConsumeEnum<RenderTextAPI>();
     switch (command) {
@@ -280,7 +316,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
 
       case RenderTextAPI::kSetMultiline:
-        render_text->SetMultiline(fdp.ConsumeBool());
+        if (generate_only_homogeneous_styles) {
+          render_text->SetMultiline(fdp.ConsumeBool());
+        }
         break;
 
       case RenderTextAPI::kSetMaxLines:
@@ -304,9 +342,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
 
       case RenderTextAPI::kApplyColor:
-        render_text->ApplyColor(
-            ConsumeSkColor(&fdp),
-            ConsumeRange(&fdp, render_text->text().length()));
+        if (!generate_only_homogeneous_styles) {
+          render_text->ApplyColor(
+              ConsumeSkColor(&fdp),
+              ConsumeRange(&fdp, render_text->text().length()));
+        }
         break;
 
       case RenderTextAPI::kSetStyle:
@@ -314,9 +354,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
 
       case RenderTextAPI::kApplyStyle:
-        render_text->ApplyStyle(
-            ConsumeStyle(&fdp), fdp.ConsumeBool(),
-            ConsumeRange(&fdp, render_text->text().length()));
+        if (!generate_only_homogeneous_styles) {
+          render_text->ApplyStyle(
+              ConsumeStyle(&fdp), fdp.ConsumeBool(),
+              ConsumeRange(&fdp, render_text->text().length()));
+        }
         break;
 
       case RenderTextAPI::kSetWeight:
@@ -324,9 +366,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
 
       case RenderTextAPI::kApplyWeight:
-        render_text->ApplyWeight(
-            ConsumeWeight(&fdp),
-            ConsumeRange(&fdp, render_text->text().length()));
+        if (!generate_only_homogeneous_styles) {
+          render_text->ApplyWeight(
+              ConsumeWeight(&fdp),
+              ConsumeRange(&fdp, render_text->text().length()));
+        }
         break;
 
       case RenderTextAPI::kSetDirectionalityMode:
@@ -334,7 +378,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
 
       case RenderTextAPI::kSetElideBehavior:
-        render_text->SetElideBehavior(ConsumeElideBehavior(&fdp));
+        render_text->SetElideBehavior(
+            ConsumeElideBehavior(&fdp, generate_only_homogeneous_styles));
         break;
 
       case RenderTextAPI::kIsGraphemeBoundary:
@@ -362,10 +407,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                       fdp.ConsumeIntegralInRange<int>(0, 30)));
         break;
       case RenderTextAPI::kGetSubstringBounds:
+        // RenderText doesn't support that case (https://crbug.com/1085014).
+        if (!DoesDisplayRangeSupportElideBehavior(render_text.get()))
+          break;
+
         render_text->GetSubstringBounds(
             ConsumeRange(&fdp, render_text->text().length()));
         break;
       case RenderTextAPI::kGetCursorSpan:
+        // RenderText doesn't support that case (https://crbug.com/1085014).
+        if (!DoesDisplayRangeSupportElideBehavior(render_text.get()))
+          break;
+
         render_text->GetCursorSpan(
             ConsumeRange(&fdp, render_text->text().length()));
         break;

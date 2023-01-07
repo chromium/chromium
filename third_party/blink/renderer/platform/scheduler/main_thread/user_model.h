@@ -1,13 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_USER_MODEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_USER_MODEL_H_
 
-#include "base/macros.h"
-#include "base/trace_event/trace_event.h"
-#include "base/trace_event/traced_value.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -22,6 +20,8 @@ class PLATFORM_EXPORT UserModel {
 
  public:
   UserModel();
+  UserModel(const UserModel&) = delete;
+  UserModel& operator=(const UserModel&) = delete;
 
   // Tells us that the system started processing an input event. Must be paired
   // with a call to DidFinishProcessingInputEvent.
@@ -49,7 +49,7 @@ class PLATFORM_EXPORT UserModel {
       const base::TimeTicks now,
       base::TimeDelta* prediction_valid_duration) const;
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
   // The time we should stay in a priority-escalated mode after an input event.
   static const int kGestureEstimationLimitMillis = 100;
@@ -79,8 +79,6 @@ class PLATFORM_EXPORT UserModel {
   base::TimeTicks last_reset_time_;
   bool is_gesture_active_;  // This typically means the user's finger is down.
   bool is_gesture_expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserModel);
 };
 
 }  // namespace scheduler

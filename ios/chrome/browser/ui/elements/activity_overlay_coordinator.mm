@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,15 @@
       addSubview:self.activityOverlayViewController.view];
   [self.activityOverlayViewController
       didMoveToParentViewController:self.baseViewController];
-  AddSameConstraints(self.baseViewController.view,
-                     self.activityOverlayViewController.view);
+  UIView* baseView = self.baseViewController.view;
+  UIView* activityOverlayView = self.activityOverlayViewController.view;
+  AddSameCenterConstraints(baseView, activityOverlayView);
+  [NSLayoutConstraint activateConstraints:@[
+    [baseView.heightAnchor
+        constraintEqualToAnchor:activityOverlayView.heightAnchor],
+    [baseView.widthAnchor
+        constraintEqualToAnchor:activityOverlayView.widthAnchor],
+  ]];
 }
 
 - (void)stop {

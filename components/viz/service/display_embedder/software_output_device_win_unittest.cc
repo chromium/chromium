@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/test/gmock_callback_support.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/privileged/mojom/compositing/layered_window_updater.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

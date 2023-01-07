@@ -1,10 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.client_certificate;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -62,7 +61,6 @@ public class SSLClientCertificateRequest {
         // Pointer to the native certificate request needed to return the results.
         private final long mNativePtr;
 
-        @SuppressLint("StaticFieldLeak") // TODO(crbug.com/807729): Remove and fix.
         final Context mContext;
         final String mAlias;
 
@@ -232,7 +230,7 @@ public class SSLClientCertificateRequest {
          */
         public void show() {
             final AlertDialog.Builder builder =
-                    new AlertDialog.Builder(mContext, R.style.Theme_Chromium_AlertDialog);
+                    new AlertDialog.Builder(mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog);
             builder.setTitle(R.string.client_cert_unsupported_title)
                     .setMessage(R.string.client_cert_unsupported_message)
                     .setNegativeButton(R.string.close,

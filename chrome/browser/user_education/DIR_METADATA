@@ -1,4 +1,4 @@
 monorail: {
-  component: "UI>Browser>Mobile"
+  component: "UI>Browser>Mobile>UserEducation"
 }
 os: ANDROID

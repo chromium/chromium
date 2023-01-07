@@ -1,0 +1,7 @@
+<style include="wallpaper"></style>
+<template is="dom-if" if="[[hasError_]]">
+  <wallpaper-error></wallpaper-error>
+</template>
+<main aria-label="$i18n{wallpaperCollections}" hidden$="[[hasError_]]">
+  <collections-grid id="collectionsGrid"></collections-grid>
+</main>

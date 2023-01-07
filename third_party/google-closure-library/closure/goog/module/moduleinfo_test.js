@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.module.ModuleInfoTest');
 goog.setTestOnly();
@@ -39,16 +31,21 @@ testSuite({
 
   /** Test initial state of module info. */
   testNotLoadedAtStart() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const m = new ModuleInfo();
     assertFalse('Shouldn\'t be loaded', m.isLoaded());
   },
 
-  /** Test loaded module info. */
+  /**
+     Test loaded module info. @suppress {checkTypes} suppression added to
+     enable type checking
+   */
   testOnLoad() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const m = new ModuleInfo();
 
     m.setModuleConstructor(TestModule);
-    m.onLoad(goog.nullFunction);
+    m.onLoad(/** @type {?} */ (goog.nullFunction));
     assertTrue(m.isLoaded());
 
     const module = m.getModule();
@@ -62,8 +59,12 @@ testSuite({
         module.isDisposed());
   },
 
-  /** Test callbacks on module load. */
+  /**
+     Test callbacks on module load. @suppress {checkTypes} suppression added to
+     enable type checking
+   */
   testCallbacks() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const m = new ModuleInfo();
     m.setModuleConstructor(TestModule);
     let index = 0;
@@ -85,7 +86,7 @@ testSuite({
       d = index++;
     });
     cb.abort();
-    m.onLoad(goog.nullFunction);
+    m.onLoad(/** @type {?} */ (goog.nullFunction));
 
     assertTrue('callback A should have fired', a >= 0);
     assertFalse('callback B should have been aborted', b >= 0);
@@ -98,6 +99,7 @@ testSuite({
   },
 
   testErrorsInCallbacks() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const m = new ModuleInfo();
     m.setModuleConstructor(TestModule);
     m.registerCallback(() => {
@@ -106,6 +108,7 @@ testSuite({
     m.registerCallback(() => {
       throw new Error('boom2');
     });
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const hadError = m.onLoad(goog.nullFunction);
     assertTrue(hadError);
 
@@ -116,8 +119,12 @@ testSuite({
     assertEquals('boom1', e.message);
   },
 
-  /** Tests the error callbacks. */
+  /**
+     Tests the error callbacks. @suppress {checkTypes} suppression added to
+     enable type checking
+   */
   testErrbacks() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const m = new ModuleInfo();
     m.setModuleConstructor(TestModule);
     let index = 0;
@@ -135,7 +142,7 @@ testSuite({
     const cc = m.registerErrback(() => {
       c = index++;
     });
-    m.onError('foo');
+    m.onError(/** @type {?} */ ('foo'));
 
     assertTrue('callback A should have fired', a >= 0);
     assertTrue('callback B should have fired', b >= 0);

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
-#include "ui/events/android/gesture_event_android.h"
-#include "ui/events/android/gesture_event_type.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_event_data.h"
@@ -26,8 +24,14 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/angle_conversions.h"
-#include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/events/android/gesture_event_android.h"
+#include "ui/events/android/gesture_event_type.h"
+#endif
 
 using blink::WebGestureDevice;
 using blink::WebGestureEvent;
@@ -326,6 +330,8 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       details.is_source_touch_event_set_blocking();
   gesture.primary_pointer_type =
       ToWebPointerType(details.primary_pointer_type());
+  gesture.primary_unique_touch_event_id =
+      details.primary_unique_touch_event_id();
   gesture.unique_touch_event_id = unique_touch_event_id;
 
   switch (details.type()) {
@@ -362,6 +368,13 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       gesture.data.tap.width =
           IfNanUseMaxFloat(details.bounding_box_f().width());
       gesture.data.tap.height =
+          IfNanUseMaxFloat(details.bounding_box_f().height());
+      break;
+    case ET_GESTURE_SHORT_PRESS:
+      gesture.SetType(WebInputEvent::Type::kGestureShortPress);
+      gesture.data.long_press.width =
+          IfNanUseMaxFloat(details.bounding_box_f().width());
+      gesture.data.long_press.height =
           IfNanUseMaxFloat(details.bounding_box_f().height());
       break;
     case ET_GESTURE_LONG_PRESS:
@@ -473,12 +486,12 @@ WebGestureEvent CreateWebGestureEventFromGestureEventData(
 std::unique_ptr<blink::WebInputEvent> ScaleWebInputEvent(
     const blink::WebInputEvent& event,
     float scale) {
-  return TranslateAndScaleWebInputEvent(event, gfx::Vector2d(0, 0), scale);
+  return TranslateAndScaleWebInputEvent(event, gfx::Vector2dF(0, 0), scale);
 }
 
 std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     const blink::WebInputEvent& event,
-    const gfx::Vector2d& delta,
+    const gfx::Vector2dF& delta,
     float scale) {
   std::unique_ptr<blink::WebInputEvent> scaled_event;
   if (scale == 1.f && delta.IsZero())
@@ -487,9 +500,8 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     blink::WebMouseWheelEvent* wheel_event = new blink::WebMouseWheelEvent;
     scaled_event.reset(wheel_event);
     *wheel_event = static_cast<const blink::WebMouseWheelEvent&>(event);
-    float x = (wheel_event->PositionInWidget().x() + delta.x()) * scale;
-    float y = (wheel_event->PositionInWidget().y() + delta.y()) * scale;
-    wheel_event->SetPositionInWidget(x, y);
+    wheel_event->SetPositionInWidget(
+        gfx::ScalePoint(wheel_event->PositionInWidget() + delta, scale));
     if (wheel_event->delta_units != ui::ScrollGranularity::kScrollByPage) {
       wheel_event->delta_x *= scale;
       wheel_event->delta_y *= scale;
@@ -500,9 +512,8 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     blink::WebMouseEvent* mouse_event = new blink::WebMouseEvent;
     scaled_event.reset(mouse_event);
     *mouse_event = static_cast<const blink::WebMouseEvent&>(event);
-    float x = (mouse_event->PositionInWidget().x() + delta.x()) * scale;
-    float y = (mouse_event->PositionInWidget().y() + delta.y()) * scale;
-    mouse_event->SetPositionInWidget(x, y);
+    mouse_event->SetPositionInWidget(
+        gfx::ScalePoint(mouse_event->PositionInWidget() + delta, scale));
     // Do not scale movement of raw movement events.
     if (!mouse_event->is_raw_movement_event) {
       mouse_event->movement_x *= scale;
@@ -513,9 +524,8 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     scaled_event.reset(touch_event);
     *touch_event = static_cast<const blink::WebTouchEvent&>(event);
     for (unsigned i = 0; i < touch_event->touches_length; i++) {
-      touch_event->touches[i].SetPositionInWidget(
-          (touch_event->touches[i].PositionInWidget().x() + delta.x()) * scale,
-          (touch_event->touches[i].PositionInWidget().y() + delta.y()) * scale);
+      touch_event->touches[i].SetPositionInWidget(gfx::ScalePoint(
+          touch_event->touches[i].PositionInWidget() + delta, scale));
       touch_event->touches[i].radius_x *= scale;
       touch_event->touches[i].radius_y *= scale;
     }
@@ -523,9 +533,8 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     blink::WebGestureEvent* gesture_event = new blink::WebGestureEvent;
     scaled_event.reset(gesture_event);
     *gesture_event = static_cast<const blink::WebGestureEvent&>(event);
-    gesture_event->SetPositionInWidget(gfx::PointF(
-        (gesture_event->PositionInWidget().x() + delta.x()) * scale,
-        (gesture_event->PositionInWidget().y() + delta.y()) * scale));
+    gesture_event->SetPositionInWidget(
+        gfx::ScalePoint(gesture_event->PositionInWidget() + delta, scale));
     switch (gesture_event->GetType()) {
       case blink::WebInputEvent::Type::kGestureScrollUpdate:
         if (gesture_event->data.scroll_update.delta_units ==
@@ -755,7 +764,7 @@ blink::WebGestureEvent ScrollBeginFromScrollUpdate(
   return scroll_begin;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<WebGestureEvent> CreateWebGestureEventFromGestureEventAndroid(
     const GestureEventAndroid& event) {
   WebInputEvent::Type event_type = WebInputEvent::Type::kUndefined;
@@ -793,7 +802,7 @@ std::unique_ptr<WebGestureEvent> CreateWebGestureEventFromGestureEventAndroid(
   }
   auto web_event = std::make_unique<WebGestureEvent>(
       event_type, WebInputEvent::kNoModifiers,
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(event.time()));
+      base::TimeTicks() + base::Milliseconds(event.time()));
   // NOTE: Source gesture events are synthetic ones that simulate
   // gesture from keyboard (zoom in/out) for now. Should populate Blink
   // event's fields better when extended to handle more cases.

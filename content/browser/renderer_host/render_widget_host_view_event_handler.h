@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/native_web_keyboard_event.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "services/viz/public/mojom/compositing/delegated_ink_point_renderer.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
 #include "ui/aura/scoped_keyboard_hook.h"
@@ -45,7 +45,6 @@ class OverscrollController;
 class RenderWidgetHostImpl;
 class RenderWidgetHostViewBase;
 class TouchSelectionControllerClientAura;
-class HitTestDebugKeyEventObserver;
 
 // Provides an implementation of ui::EventHandler for use with
 // RenderWidgetHostViewBase. A delegate is required in order to provide platform
@@ -65,6 +64,9 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   class Delegate {
    public:
     Delegate();
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
 
     // Converts |rect| from window coordinate to screen coordinate.
     virtual gfx::Rect ConvertRectToScreen(const gfx::Rect& rect) const = 0;
@@ -101,14 +103,17 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
         selection_controller_client_;
     std::unique_ptr<ui::TouchSelectionController> selection_controller_;
     std::unique_ptr<OverscrollController> overscroll_controller_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   RenderWidgetHostViewEventHandler(RenderWidgetHostImpl* host,
                                    RenderWidgetHostViewBase* host_view,
                                    Delegate* delegate);
+
+  RenderWidgetHostViewEventHandler(const RenderWidgetHostViewEventHandler&) =
+      delete;
+  RenderWidgetHostViewEventHandler& operator=(
+      const RenderWidgetHostViewEventHandler&) = delete;
+
   ~RenderWidgetHostViewEventHandler() override;
 
   // Set child popup's host view, and event handler, in order to redirect input.
@@ -122,14 +127,11 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
     return mouse_wheel_phase_handler_;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Sets the ContextMenuParams when a context menu is triggered. Required for
   // subsequent event processing.
   void SetContextMenuParams(const ContextMenuParams& params);
-
-  // Updates the cursor clip region. Used for mouse locking.
-  void UpdateMouseLockRegion();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   bool accept_return_character() { return accept_return_character_; }
   bool mouse_locked() { return mouse_locked_; }
@@ -151,7 +153,7 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   void UnlockMouse();
 
   // Start/Stop processing of future system keyboard events.
-  bool LockKeyboard(base::Optional<base::flat_set<ui::DomCode>> codes);
+  bool LockKeyboard(absl::optional<base::flat_set<ui::DomCode>> codes);
   void UnlockKeyboard();
   bool IsKeyboardLocked() const;
 
@@ -254,15 +256,6 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
 
   void HandleMouseWheelEvent(ui::MouseEvent* event);
 
-  // Forward the location and timestamp of the event to viz if a delegated ink
-  // trail is requested.
-  void ForwardDelegatedInkPoint(ui::LocatedEvent* event,
-                                bool hovering,
-                                int32_t pointer_id);
-
-  // Flush the remote for testing purposes.
-  void FlushForTest() { delegated_ink_point_renderer_.FlushForTesting(); }
-
   // Whether return characters should be passed on to the RenderWidgetHostImpl.
   bool accept_return_character_ = false;
 
@@ -304,7 +297,7 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   // of the window when it reaches the window borders to avoid it going outside.
   // This value is used to differentiate between these synthetic mouse move
   // events vs. normal mouse move events.
-  base::Optional<gfx::Point> synthetic_move_position_;
+  absl::optional<gfx::Point> synthetic_move_position_;
 
   bool enable_consolidated_movement_;
 
@@ -313,31 +306,15 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   ui::MotionEventAura pointer_state_;
 
   // The following are not owned. They should outlive |this|
-  RenderWidgetHostImpl* const host_;
+  const raw_ptr<RenderWidgetHostImpl> host_;
   // Should create |this| and own it.
-  RenderWidgetHostViewBase* const host_view_;
+  const raw_ptr<RenderWidgetHostViewBase> host_view_;
   // Optional, used to redirect events to a popup and associated handler.
-  RenderWidgetHostViewBase* popup_child_host_view_ = nullptr;
-  ui::EventHandler* popup_child_event_handler_ = nullptr;
-  Delegate* const delegate_;
-  aura::Window* window_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> popup_child_host_view_ = nullptr;
+  raw_ptr<ui::EventHandler> popup_child_event_handler_ = nullptr;
+  const raw_ptr<Delegate> delegate_;
+  raw_ptr<aura::Window> window_ = nullptr;
   MouseWheelPhaseHandler mouse_wheel_phase_handler_;
-
-  std::unique_ptr<HitTestDebugKeyEventObserver> debug_observer_;
-
-  // Remote end of the connection for sending delegated ink points to viz to
-  // support the delegated ink trails feature.
-  mojo::Remote<viz::mojom::DelegatedInkPointRenderer>
-      delegated_ink_point_renderer_;
-  // Used to know if we have already told viz to reset prediction because the
-  // final point of the delegated ink trail has been sent. True when prediction
-  // has already been reset for the most recent trail, false otherwise. This
-  // flag helps make sure that we don't send more IPCs than necessary to viz to
-  // reset prediction. Sending extra IPCs wouldn't impact correctness, but can
-  // impact performance due to the IPC overhead.
-  bool ended_delegated_ink_trail_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewEventHandler);
 };
 
 }  // namespace content

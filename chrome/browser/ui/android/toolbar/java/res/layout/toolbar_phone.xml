@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- The toolbar containing the URL bar, back button, and NTP button.
+-->
+
+<org.chromium.chrome.browser.toolbar.top.ToolbarPhone
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/toolbar_height_no_shadow" >
+
+    <org.chromium.chrome.browser.toolbar.HomeButton
+        android:id="@+id/home_button"
+        style="@style/ToolbarButton"
+        android:src="@drawable/btn_toolbar_home"
+        android:contentDescription="@string/accessibility_toolbar_btn_home"
+        android:visibility="gone"
+        app:menuVerticalOverlapAnchor="false"
+        app:menuMaxWidth="@dimen/home_button_list_menu_width"
+        app:menuPositionedAtEnd="false"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <org.chromium.chrome.browser.omnibox.LocationBarPhone
+        android:id="@+id/location_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:paddingStart="@dimen/location_bar_lateral_padding"
+        android:paddingEnd="@dimen/location_bar_lateral_padding"/>
+
+    <LinearLayout android:id="@+id/toolbar_buttons"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <ViewStub
+            android:id="@+id/optional_button_stub"
+            android:inflatedId="@+id/optional_toolbar_button_container"
+            android:layout_gravity="top"
+            android:visibility="gone"
+            android:layout_width="52dp"
+            style="@style/ToolbarButton" />
+        <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
+            android:id="@+id/tab_switcher_button"
+            style="@style/ToolbarButton"
+            android:paddingStart="8dp"
+            android:layout_gravity="top"
+            android:contentDescription="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
+            app:menuMaxWidth="@dimen/tab_switcher_menu_width"
+            app:menuVerticalOverlapAnchor="false" />
+
+        <include layout="@layout/menu_button"/>
+
+    </LinearLayout>
+
+</org.chromium.chrome.browser.toolbar.top.ToolbarPhone>

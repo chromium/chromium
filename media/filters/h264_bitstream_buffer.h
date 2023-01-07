@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_export.h"
@@ -32,6 +33,9 @@ class MEDIA_EXPORT H264BitstreamBuffer
     : public base::RefCountedThreadSafe<H264BitstreamBuffer> {
  public:
   H264BitstreamBuffer();
+
+  H264BitstreamBuffer(const H264BitstreamBuffer&) = delete;
+  H264BitstreamBuffer& operator=(const H264BitstreamBuffer&) = delete;
 
   // Discard all data and reset the buffer for reuse.
   void Reset();
@@ -68,9 +72,21 @@ class MEDIA_EXPORT H264BitstreamBuffer
   // returned by data() to be correct.
   void FinishNALU();
 
+  // Finishes current bit stream. This will flush any cached bits in the reg
+  // without RBSP trailing bits alignment. e.g. for packed slice header, it is
+  // not a complete NALU, the slice data and RBSP trailing will be filled by
+  // user mode driver. This MUST be called for the stream returned by data() to
+  // be correct.
+  void Flush();
+
   // Return number of full bytes in the stream. Note that FinishNALU() has to
   // be called to flush cached bits, or the return value will not include them.
   size_t BytesInBuffer() const;
+
+  // Returns number of bits in the stream. Note that FinishNALU() or Flush() has
+  // to be called to flush cached bits, or the return value will not include
+  // them.
+  size_t BitsInBuffer() const;
 
   // Return a pointer to the stream. FinishNALU() must be called before
   // accessing the stream, otherwise some bits may still be cached and not
@@ -120,11 +136,11 @@ class MEDIA_EXPORT H264BitstreamBuffer
 
   // Current byte offset in data_ (points to the start of unwritten bits).
   size_t pos_;
+  // Current last bit in data_ (points to the start of unwritten bit).
+  size_t bits_in_buffer_;
 
   // Buffer for stream data.
-  uint8_t* data_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264BitstreamBuffer);
+  raw_ptr<uint8_t> data_;
 };
 
 }  // namespace media

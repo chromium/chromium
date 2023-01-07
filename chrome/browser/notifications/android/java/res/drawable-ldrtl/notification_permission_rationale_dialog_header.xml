@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!--VectorRaster is ignored because: The image should be shown rarely enough to prioritize binary size over inflation time.-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="VectorRaster"
+    android:width="224dp"
+    android:height="245dp"
+    android:viewportWidth="224"
+    android:viewportHeight="245">
+  <group>
+    <clip-path
+        android:pathData="M0,0h224v245h-224z"/>
+    <path
+        android:pathData="M41,16.832C43,16.832 44.75,17.707 46,19.082L41,25.165L36,19.082C37.25,17.707 39,16.832 41,16.832Z"
+        android:fillColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+    <path
+        android:pathData="M27.328,16.832L35.661,25.165H27.328V16.832Z"
+        android:fillColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+    <path
+        android:pathData="M21.543,17.671V16.838H19.459V17.671H18.555C18.251,17.671 18.001,17.921 18.001,18.226V22.255V24.617C18.001,24.921 18.251,25.171 18.559,25.171H22.447C22.751,25.171 23.001,24.921 23.001,24.617V22.255V18.226C23.001,17.921 22.751,17.671 22.447,17.671H21.543ZM22.169,22.256V24.34H18.836V22.256V18.506H22.169V22.256Z"
+        android:fillColor="@color/permission_rationale_illustration_inner_border_baseline"
+        android:fillType="evenOdd"/>
+    <path
+        android:pathData="M18.554,25.169H22.446C22.75,25.169 23,24.919 23,24.615V18.223C23,17.919 22.75,17.669 22.446,17.669H18.554C18.25,17.669 18,17.919 18,18.223V24.615C18,24.919 18.25,25.169 18.554,25.169Z"
+        android:fillColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+    <path
+        android:pathData="M164.2,55L119.8,55A1.8,1.8 0,0 0,118 56.8L118,59.2A1.8,1.8 0,0 0,119.8 61L164.2,61A1.8,1.8 0,0 0,166 59.2L166,56.8A1.8,1.8 0,0 0,164.2 55z"
+        android:fillColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+    <path
+        android:pathData="M164,83L88,83A2,2 0,0 0,86 85L86,89A2,2 0,0 0,88 91L164,91A2,2 0,0 0,166 89L166,85A2,2 0,0 0,164 83z"
+        android:fillColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+    <path
+        android:pathData="M164,69L132,69A2,2 0,0 0,130 71L130,75A2,2 0,0 0,132 77L164,77A2,2 0,0 0,166 75L166,71A2,2 0,0 0,164 69z"
+        android:fillColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+    <path
+        android:pathData="M174,58C174,64.627 179.373,70 186,70V70C192.627,70 198,64.627 198,58V58C198,51.373 192.627,46 186,46V46C179.373,46 174,51.373 174,58V58Z"
+        android:fillColor="#3982F8"/>
+    <path
+        android:pathData="M178.5,60.502V55.502H181.833L186,51.335V64.669L181.833,60.502H178.5V60.502ZM189.749,57.999C189.749,59.469 188.899,60.74 187.666,61.353V54.64C188.899,55.257 189.749,56.528 189.749,57.999V57.999ZM187.666,65.309V63.588C190.074,62.872 191.833,60.643 191.833,58.001C191.833,55.359 190.074,53.13 187.666,52.413V50.693C191.003,51.451 193.499,54.43 193.499,58.001C193.499,61.572 191.003,64.551 187.666,65.309V65.309Z"
+        android:fillColor="#ffffff"
+        android:fillType="evenOdd"/>
+    <path
+        android:pathData="M195.695,38L28.305,38A10.305,10.305 0,0 0,18 48.305L18,88.695A10.305,10.305 0,0 0,28.305 99L195.695,99A10.305,10.305 0,0 0,206 88.695L206,48.305A10.305,10.305 0,0 0,195.695 38z"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:strokeColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+    <path
+        android:pathData="M164.2,126L147.8,126A1.8,1.8 45,0 0,146 127.8L146,130.2A1.8,1.8 0,0 0,147.8 132L164.2,132A1.8,1.8 0,0 0,166 130.2L166,127.8A1.8,1.8 135,0 0,164.2 126z"
+        android:fillColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+    <path
+        android:pathData="M164,154L108,154A2,2 0,0 0,106 156L106,160A2,2 0,0 0,108 162L164,162A2,2 0,0 0,166 160L166,156A2,2 0,0 0,164 154z"
+        android:fillColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+    <path
+        android:pathData="M164,140L36,140A2,2 0,0 0,34 142L34,146A2,2 0,0 0,36 148L164,148A2,2 0,0 0,166 146L166,142A2,2 0,0 0,164 140z"
+        android:fillColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+    <path
+        android:pathData="M198,129C198,122.373 192.627,117 186,117C179.373,117 174,122.373 174,129C174,135.627 179.373,141 186,141C192.627,141 198,135.627 198,129Z"
+        android:fillColor="#34A853"/>
+    <path
+        android:pathData="M178.5,128.169H193.5V129.003H178.5V128.169Z"
+        android:fillColor="#ffffff"/>
+    <path
+        android:pathData="M181.317,127.336L183.225,122.253C183.383,121.836 183.842,121.611 184.267,121.753L186,122.336L187.742,121.753C188.167,121.611 188.625,121.836 188.783,122.253L190.683,127.336H181.317Z"
+        android:fillColor="#ffffff"/>
+    <path
+        android:pathData="M182.25,129.836C183.633,129.836 184.783,130.803 185.083,132.094C185.783,131.794 186.433,131.878 186.917,132.086C187.225,130.794 188.375,129.836 189.75,129.836C191.358,129.836 192.667,131.144 192.667,132.753C192.667,134.361 191.358,135.669 189.75,135.669C188.217,135.669 186.975,134.486 186.858,132.986C186.608,132.811 185.95,132.486 185.142,133.003C185.008,134.494 183.775,135.669 182.25,135.669C180.642,135.669 179.333,134.361 179.333,132.753C179.333,131.144 180.642,129.836 182.25,129.836ZM189.75,134.836C190.9,134.836 191.833,133.903 191.833,132.753C191.833,131.603 190.9,130.669 189.75,130.669C188.6,130.669 187.667,131.603 187.667,132.753C187.667,133.903 188.6,134.836 189.75,134.836ZM182.25,134.836C183.4,134.836 184.333,133.903 184.333,132.753C184.333,131.603 183.4,130.669 182.25,130.669C181.1,130.669 180.167,131.603 180.167,132.753C180.167,133.903 181.1,134.836 182.25,134.836Z"
+        android:fillColor="#ffffff"/>
+    <path
+        android:pathData="M195.695,109L28.305,109A10.305,10.305 0,0 0,18 119.305L18,159.695A10.305,10.305 0,0 0,28.305 170L195.695,170A10.305,10.305 0,0 0,206 159.695L206,119.305A10.305,10.305 135,0 0,195.695 109z"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:strokeColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+    <group>
+      <clip-path
+          android:pathData="M195.695,180L28.305,180A10.305,10.305 0,0 0,18 190.305L18,209.695A10.305,10.305 0,0 0,28.305 220L195.695,220A10.305,10.305 135,0 0,206 209.695L206,190.305A10.305,10.305 0,0 0,195.695 180z"/>
+      <path
+          android:pathData="M164.2,197L135.8,197A1.8,1.8 45,0 0,134 198.8L134,201.2A1.8,1.8 0,0 0,135.8 203L164.2,203A1.8,1.8 0,0 0,166 201.2L166,198.8A1.8,1.8 0,0 0,164.2 197z"
+          android:fillColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+      <path
+          android:pathData="M198,200C198,193.373 192.627,188 186,188C179.373,188 174,193.373 174,200C174,206.627 179.373,212 186,212C192.627,212 198,206.627 198,200Z"
+          android:fillColor="#FBBC04"/>
+      <path
+          android:pathData="M180.166,197.5H183.5V192.5H188.5V197.5H191.833L186,203.333L180.166,197.5ZM191.833,205V206.667H180.166V205H191.833Z"
+          android:fillColor="#ffffff"/>
+    </group>
+    <path
+        android:pathData="M195.695,180L28.305,180A10.305,10.305 0,0 0,18 190.305L18,209.695A10.305,10.305 0,0 0,28.305 220L195.695,220A10.305,10.305 135,0 0,206 209.695L206,190.305A10.305,10.305 0,0 0,195.695 180z"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:strokeColor="@color/permission_rationale_illustration_inner_border_baseline"/>
+    <path
+        android:pathData="M201.495,3L22.505,3A19.505,19.505 45,0 0,3 22.505L3,297.934A19.505,19.505 0,0 0,22.505 317.439L201.495,317.439A19.505,19.505 0,0 0,221 297.934L221,22.505A19.505,19.505 0,0 0,201.495 3z"
+        android:strokeWidth="6"
+        android:fillColor="#00000000"
+        android:strokeColor="@color/permission_rationale_illustration_outer_border_baseline"/>
+  </group>
+</vector>

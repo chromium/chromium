@@ -1,12 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_BIND_SOURCE_INFO_H_
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_BIND_SOURCE_INFO_H_
-
-#include <map>
-#include <string>
 
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/cpp/interface_provider_spec.h"

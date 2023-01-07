@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/mime_util.h"
+
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
@@ -12,19 +13,17 @@
 #include "media/base/audio_codecs.h"
 #include "media/base/media.h"
 #include "media/base/media_switches.h"
-#include "media/base/mime_util.h"
 #include "media/base/mime_util_internal.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-namespace media {
-namespace internal {
+namespace media::internal {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 // TODO(https://crbug.com/1117275): Remove conditioning of kUsePropCodecs when
@@ -38,7 +37,7 @@ const bool kUsePropCodecs = false;
 // all cases except for when paired with the Opus codec.
 const char kTestMimeType[] = "foo/foo";
 
-#if defined(OS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 // HLS is supported on Android API level 14 and higher and Chrome supports
 // API levels 15 and higher, so HLS is always supported on Android.
 const bool kHlsSupported = true;
@@ -53,8 +52,7 @@ static std::vector<bool> CreateTestVector(bool test_all_values,
                                           bool single_value) {
   const bool kTestStates[] = {true, false};
   if (test_all_values)
-    return std::vector<bool>(kTestStates,
-                             kTestStates + base::size(kTestStates));
+    return std::vector<bool>(kTestStates, kTestStates + std::size(kTestStates));
   return std::vector<bool>(1, single_value);
 }
 
@@ -76,7 +74,6 @@ static void RunCodecSupportTest(const MimeUtil::PlatformInfo& states_to_vary,
       CreateTestVector(states_to_vary.name, test_states.name)
 
   // Stuff states to test into vectors for easy for_each() iteration.
-  MAKE_TEST_VECTOR(has_platform_decoders);
   MAKE_TEST_VECTOR(has_platform_vp8_decoder);
   MAKE_TEST_VECTOR(has_platform_vp9_decoder);
   MAKE_TEST_VECTOR(has_platform_opus_decoder);
@@ -90,22 +87,20 @@ static void RunCodecSupportTest(const MimeUtil::PlatformInfo& states_to_vary,
     info.name = name##_states[name##_index];
 #define RUN_TEST_VECTOR_END() }
 
-  RUN_TEST_VECTOR_BEGIN(has_platform_decoders)
   RUN_TEST_VECTOR_BEGIN(has_platform_vp8_decoder)
   RUN_TEST_VECTOR_BEGIN(has_platform_vp9_decoder)
   RUN_TEST_VECTOR_BEGIN(has_platform_opus_decoder)
   for (int codec = MimeUtil::INVALID_CODEC; codec <= MimeUtil::LAST_CODEC;
        ++codec) {
     SCOPED_TRACE(base::StringPrintf(
-        "has_platform_decoders=%d, has_platform_vp8_decoder=%d, "
+        "has_platform_vp8_decoder=%d, "
         "has_platform_opus_decoder=%d, "
         "has_platform_vp9_decoder=%d, "
         "codec=%d",
-        info.has_platform_decoders, info.has_platform_vp8_decoder,
-        info.has_platform_opus_decoder, info.has_platform_vp9_decoder, codec));
+        info.has_platform_vp8_decoder, info.has_platform_opus_decoder,
+        info.has_platform_vp9_decoder, codec));
     test_func(info, static_cast<MimeUtil::Codec>(codec));
   }
-  RUN_TEST_VECTOR_END()
   RUN_TEST_VECTOR_END()
   RUN_TEST_VECTOR_END()
   RUN_TEST_VECTOR_END()
@@ -121,14 +116,17 @@ static MimeUtil::PlatformInfo VaryAllFields() {
   states_to_vary.has_platform_vp8_decoder = true;
   states_to_vary.has_platform_vp9_decoder = true;
   states_to_vary.has_platform_opus_decoder = true;
-  states_to_vary.has_platform_decoders = true;
   return states_to_vary;
 }
 
 // This is to validate MimeUtil::IsCodecSupportedOnPlatform(), which is used
 // only on Android platform.
 static bool HasDolbyVisionSupport() {
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+  return true;
+#else
   return false;
+#endif
 }
 
 static bool HasEac3Support() {
@@ -154,8 +152,8 @@ TEST(MimeUtilTest, CommonMediaMimeType) {
 
   EXPECT_EQ(kHlsSupported, IsSupportedMediaMimeType("application/x-mpegurl"));
   EXPECT_EQ(kHlsSupported, IsSupportedMediaMimeType("Application/X-MPEGURL"));
-  EXPECT_EQ(kHlsSupported, IsSupportedMediaMimeType(
-      "application/vnd.apple.mpegurl"));
+  EXPECT_EQ(kHlsSupported,
+            IsSupportedMediaMimeType("application/vnd.apple.mpegurl"));
   EXPECT_EQ(kHlsSupported, IsSupportedMediaMimeType("audio/mpegurl"));
   EXPECT_EQ(kHlsSupported, IsSupportedMediaMimeType("audio/x-mpegurl"));
   EXPECT_TRUE(IsSupportedMediaMimeType("audio/mp4"));
@@ -216,18 +214,18 @@ TEST(MimeUtilTest, SplitAndStripCodecs) {
       {",", 2, {"", ""}, {"", ""}},
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (const auto& test : tests) {
     std::vector<std::string> codecs_out;
 
-    SplitCodecs(tests[i].original, &codecs_out);
-    ASSERT_EQ(tests[i].expected_size, codecs_out.size());
-    for (size_t j = 0; j < tests[i].expected_size; ++j)
-      EXPECT_EQ(tests[i].split_results[j], codecs_out[j]);
+    SplitCodecs(test.original, &codecs_out);
+    ASSERT_EQ(test.expected_size, codecs_out.size());
+    for (size_t j = 0; j < test.expected_size; ++j)
+      EXPECT_EQ(test.split_results[j], codecs_out[j]);
 
     StripCodecs(&codecs_out);
-    ASSERT_EQ(tests[i].expected_size, codecs_out.size());
-    for (size_t j = 0; j < tests[i].expected_size; ++j)
-      EXPECT_EQ(tests[i].strip_results[j], codecs_out[j]);
+    ASSERT_EQ(test.expected_size, codecs_out.size());
+    for (size_t j = 0; j < test.expected_size; ++j)
+      EXPECT_EQ(test.strip_results[j], codecs_out[j]);
   }
 }
 
@@ -247,7 +245,7 @@ TEST(MimeUtilTest, ParseVideoCodecString) {
                                   &out_colorspace));
   if (kUsePropCodecs) {
     EXPECT_FALSE(out_is_ambiguous);
-    EXPECT_EQ(kCodecH264, out_codec);
+    EXPECT_EQ(VideoCodec::kH264, out_codec);
     EXPECT_EQ(H264PROFILE_BASELINE, out_profile);
     EXPECT_EQ(30, out_level);
     EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -258,7 +256,7 @@ TEST(MimeUtilTest, ParseVideoCodecString) {
                                     &out_is_ambiguous, &out_codec, &out_profile,
                                     &out_level, &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecVP9, out_codec);
+  EXPECT_EQ(VideoCodec::kVP9, out_codec);
   EXPECT_EQ(VP9PROFILE_PROFILE0, out_profile);
   EXPECT_EQ(10, out_level);
   EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -268,7 +266,7 @@ TEST(MimeUtilTest, ParseVideoCodecString) {
                                     &out_is_ambiguous, &out_codec, &out_profile,
                                     &out_level, &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecVP9, out_codec);
+  EXPECT_EQ(VideoCodec::kVP9, out_codec);
   EXPECT_EQ(VP9PROFILE_PROFILE2, out_profile);
   EXPECT_EQ(10, out_level);
   EXPECT_EQ(VideoColorSpace::REC601(), out_colorspace);
@@ -280,7 +278,7 @@ TEST(MimeUtilTest, ParseVideoCodecString) {
                             &out_profile, &out_level, &out_colorspace));
   if (kUsePropCodecs) {
     EXPECT_TRUE(out_is_ambiguous);
-    EXPECT_EQ(kCodecH264, out_codec);
+    EXPECT_EQ(VideoCodec::kH264, out_codec);
     EXPECT_EQ(VIDEO_CODEC_PROFILE_UNKNOWN, out_profile);
     EXPECT_EQ(0, out_level);
     EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -316,7 +314,7 @@ TEST(MimeUtilTest, ParseVideoCodecString_NoMimeType) {
                                     &out_codec, &out_profile, &out_level,
                                     &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecH264, out_codec);
+  EXPECT_EQ(VideoCodec::kH264, out_codec);
   EXPECT_EQ(H264PROFILE_BASELINE, out_profile);
   EXPECT_EQ(30, out_level);
   EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -326,7 +324,7 @@ TEST(MimeUtilTest, ParseVideoCodecString_NoMimeType) {
                                     &out_codec, &out_profile, &out_level,
                                     &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecVP9, out_codec);
+  EXPECT_EQ(VideoCodec::kVP9, out_codec);
   EXPECT_EQ(VP9PROFILE_PROFILE0, out_profile);
   EXPECT_EQ(10, out_level);
   EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -335,7 +333,7 @@ TEST(MimeUtilTest, ParseVideoCodecString_NoMimeType) {
                                     &out_is_ambiguous, &out_codec, &out_profile,
                                     &out_level, &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecVP9, out_codec);
+  EXPECT_EQ(VideoCodec::kVP9, out_codec);
   EXPECT_EQ(VP9PROFILE_PROFILE2, out_profile);
   EXPECT_EQ(10, out_level);
   EXPECT_EQ(VideoColorSpace::REC601(), out_colorspace);
@@ -344,7 +342,7 @@ TEST(MimeUtilTest, ParseVideoCodecString_NoMimeType) {
   EXPECT_TRUE(ParseVideoCodecString("", "avc3", &out_is_ambiguous, &out_codec,
                                     &out_profile, &out_level, &out_colorspace));
   EXPECT_TRUE(out_is_ambiguous);
-  EXPECT_EQ(kCodecH264, out_codec);
+  EXPECT_EQ(VideoCodec::kH264, out_codec);
   EXPECT_EQ(VIDEO_CODEC_PROFILE_UNKNOWN, out_profile);
   EXPECT_EQ(0, out_level);
   EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
@@ -368,7 +366,7 @@ TEST(MimeUtilTest, ParseAudioCodecString) {
   EXPECT_TRUE(ParseAudioCodecString("audio/webm", "opus", &out_is_ambiguous,
                                     &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecOpus, out_codec);
+  EXPECT_EQ(AudioCodec::kOpus, out_codec);
 
   // Valid AAC string when proprietary codecs are supported.
   EXPECT_EQ(kUsePropCodecs,
@@ -376,14 +374,14 @@ TEST(MimeUtilTest, ParseAudioCodecString) {
                                   &out_codec));
   if (kUsePropCodecs) {
     EXPECT_FALSE(out_is_ambiguous);
-    EXPECT_EQ(kCodecAAC, out_codec);
+    EXPECT_EQ(AudioCodec::kAAC, out_codec);
   }
 
   // Valid FLAC string with MP4. Neither decoding nor demuxing is proprietary.
   EXPECT_TRUE(ParseAudioCodecString("audio/mp4", "flac", &out_is_ambiguous,
                                     &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecFLAC, out_codec);
+  EXPECT_EQ(AudioCodec::kFLAC, out_codec);
 
   // Ambiguous AAC string.
   // TODO(chcunningha): This can probably be allowed. I think we treat all
@@ -393,20 +391,20 @@ TEST(MimeUtilTest, ParseAudioCodecString) {
                                   &out_codec));
   if (kUsePropCodecs) {
     EXPECT_TRUE(out_is_ambiguous);
-    EXPECT_EQ(kCodecAAC, out_codec);
+    EXPECT_EQ(AudioCodec::kAAC, out_codec);
   }
 
   // Valid empty codec string. Codec unambiguously implied by mime type.
   EXPECT_TRUE(
       ParseAudioCodecString("audio/flac", "", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecFLAC, out_codec);
+  EXPECT_EQ(AudioCodec::kFLAC, out_codec);
 
   // Valid audio codec should still be allowed with video mime type.
   EXPECT_TRUE(ParseAudioCodecString("video/webm", "opus", &out_is_ambiguous,
                                     &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecOpus, out_codec);
+  EXPECT_EQ(AudioCodec::kOpus, out_codec);
 
   // Video codec is not valid for audio API.
   EXPECT_FALSE(ParseAudioCodecString("audio/webm", "vp09.00.10.08",
@@ -427,18 +425,18 @@ TEST(MimeUtilTest, ParseAudioCodecString_NoMimeType) {
   // Valid Opus string.
   EXPECT_TRUE(ParseAudioCodecString("", "opus", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecOpus, out_codec);
+  EXPECT_EQ(AudioCodec::kOpus, out_codec);
 
   // Valid AAC string when proprietary codecs are supported.
   EXPECT_TRUE(
       ParseAudioCodecString("", "mp4a.40.2", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecAAC, out_codec);
+  EXPECT_EQ(AudioCodec::kAAC, out_codec);
 
   // Valid FLAC string. Neither decoding nor demuxing is proprietary.
   EXPECT_TRUE(ParseAudioCodecString("", "flac", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecFLAC, out_codec);
+  EXPECT_EQ(AudioCodec::kFLAC, out_codec);
 
   // Ambiguous AAC string.
   // TODO(chcunningha): This can probably be allowed. I think we treat all
@@ -447,7 +445,7 @@ TEST(MimeUtilTest, ParseAudioCodecString_NoMimeType) {
       ParseAudioCodecString("", "mp4a.40", &out_is_ambiguous, &out_codec));
   if (kUsePropCodecs) {
     EXPECT_TRUE(out_is_ambiguous);
-    EXPECT_EQ(kCodecAAC, out_codec);
+    EXPECT_EQ(AudioCodec::kAAC, out_codec);
   }
 
   // Video codec is not valid for audio API.
@@ -468,26 +466,26 @@ TEST(MimeUtilTest, ParseAudioCodecString_Mp3) {
   EXPECT_TRUE(ParseAudioCodecString("audio/mpeg", "mp3", &out_is_ambiguous,
                                     &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecMP3, out_codec);
+  EXPECT_EQ(AudioCodec::kMP3, out_codec);
 
   EXPECT_TRUE(
       ParseAudioCodecString("audio/mpeg", "", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecMP3, out_codec);
+  EXPECT_EQ(AudioCodec::kMP3, out_codec);
 
   EXPECT_TRUE(ParseAudioCodecString("", "mp3", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecMP3, out_codec);
+  EXPECT_EQ(AudioCodec::kMP3, out_codec);
 
   EXPECT_TRUE(
       ParseAudioCodecString("", "mp4a.69", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecMP3, out_codec);
+  EXPECT_EQ(AudioCodec::kMP3, out_codec);
 
   EXPECT_TRUE(
       ParseAudioCodecString("", "mp4a.6B", &out_is_ambiguous, &out_codec));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecMP3, out_codec);
+  EXPECT_EQ(AudioCodec::kMP3, out_codec);
 }
 
 // These codecs really only have one profile. Ensure that |out_profile| is
@@ -504,13 +502,13 @@ TEST(MimeUtilTest, ParseVideoCodecString_SimpleCodecsHaveProfiles) {
                                     &out_codec, &out_profile, &out_level,
                                     &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecVP8, out_codec);
+  EXPECT_EQ(VideoCodec::kVP8, out_codec);
   EXPECT_EQ(VP8PROFILE_ANY, out_profile);
   EXPECT_EQ(0, out_level);
   EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
 
 // Valid Theora string.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Theora not supported on Android.
   EXPECT_FALSE(ParseVideoCodecString("video/ogg", "theora", &out_is_ambiguous,
                                      &out_codec, &out_profile, &out_level,
@@ -520,40 +518,18 @@ TEST(MimeUtilTest, ParseVideoCodecString_SimpleCodecsHaveProfiles) {
                                     &out_codec, &out_profile, &out_level,
                                     &out_colorspace));
   EXPECT_FALSE(out_is_ambiguous);
-  EXPECT_EQ(kCodecTheora, out_codec);
+  EXPECT_EQ(VideoCodec::kTheora, out_codec);
   EXPECT_EQ(THEORAPROFILE_ANY, out_profile);
   EXPECT_EQ(0, out_level);
   EXPECT_EQ(VideoColorSpace::REC709(), out_colorspace);
 #endif
 }
 
-TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecsFailWithoutPlatformSupport) {
-  // Vary all parameters except |has_platform_decoders|.
-  MimeUtil::PlatformInfo states_to_vary = VaryAllFields();
-  states_to_vary.has_platform_decoders = false;
-
-  // Disable platform decoders.
-  MimeUtil::PlatformInfo test_states;
-  test_states.has_platform_decoders = false;
-
-  // Every codec should fail since platform support is missing and we've
-  // requested encrypted codecs.
-  RunCodecSupportTest(
-      states_to_vary, test_states,
-      [](const MimeUtil::PlatformInfo& info, MimeUtil::Codec codec) {
-        EXPECT_FALSE(MimeUtil::IsCodecSupportedOnAndroid(
-            codec, kTestMimeType, true, VIDEO_CODEC_PROFILE_UNKNOWN, info));
-      });
-}
-
 TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecBehavior) {
-  // Vary all parameters except |has_platform_decoders|.
+  // Vary all parameters.
   MimeUtil::PlatformInfo states_to_vary = VaryAllFields();
-  states_to_vary.has_platform_decoders = false;
 
-  // Enable platform decoders.
   MimeUtil::PlatformInfo test_states;
-  test_states.has_platform_decoders = true;
 
   RunCodecSupportTest(
       states_to_vary, test_states,
@@ -614,6 +590,11 @@ TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecBehavior) {
           case MimeUtil::AV1:
             EXPECT_EQ(BUILDFLAG(ENABLE_AV1_DECODER), result);
             break;
+
+          case MimeUtil::DTS:
+          case MimeUtil::DTSXP2:
+            EXPECT_EQ(BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO), result);
+            break;
         }
       });
 }
@@ -652,14 +633,12 @@ TEST(IsCodecSupportedOnAndroidTest, ClearCodecBehavior) {
 
           // These codecs are only supported if platform decoders are supported.
           case MimeUtil::MPEG4_XHE_AAC:
-            EXPECT_EQ(info.has_platform_decoders, result);
+            EXPECT_TRUE(result);
             break;
 
           case MimeUtil::HEVC:
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-            EXPECT_EQ(
-                info.has_platform_decoders && info.has_platform_hevc_decoder,
-                result);
+            EXPECT_EQ(info.has_platform_hevc_decoder, result);
 #else
             EXPECT_FALSE(result);
 #endif
@@ -676,6 +655,11 @@ TEST(IsCodecSupportedOnAndroidTest, ClearCodecBehavior) {
 
           case MimeUtil::AV1:
             EXPECT_EQ(BUILDFLAG(ENABLE_AV1_DECODER), result);
+            break;
+
+          case MimeUtil::DTS:
+          case MimeUtil::DTSXP2:
+            EXPECT_EQ(BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO), result);
             break;
         }
       });
@@ -698,13 +682,8 @@ TEST(IsCodecSupportedOnAndroidTest, OpusOggSupport) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 TEST(IsCodecSupportedOnAndroidTest, HEVCSupport) {
   MimeUtil::PlatformInfo info;
-  info.has_platform_decoders = false;
   info.has_platform_hevc_decoder = false;
 
-  EXPECT_FALSE(MimeUtil::IsCodecSupportedOnAndroid(
-      MimeUtil::HEVC, kTestMimeType, false, VIDEO_CODEC_PROFILE_UNKNOWN, info));
-
-  info.has_platform_decoders = true;
   EXPECT_FALSE(MimeUtil::IsCodecSupportedOnAndroid(
       MimeUtil::HEVC, kTestMimeType, false, VIDEO_CODEC_PROFILE_UNKNOWN, info));
 
@@ -750,5 +729,4 @@ TEST(IsCodecSupportedOnAndroidTest, AndroidHLSAAC) {
   // platform support).
 }
 
-}  // namespace internal
-}  // namespace media
+}  // namespace media::internal

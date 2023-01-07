@@ -1,14 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/mirroring/service/rtp_stream.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "media/base/video_frame.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
@@ -29,28 +31,56 @@ namespace mirroring {
 
 namespace {
 
-class DummyClient final : public RtpStreamClient {
+class StreamClient final : public RtpStreamClient {
  public:
-  DummyClient() {}
-  ~DummyClient() override {}
+  explicit StreamClient(base::SimpleTestTickClock* clock) : clock_(clock) {}
+
+  StreamClient(const StreamClient&) = delete;
+  StreamClient& operator=(const StreamClient&) = delete;
+
+  ~StreamClient() override = default;
+
+  void SetVideoRtpStream(VideoRtpStream* stream) { video_stream_ = stream; }
 
   // RtpStreamClient implementation.
   void OnError(const std::string& message) override {}
-  void RequestRefreshFrame() override {}
+  void RequestRefreshFrame() override {
+    if (video_stream_) {
+      video_stream_->InsertVideoFrame(CreateVideoFrame());
+    }
+  }
   void CreateVideoEncodeAccelerator(
       media::cast::ReceiveVideoEncodeAcceleratorCallback callback) override {}
-  void CreateVideoEncodeMemory(
-      size_t size,
-      media::cast::ReceiveVideoEncodeMemoryCallback callback) override {}
+
+  scoped_refptr<media::VideoFrame> CreateVideoFrame() {
+    constexpr gfx::Size kFrameSize(640, 480);
+
+    base::TimeDelta frame_timestamp;
+    if (first_frame_time_.is_null()) {
+      first_frame_time_ = clock_->NowTicks();
+      frame_timestamp = base::TimeDelta();
+    } else {
+      clock_->Advance(base::Milliseconds(10));
+      frame_timestamp = clock_->NowTicks() - first_frame_time_;
+    }
+
+    auto frame = media::VideoFrame::CreateFrame(
+        media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize), kFrameSize,
+        frame_timestamp);
+    media::cast::PopulateVideoFrame(frame.get(), 1);
+    frame->metadata().reference_time = clock_->NowTicks();
+    return frame;
+  }
 
   base::WeakPtr<RtpStreamClient> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
-  base::WeakPtrFactory<DummyClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DummyClient);
+  raw_ptr<VideoRtpStream> video_stream_;
+  base::TimeTicks first_frame_time_;
+  const raw_ptr<base::SimpleTestTickClock> clock_;
+  base::WeakPtrFactory<StreamClient> weak_factory_{this};
 };
 
 }  // namespace
@@ -62,9 +92,13 @@ class RtpStreamTest : public ::testing::Test {
             &testing_clock_,
             task_environment_.GetMainThreadTaskRunner(),
             task_environment_.GetMainThreadTaskRunner(),
-            task_environment_.GetMainThreadTaskRunner())) {
+            task_environment_.GetMainThreadTaskRunner())),
+        client_(&testing_clock_) {
     testing_clock_.Advance(base::TimeTicks::Now() - base::TimeTicks());
   }
+
+  RtpStreamTest(const RtpStreamTest&) = delete;
+  RtpStreamTest& operator=(const RtpStreamTest&) = delete;
 
   ~RtpStreamTest() override { task_environment_.RunUntilIdle(); }
 
@@ -72,26 +106,18 @@ class RtpStreamTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::SimpleTestTickClock testing_clock_;
   const scoped_refptr<media::cast::CastEnvironment> cast_environment_;
-  DummyClient client_;
-  media::cast::MockCastTransport transport_;
+  StreamClient client_;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(RtpStreamTest);
+  // We currently don't care about sender reports, so we use a nice mock here.
+  testing::NiceMock<media::cast::MockCastTransport> transport_;
 };
 
 // Test the video streaming pipeline.
 TEST_F(RtpStreamTest, VideoStreaming) {
-  // Create one video frame.
-  gfx::Size size(64, 32);
-  scoped_refptr<media::VideoFrame> video_frame = media::VideoFrame::CreateFrame(
-      media::PIXEL_FORMAT_I420, size, gfx::Rect(size), size, base::TimeDelta());
-  media::cast::PopulateVideoFrame(video_frame.get(), 1);
-  video_frame->metadata().reference_time = testing_clock_.NowTicks();
-
   auto video_sender = std::make_unique<media::cast::VideoSender>(
       cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
-      base::DoNothing(), base::DoNothing(), base::DoNothing(), &transport_,
-      base::DoNothing(), base::DoNothing());
+      base::DoNothing(), base::DoNothing(), &transport_, base::DoNothing(),
+      base::DoNothing());
   VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr());
   {
     base::RunLoop run_loop;
@@ -99,7 +125,34 @@ TEST_F(RtpStreamTest, VideoStreaming) {
     // encoded frame is sent to the transport.
     EXPECT_CALL(transport_, InsertFrame(_, _))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-    video_stream.InsertVideoFrame(std::move(video_frame));
+    video_stream.InsertVideoFrame(client_.CreateVideoFrame());
+    run_loop.Run();
+  }
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(RtpStreamTest, VideoStreamEmitsFramesWhenNoUpdates) {
+  auto video_sender = std::make_unique<media::cast::VideoSender>(
+      cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
+      base::DoNothing(), base::DoNothing(), &transport_, base::DoNothing(),
+      base::DoNothing());
+  VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr());
+  client_.SetVideoRtpStream(&video_stream);
+  {
+    base::RunLoop run_loop;
+    int loop_count = 0;
+    // Expect the video frame is sent to video sender for encoding, and the
+    // encoded frame is sent to the transport.
+    EXPECT_CALL(transport_, InsertFrame(_, _))
+        .WillRepeatedly(InvokeWithoutArgs([&run_loop, &loop_count] {
+          if (loop_count++ == 5) {
+            run_loop.Quit();
+          }
+        }));
+
+    // We start with one valid frame, then the rest should be update requests.
+    video_stream.InsertVideoFrame(client_.CreateVideoFrame());
     run_loop.Run();
   }
 
@@ -109,7 +162,7 @@ TEST_F(RtpStreamTest, VideoStreaming) {
 // Test the audio streaming pipeline.
 TEST_F(RtpStreamTest, AudioStreaming) {
   // Create audio data.
-  const base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
   media::cast::FrameSenderConfig audio_config =
       media::cast::GetDefaultAudioSenderConfig();
   std::unique_ptr<media::AudioBus> audio_bus =

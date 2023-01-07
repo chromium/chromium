@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "components/invalidation/impl/channels_states.h"
 #include "components/invalidation/impl/per_user_topic_subscription_request.h"
 #include "components/invalidation/public/identity_provider.h"
@@ -19,6 +20,7 @@
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "net/base/backoff_entry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -91,9 +93,9 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  base::DictionaryValue CollectDebugData() const;
+  base::Value::Dict CollectDebugData() const;
 
-  virtual base::Optional<Topic> LookupSubscribedPublicTopicByPrivateTopic(
+  virtual absl::optional<Topic> LookupSubscribedPublicTopicByPrivateTopic(
       const std::string& private_topic) const;
 
   TopicSet GetSubscribedTopicsForTest() const;
@@ -137,9 +139,9 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
   void NotifySubscriptionChannelStateChange(
       SubscriptionChannelState invalidator_state);
 
-  PrefService* const pref_service_;
-  IdentityProvider* const identity_provider_;
-  network::mojom::URLLoaderFactory* const url_loader_factory_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<IdentityProvider> identity_provider_;
+  const raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   const std::string project_id_;
 

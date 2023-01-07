@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sample_vector.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,7 +33,7 @@
 
 // TODO(crbug.com/1039517): Disabled all tests because they lead the flakiness
 // dashboard. The root cause is documented in the bug.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace site_engagement {
 
@@ -126,7 +126,7 @@ class ImportantSitesUtilTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  BookmarkModel* model_ = nullptr;
+  raw_ptr<BookmarkModel> model_ = nullptr;
 };
 
 TEST_F(ImportantSitesUtilTest, TestNoImportantSites) {
@@ -472,4 +472,4 @@ TEST_F(ImportantSitesUtilTest, DialogExcluding) {
 
 }  // namespace site_engagement
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

@@ -1,0 +1,15 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN label='Appearance'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Appearance'
+++++++++++++UNKNOWN label='Appearance'
+++++++++UNKNOWN
+++++++++++RADIO_BUTTON focusable label='System' actions='{DEFAULT}' checked_state='UNCHECKED'
+++++++++++STATIC_TEXT label='System'
+++++++++++++UNKNOWN label='System'
+++++++++UNKNOWN
+++++++++++RADIO_BUTTON focusable label='Dark' actions='{DEFAULT}' checked_state='UNCHECKED'
+++++++++++STATIC_TEXT label='Dark'
+++++++++++++UNKNOWN label='Dark'

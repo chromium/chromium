@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_boolean.h"
 
+#include "base/notreached.h"
+
 namespace blink {
 
 String SVGBoolean::ValueAsString() const {

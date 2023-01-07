@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -114,17 +114,31 @@ class COMPONENT_EXPORT(X11) Sync {
   };
 
   struct Int64 {
+    bool operator==(const Int64& other) const {
+      return hi == other.hi && lo == other.lo;
+    }
+
     int32_t hi{};
     uint32_t lo{};
   };
 
   struct SystemCounter {
+    bool operator==(const SystemCounter& other) const {
+      return counter == other.counter && resolution == other.resolution &&
+             name == other.name;
+    }
+
     Counter counter{};
     Int64 resolution{};
     std::string name{};
   };
 
   struct Trigger {
+    bool operator==(const Trigger& other) const {
+      return counter == other.counter && wait_type == other.wait_type &&
+             wait_value == other.wait_value && test_type == other.test_type;
+    }
+
     Counter counter{};
     Valuetype wait_type{};
     Int64 wait_value{};
@@ -132,6 +146,11 @@ class COMPONENT_EXPORT(X11) Sync {
   };
 
   struct WaitCondition {
+    bool operator==(const WaitCondition& other) const {
+      return trigger == other.trigger &&
+             event_threshold == other.event_threshold;
+    }
+
     Trigger trigger{};
     Int64 event_threshold{};
   };
@@ -157,7 +176,6 @@ class COMPONENT_EXPORT(X11) Sync {
   struct CounterNotifyEvent {
     static constexpr int type_id = 16;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     uint8_t kind{};
     uint16_t sequence{};
     Counter counter{};
@@ -173,7 +191,6 @@ class COMPONENT_EXPORT(X11) Sync {
   struct AlarmNotifyEvent {
     static constexpr int type_id = 17;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint8_t kind{};
     uint16_t sequence{};
     Alarm alarm{};
@@ -290,12 +307,12 @@ class COMPONENT_EXPORT(X11) Sync {
 
   struct CreateAlarmRequest {
     Alarm id{};
-    base::Optional<Counter> counter{};
-    base::Optional<Valuetype> valueType{};
-    base::Optional<Int64> value{};
-    base::Optional<Testtype> testType{};
-    base::Optional<Int64> delta{};
-    base::Optional<uint32_t> events{};
+    absl::optional<Counter> counter{};
+    absl::optional<Valuetype> valueType{};
+    absl::optional<Int64> value{};
+    absl::optional<Testtype> testType{};
+    absl::optional<Int64> delta{};
+    absl::optional<uint32_t> events{};
   };
 
   using CreateAlarmResponse = Response<void>;
@@ -304,21 +321,21 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<void> CreateAlarm(
       const Alarm& id = {},
-      const base::Optional<Counter>& counter = base::nullopt,
-      const base::Optional<Valuetype>& valueType = base::nullopt,
-      const base::Optional<Int64>& value = base::nullopt,
-      const base::Optional<Testtype>& testType = base::nullopt,
-      const base::Optional<Int64>& delta = base::nullopt,
-      const base::Optional<uint32_t>& events = base::nullopt);
+      const absl::optional<Counter>& counter = absl::nullopt,
+      const absl::optional<Valuetype>& valueType = absl::nullopt,
+      const absl::optional<Int64>& value = absl::nullopt,
+      const absl::optional<Testtype>& testType = absl::nullopt,
+      const absl::optional<Int64>& delta = absl::nullopt,
+      const absl::optional<uint32_t>& events = absl::nullopt);
 
   struct ChangeAlarmRequest {
     Alarm id{};
-    base::Optional<Counter> counter{};
-    base::Optional<Valuetype> valueType{};
-    base::Optional<Int64> value{};
-    base::Optional<Testtype> testType{};
-    base::Optional<Int64> delta{};
-    base::Optional<uint32_t> events{};
+    absl::optional<Counter> counter{};
+    absl::optional<Valuetype> valueType{};
+    absl::optional<Int64> value{};
+    absl::optional<Testtype> testType{};
+    absl::optional<Int64> delta{};
+    absl::optional<uint32_t> events{};
   };
 
   using ChangeAlarmResponse = Response<void>;
@@ -327,12 +344,12 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<void> ChangeAlarm(
       const Alarm& id = {},
-      const base::Optional<Counter>& counter = base::nullopt,
-      const base::Optional<Valuetype>& valueType = base::nullopt,
-      const base::Optional<Int64>& value = base::nullopt,
-      const base::Optional<Testtype>& testType = base::nullopt,
-      const base::Optional<Int64>& delta = base::nullopt,
-      const base::Optional<uint32_t>& events = base::nullopt);
+      const absl::optional<Counter>& counter = absl::nullopt,
+      const absl::optional<Valuetype>& valueType = absl::nullopt,
+      const absl::optional<Int64>& value = absl::nullopt,
+      const absl::optional<Testtype>& testType = absl::nullopt,
+      const absl::optional<Int64>& delta = absl::nullopt,
+      const absl::optional<uint32_t>& events = absl::nullopt);
 
   struct DestroyAlarmRequest {
     Alarm alarm{};

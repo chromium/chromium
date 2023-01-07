@@ -38,11 +38,18 @@ namespace blink {
 class TelephoneInputType final : public BaseTextInputType {
  public:
   explicit TelephoneInputType(HTMLInputElement& element)
-      : BaseTextInputType(element) {}
+      : BaseTextInputType(Type::kTelephone, element) {}
 
  private:
   void CountUsage() override;
   const AtomicString& FormControlType() const override;
+};
+
+template <>
+struct DowncastTraits<TelephoneInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsTelephoneInputType();
+  }
 };
 
 }  // namespace blink

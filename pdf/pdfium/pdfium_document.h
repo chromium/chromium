@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_dataavail.h"
 #include "third_party/pdfium/public/fpdfview.h"
@@ -42,7 +43,7 @@ class PDFiumDocument {
   void InitializeForm(FPDF_FORMFILLINFO* form_info);
 
  private:
-  DocumentLoader* const doc_loader_;
+  const raw_ptr<DocumentLoader> doc_loader_;
 
   // Interface structure to provide access to document stream.
   std::unique_ptr<FPDF_FILEACCESS> file_access_;
@@ -57,11 +58,11 @@ class PDFiumDocument {
   ScopedFPDFAvail fpdf_availability_;
 
   // The PDFium wrapper object for the document. Must come after
-  // |fpdf_availability_| to prevent outliving it.
+  // `fpdf_availability_` to prevent outliving it.
   ScopedFPDFDocument doc_handle_;
 
   // The PDFium wrapper for form data.  Used even if there are no form controls
-  // on the page. Must come after |doc_handle_| to prevent outliving it.
+  // on the page. Must come after `doc_handle_` to prevent outliving it.
   ScopedFPDFFormHandle form_handle_;
 
   // Current form availability status.

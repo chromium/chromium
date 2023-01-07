@@ -1,19 +1,20 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.weblayer.test;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.PixelCopy;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.test.filters.SmallTest;
 
@@ -26,9 +27,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.weblayer.BrowserEmbeddabilityMode;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
 import java.lang.ref.PhantomReference;
@@ -45,7 +44,7 @@ public class SmokeTest {
             new InstrumentationActivityTestRule();
 
     // Should be used only for solid color pages, since the window is downsampled significantly.
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private int getWindowCenterPixelColor(Activity activity) {
         BoundedCountDownLatch latch = new BoundedCountDownLatch(1);
         Bitmap bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888, /*hasAlpha=*/true);
@@ -68,43 +67,6 @@ public class SmokeTest {
                 Math.abs(Color.green(color1) - Color.green(color2)), Matchers.lessThan(tolerance));
         Criteria.checkThat(
                 Math.abs(Color.blue(color1) - Color.blue(color2)), Matchers.lessThan(tolerance));
-    }
-
-    @Test
-    @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @MinWebLayerVersion(90)
-    public void testSetEmbeddabilityMode() {
-        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.getBrowser().setEmbeddabilityMode(
-                    BrowserEmbeddabilityMode.SUPPORTED, (result) -> {});
-        });
-
-        // Set css background color to blue with 50% transparency. CSS format is #RRGGBBAA.
-        mActivityTestRule.executeScriptSync("document.body.style.backgroundColor = \"#0000FF7F\";",
-                /*useSeparateIsolate=*/false);
-
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            // 50% blue is blended with white. Java color format is #AARRGGBB.
-            checkColorIsClose(0xFF7F7FFF, getWindowCenterPixelColor(activity), 10);
-        });
-
-        BoundedCountDownLatch latch = new BoundedCountDownLatch(1);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.getBrowser().setEmbeddabilityMode(
-                    BrowserEmbeddabilityMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND, (result) -> {
-                        Assert.assertTrue(result);
-                        latch.countDown();
-                    });
-        });
-        latch.timedAwait();
-
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            // 50% blue is blended with red. Java color format is #AARRGGBB.
-            checkColorIsClose(0xFF7F007F, getWindowCenterPixelColor(activity), 10);
-        });
     }
 
     @Test
@@ -143,7 +105,7 @@ public class SmokeTest {
                 Runtime.getRuntime().gc();
                 throw new CriteriaNotSatisfiedException("No enqueued reference");
             }
-            Criteria.checkThat(reference, Matchers.is(enqueuedReference));
+            Assert.assertEquals(reference, enqueuedReference);
         });
     }
 
@@ -199,7 +161,28 @@ public class SmokeTest {
                 Runtime.getRuntime().gc();
                 throw new CriteriaNotSatisfiedException("No enqueued reference");
             }
-            Criteria.checkThat(reference, Matchers.is(enqueuedReference));
+            Assert.assertEquals(reference, enqueuedReference);
+        });
+    }
+
+    // Verifies recreating the Activity destroys the original Fragment when using ViewModel.
+    @Test
+    @SmallTest
+    public void testRecreateActivityDestroysFragmentUseViewModel() throws Throwable {
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_USE_VIEW_MODEL, true);
+        mActivityTestRule.launchShellWithUrl("about:blank", extras);
+        ReferenceQueue<Fragment> referenceQueue = new ReferenceQueue<>();
+        PhantomReference<Fragment> reference =
+                new PhantomReference<>(mActivityTestRule.getFragment(), referenceQueue);
+        mActivityTestRule.recreateActivity();
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Reference enqueuedReference = referenceQueue.poll();
+            if (enqueuedReference == null) {
+                Runtime.getRuntime().gc();
+                throw new CriteriaNotSatisfiedException("No enqueued reference");
+            }
+            Assert.assertEquals(reference, enqueuedReference);
         });
     }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,11 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -44,6 +45,7 @@
 #include "gpu/skia_bindings/grcontext_for_webgpu_interface.h"
 #include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
 #include "skia/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkTraceMemoryDump.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/trace_util.h"
@@ -64,7 +66,8 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
     bool support_grcontext,
     const gpu::SharedMemoryLimits& memory_limits,
     const gpu::ContextCreationAttribs& attributes,
-    command_buffer_metrics::ContextType type)
+    command_buffer_metrics::ContextType type,
+    base::SharedMemoryMapper* buffer_mapper)
     : stream_id_(stream_id),
       stream_priority_(stream_priority),
       surface_handle_(surface_handle),
@@ -77,7 +80,8 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
       context_type_(type),
       channel_(std::move(channel)),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
-      impl_(nullptr) {
+      impl_(nullptr),
+      buffer_mapper_(buffer_mapper) {
   DCHECK(main_thread_checker_.CalledOnValidThread());
   DCHECK(channel_);
   context_thread_checker_.DetachFromThread();
@@ -139,7 +143,8 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentThread() {
   // This command buffer is a client-side proxy to the command buffer in the
   // GPU process.
   command_buffer_ = std::make_unique<gpu::CommandBufferProxyImpl>(
-      channel_, gpu_memory_buffer_manager_, stream_id_, task_runner);
+      channel_, gpu_memory_buffer_manager_, stream_id_, task_runner,
+      buffer_mapper_);
   bind_result_ = command_buffer_->Initialize(
       surface_handle_, /*shared_command_buffer=*/nullptr, stream_priority_,
       attributes_, active_url_);
@@ -402,9 +407,10 @@ class GrDirectContext* ContextProviderCommandBuffer::GrContext() {
 
   if (attributes_.context_type == gpu::CONTEXT_TYPE_WEBGPU) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-    webgpu_gr_context_.reset(new skia_bindings::GrContextForWebGPUInterface(
-        webgpu_interface_.get(), ContextSupport(), ContextCapabilities(),
-        max_resource_cache_bytes, max_glyph_cache_texture_bytes));
+    webgpu_gr_context_ =
+        std::make_unique<skia_bindings::GrContextForWebGPUInterface>(
+            webgpu_interface_.get(), ContextSupport(), ContextCapabilities(),
+            max_resource_cache_bytes, max_glyph_cache_texture_bytes);
     cache_controller_->SetGrContext(webgpu_gr_context_->get());
     return webgpu_gr_context_->get();
 #else
@@ -417,9 +423,9 @@ class GrDirectContext* ContextProviderCommandBuffer::GrContext() {
   else
     gl_interface = gles2_impl_.get();
 
-  gr_context_.reset(new skia_bindings::GrContextForGLES2Interface(
+  gr_context_ = std::make_unique<skia_bindings::GrContextForGLES2Interface>(
       gl_interface, ContextSupport(), ContextCapabilities(),
-      max_resource_cache_bytes, max_glyph_cache_texture_bytes));
+      max_resource_cache_bytes, max_glyph_cache_texture_bytes);
   cache_controller_->SetGrContext(gr_context_->get());
 
   // If GlContext is already lost, also abandon the new GrContext.
@@ -477,9 +483,13 @@ const gpu::GpuFeatureInfo& ContextProviderCommandBuffer::GetGpuFeatureInfo()
 void ContextProviderCommandBuffer::OnLostContext() {
   CheckValidThreadOrLockAcquired();
 
-  // Ensure |this| isn't destroyed in the middle of OnLostContext() if observers
-  // drop all references to it.
-  scoped_refptr<ContextProviderCommandBuffer> ref(this);
+  // Observers may drop the last persistent references to `this`, but there may
+  // be weak references in use further up the stack. This task is posted to
+  // ensure that destruction is deferred until it's safe.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce([](scoped_refptr<ContextProviderCommandBuffer>) {},
+                     base::WrapRefCounted(this)));
 
   for (auto& observer : observers_)
     observer.OnContextLost();

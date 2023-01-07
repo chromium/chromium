@@ -44,7 +44,7 @@ class ZipfDistributionTypedTest : public ::testing::Test {};
 
 using IntTypes = ::testing::Types<int, int8_t, int16_t, int32_t, int64_t,
                                   uint8_t, uint16_t, uint32_t, uint64_t>;
-TYPED_TEST_CASE(ZipfDistributionTypedTest, IntTypes);
+TYPED_TEST_SUITE(ZipfDistributionTypedTest, IntTypes);
 
 TYPED_TEST(ZipfDistributionTypedTest, SerializeTest) {
   using param_type = typename absl::zipf_distribution<TypeParam>::param_type;

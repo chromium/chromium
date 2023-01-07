@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "chromecast/graphics/cast_window_tree_host_aura.h"
 #include "chromecast/graphics/gestures/cast_system_gesture_event_handler.h"
 #include "chromecast/graphics/gestures/side_swipe_detector.h"
-#include "chromecast/graphics/rounded_window_corners.h"
 #include "ui/aura/client/default_capture_client.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env.h"
@@ -23,14 +22,16 @@
 #include "ui/aura/window.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/compositor/compositor.h"
 #include "ui/display/display.h"
 #include "ui/display/display_transform.h"
 #include "ui/display/screen.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
+#include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/wm/core/default_screen_position_client.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif
 
@@ -65,6 +66,10 @@ class CastLayoutManager : public aura::LayoutManager {
  public:
   CastLayoutManager(CastWindowManagerAura* window_manager,
                     aura::Window* parent);
+
+  CastLayoutManager(const CastLayoutManager&) = delete;
+  CastLayoutManager& operator=(const CastLayoutManager&) = delete;
+
   ~CastLayoutManager() override;
 
  private:
@@ -83,8 +88,6 @@ class CastLayoutManager : public aura::LayoutManager {
 
   CastWindowManagerAura* const window_manager_;
   aura::Window* const parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastLayoutManager);
 };
 
 CastLayoutManager::CastLayoutManager(CastWindowManagerAura* window_manager,
@@ -135,10 +138,10 @@ void CastLayoutManager::ReorderChildWindows(aura::Window* changed_window) {
                    [changed_window](aura::Window* lhs, aura::Window* rhs) {
                      // Promote |changed_window| to the top of the stack of
                      // windows with the same ID.
-                     if (lhs->id() == rhs->id() && rhs == changed_window)
+                     if (lhs->GetId() == rhs->GetId() && rhs == changed_window)
                        return true;
 
-                     return lhs->id() < rhs->id();
+                     return lhs->GetId() < rhs->GetId();
                    });
 
   std::vector<CastWindowManager::WindowId> visible_window_order;
@@ -147,7 +150,7 @@ void CastLayoutManager::ReorderChildWindows(aura::Window* changed_window) {
       // static_cast is safe since the window ID value is originally derived
       // from CastWindowManager::WindowId.
       visible_window_order.push_back(
-          static_cast<CastWindowManager::WindowId>(windows[i]->id()));
+          static_cast<CastWindowManager::WindowId>(windows[i]->GetId()));
     }
     if (i == 0) {
       parent_->StackChildAtBottom(windows[i]);
@@ -184,7 +187,7 @@ void CastWindowManagerAura::Setup() {
   gfx::Rect host_bounds = GetPrimaryDisplayHostBounds();
   ui::PlatformWindowInitProperties properties(host_bounds);
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // When using Scenic Ozone platform we need to supply a view_token to the
   // window. This is not necessary when using the headless ozone platform.
   if (ui::OzonePlatform::GetInstance()
@@ -200,7 +203,8 @@ void CastWindowManagerAura::Setup() {
       enable_input_, std::move(properties));
   window_tree_host_->InitHost();
   aura::Window* root_window = window_tree_host_->window();
-  root_window->SetLayoutManager(new CastLayoutManager(this, root_window));
+  root_window->SetLayoutManager(
+      std::make_unique<CastLayoutManager>(this, root_window));
   window_tree_host_->SetRootTransform(GetPrimaryDisplayRotationTransform());
 
   // Allow seeing through to the hardware video plane:
@@ -230,19 +234,13 @@ void CastWindowManagerAura::Setup() {
   side_swipe_detector_ = std::make_unique<SideSwipeDetector>(
       system_gesture_dispatcher_.get(), root_window);
 
-  // Add rounded corners, but defaulted to hidden until explicitly asked for by
-  // a component.
-  rounded_window_corners_ = RoundedWindowCorners::Create(this);
-
 #if BUILDFLAG(IS_CAST_AUDIO_ONLY)
   window_tree_host_->compositor()->SetDisplayVSyncParameters(
-      base::TimeTicks(), base::TimeDelta::FromMilliseconds(250));
+      base::TimeTicks(), base::Milliseconds(250));
 #endif
-}
 
-bool CastWindowManagerAura::HasRoundedWindowCorners() const {
-  return rounded_window_corners_.get() != nullptr &&
-         rounded_window_corners_->IsEnabled();
+  // Chromecast devices do not support cut/copy/paste.
+  DCHECK(!ui::TouchSelectionMenuRunner::GetInstance());
 }
 
 void CastWindowManagerAura::OnWindowOrderChanged(
@@ -279,7 +277,7 @@ void CastWindowManagerAura::SetZOrder(gfx::NativeView window,
   // Use aura::Window ID to maintain z-order. When the window's visibility
   // changes, we stack sibling windows based on this ID. Windows with higher
   // IDs are stacked on top.
-  window->set_id(static_cast<int>(z_order));
+  window->SetId(static_cast<int>(z_order));
 }
 
 void CastWindowManagerAura::InjectEvent(ui::Event* event) {
@@ -314,7 +312,7 @@ aura::Window* CastWindowManagerAura::GetDefaultParent(aura::Window* window,
 }
 
 void CastWindowManagerAura::AddWindow(gfx::NativeView child) {
-  LOG(INFO) << "Adding window: " << child->id() << ": " << child->GetName();
+  LOG(INFO) << "Adding window: " << child->GetId() << ": " << child->GetName();
   Setup();
 
   DCHECK(child);
@@ -351,15 +349,6 @@ void CastWindowManagerAura::AddTouchActivityObserver(
 void CastWindowManagerAura::RemoveTouchActivityObserver(
     CastTouchActivityObserver* observer) {
   event_gate_->RemoveObserver(observer);
-}
-
-void CastWindowManagerAura::SetEnableRoundedCorners(bool enable) {
-  DCHECK(rounded_window_corners_);
-  rounded_window_corners_->SetEnabled(enable);
-}
-
-void CastWindowManagerAura::NotifyColorInversionEnabled(bool enabled) {
-  rounded_window_corners_->SetColorInversion(enabled);
 }
 
 }  // namespace chromecast

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,9 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "cc/test/pixel_test_utils.h"
@@ -36,9 +35,9 @@
 #include "headless/public/headless_devtools_client.h"
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/headless_browser_test.h"
-#include "printing/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -46,14 +45,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_PRINTING)
-#include "base/strings/string_number_conversions.h"
-#include "pdf/pdf.h"
-#include "printing/pdf_render_settings.h"
-#include "printing/units.h"
-#include "ui/gfx/geometry/rect.h"
-#endif
 
 using testing::ElementsAre;
 using testing::ElementsAreArray;
@@ -113,14 +104,14 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest, WindowOpen) {
     EXPECT_NE(parent->window_tree_host(), child->window_tree_host());
 
   gfx::Rect expected_bounds(0, 0, 200, 100);
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(expected_bounds, child->web_contents()->GetViewBounds());
   EXPECT_EQ(expected_bounds, child->web_contents()->GetContainerBounds());
-#else   // !defined(OS_MAC)
+#else   // !BUILDFLAG(IS_MAC)
   // Mac does not support GetViewBounds() and view positions are random.
   EXPECT_EQ(expected_bounds.size(),
             child->web_contents()->GetContainerBounds().size());
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest,
@@ -260,7 +251,7 @@ class HeadlessWebContentsScreenshotWindowPositionTest
   }
 };
 
-#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
 DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_P(
     HeadlessWebContentsScreenshotWindowPositionTest);
@@ -273,371 +264,6 @@ HEADLESS_ASYNC_DEVTOOLED_TEST_P(
 INSTANTIATE_TEST_SUITE_P(HeadlessWebContentsScreenshotWindowPositionTests,
                          HeadlessWebContentsScreenshotWindowPositionTest,
                          ::testing::Bool());
-
-#if BUILDFLAG(ENABLE_PRINTING)
-class HeadlessWebContentsPDFTest : public HeadlessAsyncDevTooledBrowserTest {
- public:
-  const double kPaperWidth = 10;
-  const double kPaperHeight = 15;
-  const double kDocHeight = 50;
-  // Number of color channels in a BGRA bitmap.
-  const int kColorChannels = 4;
-  const int kDpi = 300;
-
-  void RunDevTooledTest() override {
-    std::string height_expression = "document.body.style.height = '" +
-                                    base::NumberToString(kDocHeight) + "in'";
-    std::unique_ptr<runtime::EvaluateParams> params =
-        runtime::EvaluateParams::Builder()
-            .SetExpression("document.body.style.background = '#123456';" +
-                           height_expression)
-            .Build();
-    devtools_client_->GetRuntime()->Evaluate(
-        std::move(params),
-        base::BindOnce(&HeadlessWebContentsPDFTest::OnPageSetupCompleted,
-                       base::Unretained(this)));
-  }
-
-  void OnPageSetupCompleted(std::unique_ptr<runtime::EvaluateResult> result) {
-    devtools_client_->GetPage()->GetExperimental()->PrintToPDF(
-        page::PrintToPDFParams::Builder()
-            .SetPrintBackground(true)
-            .SetPaperHeight(kPaperHeight)
-            .SetPaperWidth(kPaperWidth)
-            .SetMarginTop(0)
-            .SetMarginBottom(0)
-            .SetMarginLeft(0)
-            .SetMarginRight(0)
-            .Build(),
-        base::BindOnce(&HeadlessWebContentsPDFTest::OnPDFCreated,
-                       base::Unretained(this)));
-  }
-
-  void OnPDFCreated(std::unique_ptr<page::PrintToPDFResult> result) {
-    protocol::Binary pdf_data = result->GetData();
-    EXPECT_GT(pdf_data.size(), 0U);
-    auto pdf_span = base::make_span(pdf_data.data(), pdf_data.size());
-    int num_pages;
-    EXPECT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
-    EXPECT_EQ(std::ceil(kDocHeight / kPaperHeight), num_pages);
-
-    constexpr chrome_pdf::RenderOptions options = {
-        .stretch_to_bounds = false,
-        .keep_aspect_ratio = true,
-        .autorotate = true,
-        .use_color = true,
-        .render_device_type = chrome_pdf::RenderDeviceType::kPrinter,
-    };
-    for (int i = 0; i < num_pages; i++) {
-      base::Optional<gfx::SizeF> size_in_points =
-          chrome_pdf::GetPDFPageSizeByIndex(pdf_span, i);
-      ASSERT_TRUE(size_in_points.has_value());
-      EXPECT_EQ(static_cast<int>(size_in_points.value().width()),
-                static_cast<int>(kPaperWidth * printing::kPointsPerInch));
-      EXPECT_EQ(static_cast<int>(size_in_points.value().height()),
-                static_cast<int>(kPaperHeight * printing::kPointsPerInch));
-
-      gfx::Rect rect(kPaperWidth * kDpi, kPaperHeight * kDpi);
-      printing::PdfRenderSettings settings(
-          rect, gfx::Point(), gfx::Size(kDpi, kDpi), options.autorotate,
-          options.use_color, printing::PdfRenderSettings::Mode::NORMAL);
-      std::vector<uint8_t> page_bitmap_data(kColorChannels *
-                                            settings.area.size().GetArea());
-      EXPECT_TRUE(chrome_pdf::RenderPDFPageToBitmap(
-          pdf_span, i, page_bitmap_data.data(), settings.area.size(),
-          settings.dpi, options));
-      EXPECT_EQ(0x56, page_bitmap_data[0]);  // B
-      EXPECT_EQ(0x34, page_bitmap_data[1]);  // G
-      EXPECT_EQ(0x12, page_bitmap_data[2]);  // R
-    }
-    FinishAsynchronousTest();
-  }
-};
-
-HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessWebContentsPDFTest);
-
-class HeadlessWebContentsPDFStreamTest
-    : public HeadlessAsyncDevTooledBrowserTest {
- public:
-  const double kPaperWidth = 10;
-  const double kPaperHeight = 15;
-  const double kDocHeight = 50;
-
-  void RunDevTooledTest() override {
-    std::string height_expression = "document.body.style.height = '" +
-                                    base::NumberToString(kDocHeight) + "in'";
-    std::unique_ptr<runtime::EvaluateParams> params =
-        runtime::EvaluateParams::Builder()
-            .SetExpression(height_expression)
-            .Build();
-    devtools_client_->GetRuntime()->Evaluate(
-        std::move(params),
-        base::BindOnce(&HeadlessWebContentsPDFStreamTest::OnPageSetupCompleted,
-                       base::Unretained(this)));
-  }
-
-  void OnPageSetupCompleted(std::unique_ptr<runtime::EvaluateResult> result) {
-    devtools_client_->GetPage()->GetExperimental()->PrintToPDF(
-        page::PrintToPDFParams::Builder()
-            .SetTransferMode(page::PrintToPDFTransferMode::RETURN_AS_STREAM)
-            .SetPaperHeight(kPaperHeight)
-            .SetPaperWidth(kPaperWidth)
-            .SetMarginTop(0)
-            .SetMarginBottom(0)
-            .SetMarginLeft(0)
-            .SetMarginRight(0)
-            .Build(),
-        base::BindOnce(&HeadlessWebContentsPDFStreamTest::OnPDFCreated,
-                       base::Unretained(this)));
-  }
-
-  void OnPDFCreated(std::unique_ptr<page::PrintToPDFResult> result) {
-    EXPECT_EQ(result->GetData().size(), 0U);
-    stream_ = result->GetStream();
-    devtools_client_->GetIO()->Read(
-        stream_, base::BindOnce(&HeadlessWebContentsPDFStreamTest::OnReadChunk,
-                                base::Unretained(this)));
-  }
-
-  void OnReadChunk(std::unique_ptr<io::ReadResult> result) {
-    base64_data_ = base64_data_ + result->GetData();
-    if (result->GetEof()) {
-      OnPDFLoaded();
-    } else {
-      devtools_client_->GetIO()->Read(
-          stream_,
-          base::BindOnce(&HeadlessWebContentsPDFStreamTest::OnReadChunk,
-                         base::Unretained(this)));
-    }
-  }
-
-  void OnPDFLoaded() {
-    EXPECT_GT(base64_data_.size(), 0U);
-    bool success;
-    protocol::Binary pdf_data =
-        protocol::Binary::fromBase64(base64_data_, &success);
-    EXPECT_TRUE(success);
-    EXPECT_GT(pdf_data.size(), 0U);
-    auto pdf_span = base::make_span(pdf_data.data(), pdf_data.size());
-
-    int num_pages;
-    EXPECT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
-    EXPECT_EQ(std::ceil(kDocHeight / kPaperHeight), num_pages);
-
-    base::Optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
-    ASSERT_TRUE(tagged.has_value());
-    EXPECT_FALSE(tagged.value());
-
-    FinishAsynchronousTest();
-  }
-
- private:
-  std::string stream_;
-  std::string base64_data_;
-};
-
-HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessWebContentsPDFStreamTest);
-
-class HeadlessWebContentsPDFPageSizeRoundingTest
-    : public HeadlessAsyncDevTooledBrowserTest,
-      public page::Observer {
- public:
-  void RunDevTooledTest() override {
-    EXPECT_TRUE(embedded_test_server()->Start());
-
-    devtools_client_->GetPage()->AddObserver(this);
-
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    devtools_client_->GetPage()->Enable(run_loop.QuitClosure());
-    run_loop.Run();
-
-    devtools_client_->GetPage()->Navigate(
-        embedded_test_server()->GetURL("/red_square.html").spec());
-  }
-
-  void OnLoadEventFired(const page::LoadEventFiredParams&) override {
-    devtools_client_->GetPage()->GetExperimental()->PrintToPDF(
-        page::PrintToPDFParams::Builder()
-            .SetPrintBackground(true)
-            .SetPaperHeight(41)
-            .SetPaperWidth(41)
-            .SetMarginTop(0)
-            .SetMarginBottom(0)
-            .SetMarginLeft(0)
-            .SetMarginRight(0)
-            .Build(),
-        base::BindOnce(
-            &HeadlessWebContentsPDFPageSizeRoundingTest::OnPDFCreated,
-            base::Unretained(this)));
-  }
-
-  void OnPDFCreated(std::unique_ptr<page::PrintToPDFResult> result) {
-    protocol::Binary pdf_data = result->GetData();
-    EXPECT_GT(pdf_data.size(), 0U);
-    auto pdf_span = base::make_span(pdf_data.data(), pdf_data.size());
-    int num_pages;
-    EXPECT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
-    EXPECT_THAT(num_pages, testing::Eq(1));
-    FinishAsynchronousTest();
-  }
-};
-
-HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessWebContentsPDFPageSizeRoundingTest);
-
-const char kExpectedStructTreeJSON[] = R"({
-   "lang": "en",
-   "type": "Document",
-   "~children": [ {
-      "type": "H1",
-      "~children": [ {
-         "type": "NonStruct"
-      } ]
-   }, {
-      "type": "P",
-      "~children": [ {
-         "type": "NonStruct"
-      } ]
-   }, {
-      "type": "L",
-      "~children": [ {
-         "type": "LI",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      }, {
-         "type": "LI",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      } ]
-   }, {
-      "type": "Div",
-      "~children": [ {
-         "type": "Link",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      } ]
-   }, {
-      "type": "Table",
-      "~children": [ {
-         "type": "TR",
-         "~children": [ {
-            "type": "TH",
-            "~children": [ {
-               "type": "NonStruct"
-            } ]
-         }, {
-            "type": "TH",
-            "~children": [ {
-               "type": "NonStruct"
-            } ]
-         } ]
-      }, {
-         "type": "TR",
-         "~children": [ {
-            "type": "TD",
-            "~children": [ {
-               "type": "NonStruct"
-            } ]
-         }, {
-            "type": "TD",
-            "~children": [ {
-               "type": "NonStruct"
-            } ]
-         } ]
-      } ]
-   }, {
-      "type": "H2",
-      "~children": [ {
-         "type": "NonStruct"
-      } ]
-   }, {
-      "type": "Div",
-      "~children": [ {
-         "alt": "Car at the beach",
-         "type": "Figure"
-      } ]
-   }, {
-      "lang": "fr",
-      "type": "P",
-      "~children": [ {
-         "type": "NonStruct"
-      } ]
-   } ]
-}
-)";
-
-class HeadlessWebContentsTaggedPDFTest
-    : public HeadlessAsyncDevTooledBrowserTest,
-      public page::Observer {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Specifically request a tagged (accessible) PDF. Maybe someday
-    // we can enable this by default.
-    HeadlessAsyncDevTooledBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kExportTaggedPDF);
-  }
-
-  void RunDevTooledTest() override {
-    EXPECT_TRUE(embedded_test_server()->Start());
-
-    devtools_client_->GetPage()->AddObserver(this);
-
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    devtools_client_->GetPage()->Enable(run_loop.QuitClosure());
-    run_loop.Run();
-
-    devtools_client_->GetPage()->Navigate(
-        embedded_test_server()->GetURL("/structured_doc.html").spec());
-  }
-
-  void OnLoadEventFired(const page::LoadEventFiredParams&) override {
-    devtools_client_->GetPage()->GetExperimental()->PrintToPDF(
-        page::PrintToPDFParams::Builder()
-            .SetPrintBackground(true)
-            .SetPaperHeight(41)
-            .SetPaperWidth(41)
-            .SetMarginTop(0)
-            .SetMarginBottom(0)
-            .SetMarginLeft(0)
-            .SetMarginRight(0)
-            .Build(),
-        base::BindOnce(&HeadlessWebContentsTaggedPDFTest::OnPDFCreated,
-                       base::Unretained(this)));
-  }
-
-  void OnPDFCreated(std::unique_ptr<page::PrintToPDFResult> result) {
-    ASSERT_TRUE(result);
-    protocol::Binary pdf_data = result->GetData();
-    EXPECT_GT(pdf_data.size(), 0U);
-    auto pdf_span = base::make_span(pdf_data.data(), pdf_data.size());
-    int num_pages;
-    EXPECT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
-    EXPECT_EQ(1, num_pages);
-
-    base::Optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
-    ASSERT_TRUE(tagged.has_value());
-    EXPECT_TRUE(tagged.value());
-
-    constexpr int kFirstPage = 0;
-    base::Value struct_tree =
-        chrome_pdf::GetPDFStructTreeForPage(pdf_span, kFirstPage);
-    std::string json;
-    base::JSONWriter::WriteWithOptions(
-        struct_tree, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
-    // Map Windows line endings to Unix by removing '\r'.
-    base::RemoveChars(json, "\r", &json);
-
-    EXPECT_EQ(kExpectedStructTreeJSON, json);
-
-    FinishAsynchronousTest();
-  }
-};
-
-HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessWebContentsTaggedPDFTest);
-
-#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 class HeadlessWebContentsSecurityTest
     : public HeadlessAsyncDevTooledBrowserTest,
@@ -730,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest, BrowserOpenInTab) {
 }
 
 // BeginFrameControl is not supported on MacOS.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 class HeadlessWebContentsBeginFrameControlTest
     : public HeadlessBrowserTest,
@@ -903,8 +529,8 @@ class HeadlessWebContentsBeginFrameControlTest
             base::Unretained(this)));
   }
 
-  HeadlessBrowserContext* browser_context_ = nullptr;  // Not owned.
-  HeadlessWebContentsImpl* web_contents_ = nullptr;    // Not owned.
+  raw_ptr<HeadlessBrowserContext> browser_context_ = nullptr;  // Not owned.
+  raw_ptr<HeadlessWebContentsImpl> web_contents_ = nullptr;    // Not owned.
 
   bool page_ready_ = false;
   bool needs_begin_frames_ = false;
@@ -1046,7 +672,7 @@ class HeadlessWebContentsBeginFrameControlViewportTest
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(
     HeadlessWebContentsBeginFrameControlViewportTest);
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 class CookiesEnabled : public HeadlessAsyncDevTooledBrowserTest,
                        page::Observer {
@@ -1068,10 +694,10 @@ class CookiesEnabled : public HeadlessAsyncDevTooledBrowserTest,
   }
 
   void OnResult(std::unique_ptr<runtime::EvaluateResult> result) {
-    std::string value;
     EXPECT_TRUE(result->GetResult()->HasValue());
-    EXPECT_TRUE(result->GetResult()->GetValue()->GetAsString(&value));
-    EXPECT_EQ("0", value);
+    const base::Value* value = result->GetResult()->GetValue();
+    EXPECT_TRUE(value->is_string());
+    EXPECT_EQ("0", value->GetString());
     FinishAsynchronousTest();
   }
 };

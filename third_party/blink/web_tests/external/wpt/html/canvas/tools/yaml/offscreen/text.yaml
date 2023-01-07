@@ -29,6 +29,16 @@
     @assert ctx.font === 'italic small-caps 12px "Unknown Font", sans-serif'; @moz-todo
     t.done();
 
+- name: 2d.text.font.parse.family
+  testing:
+  - 2d.text.font.parse
+  - 2d.text.font.get
+  - 2d.text.font.lineheight
+  code: |
+    ctx.font = '20px cursive,fantasy,monospace,sans-serif,serif,UnquotedFont,"QuotedFont\\\\\\","';
+    @assert ctx.font === '20px cursive, fantasy, monospace, sans-serif, serif, UnquotedFont, "QuotedFont\\\\\\","';
+    t.done();
+
   # TODO:
   #   2d.text.font.parse.size.absolute
   #     xx-small x-small small medium large x-large xx-large
@@ -83,6 +93,18 @@
 
     ctx.font = '20px serif';
     ctx.font = '10px inherit';
+    @assert ctx.font === '20px serif';
+
+    ctx.font = '20px serif';
+    ctx.font = '10px revert';
+    @assert ctx.font === '20px serif';
+
+    ctx.font = '20px serif';
+    ctx.font = 'var(--x)';
+    @assert ctx.font === '20px serif';
+
+    ctx.font = '20px serif';
+    ctx.font = 'var(--x, 10px serif)';
     @assert ctx.font === '20px serif';
 
     ctx.font = '20px serif';
@@ -1241,55 +1263,186 @@
   testing:
   - 2d.text.drawing.style.spacing
   code: |
-    @assert ctx.textLetterSpacing === 0;
-    @assert ctx.textWordSpacing === 0;
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
 
-    ctx.textLetterSpacing = 3;
-    @assert ctx.textLetterSpacing === 3;
-    @assert ctx.textWordSpacing === 0;
+    ctx.letterSpacing = '3px';
+    @assert ctx.letterSpacing === '3px';
+    @assert ctx.wordSpacing === '0px';
 
-    ctx.textWordSpacing = 5;
-    @assert ctx.textLetterSpacing === 3;
-    @assert ctx.textWordSpacing === 5;
+    ctx.wordSpacing = '5px';
+    @assert ctx.letterSpacing === '3px';
+    @assert ctx.wordSpacing === '5px';
 
-    ctx.textLetterSpacing = -1;
-    ctx.textWordSpacing = -1;
-    @assert ctx.textLetterSpacing === -1;
-    @assert ctx.textWordSpacing === -1;
+    ctx.letterSpacing = '-1px';
+    ctx.wordSpacing = '-1px';
+    @assert ctx.letterSpacing === '-1px';
+    @assert ctx.wordSpacing === '-1px';
+
+    ctx.letterSpacing = '1PX';
+    ctx.wordSpacing = '1EM';
+    @assert ctx.letterSpacing === '1px';
+    @assert ctx.wordSpacing === '1em';
     t.done();
 
-- name: 2d.text.drawing.style.spacing.measure
+- name: 2d.text.drawing.style.nonfinite.spacing
+  desc: Testing letter spacing and word spacing with nonfinite inputs
+  testing:
+  - 2d.text.drawing.style.spacing
+  code: |
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
+
+    function test_word_spacing(value) {
+      ctx.wordSpacing = value;
+      ctx.letterSpacing = value;
+      @assert ctx.wordSpacing === '0px';
+      @assert ctx.letterSpacing === '0px';
+    }
+    @nonfinite test_word_spacing(<0 NaN Infinity -Infinity>);
+
+    t.done();
+
+- name: 2d.text.drawing.style.invalid.spacing
+  desc: Testing letter spacing and word spacing with invalid units
+  testing:
+  - 2d.text.drawing.style.spacing
+  code: |
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
+
+    function test_word_spacing(value) {
+      ctx.wordSpacing = value;
+      ctx.letterSpacing = value;
+      @assert ctx.wordSpacing === '0px';
+      @assert ctx.letterSpacing === '0px';
+    }
+    @nonfinite test_word_spacing(< '0s' '1min' '1deg' '1pp'>);
+
+    t.done();
+
+- name: 2d.text.drawing.style.letterSpacing.measure
   desc: Testing letter spacing and word spacing
   testing:
   - 2d.text.drawing.style.spacing
   code: |
-    @assert ctx.textLetterSpacing === 0;
-    @assert ctx.textWordSpacing === 0;
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
     var width_normal = ctx.measureText('Hello World').width;
 
-    ctx.textLetterSpacing = 3;
-    @assert ctx.textLetterSpacing === 3;
-    @assert ctx.textWordSpacing === 0;
+    function test_letter_spacing(value, difference_spacing, epsilon) {
+      ctx.letterSpacing = value;
+      @assert ctx.letterSpacing === value;
+      @assert ctx.wordSpacing === '0px';
+      width_with_letter_spacing = ctx.measureText('Hello World').width;
+      assert_approx_equals(width_with_letter_spacing, width_normal + difference_spacing, epsilon, "letter spacing doesn't work.");
+    }
+
+    // The first value is the letter Spacing to be set, the second value the
+    // change in length of string 'Hello World', note that there are 11 letters
+    // in 'hello world', so the length difference is always letterSpacing * 11.
+    // and the third value is the acceptable differencee for the length change,
+    // note that unit such as 1cm/1mm doesn't map to an exact pixel value.
+    test_cases = [['3px', 33, 0],
+                  ['5px', 55, 0],
+                  ['-2px', -22, 0],
+                  ['1em', 110, 0],
+                  ['1in', 1056, 0],
+                  ['-0.1cm', -41.65, 0.2],
+                  ['-0.6mm', -24,95, 0.2]]
+
+    for (const test_case of test_cases) {
+      test_letter_spacing(test_case[0], test_case[1], test_case[2]);
+    }
+    t.done();
+
+- name: 2d.text.drawing.style.wordSpacing.measure
+  desc: Testing if word spacing is working properly
+  testing:
+  - 2d.text.drawing.style.spacing
+  code: |
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
+    var width_normal = ctx.measureText('Hello World, again').width;
+
+    function test_word_spacing(value, difference_spacing, epsilon) {
+      ctx.wordSpacing = value;
+      @assert ctx.letterSpacing === '0px';
+      @assert ctx.wordSpacing === value;
+      width_with_word_spacing = ctx.measureText('Hello World, again').width;
+      assert_approx_equals(width_with_word_spacing, width_normal + difference_spacing, epsilon, "word spacing doesn't work.");
+    }
+
+    // The first value is the word Spacing to be set, the second value the
+    // change in length of string 'Hello World', note that there are 2 words
+    // in 'Hello World, again', so the length difference is always wordSpacing * 2.
+    // and the third value is the acceptable differencee for the length change,
+    // note that unit such as 1cm/1mm doesn't map to an exact pixel value.
+    test_cases = [['3px', 6, 0],
+                  ['5px', 10, 0],
+                  ['-2px', -4, 0],
+                  ['1em', 20, 0],
+                  ['1in', 192, 0],
+                  ['-0.1cm', -7.57, 0.2],
+                  ['-0.6mm', -4.54, 0.2]]
+
+    for (const test_case of test_cases) {
+      test_word_spacing(test_case[0], test_case[1], test_case[2]);
+    }
+    t.done();
+
+- name: 2d.text.drawing.style.letterSpacing.change.font
+  desc: Set letter spacing and word spacing to font dependent value and verify it works after font change.
+  testing:
+  - 2d.text.drawing.style.spacing
+  code: |
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
+    // Get the width for 'Hello World' at default size, 10px.
+    var width_normal = ctx.measureText('Hello World').width;
+
+    ctx.letterSpacing = '1em';
+    @assert ctx.letterSpacing === '1em';
+    // 1em = 10px. Add 10px after each letter in "Hello World",
+    // makes it 110px longer.
     var width_with_spacing = ctx.measureText('Hello World').width;
-    // Add letter spacing after each letter, so 11 * 3 = 33px longer.
-    @assert width_with_spacing === width_normal + 33;
+    @assert width_with_spacing === width_normal + 110;
 
-    ctx.textWordSpacing = 5;
-    ctx.textLetterSpacing = 0;
-    @assert ctx.textLetterSpacing === 0;
-    @assert ctx.textWordSpacing === 5;
-    // Add Word Spacing between "Hello" and "World", so it's 5px longer.
+    // Changing font to 20px. Without resetting the spacing, 1em letterSpacing
+    // is now 20px, so it's suppose to be 220px longer without any letterSpacing set.
+    ctx.font = '20px serif';
     width_with_spacing = ctx.measureText('Hello World').width;
-    @assert width_with_spacing === width_normal + 5;
+    // Now calculate the reference spacing for "Hello World" with no spacing.
+    ctx.letterSpacing = '0em';
+    width_normal = ctx.measureText('Hello World').width;
+    @assert width_with_spacing === width_normal + 220;
+    t.done();
 
-    ctx.textLetterSpacing = -2;
-    ctx.textWordSpacing = -1;
-    @assert ctx.textLetterSpacing === -2;
-    @assert ctx.textWordSpacing === -1;
-    // Add Word Spacing and letter spacing, so it's -11*2 = -22px from
-    // letter spacing and -1px from word spacing.
-    width_with_spacing = ctx.measureText('Hello World').width;
-    @assert width_with_spacing === width_normal - 23;
+- name: 2d.text.drawing.style.wordSpacing.change.font
+  desc: Set word spacing and word spacing to font dependent value and verify it works after font change.
+  testing:
+  - 2d.text.drawing.style.spacing
+  code: |
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
+    // Get the width for 'Hello World, again' at default size, 10px.
+    var width_normal = ctx.measureText('Hello World, again').width;
+
+    ctx.wordSpacing = '1em';
+    @assert ctx.wordSpacing === '1em';
+    // 1em = 10px. Add 10px after each word in "Hello World, again",
+    // makes it 20px longer.
+    var width_with_spacing = ctx.measureText('Hello World, again').width;
+    @assert width_with_spacing === width_normal + 20;
+
+    // Changing font to 20px. Without resetting the spacing, 1em wordSpacing
+    // is now 20px, so it's suppose to be 40px longer without any wordSpacing set.
+    ctx.font = '20px serif';
+    width_with_spacing = ctx.measureText('Hello World, again').width;
+    // Now calculate the reference spacing for "Hello World, again" with no spacing.
+    ctx.wordSpacing = '0em';
+    width_normal = ctx.measureText('Hello World, again').width;
+    @assert width_with_spacing === width_normal + 40;
     t.done();
 
 - name: 2d.text.drawing.style.fontKerning
@@ -1297,12 +1450,12 @@
   testing:
   - 2d.text.drawing.style.fontKerning
   code: |
-    @assert ctx.fontKerning === "Auto";
-    ctx.fontKerning = "Normal";
-    @assert ctx.fontKerning === "Normal";
+    @assert ctx.fontKerning === "auto";
+    ctx.fontKerning = "normal";
+    @assert ctx.fontKerning === "normal";
     width_normal = ctx.measureText("TAWATAVA").width;
-    ctx.fontKerning = "None";
-    @assert ctx.fontKerning === "None";
+    ctx.fontKerning = "none";
+    @assert ctx.fontKerning === "none";
     width_none = ctx.measureText("TAWATAVA").width;
     @assert width_normal < width_none;
     t.done();
@@ -1312,36 +1465,36 @@
   testing:
   - 2d.text.drawing.style.fontKerning
   code: |
-    @assert ctx.fontKerning === "Auto";
+    @assert ctx.fontKerning === "auto";
     ctx.fontKerning = "Normal";
-    @assert ctx.fontKerning === "Normal";
-    ctx.fontKerning = "Auto";
+    @assert ctx.fontKerning === "normal";
+    ctx.fontKerning = "auto";
     ctx.fontKerning = "normal";
-    @assert ctx.fontKerning === "Normal";
-    ctx.fontKerning = "Auto";
+    @assert ctx.fontKerning === "normal";
+    ctx.fontKerning = "auto";
     ctx.fontKerning = "noRmal";
-    @assert ctx.fontKerning === "Normal";
-    ctx.fontKerning = "Auto";
+    @assert ctx.fontKerning === "normal";
+    ctx.fontKerning = "auto";
     ctx.fontKerning = "NoRMal";
-    @assert ctx.fontKerning === "Normal";
-    ctx.fontKerning = "Auto";
+    @assert ctx.fontKerning === "normal";
+    ctx.fontKerning = "auto";
     ctx.fontKerning = "NORMAL";
-    @assert ctx.fontKerning === "Normal";
+    @assert ctx.fontKerning === "normal";
 
     ctx.fontKerning = "None";
-    @assert ctx.fontKerning === "None";
-    ctx.fontKerning = "Auto";
+    @assert ctx.fontKerning === "none";
+    ctx.fontKerning = "auto";
     ctx.fontKerning = "none";
-    @assert ctx.fontKerning === "None";
-    ctx.fontKerning = "Auto";
+    @assert ctx.fontKerning === "none";
+    ctx.fontKerning = "auto";
     ctx.fontKerning = "nOne";
-    @assert ctx.fontKerning === "None";
-    ctx.fontKerning = "Auto";
+    @assert ctx.fontKerning === "none";
+    ctx.fontKerning = "auto";
     ctx.fontKerning = "nonE";
-    @assert ctx.fontKerning === "None";
-    ctx.fontKerning = "Auto";
+    @assert ctx.fontKerning === "none";
+    ctx.fontKerning = "auto";
     ctx.fontKerning = "NONE";
-    @assert ctx.fontKerning === "None";
+    @assert ctx.fontKerning === "none";
     t.done();
 
 - name: 2d.text.drawing.style.fontVariant.settings
@@ -1350,54 +1503,54 @@
   - 2d.text.drawing.style.fontVariantCaps
   code: |
     // Setting fontVariantCaps with lower cases
-    @assert ctx.fontVariantCaps === "Normal";
+    @assert ctx.fontVariantCaps === "normal";
 
     ctx.fontVariantCaps = "normal";
-    @assert ctx.fontVariantCaps === "Normal";
+    @assert ctx.fontVariantCaps === "normal";
 
     ctx.fontVariantCaps = "small-caps";
-    @assert ctx.fontVariantCaps === "SmallCaps";
+    @assert ctx.fontVariantCaps === "small-caps";
 
     ctx.fontVariantCaps = "all-small-caps";
-    @assert ctx.fontVariantCaps === "AllSmallCaps";
+    @assert ctx.fontVariantCaps === "all-small-caps";
 
     ctx.fontVariantCaps = "petite-caps";
-    @assert ctx.fontVariantCaps === "PetiteCaps";
+    @assert ctx.fontVariantCaps === "petite-caps";
 
     ctx.fontVariantCaps = "all-petite-caps";
-    @assert ctx.fontVariantCaps === "AllPetiteCaps";
+    @assert ctx.fontVariantCaps === "all-petite-caps";
 
     ctx.fontVariantCaps = "unicase";
-    @assert ctx.fontVariantCaps === "Unicase";
+    @assert ctx.fontVariantCaps === "unicase";
 
     ctx.fontVariantCaps = "titling-caps";
-    @assert ctx.fontVariantCaps === "TitlingCaps";
+    @assert ctx.fontVariantCaps === "titling-caps";
 
     // Setting fontVariantCaps with lower cases and upper cases word.
     ctx.fontVariantCaps = "nORmal";
-    @assert ctx.fontVariantCaps === "Normal";
+    @assert ctx.fontVariantCaps === "normal";
 
     ctx.fontVariantCaps = "smaLL-caps";
-    @assert ctx.fontVariantCaps === "SmallCaps";
+    @assert ctx.fontVariantCaps === "small-caps";
 
     ctx.fontVariantCaps = "all-small-CAPS";
-    @assert ctx.fontVariantCaps === "AllSmallCaps";
+    @assert ctx.fontVariantCaps === "all-small-caps";
 
     ctx.fontVariantCaps = "pEtitE-caps";
-    @assert ctx.fontVariantCaps === "PetiteCaps";
+    @assert ctx.fontVariantCaps === "petite-caps";
 
     ctx.fontVariantCaps = "All-Petite-Caps";
-    @assert ctx.fontVariantCaps === "AllPetiteCaps";
+    @assert ctx.fontVariantCaps === "all-petite-caps";
 
     ctx.fontVariantCaps = "uNIcase";
-    @assert ctx.fontVariantCaps === "Unicase";
+    @assert ctx.fontVariantCaps === "unicase";
 
     ctx.fontVariantCaps = "titling-CAPS";
-    @assert ctx.fontVariantCaps === "TitlingCaps";
+    @assert ctx.fontVariantCaps === "titling-caps";
 
     // Setting fontVariantCaps with non-existing font variant.
     ctx.fontVariantCaps = "abcd";
-    @assert ctx.fontVariantCaps === "TitlingCaps";
+    @assert ctx.fontVariantCaps === "titling-caps";
     t.done();
 
 - name: 2d.text.drawing.style.textRendering.settings
@@ -1406,36 +1559,36 @@
   - 2d.text.drawing.style.textRendering
   code: |
     // Setting textRendering with lower cases
-    @assert ctx.textRendering === "Auto";
+    @assert ctx.textRendering === "auto";
 
     ctx.textRendering = "auto";
-    @assert ctx.textRendering === "Auto";
+    @assert ctx.textRendering === "auto";
 
     ctx.textRendering = "optimizespeed";
-    @assert ctx.textRendering === "OptimizeSpeed";
+    @assert ctx.textRendering === "optimizeSpeed";
 
     ctx.textRendering = "optimizelegibility";
-    @assert ctx.textRendering === "OptimizeLegibility";
+    @assert ctx.textRendering === "optimizeLegibility";
 
     ctx.textRendering = "geometricprecision";
-    @assert ctx.textRendering === "GeometricPrecision";
+    @assert ctx.textRendering === "geometricPrecision";
 
     // Setting textRendering with lower cases and upper cases word.
     ctx.textRendering = "aUto";
-    @assert ctx.textRendering === "Auto";
+    @assert ctx.textRendering === "auto";
 
     ctx.textRendering = "OPtimizeSpeed";
-    @assert ctx.textRendering === "OptimizeSpeed";
+    @assert ctx.textRendering === "optimizeSpeed";
 
     ctx.textRendering = "OPtimizELEgibility";
-    @assert ctx.textRendering === "OptimizeLegibility";
+    @assert ctx.textRendering === "optimizeLegibility";
 
     ctx.textRendering = "GeometricPrecision";
-    @assert ctx.textRendering === "GeometricPrecision";
+    @assert ctx.textRendering === "geometricPrecision";
 
     // Setting textRendering with non-existing font variant.
     ctx.textRendering = "abcd";
-    @assert ctx.textRendering === "GeometricPrecision";
+    @assert ctx.textRendering === "geometricPrecision";
     t.done();
 
 - name: 2d.text.drawing.style.measure.rtl.text

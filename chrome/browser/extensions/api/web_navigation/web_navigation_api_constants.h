@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,11 @@ namespace web_navigation_api_constants {
 
 // Keys.
 extern const char kErrorKey[];
+extern const char kDocumentIdKey[];
+extern const char kDocumentLifecycleKey[];
 extern const char kFrameIdKey[];
+extern const char kFrameTypeKey[];
+extern const char kParentDocumentIdKey[];
 extern const char kParentFrameIdKey[];
 extern const char kProcessIdKey[];
 extern const char kReplacedTabIdKey[];

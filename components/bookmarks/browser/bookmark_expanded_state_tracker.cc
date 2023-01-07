@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,17 +42,15 @@ BookmarkExpandedStateTracker::GetExpandedNodes() {
   if (!pref_service_)
     return nodes;
 
-  const base::ListValue* value =
+  const base::Value::List& value =
       pref_service_->GetList(prefs::kBookmarkEditorExpandedNodes);
-  if (!value)
-    return nodes;
 
   bool changed = false;
-  for (auto i = value->begin(); i != value->end(); ++i) {
-    std::string value;
+  for (const auto& entry : value) {
     int64_t node_id;
     const BookmarkNode* node;
-    if (i->GetAsString(&value) && base::StringToInt64(value, &node_id) &&
+    const std::string* value_str = entry.GetIfString();
+    if (value_str && base::StringToInt64(*value_str, &node_id) &&
         (node = GetBookmarkNodeByID(bookmark_model_, node_id)) != nullptr &&
         node->is_folder()) {
       nodes.insert(node);
@@ -106,14 +104,14 @@ void BookmarkExpandedStateTracker::UpdatePrefs(const Nodes& nodes) {
   if (!pref_service_)
     return;
 
-  std::vector<base::Value> values;
+  base::Value::List values;
   values.reserve(nodes.size());
   for (const auto* node : nodes) {
-    values.emplace_back(base::NumberToString(node->id()));
+    values.Append(base::NumberToString(node->id()));
   }
 
-  pref_service_->Set(prefs::kBookmarkEditorExpandedNodes,
-                     base::Value(std::move(values)));
+  pref_service_->SetList(prefs::kBookmarkEditorExpandedNodes,
+                         std::move(values));
 }
 
 }  // namespace bookmarks

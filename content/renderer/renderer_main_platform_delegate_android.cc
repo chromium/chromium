@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,10 +32,12 @@ void RendererMainPlatformDelegate::PlatformUninitialize() {
 bool RendererMainPlatformDelegate::EnableSandbox() {
   TRACE_EVENT0("startup", "RendererMainPlatformDelegate::EnableSandbox");
   auto* info = base::android::BuildInfo::GetInstance();
-  sandbox::SeccompStarterAndroid starter(info->sdk_int(), info->device());
+  sandbox::SeccompStarterAndroid starter(info->sdk_int());
   // The policy compiler is only available if USE_SECCOMP_BPF is enabled.
 #if BUILDFLAG(USE_SECCOMP_BPF)
-  starter.set_policy(std::make_unique<sandbox::BaselinePolicyAndroid>());
+  sandbox::BaselinePolicyAndroid::RuntimeOptions options(
+      starter.GetDefaultBaselineOptions());
+  starter.set_policy(std::make_unique<sandbox::BaselinePolicyAndroid>(options));
 #endif
   starter.StartSandbox();
 

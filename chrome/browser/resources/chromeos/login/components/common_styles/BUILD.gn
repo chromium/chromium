@@ -1,0 +1,73 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [
+    ":common_styles.m",
+    ":cr_card_radio_group_styles.m",
+    ":oobe_dialog_host_styles.m",
+    ":oobe_flex_layout_styles.m",
+  ]
+}
+
+group("polymer3_elements") {
+  public_deps = [
+    ":common_styles_module",
+    ":cr_card_radio_group_styles_module",
+    ":oobe_dialog_host_styles_module",
+    ":oobe_flex_layout_styles_module",
+  ]
+}
+
+js_library("common_styles.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/common_styles/common_styles.m.js" ]
+  deps = []
+  extra_deps = [ ":common_styles_module" ]
+}
+
+js_library("oobe_dialog_host_styles.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/common_styles/oobe_dialog_host_styles.m.js" ]
+  deps = []
+  extra_deps = [ ":oobe_dialog_host_styles_module" ]
+}
+
+js_library("cr_card_radio_group_styles.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/common_styles/cr_card_radio_group_styles.m.js" ]
+  deps = []
+  extra_deps = [ ":cr_card_radio_group_styles_module" ]
+}
+
+js_library("oobe_flex_layout_styles.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/common_styles/oobe_flex_layout_styles.m.js" ]
+  deps = []
+  extra_deps = [ ":oobe_flex_layout_styles_module" ]
+}
+
+polymer_modulizer("common_styles") {
+  js_file = "common_styles.m.js"
+  html_file = "common_styles.html"
+  html_type = "style-module"
+}
+
+polymer_modulizer("cr_card_radio_group_styles") {
+  js_file = "cr_card_radio_group_styles.m.js"
+  html_file = "cr_card_radio_group_styles.html"
+  html_type = "style-module"
+}
+
+polymer_modulizer("oobe_dialog_host_styles") {
+  js_file = "oobe_dialog_host_styles.m.js"
+  html_file = "oobe_dialog_host_styles.html"
+  html_type = "style-module"
+}
+
+polymer_modulizer("oobe_flex_layout_styles") {
+  js_file = "oobe_flex_layout_styles.m.js"
+  html_file = "oobe_flex_layout_styles.html"
+  html_type = "style-module"
+}

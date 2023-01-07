@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -24,17 +25,10 @@ void WebUIControllerFactory::RegisterFactory(WebUIControllerFactory* factory) {
   g_web_ui_controller_factories.Pointer()->push_back(factory);
 }
 
-void WebUIControllerFactory::UnregisterFactoryForTesting(
-    WebUIControllerFactory* factory) {
-  std::vector<WebUIControllerFactory*>* factories =
-      g_web_ui_controller_factories.Pointer();
-  for (size_t i = 0; i < factories->size(); ++i) {
-    if ((*factories)[i] == factory) {
-      factories->erase(factories->begin() + i);
-      return;
-    }
-  }
-  NOTREACHED() << "Tried to unregister a factory but it wasn't found";
+int WebUIControllerFactory::GetNumRegisteredFactoriesForTesting() {
+  if (!g_web_ui_controller_factories.IsCreated())
+    return 0;
+  return g_web_ui_controller_factories.Get().size();
 }
 
 WebUIControllerFactoryRegistry* WebUIControllerFactoryRegistry::GetInstance() {
@@ -87,11 +81,29 @@ bool WebUIControllerFactoryRegistry::IsURLAcceptableForWebUI(
          // See http://crbug.com/42547
          url.spec() == url::kAboutBlankURL ||
          // javascript: and debug URLs like chrome://kill are allowed.
-         IsRendererDebugURL(url);
+         blink::IsRendererDebugURL(url);
 }
 
 WebUIControllerFactoryRegistry::WebUIControllerFactoryRegistry() = default;
 
 WebUIControllerFactoryRegistry::~WebUIControllerFactoryRegistry() = default;
+
+void WebUIControllerFactory::UnregisterFactoryForTesting(
+    WebUIControllerFactory* factory) {
+  std::vector<WebUIControllerFactory*>* factories =
+      g_web_ui_controller_factories.Pointer();
+  for (size_t i = 0; i < factories->size(); ++i) {
+    if ((*factories)[i] == factory) {
+      factories->erase(factories->begin() + i);
+      return;
+    }
+  }
+  NOTREACHED() << "Tried to unregister a factory but it wasn't found. Tip: if "
+                  "trying to unregister a global like "
+                  "ChromeWebUIControllerFactory::GetInstance(), create the "
+                  "ScopedWebUIControllerFactoryRegistration in the "
+                  "setup method instead of the constructor, to ensure the "
+                  "global exists.";
+}
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 #define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
+#include "media/base/video_color_space.h"
 #include "media/base/video_decoder.h"
+#include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -56,10 +58,14 @@ class V4L2VideoDecoderBackend {
     // Convert the frame and call the output callback.
     virtual void OutputFrame(scoped_refptr<VideoFrame> frame,
                              const gfx::Rect& visible_rect,
+                             const VideoColorSpace& color_space,
                              base::TimeDelta timestamp) = 0;
     // Get the video frame pool without passing the ownership.
     virtual DmabufVideoFramePool* GetVideoFramePool() const = 0;
   };
+
+  V4L2VideoDecoderBackend(const V4L2VideoDecoderBackend&) = delete;
+  V4L2VideoDecoderBackend& operator=(const V4L2VideoDecoderBackend&) = delete;
 
   virtual ~V4L2VideoDecoderBackend();
 
@@ -85,12 +91,12 @@ class V4L2VideoDecoderBackend {
   virtual bool ApplyResolution(const gfx::Size& pic_size,
                                const gfx::Rect& visible_rect,
                                const size_t num_output_frames) = 0;
-  // Called when ChangeResolution is done. |success| indicates whether there is
+  // Called when ChangeResolution is done. |status| indicates whether there is
   // any error occurs during the resolution change.
-  virtual void OnChangeResolutionDone(bool success) = 0;
+  virtual void OnChangeResolutionDone(CroStatus status) = 0;
   // Clear all pending decoding tasks and call all pending decode callbacks
   // with |status| as argument.
-  virtual void ClearPendingRequests(DecodeStatus status) = 0;
+  virtual void ClearPendingRequests(DecoderStatus status) = 0;
 
   // Whether we should stop the input queue when changing resolution. Stateless
   // decoders require this, but stateful ones need the input queue to keep
@@ -113,7 +119,6 @@ class V4L2VideoDecoderBackend {
   scoped_refptr<V4L2Queue> output_queue_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecoderBackend);
 };
 
 }  // namespace media

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+// Test serialization of shared structs and shared strings.
+async_test(t => {
+  let worker = new Worker('resources/worker.js');
+
+  const Box = new SharedStructType(['payload']);
+  let box = new Box();
+  box.payload = 'hello from main';
+
+  worker.onmessage = t.step_func_done(function (e) {
+    assert_equals(box.payload, 'hello from worker');
+  });
+
+  worker.postMessage(box);
+});
+</script>

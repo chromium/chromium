@@ -1,6 +1,0 @@
-PASS picker._selectElement.options[0].title is "bar\nbaz"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-foo

@@ -1,0 +1,67 @@
+caption: Clear Browsing Data on Exit
+desc: |-
+  Configures a list of browsing data types that should be deleted when the user closes all browser windows. The available data types are browsing history (<ph name="DATA_TYPE_BROWSING_HISTORY">browsing_history</ph>), download history (<ph name="DATA_TYPE_DOWNLOAD_HISTORY">download_history</ph>), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA">cookies_and_other_site_data</ph>), cache<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES"> (cached_images_and_files)</ph>, autofill (<ph name="DATA_TYPE_AUTOFILL">autofill</ph>), passwords (<ph name="DATA_TYPE_PASSWORD">password_signin</ph>), site settings (<ph name="DATA_TYPE_SITE_SETTINGS">site_settings</ph>) and hosted apps data (<ph name="DATA_TYPE_HOSTED_APP_DATA">hosted_app_data</ph>). This policy does not take precedence over <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME">AllowDeletingBrowserHistory</ph>.
+
+        This policy requires the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy to be set to true, otherwise it will be ignored. If this policy is set at platform level, Sync should be disabled at platform level. If this policy is set at user level, Sync should be disabled for that user in order for this policy to take effect.
+
+        If <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> does not exit cleanly (for example, if the browser or the OS crashes), the browsing data will be cleared the next time the profile is loaded.
+example_value:
+- browsing_history
+- download_history
+- cookies_and_other_site_data
+- cached_images_and_files
+- password_signin
+- autofill
+- site_settings
+- hosted_app_data
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Browsing history
+  name: browsing_history
+  value: browsing_history
+- caption: Download history
+  name: download_history
+  value: download_history
+- caption: Cookies and other site data
+  name: cookies_and_other_site_data
+  value: cookies_and_other_site_data
+- caption: Cached images and files
+  name: cached_images_and_files
+  value: cached_images_and_files
+- caption: Password signin
+  name: password_signin
+  value: password_signin
+- caption: Autofill
+  name: autofill
+  value: autofill
+- caption: Site settings
+  name: site_settings
+  value: site_settings
+- caption: Hosted apps data
+  name: hosted_app_data
+  value: hosted_app_data
+owners:
+- ydago@chromium.org
+- pastarmovj@chromium.org
+schema:
+  items:
+    enum:
+    - browsing_history
+    - download_history
+    - cookies_and_other_site_data
+    - cached_images_and_files
+    - password_signin
+    - autofill
+    - site_settings
+    - hosted_app_data
+    type: string
+  type: array
+supported_on:
+- chrome.*:89-
+- chrome_os:89-
+tags: []
+type: string-enum-list

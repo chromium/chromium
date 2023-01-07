@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Tests dynamic updates of the "lengthAdjust" content attribute assert_greater_than: expected a number greater than 86 but got 86
+FAIL Tests dynamic updates of the "lengthAdjust" IDL attribute assert_greater_than: expected a number greater than 86 but got 86
+Harness: the test ran to completion.
+

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
 import android.content.Context;
+import android.os.Build;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,7 +28,7 @@ import java.util.Collection;
  * Parametrized unit tests for the AutofillContact class.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(sdk = 21, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
 public class AutofillContactTest {
     @Parameters
     public static Collection<Object[]> data() {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,11 @@
 
 #include "third_party/blink/renderer/core/editing/text_offset_mapping.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -16,6 +18,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+using ::testing::ElementsAre;
 
 class ParameterizedTextOffsetMappingTest
     : public ::testing::WithParamInterface<bool>,
@@ -284,6 +288,28 @@ TEST_P(ParameterizedTextOffsetMappingTest,
   EXPECT_TRUE(previous_contents.IsNull());
 }
 
+// http://crbug.com/1324970
+TEST_P(ParameterizedTextOffsetMappingTest, BlockInInlineWithAbsolute) {
+  InsertStyleElement("a { position:absolute; } #t { position: relative; }");
+  const PositionInFlatTree position = ToPositionInFlatTree(
+      SetCaretTextToBody("<div id=t><i><p><a></a></p></i> </div><p>|ab</p>"));
+
+  Vector<String> results;
+  for (const auto contents : TextOffsetMapping::BackwardRangeOf(position))
+    results.push_back(GetRange(contents));
+
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    ElementsAre("<div id=\"t\"><i><p><a></a></p></i> </div><p>^ab|</p>",
+                "<div id=\"t\"><i><p><a></a></p></i>^ |</div><p>ab</p>",
+                "<div id=\"t\">^<i><p><a></a></p></i>| </div><p>ab</p>");
+  } else {
+    EXPECT_THAT(
+        results,
+        ElementsAre("<div id=\"t\"><i><p><a></a></p></i> </div><p>^ab|</p>",
+                    "<div id=\"t\">^<i><p><a></a></p></i> |</div><p>ab</p>"));
+  }
+}
+
 TEST_P(ParameterizedTextOffsetMappingTest, ForwardRangesWithTextControl) {
   // InlineContents for positions outside text control should cover the entire
   // containing block.
@@ -338,6 +364,17 @@ TEST_P(ParameterizedTextOffsetMappingTest, BackwardRangesWithTextControl) {
       PositionInFlatTree::FirstPositionInNode(*input);
   EXPECT_TRUE(
       TextOffsetMapping::FindBackwardInlineContents(inside_first).IsNull());
+}
+
+// http://crbug.com/1295233
+TEST_P(ParameterizedTextOffsetMappingTest, RangeWithBlockInInline) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    EXPECT_EQ("<div><p>ab</p><b><p>cd</p></b>^yz|</div>",
+              GetRange("<div><p>ab</p><b><p>cd</p></b>|yz</div>"));
+  } else {
+    EXPECT_EQ("<div><p>ab</p>^<b><p>cd</p></b>yz|</div>",
+              GetRange("<div><p>ab</p><b><p>cd</p></b>|yz</div>"));
+  }
 }
 
 // http://crbug.com/832497
@@ -430,12 +467,12 @@ TEST_P(ParameterizedTextOffsetMappingTest, RangeWithSelect1) {
   const auto& expected_outer =
       "^<select>"
       "<div aria-hidden=\"true\"></div>"
-      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "<slot></slot>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
       "<div aria-hidden=\"true\">^|</div>"
-      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "<slot></slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));
@@ -448,12 +485,12 @@ TEST_P(ParameterizedTextOffsetMappingTest, RangeWithSelect2) {
   const auto& expected_outer =
       "^<select>"
       "<div aria-hidden=\"true\"></div>"
-      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "<slot></slot>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
       "<div aria-hidden=\"true\">^|</div>"
-      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "<slot></slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));
@@ -468,6 +505,32 @@ TEST_P(ParameterizedTextOffsetMappingTest, RangeWithShadowDOM) {
                      "<template data-mode='open'><slot></slot></template>"
                      "|abc"
                      "</div>"));
+}
+
+// http://crbug.com/1262589
+TEST_P(ParameterizedTextOffsetMappingTest, RangeWithSvgUse) {
+  SetBodyContent(R"HTML(
+<svg id="svg1"><symbol id="foo"><circle cx=1 cy=1 r=1 /></symbol></svg>
+<div id="div1"><svg><use href="#foo"></svg>&#32;</div>
+<div id="div2">xyz</div>
+)HTML");
+  const auto& div1 = *GetElementById("div1");
+  const auto& div2 = *GetElementById("div2");
+
+  const TextOffsetMapping::InlineContents& div1_contents =
+      TextOffsetMapping::FindForwardInlineContents(
+          PositionInFlatTree::FirstPositionInNode(div1));
+  EXPECT_EQ(div1.firstChild()->GetLayoutObject(),
+            div1_contents.FirstLayoutObject());
+  EXPECT_EQ(div1.lastChild()->GetLayoutObject(),
+            div1_contents.LastLayoutObject());
+
+  const TextOffsetMapping::InlineContents& div2_contents =
+      TextOffsetMapping::InlineContents::NextOf(div1_contents);
+  EXPECT_EQ(div2.firstChild()->GetLayoutObject(),
+            div2_contents.FirstLayoutObject());
+  EXPECT_EQ(div2.lastChild()->GetLayoutObject(),
+            div2_contents.LastLayoutObject());
 }
 
 TEST_P(ParameterizedTextOffsetMappingTest, GetPositionBefore) {
@@ -508,6 +571,30 @@ TEST_P(ParameterizedTextOffsetMappingTest, InlineContentsWithDocumentBoundary) {
       TextOffsetMapping::InlineContents::PreviousOf(inline_contents).IsNull());
   EXPECT_TRUE(
       TextOffsetMapping::InlineContents::NextOf(inline_contents).IsNull());
+}
+
+// https://crbug.com/1224206
+TEST_P(ParameterizedTextOffsetMappingTest, ComputeTextOffsetWithBrokenImage) {
+  SetBodyContent("A<img alt='X'>B<div>C</div>D");
+  Element* img = GetDocument().QuerySelector("img");
+  To<HTMLImageElement>(img)->EnsureCollapsedOrFallbackContent();
+  UpdateAllLifecyclePhasesForTest();
+  ShadowRoot* shadow = img->UserAgentShadowRoot();
+  DCHECK(shadow);
+  const Element* alt_img = shadow->getElementById("alttext-image");
+  DCHECK(alt_img);
+
+  const PositionInFlatTree position = PositionInFlatTree::BeforeNode(*alt_img);
+  for (const TextOffsetMapping::InlineContents& inline_contents :
+       {TextOffsetMapping::FindForwardInlineContents(position),
+        TextOffsetMapping::FindBackwardInlineContents(position)}) {
+    const TextOffsetMapping mapping(inline_contents);
+    const String text = mapping.GetText();
+    const unsigned offset = mapping.ComputeTextOffset(position);
+    EXPECT_LE(offset, text.length());
+    EXPECT_EQ("A,B", text);
+    EXPECT_EQ(2u, offset);
+  }
 }
 
 }  // namespace blink

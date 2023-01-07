@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ WebPushMessage& WebPushMessage::operator=(WebPushMessage&& other) = default;
 
 void InvokeWebPushCallback(WebPushCallback callback,
                            SendWebPushMessageResult result,
-                           base::Optional<std::string> message_id) {
+                           absl::optional<std::string> message_id) {
   DCHECK(message_id || result != SendWebPushMessageResult::kSuccessful);
   base::UmaHistogramEnumeration("GCM.SendWebPushMessageResult", result);
   std::move(callback).Run(result, std::move(message_id));

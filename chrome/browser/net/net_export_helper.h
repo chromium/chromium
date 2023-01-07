@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_NET_NET_EXPORT_HELPER_H_
 
 #include <memory>
+
+#include "build/build_config.h"
 
 namespace base {
 class Value;
@@ -23,7 +25,7 @@ namespace chrome_browser_net {
 
 std::unique_ptr<base::DictionaryValue> GetPrerenderInfo(Profile* profile);
 std::unique_ptr<base::ListValue> GetExtensionInfo(Profile* profile);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::unique_ptr<base::DictionaryValue> GetWindowsServiceProviders();
 #endif
 

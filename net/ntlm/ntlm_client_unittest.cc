@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/ntlm/ntlm.h"
@@ -16,8 +15,7 @@
 #include "net/ntlm/ntlm_test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace ntlm {
+namespace net::ntlm {
 
 namespace {
 
@@ -25,8 +23,8 @@ std::vector<uint8_t> GenerateAuthMsg(const NtlmClient& client,
                                      base::span<const uint8_t> challenge_msg) {
   return client.GenerateAuthenticateMessage(
       test::kNtlmDomain, test::kUser, test::kPassword, test::kHostnameAscii,
-      test::kChannelBindings, test::kNtlmSpn, test::kClientTimestamp,
-      test::kClientChallenge, challenge_msg);
+      reinterpret_cast<const char*>(test::kChannelBindings), test::kNtlmSpn,
+      test::kClientTimestamp, test::kClientChallenge, challenge_msg);
 }
 
 std::vector<uint8_t> GenerateAuthMsg(const NtlmClient& client,
@@ -303,7 +301,7 @@ TEST(NtlmClientTest, Type3UnicodeWithSessionSecuritySpecTest) {
   std::vector<uint8_t> result = GenerateAuthMsg(client, test::kChallengeMsgV1);
 
   ASSERT_FALSE(result.empty());
-  ASSERT_EQ(base::size(test::kExpectedAuthenticateMsgSpecResponseV1),
+  ASSERT_EQ(std::size(test::kExpectedAuthenticateMsgSpecResponseV1),
             result.size());
   ASSERT_EQ(0, memcmp(test::kExpectedAuthenticateMsgSpecResponseV1,
                       result.data(), result.size()));
@@ -418,7 +416,7 @@ TEST(NtlmClientTest, VerifyNegotiateMessageV2) {
 
   std::vector<uint8_t> result = client.GetNegotiateMessage();
   ASSERT_FALSE(result.empty());
-  ASSERT_EQ(base::size(test::kExpectedNegotiateMsg), result.size());
+  ASSERT_EQ(std::size(test::kExpectedNegotiateMsg), result.size());
   ASSERT_EQ(0,
             memcmp(test::kExpectedNegotiateMsg, result.data(), result.size()));
 }
@@ -430,7 +428,7 @@ TEST(NtlmClientTest, VerifyAuthenticateMessageV2) {
   std::vector<uint8_t> result =
       GenerateAuthMsg(client, test::kChallengeMsgFromSpecV2);
   ASSERT_FALSE(result.empty());
-  ASSERT_EQ(base::size(test::kExpectedAuthenticateMsgSpecResponseV2),
+  ASSERT_EQ(std::size(test::kExpectedAuthenticateMsgSpecResponseV2),
             result.size());
   ASSERT_EQ(0, memcmp(test::kExpectedAuthenticateMsgSpecResponseV2,
                       result.data(), result.size()));
@@ -447,7 +445,7 @@ TEST(NtlmClientTest,
   std::vector<uint8_t> result = GenerateAuthMsg(client, test::kChallengeMsgV1);
   ASSERT_FALSE(result.empty());
 
-  ASSERT_EQ(base::size(test::kExpectedAuthenticateMsgToOldV1ChallegeV2),
+  ASSERT_EQ(std::size(test::kExpectedAuthenticateMsgToOldV1ChallegeV2),
             result.size());
   ASSERT_EQ(0, memcmp(test::kExpectedAuthenticateMsgToOldV1ChallegeV2,
                       result.data(), result.size()));
@@ -470,5 +468,4 @@ TEST(NtlmClientTest, AvPairsOverflow) {
   }
 }
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm

@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,14 @@ imageset("identity_picker_view_arrow_down") {
     "identity_picker_view_arrow_down.imageset/Contents.json",
     "identity_picker_view_arrow_down.imageset/identity_picker_view_arrow_down@2x.png",
     "identity_picker_view_arrow_down.imageset/identity_picker_view_arrow_down@3x.png",
+  ]
+}
+
+imageset("identity_picker_view_arrow_right") {
+  sources = [
+    "identity_picker_view_arrow_right.imageset/Contents.json",
+    "identity_picker_view_arrow_right.imageset/identity_picker_view_arrow_right@2x.png",
+    "identity_picker_view_arrow_right.imageset/identity_picker_view_arrow_right@3x.png",
   ]
 }
 

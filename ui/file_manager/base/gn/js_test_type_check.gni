@@ -1,0 +1,74 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/js_unit_tests.gni")
+
+# Generates one target that depends on a list of `js_type_check(...)` targets --
+# one for each test -- that will type check the test js file and its dependency
+# subtree.
+#
+# Must be declared after the js_library targets it depends on.
+#
+# Note js_type_check() is only in effect if `enable_js_type_check` is set in gn
+# args.
+#
+# Variables:
+#   deps:
+#     List of js_unittest() targets to depend on.
+#
+#   extra_deps:
+#     List of other deps that aren't js_unittest().
+#
+#   is_polymer3:
+#     Boolean indicating that it's a test for a Polymer 3 element, the only
+#     difference is the js_type_check() rule also has the is_polymer3=true.
+#
+#
+# Non-Polymer example:
+#   js_test_type_check("folder_tests") {
+#     deps = [
+#       ":foo_unittest",
+#       ":bar_unittest",
+#       ":baz_unittest",
+#     ]
+#   }
+#
+#   group("closure_compile") {
+#     # ...
+#     ":folder_tests".
+#   }
+#
+# Polymer example:
+#   js_test_type_check("polymer_tests") {
+#     is_polymer3 = true
+#     deps = [
+#       ":element1_unittest",
+#     ]
+#   }
+#
+template("js_test_type_check") {
+  type_check_deps = []
+  foreach(dep, invoker.deps) {
+    type_check_target_name = target_name + "_" + dep
+    type_check_deps += [ ":$type_check_target_name" ]
+    js_type_check(type_check_target_name) {
+      testonly = true
+      forward_variables_from(invoker,
+                             [
+                               "closure_flags",
+                               "is_polymer3",
+                             ])
+      deps = [ dep ]
+      if (defined(invoker.extra_deps)) {
+        deps += invoker.extra_deps
+      }
+    }
+  }
+
+  type_check_group_name = target_name
+  group(type_check_group_name) {
+    testonly = true
+    deps = type_check_deps
+  }
+}

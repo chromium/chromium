@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ Status ConvertKeysToKeyEvents(const std::u16string& keys,
                               int* modifiers,
                               std::vector<KeyEvent>* key_events);
 
-Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
+Status ConvertKeyActionToKeyEvent(const base::Value::Dict& action_object,
                                   base::DictionaryValue* input_state,
                                   bool is_key_down,
                                   std::vector<KeyEvent>* client_key_events);

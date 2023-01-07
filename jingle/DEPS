@@ -1,8 +1,0 @@
-include_rules = [
-  "+mojo/core/embedder",
-  "+net",
-  "+services/network/public/mojom",
-  "+third_party/libjingle_xmpp/task_runner",
-  "+third_party/libjingle_xmpp/xmllite",
-  "+third_party/libjingle_xmpp/xmpp",
-]

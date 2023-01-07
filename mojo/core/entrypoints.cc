@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/no_destructor.h"
 #include "mojo/core/core.h"
 #include "mojo/public/c/system/buffer.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -358,52 +359,52 @@ MojoResult MojoSetDefaultProcessErrorHandlerImpl(
 
 }  // extern "C"
 
-MojoSystemThunks g_thunks = {sizeof(MojoSystemThunks),
-                             MojoInitializeImpl,
-                             MojoGetTimeTicksNowImpl,
-                             MojoCloseImpl,
-                             MojoQueryHandleSignalsStateImpl,
-                             MojoCreateMessagePipeImpl,
-                             MojoWriteMessageImpl,
-                             MojoReadMessageImpl,
-                             MojoFuseMessagePipesImpl,
-                             MojoCreateMessageImpl,
-                             MojoDestroyMessageImpl,
-                             MojoSerializeMessageImpl,
-                             MojoAppendMessageDataImpl,
-                             MojoGetMessageDataImpl,
-                             MojoSetMessageContextImpl,
-                             MojoGetMessageContextImpl,
-                             MojoNotifyBadMessageImpl,
-                             MojoCreateDataPipeImpl,
-                             MojoWriteDataImpl,
-                             MojoBeginWriteDataImpl,
-                             MojoEndWriteDataImpl,
-                             MojoReadDataImpl,
-                             MojoBeginReadDataImpl,
-                             MojoEndReadDataImpl,
-                             MojoCreateSharedBufferImpl,
-                             MojoDuplicateBufferHandleImpl,
-                             MojoMapBufferImpl,
-                             MojoUnmapBufferImpl,
-                             MojoGetBufferInfoImpl,
-                             MojoCreateTrapImpl,
-                             MojoAddTriggerImpl,
-                             MojoRemoveTriggerImpl,
-                             MojoArmTrapImpl,
-                             MojoWrapPlatformHandleImpl,
-                             MojoUnwrapPlatformHandleImpl,
-                             MojoWrapPlatformSharedMemoryRegionImpl,
-                             MojoUnwrapPlatformSharedMemoryRegionImpl,
-                             MojoCreateInvitationImpl,
-                             MojoAttachMessagePipeToInvitationImpl,
-                             MojoExtractMessagePipeFromInvitationImpl,
-                             MojoSendInvitationImpl,
-                             MojoAcceptInvitationImpl,
-                             MojoSetQuotaImpl,
-                             MojoQueryQuotaImpl,
-                             MojoShutdownImpl,
-                             MojoSetDefaultProcessErrorHandlerImpl};
+MojoSystemThunks2 g_thunks = {sizeof(g_thunks),
+                              MojoInitializeImpl,
+                              MojoGetTimeTicksNowImpl,
+                              MojoCloseImpl,
+                              MojoQueryHandleSignalsStateImpl,
+                              MojoCreateMessagePipeImpl,
+                              MojoWriteMessageImpl,
+                              MojoReadMessageImpl,
+                              MojoFuseMessagePipesImpl,
+                              MojoCreateMessageImpl,
+                              MojoDestroyMessageImpl,
+                              MojoSerializeMessageImpl,
+                              MojoAppendMessageDataImpl,
+                              MojoGetMessageDataImpl,
+                              MojoSetMessageContextImpl,
+                              MojoGetMessageContextImpl,
+                              MojoNotifyBadMessageImpl,
+                              MojoCreateDataPipeImpl,
+                              MojoWriteDataImpl,
+                              MojoBeginWriteDataImpl,
+                              MojoEndWriteDataImpl,
+                              MojoReadDataImpl,
+                              MojoBeginReadDataImpl,
+                              MojoEndReadDataImpl,
+                              MojoCreateSharedBufferImpl,
+                              MojoDuplicateBufferHandleImpl,
+                              MojoMapBufferImpl,
+                              MojoUnmapBufferImpl,
+                              MojoGetBufferInfoImpl,
+                              MojoCreateTrapImpl,
+                              MojoAddTriggerImpl,
+                              MojoRemoveTriggerImpl,
+                              MojoArmTrapImpl,
+                              MojoWrapPlatformHandleImpl,
+                              MojoUnwrapPlatformHandleImpl,
+                              MojoWrapPlatformSharedMemoryRegionImpl,
+                              MojoUnwrapPlatformSharedMemoryRegionImpl,
+                              MojoCreateInvitationImpl,
+                              MojoAttachMessagePipeToInvitationImpl,
+                              MojoExtractMessagePipeFromInvitationImpl,
+                              MojoSendInvitationImpl,
+                              MojoAcceptInvitationImpl,
+                              MojoSetQuotaImpl,
+                              MojoQueryQuotaImpl,
+                              MojoShutdownImpl,
+                              MojoSetDefaultProcessErrorHandlerImpl};
 
 }  // namespace
 
@@ -416,10 +417,14 @@ Core* Core::Get() {
 }
 
 void InitializeCore() {
-  g_core = new Core;
+  g_core = new Core();
 }
 
-const MojoSystemThunks& GetSystemThunks() {
+void ShutDownCore() {
+  delete std::exchange(g_core, nullptr);
+}
+
+const MojoSystemThunks2& GetSystemThunks() {
   return g_thunks;
 }
 

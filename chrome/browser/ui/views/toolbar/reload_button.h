@@ -1,15 +1,17 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 class CommandUpdater;
@@ -80,7 +82,7 @@ class ReloadButton : public ToolbarButton,
   base::OneShotTimer mode_switch_timer_;
 
   // This may be NULL when testing.
-  CommandUpdater* command_updater_;
+  raw_ptr<CommandUpdater> command_updater_;
 
   // The mode we should be in assuming no timers are running.
   Mode intended_mode_ = Mode::kReload;

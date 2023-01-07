@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+FAIL target1 --var2 assert_equals: expected "23px 13px 17px 10px" but got "   23px 13px 17px 10px"
+PASS target1 margin-top
+PASS target1 margin-right
+PASS target1 margin-bottom
+PASS target1 margin-left
+PASS target2parent --var1
+PASS target2parent --var2
+FAIL target2 --var1 assert_equals: expected "good" but got " good"
+PASS target2 --var2
+FAIL target3 --var1 assert_equals: expected "5px" but got "  5px"
+FAIL target3 --var2 assert_equals: expected "5px" but got "   5px"
+PASS target4 --varA
+PASS target4 --varB
+FAIL target4 --varC assert_equals: expected "13px" but got " 13px"
+PASS target5 --varA
+PASS target5 --varB
+PASS target5 --varC
+PASS target6 --varA
+PASS target6 --varB
+PASS target6 --varC
+PASS target7 --varA
+PASS target7 --varB
+PASS target7 --varC
+PASS target8 --varA
+FAIL target8 --varB assert_equals: expected "7px" but got "  7px"
+FAIL target9 --varA assert_equals: expected "good" but got " good"
+PASS target9 --varB
+PASS target9 --varC
+PASS target10 --varA
+PASS target10 --varB
+PASS target10 --varC
+Harness: the test ran to completion.
+

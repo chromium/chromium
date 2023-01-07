@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,9 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension_id.h"
@@ -40,6 +41,10 @@ class InstallVerifier : public KeyedService,
                         public ManagementPolicy::Provider {
  public:
   InstallVerifier(ExtensionPrefs* prefs, content::BrowserContext* context);
+
+  InstallVerifier(const InstallVerifier&) = delete;
+  InstallVerifier& operator=(const InstallVerifier&) = delete;
+
   ~InstallVerifier() override;
 
   // Convenience method to return the InstallVerifier for a given |context|.
@@ -151,10 +156,10 @@ class InstallVerifier : public KeyedService,
   // Called with the result of a signature request, or NULL on failure.
   void SignatureCallback(std::unique_ptr<InstallSignature> signature);
 
-  ExtensionPrefs* prefs_;
+  raw_ptr<ExtensionPrefs> prefs_;
 
   // The context with which the InstallVerifier is associated.
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
   // Have we finished our bootstrap check yet?
   bool bootstrap_check_complete_;
@@ -174,8 +179,6 @@ class InstallVerifier : public KeyedService,
   ExtensionIdSet provisional_;
 
   base::WeakPtrFactory<InstallVerifier> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InstallVerifier);
 };
 
 // Instances of this class can be constructed to disable install verification
@@ -188,13 +191,17 @@ class ScopedInstallVerifierBypassForTest {
   };
 
   explicit ScopedInstallVerifierBypassForTest(ForceType force_type = kForceOff);
+
+  ScopedInstallVerifierBypassForTest(
+      const ScopedInstallVerifierBypassForTest&) = delete;
+  ScopedInstallVerifierBypassForTest& operator=(
+      const ScopedInstallVerifierBypassForTest&) = delete;
+
   ~ScopedInstallVerifierBypassForTest();
 
  private:
   ForceType value_;
-  ForceType* old_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedInstallVerifierBypassForTest);
+  raw_ptr<ForceType> old_value_;
 };
 
 }  // namespace extensions

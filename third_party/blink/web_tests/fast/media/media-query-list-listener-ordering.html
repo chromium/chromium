@@ -28,7 +28,9 @@
     mediaList2.addListener(makeListener("mediaList2_2"));
     mediaList3.addListener(verifyResult);
 
-    iframe.style.width = "200px";
+    requestAnimationFrame(() => {
+        iframe.style.width = "80px";
+    });
 
     var expectedResult = ["mediaList1_1", "mediaList2_1", "mediaList2_2", "mediaList3_1"];
     function verifyResult() {

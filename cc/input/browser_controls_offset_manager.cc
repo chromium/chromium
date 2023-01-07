@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,14 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/transform.h"
 
 namespace cc {
 namespace {
@@ -206,8 +206,11 @@ BrowserControlsState BrowserControlsOffsetManager::PullConstraintForMainThread(
     bool* out_changed_since_commit) {
   DCHECK(out_changed_since_commit);
   *out_changed_since_commit = constraint_changed_since_commit_;
-  constraint_changed_since_commit_ = false;
   return permitted_state_;
+}
+
+void BrowserControlsOffsetManager::NotifyConstraintSyncedToMainThread() {
+  constraint_changed_since_commit_ = false;
 }
 
 void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
@@ -350,6 +353,8 @@ void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
       top_controls_min_height_offset_ =
           old_browser_controls_params_.top_controls_min_height;
       top_min_height_change_in_progress_ = true;
+      SetTopMinHeightOffsetAnimationRange(top_controls_min_height_offset_,
+                                          TopControlsMinHeight());
     }
   } else {
     top_controls_min_height_offset_ = TopControlsMinHeight();
@@ -363,6 +368,8 @@ void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
       bottom_controls_min_height_offset_ =
           old_browser_controls_params_.bottom_controls_min_height;
       bottom_min_height_change_in_progress_ = true;
+      SetBottomMinHeightOffsetAnimationRange(bottom_controls_min_height_offset_,
+                                             BottomControlsMinHeight());
     }
   } else {
     bottom_controls_min_height_offset_ = BottomControlsMinHeight();
@@ -439,7 +446,7 @@ gfx::Vector2dF BrowserControlsOffsetManager::ScrollBy(
   float min_ratio = base_on_top_controls ? TopControlsMinShownRatio()
                                          : BottomControlsMinShownRatio();
   float normalized_shown_ratio =
-      (base::ClampToRange(shown_ratio, min_ratio, 1.f) - min_ratio) /
+      (base::clamp(shown_ratio, min_ratio, 1.f) - min_ratio) /
       (1.f - min_ratio);
   // Even though the real shown ratios (shown height / total height) of the top
   // and bottom controls can be different, they share the same
@@ -493,11 +500,11 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
 
   float old_top_offset = ContentTopOffset();
   float old_bottom_offset = ContentBottomOffset();
-  base::Optional<float> new_top_ratio =
+  absl::optional<float> new_top_ratio =
       top_controls_animation_.Tick(monotonic_time);
   if (!new_top_ratio.has_value())
     new_top_ratio = TopControlsShownRatio();
-  base::Optional<float> new_bottom_ratio =
+  absl::optional<float> new_bottom_ratio =
       bottom_controls_animation_.Tick(monotonic_time);
   if (!new_bottom_ratio.has_value())
     new_bottom_ratio = BottomControlsShownRatio();
@@ -509,14 +516,26 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
   float bottom_offset_delta = ContentBottomOffset() - old_bottom_offset;
 
   if (top_min_height_change_in_progress_) {
-    top_controls_min_height_offset_ += top_offset_delta;
+    // The change in top offset may be larger than the min-height, resulting in
+    // too low or too high |top_controls_min_height_offset_| values. So, we
+    // should clamp it to a valid range.
+    top_controls_min_height_offset_ =
+        base::clamp(top_controls_min_height_offset_ + top_offset_delta,
+                    top_min_height_offset_animation_range_->first,
+                    top_min_height_offset_animation_range_->second);
     // Ticking the animation might reset it if it's at the final value.
     top_min_height_change_in_progress_ =
         top_controls_animation_.IsInitialized();
   }
   if (bottom_min_height_change_in_progress_) {
+    // The change in bottom offset may be larger than the min-height, resulting
+    // in too low or too high |bottom_controls_min_height_offset_| values. So,
+    // we should clamp it to a valid range.
+    bottom_controls_min_height_offset_ =
+        base::clamp(bottom_controls_min_height_offset_ + bottom_offset_delta,
+                    bottom_min_height_offset_animation_range_->first,
+                    bottom_min_height_offset_animation_range_->second);
     // Ticking the animation might reset it if it's at the final value.
-    bottom_controls_min_height_offset_ += bottom_offset_delta;
     bottom_min_height_change_in_progress_ =
         bottom_controls_animation_.IsInitialized();
   }
@@ -532,9 +551,9 @@ bool BrowserControlsOffsetManager::HasAnimation() {
 
 void BrowserControlsOffsetManager::ResetAnimations() {
   // If the animation doesn't need to jump to the end, Animation::Reset() will
-  // return |base::nullopt|.
-  base::Optional<float> top_ratio = top_controls_animation_.Reset();
-  base::Optional<float> bottom_ratio = bottom_controls_animation_.Reset();
+  // return |absl::nullopt|.
+  absl::optional<float> top_ratio = top_controls_animation_.Reset();
+  absl::optional<float> bottom_ratio = bottom_controls_animation_.Reset();
 
   if (top_ratio.has_value() || bottom_ratio.has_value()) {
     client_->SetCurrentBrowserControlsShownRatio(
@@ -552,6 +571,8 @@ void BrowserControlsOffsetManager::ResetAnimations() {
   }
   top_min_height_change_in_progress_ = false;
   bottom_min_height_change_in_progress_ = false;
+  top_min_height_offset_animation_range_.reset();
+  bottom_min_height_offset_animation_range_.reset();
 }
 
 void BrowserControlsOffsetManager::SetupAnimation(
@@ -663,6 +684,20 @@ void BrowserControlsOffsetManager::UpdateOldBrowserControlsParams() {
       BottomControlsMinHeight();
 }
 
+void BrowserControlsOffsetManager::SetTopMinHeightOffsetAnimationRange(
+    float from,
+    float to) {
+  top_min_height_offset_animation_range_ =
+      std::make_pair(std::min(from, to), std::max(from, to));
+}
+
+void BrowserControlsOffsetManager::SetBottomMinHeightOffsetAnimationRange(
+    float from,
+    float to) {
+  bottom_min_height_offset_animation_range_ =
+      std::make_pair(std::min(from, to), std::max(from, to));
+}
+
 // class Animation
 
 BrowserControlsOffsetManager::Animation::Animation() {}
@@ -676,17 +711,17 @@ void BrowserControlsOffsetManager::Animation::Initialize(
   direction_ = direction;
   start_value_ = start_value;
   stop_value_ = stop_value;
-  duration_ = base::TimeDelta::FromMilliseconds(duration);
+  duration_ = base::Milliseconds(duration);
   initialized_ = true;
   jump_to_end_on_reset_ = jump_to_end_on_reset;
   SetBounds(std::min(start_value_, stop_value_),
             std::max(start_value_, stop_value_));
 }
 
-base::Optional<float> BrowserControlsOffsetManager::Animation::Tick(
+absl::optional<float> BrowserControlsOffsetManager::Animation::Tick(
     base::TimeTicks monotonic_time) {
   if (!IsInitialized())
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!started_) {
     start_time_ = monotonic_time;
@@ -710,10 +745,10 @@ void BrowserControlsOffsetManager::Animation::SetBounds(float min, float max) {
   max_value_ = max;
 }
 
-base::Optional<float> BrowserControlsOffsetManager::Animation::Reset() {
-  auto ret = jump_to_end_on_reset_ ? base::make_optional(base::ClampToRange(
+absl::optional<float> BrowserControlsOffsetManager::Animation::Reset() {
+  auto ret = jump_to_end_on_reset_ ? absl::make_optional(base::clamp(
                                          stop_value_, min_value_, max_value_))
-                                   : base::nullopt;
+                                   : absl::nullopt;
 
   started_ = false;
   initialized_ = false;
@@ -738,7 +773,7 @@ bool BrowserControlsOffsetManager::Animation::IsComplete(float value) {
 }
 
 float BrowserControlsOffsetManager::Animation::FinalValue() {
-  return base::ClampToRange(stop_value_, min_value_, max_value_);
+  return base::clamp(stop_value_, min_value_, max_value_);
 }
 
 }  // namespace cc

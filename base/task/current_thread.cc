@@ -1,18 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/task/current_thread.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/no_destructor.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -67,6 +68,11 @@ bool CurrentThread::IsIdleForTesting() {
   return current_->IsIdleForTesting();
 }
 
+void CurrentThread::EnableMessagePumpTimeKeeperMetrics(
+    const char* thread_name) {
+  return current_->EnableMessagePumpTimeKeeperMetrics(thread_name);
+}
+
 void CurrentThread::AddTaskObserver(TaskObserver* task_observer) {
   DCHECK(current_->IsBoundToCurrentThread());
   current_->AddTaskObserver(task_observer);
@@ -77,21 +83,14 @@ void CurrentThread::RemoveTaskObserver(TaskObserver* task_observer) {
   current_->RemoveTaskObserver(task_observer);
 }
 
-void CurrentThread::AddTaskTimeObserver(
-    sequence_manager::TaskTimeObserver* task_observer) {
-  DCHECK(current_->IsBoundToCurrentThread());
-  current_->AddTaskTimeObserver(task_observer);
-}
-
-void CurrentThread::RemoveTaskTimeObserver(
-    sequence_manager::TaskTimeObserver* task_observer) {
-  DCHECK(current_->IsBoundToCurrentThread());
-  current_->RemoveTaskTimeObserver(task_observer);
-}
-
 void CurrentThread::SetAddQueueTimeToTasks(bool enable) {
   DCHECK(current_->IsBoundToCurrentThread());
   current_->SetAddQueueTimeToTasks(enable);
+}
+
+void CurrentThread::RegisterOnNextIdleCallback(
+    OnceClosure on_next_idle_callback) {
+  current_->RegisterOnNextIdleCallback(std::move(on_next_idle_callback));
 }
 
 CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop::
@@ -116,7 +115,7 @@ bool CurrentThread::operator==(const CurrentThread& other) const {
   return current_ == other.current_;
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 
 //------------------------------------------------------------------------------
 // CurrentUIThread
@@ -125,12 +124,12 @@ bool CurrentThread::operator==(const CurrentThread& other) const {
 CurrentUIThread CurrentUIThread::Get() {
   auto* sequence_manager = GetCurrentSequenceManagerImpl();
   DCHECK(sequence_manager);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DCHECK(sequence_manager->IsType(MessagePumpType::UI) ||
          sequence_manager->IsType(MessagePumpType::JAVA));
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   DCHECK(sequence_manager->IsType(MessagePumpType::UI));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   return CurrentUIThread(sequence_manager);
 }
 
@@ -139,19 +138,19 @@ bool CurrentUIThread::IsSet() {
   sequence_manager::internal::SequenceManagerImpl* sequence_manager =
       GetCurrentSequenceManagerImpl();
   return sequence_manager &&
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
          (sequence_manager->IsType(MessagePumpType::UI) ||
           sequence_manager->IsType(MessagePumpType::JAVA));
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
          sequence_manager->IsType(MessagePumpType::UI);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 MessagePumpForUI* CurrentUIThread::GetMessagePumpForUI() const {
   return static_cast<MessagePumpForUI*>(current_->GetMessagePump());
 }
 
-#if defined(USE_OZONE) && !defined(OS_FUCHSIA) && !defined(OS_WIN)
+#if defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
 bool CurrentUIThread::WatchFileDescriptor(
     int fd,
     bool persistent,
@@ -164,19 +163,19 @@ bool CurrentUIThread::WatchFileDescriptor(
 }
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void CurrentUIThread::Attach() {
   current_->AttachToMessagePump();
 }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void CurrentUIThread::Abort() {
   GetMessagePumpForUI()->Abort();
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void CurrentUIThread::AddMessagePumpObserver(
     MessagePumpForUI::Observer* observer) {
   GetMessagePumpForUI()->AddObserver(observer);
@@ -186,9 +185,9 @@ void CurrentUIThread::RemoveMessagePumpObserver(
     MessagePumpForUI::Observer* observer) {
   GetMessagePumpForUI()->RemoveObserver(observer);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 //------------------------------------------------------------------------------
 // CurrentIOThread
@@ -211,9 +210,9 @@ MessagePumpForIO* CurrentIOThread::GetMessagePumpForIO() const {
   return static_cast<MessagePumpForIO*>(current_->GetMessagePump());
 }
 
-#if !defined(OS_NACL_SFI)
+#if !BUILDFLAG(IS_NACL)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 HRESULT CurrentIOThread::RegisterIOHandler(
     HANDLE file,
     MessagePumpForIO::IOHandler* handler) {
@@ -227,7 +226,7 @@ bool CurrentIOThread::RegisterJobObject(HANDLE job,
   return GetMessagePumpForIO()->RegisterJobObject(job, handler);
 }
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 bool CurrentIOThread::WatchFileDescriptor(
     int fd,
     bool persistent,
@@ -238,9 +237,9 @@ bool CurrentIOThread::WatchFileDescriptor(
   return GetMessagePumpForIO()->WatchFileDescriptor(fd, persistent, mode,
                                                     controller, delegate);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool CurrentIOThread::WatchMachReceivePort(
     mach_port_t port,
     MessagePumpForIO::MachPortWatchController* controller,
@@ -251,9 +250,9 @@ bool CurrentIOThread::WatchMachReceivePort(
 }
 #endif
 
-#endif  // !defined(OS_NACL_SFI)
+#endif  // !BUILDFLAG(IS_NACL)
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // Additional watch API for native platform resources.
 bool CurrentIOThread::WatchZxHandle(
     zx_handle_t handle,

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,13 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SERVICE_FONT_MANAGER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/gpu_gles2_export.h"
-#include "third_party/skia/src/core/SkRemoteGlyphCache.h"
+#include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 
 namespace gpu {
 class Buffer;
@@ -37,6 +38,7 @@ class GPU_GLES2_EXPORT ServiceFontManager
   bool disable_oopr_debug_crash_dump() const {
     return disable_oopr_debug_crash_dump_;
   }
+  bool is_destroyed() const { return destroyed_; }
 
  private:
   friend class base::RefCountedThreadSafe<ServiceFontManager>;
@@ -47,14 +49,33 @@ class GPU_GLES2_EXPORT ServiceFontManager
   bool AddHandle(SkDiscardableHandleId handle_id,
                  ServiceDiscardableHandle handle);
   bool DeleteHandle(SkDiscardableHandleId handle_id);
+  void AssertHandle(SkDiscardableHandleId handle_id);
 
   base::Lock lock_;
 
-  Client* client_;
+  raw_ptr<Client> client_;
   const base::PlatformThreadId client_thread_id_;
   std::unique_ptr<SkStrikeClient> strike_client_;
-  base::flat_map<SkDiscardableHandleId, ServiceDiscardableHandle>
-      discardable_handle_map_;
+
+  class Handle {
+   public:
+    explicit Handle(ServiceDiscardableHandle handle)
+        : handle_(std::move(handle)) {}
+    void Unlock() {
+      --ref_count_;
+      handle_.Unlock();
+    }
+    void Lock() { ++ref_count_; }
+    bool Delete() { return handle_.Delete(); }
+    int ref_count() const { return ref_count_; }
+    bool IsLocked() const { return handle_.IsLockedForTesting(); }
+
+   private:
+    ServiceDiscardableHandle handle_;
+    // ref count hold by GPU service.
+    int ref_count_ = 0;
+  };
+  base::flat_map<SkDiscardableHandleId, Handle> discardable_handle_map_;
   bool destroyed_ = false;
   const bool disable_oopr_debug_crash_dump_;
 };

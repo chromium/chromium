@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,7 @@
 #include "remoting/protocol/video_renderer.h"
 #include "remoting/protocol/video_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class FakeVideoStub : public VideoStub {
  public:
@@ -34,10 +33,10 @@ class FakeVideoStub : public VideoStub {
                           base::OnceClosure done) override;
 
  private:
-  base::ThreadChecker thread_checker_;
-
   std::list<std::unique_ptr<VideoPacket>> received_packets_;
   base::RepeatingClosure on_frame_callback_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 class FakeFrameConsumer : public FrameConsumer {
@@ -59,10 +58,10 @@ class FakeFrameConsumer : public FrameConsumer {
   PixelFormat GetPixelFormat() override;
 
  private:
-  base::ThreadChecker thread_checker_;
-
   std::list<std::unique_ptr<webrtc::DesktopFrame>> received_frames_;
   base::RepeatingClosure on_frame_callback_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 class FakeFrameStatsConsumer : public FrameStatsConsumer {
@@ -78,10 +77,10 @@ class FakeFrameStatsConsumer : public FrameStatsConsumer {
   void OnVideoFrameStats(const FrameStats& stats) override;
 
  private:
-  base::ThreadChecker thread_checker_;
-
   std::list<FrameStats> received_stats_;
   base::RepeatingClosure on_stats_callback_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 class FakeVideoRenderer : public VideoRenderer {
@@ -98,14 +97,13 @@ class FakeVideoRenderer : public VideoRenderer {
   FakeFrameStatsConsumer* GetFrameStatsConsumer() override;
 
  private:
-  base::ThreadChecker thread_checker_;
-
   FakeVideoStub video_stub_;
   FakeFrameConsumer frame_consumer_;
   FakeFrameStatsConsumer frame_stats_consumer_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_FAKE_VIDEO_RENDERER_H_

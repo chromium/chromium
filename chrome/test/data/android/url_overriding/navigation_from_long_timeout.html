@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <script>
+    function waitAndOpenApp() {
+      window.setTimeout(function () {
+        window.location.replace(
+          'intent://test/#Intent;scheme=externalappscheme;end'
+        );
+      }, 6000);
+    };
+  </script>
+</head>
+<body style='height:10000px;' onclick='waitAndOpenApp();'>
+  Click page to open App!!
+</body>
+</html>

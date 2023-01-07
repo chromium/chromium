@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
-#include "base/macros.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -18,7 +17,9 @@
 
 namespace ash {
 
-class CloseDeskButton;
+class CloseButton;
+class DeskActionContextMenu;
+class DeskActionView;
 class DeskNameView;
 class DeskPreviewView;
 class DesksBarView;
@@ -27,12 +28,10 @@ class DesksBarView;
 // virtual desk in the desk bar view when overview mode is active. This view
 // shows a preview of the contents of the associated desk, its title, and
 // supports desk activation and removal.
-class ASH_EXPORT DeskMiniView
-    : public views::View,
-      public Desk::Observer,
-      public OverviewHighlightController::OverviewHighlightableView,
-      public views::TextfieldController,
-      public views::ViewObserver {
+class ASH_EXPORT DeskMiniView : public views::View,
+                                public Desk::Observer,
+                                public views::TextfieldController,
+                                public views::ViewObserver {
  public:
   // Returns the width of the desk preview based on its |preview_height| and the
   // aspect ratio of the root window taken from |root_window_size|.
@@ -40,11 +39,14 @@ class ASH_EXPORT DeskMiniView
                              int preview_height);
 
   // The desk preview bounds are proportional to the bounds of the display on
-  // which it resides, and whether the |compact| layout is used.
-  static gfx::Rect GetDeskPreviewBounds(aura::Window* root_window,
-                                        bool compact);
+  // which it resides.
+  static gfx::Rect GetDeskPreviewBounds(aura::Window* root_window);
 
   DeskMiniView(DesksBarView* owner_bar, aura::Window* root_window, Desk* desk);
+
+  DeskMiniView(const DeskMiniView&) = delete;
+  DeskMiniView& operator=(const DeskMiniView&) = delete;
+
   ~DeskMiniView() override;
 
   aura::Window* root_window() { return root_window_; }
@@ -53,12 +55,19 @@ class ASH_EXPORT DeskMiniView
 
   DeskNameView* desk_name_view() { return desk_name_view_; }
 
-  const CloseDeskButton* close_desk_button() const {
-    return close_desk_button_;
-  }
+  const CloseButton* close_desk_button() const { return close_desk_button_; }
+
+  const DeskActionView* desk_action_view() const { return desk_action_view_; }
+  DeskActionView* desk_action_view() { return desk_action_view_; }
 
   DesksBarView* owner_bar() { return owner_bar_; }
   const DeskPreviewView* desk_preview() const { return desk_preview_; }
+  DeskPreviewView* desk_preview() { return desk_preview_; }
+
+  bool is_animating_to_remove() const { return is_animating_to_remove_; }
+  void set_is_animating_to_remove(bool value) {
+    is_animating_to_remove_ = value;
+  }
 
   gfx::Rect GetPreviewBoundsInScreen() const;
 
@@ -70,21 +79,46 @@ class ASH_EXPORT DeskMiniView
   // has the focus).
   bool IsDeskNameBeingModified() const;
 
-  // Updates the visibility state of the close button depending on whether this
+  // Updates the visibility state of the desk buttons depending on whether this
   // view is mouse hovered, or if switch access is enabled.
-  void UpdateCloseButtonVisibility();
+  void UpdateDeskButtonVisibility();
 
-  // Gesture tapping may affect the visibility of the close button. There's only
-  // one mini_view that shows the close button on long press at any time.
+  // Gesture tapping may affect the visibility of the desk buttons. There's only
+  // one mini_view that shows the desk buttons on long press at any time.
   // This is useful for touch-only UIs.
   void OnWidgetGestureTap(const gfx::Rect& screen_rect, bool is_long_gesture);
 
   // Updates the border color of the DeskPreviewView based on the activation
-  // state of the corresponding desk.
+  // state of the corresponding desk and whether the desks template grid is
+  // visible.
   void UpdateBorderColor();
 
   // Gets the preview border's insets.
   gfx::Insets GetPreviewBorderInsets() const;
+
+  bool IsPointOnMiniView(const gfx::Point& screen_location) const;
+
+  // Hides the `desk_action_view_` and opens `context_menu_`. Called when
+  // `desk_preview_` is right-clicked or long-pressed. `source` is the type of
+  // action that caused the context menu to be opened (e.g. long press versus
+  // mouse click), and is provided to the context menu runner when the menu is
+  // open in `DeskActionContextMenu::ShowContextMenuForViewImpl` so that it can
+  // further evaluate menu positioning. This ends up doing nothing in particular
+  // in the case of the `DeskActionContextMenu` because we use a
+  // `views::MenuRunner::FIXED_ANCHOR` run type parameter, but the
+  // `MenuRunner::RunMenuAt` function still requires this parameter, so we pass
+  // it down to the function through this parameter.
+  void OpenContextMenu(ui::MenuSourceType source);
+
+  // Closes context menu on this mini view if one exists.
+  void MaybeCloseContextMenu();
+
+  // Sets either the `desk_action_view_` or the `close_desk_button_` visibility
+  // to false depending on whether the `kDesksCloseAll` feature is active, and
+  // then removes the desk. If `close_type` is `kCloseAllWindows*`, this
+  // function tells the `DesksController` to remove `desk_`'s windows as well,
+  // and wait for the user to confirm.
+  void OnRemovingDesk(DeskCloseType close_type);
 
   // views::View:
   const char* GetClassName() const override;
@@ -98,14 +132,6 @@ class ASH_EXPORT DeskMiniView
   void OnDeskDestroyed(const Desk* desk) override;
   void OnDeskNameChanged(const std::u16string& new_name) override;
 
-  // OverviewHighlightController::OverviewHighlightableView:
-  views::View* GetView() override;
-  void MaybeActivateHighlightedView() override;
-  void MaybeCloseHighlightedView() override;
-  void MaybeSwapHighlightedView(bool right) override;
-  void OnViewHighlighted() override;
-  void OnViewUnhighlighted() override;
-
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
@@ -118,18 +144,12 @@ class ASH_EXPORT DeskMiniView
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
 
-  bool IsPointOnMiniView(const gfx::Point& screen_location) const;
-
-  // Gets the minimum width of this view to properly lay out all its contents in
-  // default layout.
-  // The view containing this object can use the width returned from this
-  // function to decide its own proper size or layout.
-  int GetMinWidthForDefaultLayout() const;
-
-  bool IsDeskNameViewVisibleForTesting() const;
-
  private:
-  void OnCloseButtonPressed();
+  friend class DesksTestApi;
+
+  // Callback for when `context_menu_` is closed. Makes `desk_action_view_`
+  // visible.
+  void OnContextMenuClosed();
 
   void OnDeskPreviewPressed();
 
@@ -139,7 +159,7 @@ class ASH_EXPORT DeskMiniView
   DesksBarView* const owner_bar_;
 
   // The root window on which this mini_view is created.
-  aura::Window* root_window_;
+  aura::Window* const root_window_;
 
   // The associated desk. Can be null when the desk is deleted before this
   // mini_view completes its removal animation. See comment above
@@ -147,17 +167,32 @@ class ASH_EXPORT DeskMiniView
   Desk* desk_;  // Not owned.
 
   // The view that shows a preview of the desk contents.
-  DeskPreviewView* desk_preview_;
+  DeskPreviewView* desk_preview_ = nullptr;
 
   // The editable desk name.
-  DeskNameView* desk_name_view_;
+  DeskNameView* desk_name_view_ = nullptr;
 
   // The close button that shows on hover.
-  CloseDeskButton* close_desk_button_;
+  CloseButton* close_desk_button_ = nullptr;
 
-  // We force showing the close button when the mini_view is long pressed or
+  // When the Close-All flag is enabled, we store the hover interface for desk
+  // actions here.
+  DeskActionView* desk_action_view_ = nullptr;
+
+  // The context menu that appears when `desk_preview_` is right-clicked or
+  // long-pressed.
+  std::unique_ptr<DeskActionContextMenu> context_menu_;
+
+  // True when this mini view is being animated to be removed from the bar.
+  bool is_animating_to_remove_ = false;
+
+  // We force showing desk buttons when the mini_view is long pressed or
   // tapped using touch gestures.
-  bool force_show_close_button_ = false;
+  bool force_show_desk_buttons_ = false;
+
+  // Prevents `desk_action_view_` from becoming visible while `context_menu_` is
+  // open.
+  bool is_context_menu_open_ = false;
 
   // When the DeskNameView is focused, we select all its text. However, if it is
   // focused via a mouse press event, on mouse release will clear the selection.
@@ -166,7 +201,11 @@ class ASH_EXPORT DeskMiniView
 
   bool is_desk_name_being_modified_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(DeskMiniView);
+  // This is initialized to true and tells the OnViewBlurred function if the
+  // user wants to set a new desk name. We set this to false if the
+  // HandleKeyEvent function detects that the escape key was pressed so that
+  // OnViewBlurred does not change the name of `desk_`.
+  bool should_commit_name_changes_ = true;
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ void JNI_DisplayAgent_OnUserAction(JNIEnv* env,
     button_click_info.type =
         static_cast<notifications::ActionButtonType>(j_button_type);
     action_data.button_click_info =
-        base::make_optional(std::move(button_click_info));
+        absl::make_optional(std::move(button_click_info));
   }
 
   GetUserActionHandler()->OnUserAction(action_data);

@@ -1,12 +1,13 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/policy/core/common/cloud/user_cloud_policy_store.h"
 
+#include <memory>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -14,7 +15,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
-#include "components/policy/core/common/cloud/policy_builder.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -57,12 +58,14 @@ class UserCloudPolicyStoreTest : public testing::Test {
   UserCloudPolicyStoreTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
+  UserCloudPolicyStoreTest(const UserCloudPolicyStoreTest&) = delete;
+  UserCloudPolicyStoreTest& operator=(const UserCloudPolicyStoreTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
-    store_.reset(new UserCloudPolicyStore(policy_file(), key_file(),
-                                          base::ThreadTaskRunnerHandle::Get()));
-    external_data_manager_.reset(new MockCloudExternalDataManager);
+    store_ = std::make_unique<UserCloudPolicyStore>(
+        policy_file(), key_file(), base::ThreadTaskRunnerHandle::Get());
+    external_data_manager_ = std::make_unique<MockCloudExternalDataManager>();
     external_data_manager_->SetPolicyStore(store_.get());
     store_->SetSigninAccountId(PolicyBuilder::GetFakeAccountIdForTesting());
     EXPECT_EQ(PolicyBuilder::GetFakeAccountIdForTesting(),
@@ -106,7 +109,7 @@ class UserCloudPolicyStoreTest : public testing::Test {
     const PolicyMap::Entry* entry =
         store->policy_map().Get(key::kSearchSuggestEnabled);
     ASSERT_TRUE(entry);
-    EXPECT_TRUE(base::Value(true).Equals(entry->value()));
+    EXPECT_EQ(true, *entry->value(base::Value::Type::BOOLEAN));
     ASSERT_TRUE(store->policy_map().Get(key::kURLBlocklist));
   }
 
@@ -138,9 +141,6 @@ class UserCloudPolicyStoreTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   base::ScopedTempDir tmp_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStoreTest);
 };
 
 TEST_F(UserCloudPolicyStoreTest, LoadWithNoFile) {

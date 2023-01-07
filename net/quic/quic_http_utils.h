@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_capture_mode.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
 namespace net {
 
@@ -37,12 +37,6 @@ NET_EXPORT base::Value QuicResponseNetLogParams(
     bool fin_received,
     const spdy::Http2HeaderBlock* headers,
     NetLogCaptureMode capture_mode);
-
-// Parses |alt_svc_versions| into a quic::ParsedQuicVersionVector and removes
-// all entries that aren't found in |supported_versions|.
-NET_EXPORT quic::ParsedQuicVersionVector FilterSupportedAltSvcVersions(
-    const spdy::SpdyAltSvcWireFormat::AlternativeService& quic_alt_svc,
-    const quic::ParsedQuicVersionVector& supported_versions);
 
 }  // namespace net
 

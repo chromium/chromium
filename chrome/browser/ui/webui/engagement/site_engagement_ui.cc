@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/dev_ui_browser_resources.h"
@@ -40,6 +40,11 @@ class SiteEngagementDetailsProviderImpl
       : profile_(profile), receiver_(this, std::move(receiver)) {
     DCHECK(profile_);
   }
+
+  SiteEngagementDetailsProviderImpl(const SiteEngagementDetailsProviderImpl&) =
+      delete;
+  SiteEngagementDetailsProviderImpl& operator=(
+      const SiteEngagementDetailsProviderImpl&) = delete;
 
   ~SiteEngagementDetailsProviderImpl() override {}
 
@@ -79,12 +84,10 @@ class SiteEngagementDetailsProviderImpl
 
  private:
   // The Profile* handed to us in our constructor.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   mojo::Receiver<site_engagement::mojom::SiteEngagementDetailsProvider>
       receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteEngagementDetailsProviderImpl);
 };
 
 }  // namespace
@@ -96,7 +99,7 @@ SiteEngagementUI::SiteEngagementUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUISiteEngagementHost));
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
+      "script-src chrome://resources chrome://webui-test 'self';");
   source->AddResourcePath("site_engagement.js", IDR_SITE_ENGAGEMENT_JS);
   source->AddResourcePath("site_engagement_details.mojom-webui.js",
                           IDR_SITE_ENGAGEMENT_DETAILS_MOJOM_WEBUI_JS);

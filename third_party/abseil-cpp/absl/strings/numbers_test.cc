@@ -19,6 +19,7 @@
 #include <sys/types.h>
 
 #include <cfenv>  // NOLINT(build/c++11)
+#include <cfloat>
 #include <cinttypes>
 #include <climits>
 #include <cmath>
@@ -47,6 +48,7 @@
 namespace {
 
 using absl::SimpleAtoi;
+using absl::SimpleHexAtoi;
 using absl::numbers_internal::kSixDigitsToBufferSize;
 using absl::numbers_internal::safe_strto32_base;
 using absl::numbers_internal::safe_strto64_base;
@@ -387,9 +389,209 @@ TEST(NumbersTest, Atoi) {
 }
 
 TEST(NumbersTest, Atod) {
+  // DBL_TRUE_MIN and FLT_TRUE_MIN were not mandated in <cfloat> before C++17.
+#if !defined(DBL_TRUE_MIN)
+  static constexpr double DBL_TRUE_MIN =
+      4.940656458412465441765687928682213723650598026143247644255856825e-324;
+#endif
+#if !defined(FLT_TRUE_MIN)
+  static constexpr float FLT_TRUE_MIN =
+      1.401298464324817070923729583289916131280261941876515771757068284e-45f;
+#endif
+
   double d;
-  EXPECT_TRUE(absl::SimpleAtod("nan", &d));
+  float f;
+
+  // NaN can be spelled in multiple ways.
+  EXPECT_TRUE(absl::SimpleAtod("NaN", &d));
   EXPECT_TRUE(std::isnan(d));
+  EXPECT_TRUE(absl::SimpleAtod("nAN", &d));
+  EXPECT_TRUE(std::isnan(d));
+  EXPECT_TRUE(absl::SimpleAtod("-nan", &d));
+  EXPECT_TRUE(std::isnan(d));
+
+  // Likewise for Infinity.
+  EXPECT_TRUE(absl::SimpleAtod("inf", &d));
+  EXPECT_TRUE(std::isinf(d) && (d > 0));
+  EXPECT_TRUE(absl::SimpleAtod("+Infinity", &d));
+  EXPECT_TRUE(std::isinf(d) && (d > 0));
+  EXPECT_TRUE(absl::SimpleAtod("-INF", &d));
+  EXPECT_TRUE(std::isinf(d) && (d < 0));
+
+  // Parse DBL_MAX. Parsing something more than twice as big should also
+  // produce infinity.
+  EXPECT_TRUE(absl::SimpleAtod("1.7976931348623157e+308", &d));
+  EXPECT_EQ(d, 1.7976931348623157e+308);
+  EXPECT_TRUE(absl::SimpleAtod("5e308", &d));
+  EXPECT_TRUE(std::isinf(d) && (d > 0));
+  // Ditto, but for FLT_MAX.
+  EXPECT_TRUE(absl::SimpleAtof("3.4028234663852886e+38", &f));
+  EXPECT_EQ(f, 3.4028234663852886e+38f);
+  EXPECT_TRUE(absl::SimpleAtof("7e38", &f));
+  EXPECT_TRUE(std::isinf(f) && (f > 0));
+
+  // Parse the largest N such that parsing 1eN produces a finite value and the
+  // smallest M = N + 1 such that parsing 1eM produces infinity.
+  //
+  // The 309 exponent (and 39) confirms the "definition of
+  // kEiselLemireMaxExclExp10" comment in charconv.cc.
+  EXPECT_TRUE(absl::SimpleAtod("1e308", &d));
+  EXPECT_EQ(d, 1e308);
+  EXPECT_FALSE(std::isinf(d));
+  EXPECT_TRUE(absl::SimpleAtod("1e309", &d));
+  EXPECT_TRUE(std::isinf(d));
+  // Ditto, but for Atof instead of Atod.
+  EXPECT_TRUE(absl::SimpleAtof("1e38", &f));
+  EXPECT_EQ(f, 1e38f);
+  EXPECT_FALSE(std::isinf(f));
+  EXPECT_TRUE(absl::SimpleAtof("1e39", &f));
+  EXPECT_TRUE(std::isinf(f));
+
+  // Parse the largest N such that parsing 9.999999999999999999eN, with 19
+  // nines, produces a finite value.
+  //
+  // 9999999999999999999, with 19 nines but no decimal point, is the largest
+  // "repeated nines" integer that fits in a uint64_t.
+  EXPECT_TRUE(absl::SimpleAtod("9.999999999999999999e307", &d));
+  EXPECT_EQ(d, 9.999999999999999999e307);
+  EXPECT_FALSE(std::isinf(d));
+  EXPECT_TRUE(absl::SimpleAtod("9.999999999999999999e308", &d));
+  EXPECT_TRUE(std::isinf(d));
+  // Ditto, but for Atof instead of Atod.
+  EXPECT_TRUE(absl::SimpleAtof("9.999999999999999999e37", &f));
+  EXPECT_EQ(f, 9.999999999999999999e37f);
+  EXPECT_FALSE(std::isinf(f));
+  EXPECT_TRUE(absl::SimpleAtof("9.999999999999999999e38", &f));
+  EXPECT_TRUE(std::isinf(f));
+
+  // Parse DBL_MIN (normal), DBL_TRUE_MIN (subnormal) and (DBL_TRUE_MIN / 10)
+  // (effectively zero).
+  EXPECT_TRUE(absl::SimpleAtod("2.2250738585072014e-308", &d));
+  EXPECT_EQ(d, 2.2250738585072014e-308);
+  EXPECT_TRUE(absl::SimpleAtod("4.9406564584124654e-324", &d));
+  EXPECT_EQ(d, 4.9406564584124654e-324);
+  EXPECT_TRUE(absl::SimpleAtod("4.9406564584124654e-325", &d));
+  EXPECT_EQ(d, 0);
+  // Ditto, but for FLT_MIN, FLT_TRUE_MIN and (FLT_TRUE_MIN / 10).
+  EXPECT_TRUE(absl::SimpleAtof("1.1754943508222875e-38", &f));
+  EXPECT_EQ(f, 1.1754943508222875e-38f);
+  EXPECT_TRUE(absl::SimpleAtof("1.4012984643248171e-45", &f));
+  EXPECT_EQ(f, 1.4012984643248171e-45f);
+  EXPECT_TRUE(absl::SimpleAtof("1.4012984643248171e-46", &f));
+  EXPECT_EQ(f, 0);
+
+  // Parse the largest N (the most negative -N) such that parsing 1e-N produces
+  // a normal or subnormal (but still positive) or zero value.
+  EXPECT_TRUE(absl::SimpleAtod("1e-307", &d));
+  EXPECT_EQ(d, 1e-307);
+  EXPECT_GE(d, DBL_MIN);
+  EXPECT_LT(d, DBL_MIN * 10);
+  EXPECT_TRUE(absl::SimpleAtod("1e-323", &d));
+  EXPECT_EQ(d, 1e-323);
+  EXPECT_GE(d, DBL_TRUE_MIN);
+  EXPECT_LT(d, DBL_TRUE_MIN * 10);
+  EXPECT_TRUE(absl::SimpleAtod("1e-324", &d));
+  EXPECT_EQ(d, 0);
+  // Ditto, but for Atof instead of Atod.
+  EXPECT_TRUE(absl::SimpleAtof("1e-37", &f));
+  EXPECT_EQ(f, 1e-37f);
+  EXPECT_GE(f, FLT_MIN);
+  EXPECT_LT(f, FLT_MIN * 10);
+  EXPECT_TRUE(absl::SimpleAtof("1e-45", &f));
+  EXPECT_EQ(f, 1e-45f);
+  EXPECT_GE(f, FLT_TRUE_MIN);
+  EXPECT_LT(f, FLT_TRUE_MIN * 10);
+  EXPECT_TRUE(absl::SimpleAtof("1e-46", &f));
+  EXPECT_EQ(f, 0);
+
+  // Parse the largest N (the most negative -N) such that parsing
+  // 9.999999999999999999e-N, with 19 nines, produces a normal or subnormal
+  // (but still positive) or zero value.
+  //
+  // 9999999999999999999, with 19 nines but no decimal point, is the largest
+  // "repeated nines" integer that fits in a uint64_t.
+  //
+  // The -324/-325 exponents (and -46/-47) confirms the "definition of
+  // kEiselLemireMinInclExp10" comment in charconv.cc.
+  EXPECT_TRUE(absl::SimpleAtod("9.999999999999999999e-308", &d));
+  EXPECT_EQ(d, 9.999999999999999999e-308);
+  EXPECT_GE(d, DBL_MIN);
+  EXPECT_LT(d, DBL_MIN * 10);
+  EXPECT_TRUE(absl::SimpleAtod("9.999999999999999999e-324", &d));
+  EXPECT_EQ(d, 9.999999999999999999e-324);
+  EXPECT_GE(d, DBL_TRUE_MIN);
+  EXPECT_LT(d, DBL_TRUE_MIN * 10);
+  EXPECT_TRUE(absl::SimpleAtod("9.999999999999999999e-325", &d));
+  EXPECT_EQ(d, 0);
+  // Ditto, but for Atof instead of Atod.
+  EXPECT_TRUE(absl::SimpleAtof("9.999999999999999999e-38", &f));
+  EXPECT_EQ(f, 9.999999999999999999e-38f);
+  EXPECT_GE(f, FLT_MIN);
+  EXPECT_LT(f, FLT_MIN * 10);
+  EXPECT_TRUE(absl::SimpleAtof("9.999999999999999999e-46", &f));
+  EXPECT_EQ(f, 9.999999999999999999e-46f);
+  EXPECT_GE(f, FLT_TRUE_MIN);
+  EXPECT_LT(f, FLT_TRUE_MIN * 10);
+  EXPECT_TRUE(absl::SimpleAtof("9.999999999999999999e-47", &f));
+  EXPECT_EQ(f, 0);
+
+  // Leading and/or trailing whitespace is OK.
+  EXPECT_TRUE(absl::SimpleAtod("  \t\r\n  2.718", &d));
+  EXPECT_EQ(d, 2.718);
+  EXPECT_TRUE(absl::SimpleAtod("  3.141  ", &d));
+  EXPECT_EQ(d, 3.141);
+
+  // Leading or trailing not-whitespace is not OK.
+  EXPECT_FALSE(absl::SimpleAtod("n 0", &d));
+  EXPECT_FALSE(absl::SimpleAtod("0n ", &d));
+
+  // Multiple leading 0s are OK.
+  EXPECT_TRUE(absl::SimpleAtod("000123", &d));
+  EXPECT_EQ(d, 123);
+  EXPECT_TRUE(absl::SimpleAtod("000.456", &d));
+  EXPECT_EQ(d, 0.456);
+
+  // An absent leading 0 (for a fraction < 1) is OK.
+  EXPECT_TRUE(absl::SimpleAtod(".5", &d));
+  EXPECT_EQ(d, 0.5);
+  EXPECT_TRUE(absl::SimpleAtod("-.707", &d));
+  EXPECT_EQ(d, -0.707);
+
+  // Unary + is OK.
+  EXPECT_TRUE(absl::SimpleAtod("+6.0221408e+23", &d));
+  EXPECT_EQ(d, 6.0221408e+23);
+
+  // Underscores are not OK.
+  EXPECT_FALSE(absl::SimpleAtod("123_456", &d));
+
+  // The decimal separator must be '.' and is never ','.
+  EXPECT_TRUE(absl::SimpleAtod("8.9", &d));
+  EXPECT_FALSE(absl::SimpleAtod("8,9", &d));
+
+  // These examples are called out in the EiselLemire function's comments.
+  EXPECT_TRUE(absl::SimpleAtod("4503599627370497.5", &d));
+  EXPECT_EQ(d, 4503599627370497.5);
+  EXPECT_TRUE(absl::SimpleAtod("1e+23", &d));
+  EXPECT_EQ(d, 1e+23);
+  EXPECT_TRUE(absl::SimpleAtod("9223372036854775807", &d));
+  EXPECT_EQ(d, 9223372036854775807);
+  // Ditto, but for Atof instead of Atod.
+  EXPECT_TRUE(absl::SimpleAtof("0.0625", &f));
+  EXPECT_EQ(f, 0.0625f);
+  EXPECT_TRUE(absl::SimpleAtof("20040229.0", &f));
+  EXPECT_EQ(f, 20040229.0f);
+  EXPECT_TRUE(absl::SimpleAtof("2147483647.0", &f));
+  EXPECT_EQ(f, 2147483647.0f);
+
+  // Some parsing algorithms don't always round correctly (but absl::SimpleAtod
+  // should). This test case comes from
+  // https://github.com/serde-rs/json/issues/707
+  //
+  // See also atod_manual_test.cc for running many more test cases.
+  EXPECT_TRUE(absl::SimpleAtod("122.416294033786585", &d));
+  EXPECT_EQ(d, 122.416294033786585);
+  EXPECT_TRUE(absl::SimpleAtof("122.416294033786585", &f));
+  EXPECT_EQ(f, 122.416294033786585f);
 }
 
 TEST(NumbersTest, Prefixes) {
@@ -466,6 +668,148 @@ TEST(NumbersTest, Atoenum) {
   VerifySimpleAtoiGood<E_biguint>(E_biguint_one, E_biguint_one);
   VerifySimpleAtoiGood<E_biguint>(E_biguint_max31, E_biguint_max31);
   VerifySimpleAtoiGood<E_biguint>(E_biguint_max32, E_biguint_max32);
+}
+
+template <typename int_type, typename in_val_type>
+void VerifySimpleHexAtoiGood(in_val_type in_value, int_type exp_value) {
+  std::string s;
+  // uint128 can be streamed but not StrCat'd
+  absl::strings_internal::OStringStream strm(&s);
+  if (in_value >= 0) {
+    strm << std::hex << in_value;
+  } else {
+    // Inefficient for small integers, but works with all integral types.
+    strm << "-" << std::hex << -absl::uint128(in_value);
+  }
+  int_type x = static_cast<int_type>(~exp_value);
+  EXPECT_TRUE(SimpleHexAtoi(s, &x))
+      << "in_value=" << std::hex << in_value << " s=" << s << " x=" << x;
+  EXPECT_EQ(exp_value, x);
+  x = static_cast<int_type>(~exp_value);
+  EXPECT_TRUE(SimpleHexAtoi(
+      s.c_str(), &x));  // NOLINT: readability-redundant-string-conversions
+  EXPECT_EQ(exp_value, x);
+}
+
+template <typename int_type, typename in_val_type>
+void VerifySimpleHexAtoiBad(in_val_type in_value) {
+  std::string s;
+  // uint128 can be streamed but not StrCat'd
+  absl::strings_internal::OStringStream strm(&s);
+  if (in_value >= 0) {
+    strm << std::hex << in_value;
+  } else {
+    // Inefficient for small integers, but works with all integral types.
+    strm << "-" << std::hex << -absl::uint128(in_value);
+  }
+  int_type x;
+  EXPECT_FALSE(SimpleHexAtoi(s, &x));
+  EXPECT_FALSE(SimpleHexAtoi(
+      s.c_str(), &x));  // NOLINT: readability-redundant-string-conversions
+}
+
+TEST(NumbersTest, HexAtoi) {
+  // SimpleHexAtoi(absl::string_view, int32_t)
+  VerifySimpleHexAtoiGood<int32_t>(0, 0);
+  VerifySimpleHexAtoiGood<int32_t>(0x42, 0x42);
+  VerifySimpleHexAtoiGood<int32_t>(-0x42, -0x42);
+
+  VerifySimpleHexAtoiGood<int32_t>(std::numeric_limits<int32_t>::min(),
+                                   std::numeric_limits<int32_t>::min());
+  VerifySimpleHexAtoiGood<int32_t>(std::numeric_limits<int32_t>::max(),
+                                   std::numeric_limits<int32_t>::max());
+
+  // SimpleHexAtoi(absl::string_view, uint32_t)
+  VerifySimpleHexAtoiGood<uint32_t>(0, 0);
+  VerifySimpleHexAtoiGood<uint32_t>(0x42, 0x42);
+  VerifySimpleHexAtoiBad<uint32_t>(-0x42);
+
+  VerifySimpleHexAtoiBad<uint32_t>(std::numeric_limits<int32_t>::min());
+  VerifySimpleHexAtoiGood<uint32_t>(std::numeric_limits<int32_t>::max(),
+                                    std::numeric_limits<int32_t>::max());
+  VerifySimpleHexAtoiGood<uint32_t>(std::numeric_limits<uint32_t>::max(),
+                                    std::numeric_limits<uint32_t>::max());
+  VerifySimpleHexAtoiBad<uint32_t>(std::numeric_limits<int64_t>::min());
+  VerifySimpleHexAtoiBad<uint32_t>(std::numeric_limits<int64_t>::max());
+  VerifySimpleHexAtoiBad<uint32_t>(std::numeric_limits<uint64_t>::max());
+
+  // SimpleHexAtoi(absl::string_view, int64_t)
+  VerifySimpleHexAtoiGood<int64_t>(0, 0);
+  VerifySimpleHexAtoiGood<int64_t>(0x42, 0x42);
+  VerifySimpleHexAtoiGood<int64_t>(-0x42, -0x42);
+
+  VerifySimpleHexAtoiGood<int64_t>(std::numeric_limits<int32_t>::min(),
+                                   std::numeric_limits<int32_t>::min());
+  VerifySimpleHexAtoiGood<int64_t>(std::numeric_limits<int32_t>::max(),
+                                   std::numeric_limits<int32_t>::max());
+  VerifySimpleHexAtoiGood<int64_t>(std::numeric_limits<uint32_t>::max(),
+                                   std::numeric_limits<uint32_t>::max());
+  VerifySimpleHexAtoiGood<int64_t>(std::numeric_limits<int64_t>::min(),
+                                   std::numeric_limits<int64_t>::min());
+  VerifySimpleHexAtoiGood<int64_t>(std::numeric_limits<int64_t>::max(),
+                                   std::numeric_limits<int64_t>::max());
+  VerifySimpleHexAtoiBad<int64_t>(std::numeric_limits<uint64_t>::max());
+
+  // SimpleHexAtoi(absl::string_view, uint64_t)
+  VerifySimpleHexAtoiGood<uint64_t>(0, 0);
+  VerifySimpleHexAtoiGood<uint64_t>(0x42, 0x42);
+  VerifySimpleHexAtoiBad<uint64_t>(-0x42);
+
+  VerifySimpleHexAtoiBad<uint64_t>(std::numeric_limits<int32_t>::min());
+  VerifySimpleHexAtoiGood<uint64_t>(std::numeric_limits<int32_t>::max(),
+                                    std::numeric_limits<int32_t>::max());
+  VerifySimpleHexAtoiGood<uint64_t>(std::numeric_limits<uint32_t>::max(),
+                                    std::numeric_limits<uint32_t>::max());
+  VerifySimpleHexAtoiBad<uint64_t>(std::numeric_limits<int64_t>::min());
+  VerifySimpleHexAtoiGood<uint64_t>(std::numeric_limits<int64_t>::max(),
+                                    std::numeric_limits<int64_t>::max());
+  VerifySimpleHexAtoiGood<uint64_t>(std::numeric_limits<uint64_t>::max(),
+                                    std::numeric_limits<uint64_t>::max());
+
+  // SimpleHexAtoi(absl::string_view, absl::uint128)
+  VerifySimpleHexAtoiGood<absl::uint128>(0, 0);
+  VerifySimpleHexAtoiGood<absl::uint128>(0x42, 0x42);
+  VerifySimpleHexAtoiBad<absl::uint128>(-0x42);
+
+  VerifySimpleHexAtoiBad<absl::uint128>(std::numeric_limits<int32_t>::min());
+  VerifySimpleHexAtoiGood<absl::uint128>(std::numeric_limits<int32_t>::max(),
+                                         std::numeric_limits<int32_t>::max());
+  VerifySimpleHexAtoiGood<absl::uint128>(std::numeric_limits<uint32_t>::max(),
+                                         std::numeric_limits<uint32_t>::max());
+  VerifySimpleHexAtoiBad<absl::uint128>(std::numeric_limits<int64_t>::min());
+  VerifySimpleHexAtoiGood<absl::uint128>(std::numeric_limits<int64_t>::max(),
+                                         std::numeric_limits<int64_t>::max());
+  VerifySimpleHexAtoiGood<absl::uint128>(std::numeric_limits<uint64_t>::max(),
+                                         std::numeric_limits<uint64_t>::max());
+  VerifySimpleHexAtoiGood<absl::uint128>(
+      std::numeric_limits<absl::uint128>::max(),
+      std::numeric_limits<absl::uint128>::max());
+
+  // Some other types
+  VerifySimpleHexAtoiGood<int>(-0x42, -0x42);
+  VerifySimpleHexAtoiGood<int32_t>(-0x42, -0x42);
+  VerifySimpleHexAtoiGood<uint32_t>(0x42, 0x42);
+  VerifySimpleHexAtoiGood<unsigned int>(0x42, 0x42);
+  VerifySimpleHexAtoiGood<int64_t>(-0x42, -0x42);
+  VerifySimpleHexAtoiGood<long>(-0x42, -0x42);  // NOLINT: runtime-int
+  VerifySimpleHexAtoiGood<uint64_t>(0x42, 0x42);
+  VerifySimpleHexAtoiGood<size_t>(0x42, 0x42);
+  VerifySimpleHexAtoiGood<std::string::size_type>(0x42, 0x42);
+
+  // Number prefix
+  int32_t value;
+  EXPECT_TRUE(safe_strto32_base("0x34234324", &value, 16));
+  EXPECT_EQ(0x34234324, value);
+
+  EXPECT_TRUE(safe_strto32_base("0X34234324", &value, 16));
+  EXPECT_EQ(0x34234324, value);
+
+  // ASCII whitespace
+  EXPECT_TRUE(safe_strto32_base(" \t\n 34234324", &value, 16));
+  EXPECT_EQ(0x34234324, value);
+
+  EXPECT_TRUE(safe_strto32_base("34234324 \t\n ", &value, 16));
+  EXPECT_EQ(0x34234324, value);
 }
 
 TEST(stringtest, safe_strto32_base) {

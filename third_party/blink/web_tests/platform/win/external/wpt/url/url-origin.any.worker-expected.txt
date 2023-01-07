@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 321 tests; 311 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 329 tests; 318 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Origin parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -37,6 +37,8 @@ PASS Origin parsing: <?> against <http://example.org/foo/bar>
 PASS Origin parsing: </> against <http://example.org/foo/bar>
 PASS Origin parsing: <:23> against <http://example.org/foo/bar>
 PASS Origin parsing: </:23> against <http://example.org/foo/bar>
+PASS Origin parsing: <\x> against <http://example.org/foo/bar>
+FAIL Origin parsing: <\\x\hello> against <http://example.org/foo/bar> assert_equals: origin expected "http://x" but got "file://"
 PASS Origin parsing: <::> against <http://example.org/foo/bar>
 PASS Origin parsing: <::23> against <http://example.org/foo/bar>
 PASS Origin parsing: <foo://> against <http://example.org/foo/bar>
@@ -219,7 +221,6 @@ PASS Origin parsing: <http://%30%78%63%30%2e%30%32%35%30.01%2e> against <http://
 PASS Origin parsing: <http://０Ｘｃ０．０２５０．０１> against <http://other.com/>
 PASS Origin parsing: <http://./> against <about:blank>
 PASS Origin parsing: <http://../> against <about:blank>
-PASS Origin parsing: <http://0..0x300/> against <about:blank>
 PASS Origin parsing: <http://foo:💩@example.com/bar> against <http://other.com/>
 PASS Origin parsing: <#> against <test:test>
 PASS Origin parsing: <#x> against <mailto:x@x.com>
@@ -263,8 +264,8 @@ PASS Origin parsing: <wow:%NBD> against <about:blank>
 PASS Origin parsing: <wow:%1G> against <about:blank>
 PASS Origin parsing: <wow:￿> against <about:blank>
 FAIL Origin parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> Failed to construct 'URL': Invalid URL
-FAIL Origin parsing: <http://!"$&'()*+,-.;=_`{|}~/> against <about:blank> Failed to construct 'URL': Invalid URL
-PASS Origin parsing: <sc://!"$&'()*+,-.;=_`{|}~/> against <about:blank>
+FAIL Origin parsing: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank> Failed to construct 'URL': Invalid URL
+PASS Origin parsing: <sc://!"$%&'()*+,-.;=_`{}~/> against <about:blank>
 PASS Origin parsing: <ftp://%e2%98%83> against <about:blank>
 PASS Origin parsing: <https://%e2%98%83> against <about:blank>
 PASS Origin parsing: <http://127.0.0.1:10100/relative_import.html> against <about:blank>
@@ -286,17 +287,21 @@ PASS Origin parsing: <http://foo.bar/baz?qux#foo"bar> against <about:blank>
 PASS Origin parsing: <http://foo.bar/baz?qux#foo<bar> against <about:blank>
 PASS Origin parsing: <http://foo.bar/baz?qux#foo>bar> against <about:blank>
 PASS Origin parsing: <http://foo.bar/baz?qux#foo`bar> against <about:blank>
+PASS Origin parsing: <http://1.2.3.4/> against <http://other.com/>
+PASS Origin parsing: <http://1.2.3.4./> against <http://other.com/>
 PASS Origin parsing: <http://192.168.257> against <http://other.com/>
+PASS Origin parsing: <http://192.168.257.> against <http://other.com/>
 PASS Origin parsing: <http://192.168.257.com> against <http://other.com/>
 PASS Origin parsing: <http://256> against <http://other.com/>
 PASS Origin parsing: <http://256.com> against <http://other.com/>
 PASS Origin parsing: <http://999999999> against <http://other.com/>
+PASS Origin parsing: <http://999999999.> against <http://other.com/>
 PASS Origin parsing: <http://999999999.com> against <http://other.com/>
 PASS Origin parsing: <http://10000000000.com> against <http://other.com/>
 PASS Origin parsing: <http://4294967295> against <http://other.com/>
 PASS Origin parsing: <http://0xffffffff> against <http://other.com/>
-PASS Origin parsing: <http://256.256.256.256.256> against <http://other.com/>
 PASS Origin parsing: <https://0x.0x.0> against <about:blank>
+PASS Origin parsing: <asdf://%43%7C/> against <about:blank>
 PASS Origin parsing: <http://[1:0::]> against <http://example.net/>
 PASS Origin parsing: <sc://ñ> against <about:blank>
 PASS Origin parsing: <sc://ñ?x> against <about:blank>
@@ -315,6 +320,9 @@ PASS Origin parsing: <ldap://localhost:389/ou=People,o=JNDITutorial> against <ab
 PASS Origin parsing: <git+https://github.com/foo/bar> against <about:blank>
 PASS Origin parsing: <urn:ietf:rfc:2648> against <about:blank>
 PASS Origin parsing: <tag:joe@example.org,2001:foo/bar> against <about:blank>
+PASS Origin parsing: <blob:https://example.com:443/> against <about:blank>
+PASS Origin parsing: <blob:d3958f5c-0777-0845-9dcf-2cb28783acaf> against <about:blank>
+PASS Origin parsing: <blob:> against <about:blank>
 PASS Origin parsing: <non-special:cannot-be-a-base-url-\0~> against <about:blank>
 PASS Origin parsing: <https://www.example.com/path{path.html?query'=query#fragment<fragment> against <about:blank>
 PASS Origin parsing: <https://user:pass[@foo/bar> against <http://example.org>

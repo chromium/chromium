@@ -1,46 +1,296 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//printing/buildflags/buildflags.gni")
 
 mojom("mojom") {
   sources = [
     "account_manager.mojom",
+    "app_service.mojom",
+    "app_service_types.mojom",
+    "app_window_tracker.mojom",
+    "arc.mojom",
+    "audio_service.mojom",
+    "authentication.mojom",
     "automation.mojom",
     "bitmap.mojom",
+    "browser_app_instance_registry.mojom",
+    "browser_version.mojom",
     "cert_database.mojom",
+    "cert_provisioning.mojom",
+    "chrome_app_kiosk_service.mojom",
     "clipboard.mojom",
+    "clipboard_history.mojom",
+    "content_protection.mojom",
+    "cros_display_config.mojom",
     "crosapi.mojom",
+    "desk_template.mojom",
     "device_attributes.mojom",
+    "device_local_account_extension_service.mojom",
+    "device_oauth2_token_service.mojom",
+    "device_settings_service.mojom",
+    "diagnostics_service.mojom",
+    "digital_goods.mojom",
+    "dlp.mojom",
+    "document_scan.mojom",
+    "download_controller.mojom",
+    "drive_integration_service.mojom",
+    "echo_private.mojom",
+    "emoji_picker.mojom",
+    "extension_info_private.mojom",
     "feedback.mojom",
+    "field_trial.mojom",
     "file_manager.mojom",
+    "file_system_provider.mojom",
+    "force_installed_tracker.mojom",
+    "fullscreen_controller.mojom",
+    "geolocation.mojom",
+    "holding_space_service.mojom",
+    "identity_manager.mojom",
     "idle_service.mojom",
+    "image_writer.mojom",
+    "in_session_auth.mojom",
+    "keystore_error.mojom",
     "keystore_service.mojom",
+    "kiosk_session_service.mojom",
+    "launcher_search.mojom",
+    "local_printer.mojom",
+    "login.mojom",
+    "login_screen_storage.mojom",
+    "login_state.mojom",
     "message_center.mojom",
     "metrics_reporting.mojom",
+    "native_theme.mojom",
+    "network_change.mojom",
+    "network_settings_service.mojom",
+    "networking_attributes.mojom",
+    "networking_private.mojom",
     "notification.mojom",
+    "nullable_primitives.mojom",
+    "parent_access.mojom",
+    "policy_namespace.mojom",
+    "policy_service.mojom",
+    "power.mojom",
     "prefs.mojom",
+    "printing_metrics.mojom",
+    "probe_service.mojom",
+    "remoting.mojom",
+    "resource_manager.mojom",
     "screen_manager.mojom",
     "select_file.mojom",
+    "sharesheet.mojom",
+    "speech_recognition.mojom",
+    "structured_metrics_service.mojom",
+    "sync.mojom",
+    "system_display.mojom",
     "task_manager.mojom",
     "test_controller.mojom",
+    "timezone.mojom",
+    "tts.mojom",
     "url_handler.mojom",
     "video_capture.mojom",
+    "virtual_keyboard.mojom",
+    "volume_manager.mojom",
+    "vpn_extension_observer.mojom",
+    "vpn_service.mojom",
+    "wallpaper.mojom",
+    "web_app_service.mojom",
+    "web_app_types.mojom",
+    "web_page_info.mojom",
   ]
   disable_variants = true
 
   public_deps = [
+    "//chromeos/components/remote_apps/mojom",
     "//chromeos/components/sensors/mojom",
     "//chromeos/services/machine_learning/public/mojom",
+    "//chromeos/services/network_health/public/mojom:mojom",
+    "//components/digital_goods/mojom:mojom",
+    "//components/metrics/structured/mojom",
+    "//components/services/app_service/public/mojom:mojom",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:video_capture_types",
+    "//media/mojo/mojom:speech_recognition",
     "//mojo/public/mojom/base",
+    "//printing/backend/mojom",
+    "//printing/mojom",
+    "//remoting/host/mojom:mojom",
     "//services/device/public/mojom:mojom",
     "//services/media_session/public/mojom:mojom",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/accessibility/mojom",
+    "//ui/base/mojom",
+    "//ui/display/mojom:mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/image/mojom",
     "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "crosapi.mojom.App"
+          cpp = "::apps::AppPtr"
+          move_only = true
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "crosapi.mojom.PolicyDomain"
+          cpp = "::policy::PolicyDomain"
+          move_only = true
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "crosapi.mojom.PolicyNamespace"
+          cpp = "::policy::PolicyNamespace"
+          move_only = true
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "crosapi.mojom.UninstallSource"
+          cpp = "::apps::UninstallSource"
+        },
+        {
+          mojom = "crosapi.mojom.CapabilityAccess"
+          cpp = "::apps::CapabilityAccessPtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.IconType"
+          cpp = "::apps::IconType"
+        },
+        {
+          mojom = "crosapi.mojom.IconValue"
+          cpp = "::apps::IconValuePtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.IconKey"
+          cpp = "::apps::IconKeyPtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.WindowMode"
+          cpp = "::apps::WindowMode"
+        },
+        {
+          mojom = "crosapi.mojom.AppType"
+          cpp = "::apps::AppType"
+        },
+        {
+          mojom = "crosapi.mojom.LaunchSource"
+          cpp = "::apps::LaunchSource"
+        },
+        {
+          mojom = "crosapi.mojom.SharesheetLaunchSource"
+          cpp = "::sharesheet::LaunchSource"
+        },
+        {
+          mojom = "crosapi.mojom.SharesheetResult"
+          cpp = "::sharesheet::SharesheetResult"
+        },
+        {
+          mojom = "crosapi.mojom.BrowserWindowInstanceUpdate"
+          cpp = "::apps::BrowserWindowInstanceUpdate"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.BrowserAppInstanceUpdate"
+          cpp = "::apps::BrowserAppInstanceUpdate"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.BrowserAppInstanceType"
+          cpp = "::apps::BrowserAppInstanceUpdate::Type"
+        },
+        {
+          mojom = "crosapi.mojom.Permission"
+          cpp = "::apps::PermissionPtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.PreferredApp"
+          cpp = "::apps::PreferredAppPtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.PreferredAppChanges"
+          cpp = "::apps::PreferredAppChangesPtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.WebAppInstallResultCode"
+          cpp = "::webapps::InstallResultCode"
+        },
+        {
+          mojom = "crosapi.mojom.WebAppUninstallResultCode"
+          cpp = "::webapps::UninstallResultCode"
+        },
+        {
+          mojom = "crosapi.mojom.Shortcut"
+          cpp = "::apps::ShortcutPtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.CertInfo"
+          cpp = "::chromeos::certificate_provider::CertificateInfo"
+        },
+      ]
+      traits_headers = [
+        "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
+        "//chromeos/crosapi/mojom/cert_database_mojom_traits.h",
+        "//chromeos/crosapi/mojom/policy_namespace_mojom_traits.h",
+        "//chromeos/crosapi/mojom/policy_domain_mojom_traits.h",
+        "//chromeos/crosapi/mojom/web_app_types_mojom_traits.h",
+        "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.h",
+        "//components/services/app_service/public/cpp/app_launch_util.h",
+        "//components/services/app_service/public/cpp/app_types.h",
+        "//components/services/app_service/public/cpp/capability_access.h",
+        "//components/services/app_service/public/cpp/preferred_app.h",
+        "//chromeos/crosapi/mojom/sharesheet_mojom_traits.h",
+        "//components/services/app_service/public/cpp/icon_types.h",
+      ]
+      traits_sources = [
+        "//chromeos/crosapi/mojom/app_service_types_mojom_traits.cc",
+        "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.cc",
+        "//chromeos/crosapi/mojom/cert_database_mojom_traits.cc",
+        "//chromeos/crosapi/mojom/policy_domain_mojom_traits.cc",
+        "//chromeos/crosapi/mojom/policy_namespace_mojom_traits.cc",
+        "//chromeos/crosapi/mojom/sharesheet_mojom_traits.cc",
+        "//chromeos/crosapi/mojom/web_app_types_mojom_traits.cc",
+      ]
+      traits_public_deps = [
+        "//chromeos/components/certificate_provider:certificate_provider",
+        "//components/policy/core/common:policy_namespace",
+        "//components/services/app_service/public/cpp:app_types",
+        "//components/services/app_service/public/cpp:browser_app_instance_registry_update",
+        "//components/services/app_service/public/cpp:icon_types",
+        "//components/services/app_service/public/cpp:preferred_app",
+        "//components/services/app_service/public/mojom:mojom",
+        "//components/webapps/browser:constants",
+      ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "app_service_types_mojom_traits_unittest.cc",
+    "sharesheet_mojom_traits_unittest.cc",
+  ]
+
+  deps = [
+    ":mojom",
+    "//base/test:test_support",
+    "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/mojom:mojom",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
   ]
 }

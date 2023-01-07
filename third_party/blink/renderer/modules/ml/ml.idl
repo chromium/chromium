@@ -1,0 +1,17 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This will be a shared interface by two APIs:
+// - The Model Loader API,
+//     https://github.com/webmachinelearning/model-loader/blob/main/explainer.md
+// - The WebNN API,
+//     https://github.com/webmachinelearning/webnn/blob/main/explainer.md
+
+[
+  RuntimeEnabled=MachineLearningCommon,
+  Exposed=Window
+] interface ML {
+  [CallWith=ScriptState, RaisesException]
+      Promise<MLContext> createContext(optional MLContextOptions options = {});
+};

@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Inhabilitar toda la animación de las imágenes.</translation>
 <translation id="1703735871906654364">Navegación por cursor de texto</translation>
 <translation id="1791496371305830581">Permitir todas las imágenes animadas.</translation>
+<translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1996252509865389616">¿Quieres habilitar la extensión?</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2179565792157161713">Abre la descripción larga en una pestaña nueva</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Potenciador del color</translation>
 <translation id="633394792577263429">Mantén pulsada la tecla &lt;span class='key'&gt;Control&lt;/span&gt; para desplazarte palabra a palabra.</translation>
 <translation id="6550675742724504774">Opciones</translation>
+<translation id="6699630355767768222">Paso 3: Anulación del eje de color para la corrección.</translation>
 <translation id="6838518108677880446">Configuración:</translation>
 <translation id="690628312087070417">Cuando el cursor salta una gran distancia:</translation>
 <translation id="6965382102122355670">Aceptar</translation>
@@ -64,5 +66,6 @@
 <translation id="8321034316479930120">Política de animación</translation>
 <translation id="8480209185614411573">Contraste alto</translation>
 <translation id="8609925175482059018">Pulsa &lt;span class='key'&gt;F7&lt;/span&gt; para activar la navegación por cursor de texto. Vuelve a pulsar la tecla para desactivarla.</translation>
+<translation id="8798099450830957504">Predeterminado</translation>
 <translation id="894241283505723656">Descripciones largas en el menú contextual</translation>
 </translationbundle>

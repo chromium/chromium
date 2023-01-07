@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
@@ -39,9 +39,9 @@ const char kErrorNotOnLoginOrLockScreen[] =
 const bool kCanBeClosedByUser = false;
 const char kUrl[] = "test.html";
 
-const char kWhitelistedExtensionID1[] =
+const char kAllowlistedExtensionID1[] =
     "oclffehlkdgibkainkilopaalpdobkan";  // Login screen APIs test extension
-const char kWhitelistedExtensionID2[] =
+const char kAllowlistedExtensionID2[] =
     "lpimkpkllnkdlcigdbgmabfplniahkgm";  // Imprivata (login screen)
 const char kPermissionName[] = "loginScreenUi";
 
@@ -54,6 +54,10 @@ namespace login_screen_extension_ui {
 class FakeWindowFactory : public WindowFactory {
  public:
   FakeWindowFactory() = default;
+
+  FakeWindowFactory(const FakeWindowFactory&) = delete;
+  FakeWindowFactory& operator=(const FakeWindowFactory&) = delete;
+
   ~FakeWindowFactory() override = default;
 
   std::unique_ptr<Window> Create(CreateOptions* create_options) override {
@@ -62,7 +66,7 @@ class FakeWindowFactory : public WindowFactory {
     last_content_url_ = create_options->content_url;
     last_can_be_closed_by_user_ = create_options->can_be_closed_by_user;
     last_close_callback_ = std::move(create_options->close_callback);
-    return std::unique_ptr<Window>();
+    return nullptr;
   }
 
   bool create_was_called() const { return create_was_called_; }
@@ -90,8 +94,6 @@ class FakeWindowFactory : public WindowFactory {
   bool last_can_be_closed_by_user_;
   base::OnceClosure last_close_callback_;
   bool create_was_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWindowFactory);
 };
 
 class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
@@ -99,6 +101,12 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
   LoginScreenExtensionUiHandlerUnittest()
       : scoped_current_channel_(version_info::Channel::DEV),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  LoginScreenExtensionUiHandlerUnittest(
+      const LoginScreenExtensionUiHandlerUnittest&) = delete;
+  LoginScreenExtensionUiHandlerUnittest& operator=(
+      const LoginScreenExtensionUiHandlerUnittest&) = delete;
+
   ~LoginScreenExtensionUiHandlerUnittest() override = default;
 
   void SetUp() override {
@@ -126,8 +134,8 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
         session_manager::SessionState::LOGIN_PRIMARY);
 
     extension_ = extensions::ExtensionBuilder(
-                     /*extension_name=*/"LoginScreenUi test extension")
-                     .SetID(kWhitelistedExtensionID1)
+                     /*name=*/"LoginScreenUi test extension")
+                     .SetID(kAllowlistedExtensionID1)
                      .SetLocation(ManifestLocation::kExternalPolicy)
                      .AddPermission(kPermissionName)
                      .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
@@ -162,7 +170,7 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
   void CheckCanCloseWindow(const extensions::Extension* extension) {
     base::MockCallback<UiHandler::WindowClosedCallback> callback;
     EXPECT_CALL(callback,
-                Run(true, base::Optional<std::string>(base::nullopt)));
+                Run(true, absl::optional<std::string>(absl::nullopt)));
     ui_handler_->Close(extension, callback.Get());
     // Invoke close callback from dialog delegate because UiHandler::Close() is
     // synchronous and will invoke its callback after that.
@@ -184,7 +192,7 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
                               const std::string& expected_error) {
     base::MockCallback<UiHandler::WindowClosedCallback> callback;
     EXPECT_CALL(callback,
-                Run(false, base::Optional<std::string>(expected_error)));
+                Run(false, absl::optional<std::string>(expected_error)));
     ui_handler_->Close(extension, callback.Get());
     // No need to invoke the close callback here since in case of no open window
     // we directly invoke the callback with an error.
@@ -211,8 +219,6 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
   FakeWindowFactory* fake_window_factory_ = nullptr;
 
   std::unique_ptr<UiHandler> ui_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenExtensionUiHandlerUnittest);
 };
 
 using LoginScreenExtensionUiHandlerDeathUnittest =
@@ -293,8 +299,8 @@ TEST_F(LoginScreenExtensionUiHandlerUnittest, WindowClosedOnUnlock) {
 
 TEST_F(LoginScreenExtensionUiHandlerUnittest, OnlyOneWindow) {
   scoped_refptr<const extensions::Extension> other_extension =
-      extensions::ExtensionBuilder(/*extension_name=*/"Imprivata")
-          .SetID(kWhitelistedExtensionID2)
+      extensions::ExtensionBuilder(/*name=*/"Imprivata")
+          .SetID(kAllowlistedExtensionID2)
           .SetLocation(ManifestLocation::kExternalPolicy)
           .AddPermission(kPermissionName)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
@@ -372,8 +378,8 @@ TEST_F(LoginScreenExtensionUiHandlerDeathUnittest, NotAllowed) {
   // |other_profile_extension| is not enabled in the sign-in profile's
   // extensions registry.
   scoped_refptr<const extensions::Extension> other_profile_extension =
-      extensions::ExtensionBuilder("other profile" /*extension_name*/)
-          .SetID(kWhitelistedExtensionID2)  // whitelisted
+      extensions::ExtensionBuilder(/*name=*/"other profile")
+          .SetID(kAllowlistedExtensionID2)  // allowlisted
           .SetLocation(ManifestLocation::kExternalPolicy)
           .AddPermission(kPermissionName)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
@@ -384,8 +390,8 @@ TEST_F(LoginScreenExtensionUiHandlerDeathUnittest, NotAllowed) {
   // |no_permission_extension| is enabled in the sign-in profile's extensions
   // registry, but doesn't have the needed "loginScreenUi" permission.
   scoped_refptr<const extensions::Extension> no_permission_extension =
-      extensions::ExtensionBuilder("no permission extension" /*extension_name*/)
-          .SetID(kWhitelistedExtensionID2)  // whitelisted
+      extensions::ExtensionBuilder(/*name=*/"no permission extension")
+          .SetID(kAllowlistedExtensionID2)  // allowlisted
           .SetLocation(ManifestLocation::kExternalPolicy)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
           .Build();

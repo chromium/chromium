@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 
 class GURL;
@@ -30,6 +29,10 @@ class DeltaFileBackend;
 class DeltaFileService {
  public:
   explicit DeltaFileService(const base::FilePath& dir);
+
+  DeltaFileService(const DeltaFileService&) = delete;
+  DeltaFileService& operator=(const DeltaFileService&) = delete;
+
   virtual ~DeltaFileService();
 
   // Adds new addition entry to delta file.
@@ -55,8 +58,6 @@ class DeltaFileService {
  private:
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<DeltaFileBackend> delta_file_backend_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaFileService);
 };
 
 }  // namespace history_report

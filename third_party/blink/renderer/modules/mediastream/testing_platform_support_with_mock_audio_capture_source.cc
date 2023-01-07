@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@ scoped_refptr<media::AudioCapturerSource>
 AudioCapturerSourceTestingPlatformSupport::NewAudioCapturerSource(
     WebLocalFrame* web_frame,
     const media::AudioSourceParameters& params) {
-  EXPECT_EQ(nullptr, web_frame);
   return mock_audio_capturer_source_;
 }
 

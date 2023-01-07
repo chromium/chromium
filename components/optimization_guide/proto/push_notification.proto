@@ -1,0 +1,29 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "PushNotificationProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/common_types.proto";
+import "components/optimization_guide/proto/hints.proto";
+
+// This message is attached as a payload to push notifications in Optimization
+// Guide and contains all the needed information to invalidate stored hints that
+// the notification is meant to supersede, as well as an Any payload that can be
+// passed to consumers.
+message HintNotificationPayload {
+  optional OptimizationType optimization_type = 1;
+
+  // This is the unique key that will get cleared from the persistent hint store
+  // for the given optimization type. The |hint_key| must match exactly for
+  // hints to be cleared.
+  optional KeyRepresentation key_representation = 2;
+  optional string hint_key = 3;
+
+  optional Any payload = 4;
+}

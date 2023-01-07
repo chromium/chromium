@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
 #include "sandbox/linux/bpf_dsl/linux_syscall_ranges.h"
 #include "sandbox/linux/tests/unit_tests.h"
 
@@ -86,12 +85,12 @@ SANDBOX_TEST(SyscallSet, InvalidSyscalls) {
     size_t i = 0;
     for (uint32_t sysnum : set) {
       if (!SyscallSet::IsValid(sysnum)) {
-        SANDBOX_ASSERT(i < base::size(kExpected));
+        SANDBOX_ASSERT(i < std::size(kExpected));
         SANDBOX_ASSERT(kExpected[i] == sysnum);
         ++i;
       }
     }
-    SANDBOX_ASSERT(i == base::size(kExpected));
+    SANDBOX_ASSERT(i == std::size(kExpected));
   }
 }
 

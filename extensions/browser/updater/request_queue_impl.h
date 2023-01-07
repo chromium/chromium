@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,40 +22,56 @@ RequestQueue<T>::RequestQueue(
     const net::BackoffEntry::Policy* const backoff_policy,
     const base::RepeatingClosure& start_request_callback)
     : backoff_policy_(backoff_policy),
-      start_request_callback_(start_request_callback) {}
+      start_request_callback_(start_request_callback),
+      active_request_(absl::nullopt) {}
 
 template <typename T>
 RequestQueue<T>::~RequestQueue() = default;
 
 template <typename T>
 T* RequestQueue<T>::active_request() {
-  return active_request_.get();
+  return active_request_ ? active_request_->fetch.get() : nullptr;
 }
 
 template <typename T>
 int RequestQueue<T>::active_request_failure_count() {
-  return active_backoff_entry_->failure_count();
+  DCHECK(active_request_);
+  return active_request_->backoff_entry->failure_count();
 }
 
 template <typename T>
-std::unique_ptr<T> RequestQueue<T>::reset_active_request() {
-  active_backoff_entry_.reset();
-  return std::move(active_request_);
+typename RequestQueue<T>::Request RequestQueue<T>::reset_active_request() {
+  DCHECK(active_request_);
+  Request request = std::move(*active_request_);
+  active_request_.reset();
+  return request;
 }
 
 template <typename T>
 void RequestQueue<T>::ScheduleRequest(std::unique_ptr<T> request) {
-  PushImpl(std::move(request), std::unique_ptr<net::BackoffEntry>(
-                                   new net::BackoffEntry(backoff_policy_)));
+  PushImpl(Request(std::unique_ptr<net::BackoffEntry>(
+                       new net::BackoffEntry(backoff_policy_)),
+                   std::move(request)));
   StartNextRequest();
 }
 
 template <typename T>
-void RequestQueue<T>::PushImpl(
-    std::unique_ptr<T> request,
-    std::unique_ptr<net::BackoffEntry> backoff_entry) {
-  pending_requests_.push_back(
-      Request(backoff_entry.release(), request.release()));
+void RequestQueue<T>::ScheduleRetriedRequest(
+    Request request,
+    const base::TimeDelta& min_backoff_delay) {
+  DCHECK(request.backoff_entry);
+  DCHECK(request.fetch);
+  request.backoff_entry->InformOfRequest(false);
+  if (request.backoff_entry->GetTimeUntilRelease() < min_backoff_delay) {
+    request.backoff_entry->SetCustomReleaseTime(base::TimeTicks::Now() +
+                                                min_backoff_delay);
+  }
+  PushImpl(std::move(request));
+}
+
+template <typename T>
+void RequestQueue<T>::PushImpl(Request request) {
+  pending_requests_.push_back(std::move(request));
   std::push_heap(
       pending_requests_.begin(), pending_requests_.end(), CompareRequests);
 }
@@ -107,8 +123,7 @@ void RequestQueue<T>::StartNextRequest() {
   std::pop_heap(
       pending_requests_.begin(), pending_requests_.end(), CompareRequests);
 
-  active_backoff_entry_ = std::move(pending_requests_.back().backoff_entry);
-  active_request_ = std::move(pending_requests_.back().request);
+  active_request_ = std::move(pending_requests_.back());
 
   pending_requests_.pop_back();
 
@@ -117,12 +132,8 @@ void RequestQueue<T>::StartNextRequest() {
 
 template <typename T>
 void RequestQueue<T>::RetryRequest(const base::TimeDelta& min_backoff_delay) {
-  active_backoff_entry_->InformOfRequest(false);
-  if (active_backoff_entry_->GetTimeUntilRelease() < min_backoff_delay) {
-    active_backoff_entry_->SetCustomReleaseTime(base::TimeTicks::Now() +
-                                                min_backoff_delay);
-  }
-  PushImpl(std::move(active_request_), std::move(active_backoff_entry_));
+  DCHECK(active_request_);
+  ScheduleRetriedRequest(reset_active_request(), min_backoff_delay);
 }
 
 template <typename T>
@@ -133,6 +144,28 @@ typename RequestQueue<T>::iterator RequestQueue<T>::begin() {
 template <typename T>
 typename RequestQueue<T>::iterator RequestQueue<T>::end() {
   return iterator(pending_requests_.end());
+}
+
+template <typename T>
+std::vector<std::unique_ptr<T>> RequestQueue<T>::erase_if(
+    base::RepeatingCallback<bool(const T&)> condition) {
+  std::vector<std::unique_ptr<T>> erased_fetches;
+  for (size_t i = 0; i < pending_requests_.size();) {
+    if (condition.Run(*pending_requests_[i].fetch)) {
+      erased_fetches.emplace_back(std::move(pending_requests_[i].fetch));
+      std::swap(pending_requests_[i],
+                pending_requests_[pending_requests_.size() - 1]);
+      pending_requests_.pop_back();
+    } else {
+      i++;
+    }
+  }
+  // We need to maintain a heap structure on pending request in order to extract
+  // first ones, but removing might break this structure.
+  std::make_heap(pending_requests_.begin(), pending_requests_.end(),
+                 CompareRequests);
+
+  return erased_fetches;
 }
 
 template <typename T>

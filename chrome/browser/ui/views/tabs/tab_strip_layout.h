@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Rect;
@@ -47,24 +47,13 @@ struct TabWidthOverride {
   int extra_space;
 };
 
-TabWidthOverride CalculateTabWidthOverride(
-    const TabLayoutConstants& layout_constants,
-    const std::vector<TabWidthConstraints>& tabs,
-    int width);
-
 // Calculates and returns the bounds of the tabs. |width| is the available
 // width to use for tab layout. This never sizes the tabs smaller then the
 // minimum widths in TabSizeInfo, and as a result the calculated bounds may go
-// beyond |width|. If |tab_width_override| has a value, it is used to calculate
-// bounds; otherwise, they are calculated based on the other constraints.
+// beyond |width|.
 std::vector<gfx::Rect> CalculateTabBounds(
     const TabLayoutConstants& layout_constants,
     const std::vector<TabWidthConstraints>& tabs,
-    base::Optional<int> width,
-    base::Optional<TabWidthOverride> tab_width_override);
-
-std::vector<gfx::Rect> CalculatePinnedTabBounds(
-    const TabLayoutConstants& layout_constants,
-    const std::vector<TabWidthConstraints>& pinned_tabs);
+    absl::optional<int> width);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_LAYOUT_H_

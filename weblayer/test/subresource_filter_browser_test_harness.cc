@@ -1,11 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/test/subresource_filter_browser_test_harness.h"
 
+#include "build/build_config.h"
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
@@ -14,7 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/heavy_ad_service_factory.h"
-#include "weblayer/browser/subresource_filter_client_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
@@ -50,7 +51,7 @@ void WaitForHeavyAdBlocklistToBeLoaded(content::WebContents* web_contents) {
   run_loop.Run();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Installs a fake database manager so that the safe browsing activation
 // throttle will be created (WebLayer currently has a safe browsing database
 // available in production only on Android).
@@ -59,11 +60,9 @@ void InstallFakeSafeBrowsingDatabaseManagerInWebContents(
   scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager =
       base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
 
-  auto* client_impl = static_cast<SubresourceFilterClientImpl*>(
-      subresource_filter::ContentSubresourceFilterThrottleManager::
-          FromWebContents(web_contents)
-              ->client());
-  client_impl->set_database_manager_for_testing(std::move(database_manager));
+  subresource_filter::ContentSubresourceFilterWebContentsHelper::
+      FromWebContents(web_contents)
+          ->SetDatabaseManagerForTesting(std::move(database_manager));
 }
 #endif
 
@@ -91,7 +90,7 @@ void SubresourceFilterBrowserTest::SetUpOnMainThread() {
   // interferes with the operation of those tests.
   WaitForHeavyAdBlocklistToBeLoaded(web_contents());
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Install a fake database manager so that the safe browsing activation
   // throttle will be created, as that throttle is a core requirement for the
   // operation of the subresource filter.
@@ -147,6 +146,12 @@ bool SubresourceFilterBrowserTest::WasParsedScriptElementLoaded(
 
 bool SubresourceFilterBrowserTest::StartEmbeddedTestServerAutomatically() {
   return true;
+}
+
+subresource_filter::ContentSubresourceFilterThrottleManager*
+SubresourceFilterBrowserTest::GetPrimaryPageThrottleManager() {
+  return subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
+      web_contents()->GetPrimaryPage());
 }
 
 }  // namespace weblayer

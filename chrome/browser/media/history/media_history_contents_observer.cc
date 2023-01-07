@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,9 @@
 
 MediaHistoryContentsObserver::MediaHistoryContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents), service_(nullptr) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<MediaHistoryContentsObserver>(
+          *web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -32,7 +34,7 @@ MediaHistoryContentsObserver::~MediaHistoryContentsObserver() = default;
 
 void MediaHistoryContentsObserver::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   frozen_ = true;
@@ -40,7 +42,7 @@ void MediaHistoryContentsObserver::DidStartNavigation(
 
 void MediaHistoryContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   MaybeCommitMediaSession();
@@ -78,7 +80,7 @@ void MediaHistoryContentsObserver::MediaSessionInfoChanged(
 }
 
 void MediaHistoryContentsObserver::MediaSessionMetadataChanged(
-    const base::Optional<media_session::MediaMetadata>& metadata) {
+    const absl::optional<media_session::MediaMetadata>& metadata) {
   if (!metadata.has_value() || frozen_)
     return;
 
@@ -101,7 +103,7 @@ void MediaHistoryContentsObserver::MediaSessionImagesChanged(
 }
 
 void MediaHistoryContentsObserver::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   if (!position.has_value() || frozen_)
     return;
 
@@ -120,4 +122,4 @@ void MediaHistoryContentsObserver::MaybeCommitMediaSession() {
                                 cached_position_, cached_artwork_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaHistoryContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaHistoryContentsObserver);

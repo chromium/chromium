@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -26,7 +24,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/external_testing_loader.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
-#include "chrome/browser/web_applications/components/external_app_install_features.h"
+#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -38,20 +36,22 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
+#include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/customization/customization_document.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #endif
@@ -85,7 +85,7 @@ constexpr const TestServerExtension kTestServerExtensions[] = {
 const char kExternalAppId[] = "kekdneafjmhmndejhmbcadfiiofngffo";
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kExternalAppCrxPath[] =
     "external\\kekdneafjmhmndejhmbcadfiiofngffo.crx";
 const wchar_t kExternalAppRegistryKey[] =
@@ -95,6 +95,10 @@ const wchar_t kExternalAppRegistryKey[] =
 class ExternalProviderImplTest : public ExtensionServiceTestBase {
  public:
   ExternalProviderImplTest() {}
+
+  ExternalProviderImplTest(const ExternalProviderImplTest&) = delete;
+  ExternalProviderImplTest& operator=(const ExternalProviderImplTest&) = delete;
+
   ~ExternalProviderImplTest() override {}
 
   void InitService() {
@@ -107,14 +111,15 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     service()->updater()->SetExtensionCacheForTesting(
         test_extension_cache_.get());
 
-    // Don't install default apps. Some of the default apps are downloaded from
-    // the webstore, ignoring the url we pass to kAppsGalleryUpdateURL, which
-    // would cause the external updates to never finish install.
-    profile_->GetPrefs()->SetString(prefs::kDefaultApps, "");
+    // Don't install pre-installed apps. Some of the pre-installed apps are
+    // downloaded from the webstore, ignoring the url we pass to
+    // kAppsGalleryUpdateURL, which would cause the external updates to never
+    // finish install.
+    profile_->GetPrefs()->SetString(prefs::kPreinstalledApps, "");
   }
 
   void InitServiceWithExternalProviders(
-      const base::Optional<bool> block_external = base::nullopt) {
+      const absl::optional<bool> block_external = absl::nullopt) {
     InitService();
 
     if (block_external.has_value())
@@ -132,7 +137,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     // Windows doesn't use the provider that installs the |kExternalAppId|
     // extension implicitly, so to test that the blocking policy works on
     // Windows it is installed through a Windows-specific registry provider.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
     EXPECT_EQ(ERROR_SUCCESS,
@@ -145,8 +150,10 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     EXPECT_EQ(ERROR_SUCCESS,
               external_extension_key_.WriteValue(L"version", L"1"));
 #else
-    external_externsions_overrides_.reset(new base::ScopedPathOverride(
-        chrome::DIR_EXTERNAL_EXTENSIONS, data_dir().AppendASCII("external")));
+    external_externsions_overrides_ =
+        std::make_unique<base::ScopedPathOverride>(
+            chrome::DIR_EXTERNAL_EXTENSIONS,
+            data_dir().AppendASCII("external"));
 #endif
   }
 
@@ -176,7 +183,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
         &ExternalProviderImplTest::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE(test_server_->Start());
 
-    test_extension_cache_.reset(new ExtensionCacheFake());
+    test_extension_cache_ = std::make_unique<ExtensionCacheFake>();
 
     extension_test_util::SetGalleryUpdateURL(
         test_server_->GetURL(kInAppPaymentsApp.update_path));
@@ -201,17 +208,11 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
       if (url.path() == test_extension.update_path) {
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_code(net::HTTP_OK);
-        response->set_content(base::StringPrintf(
-            "<?xml version='1.0' encoding='UTF-8'?>\n"
-            "<gupdate xmlns='http://www.google.com/update2/response' "
-            "protocol='2.0'>\n"
-            "  <app appid='%s'>\n"
-            "    <updatecheck codebase='%s' version='%s' />\n"
-            "  </app>\n"
-            "</gupdate>",
-            test_extension.app_id,
-            test_server_->GetURL(test_extension.app_path).spec().c_str(),
-            test_extension.version));
+        response->set_content(CreateUpdateManifest(
+            {UpdateManifestItem(test_extension.app_id)
+                 .version(test_extension.version)
+                 .codebase(
+                     test_server_->GetURL(test_extension.app_path).spec())}));
         response->set_content_type("text/xml");
         return std::move(response);
       }
@@ -240,13 +241,11 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Registry key pointing to the external extension for Windows.
   base::win::RegKey external_extension_key_;
   registry_util::RegistryOverrideManager registry_override_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProviderImplTest);
 };
 
 }  // namespace
@@ -304,7 +303,7 @@ TEST_F(ExternalProviderImplTest, WebAppMigrationFlag) {
   // App is not installed, we should not install if the flag is enabled.
   {
     base::AutoReset<bool> testing_scope =
-        web_app::SetExternalAppInstallFeatureAlwaysEnabledForTesting();
+        web_app::SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
     AwaitCheckForExternalUpdates();
     EXPECT_FALSE(registry()->GetInstalledExtension(kGoodApp.app_id));
   }
@@ -318,7 +317,7 @@ TEST_F(ExternalProviderImplTest, WebAppMigrationFlag) {
   // App is now installed, we should not uninstall if the flag is enabled.
   {
     base::AutoReset<bool> testing_scope =
-        web_app::SetExternalAppInstallFeatureAlwaysEnabledForTesting();
+        web_app::SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
     AwaitCheckForExternalUpdates();
     EXPECT_TRUE(registry()->GetInstalledExtension(kGoodApp.app_id));
   }

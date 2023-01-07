@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ class GURL;
 // favicon retrieving logic from the View layer.
 @protocol FaviconRetriever <NSObject>
 // Fetches favicon given a page URL.
-// |completion| is guaranteed to only be called on main thread, but could be
+// `completion` is guaranteed to only be called on main thread, but could be
 // called at any time, even before this returns.
 // It might never be called if the favicon is not available.
 // It might be called multiple times per request.

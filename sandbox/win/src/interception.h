@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 // for the sandboxed process. For more details see
 // http://dev.chromium.org/developers/design-documents/sandbox .
 
-#ifndef SANDBOX_SRC_INTERCEPTION_H_
-#define SANDBOX_SRC_INTERCEPTION_H_
+#ifndef SANDBOX_WIN_SRC_INTERCEPTION_H_
+#define SANDBOX_WIN_SRC_INTERCEPTION_H_
 
 #include <stddef.h>
 
@@ -15,7 +15,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/sandbox_types.h"
 
@@ -67,10 +67,14 @@ class InterceptionManager {
 
  public:
   // An interception manager performs interceptions on a given child process.
-  // If we are allowed to intercept functions that have been patched by somebody
-  // else, relaxed should be set to true.
+  // We are allowed to intercept functions that have been patched by somebody
+  // else.
   // |child_process| should outlive the manager.
-  InterceptionManager(TargetProcess& child_process, bool relaxed);
+  InterceptionManager(TargetProcess& child_process);
+
+  InterceptionManager(const InterceptionManager&) = delete;
+  InterceptionManager& operator=(const InterceptionManager&) = delete;
+
   ~InterceptionManager();
 
   // Patches function_name inside dll_name to point to replacement_code_address.
@@ -145,7 +149,7 @@ class InterceptionManager {
     std::wstring dll;                 // Name of dll to intercept.
     std::string function;             // Name of function to intercept.
     std::string interceptor;          // Name of interceptor function.
-    const void* interceptor_address;  // Interceptor's entry point.
+    raw_ptr<const void> interceptor_address;  // Interceptor's entry point.
   };
 
   // Calculates the size of the required configuration buffer.
@@ -215,11 +219,6 @@ class InterceptionManager {
 
   // Keep track of patches added by name.
   bool names_used_;
-
-  // true if we are allowed to patch already-patched functions.
-  bool relaxed_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptionManager);
 };
 
 // This macro simply calls interception_manager.AddToPatchedFunctions with
@@ -253,4 +252,4 @@ class InterceptionManager {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_INTERCEPTION_H_
+#endif  // SANDBOX_WIN_SRC_INTERCEPTION_H_

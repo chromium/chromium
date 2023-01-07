@@ -18,6 +18,9 @@
  *
  */
 
+// no-include-guard-because-pch-file
+// no-std-usage-because-pch-file
+
 /* This prefix file is for use on Mac OS X only. This prefix file should contain
  * only files to precompile for faster builds. The project should be able to
  * build without this header, although we rarely test that.

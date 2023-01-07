@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,12 +23,15 @@ blink_core_sources_script = [
   "ignore_destructive_write_count_incrementer.h",
   "import_map.cc",
   "import_map.h",
+  "import_map_error.cc",
+  "import_map_error.h",
   "js_module_script.cc",
   "js_module_script.h",
   "modulator.cc",
   "modulator.h",
   "modulator_impl_base.cc",
   "modulator_impl_base.h",
+  "module_import_meta.cc",
   "module_import_meta.h",
   "module_map.cc",
   "module_map.h",
@@ -63,4 +66,13 @@ blink_core_sources_script = [
   "xml_parser_script_runner.cc",
   "xml_parser_script_runner.h",
   "xml_parser_script_runner_host.h",
+]
+
+blink_core_tests_script = [
+  "document_modulator_impl_test.cc",
+  "dynamic_module_resolver_test.cc",
+  "module_map_test.cc",
+  "module_record_resolver_impl_test.cc",
+  "module_script_test.cc",
+  "script_runner_test.cc",
 ]

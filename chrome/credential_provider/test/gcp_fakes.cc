@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ void InitializeRegistryOverrideForTesting(
   ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(L"enable_cloud_association",
                                           disable_cloud_association));
   ASSERT_EQ(ERROR_SUCCESS,
-            key.WriteValue(L"domains_allowed_to_login", L"test.com"));
+            key.WriteValue(L"domains_allowed_to_login", L"test.com,gmail.com"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -344,6 +344,15 @@ HRESULT FakeOSUserManager::FindUserBySID(const wchar_t* sid,
                                          DWORD username_size,
                                          wchar_t* domain,
                                          DWORD domain_size) {
+  auto it = to_be_failed_find_user_sids_.find(sid);
+  if (it != to_be_failed_find_user_sids_.end()) {
+    to_be_failed_find_user_sids_[sid]--;
+    if (to_be_failed_find_user_sids_[sid] == 0)
+      to_be_failed_find_user_sids_.erase(it);
+
+    return E_FAIL;
+  }
+
   for (auto& kv : username_to_info_) {
     if (kv.second.sid == sid) {
       if (username)
@@ -355,6 +364,11 @@ HRESULT FakeOSUserManager::FindUserBySID(const wchar_t* sid,
   }
 
   return HRESULT_FROM_WIN32(ERROR_NONE_MAPPED);
+}
+
+void FakeOSUserManager::FailFindUserBySID(const wchar_t* sid,
+                                          int number_of_failures) {
+  to_be_failed_find_user_sids_[sid] = number_of_failures;
 }
 
 HRESULT FakeOSUserManager::RemoveUser(const wchar_t* username,

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,6 @@ namespace testing {
 
 // Ensures that all flags in |entries| has associated metadata. |count| is the
 // number of flags in |entries|.
-// TODO(ellyjones): remove the version of this that takes (entries, count)
-// separately after updating the iOS tests.
-void EnsureEveryFlagHasMetadata(const flags_ui::FeatureEntry* entries,
-                                size_t count);
 void EnsureEveryFlagHasMetadata(
     const base::span<const flags_ui::FeatureEntry>& entries);
 

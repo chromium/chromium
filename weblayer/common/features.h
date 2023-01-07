@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@ namespace features {
 
 // Weblayer features in alphabetical order.
 
-extern const base::Feature kWebLayerClientSidePhishingDetection;
-extern const base::Feature kWebLayerSafeBrowsing;
+BASE_DECLARE_FEATURE(kWebLayerClientSidePhishingDetection);
+BASE_DECLARE_FEATURE(kWebLayerSafeBrowsing);
 
 }  // namespace features
 }  // namespace weblayer

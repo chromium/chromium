@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,9 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -15,12 +18,13 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace arc {
 namespace {
@@ -33,18 +37,16 @@ void OnEmitArcBooted(bool success) {
 class DefaultDelegateImpl : public ArcBootPhaseMonitorBridge::Delegate {
  public:
   DefaultDelegateImpl() = default;
+  DefaultDelegateImpl(const DefaultDelegateImpl&) = delete;
+  DefaultDelegateImpl& operator=(const DefaultDelegateImpl&) = delete;
   ~DefaultDelegateImpl() override = default;
 
   void RecordFirstAppLaunchDelayUMA(base::TimeDelta delta) override {
     VLOG(2) << "Launching the first app took "
             << delta.InMillisecondsRoundedUp() << " ms.";
     UMA_HISTOGRAM_CUSTOM_TIMES("Arc.FirstAppLaunchDelay.TimeDelta", delta,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(2), 50);
+                               base::Milliseconds(1), base::Minutes(2), 50);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultDelegateImpl);
 };
 
 }  // namespace
@@ -101,25 +103,12 @@ ArcBootPhaseMonitorBridge::~ArcBootPhaseMonitorBridge() {
 
 void ArcBootPhaseMonitorBridge::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
+  if (boot_completed_)
+    observer->OnBootCompleted();
 }
 
 void ArcBootPhaseMonitorBridge::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMAInternal() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (first_app_launch_delay_recorded_)
-    return;
-  first_app_launch_delay_recorded_ = true;
-
-  if (boot_completed_) {
-    VLOG(2) << "ARC has already fully started. Recording the UMA now.";
-    if (delegate_)
-      delegate_->RecordFirstAppLaunchDelayUMA(base::TimeDelta());
-    return;
-  }
-  app_launch_time_ = base::TimeTicks::Now();
 }
 
 void ArcBootPhaseMonitorBridge::OnBootCompleted() {
@@ -127,7 +116,7 @@ void ArcBootPhaseMonitorBridge::OnBootCompleted() {
   VLOG(2) << "OnBootCompleted";
   boot_completed_ = true;
 
-  chromeos::SessionManagerClient::Get()->EmitArcBooted(
+  ash::SessionManagerClient::Get()->EmitArcBooted(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_),
       base::BindOnce(&OnEmitArcBooted));
 
@@ -149,15 +138,30 @@ void ArcBootPhaseMonitorBridge::OnArcSessionRestarting() {
   Reset();
 }
 
+void ArcBootPhaseMonitorBridge::SetDelegateForTesting(
+    std::unique_ptr<Delegate> delegate) {
+  delegate_ = std::move(delegate);
+}
+
+void ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMAInternal() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (first_app_launch_delay_recorded_)
+    return;
+  first_app_launch_delay_recorded_ = true;
+
+  if (boot_completed_) {
+    VLOG(2) << "ARC has already fully started. Recording the UMA now.";
+    if (delegate_)
+      delegate_->RecordFirstAppLaunchDelayUMA(base::TimeDelta());
+    return;
+  }
+  app_launch_time_ = base::TimeTicks::Now();
+}
+
 void ArcBootPhaseMonitorBridge::Reset() {
   app_launch_time_ = base::TimeTicks();
   first_app_launch_delay_recorded_ = false;
   boot_completed_ = false;
-}
-
-void ArcBootPhaseMonitorBridge::SetDelegateForTesting(
-    std::unique_ptr<Delegate> delegate) {
-  delegate_ = std::move(delegate);
 }
 
 }  // namespace arc

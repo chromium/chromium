@@ -1,11 +1,11 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/util/version.gni")
+import("//chrome/version.gni")
 
 declare_args() {
   # Should ANGLE be linked statically?
@@ -17,19 +17,21 @@ declare_args() {
       is_win || is_android || is_linux || is_chromeos || is_fuchsia || is_mac
 
   # Should Dawn support be compiled to back the WebGPU implementation?
-  # Also controls linking Dawn depedencies in such as SPIRV-Tools/SPIRV-Cross.
-  use_dawn = is_mac || is_win || is_chromeos_ash ||
-             ((is_linux || is_chromeos_lacros) && !is_chromecast)
+  # Also controls linking Dawn dependencies in such as SPIRV-Tools/SPIRV-Cross.
+  # TODO(crbug.com/1361532): Enable non-component builds on Android
+  use_dawn = is_mac || is_win || is_chromeos_ash || (is_linux && !is_castos) ||
+             is_chromeos_lacros || (is_android && is_component_build)
 
   # Should Dawn test binaries (unittests, end2end_tests, perf_tests) be built?
   # Independent of use_dawn, which controls whether Dawn is used in Chromium.
-  build_dawn_tests = is_mac || is_win || is_linux || is_chromeos
+  build_dawn_tests = is_mac || is_win || is_linux || is_chromeos || is_android
 }
 
 declare_args() {
-  enable_swiftshader = (is_win || is_linux || is_chromeos ||
-                        (is_mac && use_egl) || is_chromeos_ash || is_fuchsia) &&
-                       (target_cpu == "x86" || target_cpu == "x64" ||
-                        target_cpu == "arm" || target_cpu == "arm64" ||
-                        target_cpu == "mipsel" || target_cpu == "mips64el")
+  enable_swiftshader =
+      (is_win || is_linux || is_chromeos || (is_mac && use_egl) ||
+       is_chromeos_ash || is_fuchsia) &&
+      (target_cpu == "x86" || target_cpu == "x64" || target_cpu == "arm" ||
+       target_cpu == "arm64" || target_cpu == "mipsel" ||
+       target_cpu == "mips64el" || target_cpu == "riscv64")
 }

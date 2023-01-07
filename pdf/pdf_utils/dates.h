@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@ class Time;
 namespace chrome_pdf {
 
 // Parses a string in the PDF date format (see section 7.9.4 "Dates" of the ISO
-// 32000-1 standard). If `date` cannot be parsed, returns a "null" time (one for
-// which `base::Time::is_null()` returns `true`).
+// 32000-1:2008 spec). If `date` cannot be parsed, returns a "null" time (one
+// for which `base::Time::is_null()` returns `true`).
 base::Time ParsePdfDate(base::StringPiece date);
 
 }  // namespace chrome_pdf

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,39 +19,34 @@ class CORE_EXPORT CompositingReasonFinder {
   DISALLOW_NEW();
 
  public:
-  static CompositingReasons PotentialCompositingReasonsFromStyle(
-      const LayoutObject&);
-
-  static CompositingReasons NonStyleDeterminedDirectReasons(const PaintLayer&);
-
   CompositingReasonFinder(const CompositingReasonFinder&) = delete;
   CompositingReasonFinder& operator=(const CompositingReasonFinder&) = delete;
 
-  // Returns the direct reasons for compositing the given layer.
-  static CompositingReasons DirectReasons(const PaintLayer&);
+  // Composited scrolling reason is not included because
+  // PaintLayerScrollableArea needs the result of this function to determine
+  // composited scrolling status.
+  static CompositingReasons DirectReasonsForPaintPropertiesExceptScrolling(
+      const LayoutObject&,
+      const LayoutObject* container_for_fixed_position = nullptr);
 
+  static bool ShouldForcePreferCompositingToLCDText(
+      const LayoutObject&,
+      CompositingReasons reasons_except_scrolling);
+
+  // This must be called after
+  // |DirectReasonsForPaintPropertiesExceptForScrolling()| and
+  // |PaintLayerScrollableArea::UpdateNeedsCompositedScrolling()|.
   static CompositingReasons DirectReasonsForPaintProperties(
-      const LayoutObject&);
-
-  static CompositingReasons DirectReasonsForSVGChildPaintProperties(
-      const LayoutObject&);
+      const LayoutObject&,
+      CompositingReasons reasons_except_scrolling);
 
   static CompositingReasons CompositingReasonsForAnimation(const LayoutObject&);
-  static CompositingReasons CompositingReasonsForWillChange(
-      const ComputedStyle&);
   // Some LayoutObject types do not support transforms (see:
   // |LayoutObject::HasTransformRelatedProperty|) so this can return reasons
   // that the LayoutObject does not end up using.
   static CompositingReasons PotentialCompositingReasonsFor3DTransform(
       const ComputedStyle&);
-  static CompositingReasons CompositingReasonsFor3DTransform(
-      const LayoutObject&);
   static bool RequiresCompositingForRootScroller(const PaintLayer&);
-
-  static bool RequiresCompositingForScrollDependentPosition(const PaintLayer&);
-
-  static bool RequiresCompositingForAffectedByOuterViewportBoundsDelta(
-      const LayoutObject&);
 };
 
 }  // namespace blink

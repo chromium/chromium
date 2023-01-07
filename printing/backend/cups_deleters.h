@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,23 +8,23 @@
 #include <cups/cups.h>
 #include <memory>
 
-#include "printing/printing_export.h"
+#include "base/component_export.h"
 
 namespace printing {
 
-struct PRINTING_EXPORT HttpDeleter {
+struct COMPONENT_EXPORT(PRINT_BACKEND) HttpDeleter {
   void operator()(http_t* http) const;
 };
 
-struct PRINTING_EXPORT DestinationDeleter {
+struct COMPONENT_EXPORT(PRINT_BACKEND) DestinationDeleter {
   void operator()(cups_dest_t* dest) const;
 };
 
-struct PRINTING_EXPORT DestInfoDeleter {
+struct COMPONENT_EXPORT(PRINT_BACKEND) DestInfoDeleter {
   void operator()(cups_dinfo_t* info) const;
 };
 
-struct PRINTING_EXPORT OptionDeleter {
+struct COMPONENT_EXPORT(PRINT_BACKEND) OptionDeleter {
   void operator()(cups_option_t* option) const;
 };
 

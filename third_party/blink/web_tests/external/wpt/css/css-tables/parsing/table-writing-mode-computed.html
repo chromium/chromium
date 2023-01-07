@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<title>Computed value of writing-mode / direction on table parts.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://www.w3.org/TR/css-tables-3">
+<link rel="help" href="https://crbug.com/736093">
+<style>
+.test {
+  writing-mode: vertical-rl;
+  direction: rtl;
+}
+</style>
+
+<table class="test">
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <tbody class="test">
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <tbody>
+    <tr class="test">
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <tbody>
+    <tr>
+      <td class="test"></td>
+    </tr>
+  </tbody>
+</table>
+
+<script>
+let tables = [...document.querySelectorAll('table')];
+
+test(() => {
+  let table = tables[0];
+  assert_equals(getComputedStyle(table).writingMode, 'vertical-rl');
+  assert_equals(getComputedStyle(table).direction, 'rtl');
+
+  assert_equals(getComputedStyle(table.querySelector('tbody')).writingMode, 'vertical-rl');
+  assert_equals(getComputedStyle(table.querySelector('tbody')).direction, 'rtl');
+
+  assert_equals(getComputedStyle(table.querySelector('tr')).writingMode, 'vertical-rl');
+  assert_equals(getComputedStyle(table.querySelector('tr')).direction, 'rtl');
+
+  assert_equals(getComputedStyle(table.querySelector('td')).writingMode, 'vertical-rl');
+  assert_equals(getComputedStyle(table.querySelector('td')).direction, 'rtl');
+});
+
+test(() => {
+  let table = tables[1];
+  assert_equals(getComputedStyle(table).writingMode, 'horizontal-tb');
+  assert_equals(getComputedStyle(table).direction, 'ltr');
+
+  assert_equals(getComputedStyle(table.querySelector('tbody')).writingMode, 'vertical-rl');
+  assert_equals(getComputedStyle(table.querySelector('tbody')).direction, 'rtl');
+
+  assert_equals(getComputedStyle(table.querySelector('tr')).writingMode, 'vertical-rl');
+  assert_equals(getComputedStyle(table.querySelector('tr')).direction, 'rtl');
+
+  assert_equals(getComputedStyle(table.querySelector('td')).writingMode, 'vertical-rl');
+  assert_equals(getComputedStyle(table.querySelector('td')).direction, 'rtl');
+});
+
+test(() => {
+  let table = tables[2];
+  assert_equals(getComputedStyle(table).writingMode, 'horizontal-tb');
+  assert_equals(getComputedStyle(table).direction, 'ltr');
+
+  assert_equals(getComputedStyle(table.querySelector('tbody')).writingMode, 'horizontal-tb');
+  assert_equals(getComputedStyle(table.querySelector('tbody')).direction, 'ltr');
+
+  assert_equals(getComputedStyle(table.querySelector('tr')).writingMode, 'vertical-rl');
+  assert_equals(getComputedStyle(table.querySelector('tr')).direction, 'rtl');
+
+  assert_equals(getComputedStyle(table.querySelector('td')).writingMode, 'vertical-rl');
+  assert_equals(getComputedStyle(table.querySelector('td')).direction, 'rtl');
+});
+
+test(() => {
+  let table = tables[3];
+  assert_equals(getComputedStyle(table).writingMode, 'horizontal-tb');
+  assert_equals(getComputedStyle(table).direction, 'ltr');
+
+  assert_equals(getComputedStyle(table.querySelector('tbody')).writingMode, 'horizontal-tb');
+  assert_equals(getComputedStyle(table.querySelector('tbody')).direction, 'ltr');
+
+  assert_equals(getComputedStyle(table.querySelector('tr')).writingMode, 'horizontal-tb');
+  assert_equals(getComputedStyle(table.querySelector('tr')).direction, 'ltr');
+
+  assert_equals(getComputedStyle(table.querySelector('td')).writingMode, 'vertical-rl');
+  assert_equals(getComputedStyle(table.querySelector('td')).direction, 'rtl');
+});
+</script>

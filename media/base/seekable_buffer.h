@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,6 @@
 
 #include <list>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -51,6 +50,9 @@ class MEDIA_EXPORT SeekableBuffer {
   // Constructs an instance with |forward_capacity| and |backward_capacity|.
   // The values are in bytes.
   SeekableBuffer(int backward_capacity, int forward_capacity);
+
+  SeekableBuffer(const SeekableBuffer&) = delete;
+  SeekableBuffer& operator=(const SeekableBuffer&) = delete;
 
   ~SeekableBuffer();
 
@@ -180,8 +182,6 @@ class MEDIA_EXPORT SeekableBuffer {
   // Keeps track of the most recent time we've seen in case the |buffers_| is
   // empty when our owner asks what time it is.
   base::TimeDelta current_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(SeekableBuffer);
 };
 
 }  // namespace media

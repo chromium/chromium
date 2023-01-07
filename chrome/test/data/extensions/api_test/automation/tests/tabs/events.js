@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,6 +83,22 @@ let allTests = [
       assertEq(result, cancelButton);
       chrome.test.succeed();
     });
+  },
+  function testMultipleEventListeners() {
+    const cancelButton = rootNode.firstChild.children[2];
+    assertEq('Cancel', cancelButton.name);
+    let didCallListener1 = false;
+    const listener1 = () => {
+      didCallListener1 = true;
+      cancelButton.removeEventListener(EventType.FOCUS, listener1, false);
+    };
+    const listener2 = () => {
+      assertTrue(didCallListener1);
+      chrome.test.succeed();
+    };
+    cancelButton.addEventListener(EventType.FOCUS, listener1, false);
+    cancelButton.addEventListener(EventType.FOCUS, listener2, false);
+    cancelButton.focus();
   }
 ];
 

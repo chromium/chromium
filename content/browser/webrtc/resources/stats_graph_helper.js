@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 // Each group has an expand/collapse button and is collapsed initially.
 //
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {TimelineDataSeries} from './data_series.js';
 import {peerConnectionDataStore} from './dump_creator.js';
@@ -93,7 +93,7 @@ const dataConversionConfig = {
 
 // The object contains the stats names that should not be added to the graph,
 // even if they are numbers.
-const statsNameBlackList = {
+const statsNameBlockList = {
   'ssrc': true,
   'googTrackId': true,
   'googComponent': true,
@@ -139,12 +139,18 @@ function readReportStat(report, stat) {
 
 function isStandardStatBlocklisted(report, statName) {
   // The datachannelid is an identifier, but because it is a number it shows up
-  // as a graph if we don't blacklist it.
+  // as a graph if we don't blocklist it.
   if (report.type === 'data-channel' && statName === 'datachannelid') {
     return true;
   }
   // The priority does not change over time on its own; plotting uninteresting.
   if (report.type === 'candidate-pair' && statName === 'priority') {
+    return true;
+  }
+  // The mid/rid associated with a sender/receiver does not change over time;
+  // plotting uninteresting.
+  if (['inbound-rtp', 'outbound-rtp'].includes(report.type) &&
+      ['mid', 'rid'].includes(statName)) {
     return true;
   }
   return false;
@@ -155,9 +161,9 @@ const graphViews = {};
 window.graphViews = graphViews;
 const graphElementsByPeerConnectionId = new Map();
 
-// Returns number parsed from |value|, or NaN if the stats name is black-listed.
+// Returns number parsed from |value|, or NaN if the stats name is blocklisted.
 function getNumberFromValue(name, value) {
-  if (statsNameBlackList[name]) {
+  if (statsNameBlockList[name]) {
     return NaN;
   }
   if (isNaN(value)) {
@@ -195,8 +201,8 @@ export function drawSingleReport(
       // We do not draw non-numerical values, but still want to record it in the
       // data series.
       addDataSeriesPoints(
-          peerConnectionElement, rawDataSeriesId, rawLabel, [stats.timestamp],
-          [stats.values[i + 1]]);
+          peerConnectionElement, reportType, rawDataSeriesId, rawLabel,
+          [stats.timestamp], [stats.values[i + 1]]);
       continue;
     }
     let finalDataSeriesId = rawDataSeriesId;
@@ -206,8 +212,8 @@ export function drawSingleReport(
     if (isLegacyReport && dataConversionConfig[rawLabel]) {
       // Updates the original dataSeries before the conversion.
       addDataSeriesPoints(
-          peerConnectionElement, rawDataSeriesId, rawLabel, [stats.timestamp],
-          [rawValue]);
+          peerConnectionElement, reportType, rawDataSeriesId, rawLabel,
+          [stats.timestamp], [rawValue]);
 
       // Convert to another value to draw on graph, using the original
       // dataSeries as input.
@@ -220,8 +226,8 @@ export function drawSingleReport(
 
     // Updates the final dataSeries to draw.
     addDataSeriesPoints(
-        peerConnectionElement, finalDataSeriesId, finalLabel, [stats.timestamp],
-        [finalValue]);
+        peerConnectionElement, reportType, finalDataSeriesId, finalLabel,
+        [stats.timestamp], [finalValue]);
 
     if (!isLegacyReport &&
         (isStandardReportBlocklisted(report) ||
@@ -240,6 +246,15 @@ export function drawSingleReport(
     if (!graphViews[graphViewId]) {
       graphViews[graphViewId] =
           createStatsGraphView(peerConnectionElement, report, graphType);
+      const searchParameters = new URLSearchParams(window.location.search);
+      if (searchParameters.has('statsInterval')) {
+        const statsInterval = Math.max(
+            parseInt(searchParameters.get('statsInterval'), 10),
+            100);
+        if (isFinite(statsInterval)) {
+          graphViews[graphViewId].setScale(statsInterval);
+        }
+      }
       const date = new Date(stats.timestamp);
       graphViews[graphViewId].setDateRange(date, date);
     }
@@ -291,12 +306,12 @@ export function removeStatsReportGraphs(peerConnectionElement) {
 // and adds the new data points to it. |times| is the list of timestamps for
 // each data point, and |values| is the list of the data point values.
 function addDataSeriesPoints(
-    peerConnectionElement, dataSeriesId, label, times, values) {
+    peerConnectionElement, reportType, dataSeriesId, label, times, values) {
   let dataSeries =
       peerConnectionDataStore[peerConnectionElement.id].getDataSeries(
           dataSeriesId);
   if (!dataSeries) {
-    dataSeries = new TimelineDataSeries();
+    dataSeries = new TimelineDataSeries(reportType);
     peerConnectionDataStore[peerConnectionElement.id].setDataSeries(
         dataSeriesId, dataSeries);
     if (bweCompoundGraphConfig[label]) {
@@ -340,8 +355,8 @@ function drawReceivedPropagationDelta(peerConnectionElement, report, deltas) {
   // Update the data series.
   const dataSeriesId = reportId + '-' + RECEIVED_PROPAGATION_DELTA_LABEL;
   addDataSeriesPoints(
-      peerConnectionElement, dataSeriesId, RECEIVED_PROPAGATION_DELTA_LABEL,
-      times, deltas);
+      peerConnectionElement, 'test type', dataSeriesId,
+      RECEIVED_PROPAGATION_DELTA_LABEL, times, deltas);
   // Update the graph.
   const graphViewId = peerConnectionElement.id + '-' + reportId + '-' +
       RECEIVED_PROPAGATION_DELTA_LABEL;
@@ -399,7 +414,7 @@ function ensureStatsGraphTopContainer(peerConnectionElement, report) {
     container.firstChild.firstChild.className =
         STATS_GRAPH_CONTAINER_HEADING_CLASS;
     container.firstChild.firstChild.textContent =
-        'Stats graphs for ' + report.id + ' (' + report.type + ')';
+        'Stats graphs for ' + report.type + ' (id=' + report.id + ')';
     const statsType = getSsrcReportType(report);
     if (statsType !== '') {
       container.firstChild.firstChild.textContent += ' (' + statsType + ')';

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ float XRDepthInformation::rawValueToMeters() const {
 
 XRRigidTransform* XRDepthInformation::normDepthBufferFromNormView() const {
   return MakeGarbageCollected<XRRigidTransform>(
-      TransformationMatrix(norm_depth_buffer_from_norm_view_.matrix()));
+      TransformationMatrix(norm_depth_buffer_from_norm_view_));
 }
 
 bool XRDepthInformation::ValidateFrame(ExceptionState& exception_state) const {

@@ -1,0 +1,19 @@
+caption: Disable taking screenshots
+desc: Setting the policy to True disallows screenshots taken with keyboard shortcuts
+  or extension APIs. Setting the policy to False allows screenshots.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+owners:
+- file://components/policy/resources/OWNERS
+- poromov@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:22-
+- chrome.*:22-
+tags: []
+type: main

@@ -1,15 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view_label.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -81,9 +81,7 @@ const CGFloat kVerticalContentPadding = 70.0f;
     _tabSwitcherButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     _tabSwitcherButton.titleLabel.adjustsFontForContentSizeCategory = YES;
 
-    if (@available(iOS 13.4, *)) {
-      _tabSwitcherButton.pointerInteractionEnabled = YES;
-    }
+    _tabSwitcherButton.pointerInteractionEnabled = YES;
 
     UIView* authButtonContainer =
         [self buildAuthenticateButtonWithBlurEffect:blurEffect];
@@ -126,7 +124,7 @@ const CGFloat kVerticalContentPadding = 70.0f;
   DCHECK(!_authenticateButton);
 
   // Use a IncognitoReauthViewLabel for the button label, because the built-in
-  // UIButton's |titleLabel| does not correctly resize for multiline labels and
+  // UIButton's `titleLabel` does not correctly resize for multiline labels and
   // using a UILabel doesn't provide feedback to adjust the corner radius.
   IncognitoReauthViewLabel* titleLabel =
       [[IncognitoReauthViewLabel alloc] init];
@@ -138,7 +136,7 @@ const CGFloat kVerticalContentPadding = 70.0f;
   titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
   titleLabel.text = l10n_util::GetNSStringF(
       IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON,
-      base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
+      base::SysNSStringToUTF16(BiometricAuthenticationTypeString()));
   [titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
@@ -154,28 +152,20 @@ const CGFloat kVerticalContentPadding = 70.0f;
 
   button.accessibilityLabel = l10n_util::GetNSStringF(
       IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON_VOICEOVER_LABEL,
-      base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
+      base::SysNSStringToUTF16(BiometricAuthenticationTypeString()));
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
-  if (@available(iOS 13.4, *)) {
-    button.pointerInteractionEnabled = YES;
-  }
+  button.pointerInteractionEnabled = YES;
 
   UIView* backgroundView = nil;
-  if (@available(iOS 13, *)) {
-    UIVisualEffectView* effectView = [[UIVisualEffectView alloc]
-        initWithEffect:[UIVibrancyEffect
-                           effectForBlurEffect:blurEffect
-                                         style:UIVibrancyEffectStyleFill]];
+  UIVisualEffectView* effectView = [[UIVisualEffectView alloc]
+      initWithEffect:[UIVibrancyEffect
+                         effectForBlurEffect:blurEffect
+                                       style:UIVibrancyEffectStyleFill]];
 
-    [button addSubview:titleLabel];
-    [effectView.contentView addSubview:button];
-    backgroundView = effectView;
-  } else {
-    backgroundView = [[UIView alloc] init];
-    [backgroundView addSubview:button];
-    [backgroundView addSubview:titleLabel];
-  }
+  [button addSubview:titleLabel];
+  [effectView.contentView addSubview:button];
+  backgroundView = effectView;
   AddSameConstraintsWithInsets(
 
       button, titleLabel,

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,8 @@
 #define CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_HANDLER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/notifications/notification_handler.h"  // nogncheck
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -16,6 +15,12 @@ class Profile;
 class AnnouncementNotificationHandler : public NotificationHandler {
  public:
   AnnouncementNotificationHandler();
+
+  AnnouncementNotificationHandler(const AnnouncementNotificationHandler&) =
+      delete;
+  AnnouncementNotificationHandler& operator=(
+      const AnnouncementNotificationHandler&) = delete;
+
   ~AnnouncementNotificationHandler() override;
 
  private:
@@ -28,13 +33,11 @@ class AnnouncementNotificationHandler : public NotificationHandler {
   void OnClick(Profile* profile,
                const GURL& origin,
                const std::string& notification_id,
-               const base::Optional<int>& action_index,
-               const base::Optional<std::u16string>& reply,
+               const absl::optional<int>& action_index,
+               const absl::optional<std::u16string>& reply,
                base::OnceClosure completed_closure) override;
 
   void OpenAnnouncement(Profile* profile);
-
-  DISALLOW_COPY_AND_ASSIGN(AnnouncementNotificationHandler);
 };
 
 #endif  // CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_HANDLER_H_

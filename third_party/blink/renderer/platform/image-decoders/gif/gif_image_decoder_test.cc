@@ -345,7 +345,7 @@ TEST(GIFImageDecoderTest, firstFrameHasGreaterSizeThanScreenSize) {
           ->CopyAs<Vector<char>>();
 
   std::unique_ptr<ImageDecoder> decoder;
-  IntSize frame_size;
+  gfx::Size frame_size;
 
   // Compute hashes when the file is truncated.
   for (size_t i = 1; i <= full_data.size(); ++i) {
@@ -354,20 +354,27 @@ TEST(GIFImageDecoderTest, firstFrameHasGreaterSizeThanScreenSize) {
         SharedBuffer::Create(full_data.data(), i);
     decoder->SetData(data.get(), i == full_data.size());
 
-    if (decoder->IsSizeAvailable() && !frame_size.Width() &&
-        !frame_size.Height()) {
+    if (decoder->IsSizeAvailable() && !frame_size.width() &&
+        !frame_size.height()) {
       frame_size = decoder->DecodedSize();
       continue;
     }
 
-    ASSERT_EQ(frame_size.Width(), decoder->DecodedSize().Width());
-    ASSERT_EQ(frame_size.Height(), decoder->DecodedSize().Height());
+    ASSERT_EQ(frame_size.width(), decoder->DecodedSize().width());
+    ASSERT_EQ(frame_size.height(), decoder->DecodedSize().height());
   }
 }
 
 TEST(GIFImageDecoderTest, verifyRepetitionCount) {
+  // full2loop.gif has 3 frames (it is an animated GIF) and an explicit loop
+  // count of 2.
   TestRepetitionCount(kWebTestsResourcesDir, "full2loop.gif", 2);
-  TestRepetitionCount(kDecodersTestingDir, "radient.gif", kAnimationNone);
+  // radient.gif has 1 frame (it is a still GIF) and no explicit loop count.
+  // For still images, either kAnimationLoopInfinite or kAnimationNone are
+  // valid and equivalent, in that the pixels on screen do not change over
+  // time. It's arbitrary which one we pick: kAnimationLoopInfinite.
+  TestRepetitionCount(kDecodersTestingDir, "radient.gif",
+                      kAnimationLoopInfinite);
 }
 
 TEST(GIFImageDecoderTest, repetitionCountChangesWhenSeen) {
@@ -469,7 +476,7 @@ TEST(GIFImageDecoderTest, externalAllocator) {
   decoder->SetMemoryAllocator(nullptr);
 
   ASSERT_TRUE(frame);
-  EXPECT_EQ(IntRect(IntPoint(), decoder->Size()), frame->OriginalFrameRect());
+  EXPECT_EQ(gfx::Rect(decoder->Size()), frame->OriginalFrameRect());
   EXPECT_FALSE(frame->HasAlpha());
 }
 

@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/history/core/browser/in_memory_history_backend.h"
 
+#include <memory>
 #include <set>
-#include <vector>
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,7 +19,7 @@ InMemoryHistoryBackend::InMemoryHistoryBackend() = default;
 InMemoryHistoryBackend::~InMemoryHistoryBackend() = default;
 
 bool InMemoryHistoryBackend::Init(const base::FilePath& history_filename) {
-  db_.reset(new InMemoryDatabase);
+  db_ = std::make_unique<InMemoryDatabase>();
   return db_->InitFromDisk(history_filename);
 }
 
@@ -37,12 +37,11 @@ void InMemoryHistoryBackend::DeleteAllSearchTermsForKeyword(
   db_->DeleteAllSearchTermsForKeyword(keyword_id);
 }
 
-void InMemoryHistoryBackend::OnURLVisited(HistoryService* history_service,
-                                          ui::PageTransition transition,
-                                          const URLRow& row,
-                                          const RedirectList& redirects,
-                                          base::Time visit_time) {
-  OnURLVisitedOrModified(row);
+void InMemoryHistoryBackend::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::URLRow& url_row,
+    const history::VisitRow& new_visit) {
+  OnURLVisitedOrModified(url_row);
 }
 
 void InMemoryHistoryBackend::OnURLsModified(HistoryService* history_service,
@@ -59,7 +58,7 @@ void InMemoryHistoryBackend::OnURLsDeleted(HistoryService* history_service,
   if (deletion_info.IsAllHistory()) {
     // When all history is deleted, the individual URLs won't be listed. Just
     // create a new database to quickly clear everything out.
-    db_.reset(new InMemoryDatabase);
+    db_ = std::make_unique<InMemoryDatabase>();
     if (!db_->InitFromScratch())
       db_.reset();
     return;

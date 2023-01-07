@@ -1,13 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_ANDROID_CONTENT_URL_LOADER_FACTORY_H_
 #define CONTENT_BROWSER_ANDROID_CONTENT_URL_LOADER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -25,6 +24,9 @@ class CONTENT_EXPORT ContentURLLoaderFactory
   // receivers (including the receiver associated with the returned
   // mojo::PendingRemote and the receivers bound by the Clone method).
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
+
+  ContentURLLoaderFactory(const ContentURLLoaderFactory&) = delete;
+  ContentURLLoaderFactory& operator=(const ContentURLLoaderFactory&) = delete;
 
  private:
   // SequencedTaskRunner must be allowed to block and should have background
@@ -45,8 +47,6 @@ class CONTENT_EXPORT ContentURLLoaderFactory
       override;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentURLLoaderFactory);
 };
 
 }  // namespace content

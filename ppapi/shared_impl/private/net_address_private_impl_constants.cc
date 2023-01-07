@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 
 namespace ppapi {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 // static
 const PP_NetAddress_Private NetAddressPrivateImpl::kInvalidNetAddress = { 0 };
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace ppapi

@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/exo/wayland/wayland_positioner.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 #include "xdg-shell-server-protocol.h"
 #include "xdg-shell-unstable-v6-server-protocol.h"
 
@@ -19,16 +20,12 @@ class WaylandPositionerTest : public testing::Test {
   struct TestCaseBuilder {
     WaylandPositioner positioner;
     gfx::Rect work_area = {0, 0, 5, 5};
-    bool flip_x = false;
-    bool flip_y = false;
 
     explicit TestCaseBuilder(WaylandPositioner::Version v) : positioner(v) {
       positioner.SetAnchorRect({2, 2, 1, 1});
     }
 
     TestCaseBuilder& SetFlipState(bool x, bool y) {
-      flip_x = x;
-      flip_y = y;
       return *this;
     }
 
@@ -52,13 +49,18 @@ class WaylandPositionerTest : public testing::Test {
       return *this;
     }
 
-    TestCaseBuilder& SetSize(uint32_t w, uint32_t h) {
+    TestCaseBuilder& SetWorkArea(const gfx::Rect& rect) {
+      work_area = rect;
+      return *this;
+    }
+
+    TestCaseBuilder& SetSize(int w, int h) {
       positioner.SetSize({w, h});
       return *this;
     }
 
     WaylandPositioner::Result Solve() const {
-      return positioner.CalculateBounds(work_area, flip_x, flip_y);
+      return positioner.CalculateBounds(work_area);
     }
 
     gfx::Rect SolveToRect() const {
@@ -173,9 +175,6 @@ TEST_F(WaylandPositionerTest, TriesToMaximizeAreaUnstable) {
   EXPECT_EQ(result.origin, gfx::Point(1, 0));
   // The x size will be preserved but y shrinks to the work area.
   EXPECT_EQ(result.size, gfx::Size(4, 5));
-  // Neither axis will be flipped.
-  EXPECT_FALSE(result.x_flipped);
-  EXPECT_FALSE(result.y_flipped);
 }
 
 TEST_F(WaylandPositionerTest, PropagatesAnInitialFlipUnstable) {
@@ -191,12 +190,9 @@ TEST_F(WaylandPositionerTest, PropagatesAnInitialFlipUnstable) {
           .SetFlipState(true, true)
           .Solve();
   // With a propagated flip state:
-  //  - Normally the x would not need to flip, but it propagates the flip.
-  //  - Y also propagates, but that makes it constrained so it flips back.
-  EXPECT_EQ(result.origin, gfx::Point(1, 1));
+  //  - X and Y remain flipped to be positioned by the client.
+  EXPECT_EQ(result.origin, gfx::Point(3, 1));
   EXPECT_EQ(result.size, gfx::Size(2, 2));
-  EXPECT_TRUE(result.x_flipped);
-  EXPECT_FALSE(result.y_flipped);
 }
 
 // This is a common case for dropdown menus. In ChromeOS we do not let them
@@ -224,6 +220,38 @@ TEST_F(WaylandPositionerTest, PreventsSlidingThatOccludesAnchorRectUnstable) {
                 .SetAdjustment(~ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_NONE)
                 .SolveToRect(),
             gfx::Rect(1, 1, 4, 4));
+}
+
+// Allowing sliding which will occlude the anchor if there are no other
+// positioning options which do not result in a constrained view available.
+TEST_F(WaylandPositionerTest,
+       AllowsSlidingThatOccludesWhenThereAreNoOtherOptionsUnstable) {
+  EXPECT_EQ(
+      TestCaseBuilder(WaylandPositioner::Version::UNSTABLE)
+          .SetSize(4, 4)
+          .SetGravity(XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT)
+          .SetAnchor(XDG_POSITIONER_ANCHOR_BOTTOM_LEFT)
+          // Disable resizing in both axes which will force sliding.
+          .SetAdjustment(~(ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_RESIZE_X |
+                           ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_RESIZE_Y))
+          .SolveToRect(),
+      gfx::Rect(1, 1, 4, 4));
+}
+
+TEST_F(WaylandPositionerTest,
+       AllowsAdditionalAdjustmentsIfNoSolutionCanBeFoundUnstable) {
+  EXPECT_EQ(
+      TestCaseBuilder(WaylandPositioner::Version::UNSTABLE)
+          .SetWorkArea(gfx::Rect(5, 5))
+          .SetSize(10, 10)
+          .SetAnchorRect(0, 0, 0, 0)
+          .SetGravity(ZXDG_POSITIONER_V6_GRAVITY_BOTTOM |
+                      ZXDG_POSITIONER_V6_GRAVITY_RIGHT)
+          // No solution should forcibly allow resize
+          .SetAdjustment(ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_SLIDE_X |
+                         ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_SLIDE_Y)
+          .SolveToRect(),
+      gfx::Rect(0, 0, 5, 5));
 }
 
 // Tests for the stable protocol.
@@ -318,9 +346,6 @@ TEST_F(WaylandPositionerTest, TriesToMaximizeArea) {
   EXPECT_EQ(result.origin, gfx::Point(1, 0));
   // The x size will be preserved but y shrinks to the work area.
   EXPECT_EQ(result.size, gfx::Size(4, 5));
-  // Neither axis will be flipped.
-  EXPECT_FALSE(result.x_flipped);
-  EXPECT_FALSE(result.y_flipped);
 }
 
 TEST_F(WaylandPositionerTest, PropagatesAnInitialFlip) {
@@ -334,12 +359,9 @@ TEST_F(WaylandPositionerTest, PropagatesAnInitialFlip) {
           .SetFlipState(true, true)
           .Solve();
   // With a propagated flip state:
-  //  - Normally the x would not need to flip, but it propagates the flip.
-  //  - Y also propagates, but that makes it constrained so it flips back.
-  EXPECT_EQ(result.origin, gfx::Point(1, 1));
+  //  - X and Y remain flipped to be positioned by the client.
+  EXPECT_EQ(result.origin, gfx::Point(3, 1));
   EXPECT_EQ(result.size, gfx::Size(2, 2));
-  EXPECT_TRUE(result.x_flipped);
-  EXPECT_FALSE(result.y_flipped);
 }
 
 // This is a common case for dropdown menus. In ChromeOS we do not let them
@@ -365,6 +387,21 @@ TEST_F(WaylandPositionerTest, PreventsSlidingThatOccludesAnchorRect) {
             gfx::Rect(1, 1, 4, 4));
 }
 
+// Allowing sliding which will occlude the anchor if there are no other
+// positioning options which do not result in a constrained view available.
+TEST_F(WaylandPositionerTest,
+       AllowsSlidingThatOccludesWhenThereAreNoOtherOptions) {
+  EXPECT_EQ(TestCaseBuilder(WaylandPositioner::Version::STABLE)
+                .SetSize(4, 4)
+                .SetGravity(XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT)
+                .SetAnchor(XDG_POSITIONER_ANCHOR_BOTTOM_LEFT)
+                // Disable resizing in both axes which will force sliding.
+                .SetAdjustment(~(XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_RESIZE_X |
+                                 XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_RESIZE_Y))
+                .SolveToRect(),
+            gfx::Rect(1, 1, 4, 4));
+}
+
 // Make sure that the size should never be an empty even if the constraints
 // resulted in empty size.
 TEST_F(WaylandPositionerTest, ResizableShouldNotBeEmpty) {
@@ -384,6 +421,20 @@ TEST_F(WaylandPositionerTest, ResizableShouldNotBeEmpty) {
                 .SetAnchorRect(-10, 2, 4, 4)
                 .SolveToRect(),
             gfx::Rect(0, 2, 1, 3));
+}
+
+TEST_F(WaylandPositionerTest,
+       AllowsAdditionalAdjustmentsIfNoSolutionCanBeFound) {
+  EXPECT_EQ(TestCaseBuilder(WaylandPositioner::Version::STABLE)
+                .SetWorkArea(gfx::Rect(5, 5))
+                .SetSize(10, 10)
+                .SetAnchorRect(0, 0, 0, 0)
+                .SetGravity(XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT)
+                // No solution should forcibly allow resize
+                .SetAdjustment(XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_SLIDE_X |
+                               XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_SLIDE_Y)
+                .SolveToRect(),
+            gfx::Rect(0, 0, 5, 5));
 }
 
 }  // namespace

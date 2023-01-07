@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include <vector>
 
-#include "net/third_party/quiche/src/quic/core/quic_versions.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_ptr_util.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_system_event_loop.h"
-#include "net/third_party/quiche/src/quic/tools/quic_simple_server_backend.h"
-#include "net/third_party/quiche/src/quic/tools/quic_toy_server.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_command_line_flags.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_system_event_loop.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_simple_server_backend.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_toy_server.h"
 #include "net/tools/quic/quic_simple_server.h"
 #include "net/tools/quic/quic_simple_server_backend_factory.h"
 
@@ -32,12 +32,12 @@ class QuicSimpleServerFactory : public quic::QuicToyServer::ServerFactory {
 };
 
 int main(int argc, char* argv[]) {
-  QuicSystemEventLoop event_loop("quic_server");
+  quiche::QuicheSystemEventLoop event_loop("quic_server");
   const char* usage = "Usage: quic_server [options]";
   std::vector<std::string> non_option_args =
-      quic::QuicParseCommandLineFlags(usage, argc, argv);
+      quiche::QuicheParseCommandLineFlags(usage, argc, argv);
   if (!non_option_args.empty()) {
-    quic::QuicPrintCommandLineFlagHelp(usage);
+    quiche::QuichePrintCommandLineFlagHelp(usage);
     exit(0);
   }
 

@@ -14,6 +14,9 @@
             var overflowMenu = getOverflowMenuButton(video);
             var coords = elementCoordinates(overflowMenu);
             clickAtCoordinates(coords[0], coords[1]);
+
+            // Simulate a 'tab' keypress to validate :focus-visible styles.
+            eventSender.keyDown('\u0009');
         };
         setVideoSrcAndWaitForFirstFrame("../../../../media/content/test.ogv");
     </script>

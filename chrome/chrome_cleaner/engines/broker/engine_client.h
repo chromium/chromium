@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,9 @@
 #include <windows.h>
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/chrome_cleaner/constants/uws_id.h"
@@ -82,6 +80,9 @@ class EngineClient : public base::RefCountedThreadSafe<EngineClient> {
       scoped_refptr<MojoTaskRunner> mojo_task_runner,
       std::unique_ptr<InterfaceMetadataObserver> interface_metadata_observer =
           nullptr);
+
+  EngineClient(const EngineClient&) = delete;
+  EngineClient& operator=(const EngineClient&) = delete;
 
   // Return the watchdog timeout that should be used for scanning using this
   // client.
@@ -240,8 +241,6 @@ class EngineClient : public base::RefCountedThreadSafe<EngineClient> {
   // Keeps track of the calls of both EngineRequestsImpl and
   // CleanerEngineRequestsImpl.
   std::unique_ptr<InterfaceMetadataObserver> interface_metadata_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(EngineClient);
 };
 
 }  // namespace chrome_cleaner

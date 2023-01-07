@@ -1,6 +1,6 @@
-CONSOLE ERROR: line 9: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8000". Protocols, domains, and ports must match.
-CONSOLE ERROR: line 9: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8000". Protocols, domains, and ports must match.
-CONSOLE ERROR: line 9: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8000". Protocols, domains, and ports must match.
+CONSOLE ERROR: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8000". Protocols, domains, and ports must match.
+CONSOLE ERROR: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8000". Protocols, domains, and ports must match.
+CONSOLE ERROR: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8000". Protocols, domains, and ports must match.
 
 
 --------

@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 
 #include <cstring>
+#include <tuple>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -58,12 +59,12 @@ static bool gRecordReplayAssertAllocations = false;
 
 extern "C" bool V8IsMainThread();
 
-void RecordReplayAssertBufferAllocationsBegin() {
+AutoRecordReplayAssertBufferAllocations::AutoRecordReplayAssertBufferAllocations() {
   if (V8IsMainThread())
     gRecordReplayAssertAllocations = true;
 }
 
-void RecordReplayAssertBufferAllocationsEnd() {
+AutoRecordReplayAssertBufferAllocations::~AutoRecordReplayAssertBufferAllocations() {
   if (V8IsMainThread())
     gRecordReplayAssertAllocations = false;
 }
@@ -110,7 +111,7 @@ size_t Buffer::Allocate(size_t num_bytes) {
   return block_start;
 }
 
-void Buffer::AttachHandles(std::vector<ScopedHandle>* handles) {
+bool Buffer::AttachHandles(std::vector<ScopedHandle>* handles) {
   DCHECK(message_.is_valid());
 
   uint32_t new_size = 0;
@@ -118,11 +119,13 @@ void Buffer::AttachHandles(std::vector<ScopedHandle>* handles) {
       message_.value(), 0, reinterpret_cast<MojoHandle*>(handles->data()),
       static_cast<uint32_t>(handles->size()), nullptr, &data_, &new_size);
   if (rv != MOJO_RESULT_OK)
-    return;
+    return false;
 
   size_ = new_size;
   for (auto& handle : *handles)
-    ignore_result(handle.release());
+    std::ignore = handle.release();
+  handles->clear();
+  return true;
 }
 
 void Buffer::Seal() {

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,14 @@ namespace printing {
 
 class PrintTestContentRendererClient : public content::ContentRendererClient {
  public:
-  PrintTestContentRendererClient();
+  explicit PrintTestContentRendererClient(bool generate_tagged_pdfs);
   ~PrintTestContentRendererClient() override;
 
+  // content::ContentRendererClient:
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
+
+ private:
+  const bool generate_tagged_pdfs_;
 };
 
 }  // namespace printing

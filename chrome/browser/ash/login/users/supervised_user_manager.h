@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -23,16 +22,21 @@ extern const char kSalt[];
 extern const char kRequirePasswordUpdate[];
 extern const char kHasIncompleteKey[];
 
-
 // Base class for SupervisedUserManagerImpl - provides a mechanism for getting
 // and setting specific values for supervised users, as well as additional
 // lookup methods that make sense only for supervised users.
+// TODO(b/231321563): Check this entire class is not used anymore for
+// deprecated supervised users and remove it with all dependencies.
 class SupervisedUserManager {
  public:
   // Registers user manager preferences.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   SupervisedUserManager() {}
+
+  SupervisedUserManager(const SupervisedUserManager&) = delete;
+  SupervisedUserManager& operator=(const SupervisedUserManager&) = delete;
+
   virtual ~SupervisedUserManager() {}
 
   // Returns sync_user_id for supervised user with `user_id` or empty string if
@@ -59,16 +63,13 @@ class SupervisedUserManager {
   // Fill `result` with public password-specific data for `user_id` from Local
   // State.
   virtual void GetPasswordInformation(const std::string& user_id,
-                                      base::DictionaryValue* result) = 0;
+                                      base::Value::Dict* result) = 0;
 
   // Stores public password-specific data from `password_info` for `user_id` in
   // Local State.
   virtual void SetPasswordInformation(
       const std::string& user_id,
-      const base::DictionaryValue* password_info) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserManager);
+      const base::Value::Dict* password_info) = 0;
 };
 
 }  // namespace ash

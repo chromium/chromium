@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <iterator>
 
-#include "base/macros.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {
@@ -32,6 +31,9 @@ class SANDBOX_EXPORT SyscallSet {
   class Iterator;
 
   SyscallSet(const SyscallSet& ss) : set_(ss.set_) {}
+
+  SyscallSet& operator=(const SyscallSet&) = delete;
+
   ~SyscallSet() {}
 
   Iterator begin() const;
@@ -62,18 +64,25 @@ class SANDBOX_EXPORT SyscallSet {
   Set set_;
 
   friend bool operator==(const SyscallSet&, const SyscallSet&);
-  DISALLOW_ASSIGN(SyscallSet);
 };
 
 SANDBOX_EXPORT bool operator==(const SyscallSet& lhs, const SyscallSet& rhs);
 
 // Iterator provides C++ input iterator semantics for traversing a
 // SyscallSet.
-class SyscallSet::Iterator
-    : public std::iterator<std::input_iterator_tag, uint32_t> {
+class SyscallSet::Iterator {
  public:
+  using iterator_category = std::input_iterator_tag;
+  using value_type = uint32_t;
+  using difference_type = std::ptrdiff_t;
+  using pointer = uint32_t*;
+  using reference = uint32_t&;
+
   Iterator(const Iterator& it)
       : set_(it.set_), done_(it.done_), num_(it.num_) {}
+
+  Iterator& operator=(const Iterator&) = delete;
+
   ~Iterator() {}
 
   uint32_t operator*() const;
@@ -90,7 +99,6 @@ class SyscallSet::Iterator
 
   friend SyscallSet;
   friend bool operator==(const Iterator&, const Iterator&);
-  DISALLOW_ASSIGN(Iterator);
 };
 
 SANDBOX_EXPORT bool operator==(const SyscallSet::Iterator& lhs,

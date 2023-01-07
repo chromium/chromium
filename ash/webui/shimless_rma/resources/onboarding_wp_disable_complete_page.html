@@ -1,0 +1,22 @@
+<style include="cr-shared-style shimless-rma-shared">
+</style>
+
+<base-page>
+  <div slot="left-pane">
+    <h1 tabindex="-1">[[i18n('wpDisableCompletePageTitleText')]]</h1>
+    <div id="writeProtectAction" class="icon-message">
+      <iron-icon id="verificationIcon" icon="[[getVerificationIcon_(action_)]]"
+          class="small-icon">
+      </iron-icon>
+      <span id="writeProtectAction" class="instructions">
+        [[actionString_]]
+      </span>
+    </div>
+  </div>
+  <div slot="right-pane">
+    <div class="illustration-wrapper" aria-hidden="true">
+      <img class="illustration" src="illustrations/success.svg"
+          alt="[[i18n('successAltText')]]">
+    </div>
+  </div>
+</base-page>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "google_apis/gcm/base/gcm_export.h"
@@ -71,6 +72,10 @@ class GCM_EXPORT CheckinRequest {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder);
+
+  CheckinRequest(const CheckinRequest&) = delete;
+  CheckinRequest& operator=(const CheckinRequest&) = delete;
+
   ~CheckinRequest();
 
   void Start();
@@ -80,6 +85,9 @@ class GCM_EXPORT CheckinRequest {
                          std::unique_ptr<std::string> body);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(GCMClientImplCheckinTest, CheckinWithAccounts);
+  FRIEND_TEST_ALL_PREFIXES(GCMClientImplCheckinTest,
+                           CheckinWithAccountsEmptyWithFeature);
   // Schedules a retry attempt with a backoff.
   void RetryWithBackoff();
 
@@ -95,11 +103,9 @@ class GCM_EXPORT CheckinRequest {
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   // Recorder that records GCM activities for debugging purpose. Not owned.
-  GCMStatsRecorder* recorder_;
+  raw_ptr<GCMStatsRecorder> recorder_;
 
   base::WeakPtrFactory<CheckinRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CheckinRequest);
 };
 
 }  // namespace gcm

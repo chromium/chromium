@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "dbus/dbus_export.h"
 #include "dbus/object_path.h"
@@ -47,6 +46,9 @@ class CHROME_DBUS_EXPORT ObjectProxy
               const std::string& service_name,
               const ObjectPath& object_path,
               int options);
+
+  ObjectProxy(const ObjectProxy&) = delete;
+  ObjectProxy& operator=(const ObjectProxy&) = delete;
 
   // Options to be OR-ed together when calling Bus::GetObjectProxyWithOptions().
   // Set the IGNORE_SERVICE_UNKNOWN_ERRORS option to silence logging of
@@ -188,6 +190,14 @@ class CHROME_DBUS_EXPORT ObjectProxy
                                SignalCallback signal_callback,
                                OnConnectedCallback on_connected_callback);
 
+  // Blocking version of ConnectToSignal.  Returns true on success.  Must be
+  // called from the DBus thread.
+  //
+  // BLOCKING CALL.
+  virtual bool ConnectToSignalAndBlock(const std::string& interface_name,
+                                       const std::string& signal_name,
+                                       SignalCallback signal_callback);
+
   // Sets a callback for "NameOwnerChanged" signal. The callback is called on
   // the origin thread when D-Bus system sends "NameOwnerChanged" for the name
   // represented by |service_name_|.
@@ -229,6 +239,9 @@ class CHROME_DBUS_EXPORT ObjectProxy
     // This is movable to be bound to an OnceCallback.
     ReplyCallbackHolder(ReplyCallbackHolder&& other);
 
+    ReplyCallbackHolder(const ReplyCallbackHolder&) = delete;
+    ReplyCallbackHolder& operator=(const ReplyCallbackHolder&) = delete;
+
     // |callback_| needs to be destroyed on the origin thread.
     // If this is not destroyed on non-origin thread, it PostTask()s the
     // callback to the origin thread for destroying.
@@ -241,7 +254,6 @@ class CHROME_DBUS_EXPORT ObjectProxy
    private:
     scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
     ResponseOrErrorCallback callback_;
-    DISALLOW_COPY_AND_ASSIGN(ReplyCallbackHolder);
   };
 
   // Starts the async method call. This is a helper function to implement
@@ -267,11 +279,6 @@ class CHROME_DBUS_EXPORT ObjectProxy
 
   // Tries to connect to NameOwnerChanged signal, ignores any error.
   void TryConnectToNameOwnerChangedSignal();
-
-  // Helper function for ConnectToSignal().
-  bool ConnectToSignalInternal(const std::string& interface_name,
-                               const std::string& signal_name,
-                               SignalCallback signal_callback);
 
   // Helper function for WaitForServiceToBeAvailable().
   void WaitForServiceToBeAvailableInternal();
@@ -356,8 +363,6 @@ class CHROME_DBUS_EXPORT ObjectProxy
   std::string service_name_owner_;
 
   std::set<DBusPendingCall*> pending_calls_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObjectProxy);
 };
 
 }  // namespace dbus

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <limits>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/numerics/safe_math.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -39,6 +38,12 @@ class VIZ_RESOURCE_FORMAT_EXPORT ResourceSizes {
   static bool MaybeSizeInBytes(const gfx::Size& size,
                                ResourceFormat format,
                                T* bytes);
+  // WARNING: The `format` must be single planar.
+  // TODO(hitawala): Add multiplanar format support.
+  template <typename T>
+  static bool MaybeSizeInBytes(const gfx::Size& size,
+                               SharedImageFormat format,
+                               T* bytes);
 
   // Dies with a CRASH() if the width can not be represented as a positive
   // number of bytes.
@@ -48,7 +53,10 @@ class VIZ_RESOURCE_FORMAT_EXPORT ResourceSizes {
   // number of bytes.
   template <typename T>
   static T CheckedSizeInBytes(const gfx::Size& size, ResourceFormat format);
-
+  // WARNING: The `format` must be single planar.
+  // TODO(hitawala): Add multiplanar format support.
+  template <typename T>
+  static T CheckedSizeInBytes(const gfx::Size& size, SharedImageFormat format);
   // Returns the width in bytes but may overflow or return 0. Only do this for
   // computing widths for sizes that have already been checked.
   template <typename T>
@@ -57,6 +65,11 @@ class VIZ_RESOURCE_FORMAT_EXPORT ResourceSizes {
   // sizes that have already been checked.
   template <typename T>
   static T UncheckedSizeInBytes(const gfx::Size& size, ResourceFormat format);
+  // WARNING: The `format` must be single planar.
+  // TODO(hitawala): Add multiplanar format support.
+  template <typename T>
+  static T UncheckedSizeInBytes(const gfx::Size& size,
+                                SharedImageFormat format);
   // Returns the width in bytes aligned but may overflow or return 0. Only do
   // this for computing widths for sizes that have already been checked.
   template <typename T>
@@ -146,6 +159,13 @@ bool ResourceSizes::MaybeSizeInBytes(const gfx::Size& size,
 }
 
 template <typename T>
+bool ResourceSizes::MaybeSizeInBytes(const gfx::Size& size,
+                                     SharedImageFormat format,
+                                     T* bytes) {
+  return MaybeSizeInBytes<T>(size, format.resource_format(), bytes);
+}
+
+template <typename T>
 T ResourceSizes::CheckedWidthInBytes(int width, ResourceFormat format) {
   VerifyType<T>();
   CHECK_GT(width, 0);
@@ -165,6 +185,12 @@ T ResourceSizes::CheckedSizeInBytes(const gfx::Size& size,
 }
 
 template <typename T>
+T ResourceSizes::CheckedSizeInBytes(const gfx::Size& size,
+                                    SharedImageFormat format) {
+  return CheckedSizeInBytes<T>(size, format.resource_format());
+}
+
+template <typename T>
 T ResourceSizes::UncheckedWidthInBytes(int width, ResourceFormat format) {
   VerifyType<T>();
   DCHECK_GT(width, 0);
@@ -179,6 +205,12 @@ T ResourceSizes::UncheckedSizeInBytes(const gfx::Size& size,
   DCHECK(!size.IsEmpty());
   DCHECK(VerifySizeInBytesInternal<T>(size, format, false));
   return SizeInBytesInternal<T>(size, format, false);
+}
+
+template <typename T>
+T ResourceSizes::UncheckedSizeInBytes(const gfx::Size& size,
+                                      SharedImageFormat format) {
+  return UncheckedSizeInBytes<T>(size, format.resource_format());
 }
 
 template <typename T>

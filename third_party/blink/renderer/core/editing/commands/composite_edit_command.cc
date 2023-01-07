@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_li_element.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -84,7 +85,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -178,7 +179,7 @@ UndoStep* CompositeEditCommand::EnsureUndoStep() {
     command = command->Parent();
   if (!command->undo_step_) {
     command->undo_step_ = MakeGarbageCollected<UndoStep>(
-        &GetDocument(), StartingSelection(), EndingSelection(), GetInputType());
+        &GetDocument(), StartingSelection(), EndingSelection());
   }
   return command->undo_step_.Get();
 }
@@ -298,7 +299,7 @@ void CompositeEditCommand::InsertNodeBefore(
   // TODO(editing-dev): Use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  ABORT_EDITING_COMMAND_IF(!HasEditableStyle(*ref_child->parentNode()) &&
+  ABORT_EDITING_COMMAND_IF(!IsEditable(*ref_child->parentNode()) &&
                            ref_child->parentNode()->InActiveDocument());
   ApplyCommandToComposite(
       MakeGarbageCollected<InsertNodeBeforeCommand>(
@@ -312,7 +313,7 @@ void CompositeEditCommand::InsertNodeAfter(Node* insert_child,
   ABORT_EDITING_COMMAND_IF(!ref_child->parentNode());
   DCHECK(insert_child);
   DCHECK(ref_child);
-  DCHECK_NE(GetDocument().body(), ref_child);
+  ABORT_EDITING_COMMAND_IF(GetDocument().body() == ref_child);
   ContainerNode* parent = ref_child->parentNode();
   DCHECK(parent);
   DCHECK(!parent->IsShadowRoot()) << parent;
@@ -375,8 +376,7 @@ void CompositeEditCommand::AppendNode(Node* node,
   ABORT_EDITING_COMMAND_IF(!CanHaveChildrenForEditing(parent) &&
                            !(parent_element && parent_element->TagQName() ==
                                                    html_names::kObjectTag));
-  ABORT_EDITING_COMMAND_IF(!HasEditableStyle(*parent) &&
-                           parent->InActiveDocument());
+  ABORT_EDITING_COMMAND_IF(!IsEditable(*parent) && parent->InActiveDocument());
   ApplyCommandToComposite(MakeGarbageCollected<AppendNodeCommand>(parent, node),
                           editing_state);
 }
@@ -561,7 +561,7 @@ void CompositeEditCommand::InsertTextIntoNode(Text* node,
                                               unsigned offset,
                                               const String& text) {
   // InsertIntoTextNodeCommand is never aborted.
-  if (!text.IsEmpty())
+  if (!text.empty())
     ApplyCommandToComposite(
         MakeGarbageCollected<InsertIntoTextNodeCommand>(node, offset, text),
         ASSERT_NO_EDITING_ABORT);
@@ -692,8 +692,9 @@ bool CompositeEditCommand::CanRebalance(const Position& position) const {
 
   auto* text_node = DynamicTo<Text>(position.ComputeContainerNode());
   if (!position.IsOffsetInAnchor() || !text_node ||
-      !HasRichlyEditableStyle(*text_node))
+      !IsRichlyEditable(*text_node)) {
     return false;
+  }
 
   if (text_node->length() == 0)
     return false;
@@ -731,7 +732,7 @@ void CompositeEditCommand::RebalanceWhitespaceOnTextSubstring(Text* text_node,
                                                               int start_offset,
                                                               int end_offset) {
   String text = text_node->data();
-  DCHECK(!text.IsEmpty());
+  DCHECK(!text.empty());
 
   // Set upstream and downstream to define the extent of the whitespace
   // surrounding text[offset].
@@ -831,6 +832,14 @@ void CompositeEditCommand::RebalanceWhitespace() {
     RebalanceWhitespaceAt(selection.End());
 }
 
+static bool IsInsignificantText(const LayoutText& layout_text) {
+  if (layout_text.HasInlineFragments())
+    return false;
+  // Spaces causing line break don't have `NGFragmentItem` but it has
+  // non-zero length. See http://crbug.com/1322746
+  return !layout_text.ResolvedTextLength();
+}
+
 void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
                                                    unsigned start,
                                                    unsigned end) {
@@ -843,7 +852,7 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
   if (!text_layout_object)
     return;
 
-  if (!text_layout_object->HasInlineFragments()) {
+  if (IsInsignificantText(*text_layout_object)) {
     // whole text node is empty
     // Removing a Text node won't dispatch synchronous events.
     RemoveNode(text_node, ASSERT_NO_EDITING_ABORT);
@@ -856,13 +865,15 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
   if (text_layout_object->IsInLayoutNGInlineFormattingContext()) {
     const String string = PlainText(
         EphemeralRange(Position(*text_node, start), Position(*text_node, end)));
-    if (string.IsEmpty())
+    if (string.empty())
       return DeleteTextFromNode(text_node, start, end - start);
     // Replace the text between start and end with collapsed version.
     return ReplaceTextInNode(text_node, start, end - start, string);
   }
 
-  Vector<InlineTextBox*> sorted_text_boxes;
+  HeapVector<Member<InlineTextBox>> sorted_text_boxes;
+  ClearCollectionScope<HeapVector<Member<InlineTextBox>>> scope(
+      &sorted_text_boxes);
   wtf_size_t sorted_text_boxes_position = 0;
 
   for (InlineTextBox* text_box : text_layout_object->TextBoxes())
@@ -873,8 +884,8 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
   if (text_layout_object->ContainsReversedText())
     std::sort(sorted_text_boxes.begin(), sorted_text_boxes.end(),
               InlineTextBox::CompareByStart);
-  InlineTextBox* box = sorted_text_boxes.IsEmpty()
-                           ? 0
+  InlineTextBox* box = sorted_text_boxes.empty()
+                           ? nullptr
                            : sorted_text_boxes[sorted_text_boxes_position];
 
   unsigned removed = 0;
@@ -913,7 +924,7 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
 
   if (!str.IsNull()) {
     // Replace the text between start and end with our pruned version.
-    if (!str.IsEmpty()) {
+    if (!str.empty()) {
       ReplaceTextInNode(text_node, start, end - start, str);
     } else {
       // Assert that we are not going to delete all of the text in the node.
@@ -971,7 +982,11 @@ HTMLBRElement* CompositeEditCommand::AppendBlockPlaceholder(
 
   // Should assert isLayoutBlockFlow || isInlineFlow when deletion improves. See
   // 4244964.
-  DCHECK(container->GetLayoutObject()) << container;
+  // Note: When `container` is newly created <object> as fallback content, it
+  // isn't associated to layout object. See http://crbug.com/1357082
+  DCHECK(container->GetLayoutObject() ||
+         Traversal<HTMLObjectElement>::FirstAncestor(*container))
+      << container;
 
   auto* placeholder = MakeGarbageCollected<HTMLBRElement>(GetDocument());
   AppendNode(placeholder, container, editing_state);
@@ -1065,6 +1080,10 @@ HTMLElement* CompositeEditCommand::MoveParagraphContentsToNewBlockIfNecessary(
   // not been invalidated by an earlier call to this function.  The caller,
   // applyBlockStyle, should do this.
   VisiblePosition visible_pos = CreateVisiblePosition(pos);
+  if (visible_pos.IsNull()) {
+    editing_state->Abort();
+    return nullptr;
+  }
   VisiblePosition visible_paragraph_start = StartOfParagraph(visible_pos);
   VisiblePosition visible_paragraph_end = EndOfParagraph(visible_pos);
   VisiblePosition next = NextPositionOf(visible_paragraph_end);
@@ -1136,6 +1155,10 @@ HTMLElement* CompositeEditCommand::MoveParagraphContentsToNewBlockIfNecessary(
   }
 
   visible_pos = CreateVisiblePosition(pos);
+  if (visible_pos.IsNull()) {
+    editing_state->Abort();
+    return nullptr;
+  }
   visible_paragraph_start = StartOfParagraph(visible_pos);
   visible_paragraph_end = EndOfParagraph(visible_pos);
   DCHECK_LE(visible_paragraph_start.DeepEquivalent(),
@@ -1692,7 +1715,7 @@ bool CompositeEditCommand::BreakOutOfEmptyListItem(
   if (!list_node ||
       (!IsA<HTMLUListElement>(*list_node) &&
        !IsA<HTMLOListElement>(*list_node)) ||
-      !HasEditableStyle(*list_node) ||
+      !IsEditable(*list_node) ||
       list_node == RootEditableElement(*empty_list_item))
     return false;
 
@@ -2122,6 +2145,8 @@ void CompositeEditCommand::AppliedEditing() {
         EnsureUndoStep()->EndingSelection());
     last_edit_command->GetUndoStep()->SetSelectionIsDirectional(
         GetUndoStep()->SelectionIsDirectional());
+    editor.GetUndoStack().DidSetEndingSelection(
+        last_edit_command->GetUndoStep());
     last_edit_command->AppendCommandToUndoStep(this);
   } else {
     // Only register a new undo command if the command passed in is

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,20 @@ struct RecordingParams {
   // async ordering of captures from different frames making it hard to keep
   // track of available headroom at the time of each capture triggering.
   size_t max_capture_size;
+
+  // Limit on the maximum size of a decoded image that can be serialized.
+  // Any images with a decoded size exceeding this value will be discarded.
+  // This can be used to reduce the chance of an OOM during serialization and
+  // later during playback.
+  uint64_t max_decoded_image_size_bytes{std::numeric_limits<uint64_t>::max()};
+
+  // This flag will skip GPU accelerated content where applicable when
+  // capturing. This reduces hangs, capture time and may also reduce OOM
+  // crashes, but results in a lower fideltiy capture (i.e. the contents
+  // captured may not accurately reflect the content visible to the user at
+  // time of capture). See PaintPreviewBaseService::CaptureParams for a
+  // description of the effects of this flag.
+  bool skip_accelerated_content{false};
 };
 
 // The result of a capture of a WebContents, which may contain recordings of

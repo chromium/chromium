@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -205,8 +205,6 @@ base::Time GCMDriverAndroid::GetLastTokenFetchTime() {
 void GCMDriverAndroid::SetLastTokenFetchTime(const base::Time& time) {
   NOTIMPLEMENTED();
 }
-
-void GCMDriverAndroid::WakeFromSuspendForHeartbeat(bool wake) {}
 
 InstanceIDHandler* GCMDriverAndroid::GetInstanceIDHandlerInternal() {
   // Not supported for Android.

@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller_impl.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
@@ -15,6 +16,10 @@ namespace autofill {
 class SaveUPIBubbleControllerImplTest : public DialogBrowserTest {
  public:
   SaveUPIBubbleControllerImplTest() = default;
+  SaveUPIBubbleControllerImplTest(const SaveUPIBubbleControllerImplTest&) =
+      delete;
+  SaveUPIBubbleControllerImplTest& operator=(
+      const SaveUPIBubbleControllerImplTest&) = delete;
   ~SaveUPIBubbleControllerImplTest() override = default;
 
   // DialogBrowserTest:
@@ -31,9 +36,7 @@ class SaveUPIBubbleControllerImplTest : public DialogBrowserTest {
   }
 
  private:
-  SaveUPIBubbleControllerImpl* controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveUPIBubbleControllerImplTest);
+  raw_ptr<SaveUPIBubbleControllerImpl> controller_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SaveUPIBubbleControllerImplTest, InvokeUi) {

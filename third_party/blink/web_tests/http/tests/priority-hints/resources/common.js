@@ -29,7 +29,7 @@ function assert_priority_onload(url, expected_priority, test) {
 }
 
 function getPriority(url) {
-  return internals.getResourcePriority(url, document);
+  return internals.getInitialResourcePriority(url, document);
 }
 
 function clearUseCounter() {

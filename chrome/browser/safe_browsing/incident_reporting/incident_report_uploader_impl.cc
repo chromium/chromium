@@ -1,23 +1,26 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/incident_reporting/incident_report_uploader_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/safe_browsing/core/features.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "base/strings/escape.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace safe_browsing {
 
@@ -75,7 +78,7 @@ IncidentReportUploaderImpl::UploadReport(
     const ClientIncidentReport& report) {
   std::string post_data;
   if (!report.SerializeToString(&post_data))
-    return std::unique_ptr<IncidentReportUploader>();
+    return nullptr;
   return std::unique_ptr<IncidentReportUploader>(new IncidentReportUploaderImpl(
       std::move(callback), url_loader_factory, post_data));
 }
@@ -89,8 +92,7 @@ IncidentReportUploaderImpl::IncidentReportUploaderImpl(
   resource_request->url = GetIncidentReportUrl();
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies))
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kSafeBrowsingIncidentTrafficAnnotation);
   url_loader_->AttachStringForUpload(post_data, "application/octet-stream");
@@ -108,7 +110,7 @@ GURL IncidentReportUploaderImpl::GetIncidentReportUrl() {
   std::string api_key(google_apis::GetAPIKey());
   if (api_key.empty())
     return url;
-  return url.Resolve("?key=" + net::EscapeQueryParamValue(api_key, true));
+  return url.Resolve("?key=" + base::EscapeQueryParamValue(api_key, true));
 }
 
 void IncidentReportUploaderImpl::OnURLLoaderComplete(
@@ -134,7 +136,7 @@ void IncidentReportUploaderImpl::OnURLLoaderCompleteInternal(
   Result result = UPLOAD_REQUEST_FAILED;
   std::unique_ptr<ClientIncidentResponse> response;
   if (net_error == net::OK && response_code == net::HTTP_OK) {
-    response.reset(new ClientIncidentResponse());
+    response = std::make_unique<ClientIncidentResponse>();
     if (!response->ParseFromString(response_body)) {
       response.reset();
       result = UPLOAD_INVALID_RESPONSE;

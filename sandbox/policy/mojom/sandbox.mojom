@@ -1,0 +1,145 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module sandbox.mojom;
+
+// Sandbox type that can be specified as an attribute of mojo interfaces.
+// To specify the sandbox a service should be launched in, use the
+// [ServiceSandbox=type] attribute.
+// If your service does not need access to OS resources it should be
+// possible to host it in |kService|. These values are mapped to
+// //sandbox/policy/sandbox_type.h values.
+enum Sandbox {
+  // |kService| hosts 'computation only' services such as decoders that
+  // use limited operating system services. Prefer to use this sandbox
+  // if possible.
+  kService,
+
+  // |kServiceWithJit| hosts computation only services that make use of
+  // dynamic code (e.g. v8 or wasm) but do not need access to OS resources.
+  // Prefer |kService| if possible.
+  kServiceWithJit,
+
+  // Hosts generic utilities with limited access to system services.
+  // On some platforms, may be slightly less locked down than |kService|.
+  // For instance, it allows dynamic code and wider access to APIs on Windows.
+  kUtility,
+
+  // The audio service process. May be disabled by policy.
+  kAudio,
+
+  // Hosts the content decryption module. Allows pre-loading of CDM libraries.
+  // - On Windows, when `CdmServiceBroker` is connected the CDM was not
+  // sandboxed to allow CDM preloading.
+  // - On Mac, the process is fully sandboxed when launched.
+  // - On Linux/ChromeOS, the CDM is preloaded in the zygote sandbox.
+  kCdm,
+
+  // The network service. May be disabled by policy.
+  kNetwork,
+
+  // Runs with the same rights as the browser. Usually needed to improve
+  // stability by hosting code that interacts with third party code in another
+  // process.
+  kNoSandbox,
+
+  // Hosts the GPU service and can talk to GPU drivers and other OS APIs which
+  // may not be expecting untrusted input.
+  kGpu,
+
+  // Composits PDF and XPS documents.
+  kPrintCompositor,
+
+  // Hosts untrustworthy web content. Blocks as much OS access as possible.
+  // Unless disabled by policy, allows dynamic code (for wasm/v8). Services
+  // should prefer to use kService or kUtility.
+  kRenderer,
+
+  // Like kUtility but allows loading of speech recognition libraries.
+  kSpeechRecognition,
+
+  // Like kUtility but allows loading of screen AI library.
+  [EnableIf=enable_screen_ai_service]
+  kScreenAI,
+
+  // The PPAPI plugin process.
+  [EnableIf=enable_ppapi]
+  kPpapi,
+
+  // Equivalent to no sandbox on all non-Fuchsia platforms.
+  // Minimally privileged sandbox on Fuchsia.
+  [EnableIf=is_fuchsia]
+  kVideoCapture,
+
+  // Allows access to file contents and Windows APIs for parsing icons from PE
+  // files.
+  [EnableIf=is_win]
+  kIconReader,
+
+  // Allows LPAC capabilities for the Windws Media Foundation CDM, including
+  // internet and private network access, COM, Identity & others. Allows access
+  // to files in the `mediaFoundationCdmFiles` Chromium lpac.
+  [EnableIf=is_win]
+  kMediaFoundationCdm,
+
+  // Launches elevated. Used by the RemovableStorageWriter.
+  [EnableIf=is_win]
+  kNoSandboxAndElevatedPrivileges,
+
+  // Like kUtility, but patches GDI during child startup in pdf_child_init.
+  [EnableIf=is_win]
+  kPdfConversion,
+
+  // Interfaces with operating system print drivers.
+  [EnableIf=enable_oop_printing]
+  kPrintBackend,
+
+  // |kXrCompositing| hosts XR Device Service on Windows.
+  [EnableIf=is_win]
+  kXrCompositing,
+
+  // Allows LPAC capabilities for WinHttp. This only needs internet access,
+  // policy access, and service access.
+  [EnableIf=is_win]
+  kWindowsSystemProxyResolver,
+
+  // Used to protect processes that perform hardware video decode acceleration.
+  // Currently uses the same policy as the GPU process sandbox. Warm-up does
+  // something different depending on the video acceleration API: for VA-API, we
+  // open the render node and load libva plus associated libraries (like i965 or
+  // iHD). For V4L2, we set up the broker process to allow opening certain V4L2
+  // devices and we load the libv4l2.so library.
+  //
+  // TODO(b/195769334): we're using the GPU process sandbox policy for now as a
+  // transition step. However, we should create a policy that's tighter just for
+  // hardware video decoding.
+  [EnableIf=is_linux_or_chromeos_ash]
+  kHardwareVideoDecoding,
+
+  // Hosts Input Method Editors.
+  [EnableIf=is_chromeos_ash]
+  kIme,
+
+  // Text-to-speech.
+  [EnableIf=is_chromeos_ash]
+  kTts,
+
+  // Hosts the Libassistant service on ChromeOS Ash, only used for
+  // Chrome branded builds.
+  [EnableIf=enable_cros_libassistant]
+  kLibassistant,
+
+  // Like kUtility but allows access to IOSurface on macOS.
+  [EnableIf=is_mac]
+  kMirroring,
+
+  // The NaCl loader process.
+  [EnableIf=is_mac]
+  kNaClLoader,
+
+  // Used to prime zygotes before they specialize. The process will receive a
+  // new sandbox later in its lifetime.
+  [EnableIf=has_zygote]
+  kZygoteIntermediateSandbox,
+};

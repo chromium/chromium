@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,8 +53,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // only set |subsamples| if |clear_bytes| <= |size|. If |subsamples| is
   // empty, the complete buffer is treated as encrypted.
   std::vector<media::SubsampleEntry> subsamples;
-  if (clear_bytes <= size)
-    subsamples.push_back({clear_bytes, size - clear_bytes});
+  if (clear_bytes <= size) {
+    subsamples.push_back(
+        {clear_bytes, static_cast<uint32_t>(size - clear_bytes)});
+  }
 
   auto encrypted_buffer = media::DecoderBuffer::CopyFrom(data, size);
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/html/canvas/canvas_draw_listener.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -16,7 +16,7 @@ class ExecutionContext;
 class HTMLCanvasElement;
 class CanvasCaptureHandler;
 
-class CanvasCaptureMediaStreamTrack final : public MediaStreamTrack {
+class CanvasCaptureMediaStreamTrack final : public MediaStreamTrackImpl {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -35,7 +35,7 @@ class CanvasCaptureMediaStreamTrack final : public MediaStreamTrack {
   HTMLCanvasElement* canvas() const;
   void requestFrame();
 
-  CanvasCaptureMediaStreamTrack* clone(ScriptState*) override;
+  CanvasCaptureMediaStreamTrack* clone(ExecutionContext*) override;
 
   void Trace(Visitor*) const override;
 
@@ -46,4 +46,4 @@ class CanvasCaptureMediaStreamTrack final : public MediaStreamTrack {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIACAPTUREFROMELEMENT_CANVAS_CAPTURE_MEDIA_STREAM_TRACK_H_

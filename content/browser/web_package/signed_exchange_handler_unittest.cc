@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,7 +30,7 @@
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -39,6 +40,8 @@
 #include "net/http/transport_security_state.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -83,22 +86,22 @@ class MockExpectCTReporter
       const net::X509Certificate* served_certificate_chain,
       const net::SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps,
-      const net::NetworkIsolationKey& network_isolation_key) override {
+      const net::NetworkAnonymizationKey& network_anonymization_key) override {
     num_failures_++;
     report_uri_ = report_uri;
-    network_isolation_key_ = network_isolation_key;
+    network_anonymization_key_ = network_anonymization_key;
   }
 
   int num_failures() const { return num_failures_; }
   const GURL& report_uri() const { return report_uri_; }
-  const net::NetworkIsolationKey& network_isolation_key() const {
-    return network_isolation_key_;
+  const net::NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
   }
 
  private:
   int num_failures_ = 0;
   GURL report_uri_;
-  net::NetworkIsolationKey network_isolation_key_;
+  net::NetworkAnonymizationKey network_anonymization_key_;
 };
 
 class TestBrowserClient : public ContentBrowserClient {
@@ -217,8 +220,7 @@ class SignedExchangeHandlerTest
   void SetUp() override {
     original_client_ = SetBrowserClientForTesting(&browser_client_);
     signed_exchange_utils::SetVerificationTimeForTesting(
-        base::Time::UnixEpoch() +
-        base::TimeDelta::FromSeconds(kSignatureHeaderDate));
+        base::Time::UnixEpoch() + base::Seconds(kSignatureHeaderDate));
     feature_list_.InitAndEnableFeature(features::kSignedHTTPExchange);
 
     source_stream_ = std::make_unique<net::MockSourceStream>();
@@ -245,7 +247,7 @@ class SignedExchangeHandlerTest
     SignedExchangeHandler::SetNetworkContextForTesting(nullptr);
     network::NetworkContext::SetCertVerifierForTesting(nullptr);
     signed_exchange_utils::SetVerificationTimeForTesting(
-        base::Optional<base::Time>());
+        absl::optional<base::Time>());
     SetBrowserClientForTesting(original_client_);
   }
 
@@ -339,21 +341,21 @@ class SignedExchangeHandlerTest
     return *resource_response_;
   }
 
-  // Creates a TestURLRequestContext that uses |mock_ct_policy_enforcer_|.
-  std::unique_ptr<net::TestURLRequestContext> CreateTestURLRequestContext() {
-    auto test_url_request_context =
-        std::make_unique<net::TestURLRequestContext>(
-            true /* delay_initialization */);
-    test_url_request_context->set_ct_policy_enforcer(
-        mock_ct_policy_enforcer_.get());
-    test_url_request_context->set_sct_auditing_delegate(
-        mock_sct_auditing_delegate_.get());
-    test_url_request_context->Init();
-    return test_url_request_context;
+  // Creates a URLRequestContext that uses |mock_ct_policy_enforcer_|.
+  std::unique_ptr<net::URLRequestContext> CreateTestURLRequestContext() {
+    // We consume these mock objects, so register expectations beforehand.
+    DCHECK(mock_ct_policy_enforcer_);
+    DCHECK(mock_sct_auditing_delegate_);
+    auto context_builder = net::CreateTestURLRequestContextBuilder();
+    context_builder->set_ct_policy_enforcer(
+        std::move(mock_ct_policy_enforcer_));
+    context_builder->set_sct_auditing_delegate(
+        std::move(mock_sct_auditing_delegate_));
+    return context_builder->Build();
   }
 
   void CreateSignedExchangeHandler(
-      std::unique_ptr<net::TestURLRequestContext> context) {
+      std::unique_ptr<net::URLRequestContext> context) {
     url_request_context_ = std::move(context);
     network_context_ = std::make_unique<network::NetworkContext>(
         nullptr, network_context_remote_.BindNewPipeAndPassReceiver(),
@@ -366,8 +368,9 @@ class SignedExchangeHandlerTest
         std::move(source_stream_),
         base::BindOnce(&SignedExchangeHandlerTest::OnHeaderFound,
                        base::Unretained(this)),
-        std::move(cert_fetcher_factory_), network_isolation_key_,
-        net::LOAD_NORMAL, net::IPEndPoint(),
+        std::move(cert_fetcher_factory_), network_anonymization_key_,
+        absl::nullopt /* outer_request_isolation_info */, net::LOAD_NORMAL,
+        net::IPEndPoint(),
         std::make_unique<blink::WebPackageRequestMatcher>(
             net::HttpRequestHeaders(), std::string() /* accept_langs */),
         nullptr /* devtools_proxy */, nullptr /* reporter */,
@@ -383,12 +386,12 @@ class SignedExchangeHandlerTest
   }
 
   void ExpectHistogramValues(
-      base::Optional<SignedExchangeSignatureVerifier::Result> signature_result,
-      base::Optional<int32_t> cert_result,
-      base::Optional<net::ct::CTPolicyCompliance> ct_result,
-      base::Optional<net::OCSPVerifyResult::ResponseStatus>
+      absl::optional<SignedExchangeSignatureVerifier::Result> signature_result,
+      absl::optional<int32_t> cert_result,
+      absl::optional<net::ct::CTPolicyCompliance> ct_result,
+      absl::optional<net::OCSPVerifyResult::ResponseStatus>
           ocsp_response_status,
-      base::Optional<net::OCSPRevocationStatus> ocsp_revocation_status) {
+      absl::optional<net::OCSPRevocationStatus> ocsp_revocation_status) {
     // CertVerificationResult histogram records negated net::Error code.
     if (cert_result.has_value())
       *cert_result = -*cert_result;
@@ -404,19 +407,19 @@ class SignedExchangeHandlerTest
                              ocsp_revocation_status);
   }
 
-  // Sets the NetworkIsolationKey used by CreateSignedExchangeHandler().
-  void set_network_isolation_key(
-      const net::NetworkIsolationKey& network_isolation_key) {
-    network_isolation_key_ = network_isolation_key;
+  // Sets the NetworkAnonymizationKey used by CreateSignedExchangeHandler().
+  void set_network_anonymization_key(
+      const net::NetworkAnonymizationKey& network_anonymization_key) {
+    network_anonymization_key_ = network_anonymization_key;
   }
 
  protected:
   const base::HistogramTester histogram_tester_;
-  MockSignedExchangeCertFetcherFactory* mock_cert_fetcher_factory_;
+  raw_ptr<MockSignedExchangeCertFetcherFactory> mock_cert_fetcher_factory_;
   std::unique_ptr<net::CertVerifier> cert_verifier_;
   std::unique_ptr<MockCTPolicyEnforcer> mock_ct_policy_enforcer_;
   std::unique_ptr<MockSCTAuditingDelegate> mock_sct_auditing_delegate_;
-  net::MockSourceStream* source_;
+  raw_ptr<net::MockSourceStream> source_;
   std::unique_ptr<SignedExchangeHandler> handler_;
 
  private:
@@ -435,7 +438,7 @@ class SignedExchangeHandlerTest
 
   template <typename T>
   void ExpectZeroOrUniqueSample(const std::string& histogram_name,
-                                base::Optional<T> expected_value) {
+                                absl::optional<T> expected_value) {
     if (expected_value.has_value())
       histogram_tester_.ExpectUniqueSample(histogram_name, *expected_value, 1);
     else
@@ -445,8 +448,8 @@ class SignedExchangeHandlerTest
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestBrowserClient browser_client_;
-  ContentBrowserClient* original_client_;
-  std::unique_ptr<net::TestURLRequestContext> url_request_context_;
+  raw_ptr<ContentBrowserClient> original_client_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<network::NetworkContext> network_context_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
   const url::Origin request_initiator_;
@@ -454,7 +457,7 @@ class SignedExchangeHandlerTest
       original_ignore_errors_spki_list_;
   std::unique_ptr<net::MockSourceStream> source_stream_;
   std::unique_ptr<MockSignedExchangeCertFetcherFactory> cert_fetcher_factory_;
-  net::NetworkIsolationKey network_isolation_key_;
+  net::NetworkAnonymizationKey network_anonymization_key_;
 
   bool read_header_ = false;
   SignedExchangeLoadResult result_;
@@ -634,7 +637,7 @@ TEST_P(SignedExchangeHandlerTest,
 
   signed_exchange_utils::SetVerificationTimeForTesting(
       base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(kCertValidityPeriodEnforcementDate));
+      base::Seconds(kCertValidityPeriodEnforcementDate));
   mock_cert_fetcher_factory_->ExpectFetch(
       GURL("https://cert.example.org/cert.msg"),
       GetTestFileContents("test.example.org.public.pem.cbor"));
@@ -706,9 +709,9 @@ TEST_P(SignedExchangeHandlerTest, CertSha256Mismatch) {
   EXPECT_EQ(kTestSxgInnerURL, inner_url());
   ExpectHistogramValues(
       SignedExchangeSignatureVerifier::Result::kErrCertificateSHA256Mismatch,
-      base::nullopt /* cert_result */, base::nullopt /* ct_result */,
-      base::nullopt /* ocsp_response_status */,
-      base::nullopt /* ocsp_revocation_status */);
+      absl::nullopt /* cert_result */, absl::nullopt /* ct_result */,
+      absl::nullopt /* ocsp_response_status */,
+      absl::nullopt /* ocsp_revocation_status */);
 
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
@@ -736,8 +739,8 @@ TEST_P(SignedExchangeHandlerTest, VerifyCertFailure) {
   ExpectHistogramValues(
       SignedExchangeSignatureVerifier::Result::kSuccess, net::ERR_CERT_INVALID,
       net::ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE,
-      base::nullopt /* ocsp_response_status */,
-      base::nullopt /* ocsp_revocation_status */);
+      absl::nullopt /* ocsp_response_status */,
+      absl::nullopt /* ocsp_revocation_status */);
 
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
@@ -897,23 +900,23 @@ TEST_P(SignedExchangeHandlerTest, NotEnoughSCTsFromPubliclyTrustedCert) {
   ExpectHistogramValues(SignedExchangeSignatureVerifier::Result::kSuccess,
                         net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED,
                         net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-                        base::nullopt /* ocsp_response_status */,
-                        base::nullopt /* ocsp_revocation_status */);
+                        absl::nullopt /* ocsp_response_status */,
+                        absl::nullopt /* ocsp_revocation_status */);
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
 }
 
 TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
-  const net::NetworkIsolationKey kNetworkIsolationKey =
-      net::NetworkIsolationKey::CreateTransient();
+  const net::NetworkAnonymizationKey kNetworkIsolationKey =
+      net::NetworkAnonymizationKey::CreateTransient();
   const GURL kReportUri = GURL("https://report.test/");
 
-  set_network_isolation_key(kNetworkIsolationKey);
+  set_network_anonymization_key(kNetworkIsolationKey);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // enabled_features
-      {net::TransportSecurityState::kDynamicExpectCTFeature,
+      {net::kDynamicExpectCTFeature,
        net::features::kPartitionExpectCTStateByNetworkIsolationKey},
       // disabled_features
       {});
@@ -932,11 +935,10 @@ TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
 
   SetSourceStreamContents("test.example.org_test.sxg");
 
-  std::unique_ptr<net::TestURLRequestContext> url_request_context =
+  std::unique_ptr<net::URLRequestContext> url_request_context =
       CreateTestURLRequestContext();
   url_request_context->transport_security_state()->AddExpectCT(
-      "test.example.org",
-      base::Time::Now() + base::TimeDelta::FromDays(1) /* expiry */,
+      "test.example.org", base::Time::Now() + base::Days(1) /* expiry */,
       false /* include_subdomains */, kReportUri, kNetworkIsolationKey);
   MockExpectCTReporter expect_ct_reporter;
   url_request_context->transport_security_state()->SetExpectCTReporter(
@@ -952,14 +954,15 @@ TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
   ExpectHistogramValues(SignedExchangeSignatureVerifier::Result::kSuccess,
                         net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED,
                         net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-                        base::nullopt /* ocsp_response_status */,
-                        base::nullopt /* ocsp_revocation_status */);
+                        absl::nullopt /* ocsp_response_status */,
+                        absl::nullopt /* ocsp_revocation_status */);
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
 
   ASSERT_EQ(1, expect_ct_reporter.num_failures());
   EXPECT_EQ(kReportUri, expect_ct_reporter.report_uri());
-  EXPECT_EQ(kNetworkIsolationKey, expect_ct_reporter.network_isolation_key());
+  EXPECT_EQ(kNetworkIsolationKey,
+            expect_ct_reporter.network_anonymization_key());
 }
 
 TEST_P(SignedExchangeHandlerTest, CTRequirementsMetForPubliclyTrustedCert) {
@@ -1064,11 +1067,9 @@ TEST_P(SignedExchangeHandlerTest, CTVerifierParams) {
       .WillOnce(
           Return(net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
-  auto test_url_request_context = std::make_unique<net::TestURLRequestContext>(
-      true /* delay_initialization */);
-  test_url_request_context->set_ct_policy_enforcer(
-      mock_ct_policy_enforcer_.get());
-  test_url_request_context->Init();
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  context_builder->set_ct_policy_enforcer(std::move(mock_ct_policy_enforcer_));
+  auto test_url_request_context = context_builder->Build();
 
   // Mock a verify result including the SCTs.
   auto verify_result = CreateCertVerifyResult();

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ enum class UploadState {
 // Used for UMA histogram, do not reorder. Represents the UI elements which
 // contain trusted vault error button.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
-enum class KeyRetrievalTriggerForUMA {
+enum class TrustedVaultUserActionTriggerForUMA {
   // Settings pages, used on all platforms except ChromeOS.
   kSettings,
   // Used on desktop platform only.
@@ -60,7 +60,13 @@ enum class KeyRetrievalTriggerForUMA {
 UploadState GetUploadToGoogleState(const SyncService* sync_service,
                                    ModelType type);
 
-void RecordKeyRetrievalTrigger(KeyRetrievalTriggerForUMA trigger);
+void RecordKeyRetrievalTrigger(TrustedVaultUserActionTriggerForUMA trigger);
+
+void RecordRecoverabilityDegradedFixTrigger(
+    TrustedVaultUserActionTriggerForUMA trigger);
+
+// Whether the user should be offered to opt in to trusted vault encryption.
+bool ShouldOfferTrustedVaultOptIn(const SyncService* service);
 
 }  // namespace syncer
 

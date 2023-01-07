@@ -1,12 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OFFLINE_PAGES_BACKGROUND____CORE_BACKGROUND_INITIALIZE_STORE_TASK_H_
-#define COMPONENTS_OFFLINE_PAGES_BACKGROUND____CORE_BACKGROUND_INITIALIZE_STORE_TASK_H_
+#ifndef COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_INITIALIZE_STORE_TASK_H_
+#define COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_INITIALIZE_STORE_TASK_H_
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/background/request_queue_store.h"
 #include "components/offline_pages/task/task.h"
@@ -26,6 +27,10 @@ class InitializeStoreTask : public Task {
  public:
   InitializeStoreTask(RequestQueueStore* store,
                       RequestQueueStore::InitializeCallback callback);
+
+  InitializeStoreTask(const InitializeStoreTask&) = delete;
+  InitializeStoreTask& operator=(const InitializeStoreTask&) = delete;
+
   ~InitializeStoreTask() override;
 
  private:
@@ -42,16 +47,15 @@ class InitializeStoreTask : public Task {
   void OnStoreResetDone(bool success);
 
   // Store that this task initializes.
-  RequestQueueStore* store_;
+  raw_ptr<RequestQueueStore> store_;
   // Number of attempts left to reset and reinitialize the store.
   int reset_attempts_left_;
   // Callback to complete the task.
   RequestQueueStore::InitializeCallback callback_;
 
   base::WeakPtrFactory<InitializeStoreTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(InitializeStoreTask);
 };
 
 }  // namespace offline_pages
 
-#endif  // COMPONENTS_OFFLINE_PAGES_BACKGROUND____CORE_BACKGROUND_INITIALIZE_STORE_TASK_H_
+#endif  // COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_INITIALIZE_STORE_TASK_H_

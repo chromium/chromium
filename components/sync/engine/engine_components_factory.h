@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/time/time.h"
 
 namespace syncer {
@@ -45,7 +44,7 @@ class EngineComponentsFactory {
     bool force_short_nudge_delay_for_test;
   };
 
-  virtual ~EngineComponentsFactory() {}
+  virtual ~EngineComponentsFactory() = default;
 
   virtual std::unique_ptr<SyncScheduler> BuildScheduler(
       const std::string& name,

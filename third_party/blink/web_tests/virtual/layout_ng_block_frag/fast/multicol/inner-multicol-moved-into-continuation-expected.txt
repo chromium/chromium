@@ -1,3 +1,0 @@
-Inside a multicol container, establish an inline continuation around an inner multicol-container with a spanner.
-
-PASS if no crash or assertion failure.

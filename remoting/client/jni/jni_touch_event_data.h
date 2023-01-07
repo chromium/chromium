@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 
 namespace remoting {
 
@@ -19,6 +18,10 @@ class TouchEventPoint;
 class JniTouchEventData {
  public:
   JniTouchEventData();
+
+  JniTouchEventData(const JniTouchEventData&) = delete;
+  JniTouchEventData& operator=(const JniTouchEventData&) = delete;
+
   ~JniTouchEventData();
 
   // Copies touch point data from a Java object to a C++ object.
@@ -26,9 +29,6 @@ class JniTouchEventData {
       JNIEnv* env,
       const base::android::ScopedJavaLocalRef<jobject>& java_object,
       protocol::TouchEventPoint* touch_event_point);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(JniTouchEventData);
 };
 
 }  // namespace remoting

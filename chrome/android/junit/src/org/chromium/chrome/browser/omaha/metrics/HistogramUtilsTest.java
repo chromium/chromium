@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Source;
@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.omaha.metrics.UpdateSuccessMetrics.Attributio
 
 /** Tests for HistogramUtils. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class HistogramUtilsTest {
     /** Tests {@link HistogramUtils#recordStartedUpdateHistogram(boolean)} */
     @Test
@@ -28,13 +28,13 @@ public class HistogramUtilsTest {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "GoogleUpdate.StartingUpdateState", 0));
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
 
         HistogramUtils.recordStartedUpdateHistogram(true);
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "GoogleUpdate.StartingUpdateState", 1));
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     /** Tests {@link HistogramUtils#recordResultHistogram(int, Tracking, boolean)}. */
@@ -56,14 +56,6 @@ public class HistogramUtilsTest {
                 "Intent.Infobar");
         validateHistogram(-3, Type.INTENT, Source.FROM_NOTIFICATION, "GoogleUpdate.Result.Unknown",
                 "Intent.Notification");
-        validateHistogram(-3, Type.INLINE, Source.UNKNOWN_SOURCE, "GoogleUpdate.Result.Unknown",
-                "Inline.Unknown");
-        validateHistogram(
-                -3, Type.INLINE, Source.FROM_MENU, "GoogleUpdate.Result.Unknown", "Inline.Menu");
-        validateHistogram(-3, Type.INLINE, Source.FROM_INFOBAR, "GoogleUpdate.Result.Unknown",
-                "Inline.Infobar");
-        validateHistogram(-3, Type.INLINE, Source.FROM_NOTIFICATION, "GoogleUpdate.Result.Unknown",
-                "Inline.Notification");
 
         validateHistogram(AttributionType.SESSION, Type.UNKNOWN_TYPE, Source.UNKNOWN_SOURCE,
                 "GoogleUpdate.Result.Session", "Unknown.Unknown");
@@ -81,14 +73,6 @@ public class HistogramUtilsTest {
                 "GoogleUpdate.Result.Session", "Intent.Infobar");
         validateHistogram(AttributionType.SESSION, Type.INTENT, Source.FROM_NOTIFICATION,
                 "GoogleUpdate.Result.Session", "Intent.Notification");
-        validateHistogram(AttributionType.SESSION, Type.INLINE, Source.UNKNOWN_SOURCE,
-                "GoogleUpdate.Result.Session", "Inline.Unknown");
-        validateHistogram(AttributionType.SESSION, Type.INLINE, Source.FROM_MENU,
-                "GoogleUpdate.Result.Session", "Inline.Menu");
-        validateHistogram(AttributionType.SESSION, Type.INLINE, Source.FROM_INFOBAR,
-                "GoogleUpdate.Result.Session", "Inline.Infobar");
-        validateHistogram(AttributionType.SESSION, Type.INLINE, Source.FROM_NOTIFICATION,
-                "GoogleUpdate.Result.Session", "Inline.Notification");
 
         validateHistogram(AttributionType.TIME_WINDOW, Type.UNKNOWN_TYPE, Source.UNKNOWN_SOURCE,
                 "GoogleUpdate.Result.TimeWindow", "Unknown.Unknown");
@@ -106,14 +90,6 @@ public class HistogramUtilsTest {
                 "GoogleUpdate.Result.TimeWindow", "Intent.Infobar");
         validateHistogram(AttributionType.TIME_WINDOW, Type.INTENT, Source.FROM_NOTIFICATION,
                 "GoogleUpdate.Result.TimeWindow", "Intent.Notification");
-        validateHistogram(AttributionType.TIME_WINDOW, Type.INLINE, Source.UNKNOWN_SOURCE,
-                "GoogleUpdate.Result.TimeWindow", "Inline.Unknown");
-        validateHistogram(AttributionType.TIME_WINDOW, Type.INLINE, Source.FROM_MENU,
-                "GoogleUpdate.Result.TimeWindow", "Inline.Menu");
-        validateHistogram(AttributionType.TIME_WINDOW, Type.INLINE, Source.FROM_INFOBAR,
-                "GoogleUpdate.Result.TimeWindow", "Inline.Infobar");
-        validateHistogram(AttributionType.TIME_WINDOW, Type.INLINE, Source.FROM_NOTIFICATION,
-                "GoogleUpdate.Result.TimeWindow", "Inline.Notification");
     }
 
     private static void validateHistogram(@AttributionType int attributionType, Type type,
@@ -131,6 +107,6 @@ public class HistogramUtilsTest {
         Assert.assertEquals(1, RecordHistogram.getHistogramValueCountForTesting(base, value));
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramValueCountForTesting(base + "." + suffix, value));
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 }

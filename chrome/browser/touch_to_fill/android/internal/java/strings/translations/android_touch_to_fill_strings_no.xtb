@@ -1,11 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1220509181886849806">Vil du bruke det lagrede passordet?</translation>
 <translation id="1717486229951421299">Listen over legitimasjon som kan fylles ut ved å trykke, er åpnet i halv høyde.</translation>
 <translation id="207576718733492531">Listen over legitimasjon som kan fylles ut ved å trykke, er lukket.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2410754283952462441">Velg en konto</translation>
 <translation id="3399357656427473483">Listen over legitimasjon som kan fylles ut ved å trykke.</translation>
+<translation id="3653689374478248324">Du er i ferd med å logge på <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Logg på</translation>
+<translation id="4598345735110653698">Administrer tilgangsnøkler</translation>
+<translation id="4907224763885298217">Bruk skjermlåsen</translation>
 <translation id="5441504010984421144">Listen over legitimasjon som kan fylles ut ved å trykke, er åpnet i full høyde.</translation>
 <translation id="5624120631404540903">Administrer passord</translation>
 <translation id="804577341878669140">Fortsett med konto</translation>

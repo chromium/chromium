@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 
 namespace remoting {
@@ -20,6 +19,9 @@ class FileChooser {
   typedef base::OnceCallback<void(Result)> ResultCallback;
 
   FileChooser() = default;
+
+  FileChooser(const FileChooser&) = delete;
+  FileChooser& operator=(const FileChooser&) = delete;
 
   // If the file dialog is currently displayed, destroys it without invoking
   // |callback|.
@@ -35,9 +37,6 @@ class FileChooser {
   static std::unique_ptr<FileChooser> Create(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       ResultCallback callback);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileChooser);
 };
 
 }  // namespace remoting

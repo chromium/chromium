@@ -1,11 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_async_file_util.h"
 
+#include "ash/components/arc/arc_util.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner_util.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,7 +43,7 @@ ArcContentFileSystemAsyncFileUtil::~ArcContentFileSystemAsyncFileUtil() =
 void ArcContentFileSystemAsyncFileUtil::CreateOrOpen(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
-    int file_flags,
+    uint32_t file_flags,
     CreateOrOpenCallback callback) {
   NOTIMPLEMENTED();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -109,17 +112,24 @@ void ArcContentFileSystemAsyncFileUtil::Truncate(
     const storage::FileSystemURL& url,
     int64_t length,
     StatusCallback callback) {
-  NOTIMPLEMENTED();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), base::File::FILE_ERROR_FAILED));
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  // Truncate() doesn't work well on ARC++ P.
+  // TODO(b/223247850) Fix this.
+  if (!IsArcVmEnabled()) {
+    NOTIMPLEMENTED();
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), base::File::FILE_ERROR_FAILED));
+    return;
+  }
+  TruncateOnIOThread(FileSystemUrlToArcUrl(url), length, std::move(callback));
 }
 
 void ArcContentFileSystemAsyncFileUtil::CopyFileLocal(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& src_url,
     const storage::FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     CopyFileProgressCallback progress_callback,
     StatusCallback callback) {
   NOTIMPLEMENTED();
@@ -132,7 +142,7 @@ void ArcContentFileSystemAsyncFileUtil::MoveFileLocal(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& src_url,
     const storage::FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     StatusCallback callback) {
   NOTIMPLEMENTED();
   base::ThreadTaskRunnerHandle::Get()->PostTask(

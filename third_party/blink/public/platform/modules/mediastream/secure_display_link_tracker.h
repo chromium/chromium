@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,19 +14,19 @@ namespace blink {
 template <typename T>
 class SecureDisplayLinkTracker {
  public:
-  SecureDisplayLinkTracker() {}
-  ~SecureDisplayLinkTracker() {}
+  SecureDisplayLinkTracker() = default;
+  SecureDisplayLinkTracker(const SecureDisplayLinkTracker&) = delete;
+  SecureDisplayLinkTracker& operator=(const SecureDisplayLinkTracker&) = delete;
+  ~SecureDisplayLinkTracker() = default;
 
   void Add(T* link, bool is_link_secure);
   void Remove(T* link);
   void Update(T* link, bool is_link_secure);
-  bool is_capturing_secure() const { return insecure_links_.IsEmpty(); }
+  bool is_capturing_secure() const { return insecure_links_.empty(); }
 
  private:
   // Record every insecure links.
   Vector<T*> insecure_links_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureDisplayLinkTracker);
 };
 
 template <typename T>

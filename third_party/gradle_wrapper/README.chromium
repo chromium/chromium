@@ -1,7 +1,7 @@
 Name: Gradle Wrapper
 Short Name: gradlew
 URL: https://gradle.org/
-Version: 4.3.1
+Version: 7.4
 License: Apache Version 2.0
 License File: NOT_SHIPPED
 Security Critical: no
@@ -19,6 +19,13 @@ way to do so is in Android Studio, open the "Gradle" tab on the right, click
 the elephant symbol for "Execute Gradle Task", and input `gradle wrapper`. The
 necessary files will then be populated in whichever directory the project is
 located.
+
+To upgrade:
+https://docs.gradle.org/current/userguide/gradle_wrapper.html#sec:upgrading_wrapper
+- Run: `./gradlew --version` to check the current version.
+- Run: `./gradlew wrapper --gradle-version <version>` to update to a newer version.
+  - You can find the latest version here: https://gradle.org/releases/
+- Run: `./gradlew --version` again to actually download the new version.
 
 Local Modifications:
 No modifications.

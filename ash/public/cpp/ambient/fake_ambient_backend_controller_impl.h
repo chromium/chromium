@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,15 @@
 #define ASH_PUBLIC_CPP_AMBIENT_FAKE_AMBIENT_BACKEND_CONTROLLER_IMPL_H_
 
 #include <array>
+#include <utility>
+#include <vector>
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 
@@ -24,13 +28,12 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
   // AmbientBackendController:
   void FetchScreenUpdateInfo(
       int num_topics,
+      bool show_pair_personal_portraits,
+      const gfx::Size& screen_size,
       OnScreenUpdateInfoFetchedCallback callback) override;
   void GetSettings(GetSettingsCallback callback) override;
   void UpdateSettings(const AmbientSettings& settings,
                       UpdateSettingsCallback callback) override;
-  void FetchSettingPreview(int preview_width,
-                           int preview_height,
-                           OnSettingPreviewFetchedCallback) override;
   void FetchPersonalAlbums(int banner_width,
                            int banner_height,
                            int num_albums,
@@ -42,6 +45,12 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
       int num_albums,
       OnSettingsAndAlbumsFetchedCallback callback) override;
   void FetchWeather(FetchWeatherCallback callback) override;
+  void GetGooglePhotosAlbumsPreview(
+      const std::vector<std::string>& album_ids,
+      int preview_width,
+      int preview_height,
+      int num_previews,
+      GetGooglePhotosAlbumsPreviewCallback callback) override;
   const std::array<const char*, 2>& GetBackupPhotoUrls() const override;
 
   // Simulate to reply the request of FetchSettingsAndAlbums().
@@ -51,7 +60,13 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
   // the pending callback.
   void ReplyFetchSettingsAndAlbums(
       bool success,
-      const base::Optional<AmbientSettings>& settings = base::nullopt);
+      const absl::optional<AmbientSettings>& settings = absl::nullopt);
+
+  // Simulates the reply for FetchScreenUpdateInfo(). All future calls to
+  // FetchScreenUpdateInfo() will return the number of topics specified by
+  // |num_topics_to_return|, bounded by the |num_topics| argument requested in
+  // FetchScreenUpdateInfo().
+  void SetFetchScreenUpdateInfoResponseSize(int num_topics_to_return);
 
   // Whether there is a pending FetchSettingsAndAlbums() request.
   bool IsFetchSettingsAndAlbumsPending() const;
@@ -64,14 +79,38 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
 
   // Sets the weather info that will be returned in subsequent calls to
   // `FetchWeather`.
-  void SetWeatherInfo(base::Optional<WeatherInfo> info);
+  void SetWeatherInfo(absl::optional<WeatherInfo> info);
+
+  void SetPhotoOrientation(bool portrait);
+
+  void SetPhotoTopicType(::ambient::TopicType topic_type);
+
+  // Gives the test total control over the topics returned by the backend.
+  // If a generator is set, it takes priority over all other topic settings
+  // above, and the topics it generates are returned verbatim to the client.
+  using TopicGeneratorCallback = base::RepeatingCallback<std::vector<
+      AmbientModeTopic>(int num_topics, const gfx::Size& screen_size)>;
+  void set_custom_topic_generator(
+      TopicGeneratorCallback custom_topic_generator) {
+    custom_topic_generator_ = std::move(custom_topic_generator);
+  }
 
  private:
   OnSettingsAndAlbumsFetchedCallback pending_fetch_settings_albums_callback_;
 
   UpdateSettingsCallback pending_update_callback_;
 
-  base::Optional<WeatherInfo> weather_info_;
+  absl::optional<WeatherInfo> weather_info_;
+
+  bool is_portrait_ = false;
+
+  bool has_related_image_ = true;
+
+  ::ambient::TopicType topic_type_ = ::ambient::TopicType::kCulturalInstitute;
+
+  absl::optional<int> custom_num_topics_to_return_;
+
+  TopicGeneratorCallback custom_topic_generator_;
 };
 
 }  // namespace ash

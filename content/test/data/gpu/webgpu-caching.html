@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>WebGPU caching test</title>
+  <style type="text/css">
+    .nomargin {
+      margin: 0px auto;
+    }
+  </style>
+
+  <script type="module">
+    import { webGpuUnitTests } from './webgpu-unittest-utils.js';
+
+    async function main() {
+        const parsedString = new URLSearchParams(window.location.search);
+
+        // Get the test parameters.
+        const testId = parsedString.get('testId');
+        const worker_string = parsedString.get('worker');
+        const use_worker =
+              (worker_string != null) ? worker_string == 'true' : false;
+        const runs_string = parsedString.get('runs');
+        const runs = (runs_string != null) ? parseInt(runs_string) : 1;
+
+        var success = true;
+        for (let i = 0; i < runs; i++) {
+            if (!use_worker) {
+                success = success && await webGpuUnitTests.runTest(testId);
+            } else {
+                const worker = new Worker(
+                    './webgpu-unittest-worker.js',
+                    { type: 'module' }
+                );
+                const result = new Promise(
+                    resolve => {
+                        worker.addEventListener('message',
+                                                e => {
+                                                    resolve(e.data.result);
+                                                },
+                                                { once: true })
+                    }
+                );
+                worker.postMessage({ testId });
+                success = success && await result;
+            }
+        }
+        domAutomationController.send(success ? 'SUCCESS' : 'FAILED');
+    }
+
+    await main();
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>

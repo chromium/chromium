@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,19 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/no_destructor.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
+namespace heap_profiling {
+class HeapProfilerControllerTest;
+}
+
 namespace base {
 
-template <typename T>
-class NoDestructor;
+class SamplingHeapProfilerTest;
 
 // This singleton class implements Poisson sampling of the incoming allocations
 // stream. It hooks onto base::allocator and base::PartitionAlloc.
@@ -33,7 +37,10 @@ class NoDestructor;
 //
 class BASE_EXPORT PoissonAllocationSampler {
  public:
-  enum AllocatorType : uint32_t { kMalloc, kPartitionAlloc };
+  // The type of hooked allocator that is the source of a sample.
+  // kManualForTesting is for unit tests calling RecordAlloc directly without
+  // going through a hooked allocator.
+  enum AllocatorType : uint32_t { kMalloc, kPartitionAlloc, kManualForTesting };
 
   class SamplesObserver {
    public:
@@ -46,7 +53,7 @@ class BASE_EXPORT PoissonAllocationSampler {
     virtual void SampleRemoved(void* address) = 0;
   };
 
-  // The instance of this class makes sampler do not report samples generated
+  // An instance of this class makes the sampler not report samples generated
   // within the object scope for the current thread.
   // It allows observers to allocate/deallocate memory while holding a lock
   // without a chance to get into reentrancy problems.
@@ -56,7 +63,25 @@ class BASE_EXPORT PoissonAllocationSampler {
     ScopedMuteThreadSamples();
     ~ScopedMuteThreadSamples();
 
+    ScopedMuteThreadSamples(const ScopedMuteThreadSamples&) = delete;
+    ScopedMuteThreadSamples& operator=(const ScopedMuteThreadSamples&) = delete;
+
     static bool IsMuted();
+  };
+
+  // An instance of this class makes the sampler behave deterministically to
+  // ensure test results are repeatable. Does not support nesting.
+  class BASE_EXPORT ScopedSuppressRandomnessForTesting {
+   public:
+    ScopedSuppressRandomnessForTesting();
+    ~ScopedSuppressRandomnessForTesting();
+
+    ScopedSuppressRandomnessForTesting(
+        const ScopedSuppressRandomnessForTesting&) = delete;
+    ScopedSuppressRandomnessForTesting& operator=(
+        const ScopedSuppressRandomnessForTesting&) = delete;
+
+    static bool IsSuppressed();
   };
 
   // Must be called early during the process initialization. It creates and
@@ -83,8 +108,12 @@ class BASE_EXPORT PoissonAllocationSampler {
   // want to put observers notification loop under a reader-writer lock.
   void RemoveSamplesObserver(SamplesObserver*);
 
-  void SetSamplingInterval(size_t sampling_interval);
-  void SuppressRandomnessForTest(bool suppress);
+  // Sets the mean number of bytes that will be allocated before taking a
+  // sample.
+  void SetSamplingInterval(size_t sampling_interval_bytes);
+
+  // Returns the current mean sampling interval, in bytes.
+  size_t SamplingInterval() const;
 
   static void RecordAlloc(void* address,
                           size_t,
@@ -94,13 +123,53 @@ class BASE_EXPORT PoissonAllocationSampler {
 
   static PoissonAllocationSampler* Get();
 
+  PoissonAllocationSampler(const PoissonAllocationSampler&) = delete;
+  PoissonAllocationSampler& operator=(const PoissonAllocationSampler&) = delete;
+
+  // Returns true if a ScopedMuteHookedSamplesForTesting exists. Only friends
+  // can create a ScopedMuteHookedSamplesForTesting but anyone can check the
+  // status of this. This can be read from any thread.
+  static bool AreHookedSamplesMuted();
+
  private:
+  // An instance of this class makes the sampler only report samples with
+  // AllocatorType kManualForTesting, not those from hooked allocators. This
+  // allows unit tests to set test expectations based on only explicit calls to
+  // RecordAlloc and RecordFree.
+  //
+  // The accumulated bytes on the thread that creates a
+  // ScopedMuteHookedSamplesForTesting will also be reset to 0, and restored
+  // when the object leaves scope. This gives tests a known state to start
+  // recording samples on one thread: a full interval must pass to record a
+  // sample. Other threads will still have a random number of accumulated bytes.
+  //
+  // Only one instance may exist at a time.
+  class BASE_EXPORT ScopedMuteHookedSamplesForTesting {
+   public:
+    ScopedMuteHookedSamplesForTesting();
+    ~ScopedMuteHookedSamplesForTesting();
+
+    ScopedMuteHookedSamplesForTesting(
+        const ScopedMuteHookedSamplesForTesting&) = delete;
+    ScopedMuteHookedSamplesForTesting& operator=(
+        const ScopedMuteHookedSamplesForTesting&) = delete;
+
+   private:
+    intptr_t accumulated_bytes_snapshot_;
+  };
+
   PoissonAllocationSampler();
   ~PoissonAllocationSampler() = delete;
 
-  static void InstallAllocatorHooksOnce();
-  static bool InstallAllocatorHooks();
+  // Installs allocator hooks if they weren't already installed. This is not
+  // static to ensure that allocator hooks can't be installed unless the
+  // PoissonAllocationSampler singleton exists.
+  void InstallAllocatorHooksOnce();
+
   static size_t GetNextSampleInterval(size_t base_interval);
+
+  // Return the set of sampled addresses. This is only valid to call after
+  // Init().
   static LockFreeAddressHashSet& sampled_addresses_set();
 
   void DoRecordAlloc(intptr_t accumulated_bytes,
@@ -122,11 +191,11 @@ class BASE_EXPORT PoissonAllocationSampler {
 
   static PoissonAllocationSampler* instance_;
 
+  friend class heap_profiling::HeapProfilerControllerTest;
   friend class NoDestructor<PoissonAllocationSampler>;
   friend class SamplingHeapProfilerTest;
-  friend class ScopedMuteThreadSamples;
-
-  DISALLOW_COPY_AND_ASSIGN(PoissonAllocationSampler);
+  FRIEND_TEST_ALL_PREFIXES(PoissonAllocationSamplerTest, MuteHooksWithoutInit);
+  FRIEND_TEST_ALL_PREFIXES(SamplingHeapProfilerTest, HookedAllocatorMuted);
 };
 
 // static

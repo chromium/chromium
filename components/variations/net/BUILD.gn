@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,6 +6,8 @@ static_library("net") {
   sources = [
     "variations_command_line.cc",
     "variations_command_line.h",
+    "variations_flags.cc",
+    "variations_flags.h",
     "variations_http_headers.cc",
     "variations_http_headers.h",
   ]

@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Verifies that network request response view generates a view if no mime type is set.`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
@@ -24,7 +24,7 @@
 
       const responseView = new Network.RequestResponseView(networkRequest);
       responseView.showPreview().then((emptyWidgetView) => {
-        TestRunner.addResult(emptyWidgetView._textElement.textContent);
+        TestRunner.addResult(emptyWidgetView.textElement.textContent);
         TestRunner.completeTest();
       });
     }

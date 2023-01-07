@@ -1,23 +1,23 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/memory/ptr_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_manager.h"
-#include "components/password_manager/core/browser/password_form_manager_for_ui.h"
-#include "components/password_manager/core/browser/password_form_metrics_recorder.h"
-#include "components/password_manager/core/browser/password_manager_constants.h"
-#include "components/password_manager/core/browser/password_ui_utils.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "base/memory/ptr_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_manager.h"
+#import "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#import "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#import "components/password_manager/core/browser/password_manager_constants.h"
+#import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,11 +26,11 @@
 namespace {
 
 // Records Presentation Metrics for the Infobar Delegate.
-// |current_password_saved| is true if the Infobar is on read-only mode after a
+// `current_password_saved` is true if the Infobar is on read-only mode after a
 // Save/Update action has occured.
-// |update_infobar| is YES if presenting an Update Infobar, NO if presenting a
+// `update_infobar` is YES if presenting an Update Infobar, NO if presenting a
 // Save Infobar.
-// |automatic| is YES the Infobar was presented automatically(e.g. The banner
+// `automatic` is YES the Infobar was presented automatically(e.g. The banner
 // was presented), NO if the user triggered it  (e.g. Tapped onthe badge).
 void RecordPresentationMetrics(
     password_manager::PasswordFormManagerForUI* form_to_save,
@@ -83,9 +83,9 @@ void RecordPresentationMetrics(
 }
 
 // Records Dismissal Metrics for the Infobar Delegate.
-// |infobar_response| is the action that was taken in order to dismiss the
+// `infobar_response` is the action that was taken in order to dismiss the
 // Infobar.
-// |update_infobar| is YES if presenting an Update Infobar, NO if presenting a
+// `update_infobar` is YES if presenting an Update Infobar, NO if presenting a
 // Save Infobar.
 void RecordDismissalMetrics(
     password_manager::PasswordFormManagerForUI* form_to_save,
@@ -95,10 +95,13 @@ void RecordDismissalMetrics(
 
   if (update_infobar) {
     password_manager::metrics_util::LogUpdateUIDismissalReason(
-        infobar_response);
+        infobar_response,
+        form_to_save->GetPendingCredentials().submission_event);
   } else {
     password_manager::metrics_util::LogSaveUIDismissalReason(
-        infobar_response, /*user_state=*/base::nullopt);
+        infobar_response,
+        form_to_save->GetPendingCredentials().submission_event,
+        /*user_state=*/absl::nullopt);
   }
 }
 
@@ -126,16 +129,17 @@ IOSChromeSavePasswordInfoBarDelegate::FromInfobarDelegate(
 }
 
 IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
+    NSString* user_email,
     bool is_sync_user,
     bool password_update,
     std::unique_ptr<PasswordFormManagerForUI> form_manager)
-    : IOSChromePasswordManagerInfoBarDelegate(is_sync_user,
+    : IOSChromePasswordManagerInfoBarDelegate(user_email,
+                                              is_sync_user,
                                               std::move(form_manager)),
       password_update_(password_update),
       infobar_type_(password_update
                         ? PasswordInfobarType::kPasswordInfobarTypeUpdate
-                        : PasswordInfobarType::kPasswordInfobarTypeSave) {
-}
+                        : PasswordInfobarType::kPasswordInfobarTypeSave) {}
 
 IOSChromeSavePasswordInfoBarDelegate::~IOSChromeSavePasswordInfoBarDelegate() {
     // If by any reason this delegate gets dealloc before the Infobar is

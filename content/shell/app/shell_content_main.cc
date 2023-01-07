@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/shell/app/shell_main_delegate.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 int ContentMain(int argc,
                 const char** argv) {
   bool is_browsertest = false;
@@ -24,6 +24,6 @@ int ContentMain(int argc,
   content::ContentMainParams params(&delegate);
   params.argc = argc;
   params.argv = argv;
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)

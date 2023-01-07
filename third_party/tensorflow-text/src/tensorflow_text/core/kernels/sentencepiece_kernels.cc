@@ -21,8 +21,10 @@
 #include "absl/synchronization/mutex.h"
 #include "absl/types/span.h"
 #include "src/sentencepiece.pb.h"
+#include "src/sentencepiece_model.pb.h"
 #include "src/sentencepiece_processor.h"
 #include "tensorflow/core/framework/bounds_check.h"
+#include "tensorflow/core/framework/dataset_stateful_op_allowlist.h"
 #include "tensorflow/core/framework/device_base.h"
 #include "tensorflow/core/framework/node_def_util.h"
 #include "tensorflow/core/framework/op_kernel.h"
@@ -31,6 +33,7 @@
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/framework/types.pb.h"
+#include "tensorflow/core/graph/graph_def_builder.h"
 #include "tensorflow/core/lib/core/errors.h"
 #include "tensorflow/core/lib/core/refcount.h"
 #include "tensorflow/core/lib/core/status.h"
@@ -53,11 +56,34 @@ struct SentencepieceResource : public ResourceBase {
   bool add_bos = false;
   bool add_eos = false;
   bool reverse = false;
-  absl::Mutex mu;
+  mutable absl::Mutex mu;
 
   string DebugString() const override { return "Sentencepiece Resource"; }
 
   int64 MemoryUsed() const override { return memory_used; }
+
+  bool SameOptions(bool add_bos, bool add_eos, bool reverse) const {
+    return (add_bos == this->add_bos) && (add_eos == this->add_eos) &&
+           (reverse == this->reverse);
+  }
+
+  Status AsGraphDef(GraphDefBuilder* builder, Node** out) const override {
+    absl::ReaderMutexLock l(&mu);
+    // We set use_node_name_sharing with a unique node name so that the resource
+    // can outlive the kernel. This means that the lifetime of the re-created
+    // resource will be tied to the lifetime of the resource manager it is
+    // created in.
+    static std::atomic<int64> counter(0);
+    std::string unique_node_name = strings::StrCat(
+        "SentencepieceResourceFromGraphDef", "/", counter.fetch_add(1));
+    std::string model = processor.model_proto().SerializeAsString();
+    *out = ops::SourceOp("SentencepieceOp",
+                         builder->opts()
+                             .WithName(unique_node_name)
+                             .WithAttr("model", model)
+                             .WithAttr("use_node_name_sharing", true));
+    return Status::OK();
+  }
 };
 
 // According to .../tensorflow/core/util/work_sharder.cc, this values determines
@@ -90,53 +116,53 @@ int32 GetPieceOrId<int32>(
 
 tensorflow::Status HandleExtraOptions(OpKernelContext* ctx,
                                       SentencepieceResource* sp) {
-  absl::WriterMutexLock lock(&sp->mu);
-  bool require_update = false;
   const Tensor* add_bos_tensor = nullptr;
   TF_RETURN_IF_ERROR(ctx->input("add_bos", &add_bos_tensor));
-  bool add_bos = add_bos_tensor->scalar<bool>()();
-  require_update |= add_bos != sp->add_bos;
-  sp->add_bos = add_bos;
+  const bool add_bos = add_bos_tensor->scalar<bool>()();
 
   const Tensor* add_eos_tensor = nullptr;
   TF_RETURN_IF_ERROR(ctx->input("add_eos", &add_eos_tensor));
-  bool add_eos = add_eos_tensor->scalar<bool>()();
-  require_update |= add_eos != sp->add_eos;
-  sp->add_eos = add_eos;
+  const bool add_eos = add_eos_tensor->scalar<bool>()();
 
   const Tensor* reverse_tensor = nullptr;
   TF_RETURN_IF_ERROR(ctx->input("reverse", &reverse_tensor));
-  bool reverse = reverse_tensor->scalar<bool>()();
-  require_update |= reverse != sp->reverse;
-  sp->reverse = reverse;
+  const bool reverse = reverse_tensor->scalar<bool>()();
 
-  if (require_update) {
-    string options("");
-    bool first = true;
-    if (sp->add_bos) {
-      absl::StrAppend(&options, "bos");
-      first = false;
+  {
+    // Because we expect most of the time no change in these options, we grab
+    // the reader lock once and do a quick check first.
+    absl::ReaderMutexLock l(&sp->mu);
+    if (sp->SameOptions(add_bos, add_eos, reverse)) {
+      return Status::OK();
     }
-    if (sp->add_eos) {
-      if (!first) {
-        absl::StrAppend(&options, ":");
-      }
-      absl::StrAppend(&options, "eos");
-      first = false;
-    }
-    if (sp->reverse) {
-      if (!first) {
-        absl::StrAppend(&options, ":");
-      }
-      absl::StrAppend(&options, "reverse");
-      first = false;
-    }
-
-    TF_RETURN_IF_ERROR(
-        ToTFStatus(sp->processor.SetEncodeExtraOptions(options)));
-    TF_RETURN_IF_ERROR(
-        ToTFStatus(sp->processor.SetDecodeExtraOptions(options)));
   }
+
+  absl::WriterMutexLock lock(&sp->mu);
+  if (sp->SameOptions(add_bos, add_eos, reverse)) {
+    return Status::OK();
+  }
+  string options;
+  sp->add_bos = add_bos;
+  if (sp->add_bos) {
+    absl::StrAppend(&options, "bos");
+  }
+  sp->add_eos = add_eos;
+  if (sp->add_eos) {
+    if (!options.empty()) {
+      absl::StrAppend(&options, ":");
+    }
+    absl::StrAppend(&options, "eos");
+  }
+  sp->reverse = reverse;
+  if (sp->reverse) {
+    if (!options.empty()) {
+      absl::StrAppend(&options, ":");
+    }
+    absl::StrAppend(&options, "reverse");
+  }
+
+  TF_RETURN_IF_ERROR(ToTFStatus(sp->processor.SetEncodeExtraOptions(options)));
+  TF_RETURN_IF_ERROR(ToTFStatus(sp->processor.SetDecodeExtraOptions(options)));
 
   return Status::OK();
 }
@@ -146,17 +172,16 @@ tensorflow::Status HandleExtraOptions(OpKernelContext* ctx,
 class SentencepieceOp : public OpKernel {
  public:
   explicit SentencepieceOp(OpKernelConstruction* ctx)
-      : OpKernel(ctx), handle_set_(false) {
-    OP_REQUIRES_OK(ctx, ctx->allocate_persistent(tensorflow::DT_STRING,
-                                                 tensorflow::TensorShape({2}),
-                                                 &sp_handle_, nullptr));
+      : OpKernel(ctx), sp_set_(false) {
+    OP_REQUIRES_OK(ctx, ctx->allocate_temp(tensorflow::DT_STRING,
+                                           tensorflow::TensorShape({2}), &sp_));
     OP_REQUIRES_OK(
         ctx, ctx->GetAttr("use_node_name_sharing", &use_node_name_sharing_));
   }
 
   ~SentencepieceOp() override {
     // If the table object was not shared, delete it.
-    if (handle_set_ && cinfo_.resource_is_private_to_kernel()) {
+    if (sp_set_ && cinfo_.resource_is_private_to_kernel()) {
       if (!cinfo_.resource_manager()
                ->template Delete<SentencepieceResource>(cinfo_.container(),
                                                         cinfo_.name())
@@ -169,7 +194,7 @@ class SentencepieceOp : public OpKernel {
   void Compute(OpKernelContext* ctx) override {
     absl::MutexLock lock(&mu_);
 
-    if (!handle_set_) {
+    if (!sp_set_) {
       OP_REQUIRES_OK(ctx, cinfo_.Init(ctx->resource_manager(), def(),
                                       use_node_name_sharing_));
     }
@@ -220,13 +245,13 @@ class SentencepieceOp : public OpKernel {
     handle->scalar<ResourceHandle>()() =
         MakeResourceHandle<SentencepieceResource>(ctx, cinfo_.container(),
                                                   cinfo_.name());
-    handle_set_ = true;
+    sp_set_ = true;
   }
 
  private:
   absl::Mutex mu_;
-  PersistentTensor sp_handle_ ABSL_GUARDED_BY(mu_);
-  bool handle_set_ ABSL_GUARDED_BY(mu_);
+  Tensor sp_ ABSL_GUARDED_BY(mu_);
+  bool sp_set_ ABSL_GUARDED_BY(mu_);
   ContainerInfo cinfo_;
   bool use_node_name_sharing_;
   TF_DISALLOW_COPY_AND_ASSIGN(SentencepieceOp);
@@ -234,6 +259,7 @@ class SentencepieceOp : public OpKernel {
 
 REGISTER_KERNEL_BUILDER(Name("SentencepieceOp").Device(DEVICE_CPU),
                         tensorflow::text::SentencepieceOp);
+ALLOW_STATEFUL_OP_FOR_DATASET_FUNCTIONS("SentencepieceOp");
 
 template <typename T, typename Tsplits>
 class SentencepieceTokenizeOp : public OpKernel {
@@ -247,7 +273,7 @@ class SentencepieceTokenizeOp : public OpKernel {
     const Tensor& resource_tensor = ctx->input(0);
     ResourceHandle resource_handle(resource_tensor.scalar<ResourceHandle>()());
     OP_REQUIRES_OK(
-        ctx, ctx->resource_manager()->Lookup<SentencepieceResource, true>(
+        ctx, ctx->resource_manager()->Lookup<SentencepieceResource>(
                  resource_handle.container(), resource_handle.name(), &sp));
     core::ScopedUnref unref_me(sp);
 
@@ -373,6 +399,7 @@ REGISTER_KERNEL_BUILDER(Name("SentencepieceTokenizeOp")
                             .TypeConstraint<tensorflow::tstring>("out_type")
                             .TypeConstraint<int64>("Tsplits"),
                         SentencepieceTokenizeOp<tensorflow::tstring, int64>);
+ALLOW_STATEFUL_OP_FOR_DATASET_FUNCTIONS("SentencepieceTokenizeOp");
 
 template <typename T, typename Tsplits>
 class SentencepieceTokenizeWithOffsetsOp : public OpKernel {
@@ -387,7 +414,7 @@ class SentencepieceTokenizeWithOffsetsOp : public OpKernel {
     const Tensor& resource_tensor = ctx->input(0);
     ResourceHandle resource_handle(resource_tensor.scalar<ResourceHandle>()());
     OP_REQUIRES_OK(
-        ctx, ctx->resource_manager()->Lookup<SentencepieceResource, true>(
+        ctx, ctx->resource_manager()->Lookup<SentencepieceResource>(
                  resource_handle.container(), resource_handle.name(), &sp));
     core::ScopedUnref unref_me(sp);
 
@@ -523,6 +550,7 @@ REGISTER_KERNEL_BUILDER(
         .TypeConstraint<tensorflow::tstring>("out_type")
         .TypeConstraint<int64>("Tsplits"),
     SentencepieceTokenizeWithOffsetsOp<tensorflow::tstring, int64>);
+ALLOW_STATEFUL_OP_FOR_DATASET_FUNCTIONS("SentencepieceTokenizeWithOffsetsOp");
 
 template <typename T, typename Tsplits>
 class SentencepieceDetokenizeOp : public OpKernel {
@@ -535,7 +563,7 @@ class SentencepieceDetokenizeOp : public OpKernel {
     const Tensor& resource_tensor = ctx->input(0);
     ResourceHandle resource_handle(resource_tensor.scalar<ResourceHandle>()());
     OP_REQUIRES_OK(
-        ctx, ctx->resource_manager()->Lookup<SentencepieceResource, true>(
+        ctx, ctx->resource_manager()->Lookup<SentencepieceResource>(
                  resource_handle.container(), resource_handle.name(), &sp));
     core::ScopedUnref unref_me(sp);
 
@@ -607,6 +635,7 @@ REGISTER_KERNEL_BUILDER(Name("SentencepieceDetokenizeOp")
                             .TypeConstraint<tensorflow::tstring>("T")
                             .TypeConstraint<int64>("Tsplits"),
                         SentencepieceDetokenizeOp<tensorflow::tstring, int64>);
+ALLOW_STATEFUL_OP_FOR_DATASET_FUNCTIONS("SentencepieceDetokenizeOp");
 
 class SentencepieceVocabSizeOp : public OpKernel {
  public:
@@ -618,7 +647,7 @@ class SentencepieceVocabSizeOp : public OpKernel {
     const Tensor& resource_tensor = ctx->input(0);
     ResourceHandle resource_handle(resource_tensor.scalar<ResourceHandle>()());
     OP_REQUIRES_OK(
-        ctx, ctx->resource_manager()->Lookup<SentencepieceResource, true>(
+        ctx, ctx->resource_manager()->Lookup<SentencepieceResource>(
                  resource_handle.container(), resource_handle.name(), &sp));
     core::ScopedUnref unref_me(sp);
 
@@ -630,6 +659,7 @@ class SentencepieceVocabSizeOp : public OpKernel {
 
 REGISTER_KERNEL_BUILDER(Name("SentencepieceVocabSizeOp").Device(DEVICE_CPU),
                         SentencepieceVocabSizeOp);
+ALLOW_STATEFUL_OP_FOR_DATASET_FUNCTIONS("SentencepieceVocabSizeOp");
 
 class SentencepieceIdToStringOp : public OpKernel {
  public:
@@ -641,7 +671,7 @@ class SentencepieceIdToStringOp : public OpKernel {
     const Tensor& resource_tensor = ctx->input(0);
     ResourceHandle resource_handle(resource_tensor.scalar<ResourceHandle>()());
     OP_REQUIRES_OK(
-        ctx, ctx->resource_manager()->Lookup<SentencepieceResource, true>(
+        ctx, ctx->resource_manager()->Lookup<SentencepieceResource>(
                  resource_handle.container(), resource_handle.name(), &sp));
     core::ScopedUnref unref_me(sp);
 
@@ -661,6 +691,7 @@ class SentencepieceIdToStringOp : public OpKernel {
 
 REGISTER_KERNEL_BUILDER(Name("SentencepieceIdToStringOp").Device(DEVICE_CPU),
                         SentencepieceIdToStringOp);
+ALLOW_STATEFUL_OP_FOR_DATASET_FUNCTIONS("SentencepieceIdToStringOp");
 
 class SentencepieceStringToIdOp : public OpKernel {
  public:
@@ -672,7 +703,7 @@ class SentencepieceStringToIdOp : public OpKernel {
     const Tensor& resource_tensor = ctx->input(0);
     ResourceHandle resource_handle(resource_tensor.scalar<ResourceHandle>()());
     OP_REQUIRES_OK(
-        ctx, ctx->resource_manager()->Lookup<SentencepieceResource, true>(
+        ctx, ctx->resource_manager()->Lookup<SentencepieceResource>(
                  resource_handle.container(), resource_handle.name(), &sp));
     core::ScopedUnref unref_me(sp);
 
@@ -692,6 +723,7 @@ class SentencepieceStringToIdOp : public OpKernel {
 
 REGISTER_KERNEL_BUILDER(Name("SentencepieceStringToIdOp").Device(DEVICE_CPU),
                         SentencepieceStringToIdOp);
+ALLOW_STATEFUL_OP_FOR_DATASET_FUNCTIONS("SentencepieceStringToIdOp");
 
 }  // namespace text
 }  // namespace tensorflow

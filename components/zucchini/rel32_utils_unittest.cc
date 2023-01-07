@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,17 @@
 
 #include <stdint.h>
 
+#include <deque>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/test/gtest_util.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/arm_utils.h"
 #include "components/zucchini/image_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -39,8 +40,13 @@ void CheckReader(const std::vector<Reference>& expected_refs,
     EXPECT_TRUE(ref.has_value());
     EXPECT_EQ(expected_ref, ref.value());
   }
-  EXPECT_EQ(base::nullopt, reader->GetNext());  // Nothing should be left.
+  EXPECT_EQ(absl::nullopt, reader->GetNext());  // Nothing should be left.
 }
+
+using ArmCopyDispFun = bool (*)(ConstBufferView src_view,
+                                offset_t src_idx,
+                                MutableBufferView dst_view,
+                                offset_t dst_idx);
 
 // Copies displacements from |bytes1| to |bytes2| and checks results against
 // |bytes_exp_1_to_2|. Then repeats for |*bytes2| , |*byte1|, and
@@ -88,7 +94,7 @@ TEST(Rel32UtilsTest, Rel32ReaderX86) {
   };
   ConstBufferView buffer(bytes.data(), bytes.size());
   // Specify rel32 locations directly, instead of parsing.
-  std::vector<offset_t> rel32_locations = {0x0008U, 0x0010U, 0x0018U, 0x001CU};
+  std::deque<offset_t> rel32_locations = {0x0008U, 0x0010U, 0x0018U, 0x001CU};
 
   // Generate everything.
   auto reader1 = std::make_unique<Rel32ReaderX86>(buffer, 0x0000U, 0x0020U,
@@ -145,7 +151,7 @@ TEST(Rel32UtilsTest, Rel32WriterX86) {
             bytes);
 }
 
-TEST(Rel32UtilsTest, Rel32ReaderArm_Arm32) {
+TEST(Rel32UtilsTest, Rel32ReaderArm_AArch32) {
   constexpr offset_t kTestImageSize = 0x00100000U;
   constexpr rva_t kRvaBegin = 0x00030000U;
   TestAddressTranslator translator(kTestImageSize, kRvaBegin);
@@ -163,12 +169,12 @@ TEST(Rel32UtilsTest, Rel32ReaderArm_Arm32) {
   };
   ConstBufferView region(&bytes[0], bytes.size());
   // Specify rel32 locations directly, instead of parsing.
-  std::vector<offset_t> rel32_locations_A24 = {0x0008U, 0x0010U, 0x0018U,
-                                               0x001CU};
+  std::deque<offset_t> rel32_locations_A24 = {0x0008U, 0x0010U, 0x0018U,
+                                              0x001CU};
 
   // Generate everything.
   auto reader1 =
-      std::make_unique<Rel32ReaderArm<Arm32Rel32Translator::AddrTraits_A24>>(
+      std::make_unique<Rel32ReaderArm<AArch32Rel32Translator::AddrTraits_A24>>(
           translator, region, rel32_locations_A24, 0x0000U, 0x0020U);
   CheckReader({{0x0008U, 0x0010U},
                {0x0010U, 0x0014U},
@@ -178,19 +184,19 @@ TEST(Rel32UtilsTest, Rel32ReaderArm_Arm32) {
 
   // Exclude last.
   auto reader2 =
-      std::make_unique<Rel32ReaderArm<Arm32Rel32Translator::AddrTraits_A24>>(
+      std::make_unique<Rel32ReaderArm<AArch32Rel32Translator::AddrTraits_A24>>(
           translator, region, rel32_locations_A24, 0x0000U, 0x001CU);
   CheckReader({{0x0008U, 0x0010U}, {0x0010U, 0x0014U}, {0x0018U, 0x0010U}},
               std::move(reader2));
 
   // Only find one.
   auto reader3 =
-      std::make_unique<Rel32ReaderArm<Arm32Rel32Translator::AddrTraits_A24>>(
+      std::make_unique<Rel32ReaderArm<AArch32Rel32Translator::AddrTraits_A24>>(
           translator, region, rel32_locations_A24, 0x000CU, 0x0018U);
   CheckReader({{0x0010U, 0x0014U}}, std::move(reader3));
 }
 
-TEST(Rel32UtilsTest, Rel32WriterArm_Arm32_Easy) {
+TEST(Rel32UtilsTest, Rel32WriterArm_AArch32_Easy) {
   constexpr offset_t kTestImageSize = 0x00100000U;
   constexpr rva_t kRvaBegin = 0x00030000U;
   TestAddressTranslator translator(kTestImageSize, kRvaBegin);
@@ -206,7 +212,7 @@ TEST(Rel32UtilsTest, Rel32WriterArm_Arm32_Easy) {
   MutableBufferView region(&bytes[0], bytes.size());
 
   auto writer1 =
-      std::make_unique<Rel32WriterArm<Arm32Rel32Translator::AddrTraits_T8>>(
+      std::make_unique<Rel32WriterArm<AArch32Rel32Translator::AddrTraits_T8>>(
           translator, region);
   writer1->PutNext({0x0002U, 0x0004U});
   EXPECT_EQ(0xFF, bytes[0x02]);  // 00030002: B   00030004 ; T8
@@ -217,7 +223,7 @@ TEST(Rel32UtilsTest, Rel32WriterArm_Arm32_Easy) {
   EXPECT_EQ(0xDE, bytes[0x03]);
 
   auto writer2 =
-      std::make_unique<Rel32WriterArm<Arm32Rel32Translator::AddrTraits_T11>>(
+      std::make_unique<Rel32WriterArm<AArch32Rel32Translator::AddrTraits_T11>>(
           translator, region);
   writer2->PutNext({0x0008U, 0x0008U});
   EXPECT_EQ(0xFE, bytes[0x08]);  // 00030008: B   00030008 ; T11
@@ -227,7 +233,7 @@ TEST(Rel32UtilsTest, Rel32WriterArm_Arm32_Easy) {
   EXPECT_EQ(0xE0, bytes[0x09]);
 
   auto writer3 =
-      std::make_unique<Rel32WriterArm<Arm32Rel32Translator::AddrTraits_T20>>(
+      std::make_unique<Rel32WriterArm<AArch32Rel32Translator::AddrTraits_T20>>(
           translator, region);
   writer3->PutNext({0x000CU, 0x000AU});
   EXPECT_EQ(0xBF, bytes[0x0C]);  // 0003000C: B   0003000A ; T20
@@ -241,7 +247,7 @@ TEST(Rel32UtilsTest, Rel32WriterArm_Arm32_Easy) {
   EXPECT_EQ(0x80, bytes[0x0F]);
 }
 
-TEST(Rel32UtilsTest, Rel32WriterArm_Arm32_Hard) {
+TEST(Rel32UtilsTest, Rel32WriterArm_AArch32_Hard) {
   constexpr offset_t kTestImageSize = 0x10000000U;
   constexpr rva_t kRvaBegin = 0x0C030000U;
   TestAddressTranslator translator(kTestImageSize, kRvaBegin);
@@ -257,7 +263,7 @@ TEST(Rel32UtilsTest, Rel32WriterArm_Arm32_Hard) {
   MutableBufferView region(&bytes[0], bytes.size());
 
   auto writer =
-      std::make_unique<Rel32WriterArm<Arm32Rel32Translator::AddrTraits_T24>>(
+      std::make_unique<Rel32WriterArm<AArch32Rel32Translator::AddrTraits_T24>>(
           translator, region);
   writer->PutNext({0x0002U, 0x0000U});
   EXPECT_EQ(0xFF, bytes[0x02]);  // 0C030002: B   0C030000 ; T24
@@ -302,7 +308,7 @@ TEST(Rel32UtilsTest, Rel32WriterArm_Arm32_Hard) {
 
 // Test BLX encoding A2, which is an ARM instruction that switches to THUMB2,
 // and therefore should have 2-byte alignment.
-TEST(Rel32UtilsTest, Arm32SwitchToThumb2) {
+TEST(Rel32UtilsTest, AArch32SwitchToThumb2) {
   constexpr offset_t kTestImageSize = 0x10000000U;
   constexpr rva_t kRvaBegin = 0x08030000U;
   TestAddressTranslator translator(kTestImageSize, kRvaBegin);
@@ -314,7 +320,7 @@ TEST(Rel32UtilsTest, Arm32SwitchToThumb2) {
   MutableBufferView region(&bytes[0], bytes.size());
 
   auto writer =
-      std::make_unique<Rel32WriterArm<Arm32Rel32Translator::AddrTraits_A24>>(
+      std::make_unique<Rel32WriterArm<AArch32Rel32Translator::AddrTraits_A24>>(
           translator, region);
 
   // To location that's 4-byte aligned.
@@ -339,11 +345,12 @@ TEST(Rel32UtilsTest, Arm32SwitchToThumb2) {
   EXPECT_EQ(0xFA, bytes[0x07]);
 }
 
-TEST(Rel32UtilsTest, ArmCopyDisp_Arm32) {
+TEST(Rel32UtilsTest, ArmCopyDisp_AArch32) {
   std::vector<uint8_t> expect_fail;
 
   // Successful A24.
-  ArmCopyDispFun copier_A24 = ArmCopyDisp<Arm32Rel32Translator::AddrTraits_A24>;
+  ArmCopyDispFun copier_A24 =
+      ArmCopyDisp<AArch32Rel32Translator::AddrTraits_A24>;
   CheckCopy({0x12, 0x34, 0x56, 0xEB},  // 00000100: BL     0158D150
             {0xA0, 0xC0, 0x0E, 0x2A},  // 00000100: BCS    003B0388
             {0x12, 0x34, 0x56, 0x2A},  // 00000100: BCS    0158D150
@@ -351,7 +358,7 @@ TEST(Rel32UtilsTest, ArmCopyDisp_Arm32) {
             copier_A24);
 
   // Successful T8.
-  ArmCopyDispFun copier_T8 = ArmCopyDisp<Arm32Rel32Translator::AddrTraits_T8>;
+  ArmCopyDispFun copier_T8 = ArmCopyDisp<AArch32Rel32Translator::AddrTraits_T8>;
   CheckCopy({0x12, 0xD5},  // 00000100: BPL    00000128
             {0xAB, 0xD8},  // 00000100: BHI    0000005A
             {0x12, 0xD8},  // 00000100: BHI    00000128
@@ -359,7 +366,8 @@ TEST(Rel32UtilsTest, ArmCopyDisp_Arm32) {
             copier_T8);
 
   // Successful T11.
-  ArmCopyDispFun copier_T11 = ArmCopyDisp<Arm32Rel32Translator::AddrTraits_T11>;
+  ArmCopyDispFun copier_T11 =
+      ArmCopyDisp<AArch32Rel32Translator::AddrTraits_T11>;
   CheckCopy({0xF5, 0xE0},  // 00000100: B      000002EE
             {0x12, 0xE7},  // 00000100: B      FFFFFF28
             {0xF5, 0xE0},  // 00000100: B      000002EE
@@ -370,7 +378,8 @@ TEST(Rel32UtilsTest, ArmCopyDisp_Arm32) {
   CheckCopy(expect_fail, expect_fail, {0xF5, 0xE0}, {0x12, 0xE7}, copier_T8);
 
   // Successful T20.
-  ArmCopyDispFun copier_T20 = ArmCopyDisp<Arm32Rel32Translator::AddrTraits_T20>;
+  ArmCopyDispFun copier_T20 =
+      ArmCopyDisp<AArch32Rel32Translator::AddrTraits_T20>;
   CheckCopy({0x41, 0xF2, 0xA5, 0x88},  // 00000100: BLS.W   0008124E
             {0x04, 0xF3, 0x3C, 0xA2},  // 00000100: BGT.W   0004457C
             {0x01, 0xF3, 0xA5, 0x88},  // 00000100: BGT.W   0008124E
@@ -387,7 +396,8 @@ TEST(Rel32UtilsTest, ArmCopyDisp_Arm32) {
             {0x84, 0xF3, 0x3C, 0xA2}, copier_A24);
 
   // T24: Mix B encoding T4 and BL encoding T1.
-  ArmCopyDispFun copier_T24 = ArmCopyDisp<Arm32Rel32Translator::AddrTraits_T24>;
+  ArmCopyDispFun copier_T24 =
+      ArmCopyDisp<AArch32Rel32Translator::AddrTraits_T24>;
   CheckCopy({0xFF, 0xF7, 0xFF, 0xFF},  // 00000100: BL      00000102
             {0x00, 0xF0, 0x00, 0x90},  // 00000100: B.W     00C00104
             {0xFF, 0xF7, 0xFF, 0xBF},  // 00000100: B.W     00000102
@@ -427,21 +437,21 @@ TEST(Rel32UtilsTest, Rel32ReaderArm_AArch64) {
   MutableBufferView region(&bytes[0], bytes.size());
 
   // Generate Immd26. We specify rel32 locations directly.
-  std::vector<offset_t> rel32_locations_Immd26 = {0x0008U};
+  std::deque<offset_t> rel32_locations_Immd26 = {0x0008U};
   auto reader1 = std::make_unique<
       Rel32ReaderArm<AArch64Rel32Translator::AddrTraits_Immd26>>(
       translator, region, rel32_locations_Immd26, 0x0000U, 0x0020U);
   CheckReader({{0x0008U, 0x0010U}}, std::move(reader1));
 
   // Generate Immd19.
-  std::vector<offset_t> rel32_locations_Immd19 = {0x0010U, 0x0018U};
+  std::deque<offset_t> rel32_locations_Immd19 = {0x0010U, 0x0018U};
   auto reader2 = std::make_unique<
       Rel32ReaderArm<AArch64Rel32Translator::AddrTraits_Immd19>>(
       translator, region, rel32_locations_Immd19, 0x0000U, 0x0020U);
   CheckReader({{0x0010U, 0x0014U}, {0x0018U, 0x0010U}}, std::move(reader2));
 
   // Generate Immd14.
-  std::vector<offset_t> rel32_locations_Immd14 = {0x001CU};
+  std::deque<offset_t> rel32_locations_Immd14 = {0x001CU};
   auto reader3 = std::make_unique<
       Rel32ReaderArm<AArch64Rel32Translator::AddrTraits_Immd14>>(
       translator, region, rel32_locations_Immd14, 0x0000U, 0x0020U);

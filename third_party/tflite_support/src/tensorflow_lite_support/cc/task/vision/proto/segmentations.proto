@@ -1,0 +1,109 @@
+/* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================*/
+
+syntax = "proto2";
+
+package tflite.task.vision;
+
+// Results of performing image segmentation.
+// Note that at the time, a single `Segmentation` element is expected to be
+// returned; the field is made repeated for later extension to e.g. instance
+// segmentation models, which may return one segmentation per object.
+message SegmentationResult {
+  repeated Segmentation segmentation = 1;
+}
+
+// Next Id: 6
+message Segmentation {
+  // Confidence mask. This is a flattened 2D-array in row major order. For each
+  // pixel, the value indicates the prediction confidence usually in the [0, 1]
+  // range where higher values represent a stronger confidence. Ultimately this
+  // is model specific, and other range of values might be used.
+  message ConfidenceMask {
+    repeated float value = 1 [packed = true];
+  }
+
+  // List of confidence masks with respect to the model output depth (this depth
+  // represents how many classes are supported). Note: some models have a single
+  // class (e.g. a sky segmentation model) which turns into a single confidence
+  // mask in this list.
+  message ConfidenceMasks {
+    repeated ConfidenceMask confidence_mask = 1;
+  }
+
+  // IMPORTANT: segmentation masks are not direcly suited for display, in
+  // particular:
+  // * they are relative to the unrotated input frame, i.e. *not* taking into
+  //   account the `Orientation` flag of the input FrameBuffer,
+  // * their dimensions are intrinsic to the model, i.e. *not* dependent on the
+  //   input FrameBuffer dimensions.
+  //
+  // Example of such post-processing, assuming:
+  // * an input FrameBuffer with width=640, height=480, orientation=kLeftBottom
+  //   (i.e. the image will be rotated 90° clockwise during preprocessing to
+  //   make it "upright"),
+  // * a model outputting masks of size 224x224.
+  // In order to be directly displayable on top of the input image assumed to
+  // be displayed *with* the `Orientation` flag taken into account (according to
+  // the EXIF specification [1]), the masks need to be:
+  // * re-scaled to 640 x 480,
+  // * then rotated 90° clockwise.
+  //
+  // [1]: http://jpegclub.org/exif_orientation.html
+  oneof mask_oneof {
+    // Category mask. This is a flattened 2D-array of size `width` x `height`,
+    // in row major order. The value of each pixel in this mask represents the
+    // class to which the pixel belongs.
+    // See `colored_labels` for instructions on how to get pixel labels and
+    // display color.
+    bytes category_mask = 1;
+
+    // One confidence masks of size `width` x `height` for each of the supported
+    // classes. The value of each pixel in these masks represents the confidence
+    // score for this particular class.
+    // See `colored_labels` for instructions on how to get pixel labels and
+    // display color.
+    ConfidenceMasks confidence_masks = 4;
+  }
+  // The width of the mask. This is an intrinsic parameter of the model being
+  // used, and does not depend on the input image dimensions.
+  optional int32 width = 2;
+  // The height of the mask. This is an intrinsic parameter of the model being
+  // used, and does not depend on the input image dimensions.
+  optional int32 height = 3;
+
+  // Defines a label associated with an RGB color, for display purposes.
+  message ColoredLabel {
+    // The RGB color components for the label, in the [0, 255] range.
+    optional uint32 r = 1;
+    optional uint32 g = 2;
+    optional uint32 b = 3;
+    // The class name, as provided in the label map packed in the TFLite Model
+    // Metadata.
+    optional string class_name = 4;
+    // The display name, as provided in the label map (if available) packed in
+    // the TFLite Model Metadata. See `display_names_locale` field in
+    // ImageSegmenterOptions.
+    optional string display_name = 5;
+  }
+
+  // The list of colored labels for all the supported categories. Depending on
+  // which is present, this list is in 1:1 correspondence with:
+  // * `category_mask` pixel values, i.e. a pixel with value `i` is
+  //   associated with `colored_labels[i]`,
+  // * `confidence_masks` indices, i.e. `confidence_masks[i]` is associated with
+  //   `colored_labels[i]`.
+  repeated ColoredLabel colored_labels = 5;
+}

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,13 +71,13 @@ inline NSString* FilterSpecialCharacter(NSString* str) {
 }
 
 inline NSString* TextFromEvent(NSEvent* event) {
-  if ([event type] == NSFlagsChanged)
+  if ([event type] == NSEventTypeFlagsChanged)
     return @"";
   return FilterSpecialCharacter([event characters]);
 }
 
 inline NSString* UnmodifiedTextFromEvent(NSEvent* event) {
-  if ([event type] == NSFlagsChanged)
+  if ([event type] == NSEventTypeFlagsChanged)
     return @"";
   return FilterSpecialCharacter([event charactersIgnoringModifiers]);
 }
@@ -87,16 +87,17 @@ inline NSString* UnmodifiedTextFromEvent(NSEvent* event) {
 
 int ModifiersFromEvent(NSEvent* event) {
   int modifiers = 0;
+  NSEventModifierFlags modifier_flags = [event modifierFlags];
 
-  if ([event modifierFlags] & NSControlKeyMask)
+  if (modifier_flags & NSEventModifierFlagControl)
     modifiers |= blink::WebInputEvent::kControlKey;
-  if ([event modifierFlags] & NSShiftKeyMask)
+  if (modifier_flags & NSEventModifierFlagShift)
     modifiers |= blink::WebInputEvent::kShiftKey;
-  if ([event modifierFlags] & NSAlternateKeyMask)
+  if (modifier_flags & NSEventModifierFlagOption)
     modifiers |= blink::WebInputEvent::kAltKey;
-  if ([event modifierFlags] & NSCommandKeyMask)
+  if (modifier_flags & NSEventModifierFlagCommand)
     modifiers |= blink::WebInputEvent::kMetaKey;
-  if ([event modifierFlags] & NSAlphaShiftKeyMask)
+  if (modifier_flags & NSEventModifierFlagCapsLock)
     modifiers |= blink::WebInputEvent::kCapsLockOn;
 
   // The return value of 1 << 0 corresponds to the left mouse button,
@@ -201,17 +202,11 @@ blink::WebMouseWheelEvent::Phase PhaseForNSEventPhase(
 }
 
 blink::WebMouseWheelEvent::Phase PhaseForEvent(NSEvent* event) {
-  if (![event respondsToSelector:@selector(phase)])
-    return blink::WebMouseWheelEvent::kPhaseNone;
-
   NSEventPhase event_phase = [event phase];
   return PhaseForNSEventPhase(event_phase);
 }
 
 blink::WebMouseWheelEvent::Phase MomentumPhaseForEvent(NSEvent* event) {
-  if (![event respondsToSelector:@selector(momentumPhase)])
-    return blink::WebMouseWheelEvent::kPhaseNone;
-
   NSEventPhase event_momentum_phase = [event momentumPhase];
   return PhaseForNSEventPhase(event_momentum_phase);
 }
@@ -254,35 +249,44 @@ blink::WebMouseEvent::Button ButtonFromButtonNumber(NSEvent* event) {
 
 }  // namespace
 
-blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(NSEvent* event,
-                                                       bool record_debug_uma) {
+blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(NSEvent* event) {
   ui::ComputeEventLatencyOS(event);
-  base::TimeTicks now = ui::EventTimeForNow();
-  base::TimeTicks hardware_timestamp =
-      ui::EventTimeStampFromSeconds([event timestamp]);
-  if (record_debug_uma) {
-    if (ui::EventTypeFromNative(event) == ui::ET_KEY_PRESSED) {
-      base::TimeDelta diff = (now - hardware_timestamp).magnitude();
-      UMA_HISTOGRAM_CUSTOM_TIMES(
-          "Event.Latency.OS_NO_VALIDATION.POSITIVE.KEY_PRESSED", diff,
-          base::TimeDelta::FromMilliseconds(1),
-          base::TimeDelta::FromSeconds(60), 50);
-    }
-  }
 
   ui::DomCode dom_code = ui::DomCodeFromNSEvent(event);
   int modifiers =
       ModifiersFromEvent(event) | ui::DomCodeToWebInputEventModifiers(dom_code);
 
-  if (([event type] != NSFlagsChanged) && [event isARepeat])
+  if (([event type] != NSEventTypeFlagsChanged) && [event isARepeat])
     modifiers |= blink::WebInputEvent::kIsAutoRepeat;
 
   blink::WebKeyboardEvent result(
       ui::IsKeyUpEvent(event) ? blink::WebInputEvent::Type::kKeyUp
                               : blink::WebInputEvent::Type::kRawKeyDown,
       modifiers, ui::EventTimeStampFromSeconds([event timestamp]));
-  result.windows_key_code =
-      ui::LocatedToNonLocatedKeyboardCode(ui::KeyboardCodeFromNSEvent(event));
+
+  // Some keys have the same meaning but different locations on the keyboard:
+  // the left and right shift keys; the numeric keypad keys and their
+  // counterparts in the number row; etc. A "located" keyboard code lets us
+  // distinguish between keys with the same meaning. For example, VKEY_LSHIFT
+  // and VKEY_RSHIFT are located keyboard codes and VKEY_SHIFT is their non-
+  // located representation.
+  //
+  // When determining the windows_key_code, we want to use the non-located code
+  // for some keys (Shift, etc.). We call ui::LocatedToNonLocatedKeyboardCode()
+  // to perform this conversion. However, ui::LocatedToNonLocatedKeyboardCode()
+  // converts more keys than we'd like. In particular, it returns the
+  // non-located representations of number pad key codes. If we use these as
+  // windows key codes, key presses in the number row and the number pad will be
+  // indistinguishable (see https://crbug.com/1282730). To avoid this, when we
+  // encounter a number pad key, we'll use the located key_code itself rather
+  // than its non-located counterpart.
+  ui::KeyboardCode key_code = ui::KeyboardCodeFromNSEvent(event);
+  bool is_numeric_keypad_keycode =
+      key_code >= ui::VKEY_NUMPAD0 && key_code <= ui::VKEY_NUMPAD9;
+  result.windows_key_code = is_numeric_keypad_keycode
+                                ? key_code
+                                : ui::LocatedToNonLocatedKeyboardCode(key_code);
+
   result.native_key_code = [event keyCode];
   result.dom_code = static_cast<int>(dom_code);
   result.dom_key = DomKeyFromEvent(event);
@@ -328,16 +332,6 @@ blink::WebMouseEvent WebMouseEventBuilder::Build(
     blink::WebPointerProperties::PointerType pointerType,
     bool unacceleratedMovement) {
   ui::ComputeEventLatencyOS(event);
-  base::TimeTicks now = ui::EventTimeForNow();
-  base::TimeTicks hardware_timestamp =
-      ui::EventTimeStampFromSeconds([event timestamp]);
-  if (ui::EventTypeFromNative(event) == ui::ET_MOUSE_PRESSED) {
-    base::TimeDelta diff = (now - hardware_timestamp).magnitude();
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "Event.Latency.OS_NO_VALIDATION.POSITIVE.MOUSE_PRESSED", diff,
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
-  }
   blink::WebInputEvent::Type event_type =
       blink::WebInputEvent::Type::kUndefined;
   int click_count = 0;
@@ -345,53 +339,53 @@ blink::WebMouseEvent WebMouseEventBuilder::Build(
 
   NSEventType type = [event type];
   switch (type) {
-    case NSMouseExited:
+    case NSEventTypeMouseExited:
       event_type = blink::WebInputEvent::Type::kMouseLeave;
       break;
-    case NSLeftMouseDown:
+    case NSEventTypeLeftMouseDown:
       event_type = blink::WebInputEvent::Type::kMouseDown;
       click_count = [event clickCount];
       button = blink::WebMouseEvent::Button::kLeft;
       break;
-    case NSOtherMouseDown:
+    case NSEventTypeOtherMouseDown:
       event_type = blink::WebInputEvent::Type::kMouseDown;
       click_count = [event clickCount];
       button = ButtonFromButtonNumber(event);
       break;
-    case NSRightMouseDown:
+    case NSEventTypeRightMouseDown:
       event_type = blink::WebInputEvent::Type::kMouseDown;
       click_count = [event clickCount];
       button = blink::WebMouseEvent::Button::kRight;
       break;
-    case NSLeftMouseUp:
+    case NSEventTypeLeftMouseUp:
       event_type = blink::WebInputEvent::Type::kMouseUp;
       click_count = [event clickCount];
       button = blink::WebMouseEvent::Button::kLeft;
       break;
-    case NSOtherMouseUp:
+    case NSEventTypeOtherMouseUp:
       event_type = blink::WebInputEvent::Type::kMouseUp;
       click_count = [event clickCount];
       button = ButtonFromButtonNumber(event);
       break;
-    case NSRightMouseUp:
+    case NSEventTypeRightMouseUp:
       event_type = blink::WebInputEvent::Type::kMouseUp;
       click_count = [event clickCount];
       button = blink::WebMouseEvent::Button::kRight;
       break;
-    case NSMouseMoved:
-    case NSMouseEntered:
+    case NSEventTypeMouseMoved:
+    case NSEventTypeMouseEntered:
       event_type = blink::WebInputEvent::Type::kMouseMove;
       button = ButtonFromPressedMouseButtons();
       break;
-    case NSLeftMouseDragged:
+    case NSEventTypeLeftMouseDragged:
       event_type = blink::WebInputEvent::Type::kMouseMove;
       button = blink::WebMouseEvent::Button::kLeft;
       break;
-    case NSOtherMouseDragged:
+    case NSEventTypeOtherMouseDragged:
       event_type = blink::WebInputEvent::Type::kMouseMove;
       button = blink::WebMouseEvent::Button::kMiddle;
       break;
-    case NSRightMouseDragged:
+    case NSEventTypeRightMouseDragged:
       event_type = blink::WebInputEvent::Type::kMouseMove;
       button = blink::WebMouseEvent::Button::kRight;
       break;
@@ -400,8 +394,8 @@ blink::WebMouseEvent WebMouseEventBuilder::Build(
   }
 
   // Set id = 0 for all mouse events, disable multi-pen on mac for now.
-  // NSMouseExited and NSMouseEntered events don't have deviceID.
-  // Therefore pen exit and enter events can't get correct id.
+  // NSEventTypeMouseExited and NSEventTypeMouseEntered events don't have
+  // deviceID. Therefore pen exit and enter events can't get correct id.
   blink::WebMouseEvent result(event_type, ModifiersFromEvent(event),
                               ui::EventTimeStampFromSeconds([event timestamp]),
                               0);
@@ -411,16 +405,16 @@ blink::WebMouseEvent WebMouseEventBuilder::Build(
                                      unacceleratedMovement);
 
   result.pointer_type = pointerType;
-  if ((type == NSMouseExited || type == NSMouseEntered) ||
-      ([event subtype] != NSTabletPointEventSubtype &&
-       [event subtype] != NSTabletProximityEventSubtype)) {
+  if ((type == NSEventTypeMouseExited || type == NSEventTypeMouseEntered) ||
+      ([event subtype] != NSEventSubtypeTabletPoint &&
+       [event subtype] != NSEventSubtypeTabletProximity)) {
     return result;
   }
 
   // Set stylus properties for events with a subtype of
-  // NSTabletPointEventSubtype.
+  // NSEventSubtypeTabletPoint.
   NSEventSubtype subtype = [event subtype];
-  if (subtype == NSTabletPointEventSubtype) {
+  if (subtype == NSEventSubtypeTabletPoint) {
     result.force = [event pressure];
     NSPoint tilt = [event tilt];
     result.tilt_x = lround(tilt.x * 90);
@@ -456,14 +450,6 @@ blink::WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
     NSEvent* event,
     NSView* view) {
   ui::ComputeEventLatencyOS(event);
-  base::TimeTicks now = ui::EventTimeForNow();
-  base::TimeTicks hardware_timestamp =
-      ui::EventTimeStampFromSeconds([event timestamp]);
-  base::TimeDelta diff = (now - hardware_timestamp).magnitude();
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "Event.Latency.OS_NO_VALIDATION.POSITIVE.MOUSE_WHEEL", diff,
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-      50);
   blink::WebMouseWheelEvent result(
       blink::WebInputEvent::Type::kMouseWheel, ModifiersFromEvent(event),
       ui::EventTimeStampFromSeconds([event timestamp]));
@@ -568,7 +554,7 @@ blink::WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   // [1]
   // <http://developer.apple.com/documentation/Carbon/Reference/QuartzEventServicesRef/Reference/reference.html>
   // [2] <http://developer.apple.com/releasenotes/Cocoa/AppKitOlderNotes.html>
-  //     Scroll to the section headed "NSScrollWheel events".
+  //     Scroll to the section headed "NSEventTypeScrollWheel events".
   //
   // P.S. The "smooth scrolling" option in the system preferences is utterly
   // unrelated to any of this.
@@ -670,22 +656,22 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(NSEvent* event, NSView* view) {
   blink::WebTouchPoint::State state =
       blink::WebTouchPoint::State::kStateUndefined;
   switch (type) {
-    case NSLeftMouseDown:
+    case NSEventTypeLeftMouseDown:
       event_type = blink::WebInputEvent::Type::kTouchStart;
       state = blink::WebTouchPoint::State::kStatePressed;
       break;
-    case NSLeftMouseUp:
+    case NSEventTypeLeftMouseUp:
       event_type = blink::WebInputEvent::Type::kTouchEnd;
       state = blink::WebTouchPoint::State::kStateReleased;
       break;
-    case NSLeftMouseDragged:
-    case NSRightMouseDragged:
-    case NSOtherMouseDragged:
-    case NSMouseMoved:
-    case NSRightMouseDown:
-    case NSOtherMouseDown:
-    case NSRightMouseUp:
-    case NSOtherMouseUp:
+    case NSEventTypeLeftMouseDragged:
+    case NSEventTypeRightMouseDragged:
+    case NSEventTypeOtherMouseDragged:
+    case NSEventTypeMouseMoved:
+    case NSEventTypeRightMouseDown:
+    case NSEventTypeOtherMouseDown:
+    case NSEventTypeRightMouseUp:
+    case NSEventTypeOtherMouseUp:
       event_type = blink::WebInputEvent::Type::kTouchMove;
       state = blink::WebTouchPoint::State::kStateMoved;
       break;
@@ -695,16 +681,6 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(NSEvent* event, NSView* view) {
 
   blink::WebTouchEvent result(event_type, ModifiersFromEvent(event),
                               ui::EventTimeStampFromSeconds([event timestamp]));
-  if (ui::EventTypeFromNative(event) == ui::ET_TOUCH_PRESSED) {
-    base::TimeTicks now = ui::EventTimeForNow();
-    base::TimeTicks hardware_timestamp =
-        ui::EventTimeStampFromSeconds([event timestamp]);
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "Event.Latency.OS.NO_VALIDATION.POSITIVE.TOUCH_PRESSED",
-        (now - hardware_timestamp).magnitude(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
-  }
   ui::ComputeEventLatencyOS(event);
   result.hovering = event_type == blink::WebInputEvent::Type::kTouchEnd;
   result.unique_touch_event_id = ui::GetNextTouchEventId();

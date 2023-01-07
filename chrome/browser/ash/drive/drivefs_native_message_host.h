@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -1,15 +1,15 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_PROTOCOL_CONNECTION_TESTER_H_
 #define REMOTING_PROTOCOL_CONNECTION_TESTER_H_
 
-#include <list>
 #include <memory>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "remoting/protocol/message_pipe.h"
@@ -53,8 +53,8 @@ class StreamConnectionTester {
   void HandleReadResult(int result);
 
  private:
-  P2PStreamSocket* host_socket_;
-  P2PStreamSocket* client_socket_;
+  raw_ptr<P2PStreamSocket> host_socket_;
+  raw_ptr<P2PStreamSocket> client_socket_;
   int message_size_;
   int test_data_size_;
   base::OnceClosure on_done_;
@@ -86,7 +86,7 @@ class MessagePipeConnectionTester : public MessagePipe::EventHandler {
   class MessageSender;
 
   base::RunLoop run_loop_;
-  MessagePipe* client_pipe_;
+  raw_ptr<MessagePipe> client_pipe_;
 
   std::unique_ptr<MessageSender> sender_;
 

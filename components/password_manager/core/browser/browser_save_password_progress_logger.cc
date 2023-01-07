@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,7 +117,7 @@ BrowserSavePasswordProgressLogger::StringID FormSchemeToStringID(
 }  // namespace
 
 BrowserSavePasswordProgressLogger::BrowserSavePasswordProgressLogger(
-    const autofill::LogManager* log_manager)
+    autofill::LogManager* log_manager)
     : log_manager_(log_manager) {
   DCHECK(log_manager_);
 }
@@ -157,7 +157,7 @@ void BrowserSavePasswordProgressLogger::LogSuccessiveOrigins(
 std::string
 BrowserSavePasswordProgressLogger::FormStructurePasswordAttributesLogString(
     const FormStructure& form) {
-  const base::Optional<std::pair<PasswordAttribute, bool>> attribute_vote =
+  const absl::optional<std::pair<PasswordAttribute, bool>> attribute_vote =
       form.get_password_attributes_vote();
   if (!attribute_vote.has_value())
     return std::string();
@@ -166,9 +166,9 @@ BrowserSavePasswordProgressLogger::FormStructurePasswordAttributesLogString(
   const bool attribute_value = std::get<1>(attribute_vote.value());
 
   switch (attribute) {
-    case PasswordAttribute::kHasLowercaseLetter:
+    case PasswordAttribute::kHasLetter:
       message += BinaryPasswordAttributeLogString(
-          STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LOWERCASE, attribute_value);
+          STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LETTER, attribute_value);
       break;
 
     case PasswordAttribute::kHasSpecialSymbol:
@@ -333,8 +333,24 @@ void BrowserSavePasswordProgressLogger::LogPasswordForm(
   LogValue(label, log);
 }
 
+void BrowserSavePasswordProgressLogger::LogPasswordRequirements(
+    const GURL& origin,
+    autofill::FormSignature form_signature,
+    autofill::FieldSignature field_signature,
+    const autofill::PasswordRequirementsSpec& spec) {
+  std::ostringstream s;
+  s << "Joint password requirements: {\n"
+    << GetStringFromID(STRING_ORIGIN) << ": " << ScrubURL(origin) << "\n"
+    << GetStringFromID(STRING_FORM_SIGNATURE) << ": "
+    << FormSignatureToDebugString(form_signature) << "\n"
+    << "Field signature: " << NumberToString(field_signature.value()) << "\n"
+    << "Requirements:" << spec << "\n"
+    << "}";
+  SendLog(s.str());
+}
+
 void BrowserSavePasswordProgressLogger::SendLog(const std::string& log) {
-  log_manager_->LogTextMessage(log);
+  LOG_AF(*log_manager_) << log;
 }
 
 std::string BrowserSavePasswordProgressLogger::PasswordAttributeLogString(

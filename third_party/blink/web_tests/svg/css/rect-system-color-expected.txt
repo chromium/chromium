@@ -19,6 +19,9 @@ PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
 Testing system colorBackground
 PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
 PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
+Testing system colorButtonBorder
+PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
+PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
 Testing system colorButtonFace
 PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
 PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
@@ -73,6 +76,12 @@ PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
 Testing system colorLinkText
 PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
 PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
+Testing system colorMark
+PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
+PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
+Testing system colorMarkText
+PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
+PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
 Testing system colorMenu
 PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
 PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
@@ -80,6 +89,12 @@ Testing system colorMenuText
 PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
 PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
 Testing system colorScrollbar
+PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
+PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
+Testing system colorSelectedItem
+PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
+PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
+Testing system colorSelectedItemText
 PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
 PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
 Testing system colorThreeDDarkShadow

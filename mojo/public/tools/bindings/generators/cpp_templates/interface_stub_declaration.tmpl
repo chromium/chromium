@@ -14,8 +14,8 @@ class {{interface.name}}Stub
  public:
   using ImplPointerType = typename ImplRefTraits::PointerType;
 
-  {{interface.name}}Stub() {}
-  ~{{interface.name}}Stub() override {}
+  {{interface.name}}Stub() = default;
+  ~{{interface.name}}Stub() override = default;
 
   void set_sink(ImplPointerType sink) { sink_ = std::move(sink); }
   ImplPointerType& sink() { return sink_; }

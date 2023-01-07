@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #import "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web_view/test/web_view_test_util.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -115,10 +116,9 @@ WebViewInttestBase::WebViewInttestBase()
   // The WKWebView must be present in the view hierarchy in order to prevent
   // WebKit optimizations which may pause internal parts of the web view
   // without notice. Work around this by adding the view directly.
-  // TODO:(crbug.com/944077) Remove this workaround once fixed in ios/web.
-  UIViewController* view_controller =
-      [[[UIApplication sharedApplication] keyWindow] rootViewController];
+  UIViewController* view_controller = [GetAnyKeyWindow() rootViewController];
   [view_controller.view addSubview:web_view_];
+
   test_server_->AddDefaultHandlers(FILE_PATH_LITERAL(base::FilePath()));
   test_server_->RegisterRequestHandler(
       base::BindRepeating(&TestRequestHandler));

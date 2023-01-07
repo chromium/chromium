@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -37,13 +38,12 @@
 #include "rlz/buildflags/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/installer/util/google_update_settings.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
 #endif
 
 ChromeRLZTrackerDelegate::ChromeRLZTrackerDelegate() {}
@@ -57,14 +57,18 @@ void ChromeRLZTrackerDelegate::RegisterProfilePrefs(
   int rlz_ping_delay_seconds = 90;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kRlzPingDelay)) {
+          ash::switches::kRlzPingDelay)) {
     // Use a switch for overwriting the default delay because it doesn't seem
     // possible to manually override the Preferences file on Chrome OS: the file
     // is already loaded into memory by the time you modify it and any changes
     // made get overwritten by Chrome.
-    rlz_ping_delay_seconds =
-        std::stoi(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            chromeos::switches::kRlzPingDelay));
+    int parsed_delay_from_switch = 0;
+    if (base::StringToInt(
+            base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                ash::switches::kRlzPingDelay),
+            &parsed_delay_from_switch)) {
+      rlz_ping_delay_seconds = parsed_delay_from_switch;
+    }
   } else {
     rlz_ping_delay_seconds = 24 * 3600;
   }
@@ -143,7 +147,7 @@ bool ChromeRLZTrackerDelegate::ShouldEnableZeroDelayForTesting() {
 }
 
 bool ChromeRLZTrackerDelegate::GetLanguage(std::u16string* language) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::wstring wide_language;
   bool result = GoogleUpdateSettings::GetLanguage(&wide_language);
   *language = base::AsString16(wide_language);
@@ -158,7 +162,7 @@ bool ChromeRLZTrackerDelegate::GetLanguage(std::u16string* language) {
 }
 
 bool ChromeRLZTrackerDelegate::GetReferral(std::u16string* referral) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::wstring wide_referral;
   bool result = GoogleUpdateSettings::GetReferral(&wide_referral);
   *referral = base::AsString16(wide_referral);
@@ -171,7 +175,7 @@ bool ChromeRLZTrackerDelegate::GetReferral(std::u16string* referral) {
 }
 
 bool ChromeRLZTrackerDelegate::ClearReferral() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return GoogleUpdateSettings::ClearReferral();
 #else
   // The referral program is defunct and not used. No need to implement this

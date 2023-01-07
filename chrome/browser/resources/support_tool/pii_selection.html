@@ -1,0 +1,124 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="support-tool-shared cr-shared-style">
+  #pii-warning-text {
+    width: 520px;
+  }
+
+  #radio-group {
+    width: 520px;
+  }
+
+  cr-radio-button {
+    /* Override the padding to align the buttons to the text start.*/
+    padding: 8px;
+    padding-inline-start: 0;
+  }
+
+  #privacy-disclaimer {
+    color: var(--cr-title-text-color);
+    margin-inline-start: 24px;
+    /* Add negative margin to override the padding of the radio-button on top
+      so the disclaimer text looks connected to the radio button text.*/
+    margin-top: -16px;
+  }
+
+  #detected-pii-container {
+    margin-inline-start: 36px;
+    max-height: 256px;
+    width: 520px;
+  }
+
+  #detected-pii-item {
+    max-width: 520px;
+    padding-bottom: 8px;
+    padding-top: 8px;
+  }
+
+  cr-expand-button {
+    background-color: var(--cr-card-background-color);
+    height: var(--cr-expand-button-icon-size, 20px);
+  }
+
+  cr-checkbox {
+    background-color: var(--cr-card-background-color);
+  }
+
+  .pii-item-collapse {
+    color: var(--cr-title-text-color);
+    margin-bottom: 4px;
+    margin-inline-start: 36px;
+    margin-top: 4px;
+  }
+
+  .pii-details {
+    border: none;
+    border-radius: var(--cr-card-border-radius, 4px);
+    padding-bottom: 2px;
+    padding-top: 2px;
+  }
+
+  cr-button {
+    margin-inline-start: 12px;
+  }
+</style>
+
+<h1 tabindex="0">
+  Step 3 of 4: Review personally identifiable information
+</h1>
+<div id="pii-warning-text" class="support-tool-title" tabindex="0">
+  Diagnostic data collection is complete. Some of your personal information is
+  included in this data.
+</div>
+<div id="radio-group">
+  <cr-radio-group selected="[[selectedRadioButton_]]"
+      on-selected-changed="onSelectedRadioButtonChanged_">
+    <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_ALL]]" tabindex="0">
+      Include all personal information
+    </cr-radio-button>
+    <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_NONE]]" tabindex="0">
+      Automatically remove most personal information
+    </cr-radio-button>
+    <iron-collapse id="privacy-disclaimer"
+        opened$="[[showDisclaimer_(selectedRadioButton_)]]">
+      <div tabindex="0">
+        Some personal information may still be included in the data. Make sure
+        to review the exported files.
+      </div>
+    </iron-collapse>
+    <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_SOME]]" tabindex="0">
+      Manually select personal information you want to include
+    </cr-radio-button>
+  </cr-radio-group>
+</div>
+<iron-collapse id="detected-pii-container" opened="[[showPIISelection_]]">
+  <div>
+    <template is="dom-repeat" items="[[detectedPIIItems_]]">
+      <div id="detected-pii-item">
+        <cr-expand-button expanded="{{item.expandDetails}}"
+            aria-label$=
+                "[[getPiiItemAriaLabel_(
+                      item.piiTypeDescription, item.count)]]">
+          <cr-checkbox checked="{{item.keep}}">
+            <span>[[item.piiTypeDescription]]: [[item.count]]</span>
+          </cr-checkbox>
+        </cr-expand-button>
+        <iron-collapse class="pii-item-collapse"
+            opened="[[item.expandDetails]]">
+          <div class="pii-details" tabindex="0">[[item.detectedData]]</div>
+        </iron-collapse>
+      </div>
+    </template>
+  </div>
+</iron-collapse>
+<div class="navigation-buttons">
+  <cr-button id="cancelButton" on-click="onCancelClick_">Cancel</cr-button>
+  <cr-button id="exportButton" class="action-button"
+      on-click="onExportClick_">
+    Export
+  </cr-button>
+</div>

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -32,6 +32,7 @@ if (is_android) {
       "$google_play_services_package:google_play_services_gcm_java",
       "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_java",
+      "//build/android:build_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
       "//components/background_task_scheduler:public_java",
       "//content/public/android:content_main_dex_java",
@@ -71,9 +72,9 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//components/background_task_scheduler:factory_java",
       "//components/background_task_scheduler:public_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 
@@ -83,33 +84,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/background_task_scheduler/internal/NativeTaskScheduler.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/TaskInfoBridge.java",
-    ]
-  }
-
-  android_library("background_task_scheduler_javatests") {
-    testonly = true
-
-    sources = [
-      "android/javatests/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerImplWithMockTest.java",
-      "android/javatests/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerJobServiceTest.java",
-      "android/javatests/src/org/chromium/components/background_task_scheduler/internal/BundleToPersistableBundleConverterTest.java",
-      "android/javatests/src/org/chromium/components/background_task_scheduler/internal/MockBackgroundTaskSchedulerDelegate.java",
-    ]
-
-    deps = [
-      ":internal_java",
-      "$google_play_services_package:google_play_services_base_java",
-      "$google_play_services_package:google_play_services_basement_java",
-      "$google_play_services_package:google_play_services_gcm_java",
-      "$google_play_services_package:google_play_services_tasks_java",
-      "//base:base_java",
-      "//base:base_java_test_support",
-      "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
-      "//components/background_task_scheduler:public_java",
-      "//content/public/test/android:content_java_test_support",
-      "//third_party/android_support_test_runner:runner_java",
-      "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/junit",
     ]
   }
 }

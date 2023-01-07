@@ -43,7 +43,7 @@
   <message name="IDS_VERSION_UI_COMMAND_LINE" desc="label for the command line on the about:version page">
     Command Line
   </message>
-  <if expr="chromeos">
+  <if expr="chromeos_ash">
     <message name="IDS_VERSION_UI_BUILD_DATE" desc="label for build date on the about:version page">
       Build Date
     </message>
@@ -54,6 +54,9 @@
       Firmware Version
     </message>
   </if>
+  <message name="IDS_VERSION_UI_COPY_LABEL" desc="label for the button to copy the version string">
+    Copy version string
+  </message>
   <message name="IDS_VERSION_UI_EXECUTABLE_PATH" desc="label for the executable path on the about:version page">
     Executable Path
   </message>
@@ -64,7 +67,7 @@
     No such file or directory
   </message>
   <message name="IDS_VERSION_UI_VARIATIONS" desc="label for the variations list on the about:version page">
-    Variations
+    Active Variations
   </message>
   <message name="IDS_VERSION_UI_VARIATIONS_CMD" desc="label for the variations information in command-line format on the about:version page">
     Command-line variations
@@ -72,6 +75,28 @@
   <if expr="is_win">
     <message translateable="false" name="IDS_VERSION_UI_COHORT_NAME" desc="Update cohort substring included in the version number line on the about:version page.">
       (cohort: <ph name="UPDATE_COHORT_NAME">$1<ex>Stable</ex></ph>)
+    </message>
+  </if>
+  <if expr="chromeos_ash">
+    <message name="IDS_VERSION_UI_OS_TEXT1_LABEL" desc="Begin label text on the os://version page from ChromeOS which directs a user to a dialog showing Chrome browser specific version - enclosing url link.">
+      Looking for browser version? Visit
+    </message>
+    <message name="IDS_VERSION_UI_OS_TEXT2_LABEL" desc="End label text on the os://version page from ChromeOS which directs a user to a dialog showing Chrome browser specific version - enclosing url link.">
+      .
+    </message>
+    <message name="IDS_VERSION_UI_OS_LINK" translateable="false" desc="Label for a button on the os://version page from ChromeOS that will call a new window which allows to change Chrome browser version.">
+      chrome://version
+    </message>
+  </if>
+  <if expr="chromeos_lacros">
+    <message name="IDS_VERSION_UI_OS_TEXT1_LABEL" desc="Begin label text on the chrome://version page from ChromeOS which directs a user to a dialog showing OS specific version - enclosing url link.">
+      Looking for system version? Visit
+    </message>
+    <message name="IDS_VERSION_UI_OS_TEXT2_LABEL" desc="End label text on the chrome://version page from ChromeOS which directs a user to a dialog showing OS specific version - enclosing url link.">
+      .
+    </message>
+    <message name="IDS_VERSION_UI_OS_LINK" translateable="false" desc="Label for button on the chrome://version page from ChromeOS that will call a new window which allows to change system version.">
+      os://version
     </message>
   </if>
 </grit-part>

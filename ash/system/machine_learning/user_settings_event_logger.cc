@@ -1,16 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/machine_learning/user_settings_event_logger.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/shell.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/power/power_status.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
@@ -97,30 +99,6 @@ void UserSettingsEventLogger::LogNetworkUkmEvent(
     return;
   }
   event->set_setting_type(UserSettingsEvent::Event::QUICK_SETTINGS);
-
-  PopulateSharedFeatures(&settings_event);
-  SendToUkmAndAppList(settings_event);
-}
-
-void UserSettingsEventLogger::LogBluetoothUkmEvent(
-    const BluetoothAddress& device_address) {
-  UserSettingsEvent settings_event;
-  auto* const event = settings_event.mutable_event();
-
-  event->set_setting_id(UserSettingsEvent::Event::BLUETOOTH);
-  event->set_setting_type(UserSettingsEvent::Event::QUICK_SETTINGS);
-
-  const auto& devices =
-      Shell::Get()->tray_bluetooth_helper()->GetAvailableBluetoothDevices();
-  UMA_HISTOGRAM_COUNTS_100("Ash.Shelf.UkmLogger.NumAvailableBluetoothDevices",
-                           devices.size());
-  for (const auto& device : devices) {
-    if (device->address == device_address) {
-      settings_event.mutable_features()->set_is_paired_bluetooth_device(
-          device->is_paired);
-      break;
-    }
-  }
 
   PopulateSharedFeatures(&settings_event);
   SendToUkmAndAppList(settings_event);
@@ -276,7 +254,7 @@ void UserSettingsEventLogger::OnCastingSessionStartedOrStopped(
     --presenting_session_count_;
     DCHECK_GE(presenting_session_count_, 0);
     if (presenting_session_count_ == 0) {
-      presenting_timer_.Start(FROM_HERE, base::TimeDelta::FromMinutes(5), this,
+      presenting_timer_.Start(FROM_HERE, base::Minutes(5), this,
                               &UserSettingsEventLogger::OnPresentingTimerEnded);
     }
   }
@@ -295,7 +273,7 @@ void UserSettingsEventLogger::OnFullscreenStateChanged(
     is_recently_fullscreen_ = true;
     fullscreen_timer_.Stop();
   } else {
-    fullscreen_timer_.Start(FROM_HERE, base::TimeDelta::FromMinutes(5), this,
+    fullscreen_timer_.Start(FROM_HERE, base::Minutes(5), this,
                             &UserSettingsEventLogger::OnFullscreenTimerEnded);
   }
 }
@@ -344,9 +322,9 @@ void UserSettingsEventLogger::PopulateSharedFeatures(
           : UserSettingsEvent::Features::CLAMSHELL_MODE);
   const auto orientation =
       Shell::Get()->screen_orientation_controller()->GetCurrentOrientation();
-  if (IsLandscapeOrientation(orientation)) {
+  if (chromeos::IsLandscapeOrientation(orientation)) {
     features->set_device_orientation(UserSettingsEvent::Features::LANDSCAPE);
-  } else if (IsPortraitOrientation(orientation)) {
+  } else if (chromeos::IsPortraitOrientation(orientation)) {
     features->set_device_orientation(UserSettingsEvent::Features::PORTRAIT);
   }
 }
@@ -399,8 +377,6 @@ void UserSettingsEventLogger::SendToUkmAndAppList(
     ukm_event.SetHasWifiSecurity(features.has_wifi_security());
   if (features.has_used_cellular_in_session())
     ukm_event.SetUsedCellularInSession(features.used_cellular_in_session());
-  if (features.has_is_paired_bluetooth_device())
-    ukm_event.SetIsPairedBluetoothDevice(features.is_paired_bluetooth_device());
   if (features.has_has_night_light_schedule())
     ukm_event.SetHasNightLightSchedule(features.has_night_light_schedule());
   if (features.has_is_after_sunset())

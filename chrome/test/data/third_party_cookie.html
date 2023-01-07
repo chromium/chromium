@@ -1,0 +1,7 @@
+<html><head><title>Third Party Cookies test</title></head>
+<body>
+<!-- This only works if the CrossSiteRedirector is running on the embedded test
+     server, and the host_resolver is set up to handle b.com. -->
+<iframe src="/set_cookie_header.html" id="frame1"></iframe>
+<iframe src="/cross-site/b.com/set_cookie_header.html" id="frame2"></iframe>
+</body></html>

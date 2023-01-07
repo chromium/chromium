@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -33,9 +32,6 @@ namespace {
 const char kJsApiDisableTracing[] = "disableTracing";
 const char kJsApiEnableTracing[] = "enableTracing";
 const char kJsApiLoadComplete[] = "loadComplete";
-
-// Page JS API function names.
-const char kJsApiTracingPrefChanged[] = "options.Slow.tracingPrefChanged";
 
 }  // namespace
 
@@ -63,28 +59,34 @@ content::WebUIDataSource* CreateSlowUIHTMLSource() {
 class SlowHandler : public WebUIMessageHandler {
  public:
   explicit SlowHandler(Profile* profile);
+
+  SlowHandler(const SlowHandler&) = delete;
+  SlowHandler& operator=(const SlowHandler&) = delete;
+
   ~SlowHandler() override;
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
+  void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
 
  private:
   void UpdatePage();
 
   // Handlers for JS WebUI messages.
-  void HandleDisable(const base::ListValue* args);
-  void HandleEnable(const base::ListValue* args);
-  void LoadComplete(const base::ListValue* args);
+  void HandleDisable(const base::Value::List& args);
+  void HandleEnable(const base::Value::List& args);
+  void LoadComplete(const base::Value::List& args);
 
   Profile* profile_;
   std::unique_ptr<PrefChangeRegistrar> user_pref_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(SlowHandler);
 };
 
 // SlowHandler ------------------------------------------------------------
 
 SlowHandler::SlowHandler(Profile* profile) : profile_(profile) {
+  user_pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  user_pref_registrar_->Init(profile_->GetPrefs());
 }
 
 SlowHandler::~SlowHandler() {
@@ -100,25 +102,30 @@ void SlowHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       kJsApiLoadComplete,
       base::BindRepeating(&SlowHandler::LoadComplete, base::Unretained(this)));
+}
 
-  user_pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  user_pref_registrar_->Init(profile_->GetPrefs());
+void SlowHandler::OnJavascriptAllowed() {
   user_pref_registrar_->Add(
       prefs::kPerformanceTracingEnabled,
       base::BindRepeating(&SlowHandler::UpdatePage, base::Unretained(this)));
 }
 
-void SlowHandler::HandleDisable(const base::ListValue* args) {
+void SlowHandler::OnJavascriptDisallowed() {
+  user_pref_registrar_->RemoveAll();
+}
+
+void SlowHandler::HandleDisable(const base::Value::List& args) {
   PrefService* pref_service = profile_->GetPrefs();
   pref_service->SetBoolean(prefs::kPerformanceTracingEnabled, false);
 }
 
-void SlowHandler::HandleEnable(const base::ListValue* args) {
+void SlowHandler::HandleEnable(const base::Value::List& args) {
   PrefService* pref_service = profile_->GetPrefs();
   pref_service->SetBoolean(prefs::kPerformanceTracingEnabled, true);
 }
 
-void SlowHandler::LoadComplete(const base::ListValue* args) {
+void SlowHandler::LoadComplete(const base::Value::List& args) {
+  AllowJavascript();
   UpdatePage();
 }
 
@@ -126,7 +133,7 @@ void SlowHandler::UpdatePage() {
   PrefService* pref_service = profile_->GetPrefs();
   bool enabled = pref_service->GetBoolean(prefs::kPerformanceTracingEnabled);
   base::Value pref_value(enabled);
-  web_ui()->CallJavascriptFunctionUnsafe(kJsApiTracingPrefChanged, pref_value);
+  FireWebUIListener("tracing-pref-changed", pref_value);
 }
 
 // SlowUI -----------------------------------------------------------------
@@ -141,4 +148,3 @@ SlowUI::SlowUI(content::WebUI* web_ui) : WebUIController(web_ui) {
 }
 
 }  // namespace chromeos
-

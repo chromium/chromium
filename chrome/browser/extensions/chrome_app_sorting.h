@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,15 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/app_registrar_observer.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_prefs.h"
@@ -32,9 +34,14 @@ class WebAppRegistrar;
 namespace extensions {
 
 class ChromeAppSorting : public AppSorting,
-                         public web_app::AppRegistrarObserver {
+                         public web_app::AppRegistrarObserver,
+                         public web_app::WebAppInstallManagerObserver {
  public:
   explicit ChromeAppSorting(content::BrowserContext* browser_context);
+
+  ChromeAppSorting(const ChromeAppSorting&) = delete;
+  ChromeAppSorting& operator=(const ChromeAppSorting&) = delete;
+
   ~ChromeAppSorting() override;
 
   // AppSorting implementation:
@@ -71,8 +78,11 @@ class ChromeAppSorting : public AppSorting,
   void SetExtensionVisible(const std::string& extension_id,
                            bool visible) override;
 
-  // AppRegistrarObserver implementation:
+  // web_app::WebAppInstallManagerObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
+
+  // web_app::AppRegistrarObserver:
   void OnWebAppsWillBeUpdatedFromSync(
       const std::vector<const web_app::WebApp*>& updated_apps_state) override;
   void OnAppRegistrarDestroyed() override;
@@ -165,11 +175,15 @@ class ChromeAppSorting : public AppSorting,
   // Returns the number of items in |m| visible on the new tab page.
   size_t CountItemsVisibleOnNtp(const AppLaunchOrdinalMap& m) const;
 
-  content::BrowserContext* const browser_context_ = nullptr;
-  const web_app::WebAppRegistrar* web_app_registrar_ = nullptr;
-  web_app::WebAppSyncBridge* web_app_sync_bridge_ = nullptr;
-  base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
+  const raw_ptr<content::BrowserContext> browser_context_ = nullptr;
+  raw_ptr<const web_app::WebAppRegistrar> web_app_registrar_ = nullptr;
+  raw_ptr<web_app::WebAppSyncBridge> web_app_sync_bridge_ = nullptr;
+  base::ScopedObservation<web_app::WebAppRegistrar,
+                          web_app::AppRegistrarObserver>
       app_registrar_observation_{this};
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   // A map of all the StringOrdinal page ordinals mapping to the collections of
   // app launch ordinals that exist on that page. This is used for mapping
@@ -191,8 +205,6 @@ class ChromeAppSorting : public AppSorting,
   std::set<std::string> ntp_hidden_extensions_;
 
   base::WeakPtrFactory<ChromeAppSorting> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppSorting);
 };
 
 }  // namespace extensions

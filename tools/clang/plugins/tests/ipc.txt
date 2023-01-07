@@ -170,9 +170,6 @@ ipc.cpp:212:32: note: expanded from macro 'CALL_WRITEPARAM'
 ipc.cpp:234:18: note: see here
   typedef size_t my_size;
                  ^
-ipc.cpp:240:32: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'unsigned long'.
-    IPC::WriteParam(nullptr, p + 1); // ERROR
-                               ^
 ipc.cpp:249:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t' via 'my_size'.
     IPC::WriteParam(nullptr, p); // ERROR
                              ^
@@ -221,4 +218,4 @@ ipc.cpp:348:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted
 ipc.cpp:349:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t' via 'std::vector<size_t>'.
   IPC::WriteParam(nullptr, p.sizes_data); // ERROR
                              ^
-41 errors generated.
+40 errors generated.

@@ -1,4 +1,4 @@
-/* Copyright 2018 The Chromium Authors. All rights reserved.
+/* Copyright 2018 The Chromium Authors
    Use of this source code is governed by a BSD-style license that can be
    found in the LICENSE file. */
 
@@ -38,7 +38,7 @@ video::-internal-media-interstitial-background-image {
 }
 
 video::-internal-media-remoting-cast-icon {
-    -webkit-appearance: none;
+    appearance: none;
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center center;

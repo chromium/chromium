@@ -1,11 +1,10 @@
 include_rules = [
+  "+ash/components/arc",
   "+ash/constants",
   "+ash/public/cpp",
+  "+chromeos/ash/components/memory",
   "+chromeos/components/sensors",
-  "+chromeos/cryptohome",
   "+chromeos/dbus",
-  "+chromeos/memory",
-  "+chromeos/policy",
   "+chromeos/system",
   "+components/guest_os",
   "+components/account_id",
@@ -14,9 +13,9 @@ include_rules = [
   "+components/pref_registry",
   "+components/prefs",
   "+components/session_manager/core",
-  "+components/timers",
   "+components/user_manager",
   "+components/user_prefs",
+  "+components/vector_icons",
   "+components/version_info",
   "+content/public/browser",
   "+media/base",
@@ -38,6 +37,10 @@ specific_include_rules = {
   "arc_bridge_host_impl.cc": [
     "+ash/public",
     "+services/service_manager/public",
+  ],
+  "arc_intent_helper_bridge.cc": [
+    # For net::IsLocalhost.
+    "+net/base/url_util.h",
   ],
   "arc_util.cc": [
     "+ui/aura",

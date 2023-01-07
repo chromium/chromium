@@ -1,0 +1,14 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable label='Scrollable iframe'
+++++++++UNKNOWN focusable
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN
+++++++++++++++++STATIC_TEXT label='visible text'
+++++++++++++++++++UNKNOWN label='visible text'
+++++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN
+++++++++++++++++STATIC_TEXT label='hidden from viewport'
+++++++++++++++++++UNKNOWN label='hidden from viewport'

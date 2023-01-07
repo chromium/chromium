@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Күтпеген қате орын алды. Әзірлеушілерге осы мәселені хабарлаңыз.</translation>
 <translation id="1697532407822776718">Барлығын орнаттыңыз!</translation>
 <translation id="1742469581923031760">Қосылуда…</translation>
+<translation id="177040763384871009">Қашықтағы құрылғыда басылған сілтемелер клиент браузерінде ашылуы үшін жүйе браузерін "<ph name="URL_FORWARDER_NAME" />" құралына ауыстыруыңыз керек.</translation>
 <translation id="177096447311351977">Клиентке арналған арна IP мекенжайы: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Жою</translation>
 <translation id="2009755455353575666">Байланыс орнатылмады</translation>
@@ -24,7 +25,7 @@
 "<ph name="SERVICE_SCRIPT_NAME" />" ұяшығы белгіленіп тұрса, белгісін алып, қайта белгілеңіз.</translation>
 <translation id="225614027745146050">Қош келдіңіз</translation>
 <translation id="2320166752086256636">Пернетақтаны жасыру</translation>
-<translation id="2333212046079545895">Copyright 2021 Google LLC. Барлық құқығы қорғалған.</translation>
+<translation id="2329392777730037872">Клиент құрылғысында <ph name="URL" /> мекенжайы ашылмады.</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2366718077645204424">Хостқа қол жеткізу мүмкін емес. Бұған сіз пайдаланып жатқан желінің конфигурациясы себеп болуы мүмкін.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Соңғы рет желіде болған уақыты <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -35,6 +36,7 @@
 <translation id="2599300881200251572">Бұл қызмет Chrome Remote Desktop клиенттерінен қосылу мүмкіндігін береді.</translation>
 <translation id="2647232381348739934">Chromoting Service</translation>
 <translation id="2676780859508944670">Жұмыс істеуде…</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC, Барлық құқығы қорғалған.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Аутентификациялау кезінде ақау пайда болды. Жүйеге қайта кіріңіз.</translation>
 <translation id="2803375539583399270">PIN кодын енгізіңіз</translation>
@@ -55,6 +57,7 @@
 <translation id="369442766917958684">Желіден тыс.</translation>
 <translation id="3695446226812920698">Әдісін білу</translation>
 <translation id="3776024066357219166">Сіздің Chrome қашықтағы жұмыс үстелі сеансыңыз аяқталды.</translation>
+<translation id="3858860766373142691">Аты</translation>
 <translation id="3897092660631435901">Мәзір</translation>
 <translation id="3905196214175737742">Жарамсыз хост иесінің домені.</translation>
 <translation id="3931191050278863510">Хост тоқтады.</translation>
@@ -62,19 +65,21 @@
 <translation id="405887016757208221">Қашықтағы компьютер сеансты жұмысқа дайындау әрекетін сәтсіз аяқтады. Мәселе әлі де шешілмесе, хостты қайта конфигурациялаңыз.</translation>
 <translation id="4060747889721220580">Файлды жүктеп алу</translation>
 <translation id="4126409073460786861">Реттеу аяқталғаннан кейін, бетті жаңартыңыз. Одан кейін құрылғыны таңдап, PIN кодын енгізу арқылы компьютерге кіре аласыз</translation>
-<translation id="4145029455188493639"><ph name="EMAIL_ADDRESS" /> есептік жазбасымен кірдіңіз.</translation>
+<translation id="4145029455188493639"><ph name="EMAIL_ADDRESS" /> аккаунтымен кірдіңіз.</translation>
 <translation id="4155497795971509630">Кейбір қажетті компоненттер жоқ. Бағдарламалық жасақтаманың соңғы нұсқасы орнатылғандығын тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="4176825807642096119">Кіру коды</translation>
 <translation id="4227991223508142681">Хостқа орналастыру бағдарламасы</translation>
 <translation id="4240294130679914010">Chromoting Host Uninstaller</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> пайдаланатын URL бағытын өзгерту қолданбасы</translation>
 <translation id="4277736576214464567">Рұқсат коды жарамсыз. Әрекетті қайталап көріңіз.</translation>
 <translation id="4281844954008187215">Қызмет көрсету шарттары</translation>
+<translation id="4372650392690220936">Copyright 2022 The Chromium Authors. Барлық құқығы қорғалған.</translation>
 <translation id="4405930547258349619">Негізгі кітапхана</translation>
 <translation id="443560535555262820">Арнайы мүмкіндіктер параметрлерін ашу</translation>
 <translation id="4450893287417543264">Қайта көрсетілмесін</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Барлық құқығы қорғалған.</translation>
 <translation id="4513946894732546136">Пікір жіберу</translation>
 <translation id="4563926062592110512">Клиент ажыратылды: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> мекенжайы дұрыс конфигурацияланбады. Басқа әдепкі браузерді таңдап, URL-ді қайта бағыттаңыз.</translation>
 <translation id="4635770493235256822">Қашықтағы құрылғылар</translation>
 <translation id="4660011489602794167">Пернетақтаны көрсету</translation>
 <translation id="4703799847237267011">Chromoting сеансыңыз аяқталды.</translation>
@@ -87,6 +92,7 @@
 <translation id="4867841927763172006">Экран суретін жіберу</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> хосты үшін байланыс өшірілді</translation>
 <translation id="4985296110227979402">Алдымен компьютерді қашықтан кіруге орнату керек</translation>
+<translation id="4987330545941822761">Chrome Remote Desktop жүйесі URL мекенжайларын жергілікті құрылғыдан ашатын браузерді анықтай алмайды. Оны төмендегі тізімнен таңдаңыз.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (желіден тыс)</translation>
 <translation id="507204348399810022"><ph name="HOSTNAME" /> құрылғысына қашықтан қосылған байланыстарды шынымен өшіргіңіз келе ме?</translation>
 <translation id="5170982930780719864">Жарамсыз хост идентификаторы.</translation>
@@ -94,7 +100,6 @@
 <translation id="5222676887888702881">Шығу</translation>
 <translation id="5234764350956374838">Жабу</translation>
 <translation id="5308380583665731573">Қосылу</translation>
-<translation id="5327248766486351172">Аты</translation>
 <translation id="533625276787323658">Қосылатын компьютер жоқ</translation>
 <translation id="5397086374758643919">Chrome Remote Desktop Host Uninstaller</translation>
 <translation id="5419418238395129586">Желіде соңғы болған күні: <ph name="DATE" /></translation>
@@ -102,9 +107,10 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Жұмыс үстеліңіз қазір <ph name="USER" /> пайдаланушысымен бөлісілген.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> есептік жазбасымен кірдіңіз.</translation>
+<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> аккаунтымен кірдіңіз.</translation>
 <translation id="579702532610384533">Қайта қосылу</translation>
 <translation id="5810269635982033450">Экран сенсорлық тақта сияқты жұмыс істейді</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> экраныңызды көру, пернетақта мен тінтуірді басқару рұқсатын сұрады. Бұл сұрауды күтпесеңіз, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' түймесін басыңыз. Не болмаса дайын болған кезде байланысқа рұқсат беру үшін, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' түймесін басыңыз.</translation>
 <translation id="5823658491130719298">Қашықтан кіргіңіз келетін компьютерде Chrome браузерін ашып, <ph name="INSTALLATION_LINK" /> бетіне өтіңіз</translation>
 <translation id="5841343754884244200">Көрсету опциялары</translation>
 <translation id="6033507038939587647">Пернетақта опциялары</translation>
@@ -121,6 +127,7 @@
 <translation id="6612717000975622067">Ctrl-Alt-Del жіберу</translation>
 <translation id="6654753848497929428">Бөлісу</translation>
 <translation id="677755392401385740">Пайдаланушы үшін хост іске қосылды: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> клиентінде URL мекенжайын ашуға көмектесетін қолданба</translation>
 <translation id="6939719207673461467">Пернетақтаны көрсету/жасыру.</translation>
 <translation id="6963936880795878952">Қашықтағы компьютерге жарамсыз PIN кодымен кіру әрекеті жасалғандықтан, оған қосылу уақытша мүмкін емес. Әрекетіңізді кейінірек қайталаңыз.</translation>
 <translation id="6965382102122355670">Жарайды</translation>
@@ -133,19 +140,21 @@
 <translation id="7144878232160441200">Қайталау</translation>
 <translation id="7312846573060934304">Хост желіден тыс.</translation>
 <translation id="7319983568955948908">Бөлісуді тоқтату</translation>
+<translation id="7359298090707901886">Таңдалған браузерді жергілікті құрылғыдан URL мекенжайларын ашу үшін пайдалану мүмкін емес.</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">Клиент үшін кіруге тыйым салынған: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Клиент қосылды: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="7526139040829362392">Есептік жазбаны өзгерту</translation>
+<translation id="7526139040829362392">Аккаунтты өзгерту</translation>
+<translation id="7535110896613603182">Әдепкі қолданбалардың параметрлерін ашу</translation>
 <translation id="7628469622942688817">Бұл құрылғыда PIN кодым есте сақталсын.</translation>
 <translation id="7649070708921625228">Анықтама</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
-<translation id="7665369617277396874">Есептік жазба қосу</translation>
+<translation id="7665369617277396874">Аккаунт қосу</translation>
 <translation id="7678209621226490279">Сол жаққа қондыру</translation>
 <translation id="7693372326588366043">Хосттар тізімін жаңарту</translation>
 <translation id="7714222945760997814">Осы жөнінде хабарлау</translation>
 <translation id="7868137160098754906">Қашықтағы компьютерге арналған PIN кодын енгізіңіз.</translation>
-<translation id="7895403300744144251">Қашықтағы компьютердегі қауіпсіздік саясаттары есептік жазбаңыздан байланыс орнатуға тыйым салады.</translation>
+<translation id="7895403300744144251">Қашықтағы компьютердегі қауіпсіздік саясаттары аккаунтыңыздан байланыс орнатуға тыйым салады.</translation>
 <translation id="7936528439960309876">Оң жаққа қондыру</translation>
 <translation id="7970576581263377361">Аутентификация сәтсіз аяқталды. Chromium жүйесіне қайта кіріңіз.</translation>
 <translation id="7981525049612125370">Қашықтағы сеанстың мерзімі аяқталды.</translation>
@@ -153,7 +162,7 @@
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="8060029310790625334">Анықтама орталығы</translation>
 <translation id="806699900641041263"><ph name="HOSTNAME" /> хостымен байланыс орнатылуда</translation>
-<translation id="8073845705237259513">Chrome Remote Desktop пайдалану үшін құрылғыңызға Google есептік жазбасын қосуыңыз қажет.</translation>
+<translation id="8073845705237259513">Chrome Remote Desktop пайдалану үшін құрылғыңызға Google аккаунтын қосуыңыз қажет.</translation>
 <translation id="809687642899217504">Компьютерлерім</translation>
 <translation id="8116630183974937060">Желілік қате орын алды. Құрылғыңыз желіде екендігін тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="8295077433896346116"><ph name="PRODUCT_NAME" /> қызметін пайдалану үшін арнайы мүмкіндіктерді пайдалануға рұқсат беруіңіз керек, сонда қашықтағы құрылғыдан енгізілген деректерді осы Mac құрылғысына жіберуге болады.
@@ -161,7 +170,8 @@
 Рұқсат беру үшін төмендегі "<ph name="BUTTON_NAME" />" түймесін басыңыз. "Арнайы мүмкіндіктер" параметрлері панелін ашыңыз және "<ph name="SERVICE_SCRIPT_NAME" />" ұяшығын белгілеңіз.
 
 "<ph name="SERVICE_SCRIPT_NAME" />" ұяшығы белгіленіп тұрса, белгісін алып, қайта белгілеңіз.</translation>
-<translation id="8383794970363966105">Chromoting пайдалану үшін құрылғыңызға Google есептік жазбасын қосуыңыз қажет.</translation>
+<translation id="8305209735512572429">Желі аутентификациясын қашықтан басқару процесі</translation>
+<translation id="8383794970363966105">Chromoting пайдалану үшін құрылғыңызға Google аккаунтын қосуыңыз қажет.</translation>
 <translation id="8386846956409881180">Хост жарамсыз OAuth есептік деректерімен реттелген.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> қызметіне рұқсат беру</translation>
 <translation id="8406498562923498210">Chrome Remote Desktop ортасында іске қосылатын сеансты таңдаңыз (кейбір сеанс түрлері Chrome Remote Desktop және жергілікті консольде бір уақытта жұмыс істей алмайтынын ескеріңіз).</translation>

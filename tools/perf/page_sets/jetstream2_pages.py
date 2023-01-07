@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,8 +10,8 @@ class Jetstream2Story(press_story.PressStory):
   URL = 'http://browserbench.org/JetStream/'
   NAME = 'JetStream2'
 
-  def __init__(self, ps):
-    super(Jetstream2Story, self).__init__(ps)
+  def __init__(self, page_set):
+    super(Jetstream2Story, self).__init__(page_set)
 
   def ExecuteTest(self, action_runner):
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()
@@ -58,7 +58,7 @@ class Jetstream2Story(press_story.PressStory):
     )
 
     self.AddMeasurement('Score', 'score', score)
-    for k, v in result.iteritems():
+    for k, v in result.items():
       # Replace '.' in the benchmark name, because '.' is interpreted
       # as a sub-category of the metric
       benchmark = str(k).replace('.', '_')
@@ -68,7 +68,7 @@ class Jetstream2Story(press_story.PressStory):
       self.AddMeasurement(
           '%s.Iterations' % benchmark, 'count', v['Iterations'],
           description='Total number of iterations')
-      for sub_k, sub_v in v['SubResults'].iteritems():
+      for sub_k, sub_v in v['SubResults'].items():
         self.AddMeasurement('%s.%s' % (benchmark, sub_k), 'score', sub_v)
 
 

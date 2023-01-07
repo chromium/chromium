@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/base/host_port_pair.h"
@@ -69,6 +69,10 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
       NetLog* net_log,
       const base::TickClock* clock = nullptr);
 
+  HttpServerPropertiesManager(const HttpServerPropertiesManager&) = delete;
+  HttpServerPropertiesManager& operator=(const HttpServerPropertiesManager&) =
+      delete;
+
   ~HttpServerPropertiesManager();
 
   // Populates passed in objects with data from preferences. If pref data is not
@@ -102,7 +106,7 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
   // by the time this method is called, calling this will prevent it from ever
   // being invoked, as this method will overwrite any previous preferences.
   //
-  // Entries associated with NetworkIsolationKeys for opaque origins are not
+  // Entries associated with NetworkAnonymizationKeys for opaque origins are not
   // written to disk.
   void WriteToPrefs(
       const HttpServerProperties::ServerInfoMap& server_info_map,
@@ -128,9 +132,9 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
   FRIEND_TEST_ALL_PREFIXES(HttpServerPropertiesManagerTest,
                            AdvertisedVersionsRoundTrip);
 
-  void AddServerData(const base::Value& server_dict,
+  void AddServerData(const base::Value::Dict& server_dict,
                      HttpServerProperties::ServerInfoMap* server_info_map,
-                     bool use_network_isolation_key);
+                     bool use_network_anonymization_key);
 
   // Helper method used for parsing an alternative service from JSON.
   // |dict| is the JSON dictionary to be parsed. It should contain fields
@@ -142,13 +146,13 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
   // |alternative_service| is the output of parsing |dict|.
   // Return value is true if parsing is successful.
   static bool ParseAlternativeServiceDict(
-      const base::Value& dict,
+      const base::Value::Dict& dict,
       bool host_optional,
       const std::string& parsing_under,
       AlternativeService* alternative_service);
 
   static bool ParseAlternativeServiceInfoDictOfServer(
-      const base::Value& dict,
+      const base::Value::Dict& dict,
       const std::string& server_str,
       AlternativeServiceInfo* alternative_service_info);
 
@@ -157,43 +161,43 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
   // not considered corruption).
   static bool ParseAlternativeServiceInfo(
       const url::SchemeHostPort& server,
-      const base::Value& server_dict,
+      const base::Value::Dict& server_dict,
       HttpServerProperties::ServerInfo* server_info);
 
   void ReadLastLocalAddressWhenQuicWorked(
-      const base::Value& server_dict,
+      const base::Value::Dict& server_dict,
       IPAddress* last_local_address_when_quic_worked);
   void ParseNetworkStats(const url::SchemeHostPort& server,
-                         const base::Value& server_dict,
+                         const base::Value::Dict& server_dict,
                          HttpServerProperties::ServerInfo* server_info);
   void AddToQuicServerInfoMap(
-      const base::Value& server_dict,
-      bool use_network_isolation_key,
+      const base::Value::Dict& server_dict,
+      bool use_network_anonymization_key,
       HttpServerProperties::QuicServerInfoMap* quic_server_info_map);
   void AddToBrokenAlternativeServices(
-      const base::Value& broken_alt_svc_entry_dict,
-      bool use_network_isolation_key,
+      const base::Value::Dict& broken_alt_svc_entry_dict,
+      bool use_network_anonymization_key,
       BrokenAlternativeServiceList* broken_alternative_service_list,
       RecentlyBrokenAlternativeServices* recently_broken_alternative_services);
 
   void SaveAlternativeServiceToServerPrefs(
       const AlternativeServiceInfoVector& alternative_service_info_vector,
-      base::Value* server_pref_dict);
+      base::Value::Dict& server_pref_dict);
   void SaveLastLocalAddressWhenQuicWorkedToPrefs(
       const IPAddress& last_local_address_when_quic_worked,
-      base::Value* http_server_properties_dict);
+      base::Value::Dict& http_server_properties_dict);
   void SaveNetworkStatsToServerPrefs(
       const ServerNetworkStats& server_network_stats,
-      base::Value* server_pref_dict);
+      base::Value::Dict& server_pref_dict);
   void SaveQuicServerInfoMapToServerPrefs(
       const HttpServerProperties::QuicServerInfoMap& quic_server_info_map,
-      base::Value* http_server_properties_dict);
+      base::Value::Dict& http_server_properties_dict);
   void SaveBrokenAlternativeServicesToPrefs(
       const BrokenAlternativeServiceList& broken_alternative_service_list,
       size_t max_broken_alternative_services,
       const RecentlyBrokenAlternativeServices&
           recently_broken_alternative_services,
-      base::Value* http_server_properties_dict);
+      base::Value::Dict& http_server_properties_dict);
 
   void OnHttpServerPropertiesLoaded();
 
@@ -203,7 +207,7 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
 
   size_t max_server_configs_stored_in_properties_;
 
-  const base::TickClock* clock_;  // Unowned
+  raw_ptr<const base::TickClock> clock_;  // Unowned
 
   const NetLogWithSource net_log_;
 
@@ -211,8 +215,6 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
 
   base::WeakPtrFactory<HttpServerPropertiesManager> pref_load_weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpServerPropertiesManager);
 };
 
 }  // namespace net

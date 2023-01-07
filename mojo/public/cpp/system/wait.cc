@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,9 @@ class TriggerContext : public base::RefCountedThreadSafe<TriggerContext> {
   TriggerContext()
       : event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+
+  TriggerContext(const TriggerContext&) = delete;
+  TriggerContext& operator=(const TriggerContext&) = delete;
 
   base::WaitableEvent& event() { return event_; }
   MojoResult wait_result() const { return wait_result_; }
@@ -58,8 +61,6 @@ class TriggerContext : public base::RefCountedThreadSafe<TriggerContext> {
   // apart from waiting on |event()|.
   MojoResult wait_result_ = MOJO_RESULT_UNKNOWN;
   MojoHandleSignalsState wait_state_ = {0, 0};
-
-  DISALLOW_COPY_AND_ASSIGN(TriggerContext);
 };
 
 }  // namespace

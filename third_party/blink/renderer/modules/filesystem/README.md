@@ -5,12 +5,12 @@ related APIs.
 
 ## Related directories
 
-[`//storage/browser/file_system/`](../../../storage/browser/file_system) contains part
-of the browser side implementation, while
-[`//content/browser/fileapi/`](../../../content/browser/fileapi) contains the
-rest of the browser side implementation and
-[`blink/public/mojom/filesystem`](../../../third_party/blink/public/mojom/filesystem)
-contains the mojom interfaces for these APIs.
+[`//storage/browser/file_system/`](../../../../../storage/browser/file_system)
+contains part of the browser side implementation, while
+[`//content/browser/file_system/`](../../../../../content/browser/file_system)
+contains the rest of the browser side implementation and
+[`blink/public/mojom/filesystem`](../../../public/mojom/filesystem) contains the
+mojom interfaces for these APIs.
 
 ## APIs In this directory
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,7 @@
 
 #import <CoreServices/CoreServices.h>
 
-#include "base/macros.h"
-
-namespace base {
-namespace mac {
+namespace base::mac {
 
 // The ScopedAEDesc is used to scope AppleEvent descriptors.  On creation,
 // it will store a NULL descriptor.  On destruction, it will dispose of the
@@ -25,6 +22,9 @@ class ScopedAEDesc {
   ScopedAEDesc() {
     AECreateDesc(typeNull, NULL, 0, &desc_);
   }
+
+  ScopedAEDesc(const ScopedAEDesc&) = delete;
+  ScopedAEDesc& operator=(const ScopedAEDesc&) = delete;
 
   ~ScopedAEDesc() {
     AEDisposeDesc(&desc_);
@@ -42,11 +42,8 @@ class ScopedAEDesc {
 
  private:
   AEDescType desc_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAEDesc);
 };
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_SCOPED_AEDESC_H_

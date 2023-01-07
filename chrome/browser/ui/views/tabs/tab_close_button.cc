@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,24 +9,24 @@
 #include <vector>
 
 #include "base/hash/hash.h"
-#include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view_class_properties.h"
 
@@ -48,14 +48,15 @@ TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
-  SetInkDropMode(InkDropMode::ON);
-  SetInkDropHighlightOpacity(0.16f);
-  SetInkDropVisibleOpacity(0.14f);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetHighlightOpacity(0.16f);
+  views::InkDrop::Get(this)->SetVisibleOpacity(0.14f);
 
   // Disable animation so that the hover indicator shows up immediately to help
   // avoid mis-clicks.
   SetAnimationDuration(base::TimeDelta());
-  GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
+  views::InkDrop::Get(this)->GetInkDrop()->SetHoverHighlightFadeDuration(
+      base::TimeDelta());
 
   // The ink drop highlight path is the same as the focus ring highlight path,
   // but needs to be explicitly mirrored for RTL.
@@ -74,7 +75,7 @@ TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
   auto ring_highlight_path =
       std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets());
   ring_highlight_path->set_use_contents_bounds(true);
-  focus_ring()->SetPathGenerator(std::move(ring_highlight_path));
+  views::FocusRing::Get(this)->SetPathGenerator(std::move(ring_highlight_path));
 
   // Always have a value on this property so we can modify it directly without
   // a heap allocation.
@@ -97,8 +98,10 @@ void TabCloseButton::SetColors(TabStyle::TabColors colors) {
   if (colors == colors_)
     return;
   colors_ = std::move(colors);
-  SetInkDropBaseColor(
+  views::InkDrop::Get(this)->SetBaseColor(
       color_utils::GetColorWithMaxContrast(colors_.background_color));
+  views::FocusRing::Get(this)->SetColorId(
+      colors_.close_button_focus_ring_color);
   OnPropertyChanged(&colors_, views::kPropertyEffectsPaint);
 }
 
@@ -154,7 +157,7 @@ gfx::Size TabCloseButton::CalculatePreferredSize() const {
 void TabCloseButton::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   constexpr float kStrokeWidth = 1.5f;
-  float touch_scale = float{GetGlyphSize()} / kGlyphSize;
+  float touch_scale = static_cast<float>(GetGlyphSize()) / kGlyphSize;
   float size = (kGlyphSize - 8) * touch_scale - kStrokeWidth;
   gfx::RectF glyph_bounds(GetContentsBounds());
   glyph_bounds.ClampToCenteredSize(gfx::SizeF(size, size));

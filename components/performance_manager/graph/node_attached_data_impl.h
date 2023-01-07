@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -181,6 +181,9 @@ class NodeAttachedDataImpl : public NodeAttachedData {
     static DataType* Get(const NodeType* node);
     static bool Destroy(const NodeType* node);
   };
+
+  NodeAttachedDataImpl() = default;
+  ~NodeAttachedDataImpl() override = default;
 
   static const void* UserDataKey() { return &DataType::kUserDataKey; }
 

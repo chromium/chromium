@@ -1,16 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "android_webview/browser/aw_render_process.h"
 
+#include "android_webview/browser_jni_headers/AwRenderProcess_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-
-#include "android_webview/browser_jni_headers/AwRenderProcess_jni.h"
+#include "ipc/ipc_channel_proxy.h"
 
 using base::android::AttachCurrentThread;
 using content::BrowserThread;
@@ -64,10 +63,6 @@ void AwRenderProcess::ClearCache() {
 
 void AwRenderProcess::SetJsOnlineProperty(bool network_up) {
   renderer_remote_->SetJsOnlineProperty(network_up);
-}
-
-void AwRenderProcess::SetCpuAffinityToLittleCores() {
-  renderer_remote_->SetCpuAffinityToLittleCores();
 }
 
 void AwRenderProcess::Ready() {

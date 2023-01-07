@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -2144,6 +2143,10 @@ class CountingMemoryTracker : public MemoryTracker {
   CountingMemoryTracker() {
     current_size_ = 0;
   }
+
+  CountingMemoryTracker(const CountingMemoryTracker&) = delete;
+  CountingMemoryTracker& operator=(const CountingMemoryTracker&) = delete;
+
   ~CountingMemoryTracker() override = default;
 
   void TrackMemoryAllocatedChange(int64_t delta) override {
@@ -2161,7 +2164,6 @@ class CountingMemoryTracker : public MemoryTracker {
 
  private:
   uint64_t current_size_;
-  DISALLOW_COPY_AND_ASSIGN(CountingMemoryTracker);
 };
 
 class SharedTextureTest : public GpuServiceTest {

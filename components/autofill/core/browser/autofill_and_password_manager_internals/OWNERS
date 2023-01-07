@@ -1,0 +1,5 @@
+# For most changes:
+file://components/autofill/OWNERS
+
+# For trivial or mechanical horizontal JS/CSS/HTML changes.
+file://ui/webui/PLATFORM_OWNERS

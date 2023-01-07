@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -47,7 +47,7 @@ class FreezingVoteToken {
   FreezingVoteToken();
 };
 
-// Allows emiting a freezing vote for a WebContents. The vote's lifetime will
+// Allows emitting a freezing vote for a WebContents. The vote's lifetime will
 // follow the lifetime of this object, as soon as it's released the vote will be
 // invalidated. This can only be called from the UI thread.
 //

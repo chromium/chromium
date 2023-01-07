@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_math.h"
 #include "base/thread_annotations.h"
@@ -38,8 +38,7 @@ class CC_EXPORT SoftwareImageDecodeCache
   enum class TaskProcessingResult { kFullDecode, kLockOnly, kCancelled };
 
   SoftwareImageDecodeCache(SkColorType color_type,
-                           size_t locked_memory_limit_bytes,
-                           PaintImage::GeneratorClientId generator_client_id);
+                           size_t locked_memory_limit_bytes);
   ~SoftwareImageDecodeCache() override;
 
   // ImageDecodeCache overrides.
@@ -96,8 +95,8 @@ class CC_EXPORT SoftwareImageDecodeCache
     base::CheckedNumeric<size_t> current_usage_bytes_;
   };
 
-  using ImageMRUCache = base::
-      HashingMRUCache<CacheKey, std::unique_ptr<CacheEntry>, CacheKeyHash>;
+  using ImageLRUCache = base::
+      HashingLRUCache<CacheKey, std::unique_ptr<CacheEntry>, CacheKeyHash>;
 
   // Get the decoded draw image for the given key and paint_image. Note that
   // when used internally, we still require that DrawWithImageFinished() is
@@ -129,18 +128,18 @@ class CC_EXPORT SoftwareImageDecodeCache
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void RemoveBudgetForImage(const CacheKey& key, CacheEntry* entry)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  base::Optional<CacheKey> FindCachedCandidate(const CacheKey& key)
+  absl::optional<CacheKey> FindCachedCandidate(const CacheKey& key)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void UnrefImage(const CacheKey& key) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   SkColorType GetColorTypeForPaintImage(
-      const gfx::ColorSpace& target_color_space,
+      const TargetColorParams& target_color_params,
       const PaintImage& paint_image);
 
   base::Lock lock_;
   // Decoded images and ref counts (predecode path).
-  ImageMRUCache decoded_images_ GUARDED_BY(lock_);
+  ImageLRUCache decoded_images_ GUARDED_BY(lock_);
 
   // A map of PaintImage::FrameKey to the ImageKeys for cached decodes of this
   // PaintImage.

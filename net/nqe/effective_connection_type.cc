@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ const char* GetNameForEffectiveConnectionType(EffectiveConnectionType type) {
   return "";
 }
 
-base::Optional<EffectiveConnectionType> GetEffectiveConnectionTypeForName(
+absl::optional<EffectiveConnectionType> GetEffectiveConnectionTypeForName(
     base::StringPiece connection_type_name) {
   if (connection_type_name == kEffectiveConnectionTypeUnknown)
     return EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
@@ -61,7 +61,7 @@ base::Optional<EffectiveConnectionType> GetEffectiveConnectionTypeForName(
     return EFFECTIVE_CONNECTION_TYPE_3G;
   if (connection_type_name == kEffectiveConnectionType4G)
     return EFFECTIVE_CONNECTION_TYPE_4G;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 const char* DeprecatedGetNameForEffectiveConnectionType(

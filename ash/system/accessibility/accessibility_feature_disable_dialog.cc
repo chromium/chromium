@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/border.h"
@@ -40,7 +41,7 @@ AccessibilityFeatureDisableDialog::AccessibilityFeatureDisableDialog(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::TEXT, views::TEXT)));
+          views::DialogContentType::kText, views::DialogContentType::kText)));
 
   auto body_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(window_title_text_id),
@@ -49,7 +50,7 @@ AccessibilityFeatureDisableDialog::AccessibilityFeatureDisableDialog(
   AddChildView(body_label.release());
 
   set_margins(views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   // Parent the dialog widget to the LockSystemModalContainer, or
   // OverlayContainer to ensure that it will get displayed on respective

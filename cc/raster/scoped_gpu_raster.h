@@ -1,12 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_RASTER_SCOPED_GPU_RASTER_H_
 #define CC_RASTER_SCOPED_GPU_RASTER_H_
 
-#include <memory>
-
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 
 namespace viz {
@@ -30,7 +29,7 @@ class CC_EXPORT ScopedGpuRaster {
   void BeginGpuRaster();
   void EndGpuRaster();
 
-  viz::ContextProvider* context_provider_;
+  raw_ptr<viz::ContextProvider> context_provider_;
 };
 
 }  // namespace cc

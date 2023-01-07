@@ -1,0 +1,21 @@
+Tests that Network events are fired for service workers and they align (module)
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/main.html?type=module, type: Document
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/sw-module.js, type: Other
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/imported-module.js, type: Other
+[browser] Request to http://127.0.0.1:8000/404-me, type: XHR
+
+Results from Running the Page:
+	module init
+	-> imported value: MODULE
+	-> fetch within worker: Not Found
+
+Network Events and Alignment:
+[/main\.html/] Status Code 200
+[/main\.html/] OK: All expected network events found and align with one another!
+[/sw-module\.js/] Status Code 200
+[/sw-module\.js/] OK: All expected network events found and align with one another!
+[/imported-module\.js/] Status Code 200
+[/imported-module\.js/] OK: All expected network events found and align with one another!
+[/404-me/] Status Code 404
+[/404-me/] OK: All expected network events found and align with one another!
+

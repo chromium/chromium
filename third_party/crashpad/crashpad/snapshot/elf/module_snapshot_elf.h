@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "client/crashpad_info.h"
 #include "snapshot/crashpad_info_client_options.h"
 #include "snapshot/crashpad_types/crashpad_info_reader.h"
@@ -50,6 +49,10 @@ class ModuleSnapshotElf final : public ModuleSnapshot {
                     ModuleSnapshot::ModuleType type,
                     ProcessMemoryRange* process_memory_range,
                     const ProcessMemory* process_memory);
+
+  ModuleSnapshotElf(const ModuleSnapshotElf&) = delete;
+  ModuleSnapshotElf& operator=(const ModuleSnapshotElf&) = delete;
+
   ~ModuleSnapshotElf() override;
 
   //! \brief Initializes the object.
@@ -98,8 +101,6 @@ class ModuleSnapshotElf final : public ModuleSnapshot {
   InitializationStateDcheck initialized_;
   // Too const-y: https://crashpad.chromium.org/bug/9.
   mutable std::vector<std::unique_ptr<const UserMinidumpStream>> streams_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleSnapshotElf);
 };
 
 }  // namespace internal

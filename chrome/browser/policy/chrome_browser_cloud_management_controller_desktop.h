@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,9 @@
 
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 
-#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "chrome/browser/policy/cbcm_invalidations_initializer.h"
 
 class DeviceIdentityProvider;
-
-namespace enterprise_reporting {
-class ReportScheduler;
-}
 
 namespace instance_id {
 class InstanceIDDriver;
@@ -63,14 +58,17 @@ class ChromeBrowserCloudManagementControllerDesktop
   DeviceManagementService* GetDeviceManagementService() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
-  std::unique_ptr<enterprise_reporting::ReportScheduler> CreateReportScheduler(
-      CloudPolicyClient* client) override;
-
   scoped_refptr<base::SingleThreadTaskRunner> GetBestEffortTaskRunner()
       override;
-
+  std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>
+  GetReportingDelegateFactory() override;
   void SetGaiaURLLoaderFactory(scoped_refptr<network::SharedURLLoaderFactory>
                                    url_loader_factory) override;
+  bool ReadyToCreatePolicyManager() override;
+  bool ReadyToInit() override;
+  std::unique_ptr<ClientDataDelegate> CreateClientDataDelegate() override;
+  std::unique_ptr<enterprise_connectors::DeviceTrustKeyManager>
+  CreateDeviceTrustKeyManager() override;
 
   // CBCMInvalidationsInitializer::Delegate:
   // Starts the services required for Policy Invalidations over FCM to be
@@ -80,9 +78,6 @@ class ChromeBrowserCloudManagementControllerDesktop
   bool IsInvalidationsServiceStarted() const override;
 
  private:
-  enterprise_reporting::ReportingDelegateFactoryDesktop
-      reporting_delegate_factory_;
-
   std::unique_ptr<ChromeBrowserCloudManagementRegisterWatcher>
       cloud_management_register_watcher_;
 

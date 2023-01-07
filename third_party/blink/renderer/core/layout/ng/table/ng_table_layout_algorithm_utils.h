@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_UTILS_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
@@ -12,10 +13,9 @@ namespace blink {
 
 class NGBlockNode;
 class NGBoxFragment;
-class NGConstraintSpace;
+class NGConstraintSpaceBuilder;
 class NGTableBorders;
 enum class NGCacheSlot;
-struct LogicalSize;
 
 // Table size distribution algorithms.
 class NGTableAlgorithmUtils {
@@ -29,26 +29,41 @@ class NGTableAlgorithmUtils {
            align == EVerticalAlign::kLength;
   }
 
-  // Creates a constraint-space for a table-cell.
+  // Computes a cell's block-size, and if its initial block-size should be
+  // considered indefinite.
+  struct CellBlockSizeData {
+    LayoutUnit block_size;
+    bool is_initial_block_size_indefinite;
+  };
+  static CellBlockSizeData ComputeCellBlockSize(
+      const NGTableTypes::CellBlockConstraint& cell_block_constraint,
+      const NGTableTypes::Rows& rows,
+      wtf_size_t row_index,
+      const LogicalSize& border_spacing,
+      bool is_table_block_size_specified);
+
+  // Sets up a constraint space builder for a table-cell.
   //
   // In order to make the cache as effective as possible, we try and keep
   // creating the constraint-space for table-cells as consistent as possible.
-  static NGConstraintSpace CreateTableCellConstraintSpace(
+  static void SetupTableCellConstraintSpaceBuilder(
       const WritingDirectionMode table_writing_direction,
       const NGBlockNode cell,
       const NGBoxStrut& cell_borders,
-      LogicalSize cell_size,
+      const Vector<NGTableColumnLocation>& column_locations,
+      LayoutUnit cell_block_size,
       LayoutUnit percentage_inline_size,
-      base::Optional<LayoutUnit> alignment_baseline,
-      wtf_size_t column_index,
-      bool is_fixed_block_size_indefinite,
+      absl::optional<LayoutUnit> alignment_baseline,
+      wtf_size_t start_column,
+      bool is_initial_block_size_indefinite,
       bool is_restricted_block_size_table,
-      bool is_hidden_for_paint,
       bool has_collapsed_borders,
-      NGCacheSlot);
+      bool has_effective_rowspan,
+      NGCacheSlot,
+      NGConstraintSpaceBuilder*);
 
   static wtf_size_t ComputeMaximumNonMergeableColumnCount(
-      const Vector<NGBlockNode>& columns,
+      const HeapVector<NGBlockNode>& columns,
       bool is_fixed_layout);
 
   static scoped_refptr<NGTableTypes::Columns> ComputeColumnConstraints(
@@ -60,8 +75,8 @@ class NGTableAlgorithmUtils {
   static void ComputeSectionMinimumRowBlockSizes(
       const NGBlockNode& section,
       const LayoutUnit cell_percentage_resolution_inline_size,
-      const bool is_restricted_block_size_table,
-      const NGTableTypes::ColumnLocations& column_locations,
+      const bool is_table_block_size_specified,
+      const Vector<NGTableColumnLocation>& column_locations,
       const NGTableBorders& table_borders,
       const LayoutUnit block_border_spacing,
       wtf_size_t section_index,
@@ -69,6 +84,11 @@ class NGTableAlgorithmUtils {
       NGTableTypes::Sections* sections,
       NGTableTypes::Rows* rows,
       NGTableTypes::CellBlockConstraints* cell_block_constraints);
+
+  // Performs any final adjustments for table-cells at the end of layout.
+  static void FinalizeTableCellLayout(
+      LayoutUnit unconstrained_intrinsic_block_size,
+      NGBoxFragmentBuilder*);
 };
 
 // NGColspanCellTabulator keeps track of columns occupied by colspanned cells
@@ -115,26 +135,25 @@ class NGColspanCellTabulator {
 class NGRowBaselineTabulator {
  public:
   void ProcessCell(const NGBoxFragment& fragment,
-                   const LayoutUnit cell_min_block_size,
                    bool is_baseline_aligned,
-                   bool is_parallel,
+                   bool is_rowspanned,
                    bool descendant_depends_on_percentage_block_size);
 
   LayoutUnit ComputeRowBlockSize(const LayoutUnit max_cell_block_size);
 
   LayoutUnit ComputeBaseline(const LayoutUnit row_block_size);
 
-  bool ComputeBaselineDependsOnPercentageBlockDescendant();
+  bool BaselineDependsOnPercentageBlockDescendant();
 
  private:
   // Cell baseline is computed from baseline-aligned cells.
-  base::Optional<LayoutUnit> max_cell_ascent_;
-  base::Optional<LayoutUnit> max_cell_descent_;
+  absl::optional<LayoutUnit> max_cell_ascent_;
+  absl::optional<LayoutUnit> max_cell_descent_;
   bool max_cell_baseline_depends_on_percentage_block_descendant_ = false;
 
   // Non-baseline aligned cells are used to compute baseline if baseline
   // cells are not available.
-  base::Optional<LayoutUnit> fallback_cell_descent_;
+  absl::optional<LayoutUnit> fallback_cell_descent_;
   bool fallback_cell_depends_on_percentage_block_descendant_ = false;
 };
 

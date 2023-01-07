@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/flat_tree.h"
-#include "base/optional.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_constants.h"
@@ -21,6 +20,7 @@
 #include "mojo/public/cpp/bindings/array_traits_stl.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 
@@ -68,18 +68,18 @@ struct BLINK_COMMON_EXPORT
                  device::PublicKeyCredentialDescriptor> {
   static device::CredentialType type(
       const device::PublicKeyCredentialDescriptor& in) {
-    return in.credential_type();
+    return in.credential_type;
   }
 
   static const std::vector<uint8_t>& id(
       const device::PublicKeyCredentialDescriptor& in) {
-    return in.id();
+    return in.id;
   }
 
   static const std::vector<device::FidoTransportProtocol> transports(
       const device::PublicKeyCredentialDescriptor& in) {
     std::vector<device::FidoTransportProtocol> protocols;
-    for (const auto& protocol : in.transports()) {
+    for (const auto& protocol : in.transports) {
       protocols.push_back(protocol);
     }
     return protocols;
@@ -130,17 +130,17 @@ struct BLINK_COMMON_EXPORT
                  device::AuthenticatorSelectionCriteria> {
   static device::AuthenticatorAttachment authenticator_attachment(
       const device::AuthenticatorSelectionCriteria& in) {
-    return in.authenticator_attachment();
+    return in.authenticator_attachment;
   }
 
   static device::ResidentKeyRequirement resident_key(
       const device::AuthenticatorSelectionCriteria& in) {
-    return in.resident_key();
+    return in.resident_key;
   }
 
   static device::UserVerificationRequirement user_verification(
       const device::AuthenticatorSelectionCriteria& in) {
-    return in.user_verification_requirement();
+    return in.user_verification_requirement;
   }
 
   static bool Read(blink::mojom::AuthenticatorSelectionCriteriaDataView data,
@@ -155,14 +155,9 @@ struct BLINK_COMMON_EXPORT
     return in.id;
   }
 
-  static const base::Optional<std::string>& name(
+  static const absl::optional<std::string>& name(
       const device::PublicKeyCredentialRpEntity& in) {
     return in.name;
-  }
-
-  static const base::Optional<GURL>& icon(
-      const device::PublicKeyCredentialRpEntity& in) {
-    return in.icon_url;
   }
 
   static bool Read(blink::mojom::PublicKeyCredentialRpEntityDataView data,
@@ -178,19 +173,14 @@ struct BLINK_COMMON_EXPORT
     return in.id;
   }
 
-  static const base::Optional<std::string>& name(
+  static const absl::optional<std::string>& name(
       const device::PublicKeyCredentialUserEntity& in) {
     return in.name;
   }
 
-  static const base::Optional<std::string>& display_name(
+  static const absl::optional<std::string>& display_name(
       const device::PublicKeyCredentialUserEntity& in) {
     return in.display_name;
-  }
-
-  static const base::Optional<GURL>& icon(
-      const device::PublicKeyCredentialUserEntity& in) {
-    return in.icon_url;
   }
 
   static bool Read(blink::mojom::PublicKeyCredentialUserEntityDataView data,
@@ -213,36 +203,44 @@ struct BLINK_COMMON_EXPORT
     }
   }
 
-  static base::Optional<device::CableEidArray> client_eid(
+  static absl::optional<device::CableEidArray> client_eid(
       const device::CableDiscoveryData& in) {
     if (in.version == device::CableDiscoveryData::Version::V1) {
       return in.v1->client_eid;
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  static const base::Optional<device::CableEidArray> authenticator_eid(
+  static const absl::optional<device::CableEidArray> authenticator_eid(
       const device::CableDiscoveryData& in) {
     if (in.version == device::CableDiscoveryData::Version::V1) {
       return in.v1->authenticator_eid;
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  static const base::Optional<device::CableSessionPreKeyArray> session_pre_key(
+  static const absl::optional<device::CableSessionPreKeyArray> session_pre_key(
       const device::CableDiscoveryData& in) {
     if (in.version == device::CableDiscoveryData::Version::V1) {
       return in.v1->session_pre_key;
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  static const base::Optional<std::vector<uint8_t>> server_link_data(
+  static const absl::optional<std::vector<uint8_t>> server_link_data(
       const device::CableDiscoveryData& in) {
     if (in.version == device::CableDiscoveryData::Version::V2) {
-      return *in.v2;
+      return in.v2->server_link_data;
     }
-    return base::nullopt;
+    return absl::nullopt;
+  }
+
+  static const absl::optional<std::vector<uint8_t>> experiments(
+      const device::CableDiscoveryData& in) {
+    if (in.version == device::CableDiscoveryData::Version::V2) {
+      return in.v2->experiments;
+    }
+    return absl::nullopt;
   }
 
   static bool Read(blink::mojom::CableAuthenticationDataView data,

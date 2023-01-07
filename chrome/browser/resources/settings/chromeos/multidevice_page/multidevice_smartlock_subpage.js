@@ -1,85 +1,140 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-Polymer({
-  is: 'settings-multidevice-smartlock-subpage',
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import './multidevice_feature_toggle.js';
+import './multidevice_radio_button.js';
+import '../../settings_shared.css.js';
 
-  behaviors: [
-    DeepLinkingBehavior,
-    MultiDeviceFeatureBehavior,
-    settings.RouteObserverBehavior,
-    WebUIListenerBehavior,
-  ],
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    /** @type {?OsSettingsRoutes} */
-    routes: {
-      type: Object,
-      value: settings.routes,
-    },
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {recordSettingChange} from '../metrics_recorder.js';
+import {routes} from '../os_route.js';
+import {OsSettingsRoutes} from '../os_settings_routes.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-    /**
-     * True if Smart Lock is enabled.
-     * @private
-     */
-    smartLockEnabled_: {
-      type: Boolean,
-      computed: 'computeIsSmartLockEnabled_(pageContentData)',
-    },
+import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
+import {MultiDeviceFeature, MultiDeviceFeatureState, SmartLockSignInEnabledState} from './multidevice_constants.js';
+import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
+import {recordSmartLockToggleMetric, SmartLockToggleLocation} from './multidevice_metrics_logger.js';
 
-    /**
-     * Whether Smart Lock may be used to sign-in the user (as opposed to only
-     * being able to unlock the user's screen).
-     * @private {!settings.SmartLockSignInEnabledState}
-     */
-    smartLockSignInEnabled_: {
-      type: Object,
-      value: settings.SmartLockSignInEnabledState.DISABLED,
-    },
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {MultiDeviceFeatureBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsMultideviceSmartlockSubpageElementBase = mixinBehaviors(
+    [
+      DeepLinkingBehavior,
+      MultiDeviceFeatureBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
+    ],
+    PolymerElement);
 
-    /**
-     * True if the user is allowed to enable Smart Lock sign-in.
-     * @private
-     */
-    smartLockSignInAllowed_: {
-      type: Boolean,
-      value: true,
-    },
+/** @polymer */
+class SettingsMultideviceSmartlockSubpageElement extends
+    SettingsMultideviceSmartlockSubpageElementBase {
+  static get is() {
+    return 'settings-multidevice-smartlock-subpage';
+  }
 
-    /** @private */
-    showPasswordPromptDialog_: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Authentication token provided by password-prompt-dialog.
-     * @private {!chrome.quickUnlockPrivate.TokenInfo|undefined}
-     */
-    authToken_: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      /** @type {?OsSettingsRoutes} */
+      routes: {
+        type: Object,
+        value: routes,
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kSmartLockOnOff,
-        chromeos.settings.mojom.Setting.kSmartLockUnlockOrSignIn,
-      ]),
-    },
-  },
+      /**
+       * True if Smart Lock is enabled.
+       * @private
+       */
+      smartLockEnabled_: {
+        type: Boolean,
+        computed: 'computeIsSmartLockEnabled_(pageContentData)',
+      },
 
-  /** @private {?settings.MultiDeviceBrowserProxy} */
-  browserProxy_: null,
+      /**
+       * Whether Smart Lock may be used to sign-in the user (as opposed to only
+       * being able to unlock the user's screen).
+       * @private {!SmartLockSignInEnabledState}
+       */
+      smartLockSignInEnabled_: {
+        type: Object,
+        value: SmartLockSignInEnabledState.DISABLED,
+      },
+
+      /**
+       * True if the user is allowed to enable Smart Lock sign-in.
+       * @private
+       */
+      smartLockSignInAllowed_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /** @private */
+      showPasswordPromptDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Authentication token provided by password-prompt-dialog.
+       * @private {!chrome.quickUnlockPrivate.TokenInfo|undefined}
+       */
+      authToken_: {
+        type: Object,
+      },
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          Setting.kSmartLockOnOff,
+          Setting.kSmartLockUnlockOrSignIn,
+        ]),
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!MultiDeviceBrowserProxy} */
+    this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
+  }
 
   /** @override */
   ready() {
-    this.browserProxy_ = settings.MultiDeviceBrowserProxyImpl.getInstance();
+    super.ready();
+
+    this.addEventListener('feature-toggle-clicked', (event) => {
+      this.onFeatureToggleClicked_(
+          /**
+           * @type {!CustomEvent<!{feature: !MultiDeviceFeature, enabled:
+           *  boolean}>}
+           */
+          (event));
+    });
 
     this.addWebUIListener(
         'smart-lock-signin-enabled-changed',
@@ -96,20 +151,20 @@ Polymer({
     this.browserProxy_.getSmartLockSignInAllowed().then(allowed => {
       this.updateSmartLockSignInAllowed_(allowed);
     });
-  },
+  }
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.SMART_LOCK) {
+    if (route !== routes.SMART_LOCK) {
       return;
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * Returns true if Smart Lock is an enabled feature.
@@ -118,19 +173,19 @@ Polymer({
    */
   computeIsSmartLockEnabled_() {
     return !!this.pageContentData &&
-        this.getFeatureState(settings.MultiDeviceFeature.SMART_LOCK) ===
-        settings.MultiDeviceFeatureState.ENABLED_BY_USER;
-  },
+        this.getFeatureState(MultiDeviceFeature.SMART_LOCK) ===
+        MultiDeviceFeatureState.ENABLED_BY_USER;
+  }
 
   /**
    * Updates the state of the Smart Lock 'sign-in enabled' toggle.
    * @private
    */
   updateSmartLockSignInEnabled_(enabled) {
-    this.smartLockSignInEnabled_ =
-        enabled ? settings.SmartLockSignInEnabledState.ENABLED :
-        settings.SmartLockSignInEnabledState.DISABLED;
-  },
+    this.smartLockSignInEnabled_ = enabled ?
+        SmartLockSignInEnabledState.ENABLED :
+        SmartLockSignInEnabledState.DISABLED;
+  }
 
   /**
    * Updates the Smart Lock 'sign-in enabled' toggle such that disallowing
@@ -139,12 +194,12 @@ Polymer({
    */
   updateSmartLockSignInAllowed_(allowed) {
     this.smartLockSignInAllowed_ = allowed;
-  },
+  }
 
   /** @private */
   openPasswordPromptDialog_() {
     this.showPasswordPromptDialog_ = true;
-  },
+  }
 
   /**
    * Sets the Smart Lock 'sign-in enabled' pref based on the value of the
@@ -152,22 +207,21 @@ Polymer({
    * @private
    */
   onSmartLockSignInEnabledChanged_() {
-    const radioGroup = this.$$('cr-radio-group');
-    const enabled =
-        radioGroup.selected === settings.SmartLockSignInEnabledState.ENABLED;
+    const radioGroup = this.shadowRoot.querySelector('cr-radio-group');
+    const enabled = radioGroup.selected === SmartLockSignInEnabledState.ENABLED;
 
     if (!enabled) {
       // No authentication check is required to disable.
       this.browserProxy_.setSmartLockSignInEnabled(false /* enabled */);
-      settings.recordSettingChange();
+      recordSettingChange();
       return;
     }
 
     // Toggle the enabled state back to disabled, as authentication may not
     // succeed. The toggle state updates automatically by the pref listener.
-    radioGroup.selected = settings.SmartLockSignInEnabledState.DISABLED;
+    radioGroup.selected = SmartLockSignInEnabledState.DISABLED;
     this.openPasswordPromptDialog_();
-  },
+  }
 
   /**
    * Updates the state of the password dialog controller flag when the UI
@@ -183,12 +237,12 @@ Polymer({
     if (this.authToken_) {
       this.browserProxy_.setSmartLockSignInEnabled(
           true /* enabled */, this.authToken_.token);
-      settings.recordSettingChange();
+      recordSettingChange();
     }
 
     // Always require password entry if re-enabling SignIn with Smart Lock.
     this.authToken_ = undefined;
-  },
+  }
 
   /**
    * @param {!CustomEvent<!chrome.quickUnlockPrivate.TokenInfo>} e
@@ -196,6 +250,37 @@ Polymer({
    */
   onTokenObtained_(e) {
     this.authToken_ = e.detail;
-  },
+  }
 
-});
+  /**
+   * Intercept (but do not stop propagation of) the feature-toggle-clicked event
+   * for the purpose of logging metrics.
+   * @private
+   */
+  onFeatureToggleClicked_(event) {
+    const feature = event.detail.feature;
+    const enabled = event.detail.enabled;
+
+    if (feature !== MultiDeviceFeature.SMART_LOCK) {
+      return;
+    }
+
+    const previousRoute = window.history.state &&
+        Router.getInstance().getRouteForPath(
+            /** @type {string} */ (window.history.state));
+    if (!previousRoute) {
+      return;
+    }
+
+    let toggleLocation = SmartLockToggleLocation.MULTIDEVICE_PAGE;
+    if (previousRoute === routes.LOCK_SCREEN) {
+      toggleLocation = SmartLockToggleLocation.LOCK_SCREEN_SETTINGS;
+    }
+
+    recordSmartLockToggleMetric(toggleLocation, enabled);
+  }
+}
+
+customElements.define(
+    SettingsMultideviceSmartlockSubpageElement.is,
+    SettingsMultideviceSmartlockSubpageElement);

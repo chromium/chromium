@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,63 +21,59 @@ enum ImageStateElement {
   IMAGE_STATE_LOADED,
 };
 
-// Returns true if there is a web view for |web_state| that contains |text|.
+// Returns true if there is a web view for `web_state` that contains `text`.
 // Otherwise, returns false.
 bool IsWebViewContainingText(web::WebState* web_state, const std::string& text);
 
-// Returns true if there is a frame from |web_state| that contains |text|.
+// Returns true if there is a frame from `web_state` that contains `text`.
 // This method waits for the JavaScript message response.
-// |FindInPageJavaScriptFeature| must be configured for |web_state| in order for
+// `FindInPageJavaScriptFeature` must be configured for `web_state` in order for
 // this function to correctly return results.
 bool IsWebViewContainingTextInFrame(web::WebState* web_state,
                                     const std::string& text);
 
-// Waits for the given web state to contain |text|. If the condition is not met
-// within |timeout| false is returned.
-bool WaitForWebViewContainingText(
+// Waits for the given web state to contain `text`. If the condition is not met
+// within `timeout` false is returned.
+[[nodiscard]] bool WaitForWebViewContainingText(
     web::WebState* web_state,
     std::string text,
-    NSTimeInterval timeout = base::test::ios::kWaitForPageLoadTimeout)
-    WARN_UNUSED_RESULT;
+    base::TimeDelta timeout = base::test::ios::kWaitForPageLoadTimeout);
 
-// Waits for the given web state to not contain |text|. If the condition is not
-// met within |timeout| false is returned.
-bool WaitForWebViewNotContainingText(
+// Waits for the given web state to not contain `text`. If the condition is not
+// met within `timeout` false is returned.
+[[nodiscard]] bool WaitForWebViewNotContainingText(
     web::WebState* web_state,
     std::string text,
-    NSTimeInterval timeout = base::test::ios::kWaitForPageLoadTimeout)
-    WARN_UNUSED_RESULT;
+    base::TimeDelta timeout = base::test::ios::kWaitForPageLoadTimeout);
 
-// Waits for the given web state to have a frame that contains |text|. If the
-// condition is not met within |timeout| false is returned.
-// |FindInPageJavaScriptFeature| must be configured for |web_state| in order for
+// Waits for the given web state to have a frame that contains `text`. If the
+// condition is not met within `timeout` false is returned.
+// `FindInPageJavaScriptFeature` must be configured for `web_state` in order for
 // this function to correctly return results.
-bool WaitForWebViewContainingTextInFrame(
+[[nodiscard]] bool WaitForWebViewContainingTextInFrame(
     web::WebState* web_state,
     std::string text,
-    NSTimeInterval timeout = base::test::ios::kWaitForPageLoadTimeout)
-    WARN_UNUSED_RESULT;
+    base::TimeDelta timeout = base::test::ios::kWaitForPageLoadTimeout);
 
-// Waits for a web view with the corresponding |image_id| and |image_state|, in
-// the given |web_state|.
+// Waits for a web view with the corresponding `image_id` and `image_state`, in
+// the given `web_state`.
 bool WaitForWebViewContainingImage(std::string image_id,
                                    web::WebState* web_state,
                                    ImageStateElement image_state);
 
-// Returns true if there is a web view for |web_state| that contains an
-// element for the |selector|.
+// Returns true if there is a web view for `web_state` that contains an
+// element for the `selector`.
 bool IsWebViewContainingElement(web::WebState* web_state,
                                 ElementSelector* selector);
 
-// Waits for |web_state| to contain an element for |selector|.
-bool WaitForWebViewContainingElement(web::WebState* web_state,
-                                     ElementSelector* selector)
-    WARN_UNUSED_RESULT;
+// Waits for `web_state` to contain an element for `selector`.
+[[nodiscard]] bool WaitForWebViewContainingElement(web::WebState* web_state,
+                                                   ElementSelector* selector);
 
-// Waits for |web_state| to not contain an element for |selector|.
-bool WaitForWebViewNotContainingElement(web::WebState* web_state,
-                                        ElementSelector* selector)
-    WARN_UNUSED_RESULT;
+// Waits for `web_state` to not contain an element for `selector`.
+[[nodiscard]] bool WaitForWebViewNotContainingElement(
+    web::WebState* web_state,
+    ElementSelector* selector);
 
 }  // namespace test
 }  // namespace web

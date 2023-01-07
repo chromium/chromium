@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
  * 3) navigationCompleted() or navigationFailed()
  * 4) onFirstContentfulPaint().
  */
-public abstract class NavigationCallback {
+abstract class NavigationCallback {
     /**
      * Called when a navigation started in the Tab. |navigation| is unique to a
      * specific navigation. The same |navigation| will be  provided on subsequent calls to
@@ -81,10 +81,10 @@ public abstract class NavigationCallback {
      * The load state of the document has changed.
      *
      * @param isLoading Whether any resource is loading.
-     * @param toDifferentDocument True if the main frame is loading a different document. Only valid
-     *        when |isLoading| is true.
+     * @param shouldShowLoadingUi True if the navigation is expected to show navigation-in-progress
+     *        UI (if any exists). Only valid when |isLoading| is true.
      */
-    public void onLoadStateChanged(boolean isLoading, boolean toDifferentDocument) {}
+    public void onLoadStateChanged(boolean isLoading, boolean shouldShowLoadingUi) {}
 
     /**
      * The progress of loading the main frame in the document has changed.
@@ -142,4 +142,12 @@ public abstract class NavigationCallback {
      * @since 90
      */
     public void onPageDestroyed(@NonNull Page page) {}
+
+    /*
+     * Called when the source language for |page| has been determined to be |language|.
+     * Note: |language| is an ISO 639 language code (two letters, except for Chinese where a
+     * localization is necessary).
+     * @since 93
+     */
+    public void onPageLanguageDetermined(@NonNull Page page, @NonNull String language) {}
 }

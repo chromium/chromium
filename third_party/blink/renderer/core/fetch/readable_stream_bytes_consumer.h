@@ -1,18 +1,17 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_READABLE_STREAM_BYTES_CONSUMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_READABLE_STREAM_BYTES_CONSUMER_H_
 
-#include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -26,6 +25,9 @@ class ScriptState;
 class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
  public:
   ReadableStreamBytesConsumer(ScriptState*, ReadableStream*);
+  ReadableStreamBytesConsumer(const ReadableStreamBytesConsumer&) = delete;
+  ReadableStreamBytesConsumer& operator=(const ReadableStreamBytesConsumer&) =
+      delete;
   ~ReadableStreamBytesConsumer() override;
 
   Result BeginRead(const char** buffer, size_t* available) override;
@@ -41,8 +43,8 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   void Trace(Visitor*) const override;
 
  private:
-  class OnFulfilled;
-  class OnRejected;
+  class Fulfilled;
+  class Rejected;
 
   void OnRead(DOMUint8Array*);
   void OnReadDone();
@@ -57,7 +59,6 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   size_t pending_offset_ = 0;
   PublicState state_ = PublicState::kReadableOrWaiting;
   bool is_reading_ = false;
-  DISALLOW_COPY_AND_ASSIGN(ReadableStreamBytesConsumer);
 };
 
 }  // namespace blink

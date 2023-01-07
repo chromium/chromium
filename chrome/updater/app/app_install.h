@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,12 @@
 #include "chrome/updater/splash_screen.h"
 
 namespace base {
-class TaskRunner;
 class Version;
 }
 
 namespace updater {
 
+class ExternalConstants;
 class UpdateService;
 
 // This class defines an interface for installing an application. The interface
@@ -30,9 +30,15 @@ class UpdateService;
 class AppInstallController
     : public base::RefCountedThreadSafe<AppInstallController> {
  public:
-  using Maker = base::RepeatingCallback<scoped_refptr<AppInstallController>()>;
+  using Maker = base::RepeatingCallback<scoped_refptr<AppInstallController>(
+      scoped_refptr<UpdateService> update_service)>;
   virtual void InstallApp(const std::string& app_id,
+                          const std::string& app_name,
                           base::OnceCallback<void(int)> callback) = 0;
+
+  virtual void InstallAppOffline(const std::string& app_id,
+                                 const std::string& app_name,
+                                 base::OnceCallback<void(int)> callback) = 0;
 
  protected:
   virtual ~AppInstallController() = default;
@@ -53,17 +59,21 @@ class AppInstall : public App {
 
   // Overrides for App.
   void Initialize() override;
+  void Uninitialize() override;
   void FirstTaskRun() override;
 
   // Called after the version of the active updater has been retrieved.
-  void GetVersionDone(scoped_refptr<UpdateService>,
-                      const base::Version& version);
+  void GetVersionDone(const base::Version& version);
 
-  void InstallCandidateDone(int result);
+  void InstallCandidateDone(bool valid_version, int result);
 
   void WakeCandidate();
 
   void WakeCandidateDone();
+
+  void FetchPolicies();
+
+  void RegisterUpdater();
 
   // Handles the --tag and --app-id command line arguments, and triggers
   // installing of the corresponding application if either argument is present.
@@ -71,6 +81,11 @@ class AppInstall : public App {
 
   // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // The `app_id_` is parsed from the tag, if the the tag is present, or from
+  // the command line argument --app-id.
+  std::string app_id_;
+  std::string app_name_;
 
   // Creates instances of |SplashScreen|.
   SplashScreen::Maker splash_screen_maker_;
@@ -84,10 +99,12 @@ class AppInstall : public App {
 
   scoped_refptr<AppInstallController> app_install_controller_;
 
-  scoped_refptr<base::TaskRunner> make_active_task_runner_;
+  scoped_refptr<ExternalConstants> external_constants_;
+
+  scoped_refptr<UpdateService> update_service_;
 };
 
-scoped_refptr<App> MakeAppInstall();
+scoped_refptr<App> MakeAppInstall(bool is_silent_install);
 
 }  // namespace updater
 

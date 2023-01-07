@@ -1,0 +1,13 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+package web;
+
+message ScriptMessageProto {
+  required string body = 1;
+  required bool user_interacting = 2;
+  required bool main_frame = 3;
+  optional string url = 4;
+}

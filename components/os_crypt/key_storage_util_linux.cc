@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,13 +59,16 @@ SelectedLinuxBackend SelectBackend(const std::string& type,
     case base::nix::DESKTOP_ENVIRONMENT_KDE5:
       return SelectedLinuxBackend::KWALLET5;
     case base::nix::DESKTOP_ENVIRONMENT_CINNAMON:
+    case base::nix::DESKTOP_ENVIRONMENT_DEEPIN:
     case base::nix::DESKTOP_ENVIRONMENT_GNOME:
     case base::nix::DESKTOP_ENVIRONMENT_PANTHEON:
+    case base::nix::DESKTOP_ENVIRONMENT_UKUI:
     case base::nix::DESKTOP_ENVIRONMENT_UNITY:
     case base::nix::DESKTOP_ENVIRONMENT_XFCE:
       return SelectedLinuxBackend::GNOME_ANY;
     // KDE3 didn't use DBus, which our KWallet store uses.
     case base::nix::DESKTOP_ENVIRONMENT_KDE3:
+    case base::nix::DESKTOP_ENVIRONMENT_LXQT:
     case base::nix::DESKTOP_ENVIRONMENT_OTHER:
       return SelectedLinuxBackend::BASIC_TEXT;
   }

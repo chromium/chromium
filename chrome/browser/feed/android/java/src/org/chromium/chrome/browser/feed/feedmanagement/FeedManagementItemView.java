@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.chromium.chrome.browser.feed.webfeed.R;
+import org.chromium.chrome.browser.feed.R;
 
 /**
  * View class for the individual line items in the feed management interstitial.

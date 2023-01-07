@@ -1,0 +1,17 @@
+// Copyright 2013 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.attestation;
+
+// The message used by the attestation service for challenge response.
+message SignedData {
+  // The data which was signed.
+  optional bytes data = 1;
+  // The signature of the data field.
+  optional bytes signature = 2;
+}

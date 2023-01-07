@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,6 @@ TEST(NetErrorsTest, IsCertificateError) {
   EXPECT_TRUE(IsCertificateError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
   EXPECT_TRUE(IsCertificateError(ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN));
   EXPECT_TRUE(IsCertificateError(ERR_CERT_KNOWN_INTERCEPTION_BLOCKED));
-  EXPECT_TRUE(IsCertificateError(ERR_SSL_OBSOLETE_VERSION));
 
   // Negative tests.
   EXPECT_FALSE(IsCertificateError(ERR_SSL_PROTOCOL_ERROR));

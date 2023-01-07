@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/pattern.h"
@@ -73,15 +74,14 @@ class MockCertVerifier::MockRequest : public CertVerifier::Request {
     std::move(callback_).Reset();
   }
 
-  CertVerifyResult* result_;
+  raw_ptr<CertVerifyResult> result_;
   CompletionOnceCallback callback_;
   base::CallbackListSubscription subscription_;
 
   base::WeakPtrFactory<MockRequest> weak_factory_{this};
 };
 
-MockCertVerifier::MockCertVerifier()
-    : default_result_(ERR_CERT_INVALID), async_(false) {}
+MockCertVerifier::MockCertVerifier() = default;
 
 MockCertVerifier::~MockCertVerifier() {
   // Reset the callbacks for any outstanding MockRequests to fulfill the

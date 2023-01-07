@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,19 +22,19 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
-#if !defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX)
+#if !BUILDFLAG(IS_FUCHSIA)
 #include <sys/resource.h>
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 #include <unistd.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
 int main(int argc, char* argv[]) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // getrlimit() is not implemented on Fuchsia. By construction, the child only
   // receieves specific fds that it's given, but check low values as mild
   // verification.
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
     LOG(FATAL) << "getrlimit";
   }
   int last_fd = static_cast<int>(rlimit_nofile.rlim_cur);
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   // Make sure that there’s nothing open at any FD higher than 3. All FDs other
   // than stdin, stdout, and stderr should have been closed prior to or at
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
   if (rv != 1) {
     LOG(FATAL) << "write";
   }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // TODO(scottmg): Verify that only the handles we expect to be open, are.
 
   // Read a byte from stdin, expecting it to be a specific value.
@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) {
       bytes_written != 1) {
     LOG(FATAL) << "WriteFile";
   }
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
   return 0;
 }

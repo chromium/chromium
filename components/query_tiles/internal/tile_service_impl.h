@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
 #include "components/query_tiles/internal/image_prefetcher.h"
 #include "components/query_tiles/internal/tile_fetcher.h"
 #include "components/query_tiles/internal/tile_manager.h"
@@ -57,7 +59,7 @@ class TileServiceImpl : public InitializableTileService,
   void PurgeDb() override;
   void SetServerUrl(const std::string& base_url) override;
   void OnTileClicked(const std::string& tile_id) override;
-  void OnQuerySelected(const base::Optional<std::string>& parent_tile_id,
+  void OnQuerySelected(const absl::optional<std::string>& parent_tile_id,
                        const std::u16string& query_text) override;
   Logger* GetLogger() override;
 
@@ -97,7 +99,7 @@ class TileServiceImpl : public InitializableTileService,
   std::unique_ptr<TileFetcher> tile_fetcher_;
 
   // Clock object.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   std::unique_ptr<Logger> logger_;
 

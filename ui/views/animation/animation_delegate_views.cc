@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/animation/animation_delegate_views.h"
 
+#include <memory>
 #include <utility>
 
 #include "ui/gfx/animation/animation_container.h"
@@ -34,11 +35,11 @@ void AnimationDelegateViews::AnimationContainerWasSet(
 
   container_ = container;
   container_->set_observer(this);
-  UpdateAnimationRunner();
+  UpdateAnimationRunner(FROM_HERE);
 }
 
 void AnimationDelegateViews::OnViewAddedToWidget(View* observed_view) {
-  UpdateAnimationRunner();
+  UpdateAnimationRunner(FROM_HERE);
 }
 
 void AnimationDelegateViews::OnViewRemovedFromWidget(View* observed_view) {
@@ -46,10 +47,10 @@ void AnimationDelegateViews::OnViewRemovedFromWidget(View* observed_view) {
 }
 
 void AnimationDelegateViews::OnViewIsDeleting(View* observed_view) {
-  DCHECK(scoped_observation_.IsObservingSource(view_));
+  DCHECK(scoped_observation_.IsObservingSource(view_.get()));
   scoped_observation_.Reset();
   view_ = nullptr;
-  UpdateAnimationRunner();
+  UpdateAnimationRunner(FROM_HERE);
 }
 
 void AnimationDelegateViews::AnimationContainerShuttingDown(
@@ -63,7 +64,8 @@ base::TimeDelta AnimationDelegateViews::GetAnimationDurationForReporting()
   return base::TimeDelta();
 }
 
-void AnimationDelegateViews::UpdateAnimationRunner() {
+void AnimationDelegateViews::UpdateAnimationRunner(
+    const base::Location& location) {
   if (!view_ || !view_->GetWidget() || !view_->GetWidget()->GetCompositor()) {
     ClearAnimationRunner();
     return;
@@ -73,17 +75,20 @@ void AnimationDelegateViews::UpdateAnimationRunner() {
     return;
 
   auto compositor_animation_runner =
-      std::make_unique<CompositorAnimationRunner>(view_->GetWidget());
+      std::make_unique<CompositorAnimationRunner>(view_->GetWidget(), location);
   compositor_animation_runner_ = compositor_animation_runner.get();
   container_->SetAnimationRunner(std::move(compositor_animation_runner));
 }
 
 void AnimationDelegateViews::ClearAnimationRunner() {
+  // `compositor_animation_runner_` holds a pointer owned by `container_`, so
+  // we need to release it before `container_` actually releases the memory it
+  // points to.
+  compositor_animation_runner_ = nullptr;
   // TODO(https://crbug.com/960621): make sure the container has a correct
   // compositor-assisted runner.
   if (container_)
     container_->SetAnimationRunner(nullptr);
-  compositor_animation_runner_ = nullptr;
 }
 
 }  // namespace views

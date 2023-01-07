@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,15 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
-#include "chrome/browser/ui/webui/app_launcher_login_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/ntp/app_icon_webui_handler.h"
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
@@ -46,7 +47,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/animation/animation.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/platform_util.h"
 #endif
 
@@ -61,7 +62,7 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
     extensions::ExtensionService* service =
         extensions::ExtensionSystem::Get(GetProfile())->extension_service();
     web_app::WebAppProvider* web_app_provider =
-        web_app::WebAppProvider::Get(GetProfile());
+        web_app::WebAppProvider::GetForWebApps(GetProfile());
     DCHECK(web_app_provider);
     DCHECK(service);
     // We should not be launched without an ExtensionService or WebAppProvider.
@@ -123,9 +124,6 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
       "bookmarkbarattached",
       prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar) ? "true" : "false");
 
-  source->AddBoolean("shouldShowSyncLogin",
-                     AppLauncherLoginHandler::ShouldShow(GetProfile()));
-
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   source->AddString("webStoreLink",
                     google_util::AppendGoogleLocaleParam(
@@ -133,10 +131,10 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
                         .spec());
 
   bool is_swipe_tracking_from_scroll_events_enabled = false;
-#if defined(OS_MAC)
-  // On Mac OS X 10.7+, horizontal scrolling can be treated as a back or
-  // forward gesture. Pass through a flag that indicates whether or not that
-  // feature is enabled.
+#if BUILDFLAG(IS_MAC)
+  // On the Mac, horizontal scrolling can be treated as a back or forward
+  // gesture. Pass through a flag that indicates whether or not that feature is
+  // enabled.
   is_swipe_tracking_from_scroll_events_enabled =
       platform_util::IsSwipeTrackingFromScrollEventsEnabled();
 #endif
@@ -185,33 +183,20 @@ AppLauncherPageUI::~AppLauncherPageUI() {
 }
 
 void AppLauncherPageUI::OnHideWebStoreIconChanged() {
-  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+  base::Value::Dict update;
   PrefService* prefs = GetProfile()->GetPrefs();
-  update->SetBoolean("showWebStoreIcon",
-                     !prefs->GetBoolean(prefs::kHideWebStoreIcon));
+  update.Set("showWebStoreIcon", !prefs->GetBoolean(prefs::kHideWebStoreIcon));
   content::WebUIDataSource::Update(
       GetProfile(), chrome::kChromeUIAppLauncherPageHost, std::move(update));
 }
 
 // static
 base::RefCountedMemory* AppLauncherPageUI::GetFaviconResourceBytes(
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().
       LoadDataResourceBytesForScale(IDR_BOOKMARK_BAR_APPS_SHORTCUT,
                                     scale_factor);
 }
-
-bool AppLauncherPageUI::OverrideHandleWebUIMessage(
-    const GURL& source_url,
-    const std::string& message,
-    const base::ListValue& args) {
-  if (message == "getApps" &&
-      AppLauncherLoginHandler::ShouldShow(GetProfile())) {
-    web_ui()->AddMessageHandler(std::make_unique<AppLauncherLoginHandler>());
-  }
-  return false;
-}
-
 
 Profile* AppLauncherPageUI::GetProfile() const {
   return Profile::FromWebUI(web_ui());

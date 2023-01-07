@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "chrome/browser/media/output_protection_proxy.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 
 // static
@@ -21,19 +22,19 @@ void OutputProtectionImpl::Create(
 
   // OutputProtectionProxy requires to run on the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See FrameServiceBase for details.
-  new OutputProtectionImpl(render_frame_host, std::move(receiver));
+  // connection. See DocumentService for details.
+  new OutputProtectionImpl(*render_frame_host, std::move(receiver));
 }
 
 OutputProtectionImpl::OutputProtectionImpl(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<media::mojom::OutputProtection> receiver)
-    : FrameServiceBase(render_frame_host, std::move(receiver)),
-      render_process_id_(render_frame_host->GetProcess()->GetID()),
-      render_frame_id_(render_frame_host->GetRoutingID()) {}
+    : DocumentService(render_frame_host, std::move(receiver)),
+      render_process_id_(render_frame_host.GetProcess()->GetID()),
+      render_frame_id_(render_frame_host.GetRoutingID()) {}
 
 OutputProtectionImpl::~OutputProtectionImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

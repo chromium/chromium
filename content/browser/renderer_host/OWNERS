@@ -10,9 +10,13 @@ sadrul@chromium.org
 # via DelegatedFrame*.
 jonross@chromium.org
 
-# RenderFrame/Frame related code.
-acolwell@chromium.org
+# RenderFrameHost and navigation-related code.
+alexmos@chromium.org
+altimin@chromium.org
 arthursonzogni@chromium.org
+creis@chromium.org
+nasko@chromium.org
+rakina@chromium.org
 
 # Aura platform code.
 per-file *aura*=sadrul@chromium.org
@@ -25,22 +29,22 @@ per-file *mac*=ccameron@chromium.org
 per-file *android*=boliu@chromium.org
 
 # Embedded Frame Sinks (eg. Offscreen Canvas).
-per-file embedded_frame_sink*.*=xlai@chromium.org
-per-file embedded_frame_sink*.*=junov@chromium.org
 per-file embedded_frame_sink*.*=kylechar@chromium.org
 
 # DirectWrite font code.
 per-file dwrite_*=drott@chromium.org
 
-# BackForwardCache.
-per-file back_forward_cache*=altimin@chromium.org
+per-file back_forward_cache*=file://content/browser/BACK_FORWARD_CACHE_OWNERS
 
 # Clipboard
-per-file *clipboard_host_impl*=huangdarwin@chromium.org
+per-file *clipboard_host_impl*=asully@chromium.org
+per-file *clipboard_host_impl*=ayui@chromium.org
 per-file *clipboard_host_impl*=dcheng@chromium.org
 
 # AgentSchedulingGroup (MBI)
-per-file agent_scheduling_group*=talp@chromium.org
 per-file agent_scheduling_group*=dom@chromium.org
 per-file agent_scheduling_group*=kouhei@chromium.org
 per-file agent_scheduling_group*=haraken@chromium.org
+
+per-file *_sandboxed*.*=set noparent
+per-file *_sandboxed*.*=file://ipc/SECURITY_OWNERS

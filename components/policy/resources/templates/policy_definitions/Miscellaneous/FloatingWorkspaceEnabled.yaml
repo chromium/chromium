@@ -1,0 +1,24 @@
+caption: Enable Floating Workspace Service
+default: false
+desc: |-
+  Setting the policy to Enabled will launch browser windows from current user's last used device automatically upon login.
+        Setting the policy to Disabled or leaving it unset will let full restore settings determine what to be launched upon login.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Enable floating workspace and launch remote browser windows upon login
+  value: true
+- caption: Disable floating workspace and do not launch remote browser windows upon
+    login
+  value: false
+owners:
+- ligeng@chromium.org
+- yzd@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:100-
+tags: []
+type: main

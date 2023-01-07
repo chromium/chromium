@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2018 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,7 +10,7 @@ given output file.
 The output file is a binary file containing CFI rows ordered based on function
 address. The output file only contains rows that match the most popular rule
 type in CFI table, to reduce the output size and specify data in compact format.
-See doc https://github.com/google/breakpad/blob/master/docs/symbol_files.md.
+See doc https://github.com/google/breakpad/blob/main/docs/symbol_files.md.
 1. The CFA rules should be of postfix form "SP <val> +".
 2. The RA rules should be of postfix form "CFA <val> + ^".
 Note: breakpad represents dereferencing address with '^' operator.
@@ -255,12 +255,6 @@ def _WriteCfiData(cfi_data, out_file):
     _Write2Bytes(out_file, data)
 
 
-def _ParseCfiData(sym_stream, output_path):
-  cfi_data = _GetAllCfiRows(sym_stream)
-  with open(output_path, 'wb') as out_file:
-    _WriteCfiData(cfi_data, out_file)
-
-
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
@@ -274,12 +268,16 @@ def main():
       help='The path of the dump_syms binary')
 
   args = parser.parse_args()
-  cmd = ['./' + args.dump_syms_path, args.input_path]
-  proc = subprocess.Popen(cmd, bufsize=-1, stdout=subprocess.PIPE)
-  _ParseCfiData(proc.stdout, args.output_path)
-  assert proc.wait() == 0
+  cmd = ['./' + args.dump_syms_path, args.input_path, '-v']
+  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+  cfi_data = _GetAllCfiRows(proc.stdout)
+  if proc.wait():
+    sys.stderr.write('dump_syms exited with code {} after {} symbols\n'.format(
+        proc.returncode, len(cfi_data)))
+    sys.exit(proc.returncode)
+  with open(args.output_path, 'wb') as out_file:
+    _WriteCfiData(cfi_data, out_file)
 
-  return 0
 
 if __name__ == '__main__':
-  sys.exit(main())
+  main()

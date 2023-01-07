@@ -1298,7 +1298,7 @@ opus_int32 test_enc_api(void)
    err=opus_encoder_ctl(enc,OPUS_GET_INBAND_FEC(null_int_ptr));
    if(err!=OPUS_BAD_ARG)test_failed();
    cfgs++;
-   CHECK_SETGET(OPUS_SET_INBAND_FEC(i),OPUS_GET_INBAND_FEC(&i),-1,2,
+   CHECK_SETGET(OPUS_SET_INBAND_FEC(i),OPUS_GET_INBAND_FEC(&i),-1,3,
      1,0,
      "    OPUS_SET_INBAND_FEC .......................... OK.\n",
      "    OPUS_GET_INBAND_FEC .......................... OK.\n")

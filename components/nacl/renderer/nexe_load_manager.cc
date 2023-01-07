@@ -1,13 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/nacl/renderer/nexe_load_manager.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/buffer_iterator.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram.h"
@@ -22,10 +24,8 @@
 #include "components/nacl/renderer/progress_event.h"
 #include "components/nacl/renderer/trusted_plugin_channel.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/sandbox_init.h"
 #include "content/public/renderer/pepper_plugin_instance.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/private/pp_file_handle.h"
@@ -67,7 +67,7 @@ static int GetRoutingID(PP_Instance instance) {
       content::RendererPpapiHost::GetForPPInstance(instance);
   if (!host)
     return 0;
-  return host->GetRoutingIDForWidget(instance);
+  return host->GetRoutingIDForFrame(instance);
 }
 
 std::string LookupAttribute(const std::map<std::string, std::string>& args,
@@ -87,8 +87,7 @@ NexeLoadManager::NexeLoadManager(PP_Instance pp_instance)
       is_installed_(false),
       exit_status_(-1),
       nexe_size_(0),
-      plugin_instance_(content::PepperPluginInstance::Get(pp_instance)),
-      nonsfi_(false) {
+      plugin_instance_(content::PepperPluginInstance::Get(pp_instance)) {
   set_exit_status(-1);
   SetLastError("");
   HistogramEnumerateOsArch(GetSandboxArch());
@@ -262,8 +261,8 @@ void NexeLoadManager::NexeDidCrash() {
   base::ReadOnlySharedMemoryMapping shmem_mapping =
       crash_info_shmem_region_.MapAt(0, kNaClCrashInfoShmemSize);
   if (shmem_mapping.IsValid()) {
-    base::BufferIterator<const uint8_t> buffer =
-        shmem_mapping.GetMemoryAsBufferIterator<uint8_t>();
+    auto buffer = base::BufferIterator<const uint8_t>(
+        shmem_mapping.GetMemoryAsSpan<uint8_t>());
     const uint32_t* crash_log_length = buffer.Object<uint32_t>();
     base::span<const uint8_t> data = buffer.Span<uint8_t>(
         std::min<uint32_t>(*crash_log_length, kNaClCrashInfoMaxLogSize));

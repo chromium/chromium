@@ -1,0 +1,4 @@
+[document web] tag:#document
+++[section] tag:body
+++++[push button] name='Search' tag:button
+++++++[image] class:button-child-icon tag:svg

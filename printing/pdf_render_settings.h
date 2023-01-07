@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,14 +16,13 @@ namespace printing {
 struct PdfRenderSettings {
   enum Mode {
     NORMAL = 0,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     TEXTONLY,
-    GDI_TEXT,
     POSTSCRIPT_LEVEL2,
     POSTSCRIPT_LEVEL3,
     EMF_WITH_REDUCED_RASTERIZATION,
-    EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT,
-    LAST = EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT
+    POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS,
+    LAST = POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS
 #else
     LAST = NORMAL
 #endif

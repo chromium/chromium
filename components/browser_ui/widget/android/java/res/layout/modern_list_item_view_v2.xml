@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content"
+    style="@style/ListItemContainerV2">
+
+    <ImageView
+      android:id="@+id/start_icon"
+      style="@style/ListItemStartIconV2"
+      android:importantForAccessibility="no" />
+
+    <!-- Common title/description shared between list item views. -->
+    <include layout="@layout/title_and_description_layout" />
+
+    <!-- TODO(crbug.com/1241509): Allow an arbitrary amount of buttons to be added here. -->
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/optional_button"
+        android:visibility="gone"
+        style="@style/ListItemEndIconV2" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/end_button"
+        android:visibility="gone"
+        style="@style/ListItemEndIconV2"
+        android:layout_marginEnd="4dp" />
+
+</LinearLayout>

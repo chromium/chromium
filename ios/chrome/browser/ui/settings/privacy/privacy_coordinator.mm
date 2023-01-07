@@ -1,19 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
 
+#import "base/check.h"
 #import "base/mac/foundation_util.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_delegate.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/handoff_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_navigation_commands.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -24,12 +25,20 @@
 #endif
 
 @interface PrivacyCoordinator () <
-    ClearBrowsingDataUIDelegate,
+    ClearBrowsingDataCoordinatorDelegate,
     PrivacyNavigationCommands,
+    PrivacySafeBrowsingCoordinatorDelegate,
     PrivacyTableViewControllerPresentationDelegate>
 
 @property(nonatomic, strong) id<ApplicationCommands> handler;
 @property(nonatomic, strong) PrivacyTableViewController* viewController;
+// Coordinator for Privacy Safe Browsing settings.
+@property(nonatomic, strong)
+    PrivacySafeBrowsingCoordinator* safeBrowsingCoordinator;
+
+// The coordinator for the clear browsing data screen.
+@property(nonatomic, strong)
+    ClearBrowsingDataCoordinator* clearBrowsingDataCoordinator;
 
 @end
 
@@ -52,10 +61,7 @@
   self.handler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                     ApplicationCommands);
 
-  ReauthenticationModule* module = nil;
-  if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
-    module = [[ReauthenticationModule alloc] init];
-  }
+  ReauthenticationModule* module = [[ReauthenticationModule alloc] init];
   self.viewController =
       [[PrivacyTableViewController alloc] initWithBrowser:self.browser
                                    reauthenticationModule:module];
@@ -71,6 +77,9 @@
 }
 
 - (void)stop {
+  [self.clearBrowsingDataCoordinator stop];
+  self.clearBrowsingDataCoordinator = nil;
+
   self.viewController = nil;
 }
 
@@ -94,26 +103,39 @@
 }
 
 - (void)showClearBrowsingData {
-  ClearBrowsingDataTableViewController* viewController =
-      [[ClearBrowsingDataTableViewController alloc]
-          initWithBrowser:self.browser];
-  viewController.dispatcher = self.viewController.dispatcher;
-  viewController.delegate = self;
-  [self.baseNavigationController pushViewController:viewController
-                                           animated:YES];
+  self.clearBrowsingDataCoordinator = [[ClearBrowsingDataCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  self.clearBrowsingDataCoordinator.delegate = self;
+  [self.clearBrowsingDataCoordinator start];
 }
 
-#pragma mark - ClearBrowsingDataUIDelegate
-
-- (void)openURL:(const GURL&)URL {
-  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [self.handler closeSettingsUIAndOpenURL:command];
+- (void)showSafeBrowsing {
+  DCHECK(!self.safeBrowsingCoordinator);
+  self.safeBrowsingCoordinator = [[PrivacySafeBrowsingCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  self.safeBrowsingCoordinator.delegate = self;
+  [self.safeBrowsingCoordinator start];
 }
 
-- (void)dismissClearBrowsingData {
-  SettingsNavigationController* navigationController =
-      base::mac::ObjCCastStrict<SettingsNavigationController>(
-          self.viewController.navigationController);
-  [navigationController closeSettings];
+#pragma mark - ClearBrowsingDataCoordinatorDelegate
+
+- (void)clearBrowsingDataCoordinatorViewControllerWasRemoved:
+    (ClearBrowsingDataCoordinator*)coordinator {
+  DCHECK_EQ(self.clearBrowsingDataCoordinator, coordinator);
+  [self.clearBrowsingDataCoordinator stop];
+  self.clearBrowsingDataCoordinator = nil;
 }
+
+#pragma mark - SafeBrowsingCoordinatorDelegate
+
+- (void)privacySafeBrowsingCoordinatorDidRemove:
+    (PrivacySafeBrowsingCoordinator*)coordinator {
+  DCHECK_EQ(self.safeBrowsingCoordinator, coordinator);
+  [self.safeBrowsingCoordinator stop];
+  self.safeBrowsingCoordinator.delegate = nil;
+  self.safeBrowsingCoordinator = nil;
+}
+
 @end

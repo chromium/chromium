@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,29 +10,19 @@
 // Undefine before windows header will make the poisonous defines
 #include "base/win/windows_undefines.inc"
 
-// atlwin.h relies on std::void_t, but libc++ doesn't define it unless
-// _LIBCPP_STD_VER > 14.  Workaround this by manually defining it.
-#include <type_traits>
-#if defined(_LIBCPP_STD_VER) && _LIBCPP_STD_VER <= 14
-namespace std {
-template <class...>
-using void_t = void;
-}
-#endif
-
 // Declare our own exception thrower (atl_throw.h includes atldef.h).
 #include "base/win/atl_throw.h"
 
-#include <atlbase.h>
-#include <atlcom.h>
-#include <atlctl.h>
-#include <atlhost.h>
-#include <atlsecurity.h>
-#include <atlwin.h>
+#include <atlbase.h>      // NOLINT(build/include_order)
+#include <atlcom.h>       // NOLINT(build/include_order)
+#include <atlctl.h>       // NOLINT(build/include_order)
+#include <atlhost.h>      // NOLINT(build/include_order)
+#include <atlsecurity.h>  // NOLINT(build/include_order)
+#include <atlwin.h>       // NOLINT(build/include_order)
 
 // Undefine the poisonous defines
-#include "base/win/windows_undefines.inc"
+#include "base/win/windows_undefines.inc"  // NOLINT(build/include)
 // Check no poisonous defines follow this include
-#include "base/win/windows_defines.inc"
+#include "base/win/windows_defines.inc"  // NOLINT(build/include)
 
 #endif  // BASE_WIN_ATL_H_

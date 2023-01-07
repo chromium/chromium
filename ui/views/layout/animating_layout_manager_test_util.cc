@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,8 +27,7 @@ void WaitForAnimatingLayoutManager(View* view) {
 }
 
 void ReduceAnimationDuration(AnimatingLayoutManager* layout_manager) {
-  static constexpr base::TimeDelta kSmallDuration =
-      base::TimeDelta::FromMilliseconds(1);
+  static constexpr base::TimeDelta kSmallDuration = base::Milliseconds(1);
   layout_manager->SetAnimationDuration(kSmallDuration);
 }
 

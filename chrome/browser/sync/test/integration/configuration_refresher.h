@@ -1,12 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_CONFIGURATION_REFRESHER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_CONFIGURATION_REFRESHER_H_
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 
@@ -21,6 +20,10 @@
 class ConfigurationRefresher : public syncer::SyncServiceObserver {
  public:
   ConfigurationRefresher();
+
+  ConfigurationRefresher(const ConfigurationRefresher&) = delete;
+  ConfigurationRefresher& operator=(const ConfigurationRefresher&) = delete;
+
   ~ConfigurationRefresher() override;
   void Observe(syncer::SyncService* sync_service);
 
@@ -29,10 +32,9 @@ class ConfigurationRefresher : public syncer::SyncServiceObserver {
   void OnSyncConfigurationCompleted(syncer::SyncService* sync_service) override;
   void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      scoped_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigurationRefresher);
+  base::ScopedMultiSourceObservation<syncer::SyncService,
+                                     syncer::SyncServiceObserver>
+      scoped_observations_{this};
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_CONFIGURATION_REFRESHER_H_

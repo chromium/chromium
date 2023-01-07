@@ -1,13 +1,8 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-window.enablePixelTesting = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
-</head>
-<body>
+
 <style>
 select {
     -webkit-appearance: none;
@@ -17,22 +12,15 @@ select {
     font-family: 'Ahem';
 }
 </style>
-<select id="menu">
-<option>foo</option>
-<option>foo</option>
-<option>foo</option>
-<option>foo</option>
-<option>foo</option>
+<select>
+  <option>foo</option>
+  <option>foo</option>
+  <option>foo</option>
+  <option>foo</option>
+  <option>foo</option>
 </select>
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
+  
 <script>
-description('Test for crbug.com/470505. Pass if there is no vertical scroll bar in the popup.');
-var menu = document.getElementById('menu');
-openPicker(menu, finishJSTest, function () {
-    testFailed('picker didn\'t open')
-    finishJSTest();
-});
+  // Test for crbug.com/470505. Pass if there is no vertical scroll bar in the popup.
+  window.onload = openPickerAppearanceOnly(document.querySelector('select'));
 </script>
-</body>
-</html>

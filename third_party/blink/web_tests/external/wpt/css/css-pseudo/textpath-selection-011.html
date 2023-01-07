@@ -17,6 +17,11 @@
   <style>
   ::selection
     {
+      background-color: transparent;
+      /*
+      color suppresses UA default background-color,
+      but fill and stroke do not, so set explicitly
+      */
       fill: green;
       /*
       fill is the shorthand form for fill-color,

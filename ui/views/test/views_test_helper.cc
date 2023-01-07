@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ ViewsTestHelper::GetFallbackTestViewsDelegate() {
 
 void ViewsTestHelper::SetUpTestViewsDelegate(
     TestViewsDelegate* delegate,
-    base::Optional<ViewsDelegate::NativeWidgetFactory> factory) {
+    absl::optional<ViewsDelegate::NativeWidgetFactory> factory) {
   if (factory.has_value())
     delegate->set_native_widget_factory(factory.value());
 }

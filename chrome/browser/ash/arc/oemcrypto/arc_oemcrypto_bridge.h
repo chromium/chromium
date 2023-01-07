@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,7 @@
 
 #include <stdint.h>
 
-#include <vector>
-
-#include "base/macros.h"
-#include "components/arc/mojom/oemcrypto.mojom.h"
-#include "components/arc/mojom/protected_buffer_manager.mojom.h"
+#include "ash/components/arc/mojom/oemcrypto.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -35,6 +31,10 @@ class ArcOemCryptoBridge : public KeyedService,
 
   ArcOemCryptoBridge(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);
+
+  ArcOemCryptoBridge(const ArcOemCryptoBridge&) = delete;
+  ArcOemCryptoBridge& operator=(const ArcOemCryptoBridge&) = delete;
+
   ~ArcOemCryptoBridge() override;
 
   // OemCrypto Mojo host interface
@@ -42,16 +42,10 @@ class ArcOemCryptoBridge : public KeyedService,
       mojo::PendingReceiver<mojom::OemCryptoService> receiver) override;
 
  private:
-  void ConnectToDaemon(
-      mojo::PendingReceiver<mojom::OemCryptoService> receiver,
-      mojo::PendingRemote<mojom::ProtectedBufferManager> gpu_buffer_manager);
-
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcOemCryptoBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcOemCryptoBridge);
 };
 
 }  // namespace arc

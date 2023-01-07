@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,11 +42,22 @@ void TestCreditCardSaveManager::set_upload_request_card_number(
   upload_request_.card.SetNumber(credit_card_number);
 }
 
+void TestCreditCardSaveManager::set_upload_request_card(
+    const CreditCard& card) {
+  upload_request_.card = std::move(card);
+}
+
+payments::PaymentsClient::UploadRequestDetails*
+TestCreditCardSaveManager::upload_request() {
+  return &upload_request_;
+}
+
 void TestCreditCardSaveManager::OnDidUploadCard(
     AutofillClient::PaymentsRpcResult result,
-    const std::string& server_id) {
+    const payments::PaymentsClient::UploadCardResponseDetails&
+        upload_card_response_details) {
   credit_card_was_uploaded_ = true;
-  CreditCardSaveManager::OnDidUploadCard(result, server_id);
+  CreditCardSaveManager::OnDidUploadCard(result, upload_card_response_details);
 }
 
 }  // namespace autofill

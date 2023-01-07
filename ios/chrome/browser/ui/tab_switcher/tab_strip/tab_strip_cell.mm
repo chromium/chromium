@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_cell.h"
 
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -12,11 +13,15 @@
 #endif
 
 namespace {
+
+// The size of the xmark symbol image.
+NSInteger kXmarkSymbolPointSize = 13;
+
 // Tab close button insets.
-const CGFloat kTabBackgroundLeftCapInset = 34.0;
 const CGFloat kFaviconInset = 28;
 const CGFloat kTitleInset = 10.0;
 const CGFloat kFontSize = 14.0;
+
 }  // namespace
 
 @implementation TabStripCell
@@ -38,8 +43,12 @@ const CGFloat kFontSize = 14.0;
           constraintEqualToAnchor:self.contentView.centerYAnchor],
     ]];
 
-    UIImage* close = [[UIImage imageNamed:@"grid_cell_close_button"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* close =
+        UseSymbols()
+            ? DefaultSymbolTemplateWithPointSize(kXMarkSymbol,
+                                                 kXmarkSymbolPointSize)
+            : [[UIImage imageNamed:@"grid_cell_close_button"]
+                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_closeButton setImage:close forState:UIControlStateNormal];
     [self.contentView addSubview:_closeButton];
@@ -83,9 +92,14 @@ const CGFloat kFontSize = 14.0;
 }
 
 - (void)setupBackgroundViews {
-  self.backgroundView = [self resizeableBackgroundImageForStateSelected:NO];
-  self.selectedBackgroundView =
-      [self resizeableBackgroundImageForStateSelected:YES];
+  self.backgroundView = [[UIImageView alloc]
+      initWithImage:[UIImage imageNamed:@"tabstrip_background_tab"]];
+  self.selectedBackgroundView = [[UIImageView alloc]
+      initWithImage:[UIImage imageNamed:@"tabstrip_foreground_tab"]];
+}
+
+- (BOOL)hasIdentifier:(NSString*)identifier {
+  return [self.itemIdentifier isEqualToString:identifier];
 }
 
 #pragma mark - UIView
@@ -96,29 +110,6 @@ const CGFloat kFontSize = 14.0;
 }
 
 #pragma mark - Private
-
-// Updates this tab's style based on the value of |selected| and the current
-// incognito style.
-- (UIView*)resizeableBackgroundImageForStateSelected:(BOOL)selected {
-  // Style the background image first.
-  NSString* state = (selected ? @"foreground" : @"background");
-  NSString* incognito = self.useIncognitoFallback ? @"incognito_" : @"";
-  NSString* imageName =
-      [NSString stringWithFormat:@"tabstrip_%@%@_tab", incognito, state];
-
-  // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
-  // Radar filled: b/137942721.
-  UIImage* resolvedImage = [UIImage imageNamed:imageName
-                                      inBundle:nil
-                 compatibleWithTraitCollection:self.traitCollection];
-  UIEdgeInsets insets = UIEdgeInsetsMake(
-      0, kTabBackgroundLeftCapInset, resolvedImage.size.height + 1.0,
-      resolvedImage.size.width - kTabBackgroundLeftCapInset + 1.0);
-  UIImage* backgroundImage =
-      StretchableImageFromUIImage(resolvedImage, kTabBackgroundLeftCapInset, 0);
-  return [[UIImageView alloc]
-      initWithImage:[backgroundImage resizableImageWithCapInsets:insets]];
-}
 
 // Selector registered to the close button.
 - (void)closeButtonTapped:(id)sender {
@@ -136,24 +127,6 @@ const CGFloat kFontSize = 14.0;
   // Style the title tint color.
   self.titleLabel.textColor = selected ? [UIColor colorNamed:kTextPrimaryColor]
                                        : [UIColor colorNamed:kGrey600Color];
-  // These dark-theme specific colorsets should only be used for iOS 12
-  // dark theme, as they will be removed along with iOS 12.
-  // TODO (crbug.com/981889): The following lines will be removed
-  // along with iOS 12
-  if (self.useIncognitoFallback) {
-    // Style the favicon tint color.
-    self.faviconView.tintColor =
-        selected ? [UIColor colorNamed:kCloseButtonDarkColor]
-                 : [UIColor colorNamed:kGrey500Color];
-    // Style the close button tint color.
-    self.closeButton.tintColor =
-        selected ? [UIColor colorNamed:kCloseButtonDarkColor]
-                 : [UIColor colorNamed:kGrey500Color];
-    // Style the title tint color.
-    self.titleLabel.textColor = selected
-                                    ? [UIColor colorNamed:kTextPrimaryDarkColor]
-                                    : [UIColor colorNamed:kGrey600Color];
-  }
 }
 
 @end

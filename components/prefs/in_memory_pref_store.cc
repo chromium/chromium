@@ -1,25 +1,28 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/prefs/in_memory_pref_store.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 InMemoryPrefStore::InMemoryPrefStore() {}
 
 InMemoryPrefStore::~InMemoryPrefStore() {}
 
-bool InMemoryPrefStore::GetValue(const std::string& key,
+bool InMemoryPrefStore::GetValue(base::StringPiece key,
                                  const base::Value** value) const {
   return prefs_.GetValue(key, value);
 }
 
-std::unique_ptr<base::DictionaryValue> InMemoryPrefStore::GetValues() const {
-  return prefs_.AsDictionaryValue();
+base::Value::Dict InMemoryPrefStore::GetValues() const {
+  return prefs_.AsDict();
 }
 
 bool InMemoryPrefStore::GetMutableValue(const std::string& key,
@@ -44,18 +47,16 @@ bool InMemoryPrefStore::IsInitializationComplete() const {
 }
 
 void InMemoryPrefStore::SetValue(const std::string& key,
-                                 std::unique_ptr<base::Value> value,
+                                 base::Value value,
                                  uint32_t flags) {
-  DCHECK(value);
-  if (prefs_.SetValue(key, base::Value::FromUniquePtrValue(std::move(value))))
+  if (prefs_.SetValue(key, std::move(value)))
     ReportValueChanged(key, flags);
 }
 
 void InMemoryPrefStore::SetValueSilently(const std::string& key,
-                                      std::unique_ptr<base::Value> value,
-                                      uint32_t flags) {
-  DCHECK(value);
-  prefs_.SetValue(key, base::Value::FromUniquePtrValue(std::move(value)));
+                                         base::Value value,
+                                         uint32_t flags) {
+  prefs_.SetValue(key, std::move(value));
 }
 
 void InMemoryPrefStore::RemoveValue(const std::string& key, uint32_t flags) {

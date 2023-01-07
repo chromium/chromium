@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,12 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/profiler/module_cache.h"
 #include "build/build_config.h"
 
 namespace base {
 
-#if !defined(_WIN64)
+#if !defined(ARCH_CPU_64_BITS)
 // Allows code to compile for x86. Actual support for x86 will require either
 // refactoring these interfaces or separate architecture-specific interfaces.
 struct RUNTIME_FUNCTION {
@@ -24,7 +23,7 @@ struct RUNTIME_FUNCTION {
   DWORD EndAddress;
 };
 using PRUNTIME_FUNCTION = RUNTIME_FUNCTION*;
-#endif  // !defined(_WIN64)
+#endif  // !defined(ARCH_CPU_64_BITS)
 
 inline ULONG64 ContextPC(CONTEXT* context) {
 #if defined(ARCH_CPU_X86_64)
@@ -46,6 +45,9 @@ class BASE_EXPORT Win32StackFrameUnwinder {
   // on. Provides a seam for testing.
   class BASE_EXPORT UnwindFunctions {
    public:
+    UnwindFunctions(const UnwindFunctions&) = delete;
+    UnwindFunctions& operator=(const UnwindFunctions&) = delete;
+
     virtual ~UnwindFunctions();
 
     virtual PRUNTIME_FUNCTION LookupFunctionEntry(DWORD64 program_counter,
@@ -57,12 +59,13 @@ class BASE_EXPORT Win32StackFrameUnwinder {
 
    protected:
     UnwindFunctions();
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(UnwindFunctions);
   };
 
   explicit Win32StackFrameUnwinder();
+
+  Win32StackFrameUnwinder(const Win32StackFrameUnwinder&) = delete;
+  Win32StackFrameUnwinder& operator=(const Win32StackFrameUnwinder&) = delete;
+
   ~Win32StackFrameUnwinder();
 
   // Attempts to unwind the frame represented by |context|, where the
@@ -78,8 +81,6 @@ class BASE_EXPORT Win32StackFrameUnwinder {
   friend class Win32StackFrameUnwinderTest;
 
   std::unique_ptr<UnwindFunctions> unwind_functions_;
-
-  DISALLOW_COPY_AND_ASSIGN(Win32StackFrameUnwinder);
 };
 
 }  // namespace base

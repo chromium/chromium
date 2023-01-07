@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_VIDEO_CAPTURE_VIDEO_CAPTURE_SERVICE_EVENT_H_
-#define SERVICES_VIDEO_CAPTURE_VIDEO_CAPTURE_SERVICE_EVENT_H_
+#ifndef SERVICES_VIDEO_CAPTURE_PUBLIC_UMA_VIDEO_CAPTURE_SERVICE_EVENT_H_
+#define SERVICES_VIDEO_CAPTURE_PUBLIC_UMA_VIDEO_CAPTURE_SERVICE_EVENT_H_
 
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -29,7 +29,7 @@ enum VideoCaptureServiceEvent {
   NUM_VIDEO_CAPTURE_SERVICE_EVENT
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 enum MacbookRetryGetDeviceInfosEvent {
   PROVIDER_RECEIVED_ZERO_INFOS_STOPPING_SERVICE = 0,
   PROVIDER_SERVICE_STOPPED_ISSUING_RETRY = 1,
@@ -61,11 +61,11 @@ void LogDurationFromLastConnectToConnectionLost(base::TimeDelta duration);
 void LogDurationUntilReconnectAfterEnumerationOnly(base::TimeDelta duration);
 void LogDurationUntilReconnectAfterCapture(base::TimeDelta duration);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void LogMacbookRetryGetDeviceInfosEvent(MacbookRetryGetDeviceInfosEvent event);
 #endif
 
 }  // namespace uma
 }  // namespace video_capture
 
-#endif  // SERVICES_VIDEO_CAPTURE_VIDEO_CAPTURE_SERVICE_EVENT_H_
+#endif  // SERVICES_VIDEO_CAPTURE_PUBLIC_UMA_VIDEO_CAPTURE_SERVICE_EVENT_H_

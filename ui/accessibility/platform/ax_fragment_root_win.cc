@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 
-#include <unordered_map>
-
+#include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
@@ -17,13 +16,11 @@ namespace ui {
 
 class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
                                       public IItemContainerProvider,
-                                      public IRawElementProviderFragmentRoot,
-                                      public IRawElementProviderAdviseEvents {
+                                      public IRawElementProviderFragmentRoot {
  public:
   BEGIN_COM_MAP(AXFragmentRootPlatformNodeWin)
   COM_INTERFACE_ENTRY(IItemContainerProvider)
   COM_INTERFACE_ENTRY(IRawElementProviderFragmentRoot)
-  COM_INTERFACE_ENTRY(IRawElementProviderAdviseEvents)
   COM_INTERFACE_ENTRY_CHAIN(AXPlatformNodeWin)
   END_COM_MAP()
 
@@ -219,45 +216,6 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
 
     return S_OK;
   }
-
-  //
-  // IRawElementProviderAdviseEvents methods.
-  //
-  IFACEMETHODIMP AdviseEventAdded(EVENTID event_id,
-                                  SAFEARRAY* property_ids) override {
-    WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ADVISE_EVENT_ADDED);
-    if (event_id == UIA_LiveRegionChangedEventId) {
-      live_region_change_listeners_++;
-
-      if (live_region_change_listeners_ == 1) {
-        // Fire a LiveRegionChangedEvent for each live-region to tell the
-        // newly-attached assistive technology about the regions.
-        //
-        // Ideally we'd be able to direct these events to only the
-        // newly-attached AT, but we don't have that capability, so we only
-        // fire events when the *first* AT attaches. (A common scenario will
-        // be an attached screen-reader, then a software-keyboard attaches to
-        // handle an input field; we don't want the screen-reader to announce
-        // that every live-region has changed.) There isn't a perfect solution,
-        // but this heuristic seems to work well in practice.
-        FireLiveRegionChangeRecursive();
-      }
-    }
-    return S_OK;
-  }
-
-  IFACEMETHODIMP AdviseEventRemoved(EVENTID event_id,
-                                    SAFEARRAY* property_ids) override {
-    WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ADVISE_EVENT_REMOVED);
-    if (event_id == UIA_LiveRegionChangedEventId) {
-      DCHECK(live_region_change_listeners_ > 0);
-      live_region_change_listeners_--;
-    }
-    return S_OK;
-  }
-
- private:
-  int32_t live_region_change_listeners_ = 0;
 };
 
 class AXFragmentRootMapWin {
@@ -293,7 +251,7 @@ class AXFragmentRootMapWin {
   }
 
  private:
-  std::unordered_map<gfx::AcceleratedWidget, AXFragmentRootWin*> map_;
+  base::flat_map<gfx::AcceleratedWidget, AXFragmentRootWin*> map_;
 };
 
 AXFragmentRootWin::AXFragmentRootWin(gfx::AcceleratedWidget widget,
@@ -326,7 +284,7 @@ gfx::NativeViewAccessible AXFragmentRootWin::GetNativeViewAccessible() {
   // Automation. Signal observers when we're asked for a platform object on it.
   for (WinAccessibilityAPIUsageObserver& observer :
        GetWinAccessibilityAPIUsageObserverList()) {
-    observer.OnUIAutomationUsed();
+    observer.OnBasicUIAutomationUsed();
   }
   return platform_node_.Get();
 }
@@ -335,15 +293,15 @@ bool AXFragmentRootWin::IsControlElement() {
   return delegate_->IsAXFragmentRootAControlElement();
 }
 
-gfx::NativeViewAccessible AXFragmentRootWin::GetParent() {
+gfx::NativeViewAccessible AXFragmentRootWin::GetParent() const {
   return delegate_->GetParentOfAXFragmentRoot();
 }
 
-int AXFragmentRootWin::GetChildCount() const {
+size_t AXFragmentRootWin::GetChildCount() const {
   return delegate_->GetChildOfAXFragmentRoot() ? 1 : 0;
 }
 
-gfx::NativeViewAccessible AXFragmentRootWin::ChildAtIndex(int index) {
+gfx::NativeViewAccessible AXFragmentRootWin::ChildAtIndex(size_t index) {
   if (index == 0) {
     return delegate_->GetChildOfAXFragmentRoot();
   }
@@ -352,18 +310,16 @@ gfx::NativeViewAccessible AXFragmentRootWin::ChildAtIndex(int index) {
 }
 
 gfx::NativeViewAccessible AXFragmentRootWin::GetNextSibling() {
-  int child_index = GetIndexInParentOfChild();
-  if (child_index >= 0) {
-    AXPlatformNodeDelegate* parent = GetParentNodeDelegate();
-    if (parent && child_index < (parent->GetChildCount() - 1))
-      return GetParentNodeDelegate()->ChildAtIndex(child_index + 1);
-  }
+  size_t child_index = GetIndexInParentOfChild();
+  AXPlatformNodeDelegate* parent = GetParentNodeDelegate();
+  if (parent && (child_index + 1) < parent->GetChildCount())
+    return GetParentNodeDelegate()->ChildAtIndex(child_index + 1);
 
   return nullptr;
 }
 
 gfx::NativeViewAccessible AXFragmentRootWin::GetPreviousSibling() {
-  int child_index = GetIndexInParentOfChild();
+  size_t child_index = GetIndexInParentOfChild();
   if (child_index > 0)
     return GetParentNodeDelegate()->ChildAtIndex(child_index - 1);
 
@@ -421,7 +377,7 @@ AXPlatformNodeDelegate* AXFragmentRootWin::GetChildNodeDelegate() const {
   return nullptr;
 }
 
-int AXFragmentRootWin::GetIndexInParentOfChild() const {
+size_t AXFragmentRootWin::GetIndexInParentOfChild() const {
   AXPlatformNodeDelegate* parent = GetParentNodeDelegate();
 
   if (!parent)
@@ -429,8 +385,8 @@ int AXFragmentRootWin::GetIndexInParentOfChild() const {
 
   AXPlatformNodeDelegate* child = GetChildNodeDelegate();
   if (child) {
-    int child_count = parent->GetChildCount();
-    for (int child_index = 0; child_index < child_count; child_index++) {
+    size_t child_count = parent->GetChildCount();
+    for (size_t child_index = 0; child_index < child_count; child_index++) {
       if (ui::AXPlatformNode::FromNativeViewAccessible(
               parent->ChildAtIndex(child_index))
               ->GetDelegate() == child)

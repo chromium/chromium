@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/events/event_ack_data.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/process_map.h"
@@ -29,6 +31,9 @@ namespace {
 class ShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
+  ShutdownNotifierFactory(const ShutdownNotifierFactory&) = delete;
+  ShutdownNotifierFactory& operator=(const ShutdownNotifierFactory&) = delete;
+
   static ShutdownNotifierFactory* GetInstance() {
     return base::Singleton<ShutdownNotifierFactory>::get();
   }
@@ -39,12 +44,11 @@ class ShutdownNotifierFactory
   ShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "ExtensionServiceWorkerMessageFilter") {
+    DependsOn(ExtensionRegistryFactory::GetInstance());
     DependsOn(EventRouterFactory::GetInstance());
     DependsOn(ProcessManagerFactory::GetInstance());
   }
   ~ShutdownNotifierFactory() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownNotifierFactory);
 };
 
 }  // namespace
@@ -127,7 +131,7 @@ void ExtensionServiceWorkerMessageFilter::OnRequestWorker(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!browser_context_)
     return;
-  dispatcher_->Dispatch(params, nullptr, render_process_id_);
+  dispatcher_->DispatchForServiceWorker(params, render_process_id_);
 }
 
 void ExtensionServiceWorkerMessageFilter::OnResponseWorker(
@@ -142,21 +146,22 @@ void ExtensionServiceWorkerMessageFilter::OnResponseWorker(
 void ExtensionServiceWorkerMessageFilter::OnIncrementServiceWorkerActivity(
     int64_t service_worker_version_id,
     const std::string& request_uuid) {
-  DCHECK_CURRENTLY_ON(content::ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!browser_context_)
     return;
   active_request_uuids_.insert(request_uuid);
   // The worker might have already stopped before we got here, so the increment
   // below might fail legitimately. Therefore, we do not send bad_message to the
   // worker even if it fails.
-  service_worker_context_->StartingExternalRequest(service_worker_version_id,
-                                                   request_uuid);
+  service_worker_context_->StartingExternalRequest(
+      service_worker_version_id,
+      content::ServiceWorkerExternalRequestTimeoutType::kDefault, request_uuid);
 }
 
 void ExtensionServiceWorkerMessageFilter::OnDecrementServiceWorkerActivity(
     int64_t service_worker_version_id,
     const std::string& request_uuid) {
-  DCHECK_CURRENTLY_ON(content::ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!browser_context_)
     return;
   content::ServiceWorkerExternalRequestResult result =
@@ -204,11 +209,24 @@ void ExtensionServiceWorkerMessageFilter::OnDidInitializeServiceWorkerContext(
     int thread_id) {
   if (!browser_context_)
     return;
-  if (!ProcessMap::Get(browser_context_)
-           ->Contains(extension_id, render_process_id_)) {
-    // We can legitimately get here if the extension was already unloaded.
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
+  DCHECK(registry);
+  if (!registry->enabled_extensions().GetByID(extension_id)) {
+    // This can happen if the extension is unloaded at this point. Just
+    // checking the extension process (as below) is insufficient because
+    // tearing down processes is async and happens after extension unload.
     return;
   }
+
+  if (!ProcessMap::Get(browser_context_)
+           ->Contains(extension_id, render_process_id_)) {
+    // We check the process in addition to the registry to guard against
+    // situations in which an extension may still be enabled, but no longer
+    // running in a given process.
+    return;
+  }
+
   ServiceWorkerTaskQueue::Get(browser_context_)
       ->DidInitializeServiceWorkerContext(render_process_id_, extension_id,
                                           service_worker_version_id, thread_id);

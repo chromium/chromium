@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ em::Extension_InstallType GetExtensionInstallType(
       return em::Extension_InstallType_TYPE_ADMIN;
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ManifestLocation::kInvalidLocation:
     case ManifestLocation::kComponent:
     case ManifestLocation::kExternalComponent:
@@ -85,6 +85,7 @@ void AddExtensions(const extensions::ExtensionSet& extensions,
     AddPermission(extension.get(), extension_info);
     AddHostPermission(extension.get(), extension_info);
     extension_info->set_from_webstore(extension->from_webstore());
+    extension_info->set_manifest_version(extension->manifest_version());
   }
 }
 
@@ -110,6 +111,8 @@ em::Extension_ExtensionType ConvertExtensionTypeToProto(
       return em::Extension_ExtensionType_TYPE_PLATFORM_APP;
     case extensions::Manifest::TYPE_LOGIN_SCREEN_EXTENSION:
       return em::Extension_ExtensionType_TYPE_LOGIN_SCREEN_EXTENSION;
+    case extensions::Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
+      return em::Extension_ExtensionType_TYPE_CHROMEOS_SYSTEM_EXTENSION;
     case extensions::Manifest::NUM_LOAD_TYPES:
       NOTREACHED();
       return em::Extension_ExtensionType_TYPE_UNKNOWN;

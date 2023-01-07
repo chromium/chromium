@@ -1,0 +1,170 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles">
+  a {
+    width: fit-content;
+  }
+  ul {
+    list-style-position: outside;
+    padding-inline-start: 20px;
+  }
+  ul li::marker {
+    color: var(--cros-color-secondary);
+    font-size: 18px;
+  }
+  li:not(:last-child) {
+    margin-bottom: 14px;
+  }
+  #serviceLogsDialog {
+    --oobe-modal-dialog-content-slot-padding-bottom: 0;
+    --oobe-modal-dialog-content-slot-padding-end: 0;
+    --oobe-modal-dialog-content-slot-padding-start: 0;
+    --oobe-modal-dialog-title-slot-padding-bottom: 16px;
+    --oobe-modal-dialog-width: 512px;
+  }
+  #serviceLogsFrame {
+    padding-inline-end: 20px;
+    padding-inline-start: 20px;
+  }
+  .intro-content {
+    color: var(--oobe-header-text-color);
+  }
+  .intro-footer {
+    color: var(--cros-color-primary);
+  }
+</style>
+
+<oobe-adaptive-dialog id="osInstallDialogIntro"
+    role="dialog" for-step="intro"
+    aria-label$="[[i18nDynamic(
+        locale, 'osInstallDialogIntroTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title" id="osInstallDialogIntroTitleId">
+    [[i18nDynamic(locale, 'osInstallDialogIntroTitle')]]</h1>
+  <div slot="subtitle">
+    [[i18nDynamic(locale, 'osInstallDialogIntroSubtitle')]]
+  </div>
+  <div slot="content" class="flex layout vertical center-justified">
+    <p class="intro-content">
+      [[i18nDynamic(locale, 'osInstallDialogIntroBody0')]]
+    </p>
+    <p class="intro-content">
+      [[i18nDynamic(locale, 'osInstallDialogIntroBody1')]]
+    </p>
+    <p class="intro-footer">
+      [[i18nDynamic(locale, 'osInstallDialogIntroFooter')]]
+    </p>
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button id="osInstallExitButton" on-click="onBack_">
+    </oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button class="focus-on-show" id="osInstallIntroNextButton"
+        inverse on-click="onIntroNextButtonPressed_">
+      <div slot="text">
+        [[i18nDynamic(locale, 'osInstallDialogIntroNextButton')]]
+      </div>
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-modal-dialog id="osInstallDialogConfirm" ignore-popstate>
+  <div slot="title" id="osInstallDialogConfirmTitleId">
+    [[i18nDynamic(locale, 'osInstallDialogConfirmTitle')]]
+  </div>
+  <span slot="content"
+      inner-h-t-m-l="[[i18nAdvancedDynamic(
+        locale, 'osInstallDialogConfirmBody')]]">
+  </span>
+  <div slot="buttons">
+    <oobe-text-button id="closeConfirmDialogButton"
+        on-click="onCloseConfirmDialogButtonPressed_"
+        text-key="oobeModalDialogClose">
+    </oobe-text-button>
+    <oobe-text-button
+        text-key="osInstallDialogConfirmNextButton"
+        id="osInstallConfirmNextButton"
+        inverse on-click="onConfirmNextButtonPressed_"></oobe-text-button>
+  </div>
+</oobe-modal-dialog>
+
+<oobe-loading-dialog id="osInstallDialogInProgress"
+    role="dialog" for-step="in-progress"
+    subtitle-key="osInstallDialogInProgressSubtitle"
+    title-key="osInstallDialogInProgressTitle"
+    aria-label$="[[i18nDynamic(locale, 'osInstallDialogInProgressTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+</oobe-loading-dialog>
+
+<oobe-adaptive-dialog id="osInstallDialogError"
+    role="dialog" for-step="failed,no-destination-device-found"
+    aria-label$="[[i18nDynamic(locale, 'osInstallDialogErrorTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+  <h1 slot="title">[[i18nDynamic(locale, 'osInstallDialogErrorTitle')]]</h1>
+  <div slot="subtitle" for-step="no-destination-device-found"
+      id="osInstallDialogErrorNoDestSubtitleId">
+    [[i18nDynamic(locale, 'osInstallDialogErrorNoDestSubtitle')]]
+  </div>
+  <div slot="content" for-step="no-destination-device-found"
+      class="flex layout vertical center-justified">
+    <span inner-h-t-m-l="[[getErrorNoDestContentHtml_(locale)]]"></span>
+    <a id="noDestLogsLink" is="action-link" class="oobe-local-link"
+        on-click="onServiceLogsLinkClicked_">
+      [[i18nDynamic(locale, 'osInstallDialogErrorViewLogs')]]
+    </a>
+  </div>
+  <div slot="subtitle" for-step="failed">
+    <span inner-h-t-m-l="[[getErrorFailedSubtitleHtml_(locale)]]"></span>
+    <a id="serviceLogsLink" is="action-link" class="oobe-local-link"
+        on-click="onServiceLogsLinkClicked_">
+      [[i18nDynamic(locale, 'osInstallDialogErrorViewLogs')]]
+    </a>
+  </div>
+  <div slot="content" for-step="failed"
+      class="flex layout vertical center center-justified">
+    <img src="images/error.svg"
+        class="oobe-illustration" aria-hidden="true">
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button
+        text-key="osInstallDialogSendFeedback"
+        id="osInstallErrorSendFeedbackButton"
+        on-click="onErrorSendFeedbackButtonPressed_"></oobe-text-button>
+    <oobe-text-button
+        text-key="osInstallDialogShutdownButton" class="focus-on-show"
+        id="osInstallErrorShutdownButton"
+        inverse on-click="onErrorShutdownButtonPressed_"></oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="osInstallDialogSuccess"
+    role="dialog" for-step="success"
+    aria-label$="[[i18nDynamic(locale, 'osInstallDialogSuccessTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">[[i18nDynamic(locale, 'osInstallDialogSuccessTitle')]]
+  </h1>
+  <div slot="subtitle" id="osInstallDialogSuccessSubtitile">
+      [[osInstallDialogSuccessSubtitile_]]</div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="images/os-install-success.svg"
+        class="oobe-illustration" aria-hidden="true">
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-modal-dialog id="serviceLogsDialog" ignore-popstate
+    on-close="focusLogsLink_" on-cancel="focusLogsLink_">
+  <div slot="title">
+    [[i18nDynamic(locale, 'osInstallDialogServiceLogsTitle')]]
+  </div>
+  <webview slot="content" id="serviceLogsFrame" role="document"
+      allowTransparency class="focus-on-show flex oobe-tos-webview">
+  </webview>
+  <oobe-text-button id="closeServiceLogsDialog" slot="buttons" inverse
+      on-click="hideServiceLogsDialog_" text-key="oobeModalDialogClose">
+  </oobe-text-button>
+</oobe-modal-dialog>

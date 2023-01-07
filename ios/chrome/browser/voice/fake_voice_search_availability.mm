@@ -1,13 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/voice/fake_voice_search_availability.h"
 
-#include "base/memory/ptr_util.h"
-#include "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/voice/test_voice_search_provider.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "base/memory/ptr_util.h"
+#import "ios/chrome/test/providers/voice_search/test_voice_search.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,12 +27,7 @@ void FakeVoiceSearchAvailability::SetVoiceOverEnabled(bool enabled) {
 }
 
 void FakeVoiceSearchAvailability::SetVoiceProviderEnabled(bool enabled) {
-  ios::TestChromeBrowserProvider* browser_provider =
-      ios::TestChromeBrowserProvider::GetTestProvider();
-  TestVoiceSearchProvider* voice_provider =
-      static_cast<TestVoiceSearchProvider*>(
-          browser_provider->GetVoiceSearchProvider());
-  voice_provider->set_voice_search_enabled(enabled);
+  ios::provider::test::SetVoiceSearchEnabled(enabled);
 }
 
 bool FakeVoiceSearchAvailability::IsVoiceOverEnabled() const {

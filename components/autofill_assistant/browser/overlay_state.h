@@ -1,18 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_OVERLAY_STATE_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_OVERLAY_STATE_H_
 
-#include <string>
-
 #include "base/callback.h"
 
 namespace autofill_assistant {
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
-// org.chromium.chrome.browser.autofill_assistant.overlay)
+// org.chromium.components.autofill_assistant.overlay)
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AssistantOverlayState
 enum OverlayState {
   // The overlay is completely hidden.

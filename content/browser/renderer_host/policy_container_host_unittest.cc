@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,6 +27,11 @@ struct SameSizeAsPolicyContainerPolicies {
   bool is_web_secure_context;
   std::vector<network::mojom::ContentSecurityPolicyPtr>
       content_security_policies;
+  network::CrossOriginOpenerPolicy cross_origin_opener_policy;
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+  network::mojom::WebSandboxFlags sandbox_flags;
+  bool is_anonymous;
+  bool can_navigate_top_without_user_gesture;
 };
 
 }  // namespace
@@ -47,13 +53,31 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
   auto csp = network::mojom::ContentSecurityPolicy::New();
   csp->treat_as_public_address = true;
   csps.push_back(std::move(csp));
+  network::CrossOriginOpenerPolicy coop;
+  network::mojom::WebSandboxFlags sandbox_flags =
+      network::mojom::WebSandboxFlags::kOrientationLock |
+      network::mojom::WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts;
+  coop.value = network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin;
+  coop.report_only_value =
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
+  coop.reporting_endpoint = "endpoint 1";
+  coop.report_only_reporting_endpoint = "endpoint 2";
+  network::CrossOriginEmbedderPolicy coep;
+  coep.value = network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+  coep.report_only_value =
+      network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
+  coep.reporting_endpoint = "endpoint 1";
+  coep.report_only_reporting_endpoint = "endpoint 2";
 
-  auto policies = std::make_unique<PolicyContainerPolicies>(
+  PolicyContainerPolicies policies(
       network::mojom::ReferrerPolicy::kAlways,
       network::mojom::IPAddressSpace::kUnknown,
-      /*is_web_secure_context=*/true, std::move(csps));
+      /*is_web_secure_context=*/true, std::move(csps), coop, coep,
+      sandbox_flags,
+      /*is_anonymous=*/true,
+      /*can_navigate_top_without_user_gesture=*/true);
 
-  EXPECT_THAT(policies->Clone(), Pointee(Eq(ByRef(*policies))));
+  EXPECT_THAT(policies.Clone(), Eq(ByRef(policies)));
 }
 
 TEST(PolicyContainerHostTest, ReferrerPolicy) {

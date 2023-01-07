@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observation.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
@@ -61,20 +62,19 @@ void ElementIntersectionObserverData::StopTrackingWithController(
 bool ElementIntersectionObserverData::ComputeIntersectionsForTarget(
     unsigned flags) {
   bool needs_occlusion_tracking = false;
+  absl::optional<base::TimeTicks> monotonic_time;
 
   // Intersections need to be computed in a consistent order.
   HeapVector<Member<IntersectionObservation>> observations_to_process;
-
   for (auto& entry : observations_) {
     needs_occlusion_tracking |= entry.key->NeedsOcclusionTracking();
     observations_to_process.push_back(entry.value);
   }
-
   std::sort(observations_to_process.begin(), observations_to_process.end(),
             recordreplay::CompareMemberByPointerId<Member<IntersectionObservation>>());
 
   for (auto& observation : observations_to_process) {
-    observation->ComputeIntersection(flags);
+    observation->ComputeIntersection(flags, monotonic_time);
   }
   return needs_occlusion_tracking;
 }

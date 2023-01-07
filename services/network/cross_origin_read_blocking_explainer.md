@@ -527,7 +527,7 @@ Examples:
     (scroll down to CVE-2010-0051) and
     [Opera](http://www.opera.com/support/kb/view/943/)).
     This behavior is covered by
-    [the HTML spec](https://html.spec.whatwg.org/#link-type-stylesheet)
+    [the HTML spec](https://html.spec.whatwg.org/C/#link-type-stylesheet)
     which 1) asks to only assume `text/css` Content-Type
     if the document embedding the stylesheet has been set to quirks mode and has
     the same origin and 2) only asks to run the steps for creating a CSS style
@@ -574,7 +574,7 @@ CORB has no impact on the following scenarios:
     same-origin policy to the responses (e.g. CORB should only block responses
     that would result in cross-origin XHR errors because of lack of CORS).
 
-* **[Prefetch](https://html.spec.whatwg.org/#link-type-prefetch)**
+* **[Prefetch](https://html.spec.whatwg.org/C/#link-type-prefetch)**
   * CORB blocks response body from reaching a cross-origin renderer, but
     CORB doesn't prevent the response body from being cached by the browser
     process (and subsequently delivered into another, same-origin renderer
@@ -684,7 +684,7 @@ In the future CORB may be extended to protect additional resources as follows:
   all MIME types, except MIME types that are allowlisted as usable in `<img>`,
   `<audio>`, `<video>`, `<script>` and other similar elements that can be
   embedded cross-origin:
-    * [JavaScript MIME type](https://html.spec.whatwg.org/#javascript-mime-type)
+    * [JavaScript MIME type](https://html.spec.whatwg.org/C/#javascript-mime-type)
       like `text/javascript`, `application/javascript`, or `text/jscript`
     * `text/css`
     * [image types](https://mimesniff.spec.whatwg.org/#image-type) like types

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,17 @@
 
 #include <stdint.h>
 
+#include <deque>
 #include <map>
 #include <memory>
+#include <queue>
+#include <set>
+#include <string>
+#include <vector>
 
 #include "base/containers/queue.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -22,6 +27,10 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/h264_parser.h"
 #include "media/video/h264_poc.h"
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "media/video/h265_parser.h"
+#include "media/video/h265_poc.h"
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/video/video_decode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
@@ -39,13 +48,16 @@ class VP9SuperFrameBitstreamFilter;
 MEDIA_GPU_EXPORT bool InitializeVideoToolbox();
 
 // VideoToolbox.framework implementation of the VideoDecodeAccelerator
-// interface for Mac OS X (currently limited to 10.9+).
+// interface for macOS.
 class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
                                  public base::trace_event::MemoryDumpProvider {
  public:
   VTVideoDecodeAccelerator(const GpuVideoDecodeGLClient& gl_client_,
                            const gpu::GpuDriverBugWorkarounds& workarounds,
                            MediaLog* media_log);
+
+  VTVideoDecodeAccelerator(const VTVideoDecodeAccelerator&) = delete;
+  VTVideoDecodeAccelerator& operator=(const VTVideoDecodeAccelerator&) = delete;
 
   ~VTVideoDecodeAccelerator() override;
 
@@ -142,14 +154,18 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
     // images.
     PictureInfo();
     PictureInfo(uint32_t client_texture_id, uint32_t service_texture_id);
+
+    PictureInfo(const PictureInfo&) = delete;
+    PictureInfo& operator=(const PictureInfo&) = delete;
+
     ~PictureInfo();
 
-    // If true, then |scoped_shared_image| is used and |client_texture_id| and
+    // If true, then |scoped_shared_images| is used and |client_texture_id| and
     // |service_texture_id| are not used.
     const bool uses_shared_images;
 
     // Information about the currently bound image, for OnMemoryDump().
-    scoped_refptr<gl::GLImageIOSurface> gl_image;
+    std::vector<scoped_refptr<gl::GLImageIOSurface>> gl_images;
     int32_t bitstream_id = 0;
 
     // Texture IDs for the image buffer.
@@ -157,10 +173,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
     const uint32_t service_texture_id = 0;
 
     // The shared image holder that will be passed to the client.
-    scoped_refptr<Picture::ScopedSharedImage> scoped_shared_image;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(PictureInfo);
+    std::vector<scoped_refptr<Picture::ScopedSharedImage>> scoped_shared_images;
   };
 
   struct FrameOrder {
@@ -172,8 +185,8 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // Methods for interacting with VideoToolbox. Run on |decoder_thread_|.
   //
 
-  // Set up VideoToolbox using the current SPS and PPS. Returns true or calls
-  // NotifyError() before returning false.
+  // Set up VideoToolbox using the current VPS (if codec is HEVC), SPS and PPS.
+  // Returns true or calls NotifyError() before returning false.
   bool ConfigureDecoder();
 
   // Wait for VideoToolbox to output all pending frames. Returns true or calls
@@ -181,8 +194,11 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   bool FinishDelayedFrames();
 
   // |frame| is owned by |pending_frames_|.
-  void DecodeTask(scoped_refptr<DecoderBuffer> buffer, Frame* frame);
+  void DecodeTaskH264(scoped_refptr<DecoderBuffer> buffer, Frame* frame);
   void DecodeTaskVp9(scoped_refptr<DecoderBuffer> buffer, Frame* frame);
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  void DecodeTaskHEVC(scoped_refptr<DecoderBuffer> buffer, Frame* frame);
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   void DecodeDone(Frame* frame);
 
   //
@@ -220,7 +236,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   const gpu::GpuDriverBugWorkarounds workarounds_;
   std::unique_ptr<MediaLog> media_log_;
 
-  VideoDecodeAccelerator::Client* client_ = nullptr;
+  raw_ptr<VideoDecodeAccelerator::Client> client_ = nullptr;
   State state_ = STATE_DECODING;
 
   // Queue of pending flush tasks. This is used to drop frames when a reset
@@ -246,9 +262,15 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // Size of assigned picture buffers.
   gfx::Size picture_size_;
 
+  // Format of the assigned picture buffers.
+  VideoPixelFormat picture_format_ = PIXEL_FORMAT_UNKNOWN;
+
+  // Corresponding GpuMemoryBuffer format.
+  gfx::BufferFormat buffer_format_ = gfx::BufferFormat::YUV_420_BIPLANAR;
+
   // Frames that have not yet been decoded, keyed by bitstream ID; maintains
   // ownership of Frame objects while they flow through VideoToolbox.
-  std::map<int32_t, std::unique_ptr<Frame>> pending_frames_;
+  base::flat_map<int32_t, std::unique_ptr<Frame>> pending_frames_;
 
   // Set of assigned bitstream IDs, so that Destroy() can release them all.
   std::set<int32_t> assigned_bitstream_ids_;
@@ -259,7 +281,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   std::set<int32_t> assigned_picture_ids_;
 
   // Texture IDs and image buffers of assigned pictures.
-  std::map<int32_t, std::unique_ptr<PictureInfo>> picture_info_map_;
+  base::flat_map<int32_t, std::unique_ptr<PictureInfo>> picture_info_map_;
 
   // Pictures ready to be rendered to.
   std::vector<int32_t> available_picture_ids_;
@@ -270,12 +292,12 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   VTDecompressionOutputCallbackRecord callback_;
   base::ScopedCFTypeRef<CMFormatDescriptionRef> format_;
   base::ScopedCFTypeRef<VTDecompressionSessionRef> session_;
-  H264Parser parser_;
+  H264Parser h264_parser_;
 
   // SPSs and PPSs seen in the bitstream.
-  std::map<int, std::vector<uint8_t>> seen_sps_;
-  std::map<int, std::vector<uint8_t>> seen_spsext_;
-  std::map<int, std::vector<uint8_t>> seen_pps_;
+  base::flat_map<int, std::vector<uint8_t>> seen_sps_;
+  base::flat_map<int, std::vector<uint8_t>> seen_spsext_;
+  base::flat_map<int, std::vector<uint8_t>> seen_pps_;
 
   // SPS and PPS most recently activated by an IDR.
   // TODO(sandersd): Enable configuring with multiple PPSs.
@@ -288,6 +310,25 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   std::vector<uint8_t> configured_spsext_;
   std::vector<uint8_t> configured_pps_;
 
+  H264POC h264_poc_;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  H265Parser hevc_parser_;
+
+  // VPSs seen in the bitstream.
+  base::flat_map<int, std::vector<uint8_t>> seen_vps_;
+  // VPS most recently activated by an IDR.
+  std::vector<uint8_t> active_vps_;
+
+  // VPSs the decoder is currently confgured with.
+  base::flat_map<int, std::vector<uint8_t>> configured_vpss_;
+  // SPSs the decoder is currently confgured with.
+  base::flat_map<int, std::vector<uint8_t>> configured_spss_;
+  // PPSs the decoder is currently confgured with.
+  base::flat_map<int, std::vector<uint8_t>> configured_ppss_;
+
+  H265POC hevc_poc_;
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
   Config config_;
   VideoCodec codec_;
 
@@ -296,7 +337,14 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
 
   bool waiting_for_idr_ = true;
   bool missing_idr_logged_ = false;
-  H264POC poc_;
+
+  // currently only HEVC is supported, VideoToolbox doesn't
+  // support VP9 with alpha for now.
+  bool has_alpha_ = false;
+
+  // Used to accumulate the output picture count as a workaround to solve
+  // the VT CRA/RASL bug
+  uint64_t output_count_for_cra_rasl_workaround_ = 0;
 
   // Id number for this instance for memory dumps.
   int memory_dump_id_ = 0;
@@ -317,8 +365,6 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // other destructors run.
   base::WeakPtrFactory<VTVideoDecodeAccelerator> decoder_weak_this_factory_;
   base::WeakPtrFactory<VTVideoDecodeAccelerator> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VTVideoDecodeAccelerator);
 };
 
 }  // namespace media

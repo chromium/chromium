@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,9 +76,11 @@ EphemeralRange CalculateHotModeCheckingRange(const Element& editable,
     return paragraph_range;
 
   // Otherwise, check a chunk of text centered at |position|.
-  TextIteratorBehavior behavior = TextIteratorBehavior::Builder()
-                                      .SetEmitsObjectReplacementCharacter(true)
-                                      .Build();
+  TextIteratorBehavior behavior =
+      TextIteratorBehavior::Builder()
+          .SetEmitsObjectReplacementCharacter(true)
+          .SetEmitsPunctuationForReplacedElements(true)
+          .Build();
   BackwardsCharacterIterator backward_iterator(
       EphemeralRange(full_range.StartPosition(), position), behavior);
   if (!backward_iterator.AtEnd())

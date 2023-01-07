@@ -1,0 +1,21 @@
+<!-- Copyright 2019 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<!DOCTYPE html>
+<html dir="$i18n{textdirection}" lang="$i18n{appLocale}">
+<meta charset="utf-8">
+<style>
+  body {
+    margin: 0;
+  }
+</style>
+<script src="/receiver.js" type="module"></script>
+<!--
+  Populates `window.loadTimeData.data`. Needs to be after
+  "receiver.js" which loads "sandboxed_load_time_data.js". But
+  module scripts do not block parsing, so these non-module scripts must be
+  loaded on the defer queue.
+-->
+<script src="/strings.js" defer></script>
+<script src="/app_bin.js" defer></script>
+</html>

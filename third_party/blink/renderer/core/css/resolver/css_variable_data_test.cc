@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ TEST(CSSVariableDataTest, Serialize) {
 }
 
 TEST(CSSVariableDataTest, SerializeSpecialCases) {
-  const String replacement_character_string = String(&kReplacementCharacter, 1);
+  const String replacement_character_string(&kReplacementCharacter, 1u);
   const std::pair<String, String> test_cases[] = {
       {"value\\", "value" + replacement_character_string},
       {"\"value\\", "\"value\""},

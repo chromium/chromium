@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,9 @@ TEST(PrintMediaL10N, LocalizeSomeCommonNames) {
     const char* vendor_id;
     const char* expected_localized_name;
   } kTestCases[] = {
-      {"na_c_17x22in", "Engineering-C"},
-      {"iso_a0_841x1189mm", "A0"},
-      {"iso_a1_594x841mm", "A1"},
-      {"iso_a4_210x297mm", "A4"},
+      {"na_c_17x22in", "Engineering-C"}, {"iso_a0_841x1189mm", "A0"},
+      {"iso_a1_594x841mm", "A1"},        {"iso_a4_210x297mm", "A4"},
+      {"oe_photo-l_3.5x5in", "3.5x5"},
   };
 
   for (const auto& test_case : kTestCases) {

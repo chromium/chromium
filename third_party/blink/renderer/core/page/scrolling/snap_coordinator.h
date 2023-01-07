@@ -1,16 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_SNAP_COORDINATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_SNAP_COORDINATOR_H_
 
-#include "base/macros.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -35,8 +35,10 @@ class CORE_EXPORT SnapCoordinator final
     : public GarbageCollected<SnapCoordinator> {
  public:
   explicit SnapCoordinator();
+  SnapCoordinator(const SnapCoordinator&) = delete;
+  SnapCoordinator& operator=(const SnapCoordinator&) = delete;
   ~SnapCoordinator();
-  void Trace(Visitor* visitor) const {}
+  void Trace(Visitor* visitor) const;
 
   void AddSnapContainer(LayoutBox& snap_container);
   void RemoveSnapContainer(LayoutBox& snap_container);
@@ -76,14 +78,12 @@ class CORE_EXPORT SnapCoordinator final
  private:
   friend class SnapCoordinatorTest;
 
-  HashSet<LayoutBox*> snap_containers_;
+  HeapHashSet<Member<LayoutBox>> snap_containers_;
   bool any_snap_container_data_needs_update_ = true;
 
   // Used for reporting to UMA when snapping on the initial layout affects the
   // initial scroll position.
   bool did_first_resnap_all_containers_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapCoordinator);
 };
 
 }  // namespace blink

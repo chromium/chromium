@@ -1,6 +1,8 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "media/formats/mp4/avc.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -8,18 +10,16 @@
 
 #include <ostream>
 
-#include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/stream_parser_buffer.h"
-#include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/bitstream_converter.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/nalu_test_helper.h"
 #include "media/video/h264_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace mp4 {
@@ -62,12 +62,14 @@ static std::string NALUTypeToString(int type) {
       return "EOStr";
     case H264NALU::kFiller:
       return "FILL";
-    case H264NALU::kReserved14:
-      return "R14";
+    case H264NALU::kPrefix:
+      return "Prefix";
+    case H264NALU::kSubsetSPS:
+      return "SubsetSPS";
+    case H264NALU::kDPS:
+      return "DPS";
 
     case H264NALU::kUnspecified:
-    case H264NALU::kReserved15:
-    case H264NALU::kReserved16:
     case H264NALU::kReserved17:
     case H264NALU::kReserved18:
     case H264NALU::kCodedSliceAux:
@@ -271,7 +273,7 @@ TEST_F(AVCConversionTest, ConvertConfigToAnnexB) {
 // Verify that we can round trip string -> Annex B -> string.
 TEST_F(AVCConversionTest, StringConversionFunctions) {
   std::string str =
-      "AUD SPS SPSExt SPS PPS SEI SEI R14 I P FILL EOSeq EOStr";
+      "AUD SPS SPSExt SPS PPS SEI SEI Prefix I P FILL EOSeq EOStr";
   std::vector<uint8_t> buf;
   std::vector<SubsampleEntry> subsamples;
   AvcStringToAnnexB(str, &buf, &subsamples);
@@ -302,9 +304,9 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
       {"P P P P", false},
       {"AUD SPS PPS P", false},
       {"SEI SEI I", true},
-      {"SEI SEI R14 I", true},
+      {"SEI SEI Prefix I", true},
       {"SPS SPSExt SPS PPS I P", true},
-      {"R14 SEI I", true},
+      {"Prefix SEI I", true},
       {"AUD,I", true},
       {"AUD,SEI I", true},
       {"AUD,SEI,SPS,PPS,I", true},
@@ -319,7 +321,7 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
       {"SDC I", false},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
     AvcStringToAnnexB(test_cases[i].case_string, &buf, NULL);
@@ -337,25 +339,25 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
 TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
   struct {
     const char* case_string;
-    const base::Optional<bool> is_keyframe;
+    const absl::optional<bool> is_keyframe;
   } test_cases[] = {
       // For these cases, lack of conformance is determined before detecting any
       // IDR or non-IDR slices, so the non-conformant frames' keyframe analysis
-      // reports base::nullopt (which means undetermined analysis result).
-      {"AUD", base::nullopt},            // No VCL present.
-      {"AUD,SEI", base::nullopt},        // No VCL present.
-      {"SPS PPS", base::nullopt},        // No VCL present.
-      {"SPS PPS AUD I", base::nullopt},  // Parameter sets must come after AUD.
-      {"SPSExt SPS P", base::nullopt},   // SPS must come before SPSExt.
-      {"SPS PPS SPSExt P", base::nullopt},  // SPSExt must follow an SPS.
-      {"EOSeq", base::nullopt},             // EOSeq must come after a VCL.
-      {"EOStr", base::nullopt},             // EOStr must come after a VCL.
+      // reports absl::nullopt (which means undetermined analysis result).
+      {"AUD", absl::nullopt},            // No VCL present.
+      {"AUD,SEI", absl::nullopt},        // No VCL present.
+      {"SPS PPS", absl::nullopt},        // No VCL present.
+      {"SPS PPS AUD I", absl::nullopt},  // Parameter sets must come after AUD.
+      {"SPSExt SPS P", absl::nullopt},   // SPS must come before SPSExt.
+      {"SPS PPS SPSExt P", absl::nullopt},  // SPSExt must follow an SPS.
+      {"EOSeq", absl::nullopt},             // EOSeq must come after a VCL.
+      {"EOStr", absl::nullopt},             // EOStr must come after a VCL.
 
       // For these cases, IDR slice is first VCL and is detected before
       // conformance failure, so the non-conformant frame is reported as a
       // keyframe.
       {"I EOStr EOSeq", true},  // EOSeq must come before EOStr.
-      {"I R14", true},          // Reserved14-18 must come before first VCL.
+      {"I Prefix", true},       // Reserved14-18 must come before first VCL.
       {"I SEI", true},          // SEI must come before first VCL.
 
       // For this case, P slice is first VCL and is detected before conformance
@@ -367,7 +369,7 @@ TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
   BitstreamConverter::AnalysisResult expected;
   expected.is_conformant = false;
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
     AvcStringToAnnexB(test_cases[i].case_string, &buf, NULL);
@@ -415,7 +417,7 @@ TEST_F(AVCConversionTest, InsertParamSetsAnnexB) {
   expected.is_conformant = true;
   expected.is_keyframe = true;
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
 

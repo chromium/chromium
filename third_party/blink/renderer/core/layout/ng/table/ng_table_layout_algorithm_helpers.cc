@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,14 @@ namespace {
 
 // Implements spec distribution algorithm:
 // https://www.w3.org/TR/css-tables-3/#width-distribution-algorithm
+// |treat_target_size_as_constrained| constrained target can grow fixed-width
+// columns. unconstrained target cannot grow fixed-width columns beyond
+// specified size.
 Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     LayoutUnit target_inline_size,
-    LayoutUnit inline_border_spacing,
     const NGTableTypes::Column* start_column,
-    const NGTableTypes::Column* end_column) {
+    const NGTableTypes::Column* end_column,
+    const bool treat_target_size_as_constrained) {
   unsigned all_columns_count = 0;
   unsigned percent_columns_count = 0;
   unsigned fixed_columns_count = 0;
@@ -38,9 +41,11 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     DCHECK(column->min_inline_size);
     DCHECK(column->max_inline_size);
 
-    if (column->is_mergeable) {
-      ;  // Mergeable columns are ignored.
-    } else if (column->percent) {
+    // Mergeable columns are ignored.
+    if (column->is_mergeable)
+      continue;
+
+    if (column->percent) {
       percent_columns_count++;
       total_percent += *column->percent;
       LayoutUnit percent_inline_size =
@@ -88,9 +93,10 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       break;
     }
   }
+
   switch (starting_guess) {
     case kMinGuess: {
-      // All columns are min inline size.
+      // All columns are their min inline-size.
       LayoutUnit* computed_size = computed_sizes.begin();
       for (const NGTableTypes::Column* column = start_column;
            column != end_column; ++column, ++computed_size) {
@@ -100,12 +106,13 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       }
     } break;
     case kPercentageGuess: {
-      // Percent columns grow, auto/fixed get min inline size.
-      LayoutUnit percent_inline_size_increases =
+      // Percent columns grow in proportion to difference between their
+      // percentage size and their minimum size.
+      LayoutUnit percent_inline_size_increase =
           guess_size_total_increases[kPercentageGuess];
       LayoutUnit distributable_inline_size =
           target_inline_size - guess_sizes[kMinGuess];
-      LayoutUnit rounding_error_inline_size = distributable_inline_size;
+      LayoutUnit remaining_deficit = distributable_inline_size;
       LayoutUnit* computed_size = computed_sizes.begin();
       LayoutUnit* last_computed_size = nullptr;
       for (const NGTableTypes::Column* column = start_column;
@@ -119,33 +126,31 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
           LayoutUnit column_inline_size_increase =
               percent_inline_size - *column->min_inline_size;
           LayoutUnit delta;
-          if (percent_inline_size_increases != LayoutUnit()) {
-            delta = LayoutUnit(distributable_inline_size *
-                               column_inline_size_increase.ToFloat() /
-                               percent_inline_size_increases);
+          if (percent_inline_size_increase > LayoutUnit()) {
+            delta = distributable_inline_size.MulDiv(
+                column_inline_size_increase, percent_inline_size_increase);
           } else {
-            delta = LayoutUnit(distributable_inline_size.ToFloat() /
-                               percent_columns_count);
+            delta = distributable_inline_size / percent_columns_count;
           }
-          rounding_error_inline_size -= delta;
+          remaining_deficit -= delta;
           *computed_size = *column->min_inline_size + delta;
         } else {
-          // Auto/Fixed columns get min inline size.
+          // Auto/Fixed columns get their min inline-size.
           *computed_size = *column->min_inline_size;
         }
       }
-      if (rounding_error_inline_size != LayoutUnit()) {
+      if (remaining_deficit != LayoutUnit()) {
         DCHECK(last_computed_size);
-        *last_computed_size += rounding_error_inline_size;
+        *last_computed_size += remaining_deficit;
       }
     } break;
     case kSpecifiedGuess: {
-      // Fixed columns grow, auto gets min, percent gets %max
+      // Fixed columns grow, auto gets min, percent gets %max.
       LayoutUnit fixed_inline_size_increase =
           guess_size_total_increases[kSpecifiedGuess];
       LayoutUnit distributable_inline_size =
           target_inline_size - guess_sizes[kPercentageGuess];
-      LayoutUnit rounding_error_inline_size = distributable_inline_size;
+      LayoutUnit remaining_deficit = distributable_inline_size;
       LayoutUnit* last_computed_size = nullptr;
       LayoutUnit* computed_size = computed_sizes.begin();
       for (const NGTableTypes::Column* column = start_column;
@@ -159,40 +164,37 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
           LayoutUnit column_inline_size_increase =
               *column->max_inline_size - *column->min_inline_size;
           LayoutUnit delta;
-          if (fixed_inline_size_increase != LayoutUnit()) {
-            delta = LayoutUnit(distributable_inline_size *
-                               column_inline_size_increase.ToFloat() /
-                               fixed_inline_size_increase);
+          if (fixed_inline_size_increase > LayoutUnit()) {
+            delta = distributable_inline_size.MulDiv(
+                column_inline_size_increase, fixed_inline_size_increase);
           } else {
-            delta = LayoutUnit(distributable_inline_size.ToFloat() /
-                               fixed_columns_count);
+            delta = distributable_inline_size / fixed_columns_count;
           }
-          rounding_error_inline_size -= delta;
+          remaining_deficit -= delta;
           *computed_size = *column->min_inline_size + delta;
         } else {
           *computed_size = *column->min_inline_size;
         }
       }
-      if (rounding_error_inline_size != LayoutUnit()) {
+      if (remaining_deficit != LayoutUnit()) {
         DCHECK(last_computed_size);
-        *last_computed_size += rounding_error_inline_size;
+        *last_computed_size += remaining_deficit;
       }
     } break;
     case kMaxGuess: {
-      // Auto columns grow, fixed gets max, percent gets %max
+      // Auto columns grow, fixed gets max, percent gets %max.
       LayoutUnit auto_inline_size_increase =
           guess_size_total_increases[kMaxGuess];
       LayoutUnit distributable_inline_size =
           target_inline_size - guess_sizes[kSpecifiedGuess];
-      // When widths match exactly, this usually means that table width
-      // is auto, and that columns should be wide enough to accommodate
-      // content without wrapping.
-      // Instead of using floating-point math to compute final column
-      // width, we use max_inline_size.
-      // Using floating-point math can cause rounding errors, and uninintended
-      // line wrap.
+      // When the inline-sizes match exactly, this usually means that table
+      // inline-size is auto, and that columns should be wide enough to
+      // accommodate content without wrapping.
+      // Instead of using the distributing math to compute final column
+      // inline-size, we use the max inline-size. Using distributing math can
+      // cause rounding errors, and unintended line wrap.
       bool is_exact_match = target_inline_size == guess_sizes[kMaxGuess];
-      LayoutUnit rounding_error_inline_size =
+      LayoutUnit remaining_deficit =
           is_exact_match ? LayoutUnit() : distributable_inline_size;
       LayoutUnit* last_computed_size = nullptr;
       LayoutUnit* computed_size = computed_sizes.begin();
@@ -209,29 +211,27 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
           LayoutUnit column_inline_size_increase =
               *column->max_inline_size - *column->min_inline_size;
           LayoutUnit delta;
-          if (auto_inline_size_increase != LayoutUnit()) {
-            delta = LayoutUnit(distributable_inline_size *
-                               column_inline_size_increase.ToFloat() /
-                               auto_inline_size_increase);
+          if (auto_inline_size_increase > LayoutUnit()) {
+            delta = distributable_inline_size.MulDiv(
+                column_inline_size_increase, auto_inline_size_increase);
           } else {
-            delta = LayoutUnit(distributable_inline_size.ToFloat() /
-                               auto_columns_count);
+            delta = distributable_inline_size / auto_columns_count;
           }
-          rounding_error_inline_size -= delta;
+          remaining_deficit -= delta;
           *computed_size = *column->min_inline_size + delta;
         }
       }
-      if (rounding_error_inline_size != LayoutUnit()) {
+      if (remaining_deficit != LayoutUnit()) {
         DCHECK(last_computed_size);
-        *last_computed_size += rounding_error_inline_size;
+        *last_computed_size += remaining_deficit;
       }
     } break;
     case kAboveMax: {
       LayoutUnit distributable_inline_size =
           target_inline_size - guess_sizes[kMaxGuess];
       if (auto_columns_count > 0) {
-        // Grow auto columns if available
-        LayoutUnit rounding_error_inline_size = distributable_inline_size;
+        // Grow auto columns if available.
+        LayoutUnit remaining_deficit = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
         LayoutUnit* computed_size = computed_sizes.begin();
         for (const NGTableTypes::Column* column = start_column;
@@ -247,23 +247,22 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
             last_computed_size = computed_size;
             LayoutUnit delta;
             if (total_auto_max_inline_size > LayoutUnit()) {
-              delta = LayoutUnit(distributable_inline_size *
-                                 (*column->max_inline_size).ToFloat() /
-                                 total_auto_max_inline_size);
+              delta = distributable_inline_size.MulDiv(
+                  *column->max_inline_size, total_auto_max_inline_size);
             } else {
               delta = distributable_inline_size / auto_columns_count;
             }
-            rounding_error_inline_size -= delta;
+            remaining_deficit -= delta;
             *computed_size = *column->max_inline_size + delta;
           }
         }
-        if (rounding_error_inline_size != LayoutUnit()) {
+        if (remaining_deficit != LayoutUnit()) {
           DCHECK(last_computed_size);
-          *last_computed_size += rounding_error_inline_size;
+          *last_computed_size += remaining_deficit;
         }
-      } else if (fixed_columns_count > 0) {
+      } else if (fixed_columns_count > 0 && treat_target_size_as_constrained) {
         // Grow fixed columns if available.
-        LayoutUnit rounding_error_inline_size = distributable_inline_size;
+        LayoutUnit remaining_deficit = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
         LayoutUnit* computed_size = computed_sizes.begin();
         for (const NGTableTypes::Column* column = start_column;
@@ -277,44 +276,47 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
             last_computed_size = computed_size;
             LayoutUnit delta;
             if (total_fixed_max_inline_size > LayoutUnit()) {
-              delta = LayoutUnit(distributable_inline_size *
-                                 (*column->max_inline_size).ToFloat() /
-                                 total_fixed_max_inline_size);
+              delta = distributable_inline_size.MulDiv(
+                  *column->max_inline_size, total_fixed_max_inline_size);
             } else {
               delta = distributable_inline_size / fixed_columns_count;
             }
-            rounding_error_inline_size -= delta;
+            remaining_deficit -= delta;
             *computed_size = *column->max_inline_size + delta;
           } else {
-            DCHECK(false);
+            NOTREACHED();
           }
         }
-        if (rounding_error_inline_size != LayoutUnit()) {
+        if (remaining_deficit != LayoutUnit()) {
           DCHECK(last_computed_size);
-          *last_computed_size += rounding_error_inline_size;
+          *last_computed_size += remaining_deficit;
         }
       } else if (percent_columns_count > 0) {
-        // All remaining columns are percent. Grow them.
-        LayoutUnit rounding_error_inline_size = target_inline_size;
+        // All remaining columns are percent.
+        // They grow to max(col minimum, %ge size) + additional size
+        // proportional to column percent.
+        LayoutUnit remaining_deficit = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
         LayoutUnit* computed_size = computed_sizes.begin();
         for (const NGTableTypes::Column* column = start_column;
              column != end_column; ++column, ++computed_size) {
-          if (column->is_mergeable)
+          if (column->is_mergeable || !column->percent)
             continue;
-          DCHECK(column->percent);
           last_computed_size = computed_size;
-          if (total_percent > 0.0f) {
-            *computed_size = LayoutUnit(*column->percent / total_percent *
-                                        target_inline_size);
+          LayoutUnit percent_inline_size =
+              column->ResolvePercentInlineSize(target_inline_size);
+          LayoutUnit delta;
+          if (total_percent != 0.0f) {
+            delta = LayoutUnit(distributable_inline_size * *column->percent /
+                               total_percent);
           } else {
-            *computed_size = distributable_inline_size / percent_columns_count;
+            delta = distributable_inline_size / percent_columns_count;
           }
-          rounding_error_inline_size -= *computed_size;
+          remaining_deficit -= delta;
+          *computed_size = percent_inline_size + delta;
         }
-        if (rounding_error_inline_size != LayoutUnit()) {
-          DCHECK(last_computed_size);
-          *last_computed_size += rounding_error_inline_size;
+        if (remaining_deficit != LayoutUnit() && last_computed_size) {
+          *last_computed_size += remaining_deficit;
         }
       }
     }
@@ -324,7 +326,6 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
 
 Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
     LayoutUnit target_inline_size,
-    LayoutUnit inline_border_spacing,
     const NGTableTypes::Columns& column_constraints) {
   unsigned all_columns_count = 0;
   unsigned percent_columns_count = 0;
@@ -342,7 +343,6 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
     return column.is_constrained && column.max_inline_size == LayoutUnit();
   };
 
-  float total_percent = 0.0f;
   LayoutUnit total_percent_inline_size;
   LayoutUnit total_auto_max_inline_size;
   LayoutUnit total_fixed_inline_size;
@@ -353,7 +353,6 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
     all_columns_count++;
     if (column.percent) {
       percent_columns_count++;
-      total_percent += *column.percent;
       total_percent_inline_size +=
           column.ResolvePercentInlineSize(target_inline_size);
     } else if (TreatAsFixed(column)) {
@@ -512,22 +511,20 @@ void DistributeColspanCellToColumnsFixed(
        total_inner_border_spacing)
           .ClampNegativeToZero();
 
-  // Distribute min/max/percentage evenly between all cells.
+  // Distribute min/max evenly between all cells.
   LayoutUnit rounding_error_min_inline_size = colspan_cell_min_inline_size;
   LayoutUnit rounding_error_max_inline_size = colspan_cell_max_inline_size;
-  float rounding_error_percent =
-      colspan_cell.cell_inline_constraint.percent.value_or(0.0f);
 
   LayoutUnit new_min_size = LayoutUnit(colspan_cell_min_inline_size /
                                        static_cast<float>(effective_span));
   LayoutUnit new_max_size = LayoutUnit(colspan_cell_max_inline_size /
                                        static_cast<float>(effective_span));
-  base::Optional<float> new_percent;
+  absl::optional<float> new_percent;
   if (colspan_cell.cell_inline_constraint.percent) {
     new_percent = *colspan_cell.cell_inline_constraint.percent / effective_span;
   }
 
-  NGTableTypes::Column* last_column;
+  NGTableTypes::Column* last_column = nullptr;
   for (NGTableTypes::Column* column = start_column; column < end_column;
        ++column) {
     if (column->is_mergeable)
@@ -535,8 +532,6 @@ void DistributeColspanCellToColumnsFixed(
     last_column = column;
     rounding_error_min_inline_size -= new_min_size;
     rounding_error_max_inline_size -= new_max_size;
-    if (new_percent)
-      rounding_error_percent -= *new_percent;
 
     if (!column->min_inline_size) {
       column->is_constrained |=
@@ -548,22 +543,23 @@ void DistributeColspanCellToColumnsFixed(
           colspan_cell.cell_inline_constraint.is_constrained;
       column->max_inline_size = new_max_size;
     }
-    if (!column->percent && new_percent)
-      column->percent = new_percent;
+    // Percentages only get distributed over auto columns.
+    if (!column->percent && !column->is_constrained && new_percent) {
+      column->percent = *new_percent;
+    }
   }
+  DCHECK(last_column);
   last_column->min_inline_size =
       *last_column->min_inline_size + rounding_error_min_inline_size;
   last_column->max_inline_size =
       *last_column->max_inline_size + rounding_error_max_inline_size;
-  if (new_percent)
-    last_column->percent = *last_column->percent + rounding_error_percent;
 }
 
 void DistributeColspanCellToColumnsAuto(
     const NGTableTypes::ColspanCell& colspan_cell,
     LayoutUnit inline_border_spacing,
     NGTableTypes::Columns* column_constraints) {
-  if (column_constraints->data.IsEmpty())
+  if (column_constraints->data.empty())
     return;
   unsigned effective_span =
       std::min(colspan_cell.span,
@@ -593,7 +589,7 @@ void DistributeColspanCellToColumnsAuto(
       (colspan_cell.cell_inline_constraint.max_inline_size -
        total_inner_border_spacing)
           .ClampNegativeToZero();
-  base::Optional<float> colspan_cell_percent =
+  absl::optional<float> colspan_cell_percent =
       colspan_cell.cell_inline_constraint.percent;
 
   if (colspan_cell_percent.has_value()) {
@@ -655,9 +651,8 @@ void DistributeColspanCellToColumnsAuto(
       column->max_inline_size = LayoutUnit();
   }
   Vector<LayoutUnit> computed_sizes =
-      DistributeInlineSizeToComputedInlineSizeAuto(colspan_cell_min_inline_size,
-                                                   inline_border_spacing,
-                                                   start_column, end_column);
+      DistributeInlineSizeToComputedInlineSizeAuto(
+          colspan_cell_min_inline_size, start_column, end_column, true);
   LayoutUnit* computed_size = computed_sizes.begin();
   for (NGTableTypes::Column* column = start_column; column != end_column;
        ++column, ++computed_size) {
@@ -665,13 +660,15 @@ void DistributeColspanCellToColumnsAuto(
         std::max(*column->min_inline_size, *computed_size);
   }
   computed_sizes = DistributeInlineSizeToComputedInlineSizeAuto(
-      colspan_cell_max_inline_size, inline_border_spacing, start_column,
-      end_column);
+      colspan_cell_max_inline_size, start_column,
+      end_column, /* treat_target_size_as_constrained */
+      colspan_cell.cell_inline_constraint.is_constrained);
   computed_size = computed_sizes.begin();
   for (NGTableTypes::Column* column = start_column; column != end_column;
        ++column, ++computed_size) {
     column->max_inline_size =
-        std::max(*column->max_inline_size, *computed_size);
+        std::max(std::max(*column->min_inline_size, *column->max_inline_size),
+                 *computed_size);
   }
 }
 
@@ -683,85 +680,80 @@ void DistributeExcessBlockSizeToRows(
     const wtf_size_t start_row_index,
     const wtf_size_t row_count,
     LayoutUnit desired_block_size,
-    bool desired_block_size_is_rowspan,
+    bool is_rowspan_distribution,
     LayoutUnit border_block_spacing,
     LayoutUnit percentage_resolution_block_size,
     NGTableTypes::Rows* rows) {
-  DCHECK_LE(start_row_index + row_count, rows->size());
   DCHECK_GE(desired_block_size, LayoutUnit());
   // This algorithm has not been defined by the standard in 2019.
   // Discussion at https://github.com/w3c/csswg-drafts/issues/4418
   if (row_count == 0)
     return;
-  NGTableTypes::Row* start_row = std::next(rows->begin(), start_row_index);
-  NGTableTypes::Row* end_row =
-      std::next(rows->begin(), start_row_index + row_count);
+
+  const wtf_size_t end_row_index = start_row_index + row_count;
+  DCHECK_LE(end_row_index, rows->size());
 
   auto RowBlockSizeDeficit = [&percentage_resolution_block_size](
-                                 const NGTableTypes::Row* row) {
-    if (percentage_resolution_block_size == kIndefiniteSize)
-      return LayoutUnit();
-    DCHECK(row->percent);
-    return (LayoutUnit(*row->percent * percentage_resolution_block_size / 100) -
-            row->block_size)
+                                 const NGTableTypes::Row& row) {
+    DCHECK_NE(percentage_resolution_block_size, kIndefiniteSize);
+    DCHECK(row.percent);
+    return (LayoutUnit(*row.percent * percentage_resolution_block_size / 100) -
+            row.block_size)
         .ClampNegativeToZero();
   };
 
-  auto IsUnconstrainedNonEmptyRow =
-      [&percentage_resolution_block_size](const NGTableTypes::Row* row) {
-        if (row->block_size == LayoutUnit())
-          return false;
-        if (row->percent && percentage_resolution_block_size == kIndefiniteSize)
-          return true;
-        return !row->is_constrained;
-      };
-
-  auto IsRowWithOriginatingRowspan =
-      [&start_row,
-       &desired_block_size_is_rowspan](const NGTableTypes::Row* row) {
-        // Rowspans are treated specially only during rowspan distribution.
-        return desired_block_size_is_rowspan && row != start_row &&
-               row->has_rowspan_start;
-      };
-
-  auto IsEmptyRow = [](const NGTableTypes::Row* row) {
-    return row->block_size == LayoutUnit() &&
-           (!row->percent || *row->percent == 0);
-  };
-
-  unsigned percent_rows_with_deficit_count = 0;
-  unsigned rows_with_originating_rowspan = 0;
-  unsigned unconstrained_non_empty_row_count = 0;
+  Vector<wtf_size_t> rows_with_originating_rowspan;
+  Vector<wtf_size_t> percent_rows_with_deficit;
+  Vector<wtf_size_t> unconstrained_non_empty_rows;
+  Vector<wtf_size_t> empty_rows;
+  Vector<wtf_size_t> non_empty_rows;
+  Vector<wtf_size_t> unconstrained_empty_rows;
   unsigned constrained_non_empty_row_count = 0;
-  unsigned empty_row_count = 0;
-  unsigned unconstrained_empty_row_count = 0;
 
   LayoutUnit total_block_size;
-  LayoutUnit percentage_block_size_deficit;
+  LayoutUnit percent_block_size_deficit;
   LayoutUnit unconstrained_non_empty_row_block_size;
 
-  for (NGTableTypes::Row* row = start_row; row != end_row; ++row) {
-    total_block_size += row->block_size;
-    if (row->percent) {
+  for (auto index = start_row_index; index < end_row_index; ++index) {
+    const auto& row = rows->at(index);
+    total_block_size += row.block_size;
+
+    // Rowspans are treated specially only during rowspan distribution.
+    bool is_row_with_originating_rowspan = is_rowspan_distribution &&
+                                           index != start_row_index &&
+                                           row.has_rowspan_start;
+    if (is_row_with_originating_rowspan)
+      rows_with_originating_rowspan.push_back(index);
+
+    bool is_row_empty = row.block_size == LayoutUnit();
+
+    if (row.percent && *row.percent != 0 &&
+        percentage_resolution_block_size != kIndefiniteSize) {
       LayoutUnit deficit = RowBlockSizeDeficit(row);
       if (deficit != LayoutUnit()) {
-        percent_rows_with_deficit_count++;
-        percentage_block_size_deficit += deficit;
+        percent_rows_with_deficit.push_back(index);
+        percent_block_size_deficit += deficit;
+        is_row_empty = false;
       }
     }
-    if (IsRowWithOriginatingRowspan(row)) {
-      rows_with_originating_rowspan++;
-    }
-    if (IsUnconstrainedNonEmptyRow(row)) {
-      unconstrained_non_empty_row_count++;
-      unconstrained_non_empty_row_block_size += row->block_size;
-    } else if (row->is_constrained && !IsEmptyRow(row)) {
-      constrained_non_empty_row_count++;
-    }
-    if (IsEmptyRow(row)) {
-      empty_row_count++;
-      if (!row->is_constrained)
-        unconstrained_empty_row_count++;
+
+    // Only consider percent rows that resolve as constrained.
+    const bool is_row_constrained =
+        row.is_constrained &&
+        (!row.percent || percentage_resolution_block_size != kIndefiniteSize);
+
+    if (is_row_empty) {
+      empty_rows.push_back(index);
+      if (!is_row_constrained)
+        unconstrained_empty_rows.push_back(index);
+    } else {
+      non_empty_rows.push_back(index);
+      if (is_row_constrained) {
+        constrained_non_empty_row_count++;
+      } else {
+        unconstrained_non_empty_rows.push_back(index);
+        unconstrained_non_empty_row_block_size += row.block_size;
+      }
     }
   }
 
@@ -772,140 +764,114 @@ void DistributeExcessBlockSizeToRows(
     return;
 
   // Step 1: percentage rows grow to no more than their percentage size.
-  if (percent_rows_with_deficit_count > 0) {
-    float ratio = std::min(
-        distributable_block_size.ToFloat() / percentage_block_size_deficit,
-        1.0f);
-    LayoutUnit remaining_deficit =
-        LayoutUnit(ratio * percentage_block_size_deficit);
-    NGTableTypes::Row* last_row;
-    LayoutUnit distributed_block_size;
-    for (NGTableTypes::Row* row = start_row; row != end_row; ++row) {
-      if (!row->percent)
-        continue;
-      last_row = row;
-      LayoutUnit delta = LayoutUnit(RowBlockSizeDeficit(row) * ratio);
-      row->block_size += delta;
+  if (!percent_rows_with_deficit.empty()) {
+    // Don't distribute more than the percent block-size deficit.
+    LayoutUnit percent_distributable_block_size =
+        std::min(percent_block_size_deficit, distributable_block_size);
+
+    LayoutUnit remaining_deficit = percent_distributable_block_size;
+    for (auto& index : percent_rows_with_deficit) {
+      auto& row = rows->at(index);
+      LayoutUnit delta = percent_distributable_block_size.MulDiv(
+          RowBlockSizeDeficit(row), percent_block_size_deficit);
+      row.block_size += delta;
       total_block_size += delta;
-      distributed_block_size += delta;
+      distributable_block_size -= delta;
       remaining_deficit -= delta;
     }
-    last_row->block_size += remaining_deficit;
-    last_row->block_size = std::max(last_row->block_size, LayoutUnit());
-    distributed_block_size += remaining_deficit;
-    // Rounding errors might cause us to distribute more than available length.
-    distributed_block_size =
-        std::min(distributed_block_size, distributable_block_size);
-    distributable_block_size -= distributed_block_size;
+    auto& last_row = rows->at(percent_rows_with_deficit.back());
+    last_row.block_size += remaining_deficit;
+    distributable_block_size -= remaining_deficit;
+    DCHECK_GE(last_row.block_size, LayoutUnit());
+
+    // Rounding may cause us to distribute more than the distributable size.
+    if (distributable_block_size <= LayoutUnit())
+      return;
   }
-  DCHECK_GE(distributable_block_size, LayoutUnit());
-  if (distributable_block_size <= LayoutUnit())
-    return;
 
   // Step 2: Distribute to rows that have an originating rowspan.
-  if (rows_with_originating_rowspan > 0) {
+  if (!rows_with_originating_rowspan.empty()) {
     LayoutUnit remaining_deficit = distributable_block_size;
-    NGTableTypes::Row* last_row;
-    for (NGTableTypes::Row* row = start_row; row != end_row; ++row) {
-      if (!IsRowWithOriginatingRowspan(row))
-        continue;
-      last_row = row;
+    for (auto& index : rows_with_originating_rowspan) {
+      auto& row = rows->at(index);
       LayoutUnit delta =
-          LayoutUnit(distributable_block_size / rows_with_originating_rowspan);
-      row->block_size += delta;
+          distributable_block_size / rows_with_originating_rowspan.size();
+      row.block_size += delta;
       remaining_deficit -= delta;
     }
-    last_row->block_size += remaining_deficit;
-    last_row->block_size = std::max(last_row->block_size, LayoutUnit());
+    auto& last_row = rows->at(rows_with_originating_rowspan.back());
+    last_row.block_size += remaining_deficit;
+    last_row.block_size = std::max(last_row.block_size, LayoutUnit());
     return;
   }
+
   // Step 3: "unconstrained non-empty rows" grow in proportion to current
   // block size.
-  if (unconstrained_non_empty_row_count > 0) {
+  if (!unconstrained_non_empty_rows.empty()) {
     LayoutUnit remaining_deficit = distributable_block_size;
-    NGTableTypes::Row* last_row;
-    for (NGTableTypes::Row* row = start_row; row != end_row; ++row) {
-      if (!IsUnconstrainedNonEmptyRow(row))
-        continue;
-      last_row = row;
-      LayoutUnit delta =
-          LayoutUnit(row->block_size * distributable_block_size.ToFloat() /
-                     unconstrained_non_empty_row_block_size);
-      row->block_size += delta;
+    for (auto& index : unconstrained_non_empty_rows) {
+      auto& row = rows->at(index);
+      LayoutUnit delta = distributable_block_size.MulDiv(
+          row.block_size, unconstrained_non_empty_row_block_size);
+      row.block_size += delta;
       remaining_deficit -= delta;
     }
-    last_row->block_size += remaining_deficit;
-    last_row->block_size = std::max(last_row->block_size, LayoutUnit());
+    auto& last_row = rows->at(unconstrained_non_empty_rows.back());
+    last_row.block_size += remaining_deficit;
+    DCHECK_GE(last_row.block_size, LayoutUnit());
     return;
   }
 
   // Step 4: Empty row distribution
   // At this point all rows are empty and/or constrained.
-  if (empty_row_count > 0) {
-    if (desired_block_size_is_rowspan) {
-      NGTableTypes::Row* last_row = nullptr;
-      NGTableTypes::Row* row = start_row;
-      // Rowspan distribution skips initial empty row if possible,
-      // and distributes everything to the last empty row.
-      if (empty_row_count != row_count)
-        ++row;
-      for (; row != end_row; ++row) {
-        if (row->block_size != LayoutUnit())
-          continue;
-        last_row = row;
-      }
-      if (last_row) {
-        last_row->block_size = distributable_block_size;
+  if (!empty_rows.empty()) {
+    const bool has_only_empty_rows = empty_rows.size() == row_count;
+    if (is_rowspan_distribution) {
+      // If we are doing a rowspan distribution, *and* only have empty rows,
+      // distribute everything to the last empty row.
+      if (has_only_empty_rows) {
+        rows->at(empty_rows.back()).block_size += distributable_block_size;
         return;
       }
-    } else if (empty_row_count == row_count ||
-               (empty_row_count + constrained_non_empty_row_count ==
+    } else if (has_only_empty_rows ||
+               (empty_rows.size() + constrained_non_empty_row_count ==
                 row_count)) {
       // Grow empty rows if either of these is true:
-      // - all rows are empty.
-      // - non-empty rows are all constrained.
-      NGTableTypes::Row* last_row = nullptr;
+      // - All rows are empty.
+      // - Non-empty rows are all constrained.
       LayoutUnit remaining_deficit = distributable_block_size;
-      // If there are constrained and unconstrained empty rows,
-      // only unconstrained rows grow.
-      bool grow_only_unconstrained = unconstrained_empty_row_count > 0;
-      unsigned growing_rows_count = grow_only_unconstrained
-                                        ? unconstrained_empty_row_count
-                                        : empty_row_count;
-      for (NGTableTypes::Row* row = start_row; row != end_row; ++row) {
-        if (row->block_size != LayoutUnit())
-          continue;
-        if (grow_only_unconstrained && row->is_constrained)
-          continue;
-        last_row = row;
-        LayoutUnit delta =
-            LayoutUnit(distributable_block_size.ToFloat() / growing_rows_count);
-        row->block_size = delta;
+      // If there are constrained and unconstrained empty rows, only
+      // the unconstrained rows grow.
+      Vector<wtf_size_t>& rows_to_grow = !unconstrained_empty_rows.empty()
+                                             ? unconstrained_empty_rows
+                                             : empty_rows;
+      for (auto& index : rows_to_grow) {
+        auto& row = rows->at(index);
+        LayoutUnit delta = distributable_block_size / rows_to_grow.size();
+        row.block_size = delta;
         remaining_deficit -= delta;
       }
-      DCHECK(last_row);
-      last_row->block_size += remaining_deficit;
-      last_row->block_size = std::max(last_row->block_size, LayoutUnit());
+      auto& last_row = rows->at(rows_to_grow.back());
+      last_row.block_size += remaining_deficit;
+      DCHECK_GE(last_row.block_size, LayoutUnit());
       return;
     }
   }
 
   // Step 5: Grow non-empty rows in proportion to current block size.
   // It grows constrained, and unconstrained rows.
-  NGTableTypes::Row* last_row = nullptr;
-  LayoutUnit remaining_deficit = distributable_block_size;
-  for (NGTableTypes::Row* row = start_row; row != end_row; ++row) {
-    if (row->block_size == LayoutUnit())
-      continue;
-    last_row = row;
-    LayoutUnit delta = LayoutUnit(distributable_block_size *
-                                  row->block_size.ToFloat() / total_block_size);
-    row->block_size += delta;
-    remaining_deficit -= delta;
-  }
-  if (last_row) {
-    last_row->block_size += remaining_deficit;
-    last_row->block_size = std::max(last_row->block_size, LayoutUnit());
+  if (!non_empty_rows.empty()) {
+    LayoutUnit remaining_deficit = distributable_block_size;
+    for (auto& index : non_empty_rows) {
+      auto& row = rows->at(index);
+      LayoutUnit delta =
+          distributable_block_size.MulDiv(row.block_size, total_block_size);
+      row.block_size += delta;
+      remaining_deficit -= delta;
+    }
+    auto& last_row = rows->at(non_empty_rows.back());
+    last_row.block_size += remaining_deficit;
+    DCHECK_GE(last_row.block_size, LayoutUnit());
   }
 }
 
@@ -916,8 +882,7 @@ MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
     const NGTableTypes::Columns& column_constraints,
     LayoutUnit undistributable_space,
     bool is_fixed_layout,
-    bool is_layout_pass,
-    bool skip_collapsed_columns) {
+    bool is_layout_pass) {
   MinMaxSizes min_max;
   // https://www.w3.org/TR/css-tables-3/#computing-the-table-width
   // Compute standard GRID_MIN/GRID_MAX. They are sum of column_constraints.
@@ -942,8 +907,6 @@ MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
   LayoutUnit non_percent_max_size_sum;
   float percent_sum = 0;
   for (const NGTableTypes::Column& column : column_constraints.data) {
-    if (skip_collapsed_columns && column.is_collapsed)
-      continue;
     if (column.min_inline_size) {
       // In fixed layout, constrained cells minimum inline size is their
       // maximum.
@@ -969,7 +932,9 @@ MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
     if (column.percent)
       percent_sum += *column.percent;
   }
-  DCHECK_LE(percent_sum, 100.0f);
+  // Floating point math can cause total sum to be slightly above 100%.
+  DCHECK_LE(percent_sum, 100.5f);
+  percent_sum = std::min(percent_sum, 100.0f);
 
   // Table max inline size constraint can be computed from the total column
   // percentage combined with max_inline_size of non-percent columns.
@@ -1019,22 +984,20 @@ void NGTableAlgorithmHelpers::DistributeColspanCellsToColumns(
 Vector<LayoutUnit>
 NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
     LayoutUnit assignable_table_inline_size,
-    LayoutUnit inline_border_spacing,
     bool is_fixed_layout,
     const NGTableTypes::Columns& column_constraints) {
-  if (column_constraints.data.IsEmpty())
+  if (column_constraints.data.empty())
     return Vector<LayoutUnit>();
   if (is_fixed_layout) {
     return SynchronizeAssignableTableInlineSizeAndColumnsFixed(
-        assignable_table_inline_size, inline_border_spacing,
-        column_constraints);
+        assignable_table_inline_size, column_constraints);
   } else {
     const NGTableTypes::Column* start_column = &column_constraints.data[0];
     const NGTableTypes::Column* end_column =
         start_column + column_constraints.data.size();
     return DistributeInlineSizeToComputedInlineSizeAuto(
-        assignable_table_inline_size, inline_border_spacing, start_column,
-        end_column);
+        assignable_table_inline_size, start_column, end_column,
+        /* treat_target_size_as_constrained */ true);
   }
 }
 
@@ -1042,12 +1005,12 @@ void NGTableAlgorithmHelpers::DistributeRowspanCellToRows(
     const NGTableTypes::RowspanCell& rowspan_cell,
     LayoutUnit border_block_spacing,
     NGTableTypes::Rows* rows) {
-  DCHECK_GE(rowspan_cell.span, 0u);
-  DistributeExcessBlockSizeToRows(
-      rowspan_cell.start_row, rowspan_cell.span,
-      rowspan_cell.cell_block_constraint.min_block_size,
-      /* desired_block_size_is_rowspan */ true, border_block_spacing,
-      kIndefiniteSize, rows);
+  DCHECK_GT(rowspan_cell.effective_rowspan, 1u);
+  DistributeExcessBlockSizeToRows(rowspan_cell.start_row,
+                                  rowspan_cell.effective_rowspan,
+                                  rowspan_cell.min_block_size,
+                                  /* is_rowspan_distribution */ true,
+                                  border_block_spacing, kIndefiniteSize, rows);
 }
 
 // Legacy code ignores section block size.
@@ -1059,7 +1022,7 @@ void NGTableAlgorithmHelpers::DistributeSectionFixedBlockSizeToRows(
     LayoutUnit percentage_resolution_block_size,
     NGTableTypes::Rows* rows) {
   DistributeExcessBlockSizeToRows(start_row, rowspan, section_fixed_block_size,
-                                  /* desired_block_size_is_rowspan */ false,
+                                  /* is_rowspan_distribution */ false,
                                   border_block_spacing,
                                   percentage_resolution_block_size, rows);
 }
@@ -1069,169 +1032,184 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
     LayoutUnit table_block_size,
     NGTableTypes::Sections* sections,
     NGTableTypes::Rows* rows) {
-  if (sections->IsEmpty())
-    return;
-  // Redistribute table block size over sections algorithm:
-  // 1. Compute section groups:
-  //   Group 0: sections with 0-block size
-  //   Group 1: sections with %-age block size not in Group 0
-  //   Group 2: unconstrained tbody sections not in Group 0
-  //   Group 3: all tbody sections not in Group 0
-  //   Group 4: all sections not in Group 0
-  //
-  // 2. Percentage redistribution:
-  //   Grow sections in group 1 up to their %ge block size
-  //
-  // 3. Final redistribution
-  //   Pick first non-empty group between groups 4, 3, 2, and 0.
-  //   Grow sections in picked group.
-  //   Groups 4, 3, 2 grow proportiononaly to their block size.
-  //   Group 0 grows evenly.
-  unsigned block_space_count = sections->size() + 1;
-  LayoutUnit undistributable_space = block_space_count * border_block_spacing;
-
-  LayoutUnit distributable_table_block_size =
-      std::max(LayoutUnit(), table_block_size - undistributable_space);
-  bool has_growable_percent_sections = false;
-  LayoutUnit desired_percentage_block_size_deficit;
-  LayoutUnit total_group_block_sizes[5];
-  unsigned number_of_empty_groups = 0;
-
-  auto is_group_0 = [](auto& section) {
-    return section.block_size == LayoutUnit();
-  };
-  auto is_group_1 = [](auto& section) {
-    return section.percent.has_value() && section.percent != 0.0 &&
-           section.block_size != LayoutUnit();
-  };
-  auto is_group_2 = [](auto& section) {
-    return section.is_tbody && !section.is_constrained &&
-           section.block_size != LayoutUnit();
-  };
-  auto is_group_3 = [](auto& section) {
-    return section.is_tbody && section.block_size != LayoutUnit();
-  };
-  auto is_group_4 = [](auto& section) {
-    return section.block_size != LayoutUnit();
-  };
-
-  auto update_block_sizes = [&total_group_block_sizes, &number_of_empty_groups,
-                             &is_group_0, &is_group_2, &is_group_3,
-                             &is_group_4](auto& section) {
-    if (is_group_2(section))
-      total_group_block_sizes[2] += section.block_size;
-    if (is_group_3(section))
-      total_group_block_sizes[3] += section.block_size;
-    if (is_group_4(section))
-      total_group_block_sizes[4] += section.block_size;
-    if (is_group_0(section))
-      number_of_empty_groups++;
-  };
-
-  for (NGTableTypes::Section& section : *sections) {
-    section.needs_redistribution = false;
-    update_block_sizes(section);
-    if (is_group_1(section)) {
-      has_growable_percent_sections = true;
-      desired_percentage_block_size_deficit +=
-          (LayoutUnit(*section.percent * distributable_table_block_size / 100) -
-           section.block_size)
-              .ClampNegativeToZero();
-    }
-  }
-  LayoutUnit excess_block_size =
-      distributable_table_block_size - total_group_block_sizes[4];
-  if (excess_block_size <= LayoutUnit())
+  if (sections->empty())
     return;
 
-  // Step 1: Percentage redistribution: grow percentages to their maximum.
-  if (has_growable_percent_sections) {
-    // Because percentages will grow, need to recompute all the totals.
-    total_group_block_sizes[2] = LayoutUnit();
-    total_group_block_sizes[3] = LayoutUnit();
-    total_group_block_sizes[4] = LayoutUnit();
-    number_of_empty_groups = 0;
-    float ratio = std::min(
-        excess_block_size / desired_percentage_block_size_deficit.ToFloat(),
-        1.0f);
-    LayoutUnit remaining_deficit =
-        LayoutUnit(ratio * desired_percentage_block_size_deficit);
-    NGTableTypes::Section* last_section = nullptr;
-    for (NGTableTypes::Section& section : *sections) {
-      if (!is_group_1(section)) {
-        update_block_sizes(section);
-        continue;
+  // Determine the table's block-size which we can distribute into.
+  const LayoutUnit undistributable_space =
+      (sections->size() + 1) * border_block_spacing;
+  const LayoutUnit distributable_table_block_size =
+      (table_block_size - undistributable_space).ClampNegativeToZero();
+
+  auto ComputePercentageSize = [&distributable_table_block_size](
+                                   auto& section) {
+    DCHECK(section.percent.has_value());
+    return std::max(
+        section.block_size,
+        LayoutUnit(*section.percent * distributable_table_block_size / 100));
+  };
+
+  LayoutUnit minimum_size_guess;
+  LayoutUnit percent_size_guess;
+  bool has_tbody = false;
+
+  Vector<wtf_size_t> auto_sections;
+  Vector<wtf_size_t> fixed_sections;
+  Vector<wtf_size_t> percent_sections;
+  Vector<wtf_size_t> tbody_auto_sections;
+  Vector<wtf_size_t> tbody_fixed_sections;
+  Vector<wtf_size_t> tbody_percent_sections;
+
+  LayoutUnit auto_sections_size;
+  LayoutUnit fixed_sections_size;
+  LayoutUnit percent_sections_size;
+  LayoutUnit tbody_auto_sections_size;
+  LayoutUnit tbody_fixed_sections_size;
+  LayoutUnit tbody_percent_sections_size;
+
+  // Collect all our different section types.
+  for (wtf_size_t index = 0u; index < sections->size(); ++index) {
+    const auto& section = sections->at(index);
+    minimum_size_guess += section.block_size;
+    percent_size_guess +=
+        section.percent ? ComputePercentageSize(section) : section.block_size;
+    has_tbody |= section.is_tbody;
+
+    if (section.percent) {
+      percent_sections.push_back(index);
+      if (section.is_tbody)
+        tbody_percent_sections.push_back(index);
+    } else if (section.is_constrained) {
+      fixed_sections.push_back(index);
+      fixed_sections_size += section.block_size;
+      if (section.is_tbody) {
+        tbody_fixed_sections.push_back(index);
+        tbody_fixed_sections_size += section.block_size;
       }
-      LayoutUnit desired_block_size =
-          LayoutUnit(*section.percent * distributable_table_block_size / 100);
-      LayoutUnit block_size_deficit =
-          (desired_block_size - section.block_size).ClampNegativeToZero();
-      LayoutUnit grow_by = LayoutUnit(block_size_deficit * ratio);
-      if (grow_by != LayoutUnit()) {
-        section.block_size += grow_by;
-        section.needs_redistribution = true;
-        last_section = &section;
-        remaining_deficit -= grow_by;
+    } else {
+      auto_sections.push_back(index);
+      auto_sections_size += section.block_size;
+      if (section.is_tbody) {
+        tbody_auto_sections.push_back(index);
+        tbody_auto_sections_size += section.block_size;
       }
-      update_block_sizes(section);
-    }
-    if (last_section && remaining_deficit != LayoutUnit()) {
-      last_section->block_size += remaining_deficit;
-      if (is_group_4(*last_section))
-        total_group_block_sizes[4] += remaining_deficit;
     }
   }
-  excess_block_size =
-      distributable_table_block_size - total_group_block_sizes[4];
 
-  if (excess_block_size > LayoutUnit()) {
-    // Step 2: distribute remaining block sizes to group 0, 2, 3, or 4.
-    unsigned group_index;
-    if (total_group_block_sizes[2] > LayoutUnit())
-      group_index = 2;
-    else if (total_group_block_sizes[3] > LayoutUnit())
-      group_index = 3;
-    else if (total_group_block_sizes[4] > LayoutUnit())
-      group_index = 4;
-    else
-      group_index = 0;
+  // If the sections minimum size is greater than the distributable size -
+  // there isn't any free space to distribute into.
+  if (distributable_table_block_size <= minimum_size_guess)
+    return;
 
-    LayoutUnit remaining_deficit = excess_block_size;
-    NGTableTypes::Section* last_section = nullptr;
-    for (NGTableTypes::Section& section : *sections) {
-      if (group_index == 2 && !is_group_2(section))
-        continue;
-      if (group_index == 3 && !is_group_3(section))
-        continue;
-      if (group_index == 4 && !is_group_4(section))
-        continue;
-      LayoutUnit grow_by;
-      if (group_index == 0) {
-        grow_by =
-            LayoutUnit(excess_block_size.ToFloat() / number_of_empty_groups);
+  // Grow the (all) the percent sections up to what the percent specifies, and
+  // in proportion to the *difference* between their percent size, and their
+  // minimum size. E.g.
+  //
+  // <table style="height: 100px;">
+  //   <tbody style="height: 50%;"></tbody>
+  // </table>
+  // The above <tbody> will grow to 50px.
+  //
+  // <table style="height: 100px;">
+  //   <thead style="height: 50%;"></thead>
+  //   <tbody style="height: 50%;"><td style="height: 60px;"></td></tbody>
+  //   <tfoot style="height: 50%;"></tfoot>
+  // </table>
+  // The sections will be [20px, 60px, 20px]. The <tbody> doesn't grow as its
+  // hit its minimum, remaining space distributed according to their percent.
+  if (!percent_sections.empty() && percent_size_guess > minimum_size_guess) {
+    const LayoutUnit distributable_size =
+        std::min(percent_size_guess, distributable_table_block_size) -
+        minimum_size_guess;
+    DCHECK_GE(distributable_size, LayoutUnit());
+    const LayoutUnit percent_minimum_difference =
+        percent_size_guess - minimum_size_guess;
+
+    LayoutUnit remaining_deficit = distributable_size;
+    for (auto& index : percent_sections) {
+      auto& section = sections->at(index);
+      LayoutUnit delta = distributable_size.MulDiv(
+          ComputePercentageSize(section) - section.block_size,
+          percent_minimum_difference);
+      section.block_size += delta;
+      section.needs_redistribution = true;
+      remaining_deficit -= delta;
+      minimum_size_guess += delta;
+      percent_sections_size += section.block_size;
+      if (section.is_tbody)
+        tbody_percent_sections_size += section.block_size;
+    }
+    auto& last_section = sections->at(percent_sections.back());
+    last_section.block_size += remaining_deficit;
+    DCHECK_GE(last_section.block_size, LayoutUnit());
+    percent_sections_size += remaining_deficit;
+    minimum_size_guess += remaining_deficit;
+    if (last_section.is_tbody)
+      tbody_percent_sections_size += remaining_deficit;
+  }
+
+  // Decide which sections to grow, we prefer any <tbody>-like sections over
+  // headers/footers. Then in order:
+  //  - auto sections.
+  //  - fixed sections.
+  //  - percent sections.
+  Vector<wtf_size_t>* sections_to_grow;
+  LayoutUnit sections_size;
+  if (has_tbody) {
+    if (!tbody_auto_sections.empty()) {
+      sections_to_grow = &tbody_auto_sections;
+      sections_size = tbody_auto_sections_size;
+    } else if (!tbody_fixed_sections.empty()) {
+      sections_to_grow = &tbody_fixed_sections;
+      sections_size = tbody_fixed_sections_size;
+    } else {
+      DCHECK(!tbody_percent_sections.empty());
+      sections_to_grow = &tbody_percent_sections;
+      sections_size = tbody_percent_sections_size;
+    }
+  } else {
+    if (!auto_sections.empty()) {
+      sections_to_grow = &auto_sections;
+      sections_size = auto_sections_size;
+    } else if (!fixed_sections.empty()) {
+      sections_to_grow = &fixed_sections;
+      sections_size = fixed_sections_size;
+    } else {
+      DCHECK(!percent_sections.empty());
+      sections_to_grow = &percent_sections;
+      sections_size = percent_sections_size;
+    }
+  }
+
+  // Distribute remaining size, evenly across the sections.
+  LayoutUnit distributable_size =
+      distributable_table_block_size - minimum_size_guess;
+  if (distributable_size > LayoutUnit()) {
+    LayoutUnit remaining_deficit = distributable_size;
+    for (auto& index : *sections_to_grow) {
+      auto& section = sections->at(index);
+      LayoutUnit delta;
+      if (sections_size > LayoutUnit()) {
+        delta = distributable_size.MulDiv(section.block_size, sections_size);
       } else {
-        grow_by = LayoutUnit(section.block_size.ToFloat() * excess_block_size /
-                             total_group_block_sizes[group_index]);
+        delta = distributable_size / sections_to_grow->size();
       }
-      if (grow_by > LayoutUnit()) {
-        section.block_size += grow_by;
-        section.needs_redistribution = true;
-        remaining_deficit -= grow_by;
-        last_section = &section;
-      }
+      section.block_size += delta;
+      section.needs_redistribution = true;
+      remaining_deficit -= delta;
     }
-    if (last_section && remaining_deficit != LayoutUnit()) {
-      last_section->block_size += remaining_deficit;
-    }
+    auto& last_section = sections->at(sections_to_grow->back());
+    last_section.block_size += remaining_deficit;
+    DCHECK_GE(last_section.block_size, LayoutUnit());
   }
 
-  // Step 3: Propagate section expansion to rows.
+  // Propagate new section sizes to rows.
   for (NGTableTypes::Section& section : *sections) {
     if (!section.needs_redistribution)
       continue;
     DistributeExcessBlockSizeToRows(
-        section.start_row, section.rowspan, section.block_size,
-        /* desired_block_size_is_rowspan */ false, border_block_spacing,
+        section.start_row, section.row_count, section.block_size,
+        /* is_rowspan_distribution */ false, border_block_spacing,
         section.block_size, rows);
   }
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+        android:id="@+id/account_avatar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!-- The default android:breakStrategy is "high_quality", which tries to be
+          smart and ends up splitting email addresses containing ".". So use
+          "simple" instead. -->
+    <TextView
+        android:id="@+id/manage_devices_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:breakStrategy="simple"
+        android:paddingStart="8dp" />
+
+</merge>

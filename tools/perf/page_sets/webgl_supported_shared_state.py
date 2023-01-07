@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import logging
@@ -33,13 +33,13 @@ class WebGLSupportedSharedState(shared_page_state.SharedPageState):
         vendor_id = primary_gpu.vendor_id
         if vendor_string:
           return vendor_string.split(' ')[0]
-        elif vendor_id == 0x10DE:
+        if vendor_id == 0x10DE:
           return 'nvidia'
-        elif vendor_id == 0x1002:
+        if vendor_id == 0x1002:
           return 'amd'
-        elif vendor_id == 0x8086:
+        if vendor_id == 0x8086:
           return 'intel'
-        elif vendor_id == 0x15AD:
+        if vendor_id == 0x15AD:
           return 'vmware'
 
     return 'unknown_gpu'

@@ -1,0 +1,44 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+# TODO(crbug.com/1321984): Make SystemWebAppManager an ash-only object and
+# move all the GN dependencies under `if (is_chromeos_ash)` section.
+# assert(is_chromeos_ash)
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [ "system_web_app_data.proto" ]
+}
+
+source_set("types") {
+  sources = [
+    "system_web_app_background_task_info.cc",
+    "system_web_app_background_task_info.h",
+    "system_web_app_data.cc",
+    "system_web_app_data.h",
+    "system_web_app_delegate.cc",
+    "system_web_app_delegate.h",
+    "system_web_app_delegate_map.cc",
+    "system_web_app_delegate_map.h",
+    "system_web_app_type.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base",
+    "//chrome/common",
+    "//ui/base",
+    "//url",
+  ]
+
+  public_deps = [
+    # TODO(crbug.com/1321984): Move to deps when users of system_web_app_type.
+    # are migrated to include the new location.
+    "//ash/webui/system_apps/public:system_web_app_type",
+  ]
+}

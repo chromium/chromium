@@ -1,0 +1,74 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//testing/test.gni")
+
+static_library("common") {
+  sources = [
+    "api_error_codes.cc",
+    "api_error_codes.h",
+    "auth_service.cc",
+    "auth_service.h",
+    "auth_service_interface.h",
+    "auth_service_observer.h",
+    "base_requests.cc",
+    "base_requests.h",
+    "parser_util.cc",
+    "parser_util.h",
+    "request_sender.cc",
+    "request_sender.h",
+    "task_util.cc",
+    "task_util.h",
+    "time_util.cc",
+    "time_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//google_apis:google_apis",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "dummy_auth_service.cc",
+    "dummy_auth_service.h",
+    "test_util.cc",
+    "test_util.h",
+  ]
+
+  public_deps = [
+    ":common",
+    "//base",
+    "//base/test:test_support",
+    "//google_apis:test_support",
+    "//net:test_support",
+  ]
+}
+
+source_set("common_unittests") {
+  testonly = true
+
+  sources = [
+    "base_requests_unittest.cc",
+    "request_sender_unittest.cc",
+    "time_util_unittest.cc",
+  ]
+
+  deps = [
+    ":common",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

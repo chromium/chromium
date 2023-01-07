@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,17 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/document_service.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 
@@ -31,7 +34,8 @@ namespace content {
 
 class ClipboardHostImplTest;
 
-class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
+class CONTENT_EXPORT ClipboardHostImpl
+    : public DocumentService<blink::mojom::ClipboardHost> {
  public:
   ~ClipboardHostImpl() override;
 
@@ -84,18 +88,20 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
     void InvokeCallbacks();
 
     base::Time time_{base::Time::Now()};
-    base::Optional<ClipboardPasteContentAllowed> allowed_;
+    absl::optional<ClipboardPasteContentAllowed> allowed_;
     std::vector<IsClipboardPasteContentAllowedCallback> callbacks_;
   };
 
   // A paste allowed request is obsolete if it is older than this time.
   static const base::TimeDelta kIsPasteContentAllowedRequestTooOld;
 
-  explicit ClipboardHostImpl(RenderFrameHost* render_frame_host);
+  explicit ClipboardHostImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
 
   // Performs a check to see if pasting `data` is allowed by data transfer
   // policies and invokes PasteIfPolicyAllowedCallback upon completion.
-  // PerformPasteIfContentAllowed maybe be invoked immediately if the policy
+  // PerformPasteIfContentAllowed may be invoked immediately if the policy
   // controller doesn't exist.
   void PasteIfPolicyAllowed(ui::ClipboardBuffer clipboard_buffer,
                             const ui::ClipboardFormatType& data_type,
@@ -107,7 +113,7 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   // already been checked. |data| and |seqno| should corresponds to the same
   // clipboard data.
   void PerformPasteIfContentAllowed(
-      uint64_t seqno,
+      const ui::ClipboardSequenceNumberToken& seqno,
       const ui::ClipboardFormatType& data_type,
       std::string data,
       IsClipboardPasteContentAllowedCallback callback);
@@ -121,10 +127,12 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
 
   // Completion callback of PerformPasteIfContentAllowed(). Sets the allowed
   // status for the clipboard data corresponding to sequence number |seqno|.
-  void FinishPasteIfContentAllowed(uint64_t seqno,
-                                   ClipboardPasteContentAllowed allowed);
+  void FinishPasteIfContentAllowed(
+      const ui::ClipboardSequenceNumberToken& seqno,
+      ClipboardPasteContentAllowed allowed);
 
-  const std::map<uint64_t, IsPasteContentAllowedRequest>&
+  const std::map<ui::ClipboardSequenceNumberToken,
+                 IsPasteContentAllowedRequest>&
   is_paste_allowed_requests_for_testing() {
     return is_allowed_requests_;
   }
@@ -159,13 +167,20 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
                ReadSvgCallback callback) override;
   void ReadRtf(ui::ClipboardBuffer clipboard_buffer,
                ReadRtfCallback callback) override;
-  void ReadImage(ui::ClipboardBuffer clipboard_buffer,
-                 ReadImageCallback callback) override;
+  void ReadPng(ui::ClipboardBuffer clipboard_buffer,
+               ReadPngCallback callback) override;
   void ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                  ReadFilesCallback callback) override;
   void ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
                       const std::u16string& type,
                       ReadCustomDataCallback callback) override;
+  void ReadAvailableCustomAndStandardFormats(
+      ReadAvailableCustomAndStandardFormatsCallback callback) override;
+  void ReadUnsanitizedCustomFormat(
+      const std::u16string& format,
+      ReadUnsanitizedCustomFormatCallback callback) override;
+  void WriteUnsanitizedCustomFormat(const std::u16string& format,
+                                    mojo_base::BigBuffer data) override;
   void WriteText(const std::u16string& text) override;
   void WriteHtml(const std::u16string& markup, const GURL& url) override;
   void WriteSvg(const std::u16string& markup) override;
@@ -176,14 +191,18 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
                      const std::u16string& title) override;
   void WriteImage(const SkBitmap& unsafe_bitmap) override;
   void CommitWrite() override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void WriteStringToFindPboard(const std::u16string& text) override;
 #endif
+
+  // Returns true if custom format is allowed to be read/written from/to the
+  // clipboard, else, fails.
+  bool IsUnsanitizedCustomFormatContentAllowed();
 
   // Called by PerformPasteIfContentAllowed() when an is allowed request is
   // needed. Virtual to be overridden in tests.
   virtual void StartIsPasteContentAllowedRequest(
-      uint64_t seqno,
+      const ui::ClipboardSequenceNumberToken& seqno,
       const ui::ClipboardFormatType& data_type,
       std::string data);
 
@@ -197,19 +216,21 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
       IsClipboardPasteContentAllowedCallback callback,
       bool is_allowed);
 
-  void OnReadImage(ui::ClipboardBuffer clipboard_buffer,
-                   ReadImageCallback callback,
-                   const SkBitmap& bitmap);
+  using CopyAllowedCallback = base::OnceCallback<void()>;
+  void CopyIfAllowed(size_t data_size_in_bytes, CopyAllowedCallback callback);
+
+  void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
+                 ReadPngCallback callback,
+                 const std::vector<uint8_t>& data);
 
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
 
-  ui::Clipboard* const clipboard_;  // Not owned
-  GlobalFrameRoutingId render_frame_routing_id_;
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 
   // Outstanding is allowed requests per clipboard contents.  Maps a clipboard
   // sequence number to an outstanding request.
-  std::map<uint64_t, IsPasteContentAllowedRequest> is_allowed_requests_;
+  std::map<ui::ClipboardSequenceNumberToken, IsPasteContentAllowedRequest>
+      is_allowed_requests_;
 
   base::WeakPtrFactory<ClipboardHostImpl> weak_ptr_factory_{this};
 };

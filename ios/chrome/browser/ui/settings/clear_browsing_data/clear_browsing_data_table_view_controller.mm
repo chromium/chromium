@@ -1,51 +1,60 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "components/browsing_data/core/pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/browsing_data/browsing_data_features.h"
-#include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "components/browsing_data/core/pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browsing_data/browsing_data_features.h"
+#import "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/elements/chrome_activity_overlay_coordinator.h"
-#include "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
+#import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/table_view_clear_browsing_data_item.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_consumer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_manager.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
-#include "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_delegate.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_delegate.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 @interface ClearBrowsingDataTableViewController () <
-    TableViewLinkHeaderFooterItemDelegate,
     ClearBrowsingDataConsumer,
+    IdentityManagerObserverBridgeDelegate,
+    SignoutActionSheetCoordinatorDelegate,
+    TableViewLinkHeaderFooterItemDelegate,
     UIGestureRecognizerDelegate>
 
 // TODO(crbug.com/850699): remove direct dependency and replace with
@@ -79,23 +88,19 @@
 
 @end
 
-@implementation ClearBrowsingDataTableViewController
-@synthesize actionSheetCoordinator = _actionSheetCoordinator;
-@synthesize alertCoordinator = _alertCoordinator;
-@synthesize browserState = _browserState;
-@synthesize browser = _browser;
-@synthesize clearBrowsingDataBarButton = _clearBrowsingDataBarButton;
-@synthesize dataManager = _dataManager;
+@implementation ClearBrowsingDataTableViewController {
+  // Modal alert for sign out.
+  SignoutActionSheetCoordinator* _signoutCoordinator;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserverBridge;
+}
 @synthesize dispatcher = _dispatcher;
 @synthesize delegate = _delegate;
-@synthesize suppressTableViewUpdates = _suppressTableViewUpdates;
-
+@synthesize clearBrowsingDataBarButton = _clearBrowsingDataBarButton;
 #pragma mark - ViewController Lifecycle.
 
 - (instancetype)initWithBrowser:(Browser*)browser {
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? ChromeTableViewStyle()
-                               : UITableViewStylePlain;
+  UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
     _browser = browser;
@@ -103,8 +108,18 @@
     _dataManager = [[ClearBrowsingDataManager alloc]
         initWithBrowserState:browser->GetBrowserState()];
     _dataManager.consumer = self;
+    _identityManagerObserverBridge.reset(
+        new signin::IdentityManagerObserverBridge(
+            IdentityManagerFactory::GetForBrowserState(_browserState), self));
   }
   return self;
+}
+
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent) {
+    [self.delegate clearBrowsingDataTableViewControllerWasRemoved:self];
+  }
 }
 
 #pragma mark - Property
@@ -123,6 +138,15 @@
   return _clearBrowsingDataBarButton;
 }
 
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+// Update footer to take into account whether the user is signed-in or not.
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  [self.dataManager updateModel:self.tableViewModel
+                  withTableView:self.tableView];
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -137,23 +161,12 @@
   ]
                animated:YES];
 
-  if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.accessibilityIdentifier =
-        kClearBrowsingDataViewAccessibilityIdentifier;
-    self.styler.tableViewBackgroundColor =
-        [UIColor colorNamed:kPrimaryBackgroundColor];
-    self.tableView.backgroundColor = self.styler.tableViewBackgroundColor;
-
-    // TableView configuration
-    self.tableView.estimatedRowHeight = 56;
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableView.estimatedSectionHeaderHeight = 0;
-  }
+  self.tableView.accessibilityIdentifier =
+      kClearBrowsingDataViewAccessibilityIdentifier;
 
   // Navigation controller configuration.
   self.title = l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
-  // Adds the "Done" button and hooks it up to |dismiss|.
+  // Adds the "Done" button and hooks it up to `dismiss`.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
@@ -167,6 +180,7 @@
   self.suppressTableViewUpdates = YES;
   [self loadModel];
   self.suppressTableViewUpdates = NO;
+  [self.dataManager prepare];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -206,6 +220,8 @@
     self.navigationController.interactivePopGestureRecognizer.delegate = nil;
     self.overlayCoordinator = nil;
   }
+  _identityManagerObserverBridge.reset();
+  [self.dataManager disconnect];
 }
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -250,7 +266,7 @@
     viewForFooterInSection:(NSInteger)section {
   UIView* view = [super tableView:tableView viewForFooterInSection:section];
   NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSection:section];
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
   switch (sectionIdentifier) {
     case SectionIdentifierSavedSiteData:
     case SectionIdentifierGoogleAccount: {
@@ -267,7 +283,7 @@
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
   NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSection:section];
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
   switch (sectionIdentifier) {
     case SectionIdentifierGoogleAccount:
     case SectionIdentifierSavedSiteData:
@@ -312,8 +328,33 @@
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)url {
-  [self.delegate openURL:url];
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)url {
+  if (url.gurl == GURL(kCBDSignOutOfChromeURL)) {
+    DCHECK(base::FeatureList::IsEnabled(switches::kEnableCbdSignOut));
+    // TODO(crbug.com/1341654): Log a user action indicating that the user
+    // clicked on the sign out link from the footer. Remove the action
+    // indicating that this came from signin > signout.
+    [self showSignOutWithItemView:[view contentView]];
+    return;
+  }
+  NSString* baseURL =
+      [NSString stringWithCString:(url.gurl.host() + url.gurl.path()).c_str()
+                         encoding:[NSString defaultCStringEncoding]];
+  if ([[NSString stringWithCString:(kClearBrowsingDataDSESearchUrlInFooterURL)
+                          encoding:[NSString defaultCStringEncoding]]
+          rangeOfString:baseURL]
+          .length > 0) {
+    base::UmaHistogramEnumeration("Settings.ClearBrowsingData.OpenMyActivity",
+                                  MyActivityNavigation::kSearchHistory);
+  } else if ([[NSString stringWithCString:
+                            (kClearBrowsingDataDSEMyActivityUrlInFooterURL)
+                                 encoding:[NSString defaultCStringEncoding]]
+                 rangeOfString:baseURL]
+                 .length > 0) {
+    base::UmaHistogramEnumeration("Settings.ClearBrowsingData.OpenMyActivity",
+                                  MyActivityNavigation::kTopLevel);
+  }
+  [self.delegate openURL:url.gurl];
 }
 
 #pragma mark - ClearBrowsingDataConsumer
@@ -385,6 +426,9 @@
     browserState->GetPrefs()->SetInt64(
         browsing_data::prefs::kLastClearBrowsingDataTime,
         base::Time::Now().ToTimeT());
+
+    DiscoverFeedServiceFactory::GetForBrowserState(browserState)
+        ->BrowsingHistoryCleared();
   }
 
   [self.dispatcher
@@ -431,13 +475,25 @@
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("IOSClearBrowsingDataCloseWithSwipe"));
-  // Call prepareForDismissal to clean up state and  stop the Coordinator.
+  // Call prepareForDismissal to clean up state and stop the Coordinator.
   [self prepareForDismissal];
 }
 
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
   return !self.overlayCoordinator.started;
+}
+
+#pragma mark - SignoutActionSheetCoordinatorDelegate
+
+- (void)signoutActionSheetCoordinatorPreventUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  [self preventUserInteraction];
+}
+
+- (void)signoutActionSheetCoordinatorAllowUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  [self allowUserInteraction];
 }
 
 #pragma mark - Private Helpers
@@ -476,6 +532,37 @@
     }
   }
   return NO;
+}
+
+// Offer the user to sign-out near itemView
+// If they sync, they can keep or delete their data.
+- (void)showSignOutWithItemView:(UIView*)itemView {
+  if (_signoutCoordinator) {
+    // An action is already in progress, ignore user's request.
+    return;
+  }
+  signin_metrics::ProfileSignout signout_source_metric =
+      signin_metrics::USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE;
+  _signoutCoordinator = [[SignoutActionSheetCoordinator alloc]
+      initWithBaseViewController:self
+                         browser:_browser
+                            rect:itemView.frame
+                            view:itemView
+                      withSource:signout_source_metric];
+  _signoutCoordinator.showUnavailableFeatureDialogHeader = YES;
+  __weak ClearBrowsingDataTableViewController* weakSelf = self;
+  _signoutCoordinator.completion = ^(BOOL success) {
+    [weakSelf handleAuthenticationOperationDidFinish];
+  };
+  _signoutCoordinator.delegate = self;
+  [_signoutCoordinator start];
+}
+
+// Stops the signout coordinator.
+- (void)handleAuthenticationOperationDidFinish {
+  DCHECK(_signoutCoordinator);
+  [_signoutCoordinator stop];
+  _signoutCoordinator = nil;
 }
 
 @end

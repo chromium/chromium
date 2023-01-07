@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQL_TRANSACTION_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQL_TRANSACTION_CLIENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -45,11 +44,12 @@ class SQLTransactionClient {
 
  public:
   SQLTransactionClient() = default;
+
+  SQLTransactionClient(const SQLTransactionClient&) = delete;
+  SQLTransactionClient& operator=(const SQLTransactionClient&) = delete;
+
   void DidCommitWriteTransaction(Database*);
   bool DidExceedQuota(Database*);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SQLTransactionClient);
 };
 
 }  // namespace blink

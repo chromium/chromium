@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,19 +13,17 @@
 #include "base/component_export.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
-#include "base/optional.h"
-#include "base/strings/string_piece.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "ipc/ipc_param_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/scheme_host_port.h"
-#include "url/third_party/mozilla/url_parse.h"
-#include "url/url_canon.h"
-#include "url/url_constants.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 
 namespace base {
@@ -36,12 +34,13 @@ template <typename>
 class JavaRef;
 }  // namespace android
 }  // namespace base
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class GURL;
 
 namespace blink {
 class SecurityOrigin;
+class SecurityOriginTest;
 }  // namespace blink
 
 namespace ipc_fuzzer {
@@ -120,16 +119,9 @@ class OriginDataView;
 // * The host component of an IPv6 address includes brackets, just like the URL
 //   representation.
 //
-// Usage:
-//
-// * Origins are generally constructed from an already-canonicalized GURL:
-//
-//     GURL url("https://example.com/");
-//     url::Origin origin = Origin::Create(url);
-//     origin.scheme(); // "https"
-//     origin.host(); // "example.com"
-//     origin.port(); // 443
-//     origin.opaque(); // false
+// * Constructing origins from GURLs (or from SchemeHostPort) is typically a red
+//   flag (this is true for `url::Origin::Create` but also to some extent for
+//   `url::Origin::Resolve`). See docs/security/origin-vs-url.md for more.
 //
 // * To answer the question "Are |this| and |that| "same-origin" with each
 //   other?", use |Origin::IsSameOriginWith|:
@@ -143,29 +135,46 @@ class COMPONENT_EXPORT(URL) Origin {
   // existing origins.
   Origin();
 
-  // Creates an Origin from |url|, as described at
-  // https://url.spec.whatwg.org/#origin, with the following additions:
+  // WARNING: Converting an URL into an Origin is usually a red flag. See
+  // //docs/security/origin-vs-url.md for more details. Some discussion about
+  // deprecating the Create method can be found in https://crbug.com/1270878.
   //
-  // 1. If |url| is invalid or non-standard, an opaque Origin is constructed.
+  // Creates an Origin from `url`, as described at
+  // https://url.spec.whatwg.org/#origin, with the following additions:
+  // 1. If `url` is invalid or non-standard, an opaque Origin is constructed.
   // 2. 'filesystem' URLs behave as 'blob' URLs (that is, the origin is parsed
   //    out of everything in the URL which follows the scheme).
   // 3. 'file' URLs all parse as ("file", "", 0).
   //
-  // Note that the returned Origin may have a different scheme and host from
-  // |url| (e.g. in case of blob URLs - see OriginTest.ConstructFromGURL).
+  // WARNING: `url::Origin::Create(url)` can give unexpected results if:
+  // 1) `url` is "about:blank", or "about:srcdoc" (returning unique, opaque
+  //    origin rather than the real origin of the frame)
+  // 2) `url` comes from a sandboxed frame (potentially returning a non-opaque
+  //    origin, when an opaque one is needed; see also
+  //    https://www.html5rocks.com/en/tutorials/security/sandboxed-iframes/)
+  // 3) Wrong `url` is used - e.g. in some navigations `base_url_for_data_url`
+  //    might need to be used instead of relying on
+  //    `content::NavigationHandle::GetURL`.
+  //
+  // WARNING: The returned Origin may have a different scheme and host from
+  // `url` (e.g. in case of blob URLs - see OriginTest.ConstructFromGURL).
+  //
+  // WARNING: data: URLs will be correctly be translated into opaque origins,
+  // but the precursor origin will be lost (unlike with `url::Origin::Resolve`).
   static Origin Create(const GURL& url);
 
-  // Creates an Origin for the resource |url| as if it were requested
-  // from the context of |base_origin|.  If |url| is standard
+  // Creates an Origin for the resource `url` as if it were requested
+  // from the context of `base_origin`. If `url` is standard
   // (in the sense that it embeds a complete origin, like http/https),
   // this returns the same value as would Create().
   //
-  // If |url| is "about:blank", this returns a copy of |base_origin|.
+  // If `url` is "about:blank" or "about:srcdoc", this returns a copy of
+  // `base_origin`.
   //
-  // Otherwise, returns a new opaque origin derived from |base_origin|.
+  // Otherwise, returns a new opaque origin derived from `base_origin`.
   // In this case, the resulting opaque origin will inherit the tuple
-  // (or precursor tuple) of |base_origin|, but will not be same origin
-  // with |base_origin|, even if |base_origin| is already opaque.
+  // (or precursor tuple) of `base_origin`, but will not be same origin
+  // with `base_origin`, even if `base_origin` is already opaque.
   static Origin Resolve(const GURL& url, const Origin& base_origin);
 
   // Copyable and movable.
@@ -182,7 +191,7 @@ class COMPONENT_EXPORT(URL) Origin {
   // forth over IPC (as transitioning through GURL would risk potentially
   // dangerous recanonicalization); other potential callers should prefer the
   // 'GURL'-based constructor.
-  static base::Optional<Origin> UnsafelyCreateTupleOriginWithoutNormalization(
+  static absl::optional<Origin> UnsafelyCreateTupleOriginWithoutNormalization(
       base::StringPiece scheme,
       base::StringPiece host,
       uint16_t port);
@@ -221,6 +230,15 @@ class COMPONENT_EXPORT(URL) Origin {
   bool operator!=(const Origin& other) const {
     return !IsSameOriginWith(other);
   }
+
+  // Non-opaque origin is "same-origin" with `url` if their schemes, hosts, and
+  // ports are exact matches. Opaque origin is never "same-origin" with any
+  // `url`.  about:blank, about:srcdoc, and invalid GURLs are never
+  // "same-origin" with any origin. This method is a shorthand for
+  // `origin.IsSameOriginWith(url::Origin::Create(url))`.
+  //
+  // See also CanBeDerivedFrom.
+  bool IsSameOriginWith(const GURL& url) const;
 
   // This method returns true for any |url| which if navigated to could result
   // in an origin compatible with |this|.
@@ -289,16 +307,17 @@ class COMPONENT_EXPORT(URL) Origin {
   // and precursor information.
   std::string GetDebugString(bool include_nonce = true) const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
   static Origin FromJavaObject(
       const base::android::JavaRef<jobject>& java_origin);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   friend class blink::SecurityOrigin;
+  friend class blink::SecurityOriginTest;
   // SchemefulSite needs access to the serialization/deserialization logic which
   // includes the nonce.
   friend class net::SchemefulSite;
@@ -379,7 +398,7 @@ class COMPONENT_EXPORT(URL) Origin {
   // This factory method should be used in order to pass opaque Origin objects
   // back and forth over IPC (as transitioning through GURL would risk
   // potentially dangerous recanonicalization).
-  static base::Optional<Origin> UnsafelyCreateOpaqueOriginWithoutNormalization(
+  static absl::optional<Origin> UnsafelyCreateOpaqueOriginWithoutNormalization(
       base::StringPiece precursor_scheme,
       base::StringPiece precursor_host,
       uint16_t precursor_port,
@@ -392,25 +411,26 @@ class COMPONENT_EXPORT(URL) Origin {
   // given |nonce|.
   Origin(const Nonce& nonce, SchemeHostPort precursor);
 
-  // Get the nonce associated with this origin, if it is opaque. This should be
-  // used only when trying to send an Origin across an IPC pipe.
-  base::Optional<base::UnguessableToken> GetNonceForSerialization() const;
+  // Get the nonce associated with this origin, if it is opaque, or nullptr
+  // otherwise. This should be used only when trying to send an Origin across an
+  // IPC pipe.
+  const base::UnguessableToken* GetNonceForSerialization() const;
 
   // Serializes this Origin, including its nonce if it is opaque. If an opaque
   // origin's |tuple_| is invalid nullopt is returned. If the nonce is not
   // initialized, a nonce of 0 is used. Use of this method should be limited as
   // an opaque origin will never be matchable in future browser sessions.
-  base::Optional<std::string> SerializeWithNonce() const;
+  absl::optional<std::string> SerializeWithNonce() const;
 
   // Like SerializeWithNonce(), but forces |nonce_| to be initialized prior to
   // serializing.
-  base::Optional<std::string> SerializeWithNonceAndInitIfNeeded();
+  absl::optional<std::string> SerializeWithNonceAndInitIfNeeded();
 
-  base::Optional<std::string> SerializeWithNonceImpl() const;
+  absl::optional<std::string> SerializeWithNonceImpl() const;
 
   // Deserializes an origin from |ToValueWithNonce|. Returns nullopt if the
   // value was invalid in any way.
-  static base::Optional<Origin> Deserialize(const std::string& value);
+  static absl::optional<Origin> Deserialize(const std::string& value);
 
   // The tuple is used for both tuple origins (e.g. https://example.com:80), as
   // well as for opaque origins, where it tracks the tuple origin from which
@@ -421,7 +441,7 @@ class COMPONENT_EXPORT(URL) Origin {
   // The nonce is used for maintaining identity of an opaque origin. This
   // nonce is preserved when an opaque origin is copied or moved. An Origin
   // is considered opaque if and only if |nonce_| holds a value.
-  base::Optional<Nonce> nonce_;
+  absl::optional<Nonce> nonce_;
 };
 
 // Pretty-printers for logging. These expose the internal state of the nonce.
@@ -432,16 +452,15 @@ std::ostream& operator<<(std::ostream& out, const Origin::Nonce& origin);
 
 COMPONENT_EXPORT(URL) bool IsSameOriginWith(const GURL& a, const GURL& b);
 
-// DEBUG_ALIAS_FOR_ORIGIN(var_name, origin) copies |origin| into a new
-// stack-allocated variable named |<var_name>|.  This helps ensure that the
-// value of |origin| gets preserved in crash dumps.
+// DEBUG_ALIAS_FOR_ORIGIN(var_name, origin) copies `origin` into a new
+// stack-allocated variable named `<var_name>`. This helps ensure that the
+// value of `origin` gets preserved in crash dumps.
 #define DEBUG_ALIAS_FOR_ORIGIN(var_name, origin) \
   DEBUG_ALIAS_FOR_CSTR(var_name, (origin).Serialize().c_str(), 128)
 
 namespace debug {
 
-class COMPONENT_EXPORT(URL) ScopedOriginCrashKey
-    : public base::debug::ScopedCrashKeyString {
+class COMPONENT_EXPORT(URL) ScopedOriginCrashKey {
  public:
   ScopedOriginCrashKey(base::debug::CrashKeyString* crash_key,
                        const url::Origin* value);
@@ -449,6 +468,9 @@ class COMPONENT_EXPORT(URL) ScopedOriginCrashKey
 
   ScopedOriginCrashKey(const ScopedOriginCrashKey&) = delete;
   ScopedOriginCrashKey& operator=(const ScopedOriginCrashKey&) = delete;
+
+ private:
+  base::debug::ScopedCrashKeyString scoped_string_value_;
 };
 
 }  // namespace debug

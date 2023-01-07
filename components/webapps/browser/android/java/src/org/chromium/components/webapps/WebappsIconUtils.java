@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.webapps;
 
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,12 +17,15 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.url.GURL;
 
 /**
  * This class contains functions related to adding shortcuts to the Android Home
@@ -67,7 +69,8 @@ public class WebappsIconUtils {
 
     private static final float SHORTCUT_ICON_IDEAL_SIZE_DP = 48;
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
+    @CalledByNative
     public static Bitmap generateAdaptiveIconBitmap(Bitmap bitmap) {
         Bitmap padded = createHomeScreenIconFromWebIcon(bitmap, true);
         Icon adaptiveIcon = Icon.createWithAdaptiveBitmap(padded);
@@ -195,6 +198,16 @@ public class WebappsIconUtils {
     }
 
     /**
+     * Returns the ideal size for prompt UI icon corner radius.
+     * @return the dimensions in pixels which the prompt UI should use as the corner radius.
+     */
+    @CalledByNative
+    public static int getIdealIconCornerRadiusPxForPromptUI() {
+        Context context = ContextUtils.getApplicationContext();
+        return context.getResources().getDimensionPixelSize(R.dimen.webapk_prompt_ui_icon_radius);
+    }
+
+    /**
      * Check the running Android version supports adaptive icon (i.e. API level >= 26)
      */
     public static boolean doesAndroidSupportMaskableIcons() {
@@ -226,7 +239,7 @@ public class WebappsIconUtils {
      * @return Bitmap Either the touch-icon or the newly created favicon.
      */
     @CalledByNative
-    public static Bitmap generateHomeScreenIcon(String url, int red, int green, int blue) {
+    public static Bitmap generateHomeScreenIcon(GURL url, int red, int green, int blue) {
         Context context = ContextUtils.getApplicationContext();
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         final int outerSize = am.getLauncherLargeIconSize();

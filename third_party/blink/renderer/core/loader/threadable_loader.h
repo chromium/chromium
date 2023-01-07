@@ -32,14 +32,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_THREADABLE_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_THREADABLE_LOADER_H_
 
-#include <memory>
-
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -97,6 +94,8 @@ class CORE_EXPORT ThreadableLoader final
                    ThreadableLoaderClient*,
                    const ResourceLoaderOptions&,
                    ResourceFetcher* = nullptr);
+  ThreadableLoader(const ThreadableLoader&) = delete;
+  ThreadableLoader& operator=(const ThreadableLoader&) = delete;
   ~ThreadableLoader() override;
 
   // Must be called to actually begin the request.
@@ -120,6 +119,9 @@ class CORE_EXPORT ThreadableLoader final
   void Detach();
 
   void SetDefersLoading(bool);
+
+  // Return the task runner this class uses for processing network data.
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
   void Trace(Visitor* visitor) const override;
 
@@ -149,11 +151,11 @@ class CORE_EXPORT ThreadableLoader final
   void DataDownloaded(Resource*, uint64_t) override;
   void DidDownloadToBlob(Resource*, scoped_refptr<BlobDataHandle>) override;
 
+  const ResourceLoaderOptions resource_loader_options_;
+
   Member<ThreadableLoaderClient> client_;
   Member<ExecutionContext> execution_context_;
   Member<ResourceFetcher> resource_fetcher_;
-
-  const ResourceLoaderOptions resource_loader_options_;
 
   // Saved so that we can use the original mode in ResponseReceived() where
   // |resource| might be a reused one (e.g. preloaded resource) which can have a
@@ -169,8 +171,6 @@ class CORE_EXPORT ThreadableLoader final
   base::TimeTicks request_started_;
 
   RawResourceClientStateChecker checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadableLoader);
 };
 
 }  // namespace blink

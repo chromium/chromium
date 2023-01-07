@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -19,14 +19,10 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 struct ExtensionMsg_ExternalConnectionInfo;
 struct ExtensionMsg_TabConnectionInfo;
-
-namespace base {
-class ListValue;
-}
 
 namespace extensions {
 
@@ -43,6 +39,10 @@ class ExtensionFrameHelper
  public:
   ExtensionFrameHelper(content::RenderFrame* render_frame,
                        Dispatcher* extension_dispatcher);
+
+  ExtensionFrameHelper(const ExtensionFrameHelper&) = delete;
+  ExtensionFrameHelper& operator=(const ExtensionFrameHelper&) = delete;
+
   ~ExtensionFrameHelper() override;
 
   // Returns a list of extension RenderFrames that match the given filter
@@ -54,9 +54,9 @@ class ExtensionFrameHelper
       int tab_id,
       mojom::ViewType view_type);
   // Same as above, but returns a v8::Array of the v8 global objects for those
-  // frames, and only includes main frames. Note: This only returns contexts
-  // that are accessible by |context|, and |context| must be the current
-  // context.
+  // frames, and only includes outermost main frames. Note: This only returns
+  // contexts that are accessible by |context|, and |context| must be the
+  // current context.
   // Returns an empty v8::Array if no frames are found.
   static v8::Local<v8::Array> GetV8MainFrames(v8::Local<v8::Context> context,
                                               const std::string& extension_id,
@@ -109,7 +109,7 @@ class ExtensionFrameHelper
   void MessageInvoke(const std::string& extension_id,
                      const std::string& module_name,
                      const std::string& function_name,
-                     const base::Value args) override;
+                     base::Value::List args) override;
 
   void ExecuteCode(mojom::ExecuteCodeParamsPtr param,
                    ExecuteCodeCallback callback) override;
@@ -118,6 +118,11 @@ class ExtensionFrameHelper
                                 const std::string& extension_id,
                                 const std::string& script_id,
                                 const GURL& url) override;
+
+  void UpdateBrowserWindowId(int32_t window_id) override;
+
+  void NotifyDidCreateScriptContext(int32_t world_id);
+  bool did_create_script_context() const { return did_create_script_context_; }
 
   // Called when the document element has been inserted in this frame. This
   // method may invoke untrusted JavaScript code that invalidate the frame and
@@ -162,6 +167,7 @@ class ExtensionFrameHelper
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnDestruct() override;
   void DraggableRegionsChanged() override;
+  void DidClearWindowObject() override;
 
   // IPC handlers.
   void OnExtensionValidateMessagePort(int worker_thread_id, const PortId& id);
@@ -177,11 +183,6 @@ class ExtensionFrameHelper
   void OnExtensionDispatchOnDisconnect(int worker_thread_id,
                                        const PortId& id,
                                        const std::string& error_message);
-  void OnUpdateBrowserWindowId(int browser_window_id);
-  void OnExtensionResponse(int request_id,
-                           bool success,
-                           const base::ListValue& response,
-                           const std::string& error);
 
   // Type of view associated with the RenderFrame.
   mojom::ViewType view_type_ = mojom::ViewType::kInvalid;
@@ -218,13 +219,15 @@ class ExtensionFrameHelper
   // navigation happens, it is either the initial one or a reload.
   bool has_started_first_navigation_ = false;
 
+  bool did_create_script_context_ = false;
+  // Whether we are currently initializing the main world script context.
+  bool is_initializing_main_world_script_context_ = false;
+
   mojo::AssociatedRemote<mojom::LocalFrameHost> local_frame_host_remote_;
 
   mojo::AssociatedReceiver<mojom::LocalFrame> local_frame_receiver_{this};
 
   base::WeakPtrFactory<ExtensionFrameHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionFrameHelper);
 };
 
 }  // namespace extensions

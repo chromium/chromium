@@ -1,0 +1,22 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/navigation-api/
+callback NavigationInterceptHandler = Promise<void>();
+
+dictionary NavigationInterceptOptions {
+  NavigationInterceptHandler handler;
+  NavigationFocusReset focusReset;
+  NavigationScrollBehavior scroll;
+};
+
+enum NavigationFocusReset {
+  "after-transition",
+  "manual"
+};
+
+enum NavigationScrollBehavior {
+  "after-transition",
+  "manual"
+};

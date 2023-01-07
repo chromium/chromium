@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SetTimeBrowserProxyImpl} from 'chrome://set-time/set_time_browser_proxy.js';
 
-import {TestBrowserProxy} from './test_browser_proxy.m.js';
+import {TestBrowserProxy} from './test_browser_proxy.js';
 
 suite('SetTimeDialog', function() {
   let setTimeElement = null;
@@ -18,8 +18,11 @@ suite('SetTimeDialog', function() {
   class TestSetTimeBrowserProxy extends TestBrowserProxy {
     constructor() {
       super([
-        'sendPageReady', 'setTimeInSeconds', 'setTimezone', 'dialogClose',
-        'doneClicked'
+        'sendPageReady',
+        'setTimeInSeconds',
+        'setTimezone',
+        'dialogClose',
+        'doneClicked',
       ]);
     }
 
@@ -57,7 +60,7 @@ suite('SetTimeDialog', function() {
       timezoneList: [
         [
           'America/Los_Angeles',
-          '(GMT-7:00) Pacific Daylight Time (Los Angeles)'
+          '(GMT-7:00) Pacific Daylight Time (Los Angeles)',
         ],
         ['America/Sao_Paulo', '(GMT-3:00) Brasilis Standard Time (Sao Paulo)'],
         ['Asia/Seoul', '(GMT+9:00) Korean Standard Time (Seoul)'],
@@ -131,13 +134,13 @@ suite('SetTimeDialog', function() {
   test('SystemTimezoneChanged', () => {
     const timezoneSelect = setTimeElement.$$('#timezoneSelect');
     assertTrue(!!timezoneSelect);
-    expectEquals('America/Sao_Paulo', timezoneSelect.value);
+    assertEquals('America/Sao_Paulo', timezoneSelect.value);
 
     cr.webUIListenerCallback('system-timezone-changed', 'America/Los_Angeles');
-    expectEquals('America/Los_Angeles', timezoneSelect.value);
+    assertEquals('America/Los_Angeles', timezoneSelect.value);
 
     cr.webUIListenerCallback('system-timezone-changed', 'Asia/Seoul');
-    expectEquals('Asia/Seoul', timezoneSelect.value);
+    assertEquals('Asia/Seoul', timezoneSelect.value);
   });
 
   // Disabled for flake. https://crbug.com/1043598
@@ -150,7 +153,7 @@ suite('SetTimeDialog', function() {
 
     const timezoneSelect = setTimeElement.$$('#timezoneSelect');
     assertTrue(!!timezoneSelect);
-    expectEquals('America/Sao_Paulo', timezoneSelect.value);
+    assertEquals('America/Sao_Paulo', timezoneSelect.value);
 
     // Simulate the user changing the time by forwarding it 15 minutes.
     const originalTime = dateInput.valueAsDate;
@@ -162,7 +165,7 @@ suite('SetTimeDialog', function() {
 
     // Simulate the user changing the time zone.
     cr.webUIListenerCallback('system-timezone-changed', 'America/Los_Angeles');
-    expectEquals('America/Los_Angeles', timezoneSelect.value);
+    assertEquals('America/Los_Angeles', timezoneSelect.value);
 
     // Make sure that time on input field was updated.
     const updatedTimeAndTimezone = dateInput.valueAsDate;
@@ -170,7 +173,7 @@ suite('SetTimeDialog', function() {
     // updatedTimeAndTimezone reflects the new timezone so it should be
     // smaller, because it is more to the west than the original
     // one, therefore even with the 15 minutes forwarded it should be smaller.
-    expectGT(updatedTime.getTime(), updatedTimeAndTimezone.getTime());
+    assertGT(updatedTime.getTime(), updatedTimeAndTimezone.getTime());
 
     // Close the dialog.
     setTimeElement.$$('#doneButton').click();
@@ -185,10 +188,10 @@ suite('SetTimeDialog', function() {
     // timeInSeconds should be bigger, because this timestamp is seconds
     // since epoch and it does not hold any information regarding the
     // current timezone.
-    expectGT(timeInSeconds, todaySeconds);
+    assertGT(timeInSeconds, todaySeconds);
 
     const newTimezone = await testBrowserProxy.whenCalled('setTimezone');
-    expectEquals('America/Los_Angeles', newTimezone);
+    assertEquals('America/Los_Angeles', newTimezone);
   });
 
   suite('HideTimezone', () => {

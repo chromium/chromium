@@ -1,16 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_RENDERER_HOST_OVERSCROLL_CONTROLLER_DELEGATE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_OVERSCROLL_CONTROLLER_DELEGATE_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
@@ -21,6 +19,11 @@ namespace content {
 class CONTENT_EXPORT OverscrollControllerDelegate {
  public:
   OverscrollControllerDelegate();
+
+  OverscrollControllerDelegate(const OverscrollControllerDelegate&) = delete;
+  OverscrollControllerDelegate& operator=(const OverscrollControllerDelegate&) =
+      delete;
+
   virtual ~OverscrollControllerDelegate();
 
   // Get the size of the display containing the view corresponding to the
@@ -46,13 +49,12 @@ class CONTENT_EXPORT OverscrollControllerDelegate {
 
   // Returns the optional maximum amount allowed for the absolute value of
   // overscroll delta corresponding to the current overscroll mode.
-  virtual base::Optional<float> GetMaxOverscrollDelta() const = 0;
+  virtual absl::optional<float> GetMaxOverscrollDelta() const = 0;
 
   base::WeakPtr<OverscrollControllerDelegate> GetWeakPtr();
 
  private:
   base::WeakPtrFactory<OverscrollControllerDelegate> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(OverscrollControllerDelegate);
 };
 
 }  // namespace content

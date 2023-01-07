@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/download/public/common/stream_handle_input_stream.h"
 #include "components/download/public/common/url_loader_factory_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,24 +24,27 @@ class URLLoaderStatusMonitor : public network::mojom::URLLoaderClient {
   using URLLoaderStatusChangeCallback =
       base::OnceCallback<void(const network::URLLoaderCompletionStatus&)>;
   explicit URLLoaderStatusMonitor(URLLoaderStatusChangeCallback callback);
+
+  URLLoaderStatusMonitor(const URLLoaderStatusMonitor&) = delete;
+  URLLoaderStatusMonitor& operator=(const URLLoaderStatusMonitor&) = delete;
+
   ~URLLoaderStatusMonitor() override = default;
 
   // network::mojom::URLLoaderClient
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override {}
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {}
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override {}
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback callback) override {}
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {}
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {}
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
  private:
   URLLoaderStatusChangeCallback callback_;
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderStatusMonitor);
 };
 
 URLLoaderStatusMonitor::URLLoaderStatusMonitor(
@@ -59,7 +63,7 @@ std::unique_ptr<ResourceDownloader> ResourceDownloader::BeginDownload(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const URLSecurityPolicy& url_security_policy,
-    const GURL& site_url,
+    const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
     bool is_new_download,
@@ -69,8 +73,8 @@ std::unique_ptr<ResourceDownloader> ResourceDownloader::BeginDownload(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
   auto downloader = std::make_unique<ResourceDownloader>(
       delegate, std::move(request), params->render_process_host_id(),
-      params->render_frame_host_routing_id(), site_url, tab_url,
-      tab_referrer_url, is_new_download, task_runner,
+      params->render_frame_host_routing_id(), serialized_embedder_download_data,
+      tab_url, tab_referrer_url, is_new_download, task_runner,
       std::move(url_loader_factory), url_security_policy,
       std::move(wake_lock_provider));
 
@@ -84,7 +88,7 @@ void ResourceDownloader::InterceptNavigationResponse(
     std::unique_ptr<network::ResourceRequest> resource_request,
     int render_process_id,
     int render_frame_id,
-    const GURL& site_url,
+    const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
     std::vector<GURL> url_chain,
@@ -98,8 +102,8 @@ void ResourceDownloader::InterceptNavigationResponse(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
   auto downloader = std::make_unique<ResourceDownloader>(
       delegate, std::move(resource_request), render_process_id, render_frame_id,
-      site_url, tab_url, tab_referrer_url, true, task_runner,
-      std::move(url_loader_factory), url_security_policy,
+      serialized_embedder_download_data, tab_url, tab_referrer_url, true,
+      task_runner, std::move(url_loader_factory), url_security_policy,
       std::move(wake_lock_provider));
   ResourceDownloader* raw_downloader = downloader.get();
   task_runner->PostTask(
@@ -119,7 +123,7 @@ ResourceDownloader::ResourceDownloader(
     std::unique_ptr<network::ResourceRequest> resource_request,
     int render_process_id,
     int render_frame_id,
-    const GURL& site_url,
+    const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
     bool is_new_download,
@@ -132,7 +136,7 @@ ResourceDownloader::ResourceDownloader(
       is_new_download_(is_new_download),
       render_process_id_(render_process_id),
       render_frame_id_(render_frame_id),
-      site_url_(site_url),
+      serialized_embedder_download_data_(serialized_embedder_download_data),
       tab_url_(tab_url),
       tab_referrer_url_(tab_referrer_url),
       delegate_task_runner_(task_runner),
@@ -161,13 +165,14 @@ void ResourceDownloader::Start(
   url_loader_client_ = std::make_unique<DownloadResponseHandler>(
       resource_request_.get(), this,
       std::make_unique<DownloadSaveInfo>(
-          download_url_parameters->GetSaveInfo()),
+          download_url_parameters->TakeSaveInfo()),
       is_parallel_request, download_url_parameters->is_transient(),
       download_url_parameters->fetch_error_body(),
       download_url_parameters->cross_origin_redirects(),
       download_url_parameters->request_headers(),
       download_url_parameters->request_origin(),
       download_url_parameters->download_source(),
+      download_url_parameters->require_safety_checks(),
       std::vector<GURL>(1, resource_request_->url), is_background_mode);
 
   mojo::PendingRemote<network::mojom::URLLoaderClient> url_loader_client_remote;
@@ -180,7 +185,8 @@ void ResourceDownloader::Start(
   url_loader_factory_->CreateLoaderAndStart(
       url_loader_.BindNewPipeAndPassReceiver(),
       0,  // request_id
-      network::mojom::kURLLoadOptionSendSSLInfoWithResponse,
+      network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
+          network::mojom::kURLLoadOptionSniffMimeType,
       *(resource_request_.get()), std::move(url_loader_client_remote),
       net::MutableNetworkTrafficAnnotationTag(
           download_url_parameters->GetNetworkTrafficAnnotation()));
@@ -205,14 +211,14 @@ void ResourceDownloader::InterceptResponse(
       false, /* fetch_error_body */
       network::mojom::RedirectMode::kFollow,
       download::DownloadUrlParameters::RequestHeadersType(),
-      std::string(), /* request_origin */
-      download::DownloadSource::NAVIGATION, std::move(url_chain),
-      false /* is_background_mode */);
+      std::string(),                              /* request_origin */
+      download::DownloadSource::NAVIGATION, true, /* require_safety_checks */
+      std::move(url_chain), false /* is_background_mode */);
 
   // Simulate on the new URLLoaderClient calls that happened on the old client.
   response_head->cert_status = cert_status;
-  url_loader_client_->OnReceiveResponse(std::move(response_head));
-  url_loader_client_->OnStartLoadingResponseBody(std::move(response_body));
+  url_loader_client_->OnReceiveResponse(
+      std::move(response_head), std::move(response_body), absl::nullopt);
 
   // Bind the new client.
   url_loader_client_receiver_ =
@@ -225,7 +231,8 @@ void ResourceDownloader::OnResponseStarted(
     mojom::DownloadStreamHandlePtr stream_handle) {
   download_create_info->is_new_download = is_new_download_;
   download_create_info->guid = guid_;
-  download_create_info->site_url = site_url_;
+  download_create_info->serialized_embedder_download_data =
+      serialized_embedder_download_data_;
   download_create_info->tab_url = tab_url_;
   download_create_info->tab_referrer_url = tab_referrer_url_;
   download_create_info->render_process_id = render_process_id_;
@@ -252,7 +259,7 @@ void ResourceDownloader::OnReceiveRedirect() {
       std::vector<std::string>() /* removed_headers */,
       net::HttpRequestHeaders() /* modified_headers */,
       net::HttpRequestHeaders() /* modified_cors_exempt_headers */,
-      base::nullopt);
+      absl::nullopt);
 }
 
 void ResourceDownloader::OnResponseCompleted() {
@@ -279,7 +286,7 @@ void ResourceDownloader::Destroy() {
   delegate_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UrlDownloadHandler::Delegate::OnUrlDownloadStopped,
-                     delegate_, this));
+                     delegate_, base::UnsafeDanglingUntriaged(this)));
 }
 
 void ResourceDownloader::RequestWakeLock(

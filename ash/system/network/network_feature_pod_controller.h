@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,34 +7,62 @@
 
 #include <string>
 
+#include "ash/constants/quick_settings_catalogs.h"
+#include "ash/system/network/network_feature_pod_button.h"
+#include "ash/system/network/network_icon_animation_observer.h"
+#include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace ash {
 
-class NetworkFeaturePodButton;
+class FeaturePodButton;
 class UnifiedSystemTrayController;
 
-// Controller of network feature pod button.
-class NetworkFeaturePodController : public FeaturePodControllerBase {
+// Controller of the feature pod button that allows users to toggle whether
+// certain network technologies are enabled or disabled, and that allows users
+// to navigate to a more detailed page with a network list.
+class ASH_EXPORT NetworkFeaturePodController
+    : public network_icon::AnimationObserver,
+      public FeaturePodControllerBase,
+      public NetworkFeaturePodButton::Delegate,
+      public TrayNetworkStateObserver {
  public:
-  NetworkFeaturePodController(UnifiedSystemTrayController* tray_controller);
+  explicit NetworkFeaturePodController(
+      UnifiedSystemTrayController* tray_controller);
+  NetworkFeaturePodController(const NetworkFeaturePodController&) = delete;
+  NetworkFeaturePodController& operator=(const NetworkFeaturePodController&) =
+      delete;
   ~NetworkFeaturePodController() override;
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
  private:
-  void UpdateButton();
+  // network_icon::AnimationObserver:
+  void NetworkIconChanged() override;
 
-  // Unowned.
+  // NetworkFeaturePodButton::Delegate:
+  void OnFeaturePodButtonThemeChanged() override;
+
+  // TrayNetworkStateObserver:
+  void ActiveNetworkStateChanged() override;
+
+  std::u16string ComputeButtonLabel(
+      const chromeos::network_config::mojom::NetworkStateProperties* network)
+      const;
+  std::u16string ComputeButtonSubLabel(
+      const chromeos::network_config::mojom::NetworkStateProperties* network)
+      const;
+
+  // Updates |button_| state to reflect the current state of networks.
+  void UpdateButtonStateIfExists();
+
+  FeaturePodButton* button_ = nullptr;
   UnifiedSystemTrayController* tray_controller_;
-  NetworkFeaturePodButton* button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkFeaturePodController);
 };
 
 }  // namespace ash

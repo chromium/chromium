@@ -1,17 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_manager_client_helper.h"
 
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -21,6 +20,8 @@
 namespace password_manager {
 
 namespace {
+
+constexpr int kMaxMoveToAccountOffersForNonOptedInUser = 5;
 
 bool IsPrimaryAccountSignIn(const signin::IdentityManager& identity_manager,
                             const std::u16string& username,
@@ -98,9 +99,7 @@ bool PasswordManagerClientHelper::ShouldPromptToEnableAutoSignIn() const {
   return password_bubble_experiment::
              ShouldShowAutoSignInPromptFirstRunExperience(
                  delegate_->GetPrefs()) &&
-         delegate_->GetPrefs()->GetBoolean(
-             password_manager::prefs::kCredentialsEnableAutosignin) &&
-         !delegate_->IsIncognito();
+         delegate_->IsAutoSignInEnabled() && !delegate_->IsIncognito();
 }
 
 bool PasswordManagerClientHelper::ShouldPromptToMovePasswordToAccount(
@@ -125,14 +124,9 @@ bool PasswordManagerClientHelper::ShouldPromptToMovePasswordToAccount(
           submitted_manager.GetPendingCredentials().signon_realm)) {
     return false;
   }
-  int max_move_to_account_offers_for_non_opted_in_user =
-      base::GetFieldTrialParamByFeatureAsInt(
-          features::kEnablePasswordsAccountStorage,
-          features::kMaxMoveToAccountOffersForNonOptedInUser,
-          features::kMaxMoveToAccountOffersForNonOptedInUserDefaultValue);
   return feature_manager->IsOptedInForAccountStorage() ||
          feature_manager->GetMoveOfferedToNonOptedInUserCount() <
-             max_move_to_account_offers_for_non_opted_in_user;
+             kMaxMoveToAccountOffersForNonOptedInUser;
 }
 
 }  // namespace password_manager

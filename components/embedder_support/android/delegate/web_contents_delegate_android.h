@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params) override;
-  content::ColorChooser* OpenColorChooser(
+  std::unique_ptr<content::ColorChooser> OpenColorChooser(
       content::WebContents* source,
       SkColor color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions)
@@ -60,7 +60,7 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   void VisibleSecurityStateChanged(content::WebContents* source) override;
   void ActivateContents(content::WebContents* contents) override;
   void LoadingStateChanged(content::WebContents* source,
-                           bool to_different_document) override;
+                           bool should_show_loading_ui) override;
   void RendererUnresponsive(
       content::WebContents* source,
       content::RenderWidgetHost* render_widget_host,

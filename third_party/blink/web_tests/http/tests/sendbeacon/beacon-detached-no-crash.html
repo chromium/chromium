@@ -20,7 +20,7 @@ function processMessage(event) {
 
 if (window.testRunner) {
     testRunner.dumpAsText();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
     testRunner.waitUntilDone();
 }
 w = window.open('/js-test-resources/window-postmessage-open-close.html');

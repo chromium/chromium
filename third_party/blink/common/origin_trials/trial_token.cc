@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include "base/big_endian.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -66,7 +66,7 @@ TrialToken::~TrialToken() = default;
 // static
 std::unique_ptr<TrialToken> TrialToken::From(
     base::StringPiece token_text,
-    base::StringPiece public_key,
+    const OriginTrialPublicKey& public_key,
     OriginTrialTokenStatus* out_status) {
   DCHECK(out_status);
   std::string token_payload;
@@ -82,12 +82,12 @@ std::unique_ptr<TrialToken> TrialToken::From(
   if (token) {
     token->signature_ = token_signature;
     *out_status = OriginTrialTokenStatus::kSuccess;
+    DVLOG(2) << "Well-formed origin trial token found for feature "
+             << token->feature_name();
   } else {
     DVLOG(2) << "Malformed origin trial token found (unable to parse)";
     *out_status = OriginTrialTokenStatus::kMalformed;
   }
-  DVLOG(2) << "Valid origin trial token found for feature "
-           << token->feature_name();
   return token;
 }
 
@@ -107,11 +107,12 @@ OriginTrialTokenStatus TrialToken::IsValid(const url::Origin& origin,
 }
 
 // static
-OriginTrialTokenStatus TrialToken::Extract(base::StringPiece token_text,
-                                           base::StringPiece public_key,
-                                           std::string* out_token_payload,
-                                           std::string* out_token_signature,
-                                           uint8_t* out_token_version) {
+OriginTrialTokenStatus TrialToken::Extract(
+    base::StringPiece token_text,
+    const OriginTrialPublicKey& public_key,
+    std::string* out_token_payload,
+    std::string* out_token_signature,
+    uint8_t* out_token_version) {
   if (token_text.empty()) {
     return OriginTrialTokenStatus::kMalformed;
   }
@@ -145,7 +146,9 @@ OriginTrialTokenStatus TrialToken::Extract(base::StringPiece token_text,
 
   // Extract the length of the signed data (Big-endian).
   uint32_t payload_length;
-  base::ReadBigEndian(&(token_contents[kPayloadLengthOffset]), &payload_length);
+  base::ReadBigEndian(
+      reinterpret_cast<const uint8_t*>(&(token_contents[kPayloadLengthOffset])),
+      &payload_length);
 
   // Validate that the stated length matches the actual payload length.
   if (payload_length != token_contents.length() - kPayloadOffset) {
@@ -160,8 +163,7 @@ OriginTrialTokenStatus TrialToken::Extract(base::StringPiece token_text,
                                   kPayloadLengthSize + payload_length);
 
   // The data which is covered by the signature is (version + length + payload).
-  std::string signed_data =
-      version_piece.as_string() + payload_piece.as_string();
+  std::string signed_data = base::StrCat({version_piece, payload_piece});
 
   // Validate the signature on the data before proceeding.
   if (!TrialToken::ValidateSignature(signature, signed_data, public_key)) {
@@ -171,7 +173,7 @@ OriginTrialTokenStatus TrialToken::Extract(base::StringPiece token_text,
   // Return the payload and signature, as new strings.
   *out_token_version = version;
   *out_token_payload = token_contents.substr(kPayloadOffset, payload_length);
-  *out_token_signature = signature.as_string();
+  *out_token_signature = std::string(signature);
   return OriginTrialTokenStatus::kSuccess;
 }
 
@@ -186,7 +188,7 @@ std::unique_ptr<TrialToken> TrialToken::Parse(const std::string& token_payload,
     return nullptr;
   }
 
-  base::Optional<base::Value> datadict = base::JSONReader::Read(token_payload);
+  absl::optional<base::Value> datadict = base::JSONReader::Read(token_payload);
   if (!datadict || !datadict->is_dict()) {
     return nullptr;
   }
@@ -276,10 +278,7 @@ bool TrialToken::ValidateDate(const base::Time& now) const {
 // static
 bool TrialToken::ValidateSignature(base::StringPiece signature,
                                    const std::string& data,
-                                   base::StringPiece public_key) {
-  // Public key must be 32 bytes long for Ed25519.
-  CHECK_EQ(public_key.length(), 32UL);
-
+                                   const OriginTrialPublicKey& public_key) {
   // Signature must be 64 bytes long.
   if (signature.length() != 64) {
     return false;
@@ -287,8 +286,7 @@ bool TrialToken::ValidateSignature(base::StringPiece signature,
 
   int result = ED25519_verify(
       reinterpret_cast<const uint8_t*>(data.data()), data.length(),
-      reinterpret_cast<const uint8_t*>(signature.data()),
-      reinterpret_cast<const uint8_t*>(public_key.data()));
+      reinterpret_cast<const uint8_t*>(signature.data()), public_key.data());
   return (result != 0);
 }
 

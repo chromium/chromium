@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
@@ -40,7 +39,10 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeEffect {
   KeyframeEffect();
   ~KeyframeEffect();
 
+  KeyframeEffect(KeyframeEffect&&);
   KeyframeEffect(const KeyframeEffect&) = delete;
+
+  KeyframeEffect& operator=(KeyframeEffect&&) = default;
   KeyframeEffect& operator=(const KeyframeEffect&) = delete;
 
   virtual void AddKeyframeModel(std::unique_ptr<KeyframeModel> keyframe_model);

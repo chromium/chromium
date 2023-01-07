@@ -21,7 +21,7 @@ test(function(t) {
 
     child.id = "";
     assert_equals(axFutureParent.childrenCount, 0, "after clearing id");
-    assert_equals(futureParent.ariaOwnsElements, null);
+    assert_array_equals(futureParent.ariaOwnsElements, []);
 
     child.id = "future_child";
     assert_equals(axFutureParent.childrenCount, 1, "after setting id");
@@ -29,7 +29,7 @@ test(function(t) {
 
     futureParent.setAttribute("aria-owns", "");
     assert_equals(axFutureParent.childrenCount, 0, "after clearing aria-owns");
-    assert_equals(futureParent.ariaOwnsElements, null);
+    assert_array_equals(futureParent.ariaOwnsElements, []);
 
     futureParent.setAttribute("aria-owns", "future_child");
     assert_equals(axFutureParent.childrenCount, 1, "after setting aria-oens");
@@ -46,7 +46,7 @@ test(function(t) {
 
     child.remove();
     assert_equals(axFutureParent.childrenCount, 0);
-    assert_equals(futureParent.ariaOwnsElements, null);
+    assert_array_equals(futureParent.ariaOwnsElements, []);
 }, "Aria-owns is dynamically recomputed.");
 </script>
 

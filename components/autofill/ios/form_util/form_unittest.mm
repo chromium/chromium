@@ -1,14 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
+#import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #include "components/autofill/ios/form_util/form_activity_tab_helper.h"
+#import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
+#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "components/autofill/ios/form_util/test_form_activity_observer.h"
 #import "ios/web/public/browser_state.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
-#import "ios/web/public/test/web_js_test.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,26 +20,25 @@
 #error "This file requires ARC support."
 #endif
 
+using autofill::FieldRendererId;
+using autofill::FormRendererId;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 
-class FormTestClient : public web::FakeWebClient {
- public:
-  NSString* GetDocumentStartScriptForAllFrames(
-      web::BrowserState* browser_state) const override {
-    return web::test::GetPageScript(@"form_util_js");
-  }
-};
-
 // Text fixture to test password controller.
-class FormJsTest : public web::WebJsTest<web::WebTestWithWebState> {
+class FormJsTest : public AutofillTestWithWebState {
  public:
   FormJsTest()
-      : web::WebJsTest<web::WebTestWithWebState>(
-            std::make_unique<FormTestClient>()) {}
+      : AutofillTestWithWebState(std::make_unique<web::FakeWebClient>()) {
+    web::FakeWebClient* web_client =
+        static_cast<web::FakeWebClient*>(GetWebClient());
+    web_client->SetJavaScriptFeatures(
+        {autofill::FormUtilJavaScriptFeature::GetInstance(),
+         autofill::FormHandlersJavaScriptFeature::GetInstance()});
+  }
 
   void SetUp() override {
-    web::WebJsTest<web::WebTestWithWebState>::SetUp();
+    web::WebTestWithWebState::SetUp();
     observer_ =
         std::make_unique<autofill::TestFormActivityObserver>(web_state());
     autofill::FormActivityTabHelper::GetOrCreateForWebState(web_state())
@@ -45,10 +48,19 @@ class FormJsTest : public web::WebJsTest<web::WebTestWithWebState> {
   void TearDown() override {
     autofill::FormActivityTabHelper::GetOrCreateForWebState(web_state())
         ->RemoveObserver(observer_.get());
-    web::WebJsTest<web::WebTestWithWebState>::TearDown();
+    web::WebTestWithWebState::TearDown();
   }
 
  protected:
+  web::WebFrame* WaitForMainFrame() {
+    __block web::WebFrame* main_frame = nullptr;
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+      main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+      return main_frame != nullptr;
+    }));
+    return main_frame;
+  }
+
   std::unique_ptr<autofill::TestFormActivityObserver> observer_;
 };
 
@@ -164,9 +176,13 @@ TEST_F(FormJsTest, FormSameOriginIFrame) {
 // Tests that a new form triggers form_changed event.
 TEST_F(FormJsTest, AddForm) {
   LoadHtml(@"<body></body>");
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
+
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+  SetUpForUniqueIds(main_frame);
+  TrackFormMutations(main_frame);
+
   ExecuteJavaScript(
-      @"__gCrWeb.formHandlers.trackFormMutations(10);"
       @"var form = document.createElement('form');"
       @"document.body.appendChild(form);");
   autofill::TestFormActivityObserver* block_observer = observer_.get();
@@ -183,8 +199,11 @@ TEST_F(FormJsTest, AddForm) {
 TEST_F(FormJsTest, AddInput) {
   LoadHtml(@"<form id='formId'/>");
 
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+  TrackFormMutations(main_frame);
+
   ExecuteJavaScript(
-      @"__gCrWeb.formHandlers.trackFormMutations(10);"
       @"var input = document.createElement('input');"
       @"document.getElementById('formId').appendChild(input);");
   autofill::TestFormActivityObserver* block_observer = observer_.get();
@@ -201,8 +220,11 @@ TEST_F(FormJsTest, AddInput) {
 TEST_F(FormJsTest, AddSelect) {
   LoadHtml(@"<form id='formId'/>");
 
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+  TrackFormMutations(main_frame);
+
   ExecuteJavaScript(
-      @"__gCrWeb.formHandlers.trackFormMutations(10);"
       @"var select = document.createElement('select');"
       @"document.getElementById('formId').appendChild(select);");
   autofill::TestFormActivityObserver* block_observer = observer_.get();
@@ -222,8 +244,11 @@ TEST_F(FormJsTest, AddOption) {
        "<select id='select1'><option value='CA'>CA</option></select>"
        "</form>");
 
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+  TrackFormMutations(main_frame);
+
   ExecuteJavaScript(
-      @"__gCrWeb.formHandlers.trackFormMutations(10);"
       @"var option = document.createElement('option');"
       @"document.getElementById('select1').appendChild(option);");
   autofill::TestFormActivityObserver* block_observer = observer_.get();
@@ -243,17 +268,71 @@ TEST_F(FormJsTest, RemoveForm) {
             "<input type=\"password\" name=\"password\" id=\"id2\">"
             "<input type=\"submit\" id=\"submit_input\"/>"
             "</form>");
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);"
-                    @"__gCrWeb.formHandlers.trackFormMutations(10);"
-                    @"var form1 = document.getElementById('form1');"
+
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+  SetUpForUniqueIds(main_frame);
+  TrackFormMutations(main_frame);
+
+  ExecuteJavaScript(@"var form1 = document.getElementById('form1');"
                     @"__gCrWeb.fill.setUniqueIDIfNeeded(form1);"
                     @"form1.parentNode.removeChild(form1);");
   autofill::TestFormActivityObserver* block_observer = observer_.get();
-  __block autofill::TestFormActivityInfo* info = nil;
+  __block autofill::TestFormRemovalInfo* info = nil;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    info = block_observer->form_removal_info();
+    return info != nil;
+  }));
+  EXPECT_FALSE(info->form_removal_params.input_missing);
+  EXPECT_EQ(FormRendererId(1), info->form_removal_params.unique_form_id);
+}
+
+// Tests that removing unowned password fields triggers 'password_form_removed"
+// event.
+TEST_F(FormJsTest, RemoveFormlessPasswordFields) {
+  LoadHtml(@"<body><div>"
+            "<input type=\"password\" name=\"password\" id=\"pw\">"
+            "<input type=\"submit\" id=\"submit_input\"/>"
+            "</div></body>");
+
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+  SetUpForUniqueIds(main_frame);
+  TrackFormMutations(main_frame);
+
+  ExecuteJavaScript(@"var password = document.getElementById('pw');"
+                    @"__gCrWeb.fill.setUniqueIDIfNeeded(password);"
+                    @"password.parentNode.removeChild(password);");
+
+  autofill::TestFormActivityObserver* block_observer = observer_.get();
+  __block autofill::TestFormRemovalInfo* info = nil;
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    info = block_observer->form_removal_info();
+    return info != nil;
+  }));
+  EXPECT_FALSE(info->form_removal_params.input_missing);
+  EXPECT_FALSE(info->form_removal_params.unique_form_id);
+  std::vector<FieldRendererId> expected_removed_ids = {FieldRendererId(1)};
+  EXPECT_EQ(info->form_removal_params.removed_unowned_fields,
+            expected_removed_ids);
+}
+
+// Tests that a new element that contains 'form' in the tag name does not
+// trigger a form_changed event.
+TEST_F(FormJsTest, AddCustomElement) {
+  LoadHtml(@"<body></body>");
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+  TrackFormMutations(main_frame);
+
+  ExecuteJavaScript(@"var form = document.createElement('my-form');"
+                    @"document.body.appendChild(form);");
+
+  // Check that no activity is observed upon JS completion.
+  autofill::TestFormActivityObserver* block_observer = observer_.get();
+  __block autofill::TestFormActivityInfo* info = nil;
+  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     info = block_observer->form_activity_info();
     return info != nil;
   }));
-  EXPECT_EQ("password_form_removed", info->form_activity.type);
-  EXPECT_FALSE(info->form_activity.input_missing);
 }

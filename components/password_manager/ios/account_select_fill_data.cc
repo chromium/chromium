@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/ios/account_select_fill_data.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 
@@ -28,8 +29,8 @@ Credential::~Credential() = default;
 AccountSelectFillData::AccountSelectFillData() = default;
 AccountSelectFillData::~AccountSelectFillData() = default;
 
-void AccountSelectFillData::Add(
-    const autofill::PasswordFormFillData& form_data) {
+void AccountSelectFillData::Add(const autofill::PasswordFormFillData& form_data,
+                                bool is_cross_origin_iframe) {
   auto iter_ok = forms_.insert(
       std::make_pair(form_data.form_renderer_id.value(), FormInfo()));
   FormInfo& form_info = iter_ok.first->second;
@@ -42,15 +43,22 @@ void AccountSelectFillData::Add(
   // the latest known credentials, since credentials can be updated between
   // loading of different forms.
   credentials_.clear();
-  credentials_.push_back({form_data.username_field.value,
-                          form_data.password_field.value,
-                          form_data.preferred_realm});
+
+  credentials_.push_back(
+      {form_data.username_field.value, form_data.password_field.value,
+       is_cross_origin_iframe && form_data.preferred_realm.empty()
+           ? form_data.url.spec()
+           : form_data.preferred_realm});
 
   for (const auto& username_password_and_realm : form_data.additional_logins) {
     const std::u16string& username = username_password_and_realm.username;
     const std::u16string& password = username_password_and_realm.password;
     const std::string& realm = username_password_and_realm.realm;
-    credentials_.push_back({username, password, realm});
+    if (is_cross_origin_iframe && realm.empty()) {
+      credentials_.push_back({username, password, form_data.url.spec()});
+    } else {
+      credentials_.push_back({username, password, realm});
+    }
   }
 }
 
@@ -95,10 +103,7 @@ std::unique_ptr<FillData> AccountSelectFillData::GetFillData(
     return nullptr;
   }
 
-  auto it = std::find_if(credentials_.begin(), credentials_.end(),
-                         [&username](const auto& credential) {
-                           return credential.username == username;
-                         });
+  auto it = base::ranges::find(credentials_, username, &Credential::username);
   if (it == credentials_.end())
     return nullptr;
   const Credential& credential = *it;

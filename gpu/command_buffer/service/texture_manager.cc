@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "base/bits.h"
 #include "base/format_macros.h"
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -30,6 +30,7 @@
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_enums.h"
+#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_state_restorer.h"
 #include "ui/gl/gl_version_info.h"
@@ -261,11 +262,11 @@ class FormatTypeValidator {
         {GL_RG, GL_RG, GL_HALF_FLOAT_OES},
     };
 
-    for (size_t ii = 0; ii < base::size(kSupportedFormatTypes); ++ii) {
+    for (size_t ii = 0; ii < std::size(kSupportedFormatTypes); ++ii) {
       supported_combinations_.insert(kSupportedFormatTypes[ii]);
     }
 
-    for (size_t ii = 0; ii < base::size(kSupportedFormatTypesES2Only); ++ii) {
+    for (size_t ii = 0; ii < std::size(kSupportedFormatTypesES2Only); ++ii) {
       supported_combinations_es2_only_.insert(kSupportedFormatTypesES2Only[ii]);
     }
   }
@@ -315,7 +316,7 @@ static const Texture::CompatibilitySwizzle kSwizzledFormats[] = {
 
 const Texture::CompatibilitySwizzle* GetCompatibilitySwizzleInternal(
     GLenum format) {
-  size_t count = base::size(kSwizzledFormats);
+  size_t count = std::size(kSwizzledFormats);
   for (size_t i = 0; i < count; ++i) {
     if (kSwizzledFormats[i].format == format)
       return &kSwizzledFormats[i];
@@ -413,7 +414,7 @@ class ScopedResetPixelUnpackBuffer{
   }
 
  private:
-    Buffer* buffer_;
+  raw_ptr<Buffer> buffer_;
 };
 
 class ScopedMemTrackerChange {
@@ -434,8 +435,8 @@ class ScopedMemTrackerChange {
   }
 
  private:
-  Texture* texture_;
-  MemoryTypeTracker* previous_tracker_;
+  raw_ptr<Texture> texture_;
+  raw_ptr<MemoryTypeTracker> previous_tracker_;
   uint32_t previous_size_;
 };
 
@@ -499,7 +500,7 @@ void TextureManager::Destroy() {
   }
 
   if (have_context_) {
-    glDeleteTextures(base::size(black_texture_ids_), black_texture_ids_);
+    glDeleteTextures(std::size(black_texture_ids_), black_texture_ids_);
   }
 
   DCHECK_EQ(0u, memory_type_tracker_->GetMemRepresented());
@@ -1937,10 +1938,6 @@ void Texture::SetLevelImageState(GLenum target, GLint level, ImageState state) {
   Texture::LevelInfo& info = face_infos_[face_index].level_infos[level];
   DCHECK_EQ(info.target, target);
   DCHECK_EQ(info.level, level);
-  // Workaround for StreamTexture which must be re-copied on each access.
-  // TODO(ericrk): Remove this once SharedImage transition is complete.
-  if (info.image && !info.image->HasMutableState())
-    return;
   info.image_state = state;
 }
 
@@ -2133,7 +2130,7 @@ void TextureRef::ForceContextLost() {
 }
 
 void TextureRef::SetSharedImageRepresentation(
-    std::unique_ptr<SharedImageRepresentationGLTexture> shared_image) {
+    std::unique_ptr<GLTextureImageRepresentation> shared_image) {
   shared_image_ = std::move(shared_image);
 }
 
@@ -2401,7 +2398,7 @@ TextureRef* TextureManager::Consume(
 
 TextureRef* TextureManager::ConsumeSharedImage(
     GLuint client_id,
-    std::unique_ptr<SharedImageRepresentationGLTexture> shared_image) {
+    std::unique_ptr<GLTextureImageRepresentation> shared_image) {
   DCHECK(client_id);
   Texture* texture = shared_image->GetTexture();
   TextureRef* ref = Consume(client_id, texture);
@@ -3869,6 +3866,7 @@ GLenum TextureManager::ExtractFormatFromStorageFormat(GLenum internalformat) {
     case GL_ETC1_RGB8_OES:
     case GL_RGB:
     case GL_RGB8:
+    case GL_RGBX8_ANGLE:
     case GL_SRGB8:
     case GL_RGB16:
     case GL_R11F_G11F_B10F:
@@ -4085,6 +4083,8 @@ GLenum TextureManager::ExtractTypeFromStorageFormat(GLenum internalformat) {
     case GL_RGB32I:
       return GL_INT;
     case GL_RGBA8:
+      return GL_UNSIGNED_BYTE;
+    case GL_RGBX8_ANGLE:
       return GL_UNSIGNED_BYTE;
     case GL_SRGB8_ALPHA8:
       return GL_UNSIGNED_BYTE;

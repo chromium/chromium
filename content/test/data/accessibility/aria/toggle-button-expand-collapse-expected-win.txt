@@ -1,0 +1,5 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_TOGGLE_BUTTON name='Toggle button, pressed, collapsed' PRESSED COLLAPSED HASPOPUP
+++IA2_ROLE_TOGGLE_BUTTON name='Toggle button, not pressed, collapsed' COLLAPSED HASPOPUP
+++IA2_ROLE_TOGGLE_BUTTON name='Toggle button, pressed, expanded' PRESSED EXPANDED HASPOPUP
+++IA2_ROLE_TOGGLE_BUTTON name='Toggle button, not pressed, collapsed"' EXPANDED HASPOPUP

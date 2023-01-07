@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,16 +18,19 @@ NSString* const kGridCellCloseButtonIdentifier =
 // Accessibility identifier for the background of the grid.
 NSString* const kGridBackgroundIdentifier = @"GridBackgroundIdentifier";
 
+// Accessibility identifier for the grid section header.
+NSString* const kGridSectionHeaderIdentifier = @"GridSectionHeaderIdentifier";
+
+// Accessibility identifier for the suggested actions cell.
+NSString* const kSuggestedActionsGridCellIdentifier =
+    @"SuggestedActionsGridCellIdentifier";
+
 // Grid styling.
 NSString* const kGridBackgroundColor = @"grid_background_color";
 
 // PlusSignCell styling
 NSString* const kPlusSignCellBackgroundColor =
     @"plus_sign_grid_cell_background_color";
-
-// The height of the BVC that remains visible after transitioning from thumb
-// strip to tab grid.
-const CGFloat kBVCHeightTabGrid = 108.0f;
 
 // Definition of limited width for applicable size classes. The first refers to
 // the horizontal size class; the second to the vertical.
@@ -59,6 +62,13 @@ const CGFloat kGridLayoutLineSpacingRegularRegular = 14.0f;
 const CGFloat kReorderingInactiveCellOpacity = 0.80;
 const CGFloat kReorderingActiveCellScale = 1.15;
 
+// GridHeader styling.
+const CGFloat kGridHeaderHeight = 32.0f;
+const CGFloat kGridHeaderAccessibilityHeight = 58.0f;
+const int kGridHeaderTitleColor = 0xFFFFFF;
+const int kGridHeaderValueColor = 0xEBEBF5;
+const CGFloat kGridHeaderContentSpacing = 4.0f;
+
 // GridCell styling.
 // Dark theme colors.
 // Extra dark theme colors until iOS 12 gets removed.
@@ -83,8 +93,14 @@ const CGFloat kGridCellCloseTapTargetWidthHeight = 44.0f;
 const CGFloat kGridCellCloseButtonContentInset = 8.5f;
 const CGFloat kGridCellTitleLabelContentInset = 4.0f;
 const CGFloat kGridCellIconDiameter = 16.0f;
+const CGFloat kGridCellSelectIconContentInset = 4.0f;
+const CGFloat kGridCellSelectIconSize = 25.0f;
 const CGFloat kGridCellSelectionRingGapWidth = 2.0f;
 const CGFloat kGridCellSelectionRingTintWidth = 5.0f;
+
+const CGFloat kGridCellPriceDropTopSpacing = 10.0f;
+const CGFloat kGridCellPriceDropLeadingSpacing = 10.0f;
+const CGFloat kGridCellPriceDropTrailingSpacing = 10.0f;
 
 const CGFloat kPlusSignImageTrailingCenterDistance = 55.5;
 // The threshold is set so that the hide transition starts at the moment the
@@ -97,5 +113,11 @@ const CGFloat kScrollThresholdForPlusSignButtonHide =
 const CGFloat kPlusSignImageYCenterConstant =
     kGridLayoutLineSpacingCompactCompactLimitedWidth +
     kGridCellSelectionRingGapWidth + kGridCellSelectionRingTintWidth +
-    kGridCellSizeSmall.height / 2 + 2;
+    kGridCellSizeSmall.height / 2 - 2;
 const CGFloat kPlusSignButtonWidth = 156;
+
+const CGFloat kGridExpectedTopContentInset = 20.0f;
+
+const CGFloat kThumbStripHeight =
+    kGridCellSizeSmall.height +
+    2 * kGridLayoutLineSpacingCompactCompactLimitedWidth;

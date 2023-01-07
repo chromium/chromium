@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
@@ -20,7 +21,7 @@ namespace {
 
 // Request timeout of 5 seconds to not interrupt the completion of Safety check.
 // The user can always start a new Safety check if a request times out.
-constexpr base::TimeDelta kConnectionTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kConnectionTimeout = base::Seconds(5);
 
 // Maximum number of retries for sending the request.
 constexpr int kMaxRetries = 2;

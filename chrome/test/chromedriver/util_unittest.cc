@@ -1,8 +1,10 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/files/file_path.h"
@@ -54,10 +56,10 @@ namespace {
 const base::StringPiece key = "key";
 const int64_t max_safe_int = (1ll << 53) - 1;
 
-void DictNoInit(base::DictionaryValue* dict) {}
+void DictNoInit(base::Value::Dict* dict) {}
 
-void DictInitNull(base::DictionaryValue* dict) {
-  dict->Set(key, std::make_unique<base::Value>());
+void DictInitNull(base::Value::Dict* dict) {
+  dict->Set(key, base::Value());
 }
 
 class DictInitBool {
@@ -65,9 +67,7 @@ class DictInitBool {
 
  public:
   explicit DictInitBool(bool v) : init_value(v) {}
-  void operator()(base::DictionaryValue* dict) {
-    dict->SetBoolean(key, init_value);
-  }
+  void operator()(base::Value::Dict* dict) { dict->Set(key, init_value); }
 };
 
 class DictInitInt {
@@ -75,9 +75,7 @@ class DictInitInt {
 
  public:
   explicit DictInitInt(int v) : init_value(v) {}
-  void operator()(base::DictionaryValue* dict) {
-    dict->SetInteger(key, init_value);
-  }
+  void operator()(base::Value::Dict* dict) { dict->Set(key, init_value); }
 };
 
 class DictInitDouble {
@@ -85,9 +83,7 @@ class DictInitDouble {
 
  public:
   explicit DictInitDouble(double v) : init_value(v) {}
-  void operator()(base::DictionaryValue* dict) {
-    dict->SetDouble(key, init_value);
-  }
+  void operator()(base::Value::Dict* dict) { dict->Set(key, init_value); }
 };
 
 class DictInitString {
@@ -95,13 +91,11 @@ class DictInitString {
 
  public:
   explicit DictInitString(const std::string& v) : init_value(v) {}
-  void operator()(base::DictionaryValue* dict) {
-    dict->SetString(key, init_value);
-  }
+  void operator()(base::Value::Dict* dict) { dict->Set(key, init_value); }
 };
 
 template <typename ResultType, typename DictInitFunc>
-void TestGetOptionalValue(bool (*func_to_test)(const base::DictionaryValue*,
+void TestGetOptionalValue(bool (*func_to_test)(const base::Value::Dict&,
                                                base::StringPiece,
                                                ResultType*,
                                                bool*),
@@ -110,19 +104,19 @@ void TestGetOptionalValue(bool (*func_to_test)(const base::DictionaryValue*,
                           const ResultType& expected_result_value,
                           bool expected_return_value,
                           bool expected_has_value) {
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   dict_init_func(&dict);
 
   ResultType result_value = init_result_value;
   bool has_value;
-  bool return_value = func_to_test(&dict, key, &result_value, &has_value);
+  bool return_value = func_to_test(dict, key, &result_value, &has_value);
   ASSERT_EQ(return_value, expected_return_value);
   ASSERT_EQ(result_value, expected_result_value);
   if (return_value)
     ASSERT_EQ(has_value, expected_has_value);
 
   result_value = init_result_value;
-  return_value = func_to_test(&dict, key, &result_value, nullptr);
+  return_value = func_to_test(dict, key, &result_value, nullptr);
   ASSERT_EQ(return_value, expected_return_value);
   ASSERT_EQ(result_value, expected_result_value);
 }
@@ -150,17 +144,17 @@ TEST(GetOptionalValue, StringNone) {
 }
 
 TEST(GetOptionalValue, DictionaryNone) {
-  base::DictionaryValue dv;
-  const base::DictionaryValue* tmp = &dv;
-  TestGetOptionalValue<const base::DictionaryValue*>(
+  base::Value::Dict dv;
+  const base::Value::Dict* tmp = &dv;
+  TestGetOptionalValue<const base::Value::Dict*>(
       GetOptionalDictionary, DictNoInit, tmp, tmp, true, false);
 }
 
 TEST(GetOptionalValue, ListNone) {
-  base::ListValue lv;
-  const base::ListValue* tmp = &lv;
-  TestGetOptionalValue<const base::ListValue*>(GetOptionalList, DictNoInit, tmp,
-                                               tmp, true, false);
+  base::Value::List lv;
+  const base::Value::List* tmp = &lv;
+  TestGetOptionalValue<const base::Value::List*>(GetOptionalList, DictNoInit,
+                                                 tmp, tmp, true, false);
 }
 
 TEST(GetOptionalValue, SafeIntNone) {
@@ -189,17 +183,17 @@ TEST(GetOptionalValue, StringNull) {
 }
 
 TEST(GetOptionalValue, DictionaryNull) {
-  base::DictionaryValue dv;
-  const base::DictionaryValue* tmp = &dv;
-  TestGetOptionalValue<const base::DictionaryValue*>(
+  base::Value::Dict dv;
+  const base::Value::Dict* tmp = &dv;
+  TestGetOptionalValue<const base::Value::Dict*>(
       GetOptionalDictionary, DictInitNull, tmp, tmp, false, false);
 }
 
 TEST(GetOptionalValue, ListNull) {
-  base::ListValue lv;
-  const base::ListValue* tmp = &lv;
-  TestGetOptionalValue<const base::ListValue*>(GetOptionalList, DictInitNull,
-                                               tmp, tmp, false, false);
+  base::Value::List lv;
+  const base::Value::List* tmp = &lv;
+  TestGetOptionalValue<const base::Value::List*>(GetOptionalList, DictInitNull,
+                                                 tmp, tmp, false, false);
 }
 
 TEST(GetOptionalValue, SafeIntNull) {
@@ -228,16 +222,16 @@ TEST(GetOptionalValue, StringWrongType) {
 }
 
 TEST(GetOptionalValue, DictionaryWrongType) {
-  base::DictionaryValue dv;
-  const base::DictionaryValue* tmp = &dv;
-  TestGetOptionalValue<const base::DictionaryValue*>(
+  base::Value::Dict dv;
+  const base::Value::Dict* tmp = &dv;
+  TestGetOptionalValue<const base::Value::Dict*>(
       GetOptionalDictionary, DictInitString("test"), tmp, tmp, false, false);
 }
 
 TEST(GetOptionalValue, ListWrongType) {
-  base::ListValue lv;
-  const base::ListValue* tmp = &lv;
-  TestGetOptionalValue<const base::ListValue*>(
+  base::Value::List lv;
+  const base::Value::List* tmp = &lv;
+  TestGetOptionalValue<const base::Value::List*>(
       GetOptionalList, DictInitString("test"), tmp, tmp, false, false);
 }
 
@@ -267,43 +261,37 @@ TEST(GetOptionalValue, StringNoConversion) {
 }
 
 TEST(GetOptionalValue, DictionaryNoConversion) {
-  base::DictionaryValue dv1;
-  dv1.SetString("dv", "1");
-  base::DictionaryValue dv2;
-  dv2.SetString("dv", "2");
+  base::Value::Dict dv1;
+  dv1.Set("dv", "1");
+  base::Value::Dict dv2;
+  dv2.Set("dv", "2");
 
-  std::unique_ptr<base::DictionaryValue> params(dv1.DeepCopy());
-
-  base::DictionaryValue dict;
-  dict.SetDictionary(key, std::move(params));
-  const base::DictionaryValue* res = &dv2;
+  base::Value::Dict dict;
+  dict.Set(key, dv1.Clone());
+  const base::Value::Dict* res = &dv2;
   bool has_value;
-  bool has_dict = GetOptionalDictionary(&dict, key, &res, &has_value);
+  bool has_dict = GetOptionalDictionary(dict, key, &res, &has_value);
   ASSERT_EQ(has_value, true);
   ASSERT_EQ(has_dict, true);
-  // Cast to base class to ensure print properly if different
-  ASSERT_EQ(static_cast<const base::Value&>(*res),
-            static_cast<const base::Value&>(dv1));
+  ASSERT_EQ(*res, dv1);
 }
 
 TEST(GetOptionalValue, ListNoConversion) {
-  base::ListValue lv1;
-  lv1.AppendString("1");
-  base::ListValue lv2;
-  lv2.AppendString("2");
+  base::Value::List lv1;
+  lv1.Append("1");
+  base::Value::List lv2;
+  lv2.Append("2");
 
-  std::unique_ptr<base::ListValue> params(lv1.DeepCopy());
+  base::Value::List params = lv1.Clone();
 
-  base::DictionaryValue dict;
-  dict.SetList(key, std::move(params));
-  const base::ListValue* res = &lv2;
+  base::Value dict(base::Value::Type::DICT);
+  dict.GetDict().SetByDottedPath(key, std::move(params));
+  const base::Value::List* res = &lv2;
   bool has_value;
-  bool has_dict = GetOptionalList(&dict, key, &res, &has_value);
+  bool has_dict = GetOptionalList(dict.GetDict(), key, &res, &has_value);
   ASSERT_EQ(has_value, true);
   ASSERT_EQ(has_dict, true);
-  // Cast to base class to ensure print properly if different
-  ASSERT_EQ(static_cast<const base::Value&>(*res),
-            static_cast<const base::Value&>(lv1));
+  ASSERT_EQ(*res, lv1);
 }
 
 TEST(GetOptionalValue, SafeIntNoConversion) {

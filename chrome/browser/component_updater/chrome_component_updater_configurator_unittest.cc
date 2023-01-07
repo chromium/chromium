@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,12 @@ namespace component_updater {
 class ChromeComponentUpdaterConfiguratorTest : public testing::Test {
  public:
   ChromeComponentUpdaterConfiguratorTest() = default;
+
+  ChromeComponentUpdaterConfiguratorTest(
+      const ChromeComponentUpdaterConfiguratorTest&) = delete;
+  ChromeComponentUpdaterConfiguratorTest& operator=(
+      const ChromeComponentUpdaterConfiguratorTest&) = delete;
+
   ~ChromeComponentUpdaterConfiguratorTest() override = default;
 
   // Overrides from testing::Test.
@@ -34,13 +40,10 @@ class ChromeComponentUpdaterConfiguratorTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeComponentUpdaterConfiguratorTest);
 };
 
 void ChromeComponentUpdaterConfiguratorTest::SetUp() {
   pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-  RegisterPrefsForChromeComponentUpdaterConfigurator(pref_service_->registry());
 }
 
 TEST_F(ChromeComponentUpdaterConfiguratorTest, TestDisablePings) {
@@ -117,15 +120,16 @@ TEST_F(ChromeComponentUpdaterConfiguratorTest, TestEnabledCupSigning) {
 
 TEST_F(ChromeComponentUpdaterConfiguratorTest, TestUseEncryption) {
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  const auto config(
-      MakeChromeComponentUpdaterConfigurator(cmdline, pref_service()));
 
-  const auto urls = config->UpdateUrl();
-  ASSERT_EQ(2u, urls.size());
-  ASSERT_STREQ(kUpdaterJSONDefaultUrl, urls[0].spec().c_str());
-  ASSERT_STREQ(kUpdaterJSONFallbackUrl, urls[1].spec().c_str());
-
-  ASSERT_EQ(config->UpdateUrl(), config->PingUrl());
+  {
+    const auto config(
+        MakeChromeComponentUpdaterConfigurator(cmdline, pref_service()));
+    const auto urls = config->UpdateUrl();
+    ASSERT_EQ(2u, urls.size());
+    ASSERT_STREQ(kUpdaterJSONDefaultUrl, urls[0].spec().c_str());
+    ASSERT_STREQ(kUpdaterJSONFallbackUrl, urls[1].spec().c_str());
+    ASSERT_EQ(config->UpdateUrl(), config->PingUrl());
+  }
 
   // Use the configurator implementation to test the filtering of
   // unencrypted URLs.
@@ -147,32 +151,6 @@ TEST_F(ChromeComponentUpdaterConfiguratorTest, TestUseEncryption) {
     ASSERT_STREQ(kUpdaterJSONFallbackUrl, urls[1].spec().c_str());
     ASSERT_EQ(config.UpdateUrl(), config.PingUrl());
   }
-}
-
-TEST_F(ChromeComponentUpdaterConfiguratorTest, TestEnabledComponentUpdates) {
-  base::CommandLine cmdline(*base::CommandLine::ForCurrentProcess());
-  const auto config(
-      MakeChromeComponentUpdaterConfigurator(&cmdline, pref_service()));
-  // Tests the default is set to |true| and the component updates are enabled.
-  EXPECT_TRUE(config->EnabledComponentUpdates());
-
-  // Tests the component updates are disabled.
-  pref_service()->SetManagedPref("component_updates.component_updates_enabled",
-                                 std::make_unique<base::Value>(false));
-  EXPECT_FALSE(config->EnabledComponentUpdates());
-
-  // Tests the component updates are enabled.
-  pref_service()->SetManagedPref("component_updates.component_updates_enabled",
-                                 std::make_unique<base::Value>(true));
-  EXPECT_TRUE(config->EnabledComponentUpdates());
-
-  // Sanity check setting the preference back to |false| and then removing it.
-  pref_service()->SetManagedPref("component_updates.component_updates_enabled",
-                                 std::make_unique<base::Value>(false));
-  EXPECT_FALSE(config->EnabledComponentUpdates());
-  pref_service()->RemoveManagedPref(
-      "component_updates.component_updates_enabled");
-  EXPECT_TRUE(config->EnabledComponentUpdates());
 }
 
 TEST_F(ChromeComponentUpdaterConfiguratorTest, TestProdId) {

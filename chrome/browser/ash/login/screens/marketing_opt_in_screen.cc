@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,14 @@
 #include <unordered_set>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,17 +35,23 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
-const size_t kMaxGeolocationResponseLength = 8;
+constexpr char kUserActionGetStarted[] = "get-started";
+constexpr char kUserActionSetA11yNavigationButtonsEnabled[] =
+    "set-a11y-button-enable";
+
+void RecordShowShelfNavigationButtonsValueChange(bool enabled) {
+  base::UmaHistogramBoolean(
+      "Accessibility.CrosShelfNavigationButtonsInTabletModeChanged.OOBE",
+      enabled);
+}
 
 // Records the opt-in and opt-out rates for Chromebook emails. Differentiates
 // between users who have a default opt-in vs. a default opt-out option.
@@ -70,12 +79,6 @@ void RecordGeolocationResolve(MarketingOptInScreen::GeolocationEvent event) {
                                 event);
 }
 
-void RecordGeolocationResponseLength(int length) {
-  base::UmaHistogramExactLinear(
-      "OOBE.MarketingOptInScreen.GeolocationResolveLength", length,
-      kMaxGeolocationResponseLength);
-}
-
 }  // namespace
 
 // static
@@ -89,27 +92,30 @@ std::string MarketingOptInScreen::GetResultString(Result result) {
 }
 
 MarketingOptInScreen::MarketingOptInScreen(
-    MarketingOptInScreenView* view,
+    base::WeakPtr<MarketingOptInScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(MarketingOptInScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  view_->Bind(this);
 }
 
 MarketingOptInScreen::~MarketingOptInScreen() {
-  if (view_)
-    view_->Bind(nullptr);
+  if (a11y_nav_buttons_toggle_metrics_reporter_timer_.IsRunning()) {
+    a11y_nav_buttons_toggle_metrics_reporter_timer_.FireNow();
+  }
 }
 
-bool MarketingOptInScreen::MaybeSkip(WizardContext* context) {
+bool MarketingOptInScreen::MaybeSkip(WizardContext& context) {
+  if (context.skip_post_login_screens_for_tests) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
   Initialize();
 
-  if (!base::FeatureList::IsEnabled(::features::kOobeMarketingScreen) ||
-      chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
-      IsCurrentUserManaged()) {
+  if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
+      IsCurrentUserManaged() || !context.is_branded_build) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
@@ -124,9 +130,15 @@ void MarketingOptInScreen::ShowImpl() {
   const bool legal_footer_visible =
       email_opt_in_visible_ && countries_with_legal_footer.count(country_);
 
-  view_->Show(/*opt_in_visible=*/email_opt_in_visible_,
-              /*opt_in_default_state=*/IsDefaultOptInCountry(),
-              /*legal_footer_visible=*/legal_footer_visible);
+  const bool cloud_gaming_enabled =
+      chromeos::features::IsCloudGamingDeviceEnabled();
+
+  if (view_) {
+    view_->Show(/*opt_in_visible=*/email_opt_in_visible_,
+                /*opt_in_default_state=*/IsDefaultOptInCountry(),
+                /*legal_footer_visible=*/legal_footer_visible,
+                /*cloud_gaming_enabled=*/cloud_gaming_enabled);
+  }
 
   // Mark the screen as shown for this user.
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
@@ -134,21 +146,21 @@ void MarketingOptInScreen::ShowImpl() {
 
   // Only show the link for accessibility settings if the gesture navigation
   // screen was shown.
-  view_->UpdateA11ySettingsButtonVisibility(
-      static_cast<GestureNavigationScreen*>(
-          WizardController::default_controller()->screen_manager()->GetScreen(
-              GestureNavigationScreenView::kScreenId))
-          ->was_shown());
+  if (view_) {
+    view_->UpdateA11ySettingsButtonVisibility(
+        context()->is_gesture_navigation_screen_was_shown ||
+        switches::ShouldShowAccessibilityButtonOnMarketingOptInForTesting());
 
-  view_->UpdateA11yShelfNavigationButtonToggle(prefs->GetBoolean(
-      ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
+    view_->UpdateA11yShelfNavigationButtonToggle(prefs->GetBoolean(
+        prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
+  }
 
   // Observe the a11y shelf navigation buttons pref so the setting toggle in the
   // screen can be updated if the pref value changes.
   active_user_pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   active_user_pref_change_registrar_->Init(prefs);
   active_user_pref_change_registrar_->Add(
-      ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled,
+      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled,
       base::BindRepeating(
           &MarketingOptInScreen::OnA11yShelfNavigationButtonPrefChanged,
           base::Unretained(this)));
@@ -158,11 +170,29 @@ void MarketingOptInScreen::HideImpl() {
   if (is_hidden())
     return;
   active_user_pref_change_registrar_.reset();
-  if (view_)
-    view_->Hide();
+}
+
+void MarketingOptInScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+
+  if (action_id == kUserActionGetStarted) {
+    CHECK_EQ(args.size(), 2u);
+    const bool chromebook_email_opt_in = args[1].GetBool();
+    OnGetStarted(chromebook_email_opt_in);
+    return;
+  }
+  if (action_id == kUserActionSetA11yNavigationButtonsEnabled) {
+    CHECK_EQ(args.size(), 2u);
+    const bool enabled = args[1].GetBool();
+    SetA11yNavigationButtonsEnabled(enabled);
+    return;
+  }
+  BaseScreen::OnUserAction(args);
 }
 
 void MarketingOptInScreen::OnGetStarted(bool chromebook_email_opt_in) {
+  if (is_hidden())
+    return;
   DCHECK(initialized_);
 
   // UMA Metrics & API call only when the toggle is visible
@@ -186,13 +216,17 @@ void MarketingOptInScreen::OnGetStarted(bool chromebook_email_opt_in) {
 }
 
 void MarketingOptInScreen::SetA11yButtonVisibilityForTest(bool shown) {
-  view_->UpdateA11ySettingsButtonVisibility(shown);
+  if (view_) {
+    view_->UpdateA11ySettingsButtonVisibility(shown);
+  }
 }
 
 void MarketingOptInScreen::OnA11yShelfNavigationButtonPrefChanged() {
+  if (!view_)
+    return;
   view_->UpdateA11yShelfNavigationButtonToggle(
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
+          prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
 }
 
 bool MarketingOptInScreen::IsCurrentUserManaged() {
@@ -217,39 +251,40 @@ void MarketingOptInScreen::Initialize() {
 }
 
 void MarketingOptInScreen::SetCountryFromTimezoneIfAvailable(
-    const std::string& timezone_id) {
-  // Determine region code from timezone id.
-  char region[kMaxGeolocationResponseLength];
-  UErrorCode error = U_ZERO_ERROR;
-  auto timezone_id_unicode = icu::UnicodeString::fromUTF8(timezone_id);
-  const auto region_length = icu::TimeZone::getRegion(
-      timezone_id_unicode, region, kMaxGeolocationResponseLength, error);
-  // Track failures.
-  if (U_FAILURE(error)) {
+    const std::string& timezone) {
+  auto region = system::GetCountryCodeFromTimezoneIfAvailable(timezone);
+  if (!region.has_value()) {
     RecordGeolocationResolve(GeolocationEvent::kCouldNotDetermineCountry);
     return;
   }
 
-  // Track whether we could successfully resolve and the length of the code.
+  // Track whether we could successfully resolve.
   RecordGeolocationResolve(GeolocationEvent::kCountrySuccessfullyDetermined);
-  RecordGeolocationResponseLength(region_length);
 
   // Set the country
   country_.clear();
-  const std::string region_str = base::ToLowerASCII(region);
-  const bool is_default_country = default_countries_.count(region_str);
+  const bool is_default_country = default_countries_.count(region.value());
   const bool is_extended_country =
-      additional_countries_.count(region_str) &&
+      additional_countries_.count(region.value()) &&
       base::FeatureList::IsEnabled(
           ::features::kOobeMarketingAdditionalCountriesSupported);
   const bool is_double_optin_country =
-      double_opt_in_countries_.count(region_str) &&
+      double_opt_in_countries_.count(region.value()) &&
       base::FeatureList::IsEnabled(
           ::features::kOobeMarketingDoubleOptInCountriesSupported);
 
   if (is_default_country || is_extended_country || is_double_optin_country) {
-    country_ = region_str;
+    country_ = region.value();
   }
+}
+
+void MarketingOptInScreen::SetA11yNavigationButtonsEnabled(bool enabled) {
+  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
+      ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled,
+      enabled);
+  a11y_nav_buttons_toggle_metrics_reporter_timer_.Start(
+      FROM_HERE, base::Seconds(10),
+      base::BindOnce(&RecordShowShelfNavigationButtonsValueChange, enabled));
 }
 
 bool MarketingOptInScreen::ShouldShowOptionToSubscribe() {
@@ -258,9 +293,7 @@ bool MarketingOptInScreen::ShouldShowOptionToSubscribe() {
   sync_preferences::PrefServiceSyncable* prefs =
       PrefServiceSyncableFromProfile(ProfileManager::GetActiveUserProfile());
   const bool sync_complete =
-      ignore_pref_sync_for_testing_ ||
-      (features::IsSplitSettingsSyncEnabled() ? prefs->AreOsPrefsSyncing()
-                                              : prefs->IsSyncing());
+      ignore_pref_sync_for_testing_ || prefs->AreOsPrefsSyncing();
   // Do not show if the preferences cannot be synced
   if (!sync_complete)
     return false;
@@ -279,4 +312,4 @@ bool MarketingOptInScreen::ShouldShowOptionToSubscribe() {
   return false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

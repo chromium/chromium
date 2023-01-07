@@ -73,7 +73,7 @@ void SegmentedString::Push(UChar c) {
   if (current_string_.PushIfPossible(c))
     return;
 
-  Prepend(SegmentedString(String(&c, 1)), PrependType::kUnconsume);
+  Prepend(SegmentedString(String(&c, 1u)), PrependType::kUnconsume);
 }
 
 void SegmentedString::Prepend(const SegmentedSubstring& s, PrependType type) {
@@ -122,6 +122,24 @@ void SegmentedString::Prepend(const SegmentedString& s, PrependType type) {
       Prepend(*it, type);
   }
   Prepend(s.current_string_, type);
+}
+
+void SegmentedString::Advance(unsigned num_chars,
+                              unsigned num_lines,
+                              int current_column) {
+  SECURITY_DCHECK(num_chars <= length());
+  current_line_ += num_lines;
+  while (num_chars) {
+    num_chars -= current_string_.Advance(num_chars);
+    if (num_chars) {
+      // AdvanceSubstring() assumes one char is remaining.
+      DCHECK_EQ(current_string_.length(), 1);
+      AdvanceSubstring();
+      --num_chars;
+    }
+  }
+  number_of_characters_consumed_prior_to_current_line_ =
+      NumberOfCharactersConsumed() - current_column;
 }
 
 UChar SegmentedString::AdvanceSubstring() {

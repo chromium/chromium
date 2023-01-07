@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/platform/cast/gl_ozone_egl_cast.h"
 #include "ui/ozone/public/gl_ozone.h"
@@ -26,10 +25,14 @@ class SurfaceFactoryCast : public SurfaceFactoryOzone {
   SurfaceFactoryCast();
   explicit SurfaceFactoryCast(
       std::unique_ptr<chromecast::CastEglPlatform> egl_platform);
+
+  SurfaceFactoryCast(const SurfaceFactoryCast&) = delete;
+  SurfaceFactoryCast& operator=(const SurfaceFactoryCast&) = delete;
+
   ~SurfaceFactoryCast() override;
 
   // SurfaceFactoryOzone implementation:
-  std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
+  std::vector<gl::GLImplementationParts> GetAllowedGLImplementations() override;
   GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
       gfx::AcceleratedWidget widget) override;
@@ -39,12 +42,10 @@ class SurfaceFactoryCast : public SurfaceFactoryOzone {
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      base::Optional<gfx::Size> framebuffer_size = base::nullopt) override;
+      absl::optional<gfx::Size> framebuffer_size = absl::nullopt) override;
 
  private:
   std::unique_ptr<GLOzoneEglCast> egl_implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceFactoryCast);
 };
 
 }  // namespace ui

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,16 +29,16 @@ TEST_F(HistogramsMonitorTest, StartMonitoringThenGetDiff) {
   monitor.StartMonitoring("");
 
   // Get diff immediately should return nothing.
-  base::ListValue diff = monitor.GetDiff();
-  ASSERT_EQ(diff.GetList().size(), 0ull);
+  base::Value::List diff = monitor.GetDiff();
+  ASSERT_EQ(diff.size(), 0ull);
 
   // Add more data to histogram.
   histogram1->Add(30);
   histogram1->Add(40);
 
   diff = monitor.GetDiff();
-  ASSERT_EQ(diff.GetList().size(), 1ull);
-  std::string* header1 = diff.GetList()[0].FindStringKey("header");
+  ASSERT_EQ(diff.size(), 1ull);
+  std::string* header1 = diff[0].FindStringKey("header");
   EXPECT_EQ(*header1,
             "Histogram: MonitorHistogram1 recorded 2 samples, mean = 35.0");
 
@@ -47,8 +47,8 @@ TEST_F(HistogramsMonitorTest, StartMonitoringThenGetDiff) {
       "MonitorHistogram2", 1, 1000, 10, base::HistogramBase::kNoFlags);
   histogram2->Add(50);
   diff = monitor.GetDiff();
-  ASSERT_EQ(diff.GetList().size(), 2ull);
-  std::string* header2 = diff.GetList()[1].FindStringKey("header");
+  ASSERT_EQ(diff.size(), 2ull);
+  std::string* header2 = diff[1].FindStringKey("header");
   EXPECT_EQ(*header2,
             "Histogram: MonitorHistogram2 recorded 1 samples, mean = 50.0");
 }
@@ -65,8 +65,8 @@ TEST_F(HistogramsMonitorTest, StartMonitoringWithQueryThenGetDiff) {
   base::HistogramBase* histogram2 = base::Histogram::FactoryGet(
       "MonitorHistogram2", 1, 1000, 10, base::HistogramBase::kNoFlags);
   histogram2->Add(50);
-  base::ListValue diff = monitor.GetDiff();
-  ASSERT_EQ(diff.GetList().size(), 0ull);
+  base::Value::List diff = monitor.GetDiff();
+  ASSERT_EQ(diff.size(), 0ull);
 }
 
 }  // namespace content

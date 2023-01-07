@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,9 @@ class ExtensionRequestPolicyHandler : public policy::TypeCheckingPolicyHandler {
   ExtensionRequestPolicyHandler();
   ~ExtensionRequestPolicyHandler() override;
 
- private:
+  // policy::TypeCheckingPolicyHandler
+  bool CheckPolicySettings(const policy::PolicyMap& policies,
+                           policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
 };

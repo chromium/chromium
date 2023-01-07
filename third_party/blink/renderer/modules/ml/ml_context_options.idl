@@ -1,0 +1,49 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This will be a shared interface by two APIs:
+// - The Model Loader API,
+//     https://github.com/webmachinelearning/model-loader/blob/main/explainer.md
+// - The WebNN API,
+//     https://github.com/webmachinelearning/webnn/blob/main/explainer.md
+
+enum MLDevicePreference {
+  // Let the backend selects the most suitable device.
+  "auto",
+  // The backend will use GPU to do model inference. If some operator is not
+  // supported by GPU, it will fall back to CPU.
+  "gpu",
+  // The backend will use CPU to do model inference.
+  "cpu"
+};
+
+enum MLPowerPreference {
+  // Let the backend selects the most suitable behavior.
+  "auto",
+  // Prioritizes execution speed over power consumption.
+  "high-performance",
+  // Prioritizes power consumption over other considerations such as execution
+  // speed.
+  "low-power",
+};
+
+enum MLModelFormat {
+  // Tensorflow-lite flatbuffer.
+  "tflite"
+};
+
+dictionary MLContextOptions {
+  // Preferred kind of device used.
+  MLDevicePreference devicePreference = "auto";
+
+  // Preference as related to power consumption.
+  MLPowerPreference powerPreference = "auto";
+
+  // Model format for the model loader API.
+  MLModelFormat modelFormat = "tflite";
+
+  // Number of thread to use.
+  // "0" means the backend can determine it automatically.
+  unsigned long numThreads = 0;
+};

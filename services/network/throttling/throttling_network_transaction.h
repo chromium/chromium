@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
@@ -45,6 +45,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
  public:
   explicit ThrottlingNetworkTransaction(
       std::unique_ptr<net::HttpTransaction> network_transaction);
+
+  ThrottlingNetworkTransaction(const ThrottlingNetworkTransaction&) = delete;
+  ThrottlingNetworkTransaction& operator=(const ThrottlingNetworkTransaction&) =
+      delete;
 
   ~ThrottlingNetworkTransaction() override;
 
@@ -86,7 +90,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
   void SetEarlyResponseHeadersCallback(
       net::ResponseHeadersCallback callback) override;
   int ResumeNetworkStart() override;
-  void GetConnectionAttempts(net::ConnectionAttempts* out) const override;
+  net::ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;
 
  protected:
@@ -103,7 +107,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
   ThrottlingNetworkInterceptor::ThrottleCallback throttle_callback_;
   int64_t throttled_byte_count_;
 
-  ThrottlingController* controller_;
+  raw_ptr<ThrottlingController> controller_;
   base::WeakPtr<ThrottlingNetworkInterceptor> interceptor_;
 
   // Modified upload data stream. Should be destructed after |custom_request_|.
@@ -118,12 +122,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
   // User callback.
   net::CompletionOnceCallback callback_;
 
-  const net::HttpRequestInfo* request_;
+  raw_ptr<const net::HttpRequestInfo> request_;
 
   // True if Fail was already invoked.
   bool failed_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottlingNetworkTransaction);
 };
 
 }  // namespace network

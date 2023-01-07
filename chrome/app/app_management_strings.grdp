@@ -25,6 +25,15 @@
   <message name="IDS_APP_MANAGEMENT_PIN_TO_SHELF" desc="Label for the pin to shelf button in the app settings page.">
     Pin to shelf
   </message>
+  <message name="IDS_APP_MANAGEMENT_PRESET_WINDOW_SIZES" desc="Label for the preset window sizes toggle in the app settings page.">
+    Preset window sizes
+  </message>
+  <message name="IDS_APP_MANAGEMENT_WINDOW" desc="Label for changing window mode.">
+    Open as window
+  </message>
+  <message name="IDS_APP_MANAGEMENT_PRESET_WINDOW_SIZES_TEXT" desc="Label for the description of the window preset toggle in the app settings page.">
+    Use presets for phone, tablet, or resizable windows to prevent app from misbehaving
+  </message>
   <message name="IDS_APP_MANAGEMENT_PRINTING" desc="Label for the printing permission toggle.">
     Printers
   </message>
@@ -40,7 +49,143 @@
   <message name="IDS_APP_MANAGEMENT_STORAGE" desc="Label for the Android storage permission toggle.">
     Storage
   </message>
+  <message name="IDS_APP_MANAGEMENT_RUN_ON_OS_LOGIN" desc="Label for toggling running on OS Login mode.">
+    Start app when you sign in
+  </message>
   <message name="IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING" desc="Tooltip label explaining that an app cannot be uninstalled as it has been installed by an adminstrator.">
     This app has been installed by your administrator.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_SETTINGS_TITLE" desc="Title for the intent sharing settings section.">
+    Opening <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>supported links<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN" desc="Label for the intent sharing option to open in a specified app.">
+    Open in <ph name="APP_NAME">$1<ex>Chrome browser</ex></ph>
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_BROWSER_OPEN" desc="Label for the intent sharing option to open in the browser.">
+    Open in Chrome browser
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_TAB_EXPLANATION" desc="Label for the intent sharing description for when the app is set to open in tab mode.">
+    <ph name="APP_NAME">$1<ex>Gmail</ex></ph> is set to open in a new browser tab, supported links will also open in the browser. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a href="https://support.google.com/chromebook?p=app_intent" target="_blank"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_SETTINGS_DIALOG_TITLE" desc="Title for the dialog which shows a list of supported links for a specified app.">
+    Supported links
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_CHANGE_BUTTON" desc="The text of a button that the user clicks to confrim a change in settings.">
+    Change
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TITLE" desc="The title of the dialog that asks the user for confirmation about overwritting preferred app settings.">
+    Change default app for supported links?
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_1_APP" desc="Text to explain to the user that an preferred app will be replaced, and the text states which app will be replaced.">
+    An app is set to open the same links as <ph name="APP_NAME">$1<ex>Gmail</ex></ph>. This will disable <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph> from opening supported links.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_2_APPS" desc="Text to explain to the user that 2 preferred apps will be replaced, and the text states which apps will be replaced.">
+    Other apps are set to open the same links as <ph name="APP_NAME">$1<ex>Gmail</ex></ph>. This will disable <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph> and <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph> from opening supported links.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_3_APPS" desc="Text to explain to the user that 3 preferred apps will be replaced, and the text states which apps will be replaced.">
+    Other apps are set to open the same links as <ph name="APP_NAME">$1<ex>Gmail</ex></ph>. This will disable <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph>, <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph> and <ph name="APP_NAME_4">$4<ex>Photos</ex></ph> from opening supported links.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_4_APPS" desc="Text to explain to the user that 4 preferred apps will be replaced, and the text states the first 3 apps that will be replaced.">
+    Other apps are set to open the same links as <ph name="APP_NAME">$1<ex>Gmail</ex></ph>. This will disable <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph>, <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph>, <ph name="APP_NAME_4">$4<ex>Photos</ex></ph> and 1 other app from opening supported links.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_5_OR_MORE_APPS" desc="Text to explain to the user that 5 or more preferred apps will be replaced, and the text states the first 3 apps that will be replaced.">
+    Other apps are set to open the same links as <ph name="APP_NAME">$1<ex>Gmail</ex></ph>. This will disable <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph>, <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph>, <ph name="APP_NAME_4">$4<ex>Photos</ex></ph> and <ph name="NUMBER_OF_OTHER_APPS">$5<ex>2</ex></ph> other apps from opening supported links.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_1_APP" desc="Text to explain to the user that an overlapping app will still open some supported links, and the text states which app will open links.">
+    Some supported links will still open in <ph name="APP_NAME">$1<ex>Gmail</ex></ph>.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_2_APPS" desc="Text to explain to the user that 2 overlapping apps will still open some supported links, and the text states which apps will open links.">
+    Some supported links will still open in <ph name="APP_NAME">$1<ex>Gmail</ex></ph> or  <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph>.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_3_APPS" desc="Text to explain to the user that 3 overlapping apps will still open some supported links, and the text states which apps will open links.">
+    Some supported links will still open in <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph> or <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph>.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_4_APPS" desc="Text to explain to the user that 4 overlapping apps will still open some supported links, and the text states the first 3 apps that will open links.">
+    Some supported links will still open in <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph>, <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph> and 1 other app.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_5_OR_MORE_APPS" desc="Text to explain to the user that 5 or more overlapping apps will still open some supported links, and the text states the first 3 apps that will open links.">
+    Some supported links will still open in <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph>, <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph> and <ph name="NUMBER_OF_OTHER_APPS">$4<ex>2</ex></ph> other apps.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TITLE" desc="Title for App Details Section">
+    App details
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_ANDROID" desc="Text for Android app type">
+    Android App
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_CHROME" desc="Text for Chrome app type">
+    Chrome App
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_WEB" desc="Text for Web app type">
+    Web App
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_SYSTEM" desc="Text for System app type">
+    System App
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_CROS_SYSTEM" desc="Text for ChromeOS System app type">
+    ChromeOS System App
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_WEB_STORE" desc="Text for Chrome Web Store installation source">
+    Chrome Web Store
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_PLAY_STORE" desc="Text for Google Play Store installation source">
+    Google Play Store
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_BROWSER" desc="Text for Chrome browser installation source for Web App">
+    Web App installed from Chrome browser
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_COMBINED" desc="Full text for installation source and app type line">
+    <ph name="APP_TYPE">$1<ex>Web App</ex></ph> installed from <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph><ph name="INSTALL_SOURCE">$2<ex>Google Play Store</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_VERSION" desc="Text for application version">
+    Version: <ph name="APP_VERSION">$1<ex>17.2</ex></ph>
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_STORAGE_TITLE" desc="Text for title of storage section for storage related to the app and its associated files">
+    Storage
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_APP_SIZE" desc="Text for app size label for the amount of storage the app itself is using">
+    App size: <ph name="APP_SIZE">$1<ex>100 MB</ex></ph>
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_DATA_SIZE" desc="Text for data size label for the amount of storage the app's associated files is using">
+    Data stored in app: <ph name="APP_SIZE">$1<ex>100 MB</ex></ph>
+  </message>
+
+  <!-- File Handling -->
+  <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_HEADER" desc="Main text for toggling a web app's ability to use the File Handling API. This controls whether the app can appear in an 'Open With' list in a file's context menu.">
+    Include this app as an option when opening files
+  </message>
+
+  <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_OVERFLOW_DIALOG_TITLE" desc="Title for a dialog that shows all the supported file types (file extensions) that are handled by an app. Only shown when there are 5 or more file types.">
+    Supported file types
+  </message>
+
+  <if expr="is_win">
+    <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_SET_DEFAULTS_LINK" desc="Further explanation of the File Handling API, including text describing the purpose of the toggle (referencing the Windows File Explorer) and a link to change Windows' default filetype associations.">
+      You can open and edit supported files with this app from the File Explorer or other apps. To control which files open in this app by default, go to <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Windows settings<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
+  </if>
+  <if expr="is_chromeos">
+    <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_SET_DEFAULTS_LINK" desc="Further explanation of the File Handling API, including text describing the purpose of the toggle (referencing the ChromeOS Files app) and a link to a learn more link for default filetype associations.">
+      You can open and edit supported files with this app from the Files app or other apps. To control which files open this app by default, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>learn how to set default apps on your device<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
+  </if>
+  <if expr="is_macosx">
+    <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_SET_DEFAULTS_LINK" desc="Further explanation of the File Handling API, including text describing the purpose of the toggle (referencing the Mac OS Finder app) and a link to a learn more link for default filetype associations.">
+      You can open and edit supported files with this app from Finder or other apps. To control which files open this app by default, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>learn how to set default apps on your device<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
+  </if>
+  <if expr="is_fuchsia or is_linux">
+    <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_SET_DEFAULTS_LINK" desc="Further explanation of the File Handling API, including text describing the purpose of the toggle (referencing a generic Linux file browser app) and a link to a learn more link for default filetype associations.">
+      You can open and edit supported files with this app from your file browser or other apps. To control which files open this app by default, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>learn how to set default apps on your device<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
+  </if>
+
+  <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_TYPES" desc="A label describing the file types (extensions) that an app has advertised the ability to open. If there are 1-4 file types, all will be shown. If there are more than 4, the extras will be truncated and a link will be added which, when clicked, shows the elided extensions. [ICU_Syntax]">
+    {FILE_TYPE_COUNT, plural,
+      =1 {Supported file type: <ph name="FILE_TYPE1">{FILE_TYPE1}<ex>TXT</ex></ph>}
+      =2 {Supported file types: <ph name="FILE_TYPE1">{FILE_TYPE1}<ex>TXT</ex></ph>, <ph name="FILE_TYPE2">{FILE_TYPE2}<ex>CSV</ex></ph>}
+      =3 {Supported file types: <ph name="FILE_TYPE1">{FILE_TYPE1}<ex>TXT</ex></ph>, <ph name="FILE_TYPE2">{FILE_TYPE2}<ex>CSV</ex></ph>, <ph name="FILE_TYPE3">{FILE_TYPE3}<ex>DOC</ex></ph>}
+      =4 {Supported file types: <ph name="FILE_TYPE1">{FILE_TYPE1}<ex>TXT</ex></ph>, <ph name="FILE_TYPE2">{FILE_TYPE2}<ex>CSV</ex></ph>, <ph name="FILE_TYPE3">{FILE_TYPE3}<ex>DOC</ex></ph>, <ph name="FILE_TYPE4">{FILE_TYPE4}<ex>DOCX</ex></ph>}
+      other {Supported file types: <ph name="FILE_TYPE1">{FILE_TYPE1}<ex>TXT</ex></ph>, <ph name="FILE_TYPE2">{FILE_TYPE2}<ex>CSV</ex></ph>, <ph name="FILE_TYPE3">{FILE_TYPE3}<ex>DOC</ex></ph>, <ph name="FILE_TYPE4">{FILE_TYPE4}<ex>DOCX</ex></ph> (<ph name="LINK">&lt;a href="{LINK}"&gt;</ph>and {OVERFLOW_COUNT} more<ph name="END_LINK">&lt;/a&gt;</ph>)}
+    }
   </message>
 </grit-part>

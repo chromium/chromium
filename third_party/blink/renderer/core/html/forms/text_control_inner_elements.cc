@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -64,10 +65,6 @@ scoped_refptr<ComputedStyle> EditingViewPortElement::CustomStyleForLayoutObject(
   style->SetUserModify(EUserModify::kReadOnly);
 
   return style;
-}
-
-bool EditingViewPortElement::TypeShouldForceLegacyLayout() const {
-  return !RuntimeEnabledFeatures::LayoutNGTextControlEnabled();
 }
 
 // ---------------------------
@@ -124,10 +121,6 @@ void TextControlInnerEditorElement::FocusChanged() {
                                              style_change_reason::kControl));
 }
 
-bool TextControlInnerEditorElement::TypeShouldForceLegacyLayout() const {
-  return !RuntimeEnabledFeatures::LayoutNGTextControlEnabled();
-}
-
 LayoutObject* TextControlInnerEditorElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
@@ -158,6 +151,9 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
   // The inner block, if present, always has its direction set to LTR,
   // so we need to inherit the direction and unicode-bidi style from the
   // element.
+  // TODO(https://crbug.com/1101564): The custom inheritance done here means we
+  // need to mark for style recalc inside style recalc. See the workaround in
+  // LayoutTextControl::StyleDidChange.
   text_block_style->SetDirection(start_style.Direction());
   text_block_style->SetUnicodeBidi(start_style.GetUnicodeBidi());
   text_block_style->SetUserSelect(EUserSelect::kText);
@@ -207,7 +203,8 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
         GetDocument().GetStyleResolver().CreateComputedStyle();
     no_scrollbar_style->SetStyleType(kPseudoIdScrollbar);
     no_scrollbar_style->SetDisplay(EDisplay::kNone);
-    text_block_style->AddCachedPseudoElementStyle(no_scrollbar_style);
+    text_block_style->AddCachedPseudoElementStyle(
+        no_scrollbar_style, kPseudoIdScrollbar, g_null_atom);
     text_block_style->SetHasPseudoElementStyle(kPseudoIdScrollbar);
 
     text_block_style->SetDisplay(EDisplay::kFlowRoot);
@@ -256,10 +253,6 @@ bool SearchFieldCancelButtonElement::WillRespondToMouseClickEvents() {
     return true;
 
   return HTMLDivElement::WillRespondToMouseClickEvents();
-}
-
-bool SearchFieldCancelButtonElement::TypeShouldForceLegacyLayout() const {
-  return !RuntimeEnabledFeatures::LayoutNGTextControlEnabled();
 }
 
 // ----------------------------

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessoryInfoView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -31,7 +33,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <org.chromium.ui.widget.ChipView
+            <org.chromium.components.browser_ui.widget.chips.ChipView
                 android:id="@+id/cc_number"
                 android:gravity="center_vertical|start"
                 android:layout_width="wrap_content"
@@ -46,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:orientation="horizontal">
 
-                <org.chromium.ui.widget.ChipView
+                <org.chromium.components.browser_ui.widget.chips.ChipView
                     android:id="@+id/exp_month"
                     android:gravity="center_vertical|start"
                     android:layout_width="wrap_content"
@@ -62,7 +64,7 @@
                     android:layout_marginEnd="@dimen/keyboard_accessory_sheet_padding"
                     android:textAppearance="@style/TextAppearance.DividerText"/>
 
-                <org.chromium.ui.widget.ChipView
+                <org.chromium.components.browser_ui.widget.chips.ChipView
                     android:id="@+id/exp_year"
                     android:gravity="center_vertical|start"
                     android:layout_width="wrap_content"
@@ -72,13 +74,19 @@
             </LinearLayout>
 
 
-            <org.chromium.ui.widget.ChipView
+            <org.chromium.components.browser_ui.widget.chips.ChipView
                 android:id="@+id/cardholder"
                 android:gravity="center_vertical|start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/InputChip" />
 
+            <org.chromium.components.browser_ui.widget.chips.ChipView
+                android:id="@+id/cvc"
+                android:gravity="center_vertical|start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/InputChip" />
         </LinearLayout>
 
         <ImageView

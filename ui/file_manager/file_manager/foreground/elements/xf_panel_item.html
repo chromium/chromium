@@ -1,0 +1,172 @@
+<style>
+  .xf-panel-item {
+      align-items: center;
+      background-color: var(--cros-bg-color-elevation-2);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: row;
+      height: 68px;
+      width: 504px;
+  }
+
+  .xf-button {
+      height: 36px;
+      width: 36px;
+  }
+
+  .xf-panel-text {
+      color: var(--cros-text-color-primary);
+      flex: 1;
+      font: 13px Roboto;
+      line-height: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+  }
+
+  .xf-panel-label-text {
+      outline: none;
+  }
+
+  :host([panel-type='3']) .xf-panel-label-text {
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      display: -webkit-box;
+      overflow: hidden;
+      white-space: normal;
+  }
+
+  :host([panel-type='3']) .xf-linebreaker {
+      display: none;
+  }
+
+  .xf-panel-label-text {
+      color: var(--cros-text-color-primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+  }
+
+  .xf-panel-secondary-text {
+      color: var(--cros-text-color-secondary);
+  }
+
+  :host(:not([detailed-panel])) .xf-padder-4 {
+      width: 4px;
+  }
+
+  :host(:not([detailed-panel])) .xf-padder-16 {
+      width: 16px;
+  }
+
+  :host(:not([detailed-panel])) .xf-grow-padder {
+      width: 24px;
+  }
+
+  xf-circular-progress {
+      padding: 16px;
+  }
+
+  :host(:not([detailed-summary])) iron-icon {
+      height: 36px;
+      padding: 16px;
+      width: 36px;
+  }
+
+  :host([panel-type='0']) .xf-panel-item {
+      height: var(--progress-height);
+      padding-bottom: var(--progress-padding-bottom);
+      padding-top: var(--progress-padding-top);
+  }
+
+  :host([detailed-panel]:not([detailed-summary])) .xf-panel-text {
+      margin-inline-end: 24px;
+      margin-inline-start: 24px;
+  }
+
+  :host([detailed-panel][panel-type='2']) .xf-panel-secondary-text {
+      color: var(--cros-text-color-positive);
+  }
+
+  :host([detailed-panel]:not([detailed-summary])) xf-button {
+      margin-inline-end: 12px;
+  }
+
+  :host([detailed-panel]:not([detailed-summary])) #indicator {
+      display: none;
+  }
+
+  :host([detailed-summary][data-category='collapsed'])
+  .xf-panel-item {
+      width: 236px;
+  }
+
+  :host([detailed-summary]) .xf-panel-text {
+      align-items: center;
+      display: flex;
+      height: 48px;
+      max-width: unset;
+      width: 100%;
+  }
+
+  :host([detailed-summary]) #indicator {
+      margin-inline-start: 22px;
+      padding: 0;
+  }
+
+  :host([detailed-summary]) #indicator[icon='files36:success'] {
+      --iron-icon-fill-color: var(--cros-icon-color-positive);
+  }
+
+  :host([detailed-summary]) #indicator[icon='files36:failure'] {
+      --iron-icon-stroke-color: var(--cros-icon-color-alert);
+  }
+
+  :host([detailed-summary][data-category='collapsed']) #indicator {
+      margin-inline-end: 20px;
+      min-width: 28px;
+  }
+
+  :host([detailed-summary][data-category='expanded']) #indicator {
+      margin-inline-end: 18px;
+      min-width: 32px;
+  }
+
+  :host([detailed-summary]) #primary-action {
+      align-items: center;
+      display: flex;
+      height: 48px;
+      justify-content: center;
+      margin-inline-end: 10px;
+      margin-inline-start: auto;
+      width: 48px;
+  }
+
+  :host([detailed-panel]) .xf-padder-4 {
+      display: none;
+  }
+
+  :host([detailed-panel]) .xf-padder-16 {
+      display: none;
+  }
+
+  :host([detailed-panel]) .xf-grow-padder {
+      display: none;
+  }
+</style>
+<div class='xf-panel-item'>
+    <xf-circular-progress id='indicator'>
+    </xf-circular-progress>
+    <div class='xf-panel-text' role='alert' tabindex='0'>
+        <span class='xf-panel-label-text'>
+        </span>
+        <br class='xf-linebreaker'>
+    </div>
+    <div class='xf-grow-padder'></div>
+    <xf-button id='secondary-action' tabindex='-1'>
+    </xf-button>
+    <div id='button-gap' class='xf-padder-4'></div>
+    <xf-button id='primary-action' tabindex='-1'>
+    </xf-button>
+    <div class='xf-padder-16'></div>
+</div>

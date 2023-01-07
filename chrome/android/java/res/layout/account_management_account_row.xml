@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2017 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2017 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -9,17 +11,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
+    android:baselineAligned="false"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
-    <ImageView
-        android:id="@android:id/icon"
+    <!-- https://crbug.com/1369955: android::scaleType="fitStart" does not work correctly in RTL
+         layout as it always aligns the top left. Using wrapping FrameLayout as workaround. -->
+    <FrameLayout
         android:layout_width="56dp"
         android:layout_height="40dp"
-        tools:ignore="ContentDescription"
-        android:scaleType="fitStart" />
+        android:gravity="start">
+        <ImageView
+            android:id="@android:id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
 
     <!-- Padding asymmetry (16dp top vs 18dp bottom) is necessary to move text 1dp up according to
          the Material spec. See https://crbug.com/701221#c37. -->
@@ -46,11 +57,5 @@
             android:layout_height="wrap_content" />
 
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@android:id/widget_frame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" />
 
 </LinearLayout>

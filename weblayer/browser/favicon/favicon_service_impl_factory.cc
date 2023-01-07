@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/browser/favicon/favicon_service_impl_factory.h"
 
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "components/favicon/content/large_favicon_provider_getter.h"
 #include "components/favicon/core/core_favicon_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

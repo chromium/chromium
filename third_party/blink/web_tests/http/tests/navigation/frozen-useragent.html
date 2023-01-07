@@ -8,29 +8,34 @@
         testRunner.dumpAsText();
     }
 
-    var userAgent = navigator.userAgent;
-    var platform = navigator.platform;
-
+    const userAgent = navigator.userAgent;
+    const platform = navigator.platform;
     // Validate the user agent string using the following frozen user agent strings found in content/common/user_agent.h:
-    // The version is 999 since that's what content_shell uses.
-    var desktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.0.0.0 Safari/537.36"
-    var frozenUserAgents = [
-      desktopUserAgent,
-      "Mozilla/5.0 (Linux; Android 9; Unspecified Device) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.0.0.0 Safari/537.36",
-      "Mozilla/5.0 (Linux; Android 9; Unspecified Device) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.0.0.0 Mobile Safari/537.36"
+    // The version is 999 since that's what content_shell uses. Platform values should match
+    // strings defined in third_party/blink/renderer/core/frame/navigator_id.cc.
+    const desktopUAPlatformMap = new Map([
+      ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.0.0.0 Safari/537.36", "Win32"],
+      ["Mozilla/5.0 (X11; CrOS x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.0.0.0 Safari/537.36", "Linux x86_64"],
+      ["Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.0.0.0 Safari/537.36", "Linux x86_64"],
+      ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.0.0.0 Safari/537.36", "MacIntel"]
+    ]);
+    const mobileUAPlatformMap = new Map([
+      ["Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.0.0.0 Safari/537.36", "Linux armv81"],
+      ["Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.0.0.0 Mobile Safari/537.36", "Linux armv81"]
+    ]);
+    const frozenUserAgents = [
+      ...desktopUAPlatformMap.keys(),
+      ...mobileUAPlatformMap.keys()
     ];
 
-    // Platform values should match strings defined in third_party/blink/renderer/core/frame/navigator.cc.
-    var desktopPlatform = "Win32";
-    var mobilePlatform = "Linux armv8l";
+    document.write("UserAgent should match one of the frozen UA strings: " + frozenUserAgents.includes(userAgent) + "<br>");
 
-    document.write("UserAgent should match one of the frozen UA strings: " + (frozenUserAgents.indexOf(userAgent) > -1) + "<br>");
-
-    var platformMatchesUserAgent;
-    if (userAgent == desktopUserAgent) {
-      platformMatchesUserAgent = (platform == desktopPlatform);
+    let platformMatchesUserAgent;
+    const desktopUAs = Array.from(desktopUAPlatformMap.keys());
+    if (desktopUAs.includes(userAgent)) {
+      platformMatchesUserAgent = (platform == desktopUAPlatformMap.get(userAgent));
     } else {
-      platformMatchesUserAgent = (platform == mobilePlatform);
+      platformMatchesUserAgent = (platform == mobileUAPlatformMap.get(userAgent));
     }
 
     // Validate navigator.appVersion and navigator.appCodeName

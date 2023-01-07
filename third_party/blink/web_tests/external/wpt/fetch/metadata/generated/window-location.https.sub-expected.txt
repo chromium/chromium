@@ -1,0 +1,80 @@
+This is a testharness.js-based test.
+Found 76 tests; 72 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS sec-fetch-site - Same origin - location
+PASS sec-fetch-site - Same origin - location.href
+PASS sec-fetch-site - Same origin - location.assign
+PASS sec-fetch-site - Same origin - location.replace
+PASS sec-fetch-site - Cross-site - location
+PASS sec-fetch-site - Cross-site - location.href
+PASS sec-fetch-site - Cross-site - location.assign
+PASS sec-fetch-site - Cross-site - location.replace
+PASS sec-fetch-site - Same site - location
+PASS sec-fetch-site - Same site - location.href
+PASS sec-fetch-site - Same site - location.assign
+PASS sec-fetch-site - Same site - location.replace
+PASS sec-fetch-site - Same-Origin -> Cross-Site -> Same-Origin redirect - location
+PASS sec-fetch-site - Same-Origin -> Cross-Site -> Same-Origin redirect - location.href
+PASS sec-fetch-site - Same-Origin -> Cross-Site -> Same-Origin redirect - location.assign
+PASS sec-fetch-site - Same-Origin -> Cross-Site -> Same-Origin redirect - location.replace
+PASS sec-fetch-site - Same-Origin -> Same-Site -> Same-Origin redirect - location
+PASS sec-fetch-site - Same-Origin -> Same-Site -> Same-Origin redirect - location.href
+PASS sec-fetch-site - Same-Origin -> Same-Site -> Same-Origin redirect - location.assign
+PASS sec-fetch-site - Same-Origin -> Same-Site -> Same-Origin redirect - location.replace
+PASS sec-fetch-site - Cross-Site -> Same Origin - location
+PASS sec-fetch-site - Cross-Site -> Same Origin - location.href
+PASS sec-fetch-site - Cross-Site -> Same Origin - location.assign
+PASS sec-fetch-site - Cross-Site -> Same Origin - location.replace
+PASS sec-fetch-site - Cross-Site -> Same-Site - location
+PASS sec-fetch-site - Cross-Site -> Same-Site - location.href
+PASS sec-fetch-site - Cross-Site -> Same-Site - location.assign
+PASS sec-fetch-site - Cross-Site -> Same-Site - location.replace
+PASS sec-fetch-site - Cross-Site -> Cross-Site - location
+PASS sec-fetch-site - Cross-Site -> Cross-Site - location.href
+PASS sec-fetch-site - Cross-Site -> Cross-Site - location.assign
+PASS sec-fetch-site - Cross-Site -> Cross-Site - location.replace
+PASS sec-fetch-site - Same-Origin -> Same Origin - location
+PASS sec-fetch-site - Same-Origin -> Same Origin - location.href
+PASS sec-fetch-site - Same-Origin -> Same Origin - location.assign
+PASS sec-fetch-site - Same-Origin -> Same Origin - location.replace
+PASS sec-fetch-site - Same-Origin -> Same-Site - location
+PASS sec-fetch-site - Same-Origin -> Same-Site - location.href
+PASS sec-fetch-site - Same-Origin -> Same-Site - location.assign
+PASS sec-fetch-site - Same-Origin -> Same-Site - location.replace
+PASS sec-fetch-site - Same-Origin -> Cross-Site - location
+PASS sec-fetch-site - Same-Origin -> Cross-Site - location.href
+PASS sec-fetch-site - Same-Origin -> Cross-Site - location.assign
+PASS sec-fetch-site - Same-Origin -> Cross-Site - location.replace
+PASS sec-fetch-site - Same-Site -> Same Origin - location
+PASS sec-fetch-site - Same-Site -> Same Origin - location.href
+PASS sec-fetch-site - Same-Site -> Same Origin - location.assign
+PASS sec-fetch-site - Same-Site -> Same Origin - location.replace
+PASS sec-fetch-site - Same-Site -> Same-Site - location
+PASS sec-fetch-site - Same-Site -> Same-Site - location.href
+PASS sec-fetch-site - Same-Site -> Same-Site - location.assign
+PASS sec-fetch-site - Same-Site -> Same-Site - location.replace
+PASS sec-fetch-site - Same-Site -> Cross-Site - location
+PASS sec-fetch-site - Same-Site -> Cross-Site - location.href
+PASS sec-fetch-site - Same-Site -> Cross-Site - location.assign
+PASS sec-fetch-site - Same-Site -> Cross-Site - location.replace
+PASS sec-fetch-site - HTTPS downgrade-upgrade - location
+PASS sec-fetch-site - HTTPS downgrade-upgrade - location.href
+PASS sec-fetch-site - HTTPS downgrade-upgrade - location.assign
+PASS sec-fetch-site - HTTPS downgrade-upgrade - location.replace
+PASS sec-fetch-mode - location
+PASS sec-fetch-mode - location.href
+PASS sec-fetch-mode - location.assign
+PASS sec-fetch-mode - location.replace
+PASS sec-fetch-dest - location
+PASS sec-fetch-dest - location.href
+PASS sec-fetch-dest - location.assign
+PASS sec-fetch-dest - location.replace
+PASS sec-fetch-user - location
+PASS sec-fetch-user - location.href
+PASS sec-fetch-user - location.assign
+PASS sec-fetch-user - location.replace
+FAIL sec-fetch-user - location with user activation assert_own_property: expected property "sec-fetch-user" missing
+FAIL sec-fetch-user - location.href with user activation assert_own_property: expected property "sec-fetch-user" missing
+FAIL sec-fetch-user - location.assign with user activation assert_own_property: expected property "sec-fetch-user" missing
+FAIL sec-fetch-user - location.replace with user activation assert_own_property: expected property "sec-fetch-user" missing
+Harness: the test ran to completion.
+

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -129,7 +129,8 @@ TEST_F(DataObjectTest, fileSystemId) {
   FileMetadata metadata;
   metadata.length = 0;
   data_object_->Add(
-      File::CreateForFileSystemFile(url, metadata, File::kIsUserVisible),
+      File::CreateForFileSystemFile(url, metadata, File::kIsUserVisible,
+                                    BlobDataHandle::Create()),
       "fileSystemIdForFileSystemFile");
 
   ASSERT_EQ(3U, data_object_->length());

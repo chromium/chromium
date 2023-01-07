@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,15 @@
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
+class ExceptionState;
 class ScriptState;
+class ProfilerInitOptions;
 
 // A web-exposed JS sampling profiler created via blink::ProfilerGroup,
 // wrapping a handle to v8::CpuProfiler. Records samples periodically from the
@@ -43,6 +45,10 @@ class CORE_EXPORT Profiler final : public EventTargetWithInlineData {
         time_origin_(time_origin) {}
 
   ~Profiler() override = default;
+
+  static Profiler* Create(ScriptState*,
+                          const ProfilerInitOptions*,
+                          ExceptionState&);
 
   void Trace(Visitor* visitor) const override;
 

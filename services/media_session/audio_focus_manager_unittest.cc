@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/adapters.h"
 #include "base/run_loop.h"
-#include "base/test/power_monitor_test_base.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -41,11 +42,10 @@ class AudioFocusManagerTest
  public:
   AudioFocusManagerTest() = default;
 
-  void SetUp() override {
-    auto power_source = std::make_unique<base::PowerMonitorTestSource>();
-    power_source_ = power_source.get();
-    base::PowerMonitor::Initialize(std::move(power_source));
+  AudioFocusManagerTest(const AudioFocusManagerTest&) = delete;
+  AudioFocusManagerTest& operator=(const AudioFocusManagerTest&) = delete;
 
+  void SetUp() override {
     // Create an instance of the MediaSessionService.
     service_ = std::make_unique<MediaSessionServiceImpl>();
     service_->BindAudioFocusManager(
@@ -64,15 +64,13 @@ class AudioFocusManagerTest
     base::RunLoop().RunUntilIdle();
 
     service_.reset();
-    base::PowerMonitor::ShutdownForTesting();
   }
 
   AudioFocusManager::RequestId GetAudioFocusedSession() {
     const auto audio_focus_requests = GetRequests();
-    for (auto iter = audio_focus_requests.rbegin();
-         iter != audio_focus_requests.rend(); ++iter) {
-      if ((*iter)->audio_focus_type == mojom::AudioFocusType::kGain)
-        return (*iter)->request_id.value();
+    for (const auto& request : base::Reversed(audio_focus_requests)) {
+      if (request->audio_focus_type == mojom::AudioFocusType::kGain)
+        return request->request_id.value();
     }
     return base::UnguessableToken::Null();
   }
@@ -206,7 +204,7 @@ class AudioFocusManagerTest
     return GetParam() != mojom::EnforcementMode::kSingleSession;
   }
 
-  base::PowerMonitorTestSource& GetTestPowerSource() { return *power_source_; }
+  void GenerateSuspendEvent() { power_source_.GenerateSuspendEvent(); }
 
   mojo::Remote<mojom::MediaControllerManager>& controller_manager() {
     return controller_manager_remote_;
@@ -285,9 +283,7 @@ class AudioFocusManagerTest
   mojo::Remote<mojom::AudioFocusManagerDebug> audio_focus_debug_remote_;
   mojo::Remote<mojom::MediaControllerManager> controller_manager_remote_;
 
-  base::PowerMonitorTestSource* power_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFocusManagerTest);
+  base::test::ScopedPowerMonitorTestSource power_source_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1467,7 +1463,7 @@ TEST_P(AudioFocusManagerTest, SuspendAllSessionOnPowerSuspend) {
   test::MockMediaSessionMojoObserver observer_1(media_session_1);
   test::MockMediaSessionMojoObserver observer_2(media_session_2);
 
-  GetTestPowerSource().GenerateSuspendEvent();
+  GenerateSuspendEvent();
 
   observer_1.WaitForState(mojom::MediaSessionInfo::SessionState::kSuspended);
   observer_2.WaitForState(mojom::MediaSessionInfo::SessionState::kSuspended);

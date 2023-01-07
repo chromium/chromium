@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ namespace extensions {
 namespace declarative_net_request {
 
 RulesetInstallPref::RulesetInstallPref(RulesetID ruleset_id,
-                                       base::Optional<int> checksum,
+                                       absl::optional<int> checksum,
                                        bool ignored)
     : ruleset_id(ruleset_id), checksum(checksum), ignored(ignored) {
   DCHECK_NE(ignored, checksum.has_value());

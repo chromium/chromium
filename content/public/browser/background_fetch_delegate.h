@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,11 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -29,10 +28,6 @@ namespace net {
 class HttpRequestHeaders;
 struct NetworkTrafficAnnotationTag;
 }  // namespace net
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 struct BackgroundFetchResponse;
@@ -58,8 +53,6 @@ enum class BackgroundFetchPermission {
 class CONTENT_EXPORT BackgroundFetchDelegate {
  public:
   using GetIconDisplaySizeCallback = base::OnceCallback<void(const gfx::Size&)>;
-  using GetPermissionForOriginCallback =
-      base::OnceCallback<void(BackgroundFetchPermission)>;
   using GetUploadDataCallback =
       base::OnceCallback<void(blink::mojom::SerializedBlobPtr)>;
 
@@ -73,6 +66,7 @@ class CONTENT_EXPORT BackgroundFetchDelegate {
     // e.g. because the user clicked cancel on a notification.
     virtual void OnJobCancelled(
         const std::string& job_unique_id,
+        const std::string& download_guid,
         blink::mojom::BackgroundFetchFailureReason reason_to_abort) = 0;
 
     // Called after the download has started with the initial response
@@ -116,13 +110,6 @@ class CONTENT_EXPORT BackgroundFetchDelegate {
   // Gets size of the icon to display with the Background Fetch UI.
   virtual void GetIconDisplaySize(GetIconDisplaySizeCallback callback) = 0;
 
-  // Checks whether |origin| has permission to start a Background Fetch.
-  // |wc_getter| can be null, which means this is running from a worker context.
-  virtual void GetPermissionForOrigin(
-      const url::Origin& origin,
-      const WebContents::Getter& wc_getter,
-      GetPermissionForOriginCallback callback) = 0;
-
   // Creates a new download grouping identified by |job_unique_id|. Further
   // downloads started by DownloadUrl will also use this |job_unique_id| so that
   // a notification can be updated with the current status. If the download was
@@ -140,6 +127,7 @@ class CONTENT_EXPORT BackgroundFetchDelegate {
       const std::string& download_guid,
       const std::string& method,
       const GURL& url,
+      ::network::mojom::CredentialsMode credentials_mode,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       const net::HttpRequestHeaders& headers,
       bool has_request_body) = 0;
@@ -153,8 +141,8 @@ class CONTENT_EXPORT BackgroundFetchDelegate {
   // Updates the UI shown for the fetch job associated with |job_unique_id| to
   // display a new |title| or |icon|.
   virtual void UpdateUI(const std::string& job_unique_id,
-                        const base::Optional<std::string>& title,
-                        const base::Optional<SkBitmap>& icon) = 0;
+                        const absl::optional<std::string>& title,
+                        const absl::optional<SkBitmap>& icon) = 0;
 };
 
 }  // namespace content

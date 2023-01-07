@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -17,7 +18,6 @@ namespace blink {
 
 class Document;
 class Element;
-class FileOrUSVStringOrFormData;
 class HTMLElement;
 class HTMLFormElement;
 class QualifiedName;
@@ -111,10 +111,9 @@ class CORE_EXPORT CustomElement {
                                             HTMLFormElement* nullable_form);
   static void EnqueueFormResetCallback(Element& element);
   static void EnqueueFormDisabledCallback(Element& element, bool is_disabled);
-  static void EnqueueFormStateRestoreCallback(
-      Element& element,
-      const FileOrUSVStringOrFormData& value,
-      const String& mode);
+  static void EnqueueFormStateRestoreCallback(Element& element,
+                                              const V8ControlValue* value,
+                                              const String& mode);
 
   static void TryToUpgrade(Element&);
 

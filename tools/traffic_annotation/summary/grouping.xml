@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 
@@ -9,434 +9,528 @@ to suppress a given annotation from appearing within the generated document. e.g
 
 Unsorted annotations can be placed under the 'Unsorted' group. Keep
 hidden="true" so that these annotations don't show up in the document.
+These annotations will be changed to hidden="false" eventually
+after discussions on the right group.
 -->
 
 <groups>
-  <group name="Unsorted" hidden="true"> <!--Unsorted annotations go here.-->
-    <sender name="Unsorted Sender">
-      <!-- TODO(nicolaso): do a pass through some of the recent ones, and find
-           them a new home -->
-      <traffic_annotation unique_id="prefetch_proxy_canary_check"/>
-      <traffic_annotation unique_id="nearby_webrtc_connection"/>
-      <traffic_annotation unique_id="proxy_config_windows_resolver"/>
-      <traffic_annotation unique_id="remoting_directory_delete_host"/>
-      <traffic_annotation unique_id="remoting_directory_get_host_list"/>
-      <traffic_annotation unique_id="remoting_directory_register_host"/>
-      <traffic_annotation unique_id="remoting_telemetry_log_writer"/>
-      <traffic_annotation unique_id="heartbeat_sender"/>
-      <traffic_annotation unique_id="remoting_register_support_host_request"/>
-      <traffic_annotation unique_id="remoting_ice_config_request"/>
-      <traffic_annotation unique_id="ftl_messaging_client_ack_messages"/>
-      <traffic_annotation unique_id="ftl_messaging_client_receive_messages"/>
-      <traffic_annotation unique_id="ftl_messaging_client_send_messages"/>
-      <traffic_annotation unique_id="ftl_registration_manager"/>
-      <traffic_annotation unique_id="remoting_log_to_server"/>
-      <traffic_annotation unique_id="nearby_share_update_device"/>
-      <traffic_annotation unique_id="nearby_share_contacts"/>
-      <traffic_annotation unique_id="nearby_share_list_public_certificates"/>
-      <traffic_annotation unique_id="omnibox_result_change"/>
-      <traffic_annotation unique_id="browser_switcher_ieem_sitelist"/>
-      <traffic_annotation unique_id="adb_client_socket"/>
-      <traffic_annotation unique_id="devtools_network_resource"/>
-      <traffic_annotation unique_id="devtools_cdp_network_resource"/>
-      <traffic_annotation unique_id="downloads_api_run_async"/>
-      <traffic_annotation unique_id="media_feeds_checker"/>
-      <traffic_annotation unique_id="prefetch_proxy_loader"/>
-      <traffic_annotation unique_id="intranet_redirect_detector"/>
-      <traffic_annotation unique_id="dial_url_fetcher"/>
-      <traffic_annotation unique_id="send_message_express"/>
-      <traffic_annotation unique_id="browser_switcher_ieem_sitelist"/>
-      <traffic_annotation unique_id="prefetch_proxy_probe"/>
-      <traffic_annotation unique_id="enterprise_safe_browsing_realtime_url_lookup"/>
-      <traffic_annotation unique_id="remote_copy_message_handler"/>
-      <traffic_annotation unique_id="port_forwarding_controller_socket"/>
-      <traffic_annotation unique_id="media_feeds"/>
-      <traffic_annotation unique_id="receive_messages_express"/>
-      <traffic_annotation unique_id="pdf_plugin_placeholder"/>
-      <traffic_annotation unique_id="predictive_prefetch"/>
-      <traffic_annotation unique_id="navigation_predictor_srp_prefetch"/>
-      <traffic_annotation unique_id="cloud_print_privet_register"/>
-      <traffic_annotation unique_id="cloud_print_search"/>
-      <traffic_annotation unique_id="privet_http_impl"/>
-      <traffic_annotation unique_id="render_view_context_menu"/>
-      <traffic_annotation unique_id="ice_config_fetcher"/>
-      <traffic_annotation unique_id="media_router_global_media_controls_image"/>
-      <traffic_annotation unique_id="omnibox_navigation_observer"/>
-      <traffic_annotation unique_id="credenential_avatar"/>
-      <traffic_annotation unique_id="well_known_path_that_should_not_exist"/>
-      <traffic_annotation unique_id="devtools_free_data_source"/>
-      <traffic_annotation unique_id="download_internals_webui_source"/>
-      <traffic_annotation unique_id="downloads_dom_handler"/>
-      <traffic_annotation unique_id="new_tab_page_handler"/>
-      <traffic_annotation unique_id="sharing_webrtc_connection"/>
-      <traffic_annotation unique_id="cloud_speech_recognition"/>
-      <traffic_annotation unique_id="cast_socket"/>
-      <traffic_annotation unique_id="dom_distiller"/>
-      <traffic_annotation unique_id="download_manager_resume"/>
-      <traffic_annotation unique_id="file_system_connector_to_box"/>
-      <traffic_annotation unique_id="parallel_download_job"/>
-      <traffic_annotation unique_id="interest_feedv2_send"/>
-      <traffic_annotation unique_id="mirroring_get_setup_info"/>
-      <traffic_annotation unique_id="cast_udp_socket"/>
-      <traffic_annotation unique_id="icon_cacher"/>
-      <traffic_annotation unique_id="omnibox_suggest_deletion"/>
-      <traffic_annotation unique_id="omnibox_suggest"/>
-      <traffic_annotation unique_id="openscreen_tls_message"/>
-      <traffic_annotation unique_id="openscreen_message"/>
-      <traffic_annotation unique_id="password_requirements_spec_fetch"/>
-      <traffic_annotation unique_id="payment_manifest_downloader"/>
-      <traffic_annotation unique_id="proxy_config_settings"/>
-      <traffic_annotation unique_id="query_tiles_image_loader"/>
-      <traffic_annotation unique_id="query_tiles_fetcher"/>
-      <traffic_annotation unique_id="video_tutorial_fetcher"/>
-      <traffic_annotation unique_id="qr_code_save"/>
-      <traffic_annotation unique_id="safe_browsing_cache_collector"/>
-      <traffic_annotation unique_id="safety_check_update_connectivity"/>
-      <traffic_annotation unique_id="open_search"/>
-      <traffic_annotation unique_id="logo_service"/>
-      <traffic_annotation unique_id="ssl_name_mismatch_lookup"/>
-      <traffic_annotation unique_id="ui_devtools_server"/>
-      <traffic_annotation unique_id="viz_devtools_server"/>
-      <traffic_annotation unique_id="appcache_update_job"/>
-      <traffic_annotation unique_id="background_fetch_context"/>
-      <traffic_annotation unique_id="conversion_measurement_report"/>
-      <traffic_annotation unique_id="devtools_proxy_config"/>
-      <traffic_annotation unique_id="tethering_handler_socket"/>
-      <traffic_annotation unique_id="drag_download_file"/>
-      <traffic_annotation unique_id="save_file_manager"/>
-      <traffic_annotation unique_id="renderer_initiated_download"/>
-      <traffic_annotation unique_id="indexed_db_internals_handler"/>
-      <traffic_annotation unique_id="navigation_url_loader"/>
-      <traffic_annotation unique_id="url_prevision_fetcher"/>
-      <traffic_annotation unique_id="pepper_tcp_socket"/>
-      <traffic_annotation unique_id="pepper_udp_socket"/>
-      <traffic_annotation unique_id="service_worker_navigation_preload"/>
-      <traffic_annotation unique_id="service_worker_update_checker"/>
-      <traffic_annotation unique_id="service_worker_script_load"/>
-      <traffic_annotation unique_id="download_web_contents_frame"/>
-      <traffic_annotation unique_id="sigined_exchange_cert_fetcher"/>
-      <traffic_annotation unique_id="sigined_exchange_validity_pinger"/>
-      <traffic_annotation unique_id="sigined_exchange_validity_pinger"/>
-      <traffic_annotation unique_id="web_bundle_loader"/>
-      <traffic_annotation unique_id="worker_script_load"/>
-      <traffic_annotation unique_id="blink_resource_loader"/>
-      <traffic_annotation unique_id="blink_extension_resource_loader"/>
-      <traffic_annotation unique_id="favicon_loader"/>
-      <traffic_annotation unique_id="bluetooth_socket"/>
-      <traffic_annotation unique_id="webui_content_scripts_download"/>
-      <traffic_annotation unique_id="extension_manifest_fetcher"/>
-      <traffic_annotation unique_id="extension_crx_fetcher"/>
-      <traffic_annotation unique_id="gaia_create_reauth_proof_token_for_parent"/>
-      <traffic_annotation unique_id="proxy_config_headless"/>
-      <traffic_annotation unique_id="cast_udp_transport"/>
-      <traffic_annotation unique_id="certificate_verifier_url_request"/>
-      <traffic_annotation unique_id="bidirectional_stream"/>
-      <traffic_annotation unique_id="proxy_config_system"/>
-      <traffic_annotation unique_id="quic_chromium_incoming_session"/>
-      <traffic_annotation unique_id="quic_chromium_incoming_pending_session"/>
-      <traffic_annotation unique_id="quic_chromium_packet_writer"/>
-      <traffic_annotation unique_id="proxy_config_direct"/>
-      <traffic_annotation unique_id="reporting"/>
-      <traffic_annotation unique_id="socket_bio_adapter"/>
-      <traffic_annotation unique_id="spdy_session_control"/>
-      <traffic_annotation unique_id="spdy_push_stream"/>
-      <traffic_annotation unique_id="websocket_basic_stream"/>
-      <traffic_annotation unique_id="websocket_stream"/>
-      <traffic_annotation unique_id="notification_client"/>
-      <traffic_annotation unique_id="security_key_socket"/>
-      <traffic_annotation unique_id="ssl_hmac_channel_authenticator"/>
-      <traffic_annotation unique_id="stream_message_pipe_adapter"/>
-      <traffic_annotation unique_id="stream_packet_socket"/>
-      <traffic_annotation unique_id="certificate_verifier_url_loader"/>
-      <traffic_annotation unique_id="expect_ct_reporter"/>
-      <traffic_annotation unique_id="domain_security_policy"/>
-      <traffic_annotation unique_id="origin_policy_loader"/>
-      <traffic_annotation unique_id="services_http_server_error_response"/>
-      <traffic_annotation unique_id="webrtc_peer_connection"/>
-      <traffic_annotation unique_id="direct_sockets"/>
-      <traffic_annotation unique_id="floc_event_logger"/>
-      <traffic_annotation unique_id="gstatic_change_password_override_urls"/>
-      <traffic_annotation unique_id="interest_feedv2_image_send"/>
-      <traffic_annotation unique_id="sanitized_image_source"/>
-      <traffic_annotation unique_id="kaleidoscope_service"/>
-      <traffic_annotation unique_id="webid"/>
-      <traffic_annotation unique_id="managed_configuration_loader"/>
-      <traffic_annotation unique_id="box_access_token_fetcher"/>
-      <traffic_annotation unique_id="web_app_origin_association_download"/>
-      <traffic_annotation unique_id="digital_asset_links"/>
-    </sender>
-  </group>
-  <group name="Admin Features">
-    <sender name="Cloud Policy">
-      <traffic_annotation unique_id="external_policy_fetcher"/>
-      <traffic_annotation unique_id="user_info_fetcher"/>
-    </sender>
-    <sender name="Developer Tools">
-      <traffic_annotation unique_id="devtools_handle_front_end_messages"/>
-      <traffic_annotation unique_id="devtools_hard_coded_data_source"/>
-      <traffic_annotation unique_id="devtools_http_handler"/>
-    </sender>
-  </group>
-  <group name="Apps and Content">
-    <sender name="Chrome Cleanup">
-      <traffic_annotation unique_id="chrome_cleaner"/>
-      <traffic_annotation unique_id="chrome_cleanup_report"/>
-    </sender>
-    <sender name="Extension and App Management">
-      <traffic_annotation unique_id="chrome_apps_socket_api"/>
-      <traffic_annotation unique_id="extension_blacklist"/>
-      <traffic_annotation unique_id="extension_install_signer"/>
-      <traffic_annotation unique_id="sync_file_system"/>
-    </sender>
-    <sender name="Webstore">
-      <traffic_annotation unique_id="content_hash_verification_job"/>
-      <traffic_annotation unique_id="webstore_data_fetcher"/>
-      <traffic_annotation unique_id="webstore_install_helper"/>
-      <traffic_annotation unique_id="webstore_installer"/>
-    </sender>
-    <sender name="Google Cloud Messaging">
-      <traffic_annotation unique_id="gcm_channel_status_request"/>
-      <traffic_annotation unique_id="gcm_checkin"/>
-      <traffic_annotation unique_id="gcm_connection_factory"/>
-      <traffic_annotation unique_id="gcm_registration"/>
-      <traffic_annotation unique_id="gcm_unregistration"/>
-      <traffic_annotation unique_id="web_push_message"/>
-      <traffic_annotation unique_id="per_user_topic_registration_request"/>
-    </sender>
-  </group>
-  <group name="Child-protection and Safe Browsing Features">
-    <sender name="Safe Browsing">
-      <traffic_annotation unique_id="client_download_request"/>
-      <traffic_annotation unique_id="password_protection_request"/>
-      <traffic_annotation unique_id="permission_predictions"/>
-      <traffic_annotation unique_id="safe_browsing_certificate_error_reporting"/>
-      <traffic_annotation unique_id="safe_browsing_client_side_malware_detector"/>
-      <traffic_annotation unique_id="safe_browsing_client_side_phishing_detector"/>
-      <traffic_annotation unique_id="safe_browsing_extended_reporting"/>
-      <traffic_annotation unique_id="safe_browsing_feedback"/>
-      <traffic_annotation unique_id="safe_browsing_incident"/>
-      <traffic_annotation unique_id="safe_browsing_module_loader"/>
-      <traffic_annotation unique_id="safe_browsing_v4_get_hash"/>
-      <traffic_annotation unique_id="safe_browsing_v4_update"/>
-      <traffic_annotation unique_id="safe_browsing_binary_upload_app"/>
-      <traffic_annotation unique_id="safe_browsing_binary_upload_connector"/>
-      <traffic_annotation unique_id="safe_browsing_realtime_url_lookup"/>
-      <traffic_annotation unique_id="sct_auditing"/>
-      <traffic_annotation unique_id="unwanted_software_report"/>
-      <traffic_annotation unique_id="ppapi_download_request"/>
-    </sender>
-  </group>
-  <group name="Identity and Security">
-    <sender name="Accounts, Identity, and Authentication">
-      <traffic_annotation unique_id="accounts_image_fetcher"/>
-      <traffic_annotation unique_id="affiliation_lookup_by_hash"/>
-      <traffic_annotation unique_id="device_management_service"/>
-      <traffic_annotation unique_id="lookup_single_password_leak"/>
-    </sender>
-    <sender name="OAuth 2.0">
-      <traffic_annotation unique_id="gaia_auth_check_connection_info"/>
-      <traffic_annotation unique_id="gaia_auth_exchange_device_id"/>
-      <traffic_annotation unique_id="gaia_auth_fetch_for_uber"/>
-      <traffic_annotation unique_id="gaia_auth_get_user_info"/>
-      <traffic_annotation unique_id="gaia_auth_list_accounts"/>
-      <traffic_annotation unique_id="gaia_auth_log_out"/>
-      <traffic_annotation unique_id="gaia_auth_login"/>
-      <traffic_annotation unique_id="gaia_auth_merge_sessions"/>
-      <traffic_annotation unique_id="gaia_auth_revoke_token"/>
-      <traffic_annotation unique_id="gaia_auth_multilogin"/>
-      <traffic_annotation unique_id="gaia_cookie_manager_external_cc_result"/>
-      <traffic_annotation unique_id="gaia_oauth_client_get_token_info"/>
-      <traffic_annotation unique_id="gaia_oauth_client_get_tokens"/>
-      <traffic_annotation unique_id="gaia_oauth_client_get_user_info"/>
-      <traffic_annotation unique_id="gaia_oauth_client_refresh_token"/>
-      <traffic_annotation unique_id="oauth2_access_token_fetcher"/>
-      <traffic_annotation unique_id="oauth2_mint_token_flow"/>
-      <traffic_annotation unique_id="safe_search_service"/>
-    </sender>
-    <sender name="Payments">
-      <traffic_annotation unique_id="payments_sync_cards"/>
-    </sender>
-  </group>
-  <group name="Location">
-    <sender name="Location">
-      <traffic_annotation unique_id="geo_language_provider"/>
-      <traffic_annotation unique_id="lib_address_input"/>
-      <traffic_annotation unique_id="network_location_provider"/>
-    </sender>
-    <sender name="RLZ Ping">
-      <traffic_annotation unique_id="rlz_ping"/>
-    </sender>
-  </group>
-  <group name="Media">
-    <sender name="Kaleidoscope">
-      <traffic_annotation unique_id="kaleidoscope_service"/>
-    </sender>
-    <sender name="Plugins">
-      <traffic_annotation unique_id="plugins_resource_service"/>
-    </sender>
-  </group>
-  <group name="Mobile">
-    <sender name="Android">
-      <traffic_annotation unique_id="affiliation_lookup"/>
-      <traffic_annotation unique_id="android_device_manager_socket"/>
-      <traffic_annotation unique_id="android_web_socket"/>
-    </sender>
-  </group>
-  <group name="Networking">
-    <sender name="Brandcode Configuration">
-      <traffic_annotation unique_id="brandcode_config"/>
-    </sender>
-    <sender name="Captive Portal">
-      <traffic_annotation unique_id="captive_portal_service"/>
-    </sender>
-    <sender name="DNS">
-      <traffic_annotation unique_id="dns_over_https"/>
-      <traffic_annotation unique_id="dns_transaction"/>
-      <traffic_annotation unique_id="domain_reliability_report_upload"/>
-      <traffic_annotation unique_id="http_server_error_response"/>
-    </sender>
-    <sender name="Data Reduction Proxy">
-      <traffic_annotation unique_id="data_reduction_proxy_config"/>
-      <traffic_annotation unique_id="data_reduction_proxy_secure_proxy_check"/>
-      <traffic_annotation unique_id="data_reduction_proxy_warmup"/>
-      <traffic_annotation unique_id="hintsfetcher_gethintsrequest"/>
-      <traffic_annotation unique_id="optimization_guide_model"/>
-      <traffic_annotation unique_id="optimization_guide_model_download"/>
-      <traffic_annotation unique_id="previews_litepage_prober"/>
-      <traffic_annotation unique_id="litepages_robots_rules"/>
-    </sender>
-    <sender name="Network">
-      <traffic_annotation unique_id="network_time_component"/>
-    </sender>
-  </group>
-  <group name="Printing">
-    <sender name="Cloud Print">
-      <traffic_annotation unique_id="cloud_print_backend"/>
-      <traffic_annotation unique_id="cloud_print_credential_update"/>
-      <traffic_annotation unique_id="cloud_print_proxy"/>
-      <traffic_annotation unique_id="printer_job_handler"/>
-    </sender>
-  </group>
-  <group name="Search">
-    <sender name="Web History">
-      <traffic_annotation unique_id="web_history_counter"/>
-      <traffic_annotation unique_id="web_history_expire"/>
-      <traffic_annotation unique_id="web_history_expire_between_dates"/>
-      <traffic_annotation unique_id="web_history_query"/>
-      <traffic_annotation unique_id="web_history_delete_url"/>
-      <traffic_annotation unique_id="history_notice_utils_notice"/>
-      <traffic_annotation unique_id="history_notice_utils_popup"/>
-      <traffic_annotation unique_id="history_ui_favicon_request_handler_get_favicon"/>
-    </sender>
-    <sender name="Omnibox">
-      <traffic_annotation unique_id="omnibox_documentsuggest"/>
-      <traffic_annotation unique_id="omnibox_zerosuggest"/>
-      <traffic_annotation unique_id="one_google_bar_service"/>
-      <traffic_annotation unique_id="search_prefetch_service"/>
-    </sender>
-  </group>
-  <group name="Updates, Recovery, and Crash Reports">
-    <sender name="Chrome Variations Service">
-      <traffic_annotation unique_id="chrome_variations_service"/>
-    </sender>
-    <sender name="Updates">
-      <traffic_annotation unique_id="update_client"/>
-    </sender>
-    <sender name="ChromeOS Recovery">
-      <traffic_annotation unique_id="cros_recovery_image_download"/>
-      <traffic_annotation unique_id="download_recovery_component"/>
-    </sender>
-    <sender name="Crash Reports">
-      <traffic_annotation unique_id="javascript_report_error"/>
-    </sender>
-    <sender name="Chrome Performance, Feedback, and Usage Statistics">
-      <traffic_annotation unique_id="background_performance_tracer"/>
-      <traffic_annotation unique_id="chrome_feedback_report_app"/>
-      <traffic_annotation unique_id="metrics_report_ukm"/>
-      <traffic_annotation unique_id="metrics_report_uma"/>
-    </sender>
-    <sender name="WebRTC">
-      <traffic_annotation unique_id="webrtc_event_log_uploader"/>
-      <traffic_annotation unique_id="webrtc_log_upload"/>
-    </sender>
-  </group>
-  <group name="User Experience">
-    <sender name="Autofill">
-      <traffic_annotation unique_id="autofill_query"/>
-      <traffic_annotation unique_id="autofill_upload"/>
-      <traffic_annotation unique_id="load_autofill_gstatic_data"/>
+  <group name="Mobile" hidden="true">
+    <sender name="Android Unsorted">
+      <annotation id="android_device_manager_socket"/>
+      <annotation id="android_web_socket"/>
+      <annotation id="query_tiles_fetcher"/>
+      <annotation id="query_tiles_image_loader"/>
+      <annotation id="autofill_service"/>
+      <annotation id="cached_image_fetcher"/>
+      <annotation id="chime_sdk"/>
+      <annotation id="chrome_android_hats"/>
+      <annotation id="chrome_variations_android"/>
+      <annotation id="customtabs_parallel_request"/>
+      <annotation id="download_bitmap"/>
+      <annotation id="download_manager_service_retry"/>
+      <annotation id="explore_sites"/>
+      <annotation id="family_info"/>
+      <annotation id="gstatic_change_password_scripts"/>
+      <annotation id="gstatic_onboarding_definition"/>
+      <annotation id="kids_chrome_management_client_classify_url"/>
+      <annotation id="minidump_uploader_android"/>
+      <annotation id="oma_download_handler_android"/>
+      <annotation id="partner_bookmarks_reader_get_favicon"/>
+      <annotation id="permission_request_creator"/>
+      <annotation id="publish_note_request"/>
+      <annotation id="pull_template_request"/>
+      <annotation id="rlz"/>
+      <annotation id="webapk_create"/>
+      <annotation id="webapk_create_for_service"/>
+      <annotation id="webapk_update"/>
+      <annotation id="webview_proxy_config"/>
     </sender>
     <sender name="Feed Library">
-      <traffic_annotation unique_id="interest_feed_send"/>
-    </sender>
-    <sender name="Personalization">
-      <traffic_annotation unique_id="profile_avatar"/>
-      <traffic_annotation unique_id="profile_resetter_upload"/>
-      <traffic_annotation unique_id="signed_in_profile_avatar"/>
-      <traffic_annotation unique_id="push_client_channel"/>
-    </sender>
-    <sender name="Favicon">
-      <traffic_annotation unique_id="content_suggestion_get_favicon"/>
-      <traffic_annotation unique_id="icon_catcher_get_large_icon"/>
-    </sender>
-    <sender name="Images">
-      <traffic_annotation unique_id="image_annotation"/>
-    </sender>
-    <sender name="Link Doctor">
-      <traffic_annotation unique_id="net_error_helper"/>
-    </sender>
-    <sender name="Prefetch">
-      <traffic_annotation unique_id="offline_prefetch"/>
-      <traffic_annotation unique_id="prefetch_download"/>
-      <traffic_annotation unique_id="prefetch_visuals"/>
-    </sender>
-    <sender name="New Tab Page">
-      <traffic_annotation unique_id="backdrop_collection_images_download"/>
-      <traffic_annotation unique_id="backdrop_collection_names_download"/>
-      <traffic_annotation unique_id="backdrop_next_image_download"/>
-      <traffic_annotation unique_id="drive_service"/>
-      <traffic_annotation unique_id="ntp_snippets_fetch"/>
-      <traffic_annotation unique_id="ntp_custom_background"/>
-      <traffic_annotation unique_id="ntp_icon_source"/>
-      <traffic_annotation unique_id="nux_ntp_background_preview"/>
-      <traffic_annotation unique_id="popular_sites_fetch"/>
-      <traffic_annotation unique_id="search_suggest_service"/>
-      <traffic_annotation unique_id="remote_suggestions_provider"/>
-      <traffic_annotation unique_id="repeatable_queries_deletion"/>
-      <traffic_annotation unique_id="repeatable_queries_service"/>
-      <traffic_annotation unique_id="promo_service"/>
-      <traffic_annotation unique_id="task_module_service"/>
-    </sender>
-    <sender name="Speech Recognition">
-      <traffic_annotation unique_id="speech_recognition_downstream"/>
-      <traffic_annotation unique_id="speech_recognition_upstream"/>
-    </sender>
-    <sender name="Spellcheck">
-      <traffic_annotation unique_id="spellcheck_hunspell_dictionary"/>
-      <traffic_annotation unique_id="spellcheck_lookup"/>
-    </sender>
-    <sender name="Suggestions">
-      <traffic_annotation unique_id="suggestions_service"/>
-    </sender>
-    <sender name="Translate">
-      <traffic_annotation unique_id="translate_url_fetcher"/>
-    </sender>
-    <sender name="Chrome Sync">
-      <traffic_annotation unique_id="invalidation_service"/>
-      <traffic_annotation unique_id="sync_http_bridge"/>
-      <traffic_annotation unique_id="sync_stop_reporter"/>
-      <traffic_annotation unique_id="sync_clipboard_service"/>
-      <traffic_annotation unique_id="trusted_vault_request"/>
-    </sender>
-    <sender name="Assist Rank">
-      <traffic_annotation unique_id="ranker_url_fetcher"/>
+      <annotation id="interest_feedv2_send"/>
+      <annotation id="interest_feedv2_image_send"/>
     </sender>
     <sender name="Phone as a Security Key">
-      <traffic_annotation unique_id="cablev2_websocket_from_client"/>
-      <traffic_annotation unique_id="cablev2_websocket_from_authenticator"/>
+      <annotation id="cablev2_websocket_from_client"/>
+      <annotation id="cablev2_websocket_from_authenticator"/>
     </sender>
-    <sender name="Memories">
-      <traffic_annotation unique_id="memories_remote_model_request"/>
+  </group>
+  <group name="ChromeOS" hidden="true">
+    <sender name="ChromeOS Unsorted">
+      <annotation id="ambient_client"/>
+      <annotation id="ambient_photo_cache"/>
+      <annotation id="ambient_photo_controller"/>
+      <annotation id="app_suggestion_get_favicon"/>
+      <annotation id="arc_auth_code_fetcher"/>
+      <annotation id="calendar_get_events"/>
+      <annotation id="chrome_plugin_vm_api"/>
+      <annotation id="chromebook_mail_api"/>
+      <annotation id="customization_wallpaper_downloader"/>
+      <annotation id="edu_account_login_profile_image_fetcher"/>
+      <annotation id="fast_pair_device_metadata_fetcher"/>
+      <annotation id="fast_pair_footprints_request"/>
+      <annotation id="fast_pair_image_decoder"/>
+      <annotation id="fwupd_firmware_update"/>
+      <annotation id="gaia_reauth_token_fetcher"/>
+      <annotation id="help_content_provider"/>
+      <annotation id="image_downloader"/>
+      <annotation id="ime_url_downloader"/>
+      <annotation id="kiosk_app_icon"/>
+      <annotation id="launcher_item_suggest"/>
+      <annotation id="managed_acccount_signin_restrictions_secure_connect_chromeos"/>
+      <annotation id="management_ui_customer_logo"/>
+      <annotation id="nearby_connections_wifi_lan"/>
+      <annotation id="network_traversal_ice_config_fetcher"/>
+      <annotation id="quick_answers_spellchecker"/>
+      <annotation id="remote_apps_image_downloader"/>
+      <annotation id="remote_command_screenshot"/>
+      <annotation id="side_search_availability_test"/>
+      <annotation id="smb_netbios_name_query"/>
+      <annotation id="supervised_users_denylist"/>
+      <annotation id="tachyon_ice_config_fetcher"/>
+      <annotation id="terms_of_service_fetch"/>
+      <annotation id="timezone_lookup"/>
+      <annotation id="url_icon_source_fetch"/>
+      <annotation id="wallpaper_backdrop_collection_names"/>
+      <annotation id="wallpaper_backdrop_images_info"/>
+      <annotation id="wallpaper_backdrop_surprise_me_image"/>
+      <annotation id="wallpaper_fetcher"/>
+      <annotation id="wallpaper_download_google_photo"/>
+      <annotation id="wallpaper_google_photos_albums"/>
+      <annotation id="wallpaper_google_photos_enabled"/>
+      <annotation id="wallpaper_google_photos_photos"/>
+      <annotation id="search_and_assistant_enabled_checker"/>
+    </sender>
+    <sender name="ChromeOS Recovery">
+      <annotation id="cros_recovery_image_download"/>
+      <annotation id="download_recovery_component"/>
+    </sender>
+    <sender name="ChromeOS Printers Manager">
+      <annotation id="printing_oauth2_first_token_request"/>
+      <annotation id="printing_oauth2_metadata_request"/>
+      <annotation id="printing_oauth2_next_token_request"/>
+      <annotation id="printing_oauth2_registration_request"/>
+      <annotation id="printing_oauth2_token_exchange_request"/>
+      <annotation id="printing_server_printers_query"/>
+    </sender>
+    <sender name="Device Activity">
+      <annotation id="device_activity_client_health_check"/>
+      <annotation id="device_activity_client_check_membership"/>
+      <annotation id="device_activity_client_check_in"/>
+    </sender>
+    <sender name="Enhanced Network TTS">
+      <annotation id="enhanced_network_tts"/>
+    </sender>
+  </group>
+  <group name="Unsorted" hidden="true">
+    <sender name="Unsorted Sender">
+      <annotation id="auction_downloader"/>
+      <annotation id="auction_report_sender"/>
+      <annotation id="interest_group_update_fetcher"/>
+      <annotation id="interest_group_well_known_fetcher"/>
+      <annotation id="shared_storage_worklet_module_script_downloader"/>
+      <annotation id="proxy_config_windows_resolver"/>
+      <annotation id="remoting_directory_delete_host"/>
+      <annotation id="remoting_directory_get_host_list"/>
+      <annotation id="remoting_directory_register_host"/>
+      <annotation id="remoting_telemetry_log_writer"/>
+      <annotation id="heartbeat_sender"/>
+      <annotation id="remoting_register_support_host_request"/>
+      <annotation id="remoting_ice_config_request"/>
+      <annotation id="ftl_messaging_client_ack_messages"/>
+      <annotation id="ftl_messaging_client_receive_messages"/>
+      <annotation id="ftl_messaging_client_send_messages"/>
+      <annotation id="ftl_registration_manager"/>
+      <annotation id="remoting_log_to_server"/>
+      <annotation id="omnibox_result_change"/>
+      <annotation id="browser_switcher_ieem_sitelist"/>
+      <annotation id="adb_client_socket"/>
+      <annotation id="devtools_network_resource"/>
+      <annotation id="devtools_cdp_network_resource"/>
+      <annotation id="downloads_api_run_async"/>
+      <annotation id="intranet_redirect_detector"/>
+      <annotation id="dial_url_fetcher"/>
+      <annotation id="browser_switcher_ieem_sitelist"/>
+      <annotation id="enterprise_safe_browsing_realtime_url_lookup"/>
+      <annotation id="port_forwarding_controller_socket"/>
+      <annotation id="pdf_plugin_placeholder"/>
+      <annotation id="render_view_context_menu"/>
+      <annotation id="media_router_global_media_controls_image"/>
+      <annotation id="omnibox_navigation_observer"/>
+      <annotation id="credenential_avatar"/>
+      <annotation id="well_known_path_that_should_not_exist"/>
+      <annotation id="devtools_free_data_source"/>
+      <annotation id="download_internals_webui_source"/>
+      <annotation id="downloads_dom_handler"/>
+      <annotation id="cast_socket"/>
+      <annotation id="dom_distiller"/>
+      <annotation id="download_manager_resume"/>
+      <annotation id="file_system_connector_to_box"/>
+      <annotation id="parallel_download_job"/>
+      <annotation id="mirroring_get_setup_info"/>
+      <annotation id="cast_udp_socket"/>
+      <annotation id="icon_cacher"/>
+      <annotation id="omnibox_suggest_deletion"/>
+      <annotation id="omnibox_suggest"/>
+      <annotation id="openscreen_tls_message"/>
+      <annotation id="openscreen_message"/>
+      <annotation id="password_requirements_spec_fetch"/>
+      <annotation id="payment_manifest_downloader"/>
+      <annotation id="proxy_config_settings"/>
+      <annotation id="video_tutorial_fetcher"/>
+      <annotation id="qr_code_save"/>
+      <annotation id="desktop_screenshot_save"/>
+      <annotation id="safe_browsing_cache_collector"/>
+      <annotation id="safety_check_update_connectivity"/>
+      <annotation id="open_search"/>
+      <annotation id="logo_service"/>
+      <annotation id="ssl_name_mismatch_lookup"/>
+      <annotation id="ui_devtools_server"/>
+      <annotation id="background_fetch_context"/>
+      <annotation id="devtools_proxy_config"/>
+      <annotation id="tethering_handler_socket"/>
+      <annotation id="drag_download_file"/>
+      <annotation id="save_file_manager"/>
+      <annotation id="renderer_initiated_download"/>
+      <annotation id="indexed_db_internals_handler"/>
+      <annotation id="navigation_url_loader"/>
+      <annotation id="url_prevision_fetcher"/>
+      <annotation id="pepper_tcp_socket"/>
+      <annotation id="pepper_udp_socket"/>
+      <annotation id="service_worker_navigation_preload"/>
+      <annotation id="service_worker_update_checker"/>
+      <annotation id="service_worker_script_load"/>
+      <annotation id="download_web_contents_frame"/>
+      <annotation id="sigined_exchange_cert_fetcher"/>
+      <annotation id="web_bundle_loader"/>
+      <annotation id="worker_script_load"/>
+      <annotation id="blink_resource_loader"/>
+      <annotation id="blink_extension_resource_loader"/>
+      <annotation id="favicon_loader"/>
+      <annotation id="bluetooth_socket"/>
+      <annotation id="webui_content_scripts_download"/>
+      <annotation id="extension_manifest_fetcher"/>
+      <annotation id="extension_crx_fetcher"/>
+      <annotation id="proxy_config_headless"/>
+      <annotation id="cast_udp_transport"/>
+      <annotation id="certificate_verifier_url_request"/>
+      <annotation id="bidirectional_stream"/>
+      <annotation id="proxy_config_system"/>
+      <annotation id="quic_chromium_incoming_session"/>
+      <annotation id="quic_chromium_incoming_pending_session"/>
+      <annotation id="quic_chromium_packet_writer"/>
+      <annotation id="proxy_config_direct"/>
+      <annotation id="reporting"/>
+      <annotation id="socket_bio_adapter"/>
+      <annotation id="spdy_session_control"/>
+      <annotation id="spdy_push_stream"/>
+      <annotation id="websocket_basic_stream"/>
+      <annotation id="websocket_stream"/>
+      <annotation id="notification_client"/>
+      <annotation id="security_key_socket"/>
+      <annotation id="ssl_hmac_channel_authenticator"/>
+      <annotation id="stream_message_pipe_adapter"/>
+      <annotation id="stream_packet_socket"/>
+      <annotation id="certificate_verifier_url_loader"/>
+      <annotation id="expect_ct_reporter"/>
+      <annotation id="domain_security_policy"/>
+      <annotation id="services_http_server_error_response"/>
+      <annotation id="webrtc_peer_connection"/>
+      <annotation id="direct_sockets"/>
+      <annotation id="sanitized_image_source"/>
+      <annotation id="box_access_token_fetcher"/>
+      <annotation id="web_app_origin_association_download"/>
+      <annotation id="digital_asset_links"/>
+      <annotation id="device_trust_key_rotation"/>
+    </sender>
+    <sender name="Recently Added">
+      <annotation id="share_preview_image_fetch"/>
+      <annotation id="fast_pair_image_decoder"/>
+      <annotation id="drivefs_http_client"/>
+      <annotation id="pending_beacon_api"/>
+      <annotation id="download_bubble_retry_download"/>
+      <annotation id="quick_answers_loader"/>
+      <annotation id="chrome_search_suggest_service"/>
+      <annotation id="coupon_persisted_tab_data"/>
+      <annotation id="chrome_commerce_subscriptions_create"/>
+      <annotation id="chrome_commerce_subscriptions_delete"/>
+      <annotation id="chrome_commerce_subscriptions_get"/>
+      <annotation id="cryptauth_get_my_devices"/>
+      <annotation id="chrome_commerce_waa_fetcher"/>
+      <annotation id="shopping_list_ui_image_fetcher"/>
+      <annotation id="chrome_commerce_price_email_pref_fetcher"/>
+      <annotation id="chrome_commerce_price_email_pref_sender"/>
+      <annotation id="receive_messages_express"/>
+      <annotation id="send_message_express"/>
+      <annotation id="cryptohome_recovery_fetch_epoch"/>
+      <annotation id="cryptohome_recovery_fetch_recovery_response"/>
+      <annotation id="supervised_user_favicon_request"/>
+      <annotation id="app_preload_service"/>
+      <annotation id="user_image_downloader"/>
+    </sender>
+  </group>
+  <group name="Admin Features" hidden="true">
+    <sender name="Cloud Policy">
+      <annotation id="external_policy_fetcher"/>
+      <annotation id="user_info_fetcher"/>
+      <annotation id="managed_configuration_loader"/>
+      <annotation id="managed_acccount_signin_restrictions_secure_connect"/>
+    </sender>
+    <sender name="Developer Tools">
+      <annotation id="devtools_handle_front_end_messages"/>
+      <annotation id="devtools_hard_coded_data_source"/>
+      <annotation id="devtools_http_handler"/>
+    </sender>
+  </group>
+  <group name="Apps and Content" hidden="true">
+    <sender name="Chrome Cleanup">
+      <annotation id="chrome_cleaner"/>
+      <annotation id="chrome_cleanup_report"/>
+    </sender>
+    <sender name="Extension and App Management">
+      <annotation id="chrome_apps_socket_api"/>
+      <annotation id="extension_blacklist"/>
+      <annotation id="extension_install_signer"/>
+      <annotation id="sync_file_system"/>
+    </sender>
+    <sender name="Webstore">
+      <annotation id="content_hash_verification_job"/>
+      <annotation id="webstore_data_fetcher"/>
+      <annotation id="webstore_install_helper"/>
+      <annotation id="webstore_installer"/>
+    </sender>
+    <sender name="Google Cloud Messaging">
+      <annotation id="gcm_checkin"/>
+      <annotation id="gcm_connection_factory"/>
+      <annotation id="gcm_registration"/>
+      <annotation id="gcm_unregistration"/>
+      <annotation id="web_push_message"/>
+      <annotation id="per_user_topic_registration_request"/>
+    </sender>
+  </group>
+  <group name="Child-protection and Safe Browsing Features" hidden="true">
+    <sender name="Safe Browsing">
+      <annotation id="client_download_request"/>
+      <annotation id="kids_chrome_management_list_family_members"/>
+      <annotation id="password_protection_request"/>
+      <annotation id="permission_predictions"/>
+      <annotation id="safe_browsing_certificate_error_reporting"/>
+      <annotation id="safe_browsing_client_side_phishing_detector"/>
+      <annotation id="safe_browsing_extended_reporting"/>
+      <annotation id="safe_browsing_extension_telemetry"/>
+      <annotation id="safe_browsing_feedback"/>
+      <annotation id="safe_browsing_incident"/>
+      <annotation id="safe_browsing_v4_get_hash"/>
+      <annotation id="safe_browsing_v4_update"/>
+      <annotation id="safe_browsing_binary_upload_app"/>
+      <annotation id="safe_browsing_binary_upload_connector"/>
+      <annotation id="safe_browsing_realtime_url_lookup"/>
+      <annotation id="sct_auditing"/>
+      <annotation id="sct_auditing_hashdance"/>
+      <annotation id="unwanted_software_report"/>
+      <annotation id="ppapi_download_request"/>
+      <annotation id="tailored_security_service"/>
+    </sender>
+  </group>
+  <group name="Cookieless Ads" hidden="true">
+    <sender name="Conversion Measurements">
+      <annotation id="conversion_measurement_report"/>
+    </sender>
+    <sender name="Aggregation Service">
+      <annotation id="aggregation_service_helper_keys"/>
+      <annotation id="aggregation_service_report"/>
+    </sender>
+  </group>
+  <group name="Identity and Security" hidden="true">
+    <sender name="Accounts, Identity, and Authentication">
+      <annotation id="accounts_image_fetcher"/>
+      <annotation id="affiliation_lookup_by_hash"/>
+      <annotation id="device_management_service"/>
+      <annotation id="lookup_single_password_leak"/>
+    </sender>
+    <sender name="OAuth 2.0 and FedCM">
+      <annotation id="fedcm"/>
+      <annotation id="fedcm_account_profile_image_fetcher"/>
+      <annotation id="gaia_auth_check_connection_info"/>
+      <annotation id="gaia_auth_exchange_device_id"/>
+      <annotation id="gaia_auth_fetch_for_uber"/>
+      <annotation id="gaia_auth_list_accounts"/>
+      <annotation id="gaia_auth_log_out"/>
+      <annotation id="gaia_auth_merge_sessions"/>
+      <annotation id="gaia_auth_revoke_token"/>
+      <annotation id="gaia_auth_multilogin"/>
+      <annotation id="gaia_cookie_manager_external_cc_result"/>
+      <annotation id="gaia_create_reauth_proof_token_for_parent"/>
+      <annotation id="gaia_oauth_client_get_token_info"/>
+      <annotation id="gaia_oauth_client_get_account_capabilities"/>
+      <annotation id="gaia_oauth_client_get_tokens"/>
+      <annotation id="gaia_oauth_client_get_user_info"/>
+      <annotation id="gaia_oauth_client_refresh_token"/>
+      <annotation id="oauth2_access_token_fetcher"/>
+      <annotation id="oauth2_mint_token_flow"/>
+      <annotation id="safe_search_service"/>
+    </sender>
+    <sender name="Payments">
+      <annotation id="payments_sync_cards"/>
+    </sender>
+  </group>
+  <group name="K-Anonymity Service" hidden="true">
+    <sender name="K-Anonymity Service">
+      <annotation id="k_anonymity_service_get_token"/>
+    </sender>
+  </group>
+  <group name="Location" hidden="true">
+    <sender name="Location">
+      <annotation id="geo_language_provider"/>
+      <annotation id="lib_address_input"/>
+      <annotation id="network_location_provider"/>
+    </sender>
+    <sender name="RLZ Ping">
+      <annotation id="rlz_ping"/>
+    </sender>
+  </group>
+  <group name="Media" hidden="true">
+    <sender name="Media Router">
+      <annotation id="chrome_cast_discovery_api"/>
+    </sender>
+  </group>
+  <group name="Networking" hidden="true">
+    <sender name="Brandcode Configuration">
+      <annotation id="brandcode_config"/>
+    </sender>
+    <sender name="Captive Portal">
+      <annotation id="captive_portal_service"/>
+    </sender>
+    <sender name="DNS">
+      <annotation id="dns_over_https"/>
+      <annotation id="dns_transaction"/>
+      <annotation id="domain_reliability_report_upload"/>
+      <annotation id="http_server_error_response"/>
+    </sender>
+    <sender name="Data Reduction Proxy">
+      <annotation id="hintsfetcher_gethintsrequest"/>
+      <annotation id="optimization_guide_model"/>
+      <annotation id="optimization_guide_model_download"/>
+    </sender>
+    <sender name="Network">
+      <annotation id="network_time_component"/>
+    </sender>
+  </group>
+  <group name="Search" hidden="true">
+    <sender name="Web History">
+      <annotation id="web_history_counter"/>
+      <annotation id="web_history_expire"/>
+      <annotation id="web_history_expire_between_dates"/>
+      <annotation id="web_history_query"/>
+      <annotation id="web_history_delete_url"/>
+      <annotation id="history_notice_utils_notice"/>
+      <annotation id="history_notice_utils_popup"/>
+      <annotation id="history_ui_favicon_request_handler_get_favicon"/>
+    </sender>
+    <sender name="Omnibox">
+      <annotation id="omnibox_documentsuggest"/>
+      <annotation id="omnibox_zerosuggest"/>
+      <annotation id="one_google_bar_service"/>
+      <annotation id="search_prefetch_service"/>
+    </sender>
+    <sender name="Contextual Search">
+      <annotation id="contextual_search_resolve"/>
+      <annotation id="contextual_search_thumbnail"/>
+    </sender>
+    <sender name="Prefetch">
+      <annotation id="navigation_predictor_srp_prefetch"/>
+      <annotation id="predictive_prefetch"/>
+      <annotation id="prefetch_proxy_probe"/>
+      <annotation id="speculation_rules_prefetch"/>
+      <annotation id="speculation_rules_prefetch_probe"/>
+    </sender>
+  </group>
+  <group name="Updates, Recovery, and Crash Reports" hidden="true">
+    <sender name="Chrome Variations Service">
+      <annotation id="chrome_variations_service"/>
+    </sender>
+    <sender name="Updates">
+      <annotation id="omaha_client_android_uc"/>
+      <annotation id="update_client"/>
+    </sender>
+    <sender name="Crash Reports">
+      <annotation id="javascript_report_error"/>
+    </sender>
+    <sender name="Chrome Performance, Feedback, and Usage Statistics">
+      <annotation id="chrome_feedback_report_app"/>
+      <annotation id="metrics_report_ukm"/>
+      <annotation id="metrics_report_uma"/>
+    </sender>
+    <sender name="WebRTC">
+      <annotation id="webrtc_event_log_uploader"/>
+      <annotation id="webrtc_log_upload"/>
+    </sender>
+  </group>
+  <group name="User Experience" hidden="true">
+    <sender name="Autofill">
+      <annotation id="autofill_image_fetcher_card_art_image"/>
+      <annotation id="autofill_query"/>
+      <annotation id="autofill_upload"/>
+      <annotation id="load_autofill_gstatic_data"/>
+    </sender>
+    <sender name="Personalization">
+      <annotation id="profile_avatar"/>
+      <annotation id="profile_resetter_upload"/>
+      <annotation id="signed_in_profile_avatar"/>
+    </sender>
+    <sender name="Favicon">
+      <annotation id="content_suggestion_get_favicon"/>
+      <annotation id="icon_catcher_get_large_icon"/>
+      <annotation id="favicon_fetcher_get_favicon"/>
+    </sender>
+    <sender name="Images">
+      <annotation id="image_annotation"/>
+    </sender>
+    <sender name="Prefetch">
+      <annotation id="offline_prefetch"/>
+      <annotation id="prefetch_download"/>
+      <annotation id="prefetch_visuals"/>
+    </sender>
+    <sender name="Early Hints">
+      <annotation id="early_hints_preload"/>
+    </sender>
+    <sender name="New Tab Page">
+      <annotation id="new_tab_page_handler"/>
+      <annotation id="backdrop_collection_images_download"/>
+      <annotation id="backdrop_collection_names_download"/>
+      <annotation id="backdrop_next_image_download"/>
+      <annotation id="drive_service"/>
+      <annotation id="ntp_snippets_fetch"/>
+      <annotation id="nux_ntp_background_preview"/>
+      <annotation id="photos_service"/>
+      <annotation id="popular_sites_fetch"/>
+      <annotation id="remote_suggestions_provider"/>
+      <annotation id="promo_service"/>
+      <annotation id="recipes_service"/>
+      <annotation id="chrome_cart_discounts_lookup"/>
+      <annotation id="chrome_cart_get_discounted_link"/>
+    </sender>
+    <sender name="Speech Recognition">
+      <annotation id="speech_recognition_downstream"/>
+      <annotation id="speech_recognition_upstream"/>
+    </sender>
+    <sender name="Spellcheck">
+      <annotation id="spellcheck_hunspell_dictionary"/>
+      <annotation id="spellcheck_lookup"/>
+    </sender>
+    <sender name="Translate">
+      <annotation id="translate_url_fetcher"/>
+    </sender>
+    <sender name="Chrome Sync">
+      <annotation id="sync_http_bridge"/>
+      <annotation id="sync_stop_reporter"/>
+      <annotation id="trusted_vault_request"/>
+      <annotation id="remote_copy_message_handler"/>
+    </sender>
+    <sender name="Assist Rank">
+      <annotation id="ranker_url_fetcher"/>
+    </sender>
+    <sender name="Whats New">
+      <annotation id="whats_new_handler"/>
     </sender>
   </group>
 </groups>

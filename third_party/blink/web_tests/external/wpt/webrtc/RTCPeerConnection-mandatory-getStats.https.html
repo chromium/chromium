@@ -23,18 +23,18 @@ const mandatory = {
     "packetsReceived",
     "packetsLost",
     "jitter",
-    "packetsDiscarded",
     "framesDropped"
   ],
   RTCInboundRtpStreamStats: [
-    "receiverId",
+    "trackIdentifier",
     "remoteId",
     "framesDecoded",
     "nackCount",
     "framesReceived",
     "bytesReceived",
     "totalAudioEnergy",
-    "totalSamplesDuration"
+    "totalSamplesDuration",
+    "packetsDiscarded"
   ],
   RTCRemoteInboundRtpStreamStats: [
     "localId",
@@ -45,7 +45,6 @@ const mandatory = {
     "bytesSent"
   ],
   RTCOutboundRtpStreamStats: [
-    "senderId",
     "remoteId",
     "framesEncoded",
     "nackCount",
@@ -82,20 +81,13 @@ const mandatory = {
     "height",
     "framesPerSecond"
   ],
-  RTCMediaHandlerStats: [
-    "trackIdentifier",
-  ],
-  RTCAudioHandlerStats: [
-  ],
-  RTCVideoHandlerStats: [
-  ],
-  RTCVideoSenderStats: [
-  ],
-  RTCVideoReceiverStats: [
-  ],
   RTCCodecStats: [
     "payloadType",
-    "codecType",
+    /* codecType is part of MTI but is not systematically set
+       per https://www.w3.org/TR/webrtc-stats/#dom-rtccodecstats-codectype
+       If the dictionary member is not present, it means that
+      this media format can be both encoded and decoded. */
+    // "codecType",
     "mimeType",
     "clockRate",
     "channels",
@@ -130,7 +122,11 @@ const mandatory = {
     "fingerprint",
     "fingerprintAlgorithm",
     "base64Certificate",
-    "issuerCertificateId",
+    /* issuerCertificateId is part of MTI but is not systematically set
+       per https://www.w3.org/TR/webrtc-stats/#dom-rtccertificatestats-issuercertificateid
+       If the current certificate is at the end of the chain
+       (i.e. a self-signed certificate), this will not be set. */
+    // "issuerCertificateId",
   ],
 };
 
@@ -171,16 +167,8 @@ const dictionaryNames = {
 // From https://w3c.github.io/webrtc-stats/webrtc-stats.html (webidl)
 
 const parents = {
-  RTCVideoHandlerStats: "RTCMediaHandlerStats",
-  RTCVideoSenderStats: "RTCVideoHandlerStats",
   RTCVideoSourceStats: "RTCMediaSourceStats",
-  RTCSenderVideoTrackAttachmentStats: "RTCVideoSenderStats",
-  RTCVideoReceiverStats: "RTCVideoHandlerStats",
-  RTCAudioHandlerStats: "RTCMediaHandlerStats",
-  RTCAudioSenderStats: "RTCAudioHandlerStats",
   RTCAudioSourceStats: "RTCMediaSourceStats",
-  RTCSenderAudioTrackAttachmentStats: "RTCAudioSenderStats",
-  RTCAudioReceiverStats: "RTCAudioHandlerStats",
   RTCReceivedRtpStreamStats: "RTCRtpStreamStats",
   RTCInboundRtpStreamStats: "RTCReceivedRtpStreamStats",
   RTCRemoteInboundRtpStreamStats: "RTCReceivedRtpStreamStats",

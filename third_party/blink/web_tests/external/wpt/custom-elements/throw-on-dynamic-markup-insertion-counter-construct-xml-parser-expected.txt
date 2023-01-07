@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS document.open() must throw an InvalidStateError when synchronously constructing a custom element
+PASS document.open("text/html") must throw an InvalidStateError when synchronously constructing a custom element
+FAIL document.open(URL) must NOT throw an InvalidStateError when synchronously constructing a custom element assert_true: Must synchronously instantiate a custom element expected true got false
+PASS document.close() must throw an InvalidStateError when synchronously constructing a custom element
+PASS document.write must throw an InvalidStateError when synchronously constructing a custom element
+PASS document.writeln must throw an InvalidStateError when synchronously constructing a custom element
+PASS document.open() of another document must not throw an InvalidStateError when synchronously constructing a custom element
+PASS document.open("text/html") of another document must not throw an InvalidStateError when synchronously constructing a custom element
+PASS document.close() of another document must not throw an InvalidStateError when synchronously constructing a custom element
+PASS document.write of another document must not throw an InvalidStateError when synchronously constructing a custom element
+PASS document.writeln of another document must not throw an InvalidStateError when synchronously constructing a custom element
+Harness: the test ran to completion.
+

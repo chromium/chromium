@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,16 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 PrefService* GetLocalState() {
-  return g_browser_process ? g_browser_process->local_state() : NULL;
+  return g_browser_process ? g_browser_process->local_state() : nullptr;
 }
 
 }  // namespace
@@ -38,31 +35,29 @@ EasyUnlockTpmKeyManager* EasyUnlockTpmKeyManagerFactory::Get(
           ->GetServiceForBrowserContext(browser_context, true));
 }
 
-EasyUnlockTpmKeyManager* EasyUnlockTpmKeyManagerFactory::GetForUser(
-    const std::string& user_id) {
+EasyUnlockTpmKeyManager* EasyUnlockTpmKeyManagerFactory::GetForAccountId(
+    const AccountId& account_id) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  const user_manager::User* user =
-      user_manager->FindUser(user_manager::known_user::GetAccountId(
-          user_id, std::string() /* id */, AccountType::UNKNOWN));
+  const user_manager::User* user = user_manager->FindUser(account_id);
   if (!user)
-    return NULL;
+    return nullptr;
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile)
-    return NULL;
+    return nullptr;
   return EasyUnlockTpmKeyManagerFactory::Get(profile);
 }
 
 EasyUnlockTpmKeyManagerFactory::EasyUnlockTpmKeyManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "EasyUnlockTpmKeyManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
-EasyUnlockTpmKeyManagerFactory::~EasyUnlockTpmKeyManagerFactory() {}
+EasyUnlockTpmKeyManagerFactory::~EasyUnlockTpmKeyManagerFactory() = default;
 
 KeyedService* EasyUnlockTpmKeyManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  const user_manager::User* user = NULL;
+  const user_manager::User* user = nullptr;
   if (ProfileHelper::IsRegularProfile(profile))
     user = ProfileHelper::Get()->GetUserByProfile(profile);
   else if (!ProfileHelper::IsSigninProfile(profile))
@@ -73,9 +68,4 @@ KeyedService* EasyUnlockTpmKeyManagerFactory::BuildServiceInstanceFor(
       user ? user->username_hash() : std::string(), GetLocalState());
 }
 
-content::BrowserContext* EasyUnlockTpmKeyManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
-}
-
-}  // namespace chromeos
+}  // namespace ash

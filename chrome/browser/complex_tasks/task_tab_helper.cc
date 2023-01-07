@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,12 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/android/chrome_jni_headers/TaskTabHelper_jni.h"
 #include "chrome/browser/android/tab_android.h"
 
 using base::android::JavaParamRef;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 bool DoesTransitionContinueTask(ui::PageTransition transition) {
@@ -40,7 +40,7 @@ namespace tasks {
 
 TaskTabHelper::TaskTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      last_pruned_navigation_entry_index_(-1) {}
+      content::WebContentsUserData<TaskTabHelper>(*web_contents) {}
 
 TaskTabHelper::~TaskTabHelper() {}
 
@@ -172,7 +172,7 @@ void TaskTabHelper::RecordHubAndSpokeNavigationUsage(int spokes) {
 }
 
 int64_t TaskTabHelper::GetParentTaskId() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents());
   return tab_android && Java_TaskTabHelper_getParentTaskId(
                             base::android::AttachCurrentThread(),
@@ -183,7 +183,7 @@ int64_t TaskTabHelper::GetParentTaskId() {
 }
 
 int64_t TaskTabHelper::GetParentRootTaskId() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents());
   return tab_android && Java_TaskTabHelper_getParentRootTaskId(
                             base::android::AttachCurrentThread(),
@@ -193,7 +193,7 @@ int64_t TaskTabHelper::GetParentRootTaskId() {
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 jlong JNI_TaskTabHelper_GetTaskId(JNIEnv* env,
                                   const JavaParamRef<jobject>& jweb_contents) {
   sessions::NavigationTaskId* navigation_task_id =
@@ -216,8 +216,8 @@ jlong JNI_TaskTabHelper_GetRootTaskId(
   }
   return -1;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TaskTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TaskTabHelper);
 
 }  // namespace tasks

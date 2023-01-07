@@ -1,13 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_UI_DEVTOOLS_VIEWS_OVERLAY_AGENT_VIEWS_H_
 #define COMPONENTS_UI_DEVTOOLS_VIEWS_OVERLAY_AGENT_VIEWS_H_
 
-#include <vector>
-
-#include "components/ui_devtools/Overlay.h"
+#include "base/gtest_prod_util.h"
+#include "components/ui_devtools/overlay.h"
 #include "components/ui_devtools/overlay_agent.h"
 #include "components/ui_devtools/views/dom_agent_views.h"
 #include "ui/compositor/layer.h"
@@ -39,6 +38,9 @@ class OverlayAgentViews : public OverlayAgent,
                           public ui::EventHandler,
                           public ui::LayerDelegate {
  public:
+  OverlayAgentViews(const OverlayAgentViews&) = delete;
+  OverlayAgentViews& operator=(const OverlayAgentViews&) = delete;
+
   ~OverlayAgentViews() override;
 
   // Creates a platform-specific instance.
@@ -120,8 +122,6 @@ class OverlayAgentViews : public OverlayAgent,
   gfx::Rect pinned_rect_;
 
   int pinned_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayAgentViews);
 };
 
 }  // namespace ui_devtools

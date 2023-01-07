@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_TRACING_TRACE_EVENT_SYSTEM_STATS_MONITOR_H_
 #define CHROME_BROWSER_TRACING_TRACE_EVENT_SYSTEM_STATS_MONITOR_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_metrics.h"
 #include "base/trace_event/trace_log.h"
@@ -21,6 +20,11 @@ class TraceEventSystemStatsMonitor
       public performance_monitor::SystemMonitor::SystemObserver {
  public:
   TraceEventSystemStatsMonitor();
+
+  TraceEventSystemStatsMonitor(const TraceEventSystemStatsMonitor&) = delete;
+  TraceEventSystemStatsMonitor& operator=(const TraceEventSystemStatsMonitor&) =
+      delete;
+
   ~TraceEventSystemStatsMonitor() override;
 
   // base::trace_event::TraceLog::EnabledStateChangedObserver overrides:
@@ -45,8 +49,6 @@ class TraceEventSystemStatsMonitor
   bool is_profiling_ = false;
 
   base::WeakPtrFactory<TraceEventSystemStatsMonitor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TraceEventSystemStatsMonitor);
 };
 
 }  // namespace tracing

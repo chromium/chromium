@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS type can be different from "change"
-PASS init dictionary default values
-PASS init dictionary overrides
-PASS argument of addListener
-FAIL argument of onchange assert_true: expected true got false
-FAIL constructor of "change" event assert_true: expected true got false
-Harness: the test ran to completion.
-

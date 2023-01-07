@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 
 #include "content/browser/sms/sms_parser.h"
 
-#include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -80,13 +81,11 @@ SmsParser::Result SmsParser::Parse(base::StringPiece sms) {
   // TODO(yigu): The existing kOtpFormatRegex may filter out invalid SMSes that
   // would fall into |kHostAndPortNotParsed| or |kGURLNotValid| below. We should
   // clean up the code if the statement is confirmed by metrics.
-  if (!re2::RE2::PartialMatch(sms.as_string(), kOtpFormatRegex, &top_domain,
+  if (!re2::RE2::PartialMatch(std::string(sms), kOtpFormatRegex, &top_domain,
                               &otp, &embedded_domain))
     return Result(SmsParsingStatus::kOTPFormatRegexNotMatch);
 
-  SmsParsingStatus top_domain_parsing_status;
-  GURL top_gurl;
-  std::tie(top_domain_parsing_status, top_gurl) = ParseDomain(top_domain);
+  auto [top_domain_parsing_status, top_gurl] = ParseDomain(top_domain);
   if (top_domain_parsing_status != SmsParsingStatus::kParsed)
     return Result(top_domain_parsing_status);
   DCHECK(top_gurl.is_valid());
@@ -97,9 +96,7 @@ SmsParser::Result SmsParser::Parse(base::StringPiece sms) {
   if (embedded_domain == "")
     return Result(top_origin, url::Origin(), otp);
 
-  SmsParsingStatus embedded_domain_parsing_status;
-  GURL embedded_gurl;
-  std::tie(embedded_domain_parsing_status, embedded_gurl) =
+  auto [embedded_domain_parsing_status, embedded_gurl] =
       ParseDomain(embedded_domain);
   if (embedded_domain_parsing_status != SmsParsingStatus::kParsed)
     return Result(embedded_domain_parsing_status);

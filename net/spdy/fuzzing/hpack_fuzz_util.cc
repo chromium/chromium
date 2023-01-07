@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/rand_util.h"
 #include "base/sys_byteorder.h"
-#include "net/third_party/quiche/src/spdy/core/hpack/hpack_constants.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_constants.h"
 
 namespace spdy {
 
@@ -38,7 +38,7 @@ using std::map;
 HpackFuzzUtil::GeneratorContext::GeneratorContext() = default;
 HpackFuzzUtil::GeneratorContext::~GeneratorContext() = default;
 
-HpackFuzzUtil::Input::Input() : offset(0) {}
+HpackFuzzUtil::Input::Input() = default;
 HpackFuzzUtil::Input::~Input() = default;
 
 HpackFuzzUtil::FuzzerContext::FuzzerContext() = default;
@@ -149,13 +149,12 @@ bool HpackFuzzUtil::RunHeaderBlockThroughFuzzerStages(
           input_block.data(), input_block.size())) {
     return false;
   }
-  if (!context->first_stage->HandleControlFrameHeadersComplete(nullptr)) {
+  if (!context->first_stage->HandleControlFrameHeadersComplete()) {
     return false;
   }
   // Second stage: Re-encode the decoded header block. This must succeed.
-  std::string second_stage_out;
-  CHECK(context->second_stage->EncodeHeaderSet(
-      context->first_stage->decoded_block(), &second_stage_out));
+  std::string second_stage_out = context->second_stage->EncodeHeaderBlock(
+      context->first_stage->decoded_block());
 
   // Third stage: Expect a decoding of the re-encoded block to succeed, but
   // don't require it. It's possible for the stage-two encoder to produce an
@@ -164,7 +163,7 @@ bool HpackFuzzUtil::RunHeaderBlockThroughFuzzerStages(
           second_stage_out.data(), second_stage_out.length())) {
     return false;
   }
-  if (!context->third_stage->HandleControlFrameHeadersComplete(nullptr)) {
+  if (!context->third_stage->HandleControlFrameHeadersComplete()) {
     return false;
   }
   return true;

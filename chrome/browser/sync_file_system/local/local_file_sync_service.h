@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,9 @@
 #include <map>
 #include <memory>
 #include <set>
-#include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -57,6 +56,10 @@ class LocalFileSyncService
   class Observer {
    public:
     Observer() {}
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // This is called when there're one or more local changes available.
@@ -64,9 +67,6 @@ class LocalFileSyncService
     // scheduling but the value may not be accurately reflect the real-time
     // value.
     virtual void OnLocalChangeAvailable(int64_t pending_changes_hint) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   typedef base::OnceCallback<void(SyncStatusCode status,
@@ -77,6 +77,10 @@ class LocalFileSyncService
   static std::unique_ptr<LocalFileSyncService> CreateForTesting(
       Profile* profile,
       leveldb::Env* env_override);
+
+  LocalFileSyncService(const LocalFileSyncService&) = delete;
+  LocalFileSyncService& operator=(const LocalFileSyncService&) = delete;
+
   ~LocalFileSyncService() override;
 
   void Shutdown();
@@ -217,7 +221,7 @@ class LocalFileSyncService
   LocalChangeProcessor* GetLocalChangeProcessor(
       const storage::FileSystemURL& url);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   scoped_refptr<LocalFileSyncContext> sync_context_;
 
@@ -232,12 +236,10 @@ class LocalFileSyncService
 
   OriginChangeMap origin_change_map_;
 
-  LocalChangeProcessor* local_change_processor_;
+  raw_ptr<LocalChangeProcessor> local_change_processor_;
   GetLocalChangeProcessorCallback get_local_change_processor_;
 
   base::ObserverList<Observer>::Unchecked change_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileSyncService);
 };
 
 }  // namespace sync_file_system

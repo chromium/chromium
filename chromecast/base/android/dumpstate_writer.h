@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,16 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace chromecast {
 
 // JNI wrapper for DumpstateWriter.java.
 class DumpstateWriter {
  public:
-  static void AddDumpValue(const std::string& name, const std::string& value);
+  DumpstateWriter() = delete;
+  DumpstateWriter(const DumpstateWriter&) = delete;
+  DumpstateWriter& operator=(const DumpstateWriter&) = delete;
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DumpstateWriter);
+  static void AddDumpValue(const std::string& name, const std::string& value);
 };
 
 }  // namespace chromecast

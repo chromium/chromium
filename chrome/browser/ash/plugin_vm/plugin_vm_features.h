@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -19,17 +19,51 @@ class PluginVmFeatures {
  public:
   static PluginVmFeatures* Get();
 
+  enum class ProfileSupported {
+    kOk,
+    kErrorNonPrimary,
+    kErrorChildAccount,
+    kErrorOffTheRecord,
+    kErrorEphemeral,
+    // This is for all the other cases where the profile is not supported.
+    kErrorNotSupported,
+  };
+
+  enum class PolicyConfigured {
+    kOk,
+    kErrorUnableToCheckPolicy,
+    kErrorNotEnterpriseEnrolled,
+    kErrorUserNotAffiliated,
+    kErrorUnableToCheckDevicePolicy,
+    kErrorNotAllowedByDevicePolicy,
+    kErrorNotAllowedByUserPolicy,
+    kErrorLicenseNotSetUp,
+  };
+
+  // Remember to update `plugin_vm::GetDiagnostics()` when this struct or the
+  // members change.
+  struct IsAllowedDiagnostics {
+    bool device_supported;
+    ProfileSupported profile_supported;
+    PolicyConfigured policy_configured;
+
+    bool IsOk() const;
+    // An empty string is returned if there is no error (i.e. `IsOk()`
+    // returns true).
+    std::string GetTopError() const;
+  };
+
+  // Check if Plugin VM is allowed for the current profile and return
+  // diagnostics.
+  virtual IsAllowedDiagnostics GetIsAllowedDiagnostics(const Profile* profile);
+
   // Checks if Plugin VM is allowed for the current profile and provides
-  // areason if it is not allowed. The reason string is to only be used
+  // a reason if it is not allowed. The reason string is to only be used
   // in crosh/vmc error messages.
-  virtual bool IsAllowed(const Profile* profile, std::string* reason);
+  virtual bool IsAllowed(const Profile* profile, std::string* reason = nullptr);
 
-  // Checks if Plugin VM is allowed for the current profile.
-  virtual bool IsAllowed(const Profile* profile);
-
-  // Returns whether Plugin VM has been installed.
-  // TODO(timloh): We should detect installations via VMC, currently the user
-  // needs to manually launch the installer once for the pref to get set.
+  // Returns whether Plugin VM is installed. Using vmc may cause this to return
+  // an incorrect value, e.g. by renaming or deleting VMs.
   virtual bool IsConfigured(const Profile* profile);
 
   // Returns true if Plugin VM is allowed and configured for the current

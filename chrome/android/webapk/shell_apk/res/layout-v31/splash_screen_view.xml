@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color_non_empty">
+
+  <ImageView
+      android:id="@+id/splashscreen_icon_view"
+      android:layout_width="@dimen/oom_splash_icon_size"
+      android:layout_height="@dimen/oom_splash_icon_size"
+      android:layout_gravity="center"
+      android:src="@drawable/splash_icon"/>
+
+</FrameLayout>

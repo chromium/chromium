@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,11 @@
 
 namespace switches {
 
-// TODO(crbug.com/1066962): remove this code when most of bookmarks are
-// reuploaded.
-extern const base::Feature kSyncReuploadBookmarkFullTitles;
-extern const base::Feature kSyncUseClientTagForBookmarkCommits;
+BASE_DECLARE_FEATURE(kSyncOmitLargeBookmarkFaviconUrl);
 
-// TODO(crbug.com/1177798): remove this code when most of bookmarks are
-// reuploaded. This feature toggle will work only when
-// SyncReuploadBookmarkFullTitles is enabled.
-extern const base::Feature kSyncReuploadBookmarksUponMatchingData;
+// TODO(crbug.com/1232951): remove the feature toggle once most of bookmarks
+// have been reuploaded.
+BASE_DECLARE_FEATURE(kSyncReuploadBookmarks);
 
 }  // namespace switches
 

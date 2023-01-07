@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+<title>crbug.com/1312681</title>
+<style>
+text {
+  font-size: 20px;
+  text-decoration: overline;
+}
+.decocolor {
+  fill: rgba(64,255,64,0.5);
+}
+</style>
+<text x="10" y="30">The quick <tspan text-decoration="underline" class="decocolor"><tspan fill="black">brown fox</tspan></tspan> jumps</text>
+<text x="10" y="70">The quick <tspan textLength="40" lengthAdjust="spacingAndGlyphs"><tspan text-decoration="underline" class="decocolor"><tspan fill="black">brown fox</tspan></tspan></tspan> jumps</text>
+<text x="10" y="110">The quick <tspan textLength="200" lengthAdjust="spacingAndGlyphs"><tspan text-decoration="underline" class="decocolor"><tspan fill="black">brown fox</tspan></tspan></tspan></text>
+<path stroke="red" fill="transparent" id="path1" d="m110 190 a 47 80 30 0 1 100 00"/>
+<text x="10" y="190">The quick <textPath href="#path1" textLength="140" lengthAdjust="spacingAndGlyphs"><tspan text-decoration="underline" class="decocolor"><tspan fill="black">brown fox</tspan></tspan></textPath> jumps</text>
+
+<text x="700" y="10" writing-mode="vertical-rl" textLength="140" lengthAdjust="spacingAndGlyphs"><tspan text-decoration="underline" class="decocolor"><tspan fill="black">&#x8272;&#x306F;&#x5302;&#x3078;&#x3069;quick brown</tspan></tspan></text>
+<text x="660" y="10" writing-mode="vertical-rl" textLength="400" lengthAdjust="spacingAndGlyphs"><tspan text-decoration="underline" class="decocolor"><tspan fill="black">&#x8272;&#x306F;&#x5302;&#x3078;&#x3069;quick brown</tspan></tspan></text>
+</svg>

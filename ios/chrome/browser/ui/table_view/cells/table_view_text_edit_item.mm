@@ -1,18 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,6 +23,8 @@ namespace {
 const CGFloat kLabelAndFieldGap = 5;
 // Height/width of the edit icon.
 const CGFloat kEditIconLength = 18;
+// Height/width of the error icon.
+const CGFloat kErrorIconLength = 20;
 
 }  // namespace
 
@@ -57,8 +58,16 @@ const CGFloat kEditIconLength = 18;
   NSString* textLabelFormat = self.required ? @"%@*" : @"%@";
   cell.textLabel.text =
       [NSString stringWithFormat:textLabelFormat, self.textFieldName];
-  cell.textField.placeholder = self.textFieldPlaceholder;
+  if (self.textFieldPlaceholder) {
+    cell.textField.attributedPlaceholder = [[NSAttributedString alloc]
+        initWithString:self.textFieldPlaceholder
+            attributes:@{
+              NSForegroundColorAttributeName :
+                  [UIColor colorNamed:kTextSecondaryColor]
+            }];
+  }
   cell.textField.text = self.textFieldValue;
+  cell.textField.secureTextEntry = self.textFieldSecureTextEntry;
   if (self.textFieldName.length) {
     cell.textField.accessibilityIdentifier =
         [NSString stringWithFormat:@"%@_textField", self.textFieldName];
@@ -78,13 +87,12 @@ const CGFloat kEditIconLength = 18;
   cell.textField.enabled = self.textFieldEnabled;
 
   if (self.hideIcon) {
-    cell.textField.textColor = self.textFieldEnabled
-                                   ? [UIColor colorNamed:kBlueColor]
-                                   : UIColor.cr_secondaryLabelColor;
+    cell.textField.textColor = [UIColor colorNamed:kTextPrimaryColor];
+
     [cell setIcon:TableViewTextEditItemIconTypeNone];
   } else {
     if (self.hasValidText) {
-      cell.textField.textColor = UIColor.cr_secondaryLabelColor;
+      cell.textField.textColor = [UIColor colorNamed:kTextPrimaryColor];
     } else {
       cell.textField.textColor = [UIColor colorNamed:kRedColor];
     }
@@ -168,10 +176,10 @@ const CGFloat kEditIconLength = 18;
 @property(nonatomic, strong) NSLayoutConstraint* iconTrailingConstraint;
 
 // When they are activated, the label and the text field are on one line.
-// They conflict with the |accessibilityConstraints|.
+// They conflict with the `accessibilityConstraints`.
 @property(nonatomic, strong) NSArray<NSLayoutConstraint*>* standardConstraints;
 // When they are activated, the label is on one line, the text field is on
-// another line. They conflict with the |standardConstraints|.
+// another line. They conflict with the `standardConstraints`.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* accessibilityConstraints;
 
@@ -240,8 +248,10 @@ const CGFloat kEditIconLength = 18;
         constraintEqualToAnchor:_identifyingIconButton.leadingAnchor];
 
     _standardConstraints = @[
-      [_textField.firstBaselineAnchor
-          constraintEqualToAnchor:_textLabel.firstBaselineAnchor],
+      [_textLabel.centerYAnchor
+          constraintEqualToAnchor:self.contentView.centerYAnchor],
+      [_textField.centerYAnchor
+          constraintEqualToAnchor:_textLabel.centerYAnchor],
       [_textField.leadingAnchor
           constraintEqualToAnchor:_textLabel.trailingAnchor
                          constant:kLabelAndFieldGap],
@@ -290,6 +300,9 @@ const CGFloat kEditIconLength = 18;
 #pragma mark Public
 
 - (void)setIcon:(TableViewTextEditItemIconType)iconType {
+  self.textFieldTrailingConstraint.constant = -kLabelAndFieldGap;
+  self.textLabelTrailingConstraint.constant = -kLabelAndFieldGap;
+
   switch (iconType) {
     case TableViewTextEditItemIconTypeNone:
       self.iconView.hidden = YES;
@@ -303,13 +316,15 @@ const CGFloat kEditIconLength = 18;
       self.iconView.hidden = NO;
       [self.iconView setImage:[self editImage]];
       self.iconView.tintColor = [UIColor colorNamed:kGrey400Color];
-      [self setIconTypeNoneConstraints];
+
+      _editIconHeightConstraint.constant = kEditIconLength;
       break;
     case TableViewTextEditItemIconTypeError:
       self.iconView.hidden = NO;
       [self.iconView setImage:[self errorImage]];
       self.iconView.tintColor = [UIColor colorNamed:kRedColor];
-      [self setIconTypeNoneConstraints];
+
+      _editIconHeightConstraint.constant = kErrorIconLength;
       break;
     default:
       NOTREACHED();
@@ -358,6 +373,7 @@ const CGFloat kEditIconLength = 18;
   [super prepareForReuse];
   self.textLabel.text = nil;
   self.textField.text = nil;
+  self.textField.attributedPlaceholder = nil;
   self.textField.returnKeyType = UIReturnKeyNext;
   self.textField.keyboardType = UIKeyboardTypeDefault;
   self.textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
@@ -367,25 +383,33 @@ const CGFloat kEditIconLength = 18;
   self.textField.accessibilityIdentifier = nil;
   self.textField.enabled = NO;
   self.textField.delegate = nil;
+  self.textField.secureTextEntry = NO;
   [self.textField removeTarget:nil
                         action:nil
               forControlEvents:UIControlEventAllEvents];
   [self setIdentifyingIcon:nil];
   self.identifyingIconButton.enabled = NO;
+  [self.identifyingIconButton removeTarget:nil
+                                    action:nil
+                          forControlEvents:UIControlEventAllEvents];
 }
 
 #pragma mark Accessibility
 
 - (NSString*)accessibilityLabel {
-  return [NSString
-      stringWithFormat:@"%@, %@", self.textLabel.text, self.textField.text];
+  // If `textFieldSecureTextEntry` is
+  // YES, the voice over should not read the text value.
+  NSString* textFieldText =
+      self.textField.secureTextEntry ? @"" : self.textField.text;
+  return
+      [NSString stringWithFormat:@"%@, %@", self.textLabel.text, textFieldText];
 }
 
 #pragma mark Private
 
 // Updates the cell such as it is layouted correctly with regard to the
 // preferred content size category, if it is an
-// |accessibilityContentSizeCategory| or not.
+// `accessibilityContentSizeCategory` or not.
 - (void)updateForAccessibilityContentSizeCategory:
     (BOOL)accessibilityContentSizeCategory {
   if (accessibilityContentSizeCategory) {
@@ -399,14 +423,6 @@ const CGFloat kEditIconLength = 18;
     _textField.textAlignment =
         UseRTLLayout() ? NSTextAlignmentLeft : NSTextAlignmentRight;
   }
-}
-
-// Sets constraints when the icon needs to be hidden.
-- (void)setIconTypeNoneConstraints {
-  self.textFieldTrailingConstraint.constant = -kLabelAndFieldGap;
-  self.textLabelTrailingConstraint.constant = -kLabelAndFieldGap;
-
-  _editIconHeightConstraint.constant = kEditIconLength;
 }
 
 // Returns the edit icon image.

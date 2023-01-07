@@ -2,15 +2,6 @@
 <html dir="ltr" lang="en">
 <head>
   <meta charset="utf-8">
-  <script src="chrome://resources/js/cr.js"></script>
-  <script src="chrome://resources/js/assert.js"></script>
-  <script src="chrome://resources/js/util.js"></script>
-  <script src="chrome://resources/js/load_time_data.js"></script>
-  <script src="strings.js"></script>
-<if expr="is_ios">
-  <!-- TODO(crbug.com/487000): Remove this once injected by the web layer. -->
-  <script src="chrome://resources/js/ios/web_ui.js"></script>
-</if>
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" type="text/css" href="signin_index.css">
 </head>
@@ -20,8 +11,8 @@
       <h2 jscontent="title"></h2>
       <table class="signin-details">
         <tr jsselect="data"
-            jsvalues="class:chrome.signin.setClassFromValue($this.value)"
-            jseval="chrome.signin.highlightIfChanged(this,
+            jsvalues="class:setClassFromValue($this.value)"
+            jseval="highlightIfChanged(this,
                       this.children[1].innerText, value)">
           <td jscontent="label"></td>
           <td jscontent="status"></td>
@@ -43,8 +34,8 @@
           <td>Request Status</td>
         </tr>
         <tr jsselect="data"
-            jsvalues="class:chrome.signin.setClassFromValue($this.status)"
-            jseval="chrome.signin.highlightIfAnyChanged(this,
+            jsvalues="class:setClassFromValue($this.status)"
+            jseval="highlightIfAnyChanged(this,
                       [[this.children[1].innerText, scopes],
                       [this.children[2].innerText, request_time],
                       [this.children[3].innerText, status]])">
@@ -110,7 +101,6 @@
     </div>
   </div>
 
-  <script src="chrome://resources/js/jstemplate_compiled.js"></script>
-  <script src="signin_internals.js"></script>
+  <script type="module" src="signin_internals.js"></script>
 </body>
 </html>

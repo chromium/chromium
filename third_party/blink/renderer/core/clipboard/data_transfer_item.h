@@ -31,11 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DATA_TRANSFER_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DATA_TRANSFER_ITEM_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_function_string_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -47,7 +46,7 @@ class File;
 class ScriptState;
 
 namespace probe {
-class AsyncTaskId;
+class AsyncTaskContext;
 }
 
 class CORE_EXPORT DataTransferItem final : public ScriptWrappable {
@@ -73,7 +72,7 @@ class CORE_EXPORT DataTransferItem final : public ScriptWrappable {
   void RunGetAsStringTask(ExecutionContext*,
                           V8FunctionStringCallback*,
                           const String& data,
-                          std::unique_ptr<probe::AsyncTaskId>);
+                          std::unique_ptr<probe::AsyncTaskContext>);
 
   Member<DataTransfer> data_transfer_;
   Member<DataObjectItem> item_;

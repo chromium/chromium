@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class SyncAuthProvider {
       base::OnceCallback<void(const GoogleServiceAuthError& error,
                               const std::string& token)>;
 
-  virtual ~SyncAuthProvider() {}
+  virtual ~SyncAuthProvider() = default;
 
   // Request access token for sync. Callback will be called with error and
   // access token. If error is anything other than NONE then token is invalid.

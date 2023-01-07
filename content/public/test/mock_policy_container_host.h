@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 namespace content {
 
-class MockPolicyContainerHost : public blink::mojom::PolicyContainerHost {
+class MockPolicyContainerHost final : public blink::mojom::PolicyContainerHost {
  public:
   MOCK_METHOD(void,
               SetReferrerPolicy,
@@ -29,7 +29,7 @@ class MockPolicyContainerHost : public blink::mojom::PolicyContainerHost {
       (mojo::PendingReceiver<blink::mojom::PolicyContainerHostKeepAliveHandle>),
       (override));
   MockPolicyContainerHost();
-  ~MockPolicyContainerHost() final;
+  ~MockPolicyContainerHost() override;
 
   blink::mojom::PolicyContainerPtr CreatePolicyContainerForBlink();
 
@@ -49,4 +49,4 @@ class MockPolicyContainerHost : public blink::mojom::PolicyContainerHost {
 
 }  // namespace content
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_FAKE_POLICY_CONTAINER_HOST_H_
+#endif  // CONTENT_PUBLIC_TEST_MOCK_POLICY_CONTAINER_HOST_H_

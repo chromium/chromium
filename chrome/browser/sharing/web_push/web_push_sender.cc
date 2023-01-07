@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,16 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/sharing/web_push/json_web_token_util.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
-#include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -29,7 +29,7 @@ const char kFCMServerAudience[] = "https://fcm.googleapis.com";
 const char kClaimsKeyExpirationTime[] = "exp";
 // It's 12 hours rather than 24 hours to avoid any issues with clock differences
 // between the sending application and the push service.
-constexpr base::TimeDelta kClaimsValidPeriod = base::TimeDelta::FromHours(12);
+constexpr base::TimeDelta kClaimsValidPeriod = base::Hours(12);
 
 const char kAuthorizationRequestHeaderFormat[] = "vapid t=%s, k=%s";
 
@@ -46,7 +46,7 @@ const char kContentCodingAes128Gcm[] = "aes128gcm";
 // Other constants.
 const char kContentEncodingOctetStream[] = "application/octet-stream";
 
-base::Optional<std::string> GetAuthHeader(crypto::ECPrivateKey* vapid_key) {
+absl::optional<std::string> GetAuthHeader(crypto::ECPrivateKey* vapid_key) {
   base::Value claims(base::Value::Type::DICTIONARY);
   claims.SetKey(kClaimsKeyAudience, base::Value(kFCMServerAudience));
 
@@ -55,18 +55,18 @@ base::Optional<std::string> GetAuthHeader(crypto::ECPrivateKey* vapid_key) {
           .InSeconds();
   // TODO: Year 2038 problem, base::Value does not support int64_t.
   if (exp > INT_MAX)
-    return base::nullopt;
+    return absl::nullopt;
 
   claims.SetKey(kClaimsKeyExpirationTime,
                 base::Value(static_cast<int32_t>(exp)));
 
-  base::Optional<std::string> jwt = CreateJSONWebToken(claims, vapid_key);
+  absl::optional<std::string> jwt = CreateJSONWebToken(claims, vapid_key);
   if (!jwt)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string public_key;
   if (!gcm::GetRawPublicKey(*vapid_key, &public_key))
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string base64_public_key;
   base::Base64UrlEncode(public_key, base::Base64UrlEncodePolicy::OMIT_PADDING,
@@ -153,7 +153,7 @@ void WebPushSender::SendMessage(const std::string& fcm_token,
   DCHECK(vapid_key);
   DCHECK_LE(message.time_to_live, message.kMaximumTTL);
 
-  base::Optional<std::string> auth_header = GetAuthHeader(vapid_key);
+  absl::optional<std::string> auth_header = GetAuthHeader(vapid_key);
   if (!auth_header) {
     DLOG(ERROR) << "Failed to create JWT";
     InvokeWebPushCallback(std::move(callback),
@@ -221,7 +221,7 @@ void WebPushSender::OnMessageSent(
     return;
   }
 
-  if (!network::cors::IsOkStatus(response_code)) {
+  if (!network::IsSuccessfulStatus(response_code)) {
     DLOG(ERROR) << "HTTP Error: " << response_code;
     InvokeWebPushCallback(std::move(callback),
                           SendWebPushMessageResult::kServerError);

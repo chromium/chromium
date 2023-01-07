@@ -1,0 +1,52 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_SERVING_PAGE_METRICS_CONTAINER_H_
+#define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_SERVING_PAGE_METRICS_CONTAINER_H_
+
+#include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/prefetch_metrics.h"
+
+namespace content {
+
+// Holds an instance |PrefetchServingPageMetrics| for its associated
+// |NavigationHandle|.
+class PrefetchServingPageMetricsContainer
+    : public NavigationHandleUserData<PrefetchServingPageMetricsContainer> {
+ public:
+  ~PrefetchServingPageMetricsContainer() override;
+
+  PrefetchServingPageMetricsContainer(
+      const PrefetchServingPageMetricsContainer&) = delete;
+  PrefetchServingPageMetricsContainer& operator=(
+      const PrefetchServingPageMetricsContainer&) = delete;
+
+  // Setters that set the metrics in |serving_page_metrics_|.
+  void SetPrefetchStatus(PrefetchStatus prefetch_status);
+  void SetRequiredPrivatePrefetchProxy(bool required_private_prefetch_proxy);
+  void SetSameTabAsPrefetchingTab(bool same_tab_as_prefetching_tab);
+  void SetPrefetchHeaderLatency(
+      const absl::optional<base::TimeDelta>& prefetch_header_latency);
+  void SetProbeLatency(const base::TimeDelta& probe_latency);
+
+  PrefetchServingPageMetrics& GetServingPageMetrics() {
+    return serving_page_metrics_;
+  }
+
+ private:
+  explicit PrefetchServingPageMetricsContainer(
+      NavigationHandle& navigation_handle);
+  friend NavigationHandleUserData;
+
+  // The metrics related to the prefetch being used for the page being navigated
+  // to.
+  PrefetchServingPageMetrics serving_page_metrics_;
+
+  NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+};
+
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_SERVING_PAGE_METRICS_CONTAINER_H_

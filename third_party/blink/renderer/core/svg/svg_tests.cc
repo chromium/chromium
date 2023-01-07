@@ -97,7 +97,7 @@ bool SVGTests::IsValid() const {
     const Vector<String>& extensions = required_extensions_->Value()->Values();
     // 'If a null string or empty string value is given to attribute
     // 'requiredExtensions', the attribute evaluates to "false".'
-    if (extensions.IsEmpty())
+    if (extensions.empty())
       return false;
     for (const auto& extension : extensions) {
       if (extension != html_names::xhtmlNamespaceURI &&

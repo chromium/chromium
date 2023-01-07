@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,13 +16,20 @@ class WebContents;
 // operations outside of the content layer.
 class CONTENT_EXPORT BrowserPluginGuestManager {
  public:
-  virtual ~BrowserPluginGuestManager() {}
+  virtual ~BrowserPluginGuestManager() = default;
 
-  // Iterates over all WebContents belonging to a given |embedder_web_contents|,
+  // Iterates over guest WebContents that belong to a given
+  // |owner_web_contents|, but have not yet been attached.
+  virtual void ForEachUnattachedGuest(
+      WebContents* owner_web_contents,
+      base::RepeatingCallback<void(WebContents*)> callback) {}
+
+  // Prefer using |RenderFrameHost::ForEachRenderFrameHost|.
+  // Iterates over all WebContents belonging to a given |owner_web_contents|,
   // calling |callback| for each. If one of the callbacks returns true, then
   // the iteration exits early.
   using GuestCallback = base::RepeatingCallback<bool(WebContents*)>;
-  virtual bool ForEachGuest(WebContents* embedder_web_contents,
+  virtual bool ForEachGuest(WebContents* owner_web_contents,
                             const GuestCallback& callback);
 
   // Returns the "full page" guest if there is one. That is, if there is a

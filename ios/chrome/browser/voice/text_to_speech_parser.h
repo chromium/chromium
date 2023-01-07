@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ namespace web {
 class WebState;
 }
 
-// Extracts TTS audio data from |webState|'s HTML using the start and end tags
+// Extracts TTS audio data from `webState`'s HTML using the start and end tags
 // for Google Voice Search result pages.
 typedef void (^TextToSpeechCompletion)(NSData*);
 void ExtractVoiceSearchAudioDataFromWebState(web::WebState* webState,

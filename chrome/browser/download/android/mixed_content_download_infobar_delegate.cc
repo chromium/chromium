@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_item.h"
+#include "components/infobars/android/confirm_infobar.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -21,11 +22,11 @@ using MixedContentStatus = download::DownloadItem::MixedContentStatus;
 
 // static
 void MixedContentDownloadInfoBarDelegate::Create(
-    InfoBarService* infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager,
     const base::FilePath& basename,
     download::DownloadItem::MixedContentStatus mixed_content_status,
     ResultCallback callback) {
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
+  infobar_manager->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
       base::WrapUnique(new MixedContentDownloadInfoBarDelegate(
           basename, mixed_content_status, std::move(callback)))));
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_state.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -22,13 +21,23 @@ enum WMEventType {
   // Note that this does not mean the window will be in corresponding
   // state and the request may not be fullfilled.
 
-  // NORMAL is used as a restore operation with a few exceptions.
   WM_EVENT_NORMAL = 0,
   WM_EVENT_MAXIMIZE,
   WM_EVENT_MINIMIZE,
   WM_EVENT_FULLSCREEN,
-  WM_EVENT_SNAP_LEFT,
-  WM_EVENT_SNAP_RIGHT,
+  // PRIMARY is left in primary landscape orientation and right in secondary
+  // landscape orientation. If |kVerticalSnapState| is enabled, PRIMARY is
+  // top in primary portrait orientation and SECONDARY is bottom in secondary
+  // portrait orientation. If not, in the clamshell mode, PRIMARY is left and
+  // SECONDARY is right.
+  WM_EVENT_SNAP_PRIMARY,
+  // SECONDARY is the opposite position of PRIMARY, i.e. if PRIMARY is left,
+  // SECONDARY is right.
+  WM_EVENT_SNAP_SECONDARY,
+
+  // The restore event will change the window state back to its previous
+  // applicable window state.
+  WM_EVENT_RESTORE,
 
   // A window is requested to be the given bounds. The request may or
   // may not be fulfilled depending on the requested bounds and window's
@@ -56,17 +65,17 @@ enum WMEventType {
   // A user requested to toggle fullscreen state.
   WM_EVENT_TOGGLE_FULLSCREEN,
 
-  // A user requested a cycle of snap left.
+  // A user requested a cycle of snap primary (left).
   // The way this event is processed is the current window state is used as
   // the starting state. Assuming normal window start state; if the window can
-  // be snapped left, snap it; otherwise progress to next state. If the
-  // window can be restored; and this isn't the entry condition restore it;
+  // be snapped primary (left), snap it; otherwise progress to next state. If
+  // the window can be restored; and this isn't the entry condition restore it;
   // otherwise apply the bounce animation to the window.
-  WM_EVENT_CYCLE_SNAP_LEFT,
+  WM_EVENT_CYCLE_SNAP_PRIMARY,
 
-  // A user requested a cycle of snap right.
-  // See decription of WM_EVENT_CYCLE_SNAP_LEFT.
-  WM_EVENT_CYCLE_SNAP_RIGHT,
+  // A user requested a cycle of snap secondary (right).
+  // See description of WM_EVENT_CYCLE_SNAP_PRIMARY.
+  WM_EVENT_CYCLE_SNAP_SECONDARY,
 
   // A user requested to center a window.
   WM_EVENT_CENTER,
@@ -105,6 +114,9 @@ enum WMEventType {
   // TODO(oshima): Consider consolidating this into
   // WM_EVENT_WORKAREA_BOUNDS_CHANGED
   WM_EVENT_SYSTEM_UI_AREA_CHANGED,
+
+  // A user requested to float a window.
+  WM_EVENT_FLOAT,
 };
 
 class SetBoundsWMEvent;
@@ -113,6 +125,10 @@ class DisplayMetricsChangedWMEvent;
 class ASH_EXPORT WMEvent {
  public:
   explicit WMEvent(WMEventType type);
+
+  WMEvent(const WMEvent&) = delete;
+  WMEvent& operator=(const WMEvent&) = delete;
+
   virtual ~WMEvent();
 
   WMEventType type() const { return type_; }
@@ -139,12 +155,19 @@ class ASH_EXPORT WMEvent {
   // e.g. WM_EVENT_MAXIMIZED.
   bool IsTransitionEvent() const;
 
+  // True if the event is a window snap event.
+  bool IsSnapEvent() const;
+
+  // True if the event has |snap_ratio| value, which is only available for
+  // WindowSnapWMEvent types. Checks that snap events are created with valid
+  // |snap_ratio| to pass ASan tests.
+  virtual bool IsSnapInfoAvailable() const;
+
   // Utility methods to downcast to specific WMEvent types.
   const DisplayMetricsChangedWMEvent* AsDisplayMetricsChangedWMEvent() const;
 
  private:
   WMEventType type_;
-  DISALLOW_COPY_AND_ASSIGN(WMEvent);
 };
 
 // An WMEvent to request new bounds for the window.
@@ -155,6 +178,10 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
       bool animate = false,
       base::TimeDelta duration = WindowState::kBoundsChangeSlideDuration);
   SetBoundsWMEvent(const gfx::Rect& requested_bounds, int64_t display_id);
+
+  SetBoundsWMEvent(const SetBoundsWMEvent&) = delete;
+  SetBoundsWMEvent& operator=(const SetBoundsWMEvent&) = delete;
+
   ~SetBoundsWMEvent() override;
 
   const gfx::Rect& requested_bounds() const { return requested_bounds_; }
@@ -170,8 +197,34 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
   const int64_t display_id_ = display::kInvalidDisplayId;
   const bool animate_;
   const base::TimeDelta duration_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(SetBoundsWMEvent);
+// An WMEvent to snap a window.
+class ASH_EXPORT WindowSnapWMEvent : public WMEvent {
+ public:
+  enum class SnapRatio {
+    kDefaultSnapRatio,
+    kOneThirdSnapRatio,
+    kTwoThirdSnapRatio
+  };
+
+  explicit WindowSnapWMEvent(WMEventType type);
+  WindowSnapWMEvent(WMEventType type, SnapRatio snap_ratio);
+
+  WindowSnapWMEvent(const WindowSnapWMEvent&) = delete;
+  WindowSnapWMEvent& operator=(const WindowSnapWMEvent&) = delete;
+
+  ~WindowSnapWMEvent() override;
+
+  static float GetFloatValueForSnapRatio(SnapRatio snap_ratio);
+
+  // WMEvent:
+  bool IsSnapInfoAvailable() const override;
+
+  SnapRatio snap_ratio() const { return snap_ratio_; }
+
+ private:
+  const SnapRatio snap_ratio_ = SnapRatio::kDefaultSnapRatio;
 };
 
 // A WMEvent sent when display metrics have changed.
@@ -179,6 +232,11 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
 class ASH_EXPORT DisplayMetricsChangedWMEvent : public WMEvent {
  public:
   explicit DisplayMetricsChangedWMEvent(int display_metrics);
+
+  DisplayMetricsChangedWMEvent(const DisplayMetricsChangedWMEvent&) = delete;
+  DisplayMetricsChangedWMEvent& operator=(const DisplayMetricsChangedWMEvent&) =
+      delete;
+
   ~DisplayMetricsChangedWMEvent() override;
 
   bool primary_changed() const {
@@ -189,8 +247,6 @@ class ASH_EXPORT DisplayMetricsChangedWMEvent : public WMEvent {
 
  private:
   const uint32_t changed_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayMetricsChangedWMEvent);
 };
 
 }  // namespace ash

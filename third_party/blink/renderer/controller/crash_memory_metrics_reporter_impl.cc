@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/process/memory.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 namespace blink {
@@ -32,7 +31,7 @@ CrashMemoryMetricsReporterImpl& CrashMemoryMetricsReporterImpl::Instance() {
 }
 
 CrashMemoryMetricsReporterImpl::CrashMemoryMetricsReporterImpl() {
-  base::SetPartitionAllocOomCallback(
+  ::partition_alloc::SetPartitionAllocOomCallback(
       CrashMemoryMetricsReporterImpl::OnOOMCallback);
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,10 +23,10 @@
        <body></body>`
   );
 
-  await new Promise(async fulfill => {
-    await virtualTimeController.grantInitialTime(500, 100, null, fulfill);
-    frameNavigationHelper.navigate('http://green.com/');
-  });
+  await virtualTimeController.initialize(100);
+  await frameNavigationHelper.navigate('http://green.com/');
+  await virtualTimeController.grantTime(500);
+
   await dp.Emulation.setDeviceMetricsOverride({
       deviceScaleFactor: 1,
       width: 1024, height: 1024,

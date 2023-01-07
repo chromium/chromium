@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/payments/payments_validators.h"
 
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
@@ -159,16 +160,12 @@ bool PaymentsValidators::IsValidMethodFormat(const String& identifier) {
 
   // URL PMI validation rules:
   // https://www.w3.org/TR/payment-method-id/#dfn-validate-a-url-based-payment-method-identifier
-  if (!url.User().IsEmpty() || !url.Pass().IsEmpty())
+  if (!url.User().empty() || !url.Pass().empty())
     return false;
 
-  if (url.Protocol() == "https")
-    return true;
-
-  if (url.Protocol() != "http")
-    return false;
-
-  return SecurityOrigin::Create(url)->IsPotentiallyTrustworthy();
+  // TODO(http://crbug.com/1200225): Align this with the specification.
+  return url.ProtocolIsInHTTPFamily() &&
+         network::IsUrlPotentiallyTrustworthy(GURL(url));
 }
 
 void PaymentsValidators::ValidateAndStringifyObject(

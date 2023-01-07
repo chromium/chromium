@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "components/safe_browsing/core/db/util.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 
 namespace safe_browsing {
 
@@ -59,10 +59,6 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
                                          SBThreatType* worst_threat,
                                          ThreatMetadata* metadata);
 
-// DEPRECATED.  Will be removed.
-UmaRemoteCallResult ParseJsonToThreatAndPB(const std::string& metadata_str,
-                                           SBThreatType* worst_threat,
-                                           std::string* metadata_pb_str);
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_ANDROID_SAFE_BROWSING_API_HANDLER_UTIL_H_

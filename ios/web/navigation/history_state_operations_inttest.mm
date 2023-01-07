@@ -1,12 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/compiler_specific.h"
-#include "base/memory/ptr_util.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/memory/ptr_util.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -15,10 +14,10 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/test/web_int_test.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "url/url_canon.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "url/url_canon.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,8 +48,8 @@ const char kReplaceStateId[] = "replace-state";
 // JavaScript functions on the history state test page.
 NSString* const kUpdateStateParamsScriptFormat =
     @"updateStateParams('%s', '%s', '%s')";
-NSString* const kOnLoadCheckScript = @"isOnLoadPlaceholderTextVisible()";
-NSString* const kNoOpCheckScript = @"isNoOpPlaceholderTextVisible()";
+const char kOnLoadCheckScript[] = "isOnLoadPlaceholderTextVisible()";
+const char kNoOpCheckScript[] = "isNoOpPlaceholderTextVisible()";
 
 // Wait timeout for state updates.
 const NSTimeInterval kWaitForStateUpdateTimeout = 5.0;
@@ -79,7 +78,7 @@ class HistoryStateOperationsTest : public web::WebIntTest {
   const GURL& state_operations_url() { return state_operations_url_; }
 
   // Reloads the page and waits for the load to finish.
-  bool Reload() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool Reload() {
     return ExecuteBlockAndWaitForLoad(GetLastCommittedItem()->GetURL(), ^{
       // TODO(crbug.com/677364): Use NavigationManager::Reload() once it no
       // longer requires a web delegate.
@@ -99,22 +98,26 @@ class HistoryStateOperationsTest : public web::WebIntTest {
     NSString* set_params_script = [NSString
         stringWithFormat:kUpdateStateParamsScriptFormat, state_object.c_str(),
                          title.c_str(), url_spec.c_str()];
-    ExecuteJavaScript(set_params_script);
+    web::test::ExecuteJavaScript(web_state(),
+                                 base::SysNSStringToUTF8(set_params_script));
   }
 
   // Returns the state object returned by JavaScript.
   std::string GetJavaScriptState() {
-    return ExecuteJavaScript(@"window.history.state")->GetString();
+    return web::test::ExecuteJavaScript(web_state(), "window.history.state")
+        ->GetString();
   }
 
   // Executes JavaScript to check whether the onload text is visible.
   bool IsOnLoadTextVisible() {
-    return ExecuteJavaScript(kOnLoadCheckScript)->GetBool();
+    return web::test::ExecuteJavaScript(web_state(), kOnLoadCheckScript)
+        ->GetBool();
   }
 
   // Executes JavaScript to check whether the no-op text is visible.
   bool IsNoOpTextVisible() {
-    return ExecuteJavaScript(kNoOpCheckScript)->GetBool();
+    return web::test::ExecuteJavaScript(web_state(), kNoOpCheckScript)
+        ->GetBool();
   }
 
   // Waits for the NoOp text to be visible.
@@ -204,9 +207,8 @@ TEST_F(HistoryStateOperationsTest, NoOpPushDifferentOrigin) {
   std::string empty_state;
   std::string empty_title;
   std::string new_port_string = base::NumberToString(test_server_->port() + 1);
-  url::Replacements<char> port_replacement;
-  port_replacement.SetPort(new_port_string.c_str(),
-                           url::Component(0, new_port_string.length()));
+  GURL::Replacements port_replacement;
+  port_replacement.SetPortStr(new_port_string);
   GURL different_origin_url =
       state_operations_url().ReplaceComponents(port_replacement);
   ASSERT_TRUE(IsOnLoadTextVisible());
@@ -225,9 +227,8 @@ TEST_F(HistoryStateOperationsTest, NoOpReplaceDifferentOrigin) {
   std::string empty_state;
   std::string empty_title;
   std::string new_port_string = base::NumberToString(test_server_->port() + 1);
-  url::Replacements<char> port_replacement;
-  port_replacement.SetPort(new_port_string.c_str(),
-                           url::Component(0, new_port_string.length()));
+  GURL::Replacements port_replacement;
+  port_replacement.SetPortStr(new_port_string);
   GURL different_origin_url =
       state_operations_url().ReplaceComponents(port_replacement);
   ASSERT_TRUE(IsOnLoadTextVisible());

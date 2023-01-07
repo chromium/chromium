@@ -1,0 +1,4 @@
+monorail: {
+  component: "Internals>Updater"
+}
+team_email: "chrome-updates-dev@chromium.org"

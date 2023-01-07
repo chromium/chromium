@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@ package org.chromium.android_webview;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.UsedByReflection;
 
 import java.io.File;
 
@@ -38,14 +38,8 @@ public class AwDebug {
         AwDebugJni.get().setSupportLibraryWebkitVersionCrashKey(version);
     }
 
-    @UsedByReflection("")
-    public static void setCpuAffinityToLittleCores() {
-        AwDebugJni.get().setCpuAffinityToLittleCores();
-    }
-
     @NativeMethods
     interface Natives {
         void setSupportLibraryWebkitVersionCrashKey(String version);
-        void setCpuAffinityToLittleCores();
     }
 }

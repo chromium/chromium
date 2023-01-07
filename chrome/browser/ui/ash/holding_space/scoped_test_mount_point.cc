@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 
 #include "base/files/file_util.h"
-#include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/file_manager/volume_manager_factory.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 
@@ -42,7 +42,7 @@ ScopedTestMountPoint::~ScopedTestMountPoint() {
     if (file_manager::VolumeManager::Get(profile_)) {
       file_manager::VolumeManager::Get(profile_)
           ->RemoveVolumeForTesting(  // IN-TEST
-              temp_dir_.GetPath(), volume_type_, chromeos::DEVICE_TYPE_UNKNOWN,
+              temp_dir_.GetPath(), volume_type_, DeviceType::kUnknown,
               /*read_only=*/false);
     }
   }
@@ -56,14 +56,13 @@ void ScopedTestMountPoint::Mount(Profile* profile) {
   storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
       name_, file_system_type_, storage::FileSystemMountOption(),
       temp_dir_.GetPath());
-  file_manager::util::GetFileSystemContextForExtensionId(
-      profile, file_manager::kFileManagerAppId)
+  file_manager::util::GetFileManagerFileSystemContext(profile)
       ->external_backend()
-      ->GrantFileAccessToExtension(file_manager::kFileManagerAppId,
-                                   base::FilePath(name_));
+      ->GrantFileAccessToOrigin(file_manager::util::GetFilesAppOrigin(),
+                                base::FilePath(name_));
   if (file_manager::VolumeManager::Get(profile_)) {
     file_manager::VolumeManager::Get(profile_)->AddVolumeForTesting(  // IN-TEST
-        temp_dir_.GetPath(), volume_type_, chromeos::DEVICE_TYPE_UNKNOWN,
+        temp_dir_.GetPath(), volume_type_, DeviceType::kUnknown,
         /*read_only=*/false);
   }
 }

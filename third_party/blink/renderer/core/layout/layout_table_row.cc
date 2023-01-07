@@ -28,7 +28,6 @@
 
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_state.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
@@ -72,8 +71,7 @@ void LayoutTableRow::StyleDidChange(StyleDifference diff,
   if (StyleRef().HasInFlowPosition()) {
     scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(StyleRef());
     new_style->SetPosition(EPosition::kStatic);
-    SetModifiedStyleOutsideStyleRecalc(new_style,
-                                       LayoutObject::ApplyStyleChanges::kNo);
+    SetStyle(new_style, LayoutObject::ApplyStyleChanges::kNo);
   }
 
   LayoutTableBoxComponent::StyleDidChange(diff, old_style);
@@ -192,6 +190,9 @@ void LayoutTableRow::AddChild(LayoutObject* child, LayoutObject* before_child) {
   if (before_child && before_child->Parent() != this)
     before_child = SplitAnonymousBoxesAroundChild(before_child);
 
+  // TODO(crbug.com/1341619): See the TODO in |LayoutTable::AddChild|.
+  // |LayoutNGTableCell| is not a subclass of |LayoutTableCell|.
+  CHECK(IsA<LayoutTableCell>(child));
   LayoutTableCell* cell = To<LayoutTableCell>(child);
 
   // In Legacy tables, cell writing mode must match row writing mode.
@@ -230,7 +231,6 @@ void LayoutTableRow::AddChild(LayoutObject* child, LayoutObject* before_child) {
 void LayoutTableRow::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  LayoutAnalyzer::Scope analyzer(*this);
   bool paginated = View()->GetLayoutState()->IsPaginated();
 
   for (LayoutTableCell* cell = FirstCell(); cell; cell = cell->NextCell()) {
@@ -273,7 +273,7 @@ void LayoutTableRow::UpdateLayout() {
 bool LayoutTableRow::NodeAtPoint(HitTestResult& result,
                                  const HitTestLocation& hit_test_location,
                                  const PhysicalOffset& accumulated_offset,
-                                 HitTestAction action) {
+                                 HitTestPhase phase) {
   NOT_DESTROYED();
   // The row and the cells are all located in the section.
   const auto* section = Section();
@@ -288,7 +288,7 @@ bool LayoutTableRow::NodeAtPoint(HitTestResult& result,
     PhysicalOffset cell_accumulated_offset =
         section_accumulated_offset + cell->PhysicalLocation(section);
     if (cell->NodeAtPoint(result, hit_test_location, cell_accumulated_offset,
-                          action)) {
+                          phase)) {
       UpdateHitTestResult(
           result, hit_test_location.Point() - section_accumulated_offset);
       return true;
@@ -318,7 +318,7 @@ void LayoutTableRow::Paint(const PaintInfo& paint_info) const {
 }
 
 LayoutTableRow* LayoutTableRow::CreateAnonymous(Document* document) {
-  LayoutTableRow* layout_object = new LayoutTableRow(nullptr);
+  LayoutTableRow* layout_object = MakeGarbageCollected<LayoutTableRow>(nullptr);
   layout_object->SetDocumentForAnonymous(document);
   return layout_object;
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,11 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#include "components/safe_browsing/core/db/hit_report.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
 
 namespace web {
 class WebState;
@@ -39,6 +35,21 @@ struct UnsafeResource {
       base::RepeatingCallback<void(bool /*proceed*/,
                                    bool /*showed_interstitial*/)>;
 
+  // TODO(crbug.com/1073315): These are content/ specific ids that need to be
+  // plumbed through this struct.
+  // Equivalent to GlobalRenderFrameHostId.
+  using RenderProcessId = int;
+  using RenderFrameId = int;
+  // See RenderFrameHost::GetFrameTreeNodeId.
+  using FrameTreeNodeId = int;
+  // Copies of the sentinel values used in content/.
+  // Equal to ChildProcessHost::kInvalidUniqueID.
+  static constexpr RenderProcessId kNoRenderProcessId = -1;
+  // Equal to MSG_ROUTING_NONE.
+  static constexpr RenderFrameId kNoRenderFrameId = -2;
+  // Equal to RenderFrameHost::kNoFrameTreeNodeId.
+  static constexpr FrameTreeNodeId kNoFrameTreeNodeId = -1;
+
   UnsafeResource();
   UnsafeResource(const UnsafeResource& other);
   ~UnsafeResource();
@@ -49,7 +60,7 @@ struct UnsafeResource {
   // committed.
   bool IsMainPageLoadBlocked() const;
 
-  // Checks if |callback| is not null and posts it to |callback_thread|.
+  // Checks if |callback| is not null and posts it to |callback_sequence|.
   void DispatchCallback(const base::Location& from_here,
                         bool proceed,
                         bool showed_interstitial) const;
@@ -64,15 +75,24 @@ struct UnsafeResource {
   safe_browsing::SBThreatType threat_type;
   safe_browsing::ThreatMetadata threat_metadata;
   network::mojom::RequestDestination request_destination;
-  UrlCheckCallback callback;  // This is called back on |callback_thread|.
-  scoped_refptr<base::SingleThreadTaskRunner> callback_thread;
-  // TODO(crbug.com/1073315): |web_state_getter| is only used on iOS, and
-  // |web_contents_getter| is used on all other platforms.  This struct should
-  // be refactored to use only the common functionality can be shared across
-  // platforms.
-  base::RepeatingCallback<content::WebContents*(void)> web_contents_getter;
-  base::RepeatingCallback<web::WebState*(void)> web_state_getter;
-  safe_browsing::ThreatSource threat_source;
+  UrlCheckCallback callback;  // This is called back on |callback_sequence|.
+  scoped_refptr<base::SequencedTaskRunner> callback_sequence;
+  // TODO(crbug.com/1073315): |weak_web_state| is only used on iOS, and
+  // |render_process_id|, |render_frame_id|, and |frame_tree_node_id| are used
+  // on all other platforms. This struct should be refactored to use only the
+  // common functionality can be shared across platforms.
+  // These content/ specific ids indicate what triggered safe browsing. In the
+  // case of a frame navigating, we should have its FrameTreeNode id. In the
+  // case of something triggered by a document (e.g. subresource loading), we
+  // should have the RenderFrameHost's id.
+  RenderProcessId render_process_id = kNoRenderProcessId;
+  RenderFrameId render_frame_id = kNoRenderFrameId;
+  FrameTreeNodeId frame_tree_node_id = kNoFrameTreeNodeId;
+
+  base::WeakPtr<web::WebState> weak_web_state;
+
+  safe_browsing::ThreatSource threat_source =
+      safe_browsing::ThreatSource::UNKNOWN;
   // |token| field is only set if |threat_type| is
   // SB_THREAT_TYPE_*_PASSWORD_REUSE.
   std::string token;

@@ -1,9 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_PROCESS_MITIGATIONS_WIN32K_INTERCEPTION_H_
-#define SANDBOX_SRC_PROCESS_MITIGATIONS_WIN32K_INTERCEPTION_H_
+#ifndef SANDBOX_WIN_SRC_PROCESS_MITIGATIONS_WIN32K_INTERCEPTION_H_
+#define SANDBOX_WIN_SRC_PROCESS_MITIGATIONS_WIN32K_INTERCEPTION_H_
 
 #include <windows.h>
 
@@ -41,4 +41,4 @@ TargetRegisterClassW(RegisterClassWFunction orig_register_class_function,
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_PROCESS_MITIGATIONS_WIN32K_INTERCEPTION_H_
+#endif  // SANDBOX_WIN_SRC_PROCESS_MITIGATIONS_WIN32K_INTERCEPTION_H_

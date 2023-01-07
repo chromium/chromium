@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,7 +125,7 @@ int StepsTimingFunction::NumberOfJumps() const {
       return steps_;
 
     case StepPosition::JUMP_BOTH:
-      return steps_ + 1;
+      return steps_ < std::numeric_limits<int>::max() ? steps_ + 1 : steps_;
 
     case StepPosition::JUMP_NONE:
       DCHECK_GT(steps_, 1);

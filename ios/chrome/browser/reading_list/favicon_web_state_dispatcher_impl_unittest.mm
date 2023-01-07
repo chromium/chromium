@@ -1,17 +1,17 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/reading_list/favicon_web_state_dispatcher_impl.h"
 
-#include "base/memory/ptr_util.h"
+#import "base/memory/ptr_util.h"
 #import "base/test/ios/wait_util.h"
-#include "components/favicon/ios/web_favicon_driver.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "ios/web/public/web_state_observer.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "components/favicon/ios/web_favicon_driver.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_state_observer.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 
-#include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

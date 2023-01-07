@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,16 @@
 
 #include "base/logging.h"
 #include "ui/base/ime/text_edit_commands.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/gfx/canvas.h"
 
 namespace views {
 
 Textarea::Textarea() {
+  set_placeholder_text_draw_flags(placeholder_text_draw_flags() |
+                                  gfx::Canvas::MULTI_LINE);
   GetRenderText()->SetMultiline(true);
   GetRenderText()->SetVerticalAlignment(gfx::ALIGN_TOP);
   GetRenderText()->SetWordWrapBehavior(gfx::WRAP_LONG_WORDS);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,11 @@
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/accelerometer/accelerometer_samples_observer.h"
 #include "ash/ash_export.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -85,8 +85,8 @@ class ASH_EXPORT AccelerometerProviderMojo
     // location information. It'll be passed to |samples_observer| as an
     // argument after all information is collected.
     mojo::Remote<chromeos::sensors::mojom::SensorDevice> remote;
-    base::Optional<AccelerometerSource> location;
-    base::Optional<float> scale;
+    absl::optional<AccelerometerSource> location;
+    absl::optional<float> scale;
     std::unique_ptr<AccelerometerSamplesObserver> samples_observer;
   };
 
@@ -99,6 +99,12 @@ class ASH_EXPORT AccelerometerProviderMojo
 
   void OnSensorServiceDisconnect();
   void ResetSensorService();
+
+  // Called when an in-use device is unplugged, and we need to search for other
+  // devices to use.
+  // Assumes that the angle device won't be unplugged.
+  void ResetStates();
+  void QueryDevices();
 
   void SetECLidAngleDriverSupported();
 
@@ -150,10 +156,12 @@ class ASH_EXPORT AccelerometerProviderMojo
   // accelerometer's required attributes before creating the
   // AccelerometerSamplesObserver of it.
   void RegisterAccelerometerWithId(int32_t id);
-  void OnAccelerometerRemoteDisconnect(int32_t id);
+  void OnAccelerometerRemoteDisconnect(int32_t id,
+                                       uint32_t custom_reason_code,
+                                       const std::string& description);
   void GetAttributesCallback(
       int32_t id,
-      const std::vector<base::Optional<std::string>>& values);
+      const std::vector<absl::optional<std::string>>& values);
 
   // Ignores the accelerometer as the attributes are not expected.
   void IgnoreAccelerometer(int32_t id);

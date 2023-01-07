@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,9 @@
 #include <set>
 #include <string>
 
+#include "base/values.h"
+#include "content/common/content_export.h"
 #include "content/common/input/synthetic_pointer_action_list_params.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace content {
 
@@ -44,6 +42,10 @@ namespace content {
 class CONTENT_EXPORT ActionsParser {
  public:
   explicit ActionsParser(base::Value value);
+
+  ActionsParser(const ActionsParser&) = delete;
+  ActionsParser& operator=(const ActionsParser&) = delete;
+
   ~ActionsParser();
   bool Parse();
   const std::string& error_message() const { return error_message_; }
@@ -106,8 +108,6 @@ class CONTENT_EXPORT ActionsParser {
 
   base::Value action_sequence_list_;
   std::set<std::string> pointer_name_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionsParser);
 };
 
 }  // namespace content

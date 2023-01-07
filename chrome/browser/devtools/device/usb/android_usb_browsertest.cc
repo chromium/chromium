@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,15 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
@@ -237,7 +239,7 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
   }
 
   void GenericTransferOut(uint8_t endpoint_number,
-                          const std::vector<uint8_t>& buffer,
+                          base::span<const uint8_t> buffer,
                           uint32_t timeout,
                           GenericTransferOutCallback callback) override {
     if (remaining_body_length_ == 0) {

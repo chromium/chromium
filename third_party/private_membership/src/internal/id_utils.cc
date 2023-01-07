@@ -14,6 +14,8 @@
 
 #include "third_party/private_membership/src/internal/id_utils.h"
 
+#include <string>
+
 namespace private_membership {
 
 std::string PadOrTruncate(absl::string_view in, int len) {

@@ -1,8 +1,6 @@
-/*
- * Copyright (c) 2012 The Chromium Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
+// Copyright 2012 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #include "components/nacl/renderer/plugin/service_runtime.h"
 
@@ -21,23 +19,16 @@ namespace plugin {
 
 ServiceRuntime::ServiceRuntime(Plugin* plugin,
                                PP_Instance pp_instance,
-                               bool main_service_runtime,
-                               bool uses_nonsfi_mode)
+                               bool main_service_runtime)
     : plugin_(plugin),
       pp_instance_(pp_instance),
-      main_service_runtime_(main_service_runtime),
-      uses_nonsfi_mode_(uses_nonsfi_mode) {}
+      main_service_runtime_(main_service_runtime) {}
 
 void ServiceRuntime::StartSelLdr(const SelLdrStartParams& params,
                                  pp::CompletionCallback callback) {
   nacl::PPBNaClPrivate::LaunchSelLdr(
-      pp_instance_,
-      PP_FromBool(main_service_runtime_),
-      params.url.c_str(),
-      &params.file_info,
-      PP_FromBool(uses_nonsfi_mode_),
-      params.process_type,
-      &translator_channel_,
+      pp_instance_, PP_FromBool(main_service_runtime_), params.url.c_str(),
+      &params.file_info, params.process_type, &translator_channel_,
       callback.pp_completion_callback());
 }
 

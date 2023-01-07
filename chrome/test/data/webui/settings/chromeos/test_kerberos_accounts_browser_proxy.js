@@ -1,16 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-// #import {KerberosErrorType, KerberosConfigErrorCode} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
+import {KerberosConfigErrorCode, KerberosErrorType} from 'chrome://os-settings/chromeos/os_settings.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // List of fake accounts.
-/* #export */ const TEST_KERBEROS_ACCOUNTS = [
+export const TEST_KERBEROS_ACCOUNTS = [
   {
     principalName: 'user@REALM',
     config: 'config1',
@@ -40,11 +36,11 @@
     passwordWasRemembered: true,
     pic: 'pic2',
     validForDuration: 'one over inf seconds',
-  }
+  },
 ];
 
-/** @implements {settings.KerberosAccountsBrowserProxy} */
-/* #export */ class TestKerberosAccountsBrowserProxy extends TestBrowserProxy {
+/** @implements {KerberosAccountsBrowserProxy} */
+export class TestKerberosAccountsBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'getAccounts',
@@ -55,12 +51,12 @@
     ]);
 
     // Simulated error from an addAccount call.
-    this.addAccountError = settings.KerberosErrorType.kNone;
+    this.addAccountError = KerberosErrorType.kNone;
 
     // Simulated error from a validateConfig call.
     this.validateConfigResult = {
-      error: settings.KerberosErrorType.kNone,
-      errorInfo: {code: settings.KerberosConfigErrorCode.kNone}
+      error: KerberosErrorType.kNone,
+      errorInfo: {code: KerberosConfigErrorCode.kNone},
     };
   }
 
@@ -81,7 +77,7 @@
   /** @override */
   removeAccount(account) {
     this.methodCalled('removeAccount', account);
-    return Promise.resolve(settings.KerberosErrorType.kNone);
+    return Promise.resolve(KerberosErrorType.kNone);
   }
 
   /** @override */

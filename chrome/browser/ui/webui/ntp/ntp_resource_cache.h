@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/scoped_observation.h"
@@ -25,22 +24,19 @@ class Profile;
 namespace base {
 class RefCountedMemory;
 class Value;
-}
-
-namespace content {
-class RenderProcessHost;
-}
+}  // namespace base
 
 namespace policy {
 class PolicyChangeRegistrar;
 }
 
 namespace ui {
+class ColorProvider;
 class ThemeProvider;
 }
 
 SkColor GetThemeColor(const ui::NativeTheme* native_theme,
-                      const ui::ThemeProvider& tp,
+                      const ui::ColorProvider& cp,
                       int id);
 std::string GetNewTabBackgroundPositionCSS(
     const ui::ThemeProvider& theme_provider);
@@ -64,43 +60,26 @@ class NTPResourceCache : public ThemeServiceObserver,
   };
 
   explicit NTPResourceCache(Profile* profile);
+
+  NTPResourceCache(const NTPResourceCache&) = delete;
+  NTPResourceCache& operator=(const NTPResourceCache&) = delete;
+
   ~NTPResourceCache() override;
 
   base::RefCountedMemory* GetNewTabGuestHTML();
-  base::RefCountedMemory* GetNewTabHTML(WindowType win_type);
+  base::RefCountedMemory* GetNewTabHTML(
+      WindowType win_type,
+      const content::WebContents::Getter& wc_getter);
   base::RefCountedMemory* GetNewTabCSS(
       WindowType win_type,
-      const content::WebContents::Getter wc_getter);
+      const content::WebContents::Getter& wc_getter);
 
   // ThemeServiceObserver:
   void OnThemeChanged() override;
 
-  static WindowType GetWindowType(
-      Profile* profile, content::RenderProcessHost* render_host);
+  static WindowType GetWindowType(Profile* profile);
 
  private:
-  struct GuestNTPInfo {
-    explicit GuestNTPInfo(const char* learn_more_link,
-                          int html_idr,
-                          int heading_ids,
-                          int description_ids,
-                          int features_ids = -1,
-                          int warnings_ids = -1)
-        : learn_more_link(learn_more_link),
-          html_idr(html_idr),
-          heading_ids(heading_ids),
-          description_ids(description_ids),
-          features_ids(features_ids),
-          warnings_ids(warnings_ids) {}
-
-    const char* learn_more_link;
-    int html_idr;
-    int heading_ids;
-    int description_ids;
-    int features_ids;
-    int warnings_ids;
-  };
-
   // KeyedService:
   void Shutdown() override;
 
@@ -121,27 +100,19 @@ class NTPResourceCache : public ThemeServiceObserver,
   bool NewTabHTMLNeedsRefresh();
 
   void CreateNewTabHTML();
-  void CreateNewTabCSS(const content::WebContents::Getter wc_getter);
+  void CreateNewTabCSS(const content::WebContents::Getter& wc_getter);
 
-  void CreateNewTabIncognitoHTML();
-  void CreateNewTabIncognitoCSS(const content::WebContents::Getter wc_getter);
+  void CreateNewTabIncognitoHTML(const content::WebContents::Getter& wc_getter);
+  void CreateNewTabIncognitoCSS(const content::WebContents::Getter& wc_getter);
 
-  scoped_refptr<base::RefCountedString> CreateNewTabGuestHTML(
-      const GuestNTPInfo& guest_ntp_info);
-  // TODO(crbug.com/1125474): Rename to CreateNewTabGuestSigned{In|Out}HTML once
-  // all audit is done and all instances of non-ephemeral Guest profiles are
-  // deprecated.
-  base::RefCountedMemory* CreateNewTabEphemeralGuestSignedInHTML();
-  base::RefCountedMemory* CreateNewTabEphemeralGuestSignedOutHTML();
+  void CreateNewTabGuestHTML();
 
   void SetDarkKey(base::Value* dict);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   scoped_refptr<base::RefCountedMemory> new_tab_css_;
   scoped_refptr<base::RefCountedMemory> new_tab_guest_html_;
-  scoped_refptr<base::RefCountedMemory> new_tab_guest_signed_in_html_;
-  scoped_refptr<base::RefCountedMemory> new_tab_guest_signed_out_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_css_;
   scoped_refptr<base::RefCountedMemory> new_tab_non_primary_otr_html_;
@@ -155,8 +126,6 @@ class NTPResourceCache : public ThemeServiceObserver,
       theme_observation_{this};
 
   std::unique_ptr<policy::PolicyChangeRegistrar> policy_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(NTPResourceCache);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NTP_NTP_RESOURCE_CACHE_H_

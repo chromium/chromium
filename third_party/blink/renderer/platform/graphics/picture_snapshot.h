@@ -33,7 +33,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -44,16 +43,18 @@
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
-namespace blink {
+namespace gfx {
+class RectF;
+}
 
-class FloatRect;
+namespace blink {
 
 class PLATFORM_EXPORT PictureSnapshot : public RefCounted<PictureSnapshot> {
   USING_FAST_MALLOC(PictureSnapshot);
 
  public:
   struct TilePictureStream : RefCounted<TilePictureStream> {
-    FloatPoint layer_offset;
+    gfx::PointF layer_offset;
     sk_sp<SkPicture> picture;
   };
 
@@ -61,13 +62,15 @@ class PLATFORM_EXPORT PictureSnapshot : public RefCounted<PictureSnapshot> {
       const Vector<scoped_refptr<TilePictureStream>>&);
 
   PictureSnapshot(sk_sp<const SkPicture>);
+  PictureSnapshot(const PictureSnapshot&) = delete;
+  PictureSnapshot& operator=(const PictureSnapshot&) = delete;
 
   Vector<uint8_t> Replay(unsigned from_step = 0,
                          unsigned to_step = 0,
                          double scale = 1.0) const;
   Vector<Vector<base::TimeDelta>> Profile(unsigned min_iterations,
                                           base::TimeDelta min_duration,
-                                          const FloatRect* clip_rect) const;
+                                          const gfx::RectF* clip_rect) const;
   std::unique_ptr<JSONArray> SnapshotCommandLog() const;
   bool IsEmpty() const;
 
@@ -75,8 +78,6 @@ class PLATFORM_EXPORT PictureSnapshot : public RefCounted<PictureSnapshot> {
   std::unique_ptr<SkBitmap> CreateBitmap() const;
 
   sk_sp<const SkPicture> picture_;
-
-  DISALLOW_COPY_AND_ASSIGN(PictureSnapshot);
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/stl_util.h"
 #include "components/viz/common/resources/resource_sizes.h"
 
 namespace viz {

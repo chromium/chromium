@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_IN_MEMORY_DATABASE_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_IN_MEMORY_DATABASE_H_
 
-#include "base/macros.h"
 #include "components/history/core/browser/url_database.h"
 #include "sql/database.h"
 
@@ -21,6 +20,10 @@ namespace history {
 class InMemoryDatabase : public URLDatabase {
  public:
   InMemoryDatabase();
+
+  InMemoryDatabase(const InMemoryDatabase&) = delete;
+  InMemoryDatabase& operator=(const InMemoryDatabase&) = delete;
+
   ~InMemoryDatabase() override;
 
   // Creates an empty in-memory database.
@@ -42,8 +45,6 @@ class InMemoryDatabase : public URLDatabase {
   bool InitDB();
 
   sql::Database db_;
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryDatabase);
 };
 
 }  // namespace history

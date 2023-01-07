@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_UPDATER_UPDATE_SERVICE_FACTORY_H_
 #define EXTENSIONS_BROWSER_UPDATER_UPDATE_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -17,6 +16,9 @@ class UpdateService;
 // Note that OTR browser contexts do not get an UpdateService.
 class UpdateServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  UpdateServiceFactory(const UpdateServiceFactory&) = delete;
+  UpdateServiceFactory& operator=(const UpdateServiceFactory&) = delete;
+
   static UpdateService* GetForBrowserContext(content::BrowserContext* context);
   static UpdateServiceFactory* GetInstance();
 
@@ -29,8 +31,6 @@ class UpdateServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateServiceFactory);
 };
 
 }  // namespace extensions

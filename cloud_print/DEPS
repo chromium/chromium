@@ -1,4 +1,0 @@
-include_rules = [
-  "+chrome/common",
-  "+chrome/installer/launcher_support",
-]

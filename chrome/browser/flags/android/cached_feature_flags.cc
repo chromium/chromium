@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,8 @@ bool IsJavaDrivenFeatureEnabled(const base::Feature& feature) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_feature_name(
       ConvertUTF8ToJavaString(env, feature.name));
-  return Java_CachedFeatureFlags_isEnabled(env, j_feature_name);
+  return Java_CachedFeatureFlags_isEnabled(env, j_feature_name,
+                                           feature.default_state);
 }
 
 std::string GetReachedCodeProfilerTrialGroup() {

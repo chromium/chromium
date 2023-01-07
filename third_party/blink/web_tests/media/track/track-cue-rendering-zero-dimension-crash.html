@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<video src="../content/test.ogv" height="0"></video>
+<script>
+function animationFrame() {
+  return new Promise(resolve => { requestAnimationFrame(resolve); });
+}
+
+promise_test(async () => {
+  let v = document.querySelector('video');
+  let track = v.addTextTrack('subtitles', 'label', 'en');
+  track.mode = 'showing';
+  track.addCue(new VTTCue(1, 60, 'First subtitle'));
+  v.currentTime = 3;
+  await new Promise(resolve => { v.addEventListener('seeked', resolve, {once:true}); });
+  await animationFrame();
+  await animationFrame();
+  // Pass if no division-by-zero.
+}, 'crbug.com/1351153: Crash by zero height video');
+</script>

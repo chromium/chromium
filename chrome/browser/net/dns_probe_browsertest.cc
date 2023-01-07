@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/enterprise_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
@@ -16,6 +18,8 @@
 #include "chrome/browser/net/dns_probe_test_util.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/net/secure_dns_config.h"
+#include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -27,9 +31,13 @@
 #include "components/embedder_support/pref_names.h"
 #include "components/error_page/common/net_error_info.h"
 #include "components/google/core/common/google_util.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -45,11 +53,10 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
-using base::Bind;
 using base::BindOnce;
 using base::BindRepeating;
 using base::FilePath;
@@ -174,12 +181,12 @@ class DnsProbeBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<FakeHostResolverNetworkContext> network_context_;
   std::unique_ptr<FakeDnsConfigChangeManager> dns_config_change_manager_;
-  DelayingDnsProbeService* delaying_dns_probe_service_;
+  raw_ptr<DelayingDnsProbeService> delaying_dns_probe_service_;
 
   // Browser that methods apply to.
-  Browser* active_browser_;
+  raw_ptr<Browser> active_browser_;
   // Helper that current has its DnsProbeStatus messages monitored.
-  NetErrorTabHelper* monitored_tab_helper_;
+  raw_ptr<NetErrorTabHelper> monitored_tab_helper_;
 
   std::unique_ptr<base::RunLoop> awaiting_dns_probe_status_run_loop_;
   // Queue of statuses received but not yet consumed by WaitForSentStatus().
@@ -266,13 +273,15 @@ void DnsProbeBrowserTest::SetFakeHostResolverResults(
 }
 
 void DnsProbeBrowserTest::NavigateToDnsError() {
-  NavigateToURL(active_browser_, URLRequestFailedJob::GetMockHttpUrl(
-                                     net::ERR_NAME_NOT_RESOLVED));
+  ASSERT_TRUE(NavigateToURL(
+      active_browser_,
+      URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED)));
 }
 
 void DnsProbeBrowserTest::NavigateToOtherError() {
-  NavigateToURL(active_browser_, URLRequestFailedJob::GetMockHttpUrl(
-                                     net::ERR_CONNECTION_REFUSED));
+  ASSERT_TRUE(NavigateToURL(
+      active_browser_,
+      URLRequestFailedJob::GetMockHttpUrl(net::ERR_CONNECTION_REFUSED)));
 }
 
 void DnsProbeBrowserTest::StartDelayedProbes(int expected_delayed_probe_count) {
@@ -307,25 +316,17 @@ std::string DnsProbeBrowserTest::Title() {
   WebContents* contents =
       active_browser_->tab_strip_model()->GetActiveWebContents();
 
-  bool rv = content::ExecuteScriptAndExtractString(
-      contents, "domAutomationController.send(document.title);", &title);
-  if (!rv)
-    return "";
-
-  return title;
+  return content::EvalJs(contents, "document.title;").ExtractString();
 }
 
 // Check text by roundtripping to renderer, to make sure any probe results
 // sent before this have been applied.
 bool DnsProbeBrowserTest::PageContains(const std::string& expected) {
-  std::string text_content;
-
-  bool rv = content::ExecuteScriptAndExtractString(
-      active_browser_->tab_strip_model()->GetActiveWebContents(),
-      "domAutomationController.send(document.body.textContent);",
-      &text_content);
-  if (!rv)
-    return false;
+  std::string text_content =
+      content::EvalJs(
+          active_browser_->tab_strip_model()->GetActiveWebContents(),
+          "document.body.textContent;")
+          .ExtractString();
 
   return text_content.find(expected) != std::string::npos;
 }
@@ -393,13 +394,42 @@ class DnsProbeCurrentConfigFailingProbesTest : public DnsProbeBrowserTest {
 class DnsProbeCurrentSecureConfigFailingProbesTest
     : public DnsProbeBrowserTest {
  protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    // Normal boilerplate to setup a MockConfigurationPolicyProvider.
+    ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
   void SetUpOnMainThread() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Mark as not enterprise managed to prevent the secure DNS mode from
     // being downgraded to off.
     base::win::ScopedDomainStateForTesting scoped_domain(false);
+    // TODO(crbug.com/1339062): What is the correct function to use here?
+    EXPECT_FALSE(base::win::IsEnrolledToDomain());
 #endif
 
+    // Set the mocked policy provider to act as if no policies are in use by
+    // updating to an empty PolicyMap. Done to prevent potential unintended
+    // Secure DNS downgrade.
+    policy_provider_.UpdateChromePolicy(policy::PolicyMap());
+
+    // Override parental-controls detection to not detect anything, to prevent a
+    // potential Secure DNS downgrade of off. Trigger an update to network
+    // service to ensure the override takes effect if parental controls have
+    // already been read.
+    StubResolverConfigReader* config_reader =
+        SystemNetworkContextManager::GetStubResolverConfigReader();
+    config_reader->OverrideParentalControlsForTesting(
+        /*parental_controls_override=*/false);
+    config_reader->UpdateNetworkService(/*record_metrics=*/false);
+    content::FlushNetworkServiceInstanceForTesting();
+
+    // Update prefs to enable Secure DNS in secure mode.
     PrefService* local_state = g_browser_process->local_state();
     local_state->SetString(prefs::kDnsOverHttpsMode,
                            SecureDnsConfig::kModeSecure);
@@ -414,6 +444,8 @@ class DnsProbeCurrentSecureConfigFailingProbesTest
           FakeHostResolver::kOneAddressResponse}});
     DnsProbeBrowserTest::SetUpOnMainThread();
   }
+
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 // Test Fixture for tests where the DNS probes should fail to connect to a DNS
@@ -519,8 +551,8 @@ IN_PROC_BROWSER_TEST_F(DnsProbeFailingProbesTest, SyncFailure) {
 
 // Make sure probes don't run for subframe DNS errors.
 IN_PROC_BROWSER_TEST_F(DnsProbeSuccessfulProbesTest, NoProbeInSubframe) {
-  NavigateToURL(browser(),
-                embedded_test_server()->GetURL("/iframe_dns_error.html"));
+  ASSERT_TRUE(NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe_dns_error.html")));
 
   // By the time NavigateToURL returns, the browser will have seen the failed
   // provisional load.  If a probe was started (or considered but not run),

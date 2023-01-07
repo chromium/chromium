@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/modules/filesystem/file_system_callbacks.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -100,7 +100,8 @@ class MODULES_EXPORT DOMFileSystemBase : public ScriptWrappable {
                                  String& absolute_path);
   static bool PathPrefixToFileSystemType(const String& path_prefix,
                                          mojom::blink::FileSystemType&);
-  static File* CreateFile(const FileMetadata&,
+  static File* CreateFile(ExecutionContext* context,
+                          const FileMetadata&,
                           const KURL& file_system_url,
                           mojom::blink::FileSystemType,
                           const String name);

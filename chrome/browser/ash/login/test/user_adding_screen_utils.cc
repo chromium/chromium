@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,22 +6,21 @@
 
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
-
 namespace {
 
 // A waiter that blocks until the target login screen is reached.
 class LoginScreenWaiter : public LoginScreenShownObserver {
  public:
   LoginScreenWaiter() {
-    LoginScreenClient::Get()->AddLoginScreenShownObserver(this);
+    LoginScreenClientImpl::Get()->AddLoginScreenShownObserver(this);
   }
   ~LoginScreenWaiter() override {
-    LoginScreenClient::Get()->RemoveLoginScreenShownObserver(this);
+    LoginScreenClientImpl::Get()->RemoveLoginScreenShownObserver(this);
   }
   LoginScreenWaiter(const LoginScreenWaiter&) = delete;
   LoginScreenWaiter& operator=(const LoginScreenWaiter&) = delete;
@@ -44,4 +43,4 @@ void ShowUserAddingScreen() {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

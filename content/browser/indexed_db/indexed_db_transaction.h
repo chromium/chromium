@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,17 +16,17 @@
 #include "base/containers/queue.h"
 #include "base/containers/stack.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/services/storage/indexed_db/scopes/scope_lock.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
@@ -66,6 +66,14 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
   // Signals the transaction for commit.
   void SetCommitFlag();
+
+  // Returns false if the transaction has been signalled to commit, is in the
+  // process of committing, or finished committing or was aborted. Essentially
+  // when this returns false no tasks should be scheduled that try to modify
+  // the transaction.
+  bool IsAcceptingRequests() {
+    return !is_commit_pending_ && state_ != COMMITTING && state_ != FINISHED;
+  }
 
   // This transaction is ultimately backed by a LevelDBScope. Aborting a
   // transaction rolls back the LevelDBScopes, which (if LevelDBScopes is in
@@ -133,7 +141,7 @@ class CONTENT_EXPORT IndexedDBTransaction {
     return ptr_factory_.GetWeakPtr();
   }
 
-  ScopesLocksHolder* mutable_locks_receiver() { return &locks_receiver_; }
+  PartitionedLockHolder* mutable_locks_receiver() { return &locks_receiver_; }
 
   // in_flight_memory() is used to keep track of all memory scheduled to be
   // written using ScheduleTask. This is reported to memory dumps.
@@ -208,7 +216,7 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
   bool used_ = false;
   State state_ = CREATED;
-  ScopesLocksHolder locks_receiver_;
+  PartitionedLockHolder locks_receiver_;
   bool is_commit_pending_ = false;
 
   // We are owned by the connection object, but during force closes sometimes
@@ -229,6 +237,10 @@ class CONTENT_EXPORT IndexedDBTransaction {
   class TaskQueue {
    public:
     TaskQueue();
+
+    TaskQueue(const TaskQueue&) = delete;
+    TaskQueue& operator=(const TaskQueue&) = delete;
+
     ~TaskQueue();
     bool empty() const { return queue_.empty(); }
     void push(Operation task) { queue_.push(std::move(task)); }
@@ -237,13 +249,15 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
    private:
     base::queue<Operation> queue_;
-
-    DISALLOW_COPY_AND_ASSIGN(TaskQueue);
   };
 
   class TaskStack {
    public:
     TaskStack();
+
+    TaskStack(const TaskStack&) = delete;
+    TaskStack& operator=(const TaskStack&) = delete;
+
     ~TaskStack();
     bool empty() const { return stack_.empty(); }
     void push(AbortOperation task) { stack_.push(std::move(task)); }
@@ -252,8 +266,6 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
    private:
     base::stack<AbortOperation> stack_;
-
-    DISALLOW_COPY_AND_ASSIGN(TaskStack);
   };
 
   TaskQueue task_queue_;

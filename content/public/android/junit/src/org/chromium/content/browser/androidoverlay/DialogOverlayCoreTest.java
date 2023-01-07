@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,6 @@ import android.os.IBinder;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
-
-// TODO(liberato): prior to M, this was ...policy.impl.PhoneWindow
-import com.android.internal.policy.PhoneWindow;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -66,9 +63,8 @@ public class DialogOverlayCoreTest {
 
     /**
      * Robolectric shadow for PhoneWindow.  This one keeps track of takeSurface() calls.
-     * TODO(liberato): the @Impl specifies 'minSdk=M' in the robolectric source.
      */
-    @Implements(value = PhoneWindow.class, isInAndroidSdk = false)
+    @Implements(className = "com.android.internal.policy.PhoneWindow", isInAndroidSdk = false)
     public static class MyPhoneWindowShadow extends ShadowPhoneWindow {
         public MyPhoneWindowShadow() {}
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "remoting/proto/audio.pb.h"
 #include "third_party/opus/src/include/opus.h"
@@ -108,12 +107,12 @@ std::unique_ptr<AudioPacket> AudioDecoderOpus::Decode(
 
   for (int i = 0; i < packet->data_size(); ++i) {
     int16_t* pcm_buffer =
-        reinterpret_cast<int16_t*>(base::data(*decoded_data) + buffer_pos);
+        reinterpret_cast<int16_t*>(std::data(*decoded_data) + buffer_pos);
     CHECK_LE(buffer_pos + max_frame_bytes,
              static_cast<int>(decoded_data->size()));
     std::string* frame = packet->mutable_data(i);
     unsigned char* frame_data =
-        reinterpret_cast<unsigned char*>(base::data(*frame));
+        reinterpret_cast<unsigned char*>(std::data(*frame));
     int result = opus_decode(decoder_, frame_data, frame->size(),
                              pcm_buffer, max_frame_samples, 0);
     if (result < 0) {

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ PepperPluginRegistry* PepperPluginRegistry::GetInstance() {
   return registry;
 }
 
-const PepperPluginInfo* PepperPluginRegistry::GetInfoForPlugin(
+const ContentPluginInfo* PepperPluginRegistry::GetInfoForPlugin(
     const WebPluginInfo& info) {
   for (const auto& plugin : plugin_list_) {
     if (info.path == plugin.path)
@@ -37,7 +37,7 @@ const PepperPluginInfo* PepperPluginRegistry::GetInfoForPlugin(
   // is actually in |info| and we can use it to construct it and add it to
   // the list. This same deal needs to be done in the browser side in
   // PluginService.
-  PepperPluginInfo plugin;
+  ContentPluginInfo plugin;
   if (!MakePepperPluginInfo(info, &plugin))
     return nullptr;
 
@@ -47,7 +47,7 @@ const PepperPluginInfo* PepperPluginRegistry::GetInfoForPlugin(
 
 PluginModule* PepperPluginRegistry::GetLiveModule(
     const base::FilePath& path,
-    const base::Optional<url::Origin>& origin_lock) {
+    const absl::optional<url::Origin>& origin_lock) {
   auto module_iter = live_modules_.find({path, origin_lock});
   if (module_iter == live_modules_.end())
     return nullptr;
@@ -74,7 +74,7 @@ PluginModule* PepperPluginRegistry::GetLiveModule(
 
 void PepperPluginRegistry::AddLiveModule(
     const base::FilePath& path,
-    const base::Optional<url::Origin>& origin_lock,
+    const absl::optional<url::Origin>& origin_lock,
     PluginModule* module) {
   DCHECK(live_modules_.find({path, origin_lock}) == live_modules_.end());
   live_modules_[{path, origin_lock}] = module;
@@ -120,7 +120,7 @@ void PepperPluginRegistry::Initialize() {
     auto module = base::MakeRefCounted<PluginModule>(
         current.name, current.version, current.path,
         ppapi::PpapiPermissions(current.permissions));
-    AddLiveModule(current.path, base::Optional<url::Origin>(), module.get());
+    AddLiveModule(current.path, absl::optional<url::Origin>(), module.get());
     if (current.is_internal) {
       if (!module->InitAsInternalPlugin(current.internal_entry_points)) {
         DVLOG(1) << "Failed to load pepper module: " << current.path.value();

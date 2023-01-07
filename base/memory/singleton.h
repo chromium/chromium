@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -27,12 +27,10 @@
 #ifndef BASE_MEMORY_SINGLETON_H_
 #define BASE_MEMORY_SINGLETON_H_
 
-#include "base/at_exit.h"
-#include "base/atomicops.h"
-#include "base/base_export.h"
-#include "base/check_op.h"
+#include <atomic>
+
+#include "base/dcheck_is_on.h"
 #include "base/lazy_instance_helpers.h"
-#include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace base {
@@ -104,7 +102,7 @@ struct StaticMemorySingletonTraits {
   // WARNING: User has to support a New() which returns null.
   static Type* New() {
     // Only constructs once and returns pointer; otherwise returns null.
-    if (subtle::NoBarrier_AtomicExchange(&dead_, 1))
+    if (dead_.exchange(true, std::memory_order_relaxed))
       return nullptr;
 
     return new (buffer_) Type();
@@ -121,18 +119,20 @@ struct StaticMemorySingletonTraits {
   static const bool kAllowedToAccessOnNonjoinableThread = true;
 #endif
 
-  static void ResurrectForTesting() { subtle::NoBarrier_Store(&dead_, 0); }
+  static void ResurrectForTesting() {
+    dead_.store(false, std::memory_order_relaxed);
+  }
 
  private:
   alignas(Type) static char buffer_[sizeof(Type)];
   // Signal the object was already deleted, so it is not revived.
-  static subtle::Atomic32 dead_;
+  static std::atomic<bool> dead_;
 };
 
 template <typename Type>
 alignas(Type) char StaticMemorySingletonTraits<Type>::buffer_[sizeof(Type)];
 template <typename Type>
-subtle::Atomic32 StaticMemorySingletonTraits<Type>::dead_ = 0;
+std::atomic<bool> StaticMemorySingletonTraits<Type>::dead_ = false;
 
 // The Singleton<Type, Traits, DifferentiatingType> class manages a single
 // instance of Type which will be created on first use and will be destroyed at
@@ -153,12 +153,15 @@ subtle::Atomic32 StaticMemorySingletonTraits<Type>::dead_ = 0;
 //   class FooClass {
 //    public:
 //     static FooClass* GetInstance();  <-- See comment below on this.
+//
+//     FooClass(const FooClass&) = delete;
+//     FooClass& operator=(const FooClass&) = delete;
+//
 //     void Bar() { ... }
+//
 //    private:
 //     FooClass() { ... }
 //     friend struct base::DefaultSingletonTraits<FooClass>;
-//
-//     DISALLOW_COPY_AND_ASSIGN(FooClass);
 //   };
 //
 // In your source file:
@@ -231,11 +234,11 @@ class Singleton {
   static Type* get() {
 #if DCHECK_IS_ON()
     if (!Traits::kAllowedToAccessOnNonjoinableThread)
-      ThreadRestrictions::AssertSingletonAllowed();
+      internal::AssertSingletonAllowed();
 #endif
 
     return subtle::GetOrCreateLazyPointer(
-        &instance_, &CreatorFunc, nullptr,
+        instance_, &CreatorFunc, nullptr,
         Traits::kRegisterAtExit ? OnExit : nullptr, nullptr);
   }
 
@@ -244,10 +247,10 @@ class Singleton {
   static Type* GetIfExists() {
 #if DCHECK_IS_ON()
     if (!Traits::kAllowedToAccessOnNonjoinableThread)
-      ThreadRestrictions::AssertSingletonAllowed();
+      internal::AssertSingletonAllowed();
 #endif
 
-    if (!subtle::NoBarrier_Load(&instance_))
+    if (!instance_.load(std::memory_order_relaxed))
       return nullptr;
 
     // Need to invoke get() nonetheless as some Traits return null after
@@ -265,14 +268,16 @@ class Singleton {
   static void OnExit(void* /*unused*/) {
     // AtExit should only ever be register after the singleton instance was
     // created.  We should only ever get here with a valid instance_ pointer.
-    Traits::Delete(reinterpret_cast<Type*>(subtle::NoBarrier_Load(&instance_)));
-    instance_ = 0;
+    Traits::Delete(
+        reinterpret_cast<Type*>(instance_.load(std::memory_order_relaxed)));
+    instance_.store(0, std::memory_order_relaxed);
   }
-  static subtle::AtomicWord instance_;
+  static std::atomic<uintptr_t> instance_;
 };
 
 template <typename Type, typename Traits, typename DifferentiatingType>
-subtle::AtomicWord Singleton<Type, Traits, DifferentiatingType>::instance_ = 0;
+std::atomic<uintptr_t> Singleton<Type, Traits, DifferentiatingType>::instance_ =
+    0;
 
 }  // namespace base
 

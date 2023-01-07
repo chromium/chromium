@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,14 +15,15 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/top_shortcuts_view.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -47,10 +48,11 @@ namespace {
 class AddUserButton : public views::Button {
  public:
   explicit AddUserButton(UserChooserDetailedViewController* controller);
-  ~AddUserButton() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AddUserButton);
+  AddUserButton(const AddUserButton&) = delete;
+  AddUserButton& operator=(const AddUserButton&) = delete;
+
+  ~AddUserButton() override = default;
 };
 
 AddUserButton::AddUserButton(UserChooserDetailedViewController* controller)
@@ -84,20 +86,21 @@ class Separator : public views::View {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     SetBorder(views::CreateEmptyBorder(
         between_user
-            ? gfx::Insets(0, kUnifiedUserChooserSeparatorSideMargin)
-            : gfx::Insets(kUnifiedUserChooserLargeSeparatorVerticalSpacing,
-                          0)));
+            ? gfx::Insets::VH(0, kUnifiedUserChooserSeparatorSideMargin)
+            : gfx::Insets::VH(kUnifiedUserChooserLargeSeparatorVerticalSpacing,
+                              0)));
     views::View* child = new views::View();
     // make sure that the view is displayed by setting non-zero size
     child->SetPreferredSize(gfx::Size(1, 1));
     AddChildView(child);
     child->SetBorder(views::CreateSolidSidedBorder(
-        0, 0, kUnifiedNotificationSeparatorThickness, 0,
+        gfx::Insets::TLBR(0, 0, kUnifiedNotificationSeparatorThickness, 0),
         AshColorProvider::Get()->GetContentLayerColor(
             ContentLayerType::kSeparatorColor)));
   }
 
-  DISALLOW_COPY_AND_ASSIGN(Separator);
+  Separator(const Separator&) = delete;
+  Separator& operator=(const Separator&) = delete;
 };
 
 views::View* CreateAddUserErrorView(const std::u16string& message) {
@@ -106,8 +109,7 @@ views::View* CreateAddUserErrorView(const std::u16string& message) {
       ContentLayerType::kTextColorPrimary));
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
-  label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kUnifiedTopShortcutSpacing)));
+  label->SetBorder(views::CreateEmptyBorder(kUnifiedTopShortcutSpacing));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   return label;
@@ -123,9 +125,9 @@ views::View* CreateUserAvatarView(int user_index) {
 
   if (user_session->user_info.type == user_manager::USER_TYPE_GUEST) {
     // In guest mode, the user avatar is just a disabled button pod.
-    auto* image_view = new TopShortcutButton(views::Button::PressedCallback(),
-                                             kSystemMenuGuestIcon,
-                                             IDS_ASH_STATUS_TRAY_GUEST_LABEL);
+    auto* image_view = new IconButton(
+        views::Button::PressedCallback(), IconButton::Type::kSmall,
+        &kSystemMenuGuestIcon, IDS_ASH_STATUS_TRAY_GUEST_LABEL);
     image_view->SetEnabled(false);
     return image_view;
   }
@@ -174,9 +176,7 @@ UserItemButton::UserItemButton(PressedCallback callback,
                        &UserChooserDetailedViewController::HandleUserSwitch,
                        base::Unretained(controller),
                        user_index)),
-      // The button for the currently active user is not clickable.
-      role_(user_index == 0 ? ax::mojom::Role::kLabelText
-                            : ax::mojom::Role::kButton),
+      user_index_(user_index),
       capture_icon_(new views::ImageView),
       name_(new views::Label),
       email_(new views::Label) {
@@ -185,7 +185,8 @@ UserItemButton::UserItemButton(PressedCallback callback,
   SetID(VIEW_ID_USER_ITEM_BUTTON_START + user_index);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kUnifiedTopShortcutSpacing), kUnifiedTopShortcutSpacing));
+      gfx::Insets::VH(0, kUnifiedTopShortcutSpacing),
+      kUnifiedTopShortcutSpacing));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout->set_minimum_cross_axis_size(kUnifiedUserChooserRowHeight);
@@ -225,18 +226,18 @@ UserItemButton::UserItemButton(PressedCallback callback,
   if (!has_close_button) {
     // Add a padding with the same size as the close button,
     // so as to align all media indicators in a column.
-    capture_icon_->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(0, 0, 0, kTrayItemSize + kUnifiedTopShortcutSpacing)));
+    capture_icon_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        0, 0, 0, kTrayItemSize + kUnifiedTopShortcutSpacing)));
   }
   capture_icon_->SetVisible(false);
   AddChildView(capture_icon_);
 
   if (has_close_button) {
-    AddChildView(std::make_unique<TopShortcutButton>(
+    AddChildView(std::make_unique<IconButton>(
         base::BindRepeating(
             &UserChooserDetailedViewController::TransitionToMainView,
             base::Unretained(controller)),
-        views::kIcCloseIcon, IDS_APP_ACCNAME_CLOSE));
+        IconButton::Type::kSmall, &views::kIcCloseIcon, IDS_APP_ACCNAME_CLOSE));
   }
 
   SetTooltipText(GetUserItemAccessibleString(user_index));
@@ -275,7 +276,10 @@ std::u16string UserItemButton::GetTooltipText(const gfx::Point& p) const {
 }
 
 void UserItemButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = role_;
+  // The button for the currently active user is not clickable.
+  node_data->role =
+      user_index_ == 0 ? ax::mojom::Role::kLabelText : ax::mojom::Role::kButton;
+  node_data->SetName(GetUserItemAccessibleString(user_index_));
 }
 
 UserChooserView::UserChooserView(

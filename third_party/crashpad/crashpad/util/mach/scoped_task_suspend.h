@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 #include <mach/mach.h>
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -32,12 +31,14 @@ namespace crashpad {
 class ScopedTaskSuspend {
  public:
   explicit ScopedTaskSuspend(task_t task);
+
+  ScopedTaskSuspend(const ScopedTaskSuspend&) = delete;
+  ScopedTaskSuspend& operator=(const ScopedTaskSuspend&) = delete;
+
   ~ScopedTaskSuspend();
 
  private:
   task_t task_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTaskSuspend);
 };
 
 }  // namespace crashpad

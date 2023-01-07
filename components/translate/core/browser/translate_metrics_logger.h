@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,29 +41,51 @@ enum class TranslateState {
 // numeric values should never be reused.
 enum class TranslationStatus {
   kUninitialized = 0,
-  kSuccessFromManualTranslation = 1,
+  // kSuccessFromManualTranslation = 1,  // no longer used, split into
+  // kSuccessFromManualUiTranslation and
+  // kSuccessFromManualContextMenuTranslation enum values.
   kSuccessFromAutomaticTranslationByPref = 2,
   kSuccessFromAutomaticTranslationByLink = 3,
-  kRevertedManualTranslation = 4,
+  // kManualTranslation = 4,  // no longer used, split into
+  // kRevertedManualUiTranslation and
+  // kRevertedManualContextMenuTranslation enum values.
   kRevertedAutomaticTranslation = 5,
   kNewTranslation = 6,
   kTranslationAbandoned = 7,
-  kFailedWithNoErrorManualTranslation = 8,
+  // kFailedWithNoErrorManualTranslation = 8,  // no longer used, split into
+  // kFailedWithNoErrorManualUiTranslation and
+  // kFailedWithNoErrorManualContextMenuTranslation enum values.
   kFailedWithNoErrorAutomaticTranslation = 9,
-  kFailedWithErrorManualTranslation = 10,
+  // kFailedWithErrorManualTranslation = 10,  // no longer used, split into
+  // kFailedWithErrorManualUiTranslation and
+  // kFailedWithErrorManualContextMenuTranslation enum values.
   kFailedWithErrorAutomaticTranslation = 11,
-  kMaxValue = kFailedWithErrorAutomaticTranslation,
+  kSuccessFromManualUiTranslation = 12,
+  kRevertedManualUiTranslation = 13,
+  kFailedWithNoErrorManualUiTranslation = 14,
+  kFailedWithErrorManualUiTranslation = 15,
+  kSuccessFromManualContextMenuTranslation = 16,
+  kRevertedManualContextMenuTranslation = 17,
+  kFailedWithNoErrorManualContextMenuTranslation = 18,
+  kFailedWithErrorManualContextMenuTranslation = 19,
+  kMaxValue = kFailedWithErrorManualContextMenuTranslation,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class TranslationType {
   kUninitialized = 0,
-  kManualInitialTranslation = 1,
-  kManualReTranslation = 2,
+  // kManualInitialTranslation = 1,  // no longer used, split into
+  // kManualUiInitialTranslation and kManualContextMenuInitialranslation
+  // kManualReTranslation = 2,  // no longer used, split into
+  // kManualUiReTranslation and kManualContextMenuReTranslation
   kAutomaticTranslationByPref = 3,
   kAutomaticTranslationByLink = 4,
-  kMaxValue = kAutomaticTranslationByLink,
+  kManualUiInitialTranslation = 5,
+  kManualUiReTranslation = 6,
+  kManualContextMenuInitialTranslation = 7,
+  kManualContextMenuReTranslation = 8,
+  kMaxValue = kManualContextMenuReTranslation,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -87,7 +109,8 @@ enum class TriggerDecision {
   kAutomaticTranslationByPref = 15,
   kShowUIFromHref = 16,
   kAutomaticTranslationByHref = 17,
-  kMaxValue = kAutomaticTranslationByHref,
+  kAutomaticTranslationToPredefinedTarget = 18,
+  kMaxValue = kAutomaticTranslationToPredefinedTarget,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -103,7 +126,8 @@ enum class UIInteraction {
   kNeverTranslateSite = 7,
   kCloseUIExplicitly = 8,
   kCloseUILostFocus = 9,
-  kMaxValue = kCloseUILostFocus,
+  kCloseUITimerRanOut = 10,
+  kMaxValue = kCloseUITimerRanOut,
 };
 
 // TranslateMetricsLogger tracks and logs various UKM and UMA metrics for Chrome
@@ -143,7 +167,7 @@ class TranslateMetricsLogger {
   virtual void LogInitialState() = 0;
   virtual void LogTranslationStarted(TranslationType translation_type) = 0;
   virtual void LogTranslationFinished(bool was_successful,
-                                      TranslateErrors::Type error_type) = 0;
+                                      TranslateErrors error_type) = 0;
   virtual void LogReversion() = 0;
   virtual void LogUIChange(bool is_ui_shown) = 0;
   virtual void LogOmniboxIconChange(bool is_omnibox_icon_show) = 0;
@@ -174,9 +198,14 @@ class TranslateMetricsLogger {
   virtual void LogUIInteraction(UIInteraction ui_interaction) = 0;
 
   // Returns the translation type of the next manual translation.
-  virtual TranslationType GetNextManualTranslationType() = 0;
+  virtual TranslationType GetNextManualTranslationType(
+      bool is_context_menu_initiated_translation) = 0;
 
   virtual void SetHasHrefTranslateTarget(bool has_href_translate_target) = 0;
+
+  // Records whether the page content used to detect the page language
+  // was empty or not.
+  virtual void LogWasContentEmpty(bool was_content_empty) = 0;
 };
 
 }  // namespace translate

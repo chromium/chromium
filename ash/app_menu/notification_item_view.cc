@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/app_menu/notification_item_view.h"
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/text_elider.h"
@@ -49,7 +50,7 @@ NotificationItemView::NotificationItemView(
     views::SlideOutControllerDelegate* slide_out_controller_delegate,
     const std::u16string& title,
     const std::u16string& message,
-    const gfx::Image& icon,
+    const ui::ImageModel& icon,
     const std::string& notification_id)
     : delegate_(delegate),
       slide_out_controller_(std::make_unique<views::SlideOutController>(
@@ -64,9 +65,9 @@ NotificationItemView::NotificationItemView(
   // Paint to a new layer so |slide_out_controller_| can control the opacity.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(true);
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kNotificationVerticalPadding, kNotificationHorizontalPadding,
-                  kNotificationVerticalPadding, kIconHorizontalPadding)));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kNotificationVerticalPadding, kNotificationHorizontalPadding,
+      kNotificationVerticalPadding, kIconHorizontalPadding)));
   SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
 
   text_container_ = new views::View();
@@ -89,15 +90,14 @@ NotificationItemView::NotificationItemView(
   proportional_icon_view_ =
       new message_center::ProportionalImageView(kProportionalIconViewSize);
   AddChildView(proportional_icon_view_);
-  proportional_icon_view_->SetImage(icon.AsImageSkia(),
-                                    kProportionalIconViewSize);
+  proportional_icon_view_->SetImage(icon, kProportionalIconViewSize);
 }
 
 NotificationItemView::~NotificationItemView() = default;
 
 void NotificationItemView::UpdateContents(const std::u16string& title,
                                           const std::u16string& message,
-                                          const gfx::Image& icon) {
+                                          const ui::ImageModel& icon) {
   if (title_ != title) {
     title_ = title;
     title_label_->SetText(title_);
@@ -106,8 +106,7 @@ void NotificationItemView::UpdateContents(const std::u16string& title,
     message_ = message;
     message_label_->SetText(message_);
   }
-  proportional_icon_view_->SetImage(icon.AsImageSkia(),
-                                    kProportionalIconViewSize);
+  proportional_icon_view_->SetImage(icon, kProportionalIconViewSize);
 }
 
 gfx::Size NotificationItemView::CalculatePreferredSize() const {

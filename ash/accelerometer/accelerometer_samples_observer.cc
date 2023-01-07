@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -201,7 +201,7 @@ void AccelerometerSamplesObserver::UpdateSensorDeviceFrequency() {
   sensor_device_remote_->SetFrequency(
       enabled_ ? kReadFrequencyInHz : 0.0,
       base::BindOnce(&AccelerometerSamplesObserver::SetFrequencyCallback,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), enabled_));
 }
 
 mojo::PendingRemote<chromeos::sensors::mojom::SensorDeviceSamplesObserver>
@@ -221,14 +221,21 @@ void AccelerometerSamplesObserver::OnObserverDisconnect() {
 
   LOG(ERROR) << "OnObserverDisconnect error, assuming IIO Service crashes and "
                 "waiting for its relaunch.";
-  // Don't reset |sensor_device_remote_| so that LightProviderMojo can get the
-  // disconnection.
+  // Don't reset |sensor_device_remote_| so that AccelerometerProviderMojo can
+  // get the disconnection.
   receiver_.reset();
 }
 
 void AccelerometerSamplesObserver::SetFrequencyCallback(
+    bool enabled,
     double result_frequency) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (enabled != enabled_) {
+    // As the current configuration (required frequency) is different now,
+    // ignore the result of this deprecated |SensorDevice::SetFrequency|.
+    return;
+  }
 
   if ((result_frequency > 0.0 && enabled_) ||
       (result_frequency == 0.0 && !enabled_)) {

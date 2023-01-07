@@ -1,0 +1,40 @@
+From 472b3007c45c2b628d54a3f5098497356a064ab0 Mon Sep 17 00:00:00 2001
+From: Olabode Anise <anise@chromium.org>
+Date: Wed, 22 Sep 2021 17:34:28 +0000
+Subject: [PATCH] Use string_view::data and length when setting proto value
+
+---
+ third_party/maldoca/src/maldoca/ole/ooxml_to_proto.cc | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/third_party/maldoca/src/maldoca/ole/ooxml_to_proto.cc b/third_party/maldoca/src/maldoca/ole/ooxml_to_proto.cc
+index 292944fab2418..250ad4bd1a169 100644
+--- a/third_party/maldoca/src/maldoca/ole/ooxml_to_proto.cc
++++ b/third_party/maldoca/src/maldoca/ole/ooxml_to_proto.cc
+@@ -202,11 +202,11 @@ absl::Status OOXMLToProto::ExtractRelationships() {
+         absl::string_view value = utils::XmlCharPointerToString(prop.get());
+ 
+         if (name == "Id") {
+-          rel_proto.set_id(value.data());
++          rel_proto.set_id(value.data(), value.size());
+         } else if (name == "Type") {
+-          rel_proto.set_type(value.data());
++          rel_proto.set_type(value.data(), value.size());
+         } else if (name == "Target") {
+-          rel_proto.set_target(value.data());
++          rel_proto.set_target(value.data(), value.size());
+         } else {
+           DLOG(ERROR) << "Unexpected attribute in \'_rels/.rels\': " << name
+                       << " = " << value;
+@@ -306,7 +306,7 @@ absl::Status OOXMLToProto::ExtractFile(absl::string_view filename,
+       return status_or_proto.status();
+     }
+     auto ole_entry = ooxml_proto_.add_ole_entries();
+-    ole_entry->set_filename(filename.data());
++    ole_entry->set_filename(filename.data(), filename.size());
+     ole_entry->set_filesize(content.size());
+     ole_entry->set_hash(Sha256HexString(content));
+     *(ole_entry->mutable_ole_content()) = status_or_proto.value();
+-- 
+2.33.0.464.g1972c5931b-goog
+

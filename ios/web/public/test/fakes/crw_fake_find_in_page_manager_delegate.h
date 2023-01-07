@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,13 +30,13 @@ class WebState;
 
 // The last web::WebState received in delegate method calls.
 @property(nonatomic, readonly) web::WebState* webState;
-// The last |query| string passed in |didHighlightMatchesOfQuery:|.
+// The last `query` string passed in `didHighlightMatchesOfQuery:`.
 @property(nonatomic, readonly) NSString* query;
-// The last |matchCount| passed in |didHighlightMatchesOfQuery:|.
+// The last `matchCount` passed in `didHighlightMatchesOfQuery:`.
 @property(nonatomic, readonly) NSInteger matchCount;
-// The last |index| passed in |didSelectMatchAtIndex:|.
+// The last `index` passed in `didSelectMatchAtIndex:`.
 @property(nonatomic, readonly) NSInteger index;
-// The last |contextString| passed in |didSelectMatchAtIndex:|.
+// The last `contextString` passed in `didSelectMatchAtIndex:`.
 @property(nonatomic, readonly) NSString* contextString;
 
 @end

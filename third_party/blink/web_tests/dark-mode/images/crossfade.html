@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<style>
+.cross-fade-image1 {
+    display: inline-block;
+    width: 200px; height: 200px;
+    background: no-repeat center / contain;
+    background-image: -webkit-cross-fade( url(resources/background.png),url(resources/background.png), 50%);
+}
+.cross-fade-image2 {
+    display: inline-block;
+    width: 200px; height: 200px;
+    background: no-repeat center / contain;
+    background-image: -webkit-cross-fade( url(resources/blue-rect.svg),url(resources/svg-image.svg), 50%);
+}
+.cross-fade-image1-tile {
+    display: inline-block;
+    width: 200px; height: 200px;
+    border-radius: 10px;
+    background-image: -webkit-cross-fade( url(resources/background.png),url(resources/background.png), 50%);
+}
+.cross-fade-image2-tile {
+    display: inline-block;
+    width: 200px; height: 200px;
+    background: no-repeat center / contain;
+    border-radius: 10px;
+    background-image: -webkit-cross-fade( url(resources/blue-rect.svg),url(resources/svg-image.svg), 50%);
+}
+</style>
+<div>
+<div class="cross-fade-image1"></div>
+<div class="cross-fade-image2"></div>
+</div>
+<div>
+<div class="cross-fade-image1-tile"></div>
+<div class="cross-fade-image2-tile"></div>
+</div>

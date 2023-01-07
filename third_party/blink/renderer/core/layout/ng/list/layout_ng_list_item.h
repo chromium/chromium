@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,15 @@ class CORE_EXPORT LayoutNGListItem final : public LayoutNGBlockFlow {
  public:
   explicit LayoutNGListItem(Element*);
 
-  ListItemOrdinal& Ordinal() { return ordinal_; }
+  ListItemOrdinal& Ordinal() {
+    NOT_DESTROYED();
+    return ordinal_;
+  }
 
   int Value() const;
 
   LayoutObject* Marker() const {
+    NOT_DESTROYED();
     Element* list_item = To<Element>(GetNode());
     return list_item->PseudoElementLayoutObject(kPseudoIdMarker);
   }
@@ -33,7 +37,10 @@ class CORE_EXPORT LayoutNGListItem final : public LayoutNGBlockFlow {
 
   static const LayoutObject* FindSymbolMarkerLayoutText(const LayoutObject*);
 
-  const char* GetName() const override { return "LayoutNGListItem"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGListItem";
+  }
 
  private:
   bool IsOfType(LayoutObjectType) const override;

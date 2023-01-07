@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,9 @@
 namespace navigation_interception {
 
 // Note: this feature is a no-op on non-Android platforms.
-const base::Feature InterceptNavigationThrottle::kAsyncCheck{
-    "AsyncNavigationIntercept", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAsyncCheck,
+             "AsyncNavigationIntercept",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 InterceptNavigationThrottle::InterceptNavigationThrottle(
     content::NavigationHandle* navigation_handle,
@@ -29,14 +30,16 @@ InterceptNavigationThrottle::~InterceptNavigationThrottle() = default;
 content::NavigationThrottle::ThrottleCheckResult
 InterceptNavigationThrottle::WillStartRequest() {
   DCHECK(!should_ignore_);
-  return CheckIfShouldIgnoreNavigation(false /* is_redirect */);
+  DCHECK(!navigation_handle()->WasServerRedirect());
+  return CheckIfShouldIgnoreNavigation();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 InterceptNavigationThrottle::WillRedirectRequest() {
   if (should_ignore_)
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
-  return CheckIfShouldIgnoreNavigation(true /* is_redirect */);
+  DCHECK(navigation_handle()->WasServerRedirect());
+  return CheckIfShouldIgnoreNavigation();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
@@ -58,33 +61,29 @@ const char* InterceptNavigationThrottle::GetNameForLogging() {
 }
 
 content::NavigationThrottle::ThrottleCheckResult
-InterceptNavigationThrottle::CheckIfShouldIgnoreNavigation(bool is_redirect) {
+InterceptNavigationThrottle::CheckIfShouldIgnoreNavigation() {
   if (ShouldCheckAsynchronously()) {
     pending_checks_++;
     ui_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&InterceptNavigationThrottle::RunCheckAsync,
-                                  weak_factory_.GetWeakPtr(),
-                                  GetNavigationParams(is_redirect)));
+                                  weak_factory_.GetWeakPtr()));
     return content::NavigationThrottle::PROCEED;
   }
   // No need to set |should_ignore_| since if it is true, we'll cancel the
   // navigation immediately.
-  return should_ignore_callback_.Run(navigation_handle()->GetWebContents(),
-                                     GetNavigationParams(is_redirect))
+  return should_ignore_callback_.Run(navigation_handle())
              ? content::NavigationThrottle::CANCEL_AND_IGNORE
              : content::NavigationThrottle::PROCEED;
   // Careful, |this| can be deleted at this point.
 }
 
-void InterceptNavigationThrottle::RunCheckAsync(
-    const NavigationParams& params) {
+void InterceptNavigationThrottle::RunCheckAsync() {
   DCHECK(base::FeatureList::IsEnabled(kAsyncCheck));
   DCHECK_GT(pending_checks_, 0);
   pending_checks_--;
   bool final_deferred_check = deferring_ && pending_checks_ == 0;
   auto weak_this = weak_factory_.GetWeakPtr();
-  bool should_ignore = should_ignore_callback_.Run(
-      navigation_handle()->GetWebContents(), params);
+  bool should_ignore = should_ignore_callback_.Run(navigation_handle());
   if (!weak_this)
     return;
 
@@ -111,20 +110,6 @@ bool InterceptNavigationThrottle::ShouldCheckAsynchronously() const {
          !navigation_handle()->IsPost() &&
          navigation_handle()->GetURL().SchemeIsHTTPOrHTTPS() &&
          base::FeatureList::IsEnabled(kAsyncCheck);
-}
-
-NavigationParams InterceptNavigationThrottle::GetNavigationParams(
-    bool is_redirect) const {
-  return NavigationParams(navigation_handle()->GetURL(),
-                          content::Referrer(navigation_handle()->GetReferrer()),
-                          navigation_handle()->GetNavigationId(),
-                          navigation_handle()->HasUserGesture(),
-                          navigation_handle()->IsPost(),
-                          navigation_handle()->GetPageTransition(), is_redirect,
-                          navigation_handle()->IsExternalProtocol(), true,
-                          navigation_handle()->IsRendererInitiated(),
-                          navigation_handle()->GetBaseURLForDataURL(),
-                          navigation_handle()->GetInitiatorOrigin());
 }
 
 }  // namespace navigation_interception

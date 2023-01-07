@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,17 +20,20 @@ static_library("sync_bookmarks") {
     "bookmark_specifics_conversions.h",
     "bookmark_sync_service.cc",
     "bookmark_sync_service.h",
+    "parent_guid_preprocessing.cc",
+    "parent_guid_preprocessing.h",
     "switches.cc",
     "switches.h",
     "synced_bookmark_tracker.cc",
     "synced_bookmark_tracker.h",
+    "synced_bookmark_tracker_entity.cc",
+    "synced_bookmark_tracker_entity.h",
   ]
 
   deps = [
     "//base",
     "//components/bookmarks/browser",
     "//components/favicon/core",
-    "//components/history/core/browser",
     "//components/keyed_service/core:core",
     "//components/sync",
     "//components/undo",
@@ -48,6 +51,7 @@ source_set("unit_tests") {
     "bookmark_model_type_processor_unittest.cc",
     "bookmark_remote_updates_handler_unittest.cc",
     "bookmark_specifics_conversions_unittest.cc",
+    "parent_guid_preprocessing_unittest.cc",
     "synced_bookmark_tracker_unittest.cc",
   ]
 
@@ -58,13 +62,13 @@ source_set("unit_tests") {
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/favicon/core/test:test_support",
-    "//components/history/core/browser",
     "//components/prefs:test_support",
     "//components/sync:test_support",
     "//components/undo",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//ui/gfx",
   ]
 }

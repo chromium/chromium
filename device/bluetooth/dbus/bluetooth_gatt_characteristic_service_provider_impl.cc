@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -304,20 +304,13 @@ void BluetoothGattCharacteristicServiceProviderImpl::ReadValue(
     // the delegate, which should know how to handle it.
   }
 
-  // GetValue() promises to only call either the success or error callback.
-  auto split_response_sender =
-      base::SplitOnceCallback(std::move(response_sender));
-
   DCHECK(delegate_);
   delegate_->GetValue(
       device_path,
       base::BindOnce(
           &BluetoothGattCharacteristicServiceProviderImpl::OnReadValue,
           weak_ptr_factory_.GetWeakPtr(), method_call,
-          std::move(split_response_sender.first)),
-      base::BindOnce(&BluetoothGattCharacteristicServiceProviderImpl::OnFailure,
-                     weak_ptr_factory_.GetWeakPtr(), method_call,
-                     std::move(split_response_sender.second)));
+          std::move(response_sender)));
 }
 
 void BluetoothGattCharacteristicServiceProviderImpl::WriteValue(
@@ -365,9 +358,10 @@ void BluetoothGattCharacteristicServiceProviderImpl::WriteValue(
           &BluetoothGattCharacteristicServiceProviderImpl::OnWriteValue,
           weak_ptr_factory_.GetWeakPtr(), method_call,
           std::move(split_response_sender.first)),
-      base::BindOnce(&BluetoothGattCharacteristicServiceProviderImpl::OnFailure,
-                     weak_ptr_factory_.GetWeakPtr(), method_call,
-                     std::move(split_response_sender.second)));
+      base::BindOnce(
+          &BluetoothGattCharacteristicServiceProviderImpl::OnWriteValueFailure,
+          weak_ptr_factory_.GetWeakPtr(), method_call,
+          std::move(split_response_sender.second)));
 }
 
 void BluetoothGattCharacteristicServiceProviderImpl::PrepareWriteValue(
@@ -423,9 +417,10 @@ void BluetoothGattCharacteristicServiceProviderImpl::PrepareWriteValue(
           &BluetoothGattCharacteristicServiceProviderImpl::OnWriteValue,
           weak_ptr_factory_.GetWeakPtr(), method_call,
           std::move(split_response_sender.first)),
-      base::BindOnce(&BluetoothGattCharacteristicServiceProviderImpl::OnFailure,
-                     weak_ptr_factory_.GetWeakPtr(), method_call,
-                     std::move(split_response_sender.second)));
+      base::BindOnce(
+          &BluetoothGattCharacteristicServiceProviderImpl::OnWriteValueFailure,
+          weak_ptr_factory_.GetWeakPtr(), method_call,
+          std::move(split_response_sender.second)));
 }
 
 void BluetoothGattCharacteristicServiceProviderImpl::StartNotify(
@@ -457,6 +452,12 @@ void BluetoothGattCharacteristicServiceProviderImpl::StartNotify(
           ? device::BluetoothGattCharacteristic::NotificationType::kIndication
           : device::BluetoothGattCharacteristic::NotificationType::
                 kNotification);
+
+  // This is temporary fix to unblock b/191129417.
+  // TODO(b/191129417); Plumb the callback up to ARC++ and add unit test.
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
+  std::move(response_sender).Run(std::move(response));
 }
 
 void BluetoothGattCharacteristicServiceProviderImpl::StopNotify(
@@ -476,6 +477,12 @@ void BluetoothGattCharacteristicServiceProviderImpl::StopNotify(
 
   DCHECK(delegate_);
   delegate_->StopNotifications(device_path);
+
+  // This is temporary fix to unblock b/191129417.
+  // TODO(b/191129417); Plumb the callback up to ARC++ and add unit test.
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
+  std::move(response_sender).Run(std::move(response));
 }
 
 void BluetoothGattCharacteristicServiceProviderImpl::OnExported(
@@ -489,7 +496,16 @@ void BluetoothGattCharacteristicServiceProviderImpl::OnExported(
 void BluetoothGattCharacteristicServiceProviderImpl::OnReadValue(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender,
+    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
+  if (error_code.has_value()) {
+    DVLOG(2) << "Failed to read characteristic value. Report error.";
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, kErrorFailed, "Failed to read characteristic value."));
+    return;
+  }
+
   DVLOG(3) << "Characteristic value obtained from delegate. Responding to "
               "ReadValue.";
 
@@ -542,13 +558,13 @@ void BluetoothGattCharacteristicServiceProviderImpl::WriteProperties(
   writer->CloseContainer(&array_writer);
 }
 
-void BluetoothGattCharacteristicServiceProviderImpl::OnFailure(
+void BluetoothGattCharacteristicServiceProviderImpl::OnWriteValueFailure(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  DVLOG(2) << "Failed to get/set characteristic value. Report error.";
+  DVLOG(2) << "Failed to set characteristic value. Report error.";
   std::unique_ptr<dbus::ErrorResponse> error_response =
       dbus::ErrorResponse::FromMethodCall(
-          method_call, kErrorFailed, "Failed to get/set characteristic value.");
+          method_call, kErrorFailed, "Failed to set characteristic value.");
   std::move(response_sender).Run(std::move(error_response));
 }
 

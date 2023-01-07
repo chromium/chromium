@@ -1,21 +1,26 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 
+#include "base/notreached.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_data.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_event.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_event_pump.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/modules/permissions/permission_utils.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
@@ -23,7 +28,8 @@ namespace blink {
 
 DeviceOrientationController::DeviceOrientationController(LocalDOMWindow& window)
     : DeviceSingleWindowEventController(window),
-      Supplement<LocalDOMWindow>(window) {}
+      Supplement<LocalDOMWindow>(window),
+      permission_service_(&window) {}
 
 DeviceOrientationController::~DeviceOrientationController() = default;
 
@@ -69,6 +75,12 @@ void DeviceOrientationController::DidAddEventListener(
     return;
 
   UseCounter::Count(GetWindow(), WebFeature::kDeviceOrientationSecureOrigin);
+
+  if (!has_requested_permission_) {
+    UseCounter::Count(
+        GetWindow(),
+        WebFeature::kDeviceOrientationUsedWithoutPermissionRequest);
+  }
 
   if (!has_event_listener_) {
     if (!CheckPolicyFeatures(
@@ -135,6 +147,7 @@ void DeviceOrientationController::ClearOverride() {
 void DeviceOrientationController::Trace(Visitor* visitor) const {
   visitor->Trace(override_orientation_data_);
   visitor->Trace(orientation_event_pump_);
+  visitor->Trace(permission_service_);
   DeviceSingleWindowEventController::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
@@ -146,6 +159,45 @@ void DeviceOrientationController::RegisterWithOrientationEventPump(
         *GetWindow().GetFrame(), absolute);
   }
   orientation_event_pump_->SetController(this);
+}
+
+ScriptPromise DeviceOrientationController::RequestPermission(
+    ScriptState* script_state) {
+  ExecutionContext* context = GetSupplementable();
+  DCHECK_EQ(context, ExecutionContext::From(script_state));
+
+  has_requested_permission_ = true;
+
+  if (!permission_service_.is_bound()) {
+    ConnectToPermissionService(context,
+                               permission_service_.BindNewPipeAndPassReceiver(
+                                   context->GetTaskRunner(TaskType::kSensor)));
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  permission_service_->HasPermission(
+      CreatePermissionDescriptor(mojom::blink::PermissionName::SENSORS),
+      resolver->WrapCallbackInScriptScope(
+          WTF::BindOnce([](ScriptPromiseResolver* resolver,
+                           mojom::blink::PermissionStatus status) {
+            switch (status) {
+              case mojom::blink::PermissionStatus::GRANTED:
+              case mojom::blink::PermissionStatus::DENIED:
+                resolver->Resolve(PermissionStatusToString(status));
+                break;
+              case mojom::blink::PermissionStatus::ASK:
+                // At the moment, this state is not reachable because there
+                // is no "ask" or "prompt" state in the Chromium
+                // permissions UI for sensors, so HasPermissionStatus() will
+                // always return GRANTED or DENIED.
+                NOTREACHED();
+                break;
+            }
+          })));
+
+  return promise;
 }
 
 // static

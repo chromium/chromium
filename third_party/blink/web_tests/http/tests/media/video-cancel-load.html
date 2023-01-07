@@ -20,7 +20,7 @@ window.opener.blank();
 // Access a video element with resource loading canceled.
 // If this test is successful it will terminate with a blank page.
 // This test should finish without crashing.
-testRunner.setCanOpenWindows();
+testRunner.setPopupBlockingEnabled(false);
 testRunner.dumpAsText();
 
 var video = document.querySelector("video");

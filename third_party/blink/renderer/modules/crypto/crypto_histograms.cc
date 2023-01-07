@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,10 +48,6 @@ static WebFeature AlgorithmIdToFeature(WebCryptoAlgorithmId id) {
       return WebFeature::kCryptoAlgorithmHkdf;
     case kWebCryptoAlgorithmIdPbkdf2:
       return WebFeature::kCryptoAlgorithmPbkdf2;
-    case kWebCryptoAlgorithmIdX25519:
-      return WebFeature::kCryptoAlgorithmX25519;
-    case kWebCryptoAlgorithmIdEd25519:
-      return WebFeature::kCryptoAlgorithmEd25519;
   }
 
   NOTREACHED();
@@ -104,8 +100,6 @@ void HistogramAlgorithm(ExecutionContext* context,
     case kWebCryptoAlgorithmParamsTypeEcKeyGenParams:
     case kWebCryptoAlgorithmParamsTypeEcKeyImportParams:
     case kWebCryptoAlgorithmParamsTypeAesDerivedKeyParams:
-    case kWebCryptoAlgorithmParamsTypeEd25519Params:
-    case kWebCryptoAlgorithmParamsTypeX25519KeyDeriveParams:
       break;
   }
 }

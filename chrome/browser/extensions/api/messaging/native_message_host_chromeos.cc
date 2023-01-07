@@ -1,23 +1,22 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "extensions/browser/api/messaging/native_message_host.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/stl_util.h"
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "chrome/browser/ash/drive/drivefs_native_message_host.h"
+#include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
 #include "chrome/browser/extensions/api/messaging/native_message_built_in_host.h"
 #include "chrome/browser/extensions/api/messaging/native_message_echo_host.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/api/messaging/native_message_host.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_allowed_origins.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_chromeos.h"
 
@@ -42,16 +41,19 @@ const NativeMessageBuiltInHost kBuiltInHosts[] = {
     {arc::ArcSupportMessageHost::kHostName,
      arc::ArcSupportMessageHost::kHostOrigin, 1,
      &arc::ArcSupportMessageHost::Create},
-    {chromeos::kWilcoDtcSupportdUiMessageHost,
-     chromeos::kWilcoDtcSupportdHostOrigins,
-     chromeos::kWilcoDtcSupportdHostOriginsSize,
-     &chromeos::CreateExtensionOwnedWilcoDtcSupportdMessageHost},
+    {ash::kWilcoDtcSupportdUiMessageHost, ash::kWilcoDtcSupportdHostOrigins,
+     ash::kWilcoDtcSupportdHostOriginsSize,
+     &ash::CreateExtensionOwnedWilcoDtcSupportdMessageHost},
     {drive::kDriveFsNativeMessageHostName,
      drive::kDriveFsNativeMessageHostOrigins,
      drive::kDriveFsNativeMessageHostOriginsSize,
      &drive::CreateDriveFsNativeMessageHost},
+    {ash::guest_os::VmSKForwardingNativeMessageHost::kHostName,
+     ash::guest_os::VmSKForwardingNativeMessageHost::kOrigins,
+     ash::guest_os::VmSKForwardingNativeMessageHost::kOriginCount,
+     &ash::guest_os::VmSKForwardingNativeMessageHost::CreateFromExtension},
 };
 
-const size_t kBuiltInHostsCount = base::size(kBuiltInHosts);
+const size_t kBuiltInHostsCount = std::size(kBuiltInHosts);
 
 }  // namespace extensions

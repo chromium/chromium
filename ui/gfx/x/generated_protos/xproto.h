@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 
@@ -695,16 +695,29 @@ struct Fontable {
 };
 
 struct Char16 {
+  bool operator==(const Char16& other) const {
+    return byte1 == other.byte1 && byte2 == other.byte2;
+  }
+
   uint8_t byte1{};
   uint8_t byte2{};
 };
 
 struct Point {
+  bool operator==(const Point& other) const {
+    return x == other.x && y == other.y;
+  }
+
   int16_t x{};
   int16_t y{};
 };
 
 struct Rectangle {
+  bool operator==(const Rectangle& other) const {
+    return x == other.x && y == other.y && width == other.width &&
+           height == other.height;
+  }
+
   int16_t x{};
   int16_t y{};
   uint16_t width{};
@@ -712,6 +725,12 @@ struct Rectangle {
 };
 
 struct Arc {
+  bool operator==(const Arc& other) const {
+    return x == other.x && y == other.y && width == other.width &&
+           height == other.height && angle1 == other.angle1 &&
+           angle2 == other.angle2;
+  }
+
   int16_t x{};
   int16_t y{};
   uint16_t width{};
@@ -721,12 +740,25 @@ struct Arc {
 };
 
 struct Format {
+  bool operator==(const Format& other) const {
+    return depth == other.depth && bits_per_pixel == other.bits_per_pixel &&
+           scanline_pad == other.scanline_pad;
+  }
+
   uint8_t depth{};
   uint8_t bits_per_pixel{};
   uint8_t scanline_pad{};
 };
 
 struct VisualType {
+  bool operator==(const VisualType& other) const {
+    return visual_id == other.visual_id && c_class == other.c_class &&
+           bits_per_rgb_value == other.bits_per_rgb_value &&
+           colormap_entries == other.colormap_entries &&
+           red_mask == other.red_mask && green_mask == other.green_mask &&
+           blue_mask == other.blue_mask;
+  }
+
   VisualId visual_id{};
   VisualClass c_class{};
   uint8_t bits_per_rgb_value{};
@@ -737,11 +769,32 @@ struct VisualType {
 };
 
 struct Depth {
+  bool operator==(const Depth& other) const {
+    return depth == other.depth && visuals == other.visuals;
+  }
+
   uint8_t depth{};
   std::vector<VisualType> visuals{};
 };
 
 struct Screen {
+  bool operator==(const Screen& other) const {
+    return root == other.root && default_colormap == other.default_colormap &&
+           white_pixel == other.white_pixel &&
+           black_pixel == other.black_pixel &&
+           current_input_masks == other.current_input_masks &&
+           width_in_pixels == other.width_in_pixels &&
+           height_in_pixels == other.height_in_pixels &&
+           width_in_millimeters == other.width_in_millimeters &&
+           height_in_millimeters == other.height_in_millimeters &&
+           min_installed_maps == other.min_installed_maps &&
+           max_installed_maps == other.max_installed_maps &&
+           root_visual == other.root_visual &&
+           backing_stores == other.backing_stores &&
+           save_unders == other.save_unders && root_depth == other.root_depth &&
+           allowed_depths == other.allowed_depths;
+  }
+
   Window root{};
   ColorMap default_colormap{};
   uint32_t white_pixel{};
@@ -761,6 +814,14 @@ struct Screen {
 };
 
 struct SetupRequest {
+  bool operator==(const SetupRequest& other) const {
+    return byte_order == other.byte_order &&
+           protocol_major_version == other.protocol_major_version &&
+           protocol_minor_version == other.protocol_minor_version &&
+           authorization_protocol_name == other.authorization_protocol_name &&
+           authorization_protocol_data == other.authorization_protocol_data;
+  }
+
   uint8_t byte_order{};
   uint16_t protocol_major_version{};
   uint16_t protocol_minor_version{};
@@ -769,6 +830,13 @@ struct SetupRequest {
 };
 
 struct SetupFailed {
+  bool operator==(const SetupFailed& other) const {
+    return status == other.status &&
+           protocol_major_version == other.protocol_major_version &&
+           protocol_minor_version == other.protocol_minor_version &&
+           length == other.length && reason == other.reason;
+  }
+
   uint8_t status{};
   uint16_t protocol_major_version{};
   uint16_t protocol_minor_version{};
@@ -777,12 +845,35 @@ struct SetupFailed {
 };
 
 struct SetupAuthenticate {
+  bool operator==(const SetupAuthenticate& other) const {
+    return status == other.status && length == other.length &&
+           reason == other.reason;
+  }
+
   uint8_t status{};
   uint16_t length{};
   std::string reason{};
 };
 
 struct Setup {
+  bool operator==(const Setup& other) const {
+    return status == other.status &&
+           protocol_major_version == other.protocol_major_version &&
+           protocol_minor_version == other.protocol_minor_version &&
+           length == other.length && release_number == other.release_number &&
+           resource_id_base == other.resource_id_base &&
+           resource_id_mask == other.resource_id_mask &&
+           motion_buffer_size == other.motion_buffer_size &&
+           maximum_request_length == other.maximum_request_length &&
+           image_byte_order == other.image_byte_order &&
+           bitmap_format_bit_order == other.bitmap_format_bit_order &&
+           bitmap_format_scanline_unit == other.bitmap_format_scanline_unit &&
+           bitmap_format_scanline_pad == other.bitmap_format_scanline_pad &&
+           min_keycode == other.min_keycode &&
+           max_keycode == other.max_keycode && vendor == other.vendor &&
+           pixmap_formats == other.pixmap_formats && roots == other.roots;
+  }
+
   uint8_t status{};
   uint16_t protocol_major_version{};
   uint16_t protocol_minor_version{};
@@ -804,12 +895,11 @@ struct Setup {
 };
 
 struct KeyEvent {
-  static constexpr int type_id = 52;
+  static constexpr int type_id = 54;
   enum Opcode {
     Press = 2,
     Release = 3,
   } opcode{};
-  bool send_event{};
   KeyCode detail{};
   uint16_t sequence{};
   Time time{};
@@ -827,12 +917,11 @@ struct KeyEvent {
 };
 
 struct ButtonEvent {
-  static constexpr int type_id = 53;
+  static constexpr int type_id = 55;
   enum Opcode {
     Press = 4,
     Release = 5,
   } opcode{};
-  bool send_event{};
   Button detail{};
   uint16_t sequence{};
   Time time{};
@@ -850,9 +939,8 @@ struct ButtonEvent {
 };
 
 struct MotionNotifyEvent {
-  static constexpr int type_id = 54;
+  static constexpr int type_id = 56;
   static constexpr uint8_t opcode = 6;
-  bool send_event{};
   Motion detail{};
   uint16_t sequence{};
   Time time{};
@@ -870,12 +958,11 @@ struct MotionNotifyEvent {
 };
 
 struct CrossingEvent {
-  static constexpr int type_id = 55;
+  static constexpr int type_id = 57;
   enum Opcode {
     EnterNotify = 7,
     LeaveNotify = 8,
   } opcode{};
-  bool send_event{};
   NotifyDetail detail{};
   uint16_t sequence{};
   Time time{};
@@ -894,12 +981,11 @@ struct CrossingEvent {
 };
 
 struct FocusEvent {
-  static constexpr int type_id = 56;
+  static constexpr int type_id = 58;
   enum Opcode {
     In = 9,
     Out = 10,
   } opcode{};
-  bool send_event{};
   NotifyDetail detail{};
   uint16_t sequence{};
   Window event{};
@@ -909,18 +995,16 @@ struct FocusEvent {
 };
 
 struct KeymapNotifyEvent {
-  static constexpr int type_id = 57;
+  static constexpr int type_id = 59;
   static constexpr uint8_t opcode = 11;
-  bool send_event{};
   std::array<uint8_t, 31> keys{};
 
   x11::Window* GetWindow() { return nullptr; }
 };
 
 struct ExposeEvent {
-  static constexpr int type_id = 58;
+  static constexpr int type_id = 60;
   static constexpr uint8_t opcode = 12;
-  bool send_event{};
   uint16_t sequence{};
   Window window{};
   uint16_t x{};
@@ -933,9 +1017,8 @@ struct ExposeEvent {
 };
 
 struct GraphicsExposureEvent {
-  static constexpr int type_id = 59;
+  static constexpr int type_id = 61;
   static constexpr uint8_t opcode = 13;
-  bool send_event{};
   uint16_t sequence{};
   Drawable drawable{};
   uint16_t x{};
@@ -950,9 +1033,8 @@ struct GraphicsExposureEvent {
 };
 
 struct NoExposureEvent {
-  static constexpr int type_id = 60;
+  static constexpr int type_id = 62;
   static constexpr uint8_t opcode = 14;
-  bool send_event{};
   uint16_t sequence{};
   Drawable drawable{};
   uint16_t minor_opcode{};
@@ -962,9 +1044,8 @@ struct NoExposureEvent {
 };
 
 struct VisibilityNotifyEvent {
-  static constexpr int type_id = 61;
+  static constexpr int type_id = 63;
   static constexpr uint8_t opcode = 15;
-  bool send_event{};
   uint16_t sequence{};
   Window window{};
   Visibility state{};
@@ -973,9 +1054,8 @@ struct VisibilityNotifyEvent {
 };
 
 struct CreateNotifyEvent {
-  static constexpr int type_id = 62;
+  static constexpr int type_id = 64;
   static constexpr uint8_t opcode = 16;
-  bool send_event{};
   uint16_t sequence{};
   Window parent{};
   Window window{};
@@ -990,9 +1070,8 @@ struct CreateNotifyEvent {
 };
 
 struct DestroyNotifyEvent {
-  static constexpr int type_id = 63;
+  static constexpr int type_id = 65;
   static constexpr uint8_t opcode = 17;
-  bool send_event{};
   uint16_t sequence{};
   Window event{};
   Window window{};
@@ -1001,9 +1080,8 @@ struct DestroyNotifyEvent {
 };
 
 struct UnmapNotifyEvent {
-  static constexpr int type_id = 64;
+  static constexpr int type_id = 66;
   static constexpr uint8_t opcode = 18;
-  bool send_event{};
   uint16_t sequence{};
   Window event{};
   Window window{};
@@ -1013,9 +1091,8 @@ struct UnmapNotifyEvent {
 };
 
 struct MapNotifyEvent {
-  static constexpr int type_id = 65;
+  static constexpr int type_id = 67;
   static constexpr uint8_t opcode = 19;
-  bool send_event{};
   uint16_t sequence{};
   Window event{};
   Window window{};
@@ -1025,9 +1102,8 @@ struct MapNotifyEvent {
 };
 
 struct MapRequestEvent {
-  static constexpr int type_id = 66;
+  static constexpr int type_id = 68;
   static constexpr uint8_t opcode = 20;
-  bool send_event{};
   uint16_t sequence{};
   Window parent{};
   Window window{};
@@ -1036,9 +1112,8 @@ struct MapRequestEvent {
 };
 
 struct ReparentNotifyEvent {
-  static constexpr int type_id = 67;
+  static constexpr int type_id = 69;
   static constexpr uint8_t opcode = 21;
-  bool send_event{};
   uint16_t sequence{};
   Window event{};
   Window window{};
@@ -1051,9 +1126,8 @@ struct ReparentNotifyEvent {
 };
 
 struct ConfigureNotifyEvent {
-  static constexpr int type_id = 68;
+  static constexpr int type_id = 70;
   static constexpr uint8_t opcode = 22;
-  bool send_event{};
   uint16_t sequence{};
   Window event{};
   Window window{};
@@ -1069,9 +1143,8 @@ struct ConfigureNotifyEvent {
 };
 
 struct ConfigureRequestEvent {
-  static constexpr int type_id = 69;
+  static constexpr int type_id = 71;
   static constexpr uint8_t opcode = 23;
-  bool send_event{};
   StackMode stack_mode{};
   uint16_t sequence{};
   Window parent{};
@@ -1088,9 +1161,8 @@ struct ConfigureRequestEvent {
 };
 
 struct GravityNotifyEvent {
-  static constexpr int type_id = 70;
+  static constexpr int type_id = 72;
   static constexpr uint8_t opcode = 24;
-  bool send_event{};
   uint16_t sequence{};
   Window event{};
   Window window{};
@@ -1101,9 +1173,8 @@ struct GravityNotifyEvent {
 };
 
 struct ResizeRequestEvent {
-  static constexpr int type_id = 71;
+  static constexpr int type_id = 73;
   static constexpr uint8_t opcode = 25;
-  bool send_event{};
   uint16_t sequence{};
   Window window{};
   uint16_t width{};
@@ -1113,12 +1184,11 @@ struct ResizeRequestEvent {
 };
 
 struct CirculateEvent {
-  static constexpr int type_id = 72;
+  static constexpr int type_id = 74;
   enum Opcode {
     Notify = 26,
     Request = 27,
   } opcode{};
-  bool send_event{};
   uint16_t sequence{};
   Window event{};
   Window window{};
@@ -1128,9 +1198,8 @@ struct CirculateEvent {
 };
 
 struct PropertyNotifyEvent {
-  static constexpr int type_id = 73;
+  static constexpr int type_id = 75;
   static constexpr uint8_t opcode = 28;
-  bool send_event{};
   uint16_t sequence{};
   Window window{};
   Atom atom{};
@@ -1141,9 +1210,8 @@ struct PropertyNotifyEvent {
 };
 
 struct SelectionClearEvent {
-  static constexpr int type_id = 74;
+  static constexpr int type_id = 76;
   static constexpr uint8_t opcode = 29;
-  bool send_event{};
   uint16_t sequence{};
   Time time{};
   Window owner{};
@@ -1153,9 +1221,8 @@ struct SelectionClearEvent {
 };
 
 struct SelectionRequestEvent {
-  static constexpr int type_id = 75;
+  static constexpr int type_id = 77;
   static constexpr uint8_t opcode = 30;
-  bool send_event{};
   uint16_t sequence{};
   Time time{};
   Window owner{};
@@ -1168,9 +1235,8 @@ struct SelectionRequestEvent {
 };
 
 struct SelectionNotifyEvent {
-  static constexpr int type_id = 76;
+  static constexpr int type_id = 78;
   static constexpr uint8_t opcode = 31;
-  bool send_event{};
   uint16_t sequence{};
   Time time{};
   Window requestor{};
@@ -1184,9 +1250,8 @@ struct SelectionNotifyEvent {
 };
 
 struct ColormapNotifyEvent {
-  static constexpr int type_id = 77;
+  static constexpr int type_id = 79;
   static constexpr uint8_t opcode = 32;
-  bool send_event{};
   uint16_t sequence{};
   Window window{};
   ColorMap colormap{};
@@ -1206,9 +1271,8 @@ union ClientMessageData {
 static_assert(std::is_trivially_copyable<ClientMessageData>::value, "");
 
 struct ClientMessageEvent {
-  static constexpr int type_id = 78;
+  static constexpr int type_id = 80;
   static constexpr uint8_t opcode = 33;
-  bool send_event{};
   uint8_t format{};
   uint16_t sequence{};
   Window window{};
@@ -1219,9 +1283,8 @@ struct ClientMessageEvent {
 };
 
 struct MappingNotifyEvent {
-  static constexpr int type_id = 79;
+  static constexpr int type_id = 81;
   static constexpr uint8_t opcode = 34;
-  bool send_event{};
   uint16_t sequence{};
   Mapping request{};
   KeyCode first_keycode{};
@@ -1231,9 +1294,8 @@ struct MappingNotifyEvent {
 };
 
 struct GeGenericEvent {
-  static constexpr int type_id = 80;
+  static constexpr int type_id = 82;
   static constexpr uint8_t opcode = 35;
-  bool send_event{};
   uint16_t sequence{};
 
   x11::Window* GetWindow() { return nullptr; }
@@ -1393,17 +1455,32 @@ struct ImplementationError : public x11::Error {
 };
 
 struct TimeCoord {
+  bool operator==(const TimeCoord& other) const {
+    return time == other.time && x == other.x && y == other.y;
+  }
+
   Time time{};
   int16_t x{};
   int16_t y{};
 };
 
 struct FontProperty {
+  bool operator==(const FontProperty& other) const {
+    return name == other.name && value == other.value;
+  }
+
   Atom name{};
   uint32_t value{};
 };
 
 struct CharInfo {
+  bool operator==(const CharInfo& other) const {
+    return left_side_bearing == other.left_side_bearing &&
+           right_side_bearing == other.right_side_bearing &&
+           character_width == other.character_width && ascent == other.ascent &&
+           descent == other.descent && attributes == other.attributes;
+  }
+
   int16_t left_side_bearing{};
   int16_t right_side_bearing{};
   int16_t character_width{};
@@ -1413,10 +1490,16 @@ struct CharInfo {
 };
 
 struct Str {
+  bool operator==(const Str& other) const { return name == other.name; }
+
   std::string name{};
 };
 
 struct Segment {
+  bool operator==(const Segment& other) const {
+    return x1 == other.x1 && y1 == other.y1 && x2 == other.x2 && y2 == other.y2;
+  }
+
   int16_t x1{};
   int16_t y1{};
   int16_t x2{};
@@ -1424,6 +1507,11 @@ struct Segment {
 };
 
 struct ColorItem {
+  bool operator==(const ColorItem& other) const {
+    return pixel == other.pixel && red == other.red && green == other.green &&
+           blue == other.blue && flags == other.flags;
+  }
+
   uint32_t pixel{};
   uint16_t red{};
   uint16_t green{};
@@ -1432,12 +1520,20 @@ struct ColorItem {
 };
 
 struct Rgb {
+  bool operator==(const Rgb& other) const {
+    return red == other.red && green == other.green && blue == other.blue;
+  }
+
   uint16_t red{};
   uint16_t green{};
   uint16_t blue{};
 };
 
 struct Host {
+  bool operator==(const Host& other) const {
+    return family == other.family && address == other.address;
+  }
+
   Family family{};
   std::vector<uint8_t> address{};
 };
@@ -1453,42 +1549,42 @@ struct CreateWindowRequest {
   uint16_t border_width{};
   WindowClass c_class{};
   VisualId visual{};
-  base::Optional<Pixmap> background_pixmap{};
-  base::Optional<uint32_t> background_pixel{};
-  base::Optional<Pixmap> border_pixmap{};
-  base::Optional<uint32_t> border_pixel{};
-  base::Optional<Gravity> bit_gravity{};
-  base::Optional<Gravity> win_gravity{};
-  base::Optional<BackingStore> backing_store{};
-  base::Optional<uint32_t> backing_planes{};
-  base::Optional<uint32_t> backing_pixel{};
-  base::Optional<Bool32> override_redirect{};
-  base::Optional<Bool32> save_under{};
-  base::Optional<EventMask> event_mask{};
-  base::Optional<EventMask> do_not_propogate_mask{};
-  base::Optional<ColorMap> colormap{};
-  base::Optional<Cursor> cursor{};
+  absl::optional<Pixmap> background_pixmap{};
+  absl::optional<uint32_t> background_pixel{};
+  absl::optional<Pixmap> border_pixmap{};
+  absl::optional<uint32_t> border_pixel{};
+  absl::optional<Gravity> bit_gravity{};
+  absl::optional<Gravity> win_gravity{};
+  absl::optional<BackingStore> backing_store{};
+  absl::optional<uint32_t> backing_planes{};
+  absl::optional<uint32_t> backing_pixel{};
+  absl::optional<Bool32> override_redirect{};
+  absl::optional<Bool32> save_under{};
+  absl::optional<EventMask> event_mask{};
+  absl::optional<EventMask> do_not_propogate_mask{};
+  absl::optional<ColorMap> colormap{};
+  absl::optional<Cursor> cursor{};
 };
 
 using CreateWindowResponse = Response<void>;
 
 struct ChangeWindowAttributesRequest {
   Window window{};
-  base::Optional<Pixmap> background_pixmap{};
-  base::Optional<uint32_t> background_pixel{};
-  base::Optional<Pixmap> border_pixmap{};
-  base::Optional<uint32_t> border_pixel{};
-  base::Optional<Gravity> bit_gravity{};
-  base::Optional<Gravity> win_gravity{};
-  base::Optional<BackingStore> backing_store{};
-  base::Optional<uint32_t> backing_planes{};
-  base::Optional<uint32_t> backing_pixel{};
-  base::Optional<Bool32> override_redirect{};
-  base::Optional<Bool32> save_under{};
-  base::Optional<EventMask> event_mask{};
-  base::Optional<EventMask> do_not_propogate_mask{};
-  base::Optional<ColorMap> colormap{};
-  base::Optional<Cursor> cursor{};
+  absl::optional<Pixmap> background_pixmap{};
+  absl::optional<uint32_t> background_pixel{};
+  absl::optional<Pixmap> border_pixmap{};
+  absl::optional<uint32_t> border_pixel{};
+  absl::optional<Gravity> bit_gravity{};
+  absl::optional<Gravity> win_gravity{};
+  absl::optional<BackingStore> backing_store{};
+  absl::optional<uint32_t> backing_planes{};
+  absl::optional<uint32_t> backing_pixel{};
+  absl::optional<Bool32> override_redirect{};
+  absl::optional<Bool32> save_under{};
+  absl::optional<EventMask> event_mask{};
+  absl::optional<EventMask> do_not_propogate_mask{};
+  absl::optional<ColorMap> colormap{};
+  absl::optional<Cursor> cursor{};
 };
 
 using ChangeWindowAttributesResponse = Response<void>;
@@ -1572,13 +1668,13 @@ using UnmapSubwindowsResponse = Response<void>;
 
 struct ConfigureWindowRequest {
   Window window{};
-  base::Optional<int32_t> x{};
-  base::Optional<int32_t> y{};
-  base::Optional<uint32_t> width{};
-  base::Optional<uint32_t> height{};
-  base::Optional<uint32_t> border_width{};
-  base::Optional<Window> sibling{};
-  base::Optional<StackMode> stack_mode{};
+  absl::optional<int32_t> x{};
+  absl::optional<int32_t> y{};
+  absl::optional<uint32_t> width{};
+  absl::optional<uint32_t> height{};
+  absl::optional<uint32_t> border_width{};
+  absl::optional<Window> sibling{};
+  absl::optional<StackMode> stack_mode{};
 };
 
 using ConfigureWindowResponse = Response<void>;
@@ -2054,58 +2150,58 @@ using FreePixmapResponse = Response<void>;
 struct CreateGCRequest {
   GraphicsContext cid{};
   Drawable drawable{};
-  base::Optional<Gx> function{};
-  base::Optional<uint32_t> plane_mask{};
-  base::Optional<uint32_t> foreground{};
-  base::Optional<uint32_t> background{};
-  base::Optional<uint32_t> line_width{};
-  base::Optional<LineStyle> line_style{};
-  base::Optional<CapStyle> cap_style{};
-  base::Optional<JoinStyle> join_style{};
-  base::Optional<FillStyle> fill_style{};
-  base::Optional<FillRule> fill_rule{};
-  base::Optional<Pixmap> tile{};
-  base::Optional<Pixmap> stipple{};
-  base::Optional<int32_t> tile_stipple_x_origin{};
-  base::Optional<int32_t> tile_stipple_y_origin{};
-  base::Optional<Font> font{};
-  base::Optional<SubwindowMode> subwindow_mode{};
-  base::Optional<Bool32> graphics_exposures{};
-  base::Optional<int32_t> clip_x_origin{};
-  base::Optional<int32_t> clip_y_origin{};
-  base::Optional<Pixmap> clip_mask{};
-  base::Optional<uint32_t> dash_offset{};
-  base::Optional<uint32_t> dashes{};
-  base::Optional<ArcMode> arc_mode{};
+  absl::optional<Gx> function{};
+  absl::optional<uint32_t> plane_mask{};
+  absl::optional<uint32_t> foreground{};
+  absl::optional<uint32_t> background{};
+  absl::optional<uint32_t> line_width{};
+  absl::optional<LineStyle> line_style{};
+  absl::optional<CapStyle> cap_style{};
+  absl::optional<JoinStyle> join_style{};
+  absl::optional<FillStyle> fill_style{};
+  absl::optional<FillRule> fill_rule{};
+  absl::optional<Pixmap> tile{};
+  absl::optional<Pixmap> stipple{};
+  absl::optional<int32_t> tile_stipple_x_origin{};
+  absl::optional<int32_t> tile_stipple_y_origin{};
+  absl::optional<Font> font{};
+  absl::optional<SubwindowMode> subwindow_mode{};
+  absl::optional<Bool32> graphics_exposures{};
+  absl::optional<int32_t> clip_x_origin{};
+  absl::optional<int32_t> clip_y_origin{};
+  absl::optional<Pixmap> clip_mask{};
+  absl::optional<uint32_t> dash_offset{};
+  absl::optional<uint32_t> dashes{};
+  absl::optional<ArcMode> arc_mode{};
 };
 
 using CreateGCResponse = Response<void>;
 
 struct ChangeGCRequest {
   GraphicsContext gc{};
-  base::Optional<Gx> function{};
-  base::Optional<uint32_t> plane_mask{};
-  base::Optional<uint32_t> foreground{};
-  base::Optional<uint32_t> background{};
-  base::Optional<uint32_t> line_width{};
-  base::Optional<LineStyle> line_style{};
-  base::Optional<CapStyle> cap_style{};
-  base::Optional<JoinStyle> join_style{};
-  base::Optional<FillStyle> fill_style{};
-  base::Optional<FillRule> fill_rule{};
-  base::Optional<Pixmap> tile{};
-  base::Optional<Pixmap> stipple{};
-  base::Optional<int32_t> tile_stipple_x_origin{};
-  base::Optional<int32_t> tile_stipple_y_origin{};
-  base::Optional<Font> font{};
-  base::Optional<SubwindowMode> subwindow_mode{};
-  base::Optional<Bool32> graphics_exposures{};
-  base::Optional<int32_t> clip_x_origin{};
-  base::Optional<int32_t> clip_y_origin{};
-  base::Optional<Pixmap> clip_mask{};
-  base::Optional<uint32_t> dash_offset{};
-  base::Optional<uint32_t> dashes{};
-  base::Optional<ArcMode> arc_mode{};
+  absl::optional<Gx> function{};
+  absl::optional<uint32_t> plane_mask{};
+  absl::optional<uint32_t> foreground{};
+  absl::optional<uint32_t> background{};
+  absl::optional<uint32_t> line_width{};
+  absl::optional<LineStyle> line_style{};
+  absl::optional<CapStyle> cap_style{};
+  absl::optional<JoinStyle> join_style{};
+  absl::optional<FillStyle> fill_style{};
+  absl::optional<FillRule> fill_rule{};
+  absl::optional<Pixmap> tile{};
+  absl::optional<Pixmap> stipple{};
+  absl::optional<int32_t> tile_stipple_x_origin{};
+  absl::optional<int32_t> tile_stipple_y_origin{};
+  absl::optional<Font> font{};
+  absl::optional<SubwindowMode> subwindow_mode{};
+  absl::optional<Bool32> graphics_exposures{};
+  absl::optional<int32_t> clip_x_origin{};
+  absl::optional<int32_t> clip_y_origin{};
+  absl::optional<Pixmap> clip_mask{};
+  absl::optional<uint32_t> dash_offset{};
+  absl::optional<uint32_t> dashes{};
+  absl::optional<ArcMode> arc_mode{};
 };
 
 using ChangeGCResponse = Response<void>;
@@ -2602,14 +2698,14 @@ struct GetKeyboardMappingReply {
 using GetKeyboardMappingResponse = Response<GetKeyboardMappingReply>;
 
 struct ChangeKeyboardControlRequest {
-  base::Optional<int32_t> key_click_percent{};
-  base::Optional<int32_t> bell_percent{};
-  base::Optional<int32_t> bell_pitch{};
-  base::Optional<int32_t> bell_duration{};
-  base::Optional<uint32_t> led{};
-  base::Optional<LedMode> led_mode{};
-  base::Optional<KeyCode32> key{};
-  base::Optional<AutoRepeatMode> auto_repeat_mode{};
+  absl::optional<int32_t> key_click_percent{};
+  absl::optional<int32_t> bell_percent{};
+  absl::optional<int32_t> bell_pitch{};
+  absl::optional<int32_t> bell_duration{};
+  absl::optional<uint32_t> led{};
+  absl::optional<LedMode> led_mode{};
+  absl::optional<KeyCode32> key{};
+  absl::optional<AutoRepeatMode> auto_repeat_mode{};
 };
 
 using ChangeKeyboardControlResponse = Response<void>;
@@ -2792,42 +2888,42 @@ class COMPONENT_EXPORT(X11) XProto {
       const uint16_t& border_width = {},
       const WindowClass& c_class = {},
       const VisualId& visual = {},
-      const base::Optional<Pixmap>& background_pixmap = base::nullopt,
-      const base::Optional<uint32_t>& background_pixel = base::nullopt,
-      const base::Optional<Pixmap>& border_pixmap = base::nullopt,
-      const base::Optional<uint32_t>& border_pixel = base::nullopt,
-      const base::Optional<Gravity>& bit_gravity = base::nullopt,
-      const base::Optional<Gravity>& win_gravity = base::nullopt,
-      const base::Optional<BackingStore>& backing_store = base::nullopt,
-      const base::Optional<uint32_t>& backing_planes = base::nullopt,
-      const base::Optional<uint32_t>& backing_pixel = base::nullopt,
-      const base::Optional<Bool32>& override_redirect = base::nullopt,
-      const base::Optional<Bool32>& save_under = base::nullopt,
-      const base::Optional<EventMask>& event_mask = base::nullopt,
-      const base::Optional<EventMask>& do_not_propogate_mask = base::nullopt,
-      const base::Optional<ColorMap>& colormap = base::nullopt,
-      const base::Optional<Cursor>& cursor = base::nullopt);
+      const absl::optional<Pixmap>& background_pixmap = absl::nullopt,
+      const absl::optional<uint32_t>& background_pixel = absl::nullopt,
+      const absl::optional<Pixmap>& border_pixmap = absl::nullopt,
+      const absl::optional<uint32_t>& border_pixel = absl::nullopt,
+      const absl::optional<Gravity>& bit_gravity = absl::nullopt,
+      const absl::optional<Gravity>& win_gravity = absl::nullopt,
+      const absl::optional<BackingStore>& backing_store = absl::nullopt,
+      const absl::optional<uint32_t>& backing_planes = absl::nullopt,
+      const absl::optional<uint32_t>& backing_pixel = absl::nullopt,
+      const absl::optional<Bool32>& override_redirect = absl::nullopt,
+      const absl::optional<Bool32>& save_under = absl::nullopt,
+      const absl::optional<EventMask>& event_mask = absl::nullopt,
+      const absl::optional<EventMask>& do_not_propogate_mask = absl::nullopt,
+      const absl::optional<ColorMap>& colormap = absl::nullopt,
+      const absl::optional<Cursor>& cursor = absl::nullopt);
 
   Future<void> ChangeWindowAttributes(
       const ChangeWindowAttributesRequest& request);
 
   Future<void> ChangeWindowAttributes(
       const Window& window = {},
-      const base::Optional<Pixmap>& background_pixmap = base::nullopt,
-      const base::Optional<uint32_t>& background_pixel = base::nullopt,
-      const base::Optional<Pixmap>& border_pixmap = base::nullopt,
-      const base::Optional<uint32_t>& border_pixel = base::nullopt,
-      const base::Optional<Gravity>& bit_gravity = base::nullopt,
-      const base::Optional<Gravity>& win_gravity = base::nullopt,
-      const base::Optional<BackingStore>& backing_store = base::nullopt,
-      const base::Optional<uint32_t>& backing_planes = base::nullopt,
-      const base::Optional<uint32_t>& backing_pixel = base::nullopt,
-      const base::Optional<Bool32>& override_redirect = base::nullopt,
-      const base::Optional<Bool32>& save_under = base::nullopt,
-      const base::Optional<EventMask>& event_mask = base::nullopt,
-      const base::Optional<EventMask>& do_not_propogate_mask = base::nullopt,
-      const base::Optional<ColorMap>& colormap = base::nullopt,
-      const base::Optional<Cursor>& cursor = base::nullopt);
+      const absl::optional<Pixmap>& background_pixmap = absl::nullopt,
+      const absl::optional<uint32_t>& background_pixel = absl::nullopt,
+      const absl::optional<Pixmap>& border_pixmap = absl::nullopt,
+      const absl::optional<uint32_t>& border_pixel = absl::nullopt,
+      const absl::optional<Gravity>& bit_gravity = absl::nullopt,
+      const absl::optional<Gravity>& win_gravity = absl::nullopt,
+      const absl::optional<BackingStore>& backing_store = absl::nullopt,
+      const absl::optional<uint32_t>& backing_planes = absl::nullopt,
+      const absl::optional<uint32_t>& backing_pixel = absl::nullopt,
+      const absl::optional<Bool32>& override_redirect = absl::nullopt,
+      const absl::optional<Bool32>& save_under = absl::nullopt,
+      const absl::optional<EventMask>& event_mask = absl::nullopt,
+      const absl::optional<EventMask>& do_not_propogate_mask = absl::nullopt,
+      const absl::optional<ColorMap>& colormap = absl::nullopt,
+      const absl::optional<Cursor>& cursor = absl::nullopt);
 
   Future<GetWindowAttributesReply> GetWindowAttributes(
       const GetWindowAttributesRequest& request);
@@ -2875,13 +2971,13 @@ class COMPONENT_EXPORT(X11) XProto {
 
   Future<void> ConfigureWindow(
       const Window& window = {},
-      const base::Optional<int32_t>& x = base::nullopt,
-      const base::Optional<int32_t>& y = base::nullopt,
-      const base::Optional<uint32_t>& width = base::nullopt,
-      const base::Optional<uint32_t>& height = base::nullopt,
-      const base::Optional<uint32_t>& border_width = base::nullopt,
-      const base::Optional<Window>& sibling = base::nullopt,
-      const base::Optional<StackMode>& stack_mode = base::nullopt);
+      const absl::optional<int32_t>& x = absl::nullopt,
+      const absl::optional<int32_t>& y = absl::nullopt,
+      const absl::optional<uint32_t>& width = absl::nullopt,
+      const absl::optional<uint32_t>& height = absl::nullopt,
+      const absl::optional<uint32_t>& border_width = absl::nullopt,
+      const absl::optional<Window>& sibling = absl::nullopt,
+      const absl::optional<StackMode>& stack_mode = absl::nullopt);
 
   Future<void> CirculateWindow(const CirculateWindowRequest& request);
 
@@ -3141,57 +3237,57 @@ class COMPONENT_EXPORT(X11) XProto {
   Future<void> CreateGC(
       const GraphicsContext& cid = {},
       const Drawable& drawable = {},
-      const base::Optional<Gx>& function = base::nullopt,
-      const base::Optional<uint32_t>& plane_mask = base::nullopt,
-      const base::Optional<uint32_t>& foreground = base::nullopt,
-      const base::Optional<uint32_t>& background = base::nullopt,
-      const base::Optional<uint32_t>& line_width = base::nullopt,
-      const base::Optional<LineStyle>& line_style = base::nullopt,
-      const base::Optional<CapStyle>& cap_style = base::nullopt,
-      const base::Optional<JoinStyle>& join_style = base::nullopt,
-      const base::Optional<FillStyle>& fill_style = base::nullopt,
-      const base::Optional<FillRule>& fill_rule = base::nullopt,
-      const base::Optional<Pixmap>& tile = base::nullopt,
-      const base::Optional<Pixmap>& stipple = base::nullopt,
-      const base::Optional<int32_t>& tile_stipple_x_origin = base::nullopt,
-      const base::Optional<int32_t>& tile_stipple_y_origin = base::nullopt,
-      const base::Optional<Font>& font = base::nullopt,
-      const base::Optional<SubwindowMode>& subwindow_mode = base::nullopt,
-      const base::Optional<Bool32>& graphics_exposures = base::nullopt,
-      const base::Optional<int32_t>& clip_x_origin = base::nullopt,
-      const base::Optional<int32_t>& clip_y_origin = base::nullopt,
-      const base::Optional<Pixmap>& clip_mask = base::nullopt,
-      const base::Optional<uint32_t>& dash_offset = base::nullopt,
-      const base::Optional<uint32_t>& dashes = base::nullopt,
-      const base::Optional<ArcMode>& arc_mode = base::nullopt);
+      const absl::optional<Gx>& function = absl::nullopt,
+      const absl::optional<uint32_t>& plane_mask = absl::nullopt,
+      const absl::optional<uint32_t>& foreground = absl::nullopt,
+      const absl::optional<uint32_t>& background = absl::nullopt,
+      const absl::optional<uint32_t>& line_width = absl::nullopt,
+      const absl::optional<LineStyle>& line_style = absl::nullopt,
+      const absl::optional<CapStyle>& cap_style = absl::nullopt,
+      const absl::optional<JoinStyle>& join_style = absl::nullopt,
+      const absl::optional<FillStyle>& fill_style = absl::nullopt,
+      const absl::optional<FillRule>& fill_rule = absl::nullopt,
+      const absl::optional<Pixmap>& tile = absl::nullopt,
+      const absl::optional<Pixmap>& stipple = absl::nullopt,
+      const absl::optional<int32_t>& tile_stipple_x_origin = absl::nullopt,
+      const absl::optional<int32_t>& tile_stipple_y_origin = absl::nullopt,
+      const absl::optional<Font>& font = absl::nullopt,
+      const absl::optional<SubwindowMode>& subwindow_mode = absl::nullopt,
+      const absl::optional<Bool32>& graphics_exposures = absl::nullopt,
+      const absl::optional<int32_t>& clip_x_origin = absl::nullopt,
+      const absl::optional<int32_t>& clip_y_origin = absl::nullopt,
+      const absl::optional<Pixmap>& clip_mask = absl::nullopt,
+      const absl::optional<uint32_t>& dash_offset = absl::nullopt,
+      const absl::optional<uint32_t>& dashes = absl::nullopt,
+      const absl::optional<ArcMode>& arc_mode = absl::nullopt);
 
   Future<void> ChangeGC(const ChangeGCRequest& request);
 
   Future<void> ChangeGC(
       const GraphicsContext& gc = {},
-      const base::Optional<Gx>& function = base::nullopt,
-      const base::Optional<uint32_t>& plane_mask = base::nullopt,
-      const base::Optional<uint32_t>& foreground = base::nullopt,
-      const base::Optional<uint32_t>& background = base::nullopt,
-      const base::Optional<uint32_t>& line_width = base::nullopt,
-      const base::Optional<LineStyle>& line_style = base::nullopt,
-      const base::Optional<CapStyle>& cap_style = base::nullopt,
-      const base::Optional<JoinStyle>& join_style = base::nullopt,
-      const base::Optional<FillStyle>& fill_style = base::nullopt,
-      const base::Optional<FillRule>& fill_rule = base::nullopt,
-      const base::Optional<Pixmap>& tile = base::nullopt,
-      const base::Optional<Pixmap>& stipple = base::nullopt,
-      const base::Optional<int32_t>& tile_stipple_x_origin = base::nullopt,
-      const base::Optional<int32_t>& tile_stipple_y_origin = base::nullopt,
-      const base::Optional<Font>& font = base::nullopt,
-      const base::Optional<SubwindowMode>& subwindow_mode = base::nullopt,
-      const base::Optional<Bool32>& graphics_exposures = base::nullopt,
-      const base::Optional<int32_t>& clip_x_origin = base::nullopt,
-      const base::Optional<int32_t>& clip_y_origin = base::nullopt,
-      const base::Optional<Pixmap>& clip_mask = base::nullopt,
-      const base::Optional<uint32_t>& dash_offset = base::nullopt,
-      const base::Optional<uint32_t>& dashes = base::nullopt,
-      const base::Optional<ArcMode>& arc_mode = base::nullopt);
+      const absl::optional<Gx>& function = absl::nullopt,
+      const absl::optional<uint32_t>& plane_mask = absl::nullopt,
+      const absl::optional<uint32_t>& foreground = absl::nullopt,
+      const absl::optional<uint32_t>& background = absl::nullopt,
+      const absl::optional<uint32_t>& line_width = absl::nullopt,
+      const absl::optional<LineStyle>& line_style = absl::nullopt,
+      const absl::optional<CapStyle>& cap_style = absl::nullopt,
+      const absl::optional<JoinStyle>& join_style = absl::nullopt,
+      const absl::optional<FillStyle>& fill_style = absl::nullopt,
+      const absl::optional<FillRule>& fill_rule = absl::nullopt,
+      const absl::optional<Pixmap>& tile = absl::nullopt,
+      const absl::optional<Pixmap>& stipple = absl::nullopt,
+      const absl::optional<int32_t>& tile_stipple_x_origin = absl::nullopt,
+      const absl::optional<int32_t>& tile_stipple_y_origin = absl::nullopt,
+      const absl::optional<Font>& font = absl::nullopt,
+      const absl::optional<SubwindowMode>& subwindow_mode = absl::nullopt,
+      const absl::optional<Bool32>& graphics_exposures = absl::nullopt,
+      const absl::optional<int32_t>& clip_x_origin = absl::nullopt,
+      const absl::optional<int32_t>& clip_y_origin = absl::nullopt,
+      const absl::optional<Pixmap>& clip_mask = absl::nullopt,
+      const absl::optional<uint32_t>& dash_offset = absl::nullopt,
+      const absl::optional<uint32_t>& dashes = absl::nullopt,
+      const absl::optional<ArcMode>& arc_mode = absl::nullopt);
 
   Future<void> CopyGC(const CopyGCRequest& request);
 
@@ -3526,14 +3622,14 @@ class COMPONENT_EXPORT(X11) XProto {
       const ChangeKeyboardControlRequest& request);
 
   Future<void> ChangeKeyboardControl(
-      const base::Optional<int32_t>& key_click_percent = base::nullopt,
-      const base::Optional<int32_t>& bell_percent = base::nullopt,
-      const base::Optional<int32_t>& bell_pitch = base::nullopt,
-      const base::Optional<int32_t>& bell_duration = base::nullopt,
-      const base::Optional<uint32_t>& led = base::nullopt,
-      const base::Optional<LedMode>& led_mode = base::nullopt,
-      const base::Optional<KeyCode32>& key = base::nullopt,
-      const base::Optional<AutoRepeatMode>& auto_repeat_mode = base::nullopt);
+      const absl::optional<int32_t>& key_click_percent = absl::nullopt,
+      const absl::optional<int32_t>& bell_percent = absl::nullopt,
+      const absl::optional<int32_t>& bell_pitch = absl::nullopt,
+      const absl::optional<int32_t>& bell_duration = absl::nullopt,
+      const absl::optional<uint32_t>& led = absl::nullopt,
+      const absl::optional<LedMode>& led_mode = absl::nullopt,
+      const absl::optional<KeyCode32>& key = absl::nullopt,
+      const absl::optional<AutoRepeatMode>& auto_repeat_mode = absl::nullopt);
 
   Future<GetKeyboardControlReply> GetKeyboardControl(
       const GetKeyboardControlRequest& request);

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,20 @@
 namespace blink {
 namespace scheduler {
 
-class FakePageScheduler final : public PageScheduler {
+class FakePageScheduler : public PageScheduler {
  public:
   FakePageScheduler(bool is_audio_playing, bool is_throttling_exempt)
       : is_audio_playing_(is_audio_playing),
         is_throttling_exempt_(is_throttling_exempt),
         agent_group_scheduler_(WebAgentGroupScheduler::CreateForTesting()) {}
+  FakePageScheduler(const FakePageScheduler&) = delete;
+  FakePageScheduler& operator=(const FakePageScheduler&) = delete;
 
   class Builder {
    public:
     Builder() = default;
+    Builder(const Builder&) = delete;
+    Builder& operator=(const Builder&) = delete;
 
     Builder& SetIsAudioPlaying(bool is_audio_playing) {
       is_audio_playing_ = is_audio_playing;
@@ -40,8 +44,6 @@ class FakePageScheduler final : public PageScheduler {
    private:
     bool is_audio_playing_ = false;
     bool is_throttling_exempt_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Builder);
   };
 
   bool IsAudioPlaying() const override { return is_audio_playing_; }
@@ -55,27 +57,15 @@ class FakePageScheduler final : public PageScheduler {
   void SetPageVisible(bool is_page_visible) override {}
   void SetPageFrozen(bool is_page_frozen) override {}
   void SetPageBackForwardCached(bool) override {}
-  void OnFocusChanged(bool focused) override {}
-  void SetKeepActive(bool keep_active) override {}
   bool IsMainFrameLocal() const override { return true; }
   void SetIsMainFrameLocal(bool is_local) override {}
-  void OnLocalMainFrameNetworkAlmostIdle() override {}
 
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
-      BlameContext* blame_context,
+      bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType frame_type) override {
     return nullptr;
   }
-  base::TimeTicks EnableVirtualTime() override { return base::TimeTicks(); }
-  void DisableVirtualTimeForTesting() override {}
-  bool VirtualTimeAllowedToAdvance() const override { return false; }
-  void SetVirtualTimePolicy(VirtualTimePolicy policy) override {}
-  void SetInitialVirtualTime(base::Time time) override {}
-  void SetInitialVirtualTimeOffset(base::TimeDelta offset) override {}
-  void GrantVirtualTimeBudget(base::TimeDelta budget,
-                              base::OnceClosure callback) override {}
-  void SetMaxVirtualTimeTaskStarvationCount(int count) override {}
   void AudioStateChanged(bool is_audio_playing) override {}
   bool OptedOutFromAggressiveThrottlingForTest() const override {
     return false;
@@ -83,22 +73,20 @@ class FakePageScheduler final : public PageScheduler {
   bool RequestBeginMainFrameNotExpected(bool new_state) override {
     return false;
   }
-  WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
-      const String& name,
-      WebScopedVirtualTimePauser::VirtualTaskDuration) override {
-    return WebScopedVirtualTimePauser();
-  }
   scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() override {
     return *agent_group_scheduler_;
   }
+  VirtualTimeController* GetVirtualTimeController() override { return nullptr; }
   bool IsInBackForwardCache() const override { return false; }
+
+  scoped_refptr<WidgetScheduler> CreateWidgetScheduler() override {
+    return nullptr;
+  }
 
  private:
   bool is_audio_playing_;
   bool is_throttling_exempt_;
   std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePageScheduler);
 };
 
 }  // namespace scheduler

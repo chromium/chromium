@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Contains application code for the XPC demo.
@@ -29,13 +21,17 @@ goog.require('goog.log');
 goog.require('goog.log.Level');
 goog.require('goog.net.xpc.CfgFields');
 goog.require('goog.net.xpc.CrossPageChannel');
-
+goog.requireType('goog.events.BrowserEvent');
 
 /**
  * Global function to kick off initialization in the containing document.
  */
 goog.global.initOuter = function() {
-  goog.events.listen(window, 'load', function() { xpcdemo.initOuter(); });
+  'use strict';
+  goog.events.listen(window, 'load', function() {
+    'use strict';
+    xpcdemo.initOuter();
+  });
 };
 
 
@@ -43,7 +39,11 @@ goog.global.initOuter = function() {
  * Global function to kick off initialization in the iframe.
  */
 goog.global.initInner = function() {
-  goog.events.listen(window, 'load', function() { xpcdemo.initInner(); });
+  'use strict';
+  goog.events.listen(window, 'load', function() {
+    'use strict';
+    xpcdemo.initInner();
+  });
 };
 
 
@@ -51,6 +51,7 @@ goog.global.initInner = function() {
  * Initializes XPC in the containing page.
  */
 xpcdemo.initOuter = function() {
+  'use strict';
   // Build the configuration object.
   var cfg = {};
 
@@ -116,6 +117,7 @@ xpcdemo.initOuter = function() {
  * Initialization in the iframe.
  */
 xpcdemo.initInner = function() {
+  'use strict';
   // Get the channel configuration passed by the containing document.
   var cfg = JSON.parse(
       (new goog.Uri(window.location.href)).getParameterValue('xpc') || '');
@@ -133,11 +135,13 @@ xpcdemo.initInner = function() {
  * @private
  */
 xpcdemo.initCommon_ = function() {
+  'use strict';
   var xpcLogger = goog.log.getLogger(
-      'goog.net.xpc', window.location.href.match(/verbose/) ?
-          goog.log.Level.ALL :
-          goog.log.Level.INFO);
+      'goog.net.xpc',
+      window.location.href.match(/verbose/) ? goog.log.Level.ALL :
+                                              goog.log.Level.INFO);
   goog.log.addHandler(xpcLogger, function(logRecord) {
+    'use strict';
     xpcdemo.log('[XPC] ' + logRecord.getMessage());
   });
 
@@ -158,6 +162,7 @@ xpcdemo.initCommon_ = function() {
 
   // Connect the channel.
   xpcdemo.channel.connect(function() {
+    'use strict';
     xpcdemo.channel.send('log', 'Hi from ' + window.location.host);
     goog.events.listen(
         goog.dom.getElement('clickfwd'), 'click', xpcdemo.mouseEventHandler_);
@@ -169,6 +174,7 @@ xpcdemo.initCommon_ = function() {
  * Kills the peer iframe and the disposes the channel.
  */
 xpcdemo.teardown = function() {
+  'use strict';
   goog.events.unlisten(
       goog.dom.getElement('clickfwd'), goog.events.EventType.CLICK,
       xpcdemo.mouseEventHandler_);
@@ -189,6 +195,7 @@ xpcdemo.teardown = function() {
  * @param {string} msgString The log-message.
  */
 xpcdemo.log = function(msgString) {
+  'use strict';
   xpcdemo.consoleElm || (xpcdemo.consoleElm = goog.dom.getElement('console'));
   var msgElm = goog.html.SafeHtml.create(
       goog.dom.TagName.DIV, {}, goog.html.SafeHtml.htmlEscape(msgString));
@@ -200,8 +207,9 @@ xpcdemo.log = function(msgString) {
  * Sends a ping request to the peer.
  */
 xpcdemo.ping = function() {
+  'use strict';
   // send current time
-  xpcdemo.channel.send('ping', goog.now() + '');
+  xpcdemo.channel.send('ping', Date.now() + '');
 };
 
 
@@ -212,10 +220,11 @@ xpcdemo.ping = function() {
  * @private
  */
 xpcdemo.pingHandler_ = function(payload) {
+  'use strict';
   // is the incoming message a response to a ping we sent?
   if (payload.charAt(0) == '#') {
     // calculate roundtrip time and log
-    var dt = goog.now() - parseInt(payload.substring(1), 10);
+    var dt = Date.now() - parseInt(payload.substring(1), 10);
     xpcdemo.log('roundtrip: ' + dt + 'ms');
   } else {
     // incoming message is a ping initiated from peer
@@ -247,9 +256,10 @@ xpcdemo.mmLastRateOutput_ = 0;
  * sends them over the channel.
  */
 xpcdemo.startMousemoveForwarding = function() {
+  'use strict';
   goog.events.listen(
       document, goog.events.EventType.MOUSEMOVE, xpcdemo.mouseEventHandler_);
-  xpcdemo.mmLastRateOutput_ = goog.now();
+  xpcdemo.mmLastRateOutput_ = Date.now();
 };
 
 
@@ -257,6 +267,7 @@ xpcdemo.startMousemoveForwarding = function() {
  * Stop mousemove event forwarding.
  */
 xpcdemo.stopMousemoveForwarding = function() {
+  'use strict';
   goog.events.unlisten(
       document, goog.events.EventType.MOUSEMOVE, xpcdemo.mouseEventHandler_);
 };
@@ -268,8 +279,9 @@ xpcdemo.stopMousemoveForwarding = function() {
  * @private
  */
 xpcdemo.mouseEventHandler_ = function(e) {
+  'use strict';
   xpcdemo.channel.send(
-      'events', [e.type, e.clientX, e.clientY, goog.now()].join(','));
+      'events', [e.type, e.clientX, e.clientY, Date.now()].join(','));
 };
 
 
@@ -279,7 +291,8 @@ xpcdemo.mouseEventHandler_ = function(e) {
  * @private
  */
 xpcdemo.eventsMsgHandler_ = function(payload) {
-  var now = goog.now();
+  'use strict';
+  var now = Date.now();
   var args = payload.split(',');
   var type = args[0];
   var pageX = args[1];
@@ -307,6 +320,7 @@ xpcdemo.eventsMsgHandler_ = function(payload) {
  * @param {number} n The number of messages to send.
  */
 xpcdemo.sendN = function(n) {
+  'use strict';
   xpcdemo.count_ || (xpcdemo.count_ = 1);
 
   for (var i = 0; i < n; i++) {

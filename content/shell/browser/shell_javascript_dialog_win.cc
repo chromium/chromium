@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
+
+#include <windows.h>
 
 namespace content {
 
@@ -105,16 +107,21 @@ ShellJavaScriptDialog::ShellJavaScriptDialog(
   ShowWindow(dialog_win_, SW_SHOWNORMAL);
 }
 
-ShellJavaScriptDialog::~ShellJavaScriptDialog() {
-  Cancel();
-}
+ShellJavaScriptDialog::~ShellJavaScriptDialog() = default;
 
 void ShellJavaScriptDialog::Cancel() {
-  if (dialog_win_)
+  if (dialog_win_) {
+    // DestroyWindow() will delete `this` as the WM_DESTROY event handler
+    // deletes `this` through the `manager_`.
     DestroyWindow(dialog_win_);
-  dialog_win_ = 0;
-  if (callback_)
+  } else {
+    // If the window failed to be created then we emulate WM_DESTROY, since
+    // tests don't succeed in making dialogs always (e.g.
+    // BackForwardCacheBrowserTest.CanUseCacheWhenPageAlertsInTimeoutLoop).
     std::move(callback_).Run(false, std::u16string());
+    // DialogClosed() will delete `this`.
+    manager_->DialogClosed(this);
+  }
 }
 
 }  // namespace content

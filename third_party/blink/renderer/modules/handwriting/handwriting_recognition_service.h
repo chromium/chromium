@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@ namespace blink {
 
 class ExecutionContext;
 class HandwritingModelConstraint;
-class HandwritingFeatureQuery;
 class ScriptState;
 
 class HandwritingRecognitionService final
@@ -35,10 +34,10 @@ class HandwritingRecognitionService final
       Navigator&,
       const HandwritingModelConstraint*,
       ExceptionState&);
-  static ScriptPromise queryHandwritingRecognizerSupport(
+  static ScriptPromise queryHandwritingRecognizer(
       ScriptState*,
       Navigator&,
-      const HandwritingFeatureQuery*,
+      const HandwritingModelConstraint*,
       ExceptionState&);
 
   void Trace(Visitor* visitor) const override;
@@ -53,9 +52,9 @@ class HandwritingRecognitionService final
                                             const HandwritingModelConstraint*,
                                             ExceptionState&);
 
-  ScriptPromise QueryHandwritingRecognizerSupport(
+  ScriptPromise QueryHandwritingRecognizer(
       ScriptState*,
-      const HandwritingFeatureQuery*,
+      const HandwritingModelConstraint* constraint,
       ExceptionState&);
 
   HeapMojoRemote<handwriting::mojom::blink::HandwritingRecognitionService>

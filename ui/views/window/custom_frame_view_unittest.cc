@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/window_button_order_provider.h"
@@ -20,6 +21,10 @@ namespace views {
 class CustomFrameViewTest : public ViewsTestBase {
  public:
   CustomFrameViewTest() = default;
+
+  CustomFrameViewTest(const CustomFrameViewTest&) = delete;
+  CustomFrameViewTest& operator=(const CustomFrameViewTest&) = delete;
+
   ~CustomFrameViewTest() override = default;
 
   CustomFrameView* custom_frame_view() { return custom_frame_view_; }
@@ -61,12 +66,10 @@ class CustomFrameViewTest : public ViewsTestBase {
   std::unique_ptr<WidgetDelegate> widget_delegate_;
 
   // Parent container for |custom_frame_view_|
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 
   // Owned by |widget_|
-  CustomFrameView* custom_frame_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomFrameViewTest);
+  raw_ptr<CustomFrameView> custom_frame_view_;
 };
 
 void CustomFrameViewTest::SetUp() {
@@ -154,9 +157,11 @@ TEST_F(CustomFrameViewTest, MaximizeRevealsRestoreButton) {
   ASSERT_TRUE(maximize_button()->GetVisible());
 
   widget()->Maximize();
-  custom_frame_view()->Layout();
+  // Just calling Maximize() doesn't invlidate the layout immediately.
+  custom_frame_view()->InvalidateLayout();
+  views::test::RunScheduledLayout(custom_frame_view());
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
   // Restore buttons do not exist on Mac. The maximize button is instead a kind
   // of toggle, but has no effect on frame decorations.
   EXPECT_FALSE(restore_button()->GetVisible());
@@ -207,9 +212,11 @@ TEST_F(CustomFrameViewTest, LargerEdgeButtonsWhenMaximized) {
   gfx::Rect minimize_button_initial_bounds = minimize_button()->bounds();
 
   widget()->Maximize();
-  custom_frame_view()->Layout();
+  // Just calling Maximize() doesn't invlidate the layout immediately.
+  custom_frame_view()->InvalidateLayout();
+  views::test::RunScheduledLayout(custom_frame_view());
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
   // On Mac, "Maximize" should not alter the frame. Only fullscreen does that.
   EXPECT_EQ(close_button()->bounds().width(),
             close_button_initial_bounds.width());

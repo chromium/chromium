@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace download {
@@ -94,6 +93,9 @@ struct Configuration {
   static std::unique_ptr<Configuration> CreateFromFinch();
   Configuration();
 
+  Configuration(const Configuration&) = delete;
+  Configuration& operator=(const Configuration&) = delete;
+
   // An interval to throttle battery status queries.
   base::TimeDelta battery_query_interval;
 
@@ -163,9 +165,6 @@ struct Configuration {
 
   // The delay to retry a download when the download is failed.
   base::TimeDelta download_retry_delay;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Configuration);
 };
 
 }  // namespace download

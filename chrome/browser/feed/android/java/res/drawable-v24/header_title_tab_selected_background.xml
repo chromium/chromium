@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.components.browser_ui.widget.SurfaceColorDrawable
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:shape="rectangle"
+    app:surfaceElevation="@dimen/feed_header_tab_selected_bg_elevation">
+  <corners android:radius="@dimen/feed_header_background_corner_radius"/>
+  <!-- The stroke will show the main background color. -->
+  <stroke android:width="2dp" android:color="@android:color/transparent" />
+</org.chromium.components.browser_ui.widget.SurfaceColorDrawable>

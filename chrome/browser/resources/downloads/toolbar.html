@@ -17,10 +17,11 @@
   @media (prefers-color-scheme: light) {
     cr-icon-button {
       --cr-icon-button-fill-color: currentColor;
+      --cr-icon-button-focus-outline-color: var(--cr-focus-outline-color);
     }
   }
 </style>
-<cr-toolbar id="toolbar" page-name="$i18n{title}" autofocus
+<cr-toolbar id="toolbar" page-name="$i18n{title}" autofocus always-show-logo
     search-prompt="$i18n{search}" clear-label="$i18n{clearSearch}"
     spinner-active="{{spinnerActive}}" on-search-changed="onSearchChanged_">
   <cr-icon-button id="moreActions" iron-icon="cr:more-vert"

@@ -1,13 +1,23 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {str, util, strf} from '../../../common/js/util.m.js';
-// #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
-// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+import {assertInstanceof} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-/* #export */ class GearMenu {
+import {str, strf, util} from '../../../common/js/util.js';
+
+/**
+ * Selector used by tast tests to identify when the storage meter is empty.
+ */
+const tastEmptySpaceId = 'tast-storage-meter-empty';
+
+/**
+ * @typedef {{totalSize: number, usedSize: number, warningMessage: string}}
+ */
+export let SpaceInfo;
+
+export class GearMenu {
   /**
    * @param {!HTMLElement} element
    */
@@ -17,13 +27,14 @@
      * @const
      */
     this.syncButton = /** @type {!HTMLMenuItemElement} */
-        (queryRequiredElement('#gear-menu-drive-sync-settings', element));
+        (util.queryRequiredElement('#gear-menu-drive-sync-settings', element));
 
     /**
      * @type {!HTMLElement}
      * @const
      */
-    this.volumeSpaceInfo = queryRequiredElement('#volume-space-info', element);
+    this.volumeSpaceInfo =
+        util.queryRequiredElement('#volume-space-info', element);
 
     /**
      * @type {!HTMLElement}
@@ -31,7 +42,7 @@
      * @private
      */
     this.volumeSpaceInfoSeparator_ =
-        queryRequiredElement('#volume-space-info-separator', element);
+        util.queryRequiredElement('#volume-space-info-separator', element);
 
     /**
      * @type {!HTMLElement}
@@ -39,7 +50,7 @@
      * @private
      */
     this.volumeSpaceInfoLabel_ =
-        queryRequiredElement('#volume-space-info-label', element);
+        util.queryRequiredElement('#volume-space-info-label', element);
 
     /**
      * @type {!HTMLElement}
@@ -47,7 +58,7 @@
      * @private
      */
     this.volumeSpaceInnerBar_ =
-        queryRequiredElement('#volume-space-info-bar', element);
+        util.queryRequiredElement('#volume-space-info-bar', element);
 
     /**
      * @type {!HTMLElement}
@@ -62,12 +73,20 @@
      * @const
      * @private
      */
-    this.providersMenuItem_ =
-        queryRequiredElement('#gear-menu-providers', element);
+    this.volumeSpaceWarning_ =
+        util.queryRequiredElement('#volume-space-info-warning', element);
 
     /**
-     * Volume space info.
-     * @type {Promise<chrome.fileManagerPrivate.MountPointSizeStats>}
+     * @type {!HTMLElement}
+     * @const
+     * @private
+     */
+    this.providersMenuItem_ =
+        util.queryRequiredElement('#gear-menu-providers', element);
+
+    /**
+     * Promise to be resolved with volume space info.
+     * @type {Promise<SpaceInfo|undefined>}
      * @private
      */
     this.spaceInfoPromise_ = null;
@@ -85,48 +104,83 @@
   }
 
   /**
-   * @param {Promise<chrome.fileManagerPrivate.MountPointSizeStats>}
-   * spaceInfoPromise Promise to be fulfilled with space info.
-   * @param {boolean} showLoadingCaption Whether show loading caption or not.
+   * @param {Promise<SpaceInfo|undefined>} spaceInfoPromise Promise to be
+   *     fulfilled with space info.
+   * @param {boolean} showLoadingCaption Whether to show the loading caption or
+   *     not.
    */
   setSpaceInfo(spaceInfoPromise, showLoadingCaption) {
     this.spaceInfoPromise_ = spaceInfoPromise;
 
     if (!spaceInfoPromise || loadTimeData.getBoolean('HIDE_SPACE_INFO')) {
-      this.volumeSpaceInfo.hidden = true;
-      this.volumeSpaceInfoSeparator_.hidden = true;
+      this.hideVolumeSpaceInfo_();
       return;
     }
 
-    this.volumeSpaceInfo.hidden = false;
-    this.volumeSpaceInfoSeparator_.hidden = false;
+    this.showVolumeSpaceInfo_();
     this.volumeSpaceInnerBar_.setAttribute('pending', '');
     if (showLoadingCaption) {
       this.volumeSpaceInfoLabel_.innerText = str('WAITING_FOR_SPACE_INFO');
       this.volumeSpaceInnerBar_.style.width = '100%';
     }
 
-    spaceInfoPromise.then(spaceInfo => {
-      if (this.spaceInfoPromise_ != spaceInfoPromise) {
-        return;
-      }
-      this.volumeSpaceInnerBar_.removeAttribute('pending');
-      this.volumeSpaceOuterBar_.hidden = true;
-      if (spaceInfo) {
-        const sizeStr = util.bytesToString(spaceInfo.remainingSize);
-        this.volumeSpaceInfoLabel_.textContent =
-            strf('SPACE_AVAILABLE', sizeStr);
+    this.volumeSpaceInfo.classList.remove(tastEmptySpaceId);
 
-        if (spaceInfo.totalSize > 0) {
-          const usedSpace = spaceInfo.totalSize - spaceInfo.remainingSize;
-          this.volumeSpaceInnerBar_.style.width =
-              (100 * usedSpace / spaceInfo.totalSize) + '%';
+    spaceInfoPromise.then(
+        spaceInfo => {
+          if (this.spaceInfoPromise_ != spaceInfoPromise) {
+            return;
+          }
 
-          this.volumeSpaceOuterBar_.hidden = false;
-        }
-      } else {
-        this.volumeSpaceInfoLabel_.textContent = str('FAILED_SPACE_INFO');
-      }
-    });
+          this.volumeSpaceInnerBar_.removeAttribute('pending');
+          this.volumeSpaceOuterBar_.hidden = true;
+          this.volumeSpaceWarning_.hidden = true;
+
+          if (!spaceInfo) {
+            this.volumeSpaceInfoLabel_.textContent = str('FAILED_SPACE_INFO');
+            return;
+          }
+
+          const remainingSize = spaceInfo.totalSize - spaceInfo.usedSize;
+
+          if (spaceInfo.totalSize >= 0) {
+            if (remainingSize <= 0) {
+              this.volumeSpaceInfo.classList.add(tastEmptySpaceId);
+            }
+
+            this.volumeSpaceInnerBar_.style.width =
+                Math.min(100, 100 * spaceInfo.usedSize / spaceInfo.totalSize) +
+                '%';
+
+            this.volumeSpaceOuterBar_.hidden = false;
+
+            this.volumeSpaceInfoLabel_.textContent = strf(
+                'SPACE_AVAILABLE',
+                util.bytesToString(Math.max(0, remainingSize)));
+          } else {
+            // User has unlimited individual storage.
+            this.volumeSpaceInfoLabel_.textContent =
+                strf('SPACE_USED', util.bytesToString(spaceInfo.usedSize));
+          }
+
+          if (spaceInfo.warningMessage) {
+            this.volumeSpaceWarning_.hidden = false;
+            this.volumeSpaceWarning_.textContent =
+                '*' + spaceInfo.warningMessage;
+          }
+        },
+        error => {
+          console.warn('Failed get space info', error);
+        });
+  }
+
+  hideVolumeSpaceInfo_() {
+    this.volumeSpaceInfo.hidden = true;
+    this.volumeSpaceInfoSeparator_.hidden = true;
+  }
+
+  showVolumeSpaceInfo_() {
+    this.volumeSpaceInfo.hidden = false;
+    this.volumeSpaceInfoSeparator_.hidden = false;
   }
 }

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.ui.signin.SyncConsentView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="24dp"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <org.chromium.chrome.browser.ui.signin.SigninScrollView
+        android:id="@+id/sync_consent_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fadingEdgeLength="48dp"
+        android:fillViewport="true"
+        android:requiresFadingEdge="vertical"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <!-- Creates a fix minimum spacing of 24dp between the logo and the
+            top of the screen. If additional free space is available in larger
+            screens then divides it at a 1:2 ratio between
+            @id/space_above_account_image and
+            @id/space_between_sync_data_types_and_buttons respectively. -->
+            <View
+                android:id="@+id/space_above_account_image"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_weight="1"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/account_image"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp"
+                tools:ignore="ContentDescription" />
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/sync_consent_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Headline.Primary"
+                app:leading="@dimen/headline_size_leading" />
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/sync_consent_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                app:leading="@dimen/text_size_medium_leading" />
+
+            <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+                style="@style/MaterialCardStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="24dp"
+                android:paddingVertical="16dp">
+
+                <LinearLayout
+                    android:id="@+id/sync_data_types"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/bookmarks_row"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/sync_data_type_row_space"
+                        android:drawablePadding="@dimen/sync_data_type_drawable_padding"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                        app:drawableStartCompat="@drawable/btn_star"
+                        app:drawableTint="@macro/default_control_color_active" />
+
+                    <TextView
+                        android:id="@+id/autofill_row"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/sync_data_type_row_space"
+                        android:drawablePadding="@dimen/sync_data_type_drawable_padding"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                        app:drawableStartCompat="@drawable/autofill_key" />
+
+                    <TextView
+                        android:id="@+id/history_row"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="@dimen/sync_data_type_drawable_padding"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                        app:drawableStartCompat="@drawable/devices_icon" />
+                </LinearLayout>
+            </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+
+            <!-- Refer to the comment above @id/space_above_account_image -->
+            <View
+                android:id="@+id/space_between_sync_data_types_and_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_weight="2"
+                android:visibility="invisible" />
+        </LinearLayout>
+    </org.chromium.chrome.browser.ui.signin.SigninScrollView>
+
+    <LinearLayout
+        android:id="@+id/button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/negative_button"
+            style="@style/TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:visibility="invisible" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/positive_button"
+            style="@style/FilledButton.Flat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/more_button"
+            style="@style/FilledButton.Flat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <View
+            android:id="@+id/positive_button_end_padding"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/sync_consent_details_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        app:leading="@dimen/text_size_small_leading" />
+</org.chromium.chrome.browser.ui.signin.SyncConsentView>

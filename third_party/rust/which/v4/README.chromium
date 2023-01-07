@@ -1,0 +1,6 @@
+Name: which
+URL: https://crates.io/crates/which
+Description: A Rust equivalent of Unix command "which". Locate installed executable in cross platforms.
+Version: 4.3.0
+Security Critical: no
+License: MIT

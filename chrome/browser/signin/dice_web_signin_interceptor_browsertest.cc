@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,36 +7,38 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/dice_intercepted_session_startup_helper.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/policy/core/common/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -98,13 +100,21 @@ class FakeDiceWebSigninInterceptorDelegate
     return bubble_handle;
   }
 
-  void ShowProfileCustomizationBubble(Browser* browser) override {
-    EXPECT_FALSE(customized_browser_)
-        << "Customization must be shown only once.";
-    customized_browser_ = browser;
+  void ShowFirstRunExperienceInNewProfile(
+      Browser* browser,
+      const CoreAccountId& account_id,
+      DiceWebSigninInterceptor::SigninInterceptionType interception_type)
+      override {
+    EXPECT_FALSE(fre_browser_)
+        << "First run experience must be shown only once.";
+    EXPECT_EQ(interception_type, expected_interception_type_);
+    fre_browser_ = browser;
+    fre_account_id_ = account_id;
   }
 
-  Browser* customized_browser() { return customized_browser_; }
+  Browser* fre_browser() { return fre_browser_; }
+
+  const CoreAccountId& fre_account_id() { return fre_account_id_; }
 
   void set_expected_interception_type(
       DiceWebSigninInterceptor::SigninInterceptionType type) {
@@ -122,7 +132,8 @@ class FakeDiceWebSigninInterceptorDelegate
   }
 
  private:
-  Browser* customized_browser_ = nullptr;
+  raw_ptr<Browser> fre_browser_ = nullptr;
+  CoreAccountId fre_account_id_;
   DiceWebSigninInterceptor::SigninInterceptionType expected_interception_type_ =
       DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser;
   SigninInterceptionResult expected_interception_result_ =
@@ -135,6 +146,10 @@ class BrowserCloseObserver : public BrowserListObserver {
   explicit BrowserCloseObserver(Browser* browser) : browser_(browser) {
     BrowserList::AddObserver(this);
   }
+
+  BrowserCloseObserver(const BrowserCloseObserver&) = delete;
+  BrowserCloseObserver& operator=(const BrowserCloseObserver&) = delete;
+
   ~BrowserCloseObserver() override { BrowserList::RemoveObserver(this); }
 
   void Wait() { run_loop_.Run(); }
@@ -146,10 +161,8 @@ class BrowserCloseObserver : public BrowserListObserver {
   }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserCloseObserver);
 };
 
 // Runs the interception and returns the new profile that was created.
@@ -170,59 +183,56 @@ Profile* InterceptAndWaitProfileCreation(content::WebContents* contents,
 // Checks that the interception histograms were correctly recorded.
 void CheckHistograms(const base::HistogramTester& histogram_tester,
                      SigninInterceptionHeuristicOutcome outcome,
-                     bool intercept_to_guest = false) {
+                     bool reauth = false,
+                     bool declined = false) {
   int profile_switch_count =
-      outcome == SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch
+      outcome == SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch ||
+              outcome == SigninInterceptionHeuristicOutcome::
+                             kInterceptEnterpriseForcedProfileSwitch
           ? 1
           : 0;
-  int profile_creation_count = 1 - profile_switch_count;
+  int profile_creation_count = reauth ? 0 : 1 - profile_switch_count;
+  int fetched_account_count =
+      std::max(profile_switch_count, profile_creation_count);
+
+  if (declined) {
+    histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
+                                        outcome, 1);
+    histogram_tester.ExpectTotalCount(
+        "Signin.Intercept.AccountInfoFetchDuration",
+        base::FeatureList::IsEnabled(
+            policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher)
+            ? 1
+            : fetched_account_count);
+    histogram_tester.ExpectTotalCount(
+        "Signin.Intercept.ProfileCreationDuration", 0);
+    histogram_tester.ExpectTotalCount("Signin.Intercept.ProfileSwitchDuration",
+                                      0);
+
+    return;
+  }
 
   histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                       outcome, 1);
-  histogram_tester.ExpectTotalCount("Signin.Intercept.AccountInfoFetchDuration",
-                                    profile_creation_count);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.AccountInfoFetchDuration",
+      base::FeatureList::IsEnabled(
+          policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher)
+          ? 1
+          : fetched_account_count);
   histogram_tester.ExpectTotalCount("Signin.Intercept.ProfileCreationDuration",
                                     profile_creation_count);
   histogram_tester.ExpectTotalCount("Signin.Intercept.ProfileSwitchDuration",
                                     profile_switch_count);
-  histogram_tester.ExpectTotalCount(
-      "Signin.Intercept.SessionStartupDuration.Multilogin",
-      profile_creation_count);
-  histogram_tester.ExpectTotalCount(
-      "Signin.Intercept.SessionStartupDuration.Reconcilor",
-      profile_switch_count);
-  histogram_tester.ExpectUniqueSample(
-      "Signin.Intercept.SessionStartupResult",
-      profile_switch_count
-          ? DiceInterceptedSessionStartupHelper::Result::kReconcilorSuccess
-          : DiceInterceptedSessionStartupHelper::Result::kMultiloginSuccess,
-      1);
-  histogram_tester.ExpectTotalCount("Profile.Guest.SigninTransferred.Lifetime",
-                                    intercept_to_guest ? 1 : 0);
-  histogram_tester.ExpectBucketCount("Profile.EphemeralGuest.Signin", true,
-                                     intercept_to_guest ? 1 : 0);
 }
 
 }  // namespace
 
-class DiceWebSigninInterceptorBrowserTest : public InProcessBrowserTest {
+class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
  public:
-  DiceWebSigninInterceptorBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {kDiceWebSigninInterceptionFeature,
-         features::kEnableEphemeralGuestProfilesOnDesktop},
-        {});
-  }
+  DiceWebSigninInterceptorBrowserTest() = default;
 
   Profile* profile() { return browser()->profile(); }
-
-  signin::IdentityTestEnvironment* identity_test_env() {
-    return identity_test_env_profile_adaptor_->identity_test_env();
-  }
-
-  network::TestURLLoaderFactory* test_url_loader_factory() {
-    return &test_url_loader_factory_;
-  }
 
   content::WebContents* AddTab(const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
@@ -240,35 +250,37 @@ class DiceWebSigninInterceptorBrowserTest : public InProcessBrowserTest {
     return interceptor_delegate;
   }
 
+  void SetupGaiaResponses() {
+    // Instantly return from Gaia calls, to avoid timing out when injecting the
+    // account in the new profile.
+    network::TestURLLoaderFactory* loader_factory = test_url_loader_factory();
+    loader_factory->SetInterceptor(base::BindLambdaForTesting(
+        [loader_factory](const network::ResourceRequest& request) {
+          std::string path = request.url.path();
+          if (path == "/ListAccounts" || path == "/GetCheckConnectionInfo") {
+            loader_factory->AddResponse(request.url.spec(), std::string());
+            return;
+          }
+          if (path == "/oauth/multilogin") {
+            loader_factory->AddResponse(request.url.spec(),
+                                        kMultiloginSuccessResponse);
+            return;
+          }
+        }));
+  }
+
  private:
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
-    identity_test_env_profile_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+    DiceWebSigninInterceptorFactory::GetForProfile(profile())
+        ->SetAccountLevelSigninRestrictionFetchResultForTesting("");
   }
 
-  void TearDownOnMainThread() override {
-    // Must be destroyed before the Profile.
-    identity_test_env_profile_adaptor_.reset();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&DiceWebSigninInterceptorBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                                     &test_url_loader_factory_));
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
     DiceWebSigninInterceptorFactory::GetInstance()->SetTestingFactory(
         context,
         base::BindRepeating(&DiceWebSigninInterceptorBrowserTest::
@@ -287,11 +299,6 @@ class DiceWebSigninInterceptorBrowserTest : public InProcessBrowserTest {
         Profile::FromBrowserContext(context), std::move(fake_delegate));
   }
 
-  base::test::ScopedFeatureList feature_list_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_profile_adaptor_;
-  base::CallbackListSubscription create_services_subscription_;
   std::map<content::BrowserContext*, FakeDiceWebSigninInterceptorDelegate*>
       interceptor_delegates_;
 };
@@ -309,26 +316,10 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   account_info.hosted_domain = kNoHostedDomainFound;
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
-  account_info.is_child_account = false;
   DCHECK(account_info.IsValid());
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
-  // Instantly return from Gaia calls, to avoid timing out when injecting the
-  // account in the new profile.
-  network::TestURLLoaderFactory* loader_factory = test_url_loader_factory();
-  loader_factory->SetInterceptor(base::BindLambdaForTesting(
-      [loader_factory](const network::ResourceRequest& request) {
-        std::string path = request.url.path();
-        if (path == "/ListAccounts" || path == "/GetCheckConnectionInfo") {
-          loader_factory->AddResponse(request.url.spec(), std::string());
-          return;
-        }
-        if (path == "/oauth/multilogin") {
-          loader_factory->AddResponse(request.url.spec(),
-                                      kMultiloginSuccessResponse);
-          return;
-        }
-      }));
+  SetupGaiaResponses();
 
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
@@ -368,8 +359,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_EQ(added_browser->profile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptMultiUser);
@@ -380,9 +372,11 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_destroyed());
   EXPECT_FALSE(new_interceptor_delegate->intercept_bubble_shown());
   EXPECT_FALSE(new_interceptor_delegate->intercept_bubble_destroyed());
-  // Profile customization UI was shown exactly once in the new profile.
-  EXPECT_EQ(new_interceptor_delegate->customized_browser(), added_browser);
-  EXPECT_EQ(source_interceptor_delegate->customized_browser(), nullptr);
+  // First run experience UI was shown exactly once in the new profile.
+  EXPECT_EQ(new_interceptor_delegate->fre_browser(), added_browser);
+  EXPECT_EQ(new_interceptor_delegate->fre_account_id(),
+            account_info.account_id);
+  EXPECT_EQ(source_interceptor_delegate->fre_browser(), nullptr);
 }
 
 // Tests the complete profile switch flow when the profile is not loaded.
@@ -390,17 +384,26 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = "example.com";
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
   // Add a profile in the cache (simulate the profile on disk).
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage* profile_storage =
       &profile_manager->GetProfileAttributesStorage();
   const base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
-  profile_storage->AddProfile(
-      profile_path, u"TestProfileName", account_info.gaia,
-      base::UTF8ToUTF16(account_info.email),
-      /*is_consented_primary_account=*/false, /*icon_index=*/0,
-      /*supervised_user_id*/ std::string(), EmptyAccountId());
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = u"TestProfileName";
+  params.gaia_id = account_info.gaia;
+  params.user_name = base::UTF8ToUTF16(account_info.email);
+  profile_storage->AddProfile(std::move(params));
   ProfileAttributesEntry* entry =
       profile_storage->GetProfileAttributesWithPath(profile_path);
   ASSERT_TRUE(entry);
@@ -439,16 +442,17 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
   ASSERT_TRUE(added_browser);
   EXPECT_EQ(added_browser->profile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
   // Interception bubble was closed.
   EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_destroyed());
-  // Profile customization was not shown.
-  EXPECT_EQ(GetInterceptorDelegate(new_profile)->customized_browser(), nullptr);
-  EXPECT_EQ(source_interceptor_delegate->customized_browser(), nullptr);
+  // First run experience was not shown.
+  EXPECT_EQ(GetInterceptorDelegate(new_profile)->fre_browser(), nullptr);
+  EXPECT_EQ(source_interceptor_delegate->fre_browser(), nullptr);
 }
 
 // Tests the complete profile switch flow when the profile is already loaded.
@@ -456,15 +460,22 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = "example.com";
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
   // Create another profile with a browser window.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   const base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
   base::RunLoop loop;
   Profile* other_profile = nullptr;
-  ProfileManager::CreateCallback callback = base::BindLambdaForTesting(
-      [&other_profile, &loop](Profile* profile, Profile::CreateStatus status) {
-        DCHECK_EQ(status, Profile::CREATE_STATUS_INITIALIZED);
+  base::OnceCallback<void(Profile*)> callback =
+      base::BindLambdaForTesting([&other_profile, &loop](Profile* profile) {
         other_profile = profile;
         loop.Quit();
       });
@@ -484,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
       /*is_under_advanced_protection=*/false,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   other_identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account_info.account_id);
+      account_info.account_id, signin::ConsentLevel::kSync);
 
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
@@ -510,15 +521,15 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
   EXPECT_EQ(other_browser->tab_strip_model()->count(),
             other_original_tab_count + 1);
-  EXPECT_EQ(other_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      other_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
-  // Profile customization was not shown.
-  EXPECT_EQ(GetInterceptorDelegate(other_profile)->customized_browser(),
-            nullptr);
-  EXPECT_EQ(GetInterceptorDelegate(profile())->customized_browser(), nullptr);
+  // First run experience was not shown.
+  EXPECT_EQ(GetInterceptorDelegate(other_profile)->fre_browser(), nullptr);
+  EXPECT_EQ(GetInterceptorDelegate(profile())->fre_browser(), nullptr);
 }
 
 // Close the source tab during the interception and check that the NTP is opened
@@ -534,7 +545,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
   account_info.hosted_domain = kNoHostedDomainFound;
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
-  account_info.is_child_account = false;
   DCHECK(account_info.IsValid());
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
@@ -572,43 +582,61 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
   ASSERT_TRUE(added_browser);
   EXPECT_EQ(added_browser->profile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            GURL("chrome://newtab/"));
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      GURL("chrome://newtab/"));
 }
 
-// Tests the complete profile intercept flow to a Guest profile.
-IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchToGuest) {
+class DiceWebSigninInterceptorEnterpriseBrowserTest
+    : public DiceWebSigninInterceptorBrowserTest {
+ public:
+  DiceWebSigninInterceptorEnterpriseBrowserTest() {
+    enterprise_feature_list_.InitAndEnableFeature(
+        policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher);
+  }
+
+ private:
+  base::test::ScopedFeatureList enterprise_feature_list_;
+};
+
+// Tests the complete interception flow including profile and browser creation.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
+                       ForcedEnterpriseInterceptionTestNoForcedInterception) {
   base::HistogramTester histogram_tester;
-  // Setup profile for interception.
-  identity_test_env()->MakeAccountAvailable("alice@example.com");
-  AccountInfo account_info =
+
+  AccountInfo primary_account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  primary_account_info.full_name = "fullname";
+  primary_account_info.given_name = "givenname";
+  primary_account_info.hosted_domain = "example.com";
+  primary_account_info.locale = "en";
+  primary_account_info.picture_url = "https://example.com";
+  DCHECK(primary_account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
+  IdentityManagerFactory::GetForProfile(profile())
+      ->GetPrimaryAccountMutator()
+      ->SetPrimaryAccount(primary_account_info.account_id,
+                          signin::ConsentLevel::kSync);
+
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
   // Fill the account info, in particular for the hosted_domain field.
   account_info.full_name = "fullname";
   account_info.given_name = "givenname";
-  account_info.hosted_domain = kNoHostedDomainFound;
+  account_info.hosted_domain = "example.com";
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
-  account_info.is_child_account = false;
   DCHECK(account_info.IsValid());
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
-  // Instantly return from Gaia calls, to avoid timing out when injecting the
-  // account in the new profile.
-  network::TestURLLoaderFactory* loader_factory = test_url_loader_factory();
-  loader_factory->SetInterceptor(base::BindLambdaForTesting(
-      [loader_factory](const network::ResourceRequest& request) {
-        std::string path = request.url.path();
-        if (path == "/ListAccounts" || path == "/GetCheckConnectionInfo") {
-          loader_factory->AddResponse(request.url.spec(), std::string());
-          return;
-        }
-        if (path == "/oauth/multilogin") {
-          loader_factory->AddResponse(request.url.spec(),
-                                      kMultiloginSuccessResponse);
-          return;
-        }
-      }));
+  // Enforce enterprise profile sepatation.
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "none");
+  DiceWebSigninInterceptorFactory::GetForProfile(profile())
+      ->SetAccountLevelSigninRestrictionFetchResultForTesting("");
+
+  SetupGaiaResponses();
 
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
@@ -619,8 +647,622 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchToGuest) {
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(profile());
+  source_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise);
+  Profile* new_profile =
+      InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
+  EXPECT_FALSE(
+      chrome::enterprise_util::UserAcceptedAccountManagement(new_profile));
+  ASSERT_TRUE(new_profile);
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_shown());
+  signin::IdentityManager* new_identity_manager =
+      IdentityManagerFactory::GetForProfile(new_profile);
+  EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
+      account_info.account_id));
+
+  FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
+      GetInterceptorDelegate(new_profile);
+  new_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise);
+
+  IdentityTestEnvironmentProfileAdaptor adaptor(new_profile);
+  adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+
+  // Check the profile name.
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(new_profile->GetPath());
+  ASSERT_TRUE(entry);
+  EXPECT_EQ("example.com", base::UTF16ToUTF8(entry->GetLocalProfileName()));
+  // Check the profile color.
+  EXPECT_TRUE(ThemeServiceFactory::GetForProfile(new_profile)
+                  ->UsingAutogeneratedTheme());
+
+  // A browser has been created for the new profile and the tab was moved there.
+  Browser* added_browser = ui_test_utils::WaitForBrowserToOpen();
+  ASSERT_TRUE(added_browser);
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_EQ(added_browser->profile(), new_profile);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
+
+  CheckHistograms(histogram_tester,
+                  SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
+
+  // First run experience UI was shown exactly once in the new profile.
+  EXPECT_EQ(new_interceptor_delegate->fre_browser(), added_browser);
+  EXPECT_EQ(new_interceptor_delegate->fre_account_id(),
+            account_info.account_id);
+  EXPECT_EQ(source_interceptor_delegate->fre_browser(), nullptr);
+}
+
+// Tests the complete interception flow including profile and browser creation.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
+                       EnterpriseInterceptionDeclined) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = "example.com";
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  AccountInfo primary_account_info =
+      identity_test_env()->MakeAccountAvailable("bob@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  primary_account_info.full_name = "fullname";
+  primary_account_info.given_name = "givenname";
+  primary_account_info.hosted_domain = "example.com";
+  primary_account_info.locale = "en";
+  primary_account_info.picture_url = "https://example.com";
+  DCHECK(primary_account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
+
+  IdentityManagerFactory::GetForProfile(profile())
+      ->GetPrimaryAccountMutator()
+      ->SetPrimaryAccount(primary_account_info.account_id,
+                          signin::ConsentLevel::kSignin);
+
+  // Enforce enterprise profile sepatation.
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "none");
+
+  SetupGaiaResponses();
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+  int original_tab_count = browser()->tab_strip_model()->count();
+
+  // Do the signin interception.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(profile());
+  source_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise);
   source_interceptor_delegate->set_expected_interception_result(
-      SigninInterceptionResult::kAcceptedWithGuest);
+      SigninInterceptionResult::kDeclined);
+
+  // Start the interception.
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(profile());
+  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
+                                       /*is_new_account=*/true,
+                                       /*is_sync_signin=*/false);
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  EXPECT_FALSE(
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_destroyed());
+  EXPECT_TRUE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
+
+  CheckHistograms(histogram_tester,
+                  SigninInterceptionHeuristicOutcome::kInterceptEnterprise,
+                  /*reauth=*/false, /*declined=*/true);
+}
+
+// Tests the complete interception flow including profile and browser creation.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
+                       ForcedEnterpriseInterceptionTestAccountLevelPolicy) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = "example.com";
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Enforce enterprise profile sepatation.
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "none");
+  DiceWebSigninInterceptorFactory::GetForProfile(profile())
+      ->SetAccountLevelSigninRestrictionFetchResultForTesting(
+          "primary_account");
+
+  SetupGaiaResponses();
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+  int original_tab_count = browser()->tab_strip_model()->count();
+
+  // Do the signin interception.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(profile());
+  source_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+  Profile* new_profile =
+      InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
+  EXPECT_TRUE(
+      chrome::enterprise_util::UserAcceptedAccountManagement(new_profile));
+  ASSERT_TRUE(new_profile);
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_shown());
+  signin::IdentityManager* new_identity_manager =
+      IdentityManagerFactory::GetForProfile(new_profile);
+  EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
+      account_info.account_id));
+
+  FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
+      GetInterceptorDelegate(new_profile);
+  new_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+
+  IdentityTestEnvironmentProfileAdaptor adaptor(new_profile);
+  adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+
+  // Check the profile name.
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(new_profile->GetPath());
+  ASSERT_TRUE(entry);
+  EXPECT_EQ("example.com", base::UTF16ToUTF8(entry->GetLocalProfileName()));
+  // Check the profile color.
+  EXPECT_TRUE(ThemeServiceFactory::GetForProfile(new_profile)
+                  ->UsingAutogeneratedTheme());
+
+  // A browser has been created for the new profile and the tab was moved there.
+  Browser* added_browser = ui_test_utils::WaitForBrowserToOpen();
+  ASSERT_TRUE(added_browser);
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_EQ(added_browser->profile(), new_profile);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
+
+  CheckHistograms(
+      histogram_tester,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
+
+  // First run experience UI was shown exactly once in the new profile.
+  EXPECT_EQ(new_interceptor_delegate->fre_browser(), added_browser);
+  EXPECT_EQ(new_interceptor_delegate->fre_account_id(),
+            account_info.account_id);
+  EXPECT_EQ(source_interceptor_delegate->fre_browser(), nullptr);
+}
+
+// Tests the complete interception flow including profile and browser creation.
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorEnterpriseBrowserTest,
+    ForcedEnterpriseInterceptionTestAccountLevelPolicyDeclined) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = "example.com";
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Enforce enterprise profile sepatation.
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "none");
+  DiceWebSigninInterceptorFactory::GetForProfile(profile())
+      ->SetAccountLevelSigninRestrictionFetchResultForTesting(
+          "primary_account");
+
+  SetupGaiaResponses();
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+  int original_tab_count = browser()->tab_strip_model()->count();
+
+  // Do the signin interception.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(profile());
+  source_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+  source_interceptor_delegate->set_expected_interception_result(
+      SigninInterceptionResult::kDeclined);
+
+  // Start the interception.
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(profile());
+  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
+                                       /*is_new_account=*/true,
+                                       /*is_sync_signin=*/false);
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  EXPECT_FALSE(
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_destroyed());
+  EXPECT_FALSE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
+
+  CheckHistograms(
+      histogram_tester,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced,
+      /*reauth=*/false, /*declined=*/true);
+}
+
+// Tests the complete interception flow including profile and browser creation.
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorEnterpriseBrowserTest,
+    ForcedEnterpriseInterceptionTestAccountLevelPolicyStrictDeclined) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = "example.com";
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Enforce enterprise profile sepatation.
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "none");
+  DiceWebSigninInterceptorFactory::GetForProfile(profile())
+      ->SetAccountLevelSigninRestrictionFetchResultForTesting(
+          "primary_account_strict");
+
+  SetupGaiaResponses();
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+  int original_tab_count = browser()->tab_strip_model()->count();
+
+  // Do the signin interception.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(profile());
+  source_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+  source_interceptor_delegate->set_expected_interception_result(
+      SigninInterceptionResult::kDeclined);
+
+  // Start the interception.
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(profile());
+  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
+                                       /*is_new_account=*/true,
+                                       /*is_sync_signin=*/false);
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  EXPECT_FALSE(
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_destroyed());
+  EXPECT_FALSE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
+
+  CheckHistograms(
+      histogram_tester,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced,
+      /*reauth=*/false, /*declined=*/true);
+}
+
+// Tests the complete interception flow including profile and browser creation.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
+                       ForcedEnterpriseInterceptionTest) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = "example.com";
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Enforce enterprise profile separation.
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "primary_account_strict");
+
+  SetupGaiaResponses();
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+  int original_tab_count = browser()->tab_strip_model()->count();
+
+  // Do the signin interception.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(profile());
+  source_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+  Profile* new_profile =
+      InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
+  EXPECT_TRUE(
+      chrome::enterprise_util::UserAcceptedAccountManagement(new_profile));
+  ASSERT_TRUE(new_profile);
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_shown());
+  signin::IdentityManager* new_identity_manager =
+      IdentityManagerFactory::GetForProfile(new_profile);
+  EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
+      account_info.account_id));
+
+  FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
+      GetInterceptorDelegate(new_profile);
+  new_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+
+  IdentityTestEnvironmentProfileAdaptor adaptor(new_profile);
+  adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+
+  // Check the profile name.
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(new_profile->GetPath());
+  ASSERT_TRUE(entry);
+  EXPECT_EQ("example.com", base::UTF16ToUTF8(entry->GetLocalProfileName()));
+  // Check the profile color.
+  EXPECT_TRUE(ThemeServiceFactory::GetForProfile(new_profile)
+                  ->UsingAutogeneratedTheme());
+
+  // A browser has been created for the new profile and the tab was moved there.
+  Browser* added_browser = ui_test_utils::WaitForBrowserToOpen();
+  ASSERT_TRUE(added_browser);
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_EQ(added_browser->profile(), new_profile);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
+
+  CheckHistograms(
+      histogram_tester,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
+
+  // First run experience UI was shown exactly once in the new profile.
+  EXPECT_EQ(new_interceptor_delegate->fre_browser(), added_browser);
+  EXPECT_EQ(new_interceptor_delegate->fre_account_id(),
+            account_info.account_id);
+  EXPECT_EQ(source_interceptor_delegate->fre_browser(), nullptr);
+}
+
+// Tests the complete interception flow for a reauth of the primary account of a
+// non-syncing profile.
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorEnterpriseBrowserTest,
+    ForcedEnterpriseInterceptionPrimaryACcountReauthSyncDisabledTest) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = "example.com";
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  IdentityManagerFactory::GetForProfile(profile())
+      ->GetPrimaryAccountMutator()
+      ->SetPrimaryAccount(account_info.account_id,
+                          signin::ConsentLevel::kSignin);
+
+  // Enforce enterprise profile separation.
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "primary_account_strict");
+
+  SetupGaiaResponses();
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+  int original_tab_count = browser()->tab_strip_model()->count();
+
+  // Do the signin interception.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(profile());
+  source_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+
+  EXPECT_FALSE(
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
+  // Start the interception.
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(profile());
+  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
+                                       /*is_new_account=*/false,
+                                       /*is_sync_signin=*/false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
+  // Interception bubble was closed.
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_destroyed());
+  EXPECT_TRUE(IdentityManagerFactory::GetForProfile(profile())
+                  ->HasAccountWithRefreshToken(account_info.account_id));
+
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
+
+  CheckHistograms(
+      histogram_tester,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced,
+      /*reauth=*/true);
+}
+
+// Tests the complete interception flow for a reauth of the primary account of a
+// syncing profile.
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorEnterpriseBrowserTest,
+    ForcedEnterpriseInterceptionPrimaryACcountReauthSyncEnabledTest) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = "example.com";
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  IdentityManagerFactory::GetForProfile(profile())
+      ->GetPrimaryAccountMutator()
+      ->SetPrimaryAccount(account_info.account_id, signin::ConsentLevel::kSync);
+
+  // Enforce enterprise profile separation.
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "primary_account_strict");
+
+  SetupGaiaResponses();
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+  int original_tab_count = browser()->tab_strip_model()->count();
+
+  // Do the signin interception.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(profile());
+  source_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+
+  EXPECT_FALSE(
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
+  // Start the interception.
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(profile());
+  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
+                                       /*is_new_account=*/false,
+                                       /*is_sync_signin=*/false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
+  // Interception bubble was closed.
+  EXPECT_FALSE(source_interceptor_delegate->intercept_bubble_shown());
+  EXPECT_FALSE(source_interceptor_delegate->intercept_bubble_destroyed());
+  EXPECT_TRUE(IdentityManagerFactory::GetForProfile(profile())
+                  ->HasAccountWithRefreshToken(account_info.account_id));
+
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
+
+  CheckHistograms(histogram_tester,
+                  SigninInterceptionHeuristicOutcome::kAbortAccountNotNew,
+                  /*reauth=*/true);
+}
+
+// Tests the complete profile switch flow when the profile is not loaded.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
+                       EnterpriseSwitchAndLoad) {
+  base::HistogramTester histogram_tester;
+  // Enforce enterprise profile separation.
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "primary_account_strict");
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = "example.com";
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Add a profile in the cache (simulate the profile on disk).
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage* profile_storage =
+      &profile_manager->GetProfileAttributesStorage();
+  const base::FilePath profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = u"TestProfileName";
+  params.gaia_id = account_info.gaia;
+  params.user_name = base::UTF8ToUTF16(account_info.email);
+  profile_storage->AddProfile(std::move(params));
+  ProfileAttributesEntry* entry =
+      profile_storage->GetProfileAttributesWithPath(profile_path);
+  ASSERT_TRUE(entry);
+  ASSERT_EQ(entry->GetGAIAId(), account_info.gaia);
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+  int original_tab_count = browser()->tab_strip_model()->count();
+
+  // Do the signin interception.
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(profile());
+  source_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced);
   Profile* new_profile =
       InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
   ASSERT_TRUE(new_profile);
@@ -630,27 +1272,114 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchToGuest) {
   EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
       account_info.account_id));
 
-  IdentityTestEnvironmentProfileAdaptor adaptor(new_profile);
-  adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
-  adaptor.identity_test_env()->SetUnconsentedPrimaryAccount(account_info.email);
+  // Check that the right profile was opened.
+  EXPECT_EQ(new_profile->GetPath(), profile_path);
 
-  // Check that the Guest profile was opened.
-  ASSERT_TRUE(new_profile->IsEphemeralGuestProfile());
+  // Add the account to the cookies (simulates the account reconcilor).
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  signin::SetCookieAccounts(new_identity_manager, test_url_loader_factory(),
+                            {{account_info.email, account_info.gaia}});
 
   // A browser has been created for the new profile and the tab was moved there.
-  Browser* added_browser = ui_test_utils::WaitForBrowserToOpen();
-  ASSERT_TRUE(added_browser);
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
+  Browser* added_browser = BrowserList::GetInstance()->get(1);
+  ASSERT_TRUE(added_browser);
   EXPECT_EQ(added_browser->profile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
-
-  BrowserCloseObserver close_observer(added_browser);
-  BrowserList::CloseAllBrowsersWithProfile(new_profile);
-  close_observer.Wait();
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(histogram_tester,
-                  SigninInterceptionHeuristicOutcome::kInterceptMultiUser,
-                  /*intercept_to_guest =*/true);
+                  SigninInterceptionHeuristicOutcome::
+                      kInterceptEnterpriseForcedProfileSwitch);
+
+  // Interception bubble was closed.
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_destroyed());
+
+  // First run experience was not shown.
+  EXPECT_EQ(GetInterceptorDelegate(new_profile)->fre_browser(), nullptr);
+  EXPECT_EQ(source_interceptor_delegate->fre_browser(), nullptr);
+}
+
+// Tests the complete profile switch flow when the profile is already loaded.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
+                       EnterpriseSwitchAlreadyOpen) {
+  base::HistogramTester histogram_tester;
+  // Enforce enterprise profile separation.
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "primary_account_strict");
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = "example.com";
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  // Create another profile with a browser window.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const base::FilePath profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  base::RunLoop loop;
+  Profile* other_profile = nullptr;
+  base::OnceCallback<void(Profile*)> callback =
+      base::BindLambdaForTesting([&other_profile, &loop](Profile* profile) {
+        other_profile = profile;
+        loop.Quit();
+      });
+  profiles::SwitchToProfile(profile_path, /*always_create=*/true,
+                            std::move(callback));
+  loop.Run();
+  ASSERT_TRUE(other_profile);
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
+  Browser* other_browser = BrowserList::GetInstance()->get(1);
+  ASSERT_TRUE(other_browser);
+  ASSERT_EQ(other_browser->profile(), other_profile);
+  // Add the account to the other profile.
+  signin::IdentityManager* other_identity_manager =
+      IdentityManagerFactory::GetForProfile(other_profile);
+  other_identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
+      account_info.gaia, account_info.email, "dummy_refresh_token",
+      /*is_under_advanced_protection=*/false,
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+  other_identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_info.account_id, signin::ConsentLevel::kSync);
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+  int original_tab_count = browser()->tab_strip_model()->count();
+  int other_original_tab_count = other_browser->tab_strip_model()->count();
+
+  // Start the interception.
+  GetInterceptorDelegate(profile())->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced);
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(profile());
+  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
+                                       /*is_new_account=*/true,
+                                       /*is_sync_signin=*/false);
+
+  // Add the account to the cookies (simulates the account reconcilor).
+  signin::SetCookieAccounts(other_identity_manager, test_url_loader_factory(),
+                            {{account_info.email, account_info.gaia}});
+
+  // The tab was moved to the new browser.
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
+  EXPECT_EQ(other_browser->tab_strip_model()->count(),
+            other_original_tab_count + 1);
+  EXPECT_EQ(
+      other_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
+
+  CheckHistograms(histogram_tester,
+                  SigninInterceptionHeuristicOutcome::
+                      kInterceptEnterpriseForcedProfileSwitch);
+  // First run experience was not shown.
+  EXPECT_EQ(GetInterceptorDelegate(other_profile)->fre_browser(), nullptr);
+  EXPECT_EQ(GetInterceptorDelegate(profile())->fre_browser(), nullptr);
 }

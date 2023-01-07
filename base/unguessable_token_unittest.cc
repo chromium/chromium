@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,12 +19,31 @@ void TestSmallerThanOperator(const UnguessableToken& a,
   EXPECT_FALSE(b < a);
 }
 
+TEST(UnguessableTokenTest, VerifyEveryBit) {
+  UnguessableToken token = UnguessableToken::Deserialize(1, 2);
+  uint64_t high = 1;
+  uint64_t low = 2;
+
+  for (uint64_t bit = 1; bit != 0; bit <<= 1) {
+    uint64_t new_high = high ^ bit;
+    UnguessableToken new_token = UnguessableToken::Deserialize(new_high, low);
+    EXPECT_FALSE(token == new_token);
+  }
+
+  for (uint64_t bit = 1; bit != 0; bit <<= 1) {
+    uint64_t new_low = low ^ bit;
+    UnguessableToken new_token = UnguessableToken::Deserialize(high, new_low);
+    EXPECT_FALSE(token == new_token);
+  }
+}
+
 TEST(UnguessableTokenTest, VerifyEqualityOperators) {
   // Deserialize is used for testing purposes.
   // Use UnguessableToken::Create() in production code instead.
   UnguessableToken token = UnguessableToken::Deserialize(1, 2);
   UnguessableToken same_token = UnguessableToken::Deserialize(1, 2);
   UnguessableToken diff_token = UnguessableToken::Deserialize(1, 3);
+  UnguessableToken empty_token;
 
   EXPECT_TRUE(token == token);
   EXPECT_FALSE(token != token);
@@ -36,6 +55,13 @@ TEST(UnguessableTokenTest, VerifyEqualityOperators) {
   EXPECT_FALSE(diff_token == token);
   EXPECT_TRUE(token != diff_token);
   EXPECT_TRUE(diff_token != token);
+
+  EXPECT_TRUE(empty_token == empty_token);
+  EXPECT_FALSE(empty_token != empty_token);
+  for (const UnguessableToken& this_token : {token, same_token, diff_token}) {
+    EXPECT_FALSE(this_token == empty_token);
+    EXPECT_TRUE(this_token != empty_token);
+  }
 }
 
 TEST(UnguessableTokenTest, VerifyConstructors) {

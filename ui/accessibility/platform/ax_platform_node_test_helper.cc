@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ int AXPlatformNodeTestHelper::GetTreeSize(AXPlatformNode* ax_node) {
     return 0;
   int count = 1;
   AXPlatformNodeDelegate* delegate = ax_node->GetDelegate();
-  for (int i = 0; i < delegate->GetChildCount(); ++i) {
+  for (size_t i = 0; i < delegate->GetChildCount(); ++i) {
     AXPlatformNode* child_node =
         AXPlatformNode::FromNativeViewAccessible(delegate->ChildAtIndex(i));
     count += GetTreeSize(child_node);
@@ -33,7 +33,7 @@ AXPlatformNode* AXPlatformNodeTestHelper::FindChildByName(
   if (delegate->GetName() == name)
     return ax_node;
 
-  for (int i = 0; i < delegate->GetChildCount(); ++i) {
+  for (size_t i = 0; i < delegate->GetChildCount(); ++i) {
     AXPlatformNode* result_from_child = FindChildByName(
         AXPlatformNode::FromNativeViewAccessible(delegate->ChildAtIndex(i)),
         name);

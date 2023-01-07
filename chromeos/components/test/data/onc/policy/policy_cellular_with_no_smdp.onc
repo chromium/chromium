@@ -1,0 +1,10 @@
+{
+  "NetworkConfigurations": [
+    {
+      "GUID": "policy_cellular3",
+      "Type": "Cellular",
+      "Name": "Managed cellular3",
+    }
+  ],
+  "Type": "UnencryptedConfiguration"
+}

@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,4 +9,11 @@ blink_core_sources_speculation_rules = [
   "speculation_rule.h",
   "speculation_rule_set.cc",
   "speculation_rule_set.h",
+]
+
+blink_core_tests_speculation_rules = [
+  "speculation_rule_set_test.cc",
+  "speculation_rules_origin_trial_test.cc",
+  "stub_speculation_host.cc",
+  "stub_speculation_host.h",
 ]

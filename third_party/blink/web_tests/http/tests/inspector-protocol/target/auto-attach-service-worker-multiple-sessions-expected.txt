@@ -1,0 +1,5 @@
+Tests that browser.Target.setAutoAttach() only throttles service worker for sessions that asked for it.
+session 1 attached, waiting: true
+session 2 attached, waiting: false
+PASSED: service worker URL http://127.0.0.1:8000/inspector-protocol/service-worker/resources/blank-service-worker.js
+

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,6 @@
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
-
-using BrowserTabsModel = chromeos::phonehub::BrowserTabsModel;
 
 namespace {
 
@@ -71,8 +69,8 @@ class HeaderView : public views::Label {
 }  // namespace
 
 TaskContinuationView::TaskContinuationView(
-    chromeos::phonehub::PhoneModel* phone_model,
-    chromeos::phonehub::UserActionRecorder* user_action_recorder)
+    phonehub::PhoneModel* phone_model,
+    phonehub::UserActionRecorder* user_action_recorder)
     : phone_model_(phone_model), user_action_recorder_(user_action_recorder) {
   SetID(PhoneHubViewID::kTaskContinuationView);
 
@@ -106,7 +104,7 @@ TaskContinuationView::TaskChipsView::TaskChipsView() = default;
 TaskContinuationView::TaskChipsView::~TaskChipsView() = default;
 
 void TaskContinuationView::TaskChipsView::AddTaskChip(views::View* task_chip) {
-  int view_size = task_chips_.view_size();
+  size_t view_size = task_chips_.view_size();
   task_chips_.Add(task_chip, view_size);
   AddChildView(task_chip);
 }
@@ -129,7 +127,7 @@ gfx::Size TaskContinuationView::TaskChipsView::CalculatePreferredSize() const {
 void TaskContinuationView::TaskChipsView::Layout() {
   views::View::Layout();
   CalculateIdealBounds();
-  for (int i = 0; i < task_chips_.view_size(); ++i) {
+  for (size_t i = 0; i < task_chips_.view_size(); ++i) {
     auto* button = task_chips_.view_at(i);
     button->SetBoundsRect(task_chips_.ideal_bounds(i));
   }
@@ -141,7 +139,7 @@ const char* TaskContinuationView::TaskChipsView::GetClassName() const {
 
 void TaskContinuationView::TaskChipsView::Reset() {
   task_chips_.Clear();
-  RemoveAllChildViews(true /* delete_children */);
+  RemoveAllChildViews();
 }
 
 gfx::Point TaskContinuationView::TaskChipsView::GetButtonPosition(int index) {
@@ -156,7 +154,7 @@ gfx::Point TaskContinuationView::TaskChipsView::GetButtonPosition(int index) {
 }
 
 void TaskContinuationView::TaskChipsView::CalculateIdealBounds() {
-  for (int i = 0; i < task_chips_.view_size(); ++i) {
+  for (size_t i = 0; i < task_chips_.view_size(); ++i) {
     gfx::Rect tile_bounds =
         gfx::Rect(GetButtonPosition(i), GetTaskContinuationChipSize());
     task_chips_.set_ideal_bounds(i, tile_bounds);
@@ -171,7 +169,7 @@ void TaskContinuationView::Update() {
     return;
   }
 
-  const BrowserTabsModel& browser_tabs =
+  const phonehub::BrowserTabsModel& browser_tabs =
       phone_model_->browser_tabs_model().value();
 
   if (!browser_tabs.is_tab_sync_enabled() ||
@@ -181,7 +179,7 @@ void TaskContinuationView::Update() {
   }
 
   int index = 0;
-  for (const BrowserTabsModel::BrowserTabMetadata& metadata :
+  for (const phonehub::BrowserTabsModel::BrowserTabMetadata& metadata :
        browser_tabs.most_recent_tabs()) {
     chips_view_->AddTaskChip(new ContinueBrowsingChip(
         metadata, index, browser_tabs.most_recent_tabs().size(),

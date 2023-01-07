@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "gpu/command_buffer/service/error_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -19,6 +18,10 @@ namespace gles2 {
 class MockErrorState : public ErrorState {
  public:
   MockErrorState();
+
+  MockErrorState(const MockErrorState&) = delete;
+  MockErrorState& operator=(const MockErrorState&) = delete;
+
   ~MockErrorState() override;
 
   MOCK_METHOD0(GetGLError, uint32_t());
@@ -48,11 +51,8 @@ class MockErrorState : public ErrorState {
       const char* file, int line, const char* filename));
   MOCK_METHOD3(ClearRealGLErrors, void(
       const char* file, int line, const char* filename));
-
-  DISALLOW_COPY_AND_ASSIGN(MockErrorState);
 };
 }  // namespace gles2
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_ERROR_STATE_MOCK_H_
-

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/win/windows_types.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/chrome_elf/third_party_dlls/public_api.h"
@@ -69,11 +68,11 @@ uint32_t DrainLog(uint8_t* buffer,
 
   // Each entry shares the module path for convenience.
   static constexpr char kModulePath[] = "C:\\foo\\bar\\module.dll";
-  static constexpr uint32_t kModulePathLength = base::size(kModulePath) - 1;
+  static constexpr uint32_t kModulePathLength = std::size(kModulePath) - 1;
 
   if (log_remaining) {
     *log_remaining = third_party_dlls::GetLogEntrySize(kModulePathLength) *
-                     base::size(kTestLogEntries);
+                     std::size(kTestLogEntries);
   }
 
   uint8_t* tracker = buffer;
@@ -113,4 +112,8 @@ void DisableHook() {}
 
 int32_t GetApplyHookResult() {
   return 0;
+}
+
+bool IsExtensionPointDisableSet() {
+  return false;
 }

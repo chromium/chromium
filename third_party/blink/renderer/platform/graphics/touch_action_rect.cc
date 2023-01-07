@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,8 @@
 namespace blink {
 
 String TouchActionRect::ToString() const {
-  return rect.ToString() + " " + cc::TouchActionToString(allowed_touch_action);
+  return String(rect.ToString()) + " " +
+         cc::TouchActionToString(allowed_touch_action);
 }
 
 std::ostream& operator<<(std::ostream& os,

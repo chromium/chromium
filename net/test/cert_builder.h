@@ -1,19 +1,30 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_TEST_CERT_BUILDER_H_
 #define NET_TEST_CERT_BUILDER_H_
 
+#include <map>
+#include <string>
+
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
+#include "base/strings/string_piece_forward.h"
 #include "net/base/ip_address.h"
-#include "net/cert/internal/signature_algorithm.h"
+#include "net/cert/pki/parse_certificate.h"
+#include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 class GURL;
+
+namespace base {
+class FilePath;
+}
 
 namespace net {
 
@@ -38,11 +49,31 @@ class CertBuilder {
   CertBuilder(CRYPTO_BUFFER* orig_cert, CertBuilder* issuer);
   ~CertBuilder();
 
+  // Initializes a CertBuilder using the certificate and private key from
+  // |cert_and_key_file| as a template. If |issuer| is null then the generated
+  // certificate will be self-signed. Otherwise, it will be signed using
+  // |issuer|.
+  static std::unique_ptr<CertBuilder> FromFile(
+      const base::FilePath& cert_and_key_file,
+      CertBuilder* issuer);
+
+  // Initializes a CertBuilder that will return a certificate for the provided
+  // public key |spki_der|. It will be signed with the |issuer|, this builder
+  // will not have a private key, so it cannot produce self-signed certificates
+  // and |issuer| cannot be null.
+  static std::unique_ptr<CertBuilder> FromSubjectPublicKeyInfo(
+      base::span<const uint8_t> spki_der,
+      CertBuilder* issuer);
+
   // Creates a CertBuilder that will return a static |cert| and |key|.
   // This may be passed as the |issuer| param of another CertBuilder to create
   // a cert chain that ends in a pre-defined certificate.
   static std::unique_ptr<CertBuilder> FromStaticCert(CRYPTO_BUFFER* cert,
                                                      EVP_PKEY* key);
+  // Like FromStaticCert, but loads the certificate and private key from the
+  // PEM file |cert_and_key_file|.
+  static std::unique_ptr<CertBuilder> FromStaticCertFile(
+      const base::FilePath& cert_and_key_file);
 
   // Creates a simple leaf->intermediate->root chain of CertBuilders with no AIA
   // or CrlDistributionPoint extensions, and leaf having a subjectAltName of
@@ -50,6 +81,43 @@ class CertBuilder {
   static void CreateSimpleChain(std::unique_ptr<CertBuilder>* out_leaf,
                                 std::unique_ptr<CertBuilder>* out_intermediate,
                                 std::unique_ptr<CertBuilder>* out_root);
+
+  // Creates a simple leaf->root chain of CertBuilders with no AIA or
+  // CrlDistributionPoint extensions, and leaf having a subjectAltName of
+  // www.example.com.
+  static void CreateSimpleChain(std::unique_ptr<CertBuilder>* out_leaf,
+                                std::unique_ptr<CertBuilder>* out_root);
+
+  // Returns a compatible signature algorithm for |key|.
+  static absl::optional<SignatureAlgorithm> DefaultSignatureAlgorithmForKey(
+      EVP_PKEY* key);
+
+  // Signs |tbs_data| with |key| using |signature_algorithm| appending the
+  // signature onto |out_signature| and returns true if successful.
+  static bool SignData(SignatureAlgorithm signature_algorithm,
+                       base::StringPiece tbs_data,
+                       EVP_PKEY* key,
+                       CBB* out_signature);
+
+  static bool SignDataWithDigest(const EVP_MD* digest,
+                                 base::StringPiece tbs_data,
+                                 EVP_PKEY* key,
+                                 CBB* out_signature);
+
+  // Returns a DER encoded AlgorithmIdentifier TLV for |signature_algorithm|
+  // empty string on error.
+  static std::string SignatureAlgorithmToDer(
+      SignatureAlgorithm signature_algorithm);
+
+  // Generates |num_bytes| random bytes, and then returns the hex encoding of
+  // those bytes.
+  static std::string MakeRandomHexString(size_t num_bytes);
+
+  // Builds a DER encoded X.501 Name TLV containing a commonName of
+  // |common_name| with type |common_name_tag|.
+  static std::vector<uint8_t> BuildNameWithCommonNameOfType(
+      base::StringPiece common_name,
+      unsigned common_name_tag);
 
   // Sets a value for the indicated X.509 (v3) extension.
   void SetExtension(const der::Input& oid,
@@ -67,8 +135,8 @@ class CertBuilder {
   void SetCaIssuersUrl(const GURL& url);
 
   // Sets an AIA extension with the specified caIssuers and OCSP urls. Either
-  // list can have 0 or more URLs, but it is an error for both lists to be
-  // empty.
+  // list can have 0 or more URLs. If both are empty, the AIA extension is
+  // removed.
   void SetCaIssuersAndOCSPUrls(const std::vector<GURL>& ca_issuers_urls,
                                const std::vector<GURL>& ocsp_urls);
 
@@ -80,14 +148,28 @@ class CertBuilder {
   // with |urls| in distributionPoints.fullName.
   void SetCrlDistributionPointUrls(const std::vector<GURL>& urls);
 
-  void SetSubjectCommonName(const std::string common_name);
+  // Sets the issuer bytes that will be encoded into the generated certificate.
+  // If this is not called, or |issuer_tlv| is empty, the subject field from
+  // the issuer CertBuilder will be used.
+  void SetIssuerTLV(base::span<const uint8_t> issuer_tlv);
+
+  // Sets the subject to a Name with a single commonName attribute with
+  // the value |common_name| tagged as a UTF8String.
+  void SetSubjectCommonName(base::StringPiece common_name);
+
+  // Sets the subject to |subject_tlv|.
+  void SetSubjectTLV(base::span<const uint8_t> subject_tlv);
 
   // Sets the SAN for the certificate to a single dNSName.
-  void SetSubjectAltName(const std::string& dns_name);
+  void SetSubjectAltName(base::StringPiece dns_name);
 
   // Sets the SAN for the certificate to the given dns names and ip addresses.
   void SetSubjectAltNames(const std::vector<std::string>& dns_names,
                           const std::vector<IPAddress>& ip_addresses);
+
+  // Sets the keyUsage extension. |usages| should contain the KeyUsageBit
+  // values of the usages to set, and must not be empty.
+  void SetKeyUsages(const std::vector<KeyUsageBit>& usages);
 
   // Sets the extendedKeyUsage extension. |usages| should contain the DER OIDs
   // of the usage purposes to set, and must not be empty.
@@ -96,6 +178,12 @@ class CertBuilder {
   // Sets the certificatePolicies extension with the specified policyIdentifier
   // OIDs, which must be specified in dotted string notation (e.g. "1.2.3.4").
   void SetCertificatePolicies(const std::vector<std::string>& policy_oids);
+
+  // Sets the PolicyConstraints extension. If both |require_explicit_policy|
+  // and |inhibit_policy_mapping| are nullopt, the PolicyConstraints extension
+  // will removed.
+  void SetPolicyConstraints(absl::optional<uint64_t> require_explicit_policy,
+                            absl::optional<uint64_t> inhibit_policy_mapping);
 
   void SetValidity(base::Time not_before, base::Time not_after);
 
@@ -118,13 +206,45 @@ class CertBuilder {
   // introducing AKI/SKI chain building issues.
   void SetAuthorityKeyIdentifier(const std::string& authority_key_identifier);
 
-  // Sets the signature algorithm for the certificate to either
-  // sha256WithRSAEncryption or sha1WithRSAEncryption.
-  void SetSignatureAlgorithmRsaPkca1(DigestAlgorithm digest);
+  // Sets the signature algorithm to use in generating the certificate's
+  // signature. The signature algorithm should be compatible with
+  // the type of |issuer_->GetKey()|. If this method is not called, and the
+  // CertBuilder was initialized from a template cert, the signature algorithm
+  // of that cert will be used, or if there was no template cert, a default
+  // algorithm will be used base on the signing key type.
+  void SetSignatureAlgorithm(SignatureAlgorithm signature_algorithm);
 
-  void SetSignatureAlgorithm(std::string algorithm_tlv);
+  // Sets both signature AlgorithmIdentifier TLVs to encode in the generated
+  // certificate.
+  // This only affects the bytes written to the output - it does not affect what
+  // algorithm is actually used to perform the signature. To set the signature
+  // algorithm used to generate the certificate's signature, use
+  // |SetSignatureAlgorithm|. If this method is not called, the signature
+  // algorithm written to the output will be chosen to match the signature
+  // algorithm used to sign the certificate.
+  void SetSignatureAlgorithmTLV(base::StringPiece signature_algorithm_tlv);
+
+  // Set only the outer Certificate signatureAlgorithm TLV. See
+  // SetSignatureAlgorithmTLV comment for general notes.
+  void SetOuterSignatureAlgorithmTLV(base::StringPiece signature_algorithm_tlv);
+
+  // Set only the tbsCertificate signature TLV. See SetSignatureAlgorithmTLV
+  // comment for general notes.
+  void SetTBSSignatureAlgorithmTLV(base::StringPiece signature_algorithm_tlv);
 
   void SetRandomSerialNumber();
+
+  // Sets the private key for the generated certificate to an EC key. If a key
+  // was already set, it will be replaced.
+  void GenerateECKey();
+
+  // Sets the private key for the generated certificate to a 2048-bit RSA key.
+  // RSA key generation is expensive, so this should not be used unless an RSA
+  // key is specifically needed. If a key was already set, it will be replaced.
+  void GenerateRSAKey();
+
+  // Loads the private key for the generated certificate from |key_file|.
+  bool UseKeyFromFile(const base::FilePath& key_file);
 
   // Returns the CertBuilder that issues this certificate. (Will be |this| if
   // certificate is self-signed.)
@@ -152,18 +272,32 @@ class CertBuilder {
   // |not_before| and |not_after|, returning true on success.
   bool GetValidity(base::Time* not_before, base::Time* not_after) const;
 
-  // Returns the (RSA) key for the generated certificate.
+  // Returns the key for the generated certificate.
   EVP_PKEY* GetKey();
 
   // Returns an X509Certificate for the generated certificate.
   scoped_refptr<X509Certificate> GetX509Certificate();
 
   // Returns an X509Certificate for the generated certificate, including
-  // intermediate certificates.
+  // intermediate certificates (not including the self-signed root).
   scoped_refptr<X509Certificate> GetX509CertificateChain();
+
+  // Returns an X509Certificate for the generated certificate, including
+  // intermediate certificates and the self-signed root.
+  scoped_refptr<X509Certificate> GetX509CertificateFullChain();
 
   // Returns a copy of the certificate's DER.
   std::string GetDER();
+
+  // Returns a copy of the certificate as PEM encoded DER.
+  // Convenience method for debugging, to more easily log what cert is being
+  // created.
+  std::string GetPEM();
+
+  // Returns the full chain (including root) as PEM.
+  // Convenience method for debugging, to more easily log what certs are being
+  // created.
+  std::string GetPEMFullChain();
 
  private:
   // Initializes the CertBuilder, if |orig_cert| is non-null it will be used as
@@ -185,9 +319,6 @@ class CertBuilder {
   // be re-generated next time the DER is accessed.
   void Invalidate();
 
-  // Sets the |key_| to a 2048-bit RSA key.
-  void GenerateKey();
-
   // Generates a random Subject Key Identifier for the certificate. This is
   // necessary for Windows, which otherwises uses SKI/AKI matching for lookups
   // with greater precedence than subject/issuer name matching, and on newer
@@ -207,9 +338,8 @@ class CertBuilder {
   void InitFromCert(const der::Input& cert);
 
   // Assembles the CertBuilder into a TBSCertificate.
-  void BuildTBSCertificate(std::string* out);
-
-  bool AddSignatureAlgorithm(CBB* cbb);
+  void BuildTBSCertificate(base::StringPiece signature_algorithm_tlv,
+                           std::string* out);
 
   void GenerateCertificate();
 
@@ -219,16 +349,20 @@ class CertBuilder {
   };
 
   std::string validity_tlv_;
+  absl::optional<std::string> issuer_tlv_;
   std::string subject_tlv_;
-  std::string signature_algorithm_tlv_;
+  absl::optional<SignatureAlgorithm> signature_algorithm_;
+  std::string outer_signature_algorithm_tlv_;
+  std::string tbs_signature_algorithm_tlv_;
   uint64_t serial_number_ = 0;
+  int default_pkey_id_ = EVP_PKEY_EC;
 
   std::map<std::string, ExtensionValue> extensions_;
 
   bssl::UniquePtr<CRYPTO_BUFFER> cert_;
   bssl::UniquePtr<EVP_PKEY> key_;
 
-  CertBuilder* issuer_ = nullptr;
+  raw_ptr<CertBuilder> issuer_ = nullptr;
 };
 
 }  // namespace net

@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
+#include "third_party/blink/renderer/core/html_element_lookup_trie.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -88,26 +89,28 @@ bool HTMLMetaCharsetParser::CheckForMetaCharset(const char* data,
   while (tokenizer_->NextToken(input_, token_)) {
     bool end = token_.GetType() == HTMLToken::kEndTag;
     if (end || token_.GetType() == HTMLToken::kStartTag) {
-      String tag_name =
-          AttemptStaticStringCreation(token_.GetName(), kLikely8Bit);
-      if (!end) {
-        tokenizer_->UpdateStateFor(tag_name);
-        if (ThreadSafeMatch(tag_name, html_names::kMetaTag) && ProcessMeta()) {
+      const html_names::HTMLTag tag =
+          token_.GetName().IsEmpty()
+              ? html_names::HTMLTag::kUnknown
+              : lookupHTMLTag(token_.GetName().data(), token_.GetName().size());
+      if (!end && tag != html_names::HTMLTag::kUnknown) {
+        tokenizer_->UpdateStateFor(tag);
+        if (tag == html_names::HTMLTag::kMeta && ProcessMeta()) {
           done_checking_ = true;
           return true;
         }
       }
 
-      if (!ThreadSafeMatch(tag_name, html_names::kScriptTag) &&
-          !ThreadSafeMatch(tag_name, html_names::kNoscriptTag) &&
-          !ThreadSafeMatch(tag_name, html_names::kStyleTag) &&
-          !ThreadSafeMatch(tag_name, html_names::kLinkTag) &&
-          !ThreadSafeMatch(tag_name, html_names::kMetaTag) &&
-          !ThreadSafeMatch(tag_name, html_names::kObjectTag) &&
-          !ThreadSafeMatch(tag_name, html_names::kTitleTag) &&
-          !ThreadSafeMatch(tag_name, html_names::kBaseTag) &&
-          (end || !ThreadSafeMatch(tag_name, html_names::kHTMLTag)) &&
-          (end || !ThreadSafeMatch(tag_name, html_names::kHeadTag))) {
+      if (tag != html_names::HTMLTag::kScript &&
+          tag != html_names::HTMLTag::kNoscript &&
+          tag != html_names::HTMLTag::kStyle &&
+          tag != html_names::HTMLTag::kLink &&
+          tag != html_names::HTMLTag::kMeta &&
+          tag != html_names::HTMLTag::kObject &&
+          tag != html_names::HTMLTag::kTitle &&
+          tag != html_names::HTMLTag::kBase &&
+          (end || tag != html_names::HTMLTag::kHTML) &&
+          (end || tag != html_names::HTMLTag::kHead)) {
         in_head_section_ = false;
       }
     }

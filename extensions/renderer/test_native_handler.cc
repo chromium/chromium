@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "extensions/renderer/wake_event_page.h"
+#include "v8/include/v8-function.h"
 
 namespace extensions {
 

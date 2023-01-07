@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,13 @@ class WaylandOzoneUIControlsTestHelper : public ui::OzoneUIControlsTestHelper {
                       const gfx::Point& mouse_loc,
                       const gfx::Point& mouse_root_loc,
                       base::OnceClosure closure) override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void SendTouchEvent(gfx::AcceleratedWidget widget,
+                      int action,
+                      int id,
+                      const gfx::Point& touch_loc,
+                      base::OnceClosure closure) override;
+#endif
   void RunClosureAfterAllPendingUIEvents(base::OnceClosure closure) override;
   bool MustUseUiControlsForMoveCursorTo() override;
 

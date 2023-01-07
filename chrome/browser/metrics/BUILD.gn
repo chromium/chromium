@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,14 +15,11 @@ source_set("test_support") {
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser",
+    "//chrome/test:sync_integration_test_support",
     "//components/signin/public/identity_manager",
-    "//components/sync/test/fake_server",
+    "//components/sync:test_support",
     "//third_party/metrics_proto",
   ]
-
-  if (!is_fuchsia) {
-    deps += [ "//chrome/test:sync_integration_test_support" ]
-  }
 
   if (is_android) {
     deps += [ "//content/public/browser" ]

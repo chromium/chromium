@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host.h"
 
 namespace content {
@@ -24,8 +26,11 @@ SyntheticGestureController::SyntheticGestureController(
 }
 
 SyntheticGestureController::~SyntheticGestureController() {
-  if (!pending_gesture_queue_.IsEmpty())
-    GestureCompleted(SyntheticGesture::GESTURE_FINISHED);
+  while (!pending_gesture_queue_.IsEmpty()) {
+    pending_gesture_queue_.FrontCallback().Run(
+        SyntheticGesture::GESTURE_FINISHED);
+    pending_gesture_queue_.Pop();
+  }
 }
 
 void SyntheticGestureController::EnsureRendererInitialized(
@@ -88,8 +93,7 @@ void SyntheticGestureController::QueueSyntheticGesture(
 
 void SyntheticGestureController::StartTimer(bool high_frequency) {
   dispatch_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromMicroseconds(high_frequency ? 8333 : 16666),
+      FROM_HERE, base::Microseconds(high_frequency ? 8333 : 16666),
       base::BindRepeating(
           [](base::WeakPtr<SyntheticGestureController> weak_ptr) {
             if (weak_ptr)
@@ -147,6 +151,8 @@ void SyntheticGestureController::StartGesture() {
     EnsureRendererInitialized(std::move(on_initialized));
     return;
   }
+  dispatch_timer_.SetTaskRunner(
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
 
   if (!dispatch_timer_.IsRunning()) {
     DCHECK(!pending_gesture_queue_.IsEmpty());

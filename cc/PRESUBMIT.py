@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,8 +9,8 @@ for more details about the presubmit API built into depot_tools.
 """
 
 import re
-import string
 
+USE_PYTHON3 = True
 CC_SOURCE_FILES=(r'^cc[\\/].*\.(cc|h)$',)
 
 def CheckChangeLintsClean(input_api, output_api):
@@ -105,9 +105,9 @@ def CheckPassByValue(input_api,
 
   for f in input_api.AffectedSourceFiles(source_file_filter):
     contents = input_api.ReadFile(f, 'rb')
+    sep = '|'
     match = re.search(
-      r'\bconst +' + '(?P<type>(%s))&' %
-        string.join(pass_by_value_types, '|'),
+      r'\bconst +' + '(?P<type>(%s))&' % sep.join(pass_by_value_types),
       contents)
     if match:
       local_errors.append(output_api.PresubmitError(
@@ -278,29 +278,6 @@ def CheckForUseOfWrongClock(input_api,
   else:
     return []
 
-def CheckForDisallowMacros(input_api, output_api, allowlist=CC_SOURCE_FILES,
-    denylist=None):
-  denylist = tuple(denylist or input_api.DEFAULT_FILES_TO_SKIP)
-  source_file_filter = lambda x: input_api.FilterSourceFile(x, allowlist,
-      denylist)
-
-  disallow_macro_files = []
-
-  for f in input_api.AffectedSourceFiles(source_file_filter):
-    contents = input_api.ReadFile(f, 'rb')
-    # DISALLOW macros are not allowed, use deleted constructors instead.
-    if re.search(r"\bDISALLOW_COPY\(", contents) or \
-       re.search(r"\bDISALLOW_ASSIGN\(", contents) or \
-       re.search(r"\bDISALLOW_COPY_AND_ASSIGN\(", contents) or \
-       re.search(r"\bDISALLOW_IMPLICIT_CONSTRUCTORS\(", contents):
-      disallow_macro_files.append(f.LocalPath())
-
-  if disallow_macro_files:
-    return [output_api.PresubmitError(
-      'The following files use DISALLOW* macros. In cc, please use deleted constructors/operators instead.',
-      items=disallow_macro_files)]
-  return []
-
 def CheckChangeOnUpload(input_api, output_api):
   results = []
   results += CheckAsserts(input_api, output_api)
@@ -312,5 +289,4 @@ def CheckChangeOnUpload(input_api, output_api):
   results += CheckNamespace(input_api, output_api)
   results += CheckForUseOfWrongClock(input_api, output_api)
   results += FindUselessIfdefs(input_api, output_api)
-  results += CheckForDisallowMacros(input_api, output_api)
   return results

@@ -1,12 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://scanning/scanner_select.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
+import {ScannerArr, ScannerInfo} from 'chrome://scanning/scanning_app_types.js';
 import {getScannerDisplayName, tokenToString} from 'chrome://scanning/scanning_app_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -29,6 +31,7 @@ export function scannerSelectTest() {
         document.createElement('scanner-select'));
     assertTrue(!!scannerSelect);
     scannerSelect.loaded = false;
+    scannerSelect.scannerInfoMap = new Map();
     document.body.appendChild(scannerSelect);
   });
 
@@ -37,13 +40,15 @@ export function scannerSelectTest() {
     scannerSelect = null;
   });
 
+  // Verify the scanner select is initialized enabled with two expected
+  // scanners and the first scanner selected.
   test('initializeScannerSelect', () => {
     const select = scannerSelect.$$('select');
     assertTrue(!!select);
 
     const scannerArr = [
       createScanner(firstScannerId, firstScannerName),
-      createScanner(secondScannerId, secondScannerName)
+      createScanner(secondScannerId, secondScannerName),
     ];
     scannerSelect.scanners = scannerArr;
     flush();
@@ -55,10 +60,11 @@ export function scannerSelectTest() {
     assertEquals(tokenToString(firstScannerId), select.value);
   });
 
+  // Verify the scanners are sorted alphabetically.
   test('scannersSortedAlphabetically', () => {
     const scanners = [
       createScanner(secondScannerId, secondScannerName),
-      createScanner(firstScannerId, firstScannerName)
+      createScanner(firstScannerId, firstScannerName),
     ];
     scannerSelect.scanners = scanners;
     flush();
@@ -69,5 +75,45 @@ export function scannerSelectTest() {
         scannerSelect.scanners, (scanner) => getScannerDisplayName(scanner));
     assertEquals(
         tokenToString(firstScannerId), scannerSelect.selectedScannerId);
+  });
+
+  // Verify the last used scanner is selected if available.
+  test('selectLastUsedScanner', () => {
+    const secondScannerIdString = tokenToString(secondScannerId);
+    const secondScannerInfo = /** @type {!ScannerInfo} */ ({
+      token: secondScannerId,
+      displayName: secondScannerName,
+    });
+    const scanners = [
+      createScanner(firstScannerId, firstScannerName),
+      createScanner(secondScannerId, secondScannerName),
+    ];
+
+    scannerSelect.scannerInfoMap.set(secondScannerIdString, secondScannerInfo);
+    scannerSelect.lastUsedScannerId = secondScannerIdString;
+    scannerSelect.scanners = scanners;
+
+    return waitAfterNextRender(scannerSelect).then(() => {
+      assertEquals(secondScannerIdString, scannerSelect.selectedScannerId);
+      assertEquals(secondScannerIdString, scannerSelect.$$('select').value);
+    });
+  });
+
+  // Verify the first scanner in the dropdown is selected when the last used
+  // scanner is not set.
+  test('selectFirtScanner', () => {
+    const scanners = [
+      createScanner(secondScannerId, secondScannerName),
+      createScanner(firstScannerId, firstScannerName),
+    ];
+
+    scannerSelect.lastUsedScannerId = '';
+    scannerSelect.scanners = scanners;
+
+    const firstScannerIdString = tokenToString(firstScannerId);
+    return waitAfterNextRender(scannerSelect).then(() => {
+      assertEquals(firstScannerIdString, scannerSelect.selectedScannerId);
+      assertEquals(firstScannerIdString, scannerSelect.$$('select').value);
+    });
   });
 }

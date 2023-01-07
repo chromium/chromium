@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,10 @@ namespace chrome {
 // means "NTP" instead of the current URL.
 GURL GetURLToBookmark(content::WebContents* web_contents);
 
-// Fills in the URL and title for a bookmark of |web_contents|.
-void GetURLAndTitleToBookmark(content::WebContents* web_contents,
+// Fills in the URL and title for a bookmark of |web_contents|. If this function
+// returns false, there was no valid URL and neither |url| nor |title| have been
+// modified.
+bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
                               GURL* url,
                               std::u16string* title);
 
@@ -97,10 +99,12 @@ bool IsValidBookmarkDropLocation(Profile* profile,
                                  size_t index);
 
 #if defined(TOOLKIT_VIEWS)
-// |text_color| is the color of associated text and is used to derive the icon's
-// color.
-ui::ImageModel GetBookmarkFolderIcon(SkColor text_color);
-ui::ImageModel GetBookmarkManagedFolderIcon(SkColor text_color);
+enum class BookmarkFolderIconType {
+  kNormal,
+  kManaged,
+};
+ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
+                                     absl::variant<ui::ColorId, SkColor> color);
 #endif
 
 }  // namespace chrome

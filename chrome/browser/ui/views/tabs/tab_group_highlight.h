@@ -1,12 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HIGHLIGHT_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HIGHLIGHT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class TabGroupViews;
@@ -22,6 +23,8 @@ class TabGroupHighlight : public views::View {
   TabGroupHighlight(const TabGroupHighlight&) = delete;
   TabGroupHighlight& operator=(const TabGroupHighlight&) = delete;
 
+  void UpdateBounds(views::View* leading_view, views::View* trailing_view);
+
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
   bool GetCanProcessEventsWithinSubtree() const override;
@@ -30,7 +33,7 @@ class TabGroupHighlight : public views::View {
   // Returns the highlight shape, which immitates the tab highlight shape.
   SkPath GetPath() const;
 
-  TabGroupViews* const tab_group_views_;
+  const raw_ptr<TabGroupViews> tab_group_views_;
   const tab_groups::TabGroupId group_;
 };
 

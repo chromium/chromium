@@ -1,40 +1,32 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.signin.services;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.ProfileDataSource;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.test.util.FakeProfileDataSource;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.io.IOException;
@@ -45,22 +37,17 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
-public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase {
-    @Rule
-    public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
-
-    @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeProfileDataSource());
-
-    @Mock
-    private ProfileDataCache.Observer mObserver;
-
+public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTestCase {
     private static final String TEST_ACCOUNT_NAME = "test@example.com";
 
-    private final IdentityManager mIdentityManager =
-            new IdentityManager(0 /* nativeIdentityManager */, null /* OAuth2TokenService */);
+    @Rule
+    public final ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SIGN_IN)
+                    .build();
+
+    @Rule
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     private FrameLayout mContentView;
     private ImageView mImageView;
@@ -68,11 +55,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
 
     @Before
     public void setUp() {
-        initMocks(this);
-        AccountInfoService.init(mIdentityManager);
-        final ProfileDataSource.ProfileData profileData = new ProfileDataSource.ProfileData(
-                TEST_ACCOUNT_NAME, createAvatar(), "Full Name", "Given Name");
-        mAccountManagerTestRule.addAccount(profileData);
+        mAccountManagerTestRule.addAccount(TEST_ACCOUNT_NAME);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Activity activity = getActivity();
@@ -84,57 +67,85 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
         });
     }
 
-    @After
-    public void tearDown() {
-        AccountInfoService.resetForTests();
-    }
-
     @Test
     @MediumTest
     @Feature("RenderTest")
     public void testProfileDataWithChildBadge() throws IOException {
-        setUpProfileDataCache(true);
+        setUpProfileDataCache(R.drawable.ic_account_child_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
     }
 
     @Test
     @MediumTest
     @Feature("RenderTest")
+    public void testProfileDataWithSyncErrorBadge() throws IOException {
+        setUpProfileDataCache(R.drawable.ic_sync_badge_error_20dp);
+        mRenderTestRule.render(mImageView, "profile_data_cache_with_sync_error_badge");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
     public void testProfileDataWithoutBadge() throws IOException {
-        setUpProfileDataCache(false);
+        setUpProfileDataCache(0);
         mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
     }
 
-    private void setUpProfileDataCache(boolean withBadge) {
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testProfileDataWithSettingBadgeDynamically() throws IOException {
+        setUpProfileDataCache(0);
+        mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
+        setBadgeConfig(R.drawable.ic_sync_badge_error_20dp);
+        mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testProfileDataWithRemovingBadgeDynamically() throws IOException {
+        setUpProfileDataCache(R.drawable.ic_account_child_20dp);
+        mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
+        setBadgeConfig(0);
+        mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testProfileDataWithExistingBadge() throws IOException {
+        setUpProfileDataCache(R.drawable.ic_account_child_20dp);
+        mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
+        setBadgeConfig(R.drawable.ic_sync_badge_error_20dp);
+        mRenderTestRule.render(mImageView, "profile_data_cache_with_sync_error_badge");
+    }
+
+    private void setUpProfileDataCache(@DrawableRes int badgeResId) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileDataCache = withBadge
-                    ? ProfileDataCache.createWithDefaultImageSize(
-                            getActivity(), R.drawable.ic_account_child_20dp)
+            mProfileDataCache = badgeResId != 0
+                    ? ProfileDataCache.createWithDefaultImageSize(getActivity(), badgeResId)
                     : ProfileDataCache.createWithoutBadge(getActivity(), R.dimen.user_picture_size);
-            // ProfileDataCache only populates the cache when an observer is added.
-            mProfileDataCache.addObserver(mObserver);
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            return !TextUtils.isEmpty(
+                    mProfileDataCache.getProfileDataOrDefault(TEST_ACCOUNT_NAME).getFullName());
+        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             mImageView.setImageDrawable(
                     mProfileDataCache.getProfileDataOrDefault(TEST_ACCOUNT_NAME).getImage());
         });
     }
 
-    /**
-     * Creates a simple dummy bitmap to use as the avatar picture.
-     */
-    private Bitmap createAvatar() {
-        final int avatarSize =
-                getActivity().getResources().getDimensionPixelSize(R.dimen.user_picture_size);
-        Assert.assertTrue("avatarSize must not be 0", avatarSize > 0);
-        Bitmap result = Bitmap.createBitmap(avatarSize, avatarSize, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(result);
-        canvas.drawColor(Color.RED);
-
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-
-        paint.setColor(Color.BLUE);
-        canvas.drawCircle(0, 0, avatarSize, paint);
-
-        return result;
+    private void setBadgeConfig(@DrawableRes int badgeResId) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mProfileDataCache.setBadge(badgeResId); });
+        CriteriaHelper.pollUiThread(() -> {
+            return !TextUtils.isEmpty(
+                    mProfileDataCache.getProfileDataOrDefault(TEST_ACCOUNT_NAME).getFullName());
+        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mImageView.setImageDrawable(
+                    mProfileDataCache.getProfileDataOrDefault(TEST_ACCOUNT_NAME).getImage());
+        });
     }
 }

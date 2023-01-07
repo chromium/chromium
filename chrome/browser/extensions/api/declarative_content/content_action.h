@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/values.h"
+#include "extensions/browser/user_script_loader.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/user_script.h"
-
-namespace base {
-class Value;
-class DictionaryValue;
-}
 
 namespace content {
 class BrowserContext;
@@ -35,9 +33,9 @@ class ExtensionUserScriptLoader;
 class ContentAction {
  public:
   struct ApplyInfo {
-    const Extension* extension;
-    content::BrowserContext* browser_context;
-    content::WebContents* tab;
+    raw_ptr<const Extension> extension;
+    raw_ptr<content::BrowserContext> browser_context;
+    raw_ptr<content::WebContents> tab;
     int priority;
   };
 
@@ -68,7 +66,8 @@ class ContentAction {
 };
 
 // Action that injects a content script.
-class RequestContentScript : public ContentAction {
+class RequestContentScript : public ContentAction,
+                             public UserScriptLoader::Observer {
  public:
   struct ScriptData;
 
@@ -76,15 +75,18 @@ class RequestContentScript : public ContentAction {
                        const Extension* extension,
                        const ScriptData& script_data);
 
+  RequestContentScript(const RequestContentScript&) = delete;
+  RequestContentScript& operator=(const RequestContentScript&) = delete;
+
   ~RequestContentScript() override;
 
   static std::unique_ptr<ContentAction> Create(
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::DictionaryValue* dict,
+      const base::Value::Dict* dict,
       std::string* error);
 
-  static bool InitScriptData(const base::DictionaryValue* dict,
+  static bool InitScriptData(const base::Value::Dict* dict,
                              std::string* error,
                              ScriptData* script_data);
 
@@ -103,10 +105,15 @@ class RequestContentScript : public ContentAction {
   void InstructRenderProcessToInject(content::WebContents* contents,
                                      const Extension* extension) const;
 
-  UserScript script_;
-  ExtensionUserScriptLoader* script_loader_ = nullptr;
+  // UserScriptLoader::Observer:
+  void OnScriptsLoaded(UserScriptLoader* loader,
+                       content::BrowserContext* browser_context) override;
+  void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) override;
 
-  DISALLOW_COPY_AND_ASSIGN(RequestContentScript);
+  UserScript script_;
+  raw_ptr<ExtensionUserScriptLoader> script_loader_ = nullptr;
+  base::ScopedObservation<UserScriptLoader, UserScriptLoader::Observer>
+      scoped_observation_{this};
 };
 
 }  // namespace extensions

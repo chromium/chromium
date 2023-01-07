@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ui/base/prediction/input_filter.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {
@@ -19,6 +18,10 @@ constexpr double kEpsilon = 0.0001;
 class InputFilterTest : public testing::Test {
  public:
   InputFilterTest();
+
+  InputFilterTest(const InputFilterTest&) = delete;
+  InputFilterTest& operator=(const InputFilterTest&) = delete;
+
   ~InputFilterTest() override;
 
   void TestCloneFilter();
@@ -27,8 +30,6 @@ class InputFilterTest : public testing::Test {
 
  protected:
   std::unique_ptr<InputFilter> filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputFilterTest);
 };
 
 }  // namespace test

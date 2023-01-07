@@ -31,7 +31,6 @@
 #include <math.h>
 #include <algorithm>
 #include "base/notreached.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
 
@@ -60,36 +59,39 @@ double DistanceEffect::LinearGain(double distance) {
   // Clamp refDistance and distance according to the spec.
   double dref = std::min(ref_distance_, max_distance_);
   double dmax = std::max(ref_distance_, max_distance_);
-  distance = clampTo(distance, dref, dmax);
+  distance = ClampTo(distance, dref, dmax);
 
-  if (dref == dmax)
+  if (dref == dmax) {
     return 1 - rolloff_factor_;
+  }
 
   // We want a gain that decreases linearly from m_refDistance to
   // m_maxDistance. The gain is 1 at m_refDistance.
-  return (1.0 - clampTo(rolloff_factor_, 0.0, 1.0) * (distance - dref) /
+  return (1.0 - ClampTo(rolloff_factor_, 0.0, 1.0) * (distance - dref) /
                     (dmax - dref));
 }
 
 double DistanceEffect::InverseGain(double distance) {
-  if (ref_distance_ == 0)
+  if (ref_distance_ == 0) {
     return 0;
+  }
 
   // Clamp distance according to spec
-  distance = clampTo(distance, ref_distance_);
+  distance = ClampTo(distance, ref_distance_);
 
-  return ref_distance_ / (ref_distance_ + clampTo(rolloff_factor_, 0.0) *
+  return ref_distance_ / (ref_distance_ + ClampTo(rolloff_factor_, 0.0) *
                                               (distance - ref_distance_));
 }
 
 double DistanceEffect::ExponentialGain(double distance) {
-  if (ref_distance_ == 0)
+  if (ref_distance_ == 0) {
     return 0;
+  }
 
   // Clamp distance according to spec
-  distance = clampTo(distance, ref_distance_);
+  distance = ClampTo(distance, ref_distance_);
 
-  return fdlibm::pow(distance / ref_distance_, -clampTo(rolloff_factor_, 0.0));
+  return fdlibm::pow(distance / ref_distance_, -ClampTo(rolloff_factor_, 0.0));
 }
 
 }  // namespace blink

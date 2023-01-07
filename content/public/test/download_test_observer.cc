@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,7 +33,7 @@ DownloadUpdatedObserver::~DownloadUpdatedObserver() {
 }
 
 bool DownloadUpdatedObserver::WaitForEvent() {
-  if (item_ && filter_.Run(item_))
+  if (item_ && filter_.Run(item_.get()))
     event_seen_ = true;
   if (event_seen_)
     return true;
@@ -46,7 +46,7 @@ bool DownloadUpdatedObserver::WaitForEvent() {
 
 void DownloadUpdatedObserver::OnDownloadUpdated(download::DownloadItem* item) {
   DCHECK_EQ(item_, item);
-  if (filter_.Run(item_))
+  if (filter_.Run(item_.get()))
     event_seen_ = true;
   if (waiting_ && event_seen_)
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
@@ -463,10 +463,12 @@ DownloadTestItemCreationObserver::callback() {
 
 SavePackageFinishedObserver::SavePackageFinishedObserver(
     DownloadManager* manager,
-    base::OnceClosure callback)
+    base::OnceClosure callback,
+    std::set<download::DownloadItem::DownloadState> final_states)
     : download_manager_(manager),
       download_(nullptr),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      final_states_(std::move(final_states)) {
   download_manager_->AddObserver(this);
 }
 
@@ -480,8 +482,7 @@ SavePackageFinishedObserver::~SavePackageFinishedObserver() {
 
 void SavePackageFinishedObserver::OnDownloadUpdated(
     download::DownloadItem* download) {
-  if (download->GetState() == download::DownloadItem::COMPLETE ||
-      download->GetState() == download::DownloadItem::CANCELLED) {
+  if (final_states_.count(download->GetState())) {
     std::move(callback_).Run();
   }
 }

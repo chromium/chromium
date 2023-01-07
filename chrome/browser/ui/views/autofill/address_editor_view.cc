@@ -1,15 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -50,92 +54,51 @@ void AddressEditorView::SetTextInputFieldValueForTesting(
 
 void AddressEditorView::CreateEditorView() {
   text_fields_.clear();
-  constexpr int kRowHorizontalInsets = 16;
 
-  // The editor view is padded horizontally.
-  SetBorder(views::CreateEmptyBorder(0, kRowHorizontalInsets, 0,
-                                     kRowHorizontalInsets));
+  const int kBetweenChildSpacing =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_CONTROL_LIST_VERTICAL);
 
-  // All views have fixed size except the Field which stretches. The fixed
-  // padding at the end is computed so that Field views have a minimum of
-  // 176/272dp (short/long fields) as per spec.
-  // ______________________________________________________
-  // |Label | 16dp pad | Field (flex) |  Computed Padding |
-  // |______|__________|______________|___________________|
-  constexpr int kLabelWidth = 140;
-  constexpr int kDialogMinWidth = 512;
-  // This is the horizontal padding between the label and the field.
-  constexpr int kLabelInputFieldHorizontalPadding = 16;
-  constexpr int kShortFieldMinimumWidth = 176;
-  constexpr int kLongFieldMinimumWidth = 272;
-
-  using ColumnSize = views::GridLayout::ColumnSize;
-  views::GridLayout* editor_layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  // Column set for short fields.
-  views::ColumnSet* columns_short = editor_layout->AddColumnSet(0);
-  columns_short->AddColumn(
-      views::GridLayout::LEADING, views::GridLayout::CENTER,
-      views::GridLayout::kFixedSize, ColumnSize::kFixed, kLabelWidth, 0);
-  columns_short->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                  kLabelInputFieldHorizontalPadding);
-  // The field view column stretches.
-  columns_short->AddColumn(views::GridLayout::LEADING,
-                           views::GridLayout::CENTER, 1.0,
-                           ColumnSize::kUsePreferred, 0, 0);
-  // The padding at the end is fixed, computed to make sure the short field
-  // maintains its minimum width.
-  int short_padding = kDialogMinWidth - kShortFieldMinimumWidth - kLabelWidth -
-                      (2 * kRowHorizontalInsets) -
-                      kLabelInputFieldHorizontalPadding;
-  columns_short->AddPaddingColumn(views::GridLayout::kFixedSize, short_padding);
-
-  // Column set for long fields.
-  views::ColumnSet* columns_long = editor_layout->AddColumnSet(1);
-  columns_long->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                          views::GridLayout::kFixedSize, ColumnSize::kFixed,
-                          kLabelWidth, 0);
-  columns_long->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                 kLabelInputFieldHorizontalPadding);
-  // The field view column stretches.
-  columns_long->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                          1.0, ColumnSize::kUsePreferred, 0, 0);
-
-  // The padding at the end is fixed, computed to make sure the long field
-  // maintains its minimum width.
-  int long_padding = kDialogMinWidth - kLongFieldMinimumWidth - kLabelWidth -
-                     (2 * kRowHorizontalInsets) -
-                     kLabelInputFieldHorizontalPadding;
-  columns_long->AddPaddingColumn(views::GridLayout::kFixedSize, long_padding);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::VH(kBetweenChildSpacing / 2, 0), kBetweenChildSpacing));
 
   for (const auto& field : controller_->editor_fields()) {
-    CreateInputField(editor_layout, field);
+    CreateInputField(field);
   }
 }
 
+// Field views have a width of 196/260dp (short/long fields) as per spec.
+// __________________________________
+// |Label | 16dp pad | Field (flex) |
+// |______|__________|______________|
+//
 // Each input field is a 2 cells.
 // +----------------------------------------------------------+
 // | Field Label           | Input field (textfield/combobox) |
 // +----------------------------------------------------------+
-views::View* AddressEditorView::CreateInputField(views::GridLayout* layout,
-                                                 const EditorField& field) {
-  int column_set =
-      field.length_hint == EditorField::LengthHint::HINT_SHORT ? 0 : 1;
-
-  // This is the top padding for every row.
-  constexpr int kInputRowSpacing = 6;
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, column_set,
-                              views::GridLayout::kFixedSize, kInputRowSpacing);
-
-  std::unique_ptr<views::Label> label =
-      std::make_unique<views::Label>(field.label);
-
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  layout->AddView(std::move(label));
-
-  views::View* focusable_field = nullptr;
+views::View* AddressEditorView::CreateInputField(const EditorField& field) {
+  constexpr int kLabelWidth = 140;
+  // This is the horizontal padding between the label and the field.
+  constexpr int kLabelInputFieldHorizontalPadding = 16;
+  constexpr int kShortFieldWidth = 196;
+  constexpr int kLongFieldWidth = 260;
   constexpr int kInputFieldHeight = 28;
+
+  views::Label* label;
+
+  views::BoxLayoutView* field_layout = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetBetweenChildSpacing(kLabelInputFieldHorizontalPadding)
+          .AddChildren(views::Builder<views::Label>()
+                           .CopyAddressTo(&label)
+                           .SetText(field.label)
+                           .SetMultiLine(true)
+                           .SetHorizontalAlignment(gfx::ALIGN_LEFT))
+          .Build());
+
+  label->SizeToFit(kLabelWidth);
+  views::View* focusable_field = nullptr;
 
   switch (field.control_type) {
     case EditorField::ControlType::TEXTFIELD:
@@ -154,11 +117,14 @@ views::View* AddressEditorView::CreateInputField(views::GridLayout* layout,
       text_field->SetID(GetInputFieldViewId(field.type));
       text_fields_.insert(std::make_pair(text_field.get(), field));
 
+      field.length_hint == EditorField::LengthHint::HINT_SHORT
+          ? text_field->SetPreferredSize(
+                gfx::Size(kShortFieldWidth, kInputFieldHeight))
+          : text_field->SetPreferredSize(
+                gfx::Size(kLongFieldWidth, kInputFieldHeight));
+
       // |text_field| will now be owned by |row|.
-      focusable_field =
-          layout->AddView(std::move(text_field), 1.0, 1.0,
-                          views::GridLayout::FILL, views::GridLayout::FILL,
-                          views::GridLayout::kFixedSize, kInputFieldHeight);
+      focusable_field = field_layout->AddChildView(std::move(text_field));
       break;
     }
     case EditorField::ControlType::COMBOBOX: {
@@ -166,15 +132,10 @@ views::View* AddressEditorView::CreateInputField(views::GridLayout* layout,
       std::unique_ptr<views::Combobox> combobox =
           CreateCountryCombobox(field.label);
       // |combobox| will now be owned by |row|.
-      focusable_field =
-          layout->AddView(std::move(combobox), 1.0, 1.0,
-                          views::GridLayout::FILL, views::GridLayout::FILL,
-                          views::GridLayout::kFixedSize, kInputFieldHeight);
+      focusable_field = field_layout->AddChildView(std::move(combobox));
       break;
     }
   }
-  // Bottom padding for the row.
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, kInputRowSpacing);
   return focusable_field;
 }
 
@@ -199,7 +160,7 @@ std::unique_ptr<views::Combobox> AddressEditorView::CreateCountryCombobox(
 }
 
 void AddressEditorView::UpdateEditorView() {
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
   CreateEditorView();
   PreferredSizeChanged();
 
@@ -209,7 +170,7 @@ void AddressEditorView::UpdateEditorView() {
         GetViewByID(GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)));
     DCHECK(country_combo_box);
     DCHECK_EQ(controller_->GetCountriesSize(),
-              static_cast<size_t>(country_combo_box->GetRowCount()));
+              country_combo_box->GetRowCount());
     country_combo_box->SetSelectedIndex(controller_->chosen_country_index());
   } else if (controller_->GetCountriesSize() > 0UL) {
     controller_->set_chosen_country_index(0UL);
@@ -227,7 +188,7 @@ void AddressEditorView::SaveFieldsToProfile() {
   // the view.
   if (combobox) {
     std::u16string country(
-        combobox->GetTextForRow(combobox->GetSelectedIndex()));
+        combobox->GetTextForRow(combobox->GetSelectedIndex().value()));
     controller_->SetProfileInfo(autofill::ADDRESS_HOME_COUNTRY, country);
   }
 
@@ -239,10 +200,9 @@ void AddressEditorView::SaveFieldsToProfile() {
 void AddressEditorView::OnPerformAction(views::Combobox* combobox) {
   if (combobox->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY))
     return;
-  DCHECK_GE(combobox->GetSelectedIndex(), 0);
-  if (controller_->chosen_country_index() !=
-      static_cast<size_t>(combobox->GetSelectedIndex())) {
-    controller_->set_chosen_country_index(combobox->GetSelectedIndex());
+  DCHECK(combobox->GetSelectedIndex().has_value());
+  if (controller_->chosen_country_index() != combobox->GetSelectedIndex()) {
+    controller_->set_chosen_country_index(combobox->GetSelectedIndex().value());
     OnDataChanged();
   }
 }
@@ -254,5 +214,8 @@ void AddressEditorView::OnDataChanged() {
       FROM_HERE, base::BindOnce(&AddressEditorView::UpdateEditorView,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
+
+BEGIN_METADATA(AddressEditorView, views::View)
+END_METADATA
 
 }  // namespace autofill

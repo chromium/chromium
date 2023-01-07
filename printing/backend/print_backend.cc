@@ -1,13 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "printing/backend/print_backend.h"
 
 #include <string>
+#include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
 namespace {
 
@@ -45,7 +46,7 @@ bool PrinterBasicInfo::operator==(const PrinterBasicInfo& other) const {
          is_default == other.is_default && options == other.options;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 AdvancedCapabilityValue::AdvancedCapabilityValue() = default;
 
@@ -65,6 +66,10 @@ bool AdvancedCapabilityValue::operator==(
 }
 
 AdvancedCapability::AdvancedCapability() = default;
+
+AdvancedCapability::AdvancedCapability(const std::string& name,
+                                       AdvancedCapability::Type type)
+    : name(name), type(type) {}
 
 AdvancedCapability::AdvancedCapability(
     const std::string& name,
@@ -89,7 +94,43 @@ bool AdvancedCapability::operator==(const AdvancedCapability& other) const {
          values == other.values;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+
+PageOutputQualityAttribute::PageOutputQualityAttribute() = default;
+
+PageOutputQualityAttribute::PageOutputQualityAttribute(
+    const std::string& display_name,
+    const std::string& name)
+    : display_name(display_name), name(name) {}
+
+PageOutputQualityAttribute::~PageOutputQualityAttribute() = default;
+
+bool PageOutputQualityAttribute::operator==(
+    const PageOutputQualityAttribute& other) const {
+  return display_name == other.display_name && name == other.name;
+}
+
+bool PageOutputQualityAttribute::operator<(
+    const ::printing::PageOutputQualityAttribute& other) const {
+  return std::tie(name, display_name) <
+         std::tie(other.name, other.display_name);
+}
+
+PageOutputQuality::PageOutputQuality() = default;
+
+PageOutputQuality::PageOutputQuality(
+    PageOutputQualityAttributes qualities,
+    absl::optional<std::string> default_quality)
+    : qualities(std::move(qualities)),
+      default_quality(std::move(default_quality)) {}
+
+PageOutputQuality::PageOutputQuality(const PageOutputQuality& other) = default;
+
+PageOutputQuality::~PageOutputQuality() = default;
+
+#endif  // BUILDFLAG(IS_WIN)
 
 bool PrinterSemanticCapsAndDefaults::Paper::operator==(
     const PrinterSemanticCapsAndDefaults::Paper& other) const {
@@ -111,7 +152,7 @@ PrinterCapsAndDefaults::PrinterCapsAndDefaults(
 
 PrinterCapsAndDefaults::~PrinterCapsAndDefaults() = default;
 
-PrintBackend::PrintBackend(const std::string& locale) : locale_(locale) {}
+PrintBackend::PrintBackend() = default;
 
 PrintBackend::~PrintBackend() = default;
 
@@ -121,19 +162,8 @@ scoped_refptr<PrintBackend> PrintBackend::CreateInstance(
   return g_print_backend_for_test
              ? g_print_backend_for_test
              : PrintBackend::CreateInstanceImpl(
-                   /*print_backend_settings=*/nullptr, locale,
-                   /*for_cloud_print=*/false);
+                   /*print_backend_settings=*/nullptr, locale);
 }
-
-#if defined(USE_CUPS)
-// static
-scoped_refptr<PrintBackend> PrintBackend::CreateInstanceForCloudPrint(
-    const base::DictionaryValue* print_backend_settings) {
-  return PrintBackend::CreateInstanceImpl(print_backend_settings,
-                                          /*locale=*/std::string(),
-                                          /*for_cloud_print=*/true);
-}
-#endif  // defined(USE_CUPS)
 
 // static
 void PrintBackend::SetPrintBackendForTesting(PrintBackend* backend) {

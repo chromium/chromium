@@ -31,6 +31,7 @@
 #include "third_party/blink/public/web/web_security_policy.h"
 
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -71,6 +72,11 @@ void WebSecurityPolicy::
         const WebString& scheme) {
   SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(
       scheme);
+}
+
+void WebSecurityPolicy::RegisterURLSchemeAsAllowingSharedArrayBuffers(
+    const WebString& scheme) {
+  SchemeRegistry::RegisterURLSchemeAsAllowingSharedArrayBuffers(scheme);
 }
 
 void WebSecurityPolicy::AddOriginAccessAllowListEntry(
@@ -137,6 +143,19 @@ void WebSecurityPolicy::RegisterURLSchemeAsAllowedForReferrer(
 
 void WebSecurityPolicy::RegisterURLSchemeAsError(const WebString& scheme) {
   SchemeRegistry::RegisterURLSchemeAsError(scheme);
+}
+
+void WebSecurityPolicy::RegisterURLSchemeAsExtension(const WebString& scheme) {
+  CommonSchemeRegistry::RegisterURLSchemeAsExtension(scheme.Ascii());
+}
+
+void WebSecurityPolicy::RegisterURLSchemeAsWebUI(const WebString& scheme) {
+  SchemeRegistry::RegisterURLSchemeAsWebUI(scheme);
+}
+
+void WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(
+    const WebString& scheme) {
+  SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(scheme);
 }
 
 }  // namespace blink

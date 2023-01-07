@@ -27,8 +27,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_STATE_H_
 
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -47,7 +48,7 @@ class LayoutView;
 // LayoutState incurs some memory overhead and is pretty intrusive (see next
 // paragraphs about those downsides).
 //
-// To use LayoutState, the layout() functions have to allocate a new LayoutSTate
+// To use LayoutState, the layout() functions have to allocate a new LayoutState
 // object on the stack whenever the LayoutObject creates a new coordinate system
 // (which is pretty much all objects but LayoutTableRow).
 //
@@ -112,6 +113,8 @@ class LayoutState {
 
   LayoutObject& GetLayoutObject() const { return *layout_object_; }
 
+  void Trace(Visitor*) const;
+
  private:
   // Do not add anything apart from bitfields until after m_flowThread. See
   // https://bugs.webkit.org/show_bug.cgi?id=100173
@@ -120,7 +123,7 @@ class LayoutState {
   bool containing_block_logical_width_changed_ : 1;
   bool pagination_state_changed_ : 1;
 
-  LayoutFlowThread* flow_thread_;
+  WeakMember<LayoutFlowThread> flow_thread_;
 
   LayoutState* next_;
 
@@ -138,7 +141,7 @@ class LayoutState {
 
   AtomicString input_page_name_;
 
-  LayoutObject* const layout_object_;
+  const Member<LayoutObject> layout_object_;
 };
 
 }  // namespace blink

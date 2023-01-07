@@ -1,11 +1,22 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/test/compositor_frame_helpers.h"
 
 #include <memory>
+#include <set>
 #include <utility>
+
+#include "base/bind.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/quads/surface_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/quads/yuv_video_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 
 namespace viz {
 namespace {
@@ -13,7 +24,264 @@ namespace {
 constexpr gfx::Rect kDefaultOutputRect(20, 20);
 constexpr gfx::Rect kDefaultDamageRect(0, 0);
 
+constexpr CompositorRenderPassId kInvalidRenderPassId;
+
+// A stub CopyOutputRequest for testing that ignores the result.
+class StubCopyOutputRequest : public CopyOutputRequest {
+ public:
+  StubCopyOutputRequest()
+      : CopyOutputRequest(
+            ResultFormat::RGBA,
+            ResultDestination::kSystemMemory,
+            base::BindOnce([](std::unique_ptr<CopyOutputResult>) {})) {}
+  ~StubCopyOutputRequest() override = default;
+
+  base::WeakPtr<CopyOutputRequest> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<CopyOutputRequest> weak_factory_{this};
+};
+
 }  // namespace
+
+RenderPassBuilder::RenderPassBuilder(CompositorRenderPassId id,
+                                     const gfx::Size& output_size)
+    : RenderPassBuilder(id, gfx::Rect(output_size)) {}
+
+RenderPassBuilder::RenderPassBuilder(CompositorRenderPassId id,
+                                     const gfx::Rect& output_rect)
+    : pass_(CompositorRenderPass::Create()) {
+  CHECK(!output_rect.IsEmpty());
+  pass_->id = id;
+  pass_->output_rect = output_rect;
+  pass_->damage_rect = output_rect;  // Full damage by default.
+}
+
+RenderPassBuilder::RenderPassBuilder(const gfx::Size& output_size)
+    : RenderPassBuilder(kInvalidRenderPassId, output_size) {}
+
+RenderPassBuilder::RenderPassBuilder(const gfx::Rect& output_rect)
+    : RenderPassBuilder(kInvalidRenderPassId, output_rect) {}
+
+RenderPassBuilder::~RenderPassBuilder() = default;
+
+bool RenderPassBuilder::IsValid() const {
+  return pass_ && !pass_->quad_list.empty();
+}
+
+std::unique_ptr<CompositorRenderPass> RenderPassBuilder::Build() {
+  return std::move(pass_);
+}
+
+RenderPassBuilder& RenderPassBuilder::SetDamageRect(
+    const gfx::Rect& damage_rect) {
+  CHECK(pass_->output_rect.Contains(damage_rect));
+  pass_->damage_rect = damage_rect;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetCacheRenderPass(bool val) {
+  pass_->cache_render_pass = val;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetHasDamageFromContributingContent(
+    bool val) {
+  pass_->has_damage_from_contributing_content = val;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::AddFilter(
+    const cc::FilterOperation& filter) {
+  pass_->filters.Append(filter);
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::AddBackdropFilter(
+    const cc::FilterOperation& filter) {
+  pass_->backdrop_filters.Append(filter);
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::AddStubCopyOutputRequest(
+    base::WeakPtr<CopyOutputRequest>* request_out) {
+  auto request = std::make_unique<StubCopyOutputRequest>();
+  if (request_out)
+    *request_out = request->GetWeakPtr();
+  pass_->copy_requests.push_back(std::move(request));
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::AddSolidColorQuad(
+    const gfx::Rect& rect,
+    SkColor4f color,
+    SolidColorQuadParms params) {
+  return AddSolidColorQuad(rect, rect, color, params);
+}
+
+RenderPassBuilder& RenderPassBuilder::AddSolidColorQuad(
+    const gfx::Rect& rect,
+    const gfx::Rect& visible_rect,
+    SkColor4f color,
+    SolidColorQuadParms params) {
+  auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
+  auto* quad = pass_->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  quad->SetNew(sqs, rect, visible_rect, color, params.force_anti_aliasing_off);
+
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::AddSurfaceQuad(
+    const gfx::Rect& rect,
+    const SurfaceRange& surface_range,
+    const SurfaceQuadParams& params) {
+  return AddSurfaceQuad(rect, rect, surface_range, params);
+}
+
+RenderPassBuilder& RenderPassBuilder::AddSurfaceQuad(
+    const gfx::Rect& rect,
+    const gfx::Rect& visible_rect,
+    const SurfaceRange& surface_range,
+    const SurfaceQuadParams& params) {
+  auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
+  auto* quad = pass_->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
+  // TODO (crbug.com/1308932) Change SurfaceQuadParams to use SKColor4f
+  quad->SetNew(sqs, rect, visible_rect, surface_range,
+               params.default_background_color,
+               params.stretch_content_to_fill_bounds);
+  quad->is_reflection = params.is_reflection;
+  quad->allow_merge = params.allow_merge;
+
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::AddRenderPassQuad(
+    const gfx::Rect& rect,
+    CompositorRenderPassId id,
+    const RenderPassQuadParams& params) {
+  return AddRenderPassQuad(rect, rect, id, params);
+}
+
+RenderPassBuilder& RenderPassBuilder::AddRenderPassQuad(
+    const gfx::Rect& rect,
+    const gfx::Rect& visible_rect,
+    CompositorRenderPassId id,
+    const RenderPassQuadParams& params) {
+  auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
+  auto* quad = pass_->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
+  quad->SetAll(sqs, rect, visible_rect, params.needs_blending, id,
+               kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::Vector2dF(),
+               gfx::PointF(), gfx::RectF(), params.force_anti_aliasing_off,
+               /*backdrop_filter_quality=*/1.0f,
+               params.intersects_damage_under);
+
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::AddTextureQuad(
+    const gfx::Rect& rect,
+    ResourceId resource_id,
+    const TextureQuadParams& params) {
+  return AddTextureQuad(rect, rect, resource_id, params);
+}
+
+RenderPassBuilder& RenderPassBuilder::AddTextureQuad(
+    const gfx::Rect& rect,
+    const gfx::Rect& visible_rect,
+    ResourceId resource_id,
+    const TextureQuadParams& params) {
+  auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
+  auto* quad = pass_->CreateAndAppendDrawQuad<TextureDrawQuad>();
+  quad->SetAll(sqs, rect, visible_rect, params.needs_blending, resource_id,
+               rect.size(), params.premultiplied_alpha, gfx::PointF(0.0f, 0.0f),
+               gfx::PointF(1.0f, 1.0f), params.background_color,
+               params.vertex_opacity, params.flipped, params.nearest_neighbor,
+               params.secure_output_only, gfx::ProtectedVideoType::kClear);
+
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetQuadToTargetTransform(
+    const gfx::Transform& transform) {
+  GetLastQuadSharedQuadState()->quad_to_target_transform = transform;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetQuadToTargetTranslation(
+    int translate_x,
+    int translate_y) {
+  gfx::Transform transform;
+  transform.Translate(translate_x, translate_y);
+  return SetQuadToTargetTransform(transform);
+}
+
+RenderPassBuilder& RenderPassBuilder::SetQuadOpacity(float opacity) {
+  CHECK_GE(opacity, 0.0f);
+  CHECK_LE(opacity, 1.0f);
+  GetLastQuadSharedQuadState()->opacity = opacity;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetQuadClipRect(
+    absl::optional<gfx::Rect> clip_rect) {
+  CHECK(!clip_rect || pass_->output_rect.Contains(*clip_rect));
+  GetLastQuadSharedQuadState()->clip_rect = clip_rect;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetQuadDamageRect(
+    const gfx::Rect& damage_rect) {
+  CHECK(!pass_->quad_list.empty());
+  DrawQuad* quad = pass_->quad_list.back();
+
+  if (quad->material == DrawQuad::Material::kTextureContent) {
+    auto* texture_quad = static_cast<TextureDrawQuad*>(quad);
+    texture_quad->damage_rect = damage_rect;
+  } else if (quad->material == DrawQuad::Material::kYuvVideoContent) {
+    auto* yuv_video_quad = static_cast<YUVVideoDrawQuad*>(quad);
+    yuv_video_quad->damage_rect = damage_rect;
+  } else {
+    NOTREACHED();
+  }
+
+  pass_->has_per_quad_damage = true;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetBlendMode(SkBlendMode blend_mode) {
+  GetLastQuadSharedQuadState()->blend_mode = blend_mode;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetMaskFilter(
+    const gfx::MaskFilterInfo& mask_filter_info,
+    bool is_fast_rounded_corner) {
+  auto* sqs = GetLastQuadSharedQuadState();
+  sqs->mask_filter_info = mask_filter_info;
+  sqs->is_fast_rounded_corner = is_fast_rounded_corner;
+  return *this;
+}
+
+SharedQuadState* RenderPassBuilder::AppendDefaultSharedQuadState(
+    const gfx::Rect rect,
+    const gfx::Rect visible_rect) {
+  SharedQuadState* sqs = pass_->CreateAndAppendSharedQuadState();
+  sqs->SetAll(gfx::Transform(), rect, visible_rect, gfx::MaskFilterInfo(),
+              /*clip=*/absl::nullopt, /*contents_opaque=*/false,
+              /*opacity_f=*/1.0f, SkBlendMode::kSrcOver, 0);
+  return sqs;
+}
+
+SharedQuadState* RenderPassBuilder::GetLastQuadSharedQuadState() {
+  CHECK(!pass_->quad_list.empty());
+  CHECK(!pass_->shared_quad_state_list.empty());
+  CHECK(pass_->shared_quad_state_list.back() ==
+        pass_->quad_list.back()->shared_quad_state);
+
+  return pass_->shared_quad_state_list.back();
+}
 
 CompositorFrameBuilder::CompositorFrameBuilder() {
   frame_ = MakeInitCompositorFrame();
@@ -46,14 +314,35 @@ CompositorFrameBuilder& CompositorFrameBuilder::AddRenderPass(
   // Give the render pass a unique id if one hasn't been assigned.
   if (render_pass->id.is_null())
     render_pass->id = render_pass_id_generator_.GenerateNextId();
+
+  // Populate referenced_surfaces if there are any SurfaceDrawQuads.
+  for (auto* quad : render_pass->quad_list) {
+    if (quad->material == DrawQuad::Material::kSurfaceContent) {
+      auto* surface_quad = SurfaceDrawQuad::MaterialCast(quad);
+      frame_->metadata.referenced_surfaces.push_back(
+          surface_quad->surface_range);
+    }
+  }
+
   frame_->render_pass_list.push_back(std::move(render_pass));
+  return *this;
+}
+
+CompositorFrameBuilder& CompositorFrameBuilder::AddRenderPass(
+    RenderPassBuilder& builder) {
+  CHECK(builder.IsValid());
+  AddRenderPass(builder.Build());
   return *this;
 }
 
 CompositorFrameBuilder& CompositorFrameBuilder::SetRenderPassList(
     CompositorRenderPassList render_pass_list) {
-  DCHECK(frame_->render_pass_list.empty());
-  frame_->render_pass_list = std::move(render_pass_list);
+  CHECK(frame_->render_pass_list.empty());
+
+  // Call AddRenderPass() for each pass as it contains additional logic.
+  for (auto& render_pass : render_pass_list)
+    AddRenderPass(std::move(render_pass));
+
   return *this;
 }
 
@@ -67,6 +356,11 @@ CompositorFrameBuilder& CompositorFrameBuilder::SetTransferableResources(
     std::vector<TransferableResource> resource_list) {
   DCHECK(frame_->resource_list.empty());
   frame_->resource_list = std::move(resource_list);
+  return *this;
+}
+
+CompositorFrameBuilder& CompositorFrameBuilder::PopulateResources() {
+  PopulateTransferableResources(frame_.value());
   return *this;
 }
 
@@ -141,8 +435,31 @@ CompositorFrame CompositorFrameBuilder::MakeInitCompositorFrame() const {
   return frame;
 }
 
+CompositorRenderPassList CopyRenderPasses(
+    const CompositorRenderPassList& render_pass_list) {
+  CompositorRenderPassList copy_list;
+  for (auto& render_pass : render_pass_list)
+    copy_list.push_back(render_pass->DeepCopy());
+  return copy_list;
+}
+
 CompositorFrame MakeDefaultCompositorFrame() {
   return CompositorFrameBuilder().AddDefaultRenderPass().Build();
+}
+
+CompositorFrame MakeCompositorFrame(
+    std::unique_ptr<CompositorRenderPass> render_pass) {
+  return CompositorFrameBuilder()
+      .AddRenderPass(std::move(render_pass))
+      .PopulateResources()
+      .Build();
+}
+
+CompositorFrame MakeCompositorFrame(CompositorRenderPassList render_pass_list) {
+  return CompositorFrameBuilder()
+      .SetRenderPassList(std::move(render_pass_list))
+      .PopulateResources()
+      .Build();
 }
 
 AggregatedFrame MakeDefaultAggregatedFrame(size_t num_render_passes) {
@@ -159,6 +476,27 @@ AggregatedFrame MakeDefaultAggregatedFrame(size_t num_render_passes) {
 
 CompositorFrame MakeEmptyCompositorFrame() {
   return CompositorFrameBuilder().Build();
+}
+
+void PopulateTransferableResources(CompositorFrame& frame) {
+  DCHECK(frame.resource_list.empty());
+
+  std::set<ResourceId> resources_added;
+  for (auto& render_pass : frame.render_pass_list) {
+    for (auto* quad : render_pass->quad_list) {
+      for (ResourceId resource_id : quad->resources) {
+        if (resource_id == kInvalidResourceId)
+          continue;
+
+        // Adds a TransferableResource the first time seeing a ResourceId.
+        if (resources_added.insert(resource_id).second) {
+          frame.resource_list.push_back(TransferableResource::MakeSoftware(
+              SharedBitmap::GenerateId(), quad->rect.size(), RGBA_8888));
+          frame.resource_list.back().id = resource_id;
+        }
+      }
+    }
+  }
 }
 
 }  // namespace viz

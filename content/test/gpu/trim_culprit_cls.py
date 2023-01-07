@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2020 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
@@ -33,6 +33,8 @@ Google Cloud console https://console.cloud.google.com/ (see drop-down menu in
 the top left corner).
 """
 
+from __future__ import print_function
+
 import argparse
 import json
 import re
@@ -42,10 +44,9 @@ import subprocess
 # Schemas:
 # - go/buildbucket-bq and go/buildbucket-proto/build.proto
 # - go/luci/cq/bq and
-#   https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/cv/api/bigquery/v1/attempt.proto
+#   https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/cv/api/bigquery/v1/attempt.proto
 #
 # Original author: maruel@
-# pylint: enable=line-too-long
 QUERY_TEMPLATE = """\
 WITH cq_builds AS (
   SELECT
@@ -79,12 +80,13 @@ builds AS (
 
 SELECT * FROM builds ORDER BY patchset DESC, critical, builder, start_time
 """
+# pylint: enable=line-too-long
 
 GERRIT_URL_REGEX = re.compile(r'^\s*Reviewed-on: (?P<gerrit_url>.*)$',
                               re.MULTILINE)
 
 
-class ChangeList(object):
+class ChangeList():
   """Class for storing relevant information for a CL."""
 
   def __init__(self):
@@ -148,7 +150,7 @@ def FillTrybotRuns(blamelist, trybot, project):
   """
   total_cls = len(blamelist)
   for i, entry in enumerate(blamelist):
-    print 'Getting data for CL %s/%s' % (i + 1, total_cls)
+    print('Getting data for CL %s/%s' % (i + 1, total_cls))
     largest_patchset = 0
     all_trybots = QueryTrybotsForCl(entry.cl_number, project)
     assert all_trybots
@@ -246,9 +248,9 @@ def main():
   blamelist = GetBlamelist(args.start_revision, args.end_revision)
   FillGerritUrls(blamelist)
   FillTrybotRuns(blamelist, args.trybot, args.project)
-  print '\n\nBlamelist (latest first):\n'
+  print('\n\nBlamelist (latest first):\n')
   for entry in blamelist:
-    print entry
+    print(entry)
 
 
 if __name__ == '__main__':

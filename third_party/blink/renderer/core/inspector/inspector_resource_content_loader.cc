@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/inspector_resource_content_loader.h"
 
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -29,6 +30,22 @@ namespace {
 
 bool ShouldSkipFetchingUrl(const KURL& url) {
   return !url.IsValid() || url.IsAboutBlankURL() || url.IsAboutSrcdocURL();
+}
+
+bool IsServiceWorkerPresent(Document* document) {
+  DocumentLoader* loader = document->Loader();
+  if (!loader)
+    return false;
+
+  if (loader->GetResponse().WasFetchedViaServiceWorker())
+    return true;
+
+  WebServiceWorkerNetworkProvider* provider =
+      loader->GetServiceWorkerNetworkProvider();
+  if (!provider)
+    return false;
+
+  return provider->ControllerServiceWorkerID() >= 0;
 }
 
 }  // namespace
@@ -80,7 +97,6 @@ void InspectorResourceContentLoader::Start() {
     if (frame->GetDocument()->IsInitialEmptyDocument())
       continue;
     documents.push_back(frame->GetDocument());
-    documents.AppendVector(InspectorPageAgent::ImportsForFrame(frame));
   }
   for (Document* document : documents) {
     HashSet<String> urls_to_fetch;
@@ -97,19 +113,16 @@ void InspectorResourceContentLoader::Start() {
     }
     resource_request.SetRequestContext(
         mojom::blink::RequestContextType::INTERNAL);
-    if (document->Loader() &&
-        document->Loader()->GetResponse().WasFetchedViaServiceWorker()) {
+
+    if (IsServiceWorkerPresent(document)) {
+      // If the request is going to be intercepted by a service worker, then
+      // don't use only-if-cached. only-if-cached will cause the service worker
+      // to throw an exception if it repeats the request, which is a problem:
+      // crbug.com/823392 crbug.com/1098389
       resource_request.SetCacheMode(mojom::FetchCacheMode::kDefault);
     }
 
     ResourceFetcher* fetcher = document->Fetcher();
-    if (document->ImportsController()) {
-      // For @imports from HTML imported Documents, we use the
-      // context document for getting origin and ResourceFetcher to use the
-      // main Document's origin, while using the element document for
-      // CompleteURL() to use imported Documents' base URLs.
-      fetcher = document->GetExecutionContext()->Fetcher();
-    }
 
     scoped_refptr<const DOMWrapperWorld> world =
         document->GetExecutionContext()->GetCurrentWorld();
@@ -165,6 +178,8 @@ void InspectorResourceContentLoader::Start() {
           "use-credentials");
       ResourceRequest manifest_request(link);
       manifest_request.SetMode(network::mojom::RequestMode::kCors);
+      manifest_request.SetTargetAddressSpace(
+          network::mojom::IPAddressSpace::kUnknown);
       // See https://w3c.github.io/manifest/. Use "include" when use_credentials
       // is true, and "omit" otherwise.
       manifest_request.SetCredentialsMode(
@@ -209,7 +224,7 @@ void InspectorResourceContentLoader::Cancel(int client_id) {
 }
 
 InspectorResourceContentLoader::~InspectorResourceContentLoader() {
-  DCHECK(resources_.IsEmpty());
+  DCHECK(resources_.empty());
 }
 
 void InspectorResourceContentLoader::Trace(Visitor* visitor) const {

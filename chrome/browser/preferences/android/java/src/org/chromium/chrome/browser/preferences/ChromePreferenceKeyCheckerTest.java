@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,5 +87,17 @@ public class ChromePreferenceKeyCheckerTest {
     @SmallTest
     public void testPrefixedKeys_matchPattern_throwsException() {
         mSubject.checkIsKeyInUse(KEY_PREFIX1_IN_USE.createKey("*"));
+    }
+
+    @Test
+    @SmallTest
+    public void testPrefix_inUse_noException() {
+        mSubject.checkIsPrefixInUse(KEY_PREFIX2_IN_USE);
+    }
+
+    @Test(expected = RuntimeException.class)
+    @SmallTest
+    public void testPrefix_notInUse_throwsException() {
+        mSubject.checkIsPrefixInUse(KEY_PREFIX3_NOT_IN_USE);
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "remoting/protocol/input_filter.h"
 
 namespace remoting {
@@ -49,6 +48,11 @@ namespace remoting {
 class NormalizingInputFilterMac : public protocol::InputFilter {
  public:
   explicit NormalizingInputFilterMac(protocol::InputStub* input_stub);
+
+  NormalizingInputFilterMac(const NormalizingInputFilterMac&) = delete;
+  NormalizingInputFilterMac& operator=(const NormalizingInputFilterMac&) =
+      delete;
+
   ~NormalizingInputFilterMac() override;
 
   // InputFilter overrides.
@@ -62,8 +66,6 @@ class NormalizingInputFilterMac : public protocol::InputFilter {
 
   // A map that stores pressed keycodes and the corresponding key event.
   KeyPressedMap key_pressed_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(NormalizingInputFilterMac);
 };
 
 }  // namespace remoting

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/infobars/core/infobar.h"
@@ -18,6 +18,10 @@
 class GlobalConfirmInfoBar::DelegateProxy : public ConfirmInfoBarDelegate {
  public:
   explicit DelegateProxy(base::WeakPtr<GlobalConfirmInfoBar> global_info_bar);
+
+  DelegateProxy(const DelegateProxy&) = delete;
+  DelegateProxy& operator=(const DelegateProxy&) = delete;
+
   ~DelegateProxy() override;
   void Detach();
 
@@ -39,8 +43,6 @@ class GlobalConfirmInfoBar::DelegateProxy : public ConfirmInfoBarDelegate {
 
   infobars::InfoBar* info_bar_ = nullptr;
   base::WeakPtr<GlobalConfirmInfoBar> global_info_bar_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegateProxy);
 };
 
 GlobalConfirmInfoBar::DelegateProxy::DelegateProxy(
@@ -219,18 +221,18 @@ void GlobalConfirmInfoBar::MaybeAddInfoBar(content::WebContents* web_contents) {
   if (is_closing_)
     return;
 
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  // WebContents from the tab strip must have the infobar service.
-  DCHECK(infobar_service);
-  if (base::Contains(proxies_, infobar_service))
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  // WebContents from the tab strip must have the infobar manager.
+  DCHECK(infobar_manager);
+  if (base::Contains(proxies_, infobar_manager))
     return;
 
   auto proxy = std::make_unique<GlobalConfirmInfoBar::DelegateProxy>(
       weak_factory_.GetWeakPtr());
   GlobalConfirmInfoBar::DelegateProxy* proxy_ptr = proxy.get();
-  infobars::InfoBar* added_bar = infobar_service->AddInfoBar(
-      infobar_service->CreateConfirmInfoBar(std::move(proxy)));
+  infobars::InfoBar* added_bar =
+      infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(proxy)));
 
   // If AddInfoBar() fails, either infobars are globally disabled, or something
   // strange has gone wrong and we can't show the infobar on every tab. In
@@ -250,6 +252,6 @@ void GlobalConfirmInfoBar::MaybeAddInfoBar(content::WebContents* web_contents) {
   }
 
   proxy_ptr->info_bar_ = added_bar;
-  proxies_[infobar_service] = proxy_ptr;
-  infobar_service->AddObserver(this);
+  proxies_[infobar_manager] = proxy_ptr;
+  infobar_manager->AddObserver(this);
 }

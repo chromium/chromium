@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 // Uncomment to run the SelectorQueryTests for stats in a release build.
 // #define RELEASE_QUERY_STATS
@@ -70,21 +71,25 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
   document->documentElement()->setInnerHTML(
       "<body><style>span::before { content: 'X' }</style><span></span></body>");
 
-  CSSSelectorList selector_list = CSSParser::ParseSelector(
+  Arena arena;
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-      nullptr, "span::before");
+      nullptr, "span::before", arena);
+  CSSSelectorList selector_list =
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
   std::unique_ptr<SelectorQuery> query =
       SelectorQuery::Adopt(std::move(selector_list));
   Element* elm = query->QueryFirst(*document);
   EXPECT_EQ(nullptr, elm);
 
-  selector_list = CSSParser::ParseSelector(
+  selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-      nullptr, "span");
+      nullptr, "span", arena);
+  selector_list = CSSSelectorList::AdoptSelectorVector(selector_vector);
   query = SelectorQuery::Adopt(std::move(selector_list));
   elm = query->QueryFirst(*document);
   EXPECT_NE(nullptr, elm);
@@ -99,11 +104,14 @@ TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
 
   document->body()->BeginParsingChildren();
 
-  CSSSelectorList selector_list = CSSParser::ParseSelector(
+  Arena arena;
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-      nullptr, "p:last-of-type");
+      nullptr, "p:last-of-type", arena);
+  CSSSelectorList selector_list =
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
   std::unique_ptr<SelectorQuery> query =
       SelectorQuery::Adopt(std::move(selector_list));
   Element* elm = query->QueryFirst(*document);
@@ -240,7 +248,8 @@ TEST(SelectorQueryTest, FastPathScoped) {
   ShadowRoot& shadowRoot =
       scope->AttachShadowRootInternal(ShadowRootType::kOpen);
   // Make the inside the shadow root be identical to that of the outer document.
-  shadowRoot.appendChild(&document->documentElement()->CloneWithChildren());
+  shadowRoot.appendChild(&document->documentElement()->CloneWithChildren(
+      CloneChildrenFlag::kClone));
   static const struct QueryTest kTestCases[] = {
       // Id in the right most selector.
       {"#first", false, 0, {0, 0, 0, 0, 0, 0, 0}},
@@ -371,6 +380,125 @@ TEST(SelectorQueryTest, DisconnectedTreeScope) {
   };
 
   RunTests(shadowRoot, kTestCases);
+}
+
+TEST(SelectorQueryTest, QueryHasPseudoClass) {
+  auto* document = HTMLDocument::CreateForTest();
+  document->write(R"HTML(
+    <!DOCTYPE html>
+    <main id=main>
+      <div id=div1 class=subject3>
+        <div id=div2 class=a>
+          <div id=div3 class=b></div>
+        </div>
+        <div id=div4 class='subject1 subject3 subject4'>
+          <div id=div5 class='subject2 subject5 subject6'></div>
+          <div id=div6 class=a>
+            <div id=div7 class='subject1 subject4'>
+              <div id=div8></div>
+              <div id=div9 class=a></div>
+              <div id=div10 class=b>
+                <div id=div11 class=c></div>
+              </div>
+            </div>
+            <div id=div12 class=b>
+              <div id=div13 class=c></div>
+            </div>
+          </div>
+          <div id=div14 class=b>
+            <div id=div15 class='c d'></div>
+          </div>
+        </div>
+        <div id=div16 class='subject1 subject3'>
+          <div id=div17 class='subject2 subject5'></div>
+          <div id=div18 class=a>
+            <div id=div19 class='subject1 subject4'>
+              <div id=div20 class='subject5 subject6'></div>
+              <div id=div21 class=a></div>
+              <div id=div22 class=b>
+                <div id=div23 class='c d'></div>
+              </div>
+            </div>
+            <div id=div24 class=b>
+              <div id=div25 class=c></div>
+            </div>
+          </div>
+          <div id=div26></div>
+          <div id=div27 class=b>
+            <div id=div28 class='c d'></div>
+          </div>
+          <div id=div29></div>
+          <div id=div30>
+            <div id=div31></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  )HTML");
+  Element* scope = document->getElementById("main");
+  {
+    StaticElementList* result = scope->QuerySelectorAll(":has(> .a ~ .b)");
+    ASSERT_EQ(4U, result->length());
+    EXPECT_EQ(result->item(0)->GetIdAttribute(), "div4");
+    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject1"));
+    EXPECT_EQ(result->item(1)->GetIdAttribute(), "div7");
+    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject1"));
+    EXPECT_EQ(result->item(2)->GetIdAttribute(), "div16");
+    EXPECT_TRUE(result->item(2)->ClassNames().Contains("subject1"));
+    EXPECT_EQ(result->item(3)->GetIdAttribute(), "div19");
+    EXPECT_TRUE(result->item(3)->ClassNames().Contains("subject1"));
+  }
+
+  {
+    StaticElementList* result = scope->QuerySelectorAll(":has(+ .a > .b .c)");
+    ASSERT_EQ(2U, result->length());
+    EXPECT_EQ(result->item(0)->GetIdAttribute(), "div5");
+    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject2"));
+    EXPECT_EQ(result->item(1)->GetIdAttribute(), "div17");
+    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject2"));
+  }
+
+  {
+    StaticElementList* result = scope->QuerySelectorAll(":has(> .a .b)");
+    ASSERT_EQ(3U, result->length());
+    EXPECT_EQ(result->item(0)->GetIdAttribute(), "div1");
+    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject3"));
+    EXPECT_EQ(result->item(1)->GetIdAttribute(), "div4");
+    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject3"));
+    EXPECT_EQ(result->item(2)->GetIdAttribute(), "div16");
+    EXPECT_TRUE(result->item(2)->ClassNames().Contains("subject3"));
+  }
+
+  {
+    StaticElementList* result = scope->QuerySelectorAll(":has(> .a + .b .c)");
+    ASSERT_EQ(3U, result->length());
+    EXPECT_EQ(result->item(0)->GetIdAttribute(), "div4");
+    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject4"));
+    EXPECT_EQ(result->item(1)->GetIdAttribute(), "div7");
+    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject4"));
+    EXPECT_EQ(result->item(2)->GetIdAttribute(), "div19");
+    EXPECT_TRUE(result->item(2)->ClassNames().Contains("subject4"));
+  }
+
+  {
+    StaticElementList* result = scope->QuerySelectorAll(":has(~ .a ~ .b .d)");
+    ASSERT_EQ(3U, result->length());
+    EXPECT_EQ(result->item(0)->GetIdAttribute(), "div5");
+    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject5"));
+    EXPECT_EQ(result->item(1)->GetIdAttribute(), "div17");
+    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject5"));
+    EXPECT_EQ(result->item(2)->GetIdAttribute(), "div20");
+    EXPECT_TRUE(result->item(2)->ClassNames().Contains("subject5"));
+  }
+
+  {
+    StaticElementList* result = scope->QuerySelectorAll(":has(+ .a + .b .d)");
+    ASSERT_EQ(2U, result->length());
+    EXPECT_EQ(result->item(0)->GetIdAttribute(), "div5");
+    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject6"));
+    EXPECT_EQ(result->item(1)->GetIdAttribute(), "div20");
+    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject6"));
+  }
 }
 
 }  // namespace blink

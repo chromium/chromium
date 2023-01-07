@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/offline_pages/offline_page_utils.h"
@@ -29,12 +28,14 @@
 
 namespace offline_pages {
 namespace {
+
 void DeleteFileOnFileThread(const base::FilePath& file_path,
                             base::OnceClosure callback) {
-  base::ThreadPool::PostTaskAndReply(
+  base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(base::GetDeleteFileCallback(), file_path),
-      std::move(callback));
+      base::GetDeleteFileCallback(
+          file_path, base::OnceCallback<void(bool)>(base::DoNothing())
+                         .Then(std::move(callback))));
 }
 
 // Compute a SHA256 digest using a background thread. The computed digest will

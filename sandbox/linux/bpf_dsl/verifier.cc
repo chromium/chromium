@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/seccomp_macros.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
 #include "sandbox/linux/system_headers/linux_filter.h"
@@ -19,17 +18,20 @@ namespace bpf_dsl {
 namespace {
 
 struct State {
+  State() = delete;
+
   State(const std::vector<struct sock_filter>& p,
         const struct arch_seccomp_data& d)
       : program(p), data(d), ip(0), accumulator(0), acc_is_valid(false) {}
+
+  State(const State&) = delete;
+  State& operator=(const State&) = delete;
+
   const std::vector<struct sock_filter>& program;
   const struct arch_seccomp_data& data;
   unsigned int ip;
   uint32_t accumulator;
   bool acc_is_valid;
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(State);
 };
 
 void Ld(State* state, const struct sock_filter& insn, const char** err) {

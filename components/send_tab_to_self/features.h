@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,23 @@
 #define COMPONENTS_SEND_TAB_TO_SELF_FEATURES_H_
 
 #include "base/feature_list.h"
-
-class PrefService;
+#include "build/build_config.h"
+#include "build/buildflag.h"
 
 namespace send_tab_to_self {
 
-// If this feature is enabled, we will use signed-in, ephemeral data rather than
-// persistent sync data. Users who are signed in can use the feature regardless
-// of whether they have the sync feature enabled.
-extern const base::Feature kSendTabToSelfWhenSignedIn;
+// If this feature is enabled and a signed-out user attempts to share a tab,
+// they will see a promo to sign-in.
+BASE_DECLARE_FEATURE(kSendTabToSelfSigninPromo);
 
-// Returns whether the receiving components of the feature is enabled on this
-// device. This doesn't rely on the SendTabToSelfSyncService to be actively up
-// and ready.
-bool IsReceivingEnabledByUserOnThisDevice(PrefService* prefs);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// If this feature is enabled, show received tabs in a new UI next to the
+// profile icon rather than in a system notification.
+//
+// V2 is the default on desktop and the V1 code path has been deleted there, so
+// this base::Feature no longer exists on desktop platforms.
+BASE_DECLARE_FEATURE(kSendTabToSelfV2);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace send_tab_to_self
 

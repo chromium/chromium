@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,15 +38,15 @@ class RsaSsaImplementation : public RsaHashedAlgorithm {
 
   Status Sign(const blink::WebCryptoAlgorithm& algorithm,
               const blink::WebCryptoKey& key,
-              const CryptoData& data,
+              base::span<const uint8_t> data,
               std::vector<uint8_t>* buffer) const override {
     return RsaSign(key, 0, data, buffer);
   }
 
   Status Verify(const blink::WebCryptoAlgorithm& algorithm,
                 const blink::WebCryptoKey& key,
-                const CryptoData& signature,
-                const CryptoData& data,
+                base::span<const uint8_t> signature,
+                base::span<const uint8_t> data,
                 bool* signature_match) const override {
     return RsaVerify(key, 0, signature, data, signature_match);
   }

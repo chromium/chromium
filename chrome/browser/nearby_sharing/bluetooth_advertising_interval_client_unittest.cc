@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,19 +75,19 @@ class BluetoothAdvertisingIntervalClientTest : public testing::Test {
 
   void RestoreDefaultInterval() { client_->RestoreDefaultInterval(); }
 
-  const size_t set_advertising_interval_call_count() {
+  size_t set_advertising_interval_call_count() {
     return set_advertising_interval_call_count_;
   }
 
-  const size_t set_advertising_interval_error_call_count() {
+  size_t set_advertising_interval_error_call_count() {
     return set_advertising_interval_error_call_count_;
   }
 
-  const int64_t last_advertising_interval_min() {
+  int64_t last_advertising_interval_min() {
     return last_advertising_interval_min_;
   }
 
-  const int64_t last_advertising_interval_max() {
+  int64_t last_advertising_interval_max() {
     return last_advertising_interval_max_;
   }
 
@@ -101,14 +101,14 @@ class BluetoothAdvertisingIntervalClientTest : public testing::Test {
 
 TEST_F(BluetoothAdvertisingIntervalClientTest, SetAndRestore) {
   client_->ReduceInterval();
-  EXPECT_EQ(1, set_advertising_interval_call_count());
-  EXPECT_EQ(0, set_advertising_interval_error_call_count());
+  EXPECT_EQ(1u, set_advertising_interval_call_count());
+  EXPECT_EQ(0u, set_advertising_interval_error_call_count());
   EXPECT_EQ(kInterval, last_advertising_interval_min());
   EXPECT_EQ(kInterval, last_advertising_interval_max());
 
   RestoreDefaultInterval();
-  EXPECT_EQ(2, set_advertising_interval_call_count());
-  EXPECT_EQ(0, set_advertising_interval_error_call_count());
+  EXPECT_EQ(2u, set_advertising_interval_call_count());
+  EXPECT_EQ(0u, set_advertising_interval_error_call_count());
   EXPECT_EQ(kDefaultInterval, last_advertising_interval_min());
   EXPECT_EQ(kDefaultInterval, last_advertising_interval_max());
 }
@@ -116,6 +116,6 @@ TEST_F(BluetoothAdvertisingIntervalClientTest, SetAndRestore) {
 TEST_F(BluetoothAdvertisingIntervalClientTest, SetError) {
   mock_adapter_->SetAdvertisingIntervalError(true);
   client_->ReduceInterval();
-  EXPECT_EQ(0, set_advertising_interval_call_count());
-  EXPECT_EQ(1, set_advertising_interval_error_call_count());
+  EXPECT_EQ(0u, set_advertising_interval_call_count());
+  EXPECT_EQ(1u, set_advertising_interval_error_call_count());
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,7 +72,7 @@ void ChromeVisibilityObserver::InitVisibilityGapTimeout() {
   if (!param_value.empty())
     base::StringToInt(param_value, &timeout_seconds);
 
-  visibility_gap_timeout_ = base::TimeDelta::FromSeconds(timeout_seconds);
+  visibility_gap_timeout_ = base::Seconds(timeout_seconds);
 }
 
 void ChromeVisibilityObserver::SetVisibilityGapTimeoutForTesting(

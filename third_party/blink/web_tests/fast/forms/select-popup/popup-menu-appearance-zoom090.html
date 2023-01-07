@@ -1,15 +1,11 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-window.enablePixelTesting = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
-</head>
+
 <body style="zoom:0.9;">
 <p>The bottom border of the popup should be visible in 90% zoom level.</p>
-<select id="menu">
+<select>
   <option>foo</option>
   <option selected>bar</option>
   <option hidden>qux</option>
@@ -19,13 +15,7 @@ window.enablePixelTesting = true;
     <option>bar</option>
   </optgroup>
 </select>
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
+  
 <script>
-openPicker(menu, finishJSTest, function () {
-    testFailed('picker didn\'t open')
-    finishJSTest();
-});
+  window.onload = openPickerAppearanceOnly(document.querySelector('select'));
 </script>
-</body>
-</html>

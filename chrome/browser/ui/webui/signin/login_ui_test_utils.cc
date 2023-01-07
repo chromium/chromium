@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,16 +18,18 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -66,7 +68,7 @@ class SignInObserver : public signin::IdentityManager::Observer {
 
     base::OneShotTimer timer;
     timer.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(30),
+        FROM_HERE, base::Seconds(30),
         base::BindOnce(&SignInObserver::OnTimeout, base::Unretained(this)));
     running_ = true;
     message_loop_runner_ = new MessageLoopRunner;
@@ -85,7 +87,10 @@ class SignInObserver : public signin::IdentityManager::Observer {
 
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override {
-    if (event.GetEventTypeFor(signin::ConsentLevel::kSync) !=
+    if (event.GetEventTypeFor(
+            base::FeatureList::IsEnabled(kDelayConsentLevelUpgrade)
+                ? signin::ConsentLevel::kSignin
+                : signin::ConsentLevel::kSync) !=
         signin::PrimaryAccountChangeEvent::Type::kSet) {
       return;
     }
@@ -117,6 +122,11 @@ class SignInObserver : public signin::IdentityManager::Observer {
 // Synchronously waits for the Sync confirmation to be closed.
 class SyncConfirmationClosedObserver : public LoginUIService::Observer {
  public:
+  explicit SyncConfirmationClosedObserver(Browser* browser) {
+    login_ui_service_observation_.Observe(
+        LoginUIServiceFactory::GetForProfile(browser->profile()));
+  }
+
   void WaitForConfirmationClosed() {
     if (sync_confirmation_closed_)
       return;
@@ -136,6 +146,8 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
 
   bool sync_confirmation_closed_ = false;
   base::OnceClosure quit_closure_;
+  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
+      login_ui_service_observation_{this};
 };
 
 void RunLoopFor(base::TimeDelta duration) {
@@ -148,7 +160,7 @@ void RunLoopFor(base::TimeDelta duration) {
 // Returns the render frame host where Gaia credentials can be filled in.
 content::RenderFrameHost* GetSigninFrame(content::WebContents* web_contents) {
   // Dice displays the Gaia page directly in a tab.
-  return web_contents->GetMainFrame();
+  return web_contents->GetPrimaryMainFrame();
 }
 
 // Waits until the condition is met, by polling.
@@ -157,7 +169,7 @@ void WaitUntilCondition(const base::RepeatingCallback<bool()>& condition,
   for (int attempt = 0; attempt < 10; ++attempt) {
     if (condition.Run())
       return;
-    RunLoopFor(base::TimeDelta::FromMilliseconds(1000));
+    RunLoopFor(base::Milliseconds(1000));
   }
 
   FAIL() << error_message;
@@ -369,6 +381,41 @@ class SigninViewControllerTestUtil {
     return true;
 #endif
   }
+
+  static bool TryCompleteProfileCustomizationDialog(Browser* browser) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    NOTREACHED();
+    return false;
+#else
+    SigninViewController* signin_view_controller =
+        browser->signin_view_controller();
+    DCHECK(signin_view_controller);
+    if (!signin_view_controller->ShowsModalDialog())
+      return false;
+    content::WebContents* dialog_web_contents =
+        signin_view_controller->GetModalDialogWebContentsForTesting();
+    DCHECK(dialog_web_contents);
+    std::string button_selector =
+        GetButtonSelectorForApp("profile-customization-app", "doneButton");
+    if (!IsElementReady(dialog_web_contents, button_selector))
+      return false;
+
+    // content::ExecJs() might return false because this JavaScript execution
+    // terminates the renderer as a side effect.
+    std::ignore =
+        content::ExecJs(dialog_web_contents, button_selector + ".click();");
+    return true;
+#endif
+  }
+
+  static bool ShowsModalDialog(Browser* browser) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    NOTREACHED();
+    return false;
+#else
+    return browser->signin_view_controller()->ShowsModalDialog();
+#endif
+  }
 };
 
 void WaitUntilUIReady(Browser* browser) {
@@ -442,7 +489,7 @@ void ExecuteJsToSigninInSigninFrame(Browser* browser,
 bool SignInWithUI(Browser* browser,
                   const std::string& username,
                   const std::string& password) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
   return false;
 #else
@@ -469,23 +516,31 @@ bool SignInWithUI(Browser* browser,
 #endif
 }
 
+bool TryUntilSuccessWithTimeout(base::RepeatingCallback<bool()> try_callback,
+                                base::TimeDelta timeout) {
+  const base::Time expire_time = base::Time::Now() + timeout;
+  while (base::Time::Now() <= expire_time) {
+    if (try_callback.Run())
+      return true;
+    RunLoopFor(base::Seconds(1));
+  }
+  return false;
+}
+
 bool DismissSyncConfirmationDialog(Browser* browser,
                                    base::TimeDelta timeout,
                                    SyncConfirmationDialogAction action) {
-  SyncConfirmationClosedObserver confirmation_closed_observer;
-  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
-      scoped_confirmation_closed_observation(&confirmation_closed_observer);
-  scoped_confirmation_closed_observation.Observe(
-      LoginUIServiceFactory::GetForProfile(browser->profile()));
+  SyncConfirmationClosedObserver confirmation_closed_observer(browser);
 
   const base::Time expire_time = base::Time::Now() + timeout;
   while (base::Time::Now() <= expire_time) {
     if (SigninViewControllerTestUtil::TryDismissSyncConfirmationDialog(
             browser, action)) {
       confirmation_closed_observer.WaitForConfirmationClosed();
+      EXPECT_FALSE(SigninViewControllerTestUtil::ShowsModalDialog(browser));
       return true;
     }
-    RunLoopFor(base::TimeDelta::FromMilliseconds(1000));
+    RunLoopFor(base::Milliseconds(1000));
   }
   return false;
 }
@@ -504,28 +559,21 @@ bool CompleteSigninEmailConfirmationDialog(
     Browser* browser,
     base::TimeDelta timeout,
     SigninEmailConfirmationDialog::Action action) {
-  const base::Time expire_time = base::Time::Now() + timeout;
-  while (base::Time::Now() <= expire_time) {
-    if (SigninViewControllerTestUtil::TryCompleteSigninEmailConfirmationDialog(
-            browser, action)) {
-      return true;
-    }
-    RunLoopFor(base::TimeDelta::FromMilliseconds(1000));
-  }
-  return false;
+  return TryUntilSuccessWithTimeout(
+      base::BindRepeating(SigninViewControllerTestUtil::
+                              TryCompleteSigninEmailConfirmationDialog,
+                          browser, action),
+      timeout);
 }
 
 bool CompleteReauthConfirmationDialog(Browser* browser,
                                       base::TimeDelta timeout,
                                       ReauthDialogAction action) {
-  const base::Time expire_time = base::Time::Now() + timeout;
-  while (base::Time::Now() <= expire_time) {
-    if (SigninViewControllerTestUtil::TryCompleteReauthConfirmationDialog(
-            browser, action))
-      return true;
-    RunLoopFor(base::TimeDelta::FromMilliseconds(1000));
-  }
-  return false;
+  return TryUntilSuccessWithTimeout(
+      base::BindRepeating(
+          SigninViewControllerTestUtil::TryCompleteReauthConfirmationDialog,
+          browser, action),
+      timeout);
 }
 
 bool ConfirmReauthConfirmationDialog(Browser* browser,
@@ -537,6 +585,15 @@ bool ConfirmReauthConfirmationDialog(Browser* browser,
 bool CancelReauthConfirmationDialog(Browser* browser, base::TimeDelta timeout) {
   return CompleteReauthConfirmationDialog(browser, timeout,
                                           ReauthDialogAction::kCancel);
+}
+
+bool CompleteProfileCustomizationDialog(Browser* browser,
+                                        base::TimeDelta timeout) {
+  return TryUntilSuccessWithTimeout(
+      base::BindRepeating(
+          SigninViewControllerTestUtil::TryCompleteProfileCustomizationDialog,
+          browser),
+      timeout);
 }
 
 }  // namespace login_ui_test_utils

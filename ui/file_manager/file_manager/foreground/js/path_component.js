@@ -1,12 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {util, str} from '../../common/js/util.m.js';
-// clang-format on
+import {str, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
 /**
  * File path component.
@@ -17,7 +15,7 @@
  * PathComponent.computeComponentsFromEntry computes an array of PathComponent
  * of the given entry.
  */
-/* #export */ class PathComponent {
+export class PathComponent {
   /**
    * @param {string} name Name.
    * @param {string} url Url.
@@ -89,14 +87,17 @@
       components.push(new PathComponent(
           prefixEntry.name, prefixEntry.toURL(), prefixEntry));
     }
-    if (locationInfo.rootType === VolumeManagerCommon.RootType.DRIVE_OTHER) {
-      // When target path is a shared directory, volume should be shared with
-      // me.
-      const match = entry.fullPath.match(/\/\.files-by-id\/\d+\//);
+    if (locationInfo.rootType ===
+        VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME) {
+      // DriveFS shared items are in either of:
+      // <drivefs>/.files-by-id/<id>/<item>
+      // <drivefs>/.shortcut-targets-by-id/<id>/<item>
+      const match =
+          entry.fullPath.match(/^\/\.(files|shortcut-targets)-by-id\/.+?\//);
       if (match) {
         displayRootFullPath = match[0];
       } else {
-        displayRootFullPath = '/other';
+        console.warn('Unexpected shared DriveFS path: ', entry.fullPath);
       }
       displayRootUrl = replaceRootName(displayRootUrl, displayRootFullPath);
       const sharedWithMeFakeEntry =

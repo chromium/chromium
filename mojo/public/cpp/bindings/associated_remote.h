@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,13 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_ASSOCIATED_REMOTE_H_
 
 #include <cstdint>
+#include <tuple>
 #include <utility>
 
 #include "base/callback_forward.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/associated_interface_ptr_state.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -65,6 +64,9 @@ class AssociatedRemote {
     Bind(std::move(pending_remote), std::move(task_runner));
   }
 
+  AssociatedRemote(const AssociatedRemote&) = delete;
+  AssociatedRemote& operator=(const AssociatedRemote&) = delete;
+
   ~AssociatedRemote() = default;
 
   AssociatedRemote& operator=(AssociatedRemote&& other) noexcept {
@@ -92,8 +94,8 @@ class AssociatedRemote {
   // being "connected" (see |is_connected()| below). An AssociatedRemote is
   // NEVER passively unbound and the only way for it to become unbound is to
   // explicitly call |reset()| or |Unbind()|. As such, unless you make explicit
-  // calls to those methods, it is always safe to assume that a AssociatedRemote
-  // you've bound will remain bound and callable.
+  // calls to those methods, it is always safe to assume that an
+  // AssociatedRemote you've bound will remain bound and callable.
   bool is_bound() const { return internal_state_.is_bound(); }
   explicit operator bool() const { return is_bound(); }
 
@@ -119,8 +121,8 @@ class AssociatedRemote {
   // receiver. This can happen if the corresponding AssociatedReceiver (or
   // unconsumed PendingAssociatedReceiver) is destroyed, or if the
   // AssociatedReceiver sends a malformed or otherwise unexpected response
-  // message to this AssociatedRemote. Must only be called
-  // on a bound AssociatedRemote object, and only remains set as long as the
+  // message to this AssociatedRemote. Must only be called on a bound
+  // AssociatedRemote object, and only remains set as long as the
   // AssociatedRemote is both bound and connected.
   //
   // If invoked at all, |handler| will be scheduled asynchronously using the
@@ -136,6 +138,20 @@ class AssociatedRemote {
       ConnectionErrorWithReasonCallback handler) {
     internal_state_.set_connection_error_with_reason_handler(
         std::move(handler));
+  }
+
+  // A convenient helper that resets this AssociatedRemote on disconnect. Note
+  // that this replaces any previously set disconnection handler. Must be called
+  // on a bound AssociatedRemote object. If the AssociatedRemote is connected,
+  // a callback is set to reset it after it is disconnected. If AssociatedRemote
+  // is bound but disconnected then reset is called immediately.
+  void reset_on_disconnect() {
+    if (!is_connected()) {
+      reset();
+      return;
+    }
+    set_disconnect_handler(
+        base::BindOnce(&AssociatedRemote::reset, base::Unretained(this)));
   }
 
   // Resets this AssociatedRemote to an unbound state. To reset the
@@ -164,10 +180,11 @@ class AssociatedRemote {
   // Any response callbacks or disconnection notifications will be scheduled to
   // run on |task_runner|. If |task_runner| is null, defaults to the current
   // SequencedTaskRunner.
-  PendingAssociatedReceiver<Interface> BindNewEndpointAndPassReceiver(
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
-      WARN_UNUSED_RESULT {
-    DCHECK(!is_bound()) << "AssociatedRemote is already bound";
+  [[nodiscard]] PendingAssociatedReceiver<Interface>
+  BindNewEndpointAndPassReceiver(
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
+    DCHECK(!is_bound()) << "AssociatedRemote for " << Interface::Name_
+                        << " is already bound";
 
     ScopedInterfaceEndpointHandle remote_handle;
     ScopedInterfaceEndpointHandle receiver_handle;
@@ -181,11 +198,12 @@ class AssociatedRemote {
   // Binds this AssociatedRemote by consuming |pending_remote|.
   //
   // Any response callbacks or disconnection notifications will be scheduled to
-  // run on |task_runner|. If |task_runner| is null, defaults ot the current
+  // run on |task_runner|. If |task_runner| is null, defaults to the current
   // SequencedTaskRunner.
   void Bind(PendingAssociatedRemote<Interface> pending_remote,
             scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
-    DCHECK(!is_bound()) << "AssociatedRemote is already bound";
+    DCHECK(!is_bound()) << "AssociatedRemote for " << Interface::Name_
+                        << " is already bound";
 
     if (!pending_remote) {
       reset();
@@ -201,7 +219,7 @@ class AssociatedRemote {
     // do not use AssociatedRemote in transit, so binding to a pipe handle can
     // also imply binding to a SequencedTaskRunner and observing pipe handle
     // state.
-    ignore_result(internal_state_.instance());
+    std::ignore = internal_state_.instance();
   }
 
   // Binds this AssociatedRemote with the returned PendingAssociatedReceiver
@@ -213,9 +231,10 @@ class AssociatedRemote {
   // be ordered with respect to any other mojom interfaces. This is generally
   // useful for ignoring calls on an associated remote or for binding associated
   // endpoints in tests.
-  PendingAssociatedReceiver<Interface> BindNewEndpointAndPassDedicatedReceiver()
-      WARN_UNUSED_RESULT {
-    DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
+  [[nodiscard]] PendingAssociatedReceiver<Interface>
+  BindNewEndpointAndPassDedicatedReceiver() {
+    DCHECK(!is_bound()) << "AssociatedRemote for " << Interface::Name_
+                        << " is already bound";
 
     PendingAssociatedReceiver<Interface> receiver =
         BindNewEndpointAndPassReceiver();
@@ -229,12 +248,12 @@ class AssociatedRemote {
   // elsewhere.
   //
   // Note that it is an error (the bad, crashy kind of error) to attempt to
-  // |Unbind()| a AssociatedRemote which is awaiting one or more responses to
+  // |Unbind()| an AssociatedRemote which is awaiting one or more responses to
   // previously issued Interface method calls. Calling this method should only
   // be considered in cases where satisfaction of that constraint can be proven.
   //
   // Must only be called on a bound AssociatedRemote.
-  PendingAssociatedRemote<Interface> Unbind() WARN_UNUSED_RESULT {
+  [[nodiscard]] PendingAssociatedRemote<Interface> Unbind() {
     DCHECK(is_bound());
     CHECK(!internal_state_.has_pending_callbacks());
     State state;
@@ -257,8 +276,6 @@ class AssociatedRemote {
  private:
   using State = internal::AssociatedInterfacePtrState<Interface>;
   mutable State internal_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssociatedRemote);
 };
 
 }  // namespace mojo

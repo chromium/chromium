@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ struct AttributionGroupHash {
   STATIC_ONLY(AttributionGroupHash);
 
   static unsigned GetHash(const AttributionGroup& group) {
-    return group.attribution.GetHash();
+    return static_cast<unsigned>(group.attribution.GetHash());
   }
 
   static bool Equal(const AttributionGroup& a, const AttributionGroup& b) {

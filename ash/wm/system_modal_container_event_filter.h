@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
@@ -18,6 +17,12 @@ class ASH_EXPORT SystemModalContainerEventFilter : public ui::EventHandler {
  public:
   explicit SystemModalContainerEventFilter(
       SystemModalContainerEventFilterDelegate* delegate);
+
+  SystemModalContainerEventFilter(const SystemModalContainerEventFilter&) =
+      delete;
+  SystemModalContainerEventFilter& operator=(
+      const SystemModalContainerEventFilter&) = delete;
+
   ~SystemModalContainerEventFilter() override;
 
   // ui::EventHandler:
@@ -25,8 +30,6 @@ class ASH_EXPORT SystemModalContainerEventFilter : public ui::EventHandler {
 
  private:
   SystemModalContainerEventFilterDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemModalContainerEventFilter);
 };
 
 }  // namespace ash

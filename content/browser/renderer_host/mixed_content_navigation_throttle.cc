@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,16 @@
 
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/common/frame_messages.h"
-#include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "net/base/url_util.h"
@@ -55,7 +54,8 @@ bool IsUrlPotentiallySecure(const GURL& url) {
 // This method should return the same results as
 // SchemeRegistry::shouldTreatURLSchemeAsRestrictingMixedContent.
 bool DoesOriginSchemeRestrictMixedContent(const url::Origin& origin) {
-  return origin.scheme() == url::kHttpsScheme;
+  return origin.GetTupleOrPrecursorTupleIfOpaque().scheme() ==
+         url::kHttpsScheme;
 }
 
 void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
@@ -66,7 +66,8 @@ void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
   // mixed content for now. Once/if the browser should also check form submits
   // for mixed content than this will be allowed to happen and this DCHECK
   // should be updated.
-  DCHECK(navigation_request->frame_tree_node()->parent());
+  DCHECK(!navigation_request->IsInOutermostMainFrame());
+
   RenderFrameHostImpl* rfh =
       navigation_request->frame_tree_node()->current_frame_host();
   DCHECK(!navigation_request->GetRedirectChain().empty());
@@ -142,12 +143,17 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
   // If we're in strict mode, we'll automagically fail everything, and
   // intentionally skip the client/embedder checks in order to prevent degrading
   // the site's security UI.
+  // TODO(crbug.com/1312424): Instead of checking node->IsInFencedFrameTree()
+  // set insecure_request_policy to block mixed content requests in a
+  // fenced frame tree and change InWhichFrameIsContentMixed to not cross
+  // the frame tree boundary.
   bool block_all_mixed_content =
-      (mixed_content_frame->frame_tree_node()
-           ->current_replication_state()
-           .insecure_request_policy &
-       blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent) !=
-      blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
+      ((mixed_content_frame->frame_tree_node()
+            ->current_replication_state()
+            .insecure_request_policy &
+        blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent) !=
+       blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone) ||
+      node->IsInFencedFrameTree();
   const auto& prefs = mixed_content_frame->GetOrCreateWebPreferences();
   bool strict_mode =
       prefs.strict_mixed_content_checking || block_all_mixed_content;
@@ -174,6 +180,14 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
     // InWhichFrameIsContentMixed() check above.
     UMA_HISTOGRAM_BOOLEAN("SSL.NonWebbyMixedContentLoaded", true);
     return false;
+  }
+
+  // Cancel the prerendering page to prevent the problems that can be the
+  // logging UMA, UKM and calling DidChangeVisibleSecurityState() through this
+  // throttle.
+  if (mixed_content_frame->CancelPrerendering(
+          PrerenderHost::FinalStatus::kMixedContent)) {
+    return true;
   }
 
   bool allowed = false;
@@ -243,10 +257,11 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
 RenderFrameHostImpl* MixedContentNavigationThrottle::InWhichFrameIsContentMixed(
     FrameTreeNode* node,
     const GURL& url) {
-  // Main frame navigations cannot be mixed content.
+  // Main frame navigations cannot be mixed content. But, fenced frame
+  // navigations should be considered as well because it can be mixed content.
   // TODO(carlosk): except for form submissions which might be supported in the
   // future.
-  if (node->IsMainFrame())
+  if (!node->GetParentOrOuterDocument())
     return nullptr;
 
   // There's no mixed content if any of these are true:
@@ -257,8 +272,9 @@ RenderFrameHostImpl* MixedContentNavigationThrottle::InWhichFrameIsContentMixed(
   // exist, here they are partially fulfilled here  and partially replaced by
   // DoesOriginSchemeRestrictMixedContent.
   RenderFrameHostImpl* mixed_content_frame = nullptr;
-  RenderFrameHostImpl* root = node->parent()->GetMainFrame();
-  RenderFrameHostImpl* parent = node->parent();
+  RenderFrameHostImpl* parent = node->GetParentOrOuterDocument();
+  RenderFrameHostImpl* root = parent->GetOutermostMainFrame();
+
   if (!IsUrlPotentiallySecure(url)) {
     // TODO(carlosk): we might need to check more than just the immediate parent
     // and the root. See https://crbug.com/623486.
@@ -351,8 +367,9 @@ void MixedContentNavigationThrottle::ReportBasicMixedContentFeatures(
 }
 
 void MixedContentNavigationThrottle::MaybeHandleCertificateError() {
-  // Main frame certificate errors are handled separately in SSLManager.
-  if (navigation_handle()->IsInMainFrame()) {
+  // The outermost main frame certificate errors are handled separately in
+  // SSLManager.
+  if (navigation_handle()->IsInOutermostMainFrame()) {
     return;
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,14 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_CROSS_ORIGIN_EMBEDDER_POLICY_PARSER_H_
 
 #include "base/component_export.h"
-#include "base/memory/scoped_refptr.h"
-#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 
 namespace net {
 class HttpResponseHeaders;
 }
 
 namespace network {
+
+struct CrossOriginEmbedderPolicy;
 
 // Specification:
 // https://wicg.github.io/cross-origin-embedder-policy/

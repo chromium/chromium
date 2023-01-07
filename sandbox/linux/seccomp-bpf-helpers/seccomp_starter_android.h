@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SECCOMP_STARTER_ANDROID_H_
 #define SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SECCOMP_STARTER_ANDROID_H_
 
-#include "base/macros.h"
 #include "sandbox/sandbox_buildflags.h"
 #include "sandbox/sandbox_export.h"
 
@@ -13,6 +12,7 @@
 #include <memory>
 
 #include "sandbox/linux/bpf_dsl/policy.h"
+#include "sandbox/linux/seccomp-bpf-helpers/baseline_policy_android.h"
 #endif
 
 namespace sandbox {
@@ -32,14 +32,24 @@ enum class SeccompSandboxStatus {
 };
 
 // This helper class can be used to start a Seccomp-BPF sandbox on Android. It
-// helps by doing compile- and run-time checks to see if Seccomp should be
-// supported on the given device.
+// helps by doing compile- and run-time checks to see if Seccomp is supported
+// on the given device.
 class SANDBOX_EXPORT SeccompStarterAndroid {
  public:
-  // Constructs a sandbox starter helper. The |build_sdk_int| and |device| are
-  // used to detect whether Seccomp is supported.
-  SeccompStarterAndroid(int build_sdk_int, const char* device);
+  // Constructs a sandbox starter helper. The |build_sdk_int| is used for run-
+  // time checks.
+  explicit SeccompStarterAndroid(int build_sdk_int);
+
+  SeccompStarterAndroid(const SeccompStarterAndroid&) = delete;
+  SeccompStarterAndroid& operator=(const SeccompStarterAndroid&) = delete;
+
   ~SeccompStarterAndroid();
+
+#if BUILDFLAG(USE_SECCOMP_BPF)
+  // Returns the default runtime-configured options for the baseline Android
+  // seccomp policy.
+  BaselinePolicyAndroid::RuntimeOptions GetDefaultBaselineOptions() const;
+#endif
 
   // Sets the BPF policy to apply. This must be called before StartSandbox()
   // if BUILDFLAG(USE_SECCOMP_BPF) is true.
@@ -56,16 +66,9 @@ class SANDBOX_EXPORT SeccompStarterAndroid {
   SeccompSandboxStatus status() const { return status_; }
 
  private:
-  // Determines if the running device should support Seccomp, based on the
-  // Android SDK version.
-  bool IsSupportedBySDK() const;
-
   const int sdk_int_;
-  const char* const device_;
   SeccompSandboxStatus status_ = SeccompSandboxStatus::NOT_SUPPORTED;
   std::unique_ptr<bpf_dsl::Policy> policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SeccompStarterAndroid);
 };
 
 }  // namespace sandbox

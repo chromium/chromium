@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,6 @@ namespace ash {
 class ASH_PUBLIC_EXPORT AmbientBackendModelObserver
     : public base::CheckedObserver {
  public:
-  // Invoked when |topics| has been changed.
-  virtual void OnTopicsChanged() {}
-
   // Invoked when a new image is added.
   virtual void OnImageAdded() {}
 
@@ -31,10 +28,6 @@ class ASH_PUBLIC_EXPORT AmbientBackendModelObserver
   // Invoked when fetching images has failed and not enough images are present
   // to start ambient mode.
   virtual void OnImagesFailed() {}
-
-  // Invoked when the weather info (condition icon or temperature) stored in the
-  // model has been updated.
-  virtual void OnWeatherInfoUpdated() {}
 
  protected:
   ~AmbientBackendModelObserver() override = default;

@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
-#include "third_party/blink/renderer/core/html/imports/html_import.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 
@@ -49,17 +48,8 @@ bool StyleSheetCandidate::IsXSL() const {
          To<ProcessingInstruction>(GetNode()).IsXSL();
 }
 
-bool StyleSheetCandidate::IsImport() const {
-  return type_ == kHTMLLink && To<HTMLLinkElement>(GetNode()).IsImport();
-}
-
 bool StyleSheetCandidate::IsCSSStyle() const {
   return type_ == kHTMLStyle || type_ == kSVGStyle;
-}
-
-Document* StyleSheetCandidate::ImportedDocument() const {
-  DCHECK(IsImport());
-  return To<HTMLLinkElement>(GetNode()).import();
 }
 
 bool StyleSheetCandidate::IsEnabledViaScript() const {
@@ -75,7 +65,7 @@ bool StyleSheetCandidate::IsEnabledAndLoading() const {
 
 bool StyleSheetCandidate::CanBeActivated(
     const String& current_preferrable_name) const {
-  StyleSheet* sheet = this->Sheet();
+  StyleSheet* sheet = Sheet();
   auto* css_style_sheet = DynamicTo<CSSStyleSheet>(sheet);
   if (!css_style_sheet || sheet->disabled())
     return false;

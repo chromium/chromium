@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/loader_factory_for_frame.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
@@ -14,9 +14,12 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/prefetched_signed_exchange_manager.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
@@ -129,7 +132,8 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
   IssueKeepAliveHandleIfRequested(
       request, frame->GetLocalFrameHostRemote(),
       pending_remote.InitWithNewPipeAndPassReceiver());
-  return frame->GetURLLoaderFactory()->CreateURLLoader(
+  WebURLLoaderFactory* factory = frame->GetURLLoaderFactory();
+  return factory->CreateURLLoader(
       webreq, CreateTaskRunnerHandle(freezable_task_runner),
       CreateTaskRunnerHandle(unfreezable_task_runner),
       std::move(pending_remote), back_forward_cache_loader_helper);
@@ -137,7 +141,11 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
 
 std::unique_ptr<WebCodeCacheLoader>
 LoaderFactoryForFrame::CreateCodeCacheLoader() {
-  return Platform::Current()->CreateCodeCacheLoader();
+  if (document_loader_->GetCodeCacheHost() == nullptr) {
+    return nullptr;
+  }
+  return blink::WebCodeCacheLoader::Create(
+      document_loader_->GetCodeCacheHost());
 }
 
 std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>

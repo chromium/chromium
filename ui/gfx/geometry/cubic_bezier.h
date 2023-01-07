@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GFX_GEOMETRY_CUBIC_BEZIER_H_
 #define UI_GFX_GEOMETRY_CUBIC_BEZIER_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/geometry_export.h"
 
 namespace gfx {
@@ -17,13 +16,18 @@ class GEOMETRY_EXPORT CubicBezier {
   CubicBezier(double p1x, double p1y, double p2x, double p2y);
   CubicBezier(const CubicBezier& other);
 
+  CubicBezier& operator=(const CubicBezier&) = delete;
+
   double SampleCurveX(double t) const {
     // `ax t^3 + bx t^2 + cx t' expanded using Horner's rule.
+    // The x values are in the range [0, 1]. So it isn't needed toFinite
+    // clamping.
+    // https://drafts.csswg.org/css-easing-1/#funcdef-cubic-bezier-easing-function-cubic-bezier
     return ((ax_ * t + bx_) * t + cx_) * t;
   }
 
   double SampleCurveY(double t) const {
-    return ((ay_ * t + by_) * t + cy_) * t;
+    return ToFinite(((ay_ * t + by_) * t + cy_) * t);
   }
 
   double SampleCurveDerivativeX(double t) const {
@@ -31,7 +35,8 @@ class GEOMETRY_EXPORT CubicBezier {
   }
 
   double SampleCurveDerivativeY(double t) const {
-    return (3.0 * ay_ * t + 2.0 * by_) * t + cy_;
+    return ToFinite(
+        ToFinite(ToFinite(3.0 * ay_) * t + ToFinite(2.0 * by_)) * t + cy_);
   }
 
   static double GetDefaultEpsilon();
@@ -47,9 +52,9 @@ class GEOMETRY_EXPORT CubicBezier {
   // out of [0, 1] range.
   double SolveWithEpsilon(double x, double epsilon) const {
     if (x < 0.0)
-      return 0.0 + start_gradient_ * x;
+      return ToFinite(0.0 + start_gradient_ * x);
     if (x > 1.0)
-      return 1.0 + end_gradient_ * (x - 1.0);
+      return ToFinite(1.0 + end_gradient_ * (x - 1.0));
     return SampleCurveY(SolveCurveX(x, epsilon));
   }
 
@@ -76,6 +81,7 @@ class GEOMETRY_EXPORT CubicBezier {
   void InitGradients(double p1x, double p1y, double p2x, double p2y);
   void InitRange(double p1y, double p2y);
   void InitSpline();
+  static double ToFinite(double value);
 
   double ax_;
   double bx_;
@@ -98,8 +104,6 @@ class GEOMETRY_EXPORT CubicBezier {
   // may have multiple values for t for some values of x in [0, 1].
   bool monotonically_increasing_;
 #endif
-
-  DISALLOW_ASSIGN(CubicBezier);
 };
 
 }  // namespace gfx

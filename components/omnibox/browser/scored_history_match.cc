@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -674,7 +673,7 @@ float ScoredHistoryMatch::GetDocumentSpecificityScore(
 float ScoredHistoryMatch::GetFinalRelevancyScore(float topicality_score,
                                                  float frequency_score,
                                                  float specificity_score) {
-  // |relevance_buckets| gives a mapping from intemerdiate score to the final
+  // |relevance_buckets| gives a mapping from intermediate score to the final
   // relevance score.
   static base::NoDestructor<ScoreMaxRelevances> default_relevance_buckets(
       GetHQPBuckets());

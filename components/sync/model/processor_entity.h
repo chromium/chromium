@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,16 @@
 #include <utility>
 
 #include "base/time/time.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
+
+namespace sync_pb {
+class EntitySpecifics;
+}  // namespace sync_pb
 
 namespace syncer {
 
 class ClientTagHash;
+struct EntityData;
 struct CommitRequestData;
 struct CommitResponseData;
 struct UpdateResponseData;
@@ -64,31 +67,35 @@ class ProcessorEntity {
   bool RequiresCommitData() const;
 
   // Whether it's safe to clear the metadata for this entity. This means that
-  // the entity is deleted and either knowledge of this entity has never left
-  // this client or it is up to date with the server.
+  // the entity is deleted and it is up to date with the server (i.e. is *not*
+  // unsynced).
   bool CanClearMetadata() const;
 
-  // Returns true if the specified update version does not contain new data.
-  bool UpdateIsReflection(int64_t update_version) const;
-
-  void RecordEntityUpdateLatency(int64_t update_version, ModelType type);
+  // Returns true if the specified `update_version` is already known, i.e. is
+  // small or equal to the last known server version.
+  // This is the case for reflections, but can also be true in some other edge
+  // cases (e.g. updates were received out of order).
+  bool IsVersionAlreadyKnown(int64_t update_version) const;
 
   // Records that an update from the server was received but ignores its data.
-  void RecordIgnoredUpdate(const UpdateResponseData& response_data);
+  void RecordIgnoredRemoteUpdate(const UpdateResponseData& response_data);
 
   // Records an update from the server assuming its data is the new data for
   // this entity.
-  void RecordAcceptedUpdate(const UpdateResponseData& response_data);
+  void RecordAcceptedRemoteUpdate(const UpdateResponseData& response_data,
+                                  sync_pb::EntitySpecifics trimmed_specifics);
 
   // Squashes a pending commit with an update from the server.
-  void RecordForcedUpdate(const UpdateResponseData& response_data);
+  void RecordForcedRemoteUpdate(const UpdateResponseData& response_data,
+                                sync_pb::EntitySpecifics trimmed_specifics);
 
   // Applies a local change to this item.
-  void MakeLocalChange(std::unique_ptr<EntityData> data);
+  void RecordLocalUpdate(std::unique_ptr<EntityData> data,
+                         sync_pb::EntitySpecifics trimmed_specifics);
 
   // Applies a local deletion to this item. Returns true if entity was
   // previously committed to server and tombstone should be sent.
-  bool Delete();
+  bool RecordLocalDeletion();
 
   // Initializes a message representing this item's uncommitted state
   // and assumes that it is forwarded to the sync engine for commiting.
@@ -119,8 +126,6 @@ class ProcessorEntity {
   // Takes the passed commit data updates its fields with values from metadata
   // and caches it in the instance.
   void SetCommitData(std::unique_ptr<EntityData> data);
-
-  void CacheCommitData(std::unique_ptr<EntityData> data);
 
   // Check if the instance has cached commit data.
   bool HasCommitData() const;
@@ -171,8 +176,6 @@ class ProcessorEntity {
   // The time when this entity transition from being synced to being unsynced
   // (i.e. a local change happened).
   base::Time unsynced_time_;
-
-  std::map<int64_t, base::Time> unsynced_time_per_committed_server_version_;
 };
 
 }  // namespace syncer

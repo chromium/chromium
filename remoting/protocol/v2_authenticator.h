@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "crypto/p224_spake.h"
 #include "remoting/protocol/authenticator.h"
@@ -35,6 +34,9 @@ class V2Authenticator : public Authenticator {
       scoped_refptr<RsaKeyPair> key_pair,
       const std::string& shared_secret,
       State initial_state);
+
+  V2Authenticator(const V2Authenticator&) = delete;
+  V2Authenticator& operator=(const V2Authenticator&) = delete;
 
   ~V2Authenticator() override;
 
@@ -75,8 +77,6 @@ class V2Authenticator : public Authenticator {
   RejectionReason rejection_reason_;
   base::queue<std::string> pending_messages_;
   std::string auth_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(V2Authenticator);
 };
 
 }  // namespace protocol

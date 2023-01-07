@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/media/base/decrypt_context_impl.h"
 #include "chromecast/media/base/media_caps.h"
@@ -33,6 +33,10 @@ class CastCdmContextImpl : public CastCdmContext {
   explicit CastCdmContextImpl(CastCdm* cast_cdm) : cast_cdm_(cast_cdm) {
     DCHECK(cast_cdm_);
   }
+
+  CastCdmContextImpl(const CastCdmContextImpl&) = delete;
+  CastCdmContextImpl& operator=(const CastCdmContextImpl&) = delete;
+
   ~CastCdmContextImpl() override = default;
 
   std::unique_ptr<::media::CallbackRegistration> RegisterEventCB(
@@ -59,8 +63,6 @@ class CastCdmContextImpl : public CastCdmContext {
  private:
   // The CastCdm object which owns |this|.
   CastCdm* const cast_cdm_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastCdmContextImpl);
 };
 
 // Returns the HDCP version multiplied by ten.
@@ -149,8 +151,9 @@ void CastCdm::OnSessionMessage(const std::string& session_id,
   session_message_cb_.Run(session_id, message_type, message);
 }
 
-void CastCdm::OnSessionClosed(const std::string& session_id) {
-  session_closed_cb_.Run(session_id);
+void CastCdm::OnSessionClosed(const std::string& session_id,
+                              ::media::CdmSessionClosedReason reason) {
+  session_closed_cb_.Run(session_id, reason);
 }
 
 void CastCdm::OnSessionKeysChange(const std::string& session_id,

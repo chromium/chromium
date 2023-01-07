@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ std::unique_ptr<ImageDecoder> CreateICODecoder() {
 TEST(ICOImageDecoderTests, trunctedIco) {
   const Vector<char> data =
       ReadFile("/images/resources/png-in-ico.ico")->CopyAs<Vector<char>>();
-  ASSERT_FALSE(data.IsEmpty());
+  ASSERT_FALSE(data.empty());
 
   scoped_refptr<SharedBuffer> truncated_data =
       SharedBuffer::Create(data.data(), data.size() / 2);
@@ -41,7 +41,7 @@ TEST(ICOImageDecoderTests, trunctedIco) {
 TEST(ICOImageDecoderTests, errorInPngInIco) {
   const Vector<char> data =
       ReadFile("/images/resources/png-in-ico.ico")->CopyAs<Vector<char>>();
-  ASSERT_FALSE(data.IsEmpty());
+  ASSERT_FALSE(data.empty());
 
   // Modify the file to have a broken CRC in IHDR.
   constexpr size_t kCrcOffset = 22 + 29;
@@ -88,7 +88,7 @@ TEST(ICOImageDecoderTests, NullData) {
 
   scoped_refptr<SharedBuffer> ico_file_data =
       ReadFile("/images/resources/png-in-ico.ico");
-  ASSERT_FALSE(ico_file_data->IsEmpty());
+  ASSERT_FALSE(ico_file_data->empty());
   ASSERT_LT(kSizeOfBadBlock, ico_file_data->size());
 
   scoped_refptr<SharedBuffer> truncated_data =

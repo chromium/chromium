@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <iosfwd>
 #include <string>
 
-namespace chromeos {
+namespace ash {
 
 // Lists the priority of the OOBE screens with the highest priority at the top
 // and the lowest priority at the bottom. This is used to check if screen
@@ -28,13 +28,17 @@ struct StaticOobeScreenId;
 // Identifiers an OOBE screen.
 struct OobeScreenId {
   // Create an identifier from a string.
+  // TODO(https://crbug.com/1312880): Remove this.
   explicit OobeScreenId(const std::string& id);
+
   // Create an identifier from a statically created identifier. This is implicit
   // to make StaticOobeScreenId act more like OobeScreenId.
   OobeScreenId(const StaticOobeScreenId& id);
 
-  // Name of the screen.
+  OobeScreenId(const std::string& id, const std::string& api_prefix);
+
   std::string name;
+  std::string external_api_prefix;
 
   bool operator==(const OobeScreenId& rhs) const;
   bool operator!=(const OobeScreenId& rhs) const;
@@ -47,24 +51,24 @@ struct OobeScreenId {
 // the data in the binary instead of std::string.
 struct StaticOobeScreenId {
   const char* name;
+  const char* external_api_prefix = nullptr;
 
   OobeScreenId AsId() const;
 };
 
-struct OobeScreen {
-  constexpr static StaticOobeScreenId
-      SCREEN_CREATE_SUPERVISED_USER_FLOW_DEPRECATED{"supervised-user-creation"};
-  constexpr static StaticOobeScreenId SCREEN_CONFIRM_PASSWORD{
-      "saml-confirm-password"};
+/* Keep it as `inline constexpr` (do not add `static`) so it exists as `inline
+ * variable` and have the same address in every translation unit (more at
+ * https://en.cppreference.com/w/cpp/language/inline).
+ **/
+inline constexpr StaticOobeScreenId OOBE_SCREEN_UNKNOWN{"unknown"};
 
-  constexpr static StaticOobeScreenId SCREEN_UNKNOWN{"unknown"};
-};
+}  // namespace ash
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::OobeScreenId;
+using ::ash::StaticOobeScreenId;
 }  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::OobeScreen;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_SCREEN_H_

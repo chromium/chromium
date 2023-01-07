@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,26 +9,25 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/oauth_token_getter.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/port_allocator_factory.h"
 #include "remoting/protocol/remoting_ice_config_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
 // Use a cooldown period to prevent multiple service requests in case of a bug.
-constexpr base::TimeDelta kIceConfigRequestCooldown =
-    base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kIceConfigRequestCooldown = base::Minutes(2);
 
 void PrintIceConfig(const IceConfig& ice_config) {
   std::stringstream ss;
@@ -59,9 +58,10 @@ void PrintIceConfig(const IceConfig& ice_config) {
 
 // static
 scoped_refptr<TransportContext> TransportContext::ForTests(TransportRole role) {
-  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
   return new protocol::TransportContext(
-      std::make_unique<protocol::ChromiumPortAllocatorFactory>(), nullptr,
+      std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
+      webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
       protocol::NetworkSettings(
           protocol::NetworkSettings::NAT_TRAVERSAL_OUTGOING),
       role);
@@ -69,13 +69,19 @@ scoped_refptr<TransportContext> TransportContext::ForTests(TransportRole role) {
 
 TransportContext::TransportContext(
     std::unique_ptr<PortAllocatorFactory> port_allocator_factory,
+    rtc::SocketFactory* socket_factory,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    OAuthTokenGetter* oauth_token_getter,
     const NetworkSettings& network_settings,
     TransportRole role)
     : port_allocator_factory_(std::move(port_allocator_factory)),
+      socket_factory_(socket_factory),
       url_loader_factory_(url_loader_factory),
+      oauth_token_getter_(oauth_token_getter),
       network_settings_(network_settings),
-      role_(role) {}
+      role_(role) {
+  DCHECK(socket_factory_);
+}
 
 TransportContext::~TransportContext() = default;
 
@@ -118,8 +124,8 @@ void TransportContext::EnsureFreshIceConfig() {
 
   if (base::Time::Now() >
       (last_request_completion_time_ + kIceConfigRequestCooldown)) {
-    ice_config_request_ =
-        std::make_unique<RemotingIceConfigRequest>(url_loader_factory_);
+    ice_config_request_ = std::make_unique<RemotingIceConfigRequest>(
+        url_loader_factory_, oauth_token_getter_);
     ice_config_request_->Send(
         base::BindOnce(&TransportContext::OnIceConfig, base::Unretained(this)));
   } else {
@@ -153,5 +159,4 @@ int TransportContext::GetTurnMaxRateKbps() const {
   return ice_config_.max_bitrate_kbps;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

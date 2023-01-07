@@ -33,12 +33,14 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -68,7 +70,7 @@ CSSSelectorWatch* CSSSelectorWatch::FromIfExists(Document& document) {
 
 void CSSSelectorWatch::CallbackSelectorChangeTimerFired(TimerBase*) {
   // Should be ensured by updateSelectorMatches():
-  DCHECK(!added_selectors_.IsEmpty() || !removed_selectors_.IsEmpty());
+  DCHECK(!added_selectors_.empty() || !removed_selectors_.empty());
 
   if (timer_expirations_ < 1) {
     timer_expirations_++;
@@ -76,10 +78,8 @@ void CSSSelectorWatch::CallbackSelectorChangeTimerFired(TimerBase*) {
     return;
   }
   if (GetSupplementable()->GetFrame()) {
-    Vector<String> added_selectors;
-    Vector<String> removed_selectors;
-    CopyToVector(added_selectors_, added_selectors);
-    CopyToVector(removed_selectors_, removed_selectors);
+    Vector<String> added_selectors(added_selectors_);
+    Vector<String> removed_selectors(removed_selectors_);
     GetSupplementable()->GetFrame()->Client()->SelectorMatchChanged(
         added_selectors, removed_selectors);
   }
@@ -123,7 +123,7 @@ void CSSSelectorWatch::UpdateSelectorMatches(
   if (!should_update_timer)
     return;
 
-  if (removed_selectors_.IsEmpty() && added_selectors_.IsEmpty()) {
+  if (removed_selectors_.empty() && added_selectors_.empty()) {
     if (callback_selector_change_timer_.IsActive()) {
       timer_expirations_ = 0;
       callback_selector_change_timer_.Stop();
@@ -137,9 +137,9 @@ void CSSSelectorWatch::UpdateSelectorMatches(
   }
 }
 
-static bool AllCompound(const CSSSelectorList& selector_list) {
-  for (const CSSSelector* selector = selector_list.FirstForCSSOM(); selector;
-       selector = selector_list.Next(*selector)) {
+static bool AllCompound(const StyleRule* style_rule) {
+  for (const CSSSelector* selector = style_rule->FirstSelector(); selector;
+       selector = CSSSelectorList::Next(*selector)) {
     if (!selector->IsCompound())
       return false;
   }
@@ -155,18 +155,21 @@ void CSSSelectorWatch::WatchCSSSelectors(const Vector<String>& selectors) {
   // UA stylesheets always parse in the insecure context mode.
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kUASheetMode, SecureContextMode::kInsecureContext);
+  Arena arena;
   for (const auto& selector : selectors) {
-    CSSSelectorList selector_list =
-        CSSParser::ParseSelector(context, nullptr, selector);
-    if (!selector_list.IsValid())
+    CSSSelectorVector selector_vector =
+        CSSParser::ParseSelector(context, nullptr, selector, arena);
+    if (selector_vector.empty())
       continue;
+
+    StyleRule* style_rule =
+        StyleRule::Create(selector_vector, callback_property_set);
 
     // Only accept Compound Selectors, since they're cheaper to match.
-    if (!AllCompound(selector_list))
+    if (!AllCompound(style_rule))
       continue;
 
-    watched_callback_selectors_.push_back(MakeGarbageCollected<StyleRule>(
-        std::move(selector_list), callback_property_set));
+    watched_callback_selectors_.push_back(style_rule);
   }
   GetSupplementable()->GetStyleEngine().WatchedSelectorsChanged();
 }

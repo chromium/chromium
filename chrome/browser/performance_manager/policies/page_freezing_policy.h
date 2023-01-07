@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <array>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/freezing/freezing.h"
@@ -100,9 +101,10 @@ class PageFreezingPolicy : public GraphObserver,
   void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) override;
   void OnFreezingVoteChanged(
       const PageNode* page_node,
-      base::Optional<performance_manager::freezing::FreezingVote> previous_vote)
+      absl::optional<performance_manager::freezing::FreezingVote> previous_vote)
       override;
-  void OnLoadingStateChanged(const PageNode* page_node) override;
+  void OnLoadingStateChanged(const PageNode* page_node,
+                             PageNode::LoadingState previous_state) override;
   void OnPageLifecycleStateChanged(const PageNode* page_node) override;
 
   // PageLiveStateObserver:
@@ -116,6 +118,8 @@ class PageFreezingPolicy : public GraphObserver,
   void OnIsCapturingDisplayChanged(const PageNode* page_node) override;
   void OnIsAutoDiscardableChanged(const PageNode* page_node) override {}
   void OnWasDiscardedChanged(const PageNode* page_node) override {}
+  void OnIsActiveTabChanged(const PageNode* page_node) override {}
+  void OnContentSettingsChanged(const PageNode* page_node) override {}
 
   // Helper function that either calls SubmitNegativeVote() or
   // InvalidateNegativeVote() when the value of a property changes.
@@ -149,7 +153,7 @@ class PageFreezingPolicy : public GraphObserver,
 
   // The page node being removed, used to avoid freezing/unfreezing a page node
   // while it's being removed.
-  const PageNode* page_node_being_removed_ = nullptr;
+  raw_ptr<const PageNode> page_node_being_removed_ = nullptr;
 
   // The freezing mechanism used to do the actual freezing.
   std::unique_ptr<mechanism::PageFreezer> page_freezer_;

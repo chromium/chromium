@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_WELL_KNOWN_CHANGE_PASSWORD_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_WELL_KNOWN_CHANGE_PASSWORD_TAB_HELPER_H_
 
-#include "components/password_manager/core/browser/change_password_url_service.h"
 #include "components/password_manager/core/browser/well_known_change_password_state.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "ios/web/public/navigation/web_state_policy_decider.h"
@@ -32,11 +31,13 @@ class WellKnownChangePasswordTabHelper
  public:
   ~WellKnownChangePasswordTabHelper() override;
   // web::WebStatePolicyDecider:
-  PolicyDecision ShouldAllowRequest(NSURLRequest* request,
-                                    const RequestInfo& request_info) override;
+  void ShouldAllowRequest(
+      NSURLRequest* request,
+      web::WebStatePolicyDecider::RequestInfo request_info,
+      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
+      web::WebStatePolicyDecider::ResponseInfo response_info,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
   void WebStateDestroyed() override;
 
@@ -83,7 +84,6 @@ class WellKnownChangePasswordTabHelper
   web::WebStatePolicyDecider::PolicyDecisionCallback response_policy_callback_;
   password_manager::WellKnownChangePasswordState
       well_known_change_password_state_{this};
-  ChangePasswordUrlService* change_password_url_service_ = nullptr;
   password_manager::AffiliationService* affiliation_service_ = nullptr;
   WEB_STATE_USER_DATA_KEY_DECL();
 };

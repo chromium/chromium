@@ -1,16 +1,19 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//components/exo/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
 source_set("wayland") {
   sources = [
+    "overlay_prioritizer.cc",
+    "overlay_prioritizer.h",
     "scoped_wl.cc",
     "scoped_wl.h",
     "serial_tracker.cc",
@@ -19,10 +22,14 @@ source_set("wayland") {
     "server.h",
     "server_util.cc",
     "server_util.h",
+    "surface_augmenter.cc",
+    "surface_augmenter.h",
     "wayland_display_observer.cc",
     "wayland_display_observer.h",
     "wayland_display_output.cc",
     "wayland_display_output.h",
+    "wayland_display_util.cc",
+    "wayland_display_util.h",
     "wayland_input_delegate.cc",
     "wayland_input_delegate.h",
     "wayland_pointer_delegate.cc",
@@ -66,7 +73,11 @@ source_set("wayland") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/exo",
+    "//components/exo:buildflags",
     "//components/exo/wayland/protocol:aura_shell_protocol",
+    "//components/exo/wayland/protocol:chrome_color_management_protocol",
+    "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
+    "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//device/gamepad",
     "//services/viz/privileged/mojom/compositing",
     "//services/viz/public/mojom",
@@ -74,13 +85,14 @@ source_set("wayland") {
     "//third_party/libsync",
     "//third_party/wayland:wayland_server",
     "//third_party/wayland-protocols:alpha_compositing_protocol",
-    "//third_party/wayland-protocols:color_space_protocol",
+    "//third_party/wayland-protocols:content_type_protocol",
     "//third_party/wayland-protocols:cursor_shapes_protocol",
     "//third_party/wayland-protocols:extended_drag",
     "//third_party/wayland-protocols:gaming_input_protocol",
     "//third_party/wayland-protocols:input_timestamps_protocol",
     "//third_party/wayland-protocols:keyboard_configuration_protocol",
     "//third_party/wayland-protocols:keyboard_extension_protocol",
+    "//third_party/wayland-protocols:keyboard_shortcuts_inhibit_protocol",
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     "//third_party/wayland-protocols:notification_shell_protocol",
     "//third_party/wayland-protocols:pointer_constraints_protocol",
@@ -91,10 +103,13 @@ source_set("wayland") {
     "//third_party/wayland-protocols:secure_output_protocol",
     "//third_party/wayland-protocols:stylus_protocol",
     "//third_party/wayland-protocols:stylus_tools_protocol",
+    "//third_party/wayland-protocols:text_input_extension_protocol",
     "//third_party/wayland-protocols:text_input_protocol",
+    "//third_party/wayland-protocols:touchpad_haptics_protocol",
     "//third_party/wayland-protocols:viewporter_protocol",
     "//third_party/wayland-protocols:vsync_feedback_protocol",
     "//third_party/wayland-protocols:xdg_decoration_protocol",
+    "//third_party/wayland-protocols:xdg_output_protocol",
     "//third_party/wayland-protocols:xdg_shell_protocol",
     "//ui/aura",
     "//ui/base",
@@ -133,27 +148,19 @@ source_set("wayland") {
     deps += [ "//ui/events/keycodes:xkb" ]
   }
 
-  if (is_chromecast) {
-    defines += [ "USE_FULLSCREEN_SHELL" ]
-    sources += [
-      "zwp_fullscreen_shell.cc",
-      "zwp_fullscreen_shell.h",
-    ]
-    deps += [ "//third_party/wayland-protocols:fullscreen_shell_protocol" ]
-  }
-
   if (is_chromeos_ash) {
     sources += [
+      "content_type.cc",
+      "content_type.h",
       "wayland_keyboard_delegate.cc",
       "wayland_keyboard_delegate.h",
       "wayland_positioner.cc",
       "wayland_positioner.h",
+      "weston_test.h",
       "wl_shell.cc",
       "wl_shell.h",
       "xdg_shell.cc",
       "xdg_shell.h",
-      "zcr_color_space.cc",
-      "zcr_color_space.h",
       "zcr_cursor_shapes.cc",
       "zcr_cursor_shapes.h",
       "zcr_extended_drag.cc",
@@ -168,10 +175,21 @@ source_set("wayland") {
       "zcr_notification_shell.h",
       "zcr_remote_shell.cc",
       "zcr_remote_shell.h",
+      "zcr_remote_shell_event_mapping.h",
+      "zcr_remote_shell_impl.cc",
+      "zcr_remote_shell_impl.h",
+      "zcr_remote_shell_v2.cc",
+      "zcr_remote_shell_v2.h",
       "zcr_stylus_tools.cc",
       "zcr_stylus_tools.h",
+      "zcr_touchpad_haptics.cc",
+      "zcr_touchpad_haptics.h",
+      "zwp_idle_inhibit_manager.cc",
+      "zwp_idle_inhibit_manager.h",
       "zwp_input_timestamps_manager.cc",
       "zwp_input_timestamps_manager.h",
+      "zwp_keyboard_shortcuts_inhibit_manager.cc",
+      "zwp_keyboard_shortcuts_inhibit_manager.h",
       "zwp_pointer_constraints.cc",
       "zwp_pointer_constraints.h",
       "zwp_pointer_gestures.cc",
@@ -181,27 +199,94 @@ source_set("wayland") {
       "zwp_text_input_manager.cc",
       "zwp_text_input_manager.h",
       "zxdg_decoration_manager.h",
+      "zxdg_output_manager.cc",
+      "zxdg_output_manager.h",
       "zxdg_shell.cc",
       "zxdg_shell.h",
     ]
 
-    deps += [ "//ui/base/cursor/mojom:cursor_type" ]
+    if (enable_color_manager) {
+      deps += [
+        "//ash:ash",
+        "//components/exo/wayland/protocol:chrome_color_management_protocol",
+        "//ui/base/wayland:color_manager_util",
+      ]
+      sources += [
+        "zcr_color_manager.cc",
+        "zcr_color_manager.h",
+      ]
+    }
+
+    deps += [
+      "//services/device/public/mojom",
+      "//services/device/wake_lock/power_save_blocker",
+      "//third_party/wayland-protocols:idle_inhibit_protocol",
+      "//ui/base/cursor/mojom:cursor_type",
+      "//ui/base/wayland:wayland_server_input_types",
+      "//ui/events/ozone/layout",
+    ]
   }
+}
+
+static_library("weston_test") {
+  testonly = true
+  defines = [ "WESTON_TEST_IMPLEMENTATION" ]
+  deps = [
+    ":wayland",
+    "//base",
+    "//components/exo",
+    "//third_party/wayland:wayland_server",
+    "//third_party/wayland-protocols:weston_test",
+    "//ui/base:test_support",
+    "//ui/compositor",
+    "//ui/wm",
+  ]
+  sources = [ "weston_test.cc" ]
+  if (is_chromeos_ash) {
+    deps += [ "//ash" ]
+  }
+}
+
+static_library("weston_test_stub") {
+  testonly = false
+  defines = [ "WESTON_TEST_IMPLEMENTATION" ]
+  sources = [ "weston_test_stub.cc" ]
+  deps = [ ":wayland" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "server_unittest.cc" ]
+  sources = [
+    "clients/security_delegate_binding_test.cc",
+    "server_unittest.cc",
+    "test/client_util.cc",
+    "test/client_util.h",
+    "test/resource_key.h",
+    "test/server_util.cc",
+    "test/server_util.h",
+    "test/test_client.cc",
+    "test/test_client.h",
+    "test/test_wayland_client_thread.cc",
+    "test/test_wayland_client_thread.h",
+    "test/wayland_server_test.cc",
+    "test/wayland_server_test.h",
+    "test/wayland_server_test_base.cc",
+    "test/wayland_server_test_base.h",
+  ]
 
   deps = [
+    ":client_support",
     ":wayland",
     "//base",
+    "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/exo",
     "//components/exo:test_support",
     "//components/exo/wayland/fuzzer:unit_tests",
     "//components/exo/wayland/protocol:aura_shell_protocol",
+    "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
+    "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
@@ -210,15 +295,20 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     sources += [
+      "wayland_display_observer_unittest.cc",
+      "wayland_display_util_unittest.cc",
       "wayland_keyboard_delegate_unittest.cc",
       "wayland_positioner_unittest.cc",
       "zaura_shell_unittest.cc",
+      "zcr_remote_shell_impl_unittest.cc",
       "zcr_remote_shell_unittest.cc",
     ]
     deps += [
       "//ash",
       "//ash:test_support",
       "//ash/public/cpp",
+      "//third_party/wayland-protocols:remote_shell_protocol",
+      "//third_party/wayland-protocols:xdg_output_protocol",
       "//third_party/wayland-protocols:xdg_shell_protocol",
       "//ui/compositor",
       "//ui/compositor:test_support",
@@ -256,17 +346,22 @@ source_set("client_support") {
 
   public_deps = [
     "//components/exo/wayland/protocol:aura_shell_protocol",
+    "//components/exo/wayland/protocol:chrome_color_management_protocol",
+    "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
+    "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//skia",
     "//third_party/wayland:wayland_client",
     "//third_party/wayland-protocols:alpha_compositing_protocol",
-    "//third_party/wayland-protocols:color_space_protocol",
+    "//third_party/wayland-protocols:content_type_protocol",
     "//third_party/wayland-protocols:cursor_shapes_protocol",
     "//third_party/wayland-protocols:extended_drag",
     "//third_party/wayland-protocols:fullscreen_shell_protocol",
     "//third_party/wayland-protocols:gaming_input_protocol",
+    "//third_party/wayland-protocols:idle_inhibit_protocol",
     "//third_party/wayland-protocols:input_timestamps_protocol",
     "//third_party/wayland-protocols:keyboard_configuration_protocol",
     "//third_party/wayland-protocols:keyboard_extension_protocol",
+    "//third_party/wayland-protocols:keyboard_shortcuts_inhibit_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
@@ -280,11 +375,15 @@ source_set("client_support") {
     "//third_party/wayland-protocols:secure_output_protocol",
     "//third_party/wayland-protocols:stylus_protocol",
     "//third_party/wayland-protocols:stylus_tools_protocol",
+    "//third_party/wayland-protocols:text_input_extension_protocol",
     "//third_party/wayland-protocols:text_input_protocol",
+    "//third_party/wayland-protocols:touchpad_haptics_protocol",
     "//third_party/wayland-protocols:viewporter_protocol",
     "//third_party/wayland-protocols:vsync_feedback_protocol",
     "//third_party/wayland-protocols:vsync_feedback_protocol",
+    "//third_party/wayland-protocols:weston_test",
     "//third_party/wayland-protocols:xdg_decoration_protocol",
+    "//third_party/wayland-protocols:xdg_output_protocol",
     "//third_party/wayland-protocols:xdg_shell_protocol",
   ]
 
@@ -510,12 +609,6 @@ source_set("wayland_client_test_helper") {
   data_deps = []
 
   if (is_chromeos_ash) {
-    data_deps += [
-      "//ash/resources:ash_test_resources_100_percent",
-      "//ash/resources:ash_test_resources_200_percent",
-      "//ash/strings:ash_test_strings",
-    ]
-
     deps += [
       "//ash",
       "//ash:test_support",
@@ -537,7 +630,10 @@ test("wayland_client_tests") {
     ":client_support",
     ":client_version_test",
     ":wayland_client_test_helper",
+    "//components/exo",
+    "//components/exo/wayland",
     "//ui/base",
+    "//ui/color:color",
     "//ui/gl:test_support",
   ]
 
@@ -584,6 +680,7 @@ test("wayland_client_perftests") {
     "//testing/perf",
     "//ui/aura:test_support",
     "//ui/base",
+    "//ui/color:color",
     "//ui/compositor:test_support",
     "//ui/gl:test_support",
   ]
@@ -629,6 +726,7 @@ test("wayland_client_compatibility_tests") {
     "//components/exo/wayland/compatibility_test:generated_client_helper_headers",
     "//components/viz/test:test_support",
     "//mojo/core/embedder:embedder",
+    "//ui/color:color",
     "//ui/gl:test_support",
   ]
 
@@ -640,6 +738,23 @@ test("wayland_client_compatibility_tests") {
 }
 
 if (ozone_platform_drm) {
+  test("wayland_client_integration_tests") {
+    sources = [
+      "test/integration/buffer_checker_test.cc",
+      "test/integration/wayland_client_integration_tests_main.cc",
+    ]
+    deps = [
+      ":client_support",
+      "//base",
+      "//base/test:test_support",
+      "//build/config/linux/libdrm",
+      "//ui/gfx:gfx",
+      "//ui/gfx/linux:drm",
+      "//ui/gfx/linux:gbm",
+      "//ui/gl",
+    ]
+  }
+
   executable("wayland_yuv_client") {
     sources = [ "clients/yuv.cc" ]
 
@@ -658,16 +773,16 @@ if (ozone_platform_drm) {
     deps += [ "//third_party/minigbm" ]
   }
 
-  executable("wayland_color_space_client") {
-    sources = [ "clients/color_space.cc" ]
+  executable("wayland_hdr_client") {
+    sources = [ "clients/hdr.cc" ]
 
     deps = [
       ":client_support",
       "//base",
       "//build/config/linux/libdrm",
+      "//components/exo/wayland/protocol:chrome_color_management_protocol",
       "//skia",
       "//third_party/wayland:wayland_client",
-      "//third_party/wayland-protocols:color_space_protocol",
       "//third_party/wayland-protocols:linux_dmabuf_protocol",
       "//third_party/wayland-protocols:presentation_time_protocol",
       "//ui/gfx/geometry",

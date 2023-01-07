@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_REQUEST_MATCH_PARAMS_H_
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_REQUEST_MATCH_PARAMS_H_
 
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 
@@ -18,6 +17,12 @@ class CONTENT_EXPORT BackgroundFetchRequestMatchParams {
       blink::mojom::FetchAPIRequestPtr request_to_match,
       blink::mojom::CacheQueryOptionsPtr cache_query_options,
       bool match_all);
+
+  BackgroundFetchRequestMatchParams(const BackgroundFetchRequestMatchParams&) =
+      delete;
+  BackgroundFetchRequestMatchParams& operator=(
+      const BackgroundFetchRequestMatchParams&) = delete;
+
   ~BackgroundFetchRequestMatchParams();
 
   bool FilterByRequest() const { return !request_to_match_.is_null(); }
@@ -51,8 +56,6 @@ class CONTENT_EXPORT BackgroundFetchRequestMatchParams {
 
   // Whether to return all matching responses from the cache storage.
   bool match_all_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchRequestMatchParams);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab.state;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -23,8 +22,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.ByteBufferTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -67,9 +68,10 @@ public class LevelDBPersistedDataStorageTest {
     @After
     public void tearDown() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            for (int i = 0; i < mPersistedDataStorage.length; i++) {
-                mPersistedDataStorage[i].destroy();
-            }
+            // Both PersistedDataStorage are associated with the same BrowserContext so calling
+            // destroy() on the first one will free the same SessionProtoDB for all of them. Calling
+            // on both would cause call destroy() on a freed SessionProtoDB.
+            mPersistedDataStorage[0].destroy();
         });
     }
 
@@ -189,10 +191,11 @@ public class LevelDBPersistedDataStorageTest {
             LevelDBPersistedDataStorage persistedDataStorage) throws TimeoutException {
         LoadCallbackHelper ch = new LoadCallbackHelper();
         int chCount = ch.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> { persistedDataStorage.load(key, (res) -> { ch.notifyCalled(res); }); });
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            persistedDataStorage.load(key, (res) -> { ch.notifyCalled(ByteBuffer.wrap(res)); });
+        });
         ch.waitForCallback(chCount);
-        Assert.assertArrayEquals(expected, ch.getRes());
+        ByteBufferTestUtils.verifyByteBuffer(expected, ch.getRes());
     }
 
     private void delete(String key, LevelDBPersistedDataStorage persistedDataStorage)

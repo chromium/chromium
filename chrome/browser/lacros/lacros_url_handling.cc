@@ -1,31 +1,84 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/lacros/lacros_url_handling.h"
 
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "url/gurl.h"
 
 namespace lacros_url_handling {
 
+bool IsNavigationInterceptable(const NavigateParams& params,
+                               const GURL& source_url) {
+  const auto qualifier = PageTransitionGetQualifier(params.transition);
+  // True if this was triggered by the user through a bookmark, or typing into
+  // the Omnibox.
+  const bool is_omnibox_navigation =
+      (PageTransitionCoreTypeIs(params.transition, ui::PAGE_TRANSITION_TYPED) ||
+       PageTransitionCoreTypeIs(params.transition,
+                                ui::PAGE_TRANSITION_GENERATED)) &&
+      qualifier & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR;
+  // True if this is a bookmark navigation.
+  const bool is_bookmark_navigation = PageTransitionCoreTypeIs(
+      params.transition, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  // True if this is a navigation created by the user, clicking on a link on a
+  // page with the chrome:// scheme.
+  const bool is_system_navigation =
+      PageTransitionCoreTypeIs(params.transition, ui::PAGE_TRANSITION_LINK) &&
+      source_url.SchemeIs(content::kChromeUIScheme);
+  return (is_omnibox_navigation || is_system_navigation ||
+          is_bookmark_navigation);
+}
+
 bool MaybeInterceptNavigation(const GURL& url) {
-  // For now, just intercept the os-settings URL.
-  if (url.GetOrigin() != GURL(chrome::kChromeUIOSSettingsURL).GetOrigin())
+  const GURL& ash_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
+  // Every URL which is supported by Ash but not by Lacros will automatically
+  // forwarded to Ash.
+  if (IsUrlHandledByLacros(ash_url) || !IsUrlAcceptedByAsh(ash_url))
     return false;
 
-  // We may expand this in the future to support a dynamic set of URLs provided
-  // by Ash via LacrosInitParams. That way we avoid having to synchronize the
-  // set of known chrome:// URLs across the two sides.
+  return NavigateInAsh(ash_url);
+}
 
-  chromeos::LacrosChromeServiceImpl* service =
-      chromeos::LacrosChromeServiceImpl::Get();
-  if (!service->IsUrlHandlerAvailable())
+bool IsUrlHandledByLacros(const GURL& url) {
+  return ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url);
+}
+
+bool IsUrlAcceptedByAsh(const GURL& requested_url) {
+  auto* init_params = chromeos::BrowserParamsProxy::Get();
+  if (!init_params->AcceptedInternalAshUrls().has_value()) {
+    // For Ash backwards compatibility allow URLs to be used which were
+    // allowed before crosapi passed allowed URLs.
+    return requested_url == GURL(chrome::kChromeUIOSSettingsURL)
+                                .DeprecatedGetOriginAsURL() ||
+           requested_url ==
+               GURL(chrome::kChromeUIFlagsURL).DeprecatedGetOriginAsURL();
+  }
+
+  return crosapi::gurl_os_handler_utils::IsUrlInList(
+      requested_url, *init_params->AcceptedInternalAshUrls());
+}
+
+bool NavigateInAsh(const GURL& url) {
+  // As requested by security, all additional queries will get removed.
+  // Note that this will also be done on the Ash side for the same reason.
+  const GURL& ash_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
+
+  if (!IsUrlAcceptedByAsh(ash_url))
     return false;
 
-  service->url_handler_remote()->OpenUrl(url);
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service->IsAvailable<crosapi::mojom::UrlHandler>())
+    return false;
+
+  service->GetRemote<crosapi::mojom::UrlHandler>()->OpenUrl(ash_url);
   return true;
 }
 

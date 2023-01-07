@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,8 @@ void ParamTraits<gfx::DisplayColorSpaces>::Write(
     const gfx::DisplayColorSpaces& p) {
   WriteParam(m, p.color_spaces_);
   WriteParam(m, p.buffer_formats_);
-  WriteParam(m, p.sdr_white_level_);
+  WriteParam(m, p.sdr_max_luminance_nits_);
+  WriteParam(m, p.hdr_max_luminance_relative_);
 }
 
 bool ParamTraits<gfx::DisplayColorSpaces>::Read(const base::Pickle* m,
@@ -61,7 +62,9 @@ bool ParamTraits<gfx::DisplayColorSpaces>::Read(const base::Pickle* m,
     return false;
   if (!ReadParam(m, iter, &r->buffer_formats_))
     return false;
-  if (!ReadParam(m, iter, &r->sdr_white_level_))
+  if (!ReadParam(m, iter, &r->sdr_max_luminance_nits_))
+    return false;
+  if (!ReadParam(m, iter, &r->hdr_max_luminance_relative_))
     return false;
   return true;
 }

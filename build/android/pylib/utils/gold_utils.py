@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """//build/android implementations of //testing/skia_gold_common.
@@ -74,5 +74,5 @@ class AndroidSkiaGoldSessionManager(
 
 class AndroidSkiaGoldProperties(skia_gold_properties.SkiaGoldProperties):
   @staticmethod
-  def _GetGitOriginMasterHeadSha1():
-    return repo_utils.GetGitOriginMasterHeadSHA1(host_paths.DIR_SOURCE_ROOT)
+  def _GetGitOriginMainHeadSha1():
+    return repo_utils.GetGitOriginMainHeadSHA1(host_paths.DIR_SOURCE_ROOT)

@@ -9,12 +9,12 @@
 'use strict';
 
 async_test_after_layout_and_paint((t) => {
-  const axElement = accessibilityController.accessibleElementById('textarea');
-  axElement.setNotificationListener(t.step_func((notification, intents) => {
-    if (notification == 'SelectedTextChanged') {
+  const axRoot = accessibilityController.rootElement;
+  axRoot.setNotificationListener(t.step_func((notification, intents) => {
+    if (notification == 'DocumentSelectionChanged') {
       assert_array_equals(intents,
                           ['AXEventIntent(setSelection,none,character,forward)']);
-      axElement.unsetNotificationListener();
+      axRoot.unsetNotificationListener();
       t.done();
     }
   }));

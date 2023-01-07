@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/views/view_observer.h"
@@ -302,6 +303,9 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   // necessary.
   void SetKeyboardAccessible(bool keyboard_accessible);
 
+  // Checks if a focused view is being set.
+  bool IsSettingFocusedView() const;
+
  private:
   // Returns the focusable view found in the FocusTraversable specified starting
   // at the specified view. This traverses down along the FocusTraversable
@@ -334,14 +338,14 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   static bool arrow_key_traversal_enabled_;
 
   // The top-level Widget this FocusManager is associated with.
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 
   // The object which handles an accelerator when |accelerator_manager_| doesn't
   // handle it.
   std::unique_ptr<FocusManagerDelegate> delegate_;
 
   // The view that currently is focused.
-  View* focused_view_ = nullptr;
+  raw_ptr<View> focused_view_ = nullptr;
 
   // The AcceleratorManager this FocusManager is associated with.
   ui::AcceleratorManager accelerator_manager_;
@@ -369,6 +373,11 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
 
   // Whether FocusManager is currently trying to restore a focused view.
   bool in_restoring_focused_view_ = false;
+
+  // Count of SetFocusedViewWithReason() in the current stack.
+  // This value is ideally 0 or 1, i.e. no nested focus change.
+  // See crbug.com/1203960.
+  int setting_focused_view_entrance_count_ = 0;
 };
 
 }  // namespace views

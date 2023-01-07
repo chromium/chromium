@@ -1,13 +1,24 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/unified/feature_pod_controller_base.h"
 
+#include "ash/system/unified/quick_settings_metrics_util.h"
+
 namespace ash {
 
 void FeaturePodControllerBase::OnLabelPressed() {
   return OnIconPressed();
+}
+
+void FeaturePodControllerBase::TrackToggleUMA(bool target_toggle_state) {
+  quick_settings_metrics_util::RecordQsFeatureToggle(GetCatalogName(),
+                                                     target_toggle_state);
+}
+
+void FeaturePodControllerBase::TrackDiveInUMA() {
+  quick_settings_metrics_util::RecordQsFeatureDiveIn(GetCatalogName());
 }
 
 }  // namespace ash

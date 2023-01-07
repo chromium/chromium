@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/memory_snapshot.h"
 #include "snapshot/thread_snapshot.h"
@@ -34,6 +34,10 @@ namespace test {
 class TestThreadSnapshot final : public ThreadSnapshot {
  public:
   TestThreadSnapshot();
+
+  TestThreadSnapshot(const TestThreadSnapshot&) = delete;
+  TestThreadSnapshot& operator=(const TestThreadSnapshot&) = delete;
+
   ~TestThreadSnapshot();
 
   //! \brief Obtains a pointer to the underlying mutable CPUContext structure.
@@ -60,6 +64,9 @@ class TestThreadSnapshot final : public ThreadSnapshot {
   }
 
   void SetThreadID(uint64_t thread_id) { thread_id_ = thread_id; }
+  void SetThreadName(const std::string& thread_name) {
+    thread_name_ = thread_name;
+  }
   void SetSuspendCount(int suspend_count) { suspend_count_ = suspend_count; }
   void SetPriority(int priority) { priority_ = priority; }
   void SetThreadSpecificDataAddress(uint64_t thread_specific_data_address) {
@@ -80,6 +87,7 @@ class TestThreadSnapshot final : public ThreadSnapshot {
   const CPUContext* Context() const override;
   const MemorySnapshot* Stack() const override;
   uint64_t ThreadID() const override;
+  std::string ThreadName() const override;
   int SuspendCount() const override;
   int Priority() const override;
   uint64_t ThreadSpecificDataAddress() const override;
@@ -93,12 +101,11 @@ class TestThreadSnapshot final : public ThreadSnapshot {
   CPUContext context_;
   std::unique_ptr<MemorySnapshot> stack_;
   uint64_t thread_id_;
+  std::string thread_name_;
   int suspend_count_;
   int priority_;
   uint64_t thread_specific_data_address_;
   std::vector<std::unique_ptr<MemorySnapshot>> extra_memory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestThreadSnapshot);
 };
 
 }  // namespace test

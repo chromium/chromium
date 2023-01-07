@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
@@ -29,6 +30,9 @@ public class Tile implements OfflinableSuggestion {
 
     @Nullable
     private Drawable mIcon;
+
+    @Nullable
+    private ColorStateList mIconTint;
 
     @Nullable
     private Long mOfflinePageOfflineId;
@@ -150,6 +154,17 @@ public class Tile implements OfflinableSuggestion {
      */
     public void setIcon(@Nullable Drawable icon) {
         mIcon = icon;
+    }
+
+    /**
+     * Updates the icon tint color.
+     */
+    public void setIconTint(@Nullable ColorStateList iconTint) {
+        mIconTint = iconTint;
+    }
+
+    public ColorStateList getIconTint() {
+        return mIconTint;
     }
 
     @TileSectionType

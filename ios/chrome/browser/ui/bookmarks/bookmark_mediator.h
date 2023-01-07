@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ class PrefRegistrySyncable;
 
 class GURL;
 @class MDCSnackbarMessage;
+@class URLWithTitle;
 
 // Mediator for the bookmarks.
 @interface BookmarkMediator : NSObject
@@ -37,12 +38,17 @@ class GURL;
 + (void)setFolderForNewBookmarks:(const bookmarks::BookmarkNode*)folder
                   inBrowserState:(ChromeBrowserState*)browserState;
 
-// Adds a bookmark with a |title| and a |URL| and display a snackbar with an
-// |editAction|. Returns a message to be displayed after the Bookmark has been
+// Adds a bookmark with a `title` and a `URL` and display a snackbar with an
+// `editAction`. Returns a message to be displayed after the Bookmark has been
 // added.
 - (MDCSnackbarMessage*)addBookmarkWithTitle:(NSString*)title
                                         URL:(const GURL&)URL
                                  editAction:(void (^)())editAction;
+
+// Adds bookmarks for `URLs` into `folder`. Returns a message to be displayed
+// after the Bookmark has been added.
+- (MDCSnackbarMessage*)addBookmarks:(NSArray<URLWithTitle*>*)URLs
+                           toFolder:(const bookmarks::BookmarkNode*)folder;
 
 @end
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "build/build_config.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include <CoreServices/CoreServices.h>
 #endif
 
@@ -31,7 +31,7 @@ OSStatusLogMessage::OSStatusLogMessage(const char* file_path,
 }
 
 OSStatusLogMessage::~OSStatusLogMessage() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // TODO(crbug.com/546375): Consider using NSError with NSOSStatusErrorDomain
   // to try to get a description of the failure.
   stream() << ": " << status_;

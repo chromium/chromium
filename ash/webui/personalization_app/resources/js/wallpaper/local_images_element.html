@@ -1,0 +1,45 @@
+<style include="wallpaper common">
+  :host {
+    overflow: hidden;
+  }
+
+  #main {
+    height: 100%;
+    overflow-y: auto;
+    width: 100%;
+  }
+</style>
+<main id="main" aria-label="$i18n{myImagesLabel}" tabindex="-1">
+  <iron-list
+      items="[[imagesToDisplay_]]" grid role="listbox"
+      aria-setsize$="[[imagesToDisplay_.length]]">
+    <template>
+      <div class="photo-container">
+        <template is="dom-if"
+            if="[[isImageLoading_(item, imageDataLoading_)]]">
+          <div tabindex$="[[tabIndex]]" role="option"
+              class="photo-inner-container placeholder"
+              style$="[[getLoadingPlaceholderAnimationDelay_(index)]]"
+              aria-posinset$="[[getAriaIndex_(index)]]"
+              aria-label="$i18n{ariaLabelLoading}"
+              aria-disabled="true">
+          </div>
+        </template>
+        <template is="dom-if" if="[[isImageReady_(item, imageData_, imageDataLoading_)]]">
+          <div class="photo-inner-container" role="option"
+              tabindex$="[[tabIndex]]" data-id$="[[getImageDataId_(item)]]"
+              on-click="onImageSelected_" on-keypress="onImageSelected_"
+              aria-posinset$="[[getAriaIndex_(index)]]"
+              aria-selected$="[[getAriaSelected_(item, currentSelected_, pendingSelected_)]]"
+              aria-label$="[[getAriaLabel_(item)]]">
+            <div class="photo-images-container">
+              <div class="photo-images-border"></div>
+              <img src="[[getImageData_(item, imageData_)]]" aria-hidden="true">
+              <iron-icon icon="personalization:checkmark"></iron-icon>
+            </div>
+          </div>
+        </template>
+      </div>
+    </template>
+  </iron-list>
+</main>

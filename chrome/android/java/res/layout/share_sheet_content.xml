@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <ScrollView
   xmlns:android="http://schemas.android.com/apk/res/android"
@@ -12,6 +14,7 @@
   android:orientation="vertical">
   <LinearLayout
       xmlns:tools="http://schemas.android.com/tools"
+      android:id="@+id/share_sheet_layout"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:minHeight="@dimen/min_touch_target_size"
@@ -44,7 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/image_preview"
-        android:layout_toStartOf="@id/image_preview_link"
+        android:layout_toStartOf="@id/link_toggle_view"
         android:maxLines="1"
         android:minHeight="18dp"
         android:paddingEnd="16dp"
@@ -55,12 +58,12 @@
 
       <TextView
         android:id="@+id/subtitle_preview"
-        android:ellipsize="end"
+        android:ellipsize="start"
         android:layout_below="@id/title_preview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/image_preview"
-        android:layout_toStartOf="@id/image_preview_link"
+        android:layout_toStartOf="@id/link_toggle_view"
         android:layout_centerVertical="true"
         android:maxLines="1"
         android:minHeight="18dp"
@@ -71,7 +74,7 @@
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
 
       <org.chromium.ui.widget.ChromeImageView
-          android:id="@+id/image_preview_link"
+          android:id="@+id/link_toggle_view"
           android:layout_height="@dimen/sharing_hub_preview_icon_size"
           android:layout_width="@dimen/sharing_hub_preview_icon_size"
           android:layout_alignParentEnd="true"
@@ -83,7 +86,7 @@
 
     <View
       android:id="@+id/preview_divider"
-      android:background="@color/divider_line_bg_color"
+      android:background="@macro/divider_line_bg_color"
       android:layout_height="1dp"
       android:layout_width="match_parent"/>
 
@@ -99,7 +102,7 @@
 
     <View
       android:id="@+id/share_sheet_divider"
-      android:background="@color/divider_line_bg_color"
+      android:background="@macro/divider_line_bg_color"
       android:layout_height="1dp"
       android:layout_width="match_parent"
       android:visibility="gone" />

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,11 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager_observer.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/update_observer.h"
 
@@ -38,6 +36,8 @@ class KioskAppUpdateService : public KeyedService,
   KioskAppUpdateService(
       Profile* profile,
       system::AutomaticRebootManager* automatic_reboot_manager);
+  KioskAppUpdateService(const KioskAppUpdateService&) = delete;
+  KioskAppUpdateService& operator=(const KioskAppUpdateService&) = delete;
   ~KioskAppUpdateService() override;
 
   void Init(const std::string& app_id);
@@ -71,13 +71,11 @@ class KioskAppUpdateService : public KeyedService,
   base::OneShotTimer restart_timer_;
 
   system::AutomaticRebootManager* automatic_reboot_manager_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppUpdateService);
 };
 
 // Singleton that owns all KioskAppUpdateServices and associates them with
 // profiles.
-class KioskAppUpdateServiceFactory : public BrowserContextKeyedServiceFactory {
+class KioskAppUpdateServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the KioskAppUpdateService for |profile|, creating it if it is not
   // yet created.

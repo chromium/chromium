@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <tuple>
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -71,7 +73,7 @@ bool RecursiveCrossProcessLock::TryGetCrossProcessLock(
 
 void RecursiveCrossProcessLock::ReleaseLock() {
   if (file_lock_ != -1) {
-    ignore_result(HANDLE_EINTR(flock(file_lock_, LOCK_UN)));
+    std::ignore = HANDLE_EINTR(flock(file_lock_, LOCK_UN));
     close(file_lock_);
     file_lock_ = -1;
   }

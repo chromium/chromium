@@ -44,7 +44,7 @@ class PLATFORM_EXPORT DistantLightSource final : public LightSource {
 
  private:
   DistantLightSource(float azimuth, float elevation)
-      : LightSource(LS_DISTANT), azimuth_(azimuth), elevation_(elevation) {}
+      : LightSource(kLsDistant), azimuth_(azimuth), elevation_(elevation) {}
 
   float azimuth_;
   float elevation_;

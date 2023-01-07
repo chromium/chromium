@@ -1,13 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_IS_POTENTIALLY_TRUSTWORTHY_UNITTEST_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_IS_POTENTIALLY_TRUSTWORTHY_UNITTEST_H_
 
+#include "base/containers/contains.h"
 #include "base/strings/string_piece.h"
+#include "base/test/scoped_command_line.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "url/origin_abstract_tests.h"
 
 namespace network {
@@ -207,6 +210,55 @@ TYPED_TEST_P(AbstractTrustworthinessTest, UrlFromString) {
 
   EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy(
       "quic-transport://example.com/counter"));
+
+  // These tests are imported from IsPotentiallyTrustworthy.Url.
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("file:///test/fun.html"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("file:///test/"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("file://localhost/test/"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("file://otherhost/test/"));
+
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("http://localhost/fun.html"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("http://localhost./fun.html"));
+  EXPECT_TRUE(
+      this->IsUrlPotentiallyTrustworthy("http://pumpkin.localhost/fun.html"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy(
+      "http://crumpet.pumpkin.localhost/fun.html"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy(
+      "http://pumpkin.localhost:8080/fun.html"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy(
+      "http://crumpet.pumpkin.localhost:3000/fun.html"));
+
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("http://127.0.0.1/fun.html"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("ftp://127.0.0.1/fun.html"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("http://127.3.0.1/fun.html"));
+
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("http://[::1]/fun.html"));
+
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy(
+      "filesystem:ftp://127.0.0.1/temporary/"));
+  EXPECT_TRUE(
+      this->IsUrlPotentiallyTrustworthy("blob:ftp://127.0.0.1/guid-goes-here"));
+
+  EXPECT_FALSE(this->IsUrlPotentiallyTrustworthy("blob:data:text/html,Hello"));
+  EXPECT_FALSE(this->IsUrlPotentiallyTrustworthy("blob:about:blank"));
+
+  // These tests are imported from SecurityOriginTest.IsSecure.
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("file:///etc/passwd"));
+  EXPECT_FALSE(this->IsUrlPotentiallyTrustworthy("blob:data:text/html,Hello"));
+  EXPECT_FALSE(this->IsUrlPotentiallyTrustworthy("blob:about:blank"));
+  EXPECT_FALSE(
+      this->IsUrlPotentiallyTrustworthy("filesystem:data:text/html,Hello"));
+  EXPECT_FALSE(this->IsUrlPotentiallyTrustworthy("filesystem:about:blank"));
+  EXPECT_FALSE(this->IsUrlPotentiallyTrustworthy(""));
+  EXPECT_FALSE(this->IsUrlPotentiallyTrustworthy("\0"));
+
+  // These tests are imported from SecurityOriginTest.IsSecureForLocalServers.
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("http://localhost/"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("http://localhost:8080/"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("http://127.0.0.1/"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("http://127.0.0.1:8080/"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("http://[::1]/"));
+  EXPECT_TRUE(this->IsUrlPotentiallyTrustworthy("http://vhost.localhost/"));
 }
 
 TYPED_TEST_P(AbstractTrustworthinessTest, TestcasesInheritedFromBlink) {
@@ -309,7 +361,7 @@ TYPED_TEST_P(AbstractTrustworthinessTest, TestcasesInheritedFromBlink) {
       {false, false, "data:text/html,Hello"},
   };
 
-  for (size_t i = 0; i < base::size(inputs); ++i) {
+  for (size_t i = 0; i < std::size(inputs); ++i) {
     SCOPED_TRACE(inputs[i].url);
     auto origin = this->CreateOriginFromString(inputs[i].url);
     EXPECT_EQ(inputs[i].is_potentially_trustworthy,
@@ -327,12 +379,37 @@ TYPED_TEST_P(AbstractTrustworthinessTest, TestcasesInheritedFromBlink) {
   }
 }
 
+TYPED_TEST_P(AbstractTrustworthinessTest, IsTrustworthyWithPattern) {
+  const struct HostnamePatternCase {
+    const char* pattern;
+    const char* url;
+    bool expected_secure;
+  } kTestCases[] = {
+      {"http://bar.foo.com", "http://bar.foo.com", true},
+      {"*.baz.com", "http://bar.baz.com", true},
+      {"http://foo", "*.foo.com", false},
+  };
+
+  for (const auto& test : kTestCases) {
+    EXPECT_FALSE(this->IsUrlPotentiallyTrustworthy(test.url));
+    base::test::ScopedCommandLine scoped_command_line;
+    base::CommandLine* command_line =
+        scoped_command_line.GetProcessCommandLine();
+    command_line->AppendSwitchASCII(
+        network::switches::kUnsafelyTreatInsecureOriginAsSecure, test.pattern);
+    network::SecureOriginAllowlist::GetInstance().ResetForTesting();
+    EXPECT_EQ(this->IsUrlPotentiallyTrustworthy(test.url),
+              test.expected_secure);
+  }
+}
+
 REGISTER_TYPED_TEST_SUITE_P(AbstractTrustworthinessTest,
                             OpaqueOrigins,
                             OriginFromString,
                             CustomSchemes,
                             UrlFromString,
-                            TestcasesInheritedFromBlink);
+                            TestcasesInheritedFromBlink,
+                            IsTrustworthyWithPattern);
 
 }  // namespace test
 }  // namespace network

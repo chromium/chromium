@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Site Settings common -->
+  <message name="IDS_SITE_SETTINGS_TYPE_ADS" desc="The label used for the ads site settings controls.">
+    Ads
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_ADS_MID_SENTENCE" desc="The label used for the ads site settings controls when used mid-sentence.">
+    ads
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_AR" desc="The label used for the AR site settings controls.">
+    Augmented reality
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_AR_MID_SENTENCE" desc="The label used for the AR site settings controls when used mid-sentence.">
+    augmented reality
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS" desc="The label used for the automatic downloads site settings controls.">
+    Automatic downloads
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS_MID_SENTENCE" desc="The label used for the automatic downloads site settings controls when used mid-sentence.">
+    automatic downloads
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_BACKGROUND_SYNC" desc="The label used for the background sync site settings controls.">
+    Background sync
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_BACKGROUND_SYNC_MID_SENTENCE" desc="The label used for the background sync site settings controls when used mid-sentence.">
+    background sync
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_BLUETOOTH_DEVICES" desc="The label used for the Bluetooth devices site settings controls.">
+    Bluetooth devices
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_BLUETOOTH_DEVICES_MID_SENTENCE" desc="The label used for the Bluetooth devices site settings controls when used mid-sentence.">
+    bluetooth devices
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_BLUETOOTH_SCANNING" desc="The label used for the Bluetooth scanning site settings controls.">
+    Bluetooth scanning
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_BLUETOOTH_SCANNING_MID_SENTENCE" desc="The label used for the Bluetooth scanning site settings controls when used mid-sentence.">
+    bluetooth scanning
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_CAMERA" desc="The label used for the camera site settings controls.">
+    Camera
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_CAMERA_MID_SENTENCE" desc="The label used for the camera site settings controls when used mid-sentence.">
+    camera
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM" desc="The label used for the Camera PTZ site settings controls.">
+    Camera use &amp; movement
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM_MID_SENTENCE" desc="The label used for the Camera PTZ site settings controls when used mid-sentence.">
+    camera use &amp; movement
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_CLIPBOARD" desc="The label used for the clipboard site settings controls.">
+    Clipboard
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_CLIPBOARD_MID_SENTENCE" desc="The label used for the clipboard site settings controls when used mid-sentence.">
+    clipboard
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_COOKIES" desc="The label used for the cookies and site data site settings controls.">
+    Cookies and site data
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_COOKIES_MID_SENTENCE" desc="The label used for the cookies and site data site settings controls when used mid-sentence.">
+    cookies and site data
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API" desc="The label used for the third-party sign-in site settings controls.">
+    Third-party sign-in
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API_MID_SENTENCE" desc="The label used for the third-party sign-in site settings controls when used mid-sentence.">
+    third-party sign-in
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION" desc="The label used for the idle detection site settings controls.">
+    Your device use
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION_MID_SENTENCE" desc="The label used for the idle detection site settings controls when used mid-sentence.">
+    your device use
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_JAVASCRIPT" desc="The label used for JavaScript site settings controls.">
+    JavaScript
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_MID_SENTENCE" desc="The label used for JavaScript site settings controls when used mid-sentence.">
+    javascript
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_LOCATION" desc="The label used for geolocation site settings controls." meaning="Geolocation">
+    Location
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_LOCATION_MID_SENTENCE" desc="The label used for geolocation site settings controls when used mid-sentence." meaning="Geolocation">
+    location
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_MIC" desc="The label used for the microphone site settings controls.">
+    Microphone
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_MIC_MID_SENTENCE" desc="The label used for the microphone site settings controls when used mid-sentence.">
+    microphone
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX" desc="The label used for system exclusive messages for MIDI devices site settings controls.">
+    MIDI devices
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX_MID_SENTENCE" desc="The label used for system exclusive messages for MIDI devices site settings controls when used mid-sentence.">
+    MIDI devices
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_MOTION_SENSORS" desc="The label used for the motion sensor (accelerometer, gyroscope, magnetometer) site settings controls.">
+    Motion sensors
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_MOTION_SENSORS_MID_SENTENCE" desc="The label used for the motion sensor (accelerometer, gyroscope, magnetometer) site settings controls when used mid-sentence.">
+    motion sensors
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_NFC" desc="The label used for the NFC site settings controls.">
+    NFC devices
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_NFC_MID_SENTENCE" desc="The label used for the NFC site settings controls when used mid-sentence.">
+    NFC devices
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_NOTIFICATIONS" desc="The label used for notifications site settings controls.">
+    Notifications
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_NOTIFICATIONS_MID_SENTENCE" desc="The label used for notifications site settings controls when used mid-sentence.">
+    notifications
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_POPUPS_REDIRECTS" desc="The label used for the popups and redirects site settings controls.">
+    Pop-ups and redirects
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_POPUPS_REDIRECTS_MID_SENTENCE" desc="The label used for the popups and redirects site settings controls when used mid-sentence.">
+    pop-ups and redirects
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_PROTECTED_MEDIA_ID" desc="The label used for the protected media identifier site setting that controls content controlled by DRM (e.g. paid subscriptions). Protected content refers to DRM-controlled content. IDs is short for identifiers; use abbreviation to avoid truncation.">
+    Protected content IDs
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_PROTECTED_MEDIA_ID_MID_SENTENCE" desc="The label used for the protected media identifier site setting that controls content controlled by DRM (e.g. paid subscriptions) when used mid-sentence. Protected content refers to DRM-controlled content. IDs is short for identifiers; use abbreviation to avoid truncation.">
+    protected content IDs
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_SENSORS" desc="The label used for the sensor site settings controls. Sensors are motion and light sensors, specifically accelerometers, gyroscope, magnetometers, and ambient-light sensors.">
+    Motion or light sensors
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_SENSORS_MID_SENTENCE" desc="The label used for the sensor site settings controls when used mid-sentence. Sensors are motion and light sensors, specifically accelerometers, gyroscope, magnetometers, and ambient-light sensors.">
+    motion or light sensors
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_SOUND" desc="The label used for the sound site settings controls.">
+    Sound
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_SOUND_MID_SENTENCE" desc="The label used for the sound site settings controls when used mid-sentence.">
+    sound
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_USB_DEVICES" desc="The label used for the USB devices site settings controls.">
+    USB devices
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_USB_DEVICES_MID_SENTENCE" desc="The label used for the USB devices site settings controls when used mid-sentence.">
+    USB devices
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_VR" desc="The label used for the VR site settings controls.">
+    Virtual reality
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_VR_MID_SENTENCE" desc="The label used for the VR site settings controls when used mid-sentence.">
+    virtual reality
+  </message>
+
+  <!-- Site Settings desktop-only -->
+  <if expr="not is_android">
+  <message name="IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE" desc="The label used for the File System Access write site settings controls. The write permission determines whether sites are allowed to save to the original file that was selected by the user through the File System Access API.">
+    File editing
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE_MID_SENTENCE" desc="The label used for the File System Access write site settings controls when used mid-sentence. The write permission determines whether sites are allowed to save to the original file that was selected by the user through the File System Access API.">
+    file editing
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_FONT_ACCESS" desc="The label used for the local font access site settings controls.">
+    Fonts
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_FONT_ACCESS_MID_SENTENCE" desc="The label used for the local font access site settings controls when used mid-sentence.">
+    fonts
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_HANDLERS" desc="The label used for the protocol handlers (e.g. mailto) site settings controls.">
+    Protocol handlers
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_HANDLERS_MID_SENTENCE" desc="The label used for the protocol handlers (e.g. mailto) site settings controls when used mid-sentence.">
+    protocol handlers
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_HID_DEVICES" desc="The label used for the HID site settings controls.">
+    HID devices
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_HID_DEVICES_MID_SENTENCE" desc="The label used for the HID site settings controls when used mid-sentence.">
+    HID devices
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_IMAGES" desc="The label used for images site settings controls.">
+    Images
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_IMAGES_MID_SENTENCE" desc="The label used for images site settings controls when used mid-sentence.">
+    images
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_INSECURE_CONTENT" desc="The label used for the insecure content site settings controls. This setting controls whether HTTP content will be displayed on HTTPS sites.">
+    Insecure content
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_INSECURE_CONTENT_MID_SENTENCE" desc="The label used for the insecure content site settings controls when used mid-sentence. This setting controls whether HTTP content will be displayed on HTTPS sites.">
+    insecure content
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_PAYMENT_HANDLER" desc="The label used for the payment handler site settings controls.">
+    Payment handlers
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_PAYMENT_HANDLER_MID_SENTENCE" desc="The label used for the payment handler site settings controls when used mid-sentence.">
+    payment handlers
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_PDF_DOCUMENTS" desc="The label used for the PDF documents site settings controls.">
+    PDF documents
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS" desc="The label used for the serial ports site settings controls.">
+    Serial ports
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS_MID_SENTENCE" desc="The label used for the serial ports site settings controls when used mid-sentence.">
+    serial ports
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_ZOOM_LEVELS" desc="The label used for the zoom levels site settings controls.">
+    Zoom levels
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_ZOOM_LEVELS_MID_SENTENCE" desc="The label used for the zoom levels site settings controls when used mid-sentence.">
+    zoom levels
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT" desc="The label used for the window management site settings controls.">
+    Window management
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE" desc="The label used for the window management site settings controls when used mid-sentence.">
+    window management
+  </message>
+  </if>
+</grit-part>

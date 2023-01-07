@@ -1,0 +1,51 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
+
+option java_outer_classname = "ChromeSearchboxStatsProtos";
+
+package metrics;
+
+// Chrome-specific version of searchbox_stats.proto containing a strict subset
+// of the fields in searchbox_stats.proto.
+//
+// This proto is serialized and sent over by Chrome as a Base64-encoded URL
+// param for logging. Note that this proto is not itself persisted in logs. It
+// is instead decoded and deserialized into the searchbox_stats.proto which is
+// persisted in logs.
+//
+// Field types, IDs, labels, annotations, optional-ness, and default values MUST
+// match those of their counterparts.
+//
+// See searchbox_stats.proto for documentation of these fields and do not
+// duplicate comments here.
+message ChromeSearchboxStats {
+  optional string client_name = 2;
+  message SuggestionInfo {
+    optional int32 index = 1 [default = -1];
+    optional uint32 type = 2;
+    repeated uint32 subtypes = 3;
+  }
+  optional SuggestionInfo assisted_query_info = 5;
+  repeated SuggestionInfo available_suggestions = 6;
+  optional bool zero_prefix_enabled = 38;
+  optional uint32 num_zero_prefix_suggestions_shown = 37;
+  optional string experiment_stats = 26 [deprecated = true];
+  message ExperimentStatsV2 {
+    optional int32 type_int = 4;
+    optional string string_value = 2;
+    optional int32 int_value = 3;
+  }
+  repeated ExperimentStatsV2 experiment_stats_v2 = 60;
+  message GroupInfo {
+    optional uint32 groups_set_index = 1;
+    optional uint32 side_type = 2;
+    optional uint32 why_this_result_reason = 3;
+  }
+  repeated GroupInfo group_infos = 103;
+}

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bit_cast.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "net/base/io_buffer.h"
@@ -51,7 +51,7 @@ class BrotliSourceStreamTest : public PlatformTest {
     ASSERT_TRUE(base::ReadFileToString(encoded_file_path, &encoded_buffer_));
     ASSERT_GE(kDefaultBufferSize, encoded_buffer_.size());
 
-    std::unique_ptr<MockSourceStream> source(new MockSourceStream);
+    auto source = std::make_unique<MockSourceStream>();
     source_ = source.get();
     brotli_stream_ = CreateBrotliSourceStream(std::move(source));
   }
@@ -78,7 +78,7 @@ class BrotliSourceStreamTest : public PlatformTest {
   scoped_refptr<IOBufferWithSize> out_buffer_;
 
  private:
-  MockSourceStream* source_;
+  raw_ptr<MockSourceStream> source_;
   std::unique_ptr<SourceStream> brotli_stream_;
   std::unique_ptr<base::RunLoop> loop_;
 

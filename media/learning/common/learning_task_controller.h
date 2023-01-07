@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "media/learning/common/labelled_example.h"
 #include "media/learning/common/learning_task.h"
 #include "media/learning/common/target_histogram.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace learning {
@@ -46,9 +45,13 @@ struct ObservationCompletion {
 class COMPONENT_EXPORT(LEARNING_COMMON) LearningTaskController {
  public:
   using PredictionCB = base::OnceCallback<void(
-      const base::Optional<TargetHistogram>& predicted)>;
+      const absl::optional<TargetHistogram>& predicted)>;
 
   LearningTaskController() = default;
+
+  LearningTaskController(const LearningTaskController&) = delete;
+  LearningTaskController& operator=(const LearningTaskController&) = delete;
+
   virtual ~LearningTaskController() = default;
 
   // Start a new observation.  Call this at the time one would try to predict
@@ -68,8 +71,8 @@ class COMPONENT_EXPORT(LEARNING_COMMON) LearningTaskController {
   virtual void BeginObservation(
       base::UnguessableToken id,
       const FeatureVector& features,
-      const base::Optional<TargetValue>& default_target = base::nullopt,
-      const base::Optional<ukm::SourceId>& source_id = base::nullopt) = 0;
+      const absl::optional<TargetValue>& default_target = absl::nullopt,
+      const absl::optional<ukm::SourceId>& source_id = absl::nullopt) = 0;
 
   // Complete an observation by sending a completion.
   virtual void CompleteObservation(base::UnguessableToken id,
@@ -85,19 +88,16 @@ class COMPONENT_EXPORT(LEARNING_COMMON) LearningTaskController {
   // default value was given.
   virtual void UpdateDefaultTarget(
       base::UnguessableToken id,
-      const base::Optional<TargetValue>& default_target) = 0;
+      const absl::optional<TargetValue>& default_target) = 0;
 
   // Returns the LearningTask associated with |this|.
   virtual const LearningTask& GetLearningTask() = 0;
 
   // Asynchronously predicts distribution for given |features|. |callback| will
-  // receive a base::nullopt prediction when model is not available. |callback|
+  // receive a absl::nullopt prediction when model is not available. |callback|
   // may be called immediately without posting.
   virtual void PredictDistribution(const FeatureVector& features,
                                    PredictionCB callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LearningTaskController);
 };
 
 }  // namespace learning

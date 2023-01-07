@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,45 +14,33 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordHistogramJni;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.FeatureStatus;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.UserStatus;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Tests for {@link org.chromium.chrome.browser.tasks.ConditionalTabStripUtils}.
  */
-@RunWith(LocalRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class ConditionalTabStripUtilsUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
 
     private SharedPreferences mSharedPreference;
-
-    @Mock
-    private RecordHistogram.Natives mMockRecordHistogramNatives;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        ContextUtils.initApplicationContextForTests(RuntimeEnvironment.application);
         mSharedPreference = ContextUtils.getAppSharedPreferences();
-        mJniMocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogramNatives);
 
         // Initialize the feature status.
         ConditionalTabStripUtils.setFeatureStatus(FeatureStatus.DEFAULT);

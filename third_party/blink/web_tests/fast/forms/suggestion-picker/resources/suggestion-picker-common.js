@@ -11,11 +11,11 @@ function valueForEntry(element) {
 }
 
 function highlightedEntry() {
-    return valueForEntry(popupWindow.document.activeElement);
+    return valueForEntry(internals.pagePopupWindow.document.activeElement);
 }
 
 function entryValues() {
-    var elements = popupWindow.document.getElementsByClassName("suggestion-list-entry");
+    var elements = internals.pagePopupWindow.document.getElementsByClassName("suggestion-list-entry");
     var values = [];
     for (var i = 0; i < elements.length; ++i)
         values.push(valueForEntry(elements[i]));

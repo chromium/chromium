@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 
-#if defined(USE_MINIKIN_HYPHENATION) && defined(OS_FUCHSIA)
+#if defined(USE_MINIKIN_HYPHENATION) && BUILDFLAG(IS_FUCHSIA)
 // Fuchsia doesn't include |blink_platform_unittests_data|.
 #undef USE_MINIKIN_HYPHENATION
 #endif
@@ -37,7 +37,7 @@ class HyphenationTest : public testing::Test {
  protected:
   void TearDown() override { LayoutLocale::ClearForTesting(); }
 
-#if defined(USE_MINIKIN_HYPHENATION) || defined(OS_MAC)
+#if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
   // Get a |Hyphenation| instance for the specified locale for testing.
   scoped_refptr<Hyphenation> GetHyphenation(const AtomicString& locale) {
 #if defined(USE_MINIKIN_HYPHENATION)
@@ -45,7 +45,7 @@ class HyphenationTest : public testing::Test {
     // accessible from the unit test, open the dictionary file directly for
     // testing.
     std::string filename = "hyph-" + locale.Ascii() + ".hyb";
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     base::FilePath path("/system/usr/hyphen-data");
 #else
     base::FilePath path = test::HyphenationDictionaryDir();
@@ -53,7 +53,7 @@ class HyphenationTest : public testing::Test {
     path = path.AppendASCII(filename);
     base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (file.IsValid())
-      return HyphenationMinikin::FromFileForTesting(std::move(file));
+      return HyphenationMinikin::FromFileForTesting(locale, std::move(file));
 #else
     if (const LayoutLocale* layout_locale = LayoutLocale::Get(locale))
       return layout_locale->GetHyphenation();
@@ -105,7 +105,7 @@ TEST_F(HyphenationTest, MapLocale) {
   EXPECT_EQ(HyphenationMinikin::MapLocale("de-de-xyz"), "de-1996");
   EXPECT_EQ(HyphenationMinikin::MapLocale("de-li"), "de-1996");
   EXPECT_EQ(HyphenationMinikin::MapLocale("de-li-1901"), "de-ch-1901");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("en"), "en-gb");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("en"), "en-us");
   EXPECT_EQ(HyphenationMinikin::MapLocale("en-gu"), "en-us");
   EXPECT_EQ(HyphenationMinikin::MapLocale("en-gu-xyz"), "en-us");
   EXPECT_EQ(HyphenationMinikin::MapLocale("en-xyz"), "en-gb");
@@ -126,10 +126,10 @@ TEST_F(HyphenationTest, MapLocale) {
 }
 #endif
 
-#if defined(USE_MINIKIN_HYPHENATION) || defined(OS_MAC)
+#if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
 TEST_F(HyphenationTest, HyphenLocations) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
     return;
@@ -182,7 +182,7 @@ TEST_F(HyphenationTest, WordToHyphenate) {
 
 TEST_F(HyphenationTest, LeadingSpaces) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
     return;
@@ -204,9 +204,26 @@ TEST_F(HyphenationTest, LeadingSpaces) {
   EXPECT_EQ(0u, hyphenation->LastHyphenLocation(only_spaces, 3));
 }
 
+TEST_F(HyphenationTest, NonLetters) {
+  scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
+#if BUILDFLAG(IS_ANDROID)
+  // Hyphenation is available only for Android M MR1 or later.
+  if (!hyphenation)
+    return;
+#endif
+
+  String non_letters("**********");
+  EXPECT_EQ(0u,
+            hyphenation->LastHyphenLocation(non_letters, non_letters.length()));
+
+  non_letters.Ensure16Bit();
+  EXPECT_EQ(0u,
+            hyphenation->LastHyphenLocation(non_letters, non_letters.length()));
+}
+
 TEST_F(HyphenationTest, English) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
     return;
@@ -220,7 +237,7 @@ TEST_F(HyphenationTest, English) {
 
 TEST_F(HyphenationTest, German) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("de-1996");
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
     return;
@@ -239,5 +256,21 @@ TEST_F(HyphenationTest, German) {
   EXPECT_THAT(locations, ElementsAreArray({4}));
 }
 #endif
+
+#if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
+TEST_F(HyphenationTest, CapitalizedWords) {
+  // Avoid hyphenating capitalized words for "en".
+  if (scoped_refptr<Hyphenation> en = GetHyphenation("en-us")) {
+    Vector<wtf_size_t, 8> locations = en->HyphenLocations("Hyphenation");
+    EXPECT_EQ(locations.size(), 0u);
+  }
+
+  // Hyphenate capitalized words if German.
+  if (scoped_refptr<Hyphenation> de = GetHyphenation("de-1996")) {
+    Vector<wtf_size_t, 8> locations = de->HyphenLocations("Konsonantien");
+    EXPECT_NE(locations.size(), 0u);
+  }
+}
+#endif  // defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
 
 }  // namespace blink

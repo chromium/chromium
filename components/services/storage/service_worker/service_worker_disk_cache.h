@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,19 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <set>
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "net/base/completion_once_callback.h"
 #include "net/disk_cache/disk_cache.h"
 
 namespace storage {
-
-// TODO(crbug.com/586174): Use disk_cache::EntryResult for better lifetime
-// management of disk cache entries. Using EntryResult will eliminate allocating
-// raw pointers and static methods in service worker resource readers/writers.
 
 class ServiceWorkerDiskCache;
 
@@ -54,10 +52,10 @@ class ServiceWorkerDiskCacheEntry {
 
  private:
   // The disk_cache::Entry is owned by this entry and closed on destruction.
-  disk_cache::Entry* disk_cache_entry_;
+  raw_ptr<disk_cache::Entry> disk_cache_entry_;
 
   // The cache that this entry belongs to.
-  ServiceWorkerDiskCache* const cache_;
+  const raw_ptr<ServiceWorkerDiskCache> cache_;
 };
 
 // net::DiskCache wrapper for the cache used by service worker resources.
@@ -110,7 +108,7 @@ class ServiceWorkerDiskCache {
                   int64_t cache_size,
                   base::OnceClosure post_cleanup_callback,
                   net::CompletionOnceCallback callback);
-  void OnCreateBackendComplete(int return_value);
+  void OnCreateBackendComplete(disk_cache::BackendResult result);
 
   uint64_t GetNextCallId();
 

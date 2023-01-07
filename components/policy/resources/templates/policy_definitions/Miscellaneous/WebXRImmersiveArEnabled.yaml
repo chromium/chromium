@@ -1,0 +1,32 @@
+caption: Allow creating <ph name="WEBXR_API_NAME_SHORT">WebXR</ph>'s <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph>
+  sessions
+default: true
+desc: |-
+  Configures whether the sites that the user navigates to are allowed to create immersive Augmented Reality sessions using <ph name="WEBXR_API_NAME">WebXR Device API</ph>.
+
+        When this policy is unset or enabled, the <ph name="WEBXR_API_NAME">WebXR Device API</ph> will accept <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> during session creation, thus allowing the users to enter Augmented Reality experiences.
+
+        When this policy is disabled, the <ph name="WEBXR_API_NAME">WebXR Device API</ph> will reject requests to create sessions with mode set to <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph>. The existing <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> sessions (if any) will not be terminated.
+
+        For more details about <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> sessions, please see <ph name="WEBXR_AR_MODULE_API_NAME">WebXR Augmented Reality Module</ph> specfication.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow creating <ph name="WEBXR_API_NAME_SHORT">WebXR</ph>'s <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph>
+    sessions
+  value: true
+- caption: Prevent creating <ph name="WEBXR_API_NAME_SHORT">WebXR</ph>'s <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph>
+    sessions
+  value: false
+owners:
+- bialpio@chromium.org
+- xr-dev@chromium.org
+schema:
+  type: boolean
+supported_on:
+- android:90-
+tags:
+- website-sharing
+type: main

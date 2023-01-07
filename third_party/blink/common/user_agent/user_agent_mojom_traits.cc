@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ bool StructTraits<blink::mojom::UserAgentBrandVersionDataView,
   if (!data.ReadBrand(&out->brand))
     return false;
 
-  if (!data.ReadMajorVersion(&out->major_version))
+  if (!data.ReadVersion(&out->version))
     return false;
 
   return true;
@@ -27,10 +27,15 @@ bool StructTraits<blink::mojom::UserAgentMetadataDataView,
          ::blink::UserAgentMetadata* out) {
   std::string string;
   blink::UserAgentBrandList user_agent_brand_list;
+  blink::UserAgentBrandList user_agent_brand_full_version_list;
 
   if (!data.ReadBrandVersionList(&user_agent_brand_list))
     return false;
   out->brand_version_list = std::move(user_agent_brand_list);
+
+  if (!data.ReadBrandFullVersionList(&user_agent_brand_full_version_list))
+    return false;
+  out->brand_full_version_list = std::move(user_agent_brand_full_version_list);
 
   if (!data.ReadFullVersion(&string))
     return false;
@@ -52,6 +57,11 @@ bool StructTraits<blink::mojom::UserAgentMetadataDataView,
     return false;
   out->model = string;
   out->mobile = data.mobile();
+
+  if (!data.ReadBitness(&string))
+    return false;
+  out->bitness = string;
+  out->wow64 = data.wow64();
 
   return true;
 }

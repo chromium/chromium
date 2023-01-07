@@ -1,0 +1,113 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "printing/backend/xps_utils_win.h"
+
+#include "base/values.h"
+#include "printing/backend/print_backend.h"
+#include "printing/mojom/print.mojom.h"
+#include "services/data_decoder/public/cpp/safe_xml_parser.h"
+
+namespace printing {
+
+namespace {
+
+// Elements and namespaces in XML data. The order of these elements follows
+// the Print Schema Framework elements order. Details can be found here:
+// https://docs.microsoft.com/en-us/windows/win32/printdocs/details-of-the-printcapabilities-schema
+constexpr char kPrintCapabilities[] = "psf:PrintCapabilities";
+constexpr char kFeature[] = "psf:Feature";
+constexpr char kPageOutputQuality[] = "psk:PageOutputQuality";
+constexpr char kOption[] = "psf:Option";
+constexpr char kProperty[] = "psf:Property";
+constexpr char kValue[] = "psf:Value";
+constexpr char kName[] = "name";
+
+mojom::ResultCode LoadPageOutputQuality(
+    const base::Value& page_output_quality,
+    PrinterSemanticCapsAndDefaults* printer_info) {
+  PageOutputQuality printer_page_output_quality;
+  std::vector<const base::Value*> options;
+  data_decoder::GetAllXmlElementChildrenWithTag(page_output_quality, kOption,
+                                                &options);
+  if (options.empty()) {
+    LOG(WARNING) << "Incorrect XML format";
+    return mojom::ResultCode::kFailed;
+  }
+  for (const auto* option : options) {
+    PageOutputQualityAttribute quality;
+    quality.name = data_decoder::GetXmlElementAttribute(*option, kName);
+    int property_count =
+        data_decoder::GetXmlElementChildrenCount(*option, kProperty);
+
+    // TODO(crbug.com/1291257): Each formatted option is expected to have zero
+    // or one property. Each property inside an option is expected to
+    // have one value.
+    // Source:
+    // https://docs.microsoft.com/en-us/windows/win32/printdocs/pageoutputquality
+    // If an option has more than one property or a property has more than one
+    // value, more work is expected here.
+
+    // In the case an option looks like <psf:Option name="psk:Text />,
+    // property_count is 0. In this case, an option only has `name`
+    // and does not have `display_name`.
+    if (property_count > 1) {
+      LOG(WARNING) << "Incorrect XML format";
+      return mojom::ResultCode::kFailed;
+    }
+    if (property_count == 1) {
+      const base::Value* property_element = data_decoder::FindXmlElementPath(
+          *option, {kOption, kProperty}, /*unique_path=*/nullptr);
+      int value_count =
+          data_decoder::GetXmlElementChildrenCount(*property_element, kValue);
+      if (value_count != 1) {
+        LOG(WARNING) << "Incorrect XML format";
+        return mojom::ResultCode::kFailed;
+      }
+      const base::Value* value_element = data_decoder::FindXmlElementPath(
+          *option, {kOption, kProperty, kValue}, /*unique_path=*/nullptr);
+      std::string text;
+      data_decoder::GetXmlElementText(*value_element, &text);
+      quality.display_name = std::move(text);
+    }
+    printer_page_output_quality.qualities.push_back(std::move(quality));
+  }
+  printer_info->page_output_quality = std::move(printer_page_output_quality);
+  return mojom::ResultCode::kSuccess;
+}
+
+}  // namespace
+
+mojom::ResultCode ParseValueForXpsPrinterCapabilities(
+    const base::Value& capabilities,
+    PrinterSemanticCapsAndDefaults* printer_info) {
+  if (!data_decoder::IsXmlElementNamed(capabilities, kPrintCapabilities)) {
+    LOG(WARNING) << "Incorrect XML format";
+    return mojom::ResultCode::kFailed;
+  }
+  std::vector<const base::Value*> features;
+  data_decoder::GetAllXmlElementChildrenWithTag(capabilities, kFeature,
+                                                &features);
+  if (features.empty()) {
+    LOG(WARNING) << "Incorrect XML format";
+    return mojom::ResultCode::kFailed;
+  }
+  for (auto* feature : features) {
+    std::string feature_name =
+        data_decoder::GetXmlElementAttribute(*feature, kName);
+    DVLOG(2) << feature_name;
+    mojom::ResultCode result_code;
+    if (feature_name == kPageOutputQuality) {
+      result_code = LoadPageOutputQuality(*feature, printer_info);
+      if (result_code == mojom::ResultCode::kFailed)
+        return result_code;
+    }
+
+    // TODO(crbug.com/1291257): Each feature needs to be parsed. More work is
+    // expected here.
+  }
+  return mojom::ResultCode::kSuccess;
+}
+
+}  // namespace printing

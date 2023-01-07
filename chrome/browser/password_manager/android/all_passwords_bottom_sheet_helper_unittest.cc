@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,18 +18,18 @@ using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 
 constexpr char kExampleCom[] = "https://example.com";
-constexpr char kUsername[] = "alice";
-constexpr char kPassword[] = "password123";
+constexpr char16_t kUsername[] = u"alice";
+constexpr char16_t kPassword[] = u"password123";
 
 namespace {
 
 PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
-                               base::StringPiece username) {
+                               base::StringPiece16 username) {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);
   form.url = GURL(signon_realm);
-  form.username_value = base::ASCIIToUTF16(username);
-  form.password_value = base::ASCIIToUTF16(kPassword);
+  form.username_value = std::u16string(username);
+  form.password_value = kPassword;
   form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }

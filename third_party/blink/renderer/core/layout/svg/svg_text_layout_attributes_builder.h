@@ -21,7 +21,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_LAYOUT_ATTRIBUTES_BUILDER_H_
 
 #include "third_party/blink/renderer/core/layout/svg/svg_character_data.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -85,4 +86,4 @@ class SVGTextLayoutAttributesBuilder {
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(
     blink::SVGTextLayoutAttributesBuilder::TextPosition)
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_LAYOUT_ATTRIBUTES_BUILDER_H_

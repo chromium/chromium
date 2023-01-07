@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_TEXT_INPUT_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/vr_base_export.h"
 
 namespace vr {
@@ -16,6 +15,10 @@ struct TextInputInfo;
 class VR_BASE_EXPORT TextInputDelegate {
  public:
   TextInputDelegate();
+
+  TextInputDelegate(const TextInputDelegate&) = delete;
+  TextInputDelegate& operator=(const TextInputDelegate&) = delete;
+
   virtual ~TextInputDelegate();
 
   // RequestFocusCallback gets called when an element requests focus.
@@ -39,8 +42,6 @@ class VR_BASE_EXPORT TextInputDelegate {
   RequestFocusCallback request_focus_callback_;
   RequestUnfocusCallback request_unfocus_callback_;
   UpdateInputCallback update_input_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputDelegate);
 };
 
 }  // namespace vr

@@ -52,7 +52,7 @@ looking at OWNERS files, asking a teammate, or using tools ('_git cl owners_',
 #### Provide context
 
 Change descriptions are the first impression your change makes, both on
-reviewers and on code archeologists from the future. A [good description](https://www.chromium.org/developers/contributing-code#TOC-Writing-change-list-descriptions)
+reviewers and on code archeologists from the future. A [good description](contributing.md#Uploading-a-change-for-review)
 aims to do two things. First, it conveys at a glance the high level view.
 Second, it provides references to all the relevant information for a deep dive:
 design docs, bugs, testing instructions. The bug\# is a useful reference, but

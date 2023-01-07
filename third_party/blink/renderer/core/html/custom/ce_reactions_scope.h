@@ -1,13 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CE_REACTIONS_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CE_REACTIONS_SCOPE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -27,6 +25,9 @@ class CORE_EXPORT CEReactionsScope final {
     top_of_stack_ = this;
   }
 
+  CEReactionsScope(const CEReactionsScope&) = delete;
+  CEReactionsScope& operator=(const CEReactionsScope&) = delete;
+
   ~CEReactionsScope() {
     if (work_to_do_)
       InvokeReactions();
@@ -42,8 +43,6 @@ class CORE_EXPORT CEReactionsScope final {
 
   CEReactionsScope* prev_;
   bool work_to_do_;
-
-  DISALLOW_COPY_AND_ASSIGN(CEReactionsScope);
 };
 
 }  // namespace blink

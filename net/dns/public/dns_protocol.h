@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,14 +112,20 @@ static const uint16_t kMDnsClassMask = 0x7FFF;
 // RFC 1035, section 3.1: To simplify implementations, the total length of
 // a domain name in wire form (i.e., label octets and label length octets) is
 // restricted to 255 octets or less.
+//
+// Note that RFC 1035 is ambiguous over whether or not this limit includes the
+// final zero-length terminating label, but RFC 6762 unambiguously uses the
+// more permissive interpretation of not including the terminating label against
+// the limit for mDNS and argues in RFC 6762 Appendix C that that is the correct
+// interpretation for unicast DNS. To avoid overcomplicating logic, Chrome
+// universally uses the more permissive RFC 6762 interpretation for all parsing.
 static const int kMaxNameLength = 255;
 
 // The maximum number of ASCII characters allowed in a domain in dotted form,
-// derived from `kMaxNameLength` above by subtracting two from the count to
-// correspond to the first and last byte, which, except in the case of a
-// fully-qualified domain name (where the last byte encodes '.'), are not
-// available to encode characters.
-static const uint16_t kMaxCharNameLength = 253;
+// derived from `kMaxNameLength` above by subtracting one from the count to
+// correspond to the first byte, which is not available to encode characters and
+// does not correspond to a dot after conversion.
+static const uint16_t kMaxCharNameLength = 254;
 
 // RFC 1035, section 2.3.4: labels 63 octets or less.
 // Section 3.1: Each label is represented as a one octet length field followed
@@ -164,13 +170,6 @@ static const uint16_t kTypeNSEC = 47;
 static const uint16_t kTypeHttps = 65;
 static const uint16_t kTypeANY = 255;
 
-// Experimental DNS record types pending IANA assignment.
-//
-// The INTEGRITY RR type exists purely for measuring how the DNS ecosystem
-// handles new RR types.
-// https://docs.google.com/document/d/14eCqVyT_3MSj7ydqNFl1Yl0yg1fs6g24qmYUUdi5V-k/edit?usp=sharing
-static const uint16_t kExperimentalTypeIntegrity = 65521;
-
 // DNS reply codes (RCODEs).
 //
 // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6
@@ -184,7 +183,8 @@ static const uint8_t kRcodeREFUSED = 5;
 // DNS EDNS(0) option codes (OPT)
 //
 // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-11
-static const uint16_t kEdnsPadding = 12;
+static constexpr uint16_t kEdnsPadding = 12;
+static constexpr uint16_t kEdnsExtendedDnsError = 15;
 
 // DNS header flags.
 //
@@ -196,7 +196,7 @@ static const uint16_t kFlagTC = 0x200;  // Truncated - server flag.
 
 // SVCB/HTTPS ServiceParamKey
 //
-// IANA registration pending. Values from draft-ietf-dnsop-svcb-https-02.
+// IANA registration pending. Values from draft-ietf-dnsop-svcb-https-08.
 static constexpr uint16_t kHttpsServiceParamKeyMandatory = 0;
 static constexpr uint16_t kHttpsServiceParamKeyAlpn = 1;
 static constexpr uint16_t kHttpsServiceParamKeyNoDefaultAlpn = 2;
@@ -204,6 +204,9 @@ static constexpr uint16_t kHttpsServiceParamKeyPort = 3;
 static constexpr uint16_t kHttpsServiceParamKeyIpv4Hint = 4;
 static constexpr uint16_t kHttpsServiceParamKeyEchConfig = 5;
 static constexpr uint16_t kHttpsServiceParamKeyIpv6Hint = 6;
+
+// draft-ietf-dnsop-svcb-https-08#section-9
+inline constexpr char kHttpsServiceDefaultAlpn[] = "http/1.1";
 
 }  // namespace dns_protocol
 

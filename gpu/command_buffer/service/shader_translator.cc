@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_bindings.h"
@@ -140,14 +141,13 @@ ShaderTranslator::DestructionObserver::DestructionObserver() = default;
 
 ShaderTranslator::DestructionObserver::~DestructionObserver() = default;
 
-ShaderTranslator::ShaderTranslator()
-    : compiler_(nullptr), compile_options_(0) {}
+ShaderTranslator::ShaderTranslator() : compiler_(nullptr), compile_options_{} {}
 
 bool ShaderTranslator::Init(GLenum shader_type,
                             ShShaderSpec shader_spec,
                             const ShBuiltInResources* resources,
                             ShShaderOutput shader_output_language,
-                            ShCompileOptions driver_bug_workarounds,
+                            const ShCompileOptions& driver_bug_workarounds,
                             bool gl_shader_interm_output) {
   // Make sure Init is called only once.
   DCHECK(compiler_ == nullptr);
@@ -165,35 +165,83 @@ bool ShaderTranslator::Init(GLenum shader_type,
                                       shader_output_language, resources);
   }
 
-  compile_options_ =
-      SH_OBJECT_CODE | SH_VARIABLES | SH_ENFORCE_PACKING_RESTRICTIONS |
-      SH_LIMIT_EXPRESSION_COMPLEXITY | SH_LIMIT_CALL_STACK_DEPTH |
-      SH_CLAMP_INDIRECT_ARRAY_BOUNDS | SH_EMULATE_GL_DRAW_ID |
-      SH_EMULATE_GL_BASE_VERTEX_BASE_INSTANCE;
-  if (gl_shader_interm_output)
-    compile_options_ |= SH_INTERMEDIATE_TREE;
-  compile_options_ |= driver_bug_workarounds;
+  compile_options_ = driver_bug_workarounds;
+  compile_options_.objectCode = true;
+  compile_options_.variables = true;
+  compile_options_.enforcePackingRestrictions = true;
+  compile_options_.limitExpressionComplexity = true;
+  compile_options_.limitCallStackDepth = true;
+  compile_options_.clampIndirectArrayBounds = true;
+  compile_options_.emulateGLDrawID = true;
+  compile_options_.emulateGLBaseVertexBaseInstance = true;
+
+  std::string compile_options_string =
+      "objectCode:variables:enforcePackingRestrictions:"
+      "limitExpressionComplexity:limitCallStackDepth:clampIndirectArrayBounds:"
+      "emulateGLDrawID:emulateGLBaseVertexBaseInstance";
+
+  if (gl_shader_interm_output) {
+    compile_options_.intermediateTree = true;
+    compile_options_string += ":intermediateTree";
+  }
+
   switch (shader_spec) {
     case SH_WEBGL_SPEC:
     case SH_WEBGL2_SPEC:
-      compile_options_ |= SH_INIT_OUTPUT_VARIABLES;
+      compile_options_.initOutputVariables = true;
       break;
     default:
       break;
   }
 
+  // Build the options string for additional features that may be set by the
+  // caller.  Note that this code is used by the validating command decoder,
+  // which is deprecated.  No new features are expected to be enabled, neither
+  // is it expected for there to be new users of this code.
+  if (compile_options_.initOutputVariables)
+    compile_options_string += ":initOutputVariables";
+  if (compile_options_.initGLPosition)
+    compile_options_string += ":initGLPosition";
+  if (compile_options_.unfoldShortCircuit)
+    compile_options_string += ":unfoldShortCircuit";
+  if (compile_options_.scalarizeVecAndMatConstructorArgs)
+    compile_options_string += ":scalarizeVecAndMatConstructorArgs";
+  if (compile_options_.regenerateStructNames)
+    compile_options_string += ":regenerateStructNames";
+  if (compile_options_.emulateAbsIntFunction)
+    compile_options_string += ":emulateAbsIntFunction";
+  if (compile_options_.rewriteTexelFetchOffsetToTexelFetch)
+    compile_options_string += ":rewriteTexelFetchOffsetToTexelFetch";
+  if (compile_options_.addAndTrueToLoopCondition)
+    compile_options_string += ":addAndTrueToLoopCondition";
+  if (compile_options_.rewriteDoWhileLoops)
+    compile_options_string += ":rewriteDoWhileLoops";
+  if (compile_options_.emulateIsnanFloatFunction)
+    compile_options_string += ":emulateIsnanFloatFunction";
+  if (compile_options_.useUnusedStandardSharedBlocks)
+    compile_options_string += ":useUnusedStandardSharedBlocks";
+  if (compile_options_.removeInvariantAndCentroidForESSL3)
+    compile_options_string += ":removeInvariantAndCentroidForESSL3";
+  if (compile_options_.rewriteFloatUnaryMinusOperator)
+    compile_options_string += ":rewriteFloatUnaryMinusOperator";
+  if (compile_options_.dontUseLoopsToInitializeVariables)
+    compile_options_string += ":dontUseLoopsToInitializeVariables";
+  if (compile_options_.removeDynamicIndexingOfSwizzledVector)
+    compile_options_string += ":removeDynamicIndexingOfSwizzledVector";
+  if (compile_options_.initializeUninitializedLocals)
+    compile_options_string += ":initializeUninitializedLocals";
+
   if (compiler_) {
     options_affecting_compilation_ =
         base::MakeRefCounted<OptionsAffectingCompilationString>(
-            std::string(":CompileOptions:" +
-                        base::NumberToString(GetCompileOptions())) +
+            ":CompileOptions:" + compile_options_string +
             sh::GetBuiltInResourcesString(compiler_));
   }
 
   return compiler_ != nullptr;
 }
 
-ShCompileOptions ShaderTranslator::GetCompileOptions() const {
+const ShCompileOptions& ShaderTranslator::GetCompileOptions() const {
   return compile_options_;
 }
 

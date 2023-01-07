@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   locale = "fr-FR";
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_TRUE(is_ui);
-  EXPECT_EQ("fr-FR", locale);
+  EXPECT_EQ("fr", locale);
 
   //---------------------------------------------------------------------------
   // Languages that are converted to their fallback version.
@@ -58,7 +58,7 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
     locale = es_locale;
     is_ui = ConvertToActualUILocale(&locale);
     EXPECT_TRUE(is_ui) << es_locale;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // iOS uses a different name for es-419 (es-MX).
     EXPECT_EQ("es-MX", locale) << es_locale;
 #else
@@ -70,7 +70,12 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   locale = "en";
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_TRUE(is_ui);
+#if BUILDFLAG(IS_APPLE)
+  // On Apple platforms, "en" is used instead of "en-US".
+  EXPECT_EQ("en", locale);
+#else
   EXPECT_EQ("en-US", locale);
+#endif
 
   // All other regional English languages fall back to UK.
   for (const char* en_locale :
@@ -84,7 +89,12 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   locale = "pt";
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_TRUE(is_ui);
-  EXPECT_EQ("pt-PT", locale);
+#if BUILDFLAG(IS_IOS)
+  // On iOS, "pt" is used instead of "pt-BR".
+  EXPECT_EQ("pt", locale);
+#else
+  EXPECT_EQ("pt-BR", locale);
+#endif
 
   locale = "it-CH";
   is_ui = ConvertToActualUILocale(&locale);
@@ -99,24 +109,20 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   locale = "it-IT";
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_TRUE(is_ui);
-  EXPECT_EQ("it-IT", locale);
+  EXPECT_EQ("it", locale);
 
   locale = "de-DE";
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_TRUE(is_ui);
-  EXPECT_EQ("de-DE", locale);
+  EXPECT_EQ("de", locale);
 
 //---------------------------------------------------------------------------
 // Languages that cannot be used as display UI.
 //---------------------------------------------------------------------------
 // This only matters for ChromeOS and Windows, as they are the only systems
 // where users can set the display UI.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
   locale = "sd";  // Sindhi
-  is_ui = ConvertToActualUILocale(&locale);
-  EXPECT_FALSE(is_ui);
-
-  locale = "af";  // Afrikaans
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_FALSE(is_ui);
 
@@ -125,10 +131,6 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   EXPECT_FALSE(is_ui);
 
   locale = "ky";  // Kyrgyz
-  is_ui = ConvertToActualUILocale(&locale);
-  EXPECT_FALSE(is_ui);
-
-  locale = "zu";  // Zulu
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_FALSE(is_ui);
 #endif

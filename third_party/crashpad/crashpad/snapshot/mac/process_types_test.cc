@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@
 #include <mach/mach.h>
 #include <string.h>
 
+#include <iterator>
 #include <limits>
 #include <vector>
 
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
@@ -172,7 +172,7 @@ TEST(ProcessTypes, DyldImagesSelf) {
       {16, kUnsupported, 328},
       {17, kUnsupported, 368},
   };
-  for (size_t index = 0; index < base::size(kVersionsAndSizes); ++index) {
+  for (size_t index = 0; index < std::size(kVersionsAndSizes); ++index) {
     uint32_t version = kVersionsAndSizes[index].version;
     SCOPED_TRACE(base::StringPrintf("index %zu, version %u", index, version));
 
@@ -325,7 +325,7 @@ TEST(ProcessTypes, DyldImagesSelf) {
               self_image_infos->sharedCacheBaseAddress);
     EXPECT_EQ(proctype_image_infos.dyldPath,
               reinterpret_cast<uint64_t>(self_image_infos->dyldPath));
-    for (size_t index = 0; index < base::size(self_image_infos->notifyPorts);
+    for (size_t index = 0; index < std::size(self_image_infos->notifyPorts);
          ++index) {
       EXPECT_EQ(proctype_image_infos.notifyPorts[index],
                 self_image_infos->notifyPorts[index])
@@ -345,7 +345,7 @@ TEST(ProcessTypes, DyldImagesSelf) {
   // process_types version. It’s difficult to compare the reserved fields in
   // these older SDKs, so only do it where the declarations match.
   if (proctype_image_infos.version >= 14) {
-    for (size_t index = 0; index < base::size(proctype_image_infos.reserved);
+    for (size_t index = 0; index < std::size(proctype_image_infos.reserved);
          ++index) {
       EXPECT_EQ(proctype_image_infos.reserved[index],
                 implicit_cast<uint64_t>(self_image_infos->reserved[index]))
@@ -356,8 +356,16 @@ TEST(ProcessTypes, DyldImagesSelf) {
               self_image_infos->reserved[4]);
     EXPECT_EQ(proctype_image_infos.reserved_5, self_image_infos->reserved[5]);
     EXPECT_EQ(proctype_image_infos.reserved_6, self_image_infos->reserved[6]);
-    EXPECT_EQ(proctype_image_infos.reserved_7, self_image_infos->reserved[7]);
-    EXPECT_EQ(proctype_image_infos.reserved_8, self_image_infos->reserved[8]);
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_12_0
+    uint64_t shared_cache_fs_id = self_image_infos->sharedCacheFSID;
+    uint64_t shared_cache_fs_obj_id = self_image_infos->sharedCacheFSObjID;
+#else
+    uint64_t shared_cache_fs_id = self_image_infos->reserved[7];
+    uint64_t shared_cache_fs_obj_id = self_image_infos->reserved[8];
+#endif
+    EXPECT_EQ(proctype_image_infos.shared_cache_fs_id, shared_cache_fs_id);
+    EXPECT_EQ(proctype_image_infos.shared_cache_fs_obj_id,
+              shared_cache_fs_obj_id);
 #endif
   }
 #endif

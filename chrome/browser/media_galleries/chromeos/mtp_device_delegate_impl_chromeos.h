@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,13 +18,12 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/media_galleries/chromeos/mtp_device_task_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/async_file_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct SnapshotRequestInfo;
 
@@ -80,6 +79,10 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // Do all the initializations in EnsureInitAndRunTask() function.
   MTPDeviceDelegateImplLinux(const std::string& device_location,
                              const bool read_only);
+
+  MTPDeviceDelegateImplLinux(const MTPDeviceDelegateImplLinux&) = delete;
+  MTPDeviceDelegateImplLinux& operator=(const MTPDeviceDelegateImplLinux&) =
+      delete;
 
   // Destructed via CancelPendingTasksAndDeleteDelegate().
   ~MTPDeviceDelegateImplLinux() override;
@@ -452,7 +455,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   void FillFileCache(const base::FilePath& uncached_path);
 
   // Given a full path, if it exists in the cache, return the id.
-  base::Optional<uint32_t> CachedPathToId(const base::FilePath& path) const;
+  absl::optional<uint32_t> CachedPathToId(const base::FilePath& path) const;
 
   // Evict the cache of |id|.
   void EvictCachedPathToId(uint32_t id);
@@ -512,8 +515,6 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
 
   // For callbacks that may run after destruction.
   base::WeakPtrFactory<MTPDeviceDelegateImplLinux> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MTPDeviceDelegateImplLinux);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_DEVICE_DELEGATE_IMPL_CHROMEOS_H_

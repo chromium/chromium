@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ class AtRuleDescriptorParser {
                           AtRuleDescriptorID,
                           const CSSTokenizedValue&,
                           const CSSParserContext&,
-                          HeapVector<CSSPropertyValue, 256>&);
+                          HeapVector<CSSPropertyValue, 64>&);
   static CSSValue* ParseFontFaceDescriptor(AtRuleDescriptorID,
                                            CSSParserTokenRange&,
                                            const CSSParserContext&);
@@ -40,9 +40,9 @@ class AtRuleDescriptorParser {
   static CSSValue* ParseAtCounterStyleDescriptor(AtRuleDescriptorID,
                                                  CSSParserTokenRange&,
                                                  const CSSParserContext&);
-  static CSSValue* ParseAtScrollTimelineDescriptor(AtRuleDescriptorID,
-                                                   CSSParserTokenRange&,
-                                                   const CSSParserContext&);
+  static CSSValue* ParseAtFontPaletteValuesDescriptor(AtRuleDescriptorID,
+                                                      CSSParserTokenRange&,
+                                                      const CSSParserContext&);
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace content {
@@ -18,6 +17,10 @@ namespace content {
 class TracingControllerAndroid {
  public:
   TracingControllerAndroid(JNIEnv* env, jobject obj);
+
+  TracingControllerAndroid(const TracingControllerAndroid&) = delete;
+  TracingControllerAndroid& operator=(const TracingControllerAndroid&) = delete;
+
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
   bool StartTracing(JNIEnv* env,
@@ -59,8 +62,6 @@ class TracingControllerAndroid {
 
   JavaObjectWeakGlobalRef weak_java_object_;
   base::WeakPtrFactory<TracingControllerAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TracingControllerAndroid);
 };
 
 }  // namespace content

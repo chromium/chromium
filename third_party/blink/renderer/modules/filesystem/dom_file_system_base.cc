@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/modules/filesystem/file_system_callbacks.h"
 #include "third_party/blink/renderer/modules/filesystem/file_system_dispatcher.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
@@ -173,7 +172,8 @@ bool DOMFileSystemBase::PathPrefixToFileSystemType(
   return false;
 }
 
-File* DOMFileSystemBase::CreateFile(const FileMetadata& metadata,
+File* DOMFileSystemBase::CreateFile(ExecutionContext* context,
+                                    const FileMetadata& metadata,
                                     const KURL& file_system_url,
                                     mojom::blink::FileSystemType type,
                                     const String name) {
@@ -186,7 +186,7 @@ File* DOMFileSystemBase::CreateFile(const FileMetadata& metadata,
   // storage location based on the url.
   // FIXME: We should use the snapshot metadata for all files.
   // https://www.w3.org/Bugs/Public/show_bug.cgi?id=17746
-  if (!metadata.platform_path.IsEmpty() &&
+  if (!metadata.platform_path.empty() &&
       (type == mojom::blink::FileSystemType::kTemporary ||
        type == mojom::blink::FileSystemType::kPersistent))
     return File::CreateForFileSystemFile(metadata.platform_path, name);
@@ -196,13 +196,13 @@ File* DOMFileSystemBase::CreateFile(const FileMetadata& metadata,
           ? File::kIsUserVisible
           : File::kIsNotUserVisible;
 
-  if (!metadata.platform_path.IsEmpty()) {
+  if (!metadata.platform_path.empty()) {
     // If the platformPath in the returned metadata is given, we create a File
     // object for the snapshot path.
     return File::CreateForFileSystemFile(name, metadata, user_visibility);
   } else {
     // Otherwise we create a File object for the fileSystemURL.
-    return File::CreateForFileSystemFile(file_system_url, metadata,
+    return File::CreateForFileSystemFile(*context, file_system_url, metadata,
                                          user_visibility);
   }
 }
@@ -233,7 +233,7 @@ static bool VerifyAndGetDestinationPathForCopyOrMove(const EntryBase* source,
   if (!parent || !parent->isDirectory())
     return false;
 
-  if (!new_name.IsEmpty() && !DOMFilePath::IsValidName(new_name))
+  if (!new_name.empty() && !DOMFilePath::IsValidName(new_name))
     return false;
 
   const bool is_same_file_system =
@@ -247,13 +247,12 @@ static bool VerifyAndGetDestinationPathForCopyOrMove(const EntryBase* source,
 
   // It is an error to copy or move an entry into its parent if a name different
   // from its current one isn't provided.
-  if (is_same_file_system &&
-      (new_name.IsEmpty() || source->name() == new_name) &&
+  if (is_same_file_system && (new_name.empty() || source->name() == new_name) &&
       DOMFilePath::GetDirectory(source->fullPath()) == parent->fullPath())
     return false;
 
   destination_path = parent->fullPath();
-  if (!new_name.IsEmpty())
+  if (!new_name.empty())
     destination_path = DOMFilePath::Append(destination_path, new_name);
   else
     destination_path = DOMFilePath::Append(destination_path, source->name());

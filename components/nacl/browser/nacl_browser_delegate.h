@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ class NaClBrowserDelegate {
   // Show an infobar to the user to indicate the client architecture was not
   // covered by the manifest.
   virtual void ShowMissingArchInfobar(int render_process_id,
-                                      int render_view_id) = 0;
+                                      int render_frame_id) = 0;
   // Returns whether dialogs are allowed. This is used to decide if to add the
   // command line switch kNoErrorDialogs.
   virtual bool DialogsAreSuppressed() = 0;
@@ -75,11 +75,6 @@ class NaClBrowserDelegate {
 
   // Returns whether NaCl application with this manifest URL should be debugged.
   virtual bool URLMatchesDebugPatterns(const GURL& manifest_url) = 0;
-
-  // Returns whether Non-SFI mode is allowed for a given manifest URL. Must be
-  // called on the UI thread.
-  virtual bool IsNonSfiModeAllowed(const base::FilePath& profile_directory,
-                                   const GURL& manifest_url) = 0;
 };
 
 #endif  // COMPONENTS_NACL_BROWSER_NACL_BROWSER_DELEGATE_H_

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "net/http/bidirectional_stream.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/url_request/url_request_context_getter.h"
 
 namespace base {
@@ -60,6 +60,10 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
 
   BidirectionalStream(net::URLRequestContextGetter* request_context_getter,
                       Delegate* delegate);
+
+  BidirectionalStream(const BidirectionalStream&) = delete;
+  BidirectionalStream& operator=(const BidirectionalStream&) = delete;
+
   ~BidirectionalStream() override;
 
   // Disables automatic flushing of each buffer passed to WriteData().
@@ -141,6 +145,10 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
   class WriteBuffers {
    public:
     WriteBuffers();
+
+    WriteBuffers(const WriteBuffers&) = delete;
+    WriteBuffers& operator=(const WriteBuffers&) = delete;
+
     ~WriteBuffers();
 
     // Clears Write Buffers list.
@@ -167,8 +175,6 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
     std::vector<scoped_refptr<net::IOBuffer>> write_buffer_list;
     // A list of the length of each IOBuffer in |write_buffer_list|.
     std::vector<int> write_buffer_len_list;
-
-    DISALLOW_COPY_AND_ASSIGN(WriteBuffers);
   };
 
   // net::BidirectionalStream::Delegate implementations:
@@ -218,7 +224,7 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
   bool disable_auto_flush_;
   bool delay_headers_until_flush_;
 
-  net::URLRequestContextGetter* const request_context_getter_;
+  const raw_ptr<net::URLRequestContextGetter> request_context_getter_;
 
   scoped_refptr<net::WrappedIOBuffer> read_buffer_;
 
@@ -230,12 +236,10 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
   std::unique_ptr<WriteBuffers> sending_write_data_;
 
   std::unique_ptr<net::BidirectionalStream> bidi_stream_;
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   base::WeakPtr<BidirectionalStream> weak_this_;
   base::WeakPtrFactory<BidirectionalStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BidirectionalStream);
 };
 
 }  // namespace grpc_support

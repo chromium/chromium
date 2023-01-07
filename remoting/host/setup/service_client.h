@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace network {
@@ -38,6 +37,10 @@ class ServiceClient {
 
   explicit ServiceClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  ServiceClient(const ServiceClient&) = delete;
+  ServiceClient& operator=(const ServiceClient&) = delete;
+
   ~ServiceClient();
 
   // Register a host.
@@ -56,7 +59,6 @@ class ServiceClient {
   // The guts of the implementation live in this class.
   class Core;
   scoped_refptr<Core> core_;
-  DISALLOW_COPY_AND_ASSIGN(ServiceClient);
 };
 
 }  // namespace remoting

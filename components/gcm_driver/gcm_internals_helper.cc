@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,168 +22,174 @@ namespace gcm_driver {
 
 namespace {
 
-void SetCheckinInfo(const std::vector<gcm::CheckinActivity>& checkins,
-                    base::ListValue* checkin_info) {
+base::Value::List CheckinInfoToList(
+    const std::vector<gcm::CheckinActivity>& checkins) {
+  base::Value::List checkin_info;
   for (const gcm::CheckinActivity& checkin : checkins) {
-    auto row = std::make_unique<base::ListValue>();
-    row->AppendDouble(checkin.time.ToJsTime());
-    row->AppendString(checkin.event);
-    row->AppendString(checkin.details);
-    checkin_info->Append(std::move(row));
+    base::Value::List row;
+    row.Append(checkin.time.ToJsTime());
+    row.Append(checkin.event);
+    row.Append(checkin.details);
+    checkin_info.Append(std::move(row));
   }
+  return checkin_info;
 }
 
-void SetConnectionInfo(const std::vector<gcm::ConnectionActivity>& connections,
-                       base::ListValue* connection_info) {
+base::Value::List ConnectionInfoToList(
+    const std::vector<gcm::ConnectionActivity>& connections) {
+  base::Value::List connection_info;
   for (const gcm::ConnectionActivity& connection : connections) {
-    auto row = std::make_unique<base::ListValue>();
-    row->AppendDouble(connection.time.ToJsTime());
-    row->AppendString(connection.event);
-    row->AppendString(connection.details);
-    connection_info->Append(std::move(row));
+    base::Value::List row;
+    row.Append(connection.time.ToJsTime());
+    row.Append(connection.event);
+    row.Append(connection.details);
+    connection_info.Append(std::move(row));
   }
+  return connection_info;
 }
 
-void SetRegistrationInfo(
-    const std::vector<gcm::RegistrationActivity>& registrations,
-    base::ListValue* registration_info) {
+base::Value::List RegistrationInfoToList(
+    const std::vector<gcm::RegistrationActivity>& registrations) {
+  base::Value::List registration_info;
   for (const gcm::RegistrationActivity& registration : registrations) {
-    auto row = std::make_unique<base::ListValue>();
-    row->AppendDouble(registration.time.ToJsTime());
-    row->AppendString(registration.app_id);
-    row->AppendString(registration.source);
-    row->AppendString(registration.event);
-    row->AppendString(registration.details);
-    registration_info->Append(std::move(row));
+    base::Value::List row;
+    row.Append(registration.time.ToJsTime());
+    row.Append(registration.app_id);
+    row.Append(registration.source);
+    row.Append(registration.event);
+    row.Append(registration.details);
+    registration_info.Append(std::move(row));
   }
+  return registration_info;
 }
 
-void SetReceivingInfo(const std::vector<gcm::ReceivingActivity>& receives,
-                      base::ListValue* receive_info) {
+base::Value::List ReceivingInfoToList(
+    const std::vector<gcm::ReceivingActivity>& receives) {
+  base::Value::List receive_info;
   for (const gcm::ReceivingActivity& receive : receives) {
-    auto row = std::make_unique<base::ListValue>();
-    row->AppendDouble(receive.time.ToJsTime());
-    row->AppendString(receive.app_id);
-    row->AppendString(receive.from);
-    row->AppendString(base::NumberToString(receive.message_byte_size));
-    row->AppendString(receive.event);
-    row->AppendString(receive.details);
-    receive_info->Append(std::move(row));
+    base::Value::List row;
+    row.Append(receive.time.ToJsTime());
+    row.Append(receive.app_id);
+    row.Append(receive.from);
+    row.Append(base::NumberToString(receive.message_byte_size));
+    row.Append(receive.event);
+    row.Append(receive.details);
+    receive_info.Append(std::move(row));
   }
+  return receive_info;
 }
 
-void SetSendingInfo(const std::vector<gcm::SendingActivity>& sends,
-                    base::ListValue* send_info) {
+base::Value::List SendingInfoToList(
+    const std::vector<gcm::SendingActivity>& sends) {
+  base::Value::List send_info;
   for (const gcm::SendingActivity& send : sends) {
-    auto row = std::make_unique<base::ListValue>();
-    row->AppendDouble(send.time.ToJsTime());
-    row->AppendString(send.app_id);
-    row->AppendString(send.receiver_id);
-    row->AppendString(send.message_id);
-    row->AppendString(send.event);
-    row->AppendString(send.details);
-    send_info->Append(std::move(row));
+    base::Value::List row;
+    row.Append(send.time.ToJsTime());
+    row.Append(send.app_id);
+    row.Append(send.receiver_id);
+    row.Append(send.message_id);
+    row.Append(send.event);
+    row.Append(send.details);
+    send_info.Append(std::move(row));
   }
+  return send_info;
 }
 
-void SetDecryptionFailureInfo(
-    const std::vector<gcm::DecryptionFailureActivity>& failures,
-    base::ListValue* failure_info) {
+base::Value::List DecryptionFailureInfoToList(
+    const std::vector<gcm::DecryptionFailureActivity>& failures) {
+  base::Value::List failure_info;
   for (const gcm::DecryptionFailureActivity& failure : failures) {
-    auto row = std::make_unique<base::ListValue>();
-    row->AppendDouble(failure.time.ToJsTime());
-    row->AppendString(failure.app_id);
-    row->AppendString(failure.details);
-    failure_info->Append(std::move(row));
+    base::Value::List row;
+    row.Append(failure.time.ToJsTime());
+    row.Append(failure.app_id);
+    row.Append(failure.details);
+    failure_info.Append(std::move(row));
   }
+  return failure_info;
 }
 
 }  // namespace
 
-void SetGCMInternalsInfo(const gcm::GCMClient::GCMStatistics* stats,
-                         gcm::GCMProfileService* profile_service,
-                         PrefService* prefs,
-                         base::DictionaryValue* results) {
-  auto device_info = std::make_unique<base::DictionaryValue>();
+base::Value::Dict SetGCMInternalsInfo(
+    const gcm::GCMClient::GCMStatistics* stats,
+    gcm::GCMProfileService* profile_service,
+    PrefService* prefs) {
+  base::Value::Dict results;
 
-  device_info->SetBoolean(kProfileServiceCreated, profile_service != nullptr);
-  device_info->SetBoolean(kGcmEnabled, true);
   if (stats) {
-    results->SetBoolean(kIsRecording, stats->is_recording);
-    device_info->SetBoolean(kGcmClientCreated, stats->gcm_client_created);
-    device_info->SetString(kGcmClientState, stats->gcm_client_state);
-    device_info->SetBoolean(kConnectionClientCreated,
-                            stats->connection_client_created);
+    results.Set(kIsRecording, stats->is_recording);
 
-    auto registered_app_ids = std::make_unique<base::ListValue>();
+    base::Value::Dict device_info;
+    device_info.Set(kProfileServiceCreated, profile_service != nullptr);
+    device_info.Set(kGcmEnabled, true);
+    device_info.Set(kGcmClientCreated, stats->gcm_client_created);
+    device_info.Set(kGcmClientState, stats->gcm_client_state);
+    device_info.Set(kConnectionClientCreated, stats->connection_client_created);
+
+    base::Value::List registered_app_ids;
     for (const std::string& app_id : stats->registered_app_ids)
-      registered_app_ids->AppendString(app_id);
+      registered_app_ids.Append(app_id);
 
-    device_info->SetList(kRegisteredAppIds, std::move(registered_app_ids));
+    device_info.Set(kRegisteredAppIds, std::move(registered_app_ids));
 
     if (stats->connection_client_created)
-      device_info->SetString(kConnectionState, stats->connection_state);
+      device_info.Set(kConnectionState, stats->connection_state);
     if (!stats->last_checkin.is_null()) {
-      device_info->SetString(
-          kLastCheckin, base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(
-                            stats->last_checkin)));
+      device_info.Set(kLastCheckin,
+                      base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(
+                          stats->last_checkin)));
     }
     if (!stats->next_checkin.is_null()) {
-      device_info->SetString(
-          kNextCheckin, base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(
-                            stats->next_checkin)));
+      device_info.Set(kNextCheckin,
+                      base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(
+                          stats->next_checkin)));
     }
     if (stats->android_id > 0) {
-      device_info->SetString(
-          kAndroidId, base::StringPrintf("0x%" PRIx64, stats->android_id));
+      device_info.Set(kAndroidId,
+                      base::StringPrintf("0x%" PRIx64, stats->android_id));
     }
     if (stats->android_secret > 0) {
-      device_info->SetString(kAndroidSecret,
-                             base::NumberToString(stats->android_secret));
+      device_info.Set(kAndroidSecret,
+                      base::NumberToString(stats->android_secret));
     }
-    device_info->SetInteger(kSendQueueSize, stats->send_queue_size);
-    device_info->SetInteger(kResendQueueSize, stats->resend_queue_size);
-    results->Set(kDeviceInfo, std::move(device_info));
+    device_info.Set(kSendQueueSize, stats->send_queue_size);
+    device_info.Set(kResendQueueSize, stats->resend_queue_size);
+    results.Set(kDeviceInfo, std::move(device_info));
 
     if (stats->recorded_activities.checkin_activities.size() > 0) {
-      auto checkin_info = std::make_unique<base::ListValue>();
-      SetCheckinInfo(stats->recorded_activities.checkin_activities,
-                     checkin_info.get());
-      results->Set(kCheckinInfo, std::move(checkin_info));
+      results.Set(
+          kCheckinInfo,
+          CheckinInfoToList(stats->recorded_activities.checkin_activities));
     }
     if (stats->recorded_activities.connection_activities.size() > 0) {
-      auto connection_info = std::make_unique<base::ListValue>();
-      SetConnectionInfo(stats->recorded_activities.connection_activities,
-                        connection_info.get());
-      results->Set(kConnectionInfo, std::move(connection_info));
+      results.Set(kConnectionInfo,
+                  ConnectionInfoToList(
+                      stats->recorded_activities.connection_activities));
     }
     if (stats->recorded_activities.registration_activities.size() > 0) {
-      auto registration_info = std::make_unique<base::ListValue>();
-      SetRegistrationInfo(stats->recorded_activities.registration_activities,
-                          registration_info.get());
-      results->Set(kRegistrationInfo, std::move(registration_info));
+      results.Set(kRegistrationInfo,
+                  RegistrationInfoToList(
+                      stats->recorded_activities.registration_activities));
     }
     if (stats->recorded_activities.receiving_activities.size() > 0) {
-      auto receive_info = std::make_unique<base::ListValue>();
-      SetReceivingInfo(stats->recorded_activities.receiving_activities,
-                       receive_info.get());
-      results->Set(kReceiveInfo, std::move(receive_info));
+      results.Set(
+          kReceiveInfo,
+          ReceivingInfoToList(stats->recorded_activities.receiving_activities));
     }
     if (stats->recorded_activities.sending_activities.size() > 0) {
-      auto send_info = std::make_unique<base::ListValue>();
-      SetSendingInfo(stats->recorded_activities.sending_activities,
-                     send_info.get());
-      results->Set(kSendInfo, std::move(send_info));
+      results.Set(
+          kSendInfo,
+          SendingInfoToList(stats->recorded_activities.sending_activities));
     }
 
     if (stats->recorded_activities.decryption_failure_activities.size() > 0) {
-      auto failure_info = std::make_unique<base::ListValue>();
-      SetDecryptionFailureInfo(
-          stats->recorded_activities.decryption_failure_activities,
-          failure_info.get());
-      results->Set(kDecryptionFailureInfo, std::move(failure_info));
+      results.Set(
+          kDecryptionFailureInfo,
+          DecryptionFailureInfoToList(
+              stats->recorded_activities.decryption_failure_activities));
     }
   }
+  return results;
 }
 
 }  // namespace gcm_driver

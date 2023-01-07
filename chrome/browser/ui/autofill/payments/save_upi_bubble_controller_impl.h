@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,17 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
 
 class SaveUPIBubbleControllerImpl
     : SaveUPIBubbleController,
-      public content::WebContentsObserver,
       public content::WebContentsUserData<SaveUPIBubbleControllerImpl> {
  public:
   ~SaveUPIBubbleControllerImpl() override;
@@ -43,7 +42,7 @@ class SaveUPIBubbleControllerImpl
   void ShowBubble();
 
   // Weak reference. Will be nullptr if no bubble is currently shown.
-  SaveUPIBubble* save_upi_bubble_ = nullptr;
+  raw_ptr<SaveUPIBubble> save_upi_bubble_ = nullptr;
 
   base::OnceCallback<void(bool accept)> save_upi_prompt_callback_;
 

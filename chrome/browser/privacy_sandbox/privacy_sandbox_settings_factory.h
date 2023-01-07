@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,19 @@
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-class PrivacySandboxSettings;
 class Profile;
 
-class PrivacySandboxSettingsFactory : public BrowserContextKeyedServiceFactory {
+namespace privacy_sandbox {
+class PrivacySandboxSettings;
+}
+
+class PrivacySandboxSettingsFactory : public ProfileKeyedServiceFactory {
  public:
   static PrivacySandboxSettingsFactory* GetInstance();
-  static PrivacySandboxSettings* GetForProfile(Profile* profile);
+  static privacy_sandbox::PrivacySandboxSettings* GetForProfile(
+      Profile* profile);
 
  private:
   friend struct base::DefaultSingletonTraits<PrivacySandboxSettingsFactory>;
@@ -23,8 +27,6 @@ class PrivacySandboxSettingsFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,22 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/nqe/network_quality_estimator_params.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
 namespace {
 
-base::Optional<base::TimeDelta> GetMaxWaitTimeP2PConnections() {
+absl::optional<base::TimeDelta> GetMaxWaitTimeP2PConnections() {
   if (!base::FeatureList::IsEnabled(
           features::kPauseBrowserInitiatedHeavyTrafficForP2P)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   int max_wait_time_p2p_connections_in_minutes =
@@ -30,7 +30,7 @@ base::Optional<base::TimeDelta> GetMaxWaitTimeP2PConnections() {
           features::kPauseBrowserInitiatedHeavyTrafficForP2P,
           "max_wait_time_p2p_connections_in_minutes", 60);
 
-  return base::TimeDelta::FromMinutes(max_wait_time_p2p_connections_in_minutes);
+  return base::Minutes(max_wait_time_p2p_connections_in_minutes);
 }
 
 std::set<int32_t> GetThrottledHashes() {
@@ -70,36 +70,6 @@ std::set<int32_t> GetThrottledHashes() {
   return throttled_hashes;
 }
 
-base::Optional<base::TimeDelta> GetMaxWeakSignalThrottlingDuration() {
-  if (!base::FeatureList::IsEnabled(
-          features::kPauseLowPriorityBrowserRequestsOnWeakSignal)) {
-    return base::nullopt;
-  }
-
-  int max_weak_signal_throttling_duration_in_seconds =
-      base::GetFieldTrialParamByFeatureAsInt(
-          features::kPauseLowPriorityBrowserRequestsOnWeakSignal,
-          "max_weak_signal_throttling_duration_in_seconds", 600);
-
-  return base::TimeDelta::FromSeconds(
-      max_weak_signal_throttling_duration_in_seconds);
-}
-
-base::Optional<base::TimeDelta> GetWeakSignalUnthrottleDuration() {
-  if (!base::FeatureList::IsEnabled(
-          features::kPauseLowPriorityBrowserRequestsOnWeakSignal)) {
-    return base::nullopt;
-  }
-
-  int weak_signal_unthrottle_duration_in_seconds =
-      base::GetFieldTrialParamByFeatureAsInt(
-          features::kPauseLowPriorityBrowserRequestsOnWeakSignal,
-          "weak_signal_unthrottle_duration_in_seconds", 60);
-
-  return base::TimeDelta::FromSeconds(
-      weak_signal_unthrottle_duration_in_seconds);
-}
-
 // The maximum number of delayable requests to allow to be in-flight at any
 // point in time (across all hosts).
 constexpr size_t kDefaultMaxNumDelayableRequestsPerClient = 10;
@@ -129,9 +99,9 @@ GetParamsForNetworkQualityContainer() {
   static const char kEffectiveConnectionTypeBase[] = "EffectiveConnectionType";
   static const char kNonDelayableWeightBase[] = "NonDelayableWeight";
   static constexpr base::TimeDelta kUpperBoundQueuingDuration =
-      base::TimeDelta::FromSeconds(120);
+      base::Seconds(120);
   static constexpr base::TimeDelta kLowerBoundQueuingDuration =
-      base::TimeDelta::FromSeconds(15);
+      base::Seconds(15);
 
   ResourceSchedulerParamsManager::ParamsForNetworkQualityContainer result;
   // Set the default params for networks with ECT Slow2G and 2G. These params
@@ -140,17 +110,17 @@ GetParamsForNetworkQualityContainer() {
       net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G,
       ResourceSchedulerParamsManager::ParamsForNetworkQuality(
           8, 3.0, false /* delay_requests_on_multiplexed_connections */,
-          base::nullopt)));
+          absl::nullopt)));
   result.emplace(std::make_pair(
       net::EFFECTIVE_CONNECTION_TYPE_2G,
       ResourceSchedulerParamsManager::ParamsForNetworkQuality(
           8, 3.0, false /* delay_requests_on_multiplexed_connections */,
-          base::nullopt)));
+          absl::nullopt)));
   result.emplace(std::make_pair(
       net::EFFECTIVE_CONNECTION_TYPE_3G,
       ResourceSchedulerParamsManager::ParamsForNetworkQuality(
           8, 3.0, false /* delay_requests_on_multiplexed_connections */,
-          base::nullopt)));
+          absl::nullopt)));
 
   for (int config_param_index = 1; config_param_index <= 20;
        ++config_param_index) {
@@ -164,7 +134,7 @@ GetParamsForNetworkQualityContainer() {
       break;
     }
 
-    base::Optional<net::EffectiveConnectionType> effective_connection_type =
+    absl::optional<net::EffectiveConnectionType> effective_connection_type =
         net::GetEffectiveConnectionTypeForName(
             base::GetFieldTrialParamValueByFeature(
                 features::kThrottleDelayable,
@@ -189,7 +159,7 @@ GetParamsForNetworkQualityContainer() {
           effective_connection_type.value(),
           ResourceSchedulerParamsManager::ParamsForNetworkQuality(
               max_delayable_requests, non_delayable_weight, false,
-              base::nullopt)));
+              absl::nullopt)));
     }
   }
 
@@ -198,7 +168,7 @@ GetParamsForNetworkQualityContainer() {
   // based on the experiment params.
   if (base::FeatureList::IsEnabled(
           features::kDelayRequestsOnMultiplexedConnections)) {
-    base::Optional<net::EffectiveConnectionType> max_effective_connection_type =
+    absl::optional<net::EffectiveConnectionType> max_effective_connection_type =
         net::GetEffectiveConnectionTypeForName(
             base::GetFieldTrialParamValueByFeature(
                 features::kDelayRequestsOnMultiplexedConnections,
@@ -222,7 +192,7 @@ GetParamsForNetworkQualityContainer() {
             effective_connection_type,
             ResourceSchedulerParamsManager::ParamsForNetworkQuality(
                 kDefaultMaxNumDelayableRequestsPerClient, 0.0, true,
-                base::nullopt)));
+                absl::nullopt)));
       }
     }
   }
@@ -306,13 +276,13 @@ ResourceSchedulerParamsManager::ParamsForNetworkQuality::
           kDefaultMaxNumDelayableRequestsPerClient,
           0.0,
           false,
-          base::nullopt) {}
+          absl::nullopt) {}
 
 ResourceSchedulerParamsManager::ParamsForNetworkQuality::
     ParamsForNetworkQuality(size_t max_delayable_requests,
                             double non_delayable_weight,
                             bool delay_requests_on_multiplexed_connections,
-                            base::Optional<base::TimeDelta> max_queuing_time)
+                            absl::optional<base::TimeDelta> max_queuing_time)
     : max_delayable_requests(max_delayable_requests),
       non_delayable_weight(non_delayable_weight),
       delay_requests_on_multiplexed_connections(
@@ -337,10 +307,7 @@ ResourceSchedulerParamsManager::ResourceSchedulerParamsManager(
     : params_for_network_quality_container_(
           params_for_network_quality_container),
       max_wait_time_p2p_connections_(GetMaxWaitTimeP2PConnections()),
-      throttled_traffic_annotation_hashes_(GetThrottledHashes()),
-      max_weak_signal_throttling_duration_(
-          GetMaxWeakSignalThrottlingDuration()),
-      weak_signal_unthrottle_duration_(GetWeakSignalUnthrottleDuration()) {}
+      throttled_traffic_annotation_hashes_(GetThrottledHashes()) {}
 
 ResourceSchedulerParamsManager::ResourceSchedulerParamsManager(
     const ResourceSchedulerParamsManager& other)
@@ -348,11 +315,7 @@ ResourceSchedulerParamsManager::ResourceSchedulerParamsManager(
           other.params_for_network_quality_container_),
       max_wait_time_p2p_connections_(other.max_wait_time_p2p_connections_),
       throttled_traffic_annotation_hashes_(
-          other.throttled_traffic_annotation_hashes_),
-      max_weak_signal_throttling_duration_(
-          other.max_weak_signal_throttling_duration_),
-      weak_signal_unthrottle_duration_(other.weak_signal_unthrottle_duration_) {
-}
+          other.throttled_traffic_annotation_hashes_) {}
 
 ResourceSchedulerParamsManager::~ResourceSchedulerParamsManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -367,7 +330,7 @@ ResourceSchedulerParamsManager::GetParamsForEffectiveConnectionType(
   if (iter != params_for_network_quality_container_.end())
     return iter->second;
   return ParamsForNetworkQuality(kDefaultMaxNumDelayableRequestsPerClient, 0.0,
-                                 false, base::nullopt);
+                                 false, absl::nullopt);
 }
 
 bool ResourceSchedulerParamsManager::CanThrottleNetworkTrafficAnnotationHash(
@@ -385,7 +348,7 @@ base::TimeDelta ResourceSchedulerParamsManager::
     TimeToPauseHeavyBrowserInitiatedRequestsAfterEndOfP2PConnections() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       features::kPauseBrowserInitiatedHeavyTrafficForP2P,
       "seconds_to_pause_requests_after_end_of_p2p_connections", 60));
 }

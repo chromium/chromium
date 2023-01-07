@@ -1,12 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "content/browser/sandbox_support_mac_impl.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #import "content/browser/theme_helper_mac.h"
 #include "content/common/mac/font_loader.h"
 #include "content/public/browser/browser_task_traits.h"

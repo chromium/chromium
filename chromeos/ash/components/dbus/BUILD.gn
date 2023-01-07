@@ -1,0 +1,142 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromebox_for_meetings/buildflags.gni")
+import("//build/config/ui.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
+
+component("dbus") {
+  output_name = "ash_dbus"  # Avoid conflict with //dbus
+  defines = [ "IS_ASH_DBUS_IMPL" ]
+  public_deps = [
+    "//chromeos/dbus/common",
+    "//chromeos/dbus/constants",
+    "//chromeos/dbus/init",
+    "//dbus",
+  ]
+  deps = [ "//base" ]
+  sources = [
+    "dbus_thread_manager.cc",
+    "dbus_thread_manager.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  configs += [ "//build/config/linux/dbus" ]
+  public_deps = [
+    ":dbus",
+    "//chromeos/dbus/constants",
+    "//dbus",
+    "//dbus:test_support",
+  ]
+  deps = [
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/linux/dbus" ]
+  testonly = true
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/audio",
+    "//chromeos/ash/components/dbus/authpolicy",
+    "//chromeos/ash/components/dbus/authpolicy:authpolicy_proto",
+    "//chromeos/ash/components/dbus/biod:test_support",
+    "//chromeos/ash/components/dbus/cec_service:unit_tests",
+    "//chromeos/ash/components/dbus/cros_disks:unit_tests",
+    "//chromeos/ash/components/dbus/cryptohome",
+    "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
+    "//chromeos/ash/components/dbus/dlcservice:unit_tests",
+    "//chromeos/ash/components/dbus/easy_unlock:unit_tests",
+    "//chromeos/ash/components/dbus/fwupd:test_support",
+    "//chromeos/ash/components/dbus/gnubby:unit_tests",
+    "//chromeos/ash/components/dbus/hermes:test_support",
+    "//chromeos/ash/components/dbus/hiberman",
+    "//chromeos/ash/components/dbus/ip_peripheral:test_support",
+    "//chromeos/ash/components/dbus/lorgnette_manager:test_support",
+    "//chromeos/ash/components/dbus/oobe_config:unit_tests",
+    "//chromeos/ash/components/dbus/rmad:rmad_proto",
+    "//chromeos/ash/components/dbus/rmad:test_support",
+    "//chromeos/ash/components/dbus/services:unit_tests",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/shill:test_support",
+    "//chromeos/ash/components/dbus/system_clock:unit_tests",
+    "//chromeos/ash/components/dbus/update_engine:unit_tests",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//components/account_id",
+    "//dbus",
+  ]
+  if (is_cfm) {
+    deps +=
+        [ "//chromeos/ash/components/dbus/chromebox_for_meetings:unit_tests" ]
+  }
+  sources = [
+    "audio/cras_audio_client_unittest.cc",
+    "authpolicy/fake_authpolicy_client_unittest.cc",
+    "biod/biod_client_unittest.cc",
+    "biod/fake_biod_client_unittest.cc",
+    "dbus_thread_manager_unittest.cc",
+    "hiberman/hiberman_client_unittest.cc",
+    "userdataauth/arc_quota_client_unittest.cc",
+    "userdataauth/cryptohome_misc_client_unittest.cc",
+    "userdataauth/cryptohome_pkcs11_client_unittest.cc",
+    "userdataauth/install_attributes_client_unittest.cc",
+    "userdataauth/userdataauth_client_unittest.cc",
+  ]
+}
+
+proto_library("metrics_event_proto") {
+  sources =
+      [ "//third_party/cros_system_api/dbus/metrics_event/metrics_event.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/metrics_event"
+}
+
+proto_library("plugin_vm_service_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/plugin_vm_service/plugin_vm_service.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/plugin_vm_service"
+}
+
+proto_library("vm_applications_apps_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/vm_applications/apps.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/vm_applications"
+}
+
+proto_library("vm_disk_management_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/vm_disk_management/disk_management.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/vm_disk_management"
+}
+
+proto_library("vm_launch_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/vm_launch/launch.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/vm_launch"
+}
+
+proto_library("vm_sk_forwarding_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/vm_sk_forwarding/sk_forwarding.proto",
+  ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/vm_sk_forwarding"
+}
+
+proto_library("vm_permission_service_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/vm_permission_service/vm_permission_service.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/vm_permission_service"
+}

@@ -1,0 +1,15 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+struct PictureInPictureWindowOptions {
+  // The requested aspect ratio for the picture-in-picture window to be
+  // initially sized to.
+  float initial_aspect_ratio;
+
+  // True if the picture-in-picture window should be locked to the initial
+  // aspect ratio.
+  bool lock_aspect_ratio;
+};

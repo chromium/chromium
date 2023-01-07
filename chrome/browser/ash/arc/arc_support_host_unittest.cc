@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,6 +60,7 @@ class MockErrorDelegateNonStrict : public ArcSupportHost::ErrorDelegate {
   MOCK_METHOD0(OnWindowClosed, void());
   MOCK_METHOD0(OnRetryClicked, void());
   MOCK_METHOD0(OnSendFeedbackClicked, void());
+  MOCK_METHOD0(OnRunNetworkTestsClicked, void());
 };
 
 using MockErrorDelegate = StrictMock<MockErrorDelegateNonStrict>;
@@ -69,6 +70,10 @@ using MockErrorDelegate = StrictMock<MockErrorDelegateNonStrict>;
 class ArcSupportHostTest : public BrowserWithTestWindowTest {
  public:
   ArcSupportHostTest() = default;
+
+  ArcSupportHostTest(const ArcSupportHostTest&) = delete;
+  ArcSupportHostTest& operator=(const ArcSupportHostTest&) = delete;
+
   ~ArcSupportHostTest() override = default;
 
   void SetUp() override {
@@ -79,7 +84,8 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     // The code under test should not be tied to browser sync consent.
     identity_test_env_adaptor_->identity_test_env()
-        ->MakeUnconsentedPrimaryAccountAvailable("testing@account.com");
+        ->MakePrimaryAccountAvailable("testing@account.com",
+                                      signin::ConsentLevel::kSignin);
 
     support_host_ = std::make_unique<ArcSupportHost>(profile());
     fake_arc_support_ = std::make_unique<FakeArcSupport>(support_host_.get());
@@ -151,8 +157,6 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
   std::unique_ptr<MockAuthDelegate> auth_delegate_;
   std::unique_ptr<MockTermsOfServiceDelegate> tos_delegate_;
   std::unique_ptr<MockErrorDelegate> error_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSupportHostTest);
 };
 
 namespace {
@@ -188,7 +192,8 @@ TEST_F(ArcSupportHostTest, AuthRetryOnError) {
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
-      false /* should_show_send_feedback */);
+      false /* should_show_send_feedback */,
+      true /* should_show_run_network_tests */);
 
   EXPECT_CALL(*auth_delegate, OnAuthRetryClicked());
   EXPECT_CALL(*error_delegate, OnWindowClosed()).Times(0);
@@ -236,7 +241,8 @@ TEST_F(ArcSupportHostTest, TermsOfServiceRetryOnError) {
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
-      false /* should_show_send_feedback */);
+      false /* should_show_send_feedback */,
+      true /* should_show_run_network_tests */);
 
   EXPECT_CALL(*tos_delegate, OnTermsRetryClicked());
   EXPECT_CALL(*error_delegate, OnWindowClosed()).Times(0);
@@ -275,7 +281,8 @@ TEST_F(ArcSupportHostTest, RetryOnGeneralError) {
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
-      false /* should_show_send_feedback */);
+      false /* should_show_send_feedback */,
+      true /* should_show_run_network_tests */);
 
   EXPECT_CALL(*error_delegate, OnRetryClicked());
   fake_arc_support()->ClickRetryButton();
@@ -288,10 +295,24 @@ TEST_F(ArcSupportHostTest, SendFeedbackOnError) {
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
-      true /* should_show_send_feedback */);
+      true /* should_show_send_feedback */,
+      true /* should_show_run_network_tests */);
 
   EXPECT_CALL(*error_delegate, OnSendFeedbackClicked());
   fake_arc_support()->ClickSendFeedbackButton();
 }
 
+TEST_F(ArcSupportHostTest, RunNetworkTestsOnError) {
+  MockErrorDelegate* error_delegate = CreateMockErrorDelegate();
+  support_host()->SetErrorDelegate(error_delegate);
+
+  support_host()->ShowError(
+      ArcSupportHost::ErrorInfo(
+          ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
+      true /* should_show_send_feedback */,
+      true /* should_show_run_network_tests */);
+
+  EXPECT_CALL(*error_delegate, OnRunNetworkTestsClicked());
+  fake_arc_support()->ClickRunNetworkTestsButton();
+}
 }  // namespace

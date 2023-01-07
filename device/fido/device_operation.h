@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,11 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/device_event_log/device_event_log.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -40,7 +38,7 @@ class DeviceOperation : public GenericDeviceOperation {
  public:
   using DeviceResponseCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
-                              base::Optional<Response>)>;
+                              absl::optional<Response>)>;
   // Represents a per device logic that is owned by FidoTask. Thus,
   // DeviceOperation does not outlive |request|.
   DeviceOperation(FidoDevice* device,
@@ -50,33 +48,32 @@ class DeviceOperation : public GenericDeviceOperation {
         request_(std::move(request)),
         callback_(std::move(callback)) {}
 
+  DeviceOperation(const DeviceOperation&) = delete;
+  DeviceOperation& operator=(const DeviceOperation&) = delete;
+
   ~DeviceOperation() override = default;
 
  protected:
-  void DispatchU2FCommand(base::Optional<std::vector<uint8_t>> command,
+  void DispatchU2FCommand(absl::optional<std::vector<uint8_t>> command,
                           FidoDevice::DeviceCallback callback) {
     if (!command || device_->is_in_error_state()) {
-      FIDO_LOG(DEBUG) << "<- u2f (error)";
       base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
       return;
     }
 
-    FIDO_LOG(DEBUG) << "<- u2f " << base::HexEncode(*command);
     token_ = device_->DeviceTransact(std::move(*command), std::move(callback));
   }
 
   const Request& request() const { return request_; }
   FidoDevice* device() const { return device_; }
   DeviceResponseCallback callback() { return std::move(callback_); }
-  base::Optional<FidoDevice::CancelToken> token_;
+  absl::optional<FidoDevice::CancelToken> token_;
 
  private:
-  FidoDevice* const device_ = nullptr;
+  const raw_ptr<FidoDevice> device_ = nullptr;
   Request request_;
   DeviceResponseCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceOperation);
 };
 
 }  // namespace device

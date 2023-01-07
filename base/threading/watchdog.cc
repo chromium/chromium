@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -118,7 +118,7 @@ void Watchdog::ThreadDelegate::ThreadMain() {
   SetThreadName();
   TimeDelta remaining_duration;
   StaticData* static_data = GetStaticData();
-  while (1) {
+  while (true) {
     AutoLock lock(watchdog_->lock_);
     while (DISARMED == watchdog_->state_)
       watchdog_->condition_variable_.Wait();
@@ -155,7 +155,7 @@ void Watchdog::ThreadDelegate::ThreadMain() {
       watchdog_->Alarm();  // Set a break point here to debug on alarms.
     }
     TimeDelta last_alarm_delay = TimeTicks::Now() - last_alarm_time;
-    if (last_alarm_delay <= TimeDelta::FromMilliseconds(2))
+    if (last_alarm_delay <= Milliseconds(2))
       continue;
     // Ignore race of two alarms/breaks going off at roughly the same time.
     AutoLock static_lock(static_data->lock);

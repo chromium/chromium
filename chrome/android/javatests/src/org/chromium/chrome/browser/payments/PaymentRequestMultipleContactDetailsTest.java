@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,14 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -24,7 +23,6 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
@@ -36,10 +34,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestMultipleContactDetailsTest implements MainActivityStartCallback {
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
-
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule("payment_request_contact_details_test.html", this);
@@ -147,6 +141,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testContactDetailsSuggestionOrdering() throws TimeoutException {
         // Set the use stats so that profile[0] has the highest frecency score, profile[1] the
@@ -183,6 +178,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testContactDetailsEditRequiredMessage() throws TimeoutException {
         mProfilesToAdd = new AutofillProfile[] {AUTOFILL_PROFILES[0], AUTOFILL_PROFILES[1],
@@ -215,7 +211,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1182590")
+    @DisabledTest(message = "https://crbug.com/1182590")
     public void testContactDetailsDedupe_EmptyFields() throws TimeoutException {
         // Add the original profile and a bunch of similar profiles with missing fields.
         // Make sure the original profile is suggested last, to test that the suggestions are
@@ -246,6 +242,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testContactDetailsDedupe_Capitalization() throws TimeoutException {
         // Add the original profile and the one where the the name is not capitalized.
@@ -268,6 +265,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testContactDetailsDontDedupe_FieldSubset() throws TimeoutException {
         // Add the original profile and the one where the email is a superset of the original.
@@ -293,7 +291,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1182644")
+    @DisabledTest(message = "https://crbug.com/1182644")
     public void testContactDetailsAllMissingFieldsRecorded() throws TimeoutException {
         // Don't add any profiles.
         mProfilesToAdd = new AutofillProfile[] {};

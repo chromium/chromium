@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,12 +28,14 @@ namespace extensions {
 // Linux NetworkingPrivateDelegate implementation.
 class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
  public:
-  using NetworkMap =
-      std::map<std::u16string, std::unique_ptr<base::DictionaryValue>>;
+  using NetworkMap = std::map<std::u16string, base::Value>;
 
   typedef std::vector<std::string> GuidList;
 
   NetworkingPrivateLinux();
+
+  NetworkingPrivateLinux(const NetworkingPrivateLinux&) = delete;
+  NetworkingPrivateLinux& operator=(const NetworkingPrivateLinux&) = delete;
 
   // NetworkingPrivateDelegate
   void GetProperties(const std::string& guid,
@@ -44,12 +46,12 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
                 DictionaryCallback success_callback,
                 FailureCallback failure_callback) override;
   void SetProperties(const std::string& guid,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value properties,
                      bool allow_set_shared_config,
                      VoidCallback success_callback,
                      FailureCallback failure_callback) override;
   void CreateNetwork(bool shared,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value properties,
                      StringCallback success_callback,
                      FailureCallback failure_callback) override;
   void ForgetNetwork(const std::string& guid,
@@ -86,13 +88,15 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
                                    const std::string& network_id,
                                    VoidCallback success_callback,
                                    FailureCallback failure_callback) override;
-  std::unique_ptr<base::ListValue> GetEnabledNetworkTypes() override;
-  std::unique_ptr<DeviceStateList> GetDeviceStateList() override;
-  std::unique_ptr<base::DictionaryValue> GetGlobalPolicy() override;
-  std::unique_ptr<base::DictionaryValue> GetCertificateLists() override;
-  bool EnableNetworkType(const std::string& type) override;
-  bool DisableNetworkType(const std::string& type) override;
-  bool RequestScan(const std::string& type) override;
+  void GetEnabledNetworkTypes(EnabledNetworkTypesCallback callback) override;
+  void GetDeviceStateList(DeviceStateListCallback callback) override;
+  void GetGlobalPolicy(GetGlobalPolicyCallback callback) override;
+  void GetCertificateLists(GetCertificateListsCallback callback) override;
+  void EnableNetworkType(const std::string& type,
+                         BoolCallback callback) override;
+  void DisableNetworkType(const std::string& type,
+                          BoolCallback callback) override;
+  void RequestScan(const std::string& type, BoolCallback callback) override;
   void AddObserver(NetworkingPrivateDelegateObserver* observer) override;
   void RemoveObserver(NetworkingPrivateDelegateObserver* observer) override;
 
@@ -182,14 +186,13 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
 
   // Helper function for OnAccessPointsFound and OnAccessPointsFoundViaScan to
   // fire the OnNetworkListChangedEvent.
-  void SendNetworkListChangedEvent(const base::ListValue& network_list);
+  void SendNetworkListChangedEvent(const base::Value& network_list);
 
   // Gets a dictionary of information about the access point.
   // Returns false if there is an error getting information about the
   // supplied |access_point_path|.
-  bool GetAccessPointInfo(
-      const dbus::ObjectPath& access_point_path,
-      const std::unique_ptr<base::DictionaryValue>& access_point_info);
+  bool GetAccessPointInfo(const dbus::ObjectPath& access_point_path,
+                          base::Value* access_point_info);
 
   // Helper function to extract a property from a device.
   // Returns the dbus::Response object from calling Get on the supplied
@@ -201,10 +204,9 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   // If the access_point is not already in the map it is added. Otherwise
   // the access point is updated (eg. with the max of the signal
   // strength).
-  void AddOrUpdateAccessPoint(
-      NetworkMap* network_map,
-      const std::string& network_guid,
-      std::unique_ptr<base::DictionaryValue>& access_point);
+  void AddOrUpdateAccessPoint(NetworkMap* network_map,
+                              const std::string& network_guid,
+                              base::Value* access_point);
 
   // Maps the WPA security flags to a human readable string.
   void MapSecurityFlagsToString(uint32_t securityFlags, std::string* security);
@@ -244,7 +246,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   void OnNetworksChangedEventTask(std::unique_ptr<GuidList> guid_list);
 
   void GetCachedNetworkProperties(const std::string& guid,
-                                  base::DictionaryValue* properties,
+                                  base::Value* properties,
                                   std::string* error);
 
   void OnNetworksChangedEventOnUIThread(const GuidList& network_guids);
@@ -258,14 +260,12 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   // Task runner used by the |dbus_| object.
   scoped_refptr<base::SequencedTaskRunner> dbus_task_runner_;
   // This is owned by |dbus_| object. Only access on |dbus_thread_|.
-  dbus::ObjectProxy* network_manager_proxy_;
+  raw_ptr<dbus::ObjectProxy> network_manager_proxy_;
   // Holds the current mapping of known networks. Only access on |dbus_thread_|.
   std::unique_ptr<NetworkMap> network_map_;
   // Observers to Network Events.
   base::ObserverList<NetworkingPrivateDelegateObserver>::Unchecked
       network_events_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateLinux);
 };
 
 }  // namespace extensions

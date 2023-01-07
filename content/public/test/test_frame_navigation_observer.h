@@ -1,14 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_TEST_TEST_FRAME_NAVIGATION_OBSERVER_H_
-#define CONTENT_TEST_TEST_FRAME_NAVIGATION_OBSERVER_H_
+#ifndef CONTENT_PUBLIC_TEST_TEST_FRAME_NAVIGATION_OBSERVER_H_
+#define CONTENT_PUBLIC_TEST_TEST_FRAME_NAVIGATION_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/net_errors.h"
 
 namespace content {
 
@@ -21,6 +21,10 @@ class TestFrameNavigationObserver : public WebContentsObserver {
   // Note that RenderFrameHost associated with |frame| might be destroyed during
   // the navigation (e.g. if the content commits in a new renderer process).
   explicit TestFrameNavigationObserver(const ToRenderFrameHost& adapter);
+
+  TestFrameNavigationObserver(const TestFrameNavigationObserver&) = delete;
+  TestFrameNavigationObserver& operator=(const TestFrameNavigationObserver&) =
+      delete;
 
   ~TestFrameNavigationObserver() override;
 
@@ -37,6 +41,10 @@ class TestFrameNavigationObserver : public WebContentsObserver {
 
   bool last_navigation_succeeded() const { return last_navigation_succeeded_; }
 
+  net::Error last_net_error_code() const { return last_net_error_code_; }
+
+  bool navigation_started() const { return navigation_started_; }
+
  private:
   // WebContentsObserver
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
@@ -47,28 +55,29 @@ class TestFrameNavigationObserver : public WebContentsObserver {
   int frame_tree_node_id_;
 
   // If true the navigation has started.
-  bool navigation_started_;
+  bool navigation_started_ = false;
 
   // If true, the navigation has committed.
-  bool has_committed_;
+  bool has_committed_ = false;
 
   // If true, this object is waiting for commit only, not for the full load
   // of the document.
-  bool wait_for_commit_;
+  bool wait_for_commit_ = false;
 
   // True if the last navigation succeeded.
-  bool last_navigation_succeeded_;
+  bool last_navigation_succeeded_ = false;
+
+  // The net error code of the last navigation.
+  net::Error last_net_error_code_ = net::OK;
 
   // Saved parameters from NavigationHandle.
-  base::Optional<ui::PageTransition> transition_type_;
+  absl::optional<ui::PageTransition> transition_type_;
   GURL last_committed_url_;
 
   // The RunLoop used to spin the message loop.
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFrameNavigationObserver);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_TEST_TEST_FRAME_NAVIGATION_OBSERVER_H_
+#endif  // CONTENT_PUBLIC_TEST_TEST_FRAME_NAVIGATION_OBSERVER_H_

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <stdint.h>
 
 #include <bitset>
-#include <list>
 #include <memory>
 #include <unordered_map>
 
@@ -19,9 +18,10 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gles2_impl_export.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 
@@ -41,7 +41,7 @@ class GLES2_IMPL_EXPORT QuerySyncManager {
 
     void FreePendingSyncs();
 
-    QuerySync* syncs;
+    raw_ptr<QuerySync> syncs;
     int32_t shm_id;
     uint32_t base_shm_offset;
     std::bitset<kSyncsPerBucket> in_use_query_syncs;
@@ -60,12 +60,16 @@ class GLES2_IMPL_EXPORT QuerySyncManager {
 
     uint32_t index() const { return sync - bucket->syncs; }
 
-    Bucket* bucket = nullptr;
-    QuerySync* sync = nullptr;
+    raw_ptr<Bucket> bucket = nullptr;
+    raw_ptr<QuerySync> sync = nullptr;
     int32_t submit_count = 0;
   };
 
   explicit QuerySyncManager(MappedMemoryManager* manager);
+
+  QuerySyncManager(const QuerySyncManager&) = delete;
+  QuerySyncManager& operator=(const QuerySyncManager&) = delete;
+
   ~QuerySyncManager();
 
   bool Alloc(QueryInfo* info);
@@ -75,10 +79,8 @@ class GLES2_IMPL_EXPORT QuerySyncManager {
  private:
   FRIEND_TEST_ALL_PREFIXES(QuerySyncManagerTest, Shrink);
 
-  MappedMemoryManager* mapped_memory_;
+  raw_ptr<MappedMemoryManager> mapped_memory_;
   base::circular_deque<std::unique_ptr<Bucket>> buckets_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuerySyncManager);
 };
 
 class GLES2_IMPL_EXPORT QueryTrackerClient {
@@ -198,10 +200,14 @@ class GLES2_IMPL_EXPORT QueryTracker {
     uint64_t client_begin_time_us_;  // Only used for latency query target.
     uint64_t result_;
 
-    base::Optional<base::OnceClosure> on_completed_callback_;
+    absl::optional<base::OnceClosure> on_completed_callback_;
   };
 
   explicit QueryTracker(MappedMemoryManager* manager);
+
+  QueryTracker(const QueryTracker&) = delete;
+  QueryTracker& operator=(const QueryTracker&) = delete;
+
   ~QueryTracker();
 
   Query* CreateQuery(GLuint id, GLenum target);
@@ -233,13 +239,11 @@ class GLES2_IMPL_EXPORT QueryTracker {
   QuerySyncManager query_sync_manager_;
 
   // The shared memory used for synchronizing timer disjoint values.
-  MappedMemoryManager* mapped_memory_;
+  raw_ptr<MappedMemoryManager> mapped_memory_;
   int32_t disjoint_count_sync_shm_id_;
   uint32_t disjoint_count_sync_shm_offset_;
-  DisjointValueSync* disjoint_count_sync_;
+  raw_ptr<DisjointValueSync> disjoint_count_sync_;
   uint32_t local_disjoint_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryTracker);
 };
 
 }  // namespace gles2

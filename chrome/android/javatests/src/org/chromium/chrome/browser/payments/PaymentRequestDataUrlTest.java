@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,9 @@ public class PaymentRequestDataUrlTest implements MainActivityStartCallback {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule = new PaymentRequestTestRule(
             "data:text/html,<html><head>"
-                    + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, "
-                    + "maximum-scale=1\"></head><body><button id=\"buy\" onclick=\"try { "
+                    + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=0.5, "
+                    + "maximum-scale=0.5, minimum-scale=0.5\"></head><body><button id=\"buy\""
+                    + "onclick=\"try { "
                     + "(new PaymentRequest([{supportedMethods: 'basic-card'}], "
                     + "{total: {label: 'Total', "
                     + " amount: {currency: 'USD', value: '1.00'}}})).show(); "

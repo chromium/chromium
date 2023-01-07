@@ -1,9 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ios/web/web_view/content_type_util.h"
-#include "base/stl_util.h"
 
 namespace web {
 

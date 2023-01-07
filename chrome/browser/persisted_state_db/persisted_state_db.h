@@ -1,20 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PERSISTED_STATE_DB_PERSISTED_STATE_DB_H_
 #define CHROME_BROWSER_PERSISTED_STATE_DB_PERSISTED_STATE_DB_H_
 
-#include <queue>
-#include <string>
-#include <vector>
-
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
+#include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
@@ -23,7 +19,7 @@ class BrowserContext;
 }  // namespace content
 
 template <typename T>
-class ProfileProtoDB;
+class SessionProtoDB;
 
 // PersistedStateDB is leveldb backend store for NonCriticalPersistedTabData.
 // NonCriticalPersistedTabData is an extension of TabState where data for
@@ -55,11 +51,20 @@ class PersistedStateDB {
               const base::android::JavaParamRef<jstring>& jkey,
               const base::android::JavaRef<jobject>& jcallback);
 
+  // Delete entries which have keys which match jsubstring_to_match
+  // except for those in jkeys_to_keep.
+  void PerformMaintenance(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& jkeys_to_keep,
+      const base::android::JavaParamRef<jstring>& jsubstring_to_match,
+      const base::android::JavaRef<jobject>& joncomplete_for_testing);
+
   // Destroy PersistedStateDB object.
   void Destroy(JNIEnv* env);
 
  private:
-  ProfileProtoDB<persisted_state_db::PersistedStateContentProto>* proto_db_;
+  raw_ptr<SessionProtoDB<persisted_state_db::PersistedStateContentProto>>
+      proto_db_;
 
   base::WeakPtrFactory<PersistedStateDB> weak_ptr_factory_{this};
 };

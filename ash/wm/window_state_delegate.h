@@ -1,12 +1,14 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_WM_WINDOW_STATE_DELEGATE_H_
 #define ASH_WM_WINDOW_STATE_DELEGATE_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
-#include "base/macros.h"
+#include "ash/public/cpp/presentation_time_recorder.h"
 
 namespace gfx {
 class PointF;
@@ -19,28 +21,36 @@ class WindowState;
 class ASH_EXPORT WindowStateDelegate {
  public:
   WindowStateDelegate();
+
+  WindowStateDelegate(const WindowStateDelegate&) = delete;
+  WindowStateDelegate& operator=(const WindowStateDelegate&) = delete;
+
   virtual ~WindowStateDelegate();
 
-  // Invoked when the user uses Shift+F4/F4 to toggle the window fullscreen
-  // state. If the window is not fullscreen and the window supports immersive
-  // fullscreen ToggleFullscreen() should put the window into immersive
-  // fullscreen instead of the default fullscreen type. The caller
-  // (ash::WindowState) falls backs to the default implementation if this
-  // returns false.
+  // Toggles the window into or out of the fullscreen state. If the window is
+  // not fullscreen and the window supports immersive fullscreen
+  // ToggleFullscreen() should put the window into immersive fullscreen instead
+  // of the default fullscreen type. The caller (ash::WindowState) falls backs
+  // to the default implementation if this returns false.
   virtual bool ToggleFullscreen(WindowState* window_state);
+
+  // Toggles the locked fullscreen state, aka Pinned and TrustedPinned, where a
+  // window has exclusive control of the screen. Implementers should implement
+  // restrictions related to the relevant pinned mode for their window in this
+  // function.
+  virtual void ToggleLockedFullscreen(WindowState* window_state);
 
   // Invoked when the user started drag operation. |component| must be
   // a member of ui::HitTestCompat enum and specifies which part of
   // the window the pointer device was on when the user started drag
-  // operation.
-  virtual void OnDragStarted(int component) {}
+  // operation. Returns a presentation time recorder that could be used to
+  // track resize latency.
+  virtual std::unique_ptr<PresentationTimeRecorder> OnDragStarted(
+      int component);
 
   // Invoked when the user finished drag operation. |cancel| is true
   // if the drag operation was canceled.
   virtual void OnDragFinished(bool cancel, const gfx::PointF& location) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowStateDelegate);
 };
 
 }  // namespace ash

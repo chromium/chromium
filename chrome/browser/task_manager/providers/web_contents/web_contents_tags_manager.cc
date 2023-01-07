@@ -1,12 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 
-#include <algorithm>
-
 #include "base/memory/singleton.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_task_provider.h"
 
 namespace task_manager {
@@ -26,9 +25,7 @@ void WebContentsTagsManager::AddTag(WebContentsTag* tag) {
 
 void WebContentsTagsManager::RemoveTag(WebContentsTag* tag) {
   DCHECK(tag);
-  tracked_tags_.erase(std::find(tracked_tags_.begin(),
-                                tracked_tags_.end(),
-                                tag));
+  tracked_tags_.erase(base::ranges::find(tracked_tags_, tag));
 
   // No need to inform the provider here. The provider will create an entry
   // for each WebContents it's tracking which is a WebContentsObserver and

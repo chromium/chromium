@@ -1,11 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/service/display_embedder/software_output_device_ozone.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -14,7 +16,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -36,7 +38,7 @@ class TestSurfaceOzoneCanvas : public ui::SurfaceOzoneCanvas {
 
   // ui::SurfaceOzoneCanvas override:
   SkCanvas* GetCanvas() override { return surface_->getCanvas(); }
-  void ResizeCanvas(const gfx::Size& viewport_size) override {
+  void ResizeCanvas(const gfx::Size& viewport_size, float scale) override {
     surface_ = SkSurface::MakeRaster(SkImageInfo::MakeN32Premul(
         viewport_size.width(), viewport_size.height()));
   }
@@ -67,7 +69,7 @@ class SoftwareOutputDeviceOzoneTest : public testing::Test {
   std::unique_ptr<SoftwareOutputDeviceOzone> output_device_;
   bool enable_pixel_output_ = false;
 
-  TestSurfaceOzoneCanvas* surface_ozone_ = nullptr;
+  raw_ptr<TestSurfaceOzoneCanvas> surface_ozone_ = nullptr;
 };
 
 SoftwareOutputDeviceOzoneTest::SoftwareOutputDeviceOzoneTest() = default;

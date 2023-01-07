@@ -1,8 +1,7 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "content/public/browser/context_factory.h"
 #include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_browser_context.h"
@@ -18,9 +17,14 @@ namespace {
 class ViewsContentClientMainPartsChromeOS
     : public ViewsContentClientMainPartsAura {
  public:
-  ViewsContentClientMainPartsChromeOS(
-      const content::MainFunctionParams& content_params,
+  explicit ViewsContentClientMainPartsChromeOS(
       ViewsContentClient* views_content_client);
+
+  ViewsContentClientMainPartsChromeOS(
+      const ViewsContentClientMainPartsChromeOS&) = delete;
+  ViewsContentClientMainPartsChromeOS& operator=(
+      const ViewsContentClientMainPartsChromeOS&) = delete;
+
   ~ViewsContentClientMainPartsChromeOS() override {}
 
   // content::BrowserMainParts:
@@ -30,15 +34,11 @@ class ViewsContentClientMainPartsChromeOS
  private:
   // Enable a minimal set of views::corewm to be initialized.
   std::unique_ptr<::wm::WMTestHelper> wm_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentClientMainPartsChromeOS);
 };
 
 ViewsContentClientMainPartsChromeOS::ViewsContentClientMainPartsChromeOS(
-    const content::MainFunctionParams& content_params,
     ViewsContentClient* views_content_client)
-    : ViewsContentClientMainPartsAura(content_params, views_content_client) {
-}
+    : ViewsContentClientMainPartsAura(views_content_client) {}
 
 int ViewsContentClientMainPartsChromeOS::PreMainMessageLoopRun() {
   ViewsContentClientMainPartsAura::PreMainMessageLoopRun();
@@ -66,11 +66,9 @@ void ViewsContentClientMainPartsChromeOS::PostMainMessageLoopRun() {
 
 // static
 std::unique_ptr<ViewsContentClientMainParts>
-ViewsContentClientMainParts::Create(
-    const content::MainFunctionParams& content_params,
-    ViewsContentClient* views_content_client) {
+ViewsContentClientMainParts::Create(ViewsContentClient* views_content_client) {
   return std::make_unique<ViewsContentClientMainPartsChromeOS>(
-      content_params, views_content_client);
+      views_content_client);
 }
 
 }  // namespace ui

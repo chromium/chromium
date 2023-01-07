@@ -1,16 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/login/users/user_manager_interface.h"
-#include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
+#include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
@@ -24,6 +23,10 @@ class ChromeUserManager : public user_manager::UserManagerBase,
  public:
   explicit ChromeUserManager(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  ChromeUserManager(const ChromeUserManager&) = delete;
+  ChromeUserManager& operator=(const ChromeUserManager&) = delete;
+
   ~ChromeUserManager() override;
 
   // user_manager::UserManagerBase:
@@ -32,7 +35,6 @@ class ChromeUserManager : public user_manager::UserManagerBase,
                         const user_manager::User* primary_user,
                         bool is_current_user_owner) const override;
   bool GetPlatformKnownUserId(const std::string& user_email,
-                              const std::string& gaia_id,
                               AccountId* out_account_id) const override;
 
   // Returns current ChromeUserManager or NULL if instance hasn't been
@@ -49,11 +51,6 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   // policy::DeviceStatusCollector).
   virtual bool ShouldReportUser(const std::string& user_id) const = 0;
 
-  // Checks whether 'DeviceLocalAccountManagedSessionEnabled' policy is enabled
-  // for `active_user`.
-  virtual bool IsManagedSessionEnabledForUser(
-      const user_manager::User& active_user) const = 0;
-
   // Checks whether full management disclosure is needed for the public/managed
   // session login screen UI. Full disclosure is needed if the session is
   // managed and any risky extensions or network certificates are forced
@@ -61,12 +58,26 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   virtual bool IsFullManagementDisclosureNeeded(
       policy::DeviceLocalAccountPolicyBroker* broker) const = 0;
 
+  // Temporarily stores a record of a user being moved. This is used for
+  // reporting on managed devices. Users are cached since it is possible for
+  // them to be removed just before the user removal reporter is created
+  // when the device has its users cleared in the admin console.
+  virtual void CacheRemovedUser(const std::string& user_email,
+                                user_manager::UserRemovalReason) = 0;
+
+  // Gets the temporarily removes users stores by CacheRemovedUser.
+  virtual std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
+  GetRemovedUserCache() const = 0;
+
+  // Marks that the user added/removed reporter has been initialized. This
+  // indicates that removed users no longer need to be cached and will result
+  // in the cache being cleared.
+  virtual void MarkReporterInitialized() = 0;
+
  private:
   LoginState::LoggedInUserType GetLoggedInUserType(
       const user_manager::User& active_user,
       bool is_current_user_owner) const;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeUserManager);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 
 namespace {
 
-const char kFakeGivenName[] = "Barack";
+const char16_t kFakeGivenName[] = u"Barack";
 const char kFakeProfileUserName[] = "test@gmail.com";
 
 }  // namespace
@@ -40,11 +40,11 @@ class NearbyShareProfileInfoProviderImplTest : public ::testing::Test {
 
   void AddUser() { user_manager_->AddUser(account_id_); }
 
-  void SetUserGivenName(const std::string& name) {
+  void SetUserGivenName(const std::u16string& name) {
     user_manager_->UpdateUserAccountData(
         account_id_, user_manager::UserManager::UserAccountData(
                          /*display_name=*/std::u16string(),
-                         /*given_name=*/base::UTF8ToUTF16(name),
+                         /*given_name=*/name,
                          /*locale=*/std::string()));
   }
 
@@ -59,22 +59,21 @@ TEST_F(NearbyShareProfileInfoProviderImplTest, GivenName) {
   Profile* profile = CreateProfile(kFakeProfileUserName);
   NearbyShareProfileInfoProviderImpl profile_info_provider(profile);
 
-  // If no user, return base::nullopt.
+  // If no user, return absl::nullopt.
   EXPECT_FALSE(profile_info_provider.GetGivenName());
 
-  // If given name is empty, return base::nullopt.
+  // If given name is empty, return absl::nullopt.
   AddUser();
-  SetUserGivenName(std::string());
+  SetUserGivenName(std::u16string());
   EXPECT_FALSE(profile_info_provider.GetGivenName());
 
   SetUserGivenName(kFakeGivenName);
-  EXPECT_EQ(base::UTF8ToUTF16(kFakeGivenName),
-            profile_info_provider.GetGivenName());
+  EXPECT_EQ(kFakeGivenName, profile_info_provider.GetGivenName());
 }
 
 TEST_F(NearbyShareProfileInfoProviderImplTest, ProfileUserName) {
   {
-    // If profile user name is empty, return base::nullopt.
+    // If profile user name is empty, return absl::nullopt.
     Profile* profile = CreateProfile(std::string());
     NearbyShareProfileInfoProviderImpl profile_info_provider(profile);
     EXPECT_FALSE(profile_info_provider.GetProfileUserName());

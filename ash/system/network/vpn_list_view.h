@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "ash/system/network/network_state_list_detailed_view.h"
 #include "ash/system/network/vpn_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 
@@ -21,7 +20,6 @@ class View;
 }
 
 namespace ash {
-namespace tray {
 
 // A list of VPN providers and networks that shows VPN providers and networks in
 // a hierarchical layout, allowing the user to see at a glance which provider a
@@ -42,11 +40,11 @@ class VPNListView : public NetworkStateListDetailedView,
   using VpnProviderPtr = chromeos::network_config::mojom::VpnProviderPtr;
 
   VPNListView(DetailedViewDelegate* delegate, LoginStatus login);
-  ~VPNListView() override;
 
-  // Make following functions publicly accessible for VPNListNetworkEntry.
-  using NetworkStateListDetailedView::SetupConnectedScrollListItem;
-  using NetworkStateListDetailedView::SetupConnectingScrollListItem;
+  VPNListView(const VPNListView&) = delete;
+  VPNListView& operator=(const VPNListView&) = delete;
+
+  ~VPNListView() override;
 
   // NetworkStateListDetailedView:
   void UpdateNetworkList() override;
@@ -100,11 +98,8 @@ class VPNListView : public NetworkStateListDetailedView,
   bool list_empty_ = true;
 
   base::WeakPtrFactory<VPNListView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VPNListView);
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_VPN_LIST_VIEW_H_

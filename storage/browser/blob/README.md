@@ -97,7 +97,7 @@ system partition.
 
 **Minimum Disk Availability**
 
-We limit our disk limit to accomidate a minimum disk availability. The equation
+We limit our disk limit to accommodate a minimum disk availability. The equation
 we use is:
 
 `min_disk_availability = in_memory_limit * 2`

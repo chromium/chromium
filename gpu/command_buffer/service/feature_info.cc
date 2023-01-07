@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,20 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <set>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
-#include "gpu/command_buffer/service/texture_definition.h"
 #include "gpu/config/gpu_switches.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence.h"
@@ -27,7 +27,7 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_version_info.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "ui/gl/gl_fence_egl.h"
 #else
 #include "base/mac/mac_util.h"
@@ -188,27 +188,24 @@ FeatureInfo::FeatureInfo(
   InitializeBasicState(base::CommandLine::InitializedForCurrentProcess()
                            ? base::CommandLine::ForCurrentProcess()
                            : nullptr);
-  feature_flags_.chromium_raster_transport =
-      gpu_feature_info.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
-      gpu::kGpuFeatureStatusEnabled;
   feature_flags_.android_surface_control =
       gpu_feature_info
           .status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] ==
       gpu::kGpuFeatureStatusEnabled;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CAST_ANDROID)
   feature_flags_.chromium_image_ycbcr_420v = base::Contains(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::YUV_420_BIPLANAR);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   feature_flags_.chromium_image_ycbcr_420v = true;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   feature_flags_.chromium_image_ycbcr_p010 = base::Contains(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::P010);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   feature_flags_.chromium_image_ycbcr_p010 = base::mac::IsAtLeastOS11();
 #endif
 }
@@ -224,7 +221,8 @@ void FeatureInfo::InitializeBasicState(const base::CommandLine* command_line) {
   const auto useANGLE = command_line->GetSwitchValueASCII(switches::kUseANGLE);
 
   feature_flags_.is_swiftshader_for_webgl =
-      (useGL == gl::kGLImplementationSwiftShaderForWebGLName);
+      (useGL == gl::kGLImplementationANGLEName) &&
+      (useANGLE == gl::kANGLEImplementationSwiftShaderForWebGLName);
 
   // The shader translator is needed to translate from WebGL-conformant GLES SL
   // to normal GLES SL, enforce WebGL conformance, translate from GLES SL 1.0 to
@@ -274,6 +272,11 @@ void FeatureInfo::InitializeForTesting(ContextType context_type) {
 }
 
 bool IsGL_REDSupportedOnFBOs() {
+#if BUILDFLAG(IS_MAC)
+  // The glTexImage2D call below can hang on Mac so skip this since it's only
+  // really needed to workaround a Mesa issue. See https://crbug.com/1158744.
+  return true;
+#else
   DCHECK(glGetError() == GL_NO_ERROR);
   // Skia uses GL_RED with frame buffers, unfortunately, Mesa claims to support
   // GL_EXT_texture_rg, but it doesn't support it on frame buffers.  To fix
@@ -305,12 +308,12 @@ bool IsGL_REDSupportedOnFBOs() {
   DCHECK(glGetError() == GL_NO_ERROR);
 
   return result;
+#endif  // BUILDFLAG(IS_MAC)
 }
 
-void FeatureInfo::EnableCHROMIUMTextureStorageImage() {
-  if (!feature_flags_.chromium_texture_storage_image) {
-    feature_flags_.chromium_texture_storage_image = true;
-    AddExtensionString("GL_CHROMIUM_texture_storage_image");
+void FeatureInfo::EnableTextureStorageImage() {
+  if (!feature_flags_.texture_storage_image) {
+    feature_flags_.texture_storage_image = true;
   }
 }
 
@@ -475,8 +478,8 @@ void FeatureInfo::InitializeFeatures() {
   const char* renderer_str =
       reinterpret_cast<const char*>(glGetString(GL_RENDERER));
 
-  gl_version_info_.reset(
-      new gl::GLVersionInfo(version_str, renderer_str, extensions));
+  gl_version_info_ = std::make_unique<gl::GLVersionInfo>(
+      version_str, renderer_str, extensions);
 
   bool enable_es3 = IsWebGL2OrES3OrHigherContext();
 
@@ -495,7 +498,6 @@ void FeatureInfo::InitializeFeatures() {
 
   AddExtensionString("GL_CHROMIUM_async_pixel_transfers");
   AddExtensionString("GL_CHROMIUM_bind_uniform_location");
-  AddExtensionString("GL_CHROMIUM_color_space_metadata");
   AddExtensionString("GL_CHROMIUM_command_buffer_query");
   AddExtensionString("GL_CHROMIUM_command_buffer_latency_query");
   AddExtensionString("GL_CHROMIUM_copy_texture");
@@ -986,6 +988,21 @@ void FeatureInfo::InitializeFeatures() {
     feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRX_8888);
   }
 
+#if BUILDFLAG(IS_MAC)
+  // TODO(sugoi): Remove this once crbug.com/1276529 is fixed.
+  // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
+  // this allows WebGL-rendered canvases to be composited by the OS rather
+  // than Chrome. Currently, this causes an issue on MacOS with SwANGLE when
+  // alpha is false, so disable that case for now so that we go through
+  // emulation.
+  if (gl_version_info_->is_angle_swiftshader) {
+    feature_flags_.gpu_memory_buffer_formats.Remove(
+        gfx::BufferFormat::RGBX_8888);
+    feature_flags_.gpu_memory_buffer_formats.Remove(
+        gfx::BufferFormat::BGRX_8888);
+  }
+#endif
+
   // On desktop, all devices support BGRA render buffers (note that on desktop
   // BGRA internal formats are converted to RGBA in the API implementation).
   // For ES, there is no extension that exposes BGRA renderbuffers, however
@@ -1228,10 +1245,11 @@ void FeatureInfo::InitializeFeatures() {
         gfx::BufferFormat::YUV_420_BIPLANAR);
   }
 
-#if defined(OS_MAC)
-  // Mac can create GLImages out of AR30 IOSurfaces only after High Sierra.
-  feature_flags_.chromium_image_ar30 = base::mac::IsAtLeastOS10_13();
-#elif !defined(OS_WIN)
+#if BUILDFLAG(IS_MAC)
+  // Mac can create GLImages out of AR30 IOSurfaces only after 10.13 which is
+  // required for Chromium.
+  feature_flags_.chromium_image_ar30 = true;
+#elif !BUILDFLAG(IS_WIN)
   // TODO(mcasas): connect in Windows, https://crbug.com/803451
   // XB30 support was introduced in GLES 3.0/ OpenGL 3.3, before that it was
   // signalled via a specific extension.
@@ -1533,6 +1551,7 @@ void FeatureInfo::InitializeFeatures() {
     // TODO(shrekshao): gpu_memory_buffer_formats is not used by WebGL
     // So didn't expose all buffer formats here.
     feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::R_16);
+    feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::RG_1616);
   }
 
   if (enable_es3 && gfx::HasExtension(extensions, "GL_EXT_window_rectangles")) {
@@ -1572,10 +1591,6 @@ void FeatureInfo::InitializeFeatures() {
     validators_.src_blend_factor.AddValue(GL_ONE_MINUS_SRC1_ALPHA_EXT);
     validators_.dst_blend_factor.AddValue(GL_ONE_MINUS_SRC1_ALPHA_EXT);
     validators_.g_l_state.AddValue(GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT);
-  }
-
-  if (workarounds_.avoid_egl_image_target_texture_reuse) {
-    TextureDefinition::AvoidEGLTargetTextureReuse();
   }
 
   if (gl_version_info_->IsLowerThanGL(4, 3)) {
@@ -1623,11 +1638,6 @@ void FeatureInfo::InitializeFeatures() {
     AddExtensionString("GL_EXT_debug_marker");
   }
 
-  // UnpremultiplyAndDitherCopyCHROMIUM is only implemented on the full decoder.
-  feature_flags_.unpremultiply_and_dither_copy = !is_passthrough_cmd_decoder_;
-  if (feature_flags_.unpremultiply_and_dither_copy)
-    AddExtensionString("GL_CHROMIUM_unpremultiply_and_dither_copy");
-
   // On D3D, there is only one ref, mask, and writemask setting which applies
   // to both FRONT and BACK faces. This restriction is always applied to WebGL.
   // https://crbug.com/806557
@@ -1671,7 +1681,7 @@ void FeatureInfo::InitializeFeatures() {
 
   EnableWEBGLMultiDrawIfPossible(extensions);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (is_passthrough_cmd_decoder_ &&
       gfx::HasExtension(extensions, "GL_ANGLE_base_vertex_base_instance")) {
 #else
@@ -1714,6 +1724,12 @@ void FeatureInfo::InitializeFeatures() {
                         "GL_AMD_framebuffer_multisample_advanced")) {
     feature_flags_.amd_framebuffer_multisample_advanced = true;
     AddExtensionString("GL_AMD_framebuffer_multisample_advanced");
+  }
+
+  if (gfx::HasExtension(extensions, "GL_ANGLE_rgbx_internal_format")) {
+    feature_flags_.angle_rgbx_internal_format = true;
+    AddExtensionString("GL_ANGLE_rgbx_internal_format");
+    validators_.texture_internal_format_storage.AddValue(GL_RGBX8_ANGLE);
   }
 }
 
@@ -1903,8 +1919,8 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
             "GPU.RenderableFormat.RG32F.FLOAT",
             "GPU.RenderableFormat.R11F_G11F_B10F.FLOAT",
         };
-        DCHECK_EQ(base::size(kInternalFormats), base::size(kFormats));
-        for (size_t i = 0; i < base::size(kFormats); ++i) {
+        DCHECK_EQ(std::size(kInternalFormats), std::size(kFormats));
+        for (size_t i = 0; i < std::size(kFormats); ++i) {
           glTexImage2D(GL_TEXTURE_2D, 0, kInternalFormats[i], width, width, 0,
                        kFormats[i], GL_FLOAT, nullptr);
           bool supported = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER) ==

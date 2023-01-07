@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,31 +8,99 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 
 namespace blink {
 
-void ScopedPaintState::AdjustForPaintOffsetTranslation(
+ScopedPaintState::ScopedPaintState(
     const LayoutObject& object,
-    const TransformPaintPropertyNode& paint_offset_translation) {
-  if (input_paint_info_.context.InDrawingRecorder()) {
-    // If we are recording drawings, we should issue the translation as a raw
-    // paint operation instead of paint chunk properties. One case is that we
-    // are painting table row background behind a cell having paint offset
-    // translation.
-    input_paint_info_.context.Save();
-    FloatSize translation = paint_offset_translation.Translation2D();
-    input_paint_info_.context.Translate(translation.Width(),
-                                        translation.Height());
-    paint_offset_translation_as_drawing_ = true;
-  } else {
-    chunk_properties_.emplace(
-        input_paint_info_.context.GetPaintController(),
-        paint_offset_translation, object,
-        DisplayItem::PaintPhaseToDrawingType(input_paint_info_.phase));
+    const PaintInfo& paint_info,
+    const FragmentData* fragment_data,
+    bool painting_legacy_table_part_in_ancestor_layer)
+    : fragment_to_paint_(fragment_data), input_paint_info_(paint_info) {
+  if (!fragment_to_paint_) {
+    // The object has nothing to paint in the current fragment.
+    // TODO(wangxianzhu): Use DCHECK(fragment_to_paint_) in PaintOffset()
+    // when all painters check FragmentToPaint() before painting.
+    paint_offset_ =
+        PhysicalOffset(LayoutUnit::NearlyMax(), LayoutUnit::NearlyMax());
+    return;
   }
 
-  adjusted_paint_info_.emplace(input_paint_info_);
-  adjusted_paint_info_->TransformCullRect(paint_offset_translation);
+  paint_offset_ = fragment_to_paint_->PaintOffset();
+  if (painting_legacy_table_part_in_ancestor_layer) {
+    DCHECK(object.IsTableCellLegacy() || object.IsLegacyTableRow() ||
+           object.IsLegacyTableSection());
+  } else if (paint_info.phase == PaintPhase::kOverlayOverflowControls ||
+             (object.HasLayer() &&
+              To<LayoutBoxModelObject>(object).HasSelfPaintingLayer())) {
+    // PaintLayerPainter already adjusted for PaintOffsetTranslation for
+    // PaintContainer.
+    return;
+  }
+
+  AdjustForPaintProperties(object);
+}
+
+void ScopedPaintState::AdjustForPaintProperties(const LayoutObject& object) {
+  // Paint properties of SVG children are handled in SVG code paths.
+  if (object.IsSVGChild())
+    return;
+
+  const auto* properties = fragment_to_paint_->PaintProperties();
+  if (!properties)
+    return;
+
+  auto new_chunk_properties = input_paint_info_.context.GetPaintController()
+                                  .CurrentPaintChunkProperties();
+  bool needs_new_chunk_properties = false;
+
+  if (const auto* paint_offset_translation =
+          properties->PaintOffsetTranslation()) {
+    adjusted_paint_info_.emplace(input_paint_info_);
+    adjusted_paint_info_->TransformCullRect(*paint_offset_translation);
+    new_chunk_properties.SetTransform(*paint_offset_translation);
+    needs_new_chunk_properties = true;
+
+    if (input_paint_info_.context.InDrawingRecorder()) {
+      // If we are recording drawings, we should issue the translation as a raw
+      // paint operation instead of paint chunk properties. One case is that we
+      // are painting table row background behind a cell having paint offset
+      // translation.
+      input_paint_info_.context.Save();
+      gfx::Vector2dF translation = paint_offset_translation->Translation2D();
+      input_paint_info_.context.Translate(translation.x(), translation.y());
+      paint_offset_translation_as_drawing_ = true;
+    }
+  }
+
+  if (input_paint_info_.context.InDrawingRecorder())
+    return;
+
+  if (const auto* transform = properties->Transform()) {
+    // This transform node stores some transform-related information for a
+    // non-stacked object without real transform (otherwise PaintLayerPainter
+    // should have handled the transform node for painting).
+    DCHECK(transform->IsIdentity());
+    new_chunk_properties.SetTransform(*transform);
+    needs_new_chunk_properties = true;
+  }
+  DCHECK(!properties->Translate());
+  DCHECK(!properties->Rotate());
+  DCHECK(!properties->Scale());
+  DCHECK(!properties->Offset());
+  if (const auto* effect = properties->Effect()) {
+    // Similar to the above.
+    DCHECK(!effect->HasRealEffects());
+    new_chunk_properties.SetEffect(*effect);
+    needs_new_chunk_properties = true;
+  }
+
+  if (needs_new_chunk_properties) {
+    chunk_properties_.emplace(
+        input_paint_info_.context.GetPaintController(), new_chunk_properties,
+        object, DisplayItem::PaintPhaseToDrawingType(input_paint_info_.phase));
+  }
 }
 
 void ScopedPaintState::FinishPaintOffsetTranslationAsDrawing() {
@@ -55,47 +123,56 @@ void ScopedBoxContentsPaintState::AdjustForBoxContents(const LayoutBox& box) {
                             fragment_to_paint_->ContentsProperties(), box,
                             input_paint_info_.DisplayItemTypeForClipping());
 
-  // Then adjust paint offset and cull rect for scroll translation.
-  const auto* properties = fragment_to_paint_->PaintProperties();
-  if (!properties)
-    return;
-  const auto* scroll_translation = properties->ScrollTranslation();
-  if (!scroll_translation)
-    return;
-
-  // See comments for ScrollTranslation in object_paint_properties.h
-  // for the reason of adding ScrollOrigin(). The paint offset will
-  // be used only for the scrolling contents that are not painted through
-  // descendant objects' Paint() method, e.g. inline boxes.
-  paint_offset_ += PhysicalOffset(box.ScrollOrigin());
-
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    adjusted_paint_info_.emplace(input_paint_info_);
-    adjusted_paint_info_->SetCullRect(
-        fragment_to_paint_->GetContentsCullRect());
-    if (box.HasLayer() && box.Layer()->PreviousPaintResult() == kFullyPainted) {
-      PhysicalRect contents_visual_rect =
-          box.PhysicalContentsVisualOverflowRect();
-      contents_visual_rect.Move(fragment_to_paint_->PaintOffset());
-      if (!PhysicalRect(fragment_to_paint_->GetContentsCullRect().Rect())
-               .Contains(contents_visual_rect)) {
-        box.Layer()->SetPreviousPaintResult(kMayBeClippedByCullRect);
-      }
-    }
-    return;
+  if (const auto* properties = fragment_to_paint_->PaintProperties()) {
+    // See comments for ScrollTranslation in object_paint_properties.h
+    // for the reason of adding ScrollOrigin(). The paint offset will
+    // be used only for the scrolling contents that are not painted through
+    // descendant objects' Paint() method, e.g. inline boxes.
+    if (properties->ScrollTranslation())
+      paint_offset_ += PhysicalOffset(box.ScrollOrigin());
   }
 
-  // If a LayoutView is using infinite cull rect, we are painting with viewport
-  // clip disabled, so don't cull the scrolling contents. This is just for
-  // completeness because we always paint the whole scrolling background even
-  // with a smaller cull rect, and the scrolling document contents are under the
-  // layer of document element which will use infinite cull rect calculated in
-  // PaintLayerPainter::AdjustForPaintProperties().
-  if (IsA<LayoutView>(box) && input_paint_info_.GetCullRect().IsInfinite())
+  // We calculated cull rects for PaintLayers only.
+  if (!box.HasLayer())
     return;
-
   adjusted_paint_info_.emplace(input_paint_info_);
-  adjusted_paint_info_->TransformCullRect(*scroll_translation);
+  adjusted_paint_info_->SetCullRect(fragment_to_paint_->GetContentsCullRect());
+  if (box.Layer()->PreviousPaintResult() == kFullyPainted) {
+    PhysicalRect contents_visual_rect =
+        PaintLayerPainter::ContentsVisualRect(*fragment_to_paint_, box);
+    if (!PhysicalRect(fragment_to_paint_->GetContentsCullRect().Rect())
+             .Contains(contents_visual_rect)) {
+      box.Layer()->SetPreviousPaintResult(kMayBeClippedByCullRect);
+    }
+  }
+
+  if (input_paint_info_.phase == PaintPhase::kForeground) {
+    // We treat horizontal-scrollable scrollers like replaced objects.
+    if (auto* mf_checker = MobileFriendlinessChecker::From(box.GetDocument())) {
+      if (!box.IsLayoutView()) {
+        if (auto* scrollable_area = box.GetScrollableArea()) {
+          if (scrollable_area->MaximumScrollOffset().x() != 0) {
+            PhysicalRect content_rect = box.OverflowClipRect(paint_offset_);
+            content_rect.Intersect(
+                PhysicalRect(input_paint_info_.GetCullRect().Rect()));
+            mf_checker->NotifyPaintReplaced(
+                content_rect, input_paint_info_.context.GetPaintController()
+                                  .CurrentPaintChunkProperties()
+                                  .Transform());
+            mf_ignore_scope_.emplace(*mf_checker);
+          }
+        }
+        // Don't check mobile friendliness for beyond viewport in position:fixed
+        // boxes because they don't scroll in the viewport.
+        if (const auto* properties = fragment_to_paint_->PaintProperties()) {
+          if (const auto* translation = properties->PaintOffsetTranslation()) {
+            if (translation->ScrollTranslationForFixed())
+              mf_ignore_scope_.emplace(*mf_checker);
+          }
+        }
+      }
+    }
+  }
 }
 
 }  // namespace blink

@@ -1,17 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 
-#include "third_party/blink/renderer/modules/xr/xr_test_utils.h"
-#include "third_party/blink/renderer/modules/xr/xr_utils.h"
+#include <algorithm>
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/modules/xr/xr_test_utils.h"
+#include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
@@ -74,8 +75,9 @@ TEST(XRRigidTransformTest, Compose) {
 }
 
 TEST(XRRigidTransformTest, Decompose) {
-  TransformationMatrix matrix(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0,
-                              0.0, 0.0, 1.0, 2.0, 3.0, 1.0);
+  auto matrix =
+      TransformationMatrix::ColMajor(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+                                     0.0, -1.0, 0.0, 0.0, 1.0, 2.0, 3.0, 1.0);
   XRRigidTransform transform(matrix);
   const DOMPointReadOnly expected_position(1.0, 2.0, 3.0, 1.0);
   const DOMPointReadOnly expected_orientation(0.7071068, 0.0, 0.0, 0.7071068);

@@ -1,13 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_CLIENT_CURSOR_SHAPE_STUB_PROXY_H_
 #define REMOTING_CLIENT_CURSOR_SHAPE_STUB_PROXY_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/protocol/cursor_shape_stub.h"
 
 namespace remoting {
@@ -20,6 +19,10 @@ class CursorShapeStubProxy : public protocol::CursorShapeStub {
   CursorShapeStubProxy(
       base::WeakPtr<protocol::CursorShapeStub> stub,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  CursorShapeStubProxy(const CursorShapeStubProxy&) = delete;
+  CursorShapeStubProxy& operator=(const CursorShapeStubProxy&) = delete;
+
   ~CursorShapeStubProxy() override;
 
   // CursorShapeStub override.
@@ -28,8 +31,6 @@ class CursorShapeStubProxy : public protocol::CursorShapeStub {
  private:
   base::WeakPtr<protocol::CursorShapeStub> stub_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CursorShapeStubProxy);
 };
 
 }  // namespace remoting

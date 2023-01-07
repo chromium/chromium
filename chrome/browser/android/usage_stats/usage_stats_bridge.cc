@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -319,7 +319,7 @@ void UsageStatsBridge::OnURLsDeleted(
 
   history::DeletionTimeRange time_range = deletion_info.time_range();
   if (time_range.IsValid()) {
-    const base::Optional<std::set<GURL>>& urls = deletion_info.restrict_urls();
+    const absl::optional<std::set<GURL>>& urls = deletion_info.restrict_urls();
     if (urls.has_value() && urls.value().size() > 0) {
       std::vector<std::string> domains;
       domains.reserve(urls.value().size());

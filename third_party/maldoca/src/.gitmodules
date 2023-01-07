@@ -1,0 +1,37 @@
+
+[submodule "third_party/protobuf"]
+	path = third_party/protobuf
+	url = https://github.com/protocolbuffers/protobuf/
+[submodule "third_party/abseil-cpp"]
+	path = third_party/abseil-cpp
+	url = https://github.com/abseil/abseil-cpp
+[submodule "third_party/rules_cc"]
+	path = third_party/rules_cc
+	url = https://github.com/bazelbuild/rules_cc/
+[submodule "third_party/rules_proto"]
+	path = third_party/rules_proto
+	url = https://github.com/bazelbuild/rules_proto
+[submodule "third_party/googletest"]
+	path = third_party/googletest
+	url = https://github.com/google/googletest/
+[submodule "third_party/re2"]
+	path = third_party/re2
+	url = https://github.com/google/re2/
+[submodule "third_party/boringssl"]
+	path = third_party/boringssl
+	url = https://github.com/google/boringssl
+[submodule "third_party/zlib"]
+	path = third_party/zlib
+	url = https://github.com/madler/zlib
+[submodule "third_party/grpc"]
+	path = third_party/grpc
+	url = https://github.com/grpc/grpc
+[submodule "third_party/benchmark"]
+	path = third_party/benchmark
+	url = https://github.com/google/benchmark/
+[submodule "third_party/mini_chromium"]
+	path = third_party/mini_chromium
+	url = https://github.com/chromium/mini_chromium
+[submodule "third_party/libxml2"]
+	path = third_party/libxml2
+	url = https://github.com/GNOME/libxml2

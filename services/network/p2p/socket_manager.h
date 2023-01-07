@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,23 +15,24 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
-#include "net/base/network_isolation_key.h"
 #include "services/network/p2p/socket.h"
 #include "services/network/p2p/socket_throttler.h"
 #include "services/network/public/cpp/p2p_socket_type.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "services/network/public/mojom/p2p_trusted.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class URLRequestContext;
@@ -59,7 +60,7 @@ class P2PSocketManager
   // P2PSocketManager. The P2PSocketManager must be destroyed before the
   // |url_request_context|.
   P2PSocketManager(
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<mojom::P2PTrustedSocketManagerClient>
           trusted_socket_manager_client,
       mojo::PendingReceiver<mojom::P2PTrustedSocketManager>
@@ -67,11 +68,18 @@ class P2PSocketManager
       mojo::PendingReceiver<mojom::P2PSocketManager> socket_manager_receiver,
       DeleteCallback delete_callback,
       net::URLRequestContext* url_request_context);
+
+  P2PSocketManager(const P2PSocketManager&) = delete;
+  P2PSocketManager& operator=(const P2PSocketManager&) = delete;
+
   ~P2PSocketManager() override;
 
   // net::NetworkChangeNotifier::NetworkChangeObserver overrides.
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
+
+  void PauseNetworkChangeNotifications() override;
+  void ResumeNetworkChangeNotifications() override;
 
  private:
   class DnsRequest;
@@ -96,6 +104,11 @@ class P2PSocketManager
       const std::string& host_name,
       bool enable_mdns,
       mojom::P2PSocketManager::GetHostAddressCallback callback) override;
+  void GetHostAddressWithFamily(
+      const std::string& host_name,
+      int address_family,
+      bool enable_mdns,
+      mojom::P2PSocketManager::GetHostAddressCallback callback) override;
   void CreateSocket(P2PSocketType type,
                     const net::IPEndPoint& local_address,
                     const P2PPortRange& port_range,
@@ -114,6 +127,12 @@ class P2PSocketManager
   // retrieves the default local address.
   static net::IPAddress GetDefaultLocalAddress(int family);
 
+  void DoGetHostAddress(
+      const std::string& host_name,
+      absl::optional<int> address_family,
+      bool enable_mdns,
+      mojom::P2PSocketManager::GetHostAddressCallback callback);
+
   void OnAddressResolved(
       DnsRequest* request,
       mojom::P2PSocketManager::GetHostAddressCallback callback,
@@ -122,8 +141,8 @@ class P2PSocketManager
   void OnConnectionError();
 
   DeleteCallback delete_callback_;
-  net::URLRequestContext* url_request_context_;
-  const net::NetworkIsolationKey network_isolation_key_;
+  raw_ptr<net::URLRequestContext> url_request_context_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
 
   std::unique_ptr<ProxyResolvingClientSocketFactory>
       proxy_resolving_socket_factory_;
@@ -136,6 +155,9 @@ class P2PSocketManager
 
   bool dump_incoming_rtp_packet_ = false;
   bool dump_outgoing_rtp_packet_ = false;
+
+  bool notifications_paused_ = false;
+  bool pending_network_change_notification_ = false;
 
   // Used to call DoGetNetworkList, which may briefly block since getting the
   // default local address involves creating a dummy socket.
@@ -151,8 +173,6 @@ class P2PSocketManager
       network_notification_client_;
 
   base::WeakPtrFactory<P2PSocketManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocketManager);
 };
 
 }  // namespace network

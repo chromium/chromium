@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,10 +21,10 @@
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/mock_signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 
 using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
@@ -92,10 +92,10 @@ TEST_F(XmppRegisterSupportHostRequestTest, Timeout) {
   request->OnSignalStrategyStateChange(SignalStrategy::CONNECTED);
 
   // Generate response and verify that callback is called.
-  EXPECT_CALL(callback_, Run("", base::TimeDelta::FromSeconds(0),
-                             ErrorCode::SIGNALING_TIMEOUT));
+  EXPECT_CALL(callback_,
+              Run("", base::Seconds(0), ErrorCode::SIGNALING_TIMEOUT));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+  task_environment_.FastForwardBy(base::Seconds(15));
 }
 
 TEST_F(XmppRegisterSupportHostRequestTest, Send) {
@@ -157,10 +157,9 @@ TEST_F(XmppRegisterSupportHostRequestTest, Send) {
   EXPECT_EQ(expected_signature, signature->BodyText());
 
   // Generate response and verify that callback is called.
-  EXPECT_CALL(callback_, Run(kSupportId, base::TimeDelta::FromSeconds(300),
-                             ErrorCode::OK));
+  EXPECT_CALL(callback_, Run(kSupportId, base::Seconds(300), ErrorCode::OK));
 
-  std::unique_ptr<XmlElement> response(new XmlElement(jingle_xmpp::QN_IQ));
+  std::unique_ptr<XmlElement> response(new XmlElement(kQNameIq));
   response->AddAttr(QName(std::string(), "from"), kTestBotJid);
   response->AddAttr(QName(std::string(), "type"), "result");
   response->AddAttr(QName(std::string(), "id"), kStanzaId);

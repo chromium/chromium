@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/frame/frame_visual_properties_mojom_traits.h"
 
 #include "services/viz/public/mojom/compositing/local_surface_id.mojom.h"
-#include "third_party/blink/public/mojom/widget/screen_info.mojom.h"
+#include "ui/display/mojom/screen_infos.mojom.h"
 #include "ui/gfx/mojom/display_color_spaces.mojom.h"
 
 namespace mojo {
@@ -14,12 +14,12 @@ bool StructTraits<blink::mojom::FrameVisualPropertiesDataView,
                   blink::FrameVisualProperties>::
     Read(blink::mojom::FrameVisualPropertiesDataView data,
          blink::FrameVisualProperties* out) {
-  if (!data.ReadScreenInfo(&out->screen_info) ||
+  if (!data.ReadScreenInfos(&out->screen_infos) ||
       !data.ReadMinSizeForAutoResize(&out->min_size_for_auto_resize) ||
       !data.ReadMaxSizeForAutoResize(&out->max_size_for_auto_resize) ||
       !data.ReadVisibleViewportSize(&out->visible_viewport_size) ||
       !data.ReadCompositorViewport(&out->compositor_viewport) ||
-      !data.ReadScreenSpaceRect(&out->screen_space_rect) ||
+      !data.ReadRectInLocalRoot(&out->rect_in_local_root) ||
       !data.ReadLocalFrameSize(&out->local_frame_size) ||
       !data.ReadRootWidgetWindowSegments(&out->root_widget_window_segments) ||
       !data.ReadLocalSurfaceId(&out->local_surface_id) ||

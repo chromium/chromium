@@ -33,6 +33,8 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 
 namespace blink {
 
@@ -41,15 +43,23 @@ WebString CanonicalizeSelector(WebString web_selector,
   // NOTE: We will always parse the selector in an insecure context mode, if we
   // have selectors which are only parsed in secure contexts, this will need to
   // accept a SecureContextMode as an argument.
-  CSSSelectorList selector_list = CSSParser::ParseSelector(
+  Arena arena;
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
       StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
-      web_selector);
+      web_selector, arena);
+  if (selector_vector.empty()) {
+    // Parse error.
+    return {};
+  }
+
+  CSSSelectorList selector_list =
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   if (restriction == kWebSelectorTypeCompound) {
-    for (const CSSSelector* selector = selector_list.FirstForCSSOM(); selector;
+    for (const CSSSelector* selector = selector_list.First(); selector;
          selector = selector_list.Next(*selector)) {
       if (!selector->IsCompound())
-        return WebString();
+        return {};
     }
   }
   return selector_list.SelectorsText();

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,8 @@ GtkPrimarySelectionDevice::GtkPrimarySelectionDevice(
     WaylandConnection* connection,
     gtk_primary_selection_device* data_device)
     : WaylandDataDeviceBase(connection), data_device_(data_device) {
-  static const struct gtk_primary_selection_device_listener kListener = {
-      GtkPrimarySelectionDevice::OnDataOffer,
-      GtkPrimarySelectionDevice::OnSelection};
+  static constexpr gtk_primary_selection_device_listener kListener = {
+      &OnDataOffer, &OnSelection};
   gtk_primary_selection_device_add_listener(data_device_.get(), &kListener,
                                             this);
 }
@@ -27,11 +26,12 @@ GtkPrimarySelectionDevice::GtkPrimarySelectionDevice(
 GtkPrimarySelectionDevice::~GtkPrimarySelectionDevice() = default;
 
 void GtkPrimarySelectionDevice::SetSelectionSource(
-    GtkPrimarySelectionSource* source) {
-  DCHECK(source);
-  gtk_primary_selection_device_set_selection(
-      data_device_.get(), source->data_source(), connection()->serial());
-  connection()->ScheduleFlush();
+    GtkPrimarySelectionSource* source,
+    uint32_t serial) {
+  auto* data_source = source ? source->data_source() : nullptr;
+  gtk_primary_selection_device_set_selection(data_device_.get(), data_source,
+                                             serial);
+  connection()->Flush();
 }
 
 // static
@@ -61,8 +61,7 @@ void GtkPrimarySelectionDevice::OnSelection(
     self->data_offer()->EnsureTextMimeTypeIfNeeded();
   }
 
-  if (self->selection_delegate())
-    self->selection_delegate()->OnSelectionOffer(self->data_offer());
+  self->NotifySelectionOffer(self->data_offer());
 }
 
 }  // namespace ui

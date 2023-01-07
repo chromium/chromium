@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,23 +6,24 @@
 
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#import <MaterialComponents/MaterialTypography.h>
+#import <memory>
+#import <set>
+#import <string>
 
-#include "base/bind.h"
-#include "base/hash/md5.h"
-#include "base/stl_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "components/favicon/core/fallback_url_util.h"
-#include "components/favicon/core/large_icon_service.h"
-#include "components/favicon_base/fallback_icon_style.h"
-#include "components/favicon_base/favicon_types.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/spotlight/spotlight_provider.h"
+#import "base/bind.h"
+#import "base/containers/contains.h"
+#import "base/hash/md5.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/cancelable_task_tracker.h"
+#import "build/branding_buildflags.h"
+#import "components/favicon/core/fallback_url_util.h"
+#import "components/favicon/core/large_icon_service.h"
+#import "components/favicon_base/fallback_icon_style.h"
+#import "components/favicon_base/favicon_types.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
-#include "skia/ext/skia_utils_ios.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "skia/ext/skia_utils_ios.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,8 +42,8 @@ const CGFloat kFallbackIconSize = 180;
 // Radius of the rounded corner of the fallback icon.
 const CGFloat kFallbackRoundedCorner = 8;
 
-// Create an image with a rounded square with color |backgroundColor| and
-// |string| centered in color |textColor|.
+// Create an image with a rounded square with color `backgroundColor` and
+// `string` centered in color `textColor`.
 UIImage* GetFallbackImageWithStringAndColor(NSString* string,
                                             UIColor* backgroundColor,
                                             UIColor* textColor) {
@@ -55,8 +56,8 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
       [UIBezierPath bezierPathWithRoundedRect:rect
                                  cornerRadius:kFallbackRoundedCorner];
   [rounded fill];
-  UIFont* font = [MDCTypography headlineFont];
-  font = [font fontWithSize:(kFallbackIconSize / 2)];
+  UIFont* font = [UIFont systemFontOfSize:(kFallbackIconSize / 2)
+                                   weight:UIFontWeightRegular];
   CGRect textRect = CGRectMake(0, (kFallbackIconSize - [font lineHeight]) / 2,
                                kFallbackIconSize, [font lineHeight]);
   NSMutableParagraphStyle* paragraphStyle =
@@ -94,7 +95,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 }
 
 // Compute a hash consisting of the first 8 bytes of the MD5 hash of a string
-// containing |URL| and |title|.
+// containing `URL` and `title`.
 - (int64_t)hashForURL:(const GURL&)URL title:(NSString*)title;
 
 // Returns an array of Keywords for Spotlight search.
@@ -176,7 +177,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   DCHECK(defaultTitle);
   NSURL* nsURL = net::NSURLWithGURL(indexedURL);
   std::string description = indexedURL.SchemeIsCryptographic()
-                                ? indexedURL.GetOrigin().spec()
+                                ? indexedURL.DeprecatedGetOriginAsURL().spec()
                                 : indexedURL.spec();
 
   CSSearchableItemAttributeSet* attributeSet =
@@ -231,7 +232,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 #pragma mark private methods
 
 - (NSArray*)keywordsForSpotlightItems {
-  NSMutableArray* keywordsArray = [NSMutableArray arrayWithArray:@[
+  return @[
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_ONE),
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_TWO),
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_THREE),
@@ -241,15 +242,14 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_SEVEN),
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_EIGHT),
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_NINE),
-    l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_TEN)
-  ]];
-  NSArray* additionalArray = ios::GetChromeBrowserProvider()
-                                 ->GetSpotlightProvider()
-                                 ->GetAdditionalKeywords();
-  if (additionalArray) {
-    [keywordsArray addObjectsFromArray:additionalArray];
-  }
-  return keywordsArray;
+    l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_TEN),
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    @"google",
+    @"chrome",
+#else
+    @"chromium",
+#endif
+  ];
 }
 
 - (void)largeIconResult:(const favicon_base::LargeIconResult&)largeIconResult

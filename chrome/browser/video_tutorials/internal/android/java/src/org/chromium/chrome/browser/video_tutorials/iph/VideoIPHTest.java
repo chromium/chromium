@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,15 +28,15 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.test.TestImageFetcher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.HashMap;
 
@@ -46,8 +46,8 @@ import java.util.HashMap;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class VideoIPHTest {
     @Rule
-    public BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private Activity mActivity;
     private VideoIPHCoordinator mCoordinator;
@@ -74,7 +74,7 @@ public class VideoIPHTest {
             TestImageFetcher imageFetcher = new TestImageFetcher(testImage);
             mCoordinator = new VideoIPHCoordinatorImpl(
                     viewStub, imageFetcher, mOnClickListener, mOnDismissListener);
-            ChromeFeatureList.setTestFeatures(new HashMap<>());
+            FeatureList.setTestFeatures(new HashMap<String, Boolean>());
         });
     }
 

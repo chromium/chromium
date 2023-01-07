@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.components.minidump_uploader;
@@ -9,9 +9,11 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.Context;
 import android.os.PersistableBundle;
+import android.os.SystemClock;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.BuildConfig;
 
 /**
  * Class that interacts with the Android JobScheduler to upload Minidumps at appropriate times.
@@ -58,9 +60,11 @@ public abstract class MinidumpUploadJobService extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
         // Ensure we only run one job at a time.
-        synchronized (mRunningLock) {
-            assert !mRunningJob;
-            mRunningJob = true;
+        if (BuildConfig.ENABLE_ASSERTS) {
+            synchronized (mRunningLock) {
+                assert !mRunningJob;
+                mRunningJob = true;
+            }
         }
         mMinidumpUploadJob = createMinidumpUploadJob(params.getExtras());
         mMinidumpUploadJob.uploadAllMinidumps(createJobFinishedCallback(params));
@@ -71,33 +75,39 @@ public abstract class MinidumpUploadJobService extends JobService {
     public boolean onStopJob(JobParameters params) {
         Log.i(TAG, "Canceling pending uploads due to change in networking status.");
         boolean reschedule = mMinidumpUploadJob.cancelUploads();
-        synchronized (mRunningLock) {
-            mRunningJob = false;
+        if (BuildConfig.ENABLE_ASSERTS) {
+            synchronized (mRunningLock) {
+                mRunningJob = false;
+            }
         }
         return reschedule;
-    }
-
-    @Override
-    public void onDestroy() {
-        mMinidumpUploadJob = null;
-        super.onDestroy();
     }
 
     private MinidumpUploadJob.UploadsFinishedCallback createJobFinishedCallback(
             final JobParameters params) {
         return new MinidumpUploadJob.UploadsFinishedCallback() {
+            private final long mTaskStartTimeMs = SystemClock.uptimeMillis();
+
             @Override
             public void uploadsFinished(boolean reschedule) {
                 if (reschedule) {
                     Log.i(TAG, "Some minidumps remain un-uploaded; rescheduling.");
                 }
-                synchronized (mRunningLock) {
-                    mRunningJob = false;
+                if (BuildConfig.ENABLE_ASSERTS) {
+                    synchronized (mRunningLock) {
+                        mRunningJob = false;
+                    }
                 }
                 MinidumpUploadJobService.this.jobFinished(params, reschedule);
+                recordMinidumpUploadingTime(SystemClock.uptimeMillis() - mTaskStartTimeMs);
             }
         };
     }
+
+    /**
+     * Records minidump uploading time.
+     */
+    protected void recordMinidumpUploadingTime(long taskDurationMs) {}
 
     /**
      * Create a MinidumpUploadJob instance that implements required logic for uploading minidumps

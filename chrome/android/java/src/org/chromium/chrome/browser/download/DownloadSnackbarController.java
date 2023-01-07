@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
     public void onAction(Object actionData) {
         if (!(actionData instanceof ActionDataInfo)) {
             DownloadManagerService.openDownloadsPage(
-                    ContextUtils.getApplicationContext(), DownloadOpenSource.SNACK_BAR);
+                    /*otrProfileID=*/null, DownloadOpenSource.SNACK_BAR);
             return;
         }
 
@@ -134,9 +134,9 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
     }
 
     private boolean isShowingDownloadInfoBar(OTRProfileID otrProfileID) {
-        DownloadInfoBarController infoBarController =
-                DownloadManagerService.getDownloadManagerService().getInfoBarController(
+        DownloadMessageUiController messageUiController =
+                DownloadManagerService.getDownloadManagerService().getMessageUiController(
                         otrProfileID);
-        return infoBarController == null ? false : infoBarController.isShowing();
+        return messageUiController == null ? false : messageUiController.isShowing();
     }
 }

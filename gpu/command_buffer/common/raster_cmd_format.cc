@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,9 @@
 
 // We explicitly do NOT include raster_cmd_format.h here because client side
 // and service side have different requirements.
-#include "gpu/command_buffer/common/cmd_buffer_common.h"
-
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "gpu/command_buffer/common/cmd_buffer_common.h"
 
 namespace gpu {
 namespace raster {
@@ -28,7 +26,7 @@ const char* GetCommandName(CommandId id) {
   };
 
   size_t index = static_cast<size_t>(id) - kFirstRasterCommand;
-  return (index < base::size(names)) ? names[index] : "*unknown-command*";
+  return (index < std::size(names)) ? names[index] : "*unknown-command*";
 }
 
 }  // namespace raster

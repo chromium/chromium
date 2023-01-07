@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,10 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace content {
 
@@ -51,7 +55,9 @@ class CONTENT_EXPORT FileSystemAccessPermissionGrant
     kUserDismissed = 6,
     kRequestAborted = 7,
     kGrantedByContentSetting = 8,
-    kMaxValue = kGrantedByContentSetting
+    kGrantedByPersistentPermission = 9,
+    kGrantedByAncestorPersistentPermission = 10,
+    kMaxValue = kGrantedByAncestorPersistentPermission
   };
 
   // Passed to |RequestPermission| to indicate if for this particular permission
@@ -62,7 +68,7 @@ class CONTENT_EXPORT FileSystemAccessPermissionGrant
   // should be called after the status of this grant has been updated with
   // the outcome of the request.
   virtual void RequestPermission(
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       UserActivationState user_activation_state,
       base::OnceCallback<void(PermissionRequestOutcome)> callback) = 0;
 

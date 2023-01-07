@@ -1,9 +1,8 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <string>
-#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -15,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -57,10 +55,7 @@ void ActionHandler::Handle(const base::FilePath& action,
       base::BindOnce(&ActionHandler::RunCommand, action),
       base::BindOnce(
           [](Callback callback, const Result& result) {
-            bool succeeded = false;
-            int error_code = 0;
-            int extra_code = 0;
-            std::tie(succeeded, error_code, extra_code) = result;
+            auto [succeeded, error_code, extra_code] = result;
             base::SequencedTaskRunnerHandle::Get()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), succeeded,
                                           error_code, extra_code));
@@ -76,7 +71,7 @@ ActionHandler::Result ActionHandler::RunCommand(
   options.start_hidden = true;
   base::Process process = base::LaunchProcess(command_line, options);
   int exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::TimeDelta::FromSeconds(600);
+  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
   const bool succeeded =
       process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);
   return Result{succeeded, exit_code, 0};

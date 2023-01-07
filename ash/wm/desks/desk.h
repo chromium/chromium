@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,11 @@
 #include "ash/ash_export.h"
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/guid.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -30,7 +31,7 @@ class DeskContainerObserver;
 // container per display (root window) per each desk.
 // Those containers are parent windows of the windows that belong to the
 // associated desk. When the desk is active, those containers are shown, when
-// the desk is in active, those containers are hidden.
+// the desk is inactive, those containers are hidden.
 class ASH_EXPORT Desk {
  public:
   class Observer : public base::CheckedObserver {
@@ -45,14 +46,23 @@ class ASH_EXPORT Desk {
     // removes its Observers before calling this.
     virtual void OnDeskDestroyed(const Desk* desk) = 0;
 
-    // Called  when the desk's name changes.
+    // Called when the desk's name changes.
     virtual void OnDeskNameChanged(const std::u16string& new_name) = 0;
   };
 
-  explicit Desk(int associated_container_id);
+  explicit Desk(int associated_container_id, bool desk_being_restored = false);
+
+  Desk(const Desk&) = delete;
+  Desk& operator=(const Desk&) = delete;
+
   ~Desk();
 
+  static void SetWeeklyActiveDesks(int weekly_active_desks);
+  static int GetWeeklyActiveDesks();
+
   int container_id() const { return container_id_; }
+
+  const base::GUID& uuid() const { return uuid_; }
 
   const std::vector<aura::Window*>& windows() const { return windows_; }
 
@@ -67,6 +77,9 @@ class ASH_EXPORT Desk {
   bool is_name_set_by_user() const { return is_name_set_by_user_; }
 
   bool is_desk_being_removed() const { return is_desk_being_removed_; }
+  void set_is_desk_being_removed(bool is_desk_being_removed) {
+    is_desk_being_removed_ = is_desk_being_removed;
+  }
 
   const base::Time& creation_time() const { return creation_time_; }
   void set_creation_time(base::Time creation_time) {
@@ -83,6 +96,11 @@ class ASH_EXPORT Desk {
     last_day_visited_ = last_day_visited;
   }
 
+  bool interacted_with_this_week() const { return interacted_with_this_week_; }
+  void set_interacted_with_this_week(bool interacted_with_this_week) {
+    interacted_with_this_week_ = interacted_with_this_week;
+  }
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -93,6 +111,8 @@ class ASH_EXPORT Desk {
   void RemoveWindowFromDesk(aura::Window* window);
 
   base::AutoReset<bool> GetScopedNotifyContentChangedDisabler();
+
+  bool ContainsAppWindows() const;
 
   // Sets the desk's name to |new_name| and updates the observers.
   // |set_by_user| should be true if this name was given to the desk by the user
@@ -117,21 +137,30 @@ class ASH_EXPORT Desk {
   // on this desk will be deactivated.
   void Deactivate(bool update_window_activation);
 
+  // Moves non-app overview windows (such as the Desks Bar, the Save Desk
+  // button, and the "No Windows" label) from this desk to `target_desk`. This
+  // allows us to keep the app windows in a closing desk until it is either
+  // restored or destroyed, and also to move these windows back to the desk if
+  // it is being restored in an active state.
+  void MoveNonAppOverviewWindowsToDesk(Desk* target_desk);
+
   // In preparation for removing this desk, moves all the windows on this desk
-  // to |target_desk| such that they become last in MRU order across all desks,
+  // to `target_desk` such that they become last in MRU order across all desks,
   // and they will be stacked at the bottom among the children of
-  // |target_desk|'s container.
+  // `target_desk`'s container.
   // Note that from a UX stand point, removing a desk is viewed as the user is
   // now done with this desk, and therefore its windows are demoted and
   // deprioritized.
   void MoveWindowsToDesk(Desk* target_desk);
 
   // Moves a single |window| from this desk to |target_desk|, possibly moving it
-  // to a different display, depending on |target_root|. |window| must
-  // belong to this desk.
+  // to a different display, depending on |target_root|. |window| must belong to
+  // this desk. If |unminimize| is true, the window is unminimized after it has
+  // been moved.
   void MoveWindowToDesk(aura::Window* window,
                         Desk* target_desk,
-                        aura::Window* target_root);
+                        aura::Window* target_root,
+                        bool unminimize);
 
   aura::Window* GetDeskContainerForRoot(aura::Window* root) const;
 
@@ -143,13 +172,9 @@ class ASH_EXPORT Desk {
   // visibility on the containers (on all roots) associated with this desk.
   void UpdateDeskBackdrops();
 
-  // Set desk being removed to avoid unwanted action such as `GetDeskIndex()`
-  // when desk is already removed from |desks_| in DesksController.
-  void SetDeskBeingRemoved();
-
-  // Records the lifetime of the desk based on its desk index. Should be called
-  // when this desk is removed by the user.
-  void RecordLifetimeHistogram();
+  // Records the lifetime of the desk based on its desk `index`. Should be
+  // called when this desk is removed by the user.
+  void RecordLifetimeHistogram(int index);
 
   // Returns whether the difference between |last_day_visited_| and the current
   // day is less than or equal to 1 or |last_day_visited_| is not set.
@@ -162,20 +187,12 @@ class ASH_EXPORT Desk {
   // accounts for cases where the user removes the active desk.
   void RecordAndResetConsecutiveDailyVisits(bool being_removed);
 
-  // Returns the time from base::Time::Now() to Jan 1, 2010 in the local
-  // timezeone in days as an int. We use Jan 1, 2010 as an arbitrary epoch
-  // since it is a well-known date in the past.
-  int GetDaysFromLocalEpoch() const;
-
-  // Overrides the |override_clock_| with |test_clock| for mocking time in
-  // tests.
-  void OverrideClockForTesting(base::Clock* test_clock);
-
-  // Resets |first_day_visited_| and |last_day_visited_| for testing to the
-  // current date.
-  void ResetVisitedMetricsForTesting();
+  // Gets all app windows on this desk that should be closed.
+  std::vector<aura::Window*> GetAllAppWindows();
 
  private:
+  friend class DesksTestApi;
+
   void MoveWindowToDeskInternal(aura::Window* window,
                                 Desk* target_desk,
                                 aura::Window* target_root);
@@ -185,6 +202,13 @@ class ASH_EXPORT Desk {
   // opacities of the containers back to 1, and returns true. Otherwise, returns
   // false.
   bool MaybeResetContainersOpacities();
+
+  // If |this| has not been interacted with yet this week, increment
+  // |g_weekly_active_desks| and set |this| to interacted with.
+  void MaybeIncrementWeeklyActiveDesks();
+
+  // Uniquely identifies the desk.
+  const base::GUID uuid_;
 
   // The associated container ID with this desk.
   const int container_id_;
@@ -237,9 +261,13 @@ class ASH_EXPORT Desk {
   int first_day_visited_ = -1;
   int last_day_visited_ = -1;
 
-  base::Clock* override_clock_ = nullptr;
+  // Tracks whether |this| has been interacted with this week. This value is
+  // reset by the DesksController.
+  bool interacted_with_this_week_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(Desk);
+  // A timer for marking |this| as interacted with only if the user remains on
+  // |this| for a brief period of time.
+  base::OneShotTimer active_desk_timer_;
 };
 
 }  // namespace ash

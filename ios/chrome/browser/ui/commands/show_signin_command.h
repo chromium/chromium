@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,18 +13,22 @@
 
 typedef void (^ShowSigninCommandCompletionCallback)(BOOL succeeded);
 
-enum AuthenticationOperation {
+typedef NS_ENUM(NSInteger, AuthenticationOperation) {
   // Operation to start a re-authenticate operation. The user is presented with
   // the SSOAuth re-authenticate web page.
-  AUTHENTICATION_OPERATION_REAUTHENTICATE,
-
-  // Operation to start a sign-in operation. The user is presented with the
-  // sign-in page with the user consent.
-  AUTHENTICATION_OPERATION_SIGNIN,
-
+  AuthenticationOperationReauthenticate,
+  // Operation to start a sign-in and sync operation. The user is presented with
+  // the sign-in page with the user consent.
+  AuthenticationOperationSigninAndSync,
+  // Operation to start a sign-in only operation. The user is presented with
+  // the consistency web sign-in dialog.
+  AuthenticationOperationSigninOnly,
   // Operation to add a secondary account. The user is presented with the
   // SSOAUth sin-in page.
-  AUTHENTICATION_OPERATION_ADD_ACCOUNT,
+  AuthenticationOperationAddAccount,
+  // Operation to start a forced sign-in operation. The user is presented with
+  // the sign-in page with information about the policy and cannot dimiss it.
+  AuthenticationOperationForcedSigninAndSync,
 };
 
 // A command to perform a sign in operation.
@@ -42,7 +46,7 @@ enum AuthenticationOperation {
                          callback:(ShowSigninCommandCompletionCallback)callback
     NS_DESIGNATED_INITIALIZER;
 
-// Initializes a ShowSigninCommand with |identity| and |callback| set to nil.
+// Initializes a ShowSigninCommand with `identity` and `callback` set to nil.
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
                       promoAction:(signin_metrics::PromoAction)promoAction;
@@ -59,7 +63,7 @@ enum AuthenticationOperation {
 // The operation to perform during the sign-in flow.
 @property(nonatomic, readonly) AuthenticationOperation operation;
 
-// Chrome identity is only used for the AUTHENTICATION_OPERATION_SIGNIN
+// Chrome identity is only used for the AuthenticationOperationSigninAndSync
 // operation (should be nil otherwise). If the identity is non-nil, the
 // interaction view controller logins using this identity. If the identity is
 // nil, the interaction view controller asks the user to choose an identity or

@@ -1,12 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/network_connection_tracker.h"
 
+#include <memory>
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -34,6 +37,10 @@ class TestNetworkConnectionObserver
         connection_type_(network::mojom::ConnectionType::CONNECTION_UNKNOWN) {
     tracker_->AddNetworkConnectionObserver(this);
   }
+
+  TestNetworkConnectionObserver(const TestNetworkConnectionObserver&) = delete;
+  TestNetworkConnectionObserver& operator=(
+      const TestNetworkConnectionObserver&) = delete;
 
   ~TestNetworkConnectionObserver() override {
     tracker_->RemoveNetworkConnectionObserver(this);
@@ -89,13 +96,11 @@ class TestNetworkConnectionObserver
   }
 
   size_t num_notifications_;
-  NetworkConnectionTracker* tracker_;
+  raw_ptr<NetworkConnectionTracker> tracker_;
   // May be null.
   std::unique_ptr<base::RunLoop> run_loop_;
   network::mojom::ConnectionType expected_connection_type_;
   network::mojom::ConnectionType connection_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkConnectionObserver);
 };
 
 class TestLeakyNetworkConnectionObserver
@@ -107,6 +112,11 @@ class TestLeakyNetworkConnectionObserver
     tracker->AddLeakyNetworkConnectionObserver(this);
   }
 
+  TestLeakyNetworkConnectionObserver(
+      const TestLeakyNetworkConnectionObserver&) = delete;
+  TestLeakyNetworkConnectionObserver& operator=(
+      const TestLeakyNetworkConnectionObserver&) = delete;
+
   // NetworkConnectionObserver implementation:
   void OnConnectionChanged(network::mojom::ConnectionType type) override {
     connection_type_ = type;
@@ -115,7 +125,7 @@ class TestLeakyNetworkConnectionObserver
 
   void WaitForNotification() {
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   network::mojom::ConnectionType connection_type() const {
@@ -125,8 +135,6 @@ class TestLeakyNetworkConnectionObserver
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   network::mojom::ConnectionType connection_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLeakyNetworkConnectionObserver);
 };
 
 // A helper class to call NetworkConnectionTracker::GetConnectionType().
@@ -135,6 +143,10 @@ class ConnectionTypeGetter {
   explicit ConnectionTypeGetter(NetworkConnectionTracker* tracker)
       : tracker_(tracker),
         connection_type_(network::mojom::ConnectionType::CONNECTION_UNKNOWN) {}
+
+  ConnectionTypeGetter(const ConnectionTypeGetter&) = delete;
+  ConnectionTypeGetter& operator=(const ConnectionTypeGetter&) = delete;
+
   ~ConnectionTypeGetter() {}
 
   bool GetConnectionType() {
@@ -164,11 +176,9 @@ class ConnectionTypeGetter {
   }
 
   base::RunLoop run_loop_;
-  NetworkConnectionTracker* tracker_;
+  raw_ptr<NetworkConnectionTracker> tracker_;
   network::mojom::ConnectionType connection_type_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionTypeGetter);
 };
 
 }  // namespace
@@ -178,6 +188,10 @@ class NetworkConnectionTrackerTest : public testing::Test {
   NetworkConnectionTrackerTest()
       : mock_network_change_notifier_(
             net::test::MockNetworkChangeNotifier::Create()) {}
+
+  NetworkConnectionTrackerTest(const NetworkConnectionTrackerTest&) = delete;
+  NetworkConnectionTrackerTest& operator=(const NetworkConnectionTrackerTest&) =
+      delete;
 
   ~NetworkConnectionTrackerTest() override {}
 
@@ -221,8 +235,6 @@ class NetworkConnectionTrackerTest : public testing::Test {
   std::unique_ptr<NetworkService> network_service_;
   std::unique_ptr<NetworkConnectionTracker> tracker_;
   std::unique_ptr<TestNetworkConnectionObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionTrackerTest);
 };
 
 TEST_F(NetworkConnectionTrackerTest, ObserverNotified) {
@@ -325,7 +337,7 @@ TEST_F(NetworkConnectionTrackerTest, GetConnectionTypeUnavailable) {
   mojo::Remote<network::mojom::NetworkService>* network_service_remote =
       new mojo::Remote<network::mojom::NetworkService>;
 
-  ignore_result(network_service_remote->BindNewPipeAndPassReceiver());
+  std::ignore = network_service_remote->BindNewPipeAndPassReceiver();
   NetworkConnectionTracker::BindingCallback callback = base::BindRepeating(
       [](network::mojom::NetworkService* service,
          mojo::PendingReceiver<network::mojom::NetworkChangeManager> receiver) {
@@ -351,6 +363,9 @@ class NetworkGetConnectionTest : public NetworkConnectionTrackerTest {
     Initialize();
   }
 
+  NetworkGetConnectionTest(const NetworkGetConnectionTest&) = delete;
+  NetworkGetConnectionTest& operator=(const NetworkGetConnectionTest&) = delete;
+
   ~NetworkGetConnectionTest() override {}
 
   void GetConnectionType() {
@@ -373,8 +388,6 @@ class NetworkGetConnectionTest : public NetworkConnectionTrackerTest {
 
   // Accessed on |getter_thread_|.
   std::unique_ptr<ConnectionTypeGetter> getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkGetConnectionTest);
 };
 
 TEST_F(NetworkGetConnectionTest, GetConnectionTypeOnDifferentThread) {

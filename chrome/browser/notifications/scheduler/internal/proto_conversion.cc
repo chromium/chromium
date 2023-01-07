@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ int64_t TimeDeltaToMilliseconds(const base::TimeDelta& delta) {
 // Helper method to convert serialized time delta as integer to base::TimeDelta
 // for deserialization. Loses precision beyond miliseconds.
 base::TimeDelta MillisecondsToTimeDelta(int64_t serialized_delat_ms) {
-  return base::TimeDelta::FromMilliseconds(serialized_delat_ms);
+  return base::Milliseconds(serialized_delat_ms);
 }
 
 // Helper method to convert base::Time to integer for serialization. Loses
@@ -37,7 +37,7 @@ int64_t TimeToMilliseconds(const base::Time& time) {
 // deserialization. Loses precision beyond miliseconds.
 base::Time MillisecondsToTime(int64_t serialized_time_ms) {
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMilliseconds(serialized_time_ms));
+      base::Milliseconds(serialized_time_ms));
 }
 
 // Converts SchedulerClientType to its associated enum in proto buffer.
@@ -59,6 +59,8 @@ proto::SchedulerClientType ToSchedulerClientType(SchedulerClientType type) {
       return proto::SchedulerClientType::PREFETCH;
     case SchedulerClientType::kReadingList:
       return proto::SchedulerClientType::READING_LIST;
+    case SchedulerClientType::kFeatureGuide:
+      return proto::SchedulerClientType::FEATURE_GUIDE;
   }
   NOTREACHED();
 }
@@ -83,6 +85,8 @@ SchedulerClientType FromSchedulerClientType(
       return SchedulerClientType::kPrefetch;
     case proto::SchedulerClientType::READING_LIST:
       return SchedulerClientType::kReadingList;
+    case proto::SchedulerClientType::FEATURE_GUIDE:
+      return SchedulerClientType::kFeatureGuide;
   }
   NOTREACHED();
 }

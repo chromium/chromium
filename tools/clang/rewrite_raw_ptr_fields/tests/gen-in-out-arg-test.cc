@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ void GetViaPtr(SomeClass** out_ptr) {
 
 // Based on a real-world example (Blink uses references more often than the rest
 // of Chromium):
-// https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/core/layout/layout_table.cc;drc=a3524fd6d1a4f4ff7e97893f6c6375dd1684e132;l=130
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/layout/layout_table.cc;drc=a3524fd6d1a4f4ff7e97893f6c6375dd1684e132;l=130
 void GetViaRef(SomeClass*& out_ptr) {
   out_ptr = nullptr;
 }

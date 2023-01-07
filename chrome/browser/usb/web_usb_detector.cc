@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/referrer.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -28,9 +28,9 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/web_contents.h"
-#include "device/base/features.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -40,6 +40,10 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/notifier_catalogs.h"
+#endif
 
 namespace {
 
@@ -81,7 +85,7 @@ GURL GetActiveTabURL() {
   if (!web_contents)
     return GURL();
 
-  return web_contents->GetURL();
+  return web_contents->GetVisibleURL();
 }
 
 void OpenURL(const GURL& url) {
@@ -103,9 +107,12 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
         landing_page_(landing_page),
         notification_id_(notification_id),
         disposition_(WEBUSB_NOTIFICATION_CLOSED),
-        browser_tab_strip_tracker_(base::in_place_t(), this, nullptr) {
+        browser_tab_strip_tracker_(absl::in_place, this, nullptr) {
     browser_tab_strip_tracker_->Init();
   }
+  WebUsbNotificationDelegate(const WebUsbNotificationDelegate&) = delete;
+  WebUsbNotificationDelegate& operator=(const WebUsbNotificationDelegate&) =
+      delete;
 
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -114,7 +121,7 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
     if (tab_strip_model->empty() || !selection.active_tab_changed())
       return;
 
-    if (base::StartsWith(selection.new_contents->GetURL().spec(),
+    if (base::StartsWith(selection.new_contents->GetVisibleURL().spec(),
                          landing_page_.spec(),
                          base::CompareCase::INSENSITIVE_ASCII)) {
       // If the disposition is not already set, go ahead and set it.
@@ -124,8 +131,8 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
     }
   }
 
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     disposition_ = WEBUSB_NOTIFICATION_CLOSED_CLICKED;
 
     // If the URL is already open, activate that tab.
@@ -170,9 +177,7 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
   GURL landing_page_;
   std::string notification_id_;
   WebUsbNotificationClosed disposition_;
-  base::Optional<BrowserTabStripTracker> browser_tab_strip_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUsbNotificationDelegate);
+  absl::optional<BrowserTabStripTracker> browser_tab_strip_tracker_;
 };
 
 }  // namespace
@@ -182,13 +187,10 @@ WebUsbDetector::WebUsbDetector() = default;
 WebUsbDetector::~WebUsbDetector() = default;
 
 void WebUsbDetector::Initialize() {
-#if defined(OS_WIN)
-  // The WebUSB device detector is disabled on Windows due to jank and hangs
-  // caused by enumerating devices. The new USB backend is designed to resolve
-  // these issues so enable it for testing. https://crbug.com/656702
-  if (!base::FeatureList::IsEnabled(device::kNewUsbBackend))
+  // The WebUSB device detector can be disabled if it causes trouble due to
+  // buggy devices and drivers.
+  if (!base::FeatureList::IsEnabled(features::kWebUsbDeviceDetection))
     return;
-#endif  // defined(OS_WIN)
 
   // Tests may set a fake manager.
   if (!device_manager_) {
@@ -197,8 +199,6 @@ void WebUsbDetector::Initialize() {
         device_manager_.BindNewPipeAndPassReceiver());
   }
   DCHECK(device_manager_);
-  device_manager_.set_disconnect_handler(base::BindOnce(
-      &WebUsbDetector::OnDeviceManagerConnectionError, base::Unretained(this)));
 
   // Listen for added/removed device events.
   DCHECK(!client_receiver_.is_bound());
@@ -238,11 +238,17 @@ void WebUsbDetector::OnDeviceAdded(
           IDS_WEBUSB_DEVICE_DETECTED_NOTIFICATION,
           url_formatter::FormatUrlForSecurityDisplay(
               landing_page, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)),
-      gfx::Image(gfx::CreateVectorIcon(vector_icons::kUsbIcon, 64,
-                                       gfx::kChromeIconGrey)),
+      ui::ImageModel::FromVectorIcon(vector_icons::kUsbIcon, ui::kColorIcon,
+                                     64),
       std::u16string(), GURL(),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierWebUsb,
+                                 ash::NotificationCatalogName::kWebUsb),
+#else
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierWebUsb),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       rich_notification_data,
       base::MakeRefCounted<WebUsbNotificationDelegate>(
           weak_factory_.GetWeakPtr(), landing_page, notification_id));
@@ -268,14 +274,6 @@ void WebUsbDetector::RemoveNotification(const std::string& id) {
 void WebUsbDetector::OnDeviceRemoved(
     device::mojom::UsbDeviceInfoPtr device_info) {
   SystemNotificationHelper::GetInstance()->Close(device_info->guid);
-}
-
-void WebUsbDetector::OnDeviceManagerConnectionError() {
-  device_manager_.reset();
-  client_receiver_.reset();
-
-  // Try to reconnect the device manager.
-  Initialize();
 }
 
 void WebUsbDetector::SetDeviceManagerForTesting(

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 
 #include <limits>
 
-#include "net/third_party/quiche/src/spdy/core/spdy_alt_svc_wire_format.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_alt_svc_wire_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 TEST(QuicHttpUtilsTest, ConvertRequestPriorityToQuicPriority) {
   EXPECT_EQ(0u, ConvertRequestPriorityToQuicPriority(HIGHEST));
@@ -36,31 +35,4 @@ TEST(QuicHttpUtilsTest, ConvertQuicPriorityToRequestPriority) {
   }
 }
 
-TEST(QuicHttpUtilsTest, FilterSupportedAltSvcVersions) {
-  // Supported versions are versions A and C, the alt service
-  // versions are versions B and C. FilterSupportedAltSvcVersions
-  // finds the intersection of the two sets ... version C.  Note that
-  // as QUIC versions are defined/undefined, the exact version numbers
-  // used may need to change.  The actual version numbers are not
-  // important. Note that FilterSupportedAltSvcVersions is only used
-  // for the old Google-specific Alt-Svc format which is now deprecated.
-  quic::ParsedQuicVersionVector supported_versions = {
-      quic::ParsedQuicVersion::Q050(),
-      quic::ParsedQuicVersion::Q043(),
-  };
-
-  std::vector<uint32_t> alt_svc_versions_google = {
-      33, quic::ParsedQuicVersion::Q043().transport_version};
-
-  quic::ParsedQuicVersionVector supported_alt_svc_versions = {
-      quic::ParsedQuicVersion::Q043()};
-  spdy::SpdyAltSvcWireFormat::AlternativeService altsvc;
-
-  altsvc.protocol_id = "quic";
-  altsvc.version = alt_svc_versions_google;
-  EXPECT_EQ(supported_alt_svc_versions,
-            FilterSupportedAltSvcVersions(altsvc, supported_versions));
-}
-
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,6 +20,7 @@ group("all_tests") {
     ":ios_chrome_signin_eg2tests_module",
     ":ios_chrome_smoke_eg2tests_module",
     ":ios_chrome_ui_eg2tests_module",
+    ":ios_chrome_variations_smoke_eg2tests_module",
     ":ios_chrome_web_eg2tests_module",
   ]
 }
@@ -73,21 +74,26 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
 
   deps = [
     "//ios/chrome/browser/autofill:eg2_tests",
-    "//ios/chrome/browser/context_menu:eg2_tests",
     "//ios/chrome/browser/device_sharing:eg2_tests",
     "//ios/chrome/browser/feature_engagement:eg2_tests",
+    "//ios/chrome/browser/https_upgrades:eg2_tests",
     "//ios/chrome/browser/metrics:eg2_tests",
     "//ios/chrome/browser/net:eg2_tests",
     "//ios/chrome/browser/ntp_tiles:eg2_tests",
+    "//ios/chrome/browser/optimization_guide:eg2_tests",
     "//ios/chrome/browser/passwords:eg2_tests",
     "//ios/chrome/browser/policy:eg2_tests",
     "//ios/chrome/browser/policy_url_blocking:eg2_tests",
     "//ios/chrome/browser/prerender:eg2_tests",
     "//ios/chrome/browser/safe_browsing:eg2_tests",
     "//ios/chrome/browser/ui/autofill:eg2_tests",
+    "//ios/chrome/browser/ui/autofill/form_input_accessory:eg2_tests",
     "//ios/chrome/browser/ui/autofill/manual_fill:eg2_tests",
     "//ios/chrome/browser/ui/content_suggestions:eg2_tests",
+    "//ios/chrome/browser/ui/context_menu:eg2_tests",
+    "//ios/chrome/browser/ui/default_promo:eg2_tests",
     "//ios/chrome/browser/ui/integration_tests:eg2_tests",
+    "//ios/chrome/browser/variations:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
@@ -121,9 +127,14 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
     "//ios/chrome/browser/ui/settings:eg2_tests",
     "//ios/chrome/browser/ui/settings/autofill:eg2_tests",
     "//ios/chrome/browser/ui/settings/clear_browsing_data:eg2_tests",
+    "//ios/chrome/browser/ui/settings/content_settings:eg2_tests",
     "//ios/chrome/browser/ui/settings/google_services:eg2_tests",
     "//ios/chrome/browser/ui/settings/language:eg2_tests",
     "//ios/chrome/browser/ui/settings/password:eg2_tests",
+    "//ios/chrome/browser/ui/settings/password/passwords_in_other_apps:eg2_tests",
+    "//ios/chrome/browser/ui/settings/price_notifications:eg2_tests",
+    "//ios/chrome/browser/ui/settings/price_notifications/tracking_price:eg2_tests",
+    "//ios/chrome/browser/ui/settings/privacy:eg2_tests",
     "//ios/chrome/browser/ui/settings/sync:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
@@ -133,8 +144,12 @@ chrome_ios_eg2_test("ios_chrome_signin_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
+    "//ios/chrome/browser/signin:eg2_tests",
     "//ios/chrome/browser/ui/authentication/signin:eg2_tests",
     "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin:eg2_tests",
+    "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin:eg2_tests",
+    "//ios/chrome/browser/ui/authentication/signin/forced_signin:eg2_tests",
+    "//ios/chrome/browser/ui/authentication/signin/user_signin:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
@@ -151,33 +166,61 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/first_run:eg2_tests",
     "//ios/chrome/browser/ui/fullscreen:eg2_tests",
     "//ios/chrome/browser/ui/history:eg2_tests",
+    "//ios/chrome/browser/ui/incognito_interstitial:eg2_tests",
     "//ios/chrome/browser/ui/infobars:eg2_tests",
     "//ios/chrome/browser/ui/keyboard:eg2_tests",
     "//ios/chrome/browser/ui/link_to_text:eg2_tests",
     "//ios/chrome/browser/ui/ntp:eg2_tests",
+    "//ios/chrome/browser/ui/ntp/feed_management:eg2_tests",
     "//ios/chrome/browser/ui/omnibox:eg2_tests",
     "//ios/chrome/browser/ui/omnibox/popup:eg2_tests",
     "//ios/chrome/browser/ui/open_in:eg2_tests",
     "//ios/chrome/browser/ui/page_info:eg2_tests",
     "//ios/chrome/browser/ui/passwords:eg2_tests",
+    "//ios/chrome/browser/ui/permissions:eg2_tests",
     "//ios/chrome/browser/ui/popup_menu:eg2_tests",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history:eg2_tests",
     "//ios/chrome/browser/ui/qr_scanner:eg2_tests",
     "//ios/chrome/browser/ui/reading_list:eg2_tests",
     "//ios/chrome/browser/ui/recent_tabs:eg2_tests",
     "//ios/chrome/browser/ui/sad_tab:eg2_tests",
     "//ios/chrome/browser/ui/safe_mode:eg2_tests",
+    "//ios/chrome/browser/ui/send_tab_to_self:eg2_tests",
     "//ios/chrome/browser/ui/settings/sync/utils:eg2_tests",
     "//ios/chrome/browser/ui/side_swipe:eg2_tests",
+    "//ios/chrome/browser/ui/start_surface:eg2_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:eg2_tests",
     "//ios/chrome/browser/ui/tabs:eg2_tests",
+    "//ios/chrome/browser/ui/text_fragments:eg2_tests",
     "//ios/chrome/browser/ui/thumb_strip:eg2_tests",
     "//ios/chrome/browser/ui/toolbar:eg2_tests",
     "//ios/chrome/browser/ui/webui:eg2_tests",
     "//ios/chrome/browser/ui/webui/interstitials:eg2_tests",
+    "//ios/chrome/browser/ui/webui/optimization_guide_internals:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
+}
 
-  shards = 2
+chrome_ios_eg2_test("ios_chrome_variations_smoke_eg2tests_module") {
+  xcode_test_application_name = "ios_chrome_eg2tests"
+
+  deps = [ "//ios/chrome/test/variations_smoke_test:eg2_tests" ]
+  data_deps = [ ":ios_chrome_eg2tests" ]
+
+  # Current seed to be injected in variations smoke test.
+  _variations_seed_abs_path =
+      "//ios/chrome/test/data/variations/variations_seed_ios.json"
+
+  data = [
+    "//testing/scripts/variations_seed_access_helper.py",
+    _variations_seed_abs_path,
+  ]
+
+  executable_args = [
+    "--variations-seed-path",
+    "@WrappedPath(" + rebase_path(_variations_seed_abs_path, root_build_dir) +
+        ")",
+  ]
 }
 
 chrome_ios_eg2_test("ios_chrome_web_eg2tests_module") {
@@ -188,7 +231,6 @@ chrome_ios_eg2_test("ios_chrome_web_eg2tests_module") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -199,7 +241,7 @@ source_set("eg2_tests") {
 
   deps = [
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

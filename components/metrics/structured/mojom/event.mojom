@@ -1,0 +1,30 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module metrics.structured.mojom;
+
+/*
+ * Events to be recorded by StructuredMetrics. All values will be unhashed to be
+ * validated once received by the service.
+ */
+[Stable]
+struct Event {
+  string project_name;
+
+  string event_name;
+
+  // Map containing metric name to its value. These should be consistent with
+  // definitions in structured.xml.
+  map<string, MetricValue> metrics;
+};
+
+[Stable]
+union MetricValue {
+  string hmac_value;
+  int64 long_value;
+  int32 int_value;
+  double double_value;
+  string raw_str_value;
+  bool bool_value;
+};

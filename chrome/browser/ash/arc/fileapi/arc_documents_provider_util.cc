@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "components/arc/mojom/file_system.mojom.h"
-#include "net/base/escape.h"
 #include "net/base/mime_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
@@ -26,15 +27,22 @@ struct MimeTypeToExtensions {
   const char* extensions;
 };
 
-// The mapping from MIME types to file name extensions, taken from Android N.
+// The mapping from MIME types to file name extensions, taken from Android T.
 // See: frameworks/base/media/java/android/media/MediaFile.java
 constexpr MimeTypeToExtensions kAndroidMimeTypeMappings[] = {
-    {"application/mspowerpoint", "ppt"},
-    {"application/msword", "doc"},
+    {"application/vnd.ms-powerpoint", "ppt,pot,pps,ppa"},
+    {"application/msword", "doc,dot"},
+    {"application/"
+     "vnd.openxmlformats-officedocument.presentationml.presentation",
+     "pptx"},
+    {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+     "xlsx"},
+    {"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+     "docx"},
     {"application/ogg", "ogg,oga"},
     {"application/pdf", "pdf"},
     {"application/vnd.apple.mpegurl", "m3u8"},
-    {"application/vnd.ms-excel", "xls"},
+    {"application/vnd.ms-excel", "xls,xlt,xla"},
     {"application/vnd.ms-wpl", "wpl"},
     {"application/x-android-drm-fl", "fl"},
     {"application/x-mpegurl", "m3u"},
@@ -51,19 +59,23 @@ constexpr MimeTypeToExtensions kAndroidMimeTypeMappings[] = {
     {"audio/mpegurl", "m3u8"},
     {"audio/ogg", "ogg"},
     {"audio/sp-midi", "smf"},
+    {"audio/x-aiff", "aiff"},
     {"audio/x-matroska", "mka"},
     {"audio/x-mpegurl", "m3u,m3u8"},
     {"audio/x-ms-wma", "wma"},
     {"audio/x-scpls", "pls"},
     {"audio/x-wav", "wav"},
     {"image/gif", "gif"},
+    {"image/jp2", "jpg2"},
     {"image/jpeg", "jpg,jpeg"},
+    {"image/jpx", "jpx"},
     {"image/png", "png"},
     {"image/vnd.wap.wbmp", "wbmp"},
     {"image/webp", "webp"},
     {"image/x-adobe-dng", "dng"},
     {"image/x-canon-cr2", "cr2"},
     {"image/x-fuji-raf", "raf"},
+    {"image/x-heif", "heif"},
     {"image/x-ms-bmp", "bmp"},
     {"image/x-nikon-nef", "nef"},
     {"image/x-nikon-nrw", "nrw"},
@@ -95,7 +107,7 @@ constexpr char kDocumentsProviderVolumeIdPrefix[] = "documents_provider:";
 
 // This is based on net/base/escape.cc: net::(anonymous namespace)::Escape.
 // TODO(nya): Consider consolidating this function with EscapeFileSystemId() in
-// chrome/browser/chromeos/file_system_provider/mount_path_util.cc.
+// chrome/browser/ash/file_system_provider/mount_path_util.cc.
 // This version differs from the other one in the point that dots are not always
 // escaped because authorities often contain harmless dots.
 std::string EscapePathComponent(const std::string& name) {
@@ -117,9 +129,10 @@ std::string EscapePathComponent(const std::string& name) {
 }
 
 std::string UnescapePathComponent(const std::string& escaped) {
-  return net::UnescapeURLComponent(
-      escaped, net::UnescapeRule::PATH_SEPARATORS |
-                   net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+  return base::UnescapeURLComponent(
+      escaped,
+      base::UnescapeRule::PATH_SEPARATORS |
+          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
 }
 
 const char kDocumentsProviderMountPointName[] = "arc-documents-provider";
@@ -143,8 +156,7 @@ bool ParseDocumentsProviderPath(const base::FilePath& path,
 
   // Filesystem path format for documents provider is:
   // /special/arc-documents-provider/<authority>/<root_doc_id>/<relative_path>
-  std::vector<base::FilePath::StringType> components;
-  path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components = path.GetComponents();
   if (components.size() < 5)
     return false;
 
@@ -182,8 +194,8 @@ GURL BuildDocumentUrl(const std::string& authority,
                       const std::string& document_id) {
   return GURL(base::StringPrintf(
       "content://%s/document/%s",
-      net::EscapeQueryParamValue(authority, false /* use_plus */).c_str(),
-      net::EscapeQueryParamValue(document_id, false /* use_plus */).c_str()));
+      base::EscapeQueryParamValue(authority, false /* use_plus */).c_str(),
+      base::EscapeQueryParamValue(document_id, false /* use_plus */).c_str()));
 }
 
 std::vector<base::FilePath::StringType> GetExtensionsForArcMimeType(
@@ -201,8 +213,7 @@ std::vector<base::FilePath::StringType> GetExtensionsForArcMimeType(
       base::FilePath::StringType preferred_extension;
       if (net::GetPreferredExtensionForMimeType(mime_type,
                                                 &preferred_extension)) {
-        auto iter = std::find(extensions.begin(), extensions.end(),
-                              preferred_extension);
+        auto iter = base::ranges::find(extensions, preferred_extension);
         if (iter == extensions.end()) {
           // This is unlikely to happen, but there is no guarantee.
           extensions.insert(extensions.begin(), preferred_extension);

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/mojom/print_common.mojom.h"
 #include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -16,8 +17,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -25,8 +24,8 @@
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_util.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/printing/printing_service.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "components/arc/intent_helper/custom_tab.h"
-#include "components/arc/mojom/print_common.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/filename_util.h"
@@ -36,8 +35,13 @@
 #include "printing/print_settings.h"
 #include "printing/print_settings_conversion.h"
 #include "printing/units.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/size.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace arc {
 
@@ -47,7 +51,7 @@ constexpr int kMinimumPdfSize = 50;
 
 // Converts a color mode to its Mojo type.
 mojom::PrintColorMode ToArcColorMode(int color_mode) {
-  base::Optional<bool> is_color = printing::IsColorModelSelected(
+  absl::optional<bool> is_color = printing::IsColorModelSelected(
       printing::ColorModeToColorModel(color_mode));
   return is_color.value() ? mojom::PrintColorMode::COLOR
                           : mojom::PrintColorMode::MONOCHROME;
@@ -68,28 +72,29 @@ mojom::PrintDuplexMode ToArcDuplexMode(int duplex_mode) {
 }
 
 // Gets and builds the print attributes from the job settings.
-mojom::PrintAttributesPtr GetPrintAttributes(const base::Value& job_settings) {
+mojom::PrintAttributesPtr GetPrintAttributes(
+    const base::Value::Dict& job_settings) {
   // PrintMediaSize:
-  const base::Value* media_size_value =
-      job_settings.FindDictKey(printing::kSettingMediaSize);
+  const base::Value::Dict* media_size_value =
+      job_settings.FindDict(printing::kSettingMediaSize);
   if (!media_size_value)
     return nullptr;
   // Vendor ID will be empty when Destination is Save as PDF.
   const std::string* vendor_id =
-      media_size_value->FindStringKey(printing::kSettingMediaSizeVendorId);
+      media_size_value->FindString(printing::kSettingMediaSizeVendorId);
   std::string id = "PDF";
   if (vendor_id && !vendor_id->empty()) {
     id = *vendor_id;
   }
-  base::Optional<int> width_microns =
-      media_size_value->FindIntKey(printing::kSettingMediaSizeWidthMicrons);
-  base::Optional<int> height_microns =
-      media_size_value->FindIntKey(printing::kSettingMediaSizeHeightMicrons);
+  absl::optional<int> width_microns =
+      media_size_value->FindInt(printing::kSettingMediaSizeWidthMicrons);
+  absl::optional<int> height_microns =
+      media_size_value->FindInt(printing::kSettingMediaSizeHeightMicrons);
   if (!width_microns.has_value() || !height_microns.has_value())
     return nullptr;
   // Swap the width and height if layout is landscape.
-  base::Optional<bool> landscape =
-      job_settings.FindBoolKey(printing::kSettingLandscape);
+  absl::optional<bool> landscape =
+      job_settings.FindBool(printing::kSettingLandscape);
   if (!landscape.has_value())
     return nullptr;
   gfx::Size size_micron;
@@ -104,9 +109,9 @@ mojom::PrintAttributesPtr GetPrintAttributes(const base::Value& job_settings) {
       id, "ARC", size_mil.width(), size_mil.height());
 
   // PrintResolution:
-  int horizontal_dpi = job_settings.FindIntKey(printing::kSettingDpiHorizontal)
+  int horizontal_dpi = job_settings.FindInt(printing::kSettingDpiHorizontal)
                            .value_or(printing::kDefaultPdfDpi);
-  int vertical_dpi = job_settings.FindIntKey(printing::kSettingDpiVertical)
+  int vertical_dpi = job_settings.FindInt(printing::kSettingDpiVertical)
                          .value_or(printing::kDefaultPdfDpi);
 
   // PrintMargins:
@@ -116,14 +121,14 @@ mojom::PrintAttributesPtr GetPrintAttributes(const base::Value& job_settings) {
   mojom::PrintMarginsPtr margins = mojom::PrintMargins::New(0, 0, 0, 0);
 
   // PrintColorMode:
-  base::Optional<int> color = job_settings.FindIntKey(printing::kSettingColor);
+  absl::optional<int> color = job_settings.FindInt(printing::kSettingColor);
   if (!color.has_value())
     return nullptr;
   mojom::PrintColorMode color_mode = ToArcColorMode(color.value());
 
   // PrintDuplexMode:
-  base::Optional<int> duplex =
-      job_settings.FindIntKey(printing::kSettingDuplexMode);
+  absl::optional<int> duplex =
+      job_settings.FindInt(printing::kSettingDuplexMode);
   if (!duplex.has_value())
     return nullptr;
   mojom::PrintDuplexMode duplex_mode = ToArcDuplexMode(duplex.value());
@@ -136,7 +141,7 @@ mojom::PrintAttributesPtr GetPrintAttributes(const base::Value& job_settings) {
 // Creates a PrintDocumentRequest from the provided |job_settings|. Uses helper
 // functions to parse |job_settings|.
 mojom::PrintDocumentRequestPtr PrintDocumentRequestFromJobSettings(
-    const base::Value& job_settings) {
+    const base::Value::Dict& job_settings) {
   return mojom::PrintDocumentRequest::New(
       printing::GetPageRangesFromJobSettings(job_settings),
       GetPrintAttributes(job_settings));
@@ -179,7 +184,7 @@ base::ReadOnlySharedMemoryRegion ReadPreviewDocument(
 // print preview will find the embedded plugin element instead of trying to
 // print the top-level frame.
 bool IsPdfPluginLoaded(content::WebContents* web_contents) {
-  if (!web_contents->IsDocumentOnLoadCompletedInMainFrame()) {
+  if (!web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     VLOG(1) << "Top-level WebContents not ready yet.";
     return false;
   }
@@ -191,13 +196,13 @@ bool IsPdfPluginLoaded(content::WebContents* web_contents) {
     return false;
   }
 
-  GURL url = contents_to_use->GetMainFrame()->GetLastCommittedURL();
+  GURL url = contents_to_use->GetPrimaryMainFrame()->GetLastCommittedURL();
   if (!url.SchemeIs("chrome-extension")) {
     VLOG(1) << "Plugin frame URL not loaded yet.";
     return false;
   }
 
-  if (!contents_to_use->IsDocumentOnLoadCompletedInMainFrame()) {
+  if (!contents_to_use->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     VLOG(1) << "Plugin frame still loading.";
     return false;
   }
@@ -231,6 +236,7 @@ PrintSessionImpl::PrintSessionImpl(
     mojo::PendingReceiver<mojom::PrintSessionHost> receiver)
     : ArcCustomTabModalDialogHost(std::make_unique<CustomTab>(arc_window),
                                   web_contents.get()),
+      content::WebContentsUserData<PrintSessionImpl>(*web_contents),
       instance_(std::move(instance)),
       session_receiver_(this, std::move(receiver)),
       web_contents_(std::move(web_contents)) {
@@ -243,7 +249,7 @@ PrintSessionImpl::PrintSessionImpl(
   custom_tab_->Attach(window);
   window->Show();
 
-  // TODO(jschettler): Handle this correctly once crbug.com/636642 is
+  // TODO(http://crbug.com/636642): Handle this correctly once the bug is
   // resolved. Until then, give the PDF plugin time to load.
   VLOG(1) << "Waiting for PDF plugin to load.";
   StartPrintAfterPluginIsLoaded();
@@ -267,7 +273,7 @@ void PrintSessionImpl::OnWindowDestroying(aura::Window* window) {
 }
 
 void PrintSessionImpl::CreatePreviewDocument(
-    base::Value job_settings,
+    base::Value::Dict job_settings,
     CreatePreviewDocumentCallback callback) {
   mojom::PrintDocumentRequestPtr request =
       PrintDocumentRequestFromJobSettings(job_settings);
@@ -276,7 +282,7 @@ void PrintSessionImpl::CreatePreviewDocument(
     return;
   }
 
-  int request_id = job_settings.FindIntKey(printing::kPreviewRequestID).value();
+  int request_id = job_settings.FindInt(printing::kPreviewRequestID).value();
   instance_->CreatePreviewDocument(
       std::move(request),
       base::BindOnce(&PrintSessionImpl::OnPreviewDocumentCreated,
@@ -364,7 +370,7 @@ void PrintSessionImpl::StartPrintAfterPluginIsLoaded() {
         FROM_HERE,
         base::BindOnce(&PrintSessionImpl::StartPrintAfterPluginIsLoaded,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(100));
+        base::Milliseconds(100));
     LOG(WARNING) << "PDF plugin not ready yet.  Can't start print preview.";
     return;
   }
@@ -376,7 +382,7 @@ void PrintSessionImpl::StartPrintAfterPluginIsLoaded() {
       FROM_HERE,
       base::BindOnce(&PrintSessionImpl::StartPrintNow,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 }
 
 void PrintSessionImpl::StartPrintNow() {
@@ -385,6 +391,6 @@ void PrintSessionImpl::StartPrintNow() {
                        false, false);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintSessionImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintSessionImpl);
 
 }  // namespace arc

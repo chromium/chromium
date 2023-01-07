@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "components/signin/core/browser/signin_header_helper.h"
@@ -33,6 +33,8 @@ class GURL;
 // handle signin accordingly.
 namespace signin {
 
+enum class Tribool;
+
 // Key for ManageAccountsHeaderReceivedUserData. Exposed for testing.
 extern const void* const kManageAccountsHeaderReceivedUserDataKey;
 
@@ -45,33 +47,40 @@ class ChromeRequestAdapter : public RequestAdapter {
                        const net::HttpRequestHeaders& original_headers,
                        net::HttpRequestHeaders* modified_headers,
                        std::vector<std::string>* headers_to_remove);
+
+  ChromeRequestAdapter(const ChromeRequestAdapter&) = delete;
+  ChromeRequestAdapter& operator=(const ChromeRequestAdapter&) = delete;
+
   ~ChromeRequestAdapter() override;
 
   virtual content::WebContents::Getter GetWebContentsGetter() const = 0;
 
   virtual network::mojom::RequestDestination GetRequestDestination() const = 0;
 
+  virtual bool IsOutermostMainFrame() const = 0;
+
   virtual bool IsFetchLikeAPI() const = 0;
 
-  virtual GURL GetReferrerOrigin() const = 0;
+  virtual GURL GetReferrer() const = 0;
 
   // Associate a callback with this request which will be executed when the
   // request is complete (including any redirects). If a callback was already
   // registered this function does nothing.
   virtual void SetDestructionCallback(base::OnceClosure closure) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeRequestAdapter);
 };
 
 class ResponseAdapter {
  public:
   ResponseAdapter();
+
+  ResponseAdapter(const ResponseAdapter&) = delete;
+  ResponseAdapter& operator=(const ResponseAdapter&) = delete;
+
   virtual ~ResponseAdapter();
 
   virtual content::WebContents::Getter GetWebContentsGetter() const = 0;
-  virtual bool IsMainFrame() const = 0;
-  virtual GURL GetOrigin() const = 0;
+  virtual bool IsOutermostMainFrame() const = 0;
+  virtual GURL GetURL() const = 0;
   virtual const net::HttpResponseHeaders* GetHeaders() const = 0;
   virtual void RemoveHeader(const std::string& name) = 0;
 
@@ -79,9 +88,6 @@ class ResponseAdapter {
   virtual void SetUserData(
       const void* key,
       std::unique_ptr<base::SupportsUserData::Data> data) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResponseAdapter);
 };
 
 // When Dice is enabled, the AccountReconcilor is blocked for a short delay
@@ -97,14 +103,14 @@ void FixAccountConsistencyRequestHeader(
     bool is_off_the_record,
     int incognito_availibility,
     AccountConsistencyMethod account_consistency,
-    std::string gaia_id,
-    const base::Optional<bool>& is_child_account,
+    const std::string& gaia_id,
+    signin::Tribool is_child_account,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     bool is_secondary_account_addition_allowed,
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     bool is_sync_enabled,
-    std::string signin_scoped_device_id,
+    const std::string& signin_scoped_device_id,
 #endif
     content_settings::CookieSettings* cookie_settings);
 
@@ -113,6 +119,12 @@ void FixAccountConsistencyRequestHeader(
 void ProcessAccountConsistencyResponseHeaders(ResponseAdapter* response,
                                               const GURL& redirect_url,
                                               bool is_off_the_record);
+
+// Parses and returns an account ID (Gaia ID) from HTTP response header
+// Google-Accounts-RemoveLocalAccount. Returns an empty string if parsing
+// failed. Exposed for testing purposes.
+std::string ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+    const net::HttpResponseHeaders* response_headers);
 
 }  // namespace signin
 

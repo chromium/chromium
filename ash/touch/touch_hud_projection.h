@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_TOUCH_TOUCH_HUD_PROJECTION_H_
 
 #include "ash/touch/touch_observer_hud.h"
-#include "base/macros.h"
 
 namespace ash {
 class TouchHudRenderer;
@@ -17,6 +16,9 @@ class TouchHudRenderer;
 class TouchHudProjection : public TouchObserverHud {
  public:
   explicit TouchHudProjection(aura::Window* initial_root);
+
+  TouchHudProjection(const TouchHudProjection&) = delete;
+  TouchHudProjection& operator=(const TouchHudProjection&) = delete;
 
   // TouchObserverHud:
   void Clear() override;
@@ -34,8 +36,6 @@ class TouchHudProjection : public TouchObserverHud {
 
   // TouchHudRenderer draws out the touch points.
   std::unique_ptr<TouchHudRenderer> touch_hud_renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchHudProjection);
 };
 
 }  // namespace ash

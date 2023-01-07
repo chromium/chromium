@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,7 @@
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 #define EXPECT_SIZE_EQ(expected, actual)               \
@@ -139,10 +140,10 @@ class HeadlessDevToolsClientWindowManagementTest
       std::unique_ptr<browser::GetWindowBoundsResult> result) {
     const browser::Bounds* actual_bounds = result->GetBounds();
 // Mac does not support repositioning, as we don't show any actual window.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     EXPECT_EQ(bounds.x(), actual_bounds->GetLeft());
     EXPECT_EQ(bounds.y(), actual_bounds->GetTop());
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
     EXPECT_EQ(bounds.width(), actual_bounds->GetWidth());
     EXPECT_EQ(bounds.height(), actual_bounds->GetHeight());
     EXPECT_EQ(state, actual_bounds->GetWindowState());
@@ -174,7 +175,7 @@ class HeadlessDevToolsClientChangeWindowBoundsTest
   }
 };
 
-#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
 DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(
     HeadlessDevToolsClientChangeWindowBoundsTest);
@@ -494,7 +495,7 @@ class HeadlessCrashObserverTest : public HeadlessAsyncDevTooledBrowserTest,
     devtools_client_->GetInspector()->GetExperimental()->AddObserver(this);
     devtools_client_->GetInspector()->GetExperimental()->Enable(
         inspector::EnableParams::Builder().Build());
-    devtools_client_->GetPage()->Navigate(content::kChromeUICrashURL);
+    devtools_client_->GetPage()->Navigate(blink::kChromeUICrashURL);
   }
 
   void OnTargetCrashed(const inspector::TargetCrashedParams& params) override {
@@ -505,12 +506,13 @@ class HeadlessCrashObserverTest : public HeadlessAsyncDevTooledBrowserTest,
   // Make sure we don't fail because the renderer crashed!
   void RenderProcessExited(base::TerminationStatus status,
                            int exit_code) override {
-#if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
     // TODO(crbug.com/845011): Make ASan not interfere and expect a crash.
     // ASan's normal error exit code is 1, which base categorizes as the process
     // being killed.
     EXPECT_EQ(base::TERMINATION_STATUS_PROCESS_WAS_KILLED, status);
-#elif defined(OS_WIN) || defined(OS_MAC)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
     EXPECT_EQ(base::TERMINATION_STATUS_PROCESS_CRASHED, status);
 #else
     EXPECT_EQ(base::TERMINATION_STATUS_ABNORMAL_TERMINATION, status);
@@ -521,7 +523,12 @@ class HeadlessCrashObserverTest : public HeadlessAsyncDevTooledBrowserTest,
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 };
 
+// TODO(1272554): HeadlessCrashObserverTest.RunAsyncTest is flaky on Win debug.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessCrashObserverTest);
+#else
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessCrashObserverTest);
+#endif
 
 class HeadlessDevToolsClientAttachTest
     : public HeadlessAsyncDevTooledBrowserTest {
@@ -719,12 +726,13 @@ class RawDevtoolsProtocolTest
   void RunDevTooledTest() override {
     devtools_client_->SetRawProtocolListener(this);
 
-    base::DictionaryValue message;
-    message.SetInteger("id", devtools_client_->GetNextRawDevToolsMessageId());
-    message.SetString("method", "Runtime.evaluate");
-    std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
-    params->SetString("expression", "1+1");
-    message.Set("params", std::move(params));
+    base::Value::Dict message_dict;
+    message_dict.Set("id", devtools_client_->GetNextRawDevToolsMessageId());
+    message_dict.Set("method", "Runtime.evaluate");
+    base::Value::Dict params_dict;
+    params_dict.Set("expression", "1+1");
+    message_dict.Set("params", std::move(params_dict));
+    base::Value message(std::move(message_dict));
     std::string json_message;
     base::JSONWriter::Write(message, &json_message);
     devtools_client_->SendRawDevToolsMessage(json_message);
@@ -798,42 +806,40 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
     GURL::Replacements replace_port;
     replace_port.SetPortStr("");
 
-    std::vector<std::unique_ptr<base::DictionaryValue>> dom_nodes(
-        result->GetDomNodes()->size());
+    std::vector<base::Value> dom_nodes(result->GetDomNodes()->size());
 
     // For convenience, flatten the dom tree into an array of dicts.
     for (size_t i = 0; i < result->GetDomNodes()->size(); i++) {
       dom_snapshot::DOMNode* node = (*result->GetDomNodes())[i].get();
 
-      dom_nodes[i].reset(
-          static_cast<base::DictionaryValue*>(node->Serialize().release()));
-      base::DictionaryValue* node_dict = dom_nodes[i].get();
+      dom_nodes[i] = node->Serialize();
+      ASSERT_TRUE(dom_nodes[i].is_dict());
+      base::Value::Dict& node_dict = dom_nodes[i].GetDict();
 
       // Node IDs are assigned in a non deterministic way.
-      if (node_dict->FindKey("backendNodeId"))
-        node_dict->SetString("backendNodeId", "?");
+      if (node_dict.Find("backendNodeId"))
+        node_dict.Set("backendNodeId", "?");
 
       // Frame IDs are random.
-      if (node_dict->FindKey("frameId"))
-        node_dict->SetString("frameId", "?");
+      if (node_dict.Find("frameId"))
+        node_dict.Set("frameId", "?");
 
       // Ports are random.
-      if (base::Value* base_url_value = node_dict->FindKey("baseURL")) {
-        node_dict->SetString("baseURL", GURL(base_url_value->GetString())
-                                            .ReplaceComponents(replace_port)
-                                            .spec());
+      if (base::Value* base_url_value = node_dict.Find("baseURL")) {
+        node_dict.Set("baseURL", GURL(base_url_value->GetString())
+                                     .ReplaceComponents(replace_port)
+                                     .spec());
       }
 
-      if (base::Value* document_url_value = node_dict->FindKey("documentURL")) {
-        node_dict->SetString("documentURL",
-                             GURL(document_url_value->GetString())
-                                 .ReplaceComponents(replace_port)
-                                 .spec());
+      if (base::Value* document_url_value = node_dict.Find("documentURL")) {
+        node_dict.Set("documentURL", GURL(document_url_value->GetString())
+                                         .ReplaceComponents(replace_port)
+                                         .spec());
       }
 
       // Merge LayoutTreeNode data into the dictionary.
       if (base::Value* layout_node_index_value =
-              node_dict->FindKey("layoutNodeIndex")) {
+              node_dict.Find("layoutNodeIndex")) {
         int layout_node_index = layout_node_index_value->GetInt();
         ASSERT_LE(0, layout_node_index);
         ASSERT_GT(result->GetLayoutTreeNodes()->size(),
@@ -841,24 +847,22 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
         const std::unique_ptr<dom_snapshot::LayoutTreeNode>& layout_node =
             (*result->GetLayoutTreeNodes())[layout_node_index];
 
-        node_dict->Set("boundingBox",
-                       layout_node->GetBoundingBox()->Serialize());
+        node_dict.Set("boundingBox",
+                      layout_node->GetBoundingBox()->Serialize());
 
         if (layout_node->HasLayoutText())
-          node_dict->SetString("layoutText", layout_node->GetLayoutText());
+          node_dict.Set("layoutText", layout_node->GetLayoutText());
 
         if (layout_node->HasStyleIndex())
-          node_dict->SetInteger("styleIndex", layout_node->GetStyleIndex());
+          node_dict.Set("styleIndex", layout_node->GetStyleIndex());
 
         if (layout_node->HasInlineTextNodes()) {
-          std::unique_ptr<base::ListValue> inline_text_nodes(
-              new base::ListValue());
+          base::Value::List inline_text_nodes;
           for (const std::unique_ptr<dom_snapshot::InlineTextBox>&
                    inline_text_box : *layout_node->GetInlineTextNodes()) {
-            size_t index = inline_text_nodes->GetSize();
-            inline_text_nodes->Set(index, inline_text_box->Serialize());
+            inline_text_nodes.Append(inline_text_box->Serialize());
           }
-          node_dict->Set("inlineTextNodes", std::move(inline_text_nodes));
+          node_dict.Set("inlineTextNodes", std::move(inline_text_nodes));
         }
       }
     }
@@ -875,7 +879,7 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
       computed_styles[i] = std::move(style);
     }
 
-    base::ThreadRestrictions::SetIOAllowed(true);
+    base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
     base::FilePath expected_dom_nodes_path =
@@ -886,15 +890,15 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
         base::ReadFileToString(expected_dom_nodes_path, &expected_dom_nodes));
 
     std::string dom_nodes_result;
-    for (size_t i = 0; i < dom_nodes.size(); i++) {
+    for (const base::Value& entry : dom_nodes) {
       std::string result_json;
       base::JSONWriter::WriteWithOptions(
-          *dom_nodes[i], base::JSONWriter::OPTIONS_PRETTY_PRINT, &result_json);
+          entry, base::JSONWriter::OPTIONS_PRETTY_PRINT, &result_json);
 
       dom_nodes_result += result_json;
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ASSERT_TRUE(base::RemoveChars(dom_nodes_result, "\r", &dom_nodes_result));
 #endif
 
@@ -917,7 +921,7 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
       computed_styles_result += result_json;
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ASSERT_TRUE(base::RemoveChars(computed_styles_result, "\r",
                                   &computed_styles_result));
 #endif
@@ -927,7 +931,13 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
   }
 };
 
+// TODO(crbug.com/1090930): Fix this test on Fuchsia and re-enable.
+// NOTE: These macros expand to: DomTreeExtractionBrowserTest.RunAsyncTest
+#if BUILDFLAG(IS_FUCHSIA)
+DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(DomTreeExtractionBrowserTest);
+#else
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(DomTreeExtractionBrowserTest);
+#endif
 
 // This feature uses network observation and works exactly and only for
 // network::ErrorReason::BLOCKED_BY_CLIENT modifications that are initiated
@@ -1029,31 +1039,6 @@ class BlockedByClient_NetworkObserver_Test
 
 DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(BlockedByClient_NetworkObserver_Test);
 
-class DevToolsSetCookieTest : public HeadlessAsyncDevTooledBrowserTest,
-                              public network::Observer {
- public:
-  void RunDevTooledTest() override {
-    EXPECT_TRUE(embedded_test_server()->Start());
-    devtools_client_->GetNetwork()->AddObserver(this);
-
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    devtools_client_->GetNetwork()->Enable(run_loop.QuitClosure());
-    run_loop.Run();
-
-    devtools_client_->GetPage()->Navigate(
-        embedded_test_server()->GetURL("/set-cookie?cookie1").spec());
-  }
-
-  void OnResponseReceived(
-      const network::ResponseReceivedParams& params) override {
-    EXPECT_NE(std::string::npos, params.GetResponse()->GetHeadersText().find(
-                                     "Set-Cookie: cookie1"));
-    FinishAsynchronousTest();
-  }
-};
-
-HEADLESS_ASYNC_DEVTOOLED_TEST_F(DevToolsSetCookieTest);
-
 class DevtoolsInterceptionWithAuthProxyTest
     : public HeadlessAsyncDevTooledBrowserTest,
       public network::ExperimentalObserver,
@@ -1145,8 +1130,11 @@ class DevtoolsInterceptionWithAuthProxyTest
   std::set<std::string> files_loaded_;
 };
 
-#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
+// TODO(crbug.com/1090933): Reenable on Fuchsia when fixed.
+// NOTE: This macro expands to:
+//   DevtoolsInterceptionWithAuthProxyTest.RunAsyncTest
 DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(DevtoolsInterceptionWithAuthProxyTest);
 #else
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(DevtoolsInterceptionWithAuthProxyTest);

@@ -65,7 +65,7 @@ Don't assume that readers know everything you currently know.
 
 If you got this far and have some experience with Chromium's code, you'll have figured out that these guidelines are aspirational more than what the world looks like today. So what do we do when working with existing code.
 
-First off: ***[Documentation changes can be TBRed](https://chromium.googlesource.com/chromium/src/+/master/docs/code_reviews.md#documentation-updates)***. Even in-code changes. If you have discovered something that isn't documented, have figured out how it works and would like to pay it forward, feel free to write something down and check it in.
+First off: ***[Documentation changes can be TBRed](https://chromium.googlesource.com/chromium/src/+/main/docs/code_reviews.md#documentation-updates)***. Even in-code changes. If you have discovered something that isn't documented, have figured out how it works and would like to pay it forward, feel free to write something down and check it in.
 
 At the component level, if you are the owner of a component that isn't documented, please add a README.md with content as per the above.
 

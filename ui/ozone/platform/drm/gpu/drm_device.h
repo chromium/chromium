@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/linux/gbm_device.h"
@@ -40,6 +40,10 @@ class DrmDevice;
 class DrmPropertyBlobMetadata {
  public:
   DrmPropertyBlobMetadata(DrmDevice* drm, uint32_t id);
+
+  DrmPropertyBlobMetadata(const DrmPropertyBlobMetadata&) = delete;
+  DrmPropertyBlobMetadata& operator=(const DrmPropertyBlobMetadata&) = delete;
+
   ~DrmPropertyBlobMetadata();
 
   uint32_t id() const { return id_; }
@@ -47,8 +51,6 @@ class DrmPropertyBlobMetadata {
  private:
   DrmDevice* drm_;  // Not owned;
   uint32_t id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmPropertyBlobMetadata);
 };
 
 using ScopedDrmPropertyBlob = std::unique_ptr<DrmPropertyBlobMetadata>;
@@ -64,17 +66,20 @@ class DrmDevice : public base::RefCountedThreadSafe<DrmDevice> {
 
   struct Property {
     // Unique identifier for the property. 0 denotes an invalid ID.
-    uint32_t id;
+    uint32_t id = 0;
 
     // Depending on the property, this may be an actual value describing the
     // property or an ID of another property.
-    uint64_t value;
+    uint64_t value = 0;
   };
 
   DrmDevice(const base::FilePath& device_path,
             base::File file,
             bool is_primary_device,
             std::unique_ptr<GbmDevice> gbm_device);
+
+  DrmDevice(const DrmDevice&) = delete;
+  DrmDevice& operator=(const DrmDevice&) = delete;
 
   bool is_primary_device() const { return is_primary_device_; }
 
@@ -225,9 +230,14 @@ class DrmDevice : public base::RefCountedThreadSafe<DrmDevice> {
   virtual bool SetGammaRamp(uint32_t crtc_id,
                             const std::vector<display::GammaRampRGBEntry>& lut);
 
+  virtual absl::optional<std::string> GetDriverName() const;
+
   // Drm master related
   virtual bool SetMaster();
   virtual bool DropMaster();
+
+  // Adds trace records to |context|.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
   int modeset_sequence_id() const { return modeset_sequence_id_; }
 
@@ -280,8 +290,6 @@ class DrmDevice : public base::RefCountedThreadSafe<DrmDevice> {
   bool allow_addfb2_modifiers_ = false;
 
   const std::unique_ptr<GbmDevice> gbm_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDevice);
 };
 
 }  // namespace ui

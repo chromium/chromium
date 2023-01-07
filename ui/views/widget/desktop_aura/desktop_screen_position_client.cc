@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace {
 // Returns true if bounds passed to window in SetBounds should be treated as
 // though they are in screen coordinates.
 bool PositionWindowInScreenCoordinates(aura::Window* window) {
-  if (window->type() == aura::client::WINDOW_TYPE_POPUP)
+  if (window->GetType() == aura::client::WINDOW_TYPE_POPUP)
     return true;
 
   Widget* widget = Widget::GetWidgetForNativeView(window);

@@ -1,22 +1,24 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/layers/layer_impl.h"
 
-#include "base/stl_util.h"
+#include <algorithm>
+
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/test/animation_test_common.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/tree_synchronizer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace cc {
 namespace {
@@ -41,14 +43,14 @@ namespace {
   EXPECT_TRUE(grand_child->LayerPropertyChangedFromPropertyTrees()); \
   EXPECT_FALSE(grand_child->LayerPropertyChangedNotFromPropertyTrees());
 
-#define EXECUTE_AND_VERIFY_ONLY_LAYER_CHANGED(code_to_test)               \
-  root->layer_tree_impl()->ResetAllChangeTracking();                      \
-  root->layer_tree_impl()->property_trees()->full_tree_damaged = false;   \
-  code_to_test;                                                           \
-  EXPECT_TRUE(root->LayerPropertyChanged());                              \
-  EXPECT_FALSE(root->LayerPropertyChangedFromPropertyTrees());            \
-  EXPECT_TRUE(root->LayerPropertyChangedNotFromPropertyTrees());          \
-  EXPECT_FALSE(child->LayerPropertyChanged());                            \
+#define EXECUTE_AND_VERIFY_ONLY_LAYER_CHANGED(code_to_test)                \
+  root->layer_tree_impl()->ResetAllChangeTracking();                       \
+  root->layer_tree_impl()->property_trees()->set_full_tree_damaged(false); \
+  code_to_test;                                                            \
+  EXPECT_TRUE(root->LayerPropertyChanged());                               \
+  EXPECT_FALSE(root->LayerPropertyChangedFromPropertyTrees());             \
+  EXPECT_TRUE(root->LayerPropertyChangedNotFromPropertyTrees());           \
+  EXPECT_FALSE(child->LayerPropertyChanged());                             \
   EXPECT_FALSE(grand_child->LayerPropertyChanged());
 
 #define VERIFY_NEEDS_UPDATE_DRAW_PROPERTIES(code_to_test)                   \
@@ -64,14 +66,6 @@ namespace {
   EXPECT_FALSE(host_impl()->active_tree()->needs_update_draw_properties()); \
   code_to_test;                                                             \
   EXPECT_FALSE(host_impl()->active_tree()->needs_update_draw_properties());
-
-static gfx::Vector2dF ScrollDelta(LayerImpl* layer_impl) {
-  gfx::ScrollOffset delta = layer_impl->layer_tree_impl()
-                                ->property_trees()
-                                ->scroll_tree.GetScrollOffsetDeltaForTesting(
-                                    layer_impl->element_id());
-  return gfx::Vector2dF(delta.x(), delta.y());
-}
 
 class LayerImplTest : public LayerTreeImplTestBase, public ::testing::Test {
  public:
@@ -108,7 +102,7 @@ TEST_F(LayerImplTest, VerifyPendingLayerChangesAreTrackedProperly) {
   gfx::Point arbitrary_point = gfx::Point(333, 444);
 
   gfx::Rect arbitrary_rect = gfx::Rect(arbitrary_point, arbitrary_size);
-  SkColor arbitrary_color = SkColorSetRGB(10, 20, 30);
+  SkColor4f arbitrary_color{0.1f, 0.2f, 0.3f, 1.0f};
   gfx::Transform arbitrary_transform;
   arbitrary_transform.Scale3d(0.1f, 0.2f, 0.3f);
   FilterOperations arbitrary_filters;
@@ -169,8 +163,10 @@ TEST_F(LayerImplTest, VerifyNeedsUpdateDrawProperties) {
   float arbitrary_number = 0.352f;
   gfx::Size arbitrary_size = gfx::Size(111, 222);
   gfx::Vector2d arbitrary_vector2d = gfx::Vector2d(111, 222);
+  gfx::PointF arbitrary_scroll_offset(
+      gfx::PointAtOffsetFromOrigin(arbitrary_vector2d));
   gfx::Size large_size = gfx::Size(1000, 1000);
-  SkColor arbitrary_color = SkColorSetRGB(10, 20, 30);
+  SkColor4f arbitrary_color{0.1f, 0.2f, 0.3f, 1.0f};
   gfx::Transform arbitrary_transform;
   arbitrary_transform.Scale3d(0.1f, 0.2f, 0.3f);
   FilterOperations arbitrary_filters;
@@ -212,12 +208,12 @@ TEST_F(LayerImplTest, VerifyNeedsUpdateDrawProperties) {
       layer->layer_tree_impl()->DidUpdateScrollOffset(layer->element_id()));
   layer->layer_tree_impl()
       ->property_trees()
-      ->scroll_tree.SetScrollOffsetDeltaForTesting(layer->element_id(),
-                                                   gfx::Vector2dF());
-  VERIFY_NEEDS_UPDATE_DRAW_PROPERTIES(layer->SetCurrentScrollOffset(
-      gfx::ScrollOffset(arbitrary_vector2d.x(), arbitrary_vector2d.y())));
-  VERIFY_NO_NEEDS_UPDATE_DRAW_PROPERTIES(layer->SetCurrentScrollOffset(
-      gfx::ScrollOffset(arbitrary_vector2d.x(), arbitrary_vector2d.y())));
+      ->scroll_tree_mutable()
+      .SetScrollOffsetDeltaForTesting(layer->element_id(), gfx::Vector2dF());
+  VERIFY_NEEDS_UPDATE_DRAW_PROPERTIES(
+      layer->SetCurrentScrollOffset(arbitrary_scroll_offset));
+  VERIFY_NO_NEEDS_UPDATE_DRAW_PROPERTIES(
+      layer->SetCurrentScrollOffset(arbitrary_scroll_offset));
 
   // Unrelated functions, always set to new values, always set needs update.
   host_impl()->active_tree()->set_needs_update_draw_properties();
@@ -260,41 +256,45 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     gfx::Transform transform;
     transform.Scale(10.2f, 15.1f);
     transform.ApplyPerspectiveDepth(10);
+    transform.RotateAboutXAxis(15.0f);
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
-    EXPECT_FLOAT_EQ(15.f, layer->GetIdealContentsScale());
+    EXPECT_EQ(gfx::Vector2dF(15.f, 15.f), layer->GetIdealContentsScale());
   }
   // Ensure that we don't fall below the device scale factor.
   {
     gfx::Transform transform;
     transform.Scale(0.1f, 0.2f);
     transform.ApplyPerspectiveDepth(10);
+    transform.RotateAboutXAxis(15.0f);
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
-    EXPECT_FLOAT_EQ(1.f, layer->GetIdealContentsScale());
+    EXPECT_EQ(gfx::Vector2dF(1.f, 1.f), layer->GetIdealContentsScale());
   }
   // Ensure that large scales don't end up extremely large.
   {
     gfx::Transform transform;
     transform.Scale(10000.1f, 10000.2f);
     transform.ApplyPerspectiveDepth(10);
+    transform.RotateAboutXAxis(15.0f);
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
-    EXPECT_FLOAT_EQ(127.f, layer->GetIdealContentsScale());
+    EXPECT_EQ(gfx::Vector2dF(127.f, 127.f), layer->GetIdealContentsScale());
   }
   // Test case from crbug.com/766021.
   {
-    gfx::Transform transform(-0.9397f, -0.7019f, 0.2796f, 2383.4521f,   // row 1
-                             -0.0038f, 0.0785f, 1.0613f, 1876.4553f,    // row 2
-                             -0.0835f, 0.9081f, -0.4105f, -2208.3035f,  // row 3
-                             0.0001f, -0.0008f, 0.0003f, 2.8435f);      // row 4
+    auto transform = gfx::Transform::RowMajor(
+        -0.9397f, -0.7019f, 0.2796f, 2383.4521f,   // row 1
+        -0.0038f, 0.0785f, 1.0613f, 1876.4553f,    // row 2
+        -0.0835f, 0.9081f, -0.4105f, -2208.3035f,  // row 3
+        0.0001f, -0.0008f, 0.0003f, 2.8435f);      // row 4
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
-    EXPECT_FLOAT_EQ(1.f, layer->GetIdealContentsScale());
+    EXPECT_EQ(gfx::Vector2dF(1.f, 1.f), layer->GetIdealContentsScale());
   }
 }
 
@@ -322,11 +322,13 @@ class LayerImplScrollTest : public LayerImplTest {
   LayerImpl* layer() { return layer_; }
 
   ScrollTree* scroll_tree(LayerImpl* layer_impl) {
-    return &layer_impl->layer_tree_impl()->property_trees()->scroll_tree;
+    return &layer_impl->layer_tree_impl()
+                ->property_trees()
+                ->scroll_tree_mutable();
   }
 
  private:
-  LayerImpl* layer_;
+  raw_ptr<LayerImpl> layer_;
 };
 
 class CommitToPendingTreeLayerImplScrollTest : public LayerImplScrollTest {
@@ -344,63 +346,63 @@ TEST_F(LayerImplScrollTest, ScrollByWithZeroOffset) {
   // Test that LayerImpl::ScrollBy only affects ScrollDelta and total scroll
   // offset is bounded by the range [0, max scroll offset].
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(layer()));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(),
+  EXPECT_POINTF_EQ(gfx::PointF(), CurrentScrollOffset(layer()));
+  EXPECT_POINTF_EQ(gfx::PointF(),
                    scroll_tree(layer())->GetScrollOffsetBaseForTesting(
                        layer()->element_id()));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), ScrollDelta(layer()));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(), ScrollDelta(layer()));
 
   layer()->ScrollBy(gfx::Vector2dF(-100, 100));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 80), CurrentScrollOffset(layer()));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 80), CurrentScrollOffset(layer()));
 
-  EXPECT_VECTOR_EQ(ScrollDelta(layer()), CurrentScrollOffset(layer()));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(),
+  EXPECT_POINTF_EQ(gfx::PointAtOffsetFromOrigin(ScrollDelta(layer())),
+                   CurrentScrollOffset(layer()));
+  EXPECT_POINTF_EQ(gfx::PointF(),
                    scroll_tree(layer())->GetScrollOffsetBaseForTesting(
                        layer()->element_id()));
 
   layer()->ScrollBy(gfx::Vector2dF(100, -100));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 0), CurrentScrollOffset(layer()));
+  EXPECT_POINTF_EQ(gfx::PointF(50, 0), CurrentScrollOffset(layer()));
 
-  EXPECT_VECTOR_EQ(ScrollDelta(layer()), CurrentScrollOffset(layer()));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(),
+  EXPECT_POINTF_EQ(gfx::PointAtOffsetFromOrigin(ScrollDelta(layer())),
+                   CurrentScrollOffset(layer()));
+  EXPECT_POINTF_EQ(gfx::PointF(),
                    scroll_tree(layer())->GetScrollOffsetBaseForTesting(
                        layer()->element_id()));
 }
 
 TEST_F(LayerImplScrollTest, ScrollByWithNonZeroOffset) {
-  gfx::ScrollOffset scroll_offset(10, 5);
+  gfx::PointF scroll_offset(10, 5);
   scroll_tree(layer())->UpdateScrollOffsetBaseForTesting(layer()->element_id(),
                                                          scroll_offset);
 
-  EXPECT_VECTOR_EQ(scroll_offset, CurrentScrollOffset(layer()));
-  EXPECT_VECTOR_EQ(scroll_offset,
+  EXPECT_POINTF_EQ(scroll_offset, CurrentScrollOffset(layer()));
+  EXPECT_POINTF_EQ(scroll_offset,
                    scroll_tree(layer())->GetScrollOffsetBaseForTesting(
                        layer()->element_id()));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), ScrollDelta(layer()));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(), ScrollDelta(layer()));
 
   layer()->ScrollBy(gfx::Vector2dF(-100, 100));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 80), CurrentScrollOffset(layer()));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 80), CurrentScrollOffset(layer()));
 
-  EXPECT_VECTOR_EQ(
-      gfx::ScrollOffsetWithDelta(scroll_offset, ScrollDelta(layer())),
-      CurrentScrollOffset(layer()));
-  EXPECT_VECTOR_EQ(scroll_offset,
+  EXPECT_POINTF_EQ(scroll_offset + ScrollDelta(layer()),
+                   CurrentScrollOffset(layer()));
+  EXPECT_POINTF_EQ(scroll_offset,
                    scroll_tree(layer())->GetScrollOffsetBaseForTesting(
                        layer()->element_id()));
 
   layer()->ScrollBy(gfx::Vector2dF(100, -100));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 0), CurrentScrollOffset(layer()));
+  EXPECT_POINTF_EQ(gfx::PointF(50, 0), CurrentScrollOffset(layer()));
 
-  EXPECT_VECTOR_EQ(
-      gfx::ScrollOffsetWithDelta(scroll_offset, ScrollDelta(layer())),
-      CurrentScrollOffset(layer()));
-  EXPECT_VECTOR_EQ(scroll_offset,
+  EXPECT_POINTF_EQ(scroll_offset + ScrollDelta(layer()),
+                   CurrentScrollOffset(layer()));
+  EXPECT_POINTF_EQ(scroll_offset,
                    scroll_tree(layer())->GetScrollOffsetBaseForTesting(
                        layer()->element_id()));
 }
 
 TEST_F(LayerImplScrollTest, ApplySentScrollsNoListener) {
-  gfx::ScrollOffset scroll_offset(10, 5);
+  gfx::PointF scroll_offset(10, 5);
   gfx::Vector2dF scroll_delta(20.5f, 8.5f);
   gfx::Vector2d sent_scroll_delta(12, -3);
 
@@ -408,28 +410,26 @@ TEST_F(LayerImplScrollTest, ApplySentScrollsNoListener) {
                                                          scroll_offset);
   layer()->ScrollBy(sent_scroll_delta);
   scroll_tree(layer())->CollectScrollDeltasForTesting();
-  layer()->SetCurrentScrollOffset(scroll_offset +
-                                  gfx::ScrollOffset(scroll_delta));
+  layer()->SetCurrentScrollOffset(scroll_offset + scroll_delta);
 
-  EXPECT_VECTOR_EQ(gfx::ScrollOffsetWithDelta(scroll_offset, scroll_delta),
-                   CurrentScrollOffset(layer()));
-  EXPECT_VECTOR_EQ(scroll_delta, ScrollDelta(layer()));
-  EXPECT_VECTOR_EQ(scroll_offset,
+  EXPECT_POINTF_EQ(scroll_offset + scroll_delta, CurrentScrollOffset(layer()));
+  EXPECT_VECTOR2DF_EQ(scroll_delta, ScrollDelta(layer()));
+  EXPECT_POINTF_EQ(scroll_offset,
                    scroll_tree(layer())->GetScrollOffsetBaseForTesting(
                        layer()->element_id()));
 
-  scroll_tree(layer())->ApplySentScrollDeltasFromAbortedCommit();
+  scroll_tree(layer())->ApplySentScrollDeltasFromAbortedCommit(
+      /* next_bmf */ false, /* main_frame_applied_deltas */ true);
 
-  EXPECT_VECTOR_EQ(gfx::ScrollOffsetWithDelta(scroll_offset, scroll_delta),
-                   CurrentScrollOffset(layer()));
-  EXPECT_VECTOR_EQ(scroll_delta - sent_scroll_delta, ScrollDelta(layer()));
-  EXPECT_VECTOR_EQ(gfx::ScrollOffsetWithDelta(scroll_offset, sent_scroll_delta),
+  EXPECT_POINTF_EQ(scroll_offset + scroll_delta, CurrentScrollOffset(layer()));
+  EXPECT_VECTOR2DF_EQ(scroll_delta - sent_scroll_delta, ScrollDelta(layer()));
+  EXPECT_POINTF_EQ(scroll_offset + sent_scroll_delta,
                    scroll_tree(layer())->GetScrollOffsetBaseForTesting(
                        layer()->element_id()));
 }
 
 TEST_F(LayerImplScrollTest, ScrollUserUnscrollableLayer) {
-  gfx::ScrollOffset scroll_offset(10, 5);
+  gfx::PointF scroll_offset(10, 5);
   gfx::Vector2dF scroll_delta(20.5f, 8.5f);
 
   GetScrollNode(layer())->user_scrollable_vertical = false;
@@ -438,8 +438,8 @@ TEST_F(LayerImplScrollTest, ScrollUserUnscrollableLayer) {
                                                          scroll_offset);
   gfx::Vector2dF unscrolled = layer()->ScrollBy(scroll_delta);
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 8.5f), unscrolled);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(30.5f, 5), CurrentScrollOffset(layer()));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 8.5f), unscrolled);
+  EXPECT_POINTF_EQ(gfx::PointF(30.5f, 5), CurrentScrollOffset(layer()));
 }
 
 // |LayerImpl::all_touch_action_regions_| is a cache of all regions on
@@ -469,7 +469,7 @@ TEST_F(LayerImplScrollTest, TouchActionRegionCacheInvalidation) {
 
 TEST_F(CommitToPendingTreeLayerImplScrollTest,
        PushPropertiesToMirrorsCurrentScrollOffset) {
-  gfx::ScrollOffset scroll_offset(10, 5);
+  gfx::PointF scroll_offset(10, 5);
   gfx::Vector2dF scroll_delta(12, 18);
 
   host_impl()->CreatePendingTree();
@@ -478,8 +478,8 @@ TEST_F(CommitToPendingTreeLayerImplScrollTest,
                                                          scroll_offset);
   gfx::Vector2dF unscrolled = layer()->ScrollBy(scroll_delta);
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), unscrolled);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(22, 23), CurrentScrollOffset(layer()));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), unscrolled);
+  EXPECT_POINTF_EQ(gfx::PointF(22, 23), CurrentScrollOffset(layer()));
 
   scroll_tree(layer())->CollectScrollDeltasForTesting();
 
@@ -493,8 +493,8 @@ TEST_F(CommitToPendingTreeLayerImplScrollTest,
 
   pending_layer->PushPropertiesTo(layer());
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(22, 23), CurrentScrollOffset(layer()));
-  EXPECT_VECTOR_EQ(CurrentScrollOffset(layer()),
+  EXPECT_POINTF_EQ(gfx::PointF(22, 23), CurrentScrollOffset(layer()));
+  EXPECT_POINTF_EQ(CurrentScrollOffset(layer()),
                    CurrentScrollOffset(pending_layer.get()));
 }
 
@@ -521,7 +521,7 @@ TEST_F(LayerImplTest, JitterTest) {
     accumulated_scroll += scroll;
     SetScrollOffset(
         host_impl()->active_tree()->InnerViewportScrollLayerForTesting(),
-        gfx::ScrollOffset(0, accumulated_scroll));
+        gfx::PointF(0, accumulated_scroll));
     UpdateActiveTreeDrawProperties();
 
     host_impl()->CreatePendingTree();
@@ -529,7 +529,7 @@ TEST_F(LayerImplTest, JitterTest) {
     pending_tree->set_source_frame_number(i + 1);
     pending_tree->PushPageScaleFromMainThread(1.f, 1.f, 1.f);
     // Simulate scroll offset pushed from the main thread.
-    SetScrollOffset(scroll_layer, gfx::ScrollOffset(0, accumulated_scroll));
+    SetScrollOffset(scroll_layer, gfx::PointF(0, accumulated_scroll));
     // The scroll done on the active tree is undone on the pending tree.
     content_layer->SetOffsetToTransformParent(
         gfx::Vector2dF(0, accumulated_scroll));

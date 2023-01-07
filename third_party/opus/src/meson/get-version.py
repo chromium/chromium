@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
         # check if git checkout
         git_dir = os.path.join(srcroot, '.git')
-        is_git = os.path.isdir(git_dir)
+        is_git = os.path.isdir(git_dir) or os.path.isfile(git_dir)
         have_git = shutil.which('git') is not None
 
         if is_git and have_git:

@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.CheckboxTest');
 goog.setTestOnly();
@@ -52,6 +44,10 @@ class TestCheckboxRenderer extends CheckboxRenderer {
   }
 }
 
+/**
+ * @suppress {strictMissingProperties} suppression added to enable type
+ * checking
+ */
 function validateCheckBox(span, state, disabled = undefined) {
   const testCheckbox = decorate(span);
   assertNotNull('checkbox created', testCheckbox);
@@ -229,6 +225,7 @@ testSuite({
 
   testCheckboxAriaLabelledby() {
     const label = dom.createElement(TagName.DIV);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const label2 = dom.createElement(TagName.DIV, {id: checkbox.makeId('foo')});
     document.body.appendChild(label);
     document.body.appendChild(label2);
@@ -249,6 +246,7 @@ testSuite({
     }
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testLabel() {
     const label = dom.createElement(TagName.DIV);
     document.body.appendChild(label);
@@ -351,6 +349,7 @@ testSuite({
     const cssClass = 'my-custom-checkbox';
     const renderer =
         ControlRenderer.getCustomRenderer(CheckboxRenderer, cssClass);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const customCheckbox = new Checkbox(undefined, undefined, renderer);
     customCheckbox.createDom();
     assertElementsEquals(

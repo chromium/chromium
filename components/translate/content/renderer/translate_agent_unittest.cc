@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,7 @@
 
 namespace translate {
 
-class TranslateAgentTest : public testing::Test {};
-
-TEST_F(TranslateAgentTest, TestBuildTranslationScript) {
+TEST(TranslateAgentTest, TestBuildTranslationScript) {
   // Test expected cases.
   EXPECT_EQ(TranslateAgent::BuildTranslationScript("en", "es"),
             "cr.googleTranslate.translate(\"en\",\"es\")");

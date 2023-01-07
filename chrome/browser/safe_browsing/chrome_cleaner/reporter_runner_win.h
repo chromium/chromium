@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,9 +37,10 @@ class SwReporterTestingDelegate {
       const SwReporterInvocation& invocation,
       const base::LaunchOptions& options) = 0;
 
-  // Invoked by tests in place of base::Process::WaitForExit.
-  virtual int WaitForReporterExit(
-      const base::Process& reporter_process) const = 0;
+  // Invoked by tests in place of base::Process::WaitForExitWithTimeout.
+  virtual bool WaitForReporterExit(const base::Process& reporter_process,
+                                   base::TimeDelta timeout,
+                                   int* exit_code) = 0;
 
   // Invoked by tests to override the current time.
   // See Now() in reporter_runner_win.cc.
@@ -56,6 +57,18 @@ class SwReporterTestingDelegate {
   virtual void CreateChromeCleanerDialogController() = 0;
 };
 
+// Stores the exit code and other data about a reporter run.
+struct ReporterRunResult {
+  // Exit code of the reporter process.
+  int exit_code = 0;
+
+  // Running time of the process (including time the computer is asleep).
+  base::TimeDelta running_time;
+
+  // Running time of the process, not including time the computer is asleep.
+  base::TimeDelta running_time_without_sleep;
+};
+
 // Set a delegate for testing. The implementation will not take ownership of
 // |delegate| - it must remain valid until this function is called again to
 // reset the delegate. If |delegate| is nullptr, any previous delegate is
@@ -66,9 +79,9 @@ void SetSwReporterTestingDelegate(SwReporterTestingDelegate* delegate);
 // on this version of Windows. Exposed for testing.
 bool ReporterTerminatesOnBrowserExit();
 
-// Launches a reporter process based on the command-line in |invocation| and
-// returns its exit code. Exposed for testing.
-int LaunchAndWaitForExit(const SwReporterInvocation& invocation);
+// Launches a reporter process based on the command-line in `invocation` and
+// returns its exit code and running time. Exposed for testing.
+ReporterRunResult LaunchAndWaitForExit(const SwReporterInvocation& invocation);
 
 }  // namespace internal
 

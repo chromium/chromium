@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
@@ -20,9 +20,6 @@
 namespace content {
 
 class StoragePartitionImpl;
-
-// Key name on BrowserContext.
-extern const char kBackgroundSyncSchedulerKey[];
 
 // This contains the logic to schedule delayed processing of (periodic)
 // Background Sync registrations.
@@ -35,6 +32,9 @@ class CONTENT_EXPORT BackgroundSyncScheduler
   static BackgroundSyncScheduler* GetFor(BrowserContext* browser_context);
 
   BackgroundSyncScheduler();
+
+  BackgroundSyncScheduler(const BackgroundSyncScheduler&) = delete;
+  BackgroundSyncScheduler& operator=(const BackgroundSyncScheduler&) = delete;
 
   // Schedules delayed_processing for |sync_type| for |storage_partition|.
   // On non-Android platforms, runs |delayed_task| after |delay| has passed.
@@ -64,7 +64,7 @@ class CONTENT_EXPORT BackgroundSyncScheduler
   void RunDelayedTaskAndPruneInfoMap(blink::mojom::BackgroundSyncType sync_type,
                                      StoragePartitionImpl* storage_partition,
                                      base::OnceClosure delayed_task);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ScheduleOrCancelBrowserWakeupForSyncType(
       blink::mojom::BackgroundSyncType sync_type,
       StoragePartitionImpl* storage_partition);
@@ -82,8 +82,6 @@ class CONTENT_EXPORT BackgroundSyncScheduler
       };
 
   base::WeakPtrFactory<BackgroundSyncScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncScheduler);
 };
 
 }  // namespace content

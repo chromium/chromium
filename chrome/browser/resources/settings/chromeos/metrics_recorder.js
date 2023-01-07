@@ -1,12 +1,6 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-// clang-format off
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js'
-// #import '../constants/setting.mojom-lite.js';
-// #import '../search/user_action_recorder.mojom-lite.js';
-// clang-format on
 
 /**
  * @fileoverview
@@ -14,76 +8,66 @@
  * Also provides a way to inject a test implementation for verifying
  * user action recording.
  */
-cr.define('settings', function() {
-  /** @type {?chromeos.settings.mojom.UserActionRecorderInterface} */
-  let userActionRecorder = null;
 
-  /**
-   * @param {!chromeos.settings.mojom.UserActionRecorderInterface}
-   *     testRecorder
-   */
-  /* #export */ function setUserActionRecorderForTesting(testRecorder) {
-    userActionRecorder = testRecorder;
-  }
+import {SettingChangeValue, UserActionRecorder, UserActionRecorderInterface} from '../mojom-webui/search/user_action_recorder.mojom-webui.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
-  /**
-   * @return {!chromeos.settings.mojom.UserActionRecorderInterface}
-   */
-  function getRecorder() {
-    if (userActionRecorder) {
-      return userActionRecorder;
-    }
+/** @type {?UserActionRecorderInterface} */
+let userActionRecorder = null;
 
-    userActionRecorder = chromeos.settings.mojom.UserActionRecorder.getRemote();
+/**
+ * @param {!UserActionRecorderInterface} testRecorder
+ */
+export function setUserActionRecorderForTesting(testRecorder) {
+  userActionRecorder = testRecorder;
+}
+
+/**
+ * @return {!UserActionRecorderInterface}
+ */
+function getRecorder() {
+  if (userActionRecorder) {
     return userActionRecorder;
   }
 
-  /* #export */ function recordPageFocus() {
-    getRecorder().recordPageFocus();
-  }
+  userActionRecorder = UserActionRecorder.getRemote();
+  return userActionRecorder;
+}
 
-  /* #export */ function recordPageBlur() {
-    getRecorder().recordPageBlur();
-  }
+export function recordPageFocus() {
+  getRecorder().recordPageFocus();
+}
 
-  /* #export */ function recordClick() {
-    getRecorder().recordClick();
-  }
+export function recordPageBlur() {
+  getRecorder().recordPageBlur();
+}
 
-  /* #export */ function recordNavigation() {
-    getRecorder().recordNavigation();
-  }
+export function recordClick() {
+  getRecorder().recordClick();
+}
 
-  /* #export */ function recordSearch() {
-    getRecorder().recordSearch();
-  }
+export function recordNavigation() {
+  getRecorder().recordNavigation();
+}
 
-  /**
-   * All new code should pass a value for |opt_setting| and, if applicable,
-   * |opt_value|. The zero-parameter version of this function is reserved for
-   * legacy code which has not yet been converted.
-   * TODO(https://crbug.com/1133553): make |opt_setting| non-optional when
-   * migration is complete.
-   * @param {!chromeos.settings.mojom.Setting=} opt_setting
-   * @param {!chromeos.settings.mojom.SettingChangeValue=} opt_value
-   */
-  /* #export */ function recordSettingChange(opt_setting, opt_value) {
-    if (opt_setting === undefined) {
-      getRecorder().recordSettingChange();
-    } else {
-      getRecorder().recordSettingChangeWithDetails(
-          opt_setting, opt_value || null);
-    }
-  }
+export function recordSearch() {
+  getRecorder().recordSearch();
+}
 
-  // #cr_define_end
-  return {
-    setUserActionRecorderForTesting,
-    recordPageFocus,
-    recordPageBlur,
-    recordClick,
-    recordNavigation,
-    recordSearch,
-    recordSettingChange,
-  };
-});
+/**
+ * All new code should pass a value for |opt_setting| and, if applicable,
+ * |opt_value|. The zero-parameter version of this function is reserved for
+ * legacy code which has not yet been converted.
+ * TODO(https://crbug.com/1133553): make |opt_setting| non-optional when
+ * migration is complete.
+ * @param {!Setting=} opt_setting
+ * @param {!SettingChangeValue=} opt_value
+ */
+export function recordSettingChange(opt_setting, opt_value) {
+  if (opt_setting === undefined) {
+    getRecorder().recordSettingChange();
+  } else {
+    getRecorder().recordSettingChangeWithDetails(
+        opt_setting, opt_value || null);
+  }
+}

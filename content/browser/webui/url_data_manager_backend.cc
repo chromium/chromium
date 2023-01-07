@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,18 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/webui/shared_resources_data_source.h"
 #include "content/browser/webui/url_data_source_impl.h"
@@ -36,6 +35,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/filter/source_stream.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/log/net_log_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -54,6 +54,13 @@ const char kChromeURLContentSecurityPolicyReportOnlyHeaderName[] =
 const char kChromeURLContentSecurityPolicyReportOnlyHeaderValue[] =
     "require-trusted-types-for 'script'";
 
+const char kChromeURLCrossOriginOpenerPolicyName[] =
+    "Cross-Origin-Opener-Policy";
+const char kChromeURLCrossOriginEmbedderPolicyName[] =
+    "Cross-Origin-Embedder-Policy";
+const char kChromeURLCrossOriginResourcePolicyName[] =
+    "Cross-Origin-Resource-Policy";
+
 const char kChromeURLXFrameOptionsHeaderName[] = "X-Frame-Options";
 const char kChromeURLXFrameOptionsHeaderValue[] = "DENY";
 const char kNetworkErrorKey[] = "netError";
@@ -70,6 +77,10 @@ URLDataManagerBackend::URLDataManagerBackend() : next_request_id_(0) {
   // Add a shared data source for chrome://resources.
   AddDataSource(
       static_cast<WebUIDataSourceImpl*>(CreateSharedResourcesDataSource()));
+
+  // Add a shared data source for chrome-untrusted://resources.
+  AddDataSource(static_cast<WebUIDataSourceImpl*>(
+      CreateUntrustedSharedResourcesDataSource()));
 }
 
 URLDataManagerBackend::~URLDataManagerBackend() = default;
@@ -98,7 +109,7 @@ void URLDataManagerBackend::AddDataSource(URLDataSourceImpl* source) {
 
 void URLDataManagerBackend::UpdateWebUIDataSource(
     const std::string& source_name,
-    const base::DictionaryValue& update) {
+    const base::Value::Dict& update) {
   auto it = data_sources_.find(source_name);
   if (it == data_sources_.end() || !it->second->IsWebUIDataSourceImpl()) {
     NOTREACHED();
@@ -112,7 +123,7 @@ URLDataSourceImpl* URLDataManagerBackend::GetDataSourceFromURL(
     const GURL& url) {
   // chrome-untrusted:// sources keys are of the form "chrome-untrusted://host".
   if (url.scheme() == kChromeUIUntrustedScheme) {
-    auto i = data_sources_.find(url.GetOrigin().spec());
+    auto i = data_sources_.find(url.DeprecatedGetOriginAsURL().spec());
     if (i == data_sources_.end())
       return nullptr;
     return i->second.get();
@@ -136,7 +147,7 @@ URLDataSourceImpl* URLDataManagerBackend::GetDataSourceFromURL(
 
 scoped_refptr<net::HttpResponseHeaders> URLDataManagerBackend::GetHeaders(
     URLDataSourceImpl* source_impl,
-    const std::string& path,
+    const GURL& url,
     const std::string& origin) {
   // Set the headers so that requests serviced by ChromeURLDataManager return a
   // status code of 200. Without this they return a 0, which makes the status
@@ -158,7 +169,9 @@ scoped_refptr<net::HttpResponseHeaders> URLDataManagerBackend::GetHeaders(
         network::mojom::CSPDirectiveName::ChildSrc,
         network::mojom::CSPDirectiveName::ConnectSrc,
         network::mojom::CSPDirectiveName::DefaultSrc,
+        network::mojom::CSPDirectiveName::FencedFrameSrc,
         network::mojom::CSPDirectiveName::FormAction,
+        network::mojom::CSPDirectiveName::FontSrc,
         network::mojom::CSPDirectiveName::FrameSrc,
         network::mojom::CSPDirectiveName::ImgSrc,
         network::mojom::CSPDirectiveName::MediaSrc,
@@ -198,9 +211,22 @@ scoped_refptr<net::HttpResponseHeaders> URLDataManagerBackend::GetHeaders(
   if (!source->AllowCaching())
     headers->SetHeader("Cache-Control", "no-cache");
 
-  std::string mime_type = source->GetMimeType(path);
+  std::string mime_type = source->GetMimeType(url);
   if (source->ShouldServeMimeTypeAsContentTypeHeader() && !mime_type.empty())
     headers->SetHeader(net::HttpRequestHeaders::kContentType, mime_type);
+
+  const std::string coop_value = source->GetCrossOriginOpenerPolicy();
+  if (!coop_value.empty()) {
+    headers->SetHeader(kChromeURLCrossOriginOpenerPolicyName, coop_value);
+  }
+  const std::string coep_value = source->GetCrossOriginEmbedderPolicy();
+  if (!coep_value.empty()) {
+    headers->SetHeader(kChromeURLCrossOriginEmbedderPolicyName, coep_value);
+  }
+  const std::string corp_value = source->GetCrossOriginResourcePolicy();
+  if (!corp_value.empty()) {
+    headers->SetHeader(kChromeURLCrossOriginResourcePolicyName, corp_value);
+  }
 
   if (!origin.empty()) {
     std::string header = source->GetAccessControlAllowOriginForOrigin(origin);
@@ -232,22 +258,14 @@ bool URLDataManagerBackend::CheckURLIsValid(const GURL& url) {
 }
 
 bool URLDataManagerBackend::IsValidNetworkErrorCode(int error_code) {
-  base::Value error_codes = net::GetNetConstants();
-  const base::DictionaryValue* net_error_codes_dict = nullptr;
-
-  for (const auto& item : error_codes.DictItems()) {
-    if (item.first == kNetworkErrorKey) {
-      item.second.GetAsDictionary(&net_error_codes_dict);
-      break;
-    }
-  }
+  base::Value::Dict error_codes = net::GetNetConstants();
+  const base::Value::Dict* net_error_codes_dict =
+      error_codes.FindDict(kNetworkErrorKey);
 
   if (net_error_codes_dict != nullptr) {
-    for (base::DictionaryValue::Iterator itr(*net_error_codes_dict);
-         !itr.IsAtEnd(); itr.Advance()) {
-      int net_error_code;
-      itr.value().GetAsInteger(&net_error_code);
-      if (error_code == net_error_code)
+    for (auto it = net_error_codes_dict->begin();
+         it != net_error_codes_dict->end(); ++it) {
+      if (error_code == it->second.GetInt())
         return true;
     }
   }
@@ -255,11 +273,18 @@ bool URLDataManagerBackend::IsValidNetworkErrorCode(int error_code) {
 }
 
 std::vector<std::string> URLDataManagerBackend::GetWebUISchemes() {
-  std::vector<std::string> schemes;
-  schemes.push_back(kChromeUIScheme);
-  schemes.push_back(kChromeUIUntrustedScheme);
-  GetContentClient()->browser()->GetAdditionalWebUISchemes(&schemes);
-  return schemes;
+  // It's OK to cache this in a static because the class implementing
+  // GetAdditionalWebUISchemes() won't change while the application is
+  // running, and because those methods always add the same items.
+  static base::NoDestructor<std::vector<std::string>> webui_schemes([]() {
+    std::vector<std::string> schemes;
+    schemes.emplace_back(kChromeUIScheme);
+    schemes.emplace_back(kChromeUIUntrustedScheme);
+    GetContentClient()->browser()->GetAdditionalWebUISchemes(&schemes);
+    return schemes;
+  }());
+
+  return *webui_schemes;
 }
 
 }  // namespace content

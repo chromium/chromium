@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,8 +12,6 @@ source_set("storage") {
     "dom_storage/dom_storage_constants.h",
     "dom_storage/dom_storage_database.cc",
     "dom_storage/dom_storage_database.h",
-    "dom_storage/legacy_dom_storage_database.cc",
-    "dom_storage/legacy_dom_storage_database.h",
     "dom_storage/local_storage_impl.cc",
     "dom_storage/local_storage_impl.h",
     "dom_storage/session_storage_area_impl.cc",
@@ -32,8 +30,6 @@ source_set("storage") {
     "indexed_db/leveldb/leveldb_factory.h",
     "indexed_db/leveldb/leveldb_state.cc",
     "indexed_db/leveldb/leveldb_state.h",
-    "indexed_db/scopes/disjoint_range_lock_manager.cc",
-    "indexed_db/scopes/disjoint_range_lock_manager.h",
     "indexed_db/scopes/leveldb_scope.cc",
     "indexed_db/scopes/leveldb_scope.h",
     "indexed_db/scopes/leveldb_scope_deletion_mode.h",
@@ -45,12 +41,6 @@ source_set("storage") {
     "indexed_db/scopes/leveldb_scopes_factory.h",
     "indexed_db/scopes/leveldb_scopes_tasks.cc",
     "indexed_db/scopes/leveldb_scopes_tasks.h",
-    "indexed_db/scopes/scope_lock.cc",
-    "indexed_db/scopes/scope_lock.h",
-    "indexed_db/scopes/scope_lock_range.cc",
-    "indexed_db/scopes/scope_lock_range.h",
-    "indexed_db/scopes/scopes_lock_manager.cc",
-    "indexed_db/scopes/scopes_lock_manager.h",
     "indexed_db/scopes/varint_coding.cc",
     "indexed_db/scopes/varint_coding.h",
     "indexed_db/transactional_leveldb/leveldb_write_batch.cc",
@@ -79,22 +69,34 @@ source_set("storage") {
     "service_worker/service_worker_storage.h",
     "service_worker/service_worker_storage_control_impl.cc",
     "service_worker/service_worker_storage_control_impl.h",
+    "shared_storage/async_shared_storage_database.h",
+    "shared_storage/async_shared_storage_database_impl.cc",
+    "shared_storage/async_shared_storage_database_impl.h",
+    "shared_storage/shared_storage_database.cc",
+    "shared_storage/shared_storage_database.h",
+    "shared_storage/shared_storage_manager.cc",
+    "shared_storage/shared_storage_manager.h",
+    "shared_storage/shared_storage_options.cc",
+    "shared_storage/shared_storage_options.h",
     "storage_service_impl.cc",
     "storage_service_impl.h",
   ]
 
   public_deps = [
+    ":lock_manager",
     ":test_api_stubs",
     "//base",
     "//components/services/storage/dom_storage:local_storage_proto",
     "//components/services/storage/indexed_db/scopes:scopes_metadata_proto",
+    "//components/services/storage/privileged/mojom",
     "//components/services/storage/public/mojom",
     "//components/services/storage/service_worker:service_worker_proto",
+    "//components/services/storage/shared_storage/public/mojom",
     "//mojo/public/cpp/bindings",
     "//sql",
+    "//third_party/abseil-cpp:absl",
     "//third_party/blink/public/common",
     "//third_party/leveldatabase",
-    "//third_party/sqlite",
     "//url",
   ]
 
@@ -104,8 +106,25 @@ source_set("storage") {
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//storage/browser",
     "//storage/common",
+    "//third_party/sqlite",
   ]
+}
+
+component("lock_manager") {
+  sources = [
+    "indexed_db/locks/partitioned_lock.cc",
+    "indexed_db/locks/partitioned_lock.h",
+    "indexed_db/locks/partitioned_lock_manager.cc",
+    "indexed_db/locks/partitioned_lock_manager.h",
+    "indexed_db/locks/partitioned_lock_manager_impl.cc",
+    "indexed_db/locks/partitioned_lock_manager_impl.h",
+    "indexed_db/locks/partitioned_lock_range.cc",
+    "indexed_db/locks/partitioned_lock_range.h",
+  ]
+  deps = [ "//base" ]
+  defines = [ "IS_LOCK_MANAGER_IMPL" ]
 }
 
 # This is its own component target because it exposes global state to multiple
@@ -139,12 +158,30 @@ component("test_api_stubs") {
   defines = [ "IS_STORAGE_SERVICE_TEST_API_STUBS_IMPL" ]
 }
 
+bundle_data("tests_bundle_data") {
+  visibility = [ ":tests" ]
+  testonly = true
+  sources = [
+    "//components/test/data/storage/shared_storage.v0.init_too_old.sql",
+    "//components/test/data/storage/shared_storage.v1.empty_values_mapping.5origins.sql",
+    "//components/test/data/storage/shared_storage.v1.empty_values_mapping.6origins.sql",
+    "//components/test/data/storage/shared_storage.v1.empty_values_mapping.7origins.sql",
+    "//components/test/data/storage/shared_storage.v1.empty_values_mapping.8origins.sql",
+    "//components/test/data/storage/shared_storage.v1.init_too_new.sql",
+    "//components/test/data/storage/shared_storage.v1.iterator.sql",
+    "//components/test/data/storage/shared_storage.v1.no_budget_table.sql",
+    "//components/test/data/storage/shared_storage.v1.single_origin.sql",
+    "//components/test/data/storage/shared_storage.v1.sql",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
 source_set("tests") {
   testonly = true
 
   sources = [
     "dom_storage/dom_storage_database_unittest.cc",
-    "dom_storage/legacy_dom_storage_database_unittest.cc",
     "dom_storage/local_storage_impl_unittest.cc",
     "dom_storage/session_storage_area_impl_unittest.cc",
     "dom_storage/session_storage_data_map_unittest.cc",
@@ -152,12 +189,12 @@ source_set("tests") {
     "dom_storage/session_storage_metadata_unittest.cc",
     "dom_storage/session_storage_namespace_impl_unittest.cc",
     "dom_storage/storage_area_impl_unittest.cc",
-    "indexed_db/scopes/disjoint_range_lock_manager_unittest.cc",
+    "indexed_db/locks/partitioned_lock_manager_impl_unittest.cc",
+    "indexed_db/locks/partitioned_lock_manager_unittest.cc",
     "indexed_db/scopes/leveldb_scope_unittest.cc",
     "indexed_db/scopes/leveldb_scopes_coding_unittest.cc",
     "indexed_db/scopes/leveldb_scopes_tasks_unittest.cc",
     "indexed_db/scopes/leveldb_scopes_unittest.cc",
-    "indexed_db/scopes/scopes_lock_manager_unittest.cc",
     "indexed_db/scopes/varint_coding_unittest.cc",
     "indexed_db/transactional_leveldb/transactional_leveldb_transaction_unittest.cc",
     "indexed_db/transactional_leveldb/transactional_leveldb_unittest.cc",
@@ -168,24 +205,33 @@ source_set("tests") {
     "service_worker/service_worker_storage_test_utils.cc",
     "service_worker/service_worker_storage_test_utils.h",
     "service_worker/service_worker_storage_unittest.cc",
+    "shared_storage/async_shared_storage_database_impl_unittest.cc",
+    "shared_storage/shared_storage_database_unittest.cc",
+    "shared_storage/shared_storage_manager_unittest.cc",
     "storage_service_impl_unittest.cc",
   ]
 
   deps = [
     ":storage",
     ":test_support",
+    ":tests_bundle_data",
     "//base",
     "//base/test:test_support",
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/cpp/filesystem:tests",
     "//components/services/storage/public/mojom",
+    "//components/services/storage/public/mojom:tests",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
     "//net:test_support",
+    "//sql",
     "//sql:test_support",
+    "//storage/browser:browser",
+    "//storage/browser:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/sqlite",
   ]
 
   data = [ "//components/services/storage/test_data/" ]
@@ -205,11 +251,14 @@ source_set("test_support") {
     "indexed_db/leveldb/mock_level_db.h",
     "indexed_db/scopes/leveldb_scopes_test_utils.cc",
     "indexed_db/scopes/leveldb_scopes_test_utils.h",
+    "shared_storage/shared_storage_test_utils.cc",
+    "shared_storage/shared_storage_test_utils.h",
   ]
 
   deps = [
     ":storage",
     "//base/test:test_support",
+    "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/leveldatabase",
@@ -219,6 +268,5 @@ source_set("test_support") {
     "//base",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
-    "//third_party/blink/public/mojom/dom_storage",
   ]
 }

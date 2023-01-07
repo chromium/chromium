@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright (c) 2012 The Chromium Authors. All rights reserved.  Use of this
-  source code is governed by a BSD-style license that can be found in the
-  LICENSE file.
+  Copyright 2012 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+<!--
+Note: This is a jinja2 template, processed at build time into the final manifest.
+
+Blocks denoted with { % block some_name % }foo{ % endblock % } can be overridden
+by a child template that "extends" this file.
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -23,6 +30,8 @@
 
     <!-- Required by WebView Developer UI only -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Required to run the foreground service-->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application android:label="{{ application_label|default('Android System WebView') }}"
                  android:icon="@{{manifest_package|default('com.android.webview')}}:drawable/icon_webview"
@@ -34,7 +43,17 @@
         {% macro common(manifest_package, webview_lib) %}
             <meta-data android:name="com.android.webview.WebViewLibrary"
                        android:value="{{ webview_lib }}" />
-
+            <!-- Service used to hold androidx.webkit startup feature metadata
+                 that can be read from other apps via PackageManager. -->
+            <service
+              android:name="org.chromium.android_webview.services.StartupFeatureMetadataHolder"
+              android:enabled="false"
+              android:exported="true"
+              tools:ignore="ExportedService">
+              <meta-data
+                  android:name="SET_DATA_DIRECTORY_SUFFIX:DEV"
+                  android:value="true"/>
+            </service>
             <!-- WebView Developer UI Activities. If you change these Activities, please update
                  android_webview/test/shell/AndroidManifest.xml as well. -->
             <!--suppress HardcodedText -->
@@ -63,6 +82,15 @@
                       android:process=":webview_apk" />  {# Explicit process required for monochrome compatibility. #}
             <!-- End of WebView Developer UI Activities -->
 
+            <!-- Don't actually try to launch with this alias: it only exists so we can query its enabled state. -->
+            <!-- If you change this component make sure to update the corresponding copy in
+                 test/shell/AndroidManifest.xml -->
+            <activity-alias android:name="org.chromium.android_webview.SafeModeState"
+                      android:targetActivity="org.chromium.android_webview.devui.MainActivity"
+                      android:visibleToInstantApps="true"
+                      android:enabled="false"
+                      android:process=":webview_apk" />  {# Explicit process required for monochrome compatibility. #}
+
             <activity android:name="org.chromium.android_webview.nonembedded.LicenseActivity"
                       android:label="@string/license_activity_title"
                       android:process=":webview_apk"  {# Explicit process required for monochrome compatibility. #}
@@ -89,6 +117,21 @@
                       android:authorities="{{ manifest_package }}.DeveloperModeContentProvider"
                       android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
                       tools:ignore="ExportedContentProvider" />
+            <!-- If you change this component make sure to update the corresponding copy in
+                 test/shell/AndroidManifest.xml-->
+            <provider android:name="org.chromium.android_webview.services.SafeModeContentProvider"
+                      android:visibleToInstantApps="true"
+                      android:exported="true"
+                      android:authorities="{{ manifest_package }}.SafeModeContentProvider"
+                      android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
+                      tools:ignore="ExportedContentProvider" />
+            <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
+            <provider
+                android:authorities="{{ manifest_package }}.androidx-startup"
+                android:name="androidx.startup.InitializationProvider"
+                android:exported="false"
+                tools:node="remove">
+            </provider>
             {% if donor_package is not defined %}
                 <!-- If you change the variations services, also see
                      android_webview/test/shell/AndroidManifest.xml. -->
@@ -115,7 +158,16 @@
                          android:exported="true"
                          android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
                          tools:ignore="ExportedService" />
+                <service android:name="org.chromium.android_webview.services.SafeModeService"
+                         android:exported="true"
+                         android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
+                         tools:ignore="ExportedService" />
                 <service android:name="org.chromium.android_webview.services.MetricsBridgeService"
+                         android:exported="true"
+                         android:visibleToInstantApps="true"
+                         android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
+                         tools:ignore="ExportedService" />
+                <service android:name="org.chromium.android_webview.services.MetricsUploadService"
                          android:exported="true"
                          android:visibleToInstantApps="true"
                          android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
@@ -130,6 +182,16 @@
                          android:visibleToInstantApps="true"
                          android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
                          tools:ignore="ExportedService" />
+                <!-- JS Execution Sandbox -->
+                <service android:name="org.chromium.android_webview.js_sandbox.service.JsSandboxService0"
+                    android:process=":js_sandboxed_process0"
+                    android:isolatedProcess="true"
+                    android:exported="true"
+                    android:externalService="true"
+                    tools:ignore="ExportedService"
+                    android:visibleToInstantApps="true" />
+                {% block extra_application_definitions %}
+                {% endblock %}
             {% endif %}
         {% endmacro %}
         {{ common(manifest_package|default('com.android.webview'), library|default('libwebviewchromium.so')) }}

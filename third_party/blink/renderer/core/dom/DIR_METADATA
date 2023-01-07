@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>DOM"
-}
+mixins: "//third_party/blink/renderer/core/dom/COMMON_METADATA"
 
-team_email: "dom-dev@chromium.org"

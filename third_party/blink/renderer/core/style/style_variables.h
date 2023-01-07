@@ -1,16 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_VARIABLES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_VARIABLES_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
@@ -28,9 +31,9 @@ namespace blink {
 // invalid at computed-value time [1] as such.
 //
 // If StyleVariables does not contain an entry at all for a given property,
-// base::nullopt is returned. This allows us to differentiate between the case
+// absl::nullopt is returned. This allows us to differentiate between the case
 // where we want to try to find the variable elsewhere (e.g. StyleInitialData,
-// in the case of base::nullopt), or return nullptr without looking further.
+// in the case of absl::nullopt), or return nullptr without looking further.
 //
 // Due to the subtleties introduced by the root-bucket optimization in
 // StyleInheritedVariables, there is deliberately no way to erase an entry
@@ -47,14 +50,15 @@ class CORE_EXPORT StyleVariables {
 
   StyleVariables();
   StyleVariables(const StyleVariables&);
+  StyleVariables& operator=(const StyleVariables&);
 
   bool operator==(const StyleVariables& other) const;
   bool operator!=(const StyleVariables& other) const {
     return !(*this == other);
   }
 
-  using OptionalData = base::Optional<CSSVariableData*>;
-  using OptionalValue = base::Optional<Member<const CSSValue>>;
+  using OptionalData = absl::optional<CSSVariableData*>;
+  using OptionalValue = absl::optional<Member<const CSSValue>>;
 
   OptionalValue GetValue(const AtomicString&) const;
   OptionalData GetData(const AtomicString&) const;
@@ -70,6 +74,23 @@ class CORE_EXPORT StyleVariables {
  private:
   DataMap data_;
   Persistent<ValueMap> values_;
+
+  // Cache for speeding up operator==. Some pages tend to set large numbers
+  // of custom properties on elements high up in the DOM, and the sets of
+  // custom properties generally inherit wholesale, requiring us to
+  // compare the same pair of StyleVariables against each other over and over
+  // again. Thus, we cache the last comparison we did, with its result.
+  //
+  // For the cache to be valid, the two elements must have each other as
+  // cached partner. This allows us to easily and safely invalidate the cache
+  // from either side when a mutation happens: Just set our side to
+  // nullptr, without worrying about invalidating the other side (which may have
+  // been freed in the meantime). It also lets us easily catch the (relatively
+  // obscure) case where the other side has been deallocated and a newly
+  // constructed object has reused its address, since it will be constructed
+  // with a nullptr partner.
+  mutable const StyleVariables* equality_cache_partner_ = nullptr;
+  mutable bool equality_cached_result_;
 };
 
 }  // namespace blink

@@ -1,25 +1,35 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
 
-import "url/mojom/origin.mojom";
+import "third_party/blink/public/mojom/conversions/attribution_data_host.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
-struct Conversion {
-  // Origin of the conversion registration redirect.
-  url.mojom.Origin reporting_origin;
-
-  // Conversion data specified in conversion redirect. 0 is used as a
-  // default if none is provided.
-  uint64 conversion_data = 0;
+// Mojo struct to represent blink::Impression native struct.
+struct Impression {
+  // Indicates the attributionsrc request associated with `this`.
+  // API parameters will be used from the the `AttributionDataHost`
+  // that is associated with `attribution_src_token`.
+  AttributionSrcToken attribution_src_token;
 };
 
 // Sent from renderer to browser process when a resource request matching the
 // .well-known conversion registration path is intercepted.
 interface ConversionHost {
-  // Registers a conversion on the site with data provided in the conversion
-  // registration redirect. Only called for requests loaded in the top-level
-  // browsing context.
-  RegisterConversion(Conversion conversion);
+  // Registers a new data host which can register a source or trigger.
+  // Called when an attributionsrc attribute is registered, e.g. via an img
+  // element. Information will be passed at a later point when the renderer
+  // is done fetching the config.
+  RegisterDataHost(pending_receiver<AttributionDataHost> data_host);
+
+  // Registers a new data host which can register a source associated with a
+  // navigation. Called when attributionsrc is registered on a navigation API.
+  // Information will be passed at a later point when the renderer has finished
+  // processing the attribution source config returned from the request.
+  // `attribution_src_token` can be used to associate `data_host` with an
+  // `Impression` object in the browser process.
+  RegisterNavigationDataHost(pending_receiver<AttributionDataHost> data_host,
+    AttributionSrcToken attribution_src_token);
 };

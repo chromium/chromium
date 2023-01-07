@@ -1,0 +1,14 @@
+Tests that device emulation affects fenced frames.
+Metrics: {
+    screen.height : 600
+    screen.orientation.angle : 270
+    screen.orientation.type : landscape-secondary
+    screen.width : 800
+}
+FF Metrics: {
+    screen.height : 600
+    screen.orientation.angle : 270
+    screen.orientation.type : landscape-secondary
+    screen.width : 800
+}
+

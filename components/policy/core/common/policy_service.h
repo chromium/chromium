@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_map.h"
@@ -20,7 +20,7 @@ namespace policy {
 
 class ConfigurationPolicyProvider;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace android {
 class PolicyServiceAndroid;
 }
@@ -64,13 +64,15 @@ class POLICY_EXPORT PolicyService {
 
   class POLICY_EXPORT ProviderUpdateObserver : public base::CheckedObserver {
    public:
-    // Invoked when a policy update signaled by |provider| has been propagated
-    // to the PolicyService's Observers and its contents are now available
-    // through PolicyService::GetPolicies. This is intentionally also called if
-    // the policy update signaled by |provider| did not change the effective
-    // policy values. Note that multiple policy updates by |provider| can result
-    // in a single call to this function, e.g. if a subsequent policy update is
-    // signaled before the previous one has been processed by the PolicyService.
+    // Invoked when the contents of a policy update signaled by |provider| are
+    // available through PolicyService::GetPolicies.
+    // This is intentionally also called if the policy update signaled by
+    // |provider| did not change the effective policy values. Note that multiple
+    // policy updates by |provider| can result in a single call to this
+    // function, e.g. if a subsequent policy update is signaled before the
+    // previous one has been processed by the PolicyService.
+    // Also note that when this is called, PolicyService's Observers may not
+    // have been called with the update that triggered this call yet.
     virtual void OnProviderUpdatePropagated(
         ConfigurationPolicyProvider* provider) = 0;
   };
@@ -126,7 +128,7 @@ class POLICY_EXPORT PolicyService {
   // GetPolicies() is guaranteed to return the updated values at that point.
   virtual void RefreshPolicies(base::OnceClosure callback) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Get the PolicyService JNI bridge instance.
   virtual android::PolicyServiceAndroid* GetPolicyServiceAndroid() = 0;
 #endif
@@ -145,6 +147,8 @@ class POLICY_EXPORT PolicyChangeRegistrar : public PolicyService::Observer {
   // outlive |this|.
   PolicyChangeRegistrar(PolicyService* policy_service,
                         const PolicyNamespace& ns);
+  PolicyChangeRegistrar(const PolicyChangeRegistrar&) = delete;
+  PolicyChangeRegistrar& operator=(const PolicyChangeRegistrar&) = delete;
 
   ~PolicyChangeRegistrar() override;
 
@@ -162,11 +166,9 @@ class POLICY_EXPORT PolicyChangeRegistrar : public PolicyService::Observer {
  private:
   typedef std::map<std::string, UpdateCallback> CallbackMap;
 
-  PolicyService* policy_service_;
+  raw_ptr<PolicyService> policy_service_;
   PolicyNamespace ns_;
   CallbackMap callback_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyChangeRegistrar);
 };
 
 }  // namespace policy

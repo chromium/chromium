@@ -1,8 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "components/url_param_filter/core/url_param_filterer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -79,7 +80,8 @@ UrlLoadParams::UrlLoadParams()
       user_initiated(true),
       should_focus_omnibox(false),
       inherit_opener(false),
-      load_strategy(UrlLoadStrategy::NORMAL) {}
+      load_strategy(UrlLoadStrategy::NORMAL),
+      filtering_result(url_param_filter::FilterResult()) {}
 
 UrlLoadParams::UrlLoadParams(const UrlLoadParams& other)
     : web_params(other.web_params),
@@ -91,7 +93,8 @@ UrlLoadParams::UrlLoadParams(const UrlLoadParams& other)
       user_initiated(other.user_initiated),
       should_focus_omnibox(other.should_focus_omnibox),
       inherit_opener(other.inherit_opener),
-      load_strategy(other.load_strategy) {}
+      load_strategy(other.load_strategy),
+      filtering_result(other.filtering_result) {}
 
 UrlLoadParams& UrlLoadParams::operator=(const UrlLoadParams& other) {
   web_params = other.web_params;
@@ -104,6 +107,7 @@ UrlLoadParams& UrlLoadParams::operator=(const UrlLoadParams& other) {
   should_focus_omnibox = other.should_focus_omnibox;
   inherit_opener = other.inherit_opener;
   load_strategy = other.load_strategy;
+  filtering_result = other.filtering_result;
   return *this;
 }
 

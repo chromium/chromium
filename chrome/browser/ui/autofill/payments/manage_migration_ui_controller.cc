@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,8 @@
 namespace autofill {
 
 ManageMigrationUiController::ManageMigrationUiController(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents)
+    : content::WebContentsUserData<ManageMigrationUiController>(*web_contents) {
   autofill::LocalCardMigrationBubbleControllerImpl::CreateForWebContents(
       web_contents);
   bubble_controller_ =
@@ -152,6 +153,6 @@ void ManageMigrationUiController::ShowFeedbackDialog() {
   dialog_controller_->ShowFeedbackDialog();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ManageMigrationUiController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ManageMigrationUiController);
 
 }  // namespace autofill

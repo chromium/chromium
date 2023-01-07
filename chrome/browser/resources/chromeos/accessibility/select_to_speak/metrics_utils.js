@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,13 @@ import {PrefsManager} from './prefs_manager.js';
 // Utilities for UMA metrics.
 
 export class MetricsUtils {
-  constructor() {}
-
   /**
    * Records a cancel event if speech was in progress.
    */
   static recordCancelIfSpeaking() {
     // TODO(b/1157214): Use select-to-speak's internal state instead of TTS
     // state.
-    chrome.tts.isSpeaking((speaking) => {
+    chrome.tts.isSpeaking(speaking => {
       if (speaking) {
         MetricsUtils.recordCancelEvent_();
       }
@@ -28,8 +26,11 @@ export class MetricsUtils {
    *    that reflects how this event was triggered by the user.
    * @param {PrefsManager} prefsManager A PrefsManager with the users's current
    *    preferences.
+   * @param {boolean} logEnhancedVoices Whether enhanced network TTS related
+   *     metrics should be recorded. For example, if this feature flag is turned
+   *     off, they should not be logged.
    */
-  static recordStartEvent(method, prefsManager) {
+  static recordStartEvent(method, prefsManager, logEnhancedVoices) {
     chrome.metricsPrivate.recordUserAction(MetricsUtils.START_SPEECH_METRIC);
     chrome.metricsPrivate.recordEnumerationValue(
         MetricsUtils.START_SPEECH_METHOD_METRIC.METRIC_NAME, method,
@@ -40,6 +41,11 @@ export class MetricsUtils {
     chrome.metricsPrivate.recordBoolean(
         MetricsUtils.NAVIGATION_CONTROLS_METRIC,
         prefsManager.navigationControlsEnabled());
+    if (logEnhancedVoices) {
+      chrome.metricsPrivate.recordBoolean(
+          MetricsUtils.ENHANCED_NETWORK_VOICES_METRIC,
+          prefsManager.enhancedNetworkVoicesEnabled());
+    }
   }
 
   /**
@@ -97,6 +103,44 @@ export class MetricsUtils {
         MetricsUtils.OVERRIDE_SPEECH_RATE_MULTIPLIER_METRIC,
         MetricsUtils.speechMultiplierToSparseHistogramInt_(rate));
   }
+
+  /**
+   * Records the TTS engine used for a single speech utterance.
+   * @param {string} voiceName voice in TTS
+   * @param {PrefsManager} prefsManager A PrefsManager with the users's current
+   *    preferences.
+   */
+  static recordTtsEngineUsed(voiceName, prefsManager) {
+    let ttsEngine;
+    if (voiceName === '') {
+      // No voice name passed to TTS, default voice is used
+      ttsEngine = MetricsUtils.TtsEngineUsed.SYSTEM_DEFAULT;
+    } else {
+      const extensionId = prefsManager.ttsExtensionForVoice(voiceName);
+      ttsEngine = MetricsUtils.ttsEngineForExtensionId_(extensionId);
+    }
+    chrome.metricsPrivate.recordEnumerationValue(
+        MetricsUtils.TTS_ENGINE_USED_METRIC.METRIC_NAME, ttsEngine,
+        MetricsUtils.TTS_ENGINE_USED_METRIC.EVENT_COUNT);
+  }
+
+  /**
+   * Converts extension id of TTS voice into metric for logging.
+   * @param {string} extensionId Extension ID of TTS engine
+   * @returns {MetricsUtils.TtsEngineUsed} Enum used in TtsEngineUsed histogram.
+   */
+  static ttsEngineForExtensionId_(extensionId) {
+    switch (extensionId) {
+      case PrefsManager.ENHANCED_TTS_EXTENSION_ID:
+        return MetricsUtils.TtsEngineUsed.GOOGLE_NETWORK;
+      case PrefsManager.ESPEAK_EXTENSION_ID:
+        return MetricsUtils.TtsEngineUsed.ESPEAK;
+      case PrefsManager.GOOGLE_TTS_EXTENSION_ID:
+        return MetricsUtils.TtsEngineUsed.GOOGLE_LOCAL;
+      default:
+        return MetricsUtils.TtsEngineUsed.UNKNOWN;
+    }
+  }
 }
 
 /**
@@ -125,7 +169,7 @@ MetricsUtils.StartSpeechMethod = {
  */
 MetricsUtils.START_SPEECH_METHOD_METRIC = {
   EVENT_COUNT: Object.keys(MetricsUtils.StartSpeechMethod).length,
-  METRIC_NAME: 'Accessibility.CrosSelectToSpeak.StartSpeechMethod'
+  METRIC_NAME: 'Accessibility.CrosSelectToSpeak.StartSpeechMethod',
 };
 
 /**
@@ -146,7 +190,30 @@ MetricsUtils.StateChangeEvent = {
  */
 MetricsUtils.STATE_CHANGE_METRIC = {
   EVENT_COUNT: Object.keys(MetricsUtils.StateChangeEvent).length,
-  METRIC_NAME: 'Accessibility.CrosSelectToSpeak.StateChangeEvent'
+  METRIC_NAME: 'Accessibility.CrosSelectToSpeak.StateChangeEvent',
+};
+
+/**
+ * CrosSelectToSpeakTtsEngineUsed enums.
+ * These values are persisted to logs and should not be renumbered or re-used.
+ * See tools/metrics/histograms/enums.xml.
+ * @enum {number}
+ */
+MetricsUtils.TtsEngineUsed = {
+  UNKNOWN: 0,
+  SYSTEM_DEFAULT: 1,
+  ESPEAK: 2,
+  GOOGLE_LOCAL: 3,
+  GOOGLE_NETWORK: 4,
+};
+
+/**
+ * Constants for the TTS engine metric, CrosSelectToSpeak.TtsEngineUsed.
+ * @type {MetricsUtils.EnumerationMetric}
+ */
+MetricsUtils.TTS_ENGINE_USED_METRIC = {
+  EVENT_COUNT: Object.keys(MetricsUtils.TtsEngineUsed).length,
+  METRIC_NAME: 'Accessibility.CrosSelectToSpeak.TtsEngineUsed',
 };
 
 /**
@@ -190,6 +257,13 @@ MetricsUtils.BACKGROUND_SHADING_METRIC =
  */
 MetricsUtils.NAVIGATION_CONTROLS_METRIC =
     'Accessibility.CrosSelectToSpeak.NavigationControls';
+
+/**
+ * The metric name for enhanced network TTS voices.
+ * @type {string}
+ */
+MetricsUtils.ENHANCED_NETWORK_VOICES_METRIC =
+    'Accessibility.CrosSelectToSpeak.EnhancedNetworkVoices';
 
 /**
  * The speech rate override histogram metric name.

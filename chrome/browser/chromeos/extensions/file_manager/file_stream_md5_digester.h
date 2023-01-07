@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/hash/md5.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/io_buffer.h"
 
@@ -22,12 +21,15 @@ namespace util {
 
 // Computes the (base-16 encoded) MD5 digest of data extracted from a file
 // stream.
-class FileStreamMd5Digester {
+class FileStreamMd5Digester
+    : public base::RefCountedThreadSafe<FileStreamMd5Digester> {
  public:
   using ResultCallback = base::OnceCallback<void(std::string)>;
 
   FileStreamMd5Digester();
-  ~FileStreamMd5Digester();
+
+  FileStreamMd5Digester(const FileStreamMd5Digester&) = delete;
+  FileStreamMd5Digester& operator=(const FileStreamMd5Digester&) = delete;
 
   // Computes an MD5 digest of data read from the given |streamReader|.  The
   // work occurs asynchronously, and the resulting hash is returned via the
@@ -38,6 +40,9 @@ class FileStreamMd5Digester {
                     ResultCallback callback);
 
  private:
+  friend class base::RefCountedThreadSafe<FileStreamMd5Digester>;
+  ~FileStreamMd5Digester();
+
   // Kicks off a read of the next chunk from the stream.
   void ReadNextChunk();
   // Handles the incoming chunk of data from a stream read.
@@ -48,8 +53,6 @@ class FileStreamMd5Digester {
   scoped_refptr<net::IOBuffer> buffer_;
   base::MD5Context md5_context_;
   ResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileStreamMd5Digester);
 };
 
 }  // namespace util

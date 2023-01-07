@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/ash_media_app_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="ash_media_app_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <!-- Privileged app host contents. -->
+      <include name="IDR_MEDIA_APP_INDEX_HTML" file="index.html" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_INDEX_DARK_LIGHT_HTML" file="index_dark_light.html" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_VIEWPDFHOST_HTML" file="viewpdfhost.html" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_LAUNCH_JS" file="${root_gen_dir}/ash/webui/media_app_ui/resources/js/launch.rollup.js" use_base_dir="false" compress="brotli" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_FIRST_MESSAGE_RECEIVED_JS" file="js/first_message_received.js" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_VIEWPDFHOST_JS" file="js/viewpdfhost.js" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_IMAGE_ICON_SVG" file="assets/image_icon.svg" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_IMAGE_ICON_DARK_SVG" file="assets/image_icon_dark.svg" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_AUDIO_ICON_SVG" file="assets/audio_icon.svg" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_AUDIO_ICON_DARK_SVG" file="assets/audio_icon_dark.svg" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_VIDEO_ICON_SVG" file="assets/video_icon.svg" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_VIDEO_ICON_DARK_SVG" file="assets/video_icon_dark.svg" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_PDF_ICON_SVG" file="assets/pdf_icon.svg" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_PDF_ICON_DARK_SVG" file="assets/pdf_icon_dark.svg" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_FILE_ICON_SVG" file="assets/file_icon.svg" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_FILE_ICON_DARK_SVG" file="assets/file_icon_dark.svg" type="BINDATA" />
+
+      <!-- Unprivileged guest contents. -->
+      <include name="IDR_MEDIA_APP_APP_HTML" file="app.html" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_RECEIVER_JS" file="${root_gen_dir}/ash/webui/media_app_ui/resources/js/receiver.rollup.js" use_base_dir="false" compress="brotli" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_PIEX_MODULE_JS" file="${root_gen_dir}/ash/webui/media_app_ui/resources/js/piex_module.rollup.js" use_base_dir="false" compress="brotli" type="BINDATA" />
+    </includes>
+  </release>
+</grit>

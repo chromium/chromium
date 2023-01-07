@@ -1,32 +1,26 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/fuchsia/process_context.h"
 
 #include <lib/sys/cpp/component_context.h>
-#include <lib/sys/inspect/cpp/component.h>
 #include <utility>
 
-#include "base/fuchsia/process_context.h"
 #include "base/no_destructor.h"
 
 namespace base {
 
 namespace {
+
 std::unique_ptr<sys::ComponentContext>* ProcessComponentContextPtr() {
   static base::NoDestructor<std::unique_ptr<sys::ComponentContext>> value(
       std::make_unique<sys::ComponentContext>(
           sys::ServiceDirectory::CreateFromNamespace()));
   return value.get();
 }
-}  // namespace
 
-sys::ComponentInspector* ComponentInspectorForProcess() {
-  static base::NoDestructor<sys::ComponentInspector> value(
-      ComponentContextForProcess());
-  return value.get();
-}
+}  // namespace
 
 sys::ComponentContext* ComponentContextForProcess() {
   return ProcessComponentContextPtr()->get();

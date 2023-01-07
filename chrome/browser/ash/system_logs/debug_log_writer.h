@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace debug_log_writer {
@@ -20,7 +19,7 @@ namespace debug_log_writer {
 void StoreLogs(
     const base::FilePath& out_dir,
     bool include_chrome_logs,
-    base::OnceCallback<void(base::Optional<base::FilePath> logs_path)>
+    base::OnceCallback<void(absl::optional<base::FilePath> logs_path)>
         callback);
 
 }  // namespace debug_log_writer

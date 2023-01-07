@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/udev_linux/udev1_loader.h"
+
+#include <memory>
 
 #include "library_loaders/libudev1.h"
 
@@ -15,7 +17,7 @@ Udev1Loader::~Udev1Loader() = default;
 bool Udev1Loader::Init() {
   if (lib_loader_)
     return lib_loader_->loaded();
-  lib_loader_.reset(new LibUdev1Loader);
+  lib_loader_ = std::make_unique<LibUdev1Loader>();
   return lib_loader_->Load("libudev.so.1");
 }
 
@@ -41,6 +43,11 @@ udev_device* Udev1Loader::udev_device_get_parent_with_subsystem_devtype(
     const char* devtype) {
   return lib_loader_->udev_device_get_parent_with_subsystem_devtype(
       udev_device, subsystem, devtype);
+}
+
+udev_list_entry* Udev1Loader::udev_device_get_properties_list_entry(
+    struct udev_device* udev_device) {
+  return lib_loader_->udev_device_get_properties_list_entry(udev_device);
 }
 
 const char* Udev1Loader::udev_device_get_property_value(

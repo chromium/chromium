@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -30,7 +30,7 @@ def _NumberOfTestsToString(tests):
 
 # Before running this test script, please build the translation_unit clang tool
 # first. This is explained here:
-# https://chromium.googlesource.com/chromium/src/+/master/docs/clang_tool_refactoring.md
+# https://chromium.googlesource.com/chromium/src/+/main/docs/clang_tool_refactoring.md
 def main():
   tools_clang_directory = os.path.dirname(os.path.dirname(
       os.path.realpath(__file__)))

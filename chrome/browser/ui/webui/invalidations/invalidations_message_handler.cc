@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,12 @@ invalidation::ProfileInvalidationProvider* GetInvalidationProvider(
 
 InvalidationsMessageHandler::InvalidationsMessageHandler() : logger_(nullptr) {}
 
-InvalidationsMessageHandler::~InvalidationsMessageHandler() = default;
+InvalidationsMessageHandler::~InvalidationsMessageHandler() {
+  // This handler can be destroyed without OnJavascriptDisallowed() ever being
+  // called (https://crbug.com/1199198). Call it to ensure that `this` is
+  // removed as an observer.
+  OnJavascriptDisallowed();
+}
 
 void InvalidationsMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -51,7 +56,7 @@ void InvalidationsMessageHandler::OnJavascriptDisallowed() {
     logger_->UnregisterObserver(this);
 }
 
-void InvalidationsMessageHandler::UIReady(const base::ListValue* args) {
+void InvalidationsMessageHandler::UIReady(const base::Value::List& args) {
   AllowJavascript();
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       GetInvalidationProvider(Profile::FromWebUI(web_ui()));
@@ -65,7 +70,7 @@ void InvalidationsMessageHandler::UIReady(const base::ListValue* args) {
 }
 
 void InvalidationsMessageHandler::HandleRequestDetailedStatus(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       GetInvalidationProvider(Profile::FromWebUI(web_ui()));
   if (invalidation_provider) {
@@ -75,17 +80,16 @@ void InvalidationsMessageHandler::HandleRequestDetailedStatus(
   }
 }
 
-void InvalidationsMessageHandler::UpdateContent(const base::ListValue* args) {
+void InvalidationsMessageHandler::UpdateContent(const base::Value::List& args) {
   if (logger_)
     logger_->EmitContent();
 }
 
 void InvalidationsMessageHandler::OnRegistrationChange(
-    const std::multiset<std::string>& registered_handlers) {
-  base::ListValue list_of_handlers;
-  for (auto it = registered_handlers.begin(); it != registered_handlers.end();
-       ++it) {
-    list_of_handlers.AppendString(*it);
+    const std::set<std::string>& registered_handlers) {
+  base::Value::List list_of_handlers;
+  for (const auto& registered_handler : registered_handlers) {
+    list_of_handlers.Append(registered_handler);
   }
   FireWebUIListener("handlers-updated", list_of_handlers);
 }
@@ -101,22 +105,22 @@ void InvalidationsMessageHandler::OnStateChange(
 void InvalidationsMessageHandler::OnUpdatedTopics(
     const std::string& handler_name,
     const invalidation::TopicCountMap& topics) {
-  base::ListValue list_of_objects;
+  base::Value::List list_of_objects;
   for (const auto& topic_item : topics) {
-    std::unique_ptr<base::DictionaryValue> dic(new base::DictionaryValue());
-    dic->SetString("name", topic_item.first);
+    base::Value::Dict dict;
+    dict.Set("name", topic_item.first);
     // TODO(crbug.com/1056181): source has been deprecated and after Topic->
     // ObjectID refactoring completely makes no sense. It needs to be cleaned
     // up together with other ObjectID references in js counterpart. Pass 0
     // temporary to avoid changes in js counterpart.
-    dic->SetInteger("source", 0);
-    dic->SetInteger("totalCount", topic_item.second);
-    list_of_objects.Append(std::move(dic));
+    dict.Set("source", 0);
+    dict.Set("totalCount", topic_item.second);
+    list_of_objects.Append(std::move(dict));
   }
   FireWebUIListener("update-ids", base::Value(handler_name), list_of_objects);
 }
 void InvalidationsMessageHandler::OnDebugMessage(
-    const base::DictionaryValue& details) {}
+    const base::Value::Dict& details) {}
 
 void InvalidationsMessageHandler::OnInvalidation(
     const invalidation::TopicInvalidationMap& new_invalidations) {
@@ -126,6 +130,6 @@ void InvalidationsMessageHandler::OnInvalidation(
 }
 
 void InvalidationsMessageHandler::OnDetailedStatus(
-    const base::DictionaryValue& network_details) {
+    base::Value::Dict network_details) {
   FireWebUIListener("detailed-status-updated", network_details);
 }

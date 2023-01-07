@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "sandbox/linux/services/credentials.h"
 #include "sandbox/linux/services/namespace_utils.h"
@@ -37,7 +36,6 @@ const char kSandboxUSERNSEnvironmentVarName[] = "SBX_USER_NS";
 const char kSandboxPIDNSEnvironmentVarName[] = "SBX_PID_NS";
 const char kSandboxNETNSEnvironmentVarName[] = "SBX_NET_NS";
 
-#if !defined(OS_NACL_NONSFI)
 class WriteUidGidMapDelegate : public base::LaunchOptions::PreExecDelegate {
  public:
   WriteUidGidMapDelegate()
@@ -45,6 +43,9 @@ class WriteUidGidMapDelegate : public base::LaunchOptions::PreExecDelegate {
         gid_(getgid()),
         supports_deny_setgroups_(
             NamespaceUtils::KernelSupportsDenySetgroups()) {}
+
+  WriteUidGidMapDelegate(const WriteUidGidMapDelegate&) = delete;
+  WriteUidGidMapDelegate& operator=(const WriteUidGidMapDelegate&) = delete;
 
   ~WriteUidGidMapDelegate() override {}
 
@@ -60,7 +61,6 @@ class WriteUidGidMapDelegate : public base::LaunchOptions::PreExecDelegate {
   const uid_t uid_;
   const gid_t gid_;
   const bool supports_deny_setgroups_;
-  DISALLOW_COPY_AND_ASSIGN(WriteUidGidMapDelegate);
 };
 
 void SetEnvironForNamespaceType(base::EnvironmentMap* environ,
@@ -69,7 +69,6 @@ void SetEnvironForNamespaceType(base::EnvironmentMap* environ,
   // An empty string causes the env var to be unset in the child process.
   (*environ)[env_var] = value ? "1" : "";
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 // Linux supports up to 64 signals. This should be updated if that ever changes.
 int g_signal_exit_codes[64];
@@ -78,7 +77,7 @@ void TerminationSignalHandler(int sig) {
   // Return a special exit code so that the process is detected as terminated by
   // a signal.
   const size_t sig_idx = static_cast<size_t>(sig);
-  if (sig_idx < base::size(g_signal_exit_codes)) {
+  if (sig_idx < std::size(g_signal_exit_codes)) {
     _exit(g_signal_exit_codes[sig_idx]);
   }
 
@@ -134,7 +133,6 @@ void MaybeUpdateGlibcTidCache() {
 
 }  // namespace
 
-#if !defined(OS_NACL_NONSFI)
 NamespaceSandbox::Options::Options()
     : ns_types(CLONE_NEWUSER | CLONE_NEWPID | CLONE_NEWNET),
       fail_on_unsupported_ns_type(false) {}
@@ -209,7 +207,6 @@ base::Process NamespaceSandbox::LaunchProcessWithOptions(
 
   return base::LaunchProcess(argv, launch_options_copy);
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 // static
 pid_t NamespaceSandbox::ForkInNewPidNamespace(bool drop_capabilities_in_child) {
@@ -253,19 +250,17 @@ bool NamespaceSandbox::InstallTerminationSignalHandler(
   struct sigaction old_action;
   PCHECK(sys_sigaction(sig, nullptr, &old_action) == 0);
 
-#if !defined(OS_NACL_NONSFI)
   if (old_action.sa_flags & SA_SIGINFO &&
       old_action.sa_sigaction != nullptr) {
     return false;
   }
-#endif
 
   if (old_action.sa_handler != LINUX_SIG_DFL) {
     return false;
   }
 
   const size_t sig_idx = static_cast<size_t>(sig);
-  CHECK_LT(sig_idx, base::size(g_signal_exit_codes));
+  CHECK_LT(sig_idx, std::size(g_signal_exit_codes));
 
   DCHECK_GE(exit_code, 0);
   DCHECK_LT(exit_code, 256);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
-
 namespace remoting {
 
 // Scoper for a pair of window station and desktop handles. Both handles are
@@ -16,6 +14,10 @@ namespace remoting {
 class WindowStationAndDesktop {
  public:
   WindowStationAndDesktop();
+
+  WindowStationAndDesktop(const WindowStationAndDesktop&) = delete;
+  WindowStationAndDesktop& operator=(const WindowStationAndDesktop&) = delete;
+
   ~WindowStationAndDesktop();
 
   HDESK desktop() const { return desktop_; }
@@ -34,8 +36,6 @@ class WindowStationAndDesktop {
  private:
   HDESK desktop_;
   HWINSTA window_station_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowStationAndDesktop);
 };
 
 }  // namespace remoting

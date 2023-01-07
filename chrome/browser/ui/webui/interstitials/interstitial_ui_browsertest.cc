@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ class InterstitialUITest : public InProcessBrowserTest {
   void TestInterstitial(GURL url,
                         const std::string& page_title,
                         const std::u16string& body_text) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_EQ(
       base::ASCIIToUTF16(page_title),
       browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
@@ -179,21 +179,10 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, CaptivePortalInterstitialWifi) {
                    "Connect to Wi-Fi");
 }
 
-IN_PROC_BROWSER_TEST_F(InterstitialUITest, OriginPolicyErrorInterstitial) {
-  TestInterstitial(GURL("chrome://interstitials/origin_policy"),
-                   "Origin Policy Error",
-                   u"has requested that an origin policy");
-}
-
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, BlockedInterceptionInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/blocked-interception"),
                    "Your activity on example.com is being monitored",
                    u"Anything you type");
-}
-
-IN_PROC_BROWSER_TEST_F(InterstitialUITest, LegacyTLSInterstitial) {
-  TestInterstitial(GURL("chrome://interstitials/legacy-tls"), "Privacy error",
-                   u"outdated security configuration");
 }
 
 // Tests that back button works after opening an interstitial from
@@ -201,8 +190,10 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, LegacyTLSInterstitial) {
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialBackButton) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://interstitials"));
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://interstitials/ssl"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://interstitials")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("chrome://interstitials/ssl")));
   content::TestNavigationObserver navigation_observer(web_contents);
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
   navigation_observer.Wait();
@@ -213,8 +204,8 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialBackButton) {
 
 // Tests that view-source: works correctly on chrome://interstitials.
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialViewSource) {
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("view-source:chrome://interstitials/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("view-source:chrome://interstitials/")));
   int found;
   std::u16string expected_title = u"<title>Interstitials</title>";
   found = ui_test_utils::FindInPage(
@@ -229,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialViewSource) {
 // chrome://interstitials (using chrome://interstitials/ssl).
 
 // Test is currently flaky on Windows (crbug.com/926392)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_InterstitialWithPathViewSource \
   DISABLED_InterstitialWithPathViewSource
 #else
@@ -238,8 +229,8 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialViewSource) {
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest,
                        MAYBE_InterstitialWithPathViewSource) {
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("view-source:chrome://interstitials/ssl"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("view-source:chrome://interstitials/ssl")));
   int found;
   std::u16string expected_title = u"<title>Privacy error</title";
   found = ui_test_utils::FindInPage(
@@ -255,7 +246,8 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest,
 // See https://crbug.com/611706 for details.
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, UseCorrectWebContents) {
   int current_tab = browser()->tab_strip_model()->active_index();
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://interstitials/ssl"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("chrome://interstitials/ssl")));
   // Duplicate the tab and close it.
   chrome::DuplicateTab(browser());
   EXPECT_NE(current_tab, browser()->tab_strip_model()->active_index());

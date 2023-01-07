@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,22 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 class PrefService;
+class PrefRegistrySimple;
 
 namespace base {
 class FilePath;
-class Value;
+class Time;
 class Version;
 }  // namespace base
 
@@ -57,9 +65,13 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   std::string GetBrandCode(const std::string& id) const;
   void SetBrandCode(const std::string& id, const std::string& bc);
 
-  // These functions access the tag for the specified id.
-  std::string GetTag(const std::string& id) const;
-  void SetTag(const std::string& id, const std::string& tag);
+  // These functions access the brand path for the specified id.
+  base::FilePath GetBrandPath(const std::string& id) const;
+  void SetBrandPath(const std::string& id, const base::FilePath& bp);
+
+  // These functions access the AP for the specified id.
+  std::string GetAP(const std::string& id) const;
+  void SetAP(const std::string& id, const std::string& ap);
 
   // This function sets everything in the registration request object into the
   // persistent data store.
@@ -72,24 +84,55 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   // application has a valid version.
   std::vector<std::string> GetAppIds() const;
 
+  // HadApps is set when the updater processes a registration for an app other
+  // than itself, and is never unset, even if the app is uninstalled.
+  bool GetHadApps() const;
+  void SetHadApps();
+
+  // LastChecked is set when the updater completed successfully a call to
+  // `UpdateService::UpdateAll` as indicated by the `UpdateService::Result`
+  // argument of the completion callback. This means that the execution path
+  // for updating all applications works end to end, including communicating
+  // with the backend.
+  base::Time GetLastChecked() const;
+  void SetLastChecked(const base::Time& time);
+
+  // LastStarted is set when `UpdateService::RunPeriodicTasks` is called. This
+  // indicates that the mechanism to initiate automated update checks is
+  // working.
+  base::Time GetLastStarted() const;
+  void SetLastStarted(const base::Time& time);
+
+#if BUILDFLAG(IS_WIN)
+  // Retrieves the previously stored OS version.
+  absl::optional<OSVERSIONINFOEX> GetLastOSVersion() const;
+
+  // Stores the current os version.
+  void SetLastOSVersion();
+#endif
+
  private:
   friend class base::RefCountedThreadSafe<PersistedData>;
   ~PersistedData();
 
   // Returns nullptr if the app key does not exist.
-  const base::Value* GetAppKey(const std::string& id) const;
+  const base::Value::Dict* GetAppKey(const std::string& id) const;
 
   // Returns an existing or newly created app key under a root pref.
-  base::Value* GetOrCreateAppKey(const std::string& id, base::Value* root);
+  base::Value::Dict* GetOrCreateAppKey(const std::string& id,
+                                       base::Value::Dict& root);
 
   std::string GetString(const std::string& id, const std::string& key) const;
   void SetString(const std::string& id,
                  const std::string& key,
                  const std::string& value);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
-  PrefService* pref_service_ = nullptr;  // Not owned by this class.
+  raw_ptr<PrefService> pref_service_ = nullptr;  // Not owned by this class.
 };
+
+void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry);
 
 }  // namespace updater
 

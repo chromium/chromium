@@ -1,9 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_FUCHSIA_SCOPED_SERVICE_PUBLISHER_H_
 #define BASE_FUCHSIA_SCOPED_SERVICE_PUBLISHER_H_
+
+#include <memory>
+#include <string>
+#include <utility>
 
 #include <lib/async/dispatcher.h>
 #include <lib/fidl/cpp/interface_request.h>
@@ -13,7 +17,7 @@
 #include <lib/zx/channel.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -35,16 +39,19 @@ class BASE_EXPORT ScopedServicePublisher {
                          fidl::InterfaceRequestHandler<Interface> handler,
                          base::StringPiece name = Interface::Name_)
       : pseudo_dir_(pseudo_dir), name_(name) {
-    pseudo_dir_->AddEntry(name_,
-                          std::make_unique<vfs::Service>(std::move(handler)));
+    zx_status_t status = pseudo_dir_->AddEntry(
+        name_, std::make_unique<vfs::Service>(std::move(handler)));
+    ZX_DCHECK(status == ZX_OK, status) << "vfs::PseudoDir::AddEntry";
   }
+
+  ScopedServicePublisher(const ScopedServicePublisher&) = delete;
+  ScopedServicePublisher& operator=(const ScopedServicePublisher&) = delete;
 
   ~ScopedServicePublisher() { pseudo_dir_->RemoveEntry(name_); }
 
  private:
   vfs::PseudoDir* const pseudo_dir_ = nullptr;
   std::string name_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedServicePublisher);
 };
 
 }  // namespace base

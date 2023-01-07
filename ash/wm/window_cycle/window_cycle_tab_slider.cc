@@ -1,27 +1,29 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/window_cycle/window_cycle_tab_slider.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -30,7 +32,7 @@ namespace {
 // Animation
 // The animation duration for the translation of |active_button_selector_| on
 // mode change.
-constexpr auto kToggleSlideDuration = base::TimeDelta::FromMilliseconds(150);
+constexpr auto kToggleSlideDuration = base::Milliseconds(150);
 
 // The insets of the focus ring of the tab slider button.
 constexpr int kTabSliderButtonFocusInsets = 4;
@@ -120,6 +122,13 @@ WindowCycleTabSlider::WindowCycleTabSlider()
       Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk();
   all_desks_tab_slider_button_->SetToggled(!per_desk);
   current_desk_tab_slider_button_->SetToggled(per_desk);
+
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks. This crashes if fetching a11y node
+  // data during paint because `active_button_selector_` is null.
+  active_button_selector_->SetProperty(views::kSkipAccessibilityPaintChecks,
+                                       true);
+  active_button_selector_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 }
 
 void WindowCycleTabSlider::SetFocus(bool focus) {
@@ -137,29 +146,25 @@ void WindowCycleTabSlider::OnModePrefsChanged() {
   all_desks_tab_slider_button_->SetToggled(!per_desk);
   current_desk_tab_slider_button_->SetToggled(per_desk);
   UpdateActiveButtonSelector(per_desk);
+  active_button_selector_->RequestFocus();
 }
 
 void WindowCycleTabSlider::Layout() {
   const gfx::Size button_size = GetPreferredSizeForButtons();
-  buttons_container_->SetBounds(kTabSliderButtonFocusInsets,
-                                kTabSliderButtonFocusInsets,
-                                2 * button_size.width(), button_size.height());
+  buttons_container_->SetSize(
+      gfx::Size(2 * button_size.width(), button_size.height()));
 
   active_button_selector_->SetBounds(
       Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk()
-          ? button_size.width()
-          : 0,
-      0, button_size.width() + 2 * kTabSliderButtonFocusInsets,
+          ? button_size.width() - kTabSliderButtonFocusInsets
+          : -kTabSliderButtonFocusInsets,
+      -kTabSliderButtonFocusInsets,
+      button_size.width() + 2 * kTabSliderButtonFocusInsets,
       button_size.height() + 2 * kTabSliderButtonFocusInsets);
 }
 
 gfx::Size WindowCycleTabSlider::CalculatePreferredSize() const {
   return buttons_container_->GetPreferredSize();
-}
-
-const views::View::Views& WindowCycleTabSlider::GetTabSliderButtonsForTesting()
-    const {
-  return buttons_container_->children();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -183,7 +188,9 @@ void WindowCycleTabSlider::UpdateActiveButtonSelector(bool per_desk) {
 
   const gfx::Size button_size = GetPreferredSizeForButtons();
   const gfx::Rect new_selector_bounds =
-      gfx::Rect(per_desk ? button_size.width() : 0, 0,
+      gfx::Rect(per_desk ? button_size.width() - kTabSliderButtonFocusInsets
+                         : -kTabSliderButtonFocusInsets,
+                -kTabSliderButtonFocusInsets,
                 button_size.width() + 2 * kTabSliderButtonFocusInsets,
                 button_size.height() + 2 * kTabSliderButtonFocusInsets);
   active_button_selector_layer->SetTransform(

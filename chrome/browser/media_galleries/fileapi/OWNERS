@@ -1,3 +1,3 @@
-# kinuko understand the fileapi code, so they may be the best
-# reviewers for generic fileapi changes, otherwise look at ../OWNERS.
-kinuko@chromium.org
+# The fileapi owners may be the best reviewers for generic fileapi changes,
+# otherwise look at ../OWNERS.
+file://storage/browser/file_system/OWNERS

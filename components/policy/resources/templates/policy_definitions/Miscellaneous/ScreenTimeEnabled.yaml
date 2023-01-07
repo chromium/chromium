@@ -1,0 +1,26 @@
+caption: Enable Screen Time for websites
+default: true
+desc: |-
+  This policy enables <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to participate in the <ph name="MAC_OS_NAME">macOS</ph> Screen Time feature.
+
+        If the policy is Enabled or not set, visited origins will be reported to the OS, and origins that have been blocked in Screen Time settings will display a blocking screen.
+        If the policy is Disabled, visited origins will not be reported to the OS, and origins that have been blocked in Screen Time settings will be accessible.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.mac
+items:
+- caption: Enable Screen Time for websites
+  value: true
+- caption: Disable Screen Time for websites
+  value: false
+owners:
+- lgrey@chromium.org
+- chrome-mac-dev@google.com
+schema:
+  type: boolean
+tags:
+- local-data-access
+type: main

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,7 +75,7 @@ public class IncognitoToggleButton extends ChromeImageButton {
         setImageResource(R.drawable.incognito_simple);
         ApiCompatibilityUtils.setImageTintList(this,
                 AppCompatResources.getColorStateList(getContext(),
-                        isIncognitoSelected ? R.color.white_mode_tint
+                        isIncognitoSelected ? R.color.default_icon_color_white_tint_list
                                             : R.color.default_icon_color_tint_list));
     }
 

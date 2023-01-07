@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -30,7 +31,8 @@ struct FieldCandidate {
 class FieldCandidates {
  public:
   FieldCandidates();
-  FieldCandidates(const FieldCandidates& other);
+  FieldCandidates(FieldCandidates&& other);
+  FieldCandidates& operator=(FieldCandidates&& other);
   ~FieldCandidates();
 
   // Includes a possible |type| for a given field.

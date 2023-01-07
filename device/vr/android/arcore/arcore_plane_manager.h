@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,21 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
+#include "base/types/id_type.h"
 #include "base/types/pass_key.h"
-#include "base/util/type_safety/id_type.h"
 #include "device/vr/android/arcore/address_to_id_map.h"
 #include "device/vr/android/arcore/arcore_sdk.h"
 #include "device/vr/android/arcore/scoped_arcore_objects.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
 class ArCoreImpl;
 class ArCoreAnchorManager;
 
-using PlaneId = util::IdTypeU64<class PlaneTag>;
+using PlaneId = base::IdTypeU64<class PlaneTag>;
 
 std::pair<gfx::Quaternion, gfx::Point3F> GetPositionAndOrientationFromArPose(
     const ArSession* session,
@@ -48,11 +50,11 @@ class ArCorePlaneManager {
 
   bool PlaneExists(PlaneId id) const;
 
-  // Returns base::nullopt if plane with the given address does not exist.
-  base::Optional<PlaneId> GetPlaneId(void* plane_address) const;
+  // Returns absl::nullopt if plane with the given address does not exist.
+  absl::optional<PlaneId> GetPlaneId(void* plane_address) const;
 
-  // Returns base::nullopt if plane with the given id does not exist.
-  base::Optional<gfx::Transform> GetMojoFromPlane(PlaneId id) const;
+  // Returns absl::nullopt if plane with the given id does not exist.
+  absl::optional<gfx::Transform> GetMojoFromPlane(PlaneId id) const;
 
   // Creates Anchor object given a plane ID. This is needed since Plane objects
   // are managed by this class in its entirety and are not accessible outside
@@ -83,7 +85,7 @@ class ArCorePlaneManager {
 
   // Owned by ArCoreImpl - non-owning pointer is fine since ArCorePlaneManager
   // is also owned by ArCoreImpl.
-  ArSession* arcore_session_;
+  raw_ptr<ArSession> arcore_session_;
 
   // List of trackables - used for retrieving planes detected by ARCore.
   // Allows reuse of the list across updates; ARCore clears the list on each
@@ -102,6 +104,17 @@ class ArCorePlaneManager {
   // Set containing IDs of planes updated in the last frame. It should be
   // modified only during calls to |Update()|.
   std::set<PlaneId> updated_plane_ids_;
+
+#if DCHECK_IS_ON()
+  // True if |GetDetectedPlanesData()| was called after |Update()|. It is used
+  // to track if |Update()| was called twice in a row w/o a call to
+  // |GetDetectedPlanesData()| in between. Initially true since we expect the
+  // call to |Update()| to happen next.
+  // TODO(https://crbug.com/1192844): remove the assumption that the calls to
+  // |Update()| will always be followed by at least one call to
+  // |GetDetectedPlanesData()| before the next call to |Update()| happens.
+  mutable bool was_plane_data_retrieved_in_current_frame_ = true;
+#endif
 };
 
 }  // namespace device

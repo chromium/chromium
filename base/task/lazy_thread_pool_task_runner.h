@@ -1,18 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_TASK_LAZY_THREAD_POOL_TASK_RUNNER_H_
 #define BASE_TASK_LAZY_THREAD_POOL_TASK_RUNNER_H_
 
+#include <atomic>
 #include <vector>
 
-#include "base/atomicops.h"
+#include "base/base_export.h"
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/common/checked_lock.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/thread_annotations.h"
@@ -77,7 +77,7 @@ using LazyThreadPoolSequencedTaskRunner =
 using LazyThreadPoolSingleThreadTaskRunner =
     internal::LazyThreadPoolTaskRunner<SingleThreadTaskRunner, false>;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Lazy COM-STA enabled SingleThreadTaskRunner.
 using LazyThreadPoolCOMSTATaskRunner =
     internal::LazyThreadPoolTaskRunner<SingleThreadTaskRunner, true>;
@@ -95,7 +95,7 @@ using LazyThreadPoolCOMSTATaskRunner =
 // |traits| are TaskTraits used when creating the SequencedTaskRunner.
 #define LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(traits)     \
   base::LazyThreadPoolSequencedTaskRunner::CreateInternal(traits);     \
-  ALLOW_UNUSED_TYPE constexpr base::TaskTraits                         \
+  [[maybe_unused]] constexpr base::TaskTraits                          \
       LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyTraitsAreConstexpr, \
                                             __LINE__) = traits
 
@@ -106,10 +106,10 @@ using LazyThreadPoolCOMSTATaskRunner =
                                                                thread_mode) \
   base::LazyThreadPoolSingleThreadTaskRunner::CreateInternal(traits,        \
                                                              thread_mode);  \
-  ALLOW_UNUSED_TYPE constexpr base::TaskTraits                              \
+  [[maybe_unused]] constexpr base::TaskTraits                               \
       LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyTraitsAreConstexpr,      \
                                             __LINE__) = traits;             \
-  ALLOW_UNUSED_TYPE constexpr base::SingleThreadTaskRunnerThreadMode        \
+  [[maybe_unused]] constexpr base::SingleThreadTaskRunnerThreadMode         \
       LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyThreadModeIsConstexpr,   \
                                             __LINE__) = thread_mode
 
@@ -119,10 +119,10 @@ using LazyThreadPoolCOMSTATaskRunner =
 // SingleThreadTaskRunners.
 #define LAZY_COM_STA_TASK_RUNNER_INITIALIZER(traits, thread_mode)            \
   base::LazyThreadPoolCOMSTATaskRunner::CreateInternal(traits, thread_mode); \
-  ALLOW_UNUSED_TYPE constexpr base::TaskTraits                               \
+  [[maybe_unused]] constexpr base::TaskTraits                                \
       LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyTraitsAreConstexpr,       \
                                             __LINE__) = traits;              \
-  ALLOW_UNUSED_TYPE constexpr base::SingleThreadTaskRunnerThreadMode         \
+  [[maybe_unused]] constexpr base::SingleThreadTaskRunnerThreadMode          \
       LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyThreadModeIsConstexpr,    \
                                             __LINE__) = thread_mode
 
@@ -178,7 +178,7 @@ class BASE_EXPORT LazyThreadPoolTaskRunner {
   // - This instance is creating a TaskRunner: kLazyInstanceStateCreating
   // - This instance holds a TaskRunner: Pointer to the TaskRunner.
   // LazyInstance's internals are reused to handle transition between states.
-  subtle::AtomicWord state_ = 0;
+  std::atomic<uintptr_t> state_ = 0;
 
   // No DISALLOW_COPY_AND_ASSIGN since that prevents static initialization with
   // Visual Studio (warning C4592: 'symbol will be dynamically initialized
@@ -193,13 +193,19 @@ class BASE_EXPORT LazyThreadPoolTaskRunner {
 class BASE_EXPORT ScopedLazyTaskRunnerListForTesting {
  public:
   ScopedLazyTaskRunnerListForTesting();
+
+  ScopedLazyTaskRunnerListForTesting(
+      const ScopedLazyTaskRunnerListForTesting&) = delete;
+  ScopedLazyTaskRunnerListForTesting& operator=(
+      const ScopedLazyTaskRunnerListForTesting&) = delete;
+
   ~ScopedLazyTaskRunnerListForTesting();
 
  private:
   friend class LazyThreadPoolTaskRunner<SequencedTaskRunner, false>;
   friend class LazyThreadPoolTaskRunner<SingleThreadTaskRunner, false>;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   friend class LazyThreadPoolTaskRunner<SingleThreadTaskRunner, true>;
 #endif
 
@@ -210,8 +216,6 @@ class BASE_EXPORT ScopedLazyTaskRunnerListForTesting {
 
   // List of callbacks to run on destruction.
   std::vector<OnceClosure> callbacks_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLazyTaskRunnerListForTesting);
 };
 
 }  // namespace internal

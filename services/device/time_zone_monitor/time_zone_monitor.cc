@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ void TimeZoneMonitor::NotifyClients(base::StringPiece zone_id_str) {
   VLOG(1) << "timezone reset to " << zone_id_str;
 
   for (auto& client : clients_)
-    client->OnTimeZoneChange(zone_id_str.as_string());
+    client->OnTimeZoneChange(std::string(zone_id_str));
 }
 
 void TimeZoneMonitor::UpdateIcuAndNotifyClients(

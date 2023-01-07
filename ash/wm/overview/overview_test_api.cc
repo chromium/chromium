@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,8 +40,9 @@ void OverviewTestApi::SetOverviewMode(
             : OverviewAnimationState::kExitAnimationComplete,
       std::move(done_callback));
 
-  const bool animation_started = start ? overview_controller->StartOverview()
-                                       : overview_controller->EndOverview();
+  const bool animation_started =
+      start ? overview_controller->StartOverview(OverviewStartAction::kTests)
+            : overview_controller->EndOverview(OverviewEndAction::kTests);
 
   if (!animation_started)
     waiter->Cancel();
@@ -68,10 +69,10 @@ void OverviewTestApi::WaitForOverviewState(
   new OverviewAnimationStateWaiter(expected_state, std::move(callback));
 }
 
-base::Optional<OverviewInfo> OverviewTestApi::GetOverviewInfo() const {
+absl::optional<OverviewInfo> OverviewTestApi::GetOverviewInfo() const {
   auto* overview_controller = Shell::Get()->overview_controller();
   if (!overview_controller->InOverviewSession())
-    return base::nullopt;
+    return absl::nullopt;
 
   OverviewInfo info;
   for (const auto& grid :

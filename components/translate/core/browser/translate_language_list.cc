@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,6 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -27,6 +25,7 @@
 #include "components/translate/core/browser/translate_url_util.h"
 #include "components/translate/core/common/translate_util.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -39,6 +38,7 @@ namespace {
 // This list must be sorted in alphabetical order and contain no duplicates.
 const char* const kDefaultSupportedLanguages[] = {
     "af",     // Afrikaans
+    "ak",     // Twi
     "am",     // Amharic
     "ar",     // Arabic
     "az",     // Azerbaijani
@@ -48,11 +48,13 @@ const char* const kDefaultSupportedLanguages[] = {
     "bs",     // Bosnian
     "ca",     // Catalan
     "ceb",    // Cebuano
+    "ckb",    // Kurdish (Sorani)
     "co",     // Corsican
     "cs",     // Czech
     "cy",     // Welsh
     "da",     // Danish
     "de",     // German
+    "ee",     // Ewe
     "el",     // Greek
     "en",     // English
     "eo",     // Esperanto
@@ -66,6 +68,7 @@ const char* const kDefaultSupportedLanguages[] = {
     "ga",     // Irish
     "gd",     // Scots Gaelic
     "gl",     // Galician
+    "gom",    // Konkani
     "gu",     // Gujarati
     "ha",     // Hausa
     "haw",    // Hawaiian
@@ -79,18 +82,21 @@ const char* const kDefaultSupportedLanguages[] = {
     "ig",     // Igbo
     "is",     // Icelandic
     "it",     // Italian
-    "iw",     // Hebrew
+    "iw",     // Hebrew - Chrome uses "he"
     "ja",     // Japanese
-    "jv",     // Javanese
+    "jw",     // Javanese - Chrome uses "jv"
     "ka",     // Georgian
     "kk",     // Kazakh
     "km",     // Khmer
     "kn",     // Kannada
     "ko",     // Korean
+    "kri",    // Krio
     "ku",     // Kurdish
     "ky",     // Kyrgyz
     "la",     // Latin
     "lb",     // Luxembourgish
+    "lg",     // Luganda
+    "ln",     // Lingala
     "lo",     // Lao
     "lt",     // Lithuanian
     "lv",     // Latvian
@@ -105,13 +111,16 @@ const char* const kDefaultSupportedLanguages[] = {
     "my",     // Burmese
     "ne",     // Nepali
     "nl",     // Dutch
-    "no",     // Norwegian
+    "no",     // Norwegian - Chrome uses "nb"
+    "nso",    // Sepedi
     "ny",     // Nyanja
+    "om",     // Oromo
     "or",     // Odia (Oriya)
     "pa",     // Punjabi
     "pl",     // Polish
     "ps",     // Pashto
     "pt",     // Portuguese
+    "qu",     // Quechua
     "ro",     // Romanian
     "ru",     // Russian
     "rw",     // Kinyarwanda
@@ -132,8 +141,9 @@ const char* const kDefaultSupportedLanguages[] = {
     "te",     // Telugu
     "tg",     // Tajik
     "th",     // Thai
+    "ti",     // Tigrinya
     "tk",     // Turkmen
-    "tl",     // Tagalog
+    "tl",     // Tagalog - Chrome uses "fil"
     "tr",     // Turkish
     "tt",     // Tatar
     "ug",     // Uyghur
@@ -313,7 +323,7 @@ bool TranslateLanguageList::SetSupportedLanguages(
   //   "tl": {"XX": "LanguageName", ...}
   // }
   // Where "tl" is set in kTargetLanguagesKey.
-  base::Optional<base::Value> json_value =
+  absl::optional<base::Value> json_value =
       base::JSONReader::Read(language_list, base::JSON_ALLOW_TRAILING_COMMAS);
 
   if (!json_value || !json_value->is_dict()) {
@@ -338,7 +348,7 @@ bool TranslateLanguageList::SetSupportedLanguages(
   // Now we can clear language list.
   supported_languages_.clear();
   // ... and replace it with the values we just fetched from the server.
-  for (const auto& kv_pair : target_languages->DictItems()) {
+  for (auto kv_pair : target_languages->DictItems()) {
     const std::string& lang = kv_pair.first;
     if (!l10n_util::IsLocaleNameTranslated(lang.c_str(), locale)) {
       // Don't include languages not displayable in current UI language.

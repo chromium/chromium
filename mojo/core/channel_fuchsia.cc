@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,20 +11,21 @@
 #include <zircon/processargs.h>
 #include <zircon/status.h>
 #include <zircon/syscalls.h>
+
 #include <algorithm>
+#include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/scoped_file.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/stl_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "mojo/core/platform_handle_in_transit.h"
 
 namespace mojo {
@@ -45,25 +46,14 @@ bool UnwrapFdioHandle(PlatformHandleInTransit handle,
     return true;
   }
 
-  // Try to transfer the FD, and if that fails (for example if the file has
-  // already been dup()d into another FD) then fall back to cloning it.
+  // Try to transfer the FD if possible, otherwise take a clone of it.
+  // This allows non-dup()d FDs to be efficiently unwrapped, while dup()d FDs
+  // have a new handle attached to the same underlying resource created.
   zx::handle result;
-  zx_status_t status = fdio_fd_transfer(handle.handle().GetFD().get(),
-                                        result.reset_and_get_address());
-  if (status == ZX_OK) {
-    // On success, the fd in |handle| has been transferred and is no longer
-    // valid. Release from the PlatformHandle to avoid close()ing an invalid
-    // an invalid handle.
-    handle.CompleteTransit();
-  } else if (status == ZX_ERR_UNAVAILABLE) {
-    // No luck, try cloning instead.
-    status = fdio_fd_clone(handle.handle().GetFD().get(),
-                           result.reset_and_get_address());
-  }
-
+  zx_status_t status = fdio_fd_transfer_or_clone(
+      handle.TakeHandle().ReleaseFD(), result.reset_and_get_address());
   if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "fdio_fd_clone/transfer("
-                           << handle.handle().GetFD().get() << ")";
+    ZX_DLOG(ERROR, status) << "fdio_fd_transfer_or_clone";
     return false;
   }
 
@@ -103,6 +93,9 @@ class MessageView {
 
   MessageView& operator=(MessageView&& other) = default;
 
+  MessageView(const MessageView&) = delete;
+  MessageView& operator=(const MessageView&) = delete;
+
   ~MessageView() = default;
 
   const void* data() const {
@@ -117,9 +110,9 @@ class MessageView {
     offset_ += num_bytes;
   }
 
-  std::vector<PlatformHandleInTransit> TakeHandles() {
-    if (handles_.empty())
-      return std::vector<PlatformHandleInTransit>();
+  std::vector<PlatformHandleInTransit> TakeHandles(bool unwrap_fds) {
+    if (handles_.empty() || !unwrap_fds)
+      return std::move(handles_);
 
     // We can only pass Fuchsia handles via IPC, so unwrap any FDIO file-
     // descriptors in |handles_| into the underlying handles, with metadata in
@@ -143,8 +136,6 @@ class MessageView {
   Channel::MessagePtr message_;
   size_t offset_;
   std::vector<PlatformHandleInTransit> handles_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageView);
 };
 
 class ChannelFuchsia : public Channel,
@@ -162,6 +153,9 @@ class ChannelFuchsia : public Channel,
         io_task_runner_(io_task_runner) {
     CHECK(handle_.is_valid());
   }
+
+  ChannelFuchsia(const ChannelFuchsia&) = delete;
+  ChannelFuchsia& operator=(const ChannelFuchsia&) = delete;
 
   void Start() override {
     if (io_task_runner_->RunsTasksInCurrentSequence()) {
@@ -237,6 +231,22 @@ class ChannelFuchsia : public Channel,
     return true;
   }
 
+  bool GetReadPlatformHandlesForIpcz(
+      size_t num_handles,
+      std::vector<PlatformHandle>& handles) override {
+    if (incoming_handles_.size() < num_handles) {
+      return true;
+    }
+
+    DCHECK(handles.empty());
+    handles.reserve(num_handles);
+    for (size_t i = 0; i < num_handles; ++i) {
+      handles.emplace_back(std::move(incoming_handles_.front()));
+      incoming_handles_.pop_front();
+    }
+    return true;
+  }
+
  private:
   ~ChannelFuchsia() override { DCHECK(!read_watch_); }
 
@@ -245,8 +255,9 @@ class ChannelFuchsia : public Channel,
 
     base::CurrentThread::Get()->AddDestructionObserver(this);
 
-    read_watch_.reset(
-        new base::MessagePumpForIO::ZxHandleWatchController(FROM_HERE));
+    read_watch_ =
+        std::make_unique<base::MessagePumpForIO::ZxHandleWatchController>(
+            FROM_HERE);
     base::CurrentIOThread::Get()->WatchZxHandle(
         handle_.get(), true /* persistent */,
         ZX_CHANNEL_READABLE | ZX_CHANNEL_PEER_CLOSED, read_watch_.get(), this);
@@ -257,7 +268,7 @@ class ChannelFuchsia : public Channel,
 
     read_watch_.reset();
     if (leak_handle_)
-      ignore_result(handle_.release());
+      std::ignore = handle_.release();
     handle_.reset();
 
     // May destroy the |this| if it was the last reference.
@@ -295,7 +306,7 @@ class ChannelFuchsia : public Channel,
       zx_handle_t handles[ZX_CHANNEL_MAX_MSG_HANDLES] = {};
 
       zx_status_t read_result =
-          handle_.read(0, buffer, handles, buffer_capacity, base::size(handles),
+          handle_.read(0, buffer, handles, buffer_capacity, std::size(handles),
                        &bytes_read, &handles_read);
       if (read_result == ZX_OK) {
         for (size_t i = 0; i < handles_read; ++i) {
@@ -308,7 +319,7 @@ class ChannelFuchsia : public Channel,
           break;
         }
       } else if (read_result == ZX_ERR_BUFFER_TOO_SMALL) {
-        DCHECK_LE(handles_read, base::size(handles));
+        DCHECK_LE(handles_read, std::size(handles));
         next_read_size = bytes_read;
       } else if (read_result == ZX_ERR_SHOULD_WAIT) {
         break;
@@ -338,11 +349,11 @@ class ChannelFuchsia : public Channel,
       message_view.advance_data_offset(write_bytes);
 
       std::vector<PlatformHandleInTransit> outgoing_handles =
-          message_view.TakeHandles();
+          message_view.TakeHandles(/*unwrap_fds=*/!is_for_ipcz());
       zx_handle_t handles[ZX_CHANNEL_MAX_MSG_HANDLES] = {};
       size_t handles_count = outgoing_handles.size();
 
-      DCHECK_LE(handles_count, base::size(handles));
+      DCHECK_LE(handles_count, std::size(handles));
       for (size_t i = 0; i < handles_count; ++i) {
         DCHECK(outgoing_handles[i].handle().is_valid());
         handles[i] = outgoing_handles[i].handle().GetHandle().get();
@@ -401,8 +412,6 @@ class ChannelFuchsia : public Channel,
 
   base::Lock write_lock_;
   bool reject_writes_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelFuchsia);
 };
 
 }  // namespace

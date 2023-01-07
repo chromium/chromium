@@ -210,9 +210,9 @@ have occurred first (since you cannot `close()` an object that hasn't been
 constructed). The implications of these properties will be explored further in
 later sections.
 
-### Registering scopes with Observables
+### Registering subscriptions with Observables
 
-To register scopes to track the state of an `Observable`, we call `subscribe()`
+To subscribe an `Observer` to an `Observable`, we call `subscribe()`
 on the `Observable`. The `subscribe()` method takes a single argument, an
 `Observer`, which has an `open()` method that returns a `Scope`. The
 `Observer`'s `open()` method is called when the `Observable` activates,
@@ -272,7 +272,7 @@ with:
 ```java
 void logStateTransitionsWithData(Observable<String> observable) {
     observable.subscribe((String s) -> {
-        Log.d(TAG, "activated with data: " + s);
+        Log.d(TAG, "activated with data: %s", s);
         return () -> Log.d(TAG, "deactivated");
     });
 }
@@ -392,6 +392,25 @@ Example:
     onOrOff.set(Unit.unit()); // Does nothing because it's already on.
     onOrOff.reset(); // Turns off.
     onOrOff.reset(); // Does nothing because it's already off.
+}
+```
+
+It's common for observers and APIs that refer to `Observable`s with no data to
+use `Observable<?>` in their interface. This is an easy way to make an
+`Observable`'s data "opaque" to observers, even when the data are not `Unit`.
+
+```java
+{
+    Controller<Foo> foos = new Controller<>();
+    // Subscribers to opaqueFoos will get notified of state changes, but will
+    // not be able to access the data through the Foo interface.
+    Observable<?> opaqueFoos = foos;
+    // The observer can use methods like toString() that exist on all Objects,
+    // but cannot use Foo's API.
+    subscribe(opaqueFoos, x -> {
+        Log.d(TAG, "got Foo: %s", x.toString());
+        return () -> Log.d(TAG, "lost Foo: %s", x.toString());
+    });
 }
 ```
 
@@ -969,6 +988,11 @@ all observers have been notified. This allows a deterministic and unastonishing
 order of execution for the above example: the log will show "enter", followed
 immediately by "exit".
 
+We call this property *re-entrancy-safety*. `Controller`s are *re-entrant-safe*.
+What this guarantees is that all observers are notified of all changes, and any
+observer that imposes its own change (including indirect changes) will not have
+that change take effect until all observers are notified of the current change.
+
 Note that if you `set()` a controller with a value that is never `null` inside
 an activation handler, **you will get an infinite loop**.
 
@@ -1072,6 +1096,33 @@ should close all existing `Scopes` emitted from an `Observer` when that
 
 Once a `ReactiveRecorder` unsubscribes, it will not get any new events from the
 `Observable` it was recording.
+
+### Debugging
+
+Sometimes, particularly in long chains of `and()` or `andThen()` or `map()` or
+`filter()`, you might get confused about the ultimate state of the system in
+some circumstances. When confused about these complex `Observable`s, it's often
+helpful to use the `debug()` operator:
+
+```java
+    // Before
+    foos.andThen(bars).subscribe(...);
+    // After
+    foos.debug(msg -> Log.d(TAG, "foos: %s", msg))
+            .andThen(bars.debug(msg -> Log.d(TAG, "bars: %s", msg)))
+            .debug(msg -> Log.d(TAG, "foosAndThenBars: %s", msg))
+            .subscribe(...);
+```
+
+The `debug()` operator doesn't by itself log anything; you need to give it a
+`Consumer<String>` that logs the debug messages it generates. This makes the
+file/line number information in the log is more helpful, as it indicates which
+file you're debugging, rather than the body of the `debug()` operator itself.
+
+The messages in question will show when `Observer`s subscribe and unsubscribe,
+and whenever data are added or removed from the `Observable`. The `debug()`
+operator will call the `toString()` method on all data to format messages about
+state transitions.
 
 ## When to use Observables
 

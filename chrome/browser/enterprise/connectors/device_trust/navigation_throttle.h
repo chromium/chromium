@@ -1,28 +1,41 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_NAVIGATION_THROTTLE_H_
 
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/url_matcher/url_matcher.h"
+#include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "content/public/browser/navigation_throttle.h"
-
-class GURL;
 
 namespace enterprise_connectors {
 
+class DeviceTrustService;
+struct DeviceTrustResponse;
+
 // DeviceTrustNavigationThrottle provides a simple way to start a handshake
-// base on a list of allowed URLs.
+// between Chrome and an origin based on a list of trusted URLs set in the
+// `ContextAwareAccessSignalsAllowlist` policy.
+//
+// The handshake begins when the user visits a trusted URL. Chrome
+// adds the (X-Device-Trust: VerifiedAccess) HTTP header to the request.
+// When the origin detects this header it responds with a 302 redirect that
+// includes a Verified Access challenge in the X-Verified-Access-Challenge HTTP
+// header. Chrome uses the challenge to build a challenge response that is sent
+// back to the origin via the X-Verified-Access-Challenge-Response HTTP header.
 class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
  public:
+  // Create a navigation throttle for the given navigation if device trust is
+  // enabled.  Returns nullptr if no throttling should be done.
   static std::unique_ptr<DeviceTrustNavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* navigation_handle);
 
-  explicit DeviceTrustNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+  DeviceTrustNavigationThrottle(DeviceTrustService* device_trust_service,
+                                content::NavigationHandle* navigation_handle);
+
   DeviceTrustNavigationThrottle(const DeviceTrustNavigationThrottle&) = delete;
   DeviceTrustNavigationThrottle& operator=(
       const DeviceTrustNavigationThrottle&) = delete;
@@ -34,17 +47,20 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
-  ThrottleCheckResult GetUrlThrottleResult(const GURL& url);
-
-  void OnPolicyUpdate();
-
   content::NavigationThrottle::ThrottleCheckResult AddHeadersIfNeeded();
 
-  DeviceTrustService* device_trust_service_;
-  // The URL matcher created from the ContextAwareAccessSignalsAllowlist policy.
-  std::unique_ptr<url_matcher::URLMatcher> matcher_;
+  // Not owned.
+  const raw_ptr<DeviceTrustService> device_trust_service_;
 
-  PrefChangeRegistrar pref_change_registrar_;
+  // Resumes the navigation by setting a value into the header
+  // `X-Verified-Access-Challenge-Response` of the redirection request to the
+  // IdP and resume the navigation. That value is determined by the properties
+  // of `dt_response` which, when in success cases, contains a valid response
+  // string. `start_time` is used to measure the latency of the end-to-end flow.
+  void ReplyChallengeResponseAndResume(base::TimeTicks start_time,
+                                       const DeviceTrustResponse& dt_response);
+
+  base::WeakPtrFactory<DeviceTrustNavigationThrottle> weak_ptr_factory_{this};
 };
 
 }  // namespace enterprise_connectors

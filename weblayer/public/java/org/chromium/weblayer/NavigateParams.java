@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 /**
  * Parameters for {@link NavigationController#navigate}.
  */
-public class NavigateParams {
+class NavigateParams {
     private boolean mShouldReplaceCurrentEntry;
     private boolean mIntentProcessingDisabled;
     private boolean mIntentLaunchesAllowedInBackground;

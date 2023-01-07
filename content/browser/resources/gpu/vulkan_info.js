@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ export class VulkanInfo {
     let result = '';
     for (let i = 0; i < 16; ++i) {
       const value = uuid[i];
-      if (i == 4 || i == 6 || i == 8 || i == 10) {
+      if (i === 4 || i === 6 || i === 8 || i === 10) {
         result += '-';
       }
       if (value < 0x10) {

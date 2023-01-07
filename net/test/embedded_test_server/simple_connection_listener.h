@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_TEST_EMBEDDED_TEST_SERVER_SIMPLE_CONNECTION_LISTENER_H_
 #define NET_TEST_EMBEDDED_TEST_SERVER_SIMPLE_CONNECTION_LISTENER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 
@@ -33,6 +32,9 @@ class SimpleConnectionListener : public EmbeddedTestServerConnectionListener {
       int expected_connections,
       AllowAdditionalConnections allow_additional_connections);
 
+  SimpleConnectionListener(const SimpleConnectionListener&) = delete;
+  SimpleConnectionListener& operator=(const SimpleConnectionListener&) = delete;
+
   // Must be torn down only after the EmbeddedTestServer it's attached to is
   // shut down.
   ~SimpleConnectionListener() override;
@@ -53,8 +55,6 @@ class SimpleConnectionListener : public EmbeddedTestServerConnectionListener {
   const AllowAdditionalConnections allow_additional_connections_;
 
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleConnectionListener);
 };
 
 }  // namespace test_server

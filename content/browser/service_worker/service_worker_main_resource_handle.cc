@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 
 namespace content {
@@ -37,9 +37,8 @@ void ServiceWorkerMainResourceHandle::OnCreatedContainerHost(
 }
 
 void ServiceWorkerMainResourceHandle::OnBeginNavigationCommit(
-    int render_process_id,
-    int render_frame_id,
-    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    const GlobalRenderFrameHostId& rfh_id,
+    const PolicyContainerPolicies& policy_container_policies,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr* out_container_info,
@@ -51,9 +50,9 @@ void ServiceWorkerMainResourceHandle::OnBeginNavigationCommit(
   *out_container_info = std::move(container_info_);
 
   if (container_host_) {
-    container_host_->OnBeginNavigationCommit(
-        render_process_id, render_frame_id, cross_origin_embedder_policy,
-        std::move(coep_reporter), document_ukm_source_id);
+    container_host_->OnBeginNavigationCommit(rfh_id, policy_container_policies,
+                                             std::move(coep_reporter),
+                                             document_ukm_source_id);
   }
 }
 
@@ -64,11 +63,11 @@ void ServiceWorkerMainResourceHandle::OnEndNavigationCommit() {
 }
 
 void ServiceWorkerMainResourceHandle::OnBeginWorkerCommit(
-    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    const PolicyContainerPolicies& policy_container_policies,
     ukm::SourceId worker_ukm_source_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (container_host_) {
-    container_host_->CompleteWebWorkerPreparation(cross_origin_embedder_policy,
+    container_host_->CompleteWebWorkerPreparation(policy_container_policies,
                                                   worker_ukm_source_id);
   }
 }

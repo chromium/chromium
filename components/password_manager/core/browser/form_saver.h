@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace password_manager {
 
@@ -24,15 +22,18 @@ class FormSaver {
  public:
   FormSaver() = default;
 
+  FormSaver(const FormSaver&) = delete;
+  FormSaver& operator=(const FormSaver&) = delete;
+
   virtual ~FormSaver() = default;
 
   // Blocklist the origin described by |digest|. Returns the PasswordForm pushed
   // to the store.
-  virtual PasswordForm Blocklist(PasswordStore::FormDigest digest) = 0;
+  virtual PasswordForm Blocklist(PasswordFormDigest digest) = 0;
 
   // Unblocklist the origin described by |digest| by deleting all corresponding
   // blocklisted entries.
-  virtual void Unblocklist(const PasswordStore::FormDigest& digest) = 0;
+  virtual void Unblocklist(const PasswordFormDigest& digest) = 0;
 
   // Saves the |pending| form.
   // |matches| are relevant credentials for the site. After saving |pending|,
@@ -69,9 +70,6 @@ class FormSaver {
 
   // Creates a new FormSaver with the same state as |*this|.
   virtual std::unique_ptr<FormSaver> Clone() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FormSaver);
 };
 
 }  // namespace password_manager

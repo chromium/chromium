@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ enum class AccessorySuggestionType {
   PASSWORD = 1,
   PAYMENT_INFO = 2,
   ADDRESS_INFO = 3,
-  TOUCH_TO_FILL_INFO = 4,
+  OBSOLETE_TOUCH_TO_FILL_INFO = 4,
   COUNT,
 };
 

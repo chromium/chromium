@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Creates a pool of XhrIo objects to use. This allows multiple
@@ -22,6 +14,7 @@ goog.provide('goog.net.XhrIoPool');
 
 goog.require('goog.net.XhrIo');
 goog.require('goog.structs.PriorityPool');
+goog.requireType('goog.structs.Map');
 
 
 
@@ -38,6 +31,7 @@ goog.require('goog.structs.PriorityPool');
  */
 goog.net.XhrIoPool = function(
     opt_headers, opt_minCount, opt_maxCount, opt_withCredentials) {
+  'use strict';
   /**
    * Map of default headers to add to every request.
    * @type {goog.structs.Map|undefined}
@@ -72,10 +66,14 @@ goog.inherits(goog.net.XhrIoPool, goog.structs.PriorityPool);
  * @override
  */
 goog.net.XhrIoPool.prototype.createObject = function() {
-  var xhrIo = new goog.net.XhrIo();
-  var headers = this.headers_;
+  'use strict';
+  const xhrIo = new goog.net.XhrIo();
+  const headers = this.headers_;
   if (headers) {
-    headers.forEach(function(value, key) { xhrIo.headers.set(key, value); });
+    headers.forEach(function(value, key) {
+      'use strict';
+      xhrIo.headers.set(key, value);
+    });
   }
   if (this.withCredentials_) {
     xhrIo.setWithCredentials(true);
@@ -92,7 +90,8 @@ goog.net.XhrIoPool.prototype.createObject = function() {
  * @override
  */
 goog.net.XhrIoPool.prototype.objectCanBeReused = function(obj) {
+  'use strict';
   // An active XhrIo object should never be used.
-  var xhr = /** @type {goog.net.XhrIo} */ (obj);
+  const xhr = /** @type {goog.net.XhrIo} */ (obj);
   return !xhr.isDisposed() && !xhr.isActive();
 };

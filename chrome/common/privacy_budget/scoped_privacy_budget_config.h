@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/common/privacy_budget/types.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
 namespace test {
@@ -29,43 +29,48 @@ namespace test {
 //     reverts the configuration changes.
 class ScopedPrivacyBudgetConfig {
  public:
+  // The default generation is arbitrary. The only thing special about this
+  // number is that it is the default.
+  constexpr static int kDefaultGeneration = 17;
+
+  enum class Presets {
+    // Enables the study with random sampling and with a probability of 1 of
+    // selecting each surface.
+    kEnableRandomSampling,
+
+    // Disables the study. The other parameters are undefined and should not be
+    // relied upon.
+    kDisable
+  };
+
   // These fields correspond to the equivalent features described in
   // privacy_budget_features.h
-  //
-  // The default values enable the identifiability study with a selection rate
-  // of 1, which means every surface is included in UKM reports, and a sampling
-  // rate of 1, which means every report is sampled.
   struct Parameters {
     Parameters();
+    explicit Parameters(Presets);
     Parameters(const Parameters&);
     Parameters(Parameters&&);
     ~Parameters();
 
     bool enabled = true;
-    int generation = 1;
+    int generation = kDefaultGeneration;
 
-    std::vector<blink::IdentifiableSurface> blocked_surfaces;
-    std::vector<blink::IdentifiableSurface::Type> blocked_types;
-    int surface_selection_rate = 1;
-    int max_surfaces = std::numeric_limits<int>::max();
-    std::map<blink::IdentifiableSurface, int> per_surface_selection_rate;
-    std::map<blink::IdentifiableSurface::Type, int> per_type_selection_rate;
-    std::map<blink::IdentifiableSurface, int> per_surface_sampling_rate;
-    std::map<blink::IdentifiableSurface::Type, int> per_type_sampling_rate;
-  };
-
-  enum Presets {
-    // Represents the default state of `Parameters` which enables the study with
-    // the following settings:
-    //
-    // * `generation` = 1
-    // * `surface_selection_rate`= 1 (i.e. includes every surface)
-    // * `max_surfaces` = <very large number> (i.e. unlimited)
-    kEnable,
-
-    // Disables the study. The other parameters are undefined and should not be
-    // relied upon.
-    kDisable
+    IdentifiableSurfaceList blocked_surfaces;
+    IdentifiableSurfaceTypeList blocked_types;
+    int expected_surface_count = 0;
+    int active_surface_budget = std::numeric_limits<int>::max();
+    IdentifiableSurfaceCostMap per_surface_cost;
+    IdentifiableSurfaceTypeCostMap per_type_cost;
+    SurfaceSetEquivalentClassesList equivalence_classes;
+    IdentifiableSurfaceBlocks blocks;
+    std::vector<double> block_weights;
+    IdentifiableSurfaceBlocks reid_blocks;
+    std::vector<uint64_t> reid_salts_ranges;
+    std::vector<int> reid_bits;
+    std::vector<double> reid_noise;
+    std::vector<blink::IdentifiableSurface::Type> allowed_random_types;
+    bool enable_active_sampling = false;
+    std::vector<std::string> actively_sampled_fonts;
   };
 
   // Doesn't do anything until Apply() is called.
@@ -81,7 +86,7 @@ class ScopedPrivacyBudgetConfig {
   ~ScopedPrivacyBudgetConfig();
 
   // Apply the configuration as described in `parameters`. Should only be called
-  // once.
+  // once per instance.
   void Apply(const Parameters& parameters);
 
   ScopedPrivacyBudgetConfig(const ScopedPrivacyBudgetConfig&) = delete;
@@ -90,6 +95,7 @@ class ScopedPrivacyBudgetConfig {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  bool applied_ = false;
 };
 
 }  // namespace test

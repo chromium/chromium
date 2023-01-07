@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define CONTENT_PUBLIC_BROWSER_BROWSER_ACCESSIBILITY_STATE_H_
 
 #include "base/callback_forward.h"
+#include "base/callback_list.h"
 #include "build/build_config.h"
-
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/accessibility/ax_mode.h"
@@ -21,7 +21,7 @@ struct FocusedNodeDetails;
 // readers.
 class CONTENT_EXPORT BrowserAccessibilityState {
  public:
-  virtual ~BrowserAccessibilityState() { }
+  virtual ~BrowserAccessibilityState() = default;
 
   // Returns the singleton instance.
   static BrowserAccessibilityState* GetInstance();
@@ -79,7 +79,7 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // Update BrowserAccessibilityState with the current status of caret browsing.
   virtual void SetCaretBrowsingState(bool enabled) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Update BrowserAccessibilityState with the current state of accessibility
   // image labels. Used exclusively on Android.
   virtual void SetImageLabelsModeForProfile(bool enabled,
@@ -94,6 +94,26 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   virtual base::CallbackListSubscription RegisterFocusChangedCallback(
       FocusChangedCallback callback) = 0;
 };
+
+namespace testing {
+
+class CONTENT_EXPORT ScopedContentAXModeSetter {
+ public:
+  explicit ScopedContentAXModeSetter(ui::AXMode mode) : mode_(mode) {
+    BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(mode);
+  }
+  ~ScopedContentAXModeSetter() { ResetMode(); }
+
+  void ResetMode() {
+    BrowserAccessibilityState::GetInstance()->RemoveAccessibilityModeFlags(
+        mode_);
+  }
+
+ private:
+  ui::AXMode mode_;
+};
+
+}  // namespace testing
 
 }  // namespace content
 

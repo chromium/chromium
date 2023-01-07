@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,9 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
 namespace base {
@@ -62,6 +63,10 @@ class BudgetDatabase {
 
   // The database_dir specifies the location of the budget information on disk.
   explicit BudgetDatabase(Profile* profile);
+
+  BudgetDatabase(const BudgetDatabase&) = delete;
+  BudgetDatabase& operator=(const BudgetDatabase&) = delete;
+
   ~BudgetDatabase();
 
   // Get the full budget expectation for the origin. This will return a
@@ -87,8 +92,8 @@ class BudgetDatabase {
   struct BudgetChunk {
     BudgetChunk(double amount, base::Time expiration)
         : amount(amount), expiration(expiration) {}
-    BudgetChunk(const BudgetChunk& other)
-        : amount(other.amount), expiration(other.expiration) {}
+    BudgetChunk(const BudgetChunk&) = default;
+    BudgetChunk& operator=(const BudgetChunk&) = default;
 
     double amount;
     base::Time expiration;
@@ -102,13 +107,16 @@ class BudgetDatabase {
   // which have been awarded.
   struct BudgetInfo {
     BudgetInfo();
+
+    BudgetInfo(const BudgetInfo&) = delete;
+    BudgetInfo& operator=(const BudgetInfo&) = delete;
+
     BudgetInfo(const BudgetInfo&& other);
+
     ~BudgetInfo();
 
     base::Time last_engagement_award;
     BudgetChunks chunks;
-
-    DISALLOW_COPY_AND_ASSIGN(BudgetInfo);
   };
 
   // Callback for writing budget values to the database.
@@ -158,7 +166,7 @@ class BudgetDatabase {
   // score of zero when |profile_| is off the record.
   double GetSiteEngagementScoreForOrigin(const url::Origin& origin) const;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The database for storing budget information.
   std::unique_ptr<leveldb_proto::ProtoDatabase<budget_service::Budget>> db_;
@@ -170,8 +178,6 @@ class BudgetDatabase {
   std::unique_ptr<base::Clock> clock_;
 
   base::WeakPtrFactory<BudgetDatabase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BudgetDatabase);
 };
 
 #endif  // CHROME_BROWSER_PUSH_MESSAGING_BUDGET_DATABASE_H_

@@ -14,11 +14,9 @@ window.onload = (() => {
 });
 
 function handleMessage(event) {
-  if (event.data.hasOwnProperty('scrollBy')) {
+  if (event.data.hasOwnProperty('expectScrollBy')) {
     port = event.source;
     frame_id = event.data.frame_id;
-    eventSender.mouseMoveTo(5, 5);
-    eventSender.mouseScrollBy(0, event.data.scrollBy);
   } else if (event.data.hasOwnProperty('clickScrollbar')) {
     port = event.source;
     frame_id = event.data.frame_id;

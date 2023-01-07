@@ -1,0 +1,9 @@
+include_rules = [
+  "+ios/chrome/browser/ui/browser_view",
+]
+
+specific_include_rules = {
+  "key_commands_provider_unittest\.mm": [
+    "+ios/web/find_in_page/find_in_page_manager_impl.h",
+  ],
+}

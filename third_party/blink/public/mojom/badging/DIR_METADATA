@@ -1,5 +1,2 @@
-monorail {
-  component: "UI>Browser>WebAppInstalls"
-}
+mixins: "//chrome/browser/badging/COMMON_METADATA"
 
-team_email: "pwa-dev@chromium.org"

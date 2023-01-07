@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
 PASS calls handleEvent method of event listener
-FAIL looks up handleEvent method on every event dispatch assert_equals: expected 1 but got 0
-FAIL doesn't look up handleEvent method on callable event listeners assert_equals: expected 1 but got 0
-FAIL rethrows errors when getting handleEvent assert_true: Timed out waiting for error expected true got false
+PASS looks up handleEvent method on every event dispatch
+PASS doesn't look up handleEvent method on callable event listeners
+PASS rethrows errors when getting handleEvent
 FAIL throws if handleEvent is falsy and not callable assert_true: Timed out waiting for error expected true got false
 FAIL throws if handleEvent is thruthy and not callable assert_true: Timed out waiting for error expected true got false
 Harness: the test ran to completion.

@@ -27,6 +27,5 @@ Extension record X 1 (hsl(261deg 82% 70% / 70%))
 Extension record X 2 (hsl(230deg 88% 70% / 70%))
 Level 1
 Extension record I 1 (hsl(298deg 100% 70% / 70%))
-Extension record B+E (hsl(292deg 100% 70% / 70%))
 All tests done.
 

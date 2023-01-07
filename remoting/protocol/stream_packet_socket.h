@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
@@ -20,8 +21,7 @@ class StreamSocket;
 
 }  // namespace net
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class StreamPacketProcessor;
 
@@ -94,7 +94,7 @@ class StreamPacketSocket final : public rtc::AsyncPacketSocket {
   void CloseWithNetError(int net_error);
 
   std::unique_ptr<net::StreamSocket> socket_;
-  StreamPacketProcessor* packet_processor_;
+  raw_ptr<StreamPacketProcessor> packet_processor_;
 
   // Note that a packet can be partially sent, where the number of bytes sent
   // is reflected in DrainableIOBuffer::BytesConsumed.
@@ -116,7 +116,6 @@ class StreamPacketSocket final : public rtc::AsyncPacketSocket {
   int error_ = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_STREAM_PACKET_SOCKET_H_

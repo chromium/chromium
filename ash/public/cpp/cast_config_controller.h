@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,11 @@
 namespace ash {
 
 // The type of icon the sink is associated with. These values match
-// media_router::SinkIconType.
+// media_router::SinkIconType and media_router::mojom::SinkIconType.
 enum class SinkIconType {
   kCast = 0,
   kCastAudioGroup = 1,
   kCastAudio = 2,
-  kMeeting = 3,
-  kHangout = 4,
-  kEducation = 5,
   kWiredDisplay = 6,
   kGeneric = 7,
 };
@@ -92,6 +89,11 @@ class ASH_PUBLIC_EXPORT CastConfigController {
   // server. In that case, this device is not actively transmitting information
   // to the cast sink.
   virtual bool HasActiveRoute() const = 0;
+
+  // Returns true if access code casting is enabled for this user. This is
+  // important because if it is enabled, the cast icon may need to be shown even
+  // if there are no currently available sinks.
+  virtual bool AccessCodeCastingEnabled() const = 0;
 
   // Request fresh data from the backend. When the data is available, all
   // registered observers will get called.

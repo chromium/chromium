@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,10 @@ class LockDebugView : public views::View {
  public:
   LockDebugView(mojom::TrayActionState initial_note_action_state,
                 LockScreen::ScreenType screen_type);
+
+  LockDebugView(const LockDebugView&) = delete;
+  LockDebugView& operator=(const LockDebugView&) = delete;
+
   ~LockDebugView() override;
 
   // views::View:
@@ -138,8 +142,6 @@ class LockDebugView : public views::View {
   // True if full management disclosure method for the managed sessions is
   // shown.
   bool is_managed_session_disclosure_shown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LockDebugView);
 };
 
 }  // namespace ash

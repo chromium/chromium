@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ppapi/c/ppp_instance.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 
@@ -24,6 +23,9 @@ struct PPAPI_SHARED_EXPORT PPP_Instance_Combined {
   // returns NULL.
   static PPP_Instance_Combined* Create(
       base::RepeatingCallback<const void*(const char*)> get_plugin_if);
+
+  PPP_Instance_Combined(const PPP_Instance_Combined&) = delete;
+  PPP_Instance_Combined& operator=(const PPP_Instance_Combined&) = delete;
 
   PP_Bool DidCreate(PP_Instance instance,
                     uint32_t argc,
@@ -55,8 +57,6 @@ struct PPAPI_SHARED_EXPORT PPP_Instance_Combined {
   void (*did_change_view_1_0_)(PP_Instance instance,
                                const struct PP_Rect* position,
                                const struct PP_Rect* clip);
-
-  DISALLOW_COPY_AND_ASSIGN(PPP_Instance_Combined);
 };
 
 }  // namespace ppapi

@@ -27,7 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_EDITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_EDITOR_H_
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -43,6 +43,8 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
                               public SynchronousMutationObserver {
  public:
   explicit SelectionEditor(LocalFrame&);
+  SelectionEditor(const SelectionEditor&) = delete;
+  SelectionEditor& operator=(const SelectionEditor&) = delete;
   virtual ~SelectionEditor();
   void Dispose();
 
@@ -50,7 +52,7 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
 
   VisibleSelection ComputeVisibleSelectionInDOMTree() const;
   VisibleSelectionInFlatTree ComputeVisibleSelectionInFlatTree() const;
-  bool ComputeAbsoluteBounds(IntRect& anchor, IntRect& focus) const;
+  bool ComputeAbsoluteBounds(gfx::Rect& anchor, gfx::Rect& focus) const;
   void SetSelectionAndEndTyping(const SelectionInDOMTree&);
 
   void DidAttachDocument(Document*);
@@ -87,7 +89,8 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
 
   // Implementation of |SynchronousMutationObsderver| member functions.
   void ContextDestroyed() final;
-  void DidChangeChildren(const ContainerNode&) final;
+  void DidChangeChildren(const ContainerNode&,
+                         const ContainerNode::ChildrenChange&) final;
   void DidMergeTextNodes(const Text& merged_node,
                          const NodeWithIndex& node_to_be_removed_with_index,
                          unsigned old_length) final;
@@ -112,8 +115,8 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
   mutable bool cached_visible_selection_in_dom_tree_is_dirty_ = true;
   mutable bool cached_visible_selection_in_flat_tree_is_dirty_ = true;
 
-  mutable IntRect cached_anchor_bounds_;
-  mutable IntRect cached_focus_bounds_;
+  mutable gfx::Rect cached_anchor_bounds_;
+  mutable gfx::Rect cached_focus_bounds_;
   mutable bool cached_absolute_bounds_are_dirty_ = true;
   mutable bool has_selection_bounds_ = false;
 
@@ -125,8 +128,6 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
   mutable uint64_t style_version_for_absolute_bounds_ =
       static_cast<uint64_t>(-1);
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionEditor);
 };
 
 }  // namespace blink

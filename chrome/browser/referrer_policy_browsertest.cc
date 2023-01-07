@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,12 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -69,7 +72,6 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
   };
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
     // Some builders are flaky due to slower loading interacting
     // with deferred commits.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
@@ -239,7 +241,7 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
     // Watch for all possible outcomes to avoid timeouts if something breaks.
     AddAllPossibleTitles(start_url, &title_watcher);
 
-    ui_test_utils::NavigateToURL(browser(), start_url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
 
     if (renderer_or_browser_initiated == BROWSER_INITIATED) {
       CHECK(disposition == WindowOpenDisposition::CURRENT_TAB);
@@ -256,11 +258,15 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
       mouse_event.button = button;
       mouse_event.SetPositionInWidget(15, 15);
       mouse_event.click_count = 1;
-      tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-          mouse_event);
+      tab->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->ForwardMouseEvent(mouse_event);
       mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-      tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-          mouse_event);
+      tab->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->ForwardMouseEvent(mouse_event);
     }
 
     if (disposition == WindowOpenDisposition::CURRENT_TAB) {
@@ -312,7 +318,7 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
   };
 
   base::Lock check_on_requests_lock_;
-  base::Optional<RequestCheck> check_on_requests_
+  absl::optional<RequestCheck> check_on_requests_
       GUARDED_BY(check_on_requests_lock_);
 };
 
@@ -406,7 +412,13 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, HttpsMiddleClickTargetBlankOrigin) {
 }
 
 // Context menu, from HTTP to HTTP.
-IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, ContextMenuOrigin) {
+// TODO(crbug.com/1269942): Flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ContextMenuOrigin DISABLED_ContextMenuOrigin
+#else
+#define MAYBE_ContextMenuOrigin ContextMenuOrigin
+#endif
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_ContextMenuOrigin) {
   ContextMenuNotificationObserver context_menu_observer(
       IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
   RunReferrerTest(
@@ -416,7 +428,13 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, ContextMenuOrigin) {
 }
 
 // Context menu, from HTTPS to HTTP.
-IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, HttpsContextMenuOrigin) {
+// TODO(crbug.com/1269041): Fix flakiness on Linux and Lacros then reenable.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_HttpsContextMenuOrigin DISABLED_HttpsContextMenuOrigin
+#else
+#define MAYBE_HttpsContextMenuOrigin HttpsContextMenuOrigin
+#endif
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_HttpsContextMenuOrigin) {
   ContextMenuNotificationObserver context_menu_observer(
       IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
   RunReferrerTest(
@@ -519,7 +537,13 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest,
 }
 
 // Context menu, from HTTP to HTTP via server redirect.
-IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, ContextMenuRedirect) {
+// TODO(crbug.com/1269041): Fix flakiness on Linux and Lacros then reenable.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ContextMenuRedirect DISABLED_ContextMenuRedirect
+#else
+#define MAYBE_ContextMenuRedirect ContextMenuRedirect
+#endif
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_ContextMenuRedirect) {
   ContextMenuNotificationObserver context_menu_observer(
       IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
   RunReferrerTest(network::mojom::ReferrerPolicy::kOrigin, START_ON_HTTP,
@@ -530,7 +554,13 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, ContextMenuRedirect) {
 }
 
 // Context menu, from HTTPS to HTTP via server redirect.
-IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, HttpsContextMenuRedirect) {
+// TODO(crbug.com/1269942): Flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_HttpsContextMenuRedirect DISABLED_HttpsContextMenuRedirect
+#else
+#define MAYBE_HttpsContextMenuRedirect HttpsContextMenuRedirect
+#endif
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_HttpsContextMenuRedirect) {
   ContextMenuNotificationObserver context_menu_observer(
       IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
   RunReferrerTest(network::mojom::ReferrerPolicy::kOrigin, START_ON_HTTPS,
@@ -550,8 +580,8 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, History) {
       blink::WebMouseEvent::Button::kLeft, EXPECT_ORIGIN_AS_REFERRER);
 
   // Navigate to C.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
 
   std::u16string expected_title =
       GetExpectedTitle(start_url, EXPECT_ORIGIN_AS_REFERRER);
@@ -626,9 +656,9 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
       new content::TitleWatcher(tab, expected_title));
 
   // Load a page that loads an iframe.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_.GetURL("/referrer_policy/referrer-policy-iframe.html"));
+      https_server_.GetURL("/referrer_policy/referrer-policy-iframe.html")));
   EXPECT_TRUE(content::ExecuteScript(
       tab,
       std::string("var frame = document.createElement('iframe');frame.src ='") +
@@ -642,7 +672,8 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
   // Verify that the referrer policy was honored and the main page's origin was
   // send as referrer.
   content::RenderFrameHost* frame = content::FrameMatchingPredicate(
-      tab, base::BindRepeating(&content::FrameIsChildOfMainFrame));
+      tab->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameIsChildOfMainFrame));
   std::string title;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
       frame,
@@ -747,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest,
 //
 // These tests assume a default policy of no-referrer-when-downgrade.
 struct ReferrerOverrideParams {
-  base::Optional<base::Feature> feature_to_enable;
+  absl::optional<base::test::FeatureRef> feature_to_enable;
   network::mojom::ReferrerPolicy baseline_policy;
   network::mojom::ReferrerPolicy expected_policy;
 
@@ -817,8 +848,10 @@ class ReferrerOverrideTest
       public ::testing::WithParamInterface<ReferrerOverrideParams> {
  public:
   ReferrerOverrideTest() {
-    if (GetParam().feature_to_enable)
-      scoped_feature_list_.InitAndEnableFeature(*GetParam().feature_to_enable);
+    if (GetParam().feature_to_enable) {
+      scoped_feature_list_.InitAndEnableFeature(
+          *GetParam().feature_to_enable.value());
+    }
   }
 
  protected:
@@ -887,7 +920,7 @@ class ReferrerOverrideTest
     std::u16string expected_title(u"loaded");
     std::unique_ptr<content::TitleWatcher> title_watcher(
         new content::TitleWatcher(tab, expected_title));
-    ui_test_utils::NavigateToURL(browser(), start_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
 
     // Wait for the page to load; during the load, since check_on_requests_ is
     // nonempty, OnServerIncomingRequest will validate the referrers.
@@ -904,9 +937,10 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(kReferrerOverrideParams),
     [](const ::testing::TestParamInfo<ReferrerOverrideParams>& info)
         -> std::string {
-      if (info.param.feature_to_enable)
+      if (info.param.feature_to_enable) {
         return base::StringPrintf("Param%s",
-                                  info.param.feature_to_enable->name);
+                                  info.param.feature_to_enable.value()->name);
+      }
       return "NoFeature";
     });
 
@@ -1015,7 +1049,9 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyCapReferrerToOriginOnCrossOriginTest,
 IN_PROC_BROWSER_TEST_F(ReferrerPolicyCapReferrerToOriginOnCrossOriginTest,
                        RespectsNoReferrerPref) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kEnableReferrers, false);
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
   RunReferrerTest(network::mojom::ReferrerPolicy::kAlways, START_ON_HTTPS,
                   REGULAR_LINK, NO_REDIRECT, WindowOpenDisposition::CURRENT_TAB,

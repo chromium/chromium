@@ -1,18 +1,75 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 
+#include "base/feature_list.h"
+#include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "third_party/blink/public/common/features.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
+
+namespace {
+
+bool IsEphemeralProfile(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::ProfileHelper::IsEphemeralUserProfile(profile))
+    return true;
+#endif
+
+  // Catch additional logic that may not be caught by the existing Ash check.
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
+  return entry && entry->IsEphemeral();
+}
+
+bool ShouldEnablePageContentAnnotations(Profile* profile) {
+  if (chrome::IsRunningInAppMode()) {
+    // The annotations we provide cannot provide any benefit to users in kiosk
+    // mode, so we can skip.
+    return false;
+  }
+
+  if (IsEphemeralProfile(profile)) {
+    // The annotations we provide won't have lasting effect if profile is
+    // ephemeral, so we can skip.
+    return false;
+  }
+
+  // Allow for the validation experiment, remote page metadata, or the Topics
+  // experiment to enable the PCAService without need to enable both features.
+  return optimization_guide::features::IsPageContentAnnotationEnabled() ||
+         base::FeatureList::IsEnabled(
+             optimization_guide::features::kPageContentAnnotationsValidation) ||
+         base::FeatureList::IsEnabled(
+             optimization_guide::features::kRemotePageMetadata) ||
+         base::FeatureList::IsEnabled(blink::features::kBrowsingTopics);
+}
+
+}  // namespace
 
 // static
 optimization_guide::PageContentAnnotationsService*
@@ -29,9 +86,7 @@ PageContentAnnotationsServiceFactory::GetInstance() {
 }
 
 PageContentAnnotationsServiceFactory::PageContentAnnotationsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PageContentAnnotationsService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("PageContentAnnotationsService") {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
 }
@@ -41,10 +96,16 @@ PageContentAnnotationsServiceFactory::~PageContentAnnotationsServiceFactory() =
 
 KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!optimization_guide::features::IsPageContentAnnotationEnabled())
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  if (!ShouldEnablePageContentAnnotations(profile))
     return nullptr;
 
-  Profile* profile = Profile::FromBrowserContext(context);
+  auto* proto_db_provider = profile->GetOriginalProfile()
+                                ->GetDefaultStoragePartition()
+                                ->GetProtoDatabaseProvider();
+  base::FilePath profile_path = profile->GetOriginalProfile()->GetPath();
+
   // The optimization guide and history services must be available for the page
   // content annotations service to work.
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
@@ -54,14 +115,19 @@ KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
                                            ServiceAccessType::IMPLICIT_ACCESS);
   if (optimization_guide_keyed_service && history_service) {
     return new optimization_guide::PageContentAnnotationsService(
-        optimization_guide_keyed_service, history_service);
+        g_browser_process->GetApplicationLocale(),
+        optimization_guide_keyed_service, history_service, proto_db_provider,
+        profile_path,
+        optimization_guide_keyed_service->GetOptimizationGuideLogger(),
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
   }
   return nullptr;
 }
 
 bool PageContentAnnotationsServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return optimization_guide::features::IsPageContentAnnotationEnabled();
+  return true;
 }
 
 bool PageContentAnnotationsServiceFactory::ServiceIsNULLWhileTesting() const {

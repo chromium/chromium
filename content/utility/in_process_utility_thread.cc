@@ -1,13 +1,14 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/utility/in_process_utility_thread.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/child/child_process.h"
@@ -49,7 +50,7 @@ void InProcessUtilityThread::CleanUp()
 void InProcessUtilityThread::InitInternal()
     EXCLUSIVE_LOCK_FUNCTION(g_one_utility_thread_lock.Get()) {
   g_one_utility_thread_lock.Get().Acquire();
-  child_process_.reset(new ChildProcess());
+  child_process_ = std::make_unique<ChildProcess>();
   child_process_->set_main_thread(new UtilityThreadImpl(params_));
 }
 

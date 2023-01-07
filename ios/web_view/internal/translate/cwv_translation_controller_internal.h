@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateTranslateStep:(translate::TranslateStep)step
              sourceLanguage:(const std::string&)sourceLanguage
              targetLanguage:(const std::string&)targetLanguage
-                  errorType:(translate::TranslateErrors::Type)errorType
+                  errorType:(translate::TranslateErrors)errorType
           triggeredFromMenu:(bool)triggeredFromMenu;
 
 @end

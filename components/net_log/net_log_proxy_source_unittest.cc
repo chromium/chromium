@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -155,7 +156,7 @@ TEST(NetLogProxySource, OnlyProxiesEventsWhenCaptureModeSetIsNonZero) {
       std::move(proxy_sink_remote));
 
   // No capture modes are set, so should not get proxied.
-  task_environment.FastForwardBy(base::TimeDelta::FromSeconds(9876));
+  task_environment.FastForwardBy(base::Seconds(9876));
 
   net::NetLogWithSource source0 = net::NetLogWithSource::Make(
       net::NetLog::Get(), net::NetLogSourceType::URL_REQUEST);
@@ -170,25 +171,25 @@ TEST(NetLogProxySource, OnlyProxiesEventsWhenCaptureModeSetIsNonZero) {
   // start listening for NetLog events.
   capture_mode_waiter->WaitForCaptureModeUpdate();
 
-  task_environment.FastForwardBy(base::TimeDelta::FromSeconds(5432));
+  task_environment.FastForwardBy(base::Seconds(5432));
   base::TimeTicks source1_start_ticks = base::TimeTicks::Now();
 
   net::NetLogWithSource source1 = net::NetLogWithSource::Make(
       net::NetLog::Get(), net::NetLogSourceType::SOCKET);
-  task_environment.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment.FastForwardBy(base::Seconds(1));
   base::TimeTicks source1_event0_ticks = base::TimeTicks::Now();
   source1.BeginEvent(net::NetLogEventType::SOCKET_ALIVE);
 
-  task_environment.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment.FastForwardBy(base::Seconds(10));
   base::TimeTicks source1_event1_ticks = base::TimeTicks::Now();
   // Add the second event from a different thread. Use a lambda instead of
   // binding to NetLogWithSource::EndEvent since EndEvent is overloaded and
   // templatized which seems to confuse BindOnce. Capturing is safe here as
   // the test will WaitForExpectedEntries() before completing.
   base::ThreadPool::PostTask(
-      FROM_HERE, base::BindOnce(base::BindLambdaForTesting([&]() {
+      FROM_HERE, base::BindLambdaForTesting([&]() {
         source1.EndEvent(net::NetLogEventType::SOCKET_ALIVE);
-      })));
+      }));
 
   // Wait for all the expected events to be proxied over the mojo pipe and
   // recorded.

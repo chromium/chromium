@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -64,7 +64,12 @@ class CORE_EXPORT TopDocumentRootScrollerController
 
   // Returns the size we should use for the root scroller, accounting for
   // browser controls adjustment and using the root LocalFrameView.
-  IntSize RootScrollerVisibleArea() const;
+  gfx::Size RootScrollerVisibleArea() const;
+
+  // Called when a document is shutdown to releases the global_root_scroller_
+  // and viewport_apply_scroll_ members, without any side effects (i.e. doesn't
+  // call DidChangeGlobalRootScroller).
+  void Reset();
 
  private:
   // Calculates the Node that should be the global root scroller. On a simple
@@ -99,4 +104,4 @@ class CORE_EXPORT TopDocumentRootScrollerController
 
 }  // namespace blink
 
-#endif  // RootScrollerController_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_TOP_DOCUMENT_ROOT_SCROLLER_CONTROLLER_H_

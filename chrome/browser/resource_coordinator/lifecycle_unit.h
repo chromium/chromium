@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/decision_details.h"
@@ -45,6 +44,7 @@ class LifecycleUnit {
     explicit SortKey(base::TimeTicks last_focused_time);
 
     SortKey(const SortKey& other);
+    SortKey& operator=(const SortKey& other);
 
     bool operator<(const SortKey& other) const;
     bool operator>(const SortKey& other) const;
@@ -140,7 +140,8 @@ class LifecycleUnit {
   // is easier to achieve that if we discard a group of LifecycleUnits that live
   // in the same process(es) than if we discard individual LifecycleUnits.
   // https://crbug.com/775644
-  virtual bool Discard(LifecycleUnitDiscardReason discard_reason) = 0;
+  virtual bool Discard(LifecycleUnitDiscardReason discard_reason,
+                       uint64_t resident_set_size_estimate = 0) = 0;
 
   // Returns the number of times this lifecycle unit has been discarded.
   virtual size_t GetDiscardCount() const = 0;

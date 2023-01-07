@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.DoNotInline;
 import org.chromium.content.browser.remoteobjects.RemoteObjectInjector;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
@@ -32,6 +33,9 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
                 JavascriptInjectorImpl::new;
     }
 
+    // The set is passed to native and stored in a weak reference, so ensure this
+    // strong reference is not optimized away by R8.
+    @DoNotInline
     private final Set<Object> mRetainedObjects = new HashSet<>();
     private final Map<String, Pair<Object, Class>> mInjectedObjects = new HashMap<>();
     private long mNativePtr;

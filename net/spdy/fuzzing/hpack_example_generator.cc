@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/spdy/fuzzing/hpack_fuzz_util.h"
-#include "net/third_party/quiche/src/spdy/core/hpack/hpack_constants.h"
-#include "net/third_party/quiche/src/spdy/core/hpack/hpack_encoder.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_constants.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_encoder.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
 namespace {
 
@@ -61,8 +61,7 @@ int main(int argc, char** argv) {
     spdy::Http2HeaderBlock headers =
         HpackFuzzUtil::NextGeneratedHeaderSet(&context);
 
-    std::string buffer;
-    CHECK(encoder.EncodeHeaderSet(headers, &buffer));
+    std::string buffer = encoder.EncodeHeaderBlock(headers);
 
     std::string prefix = HpackFuzzUtil::HeaderBlockPrefix(buffer.size());
 

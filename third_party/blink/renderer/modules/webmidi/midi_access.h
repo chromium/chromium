@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_ACCESS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_ACCESS_H_
 
-#include <memory>
+#include "base/notreached.h"
 #include "media/midi/midi_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_access_initializer.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_dispatcher.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {

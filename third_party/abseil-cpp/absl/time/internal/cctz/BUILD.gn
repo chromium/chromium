@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -43,4 +43,13 @@ absl_source_set("time_zone") {
     ":civil_time",
     "//third_party/abseil-cpp/absl/base:config",
   ]
+  if (is_fuchsia) {
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
+      "//third_party/fuchsia-sdk/sdk/pkg/async",
+      "//third_party/fuchsia-sdk/sdk/pkg/async-loop-cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
+  }
 }

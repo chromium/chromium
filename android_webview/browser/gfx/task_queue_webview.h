@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,22 +6,10 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_TASK_QUEUE_WEBVIEW_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace android_webview {
-
-// This class is used to control when to access GL.
-class ScopedAllowGL {
- public:
-  ScopedAllowGL();
-  ~ScopedAllowGL();
-
-  // Disallow copy and assign.
-  ScopedAllowGL(const ScopedAllowGL&) = delete;
-  ScopedAllowGL& operator=(const ScopedAllowGL&) = delete;
-};
 
 // In WebView, there is a single task queue that runs all tasks instead of
 // thread task runners. This is the class actually scheduling and running tasks
@@ -47,21 +35,14 @@ class TaskQueueWebView {
   // Called by TaskForwardingSequence.
   virtual void ScheduleOrRetainTask(base::OnceClosure task) = 0;
 
-  // Called by DeferredGpuCommandService to schedule delayed tasks.
-  // This should not be called when kVizForWebView is enabled.
+  // Called to schedule delayed tasks.
   virtual void ScheduleIdleTask(base::OnceClosure task) = 0;
 
-  // Called by both DeferredGpuCommandService and
-  // SkiaOutputSurfaceDisplayContext to post task to client thread.
-  virtual void ScheduleClientTask(base::OnceClosure task) = 0;
+  // Used to post task to client thread.
+  virtual scoped_refptr<base::TaskRunner> GetClientTaskRunner() = 0;
 
  protected:
-  friend ScopedAllowGL;
-
   virtual ~TaskQueueWebView() = default;
-
-  // Called by ScopedAllowGL.
-  virtual void RunAllTasks() = 0;
 };
 
 }  // namespace android_webview

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function add_speculation_rules(url) {
+  const script = document.createElement('script');
+  script.type = 'speculationrules';
+  script.text = `{"prerender": [{"source": "list", "urls": ["${url}"] }] }`;
+  document.head.appendChild(script);
+}
+</script>
+</head>
+<body></body>
+</html>

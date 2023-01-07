@@ -1,10 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/storage_monitor/storage_monitor_mac.h"
 
 #include <stdint.h>
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -45,9 +47,9 @@ class StorageMonitorMacTest : public testing::Test {
   StorageMonitorMacTest() {}
 
   void SetUp() override {
-    monitor_.reset(new StorageMonitorMac);
+    monitor_ = std::make_unique<StorageMonitorMac>();
 
-    mock_storage_observer_.reset(new MockRemovableStorageObserver);
+    mock_storage_observer_ = std::make_unique<MockRemovableStorageObserver>();
     monitor_->AddObserver(mock_storage_observer_.get());
 
     unique_id_ = "test_id";

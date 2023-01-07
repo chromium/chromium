@@ -1,0 +1,38 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module arc.mojom;
+
+// Contains the types of resize lock setting status that overrides the state
+// Android calculates.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+[Extensible]
+enum ArcResizeLockState {
+  // The setting value is not set.
+  UNDEFINED = 0,
+  // Resize lock is ready to be turned on. The state must have this value first
+  // to be enabled.
+  READY = 1,
+  // Resize lock is enabled.
+  ON = 2,
+  // Resize lock is disabled via the Chrome OS settings.
+  OFF = 3,
+  // Resize lock is enabled, and even resize/resizability toggle is not
+  // available.
+  FULLY_LOCKED = 4,
+};
+
+// Interface for synchronizing the Chrome OS setting value for compatibility
+// mode to Android.
+// Compatibility mode is a special set of WM policies to enforce restrictions
+// on apps that are not optimized for large screens.
+// Next Method ID: 1
+interface CompatibilityModeInstance {
+  // Synchronizes the resize lock state of the given package name to Android.
+  SetResizeLockState@0(string package_name,
+                       ArcResizeLockState state);
+};

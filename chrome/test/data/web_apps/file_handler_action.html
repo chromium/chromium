@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" href="basic-48.png">
+</head>
+<body>
+  <h1>Web app with file handlers - Handle launch</h1>
+  <script>
+    if ("launchQueue" in window) {
+      window.launchQueue.setConsumer(launchParams => {
+        console.log("Launched with: ", launchParams);
+      });
+    }
+  </script>
+</body>
+</html>

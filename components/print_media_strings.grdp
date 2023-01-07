@@ -86,24 +86,24 @@
       B3
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_B4_250X353MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``B4 (Envelope)''">
-      B4 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope B4''">
+      Envelope B4
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_B5_176X250MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``B5 (Envelope)''">
-      B5 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope B5''">
+      Envelope B5
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_B5_EXTRA_201X276MM"
              desc="In Title Case: Media size shown to user in print preview for media ``B5-Extra''">
       B5-Extra
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_B6C4_125X324MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``B6/C4 (Envelope)''">
-      B6/C4 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope B6/C4''">
+      Envelope B6/C4
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_B6_125X176MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``B6 (Envelope)''">
-      B6 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope B6''">
+      Envelope B6
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_B7_88X125MM"
              desc="In Title Case: Media size shown to user in print preview for media ``B7''">
@@ -118,112 +118,188 @@
       B9
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C0_917X1297MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C0 (Envelope)''">
-      C0 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C0''">
+      Envelope C0
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C10_28X40MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C10 (Envelope)''">
-      C10 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C10''">
+      Envelope C10
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C1_648X917MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C1 (Envelope)''">
-      C1 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C1''">
+      Envelope C1
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C2_458X648MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C2 (Envelope)''">
-      C2 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C2''">
+      Envelope C2
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C3_324X458MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C3 (Envelope)''">
-      C3 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C3''">
+      Envelope C3
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C4_229X324MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C4 (Envelope)''">
-      C4 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C4''">
+      Envelope C4
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C5_162X229MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C5 (Envelope)''">
-      C5 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C5''">
+      Envelope C5
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C6C5_114X229MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C6/C5 (Envelope)''">
-      C6/C5 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C6/C5''">
+      Envelope C6/C5
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C6_114X162MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C6 (Envelope)''">
-      C6 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C6''">
+      Envelope C6
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C7C6_81X162MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C7/C6 (Envelope)''">
-      C7/C6 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C7/C6''">
+      Envelope C7/C6
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C7_81X114MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C7 (Envelope)''">
-      C7 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C7''">
+      Envelope C7
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C8_57X81MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C8 (Envelope)''">
-      C8 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C8''">
+      Envelope C8
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_C9_40X57MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``C9 (Envelope)''">
-      C9 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C9''">
+      Envelope C9
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_DL_110X220MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Designated-Long''">
-      Designated-Long
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope DL''">
+      Envelope DL
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B0_1030X1456MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B0''">
+      JIS B0
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B1_728X1030MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B1''">
+      JIS B1
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B2_515X728MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B2''">
+      JIS B2
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B3_364X515MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B3''">
+      JIS B3
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B4_257X364MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B4''">
+      JIS B4
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B5_182X257MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B5''">
+      JIS B5
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B6_128X182MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B6''">
+      JIS B6
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B7_91X128MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B7''">
+      JIS B7
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B8_64X91MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B8''">
+      JIS B8
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B9_45X64MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B9''">
+      JIS B9
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B10_32X45MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B10''">
+      JIS B10
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JIS_EXEC_216X330MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Exec''">
-      Exec
+             desc="Media size shown to user in print preview for media ``JIS Exec''.  JIS is an acronym and Exec is the name of the paper size.">
+      JIS Exec
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_CHOU2_111_1X146MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Chou2 (Envelope)''">
-      Chou2 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chou 2''">
+      Envelope Chou 2
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_CHOU3_120X235MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Chou3 (Envelope)''">
-      Chou3 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chou 3''">
+      Envelope Chou 3
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_CHOU4_90X205MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Chou4 (Envelope)''">
-      Chou4 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chou 4''">
+      Envelope Chou 4
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JPN_CHOU40_90X225MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chou 40''">
+      Envelope Chou 40
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_HAGAKI_100X148MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Hagaki (Postcard)''">
-      Hagaki (Postcard)
+             desc="In Title Case: Media size shown to user in print preview for media ``Hagaki Postcard''">
+      Hagaki Postcard
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_KAHU_240X322_1MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Kahu (Envelope)''">
-      Kahu (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Kahu''">
+      Envelope Kahu
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JPN_KAKU1_270X382MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Kaku 1''">
+      Envelope Kaku 1
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_KAKU2_240X332MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Kaku2 (Envelope)''">
-      Kaku2 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Kaku 2''">
+      Envelope Kaku 2
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JPN_KAKU3_216X277MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Kaku 3''">
+      Envelope Kaku 3
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JPN_KAKU4_197X267MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Kaku 4''">
+      Envelope Kaku 4
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JPN_KAKU5_190X240MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Kaku 5''">
+      Envelope Kaku 5
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JPN_KAKU7_142X205MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Kaku 7''">
+      Envelope Kaku 7
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JPN_KAKU8_119X197MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Kaku 8''">
+      Envelope Kaku 8
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_OUFUKU_148X200MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Postcard)''">
-      Postcard)
+             desc="In Title Case: Media size shown to user in print preview for media ``Oufuku Hagaki Postcard''">
+      Oufuku Hagaki Postcard
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_YOU4_105X235MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``You4 (Envelope)''">
-      You4 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope You 4''">
+      Envelope You 4
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JPN_YOU6_98X190MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope You 6''">
+      Envelope You 6
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_10X11_10X11IN"
              desc="In Title Case: Media size shown to user in print preview for media ``10x11''">
       10x11
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_10X13_10X13IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``10x13 (Envelope)''">
-      10x13 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope 10 x 13 in''">
+      Envelope 10 x 13 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_10X14_10X14IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``10x14 (Envelope)''">
-      10x14 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope 10 x 14 in''">
+      Envelope 10 x 14 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_10X15_10X15IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``10x15 (Envelope)''">
-      10x15 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope 10 x 15 in''">
+      Envelope 10 x 15 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_11X12_11X12IN"
              desc="In Title Case: Media size shown to user in print preview for media ``11x12''">
@@ -238,28 +314,28 @@
       12x19
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_5X7_5X7IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``5x7''">
+             desc="In Title Case: Media size shown to user in print preview for media ``5x7''.  This size is called ``2L'' in Japan.">
       5x7
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_6X9_6X9IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``6x9 (Envelope)''">
-      6x9 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope 6 x 9 in''">
+      Envelope 6 x 9 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_7X9_7X9IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``7x9 (Envelope)''">
-      7x9 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope 7 x 9 in''">
+      Envelope 7 x 9 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_9X11_9X11IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``9x11 (Envelope)''">
-      9x11 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope 9 x 11 in''">
+      Envelope 9 x 11 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_A2_4_375X5_75IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``A2 (Envelope)''">
-      A2 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope A2''">
+      Envelope A2
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_ARCH_A_9X12IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Architecture-A (Envelope)''">
-      Architecture-A (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope 9 x 12 in''">
+      Envelope 9 x 12 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_ARCH_B_12X18IN"
              desc="In Title Case: Media size shown to user in print preview for media ``Architecture-B''">
@@ -282,8 +358,8 @@
       B-Plus
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_C5_6_5X9_5IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``C5 (Envelope)''">
-      C5 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope C5''">
+      Envelope C5
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_C_17X22IN"
              desc="In Title Case: Media size shown to user in print preview for media ``Engineering-C''">
@@ -373,25 +449,33 @@
              desc="In Title Case: Media size shown to user in print preview for media ``Letter-Plus''">
       Letter-Plus
     </message>
+    <message name="PRINT_PREVIEW_MEDIA_NA_MONARCH_3_875X7_5IN"
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Monarch''">
+      Envelope Monarch
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_NA_NUMBER_9_3_875X8_875IN"
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope #9''">
+      Envelope #9
+    </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_NUMBER_10_4_125X9_5IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Comm-10 (Envelope)''">
-      Comm-10 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope #10''">
+      Envelope #10
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_NUMBER_11_4_5X10_375IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Number-11 (Envelope)''">
-      Number-11 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope #11''">
+      Envelope #11
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_NUMBER_12_4_75X11IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Number-12 (Envelope)''">
-      Number-12 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope #12''">
+      Envelope #12
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_NUMBER_14_5X11_5IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Number-14 (Envelope)''">
-      Number-14 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope #14''">
+      Envelope #14
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_PERSONAL_3_625X6_5IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Personal (Envelope)''">
-      Personal (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Personal''">
+      Envelope Personal
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_SUPER_A_8_94X14IN"
              desc="In Title Case: Media size shown to user in print preview for media ``Super-A''">
@@ -405,141 +489,97 @@
              desc="In Title Case: Media size shown to user in print preview for media ``Wide-Format''">
       Wide-Format
     </message>
+    <message name="PRINT_PREVIEW_MEDIA_OE_PHOTO_L_3_5X5IN"
+             desc="In Title Case: Media size shown to user in print preview for media ``3.5x5''.  This size is called ``L'' in Japan.">
+      3.5x5
+    </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_DAI_PA_KAI_275X395MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Dai-Pa-Kai''">
-      Dai-Pa-Kai
+             desc="In Title Case: Media size shown to user in print preview for media ``275 x 395 mm''">
+      275 x 395 mm
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_FOLIO_SP_215X315MM"
              desc="In Title Case: Media size shown to user in print preview for media ``Folio-Sp''">
       Folio-Sp
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_INVITE_220X220MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Invite (Envelope)''">
-      Invite (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Invite''">
+      Envelope Invite
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_ITALIAN_110X230MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Italian (Envelope)''">
-      Italian (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Italian''">
+      Envelope Italian
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_JUURO_KU_KAI_198X275MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Juuro-Ku-Kai''">
-      Juuro-Ku-Kai
+             desc="In Title Case: Media size shown to user in print preview for media ``198 x 275 mm''">
+      198 x 275 mm
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_LARGE_PHOTO_200X300"
              desc="In Title Case: Media size shown to user in print preview for media ``Large-Photo''">
       Large-Photo
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_PA_KAI_267X389MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Pa-Kai''">
-      Pa-Kai
+             desc="In Title Case: Media size shown to user in print preview for media ``267 x 389 mm''">
+      267 x 389 mm
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_POSTFIX_114X229MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Postfix (Envelope)''">
-      Postfix (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Postfix''">
+      Envelope Postfix
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_SMALL_PHOTO_100X150MM"
              desc="In Title Case: Media size shown to user in print preview for media ``Small-Photo''">
       Small-Photo
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_10_324X458MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc10 (Envelope)''">
-      Prc10 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chinese #10''">
+      Envelope Chinese #10
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_16K_146X215MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc-16K''">
-      Prc-16K
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``PRC 16K''.  PRC is an acronym and 16K is a paper size.">
+      PRC 16K
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_1_102X165MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc1 (Envelope)''">
-      Prc1 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chinese #1''">
+      Envelope Chinese #1
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_2_102X176MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc2 (Envelope)''">
-      Prc2 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chinese #2''">
+      Envelope Chinese #2
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_32K_97X151MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc-32K''">
-      Prc-32K
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``PRC 32K''.  PRC is an acronym and 32K is a paper size.">
+      PRC 32K
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_3_125X176MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc3 (Envelope)''">
-      Prc3 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chinese #3''">
+      Envelope Chinese #3
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_4_110X208MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc4 (Envelope)''">
-      Prc4 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chinese #4''">
+      Envelope Chinese #4
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_5_110X220MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc5 (Envelope)''">
-      Prc5 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chinese #5''">
+      Envelope Chinese #5
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_6_120X320MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc6 (Envelope)''">
-      Prc6 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chinese #6''">
+      Envelope Chinese #6
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_7_160X230MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc7 (Envelope)''">
-      Prc7 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chinese #7''">
+      Envelope Chinese #7
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_8_120X309MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc8 (Envelope)''">
-      Prc8 (Envelope)
+             desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chinese #8''">
+      Envelope Chinese #8
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ROC_16K_7_75X10_75IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Roc-16K''">
-      Roc-16K
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``ROC 16K''.  ROC is an acronym and 16K is a paper size.">
+      ROC 16K
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ROC_8K_10_75X15_5IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Roc-8K''">
-      Roc-8K
-    </message>
-
-    <!-- Manually curated media names (not specified by PWG 5101.1-2002) -->
-
-    <!-- JIS B* -->
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B0_1030X1456MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B0''">
-      JIS B0
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B1_728X1030MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B1''">
-      JIS B1
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B2_515X728MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B2''">
-      JIS B2
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B3_364X515MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B3''">
-      JIS B3
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B4_257X364MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B4''">
-      JIS B4
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B5_182X257MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B5''">
-      JIS B5
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B6_128X182MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B6''">
-      JIS B6
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B7_91X128MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B7''">
-      JIS B7
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B8_64X91MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B8''">
-      JIS B8
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B9_45X64MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B9''">
-      JIS B9
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B10_32X45MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B10''">
-      JIS B10
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``ROC 8K''.  ROC is an acronym and 8K is a paper size.">
+      ROC 8K
     </message>
   </if>
 </grit-part>

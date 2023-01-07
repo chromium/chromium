@@ -1,13 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
+#include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/base64.h"
 #include "base/bind.h"
@@ -15,12 +16,15 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/syslog_logging.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 
 namespace policy {
 
@@ -103,7 +107,7 @@ void BrowserDMTokenStorage::StoreDMToken(const std::string& dm_token,
 
   if (dm_token.empty()) {
     dm_token_ = CreateEmptyToken();
-    SaveDMToken("");
+    DeleteDMToken();
   } else if (dm_token == kInvalidTokenValue) {
     dm_token_ = CreateInvalidToken();
     SaveDMToken(kInvalidTokenValue);
@@ -154,11 +158,37 @@ void BrowserDMTokenStorage::InitIfNeeded() {
 
   is_initialized_ = true;
 
+  // When CBCM is not enabled, set the DM token to empty directly withtout
+  // actually read it.
+  if (!ChromeBrowserCloudManagementController::IsEnabled()) {
+    dm_token_ = CreateEmptyToken();
+    return;
+  }
+
   // Only supported in official builds.
   client_id_ = delegate_->InitClientId();
   DVLOG(1) << "Client ID = " << client_id_;
   if (client_id_.empty())
     return;
+
+  // checks if client ID is greater than 64 characters
+  if (client_id_.length() > 64) {
+    SYSLOG(ERROR) << "Chrome browser cloud management client ID should"
+                     "not be greater than 64 characters long.";
+    client_id_.clear();
+    return;
+  }
+
+  // checks if client ID includes an illegal character
+  if (base::ranges::any_of(client_id_, [](char ch) {
+        return ch == ' ' || !base::IsAsciiPrintable(ch);
+      })) {
+    SYSLOG(ERROR)
+        << "Chrome browser cloud management client ID should not"
+           " contain a space, new line, or any nonprintable character.";
+    client_id_.clear();
+    return;
+  }
 
   enrollment_token_ = delegate_->InitEnrollmentToken();
   DVLOG(1) << "Enrollment token = " << enrollment_token_;
@@ -181,6 +211,15 @@ void BrowserDMTokenStorage::InitIfNeeded() {
 
 void BrowserDMTokenStorage::SaveDMToken(const std::string& token) {
   auto task = delegate_->SaveDMTokenTask(token, RetrieveClientId());
+  auto reply = base::BindOnce(&BrowserDMTokenStorage::OnDMTokenStored,
+                              weak_factory_.GetWeakPtr());
+  base::PostTaskAndReplyWithResult(delegate_->SaveDMTokenTaskRunner().get(),
+                                   FROM_HERE, std::move(task),
+                                   std::move(reply));
+}
+
+void BrowserDMTokenStorage::DeleteDMToken() {
+  auto task = delegate_->DeleteDMTokenTask(RetrieveClientId());
   auto reply = base::BindOnce(&BrowserDMTokenStorage::OnDMTokenStored,
                               weak_factory_.GetWeakPtr());
   base::PostTaskAndReplyWithResult(delegate_->SaveDMTokenTaskRunner().get(),

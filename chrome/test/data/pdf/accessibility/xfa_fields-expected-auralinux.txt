@@ -1,3 +1,2 @@
-[embedded component]
-++[document frame] name='PDF document containing 1 page'
-++++[landmark] name='Page 1'
+[document frame] name='PDF document containing 1 page'
+++[landmark] name='Page 1'

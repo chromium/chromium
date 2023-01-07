@@ -1,0 +1,8 @@
+Tests that getting metadata works for IndexedDB with storageKey
+
+Open database, object store
+database and objectstore created
+
+Get metadata for storage key
+metadata equals {"entriesCount":1,"keyGeneratorValue":1}
+

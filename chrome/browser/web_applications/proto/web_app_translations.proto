@@ -1,0 +1,28 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package web_app;
+
+// Translations for all apps.
+message AllTranslations {
+  // Maps from app id to a message containing the translations for the app.
+  map<string, WebAppTranslations> id_to_translations_map = 1;
+}
+
+// Translations for one app.
+message WebAppTranslations {
+  // Maps from a locale string to a message containing the translated fields.
+  map<string, LocaleOverrides> locale_to_overrides_map = 1;
+}
+
+// Translated fields for a single locale.
+message LocaleOverrides {
+  optional string name = 1;
+  optional string short_name = 2;
+  optional string description = 3;
+}

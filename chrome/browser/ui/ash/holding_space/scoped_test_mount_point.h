@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/browser/chromeos/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 
 class Profile;
 
@@ -54,7 +54,7 @@ class ScopedTestMountPoint {
   // provided content. Returns the created file's file path, or an empty path on
   // failure.
   base::FilePath CreateFile(const base::FilePath& relative_path,
-                            const std::string& content);
+                            const std::string& content = base::EmptyString());
 
   // Creates an arbitrary file under the 'mount_point'.
   base::FilePath CreateArbitraryFile();

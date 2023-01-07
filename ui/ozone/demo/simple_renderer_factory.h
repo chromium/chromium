@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,10 @@
 #include "gpu/vulkan/vulkan_implementation.h"
 #endif
 
+namespace gl {
+class GLDisplay;
+}
+
 namespace ui {
 
 class SimpleRendererFactory : public RendererFactory {
@@ -27,6 +31,10 @@ class SimpleRendererFactory : public RendererFactory {
   };
 
   SimpleRendererFactory();
+
+  SimpleRendererFactory(const SimpleRendererFactory&) = delete;
+  SimpleRendererFactory& operator=(const SimpleRendererFactory&) = delete;
+
   ~SimpleRendererFactory() override;
 
   bool Initialize() override;
@@ -39,8 +47,7 @@ class SimpleRendererFactory : public RendererFactory {
 #endif
 
   RendererType type_ = SOFTWARE;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleRendererFactory);
+  gl::GLDisplay* display_ = nullptr;
 };
 
 }  // namespace ui

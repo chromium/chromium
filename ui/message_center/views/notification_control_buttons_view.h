@@ -1,16 +1,18 @@
-
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_
 
-#include "base/macros.h"
-#include "build/chromeos_buildflags.h"
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/message_center/message_center_export.h"
-#include "ui/message_center/views/padded_button.h"
+#include "ui/message_center/views/message_view.h"
+#include "ui/message_center/views/notification_control_button_factory.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
 
 namespace message_center {
@@ -22,12 +24,14 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
  public:
   METADATA_HEADER(NotificationControlButtonsView);
 
-  explicit NotificationControlButtonsView(MessageView* message_view);
+  explicit NotificationControlButtonsView(MessageView* message_view = nullptr);
   NotificationControlButtonsView(const NotificationControlButtonsView&) =
       delete;
   NotificationControlButtonsView& operator=(
       const NotificationControlButtonsView&) = delete;
   ~NotificationControlButtonsView() override;
+
+  void OnThemeChanged() override;
 
   // Change the visibility of the close button. True to show, false to hide.
   void ShowCloseButton(bool show);
@@ -49,14 +53,16 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   // Sets the background color to ensure proper readability.
   void SetBackgroundColor(SkColor color);
 
-  // Methods for retrieving the control buttons directly.
-  PaddedButton* close_button() { return close_button_; }
-  PaddedButton* settings_button() { return settings_button_; }
-  PaddedButton* snooze_button() { return snooze_button_; }
+  void SetMessageView(MessageView* message_view);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnThemeChanged() override;
-#endif
+  void SetNotificationControlButtonFactory(
+      std::unique_ptr<NotificationControlButtonFactory>
+          notification_control_button_factory);
+
+  // Methods for retrieving the control buttons directly.
+  views::ImageButton* close_button() { return close_button_; }
+  views::ImageButton* settings_button() { return settings_button_; }
+  views::ImageButton* snooze_button() { return snooze_button_; }
 
  private:
   // Updates the button icon colors to the value of DetermineButtonIconColor().
@@ -66,18 +72,32 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   // |background_color_| ensuring readability.
   SkColor DetermineButtonIconColor() const;
 
-  MessageView* message_view_;
+  raw_ptr<MessageView> message_view_;
+  std::unique_ptr<NotificationControlButtonFactory>
+      notification_control_button_factory_;
 
-  PaddedButton* close_button_ = nullptr;
-  PaddedButton* settings_button_ = nullptr;
-  PaddedButton* snooze_button_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
+  raw_ptr<views::ImageButton> settings_button_ = nullptr;
+  raw_ptr<views::ImageButton> snooze_button_ = nullptr;
 
   // The color used for the close, settings, and snooze icons.
-  SkColor icon_color_;
+  absl::optional<SkColor> icon_color_;
   // The background color for readability of the icons.
   SkColor background_color_ = SK_ColorTRANSPARENT;
 };
 
+BEGIN_VIEW_BUILDER(MESSAGE_CENTER_EXPORT,
+                   NotificationControlButtonsView,
+                   views::View)
+VIEW_BUILDER_PROPERTY(MessageView*, MessageView)
+VIEW_BUILDER_PROPERTY(SkColor, ButtonIconColors)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<NotificationControlButtonFactory>,
+                      NotificationControlButtonFactory)
+END_VIEW_BUILDER
+
 }  // namespace message_center
+
+DEFINE_VIEW_BUILDER(MESSAGE_CENTER_EXPORT,
+                    message_center::NotificationControlButtonsView)
 
 #endif  // UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_

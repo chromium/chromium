@@ -1,4 +1,0 @@
-language: c++
-sudo: required
-dist: trusty
-script: ./autogen.sh && ./configure && make -j`getconf _NPROCESSORS_ONLN` && make check

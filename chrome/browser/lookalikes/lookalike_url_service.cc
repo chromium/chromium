@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,17 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
-#include "base/task/post_task.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/time/default_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/site_engagement/content/site_engagement_score.h"
@@ -32,10 +30,9 @@
 
 namespace {
 
-constexpr base::TimeDelta kEngagedSiteUpdateInterval =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kEngagedSiteUpdateInterval = base::Seconds(60);
 
-class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
+class LookalikeUrlServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static LookalikeUrlService* GetForProfile(Profile* profile) {
     return static_cast<LookalikeUrlService*>(
@@ -46,14 +43,18 @@ class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
     return base::Singleton<LookalikeUrlServiceFactory>::get();
   }
 
+  LookalikeUrlServiceFactory(const LookalikeUrlServiceFactory&) = delete;
+  LookalikeUrlServiceFactory& operator=(const LookalikeUrlServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<LookalikeUrlServiceFactory>;
 
   // LookalikeUrlServiceFactory();
   LookalikeUrlServiceFactory()
-      : BrowserContextKeyedServiceFactory(
+      : ProfileKeyedServiceFactory(
             "LookalikeUrlServiceFactory",
-            BrowserContextDependencyManager::GetInstance()) {
+            ProfileSelections::BuildForRegularAndIncognito()) {
     DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
   }
 
@@ -64,13 +65,6 @@ class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override {
     return new LookalikeUrlService(static_cast<Profile*>(profile));
   }
-
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override {
-    return chrome::GetBrowserContextOwnInstanceInIncognito(context);
-  }
-
-  DISALLOW_COPY_AND_ASSIGN(LookalikeUrlServiceFactory);
 };
 
 // static
@@ -91,8 +85,8 @@ std::vector<DomainInfo> UpdateEngagedSitesOnWorkerThread(
       continue;
     }
     // Ignore sites with an engagement score below threshold.
-    if (detail.total_score <
-        site_engagement::SiteEngagementScore::GetMediumEngagementBoundary()) {
+    if (!site_engagement::SiteEngagementService::IsEngagementAtLeast(
+            detail.total_score, blink::mojom::EngagementLevel::MEDIUM)) {
       continue;
     }
     const DomainInfo domain_info = GetDomainInfo(detail.origin);
@@ -112,7 +106,7 @@ const base::FeatureParam<base::TimeDelta>
     LookalikeUrlService::kManifestFetchDelay{
         &lookalikes::features::kLookalikeDigitalAssetLinks,
         lookalikes::features::kLookalikeDigitalAssetLinksTimeoutParameter,
-        base::TimeDelta::FromSeconds(5)};
+        base::Seconds(5)};
 
 LookalikeUrlService::LookalikeUrlService(Profile* profile)
     : profile_(profile), clock_(base::DefaultClock::GetInstance()) {}

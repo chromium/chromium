@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
@@ -26,6 +25,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptor {
   // The ErrorCallback is used by methods to asynchronously report errors.
   using ErrorCallback =
       base::OnceCallback<void(BluetoothGattService::GattErrorCode)>;
+
+  BluetoothGattDescriptor(const BluetoothGattDescriptor&) = delete;
+  BluetoothGattDescriptor& operator=(const BluetoothGattDescriptor&) = delete;
 
   // The Bluetooth Specification declares several predefined descriptors that
   // profiles can use. The following are definitions for the list of UUIDs
@@ -128,9 +130,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptor {
  protected:
   BluetoothGattDescriptor();
   virtual ~BluetoothGattDescriptor();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattDescriptor);
 };
 
 }  // namespace device

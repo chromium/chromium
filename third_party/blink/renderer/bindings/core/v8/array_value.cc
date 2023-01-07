@@ -52,7 +52,7 @@ bool ArrayValue::Get(uint32_t index, Dictionary& value) const {
     return false;
 
   DCHECK(isolate_);
-  DCHECK_EQ(isolate_, v8::Isolate::GetCurrent());
+  DCHECK(isolate_->IsCurrent());
   v8::Local<v8::Value> indexed_value;
   if (!array_->Get(isolate_->GetCurrentContext(), index)
            .ToLocal(&indexed_value) ||

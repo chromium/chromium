@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ TEST(FileInfoTest, Roundtrip) {
   struct TestCase {
     std::string uri_list;
     std::vector<base::FilePath::StringType> paths;
-    base::Optional<std::string> uri_list_roundtrip;
+    absl::optional<std::string> uri_list_roundtrip;
   };
   const TestCase tests[] = {
       // Empty text/uri-list should give empty list.
@@ -82,10 +82,10 @@ TEST(FileInfoTest, Backslashes) {
   struct TestCase {
     base::FilePath::StringType path;
     std::string uri_list;
-    base::Optional<base::FilePath::StringType> path_roundtrip;
+    absl::optional<base::FilePath::StringType> path_roundtrip;
   };
   const TestCase tests[] = {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // File paths with backslash should roundtrip on windows.
     {FPL("C:\\path"), "file:///C:/path"},
     {FPL("\\path"), "file:///path"},

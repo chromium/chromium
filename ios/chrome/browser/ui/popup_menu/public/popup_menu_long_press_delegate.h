@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 // Delegate for the object creating popup menu with a long press gesture.
 @protocol PopupMenuLongPressDelegate
 
-// Notifies the popup menu that the focus |point| of the long press gesture has
-// changed. |point| should be in window base coordinates.
+// Notifies the popup menu that the focus `point` of the long press gesture has
+// changed. `point` should be in window base coordinates.
 - (void)longPressFocusPointChangedTo:(CGPoint)point;
-// Notifies the popup menu that the long press gesture has ended at |point|.
-// |point| should be in window base coordinates.
+// Notifies the popup menu that the long press gesture has ended at `point`.
+// `point` should be in window base coordinates.
 - (void)longPressEndedAtPoint:(CGPoint)point;
 
 @end

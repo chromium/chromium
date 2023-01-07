@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/digital-goods/blob/master/explainer.md
+// https://github.com/WICG/digital-goods/blob/main/explainer.md
 [
   SecureContext,
   RuntimeEnabled=DigitalGoods
@@ -10,14 +10,12 @@
   [CallWith=ScriptState, MeasureAs=DigitalGoodsGetDetails]
   Promise<sequence<ItemDetails>> getDetails(sequence<DOMString> itemIds);
 
-  [CallWith=ScriptState, MeasureAs=DigitalGoodsAcknowledge]
-  Promise<void> acknowledge(DOMString purchaseToken, PurchaseType purchaseType);
-
   [CallWith=ScriptState, MeasureAs=DigitalGoodsListPurchases]
   Promise<sequence<PurchaseDetails>> listPurchases();
-};
 
-enum PurchaseType {
-  "repeatable",
-  "onetime",
+  [CallWith=ScriptState, MeasureAs=DigitalGoodsListPurchaseHistory, RuntimeEnabled=DigitalGoodsV2_1]
+  Promise<sequence<PurchaseDetails>> listPurchaseHistory();
+
+  [CallWith=ScriptState, MeasureAs=DigitalGoodsConsume]
+  Promise<void> consume(DOMString purchaseToken);
 };

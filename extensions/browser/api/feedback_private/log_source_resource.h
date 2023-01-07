@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource.h"
@@ -27,6 +26,9 @@ class LogSourceResource : public ApiResource {
   LogSourceResource(const std::string& extension_id,
                     std::unique_ptr<system_logs::SystemLogsSource> source);
 
+  LogSourceResource(const LogSourceResource&) = delete;
+  LogSourceResource& operator=(const LogSourceResource&) = delete;
+
   ~LogSourceResource() override;
 
   system_logs::SystemLogsSource* GetLogSource() const { return source_.get(); }
@@ -44,8 +46,6 @@ class LogSourceResource : public ApiResource {
   // This unregisters the LogSourceResource from a LogSourceAccessManager when
   // this resource is cleaned up.
   base::OnceClosure unregister_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogSourceResource);
 };
 
 }  // namespace extensions

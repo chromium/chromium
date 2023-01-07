@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,18 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "remoting/base/oauth_client.h"
 #include "remoting/host/setup/daemon_controller.h"
 
 namespace base {
-class DictionaryValue;
-class ListValue;
 class SingleThreadTaskRunner;
-class Value;
 }  // namespace base
 
 namespace remoting {
@@ -45,6 +43,10 @@ class Me2MeNativeMessagingHost : public extensions::NativeMessageHost {
       scoped_refptr<DaemonController> daemon_controller,
       scoped_refptr<protocol::PairingRegistry> pairing_registry,
       std::unique_ptr<OAuthClient> oauth_client);
+
+  Me2MeNativeMessagingHost(const Me2MeNativeMessagingHost&) = delete;
+  Me2MeNativeMessagingHost& operator=(const Me2MeNativeMessagingHost&) = delete;
+
   ~Me2MeNativeMessagingHost() override;
 
   // extensions::NativeMessageHost implementation.
@@ -62,84 +64,72 @@ class Me2MeNativeMessagingHost : public extensions::NativeMessageHost {
   // These "Process.." methods handle specific request types. The |response|
   // dictionary is pre-filled by ProcessMessage() with the parts of the
   // response already known ("id" and "type" fields).
-  void ProcessHello(std::unique_ptr<base::DictionaryValue> message,
-                    std::unique_ptr<base::DictionaryValue> response);
-  void ProcessClearPairedClients(
-      std::unique_ptr<base::DictionaryValue> message,
-      std::unique_ptr<base::DictionaryValue> response);
-  void ProcessDeletePairedClient(
-      std::unique_ptr<base::DictionaryValue> message,
-      std::unique_ptr<base::DictionaryValue> response);
-  void ProcessGetHostName(std::unique_ptr<base::DictionaryValue> message,
-                          std::unique_ptr<base::DictionaryValue> response);
-  void ProcessGetPinHash(std::unique_ptr<base::DictionaryValue> message,
-                         std::unique_ptr<base::DictionaryValue> response);
-  void ProcessGenerateKeyPair(std::unique_ptr<base::DictionaryValue> message,
-                              std::unique_ptr<base::DictionaryValue> response);
-  void ProcessUpdateDaemonConfig(
-      std::unique_ptr<base::DictionaryValue> message,
-      std::unique_ptr<base::DictionaryValue> response);
-  void ProcessGetDaemonConfig(std::unique_ptr<base::DictionaryValue> message,
-                              std::unique_ptr<base::DictionaryValue> response);
-  void ProcessGetPairedClients(std::unique_ptr<base::DictionaryValue> message,
-                               std::unique_ptr<base::DictionaryValue> response);
-  void ProcessGetUsageStatsConsent(
-      std::unique_ptr<base::DictionaryValue> message,
-      std::unique_ptr<base::DictionaryValue> response);
-  void ProcessStartDaemon(std::unique_ptr<base::DictionaryValue> message,
-                          std::unique_ptr<base::DictionaryValue> response);
-  void ProcessStopDaemon(std::unique_ptr<base::DictionaryValue> message,
-                         std::unique_ptr<base::DictionaryValue> response);
-  void ProcessGetDaemonState(std::unique_ptr<base::DictionaryValue> message,
-                             std::unique_ptr<base::DictionaryValue> response);
-  void ProcessGetHostClientId(std::unique_ptr<base::DictionaryValue> message,
-                              std::unique_ptr<base::DictionaryValue> response);
-  void ProcessGetCredentialsFromAuthCode(
-      std::unique_ptr<base::DictionaryValue> message,
-      std::unique_ptr<base::DictionaryValue> response,
-      bool need_user_email);
-  void ProcessIt2mePermissionCheck(
-      std::unique_ptr<base::DictionaryValue> message,
-      std::unique_ptr<base::DictionaryValue> response);
+  void ProcessHello(base::Value::Dict message, base::Value::Dict response);
+  void ProcessClearPairedClients(base::Value::Dict message,
+                                 base::Value::Dict response);
+  void ProcessDeletePairedClient(base::Value::Dict message,
+                                 base::Value::Dict response);
+  void ProcessGetHostName(base::Value::Dict message,
+                          base::Value::Dict response);
+  void ProcessGetPinHash(base::Value::Dict message, base::Value::Dict response);
+  void ProcessGenerateKeyPair(base::Value::Dict message,
+                              base::Value::Dict response);
+  void ProcessUpdateDaemonConfig(base::Value::Dict message,
+                                 base::Value::Dict response);
+  void ProcessGetDaemonConfig(base::Value::Dict message,
+                              base::Value::Dict response);
+  void ProcessGetPairedClients(base::Value::Dict message,
+                               base::Value::Dict response);
+  void ProcessGetUsageStatsConsent(base::Value::Dict message,
+                                   base::Value::Dict response);
+  void ProcessStartDaemon(base::Value::Dict message,
+                          base::Value::Dict response);
+  void ProcessStopDaemon(base::Value::Dict message, base::Value::Dict response);
+  void ProcessGetDaemonState(base::Value::Dict message,
+                             base::Value::Dict response);
+  void ProcessGetHostClientId(base::Value::Dict message,
+                              base::Value::Dict response);
+  void ProcessGetCredentialsFromAuthCode(base::Value::Dict message,
+                                         base::Value::Dict response,
+                                         bool need_user_email);
+  void ProcessIt2mePermissionCheck(base::Value::Dict message,
+                                   base::Value::Dict response);
 
   // These Send... methods get called on the DaemonController's internal thread,
   // or on the calling thread if called by the PairingRegistry.
   // These methods fill in the |response| dictionary from the other parameters,
   // and pass it to SendResponse().
-  void SendConfigResponse(std::unique_ptr<base::DictionaryValue> response,
-                          std::unique_ptr<base::DictionaryValue> config);
-  void SendPairedClientsResponse(
-      std::unique_ptr<base::DictionaryValue> response,
-      std::unique_ptr<base::ListValue> pairings);
+  void SendConfigResponse(base::Value::Dict response,
+                          absl::optional<base::Value::Dict> config);
+  void SendPairedClientsResponse(base::Value::Dict response,
+                                 base::Value::List pairings);
   void SendUsageStatsConsentResponse(
-      std::unique_ptr<base::DictionaryValue> response,
+      base::Value::Dict response,
       const DaemonController::UsageStatsConsent& consent);
-  void SendAsyncResult(std::unique_ptr<base::DictionaryValue> response,
+  void SendAsyncResult(base::Value::Dict response,
                        DaemonController::AsyncResult result);
-  void SendBooleanResult(std::unique_ptr<base::DictionaryValue> response,
-                         bool result);
-  void SendCredentialsResponse(std::unique_ptr<base::DictionaryValue> response,
+  void SendBooleanResult(base::Value::Dict response, bool result);
+  void SendCredentialsResponse(base::Value::Dict response,
                                const std::string& user_email,
                                const std::string& refresh_token);
-  void SendMessageToClient(std::unique_ptr<base::Value> message) const;
+  void SendMessageToClient(base::Value::Dict message) const;
 
   void OnError(const std::string& error_message);
 
   // Returns whether the request was successfully sent to the elevated host.
-  DelegationResult DelegateToElevatedHost(
-      std::unique_ptr<base::DictionaryValue> message);
+  DelegationResult DelegateToElevatedHost(base::Value::Dict message);
 
   bool needs_elevation_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Controls the lifetime of the elevated native messaging host process.
   std::unique_ptr<ElevatedNativeMessagingHost> elevated_host_;
 
   // Handle of the parent window.
   intptr_t parent_window_handle_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-  extensions::NativeMessageHost::Client* client_;
+  raw_ptr<extensions::NativeMessageHost::Client> client_;
   std::unique_ptr<ChromotingHostContext> host_context_;
 
   std::unique_ptr<LogMessageHandler> log_message_handler_;
@@ -154,8 +144,6 @@ class Me2MeNativeMessagingHost : public extensions::NativeMessageHost {
 
   base::WeakPtr<Me2MeNativeMessagingHost> weak_ptr_;
   base::WeakPtrFactory<Me2MeNativeMessagingHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Me2MeNativeMessagingHost);
 };
 
 }  // namespace remoting

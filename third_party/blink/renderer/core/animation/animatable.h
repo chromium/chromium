@@ -32,18 +32,22 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATABLE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
 class Animation;
-class ExceptionState;
 class Element;
+class ExceptionState;
 class GetAnimationsOptions;
 class ScriptState;
 class ScriptValue;
-class UnrestrictedDoubleOrKeyframeAnimationOptions;
+class V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble;
+
+struct GetAnimationsOptionsResolved {
+  bool use_subtree;
+};
 
 // https://drafts.csswg.org/web-animations-1/#the-animatable-interface-mixin
 class CORE_EXPORT Animatable {
@@ -52,15 +56,19 @@ class CORE_EXPORT Animatable {
   // called on.
   virtual Element* GetAnimationTarget() = 0;
 
-  Animation* animate(ScriptState*,
-                     const ScriptValue&,
-                     const UnrestrictedDoubleOrKeyframeAnimationOptions&,
-                     ExceptionState&);
+  Animation* animate(
+      ScriptState* script_state,
+      const ScriptValue& keyframes,
+      const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options,
+      ExceptionState& exception_state);
 
   Animation* animate(ScriptState*, const ScriptValue&, ExceptionState&);
 
   HeapVector<Member<Animation>> getAnimations(
       GetAnimationsOptions* options = nullptr);
+
+  HeapVector<Member<Animation>> GetAnimationsInternal(
+      GetAnimationsOptionsResolved options);
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_QUICK_ACTIONS_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -18,8 +18,7 @@ class QuickActionItem;
 // as enable hotspot, silence phone and locate phone.
 class ASH_EXPORT QuickActionsView : public views::View {
  public:
-  explicit QuickActionsView(
-      chromeos::phonehub::PhoneHubManager* phone_hub_manager);
+  explicit QuickActionsView(phonehub::PhoneHubManager* phone_hub_manager);
   ~QuickActionsView() override;
   QuickActionsView(QuickActionsView&) = delete;
   QuickActionsView operator=(QuickActionsView&) = delete;
@@ -36,7 +35,7 @@ class ASH_EXPORT QuickActionsView : public views::View {
   std::vector<std::unique_ptr<QuickActionControllerBase>>
       quick_action_controllers_;
 
-  chromeos::phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
+  phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
 
   // QuickActionItem for unit testing. Owned by this view.
   QuickActionItem* enable_hotspot_ = nullptr;

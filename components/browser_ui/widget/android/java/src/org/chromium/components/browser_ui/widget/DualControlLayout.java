@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@ import android.widget.Button;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
@@ -76,8 +75,6 @@ public final class DualControlLayout extends ViewGroup {
             secondaryButton.setId(R.id.button_secondary);
             secondaryButton.setOnClickListener(listener);
             secondaryButton.setText(text);
-            ApiCompatibilityUtils.setTextAppearance(
-                    secondaryButton, R.style.TextAppearance_Button_Text_Blue);
             return secondaryButton;
         }
     }
@@ -209,9 +206,12 @@ public final class DualControlLayout extends ViewGroup {
                         && (mAlignment == DualControlLayoutAlignment.APART
                                 || mAlignment == DualControlLayoutAlignment.END));
 
+        // If primary view visibility is GONE, do not take into account the space it would occupy.
+        int primaryViewMeasuredWidth =
+                mPrimaryView.getVisibility() != View.GONE ? mPrimaryView.getMeasuredWidth() : 0;
         int primaryRight = isPrimaryOnRight ? (width - rightPadding)
-                                            : (mPrimaryView.getMeasuredWidth() + leftPadding);
-        int primaryLeft = primaryRight - mPrimaryView.getMeasuredWidth();
+                                            : (primaryViewMeasuredWidth + leftPadding);
+        int primaryLeft = primaryRight - primaryViewMeasuredWidth;
         int primaryTop = getPaddingTop();
         int primaryBottom = primaryTop + mPrimaryView.getMeasuredHeight();
         mPrimaryView.layout(primaryLeft, primaryTop, primaryRight, primaryBottom);
@@ -241,14 +241,14 @@ public final class DualControlLayout extends ViewGroup {
             } else if (isPrimaryOnRight) {
                 // Sit to the left of the primary View.
                 secondaryRight = primaryLeft;
-                if (mPrimaryView.getMeasuredWidth() > 0) {
+                if (primaryViewMeasuredWidth > 0) {
                     secondaryRight -= mHorizontalMarginBetweenViews;
                 }
                 secondaryLeft = secondaryRight - mSecondaryView.getMeasuredWidth();
             } else {
                 // Sit to the right of the primary View.
                 secondaryLeft = primaryRight;
-                if (mPrimaryView.getMeasuredWidth() > 0) {
+                if (primaryViewMeasuredWidth > 0) {
                     secondaryLeft += mHorizontalMarginBetweenViews;
                 }
                 secondaryRight = secondaryLeft + mSecondaryView.getMeasuredWidth();

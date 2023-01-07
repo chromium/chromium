@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ class WebTestWithWebController : public WebTestWithWebState {
   WebTestWithWebController();
   explicit WebTestWithWebController(std::unique_ptr<web::WebClient> web_client);
   ~WebTestWithWebController() override;
-  // Returns web controller for testing or null if |web_state()| is null.
+  // Returns web controller for testing or null if `web_state()` is null.
   CRWWebController* web_controller();
 };
 

@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PERSONAL_DATA_MANAGER_FINISHED_PROFILE_TASKS_WAITER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PERSONAL_DATA_MANAGER_FINISHED_PROFILE_TASKS_WAITER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 
@@ -26,9 +25,15 @@ class PersonalDataManagerFinishedProfileTasksWaiter
  public:
   PersonalDataManagerFinishedProfileTasksWaiter(
       autofill::PersonalDataManager* personal_data_manager);
+
+  PersonalDataManagerFinishedProfileTasksWaiter(
+      const PersonalDataManagerFinishedProfileTasksWaiter&) = delete;
+  PersonalDataManagerFinishedProfileTasksWaiter& operator=(
+      const PersonalDataManagerFinishedProfileTasksWaiter&) = delete;
+
   ~PersonalDataManagerFinishedProfileTasksWaiter() override;
 
-  // Blocks until |OnPersonalDataFinishedProfileTasks| is invoked at the end of
+  // Blocks until `OnPersonalDataFinishedProfileTasks` is invoked at the end of
   // the asynchronous modification on the PersonalDataManager.
   void Wait();
 
@@ -39,8 +44,6 @@ class PersonalDataManagerFinishedProfileTasksWaiter
  private:
   autofill::PersonalDataManager* personal_data_manager_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersonalDataManagerFinishedProfileTasksWaiter);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PERSONAL_DATA_MANAGER_FINISHED_PROFILE_TASKS_WAITER_H_

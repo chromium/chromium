@@ -30,15 +30,16 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/radio_node_list_or_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_submit_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_element_radionodelist.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
+#include "third_party/blink/renderer/core/html/rel_list.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -66,21 +68,41 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
+namespace {
+
+bool HasFormInBetween(const Node* root, const Node* descendant) {
+  DCHECK(!IsA<HTMLFormElement>(descendant));
+  // |descendant| might not actually be a descendant of |root|.
+  if (!descendant->IsDescendantOf(root))
+    return false;
+  for (ContainerNode* parent = descendant->parentNode();
+       parent && parent != root; parent = parent->parentNode()) {
+    if (DynamicTo<HTMLFormElement>(parent)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 HTMLFormElement::HTMLFormElement(Document& document)
     : HTMLElement(html_names::kFormTag, document),
       listed_elements_are_dirty_(false),
+      listed_elements_including_shadow_trees_are_dirty_(false),
       image_elements_are_dirty_(false),
       has_elements_associated_by_parser_(false),
       has_elements_associated_by_form_attribute_(false),
       did_finish_parsing_children_(false),
-      is_in_reset_function_(false) {
-  static unsigned next_unique_renderer_form_id = 1;
+      is_in_reset_function_(false),
+      rel_list_(MakeGarbageCollected<RelList>(this)) {
+  static uint64_t next_unique_renderer_form_id = 1;
   unique_renderer_form_id_ = next_unique_renderer_form_id++;
 
   UseCounter::Count(document, WebFeature::kFormElement);
@@ -92,7 +114,9 @@ void HTMLFormElement::Trace(Visitor* visitor) const {
   visitor->Trace(past_names_map_);
   visitor->Trace(radio_button_group_scope_);
   visitor->Trace(listed_elements_);
+  visitor->Trace(listed_elements_including_shadow_trees_);
   visitor->Trace(image_elements_);
+  visitor->Trace(rel_list_);
   HTMLElement::Trace(visitor);
 }
 
@@ -159,7 +183,7 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
 
 void HTMLFormElement::HandleLocalEvents(Event& event) {
   Node* target_node = event.target()->ToNode();
-  if (event.eventPhase() != Event::kCapturingPhase && target_node &&
+  if (event.eventPhase() != Event::PhaseType::kCapturingPhase && target_node &&
       target_node != this &&
       (event.type() == event_type_names::kSubmit ||
        event.type() == event_type_names::kReset)) {
@@ -243,9 +267,14 @@ bool HTMLFormElement::ValidateInteractively() {
       String message(
           "An invalid form control with name='%name' is not focusable.");
       message.Replace("%name", unhandled->GetName());
-      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kRendering,
-          mojom::ConsoleMessageLevel::kError, message));
+
+      ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kError, message);
+      console_message->SetNodes(
+          GetDocument().GetFrame(),
+          {DOMNodeIds::IdForNode(&unhandled->ToHTMLElement())});
+      GetDocument().AddConsoleMessage(console_message);
     }
   }
   return false;
@@ -329,6 +358,10 @@ void HTMLFormElement::PrepareForSubmission(
     }
   }
   if (should_submit) {
+    // If this form already made a request to navigate another frame which is
+    // still pending, then we should cancel that one.
+    if (cancel_last_submission_)
+      std::move(cancel_last_submission_).Run();
     ScheduleFormSubmission(event, submit_button);
   }
 }
@@ -471,9 +504,18 @@ void HTMLFormElement::ScheduleFormSubmission(
     return;
   }
 
-  if (!GetExecutionContext()->GetContentSecurityPolicy()->AllowFormAction(
-          form_submission->Action())) {
-    return;
+  if (form_submission->Action().ProtocolIsJavaScript()) {
+    // For javascript URLs we need to do the CSP check for 'form-action' here.
+    // All other schemes are checked in the browser.
+    //
+    // TODO(antoniosartori): Should we keep the 'form-action' check for
+    // javascript: URLs? For 'frame-src' and 'navigate-to', we do not check
+    // javascript: URLs. Reading the specification, it looks like 'form-action'
+    // should not apply to javascript: URLs.
+    if (!GetExecutionContext()->GetContentSecurityPolicy()->AllowFormAction(
+            form_submission->Action())) {
+      return;
+    }
   }
 
   UseCounter::Count(GetDocument(), WebFeature::kFormsSubmitted);
@@ -524,7 +566,8 @@ void HTMLFormElement::ScheduleFormSubmission(
     target_local_frame->Loader().CancelClientNavigation();
   }
 
-  target_frame->ScheduleFormSubmission(scheduler, form_submission);
+  cancel_last_submission_ =
+      target_frame->ScheduleFormSubmission(scheduler, form_submission);
 }
 
 FormData* HTMLFormElement::ConstructEntryList(
@@ -544,7 +587,7 @@ FormData* HTMLFormElement::ConstructEntryList(
       control->AppendToFormData(form_data);
     if (auto* input = DynamicTo<HTMLInputElement>(element)) {
       if (input->type() == input_type_names::kPassword &&
-          !input->value().IsEmpty())
+          !input->Value().empty())
         form_data.SetContainsPasswordData(true);
     }
   }
@@ -602,8 +645,8 @@ void HTMLFormElement::ParseAttribute(
             mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone)
       return;
     KURL action_url = GetDocument().CompleteURL(
-        attributes_.Action().IsEmpty() ? GetDocument().Url().GetString()
-                                       : attributes_.Action());
+        attributes_.Action().empty() ? GetDocument().Url().GetString()
+                                     : attributes_.Action());
     if (MixedContentChecker::IsMixedFormAction(GetDocument().GetFrame(),
                                                action_url)) {
       UseCounter::Count(GetDocument(), WebFeature::kMixedContentFormPresent);
@@ -618,6 +661,17 @@ void HTMLFormElement::ParseAttribute(
     attributes_.SetAcceptCharset(params.new_value);
   } else if (name == html_names::kDisabledAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kFormDisabledAttributePresent);
+  } else if (name == html_names::kRelAttr &&
+             RuntimeEnabledFeatures::FormRelAttributeEnabled()) {
+    rel_attribute_ = RelAttribute::kNone;
+    rel_list_->DidUpdateAttributeValue(params.old_value, params.new_value);
+    if (rel_list_->contains(AtomicString("noreferrer")))
+      rel_attribute_ |= RelAttribute::kNoReferrer;
+    if (rel_list_->contains(AtomicString("noopener")))
+      rel_attribute_ |= RelAttribute::kNoOpener;
+    if (rel_list_->contains(AtomicString("opener")))
+      rel_attribute_ |= RelAttribute::kOpener;
+
   } else {
     HTMLElement::ParseAttribute(params);
   }
@@ -626,6 +680,8 @@ void HTMLFormElement::ParseAttribute(
 void HTMLFormElement::Associate(ListedElement& e) {
   listed_elements_are_dirty_ = true;
   listed_elements_.clear();
+  listed_elements_including_shadow_trees_are_dirty_ = true;
+  listed_elements_including_shadow_trees_.clear();
   if (e.ToHTMLElement().FastHasAttribute(html_names::kFormAttr))
     has_elements_associated_by_form_attribute_ = true;
 }
@@ -633,6 +689,8 @@ void HTMLFormElement::Associate(ListedElement& e) {
 void HTMLFormElement::Disassociate(ListedElement& e) {
   listed_elements_are_dirty_ = true;
   listed_elements_.clear();
+  listed_elements_including_shadow_trees_are_dirty_ = true;
+  listed_elements_including_shadow_trees_.clear();
   RemoveFromPastNamesMap(e.ToHTMLElement());
 }
 
@@ -669,31 +727,68 @@ HTMLFormControlsCollection* HTMLFormElement::elements() {
 }
 
 void HTMLFormElement::CollectListedElements(
-    Node& root,
-    ListedElement::List& elements) const {
-  elements.clear();
+    const Node& root,
+    ListedElement::List& elements,
+    ListedElement::List* elements_including_shadow_trees,
+    bool in_shadow_tree) const {
+  DCHECK(!in_shadow_tree || elements_including_shadow_trees);
+  if (!in_shadow_tree)
+    elements.clear();
   for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
-    ListedElement* listed_element = ListedElement::From(element);
-    if (listed_element && listed_element->Form() == this)
-      elements.push_back(listed_element);
+    if (ListedElement* listed_element = ListedElement::From(element)) {
+      // If there is a <form> in between |root| and |listed_element|, then we
+      // shouldn't include it in |elements_including_shadow_trees| in order to
+      // prevent multiple forms from "owning" the same |listed_element| as shown
+      // by their |elements_including_shadow_trees|. |elements| doesn't have
+      // this problem because it can check |listed_element->Form()|.
+      if (in_shadow_tree && !HasFormInBetween(&root, &element) &&
+          !listed_element->Form()) {
+        elements_including_shadow_trees->push_back(listed_element);
+      } else if (listed_element->Form() == this) {
+        elements.push_back(listed_element);
+        if (elements_including_shadow_trees)
+          elements_including_shadow_trees->push_back(listed_element);
+      }
+    }
+    if (elements_including_shadow_trees && element.AuthorShadowRoot() &&
+        !HasFormInBetween(in_shadow_tree ? &root : this, &element)) {
+      const Node& shadow = *element.AuthorShadowRoot();
+      CollectListedElements(shadow, elements, elements_including_shadow_trees,
+                            /*in_shadow_tree=*/true);
+    }
   }
 }
 
 // This function should be const conceptually. However we update some fields
 // because of lazy evaluation.
-const ListedElement::List& HTMLFormElement::ListedElements() const {
-  if (!listed_elements_are_dirty_)
-    return listed_elements_;
-  HTMLFormElement* mutable_this = const_cast<HTMLFormElement*>(this);
-  Node* scope = mutable_this;
-  if (has_elements_associated_by_parser_)
-    scope = &NodeTraversal::HighestAncestorOrSelf(*mutable_this);
-  if (isConnected() && has_elements_associated_by_form_attribute_)
-    scope = &GetTreeScope().RootNode();
-  DCHECK(scope);
-  CollectListedElements(*scope, mutable_this->listed_elements_);
-  mutable_this->listed_elements_are_dirty_ = false;
-  return listed_elements_;
+const ListedElement::List& HTMLFormElement::ListedElements(
+    bool include_shadow_trees) const {
+  if (!RuntimeEnabledFeatures::AutofillShadowDOMEnabled())
+    include_shadow_trees = false;
+  bool collect_shadow_inputs =
+      include_shadow_trees && listed_elements_including_shadow_trees_are_dirty_;
+
+  if (listed_elements_are_dirty_ || collect_shadow_inputs) {
+    HTMLFormElement* mutable_this = const_cast<HTMLFormElement*>(this);
+    Node* scope = mutable_this;
+    if (has_elements_associated_by_parser_)
+      scope = &NodeTraversal::HighestAncestorOrSelf(*mutable_this);
+    if (isConnected() && has_elements_associated_by_form_attribute_)
+      scope = &GetTreeScope().RootNode();
+    DCHECK(scope);
+    mutable_this->listed_elements_.clear();
+    mutable_this->listed_elements_including_shadow_trees_.clear();
+    CollectListedElements(
+        *scope, mutable_this->listed_elements_,
+        collect_shadow_inputs
+            ? &mutable_this->listed_elements_including_shadow_trees_
+            : nullptr);
+    mutable_this->listed_elements_are_dirty_ = false;
+    mutable_this->listed_elements_including_shadow_trees_are_dirty_ =
+        !collect_shadow_inputs;
+  }
+  return include_shadow_trees ? listed_elements_including_shadow_trees_
+                              : listed_elements_;
 }
 
 void HTMLFormElement::CollectImageElements(
@@ -728,7 +823,7 @@ bool HTMLFormElement::NoValidate() const {
 
 String HTMLFormElement::action() const {
   Document& document = GetDocument();
-  KURL action_url = document.CompleteURL(attributes_.Action().IsEmpty()
+  KURL action_url = document.CompleteURL(attributes_.Action().empty()
                                              ? document.Url().GetString()
                                              : attributes_.Action());
   return action_url.GetString();
@@ -771,7 +866,7 @@ bool HTMLFormElement::CheckInvalidControlsAndCollectUnhandled(
   // ListedElement::checkValidity() might change listed_elements.
   const ListedElement::List& listed_elements = ListedElements();
   HeapVector<Member<ListedElement>> elements;
-  elements.ReserveCapacity(listed_elements.size());
+  elements.reserve(listed_elements.size());
   for (ListedElement* element : listed_elements)
     elements.push_back(element);
   int invalid_controls_count = 0;
@@ -800,20 +895,20 @@ bool HTMLFormElement::reportValidity() {
 
 Element* HTMLFormElement::ElementFromPastNamesMap(
     const AtomicString& past_name) {
-  if (past_name.IsEmpty() || !past_names_map_)
+  if (past_name.empty() || !past_names_map_)
     return nullptr;
-  Element* element = past_names_map_->at(past_name);
+  auto it = past_names_map_->find(past_name);
+  Element* element = it != past_names_map_->end() ? it->value : nullptr;
 #if DCHECK_IS_ON()
   if (!element)
     return nullptr;
   SECURITY_DCHECK(To<HTMLElement>(element)->formOwner() == this);
   if (IsA<HTMLImageElement>(*element)) {
     SECURITY_DCHECK(ImageElements().Find(element) != kNotFound);
-  } else if (auto* html_image_element = DynamicTo<HTMLObjectElement>(element)) {
-    SECURITY_DCHECK(ListedElements().Find(html_image_element) != kNotFound);
   } else {
-    SECURITY_DCHECK(ListedElements().Find(
-                        To<HTMLFormControlElement>(element)) != kNotFound);
+    auto* listed_element = ListedElement::From(*element);
+    SECURITY_DCHECK(listed_element &&
+                    ListedElements().Find(listed_element) != kNotFound);
   }
 #endif
   return element;
@@ -821,7 +916,7 @@ Element* HTMLFormElement::ElementFromPastNamesMap(
 
 void HTMLFormElement::AddToPastNamesMap(Element* element,
                                         const AtomicString& past_name) {
-  if (past_name.IsEmpty())
+  if (past_name.empty())
     return;
   if (!past_names_map_)
     past_names_map_ = MakeGarbageCollected<PastNamesMap>();
@@ -848,7 +943,7 @@ void HTMLFormElement::GetNamedElements(
   Element* element_from_past = ElementFromPastNamesMap(name);
   if (named_items.size() && named_items.front() != element_from_past) {
     AddToPastNamesMap(named_items.front().Get(), name);
-  } else if (element_from_past && named_items.IsEmpty()) {
+  } else if (element_from_past && named_items.empty()) {
     named_items.push_back(element_from_past);
     UseCounter::Count(GetDocument(),
                       WebFeature::kFormNameAccessForPastNamesMap);
@@ -860,33 +955,40 @@ bool HTMLFormElement::ShouldAutocomplete() const {
       FastGetAttribute(html_names::kAutocompleteAttr), "off");
 }
 
+DOMTokenList& HTMLFormElement::relList() const {
+  return static_cast<DOMTokenList&>(*rel_list_);
+}
+
+bool HTMLFormElement::HasRel(RelAttribute relation) const {
+  return rel_attribute_ & relation;
+}
+
 void HTMLFormElement::FinishParsingChildren() {
   HTMLElement::FinishParsingChildren();
   GetDocument().GetFormController().RestoreControlStateIn(*this);
   did_finish_parsing_children_ = true;
 }
 
-void HTMLFormElement::AnonymousNamedGetter(
-    const AtomicString& name,
-    RadioNodeListOrElement& return_value) {
+V8UnionElementOrRadioNodeList* HTMLFormElement::AnonymousNamedGetter(
+    const AtomicString& name) {
   // Call getNamedElements twice, first time check if it has a value
   // and let HTMLFormElement update its cache.
   // See issue: 867404
   {
     HeapVector<Member<Element>> elements;
     GetNamedElements(name, elements);
-    if (elements.IsEmpty())
-      return;
+    if (elements.empty())
+      return nullptr;
   }
 
   // Second call may return different results from the first call,
   // but if the first the size cannot be zero.
   HeapVector<Member<Element>> elements;
   GetNamedElements(name, elements);
-  DCHECK(!elements.IsEmpty());
+  DCHECK(!elements.empty());
 
   bool only_match_img =
-      !elements.IsEmpty() && IsA<HTMLImageElement>(*elements.front());
+      !elements.empty() && IsA<HTMLImageElement>(*elements.front());
   if (only_match_img) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kFormNameAccessForImageElement);
@@ -902,11 +1004,10 @@ void HTMLFormElement::AnonymousNamedGetter(
     }
   }
   if (elements.size() == 1) {
-    return_value.SetElement(elements.at(0));
-    return;
+    return MakeGarbageCollected<V8UnionElementOrRadioNodeList>(elements[0]);
   }
-
-  return_value.SetRadioNodeList(GetRadioNodeList(name, only_match_img));
+  return MakeGarbageCollected<V8UnionElementOrRadioNodeList>(
+      GetRadioNodeList(name, only_match_img));
 }
 
 void HTMLFormElement::InvalidateDefaultButtonStyle() const {
@@ -919,6 +1020,10 @@ void HTMLFormElement::InvalidateDefaultButtonStyle() const {
       html_form_control->PseudoStateChanged(CSSSelector::kPseudoDefault);
     }
   }
+}
+
+void HTMLFormElement::InvalidateListedElementsIncludingShadowTrees() {
+  listed_elements_including_shadow_trees_are_dirty_ = true;
 }
 
 }  // namespace blink

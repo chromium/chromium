@@ -1,0 +1,10 @@
+error[E0277]: `NoDisplay` doesn't implement `std::fmt::Display`
+ --> $DIR/printdoc-no-display.rs:6:21
+  |
+6 |     printdoc!("{}", NoDisplay);
+  |                     ^^^^^^^^^ `NoDisplay` cannot be formatted with the default formatter
+  |
+  = help: the trait `std::fmt::Display` is not implemented for `NoDisplay`
+  = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+  = note: required by `std::fmt::Display::fmt`
+  = note: this error originates in a macro (in Nightly builds, run with -Z macro-backtrace for more info)

@@ -11,6 +11,14 @@ async function cleanup() {
   screen.orientation.unlock();
 }
 
+promise_test(async t => {
+  t.add_cleanup(cleanup);
+  await test_driver.bless("request full screen", () => {
+    return document.documentElement.requestFullscreen();
+  });
+  screen.orientation.unlock();
+}, "Test that screen.orientation.unlock() doesn't throw when there is no lock with fullscreen");
+
 test(() => {
   screen.orientation.unlock();
 }, "Test that screen.orientation.unlock() doesn't throw when there is no lock");
@@ -47,7 +55,14 @@ promise_test(async t => {
   for (const orientation of orientations) {
     const promiseToChange = screen.orientation.lock(orientation);
     assert_true(promiseToChange instanceof Promise, "Expected an instance of Promise");
-    await promiseToChange;
+    try {
+      await promiseToChange;
+    } catch(err) {
+      if (err.name === "NotSupportedError") {
+        continue;
+      }
+      assert_unreached("Unknown error: " + err);
+    }
     const type = screen.orientation.type;
     switch (orientation) {
     case 'any':
@@ -75,10 +90,10 @@ promise_test(async t => {
   });
   const preType = screen.orientation.type;
   const isPortrait = preType.includes("portrait");
-  const newType = `${ isPortrait ? "landscape" : "portrait" }-primary`;
+  const newType = `${ isPortrait ? "landscape" : "portrait" }`;
   const p = screen.orientation.lock(newType);
   assert_equals(screen.orientation.type, preType, "Must not change orientation until next spin of event loop");
   await p;
-  assert_equals(screen.orientation.type, newType);
+  assert_true(screen.orientation.type.startsWith(newType), `Expected type to start with ${newType}`);
 }, "Test that screen.orientation.lock() is actually async");
 </script>

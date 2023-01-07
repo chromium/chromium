@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,9 @@ class WM_PUBLIC_EXPORT TooltipClient {
   // contained.
   virtual void UpdateTooltipFromKeyboard(const gfx::Rect& bounds,
                                          aura::Window* target) = 0;
+
+  // Returns true if the tooltip was set from a keyboard action.
+  virtual bool IsTooltipSetFromKeyboard(aura::Window* target) = 0;
 
   // Sets the time after which the tooltip is hidden for Window |target|. If
   // |timeout_in_ms| is <= 0, the tooltip is shown indefinitely.

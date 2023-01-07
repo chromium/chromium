@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/renderer/supervised_user/supervised_user_error_page_controller.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/renderer/supervised_user/supervised_user_error_page_controller_delegate.h"
@@ -13,6 +14,16 @@
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-microtask-queue.h"
+
+namespace {
+
+bool IsOutermostMainFrame(content::RenderFrame* render_frame) {
+  return render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree();
+}
+
+}  // namespace
 
 gin::WrapperInfo SupervisedUserErrorPageController::kWrapperInfo = {
     gin::kEmbedderNativeGin};
@@ -22,6 +33,8 @@ void SupervisedUserErrorPageController::Install(
     base::WeakPtr<SupervisedUserErrorPageControllerDelegate> delegate) {
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Context> context =
       render_frame->GetWebFrame()->MainWorldScriptContext();
   if (context.IsEmpty())
@@ -54,11 +67,21 @@ void SupervisedUserErrorPageController::GoBack() {
     delegate_->GoBack();
 }
 
-void SupervisedUserErrorPageController::RequestPermission() {
+void SupervisedUserErrorPageController::RequestUrlAccessRemote() {
   if (delegate_) {
-    delegate_->RequestPermission(base::BindOnce(
-        &SupervisedUserErrorPageController::RequestPermissionCallback,
+    delegate_->RequestUrlAccessRemote(base::BindOnce(
+        &SupervisedUserErrorPageController::OnRequestUrlAccessRemote,
         weak_factory_.GetWeakPtr()));
+  }
+}
+
+void SupervisedUserErrorPageController::RequestUrlAccessLocal() {
+  if (delegate_) {
+    delegate_->RequestUrlAccessLocal(base::BindOnce([](bool success) {
+      // We might want to handle the error in starting local approval flow
+      // later. For now just log a result.
+      VLOG(0) << "Local URL approval initiation result: " << success;
+    }));
   }
 }
 
@@ -67,12 +90,13 @@ void SupervisedUserErrorPageController::Feedback() {
     delegate_->Feedback();
 }
 
-void SupervisedUserErrorPageController::RequestPermissionCallback(
-    bool success) {
+void SupervisedUserErrorPageController::OnRequestUrlAccessRemote(bool success) {
   std::string result = success ? "true" : "false";
-  std::string in_main_frame = render_frame_->IsMainFrame() ? "true" : "false";
-  std::string js = base::StringPrintf("setRequestStatus(%s, %s)",
-                                      result.c_str(), in_main_frame.c_str());
+  std::string is_outermost_main_frame =
+      IsOutermostMainFrame(render_frame_) ? "true" : "false";
+  std::string js =
+      base::StringPrintf("setRequestStatus(%s, %s)", result.c_str(),
+                         is_outermost_main_frame.c_str());
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(js));
 }
 
@@ -82,7 +106,9 @@ SupervisedUserErrorPageController::GetObjectTemplateBuilder(
   return gin::Wrappable<SupervisedUserErrorPageController>::
       GetObjectTemplateBuilder(isolate)
           .SetMethod("goBack", &SupervisedUserErrorPageController::GoBack)
-          .SetMethod("requestPermission",
-                     &SupervisedUserErrorPageController::RequestPermission)
+          .SetMethod("requestUrlAccessRemote",
+                     &SupervisedUserErrorPageController::RequestUrlAccessRemote)
+          .SetMethod("requestUrlAccessLocal",
+                     &SupervisedUserErrorPageController::RequestUrlAccessLocal)
           .SetMethod("feedback", &SupervisedUserErrorPageController::Feedback);
 }

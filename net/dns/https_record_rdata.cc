@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -16,20 +15,21 @@
 
 #include "base/big_endian.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/immediate_crash.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
 namespace {
 
-bool ReadNextServiceParam(base::Optional<uint16_t> last_key,
+bool ReadNextServiceParam(absl::optional<uint16_t> last_key,
                           base::BigEndianReader& reader,
                           uint16_t* out_param_key,
                           base::StringPiece* out_param_value) {
@@ -55,7 +55,7 @@ bool ParseMandatoryKeys(base::StringPiece param_value,
                         std::set<uint16_t>* out_parsed) {
   DCHECK(out_parsed);
 
-  base::BigEndianReader reader(param_value.data(), param_value.size());
+  auto reader = base::BigEndianReader::FromStringPiece(param_value);
 
   std::set<uint16_t> mandatory_keys;
   // Do/while to require at least one key.
@@ -82,7 +82,7 @@ bool ParseAlpnIds(base::StringPiece param_value,
                   std::vector<std::string>* out_parsed) {
   DCHECK(out_parsed);
 
-  base::BigEndianReader reader(param_value.data(), param_value.size());
+  auto reader = base::BigEndianReader::FromStringPiece(param_value);
 
   std::vector<std::string> alpn_ids;
   // Do/while to require at least one ID.
@@ -106,7 +106,7 @@ bool ParseIpAddresses(base::StringPiece param_value,
                       std::vector<IPAddress>* out_addresses) {
   DCHECK(out_addresses);
 
-  base::BigEndianReader reader(param_value.data(), param_value.size());
+  auto reader = base::BigEndianReader::FromStringPiece(param_value);
 
   std::vector<IPAddress> addresses;
   uint8_t addr_bytes[ADDRESS_SIZE];
@@ -127,23 +127,16 @@ bool ParseIpAddresses(base::StringPiece param_value,
 std::unique_ptr<HttpsRecordRdata> HttpsRecordRdata::Parse(
     base::StringPiece data) {
   if (!HasValidSize(data, kType))
-    return std::make_unique<MalformedHttpsRecordRdata>();
+    return nullptr;
 
-  base::BigEndianReader reader(data.data(), data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(data);
   uint16_t priority;
   CHECK(reader.ReadU16(&priority));
 
-  std::unique_ptr<HttpsRecordRdata> parsed;
   if (priority == 0) {
-    parsed = AliasFormHttpsRecordRdata::Parse(data);
-  } else {
-    parsed = ServiceFormHttpsRecordRdata::Parse(data);
+    return AliasFormHttpsRecordRdata::Parse(data);
   }
-
-  if (!parsed)
-    return std::make_unique<MalformedHttpsRecordRdata>();
-
-  return parsed;
+  return ServiceFormHttpsRecordRdata::Parse(data);
 }
 
 HttpsRecordRdata::~HttpsRecordRdata() = default;
@@ -164,7 +157,6 @@ uint16_t HttpsRecordRdata::Type() const {
 
 AliasFormHttpsRecordRdata* HttpsRecordRdata::AsAliasForm() {
   CHECK(IsAlias());
-  CHECK(!IsMalformed());
   return static_cast<AliasFormHttpsRecordRdata*>(this);
 }
 
@@ -174,31 +166,11 @@ const AliasFormHttpsRecordRdata* HttpsRecordRdata::AsAliasForm() const {
 
 ServiceFormHttpsRecordRdata* HttpsRecordRdata::AsServiceForm() {
   CHECK(!IsAlias());
-  CHECK(!IsMalformed());
   return static_cast<ServiceFormHttpsRecordRdata*>(this);
 }
 
 const ServiceFormHttpsRecordRdata* HttpsRecordRdata::AsServiceForm() const {
   return const_cast<HttpsRecordRdata*>(this)->AsServiceForm();
-}
-
-bool HttpsRecordRdata::IsMalformed() const {
-  return false;
-}
-
-MalformedHttpsRecordRdata::MalformedHttpsRecordRdata() = default;
-
-bool MalformedHttpsRecordRdata::IsEqual(const HttpsRecordRdata* other) const {
-  DCHECK(other);
-  return other->IsMalformed();
-}
-
-bool MalformedHttpsRecordRdata::IsAlias() const {
-  return false;
-}
-
-bool MalformedHttpsRecordRdata::IsMalformed() const {
-  return true;
 }
 
 AliasFormHttpsRecordRdata::AliasFormHttpsRecordRdata(std::string alias_name)
@@ -207,7 +179,7 @@ AliasFormHttpsRecordRdata::AliasFormHttpsRecordRdata(std::string alias_name)
 // static
 std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
     base::StringPiece data) {
-  base::BigEndianReader reader(data.data(), data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(data);
 
   uint16_t priority;
   if (!reader.ReadU16(&priority))
@@ -215,13 +187,13 @@ std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
   if (priority != 0)
     return nullptr;
 
-  base::Optional<std::string> alias_name =
+  absl::optional<std::string> alias_name =
       DnsDomainToString(reader, true /* require_complete */);
   if (!alias_name.has_value())
     return nullptr;
 
   // Ignore any params.
-  base::Optional<uint16_t> last_param_key;
+  absl::optional<uint16_t> last_param_key;
   while (reader.remaining() > 0) {
     uint16_t param_key;
     base::StringPiece param_value;
@@ -252,12 +224,12 @@ bool AliasFormHttpsRecordRdata::IsAlias() const {
 constexpr uint16_t ServiceFormHttpsRecordRdata::kSupportedKeys[];
 
 ServiceFormHttpsRecordRdata::ServiceFormHttpsRecordRdata(
-    uint16_t priority,
+    HttpsRecordPriority priority,
     std::string service_name,
     std::set<uint16_t> mandatory_keys,
     std::vector<std::string> alpn_ids,
     bool default_alpn,
-    base::Optional<uint16_t> port,
+    absl::optional<uint16_t> port,
     std::vector<IPAddress> ipv4_hint,
     std::string ech_config,
     std::vector<IPAddress> ipv6_hint,
@@ -294,7 +266,7 @@ ServiceFormHttpsRecordRdata::~ServiceFormHttpsRecordRdata() = default;
 bool ServiceFormHttpsRecordRdata::IsEqual(const HttpsRecordRdata* other) const {
   DCHECK(other);
 
-  if (other->IsAlias() || other->IsMalformed())
+  if (other->IsAlias())
     return false;
 
   const ServiceFormHttpsRecordRdata* service = other->AsServiceForm();
@@ -315,7 +287,7 @@ bool ServiceFormHttpsRecordRdata::IsAlias() const {
 // static
 std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
     base::StringPiece data) {
-  base::BigEndianReader reader(data.data(), data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(data);
 
   uint16_t priority;
   if (!reader.ReadU16(&priority))
@@ -323,17 +295,17 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
   if (priority == 0)
     return nullptr;
 
-  base::Optional<std::string> service_name =
+  absl::optional<std::string> service_name =
       DnsDomainToString(reader, true /* require_complete */);
   if (!service_name.has_value())
     return nullptr;
 
   if (reader.remaining() == 0) {
     return std::make_unique<ServiceFormHttpsRecordRdata>(
-        priority, std::move(service_name).value(),
+        HttpsRecordPriority{priority}, std::move(service_name).value(),
         std::set<uint16_t>() /* mandatory_keys */,
         std::vector<std::string>() /* alpn_ids */, true /* default_alpn */,
-        base::nullopt /* port */, std::vector<IPAddress>() /* ipv4_hint */,
+        absl::nullopt /* port */, std::vector<IPAddress>() /* ipv4_hint */,
         std::string() /* ech_config */,
         std::vector<IPAddress>() /* ipv6_hint */,
         std::map<uint16_t, std::string>() /* unparsed_params */);
@@ -341,7 +313,7 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
 
   uint16_t param_key = 0;
   base::StringPiece param_value;
-  if (!ReadNextServiceParam(base::nullopt /* last_key */, reader, &param_key,
+  if (!ReadNextServiceParam(absl::nullopt /* last_key */, reader, &param_key,
                             &param_value))
     return nullptr;
 
@@ -382,13 +354,14 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
     }
   }
 
-  base::Optional<uint16_t> port;
+  absl::optional<uint16_t> port;
   if (param_key == dns_protocol::kHttpsServiceParamKeyPort) {
     DCHECK(IsSupportedKey(param_key));
     if (param_value.size() != 2)
       return nullptr;
     uint16_t port_val;
-    base::ReadBigEndian(param_value.data(), &port_val);
+    base::ReadBigEndian(reinterpret_cast<const uint8_t*>(param_value.data()),
+                        &port_val);
     port = port_val;
     if (reader.remaining() > 0 &&
         !ReadNextServiceParam(param_key, reader, &param_key, &param_value)) {
@@ -445,9 +418,10 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
   }
 
   return std::make_unique<ServiceFormHttpsRecordRdata>(
-      priority, std::move(service_name).value(), std::move(mandatory_keys),
-      std::move(alpn_ids), default_alpn, port, std::move(ipv4_hint),
-      std::move(ech_config), std::move(ipv6_hint), std::move(unparsed_params));
+      HttpsRecordPriority{priority}, std::move(service_name).value(),
+      std::move(mandatory_keys), std::move(alpn_ids), default_alpn, port,
+      std::move(ipv4_hint), std::move(ech_config), std::move(ipv6_hint),
+      std::move(unparsed_params));
 }
 
 bool ServiceFormHttpsRecordRdata::IsCompatible() const {
@@ -473,8 +447,7 @@ bool ServiceFormHttpsRecordRdata::IsCompatible() const {
 // static
 bool ServiceFormHttpsRecordRdata::IsSupportedKey(uint16_t key) {
 #if DCHECK_IS_ON()
-  return std::find(std::begin(kSupportedKeys), std::end(kSupportedKeys), key) !=
-         std::end(kSupportedKeys);
+  return base::Contains(kSupportedKeys, key);
 #else
   // Only intended for DCHECKs.
   IMMEDIATE_CRASH();

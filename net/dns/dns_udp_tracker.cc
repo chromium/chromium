@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/dns/dns_udp_tracker.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/tick_clock.h"
 #include "net/base/net_errors.h"
 
@@ -126,9 +126,8 @@ void DnsUdpTracker::SaveIdMismatch(uint16_t id) {
 
   base::TimeTicks now = tick_clock_->NowTicks();
   base::TimeTicks time_cutoff = now - kMaxRecognizedIdAge;
-  bool is_recognized = std::any_of(
-      recent_queries_.cbegin(), recent_queries_.cend(),
-      [&](const auto& recent_query) {
+  bool is_recognized =
+      base::ranges::any_of(recent_queries_, [&](const auto& recent_query) {
         return recent_query.query_id == id && recent_query.time >= time_cutoff;
       });
 

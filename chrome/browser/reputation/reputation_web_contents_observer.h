@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_REPUTATION_REPUTATION_WEB_CONTENTS_OBSERVER_H_
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/lookalikes/digital_asset_links_cross_validator.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
@@ -16,9 +17,14 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/reputation/safety_tip_message_delegate_android.h"
+#endif
 
 class Profile;
 
@@ -92,7 +98,7 @@ class ReputationWebContentsObserver
                                           ukm::SourceId navigation_source_id,
                                           bool validation_succeeded);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Used to cache the last safety tip info (and associated navigation entry ID)
   // so that Page Info can fetch this information without performing a
@@ -104,7 +110,7 @@ class ReputationWebContentsObserver
   // The initiator origin and URL of the most recently committed navigation.
   // Presently, these are used in metrics to differentiate same-origin
   // navigations (i.e. when the user stays on a flagged page).
-  base::Optional<url::Origin> last_committed_initiator_origin_;
+  absl::optional<url::Origin> last_committed_initiator_origin_;
   GURL last_committed_url_;
 
   base::OnceClosure reputation_check_callback_for_testing_;
@@ -112,6 +118,10 @@ class ReputationWebContentsObserver
   bool reputation_check_pending_for_testing_;
 
   base::OnceClosure safety_tip_close_callback_for_testing_;
+
+#if BUILDFLAG(IS_ANDROID)
+  SafetyTipMessageDelegateAndroid delegate_;
+#endif
 
   std::unique_ptr<DigitalAssetLinkCrossValidator> digital_asset_link_validator_;
 

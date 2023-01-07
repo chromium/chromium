@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,5 +14,7 @@ message RequestSchedule {
   message TimeBasedSchedule {
     repeated Duration refresh_time_from_response_time = 1;
   }
-  oneof schedule { TimeBasedSchedule time_based_schedule = 1; }
+  oneof schedule {
+    TimeBasedSchedule time_based_schedule = 1;
+  }
 }

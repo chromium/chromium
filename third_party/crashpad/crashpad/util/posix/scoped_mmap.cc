@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,15 +20,15 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
-#include "base/process/process_metrics.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "third_party/lss/lss.h"
 #endif
 
@@ -36,7 +36,7 @@ namespace {
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void* CallMmap(void* addr,
                size_t len,
                int prot,

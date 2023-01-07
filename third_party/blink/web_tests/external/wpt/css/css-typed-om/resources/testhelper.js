@@ -1,3 +1,42 @@
+function assert_color_channel_approx_equals(a, b) {
+  // Color is is limited to 32bit RGBA, thus channels are values within 0-255.
+  // Our epsilon needs to reflect this relatively limited precision.
+  const EPSILON = 1/255;
+
+  function epsilonForUnitType(unitType) {
+    switch(unitType) {
+      case 'deg':
+        return EPSILON * 360;
+      case 'rad':
+        return EPSILON * 2 * Math.PI;
+      case 'grad':
+        return EPSILON * 400;
+      case 'percent':
+        return EPSILON * 100;
+      default:
+        return EPSILON;
+    }
+  }
+
+  assert_equals(a.constructor.name, b.constructor.name);
+  const className = a.constructor.name;
+  switch (className) {
+    case 'CSSMathSum':
+    case 'CSSMathProduct':
+    case 'CSSMathMin':
+    case 'CSSMathMax':
+      assert_equals(a.values.length, b.values.length);
+      for (let i = 0; i < a.length; i++) {
+        assert_equals(a.unit, b.unit);
+        assert_approx_equals(a[i].value, b[i].value, epsilonForUnitType(a.unit));
+      }
+      break;
+    default:
+      assert_equals(a.unit, b.unit);
+      assert_approx_equals(a.value, b.value, epsilonForUnitType(a.unit));
+  }
+}
+
 // Compares two CSSStyleValues to check if they're the same type
 // and have the same attributes.
 function assert_style_value_equals(a, b) {
@@ -24,6 +63,11 @@ function assert_style_value_equals(a, b) {
     case 'CSSMathMin':
     case 'CSSMathMax':
       assert_style_value_array_equals(a.values, b.values);
+      break;
+    case 'CSSMathClamp':
+      assert_style_value_equals(a.lower, b.lower);
+      assert_style_value_equals(a.value, b.value);
+      assert_style_value_equals(a.upper, b.upper);
       break;
     case 'CSSMathInvert':
     case 'CSSMathNegate':
@@ -98,6 +142,17 @@ const gValidUnits = [
 function createDivWithStyle(test, cssText) {
   let element = document.createElement('div');
   element.style = cssText || '';
+  document.body.appendChild(element);
+  test.add_cleanup(() => {
+    element.remove();
+  });
+  return element;
+}
+
+// Creates a new div element without inline style.
+// The created element is deleted during test cleanup.
+function createDivWithoutStyle(test) {
+  let element = document.createElement('div');
   document.body.appendChild(element);
   test.add_cleanup(() => {
     element.remove();

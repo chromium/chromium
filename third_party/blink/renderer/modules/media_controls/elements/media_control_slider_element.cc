@@ -1,15 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_slider_element.h"
 
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
@@ -23,8 +24,8 @@ void SetSegmentDivPosition(blink::HTMLDivElement* segment,
                            int width,
                            float zoom_factor) {
   int segment_width =
-      clampTo<int>(floor((position.width * width) / zoom_factor));
-  int segment_left = clampTo<int>(floor((position.left * width) / zoom_factor));
+      ClampTo<int>(floor((position.width * width) / zoom_factor));
+  int segment_left = ClampTo<int>(floor((position.left * width) / zoom_factor));
   int current_width = 0;
   int current_left = 0;
 
@@ -153,9 +154,8 @@ int MediaControlSliderElement::TrackWidth() {
 }
 
 float MediaControlSliderElement::ZoomFactor() const {
-  if (!GetDocument().GetLayoutView())
-    return 1;
-  return GetDocument().GetLayoutView()->ZoomFactor();
+  const LocalFrame* frame = GetDocument().GetFrame();
+  return frame ? frame->PageZoomFactor() : 1;
 }
 
 void MediaControlSliderElement::NotifyElementSizeChanged() {

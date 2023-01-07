@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "ash/login/ui/login_test_utils.h"
 #include "ash/login/ui/login_user_view.h"
 #include "base/bind.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
@@ -19,6 +20,12 @@ namespace {
 constexpr int kNonEmptySize = 20;
 
 class LoginPublicAccountUserViewTest : public LoginTestBase {
+ public:
+  LoginPublicAccountUserViewTest(const LoginPublicAccountUserViewTest&) =
+      delete;
+  LoginPublicAccountUserViewTest& operator=(
+      const LoginPublicAccountUserViewTest&) = delete;
+
  protected:
   LoginPublicAccountUserViewTest() = default;
   ~LoginPublicAccountUserViewTest() override = default;
@@ -72,8 +79,6 @@ class LoginPublicAccountUserViewTest : public LoginTestBase {
   }
 
   void OnPublicAccountTapped() { ++public_account_tap_count_; }
-
-  DISALLOW_COPY_AND_ASSIGN(LoginPublicAccountUserViewTest);
 };
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,10 +59,11 @@ function updateGCacheContents(gcacheContents, gcacheSummary) {
 
     // Add some suffix based on the type.
     var path = entry.path;
-    if (entry.is_directory)
+    if (entry.is_directory) {
       path += '/';
-    else if (entry.is_symbolic_link)
+    } else if (entry.is_symbolic_link) {
       path += '@';
+    }
 
     tr.appendChild(createElementFromText('td', path));
     tr.appendChild(createElementFromText('td', entry.size));
@@ -95,6 +96,10 @@ function updateVerboseLogging(enabled) {
   $('verbose-logging-toggle').checked = enabled;
 }
 
+function updateMirroring(enabled) {
+  $('mirroring-toggle').checked = enabled;
+}
+
 function updateStartupArguments(args) {
   $('startup-arguments-input').value = args;
 }
@@ -122,8 +127,9 @@ function updateInFlightOperations(inFlightOperations) {
   var existingNodes = container.childNodes;
   for (var i = existingNodes.length - 1; i >= 0; i--) {
     var node = existingNodes[i];
-    if (node.className == 'in-flight-operation')
+    if (node.className == 'in-flight-operation') {
       container.removeChild(node);
+    }
   }
 
   // Add in-flight operations.
@@ -213,6 +219,54 @@ function updateOtherServiceLogsUrl(url) {
 }
 
 /**
+ * Adds a new row to the syncing paths table upon successful completion.
+ * @param {string} path The path that was synced.
+ * @param {string} status The drive::FileError as a string.
+ */
+function onAddSyncPath(path, status) {
+  $('mirroring-path-status').textContent = status;
+  if (status !== 'FILE_ERROR_OK') {
+    return;
+  }
+
+  // Avoid adding paths to the table if they already exist.
+  if ($(`mirroring-${path}`)) {
+    return;
+  }
+
+  const newRow = document.createElement('tr');
+  newRow.id = `mirroring-${path}`;
+  const deleteButton = createElementFromText('button', 'Delete');
+  deleteButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    chrome.send('removeSyncPath', [path]);
+  });
+  const deleteCell = document.createElement('td');
+  deleteCell.appendChild(deleteButton);
+  newRow.appendChild(deleteCell);
+  const pathCell = createElementFromText('td', path);
+  newRow.appendChild(pathCell);
+  $('mirror-sync-paths').appendChild(newRow);
+}
+
+/**
+ * Remove a path from the syncing table.
+ * @param {string} path The path that was synced.
+ * @param {string} status The drive::FileError as a string.
+ */
+function onRemoveSyncPath(path, status) {
+  if (status !== 'FILE_ERROR_OK') {
+    return;
+  }
+
+  if (!$(`mirroring-${path}`)) {
+    return;
+  }
+
+  $(`mirroring-${path}`).remove();
+}
+
+/**
  * Creates an element named |elementName| containing the content |text|.
  * @param {string} elementName Name of the new element to be created.
  * @param {string} text Text to be contained in the new element.
@@ -235,12 +289,14 @@ function updateKeyValueList(ul, list) {
   for (var i = 0; i < list.length; i++) {
     var item = list[i];
     var text = item.key;
-    if (item.value != '')
+    if (item.value != '') {
       text += ': ' + item.value;
+    }
 
     var li = createElementFromText('li', text);
-    if (item.class)
+    if (item.class) {
       li.classList.add(item.class);
+    }
     ul.appendChild(li);
   }
 }
@@ -305,10 +361,20 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.send('setVerboseLoggingEnabled', [e.target.checked]);
   });
 
+  $('mirroring-toggle').addEventListener('change', function(e) {
+    chrome.send('setMirroringEnabled', [e.target.checked]);
+  });
+
   $('startup-arguments-form').addEventListener('submit', function(e) {
     e.preventDefault();
     $('arguments-status-text').textContent = 'applying...';
     chrome.send('setStartupArguments', [$('startup-arguments-input').value]);
+  });
+
+  $('mirror-path-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    $('mirroring-path-status').textContent = 'adding...';
+    chrome.send('addSyncPath', [$('mirror-path-input').value]);
   });
 
   $('button-enable-tracing').addEventListener('click', function() {

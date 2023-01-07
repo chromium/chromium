@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/atomicops.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 
@@ -20,8 +21,8 @@ struct dyld_interpose_tuple {
   dyld_interpose_tuple(T* replacement, T* replacee)
       : replacement(reinterpret_cast<const void*>(replacement)),
         replacee(reinterpret_cast<const void*>(replacee)) {}
-  const void* replacement;
-  const void* replacee;
+  raw_ptr<const void> replacement;
+  raw_ptr<const void> replacee;
 };
 
 using DispatchGetGlobalQueueFunc = dispatch_queue_t (*)(long id,
@@ -149,6 +150,10 @@ dispatch_queue_t GetGlobalQueueOverride(long identifier, unsigned long flags) {
 }  // namespace
 
 bool InitializeCoreAudioDispatchOverride() {
+  // Apple reports this issue is fixed in 11+.
+  if (base::mac::IsAtLeastOS11())
+    return true;
+
   if (g_dispatch_override_installed)
     return true;
 

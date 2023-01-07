@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,10 +70,6 @@ bool TlsClientConnection::Send(const void* data, size_t len) {
                                        ? Error::Code::kSocketClosedFailure
                                        : Error::Code::kSocketSendFailure) ==
          Error::Code::kNone;
-}
-
-openscreen::IPEndpoint TlsClientConnection::GetLocalEndpoint() const {
-  return local_address_;
 }
 
 openscreen::IPEndpoint TlsClientConnection::GetRemoteEndpoint() const {

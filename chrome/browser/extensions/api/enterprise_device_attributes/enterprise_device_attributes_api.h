@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,99 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_DEVICE_ATTRIBUTES_ENTERPRISE_DEVICE_ATTRIBUTES_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_DEVICE_ATTRIBUTES_ENTERPRISE_DEVICE_ATTRIBUTES_API_H_
 
-#include "build/chromeos_buildflags.h"
+#include "chromeos/crosapi/mojom/device_attributes.mojom.h"
+#include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_function_histogram_value.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api_lacros.h"
-#else
-#include "chrome/browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api_ash.h"
-#endif
+namespace extensions {
+
+// The implementation requires forwarding to ash via crosapi. This subclass is
+// used to reduce redundant code.
+class EnterpriseDeviceAttributesBase : public ExtensionFunction {
+ protected:
+  ~EnterpriseDeviceAttributesBase() override;
+
+  // Called asynchronously when crosapi returns the result.
+  void OnCrosapiResult(crosapi::mojom::DeviceAttributesStringResultPtr result);
+};
+
+class EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction
+    : public EnterpriseDeviceAttributesBase {
+ public:
+  EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction();
+
+ protected:
+  ~EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction() override;
+
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("enterprise.deviceAttributes.getDirectoryDeviceId",
+                             ENTERPRISE_DEVICEATTRIBUTES_GETDIRECTORYDEVICEID)
+};
+
+class EnterpriseDeviceAttributesGetDeviceSerialNumberFunction
+    : public EnterpriseDeviceAttributesBase {
+ public:
+  EnterpriseDeviceAttributesGetDeviceSerialNumberFunction();
+
+ protected:
+  ~EnterpriseDeviceAttributesGetDeviceSerialNumberFunction() override;
+
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION(
+      "enterprise.deviceAttributes.getDeviceSerialNumber",
+      ENTERPRISE_DEVICEATTRIBUTES_GETDEVICESERIALNUMBER)
+};
+
+class EnterpriseDeviceAttributesGetDeviceAssetIdFunction
+    : public EnterpriseDeviceAttributesBase {
+ public:
+  EnterpriseDeviceAttributesGetDeviceAssetIdFunction();
+
+ protected:
+  ~EnterpriseDeviceAttributesGetDeviceAssetIdFunction() override;
+
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("enterprise.deviceAttributes.getDeviceAssetId",
+                             ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEASSETID)
+};
+
+class EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction
+    : public EnterpriseDeviceAttributesBase {
+ public:
+  EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction();
+
+ protected:
+  ~EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction() override;
+
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION(
+      "enterprise.deviceAttributes.getDeviceAnnotatedLocation",
+      ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEANNOTATEDLOCATION)
+};
+
+class EnterpriseDeviceAttributesGetDeviceHostnameFunction
+    : public EnterpriseDeviceAttributesBase {
+ public:
+  EnterpriseDeviceAttributesGetDeviceHostnameFunction();
+
+ protected:
+  ~EnterpriseDeviceAttributesGetDeviceHostnameFunction() override;
+
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("enterprise.deviceAttributes.getDeviceHostname",
+                             ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEHOSTNAME)
+};
+
+}  //  namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_DEVICE_ATTRIBUTES_ENTERPRISE_DEVICE_ATTRIBUTES_API_H_

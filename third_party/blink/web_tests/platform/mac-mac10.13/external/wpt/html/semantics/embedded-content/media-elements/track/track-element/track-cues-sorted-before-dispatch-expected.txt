@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL All events are triggered in chronological order assert_equals: expected 14 but got 10
+Harness: the test ran to completion.
+

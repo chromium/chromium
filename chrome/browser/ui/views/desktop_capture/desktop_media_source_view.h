@@ -1,16 +1,17 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_SOURCE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_SOURCE_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -76,6 +77,9 @@ class DesktopMediaSourceView : public views::View {
   // Returns true if the source is selected.
   bool GetSelected() const;
 
+  // Clears selection from this item, or no-ops if it is not selected.
+  void ClearSelection();
+
   // views::View interface.
   views::View* GetSelectedViewForGroup(int group) override;
   bool IsGroupFocusTraversable() const override;
@@ -90,12 +94,12 @@ class DesktopMediaSourceView : public views::View {
   // (if any).
   void SetSelected(bool selected);
 
-  DesktopMediaListView* parent_;
+  raw_ptr<DesktopMediaListView> parent_;
   content::DesktopMediaID source_id_;
 
-  views::ImageView* icon_view_ = new views::ImageView;
-  views::ImageView* image_view_ = new views::ImageView;
-  views::Label* label_ = new views::Label;
+  raw_ptr<views::ImageView> icon_view_ = new views::ImageView;
+  raw_ptr<views::ImageView> image_view_ = new views::ImageView;
+  raw_ptr<views::Label> label_ = new views::Label;
 
   bool selected_;
 };

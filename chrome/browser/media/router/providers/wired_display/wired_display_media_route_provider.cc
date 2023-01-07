@@ -1,16 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/i18n/number_formatting.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver_factory.h"
@@ -18,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/route_request_result.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -36,7 +39,7 @@ MediaSinkInternal CreateSinkForDisplay(const Display& display,
       l10n_util::GetStringFUTF8(IDS_MEDIA_ROUTER_WIRED_DISPLAY_SINK_NAME,
                                 base::FormatNumber(display_index));
   MediaSink sink(sink_id, sink_name, SinkIconType::WIRED_DISPLAY,
-                 MediaRouteProviderId::WIRED_DISPLAY);
+                 mojom::MediaRouteProviderId::WIRED_DISPLAY);
   MediaSinkInternal sink_internal;
   sink_internal.set_sink(sink);
   return sink_internal;
@@ -60,8 +63,8 @@ bool CompareDisplays(int64_t primary_id,
 }  // namespace
 
 // static
-const MediaRouteProviderId WiredDisplayMediaRouteProvider::kProviderId =
-    MediaRouteProviderId::WIRED_DISPLAY;
+const mojom::MediaRouteProviderId WiredDisplayMediaRouteProvider::kProviderId =
+    mojom::MediaRouteProviderId::WIRED_DISPLAY;
 
 // static
 std::string WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(
@@ -73,7 +76,7 @@ std::string WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(
 std::string WiredDisplayMediaRouteProvider::GetRouteDescription(
     const std::string& media_source) {
   return l10n_util::GetStringFUTF8(
-      IDS_MEDIA_ROUTER_WIRED_DISPLAY_ROUTE_DESCRIPTION,
+      IDS_MEDIA_ROUTER_PRESENTATION_ROUTE_DESCRIPTION,
       base::UTF8ToUTF16(url::Origin::Create(GURL(media_source)).host()));
 }
 
@@ -83,33 +86,25 @@ WiredDisplayMediaRouteProvider::WiredDisplayMediaRouteProvider(
     Profile* profile)
     : receiver_(this, std::move(receiver)),
       media_router_(std::move(media_router)),
-      profile_(profile) {
-  media_router_->OnSinkAvailabilityUpdated(
-      kProviderId, mojom::MediaRouter::SinkAvailability::PER_SOURCE);
-}
+      profile_(profile) {}
 
-WiredDisplayMediaRouteProvider::~WiredDisplayMediaRouteProvider() {
-  if (is_observing_displays_) {
-    display::Screen::GetScreen()->RemoveObserver(this);
-    is_observing_displays_ = false;
-  }
-}
+WiredDisplayMediaRouteProvider::~WiredDisplayMediaRouteProvider() = default;
 
 void WiredDisplayMediaRouteProvider::CreateRoute(
     const std::string& media_source,
     const std::string& sink_id,
     const std::string& presentation_id,
     const url::Origin& origin,
-    int32_t tab_id,
+    int32_t frame_tree_node_id,
     base::TimeDelta timeout,
     bool off_the_record,
     CreateRouteCallback callback) {
   DCHECK(!base::Contains(presentations_, presentation_id));
-  base::Optional<Display> display = GetDisplayBySinkId(sink_id);
+  absl::optional<Display> display = GetDisplayBySinkId(sink_id);
   if (!display) {
-    std::move(callback).Run(base::nullopt, nullptr,
+    std::move(callback).Run(absl::nullopt, nullptr,
                             std::string("Display not found"),
-                            RouteRequestResult::SINK_NOT_FOUND);
+                            mojom::RouteRequestResultCode::SINK_NOT_FOUND);
     return;
   }
 
@@ -118,7 +113,7 @@ void WiredDisplayMediaRouteProvider::CreateRoute(
   // Use |presentation_id| as the route ID. This MRP creates only one route per
   // presentation ID.
   MediaRoute route(presentation_id, MediaSource(media_source), sink_id,
-                   GetRouteDescription(media_source), true, true);
+                   GetRouteDescription(media_source), true);
   route.set_local_presentation(true);
   route.set_off_the_record(profile_->IsOffTheRecord());
   route.set_controller_type(RouteControllerType::kGeneric);
@@ -128,8 +123,8 @@ void WiredDisplayMediaRouteProvider::CreateRoute(
   presentation.set_receiver(
       CreatePresentationReceiver(presentation_id, &presentation, *display));
   presentation.receiver()->Start(presentation_id, GURL(media_source));
-  std::move(callback).Run(route, nullptr, base::nullopt,
-                          RouteRequestResult::OK);
+  std::move(callback).Run(route, nullptr, absl::nullopt,
+                          mojom::RouteRequestResultCode::OK);
   NotifyRouteObservers();
 }
 
@@ -137,29 +132,14 @@ void WiredDisplayMediaRouteProvider::JoinRoute(
     const std::string& media_source,
     const std::string& presentation_id,
     const url::Origin& origin,
-    int32_t tab_id,
+    int32_t frame_tree_node_id,
     base::TimeDelta timeout,
     bool off_the_record,
     JoinRouteCallback callback) {
   std::move(callback).Run(
-      base::nullopt, nullptr,
+      absl::nullopt, nullptr,
       std::string("Join should be handled by the presentation manager"),
-      RouteRequestResult::UNKNOWN_ERROR);
-}
-
-void WiredDisplayMediaRouteProvider::ConnectRouteByRouteId(
-    const std::string& media_source,
-    const std::string& route_id,
-    const std::string& presentation_id,
-    const url::Origin& origin,
-    int32_t tab_id,
-    base::TimeDelta timeout,
-    bool off_the_record,
-    ConnectRouteByRouteIdCallback callback) {
-  std::move(callback).Run(
-      base::nullopt, nullptr,
-      std::string("Connect should be handled by the presentation manager"),
-      RouteRequestResult::UNKNOWN_ERROR);
+      mojom::RouteRequestResultCode::UNKNOWN_ERROR);
 }
 
 void WiredDisplayMediaRouteProvider::TerminateRoute(
@@ -168,14 +148,14 @@ void WiredDisplayMediaRouteProvider::TerminateRoute(
   auto it = presentations_.find(route_id);
   if (it == presentations_.end()) {
     std::move(callback).Run(std::string("Presentation not found"),
-                            RouteRequestResult::ROUTE_NOT_FOUND);
+                            mojom::RouteRequestResultCode::ROUTE_NOT_FOUND);
     return;
   }
 
   // The presentation will be removed from |presentations_| in the termination
   // callback of its receiver.
   it->second.receiver()->Terminate();
-  std::move(callback).Run(base::nullopt, RouteRequestResult::OK);
+  std::move(callback).Run(absl::nullopt, mojom::RouteRequestResultCode::OK);
 }
 
 void WiredDisplayMediaRouteProvider::SendRouteMessage(
@@ -198,10 +178,8 @@ void WiredDisplayMediaRouteProvider::StartObservingMediaSinks(
     return;
 
   // Start observing displays if |this| isn't already observing.
-  if (!is_observing_displays_) {
-    display::Screen::GetScreen()->AddObserver(this);
-    is_observing_displays_ = true;
-  }
+  if (!display_observer_)
+    display_observer_.emplace(this);
   sink_queries_.insert(media_source);
   UpdateMediaSinks(media_source);
 }
@@ -211,18 +189,12 @@ void WiredDisplayMediaRouteProvider::StopObservingMediaSinks(
   sink_queries_.erase(media_source);
 }
 
-void WiredDisplayMediaRouteProvider::StartObservingMediaRoutes(
-    const std::string& media_source) {
-  route_queries_.insert(media_source);
+void WiredDisplayMediaRouteProvider::StartObservingMediaRoutes() {
   std::vector<MediaRoute> route_list;
   for (const auto& presentation : presentations_)
     route_list.push_back(presentation.second.route());
-  media_router_->OnRoutesUpdated(kProviderId, route_list, media_source, {});
-}
 
-void WiredDisplayMediaRouteProvider::StopObservingMediaRoutes(
-    const std::string& media_source) {
-  route_queries_.erase(media_source);
+  media_router_->OnRoutesUpdated(kProviderId, route_list);
 }
 
 void WiredDisplayMediaRouteProvider::StartListeningForRouteMessages(
@@ -282,12 +254,11 @@ void WiredDisplayMediaRouteProvider::OnDisplayRemoved(
     const Display& old_display) {
   const std::string sink_id =
       WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(old_display);
-  auto it = std::find_if(
-      presentations_.begin(), presentations_.end(),
-      [&sink_id](
-          const std::pair<const std::string, Presentation>& presentation) {
-        return presentation.second.route().media_sink_id() == sink_id;
-      });
+  auto it =
+      base::ranges::find(presentations_, sink_id,
+                         [](const Presentations::value_type& presentation) {
+                           return presentation.second.route().media_sink_id();
+                         });
   if (it != presentations_.end())
     it->second.receiver()->ExitFullscreen();
   NotifySinkObservers();
@@ -309,7 +280,7 @@ Display WiredDisplayMediaRouteProvider::GetPrimaryDisplay() const {
 
 WiredDisplayMediaRouteProvider::Presentation::Presentation(
     const MediaRoute& route)
-    : route_(route), status_(base::in_place) {}
+    : route_(route), status_(absl::in_place) {}
 
 WiredDisplayMediaRouteProvider::Presentation::Presentation(
     Presentation&& other) = default;
@@ -350,14 +321,13 @@ void WiredDisplayMediaRouteProvider::NotifyRouteObservers() const {
   std::vector<MediaRoute> route_list;
   for (const auto& presentation : presentations_)
     route_list.push_back(presentation.second.route());
-  for (const auto& route_query : route_queries_)
-    media_router_->OnRoutesUpdated(kProviderId, route_list, route_query, {});
+
+  media_router_->OnRoutesUpdated(kProviderId, route_list);
 }
 
 void WiredDisplayMediaRouteProvider::NotifySinkObservers() {
   std::vector<MediaSinkInternal> sinks = GetSinks();
   device_count_metrics_.RecordDeviceCountsIfNeeded(sinks.size(), sinks.size());
-  ReportSinkAvailability(sinks);
   for (const auto& sink_query : sink_queries_)
     media_router_->OnSinksReceived(kProviderId, sink_query, sinks, {});
 }
@@ -396,14 +366,6 @@ std::vector<Display> WiredDisplayMediaRouteProvider::GetAvailableDisplays()
   // If all the displays are mirrored, the user should not be able to present to
   // them.
   return displays.size() == 1 ? std::vector<Display>() : displays;
-}
-
-void WiredDisplayMediaRouteProvider::ReportSinkAvailability(
-    const std::vector<MediaSinkInternal>& sinks) {
-  mojom::MediaRouter::SinkAvailability sink_availability =
-      sinks.empty() ? mojom::MediaRouter::SinkAvailability::UNAVAILABLE
-                    : mojom::MediaRouter::SinkAvailability::PER_SOURCE;
-  media_router_->OnSinkAvailabilityUpdated(kProviderId, sink_availability);
 }
 
 void WiredDisplayMediaRouteProvider::RemovePresentationById(
@@ -448,15 +410,12 @@ void WiredDisplayMediaRouteProvider::TerminatePresentationsOnDisplay(
     presentation_to_terminate->Terminate();
 }
 
-base::Optional<Display> WiredDisplayMediaRouteProvider::GetDisplayBySinkId(
+absl::optional<Display> WiredDisplayMediaRouteProvider::GetDisplayBySinkId(
     const std::string& sink_id) const {
   std::vector<Display> displays = GetAllDisplays();
-  auto it = std::find_if(displays.begin(), displays.end(),
-                         [&sink_id](const Display& display) {
-                           return GetSinkIdForDisplay(display) == sink_id;
-                         });
-  return it == displays.end() ? base::nullopt
-                              : base::make_optional<Display>(std::move(*it));
+  auto it = base::ranges::find(displays, sink_id, &GetSinkIdForDisplay);
+  return it == displays.end() ? absl::nullopt
+                              : absl::make_optional<Display>(std::move(*it));
 }
 
 }  // namespace media_router

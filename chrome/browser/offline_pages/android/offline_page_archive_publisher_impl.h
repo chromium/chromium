@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,10 @@
 #define CHROME_BROWSER_OFFLINE_PAGES_ANDROID_OFFLINE_PAGE_ARCHIVE_PUBLISHER_IMPL_H_
 
 #include <cstdint>
-#include <string>
 
-#include "base/callback.h"
-#include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_item.h"
-#include "components/offline_pages/core/offline_page_types.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -58,9 +55,12 @@ class OfflinePageArchivePublisherImpl : public OfflinePageArchivePublisher {
   void UnpublishArchives(
       const std::vector<PublishedArchiveId>& publish_ids) const override;
 
+  base::WeakPtr<OfflinePageArchivePublisher> GetWeakPtr() override;
+
  private:
-  ArchiveManager* archive_manager_;
-  Delegate* delegate_;
+  raw_ptr<ArchiveManager> archive_manager_;
+  raw_ptr<Delegate> delegate_;
+  base::WeakPtrFactory<OfflinePageArchivePublisher> weak_ptr_factory_{this};
 };
 
 }  // namespace offline_pages

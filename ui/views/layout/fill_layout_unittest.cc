@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/border.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -24,6 +26,9 @@ class FillLayoutTest : public testing::Test {
     layout_ = host_->SetLayoutManager(std::make_unique<FillLayout>());
     SetHostSize(kDefaultHostWidth, kDefaultHostHeight);
   }
+
+  FillLayoutTest(const FillLayoutTest&) = delete;
+  FillLayoutTest& operator=(const FillLayoutTest&) = delete;
 
  protected:
   // Convenience function to get the preferred size from |layout_|.
@@ -48,17 +53,14 @@ class FillLayoutTest : public testing::Test {
     host_->SetSize(gfx::Size(width, height));
   }
 
-  void SetHostInsets(int top, int left, int bottom, int right) {
-    host_->SetBorder(CreateEmptyBorder(gfx::Insets(top, left, bottom, right)));
+  void SetHostInsets(const gfx::Insets& insets) {
+    host_->SetBorder(CreateEmptyBorder(insets));
   }
 
   // The test target.
-  FillLayout* layout_ = nullptr;
+  raw_ptr<FillLayout> layout_ = nullptr;
 
   std::unique_ptr<View> host_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FillLayoutTest);
 };
 
 }  // namespace
@@ -84,7 +86,8 @@ TEST_F(FillLayoutTest, GetPreferredSizeWithInsets) {
   const int kRightInset = 7;
 
   AddChildView(kChildWidth, kChildHeight);
-  SetHostInsets(kTopInset, kLeftInset, kBottomInset, kRightInset);
+  SetHostInsets(
+      gfx::Insets::TLBR(kTopInset, kLeftInset, kBottomInset, kRightInset));
 
   EXPECT_EQ(gfx::Size(kChildWidth + kLeftInset + kRightInset,
                       kChildHeight + kTopInset + kBottomInset),
@@ -127,7 +130,8 @@ TEST_F(FillLayoutTest, GetPreferredHeightForWidthWithInsets) {
   const int kExpectedHeight = kChildHeight + kTopInset + kBottomInset;
 
   AddChildView(kChildWidth, kChildHeight);
-  SetHostInsets(kTopInset, kLeftInset, kBottomInset, kRightInset);
+  SetHostInsets(
+      gfx::Insets::TLBR(kTopInset, kLeftInset, kBottomInset, kRightInset));
 
   EXPECT_EQ(kExpectedHeight, GetPreferredHeightForWidth(0));
   EXPECT_EQ(kExpectedHeight, GetPreferredHeightForWidth(25));
@@ -145,13 +149,13 @@ TEST_F(FillLayoutTest, GetPreferredHeightForWidthWithMultipleChildren) {
 }
 
 TEST_F(FillLayoutTest, LayoutWithNoChildren) {
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
   // Makes sure there is no crash.
 }
 
 TEST_F(FillLayoutTest, LayoutWithOneChild) {
   View* const child = AddChildView(25, 50);
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
 
   EXPECT_EQ(gfx::Rect(0, 0, kDefaultHostWidth, kDefaultHostHeight),
             child->bounds());
@@ -166,8 +170,9 @@ TEST_F(FillLayoutTest, LayoutWithInsets) {
   const int kRightInset = 7;
 
   View* const child = AddChildView(kChildWidth, kChildHeight);
-  SetHostInsets(kTopInset, kLeftInset, kBottomInset, kRightInset);
-  host_->Layout();
+  SetHostInsets(
+      gfx::Insets::TLBR(kTopInset, kLeftInset, kBottomInset, kRightInset));
+  test::RunScheduledLayout(host_.get());
 
   EXPECT_EQ(gfx::Rect(kLeftInset, kTopInset,
                       kDefaultHostWidth - kLeftInset - kRightInset,
@@ -182,7 +187,7 @@ TEST_F(FillLayoutTest, LayoutMultipleChildren) {
 
   const gfx::Rect kExpectedBounds(0, 0, kDefaultHostWidth, kDefaultHostHeight);
 
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
 
   EXPECT_EQ(kExpectedBounds, child_1->bounds());
   EXPECT_EQ(kExpectedBounds, child_2->bounds());
@@ -196,7 +201,7 @@ TEST_F(FillLayoutTest, LayoutIgnoreView) {
 
   layout_->SetChildViewIgnoredByLayout(child_3, true);
   EXPECT_EQ(gfx::Size(10, 50), GetPreferredSize());
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
 
   const gfx::Size kExpectedSize(kDefaultHostWidth, kDefaultHostHeight);
   EXPECT_EQ(kExpectedSize, child_1->size());
@@ -212,7 +217,7 @@ TEST_F(FillLayoutTest, LayoutIgnoresHiddenView) {
   layout_->SetIncludeHiddenViews(false);
 
   EXPECT_EQ(gfx::Size(10, 50), GetPreferredSize());
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
 
   const gfx::Size kExpectedSize(kDefaultHostWidth, kDefaultHostHeight);
   EXPECT_EQ(kExpectedSize, child_1->size());
@@ -227,7 +232,7 @@ TEST_F(FillLayoutTest, LayoutIncludesHiddenView) {
   child_3->SetVisible(false);
 
   EXPECT_EQ(gfx::Size(25, 50), GetPreferredSize());
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
 
   const gfx::Size kExpectedSize(kDefaultHostWidth, kDefaultHostHeight);
   EXPECT_EQ(kExpectedSize, child_1->size());

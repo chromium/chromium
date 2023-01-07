@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,6 +42,10 @@ namespace storage_monitor {
 class StorageMonitorWinTest : public testing::Test {
  public:
   StorageMonitorWinTest();
+
+  StorageMonitorWinTest(const StorageMonitorWinTest&) = delete;
+  StorageMonitorWinTest& operator=(const StorageMonitorWinTest&) = delete;
+
   ~StorageMonitorWinTest() override;
 
  protected:
@@ -67,14 +72,12 @@ class StorageMonitorWinTest : public testing::Test {
   std::unique_ptr<TestStorageMonitorWin> monitor_;
 
   // Weak pointer; owned by the device notifications class.
-  TestVolumeMountWatcherWin* volume_mount_watcher_;
+  raw_ptr<TestVolumeMountWatcherWin> volume_mount_watcher_;
 
   MockRemovableStorageObserver observer_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageMonitorWinTest);
 };
 
 StorageMonitorWinTest::StorageMonitorWinTest() {
@@ -84,9 +87,11 @@ StorageMonitorWinTest::~StorageMonitorWinTest() {
 }
 
 void StorageMonitorWinTest::SetUp() {
-  volume_mount_watcher_ = new TestVolumeMountWatcherWin;
-  monitor_.reset(new TestStorageMonitorWin(volume_mount_watcher_,
-                                           new TestPortableDeviceWatcherWin));
+  auto volume_mount_watcher = std::make_unique<TestVolumeMountWatcherWin>();
+  volume_mount_watcher_ = volume_mount_watcher.get();
+  monitor_ = std::make_unique<TestStorageMonitorWin>(
+      std::move(volume_mount_watcher),
+      std::make_unique<TestPortableDeviceWatcherWin>());
 
   monitor_->Init();
   content::RunAllTasksUntilIdle();
@@ -104,7 +109,8 @@ void StorageMonitorWinTest::TearDown() {
 
 void StorageMonitorWinTest::PreAttachDevices() {
   monitor_.reset();
-  volume_mount_watcher_ = new TestVolumeMountWatcherWin;
+  auto volume_mount_watcher = std::make_unique<TestVolumeMountWatcherWin>();
+  volume_mount_watcher_ = volume_mount_watcher.get();
   volume_mount_watcher_->SetAttachedDevicesFake();
 
   int expect_attach_calls = 0;
@@ -118,8 +124,9 @@ void StorageMonitorWinTest::PreAttachDevices() {
       expect_attach_calls++;
   }
 
-  monitor_.reset(new TestStorageMonitorWin(volume_mount_watcher_,
-                                           new TestPortableDeviceWatcherWin));
+  monitor_ = std::make_unique<TestStorageMonitorWin>(
+      std::move(volume_mount_watcher),
+      std::make_unique<TestPortableDeviceWatcherWin>());
 
   monitor_->AddObserver(&observer_);
   monitor_->Init();

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/dev/ppb_video_decoder_dev.h"
 #include "ppapi/shared_impl/resource.h"
 #include "ppapi/shared_impl/tracked_callback.h"
@@ -33,6 +32,10 @@ class PPAPI_SHARED_EXPORT PPB_VideoDecoder_Shared
  public:
   explicit PPB_VideoDecoder_Shared(PP_Instance instance);
   explicit PPB_VideoDecoder_Shared(const HostResource& host_resource);
+
+  PPB_VideoDecoder_Shared(const PPB_VideoDecoder_Shared&) = delete;
+  PPB_VideoDecoder_Shared& operator=(const PPB_VideoDecoder_Shared&) = delete;
+
   ~PPB_VideoDecoder_Shared() override;
 
   // Resource overrides.
@@ -76,8 +79,6 @@ class PPAPI_SHARED_EXPORT PPB_VideoDecoder_Shared
   // In the out-of-process case, Graphics3D's gles2_impl() exists in the plugin
   // process only, so gles2_impl_ is NULL in that case.
   gpu::gles2::GLES2Implementation* gles2_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_VideoDecoder_Shared);
 };
 
 }  // namespace ppapi

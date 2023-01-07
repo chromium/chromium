@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,21 +12,22 @@
 #include "chrome/browser/extensions/settings_api_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_message_bubble_bridge.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
-#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/navigation_entry.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
 
 namespace extensions {
@@ -35,7 +36,7 @@ namespace {
 
 // Whether the NTP post-install UI is enabled. By default, this is limited to
 // Windows, Mac, and ChromeOS, but can be overridden for testing.
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 bool g_ntp_post_install_ui_enabled = true;
 #else
 bool g_ntp_post_install_ui_enabled = false;
@@ -48,7 +49,7 @@ bool g_ntp_post_install_ui_enabled = false;
 // false (and keep the logic around for when/if we decide to expand the warning
 // treatment to Linux).
 bool g_acknowledge_existing_ntp_extensions =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     true;
 #else
     false;
@@ -59,7 +60,7 @@ bool g_acknowledge_existing_ntp_extensions =
 const char kDidAcknowledgeExistingNtpExtensions[] =
     "ack_existing_ntp_extensions";
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 void ShowSettingsApiBubble(SettingsApiOverrideType type,
                            Browser* browser) {
   ToolbarActionsModel* model = ToolbarActionsModel::Get(browser->profile());
@@ -75,7 +76,7 @@ void ShowSettingsApiBubble(SettingsApiOverrideType type,
   settings_api_bubble->SetIsActiveBubble();
   std::unique_ptr<ToolbarActionsBarBubbleDelegate> bridge(
       new ExtensionMessageBubbleBridge(std::move(settings_api_bubble)));
-  browser->window()->GetExtensionsContainer()->ShowToolbarActionBubbleAsync(
+  browser->window()->GetExtensionsContainer()->ShowToolbarActionBubble(
       std::move(bridge));
 }
 #endif
@@ -124,7 +125,7 @@ void RegisterSettingsOverriddenUiPrefs(PrefRegistrySimple* registry) {
 }
 
 void MaybeShowExtensionControlledHomeNotification(Browser* browser) {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   ShowSettingsApiBubble(BUBBLE_TYPE_HOME_PAGE, browser);
 #endif
 }
@@ -132,7 +133,7 @@ void MaybeShowExtensionControlledHomeNotification(Browser* browser) {
 void MaybeShowExtensionControlledSearchNotification(
     content::WebContents* web_contents,
     AutocompleteMatch::Type match_type) {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (!AutocompleteMatch::IsSearchType(match_type) ||
       match_type == AutocompleteMatchType::SEARCH_OTHER_ENGINE) {
     return;
@@ -142,23 +143,17 @@ void MaybeShowExtensionControlledSearchNotification(
   if (!browser)
     return;
 
-  if (base::FeatureList::IsEnabled(
-          features::kExtensionSettingsOverriddenDialogs)) {
-    base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
-        settings_overridden_params::GetSearchOverriddenParams(
-            browser->profile());
-    if (!params)
-      return;
+  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
+      settings_overridden_params::GetSearchOverriddenParams(browser->profile());
+  if (!params)
+    return;
 
-    auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
-        std::move(*params), browser->profile());
-    if (!dialog->ShouldShow())
-      return;
+  auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
+      std::move(*params), browser->profile());
+  if (!dialog->ShouldShow())
+    return;
 
-    chrome::ShowExtensionSettingsOverriddenDialog(std::move(dialog), browser);
-  } else {
-    ShowSettingsApiBubble(BUBBLE_TYPE_SEARCH_ENGINE, browser);
-  }
+  ShowSettingsOverriddenDialog(std::move(dialog), browser);
 #endif
 }
 
@@ -196,21 +191,17 @@ void MaybeShowExtensionControlledNewTabPage(
   if (model->has_active_bubble())
     return;
 
-  if (base::FeatureList::IsEnabled(
-          features::kExtensionSettingsOverriddenDialogs)) {
-    base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
-        settings_overridden_params::GetNtpOverriddenParams(profile);
-    if (!params)
-      return;
-
-    auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
-        std::move(*params), profile);
-    if (!dialog->ShouldShow())
-      return;
-
-    chrome::ShowExtensionSettingsOverriddenDialog(std::move(dialog), browser);
+  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
+      settings_overridden_params::GetNtpOverriddenParams(profile);
+  if (!params)
     return;
-  }
+
+  auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
+      std::move(*params), profile);
+  if (!dialog->ShouldShow())
+    return;
+
+  ShowSettingsOverriddenDialog(std::move(dialog), browser);
 }
 
 }  // namespace extensions

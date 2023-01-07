@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,16 @@
 #include <jni.h>
 #include <string>
 
-#include "base/macros.h"
-
 // Provides access to the locale specific customizations on Android.
 class LocaleManager {
  public:
+  LocaleManager() = delete;
+  LocaleManager(const LocaleManager&) = delete;
+  LocaleManager& operator=(const LocaleManager&) = delete;
+
   static std::string GetYandexReferralID();
   static std::string GetMailRUReferralID();
   static void RecordUserTypeMetrics();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LocaleManager);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_LOCALE_LOCALE_MANAGER_H_

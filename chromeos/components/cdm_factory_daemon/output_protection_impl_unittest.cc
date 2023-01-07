@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/output_protection.mojom.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,8 +52,6 @@ class MockDisplaySystemDelegate
   MOCK_METHOD(void,
               UnregisterClient,
               (display::ContentProtectionManager::ClientId));
-  MOCK_METHOD(void, AddObserver, (display::DisplayObserver*));
-  MOCK_METHOD(void, RemoveObserver, (display::DisplayObserver*));
   MOCK_METHOD(const std::vector<display::DisplaySnapshot*>&,
               cached_displays,
               (),
@@ -77,7 +76,7 @@ class OutputProtectionImplTest : public testing::Test {
         display::DISPLAY_CONNECTION_TYPE_HDMI,
         display::DISPLAY_CONNECTION_TYPE_DISPLAYPORT,
         display::DISPLAY_CONNECTION_TYPE_VGA};
-    for (size_t i = 0; i < base::size(kDisplayIds); ++i) {
+    for (size_t i = 0; i < std::size(kDisplayIds); ++i) {
       displays_[i] = display::FakeDisplaySnapshot::Builder()
                          .SetId(kDisplayIds[i])
                          .SetType(conn_types[i])
@@ -88,12 +87,11 @@ class OutputProtectionImplTest : public testing::Test {
     UpdateDisplays(2);
 
     EXPECT_CALL(*delegate_, RegisterClient())
-        .WillOnce(Return(base::Optional<uint64_t>(kFakeClientId)));
-    EXPECT_CALL(*delegate_, AddObserver(_));
+        .WillOnce(Return(absl::optional<uint64_t>(kFakeClientId)));
   }
 
   void UpdateDisplays(size_t count) {
-    ASSERT_LE(count, base::size(displays_));
+    ASSERT_LE(count, std::size(displays_));
 
     cached_displays_.clear();
     for (size_t i = 0; i < count; ++i)
@@ -102,7 +100,6 @@ class OutputProtectionImplTest : public testing::Test {
 
   ~OutputProtectionImplTest() override {
     EXPECT_CALL(*delegate_, UnregisterClient(_));
-    EXPECT_CALL(*delegate_, RemoveObserver(_));
     output_protection_mojo_.reset();
     base::RunLoop().RunUntilIdle();
   }
@@ -136,8 +133,8 @@ class OutputProtectionImplTest : public testing::Test {
   }
 
   mojo::Remote<OutputProtection> output_protection_mojo_;
-  MockDisplaySystemDelegate* delegate_;  // Not owned.
-  std::unique_ptr<display::DisplaySnapshot> displays_[base::size(kDisplayIds)];
+  raw_ptr<MockDisplaySystemDelegate> delegate_;  // Not owned.
+  std::unique_ptr<display::DisplaySnapshot> displays_[std::size(kDisplayIds)];
   std::vector<display::DisplaySnapshot*> cached_displays_;
 
  private:
@@ -202,7 +199,7 @@ TEST_F(OutputProtectionImplTest, ApplyDoesNotAggregateTypes) {
       display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_1,
       display::CONTENT_PROTECTION_METHOD_NONE};
 
-  for (size_t i = 0; i < base::size(applied_types); ++i) {
+  for (size_t i = 0; i < std::size(applied_types); ++i) {
     ExpectProtectionCall(kDisplayIds[0], expected_types[i], true);
 
     base::MockCallback<OutputProtection::EnableProtectionCallback>

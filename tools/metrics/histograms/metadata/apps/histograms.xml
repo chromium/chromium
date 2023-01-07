@@ -1,0 +1,2856 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Apps histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="AppType">
+  <variant name="Arc" summary="Android apps"/>
+  <variant name="Borealis" summary="Borealis apps"/>
+  <variant name="BuiltIn" summary="BuiltIn apps"/>
+  <variant name="ChromeApp" summary="Chrome apps"/>
+  <variant name="ChromeBrowser" summary="Chrome browsers"/>
+  <variant name="Crostini" summary="Crostini apps"/>
+  <variant name="Extension" summary="Browser extensions"/>
+  <variant name="MacOs" summary="MacOs apps"/>
+  <variant name="PluginVm" summary="Plugin VM app"/>
+  <variant name="RemoteApp" summary="Remote apps"/>
+  <variant name="StandaloneBrowser" summary="Standalone browsers"/>
+  <variant name="StandaloneBrowserChromeApp"
+      summary="Chrome apps hosted by lacros."/>
+  <variant name="StandaloneBrowserExtension"
+      summary="Extension hosted by lacros."/>
+  <variant name="StandaloneBrowserWebApp" summary="Web apps hosted by lacros."/>
+  <variant name="SystemWebApp" summary="System web apps"/>
+  <variant name="WebApp" summary="Web apps"/>
+</variants>
+
+<variants name="AppTypeV2">
+  <variant name="Arc" summary="Android apps"/>
+  <variant name="Borealis" summary="Borealis apps"/>
+  <variant name="BuiltIn" summary="BuiltIn apps"/>
+  <variant name="ChromeAppTab" summary="Chrome apps opened in tabs"/>
+  <variant name="ChromeAppWindow"
+      summary="Chrome apps opened in standalone windows"/>
+  <variant name="ChromeBrowser" summary="Chrome browsers"/>
+  <variant name="Crostini" summary="Crostini apps"/>
+  <variant name="Extension" summary="Browser extensions"/>
+  <variant name="MacOs" summary="MacOs apps"/>
+  <variant name="PluginVm" summary="Plugin VM app"/>
+  <variant name="RemoteApp" summary="Remote apps"/>
+  <variant name="StandaloneBrowser" summary="Standalone browsers"/>
+  <variant name="StandaloneBrowserChromeApp"
+      summary="Chrome apps hosted by lacros."/>
+  <variant name="StandaloneBrowserChromeAppTab"
+      summary="Chrome apps opened in Standalone browser tabs."/>
+  <variant name="StandaloneBrowserChromeAppWindow"
+      summary="Chrome apps opened in Standalone browser windows."/>
+  <variant name="StandaloneBrowserExtension"
+      summary="Extension hosted by lacros."/>
+  <variant name="StandaloneBrowserWebAppTab"
+      summary="Web apps opened in Standalone browser tabs."/>
+  <variant name="StandaloneBrowserWebAppWindow"
+      summary="Web apps opened in Standalone browser windows."/>
+  <variant name="SystemWebApp" summary="System web apps"/>
+  <variant name="WebAppTab" summary="Web apps opened in tabs"/>
+  <variant name="WebAppWindow" summary="Web apps opened in standalone windows"/>
+</variants>
+
+<variants name="AppUIComponent">
+  <variant name=".AppGrid" summary="App - Fullscreen Launcher"/>
+  <variant name=".Desktop" summary="Desktop"/>
+  <variant name=".ProductivityLauncherAppGrid"
+      summary="App - Productivity Launcher"/>
+  <variant name=".ProductivityLauncherRecentApp"
+      summary="Recent App, Productivity Launcher"/>
+  <variant name=".SearchResult" summary="Launcher App Search Result"/>
+  <variant name=".Shelf" summary="Shelf"/>
+  <variant name=".ShelfButton" summary="ShelfButton"/>
+  <variant name=".SuggestedAppFullscreen"
+      summary="Suggested App, Fullscreen Launcher"/>
+</variants>
+
+<variants name="HomeLauncherVisibility">
+  <variant name=".ClamshellMode.LauncherHidden"
+      summary="Home Launcher was hidden during this animation on clamshell
+               mode."/>
+  <variant name=".ClamshellMode.LauncherVisible"
+      summary="Home Launcher was visible during this animation on clamshell
+               mode."/>
+  <variant name=".TabletMode.LauncherHidden"
+      summary="Home Launcher was hidden during this animation on tablet mode."/>
+  <variant name=".TabletMode.LauncherVisible"
+      summary="Home Launcher was visible during this animation on tablet
+               mode."/>
+</variants>
+
+<variants name="InstallReason">
+  <variant name="CommandLine" summary="Installed by a command line argument"/>
+  <variant name="Kiosk" summary="Installed by Kiosk on Chrome OS"/>
+  <variant name="Oem" summary="Installed by an OEM"/>
+  <variant name="Policy" summary="Installed by policy"/>
+  <variant name="Preload" summary="Preinstalled by default"/>
+  <variant name="SubApp" summary="Installed by SubApp API"/>
+  <variant name="Sync" summary="Installed by sync"/>
+  <variant name="System" summary="Installed with the system"/>
+  <variant name="Unknown" summary="Installed with unknown source"/>
+  <variant name="User" summary="Installed by user"/>
+</variants>
+
+<variants name="LauncherUISurface">
+  <variant name=".AppsSearch" summary="App tiles search"/>
+  <variant name=".AppsZeroState" summary="App tiles zero-state"/>
+  <variant name=".Chip" summary="Suggestion chips"/>
+  <variant name=".ListSearch" summary="Results list search"/>
+  <variant name=".ListZeroState" summary="Results list zero-state"/>
+</variants>
+
+<variants name="LockScreenAppDataItemOperation">
+  <variant name=".DeleteItem" summary=""/>
+  <variant name=".GetRegisteredItems" summary=""/>
+  <variant name=".ReadItem" summary=""/>
+  <variant name=".RegisterItem" summary=""/>
+  <variant name=".WriteItem" summary=""/>
+</variants>
+
+<variants name="SearchAction">
+  <variant name="Abandon" summary="abandon"/>
+  <variant name="Ignore" summary="ignore"/>
+  <variant name="Impression" summary="impression"/>
+  <variant name="Launch" summary="launch"/>
+</variants>
+
+<variants name="SearchView">
+  <variant name="AnswerCard" summary="answer card"/>
+  <variant name="AppsSearch" summary="app tiles search"/>
+  <variant name="AppsZeroState" summary="app tiles zero-state"/>
+  <variant name="Chip" summary="suggestion chips"/>
+  <variant name="Continue" summary="continue section"/>
+  <variant name="ListSearch" summary="results list search"/>
+  <variant name="ListZeroState" summary="results list zero-state"/>
+  <variant name="RecentApps" summary="recent apps row"/>
+</variants>
+
+<variants name="TabletOrClamshellMode">
+  <variant name=".ClamshellMode" summary="Clamshell Mode Enabled"/>
+  <variant name=".TabletMode" summary="Tablet Mode Enabled"/>
+</variants>
+
+<histogram name="AppManagement.AppDetailViews" enum="AppManagementUserAction"
+    expires_after="2023-03-01">
+<!-- Name completed by histogram_suffixes name="AppType" -->
+
+  <owner>jshikaram@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    The actions taken by the user when they are viewing the app details of an
+    app in App Management (chrome://os-settings/app-management). On
+    Windows/Linux/MacOS AppManagement.AppDetailViews.WebApp is the view on
+    chrome://app-settings page.
+  </summary>
+</histogram>
+
+<histogram name="AppManagement.EntryPoints" enum="AppManagementEntryPoint"
+    expires_after="2023-03-01">
+  <owner>jshikaram@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>The ways the user opens up the App Management interface.</summary>
+</histogram>
+
+<histogram name="Apps.ActivatedCount.{AppType}" units="units"
+    expires_after="2022-07-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Recorded the app window activated times for {AppType} in Chrome OS. This is
+    logged when more than 24 hours pass after last log, or during the system
+    startup phase if more than 24 hours passed after last log.
+  </summary>
+  <token key="AppType" variants="AppType"/>
+</histogram>
+
+<histogram name="Apps.AppInfoDialog.CreateExtensionShortcutSuccess"
+    enum="Boolean" expires_after="2021-12-12">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of creating shortcuts for an Extension, specifically from
+    the user clicking on &quot;Create Shortcut&quot; on the chrome://apps page,
+    in the right click menu of the respective Extension icon.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppInfoDialog.CreateWebAppShortcutSuccess" enum="Boolean"
+    expires_after="2023-03-19">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of creating shortcuts for a WebApp, specifically from the
+    user clicking on &quot;Create Shortcut&quot; on the chrome://apps page, in
+    the right click menu of the respective WebApp icon.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppLaunch" enum="AppLaunch" expires_after="2023-03-19">
+  <owner>tapted@chromium.org</owner>
+  <owner>benwells@chromium.org</owner>
+  <summary>
+    The number of times v2 packaged apps are launched grouped by
+    extension_misc::AppLaunchBuckets. See also Extensions.AppLaunch.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppLaunchPerAppType" enum="AppType"
+    expires_after="2023-02-12">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records an app launch grouped by app type. This is recorded when an app is
+    launched.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppLaunchPerAppTypeV2" enum="AppTypeV2"
+    expires_after="2023-02-12">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records an app launch grouped by app type V2. This is recorded when an app
+    is launched.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppLaunchSource" enum="LaunchSource"
+    expires_after="2023-02-12">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>Records an app launch grouped by launch source.</summary>
+</histogram>
+
+<histogram name="Apps.AppList.AggregatedMlAppRankFail" units="units"
+    expires_after="M92">
+  <owner>pdyson@chromium.org</owner>
+  <summary>
+    The number of apps the were not able to be ranked by the Aggregated ML app
+    ranker (Top Cat).
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.AggregatedMlAppRankSuccess" units="units"
+    expires_after="M92">
+  <owner>pdyson@chromium.org</owner>
+  <summary>
+    The number of apps successfully ranked by the Aggregated ML app ranker (Top
+    Cat).
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.AggregatedSearchRankerError"
+    enum="AggregatedSearchRankerError" expires_after="2020-12-01">
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    The type of errors that occur during the inference of Search Ranking
+    aggregated model.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.AnswerCardSearchProvider.SearchAnswerLoadingTime"
+    units="ms" expires_after="2021-03-15">
+  <owner>jennyz@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The time between sending an answer card request and receiving the
+    notification that answer card has finished loading.
+  </summary>
+</histogram>
+
+<histogram
+    name="Apps.AppList.AnswerCardSearchProvider.SearchAnswerNavigationTime"
+    units="ms" expires_after="2021-04-04">
+  <owner>jennyz@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The time between sending an answer card request and receiving the
+    notification navigation has been finished with a valid answer card.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.AppLaunched{TabletOrClamshell}"
+    enum="AppListLaunchedFrom" expires_after="2022-12-19">
+  <owner>gzadina@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The number of apps launched from different parts of the launcher (apps grid,
+    search results UI, recent apps), and the shelf. Values are incremented each
+    time the user launches an app. Each bucket represents where in the launcher
+    or shelf the app was launched from. Recorded for {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram name="Apps.AppList.AppListSortDiscoveryDurationAfterActivation"
+    units="ms" expires_after="2023-02-19">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The time duration between the earliest user session activation with the app
+    list sort enabled and the first sort usage. This metric is recorded when app
+    list sort is triggered.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.AppSearchProvider.QueryTime" units="ms"
+    expires_after="2023-06-24">
+  <owner>wrong@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The time between sending a non-empty query to AppSearchProvider and
+    receiving results back.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.AppSearchProvider.ZeroStateLatency" units="ms"
+    expires_after="2022-05-01">
+  <owner>jennyz@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The time between sending an empty query to AppSearchProvider and receiving
+    Zero State recommendation results back.
+  </summary>
+</histogram>
+
+<histogram
+    name="Apps.AppList.CardifiedStateAnimation.AnimationSmoothness{EnterOrExitCardifiedState}"
+    units="%" expires_after="2022-12-02">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations of entering or exiting the cardified state
+    in the apps grid. 100% represents ideally smooth 60 frames per second. 50%
+    represents only 30 frames per second is achieved during the animations. 0%
+    should not happen. This metric is recorded one time per apps grid page each
+    time we enter or exit cardified state in the apps grid.
+    {EnterOrExitCardifiedState}
+  </summary>
+  <token key="EnterOrExitCardifiedState">
+    <variant name=""/>
+    <variant name=".EnterCardifiedState"
+        summary="Triggered by entering cardified state in the app list"/>
+    <variant name=".ExitCardifiedState"
+        summary="Triggered by exiting cardified state in the app list"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppList.ContinueIsDriveEnabled" enum="BooleanEnabled"
+    expires_after="2023-02-09">
+  <owner>tby@chromium.org</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    Recorded once upon login, records the state of the Disconnect Google Drive
+    Account setting.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ContinueResultCount.{Type}" units="count"
+    expires_after="2023-02-09">
+  <obsolete>
+    Deprecated Feb 2022 in favor of
+    Apps.AppList.Search.ContinueResultCount.Type. This histogram was recorded in
+    the wrong place to be useful for counting how many Continue results the user
+    sees, vs. how many the search backend is prepared to show.
+  </obsolete>
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Recorded on the first publication of zero-state results when opening the
+    launcher. Records the number of {Type} results that are ready for display.
+  </summary>
+  <token key="Type">
+    <variant name="Drive" summary="Count of Drive results"/>
+    <variant name="Local" summary="Count of local file results"/>
+    <variant name="Total" summary="Count of all results"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppList.ContinueResultRemoved"
+    enum="LauncherContinueSectionResultType" expires_after="2023-02-14">
+  <obsolete>
+    Deprecated April 2022 in favor of
+    Apps.AppList.Search.ContinueResultRemoved.Type. This histogram was recorded
+    wrongly with the missing Search prefic. It is missing data for drive backed
+    files.
+  </obsolete>
+  <owner>anasalazar@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records the type of a zero-state result when it is removed from the Continue
+    section. Recorded once every time a result is removed. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ContinueSectionHiddenByUser{TabletOrClamshell}"
+    enum="Boolean" expires_after="2023-05-01">
+  <owner>jamescook@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Whether the user has manually hidden the productivity launcher
+    &quot;continue where you left off&quot; section. Recorded once per launcher
+    open. Split by clamshell vs. tablet mode.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram name="Apps.AppList.DriveSearchProvider.Latency" units="ms"
+    expires_after="2023-02-12">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Latency in milliseconds from the beginning of a launcher search query to
+    Drive file results being returned. Logged once per Drive search query.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.DriveSearchProvider.Relevance" units="score"
+    expires_after="2022-11-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Relevance score for a Drive file result that was returned in response to a
+    search query. Logged once for each file per search query.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.DriveSearchProvider.Status"
+    enum="DriveSearchProviderStatus" expires_after="2023-02-12">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    The outcome of a query for Drive file results. Logged once per Drive search
+    query.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.DriveZeroStateProvider.Latency" units="ms"
+    expires_after="2023-02-12">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    The time between sending a zero state query and receiving file
+    recommendations back from DriveZeroStateProvider.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.DriveZeroStateProvider.Status"
+    enum="DriveZeroStateProviderStatus" expires_after="2023-02-12">
+  <obsolete>
+    Deprecated September 2022, now that it's replaced by
+    Ash.Search.DriveFileSuggestDataValidation.Status
+  </obsolete>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    The outcome of a query for search results from DriverZeroStateProvider.
+    Recorded once per zero-state query.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.FileResult.DefaultRelevanceUsed"
+    enum="BooleanUsage" expires_after="2022-11-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Whether or not the default relevance was used when calculating the relevance
+    score between a filename and the search query. The default relevance is used
+    as a fallback whenever the relevance calculation fails. Logged once per
+    relevance calculation.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.FileResult.ThumbnailLoadedError"
+    enum="PlatformFileError" expires_after="2022-11-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Result of requesting a thumbnail icon for some types of file results in the
+    Chrome OS launcher. Emitted on each attempt to load a thumbnail, if it
+    results in an error.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.FileSearchProvider.Latency" units="ms"
+    expires_after="2023-03-05">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Latency in milliseconds from the beginning of a launcher search query to
+    local file results being returned. Logged once per file search query.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.FileSearchProvider.Relevance" units="score"
+    expires_after="2023-02-12">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Relevance score for a local file result that was returned in response to a
+    search query. Logged once for each file per search query.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.FileSearchProvider.TimedOut"
+    enum="BooleanTimedOut" expires_after="2023-03-05">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Whether or not local file search was exited early due to a time out. Logged
+    once per file search query.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.GameProvider.SearchStatus"
+    enum="GameProviderSearchStatus" expires_after="2023-02-28">
+  <owner>wrong@chromium.org</owner>
+  <owner>amandadeacon@chromium.org</owner>
+  <summary>
+    The outcome of a query for game results. Logged once per game search query.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.GameProvider.UpdateStatus" enum="DiscoveryError"
+    expires_after="2023-02-28">
+  <owner>wrong@chromium.org</owner>
+  <owner>amandadeacon@chromium.org</owner>
+  <summary>
+    The outcome of an index update from the Discovery service. Logged once per
+    update.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.GameResult.IconLoadStatus" enum="DiscoveryError"
+    expires_after="2023-02-28">
+  <owner>wrong@chromium.org</owner>
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>chenjih@chromium.org</owner>
+  <summary>
+    The outcome of the icon load from the Discovery service. Logged once per
+    icon loaded in game result.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.HelpAppProvider.ListSearchResultState"
+    enum="HelpAppProviderListSearchResultState" expires_after="2022-10-19">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>zufeng@google.com</owner>
+  <summary>
+    The end result of list searches by the provider for the help app in the CrOS
+    launcher. Logged once per time a list search finishes. Not logged if the
+    search is canceled by a new search starting. Not logged for the help app
+    provider's suggestion chips. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.HelpAppProvider.QueryTime" units="ms"
+    expires_after="2022-10-19">
+  <owner>wrong@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>zufeng@google.com</owner>
+  <summary>
+    The latency of a search in the HelpAppProvider. Recorded each time a search
+    is completed, even if it returns no results. Not recorded if the query is
+    too short to perform a search at all. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ItemSuggestCache.ResponseSize" units="bytes"
+    expires_after="2023-02-26">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Records the size of a response from the ItemSuggest API. Reported once per
+    successful response. Will not be reported if the response exceeds the
+    maximum size, instead check Apps.AppList.ItemSuggestCache.Status.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ItemSuggestCache.Status"
+    enum="ItemSuggestCacheStatus" expires_after="2023-02-19">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Records the outcome of a call to ItemSuggest. Reported once per call to
+    UpdateCache that passes the minimum time between udpates check.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ItemSuggestCache.UpdateCacheLatency" units="ms"
+    expires_after="2023-02-26">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Records the latency from the start of a call to UpdateCache to the time when
+    results are finalised. Reported once each time results are successfully
+    obtained, which corresponds to a kOk status being recorded in
+    Apps.AppList.ItemSuggestCache.Status.
+  </summary>
+</histogram>
+
+<histogram
+    name="Apps.AppList.LaunchedResultInNewUsersFirstSearch{TabletOrClamshell}"
+    enum="AppListSearchResult" expires_after="2022-12-05">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Type of the result that a user opened during their first launcher search in
+    their first user session on the device. It includes a bucket for the case
+    the user does not launch any results.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram name="Apps.AppList.NumberOfApps" units="count"
+    expires_after="2023-02-12">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    The number of apps which exist within the launcher app list. This number
+    also includes apps within folders. This metric is recorded every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.NumberOfAppsInNonSystemFolders" units="count"
+    expires_after="2022-12-01">
+  <owner>jamescook@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The total number of apps in folders ignoring system-created folders like the
+    OEM folder and the Linux apps folder. Recorded every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.NumberOfFolders" units="count"
+    expires_after="2023-03-05">
+  <owner>jamescook@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The number of folders that users have in their Launcher. Includes
+    system-created folders like the OEM folder and the Linux apps folder.
+    Recorded every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.NumberOfNonSystemFolders" units="count"
+    expires_after="2022-12-01">
+  <owner>jamescook@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The number of folders that users have in their launcher. Does not include
+    system-created folders like the OEM folder and the Linux apps folder.
+    Recorded every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.NumberOfRootLevelItems" units="count"
+    expires_after="2022-12-01">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    The number of items which exist within the root level of the app list. This
+    number includes both app items and folder items. Apps within folders are not
+    included. This metric is recorded every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.OmniboxProvider.QueryTime" units="ms"
+    expires_after="2023-06-04">
+  <owner>wrong@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The time between sending an non-empty query and receiving search results
+    back from OmniboxProvider which queries chrome AutocompelteController's
+    search providers to get the results.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.OsSettingsProvider.Error"
+    enum="OsSettingsProviderError" expires_after="2023-02-24">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Various error states of the provider for OS settings in the cros launcher.
+    Emitted only in the case of an unexpected error, the bucket proportion is
+    not meaningful.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.OsSettingsProvider.QueryTime" units="ms"
+    expires_after="2023-02-10">
+  <owner>wrong@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    The latency of a search in the OsSettingsProvider. Recorded each time a
+    search is completed, even if it returns no results. Not recorded if the
+    query is too short to perform a search at all. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.PersistentProto.ReadStatus"
+    enum="PersistentProtoReadStatus" expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Various error states on reading a backing file from disk, in the score
+    normalizer used by the Chrome OS launcher. Emitted once when a persistent
+    proto initially reads from disk. Some number of Missing values are expected,
+    eg. because it is logged for each new user added to a device.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.PersistentProto.WriteStatus"
+    enum="PersistentProtoWriteStatus" expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Various error states on writing a backing file to disk, in the score
+    normalizer used by the Chrome OS launcher. Emitted each time a persistent
+    proto writes to disk.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.PersonalizationProvider.QueryTime" units="ms"
+    expires_after="2023-02-10">
+  <owner>cowmoo@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    The latency of a search in the PersonalizationProvider. Recorded each time a
+    search is completed, even if it returns no results. Not recorded if the
+    query is too short to perform a search at all. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.ContinueResultCount.{Type}" units="count"
+    expires_after="2023-02-14">
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Recorded when the user has seen the zero-state launcher. Records the number
+    of {Type} results shown.
+  </summary>
+  <token key="Type">
+    <variant name="Drive" summary="Count of Drive results"/>
+    <variant name="HelpApp" summary="Count of results from help app"/>
+    <variant name="Local" summary="Count of local file results"/>
+    <variant name="Total" summary="Count of all results"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppList.Search.ContinueResultRemovalReason"
+    enum="LauncherContinueSectionRemoveFeedbackType" expires_after="2023-04-08">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The user response to the feedback dialog shown to users when they attempt to
+    remove a file suggestion shown in ChromeOS launcher UI. The dialog lets the
+    user provide feedback about why they removed the suggestion,and will not be
+    shown again after the user responds.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.ContinueResultRemoved"
+    enum="LauncherContinueSectionResultType" expires_after="2023-02-14">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records the type of a zero-state result when it is removed from the Continue
+    section. Recorded once every time a result is removed. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.ContinueSectionFilesRemovedPerSession"
+    units="files" expires_after="2023-04-07">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Represents the number of file suggestions removed per user per session in
+    the in ChromeOS launcher UI. Recorded every time the user removes a
+    suggestion. Each bucket represents the total number of suggestions removed
+    within the user session at the time the histogram is recorded. If the user
+    removes total of n files, histogram will have recorded all of 1, 2, 3, ...,
+    n values. We also record 0 count during session end if no suggestions have
+    been removed.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.DriveContinueResultsShown"
+    enum="BooleanShown" expires_after="2023-02-14">
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Recorded when the user has seen the zero-state launcher. Records whether or
+    not the user would have seen any Drive files. This is equivalent to
+    Apps.AppList.Search.ContinueResultCount.Drive greater than 0.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.Error" enum="AppListUserEventError"
+    expires_after="2023-04-09">
+  <owner>wrong@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Records errors in processing other Apps.AppList.Search.* metrics. These are
+    expected to be rare and bucket proportion is not meaningful.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.{SearchView}" enum="AppListSearchAction"
+    expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Emitted on a usage of launcher search, and records overall impressions,
+    launches, abandons, and ignores for the {SearchView} view.
+
+    Launch. Emitted after an impression, if a result is clicked in the
+    {SearchView} view.
+
+    Abandon. Emitted after an impression, if the user closes the launcher or
+    moves to another UI view.
+
+    Ignore. Emitted after an impression, if the user launches a result from a
+    different currently visible UI view.
+
+    Impression. Emitted if either a) the view is displayed for 2 seconds or b)
+    the user interacted with a result, eg. by clicking it.
+
+    The bucket proportion is not meaningful, because impressions are a superset
+    of the other buckets. Instead, the ratio between buckets is meaningful.
+  </summary>
+  <token key="SearchView" variants="SearchView"/>
+</histogram>
+
+<histogram name="Apps.AppList.Search.{SearchView}.LaunchIndex" units="index"
+    expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Emitted when launching a search result. Records the index of the launched
+    result in the {SearchView} view. The top-most result is index zero.
+  </summary>
+  <token key="SearchView" variants="SearchView"/>
+</histogram>
+
+<histogram name="Apps.AppList.Search.{SearchView}.{SearchAction}"
+    enum="AppListSearchResult" expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Tracks launches, impressions, abandons, and ignores for search result types
+    in the launcher. This histogram is specific to the {SearchView} view. These
+    metrics are all emitted once for each unique displayed search result type,
+    and records that search result type.
+
+    For example, if we show the user three files and two apps, and the user
+    clicks a file, then we would record: one file impression and one app
+    impression, one file launch, and one app ignore.
+
+    Launch. Emitted after an impression, if the user launches a result.
+
+    Abandon. Emitted after an impression, if the user closes the launcher or
+    moves to a different view.
+
+    Ignore. Emitted after an impression, if the user then launched a different
+    result.
+
+    Impression. Emitted if either a) a set of results is displayed for 2 seconds
+    or b) the user interacted with a result, eg. by clicking it.
+  </summary>
+  <token key="SearchView" variants="SearchView"/>
+  <token key="SearchAction" variants="SearchAction"/>
+</histogram>
+
+<histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
+    expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    The length of the query that resulted in an app launch from search box. This
+    metric only records non-empty queries.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.SearchResultRemovalDecision"
+    enum="AppListResultRemovalConfirmation" expires_after="2022-12-31">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    The decision of the user whether to remove a search result from search
+    results UI when productivity launcher is enabled. When productivity launcher
+    is enabled, the user has an option to remove subset of omnibox results from
+    search results. When removing the result, the user is shown a dialog to
+    confirm or cancel result removal. This histogram record the user action in
+    that dialog.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.SearchSuccess.Apps" enum="AppListLaunchedFrom"
+    expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    The number of app launches from the search box with non-empty queries.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.SortDiscoveryDurationAfterEducationNudge"
+    units="ms" expires_after="2023-02-26">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The time duration between showing the app list sort education nudge and the
+    first sort usage. This metric is recorded when app list sort is triggered
+    after the sort nudge is shown.
+  </summary>
+</histogram>
+
+<histogram
+    name="Apps.AppList.SortDiscoveryDurationAfterEducationNudgeV2.{TabletOrClamshell}"
+    units="ms" expires_after="M107">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The time duration between showing the app list sort education nudge and the
+    first sort usage. This metric is recorded when app list sort is triggered
+    after the sort nudge is shown. The collected data are separated by the
+    tablet mode state under which the sort nudge is shown. In detail, if the
+    sort nudge shows initially in tablet (or clamshell), then the discovery
+    duration is reported using the histogram for tablet (or clamshell).
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Apps.AppList.SortOrderOnSessionStart.{TabletOrClamshell}"
+    enum="AppListSortOrder" expires_after="M112">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The app list sort order preserved in the pref service. Triggered when the
+    pref service for the new session is ready.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Apps.AppList.SuccessfulFirstUsageByNewUsers{TabletOrClamshell}"
+    enum="Boolean" expires_after="2022-12-19">
+  <owner>gzadina@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Whether the user successfully used the launcher when they opened it for the
+    first time. Successful usage entails launching an app, or search result from
+    the launcher UI. Only recorded in user session started after creating a new
+    account on the device. Split by whether the launcher was first shown in
+    clamshell or tablet mode.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram name="Apps.AppList.SuggestedContent.Enabled" enum="BooleanEnabled"
+    expires_after="2023-03-19">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Whether or not the user has enabled Suggested Content in the launcher. This
+    is logged once per UMA upload, and only for any user that has the Suggested
+    Content toggle feature flag enabled.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.TimeToUserAction{TabletOrClamshell}" units="ms"
+    expires_after="2022-12-19">
+  <owner>gzadina@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Amount of time passed from when the launcher was shown to the user
+    performing a launcher workflow action, which includes launching an app from
+    the apps grid, launching an app from recent apps section, opening a search
+    result, or opening a task in continue section. Logged when the user performs
+    an action. Recorded for {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram name="Apps.AppList.UserAction{TabletOrClamshell}"
+    enum="LauncherUserAction" expires_after="2022-12-19">
+  <owner>gzadina@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Tracks different launcher worflow actions the user performs in the launcher.
+    Logged when the user performs an action. Recorded for {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram name="Apps.AppList.UserEvent.LaunchIndex{LauncherUISurface}"
+    units="index" expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Emitted on a usage of the launcher, and records overall impressions,
+    launches, and abandons for a launcher UI view. The bucket proportion is not
+    meaningful for this metric, because impressions are a superset of launches
+    and abandons. Instead, the ratio between buckets can be used to calculate
+    accurate overall CTR. {LauncherUISurface}
+
+    This metric stopped collecting data in November 2021, but has not yet been
+    marked obsolete because the historical data is still being used for
+    analysis.
+  </summary>
+  <token key="LauncherUISurface" variants="LauncherUISurface">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppList.UserEvent.Overall{LauncherUISurface}"
+    enum="AppListUserEvent" expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Emitted on a usage of the launcher, and records overall impressions,
+    launches, and abandons for a launcher UI view. The bucket proportion is not
+    meaningful for this metric, because impressions are a superset of launches
+    and abandons. Instead, the ratio between buckets can be used to calculate
+    accurate overall CTR. {LauncherUISurface}
+
+    This metric stopped collecting data in November 2021, but has not yet been
+    marked obsolete because the historical data is still being used for
+    analysis.
+  </summary>
+  <token key="LauncherUISurface" variants="LauncherUISurface">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppList.UserEvent.Query" enum="Boolean"
+    expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Emits true when the user enters a query into the Chrome OS launcher search
+    box. Entering any number of characters is considered only one query, but
+    deleting the contents of the search box and starting again is recorded as a
+    new query.
+
+    This metric stopped collecting data in November 2021, but has not yet been
+    marked obsolete because the historical data is still being used for
+    analysis.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.UserEvent.TypeAbandon{LauncherUISurface}"
+    enum="AppListSearchResult" expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Emitted after an impression, if the user then closes the launcher or moves
+    to a different view without launching any search result. This is emitted
+    once per abandon, per displayed result. Records the displayed result's type.
+    See Apps.AppList.UserEvent.TypeImpression for more details.
+
+    This metric is completed by a histogram suffix describing which UI surface
+    the results are recorded from. {LauncherUISurface}
+
+    This metric stopped collecting data in November 2021, but has not yet been
+    marked obsolete because the historical data is still being used for
+    analysis.
+  </summary>
+  <token key="LauncherUISurface" variants="LauncherUISurface">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppList.UserEvent.TypeImpression{LauncherUISurface}"
+    enum="AppListSearchResult" expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When a set of results is displayed for 2 seconds and the user has probably
+    seen it, or the user interacted with the results and has definitely seen it,
+    we consider it an impression.
+
+    Emitted once per impression for each displayed result. Records the type of
+    the displayed result, eg. native app or omnibox bookmark.
+
+    The Apps.AppList.UserEvent.Type* metrics are directly comparable
+    per-result-type. So, for example, (launches / impressions) for a result type
+    gives an accurate CTR.
+
+    This metric is completed by a histogram suffix describing which UI surface
+    the results are recorded from. {LauncherUISurface}
+
+    This metric stopped collecting data in November 2021, but has not yet been
+    marked obsolete because the historical data is still being used for
+    analysis.
+  </summary>
+  <token key="LauncherUISurface" variants="LauncherUISurface">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppList.UserEvent.TypeLaunch{LauncherUISurface}"
+    enum="AppListSearchResult" expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Emitted after an impression, if the user launches a result. Records the type
+    of the launched result. See Apps.AppList.UserEvent.TypeImpression for more
+    details.
+
+    This metric is completed by a histogram suffix describing which UI surface
+    the results are recorded from. {LauncherUISurface}
+
+    This metric stopped collecting data in November 2021, but has not yet been
+    marked obsolete because the historical data is still being used for
+    analysis.
+  </summary>
+  <token key="LauncherUISurface" variants="LauncherUISurface">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppList.ZeroStateDriveProvider.Relevance" units="score"
+    expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Relevance score for a zero state Drive result in the results list. Logged
+    whenever ItemSuggest is queried, once for each zero-state result created.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ZeroStateFileProvider.Latency" units="ms"
+    expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    The time between sending a zero state query and receiving file
+    recommendations back from the ZeroStateFileProvider.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ZeroStateFileProvider.Relevance" units="score"
+    expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Relevance score for a zero state file result in suggestion chips or the
+    results list. Logged once each time zero state is loaded.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ZeroStateResults.LaunchedItemType"
+    enum="ZeroStateResultType" expires_after="2023-01-31">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    The type of item that was launched from a zero state launcher search result.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ZeroStateSearchResultRemovalDecision"
+    enum="AppListResultRemovalConfirmation" expires_after="2022-10-04">
+  <owner>jennyz@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The decision of the user whether to remove a zero state search result. This
+    is gathered per click of a remove or cancel button of a search result
+    removal confirmation dialog.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ZeroStateSearchResultUserActionType"
+    enum="AppListZeroStateSearchResultUserActionType"
+    expires_after="2022-05-01">
+  <owner>jennyz@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The type of the action user performed on zero state search result. This is
+    gathered per click of a remove or append button of a search result.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ZeroStateSuggestionOpenType"
+    enum="AppListSearchResult" expires_after="2021-03-15">
+  <owner>jennyz@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The type of the app list suggestion that was opened by user in zero state.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListAppLaunchedV2{AppListState}"
+    enum="AppListLaunchedFrom" expires_after="2022-12-19">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of apps launched from the launcher and shelf for each launcher
+    state. This is incremented each time an app is launched. Each bucket
+    represents where in the launcher or shelf the app was launched from.
+    {AppListState}
+  </summary>
+  <token key="AppListState">
+    <variant name=""/>
+    <variant name=".BubbleAllApps" summary=""/>
+    <variant name=".Closed" summary=""/>
+    <variant name=".FullscreenAllApps" summary=""/>
+    <variant name=".FullscreenSearch" summary=""/>
+    <variant name=".HomecherAllApps" summary=""/>
+    <variant name=".HomecherClosed" summary=""/>
+    <variant name=".HomecherSearch" summary=""/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppListAppMovingType" enum="AppListAppMovingType"
+    expires_after="2023-02-19">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The different ways to move an app in app list's apps grid. Logged when the
+    app moving succeeds.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListAppTypeClicked" enum="AppListAppType"
+    expires_after="2023-04-24">
+  <owner>charleszhao@chromium.org</owner>
+  <owner>pdyson@chromium.org</owner>
+  <summary>
+    The type of app clicked in the launcher on ChromeOS, recorded after the icon
+    is clicked, before it is launched.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListBadgedAppsCount" units="apps"
+    expires_after="2020-04-26">
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Number of apps (including ones in folders) with Chrome badge, across all
+    Launcher pages. This is gathered per open-launcher event.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListBubbleAppMovingType" enum="AppListAppMovingType"
+    expires_after="2022-10-17">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>wcwang@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The different ways to move an app in app list's apps grid, specifically for
+    the scrollable apps grid in bubble launcher. Logged when the app moving
+    succeeds.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListBubbleCreationTime" units="ms"
+    expires_after="2022-10-17">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>wcwang@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The amount of time it takes to build the app list bubble UI. This is logged
+    each time the app list bubble gets shown.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListBubbleShowSource" enum="AppListShowSource"
+    expires_after="2023-04-10">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The number of times the different sources for showing the bubble app list
+    are used. This is logged when the bubble app list is shown, which only
+    exists in clamshell mode. See sister metric
+    &quot;Apps.AppListShowSource&quot; for tablet mode and fullscreen app list
+    metrics.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListContinueTaskOpenType" enum="AppListSearchResult"
+    expires_after="2023-03-19">
+<!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
+
+  <owner>anasalazar@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The type of app list continue search result that was opened by the user.
+    This is gathered per continue section task opened.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListCreationTime" units="ms"
+    expires_after="2023-02-19">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The amount of time it takes to build the app list UI. This is logged each
+    time the app list is built from scratch.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListDefaultSearchResultOpenType"
+    enum="AppListSearchResult" expires_after="2022-10-04">
+  <owner>jennyz@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The type of the default result opened by user by pressing ENTER key.
+    Launcher UI shows suggested apps, recent queries, etc when user activates
+    the search box, or shows matched apps (installed apps, play store app
+    results, etc.) and other results (query suggestions, web site, bookmark,
+    files, etc) when user types a query. It will set the focus on the first
+    result as the default. User can open the default result by simply pressing
+    ENTER key. This metrics logs the type of the default result (installed app,
+    play store result, query suggestion, etc) opened by user pressing ENTER key.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListFolder.ShowHide.AnimationSmoothness" units="%"
+    expires_after="2023-05-06">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Relative smoothness of animations of showing and hiding app list folder.
+    100% represents ideally smooth 60 frames per second. 50% represents only 30
+    frames per second is achieved during the animations. 0% should not happen.
+    This metric is recorded exactly once when the user starts the folder
+    animation in the launcher.
+
+    Warning: this histogram was expired from 2021-08-29 to 2021-09-28; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Apps.AppListFolderNameLength" units="characters"
+    expires_after="2023-02-19">
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <owner>mmourgos@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The folder name length in characters when an app list folder gets renamed.
+    Logged when the folder name is changed and the texfield is no longer in
+    focus.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListFolderOpened" enum="AppListFolderOpened"
+    expires_after="2023-03-19">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of times folders are opened in the app list. This is logged when
+    the folder is clicked.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListHide.InputLatency" units="ms"
+    expires_after="2022-12-01">
+  <owner>newcomer@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    Elapsed time from the input event to hide the launcher UI. This is logged
+    each time the launcher is dismissed by pressing search key, clicking shelf
+    button, or focusing out side of the launcher.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListInternalApp.Activate"
+    enum="AppListInternalAppName" expires_after="M81">
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    The internal app in apps grid was opened by the user. This is gathered per
+    click of an internal app.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListLauncherClickedSearchQueryLength"
+    units="characters" expires_after="2023-01-15">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Logs the length of user typed queries that result in launcher clicks.
+    Emitted each time the user opens a launcher search result after typing a
+    query.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListLauncherIssuedSearchQueryLength"
+    units="characters" expires_after="2023-03-19">
+  <owner>jennyz@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The UMA histogram that logs the length of user typed queries app list
+    launcher issues to the search providers.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListOpenTime.{OpenMethod}" units="ms"
+    expires_after="2022-12-26">
+  <owner>angusmclean@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>src/ash/app_list/OWNERS</owner>
+  <summary>
+    The time a user spends with the AppList open after opening it using the
+    {OpenMethod} method.
+  </summary>
+  <token key="OpenMethod">
+    <variant name="HomeButton"
+        summary="User activated the home button on the shelf"/>
+    <variant name="Others"
+        summary="Opened by a source we don't intend to track."/>
+    <variant name="Scroll" summary="User scrolled on the shelf"/>
+    <variant name="SearchKey" summary="User pressed search key"/>
+    <variant name="Swipe" summary="User swiped on the shelf"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppListPageSwitcherSource"
+    enum="AppListPageSwitcherSource" expires_after="2023-03-26">
+<!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
+
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The source used to switch pages in the app list's app grid. Logged when the
+    page switch succeeds.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListPlayStoreAppLaunchedIndex" units="indices"
+    expires_after="2021-12-31">
+  <owner>jennyz@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The index of the app within all play store apps displayed when it is
+    launched.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListPlayStoreQueryState"
+    enum="AppListPlayStoreQueryState" expires_after="2023-03-19">
+  <owner>hejq@chromium.org</owner>
+  <summary>The state of a Play Store app search request.</summary>
+</histogram>
+
+<histogram name="Apps.AppListPlayStoreSearchAppsDisplayed" units="apss"
+    expires_after="2021-12-31">
+  <owner>jennyz@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of the play store apps displayed to user for a query.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListRecommendedResponse"
+    enum="ReinstallResponseParseResult" expires_after="2022-01-02">
+  <owner>napper@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Response when parsing the recommended app list from Play Store for candidate
+    app list, recorded every time a response from the play store is parsed in
+    client.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListRecommendedResponse.Count" units="units"
+    expires_after="2022-02-20">
+  <owner>napper@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Number of responses from server in Apps.AppListRecommendedResponse.count
+    when fetching appListRecommendded GetAppReinstallCandidates.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListRecommendedResponse.Latency" units="ms"
+    expires_after="2022-02-27">
+  <owner>napper@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Milliseconds elapsed to fetch appListRecommended GetAppReinstallCandidates.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListSearchAutocomplete" enum="SearchBoxTextMatch"
+    expires_after="2023-02-12">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The outcome of app list search attempting to autocomplete queries by
+    matching user entered text with search result text. This metric is split by
+    prefix match, substring match, and no match. This is gathered each time app
+    list attempts to perform an autocomplete.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListSearchBoxActivated"
+    enum="SearchBoxActivationSource" expires_after="2022-05-01">
+<!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
+
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The number of times the applist searchbox has been activated. This is split
+    by keystroke, mouse press, and gesture tap activations. This is gathered
+    each time the searchbox goes from inactive to active, not necessarily empty
+    to non-empty.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListSearchQueryLength" units="characters"
+    expires_after="2022-08-01">
+  <obsolete>
+    Deprecated in July 2022. Replaced with Apps.AppListSearchQueryLenghtV2,
+    which, unlike this histogram, only records query length for results from
+    launcher search results UI. Apps.AppListSearchQueryLength was recording
+    query length when launching results from continue section.
+  </obsolete>
+<!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
+
+  <owner>yulunwu@chromium.org</owner>
+  <owner>calamity@chromium.org</owner>
+  <summary>
+    The length of the app list search query when a result is opened. This is
+    gathered per click of a search result.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListSearchQueryLengthV2{TabletOrClamshell}"
+    units="characters" expires_after="2022-12-01">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>calamity@chromium.org</owner>
+  <summary>
+    The length of the app list search query when a result is opened. This is
+    gathered per click of a search result in launcher search results UI.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram name="Apps.AppListSearchResultInternalApp.Open"
+    enum="AppListInternalAppName" expires_after="2020-12-13">
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    The app list search result of an internal app that was opened by the user.
+    This is gathered per click of a search result.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListSearchResultInternalApp.Show"
+    enum="AppListInternalAppName" expires_after="2023-01-15">
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    The app list search result of an internal app that was shown to the user.
+    This is gathered per creation of a search result. Note: Typing a word with
+    multiple letters could trigger multiple creations of the search result.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListSearchResultOpenDisplayType"
+    enum="AppListSearchResultDisplayType" expires_after="2021-12-19">
+  <owner>calamity@chromium.org</owner>
+  <owner>src/ash/app_list/OWNERS</owner>
+  <summary>
+    The display type of the app list search result that was opened by the user.
+    This is gathered per click of a search result.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListSearchResultOpenedSource"
+    enum="ApplistSearchResultOpenedSource" expires_after="M85">
+  <owner>newcomer@chromium.org</owner>
+  <summary>The state of the app list when a search result was opened.</summary>
+</histogram>
+
+<histogram name="Apps.AppListSearchResultOpenTypeV2" enum="AppListSearchResult"
+    expires_after="2023-04-02">
+<!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
+
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The type of app list search result that was opened by the user. This is
+    gathered per SearchResult opened. Only recorded for search results shown in
+    the search result page of the launcher (suggestion chips are not recorded).
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListShow.InputLatency" units="ms"
+    expires_after="2023-03-05">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    Elapsed time from the input event to show the launcher UI. This is logged
+    each time the app list is shown by pressing search key, clicking shelf
+    button, or swiping from shelf.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListShowSource" enum="AppListShowSource"
+    expires_after="2023-04-10">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of times the different sources for showing the app list are used.
+    This is logged when the app list is shown. Does not count the app list shown
+    when the last window is closed in tablet mode. This is not the total number
+    of times the app list is shown to the user; for that consult the user action
+    AppList_WindowFocused.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListStateTransitionSource"
+    enum="AppListStateTransitionSource" expires_after="2023-02-09">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The number of transitions from the different AppListStates. This is gathered
+    each time the launcher transitions from various states in
+    AppListView::SetState (Peeking, Half, Fullscreen All Apps, Fullscreen
+    Search, and Closed). Not all state transitions are collected because they
+    are not meaningful in measuring user activity.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListSuggestedChipLaunched" units="indices"
+    expires_after="2022-12-01">
+  <owner>newcomer@chromium.org</owner>
+  <owner>charleszhao@chromium.org</owner>
+  <owner>yulunwu@chromium.org</owner>
+  <summary>
+    The number of times suggested chips are launched at each suggested-apps
+    tile. An index i, ranged from 0 to kNumStartPageTiles - 1, is logged each
+    time a suggested chip is launched from i-th tile.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListSuggestedChipOpenType" enum="AppListSearchResult"
+    expires_after="2021-04-11">
+<!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
+
+  <owner>newcomer@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The type of app list suggestion chip that was opened by the user. This is
+    gathered per SuggestionChip opened.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppListUsageByNewUsers{TabletOrClamshell}"
+    enum="AppListUsageStateByNewUsers" expires_after="2022-12-19">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records the launcher usage state during the session started by a new user
+    (i.e. the session completing the OOBE flow). This metric is recorded in the
+    following scenarios: (1) the launcher shows and the current user is new (2)
+    the launcher has never shown before launcher is destructed. Destruction can
+    be triggered by loging out accounts, shuting down the device or system
+    crashes and meanwhile the current user is new (3) the launcher has never
+    shown when the active user has changed and the previous active user was a
+    new user. Split depending on whether the device was in tablet or clamshell
+    mode when the metric was recorded.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram name="Apps.AppsCount.{AppType}" units="Apps"
+    expires_after="2023-06-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    The total number of installed {AppType} for each app type in Chrome OS. This
+    is logged when more than 24 hours pass after last log, or during the system
+    startup phase if more than 24 hours passed after last log. This histogram is
+    capped at 1000; values above this go into the overflow bucket.
+  </summary>
+  <token key="AppType" variants="AppType"/>
+</histogram>
+
+<histogram name="Apps.AppsCountPerInstallReason.{AppType}.{InstallReason}"
+    units="Apps" expires_after="2023-06-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    The total number of installed {AppType} for each app type {InstallReason} in
+    Chrome OS. This is logged when more than 24 hours pass after last log, or
+    during the system startup phase if more than 24 hours passed after last log.
+    This histogram is capped at 1000; values above this go into the overflow
+    bucket.
+  </summary>
+  <token key="AppType" variants="AppType"/>
+  <token key="InstallReason" variants="InstallReason"/>
+</histogram>
+
+<histogram name="Apps.AppShimErrorVersion" units="units" expires_after="M78">
+  <owner>jackhou@chromium.org</owner>
+  <summary>
+    Counts which major milestone versions of app_mode_loader are sending
+    --app-shim-error. --app-shim-error is sent as a command line argument to
+    Chrome when app_mode_loader was unable to dyload the Chrome Framework and
+    call ChromeAppModeMain. For example, when Chrome updates from 32-bit to
+    64-bit, an older shim will find the new framework version but fail to dyload
+    it.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppsInFolders{AppListFolderExperiment}" units="Apps"
+    expires_after="2022-10-09">
+  <obsolete>
+    Deprecated in May 2022. Replaced with
+    Apps.AppList.NumberOfAppsInNonSystemFolders, which is recorded periodically,
+    for consistency with other app list metrics.
+  </obsolete>
+  <owner>mmourgos@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The total number of apps in folders ignoring OEM folders. This is logged
+    each time the app list is initialized. The
+    &quot;FullscreenAppListDisabled&quot; suffix has been deprecated.
+    {AppListFolderExperiment}
+  </summary>
+  <token key="AppListFolderExperiment">
+    <variant name=""/>
+    <variant name=".FullscreenAppListDisabled"
+        summary="Peeking Launcher Disabled"/>
+    <variant name=".FullscreenAppListEnabled"
+        summary="Peeking Launcher Enabled"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.ArcGhostWindowLaunch" enum="Boolean"
+    expires_after="2023-02-12">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sstan@chromium.org</owner>
+  <summary>
+    Records whether the ARC ghost window is launched when the ARC app are
+    restored during the system startup phase.
+  </summary>
+</histogram>
+
+<histogram name="Apps.Bounced" enum="BooleanBounced" expires_after="2020-12-14">
+  <owner>ajlinker@chromium.org</owner>
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records whether an application has bounced (been uninstalled in less than
+    seven days). Recorded when an application is uninstalled.
+  </summary>
+</histogram>
+
+<histogram name="Apps.ClamshellLauncher.AnimationSmoothness.{Transition}"
+    units="%" expires_after="M112">
+<!-- This metric is used in Tast tests. Do not rename the metric or variants. -->
+
+  <owner>tbarzic@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Emitted when the clamshell launcher {Transition} animation completes.
+    Reports the smoothness of this animation. 100% represents the ideally smooth
+    60 frames per second.
+  </summary>
+  <token key="Transition">
+    <variant name="Close" summary="close launcher"/>
+    <variant name="HideAppsPage"
+        summary="switch away from apps page to another page"/>
+    <variant name="Open" summary="open launcher"/>
+    <variant name="OpenAppsPage" summary="open launcher to apps page"/>
+    <variant name="ShowAppsPage"
+        summary="switch to apps page from another page"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.ContextMenuExecuteCommand{ContextMenuFromApp}"
+    enum="ChromeOSUICommands" expires_after="2022-12-31">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The number of times a certain command was executed by a context menu, split
+    by whether the context menu came from an app, or another part of the system
+    UI. {ContextMenuFromApp}
+  </summary>
+  <token key="ContextMenuFromApp">
+    <variant name=".FromApp"
+        summary="The source of the context menu was an app."/>
+    <variant name=".NotFromApp"
+        summary="The source of the context menu was shelf or wallpaper."/>
+  </token>
+</histogram>
+
+<histogram
+    name="Apps.ContextMenuShowSourceV2{AppUIComponent}{TabletOrClamshellMode}"
+    enum="MenuSourceType" expires_after="2022-12-01">
+  <owner>wcwang@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The show source (touch, mouse, keyboard, etc) for a context menu. Split by
+    the component from which the context menu originated. {AppUIComponent}
+  </summary>
+  <token key="AppUIComponent" variants="AppUIComponent"/>
+  <token key="TabletOrClamshellMode" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram
+    name="Apps.ContextMenuUserJourneyTimeV2{AppUIComponent}{TabletOrClamshellMode}"
+    units="ms" expires_after="2022-12-01">
+  <owner>wcwang@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The user journey time for a ContextMenu, defined as the time between
+    launching a context menu and the context menu's close callback being
+    activated. Not recorded whenever the context menu is not for an app icon on
+    the shelf. {AppUIComponent}
+  </summary>
+  <token key="AppUIComponent" variants="AppUIComponent"/>
+  <token key="TabletOrClamshellMode" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram name="Apps.CreateShortcutIcon.Linux.Result"
+    enum="WebAppCreateShortcutIconLinuxResult" expires_after="2023-03-19">
+  <owner>estade@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of creating shortcut image for web app on Linux.
+  </summary>
+</histogram>
+
+<histogram name="Apps.CreateShortcuts.Linux.Result"
+    enum="WebAppCreateShortcutLinuxResult" expires_after="2023-02-12">
+  <owner>phillis@chromium.org</owner>
+  <owner>cmumford@chromium.org</owner>
+  <summary>
+    Records the result of creating shortcut for web app on Linux.
+  </summary>
+</histogram>
+
+<histogram name="Apps.CreateShortcuts.Mac.Result"
+    enum="WebAppCreateShortcutMacResult" expires_after="2023-03-19">
+  <owner>phillis@chromium.org</owner>
+  <owner>cmumford@chromium.org</owner>
+  <summary>
+    Records the result of creating shortcut for web app on MacOS.
+  </summary>
+</histogram>
+
+<histogram name="Apps.DefaultAppLaunch{DefaultAppLaunchSource}"
+    enum="DefaultAppName" expires_after="2023-06-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records when a user attempts to launch a particular Chrome OS app.
+    {DefaultAppLaunchSource}
+  </summary>
+  <token key="DefaultAppLaunchSource">
+    <variant name=".FromAppListGrid" summary="From app list grid."/>
+    <variant name=".FromAppListGridContextMenu"
+        summary="From app list grid context menu."/>
+    <variant name=".FromAppListQuery" summary="From app list query."/>
+    <variant name=".FromAppListQueryContextMenu"
+        summary="From app list query context menu."/>
+    <variant name=".FromAppListRecommendation"
+        summary="From app list recommendation."/>
+    <variant name=".FromArc" summary="From ARC."/>
+    <variant name=".FromChromeInternal" summary="From Chrome Internal."/>
+    <variant name=".FromDiscoverTabNotification"
+        summary="From Discover Tab notification."/>
+    <variant name=".FromFileManager" summary="From FileManager."/>
+    <variant name=".FromFullRestore" summary="From full restore."/>
+    <variant name=".FromInstalledNotification"
+        summary="From installed notification."/>
+    <variant name=".FromIntentUrl" summary="From Intent Url."/>
+    <variant name=".FromKeyboard" summary="From keyboard shortcut."/>
+    <variant name=".FromKiosk" summary="From Kiosk."/>
+    <variant name=".FromLink" summary="From Link."/>
+    <variant name=".FromLockScreen" summary="From lock screen app launcher."/>
+    <variant name=".FromManagementApi" summary="From management API."/>
+    <variant name=".FromMenu" summary="From menu."/>
+    <variant name=".FromNewTabPage" summary="From new tab page."/>
+    <variant name=".FromOmnibox" summary="From Omnibox."/>
+    <variant name=".FromOsLogin" summary="Run on OS login."/>
+    <variant name=".FromOtherApp" summary="From another app."/>
+    <variant name=".FromProtocolHandler" summary="From protocol handler."/>
+    <variant name=".FromReleaseNotesNotification"
+        summary="From Release Notes notification."/>
+    <variant name=".FromSharesheet" summary="From sharesheet."/>
+    <variant name=".FromShelf" summary="From shelf."/>
+    <variant name=".FromSmartTextContextMenu"
+        summary="From Smart text selection context menu."/>
+    <variant name=".FromUrlHandler" summary="From URL handler."/>
+  </token>
+</histogram>
+
+<histogram name="Apps.FileHandler.Registration.Linux.RecreateShortcut.Result"
+    enum="FileHandlerRegistrationLinuxRecreateShortcutResult"
+    expires_after="M110">
+  <owner>estade@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of re-creating shortcut during file handler registration
+    process for PWA on Linux
+  </summary>
+</histogram>
+
+<histogram name="Apps.FileHandler.Registration.Linux.Result"
+    enum="FileHandlerRegistrationLinuxResult" expires_after="M110">
+  <owner>estade@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of MIME info database update when enabling an app's use
+    of the PWA File Handling API
+  </summary>
+</histogram>
+
+<histogram name="Apps.FileHandler.Registration.Win.Result"
+    enum="FileHandlerRegistrationWinResult" expires_after="2023-02-26">
+  <owner>estade@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of file handler registration for PWA on Windows
+  </summary>
+</histogram>
+
+<histogram name="Apps.FileHandler.Unregistration.Linux.Result"
+    enum="FileHandlerRegistrationLinuxResult" expires_after="M110">
+  <owner>estade@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of MIME info database update when disabling an app's use
+    of the PWA File Handling API
+  </summary>
+</histogram>
+
+<histogram name="Apps.FirstLauncherActionByNewUsers{TabletOrClamshell}"
+    enum="AppListLaunchedFrom" expires_after="M107">
+  <obsolete>
+    Deprecated in M103. Replaced with Apps.NewUserFirstLauncherAction.
+  </obsolete>
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records which launcher action a new user takes for the first time within a
+    session. Launcher actions include the following: activating a launcher app
+    and opening a search result from either a launcher suggestion chip or the
+    search box. The metric is recorded when a launcher action performs on a new
+    user's session for the first time. Split depending on whether the first
+    launcher action occurred in clamshell or tablet mode.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram
+    name="Apps.HomeLauncherTransition.AnimationSmoothness{AppListTabletModeTransition}"
+    units="%" expires_after="never">
+<!-- expires-never: These metrics are required
+     by Tast tests to monitor performance. We should
+     keep these metrics alive until we stop monitoring
+     performance of home launcher animations -->
+
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations of launcher transitions in tablet mode.
+    100% represents ideally smooth 60 frames per second. 50% represents only 30
+    frames per second is achieved during the animations. 0% should not happen.
+    This metric is recorded exactly once when the user triggers launcher
+    animation in tablet mode. {AppListTabletModeTransition}
+  </summary>
+  <token key="AppListTabletModeTransition">
+    <variant name=""/>
+    <variant name=".EnterFullscreenAllApps"
+        summary="Enter kFullScreenAllApps state in tablet"/>
+    <variant name=".EnterFullscreenSearch"
+        summary="Enter kFullscreenSearch state in tablet"/>
+    <variant name=".EnterOverview" summary="Enter overview mode in tablet"/>
+    <variant name=".ExitOverview" summary="Exit overview mode in tablet"/>
+    <variant name=".FadeInOverview"
+        summary="Fade in overview from home in tablet"/>
+    <variant name=".FadeOutOverview"
+        summary="Fade out of overview to home in tablet"/>
+    <variant name=".HideLauncherForWindow"
+        summary="Active a window to hide the app list"/>
+    <variant name=".PressAppListButtonShow"
+        summary="Press the AppList button to show the app list"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.IconLoadingMethod" enum="IconLoadingMethod"
+    expires_after="2023-02-12">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>Records the app icon loading method when loading app icons.</summary>
+</histogram>
+
+<histogram name="Apps.Launcher.AppListSortClearAction.{TabletOrClamshell}"
+    enum="AppListOrderUpdateEvent" expires_after="M112">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The events that reset the app list pref sort order. Triggered when the pref
+    sort order is reset.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Apps.Launcher.DragReorderAnimationSmoothness.{TabletOrClamshell}"
+    units="%" expires_after="M112">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Emitted when an app list drag reorder animation completes. Reports the
+    smoothness of this animation. 100% represents the ideally smooth 60 frames
+    per second.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Apps.Launcher.InstallAppFromLinkResult"
+    enum="WebAppInstallResultCode" expires_after="2022-09-25">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of installing an app on the chrome://apps page. This
+    happens when a user drags a link to this page.
+  </summary>
+</histogram>
+
+<histogram name="Apps.Launcher.InstallLocallyShortcutsCreated" enum="Boolean"
+    expires_after="2022-07-03">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of locally installed an app on the chrome://apps page,
+    which involves hooking up Os integration. Specifically, this records if the
+    shortcuts were created successfully. This happens whena user right-clicks on
+    a greyed out webapp icon in the chrome://apps page and clicks
+    &quot;Install&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Apps.Launcher.ProductivityReorderAction.{TabletOrClamshell}"
+    enum="AppListSortOrder" expires_after="M112">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The user-set sort order of the productivity launcher. Triggered when the
+    launcher is set with a new order.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Apps.Launcher.ProductivityReorderAnimationSmoothness.{TabletOrClamshell}"
+    units="%" expires_after="M112">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Emitted when the app list sort reorder animation completes. Reports the
+    smoothness of this animation. 100% represents the ideally smooth 60 frames
+    per second.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Apps.LockScreen.AppsProfile.Creation.Duration" units="ms"
+    expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The amount of time needed to create a lock screen apps profile. This metric
+    is recorded only if the profile creation was successful. The lock screen
+    apps profile is created if the user has an app enabled on Chrome OS lock
+    screen, and is used as the context in which the app is launched on top of
+    the lock screen.
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.AppsProfile.Creation.Success"
+    enum="BooleanSuccess" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    Boolean indicating whether the lock screen apps profile creation succeeded.
+    The lock screen apps profile is created if the user has an app enabled on
+    Chrome OS lock screen, and is used as the context in which the app is
+    launched on top of the lock screen.
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.DataItemStorage.ClearTextItemSize"
+    units="bytes" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The size of a data item stored in the lock screen data item storage using
+    chrome.lockScreen.data API as sent from the app - the item will be encrypted
+    before getting stored in the storage.
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.DataItemStorage.EncryptedItemSize"
+    units="bytes" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The size of an encrypted data item stored in the lock screen data item
+    storage using chrome.lockScreen.data API.
+  </summary>
+</histogram>
+
+<histogram
+    name="Apps.LockScreen.DataItemStorage.FailedOperationDuration{LockScreenAppDataItemOperation}"
+    units="ms" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The amount of time it took to complete a lock screen data item storage
+    operation. Reported only on the operation failure.
+    {LockScreenAppDataItemOperation}
+  </summary>
+  <token key="LockScreenAppDataItemOperation"
+      variants="LockScreenAppDataItemOperation"/>
+</histogram>
+
+<histogram
+    name="Apps.LockScreen.DataItemStorage.OperationDuration{LockScreenAppDataItemOperation}"
+    units="ms" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    Warning: this histogram was expired from 2021-06-01 to 2022-05-16; data may
+    be missing. The amount of time it took to complete a lock screen data item
+    storage operation. Reported only on the operation success.
+    {LockScreenAppDataItemOperation}
+  </summary>
+  <token key="LockScreenAppDataItemOperation"
+      variants="LockScreenAppDataItemOperation"/>
+</histogram>
+
+<histogram
+    name="Apps.LockScreen.DataItemStorage.OperationResult{LockScreenAppDataItemOperation}"
+    enum="LockScreenDataItemOperationResult" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The result of a lock screen data item storage operation returned through
+    chrome.lockScreen.data extension API. {LockScreenAppDataItemOperation}
+  </summary>
+  <token key="LockScreenAppDataItemOperation"
+      variants="LockScreenAppDataItemOperation"/>
+</histogram>
+
+<histogram name="Apps.LockScreen.DataItemStorage.RegisteredItemsCount"
+    units="units" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The number of data items saved in the lock screen data item storage per app.
+    This is recorded on startup, when the app attempts to use the
+    chrome.lockScreen.data API.
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.NoteTakingApp.AppStatusOnNoteLaunch"
+    enum="LockScreenNoteAppStatusOnLaunch" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    Reported when a user attempts to launch a note taking app on the lock
+    screen. It reports the note taking app state in the lock screen apps profile
+    at the launch attempt time - for example, whether the app was enabled, or
+    whether the app had been terminated and an app reload was attempted.
+  </summary>
+</histogram>
+
+<histogram
+    name="Apps.LockScreen.NoteTakingApp.AppWindowLifeTime{LockScreenNoteTakingAppWindowState}"
+    units="ms" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The amount of time a lock screen enabled app window spent in a certain state
+    during the app window activity. The state to which the histogram refers to
+    is defined by the suffix. The metric is logged upon leaving the associated
+    state. {LockScreenNoteTakingAppWindowState}
+  </summary>
+  <token key="LockScreenNoteTakingAppWindowState">
+    <variant name=".Background"
+        summary="The app window is in background (behind the lock screen)"/>
+    <variant name=".Foreground"
+        summary="The app window is in foreground (on top of the lock screen)"/>
+    <variant name=".TotalActive"
+        summary="The total amount of time an app window was active on lock
+                 screen"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.LockScreen.NoteTakingApp.AvailabilityOnScreenLock"
+    enum="LockScreenActionAvailability" expires_after="2023-02-26">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The note taking action availability state on the lock screen, recorded when
+    the user session is locked.
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.NoteTakingApp.FinalAppSessionState"
+    enum="LockScreenAppSessionState" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The state in which lock screen enabled note taking app was when the note
+    taking session ended.
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.NoteTakingApp.LaunchDurationAtLaunchCancel"
+    units="ms" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The amount time a lock screen app had been launching when the app launch was
+    canceled. Logged if the lock screen app session ends before the lock screen
+    app window is shown.
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.NoteTakingApp.LaunchRequestOrdinalNumber"
+    units="units" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    Ordinal number of a note taking app launch request from a lock screen within
+    a lock screen session. If a note taking app is launched n times during a
+    single lock screen session, this histogram will be reported with values 1
+    through n. The launch counter is reset on screen unlock.
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.NoteTakingApp.LaunchRequestReason"
+    enum="NewLockScreenNoteRequestType" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The user action that launched note taking from the lock screen.
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.NoteTakingApp.LockScreenAppUnloaded"
+    enum="LockScreenAppUnloadStatus" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    Reported when a note taking app is unloaded from the lock screen apps
+    profile while lock screen note taking is available. Reports the unload
+    reason type, which can be used to deduce whether the app can be reloaded in
+    the profile. The app unload event is not reported if the app is unloaded due
+    to lock screen note taking becoming unavailble (e.g. when the user unlocks
+    the screen).
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.NoteTakingApp.LockScreenInstallationDuration"
+    units="ms" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    Amount of time needed to install a copy of a lock screen note taking app
+    into lock screen apps profile.
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.NoteTakingApp.NoteTakingExitReason"
+    enum="LockScreenNoteTakingExitReason" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The reason the note taking on lock screen was ended (and lock screen app
+    window was closed).
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.NoteTakingApp.ReloadCountOnAppTermination"
+    units="units" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    Reported when a note taking app is terminated in the lock screen apps
+    profile. It reports the number of times the app was reloaded in the lock
+    screen apps profile during the current lock screen session (prior to the
+    termination).
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.NoteTakingApp.TimeToLoadAppWindowContents"
+    units="ms" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The amount of time needed to load a note taking app window contents on the
+    lock screen - i.e. the time passed from the user requesting an app launch to
+    the app window contents being loaded.
+  </summary>
+</histogram>
+
+<histogram name="Apps.LockScreen.NoteTakingApp.TimeToShowWindow" units="ms"
+    expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The amount of time needed to launch a note taking app window from the lock
+    screen - i.e. the time passed from the user requesting an app launch to the
+    app window appearing on the screen.
+  </summary>
+</histogram>
+
+<histogram name="Apps.MediaApp.Load.OtherOpenWindowCount" units="windows"
+    expires_after="2023-05-11">
+  <owner>tapted@chromium.org</owner>
+  <owner>patricialor@chromium.org</owner>
+  <summary>
+    The number of other media app windows that exist when a new media app window
+    is created. Counts windows open with any supported file type, or in the
+    &quot;zero state&quot; (with no open file).
+  </summary>
+</histogram>
+
+<histogram name="Apps.NewUserFirstLauncherAction{TabletOrClamshell}"
+    enum="AppListLaunchedFrom" expires_after="M107">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records which launcher action a new user takes for the first time within a
+    session. Launcher actions include the following: activating a launcher app,
+    opening a search result from either a launcher suggestion chip or the search
+    box, or triggering an app from the continue section. The metric is recorded
+    when a launcher action performs on a new user's session for the first time.
+    Split depending on whether the first launcher action occurred in clamshell
+    or tablet mode.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram name="Apps.NoteTakingApp.DefaultLaunchResult"
+    enum="NoteTakingAppLaunchResult" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The result of attempting to launch a default note-taking app on Chrome OS.
+    Only reported if the preferred app was unspecified or failed to launch.
+  </summary>
+</histogram>
+
+<histogram name="Apps.NoteTakingApp.PreferredLaunchResult"
+    enum="NoteTakingAppLaunchResult" expires_after="2023-02-19">
+  <owner>glenrob@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The result of attempting to launch the user-specified preferred note-taking
+    app, if any, on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Apps.NumberOfFolders" units="folder(s)"
+    expires_after="2022-10-04">
+  <obsolete>
+    Deprecated in May 2022. Replaced with Apps.AppList.NumberOfFolders, which is
+    recorded periodically, for consistency with other app list metrics.
+  </obsolete>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of folders that users have in their Launcher. Includes
+    system-created folders like &quot;Linux apps&quot; or the OEM folder.
+    Recorded every time the launcher is shown.
+  </summary>
+</histogram>
+
+<histogram name="Apps.NumberOfNonSystemFolders" units="folder(s)"
+    expires_after="2022-10-04">
+  <obsolete>
+    Deprecated in May 2022. Replaced with Apps.AppList.NumberOfNonSystemFolders,
+    which is recorded periodically, for consistency with other app list metrics.
+  </obsolete>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of folders that users have in their launcher. Does not include
+    system-created folders like &quot;Linux apps&quot; or the OEM folder.
+    Recorded every time the launcher is shown.
+  </summary>
+</histogram>
+
+<histogram name="Apps.NumberOfPages" units="page(s)" expires_after="2023-02-19">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of pages that users have in the top level apps grid of their
+    Launcher. This metric is recorded every time the launcher is shown.
+  </summary>
+</histogram>
+
+<histogram
+    name="Apps.OpenedAppListSearchResultFromSearchBoxV2.{AnyNonAppBrowserWindowOpenAndNotMinimized}"
+    enum="AppListSearchResult" expires_after="M108">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records the opened launcher search results from the search box. Data is
+    gathered when a search result is opened from the search box.
+    {AnyNonAppBrowserWindowOpenAndNotMinimized} denotes whether there is any
+    non-app browser window open and not minimized when a search result is
+    opened.
+  </summary>
+  <token key="AnyNonAppBrowserWindowOpenAndNotMinimized">
+    <variant name="ExistNonAppBrowserWindowOpenAndNotMinimized"
+        summary="there exists at least one non-app browser window which is
+                 open and not minimized"/>
+    <variant name="NonAppBrowserWindowsEitherClosedOrMinimized"
+        summary="there is no open non-app browser windows or all open non-app
+                 browser windows are minimized"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.PaginationTransition.AnimationSmoothness" units="%"
+    expires_after="2023-02-12">
+<!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
+
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    Base name is deprecated as of 3/2019 in favor of
+    Apps.PaginationTransition.AnimationSmoothness.ClamshellMode and
+    Apps.PaginationTransition.AnimationSmoothness.TabletMode
+
+    Relative smoothness of animations of launcher pagination transitions. 100%
+    represents ideally smooth 60 frames per second. 50% represents only 30
+    frames per second is achieved during the animations. 0% should not happen.
+    This metric is recorded exactly once when the user starts the pagination
+    transition animation of the launcher.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Apps.PaginationTransition.DragScroll.PresentationTime" units="ms"
+    expires_after="2023-02-12">
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <owner>omrilio@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Presentation time for the apps grid scrolling operation. This starts when
+    drag starts by gesture and ends before the patination animation starts. The
+    smoothness of the pagination animation is recorded in
+    Apps.PaginationTransition.AnimationSmoothness.{TabletMode|ClamshellMode}.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency"
+    units="ms" expires_after="2022-10-24">
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <owner>omrilio@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Maximum latecy reported during one drag to scroll operation on apps grid.
+  </summary>
+</histogram>
+
+<histogram name="Apps.PreferredApps.EntryCount" units="entries"
+    expires_after="2023-03-05">
+  <owner>mxcai@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records the number of entries in the preferred apps list that was stored on
+    the disk. The preferred apps list is a vector that identifies the preferred
+    app for an intent filter. This value is recorded every time on user login
+    and we read the stored data from the disk.
+  </summary>
+</histogram>
+
+<histogram name="Apps.RestoreArcAppsResult" enum="RestoreResult"
+    expires_after="2022-12-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sstan@chromium.org</owner>
+  <summary>
+    Records whether all Arc app windows have been restored. This is logged when
+    the restoration process finishes during the system startup phase.
+  </summary>
+</histogram>
+
+<histogram name="Apps.RestoreArcAppStates" enum="ArcRestoreState"
+    expires_after="2022-12-04">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sstan@chromium.org</owner>
+  <summary>
+    Records restoration result states of Arc apps. This is logged when the
+    restoration process finishes during the system startup phase.
+  </summary>
+</histogram>
+
+<histogram name="Apps.RestoreArcWindowCount" units="units"
+    expires_after="2023-02-12">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sstan@chromium.org</owner>
+  <summary>
+    Records the number of restored ARC app windows in Chrome OS. This is logged
+    during the system startup phase. This histogram is capped at 100; values
+    above this go into the overflow bucket.
+  </summary>
+</histogram>
+
+<histogram name="Apps.RestoreBrowserResult" enum="RestoreTabResult"
+    expires_after="2022-12-04">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Records the browser restore result, whether tabs can be restored, when the
+    browser is restored during the system startup phase.
+  </summary>
+</histogram>
+
+<histogram name="Apps.RestoredAppLaunch" enum="AppType"
+    expires_after="2023-02-12">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Records the number of app launching restored grouped by app type, when the
+    system startup.
+  </summary>
+</histogram>
+
+<histogram name="Apps.RestoreForCrashNotification" enum="RestoreAction"
+    expires_after="2023-02-12">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Records user actions on the full restore for crash notification, when the
+    notification is closed.
+  </summary>
+</histogram>
+
+<histogram name="Apps.RestoreInitSetting" enum="RestoreSetting"
+    expires_after="2023-02-12">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Records the restore apps and pages preference setting, when a profile is
+    loaded.
+  </summary>
+</histogram>
+
+<histogram name="Apps.RestoreNoGhostWindowReason" enum="ArcNoWindowReason"
+    expires_after="2023-02-12">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sstan@chromium.org</owner>
+  <summary>
+    Records the reason of ARC app launched without ghost window on ARC VM.
+  </summary>
+</histogram>
+
+<histogram name="Apps.RestoreNotification" enum="RestoreAction"
+    expires_after="2023-02-12">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Records user actions on the full restore notification, when the notification
+    is closed.
+  </summary>
+</histogram>
+
+<histogram name="Apps.RestoreSetting" enum="RestoreSetting"
+    expires_after="2023-02-12">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Records the restore apps and pages preference setting, when the preference
+    setting is changed.
+  </summary>
+</histogram>
+
+<histogram name="Apps.RunningDuration.{AppType}" units="ms"
+    expires_after="2023-06-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Recorded the app running duration for {AppType} in Chrome OS. This is logged
+    when more than 24 hours pass after last log, or during the system startup
+    phase if more than 24 hours passed after last log.
+  </summary>
+  <token key="AppType" variants="AppType"/>
+</histogram>
+
+<histogram name="Apps.RunningPercentage.{AppType}" units="%"
+    expires_after="2022-07-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Recorded the app running duration percentage for {AppType} in Chrome OS.
+    This is logged when more than 24 hours pass after last log, or during the
+    system startup phase if more than 24 hours passed after last log.
+  </summary>
+  <token key="AppType" variants="AppType"/>
+</histogram>
+
+<histogram
+    name="Apps.ScrollableShelf.AnimationSmoothness{HomeLauncherVisibility}"
+    units="%" expires_after="2022-12-14">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations of the scrollable shelf when scrolling.
+    100% represents ideally smooth 60 frames per second. 50% represents only 30
+    frames per second is achieved during the animations. 0% should not happen.
+    This metric is recorded exactly once when the user scrolls over the
+    scrollable shelf. {HomeLauncherVisibility}
+  </summary>
+  <token key="HomeLauncherVisibility" variants="HomeLauncherVisibility">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Apps.ScrollableShelf.Drag.PresentationTime.MaxLatency{HomeLauncherVisibility}"
+    units="ms" expires_after="2022-12-06">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Maximum latency of the presentation time of the drag scroll in the
+    scrollable shelf. {HomeLauncherVisibility}
+  </summary>
+  <token key="HomeLauncherVisibility" variants="HomeLauncherVisibility"/>
+</histogram>
+
+<histogram
+    name="Apps.ScrollableShelf.Drag.PresentationTime{HomeLauncherVisibility}"
+    units="ms" expires_after="2022-12-02">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Presentation time of the drag scroll in the scrollable shelf in
+    milliseconds.
+
+    Warning: This histogram was expired from 2021-01-10 to 2022-06-02; data may
+    be missing. {HomeLauncherVisibility}
+  </summary>
+  <token key="HomeLauncherVisibility" variants="HomeLauncherVisibility"/>
+</histogram>
+
+<histogram name="Apps.SessionRestoreExitResult" enum="SessionRestoreExitResult"
+    expires_after="2022-12-04">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Records the last session restore exit result. This is logged when the
+    restoration process finishes during the system startup phase.
+  </summary>
+</histogram>
+
+<histogram name="Apps.SessionRestoreWindowCount"
+    enum="SessionRestoreWindowCount" expires_after="2022-12-04">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Records the restored browser window count from session restore. This is
+    logged when the restoration process finishes during the system startup
+    phase.
+  </summary>
+</histogram>
+
+<histogram name="Apps.StateTransition.AnimationSmoothness{AppListTargetState}"
+    units="%" expires_after="2022-12-30">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <owner>src/ash/app_list/OWNERS</owner>
+  <summary>
+    Relative smoothness of animations of peeking launcher state transitions.
+    100% represents ideally smooth 60 frames per second. 50% represents only 30
+    frames per second is achieved during the animations. 0% should not happen.
+    This metric is recorded exactly once when the user switches states of the
+    launcher. {AppListTargetState}
+  </summary>
+  <token key="AppListTargetState">
+    <variant name=""/>
+    <variant name=".Close.ClamshellMode" summary="Closing the app list"/>
+    <variant name=".FullscreenAllApps.ClamshellMode"
+        summary="Fullscreen and showing all apps"/>
+    <variant name=".FullscreenSearch.ClamshellMode"
+        summary="Fullscreen with search results"/>
+    <variant name=".Half.ClamshellMode"
+        summary="Half-visible state of the app list"/>
+    <variant name=".Peeking.ClamshellMode"
+        summary="Peek state of the app list"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.TimeBetweenAppInstallAndLaunch{TabletOrClamshell}"
+    units="ms" expires_after="M112">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Time between when an app is installed and when the user launches the app.
+    Recorded the first time the user launches the app. The clamshell or tablet
+    mode state is the state when the app is launched.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram
+    name="Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction{TabletOrClamshell}"
+    units="ms" expires_after="M107">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The time duration between session activation and the first launcher action
+    on a new user session. Launcher actions include the following: activating a
+    launcher app and opening a search result from either a launcher suggestion
+    chip or the search box. This metric is recorded when a new user triggers the
+    launcher action for the first time.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram
+    name="Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening{TabletOrClamshell}"
+    units="ms" expires_after="M107">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The time duration between session activation and opening the Launcher for
+    the first time on a new user session. This metric is recorded when a new
+    user opens the laucnher for the first time.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram name="Apps.UsageTime.{AppType}" units="ms"
+    expires_after="2023-06-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records the amount of time that {AppType} were used in the last five minutes
+    on Chrome OS. This is logged every five minutes.
+  </summary>
+  <token key="AppType" variants="AppType"/>
+</histogram>
+
+<histogram name="Apps.UsageTimeV2.{AppTypeV2}" units="ms"
+    expires_after="2023-06-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records the amount of time that {AppTypeV2} were used in the last five
+    minutes on Chrome OS. This is logged every five minutes.
+  </summary>
+  <token key="AppTypeV2" variants="AppTypeV2"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

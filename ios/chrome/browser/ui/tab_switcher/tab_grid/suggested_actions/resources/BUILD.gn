@@ -1,0 +1,46 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+group("resources") {
+  deps = [
+    ":suggested_action_history",
+    ":suggested_action_open_tabs",
+    ":suggested_action_recent_tabs",
+    ":suggested_action_web",
+  ]
+}
+
+imageset("suggested_action_history") {
+  sources = [
+    "suggested_action_history.imageset/Contents.json",
+    "suggested_action_history.imageset/suggested_action_history@2x.png",
+    "suggested_action_history.imageset/suggested_action_history@3x.png",
+  ]
+}
+
+imageset("suggested_action_recent_tabs") {
+  sources = [
+    "suggested_action_recent_tabs.imageset/Contents.json",
+    "suggested_action_recent_tabs.imageset/suggested_action_recent_tabs@2x.png",
+    "suggested_action_recent_tabs.imageset/suggested_action_recent_tabs@3x.png",
+  ]
+}
+
+imageset("suggested_action_open_tabs") {
+  sources = [
+    "suggested_action_open_tabs.imageset/Contents.json",
+    "suggested_action_open_tabs.imageset/suggested_action_open_tabs@2x.png",
+    "suggested_action_open_tabs.imageset/suggested_action_open_tabs@3x.png",
+  ]
+}
+
+imageset("suggested_action_web") {
+  sources = [
+    "suggested_action_web.imageset/Contents.json",
+    "suggested_action_web.imageset/suggested_action_web@2x.png",
+    "suggested_action_web.imageset/suggested_action_web@3x.png",
+  ]
+}

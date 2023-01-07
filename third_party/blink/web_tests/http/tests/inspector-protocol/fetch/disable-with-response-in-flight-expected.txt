@@ -1,0 +1,7 @@
+Tests that requests are completed if interception is disabled between request and response.
+Request intercepted: resource.php?size=10
+Continuing request
+Disabling request interception
+Body:
+**********
+

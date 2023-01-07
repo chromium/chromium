@@ -24,21 +24,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_LIGHT_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_LIGHT_SOURCE_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
+namespace gfx {
+class Point3F;
+}
+
 namespace blink {
 
-enum LightType { LS_DISTANT, LS_POINT, LS_SPOT };
+enum LightType { kLsDistant, kLsPoint, kLsSpot };
 
 class PLATFORM_EXPORT LightSource : public RefCounted<LightSource> {
 
  public:
   LightSource(LightType type) : type_(type) {}
+  LightSource(const LightSource&) = delete;
+  LightSource& operator=(const LightSource&) = delete;
 
   virtual ~LightSource();
 
@@ -47,15 +51,13 @@ class PLATFORM_EXPORT LightSource : public RefCounted<LightSource> {
 
   virtual bool SetAzimuth(float) { return false; }
   virtual bool SetElevation(float) { return false; }
-  virtual bool SetPosition(const FloatPoint3D&) { return false; }
-  virtual bool SetPointsAt(const FloatPoint3D&) { return false; }
+  virtual bool SetPosition(const gfx::Point3F&) { return false; }
+  virtual bool SetPointsAt(const gfx::Point3F&) { return false; }
   virtual bool SetSpecularExponent(float) { return false; }
   virtual bool SetLimitingConeAngle(float) { return false; }
 
  private:
   LightType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(LightSource);
 };
 
 }  // namespace blink

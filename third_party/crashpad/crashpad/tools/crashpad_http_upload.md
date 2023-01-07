@@ -1,5 +1,5 @@
 <!--
-Copyright 2017 The Crashpad Authors. All rights reserved.
+Copyright 2017 The Crashpad Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ crashpad_http_upload—Send an HTTP POST request
 
 ## Synopsis
 
-**crashpad_http_uplaod** [_OPTION…_]
+**crashpad_http_upload** [_OPTION…_]
 
 ## Description
 
@@ -115,7 +115,7 @@ Report bugs at https://crashpad.chromium.org/bug/new.
 ## Copyright
 
 Copyright 2017 [The Crashpad
-Authors](https://chromium.googlesource.com/crashpad/crashpad/+/master/AUTHORS).
+Authors](https://chromium.googlesource.com/crashpad/crashpad/+/main/AUTHORS).
 
 ## License
 

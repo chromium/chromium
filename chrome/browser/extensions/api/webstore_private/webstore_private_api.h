@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/extensions/active_install_data.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/webstore_install_helper.h"
 #include "chrome/browser/extensions/webstore_installer.h"
@@ -22,10 +22,12 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 // TODO(https://crbug.com/1060801): Here and elsewhere, possibly switch build
-// flag to #if defined(OS_CHROMEOS)
+// flag to #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+class Profile;
 
 namespace content {
 class GpuFeatureChecker;
@@ -49,8 +51,11 @@ class WebstorePrivateApi {
       Profile* profile,
       const std::string& extension_id);
 
-  // Clear the pending approvals. This should be used for testing only.
+  // Clear the pending approvals. This should only be used for testing.
   static void ClearPendingApprovalsForTesting();
+
+  // Get the count of pending approvals. This should only be used for testing.
+  static int GetPendingApprovalsCountForTesting();
 };
 
 class WebstorePrivateBeginInstallWithManifest3Function
@@ -101,8 +106,8 @@ class WebstorePrivateBeginInstallWithManifest3Function
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   void OnFrictionPromptDone(bool result);
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
-  void OnRequestPromptDone(ExtensionInstallPrompt::Result result);
+  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
+  void OnRequestPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
   void OnBlockByPolicyPromptDone();
 
   void HandleInstallProceed();
@@ -111,8 +116,6 @@ class WebstorePrivateBeginInstallWithManifest3Function
   ExtensionFunction::ResponseValue BuildResponse(
       api::webstore_private::Result result,
       const std::string& error);
-  std::unique_ptr<base::ListValue> CreateResults(
-      api::webstore_private::Result result) const;
 
   bool ShouldShowFrictionDialog(Profile* profile);
   void ShowInstallFrictionDialog(content::WebContents* contents);
@@ -127,11 +130,16 @@ class WebstorePrivateBeginInstallWithManifest3Function
                                  content::WebContents* contents,
                                  base::OnceClosure done_callback);
 
+  // Adds friction accepted events to Safe Browsing metrics collector for
+  // further metrics logging. Called when a user decides to accept the friction
+  // prompt. Note that the extension may not be eventually installed.
+  void ReportFrictionAcceptedEvent();
+
   const Params::Details& details() const { return params_->details; }
 
-  ChromeExtensionFunctionDetails chrome_details_;
-
   std::unique_ptr<Params> params_;
+
+  raw_ptr<Profile> profile_ = nullptr;
 
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
 
@@ -179,8 +187,6 @@ class WebstorePrivateCompleteInstallFunction
 
   void OnInstallSuccess(const std::string& id);
 
-  ChromeExtensionFunctionDetails chrome_details_;
-
   std::unique_ptr<WebstoreInstaller::Approval> approval_;
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
 };
@@ -197,8 +203,6 @@ class WebstorePrivateEnableAppLauncherFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateGetBrowserLoginFunction : public ExtensionFunction {
@@ -213,8 +217,6 @@ class WebstorePrivateGetBrowserLoginFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateGetStoreLoginFunction : public ExtensionFunction {
@@ -229,8 +231,6 @@ class WebstorePrivateGetStoreLoginFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateSetStoreLoginFunction : public ExtensionFunction {
@@ -245,8 +245,6 @@ class WebstorePrivateSetStoreLoginFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateGetWebGLStatusFunction : public ExtensionFunction {
@@ -295,8 +293,6 @@ class WebstorePrivateIsInIncognitoModeFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateLaunchEphemeralAppFunction : public ExtensionFunction {
@@ -318,8 +314,6 @@ class WebstorePrivateLaunchEphemeralAppFunction : public ExtensionFunction {
   ExtensionFunction::ResponseValue BuildResponse(
       api::webstore_private::Result result,
       const std::string& error);
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateGetEphemeralAppsEnabledFunction
@@ -352,8 +346,6 @@ class WebstorePrivateIsPendingCustodianApprovalFunction
   ExtensionFunction::ResponseAction Run() override;
 
   ExtensionFunction::ResponseValue BuildResponse(bool result);
-
-  ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class WebstorePrivateGetReferrerChainFunction : public ExtensionFunction {
@@ -363,15 +355,16 @@ class WebstorePrivateGetReferrerChainFunction : public ExtensionFunction {
 
   WebstorePrivateGetReferrerChainFunction();
 
+  WebstorePrivateGetReferrerChainFunction(
+      const WebstorePrivateGetReferrerChainFunction&) = delete;
+  WebstorePrivateGetReferrerChainFunction& operator=(
+      const WebstorePrivateGetReferrerChainFunction&) = delete;
+
  private:
   ~WebstorePrivateGetReferrerChainFunction() override;
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstorePrivateGetReferrerChainFunction);
 };
 
 class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
@@ -381,36 +374,21 @@ class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
 
   WebstorePrivateGetExtensionStatusFunction();
 
+  WebstorePrivateGetExtensionStatusFunction(
+      const WebstorePrivateGetExtensionStatusFunction&) = delete;
+  WebstorePrivateGetExtensionStatusFunction& operator=(
+      const WebstorePrivateGetExtensionStatusFunction&) = delete;
+
  private:
   ~WebstorePrivateGetExtensionStatusFunction() override;
 
   ExtensionFunction::ResponseValue BuildResponseWithoutManifest(
-      const ExtensionId& extension_id,
-      Profile* profile);
+      const ExtensionId& extension_id);
   void OnManifestParsed(const ExtensionId& extension_id,
                         data_decoder::DataDecoder::ValueOrError result);
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  ChromeExtensionFunctionDetails chrome_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstorePrivateGetExtensionStatusFunction);
-};
-
-class WebstorePrivateRequestExtensionFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("webstorePrivate.requestExtension",
-                             WEBSTOREPRIVATE_REQUESTEXTENSION)
-  WebstorePrivateRequestExtensionFunction();
-
- private:
-  ~WebstorePrivateRequestExtensionFunction() override;
-
-  // Extensionfunction:
-  ExtensionFunction::ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstorePrivateRequestExtensionFunction);
 };
 
 }  // namespace extensions

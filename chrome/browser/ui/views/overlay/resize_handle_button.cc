@@ -1,19 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/overlay/resize_handle_button.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/color_palette.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skbitmap_operations.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -21,32 +21,32 @@ namespace {
 constexpr int kResizeHandleButtonMargin = 4;
 constexpr int kResizeHandleButtonSize = 16;
 
-constexpr SkColor kResizeHandleIconColor = SK_ColorWHITE;
-
 }  // namespace
 
-namespace views {
-
 ResizeHandleButton::ResizeHandleButton(PressedCallback callback)
-    : ImageButton(std::move(callback)) {
+    : views::ImageButton(std::move(callback)) {
   SetSize(gfx::Size(kResizeHandleButtonSize, kResizeHandleButtonSize));
-  SetImageForQuadrant(OverlayWindowViews::WindowQuadrant::kBottomRight);
+
+  // The ResizeHandleButton has no action and is just for display to hint to the
+  // user that the window can be dragged. It should not be focusable.
+  SetFocusBehavior(FocusBehavior::NEVER);
 
   // Accessibility.
   const std::u16string resize_button_label(
       l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_RESIZE_HANDLE_TEXT));
   SetAccessibleName(resize_button_label);
   SetTooltipText(resize_button_label);
-  SetInstallFocusRingOnFocus(true);
 }
 
 ResizeHandleButton::~ResizeHandleButton() = default;
 
-int ResizeHandleButton::GetHTComponent() const {
-  if (!current_quadrant_)
-    return HTNOWHERE;
+void ResizeHandleButton::OnThemeChanged() {
+  views::ImageButton::OnThemeChanged();
+  UpdateImageForQuadrant();
+}
 
-  switch (current_quadrant_.value()) {
+int ResizeHandleButton::GetHTComponent() const {
+  switch (current_quadrant_) {
     case OverlayWindowViews::WindowQuadrant::kBottomLeft:
       return HTTOPRIGHT;
     case OverlayWindowViews::WindowQuadrant::kBottomRight:
@@ -65,39 +65,44 @@ void ResizeHandleButton::SetPosition(
   // This is determined as the opposite quadrant on the window.
   switch (quadrant) {
     case OverlayWindowViews::WindowQuadrant::kBottomLeft:
-      ImageButton::SetPosition(gfx::Point(
+      views::ImageButton::SetPosition(gfx::Point(
           size.width() - kResizeHandleButtonSize - kResizeHandleButtonMargin,
           kResizeHandleButtonMargin));
       break;
     case OverlayWindowViews::WindowQuadrant::kBottomRight:
-      ImageButton::SetPosition(
+      views::ImageButton::SetPosition(
           gfx::Point(kResizeHandleButtonMargin, kResizeHandleButtonMargin));
       break;
     case OverlayWindowViews::WindowQuadrant::kTopLeft:
-      ImageButton::SetPosition(gfx::Point(
+      views::ImageButton::SetPosition(gfx::Point(
           size.width() - kResizeHandleButtonSize - kResizeHandleButtonMargin,
           size.height() - kResizeHandleButtonSize - kResizeHandleButtonMargin));
       break;
     case OverlayWindowViews::WindowQuadrant::kTopRight:
-      ImageButton::SetPosition(gfx::Point(
+      views::ImageButton::SetPosition(gfx::Point(
           kResizeHandleButtonMargin,
           size.height() - kResizeHandleButtonSize - kResizeHandleButtonMargin));
       break;
   }
 
   // Also rotate the icon to match the new corner.
-  SetImageForQuadrant(quadrant);
+  SetQuadrant(quadrant);
 }
 
-void ResizeHandleButton::SetImageForQuadrant(
+void ResizeHandleButton::SetQuadrant(
     OverlayWindowViews::WindowQuadrant quadrant) {
   if (current_quadrant_ == quadrant)
     return;
   current_quadrant_ = quadrant;
+  if (GetWidget())
+    UpdateImageForQuadrant();
+}
 
-  gfx::ImageSkia icon = gfx::CreateVectorIcon(
-      kResizeHandleIcon, kResizeHandleButtonSize, kResizeHandleIconColor);
-  switch (quadrant) {
+void ResizeHandleButton::UpdateImageForQuadrant() {
+  const SkColor color = GetColorProvider()->GetColor(kColorPipWindowForeground);
+  gfx::ImageSkia icon =
+      gfx::CreateVectorIcon(kResizeHandleIcon, kResizeHandleButtonSize, color);
+  switch (current_quadrant_) {
     case OverlayWindowViews::WindowQuadrant::kBottomLeft:
       SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);
       SetImageVerticalAlignment(views::ImageButton::ALIGN_TOP);
@@ -127,5 +132,3 @@ void ResizeHandleButton::SetImageForQuadrant(
 
 BEGIN_METADATA(ResizeHandleButton, views::ImageButton)
 END_METADATA
-
-}  // namespace views

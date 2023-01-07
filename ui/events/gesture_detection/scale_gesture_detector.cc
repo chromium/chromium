@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "ui/events/gesture_detection/motion_event.h"
 #include "ui/events/gesture_detection/scale_gesture_listeners.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace ui {
@@ -53,7 +52,7 @@ ScaleGestureDetector::ScaleGestureDetector(const Config& config,
       curr_span_y_(0),
       prev_span_x_(0),
       prev_span_y_(0),
-      in_progress_(0),
+      in_progress_(false),
       span_slop_(0),
       min_span_(0),
       anchored_scale_start_x_(0),

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -165,7 +165,7 @@ std::unique_ptr<const RecordParsed> MDnsCache::RemoveRecord(
     return result;
   }
 
-  return std::unique_ptr<const RecordParsed>();
+  return nullptr;
 }
 
 bool MDnsCache::IsCacheOverfilled() const {
@@ -189,9 +189,9 @@ base::Time MDnsCache::GetEffectiveExpiration(const RecordParsed* record) {
   base::TimeDelta ttl;
 
   if (record->ttl()) {
-    ttl = base::TimeDelta::FromSeconds(record->ttl());
+    ttl = base::Seconds(record->ttl());
   } else {
-    ttl = base::TimeDelta::FromSeconds(kZeroTTLSeconds);
+    ttl = base::Seconds(kZeroTTLSeconds);
   }
 
   return record->time_created() + ttl;

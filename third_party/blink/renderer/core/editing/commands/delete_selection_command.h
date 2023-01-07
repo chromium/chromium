@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_DELETE_SELECTION_COMMAND_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_DELETE_SELECTION_COMMAND_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/commands/composite_edit_command.h"
 #include "third_party/blink/renderer/core/editing/commands/delete_selection_options.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
@@ -61,7 +62,8 @@ class CORE_EXPORT DeleteSelectionCommand final : public CompositeEditCommand {
   void SaveTypingStyleState();
   bool HandleSpecialCaseBRDelete(EditingState*);
   void HandleGeneralDelete(EditingState*);
-  void FixupWhitespace();
+  // Replace collapsed space at |position| to U+00A0.
+  void FixupWhitespace(const Position& position);
   void MergeParagraphs(EditingState*);
   void RemovePreviouslySelectedEmptyTableRows(EditingState*);
   void CalculateTypingStyleAfterDelete();
@@ -72,6 +74,8 @@ class CORE_EXPORT DeleteSelectionCommand final : public CompositeEditCommand {
                   EditingState*,
                   ShouldAssumeContentIsAlwaysEditable =
                       kDoNotAssumeContentIsAlwaysEditable) override;
+  void RemoveCompletelySelectedNodes(Node* start_node,
+                                     EditingState* editing_state);
   void DeleteTextFromNode(Text*, unsigned, unsigned) override;
   void RemoveRedundantBlocks(EditingState*);
 

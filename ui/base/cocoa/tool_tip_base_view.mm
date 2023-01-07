@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -120,7 +120,7 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
 // Override of (apparently) a private NSView method(!)
 - (void)_removeTrackingRects:(NSTrackingRectTag *)tags count:(int)count {
   for (int i = 0; i < count; ++i) {
-    int tag = tags[i];
+    NSTrackingRectTag tag = tags[i];
     if (tag == 0)
       continue;
     DCHECK(tag == kTrackingRectTag);
@@ -128,12 +128,13 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
   }
 }
 
-// Sends a fake NSMouseExited event to the view for its current tracking rect.
+// Sends a fake NSEventTypeMouseExited event to the view for its current
+// tracking rect.
 - (void)_sendToolTipMouseExited {
   // Nothing matters except window, trackingNumber, and userData.
-  int windowNumber = [[self window] windowNumber];
+  NSInteger windowNumber = [[self window] windowNumber];
   NSTimeInterval eventTime = [[NSApp currentEvent] timestamp];
-  NSEvent* fakeEvent = [NSEvent enterExitEventWithType:NSMouseExited
+  NSEvent* fakeEvent = [NSEvent enterExitEventWithType:NSEventTypeMouseExited
                                               location:NSZeroPoint
                                          modifierFlags:0
                                              timestamp:eventTime
@@ -145,9 +146,10 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
   [_trackingRectOwner mouseExited:fakeEvent];
 }
 
-// Sends a fake NSMouseEntered event to the view for its current tracking rect.
+// Sends a fake NSEventTypeMouseEntered event to the view for its current
+// tracking rect.
 - (void)_sendToolTipMouseEntered {
-  int windowNumber = [[self window] windowNumber];
+  NSInteger windowNumber = [[self window] windowNumber];
 
   // Only send a fake mouse enter if the mouse is actually over the window,
   // versus over a window which overlaps it (see http://crbug.com/883269).
@@ -157,7 +159,7 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
 
   // Nothing matters except window, trackingNumber, and userData.
   NSTimeInterval eventTime = [[NSApp currentEvent] timestamp];
-  NSEvent* fakeEvent = [NSEvent enterExitEventWithType:NSMouseEntered
+  NSEvent* fakeEvent = [NSEvent enterExitEventWithType:NSEventTypeMouseEntered
                                               location:NSZeroPoint
                                          modifierFlags:0
                                              timestamp:eventTime

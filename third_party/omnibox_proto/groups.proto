@@ -1,0 +1,143 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'GroupsProto';
+
+package omnibox;
+
+// Suggestion group configurations supported by Chrome Omnibox. Contains
+// information about how to display the suggestion groups.
+message GroupConfig {
+  // The optional header text the group must appear under.
+  optional string header_text = 1;
+
+  enum SideType {
+    DEFAULT_PRIMARY = 0;
+    SECONDARY = 1;
+  }
+
+  // Indicates the primary or secondary column of suggestions.
+  optional SideType side_type = 2;
+
+  enum RenderType {
+    DEFAULT_VERTICAL = 0;
+    HORIZONTAL = 1;
+    GRID = 2;
+  }
+
+  // Indicates how the group will be rendered.
+  optional RenderType render_type = 3;
+
+  enum Visibility {
+    DEFAULT_VISIBLE = 0;
+    HIDDEN = 1;
+  }
+
+  // Indicates whether the group is initially hidden (collapsed).
+  optional Visibility visibility = 4;
+
+  // Indicates the reason why this suggestion shows up.
+  optional uint32 why_this_result_reason = 5;
+
+  // The section of the list where the group belongs.
+  // This field is set by Chrome and should not be populated in GWS.
+  optional GroupSection section = 6;
+
+  // Next ID: 7
+}
+
+// Contains information about the suggestion groups supported by Chrome Omnibox.
+// Specifically the mapping from suggestion group IDs (GroupId) to suggestion
+// group configurations (GroupConfig).
+message GroupsInfo {
+  map<uint32, GroupConfig> group_configs = 1;
+}
+
+// Suggestion group IDs supported by Chrome Omnibox. These entries must not
+// be removed or renumbered.
+enum GroupId {
+  GROUP_INVALID = -1;
+
+  // Reserved for Polaris zero-prefix suggestions.
+  // Produced by ZeroSuggestProvider.
+  GROUP_PREVIOUS_SEARCH_RELATED = 10000;
+  GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS = 10001;
+  GROUP_TRENDS = 10002;
+  GROUP_TRENDS_ENTITY_CHIPS = 10003;
+  GROUP_RELATED_QUERIES = 10004;
+  GROUP_VISITED_DOC_RELATED = 10005;
+  GROUP_POLARIS_RESERVED_MAX = 19999;
+
+  // Mobile-specific auxiliary suggestions. These suggestions are placed on top
+  // of any other content.
+  GROUP_MOBILE_SEARCH_READY_OMNIBOX = 30000;
+  GROUP_MOBILE_MOST_VISITED = 30001;
+  GROUP_MOBILE_CLIPBOARD = 30002;
+
+  // Reserved for personalized zero-prefix suggestions.
+  // Produced by ZeroSuggestProvider and LocalHistoryZeroSuggestProvider.
+  GROUP_PERSONALIZED_ZERO_SUGGEST = 40000;
+
+  // Cross platform suggestions with vanilla visual representation (i.e.
+  // vertical, primary column, and no header), but useful for sorting.
+  GROUP_STARTER_PACK = 50000;
+  GROUP_SEARCH = 50001;
+  GROUP_OTHER_NAVS = 50002;  // E.g., bookmarks, history, etc.
+  GROUP_DOCUMENT = 50003;    // E.g., Drive docs, slides, sheets, etc.
+  GROUP_HISTORY_CLUSTER = 50004;
+}
+
+// Suggestion group sections determine the order in which suggestion groups
+// appear in the result list relative to one another. A group with a section of
+// a lower numeric value comes before a group with a section of a higher value.
+enum GroupSection {
+  // The default section. Any group with this section is placed above all other
+  // groups. Must not be removed or renumbered and must have the lowest value.
+  SECTION_DEFAULT = 0;
+
+  // Mobile-specific auxiliary suggestions. These suggestions are sourced on
+  // device, and appear above any other content.
+  // SECTION_MOBILE_VERBATIM hosts:
+  // Search Ready Omnibox / Verbatim match
+  SECTION_MOBILE_VERBATIM = 1;
+
+  // SECTION_MOBILE_CLIPBOARD hosts:
+  // - Text you copied
+  // - Link you copied
+  // - Image you copied
+  SECTION_MOBILE_CLIPBOARD = 2;
+
+  // Clipboard suggestions
+  // SECTION_MOBILE_MOST_VISITED hosts a horizontal carousel with:
+  // - Most Visited Tiles
+  // - Organic Repeatable Queries
+  SECTION_MOBILE_MOST_VISITED = 3;
+
+  // A contiguous range reserved for remote zero-prefix suggestions.
+  // The sections are dynamically assigned to the groups found in the server
+  // response based on the order in which they appear in the results.
+  // Accommodates up to 10 distinct suggestion groups in the server response.
+  SECTION_REMOTE_ZPS_1 = 4;
+  SECTION_REMOTE_ZPS_2 = 5;
+  SECTION_REMOTE_ZPS_3 = 6;
+  SECTION_REMOTE_ZPS_4 = 7;
+  SECTION_REMOTE_ZPS_5 = 8;
+  SECTION_REMOTE_ZPS_6 = 9;
+  SECTION_REMOTE_ZPS_7 = 10;
+  SECTION_REMOTE_ZPS_8 = 11;
+  SECTION_REMOTE_ZPS_9 = 12;
+  SECTION_REMOTE_ZPS_10 = 13;
+
+  // Cross platform suggestions with vanilla visual representation (i.e.
+  // vertical, primary column, and no header), but useful for sorting.
+  SECTION_STARTER_PACK = 100;
+  SECTION_SEARCH = 101;
+  SECTION_OTHER_NAVS = 102;
+  SECTION_DOCUMENT = 103;
+  SECTION_HISTORY_CLUSTER = 104;
+}

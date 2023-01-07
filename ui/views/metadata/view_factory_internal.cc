@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ ViewBuilderCore::~ViewBuilderCore() = default;
 
 ViewBuilderCore& ViewBuilderCore::operator=(ViewBuilderCore&&) = default;
 
-std::unique_ptr<View> ViewBuilderCore::Build() {
+std::unique_ptr<View> ViewBuilderCore::Build() && {
   return DoBuild();
 }
 
@@ -27,13 +27,17 @@ void ViewBuilderCore::AddPropertySetter(
 }
 
 void ViewBuilderCore::CreateChildren(View* parent) {
-  for (auto& builder : children_)
-    parent->AddChildView(builder.get().DoBuild());
+  for (auto& builder : children_) {
+    if (builder.second)
+      parent->AddChildViewAt(builder.first->DoBuild(), builder.second.value());
+    else
+      parent->AddChildView(builder.first->DoBuild());
+  }
 }
 
 void ViewBuilderCore::SetProperties(View* view) {
   for (auto& property : property_list_)
-    property.get()->SetProperty(view);
+    property->SetProperty(view);
 }
 
 }  // namespace internal

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -192,20 +192,17 @@ public class PickerCategoryView extends RelativeLayout
      *         selection.
      * @param contentResolver The ContentResolver to use to retrieve image metadata from disk.
      * @param multiSelectionAllowed Whether to allow the user to select more than one image.
-     * @param animatedThumbnailsSupported Whether animated thumbnails should be generated for video
-     *         clips.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public PickerCategoryView(WindowAndroid windowAndroid, ContentResolver contentResolver,
-            boolean multiSelectionAllowed, boolean animatedThumbnailsSupported,
-            PhotoPickerToolbar.PhotoPickerToolbarDelegate delegate) {
+            boolean multiSelectionAllowed, PhotoPickerToolbar.PhotoPickerToolbarDelegate delegate) {
         super(windowAndroid.getContext().get());
         mWindowAndroid = windowAndroid;
         Context context = mWindowAndroid.getContext().get();
         mContentResolver = contentResolver;
         mMultiSelectionAllowed = multiSelectionAllowed;
 
-        mDecoderServiceHost = new DecoderServiceHost(this, context, animatedThumbnailsSupported);
+        mDecoderServiceHost = new DecoderServiceHost(this, context);
         mDecoderServiceHost.bind();
 
         mSelectionDelegate = new SelectionDelegate<PickerBitmap>();
@@ -221,8 +218,7 @@ public class PickerCategoryView extends RelativeLayout
         int titleId = multiSelectionAllowed ? R.string.photo_picker_select_images
                                             : R.string.photo_picker_select_image;
         PhotoPickerToolbar toolbar = (PhotoPickerToolbar) mSelectableListLayout.initializeToolbar(
-                R.layout.photo_picker_toolbar, mSelectionDelegate, titleId, 0, 0, null, false,
-                false);
+                R.layout.photo_picker_toolbar, mSelectionDelegate, titleId, 0, 0, null, false);
         toolbar.setNavigationOnClickListener(this);
         toolbar.setDelegate(delegate);
         Button doneButton = (Button) toolbar.findViewById(R.id.done);
@@ -288,7 +284,7 @@ public class PickerCategoryView extends RelativeLayout
      */
     public void startVideoPlaybackAsync(Uri uri) {
         if (mDialog == null) return;
-        mVideoPlayer.startVideoPlaybackAsync(uri, mDialog.getWindow().getDecorView());
+        mVideoPlayer.startVideoPlaybackAsync(uri, mDialog.getWindow());
     }
 
     /**
@@ -661,9 +657,9 @@ public class PickerCategoryView extends RelativeLayout
     private void recordFinalUmaStats(int action) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.PhotoPicker.DialogAction", action, ACTION_BOUNDARY);
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Android.PhotoPicker.DecodeRequests", mPickerAdapter.getDecodeRequestCount());
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Android.PhotoPicker.CacheHits", mPickerAdapter.getCacheHitCount());
     }
 

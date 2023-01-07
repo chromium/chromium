@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/android/path_utils.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_android.h"
@@ -28,7 +28,7 @@ struct RunState {
         should_quit(false) {
   }
 
-  base::MessagePump::Delegate* delegate;
+  raw_ptr<base::MessagePump::Delegate> delegate;
 
   // Used to count how many Run() invocations are on the stack.
   int run_depth;
@@ -49,6 +49,9 @@ class Waitable {
                            base::LeakySingletonTraits<Waitable>>::get();
   }
 
+  Waitable(const Waitable&) = delete;
+  Waitable& operator=(const Waitable&) = delete;
+
   // Signals that there are more work to do.
   void Signal() { waitable_event_.Signal(); }
 
@@ -68,8 +71,6 @@ class Waitable {
                         base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
   base::WaitableEvent waitable_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(Waitable);
 };
 
 // The MessagePumpForUI implementation for test purpose.
@@ -159,11 +160,12 @@ class MessagePumpForUIStub : public base::MessagePumpForUI {
     }
   }
 
-  void ScheduleDelayedWork(const base::TimeTicks& delayed_work_time) override {
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override {
     if (g_state && g_state->run_depth > 1) {
       Waitable::GetInstance()->Signal();
     } else {
-      MessagePumpForUI::ScheduleDelayedWork(delayed_work_time);
+      MessagePumpForUI::ScheduleDelayedWork(next_work_info);
     }
   }
 };
@@ -172,16 +174,19 @@ std::unique_ptr<base::MessagePump> CreateMessagePumpForUIStub() {
   return std::unique_ptr<base::MessagePump>(new MessagePumpForUIStub());
 }
 
-// Provides the test path for DIR_SOURCE_ROOT and DIR_ANDROID_APP_DATA.
+// Provides the test path for paths overridden during tests.
 bool GetTestProviderPath(int key, base::FilePath* result) {
   switch (key) {
+    // On Android, our tests don't have permission to write to DIR_MODULE.
+    // gtest/test_runner.py pushes data to external storage.
     // TODO(agrieve): Stop overriding DIR_ANDROID_APP_DATA.
     // https://crbug.com/617734
     // Instead DIR_ASSETS should be used to discover assets file location in
     // tests.
     case base::DIR_ANDROID_APP_DATA:
     case base::DIR_ASSETS:
-    case base::DIR_SOURCE_ROOT:
+    case base::DIR_SRC_TEST_DATA_ROOT:
+    case base::DIR_GEN_TEST_DATA_ROOT:
       CHECK(g_test_data_dir != nullptr);
       *result = *g_test_data_dir;
       return true;
@@ -203,27 +208,16 @@ void InitPathProvider(int key) {
 
 namespace base {
 
-void InitAndroidTestLogging() {
-  logging::LoggingSettings settings;
-  settings.logging_dest =
-      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
-  logging::InitLogging(settings);
-  // To view log output with IDs and timestamps use "adb logcat -v threadtime".
-  logging::SetLogItems(false,    // Process ID
-                       false,    // Thread ID
-                       false,    // Timestamp
-                       false);   // Tick count
-}
-
 void InitAndroidTestPaths(const FilePath& test_data_dir) {
   if (g_test_data_dir) {
     CHECK(test_data_dir == *g_test_data_dir);
     return;
   }
   g_test_data_dir = new FilePath(test_data_dir);
-  InitPathProvider(DIR_SOURCE_ROOT);
   InitPathProvider(DIR_ANDROID_APP_DATA);
   InitPathProvider(DIR_ASSETS);
+  InitPathProvider(DIR_SRC_TEST_DATA_ROOT);
+  InitPathProvider(DIR_GEN_TEST_DATA_ROOT);
 }
 
 void InitAndroidTestMessageLoop() {

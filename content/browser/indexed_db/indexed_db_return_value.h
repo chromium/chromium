@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_RETURN_VALUE_H_
 
 #include "content/browser/indexed_db/indexed_db_value.h"
-#include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 
@@ -17,7 +16,7 @@ namespace content {
 // value cannot (at least easily) be amended to the object being written to the
 // database, so they are kept separately, and sent back with the original data
 // so that the render process can amend the returned object.
-struct CONTENT_EXPORT IndexedDBReturnValue : public IndexedDBValue {
+struct IndexedDBReturnValue : public IndexedDBValue {
   // Destructively converts an IndexedDBReturnValue to a Mojo ReturnValue.
   static blink::mojom::IDBReturnValuePtr ConvertReturnValue(
       IndexedDBReturnValue* value);

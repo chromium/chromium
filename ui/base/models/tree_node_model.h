@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,16 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "ui/base/models/tree_model.h"
-
-namespace bookmarks {
-class BookmarkModel;
-}
 
 namespace ui {
 
@@ -83,6 +80,9 @@ class TreeNode : public TreeModelNode {
   explicit TreeNode(const std::u16string& title)
       : title_(title), parent_(nullptr) {}
 
+  TreeNode(const TreeNode&) = delete;
+  TreeNode& operator=(const TreeNode&) = delete;
+
   ~TreeNode() override {}
 
   // Adds |node| as a child of this node, at |index|. Returns a raw pointer to
@@ -93,7 +93,8 @@ class TreeNode : public TreeModelNode {
     DCHECK(!node->parent_);
     node->parent_ = static_cast<NodeType*>(this);
     NodeType* node_ptr = node.get();
-    children_.insert(children_.begin() + index, std::move(node));
+    children_.insert(children_.begin() + static_cast<ptrdiff_t>(index),
+                     std::move(node));
     return node_ptr;
   }
 
@@ -107,7 +108,7 @@ class TreeNode : public TreeModelNode {
     DCHECK_LT(index, children_.size());
     children_[index]->parent_ = nullptr;
     std::unique_ptr<NodeType> ptr = std::move(children_[index]);
-    children_.erase(children_.begin() + index);
+    children_.erase(children_.begin() + static_cast<ptrdiff_t>(index));
     return ptr;
   }
 
@@ -125,21 +126,21 @@ class TreeNode : public TreeModelNode {
 
   // Returns the number of all nodes in the subtree rooted at this node,
   // including this node.
-  int GetTotalNodeCount() const {
-    int count = 1;  // Start with one to include the node itself.
+  size_t GetTotalNodeCount() const {
+    size_t count = 1;  // Start with one to include the node itself.
     for (const auto& child : children_)
       count += child->GetTotalNodeCount();
     return count;
   }
 
-  // Returns the index of |node|, or -1 if |node| is not a child of this.
-  int GetIndexOf(const NodeType* node) const {
+  // Returns the index of |node|, or nullopt if |node| is not a child of this.
+  absl::optional<size_t> GetIndexOf(const NodeType* node) const {
     DCHECK(node);
-    auto i = std::find_if(children_.begin(), children_.end(),
-                          [node](const std::unique_ptr<NodeType>& ptr) {
-                            return ptr.get() == node;
-                          });
-    return i != children_.end() ? static_cast<int>(i - children_.begin()) : -1;
+    const auto i =
+        base::ranges::find(children_, node, &std::unique_ptr<NodeType>::get);
+    return i != children_.end()
+               ? absl::make_optional(static_cast<size_t>(i - children_.begin()))
+               : absl::nullopt;
   }
 
   // Sets the title of the node.
@@ -147,6 +148,15 @@ class TreeNode : public TreeModelNode {
 
   // TreeModelNode:
   const std::u16string& GetTitle() const override { return title_; }
+
+  const std::u16string& GetAccessibleTitle() const override {
+    return title_.empty() ? placeholder_accessible_title_ : title_;
+  }
+
+  void SetPlaceholderAccessibleTitle(
+      std::u16string placeholder_accessible_title) {
+    placeholder_accessible_title_ = placeholder_accessible_title;
+  }
 
   // Returns true if this == ancestor, or one of this nodes parents is
   // ancestor.
@@ -158,20 +168,45 @@ class TreeNode : public TreeModelNode {
     return parent_ ? parent_->HasAncestor(ancestor) : false;
   }
 
- private:
-  // TODO(https://crbug.com/956314): Remove this.
-  friend class bookmarks::BookmarkModel;
+  // Reorders children according to a new arbitrary order. |new_order| must
+  // contain one entry per child node, and the value of the entry at position
+  // |i| represents the new position, which must be unique and in the range
+  // between 0 (inclusive) and the number of children (exclusive).
+  void ReorderChildren(const std::vector<size_t>& new_order) {
+    const size_t children_count = children_.size();
+    DCHECK_EQ(children_count, new_order.size());
+    DCHECK_EQ(children_count,
+              std::set(new_order.begin(), new_order.end()).size());
+    TreeNodes new_children(children_count);
+    for (size_t old_index = 0; old_index < children_count; ++old_index) {
+      const size_t new_index = new_order[old_index];
+      DCHECK_LT(new_index, children_count);
+      DCHECK(children_[old_index]);
+      DCHECK(!new_children[new_index]);
+      new_children[new_index] = std::move(children_[old_index]);
+    }
+    children_ = std::move(new_children);
+  }
 
+  // Sorts children according to a comparator.
+  template <typename Compare>
+  void SortChildren(Compare comp) {
+    std::stable_sort(children_.begin(), children_.end(), comp);
+  }
+
+ private:
   // Title displayed in the tree.
   std::u16string title_;
 
+  // If set, a placeholder accessible title to fall back to if there is no
+  // title.
+  std::u16string placeholder_accessible_title_;
+
   // This node's parent.
-  NodeType* parent_;
+  raw_ptr<NodeType> parent_;
 
   // This node's children.
   TreeNodes children_;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeNode);
 };
 
 // TreeNodeWithValue ----------------------------------------------------------
@@ -191,12 +226,13 @@ class TreeNodeWithValue : public TreeNode<TreeNodeWithValue<ValueType>> {
   TreeNodeWithValue(const std::u16string& title, const ValueType& value)
       : ParentType(title), value(value) {}
 
+  TreeNodeWithValue(const TreeNodeWithValue&) = delete;
+  TreeNodeWithValue& operator=(const TreeNodeWithValue&) = delete;
+
   ValueType value;
 
  private:
   using ParentType = TreeNode<TreeNodeWithValue<ValueType>>;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeNodeWithValue);
 };
 
 // TreeNodeModel --------------------------------------------------------------
@@ -208,6 +244,10 @@ class TreeNodeModel : public TreeModel {
   // Creates a TreeNodeModel with the specified root node.
   explicit TreeNodeModel(std::unique_ptr<NodeType> root)
       : root_(std::move(root)) {}
+
+  TreeNodeModel(const TreeNodeModel&) = delete;
+  TreeNodeModel& operator=(const TreeNodeModel&) = delete;
+
   virtual ~TreeNodeModel() override {}
 
   static NodeType* AsNode(TreeModelNode* model_node) {
@@ -241,7 +281,7 @@ class TreeNodeModel : public TreeModel {
 
   std::unique_ptr<NodeType> Remove(NodeType* parent, NodeType* node) {
     DCHECK(parent);
-    return Remove(parent, size_t{parent->GetIndexOf(node)});
+    return Remove(parent, parent->GetIndexOf(node).value());
   }
 
   void NotifyObserverTreeNodesAdded(NodeType* parent,
@@ -288,7 +328,8 @@ class TreeNodeModel : public TreeModel {
     return nodes;
   }
 
-  int GetIndexOf(TreeModelNode* parent, TreeModelNode* child) const override {
+  absl::optional<size_t> GetIndexOf(TreeModelNode* parent,
+                                    TreeModelNode* child) const override {
     DCHECK(parent);
     return AsNode(parent)->GetIndexOf(AsNode(child));
   }
@@ -318,8 +359,6 @@ class TreeNodeModel : public TreeModel {
 
   // The root.
   std::unique_ptr<NodeType> root_;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeNodeModel);
 };
 
 }  // namespace ui

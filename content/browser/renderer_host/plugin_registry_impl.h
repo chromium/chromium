@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,13 +23,10 @@ class PluginRegistryImpl : public blink::mojom::PluginRegistry {
   void Bind(mojo::PendingReceiver<blink::mojom::PluginRegistry> receiver);
 
   // blink::mojom::PluginRegistry
-  void GetPlugins(bool refresh,
-                  const url::Origin& main_frame_origin,
-                  GetPluginsCallback callback) override;
+  void GetPlugins(bool refresh, GetPluginsCallback callback) override;
 
  private:
-  void GetPluginsComplete(const url::Origin& main_frame_origin,
-                          GetPluginsCallback callback,
+  void GetPluginsComplete(GetPluginsCallback callback,
                           const std::vector<WebPluginInfo>& all_plugins);
 
   int render_process_id_;

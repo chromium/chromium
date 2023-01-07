@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,24 +32,36 @@ HistogramTester::~HistogramTester() = default;
 void HistogramTester::ExpectUniqueSample(
     StringPiece name,
     HistogramBase::Sample sample,
-    HistogramBase::Count expected_count) const {
+    HistogramBase::Count expected_bucket_count) const {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
-  if (histogram) {
-    std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
-    CheckBucketCount(name, sample, expected_count, *samples);
-    CheckTotalCount(name, expected_count, *samples);
-  } else {
+  if (!histogram) {
     // No histogram means there were zero samples.
-    EXPECT_EQ(0, expected_count)
+    EXPECT_EQ(0, expected_bucket_count)
         << "Zero samples found for Histogram \"" << name << "\".";
+    return;
   }
+
+  std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
+
+  int actual_bucket_count;
+  GetBucketCountForSamples(name, sample, *samples, &actual_bucket_count);
+
+  int actual_total_count = GetTotalCountForSamples(name, *samples);
+
+  EXPECT_TRUE(expected_bucket_count == actual_bucket_count &&
+              expected_bucket_count == actual_total_count)
+      << "Histogram \"" << name << "\" did not meet its expectations. "
+      << "Bucket " << sample << " should contain " << expected_bucket_count
+      << " samples and contained " << actual_bucket_count << " samples. "
+      << "The total count of samples in the histogram should be "
+      << expected_bucket_count << " and was " << actual_total_count << ".";
 }
 
 void HistogramTester::ExpectUniqueTimeSample(
     StringPiece name,
     TimeDelta sample,
-    HistogramBase::Count expected_count) const {
-  ExpectUniqueSample(name, sample.InMilliseconds(), expected_count);
+    HistogramBase::Count expected_bucket_count) const {
+  ExpectUniqueSample(name, sample.InMilliseconds(), expected_bucket_count);
 }
 
 void HistogramTester::ExpectBucketCount(
@@ -83,6 +95,20 @@ void HistogramTester::ExpectTimeBucketCount(StringPiece name,
                                             TimeDelta sample,
                                             HistogramBase::Count count) const {
   ExpectBucketCount(name, sample.InMilliseconds(), count);
+}
+
+int64_t HistogramTester::GetTotalSum(StringPiece name) const {
+  HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
+  if (!histogram)
+    return 0;
+
+  int64_t original_sum = 0;
+  auto original_samples_it = histograms_snapshot_.find(name);
+  if (original_samples_it != histograms_snapshot_.end())
+    original_sum = original_samples_it->second->sum();
+
+  std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
+  return samples->sum() - original_sum;
 }
 
 std::vector<Bucket> HistogramTester::GetAllSamples(StringPiece name) const {
@@ -212,13 +238,20 @@ void HistogramTester::CheckBucketCount(StringPiece name,
       << ").";
 }
 
-void HistogramTester::CheckTotalCount(StringPiece name,
-                                      HistogramBase::Count expected_count,
-                                      const HistogramSamples& samples) const {
+int HistogramTester::GetTotalCountForSamples(
+    StringPiece name,
+    const HistogramSamples& samples) const {
   int actual_count = samples.TotalCount();
   auto histogram_data = histograms_snapshot_.find(name);
   if (histogram_data != histograms_snapshot_.end())
     actual_count -= histogram_data->second->TotalCount();
+  return actual_count;
+}
+
+void HistogramTester::CheckTotalCount(StringPiece name,
+                                      HistogramBase::Count expected_count,
+                                      const HistogramSamples& samples) const {
+  int actual_count = GetTotalCountForSamples(name, samples);
 
   EXPECT_EQ(expected_count, actual_count)
       << "Histogram \"" << name

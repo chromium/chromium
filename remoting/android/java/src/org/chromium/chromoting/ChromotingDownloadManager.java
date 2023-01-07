@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,10 @@ import java.util.Set;
  * Class that manages download operation for Chromoting activity.
  */
 public class ChromotingDownloadManager {
+    // Undocumented outside of Android source, but held by the Android Download Manager since at
+    // least Android M in order to send download completed broadcasts.
+    private static final String PERMISSION_SEND_DOWNLOAD_COMPLETED_INTENTS =
+            "android.permission.SEND_DOWNLOAD_COMPLETED_INTENTS";
     /**
      * Callback for download manager. This will be executed on application's main thread.
      */
@@ -108,8 +112,9 @@ public class ChromotingDownloadManager {
                 }
             };
 
-            mActivity.registerReceiver(mDownloadReceiver,
-                    new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+            ContextUtils.registerExportedBroadcastReceiver(mActivity, mDownloadReceiver,
+                    new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                    PERMISSION_SEND_DOWNLOAD_COMPLETED_INTENTS);
         }
     }
 

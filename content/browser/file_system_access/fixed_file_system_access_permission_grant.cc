@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ base::FilePath FixedFileSystemAccessPermissionGrant::GetPath() {
 }
 
 void FixedFileSystemAccessPermissionGrant::RequestPermission(
-    GlobalFrameRoutingId frame_id,
+    GlobalRenderFrameHostId frame_id,
     UserActivationState user_activation_state,
     base::OnceCallback<void(PermissionRequestOutcome)> callback) {
   std::move(callback).Run(PermissionRequestOutcome::kRequestAborted);

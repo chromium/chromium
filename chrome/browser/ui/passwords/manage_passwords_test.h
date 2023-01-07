@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,6 +27,10 @@ class ManagePasswordsUIController;
 class ManagePasswordsTest : public InProcessBrowserTest {
  public:
   ManagePasswordsTest();
+
+  ManagePasswordsTest(const ManagePasswordsTest&) = delete;
+  ManagePasswordsTest& operator=(const ManagePasswordsTest&) = delete;
+
   ~ManagePasswordsTest() override;
 
   // InProcessBrowserTest:
@@ -61,6 +64,10 @@ class ManagePasswordsTest : public InProcessBrowserTest {
   // Put the controller, icon, and bubble into a moving-password state.
   void SetupMovingPasswords();
 
+  // Always configures a signed-in user, and when |is_enabled| is true, it also
+  // configures the Sync service to sync passwords.
+  void ConfigurePasswordSync(bool is_enabled);
+
   // Get samples for |histogram|.
   std::unique_ptr<base::HistogramSamples> GetSamples(const char* histogram);
 
@@ -76,17 +83,13 @@ class ManagePasswordsTest : public InProcessBrowserTest {
   std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager();
 
   password_manager::PasswordForm password_form_;
-  password_manager::PasswordForm federated_form_;
-  autofill::FormData observed_form_;
-  autofill::FormData submitted_form_;
+  password_manager::PasswordForm insecure_credential_;
   base::HistogramTester histogram_tester_;
   password_manager::StubPasswordManagerClient client_;
   password_manager::StubPasswordManagerDriver driver_;
   password_manager::FakeFormFetcher fetcher_;
 
   base::CallbackListSubscription create_services_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagePasswordsTest);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_TEST_H_

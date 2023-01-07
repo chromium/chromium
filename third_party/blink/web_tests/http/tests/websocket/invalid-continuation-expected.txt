@@ -1,4 +1,3 @@
-CONSOLE ERROR: line 14: WebSocket connection to 'ws://127.0.0.1:8880/invalid-continuation' failed: Received unexpected continuation frame.
 Test whether WebSocket aborts the connection when it receives an unexpected continuation frame without any leading text or binary frame.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

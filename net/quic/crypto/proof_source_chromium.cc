@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "crypto/openssl_util.h"
 #include "net/cert/x509_util.h"
-#include "net/third_party/quiche/src/quic/core/crypto/crypto_protocol.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
@@ -16,9 +16,9 @@ using std::string;
 
 namespace net {
 
-ProofSourceChromium::ProofSourceChromium() {}
+ProofSourceChromium::ProofSourceChromium() = default;
 
-ProofSourceChromium::~ProofSourceChromium() {}
+ProofSourceChromium::~ProofSourceChromium() = default;
 
 bool ProofSourceChromium::Initialize(const base::FilePath& cert_path,
                                      const base::FilePath& key_path,
@@ -31,17 +31,16 @@ bool ProofSourceChromium::Initialize(const base::FilePath& cert_path,
     return false;
   }
 
-  CertificateList certs_in_file =
-      X509Certificate::CreateCertificateListFromBytes(
-          cert_data.data(), cert_data.size(), X509Certificate::FORMAT_AUTO);
+  certs_in_file_ = X509Certificate::CreateCertificateListFromBytes(
+      base::as_bytes(base::make_span(cert_data)), X509Certificate::FORMAT_AUTO);
 
-  if (certs_in_file.empty()) {
+  if (certs_in_file_.empty()) {
     DLOG(FATAL) << "No certificates.";
     return false;
   }
 
   std::vector<string> certs;
-  for (const scoped_refptr<X509Certificate>& cert : certs_in_file) {
+  for (const scoped_refptr<X509Certificate>& cert : certs_in_file_) {
     certs.emplace_back(
         x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()));
   }
@@ -79,7 +78,7 @@ bool ProofSourceChromium::GetProofInner(
     const string& server_config,
     quic::QuicTransportVersion quic_version,
     absl::string_view chlo_hash,
-    quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>* out_chain,
+    quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>* out_chain,
     quic::QuicCryptoProof* proof) {
   DCHECK(proof != nullptr);
   DCHECK(private_key_.get()) << " this: " << this;
@@ -138,7 +137,7 @@ void ProofSourceChromium::GetProof(const quic::QuicSocketAddress& server_addr,
                                    std::unique_ptr<Callback> callback) {
   // As a transitional implementation, just call the synchronous version of
   // GetProof, then invoke the callback with the results and destroy it.
-  quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain;
+  quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain> chain;
   string signature;
   string leaf_cert_sct;
   quic::QuicCryptoProof out_proof;
@@ -148,10 +147,20 @@ void ProofSourceChromium::GetProof(const quic::QuicSocketAddress& server_addr,
   callback->Run(ok, chain, out_proof, nullptr /* details */);
 }
 
-quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>
+quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>
 ProofSourceChromium::GetCertChain(const quic::QuicSocketAddress& server_address,
                                   const quic::QuicSocketAddress& client_address,
-                                  const std::string& hostname) {
+                                  const std::string& hostname,
+                                  bool* cert_matched_sni) {
+  *cert_matched_sni = false;
+  if (!hostname.empty()) {
+    for (const scoped_refptr<X509Certificate>& cert : certs_in_file_) {
+      if (cert->VerifyNameMatch(hostname)) {
+        *cert_matched_sni = true;
+        break;
+      }
+    }
+  }
   return chain_;
 }
 
@@ -189,6 +198,12 @@ void ProofSourceChromium::ComputeTlsSignature(
   sig.resize(siglen);
 
   callback->Run(true, sig, nullptr);
+}
+
+absl::InlinedVector<uint16_t, 8>
+ProofSourceChromium::SupportedTlsSignatureAlgorithms() const {
+  // Allow all signature algorithms that BoringSSL allows.
+  return {};
 }
 
 quic::ProofSource::TicketCrypter* ProofSourceChromium::GetTicketCrypter() {

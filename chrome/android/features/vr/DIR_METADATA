@@ -2,4 +2,3 @@ monorail {
   component: "Internals>XR>VR"
 }
 team_email: "xr-dev@chromium.org"
-os: ANDROID

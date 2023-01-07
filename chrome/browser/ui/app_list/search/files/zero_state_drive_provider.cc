@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,63 +8,52 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
-#include "base/files/file_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/files/file.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
+#include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/drive/file_errors.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 namespace {
 
-// Schemas of result IDs for the results list and suggestion chips.
-constexpr char kListSchema[] = "zero_state_drive://";
-constexpr char kChipSchema[] = "drive_chip://";
+using SuggestResults = std::vector<FileSuggestData>;
 
-// Outcome of a call to DriverZeroStateProvider::Start. These values persist to
-// logs. Entries should not be renumbered and numeric values should never be
-// reused.
-enum class Status {
-  kOk = 0,
-  kDriveFSNotMounted = 1,
-  kNoResults = 2,
-  kPathLocationFailed = 3,
-  kAllFilesErrored = 4,
-  kMaxValue = kAllFilesErrored,
-};
+// How long to wait before making the first request for results from the
+// ItemSuggestCache.
+constexpr base::TimeDelta kFirstUpdateDelay = base::Seconds(10);
 
-void LogStatus(Status status) {
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppList.DriveZeroStateProvider.Status",
-                            status);
+void LogLatency(base::TimeDelta latency) {
+  base::UmaHistogramTimes("Apps.AppList.DriveZeroStateProvider.Latency",
+                          latency);
 }
 
-bool IsSuggestedContentEnabled(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(
-      chromeos::prefs::kSuggestedContentEnabled);
-}
-
-// Given an absolute path representing a file in the user's Drive, returns a
-// reparented version of the path within the user's drive fs mount.
-base::FilePath ReparentToDriveMount(
-    const base::FilePath& path,
-    const drive::DriveIntegrationService* drive_service) {
-  DCHECK(!path.IsAbsolute());
-  return drive_service->GetMountPointPath().Append(path.value());
+// TODO(crbug.com/1258415): This exists to reroute results depending on which
+// launcher is enabled, and should be removed after the new launcher launch.
+ash::SearchResultDisplayType GetDisplayType() {
+  return ash::features::IsProductivityLauncherEnabled()
+             ? ash::SearchResultDisplayType::kContinue
+             : ash::SearchResultDisplayType::kList;
 }
 
 }  // namespace
@@ -72,187 +61,181 @@ base::FilePath ReparentToDriveMount(
 ZeroStateDriveProvider::ZeroStateDriveProvider(
     Profile* profile,
     SearchController* search_controller,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    drive::DriveIntegrationService* drive_service,
+    session_manager::SessionManager* session_manager)
     : profile_(profile),
-      drive_service_(
-          drive::DriveIntegrationServiceFactory::GetForProfile(profile)),
-      item_suggest_cache_(profile, std::move(url_loader_factory)),
-      suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled()) {
-  DCHECK(profile_);
+      drive_service_(drive_service),
+      session_manager_(session_manager),
+      file_suggest_service_(
+          FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile)),
+      construction_time_(base::Time::Now()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  DCHECK(profile_);
 
-  // Warm the results cache if or when drivefs is mounted by fetching from the
-  // Drive QuickAccess API. This is necessary only if the suggested files
-  // experiment is enabled, so that results are ready for display in the
-  // suggested chips on the first launcher open after login. To prevent
-  // unnecessary queries to ItemSuggest, only warm the cache if the launcher has
-  // been used before.
-  const bool launcher_used = profile->GetPrefs()->GetBoolean(
-      chromeos::prefs::kLauncherResultEverLaunched);
-  const bool gate_on_use = base::GetFieldTrialParamByFeatureAsBool(
-      app_list_features::kEnableSuggestedFiles, "gate_warm_on_launcher_use",
-      true);
-  const bool should_warm = !gate_on_use || launcher_used;
-  if (suggested_files_enabled_ && drive_service_ && should_warm) {
+  // `FileSuggestKeyedServiceFactory` ensures to build the keyed
+  // service when the app list syncable service is built. Meanwhile,
+  // `ZeroStateDriveProvider` is built only when the app list syncable service
+  // exists. Therefore, `file_suggest_service_` should always be true.
+  DCHECK(file_suggest_service_);
+
+  if (drive_service_) {
     if (drive_service_->IsMounted()) {
-      // Drivefs is mounted, so we can fetch results immediately.
+      // DriveFS is mounted, so we can fetch results immediately.
       OnFileSystemMounted();
     } else {
       // Wait for DriveFS to be mounted, then fetch results. This happens in
       // OnFileSystemMounted.
-      drive_service_->AddObserver(this);
+      drive_observation_.Observe(drive_service_);
     }
   }
-  if (base::FeatureList::IsEnabled(
-          app_list_features::kEnableLauncherSearchNormalization)) {
-    normalizer_.emplace("zero_state_drive_provider", profile, 25);
+
+  if (session_manager_)
+    session_observation_.Observe(session_manager_);
+
+  auto* power_manager = chromeos::PowerManagerClient::Get();
+  if (power_manager)
+    power_observation_.Observe(power_manager);
+
+  file_suggest_service_observation_.Observe(file_suggest_service_);
+}
+
+ZeroStateDriveProvider::~ZeroStateDriveProvider() = default;
+
+void ZeroStateDriveProvider::OnFileSystemMounted() {
+  static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
+      ash::features::kProductivityLauncher,
+      "itemsuggest_query_on_filesystem_mounted", true);
+
+  if (kUpdateCache) {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ZeroStateDriveProvider::MaybeUpdateCache,
+                       weak_factory_.GetWeakPtr()),
+        kFirstUpdateDelay);
   }
 }
 
-ZeroStateDriveProvider::~ZeroStateDriveProvider() {
-  if (suggested_files_enabled_ && drive_service_)
-    drive_service_->RemoveObserver(this);
+void ZeroStateDriveProvider::OnSessionStateChanged() {
+  static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
+      ash::features::kProductivityLauncher,
+      "itemsuggest_query_on_session_state_changed", true);
+
+  // Update cache if the user has logged in.
+  if (session_manager_->session_state() ==
+          session_manager::SessionState::ACTIVE &&
+      kUpdateCache) {
+    MaybeUpdateCache();
+  }
 }
 
-void ZeroStateDriveProvider::OnFileSystemMounted() {
-  // This method is called on login, and each time the device wakes from sleep.
-  // We only want to warm the cache once.
-  if (have_warmed_up_cache_)
-    return;
-  have_warmed_up_cache_ = true;
+void ZeroStateDriveProvider::ScreenIdleStateChanged(
+    const power_manager::ScreenIdleState& proto) {
+  static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
+      ash::features::kProductivityLauncher,
+      "itemsuggest_query_on_screen_idle_state_changed", true);
 
-  item_suggest_cache_.UpdateCache();
+  // Update cache if the screen changed from off to on.
+  if (screen_off_ && !proto.dimmed() && !proto.off() && kUpdateCache) {
+    MaybeUpdateCache();
+  }
+  screen_off_ = proto.off();
 }
 
-void ZeroStateDriveProvider::AppListShown() {
+void ZeroStateDriveProvider::ViewClosing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  item_suggest_cache_.UpdateCache();
+
+  static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
+      ash::features::kProductivityLauncher, "itemsuggest_query_on_view_closing",
+      true);
+  if (kUpdateCache) {
+    MaybeUpdateCache();
+  }
 }
 
-ash::AppListSearchResultType ZeroStateDriveProvider::ResultType() {
+ash::AppListSearchResultType ZeroStateDriveProvider::ResultType() const {
   return ash::AppListSearchResultType::kZeroStateDrive;
 }
 
+bool ZeroStateDriveProvider::ShouldBlockZeroState() const {
+  return true;
+}
+
 void ZeroStateDriveProvider::Start(const std::u16string& query) {
+  ClearResultsSilently();
+}
+
+void ZeroStateDriveProvider::StartZeroState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClearResultsSilently();
-
-  // TODO(crbug.com/1034842): Add query latency metrics.
-
-  // Exit in three cases:
-  //  - this search has a non-empty query, we only handle zero-state.
-  //  - drive fs isn't mounted, as we launch results via drive fs.
-  const bool drive_fs_mounted = drive_service_ && drive_service_->IsMounted();
-  if (!query.empty()) {
-    return;
-  } else if (!drive_fs_mounted) {
-    LogStatus(Status::kDriveFSNotMounted);
-    return;
-  }
 
   query_start_time_ = base::TimeTicks::Now();
 
   // Cancel any in-flight queries for this provider.
   weak_factory_.InvalidateWeakPtrs();
 
-  // Get the most recent results from the cache.
-  cache_results_ = item_suggest_cache_.GetResults();
-  if (!cache_results_) {
-    LogStatus(Status::kNoResults);
-    return;
-  }
-
-  std::vector<std::string> item_ids;
-  for (const auto& result : cache_results_->results) {
-    item_ids.push_back(result.id);
-  }
-
-  drive_service_->LocateFilesByItemIds(
-      item_ids, base::BindOnce(&ZeroStateDriveProvider::OnFilePathsLocated,
-                               weak_factory_.GetWeakPtr()));
+  file_suggest_service_->GetSuggestFileData(
+      FileSuggestionType::kDriveFile,
+      base::BindOnce(&ZeroStateDriveProvider::OnSuggestFileDataFetched,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void ZeroStateDriveProvider::OnFilePathsLocated(
-    base::Optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!paths) {
-    LogStatus(Status::kPathLocationFailed);
+void ZeroStateDriveProvider::OnSuggestFileDataFetched(
+    const absl::optional<SuggestResults>& suggest_results) {
+  // Fail to fetch the suggest data, so return early.
+  if (!suggest_results)
     return;
-  }
 
-  DCHECK(cache_results_);
-  DCHECK_EQ(cache_results_->results.size(), paths->size());
+  SetSearchResults(*suggest_results);
+}
+
+void ZeroStateDriveProvider::SetSearchResults(
+    const SuggestResults& suggest_results) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Assign scores to results by simply using their position in the results
   // list. The order of results from the ItemSuggest API is significant:
   // the first is better than the second, etc. Resulting scores are in [0, 1].
-  const double total_items = static_cast<double>(paths->size());
+  const double total_items = static_cast<double>(suggest_results.size());
   int item_index = 0;
-  bool all_files_errored = true;
   SearchProvider::Results provider_results;
-  for (int i = 0; i < static_cast<int>(paths->size()); ++i) {
-    const auto& path_or_error = paths.value()[i];
-    if (path_or_error->is_error()) {
-      continue;
-    } else {
-      all_files_errored = false;
-    }
-
+  for (const auto& result : suggest_results) {
     const double score = 1.0 - (item_index / total_items);
     ++item_index;
 
-    // TODO(crbug.com/1034842): Use |cache_results_| to attach the session id to
-    // the result.
-
-    provider_results.emplace_back(
-        MakeListResult(path_or_error->get_path(), score));
-    if (suggested_files_enabled_ && IsSuggestedContentEnabled(profile_)) {
-      provider_results.emplace_back(
-          MakeChipResult(path_or_error->get_path(), score));
-    }
-  }
-
-  // We expect some files to error sometimes, but we're mainly interested in
-  // when all of the files error at once. This also keeps the bucket proportion
-  // of the status metric meaningful.
-  if (all_files_errored) {
-    LogStatus(Status::kAllFilesErrored);
-    return;
-  }
-
-  cache_results_.reset();
-
-  if (normalizer_.has_value()) {
-    normalizer_->RecordResults(provider_results);
-    normalizer_->NormalizeResults(&provider_results);
+    provider_results.emplace_back(MakeListResult(
+        result.id, result.file_path, result.prediction_reason, score));
   }
 
   SwapResults(&provider_results);
-
-  LogStatus(Status::kOk);
-  UMA_HISTOGRAM_TIMES("Apps.AppList.DriveZeroStateProvider.Latency",
-                      base::TimeTicks::Now() - query_start_time_);
+  LogLatency(base::TimeTicks::Now() - query_start_time_);
 }
 
 std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
+    const std::string& result_id,
     const base::FilePath& filepath,
+    const absl::optional<std::u16string>& prediction_reason,
     const float relevance) {
-  return std::make_unique<FileResult>(
-      kListSchema, ReparentToDriveMount(filepath, drive_service_),
-      ash::AppListSearchResultType::kZeroStateDrive,
-      ash::SearchResultDisplayType::kList, relevance, profile_);
+  absl::optional<std::u16string> details;
+  if (prediction_reason && ash::features::IsProductivityLauncherEnabled())
+    details = prediction_reason.value();
+
+  auto result = std::make_unique<FileResult>(
+      result_id, filepath, details,
+      ash::AppListSearchResultType::kZeroStateDrive, GetDisplayType(),
+      relevance, std::u16string(), FileResult::Type::kFile, profile_);
+  return result;
 }
 
-std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeChipResult(
-    const base::FilePath& filepath,
-    const float relevance) {
-  return std::make_unique<FileResult>(
-      kChipSchema, ReparentToDriveMount(filepath, drive_service_),
-      ash::AppListSearchResultType::kDriveChip,
-      ash::SearchResultDisplayType::kChip, relevance, profile_);
+void ZeroStateDriveProvider::MaybeUpdateCache() {
+  if (base::Time::Now() - kFirstUpdateDelay > construction_time_) {
+    file_suggest_service_->MaybeUpdateItemSuggestCache(
+        base::PassKey<ZeroStateDriveProvider>());
+  }
+}
+
+void ZeroStateDriveProvider::OnFileSuggestionUpdated(FileSuggestionType type) {
+  if (type == FileSuggestionType::kDriveFile)
+    StartZeroState();
 }
 
 }  // namespace app_list

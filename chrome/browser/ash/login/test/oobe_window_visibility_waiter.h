@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,11 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_WINDOW_VISIBILITY_WAITER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 // Waits for the window that hosts OOBE UI changes visibility to target value.
 // When waiting for the OOBE UI window to be hidden, it handles the window
@@ -20,6 +19,11 @@ namespace chromeos {
 class OobeWindowVisibilityWaiter : public aura::WindowObserver {
  public:
   explicit OobeWindowVisibilityWaiter(bool target_visibilty);
+
+  OobeWindowVisibilityWaiter(const OobeWindowVisibilityWaiter&) = delete;
+  OobeWindowVisibilityWaiter& operator=(const OobeWindowVisibilityWaiter&) =
+      delete;
+
   ~OobeWindowVisibilityWaiter() override;
 
   void Wait();
@@ -33,11 +37,16 @@ class OobeWindowVisibilityWaiter : public aura::WindowObserver {
 
   const bool target_visibility_;
   base::OnceClosure wait_stop_closure_;
-  ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OobeWindowVisibilityWaiter);
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source code migration is finished.
+namespace chromeos {
+using ::ash::OobeWindowVisibilityWaiter;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_WINDOW_VISIBILITY_WAITER_H_

@@ -17,13 +17,13 @@ Document
 ++Hyperlink Name='Paragraph with content'
 ++++Text Name='Paragraph with content' IsControlElement=false
 ++Group IsControlElement=false
-++++Hyperlink
+++++Group IsControlElement=false
 ++++Text Name='After empty anchor'
 ++Group IsControlElement=false
-++++Hyperlink Name='Anchor with content'
+++++Group IsControlElement=false
 ++++++Text Name='Anchor with content'
 ++Group IsControlElement=false
-++++Hyperlink Name='Anchor with ID'
+++++Group IsControlElement=false
 ++++++Text Name='Anchor with ID'
 ++Group IsControlElement=false
 ++++Group IsControlElement=false

@@ -1,0 +1,111 @@
+<style include="cr-shared-style diagnostics-shared">
+  #banner {
+   align-items: center;
+   background-color: var(--google-blue-50);
+   display: flex;
+   height: 56px;
+   position: sticky;
+   top: 0;
+   width: 100vw;
+   z-index: 1;
+ }
+
+ #bannerIcon {
+   --iron-icon-height: 20px;
+   --iron-icon-width: 20px;
+   fill: var(--cros-icon-color-prominent);
+   padding-inline-end: 16px;
+   padding-inline-start: 40px;
+ }
+
+ #diagnosticsContainer {
+   align-items: center;
+   box-sizing: border-box;
+   display: flex;
+   flex-direction: column;
+   height: inherit;
+   position: relative;
+ }
+
+ #download-icon {
+   --iron-icon-fill-color: currentColor;
+   --iron-icon-height: 20px;
+   --iron-icon-width: 20px;
+   right: 4px;
+ }
+
+ .elevation-2 {
+   box-shadow: var(--diagnostics-box-shadow-elevation-2);
+ }
+
+ #header {
+   align-self: flex-start;
+   color: var(--cros-text-color-primary);
+   font-family: var(--diagnostics-roboto-font-family);
+   font-size: 16px;
+   font-weight: var(--diagnostics-medium-font-weight);
+   margin-bottom: 10px;
+   margin-inline-start: 22px;
+ }
+
+ .overview-container {
+   margin-bottom: 10px;
+ }
+
+ .session-log-container {
+   display: flex;
+   justify-content: center;
+   margin: 20px 0;
+ }
+
+ #toast {
+   bottom: 0;
+   left: 0;
+ }
+</style>
+<div id="diagnosticsContainer" hidden="[[!systemInfoReceived_]]">
+  <div id="header" hidden$="[[isNetworkingEnabled]]">
+    [[i18n('diagnosticsTitle')]]
+  </div>
+  <div id="banner" hidden="[[!bannerMessage]]" class$="[[scrollingClass_]]">
+    <iron-icon icon="diagnostics:info" id="bannerIcon"></iron-icon>
+    <span id="bannerMsg" class="diagnostics-caution-banner-font">[[bannerMessage]]</span>
+  </div>
+  <div class="overview-container">
+    <overview-card id="overviewCard"></overview-card>
+  </div>
+  <div class$="[[getCardContainerClass_(isNetworkingEnabled)]]">
+    <template is="dom-if" if="[[showBatteryStatusCard_]]" restamp>
+      <div class="card-width">
+        <battery-status-card id="batteryStatusCard"
+            test-suite-status="{{testSuiteStatus}}"
+            is-active="[[isActive]]">
+        </battery-status-card>
+      </div>
+    </template>
+    <div class="card-width">
+      <cpu-card id="cpuCard"
+          test-suite-status="{{testSuiteStatus}}"
+          is-active="[[isActive]]">
+      </cpu-card>
+    </div>
+    <div class="card-width">
+      <memory-card id="memoryCard"
+          test-suite-status="{{testSuiteStatus}}"
+          is-active="[[isActive]]">
+      </memory-card>
+    </div>
+  </div>
+  <template is="dom-if" if="[[!isNetworkingEnabled]]">
+    <div class="session-log-container">
+      <cr-button on-click="onSessionLogClick_" class="session-log-button"
+          disabled="[[!saveSessionLogEnabled_]]" hidden="[[!isLoggedIn_]]">
+        <iron-icon icon="diagnostics:download" id="download-icon"></iron-icon>
+        <span>[[i18n('sessionLog')]]</span>
+      </cr-button>
+    </div>
+  </template>
+  <cr-toast id="toast" duration="2500">
+    <span>[[toastText_]]</span>
+  </cr-toast>
+</div>

@@ -1,0 +1,122 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "url/mojom/url.mojom";
+
+// A struct representing a removable storage device.
+[Stable]
+struct RemovableStorageDevice {
+  // Identifier for the storage unit.
+  string storage_unit_id@0;
+  // Capacity of the device in bytes.
+  double capacity@1;
+  // Vendor of the device.
+  string vendor@2;
+  // Model of the device.
+  string model@3;
+  // True if the device is removable.
+  bool removable@4;
+};
+
+// The different stages of a write call.
+[Stable, Extensible]
+enum Stage {
+  [Default] kUnknown = 0,
+  kConfirmation  = 1,  /* prompting the user for confirmation */
+  kDownload = 2,       /* downloading image if a remote image was requested */
+  kVerifyDownload = 3, /* verifying download matches image hash, if provided */
+  kUnzip = 4,          /* extracting image from the downloaded zip file */
+  kWrite = 5,          /* writing image to disk */
+  kVerifyWrite = 6,    /* verifying written image matches the downloaded one */
+};
+
+// Interface for image writer client. Implemented by lacros-chrome. Used by
+// ash-chrome to dispatch the extension events about the progress of writing
+// to the Lacros extension that initiates the remote writing in ash.
+[Stable, Uuid="18f14c56-9dea-480a-a7d1-9ef94c223f2e"]
+interface ImageWriterClient {
+  // Dispatches OnWriteProgress event to the Lacros extension which initiates
+  // the write request.
+  DispatchOnWriteProgressEvent@0(
+      Stage stage, uint32 percent_complete);
+
+  // Dispatches OnWriteComplete event to the Lacros extension which initiates
+  // the write request.
+  DispatchOnWriteCompleteEvent@1();
+
+  // Dispatches OnWriteError event to the Lacros extension which initiates
+  // the write request. This reports the error occurred during the writing
+  // operation to the removable device.
+  DispatchOnWriteErrorEvent@2(
+      Stage stage, uint32 percent_complete, string error);
+};
+
+// Interface for image writer. Implemented by ash-chrome. Used by lacros-chrome
+// to forward the removable disk operations to ash to support the image writer
+// private extension API in Lacros.
+[Stable, Uuid="13df62d0-b72c-46ed-9024-e8ee4a30590c"]
+interface ImageWriter {
+  // Lists all the removable storage devices currently attached to the system.
+  // Returns removable devices if the operation succeeds.
+  ListRemovableStorageDevices@0()
+      => (array<RemovableStorageDevice>? devices);
+
+  // Destroys the partition table of a removable disk specified by
+  // |storage_unit_id| from the request of a remote extension running in Lacros.
+  // |remote_client| will be used to dispatch writing progress events back
+  // to the remote extension which initiates DestroyPartitions.
+  // Returns an error defined by extensions::image_writer::error
+  // (see chrome/browser/extensions/api/image_writer_private/error_messages.cc)
+  // such as error::kOperationAlreadyInProgress or error::kDeviceWriteError,
+  // which are caught before performing writing operation on the removable
+  // device.
+  // |error| should be returned to the caller of the extension API
+  // imageWriterPrivate.destroyPartitions.
+  // Errors that occur while writing to the removable device are reported by
+  // ImageWriterClient::DispatchOnWriteErrorEvent api.
+  DestroyPartitions@1(string storage_unit_id,
+      pending_remote<ImageWriterClient> remote_client)
+          => (string? error);
+
+  // Write an image downloaded from |image_url| to the disk specified by
+  // |storage_unit_id|. Compare the download with |image_hash| if the optional
+  // parameter is provided.
+  // |remote_client| will be used to dispatch writing progress events back
+  // to the remote extension which initiates WriteFromUrl.
+  // Returns an error defined by extensions::image_writer::error
+  // (see chrome/browser/extensions/api/image_writer_private/error_messages.cc)
+  // such as error::kOperationAlreadyInProgress or error::kDeviceWriteError,
+  // which are caught before performing writing operation on the removable
+  // device.
+  // |error| should be returned to the caller of the extension API
+  // imageWriterPrivate.writeFromUrl.
+  // Errors that occur while writing to the removable device are reported by
+  // ImageWriterClient::DispatchOnWriteErrorEvent api.
+  [MinVersion=1]
+  WriteFromUrl@2(string storage_unit_id, url.mojom.Url image_url,
+      string? image_hash, pending_remote<ImageWriterClient> remote_client)
+          => (string? error);
+
+
+  // Write an image supplied by a local file with |image_path| to the
+  // disk specified by |storage_unit_id|.
+  // |remote_client| will be used to dispatch writing progress events back
+  // to the remote extension which initiates WriteFromFile.
+  // Returns an error defined by extensions::image_writer::error
+  // (see chrome/browser/extensions/api/image_writer_private/error_messages.cc)
+  // such as error::kOperationAlreadyInProgress or error::kDeviceWriteError,
+  // which are caught before performing writing operation on the removable
+  // device.
+  // |error| should be returned to the caller of the extension API
+  // imageWriterPrivate.writeFromFile.
+  // Errors that occur while writing to the removable device are reported by
+  // ImageWriterClient::DispatchOnWriteErrorEvent api.
+  [MinVersion=1]
+  WriteFromFile@3(string storage_unit_id, mojo_base.mojom.FilePath image_path,
+      pending_remote<ImageWriterClient> remote_client)
+          => (string? error);
+};

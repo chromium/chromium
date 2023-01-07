@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
 
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
@@ -92,8 +93,8 @@ RemovableStorageProvider::PopulateDeviceList() {
        and manufacturer.  You can look at the hierarchy with
        udevadm info -a -n /dev/<device> */
     udev_device* parent_device =
-        device::udev_device_get_parent_with_subsystem_devtype(
-            cur_device.get(), "scsi", NULL);
+        device::udev_device_get_parent_with_subsystem_devtype(cur_device.get(),
+                                                              "scsi", nullptr);
     if (!parent_device) {
       // this is not a usb device
       continue;

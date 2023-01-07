@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
@@ -37,6 +38,10 @@ class MockAccessoryView
     : public AutofillKeyboardAccessoryAdapter::AccessoryView {
  public:
   MockAccessoryView() {}
+
+  MockAccessoryView(const MockAccessoryView&) = delete;
+  MockAccessoryView& operator=(const MockAccessoryView&) = delete;
+
   MOCK_METHOD0(Initialize, bool());
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD0(Show, void());
@@ -44,9 +49,6 @@ class MockAccessoryView
                void(const std::u16string&,
                     const std::u16string&,
                     base::OnceClosure));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAccessoryView);
 };
 
 Suggestion createPasswordEntry(std::string password,
@@ -74,18 +76,37 @@ std::vector<Suggestion> createSuggestions(int clearItemOffset) {
   return suggestions;
 }
 
+// Convert the Suggestion::labels into one string of format "[[a, b],[c]]".
+std::string SuggestionLabelsToString(
+    const std::vector<std::vector<Suggestion::Text>>& labels) {
+  std::string result;
+  for (const std::vector<Suggestion::Text>& texts : labels) {
+    if (!result.empty())
+      result.append(",");
+
+    std::string row;
+    for (const Suggestion::Text& text : texts) {
+      if (!row.empty())
+        row.append(",");
+      row.append(base::UTF16ToUTF8(text.value));
+    }
+    result.append("[" + row + "]");
+  }
+  return "[" + result + "]";
+}
+
 // Matcher returning true if suggestions have equal members.
 MATCHER_P(equalsSuggestion, other, "") {
   if (arg.frontend_id != other.frontend_id) {
     *result_listener << "has frontend_id " << arg.frontend_id;
     return false;
   }
-  if (arg.value != other.value) {
-    *result_listener << "has value " << arg.value;
+  if (arg.main_text != other.main_text) {
+    *result_listener << "has main_text " << arg.main_text.value;
     return false;
   }
-  if (arg.label != other.label) {
-    *result_listener << "has label " << arg.label;
+  if (arg.labels != other.labels) {
+    *result_listener << "has labels " << SuggestionLabelsToString(arg.labels);
     return false;
   }
   if (arg.icon != other.icon) {
@@ -96,13 +117,6 @@ MATCHER_P(equalsSuggestion, other, "") {
 }
 
 }  // namespace
-
-// Automagically used to pretty-print Suggestion. Must be in same namespace.
-void PrintTo(const Suggestion& suggestion, std::ostream* os) {
-  *os << "(value: \"" << suggestion.value << "\", label: \"" << suggestion.label
-      << "\", frontend_id: " << suggestion.frontend_id
-      << ", additional_label: \"" << suggestion.additional_label << "\")";
-}
 
 class AutofillKeyboardAccessoryAdapterTest : public testing::Test {
  public:
@@ -143,7 +157,7 @@ class AutofillKeyboardAccessoryAdapterTest : public testing::Test {
   MockAccessoryView* view() { return accessory_view_; }
 
  private:
-  StrictMock<MockAccessoryView>* accessory_view_;
+  raw_ptr<StrictMock<MockAccessoryView>> accessory_view_;
   std::unique_ptr<StrictMock<MockAutofillPopupController>> popup_controller_;
   std::unique_ptr<AutofillKeyboardAccessoryAdapter> autofill_accessory_adapter_;
 };
@@ -180,17 +194,28 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, UseAdditionalLabelForElidedLabel) {
 
   // The 1st item is usually not visible (something like clear form) and has an
   // empty label. But it needs to be handled since UI might ask for it anyway.
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(0), std::u16string());
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(0).size(), 1U);
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(0)[0].size(), 1U);
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(0)[0][0].value,
+            std::u16string());
 
   // If there is a label, use it but cap at 8 bullets.
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(1), u"********");
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(1).size(), 1U);
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(1)[0].size(), 1U);
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(1)[0][0].value,
+            u"********");
 
   // If the label is empty, use the additional label:
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(2),
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(2).size(), 1U);
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(2)[0].size(), 1U);
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(2)[0][0].value,
             u"psl.origin.eg ********");
 
   // If the password has less than 8 bullets, show the exact amount.
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(3), u"***");
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(3).size(), 1U);
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(3)[0].size(), 1U);
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(3)[0][0].value,
+            u"***");
 }
 
 TEST_F(AutofillKeyboardAccessoryAdapterTest, ProvideReorderedSuggestions) {
@@ -225,7 +250,7 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, MapSelectedLineToChangedIndices) {
   controller()->set_suggestions(createSuggestions(/*clearItemOffset=*/2));
   NotifyAboutSuggestions();
 
-  EXPECT_CALL(*controller(), SetSelectedLine(base::Optional<int>(0)));
+  EXPECT_CALL(*controller(), SetSelectedLine(absl::optional<int>(0)));
   adapter_as_controller()->SetSelectedLine(1);
 
   EXPECT_CALL(*controller(), selected_line()).WillRepeatedly(Return(0));

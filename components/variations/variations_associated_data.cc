@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
-#include "components/variations/variations_ids_provider.h"
 
 namespace variations {
 
@@ -27,8 +25,12 @@ class GroupMapAccessor {
 
   // Retrieve the singleton.
   static GroupMapAccessor* GetInstance() {
-    return base::Singleton<GroupMapAccessor>::get();
+    return base::Singleton<GroupMapAccessor,
+                           base::LeakySingletonTraits<GroupMapAccessor>>::get();
   }
+
+  GroupMapAccessor(const GroupMapAccessor&) = delete;
+  GroupMapAccessor& operator=(const GroupMapAccessor&) = delete;
 
   // Ensures that |group_identifier| is associated with only one non-trigger,
   // trigger, or signed-in key.
@@ -111,8 +113,6 @@ class GroupMapAccessor {
 
   base::Lock lock_;
   std::vector<GroupToIDMap> group_to_id_maps_;
-
-  DISALLOW_COPY_AND_ASSIGN(GroupMapAccessor);
 };
 }  // namespace
 

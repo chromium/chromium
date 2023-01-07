@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,9 @@ LocationBarState::LocationBarState(const GURL& url,
       offline_page(offline) {}
 
 LocationBarState::LocationBarState(const LocationBarState& other) = default;
+
+LocationBarState& LocationBarState::operator=(const LocationBarState& other) =
+    default;
 
 bool LocationBarState::operator==(const LocationBarState& other) const {
   return (gurl == other.gurl && security_level == other.security_level &&

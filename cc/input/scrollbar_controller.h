@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,19 @@
 
 #include <memory>
 
+#include "base/cancelable_callback.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/scrollbar.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // High level documentation:
-// https://source.chromium.org/chromium/chromium/src/+/master:cc/input/README.md
+// https://source.chromium.org/chromium/chromium/src/+/main:cc/input/README.md
 
 // Click scrolling.
 // - A click is considered as a kMouseDown and a kMouseUp in quick succession.
@@ -114,6 +119,8 @@
 // animation with the new scroller length is kicked off.
 
 namespace cc {
+class LayerTreeHostImpl;
+
 // This class is responsible for hit testing composited scrollbars, event
 // handling and creating gesture scroll deltas.
 class CC_EXPORT ScrollbarController {
@@ -143,6 +150,8 @@ class CC_EXPORT ScrollbarController {
     return cancelable_autoscroll_task_ != nullptr;
   }
   bool ScrollbarScrollIsActive() const { return scrollbar_scroll_is_active_; }
+  void DidRegisterScrollbar(ElementId element_id,
+                            ScrollbarOrientation orientation);
   void DidUnregisterScrollbar(ElementId element_id,
                               ScrollbarOrientation orientation);
   ScrollbarLayerImplBase* ScrollbarLayer() const;
@@ -155,15 +164,32 @@ class CC_EXPORT ScrollbarController {
                            ThumbDragAfterJumpClick);
   FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
                            AbortAnimatedScrollBeforeStartingAutoscroll);
+  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
+                           AutoscrollOnDeletedScrollbar);
+  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
+                           ScrollOnLargeThumb);
 
   // "Autoscroll" here means the continuous scrolling that occurs when the
   // pointer is held down on a hit-testable area of the scrollbar such as an
   // arrows of the track itself.
   enum class AutoScrollDirection { AUTOSCROLL_FORWARD, AUTOSCROLL_BACKWARD };
 
+  enum class AutoScrollStatus {
+    // For when the 250ms delay before an autoscroll starts animating has not
+    // yet elapsed
+    AUTOSCROLL_WAITING,
+    // For when the delay has elapsed, but the autoscroll cannot animate for
+    // some reason (the scrollbar being unregistered)
+    AUTOSCROLL_READY,
+    // For when the autoscroll is animating
+    AUTOSCROLL_SCROLLING
+  };
+
   struct CC_EXPORT AutoScrollState {
     // Can only be either AUTOSCROLL_FORWARD or AUTOSCROLL_BACKWARD.
     AutoScrollDirection direction = AutoScrollDirection::AUTOSCROLL_FORWARD;
+
+    AutoScrollStatus status = AutoScrollStatus::AUTOSCROLL_WAITING;
 
     // Stores the autoscroll velocity. The sign is used to set the "direction".
     float velocity = 0.f;
@@ -203,27 +229,27 @@ class CC_EXPORT ScrollbarController {
     ScrollbarOrientation orientation;
   };
 
-  // "velocity" here is calculated based on the initial scroll delta (See
-  // InitialDeltaToAutoscrollVelocity). This value carries a "sign" which is
-  // needed to determine whether we should set up the autoscrolling in the
-  // forwards or the backwards direction.
-  void StartAutoScrollAnimation(float velocity,
-                                ScrollbarPart pressed_scrollbar_part);
+  // Posts an autoscroll task based on the autoscroll state, with the given
+  // delay
+  void PostAutoscrollTask(const base::TimeDelta delay);
+
+  // Initiates an autoscroll, setting the necessary status and starting the
+  // animation, if possible
+  void StartAutoScroll();
+
+  // Starts/restarts an autoscroll animation based off of the information in
+  // autoscroll_state_
+  void StartAutoScrollAnimation();
 
   // Returns the DSF based on whether use-zoom-for-dsf is enabled.
   float ScreenSpaceScaleFactor() const;
 
   // Helper to convert scroll offset to autoscroll velocity.
-  float InitialDeltaToAutoscrollVelocity(gfx::ScrollOffset scroll_offset) const;
+  float InitialDeltaToAutoscrollVelocity(gfx::Vector2dF scroll_delta) const;
 
   // Returns the hit tested ScrollbarPart based on the position_in_widget.
   ScrollbarPart GetScrollbarPartFromPointerDown(
       const gfx::PointF position_in_widget) const;
-
-  // Returns scroll offsets based on which ScrollbarPart was hit tested.
-  gfx::ScrollOffset GetScrollOffsetForScrollbarPart(
-      const ScrollbarPart scrollbar_part,
-      const bool jump_key_modifier) const;
 
   // Clamps |scroll_delta| based on the available scrollable amount of
   // |target_node|. The returned delta includes the page scale factor and is
@@ -235,15 +261,27 @@ class CC_EXPORT ScrollbarController {
   gfx::Rect GetRectForScrollbarPart(const ScrollbarPart scrollbar_part) const;
 
   LayerImpl* GetLayerHitByPoint(const gfx::PointF position_in_widget) const;
-  float GetScrollDeltaForScrollbarPart(const ScrollbarPart scrollbar_part,
-                                       const bool jump_key_modifier) const;
+
+  // Returns scroll delta as Vector2dF based on which ScrollbarPart was hit
+  // tested.
+  gfx::Vector2dF GetScrollDeltaForScrollbarPart(
+      const ScrollbarPart scrollbar_part,
+      const bool jump_key_modifier) const;
+  // Returns scroll delta in the direction of the scrollbar's orientation.
+  float GetScrollDistanceForScrollbarPart(const ScrollbarPart scrollbar_part,
+                                          const bool jump_key_modifier) const;
 
   // Makes position_in_widget relative to the scrollbar.
   gfx::PointF GetScrollbarRelativePosition(const gfx::PointF position_in_widget,
                                            bool* clipped) const;
 
-  // Decides if the scroller should snap to the offset that it was originally at
-  // (i.e the offset before the thumb drag).
+  // Computes an aritificial drag origin for jump clicks, to give the scrollbar
+  // a proper place to snap back to on a jump click then drag
+  gfx::PointF DragOriginForJumpClick(
+      const ScrollbarLayerImplBase* scrollbar) const;
+
+  // Decides if the scroller should snap to the offset that it was
+  // originally at (i.e the offset before the thumb drag).
   bool SnapToDragOrigin(const gfx::PointF pointer_position_in_widget) const;
 
   // Decides whether a track autoscroll should be aborted (or restarted) due to
@@ -253,14 +291,14 @@ class CC_EXPORT ScrollbarController {
 
   // Shift (or "Option" in case of Mac) + click is expected to do a non-animated
   // jump to a certain offset.
-  float GetScrollDeltaForAbsoluteJump() const;
+  float GetScrollDistanceForAbsoluteJump() const;
 
   // Determines if the delta needs to be animated.
   ui::ScrollGranularity Granularity(const ScrollbarPart scrollbar_part,
                                     bool jump_key_modifier) const;
 
-  // Calculates the delta based on position_in_widget and drag_origin.
-  float GetScrollDeltaForDragPosition(
+  // Calculates the distance based on position_in_widget and drag_origin.
+  float GetScrollDistanceForDragPosition(
       const gfx::PointF pointer_position_in_widget) const;
 
   // Returns the ratio of the scroller length to the scrollbar length. This is
@@ -269,14 +307,14 @@ class CC_EXPORT ScrollbarController {
 
   float GetViewportLength() const;
 
-  // Returns the pixel delta for a percent-based scroll of the scrollbar
-  float GetScrollDeltaForPercentBasedScroll() const;
+  // Returns the pixel distance for a percent-based scroll of the scrollbar
+  float GetScrollDistanceForPercentBasedScroll() const;
 
   // Returns the page scale factor (i.e. pinch zoom factor). This is relevant
   // for root viewport scrollbar scrolling.
   float GetPageScaleFactorForScroll() const;
 
-  LayerTreeHostImpl* layer_tree_host_impl_;
+  raw_ptr<LayerTreeHostImpl> layer_tree_host_impl_;
 
   // Used to safeguard against firing GSE without firing GSB and GSU. For
   // example, if mouse is pressed outside the scrollbar but released after
@@ -287,15 +325,15 @@ class CC_EXPORT ScrollbarController {
   gfx::PointF last_known_pointer_position_;
 
   // Set only while interacting with the scrollbar (eg: drag, click etc).
-  base::Optional<CapturedScrollbarMetadata> captured_scrollbar_metadata_;
+  absl::optional<CapturedScrollbarMetadata> captured_scrollbar_metadata_;
 
   // Holds information pertaining to autoscrolling. This member is empty if and
-  // only if an autoscroll is *not* in progress.
-  base::Optional<AutoScrollState> autoscroll_state_;
+  // only if an autoscroll is *not* in progress or scheduled
+  absl::optional<AutoScrollState> autoscroll_state_;
 
   // Holds information pertaining to thumb drags. Useful while making decisions
   // about thumb anchoring/snapping.
-  base::Optional<DragState> drag_state_;
+  absl::optional<DragState> drag_state_;
 
   // Used to track if a GSU was processed for the current frame or not. Without
   // this, thumb drag will appear jittery. The reason this happens is because

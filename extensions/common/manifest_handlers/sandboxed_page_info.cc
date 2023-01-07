@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,18 +60,18 @@ bool SandboxedPageHandler::Parse(Extension* extension, std::u16string* error) {
 
   const base::Value* list_value = nullptr;
   if (!extension->manifest()->GetList(keys::kSandboxedPages, &list_value)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidSandboxedPagesList);
+    *error = errors::kInvalidSandboxedPagesList;
     return false;
   }
 
-  base::Value::ConstListView list_view = list_value->GetList();
-  for (size_t i = 0; i < list_view.size(); ++i) {
-    if (!list_view[i].is_string()) {
+  const base::Value::List& list = list_value->GetList();
+  for (size_t i = 0; i < list.size(); ++i) {
+    if (!list[i].is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidSandboxedPage, base::NumberToString(i));
       return false;
     }
-    std::string relative_path = list_view[i].GetString();
+    std::string relative_path = list[i].GetString();
     URLPattern pattern(URLPattern::SCHEME_EXTENSION);
     if (pattern.Parse(extension->url().spec()) !=
         URLPattern::ParseResult::kSuccess) {

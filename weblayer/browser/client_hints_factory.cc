@@ -1,17 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/browser/client_hints_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/client_hints/browser/client_hints.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/prefs/pref_service.h"
 #include "weblayer/browser/browser_process.h"
+#include "weblayer/browser/cookie_settings_factory.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
-
-class PrefService;
 
 namespace weblayer {
 
@@ -33,17 +32,18 @@ ClientHintsFactory::ClientHintsFactory()
           "ClientHints",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(CookieSettingsFactory::GetInstance());
 }
 
 ClientHintsFactory::~ClientHintsFactory() = default;
 
 KeyedService* ClientHintsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  PrefService* local_state = BrowserProcess::GetInstance()->GetLocalState();
   return new client_hints::ClientHints(
       context, BrowserProcess::GetInstance()->GetNetworkQualityTracker(),
       HostContentSettingsMapFactory::GetForBrowserContext(context),
-      embedder_support::GetUserAgentMetadata(), local_state);
+      CookieSettingsFactory::GetForBrowserContext(context),
+      BrowserProcess::GetInstance()->GetLocalState());
 }
 
 content::BrowserContext* ClientHintsFactory::GetBrowserContextToUse(

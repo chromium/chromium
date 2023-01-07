@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,10 @@
 
 #include <windows.h>
 
-#include <string>
-#include <vector>
-
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/win/scoped_com_initializer.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_server.h"
 #include "chrome/updater/update_service.h"
@@ -22,7 +18,7 @@
 
 namespace updater {
 
-class Configurator;
+struct RegistrationRequest;
 
 // The COM objects involved in this server are free threaded. Incoming COM calls
 // arrive on COM RPC threads. Outgoing COM calls are posted from a blocking
@@ -45,6 +41,9 @@ class ComServerApp : public AppServer {
  public:
   ComServerApp();
 
+  using AppServer::config;
+  using AppServer::prefs;
+
   scoped_refptr<base::SequencedTaskRunner> main_task_runner() {
     return main_task_runner_;
   }
@@ -57,17 +56,21 @@ class ComServerApp : public AppServer {
     return update_service_internal_;
   }
 
+  // Handles COM factory unregistration then triggers program shutdown. This
+  // function runs on a COM RPC thread when the WRL module is destroyed.
+  void Stop();
+
  private:
   ~ComServerApp() override;
-
-  // Overrides for App.
-  void InitializeThreadPool() override;
 
   // Overrides for AppServer
   void ActiveDuty(scoped_refptr<UpdateService> update_service) override;
   void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) override;
-  bool SwapRPCInterfaces() override;
+  bool SwapInNewVersion() override;
+  bool MigrateLegacyUpdaters(
+      base::RepeatingCallback<void(const RegistrationRequest&)>
+          register_callback) override;
   void UninstallSelf() override;
 
   // Registers and unregisters the out-of-process COM class factories.
@@ -86,16 +89,6 @@ class ComServerApp : public AppServer {
 
   // Handles COM setup and registration.
   void Start(base::OnceCallback<HRESULT()> register_callback);
-
-  // Handles object unregistration then triggers program shutdown. This
-  // function runs on a COM RPC thread when the WRL module is destroyed.
-  void Stop();
-
-  // Identifier of registered class objects used for unregistration.
-  std::vector<DWORD> cookies_;
-
-  // While this object lives, COM can be used by all threads in the program.
-  base::win::ScopedCOMInitializer com_initializer_;
 
   // Task runner bound to the main sequence.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

@@ -1,23 +1,27 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <limits>
+#include "ui/gfx/geometry/rect.h"
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include <limits>
+
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/test/gfx_util.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
 namespace gfx {
+
+constexpr int kMaxInt = std::numeric_limits<int>::max();
+constexpr int kMinInt = std::numeric_limits<int>::min();
 
 TEST(RectTest, Contains) {
   static const struct ContainsCase {
@@ -40,7 +44,7 @@ TEST(RectTest, Contains) {
     {0, 0, -10, -10, 0, 0, false},
   #endif
   };
-  for (size_t i = 0; i < base::size(contains_cases); ++i) {
+  for (size_t i = 0; i < std::size(contains_cases); ++i) {
     const ContainsCase& value = contains_cases[i];
     Rect rect(value.rect_x, value.rect_y, value.rect_width, value.rect_height);
     EXPECT_EQ(value.contained, rect.Contains(value.point_x, value.point_y));
@@ -70,7 +74,7 @@ TEST(RectTest, Intersects) {
     { 10, 10, 10, 10, 20, 15, 10, 10, false },
     { 10, 10, 10, 10, 21, 15, 10, 10, false }
   };
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     EXPECT_EQ(tests[i].intersects, r1.Intersects(r2));
@@ -112,65 +116,55 @@ TEST(RectTest, Intersect) {
       0, 0, 2, 2,
       0, 0, 0, 0 }
   };
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
-    Rect ir = IntersectRects(r1, r2);
-    EXPECT_EQ(r3.x(), ir.x());
-    EXPECT_EQ(r3.y(), ir.y());
-    EXPECT_EQ(r3.width(), ir.width());
-    EXPECT_EQ(r3.height(), ir.height());
+    EXPECT_EQ(r3, IntersectRects(r1, r2));
   }
 }
 
+TEST(RectTest, InclusiveIntersect) {
+  Rect rect(11, 12, 0, 0);
+  EXPECT_TRUE(rect.InclusiveIntersect(Rect(11, 12, 13, 14)));
+  EXPECT_EQ(Rect(11, 12, 0, 0), rect);
+
+  rect = Rect(11, 12, 13, 14);
+  EXPECT_TRUE(rect.InclusiveIntersect(Rect(24, 8, 0, 7)));
+  EXPECT_EQ(Rect(24, 12, 0, 3), rect);
+
+  rect = Rect(11, 12, 13, 14);
+  EXPECT_TRUE(rect.InclusiveIntersect(Rect(9, 15, 4, 0)));
+  EXPECT_EQ(Rect(11, 15, 2, 0), rect);
+
+  rect = Rect(11, 12, 0, 14);
+  EXPECT_FALSE(rect.InclusiveIntersect(Rect(12, 13, 15, 16)));
+  EXPECT_EQ(Rect(), rect);
+}
+
 TEST(RectTest, Union) {
-  static const struct Test {
-    int x1;  // rect 1
-    int y1;
-    int w1;
-    int h1;
-    int x2;  // rect 2
-    int y2;
-    int w2;
-    int h2;
-    int x3;  // rect 3: the union of rects 1 and 2
-    int y3;
-    int w3;
-    int h3;
-  } tests[] = {
-    { 0, 0, 0, 0,
-      0, 0, 0, 0,
-      0, 0, 0, 0 },
-    { 0, 0, 4, 4,
-      0, 0, 4, 4,
-      0, 0, 4, 4 },
-    { 0, 0, 4, 4,
-      4, 4, 4, 4,
-      0, 0, 8, 8 },
-    { 0, 0, 4, 4,
-      0, 5, 4, 4,
-      0, 0, 4, 9 },
-    { 0, 0, 2, 2,
-      3, 3, 2, 2,
-      0, 0, 5, 5 },
-    { 3, 3, 2, 2,   // reverse r1 and r2 from previous test
-      0, 0, 2, 2,
-      0, 0, 5, 5 },
-    { 0, 0, 0, 0,   // union with empty rect
-      2, 2, 2, 2,
-      2, 2, 2, 2 }
-  };
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
-    Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
-    Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
-    Rect u = UnionRects(r1, r2);
-    EXPECT_EQ(r3.x(), u.x());
-    EXPECT_EQ(r3.y(), u.y());
-    EXPECT_EQ(r3.width(), u.width());
-    EXPECT_EQ(r3.height(), u.height());
-  }
+  EXPECT_EQ(Rect(), UnionRects(Rect(), Rect()));
+  EXPECT_EQ(Rect(1, 2, 3, 4), UnionRects(Rect(1, 2, 3, 4), Rect(1, 2, 3, 4)));
+  EXPECT_EQ(Rect(0, 0, 8, 10), UnionRects(Rect(0, 0, 3, 4), Rect(3, 4, 5, 6)));
+  EXPECT_EQ(Rect(0, 0, 8, 10), UnionRects(Rect(3, 4, 5, 6), Rect(0, 0, 3, 4)));
+  EXPECT_EQ(Rect(0, 1, 3, 8), UnionRects(Rect(0, 1, 3, 4), Rect(0, 5, 3, 4)));
+  EXPECT_EQ(Rect(0, 1, 10, 11), UnionRects(Rect(0, 1, 3, 4), Rect(4, 5, 6, 7)));
+  EXPECT_EQ(Rect(0, 1, 10, 11), UnionRects(Rect(4, 5, 6, 7), Rect(0, 1, 3, 4)));
+  EXPECT_EQ(Rect(2, 3, 4, 5), UnionRects(Rect(8, 9, 0, 2), Rect(2, 3, 4, 5)));
+  EXPECT_EQ(Rect(2, 3, 4, 5), UnionRects(Rect(2, 3, 4, 5), Rect(8, 9, 2, 0)));
+}
+
+TEST(RectTest, UnionEvenIfEmpty) {
+  EXPECT_EQ(Rect(), UnionRectsEvenIfEmpty(Rect(), Rect()));
+  EXPECT_EQ(Rect(0, 0, 3, 4), UnionRectsEvenIfEmpty(Rect(), Rect(3, 4, 0, 0)));
+  EXPECT_EQ(Rect(0, 0, 8, 10),
+            UnionRectsEvenIfEmpty(Rect(0, 0, 3, 4), Rect(3, 4, 5, 6)));
+  EXPECT_EQ(Rect(0, 0, 8, 10),
+            UnionRectsEvenIfEmpty(Rect(3, 4, 5, 6), Rect(0, 0, 3, 4)));
+  EXPECT_EQ(Rect(2, 3, 6, 8),
+            UnionRectsEvenIfEmpty(Rect(8, 9, 0, 2), Rect(2, 3, 4, 5)));
+  EXPECT_EQ(Rect(2, 3, 8, 6),
+            UnionRectsEvenIfEmpty(Rect(2, 3, 4, 5), Rect(8, 9, 2, 0)));
 }
 
 TEST(RectTest, Equals) {
@@ -213,16 +207,13 @@ TEST(RectTest, AdjustToFit) {
       0, 0, 3, 3,
       2, 2, 1, 1 }
   };
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
     Rect u = r1;
     u.AdjustToFit(r2);
-    EXPECT_EQ(r3.x(), u.x());
-    EXPECT_EQ(r3.y(), u.y());
-    EXPECT_EQ(r3.width(), u.width());
-    EXPECT_EQ(r3.height(), u.height());
+    EXPECT_EQ(r3, u);
   }
 }
 
@@ -357,36 +348,6 @@ TEST(RectTest, CenterPoint) {
   EXPECT_TRUE(center == Point(21, 21));
 }
 
-TEST(RectTest, CenterPointF) {
-  PointF center;
-
-  // When origin is (0, 0).
-  center = RectF(0, 0, 20, 20).CenterPoint();
-  EXPECT_TRUE(center == PointF(10, 10));
-
-  // When origin is even.
-  center = RectF(10, 10, 20, 20).CenterPoint();
-  EXPECT_TRUE(center == PointF(20, 20));
-
-  // When origin is odd.
-  center = RectF(11, 11, 20, 20).CenterPoint();
-  EXPECT_TRUE(center == PointF(21, 21));
-
-  // When 0 width or height.
-  center = RectF(10, 10, 0, 20).CenterPoint();
-  EXPECT_TRUE(center == PointF(10, 20));
-  center = RectF(10, 10, 20, 0).CenterPoint();
-  EXPECT_TRUE(center == PointF(20, 10));
-
-  // When an odd size.
-  center = RectF(10, 10, 21, 21).CenterPoint();
-  EXPECT_TRUE(center == PointF(20.5f, 20.5f));
-
-  // When an odd size and position.
-  center = RectF(11, 11, 21, 21).CenterPoint();
-  EXPECT_TRUE(center == PointF(21.5f, 21.5f));
-}
-
 TEST(RectTest, SharesEdgeWith) {
   Rect r(2, 3, 4, 5);
 
@@ -421,359 +382,100 @@ TEST(RectTest, SharesEdgeWith) {
   EXPECT_FALSE(r.SharesEdgeWith(just_right_no_edge));
 }
 
-// Similar to EXPECT_FLOAT_EQ, but lets NaN equal NaN
-#define EXPECT_FLOAT_AND_NAN_EQ(a, b) \
-  { if (a == a || b == b) { EXPECT_FLOAT_EQ(a, b); } }
+static void TestScaleRectOverflowClamp(Rect (*function)(const Rect&,
+                                                        float,
+                                                        float)) {
+  // The whole rect is scaled out of kMinInt.
+  Rect xy_underflow1(-100000, -123456, 10, 20);
+  EXPECT_EQ(Rect(kMinInt, kMinInt, 0, 0),
+            function(xy_underflow1, 100000, 100000));
 
-TEST(RectTest, ScaleRect) {
-  static const struct Test {
-    int x1;  // source
-    int y1;
-    int w1;
-    int h1;
-    float scale;
-    float x2;  // target
-    float y2;
-    float w2;
-    float h2;
-  } tests[] = {
-    { 3, 3, 3, 3,
-      1.5f,
-      4.5f, 4.5f, 4.5f, 4.5f },
-    { 3, 3, 3, 3,
-      0.0f,
-      0.0f, 0.0f, 0.0f, 0.0f },
-    { 3, 3, 3, 3,
-      std::numeric_limits<float>::quiet_NaN(),
-      std::numeric_limits<float>::quiet_NaN(),
-      std::numeric_limits<float>::quiet_NaN(),
-      std::numeric_limits<float>::quiet_NaN(),
-      std::numeric_limits<float>::quiet_NaN() },
-    { 3, 3, 3, 3,
-      std::numeric_limits<float>::max(),
-      std::numeric_limits<float>::max(),
-      std::numeric_limits<float>::max(),
-      std::numeric_limits<float>::max(),
-      std::numeric_limits<float>::max() }
-  };
+  // This rect's right/bottom is 0. The origin overflows, and is clamped to
+  // -kMaxInt (instead of kMinInt) to keep width/height not overflowing.
+  Rect xy_underflow2(-100000, -123456, 100000, 123456);
+  EXPECT_EQ(Rect(-kMaxInt, -kMaxInt, kMaxInt, kMaxInt),
+            function(xy_underflow2, 100000, 100000));
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    RectF r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
-    RectF r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
+  // A location overflow means that width/right and bottom/top also
+  // overflow so need to be clamped.
+  Rect xy_overflow(100000, 123456, 10, 20);
+  EXPECT_EQ(Rect(kMaxInt, kMaxInt, 0, 0),
+            function(xy_overflow, 100000, 100000));
 
-    RectF scaled = ScaleRect(r1, tests[i].scale);
-    EXPECT_FLOAT_AND_NAN_EQ(r2.x(), scaled.x());
-    EXPECT_FLOAT_AND_NAN_EQ(r2.y(), scaled.y());
-    EXPECT_FLOAT_AND_NAN_EQ(r2.width(), scaled.width());
-    EXPECT_FLOAT_AND_NAN_EQ(r2.height(), scaled.height());
-  }
-}
+  // In practice all rects are clamped to 0 width / 0 height so
+  // negative sizes don't matter, but try this for the sake of testing.
+  Rect size_underflow(-1, -2, 100000, 100000);
+  EXPECT_EQ(Rect(100000, 200000, 0, 0),
+            function(size_underflow, -100000, -100000));
 
-TEST(RectTest, ToEnclosedRect) {
-  static const int max_int = std::numeric_limits<int>::max();
-  static const int min_int = std::numeric_limits<int>::min();
-  static const float max_float = std::numeric_limits<float>::max();
-  static const float max_int_f = static_cast<float>(max_int);
-  static const float min_int_f = static_cast<float>(min_int);
+  Rect size_overflow(-1, -2, 123456, 234567);
+  EXPECT_EQ(Rect(-100000, -200000, kMaxInt, kMaxInt),
+            function(size_overflow, 100000, 100000));
+  // Verify width/right gets clamped properly too if x/y positive.
+  Rect size_overflow2(1, 2, 123456, 234567);
+  EXPECT_EQ(Rect(100000, 200000, kMaxInt - 100000, kMaxInt - 200000),
+            function(size_overflow2, 100000, 100000));
 
-  static const struct Test {
-    struct {
-      float x;
-      float y;
-      float width;
-      float height;
-    } in;
-    struct {
-      int x;
-      int y;
-      int width;
-      int height;
-    } expected;
-  } tests[] = {
-      {{0.0f, 0.0f, 0.0f, 0.0f}, {0, 0, 0, 0}},
-      {{-1.5f, -1.5f, 3.0f, 3.0f}, {-1, -1, 2, 2}},
-      {{-1.5f, -1.5f, 3.5f, 3.5f}, {-1, -1, 3, 3}},
-      {{max_float, max_float, 2.0f, 2.0f}, {max_int, max_int, 0, 0}},
-      {{0.0f, 0.0f, max_float, max_float}, {0, 0, max_int, max_int}},
-      {{20000.5f, 20000.5f, 0.5f, 0.5f}, {20001, 20001, 0, 0}},
-      {{max_int_f, max_int_f, max_int_f, max_int_f}, {max_int, max_int, 0, 0}},
-      {{1.9999f, 2.0002f, 5.9998f, 6.0001f}, {2, 3, 5, 5}},
-      {{1.9999f, 2.0001f, 6.0002f, 5.9998f}, {2, 3, 6, 4}},
-      {{1.9998f, 2.0002f, 6.0001f, 5.9999f}, {2, 3, 5, 5}}};
+  constexpr float kMaxIntAsFloat = static_cast<float>(kMaxInt);
+  Rect max_origin_rect(kMaxInt, kMaxInt, kMaxInt, kMaxInt);
+  // width/height of max_origin_rect has already been clamped to 0.
+  EXPECT_EQ(Rect(kMaxInt, kMaxInt, 0, 0), max_origin_rect);
+  EXPECT_EQ(Rect(kMaxInt, kMaxInt, 0, 0),
+            function(max_origin_rect, kMaxIntAsFloat, kMaxIntAsFloat));
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    RectF source(tests[i].in.x, tests[i].in.y, tests[i].in.width,
-                 tests[i].in.height);
-    Rect enclosed = ToEnclosedRect(source);
+  Rect max_size_rect1(0, 0, kMaxInt, kMaxInt);
+  // Max sized rect can't be scaled up any further in any dimension.
+  EXPECT_EQ(max_size_rect1, function(max_size_rect1, 2, 3.5));
+  EXPECT_EQ(max_size_rect1,
+            function(max_size_rect1, kMaxIntAsFloat, kMaxIntAsFloat));
+  // Max sized ret scaled by negative scale is an empty rect.
+  EXPECT_EQ(Rect(), function(max_size_rect1, kMinInt, kMinInt));
 
-    EXPECT_EQ(tests[i].expected.x, enclosed.x());
-    EXPECT_EQ(tests[i].expected.y, enclosed.y());
-    EXPECT_EQ(tests[i].expected.width, enclosed.width());
-    EXPECT_EQ(tests[i].expected.height, enclosed.height());
-  }
-
-  {
-    RectF source(min_int_f, min_int_f, max_int_f * 3.f, max_int_f * 3.f);
-    Rect enclosed = ToEnclosedRect(source);
-
-    // That rect can't be represented, but it should be big.
-    EXPECT_EQ(max_int, enclosed.width());
-    EXPECT_EQ(max_int, enclosed.height());
-    // It should include some axis near the global origin.
-    EXPECT_GT(1, enclosed.x());
-    EXPECT_GT(1, enclosed.y());
-    // And it should not cause computation issues for itself.
-    EXPECT_LT(0, enclosed.right());
-    EXPECT_LT(0, enclosed.bottom());
-  }
-}
-
-TEST(RectTest, ToEnclosingRect) {
-  static const int max_int = std::numeric_limits<int>::max();
-  static const int min_int = std::numeric_limits<int>::min();
-  static const float max_float = std::numeric_limits<float>::max();
-  static const float epsilon_float = std::numeric_limits<float>::epsilon();
-  static const float max_int_f = static_cast<float>(max_int);
-  static const float min_int_f = static_cast<float>(min_int);
-  static const struct Test {
-    struct {
-      float x;
-      float y;
-      float width;
-      float height;
-    } in;
-    struct {
-      int x;
-      int y;
-      int width;
-      int height;
-    } expected;
-  } tests[] = {
-      {{0.0f, 0.0f, 0.0f, 0.0f}, {0, 0, 0, 0}},
-      {{5.5f, 5.5f, 0.0f, 0.0f}, {5, 5, 0, 0}},
-      {{3.5f, 2.5f, epsilon_float, -0.0f}, {3, 2, 0, 0}},
-      {{3.5f, 2.5f, 0.f, 0.001f}, {3, 2, 0, 1}},
-      {{-1.5f, -1.5f, 3.0f, 3.0f}, {-2, -2, 4, 4}},
-      {{-1.5f, -1.5f, 3.5f, 3.5f}, {-2, -2, 4, 4}},
-      {{max_float, max_float, 2.0f, 2.0f}, {max_int, max_int, 0, 0}},
-      {{0.0f, 0.0f, max_float, max_float}, {0, 0, max_int, max_int}},
-      {{20000.5f, 20000.5f, 0.5f, 0.5f}, {20000, 20000, 1, 1}},
-      {{max_int_f, max_int_f, max_int_f, max_int_f}, {max_int, max_int, 0, 0}},
-      {{-0.5f, -0.5f, 22777712.f, 1.f}, {-1, -1, 22777713, 2}},
-      {{1.9999f, 2.0002f, 5.9998f, 6.0001f}, {1, 2, 7, 7}},
-      {{1.9999f, 2.0001f, 6.0002f, 5.9998f}, {1, 2, 8, 6}},
-      {{1.9998f, 2.0002f, 6.0001f, 5.9999f}, {1, 2, 7, 7}}};
-
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    RectF source(tests[i].in.x, tests[i].in.y, tests[i].in.width,
-                 tests[i].in.height);
-
-    Rect enclosing = ToEnclosingRect(source);
-    EXPECT_EQ(tests[i].expected.x, enclosing.x());
-    EXPECT_EQ(tests[i].expected.y, enclosing.y());
-    EXPECT_EQ(tests[i].expected.width, enclosing.width());
-    EXPECT_EQ(tests[i].expected.height, enclosing.height());
-  }
-
-  {
-    RectF source(min_int_f, min_int_f, max_int_f * 3.f, max_int_f * 3.f);
-    Rect enclosing = ToEnclosingRect(source);
-
-    // That rect can't be represented, but it should be big.
-    EXPECT_EQ(max_int, enclosing.width());
-    EXPECT_EQ(max_int, enclosing.height());
-    // It should include some axis near the global origin.
-    EXPECT_GT(1, enclosing.x());
-    EXPECT_GT(1, enclosing.y());
-    // And it should cause computation issues for itself.
-    EXPECT_LT(0, enclosing.right());
-    EXPECT_LT(0, enclosing.bottom());
-  }
-}
-
-TEST(RectTest, ToEnclosingRectIgnoringError) {
-  static const int max_int = std::numeric_limits<int>::max();
-  static const float max_float = std::numeric_limits<float>::max();
-  static const float epsilon_float = std::numeric_limits<float>::epsilon();
-  static const float max_int_f = static_cast<float>(max_int);
-  static const float error = 0.001f;
-  static const struct Test {
-    struct {
-      float x;
-      float y;
-      float width;
-      float height;
-    } in;
-    struct {
-      int x;
-      int y;
-      int width;
-      int height;
-    } expected;
-  } tests[] = {
-      {{0.0f, 0.0f, 0.0f, 0.0f}, {0, 0, 0, 0}},
-      {{5.5f, 5.5f, 0.0f, 0.0f}, {5, 5, 0, 0}},
-      {{3.5f, 2.5f, epsilon_float, -0.0f}, {3, 2, 0, 0}},
-      {{3.5f, 2.5f, 0.f, 0.001f}, {3, 2, 0, 1}},
-      {{-1.5f, -1.5f, 3.0f, 3.0f}, {-2, -2, 4, 4}},
-      {{-1.5f, -1.5f, 3.5f, 3.5f}, {-2, -2, 4, 4}},
-      {{max_float, max_float, 2.0f, 2.0f}, {max_int, max_int, 0, 0}},
-      {{0.0f, 0.0f, max_float, max_float}, {0, 0, max_int, max_int}},
-      {{20000.5f, 20000.5f, 0.5f, 0.5f}, {20000, 20000, 1, 1}},
-      {{max_int_f, max_int_f, max_int_f, max_int_f}, {max_int, max_int, 0, 0}},
-      {{-0.5f, -0.5f, 22777712.f, 1.f}, {-1, -1, 22777713, 2}},
-      {{1.9999f, 2.0002f, 5.9998f, 6.0001f}, {2, 2, 6, 6}},
-      {{1.9999f, 2.0001f, 6.0002f, 5.9998f}, {2, 2, 6, 6}},
-      {{1.9998f, 2.0002f, 6.0001f, 5.9999f}, {2, 2, 6, 6}}};
-
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    RectF source(tests[i].in.x, tests[i].in.y, tests[i].in.width,
-                 tests[i].in.height);
-
-    Rect enclosing = ToEnclosingRectIgnoringError(source, error);
-    EXPECT_EQ(tests[i].expected.x, enclosing.x());
-    EXPECT_EQ(tests[i].expected.y, enclosing.y());
-    EXPECT_EQ(tests[i].expected.width, enclosing.width());
-    EXPECT_EQ(tests[i].expected.height, enclosing.height());
-  }
-}
-
-TEST(RectTest, ToNearestRect) {
-  Rect rect;
-  EXPECT_EQ(rect, ToNearestRect(RectF(rect)));
-
-  rect = Rect(-1, -1, 3, 3);
-  EXPECT_EQ(rect, ToNearestRect(RectF(rect)));
-
-  RectF rectf(-1.00001f, -0.999999f, 3.0000001f, 2.999999f);
-  EXPECT_EQ(rect, ToNearestRect(rectf));
-}
-
-TEST(RectTest, ToFlooredRect) {
-  static const struct Test {
-    float x1; // source
-    float y1;
-    float w1;
-    float h1;
-    int x2; // target
-    int y2;
-    int w2;
-    int h2;
-  } tests [] = {
-    { 0.0f, 0.0f, 0.0f, 0.0f,
-      0, 0, 0, 0 },
-    { -1.5f, -1.5f, 3.0f, 3.0f,
-      -2, -2, 3, 3 },
-    { -1.5f, -1.5f, 3.5f, 3.5f,
-      -2, -2, 3, 3 },
-    { 20000.5f, 20000.5f, 0.5f, 0.5f,
-      20000, 20000, 0, 0 },
-  };
-
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    RectF r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
-    Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
-
-    Rect floored = ToFlooredRectDeprecated(r1);
-    EXPECT_FLOAT_EQ(r2.x(), floored.x());
-    EXPECT_FLOAT_EQ(r2.y(), floored.y());
-    EXPECT_FLOAT_EQ(r2.width(), floored.width());
-    EXPECT_FLOAT_EQ(r2.height(), floored.height());
-  }
+  Rect max_size_rect2(-kMaxInt, -kMaxInt, kMaxInt, kMaxInt);
+  EXPECT_EQ(max_size_rect2, function(max_size_rect2, 2, 3.5));
+  EXPECT_EQ(max_size_rect2,
+            function(max_size_rect2, kMaxIntAsFloat, kMaxIntAsFloat));
+  EXPECT_EQ(Rect(kMaxInt, kMaxInt, 0, 0),
+            function(max_size_rect2, kMinInt, kMinInt));
 }
 
 TEST(RectTest, ScaleToEnclosedRect) {
-  static const struct Test {
-    Rect input_rect;
-    float input_scale;
-    Rect expected_rect;
-  } tests[] = {
-    {
-      Rect(),
-      5.f,
-      Rect(),
-    }, {
-      Rect(1, 1, 1, 1),
-      5.f,
-      Rect(5, 5, 5, 5),
-    }, {
-      Rect(-1, -1, 0, 0),
-      5.f,
-      Rect(-5, -5, 0, 0),
-    }, {
-      Rect(1, -1, 0, 1),
-      5.f,
-      Rect(5, -5, 0, 5),
-    }, {
-      Rect(-1, 1, 1, 0),
-      5.f,
-      Rect(-5, 5, 5, 0),
-    }, {
-      Rect(1, 2, 3, 4),
-      1.5f,
-      Rect(2, 3, 4, 6),
-    }, {
-      Rect(-1, -2, 0, 0),
-      1.5f,
-      Rect(-1, -3, 0, 0),
-    }
-  };
-
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    Rect result = ScaleToEnclosedRect(tests[i].input_rect,
-                                      tests[i].input_scale);
-    EXPECT_EQ(tests[i].expected_rect, result);
-  }
+  EXPECT_EQ(Rect(), ScaleToEnclosedRect(Rect(), 5.f));
+  EXPECT_EQ(Rect(5, 5, 5, 5), ScaleToEnclosedRect(Rect(1, 1, 1, 1), 5.f));
+  EXPECT_EQ(Rect(-5, -5, 0, 0), ScaleToEnclosedRect(Rect(-1, -1, 0, 0), 5.f));
+  EXPECT_EQ(Rect(5, -5, 0, 5), ScaleToEnclosedRect(Rect(1, -1, 0, 1), 5.f));
+  EXPECT_EQ(Rect(-5, 5, 5, 0), ScaleToEnclosedRect(Rect(-1, 1, 1, 0), 5.f));
+  EXPECT_EQ(Rect(2, 3, 4, 6), ScaleToEnclosedRect(Rect(1, 2, 3, 4), 1.5f));
+  EXPECT_EQ(Rect(-1, -3, 0, 0), ScaleToEnclosedRect(Rect(-1, -2, 0, 0), 1.5f));
+  EXPECT_EQ(Rect(1, 2, 2, 1), ScaleToEnclosedRect(Rect(2, 4, 9, 8), 0.3f));
+  TestScaleRectOverflowClamp(ScaleToEnclosedRect);
 }
 
 TEST(RectTest, ScaleToEnclosingRect) {
-  static const struct Test {
-    Rect input_rect;
-    float input_scale;
-    Rect expected_rect;
-  } tests[] = {
-    {
-      Rect(),
-      5.f,
-      Rect(),
-    }, {
-      Rect(1, 1, 1, 1),
-      5.f,
-      Rect(5, 5, 5, 5),
-    }, {
-      Rect(-1, -1, 0, 0),
-      5.f,
-      Rect(-5, -5, 0, 0),
-    }, {
-      Rect(1, -1, 0, 1),
-      5.f,
-      Rect(5, -5, 0, 5),
-    }, {
-      Rect(-1, 1, 1, 0),
-      5.f,
-      Rect(-5, 5, 5, 0),
-    }, {
-      Rect(1, 2, 3, 4),
-      1.5f,
-      Rect(1, 3, 5, 6),
-    }, {
-      Rect(-1, -2, 0, 0),
-      1.5f,
-      Rect(-2, -3, 0, 0),
-    }
-  };
-
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    Rect result =
-        ScaleToEnclosingRect(tests[i].input_rect, tests[i].input_scale);
-    EXPECT_EQ(tests[i].expected_rect, result);
-    Rect result_safe =
-        ScaleToEnclosingRectSafe(tests[i].input_rect, tests[i].input_scale);
-    EXPECT_EQ(tests[i].expected_rect, result_safe);
-  }
+  EXPECT_EQ(Rect(), ScaleToEnclosingRect(Rect(), 5.f));
+  EXPECT_EQ(Rect(5, 5, 5, 5), ScaleToEnclosingRect(Rect(1, 1, 1, 1), 5.f));
+  EXPECT_EQ(Rect(-5, -5, 0, 0), ScaleToEnclosingRect(Rect(-1, -1, 0, 0), 5.f));
+  EXPECT_EQ(Rect(5, -5, 0, 5), ScaleToEnclosingRect(Rect(1, -1, 0, 1), 5.f));
+  EXPECT_EQ(Rect(-5, 5, 5, 0), ScaleToEnclosingRect(Rect(-1, 1, 1, 0), 5.f));
+  EXPECT_EQ(Rect(1, 3, 5, 6), ScaleToEnclosingRect(Rect(1, 2, 3, 4), 1.5f));
+  EXPECT_EQ(Rect(-2, -3, 0, 0), ScaleToEnclosingRect(Rect(-1, -2, 0, 0), 1.5f));
+  EXPECT_EQ(Rect(0, 1, 4, 3), ScaleToEnclosingRect(Rect(2, 4, 9, 8), 0.3f));
+  TestScaleRectOverflowClamp(ScaleToEnclosingRect);
 }
 
-#if defined(OS_WIN)
+TEST(RectTest, ScaleToRoundedRect) {
+  EXPECT_EQ(Rect(), ScaleToRoundedRect(Rect(), 5.f));
+  EXPECT_EQ(Rect(5, 5, 5, 5), ScaleToRoundedRect(Rect(1, 1, 1, 1), 5.f));
+  EXPECT_EQ(Rect(-5, -5, 0, 0), ScaleToRoundedRect(Rect(-1, -1, 0, 0), 5.f));
+  EXPECT_EQ(Rect(5, -5, 0, 5), ScaleToRoundedRect(Rect(1, -1, 0, 1), 5.f));
+  EXPECT_EQ(Rect(-5, 5, 5, 0), ScaleToRoundedRect(Rect(-1, 1, 1, 0), 5.f));
+  EXPECT_EQ(Rect(2, 3, 4, 6), ScaleToRoundedRect(Rect(1, 2, 3, 4), 1.5f));
+  EXPECT_EQ(Rect(-2, -3, 0, 0), ScaleToRoundedRect(Rect(-1, -2, 0, 0), 1.5f));
+  EXPECT_EQ(Rect(1, 1, 2, 3), ScaleToRoundedRect(Rect(2, 4, 9, 8), 0.3f));
+  TestScaleRectOverflowClamp(ScaleToRoundedRect);
+}
+
+#if BUILDFLAG(IS_WIN)
 TEST(RectTest, ConstructAndAssign) {
   const RECT rect_1 = { 0, 0, 10, 10 };
   const RECT rect_2 = { 0, 0, -10, -10 };
@@ -781,15 +483,6 @@ TEST(RectTest, ConstructAndAssign) {
   Rect test2(rect_2);
 }
 #endif
-
-TEST(RectTest, ToRectF) {
-  // Check that explicit conversion from integer to float compiles.
-  Rect a(10, 20, 30, 40);
-  RectF b(10, 20, 30, 40);
-
-  RectF c = RectF(a);
-  EXPECT_EQ(b, c);
-}
 
 TEST(RectTest, BoundingRect) {
   struct {
@@ -813,77 +506,10 @@ TEST(RectTest, BoundingRect) {
     { Point(-4, 6), Point(6, -4), Rect(-4, -4, 10, 10) },
   };
 
-  for (size_t i = 0; i < base::size(int_tests); ++i) {
+  for (size_t i = 0; i < std::size(int_tests); ++i) {
     Rect actual = BoundingRect(int_tests[i].a, int_tests[i].b);
     EXPECT_EQ(int_tests[i].expected, actual);
   }
-
-  struct {
-    PointF a;
-    PointF b;
-    RectF expected;
-  } float_tests[] = {
-    // If point B dominates A, then A should be the origin.
-    { PointF(4.2f, 6.8f), PointF(4.2f, 6.8f),
-      RectF(4.2f, 6.8f, 0, 0) },
-    { PointF(4.2f, 6.8f), PointF(8.5f, 6.8f),
-      RectF(4.2f, 6.8f, 4.3f, 0) },
-    { PointF(4.2f, 6.8f), PointF(4.2f, 9.3f),
-      RectF(4.2f, 6.8f, 0, 2.5f) },
-    { PointF(4.2f, 6.8f), PointF(8.5f, 9.3f),
-      RectF(4.2f, 6.8f, 4.3f, 2.5f) },
-    // If point A dominates B, then B should be the origin.
-    { PointF(4.2f, 6.8f), PointF(4.2f, 6.8f),
-      RectF(4.2f, 6.8f, 0, 0) },
-    { PointF(8.5f, 6.8f), PointF(4.2f, 6.8f),
-      RectF(4.2f, 6.8f, 4.3f, 0) },
-    { PointF(4.2f, 9.3f), PointF(4.2f, 6.8f),
-      RectF(4.2f, 6.8f, 0, 2.5f) },
-    { PointF(8.5f, 9.3f), PointF(4.2f, 6.8f),
-      RectF(4.2f, 6.8f, 4.3f, 2.5f) },
-    // If neither point dominates, then the origin is a combination of the two.
-    { PointF(4.2f, 6.8f), PointF(6.8f, 4.2f),
-      RectF(4.2f, 4.2f, 2.6f, 2.6f) },
-    { PointF(-4.2f, -6.8f), PointF(-6.8f, -4.2f),
-      RectF(-6.8f, -6.8f, 2.6f, 2.6f) },
-    { PointF(-4.2f, 6.8f), PointF(6.8f, -4.2f),
-      RectF(-4.2f, -4.2f, 11.0f, 11.0f) }
-  };
-
-  for (size_t i = 0; i < base::size(float_tests); ++i) {
-    RectF actual = BoundingRect(float_tests[i].a, float_tests[i].b);
-    EXPECT_RECTF_EQ(float_tests[i].expected, actual);
-  }
-}
-
-TEST(RectTest, IsExpressibleAsRect) {
-  EXPECT_TRUE(RectF().IsExpressibleAsRect());
-
-  float min = std::numeric_limits<int>::min();
-  float max = std::numeric_limits<int>::max();
-  float infinity = std::numeric_limits<float>::infinity();
-
-  EXPECT_TRUE(RectF(
-      min + 200, min + 200, max - 200, max - 200).IsExpressibleAsRect());
-  EXPECT_FALSE(RectF(
-      min - 200, min + 200, max + 200, max + 200).IsExpressibleAsRect());
-  EXPECT_FALSE(RectF(
-      min + 200 , min - 200, max + 200, max + 200).IsExpressibleAsRect());
-  EXPECT_FALSE(RectF(
-      min + 200, min + 200, max + 200, max - 200).IsExpressibleAsRect());
-  EXPECT_FALSE(RectF(
-      min + 200, min + 200, max - 200, max + 200).IsExpressibleAsRect());
-
-  EXPECT_TRUE(RectF(0, 0, max - 200, max - 200).IsExpressibleAsRect());
-  EXPECT_FALSE(RectF(200, 0, max + 200, max - 200).IsExpressibleAsRect());
-  EXPECT_FALSE(RectF(0, 200, max - 200, max + 200).IsExpressibleAsRect());
-  EXPECT_FALSE(RectF(0, 0, max + 200, max - 200).IsExpressibleAsRect());
-  EXPECT_FALSE(RectF(0, 0, max - 200, max + 200).IsExpressibleAsRect());
-
-  EXPECT_FALSE(RectF(infinity, 0, 1, 1).IsExpressibleAsRect());
-  EXPECT_FALSE(RectF(0, infinity, 1, 1).IsExpressibleAsRect());
-  EXPECT_FALSE(RectF(0, 0, infinity, 1).IsExpressibleAsRect());
-  EXPECT_FALSE(RectF(0, 0, 1, infinity).IsExpressibleAsRect());
 }
 
 TEST(RectTest, Offset) {
@@ -897,29 +523,23 @@ TEST(RectTest, Offset) {
   i -= Vector2d(1, -1);
   EXPECT_EQ(Rect(1, 2, 3, 4), i);
 
-  RectF f(1.1f, 2.2f, 3.3f, 4.4f);
-  EXPECT_EQ(RectF(2.2f, 1.1f, 3.3f, 4.4f), (f + Vector2dF(1.1f, -1.1f)));
-  EXPECT_EQ(RectF(2.2f, 1.1f, 3.3f, 4.4f), (Vector2dF(1.1f, -1.1f) + f));
-  f += Vector2dF(1.1f, -1.1f);
-  EXPECT_EQ(RectF(2.2f, 1.1f, 3.3f, 4.4f), f);
-  EXPECT_EQ(RectF(1.1f, 2.2f, 3.3f, 4.4f), (f - Vector2dF(1.1f, -1.1f)));
-  f -= Vector2dF(1.1f, -1.1f);
-  EXPECT_EQ(RectF(1.1f, 2.2f, 3.3f, 4.4f), f);
+  i.Offset(2, -2);
+  EXPECT_EQ(Rect(3, 0, 3, 4), i);
+
+  EXPECT_EQ(Rect(kMaxInt - 2, kMaxInt - 2, 2, 2),
+            (Rect(0, 0, kMaxInt - 2, kMaxInt - 2) +
+             Vector2d(kMaxInt - 2, kMaxInt - 2)));
+  EXPECT_EQ(Rect(kMaxInt - 2, kMaxInt - 2, 2, 2),
+            (Rect(0, 0, kMaxInt - 2, kMaxInt - 2) -
+             Vector2d(2 - kMaxInt, 2 - kMaxInt)));
 }
 
 TEST(RectTest, Corners) {
   Rect i(1, 2, 3, 4);
-  RectF f(1.1f, 2.1f, 3.1f, 4.1f);
-
   EXPECT_EQ(Point(1, 2), i.origin());
   EXPECT_EQ(Point(4, 2), i.top_right());
   EXPECT_EQ(Point(1, 6), i.bottom_left());
   EXPECT_EQ(Point(4, 6), i.bottom_right());
-
-  EXPECT_EQ(PointF(1.1f, 2.1f), f.origin());
-  EXPECT_EQ(PointF(4.2f, 2.1f), f.top_right());
-  EXPECT_EQ(PointF(1.1f, 6.2f), f.bottom_left());
-  EXPECT_EQ(PointF(4.2f, 6.2f), f.bottom_right());
 }
 
 TEST(RectTest, Centers) {
@@ -928,23 +548,12 @@ TEST(RectTest, Centers) {
   EXPECT_EQ(Point(25, 20), i.top_center());
   EXPECT_EQ(Point(40, 40), i.right_center());
   EXPECT_EQ(Point(25, 60), i.bottom_center());
-
-  RectF f(10.1f, 20.2f, 30.3f, 40.4f);
-  EXPECT_EQ(PointF(10.1f, 40.4f), f.left_center());
-  EXPECT_EQ(PointF(25.25f, 20.2f), f.top_center());
-  EXPECT_EQ(PointF(40.4f, 40.4f), f.right_center());
-  EXPECT_EQ(25.25f, f.bottom_center().x());
-  EXPECT_NEAR(60.6f, f.bottom_center().y(), 0.001f);
 }
 
 TEST(RectTest, Transpose) {
   Rect i(10, 20, 30, 40);
   i.Transpose();
   EXPECT_EQ(Rect(20, 10, 40, 30), i);
-
-  RectF f(10.1f, 20.2f, 30.3f, 40.4f);
-  f.Transpose();
-  EXPECT_EQ(RectF(20.2f, 10.1f, 40.4f, 30.3f), f);
 }
 
 TEST(RectTest, ManhattanDistanceToPoint) {
@@ -960,102 +569,59 @@ TEST(RectTest, ManhattanDistanceToPoint) {
   EXPECT_EQ(2, i.ManhattanDistanceToPoint(Point(3, 8)));
   EXPECT_EQ(2, i.ManhattanDistanceToPoint(Point(0, 7)));
   EXPECT_EQ(1, i.ManhattanDistanceToPoint(Point(0, 3)));
-
-  RectF f(1.1f, 2.1f, 3.1f, 4.1f);
-  EXPECT_FLOAT_EQ(0.f, f.ManhattanDistanceToPoint(PointF(1.1f, 2.1f)));
-  EXPECT_FLOAT_EQ(0.f, f.ManhattanDistanceToPoint(PointF(4.2f, 6.f)));
-  EXPECT_FLOAT_EQ(0.f, f.ManhattanDistanceToPoint(PointF(2.f, 4.f)));
-  EXPECT_FLOAT_EQ(3.2f, f.ManhattanDistanceToPoint(PointF(0.f, 0.f)));
-  EXPECT_FLOAT_EQ(2.1f, f.ManhattanDistanceToPoint(PointF(2.f, 0.f)));
-  EXPECT_FLOAT_EQ(2.9f, f.ManhattanDistanceToPoint(PointF(5.f, 0.f)));
-  EXPECT_FLOAT_EQ(.8f, f.ManhattanDistanceToPoint(PointF(5.f, 4.f)));
-  EXPECT_FLOAT_EQ(2.6f, f.ManhattanDistanceToPoint(PointF(5.f, 8.f)));
-  EXPECT_FLOAT_EQ(1.8f, f.ManhattanDistanceToPoint(PointF(3.f, 8.f)));
-  EXPECT_FLOAT_EQ(1.9f, f.ManhattanDistanceToPoint(PointF(0.f, 7.f)));
-  EXPECT_FLOAT_EQ(1.1f, f.ManhattanDistanceToPoint(PointF(0.f, 3.f)));
 }
 
 TEST(RectTest, ManhattanInternalDistance) {
   Rect i(0, 0, 400, 400);
-  EXPECT_EQ(0, i.ManhattanInternalDistance(gfx::Rect(-1, 0, 2, 1)));
-  EXPECT_EQ(1, i.ManhattanInternalDistance(gfx::Rect(400, 0, 1, 400)));
-  EXPECT_EQ(2, i.ManhattanInternalDistance(gfx::Rect(-100, -100, 100, 100)));
-  EXPECT_EQ(2, i.ManhattanInternalDistance(gfx::Rect(-101, 100, 100, 100)));
-  EXPECT_EQ(4, i.ManhattanInternalDistance(gfx::Rect(-101, -101, 100, 100)));
-  EXPECT_EQ(435, i.ManhattanInternalDistance(gfx::Rect(630, 603, 100, 100)));
-
-  RectF f(0.0f, 0.0f, 400.0f, 400.0f);
-  static const float kEpsilon = std::numeric_limits<float>::epsilon();
-
-  EXPECT_FLOAT_EQ(
-      0.0f, f.ManhattanInternalDistance(gfx::RectF(-1.0f, 0.0f, 2.0f, 1.0f)));
-  EXPECT_FLOAT_EQ(
-      kEpsilon,
-      f.ManhattanInternalDistance(gfx::RectF(400.0f, 0.0f, 1.0f, 400.0f)));
-  EXPECT_FLOAT_EQ(2.0f * kEpsilon,
-                  f.ManhattanInternalDistance(
-                      gfx::RectF(-100.0f, -100.0f, 100.0f, 100.0f)));
-  EXPECT_FLOAT_EQ(
-      1.0f + kEpsilon,
-      f.ManhattanInternalDistance(gfx::RectF(-101.0f, 100.0f, 100.0f, 100.0f)));
-  EXPECT_FLOAT_EQ(2.0f + 2.0f * kEpsilon,
-                  f.ManhattanInternalDistance(
-                      gfx::RectF(-101.0f, -101.0f, 100.0f, 100.0f)));
-  EXPECT_FLOAT_EQ(
-      433.0f + 2.0f * kEpsilon,
-      f.ManhattanInternalDistance(gfx::RectF(630.0f, 603.0f, 100.0f, 100.0f)));
-
-  EXPECT_FLOAT_EQ(
-      0.0f, f.ManhattanInternalDistance(gfx::RectF(-1.0f, 0.0f, 1.1f, 1.0f)));
-  EXPECT_FLOAT_EQ(
-      0.1f + kEpsilon,
-      f.ManhattanInternalDistance(gfx::RectF(-1.5f, 0.0f, 1.4f, 1.0f)));
-  EXPECT_FLOAT_EQ(
-      kEpsilon,
-      f.ManhattanInternalDistance(gfx::RectF(-1.5f, 0.0f, 1.5f, 1.0f)));
+  EXPECT_EQ(0, i.ManhattanInternalDistance(Rect(-1, 0, 2, 1)));
+  EXPECT_EQ(1, i.ManhattanInternalDistance(Rect(400, 0, 1, 400)));
+  EXPECT_EQ(2, i.ManhattanInternalDistance(Rect(-100, -100, 100, 100)));
+  EXPECT_EQ(2, i.ManhattanInternalDistance(Rect(-101, 100, 100, 100)));
+  EXPECT_EQ(4, i.ManhattanInternalDistance(Rect(-101, -101, 100, 100)));
+  EXPECT_EQ(435, i.ManhattanInternalDistance(Rect(630, 603, 100, 100)));
 }
 
 TEST(RectTest, IntegerOverflow) {
   int limit = std::numeric_limits<int>::max();
   int min_limit = std::numeric_limits<int>::min();
-  int expected = 10;
-  int large_number = limit - expected;
+  int expected_thickness = 10;
+  int large_number = limit - expected_thickness;
 
   Rect height_overflow(0, large_number, 100, 100);
   EXPECT_EQ(large_number, height_overflow.y());
-  EXPECT_EQ(expected, height_overflow.height());
+  EXPECT_EQ(expected_thickness, height_overflow.height());
 
   Rect width_overflow(large_number, 0, 100, 100);
   EXPECT_EQ(large_number, width_overflow.x());
-  EXPECT_EQ(expected, width_overflow.width());
+  EXPECT_EQ(expected_thickness, width_overflow.width());
 
   Rect size_height_overflow(Point(0, large_number), Size(100, 100));
   EXPECT_EQ(large_number, size_height_overflow.y());
-  EXPECT_EQ(expected, size_height_overflow.height());
+  EXPECT_EQ(expected_thickness, size_height_overflow.height());
 
   Rect size_width_overflow(Point(large_number, 0), Size(100, 100));
   EXPECT_EQ(large_number, size_width_overflow.x());
-  EXPECT_EQ(expected, size_width_overflow.width());
+  EXPECT_EQ(expected_thickness, size_width_overflow.width());
 
   Rect set_height_overflow(0, large_number, 100, 5);
   EXPECT_EQ(5, set_height_overflow.height());
   set_height_overflow.set_height(100);
-  EXPECT_EQ(expected, set_height_overflow.height());
+  EXPECT_EQ(expected_thickness, set_height_overflow.height());
 
   Rect set_y_overflow(100, 100, 100, 100);
   EXPECT_EQ(100, set_y_overflow.height());
   set_y_overflow.set_y(large_number);
-  EXPECT_EQ(expected, set_y_overflow.height());
+  EXPECT_EQ(expected_thickness, set_y_overflow.height());
 
   Rect set_width_overflow(large_number, 0, 5, 100);
   EXPECT_EQ(5, set_width_overflow.width());
   set_width_overflow.set_width(100);
-  EXPECT_EQ(expected, set_width_overflow.width());
+  EXPECT_EQ(expected_thickness, set_width_overflow.width());
 
   Rect set_x_overflow(100, 100, 100, 100);
   EXPECT_EQ(100, set_x_overflow.width());
   set_x_overflow.set_x(large_number);
-  EXPECT_EQ(expected, set_x_overflow.width());
+  EXPECT_EQ(expected_thickness, set_x_overflow.width());
 
   Point large_offset(large_number, large_number);
   Size size(100, 100);
@@ -1080,16 +646,16 @@ TEST(RectTest, IntegerOverflow) {
 
   // Insetting an empty rect, but the total inset (left + right) could overflow.
   Rect inset_overflow;
-  inset_overflow.Inset(large_number, large_number, 100, 100);
+  inset_overflow.Inset(Insets::TLBR(large_number, large_number, 100, 100));
   EXPECT_EQ(large_offset, inset_overflow.origin());
-  EXPECT_EQ(gfx::Size(), inset_overflow.size());
+  EXPECT_EQ(Size(), inset_overflow.size());
 
   // Insetting where the total inset (width - left - right) could overflow.
   // Also, this insetting by the min limit in all directions cannot
   // represent width() without overflow, so that will also clamp.
   Rect inset_overflow2;
-  inset_overflow2.Inset(min_limit, min_limit, min_limit, min_limit);
-  EXPECT_EQ(inset_overflow2, gfx::Rect(min_limit, min_limit, limit, limit));
+  inset_overflow2.Inset(min_limit);
+  EXPECT_EQ(inset_overflow2, Rect(min_limit, min_limit, limit, limit));
 
   // Insetting where the width shouldn't change, but if the insets operations
   // clamped in the wrong order, e.g. ((width - left) - right) vs (width - (left
@@ -1098,12 +664,12 @@ TEST(RectTest, IntegerOverflow) {
   // max int anyway.  Additionally, if left + right underflows, it cannot be
   // increased by more then max int.
   Rect inset_overflow3(0, 0, limit, limit);
-  inset_overflow3.Inset(-100, -100, 100, 100);
-  EXPECT_EQ(inset_overflow3, gfx::Rect(-100, -100, limit, limit));
+  inset_overflow3.Inset(Insets::TLBR(-100, -100, 100, 100));
+  EXPECT_EQ(inset_overflow3, Rect(-100, -100, limit, limit));
 
   Rect inset_overflow4(-1000, -1000, limit, limit);
-  inset_overflow4.Inset(100, 100, -100, -100);
-  EXPECT_EQ(inset_overflow4, gfx::Rect(-900, -900, limit, limit));
+  inset_overflow4.Inset(Insets::TLBR(100, 100, -100, -100));
+  EXPECT_EQ(inset_overflow4, Rect(-900, -900, limit, limit));
 
   Rect offset_overflow(0, 0, 100, 100);
   offset_overflow.Offset(large_number, large_number);
@@ -1116,7 +682,7 @@ TEST(RectTest, IntegerOverflow) {
   EXPECT_EQ(expected_size, operator_overflow.size());
 
   Rect origin_maxint(limit, limit, limit, limit);
-  EXPECT_EQ(origin_maxint, Rect(gfx::Point(limit, limit), gfx::Size()));
+  EXPECT_EQ(origin_maxint, Rect(Point(limit, limit), Size()));
 
   // Expect a rect at the origin and a rect whose right/bottom is maxint
   // create a rect that extends from 0..maxint in both extents.
@@ -1147,8 +713,8 @@ TEST(RectTest, IntegerOverflow) {
     // Ideally, this should be (100, 100, limit + 400, limit + 400).
     // However, width overflows and would be clamped to limit, but right
     // overflows too and so will be clamped to limit - 100.
-    Rect expected(100, 100, limit - 100, limit - 100);
-    EXPECT_EQ(UnionRects(clamped, positive_origin), expected);
+    Rect expected_rect(100, 100, limit - 100, limit - 100);
+    EXPECT_EQ(UnionRects(clamped, positive_origin), expected_rect);
   }
 
   // Unioning a left=minint rect with a right=maxint rect.
@@ -1158,7 +724,7 @@ TEST(RectTest, IntegerOverflow) {
     int part_limit = min_limit / 3;
     Rect left_minint(min_limit, min_limit, 1, 1);
     Rect right_maxint(limit - 1, limit - 1, limit, limit);
-    Rect expected(part_limit, part_limit, 2 * part_limit, 2 * part_limit);
+    Rect expected_rect(part_limit, part_limit, 2 * part_limit, 2 * part_limit);
     Rect result = UnionRects(left_minint, right_maxint);
 
     // The result should be maximally big.
@@ -1172,48 +738,137 @@ TEST(RectTest, IntegerOverflow) {
     EXPECT_LT(part_limit, result.bottom());
 
     // More succinctly, but harder to read in the results.
-    EXPECT_TRUE(UnionRects(left_minint, right_maxint).Contains(expected));
+    EXPECT_TRUE(UnionRects(left_minint, right_maxint).Contains(expected_rect));
   }
 }
 
-TEST(RectTest, ScaleToEnclosingRectSafe) {
-  const int max_int = std::numeric_limits<int>::max();
-  const int min_int = std::numeric_limits<int>::min();
+TEST(RectTest, Inset) {
+  Rect r(10, 20, 30, 40);
+  r.Inset(0);
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+  r.Inset(1);
+  EXPECT_EQ(Rect(11, 21, 28, 38), r);
+  r.Inset(-1);
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
-  Rect xy_underflow(-100000, -123456, 10, 20);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(xy_underflow, 100000, 100000),
-            Rect(min_int, min_int, 1000000, 2000000));
+  r.Inset(Insets::VH(2, 1));
+  EXPECT_EQ(Rect(11, 22, 28, 36), r);
+  r.Inset(Insets::VH(-2, -1));
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
-  // A location overflow means that width/right and bottom/top also
-  // overflow so need to be clamped.
-  Rect xy_overflow(100000, 123456, 10, 20);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(xy_overflow, 100000, 100000),
-            Rect(max_int, max_int, 0, 0));
+  // The parameters are left, top, right, bottom.
+  r.Inset(Insets::TLBR(2, 1, 4, 3));
+  EXPECT_EQ(Rect(11, 22, 26, 34), r);
+  r.Inset(Insets::TLBR(-2, -1, -4, -3));
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
-  // In practice all rects are clamped to 0 width / 0 height so
-  // negative sizes don't matter, but try this for the sake of testing.
-  Rect size_underflow(-1, -2, 100000, 100000);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(size_underflow, -100000, -100000),
-            Rect(100000, 200000, 0, 0));
+  r.Inset(Insets::TLBR(1, 2, 3, 4));
+  EXPECT_EQ(Rect(12, 21, 24, 36), r);
+  r.Inset(Insets::TLBR(-1, -2, -3, -4));
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+}
 
-  Rect size_overflow(-1, -2, 123456, 234567);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(size_overflow, 100000, 100000),
-            Rect(-100000, -200000, max_int, max_int));
-  // Verify width/right gets clamped properly too if x/y positive.
-  Rect size_overflow2(1, 2, 123456, 234567);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(size_overflow2, 100000, 100000),
-            Rect(100000, 200000, max_int - 100000, max_int - 200000));
+TEST(RectTest, Outset) {
+  Rect r(10, 20, 30, 40);
+  r.Outset(0);
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+  r.Outset(1);
+  EXPECT_EQ(Rect(9, 19, 32, 42), r);
+  r.Outset(-1);
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
-  Rect max_rect(max_int, max_int, max_int, max_int);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(max_rect, max_int, max_int),
-            Rect(max_int, max_int, 0, 0));
+  r.Outset(Outsets::VH(2, 1));
+  EXPECT_EQ(Rect(9, 18, 32, 44), r);
+  r.Outset(Outsets::VH(-2, -1));
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
-  Rect min_rect(min_int, min_int, max_int, max_int);
-  // Min rect can't be scaled up any further in any dimension.
-  EXPECT_EQ(ScaleToEnclosingRectSafe(min_rect, 2, 3.5), min_rect);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(min_rect, max_int, max_int), min_rect);
-  // Min rect scaled by min is an empty rect at (max, max)
-  EXPECT_EQ(ScaleToEnclosingRectSafe(min_rect, min_int, min_int), max_rect);
+  r.Outset(Outsets::TLBR(2, 1, 4, 3));
+  EXPECT_EQ(Rect(9, 18, 34, 46), r);
+  r.Outset(Outsets::TLBR(-2, -1, -4, -3));
+  EXPECT_EQ(Rect(10, 20, 30, 40), r);
+}
+
+TEST(RectTest, InsetOutsetClamped) {
+  Rect r(10, 20, 30, 40);
+  r.Inset(18);
+  EXPECT_EQ(Rect(28, 38, 0, 4), r);
+  r.Inset(-18);
+  EXPECT_EQ(Rect(10, 20, 36, 40), r);
+
+  r.Inset(Insets::VH(30, 15));
+  EXPECT_EQ(Rect(25, 50, 6, 0), r);
+  r.Inset(Insets::VH(-30, -15));
+  EXPECT_EQ(Rect(10, 20, 36, 60), r);
+
+  r.Inset(Insets::TLBR(30, 20, 50, 40));
+  EXPECT_EQ(Rect(30, 50, 0, 0), r);
+  r.Inset(Insets::TLBR(-30, -20, -50, -40));
+  EXPECT_EQ(Rect(10, 20, 60, 80), r);
+
+  r.Outset(kMaxInt);
+  EXPECT_EQ(Rect(10 - kMaxInt, 20 - kMaxInt, kMaxInt, kMaxInt), r);
+  r.Outset(Outsets().set_top_bottom(kMaxInt, kMaxInt));
+  EXPECT_EQ(Rect(10 - kMaxInt, kMinInt, kMaxInt, kMaxInt), r);
+  r.Outset(Outsets().set_right(kMaxInt).set_top(kMaxInt));
+  EXPECT_EQ(Rect(10 - kMaxInt, kMinInt, kMaxInt, kMaxInt), r);
+  r.Outset(Outsets().set_left_right(kMaxInt, kMaxInt));
+  EXPECT_EQ(Rect(kMinInt, kMinInt, kMaxInt, kMaxInt), r);
+}
+
+TEST(RectTest, SetByBounds) {
+  Rect r;
+  r.SetByBounds(1, 2, 30, 40);
+  EXPECT_EQ(Rect(1, 2, 29, 38), r);
+  r.SetByBounds(30, 40, 1, 2);
+  EXPECT_EQ(Rect(30, 40, 0, 0), r);
+
+  r.SetByBounds(0, 0, kMaxInt, kMaxInt);
+  EXPECT_EQ(Rect(0, 0, kMaxInt, kMaxInt), r);
+  r.SetByBounds(-1, -1, kMaxInt, kMaxInt);
+  EXPECT_EQ(Rect(-1, -1, kMaxInt, kMaxInt), r);
+  r.SetByBounds(1, 1, kMaxInt, kMaxInt);
+  EXPECT_EQ(Rect(1, 1, kMaxInt - 1, kMaxInt - 1), r);
+  r.SetByBounds(kMinInt, kMinInt, 0, 0);
+  EXPECT_EQ(Rect(kMinInt + 1, kMinInt + 1, kMaxInt, kMaxInt), r);
+  r.SetByBounds(kMinInt, kMinInt, 1, 1);
+  EXPECT_EQ(Rect(kMinInt + 2, kMinInt + 2, kMaxInt, kMaxInt), r);
+  r.SetByBounds(kMinInt, kMinInt, -1, -1);
+  EXPECT_EQ(Rect(kMinInt, kMinInt, kMaxInt, kMaxInt), r);
+  r.SetByBounds(kMinInt, kMinInt, kMaxInt, kMaxInt);
+  EXPECT_EQ(Rect(kMinInt / 2 - 1, kMinInt / 2 - 1, kMaxInt, kMaxInt), r);
+}
+
+TEST(RectTest, MaximumCoveredRect) {
+  // X aligned and intersect: unite.
+  EXPECT_EQ(Rect(10, 20, 30, 60),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(10, 30, 30, 50)));
+  // X aligned and adjacent: unite.
+  EXPECT_EQ(Rect(10, 20, 30, 90),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(10, 60, 30, 50)));
+  // X aligned and separate: choose the bigger one.
+  EXPECT_EQ(Rect(10, 61, 30, 50),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(10, 61, 30, 50)));
+  // Y aligned and intersect: unite.
+  EXPECT_EQ(Rect(10, 20, 60, 40),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(30, 20, 40, 40)));
+  // Y aligned and adjacent: unite.
+  EXPECT_EQ(Rect(10, 20, 70, 40),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(40, 20, 40, 40)));
+  // Y aligned and separate: choose the bigger one.
+  EXPECT_EQ(Rect(41, 20, 40, 40),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(41, 20, 40, 40)));
+  // Get the biggest expanded intersection.
+  EXPECT_EQ(Rect(0, 0, 9, 19),
+            MaximumCoveredRect(Rect(0, 0, 10, 10), Rect(0, 9, 9, 10)));
+  EXPECT_EQ(Rect(0, 0, 19, 9),
+            MaximumCoveredRect(Rect(0, 0, 10, 10), Rect(9, 0, 10, 9)));
+  // Otherwise choose the bigger one.
+  EXPECT_EQ(Rect(20, 30, 40, 50),
+            MaximumCoveredRect(Rect(10, 20, 30, 40), Rect(20, 30, 40, 50)));
+  EXPECT_EQ(Rect(10, 20, 40, 50),
+            MaximumCoveredRect(Rect(10, 20, 40, 50), Rect(20, 30, 30, 40)));
+  EXPECT_EQ(Rect(10, 20, 40, 50),
+            MaximumCoveredRect(Rect(10, 20, 40, 50), Rect(20, 30, 40, 50)));
 }
 
 }  // namespace gfx

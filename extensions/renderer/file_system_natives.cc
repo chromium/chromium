@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,8 @@
 #include "third_party/blink/public/web/web_dom_file_system.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/origin.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 

@@ -31,13 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_CHOOSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_CHOOSER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -46,34 +45,34 @@ class AXObject;
 struct DateTimeChooserParameters {
   DISALLOW_NEW();
   CORE_EXPORT DateTimeChooserParameters();
+  // DateTimeSuggestionPtr is not copyable.
+  DateTimeChooserParameters(const DateTimeChooserParameters&) = delete;
+  DateTimeChooserParameters& operator=(const DateTimeChooserParameters&) =
+      delete;
   CORE_EXPORT ~DateTimeChooserParameters();
 
   AtomicString type;
-  IntRect anchor_rect_in_screen;
+  gfx::Rect anchor_rect_in_screen;
   // Locale name for which the chooser should be localized. This
   // might be an invalid name because it comes from HTML lang
   // attributes.
   AtomicString locale;
-  double double_value;
+  double double_value = 0;
   Vector<mojom::blink::DateTimeSuggestionPtr> suggestions;
-  double minimum;
-  double maximum;
-  double step;
-  double step_base;
-  bool required;
-  bool is_anchor_element_rtl;
+  double minimum = 0;
+  double maximum = 0;
+  double step = 1.0;
+  double step_base = 0;
+  bool required = false;
+  bool is_anchor_element_rtl = false;
   // The fields below are used for type="time".
   // For some locales the am/pm is the first field, so is_ampm_first informs
   // the time popup when the am/pm column should be the first one.
-  bool is_ampm_first;
-  bool has_ampm;
-  bool has_second;
-  bool has_millisecond;
-  int focused_field_index;
-
- private:
-  // DateTimeSuggestionPtr is not copyable.
-  DISALLOW_COPY_AND_ASSIGN(DateTimeChooserParameters);
+  bool is_ampm_first = false;
+  bool has_ampm = false;
+  bool has_second = false;
+  bool has_millisecond = false;
+  int focused_field_index = 0;
 };
 
 // For pickers like color pickers and date pickers.

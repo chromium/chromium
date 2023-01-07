@@ -25,10 +25,11 @@
 #include <memory>
 #include <utility>
 
+#include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/public/platform/web_client_hints_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
@@ -37,6 +38,8 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -49,22 +52,22 @@
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
-#include "third_party/blink/renderer/core/loader/importance_attribute.h"
+#include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/lazy_image_helper.h"
-#include "third_party/blink/renderer/core/loader/subresource_redirect_util.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
@@ -124,7 +127,7 @@ class ImageLoader::Task {
         update_behavior_(update_behavior),
         referrer_policy_(referrer_policy) {
     ExecutionContext* context = loader_->GetElement()->GetExecutionContext();
-    probe::AsyncTaskScheduled(context, "Image", &async_task_id_);
+    async_task_context_.Schedule(context, "Image");
     world_ = context->GetCurrentWorld();
   }
 
@@ -132,7 +135,7 @@ class ImageLoader::Task {
     if (!loader_)
       return;
     ExecutionContext* context = loader_->GetElement()->GetExecutionContext();
-    probe::AsyncTask async_task(context, &async_task_id_);
+    probe::AsyncTask async_task(context, &async_task_context_);
     loader_->DoUpdateFromElement(world_, update_behavior_, referrer_policy_);
   }
 
@@ -149,7 +152,7 @@ class ImageLoader::Task {
   scoped_refptr<const DOMWrapperWorld> world_;
   network::mojom::ReferrerPolicy referrer_policy_;
 
-  probe::AsyncTaskId async_task_id_;
+  probe::AsyncTaskContext async_task_context_;
   base::WeakPtrFactory<Task> weak_factory_{this};
 };
 
@@ -171,9 +174,6 @@ void ImageLoader::Dispose() {
       << ", has pending error event=" << pending_error_event_.IsActive();
 
   if (image_content_) {
-    image_content_->RemoveObserver(this);
-    image_content_ = nullptr;
-    image_content_for_image_document_ = nullptr;
     delay_until_image_notify_finished_ = nullptr;
   }
 }
@@ -226,8 +226,8 @@ void ImageLoader::DispatchDecodeRequestsIfComplete() {
     // ImageLoader will be destroyed, leading to unresolved/unrejected Promise.
     frame->GetChromeClient().RequestDecode(
         frame, image->PaintImageForCurrentFrame(),
-        WTF::Bind(&ImageLoader::DecodeRequestFinished,
-                  WrapCrossThreadPersistent(this), request->request_id()));
+        WTF::BindOnce(&ImageLoader::DecodeRequestFinished,
+                      WrapCrossThreadPersistent(this), request->request_id()));
     request->NotifyDecodeDispatched();
     ++it;
   }
@@ -277,6 +277,7 @@ void ImageLoader::Trace(Visitor* visitor) const {
   visitor->Trace(image_content_for_image_document_);
   visitor->Trace(element_);
   visitor->Trace(decode_requests_);
+  ImageResourceObserver::Trace(visitor);
 }
 
 void ImageLoader::SetImageForTest(ImageResourceContent* new_image) {
@@ -316,7 +317,7 @@ bool ImageLoader::ImageIsPotentiallyAvailable() const {
                           !image_content_->ErrorOccurred();
   bool image_still_loading = !image_has_loaded && HasPendingActivity() &&
                              !HasPendingError() &&
-                             !element_->ImageSourceURL().IsEmpty();
+                             !element_->ImageSourceURL().empty();
   bool image_has_image = image_content_ && image_content_->HasImage();
   bool image_is_document = element_->GetDocument().IsImageDocument() &&
                            image_content_ && !image_content_->ErrorOccurred();
@@ -343,7 +344,7 @@ void ImageLoader::ClearImage() {
 
 void ImageLoader::SetImageWithoutConsideringPendingLoadEvent(
     ImageResourceContent* new_image_content) {
-  DCHECK(failed_load_url_.IsEmpty());
+  DCHECK(failed_load_url_.empty());
   ImageResourceContent* old_image_content = image_content_.Get();
   if (new_image_content != old_image_content) {
     if (pending_load_event_.IsActive())
@@ -376,17 +377,20 @@ static void ConfigureRequest(
 
   if (RuntimeEnabledFeatures::PriorityHintsEnabled(
           element.GetExecutionContext())) {
-    mojom::FetchImportanceMode importance_mode =
-        GetFetchImportanceAttributeValue(
-            element.FastGetAttribute(html_names::kImportanceAttr));
-    params.SetFetchImportanceMode(importance_mode);
+    mojom::blink::FetchPriorityHint fetch_priority_hint =
+        GetFetchPriorityAttributeValue(
+            element.FastGetAttribute(html_names::kFetchpriorityAttr));
+    params.SetFetchPriorityHint(fetch_priority_hint);
   }
 
   auto* html_image_element = DynamicTo<HTMLImageElement>(element);
-  if (client_hints_preferences.ShouldSend(
-          network::mojom::WebClientHintsType::kResourceWidth) &&
-      html_image_element)
+  if ((client_hints_preferences.ShouldSend(
+           network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED) ||
+       client_hints_preferences.ShouldSend(
+           network::mojom::WebClientHintsType::kResourceWidth)) &&
+      html_image_element) {
     params.SetResourceWidth(html_image_element->GetResourceWidth());
+  }
 }
 
 inline void ImageLoader::DispatchErrorEvent() {
@@ -398,9 +402,10 @@ inline void ImageLoader::DispatchErrorEvent() {
   pending_error_event_ = PostCancellableTask(
       *GetElement()->GetDocument().GetTaskRunner(TaskType::kDOMManipulation),
       FROM_HERE,
-      WTF::Bind(&ImageLoader::DispatchPendingErrorEvent, WrapPersistent(this),
-                std::make_unique<IncrementLoadEventDelayCount>(
-                    GetElement()->GetDocument())));
+      WTF::BindOnce(&ImageLoader::DispatchPendingErrorEvent,
+                    WrapPersistent(this),
+                    std::make_unique<IncrementLoadEventDelayCount>(
+                        GetElement()->GetDocument())));
 }
 
 inline void ImageLoader::CrossSiteOrCSPViolationOccurred(
@@ -417,7 +422,8 @@ inline void ImageLoader::EnqueueImageLoadingMicroTask(
     network::mojom::ReferrerPolicy referrer_policy) {
   auto task = std::make_unique<Task>(this, update_behavior, referrer_policy);
   pending_task_ = task->GetWeakPtr();
-  Microtask::EnqueueMicrotask(WTF::Bind(&Task::Run, std::move(task)));
+  element_->GetDocument().GetAgent()->event_loop()->EnqueueMicrotask(
+      WTF::BindOnce(&Task::Run, std::move(task)));
   delay_until_do_update_from_element_ =
       std::make_unique<IncrementLoadEventDelayCount>(element_->GetDocument());
 }
@@ -443,7 +449,8 @@ void ImageLoader::DoUpdateFromElement(
     scoped_refptr<const DOMWrapperWorld> world,
     UpdateFromElementBehavior update_behavior,
     network::mojom::ReferrerPolicy referrer_policy,
-    UpdateType update_type) {
+    UpdateType update_type,
+    bool force_blocking) {
   // FIXME: According to
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content.html#the-img-element:the-img-element-55
   // When "update image" is called due to environment changes and the load
@@ -471,8 +478,7 @@ void ImageLoader::DoUpdateFromElement(
     resource_loader_options.initiator_info.name = GetElement()->localName();
     ResourceRequest resource_request(url);
     if (update_behavior == kUpdateForcedReload) {
-      resource_request.SetCacheMode(mojom::FetchCacheMode::kBypassCache);
-      resource_request.SetPreviewsState(PreviewsTypes::kPreviewsNoTransform);
+      resource_request.SetCacheMode(mojom::blink::FetchCacheMode::kBypassCache);
     }
 
     resource_request.SetReferrerPolicy(referrer_policy);
@@ -496,6 +502,19 @@ void ImageLoader::DoUpdateFromElement(
           network::mojom::RequestDestination::kEmbed);
     }
 
+    DCHECK(document.GetFrame());
+    auto* frame = document.GetFrame();
+
+    if (IsA<HTMLImageElement>(GetElement()) &&
+        GetElement()->FastHasAttribute(html_names::kAttributionsrcAttr) &&
+        frame->GetAttributionSrcLoader()->CanRegister(
+            url, To<HTMLImageElement>(GetElement()),
+            /*request_id=*/absl::nullopt)) {
+      resource_request.SetHttpHeaderField(
+          http_names::kAttributionReportingEligible,
+          kAttributionEligibleEventSourceAndTrigger);
+    }
+
     bool page_is_being_dismissed =
         document.PageDismissalEventBeingDispatched() != Document::kNoDismissal;
     if (page_is_being_dismissed) {
@@ -504,6 +523,7 @@ void ImageLoader::DoUpdateFromElement(
       resource_request.SetKeepalive(true);
       resource_request.SetRequestContext(
           mojom::blink::RequestContextType::PING);
+      UseCounter::Count(document, WebFeature::kImageLoadAtDismissalEvent);
     }
 
     // Plug-ins should not load via service workers as plug-ins may have their
@@ -514,9 +534,6 @@ void ImageLoader::DoUpdateFromElement(
     if (html_element && html_element->IsPluginElement()) {
       resource_request.SetSkipServiceWorker(true);
     }
-
-    DCHECK(document.GetFrame());
-    auto* frame = document.GetFrame();
 
     FetchParameters params(std::move(resource_request),
                            resource_loader_options);
@@ -534,10 +551,6 @@ void ImageLoader::DoUpdateFromElement(
             was_deferred_explicitly_ =
                 (loading_attr == LoadingAttributeValue::kLazy);
             params.SetLazyImageDeferred();
-            if (frame->Client()) {
-              frame->Client()->DidObserveLazyLoadBehavior(
-                  WebLocalFrameClient::LazyLoadBehavior::kDeferredImage);
-            }
             break;
           case LazyImageHelper::Eligibility::kDisabled:
             break;
@@ -548,16 +561,9 @@ void ImageLoader::DoUpdateFromElement(
     // If we're now loading in a once-deferred image, make sure it doesn't block
     // the load event.
     if (was_deferred_explicitly_ &&
-        lazy_image_load_state_ == LazyImageLoadState::kFullImage) {
+        lazy_image_load_state_ == LazyImageLoadState::kFullImage &&
+        !force_blocking) {
       params.SetLazyImageNonBlocking();
-    }
-
-    if (ShouldEnableSubresourceRedirect(
-            DynamicTo<HTMLImageElement>(GetElement()), params.Url())) {
-      auto& subresource_request = params.MutableResourceRequest();
-      subresource_request.SetPreviewsState(
-          subresource_request.GetPreviewsState() |
-          PreviewsTypes::kSubresourceRedirectOn);
     }
 
     new_image_content = ImageResourceContent::Fetch(params, document.Fetcher());
@@ -627,7 +633,8 @@ void ImageLoader::DoUpdateFromElement(
 
 void ImageLoader::UpdateFromElement(
     UpdateFromElementBehavior update_behavior,
-    network::mojom::ReferrerPolicy referrer_policy) {
+    network::mojom::ReferrerPolicy referrer_policy,
+    bool force_blocking) {
   if (!element_->GetDocument().IsActive()) {
     return;
   }
@@ -641,7 +648,7 @@ void ImageLoader::UpdateFromElement(
   if (update_behavior == kUpdateIgnorePreviousError)
     ClearFailedLoadURL();
 
-  if (!failed_load_url_.IsEmpty() && image_source_url == failed_load_url_)
+  if (!failed_load_url_.empty() && image_source_url == failed_load_url_)
     return;
 
   // Prevent the creation of a ResourceLoader (and therefore a network request)
@@ -669,12 +676,13 @@ void ImageLoader::UpdateFromElement(
 
   if (ShouldLoadImmediately(ImageSourceToKURL(image_source_url))) {
     DoUpdateFromElement(element_->GetExecutionContext()->GetCurrentWorld(),
-                        update_behavior, referrer_policy, UpdateType::kSync);
+                        update_behavior, referrer_policy, UpdateType::kSync,
+                        force_blocking);
     return;
   }
   // Allow the idiom "img.src=''; img.src='.." to clear down the image before an
   // asynchronous load completes.
-  if (image_source_url.IsEmpty()) {
+  if (image_source_url.empty()) {
     ImageResourceContent* image = image_content_.Get();
     if (image) {
       image->RemoveObserver(this);
@@ -709,7 +717,7 @@ KURL ImageLoader::ImageSourceToKURL(AtomicString image_source_url) const {
   if (!image_source_url.IsNull()) {
     String stripped_image_source_url =
         StripLeadingAndTrailingHTMLSpaces(image_source_url);
-    if (!stripped_image_source_url.IsEmpty())
+    if (!stripped_image_source_url.empty())
       url = document.CompleteURL(stripped_image_source_url);
   }
   return url;
@@ -720,7 +728,7 @@ bool ImageLoader::ShouldLoadImmediately(const KURL& url) const {
   // asynchronous path so that we can add the shadow DOM for the alt-text
   // content when style recalc is over and DOM mutation is allowed again.
   if (!url.IsNull()) {
-    Resource* resource = GetMemoryCache()->ResourceForURL(
+    Resource* resource = MemoryCache::Get()->ResourceForURL(
         url, element_->GetDocument().Fetcher()->GetCacheIdentifier(url));
 
     if (resource && !resource->ErrorOccurred() &&
@@ -757,7 +765,7 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
       << "ImageLoader::imageNotifyFinished " << this
       << "; has pending load event=" << pending_load_event_.IsActive();
 
-  DCHECK(failed_load_url_.IsEmpty());
+  DCHECK(failed_load_url_.empty());
   DCHECK_EQ(content, image_content_.Get());
 
   CHECK(!image_complete_);
@@ -815,7 +823,7 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
   if (content->ErrorOccurred()) {
     pending_load_event_.Cancel();
 
-    base::Optional<ResourceError> error = content->GetResourceError();
+    absl::optional<ResourceError> error = content->GetResourceError();
     if (error && error->IsAccessCheck())
       CrossSiteOrCSPViolationOccurred(AtomicString(error->FailingURL()));
 
@@ -833,9 +841,10 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
   pending_load_event_ = PostCancellableTask(
       *GetElement()->GetDocument().GetTaskRunner(TaskType::kDOMManipulation),
       FROM_HERE,
-      WTF::Bind(&ImageLoader::DispatchPendingLoadEvent, WrapPersistent(this),
-                std::make_unique<IncrementLoadEventDelayCount>(
-                    GetElement()->GetDocument())));
+      WTF::BindOnce(&ImageLoader::DispatchPendingLoadEvent,
+                    WrapPersistent(this),
+                    std::make_unique<IncrementLoadEventDelayCount>(
+                        GetElement()->GetDocument())));
 }
 
 LayoutImageResource* ImageLoader::GetLayoutImageResource() {
@@ -890,8 +899,7 @@ void ImageLoader::DispatchPendingLoadEvent(
   if (!image_content_)
     return;
   CHECK(image_complete_);
-  if (GetElement()->GetDocument().GetFrame())
-    DispatchLoadEvent();
+  DispatchLoadEvent();
 
   // Checks Document's load event synchronously here for performance.
   // This is safe because DispatchPendingLoadEvent() is called asynchronously.
@@ -900,8 +908,7 @@ void ImageLoader::DispatchPendingLoadEvent(
 
 void ImageLoader::DispatchPendingErrorEvent(
     std::unique_ptr<IncrementLoadEventDelayCount> count) {
-  if (GetElement()->GetDocument().GetFrame())
-    GetElement()->DispatchEvent(*Event::Create(event_type_names::kError), "ImageLoader::DispatchPendingErrorEvent");
+  GetElement()->DispatchEvent(*Event::Create(event_type_names::kError), "ImageLoader::DispatchPendingErrorEvent");
 
   // Checks Document's load event synchronously here for performance.
   // This is safe because DispatchPendingErrorEvent() is called asynchronously.
@@ -919,29 +926,31 @@ bool ImageLoader::GetImageAnimationPolicy(
 
 ScriptPromise ImageLoader::Decode(ScriptState* script_state,
                                   ExceptionState& exception_state) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   // It's possible that |script_state|'s context isn't valid, which means we
   // should immediately reject the request. This is possible in situations like
   // the document that created this image was already destroyed (like an img
   // that comes from iframe.contentDocument.createElement("img") and the iframe
   // is destroyed).
-  if (!script_state->ContextIsValid()) {
+  if (!script_state->ContextIsValid() || !execution_context) {
     exception_state.ThrowDOMException(DOMExceptionCode::kEncodingError,
                                       "The source image cannot be decoded.");
     return ScriptPromise();
   }
 
-  UseCounter::Count(GetElement()->GetDocument(), WebFeature::kImageDecodeAPI);
+  UseCounter::Count(execution_context, WebFeature::kImageDecodeAPI);
 
   auto* request = MakeGarbageCollected<DecodeRequest>(
       this, MakeGarbageCollected<ScriptPromiseResolver>(script_state));
-  Microtask::EnqueueMicrotask(
-      WTF::Bind(&DecodeRequest::ProcessForTask, WrapWeakPersistent(request)));
+  execution_context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+      &DecodeRequest::ProcessForTask, WrapWeakPersistent(request)));
   decode_requests_.push_back(request);
   return request->promise();
 }
 
 void ImageLoader::LoadDeferredImage(
-    network::mojom::ReferrerPolicy referrer_policy) {
+    network::mojom::ReferrerPolicy referrer_policy,
+    bool force_blocking) {
   if (lazy_image_load_state_ != LazyImageLoadState::kDeferred)
     return;
   DCHECK(!image_complete_);
@@ -949,12 +958,7 @@ void ImageLoader::LoadDeferredImage(
 
   // If the image has been fully deferred (no placeholder fetch), report it as
   // fully loaded now.
-  LocalFrame* frame = element_->GetDocument().GetFrame();
-  if (frame && frame->Client()) {
-    frame->Client()->DidObserveLazyLoadBehavior(
-        WebLocalFrameClient::LazyLoadBehavior::kLazyLoadedImage);
-  }
-  UpdateFromElement(kUpdateNormal, referrer_policy);
+  UpdateFromElement(kUpdateNormal, referrer_policy, force_blocking);
 }
 
 void ImageLoader::ElementDidMoveToNewDocument() {

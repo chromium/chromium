@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<!--
+@BLINK-ALLOW:ariaInvalidValue*
+@BLINK-ALLOW:invalidState*
+@MAC-ALLOW:AXInvalid*
+@WIN-ALLOW:ia2_hypertext*
+@WIN-ALLOW:IA2_STATE_INVALID_ENTRY
+@WIN-ALLOW:invalid*
+@AURALINUX-ALLOW:invalid*
+-->
+<!-- crbug.com/1318969 Don't expose invalid on an empty required field,
+  in order to avoid redundant verbalizations.
+-->
+<html>
+<body>
+  <input required></input>
+  <input aria-required="true"></input>
+</body>
+</html>

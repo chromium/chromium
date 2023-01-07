@@ -1,0 +1,57 @@
+<style>
+  .form-item,
+  .form-item-custom {
+    align-items: center;
+    border-bottom: none;
+    display: flex;
+    font-size: 1rem;
+    padding: 0 0 8px 0;
+  }
+
+  .form-item>label {
+    flex: 1;
+    font-size: 1;
+  }
+
+  .form-item>select {
+    background: inherit;
+    border: 2px solid #666;
+    border-radius: .25rem;
+    flex: 2;
+    padding: .1rem;
+  }
+
+  .form-item-custom>label {
+    flex: 3;
+    font-size: 1;
+  }
+
+  .form-item-custom>select {
+    background: inherit;
+    border: 2px solid #666;
+    border-radius: .25rem;
+    flex: 2;
+    min-width: 0;
+    padding: .1rem;
+  }
+
+  .form-item-custom>input {
+    background: inherit;
+    border: 2px solid #666;
+    border-radius: .25rem;
+    flex: 4;
+    padding: .1rem;
+  }
+</style>
+<div class$="[[formItemStyle]]">
+  <label for="[[selectid]]">[[displayLabel]]</label>
+  <select id="[[selectid]]" on-change="onSelectChange">
+    <template is="dom-repeat" items="[[selectElements]]">
+      <option value="[[item.value]]"> [[item.displayText]] </option>
+    </template>
+    <template is="dom-if" if="[[!noCustomInput]]">
+      <option value="custom">Custom</option>
+    </template>
+  </select>
+  <input class="hidden-input" type="text" on-change="onInputChange">
+</div>

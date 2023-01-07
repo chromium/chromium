@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_service.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/reading_list/features/reading_list_switches.h"
 
 // static
@@ -32,9 +31,9 @@ ReadingListNotificationServiceFactory::GetForBrowserContext(
 }
 
 ReadingListNotificationServiceFactory::ReadingListNotificationServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ReadingListNotificationService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ReadingListModelFactory::GetInstance());
   DependsOn(NotificationScheduleServiceFactory::GetInstance());
 }
@@ -55,10 +54,4 @@ KeyedService* ReadingListNotificationServiceFactory::BuildServiceInstanceFor(
       reading_list_model, notification_scheduler,
       std::make_unique<ReadingListBridge>(), std::move(config),
       base::DefaultClock::GetInstance());
-}
-
-content::BrowserContext*
-ReadingListNotificationServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

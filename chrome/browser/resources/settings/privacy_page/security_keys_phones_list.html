@@ -1,0 +1,36 @@
+<style include="settings-shared">
+  .list-item {
+    justify-content: space-between;
+  }
+
+  #table .cr-row:first-child {
+    border-top: none;
+  }
+</style>
+<div id="outer" class="list-frame" role="table">
+  <div role="rowgroup" id="table">
+    <template is="dom-repeat" items="[[phones]]">
+      <div class="list-item cr-row" role="row">
+        <span role="cell" class="name-column">[[item.name]]</span>
+        <template is="dom-if" if="[[!immutable]]">
+          <span role="cell">
+            <cr-icon-button class="icon-more-vert"
+                            on-click="onDotsClick_"
+                            data-phone-public-key$="[[item.publicKey]]"
+                            title="$i18n{moreActions}">
+            </cr-icon-button>
+          </span>
+        </template>
+      </div>
+    </template>
+
+    <cr-action-menu id="menu" role-description="$i18n{menu}">
+      <button class="dropdown-item" on-click="onEditClick_" id="edit">
+        $i18n{edit}
+      </button>
+      <button class="dropdown-item" on-click="onDeleteClick_" id="delete">
+        $i18n{delete}
+      </button>
+    </cr-action-menu>
+  </div>
+</div>

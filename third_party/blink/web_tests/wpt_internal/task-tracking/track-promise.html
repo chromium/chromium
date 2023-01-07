@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Verify that promise tasks can be properly tracked.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+
+promise_test(() => {
+  return new Promise(async (resolve, reject) => {
+    const initialId = scheduler.taskId;
+    await new Promise(r => setTimeout(r, 0));
+    queueMicrotask(() => {
+      try {
+          assert_equals(scheduler.isAncestor(initialId), "ancestor");
+          resolve();
+        } catch {
+          reject("Queued microtask is not a descendant");
+        }
+    });
+  });
+}, "A microtask is a descendant of the dispatching task");
+
+promise_test(() => {
+  return new Promise((resolve, reject) => {
+    const initialId = scheduler.taskId;
+    fetch("/resources/blank.html")
+    .then(response => response.text())
+    .then(body => {
+      return new Promise(interimResolve => {
+        interimResolve();
+      });
+    })
+    .then(() => {
+      try {
+        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        resolve();
+      } catch {
+        reject();
+      }
+    });
+  });
+}, "A paint task after fetching a resource using promises is a " +
+   "descendant of initiating task.");
+
+promise_test(() => {
+  return new Promise((resolve, reject) => {
+    const initialId = scheduler.taskId;
+    fetch("/resources/blank.html")
+    .then(response => response.text())
+    .then(body => {
+      return new Promise(interimResolve => {
+        interimResolve();
+      });
+    })
+    .then(() => {
+      return new Promise(interimResolve => setTimeout(interimResolve, 0));
+    })
+    .then(() => {
+      try {
+        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        resolve();
+      } catch {
+        reject();
+      }
+    });
+  });
+}, "A paint task after fetching a resource using promises, including a JS " +
+   "created promise with a timeout, is a descendant of initiating task.");
+
+promise_test(() => {
+  return new Promise(async (resolve, reject) => {
+    const initialId = scheduler.taskId;
+    const response = await fetch("/resources/blank.html");
+    const body = await response.text();
+    try {
+      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      resolve();
+    } catch {
+      reject();
+    }
+  });
+}, "A paint task after fetching a resource using async await is a descendant " +
+   "of initiating task.");
+
+promise_test(() => {
+  return new Promise(async (resolve, reject) => {
+    const initialId = scheduler.taskId;
+    let promiseId;
+    await new Promise(r => setTimeout(r, 10));
+    try {
+      await new Promise((r, rj) => {
+        promiseId = scheduler.taskId;
+        rj();
+      });
+    } catch {
+      // Carry on. Rejection is expected. The important thing is not to let it
+      // get to you.
+    }
+    try {
+      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+    } catch {
+      reject("InitialId is not an ancestor");
+    }
+    try {
+      assert_equals(scheduler.isAncestor(promiseId), "ancestor");
+      resolve();
+    } catch {
+      reject("PromiseId is not an ancestor");
+    }
+  });
+}, "Rejected promises properly handle ancestry.");
+
+</script>
+</body>
+</html>

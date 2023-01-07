@@ -1,6 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/memory/raw_ptr.h"
 
 #import "content/browser/renderer_host/text_input_client_mac.h"
 
@@ -8,10 +10,10 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
@@ -22,6 +24,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "ipc/ipc_test_sink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -92,7 +95,7 @@ class TextInputClientMacTest : public content::RenderViewHostTestHarness {
   // a short delay.
   void PostTask(base::Location from_here, base::OnceClosure task) {
     PostTask(std::move(from_here), std::move(task),
-             base::TimeDelta::FromMilliseconds(kTaskDelayMs));
+             base::Milliseconds(kTaskDelayMs));
   }
 
   void PostTask(base::Location from_here,
@@ -112,7 +115,7 @@ class TextInputClientMacTest : public content::RenderViewHostTestHarness {
  private:
   friend class ScopedTestingThread;
 
-  RenderWidgetHost* widget_;
+  raw_ptr<RenderWidgetHost> widget_;
   std::unique_ptr<TextInputClientLocalFrame> local_frame_;
 
   base::Thread thread_;
@@ -178,7 +181,7 @@ TEST_F(TextInputClientMacTest, NotFoundCharacterIndex) {
   PostTask(FROM_HERE,
            base::BindOnce(&TextInputClientMac::SetCharacterIndexAndSignal,
                           base::Unretained(service()), UINT32_MAX),
-           base::TimeDelta::FromMilliseconds(kTaskDelayMs) * 2);
+           base::Milliseconds(kTaskDelayMs) * 2);
 
   base::RunLoop run_loop1;
   local_frame()->SetCallback(run_loop1.QuitClosure());
@@ -212,9 +215,15 @@ TEST_F(TextInputClientMacTest, GetRectForRange) {
 TEST_F(TextInputClientMacTest, TimeoutRectForRange) {
   base::RunLoop run_loop;
   local_frame()->SetCallback(run_loop.QuitClosure());
+
+  base::TimeDelta old_timeout = service()->wait_timeout_for_tests();
+  service()->set_wait_timeout_for_tests(base::Milliseconds(300));
+
   gfx::Rect rect =
       service()->GetFirstRectForRange(widget(), gfx::Range(NSMakeRange(0, 32)));
   run_loop.Run();
+
+  service()->set_wait_timeout_for_tests(old_timeout);
   EXPECT_EQ(gfx::Rect(), rect);
 }
 

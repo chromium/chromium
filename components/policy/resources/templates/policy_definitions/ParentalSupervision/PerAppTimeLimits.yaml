@@ -1,0 +1,101 @@
+caption: Per-App Time Limits
+desc: |-
+  Allows to set per-app usage restrictions.
+          Usage restrictions can be applied to the apps installed on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> for the given user.
+          Restrictions should be passed in |app_limits| list. Only one entry per-app is allowed. Apps not included in the list have no restrictions.
+          It is not possible to block apps that are essential for the operating system, the restrictions for such apps will be ignored.
+          App is uniquely identified by |app_id|. Since different types of apps can use different id format |app_type| needs to be specified next to |app_id|.
+          Per-App Time Limits only support |ARC| apps currently. Android package name is used as |app_id|.
+          Support for other types of applications will be added in the future, for now they can be specified in the policy, but the restrictions will take no effect.
+          There are two types of available restrictions: |BLOCK| and |TIME_LIMIT|.
+          |BLOCK| makes app unavailable for the user. If |daily_limit_mins| is specified with |BLOCK| restriction |daily_limit_mins| will be ignored.
+          |TIME_LIMITS| applies daily usage limit and makes app unavailable after the limit is reached on the given day. Usage limit is specified in |daily_limit_mins|. Usage limit is reset daily at the UTC time passed in |reset_at|.
+          This policy is only used for child users.
+          This policy is complementary to 'UsageTimeLimit'. Restrictions specified in 'UsageTimeLimit' like screen time and bedtime will be enforced regardless of 'PerAppTimeLimits'.
+example_value:
+  activity_reporting_enabled: false
+  app_limits:
+  - app_info:
+      app_id: com.example.myapp
+      app_type: ARC
+    daily_limit_mins: 30
+    last_updated_millis: '1570223060437'
+    restriction: TIME_LIMIT
+  - app_info:
+      app_id: pjkljhegncpnkpknbcohdijeoejaedia
+      app_type: EXTENSION
+    daily_limit_mins: 10
+    last_updated_millis: '1570223000000'
+    restriction: TIME_LIMIT
+  - app_info:
+      app_id: iniodglblcgmngkgdipeiclkdjjpnlbn
+      app_type: BUILT-IN
+    last_updated_millis: '1570223000000'
+    restriction: BLOCK
+  reset_at:
+    hour: 6
+    minute: 0
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- agawronska@chromium.org
+- cros-families-eng@google.com
+schema:
+  properties:
+    activity_reporting_enabled:
+      description: The value of app activity collection toggle. If set to true user
+        app activity will be reported to the server with purpose of being displayed
+        in child and parent <ph name="PRODUCT_NAME">$1<ex>Family Link</ex></ph> app.
+        If set to false Per-app time limits feature will still work, but no data will
+        be reported to the server and therefore displayed in <ph name="PRODUCT_NAME">$1<ex>Family
+        Link</ex></ph>.
+      type: boolean
+    app_limits:
+      items:
+        properties:
+          app_info:
+            properties:
+              app_id:
+                type: string
+              app_type:
+                enum:
+                - ARC
+                - BUILT-IN
+                - EXTENSION
+                - WEB
+                - CROSTINI
+                type: string
+            type: object
+          daily_limit_mins:
+            maximum: 1440
+            minimum: 0
+            type: integer
+          last_updated_millis:
+            description: UTC timestamp for the last time this entry was updated. Sent
+              as a string because the timestamp would not fit in an integer
+            type: string
+          restriction:
+            enum:
+            - BLOCK
+            - TIME_LIMIT
+            type: string
+        type: object
+      type: array
+    reset_at:
+      description: The time of the day in local time when usage quota is renewed.
+      properties:
+        hour:
+          maximum: 23
+          minimum: 0
+          type: integer
+        minute:
+          maximum: 59
+          minimum: 0
+          type: integer
+      type: object
+  type: object
+supported_on:
+- 'chrome_os: 80-'
+tags: []
+type: dict

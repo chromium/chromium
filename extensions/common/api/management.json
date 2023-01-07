@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -163,7 +163,7 @@
       },
       {
         "id": "UninstallOptions",
-        "description": "Information about an icon belonging to an extension, app, or theme.",
+        "description": "Options for how to handle the extension's uninstallation.",
         "type": "object",
         "properties": {
           "showConfirmDialog": {
@@ -295,7 +295,7 @@
       },
       {
         "name": "uninstall",
-        "description": "Uninstalls a currently installed app or extension.",
+        "description": "Uninstalls a currently installed app or extension. Note: This function does not work in managed environments when the user is not allowed to uninstall the specified extension/app.",
         "parameters": [
           {
             "name": "id",
@@ -316,7 +316,7 @@
       },
       {
         "name": "uninstallSelf",
-        "description": "Uninstalls the calling extension. Note: This function can be used without requesting the 'management' permission in the manifest.",
+        "description": "Uninstalls the calling extension. Note: This function can be used without requesting the 'management' permission in the manifest. This function does not work in managed environments when the user is not allowed to uninstall the specified extension/app.",
         "parameters": [
           {
             "name": "options",

@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/shelf/drag_handle.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shelf/shelf_widget.h"
@@ -17,8 +17,10 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "base/bind.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -40,34 +42,33 @@ constexpr int kInAppToHomeVerticalMarginDrop = 10;
 constexpr int kInAppToHomeNudgeVerticalMarginDrop = 8;
 
 // Animation time for each translation of drag handle to show contextual nudge.
-constexpr base::TimeDelta kInAppToHomeAnimationTime =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kInAppToHomeAnimationTime = base::Milliseconds(300);
 
 // Animation time to return drag handle to original position after hiding
 // contextual nudge.
 constexpr base::TimeDelta kInAppToHomeHideAnimationDuration =
-    base::TimeDelta::FromMilliseconds(600);
+    base::Milliseconds(600);
 
 // Animation time to return drag handle to original position after the user taps
 // to hide the contextual nudge.
 constexpr base::TimeDelta kInAppToHomeHideOnTapAnimationDuration =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 // Delay between animating drag handle and tooltip opacity.
 constexpr base::TimeDelta kInAppToHomeNudgeOpacityDelay =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 // Fade in time for drag handle nudge tooltip.
 constexpr base::TimeDelta kInAppToHomeNudgeOpacityAnimationDuration =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(200);
 
 // Delay before animating the drag handle and showing the drag handle nudge.
-constexpr base::TimeDelta kShowNudgeDelay = base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kShowNudgeDelay = base::Seconds(2);
 
 // This class is deleted after OnImplicitAnimationsCompleted() is called.
 class HideNudgeObserver : public ui::ImplicitAnimationObserver {
  public:
-  HideNudgeObserver(ContextualNudge* drag_handle_nudge)
+  explicit HideNudgeObserver(ContextualNudge* drag_handle_nudge)
       : drag_handle_nudge_(drag_handle_nudge) {}
   ~HideNudgeObserver() override = default;
 
@@ -79,12 +80,12 @@ class HideNudgeObserver : public ui::ImplicitAnimationObserver {
   }
 
  private:
-  ContextualNudge* drag_handle_nudge_;
+  ContextualNudge* const drag_handle_nudge_;
 };
 
 }  // namespace
 
-DragHandle::DragHandle(int drag_handle_corner_radius, Shelf* shelf)
+DragHandle::DragHandle(float drag_handle_corner_radius, Shelf* shelf)
     : views::Button(base::BindRepeating(&DragHandle::ButtonPressed,
                                         base::Unretained(this))),
       shelf_(shelf) {
@@ -196,11 +197,6 @@ void DragHandle::HideDragHandleNudge(
     contextual_tooltip::HandleGesturePerformed(
         Shell::Get()->session_controller()->GetLastActiveUserPrefService(),
         contextual_tooltip::TooltipType::kInAppToHome);
-  } else {
-    // HandleGesturePerformed will also call MaybeLogNudgeDismissedMetrics so we
-    // do not need to call it separately for kPerformedGesture.
-    contextual_tooltip::MaybeLogNudgeDismissedMetrics(
-        contextual_tooltip::TooltipType::kInAppToHome, reason);
   }
 
   HideDragHandleNudgeHelper(/*hidden_by_tap=*/reason ==
@@ -254,18 +250,20 @@ gfx::Rect DragHandle::GetAnchorBoundsInScreen() const {
   // anchor for contextual nudges, and their bounds are set relative to the
   // handle bounds without transform (for example, for in-app to home nudge both
   // drag handle and the nudge will have non-indentity, identical transforms).
-  gfx::Point origin_in_screen = anchor_bounds.origin();
-  layer()->transform().TransformPointReverse(&origin_in_screen);
+  gfx::PointF origin(anchor_bounds.origin());
+  gfx::PointF origin_in_screen =
+      layer()->transform().InverseMapPoint(origin).value_or(origin);
 
   // If the parent widget has a transform set, it should be ignored as well (the
   // transform is set during shelf widget animations, and will animate to
   // identity transform), so the nudge bounds are set relative to the target
   // shelf bounds.
   aura::Window* const widget_window = GetWidget()->GetNativeWindow();
-  origin_in_screen += widget_window->bounds().origin().OffsetFromOrigin();
+  origin_in_screen +=
+      gfx::Vector2dF(widget_window->bounds().origin().OffsetFromOrigin());
   wm::ConvertPointToScreen(widget_window->parent(), &origin_in_screen);
 
-  anchor_bounds.set_origin(origin_in_screen);
+  anchor_bounds.set_origin(gfx::ToRoundedPoint(origin_in_screen));
   return anchor_bounds;
 }
 
@@ -355,8 +353,6 @@ void DragHandle::ShowDragHandleTooltip() {
   drag_handle_nudge_ = new ContextualNudge(
       this, nullptr /*parent_window*/, ContextualNudge::Position::kTop,
       gfx::Insets(), l10n_util::GetStringUTF16(IDS_ASH_DRAG_HANDLE_NUDGE),
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary),
       base::BindRepeating(&DragHandle::HandleTapOnNudge,
                           weak_factory_.GetWeakPtr()));
   drag_handle_nudge_->GetWidget()->Show();

@@ -1,6 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import './strings.m.js';
+
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 /**
  * The different types of power consumer types. Should be kept in sync with the
@@ -13,8 +19,10 @@ const PowerConsumerType = {
   CROSTINI: 2,
   ARC: 3,
   CHROME: 4,
-  SYSTEM: 5
+  SYSTEM: 5,
 };
+
+const devicePixelRatio = window.devicePixelRatio;
 
 /**
  * Plot a line graph of data versus time on a HTML canvas element.
@@ -34,7 +42,7 @@ const PowerConsumerType = {
  *     array 'tData' above.
  * @param {number} yMin Minimum bound of y-axis
  * @param {number} yMax Maximum bound of y-axis.
- * @param {integer} yPrecision An integer value representing the number of
+ * @param {number} yPrecision An integer value representing the number of
  *     digits of precision the y-axis data should be printed with.
  */
 function plotLineGraph(
@@ -399,8 +407,17 @@ var invalidDataText = loadTimeData.getString('invalidData');
 var offlineText = loadTimeData.getString('offlineText');
 
 var plotColors = [
-  'Red', 'Blue', 'Green', 'Gold', 'CadetBlue', 'LightCoral', 'LightSlateGray',
-  'Peru', 'DarkRed', 'LawnGreen', 'Tan'
+  'Red',
+  'Blue',
+  'Green',
+  'Gold',
+  'CadetBlue',
+  'LightCoral',
+  'LightSlateGray',
+  'Peru',
+  'DarkRed',
+  'LawnGreen',
+  'Tan',
 ];
 
 /**
@@ -409,12 +426,12 @@ var plotColors = [
  *
  * @param {Array<string>} headerArray Headers for the different plots to be
  *     added to |plotsDiv|.
- * @param {HTMLDivElement} plotsDiv The div element into which the canvases
+ * @param {HTMLElement} plotsDiv The div element into which the canvases
  *     are added.
- * @return {<string>: {plotCanvas: <HTMLCanvasElement>,
- *                     legendCanvas: <HTMLCanvasElement>} Returns an object
- *    with the headers as 'keys'. Each element is an object containing the
- *    legend canvas and the plot canvas that have been added to |plotsDiv|.
+ * @return {!Object<{plot: !HTMLCanvasElement, legend: !HTMLCanvasElement}>}
+ *   Returns an object with the headers as 'keys'. Each element is an object
+ *   containing the legend canvas and the plot canvas that have been added to
+ *   |plotsDiv|.
  */
 function addCanvases(headerArray, plotsDiv) {
   // Remove the contents before adding new ones.
@@ -428,7 +445,8 @@ function addCanvases(headerArray, plotsDiv) {
     header.textContent = headerArray[i];
     plotsDiv.appendChild(header);
 
-    var legendCanvas = document.createElement('canvas');
+    var legendCanvas =
+        /** @type {!HTMLCanvasElement} */ (document.createElement('canvas'));
     legendCanvas.width = width * devicePixelRatio;
     legendCanvas.style.width = width + 'px';
     plotsDiv.appendChild(legendCanvas);
@@ -437,7 +455,8 @@ function addCanvases(headerArray, plotsDiv) {
     plotCanvasDiv.style.overflow = 'auto';
     plotsDiv.appendChild(plotCanvasDiv);
 
-    plotCanvas = document.createElement('canvas');
+    var plotCanvas =
+        /** @type {!HTMLCanvasElement} */ (document.createElement('canvas'));
     plotCanvas.width = width * devicePixelRatio;
     plotCanvas.height = 200 * devicePixelRatio;
     plotCanvas.style.height = '200px';
@@ -453,14 +472,14 @@ function addCanvases(headerArray, plotsDiv) {
  * resumed from a sleep/suspend, then "suspended" sleep samples are added to
  * the plot for the sleep duration.
  *
- * @param {Array<{data: Array<number>, color: string}>} plots An
+ * @param {Array<{data: Array<number|string>, color: string}>} plots An
  *     array of plots to plot on the canvas. The field 'data' of a plot is an
  *     array of samples to be plotted as a line graph with color speficied by
  *     the field 'color'. The elements in the 'data' array are ordered
  *     corresponding to their sampling time in the argument 'tData'. Also, the
  *     number of elements in the 'data' array should be the same as in the time
  *     array 'tData' below.
- * @param {Array<number>} tData The time (in seconds) in the past when the
+ * @param {Array<string>} tData The time (in seconds) in the past when the
  *     corresponding data in plots was sampled.
  * @param {Array<number>} absTime
  * @param {Array<number>} sampleArray The array of samples wherein each
@@ -530,27 +549,33 @@ function addTimeDataSample(
 /**
  * Display the battery charge vs time on a line graph.
  *
- * @param {Array<{time: number,
- *                 batteryPercent: number,
- *                 batteryDischargeRate: number,
- *                 externalPower: number}>} powerSupplyArray An array of objects
- *     with fields representing the battery charge, time when the charge
- *     measurement was taken, and whether there was external power connected at
- *     that time.
- * @param {Array<{time: ?, sleepDuration: ?}>} systemResumedArray An array
- *     objects with fields 'time' and 'sleepDuration'. Each object corresponds
- *     to a system resume event. The 'time' field is for the time in
- *     milliseconds since the epoch when the system resumed. The 'sleepDuration'
- *     field is for the time in milliseconds the system spent in sleep/suspend
- *     state.
+ * powerSupplyData:
+ * An array of objects with fields representing the battery charge, time when
+ * the charge measurement was taken, and whether there was external power
+ * connected at that time.
+ *
+ * systemResumedData:
+ * An array objects with fields 'time' and 'sleepDuration'. Each object
+ * corresponds to a system resume event. The 'time' field is for the time in
+ * milliseconds since the epoch when the system resumed. The 'sleepDuration'
+ * field is for the time in milliseconds the system spent in sleep/suspend
+ * state.
+ *
+ * @param {{
+ *   powerSupplyData: Array<{time: number,
+ *                           batteryPercent: number,
+ *                           batteryDischargeRate: number,
+ *                           externalPower: number}>,
+ *   systemResumedData: Array<{time: ?, sleepDuration: ?}>
+ *  }} destructedParams
  */
-function showBatteryChargeData(powerSupplyArray, systemResumedArray) {
+function showBatteryChargeData({powerSupplyData, systemResumedData}) {
   var chargeTimeData = [];
   var chargeAbsTime = [];
   var chargePlot = [{
     name: loadTimeData.getString('batteryChargePercentageHeader'),
     color: 'Blue',
-    data: []
+    data: [],
   }];
   var dischargeRateTimeData = [];
   var dischargeRateAbsTime = [];
@@ -558,36 +583,36 @@ function showBatteryChargeData(powerSupplyArray, systemResumedArray) {
     {
       name: loadTimeData.getString('dischargeRateLegendText'),
       color: 'Red',
-      data: []
+      data: [],
     },
     {
       name: loadTimeData.getString('movingAverageLegendText'),
       color: 'Green',
-      data: []
+      data: [],
     },
     {
       name: loadTimeData.getString('binnedAverageLegendText'),
       color: 'Blue',
-      data: []
-    }
+      data: [],
+    },
   ];
   var minDischargeRate = 1000;   // A high unrealistic number to begin with.
   var maxDischargeRate = -1000;  // A low unrealistic number to begin with.
-  for (var i = 0; i < powerSupplyArray.length; i++) {
+  for (var i = 0; i < powerSupplyData.length; i++) {
     var j = Math.max(i - 1, 0);
 
     addTimeDataSample(
         chargePlot, chargeTimeData, chargeAbsTime,
-        [powerSupplyArray[i].batteryPercent], powerSupplyArray[i].time,
-        powerSupplyArray[j].time, systemResumedArray);
+        [powerSupplyData[i].batteryPercent], powerSupplyData[i].time,
+        powerSupplyData[j].time, systemResumedData);
 
-    var dischargeRate = powerSupplyArray[i].batteryDischargeRate;
+    var dischargeRate = powerSupplyData[i].batteryDischargeRate;
     var inputSampleCount = $('sample-count-input').value;
 
     var movingAverage = 0;
     var k = 0;
     for (k = 0; k < inputSampleCount && i - k >= 0; k++) {
-      movingAverage += powerSupplyArray[i - k].batteryDischargeRate;
+      movingAverage += powerSupplyData[i - k].batteryDischargeRate;
     }
     // |k| will be atleast 1 because the 'min' value of the input field is 1.
     movingAverage /= k;
@@ -595,12 +620,11 @@ function showBatteryChargeData(powerSupplyArray, systemResumedArray) {
     var binnedAverage = 0;
     for (k = 0; k < inputSampleCount; k++) {
       var currentSampleIndex = i - i % inputSampleCount + k;
-      if (currentSampleIndex >= powerSupplyArray.length) {
+      if (currentSampleIndex >= powerSupplyData.length) {
         break;
       }
 
-      binnedAverage +=
-          powerSupplyArray[currentSampleIndex].batteryDischargeRate;
+      binnedAverage += powerSupplyData[currentSampleIndex].batteryDischargeRate;
     }
     binnedAverage /= k;
 
@@ -608,8 +632,8 @@ function showBatteryChargeData(powerSupplyArray, systemResumedArray) {
     maxDischargeRate = Math.max(dischargeRate, maxDischargeRate);
     addTimeDataSample(
         dischargeRatePlot, dischargeRateTimeData, dischargeRateAbsTime,
-        [dischargeRate, movingAverage, binnedAverage], powerSupplyArray[i].time,
-        powerSupplyArray[j].time, systemResumedArray);
+        [dischargeRate, movingAverage, binnedAverage], powerSupplyData[i].time,
+        powerSupplyData[j].time, systemResumedData);
   }
   if (minDischargeRate == maxDischargeRate) {
     // This means that all the samples had the same value. Hence, offset the
@@ -618,22 +642,22 @@ function showBatteryChargeData(powerSupplyArray, systemResumedArray) {
     maxDischargeRate += 1;
   }
 
-  plotsDiv = $('battery-charge-plots-div');
+  var plotsDiv = $('battery-charge-plots-div');
 
-  canvases = addCanvases(
+  var canvases = addCanvases(
       [
         loadTimeData.getString('batteryChargePercentageHeader'),
-        loadTimeData.getString('batteryDischargeRateHeader')
+        loadTimeData.getString('batteryDischargeRateHeader'),
       ],
       plotsDiv);
 
-  batteryChargeCanvases =
+  var batteryChargeCanvases =
       canvases[loadTimeData.getString('batteryChargePercentageHeader')];
   plotLineGraph(
       batteryChargeCanvases['plot'], batteryChargeCanvases['legend'],
       chargeTimeData, chargePlot, 0.00, 100.00, 3);
 
-  dischargeRateCanvases =
+  var dischargeRateCanvases =
       canvases[loadTimeData.getString('batteryDischargeRateHeader')];
   plotLineGraph(
       dischargeRateCanvases['plot'], dischargeRateCanvases['legend'],
@@ -648,7 +672,7 @@ function showBatteryChargeData(powerSupplyArray, systemResumedArray) {
  * @param {Array<Array<{
  *     time: number,
  *     cpuOnline: boolean,
- *     timeInState: Object<number>}>} timeInStateData Array of arrays
+ *     timeInState: Object<number>}>>} timeInStateData Array of arrays
  *     where each array corresponds to a CPU on the system. The elements of the
  *     individual arrays contain state occupancy samples.
  * @param {Array<{time: ?, sleepDuration: ?}>} systemResumedArray An array
@@ -660,16 +684,18 @@ function showBatteryChargeData(powerSupplyArray, systemResumedArray) {
  * @param {string} i18nHeaderString The header string to be displayed with each
  *     plot. For example, CPU idle data will have its own header format, and CPU
  *     freq data will have its header format.
- * @param {string} unitString This is the string capturing the unit, if any,
+ * @param {?string} unitString This is the string capturing the unit, if any,
  *     for the different states. Note that this is not the unit of the data
  *     being plotted.
- * @param {HTMLDivElement} plotsDivId The div element in which the plots should
+ * @param {string} plotsDivId The div element's ID in which the plots should
  *     be added.
  */
 function showStateOccupancyData(
     timeInStateData, systemResumedArray, i18nHeaderString, unitString,
     plotsDivId) {
   var cpuPlots = [];
+  var tData;
+  var absTime;
   for (var cpu = 0; cpu < timeInStateData.length; cpu++) {
     var cpuData = timeInStateData[cpu];
     if (cpuData.length == 0) {
@@ -750,30 +776,48 @@ function showStateOccupancyData(
     cpuPlots[cpu] = {plots: plots, tData: tData};
   }
 
-  headers = [];
+  var headers = [];
   for (var cpu = 0; cpu < timeInStateData.length; cpu++) {
     headers[cpu] =
         'CPU ' + cpu + ' ' + loadTimeData.getString(i18nHeaderString);
   }
 
-  canvases = addCanvases(headers, $(plotsDivId));
+  var canvases = addCanvases(headers, $(plotsDivId));
   for (var cpu = 0; cpu < timeInStateData.length; cpu++) {
-    cpuCanvases = canvases[headers[cpu]];
+    var cpuCanvases = canvases[headers[cpu]];
     plotLineGraph(
         cpuCanvases['plot'], cpuCanvases['legend'], cpuPlots[cpu]['tData'],
         cpuPlots[cpu]['plots'], 0, 100, 3);
   }
 }
 
-function showCpuIdleData(idleStateData, systemResumedArray) {
+/**
+ * @param {{
+ *   idleStateData: Array<Array<{
+ *     time: number,
+ *     cpuOnline: boolean,
+ *     timeInState: Object<number>}>>,
+ *   systemResumedData: Array<{time: ?, sleepDuration: ?}>
+ * }} destructedParams
+ */
+function showCpuIdleData({idleStateData, systemResumedData}) {
   showStateOccupancyData(
-      idleStateData, systemResumedArray, 'idleStateOccupancyPercentageHeader',
+      idleStateData, systemResumedData, 'idleStateOccupancyPercentageHeader',
       null, 'cpu-idle-plots-div');
 }
 
-function showCpuFreqData(freqStateData, systemResumedArray) {
+/**
+ * @param {{
+ *   freqStateData: Array<Array<{
+ *     time: number,
+ *     cpuOnline: boolean,
+ *     timeInState: Object<number>}>>,
+ *   systemResumedData: Array<{time: ?, sleepDuration: ?}>
+ * }} destructedParams
+ */
+function showCpuFreqData({freqStateData, systemResumedData}) {
   showStateOccupancyData(
-      freqStateData, systemResumedArray,
+      freqStateData, systemResumedData,
       'frequencyStateOccupancyPercentageHeader', 'MHz', 'cpu-freq-plots-div');
 }
 
@@ -783,19 +827,19 @@ function showProcessUsageData(processUsageData) {
 }
 
 function requestBatteryChargeData() {
-  chrome.send('requestBatteryChargeData');
+  sendWithPromise('requestBatteryChargeData').then(showBatteryChargeData);
 }
 
 function requestCpuIdleData() {
-  chrome.send('requestCpuIdleData');
+  sendWithPromise('requestCpuIdleData').then(showCpuIdleData);
 }
 
 function requestCpuFreqData() {
-  chrome.send('requestCpuFreqData');
+  sendWithPromise('requestCpuFreqData').then(showCpuFreqData);
 }
 
 function requestProcessUsageData() {
-  cr.sendWithPromise('requestProcessUsageData').then(showProcessUsageData);
+  sendWithPromise('requestProcessUsageData').then(showProcessUsageData);
 }
 
 /**
@@ -805,9 +849,9 @@ function requestProcessUsageData() {
  * @param {string} sectionId The ID of the section which is to be shown or
  *     hidden.
  * @param {string} buttonId The ID of the 'Show'/'Hide' button.
- * @param {function} requestFunction The function which should be invoked on
+ * @param {Function} requestFunction The function which should be invoked on
  *    'Show' to request for data from chrome.
- * @return {function} The button callback function.
+ * @return {Function} The button callback function.
  */
 function showHideCallback(sectionId, buttonId, requestFunction) {
   return function() {
@@ -821,12 +865,6 @@ function showHideCallback(sectionId, buttonId, requestFunction) {
     }
   };
 }
-
-var powerUI = {
-  showBatteryChargeData: showBatteryChargeData,
-  showCpuIdleData: showCpuIdleData,
-  showCpuFreqData: showCpuFreqData
-};
 
 document.addEventListener('DOMContentLoaded', function() {
   $('battery-charge-section').hidden = true;

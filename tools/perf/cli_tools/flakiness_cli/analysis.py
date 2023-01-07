@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -36,7 +36,7 @@ def FilterBy(df, **kwargs):
   Returns:
     The filtered data frame (a view on the original data frame).
   """
-  for column, pattern in kwargs.iteritems():
+  for column, pattern in kwargs.items():
     if pattern is not None:
       df = df[df[column].str.match(fnmatch.translate(pattern), case=False)]
   return df
@@ -47,10 +47,9 @@ def CompactResults(results):
   def Compact(result):
     if len(result) == 1:
       return result  # Test ran once; use same value.
-    elif all(r == 'Q' for r in result):
+    if all(r == 'Q' for r in result):
       return 'Q'  # All runs failed; test failed.
-    else:
-      return 'L'  # Sometimes failed, sometimes not; test flaky.
+    return 'L'  # Sometimes failed, sometimes not; test flaky.
 
   return results.map({r: Compact(r) for r in results.unique()})
 

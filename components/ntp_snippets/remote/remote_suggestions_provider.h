@@ -1,14 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_PROVIDER_H_
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_PROVIDER_H_
 
-#include <memory>
-
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/ntp_snippets/content_suggestions_provider.h"
 
 namespace ntp_snippets {

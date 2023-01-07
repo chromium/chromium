@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
@@ -27,18 +27,19 @@
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
 using autofill::AccessoryTabType;
 using autofill::mojom::FocusedFieldType;
-using base::ASCIIToUTF16;
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
@@ -51,24 +52,21 @@ using FillingSource = ManualFillingController::FillingSource;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 
 AccessorySheetData empty_passwords_sheet() {
-  constexpr char kTitle[] = "Example title";
-  return AccessorySheetData(AccessoryTabType::PASSWORDS,
-                            base::ASCIIToUTF16(kTitle));
+  constexpr char16_t kTitle[] = u"Example title";
+  return AccessorySheetData(AccessoryTabType::PASSWORDS, kTitle);
 }
 
 AccessorySheetData filled_passwords_sheet() {
   return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, u"Pwds")
-      .AddUserInfo("example.com", autofill::UserInfo::IsPslMatch(false))
+      .AddUserInfo("example.com", autofill::UserInfo::IsExactMatch(true))
       .AppendField(u"Ben", u"Ben", false, true)
       .AppendField(u"S3cur3", u"Ben's PW", true, false)
       .Build();
 }
 
 AccessorySheetData populate_sheet(AccessoryTabType type) {
-  constexpr char kTitle[] = "Suggestions available!";
-  return AccessorySheetData::Builder(type, base::ASCIIToUTF16(kTitle))
-      .AddUserInfo()
-      .Build();
+  constexpr char16_t kTitle[] = u"Suggestions available!";
+  return AccessorySheetData::Builder(type, kTitle).AddUserInfo().Build();
 }
 
 constexpr autofill::FieldRendererId kFocusedFieldId(123);
@@ -90,6 +88,10 @@ class ManualFillingControllerTest : public testing::Test {
 
     ON_CALL(mock_pwd_controller_, RegisterFillingSourceObserver(_))
         .WillByDefault(SaveArg<0>(&pwd_source_observer_));
+    ON_CALL(mock_cc_controller_, RegisterFillingSourceObserver(_))
+        .WillByDefault(SaveArg<0>(&cc_source_observer_));
+    ON_CALL(mock_address_controller_, RegisterFillingSourceObserver(_))
+        .WillByDefault(SaveArg<0>(&address_source_observer_));
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(), mock_cc_controller_.AsWeakPtr(),
@@ -100,13 +102,6 @@ class ManualFillingControllerTest : public testing::Test {
     // Depending on |fieldType|, different calls can be expected. All of them
     // are irrelevant during setup.
     controller()->NotifyFocusedInputChanged(kFocusedFieldId, fieldType);
-    testing::Mock::VerifyAndClearExpectations(view());
-  }
-
-  void SetSuggestionsAndClearExpectations(AccessorySheetData sheet) {
-    // Depending on |sheet| and last set field type, different calls can be
-    // expected. All of them are irrelevant during setup.
-    controller()->RefreshSuggestions(std::move(sheet));
     testing::Mock::VerifyAndClearExpectations(view());
   }
 
@@ -124,13 +119,22 @@ class ManualFillingControllerTest : public testing::Test {
     pwd_source_observer_.Run(&mock_pwd_controller_, source_available);
   }
 
+  void NotifyCreditCardSourceObserver(
+      IsFillingSourceAvailable source_available) {
+    cc_source_observer_.Run(&mock_cc_controller_, source_available);
+  }
+
+  void NotifyAddressSourceObserver(IsFillingSourceAvailable source_available) {
+    address_source_observer_.Run(&mock_address_controller_, source_available);
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_ =
+  raw_ptr<content::WebContents> web_contents_ =
       web_contents_factory_.CreateWebContents(&profile_);
 
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
@@ -138,6 +142,8 @@ class ManualFillingControllerTest : public testing::Test {
   NiceMock<MockCreditCardAccessoryController> mock_cc_controller_;
 
   AccessoryController::FillingSourceObserver pwd_source_observer_;
+  AccessoryController::FillingSourceObserver cc_source_observer_;
+  AccessoryController::FillingSourceObserver address_source_observer_;
 };
 
 // Fixture for tests that the old but widely used legacy behavior of the manual
@@ -151,29 +157,7 @@ class ManualFillingControllerLegacyTest : public ManualFillingControllerTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{
-            autofill::features::kAutofillKeyboardAccessory,
-            autofill::features::kAutofillManualFallbackAndroid});
-    ManualFillingControllerImpl::CreateForWebContentsForTesting(
-        web_contents(), mock_pwd_controller_.AsWeakPtr(),
-        mock_address_controller_.AsWeakPtr(), mock_cc_controller_.AsWeakPtr(),
-        std::make_unique<NiceMock<MockManualFillingView>>());
-  }
-};
-
-// Fixture for tests that provide the sheet to fill passwords from any site into
-// the currently focused field. It exists in the recent and the legacy version
-// of the manual filling experience but tests use the legacy configuration to
-// catch regressions.
-class ManualFillingControllerLegacyWithCrossFillingTest
-    : public ManualFillingControllerTest {
- public:
-  ManualFillingControllerLegacyWithCrossFillingTest() = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::
-                                  kFillingPasswordsFromAnyOrigin},
-        /*disabled_features=*/{
+            autofill::features::kAutofillEnableManualFallbackForVirtualCards,
             autofill::features::kAutofillKeyboardAccessory,
             autofill::features::kAutofillManualFallbackAndroid});
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
@@ -194,9 +178,6 @@ TEST_F(ManualFillingControllerLegacyTest, IsNotRecreatedForSameWebContents) {
 
 TEST_F(ManualFillingControllerLegacyTest,
        ClosesSheetWhenFocusingUnfillableField) {
-  SetSuggestionsAndClearExpectations(
-      populate_sheet(AccessoryTabType::PASSWORDS));
-
   EXPECT_CALL(*view(), CloseAccessorySheet());
   EXPECT_CALL(*view(), SwapSheetWithKeyboard()).Times(0);
   controller()->NotifyFocusedInputChanged(kFocusedFieldId,
@@ -204,10 +185,7 @@ TEST_F(ManualFillingControllerLegacyTest,
 }
 
 TEST_F(ManualFillingControllerLegacyTest,
-       ClosesSheetWhenFocusingFillableField) {
-  SetSuggestionsAndClearExpectations(
-      populate_sheet(AccessoryTabType::PASSWORDS));
-
+       SwapsWithKeyboardWhenFocusingFillableFields) {
   EXPECT_CALL(*view(), CloseAccessorySheet()).Times(0);
   EXPECT_CALL(*view(), SwapSheetWithKeyboard());
   controller()->NotifyFocusedInputChanged(
@@ -215,9 +193,6 @@ TEST_F(ManualFillingControllerLegacyTest,
 }
 
 TEST_F(ManualFillingControllerLegacyTest, ClosesSheetWhenFocusingSearchField) {
-  SetSuggestionsAndClearExpectations(
-      populate_sheet(AccessoryTabType::PASSWORDS));
-
   EXPECT_CALL(*view(), CloseAccessorySheet());
   EXPECT_CALL(*view(), SwapSheetWithKeyboard()).Times(0);
   controller()->NotifyFocusedInputChanged(
@@ -225,9 +200,6 @@ TEST_F(ManualFillingControllerLegacyTest, ClosesSheetWhenFocusingSearchField) {
 }
 
 TEST_F(ManualFillingControllerLegacyTest, ClosesSheetWhenFocusingTextArea) {
-  SetSuggestionsAndClearExpectations(
-      populate_sheet(AccessoryTabType::PASSWORDS));
-
   EXPECT_CALL(*view(), CloseAccessorySheet());
   EXPECT_CALL(*view(), SwapSheetWithKeyboard()).Times(0);
   controller()->NotifyFocusedInputChanged(kFocusedFieldId,
@@ -259,16 +231,6 @@ TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
                                          /*has_suggestions=*/false);
 }
 
-TEST_F(ManualFillingControllerTest,
-       HidesAccessoryWithoutSuggestionsOnNonPasswordFields) {
-  SetSuggestionsAndClearExpectations(
-      populate_sheet(AccessoryTabType::PASSWORDS));
-  FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
-
-  EXPECT_CALL(*view(), Hide());
-  controller()->RefreshSuggestions(empty_passwords_sheet());
-}
-
 TEST_F(ManualFillingControllerLegacyTest, ShowsAccessoryWithSuggestions) {
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
 
@@ -276,8 +238,8 @@ TEST_F(ManualFillingControllerLegacyTest, ShowsAccessoryWithSuggestions) {
   controller()->RefreshSuggestions(populate_sheet(AccessoryTabType::PASSWORDS));
 }
 
-TEST_F(ManualFillingControllerLegacyWithCrossFillingTest,
-       AlwaysShowsAccessoryForUsernameFieldsIfFillingAcrossOriginEnabled) {
+TEST_F(ManualFillingControllerLegacyTest,
+       ShowsAccessoryForUsernameFieldsEvenWithoutPasswordSuggestions) {
   EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
 
@@ -310,33 +272,103 @@ TEST_F(ManualFillingControllerLegacyTest,
 }
 
 TEST_F(ManualFillingControllerLegacyTest, ShowsAndHidesAccessoryForPasswords) {
+  EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
 
-  EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/true);
 
-  EXPECT_CALL(*view(), Hide());
+  EXPECT_CALL(*view(), Hide()).Times(0);
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/false);
 }
 
 TEST_F(ManualFillingControllerTest,
-       ShowsAndHidesAccessoryForPasswordsTriggeredByObserver) {
-  FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
-
+       ShowsAccessoryForPasswordsTriggeredByObserver) {
   // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
-  // call to GetSheetData happens.
+  // call to `GetSheetData()` happens.
   EXPECT_CALL(mock_pwd_controller_, GetSheetData)
       .Times(AtLeast(1))
       .WillRepeatedly(Return(filled_passwords_sheet()));
   EXPECT_CALL(*view(), OnItemsAvailable(filled_passwords_sheet()))
-      .Times(AtLeast(1));
+      .Times(AnyNumber());
   EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
+
   NotifyPasswordSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
 
   EXPECT_CALL(*view(), Hide());
   NotifyPasswordSourceObserver(IsFillingSourceAvailable(false));
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAccessoryForAddressesTriggeredByObserver) {
+  const AccessorySheetData kTestAddressSheet =
+      populate_sheet(AccessoryTabType::ADDRESSES);
+
+  // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
+  // call to `GetSheetData()` happens.
+  EXPECT_CALL(mock_address_controller_, GetSheetData)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(kTestAddressSheet));
+  EXPECT_CALL(*view(), OnItemsAvailable(kTestAddressSheet)).Times(AnyNumber());
+  EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
+
+  NotifyAddressSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_CALL(*view(), Hide());
+  NotifyAddressSourceObserver(IsFillingSourceAvailable(false));
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAccessoryForCreditCardsTriggeredByObserver) {
+  const AccessorySheetData kTestCreditCardSheet =
+      populate_sheet(AccessoryTabType::CREDIT_CARDS);
+
+  // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
+  // call to `GetSheetData()` happens.
+  EXPECT_CALL(mock_cc_controller_, GetSheetData)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(kTestCreditCardSheet));
+  EXPECT_CALL(*view(), OnItemsAvailable(kTestCreditCardSheet))
+      .Times(AnyNumber());
+  EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
+
+  NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_CALL(*view(), Hide());
+  NotifyCreditCardSourceObserver(IsFillingSourceAvailable(false));
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAccessoryForCreditCardsWhenManualFallbackEnabledForVirtualCards) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(/*enabled_features=*/
+                            {autofill::features::
+                                 kAutofillEnableManualFallbackForVirtualCards},
+                            /*disabled_features=*/{
+                                autofill::features::kAutofillKeyboardAccessory,
+                                autofill::features::
+                                    kAutofillManualFallbackAndroid});
+  const AccessorySheetData kTestCreditCardSheet =
+      populate_sheet(AccessoryTabType::CREDIT_CARDS);
+
+  // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
+  // call to `GetSheetData()` happens.
+  EXPECT_CALL(mock_cc_controller_, GetSheetData)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(kTestCreditCardSheet));
+  EXPECT_CALL(*view(), OnItemsAvailable(kTestCreditCardSheet))
+      .Times(AnyNumber());
+  EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
+
+  NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_CALL(*view(), Hide());
+  NotifyCreditCardSourceObserver(IsFillingSourceAvailable(false));
 }
 
 TEST_F(ManualFillingControllerLegacyTest,
@@ -365,8 +397,7 @@ TEST_F(ManualFillingControllerTest, HidesAccessoryWithoutAvailableSources) {
                                          /*has_suggestions=*/false);
   testing::Mock::VerifyAndClearExpectations(view());
 
-  // Hiding the remaining second source will result in the view being hidden.
-  EXPECT_CALL(*view(), Hide()).Times(1);
+  EXPECT_CALL(*view(), Hide());
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/false);
 }
@@ -381,10 +412,12 @@ TEST_F(ManualFillingControllerLegacyTest, OnAutomaticGenerationStatusChanged) {
 
 TEST_F(ManualFillingControllerLegacyTest,
        OnFillingTriggeredFillsAndClosesSheet) {
-  const char kTextToFill[] = "TextToFill";
-  const std::u16string text_to_fill(base::ASCIIToUTF16(kTextToFill));
-  const autofill::UserInfo::Field field(text_to_fill, text_to_fill, false,
-                                        true);
+  const char16_t kTextToFill[] = u"TextToFill";
+  const std::u16string text_to_fill(kTextToFill);
+  const autofill::AccessorySheetField field(
+      /*display_text=*/text_to_fill, /*text_to_fill=*/text_to_fill,
+      /*a11y_description=*/text_to_fill, /*id=*/"", /*is_obfuscated=*/false,
+      /*selectable=*/true);
 
   EXPECT_CALL(mock_pwd_controller_,
               OnFillingTriggered(autofill::FieldGlobalId(), field));

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 
@@ -30,6 +31,10 @@ class AccountsMutatorImpl : public AccountsMutator {
                                AccountTrackerService* account_tracker_service,
                                PrimaryAccountManager* primary_account_manager,
                                PrefService* pref_service);
+
+  AccountsMutatorImpl(const AccountsMutatorImpl&) = delete;
+  AccountsMutatorImpl& operator=(const AccountsMutatorImpl&) = delete;
+
   ~AccountsMutatorImpl() override;
 
   // AccountsMutator:
@@ -39,10 +44,9 @@ class AccountsMutatorImpl : public AccountsMutator {
       const std::string& refresh_token,
       bool is_under_advanced_protection,
       signin_metrics::SourceForRefreshTokenOperation source) override;
-  void UpdateAccountInfo(
-      const CoreAccountId& account_id,
-      base::Optional<bool> is_child_account,
-      base::Optional<bool> is_under_advanced_protection) override;
+  void UpdateAccountInfo(const CoreAccountId& account_id,
+                         Tribool is_child_account,
+                         Tribool is_under_advanced_protection) override;
   void RemoveAccount(
       const CoreAccountId& account_id,
       signin_metrics::SourceForRefreshTokenOperation source) override;
@@ -56,15 +60,18 @@ class AccountsMutatorImpl : public AccountsMutator {
                    const CoreAccountId& account_id) override;
 #endif
 
- private:
-  ProfileOAuth2TokenService* token_service_;
-  AccountTrackerService* account_tracker_service_;
-  PrimaryAccountManager* primary_account_manager_;
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  PrefService* pref_service_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CoreAccountId SeedAccountInfo(const std::string& gaia,
+                                const std::string& email) override;
 #endif
 
-  DISALLOW_COPY_AND_ASSIGN(AccountsMutatorImpl);
+ private:
+  raw_ptr<ProfileOAuth2TokenService> token_service_;
+  raw_ptr<AccountTrackerService> account_tracker_service_;
+  raw_ptr<PrimaryAccountManager> primary_account_manager_;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  raw_ptr<PrefService> pref_service_;
+#endif
 };
 
 }  // namespace signin

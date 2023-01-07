@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 
 #include <set>
 #include <string>
+#include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace login_detection {
@@ -45,17 +46,17 @@ class OAuthLoginDetector {
   OAuthLoginDetector& operator=(const OAuthLoginDetector&) = delete;
 
   // Processes the navigation |redirect_chain| and returns the site that started
-  // the OAuth login flow and completed. base::nullopt is returned when there is
+  // the OAuth login flow and completed. absl::nullopt is returned when there is
   // no login flow detected or it has not yet completed. |prev_navigation_url|
   // is the URL of the previous navigation on this detector, and can be invalid
   // when no previous navigation happened.
-  base::Optional<GURL> GetSuccessfulLoginFlowSite(
+  absl::optional<GURL> GetSuccessfulLoginFlowSite(
       const GURL& prev_navigation_url,
       const std::vector<GURL>& redirect_chain);
 
   // Returns the OAuth requestor site when popup based login flow is detected,
-  // otherwise base::nullopt is returned.
-  base::Optional<GURL> GetPopUpLoginFlowSite() const;
+  // otherwise absl::nullopt is returned.
+  absl::optional<GURL> GetPopUpLoginFlowSite() const;
 
   // Indicates this detector is opened for a popup window, and the opener window
   // had the |opener_navigation_url|.
@@ -94,11 +95,11 @@ class OAuthLoginDetector {
   // Info about the current login flow. Exists only when there is an ongoing
   // OAuth login flow. Created on the start of login flow, and destroyed when
   // the flow completes successfully or navigation limit is reached.
-  base::Optional<OAuthLoginFlowInfo> login_flow_info_;
+  absl::optional<OAuthLoginFlowInfo> login_flow_info_;
 
-  // The site that opened this detector window as a popup. base::nullopt when
+  // The site that opened this detector window as a popup. absl::nullopt when
   // this detector is not opened as a popup.
-  base::Optional<GURL> popup_opener_navigation_site_;
+  absl::optional<GURL> popup_opener_navigation_site_;
 };
 
 }  // namespace login_detection

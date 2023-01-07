@@ -1,0 +1,18 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("data_driven_testing") {
+  testonly = true
+
+  sources = [
+    "data_driven_test.cc",
+    "data_driven_test.h",
+  ]
+
+  deps = [
+    "//base",
+    "//testing/gtest",
+    "//third_party/re2",
+  ]
+}

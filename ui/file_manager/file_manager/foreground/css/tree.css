@@ -1,8 +1,8 @@
-/* Copyright 2013 The Chromium Authors. All rights reserved.
+/* Copyright 2013 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-/* Derived from /ui/webui/resources/css/table.css. */
+/* Derived from /ui/webui/resources/css/tree.css. */
 
 tree {
   display: block;
@@ -69,12 +69,6 @@ html[dir=rtl] .tree-row > .file-row > .expand-icon {
 
 .tree-children {
   display: none;
-}
-
-/* Not used in files-ng: restrict by #directory-tree:not([files-ng]) to block
-   the trailing > * matching the files-ng .tree-row > .file-row structure. */
-#directory-tree:not([files-ng]) .tree-item > .tree-row > * {
-  display: inline-block;
 }
 
 .tree-label {

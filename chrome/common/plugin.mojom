@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,9 @@ import "url/mojom/url.mojom";
 
 // Plugin messages sent from renderer to the host.
 interface PluginHost {
-  // Tells the browser to show the Flash permission bubble in the same tab.
-  ShowFlashPermissionBubble();
-
+  [EnableIf=enable_plugins]
   // Tells the browser that there was an error loading a plugin.
   CouldNotLoadPlugin(mojo_base.mojom.FilePath file_path);
-
-  // Notifies when a plugin couldn't be loaded because it's outdated.
-  BlockedOutdatedPlugin(pending_remote<PluginRenderer> plugin_renderer,
-                        string group_id);
 
   // Tells the browser to open a PDF file. Used when no PDF Viewer is
   // available, and the user clicks to view a PDF from the placeholder UI.
@@ -42,18 +36,8 @@ enum PluginStatus {
   kBlocked,
   // Plugin is blocked by policy, so it cannot be manually loaded.
   kBlockedByPolicy,
-  // Plugin is blocked, and cannot be manually loaded via context menu.
-  kBlockedNoLoading,
   kDisabled,
-  // Flash is blocked, but user can click on the placeholder to trigger the
-  // Flash permission prompt.
-  kFlashHiddenPreferHtml,
   kNotFound,
-  kOutdatedBlocked,
-  kOutdatedDisallowed,
-  // Similar to kOutdatedBlocked or kOutdatedDisallowed, but with no hope of
-  // updating and running. This is distinct to allow for separate UI treatment.
-  kDeprecated,
   kPlayImportantContent,
   kUnauthorized,
 };
@@ -76,28 +60,7 @@ interface PluginInfoHost {
   // Includes specific reasons why a plugin can't be used, for example because
   // it's disabled.
   [Sync]
-  GetPluginInfo(int32 render_frame_id,
-                url.mojom.Url url,
+  GetPluginInfo(url.mojom.Url url,
                 url.mojom.Origin origin,
                 string mime_type) => (PluginInfo plugin_info);
-};
-
-// Plugin messages sent from a host to the renderer.
-interface PluginRenderer {
-
-  // Notifies a missing plugin placeholder that we have finished downloading
-  // the plugin.
-  FinishedDownloading();
-
-  // Notifies a missing plugin placeholder that we have finished component-
-  // updating the plug-in.
-  UpdateSuccess();
-
-  // Notifies a missing plugin placeholder that we have failed to
-  // component-update the plug-in.
-  UpdateFailure();
-
-  // Notifies a missing plugin placeholder that we have started the component
-  // download.
-  UpdateDownloading();
 };

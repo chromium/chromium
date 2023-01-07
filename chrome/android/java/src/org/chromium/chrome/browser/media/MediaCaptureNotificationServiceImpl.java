@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.MediaCaptureOverlayController;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -31,6 +32,7 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.webrtc.MediaCaptureNotificationUtil;
 import org.chromium.components.webrtc.MediaCaptureNotificationUtil.MediaType;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.HashSet;
@@ -153,6 +155,18 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
      */
     private void destroyNotification(int notificationId) {
         if (doesNotificationExist(notificationId)) {
+            if (mNotifications.get(notificationId) == MediaType.SCREEN_CAPTURE) {
+                final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(notificationId);
+                if (tab != null) {
+                    WindowAndroid window = tab.getWebContents().getTopLevelNativeWindow();
+                    MediaCaptureOverlayController overlayController =
+                            MediaCaptureOverlayController.from(window);
+                    if (overlayController != null) {
+                        overlayController.stopCapture(tab);
+                    }
+                }
+            }
+
             mNotificationManager.cancel(NOTIFICATION_NAMESPACE, notificationId);
             mNotifications.delete(notificationId);
             updateSharedPreferencesEntry(notificationId, true);
@@ -167,8 +181,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
 
         Context appContext = ContextUtils.getApplicationContext();
         NotificationWrapperBuilder builder =
-                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        true /* preferCompat */, channelId, null /*remoteAppPackageName*/,
+                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(channelId,
                         new NotificationMetadata(
                                 NotificationUmaTracker.SystemNotificationType.MEDIA_CAPTURE,
                                 NOTIFICATION_NAMESPACE, notificationId));
@@ -193,6 +206,18 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
         NotificationUmaTracker.getInstance().onNotificationShown(
                 NotificationUmaTracker.SystemNotificationType.MEDIA_CAPTURE,
                 notification.getNotification());
+
+        if (mediaType == MediaType.SCREEN_CAPTURE) {
+            final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(notificationId);
+            if (tab != null) {
+                WindowAndroid window = tab.getWebContents().getTopLevelNativeWindow();
+                MediaCaptureOverlayController overlayController =
+                        MediaCaptureOverlayController.from(window);
+                if (overlayController != null) {
+                    overlayController.startCapture(tab);
+                }
+            }
+        }
     }
 
     /**

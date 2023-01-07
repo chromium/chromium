@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,18 @@
 #include <stddef.h>
 
 #include <limits>
+#include <memory>
 
 #include "base/command_line.h"
 #include "base/cpu.h"
-#include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/platform_thread.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -29,9 +28,8 @@
 #include "content/ppapi_plugin/plugin_process_dispatcher.h"
 #include "content/ppapi_plugin/ppapi_blink_platform_impl.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_plugin_info.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/pepper_plugin_info.h"
-#include "content/public/common/sandbox_init.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_platform_file.h"
 #include "ipc/ipc_sync_channel.h"
@@ -51,17 +49,17 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #include "content/child/font_warmup_win.h"
 #include "sandbox/win/src/sandbox.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "sandbox/mac/seatbelt_exec.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern sandbox::TargetServices* g_target_services;
 
 // Warm up language subsystems before the sandbox is turned on.
@@ -82,7 +80,7 @@ PpapiThread::PpapiThread(base::RepeatingClosure quit_closure,
       next_plugin_dispatcher_id_(1) {
   plugin_globals_.SetPluginProxyDelegate(this);
 
-  blink_platform_impl_.reset(new PpapiBlinkPlatformImpl);
+  blink_platform_impl_ = std::make_unique<PpapiBlinkPlatformImpl>();
   blink::Platform::CreateMainThreadAndInitialize(blink_platform_impl_.get());
 
   scoped_refptr<ppapi::proxy::PluginMessageFilter> plugin_filter(
@@ -136,8 +134,6 @@ bool PpapiThread::OnControlMessageReceived(const IPC::Message& msg) {
     IPC_MESSAGE_HANDLER(PpapiMsg_LoadPlugin, OnLoadPlugin)
     IPC_MESSAGE_HANDLER(PpapiMsg_CreateChannel, OnCreateChannel)
     IPC_MESSAGE_HANDLER(PpapiMsg_SetNetworkState, OnSetNetworkState)
-    IPC_MESSAGE_HANDLER(PpapiMsg_Crash, OnCrash)
-    IPC_MESSAGE_HANDLER(PpapiMsg_Hang, OnHang)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -232,7 +228,9 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
                                const ppapi::PpapiPermissions& permissions) {
   // In case of crashes, the crash dump doesn't indicate which plugin
   // it came from.
-  static auto* ppapi_path_key = base::debug::AllocateCrashKeyString(
+  // TODO(dcheng): Would a scoped crash key be sufficient here? It's probably a
+  // moot point, as this code is going to go away.
+  static auto* const ppapi_path_key = base::debug::AllocateCrashKeyString(
       "ppapi_path", base::debug::CrashKeySize::Size64);
   base::debug::SetCrashKeyString(ppapi_path_key, path.MaybeAsASCII());
 
@@ -246,8 +244,8 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
   // Trusted Pepper plugins may be "internal", i.e. built-in to the browser
   // binary.  If we're being asked to load such a plugin (e.g. the Chromoting
   // client) then fetch the entry points from the embedder, rather than a DLL.
-  std::vector<PepperPluginInfo> plugins;
-  GetContentClient()->AddPepperPlugins(&plugins);
+  std::vector<ContentPluginInfo> plugins;
+  GetContentClient()->AddPlugins(&plugins);
   for (const auto& plugin : plugins) {
     if (plugin.is_internal && plugin.path == path) {
       // An internal plugin is being loaded, so fetch the entry points.
@@ -296,7 +294,7 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
     }
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // If code subsequently tries to exit using abort(), force a crash (since
   // otherwise these would be silent terminations and fly under the radar).
   base::win::SetAbortBehaviorForCrashReporting();
@@ -351,24 +349,6 @@ void PpapiThread::OnSetNetworkState(bool online) {
       plugin_entry_points_.get_interface(PPP_NETWORK_STATE_DEV_INTERFACE));
   if (ns)
     ns->SetOnLine(PP_FromBool(online));
-}
-
-void PpapiThread::OnCrash() {
-  // Intentionally crash upon the request of the browser.
-  //
-  // Linker's ICF feature may merge this function with other functions with the
-  // same definition and it may confuse the crash report processing system.
-  static int static_variable_to_make_this_function_unique = 0;
-  base::debug::Alias(&static_variable_to_make_this_function_unique);
-
-  volatile int* null_pointer = nullptr;
-  *null_pointer = 0;
-}
-
-void PpapiThread::OnHang() {
-  // Intentionally hang upon the request of the browser.
-  for (;;)
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
 }
 
 bool PpapiThread::SetupChannel(base::ProcessId renderer_pid,

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,9 +40,10 @@ void MediaInternalsProxy::GetEverything() {
 
   MediaInternals::GetInstance()->SendHistoricalMediaEvents();
   MediaInternals::GetInstance()->SendGeneralAudioInformation();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   MediaInternals::GetInstance()->SendAudioFocusState();
 #endif
+  MediaInternals::GetInstance()->GetRegisteredCdms();
 
   // Ask MediaInternals for its data on IO thread.
   GetIOThreadTaskRunner({})->PostTask(

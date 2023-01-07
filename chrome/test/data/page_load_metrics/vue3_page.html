@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+
+<body>
+  <div id="nothing"></div>
+  <div id="container">
+    <div id="root">
+      This is a test to see if a page with a div with __vue_app__ property is
+      detected as using the Vue JavaScript framework.
+    </div>
+  </div>
+  <script>
+    document.getElementById('root').__vue_app__ = "test";
+  </script>
+</body>

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
@@ -41,11 +41,11 @@ class NotificationSource;
 class RenderProcessHost;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace extensions {
 class LanguageSettingsPrivateApiTestDelayInit;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Encapsulates the browser side spellcheck service. There is one of these per
 // profile and each is created by the SpellCheckServiceFactory.  The
@@ -75,17 +75,21 @@ class SpellcheckService : public KeyedService,
   };
 
   explicit SpellcheckService(content::BrowserContext* context);
+
+  SpellcheckService(const SpellcheckService&) = delete;
+  SpellcheckService& operator=(const SpellcheckService&) = delete;
+
   ~SpellcheckService() override;
 
   base::WeakPtr<SpellcheckService> GetWeakPtr();
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Returns all currently configured |dictionaries| to display in the context
   // menu over a text area. The context menu is used for selecting the
   // dictionaries used for spellcheck.
   static void GetDictionaries(content::BrowserContext* browser_context,
                               std::vector<Dictionary>* dictionaries);
-#endif  // !OS_MAC
+#endif  // !BUILDFLAG(IS_MAC)
 
   // Signals the event attached by AttachTestEvent() to report the specified
   // event to browser tests. This function is called by this class and its
@@ -103,13 +107,13 @@ class SpellcheckService : public KeyedService,
       const std::string& supported_language_full_tag,
       bool generic_only = false);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Since Windows platform dictionary support is determined asynchronously,
   // this method is used to assure that the first preferred language initially
   // has spellchecking enabled after first run. Spellchecking for the primary
   // language will be disabled later if there is no dictionary support.
   static void EnableFirstUserLanguageForSpellcheck(PrefService* prefs);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Instantiates SpellCheckHostMetrics object and makes it ready for recording
   // metrics. This should be called only if the metrics recording is active.
@@ -155,7 +159,7 @@ class SpellcheckService : public KeyedService,
   // One-time initialization of dictionaries if needed.
   void InitializeDictionaries(base::OnceClosure done);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Callback for spellcheck_platform::RetrieveSpellcheckLanguages. Populates
   // map of preferred languages to available platform dictionaries then
   // loads the dictionaries.
@@ -165,7 +169,7 @@ class SpellcheckService : public KeyedService,
   // Indicates whether given accept language has Windows spellcheck platform
   // support.
   bool UsesWindowsDictionary(std::string accept_language) const;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // The returned pointer can be null if the current platform doesn't need a
   // per-profile, platform-specific spell check object. Currently, only Windows
@@ -185,7 +189,7 @@ class SpellcheckService : public KeyedService,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SpellcheckServiceBrowserTest, DeleteCorruptedBDICT);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(SpellcheckServiceWindowsHybridBrowserTest,
                            WindowsHybridSpellcheck);
   FRIEND_TEST_ALL_PREFIXES(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
@@ -193,7 +197,7 @@ class SpellcheckService : public KeyedService,
   friend class SpellcheckServiceHybridUnitTestBase;
   friend class SpellcheckServiceHybridUnitTestDelayInitBase;
   friend class extensions::LanguageSettingsPrivateApiTestDelayInit;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Starts the process of loading the dictionaries (Hunspell and platform). Can
   // be called multiple times in a browser session if spellcheck settings
@@ -205,7 +209,7 @@ class SpellcheckService : public KeyedService,
   static std::string GetLanguageAndScriptTag(const std::string& full_tag,
                                              bool include_script_tag);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns the language subtag (first part of the full BCP47 tag)
   // if the generic accept language is supported by the browser.
   static std::string GetSupportedAcceptLanguageCodeGenericOnly(
@@ -223,7 +227,7 @@ class SpellcheckService : public KeyedService,
   static std::string GetTagToPassToWindowsSpellchecker(
       const std::string& accept_language,
       const std::string& supported_language_full_tag);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Attaches an event so browser tests can listen the status events.
   static void AttachStatusEvent(base::WaitableEvent* status_event);
@@ -258,7 +262,7 @@ class SpellcheckService : public KeyedService,
   std::vector<std::string> GetNormalizedAcceptLanguages(
       bool normalize_for_spellcheck = true) const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Initializes the platform spell checker.
   void InitializePlatformSpellchecker();
 
@@ -289,7 +293,7 @@ class SpellcheckService : public KeyedService,
   // before calling InitializeDictionaries().
   void AddSpellcheckLanguagesForTesting(
       const std::vector<std::string>& languages);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // WindowsSpellChecker must be created before the dictionary instantiation and
   // destroyed after dictionary destruction.
@@ -299,7 +303,7 @@ class SpellcheckService : public KeyedService,
   content::NotificationRegistrar registrar_;
 
   // A pointer to the BrowserContext which this service refers to.
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
   std::unique_ptr<SpellCheckHostMetrics> metrics_;
 
@@ -308,7 +312,7 @@ class SpellcheckService : public KeyedService,
   std::vector<std::unique_ptr<SpellcheckHunspellDictionary>>
       hunspell_dictionaries_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Maps accept language tags to Windows spellcheck BCP47 tags, an analog
   // of the hardcoded kSupportedSpellCheckerLanguages used for Hunspell,
   // with the difference that only language packs installed on the system
@@ -318,14 +322,12 @@ class SpellcheckService : public KeyedService,
   // Callback passed as argument to InitializeDictionaries, and invoked when
   // the dictionaries are loaded for the first time.
   base::OnceClosure dictionaries_loaded_callback_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Flag indicating dictionaries have been loaded initially.
   bool dictionaries_loaded_ = false;
 
   base::WeakPtrFactory<SpellcheckService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckService);
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELLCHECK_SERVICE_H_

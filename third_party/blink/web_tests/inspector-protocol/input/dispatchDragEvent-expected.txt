@@ -1,0 +1,20 @@
+Tests Input.dispatchDragEvent method.
+
+Dropping plain text
+div innerHTML: the drag data
+
+Dropping html with baseURL example.com
+div innerHTML: <a href="https://example.com/foo.html">foo</a>
+
+Dropping a link to example.com
+div innerHTML: <a href="https://example.com/">Example Website</a>
+
+dragOperationsMask = 0 should not drop
+div innerHTML: 
+
+wrong dragOperationsMask should not drop
+div innerHTML: 
+
+Dropping files
+div innerHTML: path1<br>
+

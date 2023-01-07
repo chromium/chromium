@@ -37,52 +37,41 @@ namespace blink {
 
 class LayoutObject;
 
-struct SameSizeAsInlineBox : DisplayItemClient {
+struct SameSizeAsInlineBox : GarbageCollected<SameSizeAsInlineBox>,
+                             DisplayItemClient {
   ~SameSizeAsInlineBox() override = default;
-  void* a[4];
+  Member<void*> members[4];
   LayoutPoint b;
   LayoutUnit c;
   uint32_t bitfields;
-#if DCHECK_IS_ON()
-  bool f;
-#endif
+  void Trace(Visitor* visitor) const override;
 };
 
 ASSERT_SIZE(InlineBox, SameSizeAsInlineBox);
 
-#if DCHECK_IS_ON()
-InlineBox::~InlineBox() {
-  if (!has_bad_parent_ && parent_)
-    parent_->SetHasBadChildList();
+void InlineBox::Trace(Visitor* visitor) const {
+  visitor->Trace(next_);
+  visitor->Trace(prev_);
+  visitor->Trace(parent_);
+  visitor->Trace(line_layout_item_);
+  DisplayItemClient::Trace(visitor);
 }
-#endif
 
 DISABLE_CFI_PERF
 void InlineBox::Destroy() {
   // We do not need to issue invalidations if the page is being destroyed
   // since these objects will never be repainted.
-  if (!line_layout_item_.DocumentBeingDestroyed()) {
+  if (!GetLineLayoutItem().DocumentBeingDestroyed()) {
     SetLineLayoutItemShouldDoFullPaintInvalidationIfNeeded();
 
     // TODO(crbug.com/619630): Make this fast.
-    line_layout_item_.SlowSetPaintingLayerNeedsRepaint();
+    GetLineLayoutItem().SlowSetPaintingLayerNeedsRepaint();
   }
-
-  delete this;
 }
 
 void InlineBox::Remove(MarkLineBoxes mark_line_boxes) {
   if (Parent())
     Parent()->RemoveChild(this, mark_line_boxes);
-}
-
-void* InlineBox::operator new(size_t sz) {
-  return WTF::Partitions::LayoutPartition()->Alloc(
-      sz, WTF_HEAP_PROFILER_TYPE_NAME(InlineBox));
-}
-
-void InlineBox::operator delete(void* ptr) {
-  WTF::Partitions::LayoutPartition()->Free(ptr);
 }
 
 const char* InlineBox::BoxName() const {
@@ -147,7 +136,7 @@ void InlineBox::DumpBox(StringBuilder& string_inlinebox) const {
       GetLineLayoutItem().DebugPointer(), X().ToFloat(), Y().ToFloat(),
       Width().ToFloat(), Height().ToFloat(),
       BaselinePosition(kAlphabeticBaseline).ToInt(),
-      BaselinePosition(kIdeographicBaseline).ToInt());
+      BaselinePosition(kCentralBaseline).ToInt());
 }
 #endif  // DCHECK_IS_ON()
 
@@ -367,27 +356,26 @@ void InlineBox::SetLineLayoutItemShouldDoFullPaintInvalidationIfNeeded() {
   // For RootInlineBox, we only need to invalidate if it's using the first line
   // style. Otherwise it paints nothing so we don't need to invalidate it.
   if (!IsRootInlineBox() || IsFirstLineStyle())
-    line_layout_item_.SetShouldDoFullPaintInvalidation();
+    GetLineLayoutItem().SetShouldDoFullPaintInvalidation();
 }
 
 bool CanUseInlineBox(const LayoutObject& node) {
   DCHECK(node.IsText() || node.IsInline() || node.IsLayoutBlockFlow());
-  return !RuntimeEnabledFeatures::LayoutNGEnabled() ||
-         !node.ContainingNGBlockFlow();
+  return !node.IsInLayoutNGInlineFormattingContext();
 }
 
 }  // namespace blink
 
 #if DCHECK_IS_ON()
 
-void showTree(const blink::InlineBox* b) {
+void ShowTree(const blink::InlineBox* b) {
   if (b)
     b->ShowTreeForThis();
   else
     fprintf(stderr, "Cannot showTree for (nil) InlineBox.\n");
 }
 
-void showLineTree(const blink::InlineBox* b) {
+void ShowLineTree(const blink::InlineBox* b) {
   if (b)
     b->ShowLineTreeForThis();
   else

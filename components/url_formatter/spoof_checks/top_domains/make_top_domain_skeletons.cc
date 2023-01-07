@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,7 +87,7 @@ int GenerateSkeletons(const char* input_file_name,
   std::u16string kLabelSeparators = u".-";
   std::stringstream input(input_content);
   std::string output =
-      R"(# Copyright 2018 The Chromium Authors. All rights reserved.
+      R"(# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -185,5 +185,7 @@ int main(int argc, const char** argv) {
   }
   GenerateSkeletons("domains.list", "domains.skeletons", spoof_checker.get());
   GenerateSkeletons("test_domains.list", "test_domains.skeletons",
+                    spoof_checker.get());
+  GenerateSkeletons("browsertest_domains.list", "browsertest_domains.skeletons",
                     spoof_checker.get());
 }

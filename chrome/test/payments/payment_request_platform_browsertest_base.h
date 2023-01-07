@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,20 +11,20 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/test/payments/payment_request_test_controller.h"
 #include "chrome/test/payments/personal_data_manager_test_util.h"
 #include "chrome/test/payments/test_event_waiter.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/payments/core/const_csp_checker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -52,6 +52,15 @@ class PaymentRequestPlatformBrowserTestBase
   // (relative to components/test/data/payments) using |hostname| or 127.0.0.1.
   void NavigateTo(const std::string& file_path);
   void NavigateTo(const std::string& hostname, const std::string& file_path);
+
+  // Install the payment app specified by `hostname`, e.g., "a.com". Specify the
+  // filename of the service worker with `service_worker_filename`. Note that
+  // the origin has to be initialized first to be supported here. The payment
+  // method of the installed payment app will be outputted in
+  // `url_method_output`, e.g., "https://a.com:12345".
+  void InstallPaymentApp(const std::string& hostname,
+                         const std::string& service_worker_filename,
+                         std::string* url_method_output);
 
   // Will expect that the expected string is present in output.
   void ExpectBodyContains(const std::string& expected_string);
@@ -82,13 +91,17 @@ class PaymentRequestPlatformBrowserTestBase
   void OnNotSupportedError() override;
   void OnAbortCalled() override;
   void OnAppListReady() override;
+  void OnErrorDisplayed() override;
   void OnCompleteCalled() override;
-  void OnMinimalUIReady() override;
   void OnUIDisplayed() override;
 
   // Resets the event waiter for a given |event| or |event_sequence|.
   void ResetEventWaiterForSingleEvent(TestEvent event);
   void ResetEventWaiterForEventSequence(std::list<TestEvent> event_sequence);
+
+  // Return a weak pointer to a Content Security Policy (CSP) checker for
+  // tests.
+  base::WeakPtr<CSPChecker> GetCSPCheckerForTests();
 
   // Wait for the event(s) passed to ResetEventWaiter*() to occur.
   void WaitForObservedEvent();
@@ -111,6 +124,7 @@ class PaymentRequestPlatformBrowserTestBase
   std::unique_ptr<EventWaiter> event_waiter_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   PaymentRequestTestController test_controller_;
+  ConstCSPChecker const_csp_checker_{/*allow=*/true};
 };
 
 }  // namespace payments

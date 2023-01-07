@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,10 @@ class ASH_EXPORT LaserPointerMode : public CommonPaletteTool,
                                     public LaserPointerObserver {
  public:
   explicit LaserPointerMode(Delegate* delegate);
+
+  LaserPointerMode(const LaserPointerMode&) = delete;
+  LaserPointerMode& operator=(const LaserPointerMode&) = delete;
+
   ~LaserPointerMode() override;
 
  private:
@@ -36,8 +40,6 @@ class ASH_EXPORT LaserPointerMode : public CommonPaletteTool,
 
   base::ScopedObservation<LaserPointerController, LaserPointerObserver>
       laser_pointer_controller_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LaserPointerMode);
 };
 
 }  // namespace ash

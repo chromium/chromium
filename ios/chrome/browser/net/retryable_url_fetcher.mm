@@ -1,18 +1,18 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/net/retryable_url_fetcher.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/check.h"
-#include "base/strings/sys_string_conversions.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/simple_url_loader.h"
-#include "url/gurl.h"
+#import "base/bind.h"
+#import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
+#import "services/network/public/cpp/resource_request.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "services/network/public/cpp/simple_url_loader.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

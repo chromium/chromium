@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/default_tick_clock.h"
 #include "ui/views/controls/button/button.h"
 
@@ -17,9 +18,7 @@ const char ShelfButtonPressedMetricTracker::
         "Ash.Shelf.TimeBetweenWindowMinimizedAndActivatedActions";
 
 ShelfButtonPressedMetricTracker::ShelfButtonPressedMetricTracker()
-    : tick_clock_(base::DefaultTickClock::GetInstance()),
-      time_of_last_minimize_(base::TimeTicks()),
-      last_minimized_source_button_(nullptr) {}
+    : tick_clock_(base::DefaultTickClock::GetInstance()) {}
 
 ShelfButtonPressedMetricTracker::~ShelfButtonPressedMetricTracker() = default;
 
@@ -48,12 +47,12 @@ void ShelfButtonPressedMetricTracker::ButtonPressed(
 
 void ShelfButtonPressedMetricTracker::RecordButtonPressedSource(
     const ui::Event& event) {
+  // NOTE: These metrics are called "launcher" instead of "shelf" because the
+  // original name of the shelf UI was "launcher".
   if (event.IsMouseEvent()) {
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        UMA_LAUNCHER_BUTTON_PRESSED_WITH_MOUSE);
+    base::RecordAction(base::UserMetricsAction("Launcher_ButtonPressed_Mouse"));
   } else if (event.IsGestureEvent()) {
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        UMA_LAUNCHER_BUTTON_PRESSED_WITH_TOUCH);
+    base::RecordAction(base::UserMetricsAction("Launcher_ButtonPressed_Touch"));
   }
 }
 
@@ -66,16 +65,17 @@ void ShelfButtonPressedMetricTracker::RecordButtonPressedAction(
     case SHELF_ACTION_APP_LIST_BACK:
       break;
     case SHELF_ACTION_NEW_WINDOW_CREATED:
-      Shell::Get()->metrics()->RecordUserMetricsAction(
-          UMA_LAUNCHER_LAUNCH_TASK);
+      base::RecordAction(base::UserMetricsAction("Launcher_LaunchTask"));
+      Shell::Get()->metrics()->task_switch_metrics_recorder().OnTaskSwitch(
+          TaskSwitchSource::SHELF);
       break;
     case SHELF_ACTION_WINDOW_ACTIVATED:
-      Shell::Get()->metrics()->RecordUserMetricsAction(
-          UMA_LAUNCHER_SWITCH_TASK);
+      base::RecordAction(base::UserMetricsAction("Launcher_SwitchTask"));
+      Shell::Get()->metrics()->task_switch_metrics_recorder().OnTaskSwitch(
+          TaskSwitchSource::SHELF);
       break;
     case SHELF_ACTION_WINDOW_MINIMIZED:
-      Shell::Get()->metrics()->RecordUserMetricsAction(
-          UMA_LAUNCHER_MINIMIZE_TASK);
+      base::RecordAction(base::UserMetricsAction("Launcher_MinimizeTask"));
       break;
   }
 }

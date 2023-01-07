@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,15 +18,17 @@
 #include "ash/assistant/ui/main_stage/element_animator.h"
 #include "ash/assistant/util/animation_util.h"
 #include "ash/assistant/util/assistant_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -37,13 +39,14 @@ using assistant::util::CreateOpacityElement;
 using assistant::util::StartLayerAnimationSequence;
 
 // Animation.
-constexpr base::TimeDelta kChipFadeInDuration =
-    base::TimeDelta::FromMilliseconds(250);
-constexpr base::TimeDelta kChipFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kChipFadeInDuration = base::Milliseconds(250);
+constexpr base::TimeDelta kChipFadeOutDuration = base::Milliseconds(200);
 
-// Appearance.
-constexpr int kPreferredHeightDip = 48;
+// Metrics.
+constexpr char kAssistantSuggestionChipHistogram[] =
+    "Ash.Assistant.AnimationSmoothness.SuggestionChip";
+
+constexpr int kPreferredHeightDip = 64;
 
 }  // namespace
 
@@ -54,22 +57,24 @@ class SuggestionChipAnimator : public ElementAnimator {
   SuggestionChipAnimator(SuggestionChipView* chip,
                          const SuggestionContainerView* parent)
       : ElementAnimator(chip), parent_(parent) {}
+
+  SuggestionChipAnimator(const SuggestionChipAnimator&) = delete;
+  SuggestionChipAnimator& operator=(const SuggestionChipAnimator&) = delete;
+
   ~SuggestionChipAnimator() override = default;
 
   void AnimateIn(ui::CallbackLayerAnimationObserver* observer) override {
     StartLayerAnimationSequence(
         layer()->GetAnimator(), CreateAnimateInAnimation(), observer,
         base::BindRepeating<void(const std::string&, int)>(
-            base::UmaHistogramPercentageObsoleteDoNotUse,
-            assistant::ui::kAssistantSuggestionChipHistogram));
+            base::UmaHistogramPercentage, kAssistantSuggestionChipHistogram));
   }
 
   void AnimateOut(ui::CallbackLayerAnimationObserver* observer) override {
     StartLayerAnimationSequence(
         layer()->GetAnimator(), CreateAnimateOutAnimation(), observer,
         base::BindRepeating<void(const std::string&, int)>(
-            base::UmaHistogramPercentageObsoleteDoNotUse,
-            assistant::ui::kAssistantSuggestionChipHistogram));
+            base::UmaHistogramPercentage, kAssistantSuggestionChipHistogram));
   }
 
   void FadeOut(ui::CallbackLayerAnimationObserver* observer) override {
@@ -92,8 +97,6 @@ class SuggestionChipAnimator : public ElementAnimator {
   }
 
   const SuggestionContainerView* const parent_;  // |parent_| owns |this|.
-
-  DISALLOW_COPY_AND_ASSIGN(SuggestionChipAnimator);
 };
 
 // SuggestionContainerView -----------------------------------------------------
@@ -153,7 +156,8 @@ void SuggestionContainerView::InitLayout() {
   layout_manager_ =
       content_view()->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(0, kPaddingDip), kSpacingDip));
+          gfx::Insets::VH(0, assistant::ui::GetHorizontalPadding()),
+          /*between_child_spacing=*/kSpacingDip));
 
   layout_manager_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -217,8 +221,8 @@ std::unique_ptr<ElementAnimator> SuggestionContainerView::AddSuggestionChip(
 void SuggestionContainerView::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   if (assistant::util::IsStartingSession(new_visibility, old_visibility) &&
       entry_point.value() != AssistantEntryPoint::kLauncherSearchResult) {
     // Show conversation starters at the start of a new Assistant session except
@@ -239,6 +243,12 @@ void SuggestionContainerView::OnUiVisibilityChanged(
   // we need to center align our content.
   layout_manager_->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
+}
+
+void SuggestionContainerView::InitializeUIForBubbleView() {
+  OnConversationStartersChanged(AssistantSuggestionsController::Get()
+                                    ->GetModel()
+                                    ->GetConversationStarters());
 }
 
 void SuggestionContainerView::OnButtonPressed(SuggestionChipView* chip_view) {

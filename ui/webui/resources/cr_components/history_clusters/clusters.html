@@ -1,0 +1,102 @@
+<style include="history-clusters-shared-style">
+  :host {
+    color: var(--cr-primary-text-color);
+    display: block;
+    font-size: 0.875rem;  /* 14px */
+    overflow-y: auto;
+  }
+
+  :host([in-side-panel_]) cr-dialog::part(dialog) {
+    max-width: fit-content;
+  }
+
+  #clusters {
+    margin: 0 auto;
+    max-width: var(--cluster-max-width);
+    min-width: var(--cluster-min-width);
+    padding: var(--first-cluster-padding-top) var(--cluster-padding-horizontal) 0;
+  }
+
+  :host([in-side-panel_]) #clusters {
+    min-width: 0;
+    padding: 8px 0 0;
+  }
+
+  :host([in-side-panel_]) history-cluster {
+    border-bottom: 4px solid var(--cr-separator-color);
+  }
+
+  :host([in-side-panel_]) history-cluster[is-last] {
+    border-bottom: none;
+  }
+
+  #placeholder {
+    align-items: center;
+    color: var(--md-loading-message-color);
+    display: flex;
+    flex: 1;
+    font-size: inherit;
+    font-weight: 500;
+    height: 100%;
+    justify-content: center;
+  }
+
+  #footer {
+    display: flex;
+    justify-content: center;
+    padding:
+        0 var(--cluster-padding-horizontal) var(--cluster-padding-vertical);
+  }
+</style>
+<div id="placeholder" hidden="[[!placeholderText_]]">
+  [[placeholderText_]]
+</div>
+<iron-list id="clusters" items="[[result_.clusters]]"
+    on-remove-visits="onRemoveVisits_" hidden="[[!result_.clusters.length]]">
+  <!-- We must have a tabindex on these history-cluster elements, because
+       iron-list gets very confused handling arrow keys without them. Moreover,
+       we can't allow Tab to traverse all list elements because:
+       https://github.com/PolymerElements/iron-list/issues/546 -->
+  <template>
+    <history-cluster cluster="[[item]]" index="[[index]]"
+        query="[[result_.query]]" tabindex$="[[tabIndex]]"
+        on-remove-cluster="onRemoveCluster_" is-first$="[[!index]]"
+        is-last$="[[isLastCluster_(index, result_.clusters.*)]]">
+    </history-cluster>
+  </template>
+</iron-list>
+<div id="footer" hidden="[[getLoadMoreButtonHidden_(
+    result_, result_.clusters.*, result_.canLoadMore)]]">
+  <cr-button id="loadMoreButton" on-click="onLoadMoreButtonClick_"
+             hidden$="[[showSpinner_]]">
+    [[i18n('loadMoreButtonLabel')]]
+  </cr-button>
+  <iron-icon src="chrome://resources/images/throbber_small.svg"
+             hidden$="[[!showSpinner_]]"></iron-icon>
+</div>
+<iron-scroll-threshold id="scrollThreshold"
+    lower-threshold="500" on-lower-threshold="onScrolledToBottom_">
+</iron-scroll-threshold>
+<cr-lazy-render id="confirmationDialog">
+  <template>
+    <cr-dialog consume-keydown-event on-cancel="onConfirmationDialogCancel_">
+      <div slot="title">[[i18n('removeSelected')]]</div>
+      <div slot="body">[[i18n('deleteWarning')]]</div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+          [[i18n('cancel')]]
+        </cr-button>
+        <cr-button class="action-button" on-click="onRemoveButtonClick_">
+          [[i18n('deleteConfirm')]]
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+</cr-lazy-render>
+<cr-lazy-render id="confirmationToast">
+  <template>
+    <cr-toast duration="5000">
+      <div>[[i18n('removeFromHistoryToast')]]</div>
+    </cr-toast>
+  </template>
+</cr-lazy-render>

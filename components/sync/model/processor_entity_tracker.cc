@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/model/processor_entity.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 
 namespace syncer {
@@ -18,9 +19,9 @@ ProcessorEntityTracker::ProcessorEntityTracker(
         metadata_map)
     : model_type_state_(model_type_state) {
   DCHECK(model_type_state.initial_sync_done());
-  for (auto& kv : metadata_map) {
+  for (auto& [storage_key, metadata] : metadata_map) {
     std::unique_ptr<ProcessorEntity> entity =
-        ProcessorEntity::CreateFromMetadata(kv.first, std::move(*kv.second));
+        ProcessorEntity::CreateFromMetadata(storage_key, std::move(*metadata));
     const ClientTagHash client_tag_hash =
         ClientTagHash::FromHashed(entity->metadata().client_tag_hash());
 
@@ -35,8 +36,7 @@ ProcessorEntityTracker::ProcessorEntityTracker(
 ProcessorEntityTracker::~ProcessorEntityTracker() = default;
 
 bool ProcessorEntityTracker::AllStorageKeysPopulated() const {
-  for (const auto& kv : entities_) {
-    const ProcessorEntity* entity = kv.second.get();
+  for (const auto& [client_tag_hash, entity] : entities_) {
     if (entity->storage_key().empty())
       return false;
   }
@@ -47,34 +47,53 @@ bool ProcessorEntityTracker::AllStorageKeysPopulated() const {
 }
 
 void ProcessorEntityTracker::ClearTransientSyncState() {
-  for (const auto& kv : entities_) {
-    kv.second->ClearTransientSyncState();
+  for (const auto& [client_tag_hash, entity] : entities_) {
+    entity->ClearTransientSyncState();
   }
 }
 
 size_t ProcessorEntityTracker::CountNonTombstoneEntries() const {
   size_t count = 0;
-  for (const auto& kv : entities_) {
-    if (!kv.second->metadata().is_deleted()) {
+  for (const auto& [client_tag_hash, entity] : entities_) {
+    if (!entity->metadata().is_deleted()) {
       ++count;
     }
   }
   return count;
 }
 
-ProcessorEntity* ProcessorEntityTracker::Add(const std::string& storage_key,
-                                             const EntityData& data) {
+ProcessorEntity* ProcessorEntityTracker::AddUnsyncedLocal(
+    const std::string& storage_key,
+    std::unique_ptr<EntityData> data,
+    sync_pb::EntitySpecifics trimmed_specifics) {
+  DCHECK(data);
+  DCHECK(!data->client_tag_hash.value().empty());
+  DCHECK(!GetEntityForTagHash(data->client_tag_hash));
+  DCHECK(!data->is_deleted());
+  DCHECK(!storage_key.empty());
+
+  ProcessorEntity* entity =
+      AddInternal(storage_key, *data, kUncommittedVersion);
+  entity->RecordLocalUpdate(std::move(data), std::move(trimmed_specifics));
+  return entity;
+}
+
+ProcessorEntity* ProcessorEntityTracker::AddRemote(
+    const std::string& storage_key,
+    const UpdateResponseData& update_data,
+    sync_pb::EntitySpecifics trimmed_specifics) {
+  const EntityData& data = update_data.entity;
   DCHECK(!data.client_tag_hash.value().empty());
   DCHECK(!GetEntityForTagHash(data.client_tag_hash));
-  DCHECK(storage_key.empty() || storage_key_to_tag_hash_.find(storage_key) ==
-                                    storage_key_to_tag_hash_.end());
-  std::unique_ptr<ProcessorEntity> entity = ProcessorEntity::CreateNew(
-      storage_key, data.client_tag_hash, data.id, data.creation_time);
-  ProcessorEntity* entity_ptr = entity.get();
-  entities_[data.client_tag_hash] = std::move(entity);
-  if (!storage_key.empty())
-    storage_key_to_tag_hash_[storage_key] = data.client_tag_hash;
-  return entity_ptr;
+  DCHECK(!data.is_deleted());
+  DCHECK(storage_key_to_tag_hash_.find(storage_key) ==
+         storage_key_to_tag_hash_.end());
+  DCHECK(update_data.response_version != kUncommittedVersion);
+
+  ProcessorEntity* entity =
+      AddInternal(storage_key, data, update_data.response_version);
+  entity->RecordAcceptedRemoteUpdate(update_data, std::move(trimmed_specifics));
+  return entity;
 }
 
 void ProcessorEntityTracker::RemoveEntityForClientTagHash(
@@ -158,8 +177,8 @@ std::vector<const ProcessorEntity*>
 ProcessorEntityTracker::GetAllEntitiesIncludingTombstones() const {
   std::vector<const ProcessorEntity*> entities;
   entities.reserve(entities_.size());
-  for (const auto& entity : entities_) {
-    entities.push_back(entity.second.get());
+  for (const auto& [client_tag_hash, entity] : entities_) {
+    entities.push_back(entity.get());
   }
   return entities;
 }
@@ -167,10 +186,9 @@ ProcessorEntityTracker::GetAllEntitiesIncludingTombstones() const {
 std::vector<ProcessorEntity*>
 ProcessorEntityTracker::GetEntitiesWithLocalChanges(size_t max_entries) {
   std::vector<ProcessorEntity*> entities;
-  for (const auto& kv : entities_) {
-    ProcessorEntity* entity = kv.second.get();
+  for (const auto& [client_tag_hash, entity] : entities_) {
     if (entity->RequiresCommitRequest() && !entity->RequiresCommitData()) {
-      entities.push_back(entity);
+      entities.push_back(entity.get());
       if (entities.size() >= max_entries)
         break;
     }
@@ -179,8 +197,7 @@ ProcessorEntityTracker::GetEntitiesWithLocalChanges(size_t max_entries) {
 }
 
 bool ProcessorEntityTracker::HasLocalChanges() const {
-  for (const auto& kv : entities_) {
-    ProcessorEntity* entity = kv.second.get();
+  for (const auto& [client_tag_hash, entity] : entities_) {
     if (entity->RequiresCommitRequest()) {
       return true;
     }
@@ -196,8 +213,7 @@ std::vector<const ProcessorEntity*>
 ProcessorEntityTracker::IncrementSequenceNumberForAllExcept(
     const std::unordered_set<std::string>& already_updated_storage_keys) {
   std::vector<const ProcessorEntity*> affected_entities;
-  for (const auto& kv : entities_) {
-    ProcessorEntity* entity = kv.second.get();
+  for (const auto& [client_tag_hash, entity] : entities_) {
     if (entity->storage_key().empty() ||
         (already_updated_storage_keys.find(entity->storage_key()) !=
          already_updated_storage_keys.end())) {
@@ -207,7 +223,7 @@ ProcessorEntityTracker::IncrementSequenceNumberForAllExcept(
       continue;
     }
     entity->IncrementSequenceNumber(base::Time::Now());
-    affected_entities.push_back(entity);
+    affected_entities.push_back(entity.get());
   }
   return affected_entities;
 }
@@ -230,6 +246,25 @@ void ProcessorEntityTracker::UpdateOrOverrideStorageKey(
   DCHECK(storage_key_to_tag_hash_.find(storage_key) ==
          storage_key_to_tag_hash_.end());
   storage_key_to_tag_hash_[storage_key] = client_tag_hash;
+}
+
+ProcessorEntity* ProcessorEntityTracker::AddInternal(
+    const std::string& storage_key,
+    const EntityData& data,
+    int64_t server_version) {
+  DCHECK(!data.client_tag_hash.value().empty());
+  DCHECK(!GetEntityForTagHash(data.client_tag_hash));
+  DCHECK(storage_key.empty() || storage_key_to_tag_hash_.find(storage_key) ==
+                                    storage_key_to_tag_hash_.end());
+
+  std::unique_ptr<ProcessorEntity> entity = ProcessorEntity::CreateNew(
+      storage_key, data.client_tag_hash, data.id, data.creation_time);
+  ProcessorEntity* entity_ptr = entity.get();
+  entities_[data.client_tag_hash] = std::move(entity);
+  if (!storage_key.empty()) {
+    storage_key_to_tag_hash_[storage_key] = data.client_tag_hash;
+  }
+  return entity_ptr;
 }
 
 }  // namespace syncer

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/i18n/unicodestring.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -18,7 +19,7 @@ int64_t TimeToProtoTime(const base::Time& t) {
 }
 
 base::Time ProtoTimeToTime(int64_t proto_t) {
-  return base::Time::UnixEpoch() + base::TimeDelta::FromMilliseconds(proto_t);
+  return base::Time::UnixEpoch() + base::Milliseconds(proto_t);
 }
 
 std::string GetTimeDebugString(const base::Time& t) {

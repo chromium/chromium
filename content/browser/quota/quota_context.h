@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,14 +23,14 @@ class FilePath;
 class SingleThreadTaskRunner;
 }  // namespace base
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace storage {
 class QuotaManager;
 class SpecialStoragePolicy;
 }  // namespace storage
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -61,7 +61,7 @@ class QuotaContext : public base::RefCountedDeleteOnSequence<QuotaContext> {
   void BindQuotaManagerHost(
       int process_id,
       int render_frame_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver);
 
   void OverrideQuotaManagerForTesting(
@@ -76,7 +76,7 @@ class QuotaContext : public base::RefCountedDeleteOnSequence<QuotaContext> {
   void BindQuotaManagerHostOnIOThread(
       int process_id,
       int render_frame_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver);
 
   // QuotaManager runs on the IO thread, so mojo receivers must be bound there.
@@ -103,4 +103,4 @@ class QuotaContext : public base::RefCountedDeleteOnSequence<QuotaContext> {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_QUOTA_QUOTA_MANAGER_HOST_H_
+#endif  // CONTENT_BROWSER_QUOTA_QUOTA_CONTEXT_H_

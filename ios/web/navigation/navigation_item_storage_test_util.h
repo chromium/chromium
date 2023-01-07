@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 namespace web {
 
-// Returns whether |item1| is equivalent to |item2|.
+// Returns whether `item1` is equivalent to `item2`.
 BOOL ItemStoragesAreEqual(CRWNavigationItemStorage* item1,
                           CRWNavigationItemStorage* item2);
 }

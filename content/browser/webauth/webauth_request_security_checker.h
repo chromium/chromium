@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "device/fido/public_key_credential_descriptor.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace url {
 class Origin;
@@ -32,8 +33,16 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   enum class RequestType {
     kMakeCredential,
     kMakePaymentCredential,
-    kGetAssertion
+    kGetAssertion,
+    kGetPaymentCredentialAssertion
   };
+
+  // Legacy App IDs, which google.com origins are allowed to assert for
+  // compatibility reasons.
+  static constexpr char kGstaticAppId[] =
+      "https://www.gstatic.com/securitykey/origins.json";
+  static constexpr char kGstaticCorpAppId[] =
+      "https://www.gstatic.com/securitykey/a/google.com/origins.json";
 
   explicit WebAuthRequestSecurityChecker(RenderFrameHost* host);
   WebAuthRequestSecurityChecker(const WebAuthRequestSecurityChecker&) = delete;
@@ -58,21 +67,41 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   // Returns AuthenticatorStatus::SUCCESS if the origin domain is valid under
   // the referenced definitions, and also the requested RP ID is a registrable
   // domain suffix of, or is equal to, the origin's effective domain.
+  //
+  // If `remote_destop_client_override` is non-null, this method also validates
+  // whether `caller_origin` is authorized to use that extension.
+  //
   // References:
   //   https://url.spec.whatwg.org/#valid-domain-string
   //   https://html.spec.whatwg.org/multipage/origin.html#concept-origin-effective-domain
   //   https://html.spec.whatwg.org/multipage/origin.html#is-a-registrable-domain-suffix-of-or-is-equal-to
   blink::mojom::AuthenticatorStatus ValidateDomainAndRelyingPartyID(
       const url::Origin& caller_origin,
-      const std::string& relying_party_id);
+      const std::string& relying_party_id,
+      RequestType request_type,
+      const blink::mojom::RemoteDesktopClientOverridePtr&
+          remote_desktop_client_override);
 
-  // Checks whether a given URL is an a-priori authenticated URL.
-  // https://w3c.github.io/webappsec-credential-management/#dom-credentialuserdata-iconurl
-  blink::mojom::AuthenticatorStatus ValidateAPrioriAuthenticatedUrl(
-      const GURL& url);
+  // Validates whether `caller_origin` is authorized to claim the U2F AppID
+  // `appid`, which per U2F's processing rules may be empty.
+  // If `remote_destop_client_override` is non-null, this method also validates
+  // whether `caller_origin` is authorized to use that extension.
+  //
+  // On success, this method returns `AuthenticatorStatus::SUCCESS` and sets
+  // `out_app_id` to the AppID to use for the request. Otherwise, returns an
+  // error which should be passed to the renderer.
+  blink::mojom::AuthenticatorStatus ValidateAppIdExtension(
+      std::string appid,
+      url::Origin caller_origin,
+      const blink::mojom::RemoteDesktopClientOverridePtr&
+          remote_desktop_client_override,
+      std::string* out_app_id);
+
+  [[nodiscard]] bool DeduplicateCredentialDescriptorListAndValidateLength(
+      std::vector<device::PublicKeyCredentialDescriptor>* list);
 
  protected:
-  friend class RefCounted<WebAuthRequestSecurityChecker>;
+  friend class base::RefCounted<WebAuthRequestSecurityChecker>;
   virtual ~WebAuthRequestSecurityChecker();
 
  private:
@@ -80,7 +109,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   // entire ancestor chain. |origin| is the origin of the frame being checked.
   bool IsSameOriginWithAncestors(const url::Origin& origin);
 
-  RenderFrameHost* render_frame_host_;
+  raw_ptr<RenderFrameHost> render_frame_host_;
 };
 
 }  // namespace content

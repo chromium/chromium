@@ -49,19 +49,31 @@ namespace blink {
 struct SameSizeAsInlineTextBox : public InlineBox {
   unsigned variables[1];
   uint16_t variables2[2];
-  void* pointers[2];
+  Member<void*> members[2];
 };
 
 ASSERT_SIZE(InlineTextBox, SameSizeAsInlineTextBox);
 
-typedef WTF::HashMap<const InlineTextBox*, LayoutRect> InlineTextBoxOverflowMap;
-static InlineTextBoxOverflowMap* g_text_boxes_with_overflow;
+typedef HeapHashMap<Member<const InlineTextBox>, LayoutRect>
+    InlineTextBoxOverflowMap;
+InlineTextBoxOverflowMap& GetTextBoxesWithOverflow() {
+  DEFINE_STATIC_LOCAL(Persistent<InlineTextBoxOverflowMap>,
+                      text_boxes_with_overflow,
+                      (MakeGarbageCollected<InlineTextBoxOverflowMap>()));
+  return *text_boxes_with_overflow;
+}
+
+void InlineTextBox::Trace(Visitor* visitor) const {
+  visitor->Trace(prev_text_box_);
+  visitor->Trace(next_text_box_);
+  InlineBox::Trace(visitor);
+}
 
 void InlineTextBox::Destroy() {
   LegacyAbstractInlineTextBox::WillDestroy(this);
 
-  if (!KnownToHaveNoOverflow() && g_text_boxes_with_overflow)
-    g_text_boxes_with_overflow->erase(this);
+  if (!KnownToHaveNoOverflow())
+    GetTextBoxesWithOverflow().erase(this);
   InlineBox::Destroy();
 }
 
@@ -77,11 +89,11 @@ void InlineTextBox::MarkDirty() {
 }
 
 LayoutRect InlineTextBox::LogicalOverflowRect() const {
-  if (KnownToHaveNoOverflow() || !g_text_boxes_with_overflow)
+  if (KnownToHaveNoOverflow())
     return LogicalFrameRect();
 
-  const auto& it = g_text_boxes_with_overflow->find(this);
-  if (it != g_text_boxes_with_overflow->end())
+  const auto& it = GetTextBoxesWithOverflow().find(this);
+  if (it != GetTextBoxesWithOverflow().end())
     return it->value;
 
   return LogicalFrameRect();
@@ -90,9 +102,7 @@ LayoutRect InlineTextBox::LogicalOverflowRect() const {
 void InlineTextBox::SetLogicalOverflowRect(const LayoutRect& rect) {
   DCHECK(!KnownToHaveNoOverflow());
   DCHECK(rect != LogicalFrameRect());
-  if (!g_text_boxes_with_overflow)
-    g_text_boxes_with_overflow = new InlineTextBoxOverflowMap;
-  g_text_boxes_with_overflow->Set(this, rect);
+  GetTextBoxesWithOverflow().Set(this, rect);
 }
 
 PhysicalRect InlineTextBox::PhysicalOverflowRect() const {
@@ -106,9 +116,9 @@ PhysicalRect InlineTextBox::PhysicalOverflowRect() const {
 void InlineTextBox::Move(const LayoutSize& delta) {
   InlineBox::Move(delta);
 
-  if (!KnownToHaveNoOverflow() && g_text_boxes_with_overflow) {
-    const auto& it = g_text_boxes_with_overflow->find(this);
-    if (it != g_text_boxes_with_overflow->end())
+  if (!KnownToHaveNoOverflow()) {
+    const auto& it = GetTextBoxesWithOverflow().find(this);
+    if (it != GetTextBoxesWithOverflow().end())
       it->value.Move(IsHorizontal() ? delta : delta.TransposedSize());
   }
 }
@@ -263,13 +273,13 @@ LayoutRect InlineTextBox::LocalSelectionRect(
   LayoutPoint starting_point = LayoutPoint(LogicalLeft(), sel_top);
   LayoutRect r;
   if (s_pos || e_pos != static_cast<int>(len_)) {
-    r = LayoutRect(EnclosingIntRect(
-        font.SelectionRectForText(text_run, FloatPoint(starting_point),
+    r = LayoutRect(gfx::ToEnclosingRect(
+        font.SelectionRectForText(text_run, gfx::PointF(starting_point),
                                   sel_height.ToInt(), s_pos, e_pos)));
   } else {
     // Avoid computing the font width when the entire line box is selected as an
     // optimization.
-    r = LayoutRect(EnclosingIntRect(
+    r = LayoutRect(ToEnclosingRect(
         LayoutRect(starting_point, LayoutSize(logical_width_, sel_height))));
   }
 
@@ -382,9 +392,9 @@ LayoutUnit InlineTextBox::PlaceEllipsisBox(bool flow_is_ltr,
     // more accurate position in rtl text.
     // TODO(crbug.com/722043: This doesn't always give the best results.
     bool ltr = IsLeftToRightDirection();
-    int offset = OffsetForPosition(ellipsis_x,
-                                   ltr ? OnlyFullGlyphs : IncludePartialGlyphs,
-                                   DontBreakGlyphs);
+    int offset = OffsetForPosition(
+        ellipsis_x, ltr ? kOnlyFullGlyphs : kIncludePartialGlyphs,
+        BreakGlyphsOption(false));
 
     // Full truncation is only necessary when we're flowing left-to-right.
     if (flow_is_ltr && offset == 0 && ltr == flow_is_ltr) {
@@ -520,7 +530,7 @@ void InlineTextBox::PaintDocumentMarker(const PaintInfo& paint_info,
 
 void InlineTextBox::PaintTextMarkerForeground(const PaintInfo& paint_info,
                                               const PhysicalOffset& box_origin,
-                                              const TextMarkerBase& marker,
+                                              const DocumentMarker& marker,
                                               const ComputedStyle& style,
                                               const Font& font) const {
   InlineTextBoxPainter(*this).PaintTextMarkerForeground(paint_info, box_origin,
@@ -529,7 +539,7 @@ void InlineTextBox::PaintTextMarkerForeground(const PaintInfo& paint_info,
 
 void InlineTextBox::PaintTextMarkerBackground(const PaintInfo& paint_info,
                                               const PhysicalOffset& box_origin,
-                                              const TextMarkerBase& marker,
+                                              const DocumentMarker& marker,
                                               const ComputedStyle& style,
                                               const Font& font) const {
   InlineTextBoxPainter(*this).PaintTextMarkerBackground(paint_info, box_origin,
@@ -588,8 +598,8 @@ LayoutUnit InlineTextBox::PositionForOffset(int offset) const {
   // FIXME: Do we need to add rightBearing here?
   return LayoutUnit(font.SelectionRectForText(
                             ConstructTextRun(style_to_use),
-                            FloatPoint(LogicalLeft().ToInt(), 0), 0, from, to)
-                        .MaxX());
+                            gfx::PointF(LogicalLeft().ToInt(), 0), 0, from, to)
+                        .right());
 }
 
 bool InlineTextBox::ContainsCaretOffset(int offset) const {
@@ -674,7 +684,6 @@ TextRun InlineTextBox::ConstructTextRun(
               Direction(),
               DirOverride() || style.RtlOrdering() == EOrder::kVisual);
   run.SetTabSize(!style.CollapseWhiteSpace(), style.GetTabSize());
-  run.SetTextJustify(style.GetTextJustify());
 
   // Propagate the maximum length of the characters buffer to the TextRun, even
   // when we're only processing a substring.
@@ -735,8 +744,8 @@ void InlineTextBox::ManuallySetStartLenAndLogicalWidth(
 
   SetLogicalWidth(logical_width);
 
-  if (!KnownToHaveNoOverflow() && g_text_boxes_with_overflow)
-    g_text_boxes_with_overflow->erase(this);
+  if (!KnownToHaveNoOverflow())
+    GetTextBoxesWithOverflow().erase(this);
 }
 
 }  // namespace blink

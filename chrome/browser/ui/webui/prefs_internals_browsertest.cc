@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ IN_PROC_BROWSER_TEST_F(PrefsInternalsTest, TestPrefsAreServed) {
 
   // First, check that navigation succeeds.
   GURL kUrl(content::GetWebUIURL(chrome::kChromeUIPrefsInternalsHost));
-  ui_test_utils::NavigateToURL(browser(), kUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);

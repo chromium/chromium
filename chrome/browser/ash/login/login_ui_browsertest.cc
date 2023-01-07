@@ -1,26 +1,33 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
@@ -29,17 +36,20 @@
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/test/event_generator.h"
 
-namespace chromeos {
+namespace ash {
 
 class InterruptedAutoStartEnrollmentTest : public OobeBaseTest,
                                            public LocalStateMixin::Delegate {
@@ -53,6 +63,9 @@ class InterruptedAutoStartEnrollmentTest : public OobeBaseTest,
     prefs->SetBoolean(::prefs::kDeviceEnrollmentAutoStart, true);
     prefs->SetBoolean(::prefs::kDeviceEnrollmentCanExit, false);
   }
+
+ private:
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 // Tests that the default first screen is the welcome screen after OOBE
@@ -116,60 +129,60 @@ class LoginUIConsumerTest : public LoginUITestBase {
 IN_PROC_BROWSER_TEST_F(LoginUIConsumerTest, LoginUIVisible) {
   const auto& test_users = login_manager_mixin_.users();
   const int users_count = test_users.size();
-  EXPECT_EQ(users_count, ash::LoginScreenTestApi::GetUsersCount());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_EQ(users_count, LoginScreenTestApi::GetUsersCount());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
 
   for (int i = 0; i < users_count; ++i) {
-    EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(test_users[i].account_id));
+    EXPECT_TRUE(LoginScreenTestApi::FocusUser(test_users[i].account_id));
   }
 
   for (int i = 0; i < users_count; ++i) {
     // Can't remove the owner.
-    EXPECT_EQ(ash::LoginScreenTestApi::RemoveUser(test_users[i].account_id),
+    EXPECT_EQ(LoginScreenTestApi::RemoveUser(test_users[i].account_id),
               test_users[i].account_id != owner_.account_id);
   }
 
-  EXPECT_EQ(1, ash::LoginScreenTestApi::GetUsersCount());
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(owner_.account_id));
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_EQ(1, LoginScreenTestApi::GetUsersCount());
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(owner_.account_id));
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginUIEnrolledTest, UserRemoval) {
   const auto& test_users = login_manager_mixin_.users();
   const int users_count = test_users.size();
-  EXPECT_EQ(users_count, ash::LoginScreenTestApi::GetUsersCount());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_EQ(users_count, LoginScreenTestApi::GetUsersCount());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
 
   // Remove the first user.
-  EXPECT_TRUE(ash::LoginScreenTestApi::RemoveUser(test_users[0].account_id));
-  EXPECT_EQ(users_count - 1, ash::LoginScreenTestApi::GetUsersCount());
+  EXPECT_TRUE(LoginScreenTestApi::RemoveUser(test_users[0].account_id));
+  EXPECT_EQ(users_count - 1, LoginScreenTestApi::GetUsersCount());
 
   // Can not remove twice.
-  EXPECT_FALSE(ash::LoginScreenTestApi::RemoveUser(test_users[0].account_id));
-  EXPECT_EQ(users_count - 1, ash::LoginScreenTestApi::GetUsersCount());
+  EXPECT_FALSE(LoginScreenTestApi::RemoveUser(test_users[0].account_id));
+  EXPECT_EQ(users_count - 1, LoginScreenTestApi::GetUsersCount());
 
   for (int i = 1; i < users_count; ++i) {
-    EXPECT_TRUE(ash::LoginScreenTestApi::RemoveUser(test_users[i].account_id));
-    EXPECT_EQ(users_count - i - 1, ash::LoginScreenTestApi::GetUsersCount());
+    EXPECT_TRUE(LoginScreenTestApi::RemoveUser(test_users[i].account_id));
+    EXPECT_EQ(users_count - i - 1, LoginScreenTestApi::GetUsersCount());
   }
 
   // Gaia dialog should be shown again as there are no users anymore.
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginUIEnrolledTest, UserReverseRemoval) {
   const auto& test_users = login_manager_mixin_.users();
   const int users_count = test_users.size();
-  EXPECT_EQ(users_count, ash::LoginScreenTestApi::GetUsersCount());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_EQ(users_count, LoginScreenTestApi::GetUsersCount());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
 
   for (int i = users_count - 1; i >= 0; --i) {
-    EXPECT_TRUE(ash::LoginScreenTestApi::RemoveUser(test_users[i].account_id));
-    EXPECT_EQ(i, ash::LoginScreenTestApi::GetUsersCount());
+    EXPECT_TRUE(LoginScreenTestApi::RemoveUser(test_users[i].account_id));
+    EXPECT_EQ(i, LoginScreenTestApi::GetUsersCount());
   }
 
   // Gaia dialog should be shown again as there are no users anymore.
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 class DisplayPasswordButtonTest : public LoginManagerTest {
@@ -177,7 +190,7 @@ class DisplayPasswordButtonTest : public LoginManagerTest {
   DisplayPasswordButtonTest() : LoginManagerTest() {}
 
   void LoginAndLock(const LoginManagerMixin::TestUserInfo& test_user) {
-    chromeos::WizardController::SkipPostLoginScreensForTesting();
+    login_manager_mixin_.SkipPostLoginScreens();
 
     auto context = LoginManagerMixin::CreateDefaultUserContext(test_user);
     login_manager_mixin_.LoginAndWaitForActiveSession(context);
@@ -185,7 +198,7 @@ class DisplayPasswordButtonTest : public LoginManagerTest {
     ScreenLockerTester screen_locker_tester;
     screen_locker_tester.Lock();
 
-    EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(test_user.account_id));
+    EXPECT_TRUE(LoginScreenTestApi::FocusUser(test_user.account_id));
   }
 
   void SetDisplayPasswordButtonEnabledLoginAndLock(
@@ -231,7 +244,7 @@ class DisplayPasswordButtonTest : public LoginManagerTest {
 IN_PROC_BROWSER_TEST_F(DisplayPasswordButtonTest,
                        PRE_DisplayPasswordButtonShownUnmanagedUser) {
   LoginAndLock(not_managed_user_);
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsDisplayPasswordButtonShown(
+  EXPECT_TRUE(LoginScreenTestApi::IsDisplayPasswordButtonShown(
       not_managed_user_.account_id));
 }
 
@@ -239,8 +252,8 @@ IN_PROC_BROWSER_TEST_F(DisplayPasswordButtonTest,
 // unmanaged user.
 IN_PROC_BROWSER_TEST_F(DisplayPasswordButtonTest,
                        DisplayPasswordButtonShownUnmanagedUser) {
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(not_managed_user_.account_id));
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsDisplayPasswordButtonShown(
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(not_managed_user_.account_id));
+  EXPECT_TRUE(LoginScreenTestApi::IsDisplayPasswordButtonShown(
       not_managed_user_.account_id));
 }
 
@@ -249,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(DisplayPasswordButtonTest,
 IN_PROC_BROWSER_TEST_F(DisplayPasswordButtonTest,
                        PRE_DisplayPasswordButtonHiddenManagedUser) {
   SetDisplayPasswordButtonEnabledLoginAndLock(false);
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsDisplayPasswordButtonShown(
+  EXPECT_FALSE(LoginScreenTestApi::IsDisplayPasswordButtonShown(
       managed_user_.account_id));
 }
 
@@ -257,8 +270,8 @@ IN_PROC_BROWSER_TEST_F(DisplayPasswordButtonTest,
 // managed user.
 IN_PROC_BROWSER_TEST_F(DisplayPasswordButtonTest,
                        DisplayPasswordButtonHiddenManagedUser) {
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(managed_user_.account_id));
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsDisplayPasswordButtonShown(
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(managed_user_.account_id));
+  EXPECT_FALSE(LoginScreenTestApi::IsDisplayPasswordButtonShown(
       managed_user_.account_id));
 }
 
@@ -267,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(DisplayPasswordButtonTest,
 IN_PROC_BROWSER_TEST_F(DisplayPasswordButtonTest,
                        PRE_DisplayPasswordButtonShownManagedUser) {
   SetDisplayPasswordButtonEnabledLoginAndLock(true);
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsDisplayPasswordButtonShown(
+  EXPECT_TRUE(LoginScreenTestApi::IsDisplayPasswordButtonShown(
       managed_user_.account_id));
 }
 
@@ -275,38 +288,38 @@ IN_PROC_BROWSER_TEST_F(DisplayPasswordButtonTest,
 // managed user.
 IN_PROC_BROWSER_TEST_F(DisplayPasswordButtonTest,
                        DisplayPasswordButtonShownManagedUser) {
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(managed_user_.account_id));
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsDisplayPasswordButtonShown(
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(managed_user_.account_id));
+  EXPECT_TRUE(LoginScreenTestApi::IsDisplayPasswordButtonShown(
       managed_user_.account_id));
 }
 
 // Checks that system info is visible independent of the Oobe dialog state.
 IN_PROC_BROWSER_TEST_F(LoginUITestBase, SystemInfoVisible) {
   // No dialog due to existing users.
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsSystemInfoShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsSystemInfoShown());
 
   // Open Oobe dialog.
-  EXPECT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  EXPECT_TRUE(LoginScreenTestApi::ClickAddUserButton());
 
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsSystemInfoShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsSystemInfoShown());
 }
 
 // Checks accelerator works for toggle system info
 IN_PROC_BROWSER_TEST_F(LoginUITestBase, ToggleSystemInfo) {
   // System info is present in the beginning
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsSystemInfoShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsSystemInfoShown());
 
   // System info is hidden when press alt + v
-  EXPECT_TRUE(ash::LoginScreenTestApi::PressAccelerator(
+  EXPECT_TRUE(LoginScreenTestApi::PressAccelerator(
       ui::Accelerator(ui::VKEY_V, ui::EF_ALT_DOWN)));
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsSystemInfoShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsSystemInfoShown());
 
   // System info is shown when press alt + v again
-  EXPECT_TRUE(ash::LoginScreenTestApi::PressAccelerator(
+  EXPECT_TRUE(LoginScreenTestApi::PressAccelerator(
       ui::Accelerator(ui::VKEY_V, ui::EF_ALT_DOWN)));
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsSystemInfoShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsSystemInfoShown());
 }
 
 class UserManagementDisclosureTest : public LoginManagerTest {
@@ -318,7 +331,7 @@ class UserManagementDisclosureTest : public LoginManagerTest {
     if (user_policy_mixin)
       user_policy_mixin->RequestPolicyUpdate();
 
-    chromeos::WizardController::SkipPostLoginScreensForTesting();
+    login_manager_mixin_.SkipPostLoginScreens();
 
     auto context = LoginManagerMixin::CreateDefaultUserContext(test_user);
     login_manager_mixin_.LoginAndWaitForActiveSession(context);
@@ -358,8 +371,8 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureTest,
                        PRE_EnterpriseIconInvisibleNotManagedUser) {
   LoginAndLock(not_managed_user, nullptr);
   EXPECT_FALSE(
-      ash::LoginScreenTestApi::IsManagedIconShown(not_managed_user.account_id));
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+      LoginScreenTestApi::IsManagedIconShown(not_managed_user.account_id));
+  EXPECT_FALSE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       not_managed_user.account_id));
 }
 
@@ -368,8 +381,8 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureTest,
 IN_PROC_BROWSER_TEST_F(UserManagementDisclosureTest,
                        EnterpriseIconInvisibleNotManagedUser) {
   EXPECT_FALSE(
-      ash::LoginScreenTestApi::IsManagedIconShown(not_managed_user.account_id));
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+      LoginScreenTestApi::IsManagedIconShown(not_managed_user.account_id));
+  EXPECT_FALSE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       not_managed_user.account_id));
 }
 
@@ -378,9 +391,8 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureTest,
 IN_PROC_BROWSER_TEST_F(UserManagementDisclosureTest,
                        PRE_EnterpriseIconVisibleManagedUser) {
   LoginAndLock(managed_user, &managed_user_policy_mixin_);
-  EXPECT_TRUE(
-      ash::LoginScreenTestApi::IsManagedIconShown(managed_user.account_id));
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_TRUE(LoginScreenTestApi::IsManagedIconShown(managed_user.account_id));
+  EXPECT_TRUE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       managed_user.account_id));
 }
 
@@ -388,9 +400,8 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureTest,
 // managed user.
 IN_PROC_BROWSER_TEST_F(UserManagementDisclosureTest,
                        EnterpriseIconVisibleManagedUser) {
-  EXPECT_TRUE(
-      ash::LoginScreenTestApi::IsManagedIconShown(managed_user.account_id));
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_TRUE(LoginScreenTestApi::IsManagedIconShown(managed_user.account_id));
+  EXPECT_TRUE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       managed_user.account_id));
 }
 
@@ -412,9 +423,9 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureChildTest,
   logged_in_user_mixin_.LogInUser();
   ScreenLockerTester screen_locker_tester;
   screen_locker_tester.Lock();
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedIconShown(
+  EXPECT_FALSE(LoginScreenTestApi::IsManagedIconShown(
       logged_in_user_mixin_.GetAccountId()));
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_FALSE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       logged_in_user_mixin_.GetAccountId()));
 }
 
@@ -422,21 +433,18 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureChildTest,
 // child account.
 IN_PROC_BROWSER_TEST_F(UserManagementDisclosureChildTest,
                        EnterpriseIconVisibleChildUser) {
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedIconShown(
+  EXPECT_FALSE(LoginScreenTestApi::IsManagedIconShown(
       logged_in_user_mixin_.GetAccountId()));
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+  EXPECT_FALSE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       logged_in_user_mixin_.GetAccountId()));
 }
 
 class LoginUIDiagnosticsTest : public LoginUITestBase {
  public:
-  LoginUIDiagnosticsTest() : LoginUITestBase() {
-    scoped_feature_list_.InitWithFeatures({chromeos::features::kDiagnosticsApp},
-                                          {});
-  }
+  LoginUIDiagnosticsTest() = default;
   ~LoginUIDiagnosticsTest() override = default;
 
-  bool IsDiagnosticsDialogVisible() {
+  static bool IsDiagnosticsDialogVisible() {
     return chromeos::SystemWebDialogDelegate::HasInstance(
         GURL("chrome://diagnostics"));
   }
@@ -444,19 +452,17 @@ class LoginUIDiagnosticsTest : public LoginUITestBase {
  protected:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Checks accelerator can launch diagnostics app
 IN_PROC_BROWSER_TEST_F(LoginUIDiagnosticsTest, LaunchDiagnostics) {
   EXPECT_FALSE(IsDiagnosticsDialogVisible());
 
-  int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
-  EXPECT_TRUE(ash::LoginScreenTestApi::PressAccelerator(ui::Accelerator(
+  EXPECT_TRUE(LoginScreenTestApi::PressAccelerator(ui::Accelerator(
       ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)));
-  ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
+  test::TestPredicateWaiter(
+      base::BindRepeating(&LoginUIDiagnosticsTest::IsDiagnosticsDialogVisible))
+      .Wait();
 
   EXPECT_TRUE(IsDiagnosticsDialogVisible());
 }
@@ -488,10 +494,10 @@ IN_PROC_BROWSER_TEST_F(LoginUIDiagnosticsDisabledTest,
                        DoesNotLaunchDiagnostics) {
   EXPECT_FALSE(IsDiagnosticsDialogVisible());
 
-  int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
-  EXPECT_TRUE(ash::LoginScreenTestApi::PressAccelerator(ui::Accelerator(
+  int ui_update_count = LoginScreenTestApi::GetUiUpdateCount();
+  EXPECT_TRUE(LoginScreenTestApi::PressAccelerator(ui::Accelerator(
       ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)));
-  ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
+  LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
 
   EXPECT_FALSE(IsDiagnosticsDialogVisible());
 }
@@ -513,22 +519,26 @@ class SshWarningTest : public OobeBaseTest,
   };
 
   void SetUpOnMainThread() override {
-    auto scoped_test_client = std::make_unique<TestDebugDaemonClient>();
-    test_client_ = scoped_test_client.get();
+    test_client_ = std::make_unique<TestDebugDaemonClient>();
     test_client_->set_flags(
         GetParam() ? debugd::DevFeatureFlag::DEV_FEATURE_SSH_SERVER_CONFIGURED
                    : debugd::DevFeatureFlag::DEV_FEATURES_DISABLED);
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        std::move(scoped_test_client));
+    DebugDaemonClient::SetInstanceForTest(test_client_.get());
     OobeBaseTest::SetUpOnMainThread();
   }
 
+  void TearDownOnMainThread() override {
+    test_client_.reset();
+    DebugDaemonClient::SetInstanceForTest(nullptr);
+    OobeBaseTest::TearDownOnMainThread();
+  }
+
  protected:
-  TestDebugDaemonClient* test_client_ = nullptr;
+  std::unique_ptr<TestDebugDaemonClient> test_client_;
 };
 
 IN_PROC_BROWSER_TEST_P(SshWarningTest, VisibilityOnGaia) {
-  chromeos::WizardController::default_controller()->SkipToLoginForTesting();
+  WizardController::default_controller()->SkipToLoginForTesting();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   test::UIPath ssh_warning = {"gaia-signin", "signin-frame-dialog",
                               "sshWarning"};
@@ -540,11 +550,11 @@ IN_PROC_BROWSER_TEST_P(SshWarningTest, VisibilityOnGaia) {
 }
 
 IN_PROC_BROWSER_TEST_P(SshWarningTest, VisibilityOnEnrollment) {
-  chromeos::WizardController::default_controller()->SkipToLoginForTesting();
+  WizardController::default_controller()->SkipToLoginForTesting();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 
   LoginDisplayHost::default_host()->HandleAccelerator(
-      ash::LoginAcceleratorAction::kStartEnrollment);
+      LoginAcceleratorAction::kStartEnrollment);
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 
   test::UIPath ssh_warning = {"enterprise-enrollment", "step-signin",
@@ -558,4 +568,184 @@ IN_PROC_BROWSER_TEST_P(SshWarningTest, VisibilityOnEnrollment) {
 
 INSTANTIATE_TEST_SUITE_P(All, SshWarningTest, ::testing::Bool());
 
-}  // namespace chromeos
+namespace {
+
+// Names of policies.
+constexpr char kManagedGuestModeName[] = "MANAGED_GUEST_MODE";
+constexpr char kAllowNewUsersName[] = "ALLOW_NEW_USERS";
+
+}  // namespace
+
+class KioskSkuLoginScreenVisibilityTest
+    : public MixinBasedInProcessBrowserTest {
+ public:
+  KioskSkuLoginScreenVisibilityTest() : MixinBasedInProcessBrowserTest() {
+    device_state_.set_skip_initial_policy_setup(true);
+  }
+  ~KioskSkuLoginScreenVisibilityTest() override = default;
+  KioskSkuLoginScreenVisibilityTest(const KioskSkuLoginScreenVisibilityTest&) =
+      delete;
+  void operator=(const KioskSkuLoginScreenVisibilityTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kLoginManager);
+    command_line->AppendSwitch(switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(
+        switches::kDisableOOBEChromeVoxHintTimerForTesting);
+
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+  }
+
+ protected:
+  policy::DevicePolicyCrosTestHelper* policy_helper() {
+    return &policy_helper_;
+  }
+
+ private:
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  policy::DevicePolicyCrosTestHelper policy_helper_;
+};
+
+// Verifies that shelf buttons of Guest mode and Add user are shown, and kiosk
+// instruction bubble is hidden without kiosk SKU.
+IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithoutKioskSku) {
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+}
+
+// Verifies that shelf buttons of Guest mode and Add user are hidden, kiosk
+// instruction bubble is hidden, and kiosk
+// default message is shown without kiosk apps.
+IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithoutApps) {
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      policy::kKioskSkuName);
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+}
+
+// Verifies that shelf buttons of Guest mode and Add user are hidden, kiosk
+// instruction bubble is shown, and kiosk
+// default message is hidden with kiosk apps.
+IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithApps) {
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      policy::kKioskSkuName);
+  KioskAppsMixin::AppendKioskAccount(
+      &policy_helper()->device_policy()->payload());
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+}
+
+// Verifies kiosk instruction bubble and kiosk
+// default message are hidden when kiosk app menu is opened.
+IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, OpenKioskMenu) {
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      policy::kKioskSkuName);
+  KioskAppsMixin::AppendKioskAccount(
+      &policy_helper()->device_policy()->payload());
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+
+  // Click app menu button
+  EXPECT_TRUE(LoginScreenTestApi::ClickAppsButton());
+
+  // Check visibility
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+}
+
+// Verifies that kiosk default message is show even after ESC key is pressed.
+IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest,
+                       TryDismissDefaultMessage) {
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      policy::kKioskSkuName);
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+
+  // Focus the Kiosk default message
+  EXPECT_TRUE(LoginScreenTestApi::FocusKioskDefaultMessage());
+
+  // Press ESC key.
+  ui::test::EventGenerator generator(Shell::Get()->GetPrimaryRootWindow());
+  generator.PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+}
+
+class KioskSkuLoginScreenPolicyTest
+    : public KioskSkuLoginScreenVisibilityTest,
+      public ::testing::WithParamInterface<std::string> {
+ protected:
+  void EnablePolicy() {
+    std::string policy_name = GetParam();
+    if (policy_name == kManagedGuestModeName) {
+      policy_helper()
+          ->device_policy()
+          ->payload()
+          .mutable_device_restricted_managed_guest_session_enabled()
+          ->set_enabled(true);
+    } else if (policy_name == kAllowNewUsersName) {
+      policy_helper()
+          ->device_policy()
+          ->payload()
+          .mutable_allow_new_users()
+          ->set_allow_new_users(true);
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(KioskSkuLoginScreenPolicyTest, EnabledPolicies) {
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      policy::kKioskSkuName);
+  EnablePolicy();
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         KioskSkuLoginScreenPolicyTest,
+                         testing::Values(kManagedGuestModeName,
+                                         kAllowNewUsersName));
+
+}  // namespace ash

@@ -1,13 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/user_session/arc_user_session_service.h"
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/memory/singleton.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace arc {
@@ -34,9 +35,16 @@ class ArcUserSessionServiceFactory
 
 }  // namespace
 
+// static
 ArcUserSessionService* ArcUserSessionService::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcUserSessionServiceFactory::GetForBrowserContext(context);
+}
+
+// static
+ArcUserSessionService* ArcUserSessionService::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcUserSessionServiceFactory::GetForBrowserContextForTesting(context);
 }
 
 ArcUserSessionService::ArcUserSessionService(content::BrowserContext* context,
@@ -66,7 +74,7 @@ void ArcUserSessionService::OnSessionStateChanged() {
   instance->SendBroadcast(
       ArcIntentHelperBridge::AppendStringToIntentHelperPackageName(
           "USER_SESSION_ACTIVE"),
-      ArcIntentHelperBridge::kArcIntentHelperPackageName,
+      kArcIntentHelperPackageName,
       ArcIntentHelperBridge::AppendStringToIntentHelperPackageName(
           "ArcIntentHelperService"),
       "{}");

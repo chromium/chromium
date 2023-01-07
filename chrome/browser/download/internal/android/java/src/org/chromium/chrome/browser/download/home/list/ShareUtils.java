@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.download.home.list;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.text.TextUtils;
 
 import androidx.core.util.Pair;
 
@@ -49,14 +48,14 @@ public class ShareUtils {
             Uri uri = item.second == null ? null : item.second.uri;
             if (uri != null && uri.compareTo(Uri.EMPTY) != 0) {
                 uris.add(uri);
-            } else if (!TextUtils.isEmpty(item.first.pageUrl)) {
+            } else if (item.first.url != null && !item.first.url.isEmpty()) {
                 if (urls.length() > 0) urls.append("\n");
-                urls.append(item.first.pageUrl);
+                urls.append(item.first.url.getSpec());
             }
         }
 
         // If we have nothing to share, don't create the intent.  We should theoretically always
-        // have the pageURL, but this is a safety precaution.  In the future we could just use the
+        // have the url, but this is a safety precaution.  In the future we could just use the
         // title instead of the URL if the URL doesn't exist.
         if (uris.isEmpty() && urls.length() == 0) return null;
 

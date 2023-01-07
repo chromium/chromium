@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -46,13 +46,20 @@ class PolymerModulizerTest(unittest.TestCase):
     actual_js = self._read_out_file(js_out_file)
     expected_js = open(os.path.join(
         _HERE_DIR, 'tests', js_file_expected), 'rb').read()
-    self.assertEquals(expected_js.split('\n'), actual_js.split('\n'))
+    self.assertEqual(expected_js.split(b'\n'), actual_js.split(b'\n'))
 
   # Test case where HTML is extracted from a Polymer2 <dom-module>.
   def testDomModule(self):
     self._run_test(
         'dom-module', 'dom_module.html', 'dom_module.js',
         'dom_module.m.js', 'dom_module_expected.js')
+
+  # Test case where HTML is extracted from a Polymer2 <dom-module> that is
+  # using ES6 class syntax.
+  def testDomModuleWithClassSyntax(self):
+    self._run_test(
+        'dom-module', 'dom_module.html', 'dom_module_with_class_syntax.js',
+        'dom_module_with_class_syntax.m.js', 'dom_module_with_class_syntax_expected.js')
 
   # Test case where a commented out HTML import exists in the original HTML
   # file. It is purposefully picked up and converted to a JS module, to address
@@ -178,7 +185,7 @@ class PolymerModulizerTest(unittest.TestCase):
 
     def assert_html_to_js(html, expected_js):
       actual_js = polymer.Dependency(src, html).to_js_import(auto_imports)
-      self.assertEquals(expected_js, actual_js)
+      self.assertEqual(expected_js, actual_js)
 
     cases = [
         # Relative paths cases.

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,9 @@ public class ViewResizer implements DisplayStyleObserver {
     private int mDefaultPaddingPixels;
     /** The minimum wide display value used for the lateral padding. */
     private int mMinWidePaddingPixels;
-    private final View mView;
+    protected final View mView;
     private final DisplayStyleObserverAdapter mDisplayStyleObserver;
-    private final UiConfig mUiConfig;
+    protected final UiConfig mUiConfig;
 
     @HorizontalDisplayStyle
     private int mCurrentDisplayStyle;
@@ -97,17 +97,17 @@ public class ViewResizer implements DisplayStyleObserver {
     }
 
     private void updatePadding() {
-        int padding;
-        if (mCurrentDisplayStyle == HorizontalDisplayStyle.WIDE) {
-            padding = computePadding();
-        } else {
-            padding = mDefaultPaddingPixels;
-        }
+        int padding = computePadding();
         ViewCompat.setPaddingRelative(
                 mView, padding, mView.getPaddingTop(), padding, mView.getPaddingBottom());
     }
 
-    private int computePadding() {
+    /**
+     * Computes the lateral padding to be applied to the associated view.
+     */
+    protected int computePadding() {
+        if (mCurrentDisplayStyle != HorizontalDisplayStyle.WIDE) return mDefaultPaddingPixels;
+
         // mUiConfig.getContext().getResources() is used here instead of mView.getResources()
         // because lemon compression, somehow, causes the resources to return a different
         // configuration.

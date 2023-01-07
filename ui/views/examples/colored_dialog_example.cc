@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/native_theme/native_theme_color_id.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
@@ -84,7 +83,7 @@ ColoredDialog::ColoredDialog(AcceptCallback accept_callback) {
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   set_margins(views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::CONTROL, views::CONTROL));
+      views::DialogContentType::kControl, views::DialogContentType::kControl));
 
   textfield_ = AddChildView(std::make_unique<views::Textfield>());
   textfield_->SetPlaceholderText(
@@ -146,8 +145,7 @@ void ColoredDialogChooser::ButtonPressed() {
 }
 
 void ColoredDialogChooser::OnFeedbackSubmit(std::u16string text) {
-  constexpr base::TimeDelta kConfirmationDuration =
-      base::TimeDelta::FromSeconds(3);
+  constexpr base::TimeDelta kConfirmationDuration = base::Seconds(3);
 
   confirmation_label_->SetText(l10n_util::GetStringFUTF16(
       IDS_COLORED_DIALOG_CHOOSER_CONFIRM_LABEL, text));

@@ -47,4 +47,4 @@ class HTMLNoEmbedElement final : public HTMLElement {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_NO_EMBED_ELEMENT_H_

@@ -1,7 +1,0 @@
-Tests that breakpoints work when one target has source map and another does not.
-
-Script execution paused.
-Call stack:
-    0) onmessage (worker-with-sourcemap.ts:3)
-Script execution resumed.
-

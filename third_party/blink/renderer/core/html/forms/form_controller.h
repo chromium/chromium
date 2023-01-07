@@ -25,7 +25,8 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -121,6 +122,11 @@ class CORE_EXPORT FormController final
   // to restore before 'pageshow' event.
   void RestoreImmediately();
 
+  // This always retutrns false in production.
+  bool DropReferencedFilePaths() const { return drop_referenced_file_paths_; }
+  void SetDropReferencedFilePathsForTesting() {
+    drop_referenced_file_paths_ = true;
+  }
   static Vector<String> GetReferencedFilePaths(
       const Vector<String>& state_vector);
 
@@ -137,10 +143,11 @@ class CORE_EXPORT FormController final
   SavedFormStateMap saved_form_state_map_;
   Member<FormKeyGenerator> form_key_generator_;
   bool did_restore_all_ = false;
+  bool drop_referenced_file_paths_ = false;
 };
 
 // Exposed for testing.
 CORE_EXPORT String FormSignature(const HTMLFormElement& form);
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_FORM_CONTROLLER_H_

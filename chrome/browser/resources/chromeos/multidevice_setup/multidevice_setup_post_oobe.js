@@ -1,14 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {PageName} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup.m.js';
-import {MultiDeviceSetupDelegate} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_delegate.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {PageName} from 'chrome://resources/ash/common/multidevice_setup/multidevice_setup.js';
+import {MultiDeviceSetupDelegate} from 'chrome://resources/ash/common/multidevice_setup/multidevice_setup_delegate.js';
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PostOobeDelegate} from './post_oobe_delegate.js';
@@ -77,36 +77,21 @@ Polymer({
 
   /** @override */
   ready() {
-    var url = new URL(document.URL);
-    var dialogHeight = url.searchParams.get('dialog-height');
-    var dialogWidth = url.searchParams.get('dialog-width');
-    if (dialogHeight && dialogWidth) {
-      // Below code is also used to set the dialog size for display manager and
-      // in-session assistant onboarding flow. Please make sure code changes are
-      // applied to all places.
-      document.documentElement.style.setProperty(
-          '--oobe-oobe-dialog-height-base', dialogHeight + 'px');
-      document.documentElement.style.setProperty(
-          '--oobe-oobe-dialog-width-base', dialogWidth + 'px');
-      if (parseInt(dialogWidth, 10) > parseInt(dialogHeight, 10)) {
-        document.documentElement.setAttribute('orientation', 'horizontal');
-      } else {
-        document.documentElement.setAttribute('orientation', 'vertical');
-      }
-    }
-
-    if (loadTimeData.valueExists('newLayoutEnabled') &&
-        loadTimeData.getBoolean('newLayoutEnabled')) {
-      document.documentElement.setAttribute('new-layout', '');
-    } else {
-      document.documentElement.removeAttribute('new-layout');
-    }
+    this.onWindowSizeUpdated_();
   },
 
   /** @override */
   attached() {
     this.delegate_ = new PostOobeDelegate();
     this.$$('multidevice-setup').initializeSetupFlow();
+    window.addEventListener('orientationchange', this.onWindowSizeUpdated_);
+    window.addEventListener('resize', this.onWindowSizeUpdated_);
+  },
+
+  /** @override */
+  detached() {
+    window.removeEventListener('orientationchange', this.onWindowSizeUpdated_);
+    window.removeEventListener('resize', this.onWindowSizeUpdated_);
   },
 
   /** @private */
@@ -142,8 +127,48 @@ Polymer({
     }
 
     chrome.send('metricsHandler:recordInHistogram', [
-      'MultiDevice.PostOOBESetupFlow.PageShown', pageNameValue,
-      PageNameValue.MAX_VALUE
+      'MultiDevice.PostOOBESetupFlow.PageShown',
+      pageNameValue,
+      PageNameValue.MAX_VALUE,
     ]);
-  }
+  },
+
+  /**
+   * Called during initialization, when the window is resized, or the window's
+   * orientation is updated.
+   */
+  onWindowSizeUpdated_() {
+    // Below code is also used to set the dialog size for display manager and
+    // in-session assistant onboarding flow. Please make sure code changes are
+    // applied to all places.
+    document.documentElement.style.setProperty(
+        '--oobe-oobe-dialog-height-base', window.innerHeight + 'px');
+    document.documentElement.style.setProperty(
+        '--oobe-oobe-dialog-width-base', window.innerWidth + 'px');
+    if (window.innerWidth > window.innerHeight) {
+      document.documentElement.setAttribute('orientation', 'horizontal');
+    } else {
+      document.documentElement.setAttribute('orientation', 'vertical');
+    }
+  },
+
+  /**
+   * Wraps i18n to return early if text is not yet defined. This prevents
+   * console errors since some of the strings are initially undefined. Variables
+   * like |cancelButtonTextId_| are initially undefined because they get piped
+   * by a 2-way data binding from the embedded multidevice-setup component. This
+   * does not affect the ui since these variables get defined shortly after the
+   * page is initialized. We purposely don't set some of these properties if the
+   * button is not expected to be shown in which case they will remain
+   * undefined.
+   * @param {string|undefined} text
+   * @return {string}
+   */
+  getButtonText_(text) {
+    if (!text) {
+      return '';
+    }
+
+    return this.i18n(text);
+  },
 });

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 
 namespace ash {
 namespace {
@@ -18,10 +19,24 @@ using base::Value;
 constexpr base::StringPiece kStartOffsetKey = "startOffset";
 constexpr base::StringPiece kEndOffsetKey = "endOffset";
 constexpr base::StringPiece kTextKey = "text";
-constexpr base::StringPiece kWordAlignmentKey = "wordAlignment";
-constexpr base::StringPiece kNameKey = "name";
+constexpr base::StringPiece kHypothesisPartsKey = "hypothesisParts";
+constexpr base::StringPiece kCaptionLanguage = "captionLanguage";
 constexpr base::StringPiece kCaptionsKey = "captions";
 constexpr base::StringPiece kKeyIdeasKey = "tableOfContent";
+constexpr base::StringPiece kOffset = "offset";
+
+base::Value HypothesisPartsToValue(
+    const media::HypothesisParts& hypothesis_parts) {
+  base::Value text_value(base::Value::Type::LIST);
+  for (auto& part : hypothesis_parts.text)
+    text_value.Append(part);
+
+  base::Value hypothesis_part_value(base::Value::Type::DICTIONARY);
+  hypothesis_part_value.SetKey(kTextKey, std::move(text_value));
+  hypothesis_part_value.SetIntKey(
+      kOffset, hypothesis_parts.hypothesis_part_offset.InMilliseconds());
+  return hypothesis_part_value;
+}
 
 }  // namespace
 
@@ -63,9 +78,9 @@ ProjectorTranscript::ProjectorTranscript(
     const base::TimeDelta start_time,
     const base::TimeDelta end_time,
     const std::string& text,
-    const std::vector<base::TimeDelta>& word_alignments)
+    const std::vector<media::HypothesisParts>& hypothesis_parts)
     : MetadataItem(start_time, end_time, text),
-      word_alignments_(word_alignments) {}
+      hypothesis_parts_(hypothesis_parts) {}
 
 ProjectorTranscript::~ProjectorTranscript() = default;
 
@@ -73,10 +88,17 @@ ProjectorTranscript::~ProjectorTranscript() = default;
 //  {
 //      "startOffset": 100
 //      "endOffset": 2100
-//      "text": "Today I'd like to teach..."
-//      "wordAlignments": [
-//         100,
-//         1500,
+//      "text": "Today I would like to teach..."
+//      "hypothesisParts": [
+//        {
+//           "text": ["Today"]
+//           "offset": 100
+//         },
+//         {
+//           "text": ["I"]
+//           "offset": 200
+//         },
+//         ...
 //      ]
 //  }
 //
@@ -85,22 +107,28 @@ ProjectorTranscript::~ProjectorTranscript() = default;
 //   "startOffset": INT
 //   "endOffset": INT
 //   "text": STRING
-//   "wordAlignments": LIST
+//   "hypothesisParts": DICT LIST
+//
 base::Value ProjectorTranscript::ToJson() {
   base::Value transcript(base::Value::Type::DICTIONARY);
   transcript.SetIntKey(kStartOffsetKey, start_time_.InMilliseconds());
   transcript.SetIntKey(kEndOffsetKey, end_time_.InMilliseconds());
   transcript.SetStringKey(kTextKey, text_);
 
-  base::Value word_alignments_value(base::Value::Type::LIST);
-  for (auto& word_alignment : word_alignments_)
-    word_alignments_value.Append((int)word_alignment.InMilliseconds());
-  transcript.SetKey(kWordAlignmentKey, std::move(word_alignments_value));
+  base::Value hypothesis_parts_value(base::Value::Type::LIST);
+  for (auto& hypothesis_part : hypothesis_parts_)
+    hypothesis_parts_value.Append(HypothesisPartsToValue(hypothesis_part));
+
+  transcript.SetKey(kHypothesisPartsKey, std::move(hypothesis_parts_value));
   return transcript;
 }
 
 ProjectorMetadata::ProjectorMetadata() = default;
 ProjectorMetadata::~ProjectorMetadata() = default;
+
+void ProjectorMetadata::SetCaptionLanguage(const std::string& language) {
+  caption_language_ = language;
+}
 
 void ProjectorMetadata::AddTranscript(
     std::unique_ptr<ProjectorTranscript> transcript) {
@@ -116,10 +144,6 @@ void ProjectorMetadata::MarkKeyIdea() {
   should_mark_key_idea_ = true;
 }
 
-void ProjectorMetadata::SetName(const std::string& name) {
-  name_ = name;
-}
-
 std::string ProjectorMetadata::Serialize() {
   std::string metadata_str;
   base::JSONWriter::Write(ToJson(), &metadata_str);
@@ -128,22 +152,29 @@ std::string ProjectorMetadata::Serialize() {
 
 // The JSON we generate looks like this:
 //  {
-//    "name": "Constructivist Learning Theory"
+//    "captionLanguage": "en"
 //    "captions": [{
 //      "startOffset": 100
 //      "endOffset": 2100
 //      "text": "Today I'd like to teach you about a central pillar of a
 //      construction learning theory it's called the debugging Loop...",
-//      "wordAlignments": [
-//         100,
-//         1500,
+//      "hypothesisParts": [
+//          {
+//            "text" : ["Today"],
+//            "offset": 100,
+//          },
+//          {
+//            "text": ["I"],
+//            "offset": 1500,
+//          }
+//          ...
 //      ]
 //    }],
 //    "tableOfContent": [
 //      {
-//        "text": "Making a creation",
+//        "endOffset" : 4500,
 //        "startOffset": 4400,
-//        "encodingFormat": "text/markdown",
+//        "text": "Making a creation",
 //      },
 //    ]
 //  }
@@ -153,10 +184,11 @@ std::string ProjectorMetadata::Serialize() {
 //   "@type": STRING
 //   "text": STRING
 //   "captions": LIST
+//   "captionLanguage": STRING
 //   "tableOfContent": LIST
 base::Value ProjectorMetadata::ToJson() {
   base::Value metadata(base::Value::Type::DICTIONARY);
-  metadata.SetStringKey(kNameKey, name_);
+  metadata.SetStringKey(kCaptionLanguage, caption_language_);
 
   base::Value captions_value(base::Value::Type::LIST);
   for (auto& transcript : transcripts_)

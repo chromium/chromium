@@ -169,6 +169,45 @@ test(() => {
 }, 'Declarative Shadow DOM: template containing declarative shadow root');
 </script>
 
+<template id="template-containing-deep-shadow">
+  <div><div><div><div><div>
+    <div class="innerdiv">
+      <template shadowroot=open>Content</template>
+    </div>
+  </div></div></div></div></div>
+</template>
+<script>
+test(() => {
+  const template = document.querySelector('#template-containing-deep-shadow');
+  const host = document.createElement('div');
+  host.style.display = 'none';
+  document.body.appendChild(host);
+  host.appendChild(template.content.cloneNode(true));
+  assert_true(!!host.querySelector('div.innerdiv').shadowRoot,"Inner div should have a shadow root");
+}, 'Declarative Shadow DOM: template containing (deeply nested) declarative shadow root');
+</script>
+
+<template id="template-containing-template">
+  <div>
+    <template id="inner-template">
+      <div class="innerdiv">
+        <template shadowroot=open>Content</template>
+      </div>
+    </template>
+  </div>
+</template>
+<script>
+test(() => {
+  const template = document.querySelector('#template-containing-template');
+  const host = document.createElement('div');
+  host.style.display = 'none';
+  document.body.appendChild(host);
+  host.appendChild(template.content.cloneNode(true));
+  const innerTemplate = host.querySelector('#inner-template');
+  assert_true(!!innerTemplate.content.querySelector('div.innerdiv').shadowRoot,"Inner div should have a shadow root");
+}, 'Declarative Shadow DOM: template containing a template containing declarative shadow root');
+</script>
+
 <template id="template-containing-ua-shadow">
   <div class="innerdiv">
     <template shadowroot=open>

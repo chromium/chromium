@@ -1,15 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/service_worker/service_worker_new_script_fetcher.h"
 
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_new_script_loader.h"
 #include "content/public/browser/global_request_id.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -63,12 +67,14 @@ ServiceWorkerNewScriptFetcher::ServiceWorkerNewScriptFetcher(
     ServiceWorkerContextCore& context,
     scoped_refptr<ServiceWorkerVersion> version,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object)
+    blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object,
+    const GlobalRenderFrameHostId& requesting_frame_id)
     : context_(context),
       version_(std::move(version)),
       loader_factory_(std::move(loader_factory)),
       fetch_client_settings_object_(std::move(fetch_client_settings_object)),
-      request_id_(GlobalRequestID::MakeBrowserInitiated().request_id) {}
+      request_id_(GlobalRequestID::MakeBrowserInitiated().request_id),
+      requesting_frame_id_(requesting_frame_id) {}
 
 ServiceWorkerNewScriptFetcher::~ServiceWorkerNewScriptFetcher() = default;
 
@@ -90,13 +96,19 @@ void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
   }
   network::ResourceRequest request =
       service_worker_loader_helpers::CreateRequestForServiceWorkerScript(
-          version_->script_url(), version_->origin(), /*is_main_script=*/true,
-          version_->script_type(), *fetch_client_settings_object_,
-          *browser_context);
+          version_->script_url(), version_->key().origin(),
+          /*is_main_script=*/true, version_->script_type(),
+          *fetch_client_settings_object_, *browser_context);
   // Request SSLInfo. It will be persisted in service worker storage and may be
   // used by ServiceWorkerMainResourceLoader for navigations handled by this
   // service worker.
   uint32_t options = network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
+
+  // Notify to DevTools that the request for fetching the service worker script
+  // is about to start. It fires `Network.onRequestWillBeSent` event.
+  devtools_instrumentation::OnServiceWorkerMainScriptRequestWillBeSent(
+      requesting_frame_id_, context_.wrapper(), version_->version_id(),
+      request);
 
   mojo::MakeSelfOwnedReceiver(
       ServiceWorkerNewScriptLoader::CreateAndStart(
@@ -105,7 +117,7 @@ void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
           std::move(version_), std::move(loader_factory_),
           net::MutableNetworkTrafficAnnotationTag(
               kServiceWorkerScriptLoadTrafficAnnotation),
-          resource_id),
+          resource_id, /*is_throttle_needed=*/true, requesting_frame_id_),
       url_loader_remote_.BindNewPipeAndPassReceiver());
 }
 
@@ -113,18 +125,16 @@ void ServiceWorkerNewScriptFetcher::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void ServiceWorkerNewScriptFetcher::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
-  response_head_ = std::move(response_head);
-}
-
-void ServiceWorkerNewScriptFetcher::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle response_body) {
-  DCHECK(response_head_);
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle response_body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+  if (!response_body)
+    return;
 
   blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params =
       blink::mojom::WorkerMainScriptLoadParams::New();
   main_script_load_params->request_id = request_id_;
-  main_script_load_params->response_head = std::move(response_head_);
+  main_script_load_params->response_head = std::move(response_head);
   main_script_load_params->response_body = std::move(response_body);
   main_script_load_params->url_loader_client_endpoints =
       network::mojom::URLLoaderClientEndpoints::New(
@@ -146,10 +156,6 @@ void ServiceWorkerNewScriptFetcher::OnUploadProgress(int64_t,
                                                      OnUploadProgressCallback) {
   mojo::ReportBadMessage("SWNSF_BAD_MSG");
 }
-void ServiceWorkerNewScriptFetcher::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {
-  mojo::ReportBadMessage("SWNSF_BAD_MSG");
-}
 void ServiceWorkerNewScriptFetcher::OnTransferSizeUpdated(int32_t) {
   mojo::ReportBadMessage("SWNSF_BAD_MSG");
 }
@@ -159,6 +165,9 @@ void ServiceWorkerNewScriptFetcher::OnComplete(
   // header and the body.
   if (status.error_code == net::OK) {
     mojo::ReportBadMessage("SWNSF_BAD_OK");
+    // Do not continue with further script processing, but let the |callback_|
+    // hang. This renderer process would be killed soon anyways.
+    return;
   }
   std::move(callback_).Run(/*main_script_load_params=*/nullptr);
 }

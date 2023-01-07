@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2013 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,13 +15,13 @@ import glob
 import multiprocessing
 import optparse
 import os
-import Queue
+import queue
 import re
 import shutil
 import subprocess
 import sys
 import threading
-
+import traceback
 
 CONCURRENT_TASKS=multiprocessing.cpu_count()
 if sys.platform == 'win32':
@@ -40,7 +40,7 @@ def GetDumpSymsBinary(build_dir=None):
   DUMP_SYMS = 'dump_syms'
   dump_syms_bin = os.path.join(os.path.expanduser(build_dir), DUMP_SYMS)
   if not os.access(dump_syms_bin, os.X_OK):
-    print 'Cannot find %s.' % dump_syms_bin
+    print('Cannot find %s.' % dump_syms_bin)
     return None
 
   return dump_syms_bin
@@ -69,7 +69,7 @@ def GetSharedLibraryDependenciesLinux(binary):
   """Return absolute paths to all shared library dependencies of the binary.
 
   This implementation assumes that we're running on a Linux system."""
-  ldd = subprocess.check_output(['ldd', binary])
+  ldd = subprocess.check_output(['ldd', binary]).decode('utf-8')
   lib_re = re.compile('\t.* => (.+) \(.*\)$')
   result = []
   for line in ldd.splitlines():
@@ -87,7 +87,7 @@ def _GetSharedLibraryDependenciesAndroidOrChromeOS(binary):
   readelf plays nice with mixed host/device architectures (e.g. x86-64 host,
   arm64 device), so use that.
   """
-  readelf = subprocess.check_output(['readelf', '-d', binary])
+  readelf = subprocess.check_output(['readelf', '-d', binary]).decode('utf-8')
   lib_re = re.compile('Shared library: \[(.+)\]$')
   result = []
   binary_path = os.path.dirname(os.path.abspath(binary))
@@ -122,7 +122,7 @@ def GetDeveloperDirMac():
   if 'DEVELOPER_DIR' in os.environ:
     candidate_paths.append(os.environ['DEVELOPER_DIR'])
   candidate_paths.extend([
-    subprocess.check_output(['xcode-select', '-p']).strip(),
+    subprocess.check_output(['xcode-select', '-p']).decode('utf-8').strip(),
     # Most Mac 10.1[0-2] bots have at least one Xcode installed.
     '/Applications/Xcode.app',
     '/Applications/Xcode9.0.app',
@@ -134,7 +134,7 @@ def GetDeveloperDirMac():
   for path in candidate_paths:
     if os.path.exists(path):
       return path
-  print 'WARNING: no value found for DEVELOPER_DIR. Some commands may fail.'
+  print('WARNING: no value found for DEVELOPER_DIR. Some commands may fail.')
 
 
 def GetSharedLibraryDependenciesMac(binary, exe_path):
@@ -166,7 +166,7 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
     otool_path = 'otool'
 
   otool = subprocess.check_output(
-      [otool_path, '-l', binary], env=env).splitlines()
+      [otool_path, '-lm', binary], env=env).decode('utf-8').splitlines()
   rpaths = []
   dylib_id = None
   for idx, line in enumerate(otool):
@@ -186,7 +186,7 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
   # the loading executables.
 
   otool = subprocess.check_output(
-      [otool_path, '-L', binary], env=env).splitlines()
+      [otool_path, '-Lm', binary], env=env).decode('utf-8').splitlines()
   lib_re = re.compile('\t(.*) \(compatibility .*\)$')
   deps = []
   for line in otool:
@@ -200,10 +200,10 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
       if dep:
         deps.append(os.path.normpath(dep))
       else:
-        print >>sys.stderr, (
+        print((
             'ERROR: failed to resolve %s, exe_path %s, loader_path %s, '
             'rpaths %s' % (m.group(1), exe_path, loader_path,
-                           ', '.join(rpaths)))
+                           ', '.join(rpaths))), file=sys.stderr)
         sys.exit(1)
   return deps
 
@@ -219,7 +219,7 @@ def GetSharedLibraryDependenciesChromeOS(binary):
 def GetSharedLibraryDependencies(options, binary, exe_path):
   """Return absolute paths to all shared library dependencies of the binary."""
   deps = []
-  if options.platform == 'linux2':
+  if options.platform == 'linux':
     deps = GetSharedLibraryDependenciesLinux(binary)
   elif options.platform == 'android':
     deps = GetSharedLibraryDependenciesAndroid(binary)
@@ -228,7 +228,7 @@ def GetSharedLibraryDependencies(options, binary, exe_path):
   elif options.platform == 'chromeos':
     deps = GetSharedLibraryDependenciesChromeOS(binary)
   else:
-    print "Platform not supported."
+    print("Platform not supported.")
     sys.exit(1)
 
   result = []
@@ -245,7 +245,7 @@ def GetTransitiveDependencies(options):
      dependencies of the binary, along with the binary itself."""
   binary = os.path.abspath(options.binary)
   exe_path = os.path.dirname(binary)
-  if options.platform == 'linux2':
+  if options.platform == 'linux':
     # 'ldd' returns all transitive dependencies for us.
     deps = set(GetSharedLibraryDependencies(options, binary, exe_path))
     deps.add(binary)
@@ -253,14 +253,14 @@ def GetTransitiveDependencies(options):
   elif (options.platform == 'darwin' or options.platform == 'android' or
         options.platform == 'chromeos'):
     binaries = set([binary])
-    queue = [binary]
-    while queue:
-      deps = GetSharedLibraryDependencies(options, queue.pop(0), exe_path)
+    q = [binary]
+    while q:
+      deps = GetSharedLibraryDependencies(options, q.pop(0), exe_path)
       new_deps = set(deps) - binaries
       binaries |= new_deps
-      queue.extend(list(new_deps))
+      q.extend(list(new_deps))
     return binaries
-  print "Platform not supported."
+  print("Platform not supported.")
   sys.exit(1)
 
 
@@ -287,7 +287,7 @@ def CreateSymbolDir(options, output_dir, relative_hash_dir):
   """Create the directory to store breakpad symbols in. On Android/Linux, we
      also create a symlink in case the hash in the binary is missing."""
   mkdir_p(output_dir)
-  if options.platform == 'android' or options.platform == "linux2":
+  if options.platform == 'android' or options.platform == 'linux':
     try:
       os.symlink(relative_hash_dir, os.path.join(os.path.dirname(output_dir),
                  '000000000000000000000000000000000'))
@@ -298,84 +298,91 @@ def CreateSymbolDir(options, output_dir, relative_hash_dir):
 def GenerateSymbols(options, binaries):
   """Dumps the symbols of binary and places them in the given directory."""
 
-  queue = Queue.Queue()
+  q = queue.Queue()
+  exceptions = []
   print_lock = threading.Lock()
+  exceptions_lock = threading.Lock()
 
   def _Worker():
     dump_syms = GetDumpSymsBinary(options.build_dir)
     while True:
-      should_dump_syms = True
-      reason = "no reason"
-      binary = queue.get()
+      try:
+        should_dump_syms = True
+        reason = "no reason"
+        binary = q.get()
 
-      run_once = True
-      while run_once:
-        run_once = False
+        run_once = True
+        while run_once:
+          run_once = False
 
-        if not dump_syms:
-          should_dump_syms = False
-          reason = "Could not locate dump_syms executable."
-          break
-
-        binary_info = GetBinaryInfoFromHeaderInfo(
-            subprocess.check_output([dump_syms, '-i', binary]).splitlines()[0])
-        if not binary_info:
-          should_dump_syms = False
-          reason = "Could not obtain binary information."
-          break
-
-        # See if the output file already exists.
-        output_dir = os.path.join(options.symbols_dir, binary_info.name,
-                                  binary_info.hash)
-        output_path = os.path.join(output_dir, binary_info.name + '.sym')
-        if os.path.isfile(output_path):
-          should_dump_syms = False
-          reason = "Symbol file already found."
-          break
-
-        # See if there is a symbol file already found next to the binary
-        potential_symbol_files = glob.glob('%s.breakpad*' % binary)
-        for potential_symbol_file in potential_symbol_files:
-          with open(potential_symbol_file, 'rt') as f:
-            symbol_info = GetBinaryInfoFromHeaderInfo(f.readline())
-          if symbol_info == binary_info:
-            CreateSymbolDir(options, output_dir, binary_info.hash)
-            shutil.copyfile(potential_symbol_file, output_path)
+          if not dump_syms:
             should_dump_syms = False
-            reason = "Found local symbol file."
+            reason = "Could not locate dump_syms executable."
             break
 
-      if not should_dump_syms:
+          dump_syms_output = subprocess.check_output(
+              [dump_syms, '-i', binary]).decode('utf-8')
+          header_info = dump_syms_output.splitlines()[0]
+          binary_info = GetBinaryInfoFromHeaderInfo(header_info)
+          if not binary_info:
+            should_dump_syms = False
+            reason = "Could not obtain binary information."
+            break
+
+          # See if the output file already exists.
+          output_dir = os.path.join(options.symbols_dir, binary_info.name,
+                                    binary_info.hash)
+          output_path = os.path.join(output_dir, binary_info.name + '.sym')
+          if os.path.isfile(output_path):
+            should_dump_syms = False
+            reason = "Symbol file already found."
+            break
+
+          # See if there is a symbol file already found next to the binary
+          potential_symbol_files = glob.glob('%s.breakpad*' % binary)
+          for potential_symbol_file in potential_symbol_files:
+            with open(potential_symbol_file, 'rt') as f:
+              symbol_info = GetBinaryInfoFromHeaderInfo(f.readline())
+            if symbol_info == binary_info:
+              CreateSymbolDir(options, output_dir, binary_info.hash)
+              shutil.copyfile(potential_symbol_file, output_path)
+              should_dump_syms = False
+              reason = "Found local symbol file."
+              break
+
+        if not should_dump_syms:
+          if options.verbose:
+            with print_lock:
+              print("Skipping %s (%s)" % (binary, reason))
+          continue
+
         if options.verbose:
           with print_lock:
-            print "Skipping %s (%s)" % (binary, reason)
-        queue.task_done()
-        continue
+            print("Generating symbols for %s" % binary)
 
-      if options.verbose:
-        with print_lock:
-          print "Generating symbols for %s" % binary
-
-      CreateSymbolDir(options, output_dir, binary_info.hash)
-      try:
+        CreateSymbolDir(options, output_dir, binary_info.hash)
         with open(output_path, 'wb') as f:
           subprocess.check_call([dump_syms, '-r', binary], stdout=f)
-      except Exception, e:
-        # Not much we can do about this.
-        with print_lock:
-          print e
-
-      queue.task_done()
+      except Exception as e:
+        with exceptions_lock:
+          exceptions.append(traceback.format_exc())
+      finally:
+        q.task_done()
 
   for binary in binaries:
-    queue.put(binary)
+    q.put(binary)
 
   for _ in range(options.jobs):
     t = threading.Thread(target=_Worker)
     t.daemon = True
     t.start()
 
-  queue.join()
+  q.join()
+  if exceptions:
+    exception_str = ('One or more exceptions occurred while generating '
+                     'symbols:\n')
+    exception_str += '\n'.join(exceptions)
+    raise Exception(exception_str)
 
 
 def main():
@@ -399,19 +406,19 @@ def main():
   (options, _) = parser.parse_args()
 
   if not options.symbols_dir:
-    print "Required option --symbols-dir missing."
+    print("Required option --symbols-dir missing.")
     return 1
 
   if not options.build_dir:
-    print "Required option --build-dir missing."
+    print("Required option --build-dir missing.")
     return 1
 
   if not options.binary:
-    print "Required option --binary missing."
+    print("Required option --binary missing.")
     return 1
 
   if not os.access(options.binary, os.X_OK):
-    print "Cannot find %s." % options.binary
+    print("Cannot find %s." % options.binary)
     return 1
 
   if options.clear:

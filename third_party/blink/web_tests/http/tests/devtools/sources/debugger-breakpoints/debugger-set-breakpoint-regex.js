@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests Debugger.setBreakpointByUrl with isRegex set to true.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -20,8 +20,7 @@
   SourcesTestRunner.runDebuggerTestSuite([
     async function testSetNoneOfURLAndRegex(next) {
       var response = await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({lineNumber: 1});
-      TestRunner.addResult(
-          response[ProtocolClient.InspectorBackend.ProtocolError]);
+      TestRunner.addResult(response.getError());
       next();
     },
 
@@ -29,8 +28,7 @@
       var url = 'debugger-set-breakpoint.js';
       var urlRegex = 'debugger-set-breakpoint.*';
       var response = await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({lineNumber: 1, url, urlRegex});
-      TestRunner.addResult(
-          response[ProtocolClient.InspectorBackend.ProtocolError]);
+      TestRunner.addResult(response.getError());
       next();
     },
 

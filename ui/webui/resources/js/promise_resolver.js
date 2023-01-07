@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assertNotReached} from './assert.m.js';
+import {assertNotReached} from './assert.js';
 
 /**
  * @fileoverview PromiseResolver is a helper class that allows creating a
@@ -20,7 +20,7 @@
 
 /** @template T */
 // eslint-disable-next-line no-var
-/* #export */ var PromiseResolver = class {
+export var PromiseResolver = class {
   constructor() {
     /** @private {function(T=): void} */
     this.resolve_;
@@ -81,4 +81,3 @@
   }
 };
 
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

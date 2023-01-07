@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/offline_items_collection/core/launch_location.h"
@@ -56,6 +56,10 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
   OfflinePageBridge(JNIEnv* env,
                     SimpleFactoryKey* key,
                     OfflinePageModel* offline_page_model);
+
+  OfflinePageBridge(const OfflinePageBridge&) = delete;
+  OfflinePageBridge& operator=(const OfflinePageBridge&) = delete;
+
   ~OfflinePageBridge() override;
 
   // OfflinePageModel::Observer implementation.
@@ -194,12 +198,6 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& j_web_contents);
 
-  void CheckForNewOfflineContent(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const jlong j_timestamp_millis,
-      const base::android::JavaParamRef<jobject>& j_callback_obj);
-
   void GetLoadUrlParamsByOfflineId(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -258,13 +256,11 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   // Not owned.
-  SimpleFactoryKey* key_;
+  raw_ptr<SimpleFactoryKey> key_;
   // Not owned.
-  OfflinePageModel* offline_page_model_;
+  raw_ptr<OfflinePageModel> offline_page_model_;
 
   base::WeakPtrFactory<OfflinePageBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageBridge);
 };
 
 }  // namespace android

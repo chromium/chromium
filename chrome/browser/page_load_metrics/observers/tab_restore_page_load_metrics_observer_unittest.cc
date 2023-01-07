@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
@@ -20,6 +18,7 @@
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -31,6 +30,12 @@ class TestTabRestorePageLoadMetricsObserver
  public:
   explicit TestTabRestorePageLoadMetricsObserver(bool is_restore)
       : is_restore_(is_restore) {}
+
+  TestTabRestorePageLoadMetricsObserver(
+      const TestTabRestorePageLoadMetricsObserver&) = delete;
+  TestTabRestorePageLoadMetricsObserver& operator=(
+      const TestTabRestorePageLoadMetricsObserver&) = delete;
+
   ~TestTabRestorePageLoadMetricsObserver() override {}
 
  private:
@@ -39,8 +44,6 @@ class TestTabRestorePageLoadMetricsObserver
   }
 
   const bool is_restore_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTabRestorePageLoadMetricsObserver);
 };
 
 }  // namespace
@@ -50,16 +53,20 @@ class TabRestorePageLoadMetricsObserverTest
  public:
   TabRestorePageLoadMetricsObserverTest() {}
 
+  TabRestorePageLoadMetricsObserverTest(
+      const TabRestorePageLoadMetricsObserverTest&) = delete;
+  TabRestorePageLoadMetricsObserverTest& operator=(
+      const TabRestorePageLoadMetricsObserverTest&) = delete;
+
   void ResetTest() {
     page_load_metrics::InitPageLoadTimingForTest(&timing_);
     // Reset to the default testing state. Does not reset histogram state.
     timing_.navigation_start = base::Time::FromDoubleT(1);
-    timing_.response_start = base::TimeDelta::FromSeconds(2);
-    timing_.parse_timing->parse_start = base::TimeDelta::FromSeconds(3);
-    timing_.paint_timing->first_contentful_paint =
-        base::TimeDelta::FromSeconds(4);
-    timing_.paint_timing->first_image_paint = base::TimeDelta::FromSeconds(5);
-    timing_.document_timing->load_event_start = base::TimeDelta::FromSeconds(7);
+    timing_.response_start = base::Seconds(2);
+    timing_.parse_timing->parse_start = base::Seconds(3);
+    timing_.paint_timing->first_contentful_paint = base::Seconds(4);
+    timing_.paint_timing->first_image_paint = base::Seconds(5);
+    timing_.document_timing->load_event_start = base::Seconds(7);
     PopulateRequiredTimingFields(&timing_);
 
     network_bytes_ = 0;
@@ -102,10 +109,8 @@ class TabRestorePageLoadMetricsObserverTest
   int64_t cache_bytes_;
 
  private:
-  base::Optional<bool> is_restore_;
+  absl::optional<bool> is_restore_;
   page_load_metrics::mojom::PageLoadTiming timing_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestorePageLoadMetricsObserverTest);
 };
 
 TEST_F(TabRestorePageLoadMetricsObserverTest, NotRestored) {

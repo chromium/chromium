@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,12 +104,12 @@
         var l3 = retainersRoot;
         TestRunner.assertEquals(1, l3.children.length, 'One retainer of L3');
         var l2 = l3.children[0];
-        TestRunner.assertEquals('y', l2._referenceName);
+        TestRunner.assertEquals('y', l2.referenceName);
         TestRunner.assertEquals(1, l2.children.length, 'One retainer of L2');
         var l1 = l2.children[0];
-        TestRunner.assertEquals('x', l1._referenceName);
+        TestRunner.assertEquals('x', l1.referenceName);
         TestRunner.assertEquals(2, l1.children.length, 'Two retainers of L1');
-        var l1retainers = [l1.children[0]._referenceName, l1.children[1]._referenceName];
+        var l1retainers = [l1.children[0].referenceName, l1.children[1].referenceName];
         l1retainers.sort();
         TestRunner.assertEquals('l1a', l1retainers[0]);
         TestRunner.assertEquals('l1b', l1retainers[1]);

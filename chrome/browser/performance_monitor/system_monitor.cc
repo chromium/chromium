@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,15 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/post_task.h"
+#include "base/notreached.h"
+#include "base/observer_list.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/performance_monitor/metric_evaluator_helper_win.h"
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include "chrome/browser/performance_monitor/metric_evaluator_helper_posix.h"
 #endif
 
@@ -31,8 +32,7 @@ using MetricRefreshFrequencies =
 SystemMonitor* g_system_metrics_monitor = nullptr;
 
 // The default interval at which the metrics are refreshed.
-constexpr base::TimeDelta kDefaultRefreshInterval =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kDefaultRefreshInterval = base::Seconds(2);
 
 }  // namespace
 
@@ -241,14 +241,17 @@ void SystemMonitor::NotifyObservers(SystemMonitor::MetricVector metrics) {
 // static
 std::unique_ptr<MetricEvaluatorsHelper>
 SystemMonitor::CreateMetricEvaluatorsHelper() {
-#if defined(OS_WIN)
-  MetricEvaluatorsHelper* helper = new MetricEvaluatorsHelperWin();
-#elif defined(OS_POSIX)
-  MetricEvaluatorsHelper* helper = new MetricEvaluatorsHelperPosix();
+#if BUILDFLAG(IS_WIN)
+  return base::WrapUnique(new MetricEvaluatorsHelperWin());
+#elif BUILDFLAG(IS_POSIX)
+  return std::make_unique<MetricEvaluatorsHelperPosix>();
+#elif BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1235293)
+  NOTIMPLEMENTED_LOG_ONCE();
+  return nullptr;
 #else
 #error Unsupported platform
 #endif
-  return base::WrapUnique(helper);
 }
 
 SystemMonitor::MetricEvaluator::MetricEvaluator(Type type) : type_(type) {}
@@ -257,7 +260,7 @@ SystemMonitor::MetricEvaluator::~MetricEvaluator() = default;
 template <typename T>
 SystemMonitor::MetricEvaluatorImpl<T>::MetricEvaluatorImpl(
     Type type,
-    base::OnceCallback<base::Optional<T>()> evaluate_function,
+    base::OnceCallback<absl::optional<T>()> evaluate_function,
     void (SystemObserver::*notify_function)(ObserverArgType))
     : MetricEvaluator(type),
       evaluate_function_(std::move(evaluate_function)),
@@ -287,7 +290,7 @@ void SystemMonitor::MetricEvaluatorImpl<T>::Evaluate() {
   value_ = std::move(evaluate_function_).Run();
 }
 
-base::Optional<base::SystemMetrics>
+absl::optional<base::SystemMetrics>
 MetricEvaluatorsHelper::GetSystemMetricsStruct() {
   return base::SystemMetrics::Sample();
 }

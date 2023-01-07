@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -51,6 +52,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/filename_util.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
 
 using content::BrowserThread;
@@ -72,6 +74,7 @@ enum DownloadsDOMEvent {
   DOWNLOADS_DOM_EVENT_RESUME = 11,
   DOWNLOADS_DOM_EVENT_RETRY_DOWNLOAD = 12,
   DOWNLOADS_DOM_EVENT_OPEN_DURING_SCANNING = 13,
+  DOWNLOADS_DOM_EVENT_REVIEW_DANGEROUS = 14,
   DOWNLOADS_DOM_EVENT_MAX
 };
 
@@ -106,7 +109,8 @@ DownloadsDOMHandler::~DownloadsDOMHandler() {
   FinalizeRemovals();
 }
 
-void DownloadsDOMHandler::RenderProcessGone(base::TerminationStatus status) {
+void DownloadsDOMHandler::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   // TODO(dbeam): WebUI + WebUIMessageHandler should do this automatically.
   // http://crbug.com/610450
   render_process_gone_ = true;
@@ -149,10 +153,11 @@ void DownloadsDOMHandler::Drag(const std::string& id) {
 
   if (file->GetState() != download::DownloadItem::COMPLETE)
     return;
-
-  gfx::Image* icon = g_browser_process->icon_manager()->LookupIconFromFilepath(
-      file->GetTargetFilePath(), IconLoader::NORMAL);
+  const display::Screen* const screen = display::Screen::GetScreen();
   gfx::NativeView view = web_contents->GetNativeView();
+  gfx::Image* icon = g_browser_process->icon_manager()->LookupIconFromFilepath(
+      file->GetTargetFilePath(), IconLoader::NORMAL,
+      screen->GetDisplayNearestView(view).device_scale_factor());
   {
     // Enable nested tasks during DnD, while |DragDownload()| blocks.
     base::CurrentThread::ScopedNestableTaskAllower allow;
@@ -185,7 +190,8 @@ void DownloadsDOMHandler::RetryDownload(const std::string& id) {
   if (!file)
     return;
   content::WebContents* web_contents = GetWebUIWebContents();
-  content::RenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  content::RenderFrameHost* render_frame_host =
+      web_contents->GetPrimaryMainFrame();
   const GURL url = file->GetURL();
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -219,8 +225,8 @@ void DownloadsDOMHandler::RetryDownload(const std::string& id) {
   dl_params->set_initiator(url::Origin::Create(GURL("chrome://downloads")));
   dl_params->set_download_source(download::DownloadSource::RETRY);
 
-  content::BrowserContext::GetDownloadManager(web_contents->GetBrowserContext())
-      ->DownloadUrl(std::move(dl_params));
+  web_contents->GetBrowserContext()->GetDownloadManager()->DownloadUrl(
+      std::move(dl_params));
 }
 
 void DownloadsDOMHandler::Show(const std::string& id) {
@@ -367,7 +373,24 @@ void DownloadsDOMHandler::OpenDuringScanningRequiringGesture(
   if (download) {
     DownloadItemModel model(download);
     model.SetOpenWhenComplete(true);
+#if BUILDFLAG(FULL_SAFE_BROWSING)
     model.CompleteSafeBrowsingScan();
+#endif
+  }
+}
+
+void DownloadsDOMHandler::ReviewDangerousRequiringGesture(
+    const std::string& id) {
+  if (!GetWebUIWebContents()->HasRecentInteractiveInputEvent()) {
+    LOG(ERROR) << __func__ << " received without recent user interaction";
+    return;
+  }
+
+  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_REVIEW_DANGEROUS);
+  download::DownloadItem* download = GetDownloadByStringId(id);
+  if (download) {
+    DownloadItemModel model(download);
+    model.ReviewScanningVerdict(GetWebUIWebContents());
   }
 }
 
@@ -410,7 +433,7 @@ void DownloadsDOMHandler::DangerPromptDone(
     DownloadDangerPrompt::Action action) {
   if (action != DownloadDangerPrompt::ACCEPT)
     return;
-  download::DownloadItem* item = NULL;
+  download::DownloadItem* item = nullptr;
   if (GetMainNotifierManager())
     item = GetMainNotifierManager()->GetDownload(download_id);
   if (!item && GetOriginalNotifierManager())
@@ -452,7 +475,7 @@ download::DownloadItem* DownloadsDOMHandler::GetDownloadByStringId(
 }
 
 download::DownloadItem* DownloadsDOMHandler::GetDownloadById(uint32_t id) {
-  download::DownloadItem* item = NULL;
+  download::DownloadItem* item = nullptr;
   if (GetMainNotifierManager())
     item = GetMainNotifierManager()->GetDownload(id);
   if (!item && GetOriginalNotifierManager())

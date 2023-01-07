@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 
-#include "base/check.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/crash/core/common/crash_key.h"
+#import "base/check.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/crash/core/common/crash_key.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
@@ -17,8 +17,6 @@
 #endif
 
 namespace crash_keys {
-
-const char kBreadcrumbsProductDataKey[] = "breadcrumbs";
 
 namespace {
 
@@ -34,16 +32,18 @@ static crash_reporter::CrashKeyString<1028> kRemoveGridToVisibleTabAnimationKey(
 // Multiple state information are combined into one CrashReportMultiParameter
 // to save limited and finite number of ReportParameters.
 // These are the values grouped in the user_application_state parameter.
-NSString* const kOrientationState = @"orient";
-NSString* const kHorizontalSizeClass = @"sizeclass";
-NSString* const kUserInterfaceStyle = @"user_interface_style";
-NSString* const kSignedIn = @"signIn";
-NSString* const kIsShowingPDF = @"pdf";
-NSString* const kVideoPlaying = @"avplay";
-NSString* const kIncognitoTabCount = @"OTRTabs";
-NSString* const kRegularTabCount = @"regTabs";
-NSString* const kDestroyingAndRebuildingIncognitoBrowserState =
-    @"destroyingAndRebuildingOTR";
+char const kOrientationState[] = "orient";
+char const kHorizontalSizeClass[] = "sizeclass";
+char const kUserInterfaceStyle[] = "user_interface_style";
+char const kSignedIn[] = "signIn";
+char const kIsShowingPDF[] = "pdf";
+char const kVideoPlaying[] = "avplay";
+char const kIncognitoTabCount[] = "OTRTabs";
+char const kRegularTabCount[] = "regTabs";
+char const kConnectedScenes[] = "scenes";
+char const kForegroundScenes[] = "fgScenes";
+char const kDestroyingAndRebuildingIncognitoBrowserState[] =
+    "destroyingAndRebuildingOTR";
 
 }  // namespace
 
@@ -124,6 +124,27 @@ void SetCurrentlySignedIn(bool signedIn) {
   }
 }
 
+void SetConnectedScenesCount(int connectedScenes) {
+  if (connectedScenes > 1) {
+    [[CrashReportUserApplicationState sharedInstance] setValue:kConnectedScenes
+                                                     withValue:connectedScenes];
+  } else {
+    [[CrashReportUserApplicationState sharedInstance]
+        removeValue:kConnectedScenes];
+  }
+}
+
+void SetForegroundScenesCount(int foregroundScenes) {
+  if (foregroundScenes > 1) {
+    [[CrashReportUserApplicationState sharedInstance]
+         setValue:kForegroundScenes
+        withValue:foregroundScenes];
+  } else {
+    [[CrashReportUserApplicationState sharedInstance]
+        removeValue:kForegroundScenes];
+  }
+}
+
 void SetRegularTabCount(int tabCount) {
   [[CrashReportUserApplicationState sharedInstance] setValue:kRegularTabCount
                                                    withValue:tabCount];
@@ -163,11 +184,6 @@ void SetGridToVisibleTabAnimation(NSString* to_view_controller,
 
 void RemoveGridToVisibleTabAnimation() {
   kRemoveGridToVisibleTabAnimationKey.Clear();
-}
-
-void SetBreadcrumbEvents(NSString* breadcrumbs) {
-  static crash_reporter::CrashKeyString<2550> key(kBreadcrumbsProductDataKey);
-  key.Set(base::SysNSStringToUTF8(breadcrumbs));
 }
 
 void MediaStreamPlaybackDidStart() {

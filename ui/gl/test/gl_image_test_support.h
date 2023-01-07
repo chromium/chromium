@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,23 @@
 
 #include <stdint.h>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gl/gl_implementation.h"
 
 namespace gl {
+class GLDisplay;
 
 class GLImageTestSupport {
  public:
   // Initialize GL for image testing. |prefered_impl| is the GL implementation
   // to select if it is an allowed GL implementation. Otherwise it selects the
   // first allowed GL implementation.
-  static void InitializeGL(base::Optional<GLImplementationParts> prefered_impl);
+  static GLDisplay* InitializeGL(
+      absl::optional<GLImplementationParts> prefered_impl);
 
   // Cleanup GL after being initialized for image testing.
-  static void CleanupGL();
+  static void CleanupGL(GLDisplay* display);
 
   // Initialize buffer of a specific |format| to |color|.
   static void SetBufferDataToColor(int width,

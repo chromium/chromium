@@ -26,13 +26,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_VALUE_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_VALUE_CACHE_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/bindings/v8_global_value_map.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
@@ -124,6 +122,8 @@ class PLATFORM_EXPORT StringCache {
  public:
   explicit StringCache(v8::Isolate* isolate)
       : string_cache_(isolate), parkable_string_cache_(isolate) {}
+  StringCache(const StringCache&) = delete;
+  StringCache& operator=(const StringCache&) = delete;
 
   v8::Local<v8::String> V8ExternalString(v8::Isolate* isolate,
                                          StringImpl* string_impl) {
@@ -167,8 +167,6 @@ class PLATFORM_EXPORT StringCache {
   // hence lastStringImpl might be not a key of the cache (in sense of identity)
   // and hence it's not refed on addition.
   scoped_refptr<StringImpl> last_string_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringCache);
 };
 
 }  // namespace blink

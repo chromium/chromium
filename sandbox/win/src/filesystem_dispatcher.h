@@ -1,15 +1,15 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_FILESYSTEM_DISPATCHER_H__
-#define SANDBOX_SRC_FILESYSTEM_DISPATCHER_H__
+#ifndef SANDBOX_WIN_SRC_FILESYSTEM_DISPATCHER_H_
+#define SANDBOX_WIN_SRC_FILESYSTEM_DISPATCHER_H_
 
 #include <stdint.h>
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
@@ -20,6 +20,10 @@ namespace sandbox {
 class FilesystemDispatcher : public Dispatcher {
  public:
   explicit FilesystemDispatcher(PolicyBase* policy_base);
+
+  FilesystemDispatcher(const FilesystemDispatcher&) = delete;
+  FilesystemDispatcher& operator=(const FilesystemDispatcher&) = delete;
+
   ~FilesystemDispatcher() override {}
 
   // Dispatcher interface.
@@ -67,10 +71,15 @@ class FilesystemDispatcher : public Dispatcher {
                             uint32_t length,
                             uint32_t info_class);
 
-  PolicyBase* policy_base_;
-  DISALLOW_COPY_AND_ASSIGN(FilesystemDispatcher);
+  // Evaluate the sandbox policy for the file system call.
+  EvalResult EvalPolicy(IpcTag ipc_tag,
+                        const std::wstring& name,
+                        uint32_t desired_access = 0,
+                        bool open_only = true);
+
+  raw_ptr<PolicyBase> policy_base_;
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_FILESYSTEM_DISPATCHER_H__
+#endif  // SANDBOX_WIN_SRC_FILESYSTEM_DISPATCHER_H_

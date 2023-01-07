@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 11: The specified value "ABC" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.
+CONSOLE WARNING: The specified value "ABC" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.
 Test if an input field matches to various pseudo classes
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

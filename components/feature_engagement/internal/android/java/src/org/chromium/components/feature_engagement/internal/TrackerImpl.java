@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.feature_engagement.TriggerState;
 import org.chromium.ui.UiSwitches;
 
@@ -83,6 +84,17 @@ public class TrackerImpl implements Tracker {
     }
 
     @Override
+    public TriggerDetails shouldTriggerHelpUIWithSnooze(String feature) {
+        // Disable all IPH if the UI is in screenshot mode. For context, see crbug.com/964012.
+        if (CommandLine.getInstance().hasSwitch(UiSwitches.ENABLE_SCREENSHOT_UI_MODE)) {
+            return new TriggerDetails(false, false);
+        }
+        assert mNativePtr != 0;
+        return TrackerImplJni.get().shouldTriggerHelpUIWithSnooze(
+                mNativePtr, TrackerImpl.this, feature);
+    }
+
+    @Override
     public boolean wouldTriggerHelpUI(String feature) {
         assert mNativePtr != 0;
         return TrackerImplJni.get().wouldTriggerHelpUI(mNativePtr, TrackerImpl.this, feature);
@@ -109,11 +121,42 @@ public class TrackerImpl implements Tracker {
     }
 
     @Override
+    public void dismissedWithSnooze(String feature, int snoozeAction) {
+        assert mNativePtr != 0;
+        TrackerImplJni.get().dismissedWithSnooze(
+                mNativePtr, TrackerImpl.this, feature, snoozeAction);
+    }
+
+    @Override
     @CheckResult
     @Nullable
     public DisplayLockHandle acquireDisplayLock() {
         assert mNativePtr != 0;
         return TrackerImplJni.get().acquireDisplayLock(mNativePtr, TrackerImpl.this);
+    }
+
+    @Override
+    public void setPriorityNotification(String feature) {
+        TrackerImplJni.get().setPriorityNotification(mNativePtr, TrackerImpl.this, feature);
+    }
+
+    @Override
+    @Nullable
+    public String getPendingPriorityNotification() {
+        return TrackerImplJni.get().getPendingPriorityNotification(mNativePtr, TrackerImpl.this);
+    }
+
+    @Override
+    public void registerPriorityNotificationHandler(
+            String feature, Runnable priorityNotificationHandler) {
+        TrackerImplJni.get().registerPriorityNotificationHandler(
+                mNativePtr, TrackerImpl.this, feature, priorityNotificationHandler);
+    }
+
+    @Override
+    public void unregisterPriorityNotificationHandler(String feature) {
+        TrackerImplJni.get().unregisterPriorityNotificationHandler(
+                mNativePtr, TrackerImpl.this, feature);
     }
 
     @Override
@@ -139,10 +182,18 @@ public class TrackerImpl implements Tracker {
         return mNativePtr;
     }
 
+    @CalledByNative
+    private static TriggerDetails createTriggerDetails(
+            boolean shouldTriggerIph, boolean shouldShowSnooze) {
+        return new TriggerDetails(shouldTriggerIph, shouldShowSnooze);
+    }
+
     @NativeMethods
     interface Natives {
         void notifyEvent(long nativeTrackerImplAndroid, TrackerImpl caller, String event);
         boolean shouldTriggerHelpUI(
+                long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+        TriggerDetails shouldTriggerHelpUIWithSnooze(
                 long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
         boolean wouldTriggerHelpUI(
                 long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
@@ -150,8 +201,17 @@ public class TrackerImpl implements Tracker {
                 boolean fromWindow);
         int getTriggerState(long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
         void dismissed(long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+        void dismissedWithSnooze(long nativeTrackerImplAndroid, TrackerImpl caller, String feature,
+                int snoozeAction);
         DisplayLockHandleAndroid acquireDisplayLock(
                 long nativeTrackerImplAndroid, TrackerImpl caller);
+        void setPriorityNotification(
+                long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+        String getPendingPriorityNotification(long nativeTrackerImplAndroid, TrackerImpl caller);
+        void registerPriorityNotificationHandler(long nativeTrackerImplAndroid, TrackerImpl caller,
+                String feature, Runnable priorityNotificationHandler);
+        void unregisterPriorityNotificationHandler(
+                long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
         boolean isInitialized(long nativeTrackerImplAndroid, TrackerImpl caller);
         void addOnInitializedCallback(
                 long nativeTrackerImplAndroid, TrackerImpl caller, Callback<Boolean> callback);

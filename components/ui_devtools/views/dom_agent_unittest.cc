@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,9 @@
 #include "components/ui_devtools/views/overlay_agent_views.h"
 #include "components/ui_devtools/views/view_element.h"
 #include "components/ui_devtools/views/widget_element.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget.h"
 
@@ -35,12 +37,13 @@ class TestView : public views::View {
  public:
   TestView(const char* name) : name_(name) {}
 
+  TestView(const TestView&) = delete;
+  TestView& operator=(const TestView&) = delete;
+
   const char* GetClassName() const override { return name_; }
 
  private:
   const char* name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestView);
 };
 
 std::string GetAttributeValue(const std::string& attribute, DOM::Node* node) {
@@ -70,6 +73,10 @@ DOM::Node* FindNodeWithID(int id, DOM::Node* root) {
 class DOMAgentTest : public views::ViewsTestBase {
  public:
   DOMAgentTest() = default;
+
+  DOMAgentTest(const DOMAgentTest&) = delete;
+  DOMAgentTest& operator=(const DOMAgentTest&) = delete;
+
   ~DOMAgentTest() override = default;
 
   views::Widget::InitParams CreateParams(
@@ -261,8 +268,6 @@ class DOMAgentTest : public views::ViewsTestBase {
   std::unique_ptr<CSSAgent> css_agent_;
   std::unique_ptr<OverlayAgentViews> overlay_agent_;
   std::string name_;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMAgentTest);
 };
 
 // Tests to ensure that the DOMAgent's hierarchy matches the real hierarchy.
@@ -614,7 +619,7 @@ TEST_F(DOMAgentTest, SimpleDomSearch) {
 
   std::string search_id;
   int result_count = 0;
-  std::unique_ptr<protocol::Array<int>> node_ids = nullptr;
+  std::unique_ptr<protocol::Array<int>> node_ids;
 
   // 1 match
   dom_agent()->performSearch("child_a1", false, &search_id, &result_count);
@@ -640,7 +645,7 @@ TEST_F(DOMAgentTest, ExactDomSearch) {
   dom_agent()->getDocument(&root);
   std::string search_id;
   int result_count = 0;
-  std::unique_ptr<protocol::Array<int>> node_ids = nullptr;
+  std::unique_ptr<protocol::Array<int>> node_ids;
 
   // substring matches
   dom_agent()->performSearch("child_a", false, &search_id, &result_count);
@@ -675,7 +680,7 @@ TEST_F(DOMAgentTest, TagDomSearch) {
   dom_agent()->getDocument(&root);
   std::string search_id;
   int result_count = 0;
-  std::unique_ptr<protocol::Array<int>> node_ids = nullptr;
+  std::unique_ptr<protocol::Array<int>> node_ids;
 
   // normal search looks for any "widget" substrings
   dom_agent()->performSearch("widget", false, &search_id, &result_count);
@@ -701,7 +706,7 @@ TEST_F(DOMAgentTest, DomSearchForStylesPanel) {
 
   std::string search_id;
   int result_count = 0;
-  std::unique_ptr<protocol::Array<int>> node_ids = nullptr;
+  std::unique_ptr<protocol::Array<int>> node_ids;
 
   // Search for something that is in style properties but not in dom name or
   // attributes.
@@ -714,6 +719,44 @@ TEST_F(DOMAgentTest, DomSearchForStylesPanel) {
 
   dom_agent()->performSearch("classname: child_a1", false, &search_id,
                              &result_count);
+  EXPECT_EQ(result_count, 0);
+  dom_agent()->getSearchResults(search_id, 0, 1, &node_ids);
+  EXPECT_TRUE(!node_ids);
+}
+
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kTestElementID);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kTestElementID);
+
+TEST_F(DOMAgentTest, DomSearchForElementID) {
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  views::View* test_view = new views::View;
+  test_view->SetProperty(views::kElementIdentifierKey, kTestElementID);
+  widget->GetRootView()->AddChildView(test_view);
+
+  std::unique_ptr<DOM::Node> root;
+  dom_agent()->getDocument(&root);
+
+  std::string search_id;
+  int result_count = 0;
+  std::unique_ptr<protocol::Array<int>> node_ids;
+
+  // Match ID for View element.
+  dom_agent()->performSearch("id: kTestElementID", false, &search_id,
+                             &result_count);
+  EXPECT_EQ(result_count, 1);
+  dom_agent()->getSearchResults(search_id, 0, result_count, &node_ids);
+  EXPECT_EQ(node_ids->size(), 1u);
+  node_ids.reset();
+
+  // Won't match substring of ID for View element.
+  dom_agent()->performSearch("id: kTestElement", false, &search_id,
+                             &result_count);
+  EXPECT_EQ(result_count, 0);
+  dom_agent()->getSearchResults(search_id, 0, 1, &node_ids);
+  EXPECT_TRUE(!node_ids);
+
+  // Won't match empty query.
+  dom_agent()->performSearch("id:", false, &search_id, &result_count);
   EXPECT_EQ(result_count, 0);
   dom_agent()->getSearchResults(search_id, 0, 1, &node_ids);
   EXPECT_TRUE(!node_ids);

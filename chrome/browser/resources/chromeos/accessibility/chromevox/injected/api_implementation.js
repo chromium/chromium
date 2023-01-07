@@ -1,38 +1,30 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
- * @fileoverview Implentation of ChromeVox's public API.
- *
+ * @fileoverview Implementation of ChromeVox's API for extnal apps.
+ * Deprecated.
+ * At this point, Google Docs is the only supported use case.
  */
 
 goog.provide('ApiImplementation');
 
-goog.require('ChromeVox');
-goog.require('ExtensionBridge');
+goog.require('ContentExtensionBridge');
 goog.require('ScriptInstaller');
 
 ApiImplementation = class {
-  constructor() {}
-
-  /**
-   * Inject the API into the page and set up communication with it.
-   * @param {function()=} opt_onload A function called when the script is
-   *     loaded.
-   */
-  static init(opt_onload) {
+  /** Inject the API into the page and set up communication with it. */
+  static init() {
     window.addEventListener('message', ApiImplementation.portSetup, true);
-    const scripts =
-        [window.chrome.extension.getURL('chromevox/injected/api.js')];
+    const script = chrome.extension.getURL('chromevox/injected/api.js');
 
-    const didInstall =
-        ScriptInstaller.installScript(scripts, 'cvoxapi', opt_onload);
+    const didInstall = ScriptInstaller.installScript(script, 'cvoxapi');
     if (!didInstall) {
-      console.error('Unable to install api scripts');
+      console.error('Unable to install api script');
     }
 
-    ExtensionBridge.addDisconnectListener(function() {
+    ContentExtensionBridge.addDisconnectListener(function() {
       ApiImplementation.port.postMessage(ApiImplementation.DISCONNECT_MSG);
       ScriptInstaller.uninstallScript('cvoxapi');
     });
@@ -63,18 +55,10 @@ ApiImplementation = class {
    * @param {*} message The message.
    */
   static dispatchApiMessage(message) {
-    let method;
-    switch (message['cmd']) {
-      case 'speak':
-        method = ApiImplementation.speak;
-        break;
-        break;
-    }
-    if (!method) {
+    if (message['cmd'] !== 'speak') {
       throw 'Unknown API call: ' + message['cmd'];
     }
-
-    method.apply(ApiImplementation, message['args']);
+    ApiImplementation.speak(...message['args']);
   }
 
   /**
@@ -95,10 +79,10 @@ ApiImplementation = class {
       'action': 'speak',
       'text': textString,
       queueMode,
-      properties
+      properties,
     };
 
-    ExtensionBridge.send(message);
+    ContentExtensionBridge.send(message);
   }
 };
 
@@ -113,7 +97,7 @@ ApiImplementation.DISCONNECT_MSG = 'Disconnect';
 
 /**
  * Sets endCallback in properties to call callbackId's function.
- * @param {Object} properties Speech properties to use for this utterance.
+ * @param {!Object} properties Speech properties to use for this utterance.
  * @param {number} callbackId The callback Id.
  * @private
  */
@@ -121,7 +105,5 @@ function setupEndCallback_(properties, callbackId) {
   const endCallback = function() {
     ApiImplementation.port.postMessage(JSON.stringify({'id': callbackId}));
   };
-  if (properties) {
-    properties['endCallback'] = endCallback;
-  }
+  properties.endCallback = endCallback;
 }

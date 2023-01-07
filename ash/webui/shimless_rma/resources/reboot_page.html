@@ -1,0 +1,17 @@
+<style include="cr-shared-style shimless-rma-shared">
+</style>
+
+<base-page>
+  <div slot="left-pane">
+    <h1 tabindex="-1">[[getPageTitle_(errorCode)]]</h1>
+    <div class="instructions">
+      [[getPageInstructions_(errorCode)]]
+    </div>
+  </div>
+  <div slot="right-pane">
+    <div class="illustration-wrapper" aria-hidden="true">
+      <paper-spinner-lite active class="large-spinner">
+      </paper-spinner-lite>
+    </div>
+  </div>
+</base-page>

@@ -1,0 +1,28 @@
+
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+<p>The two squares below should be filled in blue.</p>
+<canvas id="c" width="100" height="100" style="background-color: red;"></canvas>
+<canvas id="c2" width="100" height="100" style="background-color: red;"></canvas>
+<script>
+    const canvas = document.getElementById('c');
+    const canvas2 = document.getElementById('c2');
+    const renderer = canvas.getContext('bitmaprenderer');
+    const renderer2 = canvas2.getContext('2d');
+
+    const temp_canvas = new OffscreenCanvas(640, 480);
+    const gl = temp_canvas.getContext('webgl');
+
+    gl.clearColor(0.0, 0.0, 1.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    const bitmap = temp_canvas.transferToImageBitmap();
+
+    renderer2.drawImage(bitmap, 0, 0);
+    renderer.transferFromImageBitmap(bitmap);
+</script>
+</body>
+</html>

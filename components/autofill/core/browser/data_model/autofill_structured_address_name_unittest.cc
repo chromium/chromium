@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
@@ -167,6 +168,10 @@ TEST(AutofillStructuredName, ParseFullName) {
       // Name with multiple middle names.
       {"George Walker Junior Bush", "", "George", "Walker Junior", "Bush", "",
        "", "Bush"},
+      // Name with a middle name initial.
+      {"George W Bush", "", "George", "W", "Bush", "", "", "Bush"},
+      // Name with a middle name initial.
+      {"George W. Bush", "", "George", "W.", "Bush", "", "", "Bush"},
       // Name with a single middle name.
       {"George Walker Bush", "", "George", "Walker", "Bush", "", "", "Bush"},
       // Name without names.
@@ -1027,8 +1032,8 @@ TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
   // After normalization, the two names should have a single-token-superset
   // relation.
   SortedTokenComparisonResult token_comparison_result =
-      CompareSortedTokens(name.ValueForComparisonForTesting(),
-                          subset_name.ValueForComparisonForTesting());
+      CompareSortedTokens(name.ValueForComparisonForTesting(subset_name),
+                          subset_name.ValueForComparisonForTesting(name));
   EXPECT_TRUE(token_comparison_result.IsSingleTokenSuperset());
 
   // Without normalization, the two names should be considered distinct.

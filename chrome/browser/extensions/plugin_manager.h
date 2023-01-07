@@ -1,14 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_PLUGIN_MANAGER_H_
 #define CHROME_BROWSER_EXTENSIONS_PLUGIN_MANAGER_H_
 
-#include <set>
-#include <string>
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/nacl/common/buildflags.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -29,6 +26,10 @@ class PluginManager : public BrowserContextKeyedAPI,
                       public ExtensionRegistryObserver {
  public:
   explicit PluginManager(content::BrowserContext* context);
+
+  PluginManager(const PluginManager&) = delete;
+  PluginManager& operator=(const PluginManager&) = delete;
+
   ~PluginManager() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -69,13 +70,11 @@ class PluginManager : public BrowserContextKeyedAPI,
 
   extensions::NaClModuleInfo::List nacl_module_list_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Listen to extension load, unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginManager);
 };
 
 }  // namespace extensions

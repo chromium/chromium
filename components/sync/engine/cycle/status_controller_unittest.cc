@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,9 +35,7 @@ TEST_F(StatusControllerTest, TotalNumConflictingItems) {
   EXPECT_EQ(0, status.TotalNumConflictingItems());
 
   status.increment_num_server_conflicts();
-  status.increment_num_hierarchy_conflicts_by(3);
-  status.increment_num_encryption_conflicts_by(2);
-  EXPECT_EQ(6, status.TotalNumConflictingItems());
+  EXPECT_EQ(1, status.TotalNumConflictingItems());
 }
 
 }  // namespace syncer

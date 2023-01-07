@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_CROSSCALL_PARAMS_H__
-#define SANDBOX_SRC_CROSSCALL_PARAMS_H__
+#ifndef SANDBOX_WIN_SRC_CROSSCALL_PARAMS_H_
+#define SANDBOX_WIN_SRC_CROSSCALL_PARAMS_H_
 
 #if !defined(SANDBOX_FUZZ_TARGET)
 #include <windows.h>
@@ -16,9 +16,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-
-#include "base/macros.h"
 #include "sandbox/win/src/internal_types.h"
 #if !defined(SANDBOX_FUZZ_TARGET)
 #include "sandbox/win/src/sandbox_nt_types.h"
@@ -128,6 +125,9 @@ struct CrossCallReturn {
 // classes have the proper knowledge to construct it.
 class CrossCallParams {
  public:
+  CrossCallParams(const CrossCallParams&) = delete;
+  CrossCallParams& operator=(const CrossCallParams&) = delete;
+
   // Returns the tag (ipc unique id) associated with this IPC.
   IpcTag GetTag() const { return tag_; }
 
@@ -162,7 +162,6 @@ class CrossCallParams {
   uint32_t is_in_out_;
   CrossCallReturn call_return;
   const uint32_t params_count_;
-  DISALLOW_COPY_AND_ASSIGN(CrossCallParams);
 };
 
 // ActualCallParams models an specific IPC call parameters with respect to the
@@ -219,6 +218,9 @@ class ActualCallParams : public CrossCallParams {
     param_info_[0].offset_ =
         static_cast<uint32_t>(parameters_ - reinterpret_cast<char*>(this));
   }
+
+  ActualCallParams(const ActualCallParams&) = delete;
+  ActualCallParams& operator=(const ActualCallParams&) = delete;
 
   // Testing-only method. Allows setting the apparent size to a wrong value.
   // returns the previous size.
@@ -291,7 +293,6 @@ class ActualCallParams : public CrossCallParams {
   ParamInfo param_info_[NUMBER_PARAMS + 1];
   char parameters_[BLOCK_SIZE - sizeof(CrossCallParams) -
                    sizeof(ParamInfo) * (NUMBER_PARAMS + 1)];
-  DISALLOW_COPY_AND_ASSIGN(ActualCallParams);
 };
 
 static_assert(sizeof(ActualCallParams<1, 1024>) == 1024, "bad size buffer");
@@ -300,4 +301,4 @@ static_assert(sizeof(ActualCallParams<3, 1024>) == 1024, "bad size buffer");
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_CROSSCALL_PARAMS_H__
+#endif  // SANDBOX_WIN_SRC_CROSSCALL_PARAMS_H_

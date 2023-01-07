@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,19 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POPUP_H_
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "url/gurl.h"
 
 #if defined(USE_AURA)
@@ -48,15 +47,9 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                        public extensions::ExtensionRegistryObserver,
                        public content::WebContentsObserver,
                        public TabStripModelObserver,
-                       public content::DevToolsAgentHostObserver,
-                       public extensions::ExtensionHostObserver {
+                       public content::DevToolsAgentHostObserver {
  public:
   METADATA_HEADER(ExtensionPopup);
-
-  enum ShowAction {
-    SHOW,
-    SHOW_AND_INSPECT,
-  };
 
   // The min/max height of popups.
   // The minimum is just a little larger than the size of the button itself.
@@ -75,7 +68,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   static void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                         views::View* anchor_view,
                         views::BubbleBorder::Arrow arrow,
-                        ShowAction show_action);
+                        PopupShowAction show_action,
+                        ShowPopupCallback callback);
 
   ExtensionPopup(const ExtensionPopup&) = delete;
   ExtensionPopup& operator=(const ExtensionPopup&) = delete;
@@ -107,8 +101,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                            extensions::UnloadedExtensionReason reason) override;
 
   // content::WebContentsObserver:
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -122,14 +115,17 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   void DevToolsAgentHostDetached(
       content::DevToolsAgentHost* agent_host) override;
 
-  // extensions::ExtensionHostObserver:
-  void OnExtensionHostShouldClose(extensions::ExtensionHost* host) override;
+  // Returns the most recently constructed popup. For testing only.
+  static ExtensionPopup* last_popup_for_testing();
 
  private:
+  class ScopedDevToolsAgentHostObservation;
+
   ExtensionPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                  views::View* anchor_view,
                  views::BubbleBorder::Arrow arrow,
-                 ShowAction show_action);
+                 PopupShowAction show_action,
+                 ShowPopupCallback callback);
 
   // Shows the bubble, focuses its content, and registers listeners.
   void ShowBubble();
@@ -137,20 +133,26 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   // Closes the bubble if the devtools window is not attached.
   void CloseUnlessUnderInspection();
 
+  // Handles a signal from the extension host to close.
+  void HandleCloseExtensionHost(extensions::ExtensionHost* host);
+
   // The contained host for the view.
   std::unique_ptr<extensions::ExtensionViewHost> host_;
 
-  ExtensionViewViews* extension_view_;
-
-  base::ScopedObservation<extensions::ExtensionHost,
-                          extensions::ExtensionHostObserver>
-      extension_host_observation_{this};
+  raw_ptr<ExtensionViewViews> extension_view_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
-  ShowAction show_action_;
+  PopupShowAction show_action_;
+
+  ShowPopupCallback shown_callback_;
+
+  // Note: This must be reset *before* `host_`. See note in
+  // OnExtensionUnloaded().
+  std::unique_ptr<ScopedDevToolsAgentHostObservation>
+      scoped_devtools_observation_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POPUP_H_

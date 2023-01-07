@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/ice_config.h"
 #include "remoting/protocol/transport_context.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class PortAllocator : public cricket::BasicPortAllocator {
  public:
@@ -28,10 +28,10 @@ class PortAllocator : public cricket::BasicPortAllocator {
   }
 
   cricket::PortAllocatorSession* CreateSessionInternal(
-      const std::string& content_name,
+      absl::string_view content_name,
       int component,
-      const std::string& ice_ufrag,
-      const std::string& ice_pwd) override;
+      absl::string_view ice_ufrag,
+      absl::string_view ice_pwd) override;
 
  private:
   std::unique_ptr<rtc::NetworkManager> network_manager_;
@@ -70,7 +70,6 @@ class PortAllocatorSession : public cricket::BasicPortAllocatorSession {
   base::WeakPtrFactory<PortAllocatorSession> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_PORT_ALLOCATOR_H_

@@ -1,10 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/showcase/core/showcase_view_controller.h"
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 #import "ios/showcase/common/coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -67,7 +67,12 @@ NSString* const kUseCaseKey = @"useCase";
   self.searchController.searchResultsUpdater = self;
   self.searchController.obscuresBackgroundDuringPresentation = NO;
   self.tableView.tableHeaderView = self.searchController.searchBar;
-  self.navigationController.navigationBar.translucent = NO;
+
+  UINavigationBarAppearance* appearance =
+      [[UINavigationBarAppearance alloc] init];
+  [appearance configureWithOpaqueBackground];
+  self.navigationController.navigationBar.standardAppearance = appearance;
+  self.navigationController.navigationBar.scrollEdgeAppearance = appearance;
 
   // Presentation of searchController will walk up the view controller hierarchy
   // until it finds the root view controller or one that defines a presentation

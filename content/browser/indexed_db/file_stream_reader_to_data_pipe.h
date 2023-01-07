@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,17 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "storage/browser/file_system/file_stream_reader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 // A convenient adapter class to read out data from a FileStreamReader
 // and write them into a data pipe.
-class CONTENT_EXPORT FileStreamReaderToDataPipe {
+class FileStreamReaderToDataPipe {
  public:
   // Reads out the data from |reader| and write into |dest|.
   // Can be called from any sequence.
@@ -48,7 +48,7 @@ class CONTENT_EXPORT FileStreamReaderToDataPipe {
 
   scoped_refptr<network::NetToMojoPendingBuffer> pending_write_;
   // Optional so that its construction can be deferred.
-  base::Optional<mojo::SimpleWatcher> writable_handle_watcher_;
+  absl::optional<mojo::SimpleWatcher> writable_handle_watcher_;
 
   base::WeakPtrFactory<FileStreamReaderToDataPipe> weak_factory_{this};
 };

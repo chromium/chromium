@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,13 +18,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/common/importer/importer_data_types.h"
+#include "crypto/crypto_buildflags.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include <pk11pub.h>
 #include <pk11sdr.h>
-#endif  // defined(USE_NSS_CERTS)
+#endif  // BUILDFLAG(USE_NSS_CERTS)
 
 // This method is based on some Firefox code in
 //   security/manager/ssl/src/nsSDR.cpp
@@ -90,7 +91,7 @@ importer::ImportedPasswordForm CreateBlockedPasswordForm(
 
   importer::ImportedPasswordForm form;
   form.url = GURL(blocked_host).ReplaceComponents(rep);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.blocked_by_user = true;
   return form;
 }
@@ -113,7 +114,7 @@ std::u16string NSSDecryptor::Decrypt(const std::string& crypt) const {
     if (!base::Base64Decode(crypt, &decoded_data))
       return std::u16string();
     PK11SlotInfo* slot = GetKeySlotForDB();
-    SECStatus result = PK11_Authenticate(slot, PR_TRUE, NULL);
+    SECStatus result = PK11_Authenticate(slot, PR_TRUE, nullptr);
     if (result != SECSuccess) {
       FreeSlot(slot);
       return std::u16string();
@@ -126,11 +127,11 @@ std::u16string NSSDecryptor::Decrypt(const std::string& crypt) const {
     SECItem reply;
     reply.data = nullptr;
     reply.len = 0;
-#if defined(USE_NSS_CERTS)
-    result = PK11SDR_DecryptWithSlot(slot, &request, &reply, NULL);
+#if BUILDFLAG(USE_NSS_CERTS)
+    result = PK11SDR_DecryptWithSlot(slot, &request, &reply, nullptr);
 #else
     result = PK11SDR_Decrypt(&request, &reply, NULL);
-#endif  // defined(USE_NSS_CERTS)
+#endif  // BUILDFLAG(USE_NSS_CERTS)
     if (result == SECSuccess)
       plain.assign(reinterpret_cast<char*>(reply.data), reply.len);
 
@@ -150,15 +151,15 @@ bool NSSDecryptor::ReadAndParseLogins(
     std::vector<importer::ImportedPasswordForm>* forms) {
   std::string json_content;
   base::ReadFileToString(json_file, &json_content);
-  base::Optional<base::Value> parsed_json =
+  absl::optional<base::Value> parsed_json =
       base::JSONReader::Read(json_content);
   if (!parsed_json || !parsed_json->is_dict())
     return false;
 
-  const base::Value* blacklist_domains =
+  const base::Value* disabled_hosts =
       parsed_json->FindListKey("disabledHosts");
-  if (blacklist_domains) {
-    for (const auto& value : blacklist_domains->GetList()) {
+  if (disabled_hosts) {
+    for (const auto& value : disabled_hosts->GetListDeprecated()) {
       if (!value.is_string())
         continue;
       forms->push_back(CreateBlockedPasswordForm(value.GetString()));
@@ -167,7 +168,7 @@ bool NSSDecryptor::ReadAndParseLogins(
 
   const base::Value* password_list = parsed_json->FindListKey("logins");
   if (password_list) {
-    for (const auto& value : password_list->GetList()) {
+    for (const auto& value : password_list->GetListDeprecated()) {
       if (!value.is_dict())
         continue;
 
@@ -227,7 +228,7 @@ bool NSSDecryptor::CreatePasswordFormFromRawInfo(
     return false;
 
   form->url = url.ReplaceComponents(rep);
-  form->signon_realm = form->url.GetOrigin().spec();
+  form->signon_realm = form->url.DeprecatedGetOriginAsURL().spec();
   if (!raw_password_info.realm.empty()) {
     form->signon_realm += raw_password_info.realm;
     // Non-empty realm indicates that it's not html form authentication entry.

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,21 +9,21 @@
 #include "net/base/host_port_pair.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_mdns_task.h"
+#include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/record_parsed.h"
 
 namespace net {
 
 namespace {
 
-HostResolver::MdnsListener::Delegate::UpdateType ConvertUpdateType(
-    net::MDnsListener::UpdateType type) {
+MdnsListenerUpdateType ConvertUpdateType(net::MDnsListener::UpdateType type) {
   switch (type) {
     case net::MDnsListener::RECORD_ADDED:
-      return HostResolver::MdnsListener::Delegate::UpdateType::ADDED;
+      return MdnsListenerUpdateType::kAdded;
     case net::MDnsListener::RECORD_CHANGED:
-      return HostResolver::MdnsListener::Delegate::UpdateType::CHANGED;
+      return MdnsListenerUpdateType::kChanged;
     case net::MDnsListener::RECORD_REMOVED:
-      return HostResolver::MdnsListener::Delegate::UpdateType::REMOVED;
+      return MdnsListenerUpdateType::kRemoved;
   }
 }
 
@@ -73,16 +73,15 @@ void HostResolverMdnsListenerImpl::OnRecordUpdate(
 
   switch (query_type_) {
     case DnsQueryType::UNSPECIFIED:
-    case DnsQueryType::INTEGRITY:
     case DnsQueryType::HTTPS:
       NOTREACHED();
       break;
     case DnsQueryType::A:
     case DnsQueryType::AAAA:
-      DCHECK(parsed_entry.addresses());
-      DCHECK_EQ(1u, parsed_entry.addresses().value().size());
+      DCHECK(parsed_entry.ip_endpoints());
+      DCHECK_EQ(1u, parsed_entry.ip_endpoints()->size());
       delegate_->OnAddressResult(ConvertUpdateType(update), query_type_,
-                                 parsed_entry.addresses().value().front());
+                                 parsed_entry.ip_endpoints()->front());
       break;
     case DnsQueryType::TXT:
       DCHECK(parsed_entry.text_records());

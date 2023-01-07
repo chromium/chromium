@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ActivityUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 
@@ -55,6 +55,7 @@ public class NotificationPlatformBridgeIntentTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1246141")
     @Feature({"Browser", "Notifications"})
     public void testLaunchNotificationPreferencesForCategory() {
         Assert.assertFalse("The native library should not be loaded yet",
@@ -70,7 +71,7 @@ public class NotificationPlatformBridgeIntentTest {
                         .setClassName(context, ChromeLauncherActivity.class.getName())
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        SettingsActivity activity = ActivityUtils.waitForActivity(
+        SettingsActivity activity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SettingsActivity.class,
                 new Runnable() {
                     @Override
@@ -81,7 +82,7 @@ public class NotificationPlatformBridgeIntentTest {
         Assert.assertNotNull("Could not find the Settings activity", activity);
 
         SingleCategorySettings fragment =
-                ActivityUtils.waitForFragmentToAttach(activity, SingleCategorySettings.class);
+                ActivityTestUtils.waitForFragmentToAttach(activity, SingleCategorySettings.class);
         Assert.assertNotNull("Could not find the SingleCategorySettings fragment", fragment);
     }
 
@@ -92,6 +93,7 @@ public class NotificationPlatformBridgeIntentTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1246141")
     @Feature({"Browser", "Notifications"})
     public void testLaunchNotificationPreferencesForWebsite() {
         Assert.assertFalse("The native library should not be loaded yet",
@@ -110,7 +112,7 @@ public class NotificationPlatformBridgeIntentTest {
                         .putExtra(NotificationConstants.EXTRA_NOTIFICATION_TAG,
                                 "p#https://example.com#0" /* notificationId */);
 
-        SettingsActivity activity = ActivityUtils.waitForActivity(
+        SettingsActivity activity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SettingsActivity.class,
                 new Runnable() {
                     @Override
@@ -121,7 +123,7 @@ public class NotificationPlatformBridgeIntentTest {
         Assert.assertNotNull("Could not find the Settings activity", activity);
 
         SingleWebsiteSettings fragment =
-                ActivityUtils.waitForFragmentToAttach(activity, SingleWebsiteSettings.class);
+                ActivityTestUtils.waitForFragmentToAttach(activity, SingleWebsiteSettings.class);
         Assert.assertNotNull("Could not find the SingleWebsiteSettings fragment", fragment);
     }
 

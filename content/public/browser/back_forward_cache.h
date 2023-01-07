@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,9 +23,6 @@ class RenderFrameHost;
 //
 // Not all documents can or will be cached. You should not assume a document
 // will be cached.
-//
-// WARNING: This code is still experimental and might completely go away.
-// Please get in touch with bfcache-dev@chromium.org if you intend to use it.
 //
 // All methods of this class should be called from the UI thread.
 class CONTENT_EXPORT BackForwardCache {
@@ -52,13 +49,16 @@ class CONTENT_EXPORT BackForwardCache {
   typedef uint16_t DisabledReasonType;
   static const uint16_t kDisabledReasonTypeBits = 16;
 
-  // Represents a reason to disable back-forward cache, given by a source. It
-  // preserves the string that accompanied it, however the string is ignored for
-  // <, == and !=.
+  // Represents a reason to disable back-forward cache, given by a |source|.
+  // |context| is arbitrary context that will be preserved and passed through,
+  // e.g. an extension ID responsible for disabling BFCache that can be shown in
+  // passed devtools. It preserves the |description| and |context| that
+  // accompany it, however they are ignored for <, == and !=.
   struct CONTENT_EXPORT DisabledReason {
     const BackForwardCache::DisabledSource source;
     const BackForwardCache::DisabledReasonType id;
     const std::string description;
+    const std::string context;
 
     bool operator<(const DisabledReason&) const;
     bool operator==(const DisabledReason&) const;
@@ -85,8 +85,11 @@ class CONTENT_EXPORT BackForwardCache {
   // Helper function to be used when it is not always possible to guarantee the
   // |render_frame_host| to be still alive when this is called. In this case,
   // its |id| can be used.
-  static void DisableForRenderFrameHost(GlobalFrameRoutingId id,
+  static void DisableForRenderFrameHost(GlobalRenderFrameHostId id,
                                         DisabledReason reason);
+  // Clear a previously set `reason` for a `render_frame_host`.
+  static void ClearDisableReasonForRenderFrameHost(GlobalRenderFrameHostId id,
+                                                   DisabledReason reason);
 
   // List of reasons the BackForwardCache was disabled for a specific test. If a
   // test needs to be disabled for a reason not covered below, please add to
@@ -101,10 +104,14 @@ class CONTENT_EXPORT BackForwardCache {
     // into two tests, one using a cacheable page, and one using an uncacheable
     // page.
     //
-    // Once BackForwardCache is enabled everywhere, any tests still disabled for
-    // this reason should change their expectations to permanently match the
-    // BackForwardCache enabled behavior.
-    TEST_ASSUMES_NO_CACHING,
+    // Even though BackForwardCache is already enabled by default, it is not
+    // guaranteed to preserve and cache the previous document on every
+    // navigation, and even if it does, it is still possible for a cached
+    // document to get discarded without it ever getting restored, so not every
+    // history navigation will restore a document from the back/forward cache.
+    // Thus, testing cases where a document does not get preserved and cached
+    // on navigation or not restored on history navigation is completely valid.
+    TEST_REQUIRES_NO_CACHING,
 
     // Unload events never fire for documents that are put into the
     // BackForwardCache. This is by design, as there is never an appropriate
@@ -124,7 +131,22 @@ class CONTENT_EXPORT BackForwardCache {
     // load a page that is ineligible for caching (e.g. due to an unsupported
     // feature).
     TEST_USES_UNLOAD_EVENT,
+
+    // This test expects that same-site navigations won't result in a
+    // RenderFrameHost / RenderFrame / `blink::WebView` / RenderWidget change.
+    // But when same-site BackForwardCache is enabled, the change usually does
+    // happen. Even so, there will still be valid navigations that don't result
+    // in those objects changing, so we should keep the test as is, just with
+    // BackForwardCache disabled.
+    TEST_ASSUMES_NO_RENDER_FRAME_CHANGE,
   };
+
+  // Evict all entries from the BackForwardCache.
+  virtual void Flush() = 0;
+
+  // Evict back/forward cache entries from the least recently used ones until
+  // the cache is within the given size limit.
+  virtual void Prune(size_t limit) = 0;
 
   // Disables the BackForwardCache so that no documents will be stored/served.
   // This allows tests to "force" not using the BackForwardCache, this can be

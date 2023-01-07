@@ -1,13 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_CLIENT_CLIENT_CONTEXT_H_
 #define REMOTING_CLIENT_CLIENT_CONTEXT_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "base/threading/thread.h"
 
 namespace base {
@@ -22,6 +19,10 @@ class ClientContext {
  public:
   ClientContext(
       const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner);
+
+  ClientContext(const ClientContext&) = delete;
+  ClientContext& operator=(const ClientContext&) = delete;
+
   virtual ~ClientContext();
 
   void Start();
@@ -39,8 +40,6 @@ class ClientContext {
 
   // A thread that handles all audio decode operations.
   base::Thread audio_decode_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientContext);
 };
 
 }  // namespace remoting

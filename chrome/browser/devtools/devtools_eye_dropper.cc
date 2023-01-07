@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "content/public/common/content_features.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "skia/ext/legacy_display_globals.h"
@@ -36,8 +37,8 @@ DevToolsEyeDropper::DevToolsEyeDropper(content::WebContents* web_contents,
     : content::WebContentsObserver(web_contents), callback_(callback) {
   mouse_event_callback_ = base::BindRepeating(
       &DevToolsEyeDropper::HandleMouseEvent, base::Unretained(this));
-  if (web_contents->GetMainFrame()->IsRenderFrameCreated())
-    AttachToHost(web_contents->GetMainFrame());
+  if (web_contents->GetPrimaryMainFrame()->IsRenderFrameLive())
+    AttachToHost(web_contents->GetPrimaryMainFrame());
 }
 
 DevToolsEyeDropper::~DevToolsEyeDropper() {
@@ -48,7 +49,7 @@ DevToolsEyeDropper::~DevToolsEyeDropper() {
 }
 
 void DevToolsEyeDropper::AttachToHost(content::RenderFrameHost* frame_host) {
-  DCHECK(frame_host->IsRenderFrameCreated());
+  DCHECK(frame_host->IsRenderFrameLive());
   // Historically, (see https://crbug.com/847363) this code handled the
   // RenderWidgetHostView being null, but now it is listening to creation of the
   // frame which includes creation of the widget so it is implied that
@@ -70,11 +71,9 @@ void DevToolsEyeDropper::AttachToHost(content::RenderFrameHost* frame_host) {
       host_->GetView()->GetViewBounds().size(), true);
   video_capturer_->SetAutoThrottlingEnabled(false);
   video_capturer_->SetMinSizeChangePeriod(base::TimeDelta());
-  video_capturer_->SetFormat(media::PIXEL_FORMAT_ARGB,
-                             gfx::ColorSpace::CreateREC709());
-  video_capturer_->SetMinCapturePeriod(base::TimeDelta::FromSeconds(1) /
-                                       kMaxFrameRate);
-  video_capturer_->Start(this);
+  video_capturer_->SetFormat(media::PIXEL_FORMAT_ARGB);
+  video_capturer_->SetMinCapturePeriod(base::Seconds(1) / kMaxFrameRate);
+  video_capturer_->Start(this, viz::mojom::BufferFormatPreference::kDefault);
 }
 
 void DevToolsEyeDropper::DetachFromHost() {
@@ -88,7 +87,7 @@ void DevToolsEyeDropper::DetachFromHost() {
 void DevToolsEyeDropper::RenderFrameCreated(
     content::RenderFrameHost* frame_host) {
   // Only handle the initial main frame, not speculative ones.
-  if (frame_host != web_contents()->GetMainFrame())
+  if (frame_host != web_contents()->GetPrimaryMainFrame())
     return;
   DCHECK(!host_);
 
@@ -98,7 +97,7 @@ void DevToolsEyeDropper::RenderFrameCreated(
 void DevToolsEyeDropper::RenderFrameDeleted(
     content::RenderFrameHost* frame_host) {
   // Only handle the active main frame, not speculative ones.
-  if (frame_host != web_contents()->GetMainFrame())
+  if (frame_host != web_contents()->GetPrimaryMainFrame())
     return;
   DCHECK(host_);
   DCHECK_EQ(host_, frame_host->GetRenderWidgetHost());
@@ -112,7 +111,7 @@ void DevToolsEyeDropper::RenderFrameHostChanged(
     content::RenderFrameHost* new_host) {
   // Since we skipped speculative main frames in RenderFrameCreated, we must
   // watch for them being swapped in by watching for RenderFrameHostChanged().
-  if (new_host != web_contents()->GetMainFrame())
+  if (new_host != web_contents()->GetPrimaryMainFrame())
     return;
   // Don't watch for the initial main frame RenderFrameHost, which does not come
   // with a renderer frame. We'll hear about that from RenderFrameCreated.
@@ -121,7 +120,7 @@ void DevToolsEyeDropper::RenderFrameHostChanged(
     // has its renderer frame. Since `old_host` is null only when this observer
     // method is called at startup, it should be before the renderer frame is
     // created.
-    DCHECK(!new_host->IsRenderFrameCreated());
+    DCHECK(!new_host->IsRenderFrameLive());
     return;
   }
   DCHECK(host_);
@@ -187,7 +186,7 @@ void DevToolsEyeDropper::UpdateCursor() {
 // magnified projection only with centered hotspot.
 // Mac Retina requires cursor to be > 120px in order to render smoothly.
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const float kCursorSize = 63;
   const float kDiameter = 63;
   const float kHotspotOffset = 32;
@@ -286,7 +285,7 @@ void DevToolsEyeDropper::UpdateCursor() {
 }
 
 void DevToolsEyeDropper::OnFrameCaptured(
-    base::ReadOnlySharedMemoryRegion data,
+    ::media::mojom::VideoBufferHandlePtr data,
     ::media::mojom::VideoFrameInfoPtr info,
     const gfx::Rect& content_rect,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
@@ -301,11 +300,18 @@ void DevToolsEyeDropper::OnFrameCaptured(
   mojo::Remote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
       callbacks_remote(std::move(callbacks));
 
-  if (!data.IsValid()) {
-    callbacks_remote->Done();
-    return;
-  }
-  base::ReadOnlySharedMemoryMapping mapping = data.Map();
+  CHECK(data->is_read_only_shmem_region());
+  base::ReadOnlySharedMemoryRegion& shmem_region =
+      data->get_read_only_shmem_region();
+
+  // The |data| parameter is not nullable and mojo type mapping for
+  // `base::ReadOnlySharedMemoryRegion` defines that nullable version of it is
+  // the same type, with null check being equivalent to IsValid() check. Given
+  // the above, we should never be able to receive a read only shmem region that
+  // is not valid - mojo will enforce it for us.
+  DCHECK(shmem_region.IsValid());
+
+  base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
   if (!mapping.IsValid()) {
     DLOG(ERROR) << "Shared memory mapping failed.";
     return;
@@ -350,5 +356,9 @@ void DevToolsEyeDropper::OnFrameCaptured(
 
   UpdateCursor();
 }
+
+void DevToolsEyeDropper::OnNewCropVersion(uint32_t crop_version) {}
+
+void DevToolsEyeDropper::OnFrameWithEmptyRegionCapture() {}
 
 void DevToolsEyeDropper::OnStopped() {}

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,15 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
+#import "base/strings/stringprintf.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/app/app_startup_parameters.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
-#include "ios/components/webui/web_ui_url_constants.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -316,7 +316,7 @@ TEST_F(AppStartupParametersTest, ParseSearchWidgetKit) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_FALSE(params.launchInIncognito);
+  EXPECT_NE(params.applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 1, 1);
 }
 
@@ -335,7 +335,7 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitSearch) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_FALSE(params.launchInIncognito);
+  EXPECT_NE(params.applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 2, 1);
 }
 
@@ -354,7 +354,7 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitIncognito) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_TRUE(params.launchInIncognito);
+  EXPECT_EQ(params.applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 3, 1);
 }
 
@@ -408,6 +408,77 @@ TEST_F(AppStartupParametersTest, ParseDinoWidgetKit) {
 
   EXPECT_EQ(params.externalURL, expected_url);
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 0, 1);
+}
+
+// Tests that the lockscreen launcher widget search url is handled correctly.
+TEST_F(AppStartupParametersTest, ParseLockscreenLauncherSearch) {
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL
+      URLWithString:@"chromewidgetkit://lockscreen-launcher-widget/search"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  std::string expected_url_string =
+      base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
+
+  EXPECT_EQ(params.externalURL.spec(), expected_url_string);
+  EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
+  EXPECT_NE(params.applicationMode, ApplicationModeForTabOpening::INCOGNITO);
+  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 6, 1);
+}
+
+// Tests that the lockscreen launcher widget incognito url is handled correctly.
+TEST_F(AppStartupParametersTest, ParseLockscreenLauncherIncognito) {
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL
+      URLWithString:@"chromewidgetkit://lockscreen-launcher-widget/incognito"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  std::string expected_url_string =
+      base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
+
+  EXPECT_EQ(params.externalURL.spec(), expected_url_string);
+  EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
+  EXPECT_EQ(params.applicationMode, ApplicationModeForTabOpening::INCOGNITO);
+  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 7, 1);
+}
+
+// Tests that the lockscreen launcher widget voice search url is
+// handled correctly.
+TEST_F(AppStartupParametersTest, ParseLockscreenLauncherVoiceSearch) {
+  base::HistogramTester histogram_tester;
+  NSURL* url =
+      [NSURL URLWithString:
+                 @"chromewidgetkit://lockscreen-launcher-widget/voicesearch"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  std::string expected_url_string =
+      base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
+
+  EXPECT_EQ(params.externalURL.spec(), expected_url_string);
+  EXPECT_EQ(params.postOpeningAction, START_VOICE_SEARCH);
+  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 8, 1);
+}
+
+// Tests that the lockscreen launcher widget game url is handled correctly.
+TEST_F(AppStartupParametersTest, ParseLockscreenLauncherGame) {
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL
+      URLWithString:@"chromewidgetkit://lockscreen-launcher-widget/game"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  GURL expected_url =
+      GURL(base::StringPrintf("%s://%s", kChromeUIScheme, kChromeUIDinoHost));
+
+  EXPECT_EQ(params.externalURL, expected_url);
+  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 9, 1);
 }
 
 }  // namespace

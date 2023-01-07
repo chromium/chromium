@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 #include <string.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/stack_container.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/rand_util.h"
@@ -23,6 +23,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "build/build_config.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/configuration.h"
@@ -42,6 +43,8 @@
 #include "mojo/core/shared_buffer_dispatcher.h"
 #include "mojo/core/user_message_impl.h"
 #include "mojo/core/watcher_dispatcher.h"
+#include "mojo/public/cpp/bindings/mojo_buildflags.h"
+#include "mojo/public/cpp/platform/platform_handle_internal.h"
 
 namespace mojo {
 namespace core {
@@ -58,6 +61,9 @@ const uint64_t kUnknownPipeIdForDebug = 0x7f7f7f7f7f7f7f7fUL;
 // The pipe name which must be used for the sole pipe attachment on any isolated
 // invitation.
 constexpr base::StringPiece kIsolatedInvitationPipeName = {"\0\0\0\0", 4};
+
+// Set according to the field trial "MojoAvoidRandomPipeId".
+bool g_avoid_random_pipe_id;
 
 void InvokeProcessErrorCallback(MojoProcessErrorHandler handler,
                                 uintptr_t context,
@@ -87,6 +93,9 @@ class ProcessDisconnectHandler {
   ProcessDisconnectHandler(MojoProcessErrorHandler handler, uintptr_t context)
       : handler_(handler), context_(context) {}
 
+  ProcessDisconnectHandler(const ProcessDisconnectHandler&) = delete;
+  ProcessDisconnectHandler& operator=(const ProcessDisconnectHandler&) = delete;
+
   ~ProcessDisconnectHandler() {
     InvokeProcessErrorCallback(handler_, context_, std::string(),
                                MOJO_PROCESS_ERROR_FLAG_DISCONNECTED);
@@ -95,8 +104,6 @@ class ProcessDisconnectHandler {
  private:
   const MojoProcessErrorHandler handler_;
   const uintptr_t context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessDisconnectHandler);
 };
 
 void RunMojoProcessErrorHandler(
@@ -108,10 +115,20 @@ void RunMojoProcessErrorHandler(
                              MOJO_PROCESS_ERROR_FLAG_NONE);
 }
 
+uint64_t MakePipeId() {
+#if BUILDFLAG(MOJO_TRACE_ENABLED)
+  return base::trace_event::GetNextGlobalTraceId();
+#else
+  if (g_avoid_random_pipe_id)
+    return 0;
+  return base::RandUint64();
+#endif
+}
+
 }  // namespace
 
 Core::Core() {
-  handles_.reset(new HandleTable);
+  handles_ = std::make_unique<HandleTable>();
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       handles_.get(), "MojoHandleTable", nullptr);
 }
@@ -459,8 +476,11 @@ MojoResult Core::GetMessageData(MojoMessageHandle message_handle,
   }
 
   RequestContext request_context;
-  return message->ExtractSerializedHandles(
+  Dispatcher::SetExtractingHandlesFromMessage(true);
+  MojoResult result = message->ExtractSerializedHandles(
       UserMessageImpl::ExtractBadHandlePolicy::kAbort, handles);
+  Dispatcher::SetExtractingHandlesFromMessage(false);
+  return result;
 }
 
 MojoResult Core::SetMessageContext(
@@ -505,15 +525,15 @@ MojoResult Core::CreateMessagePipe(const MojoCreateMessagePipeOptions* options,
   DCHECK(message_pipe_handle0);
   DCHECK(message_pipe_handle1);
 
-  uint64_t pipe_id = base::RandUint64();
+  uint64_t pipe_id = MakePipeId();
 
-  *message_pipe_handle0 = AddDispatcher(
-      new MessagePipeDispatcher(GetNodeController(), port0, pipe_id, 0));
+  *message_pipe_handle0 = AddDispatcher(new MessagePipeDispatcher(
+      GetNodeController(), port0, pipe_id, /*endpoint=*/0));
   if (*message_pipe_handle0 == MOJO_HANDLE_INVALID)
     return MOJO_RESULT_RESOURCE_EXHAUSTED;
 
-  *message_pipe_handle1 = AddDispatcher(
-      new MessagePipeDispatcher(GetNodeController(), port1, pipe_id, 1));
+  *message_pipe_handle1 = AddDispatcher(new MessagePipeDispatcher(
+      GetNodeController(), port1, pipe_id, /*endpoint=*/1));
   if (*message_pipe_handle1 == MOJO_HANDLE_INVALID) {
     scoped_refptr<Dispatcher> dispatcher0;
     {
@@ -658,7 +678,7 @@ MojoResult Core::CreateDataPipe(const MojoCreateDataPipeOptions* options,
   // consumer of this pipe, and it would be impossible to support such access
   // control on Android anyway.
   auto writable_region_handle = ring_buffer_region.PassPlatformHandle();
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
   // This isn't strictly necessary, but it does make the handle configuration
   // consistent with regular UnsafeSharedMemoryRegions.
   writable_region_handle.readonly_fd.reset();
@@ -679,7 +699,7 @@ MojoResult Core::CreateDataPipe(const MojoCreateDataPipeOptions* options,
   DCHECK(data_pipe_consumer_handle);
 
   base::UnsafeSharedMemoryRegion consumer_region = producer_region.Duplicate();
-  uint64_t pipe_id = base::RandUint64();
+  uint64_t pipe_id = MakePipeId();
   scoped_refptr<Dispatcher> producer = DataPipeProducerDispatcher::Create(
       GetNodeController(), port0, std::move(producer_region), create_options,
       pipe_id);
@@ -746,13 +766,14 @@ MojoResult Core::BeginWriteData(MojoHandle data_pipe_producer_handle,
       GetDispatcher(data_pipe_producer_handle));
   if (!dispatcher)
     return MOJO_RESULT_INVALID_ARGUMENT;
+  MojoBeginWriteDataFlags flags = MOJO_BEGIN_WRITE_DATA_FLAG_NONE;
   if (options) {
-    if (options->struct_size < sizeof(*options))
+    if (options->struct_size < sizeof(*options)) {
       return MOJO_RESULT_INVALID_ARGUMENT;
-    if (options->flags != MOJO_BEGIN_WRITE_DATA_FLAG_NONE)
-      return MOJO_RESULT_UNIMPLEMENTED;
+    }
+    flags = options->flags;
   }
-  return dispatcher->BeginWriteData(buffer, buffer_num_bytes);
+  return dispatcher->BeginWriteData(buffer, buffer_num_bytes, flags);
 }
 
 MojoResult Core::EndWriteData(MojoHandle data_pipe_producer_handle,
@@ -1021,7 +1042,7 @@ MojoResult Core::WrapPlatformSharedMemoryRegion(
     MojoHandle* mojo_handle) {
   DCHECK(size);
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
   if (access_mode == MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_WRITABLE) {
     if (num_platform_handles != 2)
       return MOJO_RESULT_INVALID_ARGUMENT;
@@ -1042,7 +1063,7 @@ MojoResult Core::WrapPlatformSharedMemoryRegion(
     return MOJO_RESULT_INVALID_ARGUMENT;
 
   base::UnguessableToken token =
-      base::UnguessableToken::Deserialize(guid->high, guid->low);
+      mojo::internal::PlatformHandleInternal::UnmarshalUnguessableToken(guid);
 
   base::subtle::PlatformSharedMemoryRegion::Mode mode;
   switch (access_mode) {
@@ -1114,9 +1135,8 @@ MojoResult Core::UnwrapPlatformSharedMemoryRegion(
   DCHECK(size);
   *size = region.GetSize();
 
-  base::UnguessableToken token = region.GetGUID();
-  guid->high = token.GetHighForSerialization();
-  guid->low = token.GetLowForSerialization();
+  *guid = mojo::internal::PlatformHandleInternal::MarshalUnguessableToken(
+      region.GetGUID());
 
   DCHECK(access_mode);
   switch (region.GetMode()) {
@@ -1142,7 +1162,7 @@ MojoResult Core::UnwrapPlatformSharedMemoryRegion(
   if (available_handle_storage_slots < 1)
     return MOJO_RESULT_RESOURCE_EXHAUSTED;
   *num_platform_handles = 1;
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
   if (region.GetMode() ==
       base::subtle::PlatformSharedMemoryRegion::Mode::kWritable) {
     if (available_handle_storage_slots < 2)
@@ -1246,7 +1266,7 @@ MojoResult Core::ExtractMessagePipeFromInvitation(
   }
 
   *message_pipe_handle =
-      ExtractMessagePipeFromInvitation(name_string.as_string());
+      ExtractMessagePipeFromInvitation(std::string(name_string));
   if (*message_pipe_handle == MOJO_HANDLE_INVALID)
     return MOJO_RESULT_RESOURCE_EXHAUSTED;
   return MOJO_RESULT_OK;
@@ -1309,7 +1329,7 @@ MojoResult Core::SendInvitation(
     return MOJO_RESULT_INVALID_ARGUMENT;
 
   ConnectionParams connection_params;
-#if defined(OS_WIN) || defined(OS_POSIX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
   if (transport_endpoint->type ==
       MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER) {
     connection_params =
@@ -1344,6 +1364,10 @@ MojoResult Core::SendInvitation(
   invitation_dispatcher->Close();
   for (auto& entry : attached_port_map)
     attached_ports.emplace_back(entry.first, std::move(entry.second));
+
+  connection_params.set_is_untrusted_process(
+      options &&
+      (options->flags & MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS));
 
   bool is_isolated =
       options && (options->flags & MOJO_SEND_INVITATION_FLAG_ISOLATED);
@@ -1408,7 +1432,7 @@ MojoResult Core::AcceptInvitation(
   }
 
   ConnectionParams connection_params;
-#if defined(OS_WIN) || defined(OS_POSIX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
   if (transport_endpoint->type ==
       MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER) {
     connection_params =
@@ -1505,6 +1529,11 @@ MojoResult Core::SetDefaultProcessErrorHandler(
 void Core::GetActiveHandlesForTest(std::vector<MojoHandle>* handles) {
   base::AutoLock lock(handles_->GetLock());
   handles_->GetActiveHandlesForTest(handles);
+}
+
+// static
+void Core::set_avoid_random_pipe_id(bool avoid_random_pipe_id) {
+  g_avoid_random_pipe_id = avoid_random_pipe_id;
 }
 
 // static

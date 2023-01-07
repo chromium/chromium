@@ -8,12 +8,18 @@ https://github.com/googlei18n/noto-cjk
 For license information, see the LICENSE_OFL.txt file
 
 3. Reason
-It's used for LayoutTests/fast/forms/text/text-font-height-mismatch.html.
+Firstly, it's used for fast/forms/text/text-font-height-mismatch.html.
 Noto CJK 1.004 or later has unique metrics.  If we request font-size:16px,
 resultant FontMetrics::height() is 24.  The imported font is helpful to test
 such cases.  See crbug.com/519331 for the details.
+Secondly, it's used in fast/ruby/ruby-position-modern-japanese-fonts.html to
+test Ruby positioning.
 
-Command to generate subset font:
-$ pyftsubset NotoSansCJKjp-Regular.otf cid03075
 
-where pyftsubset comes from https://github.com/behdad/fonttools
+To combine required glyphs for those two tests, use this command to generate the
+subsetted font (generated from Version 1.004 of the font):
+$ pyftsubset NotoSansCJKjp-Regular.otf\
+   --text="いうかきくしじせちってにゃやゅょよわん㘵和天定弱強折晴洋焼肉衷過雨食〫"\
+   --output-file=NotoSansCJKjp-Regular-subset.otf
+
+where pyftsubset comes from https://github.com/fonttools/fonttools

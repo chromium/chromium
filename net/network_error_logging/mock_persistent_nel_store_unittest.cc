@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/location.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/network_error_logging/mock_persistent_nel_store.h"
 #include "net/network_error_logging/network_error_logging_service.h"
@@ -21,10 +21,10 @@ namespace {
 
 NetworkErrorLoggingService::NelPolicy MakePolicy(
     const url::Origin& origin,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   NetworkErrorLoggingService::NelPolicy policy;
-  policy.key =
-      NetworkErrorLoggingService::NelPolicyKey(network_isolation_key, origin);
+  policy.key = NetworkErrorLoggingService::NelPolicyKey(
+      network_anonymization_key, origin);
   policy.expires = base::Time();
   policy.last_used = base::Time();
 
@@ -57,11 +57,11 @@ class MockPersistentNelStoreTest : public testing::Test {
  protected:
   const url::Origin origin_ =
       url::Origin::Create(GURL("https://example.test/"));
-  const NetworkIsolationKey network_isolation_key_ =
-      NetworkIsolationKey(SchemefulSite(GURL("https://foo.test/")),
-                          SchemefulSite(GURL("https://bar.test/")));
+  const NetworkAnonymizationKey network_anonymization_key_ =
+      NetworkAnonymizationKey(SchemefulSite(GURL("https://foo.test/")),
+                              SchemefulSite(GURL("https://bar.test/")));
   const NetworkErrorLoggingService::NelPolicy nel_policy_ =
-      MakePolicy(origin_, network_isolation_key_);
+      MakePolicy(origin_, network_anonymization_key_);
 };
 
 // Test that FinishLoading() runs the callback.
@@ -104,8 +104,8 @@ TEST_F(MockPersistentNelStoreTest, PreStoredPolicies) {
   store.FinishLoading(true /* load_success */);
   ASSERT_EQ(1u, loaded_policies.size());
   EXPECT_EQ(origin_, loaded_policies[0].key.origin);
-  EXPECT_EQ(network_isolation_key_,
-            loaded_policies[0].key.network_isolation_key);
+  EXPECT_EQ(network_anonymization_key_,
+            loaded_policies[0].key.network_anonymization_key);
 
   EXPECT_EQ(1u, store.GetAllCommands().size());
   EXPECT_TRUE(store.VerifyCommands(expected_commands));

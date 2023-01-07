@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@ import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedTitleHel
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -179,7 +180,7 @@ public class JsJavaInteractionTest {
         final OnReceivedTitleHelper onReceivedTitleHelper =
                 mContentsClient.getOnReceivedTitleHelper();
         final int titleCallCount = onReceivedTitleHelper.getCallCount();
-        ports[0].postMessage(NEW_TITLE, new MessagePort[0]);
+        ports[0].postMessage(new MessagePayload(NEW_TITLE), new MessagePort[0]);
         onReceivedTitleHelper.waitForCallback(titleCallCount);
 
         Assert.assertEquals(NEW_TITLE, onReceivedTitleHelper.getTitle());
@@ -537,7 +538,7 @@ public class JsJavaInteractionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
-    public void testDontAllowAddWebMessageLitenerWithTheSameJsObjectName() {
+    public void testDontAllowAddWebMessageLitenerWithTheSameJsObjectName() throws Throwable {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
         try {
             addWebMessageListenerOnUiThread(
@@ -1317,21 +1318,24 @@ public class JsJavaInteractionTest {
                 + "</body></html>";
     }
 
-    private static ScriptHandler addDocumentStartJavaScriptOnUiThread(
-            final AwContents awContents, final String script, final String[] allowedOriginRules) {
+    private static ScriptHandler addDocumentStartJavaScriptOnUiThread(final AwContents awContents,
+            final String script, final String[] allowedOriginRules) throws Exception {
+        AwActivityTestRule.checkJavaScriptEnabled(awContents);
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> awContents.addDocumentStartJavaScript(script, allowedOriginRules));
     }
 
     private static void addWebMessageListenerOnUiThread(final AwContents awContents,
             final String jsObjectName, final String[] allowedOriginRules,
-            final WebMessageListener listener) {
+            final WebMessageListener listener) throws Exception {
+        AwActivityTestRule.checkJavaScriptEnabled(awContents);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.addWebMessageListener(jsObjectName, allowedOriginRules, listener));
     }
 
     private static void removeWebMessageListenerOnUiThread(
-            final AwContents awContents, final String jsObjectName) {
+            final AwContents awContents, final String jsObjectName) throws Exception {
+        AwActivityTestRule.checkJavaScriptEnabled(awContents);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.removeWebMessageListener(jsObjectName));
     }

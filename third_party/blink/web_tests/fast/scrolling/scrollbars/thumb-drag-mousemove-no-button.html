@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/blink-coordinates-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<style>
+
+body { margin: 0 }
+#scroller {
+  position: absolute;
+  top: 100px;
+  left: 0px;
+  width: 100px;
+  height: 100px;
+  overflow: scroll;
+  border: 1px solid black;
+}
+.space {
+  height: 1000px;
+  width: 1000px;
+}
+
+</style>
+<div id="scroller" class="appearance">
+  <div class="space"></div>
+</div>
+<div style="height:8000px"></div>
+<script>
+
+promise_test(async (test) => {
+  resetScrollOffset(scroller);
+  let point = verticalThumb(scroller);
+  let {x, y} = scaleCssToDIPixels(point);
+
+  await mouseMoveTo(x, y);
+  await mouseDownAt(x, y);
+
+  // Mouse move with button pressed drags the scrollbar thumb.
+  await mouseMoveTo(x, y + 10, Buttons.LEFT);
+  let endPos = scroller.scrollTop;
+  assert_greater_than(endPos, 0);
+
+  // Without any button pressed, this mousemove should not affect the scrollbar,
+  // even though we were previously mid-drag.
+  await mouseMoveTo(x, y + 20);
+
+  assert_equals(scroller.scrollTop, endPos);
+}, "Scrollbar not dragged by mousemove without button pressed.");
+
+</script>

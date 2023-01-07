@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ui {
@@ -48,6 +47,10 @@ class COMPONENT_EXPORT(UI_BASE) ButtonMenuItemModel {
   };
 
   ButtonMenuItemModel(int string_id, ButtonMenuItemModel::Delegate* delegate);
+
+  ButtonMenuItemModel(const ButtonMenuItemModel&) = delete;
+  ButtonMenuItemModel& operator=(const ButtonMenuItemModel&) = delete;
+
   ~ButtonMenuItemModel();
 
   // Adds a button that will emit |command_id|. All buttons created through
@@ -69,36 +72,36 @@ class COMPONENT_EXPORT(UI_BASE) ButtonMenuItemModel {
   void AddSpace();
 
   // Returns the number of items for iteration.
-  int GetItemCount() const;
+  size_t GetItemCount() const;
 
   // Returns what kind of item is at |index|.
-  ButtonType GetTypeAt(int index) const;
+  ButtonType GetTypeAt(size_t index) const;
 
   // Changes a position into a command ID.
-  int GetCommandIdAt(int index) const;
+  int GetCommandIdAt(size_t index) const;
 
   // Whether the label for item |index| changes.
-  bool IsItemDynamicAt(int index) const;
+  bool IsItemDynamicAt(size_t index) const;
 
   // Gets the accelerator information for the specified index, returning true if
   // there is a shortcut accelerator for the item, false otherwise.
-  bool GetAcceleratorAt(int index, ui::Accelerator* accelerator) const;
+  bool GetAcceleratorAt(size_t index, ui::Accelerator* accelerator) const;
 
   // Returns the current label value for the button at |index|.
-  std::u16string GetLabelAt(int index) const;
+  std::u16string GetLabelAt(size_t index) const;
 
   // If the button at |index| should have its size equalized along with all
   // other items that have their PartOfGroup bit set.
-  bool PartOfGroup(int index) const;
+  bool PartOfGroup(size_t index) const;
 
   // Called when the item at the specified index has been activated.
-  void ActivatedAt(int index);
+  void ActivatedAt(size_t index);
 
   // Returns the enabled state of the button at |index|.
-  bool IsEnabledAt(int index) const;
+  bool IsEnabledAt(size_t index) const;
 
   // Returns whether clicking on the button at |index| dismisses the menu.
-  bool DismissesMenuAt(int index) const;
+  bool DismissesMenuAt(size_t index) const;
 
   // Returns the enabled state of the command specified by |command_id|.
   bool IsCommandIdEnabled(int command_id) const;
@@ -115,9 +118,7 @@ class COMPONENT_EXPORT(UI_BASE) ButtonMenuItemModel {
   struct Item;
   std::vector<Item> items_;
 
-  Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ButtonMenuItemModel);
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ui

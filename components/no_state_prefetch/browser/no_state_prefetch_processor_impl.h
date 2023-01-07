@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,7 @@ class NoStatePrefetchProcessorImpl
 
   // The ID of NoStatePrefetchLinkManager::LinkTrigger. Used for canceling or
   // abandoning prefetch.
-  base::Optional<int> link_trigger_id_;
+  absl::optional<int> link_trigger_id_;
 
   mojo::Receiver<blink::mojom::NoStatePrefetchProcessor> receiver_{this};
 };

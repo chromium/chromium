@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+      const t = async_test('offlineaudiocontext-closed-state');
+
+      // See: https://crbug.com/1230579 - This reproduction should not crash
+      // even with DCHECKs enabled.
+      const onload = () => {
+        const oac = new OfflineAudioContext('17', '51', '271513');
+        oac.oncomplete = t.step_func_done(() => {
+          // .resume() call should not crash on DCHECK and the context state
+          // should be 'closed'.
+          oac.resume();
+          assert_equals(oac.state, 'closed');
+        });
+        oac.startRendering();
+      }
+
+      window.addEventListener('load', t.step_func(onload));
+    </script>
+  </body>
+</html>

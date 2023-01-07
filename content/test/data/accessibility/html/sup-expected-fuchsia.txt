@@ -1,0 +1,11 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='This text contains'
+++++++++++UNKNOWN label='This text contains'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='superscript'
+++++++++++++UNKNOWN label='superscript'
+++++++++STATIC_TEXT label='text.'
+++++++++++UNKNOWN label='text.'

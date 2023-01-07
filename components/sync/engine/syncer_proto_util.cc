@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,18 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/engine/net/server_connection_manager.h"
 #include "components/sync/engine/syncer.h"
 #include "components/sync/engine/traffic_logger.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/sync_protocol_error.h"
 #include "google_apis/google_api_keys.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using std::string;
 using std::stringstream;
@@ -30,48 +33,7 @@ namespace syncer {
 namespace {
 
 // Time to backoff syncing after receiving a throttled response.
-constexpr base::TimeDelta kSyncDelayAfterThrottled =
-    base::TimeDelta::FromHours(2);
-
-void LogResponseProfilingData(const ClientToServerResponse& response) {
-  if (response.has_profiling_data()) {
-    stringstream response_trace;
-    response_trace << "Server response trace:";
-
-    if (response.profiling_data().has_user_lookup_time()) {
-      response_trace << " user lookup: "
-                     << response.profiling_data().user_lookup_time() << "ms";
-    }
-
-    if (response.profiling_data().has_meta_data_write_time()) {
-      response_trace << " meta write: "
-                     << response.profiling_data().meta_data_write_time()
-                     << "ms";
-    }
-
-    if (response.profiling_data().has_meta_data_read_time()) {
-      response_trace << " meta read: "
-                     << response.profiling_data().meta_data_read_time() << "ms";
-    }
-
-    if (response.profiling_data().has_file_data_write_time()) {
-      response_trace << " file write: "
-                     << response.profiling_data().file_data_write_time()
-                     << "ms";
-    }
-
-    if (response.profiling_data().has_file_data_read_time()) {
-      response_trace << " file read: "
-                     << response.profiling_data().file_data_read_time() << "ms";
-    }
-
-    if (response.profiling_data().has_total_request_time()) {
-      response_trace << " total time: "
-                     << response.profiling_data().total_request_time() << "ms";
-    }
-    DVLOG(1) << response_trace.str();
-  }
-}
+constexpr base::TimeDelta kSyncDelayAfterThrottled = base::Hours(2);
 
 SyncerError ServerConnectionErrorAsSyncerError(
     const HttpResponse::ServerConnectionCode server_status,
@@ -121,12 +83,6 @@ SyncProtocolErrorType PBErrorTypeToSyncProtocolErrorType(
       return UNKNOWN_ERROR;
     case sync_pb::SyncEnums::ENCRYPTION_OBSOLETE:
       return ENCRYPTION_OBSOLETE;
-    case sync_pb::SyncEnums::DEPRECATED_ACCESS_DENIED:
-    case sync_pb::SyncEnums::DEPRECATED_AUTH_EXPIRED:
-    case sync_pb::SyncEnums::DEPRECATED_AUTH_INVALID:
-    case sync_pb::SyncEnums::DEPRECATED_USER_NOT_ACTIVATED:
-    case sync_pb::SyncEnums::DEPRECATED_USER_ROLLBACK:
-      return UNKNOWN_ERROR;
   }
 
   NOTREACHED();
@@ -137,10 +93,6 @@ ClientAction PBActionToClientAction(const sync_pb::SyncEnums::Action& action) {
   switch (action) {
     case sync_pb::SyncEnums::UPGRADE_CLIENT:
       return UPGRADE_CLIENT;
-    case sync_pb::SyncEnums::DEPRECATED_CLEAR_USER_DATA_AND_RESYNC:
-    case sync_pb::SyncEnums::DEPRECATED_ENABLE_SYNC_ON_ACCOUNT:
-    case sync_pb::SyncEnums::DEPRECATED_STOP_AND_RESTART_SYNC:
-    case sync_pb::SyncEnums::DEPRECATED_DISABLE_SYNC_ON_CLIENT:
     case sync_pb::SyncEnums::UNKNOWN_ACTION:
       return UNKNOWN_ACTION;
   }
@@ -232,17 +184,8 @@ void SaveBagOfChipsFromResponse(const sync_pb::ClientToServerResponse& response,
 }  // namespace
 
 ModelTypeSet GetTypesToMigrate(const ClientToServerResponse& response) {
-  ModelTypeSet to_migrate;
-  for (int i = 0; i < response.migrated_data_type_id_size(); i++) {
-    int field_number = response.migrated_data_type_id(i);
-    ModelType model_type = GetModelTypeFromSpecificsFieldNumber(field_number);
-    if (!IsRealDataType(model_type)) {
-      DLOG(WARNING) << "Unknown field number " << field_number;
-      continue;
-    }
-    to_migrate.Put(model_type);
-  }
-  return to_migrate;
+  return GetModelTypeSetFromSpecificsFieldNumberList(
+      response.migrated_data_type_id());
 }
 
 SyncProtocolError ConvertErrorPBToSyncProtocolError(
@@ -257,15 +200,9 @@ SyncProtocolError ConvertErrorPBToSyncProtocolError(
     // THROTTLED and PARTIAL_FAILURE are currently the only error codes
     // that uses |error_data_types|.
     // In both cases, |error_data_types| are throttled.
-    for (int i = 0; i < error.error_data_type_ids_size(); ++i) {
-      int field_number = error.error_data_type_ids(i);
-      ModelType model_type = GetModelTypeFromSpecificsFieldNumber(field_number);
-      if (!IsRealDataType(model_type)) {
-        DLOG(WARNING) << "Unknown field number " << field_number;
-        continue;
-      }
-      sync_protocol_error.error_data_types.Put(model_type);
-    }
+    sync_protocol_error.error_data_types =
+        GetModelTypeSetFromSpecificsFieldNumberList(
+            error.error_data_type_ids());
   }
 
   return sync_protocol_error;
@@ -288,6 +225,9 @@ SyncProtocolError SyncerProtoUtil::GetProtocolErrorFromResponse(
   if (IsSyncDisabledByAdmin(response)) {
     sync_protocol_error.error_type = DISABLED_BY_ADMIN;
     sync_protocol_error.action = STOP_SYNC_FOR_DISABLED_ACCOUNT;
+  } else if (response.has_error()) {
+    // If the server provides explicit error information, just honor it.
+    sync_protocol_error = ConvertErrorPBToSyncProtocolError(response.error());
   } else if (!ProcessResponseBirthday(response, context)) {
     // If sync isn't disabled, first check for a birthday mismatch error.
     if (response.error_code() == sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE) {
@@ -298,9 +238,6 @@ SyncProtocolError SyncerProtoUtil::GetProtocolErrorFromResponse(
       sync_protocol_error.error_type = NOT_MY_BIRTHDAY;
       sync_protocol_error.action = DISABLE_SYNC_ON_CLIENT;
     }
-  } else if (response.has_error()) {
-    // This is a new server. Just get the error from the protocol.
-    sync_protocol_error = ConvertErrorPBToSyncProtocolError(response.error());
   } else {
     // Legacy server implementation. Compute the error based on |error_code|.
     sync_protocol_error = ErrorCodeToSyncProtocolError(response.error_code());
@@ -324,7 +261,6 @@ void SyncerProtoUtil::SetProtocolVersion(ClientToServerMessage* msg) {
 
 // static
 bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
-                                            SyncCycle* cycle,
                                             const ClientToServerMessage& msg,
                                             ClientToServerResponse* response) {
   DCHECK(msg.has_protocol_version());
@@ -357,10 +293,19 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
 
   const base::Time start_time = base::Time::Now();
 
+  // User-initiated sync messages should not be batched. GET_UPDATES messages
+  // are mostly safe to consider non-user-initiated.
+  // TODO(https://crbug.com/1293657): Confirm that treating GET_UPDATES as
+  // non-user-initiated is reasonable. GET_UPDATES messages could be latency
+  // sensitive since these requests most commonly happen because of some
+  // user-initiated changes on a different device.
+  bool allow_batching =
+      msg.message_contents() == ClientToServerMessage::GET_UPDATES;
+
   // Fills in buffer_out.
   std::string buffer_out;
   HttpResponse http_response =
-      scm->PostBufferWithCachedAuth(buffer_in, &buffer_out);
+      scm->PostBufferWithCachedAuth(buffer_in, allow_batching, &buffer_out);
   if (http_response.server_status != HttpResponse::SERVER_CONNECTION_OK) {
     LOG(WARNING) << "Error posting from syncer:" << http_response;
     return false;
@@ -392,8 +337,7 @@ base::TimeDelta SyncerProtoUtil::GetThrottleDelay(
   if (response.has_client_command()) {
     const sync_pb::ClientCommand& command = response.client_command();
     if (command.has_throttle_delay_seconds()) {
-      throttle_delay =
-          base::TimeDelta::FromSeconds(command.throttle_delay_seconds());
+      throttle_delay = base::Seconds(command.throttle_delay_seconds());
     }
   }
   return throttle_delay;
@@ -431,7 +375,7 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
   DCHECK(msg.has_invalidator_client_id());
 
   LogClientToServerMessage(msg);
-  if (!PostAndProcessHeaders(cycle->context()->connection_manager(), cycle, msg,
+  if (!PostAndProcessHeaders(cycle->context()->connection_manager(), msg,
                              response)) {
     // There was an error establishing communication with the server.
     // We can not proceed beyond this point.
@@ -466,7 +410,7 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
 
     if (command.has_set_sync_poll_interval()) {
       base::TimeDelta interval =
-          base::TimeDelta::FromSeconds(command.set_sync_poll_interval());
+          base::Seconds(command.set_sync_poll_interval());
       if (interval.is_zero()) {
         DLOG(WARNING) << "Received zero poll interval from server. Ignoring.";
       } else {
@@ -478,7 +422,7 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
     if (command.has_sessions_commit_delay_seconds()) {
       std::map<ModelType, base::TimeDelta> delay_map;
       delay_map[SESSIONS] =
-          base::TimeDelta::FromSeconds(command.sessions_commit_delay_seconds());
+          base::Seconds(command.sessions_commit_delay_seconds());
       cycle->delegate()->OnReceivedCustomNudgeDelays(delay_map);
     }
 
@@ -489,7 +433,7 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
 
     if (command.has_gu_retry_delay_seconds()) {
       cycle->delegate()->OnReceivedGuRetryDelay(
-          base::TimeDelta::FromSeconds(command.gu_retry_delay_seconds()));
+          base::Seconds(command.gu_retry_delay_seconds()));
     }
 
     if (command.custom_nudge_delays_size() > 0) {
@@ -500,12 +444,31 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
       for (int i = 0; i < command.custom_nudge_delays_size(); ++i) {
         ModelType type = GetModelTypeFromSpecificsFieldNumber(
             command.custom_nudge_delays(i).datatype_id());
-        if (ProtocolTypes().Has(type)) {
-          delay_map[type] = base::TimeDelta::FromMilliseconds(
-              command.custom_nudge_delays(i).delay_ms());
+        if (type != UNSPECIFIED) {
+          delay_map[type] =
+              base::Milliseconds(command.custom_nudge_delays(i).delay_ms());
         }
       }
       cycle->delegate()->OnReceivedCustomNudgeDelays(delay_map);
+    }
+
+    absl::optional<int> max_tokens;
+    if (command.has_extension_types_max_tokens()) {
+      max_tokens = command.extension_types_max_tokens();
+    }
+    absl::optional<base::TimeDelta> refill_interval;
+    if (command.has_extension_types_refill_interval_seconds()) {
+      refill_interval =
+          base::Seconds(command.extension_types_refill_interval_seconds());
+    }
+    absl::optional<base::TimeDelta> depleted_quota_nudge_delay;
+    if (command.has_extension_types_depleted_quota_nudge_delay_seconds()) {
+      depleted_quota_nudge_delay = base::Seconds(
+          command.extension_types_depleted_quota_nudge_delay_seconds());
+    }
+    if (max_tokens || refill_interval || depleted_quota_nudge_delay) {
+      cycle->delegate()->OnReceivedQuotaParamsForExtensionTypes(
+          max_tokens, refill_interval, depleted_quota_nudge_delay);
     }
   }
 
@@ -517,7 +480,6 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
                    << "recent version.";
       return SyncerError(SyncerError::SERVER_RETURN_UNKNOWN_ERROR);
     case SYNC_SUCCESS:
-      LogResponseProfilingData(*response);
       return SyncerError(SyncerError::SYNCER_OK);
     case THROTTLED:
       if (sync_protocol_error.error_data_types.Empty()) {

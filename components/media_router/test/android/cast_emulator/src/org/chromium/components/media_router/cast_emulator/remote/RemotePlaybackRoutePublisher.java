@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,6 @@ import androidx.mediarouter.media.MediaSessionStatus;
 import com.google.android.gms.cast.CastMediaControlIntent;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.components.media_router.cast_emulator.RoutePublisher;
 
 import java.util.ArrayList;
@@ -476,7 +475,6 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
         }
     }
 
-    @RemovableInRelease
     private String getMediaControlIntentDebugString(Intent intent) {
         return "uri=" + intent.getData() + ", mime=" + intent.getType()
                 + ", sid=" + intent.getStringExtra(MediaControlIntent.EXTRA_SESSION_ID)

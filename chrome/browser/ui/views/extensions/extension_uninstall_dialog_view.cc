@@ -1,44 +1,24 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <string>
 
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
+#include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
-#include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/constrained_window/constrained_window_views.h"
-#include "components/strings/grit/components_strings.h"
-#include "extensions/common/constants.h"
-#include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/dialog_model.h"
-#include "ui/compositor/compositor.h"
-#include "ui/compositor/layer.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/checkbox.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/window/dialog_delegate.h"
 
 namespace {
 
-constexpr int kCheckboxId = 1;
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCheckboxId);
 
 // Views implementation of the uninstall dialog.
 class ExtensionUninstallDialogViews
@@ -60,12 +40,13 @@ class ExtensionUninstallDialogViews
 
  private:
   void Show() override;
+  void Close() override;
 
   // Pointer to the DialogModel for the dialog. This is cleared when the dialog
   // is being closed and OnDialogClosed is reported. As such it prevents access
   // to the dialog after it's been closed, as well as preventing multiple
   // reports of OnDialogClosed.
-  ui::DialogModel* dialog_model_ = nullptr;
+  raw_ptr<ui::DialogModel> dialog_model_ = nullptr;
 
   // WeakPtrs because the associated dialog may outlive |this|, which is owned
   // by the caller of extensions::ExtensionsUninstallDialog::Create().
@@ -87,12 +68,12 @@ ExtensionUninstallDialogViews::~ExtensionUninstallDialogViews() {
 void ExtensionUninstallDialogViews::Show() {
   // TODO(pbos): Consider separating dialog model from views code.
   ui::DialogModel::Builder dialog_builder;
-  dialog_builder
+  dialog_builder.SetInternalName("ExtensionUninstallDialog")
       .SetTitle(
           l10n_util::GetStringFUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_TITLE,
                                      base::UTF8ToUTF16(extension()->name())))
       .OverrideShowCloseButton(false)
-      .SetWindowClosingCallback(
+      .SetDialogDestroyingCallback(
           base::BindOnce(&ExtensionUninstallDialogViews::DialogClosing,
                          weak_ptr_factory_.GetWeakPtr()))
       .SetIcon(ui::ImageModel::FromImageSkia(
@@ -108,7 +89,7 @@ void ExtensionUninstallDialogViews::Show() {
           base::OnceClosure() /* Cancel is covered by WindowClosingCallback */);
 
   if (triggering_extension()) {
-    dialog_builder.AddBodyText(
+    dialog_builder.AddParagraph(
         ui::DialogModelLabel(
             l10n_util::GetStringFUTF16(
                 IDS_EXTENSION_PROMPT_UNINSTALL_TRIGGERED_BY_EXTENSION,
@@ -125,36 +106,12 @@ void ExtensionUninstallDialogViews::Show() {
   std::unique_ptr<ui::DialogModel> dialog_model = dialog_builder.Build();
   dialog_model_ = dialog_model.get();
 
-  // TODO(devlin): There's a lot of shared-ish code between this and
-  // PrintJobConfirmationDialogView. We should pull it into a common location.
-  BrowserView* const browser_view =
-      parent() ? BrowserView::GetBrowserViewForNativeWindow(parent()) : nullptr;
-  ExtensionsToolbarContainer* const container =
-      browser_view ? browser_view->toolbar_button_provider()
-                         ->GetExtensionsToolbarContainer()
-                   : nullptr;
-  ToolbarActionView* anchor_view =
-      container ? container->GetViewForId(extension()->id()) : nullptr;
+  ShowDialog(parent(), extension()->id(), std::move(dialog_model));
+}
 
-  if (anchor_view) {
-    DCHECK(container);
-    auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-        std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
-
-      container->ShowWidgetForExtension(
-          views::BubbleDialogDelegateView::CreateBubble(std::move(bubble)),
-          extension()->id());
-  } else {
-    // TODO(pbos): Add unique_ptr version of CreateBrowserModalDialogViews and
-    // remove .release().
-    constrained_window::CreateBrowserModalDialogViews(
-        views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
-                                                  ui::MODAL_TYPE_WINDOW)
-            .release(),
-        parent())
-        ->Show();
-  }
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION_UNINSTALL);
+void ExtensionUninstallDialogViews::Close() {
+  DCHECK(dialog_model_);
+  dialog_model_->host()->Close();
 }
 
 void ExtensionUninstallDialogViews::DialogAccepted() {

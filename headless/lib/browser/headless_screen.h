@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define HEADLESS_LIB_BROWSER_HEADLESS_SCREEN_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"
@@ -21,6 +20,10 @@ class HeadlessScreen : public display::ScreenBase {
  public:
   // Creates a display::Screen of the specified size (physical pixels).
   static HeadlessScreen* Create(const gfx::Size& size);
+
+  HeadlessScreen(const HeadlessScreen&) = delete;
+  HeadlessScreen& operator=(const HeadlessScreen&) = delete;
+
   ~HeadlessScreen() override;
 
  protected:
@@ -36,8 +39,6 @@ class HeadlessScreen : public display::ScreenBase {
 
  private:
   explicit HeadlessScreen(const gfx::Rect& screen_bounds);
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessScreen);
 };
 
 }  // namespace headless

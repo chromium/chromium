@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,9 @@
 
 #include <stddef.h>
 
-#include <string>
-
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -29,14 +27,14 @@ class AutofillPopupView {
 
   // If not null, invalidates the given rows and redraws them.
   virtual void OnSelectedRowChanged(
-      base::Optional<int> previous_row_selection,
-      base::Optional<int> current_row_selection) = 0;
+      absl::optional<int> previous_row_selection,
+      absl::optional<int> current_row_selection) = 0;
 
   // Refreshes the position and redraws popup when suggestions change.
   virtual void OnSuggestionsChanged() = 0;
 
   // Return the autofill popup view's ax unique id.
-  virtual base::Optional<int32_t> GetAxUniqueId() = 0;
+  virtual absl::optional<int32_t> GetAxUniqueId() = 0;
 
   // Factory function for creating the view.
   static AutofillPopupView* Create(

@@ -1,10 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/handwriting/handwriting_drawing.h"
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_drawing_segment.h"
@@ -23,7 +22,7 @@ namespace {
 void OnRecognitionResult(
     ScriptPromiseResolver* resolver,
     ScriptState* script_state,
-    base::Optional<Vector<handwriting::mojom::blink::HandwritingPredictionPtr>>
+    absl::optional<Vector<handwriting::mojom::blink::HandwritingPredictionPtr>>
         predictions) {
   // If `predictions` does not have value, it means the some error happened in
   // recognition. Otherwise, if it has value but the vector is empty, it means
@@ -94,8 +93,8 @@ ScriptPromise HandwritingDrawing::getPrediction(ScriptState* script_state) {
       std::move(strokes),
       mojo::ConvertTo<handwriting::mojom::blink::HandwritingHintsPtr>(
           hints_.Get()),
-      WTF::Bind(&OnRecognitionResult, WrapPersistent(resolver),
-                WrapPersistent(script_state)));
+      WTF::BindOnce(&OnRecognitionResult, WrapPersistent(resolver),
+                    WrapPersistent(script_state)));
 
   return promise;
 }

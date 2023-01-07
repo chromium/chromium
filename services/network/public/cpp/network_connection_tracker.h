@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -58,6 +57,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkConnectionTracker
   // that should be used. NetworkConnectionTracker does not need to be destroyed
   // before the network service.
   explicit NetworkConnectionTracker(BindingCallback callback);
+
+  NetworkConnectionTracker(const NetworkConnectionTracker&) = delete;
+  NetworkConnectionTracker& operator=(const NetworkConnectionTracker&) = delete;
 
   ~NetworkConnectionTracker() override;
 
@@ -153,8 +155,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkConnectionTracker
   // Only the initialization and re-initialization of |this| are required to
   // be bound to the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionTracker);
 };
 
 }  // namespace network

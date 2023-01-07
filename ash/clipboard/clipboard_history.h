@@ -1,23 +1,28 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_H_
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_H_
 
+#include <deque>
 #include <list>
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history_item.h"
-#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/token.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 
 namespace ash {
 
 class ScopedClipboardHistoryPauseImpl;
+
+namespace clipboard_history_util {
+enum class PauseBehavior;
+}  // namespace clipboard_history_util
 
 // Keeps track of the last few things saved in the clipboard.
 class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
@@ -72,18 +77,41 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
   // `Resume()`.
   friend class ScopedClipboardHistoryPauseImpl;
 
-  // Adds `data` to the `history_list_` if it's supported. If `data` is not
-  // supported by clipboard history, this method no-ops.
-  void MaybeCommitData(ui::ClipboardData data);
+  // Ensures that the clipboard buffer contains the same data as the item at the
+  // top of clipboard history. If clipboard history is empty, then the clipboard
+  // is cleared.
+  void SyncClipboardToClipboardHistory();
 
-  void Pause();
-  void Resume();
+  // Adds `data` to the top of the history list if `data` is supported by
+  // clipboard history. If `data` is not supported, this method no-ops. If
+  // `data` is already in the history list, `data` will be moved to the top of
+  // the list.
+  void MaybeCommitData(ui::ClipboardData data, bool is_reorder_on_paste);
+
+  // When `Pause()` is called, clipboard accesses will modify clipboard history
+  // according to `pause_behavior` until `Resume()` is called with that pause's
+  // `pause_id`. If `Pause()` is called while another pause is active, the
+  // newest pause's behavior will be respected. When the newest pause ends, the
+  // next newest pause's behavior will be restored.
+  const base::Token& Pause(
+      clipboard_history_util::PauseBehavior pause_behavior);
+  void Resume(const base::Token& pause_id);
+  struct PauseInfo {
+    base::Token pause_id;
+    clipboard_history_util::PauseBehavior pause_behavior;
+  };
 
   // Keeps track of consecutive clipboard operations and records metrics.
   void OnClipboardOperation(bool copy);
 
-  // The count of pauses.
-  size_t num_pause_ = 0;
+  // Active clipboard history pauses, stored in LIFO order so that the newest
+  // pause dictates behavior. Rather than a stack, we use a deque where the
+  // newest pause is added to and removed from the front. Not using a stack
+  // allows us to find and remove the correct pause in cases where pauses are
+  // not destroyed in LIFO order, and adding to the front of the deque rather
+  // than the back allows us to iterate forward when searching for the correct
+  // pause, simplifying removal logic.
+  std::deque<PauseInfo> pauses_;
 
   // The number of consecutive copies, reset after a paste.
   int consecutive_copies_ = 0;

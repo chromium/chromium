@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,22 +21,22 @@
 // default value for the cache size.
 - (instancetype)init NS_UNAVAILABLE;
 
-// |maxCacheSize| value is used to specify the maximum amount of items that the
+// `maxCacheSize` value is used to specify the maximum amount of items that the
 // cache can hold before starting to evict items.
 - (instancetype)initWithCacheSize:(NSUInteger)maxCacheSize
     NS_DESIGNATED_INITIALIZER;
 
-// Query the cache for an item corresponding to the |key|. Returns nil if there
+// Query the cache for an item corresponding to the `key`. Returns nil if there
 // is no item corresponding to that key.
 - (id)objectForKey:(id<NSObject>)key;
 
-// Adds the pair |key|, |obj| to the cache. If the value of the maxCacheSize
+// Adds the pair `key`, `obj` to the cache. If the value of the maxCacheSize
 // property is non zero, the cache may evict an elements if the maximum cache
-// size is reached. If the |key| is already present in the cache, the value for
-// that key is replaced by |object|.
+// size is reached. If the `key` is already present in the cache, the value for
+// that key is replaced by `object`.
 - (void)setObject:(id<NSObject>)object forKey:(NSObject*)key;
 
-// Remove the key, value pair corresponding to the given |key|.
+// Remove the key, value pair corresponding to the given `key`.
 - (void)removeObjectForKey:(id<NSObject>)key;
 
 // Remove all objects from the cache.

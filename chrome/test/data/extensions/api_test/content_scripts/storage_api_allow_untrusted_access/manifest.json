@@ -1,0 +1,16 @@
+{
+  "name": "content_script_storage_api_allow_untrusted_access",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "Tests the Storage API behavior with untrusted access level from a content script (which means the extension allows storage access to the content script).",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["http://*/extensions/test_file.html"],
+      "js": ["content_script.js"]
+    }
+  ]
+}

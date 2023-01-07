@@ -1,0 +1,12 @@
+Tests that isolation status is reported correctly
+COEP status
+{
+    reportOnlyValue : None
+    value : RequireCorp
+}
+COOP status
+{
+    reportOnlyValue : UnsafeNone
+    value : SameOriginPlusCoep
+}
+

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,6 @@ class ContentScriptLoadWaiter : public UserScriptLoader::Observer {
   ContentScriptLoadWaiter& operator=(const ContentScriptLoadWaiter& other) =
       delete;
 
-  // Restricts the waiter to wait until scripts from the provided mojom::HostID
-  // are loaded.
-  void RestrictToHostID(const mojom::HostID& host_id);
-
   // Waits until the observed UserScriptLoader completes a script load via the
   // OnScriptsLoaded event.
   void Wait();
@@ -40,9 +36,10 @@ class ContentScriptLoadWaiter : public UserScriptLoader::Observer {
   void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) override;
 
   mojom::HostID host_id_;
+
   base::RunLoop run_loop_;
   base::ScopedObservation<UserScriptLoader, UserScriptLoader::Observer>
-      scoped_observation_{this};
+      loader_observation_{this};
 };
 
 }  // namespace extensions

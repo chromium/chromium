@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <array>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace remoting {
@@ -17,6 +16,10 @@ namespace remoting {
 class Canvas {
  public:
   Canvas() {}
+
+  Canvas(const Canvas&) = delete;
+  Canvas& operator=(const Canvas&) = delete;
+
   virtual ~Canvas() {}
 
   // Clears the frame.
@@ -67,9 +70,6 @@ class Canvas {
 
   // Intended to be given to a Drawable to draw onto.
   virtual base::WeakPtr<Canvas> GetWeakPtr() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Canvas);
 };
 
 }  // namespace remoting

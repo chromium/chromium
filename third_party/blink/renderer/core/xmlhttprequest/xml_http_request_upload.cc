@@ -25,10 +25,10 @@
 
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request_upload.h"
 
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -52,8 +52,8 @@ void XMLHttpRequestUpload::DispatchProgressEvent(
   last_bytes_sent_ = bytes_sent;
   last_total_bytes_to_be_sent_ = total_bytes_to_be_sent;
   probe::AsyncTask async_task(GetExecutionContext(),
-                              xml_http_request_->async_task_id(), "progress",
-                              xml_http_request_->IsAsync());
+                              xml_http_request_->async_task_context(),
+                              "progress", xml_http_request_->IsAsync());
   DispatchEvent(*ProgressEvent::Create(event_type_names::kProgress, true,
                                        bytes_sent, total_bytes_to_be_sent), "XMLHttpRequestUpload::DispatchProgressEvent");
 }
@@ -66,7 +66,7 @@ void XMLHttpRequestUpload::DispatchEventAndLoadEnd(const AtomicString& type,
          type == event_type_names::kError ||
          type == event_type_names::kTimeout);
   probe::AsyncTask async_task(GetExecutionContext(),
-                              xml_http_request_->async_task_id(), "event",
+                              xml_http_request_->async_task_context(), "event",
                               xml_http_request_->IsAsync());
   DispatchEvent(
       *ProgressEvent::Create(type, length_computable, bytes_sent, total), "XMLHttpRequestUpload::DispatchEventAndLoadEnd #1");
@@ -78,7 +78,7 @@ void XMLHttpRequestUpload::HandleRequestError(const AtomicString& type) {
   bool length_computable = last_total_bytes_to_be_sent_ > 0 &&
                            last_bytes_sent_ <= last_total_bytes_to_be_sent_;
   probe::AsyncTask async_task(GetExecutionContext(),
-                              xml_http_request_->async_task_id(), "error",
+                              xml_http_request_->async_task_context(), "error",
                               xml_http_request_->IsAsync());
   DispatchEventAndLoadEnd(type, length_computable, last_bytes_sent_,
                           last_total_bytes_to_be_sent_);

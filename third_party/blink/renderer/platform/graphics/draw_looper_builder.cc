@@ -32,7 +32,6 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -40,6 +39,7 @@
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkPaint.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -56,7 +56,7 @@ void DrawLooperBuilder::AddUnmodifiedContent() {
   sk_draw_looper_builder_.addLayerOnTop(info);
 }
 
-void DrawLooperBuilder::AddShadow(const FloatSize& offset,
+void DrawLooperBuilder::AddShadow(const gfx::Vector2dF& offset,
                                   float blur,
                                   const Color& color,
                                   ShadowTransformMode shadow_transform_mode,
@@ -85,7 +85,7 @@ void DrawLooperBuilder::AddShadow(const FloatSize& offset,
   if (blur)
     info.fPaintBits |= SkLayerDrawLooper::kMaskFilter_Bit;  // our blur
   info.fPaintBits |= SkLayerDrawLooper::kColorFilter_Bit;
-  info.fOffset.set(offset.Width(), offset.Height());
+  info.fOffset.set(offset.x(), offset.y());
   info.fPostTranslate = (shadow_transform_mode == kShadowIgnoresTransforms);
 
   SkPaint* paint = sk_draw_looper_builder_.addLayerOnTop(info);

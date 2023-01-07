@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,4 +13,8 @@ interface ICookieManager {
   void getCookie(in String url, in IObjectWrapper callback) = 1;
 
   IObjectWrapper addCookieChangedCallback(in String url, in String name, ICookieChangedCallbackClient callback) = 2;
+
+  // Added in 101.
+  void getResponseCookies(in String url, in IObjectWrapper callback) = 3;
+
 }

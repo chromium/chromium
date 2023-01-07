@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -24,6 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.TranslateUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -35,10 +38,18 @@ import java.util.concurrent.TimeoutException;
  * Tests for the translate info included in onProvideAssistContent.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(TranslateAssistContentTest.TRANSLATE_BATCH_NAME)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TranslateAssistContentTest {
+    public static final String TRANSLATE_BATCH_NAME = "translate_batch_name";
+
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private static final String TRANSLATE_PAGE = "/chrome/test/data/translate/fr_test.html";
     private static final String NON_TRANSLATE_PAGE = "/chrome/test/data/android/test.html";
@@ -50,12 +61,11 @@ public class TranslateAssistContentTest {
      * the changes to make the translate service mockable and remove the internet requirement.
      */
     private boolean shouldSkipDueToNetworkService() {
-        return !ChromeFeatureList.isEnabled("NetworkServiceInProcess");
+        return !ChromeFeatureList.isEnabled("NetworkServiceInProcess2");
     }
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> TranslateBridge.setIgnoreMissingKeyForTesting(true));
     }
@@ -67,14 +77,14 @@ public class TranslateAssistContentTest {
     public void testAssistContentDisabled() throws TimeoutException, ExecutionException {
         if (shouldSkipDueToNetworkService()) return;
         // Load a page that triggers the translate recommendation.
-        final String url = mActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
-        mActivityTestRule.loadUrl(url);
-        TranslateUtil.waitUntilTranslatable(mActivityTestRule.getActivity().getActivityTab());
+        final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
+        sActivityTestRule.loadUrl(url);
+        TranslateUtil.waitUntilTranslatable(sActivityTestRule.getActivity().getActivityTab());
 
         String structuredData = TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> TranslateAssistContent.getTranslateDataForTab(
-                                mActivityTestRule.getActivity().getActivityTab(),
+                                sActivityTestRule.getActivity().getActivityTab(),
                                 /*isInOverviewMode=*/false));
         Assert.assertNull(structuredData);
     }
@@ -83,18 +93,19 @@ public class TranslateAssistContentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_ASSIST_CONTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testAssistContentTranslatablePage()
             throws TimeoutException, ExecutionException, JSONException {
         if (shouldSkipDueToNetworkService()) return;
         // Load a page that triggers the translate recommendation.
-        final String url = mActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
-        mActivityTestRule.loadUrl(url);
-        TranslateUtil.waitUntilTranslatable(mActivityTestRule.getActivity().getActivityTab());
+        final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
+        sActivityTestRule.loadUrl(url);
+        TranslateUtil.waitUntilTranslatable(sActivityTestRule.getActivity().getActivityTab());
 
         String structuredData = TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> TranslateAssistContent.getTranslateDataForTab(
-                                mActivityTestRule.getActivity().getActivityTab(),
+                                sActivityTestRule.getActivity().getActivityTab(),
                                 /*isInOverviewMode=*/false));
 
         JSONObject parsed = new JSONObject(structuredData);
@@ -111,30 +122,31 @@ public class TranslateAssistContentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_ASSIST_CONTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testAssistContentTranslatedPage()
             throws TimeoutException, ExecutionException, JSONException {
         if (shouldSkipDueToNetworkService()) return;
         // Load a page that triggers the translate recommendation.
-        final String url = mActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
-        mActivityTestRule.loadUrl(url);
-        TranslateUtil.waitUntilTranslatable(mActivityTestRule.getActivity().getActivityTab());
+        final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
+        sActivityTestRule.loadUrl(url);
+        TranslateUtil.waitUntilTranslatable(sActivityTestRule.getActivity().getActivityTab());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> TranslateBridge.translateTabWhenReady(
-                                mActivityTestRule.getActivity().getActivityTab()));
+                                sActivityTestRule.getActivity().getActivityTab()));
 
         // Can't wait on the Translate infobar state here because the target language tab is
         // selected before the translation is complete. Wait for the language to change instead.
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(TranslateBridge.getCurrentLanguage(
-                                       mActivityTestRule.getActivity().getActivityTab()),
+                                       sActivityTestRule.getActivity().getActivityTab()),
                     Matchers.is("en"));
         });
 
         String structuredData = TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> TranslateAssistContent.getTranslateDataForTab(
-                                mActivityTestRule.getActivity().getActivityTab(),
+                                sActivityTestRule.getActivity().getActivityTab(),
                                 /*isInOverviewMode=*/false));
 
         JSONObject parsed = new JSONObject(structuredData);
@@ -156,13 +168,13 @@ public class TranslateAssistContentTest {
             throws TimeoutException, ExecutionException, JSONException {
         if (shouldSkipDueToNetworkService()) return;
         // Load a page that can't be translated.
-        final String url = mActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
-        mActivityTestRule.loadUrl(url);
+        final String url = sActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
+        sActivityTestRule.loadUrl(url);
 
         String structuredData = TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> TranslateAssistContent.getTranslateDataForTab(
-                                mActivityTestRule.getActivity().getActivityTab(),
+                                sActivityTestRule.getActivity().getActivityTab(),
                                 /*isInOverviewMode=*/false));
 
         JSONObject parsed = new JSONObject(structuredData);
@@ -181,15 +193,15 @@ public class TranslateAssistContentTest {
     public void testAssistContentOverviewMode() throws TimeoutException, ExecutionException {
         if (shouldSkipDueToNetworkService()) return;
         // Load a page that triggers the translate recommendation.
-        final String url = mActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
-        mActivityTestRule.loadUrl(url);
-        TranslateUtil.waitUntilTranslatable(mActivityTestRule.getActivity().getActivityTab());
+        final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
+        sActivityTestRule.loadUrl(url);
+        TranslateUtil.waitUntilTranslatable(sActivityTestRule.getActivity().getActivityTab());
 
         // Pretend we're in overview mode.
         String structuredData = TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> TranslateAssistContent.getTranslateDataForTab(
-                                mActivityTestRule.getActivity().getActivityTab(),
+                                sActivityTestRule.getActivity().getActivityTab(),
                                 /*isInOverviewMode=*/true));
         Assert.assertNull(structuredData);
     }

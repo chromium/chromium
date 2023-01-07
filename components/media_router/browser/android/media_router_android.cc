@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,16 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/guid.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/browser/route_message_observer.h"
 #include "components/media_router/browser/route_message_util.h"
 #include "components/media_router/common/route_request_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -103,6 +104,8 @@ const MediaRoute* MediaRouterAndroid::FindRouteBySource(
   return nullptr;
 }
 
+void MediaRouterAndroid::Initialize() {}
+
 void MediaRouterAndroid::CreateRoute(const MediaSource::Id& source_id,
                                      const MediaSink::Id& sink_id,
                                      const url::Origin& origin,
@@ -119,17 +122,6 @@ void MediaRouterAndroid::CreateRoute(const MediaSource::Id& source_id,
           MediaSource(source_id), presentation_id, std::move(callback)));
   bridge_->CreateRoute(source_id, sink_id, presentation_id, origin,
                        web_contents, route_request_id);
-}
-
-void MediaRouterAndroid::ConnectRouteByRouteId(
-    const MediaSource::Id& source,
-    const MediaRoute::Id& route_id,
-    const url::Origin& origin,
-    content::WebContents* web_contents,
-    MediaRouteResponseCallback callback,
-    base::TimeDelta timeout,
-    bool incognito) {
-  NOTIMPLEMENTED();
 }
 
 void MediaRouterAndroid::JoinRoute(const MediaSource::Id& source_id,
@@ -167,7 +159,11 @@ void MediaRouterAndroid::SendRouteBinaryMessage(
 
 void MediaRouterAndroid::OnUserGesture() {}
 
-void MediaRouterAndroid::DetachRoute(const MediaRoute::Id& route_id) {
+std::vector<MediaRoute> MediaRouterAndroid::GetCurrentRoutes() const {
+  return active_routes_;
+}
+
+void MediaRouterAndroid::DetachRoute(MediaRoute::Id route_id) {
   bridge_->DetachRoute(route_id);
   RemoveRoute(route_id);
   NotifyPresentationConnectionClose(
@@ -208,9 +204,6 @@ void MediaRouterAndroid::UnregisterMediaSinksObserver(
 void MediaRouterAndroid::RegisterMediaRoutesObserver(
     MediaRoutesObserver* observer) {
   DVLOG(2) << "Added MediaRoutesObserver: " << observer;
-  if (!observer->source_id().empty())
-    NOTIMPLEMENTED() << "Joinable routes query not implemented.";
-
   routes_observers_.AddObserver(observer);
 }
 
@@ -250,7 +243,7 @@ void MediaRouterAndroid::OnRouteCreated(const MediaRoute::Id& route_id,
     return;
 
   MediaRoute route(route_id, request->media_source, sink_id, std::string(),
-                   is_local, true);  // TODO(avayvod): Populate for_display.
+                   is_local);
 
   std::unique_ptr<RouteRequestResult> result =
       RouteRequestResult::FromSuccess(route, request->presentation_id);
@@ -264,13 +257,13 @@ void MediaRouterAndroid::OnRouteCreated(const MediaRoute::Id& route_id,
 
   active_routes_.push_back(route);
   for (auto& observer : routes_observers_)
-    observer.OnRoutesUpdated(active_routes_, std::vector<MediaRoute::Id>());
+    observer.OnRoutesUpdated(active_routes_);
   if (is_local) {
     MediaRouterMetrics::RecordCreateRouteResultCode(
-        MediaRouteProviderId::ANDROID_CAF, result->result_code());
+        result->result_code(), mojom::MediaRouteProviderId::ANDROID_CAF);
   } else {
     MediaRouterMetrics::RecordJoinRouteResultCode(
-        MediaRouteProviderId::ANDROID_CAF, result->result_code());
+        result->result_code(), mojom::MediaRouteProviderId::ANDROID_CAF);
   }
 }
 
@@ -303,13 +296,14 @@ void MediaRouterAndroid::OnRouteTerminated(const MediaRoute::Id& route_id) {
     }
   }
   MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(
-      MediaRouteProviderId::ANDROID_CAF, RouteRequestResult::OK);
+      mojom::RouteRequestResultCode::OK,
+      mojom::MediaRouteProviderId::ANDROID_CAF);
   RemoveRoute(route_id);
 }
 
 void MediaRouterAndroid::OnRouteClosed(
     const MediaRoute::Id& route_id,
-    const base::Optional<std::string>& error) {
+    const absl::optional<std::string>& error) {
   RemoveRoute(route_id);
   // TODO(crbug.com/882690): When the sending context is destroyed, tell MRP to
   // clean up the connection.
@@ -351,7 +345,7 @@ void MediaRouterAndroid::RemoveRoute(const MediaRoute::Id& route_id) {
     }
 
   for (auto& observer : routes_observers_)
-    observer.OnRoutesUpdated(active_routes_, std::vector<MediaRoute::Id>());
+    observer.OnRoutesUpdated(active_routes_);
 }
 
 std::unique_ptr<media::FlingingController>
@@ -367,20 +361,21 @@ void MediaRouterAndroid::OnPresentationConnectionError(
 void MediaRouterAndroid::OnRouteRequestError(
     const std::string& error_text,
     int route_request_id,
-    base::OnceCallback<void(MediaRouteProviderId,
-                            RouteRequestResult::ResultCode)> callback) {
+    base::OnceCallback<void(mojom::RouteRequestResultCode,
+                            absl::optional<mojom::MediaRouteProviderId>)>
+        callback) {
   MediaRouteRequest* request = route_requests_.Lookup(route_request_id);
   if (!request)
     return;
 
   // TODO: Provide a more specific result code.
   std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
-      error_text, RouteRequestResult::UNKNOWN_ERROR);
+      error_text, mojom::RouteRequestResultCode::UNKNOWN_ERROR);
   std::move(request->callback).Run(nullptr, *result);
 
   route_requests_.Remove(route_request_id);
-  std::move(callback).Run(MediaRouteProviderId::ANDROID_CAF,
-                          result->result_code());
+  std::move(callback).Run(result->result_code(),
+                          mojom::MediaRouteProviderId::ANDROID_CAF);
 }
 
 }  // namespace media_router

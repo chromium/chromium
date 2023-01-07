@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "remoting/client/audio/audio_jitter_buffer.h"
 #include "remoting/client/audio/audio_stream_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,7 +22,7 @@ namespace {
 constexpr AudioPacket::BytesPerSample kBytesPerSample =
     AudioPacket::BYTES_PER_SAMPLE_2;
 constexpr AudioPacket::Channels kChannels = AudioPacket::CHANNELS_STEREO;
-constexpr uint32_t kAudioSampleBytes = kChannels * kBytesPerSample;
+constexpr uint32_t kAudioSampleBytes = uint32_t{kChannels} * kBytesPerSample;
 
 constexpr uint32_t kNumConsumerBuffers = 3;
 constexpr uint32_t kConsumerBufferMaxByteSize = 5000 * kAudioSampleBytes;
@@ -95,7 +97,7 @@ class AudioJitterBufferTest::SimpleGetDataRequest
   void OnDataFilled() override;
 
  private:
-  AudioJitterBufferTest* test_;
+  raw_ptr<AudioJitterBufferTest> test_;
   std::unique_ptr<uint8_t[]> buffer_;
   size_t bytes_to_write_;
 };

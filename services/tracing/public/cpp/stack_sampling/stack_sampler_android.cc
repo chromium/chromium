@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,8 @@ void StackSamplerAndroid::AddAuxUnwinder(
 
 void StackSamplerAndroid::RecordStackFrames(
     base::StackBuffer* stack_buffer,
-    base::ProfileBuilder* profile_builder) {
+    base::ProfileBuilder* profile_builder,
+    base::PlatformThreadId thread_id) {
   if (!unwinder_.is_initialized()) {
     // May block on disk access. This function is executed on the profiler
     // thread, so this will only block profiling execution.

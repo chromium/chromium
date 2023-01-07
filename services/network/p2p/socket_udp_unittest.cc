@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/sys_byteorder.h"
@@ -21,7 +22,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_server_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -51,7 +52,7 @@ class ScopedFakeClock : public rtc::ClockInterface {
   void SetTimeNanos(uint64_t time_nanos) { time_nanos_ = time_nanos; }
 
  private:
-  ClockInterface* prev_clock_;
+  raw_ptr<ClockInterface> prev_clock_;
   uint64_t time_nanos_ = 0;
 };
 
@@ -189,15 +190,15 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
 
  private:
   net::IPEndPoint address_;
-  base::circular_deque<UDPPacket>* sent_packets_;
+  raw_ptr<base::circular_deque<UDPPacket>> sent_packets_;
   base::circular_deque<UDPPacket> incoming_packets_;
   net::NetLogWithSource net_log_;
 
   scoped_refptr<net::IOBuffer> recv_buffer_;
-  net::IPEndPoint* recv_address_;
+  raw_ptr<net::IPEndPoint> recv_address_;
   int recv_size_;
   net::CompletionOnceCallback recv_callback_;
-  std::vector<uint16_t>* used_ports_;
+  raw_ptr<std::vector<uint16_t>> used_ports_;
 };
 
 std::unique_ptr<net::DatagramServerSocket> CreateFakeDatagramServerSocket(
@@ -235,7 +236,7 @@ class P2PSocketUdpTest : public testing::Test {
         local_address_, 0, 0,
         P2PHostAndIPEndPoint(std::string(),
                              ParseAddress(kTestIpAddress1, kTestPort1)),
-        net::NetworkIsolationKey());
+        net::NetworkAnonymizationKey());
     socket_ = GetSocketFromHost(socket_impl_.get());
 
     dest1_ = ParseAddress(kTestIpAddress1, kTestPort1);
@@ -251,7 +252,7 @@ class P2PSocketUdpTest : public testing::Test {
   P2PMessageThrottler throttler_;
   ScopedFakeClock fake_clock_;
   base::circular_deque<FakeDatagramServerSocket::UDPPacket> sent_packets_;
-  FakeDatagramServerSocket* socket_;  // Owned by |socket_impl_|.
+  raw_ptr<FakeDatagramServerSocket> socket_;  // Owned by |socket_impl_|.
   FakeP2PSocketDelegate socket_delegate_;
   std::unique_ptr<P2PSocketUdp> socket_impl_;
   std::unique_ptr<FakeSocketClient> fake_client_;
@@ -580,11 +581,12 @@ TEST_F(P2PSocketUdpTest, PortRangeImplicitPort) {
         local_address, min_port, max_port,
         P2PHostAndIPEndPoint(std::string(),
                              ParseAddress(kTestIpAddress1, kTestPort1)),
-        net::NetworkIsolationKey());
+        net::NetworkAnonymizationKey());
 
-    FakeDatagramServerSocket* socket = GetSocketFromHost(socket_impl.get());
+    FakeDatagramServerSocket* datagram_socket =
+        GetSocketFromHost(socket_impl.get());
     net::IPEndPoint bound_address;
-    socket->GetLocalAddress(&bound_address);
+    datagram_socket->GetLocalAddress(&bound_address);
     EXPECT_EQ(port, bound_address.port());
 
     base::RunLoop().RunUntilIdle();
@@ -605,7 +607,7 @@ TEST_F(P2PSocketUdpTest, PortRangeImplicitPort) {
       local_address, min_port, max_port,
       P2PHostAndIPEndPoint(std::string(),
                            ParseAddress(kTestIpAddress1, kTestPort1)),
-      net::NetworkIsolationKey());
+      net::NetworkAnonymizationKey());
 
   base::RunLoop().RunUntilIdle();
 
@@ -643,7 +645,7 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictValidPort) {
       local_address, min_port, max_port,
       P2PHostAndIPEndPoint(std::string(),
                            ParseAddress(kTestIpAddress1, kTestPort1)),
-      net::NetworkIsolationKey());
+      net::NetworkAnonymizationKey());
 
   FakeDatagramServerSocket* fake_socket = GetSocketFromHost(socket_host.get());
   net::IPEndPoint bound_address;
@@ -685,7 +687,7 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictInvalidPort) {
       local_address, min_port, max_port,
       P2PHostAndIPEndPoint(std::string(),
                            ParseAddress(kTestIpAddress1, kTestPort1)),
-      net::NetworkIsolationKey());
+      net::NetworkAnonymizationKey());
 
   base::RunLoop().RunUntilIdle();
 

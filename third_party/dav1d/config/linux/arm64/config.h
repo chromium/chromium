@@ -37,4 +37,6 @@
 
 #define HAVE_POSIX_MEMALIGN 1
 
+// #define HAVE_PTHREAD_GETAFFINITY_NP 1 -- Controlled by Chomium
+
 #define HAVE_UNISTD_H 1

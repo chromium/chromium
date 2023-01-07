@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_factory.h"
@@ -21,7 +21,7 @@ using url_matcher::URLMatcherFactory;
 namespace keys = extensions::declarative_webrequest_constants;
 
 namespace {
-static URLMatcherConditionSet::ID g_next_id = 0;
+static base::MatcherStringPattern::ID g_next_id = 0;
 
 // TODO(battre): improve error messaging to give more meaningful messages
 // to the extension developer.
@@ -120,44 +120,44 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
     URLMatcherConditionFactory* url_matcher_condition_factory,
     const base::Value& condition,
     std::string* error) {
-  const base::DictionaryValue* condition_dict = NULL;
-  if (!condition.GetAsDictionary(&condition_dict)) {
+  const base::Value::Dict* condition_dict = condition.GetIfDict();
+  if (!condition_dict) {
     *error = kExpectedDictionary;
-    return std::unique_ptr<WebRequestCondition>();
+    return nullptr;
   }
 
   // Verify that we are dealing with a Condition whose type we understand.
-  std::string instance_type;
-  if (!condition_dict->GetString(keys::kInstanceTypeKey, &instance_type)) {
+  const std::string* instance_type =
+      condition_dict->FindString(keys::kInstanceTypeKey);
+  if (!instance_type) {
     *error = kConditionWithoutInstanceType;
-    return std::unique_ptr<WebRequestCondition>();
+    return nullptr;
   }
-  if (instance_type != keys::kRequestMatcherType) {
+  if (*instance_type != keys::kRequestMatcherType) {
     *error = kExpectedOtherConditionType;
-    return std::unique_ptr<WebRequestCondition>();
+    return nullptr;
   }
 
   WebRequestConditionAttributes attributes;
   scoped_refptr<URLMatcherConditionSet> url_matcher_condition_set;
 
-  for (base::DictionaryValue::Iterator iter(*condition_dict);
-       !iter.IsAtEnd(); iter.Advance()) {
-    const std::string& condition_attribute_name = iter.key();
-    const base::Value& condition_attribute_value = iter.value();
+  for (const auto entry : *condition_dict) {
+    const std::string& condition_attribute_name = entry.first;
+    const base::Value& condition_attribute_value = entry.second;
     if (condition_attribute_name == keys::kInstanceTypeKey ||
         condition_attribute_name ==
             keys::kDeprecatedFirstPartyForCookiesUrlKey ||
         condition_attribute_name == keys::kDeprecatedThirdPartyKey) {
       // Skip this.
     } else if (condition_attribute_name == keys::kUrlKey) {
-      const base::DictionaryValue* dict = NULL;
-      if (!condition_attribute_value.GetAsDictionary(&dict)) {
+      const base::Value::Dict* dict = condition_attribute_value.GetIfDict();
+      if (!dict) {
         *error = base::StringPrintf(kInvalidTypeOfParamter,
                                     condition_attribute_name.c_str());
       } else {
         url_matcher_condition_set =
             URLMatcherFactory::CreateFromURLFilterDictionary(
-                url_matcher_condition_factory, dict, ++g_next_id, error);
+                url_matcher_condition_factory, *dict, ++g_next_id, error);
       }
     } else {
       scoped_refptr<const WebRequestConditionAttribute> attribute =
@@ -169,7 +169,7 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
         attributes.push_back(attribute);
     }
     if (!error->empty())
-      return std::unique_ptr<WebRequestCondition>();
+      return nullptr;
   }
 
   auto result = std::make_unique<WebRequestCondition>(url_matcher_condition_set,
@@ -177,7 +177,7 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
 
   if (!result->stages()) {
     *error = kConditionCannotBeFulfilled;
-    return std::unique_ptr<WebRequestCondition>();
+    return nullptr;
   }
 
   return result;

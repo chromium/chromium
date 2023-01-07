@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ UploadList::UploadList() = default;
 UploadList::~UploadList() = default;
 
 void UploadList::Load(base::OnceClosure callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   load_callback_ = std::move(callback);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kLoadingTaskTraits,
@@ -75,7 +75,7 @@ void UploadList::Load(base::OnceClosure callback) {
 void UploadList::Clear(const base::Time& begin,
                        const base::Time& end,
                        base::OnceClosure callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   clear_callback_ = std::move(callback);
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, kLoadingTaskTraits,
@@ -88,7 +88,7 @@ void UploadList::CancelLoadCallback() {
 }
 
 void UploadList::RequestSingleUploadAsync(const std::string& local_id) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ThreadPool::PostTask(
       FROM_HERE, kLoadingTaskTraits,
       base::BindOnce(&UploadList::RequestSingleUpload, this, local_id));
@@ -96,7 +96,7 @@ void UploadList::RequestSingleUploadAsync(const std::string& local_id) {
 
 void UploadList::GetUploads(size_t max_count,
                             std::vector<UploadInfo>* uploads) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::copy(uploads_.begin(),
             uploads_.begin() + std::min(uploads_.size(), max_count),
             std::back_inserter(*uploads));

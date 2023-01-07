@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,6 +79,8 @@ DispositionHandlingInfo GetDispositionHandlingInfo(EventType type) {
     case ET_GESTURE_SHOW_PRESS:
       return Info(RT_START);
     case ET_GESTURE_LONG_PRESS:
+      return Info(RT_START);
+    case ET_GESTURE_SHORT_PRESS:
       return Info(RT_START);
     case ET_GESTURE_LONG_TAP:
       return Info(RT_START | RT_CURRENT);

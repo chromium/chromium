@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,9 @@
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -36,12 +37,17 @@ class ASH_EXPORT AppListAssistantMainStage
       public AssistantInteractionModelObserver,
       public AssistantUiModelObserver {
  public:
+  METADATA_HEADER(AppListAssistantMainStage);
+
   explicit AppListAssistantMainStage(AssistantViewDelegate* delegate);
+  AppListAssistantMainStage(const AppListAssistantMainStage&) = delete;
+  AppListAssistantMainStage& operator=(const AppListAssistantMainStage&) =
+      delete;
   ~AppListAssistantMainStage() override;
 
   // views::View:
-  const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
+  void OnThemeChanged() override;
 
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* view) override;
@@ -60,8 +66,10 @@ class ASH_EXPORT AppListAssistantMainStage
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      base::Optional<AssistantEntryPoint> entry_point,
-      base::Optional<AssistantExitPoint> exit_point) override;
+      absl::optional<AssistantEntryPoint> entry_point,
+      absl::optional<AssistantExitPoint> exit_point) override;
+
+  void InitializeUIForBubbleView();
 
  private:
   void InitLayout();
@@ -74,12 +82,13 @@ class ASH_EXPORT AppListAssistantMainStage
   void AnimateInFooter();
 
   void MaybeHideZeroState();
+  void InitializeUIForStartingSession(bool from_search);
 
   AssistantViewDelegate* const delegate_;  // Owned by Shell.
 
   // Owned by view hierarchy.
   AssistantProgressIndicator* progress_indicator_;
-  views::View* horizontal_separator_;
+  views::Separator* horizontal_separator_;
   AssistantQueryView* query_view_;
   UiElementContainerView* ui_element_container_;
   AssistantZeroStateView* zero_state_view_;
@@ -87,8 +96,6 @@ class ASH_EXPORT AppListAssistantMainStage
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppListAssistantMainStage);
 };
 
 }  // namespace ash

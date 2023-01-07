@@ -15,6 +15,7 @@
 #include "absl/random/exponential_distribution.h"
 
 #include <algorithm>
+#include <cfloat>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -57,7 +58,7 @@ using RealTypes =
     std::conditional<absl::numeric_internal::IsDoubleDouble(),
                      ::testing::Types<float, double>,
                      ::testing::Types<float, double, long double>>::type;
-TYPED_TEST_CASE(ExponentialDistributionTypedTest, RealTypes);
+TYPED_TEST_SUITE(ExponentialDistributionTypedTest, RealTypes);
 
 TYPED_TEST(ExponentialDistributionTypedTest, SerializeTest) {
   using param_type =
@@ -342,8 +343,8 @@ std::string ParamName(const ::testing::TestParamInfo<Param>& info) {
   return absl::StrReplaceAll(name, {{"+", "_"}, {"-", "_"}, {".", "_"}});
 }
 
-INSTANTIATE_TEST_CASE_P(All, ExponentialDistributionTests,
-                        ::testing::ValuesIn(GenParams()), ParamName);
+INSTANTIATE_TEST_SUITE_P(All, ExponentialDistributionTests,
+                         ::testing::ValuesIn(GenParams()), ParamName);
 
 // NOTE: absl::exponential_distribution is not guaranteed to be stable.
 TEST(ExponentialDistributionTest, StabilityTest) {
@@ -384,6 +385,15 @@ TEST(ExponentialDistributionTest, StabilityTest) {
 TEST(ExponentialDistributionTest, AlgorithmBounds) {
   // Relies on absl::uniform_real_distribution, so some of these comments
   // reference that.
+
+#if (defined(__i386__) || defined(_M_IX86)) && FLT_EVAL_METHOD != 0
+  // We're using an x87-compatible FPU, and intermediate operations can be
+  // performed with 80-bit floats. This produces slightly different results from
+  // what we expect below.
+  GTEST_SKIP()
+      << "Skipping the test because we detected x87 floating-point semantics";
+#endif
+
   absl::exponential_distribution<double> dist;
 
   {

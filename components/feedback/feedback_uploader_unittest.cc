@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/feedback/feedback_report.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -32,8 +32,7 @@ constexpr char kReportThree[] = "three";
 constexpr char kReportFour[] = "four";
 constexpr char kReportFive[] = "five";
 
-constexpr base::TimeDelta kRetryDelayForTest =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kRetryDelayForTest = base::Milliseconds(100);
 
 class MockFeedbackUploader : public FeedbackUploader {
  public:
@@ -42,6 +41,9 @@ class MockFeedbackUploader : public FeedbackUploader {
       const base::FilePath& state_path,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : FeedbackUploader(is_off_the_record, state_path, url_loader_factory) {}
+
+  MockFeedbackUploader(const MockFeedbackUploader&) = delete;
+  MockFeedbackUploader& operator=(const MockFeedbackUploader&) = delete;
 
   void RunMessageLoop() {
     if (ProcessingComplete())
@@ -105,8 +107,6 @@ class MockFeedbackUploader : public FeedbackUploader {
   size_t dispatched_reports_count_ = 0;
   size_t expected_reports_ = 0;
   bool simulate_failure_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFeedbackUploader);
 };
 
 }  // namespace
@@ -121,6 +121,9 @@ class FeedbackUploaderTest : public testing::Test {
     EXPECT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     RecreateUploader();
   }
+
+  FeedbackUploaderTest(const FeedbackUploaderTest&) = delete;
+  FeedbackUploaderTest& operator=(const FeedbackUploaderTest&) = delete;
 
   ~FeedbackUploaderTest() override = default;
 
@@ -142,8 +145,6 @@ class FeedbackUploaderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
   std::unique_ptr<MockFeedbackUploader> uploader_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackUploaderTest);
 };
 
 TEST_F(FeedbackUploaderTest, QueueMultiple) {
@@ -190,7 +191,13 @@ TEST_F(FeedbackUploaderTest, QueueMultipleWithFailures) {
   EXPECT_EQ(uploader()->dispatched_reports().at(kReportFive), 1u);
 }
 
-TEST_F(FeedbackUploaderTest, SimulateOfflineReports) {
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222877
+#define MAYBE_SimulateOfflineReports DISABLED_SimulateOfflineReports
+#else
+#define MAYBE_SimulateOfflineReports SimulateOfflineReports
+#endif
+TEST_F(FeedbackUploaderTest, MAYBE_SimulateOfflineReports) {
   // Simulate offline reports by failing to upload three reports.
   uploader()->set_simulate_failure(true);
   QueueReport(kReportOne);

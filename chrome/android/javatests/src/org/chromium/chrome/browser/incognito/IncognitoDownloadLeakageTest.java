@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -63,6 +64,9 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+// TODO(crbug.com/1360906) remove INCOGNITO_DOWNLOADS_WARNING from the disabled features and fix
+// the test accordingly
+@DisableFeatures({ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=UseDownloadOfflineContentProvider"})
 public class IncognitoDownloadLeakageTest {

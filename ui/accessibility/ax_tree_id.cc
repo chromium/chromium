@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <iostream>
 
 #include "base/check.h"
-#include "base/no_destructor.h"
+#include "base/json/values_util.h"
 #include "base/notreached.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
@@ -30,8 +29,8 @@ AXTreeID::AXTreeID(const std::string& string) {
     type_ = ax::mojom::AXTreeIDType::kUnknown;
   } else {
     type_ = ax::mojom::AXTreeIDType::kToken;
-    base::Optional<base::UnguessableToken> token =
-        util::ValueToUnguessableToken(base::Value(string));
+    absl::optional<base::UnguessableToken> token =
+        base::ValueToUnguessableToken(base::Value(string));
     CHECK(token);
     token_ = *token;
   }
@@ -62,11 +61,8 @@ std::string AXTreeID::ToString() const {
     case ax::mojom::AXTreeIDType::kUnknown:
       return "";
     case ax::mojom::AXTreeIDType::kToken:
-      return util::UnguessableTokenToValue(*token_).GetString();
+      return base::UnguessableTokenToValue(*token_).GetString();
   }
-
-  NOTREACHED();
-  return std::string();
 }
 
 void swap(AXTreeID& first, AXTreeID& second) {
@@ -108,9 +104,8 @@ std::ostream& operator<<(std::ostream& stream, const AXTreeID& value) {
 }
 
 const AXTreeID& AXTreeIDUnknown() {
-  static const base::NoDestructor<AXTreeID> ax_tree_id_unknown(
-      ax::mojom::AXTreeIDType::kUnknown);
-  return *ax_tree_id_unknown;
+  static const AXTreeID ax_tree_id_unknown(ax::mojom::AXTreeIDType::kUnknown);
+  return ax_tree_id_unknown;
 }
 
 }  // namespace ui

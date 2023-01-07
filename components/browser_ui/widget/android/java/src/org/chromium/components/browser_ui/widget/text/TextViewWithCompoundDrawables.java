@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,6 +49,24 @@ public class TextViewWithCompoundDrawables extends AppCompatTextView {
     public void setDrawableTintColor(ColorStateList color) {
         mDrawableTint = color;
         setDrawableTint(getCompoundDrawablesRelative());
+    }
+
+    /**
+     * Set the width of the compound drawables.
+     * @param width The drawable width.
+     */
+    public void setDrawableWidth(int width) {
+        mDrawableWidth = width;
+        setDrawableBounds(getCompoundDrawables());
+    }
+
+    /**
+     * Set the height of the compound drawables.
+     * @param height The drawable height.
+     */
+    public void setDrawableHeight(int height) {
+        mDrawableHeight = height;
+        setDrawableBounds(getCompoundDrawables());
     }
 
     @Override

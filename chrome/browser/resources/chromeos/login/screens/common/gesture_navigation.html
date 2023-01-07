@@ -1,0 +1,146 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles">
+  .gesture-animation-container {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+
+  .gesture-list-item {
+    display: flex;
+    height: 46px;
+    padding-bottom: 4px;
+  }
+
+  .gesture-list-item-icon {
+    --iron-icon-height: 24px;
+    --iron-icon-width: 24px;
+    align-self: flex-start;
+    margin: auto;
+  }
+
+  .gesture-list-item-text {
+    flex: 1 1 auto;
+    font-family: var(--oobe-header-font-family);
+    font-size: 15px;
+    font-weight: var(--oobe-header-font-weight);
+    margin: auto;
+    padding-inline-start: 16px;
+  }
+</style>
+<oobe-adaptive-dialog id="gestureIntro" for-step="gestureIntro"
+    role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'gestureNavigationIntroTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:gestures"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'gestureNavigationIntroTitle')]]
+  </h1>
+  <div slot="content" class="landscape-header-aligned
+      portrait-horizontal-centered">
+    <div class="gesture-list-item">
+      <iron-icon class="gesture-list-item-icon" icon="oobe-32:gesture-home">
+      </iron-icon>
+      <div class="gesture-list-item-text">
+        [[i18nDynamic(locale, 'gestureNavigationIntroGoHomeItem')]]
+      </div>
+    </div>
+    <div class="gesture-list-item">
+      <iron-icon class="gesture-list-item-icon"
+          icon="oobe-32:gesture-overview">
+      </iron-icon>
+      <div class="gesture-list-item-text">
+        [[i18nDynamic(locale, 'gestureNavigationIntroSwitchAppItem')]]
+      </div>
+    </div>
+    <div class="gesture-list-item">
+      <iron-icon class="gesture-list-item-icon" icon="oobe-32:gesture-back">
+      </iron-icon>
+      <div class="gesture-list-item-text">
+          [[i18nDynamic(locale, 'gestureNavigationIntroGoBackItem')]]
+      </div>
+    </div>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button inverse on-click="onNext_"
+        id="gesture-intro-next-button" class="focus-on-show"
+        text-key="gestureNavigationIntroNextButton">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="gestureHome" for-step="gestureHome" role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'gestureNavigationHomeTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:gesture-home"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'gestureNavigationHomeTitle')]]
+  </h1>
+  <p slot="subtitle">
+    [[i18nDynamic(locale, 'gestureNavigationHomeDescription')]]
+  </p>
+  <div slot="content" class="content-centered gesture-animation-container">
+    <oobe-cr-lottie class="gesture-animation"
+        animation-url="animations/gesture_go_home.json">
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button on-click="onBack_"
+        id="gesture-home-back-button"></oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button on-click="onNext_" class="focus-on-show"
+        id="gesture-home-next-button"></oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="gestureOverview" for-step="gestureOverview"
+    role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'gestureNavigationOverviewTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:gesture-overview"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'gestureNavigationOverviewTitle')]]
+  </h1>
+  <p slot="subtitle">
+    [[i18nDynamic(locale, 'gestureNavigationOverviewDescription')]]
+  </p>
+  <div slot="content" class="content-centered gesture-animation-container">
+    <oobe-cr-lottie class="gesture-animation"
+        animation-url="animations/gesture_hotseat_overview.json">
+    </oobe-cr-lottie>
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button on-click="onBack_"
+        id="gesture-overview-back-button"></oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button on-click="onNext_" class="focus-on-show"
+        id="gesture-overview-next-button"></oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="gestureBack" for-step="gestureBack" role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'gestureNavigationBackTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:gesture-back"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'gestureNavigationBackTitle')]]
+  </h1>
+  <p slot="subtitle">
+    [[i18nDynamic(locale, 'gestureNavigationBackDescription')]]
+  </p>
+  <div slot="content" class="content-centered gesture-animation-container">
+    <oobe-cr-lottie animation-url="animations/gesture_go_back.json"
+        class="gesture-animation">
+    </oobe-cr-lottie>
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button on-click="onBack_"
+        id="gesture-back-back-button"></oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button on-click="onNext_" class="focus-on-show"
+        id="gesture-back-next-button"></oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>

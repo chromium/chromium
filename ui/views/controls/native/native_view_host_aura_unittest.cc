@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -17,9 +17,11 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/native/native_view_host_test_base.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/view_constants_aura.h"
 #include "ui/views/widget/widget.h"
@@ -50,6 +52,11 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
   };
 
   NativeViewHostWindowObserver() = default;
+
+  NativeViewHostWindowObserver(const NativeViewHostWindowObserver&) = delete;
+  NativeViewHostWindowObserver& operator=(const NativeViewHostWindowObserver&) =
+      delete;
+
   ~NativeViewHostWindowObserver() override = default;
 
   const std::vector<EventDetails>& events() const { return events_; }
@@ -86,13 +93,14 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
  private:
   std::vector<EventDetails> events_;
   gfx::Rect bounds_at_visibility_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostWindowObserver);
 };
 
 class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
  public:
   NativeViewHostAuraTest() = default;
+
+  NativeViewHostAuraTest(const NativeViewHostAuraTest&) = delete;
+  NativeViewHostAuraTest& operator=(const NativeViewHostAuraTest&) = delete;
 
   NativeViewHostAura* native_host() {
     return static_cast<NativeViewHostAura*>(GetNativeWrapper());
@@ -108,7 +116,7 @@ class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
     CreateTopLevel();
     CreateTestingHost();
     child_.reset(CreateChildForHost(toplevel()->GetNativeView(),
-                                    toplevel()->GetRootView(), new View,
+                                    toplevel()->client_view(), new View,
                                     host()));
   }
 
@@ -120,8 +128,6 @@ class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
 
  private:
   std::unique_ptr<Widget> child_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostAuraTest);
 };
 
 // Verifies NativeViewHostAura stops observing native view on destruction.
@@ -282,6 +288,7 @@ TEST_F(NativeViewHostAuraTest, BoundsWhileScaling) {
 TEST_F(NativeViewHostAuraTest, InstallClip) {
   CreateHost();
   toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
+  gfx::Rect client_bounds = toplevel()->client_view()->bounds();
 
   // Without a clip, the clipping window should always be positioned at the
   // requested coordinates with the native view positioned at the origin of the
@@ -293,7 +300,8 @@ TEST_F(NativeViewHostAuraTest, InstallClip) {
             clipping_window()->bounds().ToString());
 
   // Clip to the bottom right quarter of the native view.
-  native_host()->InstallClip(60, 70, 50, 50);
+  native_host()->InstallClip(60 - client_bounds.x(), 70 - client_bounds.y(), 50,
+                             50);
   native_host()->ShowWidget(10, 20, 100, 100, 100, 100);
   EXPECT_EQ(gfx::Rect(-50, -50, 100, 100).ToString(),
             host()->native_view()->bounds().ToString());
@@ -301,7 +309,8 @@ TEST_F(NativeViewHostAuraTest, InstallClip) {
             clipping_window()->bounds().ToString());
 
   // Clip to the center of the native view.
-  native_host()->InstallClip(35, 45, 50, 50);
+  native_host()->InstallClip(35 - client_bounds.x(), 45 - client_bounds.y(), 50,
+                             50);
   native_host()->ShowWidget(10, 20, 100, 100, 100, 100);
   EXPECT_EQ(gfx::Rect(-25, -25, 100, 100).ToString(),
             host()->native_view()->bounds().ToString());
@@ -326,7 +335,7 @@ TEST_F(NativeViewHostAuraTest, ParentAfterDetach) {
   CreateHost();
   // Force a Layout() now so that the visibility is set to false (because the
   // bounds is empty).
-  host()->Layout();
+  test::RunScheduledLayout(host());
 
   aura::Window* child_win = child()->GetNativeView();
   aura::Window* root_window = child_win->GetRootWindow();
@@ -388,7 +397,8 @@ TEST_F(NativeViewHostAuraTest, Attach) {
 
   child()->GetNativeView()->SetBounds(gfx::Rect(0, 0, 0, 0));
   toplevel()->SetBounds(gfx::Rect(0, 0, 100, 100));
-  host()->SetBounds(10, 10, 80, 80);
+  gfx::Rect client_bounds = toplevel()->client_view()->bounds();
+  host()->SetBoundsRect(client_bounds);
 
   NativeViewHostWindowObserver test_observer;
   child()->GetNativeView()->AddObserver(&test_observer);
@@ -397,23 +407,25 @@ TEST_F(NativeViewHostAuraTest, Attach) {
 
   // Visibiliity is not updated until Layout() happens. This is normally async,
   // but force a Layout() so this code doesn't have to wait.
-  host()->Layout();
+  test::RunScheduledLayout(host());
+
+  auto expected_bounds = client_bounds;
 
   ASSERT_EQ(3u, test_observer.events().size());
   EXPECT_EQ(NativeViewHostWindowObserver::EVENT_BOUNDS_CHANGED,
             test_observer.events()[0].type);
   EXPECT_EQ(child()->GetNativeView(), test_observer.events()[0].window);
-  EXPECT_EQ(gfx::Rect(10, 10, 80, 80).ToString(),
+  EXPECT_EQ(expected_bounds.ToString(),
             test_observer.events()[0].bounds.ToString());
   EXPECT_EQ(NativeViewHostWindowObserver::EVENT_SHOWN,
             test_observer.events()[1].type);
   EXPECT_EQ(child()->GetNativeView(), test_observer.events()[1].window);
-  EXPECT_EQ(gfx::Rect(10, 10, 80, 80).ToString(),
+  EXPECT_EQ(expected_bounds.ToString(),
             test_observer.events()[1].bounds.ToString());
   EXPECT_EQ(NativeViewHostWindowObserver::EVENT_SHOWN,
             test_observer.events()[2].type);
   EXPECT_EQ(clipping_window(), test_observer.events()[2].window);
-  EXPECT_EQ(gfx::Rect(10, 10, 80, 80).ToString(),
+  EXPECT_EQ(expected_bounds.ToString(),
             test_observer.events()[2].bounds.ToString());
 
   child()->GetNativeView()->RemoveObserver(&test_observer);
@@ -449,6 +461,9 @@ class TestFocusChangeListener : public FocusChangeListener {
     focus_manager_->AddFocusChangeListener(this);
   }
 
+  TestFocusChangeListener(const TestFocusChangeListener&) = delete;
+  TestFocusChangeListener& operator=(const TestFocusChangeListener&) = delete;
+
   ~TestFocusChangeListener() override {
     focus_manager_->RemoveFocusChangeListener(this);
   }
@@ -462,10 +477,8 @@ class TestFocusChangeListener : public FocusChangeListener {
     did_change_focus_count_++;
   }
 
-  FocusManager* focus_manager_;
+  raw_ptr<FocusManager> focus_manager_;
   int did_change_focus_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFocusChangeListener);
 };
 
 }  // namespace
@@ -534,19 +547,27 @@ TEST_F(NativeViewHostAuraTest, TopInsets) {
   CreateHost();
   toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
   toplevel()->Show();
+  // The child window is placed relative to the client view. Take that into
+  // account.
+  gfx::Vector2d offset = toplevel()->client_view()->bounds().OffsetFromOrigin();
 
   aura::Window* toplevel_window = toplevel()->GetNativeWindow();
   aura::Window* child_window = child()->GetNativeWindow();
-  EXPECT_EQ(child_window, GetTarget(toplevel_window, gfx::Point(1, 1)));
-  EXPECT_EQ(child_window, GetTarget(toplevel_window, gfx::Point(1, 11)));
+  EXPECT_EQ(child_window,
+            GetTarget(toplevel_window, gfx::Point(1, 1) + offset));
+  EXPECT_EQ(child_window,
+            GetTarget(toplevel_window, gfx::Point(1, 11) + offset));
 
   host()->SetHitTestTopInset(10);
   EXPECT_EQ(toplevel_window, GetTarget(toplevel_window, gfx::Point(1, 1)));
-  EXPECT_EQ(child_window, GetTarget(toplevel_window, gfx::Point(1, 11)));
+  EXPECT_EQ(child_window,
+            GetTarget(toplevel_window, gfx::Point(1, 11) + offset));
 
   host()->SetHitTestTopInset(0);
-  EXPECT_EQ(child_window, GetTarget(toplevel_window, gfx::Point(1, 1)));
-  EXPECT_EQ(child_window, GetTarget(toplevel_window, gfx::Point(1, 11)));
+  EXPECT_EQ(child_window,
+            GetTarget(toplevel_window, gfx::Point(1, 1) + offset));
+  EXPECT_EQ(child_window,
+            GetTarget(toplevel_window, gfx::Point(1, 11) + offset));
 
   DestroyHost();
   DestroyTopLevel();
@@ -588,6 +609,55 @@ TEST_F(NativeViewHostAuraTest, ClippedWindowNotResizedOnDetach) {
   EXPECT_EQ(gfx::Size(200, 200), window->bounds().size());
   host->Detach();
   EXPECT_EQ(gfx::Size(200, 200), window->bounds().size());
+}
+
+class WidgetDelegateForShouldDescendIntoChildForEventHandling
+    : public WidgetDelegate {
+ public:
+  void set_window(aura::Window* window) { window_ = window; }
+
+  bool ShouldDescendIntoChildForEventHandling(
+      gfx::NativeView child,
+      const gfx::Point& location) override {
+    return child != window_;
+  }
+
+ private:
+  raw_ptr<aura::Window> window_ = nullptr;
+};
+
+TEST_F(NativeViewHostAuraTest, ShouldDescendIntoChildForEventHandling) {
+  WidgetDelegateForShouldDescendIntoChildForEventHandling widget_delegate;
+  CreateTopLevel(&widget_delegate);
+  toplevel()->SetSize(gfx::Size(200, 200));
+  toplevel()->Show();
+
+  std::unique_ptr<aura::Window> window =
+      std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  window->set_owned_by_parent(false);
+  window->SetBounds(gfx::Rect(0, 0, 200, 200));
+  window->Show();
+
+  widget_delegate.set_window(window.get());
+
+  CreateTestingHost();
+  toplevel()->GetRootView()->AddChildView(host());
+  host()->SetVisible(true);
+  host()->SetBoundsRect(gfx::Rect(0, 0, 200, 200));
+  host()->Attach(window.get());
+
+  ui::test::EventGenerator event_generator(window->GetRootWindow());
+  gfx::Point press_location(100, 100);
+  aura::Window::ConvertPointToTarget(toplevel()->GetNativeView(),
+                                     window->GetRootWindow(), &press_location);
+  event_generator.MoveMouseTo(press_location);
+  event_generator.PressLeftButton();
+  // Because the delegate overrides ShouldDescendIntoChildForEventHandling()
+  // the NativeView does not get the event, but NativeViewHost will.
+  EXPECT_EQ(1, on_mouse_pressed_called_count());
+  DestroyHost();
+  DestroyTopLevel();
 }
 
 }  // namespace views

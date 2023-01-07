@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 #include <unistd.h>
 
-#include "base/macros.h"
 #include "gtest/gtest.h"
 
 namespace crashpad {
@@ -27,6 +26,9 @@ class TestMachMultiprocess final : public MachMultiprocess {
  public:
   TestMachMultiprocess() : MachMultiprocess() {}
 
+  TestMachMultiprocess(const TestMachMultiprocess&) = delete;
+  TestMachMultiprocess& operator=(const TestMachMultiprocess&) = delete;
+
   ~TestMachMultiprocess() {}
 
  private:
@@ -35,8 +37,6 @@ class TestMachMultiprocess final : public MachMultiprocess {
   void MachMultiprocessParent() override {}
 
   void MachMultiprocessChild() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TestMachMultiprocess);
 };
 
 TEST(MachMultiprocess, MachMultiprocess) {

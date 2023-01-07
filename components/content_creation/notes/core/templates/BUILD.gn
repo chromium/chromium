@@ -1,0 +1,50 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+static_library("templates") {
+  sources = [
+    "note_template.cc",
+    "note_template.h",
+    "template_constants.cc",
+    "template_constants.h",
+    "template_fetcher.cc",
+    "template_fetcher.h",
+    "template_metrics.cc",
+    "template_metrics.h",
+    "template_store.cc",
+    "template_store.h",
+  ]
+
+  deps = [
+    ":template_storage_proto",
+    ":types",
+    "//base",
+    "//components/content_creation/notes/core:features",
+    "//components/content_creation/notes/core:prefs",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp:cpp_base",
+    "//ui/base",
+  ]
+}
+
+static_library("types") {
+  sources = [
+    "template_types.cc",
+    "template_types.h",
+  ]
+
+  deps = [
+    ":template_storage_proto",
+    "//base",
+  ]
+}
+
+proto_library("template_storage_proto") {
+  sources = [ "template_storage.proto" ]
+  generate_python = false
+}

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,11 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.browserservices.metrics.BrowserServicesTimingMetrics;
 import org.chromium.chrome.browser.notifications.WebPlatformNotificationMetrics;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -96,8 +98,8 @@ public class ServiceTabLauncher {
         Context context = ContextUtils.getApplicationContext();
 
         List<ResolveInfo> resolveInfos;
-        try (BrowserServicesMetrics.TimingMetric t =
-                     BrowserServicesMetrics.getServiceTabResolveInfoTimingContext()) {
+        try (TimingMetric t = TimingMetric.mediumUptime(
+                     BrowserServicesTimingMetrics.SERVICE_TAB_RESOLVE_TIME)) {
             resolveInfos = WebApkValidator.resolveInfosForUrl(context, url);
         }
         String webApkPackageName = WebApkValidator.findFirstWebApkPackage(context, resolveInfos);
@@ -109,7 +111,7 @@ public class ServiceTabLauncher {
                 if (doesBrowserBackWebApk) {
                     Intent intent = WebApkNavigationClient.createLaunchWebApkIntent(
                             webApkPackageName, url, true /* forceNavigation */);
-                    intent.putExtra(ShortcutHelper.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
+                    intent.putExtra(WebappConstants.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
                     ContextUtils.getApplicationContext().startActivity(intent);
                     return;
                 }
@@ -167,9 +169,9 @@ public class ServiceTabLauncher {
             Intent intent = storage.createWebappLaunchIntent();
             // Replace the web app URL with the URL from the notification. This is within the
             // webapp's scope, so it is valid.
-            intent.putExtra(ShortcutHelper.EXTRA_URL, url);
-            intent.putExtra(ShortcutHelper.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
-            intent.putExtra(ShortcutHelper.EXTRA_FORCE_NAVIGATION, true);
+            intent.putExtra(WebappConstants.EXTRA_URL, url);
+            intent.putExtra(WebappConstants.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
+            intent.putExtra(WebappConstants.EXTRA_FORCE_NAVIGATION, true);
             tabDelegate.createNewStandaloneFrame(intent);
         }
     }

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,6 +102,10 @@ bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
 
   // Ref: ignore failure for this, since the page can probably still be loaded.
   CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
+
+  // Carry over the flag for potentially dangling markup:
+  if (parsed.potentially_dangling_markup)
+    new_parsed->potentially_dangling_markup = true;
 
   return success;
 }

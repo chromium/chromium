@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,9 @@
 
 #include <vector>
 
-#include "base/stl_util.h"
 #include "net/base/net_export.h"
 
-namespace net {
-namespace ntlm {
+namespace net::ntlm {
 
 // A security buffer is a structure within an NTLM message that indicates
 // the offset from the beginning of the message and the length of a payload
@@ -149,7 +147,7 @@ struct NET_EXPORT_PRIVATE AvPair {
 };
 
 static constexpr uint8_t kSignature[] = "NTLMSSP";
-static constexpr size_t kSignatureLen = base::size(kSignature);
+static constexpr size_t kSignatureLen = std::size(kSignature);
 static constexpr uint16_t kProofInputVersionV2 = 0x0101;
 static constexpr size_t kSecurityBufferLen =
     (2 * sizeof(uint16_t)) + sizeof(uint32_t);
@@ -182,7 +180,6 @@ static constexpr NegotiateFlags kNegotiateMessageFlags =
     NegotiateFlags::kRequestTarget | NegotiateFlags::kNtlm |
     NegotiateFlags::kAlwaysSign | NegotiateFlags::kExtendedSessionSecurity;
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm
 
 #endif  // NET_NTLM_NTLM_CONSTANTS_H_

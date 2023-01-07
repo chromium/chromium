@@ -1,0 +1,37 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This message fills the |metadata| bytes field of the FeatureMetadata message
+// (found in the file cryptauth_client_app_metadata.proto) when |feature_type|
+// is FeatureMetadata::Feature::BETTER_TOGETHER.
+syntax = "proto3";
+
+package cryptauthv2;
+
+option optimize_for = LITE_RUNTIME;
+
+message BetterTogetherFeatureMetadata {
+  enum FeatureName {
+    UNKNOWN_FEATURE = 0;
+    BETTER_TOGETHER_HOST = 1;
+    BETTER_TOGETHER_CLIENT = 2;
+    EASY_UNLOCK_HOST = 3;
+    EASY_UNLOCK_CLIENT = 4;
+    MAGIC_TETHER_HOST = 5;
+    MAGIC_TETHER_CLIENT = 6;
+    SMS_CONNECT_HOST = 7;
+    SMS_CONNECT_CLIENT = 8;
+    PHONE_HUB_HOST = 9;
+    PHONE_HUB_CLIENT = 10;
+    WIFI_SYNC_HOST = 11;
+    WIFI_SYNC_CLIENT = 12;
+    ECHE_HOST = 13;
+    ECHE_CLIENT = 14;
+    PHONE_HUB_CAMERA_ROLL_HOST = 15;
+    PHONE_HUB_CAMERA_ROLL_CLIENT = 16;
+  }
+
+  repeated FeatureName supported_features = 1;
+  repeated FeatureName enabled_features = 2;
+}

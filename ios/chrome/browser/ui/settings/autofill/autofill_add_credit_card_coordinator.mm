@@ -1,21 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 
-#include "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
-#include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_view_controller.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -148,7 +148,7 @@
   [self.actionSheetCoordinator start];
 }
 
-// Shows alert with received message by |AlertCoordinator|.
+// Shows alert with received message by `AlertCoordinator`.
 - (void)showAlertWithMessage:(NSString*)message {
   self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.addCreditCardViewController

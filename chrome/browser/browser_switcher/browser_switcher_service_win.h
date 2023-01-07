@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
 
 namespace browser_switcher {
@@ -17,9 +16,16 @@ namespace browser_switcher {
 // Windows-specific extension of BrowserSwitcherService.
 class BrowserSwitcherServiceWin : public BrowserSwitcherService {
  public:
+  BrowserSwitcherServiceWin() = delete;
+
   explicit BrowserSwitcherServiceWin(
       Profile* profile,
       base::FilePath cache_dir_for_testing = base::FilePath());
+
+  BrowserSwitcherServiceWin(const BrowserSwitcherServiceWin&) = delete;
+  BrowserSwitcherServiceWin& operator=(const BrowserSwitcherServiceWin&) =
+      delete;
+
   ~BrowserSwitcherServiceWin() override;
 
   void Init() override;
@@ -64,6 +70,7 @@ class BrowserSwitcherServiceWin : public BrowserSwitcherService {
   // extension, or from a previous Chrome version. Called during initialization.
   void DeleteSitelistCacheFile();
 
+  void PrefsFileDeleted(bool success);
   void CacheFileUpdated();
   void SitelistCacheFileUpdated();
 
@@ -78,8 +85,6 @@ class BrowserSwitcherServiceWin : public BrowserSwitcherService {
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
   base::WeakPtrFactory<BrowserSwitcherServiceWin> weak_ptr_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BrowserSwitcherServiceWin);
 };
 
 }  // namespace browser_switcher

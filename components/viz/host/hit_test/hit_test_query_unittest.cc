@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,10 @@ namespace test {
 class HitTestQueryTest : public testing::Test {
  public:
   HitTestQueryTest() = default;
+
+  HitTestQueryTest(const HitTestQueryTest&) = delete;
+  HitTestQueryTest& operator=(const HitTestQueryTest&) = delete;
+
   ~HitTestQueryTest() override = default;
 
   void SendHitTestData() {
@@ -28,8 +32,6 @@ class HitTestQueryTest : public testing::Test {
 
  private:
   HitTestQuery hit_test_query_;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestQueryTest);
 };
 
 // One surface.
@@ -1192,7 +1194,7 @@ TEST_F(HitTestQueryTest, GetTransformToTarget) {
   gfx::Transform transform_to_b;
   gfx::Transform expected_transform_to_b;
   expected_transform_to_b.Translate(-200, -150);
-  expected_transform_to_b.ConcatTransform(transform_c_to_b);
+  expected_transform_to_b.PostConcat(transform_c_to_b);
   EXPECT_TRUE(hit_test_query().GetTransformToTarget(b_id, &transform_to_b));
   // Use ToString so that we can compare float.
   EXPECT_EQ(transform_to_b.ToString(), expected_transform_to_b.ToString());

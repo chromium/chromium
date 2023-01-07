@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Global object's getter throws when called on incompatible object
+FAIL Global object's setter throws when called on incompatible object assert_throws_js: function "() => { Reflect.set(globalThis, "onoffline", onoffline, notGlobalObject); }" threw object "ReferenceError: onoffline is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS Global object's operation throws when called on incompatible object
+FAIL Global object's getter works when called on null / undefined onoffline is not defined
+FAIL Global object's setter works when called on null / undefined assert_true: expected true got false
+PASS Global object's operation works when called on null / undefined
+Harness: the test ran to completion.
+

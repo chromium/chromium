@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Link to the Clear Browsing Data dialog. -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="clear_browsing_data_link" />
+    <Preference
+        android:key="clear_browsing_divider"
+        android:layout="@layout/divider_preference"/>
+</PreferenceScreen>

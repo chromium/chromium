@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,37 +7,43 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/ui/avatar_button_error_controller.h"
-#include "chrome/browser/ui/avatar_button_error_controller_delegate.h"
+#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
 class Profile;
 
-// Handles the business logic for AvatarToolbarButton. This includes managing
-// the highlight animation and the identity animation.
+// Handles the business logic for AvatarToolbarButton. This includes
+// managing the highlight animation and the identity animation.
 class AvatarToolbarButtonDelegate : public BrowserListObserver,
                                     public ProfileAttributesStorage::Observer,
-                                    public AvatarButtonErrorControllerDelegate,
-                                    public signin::IdentityManager::Observer {
+                                    public signin::IdentityManager::Observer,
+                                    public syncer::SyncServiceObserver {
  public:
-  AvatarToolbarButtonDelegate();
+  AvatarToolbarButtonDelegate(AvatarToolbarButton* button, Profile* profile);
+
+  AvatarToolbarButtonDelegate(const AvatarToolbarButtonDelegate&) = delete;
+  AvatarToolbarButtonDelegate& operator=(const AvatarToolbarButtonDelegate&) =
+      delete;
+
   ~AvatarToolbarButtonDelegate() override;
 
-  // Must be called before the object can be used.
-  void Init(AvatarToolbarButton* button, Profile* profile);
-
-  // Called by the AvatarToolbarButton to get information about the profile.
+  // Methods called by the AvatarToolbarButton to get profile information.
   std::u16string GetProfileName() const;
   std::u16string GetShortProfileName() const;
   gfx::Image GetGaiaAccountImage() const;
+  // Must only be called in states which have an avatar image (i.e. not
+  // kGuestSession and not kIncognitoProfile).
   gfx::Image GetProfileAvatarImage(gfx::Image gaia_account_image,
                                    int preferred_size) const;
 
@@ -46,10 +52,19 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
 
   AvatarToolbarButton::State GetState() const;
 
+  absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType() const;
+
+  bool IsSyncFeatureEnabled() const;
+
   void ShowHighlightAnimation();
   bool IsHighlightAnimationVisible() const;
 
-  void ShowIdentityAnimation(const gfx::Image& gaia_account_image);
+  // Should be called when the icon is updated. This may trigger the identity
+  // pill animation if the delegate is waiting for the image.
+  void MaybeShowIdentityAnimation(const gfx::Image& gaia_account_image);
+
+  // Enables or disables the IPH highlight.
+  void SetHasInProductHelpPromo(bool has_promo);
 
   // Called by the AvatarToolbarButton to notify the delegate about events.
   void NotifyClick();
@@ -58,12 +73,7 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   void OnHighlightChanged();
 
  private:
-  enum class IdentityAnimationState {
-    kNotShowing,
-    kWaitingForImage,
-    kShowingUntilTimeout,
-    kShowingUntilNoLongerInUse
-  };
+  enum class IdentityAnimationState { kNotShowing, kWaitingForImage, kShowing };
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
@@ -90,38 +100,54 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
-  // AvatarButtonErrorControllerDelegate:
-  void OnAvatarErrorChanged() override;
+  // SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService*) override;
 
   // Initiates showing the identity.
   void OnUserIdentityChanged();
 
-  void OnIdentityAnimationTimeout(CoreAccountId account_id);
+  void OnIdentityAnimationTimeout();
   // Called after the user interacted with the button or after some timeout.
   void MaybeHideIdentityAnimation();
   void HideHighlightAnimation();
 
+  // Shows the identity pill animation. If the animation is already showing,
+  // this extends the duration of the current animation.
+  void ShowIdentityAnimation();
+
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       profile_observation_{this};
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
-  AvatarToolbarButton* avatar_toolbar_button_ = nullptr;
-  Profile* profile_ = nullptr;
+
+  const raw_ptr<AvatarToolbarButton> avatar_toolbar_button_;
+  const raw_ptr<Profile> profile_;
   IdentityAnimationState identity_animation_state_ =
       IdentityAnimationState::kNotShowing;
+
+  // Count of identity pill animation timeouts that are currently scheduled.
+  // Multiple timeouts are scheduled when multiple animation triggers happen in
+  // a quick sequence (before the first timeout passes). The identity pill tries
+  // to close when this reaches 0.
+  int identity_animation_timeout_count_ = 0;
+
   bool refresh_tokens_loaded_ = false;
-  std::unique_ptr<AvatarButtonErrorController> error_controller_;
+  bool has_in_product_help_promo_ = false;
 
   // Whether the avatar highlight animation is visible. The animation is shown
   // when an Autofill datatype is saved. When this is true the avatar button
   // sync paused/error state will be disabled.
   bool highlight_animation_visible_ = false;
 
-  base::WeakPtrFactory<AvatarToolbarButtonDelegate> weak_ptr_factory_{this};
+  // Caches the value of the last error so the class can detect when it changes
+  // and notify |avatar_toolbar_button_|.
+  absl::optional<AvatarSyncErrorType> last_avatar_error_;
 
-  DISALLOW_COPY_AND_ASSIGN(AvatarToolbarButtonDelegate);
+  base::WeakPtrFactory<AvatarToolbarButtonDelegate> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_DELEGATE_H_

@@ -1,0 +1,106 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
+
+#include <cstdint>
+#include <memory>
+
+#include "base/feature_list.h"
+#include "chrome/browser/lacros/sync/sync_explicit_passphrase_client_lacros.h"
+#include "chrome/browser/lacros/sync/sync_user_settings_client_lacros.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_params_proxy.h"
+#include "components/sync/base/features.h"
+
+namespace {
+
+// Version of crosapi that is guaranteed to have SyncUserSettingsClient API (
+// exposed by SyncService crosapi).
+const uint32_t kMinCrosapiVersionWithSyncUserSettingsClient = 80;
+
+// Creates SyncExplicitPassphraseClientLacros if preconditions are met, returns
+// nullptr otherwise. Preconditions are:
+// 1. Sync passphrase sharing feature is enabled.
+// 2. SyncService crosapi is available.
+// `lacros_service` and `sync_service` must not be null.
+std::unique_ptr<SyncExplicitPassphraseClientLacros>
+MaybeCreateSyncExplicitPassphraseClient(chromeos::LacrosService* lacros_service,
+                                        syncer::SyncService* sync_service) {
+  DCHECK(lacros_service);
+  DCHECK(sync_service);
+
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSyncChromeOSExplicitPassphraseSharing)) {
+    return nullptr;
+  }
+
+  if (!lacros_service->IsAvailable<crosapi::mojom::SyncService>()) {
+    return nullptr;
+  }
+
+  // TODO(crbug.com/1327602): move high-level Crosapi initialization logic to
+  // SyncCrosapiManagerLacros and make SyncExplicitPassphraseClientLacros
+  // working with crosapi::mojom::SyncExplicitPassphraseClient directly.
+  return std::make_unique<SyncExplicitPassphraseClientLacros>(
+      sync_service, &lacros_service->GetRemote<crosapi::mojom::SyncService>());
+}
+
+// Creates SyncUserSettingsClientLacros if preconditions are met, returns
+// nullptr otherwise. Preconditions are:
+// 1. Sync apps toggle sharing feature is enabled.
+// 2. SyncService crosapi is available.
+// 3. SyncService crosapi exposes SyncUserSettingsClient (e.g. Ash-side crosapi
+// has sufficient version).
+// `lacros_service` and `sync_service` must not be null.
+std::unique_ptr<SyncUserSettingsClientLacros> MaybeCreateSyncUserSettingsClient(
+    chromeos::LacrosService* lacros_service,
+    syncer::SyncService* sync_service) {
+  DCHECK(lacros_service);
+  DCHECK(sync_service);
+
+  if (!base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+    return nullptr;
+  }
+
+  if (!lacros_service->IsAvailable<crosapi::mojom::SyncService>()) {
+    return nullptr;
+  }
+
+  if (chromeos::BrowserParamsProxy::Get()->CrosapiVersion() <
+      kMinCrosapiVersionWithSyncUserSettingsClient) {
+    return nullptr;
+  }
+
+  return std::make_unique<SyncUserSettingsClientLacros>(
+      sync_service, &lacros_service->GetRemote<crosapi::mojom::SyncService>());
+}
+
+}  // namespace
+
+SyncCrosapiManagerLacros::SyncCrosapiManagerLacros() = default;
+
+SyncCrosapiManagerLacros::~SyncCrosapiManagerLacros() = default;
+
+void SyncCrosapiManagerLacros::PostProfileInit(Profile* profile) {
+  if (!profile->IsMainProfile()) {
+    return;
+  }
+
+  auto* lacros_service = chromeos::LacrosService::Get();
+  auto* sync_service = SyncServiceFactory::GetForProfile(profile);
+  if (!lacros_service || !sync_service) {
+    return;
+  }
+
+  DCHECK(!sync_explicit_passphrase_client_);
+  sync_explicit_passphrase_client_ =
+      MaybeCreateSyncExplicitPassphraseClient(lacros_service, sync_service);
+
+  DCHECK(!sync_user_settings_client_);
+  sync_user_settings_client_ =
+      MaybeCreateSyncUserSettingsClient(lacros_service, sync_service);
+}

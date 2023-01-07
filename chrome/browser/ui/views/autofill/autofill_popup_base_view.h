@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,25 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
+#include "chrome/browser/ui/browser.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/focus/widget_focus_manager.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
 class Point;
+}
+
+namespace views {
+class BubbleBorder;
 }
 
 namespace autofill {
@@ -41,9 +47,11 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   AutofillPopupBaseView& operator=(const AutofillPopupBaseView&) = delete;
 
   static int GetCornerRadius();
-
-  // views::View:
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
+  // Returns the horizontal margin between elements and the edge of the view.
+  static int GetHorizontalMargin();
+  // Returns the horizontal space between elements in the view (e.g. icon and
+  // text).
+  static int GetHorizontalPadding();
 
   // Notify accessibility that an item has been selected.
   void NotifyAXSelection(View*);
@@ -55,26 +63,33 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   SkColor GetSelectedBackgroundColor() const;
   SkColor GetSelectedForegroundColor() const;
   SkColor GetFooterBackgroundColor() const;
-  SkColor GetSeparatorColor() const;
+  ui::ColorId GetSeparatorColorId() const;
   SkColor GetWarningColor() const;
 
+  base::TimeDelta time_delta_since_popup_shown() const {
+    return base::Time::Now() - show_time_;
+  }
+
+  Browser* browser() { return browser_; }
+
  protected:
-  explicit AutofillPopupBaseView(AutofillPopupViewDelegate* delegate,
-                                 views::Widget* parent_widget);
+  AutofillPopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
+                        views::Widget* parent_widget);
   ~AutofillPopupBaseView() override;
 
-  // Show this popup. Idempotent.
-  void DoShow();
+  // Show this popup. Idempotent. Returns |true| if popup is shown, |false|
+  // otherwise.
+  bool DoShow();
 
   // Hide the widget and delete |this|.
   void DoHide();
 
-  // Ensure the child views are not rendered beyond the bubble border
+  // Ensure the child views are not rendered beyond the popup border
   // boundaries. Should be overridden together with CreateBorder.
   void UpdateClipPath();
 
-  // Returns the bounds of the containing window in screen space.
-  gfx::Rect GetWindowBounds() const;
+  // Returns the bounds of the containing browser window in screen space.
+  gfx::Rect GetTopWindowBounds() const;
 
   // Returns the bounds of the content area in screen space.
   gfx::Rect GetContentAreaBounds() const;
@@ -84,10 +99,21 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // testing).
   virtual bool DoUpdateBoundsAndRedrawPopup();
 
-  const AutofillPopupViewDelegate* delegate() const { return delegate_; }
+  // Returns the border to be applied to the popup.
+  virtual std::unique_ptr<views::Border> CreateBorder();
+
+  // Returns the optimal bounds to place the popup with |preferred_size| and
+  // places an arrow on the popup border to point towards |element_bounds|
+  // within |max_bounds_for_popup|.
+  gfx::Rect GetOptionalPositionAndPlaceArrowOnPopup(
+      const gfx::Rect& element_bounds,
+      const gfx::Rect& max_bounds_for_popup,
+      const gfx::Size& preferred_size);
 
  private:
   friend class AutofillPopupBaseViewTest;
+
+  class Widget;
 
   // views::Views implementation.
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -107,25 +133,29 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // eventually hide this view in the process.
   void HideController(PopupHidingReason reason);
 
-  // Returns the border to be applied to the popup.
-  std::unique_ptr<views::Border> CreateBorder();
+  // Return the web contents related to this.
+  content::WebContents* GetWebContents() const;
+
+  // The native view that |this|'s related widget should sit in.
+  gfx::NativeView GetParentNativeView() const;
 
   // Must return the container view for this popup.
   gfx::NativeView container_view();
 
   // Controller for this popup. Weak reference.
-  AutofillPopupViewDelegate* delegate_;
+  base::WeakPtr<AutofillPopupViewDelegate> delegate_;
 
   // The widget of the window that triggered this popup. Weak reference.
-  views::Widget* parent_widget_;
+  raw_ptr<views::Widget> parent_widget_;
 
   // The time when the popup was shown.
   base::Time show_time_;
 
+  // The browser this popup is shown in.
+  raw_ptr<Browser> browser_;
+
   // Ensures that the menu start event is not fired redundantly.
   bool is_ax_menu_start_event_fired_ = false;
-
-  base::WeakPtrFactory<AutofillPopupBaseView> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Cookie Store API on http://localhost</title>
+<!-- Cookie Store API should work on http://localhost, which is considered a
+     secure context:
+     https://html.spec.whatwg.org/multipage/webappapis.html#secure-context
+     https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy
+
+     This test also verifies it behaves consistently with document.cookie -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+promise_test(async testCase => {
+  assert_equals(await cookieStore.get('cookie-name'), null);
+
+  await cookieStore.set('cookie-name', 'cookie-value');
+  testCase.add_cleanup(async () => {
+    await cookieStore.delete('cookie-name');
+  });
+
+  const cookie = await cookieStore.get('cookie-name');
+  assert_equals(cookie.name, 'cookie-name');
+  assert_equals(cookie.value, 'cookie-value');
+
+  await cookieStore.delete('cookie-name');
+  assert_equals(await cookieStore.get('cookie-name'), null);
+}, 'cookieStore API with parameters');
+
+promise_test(async testCase => {
+  assert_equals(await cookieStore.get({name: 'cookie-name'}), null);
+
+  await cookieStore.set({name: 'cookie-name', value: 'cookie-value'});
+  testCase.add_cleanup(async () => {
+    await cookieStore.delete({name: 'cookie-name', value: 'cookie-value'});
+  });
+
+  const cookie = await cookieStore.get({name: 'cookie-name'});
+  assert_equals(cookie.name, 'cookie-name');
+  assert_equals(cookie.value, 'cookie-value');
+
+  await cookieStore.delete({name: 'cookie-name', value: 'cookie-value'});
+  assert_equals(await cookieStore.get({name: 'cookie-name'}), null);
+}, 'cookieStore API with one single object parameter.');
+
+function documentWriteGet(cookie_name) {
+  let row = document.cookie.split('; ').
+    find(row => row.startsWith(`${cookie_name}=`));
+  return row ? row.split('=')[1] : null;
+}
+
+function documentWriteSet(cookie_name, cookie_value) {
+  document.cookie = `${cookie_name}=${cookie_value}`;
+}
+
+function documentWriteDelete(cookie_name) {
+ document.cookie = `${cookie_name}=;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+}
+
+promise_test(async testCase => {
+  assert_equals(documentWriteGet("cookie-name-2"), null);
+
+  documentWriteSet('cookie-name-2', 'cookie-value');
+  testCase.add_cleanup(() => {
+    documentWriteDelete('cookie-name-2');
+  });
+
+  assert_equals(documentWriteGet('cookie-name-2'), 'cookie-value');
+
+  documentWriteDelete('cookie-name-2');
+  assert_equals(documentWriteGet('cookie-name-2'), null);
+}, 'document.cookie');
+
+</script>

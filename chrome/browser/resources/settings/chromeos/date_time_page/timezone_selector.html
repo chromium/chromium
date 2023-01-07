@@ -1,53 +1,38 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="../../controls/settings_dropdown_menu.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="../../prefs/prefs_behavior.html">
-<link rel="import" href="../../prefs/prefs_types.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="timezone_browser_proxy.html">
-
-<dom-module id="timezone-selector">
-  <template>
-    <style include="settings-shared">
-      settings-dropdown-menu {
-        --md-select-width: 425px;
-      }
-      /* When per_user_timezone_enabled is true, dropdowns are start-aligned. */
-      #userTimeZoneSelector,
-      #systemTimezoneSelector {
-        --settings-dropdown-menu-policy-order: 1;
-      }
-    </style>
-    <template is="dom-if" restamp
-        if="[[!prefs.cros.flags.per_user_timezone_enabled.value]]">
-      <settings-dropdown-menu pref="{{prefs.cros.system.timezone}}"
-          label="$i18n{timeZone}"
-          menu-options="[[timeZoneList_]]"
-          disabled="[[prefs.generated.resolve_timezone_by_geolocation_on_off.value ||
-          shouldDisableTimeZoneGeoSelector]]">
-      </settings-dropdown-menu>
-    </template>
-    <template is="dom-if" restamp
-        if="[[prefs.cros.flags.per_user_timezone_enabled.value]]">
-        <settings-dropdown-menu id="userTimeZoneSelector"
-            pref="{{prefs.settings.timezone}}"
-            label="$i18n{timeZone}"
-            menu-options="[[timeZoneList_]]"
-            hidden="[[isUserTimeZoneSelectorHidden_(prefs.settings.timezone,
-                prefs.generated.resolve_timezone_by_geolocation_on_off.value)]]"
-            disabled="[[shouldDisableTimeZoneGeoSelector]]">
-        </settings-dropdown-menu>
-        <settings-dropdown-menu id="systemTimezoneSelector"
-            pref="{{prefs.cros.system.timezone}}"
-            label="$i18n{timeZone}"
-            menu-options="[[timeZoneList_]]"
-            hidden="[[!isUserTimeZoneSelectorHidden_(prefs.settings.timezone,
-                prefs.generated.resolve_timezone_by_geolocation_on_off.value)]]"
-            disabled>
-        </settings-dropdown-menu>
-    </template>
-  </template>
-  <script src="timezone_selector.js"></script>
-</dom-module>
+<style include="settings-shared">
+  settings-dropdown-menu {
+    --md-select-width: 425px;
+  }
+  /* When per_user_timezone_enabled is true, dropdowns are start-aligned. */
+  #userTimeZoneSelector,
+  #systemTimezoneSelector {
+    --settings-dropdown-menu-policy-order: 1;
+  }
+</style>
+<template is="dom-if" restamp
+    if="[[!prefs.cros.flags.per_user_timezone_enabled.value]]">
+  <settings-dropdown-menu pref="{{prefs.cros.system.timezone}}"
+      label="$i18n{timeZone}"
+      menu-options="[[timeZoneList_]]"
+      disabled="[[prefs.generated.resolve_timezone_by_geolocation_on_off.value ||
+      shouldDisableTimeZoneGeoSelector]]">
+  </settings-dropdown-menu>
+</template>
+<template is="dom-if" restamp
+    if="[[prefs.cros.flags.per_user_timezone_enabled.value]]">
+    <settings-dropdown-menu id="userTimeZoneSelector"
+        pref="{{prefs.settings.timezone}}"
+        label="$i18n{timeZone}"
+        menu-options="[[timeZoneList_]]"
+        hidden="[[isUserTimeZoneSelectorHidden_(prefs.settings.timezone,
+            prefs.generated.resolve_timezone_by_geolocation_on_off.value)]]"
+        disabled="[[shouldDisableTimeZoneGeoSelector]]">
+    </settings-dropdown-menu>
+    <settings-dropdown-menu id="systemTimezoneSelector"
+        pref="{{prefs.cros.system.timezone}}"
+        label="$i18n{timeZone}"
+        menu-options="[[timeZoneList_]]"
+        hidden="[[!isUserTimeZoneSelectorHidden_(prefs.settings.timezone,
+            prefs.generated.resolve_timezone_by_geolocation_on_off.value)]]"
+        disabled>
+    </settings-dropdown-menu>
+</template>

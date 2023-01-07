@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,9 @@ class ToolbarActionViewDelegate {
   // Updates the view to reflect current state.
   virtual void UpdateState() = 0;
 
-  // Returns true if a context menu is running.
-  virtual bool IsMenuRunning() const = 0;
+  // Shows the context menu for the action as a fallback for performing another
+  // action.
+  virtual void ShowContextMenuAsFallback() = 0;
 
   // Whether the container supports showing extensions outside of the menu.
   virtual bool CanShowIconInToolbar() const;

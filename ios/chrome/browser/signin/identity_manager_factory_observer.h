@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_OBSERVER_H_
 #define IOS_CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 
 namespace signin {
@@ -16,13 +15,16 @@ class IdentityManager;
 class IdentityManagerFactoryObserver : public base::CheckedObserver {
  public:
   IdentityManagerFactoryObserver() {}
+
+  IdentityManagerFactoryObserver(const IdentityManagerFactoryObserver&) =
+      delete;
+  IdentityManagerFactoryObserver& operator=(
+      const IdentityManagerFactoryObserver&) = delete;
+
   ~IdentityManagerFactoryObserver() override {}
 
   // Called when an IdentityManager instance is created.
   virtual void IdentityManagerCreated(signin::IdentityManager* manager) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IdentityManagerFactoryObserver);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_OBSERVER_H_

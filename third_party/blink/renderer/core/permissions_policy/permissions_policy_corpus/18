@@ -1,0 +1,1 @@
+camera=(self "*://example.com/" "https://example.net:*/"), gyroscope=(self "https://*/" "https://foo.*.example.net/" "https://*.*.example.net/")

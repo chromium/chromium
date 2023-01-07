@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,19 +79,10 @@ bool TestExtensionMessageBubbleDelegate::ShouldShowExtensionList() const {
   return true;
 }
 
-bool TestExtensionMessageBubbleDelegate::ShouldHighlightExtensions() const {
-  return true;
-}
-
 bool TestExtensionMessageBubbleDelegate::ShouldLimitToEnabledExtensions()
     const {
   return true;
 }
-
-void TestExtensionMessageBubbleDelegate::LogExtensionCount(size_t count) {}
-
-void TestExtensionMessageBubbleDelegate::LogAction(
-    ExtensionMessageBubbleController::BubbleAction action) {}
 
 bool TestExtensionMessageBubbleDelegate::SupportsPolicyIndicator() {
   return true;

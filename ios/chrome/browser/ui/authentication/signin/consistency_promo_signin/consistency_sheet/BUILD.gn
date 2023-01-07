@@ -1,0 +1,33 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("consistency_sheet") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "child_consistency_sheet_view_controller.h",
+    "consistency_sheet_constants.h",
+    "consistency_sheet_constants.mm",
+    "consistency_sheet_navigation_controller.h",
+    "consistency_sheet_navigation_controller.mm",
+    "consistency_sheet_presentation_controller.h",
+    "consistency_sheet_presentation_controller.mm",
+    "consistency_sheet_slide_transition_animator.h",
+    "consistency_sheet_slide_transition_animator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/authentication/signin:signin_protected",
+    "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin:layout",
+    "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+  public_deps =
+      [ "//ios/chrome/browser/ui/authentication/signin:signin_headers" ]
+}

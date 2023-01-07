@@ -1,0 +1,8 @@
+Tests that object's [[Prototype]] property is present in object properties section when script is paused on a breakpoint.Bug 41214
+
+Set timer for test function.
+Script execution paused.
+Expanded property: o.[[Prototype]].[[Prototype]]
+Expanded property: d.[[Prototype]].[[Prototype]].[[Prototype]].[[Prototype]].[[Prototype]]
+Script execution resumed.
+

@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_animated_integer_optional_integer.h"
 
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

@@ -1,12 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
 
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/web/common/features.h"
+#import "ios/web/common/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

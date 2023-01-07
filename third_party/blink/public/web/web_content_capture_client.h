@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,7 @@ class WebContentCaptureClient {
  public:
   // Adjusts the ContentCaptureTask delay time, has no effect for the existing
   // tasks.
-  virtual void GetTaskTimingParameters(base::TimeDelta& short_delay,
-                                       base::TimeDelta& long_delay) const = 0;
+  virtual base::TimeDelta GetTaskInitialDelay() const = 0;
 
   // Invoked when a list of |content| is captured, |first_content| indicates if
   // this is first captured content in the current document.

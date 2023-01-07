@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,7 +13,7 @@ directory.
 
 For example, the code of `tools/perf/my_fancy_tool` should mostly be:
 
-    #!/usr/bin/env vpython
+    #!/usr/bin/env vpython3
     import sys
     from command_line_tools import my_fancy_tool
 

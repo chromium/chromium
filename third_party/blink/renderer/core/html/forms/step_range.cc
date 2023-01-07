@@ -101,7 +101,7 @@ Decimal StepRange::ClampValue(const Decimal& value) const {
 Decimal StepRange::ParseStep(AnyStepHandling any_step_handling,
                              const StepDescription& step_description,
                              const String& step_string) {
-  if (step_string.IsEmpty())
+  if (step_string.empty())
     return step_description.DefaultValue();
 
   if (EqualIgnoringASCIICase(step_string, "any")) {
@@ -176,9 +176,16 @@ bool StepRange::StepMismatch(const Decimal& value_for_check) const {
 Decimal StepRange::StepSnappedMaximum() const {
   Decimal base = StepBase();
   Decimal step = Step();
+  if (step < Decimal(0))
+    return Decimal::Nan();
   if (base - step == base || !(base / step).IsFinite())
     return Decimal::Nan();
-  Decimal aligned_maximum = base + ((Maximum() - base) / step).Floor() * step;
+  Decimal divided = ((Maximum() - base) / step);
+  Decimal aligned_maximum;
+  if (divided == divided.Floor())
+    aligned_maximum = Maximum();
+  else
+    aligned_maximum = base + divided.Floor() * step;
   if (aligned_maximum > Maximum())
     aligned_maximum -= step;
   DCHECK_LE(aligned_maximum, Maximum());

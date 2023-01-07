@@ -5,7 +5,7 @@
   <script src="/resources/testharnessreport.js"></script>
   <script>
     if (window.testRunner)
-      testRunner.setCanOpenWindows();
+      testRunner.setPopupBlockingEnabled(false);
 
     var t = async_test("Verify that subresources do not receive an 'HTTPS' header.");
     fetch("resources/echo-https-header.pl").then(t.step_func(function(res) {

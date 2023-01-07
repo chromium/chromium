@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,10 @@
 #include <set>
 #include <string>
 
+#include "ash/components/arc/mojom/metrics.mojom.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "components/arc/mojom/metrics.mojom.h"
 #include "components/exo/surface_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/window_observer.h"
@@ -29,6 +28,10 @@ class Window;
 namespace content {
 class BrowserContext;
 }  // namespace content
+
+namespace exo {
+class ScopedSurface;
+}  // namespace exo
 
 namespace arc {
 
@@ -51,6 +54,10 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   ArcAppPerformanceTracing(content::BrowserContext* context,
                            ArcBridgeService* bridge);
+
+  ArcAppPerformanceTracing(const ArcAppPerformanceTracing&) = delete;
+  ArcAppPerformanceTracing& operator=(const ArcAppPerformanceTracing&) = delete;
+
   ~ArcAppPerformanceTracing() override;
 
   // Returns singleton instance for the given BrowserContext,
@@ -180,7 +187,8 @@ class ArcAppPerformanceTracing : public KeyedService,
   // Timer for jankiness tracing.
   base::OneShotTimer jankiness_timer_;
 
-  DISALLOW_COPY_AND_ASSIGN(ArcAppPerformanceTracing);
+  // Used for automatic observer adding/removing.
+  std::unique_ptr<exo::ScopedSurface> scoped_surface_;
 };
 
 }  // namespace arc

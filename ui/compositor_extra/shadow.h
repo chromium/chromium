@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/rect.h"
-
-namespace gfx {
-struct ShadowDetails;
-}  // namespace gfx
+#include "ui/gfx/shadow_util.h"
 
 namespace ui {
 class Layer;
@@ -23,6 +20,10 @@ class Layer;
 class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
  public:
   Shadow();
+
+  Shadow(const Shadow&) = delete;
+  Shadow& operator=(const Shadow&) = delete;
+
   ~Shadow() override;
 
   // Initialize for the the given shadow |elevation|. This is passed to
@@ -51,6 +52,9 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   // adjusting the shadow layer to frame |content_bounds|. 0 or greater.
   void SetRoundedCornerRadius(int rounded_corner_radius);
 
+  // Set shadow style.
+  void SetShadowStyle(gfx::ShadowStyle style);
+
   const gfx::ShadowDetails* details_for_testing() const { return details_; }
 
   // ui::ImplicitAnimationObserver overrides:
@@ -63,15 +67,17 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
    public:
     explicit ShadowLayerOwner(Shadow* owner,
                               std::unique_ptr<Layer> layer = nullptr);
+
+    ShadowLayerOwner(const ShadowLayerOwner&) = delete;
+    ShadowLayerOwner& operator=(const ShadowLayerOwner&) = delete;
+
     ~ShadowLayerOwner() override;
 
     // ui::LayerOwner:
     std::unique_ptr<Layer> RecreateLayer() override;
 
    private:
-    Shadow* const owner_shadow_;
-
-    DISALLOW_COPY_AND_ASSIGN(ShadowLayerOwner);
+    const raw_ptr<Shadow> owner_shadow_;
   };
 
   // Updates the shadow layer and its image to reflect |desired_elevation_|.
@@ -96,7 +102,10 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   // will always point to a global ShadowDetails instance that is guaranteed
   // to outlive the Shadow instance. See ui/gfx/shadow_util.h for how these
   // ShadowDetails instances are created.
-  const gfx::ShadowDetails* details_ = nullptr;
+  raw_ptr<const gfx::ShadowDetails> details_ = nullptr;
+
+  // The style of shadow. Use MD style by default.
+  gfx::ShadowStyle style_ = gfx::ShadowStyle::kMaterialDesign;
 
   // The owner of the actual shadow layer corresponding to a cc::NinePatchLayer.
   ShadowLayerOwner shadow_layer_owner_;
@@ -107,8 +116,6 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
   // Bounds of the content that the shadow encloses.
   gfx::Rect content_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(Shadow);
 };
 
 }  // namespace ui

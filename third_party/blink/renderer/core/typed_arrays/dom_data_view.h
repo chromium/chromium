@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ namespace blink {
 
 class CORE_EXPORT DOMDataView final : public DOMArrayBufferView {
   DEFINE_WRAPPERTYPEINFO();
+  static const WrapperTypeInfo wrapper_type_info_body_;
 
  public:
   typedef char ValueType;
@@ -26,9 +27,7 @@ class CORE_EXPORT DOMDataView final : public DOMArrayBufferView {
       : DOMArrayBufferView(dom_array_buffer, byte_offset),
         raw_byte_length_(byte_length) {}
 
-  v8::Local<v8::Value> Wrap(v8::Isolate*,
-                            v8::Local<v8::Object> creation_context) override;
-  v8::MaybeLocal<v8::Value> WrapV2(ScriptState*) override;
+  v8::MaybeLocal<v8::Value> Wrap(ScriptState*) override;
 
   size_t byteLength() const final {
     return !IsDetached() ? raw_byte_length_ : 0;

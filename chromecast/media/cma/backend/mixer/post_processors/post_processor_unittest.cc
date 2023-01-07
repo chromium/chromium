@@ -1,9 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromecast/media/cma/backend/mixer/post_processors/post_processor_unittest.h"
-#include "chromecast/media/cma/backend/mixer/post_processors/post_processor_wrapper.h"
 
 #include <time.h>
 
@@ -13,7 +12,9 @@
 #include <cstring>
 #include <limits>
 
+#include "base/check_op.h"
 #include "base/logging.h"
+#include "chromecast/media/cma/backend/mixer/post_processors/post_processor_wrapper.h"
 
 namespace chromecast {
 namespace media {
@@ -347,6 +348,8 @@ PostProcessorTest::~PostProcessorTest() = default;
 INSTANTIATE_TEST_SUITE_P(SampleRates,
                          PostProcessorTest,
                          ::testing::Values(44100, 48000));
+
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(PostProcessorTest);
 
 }  // namespace post_processor_test
 }  // namespace media

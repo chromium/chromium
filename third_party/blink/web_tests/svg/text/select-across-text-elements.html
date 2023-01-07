@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="../../resources/ahem.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+
+<body style="margin:0">
+<svg>
+<text y="40" font-family="ahem" font-size="40">111</text>
+<text y="100" font-family="ahem" font-size="40">222</text>
+</svg>
+
+<script>
+// See crbug.com/1222973.
+// As of June 2021, the expected behavior doesn't conform to the SVG
+// specification. However we keep the behavior because of browser
+// interoperability.
+promise_test(async () => {
+  const actions = new test_driver.Actions()
+      .pointerMove(41, 39)
+      .pointerDown()
+      .pointerMove(30, 99)
+      .pointerUp();
+  await actions.send();
+  assert_equals(getSelection().toString(), '11\n2');
+}, 'Interactive text selection can select across text elements');
+</script>
+</body>

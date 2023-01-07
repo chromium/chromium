@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,11 +46,11 @@ MenuItem* GetParent(MenuItem::Id parent_id,
   if (!parent) {
     *error = ErrorUtils::FormatErrorMessage(
         kCannotFindItemError, GetIDString(parent_id));
-    return NULL;
+    return nullptr;
   }
   if (parent->type() != MenuItem::NORMAL) {
     *error = kParentsMustBeNormalError;
-    return NULL;
+    return nullptr;
   }
   return parent;
 }

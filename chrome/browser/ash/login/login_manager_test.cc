@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,21 @@
 #include <string>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/metrics/login_unlock_throughput_recorder.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/browser_process.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
@@ -28,7 +31,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 LoginManagerTest::LoginManagerTest() {
   set_exit_when_last_browser_closes(false);
@@ -37,15 +40,15 @@ LoginManagerTest::LoginManagerTest() {
 LoginManagerTest::~LoginManagerTest() {}
 
 void LoginManagerTest::SetUpCommandLine(base::CommandLine* command_line) {
-  command_line->AppendSwitch(chromeos::switches::kLoginManager);
-  command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(switches::kLoginManager);
+  command_line->AppendSwitch(switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(
+      switches::kDisableOOBEChromeVoxHintTimerForTesting);
 
   MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
 }
 
 void LoginManagerTest::SetUpOnMainThread() {
-  LoginDisplayHostWebUI::DisableRestrictiveProxyCheckForTest();
-
   host_resolver()->AddRule("*", "127.0.0.1");
 
   test::UserSessionManagerTestApi session_manager_test_api(
@@ -58,11 +61,14 @@ void LoginManagerTest::SetUpOnMainThread() {
 }
 
 void LoginManagerTest::RegisterUser(const AccountId& account_id) {
-  ListPrefUpdate users_pref(g_browser_process->local_state(), "LoggedInUsers");
-  users_pref->AppendIfNotPresent(
-      std::make_unique<base::Value>(account_id.GetUserEmail()));
+  ScopedListPrefUpdate users_pref(g_browser_process->local_state(),
+                                  "LoggedInUsers");
+  base::Value email_value(account_id.GetUserEmail());
+  if (!base::Contains(users_pref.Get(), email_value))
+    users_pref->Append(std::move(email_value));
   if (user_manager::UserManager::IsInitialized()) {
-    user_manager::known_user::SaveKnownUser(account_id);
+    user_manager::KnownUser(g_browser_process->local_state())
+        .SaveKnownUser(account_id);
     user_manager::UserManager::Get()->SaveUserOAuthStatus(
         account_id, user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
   }
@@ -75,6 +81,7 @@ UserContext LoginManagerTest::CreateUserContext(const AccountId& account_id,
   UserContext user_context(user_manager::UserType::USER_TYPE_REGULAR,
                            account_id);
   user_context.SetKey(Key(password));
+  user_context.SetPasswordKey(Key(password));
   if (account_id.GetUserEmail() == FakeGaiaMixin::kEnterpriseUser1) {
     user_context.SetRefreshToken(FakeGaiaMixin::kTestRefreshToken1);
   } else if (account_id.GetUserEmail() == FakeGaiaMixin::kEnterpriseUser2) {
@@ -105,9 +112,9 @@ bool LoginManagerTest::AddUserToSession(const UserContext& user_context) {
     ADD_FAILURE();
     return false;
   }
-  SessionStateWaiter waiter;
+  test::ProfilePreparedWaiter profile_prepared(user_context.GetAccountId());
   controller->Login(user_context, SigninSpecifics());
-  waiter.Wait();
+  profile_prepared.Wait();
   const user_manager::UserList& logged_users =
       user_manager::UserManager::Get()->GetLoggedInUsers();
   for (user_manager::UserList::const_iterator it = logged_users.begin();
@@ -130,4 +137,4 @@ void LoginManagerTest::AddUser(const AccountId& account_id) {
   EXPECT_TRUE(AddUserToSession(user_context));
 }
 
-}  // namespace chromeos
+}  // namespace ash

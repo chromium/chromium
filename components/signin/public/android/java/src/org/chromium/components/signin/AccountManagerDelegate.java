@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,15 @@ import android.app.Activity;
 import android.content.Intent;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.base.Callback;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Abstraction of account management implementation.
@@ -23,30 +27,31 @@ import org.chromium.base.Callback;
  */
 public interface AccountManagerDelegate {
     /**
-     * Registers internal observers used for notifying {@link AccountsChangeObserver}. Must be
-     * invoked before calling {@link #addObserver}.
+     * Response code of the {@link AccountManagerDelegate#hasCapability} result.
      */
-    void registerObservers();
-
+    @IntDef({CapabilityResponse.EXCEPTION, CapabilityResponse.YES, CapabilityResponse.NO})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface CapabilityResponse {
+        /**
+         * This value is returned when no valid response YES or NO is fetched from the server.
+         */
+        int EXCEPTION = 0;
+        int YES = 1;
+        int NO = 2;
+    }
     /**
-     * Adds an observer to get notified about accounts changes.
-     * @param observer the observer to add.
+     * Attaches the {@link AccountsChangeObserver} to the delegate and registers the
+     * accounts change receivers to listen to the accounts change broadcast from the
+     * system.
      */
     @MainThread
-    void addObserver(AccountsChangeObserver observer);
+    void attachAccountsChangeObserver(AccountsChangeObserver observer);
 
     /**
-     * Removes an observer that was previously added using {@link #addObserver}.
-     * @param observer the observer to remove.
-     */
-    @MainThread
-    void removeObserver(AccountsChangeObserver observer);
-
-    /**
-     * Get all the accounts synchronously.
+     * Get all the accounts on device synchronously.
      */
     @WorkerThread
-    Account[] getAccountsSync() throws AccountManagerDelegateException;
+    Account[] getAccounts();
 
     /**
      * Get an auth token.
@@ -77,11 +82,18 @@ public interface AccountManagerDelegate {
     AuthenticatorDescription[] getAuthenticatorTypes();
 
     /**
-     * Check whether the {@code account} has all the features listed in {@code features}.
-     * This method shouldn't be called on the UI thread.
+     * Check whether the given account has a specific feature.
      */
     @WorkerThread
-    boolean hasFeatures(Account account, String[] features);
+    boolean hasFeature(Account account, String feature);
+
+    /**
+     * Returns a {@link CapabilityResponse} which indicates whether the account has the requested
+     * capability or has exception.
+     */
+    @WorkerThread
+    @CapabilityResponse
+    int hasCapability(Account account, String capability);
 
     /**
      * Creates an intent that will ask the user to add a new account to the device. See
@@ -105,16 +117,6 @@ public interface AccountManagerDelegate {
             Account account, Activity activity, @Nullable Callback<Boolean> callback);
 
     /**
-     * Gets profile data source.
-     * @return {@link ProfileDataSource} if this delegate provides it, null otherwise.
-     */
-    @MainThread
-    @Nullable
-    default ProfileDataSource getProfileDataSource() {
-        return null;
-    }
-
-    /**
      * Returns the Gaia id for the account associated with the given email address.
      * If an account with the given email address is not installed on the device
      * then null is returned.
@@ -126,9 +128,4 @@ public interface AccountManagerDelegate {
     @WorkerThread
     @Nullable
     String getAccountGaiaId(String accountEmail);
-
-    /**
-     * Checks whether Google Play services is available.
-     */
-    boolean isGooglePlayServicesAvailable();
 }

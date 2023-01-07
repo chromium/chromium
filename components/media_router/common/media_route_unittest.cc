@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,35 +21,31 @@ namespace media_router {
 TEST(MediaRouteTest, TestEquals) {
   const MediaSource& media_source =
       MediaSource::ForPresentationUrl(GURL(kPresentationUrl));
-  MediaRoute route1(kRouteId1, media_source, "sinkId", "Description", false,
-                    false);
+  MediaRoute route1(kRouteId1, media_source, "sinkId", "Description", false);
 
   MediaRoute route1_copy(route1);
   EXPECT_EQ(route1, route1_copy);
 
   // Same as route1 with different sink ID.
   MediaRoute route2(kRouteId1, media_source, "differentSinkId", "Description",
-                    false, false);
+                    false);
   EXPECT_FALSE(route1 == route2);
 
   // Same as route1 with different description.
   MediaRoute route3(kRouteId1, media_source, "sinkId", "differentDescription",
-                    false, false);
+                    false);
   EXPECT_FALSE(route1 == route3);
 
   // Same as route1 with different is_local.
-  MediaRoute route4(kRouteId1, media_source, "sinkId", "Description", true,
-                    false);
+  MediaRoute route4(kRouteId1, media_source, "sinkId", "Description", true);
   EXPECT_FALSE(route1 == route4);
 
   // The ID is different from route1's.
-  MediaRoute route5(kRouteId2, media_source, "sinkId", "Description", false,
-                    false);
+  MediaRoute route5(kRouteId2, media_source, "sinkId", "Description", false);
   EXPECT_FALSE(route1 == route5);
 
   // Same as route1 with different off_the_record.
-  MediaRoute route6(kRouteId1, media_source, "sinkId", "Description", true,
-                    false);
+  MediaRoute route6(kRouteId1, media_source, "sinkId", "Description", true);
   route6.set_off_the_record(true);
   EXPECT_FALSE(route1 == route6);
 }
@@ -57,6 +53,7 @@ TEST(MediaRouteTest, TestEquals) {
 TEST(MediaRouteTest, TestParsingMediaRouteId) {
   // Parse a valid RouteId.
   EXPECT_EQ(MediaRoute::GetPresentationIdFromMediaRouteId(kRouteId1), "1");
+  EXPECT_EQ(MediaRoute::GetSinkIdFromMediaRouteId(kRouteId1), "cast-sink1");
   EXPECT_EQ(MediaRoute::GetMediaSourceIdFromMediaRouteId(kRouteId1),
             "http://foo.com");
 
@@ -64,6 +61,10 @@ TEST(MediaRouteTest, TestParsingMediaRouteId) {
   EXPECT_EQ(MediaRoute::GetPresentationIdFromMediaRouteId("InvalidRouteId"),
             "");
   EXPECT_EQ(MediaRoute::GetPresentationIdFromMediaRouteId(
+                "urn:x-org.chromium:media:route:1/cast-sink1"),
+            "");
+  EXPECT_EQ(MediaRoute::GetSinkIdFromMediaRouteId("InvalidRouteId"), "");
+  EXPECT_EQ(MediaRoute::GetSinkIdFromMediaRouteId(
                 "urn:x-org.chromium:media:route:1/cast-sink1"),
             "");
   EXPECT_EQ(MediaRoute::GetMediaSourceIdFromMediaRouteId("InvalidRouteId"), "");

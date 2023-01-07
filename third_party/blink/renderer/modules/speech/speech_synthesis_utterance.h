@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_voice.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -62,17 +62,17 @@ class SpeechSynthesisUtterance final
 
   float volume() const { return mojom_utterance_->volume; }
   void setVolume(float volume) {
-    mojom_utterance_->volume = clampTo(volume, 0.0f, 1.0f);
+    mojom_utterance_->volume = ClampTo(volume, 0.0f, 1.0f);
   }
 
   float rate() const { return mojom_utterance_->rate; }
   void setRate(float rate) {
-    mojom_utterance_->rate = clampTo(rate, 0.1f, 10.0f);
+    mojom_utterance_->rate = ClampTo(rate, 0.1f, 10.0f);
   }
 
   float pitch() const { return mojom_utterance_->pitch; }
   void setPitch(float pitch) {
-    mojom_utterance_->pitch = clampTo(pitch, 0.0f, 2.0f);
+    mojom_utterance_->pitch = ClampTo(pitch, 0.0f, 2.0f);
   }
 
   double StartTime() const { return start_time_; }

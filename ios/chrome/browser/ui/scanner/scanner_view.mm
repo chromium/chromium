@@ -1,20 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/scanner/scanner_view.h"
 
-#include "base/check.h"
-#include "base/mac/foundation_util.h"
-#include "base/numerics/math_constants.h"
-#include "ios/chrome/browser/ui/icons/chrome_icon.h"
+#import "base/check.h"
+#import "base/mac/foundation_util.h"
+#import "base/numerics/math_constants.h"
+#import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/scanner/preview_overlay_view.h"
 #import "ios/chrome/browser/ui/scanner/video_preview_view.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -47,10 +46,10 @@ const CGFloat kFlashDuration = 0.5;
   PreviewOverlayView* _previewOverlay;
   // The constraint specifying that the preview overlay should be square.
   NSLayoutConstraint* _overlaySquareConstraint;
-  // The constraint relating the size of the |_previewOverlay| to the width of
+  // The constraint relating the size of the `_previewOverlay` to the width of
   // the ScannerView.
   NSLayoutConstraint* _overlayWidthConstraint;
-  // The constraint relating the size of the |_previewOverlay| to the height of
+  // The constraint relating the size of the `_previewOverlay` to the height of
   // te ScannerView.
   NSLayoutConstraint* _overlayHeightConstraint;
 }
@@ -306,7 +305,7 @@ const CGFloat kFlashDuration = 0.5;
       UIUserInterfaceSizeClassCompact == self.traitCollection.verticalSizeClass;
 }
 
-// Adds a preview view to |self| and configures its layout constraints.
+// Adds a preview view to `self` and configures its layout constraints.
 - (void)setupPreviewView {
   DCHECK(!_previewView);
   _previewView = [[VideoPreviewView alloc] initWithFrame:self.frame
@@ -314,7 +313,7 @@ const CGFloat kFlashDuration = 0.5;
   [self insertSubview:_previewView atIndex:0];
 }
 
-// Adds a transparent overlay with a viewport border to |self| and configures
+// Adds a transparent overlay with a viewport border to `self` and configures
 // its layout constraints.
 - (void)setupPreviewOverlayView {
   DCHECK(!_previewOverlay);

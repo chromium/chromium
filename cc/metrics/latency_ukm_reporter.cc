@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,9 +86,9 @@ LatencyUkmReporter::LatencyUkmReporter()
 LatencyUkmReporter::~LatencyUkmReporter() = default;
 
 void LatencyUkmReporter::ReportCompositorLatencyUkm(
-    CompositorFrameReporter::FrameReportType report_type,
+    const CompositorFrameReporter::FrameReportTypes& report_types,
     const std::vector<CompositorFrameReporter::StageData>& stage_history,
-    const CompositorFrameReporter::ActiveTrackers& active_trackers,
+    const ActiveTrackers& active_trackers,
     const CompositorFrameReporter::ProcessedBlinkBreakdown&
         processed_blink_breakdown,
     const CompositorFrameReporter::ProcessedVizBreakdown&
@@ -96,7 +96,7 @@ void LatencyUkmReporter::ReportCompositorLatencyUkm(
   if (ukm_manager_ &&
       compositor_latency_sampling_controller_->ShouldRecordNextEvent()) {
     ukm_manager_->RecordCompositorLatencyUKM(
-        report_type, stage_history, active_trackers, processed_blink_breakdown,
+        report_types, stage_history, active_trackers, processed_blink_breakdown,
         processed_viz_breakdown);
   }
 }

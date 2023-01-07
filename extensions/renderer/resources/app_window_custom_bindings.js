@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -111,7 +111,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setCustomCallback('create',
-      function(name, request, callback, windowParams) {
+      function(callback, windowParams) {
     // |callback| is optional.
     let maybeCallback = callback || function() {};
 
@@ -180,11 +180,21 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   apiFunctions.setHandleRequest('getAll', function() {
     var views = runtimeNatives.GetExtensionViews(-1, -1, 'APP_WINDOW');
-    // In certain corner cases, renderers may not load correctly, and are
-    // missing the chrome.app bindings. Filter these views out so that the next
-    // lines don't crash.
-    // See https://crbug.com/1021014.
-    views = $Array.filter(views, (w) => w.chrome.app);
+
+    views = $Array.filter(views, (w) => {
+      if (!w.chrome.app.window.current()) {
+        // Even though the script context has been created, the initialization
+        // hasn't finished. chrome.app.window.current() is based upon the
+        // completion of the app.window.create() callback, and it's possible
+        // this is called before that.
+        // Treat not-fully-initialized windows as invisible; the app can query
+        // them once the callback for app.window.create() is fired (which is
+        // in-line with API expectations).
+        // See https://crbug.com/1021014.
+        return false;
+      }
+      return true;
+    });
     return $Array.map(views, function(win) {
       return win.chrome.app.window.current();
     });

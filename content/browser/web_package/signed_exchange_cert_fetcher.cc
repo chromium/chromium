@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/loader/single_request_url_loader_factory.h"
@@ -23,8 +24,11 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -80,7 +84,7 @@ SignedExchangeCertFetcher::CreateAndStart(
     bool force_fetch,
     CertificateCallback callback,
     SignedExchangeDevToolsProxy* devtools_proxy,
-    const base::Optional<base::UnguessableToken>& throttling_profile_id,
+    const absl::optional<base::UnguessableToken>& throttling_profile_id,
     net::IsolationInfo isolation_info) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeCertFetcher::CreateAndStart");
@@ -101,7 +105,7 @@ SignedExchangeCertFetcher::SignedExchangeCertFetcher(
     bool force_fetch,
     CertificateCallback callback,
     SignedExchangeDevToolsProxy* devtools_proxy,
-    const base::Optional<base::UnguessableToken>& throttling_profile_id,
+    const absl::optional<base::UnguessableToken>& throttling_profile_id,
     net::IsolationInfo isolation_info)
     : shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       throttles_(std::move(throttles)),
@@ -232,7 +236,9 @@ void SignedExchangeCertFetcher::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void SignedExchangeCertFetcher::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeCertFetcher::OnReceiveResponse");
   if (devtools_proxy_) {
@@ -281,6 +287,18 @@ void SignedExchangeCertFetcher::OnReceiveResponse(
 
   UMA_HISTOGRAM_BOOLEAN("SignedExchange.CertificateFetch.CacheHit",
                         head->was_fetched_via_cache);
+
+  if (!body)
+    return;
+
+  body_ = std::move(body);
+  handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
+      base::SequencedTaskRunnerHandle::Get());
+  handle_watcher_->Watch(
+      body_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+      base::BindRepeating(&SignedExchangeCertFetcher::OnHandleReady,
+                          base::Unretained(this)));
 }
 
 void SignedExchangeCertFetcher::OnReceiveRedirect(
@@ -300,29 +318,9 @@ void SignedExchangeCertFetcher::OnUploadProgress(
   NOTREACHED();
 }
 
-void SignedExchangeCertFetcher::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {
-  // Cert fetching doesn't use cached metadata.
-  NOTREACHED();
-}
-
 void SignedExchangeCertFetcher::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
   // Do nothing.
-}
-
-void SignedExchangeCertFetcher::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
-               "SignedExchangeCertFetcher::OnStartLoadingResponseBody");
-  body_ = std::move(body);
-  handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
-      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
-      base::SequencedTaskRunnerHandle::Get());
-  handle_watcher_->Watch(
-      body_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-      base::BindRepeating(&SignedExchangeCertFetcher::OnHandleReady,
-                          base::Unretained(this)));
 }
 
 void SignedExchangeCertFetcher::OnComplete(

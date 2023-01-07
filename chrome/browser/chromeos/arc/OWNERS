@@ -1,0 +1,4 @@
+# Intent handling code
+file://chrome/browser/ash/arc/intent_helper/OWNERS
+# All others
+file://components/arc/OWNERS

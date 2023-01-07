@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/ports/event.h"
@@ -45,6 +44,9 @@ class MOJO_SYSTEM_IMPL_EXPORT UserMessageImpl : public ports::UserMessage {
     // in the message.
     kAbort,
   };
+
+  UserMessageImpl(const UserMessageImpl&) = delete;
+  UserMessageImpl& operator=(const UserMessageImpl&) = delete;
 
   ~UserMessageImpl() override;
 
@@ -174,7 +176,10 @@ class MOJO_SYSTEM_IMPL_EXPORT UserMessageImpl : public ports::UserMessage {
   size_t GetSizeIfSerialized() const override;
 
   // The event which owns this serialized message. Not owned.
-  ports::UserMessageEvent* const message_event_;
+  //
+  // `message_event_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data and tab_search:top100:2020).
+  RAW_PTR_EXCLUSION ports::UserMessageEvent* const message_event_;
 
   // Unserialized message state.
   uintptr_t context_ = 0;
@@ -202,9 +207,13 @@ class MOJO_SYSTEM_IMPL_EXPORT UserMessageImpl : public ports::UserMessage {
   // serialized message buffer. |user_payload_| is the address of the first byte
   // after any serialized dispatchers, with the payload comprising the remaining
   // |user_payload_size_| bytes of the message.
-  void* header_ = nullptr;
+  //
+  // `header_` and `user_payload_` are not a raw_ptr<...> for performance
+  // reasons (based on analysis of sampling profiler data and
+  // tab_search:top100:2020).
+  RAW_PTR_EXCLUSION void* header_ = nullptr;
   size_t header_size_ = 0;
-  void* user_payload_ = nullptr;
+  RAW_PTR_EXCLUSION void* user_payload_ = nullptr;
   size_t user_payload_size_ = 0;
 
   // Handles which have been attached to the serialized message but which have
@@ -214,8 +223,6 @@ class MOJO_SYSTEM_IMPL_EXPORT UserMessageImpl : public ports::UserMessage {
   // The node name from which this message was received, iff it came from
   // out-of-process and the source is known.
   ports::NodeName source_node_ = ports::kInvalidNodeName;
-
-  DISALLOW_COPY_AND_ASSIGN(UserMessageImpl);
 };
 
 }  // namespace core

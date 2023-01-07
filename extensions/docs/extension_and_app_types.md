@@ -9,8 +9,15 @@ documentation, usage guidelines and examples.
 
 [TOC]
 
-![Summary of extension types showing browser extensions, packaged/platform apps,
-and hosted/bookmark apps](extension_types.png)
+## Extension types hierarchy
+
+* Extensions
+  * Browser extensions
+  * Packaged Apps aka Chrome Apps:
+    * Packaged App ("v1") - deprecated
+    * Platform App ("v2") - deprecated
+  * Hosted Apps - deprecated
+    * Bookmark Apps - deprecated
 
 ## Browser extensions
 
@@ -54,7 +61,8 @@ A platform app can be identified by the presence of an `app.background` key
 in the manifest, which provides the script that runs when the app is
 launched.
 
-*Platform apps are deprecated on non-Chrome OS platforms.*
+*Platform apps are deprecated, and will be [supported until June 2022](
+https://blog.chromium.org/2020/08/changes-to-chrome-app-support-timeline.html).*
 
 ### Packaged app (legacy)
 
@@ -87,29 +95,40 @@ A hosted app can be identified by the presence of an `app.launch.web_url` key in
 `manifest.json`, which provides http/https URL that is loaded when the app is
 launched.
 
-*Hosted apps are deprecated on non-Chrome OS platforms.*
+*Hosted apps are deprecated, and will be [supported until June 2022](
+https://blog.chromium.org/2020/08/changes-to-chrome-app-support-timeline.html).*
 
 ### Bookmark app
 
-A bookmark app is a simplified hosted app that Chrome creates on demand. When
-the user taps "More Tools > Add to desktop..." (or "Add to shelf" on Chrome OS)
-in the Chrome menu, Chrome creates a barebones app whose manifest specifies the
-current tab's URL. A shortcut to this URL appears in chrome://apps using the
-site's favicon.
+Prior to Oct 2020, bookmark apps were based on the Extensions system. At that
+point they were migrated to the [Web App](#Web App) system, but are still called
+bookmark apps. This section is about bookmark apps based on Extensions
+(deprecated).
 
-Chrome then creates a desktop shortcut that will open a browser window with
-flags that specify the app and profile. Activating the icon launches the
+A bookmark app was a simplified hosted app that Chrome created on demand. When
+the user tapped "More Tools > Add to desktop..." (or "Add to shelf" on Chrome
+OS) in the Chrome menu, Chrome created a barebones app whose manifest specified
+the current tab's URL. A shortcut to this URL appeared in chrome://apps using
+the site's favicon.
+
+Chrome then created a desktop shortcut that would open a browser window with
+flags that specify the app and profile. Activating the icon launched the
 "bookmarked" URL in a tab or a window.
 
-A bookmark app's `manifest.json` identifies it as a hosted app. However, in the
-C++ code, the `Extension` object will return true from its `from_bookmark()`
-method.
+*Bookmark apps based on Extensions are retired.*
 
-### Progressive Web App (PWA)
+### Web App
 
-When Progressive Web Apps are installed on desktop a bookmark app is created.
-The bookmark app in this case will capture navigations to its scope and opens
-them in a dedicated app window instead of the existing browser context.
+When Progressive Web Apps (PWAs) are installed on desktop a
+[Web App](/chrome/browser/web_applications/README.md) is created (no longer
+based on the Extensions system since Oct 2020). The web app may capture
+navigations to its scope and open them in a dedicated app window instead of the
+existing browser context.
+
+Due to the migration from bookmark apps, web apps are often still referred to as
+bookmark apps in code and documentation. Not to be confused with "shortcut
+apps", which are web apps that Chrome creates on demand when the user taps "More
+Tools > Create Shortcut...".
 
 ## Ambiguity surrounding the term "Extension"
 

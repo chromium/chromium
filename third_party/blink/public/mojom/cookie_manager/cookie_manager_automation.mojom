@@ -1,0 +1,20 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.test.mojom;
+
+import "services/network/public/mojom/cookie_manager.mojom";
+
+// Provides a way for tests to modify cookies for the calling frame within
+// the content_shell test environment. This should be used/expanded in cases
+// where the RestrictedCookieManager provides insufficient power or detail.
+// This interface is bound per RenderFrameHost.
+interface CookieManagerAutomation {
+  // See https://w3c.github.io/webdriver/#delete-all-cookies
+  DeleteAllCookies() => ();
+  // See https://w3c.github.io/webdriver/#get-all-cookies
+  GetAllCookies() => (array<network.mojom.CookieWithAccessResult> cookies);
+  // See https://w3c.github.io/webdriver/#get-named-cookie
+  GetNamedCookie(string name) => (network.mojom.CookieWithAccessResult? cookie);
+};

@@ -1,12 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/token.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/fake_video_capture_device_launcher.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_capture_device_client.h"
@@ -17,8 +20,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
-
-static const int kMaxBufferCount = 3;
 
 class FakeLaunchedVideoCaptureDevice
     : public content::LaunchedVideoCaptureDevice {
@@ -42,14 +43,19 @@ class FakeLaunchedVideoCaptureDevice
   }
   void MaybeSuspendDevice() override { device_->MaybeSuspend(); }
   void ResumeDevice() override { device_->Resume(); }
+  void Crop(const base::Token& crop_id,
+            uint32_t crop_version,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
+      override {
+    device_->Crop(crop_id, crop_version, std::move(callback));
+  }
   void RequestRefreshFrame() override { device_->RequestRefreshFrame(); }
   void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,
                                       base::OnceClosure done_cb) override {
     // Do nothing.
   }
-  void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoFrameFeedback feedback) override {
-    device_->OnUtilizationReport(frame_feedback_id, feedback);
+  void OnUtilizationReport(media::VideoCaptureFeedback feedback) override {
+    device_->OnUtilizationReport(feedback);
   }
 
  private:
@@ -76,10 +82,10 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::OnceClosure connection_lost_cb,
     Callbacks* callbacks,
     base::OnceClosure done_cb) {
-  auto device = system_->CreateDevice(device_id);
+  auto device = system_->CreateDevice(device_id).ReleaseDevice();
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
       new media::VideoCaptureBufferPoolImpl(
-          media::VideoCaptureBufferType::kSharedMemory, kMaxBufferCount));
+          media::VideoCaptureBufferType::kSharedMemory));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       media::VideoCaptureBufferType::kSharedMemory,

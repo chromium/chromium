@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
@@ -38,6 +39,9 @@ class SigninManagerAndroid : public KeyedService {
  public:
   SigninManagerAndroid(Profile* profile,
                        signin::IdentityManager* identity_manager);
+
+  SigninManagerAndroid(const SigninManagerAndroid&) = delete;
+  SigninManagerAndroid& operator=(const SigninManagerAndroid&) = delete;
 
   ~SigninManagerAndroid() override;
 
@@ -74,10 +78,6 @@ class SigninManagerAndroid : public KeyedService {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_callback);
 
-  // Logs out all Google accounts on the web as a part of the rollback flow.
-  // TODO(https://crbug.com/1065029): Remove this along with the feature flag.
-  void LogOutAllAccountsForMobileIdentityConsistencyRollback(JNIEnv* env);
-
  private:
   friend class SigninManagerAndroidTest;
   FRIEND_TEST_ALL_PREFIXES(SigninManagerAndroidTest,
@@ -95,7 +95,7 @@ class SigninManagerAndroid : public KeyedService {
   };
 
   using RegisterPolicyWithAccountCallback = base::OnceCallback<void(
-      const base::Optional<ManagementCredentials>& credentials)>;
+      const absl::optional<ManagementCredentials>& credentials)>;
 
   // If required registers for policy with given account. callback will be
   // called with credentials if the account is managed.
@@ -105,7 +105,7 @@ class SigninManagerAndroid : public KeyedService {
   void OnPolicyRegisterDone(
       const CoreAccountInfo& account_id,
       base::OnceCallback<void()> policy_callback,
-      const base::Optional<ManagementCredentials>& credentials);
+      const absl::optional<ManagementCredentials>& credentials);
 
   void FetchPolicyBeforeSignIn(const CoreAccountInfo& account_id,
                                base::OnceCallback<void()> policy_callback,
@@ -115,7 +115,7 @@ class SigninManagerAndroid : public KeyedService {
                        bool all_data,
                        base::OnceClosure callback);
 
-  Profile* const profile_ = nullptr;
+  const raw_ptr<Profile> profile_ = nullptr;
 
   // Handler for prefs::kSigninAllowed set in user's profile.
   BooleanPrefMember signin_allowed_;
@@ -124,9 +124,11 @@ class SigninManagerAndroid : public KeyedService {
   // State, not in user prefs.
   BooleanPrefMember force_browser_signin_;
 
-  signin::IdentityManager* const identity_manager_ = nullptr;
-  policy::UserCloudPolicyManager* const user_cloud_policy_manager_ = nullptr;
-  policy::UserPolicySigninService* const user_policy_signin_service_ = nullptr;
+  const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  const raw_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_ =
+      nullptr;
+  const raw_ptr<policy::UserPolicySigninService> user_policy_signin_service_ =
+      nullptr;
 
   // Java-side SigninManager object.
   base::android::ScopedJavaGlobalRef<jobject> java_signin_manager_;
@@ -134,8 +136,6 @@ class SigninManagerAndroid : public KeyedService {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<SigninManagerAndroid> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninManagerAndroid);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_SIGNIN_SIGNIN_MANAGER_ANDROID_H_

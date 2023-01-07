@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_IOS_FACADE_IOS_OAUTH_TOKEN_GETTER_H_
 #define REMOTING_IOS_FACADE_IOS_OAUTH_TOKEN_GETTER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/oauth_token_getter.h"
 
@@ -17,6 +16,10 @@ namespace remoting {
 class IosOauthTokenGetter : public OAuthTokenGetter {
  public:
   IosOauthTokenGetter();
+
+  IosOauthTokenGetter(const IosOauthTokenGetter&) = delete;
+  IosOauthTokenGetter& operator=(const IosOauthTokenGetter&) = delete;
+
   ~IosOauthTokenGetter() override;
 
   // OAuthTokenGetter overrides.
@@ -28,7 +31,6 @@ class IosOauthTokenGetter : public OAuthTokenGetter {
  private:
   base::WeakPtr<IosOauthTokenGetter> weak_ptr_;
   base::WeakPtrFactory<IosOauthTokenGetter> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(IosOauthTokenGetter);
 };
 
 }  // namespace remoting

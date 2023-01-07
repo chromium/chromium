@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 #include <stddef.h>
 
 #include <limits>
+#include <tuple>
 
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -33,7 +33,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // For fine-grained suppression.
 #include "base/win/windows_version.h"
 #endif
@@ -87,7 +87,7 @@ bool JavascriptErrorDetectingLogHandler(int severity,
                                         int line,
                                         size_t message_start,
                                         const std::string& str) {
-  if (file == NULL || std::string("CONSOLE") != file)
+  if (file == nullptr || std::string("CONSOLE") != file)
     return false;
 
   // TODO(crbug.com/918871): Fix AppRTC and stop ignoring this error.
@@ -112,14 +112,10 @@ std::vector<std::string> JsonArrayToVectorOfStrings(
   std::unique_ptr<base::ListValue> list =
       base::ListValue::From(std::move(value));
   std::vector<std::string> vector;
-  vector.reserve(list->GetSize());
-  for (size_t i = 0; i < list->GetSize(); ++i) {
-    base::Value* item;
-    EXPECT_TRUE(list->Get(i, &item));
-    EXPECT_TRUE(item->is_string());
-    std::string item_str;
-    EXPECT_TRUE(item->GetAsString(&item_str));
-    vector.push_back(std::move(item_str));
+  vector.reserve(list->GetListDeprecated().size());
+  for (base::Value& item : list->GetListDeprecated()) {
+    EXPECT_TRUE(item.is_string());
+    vector.push_back(std::move(item).TakeString());
   }
   return vector;
 }
@@ -160,7 +156,8 @@ bool WebRtcTestBase::GetUserMediaWithSpecificConstraintsAndAccept(
   GetUserMedia(tab_contents, constraints);
   EXPECT_TRUE(observer.request_shown());
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab_contents->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      tab_contents->GetPrimaryMainFrame(), "obtainGetUserMediaResult();",
+      &result));
   return kOkGotStream == result;
 }
 
@@ -173,7 +170,8 @@ bool WebRtcTestBase::GetUserMediaWithSpecificConstraintsAndAcceptIfPrompted(
           permissions::PermissionRequestManager::ACCEPT_ALL);
   GetUserMedia(tab_contents, constraints);
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab_contents->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      tab_contents->GetPrimaryMainFrame(), "obtainGetUserMediaResult();",
+      &result));
   return kOkGotStream == result;
 }
 
@@ -193,7 +191,8 @@ void WebRtcTestBase::GetUserMediaWithSpecificConstraintsAndDeny(
   GetUserMedia(tab_contents, constraints);
   EXPECT_TRUE(observer.request_shown());
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab_contents->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      tab_contents->GetPrimaryMainFrame(), "obtainGetUserMediaResult();",
+      &result));
   EXPECT_EQ(kFailedWithNotAllowedError, result);
 }
 
@@ -208,7 +207,8 @@ void WebRtcTestBase::GetUserMediaAndDismiss(
   EXPECT_TRUE(observer.request_shown());
   // A dismiss should be treated like a deny.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab_contents->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      tab_contents->GetPrimaryMainFrame(), "obtainGetUserMediaResult();",
+      &result));
   EXPECT_EQ(kFailedWithNotAllowedError, result);
 }
 
@@ -230,7 +230,8 @@ void WebRtcTestBase::GetUserMediaAndExpectAutoAcceptWithoutPrompt(
   GetUserMedia(tab_contents, kAudioVideoCallConstraints);
   EXPECT_FALSE(observer.request_shown());
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab_contents->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      tab_contents->GetPrimaryMainFrame(), "obtainGetUserMediaResult();",
+      &result));
   EXPECT_EQ(kOkGotStream, result);
 }
 
@@ -252,7 +253,8 @@ void WebRtcTestBase::GetUserMediaAndExpectAutoDenyWithoutPrompt(
   GetUserMedia(tab_contents, kAudioVideoCallConstraints);
   EXPECT_FALSE(observer.request_shown());
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab_contents->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      tab_contents->GetPrimaryMainFrame(), "obtainGetUserMediaResult();",
+      &result));
   EXPECT_EQ(kFailedWithNotAllowedError, result);
 }
 
@@ -266,6 +268,21 @@ void WebRtcTestBase::GetUserMedia(content::WebContents* tab_contents,
               result == "request-callback-granted");
 }
 
+void WebRtcTestBase::GetUserMediaReturnsFalseIfWaitIsTooLong(
+    content::WebContents* tab_contents,
+    const std::string& constraints) const {
+  std::string result;
+  permissions::PermissionRequestManager::FromWebContents(tab_contents)
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
+  permissions::PermissionRequestObserver observer(tab_contents);
+  // Request user media: this will launch the media stream info bar or bubble.
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab_contents, "doGetUserMedia(" + constraints + ");", &result));
+
+  EXPECT_TRUE(result == "request-timedout");
+}
+
 content::WebContents* WebRtcTestBase::OpenPageAndGetUserMediaInNewTab(
     const GURL& url) const {
   return OpenPageAndGetUserMediaInNewTabWithConstraints(
@@ -277,7 +294,7 @@ WebRtcTestBase::OpenPageAndGetUserMediaInNewTabWithConstraints(
     const GURL& url,
     const std::string& constraints) const {
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
-  ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* new_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Accept if necessary, but don't expect a prompt (because auto-accept is also
@@ -288,7 +305,7 @@ WebRtcTestBase::OpenPageAndGetUserMediaInNewTabWithConstraints(
   GetUserMedia(new_tab, constraints);
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      new_tab->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      new_tab->GetPrimaryMainFrame(), "obtainGetUserMediaResult();", &result));
   EXPECT_EQ(kOkGotStream, result);
   return new_tab;
 }
@@ -303,7 +320,7 @@ content::WebContents* WebRtcTestBase::OpenTestPageInNewTab(
     const std::string& test_page) const {
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
   GURL url = embedded_test_server()->GetURL(test_page);
-  ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* new_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Accept if necessary, but don't expect a prompt (because auto-accept is also
@@ -481,6 +498,24 @@ bool WebRtcTestBase::WaitForVideoToStop(
   return is_video_stopped;
 }
 
+void WebRtcTestBase::EnableVideoFrameCallbacks(
+    content::WebContents* tab_contents,
+    const std::string& video_element) const {
+  std::string javascript = base::StringPrintf("enableVideoFrameCallbacks('%s')",
+                                              video_element.c_str());
+  EXPECT_EQ("ok-started", ExecuteJavascript(javascript, tab_contents));
+}
+
+int WebRtcTestBase::GetNumVideoFrameCallbacks(
+    content::WebContents* tab_contents) const {
+  int counter = 0;
+  auto result = ExecuteJavascript("getNumVideoFrameCallbacks()", tab_contents);
+  if (base::StringToInt(result, &counter)) {
+    return counter;
+  }
+  return -1;
+}
+
 std::string WebRtcTestBase::GetStreamSize(
     content::WebContents* tab_contents,
     const std::string& video_element) const {
@@ -492,7 +527,7 @@ std::string WebRtcTestBase::GetStreamSize(
 }
 
 bool WebRtcTestBase::OnWin8OrHigher() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::win::GetVersion() >= base::win::Version::WIN8;
 #else
   return false;
@@ -548,13 +583,11 @@ WebRtcTestBase::GetStatsReportDictionary(content::WebContents* tab) const {
   EXPECT_TRUE(base::StartsWith(result, "ok-", base::CompareCase::SENSITIVE));
   std::unique_ptr<base::Value> parsed_json =
       base::JSONReader::ReadDeprecated(result.substr(3));
-  base::DictionaryValue* dictionary;
   CHECK(parsed_json);
-  CHECK(parsed_json->GetAsDictionary(&dictionary));
-  ignore_result(parsed_json.release());
-  return scoped_refptr<content::TestStatsReportDictionary>(
-      new content::TestStatsReportDictionary(
-          std::unique_ptr<base::DictionaryValue>(dictionary)));
+  base::Value::Dict* dictionary = parsed_json->GetIfDict();
+  CHECK(dictionary);
+  return base::MakeRefCounted<content::TestStatsReportDictionary>(
+      std::move(*dictionary));
 }
 
 double WebRtcTestBase::MeasureGetStatsPerformance(
@@ -609,8 +642,8 @@ std::string WebRtcTestBase::GetDesktopMediaStream(content::WebContents* tab) {
   return ExecuteJavascript("openDesktopMediaStream()", tab);
 }
 
-base::Optional<std::string> WebRtcTestBase::LoadDesktopCaptureExtension() {
-  base::Optional<std::string> extension_id;
+absl::optional<std::string> WebRtcTestBase::LoadDesktopCaptureExtension() {
+  absl::optional<std::string> extension_id;
   if (!desktop_capture_extension_.get()) {
     extensions::ChromeTestExtensionLoader loader(browser()->profile());
     base::FilePath extension_path;

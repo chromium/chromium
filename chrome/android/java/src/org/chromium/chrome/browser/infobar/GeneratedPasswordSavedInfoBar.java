@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ public class GeneratedPasswordSavedInfoBar extends ConfirmInfoBar {
         InfoBarControlLayout detailsMessageLayout = layout.addControlLayout();
         SpannableString detailsMessageWithLink = new SpannableString(mDetailsMessage);
         detailsMessageWithLink.setSpan(
-                new NoUnderlineClickableSpan(layout.getResources(), (view) -> onLinkClicked()),
+                new NoUnderlineClickableSpan(layout.getContext(), (view) -> onLinkClicked()),
                 mInlineLinkRangeStart, mInlineLinkRangeEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         detailsMessageLayout.addDescription(detailsMessageWithLink);
     }

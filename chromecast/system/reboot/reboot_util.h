@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,11 @@ class RebootUtil {
   // for next reboot is supported.
   static bool IsOtaForNextRebootSupported();
   static void SetOtaForNextReboot();
+
+  // Before calling IsClearOtaForNextRebootSupported, the called must check
+  // if clearing the ota is supported.
+  static bool IsClearOtaForNextRebootSupported();
+  static void ClearOtaForNextReboot();
 
   // Returns last reboot source. This value persists throughout each boot.
   static RebootShlib::RebootSource GetLastRebootSource();

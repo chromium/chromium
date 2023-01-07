@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_buildflags.h"
@@ -91,6 +91,9 @@ class CRASH_KEY_EXPORT CrashKeyStringImpl {
         index_array_(index_array),
         index_array_count_(index_array_count) {}
 
+  CrashKeyStringImpl(const CrashKeyStringImpl&) = delete;
+  CrashKeyStringImpl& operator=(const CrashKeyStringImpl&) = delete;
+
   void Set(base::StringPiece value);
   void Clear();
 
@@ -107,8 +110,6 @@ class CRASH_KEY_EXPORT CrashKeyStringImpl {
   // table. This will be |num_entries| if unset.
   size_t* index_array_;
   size_t index_array_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashKeyStringImpl);
 };
 
 // This type creates a C array that is initialized with a specific default
@@ -154,6 +155,9 @@ class CrashKeyStringBreakpad : public internal::CrashKeyStringImpl {
   constexpr CrashKeyStringBreakpad(const char name[], Tag tag)
       : CrashKeyStringBreakpad(name) {}
 
+  CrashKeyStringBreakpad(const CrashKeyStringBreakpad&) = delete;
+  CrashKeyStringBreakpad& operator=(const CrashKeyStringBreakpad&) = delete;
+
  private:
   // Indexes into the TransitionalCrashKeyStorage for when a value is set.
   // See the comment in CrashKeyStringImpl for details.
@@ -164,8 +168,6 @@ class CrashKeyStringBreakpad : public internal::CrashKeyStringImpl {
                              chunk_count,
                              internal::kCrashKeyStorageNumEntries>
       indexes_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashKeyStringBreakpad);
 };
 
 #if BUILDFLAG(USE_COMBINED_ANNOTATIONS)
@@ -178,6 +180,10 @@ class CrashKeyStringCombinedImpl {
                                        crashpad::Annotation* crashpad_key)
       : breakpad_key_(breakpad_key), crashpad_key_(crashpad_key) {}
 
+  CrashKeyStringCombinedImpl(const CrashKeyStringCombinedImpl&) = delete;
+  CrashKeyStringCombinedImpl& operator=(const CrashKeyStringCombinedImpl&) =
+      delete;
+
   void Clear() {
     breakpad_key_->Clear();
     crashpad_key_->Clear();
@@ -188,8 +194,6 @@ class CrashKeyStringCombinedImpl {
  private:
   CrashKeyStringImpl* breakpad_key_;
   crashpad::Annotation* crashpad_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashKeyStringCombinedImpl);
 };
 
 }  // namespace internal
@@ -207,6 +211,9 @@ class CrashKeyStringCombined : public internal::CrashKeyStringCombinedImpl {
   constexpr CrashKeyStringCombined(const char name[], Tag tag)
       : CrashKeyStringCombined(name) {}
 
+  CrashKeyStringCombined(const CrashKeyStringCombined&) = delete;
+  CrashKeyStringCombined& operator=(const CrashKeyStringCombined&) = delete;
+
   void Set(base::StringPiece value) {
     breakpad_key_.Set(value);
     crashpad_key_.Set(value);
@@ -215,8 +222,6 @@ class CrashKeyStringCombined : public internal::CrashKeyStringCombinedImpl {
  private:
   CrashKeyStringBreakpad<MaxLength> breakpad_key_;
   crashpad::StringAnnotation<MaxLength> crashpad_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashKeyStringCombined);
 };
 
 template <uint32_t MaxLength>
@@ -254,11 +259,13 @@ class ScopedCrashKeyString {
     crash_key->Set(value);
   }
 
+  ScopedCrashKeyString(const ScopedCrashKeyString&) = delete;
+  ScopedCrashKeyString& operator=(const ScopedCrashKeyString&) = delete;
+
   ~ScopedCrashKeyString() { crash_key_->Clear(); }
 
  private:
-  CrashKeyType* const crash_key_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedCrashKeyString);
+  const raw_ptr<CrashKeyType> crash_key_;
 };
 
 namespace internal {
@@ -281,12 +288,17 @@ void SetCrashKeyStringToStackTrace(CrashKeyString<Size>* key,
   key->Set(trace_string);
 }
 
-// Initializes the crash key subsystem if it is required.
+// Initializes the crash key subsystem if it is required. Calling this multiple
+// times is safe (though not thread-safe) and will not result in data loss from
+// crash keys set prior to the last initialization.
 CRASH_KEY_EXPORT void InitializeCrashKeys();
 
 #if defined(UNIT_TEST) || defined(CRASH_CORE_COMMON_IMPLEMENTATION)
 // Returns a value for the crash key named |key_name|. For Crashpad-based
-// clients, this returns the first instance found of the name.
+// clients, this returns the first instance found of the name. On Breakpad
+// clients, oversized crash key values (those longer than
+// |kCrashKeyStorageValueSize| - 1) are stored in chunks and must be retrieved
+// piecewise, using syntax <key name>__1, <key name>__2, etc.
 // Note: In a component build, this will only retrieve crash keys for the
 // current component.
 CRASH_KEY_EXPORT std::string GetCrashKeyValue(const std::string& key_name);
@@ -297,6 +309,8 @@ CRASH_KEY_EXPORT void InitializeCrashKeysForTesting();
 
 // Resets crash key state and, depending on the platform, de-initializes
 // the system.
+// WARNING: this does not work on Breakpad, which is used by Chrome on Linux
+// (crbug.com/1041106).
 CRASH_KEY_EXPORT void ResetCrashKeysForTesting();
 #endif
 

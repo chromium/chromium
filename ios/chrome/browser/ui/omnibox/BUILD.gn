@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,7 +7,6 @@ source_set("omnibox") {
 
   sources = [
     "location_bar_delegate.h",
-    "omnibox_left_image_consumer.h",
     "web_omnibox_edit_controller.cc",
     "web_omnibox_edit_controller.h",
   ]
@@ -23,6 +22,7 @@ source_set("omnibox_popup_shared") {
   sources = [
     "omnibox_constants.h",
     "omnibox_constants.mm",
+    "omnibox_keyboard_delegate.h",
   ]
 }
 
@@ -47,14 +47,20 @@ source_set("omnibox_suggestion_icon_util") {
     "resources:answer_translation",
     "resources:answer_when_is",
     "resources:background_solid",
-    "resources:background_stroke",
     "resources:favicon_fallback",
     "resources:omnibox_completion_bookmark",
-    "resources:omnibox_completion_calculator",
     "resources:omnibox_completion_default_favicon",
     "resources:omnibox_completion_history",
-    "resources:omnibox_completion_search",
     "resources:omnibox_popup_recent_query",
+    "resources:pedal_clear_browsing_data",
+    "resources:pedal_default_browser",
+    "resources:pedal_dino",
+    "resources:pedal_history",
+    "resources:pedal_incognito",
+    "resources:pedal_passwords",
+    "resources:pedal_payments",
+    "resources:pedal_safety_check",
+    "resources:pedal_settings",
     "resources:search",
     "//base",
   ]
@@ -66,22 +72,22 @@ source_set("omnibox_util") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   sources = [
+    "omnibox_text_change_delegate.h",
+    "omnibox_text_field_delegate.h",
     "omnibox_util.h",
     "omnibox_util.mm",
   ]
   deps = [
     ":omnibox_suggestion_icon_util",
-    "resources:omnibox_background",
     "resources:omnibox_completion_bookmark",
-    "resources:omnibox_completion_calculator",
     "resources:omnibox_completion_default_favicon",
     "resources:omnibox_completion_history",
-    "resources:omnibox_completion_search",
     "resources:search",
     "//base",
     "//components/omnibox/browser",
     "//components/security_state/core",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/icons:symbols",
   ]
   public_deps = [
     ":omnibox_icon_type_constants",
@@ -97,7 +103,10 @@ source_set("omnibox_icon_type_constants") {
     "omnibox_icon_type.h",
     "omnibox_icon_type.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/icons:symbols",
+  ]
 }
 
 source_set("omnibox_internal") {
@@ -112,8 +121,8 @@ source_set("omnibox_internal") {
     "omnibox_coordinator.mm",
     "omnibox_mediator.h",
     "omnibox_mediator.mm",
-    "omnibox_text_change_delegate.h",
-    "omnibox_text_field_delegate.h",
+    "omnibox_return_key_forwarding_delegate.h",
+    "omnibox_return_key_forwarding_delegate.mm",
     "omnibox_text_field_experimental.h",
     "omnibox_text_field_experimental.mm",
     "omnibox_text_field_ios.h",
@@ -128,13 +137,16 @@ source_set("omnibox_internal") {
     "omnibox_view_ios.mm",
     "web_omnibox_edit_controller_impl.h",
     "web_omnibox_edit_controller_impl.mm",
+    "zero_suggest_prefetch_helper.h",
+    "zero_suggest_prefetch_helper.mm",
   ]
   deps = [
+    ":features",
     ":omnibox",
     ":omnibox_popup_shared",
+    ":omnibox_suggestion_icon_util",
     ":omnibox_util",
     "resources:omnibox_clear_icon",
-    "resources:omnibox_transparent_background",
     "//base",
     "//components/favicon/ios",
     "//components/open_from_clipboard:",
@@ -142,7 +154,6 @@ source_set("omnibox_internal") {
     "//components/search_engines",
     "//components/security_state/core",
     "//components/strings",
-    "//ios/chrome/app/intents",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/autocomplete",
@@ -150,6 +161,8 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/bookmarks:bookmarks_utils",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/https_upgrades",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/prerender",
@@ -158,20 +171,31 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/location_bar:constants",
+    "//ios/chrome/browser/ui/main:default_browser_scene_agent",
+    "//ios/chrome/browser/ui/main:layout_guide_util",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/omnibox/popup",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_ui_protocols",
     "//ios/chrome/browser/ui/orchestrator:orchestrator",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/browser/url_loading",
     "//ios/chrome/common",
+    "//ios/chrome/common/intents",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
+    "//ios/components/security_interstitials/https_only_mode",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/images",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ios/web",
     "//net",
     "//skia",
@@ -192,8 +216,7 @@ source_set("omnibox_internal") {
   ]
 }
 
-source_set("app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
+source_set("eg_app_support+eg2") {
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -219,18 +242,20 @@ source_set("app_support+eg2") {
     "//ui/base:test_support",
   ]
 }
-source_set("test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
+source_set("eg_test_support+eg2") {
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "omnibox_app_interface.h" ]
+  sources = [
+    "omnibox_app_interface.h",
+    "omnibox_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -238,13 +263,16 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "omnibox_egtest.mm" ]
   deps = [
-    ":test_support+eg2",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    ":eg_test_support+eg2",
+    ":features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test:element_selector",
     "//net:test_support",
     "//ui/base",
   ]
@@ -258,6 +286,7 @@ source_set("unit_tests") {
     "omnibox_text_field_ios_experimental_unittest.mm",
     "omnibox_text_field_ios_unittest.mm",
     "omnibox_view_ios_unittest.mm",
+    "zero_suggest_prefetch_helper_unittest.mm",
   ]
   deps = [
     ":omnibox",
@@ -265,10 +294,19 @@ source_set("unit_tests") {
     ":resources_unit_tests",
     "//base",
     "//base/test:test_support",
+    "//components/omnibox/browser:test_support",
+    "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/web/common:uikit",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
@@ -283,33 +321,12 @@ bundle_data("resources_unit_tests") {
               "ios/chrome/test/data/omnibox/{{source_file_part}}" ]
 }
 
-source_set("perf_tests") {
+source_set("features") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [ "omnibox_perftest.mm" ]
-  deps = [
-    ":omnibox_internal",
-    "//base",
-    "//base/test:test_support",
-    "//components/omnibox/browser:test_support",
-    "//ios/chrome/browser/autocomplete",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/main:test_support",
-    "//ios/chrome/browser/search_engines",
-    "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/tabs:tabs_internal",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/location_bar:location_bar_model_delegate",
-    "//ios/chrome/browser/ui/toolbar",
-    "//ios/chrome/browser/ui/toolbar:toolbar_ui",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/browser/web_state_list:test_support",
-    "//ios/chrome/test/base:perf_test_support",
-    "//ios/web/public/test/fakes",
-    "//testing/gtest",
-    "//third_party/ocmock",
-    "//ui/base:test_support",
+  sources = [
+    "omnibox_ui_features.cc",
+    "omnibox_ui_features.h",
   ]
-  frameworks = [ "UIKit.framework" ]
+  public_deps = [ "//base" ]
+  deps = [ "//ios/chrome/browser/ui:feature_flags" ]
 }

@@ -1,16 +1,16 @@
-// Copyright (c) 2009 The Chromium Authors. All rights reserved.
+// Copyright 2009 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "chrome/browser/global_keyboard_shortcuts_mac.h"
 
 #include <AppKit/NSEvent.h>
 #include <Carbon/Carbon.h>
 #include <stddef.h>
 
-#include "chrome/browser/global_keyboard_shortcuts_mac.h"
+#include <initializer_list>
 
 #include "base/check_op.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/buildflags.h"
@@ -18,29 +18,55 @@
 
 namespace {
 
-int CommandForKeys(bool command_key,
-                   bool shift_key,
-                   bool cntrl_key,
-                   bool opt_key,
-                   int vkey_code) {
-  NSUInteger modifierFlags = 0;
-  if (command_key)
-    modifierFlags |= NSCommandKeyMask;
-  if (shift_key)
-    modifierFlags |= NSShiftKeyMask;
-  if (cntrl_key)
-    modifierFlags |= NSControlKeyMask;
-  if (opt_key)
-    modifierFlags |= NSAlternateKeyMask;
+enum class CommandKeyState : bool {
+  kUp,
+  kDown,
+};
+enum class ShiftKeyState : bool {
+  kUp,
+  kDown,
+};
+enum class OptionKeyState : bool {
+  kUp,
+  kDown,
+};
+enum class ControlKeyState : bool {
+  kUp,
+  kDown,
+};
+
+int CommandForKeys(int vkey_code,
+                   CommandKeyState command,
+                   ShiftKeyState shift = ShiftKeyState::kUp,
+                   OptionKeyState option = OptionKeyState::kUp,
+                   ControlKeyState control = ControlKeyState::kUp) {
+  NSUInteger modifier_flags = 0;
+  if (command == CommandKeyState::kDown)
+    modifier_flags |= NSEventModifierFlagCommand;
+  if (shift == ShiftKeyState::kDown)
+    modifier_flags |= NSEventModifierFlagShift;
+  if (option == OptionKeyState::kDown)
+    modifier_flags |= NSEventModifierFlagOption;
+  if (control == ControlKeyState::kDown)
+    modifier_flags |= NSEventModifierFlagControl;
 
   switch (vkey_code) {
     case kVK_UpArrow:
     case kVK_DownArrow:
     case kVK_LeftArrow:
     case kVK_RightArrow:
-      // Docs say this is set whenever a key came from the numpad *or* the arrow
-      // keys.
-      modifierFlags |= NSEventModifierFlagNumericPad;
+      // Docs say that this is set for numpad *and* arrow keys.
+      modifier_flags |= NSEventModifierFlagNumericPad;
+      [[fallthrough]];
+    case kVK_Help:
+    case kVK_ForwardDelete:
+    case kVK_Home:
+    case kVK_End:
+    case kVK_PageUp:
+    case kVK_PageDown:
+      // Docs say that this is set for function keys *and* the cluster of six
+      // navigation keys in the center of the keyboard *and* arrow keys.
+      modifier_flags |= NSEventModifierFlagFunction;
       break;
     default:
       break;
@@ -49,14 +75,14 @@ int CommandForKeys(bool command_key,
   unichar shifted_character;
   unichar character;
   int result = ui::MacKeyCodeForWindowsKeyCode(
-      ui::KeyboardCodeFromKeyCode(vkey_code), modifierFlags, &shifted_character,
-      &character);
+      ui::KeyboardCodeFromKeyCode(vkey_code), modifier_flags,
+      &shifted_character, &character);
   DCHECK_NE(result, -1);
 
   NSEvent* event = [NSEvent
-                 keyEventWithType:NSKeyDown
+                 keyEventWithType:NSEventTypeKeyDown
                          location:NSZeroPoint
-                    modifierFlags:modifierFlags
+                    modifierFlags:modifier_flags
                         timestamp:0.0
                      windowNumber:0
                           context:nil
@@ -73,19 +99,34 @@ int CommandForKeys(bool command_key,
 
 TEST(GlobalKeyboardShortcuts, BasicFunctionality) {
   // Test that an invalid shortcut translates into an invalid command id.
-  EXPECT_EQ(-1, CommandForKeys(false, false, false, false, 0));
+  const int kInvalidCommandId = -1;
+  const int no_key_code = 0;
+  EXPECT_EQ(
+      kInvalidCommandId,
+      CommandForKeys(no_key_code, CommandKeyState::kUp, ShiftKeyState::kUp,
+                     OptionKeyState::kUp, ControlKeyState::kUp));
 
   // Check that all known keyboard shortcuts return valid results.
   for (const auto& shortcut : GetShortcutsNotPresentInMainMenu()) {
-    int cmd_num = CommandForKeys(shortcut.command_key, shortcut.shift_key,
-                                 shortcut.cntrl_key, shortcut.opt_key,
-                                 shortcut.vkey_code);
+    CommandKeyState command =
+        shortcut.command_key ? CommandKeyState::kDown : CommandKeyState::kUp;
+    ShiftKeyState shift =
+        shortcut.shift_key ? ShiftKeyState::kDown : ShiftKeyState::kUp;
+    OptionKeyState option =
+        shortcut.opt_key ? OptionKeyState::kDown : OptionKeyState::kUp;
+    ControlKeyState control =
+        shortcut.cntrl_key ? ControlKeyState::kDown : ControlKeyState::kUp;
+
+    int cmd_num =
+        CommandForKeys(shortcut.vkey_code, command, shift, option, control);
     EXPECT_EQ(cmd_num, shortcut.chrome_command);
   }
   // Test that switching tabs triggers off keycodes and not characters (visible
   // with the Italian keyboard layout).
-  EXPECT_EQ(IDC_SELECT_TAB_0,
-            CommandForKeys(true, false, false, false, kVK_ANSI_1));
+  EXPECT_EQ(
+      IDC_SELECT_TAB_0,
+      CommandForKeys(kVK_ANSI_1, CommandKeyState::kDown, ShiftKeyState::kUp,
+                     OptionKeyState::kUp, ControlKeyState::kUp));
 }
 
 TEST(GlobalKeyboardShortcuts, KeypadNumberKeysMatch) {
@@ -109,19 +150,18 @@ TEST(GlobalKeyboardShortcuts, KeypadNumberKeysMatch) {
 
   // We only consider unshifted keys. A shifted numpad key gives a different
   // keyEquivalent than a shifted number key.
-  int shift = 0;
-  for (unsigned int i = 0; i < base::size(equivalents); ++i) {
-    for (int command = 0; command <= 1; ++command) {
-      for (int control = 0; control <= 1; ++control) {
-        for (int option = 0; option <= 1; ++option) {
-          EXPECT_EQ(CommandForKeys(command, shift, control, option,
-                                   equivalents[i].keycode),
-                    CommandForKeys(command, shift, control, option,
-                                   equivalents[i].keypad_keycode));
-          EXPECT_EQ(CommandForKeys(command, shift, control, option,
-                                   equivalents[i].keycode),
-                    CommandForKeys(command, shift, control, option,
-                                   equivalents[i].keypad_keycode));
+  const ShiftKeyState shift = ShiftKeyState::kUp;
+  for (auto equivalent : equivalents) {
+    for (CommandKeyState command :
+         {CommandKeyState::kUp, CommandKeyState::kDown}) {
+      for (OptionKeyState option :
+           {OptionKeyState::kUp, OptionKeyState::kDown}) {
+        for (ControlKeyState control :
+             {ControlKeyState::kUp, ControlKeyState::kDown}) {
+          EXPECT_EQ(CommandForKeys(equivalent.keycode, command, shift, option,
+                                   control),
+                    CommandForKeys(equivalent.keypad_keycode, command, shift,
+                                   option, control));
         }
       }
     }

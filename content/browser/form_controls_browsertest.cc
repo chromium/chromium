@@ -1,16 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "content/browser/form_controls_browsertest_mac.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -20,11 +20,11 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -34,7 +34,7 @@
 // To rebaseline this test on all platforms:
 // 1. Run a CQ+1 dry run.
 // 2. Click the failing bots for android, windows, mac, and linux.
-// 3. Find the failing interactive_ui_browsertests step.
+// 3. Find the failing content_browsertests step.
 // 4. Click the "Deterministic failure" link for the failing test case.
 // 5. Copy the "Actual pixels" data url and paste into browser.
 // 6. Save the image into your chromium checkout in content/test/data/forms/.
@@ -43,12 +43,6 @@ namespace content {
 
 class FormControlsBrowserTest : public ContentBrowserTest {
  public:
-  FormControlsBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kFormControlsRefresh, features::kCSSColorSchemeUARendering},
-        {});
-  }
-
   void SetUp() override {
     EnablePixelOutput(/*force_device_scale_factor=*/1.f);
     ContentBrowserTest::SetUp();
@@ -71,23 +65,24 @@ class FormControlsBrowserTest : public ContentBrowserTest {
                int screenshot_height) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
-    ASSERT_TRUE(features::IsFormControlsRefreshEnabled());
-    ASSERT_TRUE(features::IsCSSColorSchemeUARenderingEnabled());
-
     std::string platform_suffix;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     platform_suffix = "_mac";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     platform_suffix = "_win";
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
+    platform_suffix = "_linux";
+#elif BUILDFLAG(IS_CHROMEOS)
     platform_suffix = "_chromeos";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     int sdk_int = base::android::BuildInfo::GetInstance()->sdk_int();
     if (sdk_int == base::android::SDK_VERSION_KITKAT) {
       platform_suffix = "_android_kitkat";
     } else {
       platform_suffix = "_android";
     }
+#elif BUILDFLAG(IS_FUCHSIA)
+    platform_suffix = "_fuchsia";
 #endif
 
     base::FilePath dir_test_data;
@@ -106,7 +101,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
         NavigateToURL(shell()->web_contents(),
                       GURL("data:text/html,<!DOCTYPE html>" + body_html)));
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // This fuzzy pixel comparator handles several mac behaviors:
     // - Different font rendering after 10.14
     // - 10.12 subpixel rendering differences: crbug.com/1037971
@@ -118,7 +113,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
         /* avg_abs_error_limit */ 20.f,
         /* max_abs_error_limit */ 120.f,
         /* small_error_threshold */ 0);
-#elif defined(OS_ANDROID) || defined(OS_WIN)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || (OS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
     // Different versions of android may have slight differences in rendering.
     // Some versions have more significant differences than others, which are
     // tracked separately in separate baseline image files. The less significant
@@ -141,7 +137,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
 
   // Check if the test can run on the current system.
   bool SkipTestForOldAndroidVersions() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Lower versions of android running on older devices, ex Nexus 5, render
     // form controls with a too large of a difference -- >20% error -- to
     // pixel compare.
@@ -149,25 +145,29 @@ class FormControlsBrowserTest : public ContentBrowserTest {
         base::android::SDK_VERSION_OREO) {
       return true;
     }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     return false;
   }
 
   bool SkipTestForOldWinVersion() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Win7 font rendering causes too large of rendering diff for pixel
     // comparison.
     if (base::win::GetVersion() <= base::win::Version::WIN7)
       return true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     return false;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Checkbox) {
+// Checkbox renders differently on Android x86. crbug.com/1238283
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
+#define MAYBE_Checkbox DISABLED_Checkbox
+#else
+#define MAYBE_Checkbox Checkbox
+#endif
+
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Checkbox) {
   if (SkipTestForOldAndroidVersions())
     return;
 
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
 }
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, DarkModeTextSelection) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!MacOSVersionSupportsDarkMode())
     return;
 #endif
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Button) {
 // TODO(crbug.com/1160104/#25) This test creates large average_error_rate on
 // Android FYI SkiaRenderer Vulkan. Disable it until a resolution for is
 // found.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ColorInput DISABLED_ColorInput
 #else
 #define MAYBE_ColorInput ColorInput

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ipc/ipc_message.h"
 #include "media/audio/audio_input_ipc.h"
+#include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -50,6 +49,9 @@ class PepperPlatformAudioInput
       int frames_per_buffer,
       PepperAudioInputHost* client);
 
+  PepperPlatformAudioInput(const PepperPlatformAudioInput&) = delete;
+  PepperPlatformAudioInput& operator=(const PepperPlatformAudioInput&) = delete;
+
   // Called on main thread.
   void StartCapture();
   void StopCapture();
@@ -60,7 +62,7 @@ class PepperPlatformAudioInput
   void OnStreamCreated(base::ReadOnlySharedMemoryRegion shared_memory_region,
                        base::SyncSocket::ScopedHandle socket_handle,
                        bool initially_muted) override;
-  void OnError() override;
+  void OnError(media::AudioCapturerSource::ErrorCode code) override;
   void OnMuted(bool is_muted) override;
   void OnIPCClosed() override;
 
@@ -128,8 +130,6 @@ class PepperPlatformAudioInput
   // Used to handle cases where (Start|Stop)CaptureOnIOThread runs before the
   // InitializeOnIOThread. THIS MUST ONLY BE ACCESSED ON THE IO THREAD.
   enum { kIdle, kStarted, kStopped } ipc_startup_state_ = kIdle;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPlatformAudioInput);
 };
 
 }  // namespace content

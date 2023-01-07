@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -85,6 +84,9 @@ std::string GetParentDeviceName(udev_device* device, const char* subsystem) {
 class InputServiceLinuxImpl : public InputServiceLinux,
                               public DeviceMonitorLinux::Observer {
  public:
+  InputServiceLinuxImpl(const InputServiceLinuxImpl&) = delete;
+  InputServiceLinuxImpl& operator=(const InputServiceLinuxImpl&) = delete;
+
   // Implements DeviceMonitorLinux::Observer:
   void OnDeviceAdded(udev_device* device) override;
   void OnDeviceRemoved(udev_device* device) override;
@@ -95,14 +97,13 @@ class InputServiceLinuxImpl : public InputServiceLinux,
   InputServiceLinuxImpl();
   ~InputServiceLinuxImpl() override;
 
-  ScopedObserver<DeviceMonitorLinux, DeviceMonitorLinux::Observer> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputServiceLinuxImpl);
+  base::ScopedObservation<DeviceMonitorLinux, DeviceMonitorLinux::Observer>
+      observation_{this};
 };
 
-InputServiceLinuxImpl::InputServiceLinuxImpl() : observer_(this) {
+InputServiceLinuxImpl::InputServiceLinuxImpl() {
   DeviceMonitorLinux* monitor = DeviceMonitorLinux::GetInstance();
-  observer_.Add(monitor);
+  observation_.Observe(monitor);
   monitor->Enumerate(base::BindRepeating(&InputServiceLinuxImpl::OnDeviceAdded,
                                          base::Unretained(this)));
 }

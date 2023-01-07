@@ -96,3 +96,8 @@ less exhaustively, on [MSDN](https://msdn.microsoft.com/en-us/library/windows/de
 Additional restrictions upon trusted CAs are maintained as properties within
 the STL; however, these were not consulted, as they're not applicable to this
 use case.
+
+Tools that can help get this data:
+
+* https://github.com/robstradling/authroot.stl
+* https://github.com/zmap/rootfetch

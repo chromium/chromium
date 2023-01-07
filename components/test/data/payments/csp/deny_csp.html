@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, minimum-scale=0.5">
+    <!-- Deny connections to all payment method identifiers. -->
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'none'">
+    <script>
+    async function checkCanMakePayment(paymentMethodName) {
+      try {
+        return new PaymentRequest(
+            [{supportedMethods: paymentMethodName,}],
+            {total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}}})
+          .canMakePayment();
+      } catch (error) {
+        return error.toString();
+      }
+    }
+    </script>
+  </head>
+</html>

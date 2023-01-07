@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
+#include "components/value_store/leveldb_value_store.h"
+#include "components/value_store/value_store.h"
+#include "components/value_store/value_store_factory_impl.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
@@ -25,9 +28,6 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/browser/test_extensions_browser_client.h"
-#include "extensions/browser/value_store/leveldb_value_store.h"
-#include "extensions/browser/value_store/value_store.h"
-#include "extensions/browser/value_store/value_store_factory_impl.h"
 #include "extensions/common/api/storage.h"
 #include "extensions/common/manifest.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -40,8 +40,8 @@ namespace {
 // Caller owns the returned object.
 std::unique_ptr<KeyedService> CreateStorageFrontendForTesting(
     content::BrowserContext* context) {
-  scoped_refptr<ValueStoreFactory> factory =
-      new ValueStoreFactoryImpl(context->GetPath());
+  scoped_refptr<value_store::ValueStoreFactory> factory =
+      new value_store::ValueStoreFactoryImpl(context->GetPath());
   return StorageFrontend::CreateForTesting(factory, context);
 }
 
@@ -80,22 +80,28 @@ class StorageApiUnittest : public ApiUnitTest {
   }
 
   // Runs the storage.get() API function with the local storage, and populates
-  // |value| with the string result.
+  // |out_value| with the string result.
   testing::AssertionResult RunGetFunction(const std::string& key,
-                                          std::string* value) {
+                                          std::string* out_value) {
     std::unique_ptr<base::Value> result = RunFunctionAndReturnValue(
         new StorageStorageAreaGetFunction(),
         base::StringPrintf("[\"local\", \"%s\"]", key.c_str()));
     if (!result.get())
       return testing::AssertionFailure() << "No result";
-    base::DictionaryValue* dict = NULL;
-    if (!result->GetAsDictionary(&dict))
+
+    const base::Value::Dict* dict = result->GetIfDict();
+    if (!dict) {
       return testing::AssertionFailure() << result.get()
                                          << " was not a dictionary.";
-    if (!dict->GetString(key, value)) {
+    }
+
+    const std::string* dict_value = dict->FindString(key);
+    if (!dict_value) {
       return testing::AssertionFailure() << " could not retrieve a string from"
           << dict << " at " << key;
     }
+    *out_value = *dict_value;
+
     return testing::AssertionSuccess();
   }
 
@@ -115,17 +121,17 @@ TEST_F(StorageApiUnittest, RestoreCorruptedStorage) {
   // Corrupt the store. This is not as pretty as ideal, because we use knowledge
   // of the underlying structure, but there's no real good way to corrupt a
   // store other than directly modifying the files.
-  ValueStore* store =
-      settings_test_util::GetStorage(extension_ref(),
-                                     settings_namespace::LOCAL,
+  value_store::ValueStore* store =
+      settings_test_util::GetStorage(extension_ref(), settings_namespace::LOCAL,
                                      StorageFrontend::Get(browser_context()));
   ASSERT_TRUE(store);
   // TODO(cmumford): Modify test as this requires that the factory always
   //                 creates instances of LeveldbValueStore.
   SettingsStorageQuotaEnforcer* quota_store =
       static_cast<SettingsStorageQuotaEnforcer*>(store);
-  LeveldbValueStore* leveldb_store =
-      static_cast<LeveldbValueStore*>(quota_store->get_delegate_for_test());
+  value_store::LeveldbValueStore* leveldb_store =
+      static_cast<value_store::LeveldbValueStore*>(
+          quota_store->get_delegate_for_test());
   leveldb::WriteBatch batch;
   batch.Put(kKey, "[{(.*+\"\'\\");
   EXPECT_TRUE(leveldb_store->WriteToDbForTest(&batch));

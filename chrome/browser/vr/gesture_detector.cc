@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,8 +37,7 @@ constexpr float kSlopHorizontal = 0.15f;
 
 // Exceeding pressing the appbutton for longer than this threshold will result
 // in a long press.
-constexpr base::TimeDelta kLongPressThreshold =
-    base::TimeDelta::FromMilliseconds(900);
+constexpr base::TimeDelta kLongPressThreshold = base::Milliseconds(900);
 
 struct TouchPoint {
   gfx::Vector2dF position;

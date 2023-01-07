@@ -1,0 +1,20 @@
+<style include="cr-icons cr-hidden-style">
+  .divider {
+    border-top: 1px solid var(--cr-separator-color);
+    margin: 0 22px;
+  }
+</style>
+
+<div id="bookmarksContainer">
+  <template is="dom-repeat" items="[[folders_]]">
+    <bookmark-folder id="bookmark-[[item.id]]" folder="[[item]]"
+        open-folders="[[openFolders_]]">
+    </bookmark-folder>
+  </template>
+  <template is="dom-if" if="[[productInfos_.length]]" restamp>
+    <div class="divider"></div>
+    <shopping-list
+        id="shoppingList" product-infos="[[productInfos_]]">
+    </shopping-list>
+  </template>
+</div>

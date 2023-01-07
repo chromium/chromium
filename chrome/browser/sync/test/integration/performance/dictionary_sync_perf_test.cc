@@ -1,14 +1,13 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/sync/test/integration/dictionary_helper.h"
 #include "chrome/browser/sync/test/integration/performance/sync_timing_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "content/public/test/browser_test.h"
@@ -34,10 +33,11 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 class DictionarySyncPerfTest : public SyncTest {
  public:
   DictionarySyncPerfTest() : SyncTest(TWO_CLIENT) {}
-  ~DictionarySyncPerfTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DictionarySyncPerfTest);
+  DictionarySyncPerfTest(const DictionarySyncPerfTest&) = delete;
+  DictionarySyncPerfTest& operator=(const DictionarySyncPerfTest&) = delete;
+
+  ~DictionarySyncPerfTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(DictionarySyncPerfTest, P0) {
@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(DictionarySyncPerfTest, P0) {
   ASSERT_TRUE(
       dictionary_helper::DictionaryChecker(/*expected_words=*/{}).Wait());
 
-  auto reporter = SetUpReporter(
+  perf_test::PerfResultReporter reporter = SetUpReporter(
       base::NumberToString(spellcheck::kMaxSyncableDictionaryWords) + "_words");
   base::TimeDelta dt;
   for (size_t i = 0; i < spellcheck::kMaxSyncableDictionaryWords; ++i) {

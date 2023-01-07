@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,20 @@
 #include <atomic>
 
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
 namespace reporting {
+
+// Feature to enable/disable encryption.
+// By default encryption is enabled and supported by server.
+// Disabled only for testing/stress purposes.
+BASE_DECLARE_FEATURE(kEncryptedReportingFeature);
 
 class EncryptionModuleInterface
     : public base::RefCountedThreadSafe<EncryptionModuleInterface> {
@@ -23,13 +29,8 @@ class EncryptionModuleInterface
   // Public key id, as defined by Keystore.
   using PublicKeyId = int32_t;
 
-  // Feature to enable/disable encryption.
-  // By default encryption is disabled, until server can support decryption.
-  static const char kEncryptedReporting[];
-
   explicit EncryptionModuleInterface(
-      base::TimeDelta renew_encryption_key_period =
-          base::TimeDelta::FromDays(1));
+      base::TimeDelta renew_encryption_key_period = base::Days(1));
   EncryptionModuleInterface(const EncryptionModuleInterface& other) = delete;
   EncryptionModuleInterface& operator=(const EncryptionModuleInterface& other) =
       delete;
@@ -58,7 +59,6 @@ class EncryptionModuleInterface
   bool need_encryption_key() const;
 
   // Returns 'true' if |kEncryptedReporting| feature is enabled.
-  // To be removed once encryption becomes mandatory.
   static bool is_enabled();
 
  protected:

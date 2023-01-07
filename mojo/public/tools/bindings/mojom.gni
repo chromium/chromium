@@ -1,11 +1,11 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
 # TODO(rockot): Maybe we can factor these dependencies out of //mojo. They're
@@ -69,9 +69,8 @@ declare_args() {
 # lacros-chrome switches to target_os="chromeos"
 enable_scrambled_message_ids =
     enable_mojom_message_id_scrambling &&
-    (is_mac || is_win ||
-     (is_linux && !is_chromeos_ash && !is_chromecast && !is_chromeos_lacros) ||
-     ((enable_nacl || is_nacl || is_nacl_nonsfi) &&
+    (is_mac || is_win || (is_linux && !is_castos) ||
+     ((enable_nacl || is_nacl) &&
       (target_os != "chromeos" && !chromeos_is_browser_only)))
 
 _mojom_tools_root = "//mojo/public/tools"
@@ -81,6 +80,7 @@ mojom_parser_sources = [
   "$_mojom_library_root/__init__.py",
   "$_mojom_library_root/error.py",
   "$_mojom_library_root/generate/__init__.py",
+  "$_mojom_library_root/generate/check.py",
   "$_mojom_library_root/generate/generator.py",
   "$_mojom_library_root/generate/module.py",
   "$_mojom_library_root/generate/pack.py",
@@ -96,11 +96,15 @@ mojom_generator_root = "$_mojom_tools_root/bindings"
 mojom_generator_script = "$mojom_generator_root/mojom_bindings_generator.py"
 mojom_generator_sources =
     mojom_parser_sources + [
+      "$mojom_generator_root/checks/__init__.py",
+      "$mojom_generator_root/checks/mojom_attributes_check.py",
+      "$mojom_generator_root/checks/mojom_restrictions_check.py",
+      "$mojom_generator_root/generators/__init__.py",
       "$mojom_generator_root/generators/cpp_util.py",
       "$mojom_generator_root/generators/mojom_cpp_generator.py",
       "$mojom_generator_root/generators/mojom_java_generator.py",
-      "$mojom_generator_root/generators/mojom_mojolpm_generator.py",
       "$mojom_generator_root/generators/mojom_js_generator.py",
+      "$mojom_generator_root/generators/mojom_mojolpm_generator.py",
       "$mojom_generator_root/generators/mojom_ts_generator.py",
       "$mojom_generator_script",
     ]
@@ -200,6 +204,43 @@ if (enable_scrambled_message_ids) {
 #
 #   blink_cpp_typemaps (optional)
 #       Same as above, but for the Blink variant of generated C++ bindings.
+#
+#   cpp_proxy_target (optional)
+#       The name of a target which all C++ dependencies will link against
+#       instead of linking directly against this mojom target's generated C++
+#       sources. Normally when declaring invoking the mojom("foo") target, GN
+#       emits a source_set or component target named "foo" which encompasses the
+#       default variant of generated C++ bindings. This changes that to instead
+#       emit a group("foo") which merely forwards public_deps to the named
+#       `cpp_proxy_target`. That target must in turn depend on
+#       "foo_cpp_sources".
+#
+#       This is useful primarily in conjunction with export_define et al to
+#       embed generated C++ bindings within an existing component target.
+#
+#   blink_cpp_proxy_target (optional)
+#       Same concept as `cpp_proxy_target` above, but affects the generated
+#       "foo_blink" Blink-variant C++ bindings.
+#
+#   cpp_configs (optional)
+#       A list of extra configs to apply to the default variant of generated C++
+#       bindings.
+#
+#   blink_cpp_configs (optional)
+#       A list of extra configs to apply to the Blink variant of generated C++
+#       bindings.
+#
+#   mojom_source_deps (optional)
+#       A list of mojoms this target depends upon. This is equivalent to
+#       public_deps except that the C++ bindings depend on each of the named
+#       "foo" targets' "foo_cpp_sources" rather than on foo's
+#       `cpp_proxy_target`. It only makes sense to use this for dependencies
+#       that set `cpp_proxy_target`, and only when the dependent mojom() would
+#       otherwise have circular dependencies with that proxy target.
+#
+#   mojom_blink_source_deps (optional)
+#       Same as above but depends on "foo_blink_cpp_sources" and is used for
+#       dependencies that specify a `blink_cpp_proxy_target`.
 #
 #   generate_java (optional)
 #       If set to true, Java bindings are generated for Android builds. If
@@ -365,6 +406,12 @@ if (enable_scrambled_message_ids) {
 #             should be mapped in generated bindings. This is a string like
 #             "::base::Value" or "std::vector<::base::Value>".
 #
+#         forward_declaration (optional)
+#             A forward declaration of the C++ type, which bindings that don't
+#             need the full type definition can use to reduce the size of
+#             the generated code. This is a string like
+#             "namespace base { class Value; }".
+#
 #         move_only (optional)
 #             A boolean value (default false) which indicates whether the C++
 #             type is move-only. If true, generated bindings will pass the type
@@ -381,8 +428,8 @@ if (enable_scrambled_message_ids) {
 #             traits for the type must define IsNull and SetToNull methods.
 #
 #             When false, nullable fields are represented by wrapping the C++
-#             type with base::Optional, and null values are simply
-#             base::nullopt.
+#             type with absl::optional, and null values are simply
+#             absl::nullopt.
 #
 #         hashable (optional)
 #             A boolean value (default false) indicating whether the C++ type is
@@ -434,14 +481,15 @@ template("mojom") {
   if (defined(invoker.export_class_attribute) ||
       defined(invoker.export_define) || defined(invoker.export_header)) {
     assert(defined(invoker.export_class_attribute))
-    assert(defined(invoker.export_define))
+    assert(defined(invoker.export_define) || defined(invoker.cpp_configs))
     assert(defined(invoker.export_header))
   }
   if (defined(invoker.export_class_attribute_blink) ||
       defined(invoker.export_define_blink) ||
       defined(invoker.export_header_blink)) {
     assert(defined(invoker.export_class_attribute_blink))
-    assert(defined(invoker.export_define_blink))
+    assert(defined(invoker.export_define_blink) ||
+           defined(invoker.blink_cpp_configs))
     assert(defined(invoker.export_header_blink))
 
     # Not all platforms use the Blink variant, so make sure GN doesn't complain
@@ -477,12 +525,22 @@ template("mojom") {
       !invoker.disallow_interfaces
 
   all_deps = []
+  mojom_cpp_deps = []
   if (defined(invoker.deps)) {
     all_deps += invoker.deps
+    mojom_cpp_deps += invoker.deps
   }
   if (defined(invoker.public_deps)) {
     all_deps += invoker.public_deps
+    mojom_cpp_deps += invoker.public_deps
   }
+  if (defined(invoker.mojom_source_deps)) {
+    all_deps += invoker.mojom_source_deps
+  }
+  if (defined(invoker.mojom_blink_source_deps)) {
+    all_deps += invoker.mojom_blink_source_deps
+  }
+  not_needed([ "mojom_deps" ])
 
   if (defined(invoker.component_macro_prefix)) {
     assert(defined(invoker.component_output_prefix))
@@ -573,13 +631,14 @@ template("mojom") {
   build_metadata_filename = "$target_gen_dir/$target_name.build_metadata"
   build_metadata = {
   }
-  build_metadata.sources = rebase_path(sources_list)
+  build_metadata.sources = rebase_path(sources_list, target_gen_dir)
   build_metadata.deps = []
   foreach(dep, all_deps) {
     dep_target_gen_dir = get_label_info(dep, "target_gen_dir")
     dep_name = get_label_info(dep, "name")
     build_metadata.deps +=
-        [ rebase_path("$dep_target_gen_dir/$dep_name.build_metadata") ]
+        [ rebase_path("$dep_target_gen_dir/$dep_name.build_metadata",
+                      target_gen_dir) ]
   }
   write_file(build_metadata_filename, build_metadata, "json")
 
@@ -613,13 +672,22 @@ template("mojom") {
     if (is_android) {
       enabled_features += [ "is_android" ]
     } else if (is_chromeos_ash) {
-      enabled_features += [ "is_chromeos" ]
+      enabled_features += [
+        "is_chromeos",
+        "is_chromeos_ash",
+      ]
     } else if (is_fuchsia) {
       enabled_features += [ "is_fuchsia" ]
     } else if (is_ios) {
       enabled_features += [ "is_ios" ]
     } else if (is_linux || is_chromeos_lacros) {
       enabled_features += [ "is_linux" ]
+      if (is_chromeos_lacros) {
+        enabled_features += [
+          "is_chromeos",
+          "is_chromeos_lacros",
+        ]
+      }
     } else if (is_mac) {
       enabled_features += [ "is_mac" ]
     } else if (is_win) {
@@ -640,7 +708,7 @@ template("mojom") {
 
       filelist = []
       foreach(source, sources_list) {
-        filelist += [ rebase_path(source) ]
+        filelist += [ rebase_path(source, root_build_dir) ]
       }
       response_file_contents = filelist
 
@@ -648,23 +716,23 @@ template("mojom") {
         # Resolve relative input mojom paths against both the root src dir and
         # the root gen dir.
         "--input-root",
-        rebase_path("//."),
+        rebase_path("//.", root_build_dir),
         "--input-root",
-        rebase_path(root_gen_dir),
+        rebase_path(root_gen_dir, root_build_dir),
 
         "--output-root",
-        rebase_path(root_gen_dir),
+        rebase_path(root_gen_dir, root_build_dir),
 
         "--mojom-file-list={{response_file_name}}",
 
         "--check-imports",
-        rebase_path(build_metadata_filename),
+        rebase_path(build_metadata_filename, root_build_dir),
       ]
 
       if (defined(invoker.input_root_override)) {
         args += [
           "--input-root",
-          rebase_path(invoker.input_root_override),
+          rebase_path(invoker.input_root_override, root_build_dir),
         ]
       }
 
@@ -1023,6 +1091,11 @@ template("mojom") {
     export_defines = []
     export_defines_overridden = false
     force_source_set = false
+    proxy_target = ""
+    extra_configs = []
+    output_visibility = []
+    output_visibility = [ "*" ]
+    cpp_source_deps = []
     if (defined(bindings_configuration.for_blink) &&
         bindings_configuration.for_blink) {
       if (defined(invoker.blink_cpp_typemaps)) {
@@ -1033,18 +1106,47 @@ template("mojom") {
         export_defines = [ invoker.export_define_blink ]
         force_source_set = true
       }
+      if (defined(invoker.blink_cpp_configs)) {
+        extra_configs += invoker.blink_cpp_configs
+      }
+      if (defined(invoker.blink_cpp_proxy_target)) {
+        proxy_target = invoker.blink_cpp_proxy_target
+      }
+      if (defined(invoker.visibility_blink)) {
+        output_visibility = []
+        output_visibility = invoker.visibility_blink
+      }
+      if (defined(invoker.mojom_blink_source_deps)) {
+        cpp_source_deps = invoker.mojom_blink_source_deps
+      }
     } else {
       if (defined(invoker.cpp_typemaps)) {
         cpp_typemap_configs = invoker.cpp_typemaps
       }
-
       if (defined(invoker.export_define)) {
         export_defines_overridden = true
         export_defines = [ invoker.export_define ]
         force_source_set = true
       }
+      if (defined(invoker.cpp_configs)) {
+        extra_configs += invoker.cpp_configs
+      }
+      if (defined(invoker.cpp_proxy_target)) {
+        proxy_target = invoker.cpp_proxy_target
+      }
+      if (defined(invoker.visibility)) {
+        output_visibility = []
+        output_visibility = invoker.visibility
+      }
+      if (defined(invoker.mojom_source_deps)) {
+        cpp_source_deps = invoker.mojom_source_deps
+      }
     }
     not_needed([ "cpp_typemap_configs" ])
+    if (proxy_target != "") {
+      group("${target_name}${variant_suffix}__has_cpp_proxy") {
+      }
+    }
 
     if (!export_defines_overridden && defined(invoker.component_macro_prefix)) {
       output_name_override =
@@ -1103,7 +1205,6 @@ template("mojom") {
       generator_cpp_output_suffixes += [
         "${variant_dash_suffix}-forward.h",
         "${variant_dash_suffix}-import-headers.h",
-        "${variant_dash_suffix}-test-utils.cc",
         "${variant_dash_suffix}-test-utils.h",
         "${variant_dash_suffix}.cc",
         "${variant_dash_suffix}.h",
@@ -1111,6 +1212,7 @@ template("mojom") {
 
       generator_target_name = "${target_name}${variant_suffix}__generator"
 
+      # TODO(crbug.com/1194274): Investigate nondeterminism in Py3 builds.
       action(generator_target_name) {
         visibility = [ ":*" ]
         script = mojom_generator_script
@@ -1134,7 +1236,6 @@ template("mojom") {
           outputs += [
             "$root_gen_dir/${base_path}${variant_dash_suffix}-forward.h",
             "$root_gen_dir/${base_path}${variant_dash_suffix}-import-headers.h",
-            "$root_gen_dir/${base_path}${variant_dash_suffix}-test-utils.cc",
             "$root_gen_dir/${base_path}${variant_dash_suffix}-test-utils.h",
             "$root_gen_dir/${base_path}${variant_dash_suffix}.cc",
             "$root_gen_dir/${base_path}${variant_dash_suffix}.h",
@@ -1243,6 +1344,7 @@ template("mojom") {
           # mojolpm only uses the no-variant type.
           ":$mojolpm_generator_target_name",
           ":$mojolpm_proto_target_name",
+          "//base",
           "//mojo/public/tools/fuzzers:mojolpm",
         ]
 
@@ -1298,8 +1400,8 @@ template("mojom") {
       outputs = [ _typemap_stamp_filename ]
       args = [
         get_label_info(_mojom_target_name, "label_no_toolchain"),
-        rebase_path(_typemap_config_filename),
-        rebase_path(_typemap_stamp_filename),
+        rebase_path(_typemap_config_filename, root_build_dir),
+        rebase_path(_typemap_stamp_filename, root_build_dir),
       ]
     }
 
@@ -1359,30 +1461,39 @@ template("mojom") {
       }
     }
 
-    if (!force_source_set && defined(invoker.component_macro_prefix)) {
-      output_target_type = "component"
-    } else {
-      output_target_type = "source_set"
-    }
-
     js_data_deps_target_name = target_name + "_js_data_deps"
     not_needed([ "js_data_deps_target_name" ])
 
-    target(output_target_type, "${target_name}${variant_suffix}") {
+    if (!force_source_set && defined(invoker.component_macro_prefix)) {
+      sources_target_type = "component"
+    } else {
+      sources_target_type = "source_set"
+    }
+
+    output_target_name = "${target_name}${variant_suffix}"
+    if (proxy_target != "") {
+      group(output_target_name) {
+        public_deps = [ proxy_target ]
+        visibility = output_visibility
+        if (defined(invoker.testonly)) {
+          testonly = invoker.testonly
+        }
+      }
+      sources_target_name = "${output_target_name}_cpp_sources"
+    } else {
+      sources_target_name = output_target_name
+    }
+
+    target(sources_target_type, sources_target_name) {
       if (defined(output_name_override)) {
         output_name = output_name_override
       }
-      if (defined(bindings_configuration.for_blink) &&
-          bindings_configuration.for_blink &&
-          defined(invoker.visibility_blink)) {
-        visibility = invoker.visibility_blink
-      } else if (defined(invoker.visibility)) {
-        visibility = invoker.visibility
-      }
+      visibility = output_visibility + [ ":$output_target_name" ]
       if (defined(invoker.testonly)) {
         testonly = invoker.testonly
       }
       defines = export_defines
+      configs += extra_configs
       if (output_file_base_paths != []) {
         sources = []
         foreach(base_path, output_file_base_paths) {
@@ -1409,12 +1520,19 @@ template("mojom") {
       if (sources_list != []) {
         public_deps += [ ":$generator_target_name" ]
       }
-      foreach(d, all_deps) {
+      foreach(d, mojom_cpp_deps) {
         # Resolve the name, so that a target //mojo/something becomes
         # //mojo/something:something and we can append variant_suffix to
         # get the cpp dependency name.
-        full_name = get_label_info("$d", "label_no_toolchain")
+        full_name = get_label_info(d, "label_no_toolchain")
         public_deps += [ "${full_name}${variant_suffix}" ]
+      }
+      foreach(d, cpp_source_deps) {
+        full_name = get_label_info(d, "label_no_toolchain")
+        public_deps += [
+          "${full_name}${variant_suffix}__has_cpp_proxy",
+          "${full_name}${variant_suffix}_cpp_sources",
+        ]
       }
       if (defined(bindings_configuration.for_blink) &&
           bindings_configuration.for_blink) {
@@ -1457,17 +1575,9 @@ template("mojom") {
           public_deps += config.traits_public_deps
         }
       }
-      if (defined(invoker.export_header)) {
-        sources += [ "//" + invoker.export_header ]
-      }
       if (defined(bindings_configuration.for_blink) &&
           bindings_configuration.for_blink) {
         public_deps += [ "//mojo/public/cpp/bindings:wtf_support" ]
-      }
-
-      if (generate_fuzzing) {
-        # Generate JS bindings by default if IPC fuzzer is enabled.
-        public_deps += [ ":$js_data_deps_target_name" ]
       }
     }
 
@@ -1542,9 +1652,9 @@ template("mojom") {
       android_library(java_target_name) {
         forward_variables_from(invoker, [ "enable_bytecode_checks" ])
         deps = [
-          "//base:base_java",
           "//mojo/public/java:bindings_java",
           "//mojo/public/java:system_java",
+          "//third_party/androidx:androidx_annotation_annotation_java",
         ]
 
         # Disable warnings/checks on these generated files.
@@ -1596,10 +1706,8 @@ template("mojom") {
         foreach(base_path, output_file_base_paths) {
           outputs += [
             "$root_gen_dir/$base_path.js",
-            "$root_gen_dir/$base_path.externs.js",
             "$root_gen_dir/$base_path.m.js",
             "$root_gen_dir/$base_path-lite.js",
-            "$root_gen_dir/$base_path.html",
             "$root_gen_dir/$base_path-lite-for-compile.js",
           ]
 
@@ -1614,7 +1722,6 @@ template("mojom") {
           "--filelist={{response_file_name}}",
           "-g",
           "javascript",
-          "--js_bindings_mode=new",
         ]
 
         if (defined(invoker.js_generate_struct_deserializers) &&
@@ -1778,6 +1885,24 @@ template("mojom") {
       } else {
         group(webui_js_target_name) {
         }
+      }
+
+      webui_grdp_target_name = "${target_name}_webui_grdp"
+      out_grd = "$target_gen_dir/${target_name}_webui_resources.grdp"
+      grd_prefix = "${target_name}_webui"
+      generate_grd(webui_grdp_target_name) {
+        grd_prefix = grd_prefix
+        out_grd = out_grd
+
+        deps = [ ":$webui_js_target_name" ]
+
+        input_files = []
+        foreach(base_path, output_file_base_paths) {
+          input_files += [ "${base_path}-webui.js" ]
+        }
+
+        input_files_base_dir =
+            rebase_path("$root_gen_dir/mojom-webui", "$root_build_dir")
       }
     }
   }

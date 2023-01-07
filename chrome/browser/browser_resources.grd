@@ -8,77 +8,51 @@
   </outputs>
   <release seq="1">
     <structures>
-      <if expr="is_win or is_macosx or desktop_linux or chromeos">
-        <structure name="IDR_SIGNIN_SHARED_CSS_JS" file="${root_gen_dir}\chrome\browser\resources\signin\signin_shared_css.js" use_base_dir="false" preprocess="true" type="chrome_html" />
-        <structure name="IDR_SIGNIN_VARS_CSS_JS" file="${root_gen_dir}\chrome\browser\resources\signin\signin_vars_css.js" use_base_dir="false" type="chrome_html" />
-      </if>
       <if expr="not is_android">
         <!-- New Tab Page WebUI. -->
         <structure name="IDR_INCOGNITO_TAB_HTML" file="resources\ntp4\incognito_tab.html" flattenhtml="true" type="chrome_html" />
+        <structure name="IDR_REVAMPED_INCOGNITO_TAB_HTML" file="resources\ntp4\revamped_incognito_tab.html" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_INCOGNITO_TAB_THEME_CSS" file="resources\ntp4\incognito_tab_theme.css" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_GUEST_TAB_HTML" file="resources\ntp4\guest_tab.html" flattenhtml="true" type="chrome_html" />
-        <structure name="IDR_EPHEMERAL_GUEST_TAB_HTML" file="resources\ntp4\ephemeral_guest_tab.html" flattenhtml="true" type="chrome_html" />
-        <structure name="IDR_EPHEMERAL_GUEST_TAB_CSS" file="resources\ntp4\ephemeral_guest_tab.css" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_NEW_TAB_4_THEME_CSS" file="resources\ntp4\new_tab_theme.css" flattenhtml="true" type="chrome_html" />
 
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <structure name="IDR_KEYBOARD_UTILS_JS" file="resources\chromeos\keyboard\keyboard_utils.js" flattenhtml="true" type="chrome_html" />
-        <structure name="IDR_ASSISTANT_OPTIN_HTML" file="resources\chromeos\assistant_optin\assistant_optin.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
-        <structure name="IDR_ASSISTANT_OPTIN_JS" file="resources\chromeos\assistant_optin\assistant_optin.js" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
       </if>
     </structures>
     <includes>
-      <if expr="is_win or is_macosx or desktop_linux or chromeos">
-        <include name="IDR_DISCARDS_DATABASE_TAB_JS" file="${root_gen_dir}\chrome\browser\resources\discards\database_tab.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DISCARDS_DISCARDS_MAIN_JS" file="${root_gen_dir}\chrome\browser\resources\discards\discards_main.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DISCARDS_DISCARDS_TAB_JS" file="${root_gen_dir}\chrome\browser\resources\discards\discards_tab.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DISCARDS_GRAPH_TAB_JS" file="${root_gen_dir}\chrome\browser\resources\discards\graph_tab.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DISCARDS_HTML" file="resources\discards\discards.html" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_DISCARDS_JS" file="resources\discards\discards.js" type="BINDATA" />
-        <include name="IDR_DISCARDS_LIFECYCLE_UNIT_STATE_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\resource_coordinator\lifecycle_unit_state.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DISCARDS_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\discards\discards.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DISCARDS_SITE_DATA_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\discards\site_data.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DISCARDS_SORTED_TABLE_BEHAVIOR_JS" file="resources\discards\sorted_table_behavior.js" type="BINDATA" />
-      </if>
-      <if expr="is_win or is_macosx or (is_linux and not chromeos)">
-        <include name="IDR_BROWSER_SWITCH_APP_JS" file="${root_gen_dir}\chrome\browser\resources\browser_switch\app.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_BROWSER_SWITCH_PROXY_JS" file="resources\browser_switch\browser_switch_proxy.js" type="BINDATA" />
-        <include name="IDR_BROWSER_SWITCH_HTML" file="resources\browser_switch\browser_switch.html" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_BROWSER_SWITCH_INTERNALS_HTML" file="resources\browser_switch\internals\browser_switch_internals.html" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_BROWSER_SWITCH_INTERNALS_JS" file="resources\browser_switch\internals\browser_switch_internals.js" type="BINDATA" />
-      </if>
       <if expr="is_win">
-        <include name="IDR_ABOUT_CONFLICTS_HTML" file="resources\conflicts\about_conflicts.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_ABOUT_CONFLICTS_JS" file="resources\conflicts\about_conflicts.js" type="BINDATA" />
+        <include name="IDR_ABOUT_CONFLICTS_HTML" file="resources\conflicts\about_conflicts.html" type="BINDATA" />
+        <include name="IDR_ABOUT_CONFLICTS_JS" file="${root_gen_dir}\chrome\browser\resources\conflicts\tsc\about_conflicts.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_ABOUT_CONFLICTS_WARNING_SVG" file="resources\conflicts\warning.svg" type="BINDATA" />
       </if>
-      <if expr="not disable_nacl">
-        <include name="IDR_ABOUT_NACL_HTML" file="resources\about_nacl\about_nacl.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+      <if expr="enable_nacl or is_macosx">
+        <!-- On Mac, the NaCl page resources need to be included in the build, regardless of whether chrome://nacl is available at runtime, because x86_64 and arm64 builds need to have identical pak files, https://crbug.com/1318358. -->
+        <include name="IDR_ABOUT_NACL_HTML" file="resources\about_nacl\about_nacl.html" type="BINDATA" />
         <include name="IDR_ABOUT_NACL_CSS" file="resources\about_nacl\about_nacl.css" type="chrome_html" />
-        <include name="IDR_ABOUT_NACL_JS" file="resources\about_nacl\about_nacl.js" type="BINDATA" />
+        <include name="IDR_ABOUT_NACL_JS" file="${root_gen_dir}\chrome\browser\resources\about_nacl\tsc\about_nacl.js" use_base_dir="false" type="BINDATA" />
       </if>
       <if expr="not is_android">
         <include name="IDR_ABOUT_SYS_HTML" file="resources\about_sys\about_sys.html" type="BINDATA" />
         <include name="IDR_ABOUT_SYS_CSS" file="resources\about_sys\about_sys.css" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_ABOUT_SYS_JS" file="resources\about_sys\about_sys.js" type="BINDATA" />
+        <include name="IDR_ABOUT_SYS_JS" file="resources\about_sys\about_sys.js" preprocess="true" type="BINDATA" />
       </if>
       <include name="IDR_AD_NETWORK_HASHES" file="resources\ad_networks.dat" type="BINDATA" />
-      <if expr="is_posix and not is_macosx">
+      <if expr="enable_webui_certificate_viewer">
         <include name="IDR_CERTIFICATE_VIEWER_HTML" file="resources\certificate_viewer\certificate_viewer.html" type="BINDATA" />
-        <include name="IDR_CERTIFICATE_VIEWER_JS" file="resources\certificate_viewer\certificate_viewer.js" type="BINDATA" />
+        <include name="IDR_CERTIFICATE_VIEWER_JS" file="${root_gen_dir}\chrome\browser\resources\certificate_viewer\tsc\certificate_viewer.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_CERTIFICATE_VIEWER_CSS" file="resources\certificate_viewer\certificate_viewer.css" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_CHROME_APP_MANIFEST" file="resources\chrome_app\manifest.json" type="BINDATA" />
       </if>
-      <include name="IDR_DEVTOOLS_DISCOVERY_PAGE_HTML" file="devtools\frontend\devtools_discovery_page.html" type="BINDATA"/>
-      <include name="IDR_FEEDBACK_MANIFEST" file="resources\feedback\manifest.json" type="BINDATA" />
       <if expr="is_android">
         <include name="IDR_DEV_UI_LOADER_ERROR_HTML" file="resources/dev_ui/dev_ui_loader_error.html" type="BINDATA" />
         <include name="IDR_EXPLORE_SITES_INTERNALS_HTML" file="resources\explore_sites_internals\explore_sites_internals.html" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_EXPLORE_SITES_INTERNALS_CSS" file="resources\explore_sites_internals\explore_sites_internals.css" type="BINDATA" />
         <include name="IDR_EXPLORE_SITES_INTERNALS_JS" file="resources\explore_sites_internals\explore_sites_internals.js" type="BINDATA" />
-        <include name="IDR_EXPLORE_SITES_INTERNALS_MOJO_JS" file="${root_gen_dir}\chrome\browser\ui\webui\explore_sites_internals\explore_sites_internals.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_EXPLORE_SITES_INTERNALS_MOJO_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\explore_sites_internals\explore_sites_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_OFFLINE_INTERNALS_HTML" file="resources\offline_pages\offline_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_OFFLINE_INTERNALS_CSS" file="resources\offline_pages\offline_internals.css" type="BINDATA" />
         <include name="IDR_OFFLINE_INTERNALS_JS" file="resources\offline_pages\offline_internals.js" type="BINDATA" />
@@ -88,17 +62,8 @@
         <include name="IDR_VIDEO_PLAYER_JS" file="resources\video_tutorials\video_player.js" type="BINDATA" />
       </if>
 
-      <if expr="not is_android">
-        <!-- New Tab Page -->
-        <part file="resources/local_ntp/icons.grdp" />
-      </if>
-
       <if expr="enable_supervised_users">
         <part file="resources/supervised_user_error_page_resources.grdp" />
-      </if>
-
-      <if expr="chromeos">
-        <part file="resources/web_time_limit_error_page_resources.grdp" />
       </if>
 
       <if expr="enable_hangout_services_extension">
@@ -106,20 +71,23 @@
         <include name="IDR_HANGOUT_SERVICES_MANIFEST" file="resources\hangout_services\manifest.json" type="BINDATA" />
       </if>
 
+      <!-- Contact Center Insights extension, enabled on managed ChromeOS devices -->
+      <if expr="is_chromeos">
+        <include name="IDR_CONTACT_CENTER_INSIGHTS_MANIFEST" file="resources\chromeos\contact_center_insights\manifest.json" type="BINDATA" />
+      </if>
+
+      <!-- Desk API extension, enabled on managed ChromeOS devices -->
+      <if expr="chromeos_ash or chromeos_lacros">
+        <include name="IDR_DESK_API_MANIFEST" file="resources\chromeos\desk_api\manifest.json" type="BINDATA" />
+      </if>
+
       <if expr="not is_android">
         <!-- Page not available for guest. -->
         <include name="IDR_PAGE_NOT_AVAILABLE_FOR_GUEST_APP_HTML" file="resources\page_not_available_for_guest\app.html" type="BINDATA" />
-        <!-- In-session login flow -->
-        <include name="IDR_INLINE_LOGIN_HTML" file="resources\inline_login\inline_login.html" type="BINDATA" />
-        <include name="IDR_INLINE_LOGIN_APP_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\inline_login_app.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
-        <include name="IDR_INLINE_LOGIN_BROWSER_PROXY_JS" file="resources\inline_login\inline_login_browser_proxy.js" type ="BINDATA" preprocess="true"/>
-        <include name="IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS" file="resources\gaia_auth_host\webview_saml_injected.js" flattenhtml="true" type="BINDATA" />
       </if>
 
-      <if expr="chromeos">
+      <if expr="is_chromeos">
         <include name="IDR_CHROME_URLS_DISABLED_PAGE_HTML" file="resources\chromeos\chrome_urls_disabled_page\app.html" type="BINDATA" />
-        <!-- In-session login flow -->
-        <include name="IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\welcome_page_app.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
       </if>
 
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_MANIFEST" file="resources\identity_scope_approval_dialog\manifest.json" type="BINDATA" />
@@ -130,69 +98,27 @@
 
       <include name="IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST" file="resources\network_speech_synthesis\manifest.json" type="BINDATA" />
 
-      <include name="IDR_ORIGIN_MOJO_JS" file="${root_gen_dir}\url\mojom\origin.mojom-lite.js" use_base_dir="false" type="BINDATA"/>
-      <if expr="enable_plugins">
+      <if expr="chromeos_ash">
+        <include name="IDR_ORIGIN_MOJO_JS" file="${root_gen_dir}\url\mojom\origin.mojom-lite.js" use_base_dir="false" type="BINDATA"/>
+      </if>
+      <if expr="enable_pdf">
         <include name="IDR_PDF_MANIFEST" file="resources\pdf\manifest.json" type="BINDATA" />
       </if>
-      <if expr="is_win">
-        <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_win.json" type="BINDATA" />
-      </if>
-      <if expr="is_macosx">
-        <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_mac.json" type="BINDATA" />
-      </if>
-      <if expr="chromeos">
-        <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_chromeos.json" type="BINDATA" />
-      </if>
-      <if expr="desktop_linux">
-        <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_linux.json" type="BINDATA" />
-      </if>
-      <if expr="not is_android">
-        <include name="IDR_MANAGEMENT_HTML" file="resources\management\management.html" type="BINDATA" />
-        <include name="IDR_MANAGEMENT_UI_JS" file="${root_gen_dir}/chrome/browser/resources/management/management_ui.js" use_base_dir="false" type="BINDATA" preprocess="true" />
-        <include name="IDR_MANAGEMENT_BROWSER_PROXY_JS" file="resources\management\management_browser_proxy.js" type="BINDATA" preprocess="true" />
-        <include name="IDR_MANAGEMENT_ICONS_JS" file="${root_gen_dir}/chrome/browser/resources/management/icons.js" use_base_dir="false" type="BINDATA" preprocess="true" />
-      </if>
-      <include name="IDR_URL_MOJOM_LITE_JS" file="${root_gen_dir}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      <if expr="is_win or is_macosx or desktop_linux or chromeos">
-        <include name="IDR_SYNC_DISABLED_CONFIRMATION_HTML" file="resources\signin\sync_confirmation\sync_disabled_confirmation.html" type="BINDATA" />
-        <include name="IDR_SYNC_DISABLED_CONFIRMATION_APP_JS" file="${root_gen_dir}\chrome\browser\resources\signin\sync_confirmation\sync_disabled_confirmation_app.js" use_base_dir="false" preprocess="true" type="BINDATA" />
-        <include name="IDR_SYNC_CONFIRMATION_HTML" file="resources\signin\sync_confirmation\sync_confirmation.html" type="BINDATA" />
-        <include name="IDR_SYNC_CONFIRMATION_JS" file="resources\signin\sync_confirmation\sync_confirmation.js" type="BINDATA" />
-        <include name="IDR_SYNC_CONFIRMATION_BROWSER_PROXY_JS" file="resources\signin\sync_confirmation\sync_confirmation_browser_proxy.js" type="BINDATA" />
-        <include name="IDR_SYNC_CONFIRMATION_APP_JS" file="${root_gen_dir}\chrome\browser\resources\signin\sync_confirmation\sync_confirmation_app.js" use_base_dir="false" preprocess="true" type="BINDATA" />
-        <include name="IDR_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_SVG" file="resources\signin\sync_confirmation\images\sync_confirmation_illustration.svg" type="BINDATA" />
-        <include name="IDR_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_DARK_SVG" file="resources\signin\sync_confirmation\images\sync_confirmation_illustration_dark.svg" type="BINDATA" />
-        <include name="IDR_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_REFRESHED_ILLUSTRATION_SVG" file="resources\signin\sync_confirmation\images\sync_confirmation_refreshed_illustration.svg" type="BINDATA" />
-        <include name="IDR_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_REFRESHED_ILLUSTRATION_DARK_SVG" file="resources\signin\sync_confirmation\images\sync_confirmation_refreshed_illustration_dark.svg" type="BINDATA" />
-      </if>
-      <if expr="is_win or is_macosx or desktop_linux">
-        <include name="IDR_SIGNIN_DICE_WEB_INTERCEPT_HTML" file="resources\signin\dice_web_signin_intercept\dice_web_signin_intercept.html" type="BINDATA" />
-        <include name="IDR_SIGNIN_DICE_WEB_INTERCEPT_APP_JS" file="${root_gen_dir}\chrome\browser\resources\signin\dice_web_signin_intercept\dice_web_signin_intercept_app.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_SIGNIN_DICE_WEB_INTERCEPT_BROWSER_PROXY_JS" file="resources/signin/dice_web_signin_intercept/dice_web_signin_intercept_browser_proxy.js" type="BINDATA" />
-        <include name="IDR_SIGNIN_EMAIL_CONFIRMATION_HTML" file="resources\signin\signin_email_confirmation\signin_email_confirmation.html" type="BINDATA" />
-        <include name="IDR_SIGNIN_EMAIL_CONFIRMATION_APP_JS" file="${root_gen_dir}\chrome\browser\resources\signin\signin_email_confirmation\signin_email_confirmation_app.js" use_base_dir="false" preprocess="true" type="BINDATA" />
-        <include name="IDR_SIGNIN_ERROR_HTML" file="resources\signin\signin_error\signin_error.html" type="BINDATA" />
-        <include name="IDR_SIGNIN_ERROR_JS" file="resources\signin\signin_error\signin_error.js" type="BINDATA" />
-        <include name="IDR_SIGNIN_ERROR_APP_JS" file="${root_gen_dir}\chrome\browser\resources\signin\signin_error\signin_error_app.js" use_base_dir="false" preprocess="true" type="BINDATA" />
-        <include name="IDR_SIGNIN_REAUTH_HTML" file="resources\signin\signin_reauth\signin_reauth.html" type="BINDATA" />
-        <include name="IDR_SIGNIN_REAUTH_APP_JS" file="${root_gen_dir}\chrome\browser\resources\signin\signin_reauth\signin_reauth_app.js" use_base_dir="false" preprocess="true" type="BINDATA" />
-        <include name="IDR_SIGNIN_REAUTH_BROWSER_PROXY_JS" file="resources/signin/signin_reauth/signin_reauth_browser_proxy.js" type="BINDATA" />
-        <include name="IDR_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_SVG" file="resources\signin\signin_reauth\images\account_passwords_reauth_illustration.svg" type="BINDATA" />
-        <include name="IDR_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_DARK_SVG" file="resources\signin\signin_reauth\images\account_passwords_reauth_illustration_dark.svg" type="BINDATA" />
+      <if expr="chromeos_ash">
+        <include name="IDR_URL_MOJOM_LITE_JS" file="${root_gen_dir}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       </if>
       <include name="IDR_USB_ENUMERATION_OPTIONS_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\services\device\public\mojom\usb_enumeration_options.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_USB_DEVICE_MANAGER_CLIENT_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\services\device\public\mojom\usb_manager_client.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_USB_DEVICE_MANAGER_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\services\device\public\mojom\usb_manager.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_USB_DEVICE_MANAGER_TEST_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\services\device\public\mojom\usb_manager_test.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_USB_DEVICE_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\services\device\public\mojom\usb_device.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEB_FOOTER_EXPERIMENT_HTML" file="resources\web_footer_experiment\index.html" type="BINDATA" />
       <include name="IDR_WEBSTORE_MANIFEST" file="resources\webstore_app\manifest.json" type="BINDATA" />
       <include name="IDR_CRYPTOTOKEN_MANIFEST" file="resources\cryptotoken\manifest.json" type="BINDATA" />
-      <if expr="chromeos">
-        <!-- Edu account login resources -->
-        <include name="IDR_EDU_LOGIN_EDU_LOGIN_HTML" file="resources\chromeos\edu_login\edu_login.html" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_EDU_LOGIN_EDU_LOGIN_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_login\app.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_EDU_LOGIN_EDU_LOGIN_UTIL_JS" file="resources\chromeos\edu_login\edu_login_util.js" type="BINDATA" />
+      <if expr="is_chromeos">
+        <include name="IDR_ECHO_MANIFEST" file="resources\chromeos\echo\manifest.json" type="BINDATA" />
+      </if>
+      <if expr="chromeos_ash">
+        <!-- Shared images for ChromeOS WebUIs -->
+        <include name="IDR_CHROME_OS_AN_ERROR_OCCURRED_SVG" file="resources\chromeos\images\an_error_occurred.svg" type="BINDATA" />
+        <include name="IDR_CHROME_OS_NO_NETWORK_SVG" file="resources\chromeos\images\no_network.svg" type="BINDATA" />
+        <!-- Edu Coexistence account login resources -->
         <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_HTML" file="resources\chromeos\edu_coexistence\edu_coexistence.html" type="BINDATA" />
         <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_app.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_UI_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_ui.js" use_base_dir="false" type="BINDATA" />
@@ -203,61 +129,33 @@
         <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_ERROR_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_error.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_TEMPLATE_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_template.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CSS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_css.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_EDU_LOGIN_BROWSER_PROXY_JS" file="resources\chromeos\edu_login\browser_proxy.js" type="BINDATA" />
-        <include name="IDR_EDU_LOGIN_ICONS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_login\icons.js" use_base_dir="false" type ="BINDATA" />
-        <include name="IDR_EDU_LOGIN_EDU_LOGIN_BUTTON_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_login\edu_login_button.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_EDU_LOGIN_EDU_LOGIN_TEMPLATE_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_login\edu_login_template.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_EDU_LOGIN_EDU_LOGIN_CSS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_login\edu_login_css.js" use_base_dir="false" type ="BINDATA" />
-        <include name="IDR_EDU_LOGIN_EDU_LOGIN_COEXISTENCE_INFO_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_login\edu_login_coexistence_info.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
-        <include name="IDR_EDU_LOGIN_EDU_LOGIN_PARENTS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_login\edu_login_parents.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
-        <include name="IDR_EDU_LOGIN_EDU_LOGIN_PARENT_SIGNIN_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_login\edu_login_parent_signin.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
-        <include name="IDR_EDU_LOGIN_EDU_LOGIN_PARENT_INFO_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_login\edu_login_parent_info.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
-        <include name="IDR_EDU_LOGIN_EDU_LOGIN_SIGNIN_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_login\edu_login_signin.js" use_base_dir="false" type ="BINDATA" />
-        <include name="IDR_EDU_LOGIN_EDU_LOGIN_ERROR_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_login\edu_login_error.js" use_base_dir="false" type ="BINDATA" />
 
-        <!-- Chrome OS Account Manager resources -->
+        <!-- ChromeOS Account Manager resources -->
         <include name="IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\account_manager\components\error_screen.js" use_base_dir="false" type ="BINDATA"/>
         <include name="IDR_ACCOUNT_MANAGER_SHARED_CSS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\account_manager\account_manager_shared_css.js" use_base_dir="false" type ="BINDATA" />
-        <include name="IDR_ACCOUNT_MANAGER_WELCOME_HTML" file="resources\chromeos\account_manager\account_manager_welcome.html" allowexternalscript="true" type="BINDATA" preprocess="true"/>
-        <include name="IDR_ACCOUNT_MANAGER_WELCOME_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\account_manager\account_manager_welcome_app.js" use_base_dir="false" preprocess="true" type="BINDATA" />
         <include name="IDR_ACCOUNT_MIGRATION_WELCOME_HTML" file="resources\chromeos\account_manager\account_migration_welcome.html" type="BINDATA" />
         <include name="IDR_ACCOUNT_MIGRATION_WELCOME_APP_JS"  file="${root_gen_dir}\chrome\browser\resources\chromeos\account_manager\account_migration_welcome_app.js" use_base_dir="false" preprocess="true" type="BINDATA" />
         <include name="IDR_ACCOUNT_MANAGER_BROWSER_PROXY_JS" file="resources\chromeos\account_manager\account_manager_browser_proxy.js" type="BINDATA" />
         <include name="IDR_ACCOUNT_MANAGER_ERROR_HTML" file="resources\chromeos\account_manager\account_manager_error.html" allowexternalscript="true" type="BINDATA" preprocess="true"/>
         <include name="IDR_ACCOUNT_MANAGER_ERROR_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\account_manager\account_manager_error_app.js" use_base_dir="false" preprocess="true" type="BINDATA" />
+        <include name="IDS_ACCOUNT_MANAGER_SIGNIN_BLOCKED_BY_POLICY_SVG" file="resources\chromeos\login\images\error.svg" type="BINDATA" />
         <if expr="_google_chrome">
-          <include name="IDR_ACCOUNT_MANAGER_WELCOME_1X_PNG" file="resources\chromeos\account_manager\account_manager_welcome_1x.png" type="BINDATA" compress="gzip" />
-          <include name="IDR_ACCOUNT_MANAGER_WELCOME_2X_PNG" file="resources\chromeos\account_manager\account_manager_welcome_2x.png" type="BINDATA" compress="gzip" />
+          <include name="IDR_ACCOUNT_MANAGER_WELCOME_1X_PNG" file="resources\chromeos\account_manager\account_manager_welcome_1x.png" type="BINDATA" />
+          <include name="IDR_ACCOUNT_MANAGER_WELCOME_2X_PNG" file="resources\chromeos\account_manager\account_manager_welcome_2x.png" type="BINDATA" />
           <include name="IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG" file="resources\chromeos\googleg.svg" type="BINDATA" />
         </if>
-
-        <include name="IDR_GAIA_ACTION_BUTTONS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\gaia_action_buttons\gaia_action_buttons.js" use_base_dir="false" type ="BINDATA" />
-
-        <include name="IDR_PASSWORD_CHANGE_HTML" file="resources\chromeos\password_change\password_change.html" type="BINDATA" />
-        <include name="IDR_PASSWORD_CHANGE_JS" file="resources\chromeos\password_change\password_change.js" type="BINDATA" />
-        <include name="IDR_PASSWORD_CHANGE_AUTHENTICATOR_JS" file="resources\gaia_auth_host\password_change_authenticator.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_CONFIRM_PASSWORD_CHANGE_HTML" file="resources\chromeos\password_change\confirm_password_change.html" type="chrome_html" />
-        <include name="IDR_CONFIRM_PASSWORD_CHANGE_JS" file="resources\chromeos\password_change\confirm_password_change.js" type="chrome_html" />
-        <include name="IDR_URGENT_PASSWORD_EXPIRY_NOTIFICATION_HTML" file="resources\chromeos\password_change\urgent_password_expiry_notification.html" type="chrome_html" />
-        <include name="IDR_URGENT_PASSWORD_EXPIRY_NOTIFICATION_JS" file="resources\chromeos\password_change\urgent_password_expiry_notification.js" type="chrome_html" />
-        <include name="IDR_GAIA_AUTH_AUTHENTICATOR_JS" file="resources\gaia_auth_host\authenticator.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_LOCK_SCREEN_REAUTH_HTML" file="resources\chromeos\password_change\lock_screen_reauth.html" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_LOCK_SCREEN_REAUTH_JS" file="resources\chromeos\password_change\lock_screen_reauth.js" type="BINDATA" />
 
         <include name="IDR_CROSTINI_INSTALLER_INDEX_HTML" file="resources\chromeos\crostini_installer\index.html" type="BINDATA" />
         <include name="IDR_CROSTINI_INSTALLER_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\crostini_installer\app.js" type="BINDATA" use_base_dir="false" />
         <include name="IDR_CROSTINI_INSTALLER_BROWSER_PROXY_JS" file="resources\chromeos\crostini_installer\browser_proxy.js" type="BINDATA" />
-        <include name="IDR_CROSTINI_INSTALLER_MOJO_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\chromeos\crostini_installer\crostini_installer.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_CROSTINI_INSTALLER_TYPES_MOJO_LITE_JS" file="${root_gen_dir}\chrome\browser\chromeos\crostini\crostini_types.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_CROSTINI_INSTALLER_MOJO_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\ash\crostini_installer\crostini_installer.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_CROSTINI_INSTALLER_TYPES_MOJO_LITE_JS" file="${root_gen_dir}\chrome\browser\ash\crostini\crostini_types.mojom-lite.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_CROSTINI_UPGRADER_INDEX_HTML" file="resources\chromeos\crostini_upgrader\index.html" type="BINDATA" />
         <include name="IDR_CROSTINI_UPGRADER_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\crostini_upgrader\app.js" type="BINDATA" use_base_dir="false" />
         <include name="IDR_CROSTINI_UPGRADER_BROWSER_PROXY_JS" file="resources\chromeos\crostini_upgrader\browser_proxy.js" type="BINDATA" />
-        <include name="IDR_CROSTINI_UPGRADER_MOJO_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\chromeos\crostini_upgrader\crostini_upgrader.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_CROSTINI_UPGRADER_MOJO_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\ash\crostini_upgrader\crostini_upgrader.mojom-lite.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_CRYPTOHOME_HTML" file="resources\chromeos\cryptohome.html" type="BINDATA" />
         <include name="IDR_CRYPTOHOME_JS" file="resources\chromeos\cryptohome.js" type="BINDATA" />
-        <!-- manifest file of Connectivity Diagnostics app -->
-        <include name="IDR_CONNECTIVITY_DIAGNOSTICS_MANIFEST" file="resources\chromeos\connectivity_diagnostics\manifest.json" type="BINDATA" />
-        <include name="IDR_CONNECTIVITY_DIAGNOSTICS_LAUNCHER_MANIFEST" file="resources\chromeos\connectivity_diagnostics_launcher\manifest.json" type="BINDATA" />
 
         <include name="IDR_DRIVE_INTERNALS_CSS" file="resources\chromeos\drive_internals.css" type="BINDATA" />
         <include name="IDR_DRIVE_INTERNALS_HTML" file="resources\chromeos\drive_internals.html" flattenhtml="true" type="BINDATA" />
@@ -266,50 +164,47 @@
         <include name="IDR_GUEST_SESSION_TAB_HTML" file="resources\chromeos\guest_session_tab.html" flattenhtml="true" type="BINDATA" />
 
         <!-- Note: mobile_setup_ui.cc does not support compressed resources. -->
-        <include name="IDR_MOBILE_MANIFEST" file="resources\chromeos\mobile_app\manifest.json" type="BINDATA" />
-        <include name="IDR_MOBILE_SETUP_PAGE_HTML" file="resources\chromeos\mobile_setup.html" flattenhtml="true" type="BINDATA" />
         <include name="IDR_MOBILE_SETUP_PORTAL_PAGE_HTML" file="resources\chromeos\mobile_setup_portal.html" flattenhtml="true" type="BINDATA" />
 
-        <include name="IDR_ECHO_MANIFEST" file="resources\chromeos\echo\manifest.json" type="BINDATA" />
         <include name="IDR_OS_CREDITS_HTML" file="resources\chromeos\about_os_credits.html" flattenhtml="true" type="BINDATA" />
         <include name="IDR_CERT_MANAGER_DIALOG_HTML" file="resources\chromeos\certificate_manager_dialog.html" type="BINDATA" />
         <include name="IDR_SLOW_CSS" file="resources\chromeos\slow.css" type="BINDATA" />
         <include name="IDR_SLOW_HTML" file="resources\chromeos\slow.html" type="BINDATA" />
         <include name="IDR_SLOW_JS" file="resources\chromeos\slow.js" type="BINDATA" />
-        <include name="IDR_DEMO_APP_MANIFEST" file="resources\chromeos\demo_app\manifest.json" type="BINDATA" />
-        <include name="IDR_WALLPAPERMANAGER_MANIFEST" file="resources\chromeos\wallpaper_manager\manifest.json" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_MANIFEST" file="resources\chromeos\arc_support\manifest.json" type="BINDATA" />
 
         <!-- Fingerprint resources. -->
-        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_BOTTOM_RIGHT_ANIMATION" file="resources\chromeos\quick_unlock\fingerprint_laptop_bottom_right.json"/>
-        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_TABLET_ANIMATION" file="resources\chromeos\quick_unlock\fingerprint_tablet.json"/>
-        <include type="BINDATA" name="IDR_FINGERPRINT_LAPTOP_TOP_RIGHT_ILLUSTRATION_SVG" file="resources\chromeos\quick_unlock\fingerprint_laptop_top_right.svg" />
-        <include type="BINDATA" name="IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ILLUSTRATION_SVG" file="resources\chromeos\quick_unlock\fingerprint_laptop_bottom_left.svg" />
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ANIMATION_DARK" file="resources\chromeos\quick_unlock\fingerprint_laptop_bottom_left_dark.json"/>
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ANIMATION_LIGHT" file="resources\chromeos\quick_unlock\fingerprint_laptop_bottom_left_light.json"/>
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_BOTTOM_RIGHT_ANIMATION_DARK" file="resources\chromeos\quick_unlock\fingerprint_laptop_bottom_right_dark.json"/>
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_BOTTOM_RIGHT_ANIMATION_LIGHT" file="resources\chromeos\quick_unlock\fingerprint_laptop_bottom_right_light.json"/>
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_LEFT_OF_POWER_BUTTON_TOP_RIGHT_ANIMATION_LIGHT" file="resources\chromeos\quick_unlock\fingerprint_left_of_power_button_top_right_light.json"/>
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_LEFT_OF_POWER_BUTTON_TOP_RIGHT_ANIMATION_DARK" file="resources\chromeos\quick_unlock\fingerprint_left_of_power_button_top_right_dark.json"/>
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_TABLET_ANIMATION_DARK" file="resources\chromeos\quick_unlock\fingerprint_tablet_dark.json"/>
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_TABLET_ANIMATION_LIGHT" file="resources\chromeos\quick_unlock\fingerprint_tablet_light.json"/>
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_DEFAULT_ANIMATION_DARK" file="resources\chromeos\quick_unlock\fingerprint_default_dark.json"/>
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_DEFAULT_ANIMATION_LIGHT" file="resources\chromeos\quick_unlock\fingerprint_default_light.json"/>
+
+        <include name="IDR_VM_INDEX_HTML" file="resources\chromeos\vm\index.html" type="BINDATA" />
+        <include name="IDR_VM_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\vm\app.js" type="BINDATA" use_base_dir="false" />
+        <include name="IDR_VM_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\chromeos\vm\vm.mojom-webui.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_GUEST_OS_DIAGNOSTICS_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ash\guest_os\guest_os_diagnostics.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       </if>
-      <if expr="chromeos and _google_chrome">
+      <if expr="chromeos_ash and _google_chrome">
         <include name="IDR_HELP_MANIFEST" file="resources\help_app\manifest.json" type="BINDATA" />
-        <include name="IDR_QUICKOFFICE_MANIFEST" file="resources\chromeos\quickoffice\manifest.json" type="BINDATA" />
         <include name="IDR_PRODUCT_CHROMEOS_SYNC_CONSENT_SCREEN_ICONS" file="internal\resources\chromeos-sync-consent-icons.html" type="BINDATA" />
+        <include name="IDR_PRODUCT_CHROMEOS_SYNC_CONSENT_SCREEN_ICONS_M_JS" file="internal\resources\chromeos-sync-consent-icons.m.js" type="BINDATA" />
       </if>
-      <if expr="not is_android and not chromeos">
-        <include name="IDR_PROFILE_CUSTOMIZATION_HTML" file="resources\signin\profile_customization\profile_customization.html" type="BINDATA" />
-        <include name="IDR_PROFILE_CUSTOMIZATION_APP_JS" file="${root_gen_dir}\chrome\browser\resources\signin\profile_customization\profile_customization_app.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_PROFILE_CUSTOMIZATION_BROWSER_PROXY_JS" file="resources\signin\profile_customization\profile_customization_browser_proxy.js" type="BINDATA" />
-        <include name="IDR_ENTERPRISE_PROFILE_WELCOME_HTML" file="resources\signin\enterprise_profile_welcome\enterprise_profile_welcome.html" type="BINDATA" />
-        <include name="IDR_ENTERPRISE_PROFILE_WELCOME_APP_JS" file="${root_gen_dir}\chrome\browser\resources\signin\enterprise_profile_welcome\enterprise_profile_welcome_app.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_ENTERPRISE_PROFILE_WELCOME_BROWSER_PROXY_JS" file="resources\signin\enterprise_profile_welcome\enterprise_profile_welcome_browser_proxy.js" type="BINDATA" />
-        <include name="IDR_ENTERPRISE_PROFILE_WELCOME_ILLUSTRATION_SVG" file="resources\signin\enterprise_profile_welcome\images\enterprise_profile_welcome_illustration.svg" type="BINDATA" />
-      </if>
-      <if expr="not is_android">
-        <include name="IDR_IDENTITY_INTERNALS_HTML" file="resources\identity_internals\identity_internals.html" type="BINDATA" />
-        <include name="IDR_IDENTITY_INTERNALS_CSS" file="resources\identity_internals\identity_internals.css" type="BINDATA" />
-        <include name="IDR_IDENTITY_INTERNALS_JS" file="resources\identity_internals\identity_internals.js" type="BINDATA" />
+      <if expr="is_chromeos">
+        <if expr="_google_chrome">
+          <include name="IDR_QUICKOFFICE_MANIFEST" file="resources\chromeos\quickoffice\manifest.json" type="BINDATA" />
+        </if>
       </if>
       <if expr="_google_chrome">
         <include name="IDR_PREF_HASH_SEED_BIN" file="resources\settings_internal\pref_hash_seed.bin" type="BINDATA" />
         <include name="IDR_ADDITIONAL_MODULE_IDS" file="${additional_modules_list_file}" use_base_dir="false" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <if expr="_google_chrome">
           <then>
             <include name="IDR_SOUND_STARTUP_WAV" file="internal\resources\chromeos\sounds\startup.wav" type="BINDATA" />
@@ -332,11 +227,8 @@
         <include name="IDR_SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_HIGH_WAV" file="resources\chromeos\sounds\spoken_feedback_toggle_countdown_high.wav" type="BINDATA" />
         <include name="IDR_SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_LOW_WAV" file="resources\chromeos\sounds\spoken_feedback_toggle_countdown_low.wav" type="BINDATA" />
         <include name="IDR_SOUND_TOUCH_TYPE_WAV" file="resources\chromeos\sounds\touch_type.wav" type="BINDATA" />
-        <include name="IDR_SOUND_DICTATION_END_WAV" file="resources\chromeos\sounds\earcons\audio_end.wav" type="BINDATA" />
-        <include name="IDR_SOUND_DICTATION_START_WAV" file="resources\chromeos\sounds\earcons\audio_initiate.wav" type="BINDATA" />
-        <include name="IDR_SOUND_DICTATION_CANCEL_WAV" file="resources\chromeos\sounds\earcons\null_selection.wav" type="BINDATA" />
       </if>
-     <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_ABOUT_POWER_HTML" file="resources\chromeos\power.html" type="BINDATA" />
         <include name="IDR_ABOUT_POWER_JS" file="resources\chromeos\power.js" type="BINDATA" />
         <include name="IDR_ABOUT_POWER_CSS" file="resources\chromeos\power.css" type="BINDATA" />
@@ -350,12 +242,13 @@
         <include name="IDR_DEVICE_EMULATOR_PAGES_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\device_emulator_pages.js" use_base_dir="false"  type="BINDATA" />
         <include name="IDR_DEVICE_EMULATOR_SHARED_STYLES_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\shared_styles.js" use_base_dir="false"  type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_SET_TIME_HTML" file="resources\chromeos\set_time_dialog\set_time.html" type="BINDATA" />
-        <include name="IDR_SET_TIME_DIALOG_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\set_time_dialog\set_time_dialog.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_SET_TIME_DIALOG_HTML_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\set_time_dialog\set_time_dialog.html.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_SET_TIME_DIALOG_JS" file="resources\chromeos\set_time_dialog\set_time_dialog.js" type="BINDATA" />
         <include name="IDR_SET_TIME_BROWSER_PROXY_JS" file="resources\chromeos\set_time_dialog\set_time_browser_proxy.js" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <if expr="_google_chrome">
           <then>
             <include name="IDR_GOOGLE_XKB_MANIFEST" file="resources\chromeos\input_method\google_xkb_manifest.json" type="BINDATA" />
@@ -373,16 +266,16 @@
         <include name="IDR_BRAILLE_MANIFEST" file="resources\chromeos\accessibility\braille_ime\manifest.json" type="BINDATA" />
       </if>
       <if expr="not is_android">
-        <include name="IDR_MEDIA_ROUTER_INTERNALS_HTML" file="resources\media_router\media_router_internals.html" type="BINDATA" />
-        <include name="IDR_MEDIA_ROUTER_INTERNALS_CSS" file="resources\media_router\media_router_internals.css" type="BINDATA" />
-        <include name="IDR_MEDIA_ROUTER_INTERNALS_JS" file="resources\media_router\media_router_internals.js" type="BINDATA" />
+        <include name="IDR_MEDIA_ROUTER_INTERNALS_HTML" file="resources\media_router\internals\media_router_internals.html" type="BINDATA" />
+        <include name="IDR_MEDIA_ROUTER_INTERNALS_CSS" file="resources\media_router\internals\media_router_internals.css" type="BINDATA" />
+        <include name="IDR_MEDIA_ROUTER_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\media_router\internals\tsc\media_router_internals.js" use_base_dir="false" type="BINDATA" />
       </if>
       <if expr="not is_android">
         <include name="IDR_IME_WINDOW_CLOSE" file="resources\input_ime\ime_window_close.png" type="BINDATA" />
         <include name="IDR_IME_WINDOW_CLOSE_C" file="resources\input_ime\ime_window_close_click.png" type="BINDATA" />
         <include name="IDR_IME_WINDOW_CLOSE_H" file="resources\input_ime\ime_window_close_hover.png" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_SMB_SHARES_DIALOG_CONTAINER_HTML" file="resources\chromeos\smb_shares\smb_share_dialog_container.html" type="chrome_html" />
         <include name="IDR_SMB_SHARES_DIALOG_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\smb_shares\smb_share_dialog.js" use_base_dir="false" type="chrome_html" />
         <include name="IDR_SMB_CREDENTIALS_DIALOG_CONTAINER_HTML" file="resources\chromeos\smb_shares\smb_credentials_dialog_container.html" type="chrome_html" />
@@ -390,9 +283,17 @@
         <include name="IDR_SYS_INTERNALS_HTML" file="resources\chromeos\sys_internals\index.html" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_CSS" file="resources\chromeos\sys_internals\index.css" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_JS" file="resources\chromeos\sys_internals\index.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_MAIN_JS" file="resources\chromeos\sys_internals\main.js" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_CONSTANT_JS" file="resources\chromeos\sys_internals\constants.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_TYPES_JS" file="resources\chromeos\sys_internals\types.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_CONSTANTS_JS" file="resources\chromeos\sys_internals\line_chart\constants.js" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_LINE_CHART_CSS" file="resources\chromeos\sys_internals\line_chart\line_chart.css" type="BINDATA" />
-        <include name="IDR_SYS_INTERNALS_LINE_CHART_JS" file="resources\chromeos\sys_internals\line_chart\index.js" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_DATA_SERIES_JS" file="resources\chromeos\sys_internals\line_chart\data_series.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_LINE_CHART_JS" file="resources\chromeos\sys_internals\line_chart\line_chart.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_MENU_JS" file="resources\chromeos\sys_internals\line_chart\menu.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_SCROLLBAR_JS" file="resources\chromeos\sys_internals\line_chart\scrollbar.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_SUB_CHART_JS" file="resources\chromeos\sys_internals\line_chart\sub_chart.js" type="BINDATA" />
+        <include name="IDR_SYS_INTERNALS_LINE_CHART_UNIT_LABEL_JS" file="resources\chromeos\sys_internals\line_chart\unit_label.js" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_IMAGE_MENU_SVG" file="resources\chromeos\sys_internals\img\menu.svg" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_IMAGE_INFO_SVG" file="resources\chromeos\sys_internals\img\info.svg" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_IMAGE_CPU_SVG" file="resources\chromeos\sys_internals\img\cpu.svg" type="BINDATA" />
@@ -402,26 +303,31 @@
         <include name="IDR_ADD_SUPERVISION_NETWORK_UNAVAILABLE_SVG" file="resources\chromeos\add_supervision\images\network_unavailable.svg" type="BINDATA" />
         <include name="IDR_ADD_SUPERVISION_UI_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\add_supervision\add_supervision_ui.js" use_base_dir="false" type="chrome_html" />
         <include name="IDR_ADD_SUPERVISION_API_SERVER_JS" file="resources\chromeos\add_supervision\add_supervision_api_server.js" type="BINDATA" />
-        <include name="IDR_ADD_SUPERVISION_POST_MESSAGE_API_JS" file="resources\chromeos\add_supervision\post_message_api.js" type="BINDATA" />
-        <include name="IDR_ADD_SUPERVISION_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\chromeos\add_supervision\add_supervision.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      </if>
-      <if expr="chromeos">
-        <include name="IDR_ASSISTANT_LOGO_PNG" file="resources\chromeos\assistant_optin\assistant_logo.png" type="BINDATA" />
+        <include name="IDR_ADD_SUPERVISION_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\ash\add_supervision\add_supervision.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_PARENT_ACCESS_HTML" file="resources\chromeos\parent_access\parent_access.html" type="chrome_html" />
+        <include name="IDR_PARENT_ACCESS_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_app.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_PARENT_ACCESS_UI_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_ui.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_PARENT_ACCESS_AFTER_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_after.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_PARENT_ACCESS_WEBVIEW_MANAGER_JS" file="resources\chromeos\parent_access\webview_manager.js" type="BINDATA" />
+        <include name="IDR_LOCAL_WEB_APPROVALS_AFTER_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\flows\local_web_approvals_after.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_PARENT_ACCESS_CONTROLLER_JS" file="resources\chromeos\parent_access\parent_access_controller.js" type="BINDATA" />
+        <include name="IDR_PARENT_ACCESS_UI_HANDLER_JS" file="resources\chromeos\parent_access\parent_access_ui_handler.js" type="BINDATA" />
+        <include name="IDR_PARENT_ACCESS_UI_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\chromeos\parent_access\parent_access_ui.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       </if>
       <if expr="safe_browsing_mode == 1">
         <include name="IDR_RESET_PASSWORD_HTML" file="resources\reset_password\reset_password.html" type="BINDATA" />
-        <include name="IDR_RESET_PASSWORD_JS" file="resources\reset_password\reset_password.js" type="BINDATA" />
-        <include name="IDR_RESET_PASSWORD_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\reset_password\reset_password.mojom-webui.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_RESET_PASSWORD_JS" file="${root_gen_dir}\chrome\browser\resources\reset_password\tsc\reset_password.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_RESET_PASSWORD_MOJOM_WEBUI_JS" file="${root_gen_dir}\chrome\browser\resources\reset_password\tsc\reset_password.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       </if>
       <if expr="not is_android">
         <include name="IDR_TAB_RANKER_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="resource_coordinator\tab_ranker\example_preprocessor_config.pb" type="BINDATA" />
         <include name="IDR_TAB_RANKER_PAIRWISE_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="resource_coordinator\tab_ranker\pairwise_preprocessor_config.pb" type="BINDATA" />
       </if>
-      <if expr="chromeos">
-        <include name="IDR_SMART_DIM_20190521_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="chromeos\power\ml\smart_dim\20190521_example_preprocessor_config.pb" type="BINDATA" />
+      <if expr="chromeos_ash">
+        <include name="IDR_SMART_DIM_20190521_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="ash\power\ml\smart_dim\20190521_example_preprocessor_config.pb" type="BINDATA" />
         <include name="IDR_SEARCH_RANKER_20190923_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="ui\app_list\search\search_result_ranker\search_ranker_assets\20190923_example_preprocessor_config.pb" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_ARC_GRAPHICS_TRACING_HTML" file="resources\chromeos\arc_graphics_tracing\arc_graphics_tracing.html" type="BINDATA"/>
         <include name="IDR_ARC_GRAPHICS_TRACING_JS" file="resources\chromeos\arc_graphics_tracing\arc_graphics_tracing.js" type="BINDATA" />
         <include name="IDR_ARC_GRAPHICS_TRACING_UI_JS" file="resources\chromeos\arc_graphics_tracing\arc_graphics_tracing_ui.js" type="BINDATA" />
@@ -434,23 +340,12 @@
         <include name="IDR_ARC_POWER_CONTROL_JS" file="resources\chromeos\arc_power_control\arc_power_control.js" type="BINDATA" />
         <include name="IDR_ARC_POWER_CONTROL_CSS" file="resources\chromeos\arc_power_control\arc_power_control.css" type="BINDATA" />
       </if>
-      <if expr="chromeos">
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_GRAPH_EXECUTOR_MOJO_JS" file="${root_gen_dir}\chromeos\services\machine_learning\public\mojom\graph_executor.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_HANDWRITING_RECOGNIZER_MOJO_JS" file="${root_gen_dir}\chromeos\services\machine_learning\public\mojom\handwriting_recognizer.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_HTML" file="resources\chromeos\machine_learning\machine_learning_internals.html" type="BINDATA" />
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_JS" file="resources\chromeos\machine_learning\machine_learning_internals.js" type="BINDATA" />
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_MACHINE_LEARNING_SERVICE_MOJO_JS" file="${root_gen_dir}\chromeos\services\machine_learning\public\mojom\machine_learning_service.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_MODEL_MOJO_JS" file="${root_gen_dir}\chromeos\services\machine_learning\public\mojom\model.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_PAGE_HANDLER_MOJO_JS" file="${root_gen_dir}\chrome\browser\ui\webui\chromeos\machine_learning\machine_learning_internals_page_handler.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_SODA_MOJO_JS" file="${root_gen_dir}\chromeos\services\machine_learning\public\mojom\soda.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_TENSOR_MOJO_JS" file="${root_gen_dir}\chromeos\services\machine_learning\public\mojom\tensor.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_TEST_MODEL_TAB_JS" file="resources\chromeos\machine_learning\test_model_tab.js" type="BINDATA" />
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_TIME_MOJO_JS" file="${root_gen_dir}\mojo/public/mojom/base/time.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_UTILS_JS" file="resources\chromeos\machine_learning\machine_learning_internals_utils.js" type="BINDATA" />
-      </if>
       <if expr="not is_android">
         <!-- Chrome Cart -->
         <part file="cart/resources/cart_resources.grdp" />
+      </if>
+      <if expr="not is_android">
+        <include name="IDR_DESKTOP_SHARING_HUB_PB" file="${root_gen_dir}\chrome\browser\share\core\resources\desktop_sharing_hub.pb" use_base_dir="false" type="BINDATA" compress="gzip" />
       </if>
     </includes>
   </release>

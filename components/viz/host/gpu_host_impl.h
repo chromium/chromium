@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,21 +12,21 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
-#include "components/ui_devtools/buildflags.h"
+#include "components/viz/common/buildflags.h"
 #include "components/viz/host/viz_host_export.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/config/gpu_domain_guilt.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,11 +37,13 @@
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 #include "services/viz/privileged/mojom/viz_main.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "services/viz/privileged/mojom/gl/info_collection_gpu_service.mojom.h"
+#include "ui/gfx/mojom/dxgi_info.mojom.h"
 #endif
 
 namespace gfx {
@@ -49,13 +51,18 @@ struct FontRenderParams;
 }
 
 namespace gpu {
-class ShaderCacheFactory;
-class ShaderDiskCache;
+class GpuDiskCacheFactory;
+class GpuDiskCache;
 }  // namespace gpu
 
 namespace viz {
 
-class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
+class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
+#if BUILDFLAG(USE_VIZ_DEBUGGER)
+    ,
+                                    public mojom::VizDebugOutput
+#endif
+{
  public:
   class VIZ_HOST_EXPORT Delegate {
    public:
@@ -64,23 +71,26 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
     virtual void DidInitialize(
         const gpu::GPUInfo& gpu_info,
         const gpu::GpuFeatureInfo& gpu_feature_info,
-        const base::Optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
-        const base::Optional<gpu::GpuFeatureInfo>&
+        const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
+        const absl::optional<gpu::GpuFeatureInfo>&
             gpu_feature_info_for_hardware_gpu,
         const gfx::GpuExtraInfo& gpu_extra_info) = 0;
     virtual void DidFailInitialize() = 0;
     virtual void DidCreateContextSuccessfully() = 0;
     virtual void MaybeShutdownGpuProcess() = 0;
     virtual void DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) = 0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     virtual void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) = 0;
-    virtual void DidUpdateHDRStatus(bool hdr_enabled) = 0;
+    virtual void DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) = 0;
 #endif
-    virtual void BlockDomainFrom3DAPIs(const GURL& url,
-                                       gpu::DomainGuilt guilt) = 0;
+    virtual void BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,
+                                        gpu::DomainGuilt guilt) = 0;
+    virtual std::string GetIsolationKey(
+        int32_t client_id,
+        const blink::WebGPUExecutionContextToken& token) = 0;
     virtual void DisableGpuCompositing() = 0;
     virtual bool GpuAccessAllowed() const = 0;
-    virtual gpu::ShaderCacheFactory* GetShaderCacheFactory() = 0;
+    virtual gpu::GpuDiskCacheFactory* GetGpuDiskCacheFactory() = 0;
     virtual void RecordLogMessage(int32_t severity,
                                   const std::string& header,
                                   const std::string& message) = 0;
@@ -115,7 +125,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
     std::string product;
 
     // Number of frames to CompositorFrame activation deadline.
-    base::Optional<uint32_t> deadline_to_synchronize_surfaces;
+    absl::optional<uint32_t> deadline_to_synchronize_surfaces;
 
     // Task runner corresponding to the main thread.
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner;
@@ -139,8 +149,12 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
                               EstablishChannelStatus)>;
 
   GpuHostImpl(Delegate* delegate,
-              mojo::PendingAssociatedRemote<mojom::VizMain> viz_main,
+              mojo::PendingRemote<mojom::VizMain> viz_main,
               InitParams params);
+
+  GpuHostImpl(const GpuHostImpl&) = delete;
+  GpuHostImpl& operator=(const GpuHostImpl&) = delete;
+
   ~GpuHostImpl() override;
 
   static void InitFontRenderParams(const gfx::FontRenderParams& params);
@@ -160,18 +174,34 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
       mojo::PendingRemote<mojom::FrameSinkManagerClient> client,
       const DebugRendererSettings& debug_renderer_settings);
 
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-  // Connects to Viz DevTools running in the Viz service.
-  void ConnectVizDevTools(mojom::VizDevToolsParamsPtr params);
-#endif
-
   // Tells the GPU service to create a new channel for communication with a
   // client. Once the GPU service responds asynchronously with the channel
-  // handle and GPUInfo, we call the callback.
+  // handle and GPUInfo, we call the callback. If |sync| is true then the
+  // callback will be run before this method returns, and note that the
+  // browser GPU info data might not be initialized as well.
   void EstablishGpuChannel(int client_id,
                            uint64_t client_tracing_id,
                            bool is_gpu_host,
+                           bool sync,
                            EstablishChannelCallback callback);
+  void SetChannelClientPid(int client_id, base::ProcessId client_pid);
+  void SetChannelDiskCacheHandle(int client_id,
+                                 const gpu::GpuDiskCacheHandle& handle);
+  void RemoveChannelDiskCacheHandles(int client_id);
+  void CloseChannel(int client_id);
+
+#if BUILDFLAG(USE_VIZ_DEBUGGER)
+  // Command as a Json string that the visual debugging instance interprets as
+  // stream filtering.
+  void FilterVisualDebugStream(base::Value filter_data);
+
+  // Establishes the connection between the visual debugging instance and the
+  // output stream.
+  void StartVisualDebugStream(
+      base::RepeatingCallback<void(base::Value)> callback);
+
+  void StopVisualDebugStream();
+#endif
 
   void SendOutstandingReplies();
 
@@ -180,13 +210,9 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
 
   mojom::GpuService* gpu_service();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojom::InfoCollectionGpuService* info_collection_gpu_service();
 #endif
-
-  bool wake_up_gpu_before_drawing() const {
-    return wake_up_gpu_before_drawing_;
-  }
 
  private:
   friend class GpuHostImplTestApi;
@@ -198,22 +224,24 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
 
   std::string GetShaderPrefixKey();
 
-  void LoadedShader(int32_t client_id,
-                    const std::string& key,
-                    const std::string& data);
-
-  void CreateChannelCache(int32_t client_id);
+  void LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
+                  const std::string& key,
+                  const std::string& data);
+  void OnDiskCacheHandleDestoyed(const gpu::GpuDiskCacheHandle& handle);
 
   void OnChannelEstablished(int client_id,
-                            mojo::ScopedMessagePipeHandle channel_handle);
+                            bool sync,
+                            mojo::ScopedMessagePipeHandle channel_handle,
+                            const gpu::GPUInfo& gpu_info,
+                            const gpu::GpuFeatureInfo& gpu_feature_info);
   void MaybeShutdownGpuProcess();
 
   // mojom::GpuHost:
   void DidInitialize(
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuFeatureInfo& gpu_feature_info,
-      const base::Optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
-      const base::Optional<gpu::GpuFeatureInfo>&
+      const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
+      const absl::optional<gpu::GpuFeatureInfo>&
           gpu_feature_info_for_hardware_gpu,
       const gfx::GpuExtraInfo& gpu_extra_info) override;
   void DidFailInitialize() override;
@@ -227,44 +255,48 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
                       const GURL& active_url) override;
   void DisableGpuCompositing() override;
   void DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) override;
-  void DidUpdateHDRStatus(bool hdr_enabled) override;
+  void DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) override;
   void SetChildSurface(gpu::SurfaceHandle parent,
                        gpu::SurfaceHandle child) override;
 #endif
-  void StoreShaderToDisk(int32_t client_id,
-                         const std::string& key,
-                         const std::string& shader) override;
+  void GetIsolationKey(int32_t client_id,
+                       const blink::WebGPUExecutionContextToken& token,
+                       GetIsolationKeyCallback cb) override;
+  void StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
+                       const std::string& key,
+                       const std::string& blob) override;
   void RecordLogMessage(int32_t severity,
                         const std::string& header,
                         const std::string& message) override;
 
-  Delegate* const delegate_;
-  mojo::AssociatedRemote<mojom::VizMain> viz_main_;
+  // Implements mojom::VizDebugOutput and is called by VizDebugger.
+#if BUILDFLAG(USE_VIZ_DEBUGGER)
+  void LogFrame(base::Value frame_data) override;
+#endif
+
+  const raw_ptr<Delegate> delegate_;
+  mojo::Remote<mojom::VizMain> viz_main_;
   const InitParams params_;
 
-  // Task runner corresponding to the thread |this| is created on.
-  scoped_refptr<base::SingleThreadTaskRunner> host_thread_task_runner_;
-
   mojo::Remote<mojom::GpuService> gpu_service_remote_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojo::Remote<mojom::InfoCollectionGpuService>
       info_collection_gpu_service_remote_;
 #endif
   mojo::Receiver<mojom::GpuHost> gpu_host_receiver_{this};
   gpu::GpuProcessHostActivityFlags activity_flags_;
 
+#if BUILDFLAG(USE_VIZ_DEBUGGER)
+  mojo::Receiver<mojom::VizDebugOutput> viz_debug_output_{this};
+  base::RepeatingCallback<void(base::Value)> viz_debug_output_callback_;
+#endif
+
   base::ProcessId pid_ = base::kNullProcessId;
 
   // List of connection error handlers for the GpuService.
   std::vector<base::OnceClosure> connection_error_handlers_;
-
-  // The following are a list of driver bug workarounds that will only be
-  // set to true in DidInitialize(), where GPU service has started and GPU
-  // driver bug workarounds have been computed and sent back.
-  bool wake_up_gpu_before_drawing_ = false;
-  bool dont_disable_webgl_when_compositor_context_lost_ = false;
 
   // Track the URLs of the pages which have live offscreen contexts, assumed to
   // be associated with untrusted content such as WebGL. For best robustness,
@@ -272,21 +304,18 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
   // are guilty, and block automatic execution of 3D content from those domains.
   std::multiset<GURL> urls_with_live_offscreen_contexts_;
 
-  std::map<int32_t, scoped_refptr<gpu::ShaderDiskCache>>
-      client_id_to_shader_cache_;
+  std::multimap<int32_t, scoped_refptr<gpu::GpuDiskCache>> client_id_to_caches_;
   std::string shader_prefix_key_;
 
   // These are the channel requests that we have already sent to the GPU
   // service, but haven't heard back about yet.
-  base::queue<EstablishChannelCallback> channel_requests_;
+  base::flat_map<int, EstablishChannelCallback> channel_requests_;
 
   base::OneShotTimer shutdown_timeout_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<GpuHostImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GpuHostImpl);
 };
 
 }  // namespace viz

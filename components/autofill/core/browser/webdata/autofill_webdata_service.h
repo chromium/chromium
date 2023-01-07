@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -36,6 +35,7 @@ class AutofillWebDataBackendImpl;
 class AutofillWebDataServiceObserverOnDBSequence;
 class AutofillWebDataServiceObserverOnUISequence;
 class CreditCard;
+class IBAN;
 
 // API for Autofill web data.
 class AutofillWebDataService : public WebDataServiceBase {
@@ -47,6 +47,9 @@ class AutofillWebDataService : public WebDataServiceBase {
       scoped_refptr<WebDatabaseService> wdbs,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> db_task_runner);
+
+  AutofillWebDataService(const AutofillWebDataService&) = delete;
+  AutofillWebDataService& operator=(const AutofillWebDataService&) = delete;
 
   // WebDataServiceBase implementation.
   void ShutdownOnUISequence() override;
@@ -112,6 +115,22 @@ class AutofillWebDataService : public WebDataServiceBase {
       base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
           change_cb);
 
+  // Schedules a task to add IBAN to the web database.
+  void AddIBAN(const IBAN& iban);
+
+  // Initiates the request for local IBANs. The method
+  // OnWebDataServiceRequestDone of |consumer| gets called when the request is
+  // finished, with the IBAN included in the argument |result|. The consumer
+  // owns the IBAN.
+  WebDataServiceBase::Handle GetIBANs(WebDataServiceConsumer* consumer);
+
+  // Schedules a task to update iban in the web database.
+  void UpdateIBAN(const IBAN& iban);
+
+  // Schedules a task to remove an IBAN from the web database.
+  // |guid| is the identifier of the IBAN to remove.
+  void RemoveIBAN(const std::string& guid);
+
   // Schedules a task to add credit card to the web database.
   void AddCreditCard(const CreditCard& credit_card);
 
@@ -159,11 +178,11 @@ class AutofillWebDataService : public WebDataServiceBase {
   WebDataServiceBase::Handle GetCreditCardCloudTokenData(
       WebDataServiceConsumer* consumer);
 
-  // Initiates the request for credit card offer data. The method
+  // Initiates the request for autofill offer data. The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the offer data included in the argument |result|. The
   // consumer owns the data.
-  WebDataServiceBase::Handle GetCreditCardOffers(
+  WebDataServiceBase::Handle GetAutofillOffers(
       WebDataServiceConsumer* consumer);
 
   void ClearAllServerData();
@@ -241,8 +260,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   // This factory is used on the UI sequence. All vended weak pointers are
   // invalidated in ShutdownOnUISequence().
   base::WeakPtrFactory<AutofillWebDataService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillWebDataService);
 };
 
 }  // namespace autofill

@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../../forms/resources/picker-common.js"></script>
 
 <input type=date id=dateElement>
 
 <script>
 promise_test(async () => {
-  await openPickerWithPromise(dateElement);
-  const {Month, Day, isDayOutsideOfRange} = popupWindow;
+  await openPicker(dateElement);
+  const {Month, Day, isDayOutsideOfRange} = internals.pagePopupWindow;
 
   assert_true(isDayOutsideOfRange(
     /*day=*/new Day(1, 1, 1),

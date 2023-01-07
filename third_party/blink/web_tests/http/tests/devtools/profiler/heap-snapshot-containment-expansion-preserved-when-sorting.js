@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@
       HeapProfilerTestRunner.expandRow(row, expandA);
       function expandA(row) {
         function propertyMatcher(data) {
-          return data._referenceName === 'a' && data._name.charAt(0) === 'A';
+          return data.referenceName === 'a' && data.name.charAt(0) === 'A';
         }
         var aRow = HeapProfilerTestRunner.findMatchingRow(propertyMatcher, row);
         TestRunner.assertEquals(true, !!aRow, '"a: A" row');

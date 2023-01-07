@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 #include "net/network_error_logging/network_error_logging_service.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace net {
@@ -32,34 +30,39 @@ class TestNetworkErrorLoggingService : public NetworkErrorLoggingService {
     // addresses in |address_list|.
     bool MatchesAddressList(const AddressList& address_list) const;
 
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
     url::Origin origin;
     IPAddress received_ip_address;
     std::string value;
   };
 
   TestNetworkErrorLoggingService();
+
+  TestNetworkErrorLoggingService(const TestNetworkErrorLoggingService&) =
+      delete;
+  TestNetworkErrorLoggingService& operator=(
+      const TestNetworkErrorLoggingService&) = delete;
+
   ~TestNetworkErrorLoggingService() override;
 
   const std::vector<Header>& headers() { return headers_; }
   const std::vector<RequestDetails>& errors() { return errors_; }
 
   // NetworkErrorLoggingService implementation
-  void OnHeader(const NetworkIsolationKey& network_isolation_key,
+  void OnHeader(const NetworkAnonymizationKey& network_anonymization_key,
                 const url::Origin& origin,
                 const IPAddress& received_ip_address,
                 const std::string& value) override;
   void OnRequest(RequestDetails details) override;
   void QueueSignedExchangeReport(SignedExchangeReportDetails details) override;
   void RemoveBrowsingData(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter) override;
+      const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter)
+      override;
   void RemoveAllBrowsingData() override;
 
  private:
   std::vector<Header> headers_;
   std::vector<RequestDetails> errors_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkErrorLoggingService);
 };
 
 }  // namespace net

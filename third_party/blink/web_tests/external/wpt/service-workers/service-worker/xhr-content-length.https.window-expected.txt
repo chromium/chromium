@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Setup
+PASS Synthetic response without Content-Length header
+PASS Synthetic response with Content-Length header with value larger than response body length
+FAIL Synthetic response with two Content-Length headers value larger than response body length assert_equals: expected "10000, 10000" but got "10000"
+PASS Synthetic response with bogus Content-Length header
+Harness: the test ran to completion.
+

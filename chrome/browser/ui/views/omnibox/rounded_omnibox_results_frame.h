@@ -1,14 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_ROUNDED_OMNIBOX_RESULTS_FRAME_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_ROUNDED_OMNIBOX_RESULTS_FRAME_H_
 
-#include <memory>
-
+#include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -45,12 +44,11 @@ class RoundedOmniboxResultsFrame : public views::View {
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
 #endif  // !USE_AURA
-  void OnThemeChanged() override;
 
  private:
-  views::View* top_background_ = nullptr;
-  views::View* contents_host_ = nullptr;
-  views::View* contents_;
+  raw_ptr<views::View> top_background_ = nullptr;
+  raw_ptr<views::View> contents_host_ = nullptr;
+  raw_ptr<views::View> contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_ROUNDED_OMNIBOX_RESULTS_FRAME_H_

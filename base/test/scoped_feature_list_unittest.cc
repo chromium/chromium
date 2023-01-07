@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,8 +17,8 @@ namespace test {
 
 namespace {
 
-const Feature kTestFeature1{"TestFeature1", FEATURE_DISABLED_BY_DEFAULT};
-const Feature kTestFeature2{"TestFeature2", FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature1, "TestFeature1", FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature2, "TestFeature2", FEATURE_DISABLED_BY_DEFAULT);
 
 void ExpectFeatures(const std::string& enabled_features,
                     const std::string& disabled_features) {
@@ -34,6 +33,16 @@ void ExpectFeatures(const std::string& enabled_features,
   EXPECT_EQ(disabled_features, actual_disabled_features);
 }
 
+std::string GetActiveFieldTrialGroupName(const std::string trial_name) {
+  FieldTrial::ActiveGroups groups;
+  FieldTrialList::GetActiveFieldTrialGroups(&groups);
+  for (const auto& group : groups) {
+    if (group.trial_name == trial_name)
+      return group.group_name;
+  }
+  return std::string();
+}
+
 }  // namespace
 
 class ScopedFeatureListTest : public testing::Test {
@@ -46,6 +55,9 @@ class ScopedFeatureListTest : public testing::Test {
     FeatureList::SetInstance(std::move(feature_list));
   }
 
+  ScopedFeatureListTest(const ScopedFeatureListTest&) = delete;
+  ScopedFeatureListTest& operator=(const ScopedFeatureListTest&) = delete;
+
   ~ScopedFeatureListTest() override {
     // Restore feature list.
     if (original_feature_list_) {
@@ -57,8 +69,6 @@ class ScopedFeatureListTest : public testing::Test {
  private:
   // Save the present FeatureList and restore it after test finish.
   std::unique_ptr<FeatureList> original_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFeatureListTest);
 };
 
 TEST_F(ScopedFeatureListTest, BasicScoped) {
@@ -164,21 +174,33 @@ TEST_F(ScopedFeatureListTest, OverrideWithFeatureParameters) {
       FieldTrialList::CreateFieldTrial("foo", "bar");
   const char kParam[] = "param_1";
   const char kValue[] = "value_1";
+  const char kValue0[] = "value_0";
   std::map<std::string, std::string> parameters;
   parameters[kParam] = kValue;
 
   test::ScopedFeatureList feature_list1;
-  feature_list1.InitFromCommandLine("TestFeature1<foo,TestFeature2",
-                                    std::string());
+  feature_list1.InitFromCommandLine(
+      "TestFeature1<foo.bar:param_1/value_0,TestFeature2", std::string());
 
   // Check initial state.
   ExpectFeatures("TestFeature1<foo,TestFeature2", std::string());
   EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
   EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
-  EXPECT_EQ(trial.get(), FeatureList::GetFieldTrial(kTestFeature1));
+  // ScopedFeatureList always scope features, field trials and their associated
+  // parameters. So ScopedFeatureList::InitFromCommandLine() creates another
+  // FieldTrial instance whose trial name, group name and associated parameters
+  // are the same as |trial|, and changes |kTestFeature1|'s field trial to
+  // be the newly created one.
+  EXPECT_NE(trial.get(), FeatureList::GetFieldTrial(kTestFeature1));
   EXPECT_EQ(nullptr, FeatureList::GetFieldTrial(kTestFeature2));
-  EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+  EXPECT_EQ(kValue0, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
   EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam));
+  EXPECT_EQ("bar", GetActiveFieldTrialGroupName("foo"));
+
+  FieldTrial* trial_for_test_feature1 =
+      FeatureList::GetFieldTrial(kTestFeature1);
+  EXPECT_EQ("foo", trial_for_test_feature1->trial_name());
+  EXPECT_EQ("bar", trial_for_test_feature1->group_name());
 
   {
     // Override feature with existing field trial.
@@ -190,18 +212,43 @@ TEST_F(ScopedFeatureListTest, OverrideWithFeatureParameters) {
     EXPECT_EQ(kValue, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
     EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam));
     EXPECT_NE(trial.get(), FeatureList::GetFieldTrial(kTestFeature1));
+    EXPECT_NE(trial_for_test_feature1,
+              FeatureList::GetFieldTrial(kTestFeature1));
     EXPECT_NE(nullptr, FeatureList::GetFieldTrial(kTestFeature1));
     EXPECT_EQ(nullptr, FeatureList::GetFieldTrial(kTestFeature2));
+  }
+
+  {
+    // Override feature with existing field trial.
+    test::ScopedFeatureList feature_list2;
+
+    feature_list2.InitFromCommandLine("TestFeature1<foo.bar2:param_1/value_1",
+                                      std::string());
+    EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+    EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
+    EXPECT_EQ(kValue, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+    EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam));
+    EXPECT_NE(trial.get(), FeatureList::GetFieldTrial(kTestFeature1));
+    EXPECT_NE(trial_for_test_feature1,
+              FeatureList::GetFieldTrial(kTestFeature1));
+    EXPECT_NE(nullptr, FeatureList::GetFieldTrial(kTestFeature1));
+    EXPECT_EQ(nullptr, FeatureList::GetFieldTrial(kTestFeature2));
+
+    // foo's active group is now bar2, not bar.
+    EXPECT_TRUE(FieldTrialList::IsTrialActive("foo"));
+    EXPECT_EQ("bar2", GetActiveFieldTrialGroupName("foo"));
   }
 
   // Check that initial state is restored.
   ExpectFeatures("TestFeature1<foo,TestFeature2", std::string());
   EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
   EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
-  EXPECT_EQ(trial.get(), FeatureList::GetFieldTrial(kTestFeature1));
+  EXPECT_EQ(trial_for_test_feature1, FeatureList::GetFieldTrial(kTestFeature1));
   EXPECT_EQ(nullptr, FeatureList::GetFieldTrial(kTestFeature2));
-  EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+  EXPECT_EQ(kValue0, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
   EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam));
+  // foo's active group is bar, because initial state is restored.
+  EXPECT_EQ("bar", GetActiveFieldTrialGroupName("foo"));
 
   {
     // Override feature with no existing field trial.
@@ -210,11 +257,11 @@ TEST_F(ScopedFeatureListTest, OverrideWithFeatureParameters) {
     feature_list2.InitAndEnableFeatureWithParameters(kTestFeature2, parameters);
     EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
     EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
-    EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+    EXPECT_EQ(kValue0, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
     EXPECT_EQ(kValue, GetFieldTrialParamValueByFeature(kTestFeature2, kParam));
-    EXPECT_EQ(trial.get()->trial_name(),
+    EXPECT_EQ(trial_for_test_feature1->trial_name(),
               FeatureList::GetFieldTrial(kTestFeature1)->trial_name());
-    EXPECT_EQ(trial.get()->group_name(),
+    EXPECT_EQ(trial_for_test_feature1->group_name(),
               FeatureList::GetFieldTrial(kTestFeature1)->group_name());
     EXPECT_NE(nullptr, FeatureList::GetFieldTrial(kTestFeature2));
   }
@@ -223,16 +270,129 @@ TEST_F(ScopedFeatureListTest, OverrideWithFeatureParameters) {
   ExpectFeatures("TestFeature1<foo,TestFeature2", std::string());
   EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
   EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
-  EXPECT_EQ(trial.get(), FeatureList::GetFieldTrial(kTestFeature1));
+  EXPECT_EQ(trial_for_test_feature1, FeatureList::GetFieldTrial(kTestFeature1));
   EXPECT_EQ(nullptr, FeatureList::GetFieldTrial(kTestFeature2));
-  EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+  EXPECT_EQ(kValue0, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
   EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam));
+}
+
+TEST_F(ScopedFeatureListTest, OverrideWithFeatureMultipleParameters) {
+  const char kParam1[] = "param_1";
+  const char kValue1[] = "value_1";
+  const char kParam2[] = "param_2";
+  const char kValue2[] = "value_2";
+  const char kValue3[] = "value_3";
+  std::map<std::string, std::string> parameters;
+  parameters[kParam1] = kValue3;
+
+  test::ScopedFeatureList feature_list1;
+  feature_list1.InitFromCommandLine(
+      "TestFeature1<foo.bar:param_1/value_1/param_2/"
+      "value_2,TestFeature2:param_1/value_2",
+      std::string());
+
+  // Check initial state.
+  ExpectFeatures("TestFeature1<foo,TestFeature2<StudyTestFeature2",
+                 std::string());
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
+  EXPECT_NE(nullptr, FeatureList::GetFieldTrial(kTestFeature1));
+  EXPECT_NE(nullptr, FeatureList::GetFieldTrial(kTestFeature2));
+  EXPECT_EQ(kValue1, GetFieldTrialParamValueByFeature(kTestFeature1, kParam1));
+  EXPECT_EQ(kValue2, GetFieldTrialParamValueByFeature(kTestFeature1, kParam2));
+  EXPECT_EQ(kValue2, GetFieldTrialParamValueByFeature(kTestFeature2, kParam1));
+  EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam2));
+
+  FieldTrial* trial = FieldTrialList::Find("foo");
+  EXPECT_EQ("bar", trial->GetGroupNameWithoutActivation());
+  EXPECT_EQ("bar", GetActiveFieldTrialGroupName("foo"));
+
+  FieldTrial* trial2 = FieldTrialList::Find("StudyTestFeature2");
+  EXPECT_EQ("GroupTestFeature2", trial2->GetGroupNameWithoutActivation());
+  EXPECT_EQ("GroupTestFeature2",
+            GetActiveFieldTrialGroupName("StudyTestFeature2"));
+
+  {
+    // Override feature with existing field trial.
+    test::ScopedFeatureList feature_list2;
+
+    feature_list2.InitAndEnableFeatureWithParameters(kTestFeature1, parameters);
+    EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+    EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
+    EXPECT_EQ(kValue3,
+              GetFieldTrialParamValueByFeature(kTestFeature1, kParam1));
+    // param_2 is not set.
+    EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature1, kParam2));
+    EXPECT_EQ(kValue2,
+              GetFieldTrialParamValueByFeature(kTestFeature2, kParam1));
+    EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam2));
+    EXPECT_NE(trial, FeatureList::GetFieldTrial(kTestFeature1));
+    EXPECT_NE(nullptr, FeatureList::GetFieldTrial(kTestFeature1));
+    EXPECT_NE(trial2, FeatureList::GetFieldTrial(kTestFeature2));
+    EXPECT_NE(nullptr, FeatureList::GetFieldTrial(kTestFeature2));
+  }
+
+  // Check that initial state is restored.
+  ExpectFeatures("TestFeature1<foo,TestFeature2<StudyTestFeature2",
+                 std::string());
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
+  EXPECT_EQ(trial, FeatureList::GetFieldTrial(kTestFeature1));
+  EXPECT_EQ(trial2, FeatureList::GetFieldTrial(kTestFeature2));
+  EXPECT_EQ(kValue1, GetFieldTrialParamValueByFeature(kTestFeature1, kParam1));
+  EXPECT_EQ(kValue2, GetFieldTrialParamValueByFeature(kTestFeature1, kParam2));
+  EXPECT_EQ(kValue2, GetFieldTrialParamValueByFeature(kTestFeature2, kParam1));
+  EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam2));
+  // foo's active group is bar, because initial state is restored.
+  EXPECT_EQ("bar", GetActiveFieldTrialGroupName("foo"));
+  EXPECT_EQ("GroupTestFeature2",
+            GetActiveFieldTrialGroupName("StudyTestFeature2"));
+
+  {
+    // Override feature with existing field trial.
+    test::ScopedFeatureList feature_list2;
+
+    feature_list2.InitFromCommandLine("TestFeature1<foo.bar2:param_2/value_3",
+                                      std::string());
+    EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+    EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
+    EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature1, kParam1));
+    EXPECT_EQ(kValue3,
+              GetFieldTrialParamValueByFeature(kTestFeature1, kParam2));
+    EXPECT_EQ(kValue2,
+              GetFieldTrialParamValueByFeature(kTestFeature2, kParam1));
+    EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam2));
+    EXPECT_NE(trial, FeatureList::GetFieldTrial(kTestFeature1));
+    EXPECT_NE(nullptr, FeatureList::GetFieldTrial(kTestFeature1));
+    EXPECT_EQ("foo", FeatureList::GetFieldTrial(kTestFeature1)->trial_name());
+    EXPECT_EQ("bar2", FeatureList::GetFieldTrial(kTestFeature1)->group_name());
+    EXPECT_NE(trial2, FeatureList::GetFieldTrial(kTestFeature2));
+    EXPECT_NE(nullptr, FeatureList::GetFieldTrial(kTestFeature2));
+
+    // foo's active group is now bar2, not bar.
+    EXPECT_TRUE(FieldTrialList::IsTrialActive("foo"));
+    EXPECT_EQ("bar2", GetActiveFieldTrialGroupName("foo"));
+  }
+
+  // Check that initial state is restored.
+  ExpectFeatures("TestFeature1<foo,TestFeature2<StudyTestFeature2",
+                 std::string());
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
+  EXPECT_EQ(trial, FeatureList::GetFieldTrial(kTestFeature1));
+  EXPECT_EQ(trial2, FeatureList::GetFieldTrial(kTestFeature2));
+  EXPECT_EQ(kValue1, GetFieldTrialParamValueByFeature(kTestFeature1, kParam1));
+  EXPECT_EQ(kValue2, GetFieldTrialParamValueByFeature(kTestFeature1, kParam2));
+  EXPECT_EQ(kValue2, GetFieldTrialParamValueByFeature(kTestFeature2, kParam1));
+  EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam2));
+  EXPECT_EQ("bar", GetActiveFieldTrialGroupName("foo"));
 }
 
 TEST_F(ScopedFeatureListTest, OverrideMultipleFeaturesWithParameters) {
   scoped_refptr<FieldTrial> trial1 =
       FieldTrialList::CreateFieldTrial("foo1", "bar1");
   const char kParam[] = "param_1";
+  const char kValue0[] = "value_0";
   const char kValue1[] = "value_1";
   const char kValue2[] = "value_2";
   std::map<std::string, std::string> parameters1;
@@ -241,8 +401,8 @@ TEST_F(ScopedFeatureListTest, OverrideMultipleFeaturesWithParameters) {
   parameters2[kParam] = kValue2;
 
   test::ScopedFeatureList feature_list1;
-  feature_list1.InitFromCommandLine("TestFeature1<foo1,TestFeature2",
-                                    std::string());
+  feature_list1.InitFromCommandLine(
+      "TestFeature1<foo1:param_1/value_0,TestFeature2", std::string());
 
   // Check initial state.
   ExpectFeatures("TestFeature1<foo1,TestFeature2", std::string());
@@ -250,8 +410,20 @@ TEST_F(ScopedFeatureListTest, OverrideMultipleFeaturesWithParameters) {
   EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
   EXPECT_EQ("foo1", FeatureList::GetFieldTrial(kTestFeature1)->trial_name());
   EXPECT_EQ(nullptr, FeatureList::GetFieldTrial(kTestFeature2));
-  EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+  EXPECT_EQ(kValue0, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
   EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam));
+
+  // InitFromCommandLine() scopes field trials.
+  FieldTrial* trial = FieldTrialList::Find("foo1");
+  // --enable-features will create a group whose name is "Group" + feature
+  // name if no group name is specified. In this case, the feature name is
+  // "TestFeature1". So the group name is "GroupTestFeature1".
+  EXPECT_EQ("GroupTestFeature1", trial->GetGroupNameWithoutActivation());
+  EXPECT_NE(trial1.get(), trial);
+  // Because of "scoped", "bar1" disappears. Instead, "GroupTestFeature1"
+  // is created and activated.
+  EXPECT_NE("bar1", GetActiveFieldTrialGroupName("foo1"));
+  EXPECT_EQ("GroupTestFeature1", GetActiveFieldTrialGroupName("foo1"));
 
   {
     // Override multiple features with parameters.
@@ -281,9 +453,9 @@ TEST_F(ScopedFeatureListTest, OverrideMultipleFeaturesWithParameters) {
   ExpectFeatures("TestFeature1<foo1,TestFeature2", std::string());
   EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
   EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
-  EXPECT_EQ(trial1.get(), FeatureList::GetFieldTrial(kTestFeature1));
+  EXPECT_EQ(trial, FeatureList::GetFieldTrial(kTestFeature1));
   EXPECT_EQ(nullptr, FeatureList::GetFieldTrial(kTestFeature2));
-  EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+  EXPECT_EQ(kValue0, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
   EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam));
 }
 
@@ -459,6 +631,46 @@ TEST_F(ScopedFeatureListTest, ScopedFeatureListIsNoopWhenNotInitialized) {
   { test::ScopedFeatureList feature_list2; }
 
   ExpectFeatures("*TestFeature1", std::string());
+}
+
+TEST_F(ScopedFeatureListTest,
+       RestoreFieldTrialParamsCorrectlyWhenLeakedFieldTrialCreated) {
+  test::ScopedFeatureList feature_list1;
+  feature_list1.InitFromCommandLine("TestFeature1:TestParam/TestValue1", "");
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+  EXPECT_EQ("TestValue1",
+            GetFieldTrialParamValueByFeature(kTestFeature1, "TestParam"));
+
+  // content::InitializeFieldTrialAndFeatureList() creates a leaked
+  // FieldTrialList. To emulate the leaked one, declare
+  // unique_ptr<FieldTriaList> here and initialize it inside the following
+  // child scope.
+  std::unique_ptr<FieldTrialList> leaked_field_trial_list;
+  {
+    test::ScopedFeatureList feature_list2;
+    feature_list2.InitWithNullFeatureAndFieldTrialLists();
+
+    leaked_field_trial_list = std::make_unique<FieldTrialList>();
+    FeatureList::InitializeInstance("TestFeature1:TestParam/TestValue2", "",
+                                    {});
+    EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+    EXPECT_EQ("TestValue2",
+              GetFieldTrialParamValueByFeature(kTestFeature1, "TestParam"));
+  }
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+  EXPECT_EQ("TestValue1",
+            GetFieldTrialParamValueByFeature(kTestFeature1, "TestParam"));
+
+  {
+    FieldTrialList* backup_field_trial =
+        FieldTrialList::BackupInstanceForTesting();
+
+    // To free leaked_field_trial_list, need RestoreInstanceForTesting()
+    // to pass DCHECK_EQ(this, global_) at ~FieldTrialList().
+    FieldTrialList::RestoreInstanceForTesting(leaked_field_trial_list.get());
+    leaked_field_trial_list.reset();
+    FieldTrialList::RestoreInstanceForTesting(backup_field_trial);
+  }
 }
 
 TEST(ScopedFeatureListTestWithMemberList, ScopedFeatureListLocalOverride) {

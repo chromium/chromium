@@ -1,16 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/web/web_input_element.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 
 namespace blink {
 class WebFormElementObserver;
@@ -21,7 +23,8 @@ namespace autofill {
 // TODO(crbug.com/785531): Track the select and checkbox change.
 // This class is used to track user's change of form or WebFormControlElement,
 // notifies observers of form's change and submission.
-class FormTracker : public content::RenderFrameObserver {
+class FormTracker : public content::RenderFrameObserver,
+                    public blink::WebLocalFrameObserver {
  public:
   // The interface implemented by observer to get notification of form's change
   // and submission.
@@ -62,6 +65,10 @@ class FormTracker : public content::RenderFrameObserver {
   };
 
   FormTracker(content::RenderFrame* render_frame);
+
+  FormTracker(const FormTracker&) = delete;
+  FormTracker& operator=(const FormTracker&) = delete;
+
   ~FormTracker() override;
 
   void AddObserver(Observer* observer);
@@ -97,11 +104,14 @@ class FormTracker : public content::RenderFrameObserver {
   void DidFinishSameDocumentNavigation() override;
   void DidStartNavigation(
       const GURL& url,
-      base::Optional<blink::WebNavigationType> navigation_type) override;
+      absl::optional<blink::WebNavigationType> navigation_type) override;
   void WillDetach() override;
-  void WillSendSubmitEvent(const blink::WebFormElement& form) override;
   void WillSubmitForm(const blink::WebFormElement& form) override;
   void OnDestruct() override;
+
+  // content::WebLocalFrameObserver:
+  void OnFrameDetached() override;
+  void WillSendSubmitEvent(const blink::WebFormElement& form) override;
 
   // Called in a posted task by textFieldDidChange() to work-around a WebKit bug
   // http://bugs.webkit.org/show_bug.cgi?id=16976 , we also don't want to
@@ -131,8 +141,6 @@ class FormTracker : public content::RenderFrameObserver {
   SEQUENCE_CHECKER(form_tracker_sequence_checker_);
 
   base::WeakPtrFactory<FormTracker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FormTracker);
 };
 
 }  // namespace autofill

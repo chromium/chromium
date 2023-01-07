@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/component_export.h"
 
 namespace ui {
@@ -14,26 +15,22 @@ namespace ui {
 class LinuxInputMethodContext;
 class LinuxInputMethodContextDelegate;
 
-// An interface that lets different Linux platforms override the
-// CreateInputMethodContext function declared here to return native input method
-// contexts.
-class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextFactory {
- public:
-  // Returns the current active factory or NULL.
-  static const LinuxInputMethodContextFactory* instance();
+using LinuxInputMethodContextFactory =
+    base::RepeatingCallback<std::unique_ptr<ui::LinuxInputMethodContext>(
+        LinuxInputMethodContextDelegate*)>;
 
-  // Sets the dynamically loaded singleton that creates an input method context.
-  // This pointer is not owned, and if this method is called a second time,
-  // the first instance is not deleted.
-  static void SetInstance(const LinuxInputMethodContextFactory* instance);
+// Callers may set the returned reference to set the factory.
+COMPONENT_EXPORT(UI_BASE_IME_LINUX)
+LinuxInputMethodContextFactory& GetInputMethodContextFactoryForOzone();
 
-  virtual ~LinuxInputMethodContextFactory() {}
+// The test context factory has higher precedence than the ozone factory.
+COMPONENT_EXPORT(UI_BASE_IME_LINUX)
+LinuxInputMethodContextFactory& GetInputMethodContextFactoryForTest();
 
-  // Returns a native input method context.
-  virtual std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
-      LinuxInputMethodContextDelegate* delegate,
-      bool is_simple) const = 0;
-};
+// Returns a platform specific input method context.
+COMPONENT_EXPORT(UI_BASE_IME_LINUX)
+std::unique_ptr<LinuxInputMethodContext> CreateLinuxInputMethodContext(
+    LinuxInputMethodContextDelegate* delegate);
 
 }  // namespace ui
 

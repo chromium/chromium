@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,9 +48,8 @@ TEST_F(CommandLinePrefStoreSSLManagerTest, CommandLinePrefs) {
       network::mojom::NetworkContextParams::New();
   context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
-  std::unique_ptr<SSLConfigServiceManager> config_manager(
-      SSLConfigServiceManager::CreateDefaultManager(local_state.get()));
-  config_manager->AddToNetworkContextParams(context_params.get());
+  SSLConfigServiceManager config_manager(local_state.get());
+  config_manager.AddToNetworkContextParams(context_params.get());
 
   // Command-line flags should be respected.
   EXPECT_EQ(network::mojom::SSLVersion::kTLS12,

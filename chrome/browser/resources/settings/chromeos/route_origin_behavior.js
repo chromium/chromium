@@ -1,77 +1,112 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {RouteObserverBehavior, Route, Router} from '../router.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-cr.define('settings', function() {
-  /** @polymerBehavior */
-  /* #export */ const RouteOriginBehaviorImpl = {
-    properties: {
-      /**
-       * A map whose values are query selectors of subpage buttons on the page
-       *     keyed by the route path they lead to.
-       * @protected {!Map<string, string>}
-       */
-      focusConfig_: {
-        type: Object,
-        value: () => new Map(),
-      },
-    },
+import {Route, Router} from '../router.js';
 
+import {RouteObserverBehavior} from './route_observer_behavior.js';
+
+/** @polymerBehavior */
+export const RouteOriginBehaviorImpl = {
+  properties: {
     /**
-     * The route corresponding to this page.
-     * @protected {!settings.Route|undefined}
+     * A Map specifying which element should be focused when exiting a
+     * subpage. The key of the map holds a Route path, and the value holds
+     * either a query selector that identifies the associated element to focus
+     * or a function to be run when a neon-animation-finish event is handled.
+     * @protected {!Map<string, string|Function>}
      */
-    route_: undefined,
-
-    /**
-     * Adds a route path to |this.focusConfig_| if the route exists. Otherwise
-     *     it does nothing.
-     * @param {!settings.Route|undefined} route
-     * @param {string} value A query selector leading to a button that routes
-     *     the user to |route| if it is defined.
-     */
-    addFocusConfig_(route, value) {
-      if (route) {
-        this.focusConfig_.set(route.path, value);
-      }
+    focusConfig_: {
+      type: Object,
+      value: () => new Map(),
     },
+  },
 
-    /** @override */
-    attached() {
-      // All elements with this behavior must specify their route.
-      assert(this.route_ instanceof settings.Route);
-    },
+  /**
+   * The route corresponding to this page.
+   * @protected {!Route|undefined}
+   */
+  route_: undefined,
 
-    /**
-     * settings.RouteObserverBehavior
-     * @param {!settings.Route} newRoute
-     * @param {!settings.Route} oldRoute
-     * @protected
-     */
-    currentRouteChanged(newRoute, oldRoute) {
-      // Don't attempt to focus any anchor element, unless last navigation was a
-      // 'pop' (backwards) navigation.
-      if (!settings.Router.getInstance().lastRouteChangeWasPopstate()) {
-        return;
+  /**
+   * Adds a route path to |this.focusConfig_| if the route exists. Otherwise
+   *     it does nothing.
+   * @param {!Route|undefined} route
+   * @param {string} value A query selector leading to a button that routes
+   *     the user to |route| if it is defined.
+   * @protected
+   */
+  addFocusConfig(route, value) {
+    if (route) {
+      this.focusConfig_.set(route.path, value);
+    }
+  },
+
+  /** @override */
+  attached() {
+    // All elements with this behavior must specify their route.
+    assert(this.route_ instanceof Route);
+  },
+
+  /**
+   * RouteObserverBehavior
+   * @param {!Route} newRoute
+   * @param {!Route=} prevRoute
+   * @protected
+   */
+  currentRouteChanged(newRoute, prevRoute) {
+    // Only attempt to focus an anchor element if the most recent navigation
+    // was a 'pop' (backwards) navigation.
+    if (!Router.getInstance().lastRouteChangeWasPopstate()) {
+      return;
+    }
+
+    // Route change does not apply to this page.
+    if (this.route_ !== newRoute) {
+      return;
+    }
+
+    this.triggerFocus_(prevRoute);
+  },
+
+  /**
+   * Focuses the element for a given route by finding the associated
+   * query selector or calling the configured function.
+   * @param {Route=} route
+   * @private
+   */
+  triggerFocus_(route) {
+    if (!route) {
+      return;
+    }
+
+    const pathConfig = this.focusConfig_.get(route.path);
+    if (pathConfig) {
+      if (typeof pathConfig === 'function') {
+        pathConfig();
+      } else if (typeof pathConfig === 'string') {
+        const element = assert(this.$$(String(pathConfig)));
+        beforeNextRender(this, () => {
+          focusWithoutInk(element);
+        });
       }
-      const focusSelector = this.focusConfig_.get(oldRoute.path);
+    }
+  },
+};
 
-      if (this.route_ !== newRoute || !focusSelector) {
-        return;
-      }
+/** @polymerBehavior */
+export const RouteOriginBehavior =
+    [RouteObserverBehavior, RouteOriginBehaviorImpl];
 
-      this.$$(focusSelector).focus();
-    },
-  };
-
-  /** @polymerBehavior */
-  /* #export */ const RouteOriginBehavior =
-      [settings.RouteObserverBehavior, RouteOriginBehaviorImpl];
-
-  // #cr_define_end
-  return {RouteOriginBehaviorImpl, RouteOriginBehavior};
-});
-
+/** @interface */
+export class RouteOriginBehaviorInterface {
+  /**
+   * @param {!Route|undefined} route
+   * @param {string} value
+   */
+  addFocusConfig(route, value) {}
+}

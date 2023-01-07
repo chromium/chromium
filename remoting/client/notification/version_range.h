@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,8 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/version.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -32,19 +31,21 @@ class VersionRange final {
   //
   // Min version must be less than or equal to max version.
   explicit VersionRange(const std::string& range_spec);
+
+  VersionRange(const VersionRange&) = delete;
+  VersionRange& operator=(const VersionRange&) = delete;
+
   ~VersionRange();
 
   bool IsValid() const;
   bool ContainsVersion(const std::string& version_string) const;
 
  private:
-  base::Optional<base::Version> min_version_;
-  base::Optional<base::Version> max_version_;
+  absl::optional<base::Version> min_version_;
+  absl::optional<base::Version> max_version_;
 
   bool is_min_version_inclusive_ = false;
   bool is_max_version_inclusive_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(VersionRange);
 };
 
 }  // namespace remoting

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@ class Browser;
 @class BrowserCoordinator;
 @class BrowserViewController;
 class ChromeBrowserState;
+@protocol SyncPresenter;
 
 // A BrowserInterface is an abstraction that exposes an interface to the Chrome
 // user interface (and related model objects) to the application layer. Each
@@ -27,11 +28,12 @@ class ChromeBrowserState;
 @protocol BrowserInterface
 
 // The view controller showing the current tab for this interface. This property
-// should be used wherever possible instead of the |bvc| property.
+// should be used wherever possible instead of the `bvc` property.
 @property(nonatomic, readonly) UIViewController* viewController;
 // The BrowserViewController showing the current tab. The API surface this
 // property exposes will be refactored so that the BVC class isn't exposed.
 @property(nonatomic, readonly) BrowserViewController* bvc;
+@property(nonatomic, readonly) id<SyncPresenter> syncPresenter;
 // The active browser. This can never be nullptr.
 @property(nonatomic, readonly) Browser* browser;
 // The browser state for this interface. This can never be nullptr.
@@ -45,7 +47,7 @@ class ChromeBrowserState;
 - (void)setPrimary:(BOOL)primary;
 
 // Asks the implementor to clear any presented state, dismissing the omnibox if
-// |dismissOmnibox| is YES, and calling |completion| once any animations are
+// `dismissOmnibox` is YES, and calling `completion` once any animations are
 // complete.
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox;
@@ -58,18 +60,18 @@ class ChromeBrowserState;
 
 // One interface must be designated as being the "current" interface.
 // It's typically an error to assign this an interface which is neither of
-// mainInterface| or |incognitoInterface|. The initial value of
-// |currentInterface| is an implementation decision, but |mainInterface| is
+// mainInterface` or `incognitoInterface`. The initial value of
+// `currentInterface` is an implementation decision, but `mainInterface` is
 // typical.
 // Changing this value may or may not trigger actual UI changes, or may just be
 // bookkeeping associated with UI changes handled elsewhere.
 @property(nonatomic, weak) id<BrowserInterface> currentInterface;
 // The "main" (meaning non-incognito -- the nomenclature is legacy) interface.
-// This interface's |incognito| property is expected to be NO.
+// This interface's `incognito` property is expected to be NO.
 @property(nonatomic, readonly) id<BrowserInterface> mainInterface;
-// The incognito interface. Its |incognito| property must be YES.
+// The incognito interface. Its `incognito` property must be YES.
 @property(nonatomic, readonly) id<BrowserInterface> incognitoInterface;
-// YES iff |incognitoInterface| is already created.
+// YES iff `incognitoInterface` is already created.
 @property(nonatomic, assign, readonly) BOOL hasIncognitoInterface;
 
 @end

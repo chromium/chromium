@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,16 +22,16 @@ export class Commands {
       [SwitchAccessCommand.SELECT, ActionManager.onSelect],
       [
         SwitchAccessCommand.NEXT,
-        Navigator.byItem.moveForward.bind(Navigator.byItem)
+        Navigator.byItem.moveForward.bind(Navigator.byItem),
       ],
       [
         SwitchAccessCommand.PREVIOUS,
-        Navigator.byItem.moveBackward.bind(Navigator.byItem)
-      ]
+        Navigator.byItem.moveBackward.bind(Navigator.byItem),
+      ],
     ]);
 
     chrome.accessibilityPrivate.onSwitchAccessCommand.addListener(
-        this.runCommand_.bind(this));
+        command => this.runCommand_(command));
   }
 
   static initialize() {

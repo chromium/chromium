@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -70,13 +70,14 @@ class SharesheetClientBrowserTest : public InProcessBrowserTest {
                 content::WebContents* in_contents,
                 const std::vector<base::FilePath>& file_paths,
                 const std::vector<std::string>& content_types,
+                const std::vector<uint64_t>& file_sizes,
                 const std::string& text, const std::string& title,
-                SharesheetClient::CloseCallback close_callback) {
+                SharesheetClient::DeliveredCallback delivered_callback) {
               EXPECT_EQ(text, expected_text);
               EXPECT_EQ(title, expected_title);
               EXPECT_EQ(file_paths.size(), content_types.size());
               EXPECT_EQ(content_types, expected_content_types);
-              std::move(close_callback)
+              std::move(delivered_callback)
                   .Run(sharesheet::SharesheetResult::kSuccess);
             }));
 
@@ -89,48 +90,57 @@ class SharesheetClientBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
+IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareMultipleFiles) {
   const std::string script = "share_multiple_files()";
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   std::vector<base::FilePath> file_paths;
 
   SharesheetClient::SetSharesheetCallbackForTesting(base::BindLambdaForTesting(
-      [contents, &file_paths](content::WebContents* in_contents,
-                              const std::vector<base::FilePath>& in_file_paths,
-                              const std::vector<std::string>& content_types,
-                              const std::string& text, const std::string& title,
-                              SharesheetClient::CloseCallback close_callback) {
+      [contents, &file_paths](
+          content::WebContents* in_contents,
+          const std::vector<base::FilePath>& in_file_paths,
+          const std::vector<std::string>& content_types,
+          const std::vector<uint64_t>& file_sizes, const std::string& text,
+          const std::string& title,
+          SharesheetClient::DeliveredCallback delivered_callback) {
         EXPECT_EQ(contents, in_contents);
 
         file_paths = std::move(in_file_paths);
 
-        EXPECT_EQ(content_types.size(), 2U);
+        EXPECT_EQ(content_types.size(), 3U);
         EXPECT_EQ(content_types[0], "audio/mpeg");
         EXPECT_EQ(content_types[1], "video/mp4");
+        EXPECT_EQ(content_types[2], "image/gif");
 
-        std::move(close_callback).Run(sharesheet::SharesheetResult::kSuccess);
+        std::move(delivered_callback)
+            .Run(sharesheet::SharesheetResult::kSuccess);
       }));
 
   EXPECT_EQ("share succeeded", content::EvalJs(contents, script));
-  EXPECT_EQ(file_paths.size(), 2U);
+  EXPECT_EQ(file_paths.size(), 3U);
 
-  const base::FilePath my_files =
-      file_manager::util::GetMyFilesFolderForProfile(browser()->profile());
-  EXPECT_EQ(file_paths[0], my_files.AppendASCII(".WebShare/share1.mp3"));
-  EXPECT_EQ(file_paths[1], my_files.AppendASCII(".WebShare/share2.mp4"));
+  const base::FilePath share_cache =
+      file_manager::util::GetShareCacheFilePath(browser()->profile());
+  EXPECT_EQ(file_paths[0],
+            share_cache.AppendASCII(".WebShare/share1/sam.ple.mp3"));
+  EXPECT_EQ(file_paths[1],
+            share_cache.AppendASCII(".WebShare/share2/sample.mp4"));
+  EXPECT_EQ(file_paths[2],
+            share_cache.AppendASCII(".WebShare/share3/sam_ple.gif"));
 
   CheckSize(file_paths[0], /*expected_size=*/345);
   CheckSize(file_paths[1], /*expected_size=*/67890);
+  CheckSize(file_paths[2], /*expected_size=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
   const int kRepeats = 3;
   const std::string script = "share_single_file()";
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -143,8 +153,9 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
                 content::WebContents* in_contents,
                 const std::vector<base::FilePath>& in_file_paths,
                 const std::vector<std::string>& content_types,
+                const std::vector<uint64_t>& file_sizes,
                 const std::string& text, const std::string& title,
-                SharesheetClient::CloseCallback close_callback) {
+                SharesheetClient::DeliveredCallback delivered_callback) {
               EXPECT_EQ(contents, in_contents);
 
               file_paths = std::move(in_file_paths);
@@ -152,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
               EXPECT_EQ(content_types.size(), 1U);
               EXPECT_EQ(content_types[0], "image/webp");
 
-              std::move(close_callback)
+              std::move(delivered_callback)
                   .Run(sharesheet::SharesheetResult::kSuccess);
             }));
 
@@ -168,14 +179,16 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, CancelledShare) {
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   SharesheetClient::SetSharesheetCallbackForTesting(base::BindLambdaForTesting(
       [](content::WebContents* in_contents,
          const std::vector<base::FilePath>& file_paths,
-         const std::vector<std::string>& content_types, const std::string& text,
+         const std::vector<std::string>& content_types,
+         const std::vector<uint64_t>& file_sizes, const std::string& text,
          const std::string& title,
-         SharesheetClient::CloseCallback close_callback) {
-        std::move(close_callback).Run(sharesheet::SharesheetResult::kCancel);
+         SharesheetClient::DeliveredCallback delivered_callback) {
+        std::move(delivered_callback)
+            .Run(sharesheet::SharesheetResult::kCancel);
       }));
 
   EXPECT_EQ("share failed: AbortError: Share canceled",
@@ -184,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, CancelledShare) {
 
 IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, Text) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   ConfirmShareText("share_title()",
                    /*expected_text=*/"",
                    /*expected_title=*/"Subject", /*expected_content_types=*/{});
@@ -204,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, Text) {
 
 IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, TextWithFile) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   const std::vector<std::string> expected_content_types{"image/webp"};
   ConfirmShareText("share_file_title()",
                    /*expected_text=*/"",

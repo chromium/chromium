@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,31 +17,32 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 
-namespace chromeos {
+namespace ash {
 
 DemoModeTestHelper::DemoModeTestHelper()
     : browser_process_platform_part_test_api_(
           TestingBrowserProcess::GetGlobal()->platform_part()) {
-  if (!DBusThreadManager::IsInitialized()) {
-    DBusThreadManager::Initialize();
-    dbus_thread_manager_initialized_ = true;
+  if (!ConciergeClient::Get()) {
+    concierge_client_initialized_ = true;
+    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
   }
 
   DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kNone);
 
   CHECK(components_temp_dir_.CreateUniqueTempDir());
   components_path_override_ = std::make_unique<base::ScopedPathOverride>(
-      chromeos::DIR_PREINSTALLED_COMPONENTS, components_temp_dir_.GetPath());
+      DIR_PREINSTALLED_COMPONENTS, components_temp_dir_.GetPath());
 
   CHECK(base::CreateDirectory(GetDemoResourcesPath()));
   CHECK(base::CreateDirectory(GetPreinstalledDemoResourcesPath()));
 }
 
 DemoModeTestHelper::~DemoModeTestHelper() {
-  if (dbus_thread_manager_initialized_)
-    DBusThreadManager::Shutdown();
+  if (concierge_client_initialized_) {
+    ConciergeClient::Shutdown();
+  }
   DemoSession::ShutDownIfInitialized();
   DemoSession::ResetDemoConfigForTesting();
   if (fake_cros_component_manager_) {
@@ -99,7 +100,7 @@ void DemoModeTestHelper::InitializeCrosComponentManager() {
 
 void DemoModeTestHelper::FinishLoadingComponent() {
   base::RunLoop run_loop;
-  DemoSession::Get()->EnsureOfflineResourcesLoaded(run_loop.QuitClosure());
+  DemoSession::Get()->EnsureResourcesLoaded(run_loop.QuitClosure());
 
   // TODO(michaelpg): Update once offline Demo Mode also uses a CrOS component.
   if (DemoSession::GetDemoConfig() == DemoSession::DemoModeConfig::kOnline) {
@@ -118,7 +119,7 @@ void DemoModeTestHelper::FinishLoadingComponent() {
 
 void DemoModeTestHelper::FailLoadingComponent() {
   base::RunLoop run_loop;
-  DemoSession::Get()->EnsureOfflineResourcesLoaded(run_loop.QuitClosure());
+  DemoSession::Get()->EnsureResourcesLoaded(run_loop.QuitClosure());
 
   // TODO(michaelpg): Update once offline Demo Mode also uses a CrOS component.
   if (DemoSession::GetDemoConfig() == DemoSession::DemoModeConfig::kOnline) {
@@ -131,4 +132,4 @@ void DemoModeTestHelper::FailLoadingComponent() {
   run_loop.Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

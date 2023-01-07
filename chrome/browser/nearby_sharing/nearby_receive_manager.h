@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,7 @@ class NearbyReceiveManager : public nearby_share::mojom::ReceiveManager,
               AcceptCallback callback) override;
   void Reject(const base::UnguessableToken& share_target_id,
               RejectCallback callback) override;
+  void RecordFastInitiationNotificationUsage(bool success) override;
 
   // NearbySharingService::Observer
   void OnHighVisibilityChanged(bool in_high_visibility) override;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ public class NetworkExceptionImpl extends NetworkException {
      * @param message explanation of failure.
      * @param errorCode error code, one of {@link #ERROR_HOSTNAME_NOT_RESOLVED ERROR_*}.
      * @param cronetInternalErrorCode Cronet internal error code, one of
-     * <a href=https://chromium.googlesource.com/chromium/src/+/master/net/base/net_error_list.h>
+     * <a href=https://chromium.googlesource.com/chromium/src/+/main/net/base/net_error_list.h>
      * these</a>.
      */
     public NetworkExceptionImpl(String message, int errorCode, int cronetInternalErrorCode) {

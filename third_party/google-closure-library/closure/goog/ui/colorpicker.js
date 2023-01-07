@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A color picker component.  A color picker can compose several
@@ -29,6 +21,9 @@ goog.provide('goog.ui.ColorPicker.EventType');
 
 goog.require('goog.ui.ColorPalette');
 goog.require('goog.ui.Component');
+goog.requireType('goog.dom.DomHelper');
+goog.requireType('goog.events.Event');
+goog.requireType('goog.math.Size');
 
 
 
@@ -43,6 +38,7 @@ goog.require('goog.ui.Component');
  * @final
  */
 goog.ui.ColorPicker = function(opt_domHelper, opt_colorPalette) {
+  'use strict';
   goog.ui.Component.call(this, opt_domHelper);
 
   /**
@@ -90,6 +86,7 @@ goog.ui.ColorPicker.prototype.focusable_ = true;
  * @return {Array<string>?} The colors displayed by this widget.
  */
 goog.ui.ColorPicker.prototype.getColors = function() {
+  'use strict';
   return this.colorPalette_ ? this.colorPalette_.getColors() : null;
 };
 
@@ -99,6 +96,7 @@ goog.ui.ColorPicker.prototype.getColors = function() {
  * @param {Array<string>} colors The array of colors to be added.
  */
 goog.ui.ColorPicker.prototype.setColors = function(colors) {
+  'use strict';
   // TODO(user): Don't add colors directly, we should add palettes and the
   // picker should support multiple palettes.
   if (!this.colorPalette_) {
@@ -115,6 +113,7 @@ goog.ui.ColorPicker.prototype.setColors = function(colors) {
  * @deprecated Use setColors.
  */
 goog.ui.ColorPicker.prototype.addColors = function(colors) {
+  'use strict';
   this.setColors(colors);
 };
 
@@ -125,6 +124,7 @@ goog.ui.ColorPicker.prototype.addColors = function(colors) {
  * @param {goog.math.Size|number} size The size of the grid.
  */
 goog.ui.ColorPicker.prototype.setSize = function(size) {
+  'use strict';
   // TODO(user): The color picker should contain multiple palettes which will
   // all be resized at this point.
   if (!this.colorPalette_) {
@@ -139,6 +139,7 @@ goog.ui.ColorPicker.prototype.setSize = function(size) {
  * @return {goog.math.Size?} The size of the grid.
  */
 goog.ui.ColorPicker.prototype.getSize = function() {
+  'use strict';
   return this.colorPalette_ ? this.colorPalette_.getSize() : null;
 };
 
@@ -150,6 +151,7 @@ goog.ui.ColorPicker.prototype.getSize = function() {
  * @deprecated Use setSize.
  */
 goog.ui.ColorPicker.prototype.setColumnCount = function(n) {
+  'use strict';
   this.setSize(n);
 };
 
@@ -158,6 +160,7 @@ goog.ui.ColorPicker.prototype.setColumnCount = function(n) {
  * @return {number} The index of the color selected.
  */
 goog.ui.ColorPicker.prototype.getSelectedIndex = function() {
+  'use strict';
   return this.colorPalette_ ? this.colorPalette_.getSelectedIndex() : -1;
 };
 
@@ -168,6 +171,7 @@ goog.ui.ColorPicker.prototype.getSelectedIndex = function() {
  * @param {number} ind The index in this.colors_ of the selected color.
  */
 goog.ui.ColorPicker.prototype.setSelectedIndex = function(ind) {
+  'use strict';
   if (this.colorPalette_) {
     this.colorPalette_.setSelectedIndex(ind);
   }
@@ -180,6 +184,7 @@ goog.ui.ColorPicker.prototype.setSelectedIndex = function(ind) {
  *     color is selected.
  */
 goog.ui.ColorPicker.prototype.getSelectedColor = function() {
+  'use strict';
   return this.colorPalette_ ? this.colorPalette_.getSelectedColor() : null;
 };
 
@@ -190,6 +195,7 @@ goog.ui.ColorPicker.prototype.getSelectedColor = function() {
  * @param {string} color The selected color.
  */
 goog.ui.ColorPicker.prototype.setSelectedColor = function(color) {
+  'use strict';
   // TODO(user): This will set the color in the first available palette that
   // contains it
   if (this.colorPalette_) {
@@ -205,6 +211,7 @@ goog.ui.ColorPicker.prototype.setSelectedColor = function(color) {
  * @return {boolean} True iff the component is focusable.
  */
 goog.ui.ColorPicker.prototype.isFocusable = function() {
+  'use strict';
   return this.focusable_;
 };
 
@@ -216,6 +223,7 @@ goog.ui.ColorPicker.prototype.isFocusable = function() {
  * @param {boolean} focusable True iff the component is focusable.
  */
 goog.ui.ColorPicker.prototype.setFocusable = function(focusable) {
+  'use strict';
   this.focusable_ = focusable;
   if (this.colorPalette_) {
     this.colorPalette_.setSupportedState(
@@ -232,6 +240,7 @@ goog.ui.ColorPicker.prototype.setFocusable = function(focusable) {
  * @override
  */
 goog.ui.ColorPicker.prototype.canDecorate = function(element) {
+  'use strict';
   return false;
 };
 
@@ -242,6 +251,7 @@ goog.ui.ColorPicker.prototype.canDecorate = function(element) {
  * @override
  */
 goog.ui.ColorPicker.prototype.enterDocument = function() {
+  'use strict';
   goog.ui.ColorPicker.superClass_.enterDocument.call(this);
   if (this.colorPalette_) {
     this.colorPalette_.render(this.getElement());
@@ -252,6 +262,7 @@ goog.ui.ColorPicker.prototype.enterDocument = function() {
 
 /** @override */
 goog.ui.ColorPicker.prototype.disposeInternal = function() {
+  'use strict';
   goog.ui.ColorPicker.superClass_.disposeInternal.call(this);
   if (this.colorPalette_) {
     this.colorPalette_.dispose();
@@ -264,6 +275,7 @@ goog.ui.ColorPicker.prototype.disposeInternal = function() {
  * Sets the focus to the color picker's palette.
  */
 goog.ui.ColorPicker.prototype.focus = function() {
+  'use strict';
   if (this.colorPalette_) {
     this.colorPalette_.getElement().focus();
   }
@@ -277,6 +289,7 @@ goog.ui.ColorPicker.prototype.focus = function() {
  * @private
  */
 goog.ui.ColorPicker.prototype.onColorPaletteAction_ = function(e) {
+  'use strict';
   e.stopPropagation();
   this.dispatchEvent(goog.ui.ColorPicker.EventType.CHANGE);
 };
@@ -288,6 +301,7 @@ goog.ui.ColorPicker.prototype.onColorPaletteAction_ = function(e) {
  * @private
  */
 goog.ui.ColorPicker.prototype.createColorPalette_ = function(colors) {
+  'use strict';
   // TODO(user): The color picker should eventually just contain a number of
   // palettes and manage the interactions between them.  This will go away then.
   var cp = new goog.ui.ColorPalette(colors, null, this.getDomHelper());
@@ -309,6 +323,7 @@ goog.ui.ColorPicker.prototype.createColorPalette_ = function(colors) {
  * @return {!goog.ui.ColorPicker} The unrendered instance.
  */
 goog.ui.ColorPicker.createSimpleColorGrid = function(opt_domHelper) {
+  'use strict';
   var cp = new goog.ui.ColorPicker(opt_domHelper);
   cp.setSize(7);
   cp.setColors(goog.ui.ColorPicker.SIMPLE_GRID_COLORS);

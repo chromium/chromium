@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,17 @@
 
 #include <utility>
 
+#include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -21,7 +24,6 @@
 #include "ui/views/buildflags.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
@@ -29,11 +31,14 @@
 #include "ui/views/window/dialog_client_view.h"
 #include "ui/views/window/dialog_observer.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #endif
 
 namespace views {
+
+// Debug information for https://crbug.com/1215247.
+int g_instance_count = 0;
 
 ////////////////////////////////////////////////////////////////////////////////
 // DialogDelegate::Params:
@@ -44,6 +49,8 @@ DialogDelegate::Params::~Params() = default;
 // DialogDelegate:
 
 DialogDelegate::DialogDelegate() {
+  ++g_instance_count;
+
   WidgetDelegate::RegisterWindowWillCloseCallback(
       base::BindOnce(&DialogDelegate::WindowWillClose, base::Unretained(this)));
   UMA_HISTOGRAM_BOOLEAN("Dialog.DialogDelegate.Create", true);
@@ -72,12 +79,12 @@ Widget* DialogDelegate::CreateDialogWidget(
 
 // static
 bool DialogDelegate::CanSupportCustomFrame(gfx::NativeView parent) {
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     BUILDFLAG(ENABLE_DESKTOP_AURA)
   // The new style doesn't support unparented dialogs on Linux desktop.
   return parent != nullptr;
 #else
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The new style doesn't support unparented dialogs on Windows Classic themes.
   if (!ui::win::IsAeroGlassEnabled())
     return parent != nullptr;
@@ -103,7 +110,7 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
   if (!dialog || dialog->use_custom_frame()) {
     params.opacity = Widget::InitParams::WindowOpacity::kTranslucent;
     params.remove_standard_frame = true;
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_MAC)
     // Except on Mac, the bubble frame includes its own shadow; remove any
     // native shadowing. On Mac, the window server provides the shadow.
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
@@ -111,7 +118,7 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
   }
   params.context = context;
   params.parent = parent;
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   // Web-modal (ui::MODAL_TYPE_CHILD) dialogs with parents are marked as child
   // widgets to prevent top-level window behavior (independent movement, etc).
   // On Mac, however, the parent may be a native window (not a views::Widget),
@@ -231,6 +238,13 @@ void DialogDelegate::WindowWillClose() {
   already_started_close_ = true;
 }
 
+bool DialogDelegate::EscShouldCancelDialog() const {
+  // Use cancel as the Esc action if there's no defined "close" action. If the
+  // delegate has either specified a closing action or a close-x they can expect
+  // it to be called on Esc.
+  return !close_callback_ && !ShouldShowCloseButton();
+}
+
 // static
 std::unique_ptr<NonClientFrameView> DialogDelegate::CreateDialogFrameView(
     Widget* widget) {
@@ -239,9 +253,8 @@ std::unique_ptr<NonClientFrameView> DialogDelegate::CreateDialogFrameView(
       provider->GetInsetsMetric(INSETS_DIALOG_TITLE), gfx::Insets());
 
   const BubbleBorder::Shadow kShadow = BubbleBorder::DIALOG_SHADOW;
-  std::unique_ptr<BubbleBorder> border = std::make_unique<BubbleBorder>(
-      BubbleBorder::FLOAT, kShadow, gfx::kPlaceholderColor);
-  border->set_use_theme_background_color(true);
+  std::unique_ptr<BubbleBorder> border =
+      std::make_unique<BubbleBorder>(BubbleBorder::FLOAT, kShadow);
   DialogDelegate* delegate = widget->widget_delegate()->AsDialogDelegate();
   if (delegate) {
     if (delegate->GetParams().round_corners)
@@ -280,19 +293,19 @@ BubbleFrameView* DialogDelegate::GetBubbleFrameView() const {
 }
 
 views::LabelButton* DialogDelegate::GetOkButton() const {
-  DCHECK(GetWidget()) << "Don't call this before OnDialogInitialized";
+  DCHECK(GetWidget()) << "Don't call this before OnWidgetInitialized";
   auto* client = GetDialogClientView();
   return client ? client->ok_button() : nullptr;
 }
 
 views::LabelButton* DialogDelegate::GetCancelButton() const {
-  DCHECK(GetWidget()) << "Don't call this before OnDialogInitialized";
+  DCHECK(GetWidget()) << "Don't call this before OnWidgetInitialized";
   auto* client = GetDialogClientView();
   return client ? client->cancel_button() : nullptr;
 }
 
 views::View* DialogDelegate::GetExtraView() const {
-  DCHECK(GetWidget()) << "Don't call this before OnDialogInitialized";
+  DCHECK(GetWidget()) << "Don't call this before OnWidgetInitialized";
   auto* client = GetDialogClientView();
   return client ? client->extra_view() : nullptr;
 }
@@ -387,9 +400,21 @@ void DialogDelegate::SetButtonRowInsets(const gfx::Insets& insets) {
 }
 
 void DialogDelegate::AcceptDialog() {
+  // Copy the dialog widget name onto the stack so it appears in crash dumps.
+  DEBUG_ALIAS_FOR_CSTR(last_widget_name, GetWidget()->GetName().c_str(), 64);
+
   DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
   if (already_started_close_ || !Accept())
     return;
+
+  // Check for Accept() deleting `this` but returning false. Empirically the
+  // steady state instance count with no dialogs open is zero, so if it's back
+  // to zero `this` is deleted https://crbug.com/1215247
+  if (g_instance_count <= 0) {
+    // LOG(FATAL) instead of CHECK() to put the widget name into a crash key.
+    // See "Product Data" in the crash tool if a crash report shows this line.
+    LOG(FATAL) << last_widget_name;
+  }
 
   already_started_close_ = true;
   GetWidget()->CloseWithReason(
@@ -397,9 +422,12 @@ void DialogDelegate::AcceptDialog() {
 }
 
 void DialogDelegate::CancelDialog() {
-  // Note: don't DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL)) here;
-  // CancelDialog() is *always* reachable via Esc closing the dialog, even if
-  // the cancel button is disabled or there is no cancel button at all.
+  // If there's a close button available, this callback should only be reachable
+  // if the cancel button is available. Otherwise this can be reached through
+  // closing the dialog via Esc.
+  if (ShouldShowCloseButton())
+    DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL));
+
   if (already_started_close_ || !Cancel())
     return;
 
@@ -411,6 +439,7 @@ void DialogDelegate::CancelDialog() {
 DialogDelegate::~DialogDelegate() {
   UMA_HISTOGRAM_LONG_TIMES("Dialog.DialogDelegate.Duration",
                            base::TimeTicks::Now() - creation_time_);
+  --g_instance_count;
 }
 
 ax::mojom::Role DialogDelegate::GetAccessibleWindowRole() {
@@ -418,29 +447,26 @@ ax::mojom::Role DialogDelegate::GetAccessibleWindowRole() {
 }
 
 int DialogDelegate::GetCornerRadius() const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1116680): On Mac MODAL_TYPE_WINDOW is implemented using
   // sheets which causes visual artifacts when corner radius is increased for
   // modal types. Remove this after this issue has been addressed.
   if (GetModalType() == ui::MODAL_TYPE_WINDOW)
     return 2;
 #endif
-  return LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_MEDIUM);
+  if (params_.corner_radius)
+    return *params_.corner_radius;
+  return LayoutProvider::Get()->GetCornerRadiusMetric(views::Emphasis::kMedium);
 }
 
 std::unique_ptr<View> DialogDelegate::DisownFootnoteView() {
   return std::move(footnote_view_);
 }
 
-void DialogDelegate::OnWidgetInitialized() {
-  OnDialogInitialized();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // DialogDelegateView:
 
 DialogDelegateView::DialogDelegateView() {
-  set_owned_by_client();
   SetOwnedByWidget(true);
   UMA_HISTOGRAM_BOOLEAN("Dialog.DialogDelegateView.Create", true);
 }

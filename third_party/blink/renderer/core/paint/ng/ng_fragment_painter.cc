@@ -1,15 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/ng/ng_fragment_painter.h"
 
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
+#include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -19,24 +19,17 @@ void NGFragmentPainter::PaintOutline(const PaintInfo& paint_info,
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
   DCHECK(NGOutlineUtils::HasPaintedOutline(style_to_use, fragment.GetNode()));
   Vector<PhysicalRect> outline_rects;
+  LayoutObject::OutlineInfo info;
   fragment.AddSelfOutlineRects(
       paint_offset, style_to_use.OutlineRectsShouldIncludeBlockVisualOverflow(),
-      &outline_rects);
+      &outline_rects, &info);
 
-  if (outline_rects.IsEmpty())
+  if (outline_rects.empty())
     return;
 
-  const DisplayItemClient& display_item_client = GetDisplayItemClient();
-  if (DrawingRecorder::UseCachedDrawingIfPossible(
-          paint_info.context, display_item_client, paint_info.phase))
-    return;
-
-  IntRect visual_rect =
-      PixelSnappedIntRect(UnionRectEvenIfEmpty(outline_rects));
-  visual_rect.Inflate(style_to_use.OutlineOutsetExtent());
-  DrawingRecorder recorder(paint_info.context, display_item_client,
-                           paint_info.phase, visual_rect);
-  PaintOutlineRects(paint_info, outline_rects, style_to_use);
+  OutlinePainter::PaintOutlineRects(paint_info, GetDisplayItemClient(),
+                                    outline_rects, info, style_to_use,
+                                    fragment.GetLayoutObject()->GetDocument());
 }
 
 void NGFragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
@@ -58,8 +51,8 @@ void NGFragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
     return;
 
   auto outline_rects = fragment.GetLayoutObject()->OutlineRects(
-      paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
-  IntRect rect = PixelSnappedIntRect(UnionRect(outline_rects));
+      nullptr, paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
+  gfx::Rect rect = ToPixelSnappedRect(UnionRect(outline_rects));
   if (rect.IsEmpty())
     return;
 

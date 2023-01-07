@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -28,6 +28,16 @@ AudioStreamMonitor* GetMonitorForRenderFrame(int render_process_id,
 
 }  // namespace
 
+AudioStreamMonitor::AudibleClientRegistration::AudibleClientRegistration(
+    AudioStreamMonitor* audio_stream_monitor)
+    : audio_stream_monitor_(audio_stream_monitor) {
+  audio_stream_monitor_->AddAudibleClient();
+}
+
+AudioStreamMonitor::AudibleClientRegistration::~AudibleClientRegistration() {
+  audio_stream_monitor_->RemoveAudibleClient();
+}
+
 bool AudioStreamMonitor::StreamID::operator<(const StreamID& other) const {
   return std::tie(render_process_id, render_frame_id, stream_id) <
          std::tie(other.render_process_id, other.render_frame_id,
@@ -43,13 +53,13 @@ bool AudioStreamMonitor::StreamID::operator==(const StreamID& other) const {
 AudioStreamMonitor::AudioStreamMonitor(WebContents* contents)
     : WebContentsObserver(contents),
       web_contents_(contents),
-      clock_(base::DefaultTickClock::GetInstance()),
-      indicator_is_on_(false),
-      is_audible_(false) {
+      clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK(web_contents_);
 }
 
-AudioStreamMonitor::~AudioStreamMonitor() {}
+AudioStreamMonitor::~AudioStreamMonitor() {
+  DCHECK_EQ(audible_clients_, 0);
+}
 
 bool AudioStreamMonitor::WasRecentlyAudible() const {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -76,6 +86,26 @@ void AudioStreamMonitor::RenderProcessGone(int render_process_id) {
                 [render_process_id](const std::pair<StreamID, bool>& entry) {
                   return entry.first.render_process_id == render_process_id;
                 });
+  UpdateStreams();
+}
+
+std::unique_ptr<AudioStreamMonitor::AudibleClientRegistration>
+AudioStreamMonitor::RegisterAudibleClient() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return std::make_unique<AudibleClientRegistration>(this);
+}
+
+void AudioStreamMonitor::AddAudibleClient() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_GE(audible_clients_, 0);
+  ++audible_clients_;
+  UpdateStreams();
+}
+
+void AudioStreamMonitor::RemoveAudibleClient() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_GE(audible_clients_, 0);
+  --audible_clients_;
   UpdateStreams();
 }
 
@@ -180,6 +210,9 @@ void AudioStreamMonitor::UpdateStreams() {
     audible_frame_map[render_frame_host_impl] |= is_stream_audible;
   }
 
+  // Check non-stream audible clients.
+  is_audible_ |= (audible_clients_ > 0);
+
   if (was_audible && !is_audible_)
     last_became_silent_time_ = clock_->NowTicks();
 
@@ -199,8 +232,7 @@ void AudioStreamMonitor::UpdateStreams() {
 
 void AudioStreamMonitor::MaybeToggle() {
   const base::TimeTicks off_time =
-      last_became_silent_time_ +
-      base::TimeDelta::FromMilliseconds(kHoldOnMilliseconds);
+      last_became_silent_time_ + base::Milliseconds(kHoldOnMilliseconds);
   const base::TimeTicks now = clock_->NowTicks();
   const bool should_stop_timer = is_audible_ || now >= off_time;
   const bool should_indicator_be_on = is_audible_ || !should_stop_timer;

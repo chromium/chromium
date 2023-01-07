@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,6 +146,7 @@ class MessageLoop : public Resource {
   explicit MessageLoop(const InstanceHandle& instance);
 
   MessageLoop(const MessageLoop& other);
+  MessageLoop& operator=(const MessageLoop& other);
 
   /// Takes an additional ref to the resource.
   explicit MessageLoop(PP_Resource pp_message_loop);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,43 @@ bool TransferMetadata::IsFinalStatus(Status status) {
     case Status::kInProgress:
     case Status::kMediaDownloading:
       return false;
+  }
+}
+
+// static
+TransferMetadata::Result TransferMetadata::ToResult(Status status) {
+  switch (status) {
+    case Status::kComplete:
+      return Result::kSuccess;
+    case Status::kUnknown:
+    case Status::kAwaitingRemoteAcceptanceFailed:
+    case Status::kFailed:
+    case Status::kDecodeAdvertisementFailed:
+    case Status::kMissingTransferUpdateCallback:
+    case Status::kMissingShareTarget:
+    case Status::kMissingEndpointId:
+    case Status::kMissingPayloads:
+    case Status::kPairedKeyVerificationFailed:
+    case Status::kInvalidIntroductionFrame:
+    case Status::kIncompletePayloads:
+    case Status::kFailedToCreateShareTarget:
+    case Status::kFailedToInitiateOutgoingConnection:
+    case Status::kFailedToReadOutgoingConnectionResponse:
+    case Status::kUnexpectedDisconnection:
+      return Result::kFailure;
+    case Status::kConnecting:
+    case Status::kAwaitingLocalConfirmation:
+    case Status::kAwaitingRemoteAcceptance:
+    case Status::kInProgress:
+    case Status::kRejected:
+    case Status::kCancelled:
+    case Status::kTimedOut:
+    case Status::kMediaUnavailable:
+    case Status::kMediaDownloading:
+    case Status::kNotEnoughSpace:
+    case Status::kUnsupportedAttachmentType:
+    case Status::kExternalProviderLaunched:
+      return Result::kIndeterminate;
   }
 }
 
@@ -186,7 +223,7 @@ nearby_share::mojom::TransferMetadataPtr TransferMetadata::ToMojo() const {
 
 TransferMetadata::TransferMetadata(Status status,
                                    float progress,
-                                   base::Optional<std::string> token,
+                                   absl::optional<std::string> token,
                                    bool is_original,
                                    bool is_final_status)
     : status_(status),

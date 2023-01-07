@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,16 @@
       <p id="test"></p>
     `);
 
-  UI.panels.network._networkRecordFilmStripSetting.set(true);
+  UI.panels.network.networkRecordFilmStripSetting.set(true);
 
-  Network.NetworkPanel._displayScreenshotDelay = 0;
+  Network.NetworkPanel.displayScreenshotDelay = 0;
 
   TestRunner.resourceTreeModel.addEventListener(SDK.ResourceTreeModel.Events.Load, TestRunner.pageLoaded);
   TestRunner.runWhenPageLoads(() => setTimeout(checkRecording, 50));
   TestRunner.resourceTreeModel.reloadPage();
 
   function checkRecording() {
-    TestRunner.addResult(UI.panels.network._networkLogView._recording ? 'Still recording' : 'Not recording');
+    TestRunner.addResult(UI.panels.network.networkLogView.recording ? 'Still recording' : 'Not recording');
 
     TestRunner.completeTest();
   }

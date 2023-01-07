@@ -1,0 +1,62 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/autofill_assistant/annotate_dom_model_service_factory.h"
+
+#include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/switches.h"
+#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
+
+AnnotateDomModelServiceFactory::AnnotateDomModelServiceFactory()
+    : ProfileKeyedServiceFactory("AnnotateDomModelService") {}
+
+AnnotateDomModelServiceFactory::~AnnotateDomModelServiceFactory() = default;
+
+// static
+AnnotateDomModelServiceFactory* AnnotateDomModelServiceFactory::GetInstance() {
+  static base::NoDestructor<AnnotateDomModelServiceFactory> factory;
+  return factory.get();
+}
+
+// static
+autofill_assistant::AnnotateDomModelService*
+AnnotateDomModelServiceFactory::GetForBrowserContext(
+    content::BrowserContext* browser_context) {
+  return static_cast<autofill_assistant::AnnotateDomModelService*>(
+      GetInstance()->GetServiceForBrowserContext(browser_context, true));
+}
+
+KeyedService* AnnotateDomModelServiceFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          autofill_assistant::switches::kAutofillAssistantAnnotateDom) &&
+      !base::FeatureList::IsEnabled(
+          autofill_assistant::features::kAutofillAssistantAnnotateDom)) {
+    return nullptr;
+  }
+
+  // The optimization guide service must be available for the annotate DOM
+  // model service to be created.
+  auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(context));
+  if (!opt_guide) {
+    return nullptr;
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  return new autofill_assistant::AnnotateDomModelService(
+      opt_guide, background_task_runner);
+}

@@ -1,0 +1,18 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package merchant_signal_db;
+
+// Used for storing merchant trust signals events.
+message MerchantSignalContentProto {
+  // Original key for data (e.g. hostname).
+  string key = 1;
+
+  // Timestamp for when the merchant trust signals message was issued.
+  int64 trust_signals_message_displayed_timestamp = 2;
+}

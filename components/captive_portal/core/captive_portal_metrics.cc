@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,6 @@
 #include "base/metrics/histogram_macros.h"
 
 namespace captive_portal {
-
-void CaptivePortalMetrics::LogCaptivePortalProbeReason(
-    CaptivePortalProbeReason probe_reason) {
-  UMA_HISTOGRAM_ENUMERATION("CaptivePortal.ProbeReason", probe_reason);
-}
 
 void CaptivePortalMetrics::LogCaptivePortalBlockingPageEvent(
     CaptivePortalBlockingPageEvent event) {

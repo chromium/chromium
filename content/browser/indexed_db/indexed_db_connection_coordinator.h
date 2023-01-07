@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,17 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/indexed_db/indexed_db_origin_state_handle.h"
+#include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/browser/indexed_db/list_set.h"
 #include "content/common/content_export.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace content {
+class IndexedDBBucketStateHandle;
 class IndexedDBCallbacks;
 class IndexedDBConnection;
 class IndexedDBDatabase;
@@ -32,13 +34,19 @@ class CONTENT_EXPORT IndexedDBConnectionCoordinator {
   IndexedDBConnectionCoordinator(
       IndexedDBDatabase* db,
       TasksAvailableCallback tasks_available_callback);
+
+  IndexedDBConnectionCoordinator(const IndexedDBConnectionCoordinator&) =
+      delete;
+  IndexedDBConnectionCoordinator& operator=(
+      const IndexedDBConnectionCoordinator&) = delete;
+
   ~IndexedDBConnectionCoordinator();
 
   void ScheduleOpenConnection(
-      IndexedDBOriginStateHandle origin_state_handle,
+      IndexedDBBucketStateHandle bucket_state_handle,
       std::unique_ptr<IndexedDBPendingConnection> connection);
 
-  void ScheduleDeleteDatabase(IndexedDBOriginStateHandle origin_state_handle,
+  void ScheduleDeleteDatabase(IndexedDBBucketStateHandle bucket_state_handle,
                               scoped_refptr<IndexedDBCallbacks> callbacks,
                               base::OnceClosure on_deletion_complete);
 
@@ -96,16 +104,14 @@ class CONTENT_EXPORT IndexedDBConnectionCoordinator {
   class OpenRequest;
   class DeleteRequest;
 
-  IndexedDBDatabase* db_;
+  raw_ptr<IndexedDBDatabase> db_;
 
   TasksAvailableCallback tasks_available_callback_;
 
   base::queue<std::unique_ptr<ConnectionRequest>> request_queue_;
 
-  // |weak_factory_| is used for all callback uses.
+  // `weak_factory_` is used for all callback uses.
   base::WeakPtrFactory<IndexedDBConnectionCoordinator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBConnectionCoordinator);
 };
 
 }  // namespace content

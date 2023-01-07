@@ -1,9 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef LIBRARIES_NACL_IO_FIFO_PACKET_H_
-#define LIBRARIES_NACL_IO_FIFO_PACKET_H_
+#ifndef LIBRARIES_NACL_IO_SOCKET_FIFO_PACKET_H_
+#define LIBRARIES_NACL_IO_SOCKET_FIFO_PACKET_H_
 
 #include <stdint.h>
 #include <string.h>
@@ -28,6 +28,10 @@ class Packet;
 class FIFOPacket : public FIFOInterface {
  public:
   explicit FIFOPacket(size_t size);
+
+  FIFOPacket(const FIFOPacket&) = delete;
+  FIFOPacket& operator=(const FIFOPacket&) = delete;
+
   virtual ~FIFOPacket();
 
   virtual bool IsEmpty();
@@ -56,10 +60,8 @@ class FIFOPacket : public FIFOInterface {
   std::list<Packet*> packets_;
   uint32_t max_bytes_;
   uint32_t cur_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(FIFOPacket);
 };
 
 }  // namespace nacl_io
 
-#endif  // LIBRARIES_NACL_IO_FIFO_PACKET_H_
+#endif  // LIBRARIES_NACL_IO_SOCKET_FIFO_PACKET_H_

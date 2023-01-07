@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,13 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "components/cbor/values.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/noise.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 class GURL;
@@ -27,21 +28,25 @@ namespace cablev2 {
 
 namespace tunnelserver {
 
-// DecodeDomain converts a 22-bit tunnel server domain (as encoded by
-// |EncodeDomain|) into a string in dotted form.
-COMPONENT_EXPORT(DEVICE_FIDO) std::string DecodeDomain(uint16_t domain);
-
-// GetNewTunnelURL converts a 22-bit tunnel server domain (as encoded by
-// |EncodeDomain|), and a tunnel ID, into a WebSockets-based URL for creating a
-// new tunnel.
+// ToKnownDomainID creates a KnownDomainID from a raw 16-bit value, or returns
+// |nullopt| if the value maps to an assigned, but unknown, domain.
 COMPONENT_EXPORT(DEVICE_FIDO)
-GURL GetNewTunnelURL(uint16_t domain, base::span<const uint8_t, 16> id);
+absl::optional<KnownDomainID> ToKnownDomainID(uint16_t domain);
 
-// GetConnectURL converts a 22-bit tunnel server domain (as encoded by
-// |EncodeDomain|), a routing-ID, and a tunnel ID, into a WebSockets-based URL
-// for connecting to an existing tunnel.
+// DecodeDomain converts a 16-bit tunnel server domain into a string in dotted
+// form.
 COMPONENT_EXPORT(DEVICE_FIDO)
-GURL GetConnectURL(uint16_t domain,
+std::string DecodeDomain(KnownDomainID domain);
+
+// GetNewTunnelURL converts a tunnel server domain and a tunnel ID, into a
+// WebSockets-based URL for creating a new tunnel.
+COMPONENT_EXPORT(DEVICE_FIDO)
+GURL GetNewTunnelURL(KnownDomainID domain, base::span<const uint8_t, 16> id);
+
+// GetConnectURL converts a tunnel server domain, a routing-ID, and a tunnel ID,
+// into a WebSockets-based URL for connecting to an existing tunnel.
+COMPONENT_EXPORT(DEVICE_FIDO)
+GURL GetConnectURL(KnownDomainID domain,
                    std::array<uint8_t, kRoutingIdSize> routing_id,
                    base::span<const uint8_t, 16> id);
 
@@ -64,29 +69,34 @@ std::array<uint8_t, kAdvertSize> Encrypt(
     base::span<const uint8_t, kEIDKeySize> key);
 
 // Decrypt turns a BLE advert payload into a plaintext EID (suitable for passing
-// to |FromComponents|) by decrypting with |key|.
+// to |ToComponents|) by decrypting with |key|. It ensures that the encoded
+// tunnel server domain is recognised.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<CableEidArray> Decrypt(
+absl::optional<CableEidArray> Decrypt(
     const std::array<uint8_t, kAdvertSize>& advert,
     base::span<const uint8_t, kEIDKeySize> key);
 
 // TODO(agl): this could probably be a class.
 
 // Components contains the parts of a decrypted EID.
-struct Components {
-  uint16_t tunnel_server_domain;
+struct COMPONENT_EXPORT(DEVICE_FIDO) Components {
+  Components();
+  Components(const Components&);
+  ~Components();
+
+  tunnelserver::KnownDomainID tunnel_server_domain;
   std::array<uint8_t, kRoutingIdSize> routing_id;
   std::array<uint8_t, kNonceSize> nonce;
 };
 
-// FromComponents constructs a valid EID from the given components. |IsValid|
-// will be true of the result.
+// FromComponents constructs a valid EID from the given components. The result
+// will produce a non-nullopt value if given to |ToComponents|.
 COMPONENT_EXPORT(DEVICE_FIDO)
 CableEidArray FromComponents(const Components& components);
 
 // ToComponents explodes a decrypted EID into its components. It's the
-// inverse of |ComponentsToEID|. |IsValid| must be true for the given EID before
-// calling this function.
+// inverse of |FromComponents|. This will CHECK if the |eid| array is invalid;
+// eids from |Decrypt| are always valid.
 COMPONENT_EXPORT(DEVICE_FIDO)
 Components ToComponents(const CableEidArray& eid);
 
@@ -98,16 +108,54 @@ namespace qr {
 struct COMPONENT_EXPORT(DEVICE_FIDO) Components {
   std::array<uint8_t, device::kP256X962Length> peer_identity;
   std::array<uint8_t, 16> secret;
+
+  // num_known_domains is the number of registered tunnel server domains known
+  // to the device showing the QR code. Authenticators can use this to fallback
+  // to a hashed domain if their registered domain isn't going to work with this
+  // client.
+  int64_t num_known_domains = 0;
+
+  // supports_linking is true if the device showing the QR code supports storing
+  // and later using linking information. If this is false or absent, an
+  // authenticator may wish to avoid bothering the user about linking.
+  absl::optional<bool> supports_linking;
+
+  // request_type contains the hinted type of the request. This can
+  // be used to guide UI ahead of receiving the actual request. This defaults to
+  // `kGetAssertion` if not present or if the value in the QR code is unknown.
+  CableRequestType request_type = CableRequestType::kGetAssertion;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<Components> Parse(const std::string& qr_url);
+absl::optional<Components> Parse(const std::string& qr_url);
 
 // Encode returns the contents of a QR code that represents |qr_key|.
 COMPONENT_EXPORT(DEVICE_FIDO)
-std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key);
+std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key,
+                   CableRequestType request_type);
+
+// BytesToDigits returns a base-10 encoding of |in|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::string BytesToDigits(base::span<const uint8_t> in);
+
+// DigitsToBytes reverses the actions of |BytesToDigits|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+absl::optional<std::vector<uint8_t>> DigitsToBytes(base::StringPiece in);
 
 }  // namespace qr
+
+namespace sync {
+
+// IDNow returns the current pairing ID for Sync. This is a very rough
+// timestamp.
+COMPONENT_EXPORT(DEVICE_FIDO) uint32_t IDNow();
+
+// IDIsValid returns true iff |candidate| is an acceptable pairing ID. This
+// determination is based on the current time since Sync pairing IDs are
+// timestamps in disguise.
+COMPONENT_EXPORT(DEVICE_FIDO) bool IDIsValid(uint32_t candidate);
+
+}  // namespace sync
 
 // DerivedValueType enumerates the different types of values that might be
 // derived in caBLEv2 from some secret. The values this this enum are protocol
@@ -118,6 +166,7 @@ enum class DerivedValueType : uint32_t {
   kPSK = 3,
   kPairedSecret = 4,
   kIdentityKeySeed = 5,
+  kPerContactIDSecret = 6,
 };
 
 namespace internal {
@@ -128,6 +177,18 @@ void Derive(uint8_t* out,
             base::span<const uint8_t> nonce,
             DerivedValueType type);
 }  // namespace internal
+
+// RequestTypeToString maps |request_type| to either "ga" (for getAssertion) or
+// "mc" (for makeCredential). These strings are encoded in the QR code and
+// client payload to give the phone an early hint about the type of request.
+// This lets it craft better UI.
+COMPONENT_EXPORT(DEVICE_FIDO)
+const char* RequestTypeToString(CableRequestType request_type);
+
+// RequestTypeFromString performs the inverse of `RequestTypeToString`. If the
+// value of `s` is unknown, `kGetAssertion` is returned.
+COMPONENT_EXPORT(DEVICE_FIDO)
+CableRequestType RequestTypeFromString(const std::string& s);
 
 // Derive derives a sub-secret from a secret and nonce. It is not possible to
 // learn anything about |secret| from the value of the sub-secret, assuming that
@@ -142,19 +203,24 @@ std::array<uint8_t, N> Derive(base::span<const uint8_t> secret,
   return ret;
 }
 
-// EncodePaddedCBORMap encodes the given map and pads it to 256 bytes in such a
-// way that |DecodePaddedCBORMap| can decode it. The padding is done on the
-// assumption that the returned bytes will be encrypted and the encoded size of
-// the map should be hidden. The function can fail if the CBOR encoding fails
-// or, somehow, the size overflows.
+// IdentityKey returns a P-256 private key derived from |root_secret|.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<std::vector<uint8_t>> EncodePaddedCBORMap(
+bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret);
+
+// EncodePaddedCBORMap encodes the given map and pads it to
+// |kPostHandshakeMsgPaddingGranularity| bytes in such a way that
+// |DecodePaddedCBORMap| can decode it. The padding is done on the assumption
+// that the returned bytes will be encrypted and the encoded size of the map
+// should be hidden. The function can fail if the CBOR encoding fails or,
+// somehow, the size overflows.
+COMPONENT_EXPORT(DEVICE_FIDO)
+absl::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
     cbor::Value::MapValue map);
 
 // DecodePaddedCBORMap unpads and decodes a CBOR map as produced by
 // |EncodePaddedCBORMap|.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<cbor::Value> DecodePaddedCBORMap(
+absl::optional<cbor::Value> DecodePaddedCBORMap(
     base::span<const uint8_t> input);
 
 // Crypter handles the post-handshake encryption of CTAP2 messages.
@@ -177,14 +243,21 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Crypter {
   bool Decrypt(base::span<const uint8_t> ciphertext,
                std::vector<uint8_t>* out_plaintext);
 
+  // Encrypt and decrypt with big-endian nonces and no additional data. This
+  // is the format in the spec and that we want to transition to.
+  void UseNewConstruction();
+
   // IsCounterpartyOfForTesting returns true if |other| is the mirror-image of
   // this object. (I.e. read/write keys are equal but swapped.)
   bool IsCounterpartyOfForTesting(const Crypter& other) const;
+
+  bool& GetNewConstructionFlagForTesting();
 
  private:
   const std::array<uint8_t, 32> read_key_, write_key_;
   uint32_t read_sequence_num_ = 0;
   uint32_t write_sequence_num_ = 0;
+  bool new_construction_ = false;
 };
 
 // HandshakeHash is the hashed transcript of a handshake. This can be used as a
@@ -196,7 +269,7 @@ using HandshakeHash = std::array<uint8_t, 32>;
 // |Crypter| that can encrypt and decrypt future messages on the connection, and
 // the handshake hash that can be used to tie signatures to the connection.
 using HandshakeResult =
-    base::Optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>;
+    absl::optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>;
 
 // HandshakeInitiator starts a caBLE v2 handshake and processes the single
 // response message from the other party. The handshake is always initiated from
@@ -210,11 +283,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
       // peer_identity, if not nullopt, specifies that this is a paired
       // handshake and then contains a P-256 public key for the peer. Otherwise
       // this is a QR handshake.
-      base::Optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
+      absl::optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
       // identity_seed, if not nullopt, specifies that this is a QR handshake
       // and contains the seed for QR key for this client. identity_seed must be
       // provided iff |peer_identity| is not.
-      base::Optional<base::span<const uint8_t, kQRSeedSize>> identity_seed);
+      absl::optional<base::span<const uint8_t, kQRSeedSize>> identity_seed);
 
   ~HandshakeInitiator();
 
@@ -231,7 +304,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
   Noise noise_;
   std::array<uint8_t, 32> psk_;
 
-  base::Optional<std::array<uint8_t, kP256X962Length>> peer_identity_;
+  absl::optional<std::array<uint8_t, kP256X962Length>> peer_identity_;
   bssl::UniquePtr<EC_KEY> local_identity_;
   bssl::UniquePtr<EC_KEY> ephemeral_key_;
 };
@@ -248,7 +321,7 @@ HandshakeResult RespondToHandshake(
     bssl::UniquePtr<EC_KEY> identity,
     // peer_identity, which must be non-nullopt iff |identity| is nullptr,
     // contains the peer's public key as taken from the QR code.
-    base::Optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
+    absl::optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
     // in contains the initial handshake message from the peer.
     base::span<const uint8_t> in,
     // out_response is set to the response handshake message, if successful.

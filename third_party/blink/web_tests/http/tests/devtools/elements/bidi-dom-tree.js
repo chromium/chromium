@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that elements panel correctly displays DOM tree structure for bi-di pages.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <!DOCTYPE html>
@@ -12,7 +12,7 @@
     `);
 
   // Warm up highlighter module.
-  runtime.loadModulePromise('source_frame').then(function() {
+  TestRunner.loadLegacyModule('source_frame').then(function() {
     ElementsTestRunner.expandElementsTree(step1);
   });
 

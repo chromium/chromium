@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,7 +81,7 @@ void MockMediaSessionMojoObserver::MediaSessionInfoChanged(
 }
 
 void MockMediaSessionMojoObserver::MediaSessionMetadataChanged(
-    const base::Optional<MediaMetadata>& metadata) {
+    const absl::optional<MediaMetadata>& metadata) {
   session_metadata_ = metadata;
 
   if (expected_metadata_.has_value() && expected_metadata_ == metadata) {
@@ -112,10 +112,10 @@ void MockMediaSessionMojoObserver::MediaSessionImagesChanged(
 
   if (expected_images_of_type_.has_value()) {
     auto type = expected_images_of_type_->first;
-    auto images = expected_images_of_type_->second;
+    auto expected_images = expected_images_of_type_->second;
     auto it = session_images_->find(type);
 
-    if (it != session_images_->end() && it->second == images) {
+    if (it != session_images_->end() && it->second == expected_images) {
       run_loop_->Quit();
       expected_images_of_type_.reset();
     }
@@ -123,7 +123,7 @@ void MockMediaSessionMojoObserver::MediaSessionImagesChanged(
 }
 
 void MockMediaSessionMojoObserver::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   session_position_ = position;
 
   if (position.has_value() && expected_position_.has_value() &&
@@ -241,7 +241,7 @@ void MockMediaSessionMojoObserver::WaitForExpectedImagesOfType(
 }
 
 void MockMediaSessionMojoObserver::WaitForEmptyPosition() {
-  // |session_position_| is doubly wrapped in base::Optional so we must check
+  // |session_position_| is doubly wrapped in absl::optional so we must check
   // both values.
   if (session_position_.has_value() && !session_position_->has_value())
     return;
@@ -478,14 +478,14 @@ void MockMediaSession::FlushForTesting() {
 }
 
 void MockMediaSession::SimulateMetadataChanged(
-    const base::Optional<MediaMetadata>& metadata) {
+    const absl::optional<MediaMetadata>& metadata) {
   for (auto& observer : observers_) {
     observer->MediaSessionMetadataChanged(metadata);
   }
 }
 
 void MockMediaSession::SimulatePositionChanged(
-    const base::Optional<MediaPosition>& position) {
+    const absl::optional<MediaPosition>& position) {
   for (auto& observer : observers_) {
     observer->MediaSessionPositionChanged(position);
   }

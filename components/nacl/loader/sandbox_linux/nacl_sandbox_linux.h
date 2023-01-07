@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 
 namespace sandbox {
 class SetuidSandboxClient;
@@ -38,6 +37,10 @@ namespace nacl {
 class NaClSandbox {
  public:
   NaClSandbox();
+
+  NaClSandbox(const NaClSandbox&) = delete;
+  NaClSandbox& operator=(const NaClSandbox&) = delete;
+
   ~NaClSandbox();
 
   // This API will only work if the layer-1 sandbox is not sealed and the
@@ -54,11 +57,10 @@ class NaClSandbox {
   // setuid sandbox or was started by the namespace sandbox.
   void InitializeLayerOneSandbox();
   // Will attempt to initialize the layer-2 sandbox, depending on flags and the
-  // environment. |uses_nonsfi_mode| describes which seccomp-bpf policy is
-  // appropriate.
+  // environment.
   // This layer will also add a limit to how much of the address space can be
   // used.
-  void InitializeLayerTwoSandbox(bool uses_nonsfi_mode);
+  void InitializeLayerTwoSandbox();
   // Seal the layer-1 sandbox, making it enforcing.
   void SealLayerOneSandbox();
   // Check that the current sandboxing state matches the level of sandboxing
@@ -74,12 +76,10 @@ class NaClSandbox {
   bool layer_one_enabled_;
   bool layer_one_sealed_;
   bool layer_two_enabled_;
-  bool layer_two_is_nonsfi_;
   // |proc_fd_| must be released before the layer-1 sandbox is considered
   // enforcing.
   base::ScopedFD proc_fd_;
   std::unique_ptr<sandbox::SetuidSandboxClient> setuid_sandbox_client_;
-  DISALLOW_COPY_AND_ASSIGN(NaClSandbox);
 };
 
 }  // namespace nacl

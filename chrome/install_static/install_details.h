@@ -1,15 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_INSTALL_STATIC_INSTALL_DETAILS_H_
 #define CHROME_INSTALL_STATIC_INSTALL_DETAILS_H_
 
-#include <windows.h>
-
 #include <memory>
 #include <string>
 
+#include "base/win/windows_types.h"
 #include "chrome/install_static/install_constants.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
@@ -22,7 +21,6 @@ class ScopedInstallDetails;
 // The origin of the active channel.
 enum class ChannelOrigin {
   kInstallMode,           // The channel dictated by the install mode.
-  kAdditionalParameters,  // The legacy "ap" value.
   kPolicy,                // The updater's "TargetChannel" policy.
 };
 
@@ -59,11 +57,10 @@ class InstallDetails {
     // The string length of |channel| (not including the string terminator).
     size_t channel_length;
 
-    // The origin of the |channel| value. Install modes that use the
-    // ADDITIONAL_PARAMETERS channel strategy may determine the channel by
-    // either the "ap" value (kAdditionalParameters) or by an administrative
-    // policy override (kPolicy). For all other install modes, the channel is
-    // dictated by the mode itself (kInstallMode).
+    // The origin of the |channel| value. Install modes that use the FLOATING
+    // channel strategy may determine the channel by an administrative policy
+    // override (kPolicy). For all other install modes, the channel is dictated
+    // by the mode itself (kInstallMode).
     ChannelOrigin channel_origin;
 
     // The value that was used to select |channel| if |channel_origin| is
@@ -167,8 +164,8 @@ class InstallDetails {
     return std::wstring(payload_->channel, payload_->channel_length);
   }
 
-  // The origin of a ChannelStrategy::ADDITIONAL_PARAMETERS install mode's
-  // channel, or kInstallMode.
+  // The origin of a ChannelStrategy::FLOATING install mode's channel, or
+  // kInstallMode.
   ChannelOrigin channel_origin() const { return payload_->channel_origin; }
 
   // Returns the value that was used to select the channel if |channel_origin()|

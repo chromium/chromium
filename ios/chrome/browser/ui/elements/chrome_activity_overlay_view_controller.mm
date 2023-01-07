@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,8 +55,7 @@ const CGFloat kActivityIndicatorViewSize = 55;
     [activityView.bottomAnchor
         constraintEqualToAnchor:containerView.bottomAnchor
                        constant:-kContainerViewSpacing],
-    [activityView.centerXAnchor constraintEqualToAnchor:label.centerXAnchor
-                                               constant:0],
+    [activityView.centerXAnchor constraintEqualToAnchor:label.centerXAnchor],
     [activityView.heightAnchor
         constraintEqualToConstant:kActivityIndicatorViewSize],
     [activityView.widthAnchor

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ TEST_F(InputMethodSurfaceTest, SetGeometryShouldIgnoreWorkArea) {
 
   // With work area top insets.
   display_manager->UpdateWorkAreaOfDisplay(display_id,
-                                           gfx::Insets(200, 0, 0, 0));
+                                           gfx::Insets::TLBR(200, 0, 0, 0));
 
   gfx::Size buffer_size(800, 600);
   std::unique_ptr<Buffer> buffer(

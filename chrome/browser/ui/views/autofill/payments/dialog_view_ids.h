@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include "components/autofill/core/browser/field_types.h"
 
 // This defines an enumeration of IDs that can uniquely identify a view within
-// the scope of the local and upload credit card save bubbles as well as the
-// local card migration bubble and dialogs.
+// the scope of various credit-card-related Autofill bubbles and dialogs.
 
 namespace autofill {
 
@@ -26,6 +25,7 @@ enum DialogViewId : int {
   SIGN_IN_PROMO_VIEW,        // Contains the sign-in promo view
   MANAGE_CARDS_VIEW,         // The manage cards view
   EXPIRATION_DATE_VIEW,      // Contains the dropdowns for expiration date
+  USER_INFORMATION_VIEW,     // User avatar/display picture and email address.
 
   // The sub-view that contains the sign-in button in the promo.
   SIGN_IN_VIEW,

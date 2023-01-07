@@ -1,11 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/client/input/touch_input_scaler.h"
 
 #include "base/check_op.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "remoting/proto/event.pb.h"
 
 namespace remoting {
@@ -29,7 +29,7 @@ float Scale(float value, int output_max, int input_max) {
 // |input_max|.
 float ScaleAndClamp(float value, int output_max, int input_max) {
   value = Scale(value, output_max, input_max);
-  return base::ClampToRange(value, 0.0f, float{output_max});
+  return base::clamp(value, 0.0f, static_cast<float>(output_max));
 }
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
@@ -15,14 +14,15 @@ namespace content_settings {
 
 class PatternParser {
  public:
+  PatternParser() = delete;
+  PatternParser(const PatternParser&) = delete;
+  PatternParser& operator=(const PatternParser&) = delete;
+
   static void Parse(base::StringPiece pattern_spec,
                     ContentSettingsPattern::BuilderInterface* builder);
 
   static std::string ToString(
       const ContentSettingsPattern::PatternParts& parts);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PatternParser);
 };
 
 }  // namespace content_settings

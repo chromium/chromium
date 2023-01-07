@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -99,11 +99,13 @@ if (is_android) {
     ]
   }
 
-  java_library("components_background_task_scheduler_junit_tests") {
-    # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-    bypass_platform_checks = true
-    testonly = true
+  robolectric_library("components_background_task_scheduler_junit_tests") {
+    include_android_sdk = false
     sources = [
+      "internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerImplWithMockTest.java",
+      "internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerJobServiceTest.java",
+      "internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BundleToPersistableBundleConverterTest.java",
+      "internal/android/java/src/org/chromium/components/background_task_scheduler/internal/MockBackgroundTaskSchedulerDelegate.java",
       "internal/android/junit/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskGcmTaskServiceTest.java",
       "internal/android/junit/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskJobServiceTest.java",
       "internal/android/junit/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerAlarmManagerTest.java",
@@ -132,8 +134,8 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//components/background_task_scheduler:public_java",
+      "//content/public/test/android:content_java_test_support",
       "//third_party/android_deps:chromium_play_services_availability_shadows_java",
-      "//third_party/android_deps:robolectric_all_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
     ]

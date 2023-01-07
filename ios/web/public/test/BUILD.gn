@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,20 +13,27 @@ source_set("test") {
   ]
 
   deps = [
+    ":test_fixture",
     "//base",
     "//base/test:test_support",
-    "//ios/web:web",
+    "//ios/web",
     "//ios/web/common:features",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/navigation",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public/deprecated",
+    "//ios/web/test:js_test_util_internal",
     "//ios/web/test:test_support",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ui/base",
   ]
 
-  allow_circular_includes_from = [ "//ios/web/test:test_support" ]
+  allow_circular_includes_from = [
+    ":test_fixture",
+    "//ios/web/test:test_support",
+  ]
 
   sources = [
     "scoped_testing_web_client.h",
@@ -34,13 +41,73 @@ source_set("test") {
     "test_redirect_observer.h",
     "test_redirect_observer.mm",
     "test_web_thread.h",
-    "web_js_test.h",
+    "web_state_test_util.h",
+    "web_state_test_util.mm",
     "web_task_environment.h",
+  ]
+}
+
+source_set("download_test_utils") {
+  deps = [
+    "//base",
+    "//ios/web/public/download",
+  ]
+
+  sources = [
+    "download_task_test_util.h",
+    "download_task_test_util.mm",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+# Those fixtures *must* not be used directly from //ios/chrome code as they
+# create web::BrowserState* as the BrowserState which violates one important
+# invariant of //ios/chrome code (the invariant that all BrowserStates are of
+# a sub-class of ChromeBrowserState). This is why the classes are defined in
+# a target that limits its visibility to //ios/web, //components and to the
+# targets in //ios/chrome that safely wraps those fixtures.
+source_set("test_fixture") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+
+  visibility = [
+    "//components/*",
+    "//ios/components/*",
+    "//ios/web/*",
+    "//ios/web_view/*",
+
+    # Do not add new targets from //ios/chrome here. If you want to do it,
+    # please contact sdefresne@ or rohitrao@ to check with them.
+    "//ios/chrome/test:ios_chrome_unit_test_suite",
+  ]
+
+  sources = [
     "web_test.h",
     "web_test.mm",
     "web_test_suite.h",
     "web_test_with_web_state.h",
     "web_test_with_web_state.mm",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//ios/web",
+    "//ios/web/common:features",
+    "//ios/web/js_messaging:java_script_feature",
+    "//ios/web/navigation",
+    "//ios/web/navigation:core",
+    "//ios/web/navigation:wk_navigation_util",
+    "//ios/web/public/deprecated",
+    "//ios/web/public/test:util",
+    "//ios/web/public/test/fakes",
+    "//ios/web/test:js_test_util_internal",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
+    "//ui/base",
+    "//url",
   ]
 }
 
@@ -67,10 +134,11 @@ source_set("util") {
     "//ios/net",
     "//ios/web/find_in_page",
     "//ios/web/js_messaging",
+    "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public:public",
     "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",
-    "//ios/web/web_state/ui:ui",
+    "//ios/web/web_state/ui",
     "//ios/web/web_view:util",
     "//net",
     "//testing/gtest",
@@ -89,10 +157,28 @@ source_set("util") {
     "js_test_util.mm",
     "navigation_test_util.h",
     "navigation_test_util.mm",
+    "task_observer_util.h",
+    "task_observer_util.mm",
     "url_test_util.h",
     "web_view_content_test_util.h",
     "web_view_content_test_util.mm",
     "web_view_interaction_test_util.h",
     "web_view_interaction_test_util.mm",
   ]
+}
+
+source_set("fuzzer_support") {
+  testonly = true
+  sources = [
+    "fuzzer_env_with_web_state.h",
+    "fuzzer_env_with_web_state.mm",
+  ]
+  deps = [
+    ":test",
+    "//base",
+    "//base/test:test_support",
+    "//ios/web/public",
+    "//ios/web/public/test/fakes",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }

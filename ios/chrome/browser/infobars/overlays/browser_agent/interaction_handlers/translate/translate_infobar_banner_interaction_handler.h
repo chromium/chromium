@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_banner_interaction_handler.h"
 
-#include "base/scoped_observer.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 
 // Helper object that updates the model layer for interaction events with the
@@ -22,7 +21,7 @@ class TranslateInfobarBannerInteractionHandler
   void MainButtonTapped(InfoBarIOS* infobar) override;
 
  private:
-  // Returns the password delegate from |infobar|.
+  // Returns the password delegate from `infobar`.
   translate::TranslateInfoBarDelegate* GetInfobarDelegate(InfoBarIOS* infobar);
 };
 

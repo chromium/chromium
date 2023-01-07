@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ class PredictionServiceRequest {
   void LookupReponseReceived(
       bool lookup_succesful,
       bool response_from_cache,
-      std::unique_ptr<permissions::GeneratePredictionsResponse> response);
+      const absl::optional<permissions::GeneratePredictionsResponse>& response);
 
   permissions::PredictionServiceBase::LookupResponseCallback callback_;
 

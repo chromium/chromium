@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,10 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "components/cbor/values.h"
 #include "crypto/sha2.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace fido_parsing_utils {
@@ -52,8 +52,8 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kEs256[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::vector<uint8_t> Materialize(base::span<const uint8_t> span);
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<std::vector<uint8_t>> MaterializeOrNull(
-    base::Optional<base::span<const uint8_t>> span);
+absl::optional<std::vector<uint8_t>> MaterializeOrNull(
+    absl::optional<base::span<const uint8_t>> span);
 
 // Returns a materialized copy of the static |span|, that is, an array with the
 // same elements.
@@ -140,14 +140,15 @@ bool CopyCBORBytestring(std::array<uint8_t, N>* out,
 }
 
 constexpr std::array<uint8_t, 4> Uint32LittleEndian(uint32_t value) {
-  return {value & 0xFF, value >> 8 & 0xFF, value >> 16 & 0xFF,
-          value >> 24 & 0xFF};
+  return {static_cast<uint8_t>(value), static_cast<uint8_t>(value >> 8),
+          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24)};
 }
 
 constexpr std::array<uint8_t, 8> Uint64LittleEndian(uint64_t value) {
-  return {value & 0xFF,       value >> 8 & 0xFF,  value >> 16 & 0xFF,
-          value >> 24 & 0xFF, value >> 32 & 0xFF, value >> 40 & 0xFF,
-          value >> 48 & 0xFF, value >> 56 & 0xFF};
+  return {static_cast<uint8_t>(value),       static_cast<uint8_t>(value >> 8),
+          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24),
+          static_cast<uint8_t>(value >> 32), static_cast<uint8_t>(value >> 40),
+          static_cast<uint8_t>(value >> 48), static_cast<uint8_t>(value >> 56)};
 }
 
 }  // namespace fido_parsing_utils

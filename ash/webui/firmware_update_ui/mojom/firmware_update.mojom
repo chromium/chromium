@@ -1,0 +1,106 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.firmware_update.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Represents the priority of an firmware update e.g. a security update may be
+// considered a critical priority.
+enum UpdatePriority {
+  kLow,
+  kMedium,
+  kHigh,
+  kCritical,
+};
+
+// Contains metadata in regards to a specific device's firmware update. Includes
+// the device to be updated and metadata of the firmware state.
+struct FirmwareUpdate {
+  // Unique identifier of the device.
+  string device_id;
+
+  // Device name, may be in an internationalized language.
+  mojo_base.mojom.String16 device_name;
+
+  // Device firmware version.
+  string device_version;
+
+  // Description text associated with the device.
+  mojo_base.mojom.String16 device_description;
+
+  // Priority of the device's firmware update.
+  UpdatePriority priority;
+
+  // Filepath of the device's firmware update.
+  mojo_base.mojom.FilePath filepath;
+
+  // The expected sha256 checksum of the firmware update patch. Formatted as:
+  // "{sha256}".
+  string checksum;
+};
+
+// Contains the completion percentage and state of an in-progress firmware
+// update.
+struct InstallationProgress {
+  uint32 percentage;
+  UpdateState state;
+};
+
+// Represents the state of an in-progress firmware update.
+enum UpdateState {
+  kUnknown,
+  kIdle,
+  kUpdating,
+  kRestarting,
+  kFailed,
+  kSuccess,
+};
+
+// Send update descriptions.
+interface UpdateObserver {
+  // Fired once we've received the pending updates for all available devices
+  // (if any). Will fire once with an empty array if there are no updates
+  // available at the time the observer is attached.
+  OnUpdateListChanged(array<FirmwareUpdate> firmware_updates);
+};
+
+// Observer interface used to send remote updates about an in-progress
+// firmware update. Called when dbus::PropertiesChanged() is called for the
+// Fwupd interface.
+interface UpdateProgressObserver {
+  // Sends status updates for the in-progress firmware update.
+  OnStatusChanged(InstallationProgress update);
+};
+
+// Enables clients to receive a list of devices with pending updates.
+// Implemented in the browser process and called by the Firmware Update SWA
+// (a renderer process).
+interface UpdateProvider {
+  // Registers an observer to be notified on changes to devices with pending
+  // updates.
+  ObservePeripheralUpdates(pending_remote<UpdateObserver> observer);
+
+  // TODO(jimmyxgong): Update to include the filename/path of the file used to
+  // update.
+  // Stores the |device_id| to be updated and returns a |InstallController|
+  // remote.
+  PrepareForUpdate(string device_id) =>
+    (pending_remote<InstallController>? controller);
+
+  // Returns the update if there is a firmware update in progress. If not update
+  // is in progress, |update| will be empty.
+  FetchInProgressUpdate() => (FirmwareUpdate? update);
+};
+
+// Enables clients to begin the install flow and receive progress updates.
+interface InstallController {
+  // Responsible for calling |FirmwareUpdateManager::StartInstall| to start
+  // the update.
+  BeginUpdate(string device_id, mojo_base.mojom.FilePath filepath);
+  // Registers an observer that will be notified of changes to
+  // the inflight update's progress.
+  AddObserver(pending_remote<UpdateProgressObserver> observer);
+};

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_value_store_migrator.h"
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
@@ -43,6 +42,12 @@ class LockScreenValueStoreMigratorImpl : public LockScreenValueStoreMigrator {
                                    ValueStoreCache* target_store,
                                    base::SequencedTaskRunner* task_runner,
                                    const std::string& crypto_key);
+
+  LockScreenValueStoreMigratorImpl(const LockScreenValueStoreMigratorImpl&) =
+      delete;
+  LockScreenValueStoreMigratorImpl& operator=(
+      const LockScreenValueStoreMigratorImpl&) = delete;
+
   ~LockScreenValueStoreMigratorImpl() override;
 
   // LockScreenValueStorageMigrator:
@@ -141,8 +146,6 @@ class LockScreenValueStoreMigratorImpl : public LockScreenValueStoreMigrator {
 
   base::WeakPtrFactory<LockScreenValueStoreMigratorImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenValueStoreMigratorImpl);
 };
 
 }  // namespace lock_screen_data

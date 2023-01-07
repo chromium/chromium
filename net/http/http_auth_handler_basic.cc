@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,8 @@
 #include "net/http/http_auth_challenge_tokenizer.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_auth_scheme.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -43,7 +45,7 @@ bool ParseRealm(const HttpAuthChallengeTokenizer& tokenizer,
   realm->clear();
   HttpUtil::NameValuePairsIterator parameters = tokenizer.param_pairs();
   while (parameters.GetNext()) {
-    if (!base::LowerCaseEqualsASCII(parameters.name_piece(), "realm"))
+    if (!base::EqualsCaseInsensitiveASCII(parameters.name_piece(), "realm"))
       continue;
 
     if (!ConvertToUtf8AndNormalize(parameters.value_piece(), kCharsetLatin1,
@@ -59,7 +61,7 @@ bool ParseRealm(const HttpAuthChallengeTokenizer& tokenizer,
 bool HttpAuthHandlerBasic::Init(
     HttpAuthChallengeTokenizer* challenge,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   auth_scheme_ = HttpAuth::AUTH_SCHEME_BASIC;
   score_ = 1;
   properties_ = 0;
@@ -116,8 +118,8 @@ int HttpAuthHandlerBasic::Factory::CreateAuthHandler(
     HttpAuthChallengeTokenizer* challenge,
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key,
-    const GURL& origin,
+    const NetworkAnonymizationKey& network_anonymization_key,
+    const url::SchemeHostPort& scheme_host_port,
     CreateReason reason,
     int digest_nonce_count,
     const NetLogWithSource& net_log,
@@ -125,17 +127,18 @@ int HttpAuthHandlerBasic::Factory::CreateAuthHandler(
     std::unique_ptr<HttpAuthHandler>* handler) {
   if (http_auth_preferences() &&
       !http_auth_preferences()->basic_over_http_enabled() &&
-      origin.SchemeIs(url::kHttpScheme)) {
+      scheme_host_port.scheme() == url::kHttpScheme) {
     return ERR_UNSUPPORTED_AUTH_SCHEME;
   }
   // TODO(cbentzel): Move towards model of parsing in the factory
   //                 method and only constructing when valid.
-  std::unique_ptr<HttpAuthHandler> tmp_handler(new HttpAuthHandlerBasic());
+  auto tmp_handler = std::make_unique<HttpAuthHandlerBasic>();
   if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
-                                      network_isolation_key, origin, net_log)) {
+                                      network_anonymization_key,
+                                      scheme_host_port, net_log)) {
     return ERR_INVALID_RESPONSE;
   }
-  handler->swap(tmp_handler);
+  *handler = std::move(tmp_handler);
   return OK;
 }
 

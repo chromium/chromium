@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,7 @@ bool TabGroupsEventRouter::ShouldTrackBrowser(Browser* browser) {
 }
 
 void TabGroupsEventRouter::DispatchGroupCreated(tab_groups::TabGroupId group) {
-  std::unique_ptr<base::ListValue> args(api::tab_groups::OnCreated::Create(
+  auto args(api::tab_groups::OnCreated::Create(
       *tab_groups_util::CreateTabGroupObject(group)));
 
   DispatchEvent(events::TAB_GROUPS_ON_CREATED,
@@ -69,7 +69,7 @@ void TabGroupsEventRouter::DispatchGroupCreated(tab_groups::TabGroupId group) {
 }
 
 void TabGroupsEventRouter::DispatchGroupRemoved(tab_groups::TabGroupId group) {
-  std::unique_ptr<base::ListValue> args(api::tab_groups::OnRemoved::Create(
+  auto args(api::tab_groups::OnRemoved::Create(
       *tab_groups_util::CreateTabGroupObject(group)));
 
   DispatchEvent(events::TAB_GROUPS_ON_REMOVED,
@@ -77,7 +77,7 @@ void TabGroupsEventRouter::DispatchGroupRemoved(tab_groups::TabGroupId group) {
 }
 
 void TabGroupsEventRouter::DispatchGroupMoved(tab_groups::TabGroupId group) {
-  std::unique_ptr<base::ListValue> args(api::tab_groups::OnMoved::Create(
+  auto args(api::tab_groups::OnMoved::Create(
       *tab_groups_util::CreateTabGroupObject(group)));
 
   DispatchEvent(events::TAB_GROUPS_ON_MOVED,
@@ -85,17 +85,16 @@ void TabGroupsEventRouter::DispatchGroupMoved(tab_groups::TabGroupId group) {
 }
 
 void TabGroupsEventRouter::DispatchGroupUpdated(tab_groups::TabGroupId group) {
-  std::unique_ptr<base::ListValue> args(api::tab_groups::OnUpdated::Create(
+  auto args(api::tab_groups::OnUpdated::Create(
       *tab_groups_util::CreateTabGroupObject(group)));
 
   DispatchEvent(events::TAB_GROUPS_ON_UPDATED,
                 api::tab_groups::OnUpdated::kEventName, std::move(args));
 }
 
-void TabGroupsEventRouter::DispatchEvent(
-    events::HistogramValue histogram_value,
-    const std::string& event_name,
-    std::unique_ptr<base::ListValue> args) {
+void TabGroupsEventRouter::DispatchEvent(events::HistogramValue histogram_value,
+                                         const std::string& event_name,
+                                         base::Value::List args) {
   // |event_router_| can be null in tests.
   if (!event_router_)
     return;

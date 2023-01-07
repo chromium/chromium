@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.widget.highlight;
 
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.View;
@@ -74,5 +75,17 @@ public class ViewHighlighterTestUtils {
      */
     public static boolean checkHighlightPulse(View view) {
         return checkHighlightPulse(view, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
+    }
+
+    /**
+     * Draws the {@link PulseDrawable} attached to the {@link View} with the {@link Canvas}.
+     */
+    public static void drawPulseDrawable(View view, Canvas canvas) {
+        if (!checkHighlightOn(view)) return;
+        LayerDrawable layerDrawable = (LayerDrawable) view.getBackground();
+        PulseDrawable pulseDrawable =
+                (PulseDrawable) layerDrawable.getDrawable(layerDrawable.getNumberOfLayers() - 1);
+
+        pulseDrawable.draw(canvas);
     }
 }

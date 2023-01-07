@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 
+#include "base/observer_list.h"
 #include "chrome/common/extensions/api/settings_private.h"
 
 namespace settings_api = extensions::api::settings_private;
@@ -82,11 +83,9 @@ void GeneratedPref::AddUserSelectableValue(
     settings_api::PrefObject* pref_object,
     int value) {
   if (!pref_object->user_selectable_values) {
-    pref_object->user_selectable_values =
-        std::make_unique<std::vector<std::unique_ptr<base::Value>>>();
+    pref_object->user_selectable_values.emplace();
   }
-  pref_object->user_selectable_values->push_back(
-      std::make_unique<base::Value>(static_cast<int>(value)));
+  pref_object->user_selectable_values->push_back(base::Value(value));
 }
 
 }  // namespace settings_private

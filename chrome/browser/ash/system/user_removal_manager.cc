@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -28,8 +29,7 @@ namespace {
 
 // The time that InitiateUserRemoval waits on the passed callback to do a log
 // out, otherwise it does the log out itself.
-constexpr base::TimeDelta kFailsafeTimerTimeout =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kFailsafeTimerTimeout = base::Seconds(60);
 
 // Override for the LogOut function inside of tests.
 base::OnceClosure& GetLogOutOverrideCallbackForTest() {
@@ -41,12 +41,23 @@ base::OnceClosure& GetLogOutOverrideCallbackForTest() {
 
 bool RemoveUsersIfNeeded() {
   PrefService* local_state = g_browser_process->local_state();
-  const bool should_remove_users =
-      local_state->GetBoolean(prefs::kRemoveUsersRemoteCommand);
-  if (!should_remove_users)
+  const PrefService::Preference* pref =
+      local_state->FindPreference(prefs::kRemoveUsersRemoteCommand);
+
+  if (pref->IsDefaultValue()) {
+    // Nothing to be done.
     return false;
+  }
+
+  if (!pref->GetValue()->GetBool()) {
+    LOG(ERROR) << "RemoveUsers started and did not finish. Chrome crashed?";
+    // Return to avoid crash loop.
+    return false;
+  }
 
   local_state->SetBoolean(prefs::kRemoveUsersRemoteCommand, false);
+  local_state->CommitPendingWrite();
+  // TODO(https://crbug.com/1344832): Emit start metric here.
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   // Make a copy of the list since we'll be removing users (and the list would
@@ -54,8 +65,15 @@ bool RemoveUsersIfNeeded() {
   const user_manager::UserList user_list = user_manager->GetUsers();
 
   for (user_manager::User* user : user_list)
-    user_manager->RemoveUser(user->GetAccountId(), nullptr);
+    user_manager->RemoveUser(
+        user->GetAccountId(),
+        user_manager::UserRemovalReason::REMOTE_ADMIN_INITIATED,
+        /*delegate=*/nullptr);
 
+  // Revert to default value after removal is done.
+  local_state->ClearPref(prefs::kRemoveUsersRemoteCommand);
+
+  // TODO(https://crbug.com/1344832): Emit finish metric here.
   return true;
 }
 

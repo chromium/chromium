@@ -1,14 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/devtools/chrome_devtools_session.h"
 
 #include <memory>
+#include <type_traits>
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/devtools/protocol/cast_handler.h"
+#include "chrome/browser/devtools/protocol/emulation_handler.h"
 #include "chrome/browser/devtools/protocol/page_handler.h"
 #include "chrome/browser/devtools/protocol/security_handler.h"
 #include "chrome/browser/devtools/protocol/target_handler.h"
@@ -22,23 +26,51 @@
 #include "chrome/browser/devtools/protocol/window_manager_handler.h"
 #endif
 
+namespace {
+
+template <typename Handler>
+bool IsDomainAvailableToUntrustedClient() {
+  return std::disjunction_v<std::is_same<Handler, PageHandler>,
+                            std::is_same<Handler, EmulationHandler>,
+                            std::is_same<Handler, TargetHandler>>;
+}
+
+}  // namespace
+
 ChromeDevToolsSession::ChromeDevToolsSession(
     content::DevToolsAgentHostClientChannel* channel)
     : dispatcher_(this), client_channel_(channel) {
   content::DevToolsAgentHost* agent_host = channel->GetAgentHost();
   if (agent_host->GetWebContents() &&
       agent_host->GetType() == content::DevToolsAgentHost::kTypePage) {
-    page_handler_ = std::make_unique<PageHandler>(agent_host->GetWebContents(),
-                                                  &dispatcher_);
-    security_handler_ = std::make_unique<SecurityHandler>(
-        agent_host->GetWebContents(), &dispatcher_);
-    if (channel->GetClient()->MayAttachToBrowser()) {
+    if (IsDomainAvailableToUntrustedClient<PageHandler>() ||
+        channel->GetClient()->IsTrusted()) {
+      page_handler_ = std::make_unique<PageHandler>(
+          agent_host, agent_host->GetWebContents(), &dispatcher_);
+    }
+    if (IsDomainAvailableToUntrustedClient<SecurityHandler>() ||
+        channel->GetClient()->IsTrusted()) {
+      security_handler_ = std::make_unique<SecurityHandler>(
+          agent_host->GetWebContents(), &dispatcher_);
+    }
+    if (IsDomainAvailableToUntrustedClient<CastHandler>() ||
+        channel->GetClient()->IsTrusted()) {
       cast_handler_ = std::make_unique<CastHandler>(
           agent_host->GetWebContents(), &dispatcher_);
     }
   }
-  target_handler_ = std::make_unique<TargetHandler>(&dispatcher_);
-  if (channel->GetClient()->MayAttachToBrowser()) {
+  if (IsDomainAvailableToUntrustedClient<EmulationHandler>() ||
+      channel->GetClient()->IsTrusted()) {
+    emulation_handler_ =
+        std::make_unique<EmulationHandler>(agent_host, &dispatcher_);
+  }
+  if (IsDomainAvailableToUntrustedClient<TargetHandler>() ||
+      channel->GetClient()->IsTrusted()) {
+    target_handler_ = std::make_unique<TargetHandler>(
+        &dispatcher_, channel->GetClient()->IsTrusted());
+  }
+  if (IsDomainAvailableToUntrustedClient<BrowserHandler>() ||
+      channel->GetClient()->IsTrusted()) {
     browser_handler_ =
         std::make_unique<BrowserHandler>(&dispatcher_, agent_host->GetId());
   }
@@ -50,6 +82,12 @@ ChromeDevToolsSession::ChromeDevToolsSession(
 
 ChromeDevToolsSession::~ChromeDevToolsSession() = default;
 
+base::HistogramBase::Sample GetCommandUmaId(
+    const base::StringPiece command_name) {
+  return static_cast<base::HistogramBase::Sample>(
+      base::HashMetricName(command_name));
+}
+
 void ChromeDevToolsSession::HandleCommand(
     base::span<const uint8_t> message,
     content::DevToolsManagerDelegate::NotHandledCallback callback) {
@@ -57,6 +95,16 @@ void ChromeDevToolsSession::HandleCommand(
   DCHECK(dispatchable.ok());  // Checked by content::DevToolsSession.
   crdtp::UberDispatcher::DispatchResult dispatched =
       dispatcher_.Dispatch(dispatchable);
+
+  auto command_uma_id = GetCommandUmaId(base::StringPiece(
+      reinterpret_cast<const char*>(dispatchable.Method().begin()),
+      dispatchable.Method().size()));
+  std::string client_type = client_channel_->GetClient()->GetTypeForMetrics();
+  DCHECK(client_type == "DevTools" || client_type == "Extension" ||
+         client_type == "RemoteDebugger" || client_type == "Other");
+  base::UmaHistogramSparse("DevTools.CDPCommandFrom" + client_type,
+                           command_uma_id);
+
   if (!dispatched.MethodFound()) {
     std::move(callback).Run(message);
     return;
@@ -79,7 +127,10 @@ void ChromeDevToolsSession::SendProtocolNotification(
   client_channel_->DispatchProtocolMessageToClient(message->Serialize());
 }
 
-void ChromeDevToolsSession::FlushProtocolNotifications() {}
+void ChromeDevToolsSession::FlushProtocolNotifications() {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("ChromeDevToolsSession::FlushProtocolNotifications");
+}
 
 void ChromeDevToolsSession::FallThrough(int call_id,
                                         crdtp::span<uint8_t> method,

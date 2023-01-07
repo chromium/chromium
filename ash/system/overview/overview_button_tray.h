@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "base/macros.h"
+#include "base/time/time.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_constants.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class ImageView;
@@ -41,7 +41,7 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   // overview enter animation time, once ux decides which one to match (both are
   // 300ms currently).
   static constexpr base::TimeDelta kDoubleTapThresholdMs =
-      base::TimeDelta::FromMilliseconds(300);
+      base::Milliseconds(300);
 
   explicit OverviewButtonTray(Shelf* shelf);
   OverviewButtonTray(const OverviewButtonTray&) = delete;
@@ -78,12 +78,11 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
+  void OnThemeChanged() override;
 
  private:
   friend class OverviewButtonTrayTest;
 
-  // Sets the icon to visible if tablet mode is enabled and
-  // OverviewController::CanSelect.
   void UpdateIconVisibility();
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
@@ -93,7 +92,7 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
 
   // Stores the timestamp of the last tap event time that happened while not
   // in overview mode. Used to check for double taps, which invoke quick switch.
-  base::Optional<base::TimeTicks> last_press_event_time_;
+  absl::optional<base::TimeTicks> last_press_event_time_;
 };
 
 }  // namespace ash

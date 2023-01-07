@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,25 +18,33 @@ namespace switches {
 
 // All switches in alphabetical order. The switches should be documented
 // alongside the definition of their values in the .cc file.
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_DECLARE_FEATURE(kAccountIdMigration);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kAllowSyncOffForChildAccounts);
+BASE_DECLARE_FEATURE(kCreateSigninCheckerBeforeSyncConsentFragment);
+BASE_DECLARE_FEATURE(kGaiaIdInAMF);
+#endif
+
+BASE_DECLARE_FEATURE(kNewSigninRequestHeaderCheckOrder);
+
 extern const char kClearTokenService[];
+
 extern const char kDisableSigninScopedDeviceId[];
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const base::Feature kAccountIdMigration;
-#else
-extern const base::Feature kForceAccountIdMigration;
+BASE_DECLARE_FEATURE(kEnableFetchingAccountCapabilities);
+
+BASE_DECLARE_FEATURE(kForceDisableExtendedSyncPromos);
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kEnableCbdSignOut);
+BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
+BASE_DECLARE_FEATURE(kTangibleSync);
 #endif
 
-#if defined(OS_ANDROID)
-// This feature flag is for the deprecating of the Android profile data
-// Menagerie API.
-extern const base::Feature kDeprecateMenagerieAPI;
-#endif  // defined(OS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Killswitch for PO2TS migration to AccountManagerFacade.
-extern const base::Feature kUseAccountManagerFacade;
-#endif
 }  // namespace switches
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_SWITCHES_H_

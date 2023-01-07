@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/utility/utility_thread_impl.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -15,8 +16,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"
@@ -25,10 +26,10 @@
 #include "content/utility/services.h"
 #include "content/utility/utility_blink_platform_with_sandbox_support_impl.h"
 #include "content/utility/utility_service_factory.h"
-#include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -39,13 +40,18 @@ class ServiceBinderImpl {
   explicit ServiceBinderImpl(
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner)
       : main_thread_task_runner_(std::move(main_thread_task_runner)) {}
+
+  ServiceBinderImpl(const ServiceBinderImpl&) = delete;
+  ServiceBinderImpl& operator=(const ServiceBinderImpl&) = delete;
+
   ~ServiceBinderImpl() = default;
 
   void BindServiceInterface(mojo::GenericPendingReceiver* receiver) {
     // Set a crash key so utility process crash reports indicate which service
     // was running in the process.
-    static auto* service_name_crash_key = base::debug::AllocateCrashKeyString(
-        "service-name", base::debug::CrashKeySize::Size32);
+    static auto* const service_name_crash_key =
+        base::debug::AllocateCrashKeyString("service-name",
+                                            base::debug::CrashKeySize::Size32);
     const std::string& service_name = receiver->interface_name().value();
     base::debug::SetCrashKeyString(service_name_crash_key, service_name);
 
@@ -84,8 +90,8 @@ class ServiceBinderImpl {
                        std::move(*receiver), std::move(termination_callback)));
   }
 
-  static base::Optional<ServiceBinderImpl>& GetInstanceStorage() {
-    static base::NoDestructor<base::Optional<ServiceBinderImpl>> storage;
+  static absl::optional<ServiceBinderImpl>& GetInstanceStorage() {
+    static base::NoDestructor<absl::optional<ServiceBinderImpl>> storage;
     return *storage;
   }
 
@@ -130,8 +136,6 @@ class ServiceBinderImpl {
   std::unique_ptr<mojo::ServiceFactory> io_thread_services_;
 
   base::WeakPtrFactory<ServiceBinderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceBinderImpl);
 };
 
 ChildThreadImpl::Options::ServiceBinder GetServiceBinder() {
@@ -149,6 +153,7 @@ ChildThreadImpl::Options::ServiceBinder GetServiceBinder() {
 UtilityThreadImpl::UtilityThreadImpl(base::RepeatingClosure quit_closure)
     : ChildThreadImpl(std::move(quit_closure),
                       ChildThreadImpl::Options::Builder()
+                          .WithLegacyIPCChannel(false)
                           .ServiceBinder(GetServiceBinder())
                           .ExposesInterfacesToBrowser()
                           .Build()) {
@@ -158,6 +163,7 @@ UtilityThreadImpl::UtilityThreadImpl(base::RepeatingClosure quit_closure)
 UtilityThreadImpl::UtilityThreadImpl(const InProcessChildThreadParams& params)
     : ChildThreadImpl(base::DoNothing(),
                       ChildThreadImpl::Options::Builder()
+                          .WithLegacyIPCChannel(false)
                           .InBrowserProcess(params)
                           .ServiceBinder(GetServiceBinder())
                           .ExposesInterfacesToBrowser()
@@ -182,18 +188,18 @@ void UtilityThreadImpl::ReleaseProcess() {
     return;
   }
 
-  // Close the channel to cause the UtilityProcessHost to be deleted. We need to
-  // take a different code path than the multi-process case because that case
+  // Disconnect from the UtilityProcessHost to cause it to be deleted. We need
+  // to take a different code path than the multi-process case because that case
   // depends on the child process going away to close the channel, but that
   // can't happen when we're in single process mode.
-  channel()->Close();
+  DisconnectChildProcessHost();
 }
 
 void UtilityThreadImpl::EnsureBlinkInitialized() {
   EnsureBlinkInitializedInternal(/*sandbox_support=*/false);
 }
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 void UtilityThreadImpl::EnsureBlinkInitializedWithSandboxSupport() {
   EnsureBlinkInitializedInternal(/*sandbox_support=*/true);
 }
@@ -247,11 +253,7 @@ void UtilityThreadImpl::Init() {
   content::ExposeUtilityInterfacesToBrowser(&binders);
   ExposeInterfacesToBrowser(std::move(binders));
 
-  service_factory_.reset(new UtilityServiceFactory);
-}
-
-bool UtilityThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
-  return GetContentClient()->utility()->OnMessageReceived(msg);
+  service_factory_ = std::make_unique<UtilityServiceFactory>();
 }
 
 void UtilityThreadImpl::RunServiceDeprecated(

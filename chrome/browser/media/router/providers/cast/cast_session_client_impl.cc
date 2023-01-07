@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
-#include "components/cast_channel/enum_table.h"
+#include "components/media_router/common/providers/cast/channel/enum_table.h"
 
 using blink::mojom::PresentationConnectionCloseReason;
 using blink::mojom::PresentationConnectionMessagePtr;
@@ -34,7 +34,7 @@ void RemoveNullFields(base::Value& value) {
     }
   } else if (value.is_dict()) {
     std::vector<std::string> to_remove;
-    for (auto pair : value.DictItems()) {
+    for (auto pair : value.GetDict()) {
       if (pair.second.is_none()) {
         to_remove.push_back(pair.first);
       } else {
@@ -51,10 +51,10 @@ void RemoveNullFields(base::Value& value) {
 
 CastSessionClientImpl::CastSessionClientImpl(const std::string& client_id,
                                              const url::Origin& origin,
-                                             int tab_id,
+                                             int frame_tree_node_id,
                                              AutoJoinPolicy auto_join_policy,
                                              CastActivity* activity)
-    : CastSessionClient(client_id, origin, tab_id),
+    : CastSessionClient(client_id, origin, frame_tree_node_id),
       auto_join_policy_(auto_join_policy),
       activity_(activity) {}
 
@@ -78,12 +78,12 @@ void CastSessionClientImpl::SendMessageToClient(
 }
 
 void CastSessionClientImpl::SendMediaStatusToClient(
-    const base::Value& media_status,
-    base::Optional<int> request_id) {
+    const base::Value::Dict& media_status,
+    absl::optional<int> request_id) {
   // Look up if there is a pending request from this client associated with this
   // message. If so, send the media status message as a response by setting the
   // sequence number.
-  base::Optional<int> sequence_number;
+  absl::optional<int> sequence_number;
   if (request_id) {
     auto it = pending_media_requests_.find(*request_id);
     if (it != pending_media_requests_.end()) {
@@ -98,13 +98,15 @@ void CastSessionClientImpl::SendMediaStatusToClient(
       CreateV2Message(client_id(), media_status, sequence_number));
 }
 
-bool CastSessionClientImpl::MatchesAutoJoinPolicy(url::Origin other_origin,
-                                                  int other_tab_id) const {
+bool CastSessionClientImpl::MatchesAutoJoinPolicy(
+    url::Origin other_origin,
+    int other_frame_tree_node_id) const {
   switch (auto_join_policy_) {
     case AutoJoinPolicy::kPageScoped:
       return false;
     case AutoJoinPolicy::kTabAndOriginScoped:
-      return other_origin == origin() && other_tab_id == tab_id();
+      return other_origin == origin() &&
+             other_frame_tree_node_id == frame_tree_node_id();
     case AutoJoinPolicy::kOriginScoped:
       return other_origin == origin();
   }
@@ -128,36 +130,36 @@ void CastSessionClientImpl::DidClose(PresentationConnectionCloseReason reason) {
 void CastSessionClientImpl::SendErrorCodeToClient(
     int sequence_number,
     CastInternalMessage::ErrorCode error_code,
-    base::Optional<std::string> description) {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetKey("code", base::Value(*cast_util::EnumToString(error_code)));
-  message.SetKey("description",
-                 description ? base::Value(*description) : base::Value());
-  message.SetKey("details", base::Value());
+    absl::optional<std::string> description) {
+  base::Value::Dict message;
+  message.Set("code", base::Value(*cast_util::EnumToString(error_code)));
+  message.Set("description",
+              description ? base::Value(*description) : base::Value());
+  message.Set("details", base::Value());
   SendErrorToClient(sequence_number, std::move(message));
 }
 
 void CastSessionClientImpl::SendErrorToClient(int sequence_number,
-                                              base::Value error) {
+                                              base::Value::Dict error) {
   SendMessageToClient(
       CreateErrorMessage(client_id(), std::move(error), sequence_number));
 }
 
 void CastSessionClientImpl::HandleParsedClientMessage(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  if (!result.has_value() || !result.value().is_dict()) {
     ReportClientMessageParseError(activity_->route().media_route_id(),
-                                  *result.error);
+                                  result.error());
     return;
   }
 
   // NOTE(jrw): This step isn't part of the Cast protocol per se, but it's
   // required for backward compatibility.  There is one known case
   // (crbug.com/1129217) where not doing it breaks the Cast SDK.
-  RemoveNullFields(*result.value);
+  RemoveNullFields(*result);
 
   std::unique_ptr<CastInternalMessage> cast_message =
-      CastInternalMessage::From(std::move(*result.value));
+      CastInternalMessage::From(std::move(result.value().GetDict()));
   if (!cast_message) {
     ReportClientMessageParseError(activity_->route().media_route_id(),
                                   "Not a Cast message");
@@ -222,7 +224,7 @@ void CastSessionClientImpl::HandleV2ProtocolMessage(
       cast_channel::V2MessageTypeFromString(type_str);
   if (cast_channel::IsMediaRequestMessageType(type)) {
     DVLOG(2) << "Got media command from client: " << type_str;
-    base::Optional<int> request_id =
+    absl::optional<int> request_id =
         activity_->SendMediaRequestToReceiver(cast_message);
     if (request_id) {
       DCHECK(cast_message.sequence_number());
@@ -256,7 +258,7 @@ void CastSessionClientImpl::SendResultResponse(int sequence_number,
   if (result == cast_channel::Result::kOk) {
     // Send an empty message to let the client know the request succeeded.
     SendMessageToClient(
-        CreateV2Message(client_id(), base::Value(), sequence_number));
+        CreateV2Message(client_id(), base::Value::Dict(), sequence_number));
   } else {
     // TODO(crbug.com/951089): Send correct error codes.  The original
     // implementation isn't much help here because it sends incorrectly

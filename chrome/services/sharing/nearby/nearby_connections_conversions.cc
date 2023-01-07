@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
 namespace location {
 namespace nearby {
@@ -122,6 +122,10 @@ mojom::Medium MediumToMojom(Medium medium) {
       return mojom::Medium::kWifiDirect;
     case Medium::WEB_RTC:
       return mojom::Medium::kWebRtc;
+    case Medium::BLE_L2CAP:
+      return mojom::Medium::kBleL2Cap;
+    case Medium::USB:
+      return mojom::Medium::kUsb;
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 #include <limits>
 
 #include "base/bit_cast.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
@@ -34,7 +33,7 @@
 #include "util/numeric/int128.h"
 #include "util/process/process_memory_linux.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(jperaza): This symbol isn't defined when building in chromium for
 // Android. There may be another symbol to use.
 extern "C" {
@@ -73,7 +72,7 @@ void TestAgainstCloneOrSelf(pid_t pid) {
   ASSERT_TRUE(aux.GetValue(AT_BASE, &interp_base));
   EXPECT_TRUE(mappings.FindMapping(interp_base));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   LinuxVMAddress entry_addr;
   ASSERT_TRUE(aux.GetValue(AT_ENTRY, &entry_addr));
   EXPECT_EQ(entry_addr, FromPointerCast<LinuxVMAddress>(START_SYMBOL));
@@ -95,8 +94,7 @@ void TestAgainstCloneOrSelf(pid_t pid) {
   ASSERT_TRUE(aux.GetValue(AT_EGID, &egid));
   EXPECT_EQ(egid, getegid());
 
-  ProcessMemoryLinux memory;
-  ASSERT_TRUE(memory.Initialize(pid));
+  ProcessMemoryLinux memory(&connection);
 
   LinuxVMAddress platform_addr;
   ASSERT_TRUE(aux.GetValue(AT_PLATFORM, &platform_addr));
@@ -152,14 +150,16 @@ TEST(AuxiliaryVector, ReadSelf) {
 class ReadChildTest : public Multiprocess {
  public:
   ReadChildTest() : Multiprocess() {}
+
+  ReadChildTest(const ReadChildTest&) = delete;
+  ReadChildTest& operator=(const ReadChildTest&) = delete;
+
   ~ReadChildTest() {}
 
  private:
   void MultiprocessParent() override { TestAgainstCloneOrSelf(ChildPID()); }
 
   void MultiprocessChild() override { CheckedReadFileAtEOF(ReadPipeHandle()); }
-
-  DISALLOW_COPY_AND_ASSIGN(ReadChildTest);
 };
 
 TEST(AuxiliaryVector, ReadChild) {
@@ -182,13 +182,13 @@ TEST(AuxiliaryVector, SignedBit) {
   constexpr uint64_t type = 0x0000000012345678;
 
   constexpr int32_t neg1_32 = -1;
-  aux.Insert(type, bit_cast<uint32_t>(neg1_32));
+  aux.Insert(type, base::bit_cast<uint32_t>(neg1_32));
   int32_t outval32s;
   ASSERT_TRUE(aux.GetValue(type, &outval32s));
   EXPECT_EQ(outval32s, neg1_32);
 
   constexpr int32_t int32_max = std::numeric_limits<int32_t>::max();
-  aux.Insert(type, bit_cast<uint32_t>(int32_max));
+  aux.Insert(type, base::bit_cast<uint32_t>(int32_max));
   ASSERT_TRUE(aux.GetValue(type, &outval32s));
   EXPECT_EQ(outval32s, int32_max);
 
@@ -199,13 +199,13 @@ TEST(AuxiliaryVector, SignedBit) {
   EXPECT_EQ(outval32u, uint32_max);
 
   constexpr int64_t neg1_64 = -1;
-  aux.Insert(type, bit_cast<uint64_t>(neg1_64));
+  aux.Insert(type, base::bit_cast<uint64_t>(neg1_64));
   int64_t outval64s;
   ASSERT_TRUE(aux.GetValue(type, &outval64s));
   EXPECT_EQ(outval64s, neg1_64);
 
   constexpr int64_t int64_max = std::numeric_limits<int64_t>::max();
-  aux.Insert(type, bit_cast<uint64_t>(int64_max));
+  aux.Insert(type, base::bit_cast<uint64_t>(int64_max));
   ASSERT_TRUE(aux.GetValue(type, &outval64s));
   EXPECT_EQ(outval64s, int64_max);
 

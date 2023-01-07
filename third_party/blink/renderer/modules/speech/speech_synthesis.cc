@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/modules/speech/speech_synthesis.h"
 
+#include <tuple>
+
 #include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -36,7 +38,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_error_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_event_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
@@ -52,19 +54,23 @@ namespace blink {
 
 const char SpeechSynthesis::kSupplementName[] = "SpeechSynthesis";
 
+SpeechSynthesisBase* SpeechSynthesis::Create(LocalDOMWindow& window) {
+  return MakeGarbageCollected<SpeechSynthesis>(window);
+}
+
 SpeechSynthesis* SpeechSynthesis::speechSynthesis(LocalDOMWindow& window) {
   SpeechSynthesis* synthesis =
       Supplement<LocalDOMWindow>::From<SpeechSynthesis>(window);
   if (!synthesis) {
     synthesis = MakeGarbageCollected<SpeechSynthesis>(window);
     ProvideTo(window, synthesis);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // On Android devices we lazily initialize |mojom_synthesis_| to avoid
     // needlessly binding to the TTS service, see https://crbug.com/811929.
     // TODO(crbug/811929): Consider moving this logic into the Android-
     // specific backend implementation.
 #else
-    ignore_result(synthesis->TryEnsureMojomSynthesis());
+    std::ignore = synthesis->TryEnsureMojomSynthesis();
 #endif
   }
   return synthesis;
@@ -96,7 +102,7 @@ void SpeechSynthesis::OnSetVoiceList(
 
 const HeapVector<Member<SpeechSynthesisVoice>>& SpeechSynthesis::getVoices() {
   // Kick off initialization here to ensure voice list gets populated.
-  ignore_result(TryEnsureMojomSynthesis());
+  std::ignore = TryEnsureMojomSynthesis();
   RecordVoicesForIdentifiability();
   return voice_list_;
 }
@@ -105,7 +111,7 @@ void SpeechSynthesis::RecordVoicesForIdentifiability() const {
   constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature,
       WebFeature::kSpeechSynthesis_GetVoices_Method);
-  if (!IdentifiabilityStudySettings::Get()->ShouldSample(surface))
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface))
     return;
   if (!GetSupplementable()->GetFrame())
     return;
@@ -118,11 +124,11 @@ void SpeechSynthesis::RecordVoicesForIdentifiability() const {
     builder.AddToken(voice->localService());
   }
   IdentifiabilityMetricBuilder(GetSupplementable()->UkmSourceID())
-      .Set(surface, builder.GetToken())
+      .Add(surface, builder.GetToken())
       .Record(GetSupplementable()->UkmRecorder());
 }
 
-bool SpeechSynthesis::speaking() const {
+bool SpeechSynthesis::Speaking() const {
   // If we have a current speech utterance, then that means we're assumed to be
   // in a speaking state. This state is independent of whether the utterance
   // happens to be paused.
@@ -137,6 +143,15 @@ bool SpeechSynthesis::pending() const {
 
 bool SpeechSynthesis::paused() const {
   return is_paused_;
+}
+
+void SpeechSynthesis::Speak(const String& text, const String& lang) {
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
+  SpeechSynthesisUtterance* utterance =
+      SpeechSynthesisUtterance::Create(GetSupplementable(), text);
+  utterance->setLang(lang);
+  speak(script_state, utterance);
 }
 
 void SpeechSynthesis::speak(ScriptState* script_state,
@@ -165,7 +180,7 @@ void SpeechSynthesis::speak(ScriptState* script_state,
     StartSpeakingImmediately();
 }
 
-void SpeechSynthesis::cancel() {
+void SpeechSynthesis::Cancel() {
   // Remove all the items from the utterance queue. The platform
   // may still have references to some of these utterances and may
   // fire events on them asynchronously.
@@ -176,7 +191,7 @@ void SpeechSynthesis::cancel() {
     mojom_synthesis->Cancel();
 }
 
-void SpeechSynthesis::pause() {
+void SpeechSynthesis::Pause() {
   if (is_paused_)
     return;
 
@@ -185,7 +200,7 @@ void SpeechSynthesis::pause() {
     mojom_synthesis->Pause();
 }
 
-void SpeechSynthesis::resume() {
+void SpeechSynthesis::Resume() {
   if (!CurrentSpeechUtterance())
     return;
 
@@ -236,8 +251,7 @@ void SpeechSynthesis::SentenceBoundaryEventOccurred(
 }
 
 void SpeechSynthesis::VoicesDidChange() {
-  if (GetSupplementable()->GetFrame())
-    DispatchEvent(*Event::Create(event_type_names::kVoiceschanged), "SpeechSynthesis::VoicesDidChange");
+  DispatchEvent(*Event::Create(event_type_names::kVoiceschanged), "SpeechSynthesis::VoicesDidChange");
 }
 
 void SpeechSynthesis::StartSpeakingImmediately() {
@@ -260,6 +274,9 @@ void SpeechSynthesis::HandleSpeakingCompleted(
     bool error_occurred) {
   DCHECK(utterance);
 
+  // Special handling for audio descriptions.
+  SpeechSynthesisBase::HandleSpeakingCompleted();
+
   bool should_start_speaking = false;
   // If the utterance that completed was the one we're currently speaking,
   // remove it from the queue and start speaking the next one.
@@ -281,7 +298,7 @@ void SpeechSynthesis::HandleSpeakingCompleted(
   }
 
   // Start the next utterance if we just finished one and one was pending.
-  if (should_start_speaking && !utterance_queue_.IsEmpty())
+  if (should_start_speaking && !utterance_queue_.empty())
     StartSpeakingImmediately();
 }
 
@@ -320,7 +337,7 @@ void SpeechSynthesis::FireErrorEvent(SpeechSynthesisUtterance* utterance,
 }
 
 SpeechSynthesisUtterance* SpeechSynthesis::CurrentSpeechUtterance() const {
-  if (utterance_queue_.IsEmpty())
+  if (utterance_queue_.empty())
     return nullptr;
 
   return utterance_queue_.front();
@@ -337,6 +354,7 @@ void SpeechSynthesis::Trace(Visitor* visitor) const {
   visitor->Trace(utterance_queue_);
   Supplement<LocalDOMWindow>::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
+  SpeechSynthesisBase::Trace(visitor);
 }
 
 bool SpeechSynthesis::GetElapsedTimeMillis(double* millis) {

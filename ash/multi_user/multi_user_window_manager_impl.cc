@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,12 @@
 #include "ash/media/media_controller_impl.h"
 #include "ash/multi_user/user_switch_animator.h"
 #include "ash/public/cpp/multi_user_window_manager_delegate.h"
-#include "ash/public/cpp/multi_user_window_manager_observer.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
@@ -30,16 +28,13 @@ namespace ash {
 namespace {
 
 // The animation time for a single window that is fading in / out.
-constexpr base::TimeDelta kAnimationTime =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kAnimationTime = base::Milliseconds(100);
 
 // The animation time for the fade in and / or out when switching users.
-constexpr base::TimeDelta kUserFadeTime =
-    base::TimeDelta::FromMilliseconds(110);
+constexpr base::TimeDelta kUserFadeTime = base::Milliseconds(110);
 
 // The animation time in ms for a window which get teleported to another screen.
-constexpr base::TimeDelta kTeleportAnimationTime =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kTeleportAnimationTime = base::Milliseconds(300);
 
 MultiUserWindowManagerImpl* g_instance = nullptr;
 
@@ -75,6 +70,9 @@ class AnimationSetter {
     ::wm::SetWindowVisibilityAnimationDuration(window_, animation_time);
   }
 
+  AnimationSetter(const AnimationSetter&) = delete;
+  AnimationSetter& operator=(const AnimationSetter&) = delete;
+
   ~AnimationSetter() {
     ::wm::SetWindowVisibilityAnimationType(window_, previous_animation_type_);
     ::wm::SetWindowVisibilityAnimationDuration(window_,
@@ -90,8 +88,6 @@ class AnimationSetter {
 
   // Previous animation time.
   const base::TimeDelta previous_animation_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationSetter);
 };
 
 MultiUserWindowManagerImpl::WindowEntry::WindowEntry(
@@ -134,11 +130,6 @@ MultiUserWindowManagerImpl::~MultiUserWindowManagerImpl() {
 // static
 MultiUserWindowManagerImpl* MultiUserWindowManagerImpl::Get() {
   return g_instance;
-}
-
-void MultiUserWindowManagerImpl::OnDidSwitchActiveAccount() {
-  for (MultiUserWindowManagerObserver& observer : observers_)
-    observer.OnUserSwitchAnimationFinished();
 }
 
 void MultiUserWindowManagerImpl::SetWindowOwner(aura::Window* window,
@@ -237,16 +228,6 @@ const AccountId& MultiUserWindowManagerImpl::CurrentAccountId() const {
   return current_account_id_;
 }
 
-void MultiUserWindowManagerImpl::AddObserver(
-    MultiUserWindowManagerObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void MultiUserWindowManagerImpl::RemoveObserver(
-    MultiUserWindowManagerObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 bool MultiUserWindowManagerImpl::IsWindowOnDesktopOfUser(
     aura::Window* window,
     const AccountId& account_id) const {
@@ -315,17 +296,19 @@ void MultiUserWindowManagerImpl::OnWindowVisibilityChanging(
   if (suppress_visibility_changes_)
     return;
 
-  WindowToEntryMap::iterator it = window_to_entry_.find(window);
   // If the window is not owned by anyone it is shown on all desktops.
-  if (it != window_to_entry_.end()) {
+  if (WindowToEntryMap::iterator it = window_to_entry_.find(window);
+      it != window_to_entry_.end()) {
     // Remember what was asked for so that we can restore this when the user's
     // desktop gets restored.
     it->second->set_show(visible);
-  } else {
-    TransientWindowToVisibility::iterator it =
-        transient_window_to_visibility_.find(window);
-    if (it != transient_window_to_visibility_.end())
-      it->second = visible;
+    return;
+  }
+
+  if (TransientWindowToVisibility::iterator it =
+          transient_window_to_visibility_.find(window);
+      it != transient_window_to_visibility_.end()) {
+    it->second = visible;
   }
 }
 
@@ -565,7 +548,7 @@ base::TimeDelta MultiUserWindowManagerImpl::GetAdjustedAnimationTime(
   return animation_speed_ == ANIMATION_SPEED_NORMAL
              ? default_time
              : (animation_speed_ == ANIMATION_SPEED_FAST
-                    ? base::TimeDelta::FromMilliseconds(10)
+                    ? base::Milliseconds(10)
                     : base::TimeDelta());
 }
 

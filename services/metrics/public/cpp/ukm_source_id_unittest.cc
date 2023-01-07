@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,8 @@ TEST(UkmSourceIdTest, GetSourceIdType) {
   for (int64_t type_index = 0; type_index <= num_types; type_index++) {
     const SourceIdType expected_type = SourceIdType(type_index);
     if (expected_type == SourceIdType::WEBAPK_ID ||
-        expected_type == SourceIdType::PAYMENT_APP_ID) {
+        expected_type == SourceIdType::PAYMENT_APP_ID ||
+        expected_type == SourceIdType::WEB_IDENTITY_ID) {
       // See comment in ConvertToSourceId regarding these special cases.
       continue;
     }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,13 @@
 // Switches used by multiple embedders.
 namespace embedder_support {
 
+extern const char kDisableAutoReload[];
 extern const char kDisablePopupBlocking[];
+extern const char kEnableAutoReload[];
 extern const char kOriginTrialDisabledFeatures[];
 extern const char kOriginTrialDisabledTokens[];
 extern const char kOriginTrialPublicKey[];
+extern const char kShortReportingDelay[];
 extern const char kUserAgent[];
 
 }  // namespace embedder_support

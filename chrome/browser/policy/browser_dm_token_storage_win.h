@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,10 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace policy {
 
@@ -22,6 +21,8 @@ namespace policy {
 class BrowserDMTokenStorageWin : public BrowserDMTokenStorage::Delegate {
  public:
   BrowserDMTokenStorageWin();
+  BrowserDMTokenStorageWin(const BrowserDMTokenStorageWin&) = delete;
+  BrowserDMTokenStorageWin& operator=(const BrowserDMTokenStorageWin&) = delete;
   ~BrowserDMTokenStorageWin() override;
 
  private:
@@ -32,6 +33,8 @@ class BrowserDMTokenStorageWin : public BrowserDMTokenStorage::Delegate {
   bool InitEnrollmentErrorOption() override;
   BrowserDMTokenStorage::StoreTask SaveDMTokenTask(
       const std::string& token,
+      const std::string& client_id) override;
+  BrowserDMTokenStorage::StoreTask DeleteDMTokenTask(
       const std::string& client_id) override;
   scoped_refptr<base::TaskRunner> SaveDMTokenTaskRunner() override;
 
@@ -45,8 +48,6 @@ class BrowserDMTokenStorageWin : public BrowserDMTokenStorage::Delegate {
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageWinTest, InitDMToken);
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageWinTest,
                            InitDMTokenFromBrowserLocation);
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserDMTokenStorageWin);
 };
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include "content/common/content_export.h"
 #include "content/public/common/child_process_host.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -17,6 +17,7 @@ namespace content {
 struct CONTENT_EXPORT ServiceWorkerRunningInfo {
   ServiceWorkerRunningInfo(const GURL& script_url,
                            const GURL& scope,
+                           const blink::StorageKey& key,
                            int64_t render_process_id,
                            const blink::ServiceWorkerToken& token);
   ServiceWorkerRunningInfo(ServiceWorkerRunningInfo&& other) noexcept;
@@ -29,6 +30,9 @@ struct CONTENT_EXPORT ServiceWorkerRunningInfo {
 
   // The scope that this service worker handles.
   GURL scope;
+
+  // The key the service worker is stored under.
+  blink::StorageKey key;
 
   // The ID of the render process on which this service worker lives.
   int render_process_id = content::ChildProcessHost::kInvalidUniqueID;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ SkiaOutputDeviceVulkanSecondaryCB::SkiaOutputDeviceVulkanSecondaryCB(
                        std::move(did_swap_buffer_complete_callback)),
       context_provider_(context_provider) {
   capabilities_.uses_default_gl_framebuffer = false;
-  capabilities_.max_frames_pending = 1;
+  capabilities_.pending_swap_params.max_pending_swaps = 1;
   capabilities_.preserve_buffer_content = false;
   capabilities_.output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
   capabilities_.supports_post_sub_buffer = false;
@@ -64,13 +64,12 @@ void SkiaOutputDeviceVulkanSecondaryCB::Submit(bool sync_cpu,
 }
 
 bool SkiaOutputDeviceVulkanSecondaryCB::Reshape(
-    const gfx::Size& size,
-    float device_scale_factor,
+    const SkSurfaceCharacterization& characterization,
     const gfx::ColorSpace& color_space,
-    gfx::BufferFormat format,
+    float device_scale_factor,
     gfx::OverlayTransform transform) {
   // No-op
-  size_ = size;
+  size_ = gfx::SkISizeToSize(characterization.dimensions());
   return true;
 }
 

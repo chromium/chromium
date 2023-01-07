@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/language_detection/public/cpp/language_detection_service.h"
+#include "components/services/language_detection/public/mojom/language_detection.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,10 +19,10 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionServiceTest,
                        DetermineLanguageReliable) {
   mojo::Remote<language_detection::mojom::LanguageDetectionService> service =
       language_detection::LaunchLanguageDetectionService();
-  std::u16string text = base::UTF8ToUTF16(
-      "El niño atrapó un dorado muy grande con cebo vivo. Fileteó el "
-      "pescado y lo asó a la parrilla. Sabía excelente. Espera pescar otro "
-      "buen pescado mañana.");
+  std::u16string text =
+      u"El niño atrapó un dorado muy grande con cebo vivo. Fileteó el "
+      u"pescado y lo asó a la parrilla. Sabía excelente. Espera pescar otro "
+      u"buen pescado mañana.";
 
   base::RunLoop run_loop;
   service->DetermineLanguage(

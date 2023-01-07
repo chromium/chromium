@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "extensions/common/extension_set.h"
 
@@ -25,6 +25,10 @@ class ExtensionErrorController : public ExtensionErrorUI::Delegate {
   typedef ExtensionErrorUI* (*UICreateMethod)(ExtensionErrorUI::Delegate*);
 
   ExtensionErrorController(content::BrowserContext* context, bool is_first_run);
+
+  ExtensionErrorController(const ExtensionErrorController&) = delete;
+  ExtensionErrorController& operator=(const ExtensionErrorController&) = delete;
+
   virtual ~ExtensionErrorController();
 
   void ShowErrorIfNeeded();
@@ -51,13 +55,11 @@ class ExtensionErrorController : public ExtensionErrorUI::Delegate {
   std::unique_ptr<ExtensionErrorUI> error_ui_;
 
   // The BrowserContext with which we are associated.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Whether or not this is the first run. If it is, we avoid noisy errors, and
   // silently acknowledge blocklisted extensions.
   bool is_first_run_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionErrorController);
 };
 
 }  // namespace extensions

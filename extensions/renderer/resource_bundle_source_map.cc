@@ -1,15 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/renderer/resource_bundle_source_map.h"
 
+#include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,24 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_thumbnail_loader.h"
+#include "chrome/browser/ui/ash/thumbnail_loader.h"
+#include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -37,10 +43,14 @@ class FileSystemURL;
 
 namespace ash {
 
+class HoldingSpaceDownloadsDelegate;
+class HoldingSpaceKeyedServiceDelegate;
+
 // Browser context keyed service that:
 // *   Manages the temporary holding space per-profile data model.
 // *   Serves as an entry point to add holding space items from Chrome.
-class HoldingSpaceKeyedService : public KeyedService,
+class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
+                                 public KeyedService,
                                  public ProfileManagerObserver,
                                  public chromeos::PowerManagerClient::Observer {
  public:
@@ -52,6 +62,14 @@ class HoldingSpaceKeyedService : public KeyedService,
 
   // Registers profile preferences for holding space.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Binds the holding space service to the specified pending `receiver`.
+  void BindReceiver(
+      mojo::PendingReceiver<crosapi::mojom::HoldingSpaceService> receiver);
+
+  // crosapi::mojom::HoldingSpaceKeyedService:
+  void AddPrintedPdf(const base::FilePath& printed_pdf_path,
+                     bool from_incognito_profile) override;
 
   // Adds multiple pinned file items identified by the provided file system
   // URLs.
@@ -71,37 +89,99 @@ class HoldingSpaceKeyedService : public KeyedService,
   // files system URLs as GURLs.
   std::vector<GURL> GetPinnedFiles() const;
 
-  // Adds a screenshot item backed by the provided absolute file path.
-  // The path is expected to be under a mount point path recognized by the file
-  // manager app (otherwise, the item will be dropped silently).
-  void AddScreenshot(const base::FilePath& screenshot_path);
+  // Adds a diagnostics log item backed by the provided absolute file path.
+  void AddDiagnosticsLog(const base::FilePath& diagnostics_log_path);
 
-  // Adds a download item backed by the provided absolute file path.
-  void AddDownload(const base::FilePath& download_path);
+  // Adds a download item of the specified `type` backed by the provided
+  // absolute file path. Returns the id of the added holding space item or an
+  // empty string if the item was not added due to de-duplication checks.
+  // NOTE: `type` must refer to a download type.
+  const std::string& AddDownload(
+      HoldingSpaceItem::Type type,
+      const base::FilePath& download_path,
+      const HoldingSpaceProgress& progress = HoldingSpaceProgress(),
+      HoldingSpaceImage::PlaceholderImageSkiaResolver
+          placeholder_image_skia_resolver = base::NullCallback());
 
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);
 
+  // Adds a photo or video downloaded from a connected Android phone via
+  // PhoneHub. Returns the id of the added holding space item or an empty string
+  // if the item was not added due to de-duplication checks.
+  const std::string& AddPhoneHubCameraRollItem(
+      const base::FilePath& item_path,
+      const HoldingSpaceProgress& progress);
+
+  // Adds a scanned item backed by the provided absolute file path.
+  void AddScan(const base::FilePath& file_path);
+
   // Adds a screen recording item backed by the provided absolute file path.
   void AddScreenRecording(const base::FilePath& screen_recording_path);
 
-  // Adds the specified `item` to the holding space model.
-  void AddItem(std::unique_ptr<HoldingSpaceItem> item);
+  // Adds a screenshot item backed by the provided absolute file path.
+  void AddScreenshot(const base::FilePath& screenshot_path);
 
-  // Adds multiple `items` to the holding space model.
-  void AddItems(std::vector<std::unique_ptr<HoldingSpaceItem>> items);
+  // Replaces the existing suggestions with `suggestions`. The order among
+  // `suggestions` is respected, which means that if a suggestion A is in front
+  // of a suggestion B in the given array, after calling this function, the
+  // suggestion view of A is in front of the view of B. `suggestions` can be
+  // empty. In this case, all the existing suggestions are cleared.
+  void SetSuggestions(
+      const std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>&
+          suggestions);
 
-  const HoldingSpaceClient* client_for_testing() const {
-    return &holding_space_client_;
-  }
+  // Adds the specified `item` to the holding space model. Returns the id of the
+  // added holding space item or an empty string if the item was not added due
+  // to de-duplication checks.
+  const std::string& AddItem(std::unique_ptr<HoldingSpaceItem> item);
+
+  // Adds multiple `items` to the holding space model. `allow_duplicates`
+  // indicates whether an item should be added to the model if it is duplicate
+  // to an existing item. Returns the ids of the added holding space items or
+  // empty strings where items were not added due to de-duplication checks.
+  std::vector<std::reference_wrapper<const std::string>> AddItems(
+      std::vector<std::unique_ptr<HoldingSpaceItem>> items,
+      bool allow_duplicates);
+
+  // Adds an item of the specified `type` backed by the provided absolute
+  // `file_path` to the holding space model. Returns the id of the added
+  // holding space item or an empty string if the item was not added due to
+  // de-duplication checks.
+  const std::string& AddItemOfType(
+      HoldingSpaceItem::Type type,
+      const base::FilePath& file_path,
+      const HoldingSpaceProgress& progress = HoldingSpaceProgress(),
+      HoldingSpaceImage::PlaceholderImageSkiaResolver
+          placeholder_image_skia_resolver = base::NullCallback());
+
+  // Returns an object which, upon its destruction, performs an atomic update to
+  // the holding space item associated with the specified `id`.
+  std::unique_ptr<HoldingSpaceModel::ScopedItemUpdate> UpdateItem(
+      const std::string& id);
+
+  // Removes all holding space items directly from the model.
+  void RemoveAll();
+
+  // Removes the holding space item with the specified `id` from the model.
+  void RemoveItem(const std::string& id);
+
+  // Attempts to mark the specified holding space `item` to open when complete.
+  // Returns `absl::nullopt` on success or the reason if the attempt was not
+  // successful.
+  absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
+  OpenItemWhenComplete(const HoldingSpaceItem* item);
+
+  // Returns the `profile_` associated with this service.
+  Profile* profile() { return profile_; }
+
+  HoldingSpaceClient* client() { return &holding_space_client_; }
 
   const HoldingSpaceModel* model_for_testing() const {
     return &holding_space_model_;
   }
 
-  HoldingSpaceThumbnailLoader* thumbnail_loader_for_testing() {
-    return &thumbnail_loader_;
-  }
+  ThumbnailLoader* thumbnail_loader_for_testing() { return &thumbnail_loader_; }
 
  private:
   // KeyedService:
@@ -133,18 +213,35 @@ class HoldingSpaceKeyedService : public KeyedService,
   void MakeDriveItemAvailableOffline(
       const storage::FileSystemURL& file_system_url);
 
+  // Creates an item of the specified `type` backed by the provided absolute
+  // `file_path`. Returns an empty unique pointer if the file url cannot be
+  // resolved.
+  std::unique_ptr<HoldingSpaceItem> CreateItemOfType(
+      HoldingSpaceItem::Type type,
+      const base::FilePath& file_path,
+      const HoldingSpaceProgress& progress,
+      HoldingSpaceImage::PlaceholderImageSkiaResolver
+          placeholder_image_skia_resolver);
+
   Profile* const profile_;
   const AccountId account_id_;
 
   HoldingSpaceClientImpl holding_space_client_;
   HoldingSpaceModel holding_space_model_;
 
-  HoldingSpaceThumbnailLoader thumbnail_loader_;
+  ThumbnailLoader thumbnail_loader_;
 
   // The `HoldingSpaceKeyedService` owns a collection of `delegates_` which are
   // each tasked with an independent area of responsibility on behalf of the
   // service. They operate autonomously of one another.
   std::vector<std::unique_ptr<HoldingSpaceKeyedServiceDelegate>> delegates_;
+
+  // The delegate, owned by `delegates_`, responsible for downloads.
+  HoldingSpaceDownloadsDelegate* downloads_delegate_ = nullptr;
+
+  // This class supports any number of connections. This allows the client to
+  // have multiple, potentially thread-affine, remotes.
+  mojo::ReceiverSet<crosapi::mojom::HoldingSpaceService> receivers_;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};

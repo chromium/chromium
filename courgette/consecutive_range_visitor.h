@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <stddef.h>
 
 #include <iterator>
-
-#include "base/macros.h"
 
 namespace courgette {
 
@@ -29,6 +27,9 @@ class ConsecutiveRangeVisitor {
       : head_(begin), end_(end) {
     advance();
   }
+
+  ConsecutiveRangeVisitor(const ConsecutiveRangeVisitor&) = delete;
+  ConsecutiveRangeVisitor& operator=(const ConsecutiveRangeVisitor&) = delete;
 
   // Returns whether there are more ranges to traverse.
   bool has_more() const { return tail_ != end_; }
@@ -50,8 +51,6 @@ class ConsecutiveRangeVisitor {
   InputIterator tail_;  // The trailing pionter of a range (inclusive).
   InputIterator head_;  // The leading pointer of a range (exclusive).
   InputIterator end_;   // Store the end pointer so we know when to stop.
-
-  DISALLOW_COPY_AND_ASSIGN(ConsecutiveRangeVisitor);
 };
 
 }  // namespace courgette

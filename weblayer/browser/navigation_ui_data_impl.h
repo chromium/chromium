@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/navigation_ui_data.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/embedder_support/android/util/web_resource_response.h"
 #endif
 
@@ -34,7 +34,7 @@ class NavigationUIDataImpl : public content::NavigationUIData {
     return disable_network_error_auto_reload_;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void set_allow_intent_launches_in_background(bool value) {
     intent_launches_allowed_in_background_ = value;
   }
@@ -50,7 +50,7 @@ class NavigationUIDataImpl : public content::NavigationUIData {
  private:
   bool disable_network_error_auto_reload_ = false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool intent_launches_allowed_in_background_ = false;
 
   // Even though NavigationUIData is copyable, the WebResourceResponse would

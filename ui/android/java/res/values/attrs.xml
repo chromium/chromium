@@ -1,45 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <resources>
     <!-- The color of the ripple effect on clickable elements. -->
     <attr name="rippleColor" format="color"/>
     <!-- The top or bottom inset of a drawable. -->
     <attr name="verticalInset" format="reference|dimension"/>
-    <!-- The rounded corner radius for the menus. -->
-    <attr name="menuCornerSize" format="reference|dimension"/>
 
     <declare-styleable name="ButtonCompat">
         <!-- The color of the button background. -->
         <attr name="buttonColor" format="color"/>
+        <!-- The color of the button text. This attribute will override the text color set in
+             android:textAppearance. -->
+        <attr name="buttonTextColor" format="reference"/>
         <attr name="rippleColor"/>
+        <attr name="borderColor" format="color"/>
+        <attr name="borderWidth" format="reference|dimension"/>
         <!-- Whether the button is elevated. -->
         <attr name="buttonRaised" format="boolean"/>
         <!-- The vertical inset of the button background drawable. -->
         <attr name="verticalInset"/>
+
+        <!--  The ripple corner radius of ripple effect. If not specified,
+          @dimen/button_compat_corner_radius is default. -->
+        <attr name="rippleCornerRadiusTopStart" format="reference|dimension" />
+        <attr name="rippleCornerRadiusTopEnd" format="reference|dimension" />
+        <attr name="rippleCornerRadiusBottomStart" format="reference|dimension" />
+        <attr name="rippleCornerRadiusBottomEnd" format="reference|dimension" />
     </declare-styleable>
 
-    <declare-styleable name="ChipView">
-        <attr name="allowMultipleLines" format="boolean"/>
-        <attr name="extendLateralPadding" format="boolean"/>
-        <attr name="reduceEndPadding" format="boolean"/>
-        <attr name="solidColorChip" format="boolean"/>
-        <attr name="textAlignStart" format="boolean"/>
-        <attr name="reduceTextStartPadding" format="boolean"/>
-        <attr name="chipColor" format="color"/>
-        <attr name="chipStyle" format="reference"/>
-        <attr name="cornerRadius" format="dimension"/>
-        <attr name="iconWidth" format="reference|dimension"/>
-        <attr name="iconHeight" format="reference|dimension"/>
-        <attr name="useRoundedIcon" format="boolean"/>
-        <attr name="primaryTextAppearance" format="reference"/>
-        <attr name="endIconWidth" format="reference|dimension"/>
-        <attr name="endIconHeight" format="reference|dimension"/>
-        <attr name="secondaryTextAppearance" format="reference"/>
-        <attr name="rippleColor"/>
-        <attr name="verticalInset"/>
-    </declare-styleable>
+    <!-- The attributes prefixed with 'global' are used to control the button, link and URL colors
+         throughout the app. They are defined in ThemeOverlay.DynamicButtons and are applied
+         conditionally to the activity theme. This enables us to toggle dynamic colors for the
+         mentioned UI elements using a feature flag. These attributes may not be set in the themes,
+         so the code dealing with them should handle their absence. -->
+    <attr name="globalFilledButtonBgColor" format="color"/>
+    <attr name="globalFilledButtonTextColor" format="reference"/>
+    <attr name="globalTextButtonTextColor" format="reference"/>
+    <attr name="globalOutlinedButtonBorderColor" format="color"/>
+    <attr name="globalLinkTextColor" format="color"/>
+    <attr name="globalClickableSpanColor" format="color"/>
 
     <declare-styleable name="TextViewWithLeading">
         <attr name="leading" format="reference|dimension"/>

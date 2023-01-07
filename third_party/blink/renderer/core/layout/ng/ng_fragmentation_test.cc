@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,7 @@ class NGFragmentationTest : public NGBaseLayoutAlgorithmTest,
  protected:
   NGFragmentationTest() : ScopedLayoutNGBlockFragmentationForTest(true) {}
 
-  scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
-      Element* element) {
+  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -207,33 +206,32 @@ TEST_F(NGFragmentationTest, HasSeenAllChildrenIfc) {
   const LayoutBox* ifc = GetLayoutBoxByElementId("ifc");
   ASSERT_EQ(ifc->PhysicalFragmentCount(), 6u);
   const NGPhysicalBoxFragment* fragment = ifc->GetPhysicalFragment(0);
-  const NGBlockBreakToken* break_token =
-      DynamicTo<NGBlockBreakToken>(fragment->BreakToken());
+  const NGBlockBreakToken* break_token = fragment->BreakToken();
   ASSERT_TRUE(break_token);
   EXPECT_FALSE(break_token->HasSeenAllChildren());
 
   fragment = ifc->GetPhysicalFragment(1);
-  break_token = DynamicTo<NGBlockBreakToken>(fragment->BreakToken());
+  break_token = fragment->BreakToken();
   ASSERT_TRUE(break_token);
   EXPECT_FALSE(break_token->HasSeenAllChildren());
 
   fragment = ifc->GetPhysicalFragment(2);
-  break_token = DynamicTo<NGBlockBreakToken>(fragment->BreakToken());
+  break_token = fragment->BreakToken();
   ASSERT_TRUE(break_token);
   EXPECT_FALSE(break_token->HasSeenAllChildren());
 
   fragment = ifc->GetPhysicalFragment(3);
-  break_token = DynamicTo<NGBlockBreakToken>(fragment->BreakToken());
+  break_token = fragment->BreakToken();
   ASSERT_TRUE(break_token);
   EXPECT_TRUE(break_token->HasSeenAllChildren());
 
   fragment = ifc->GetPhysicalFragment(4);
-  break_token = DynamicTo<NGBlockBreakToken>(fragment->BreakToken());
+  break_token = fragment->BreakToken();
   ASSERT_TRUE(break_token);
   EXPECT_TRUE(break_token->HasSeenAllChildren());
 
   fragment = ifc->GetPhysicalFragment(5);
-  break_token = DynamicTo<NGBlockBreakToken>(fragment->BreakToken());
+  break_token = fragment->BreakToken();
   EXPECT_FALSE(break_token);
 }
 
@@ -273,41 +271,11 @@ TEST_F(NGFragmentationTest, InkOverflowInline) {
   const auto* flow_thread = To<LayoutBlockFlow>(container->FirstChild());
   DCHECK(flow_thread->IsLayoutFlowThread());
   // |flow_thread| is in the stitched coordinate system.
+  // Legacy had (0, 0, 150, 30), but NG doesn't compute for |LayoutFlowThread|.
   EXPECT_EQ(flow_thread->PhysicalVisualOverflowRect(),
-            PhysicalRect(0, 0, 150, 30));
-  // TOOD(crbug.com/1144203): This should be (0, 0, 260, 15).
+            PhysicalRect(0, 0, 100, 30));
   EXPECT_EQ(container->PhysicalVisualOverflowRect(),
-            PhysicalRect(0, 0, 210, 15));
-}
-
-TEST_F(NGFragmentationTest, OffsetFromOwnerLayoutBoxColumnBox) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-    #columns {
-      column-width: 100px;
-      column-gap: 10px;
-      column-fill: auto;
-      width: 320px;
-      height: 500px;
-    }
-    </style>
-    <div id="columns" style="background: blue">
-      <div id="block" style="height: 1500px"></div>
-    </div>
-  )HTML");
-  const auto* columns = GetLayoutBoxByElementId("columns");
-  const auto* flow_thread = To<LayoutBox>(columns->SlowFirstChild());
-  EXPECT_EQ(flow_thread->PhysicalFragmentCount(), 3u);
-  const NGPhysicalBoxFragment* fragment0 = flow_thread->GetPhysicalFragment(0);
-  EXPECT_EQ(fragment0->OffsetFromOwnerLayoutBox(), PhysicalOffset());
-  const NGPhysicalBoxFragment* fragment1 = flow_thread->GetPhysicalFragment(1);
-  EXPECT_EQ(fragment1->OffsetFromOwnerLayoutBox(), PhysicalOffset(110, 0));
-  const NGPhysicalBoxFragment* fragment2 = flow_thread->GetPhysicalFragment(2);
-  EXPECT_EQ(fragment2->OffsetFromOwnerLayoutBox(), PhysicalOffset(220, 0));
-
-  // Check running another layout does not crash.
-  GetElementById("block")->appendChild(GetDocument().createTextNode("a"));
-  RunDocumentLifecycle();
+            PhysicalRect(0, 0, 260, 15));
 }
 
 TEST_F(NGFragmentationTest, OffsetFromOwnerLayoutBoxFloat) {

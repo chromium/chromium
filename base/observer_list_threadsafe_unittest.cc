@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,12 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
@@ -26,6 +26,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace {
@@ -62,13 +63,13 @@ class AddInObserve : public Foo {
 
   void Observe(int x) override {
     if (to_add_) {
-      observer_list->AddObserver(to_add_);
+      observer_list->AddObserver(to_add_.get());
       to_add_ = nullptr;
     }
   }
 
-  ObserverListThreadSafe<Foo>* observer_list;
-  Foo* to_add_;
+  raw_ptr<ObserverListThreadSafe<Foo>> observer_list;
+  raw_ptr<Foo> to_add_;
 };
 
 // A task for use in the ThreadSafeObserver test which will add and remove
@@ -125,7 +126,7 @@ class AddRemoveThread : public Foo {
   }
 
  private:
-  ObserverListThreadSafe<Foo>* list_;
+  raw_ptr<ObserverListThreadSafe<Foo>> list_;
   scoped_refptr<SingleThreadTaskRunner> task_runner_;
   bool in_list_;  // Are we currently registered for notifications.
                   // in_list_ is only used on |this| thread.
@@ -139,23 +140,29 @@ class AddRemoveThread : public Foo {
 }  // namespace
 
 TEST(ObserverListThreadSafeTest, BasicTest) {
+  using List = ObserverListThreadSafe<Foo>;
   test::TaskEnvironment task_environment;
 
-  scoped_refptr<ObserverListThreadSafe<Foo>> observer_list(
-      new ObserverListThreadSafe<Foo>);
+  scoped_refptr<List> observer_list(new List);
   Adder a(1);
   Adder b(-1);
   Adder c(1);
   Adder d(-1);
 
-  observer_list->AddObserver(&a);
-  observer_list->AddObserver(&b);
+  List::AddObserverResult result;
+
+  result = observer_list->AddObserver(&a);
+  EXPECT_EQ(result, List::AddObserverResult::kBecameNonEmpty);
+  result = observer_list->AddObserver(&b);
+  EXPECT_EQ(result, List::AddObserverResult::kWasAlreadyNonEmpty);
 
   observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
   RunLoop().RunUntilIdle();
 
-  observer_list->AddObserver(&c);
-  observer_list->AddObserver(&d);
+  result = observer_list->AddObserver(&c);
+  EXPECT_EQ(result, List::AddObserverResult::kWasAlreadyNonEmpty);
+  result = observer_list->AddObserver(&d);
+  EXPECT_EQ(result, List::AddObserverResult::kWasAlreadyNonEmpty);
 
   observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
   observer_list->RemoveObserver(&c);
@@ -168,18 +175,22 @@ TEST(ObserverListThreadSafeTest, BasicTest) {
 }
 
 TEST(ObserverListThreadSafeTest, RemoveObserver) {
+  using List = ObserverListThreadSafe<Foo>;
   test::TaskEnvironment task_environment;
 
-  scoped_refptr<ObserverListThreadSafe<Foo>> observer_list(
-      new ObserverListThreadSafe<Foo>);
+  scoped_refptr<List> observer_list(new List);
   Adder a(1), b(1);
 
   // A workaround for the compiler bug. See http://crbug.com/121960.
   EXPECT_NE(&a, &b);
 
+  List::RemoveObserverResult result;
+
   // Should do nothing.
-  observer_list->RemoveObserver(&a);
-  observer_list->RemoveObserver(&b);
+  result = observer_list->RemoveObserver(&a);
+  EXPECT_EQ(result, List::RemoveObserverResult::kWasOrBecameEmpty);
+  result = observer_list->RemoveObserver(&b);
+  EXPECT_EQ(result, List::RemoveObserverResult::kWasOrBecameEmpty);
 
   observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
   RunLoop().RunUntilIdle();
@@ -190,13 +201,17 @@ TEST(ObserverListThreadSafeTest, RemoveObserver) {
   observer_list->AddObserver(&a);
 
   // Should also do nothing.
-  observer_list->RemoveObserver(&b);
+  result = observer_list->RemoveObserver(&b);
+  EXPECT_EQ(result, List::RemoveObserverResult::kRemainsNonEmpty);
 
   observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
   RunLoop().RunUntilIdle();
 
   EXPECT_EQ(10, a.total);
   EXPECT_EQ(0, b.total);
+
+  result = observer_list->RemoveObserver(&a);
+  EXPECT_EQ(result, List::RemoveObserverResult::kWasOrBecameEmpty);
 }
 
 class FooRemover : public Foo {
@@ -286,7 +301,7 @@ TEST(ObserverListThreadSafeTest, CrossThreadNotifications) {
 }
 
 TEST(ObserverListThreadSafeTest, OutlivesTaskEnvironment) {
-  Optional<test::TaskEnvironment> task_environment(in_place);
+  absl::optional<test::TaskEnvironment> task_environment(absl::in_place);
   scoped_refptr<ObserverListThreadSafe<Foo>> observer_list(
       new ObserverListThreadSafe<Foo>);
 
@@ -334,12 +349,14 @@ TEST(ObserverListThreadSafeTest, NotificationOnValidSequence) {
   SequenceVerificationObserver observer_1(task_runner_1);
   SequenceVerificationObserver observer_2(task_runner_2);
 
-  task_runner_1->PostTask(FROM_HERE,
-                          BindOnce(&ObserverListThreadSafe<Foo>::AddObserver,
-                                   observer_list, Unretained(&observer_1)));
-  task_runner_2->PostTask(FROM_HERE,
-                          BindOnce(&ObserverListThreadSafe<Foo>::AddObserver,
-                                   observer_list, Unretained(&observer_2)));
+  task_runner_1->PostTask(
+      FROM_HERE,
+      BindOnce(base::IgnoreResult(&ObserverListThreadSafe<Foo>::AddObserver),
+               observer_list, Unretained(&observer_1)));
+  task_runner_2->PostTask(
+      FROM_HERE,
+      BindOnce(base::IgnoreResult(&ObserverListThreadSafe<Foo>::AddObserver),
+               observer_list, Unretained(&observer_2)));
 
   ThreadPoolInstance::Get()->FlushForTesting();
 
@@ -418,7 +435,8 @@ TEST(ObserverListThreadSafeTest, RemoveWhileNotificationIsRunning) {
 
   ThreadPool::CreateSequencedTaskRunner({MayBlock()})
       ->PostTask(FROM_HERE,
-                 base::BindOnce(&ObserverListThreadSafe<Foo>::AddObserver,
+                 base::BindOnce(base::IgnoreResult(
+                                    &ObserverListThreadSafe<Foo>::AddObserver),
                                 observer_list, Unretained(&observer)));
   ThreadPoolInstance::Get()->FlushForTesting();
 
@@ -495,61 +513,6 @@ TEST(ObserverListThreadSafeTest, Existing) {
   observer_list->Notify(FROM_HERE, &Foo::Observe, 1);
   RunLoop().RunUntilIdle();
   EXPECT_EQ(1, c.total);
-}
-
-TEST(ObserverListThreadSafeTest, NotifySynchronously) {
-  test::TaskEnvironment task_environment;
-
-  scoped_refptr<ObserverListThreadSafe<Foo>> observer_list(
-      new ObserverListThreadSafe<Foo>);
-  Adder a(1);
-  Adder b(-1);
-  Adder c(1);
-  Adder d(-1);
-
-  observer_list->AddObserver(&a);
-  observer_list->AddObserver(&b);
-
-  observer_list->NotifySynchronously(FROM_HERE, &Foo::Observe, 10);
-
-  observer_list->AddObserver(&c);
-  observer_list->AddObserver(&d);
-
-  observer_list->NotifySynchronously(FROM_HERE, &Foo::Observe, 10);
-
-  EXPECT_EQ(20, a.total);
-  EXPECT_EQ(-20, b.total);
-  EXPECT_EQ(10, c.total);
-  EXPECT_EQ(-10, d.total);
-}
-
-TEST(ObserverListThreadSafeTest, NotifySynchronouslyCrossSequence) {
-  test::TaskEnvironment task_environment;
-
-  scoped_refptr<ObserverListThreadSafe<Foo>> observer_list(
-      new ObserverListThreadSafe<Foo>);
-  Adder a(1);
-  observer_list->AddObserver(&a);
-
-  WaitableEvent event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                      WaitableEvent::InitialState::NOT_SIGNALED);
-  // Call NotifySynchronously on a different sequence.
-  ThreadPool::PostTask(FROM_HERE, {}, BindLambdaForTesting([&]() {
-                         observer_list->NotifySynchronously(FROM_HERE,
-                                                            &Foo::Observe, 10);
-                         event.Signal();
-                       }));
-
-  event.Wait();
-
-  // Because it was run on a different sequence NotifySynchronously should have
-  // posted a task which hasn't run yet.
-  EXPECT_EQ(0, a.total);
-
-  RunLoop().RunUntilIdle();
-
-  // Verify the task has now run.
-  EXPECT_EQ(10, a.total);
 }
 
 }  // namespace base

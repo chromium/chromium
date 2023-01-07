@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+    <script type="module" src="signin_vars.css.js"></script>
     <script type="module" src="sync_confirmation_app.js"></script>
     <style>
       body {
@@ -12,6 +13,7 @@
       }
       @media (prefers-color-scheme: dark) {
         body {
+          --md-background-color: var(--signin-dark-customized-background-color);
           background-color: var(--md-background-color);
         }
       }

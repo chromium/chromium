@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,10 +33,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11Extension {
   // borders provided by the window manager (if any).
   virtual gfx::Rect GetXRootWindowOuterBounds() const = 0;
 
-  // Says if the X11 Root Window contains the point within its set shape. If
-  // shape is not set, returns true.
-  virtual bool ContainsPointInXRegion(const gfx::Point& point) const = 0;
-
   // Asks X11 to lower the Xwindow down the stack so that it does not obscure
   // any sibling windows.
   virtual void LowerXWindow() = 0;
@@ -44,6 +40,9 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11Extension {
   // Forces this window to be unmanaged by the window manager if
   // |override_redirect| is true.
   virtual void SetOverrideRedirect(bool override_redirect) = 0;
+
+  // Returns true if SetOverrideRedirect() would be compatible with the WM.
+  virtual bool CanResetOverrideRedirect() const = 0;
 
   virtual void SetX11ExtensionDelegate(X11ExtensionDelegate* delegate) = 0;
 

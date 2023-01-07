@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 
 namespace web {
 
-// Callback for |RunJavaScriptDialog|. The |success| value is true if the user
-// responded with OK, |false| if the dialog was cancelled. The |user_input|
+// Callback for `RunJavaScriptDialog`. The `success` value is true if the user
+// responded with OK, `false` if the dialog was cancelled. The `user_input`
 // value will exist for prompt alerts only.
 typedef base::OnceCallback<void(bool success, NSString* user_input)>
     DialogClosedCallback;

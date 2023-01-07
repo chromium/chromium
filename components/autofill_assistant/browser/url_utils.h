@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,15 @@ bool IsInDomainOrSubDomain(const GURL& url,
 // and the same scheme. If one or both arguments are not valid URLs, return
 // false.
 bool IsSamePublicSuffixDomain(const GURL& url1, const GURL& url2);
+
+// Returns the organization-identifying domain for |url|. Returns the empty
+// string for invalid urls.
+std::string GetOrganizationIdentifyingDomain(const GURL& url);
+
+// This checks if the schema transition is allowed. If the schemas are equal
+// this returns true. If the schema goes from http to https this returns true.
+// Returns false otherwise.
+bool IsAllowedSchemaTransition(const GURL& from, const GURL& to);
 
 }  // namespace url_utils
 }  // namespace autofill_assistant

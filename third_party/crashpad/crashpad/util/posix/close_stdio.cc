@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@
 #include <paths.h>
 #include <unistd.h>
 
+#include <ostream>
+#include <tuple>
+
 #include "base/check.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 
 namespace crashpad {
@@ -32,7 +34,7 @@ void CloseStdioStream(int desired_fd, int oflag) {
       HANDLE_EINTR(open(_PATH_DEVNULL, oflag | O_NOCTTY | O_CLOEXEC)));
   if (fd == desired_fd) {
     // Weird, but play along.
-    ignore_result(fd.release());
+    std::ignore = fd.release();
   } else {
     PCHECK(fd.get() >= 0) << "open";
     PCHECK(HANDLE_EINTR(dup2(fd.get(), desired_fd)) != -1) << "dup2";

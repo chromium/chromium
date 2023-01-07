@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/android/media_drm_bridge.h"
 #include "media/base/android/media_drm_storage_bridge.h"
@@ -24,20 +23,23 @@ struct CdmConfig;
 
 // A factory for creating MediaDrmBridge. Only one MediaDrmBridge can be created
 // at any time.
-class MEDIA_EXPORT MediaDrmBridgeFactory : public CdmFactory {
+class MEDIA_EXPORT MediaDrmBridgeFactory final : public CdmFactory {
  public:
   MediaDrmBridgeFactory(CreateFetcherCB create_fetcher_cb,
                         CreateStorageCB create_storage_cb);
-  ~MediaDrmBridgeFactory() final;
+
+  MediaDrmBridgeFactory(const MediaDrmBridgeFactory&) = delete;
+  MediaDrmBridgeFactory& operator=(const MediaDrmBridgeFactory&) = delete;
+
+  ~MediaDrmBridgeFactory() override;
 
   // CdmFactory implementation.
-  void Create(const std::string& key_system,
-              const CdmConfig& cdm_config,
+  void Create(const CdmConfig& cdm_config,
               const SessionMessageCB& session_message_cb,
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,
               const SessionExpirationUpdateCB& session_expiration_update_cb,
-              CdmCreatedCB cdm_created_cb) final;
+              CdmCreatedCB cdm_created_cb) override;
 
  private:
   // Callback for Initialize() on |storage_|.
@@ -72,8 +74,6 @@ class MEDIA_EXPORT MediaDrmBridgeFactory : public CdmFactory {
   scoped_refptr<MediaDrmBridge> media_drm_bridge_;
 
   base::WeakPtrFactory<MediaDrmBridgeFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDrmBridgeFactory);
 };
 
 }  // namespace media

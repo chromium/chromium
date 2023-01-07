@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fit_to_view_box.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -59,7 +59,7 @@ class SVGMarkerElement final : public SVGElement, public SVGFitToViewBox {
 
   explicit SVGMarkerElement(Document&);
 
-  AffineTransform ViewBoxToViewTransform(const FloatSize& viewport_size) const;
+  AffineTransform ViewBoxToViewTransform(const gfx::SizeF& viewport_size) const;
 
   void setOrientToAuto();
   void setOrientToAngle(SVGAngleTearOff*);

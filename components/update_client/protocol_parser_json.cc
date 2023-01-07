@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -159,6 +160,15 @@ bool ParseUrls(const base::Value& urls_node,
   return true;
 }
 
+void ParseData(const base::Value& data_node, ProtocolParser::Result* result) {
+  if (!data_node.is_dict())
+    return;
+
+  result->data.emplace_back(ProtocolParser::Result::Data(
+      GetValueString(data_node, "status"), GetValueString(data_node, "name"),
+      GetValueString(data_node, "index"), GetValueString(data_node, "#text")));
+}
+
 bool ParseUpdateCheck(const base::Value& updatecheck_node,
                       ProtocolParser::Result* result,
                       std::string* error) {
@@ -167,7 +177,7 @@ bool ParseUpdateCheck(const base::Value& updatecheck_node,
     return false;
   }
 
-  for (const auto& kv : updatecheck_node.DictItems()) {
+  for (auto kv : updatecheck_node.DictItems()) {
     if (kv.first.front() == '_' && kv.second.is_string()) {
       result->custom_attributes[kv.first] = kv.second.GetString();
     }
@@ -257,6 +267,15 @@ bool ParseApp(const base::Value& app_node,
   }
 
   DCHECK(result->status.empty() || result->status == "ok");
+
+  if (const auto* data_node = app_node.FindKey("data")) {
+    if (const auto* data_list = data_node->GetIfList()) {
+      base::ranges::for_each(*data_list, [&result](const base::Value& data) {
+        ParseData(data, result);
+      });
+    }
+  }
+
   const auto* updatecheck_node = app_node.FindKey("updatecheck");
   if (!updatecheck_node) {
     *error = "Missing updatecheck on app.";

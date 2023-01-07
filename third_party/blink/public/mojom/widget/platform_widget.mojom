@@ -1,0 +1,130 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "cc/mojom/render_frame_metadata.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/text_direction.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
+import "ui/base/cursor/mojom/cursor.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "third_party/blink/public/mojom/input/input_handler.mojom";
+import "third_party/blink/public/mojom/widget/visual_properties.mojom";
+import "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom";
+import "ui/base/ime/mojom/text_input_state.mojom";
+
+// This interface is bound on the compositor thread.
+interface WidgetCompositor {
+  // Requests that the RenderWidget sends back a response after the next main
+  // frame is generated and presented in the display compositor.
+  VisualStateRequest() => ();
+};
+
+// Implemented in Browser, this interface defines widget-specific methods that
+// will be invoked from the render process (e.g. content::RenderWidgetHostImpl).
+interface WidgetHost {
+  // Updates the current cursor to be used by the browser for indicating the
+  // location of a pointing device.
+  SetCursor(ui.mojom.Cursor cursor);
+
+  // Sent by a widget to the browser to set the tooltip text for the current
+  // cursor position. An empty |tooltip_text| will hide the tooltip view.
+  UpdateTooltipUnderCursor(mojo_base.mojom.String16 tooltip_text,
+                           mojo_base.mojom.TextDirection text_direction_hint);
+
+  // Sent by a widget to the browser to set the tooltip text and trigger a
+  // tooltip to show up, aligned with the bounds (in widget-relative DIPS)
+  // passed by parameter. An empty |tooltip_text| will hide the tooltip view.
+  UpdateTooltipFromKeyboard(mojo_base.mojom.String16 tooltip_text,
+                            mojo_base.mojom.TextDirection text_direction_hint,
+                            gfx.mojom.Rect bounds);
+
+  // Sent by a widget to the browser to clear any keyboard-triggered tooltip.
+  // This is needed because a keyboard-triggered tooltip follows the focused
+  // element set by the user from a keypress, but the focus could change
+  // programmatically to another element. In such a case, because of this
+  // dependency on focus, we want to hide keyboard-triggered tooltips but not
+  // the cursor-triggered ones, which don't rely on focus.
+  ClearKeyboardTriggeredTooltip();
+
+  // Sent when the text input state is changed. This usually happens when
+  // a text input entry is focused.
+  TextInputStateChanged(ui.mojom.TextInputState state);
+
+  // Sent when the current selection bounds are changed.
+  SelectionBoundsChanged(gfx.mojom.Rect anchor_rect,
+             mojo_base.mojom.TextDirection anchor_dir,
+             gfx.mojom.Rect focus_rect,
+             mojo_base.mojom.TextDirection focus_dir,
+             gfx.mojom.Rect bounding_box_rect,
+             bool is_anchor_first);
+
+  // Create a CompositorFrameSink that is associated with this widget.
+  // The renderer compositor will use the returned sink to submit
+  // CompositorFrames for this widget.
+  CreateFrameSink(
+      pending_receiver<viz.mojom.CompositorFrameSink>
+          compositor_frame_sink_receiver,
+      pending_remote<viz.mojom.CompositorFrameSinkClient>
+          compositor_frame_sink_client);
+
+  // Register compositor RenderFrameMetadataObserver and client.
+  // This call will be made in conjunction with calling CreateFrameSink.
+  // The renderer compositor will invoke the RenderFrameMetadataObserver
+  // apis when it produces a frame that changes the metadata.
+  RegisterRenderFrameMetadataObserver(
+      pending_receiver<cc.mojom.RenderFrameMetadataObserverClient>
+        render_frame_metadata_observer_client_receiver,
+      pending_remote<cc.mojom.RenderFrameMetadataObserver>
+        render_frame_metadata_observer);
+};
+
+// Implemented in Blink, this interface defines widget-specific methods that
+// will be invoked from the browser process (e.g. blink::WebWidget).
+interface Widget {
+  // Sent by the browser to ask the renderer to redraw. Robust to events that
+  // can happen in renderer (abortion of the commit or draw, loss of output
+  // surface etc.).
+  ForceRedraw() => ();
+
+  // Setup the input channel for this widget. If the widget is a frame,
+  // then it can also obtain a FrameWidgetInputHandler from the
+  // WidgetInputHandler interface.
+  GetWidgetInputHandler(
+    pending_receiver<blink.mojom.WidgetInputHandler> request,
+    pending_remote<blink.mojom.WidgetInputHandlerHost> host);
+
+  // Update the visual properties of the widget.
+  UpdateVisualProperties(VisualProperties visual_properties);
+
+  // Informs the widget of its position on the user's screen, as well as
+  // the position of the native window holding the widget.
+  // TODO(danakj): These should be part of UpdateVisualProperties.
+  UpdateScreenRects(gfx.mojom.Rect widget_screen_rect,
+                    gfx.mojom.Rect window_screen_rect) => ();
+
+
+  // Informs the widget that it was hidden. This allows it to reduce its
+  // resource utilization, and will cancel any pending
+  // RecordContentToVisibleTimeRequest that was set with WasShown or
+  // RequestPresentationTimeForNextFrame.
+  WasHidden();
+
+  // Tells the render view that it is no longer hidden (see WasHidden).
+  WasShown(bool was_evicted,
+           RecordContentToVisibleTimeRequest? record_tab_switch_time_request);
+
+  // Asks the render view to report the time its next frame is presented to
+  // the compositor. If the view is not visible this will do nothing.
+  RequestPresentationTimeForNextFrame(
+    RecordContentToVisibleTimeRequest visible_time_request);
+
+  // Cancels any pending RecordContentToVisibleTimeRequest that was set with
+  // WasShown or RequestPresentationTimeForNextFrame. If there are none this
+  // will do nothing.
+  CancelPresentationTimeRequest();
+};
+

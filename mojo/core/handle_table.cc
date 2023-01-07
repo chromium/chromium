@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 
 #include <limits>
 
-#include "base/record_replay.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/trace_event/memory_dump_manager.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {
@@ -41,6 +43,70 @@ const char* GetNameForDispatcherType(Dispatcher::Type type) {
 
 }  // namespace
 
+HandleTable::EntriesAccessor::EntriesAccessor() = default;
+
+HandleTable::EntriesAccessor::~EntriesAccessor() = default;
+
+bool HandleTable::EntriesAccessor::Add(const MojoHandle handle, Entry entry) {
+  return handles_.emplace(handle, std::move(entry)).second;
+}
+
+const scoped_refptr<Dispatcher>* HandleTable::EntriesAccessor::GetDispatcher(
+    const MojoHandle handle) {
+  // TODO(crbug.com/1295441): Remove the if-block below.
+  // This intentionally duplicates code in this function a bit, so that this
+  // entire if-block can later be removed cleanly.
+  if (!base::IsRunningCpuReductionExperiment()) {
+    const auto iter = handles_.find(handle);
+    return iter == handles_.end() ? nullptr : &iter->second.dispatcher;
+  }
+  if (last_read_handle_ != MOJO_HANDLE_INVALID && last_read_handle_ == handle) {
+    return &last_read_dispatcher_;
+  }
+  const auto iter = handles_.find(handle);
+  if (iter == handles_.end()) {
+    return nullptr;
+  }
+  last_read_handle_ = handle;
+  last_read_dispatcher_ = iter->second.dispatcher;
+  return &last_read_dispatcher_;
+}
+
+HandleTable::Entry* HandleTable::EntriesAccessor::GetMutable(
+    const MojoHandle handle) {
+  const auto iter = handles_.find(handle);
+  return iter == handles_.end() ? nullptr : &iter->second;
+}
+
+MojoResult HandleTable::EntriesAccessor::Remove(
+    const MojoHandle handle,
+    const HandleTable::EntriesAccessor::RemovalCondition removal_condition,
+    scoped_refptr<Dispatcher>* dispatcher) {
+  auto iter = handles_.find(handle);
+  if (iter == handles_.end()) {
+    return MOJO_RESULT_NOT_FOUND;
+  }
+  const bool is_busy = iter->second.busy;
+  const bool remove_only_if_busy =
+      removal_condition == RemovalCondition::kRemoveOnlyIfBusy;
+  if (remove_only_if_busy == is_busy) {
+    if (dispatcher != nullptr) {
+      *dispatcher = iter->second.dispatcher;
+    }
+    if (iter->first == last_read_handle_) {
+      last_read_handle_ = MOJO_HANDLE_INVALID;
+      last_read_dispatcher_.reset();
+    }
+    handles_.erase(iter);
+  }
+  return is_busy ? MOJO_RESULT_BUSY : MOJO_RESULT_OK;
+}
+
+const std::unordered_map<MojoHandle, HandleTable::Entry>&
+HandleTable::EntriesAccessor::GetUnderlyingMap() const {
+  return handles_;
+}
+
 HandleTable::HandleTable() : lock_("HandleTable.lock_") {}
 
 HandleTable::~HandleTable() = default;
@@ -55,9 +121,8 @@ MojoHandle HandleTable::AddDispatcher(scoped_refptr<Dispatcher> dispatcher) {
     return MOJO_HANDLE_INVALID;
 
   MojoHandle handle = next_available_handle_++;
-  auto result =
-      handles_.insert(std::make_pair(handle, Entry(std::move(dispatcher))));
-  DCHECK(result.second);
+  const bool inserted = entries_.Add(handle, Entry(std::move(dispatcher)));
+  DCHECK(inserted);
 
   return handle;
 }
@@ -66,21 +131,27 @@ bool HandleTable::AddDispatchersFromTransit(
     const std::vector<Dispatcher::DispatcherInTransit>& dispatchers,
     MojoHandle* handles) {
   // Oops, we're out of handles.
-  if (next_available_handle_ == MOJO_HANDLE_INVALID)
+  if (next_available_handle_ == MOJO_HANDLE_INVALID) {
     return false;
+  }
 
-  DCHECK_LE(dispatchers.size(), std::numeric_limits<uint32_t>::max());
+  // MOJO_HANDLE_INVALID is zero.
+  DCHECK_GE(next_available_handle_, 1u);
+
   // If this insertion would cause handle overflow, we're out of handles.
-  if (next_available_handle_ + dispatchers.size() < next_available_handle_)
+  const uintptr_t num_handles_available =
+      std::numeric_limits<uintptr_t>::max() - next_available_handle_ + 1;
+  if (num_handles_available < dispatchers.size()) {
     return false;
+  }
 
   for (size_t i = 0; i < dispatchers.size(); ++i) {
     MojoHandle handle = MOJO_HANDLE_INVALID;
     if (dispatchers[i].dispatcher) {
       handle = next_available_handle_++;
-      auto result = handles_.insert(
-          std::make_pair(handle, Entry(dispatchers[i].dispatcher)));
-      DCHECK(result.second);
+      const bool inserted =
+          entries_.Add(handle, Entry(dispatchers[i].dispatcher));
+      DCHECK(inserted);
     }
     handles[i] = handle;
   }
@@ -88,25 +159,25 @@ bool HandleTable::AddDispatchersFromTransit(
   return true;
 }
 
-scoped_refptr<Dispatcher> HandleTable::GetDispatcher(MojoHandle handle) const {
-  auto it = handles_.find(handle);
-  if (it == handles_.end()) {
-    return nullptr;
-  }
-  return it->second.dispatcher;
+scoped_refptr<Dispatcher> HandleTable::GetDispatcher(MojoHandle handle) {
+  const scoped_refptr<Dispatcher>* dispatcher = entries_.GetDispatcher(handle);
+  return dispatcher == nullptr ? nullptr : *dispatcher;
 }
 
 MojoResult HandleTable::GetAndRemoveDispatcher(
     MojoHandle handle,
     scoped_refptr<Dispatcher>* dispatcher) {
-  auto it = handles_.find(handle);
-  if (it == handles_.end())
+  scoped_refptr<Dispatcher> removed_dispatcher;
+  const MojoResult remove_result = entries_.Remove(
+      handle, EntriesAccessor::RemovalCondition::kRemoveOnlyIfNotBusy,
+      &removed_dispatcher);
+  if (remove_result == MOJO_RESULT_NOT_FOUND) {
     return MOJO_RESULT_INVALID_ARGUMENT;
-  if (it->second.busy)
+  }
+  if (remove_result == MOJO_RESULT_BUSY) {
     return MOJO_RESULT_BUSY;
-
-  *dispatcher = std::move(it->second.dispatcher);
-  handles_.erase(it);
+  }
+  *dispatcher = std::move(removed_dispatcher);
   return MOJO_RESULT_OK;
 }
 
@@ -116,18 +187,20 @@ MojoResult HandleTable::BeginTransit(
     std::vector<Dispatcher::DispatcherInTransit>* dispatchers) {
   dispatchers->reserve(dispatchers->size() + num_handles);
   for (size_t i = 0; i < num_handles; ++i) {
-    auto it = handles_.find(handles[i]);
-    if (it == handles_.end())
+    Entry* entry = entries_.GetMutable(handles[i]);
+    if (entry == nullptr) {
       return MOJO_RESULT_INVALID_ARGUMENT;
-    if (it->second.busy)
+    }
+    if (entry->busy) {
       return MOJO_RESULT_BUSY;
+    }
 
     Dispatcher::DispatcherInTransit d;
     d.local_handle = handles[i];
-    d.dispatcher = it->second.dispatcher;
+    d.dispatcher = entry->dispatcher;
     if (!d.dispatcher->BeginTransit())
       return MOJO_RESULT_BUSY;
-    it->second.busy = true;
+    entry->busy = true;
     dispatchers->push_back(d);
   }
   return MOJO_RESULT_OK;
@@ -136,9 +209,11 @@ MojoResult HandleTable::BeginTransit(
 void HandleTable::CompleteTransitAndClose(
     const std::vector<Dispatcher::DispatcherInTransit>& dispatchers) {
   for (const auto& dispatcher : dispatchers) {
-    auto it = handles_.find(dispatcher.local_handle);
-    DCHECK(it != handles_.end() && it->second.busy);
-    handles_.erase(it);
+    const MojoResult remove_result =
+        entries_.Remove(dispatcher.local_handle,
+                        EntriesAccessor::RemovalCondition::kRemoveOnlyIfBusy,
+                        /*dispatcher=*/nullptr);
+    DCHECK(remove_result == MOJO_RESULT_BUSY);
     dispatcher.dispatcher->CompleteTransitAndClose();
   }
 }
@@ -146,16 +221,16 @@ void HandleTable::CompleteTransitAndClose(
 void HandleTable::CancelTransit(
     const std::vector<Dispatcher::DispatcherInTransit>& dispatchers) {
   for (const auto& dispatcher : dispatchers) {
-    auto it = handles_.find(dispatcher.local_handle);
-    DCHECK(it != handles_.end() && it->second.busy);
-    it->second.busy = false;
+    Entry* entry = entries_.GetMutable(dispatcher.local_handle);
+    DCHECK(entry != nullptr && entry->busy);
+    entry->busy = false;
     dispatcher.dispatcher->CancelTransit();
   }
 }
 
 void HandleTable::GetActiveHandlesForTest(std::vector<MojoHandle>* handles) {
   handles->clear();
-  for (const auto& entry : handles_)
+  for (const auto& entry : entries_.GetUnderlyingMap())
     handles->push_back(entry.first);
 }
 
@@ -176,7 +251,7 @@ bool HandleTable::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
   // Count the number of each dispatcher type.
   {
     base::AutoLock lock(GetLock());
-    for (const auto& entry : handles_) {
+    for (const auto& entry : entries_.GetUnderlyingMap()) {
       ++handle_count[entry.second.dispatcher->GetType()];
     }
   }
@@ -193,14 +268,11 @@ bool HandleTable::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
   return true;
 }
 
-HandleTable::Entry::Entry() = default;
-
 HandleTable::Entry::Entry(scoped_refptr<Dispatcher> dispatcher)
     : dispatcher(std::move(dispatcher)) {}
 
-HandleTable::Entry::Entry(const Entry& other) = default;
-
 HandleTable::Entry::~Entry() = default;
+HandleTable::Entry::Entry(const Entry& entry) = default;
 
 }  // namespace core
 }  // namespace mojo

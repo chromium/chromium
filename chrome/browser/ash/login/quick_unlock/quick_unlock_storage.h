@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,19 @@
 
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
 
-namespace chromeos {
-
-class QuickUnlockStorageTestApi;
-class QuickUnlockStorageUnitTest;
+namespace ash {
+enum class FingerprintState;
 
 namespace quick_unlock {
-
+class AuthToken;
 class FingerprintStorage;
 class PinStoragePrefs;
-class AuthToken;
+enum class Purpose;
 
 // Helper class for managing state for quick unlock services (pin and
 // fingerprint), and general lock screen management (tokens for extension API
@@ -29,6 +27,10 @@ class AuthToken;
 class QuickUnlockStorage : public KeyedService {
  public:
   explicit QuickUnlockStorage(Profile* profile);
+
+  QuickUnlockStorage(const QuickUnlockStorage&) = delete;
+  QuickUnlockStorage& operator=(const QuickUnlockStorage&) = delete;
+
   ~QuickUnlockStorage() override;
 
   // Replaces default clock with a test clock for testing.
@@ -42,29 +44,25 @@ class QuickUnlockStorage : public KeyedService {
   // Returns true if the user has been strongly authenticated.
   bool HasStrongAuth() const;
 
-  // Returns the time since the last strong authentication. This should not be
-  // called if HasStrongAuth returns false.
-  base::TimeDelta TimeSinceLastStrongAuth() const;
-
-  // Returns the time until next strong authentication required. This should
+  // Returns the time when next strong authentication is required. This should
   // not be called if HasStrongAuth returns false.
-  base::TimeDelta TimeUntilNextStrongAuth() const;
+  base::Time TimeOfNextStrongAuth() const;
 
   // Returns true if fingerprint unlock is currently available.
   // This checks whether there's fingerprint setup, as well as HasStrongAuth.
-  bool IsFingerprintAuthenticationAvailable() const;
+  bool IsFingerprintAuthenticationAvailable(Purpose purpose) const;
 
   // Returns true if PIN unlock is currently available.
-  bool IsPinAuthenticationAvailable() const;
+  bool IsPinAuthenticationAvailable(Purpose purpose) const;
 
   // Tries to authenticate the given pin. This will consume a pin unlock
   // attempt. This always returns false if HasStrongAuth returns false.
-  bool TryAuthenticatePin(const Key& key);
+  bool TryAuthenticatePin(const Key& key, Purpose purpose);
 
   // Creates a new authentication token to be used by the quickSettingsPrivate
   // API for authenticating requests. Resets the expiration timer and
   // invalidates any previously issued tokens.
-  std::string CreateAuthToken(const chromeos::UserContext& user_context);
+  std::string CreateAuthToken(const UserContext& user_context);
 
   // Returns true if the current authentication token has expired.
   bool GetAuthTokenExpired();
@@ -76,6 +74,13 @@ class QuickUnlockStorage : public KeyedService {
   // Fetch the user context if `auth_token` is valid. May return null.
   const UserContext* GetUserContext(const std::string& auth_token);
 
+  void ReplaceUserContext(const std::string& auth_token,
+                          std::unique_ptr<UserContext>);
+
+  // Determines the fingerprint state. This is called at lock screen
+  // initialization or after the fingerprint sensor has restarted.
+  FingerprintState GetFingerprintState(Purpose purpose);
+
   FingerprintStorage* fingerprint_storage() {
     return fingerprint_storage_.get();
   }
@@ -85,8 +90,8 @@ class QuickUnlockStorage : public KeyedService {
   PinStoragePrefs* pin_storage_prefs() { return pin_storage_prefs_.get(); }
 
  private:
-  friend class chromeos::QuickUnlockStorageTestApi;
-  friend class chromeos::QuickUnlockStorageUnitTest;
+  friend class QuickUnlockStorageTestApi;
+  friend class QuickUnlockStorageUnitTest;
 
   // KeyedService:
   void Shutdown() override;
@@ -97,11 +102,17 @@ class QuickUnlockStorage : public KeyedService {
   base::Clock* clock_;
   std::unique_ptr<FingerprintStorage> fingerprint_storage_;
   std::unique_ptr<PinStoragePrefs> pin_storage_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockStorage);
 };
 
 }  // namespace quick_unlock
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace quick_unlock {
+using ::ash::quick_unlock::QuickUnlockStorage;
+}
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_QUICK_UNLOCK_STORAGE_H_

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Downloads pgo profiles for optimizing official Chrome.
@@ -132,7 +132,7 @@ def main():
   parser.add_argument(
       '--target',
       required=True,
-      choices=['win32', 'win64', 'mac', 'linux'],
+      choices=['win32', 'win64', 'mac', 'mac-arm', 'linux'],
       help='Identifier of a specific target platform + architecture.')
   subparsers = parser.add_subparsers()
 

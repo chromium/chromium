@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "build/buildflag.h"
-#include "chrome/common/buildflags.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/template_expressions.h"
@@ -27,34 +24,37 @@ class TerminalSource : public content::URLDataSource {
 
   static std::unique_ptr<TerminalSource> ForTerminal(Profile* profile);
 
+  TerminalSource(const TerminalSource&) = delete;
+  TerminalSource& operator=(const TerminalSource&) = delete;
+
   ~TerminalSource() override;
 
  private:
   TerminalSource(Profile* profile,
                  std::string source,
-                 std::string default_file);
+                 std::string default_file,
+                 bool ssh_allowed);
 
   // content::URLDataSource:
   std::string GetSource() override;
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-  bool AllowCaching() override;
-#endif
   void StartDataRequest(
       const GURL& url,
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string& path) override;
+  std::string GetMimeType(const GURL& url) override;
   bool ShouldServeMimeTypeAsContentTypeHeader() override;
   const ui::TemplateReplacements* GetReplacements() override;
   std::string GetContentSecurityPolicy(
       network::mojom::CSPDirectiveName directive) override;
+  std::string GetCrossOriginOpenerPolicy() override;
+  std::string GetCrossOriginEmbedderPolicy() override;
 
   Profile* profile_;
   std::string source_;
   std::string default_file_;
+  const bool ssh_allowed_;
+  const base::FilePath downloads_;
   ui::TemplateReplacements replacements_;
-
-  DISALLOW_COPY_AND_ASSIGN(TerminalSource);
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_TERMINAL_SOURCE_H_

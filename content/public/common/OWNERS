@@ -11,3 +11,6 @@ per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
 per-file sandbox*=set noparent
 per-file sandbox*=file://sandbox/OWNERS
+
+# New usage of pseudonymization_util requires a privacy review.
+per-file pseudonymization_util*=file://docs/privacy/OWNERS

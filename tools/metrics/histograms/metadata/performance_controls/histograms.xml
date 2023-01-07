@@ -1,0 +1,116 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!--
+This file is used to generate a comprehensive list of histograms owned
+by the Performance Controls team along with a detailed description for
+each histogram. Maybe add here or add a new performance controls one
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="PerformanceControls.BatterySaver.BubbleAction"
+    enum="BatterySaverBubbleActionType" expires_after="2023-03-01">
+  <owner>agale@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logged on each battery saver mode bubble close indicating whether the bubble
+    is dismissed (either by the user or by the system e.g. closed at shutdown)
+    or used it to turn off battery saver mode for current session. This will be
+    used to measure the efficacy of the bubble message and the number of users
+    that interact with the battery saver toolbar button.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.BatterySaver.IPHOpenSettings"
+    units="BooleanSettingsOpened" expires_after="2023-03-01">
+  <owner>agale@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logged each time the user opens the settings page through the link on the
+    battery saver mode IPH. This will be combined with an existing histogram
+    measuring the number of times the IPH is open to measure how the user
+    responds to it.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.BatterySaver.SettingsChangeMode"
+    enum="BatterySaverModeState" expires_after="2023-03-01">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the state of the battery saver mode pref when the user makes a change
+    to it through the settings page. This will be used to measure the
+    discoverability and usefulness of battery saver mode.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.HighEfficiency.BubbleAction"
+    enum="HighEfficiencyBubbleActionType" expires_after="2023-03-01">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logged on each high efficiency mode dialog close indicating whether the user
+    opened the settings page or dismissed the dialog. This will be used to
+    measure the efficacy of the dialog message and the number of users that
+    interact with the high efficiency page action chip.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.HighEfficiency.InfoIPHOpenSettings"
+    units="BooleanSettingsOpened" expires_after="2023-03-01">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logged each time the user opens the settings page through the link on the
+    high efficiency mode IPH. This will be combined with an existing histogram
+    measuring the number of times the IPH is open to measure how the user
+    responds to it.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.HighEfficiency.IPHEnableMode"
+    units="BooleanEnableMode" expires_after="2023-03-01">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logged each time the user enables high efficiency mode through the link on
+    the high efficiency mode IPH. This will be combined with an existing
+    histogram measuring the number of times the IPH is open to measure how the
+    user responds to it.
+  </summary>
+</histogram>
+
+<histogram
+    name="PerformanceControls.HighEfficiency.SettingsChangeExceptionList"
+    enum="HighEfficiencyModeExceptionListAction" expires_after="2023-03-01">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs whether the user did an add, edit, or remove operation to the tab
+    discard exception list for high efficiency mode. This will be used to better
+    understand how users interact with the list, and to see if we need to
+    improve our heuristics for tab discarding.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.HighEfficiency.SettingsChangeMode"
+    enum="BooleanEnabled" expires_after="2023-03-01">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs whether the user enabled or disabled the high efficiency mode pref when
+    it is changed through the settings page. This will be used to measure the
+    discoverability and usefulness of high efficiency mode.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

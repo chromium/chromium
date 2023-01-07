@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,14 +27,12 @@ namespace invalidation_timeouts {
 
 // Time for which unknown version invalidations are ignored after
 // fetching a policy or command.
-constexpr base::TimeDelta kUnknownVersionIgnorePeriod =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kUnknownVersionIgnorePeriod = base::Seconds(30);
 
 // The max tolerated discrepancy between policy or remote commands
 // timestamps and invalidation timestamps when determining if an invalidation
 // is expired.
-constexpr base::TimeDelta kMaxInvalidationTimeDelta =
-    base::TimeDelta::FromSeconds(300);
+constexpr base::TimeDelta kMaxInvalidationTimeDelta = base::Seconds(300);
 
 }  // namespace invalidation_timeouts
 

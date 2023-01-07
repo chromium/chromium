@@ -1,13 +1,13 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_GLES2_CONFORM_TEST_SURFACE_H_
-#define GPU_GLES2_CONFORM_TEST_SURFACE_H_
+#ifndef GPU_GLES2_CONFORM_SUPPORT_EGL_SURFACE_H_
+#define GPU_GLES2_CONFORM_SUPPORT_EGL_SURFACE_H_
 
 #include <EGL/egl.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 namespace gl {
 class GLSurface;
@@ -20,6 +20,10 @@ class Config;
 class Surface : public base::RefCountedThreadSafe<Surface> {
  public:
   explicit Surface(gl::GLSurface* gl_surface, const Config* config);
+
+  Surface(const Surface&) = delete;
+  Surface& operator=(const Surface&) = delete;
+
   void set_is_current_in_some_thread(bool flag) {
     is_current_in_some_thread_ = flag;
   }
@@ -34,11 +38,10 @@ class Surface : public base::RefCountedThreadSafe<Surface> {
   ~Surface();
   bool is_current_in_some_thread_;
   scoped_refptr<gl::GLSurface> gl_surface_;
-  const Config* config_;
-  DISALLOW_COPY_AND_ASSIGN(Surface);
+  raw_ptr<const Config> config_;
 };
 
 }  // namespace egl
 }  // namespace gles2_conform_support
 
-#endif  // GPU_GLES2_CONFORM_TEST_SURFACE_H_
+#endif  // GPU_GLES2_CONFORM_SUPPORT_EGL_SURFACE_H_

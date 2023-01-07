@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,13 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/task_traits.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/update_client/update_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -26,10 +27,11 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace component_updater {
-using RegisterCallback =
-    base::OnceCallback<bool(const update_client::CrxComponent&)>;
 
+struct ComponentRegistration;
 class ComponentUpdateService;
+
+using RegisterCallback = base::OnceCallback<bool(const ComponentRegistration&)>;
 
 // Components should use a ComponentInstaller by defining a class that
 // implements the members of ComponentInstallerPolicy, and then registering a
@@ -42,10 +44,10 @@ class ComponentInstallerPolicy {
   // Verifies that a working installation resides within the directory specified
   // by |install_dir|. |install_dir| is of the form <base directory>/<version>.
   // |manifest| should have been read from the manifest file in |install_dir|.
-  // Called only from a thread belonging to a blocking thread pool.
-  // The implementation of this function must be efficient since the function
-  // can be called when Chrome starts.
-  virtual bool VerifyInstallation(const base::DictionaryValue& manifest,
+  // |manifest| is a DICTIONARY base::Value. Called only from a thread belonging
+  // to a blocking thread pool. The implementation of this function must be
+  // efficient since the function can be called when Chrome starts.
+  virtual bool VerifyInstallation(const base::Value& manifest,
                                   const base::FilePath& install_dir) const = 0;
 
   // Returns true if the component supports a group policy to enable updates.
@@ -58,10 +60,11 @@ class ComponentInstallerPolicy {
 
   // OnCustomInstall is called during the installation process. Components that
   // require custom installation operations should implement them here.
-  // Returns false if a custom operation failed, and true otherwise.
-  // Called only from a thread belonging to a blocking thread pool.
+  // Returns a failure result if a custom operation failed, and
+  // update_client::InstallError::NONE otherwise. |manifest| is a DICTIONARY
+  // base::Value. Called only from a thread belonging to a blocking thread pool.
   virtual update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) = 0;
 
   // OnCustomUninstall is called during the unregister (uninstall) process.
@@ -79,11 +82,11 @@ class ComponentInstallerPolicy {
   // such as updating paths elsewhere in Chrome. Called on the UI thread.
   // |version| is the version of the component.
   // |install_dir| is the path to the install directory for this version.
-  // |manifest| is the manifest for this version of the component.
-  virtual void ComponentReady(
-      const base::Version& version,
-      const base::FilePath& install_dir,
-      std::unique_ptr<base::DictionaryValue> manifest) = 0;
+  // |manifest| is the manifest for this version of the component, and is a
+  // DICTIONARY base::Value.
+  virtual void ComponentReady(const base::Version& version,
+                              const base::FilePath& install_dir,
+                              base::Value manifest) = 0;
 
   // Returns a relative path that will be appended to the component updater
   // root directories to find the data for this particular component.
@@ -114,16 +117,31 @@ class ComponentInstaller final : public update_client::CrxInstaller {
       std::unique_ptr<ComponentInstallerPolicy> installer_policy,
       scoped_refptr<update_client::ActionHandler> action_handler = nullptr);
 
+  ComponentInstaller(const ComponentInstaller&) = delete;
+  ComponentInstaller& operator=(const ComponentInstaller&) = delete;
+
   // Registers the component for update checks and installs.
   // |cus| provides the registration logic.
   // The passed |callback| will be called once the initial check for installed
   // versions is done and the component has been registered.
-  void Register(ComponentUpdateService* cus, base::OnceClosure callback);
+  // Registration tasks will be done with a priority of |task_priority|. Some
+  // components may affect user-visible features, hence a default of
+  // USER_VISIBLE.
+  void Register(
+      ComponentUpdateService* cus,
+      base::OnceClosure callback,
+      base::TaskPriority task_priority = base::TaskPriority::USER_VISIBLE);
 
   // Registers the component for update checks and installs.
   // |register_callback| is called to do the registration.
   // |callback| is called when registration finishes.
-  void Register(RegisterCallback register_callback, base::OnceClosure callback);
+  // Registration tasks will be done with a priority of |task_priority|. Some
+  // components may affect user-visible features, hence a default of
+  // USER_VISIBLE.
+  void Register(
+      RegisterCallback register_callback,
+      base::OnceClosure callback,
+      base::TaskPriority task_priority = base::TaskPriority::USER_VISIBLE);
 
   // Overrides from update_client::CrxInstaller.
   void OnUpdateError(int error) override;
@@ -143,17 +161,18 @@ class ComponentInstaller final : public update_client::CrxInstaller {
   struct RegistrationInfo : base::RefCountedThreadSafe<RegistrationInfo> {
     RegistrationInfo();
 
+    RegistrationInfo(const RegistrationInfo&) = delete;
+    RegistrationInfo& operator=(const RegistrationInfo&) = delete;
+
     base::FilePath install_dir;
     base::Version version;
     std::string fingerprint;
-    std::unique_ptr<base::DictionaryValue> manifest;
+    absl::optional<base::Value> manifest;
 
    private:
     friend class base::RefCountedThreadSafe<RegistrationInfo>;
 
     ~RegistrationInfo();
-
-    DISALLOW_COPY_AND_ASSIGN(RegistrationInfo);
   };
 
   ~ComponentInstaller() override;
@@ -166,14 +185,14 @@ class ComponentInstaller final : public update_client::CrxInstaller {
                            scoped_refptr<RegistrationInfo> registration_info);
   update_client::CrxInstaller::Result InstallHelper(
       const base::FilePath& unpack_path,
-      std::unique_ptr<base::DictionaryValue>* manifest,
+      base::Value* manifest,
       base::Version* version,
       base::FilePath* install_path);
   void StartRegistration(scoped_refptr<RegistrationInfo> registration_info);
   void FinishRegistration(scoped_refptr<RegistrationInfo> registration_info,
                           RegisterCallback register_callback,
                           base::OnceClosure callback);
-  void ComponentReady(std::unique_ptr<base::DictionaryValue> manifest);
+  void ComponentReady(base::Value manifest);
   void UninstallOnTaskRunner();
 
   THREAD_CHECKER(thread_checker_);
@@ -188,8 +207,6 @@ class ComponentInstaller final : public update_client::CrxInstaller {
 
   // Posts responses back to the main thread.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentInstaller);
 };
 
 }  // namespace component_updater

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "content/common/content_export.h"
 #include "ppapi/c/ppb_image_data.h"
 #include "ppapi/shared_impl/ppb_image_data_shared.h"
 #include "ppapi/shared_impl/resource.h"
@@ -24,10 +22,9 @@ class TransportDIB;
 
 namespace content {
 
-class CONTENT_EXPORT PPB_ImageData_Impl
-    : public ppapi::Resource,
-      public ppapi::PPB_ImageData_Shared,
-      public ppapi::thunk::PPB_ImageData_API {
+class PPB_ImageData_Impl : public ppapi::Resource,
+                           public ppapi::PPB_ImageData_Shared,
+                           public ppapi::thunk::PPB_ImageData_API {
  public:
   // We delegate most of our implementation to a back-end class that either uses
   // a PlatformCanvas (for most trusted stuff) or bare shared memory (for use by
@@ -56,6 +53,9 @@ class CONTENT_EXPORT PPB_ImageData_Impl
   // for some internal uses of ImageData (like Graphics2D).
   PPB_ImageData_Impl(PP_Instance instance,
                      PPB_ImageData_Shared::ImageDataType type);
+
+  PPB_ImageData_Impl(const PPB_ImageData_Impl&) = delete;
+  PPB_ImageData_Impl& operator=(const PPB_ImageData_Impl&) = delete;
 
   // Constructor used for unittests. The ImageData is always allocated locally.
   struct ForTest {};
@@ -108,8 +108,6 @@ class CONTENT_EXPORT PPB_ImageData_Impl
   int width_;
   int height_;
   std::unique_ptr<Backend> backend_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_ImageData_Impl);
 };
 
 class ImageDataPlatformBackend : public PPB_ImageData_Impl::Backend {
@@ -117,6 +115,10 @@ class ImageDataPlatformBackend : public PPB_ImageData_Impl::Backend {
   // |is_browser_allocated| indicates whether the backing shared memory should
   // be allocated by the browser process.
   ImageDataPlatformBackend();
+
+  ImageDataPlatformBackend(const ImageDataPlatformBackend&) = delete;
+  ImageDataPlatformBackend& operator=(const ImageDataPlatformBackend&) = delete;
+
   ~ImageDataPlatformBackend() override;
 
   // PPB_ImageData_Impl::Backend implementation.
@@ -143,13 +145,15 @@ class ImageDataPlatformBackend : public PPB_ImageData_Impl::Backend {
 
   // When the device is mapped, this is the image. Null when umapped.
   std::unique_ptr<SkCanvas> mapped_canvas_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDataPlatformBackend);
 };
 
 class ImageDataSimpleBackend : public PPB_ImageData_Impl::Backend {
  public:
   ImageDataSimpleBackend();
+
+  ImageDataSimpleBackend(const ImageDataSimpleBackend&) = delete;
+  ImageDataSimpleBackend& operator=(const ImageDataSimpleBackend&) = delete;
+
   ~ImageDataSimpleBackend() override;
 
   // PPB_ImageData_Impl::Backend implementation.
@@ -174,8 +178,6 @@ class ImageDataSimpleBackend : public PPB_ImageData_Impl::Backend {
   SkBitmap skia_bitmap_;
   std::unique_ptr<SkCanvas> skia_canvas_;
   uint32_t map_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDataSimpleBackend);
 };
 
 // Manages mapping an image resource if necessary. Use this to ensure the
@@ -200,6 +202,9 @@ class ImageDataAutoMapper {
     }
   }
 
+  ImageDataAutoMapper(const ImageDataAutoMapper&) = delete;
+  ImageDataAutoMapper& operator=(const ImageDataAutoMapper&) = delete;
+
   ~ImageDataAutoMapper() {
     if (needs_unmap_)
       image_data_->Unmap();
@@ -213,8 +218,6 @@ class ImageDataAutoMapper {
   PPB_ImageData_Impl* image_data_;
   bool is_valid_;
   bool needs_unmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDataAutoMapper);
 };
 
 }  // namespace content

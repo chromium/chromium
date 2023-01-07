@@ -1,8 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/accessibility/chromevox_panel.h"
+
+#include <memory>
 
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
@@ -19,7 +21,7 @@ const char kDisableSpokenFeedbackURLFragment[] = "close";
 const char kFocusURLFragment[] = "focus";
 const char kFullscreenURLFragment[] = "fullscreen";
 const char kWidgetName[] = "ChromeVoxPanel";
-const int kPanelHeight = 35;
+const int kPanelHeight = 44;
 
 }  // namespace
 
@@ -29,6 +31,12 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
   ChromeVoxPanelWebContentsObserver(content::WebContents* web_contents,
                                     ChromeVoxPanel* panel)
       : content::WebContentsObserver(web_contents), panel_(panel) {}
+
+  ChromeVoxPanelWebContentsObserver(const ChromeVoxPanelWebContentsObserver&) =
+      delete;
+  ChromeVoxPanelWebContentsObserver& operator=(
+      const ChromeVoxPanelWebContentsObserver&) = delete;
+
   ~ChromeVoxPanelWebContentsObserver() override {}
 
   void DidFinishNavigation(
@@ -48,14 +56,12 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
 
  private:
   ChromeVoxPanel* panel_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeVoxPanelWebContentsObserver);
 };
 
 ChromeVoxPanel::ChromeVoxPanel(content::BrowserContext* browser_context)
     : AccessibilityPanel(browser_context, GetUrlForContent(), kWidgetName) {
-  web_contents_observer_.reset(
-      new ChromeVoxPanelWebContentsObserver(GetWebContents(), this));
+  web_contents_observer_ = std::make_unique<ChromeVoxPanelWebContentsObserver>(
+      GetWebContents(), this);
 
   SetAccessibilityPanelFullscreen(false);
 }

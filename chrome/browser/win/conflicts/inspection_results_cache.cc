@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -190,10 +190,10 @@ void AddInspectionResultToCache(
   DCHECK(insert_result.second);
 }
 
-base::Optional<ModuleInspectionResult> GetInspectionResultFromCache(
+absl::optional<ModuleInspectionResult> GetInspectionResultFromCache(
     const ModuleInfoKey& module_key,
     InspectionResultsCache* inspection_results_cache) {
-  base::Optional<ModuleInspectionResult> inspection_result;
+  absl::optional<ModuleInspectionResult> inspection_result;
 
   auto it = inspection_results_cache->find(module_key);
   if (it != inspection_results_cache->end()) {

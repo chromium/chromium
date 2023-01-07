@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,7 @@
 #include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "chrome/browser/ui/app_list/app_context_menu.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
-#include "chromeos/components/string_matching/tokenized_string_match.h"
 #include "ui/base/models/image_model.h"
-
-namespace {
-
-using chromeos::string_matching::TokenizedString;
-using chromeos::string_matching::TokenizedStringMatch;
-
-}  // namespace
 
 ChromeSearchResult::ChromeSearchResult()
     : metadata_(std::make_unique<ash::SearchResultMetadata>()) {}
@@ -35,28 +26,90 @@ void ChromeSearchResult::SetDisplayScore(double display_score) {
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetIsInstalling(bool is_installing) {
-  metadata_->is_installing = is_installing;
-  SetSearchResultMetadata();
-}
-
 void ChromeSearchResult::SetTitle(const std::u16string& title) {
   metadata_->title = title;
+  MaybeUpdateTitleVector();
   SetSearchResultMetadata();
 }
 
 void ChromeSearchResult::SetTitleTags(const Tags& tags) {
   metadata_->title_tags = tags;
+  MaybeUpdateTitleVector();
   SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::MaybeUpdateTitleVector() {
+  // Create and setup title tags if not set explicitly.
+  if (!explicit_title_vector_) {
+    std::vector<TextItem> text_vector;
+    TextItem text_item(ash::SearchResultTextItemType::kString);
+    text_item.SetText(metadata_->title);
+    text_item.SetTextTags(metadata_->title_tags);
+    text_vector.push_back(text_item);
+    metadata_->title_vector = text_vector;
+  }
 }
 
 void ChromeSearchResult::SetDetails(const std::u16string& details) {
   metadata_->details = details;
+  MaybeUpdateDetailsVector();
   SetSearchResultMetadata();
 }
 
 void ChromeSearchResult::SetDetailsTags(const Tags& tags) {
   metadata_->details_tags = tags;
+  MaybeUpdateDetailsVector();
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::MaybeUpdateDetailsVector() {
+  // Create and setup details tags if not set explicitly.
+  if (!explicit_details_vector_) {
+    std::vector<TextItem> text_vector;
+    TextItem text_item(ash::SearchResultTextItemType::kString);
+    text_item.SetText(metadata_->details);
+    text_item.SetTextTags(metadata_->details_tags);
+    text_vector.push_back(text_item);
+    metadata_->details_vector = text_vector;
+  }
+}
+
+void ChromeSearchResult::SetTitleTextVector(const TextVector& text_vector) {
+  metadata_->title_vector = text_vector;
+  explicit_title_vector_ = true;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetMultilineTitle(bool multiline_title) {
+  metadata_->multiline_title = multiline_title;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetDetailsTextVector(const TextVector& text_vector) {
+  metadata_->details_vector = text_vector;
+  explicit_details_vector_ = true;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetMultilineDetails(bool multiline_details) {
+  metadata_->multiline_details = multiline_details;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetBigTitleTextVector(const TextVector& text_vector) {
+  metadata_->big_title_vector = text_vector;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetBigTitleSuperscriptTextVector(
+    const TextVector& text_vector) {
+  metadata_->big_title_superscript_vector = text_vector;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetKeyboardShortcutTextVector(
+    const TextVector& text_vector) {
+  metadata_->keyboard_shortcut_vector = text_vector;
   SetSearchResultMetadata();
 }
 
@@ -73,6 +126,16 @@ void ChromeSearchResult::SetRating(float rating) {
 void ChromeSearchResult::SetFormattedPrice(
     const std::u16string& formatted_price) {
   metadata_->formatted_price = formatted_price;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetCategory(Category category) {
+  metadata_->category = category;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetBestMatch(bool best_match) {
+  metadata_->best_match = best_match;
   SetSearchResultMetadata();
 }
 
@@ -96,11 +159,6 @@ void ChromeSearchResult::SetDisplayIndex(DisplayIndex display_index) {
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetOmniboxType(OmniboxType omnibox_type) {
-  metadata_->omnibox_type = omnibox_type;
-  SetSearchResultMetadata();
-}
-
 void ChromeSearchResult::SetPositionPriority(float position_priority) {
   metadata_->position_priority = position_priority;
   SetSearchResultMetadata();
@@ -116,24 +174,19 @@ void ChromeSearchResult::SetIsRecommendation(bool is_recommendation) {
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetQueryUrl(const GURL& url) {
-  metadata_->query_url = url;
-  auto* updater = model_updater();
-  if (updater)
-    updater->SetSearchResultMetadata(id(), CloneMetadata());
+void ChromeSearchResult::SetSkipUpdateAnimation(bool skip_update_animation) {
+  metadata_->skip_update_animation = skip_update_animation;
+  SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetEquivalentResutlId(
-    const std::string& equivlanet_result_id) {
-  metadata_->equivalent_result_id = equivlanet_result_id;
-  auto* updater = model_updater();
-  if (updater)
-    updater->SetSearchResultMetadata(id(), CloneMetadata());
-}
-
-void ChromeSearchResult::SetIcon(const gfx::ImageSkia& icon) {
-  icon.EnsureRepsForSupportedScales();
+void ChromeSearchResult::SetIcon(const IconInfo& icon) {
+  icon.icon.EnsureRepsForSupportedScales();
   metadata_->icon = icon;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetIconDimension(const int dimension) {
+  metadata_->icon.dimension = dimension;
   SetSearchResultMetadata();
 }
 
@@ -154,69 +207,31 @@ void ChromeSearchResult::SetUseBadgeIconBackground(
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetNotifyVisibilityChange(
-    bool notify_visibility_change) {
-  metadata_->notify_visibility_change = notify_visibility_change;
-}
-
 void ChromeSearchResult::SetSearchResultMetadata() {
   AppListModelUpdater* updater = model_updater();
   if (updater)
     updater->SetSearchResultMetadata(id(), CloneMetadata());
 }
 
-void ChromeSearchResult::InvokeAction(int action_index) {}
+absl::optional<std::string> ChromeSearchResult::DriveId() const {
+  return absl::nullopt;
+}
+
+void ChromeSearchResult::InvokeAction(ash::SearchResultActionType action) {}
 
 void ChromeSearchResult::OnVisibilityChanged(bool visibility) {
   VLOG(1) << " Visibility change to " << visibility << " and ID is " << id();
-}
-
-void ChromeSearchResult::UpdateFromMatch(const TokenizedString& title,
-                                         const TokenizedStringMatch& match) {
-  const TokenizedStringMatch::Hits& hits = match.hits();
-
-  Tags tags;
-  tags.reserve(hits.size());
-  for (const auto& hit : hits)
-    tags.push_back(Tag(Tag::MATCH, hit.start(), hit.end()));
-
-  SetTitle(title.text());
-  SetTitleTags(tags);
-  set_relevance(match.relevance());
 }
 
 void ChromeSearchResult::GetContextMenuModel(GetMenuModelCallback callback) {
   std::move(callback).Run(nullptr);
 }
 
-// static
-std::string ChromeSearchResult::TagsDebugStringForTest(const std::string& text,
-                                                       const Tags& tags) {
-  std::string result = text;
-
-  // Build a table of delimiters to insert.
-  std::map<size_t, std::string> inserts;
-  for (const auto& tag : tags) {
-    if (tag.styles & Tag::URL)
-      inserts[tag.range.start()].push_back('{');
-    if (tag.styles & Tag::MATCH)
-      inserts[tag.range.start()].push_back('[');
-    if (tag.styles & Tag::DIM) {
-      inserts[tag.range.start()].push_back('<');
-      inserts[tag.range.end()].push_back('>');
-    }
-    if (tag.styles & Tag::MATCH)
-      inserts[tag.range.end()].push_back(']');
-    if (tag.styles & Tag::URL)
-      inserts[tag.range.end()].push_back('}');
-  }
-  // Insert the delimiters (in reverse order, to preserve indices).
-  for (const auto& insert : base::Reversed(inserts))
-    result.insert(insert.first, insert.second);
-
-  return result;
-}
-
 app_list::AppContextMenu* ChromeSearchResult::GetAppContextMenu() {
   return nullptr;
+}
+
+::std::ostream& operator<<(::std::ostream& os,
+                           const ChromeSearchResult& result) {
+  return os << result.id() << " " << result.scoring();
 }

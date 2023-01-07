@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ constexpr char kIntegrity[] = "integrity";
 constexpr char kSig[] = "sig";
 constexpr char kStatusKey[] = ":status";
 constexpr char kValidityUrlKey[] = "validity-url";
-constexpr char kCertChainCborMagic[] = u8"\U0001F4DC\u26D3";  // "📜⛓"
+constexpr char kCertChainCborMagic[] = "📜⛓";
 constexpr char kCertKey[] = "cert";
 constexpr char kOcspKey[] = "ocsp";
 constexpr char kSctKey[] = "sct";

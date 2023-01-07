@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,17 @@
 #include <tuple>
 #include <utility>
 
-#include "base/optional.h"
+#include "base/check.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/views_export.h"
 
 namespace views {
+
+// Describes how elements should be aligned within a layout.  Baseline alignment
+// only makes sense on the vertical axis and is unsupported by most layout
+// managers.
+enum class LayoutAlignment { kStart, kCenter, kEnd, kStretch, kBaseline };
 
 // Whether a layout is oriented horizontally or vertically.
 enum class LayoutOrientation {
@@ -66,7 +72,7 @@ class VIEWS_EXPORT SizeBound {
   friend constexpr bool operator!=(const SizeBound& lhs, const SizeBound& rhs);
 
   // nullopt represents "unbounded".
-  base::Optional<int> bound_;
+  absl::optional<int> bound_;
 };
 constexpr SizeBound::SizeBound() = default;
 constexpr SizeBound::SizeBound(int bound) : bound_(bound) {}

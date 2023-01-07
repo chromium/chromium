@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -44,6 +43,7 @@ using extensions::APIPermission;
 using extensions::Extension;
 using extensions::ExtensionRegistry;
 using extensions::ExtensionSystem;
+using extensions::mojom::APIPermissionID;
 
 // For ExtensionService interface when it requires a path that is not used.
 base::FilePath bogus_file_pathname(const std::string& name) {
@@ -61,7 +61,7 @@ class BackgroundApplicationListModelTest
   // extensions::ExtensionServiceTestBase:
   void SetUp() override {
     InitializeEmptyExtensionService();
-    model_.reset(new BackgroundApplicationListModel(profile_.get()));
+    model_ = std::make_unique<BackgroundApplicationListModel>(profile_.get());
   }
 
   bool IsBackgroundApp(const Extension& app) {
@@ -72,7 +72,7 @@ class BackgroundApplicationListModelTest
   BackgroundApplicationListModel* model() const { return model_.get(); }
 
  private:
-  std::unique_ptr<BackgroundApplicationListModel> model_ = nullptr;
+  std::unique_ptr<BackgroundApplicationListModel> model_;
 };
 
 enum PushMessagingOption {
@@ -88,14 +88,15 @@ static scoped_refptr<Extension> CreateExtension(
     const std::string& name,
     bool background_permission) {
   base::DictionaryValue manifest;
-  manifest.SetString(extensions::manifest_keys::kVersion, "1.0.0.0");
-  manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
-  manifest.SetString(extensions::manifest_keys::kName, name);
-  auto permissions = std::make_unique<base::ListValue>();
+  manifest.SetStringPath(extensions::manifest_keys::kVersion, "1.0.0.0");
+  manifest.SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
+  manifest.SetStringPath(extensions::manifest_keys::kName, name);
+  base::ListValue permissions;
   if (background_permission) {
-    permissions->AppendString("background");
+    permissions.Append("background");
   }
-  manifest.Set(extensions::manifest_keys::kPermissions, std::move(permissions));
+  manifest.SetKey(extensions::manifest_keys::kPermissions,
+                  std::move(permissions));
 
   std::string error;
   scoped_refptr<Extension> extension;
@@ -145,7 +146,7 @@ void RemoveBackgroundPermission(extensions::ExtensionService* service,
 }
 }  // namespace
 
-// Crashes on Mac tryslaves.
+// Crashes on Mac trybots.
 // http://crbug.com/165458
 // Also crashes on Windows under Dr. Memory (https://crbug.com/606779),
 // presumably broken on all platforms.
@@ -231,10 +232,10 @@ TEST_F(BackgroundApplicationListModelTest, AddRemovePermissionsTest) {
 
   scoped_refptr<Extension> ext = CreateExtension("extension", false);
   ASSERT_FALSE(
-      ext->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+      ext->permissions_data()->HasAPIPermission(APIPermissionID::kBackground));
   scoped_refptr<Extension> bgapp = CreateExtension("application", true);
-  ASSERT_TRUE(
-      bgapp->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+  ASSERT_TRUE(bgapp->permissions_data()->HasAPIPermission(
+      APIPermissionID::kBackground));
   ASSERT_EQ(0U, registry()->enabled_extensions().size());
   ASSERT_EQ(0U, model()->size());
 
@@ -251,22 +252,22 @@ TEST_F(BackgroundApplicationListModelTest, AddRemovePermissionsTest) {
   // Change permissions back and forth
   AddBackgroundPermission(service(), ext.get());
   ASSERT_TRUE(
-      ext->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+      ext->permissions_data()->HasAPIPermission(APIPermissionID::kBackground));
   ASSERT_EQ(2U, registry()->enabled_extensions().size());
   ASSERT_EQ(2U, model()->size());
   RemoveBackgroundPermission(service(), bgapp.get());
-  ASSERT_FALSE(
-      bgapp->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+  ASSERT_FALSE(bgapp->permissions_data()->HasAPIPermission(
+      APIPermissionID::kBackground));
   ASSERT_EQ(2U, registry()->enabled_extensions().size());
   ASSERT_EQ(1U, model()->size());
   RemoveBackgroundPermission(service(), ext.get());
   ASSERT_FALSE(
-      ext->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+      ext->permissions_data()->HasAPIPermission(APIPermissionID::kBackground));
   ASSERT_EQ(2U, registry()->enabled_extensions().size());
   ASSERT_EQ(0U, model()->size());
   AddBackgroundPermission(service(), bgapp.get());
-  ASSERT_TRUE(
-      bgapp->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+  ASSERT_TRUE(bgapp->permissions_data()->HasAPIPermission(
+      APIPermissionID::kBackground));
   ASSERT_EQ(2U, registry()->enabled_extensions().size());
   ASSERT_EQ(1U, model()->size());
 }
@@ -277,8 +278,8 @@ TEST_F(BackgroundApplicationListModelTest, ExtensionLoadAndUnload) {
   ASSERT_TRUE(ExtensionSystem::Get(profile())->is_ready());
   scoped_refptr<Extension> bgapp =
       CreateExtension("background_application", true);
-  ASSERT_TRUE(
-      bgapp->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+  ASSERT_TRUE(bgapp->permissions_data()->HasAPIPermission(
+      APIPermissionID::kBackground));
   ASSERT_TRUE(registry()->enabled_extensions().is_empty());
   ASSERT_EQ(0U, model()->size());
 
@@ -306,8 +307,8 @@ TEST_F(BackgroundApplicationListModelTest, LateExtensionSystemReady) {
 
   scoped_refptr<Extension> bgapp =
       CreateExtension("background_application", true);
-  EXPECT_TRUE(
-      bgapp->permissions_data()->HasAPIPermission(APIPermission::kBackground));
+  EXPECT_TRUE(bgapp->permissions_data()->HasAPIPermission(
+      APIPermissionID::kBackground));
   EXPECT_TRUE(registry()->enabled_extensions().is_empty());
   EXPECT_EQ(0U, model()->size());
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 #define COMPONENTS_SYNC_USER_EVENTS_USER_EVENT_SERVICE_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
@@ -20,6 +18,10 @@ class ModelTypeControllerDelegate;
 class UserEventService : public KeyedService {
  public:
   UserEventService() = default;
+
+  UserEventService(const UserEventService&) = delete;
+  UserEventService& operator=(const UserEventService&) = delete;
+
   ~UserEventService() override = default;
 
   // Records a given event to be reported. Relevant settings will be checked to
@@ -33,9 +35,6 @@ class UserEventService : public KeyedService {
   // Returns the underlying Sync integration point.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserEventService);
 };
 
 }  // namespace syncer

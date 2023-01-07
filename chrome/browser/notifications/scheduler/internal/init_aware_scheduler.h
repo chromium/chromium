@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,13 @@
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_INTERNAL_INIT_AWARE_SCHEDULER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_scheduler.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace notifications {
 
@@ -57,7 +56,7 @@ class InitAwareNotificationScheduler : public NotificationScheduler {
 
   // Whether the initialization is successful. No value if initialization is not
   // finished.
-  base::Optional<bool> init_success_;
+  absl::optional<bool> init_success_;
 
   // Cached calls.
   std::vector<base::OnceClosure> cached_closures_;

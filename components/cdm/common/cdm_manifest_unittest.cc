@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,11 @@
 #include "base/version.h"
 #include "content/public/common/cdm_info.h"
 #include "media/cdm/api/content_decryption_module.h"
+#include "media/cdm/cdm_capability.h"
 #include "media/cdm/supported_cdm_versions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using content::CdmCapability;
+using media::CdmCapability;
 
 namespace {
 
@@ -95,29 +96,32 @@ base::Value DefaultManifest() {
   return dict;
 }
 
-void CheckCodecs(const std::vector<media::VideoCodec>& actual,
-                 const std::vector<media::VideoCodec>& expected) {
+void CheckVideoCodecs(const media::CdmCapability::VideoCodecMap& actual,
+                      const std::vector<media::VideoCodec>& expected) {
   EXPECT_EQ(expected.size(), actual.size());
-  for (const auto& codec : expected) {
-    EXPECT_TRUE(base::Contains(actual, codec));
+  for (const auto& [video_codec, video_codec_info] : actual) {
+    EXPECT_TRUE(base::Contains(expected, video_codec));
+
+    // As the manifest only specifies codecs and not profiles, the list of
+    // profiles should be empty to indicate that all profiles are supported.
+    EXPECT_TRUE(video_codec_info.supported_profiles.empty());
   }
+}
+
+void CheckAudioCodecs(const base::flat_set<media::AudioCodec>& actual,
+                      const std::vector<media::AudioCodec>& expected) {
+  EXPECT_EQ(actual, expected);
 }
 
 void CheckEncryptionSchemes(
     const base::flat_set<media::EncryptionScheme>& actual,
     const std::vector<media::EncryptionScheme>& expected) {
-  EXPECT_EQ(expected.size(), actual.size());
-  for (const auto& encryption_scheme : expected) {
-    EXPECT_TRUE(base::Contains(actual, encryption_scheme));
-  }
+  EXPECT_EQ(actual, expected);
 }
 
 void CheckSessionTypes(const base::flat_set<media::CdmSessionType>& actual,
                        const std::vector<media::CdmSessionType>& expected) {
-  EXPECT_EQ(expected.size(), actual.size());
-  for (const auto& session_type : expected) {
-    EXPECT_TRUE(base::Contains(actual, session_type));
-  }
+  EXPECT_EQ(actual, expected);
 }
 
 void WriteManifestToFile(const base::Value& manifest,
@@ -181,9 +185,16 @@ TEST(CdmManifestTest, ValidManifest) {
   auto manifest = DefaultManifest();
   CdmCapability capability;
   EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-  CheckCodecs(capability.video_codecs,
-              {media::VideoCodec::kCodecVP8, media::VideoCodec::kCodecVP9,
-               media::VideoCodec::kCodecAV1});
+  CheckVideoCodecs(capability.video_codecs,
+                   {media::VideoCodec::kVP8, media::VideoCodec::kVP9,
+                    media::VideoCodec::kAV1});
+  CheckAudioCodecs(capability.audio_codecs, {
+    media::AudioCodec::kOpus, media::AudioCodec::kVorbis,
+        media::AudioCodec::kFLAC,
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+        media::AudioCodec::kAAC,
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+  });
   CheckEncryptionSchemes(
       capability.encryption_schemes,
       {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs});
@@ -196,7 +207,14 @@ TEST(CdmManifestTest, EmptyManifest) {
   base::Value manifest(base::Value::Type::DICTIONARY);
   CdmCapability capability;
   EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-  CheckCodecs(capability.video_codecs, {});
+  CheckVideoCodecs(capability.video_codecs, {});
+  CheckAudioCodecs(capability.audio_codecs, {
+    media::AudioCodec::kOpus, media::AudioCodec::kVorbis,
+        media::AudioCodec::kFLAC,
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+        media::AudioCodec::kAAC,
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+  });
   CheckEncryptionSchemes(capability.encryption_schemes,
                          {media::EncryptionScheme::kCenc});
   CheckSessionTypes(capability.session_types,
@@ -211,26 +229,26 @@ TEST(CdmManifestTest, ManifestCodecs) {
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "vp8");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckCodecs(capability.video_codecs, {media::VideoCodec::kCodecVP8});
+    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kVP8});
   }
   {
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "vp09");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckCodecs(capability.video_codecs, {media::VideoCodec::kCodecVP9});
+    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kVP9});
   }
   {
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "av01");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckCodecs(capability.video_codecs, {media::VideoCodec::kCodecAV1});
+    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kAV1});
   }
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   {
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "avc1");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckCodecs(capability.video_codecs, {media::VideoCodec::kCodecH264});
+    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kH264});
   }
 #endif
   {
@@ -238,23 +256,23 @@ TEST(CdmManifestTest, ManifestCodecs) {
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "vp8,vp09,av01");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckCodecs(capability.video_codecs,
-                {media::VideoCodec::kCodecVP8, media::VideoCodec::kCodecVP9,
-                 media::VideoCodec::kCodecAV1});
+    CheckVideoCodecs(capability.video_codecs,
+                     {media::VideoCodec::kVP8, media::VideoCodec::kVP9,
+                      media::VideoCodec::kAV1});
   }
   {
     // Empty codecs list result in empty list.
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckCodecs(capability.video_codecs, {});
+    CheckVideoCodecs(capability.video_codecs, {});
   }
   {
     // Note that invalid codec values are simply skipped.
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "invalid,av01");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckCodecs(capability.video_codecs, {media::VideoCodec::kCodecAV1});
+    CheckVideoCodecs(capability.video_codecs, {media::VideoCodec::kAV1});
   }
   {
     // Legacy: "vp9.0" was used to support VP9 profile 0 (no profile 2 support).
@@ -262,7 +280,7 @@ TEST(CdmManifestTest, ManifestCodecs) {
     CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "vp9.0");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckCodecs(capability.video_codecs, {});
+    CheckVideoCodecs(capability.video_codecs, {});
   }
   {
     // Wrong types are an error.
@@ -275,7 +293,7 @@ TEST(CdmManifestTest, ManifestCodecs) {
     CdmCapability capability;
     EXPECT_TRUE(manifest.RemoveKey(kCdmCodecsListName));
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckCodecs(capability.video_codecs, {});
+    CheckVideoCodecs(capability.video_codecs, {});
   }
 }
 
@@ -392,9 +410,9 @@ TEST(CdmManifestTest, FileManifest) {
   EXPECT_TRUE(ParseCdmManifestFromPath(manifest_path, &version, &capability));
   EXPECT_TRUE(version.IsValid());
   EXPECT_EQ(version.GetString(), kVersion);
-  CheckCodecs(capability.video_codecs,
-              {media::VideoCodec::kCodecVP8, media::VideoCodec::kCodecVP9,
-               media::VideoCodec::kCodecAV1});
+  CheckVideoCodecs(capability.video_codecs,
+                   {media::VideoCodec::kVP8, media::VideoCodec::kVP9,
+                    media::VideoCodec::kAV1});
   CheckEncryptionSchemes(
       capability.encryption_schemes,
       {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs});
@@ -473,7 +491,7 @@ TEST(CdmManifestTest, FileManifestLite) {
   base::Version version;
   CdmCapability capability;
   EXPECT_TRUE(ParseCdmManifestFromPath(manifest_path, &version, &capability));
-  CheckCodecs(capability.video_codecs, {});
+  CheckVideoCodecs(capability.video_codecs, {});
   CheckEncryptionSchemes(capability.encryption_schemes,
                          {media::EncryptionScheme::kCenc});
   CheckSessionTypes(capability.session_types,

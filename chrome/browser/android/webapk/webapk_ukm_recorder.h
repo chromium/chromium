@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_UKM_RECORDER_H_
 
 #include <stdint.h>
-
-#include "base/macros.h"
 
 class GURL;
 
@@ -19,6 +17,10 @@ class GURL;
 // avoid having to instantiate this class and deal with object lifetimes.
 class WebApkUkmRecorder {
  public:
+  WebApkUkmRecorder() = delete;
+  WebApkUkmRecorder(const WebApkUkmRecorder&) = delete;
+  WebApkUkmRecorder& operator=(const WebApkUkmRecorder&) = delete;
+
   static void RecordInstall(const GURL& manifest_url, int version_code);
 
   static void RecordSessionDuration(const GURL& manifest_url,
@@ -45,9 +47,6 @@ class WebApkUkmRecorder {
   // installed - all that matters is that it is being visited from a
   // "non-installed experience" (ie, as a normal browser tab).
   static void RecordWebApkableVisit(const GURL& manifest_url);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebApkUkmRecorder);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_UKM_RECORDER_H_

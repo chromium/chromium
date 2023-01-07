@@ -1,15 +1,17 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <utility>
 
-#include "base/macros.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/version_info/channel.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -26,15 +28,24 @@ bool PasswordManagerClient::IsFillingFallbackEnabled(const GURL& url) const {
   return true;
 }
 
-bool PasswordManagerClient::RequiresReauthToFill() {
+bool PasswordManagerClient::IsAutoSignInEnabled() const {
   return false;
 }
 
-void PasswordManagerClient::ShowTouchToFill(PasswordManagerDriver* driver) {}
+#if BUILDFLAG(IS_ANDROID)
+void PasswordManagerClient::ShowPasswordManagerErrorMessage(
+    ErrorMessageFlowType flow_type,
+    password_manager::PasswordStoreBackendErrorType error_type) {}
+
+void PasswordManagerClient::ShowTouchToFill(
+    PasswordManagerDriver* driver,
+    autofill::mojom::SubmissionReadinessState submission_readiness) {}
 
 void PasswordManagerClient::OnPasswordSelected(const std::u16string& text) {}
+#endif
 
-BiometricAuthenticator* PasswordManagerClient::GetBiometricAuthenticator() {
+scoped_refptr<device_reauth::BiometricAuthenticator>
+PasswordManagerClient::GetBiometricAuthenticator() {
   return nullptr;
 }
 
@@ -49,7 +60,8 @@ void PasswordManagerClient::UpdateCredentialCache(
 void PasswordManagerClient::PasswordWasAutofilled(
     const std::vector<const PasswordForm*>& best_matches,
     const url::Origin& origin,
-    const std::vector<const PasswordForm*>* federated_matches) {}
+    const std::vector<const PasswordForm*>* federated_matches,
+    bool was_autofilled_on_pageload) {}
 
 void PasswordManagerClient::AutofillHttpAuth(
     const PasswordForm& preferred_match,
@@ -57,7 +69,6 @@ void PasswordManagerClient::AutofillHttpAuth(
 
 void PasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
-    password_manager::CompromisedSitesCount saved_sites,
     const GURL& origin,
     const std::u16string& username) {}
 
@@ -74,10 +85,6 @@ SyncState PasswordManagerClient::GetPasswordSyncState() const {
 }
 
 bool PasswordManagerClient::WasLastNavigationHTTPError() const {
-  return false;
-}
-
-bool PasswordManagerClient::WasCredentialLeakDialogShown() const {
   return false;
 }
 
@@ -131,7 +138,7 @@ bool PasswordManagerClient::IsCommittedMainFrameSecure() const {
   return false;
 }
 
-const autofill::LogManager* PasswordManagerClient::GetLogManager() const {
+autofill::LogManager* PasswordManagerClient::GetLogManager() {
   return nullptr;
 }
 
@@ -157,7 +164,18 @@ network::mojom::NetworkContext* PasswordManagerClient::GetNetworkContext()
   return nullptr;
 }
 
-bool PasswordManagerClient::IsUnderAdvancedProtection() const {
-  return false;
+WebAuthnCredentialsDelegate*
+PasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
+    PasswordManagerDriver* driver) {
+  return nullptr;
 }
+
+version_info::Channel PasswordManagerClient::GetChannel() const {
+  return version_info::Channel::UNKNOWN;
+}
+
+void PasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded() const {
+  // For most implementations settings do not need to be refreshed.
+}
+
 }  // namespace password_manager

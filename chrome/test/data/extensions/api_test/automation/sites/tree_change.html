@@ -1,7 +1,7 @@
 <!--
- * Copyright 2015 The Chromium Authors. All rights reserved.  Use of this
- * source code is governed by a BSD-style license that can be found in the
- * LICENSE file.
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 <html>
 <head>
@@ -9,8 +9,8 @@
 </head>
 <body>
   <ul id="list">
-    <li tabindex="-1">One</li>
-    <li tabindex="-1">Two</li>
+    <li tabindex="0" role="option">One</li>
+    <li tabindex="0" role="option">Two</li>
   </ul>
   <button id="add">Add</button>
   <button id="remove">Remove</button>
@@ -23,7 +23,7 @@
 <script>
   document.getElementById('add').addEventListener('click', function() {
     var li = document.createElement('li');
-    li.tabIndex = -1;
+    li.tabIndex = 0;
     li.innerText = 'New';
     document.getElementById('list').appendChild(li);
   });

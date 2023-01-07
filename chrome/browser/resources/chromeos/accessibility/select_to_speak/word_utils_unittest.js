@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,13 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
  * Test fixture for word_utils.js.
  */
 SelectToSpeakWordUtilsUnitTest = class extends SelectToSpeakE2ETest {
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async function() {
-      await importModule('WordUtils', '/select_to_speak/word_utils.js');
-      runTest();
-    })();
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('WordUtils', '/select_to_speak/word_utils.js');
   }
 };
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakWordUtilsUnitTest', 'getNextWordStartWithoutWordStarts',
     function() {
       const node = {node: {}};
@@ -28,7 +25,7 @@ SYNC_TEST_F(
       assertEquals(7, WordUtils.getNextWordStart('kitty "cat"', 5, node));
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakWordUtilsUnitTest', 'getNextWordEndWithoutWordEnds',
     function() {
       const node = {node: {}};
@@ -38,7 +35,7 @@ SYNC_TEST_F(
       assertEquals(9, WordUtils.getNextWordEnd('kitty cat', 7, node));
     });
 
-SYNC_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordStart', function() {
+AX_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordStart', function() {
   const inlineText = {wordStarts: [0, 6], name: 'kitty cat'};
   const staticText = {children: [inlineText], name: 'kitty cat'};
   const node = {node: staticText, startChar: 0, hasInlineText: true};
@@ -56,12 +53,12 @@ SYNC_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordStart', function() {
       10, WordUtils.getNextWordStart('once upon a kitty cat', 10, node));
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakWordUtilsUnitTest', 'getNextWordStartIgnoresStartCharOffset',
     function() {
       const inlineText = {
         wordStarts: [0, 5, 10, 16],
-        name: 'once upon kitty cat'
+        name: 'once upon kitty cat',
       };
       const staticText = {children: [inlineText], name: 'once upon kitty cat'};
       const node = {node: staticText, startChar: 9, hasInlineText: true};
@@ -80,22 +77,22 @@ SYNC_TEST_F(
           10, WordUtils.getNextWordStart('once upon a kitty cat', 10, node));
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakWordUtilsUnitTest', 'getNextWordStartMultipleChildren',
     function() {
       const inlineText1 = {
         wordStarts: [0, 6],
         name: 'kitty cat ',
-        indexInParent: 0
+        indexInParent: 0,
       };
       const inlineText2 = {
         wordStarts: [0, 3],
         name: 'is cute',
-        indexInParent: 1
+        indexInParent: 1,
       };
       const staticText = {
         children: [inlineText1, inlineText2],
-        name: 'kitty cat is cute'
+        name: 'kitty cat is cute',
       };
       inlineText1.parent = staticText;
       inlineText2.parent = staticText;
@@ -106,7 +103,7 @@ SYNC_TEST_F(
           13, WordUtils.getNextWordStart('kitty cat is cute', 11, node));
     });
 
-SYNC_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordEnd', function() {
+AX_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordEnd', function() {
   const inlineText = {wordEnds: [5, 9], name: 'kitty cat'};
   const staticText = {children: [inlineText], name: 'kitty cat'};
   const node = {node: staticText, startChar: 0, hasInlineText: true};
@@ -124,18 +121,18 @@ SYNC_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordEnd', function() {
   assertEquals(5, WordUtils.getNextWordEnd('kitty cat', 4, node));
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakWordUtilsUnitTest', 'getNextWordEndMultipleChildren',
     function() {
       const inlineText1 = {
         wordEnds: [5, 9],
         name: 'kitty cat ',
-        indexInParent: 0
+        indexInParent: 0,
       };
       const inlineText2 = {wordEnds: [2, 7], name: 'is cute', indexInParent: 1};
       const staticText = {
         children: [inlineText1, inlineText2],
-        name: 'kitty cat is cute'
+        name: 'kitty cat is cute',
       };
       inlineText1.parent = staticText;
       inlineText2.parent = staticText;

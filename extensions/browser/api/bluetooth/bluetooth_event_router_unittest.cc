@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "content/public/test/test_browser_context.h"
@@ -54,12 +55,12 @@ class BluetoothEventRouterTest : public ExtensionsTest {
   void TearDown() override {
     // It's important to destroy the router before the browser context keyed
     // services so it removes itself as an ExtensionRegistry observer.
-    router_.reset(NULL);
+    router_.reset();
     ExtensionsTest::TearDown();
   }
 
  protected:
-  testing::StrictMock<device::MockBluetoothAdapter>* mock_adapter_;
+  raw_ptr<testing::StrictMock<device::MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<BluetoothEventRouter> router_;
 };
 

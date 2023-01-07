@@ -1,83 +1,65 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_H_
 
-// ABOUT
-// The allocators are designed to be extremely fast, thanks to the following
-// properties and design:
-// - Just two single (reasonably predicatable) branches in the hot / fast path
-//   for both allocating and (significantly) freeing.
-// - A minimal number of operations in the hot / fast path, with the slow paths
-//   in separate functions, leading to the possibility of inlining.
-// - Each partition page (which is usually multiple physical pages) has a
-//   metadata structure which allows fast mapping of free() address to an
-//   underlying bucket.
-// - Supports a lock-free API for fast performance in single-threaded cases.
-// - The freelist for a given bucket is split across a number of partition
-//   pages, enabling various simple tricks to try and minimize fragmentation.
-// - Fine-grained bucket sizes leading to less waste and better packing.
-//
-// The following security properties could be investigated in the future:
-// - Per-object bucketing (instead of per-size) is mostly available at the API,
-// but not used yet.
-// - No randomness of freelist entries or bucket position.
-// - Better checking for wild pointers in free().
-// - Better freelist masking function to guarantee fault on 32-bit.
-
-#include <limits.h>
-#include <string.h>
-#include <memory>
-
-#include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc-inl.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
-#include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_root.h"
-#include "base/allocator/partition_allocator/partition_stats.h"
-#include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/allocator/partition_allocator/thread_cache.h"
-#include "base/base_export.h"
-#include "base/bits.h"
-#include "base/check_op.h"
-#include "base/compiler_specific.h"
-#include "base/gtest_prod_util.h"
-#include "base/notreached.h"
-#include "base/partition_alloc_buildflags.h"
-#include "base/stl_util.h"
-#include "base/sys_byteorder.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-#include <stdlib.h>
-#endif
+// *** HOUSEKEEPING RULES ***
+//
+// Throughout PartitionAlloc code, we avoid using generic variable names like
+// |ptr| or |address|, and prefer names like |object|, |slot_start|, instead.
+// This helps emphasize that terms like "object" and "slot" represent two
+// different worlds. "Slot" is an indivisible allocation unit, internal to
+// PartitionAlloc. It is generally represented as an address (uintptr_t), since
+// arithmetic operations on it aren't uncommon, and for that reason it isn't
+// MTE-tagged either. "Object" is the allocated memory that the app is given via
+// interfaces like Alloc(), Free(), etc. An object is fully contained within a
+// slot, and may be surrounded by internal PartitionAlloc structures or empty
+// space. Is is generally represented as a pointer to its beginning (most
+// commonly void*), and is MTE-tagged so it's safe to access.
+//
+// The best way to transition between these to worlds is via
+// PartitionRoot::ObjectToSlotStart() and ::SlotStartToObject(). These take care
+// of shifting between slot/object start, MTE-tagging/untagging and the cast for
+// you. There are cases where these functions are insufficient. Internal
+// PartitionAlloc structures, like free-list pointers, BRP ref-count, cookie,
+// etc. are located in-slot thus accessing them requires an MTE tag.
+// SlotStartPtr2Addr() and SlotStartAddr2Ptr() take care of this.
+// There are cases where we have to do pointer arithmetic on an object pointer
+// (like check belonging to a pool, etc.), in which case we want to strip MTE
+// tag. ObjectInnerPtr2Addr() and ObjectPtr2Addr() take care of that.
+//
+// Avoid using UntagPtr/Addr() and TagPtr/Addr() directly, if possible. And
+// definitely avoid using reinterpret_cast between uintptr_t and pointer worlds.
+// When you do, add a comment explaining why it's safe from the point of MTE
+// tagging.
 
-#if defined(ADDRESS_SANITIZER)
-#include <sanitizer/asan_interface.h>
-#endif  // defined(ADDRESS_SANITIZER)
+namespace partition_alloc {
 
-namespace base {
-
-BASE_EXPORT void PartitionAllocGlobalInit(OomFunction on_out_of_memory);
-BASE_EXPORT void PartitionAllocGlobalUninitForTesting();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void PartitionAllocGlobalInit(OomFunction on_out_of_memory);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void PartitionAllocGlobalUninitForTesting();
 
 namespace internal {
 template <bool thread_safe>
-struct BASE_EXPORT PartitionAllocator {
+struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocator {
   PartitionAllocator() = default;
   ~PartitionAllocator();
 
   void init(PartitionOptions);
 
-  ALWAYS_INLINE PartitionRoot<thread_safe>* root() { return &partition_root_; }
-  ALWAYS_INLINE const PartitionRoot<thread_safe>* root() const {
+  PA_ALWAYS_INLINE PartitionRoot<thread_safe>* root() {
+    return &partition_root_;
+  }
+  PA_ALWAYS_INLINE const PartitionRoot<thread_safe>* root() const {
     return &partition_root_;
   }
 
@@ -88,9 +70,7 @@ struct BASE_EXPORT PartitionAllocator {
 }  // namespace internal
 
 using PartitionAllocator = internal::PartitionAllocator<internal::ThreadSafe>;
-using ThreadUnsafePartitionAllocator =
-    internal::PartitionAllocator<internal::NotThreadSafe>;
 
-}  // namespace base
+}  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_H_

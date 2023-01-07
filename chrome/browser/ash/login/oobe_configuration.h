@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,11 @@
 
 #include <memory>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 // Configuration that might be used to automate passing through
 // OOBE/enrollment screens
@@ -30,7 +28,8 @@ class OobeConfiguration {
   OobeConfiguration();
   virtual ~OobeConfiguration();
 
-  const base::Value& GetConfiguration() const;
+  const base::Value::Dict& configuration() const { return configuration_; }
+
   bool CheckCompleted() const;
 
   void AddAndFireObserver(Observer* observer);
@@ -69,8 +68,8 @@ class OobeConfiguration {
   // Tracks if configuration check is completed.
   bool check_completed_;
 
-  // Non-null dictionary value with configuration.
-  std::unique_ptr<base::Value> configuration_;
+  // Dictionary value with configuration.
+  base::Value::Dict configuration_;
 
   // Observers
   base::ObserverList<Observer>::Unchecked observer_list_;
@@ -79,6 +78,12 @@ class OobeConfiguration {
   base::WeakPtrFactory<OobeConfiguration> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::OobeConfiguration;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_CONFIGURATION_H_

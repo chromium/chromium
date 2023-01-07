@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "content/browser/picture_in_picture/picture_in_picture_session.h"
-#include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
+#include "content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents_delegate.h"
 
@@ -17,55 +17,53 @@ namespace content {
 void PictureInPictureServiceImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver) {
-  DCHECK(render_frame_host);
-  new PictureInPictureServiceImpl(render_frame_host, std::move(receiver));
+  CHECK(render_frame_host);
+  new PictureInPictureServiceImpl(*render_frame_host, std::move(receiver));
 }
 
 // static
 PictureInPictureServiceImpl* PictureInPictureServiceImpl::CreateForTesting(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver) {
-  return new PictureInPictureServiceImpl(render_frame_host,
+  CHECK(render_frame_host);
+  return new PictureInPictureServiceImpl(*render_frame_host,
                                          std::move(receiver));
 }
 
 void PictureInPictureServiceImpl::StartSession(
     uint32_t player_id,
     mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
-    const base::Optional<viz::SurfaceId>& surface_id,
+    const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size,
     bool show_play_pause_button,
     mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver> observer,
+    const gfx::Rect& source_bounds,
     StartSessionCallback callback) {
   gfx::Size window_size;
   mojo::PendingRemote<blink::mojom::PictureInPictureSession> session_remote;
 
-  if (surface_id.has_value()) {
-    auto result = GetController().StartSession(
-        this,
-        MediaPlayerId(render_frame_host()->GetGlobalFrameRoutingId(),
-                      player_id),
-        std::move(player_remote), surface_id.value(), natural_size,
-        show_play_pause_button, std::move(observer), &session_remote,
-        &window_size);
+  auto result = GetController().StartSession(
+      this, MediaPlayerId(render_frame_host().GetGlobalId(), player_id),
+      std::move(player_remote), surface_id, natural_size,
+      show_play_pause_button, std::move(observer), source_bounds,
+      &session_remote, &window_size);
 
-    if (result == PictureInPictureResult::kSuccess) {
-      // Frames are to be blocklisted from the back-forward cache because the
-      // picture-in-picture continues to be displayed while the page is in the
-      // cache instead of closing.
-      static_cast<RenderFrameHostImpl*>(render_frame_host())
-          ->OnSchedulerTrackedFeatureUsed(
-              blink::scheduler::WebSchedulerTrackedFeature::kPictureInPicture);
-    }
+  if (result == PictureInPictureResult::kSuccess) {
+    // Frames are to be blocklisted from the back-forward cache because the
+    // picture-in-picture continues to be displayed while the page is in the
+    // cache instead of closing.
+    static_cast<RenderFrameHostImpl&>(render_frame_host())
+        .OnBackForwardCacheDisablingStickyFeatureUsed(
+            blink::scheduler::WebSchedulerTrackedFeature::kPictureInPicture);
   }
 
   std::move(callback).Run(std::move(session_remote), window_size);
 }
 
 PictureInPictureServiceImpl::PictureInPictureServiceImpl(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver)
-    : FrameServiceBase(render_frame_host, std::move(receiver)) {}
+    : DocumentService(render_frame_host, std::move(receiver)) {}
 
 PictureInPictureServiceImpl::~PictureInPictureServiceImpl() {
   // If the service is destroyed because the frame was destroyed, the session
@@ -73,10 +71,10 @@ PictureInPictureServiceImpl::~PictureInPictureServiceImpl() {
   GetController().OnServiceDeleted(this);
 }
 
-PictureInPictureWindowControllerImpl&
+VideoPictureInPictureWindowControllerImpl&
 PictureInPictureServiceImpl::GetController() {
-  return *PictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
-      WebContents::FromRenderFrameHost(render_frame_host()));
+  return *VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
+      WebContents::FromRenderFrameHost(&render_frame_host()));
 }
 
 }  // namespace content

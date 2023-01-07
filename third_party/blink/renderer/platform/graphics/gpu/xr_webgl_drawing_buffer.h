@@ -1,19 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_XR_WEBGL_DRAWING_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_XR_WEBGL_DRAWING_BUFFER_H_
 
-#include "base/macros.h"
+#include "base/threading/platform_thread.h"
 #include "cc/layers/texture_layer_client.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -25,7 +24,7 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
  public:
   static scoped_refptr<XRWebGLDrawingBuffer> Create(DrawingBuffer*,
                                                     GLuint framebuffer,
-                                                    const IntSize&,
+                                                    const gfx::Size&,
                                                     bool want_alpha_channel,
                                                     bool want_depth_buffer,
                                                     bool want_stencil_buffer,
@@ -34,14 +33,14 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
   gpu::gles2::GLES2Interface* ContextGL();
   bool ContextLost();
 
-  const IntSize& size() const { return size_; }
+  const gfx::Size& size() const { return size_; }
 
   bool antialias() const { return anti_aliasing_mode_ != kNone; }
   bool depth() const { return depth_; }
   bool stencil() const { return stencil_; }
   bool alpha() const { return alpha_; }
 
-  void Resize(const IntSize&);
+  void Resize(const gfx::Size&);
 
   scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage();
 
@@ -57,9 +56,11 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
   struct PLATFORM_EXPORT ColorBuffer
       : public base::RefCountedThreadSafe<ColorBuffer> {
     ColorBuffer(base::WeakPtr<XRWebGLDrawingBuffer>,
-                const IntSize&,
+                const gfx::Size&,
                 const gpu::Mailbox& mailbox,
                 GLuint texture_id);
+    ColorBuffer(const ColorBuffer&) = delete;
+    ColorBuffer& operator=(const ColorBuffer&) = delete;
     ~ColorBuffer();
 
     // The thread on which the ColorBuffer is created and the DrawingBuffer is
@@ -70,7 +71,7 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
     // destroyed by the BeginDestruction method, which will eventually drain all
     // of its ColorBuffers.
     base::WeakPtr<XRWebGLDrawingBuffer> drawing_buffer;
-    const IntSize size;
+    const gfx::Size size;
 
     // The id of the texture that imports the shared image into the
     // DrawingBuffer's context.
@@ -85,9 +86,6 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
     // The sync token for when this buffer was received back from the
     // compositor.
     gpu::SyncToken receive_sync_token;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ColorBuffer);
   };
 
   XRWebGLDrawingBuffer(DrawingBuffer*,
@@ -97,9 +95,9 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
                        bool want_depth_buffer,
                        bool want_stencil_buffer);
 
-  bool Initialize(const IntSize&, bool use_multisampling);
+  bool Initialize(const gfx::Size&, bool use_multisampling);
 
-  IntSize AdjustSize(const IntSize&);
+  gfx::Size AdjustSize(const gfx::Size&);
 
   scoped_refptr<ColorBuffer> CreateColorBuffer();
   scoped_refptr<ColorBuffer> CreateOrRecycleColorBuffer();
@@ -124,7 +122,7 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
   scoped_refptr<ColorBuffer> back_color_buffer_;
   scoped_refptr<ColorBuffer> front_color_buffer_;
   GLuint depth_stencil_buffer_ = 0;
-  IntSize size_;
+  gfx::Size size_;
 
   // Nonzero for shared buffer mode from UseSharedBuffer until
   // DoneWithSharedBuffer.

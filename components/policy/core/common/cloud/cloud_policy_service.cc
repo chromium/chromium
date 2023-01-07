@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -100,8 +101,10 @@ void CloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {
 void CloudPolicyService::OnRegistrationStateChanged(CloudPolicyClient* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (unregister_state_ == UNREGISTER_PENDING)
+  if (unregister_state_ == UNREGISTER_PENDING) {
+    DCHECK(!client->is_registered());
     UnregisterCompleted(true);
+  }
 }
 
 void CloudPolicyService::OnClientError(CloudPolicyClient* client) {

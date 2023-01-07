@@ -1,12 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_BROWSING_DATA_CORE_COUNTERS_BOOKMARK_COUNTER_H_
 #define COMPONENTS_BROWSING_DATA_CORE_COUNTERS_BOOKMARK_COUNTER_H_
 
-#include <memory>
-
+#include "base/memory/raw_ptr.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 
 namespace bookmarks {
@@ -32,7 +31,7 @@ class BookmarkCounter : public browsing_data::BrowsingDataCounter {
   void Count() override;
   void CountBookmarks(const bookmarks::BookmarkModel* bookmark_model);
 
-  bookmarks::BookmarkModel* bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   base::WeakPtrFactory<BookmarkCounter> weak_ptr_factory_{this};
 };
 

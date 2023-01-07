@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_tile_item_view.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 
 namespace views {
@@ -46,6 +45,7 @@ class ASH_EXPORT SearchResultTileItemListView
 
   // Overridden from SearchResultContainerView:
   void OnShownChanged() override;
+  void OnThemeChanged() override;
 
  protected:
   // View overrides:

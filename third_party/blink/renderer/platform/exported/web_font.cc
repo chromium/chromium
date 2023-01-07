@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,19 +84,19 @@ void WebFont::DrawText(cc::PaintCanvas* canvas,
   TextRun text_run(run);
   TextRunPaintInfo run_info(text_run);
 
-  PaintRecordBuilder builder;
-  GraphicsContext& context = builder.Context();
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+  GraphicsContext& context = builder->Context();
 
   {
-    DrawingRecorder recorder(context, builder, DisplayItem::kWebFont);
+    DrawingRecorder recorder(context, *builder, DisplayItem::kWebFont);
     context.Save();
-    context.SetFillColor(color);
-    context.DrawText(private_->GetFont(), run_info, FloatPoint(left_baseline),
-                     kInvalidDOMNodeId);
+    context.SetFillColor(Color::FromSkColor(color));
+    context.DrawText(private_->GetFont(), run_info, left_baseline,
+                     kInvalidDOMNodeId, AutoDarkMode::Disabled());
     context.Restore();
   }
 
-  builder.EndRecording(*canvas);
+  builder->EndRecording(*canvas);
 }
 
 int WebFont::CalculateWidth(const WebTextRun& run) const {
@@ -105,7 +105,7 @@ int WebFont::CalculateWidth(const WebTextRun& run) const {
 
 int WebFont::OffsetForPosition(const WebTextRun& run, float position) const {
   return private_->GetFont().OffsetForPosition(
-      run, position, IncludePartialGlyphs, DontBreakGlyphs);
+      run, position, kIncludePartialGlyphs, BreakGlyphsOption(false));
 }
 
 gfx::RectF WebFont::SelectionRectForText(const WebTextRun& run,
@@ -113,8 +113,8 @@ gfx::RectF WebFont::SelectionRectForText(const WebTextRun& run,
                                          int height,
                                          int from,
                                          int to) const {
-  return private_->GetFont().SelectionRectForText(
-      run, FloatPoint(left_baseline), height, from, to);
+  return private_->GetFont().SelectionRectForText(run, left_baseline, height,
+                                                  from, to);
 }
 
 }  // namespace blink

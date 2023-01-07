@@ -1,15 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/activity_services/activities/find_in_page_activity.h"
 
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
-#include "ios/chrome/browser/ui/commands/find_in_page_commands.h"
-#include "testing/platform_test.h"
+#import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
-#include "url/gurl.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,7 +26,7 @@ class FindInPageActivityTest : public PlatformTest {
     mocked_handler_ = OCMStrictProtocolMock(@protocol(FindInPageCommands));
   }
 
-  // Creates a ShareToData instance with |is_page_searchable| set.
+  // Creates a ShareToData instance with `is_page_searchable` set.
   ShareToData* CreateData(bool is_page_searchable) {
     return [[ShareToData alloc] initWithShareURL:GURL("https://www.google.com/")
                                       visibleURL:GURL("https://google.com/")
@@ -37,7 +37,8 @@ class FindInPageActivityTest : public PlatformTest {
                                 isPageSearchable:is_page_searchable
                                 canSendTabToSelf:YES
                                        userAgent:web::UserAgentType::MOBILE
-                              thumbnailGenerator:nil];
+                              thumbnailGenerator:nil
+                                    linkMetadata:nil];
   }
 
   id mocked_handler_;

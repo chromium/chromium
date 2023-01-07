@@ -24,6 +24,7 @@
 #include "prng/chacha_prng_util.h"
 #include "prng/prng.h"
 #include "statusor.h"
+#include "third_party/shell-encryption/base/shell_encryption_export.h"
 
 namespace rlwe {
 
@@ -52,7 +53,7 @@ class SingleThreadChaChaPrng : public SecurePrng {
   //
   // Fails if the key is not the expected size or on internal cryptographic
   // errors.
-  static rlwe::StatusOr<std::unique_ptr<SingleThreadChaChaPrng>> Create(
+  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::unique_ptr<SingleThreadChaChaPrng>> Create(
       absl::string_view in_key);
 
   // Returns 8 bits of randomness.

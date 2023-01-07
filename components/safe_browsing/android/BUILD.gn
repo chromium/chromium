@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,6 +8,8 @@ import("//build/config/android/rules.gni")
 android_library("safe_browsing_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -29,7 +31,7 @@ group("safe_browsing_mobile") {
     ":remote_database_manager",
     ":safe_browsing_api_handler",
     ":safe_browsing_api_handler_util",
-    "//components/safe_browsing/core/db:safe_browsing_db_shared",
+    "//components/safe_browsing/core/browser/db:safe_browsing_db_shared",
   ]
 }
 
@@ -41,9 +43,9 @@ static_library("remote_database_manager") {
   deps = [
     ":safe_browsing_api_handler",
     "//base:base",
-    "//components/safe_browsing/core/db:database_manager",
-    "//components/safe_browsing/core/db:v4_get_hash_protocol_manager",
-    "//components/safe_browsing/core/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:v4_get_hash_protocol_manager",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/variations",
     "//content/public/browser",
     "//net",
@@ -59,32 +61,26 @@ static_library("safe_browsing_api_handler_util") {
   ]
   deps = [
     "//base",
-    "//components/safe_browsing/core/db:metadata_proto",
-    "//components/safe_browsing/core/db:util",
+    "//components/safe_browsing/core/browser/db:metadata_proto",
+    "//components/safe_browsing/core/browser/db:util",
   ]
 }
 
 source_set("safe_browsing_api_handler") {
   sources = [
-    "safe_browsing_api_handler.cc",
-    "safe_browsing_api_handler.h",
+    "safe_browsing_api_handler_bridge.cc",
+    "safe_browsing_api_handler_bridge.h",
   ]
   deps = [
+    ":jni_headers",
     ":safe_browsing_api_handler_util",
     "//base",
-    "//components/safe_browsing/core:features",
-    "//components/safe_browsing/core/db:util",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/common",
     "//content/public/browser:browser",
     "//url",
   ]
-
-  if (is_android) {
-    deps += [ ":jni_headers" ]
-    sources += [
-      "safe_browsing_api_handler_bridge.cc",
-      "safe_browsing_api_handler_bridge.h",
-    ]
-  }
 }
 
 source_set("unit_tests_mobile") {
@@ -98,10 +94,10 @@ source_set("unit_tests_mobile") {
     ":safe_browsing_api_handler",
     ":safe_browsing_api_handler_util",
     "//base",
-    "//components/safe_browsing/core/db:metadata_proto",
-    "//components/safe_browsing/core/db:unit_tests_shared",
-    "//components/safe_browsing/core/db:util",
-    "//components/safe_browsing/core/db:v4_test_util",
+    "//components/safe_browsing/core/browser/db:metadata_proto",
+    "//components/safe_browsing/core/browser/db:unit_tests_shared",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/browser/db:v4_test_util",
     "//components/variations",
     "//content/test:test_support",
     "//services/network/public/mojom",

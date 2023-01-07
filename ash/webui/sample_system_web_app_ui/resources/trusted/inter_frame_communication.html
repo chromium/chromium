@@ -1,0 +1,12 @@
+<!-- Copyright 2020 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Sample System Web App</title>
+<iframe width="640" height="180" src="chrome-untrusted://sample-system-web-app/untrusted.html"></iframe>
+<p>Task from child frame: <code id="child-task"></code></p>
+<script type="module" src="inter_frame_communication.js"></script>
+
+<!-- Below mojo script required to run browser tests -->
+<script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>

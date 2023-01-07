@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,10 @@ enum ChromeIsolatedWorldIDs {
   // Isolated world ID for internal Chrome features.
   ISOLATED_WORLD_ID_CHROME_INTERNAL,
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Isolated world ID for AppleScript.
   ISOLATED_WORLD_ID_APPLESCRIPT,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Numbers for isolated worlds for extensions are set in
   // extensions/renderer/script_injection.cc, and are are greater than or equal

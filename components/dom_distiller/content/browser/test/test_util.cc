@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace dom_distiller {
 namespace {
@@ -113,16 +113,18 @@ std::unique_ptr<FakeDistilledPage> SetUpTestServerWithDistilledPage(
 void AddComponentsResources() {
   FilePath pak_file;
   FilePath pak_dir;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CHECK(PathService::Get(base::DIR_ANDROID_APP_DATA, &pak_dir));
   pak_dir = pak_dir.Append(FILE_PATH_LITERAL("paks"));
-#else
+#elif BUILDFLAG(IS_MAC)
   PathService::Get(base::DIR_MODULE, &pak_dir);
-#endif  // OS_ANDROID
+#else
+  PathService::Get(base::DIR_ASSETS, &pak_dir);
+#endif  // BUILDFLAG(IS_ANDROID)
   pak_file =
       pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      pak_file, ui::SCALE_FACTOR_NONE);
+      pak_file, ui::kScaleFactorNone);
 }
 
 }  // namespace dom_distiller

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -29,7 +30,7 @@ using mojom::SubmissionSource;
 
 namespace {
 
-const char kSplitCharacters[] = " .,-_@";
+constexpr base::StringPiece16 kSplitCharacters = u" .,-_@";
 
 template <typename Char>
 struct Compare : base::CaseInsensitiveCompareASCII<Char> {
@@ -56,17 +57,9 @@ bool IsShowAutofillSignaturesEnabled() {
 }
 
 bool IsKeyboardAccessoryEnabled() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(kAutofillKeyboardAccessory);
-#else  // !defined(OS_ANDROID)
-  return false;
-#endif
-}
-
-bool IsTouchToFillEnabled() {
-#if defined(OS_ANDROID)
-  return true;
-#else  // !defined(OS_ANDROID)
+#else  // !BUILDFLAG(IS_ANDROID)
   return false;
 #endif
 }
@@ -96,8 +89,6 @@ bool IsPrefixOfEmailEndingWithAtSign(const std::u16string& full_string,
 size_t GetTextSelectionStart(const std::u16string& suggestion,
                              const std::u16string& field_contents,
                              bool case_sensitive) {
-  const std::u16string kSplitChars = base::ASCIIToUTF16(kSplitCharacters);
-
   // Loop until we find either the |field_contents| is a prefix of |suggestion|
   // or character right before the match is one of the splitting characters.
   for (std::u16string::const_iterator it = suggestion.begin();
@@ -107,7 +98,7 @@ size_t GetTextSelectionStart(const std::u16string& suggestion,
        suggestion.end();
        ++it) {
     if (it == suggestion.begin() ||
-        kSplitChars.find(*(it - 1)) != std::string::npos) {
+        kSplitCharacters.find(it[-1]) != std::string::npos) {
       // Returns the character position right after the |field_contents| within
       // |suggestion| text as a caret position for text selection.
       return it - suggestion.begin() + field_contents.size();
@@ -116,14 +107,6 @@ size_t GetTextSelectionStart(const std::u16string& suggestion,
 
   // Unable to find the |field_contents| in |suggestion| text.
   return std::u16string::npos;
-}
-
-bool IsDesktopPlatform() {
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  return false;
-#else
-  return true;
-#endif
 }
 
 bool IsCheckable(const FormFieldData::CheckStatus& check_status) {
@@ -150,7 +133,7 @@ void SetCheckStatus(FormFieldData* form_field_data,
 }
 
 std::vector<std::string> LowercaseAndTokenizeAttributeString(
-    const std::string& attribute) {
+    base::StringPiece attribute) {
   return base::SplitString(base::ToLowerASCII(attribute),
                            base::kWhitespaceASCII, base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY);
@@ -170,8 +153,8 @@ bool SanitizedFieldIsEmpty(const std::u16string& value) {
 }
 
 bool ShouldAutoselectFirstSuggestionOnArrowDown() {
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
@@ -206,6 +189,15 @@ SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
 
   NOTREACHED();
   return SubmissionIndicatorEvent::NONE;
+}
+
+GURL StripAuthAndParams(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  rep.ClearQuery();
+  rep.ClearRef();
+  return gurl.ReplaceComponents(rep);
 }
 
 }  // namespace autofill

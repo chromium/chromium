@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,11 @@
 
 #include <map>
 #include <memory>
-#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/owned_objects.h"
@@ -57,6 +54,9 @@ class GraphImpl : public Graph {
   GraphImpl(const GraphImpl&) = delete;
   GraphImpl& operator=(const GraphImpl&) = delete;
 
+  // Set up the graph.
+  void SetUp();
+
   // Tear down the graph to prepare for deletion.
   void TearDown();
 
@@ -77,12 +77,12 @@ class GraphImpl : public Graph {
   std::unique_ptr<GraphOwned> TakeFromGraph(GraphOwned* graph_owned) override;
   void RegisterObject(GraphRegistered* object) override;
   void UnregisterObject(GraphRegistered* object) override;
-  const SystemNode* FindOrCreateSystemNode() override;
+  const SystemNode* GetSystemNode() const override;
   std::vector<const ProcessNode*> GetAllProcessNodes() const override;
   std::vector<const FrameNode*> GetAllFrameNodes() const override;
   std::vector<const PageNode*> GetAllPageNodes() const override;
   std::vector<const WorkerNode*> GetAllWorkerNodes() const override;
-  bool IsEmpty() const override;
+  bool HasOnlySystemNode() const override;
   ukm::UkmRecorder* GetUkmRecorder() const override;
   NodeDataDescriberRegistry* GetNodeDataDescriberRegistry() const override;
   uintptr_t GetImplType() const override;
@@ -105,7 +105,10 @@ class GraphImpl : public Graph {
     return ukm_recorder_;
   }
 
-  SystemNodeImpl* FindOrCreateSystemNodeImpl();
+  SystemNodeImpl* GetSystemNodeImpl() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return system_node_.get();
+  }
   std::vector<ProcessNodeImpl*> GetAllProcessNodeImpls() const;
   std::vector<FrameNodeImpl*> GetAllFrameNodeImpls() const;
   std::vector<PageNodeImpl*> GetAllPageNodeImpls() const;
@@ -205,6 +208,7 @@ class GraphImpl : public Graph {
   template <typename NodeType, typename ReturnNodeType>
   std::vector<ReturnNodeType> GetAllNodesOfType() const;
 
+  void CreateSystemNode() VALID_CONTEXT_REQUIRED(sequence_checker_);
   void ReleaseSystemNode() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   std::unique_ptr<SystemNodeImpl> system_node_
@@ -212,8 +216,8 @@ class GraphImpl : public Graph {
   NodeSet nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
   ProcessByPidMap processes_by_pid_ GUARDED_BY_CONTEXT(sequence_checker_);
   FrameById frames_by_id_ GUARDED_BY_CONTEXT(sequence_checker_);
-  ukm::UkmRecorder* ukm_recorder_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      nullptr;
+  raw_ptr<ukm::UkmRecorder> ukm_recorder_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // Typed observers.
   // TODO(chrisha): We should wrap these containers in something that catches
@@ -261,7 +265,7 @@ class GraphImpl : public Graph {
 
   // The identity of the node currently being added to or removed from the
   // graph, if any. This is used to prevent re-entrant notifications.
-  const NodeBase* node_in_transition_ = nullptr;
+  raw_ptr<const NodeBase> node_in_transition_ = nullptr;
 
   // The state of the node being added or removed. Any node in the graph not
   // explicitly in transition is automatically in the kActiveInGraph state.

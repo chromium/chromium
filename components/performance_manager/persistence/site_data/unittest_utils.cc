@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ NoopSiteDataStore::~NoopSiteDataStore() = default;
 void NoopSiteDataStore::ReadSiteDataFromStore(
     const url::Origin& origin,
     ReadSiteDataFromStoreCallback callback) {
-  std::move(callback).Run(base::nullopt);
+  std::move(callback).Run(absl::nullopt);
 }
 
 void NoopSiteDataStore::WriteSiteDataIntoStore(
@@ -37,7 +37,7 @@ void NoopSiteDataStore::RemoveSiteDataFromStore(
 void NoopSiteDataStore::ClearStore() {}
 
 void NoopSiteDataStore::GetStoreSize(GetStoreSizeCallback callback) {
-  std::move(callback).Run(base::nullopt, base::nullopt);
+  std::move(callback).Run(absl::nullopt, absl::nullopt);
 }
 
 void NoopSiteDataStore::SetInitializationCallbackForTesting(

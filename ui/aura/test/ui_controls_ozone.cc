@@ -1,11 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/aura/test/ui_controls_ozone.h"
 
+#include <tuple>
+
+#include "base/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/events/event_utils.h"
 
 namespace aura {
 namespace test {
@@ -204,7 +208,7 @@ bool UIControlsOzone::SendMouseClick(ui_controls::MouseButton type) {
                          ui_controls::kNoAccelerator);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool UIControlsOzone::SendTouchEvents(int action, int id, int x, int y) {
   return SendTouchEventsNotifyWhenDone(action, id, x, y, base::OnceClosure());
 }
@@ -248,9 +252,9 @@ void UIControlsOzone::SendEventToSink(ui::Event* event,
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(closure));
   }
-  WindowTreeHost* host = optional_host ? optional_host : host_;
+  WindowTreeHost* host = optional_host ? optional_host : host_.get();
   ui::EventSourceTestApi event_source_test(host->GetEventSource());
-  ignore_result(event_source_test.SendEventToSink(event));
+  std::ignore = event_source_test.SendEventToSink(event);
 }
 
 void UIControlsOzone::PostKeyEvent(ui::EventType type,
@@ -275,6 +279,15 @@ void UIControlsOzone::PostKeyEventTask(ui::EventType type,
   flags |= ui::EF_FINAL;
 
   ui::KeyEvent key_event(type, key_code, flags);
+  if (type == ui::ET_KEY_PRESSED) {
+    // Set a property as if this is a key event not consumed by IME.
+    // Ozone/X11+GTK IME works so already. Ozone/wayland IME relies on this
+    // flag to work properly.
+    key_event.SetProperties({{
+        ui::kPropertyKeyboardImeFlag,
+        std::vector<uint8_t>{ui::kPropertyKeyboardImeIgnoredFlag},
+    }});
+  }
   SendEventToSink(&key_event, display_id, std::move(closure), optional_host);
 }
 
@@ -346,14 +359,9 @@ bool UIControlsOzone::ScreenDIPToHostPixels(gfx::PointF* location,
   return true;
 }
 
-// To avoid multiple definitions when use_x11 && use_ozone is true, disable this
-// factory method for OS_LINUX as Linux has a factory method that decides what
-// UIControls to use based on IsUsingOzonePlatform feature flag.
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
 ui_controls::UIControlsAura* CreateUIControlsAura(WindowTreeHost* host) {
   return new UIControlsOzone(host);
 }
-#endif
 
 }  // namespace test
 }  // namespace aura

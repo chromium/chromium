@@ -1,5 +1,3 @@
 This test passes if only one deprecation warning is presented in the console.
 
-only-one-deprecation-warning.js:10 [Deprecation] 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
-(anonymous) @ only-one-deprecation-warning.js:10
 

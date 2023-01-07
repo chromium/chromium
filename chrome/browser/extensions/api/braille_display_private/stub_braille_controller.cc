@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
+
+#include <memory>
 
 namespace extensions {
 namespace api {
@@ -12,7 +14,7 @@ StubBrailleController::StubBrailleController() {
 }
 
 std::unique_ptr<DisplayState> StubBrailleController::GetDisplayState() {
-  return std::unique_ptr<DisplayState>(new DisplayState);
+  return std::make_unique<DisplayState>();
 }
 
 void StubBrailleController::WriteDots(const std::vector<uint8_t>& cells,

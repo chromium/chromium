@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.directactions;
 
-import android.annotation.TargetApi;
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  * Chromium is built against Android Q SDK, have the test use {@code android.app.DirectAction}
  * directly.
  */
-@TargetApi(24) // for java.util.function.Consumer.
+@RequiresApi(24) // for java.util.function.Consumer.
 public class FakeDirectActionReporter implements DirectActionReporter {
     /** List of action definitions available to tests. */
     public final List<FakeDefinition> mActions = new ArrayList<>();

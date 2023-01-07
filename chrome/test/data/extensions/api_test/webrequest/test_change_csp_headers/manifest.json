@@ -1,0 +1,12 @@
+{
+  "name": "test_change_csp_headers",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests the webRequest API.",
+  "permissions": ["webRequest", "webRequestBlocking", "declarativeWebRequest",
+                  "tabs", "<all_urls>"],
+  "background": {
+    "scripts": ["test_change_csp_headers.js"],
+    "persistent": true
+  }
+}

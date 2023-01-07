@@ -1,18 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/overlay_request_queue_impl.h"
 
-#include <vector>
+#import <vector>
 
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_cancel_handler.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_request_cancel_handler.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_request_cancel_handler.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/platform_test.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -36,12 +36,12 @@ class FakeOverlayRequestQueueImplDelegate
   void OverlayRequestQueueWillReplaceDelegate(
       OverlayRequestQueueImpl* queue) override {}
 
-  // Whether |request| was removed from the queue.
+  // Whether `request` was removed from the queue.
   bool WasRequestRemoved(OverlayRequest* request) {
     return GetRemovedRequestStorage(request) != nullptr;
   }
 
-  // Whether |request| was removed from the queue for cancellation.
+  // Whether `request` was removed from the queue for cancellation.
   bool WasRequestCancelled(OverlayRequest* request) {
     const RemovedRequestStorage* storage = GetRemovedRequestStorage(request);
     return storage && storage->cancelled;
@@ -61,7 +61,7 @@ class FakeOverlayRequestQueueImplDelegate
     bool cancelled;
   };
 
-  // Returns the request storage for |request|.
+  // Returns the request storage for `request`.
   const RemovedRequestStorage* GetRemovedRequestStorage(
       OverlayRequest* request) {
     for (auto& storage : removed_requests_) {
@@ -81,7 +81,7 @@ class MockOverlayRequestQueueImplObserver
     : public OverlayRequestQueueImpl::Observer {
  public:
   MockOverlayRequestQueueImplObserver() {}
-  ~MockOverlayRequestQueueImplObserver() {}
+  ~MockOverlayRequestQueueImplObserver() override {}
 
   MOCK_METHOD3(RequestAddedToQueue,
                void(OverlayRequestQueueImpl*, OverlayRequest*, size_t));

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -23,6 +22,7 @@
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
   base::test::ScopedFeatureList feature_list;
@@ -37,8 +37,7 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
                                    base::Value(true));
 
   content::MockBrowsingDataRemoverDelegate delegate;
-  auto* remover =
-      content::BrowserContext::GetBrowsingDataRemover(testing_profile.get());
+  auto* remover = testing_profile->GetBrowsingDataRemover();
   remover->SetEmbedderDelegate(&delegate);
   static constexpr char kPref[] =
       R"([{"time_to_live_in_hours": 1, "data_types":["cached_images_and_files",
@@ -62,41 +61,40 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
       chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
   // Each scheduled removal is called once the prefs are set.
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(1),
+      base::Time::Min(), base::Time::Now() - base::Hours(1),
       remove_mask_1_filterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(1),
+      base::Time::Min(), base::Time::Now() - base::Hours(1),
       remove_mask_1_unfilterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(2),
-      remove_mask_2, origin_mask_2);
+      base::Time::Min(), base::Time::Now() - base::Hours(2), remove_mask_2,
+      origin_mask_2);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(3),
+      base::Time::Min(), base::Time::Now() - base::Hours(3),
       remove_mask_3_filterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(3),
+      base::Time::Min(), base::Time::Now() - base::Hours(3),
       remove_mask_3_unfilterable, 0);
 
   testing_profile->GetPrefs()->Set(browsing_data::prefs::kBrowsingDataLifetime,
                                    *base::JSONReader::Read(kPref));
   browser_task_environment.RunUntilIdle();
   delegate.VerifyAndClearExpectations();
-  // Each scheduled removal is called once every lowest time_to_live_in_hours,
-  // ere every 1 hour.
+  // Each scheduled removal is called once every hour.
   delegate.ExpectCallDontCareAboutFilterBuilder(
       base::Time::Min(), base::Time::Now(), remove_mask_1_filterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
       base::Time::Min(), base::Time::Now(), remove_mask_1_unfilterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(1),
-      remove_mask_2, origin_mask_2);
+      base::Time::Min(), base::Time::Now() - base::Hours(1), remove_mask_2,
+      origin_mask_2);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(2),
+      base::Time::Min(), base::Time::Now() - base::Hours(2),
       remove_mask_3_filterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(2),
+      base::Time::Min(), base::Time::Now() - base::Hours(2),
       remove_mask_3_unfilterable, 0);
-  browser_task_environment.FastForwardBy(base::TimeDelta::FromHours(1));
+  browser_task_environment.FastForwardBy(base::Hours(1));
   delegate.VerifyAndClearExpectations();
 }
 
@@ -111,8 +109,7 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemovalWithSync) {
   auto testing_profile = builder.Build();
 
   content::MockBrowsingDataRemoverDelegate delegate;
-  auto* remover =
-      content::BrowserContext::GetBrowsingDataRemover(testing_profile.get());
+  auto* remover = testing_profile->GetBrowsingDataRemover();
   remover->SetEmbedderDelegate(&delegate);
   static constexpr char kPref[] =
       R"([{"time_to_live_in_hours": 1, "data_types":["cached_images_and_files",
@@ -144,8 +141,8 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemovalWithSync) {
   delegate.ExpectCallDontCareAboutFilterBuilder(
       base::Time::Min(), base::Time::Now(), remove_mask_1_unfilterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(
-      base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(1),
-      remove_mask_2, origin_mask_2);
-  browser_task_environment.FastForwardBy(base::TimeDelta::FromHours(1));
+      base::Time::Min(), base::Time::Now() - base::Hours(1), remove_mask_2,
+      origin_mask_2);
+  browser_task_environment.FastForwardBy(base::Hours(1));
   delegate.VerifyAndClearExpectations();
 }

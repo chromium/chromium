@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,12 @@
 
 #include <list>
 #include <map>
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/browsing_data/browsing_data_media_license_helper.h"
 #include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
-#include "components/browsing_data/content/appcache_helper.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/database_helper.h"
@@ -57,23 +54,22 @@ class LocalDataContainer {
   using SharedWorkerInfoList =
       std::list<browsing_data::SharedWorkerHelper::SharedWorkerInfo>;
   using CacheStorageUsageInfoList = std::list<content::StorageUsageInfo>;
-  using AppCacheInfoList = std::list<content::StorageUsageInfo>;
-  using MediaLicenseInfoList =
-      std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>;
 
   LocalDataContainer(
       scoped_refptr<browsing_data::CookieHelper> cookie_helper,
       scoped_refptr<browsing_data::DatabaseHelper> database_helper,
       scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
       scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper,
-      scoped_refptr<browsing_data::AppCacheHelper> appcache_helper,
       scoped_refptr<browsing_data::IndexedDBHelper> indexed_db_helper,
       scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
       scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
       scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
       scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
-      scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper,
-      scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper);
+      scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper);
+
+  LocalDataContainer(const LocalDataContainer&) = delete;
+  LocalDataContainer& operator=(const LocalDataContainer&) = delete;
+
   virtual ~LocalDataContainer();
 
   // This method must be called to start the process of fetching the resources.
@@ -82,8 +78,6 @@ class LocalDataContainer {
 
  private:
   friend class CookiesTreeModel;
-  friend class CookieTreeAppCacheNode;
-  friend class CookieTreeMediaLicenseNode;
   friend class CookieTreeCookieNode;
   friend class CookieTreeDatabaseNode;
   friend class CookieTreeLocalStorageNode;
@@ -96,7 +90,6 @@ class LocalDataContainer {
   friend class CookieTreeCacheStorageNode;
 
   // Callback methods to be invoked when fetching the data is complete.
-  void OnAppCacheModelInfoLoaded(const AppCacheInfoList& appcache_info_list);
   void OnCookiesModelInfoLoaded(const net::CookieList& cookie_list);
   void OnDatabaseModelInfoLoaded(const DatabaseInfoList& database_info);
   void OnLocalStorageModelInfoLoaded(
@@ -113,11 +106,9 @@ class LocalDataContainer {
   void OnSharedWorkerInfoLoaded(const SharedWorkerInfoList& shared_worker_info);
   void OnCacheStorageModelInfoLoaded(
       const CacheStorageUsageInfoList& cache_storage_info);
-  void OnMediaLicenseInfoLoaded(const MediaLicenseInfoList& media_license_info);
 
   // Pointers to the helper objects, needed to retreive all the types of locally
   // stored data.
-  scoped_refptr<browsing_data::AppCacheHelper> appcache_helper_;
   scoped_refptr<browsing_data::CookieHelper> cookie_helper_;
   scoped_refptr<browsing_data::DatabaseHelper> database_helper_;
   scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper_;
@@ -128,11 +119,9 @@ class LocalDataContainer {
   scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper_;
   scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper_;
   scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper_;
-  scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper_;
 
   // Storage for all the data that was retrieved through the helper objects.
   // The collected data is used for (re)creating the CookiesTreeModel.
-  AppCacheInfoList appcache_info_list_;
   CookieList cookie_list_;
   DatabaseInfoList database_info_list_;
   LocalStorageInfoList local_storage_info_list_;
@@ -143,18 +132,15 @@ class LocalDataContainer {
   ServiceWorkerUsageInfoList service_worker_info_list_;
   SharedWorkerInfoList shared_worker_info_list_;
   CacheStorageUsageInfoList cache_storage_info_list_;
-  MediaLicenseInfoList media_license_info_list_;
 
   // A delegate, which must outlive this object. The update callbacks use the
   // delegate to deliver the updated data to the CookieTreeModel.
-  CookiesTreeModel* model_ = nullptr;
+  raw_ptr<CookiesTreeModel> model_ = nullptr;
 
   // Keeps track of how many batches are expected to start.
   int batches_started_ = 0;
 
   base::WeakPtrFactory<LocalDataContainer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocalDataContainer);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_LOCAL_DATA_CONTAINER_H_

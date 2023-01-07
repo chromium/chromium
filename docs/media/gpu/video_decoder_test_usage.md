@@ -7,7 +7,7 @@ on top of the video decoder implementation, and don't require the full Chrome
 browser stack. They can be very useful when adding support for a new codec or
 platform, or to make sure code changes don't break existing functionality. They
 are build on top of the
-[GoogleTest](https://github.com/google/googletest/blob/master/README.md)
+[GoogleTest](https://github.com/google/googletest/blob/main/README.md)
 framework.
 
 [TOC]
@@ -24,7 +24,7 @@ Wildcards can be used to run specific sets of tests:
 * Run all VP9 profile 2 tests: `tast run $HOST video.DecodeAccelVP92*`
 
 Check the
-[tast video folder](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/master/src/chromiumos/tast/local/bundles/cros/video/)
+[tast video folder](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/main/src/chromiumos/tast/local/bundles/cros/video/)
 for a list of all available tests.
 See the
 [Tast quickstart guide](https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/quickstart.md)
@@ -58,29 +58,40 @@ decoded frames. These frame checksums can be generated using ffmpeg, e.g.:
 ## Command line options
 Multiple command line arguments can be given to the command:
 
-     -v                  enable verbose mode, e.g. -v=2.
-    --vmodule            enable verbose mode for the specified module,
-                         e.g. --vmodule=*media/gpu*=2.
+    -v                    enable verbose mode, e.g. -v=2.
+    --vmodule             enable verbose mode for the specified module,
+                          e.g. --vmodule=*media/gpu*=2.
 
-    --disable_validator  disable frame validation.
-    --use_vd             use the new VD-based video decoders, instead of
-                         the default VDA-based video decoders.
-    --use_vd_vda         use the new VD-based video decoders with a wrapper
-                         that translates to the VDA interface, used to test
-                         interaction with older components expecting the VDA
-                         interface.
+    --validator_type      validate decoded frames, possible values are
+                          md5 (default, compare against md5hash of expected
+                          frames), ssim (compute SSIM against expected
+                          frames, currently allowed for AV1 streams only)
+                          and none (disable frame validation).
+    --use-legacy          use the legacy VDA-based video decoders.
+    --use_vd_vda          use the new VD-based video decoders with a
+                          wrapper that translates to the VDA interface,
+                          used to test interaction with older components
+    --linear_output       use linear buffers as the final output of the
+                          decoder which may require the use of an image
+                          processor internally. This flag only works in
+                          conjunction with --use_vd_vda.
+                          Disabled by default.
+    --output_frames       write the selected video frames to disk, possible
+                          values are "all|corrupt".
+    --output_format       set the format of frames saved to disk, supported
+                          formats are "png" (default) and "yuv".
+    --output_limit        limit the number of frames saved to disk.
+    --output_folder       set the folder used to store frames, defaults to
+                          "<testname>".
+    --disable_vaapi_lock  disable the global VA-API lock if applicable,
+                          i.e., only on devices that use the VA-API with a libva
+                          backend that's known to be thread-safe and only in
+                          portions of the Chrome stack that should be able to
+                          deal with the absence of the lock
+                          (not the VaapiVideoDecodeAccelerator).
 
-    --output_frames      write the selected video frames to disk, possible
-                         values are "all|corrupt".
-    --output_format      set the format of frames saved to disk, supported
-                         formats are "png" (default) and "yuv".
-    --output_limit       limit the number of frames saved to disk.
-    --output_folder      set the folder used to store frames, defaults to
-                         "<testname>"
-
-    --gtest_help         display the gtest help and exit.
-    --help               display this help and exit.
+    --gtest_help          display the gtest help and exit.
+    --help                display this help and exit.
 
 ## Source code
 See the video decoder tests [source code](https://cs.chromium.org/chromium/src/media/gpu/video_decode_accelerator_tests.cc).
-

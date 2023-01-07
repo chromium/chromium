@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,14 @@ namespace ash {
 
 // Wrapper around extensions::ExtensionBuilder for creating extension::Extension
 // instances for usage in kiosk app tests.
+// TODO(b/227985497): Turn this into a proper builder
 class TestKioskExtensionBuilder {
  public:
   TestKioskExtensionBuilder(extensions::Manifest::Type type,
                             const std::string& extension_id);
+  TestKioskExtensionBuilder(const TestKioskExtensionBuilder&) = delete;
+  TestKioskExtensionBuilder& operator=(const TestKioskExtensionBuilder&) =
+      delete;
   ~TestKioskExtensionBuilder();
 
   const std::string& extension_id() const { return extension_id_; }
@@ -47,8 +51,6 @@ class TestKioskExtensionBuilder {
   bool offline_enabled_ = true;
   std::vector<extensions::SecondaryKioskAppInfo> secondary_extensions_;
   std::string version_ = "1.0";
-
-  DISALLOW_COPY_AND_ASSIGN(TestKioskExtensionBuilder);
 };
 
 }  // namespace ash

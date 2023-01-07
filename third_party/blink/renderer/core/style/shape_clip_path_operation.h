@@ -44,7 +44,7 @@ class ShapeClipPathOperation final : public ClipPathOperation {
   }
 
   const BasicShape* GetBasicShape() const { return shape_.get(); }
-  Path GetPath(const FloatRect& bounding_rect, float zoom) const {
+  Path GetPath(const gfx::RectF& bounding_rect, float zoom) const {
     Path path;
     shape_->GetPath(path, bounding_rect, zoom);
     path.SetWindRule(shape_->GetWindRule());
@@ -53,7 +53,7 @@ class ShapeClipPathOperation final : public ClipPathOperation {
 
  private:
   bool operator==(const ClipPathOperation&) const override;
-  OperationType GetType() const override { return SHAPE; }
+  OperationType GetType() const override { return kShape; }
 
   explicit ShapeClipPathOperation(scoped_refptr<BasicShape> shape)
       : shape_(std::move(shape)) {
@@ -66,7 +66,7 @@ class ShapeClipPathOperation final : public ClipPathOperation {
 template <>
 struct DowncastTraits<ShapeClipPathOperation> {
   static bool AllowFrom(const ClipPathOperation& op) {
-    return op.GetType() == ClipPathOperation::SHAPE;
+    return op.GetType() == ClipPathOperation::kShape;
   }
 };
 

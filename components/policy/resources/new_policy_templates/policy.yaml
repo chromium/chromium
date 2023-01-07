@@ -1,0 +1,375 @@
+# This file is used as input to generate the following policy templates:
+# ADM, ADMX+ADML, MCX/plist and html documentation.
+
+# Policy templates are user interface definitions or documents about the
+# policies that can be used to configure Chrome. Each policy is a name-value
+# pair where the value has a given type. Chrome looks up the values using the
+# names of the policies. In the user interface where the values can be set,
+# related policies might appear together in policy groups. The grouping is not
+# visible to Chrome.
+
+# As a reference for translators, non-translatable strings must be tagged using
+# <ph name="..."></ph> as described in [1]. As these tags are pruned before
+# generating the comments for .proto files, paragraphs containing such tags
+# should not be line-wrapped (use one long line per paragraph instead) to allow
+# for correct re-flowing of the text.
+# [1] https://www.chromium.org/developers/tools-we-use-in-chromium/grit/grit-users-guide.
+#
+# See documentation in docs/enterprise/components/policy/resources/description_guidelines.md
+# for how product names should appear in <ph> tags to ensure consistency.
+#
+#
+# Generated grd names:
+#   Each name has two parts: the second part is either CAPTION, DESC or LABEL,
+#   and the first part identifies the item the text applies to:
+#   -For policies and groups:
+#     IDS_POLICY_<NAME OF THE POLICY OR GROUP>
+#     e.g. the name of the caption of policy HomepageLocation:
+#       IDS_POLICY_HOMEPAGELOCATION_CAPTION
+#     or other messages of the policy HomepageLocation:
+#       IDS_POLICY_HOMEPAGELOCATION_LABEL
+#       IDS_POLICY_HOMEPAGELOCATION_DESC
+#   -For enum items:
+#     IDS_POLICY_ENUM_<NAME OF THE ITEM>
+#     e.g. the name of the caption of ProxyServerDisabled:
+#       IDS_POLICY_ENUM_PROXYSERVERDISABLED_CAPTION
+
+# This field is a list of strings which describe the group of people responsible
+# for maintaining the policy and can help answer questions or solve issues with
+# the policy. The entries can be either emails of committers or
+# file:// references to OWNERS files in the Chromium repository.
+# There should be at least 2 owners per policies, and ideally a file://
+# references to an OWNERS files
+owners:
+- your-ldap@chromium.org
+- file://components/policy/resources/OWNERS
+
+# Optional field that defaults to `caption` if not set.
+# A short, one-line summary of the item it applies to. The difference from
+# caption is that label always appears next to the entry field where the value
+# of the policy can be entered. 'main' policies on Windows ignore this. Policies
+# on Mac are using this instead of caption.
+# Note: This should not end with a punctuation mark.
+label: A short one line summary that may
+  wrap to the next line
+
+# A short, one-line summary of the item it applies to. This can appear
+# both in policy or group listings or on title bars of policy-setting
+# windows.
+# Note: This should not end with a punctuation mark.
+caption: A short one line summary that may
+  wrap to the next line
+
+# See docs/enterprise/components/policy/resources/description_guidelines.md
+# for how product names should appear in <ph> tags to ensure consistency.
+# Placeholders:
+#   The following placeholder strings are automatically substituted:
+#     $1 -> Google Chrome / Chromium
+#     $2 -> Google ChromeOS / ChromiumOS
+#     $3 -> Google Chrome Frame / Chromium Frame
+#     $6 is reserved for doc_writer
+desc: |-
+  A multiline description for your policy.
+  This is the second line.
+  This is a <ph name="PLACEHOLDER">placeholder</ph>
+
+# List of platforms where the policy is planned to be released.
+# The policy has to be listed in the EnableExperimentalPolicies policy to be
+# available in the Dev and Canary channel.
+# Currently supported platforms:
+#   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome.*`
+#   `chrome_os`, `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`
+#   Note that `chrome_frame` has been deprecated.
+future_on:
+- ios
+
+# List of platforms where the policy is officially released.
+# The format of `supported_on` is `<platform>:<since_version>-<until_version>`.
+# It means the policy is officially released on the |platform| from
+# |since_version| and is removed after |until_version|. |until_version|
+# is optional.
+# Currently supported platforms:
+#   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome.*`
+#   `chrome_os`, `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`
+#   Note that `chrome_frame` has been deprecated.
+supported_on:
+- android:106-
+- chrome.*:105-
+- chrome_os:100-1001
+
+
+# Optional field that is `false` by default.
+# Set to true if the policy has been deprecated.
+deprecated: false
+
+# Optional field that is `false` by default.
+# Indicates that this policy is only supported as a device-level Cloud Policy.
+# In that case no entry in the UserPolicy Protobuf is generated and it is
+# assumed that it will be added to the DevicePolicy Protobuf manually. Device
+# policy only exists on ChromeOS.
+device_only: false
+
+# ChromeOS devices can either be managed through the Google cloud or through
+# Active Directory. Most policies are supported for both management types, but
+# some are not. The supported values are 'google_cloud', 'active_directory'.
+supported_chrome_os_management: ['google_cloud', 'active_directory']
+
+features:
+  # Optional field that is `true` by default.
+  # Set to False to suppress the policy in the generated
+  # mandatory policy templates. The generated documentation for the policy
+  # will contain a suitable hint for administrators.
+  can_be_mandatory: true
+
+  # Optional field that is `false` by default.
+  # recommended policy templates. The generated documentation for the policy
+  # will contain a suitable hint for administrators.
+  can_be_recommended: false
+
+  # Whether Chrome respects the changes to the policy immediately without having
+  # to restart the browser.
+  dynamic_refresh: true
+
+  # Optional field that is `false` by default.
+  # Set to True if the policy is used for internal development or testing
+  # purposes and will never be used by any external administrator.
+  internal_only: false
+
+  # Whether a user policy applies to every user logging into the browser or only
+  # one profile.
+  per_profile: true
+
+  # Optional field that is `false` by default.
+  # Set to True if the policy can only be set from platform policy but do not
+  # support Admin console.
+  platform_only: false
+
+  # Set to True if the policy is controlled by Admin Console without any user
+  # interface for administrator. It can only be used for policies with the
+  # 'cloud_only' tag. Policy that are 'unlisted' will be hidden from all
+  # documentations, policy templates and Admin Console UI.
+  unlisted: false
+
+  # Optional field.
+  # A metapolicy is a policy which affects how other policies are applied.
+  # Precedence metapolicies affect how policies are prioritized depending on
+  # their scope, source, and other factors. Merging metapolicies determine which
+  # list or dictionary policies can have their values combined into a single
+  # policy. If the setting is missing, it is assumed that the policy is not a
+  # metapolicy. The supported types are 'merge' (example policy is
+  # PolicyListMultipleSourceMergeList) and 'precedence' (example policy is
+  # CloudPolicyOverridesPlatformPolicy).
+  metapolicy_type: ''
+
+# Policy types:
+#   string: a string value
+#   int: an integer value
+#   int-enum: the user can select an integer value from a collection of items
+#   string-enum: the user can select a string value from a collection of items
+#   string-enum-list: the user can select a set of string values from a
+#                     collection of items
+#   main: a boolean value
+#   list: a list of string values. Using this for a list of JSON strings is now
+#         discouraged, because the dict is better for JSON.
+#   dict: perhaps should be named JSON. An arbitrarily complex object or array,
+#         nested objects/arrays, etc. The user defines the value with JSON.
+#   external: a policy that references external data. (Supported on ChromeOS only).
+type: main
+
+# This schema supports a subset of the JSON Schema standard
+# (https://json-schema.org/understanding-json-schema/index.html). For more
+# information see //components/policy/tools/schema_validator.py. This
+# validator is also used during presubmit to validate all schemas,
+# validation_schemas and the example_values. On the client-side we use
+# //components/policy/core/common/schema.h to validate policy values against
+# the provided schemas in this file. This validator supports the same subset
+# of features supported by the python schema validator used during presubmit.
+
+# For many policies this is simply a type eg 'boolean' or 'string', but for
+# 'dict' policies this describes the types of not only the root object, but
+# also all of its descendants. This schema data is used to validate 'dict'
+# policies, if a SchemaValidatingPolicyHandler is configured appropriately in
+# configuration_policy_handler_list_factory.cc
+
+# Some policies at first seem to have simple schema e.g. a string or a list of
+# strings, but those strings are actually JSON strings, and this JSON has
+# another schema. This type of policy is deprecated. When adding new policies,
+# make sure the entire schema is described by the 'schema' field and that
+# there are no strings which contain JSON.
+# The legacy policies which contain JSON strings have an extra field, the
+# 'validation_schema' which is used to validate not only the schema of the
+# policy itself, but also the content of the JSON strings inside the policy.
+# Do not use this field when adding new policies.
+
+# In order to hide sensitive policy values from the user, you can use
+# 'sensitiveValue': True (default 'False') in the associated schema. Those
+# values will be masked with '********' in the chrome://policy UI and policy
+# exports. 'sensitiveValue' can be applied to all schema types.
+
+# For some policies which have complicated schema we add either
+# 'description_schema' which describes some but not necessarily all properties
+# of the policy or 'url_schema' which contains the link to the expanded
+# documentation.
+# Note that 'description_schema' is used for documentation purposes only, but
+# not for schema validation. It can be used in cases where validation is not
+# desired, e.g. if the schema does not describe all properties (see
+# ArcPolicy).
+schema:
+  type: boolean
+# main policy example:
+#   schema:
+#     type: boolean
+#
+# int policy example:
+#   schema:
+#     type: integer
+#
+# int-enum policy example
+# schema:
+#   type: integer
+#   enum:
+#   - 0
+#   - 1
+#   - 2
+#
+# string policy example:
+#   schema:
+#     type: string
+#
+# string-enum policy example:
+#   schema:
+#     type: string
+#     enum:
+#     - enum-value-1
+#     - enum-value-2
+#     - enum-value-3
+#
+# list policy example
+#   schema:
+#     items:
+#       type: string
+#     type: array
+#
+# string-enum-list policy example:
+#   schema:
+#     type: array
+#     items:
+#       type: string
+#       enum:
+#       - enum-value-1
+#       - enum-value-2
+#       - enum-value-3
+#
+# dict policy example
+#  schema:
+#    type: object
+#    id: nestableObjectId
+#    properties:
+#      name:
+#        type: string
+#      description:
+#        type: string
+#      children:
+#        type: array
+#          items:
+#            $ref: nestableObjectId
+
+# Used to outline the behavior of each state the policy can take.
+# This field is only used for policies of type 'main', 'int-enum', or
+# 'string-enum'. For 'main' policies, it describes how the policy behaves when
+# set to True or False, and whether the unset state is different from the
+# enabled/disabled states. For 'enum' policies, it lists all possible values
+# the policy can be set to along with a brief description.
+items:
+- caption: Use the Chrome Root Store.
+  value: true
+- caption: Do not use the Chrome Root Store.
+  value: false
+- caption: Chrome Root Store may be used depending on feature launch process.
+  value: null
+
+# Indicates the behavior of the controlled setting/feature when the policy is no
+# set. If this is set to `true`, when the poolicy is not set, the feature
+# controlled by the policy behaves as if the policy was set to `true`.
+# If the default value cannot be expressed with the given type and is equivalent
+# to unset, it should be represent with `null`.
+#   For example, this would be used for a boolean policy where unset means the
+#   user can turn the feature on and off, while a set policy will force the
+#   feature to always be on or off.
+# This field is only used for policies of type `int`, `main`, `string-enum` or
+# `int-enum`. Other policy types are assumed to have a default equal to an empty
+# string or empty list.
+default: null
+
+# Optional value which defaults to `default` if not set.
+# For managed users on ChromeOS (i.e. users receiving user policy from the
+# cloud), if the optional key 'default_for_enterprise_users' is set, its value
+# is applied as mandatory policy unless a different setting is received from
+# the cloud or `default_policy_level` is set. This default value handling is
+# automatically enforced by the policy stack when filling the PolicyMap
+# (specifically, by the generated function SetEnterpriseUsersDefaults).
+default_for_enterprise_users: false
+
+# Optional value which defaults to `mandatory` if not set.
+# This controls the policy level of `default_for_enterprise_users`. The
+# accepted values are 'recommended' and 'mandatory'.
+default_policy_level: 'recommended'
+
+# Optional key can be used to document a differing default value for devices
+# enrolled into enterprise  management. This is for documentation only, the
+# enrollment-dependent handling must be manually implemented.
+default_for_managed_devices_doc_only: null
+
+# `example_value` is used in the generated documentation and example policy
+#  configuration files. Examples must cover the entire schema, i.e. use every
+#  defined property at least once.
+example_value: false
+# main policy example:
+#   example_value: false
+#
+# int policy example:
+#   example_value: 2
+#
+# int-enum policy example
+#   example_value: 0
+#
+# string policy example:
+#   example_value: stringvalue
+#
+# string-enum policy example:
+#   example_value: enum-value-1
+#
+# list policy example
+#   example_value:
+#   - item1
+#   - item2
+#
+# string-enum-list policy example:
+#   example_value:
+#   - enum-value-1
+#   - enum-value-2
+#
+# dict policy example
+#  example_value:
+#    name: some-name
+#    description: some-description
+#    children:
+#    - name: child-name1
+#      description: child-description1
+#    - name: child-name2
+#      description: child-description2
+
+# The maximal size of the external data that a policy can reference, in bytes.
+# This is mandatory for policies of type 'external' and is ignored for other
+# policy types.
+max_size: 123456
+
+# Each policy is tagged with risk tags that indicate potential privacy or
+# security risks. They are defined in `components/policy/templates/risk_tag_definitions.yaml`.
+# Each risk tag contains the following information:
+#   - name: The name of the risk tag. May not contain spaces.
+#   - description: Description for developers so they know which tags apply to
+#       newly added policies.
+#   - user-description: A text that helps users understand what a policy with
+#       this tag means for their privacy and/or security.
+tags: []

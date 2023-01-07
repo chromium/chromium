@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,12 +21,13 @@ public interface TabViewProvider {
      * Represents each {@link TabViewProvider} implementer. Please note that the integer values
      * bear no ordering or prioritization meaning.
      */
-    @IntDef({Type.SUSPENDED_TAB, Type.SAD_TAB, Type.PAINT_PREVIEW})
+    @IntDef({Type.SUSPENDED_TAB, Type.SAD_TAB, Type.PAINT_PREVIEW, Type.NEW_DOWNLOAD_TAB})
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
         int SUSPENDED_TAB = 0;
         int SAD_TAB = 1;
         int PAINT_PREVIEW = 2;
+        int NEW_DOWNLOAD_TAB = 3;
     }
 
     /**

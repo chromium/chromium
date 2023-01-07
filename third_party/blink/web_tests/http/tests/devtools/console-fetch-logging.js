@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(
       `Tests that fetch logging works when XMLHttpRequest Logging is Enabled and doesn't show logs when it is Disabled.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function requestHelper(method, url, callback)

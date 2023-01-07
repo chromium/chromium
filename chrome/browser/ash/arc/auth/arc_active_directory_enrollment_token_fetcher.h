@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,15 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/auth/arc_fetcher_base.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
-namespace enterprise_management {
-class DeviceManagementResponse;
-}  // namespace enterprise_management
-
 namespace policy {
 class DMTokenStorage;
+struct DMServerJobResult;
 }  // namespace policy
 
 namespace arc {
@@ -34,6 +30,12 @@ class ArcActiveDirectoryEnrollmentTokenFetcher
  public:
   explicit ArcActiveDirectoryEnrollmentTokenFetcher(
       ArcSupportHost* support_host);
+
+  ArcActiveDirectoryEnrollmentTokenFetcher(
+      const ArcActiveDirectoryEnrollmentTokenFetcher&) = delete;
+  ArcActiveDirectoryEnrollmentTokenFetcher& operator=(
+      const ArcActiveDirectoryEnrollmentTokenFetcher&) = delete;
+
   ~ArcActiveDirectoryEnrollmentTokenFetcher() override;
 
   enum class Status {
@@ -70,11 +72,7 @@ class ArcActiveDirectoryEnrollmentTokenFetcher
 
   // Response from DM server. Calls the stored FetchCallback or initiates the
   // SAML flow.
-  void OnEnrollmentTokenResponseReceived(
-      policy::DeviceManagementService::Job* job,
-      policy::DeviceManagementStatus dm_status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnEnrollmentTokenResponseReceived(policy::DMServerJobResult result);
 
   // Sends |auth_redirect_url| to the ArcSupportHost instance, which displays
   // it in a web view and checks whether authentication succeeded. Calls
@@ -97,8 +95,6 @@ class ArcActiveDirectoryEnrollmentTokenFetcher
 
   base::WeakPtrFactory<ArcActiveDirectoryEnrollmentTokenFetcher>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcActiveDirectoryEnrollmentTokenFetcher);
 };
 
 }  // namespace arc

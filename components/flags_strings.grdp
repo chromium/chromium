@@ -15,13 +15,14 @@
   <message name="IDS_FLAGS_UI_PAGE_RESET" translateable="false" desc="Label for button that resets the flags to their default value.">
     Reset all
   </message>
-  <message name="IDS_FLAGS_UI_PAGE_WARNING" desc="A warning stating that the features of the page are experimental.">
+  <message name="IDS_FLAGS_UI_PAGE_WARNING" translateable="false" desc="A warning stating that the features of the page are experimental.">
     Warning: Experimental features ahead!
   </message>
-  <message name="IDS_FLAGS_UI_PAGE_WARNING_EXPLANATION" desc="A warning stating what the user gets exposed to by enabling one the features.">
+  <message name="IDS_FLAGS_UI_PAGE_WARNING_EXPLANATION" translateable="false" desc="A warning stating what the user gets exposed to by enabling one the features.">
     By enabling these features, you could lose browser data or
     compromise your security or privacy. Enabled features apply to all
-    users of this browser.
+    users of this browser. If you are an enterprise admin you should
+    not be using these flags in production.
   </message>
   <message name="IDS_FLAGS_UI_OWNER_WARNING" translateable="false" desc="A warning stating what system-wide features can only be set by the owner.">
     Flags that apply system-wide can only be set by the owner: <ph name="OWNER_EMAIL">$1<ex>owner@email.com</ex></ph>
@@ -44,12 +45,32 @@
   <message name="IDS_FLAGS_UI_NOT_AVAILABLE_ON_PLATFORM" translateable="false" desc="Message stating that an experiment is not available for the current platform.">
     Not available on your platform.
   </message>
-  <if expr="chromeos">
-    <message name="IDS_FLAGS_UI_RELAUNCH" translateable="false" desc="Label for button that restarts chrome os.">
+  <if expr="chromeos_ash">
+    <message name="IDS_FLAGS_UI_RELAUNCH" translateable="false" desc="Label for button that restarts ChromeOS.">
       Restart
     </message>
+    <message name="IDS_FLAGS_UI_OS_FLAGS_TEXT1" translateable="false" desc="Begin label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
+      Looking for browser flags? Visit
+    </message>
+    <message name="IDS_FLAGS_UI_OS_FLAGS_TEXT2" translateable="false" desc="End label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
+      .
+    </message>
+    <message name="IDS_FLAGS_UI_OS_FLAGS_LINK" translateable="false" desc="Label for button that will call a new window which allows to change ChromeOS system flags.">
+      chrome://flags
+    </message>
   </if>
-  <if expr="not chromeos">
+  <if expr="chromeos_lacros">
+    <message name="IDS_FLAGS_UI_OS_FLAGS_TEXT1" translateable="false" desc="Begin label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
+      Looking for the ChromeOS flags? Visit
+    </message>
+    <message name="IDS_FLAGS_UI_OS_FLAGS_TEXT2" translateable="false" desc="End label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
+      .
+    </message>
+    <message name="IDS_FLAGS_UI_OS_FLAGS_LINK" translateable="false" desc="Label for button that will call a new window which allows to change ChromeOS system flags.">
+      os://flags
+    </message>
+  </if>
+  <if expr="not chromeos_ash">
     <message name="IDS_FLAGS_UI_RELAUNCH" translateable="false" desc="Label for button that relaunches chrome.">
       Relaunch
     </message>
@@ -63,12 +84,12 @@
   <message name="IDS_FLAGS_UI_EXPERIMENT_ENABLED" translateable="false" desc="Screen reader text stating that an experiment is enabled.">
     Experiment enabled
   </message>
-  <message name="IDS_FLAGS_UI_SEARCH_RESULTS_SINGULAR" desc="Message announced to screenreader users when searching completes and results are showing.">
+  <message name="IDS_FLAGS_UI_SEARCH_RESULTS_SINGULAR" translateable="false" desc="Message announced to screenreader users when searching completes and results are showing.">
     1 result for '<ph name="SEARCH_TEXT">
       $1<ex>cookies</ex>
     </ph>'
   </message>
-  <message name="IDS_FLAGS_UI_SEARCH_RESULTS_PLURAL" desc="Message announced to screenreader users when searching completes and results are showing.">
+  <message name="IDS_FLAGS_UI_SEARCH_RESULTS_PLURAL" translateable="false" desc="Message announced to screenreader users when searching completes and results are showing.">
     <ph name="RESULT_COUNT">
       $1<ex>15</ex>
     </ph> results for '<ph name="SEARCH_TEXT">
@@ -98,12 +119,32 @@
   <message name="IDS_DEPRECATED_FEATURES_NOT_AVAILABLE_ON_PLATFORM" desc="Message stating that an experiment is not available for the current platform.">
     Not available on your platform.
   </message>
-  <if expr="chromeos">
-    <message name="IDS_DEPRECATED_FEATURES_RELAUNCH" desc="Label for button that restarts chrome os.">
+  <if expr="chromeos_ash">
+    <message name="IDS_DEPRECATED_FEATURES_RELAUNCH" desc="Label for button that restarts ChromeOS.">
       Restart
     </message>
+    <message name="IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT1" desc="Begin label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
+      Looking for browser flags? Visit
+    </message>
+    <message name="IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT2" desc="End label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
+      .
+    </message>
+    <message name="IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_LINK" desc="Label for button that will call a new window which allows to change ChromeOS system flags.">
+      chrome://flags
+    </message>
   </if>
-  <if expr="not chromeos">
+  <if expr="chromeos_lacros">
+    <message name="IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT1" desc="Begin label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
+      Looking for the ChromeOS flags? Visit
+    </message>
+    <message name="IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT2" desc="End label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
+      .
+    </message>
+    <message name="IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_LINK" desc="Label for button that will call a new window which allows to change ChromeOS system flags.">
+      os://flags
+    </message>
+  </if>
+  <if expr="not chromeos_ash">
     <message name="IDS_DEPRECATED_FEATURES_RELAUNCH" desc="Label for button that relaunches chrome.">
       Relaunch
     </message>

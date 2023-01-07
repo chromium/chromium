@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,23 +19,22 @@ config("external_config") {
   }
 }
 
-# Config internal to this build file, shared by boringssl and boringssl_fuzzer.
+# The config used by the :boringssl component itself, and the fuzzer copies.
+config("component_config") {
+  visibility = [ ":*" ]  # Only targets in this file can depend on this.
+  configs = [ ":internal_config" ]
+  defines = [ "BORINGSSL_IMPLEMENTATION" ]
+}
+
+# This config is used by anything that consumes internal headers. Tests consume
+# this rather than :component_config.
 config("internal_config") {
   visibility = [ ":*" ]  # Only targets in this file can depend on this.
   defines = [
     "BORINGSSL_ALLOW_CXX_RUNTIME",
-    "BORINGSSL_IMPLEMENTATION",
     "BORINGSSL_NO_STATIC_INITIALIZER",
     "OPENSSL_SMALL",
   ]
-  configs = [
-    # TODO(davidben): Fix size_t truncations in BoringSSL.
-    # https://crbug.com/boringssl/22
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
-  if (is_posix || is_fuchsia) {
-    defines += [ "_XOPEN_SOURCE=700" ]
-  }
 }
 
 config("no_asm_config") {
@@ -69,16 +68,16 @@ if (is_win && !is_msan && current_cpu != "arm64") {
     if (is_msan) {
       public_configs = [ ":no_asm_config" ]
     } else if (current_cpu == "x64") {
-      if (is_mac) {
-        sources += crypto_sources_mac_x86_64
+      if (is_apple) {
+        sources += crypto_sources_apple_x86_64
       } else if (is_linux || is_chromeos || is_android) {
         sources += crypto_sources_linux_x86_64
       } else {
         public_configs = [ ":no_asm_config" ]
       }
     } else if (current_cpu == "x86") {
-      if (is_mac) {
-        sources += crypto_sources_mac_x86
+      if (is_apple) {
+        sources += crypto_sources_apple_x86
       } else if (is_linux || is_chromeos || is_android) {
         sources += crypto_sources_linux_x86
       } else {
@@ -87,8 +86,8 @@ if (is_win && !is_msan && current_cpu != "arm64") {
     } else if (current_cpu == "arm") {
       if (is_linux || is_chromeos || is_android) {
         sources += crypto_sources_linux_arm
-      } else if (is_ios) {
-        sources += crypto_sources_ios_arm
+      } else if (is_apple) {
+        sources += crypto_sources_apple_arm
       } else {
         public_configs = [ ":no_asm_config" ]
       }
@@ -96,9 +95,7 @@ if (is_win && !is_msan && current_cpu != "arm64") {
       if (is_linux || is_chromeos || is_android) {
         sources += crypto_sources_linux_aarch64
       } else if (is_apple) {
-        # TODO(davidben): Rename all the file lists, etc., upstream from mac
-        # and ios to apple.
-        sources += crypto_sources_ios_aarch64
+        sources += crypto_sources_apple_aarch64
       } else if (is_win) {
         sources += crypto_sources_win_aarch64
       } else {
@@ -122,7 +119,7 @@ component("boringssl") {
   public_deps = [ ":boringssl_asm" ]
 
   public_configs = [ ":external_config" ]
-  configs += [ ":internal_config" ]
+  configs += [ ":component_config" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -134,6 +131,13 @@ component("boringssl") {
   if (!is_debug && !optimize_for_size) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
+  if (is_linux && is_component_build) {
+    version_script = "boringssl.map"
+    inputs = [ version_script ]
+    ldflags = [ "-Wl,--version-script=" +
+                rebase_path(version_script, root_build_dir) ]
   }
 }
 
@@ -179,7 +183,7 @@ if (build_with_chromium) {
 
     if (is_fuchsia) {
       additional_manifest_fragments =
-          [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
+          [ "//build/config/fuchsia/test/network.shard.test-cml" ]
     }
   }
 
@@ -216,6 +220,7 @@ if (build_with_chromium) {
   }
 
   # The same as boringssl, but builds with BORINGSSL_UNSAFE_FUZZER_MODE.
+  # TODO(https://crbug.com/boringssl/258): Fold this into the normal target.
   component("boringssl_fuzzer") {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
 
@@ -231,7 +236,7 @@ if (build_with_chromium) {
       ":external_config",
       ":fuzzer_config",
     ]
-    configs += [ ":internal_config" ]
+    configs += [ ":component_config" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -280,6 +285,7 @@ if (build_with_chromium) {
   }
 
   # The same as boringssl, but builds with BORINGSSL_UNSAFE_DETERMINISTIC_MODE.
+  # TODO(https://crbug.com/boringssl/258): Fold this into the normal target.
   component("boringssl_fuzzer_no_fuzzer_mode") {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
 
@@ -295,7 +301,7 @@ if (build_with_chromium) {
       ":external_config",
       ":fuzzer_no_fuzzer_mode_config",
     ]
-    configs += [ ":internal_config" ]
+    configs += [ ":component_config" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]

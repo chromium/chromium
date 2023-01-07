@@ -1,8 +1,0 @@
-Test that we don't hang xhr loads from cache when the resposne body was empty.
-
-load
-progress
-load
-This http body should be visible
-DONE
-

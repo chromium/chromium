@@ -1,16 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_THEME_UPDATE_SERVICE_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_THEME_UPDATE_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
 class ProfileAttributesStorage;
-class ThemeService;
 
 // A KeyedService that listens to browser theme updates and updates profile
 // theme colors cached in ProfileAttributesStorage.
@@ -22,8 +24,7 @@ class ProfileThemeUpdateService : public KeyedService,
  public:
   ProfileThemeUpdateService(
       Profile* profile,
-      ProfileAttributesStorage* profile_attributes_storage,
-      ThemeService* theme_service);
+      ProfileAttributesStorage* profile_attributes_storage);
   ~ProfileThemeUpdateService() override;
 
   // This class in uncopyable.
@@ -39,9 +40,10 @@ class ProfileThemeUpdateService : public KeyedService,
   // |profile_|.
   void UpdateProfileThemeColors();
 
-  Profile* const profile_;
-  ProfileAttributesStorage* const profile_attributes_storage_;
-  ThemeService* const theme_service_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
+  base::ScopedObservation<ThemeService, ThemeServiceObserver> observation_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_THEME_UPDATE_SERVICE_H_

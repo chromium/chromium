@@ -1,0 +1,8 @@
+Tests that an InvalidateLayout trace event is dispatched at LocalFrameView::ScheduleRelayout
+Recording started
+Tracing complete
+Trace event received
+Event name: InvalidateLayout
+Type of event frame: string
+Type of event nodeId: number
+

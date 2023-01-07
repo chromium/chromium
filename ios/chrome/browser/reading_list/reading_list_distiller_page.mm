@@ -1,26 +1,30 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
+#import "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
 
-#include "base/bind.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "components/favicon/ios/web_favicon_driver.h"
-#include "components/google/core/common/google_util.h"
-#include "ios/chrome/browser/reading_list/favicon_web_state_dispatcher_impl.h"
+#import "base/bind.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/threading/thread_task_runner_handle.h"
+#import "base/time/time.h"
+#import "base/values.h"
+#import "components/favicon/ios/web_favicon_driver.h"
+#import "components/google/core/common/google_util.h"
+#import "ios/chrome/browser/reading_list/favicon_web_state_dispatcher_impl.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/security/ssl_status.h"
+#import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/cert/cert_status_flags.h"
-#include "url/url_constants.h"
+#import "net/cert/cert_status_flags.h"
+#import "url/url_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,13 +32,13 @@
 
 namespace {
 // The delay given to the web page to render after the PageLoaded callback.
-const int64_t kPageLoadDelayInSeconds = 2;
+constexpr base::TimeDelta kPageLoadDelay = base::Seconds(2);
 
 // This script retrieve the href parameter of the <link rel="amphtml"> element
 // of the page if it exists. If it does not exist, it returns the src of the
 // first iframe of the page.
-const char* kGetIframeURLJavaScript =
-    "(() => {"
+const char16_t* kGetIframeURLJavaScript =
+    u"(() => {"
     "  var link = document.evaluate('//link[@rel=\"amphtml\"]',"
     "                               document,"
     "                               null,"
@@ -46,8 +50,8 @@ const char* kGetIframeURLJavaScript =
     "  return document.getElementsByTagName('iframe')[0].src;"
     "})()";
 
-const char* kWikipediaWorkaround =
-    "(() => {"
+const char16_t* kWikipediaWorkaround =
+    u"(() => {"
     "  var s = document.createElement('style');"
     "  s.innerHTML='.client-js .collapsible-block { display: block }';"
     "  document.head.appendChild(s);"
@@ -178,7 +182,7 @@ void ReadingListDistillerPage::OnLoadURLDone(
       FROM_HERE,
       base::BindOnce(&ReadingListDistillerPage::DelayedOnLoadURLDone, weak_this,
                      delayed_task_id_),
-      base::TimeDelta::FromSeconds(kPageLoadDelayInSeconds));
+      kPageLoadDelay);
 }
 
 void ReadingListDistillerPage::DelayedOnLoadURLDone(int delayed_task_id) {
@@ -245,42 +249,37 @@ bool ReadingListDistillerPage::IsGoogleCachedAMPPage() {
 }
 
 void ReadingListDistillerPage::HandleGoogleCachedAMPPage() {
-  base::WeakPtr<ReadingListDistillerPage> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
-  [CurrentWebState()->GetJSInjectionReceiver()
-      executeJavaScript:@(kGetIframeURLJavaScript)
-      completionHandler:^(id result, NSError* error) {
-        if (weak_this &&
-            !weak_this->HandleGoogleCachedAMPPageJavaScriptResult(result,
-                                                                  error)) {
-          // If there is an error on navigation, continue normal distillation.
-          weak_this->ContinuePageDistillation();
-        }
-        // If there is no error, the navigation completion will trigger a new
-        // |OnLoadURLDone| call that will resume the distillation.
-      }];
+  web::WebFrame* web_frame = web::GetMainFrame(CurrentWebState());
+  if (!web_frame) {
+    return;
+  }
+  web_frame->ExecuteJavaScript(
+      kGetIframeURLJavaScript,
+      base::BindOnce(
+          &ReadingListDistillerPage::OnHandleGoogleCachedAMPPageResult,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
-bool ReadingListDistillerPage::HandleGoogleCachedAMPPageJavaScriptResult(
-    id result,
-    id error) {
-  if (error) {
-    return false;
-  }
-  NSString* result_string = base::mac::ObjCCast<NSString>(result);
-  NSURL* new_url = [NSURL URLWithString:result_string];
-  if (!new_url) {
-    return false;
+void ReadingListDistillerPage::OnHandleGoogleCachedAMPPageResult(
+    const base::Value* value,
+    NSError* error) {
+  if (!error && value->is_string()) {
+    GURL new_gurl(value->GetString());
+    if (new_gurl.is_valid()) {
+      FetchFavicon(new_gurl);
+      web::NavigationManager::WebLoadParams params(new_gurl);
+      CurrentWebState()->GetNavigationManager()->LoadURLWithParams(params);
+
+      // If there is no error, the navigation completion will
+      // trigger a new `OnLoadURLDone` call that will resume
+      // the distillation.
+      return;
+    }
   }
 
-  GURL new_gurl = net::GURLWithNSURL(new_url);
-  if (!new_gurl.is_valid()) {
-    return false;
-  }
-  FetchFavicon(new_gurl);
-  web::NavigationManager::WebLoadParams params(new_gurl);
-  CurrentWebState()->GetNavigationManager()->LoadURLWithParams(params);
-  return true;
+  // If there is an error on navigation, continue
+  // normal distillation.
+  ContinuePageDistillation();
 }
 
 bool ReadingListDistillerPage::IsWikipediaPage() {
@@ -294,15 +293,19 @@ bool ReadingListDistillerPage::IsWikipediaPage() {
 }
 
 void ReadingListDistillerPage::HandleWikipediaPage() {
-  base::WeakPtr<ReadingListDistillerPage> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
-  [CurrentWebState()->GetJSInjectionReceiver()
-      executeJavaScript:@(kWikipediaWorkaround)
-      completionHandler:^(id result, NSError* error) {
-        if (weak_this) {
-          weak_this->ContinuePageDistillation();
-        }
-      }];
+  web::WebFrame* web_frame = web::GetMainFrame(CurrentWebState());
+  if (!web_frame) {
+    return;
+  }
+  web_frame->ExecuteJavaScript(
+      kWikipediaWorkaround,
+      BindOnce(&ReadingListDistillerPage::OnHandleWikipediaPageResult,
+               weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ReadingListDistillerPage::OnHandleWikipediaPageResult(
+    const base::Value* value) {
+  ContinuePageDistillation();
 }
 
 }  // namespace reading_list

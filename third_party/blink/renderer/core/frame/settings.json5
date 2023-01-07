@@ -152,10 +152,6 @@
     },
 
     {
-      name: "offlineWebApplicationCacheEnabled",
-      initial: true,
-    },
-    {
       name: "allowScriptsToCloseWindows",
       initial: false,
     },
@@ -730,7 +726,7 @@
     {
       name: "viewportStyle",
       initial: "mojom::blink::ViewportStyle::kDefault",
-      invalidate: ["ViewportRule"],
+      invalidate: ["ViewportStyle"],
       type: "mojom::blink::ViewportStyle",
     },
 
@@ -777,10 +773,6 @@
       type: "String",
     },
     {
-      name: "textTrackWindowPadding",
-      type: "String",
-    },
-    {
       name: "textTrackWindowRadius",
       type: "String",
     },
@@ -822,28 +814,11 @@
       initial: false,
     },
 
-    // Whether data saver holdback for Web APIs is enabled. If enabled, data saver appears
-    // as disabled to the web consumers even if it has been actually enabled by the user.
-    {
-      name: "dataSaverHoldbackWebApi",
-      initial: false,
-    },
-
     // Whether to invalidate device-dependent media queries and restore scroll positions
     // on frame resize assuming device rotation.
     {
       name: "mainFrameResizesAreOrientationChanges",
       initial: false,
-    },
-
-    // Ability to override the default 'passive' value in AddEventListenerOptions. This
-    // is useful to demonstrate the power of passive event listeners. This can be removed
-    // when there is greater adoption, interventions to force it on and associated devtools
-    // to enable it have been shipped.
-    {
-      name: "passiveListenerDefault",
-      initial: "PassiveListenerDefault::kFalse",
-      type: "PassiveListenerDefault",
     },
 
     {
@@ -899,7 +874,7 @@
     {
       name: "forceDarkModeEnabled",
       initial: false,
-      invalidate: ["ColorScheme", "Paint"],
+      invalidate: ["ColorScheme", "Style", "Paint"],
     },
 
     {
@@ -987,34 +962,6 @@
       initial: 1250,
       type: "int",
     },
-    //
-    // Count of the images to fully load for different effective connection types.
-    //
-    {
-      name: "lazyImageFirstKFullyLoadUnknown",
-      initial: 0,
-      type: "int",
-    },
-    {
-      name: "lazyImageFirstKFullyLoadSlow2G",
-      initial: 0,
-      type: "int",
-    },
-    {
-      name: "lazyImageFirstKFullyLoad2G",
-      initial: 0,
-      type: "int",
-    },
-    {
-      name: "lazyImageFirstKFullyLoad3G",
-      initial: 0,
-      type: "int",
-    },
-    {
-      name: "lazyImageFirstKFullyLoad4G",
-      initial: 0,
-      type: "int",
-    },
 
     // Preferred color scheme from the OS/application passed to the renderer for
     // evaluating the prefers-color-scheme media query.
@@ -1096,7 +1043,7 @@
     {
       name: "textAutosizingWindowSizeOverride",
       invalidate: ["TextAutosizing"],
-      type: "IntSize",
+      type: "gfx::Size",
     },
     {
       name: "WebXRImmersiveArAllowed",

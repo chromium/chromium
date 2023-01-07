@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from telemetry.page import shared_page_state
@@ -73,9 +73,6 @@ class GoogleImageSearch2018Page(TopRealWorldDesktopPage):
         shared_page_state_class=shared_page_state_class,
         name_suffix=name_suffix,
         extra_browser_args=extra_browser_args)
-
-  def RunNavigateSteps(self, action_runner):
-    super(GoogleImageSearch2018Page, self).RunNavigateSteps(action_runner)
 
 
 class GooglePlus2018Page(TopRealWorldDesktopPage):
@@ -290,6 +287,13 @@ class AccuWeather2018Page(TopRealWorldDesktopPage):
         shared_page_state_class=shared_page_state_class,
         name_suffix=name_suffix,
         extra_browser_args=extra_browser_args)
+
+  def RunNavigateSteps(self, action_runner):
+    super(AccuWeather2018Page, self).RunNavigateSteps(action_runner)
+
+    # Close a pop-up dialog before scrolling.
+    action_runner.WaitForElement(selector=".fc-button-consent")
+    action_runner.TapElement(selector=".fc-button-consent")
 
 
 class Twitch2018Page(TopRealWorldDesktopPage):

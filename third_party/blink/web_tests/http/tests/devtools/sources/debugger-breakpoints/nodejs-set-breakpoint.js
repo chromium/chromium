@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Verify that front-end is able to set breakpoint for node.js scripts.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadTestModule('sdk_test_runner');
   await TestRunner.showPanel('sources');
 
@@ -20,7 +20,7 @@
   async function didShowScriptSource(sourceFrame) {
     TestRunner.addResult('Setting breakpoint:');
     TestRunner.addSniffer(
-        Bindings.BreakpointManager.ModelBreakpoint.prototype, '_addResolvedLocation', breakpointResolved);
+        Bindings.BreakpointManager.ModelBreakpoint.prototype, 'addResolvedLocation', breakpointResolved);
     await SourcesTestRunner.setBreakpoint(sourceFrame, 1, '', true);
   }
 

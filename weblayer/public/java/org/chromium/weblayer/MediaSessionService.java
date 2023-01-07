@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
  * in turn manages a system notification and {@link MediaSession}. This service will be in the
  * foreground when the MediaSession is active.
  */
-public class MediaSessionService extends MediaPlaybackBaseService {
+class MediaSessionService extends MediaPlaybackBaseService {
     // A helper to automatically pause the media session when a user removes headphones.
     private BroadcastReceiver mAudioBecomingNoisyReceiver;
 

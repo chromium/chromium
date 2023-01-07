@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,20 +8,20 @@ static_library("core") {
     "bad_clock_ui.h",
     "base_safe_browsing_error_ui.cc",
     "base_safe_browsing_error_ui.h",
-    "blocked_interception_ui.cc",
-    "blocked_interception_ui.h",
     "common_string_util.cc",
     "common_string_util.h",
     "controller_client.cc",
     "controller_client.h",
-    "features.cc",
-    "features.h",
-    "legacy_tls_ui.cc",
-    "legacy_tls_ui.h",
+    "https_only_mode_allowlist.cc",
+    "https_only_mode_allowlist.h",
+    "https_only_mode_metrics.cc",
+    "https_only_mode_metrics.h",
+    "https_only_mode_ui_util.cc",
+    "https_only_mode_ui_util.h",
     "metrics_helper.cc",
     "metrics_helper.h",
-    "mitm_software_ui.cc",
-    "mitm_software_ui.h",
+    "omnibox_https_upgrade_metrics.cc",
+    "omnibox_https_upgrade_metrics.h",
     "pref_names.cc",
     "pref_names.h",
     "safe_browsing_loud_error_ui.cc",
@@ -36,10 +36,12 @@ static_library("core") {
     "urls.h",
   ]
 
-  if (is_ios) {
-    sources -= [
+  if (!is_ios) {
+    sources += [
       "blocked_interception_ui.cc",
       "blocked_interception_ui.h",
+      "https_only_mode_policy_handler.cc",
+      "https_only_mode_policy_handler.h",
       "mitm_software_ui.cc",
       "mitm_software_ui.h",
     ]
@@ -48,9 +50,12 @@ static_library("core") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/content_settings/core/browser",
     "//components/google/core/common",
     "//components/history/core/browser",
     "//components/metrics",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
     "//components/prefs",
     "//components/resources",
     "//components/ssl_errors",
@@ -72,9 +77,9 @@ static_library("unsafe_resource") {
 
   deps = [
     "//base",
+    "//components/safe_browsing/core/browser/db:hit_report",
+    "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/common:common",
-    "//components/safe_browsing/core/db:hit_report",
-    "//components/safe_browsing/core/db:util",
     "//net",
     "//services/network/public/mojom",
   ]

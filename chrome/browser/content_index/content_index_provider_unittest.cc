@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,14 +42,7 @@ using testing::_;
 
 constexpr int64_t kServiceWorkerRegistrationId = 42;
 constexpr double kEngagementScore = 42.0;
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL LaunchURL() {
-  return GURL("https://example.com/foo");
-}
-url::Origin Origin() {
-  return url::Origin::Create(LaunchURL().GetOrigin());
-}
+constexpr char kLaunchUrl[] = "https://example.com/foo";
 
 // Hosts the test profile. Global to be accessible from
 // |BuildTestHistoryService|.
@@ -57,18 +50,17 @@ base::FilePath profile_path;
 
 std::unique_ptr<KeyedService> BuildTestHistoryService(
     content::BrowserContext* context) {
-  std::unique_ptr<history::HistoryService> service(
-      std::make_unique<history::HistoryService>());
+  auto service = std::make_unique<history::HistoryService>();
   service->Init(history::TestHistoryDatabaseParamsForPath(profile_path));
   return std::move(service);
 }
 
 std::unique_ptr<KeyedService> BuildTestSiteEngagementService(
     content::BrowserContext* context) {
-  Profile* profile = static_cast<Profile*>(context);
-  std::unique_ptr<site_engagement::SiteEngagementService> service(
-      std::make_unique<site_engagement::SiteEngagementService>(profile));
-  service->ResetBaseScoreForURL(Origin().GetURL(), kEngagementScore);
+  auto service = std::make_unique<site_engagement::SiteEngagementService>(
+      static_cast<Profile*>(context));
+  service->ResetBaseScoreForURL(GURL(kLaunchUrl).DeprecatedGetOriginAsURL(),
+                                kEngagementScore);
   return std::move(service);
 }
 
@@ -102,18 +94,19 @@ class ContentIndexProviderImplTest : public testing::Test,
                void(const OfflineContentProvider::OfflineItemList& items));
   MOCK_METHOD1(OnItemRemoved, void(const ContentId& id));
   void OnItemUpdated(const OfflineItem& item,
-                     const base::Optional<UpdateDelta>& update_delta) override {
+                     const absl::optional<UpdateDelta>& update_delta) override {
     NOTREACHED();
   }
   void OnContentProviderGoingDown() override {}
 
-  content::ContentIndexEntry CreateEntry(const std::string& id) {
+  content::ContentIndexEntry CreateEntry(const std::string& id,
+                                         bool is_top_level_context = true) {
     auto description = blink::mojom::ContentDescription::New(
         id, "title", "description", blink::mojom::ContentCategory::ARTICLE,
         std::vector<blink::mojom::ContentIconDefinitionPtr>(), "launch_url");
     return content::ContentIndexEntry(kServiceWorkerRegistrationId,
-                                      std::move(description), LaunchURL(),
-                                      base::Time::Now());
+                                      std::move(description), GURL(kLaunchUrl),
+                                      base::Time::Now(), is_top_level_context);
   }
 
  protected:
@@ -139,7 +132,7 @@ TEST_F(ContentIndexProviderImplTest, OfflineItemCreation) {
   EXPECT_FALSE(item.is_transient);
   EXPECT_TRUE(item.is_suggested);
   EXPECT_TRUE(item.is_openable);
-  EXPECT_EQ(item.page_url, LaunchURL());
+  EXPECT_EQ(item.url, GURL(kLaunchUrl));
   EXPECT_EQ(item.content_quality_score, kEngagementScore / 100.0);
 }
 
@@ -158,6 +151,13 @@ TEST_F(ContentIndexProviderImplTest, ObserverUpdates) {
 
   {
     EXPECT_CALL(*this, OnItemRemoved(_));
-    provider_->OnContentDeleted(kServiceWorkerRegistrationId, Origin(), "id");
+    provider_->OnContentDeleted(kServiceWorkerRegistrationId,
+                                url::Origin::Create(GURL(kLaunchUrl)), "id");
+  }
+
+  {
+    EXPECT_CALL(*this, OnItemsAdded(_)).Times(0);
+    provider_->OnContentAdded(
+        CreateEntry("id", /* is_top_level_context= */ false));
   }
 }

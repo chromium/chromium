@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    style="@style/ListItemContainer" >
+    <LinearLayout
+        android:id="@+id/new_window"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/favicon"
+            android:src="@drawable/ic_add"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginVertical="20dp"
+            android:scaleType="fitCenter"
+            android:layout_gravity="center_vertical"
+            app:tint="@macro/default_icon_color_accent1"
+            android:importantForAccessibility="no" />
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:text="@string/menu_new_window"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            app:leading="@dimen/text_size_large_leading" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/max_info"
+        android:text="@string/max_number_of_windows"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="64dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+</RelativeLayout>

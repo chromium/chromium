@@ -3,7 +3,7 @@ Short Name: khronos_headers
 URL: http://www.khronos.org/registry
 Version: unknown
 GLES Date: 2018-07-25
-EGL Date: 2017-10-13
+EGL Date: 2022-03-23
 License: MIT/X11, SGI Free Software License B
 Security Critical: no
 
@@ -29,10 +29,6 @@ GLES2/gl2ext.h
    see http://crbug.com/329708.
  - Commented out GL_SAMPLER, conflicts with third_party/gles2_conform
  - Drop const from last argument of GLDEBUGPROCKHR (win trybot fail)
-EGL/eglplatform.h
- - Added EGLNative*Type for Mac.
- - Added EGLNative*Type for native linux framebuffers.
- - Forward declare Xlib types instead of including Xlib headers.
 EGL/eglext.h
  - Added support for EGL_EXT_image_flush_external extension
  - Added support for EGL_ANGLE_stream_producer_d3d_texture

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,20 @@
 #include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 UserPolicyMixin::UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
                                  const AccountId& account_id)
@@ -29,10 +30,10 @@ UserPolicyMixin::UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
 
 UserPolicyMixin::UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
                                  const AccountId& account_id,
-                                 LocalPolicyTestServerMixin* policy_server)
+                                 EmbeddedPolicyTestServerMixin* policy_server)
     : InProcessBrowserTestMixin(mixin_host),
       account_id_(account_id),
-      policy_server_(policy_server) {}
+      embedded_policy_server_(policy_server) {}
 
 UserPolicyMixin::~UserPolicyMixin() = default;
 
@@ -41,8 +42,8 @@ void UserPolicyMixin::SetUpInProcessBrowserTestFixture() {
 
   // Make sure session manager client has been initialized as in-memory. This is
   // requirement for setting policy blobs.
-  if (!chromeos::SessionManagerClient::Get())
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+  if (!SessionManagerClient::Get())
+    SessionManagerClient::InitializeFakeInMemory();
 
   session_manager_initialized_ = true;
 
@@ -65,7 +66,7 @@ void UserPolicyMixin::SetUpUserKeysFile(const std::string& user_key_bits) {
   CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
 
   base::ScopedAllowBlockingForTesting allow_io;
-  chromeos::RegisterStubPathOverrides(user_data_dir);
+  RegisterStubPathOverrides(user_data_dir);
   chromeos::dbus_paths::RegisterStubPathOverrides(user_data_dir);
 
   base::FilePath user_keys_dir;
@@ -73,7 +74,7 @@ void UserPolicyMixin::SetUpUserKeysFile(const std::string& user_key_bits) {
                                &user_keys_dir));
 
   const std::string sanitized_username =
-      chromeos::CryptohomeClient::GetStubSanitizedUsername(
+      UserDataAuthClient::GetStubSanitizedUsername(
           cryptohome::CreateAccountIdentifierFromAccountId(account_id_));
   const base::FilePath user_key_file =
       user_keys_dir.AppendASCII(sanitized_username).AppendASCII("policy.pub");
@@ -103,10 +104,10 @@ void UserPolicyMixin::SetUpPolicy() {
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
   FakeSessionManagerClient::Get()->set_user_policy(cryptohome_id, policy_blob);
 
-  if (policy_server_) {
-    policy_server_->UpdateUserPolicy(user_policy_builder_.payload(),
-                                     account_id_.GetUserEmail());
+  if (embedded_policy_server_) {
+    embedded_policy_server_->UpdateUserPolicy(user_policy_builder_.payload(),
+                                              account_id_.GetUserEmail());
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

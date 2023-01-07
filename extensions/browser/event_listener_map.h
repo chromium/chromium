@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,13 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/event_filter.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -74,6 +75,9 @@ class EventListener {
       int worker_thread_id,
       std::unique_ptr<base::DictionaryValue> filter);
 
+  EventListener(const EventListener&) = delete;
+  EventListener& operator=(const EventListener&) = delete;
+
   ~EventListener();
 
   bool Equals(const EventListener* other) const;
@@ -120,7 +124,7 @@ class EventListener {
   const std::string event_name_;
   const std::string extension_id_;
   const GURL listener_url_;
-  content::RenderProcessHost* process_ = nullptr;
+  raw_ptr<content::RenderProcessHost> process_ = nullptr;
 
   const bool is_for_service_worker_ = false;
 
@@ -135,8 +139,6 @@ class EventListener {
 
   std::unique_ptr<base::DictionaryValue> filter_;
   EventFilter::MatcherID matcher_id_;  // -1 if unset.
-
-  DISALLOW_COPY_AND_ASSIGN(EventListener);
 };
 
 // Holds listeners for extension events and can answer questions about which
@@ -155,6 +157,10 @@ class EventListenerMap {
   };
 
   explicit EventListenerMap(Delegate* delegate);
+
+  EventListenerMap(const EventListenerMap&) = delete;
+  EventListenerMap& operator=(const EventListenerMap&) = delete;
+
   ~EventListenerMap();
 
   // Add a listener for a particular event. GetEventListeners() will include a
@@ -230,7 +236,7 @@ class EventListenerMap {
       base::DictionaryValue* filter_dict);
 
   // Listens for removals from this map.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   std::set<std::string> filtered_events_;
   ListenerMap listeners_;
@@ -238,8 +244,6 @@ class EventListenerMap {
   std::map<EventFilter::MatcherID, EventListener*> listeners_by_matcher_id_;
 
   EventFilter event_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventListenerMap);
 };
 
 }  // namespace extensions

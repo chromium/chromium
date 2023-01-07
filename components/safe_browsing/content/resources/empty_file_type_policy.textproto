@@ -1,0 +1,13 @@
+# Textproto version of empty_file_type_policy.pb for reference. The pb file
+# the authoritative version.
+
+version_id: 0
+default_file_type {
+
+  uma_value: 18
+  ping_setting: NO_PING
+  platform_settings {
+    danger_level: NOT_DANGEROUS
+    auto_open_hint: ALLOW_AUTO_OPEN
+  }
+}

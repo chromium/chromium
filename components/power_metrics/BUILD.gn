@@ -1,0 +1,42 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_mac) {
+  static_library("power_metrics") {
+    sources = [
+      "energy_impact_mac.h",
+      "energy_impact_mac.mm",
+      "m1_sensors_internal_types_mac.h",
+      "m1_sensors_mac.h",
+      "m1_sensors_mac.mm",
+      "mach_time_mac.h",
+      "mach_time_mac.mm",
+      "resource_coalition_internal_types_mac.h",
+      "resource_coalition_mac.h",
+      "resource_coalition_mac.mm",
+      "smc_internal_types_mac.h",
+      "smc_mac.h",
+      "smc_mac.mm",
+    ]
+
+    deps = [ "//base" ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [
+      "energy_impact_mac_unittest.mm",
+      "resource_coalition_mac_unittest.mm",
+    ]
+
+    data = [ "test/data/" ]
+
+    deps = [
+      ":power_metrics",
+      "//base",
+      "//testing/gtest",
+    ]
+  }
+}

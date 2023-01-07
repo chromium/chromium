@@ -1,0 +1,5 @@
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+# Previous two lines are to satisfy PRESUBMIT.py check for Mojo-related files,
+# but since these are just for test, allow anyone to be OWNERS in practice.
+per-file *.mojom=*

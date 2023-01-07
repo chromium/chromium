@@ -11,18 +11,15 @@ var propertiesToVerify = [];
 function insertExpectedResult(path, expected)
 {
     var property = path.join(".");
-    if (property == "location.ancestorOrigins.length")
-        expected = '0';
     propertiesToVerify.push({"path": path.slice(0), "property": property, "expected": expected});
 }
 
 function runTest()
 {
-    description("Tests property access on a cached DOMWindow after the associated frame is no longer in a web page. Test should not crash and properties should be set to sane defaults.");
+    description("Tests property access on a cached DOMWindow after the associated frame is no longer in a web page. Test should not crash and properties should be set to reasonable defaults as appropriate.");
     var frame = document.getElementById("test_frame");
     childWindow = frame.contentWindow;
-    // Have expected results assume that the frame has been closed (=> window.closed = true.)
-    collectProperties(document.getElementById("src_frame").contentWindow, true);
+    collectProperties(document.getElementById("src_frame").contentWindow);
     frame.parentNode.removeChild(frame);
     for (var i = 0; i < propertiesToVerify.length; ++i) {
       // It's ok if the property no longer exists.

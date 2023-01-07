@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/null_task_runner.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
@@ -21,8 +22,10 @@
 #include "storage/browser/file_system/file_system_options.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -56,28 +59,23 @@ TEST(BrowserFileSystemHelperTest,
       storage::FileSystemMountOption(), mount_path));
   storage::FileSystemURL original_file =
       external_mount_points->CreateExternalFileSystemURL(
-          url::Origin::Create(kSensitiveOrigin), kMountName, kTestPath);
+          blink::StorageKey(url::Origin::Create(kSensitiveOrigin)), kMountName,
+          kTestPath);
   EXPECT_TRUE(original_file.is_valid());
   EXPECT_EQ(kSensitiveOrigin, original_file.origin().GetURL());
 
   // Prepare fake FileSystemContext to use in the test.
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner(
-      new base::NullTaskRunner);
-  scoped_refptr<base::SequencedTaskRunner> file_task_runner(
-      new base::NullTaskRunner);
   storage::FileSystemOptions file_system_options(
       storage::FileSystemOptions::PROFILE_MODE_NORMAL,
-      false /* force_in_memory */, std::vector<std::string>());
-  scoped_refptr<storage::FileSystemContext> test_file_system_context(
-      new storage::FileSystemContext(
-          io_task_runner.get(), file_task_runner.get(),
-          external_mount_points.get(),
-          nullptr,  // special_storage_policy
-          nullptr,  // quota_manager_proxy,
-          std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
-          std::vector<storage::URLRequestAutoMountHandler>(),
-          base::FilePath(),  // partition_path
-          file_system_options));
+      /*force_in_memory=*/false, std::vector<std::string>());
+  auto test_file_system_context = storage::FileSystemContext::Create(
+      /*io_task_runner=*/base::MakeRefCounted<base::NullTaskRunner>(),
+      /*file_task_runner=*/base::MakeRefCounted<base::NullTaskRunner>(),
+      std::move(external_mount_points), /*special_storage_policy=*/nullptr,
+      /*quota_manager_proxy=*/nullptr,
+      std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
+      std::vector<storage::URLRequestAutoMountHandler>(),
+      /*partition_path=*/base::FilePath(), file_system_options);
 
   // Prepare content::DropData containing |file_system_url|.
   DropData::FileSystemFileInfo filesystem_file_info;
@@ -110,8 +108,9 @@ TEST(BrowserFileSystemHelperTest,
   // proper access patterns that are verified below).
 
   // Verify that the URL didn't change *too* much.
+  const GURL crack_url = drop_data.file_system_files[0].url;
   storage::FileSystemURL dropped_file =
-      test_file_system_context->CrackURL(drop_data.file_system_files[0].url);
+      test_file_system_context->CrackURLInFirstPartyContext(crack_url);
   EXPECT_TRUE(dropped_file.is_valid());
   EXPECT_EQ(original_file.origin(), dropped_file.origin());
   EXPECT_EQ(original_file.path().BaseName(), dropped_file.path().BaseName());

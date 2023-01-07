@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,11 +58,11 @@ class MockStorageArea : public mojom::blink::StorageArea {
       mojo::PendingRemote<mojom::blink::StorageAreaObserver> observer) override;
   void Put(const Vector<uint8_t>& key,
            const Vector<uint8_t>& value,
-           const base::Optional<Vector<uint8_t>>& client_old_value,
+           const absl::optional<Vector<uint8_t>>& client_old_value,
            const String& source,
            PutCallback callback) override;
   void Delete(const Vector<uint8_t>& key,
-              const base::Optional<Vector<uint8_t>>& client_old_value,
+              const absl::optional<Vector<uint8_t>>& client_old_value,
               const String& source,
               DeleteCallback callback) override;
   void DeleteAll(

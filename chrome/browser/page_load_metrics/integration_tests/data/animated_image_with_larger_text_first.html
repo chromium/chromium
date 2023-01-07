@@ -1,0 +1,30 @@
+<body>
+<div style="width: 500px; height: 500px; background: blue">
+  This is an extremely contentful div. I swear. It has words and a background
+  and everything. There's even four different sentences of actual content to
+  fill it up.
+</div>
+<script>
+const run_test = async () => {
+  await new Promise((resolve, reject) => {
+    new PerformanceObserver(list => {
+      const entries = list.getEntries();
+      for (let entry of entries) {
+        if (!entry.url) {
+          // Once we have an LCP entry for the div, we add the image and wait
+          // a bit.
+          const anim = new Image();
+          anim.src = "/images/anim-gr.png";
+          document.body.appendChild(anim);
+          setTimeout(resolve, 100);
+        } else if (entry.url.includes("anim-gr.png")) {
+          // We should never get an entry for the image.
+          reject("The image should not be an LCP candidate.");
+        }
+      }
+    }).observe({type: "largest-contentful-paint", buffered: true});
+  });
+};
+</script>
+
+

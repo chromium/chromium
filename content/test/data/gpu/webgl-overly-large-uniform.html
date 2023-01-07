@@ -1,0 +1,140 @@
+<html>
+<head>
+<script type="x-shader/x-vertex" id="vertex">
+#version 100
+uniform mat4 overflow;
+
+void main() {
+  gl_Position = overflow * vec4(0.11, 0.22, 0.33, 1.0);
+}
+</script>
+<script type="x-shader/x-fragment" id="fragment">
+#version 100
+void main() {
+  gl_FragColor = vec4(0.11, 0.22, 0.33, 1.0);
+}
+</script>
+<script type="text/javascript">
+let canvas;
+let w, h;
+let gl;
+let timeout;
+
+function send(result, message) {
+  if (window.domAutomationController)
+    window.domAutomationController.send(result);
+  if (message)
+    console.log(message);
+}
+
+function onContextLost(e) {
+  e.preventDefault();
+  clearTimeout(timeout);
+  // This is the last test in this file.
+  send("SUCCESS");
+}
+
+function onContextRestored() {
+  // Could extend this test to cover context restoration, but ignore
+  // this for now.
+}
+
+function timedOut() {
+  send("FAILURE", "Timed out waiting for context lost event");
+}
+
+function onLoad() {
+  send("LOADED");
+
+  canvas = document.getElementById("canvas1");
+  w = canvas.width;
+  h = canvas.height;
+  if (!canvas)
+    return;
+  canvas.addEventListener("webglcontextlost", onContextLost, false);
+  canvas.addEventListener("webglcontextrestored", onContextRestored, false);
+
+  gl = canvas.getContext("webgl");
+  if (!gl) {
+    send("FAILURE", "Couldn't get WebGL context");
+    return;
+  }
+
+  let vertexShader = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vertexShader, document.querySelector("#vertex").innerHTML);
+  gl.compileShader(vertexShader);
+
+  let fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fragmentShader, document.querySelector("#fragment").innerHTML);
+  gl.compileShader(fragmentShader);
+
+  program = gl.createProgram();
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+
+  overflow = gl.getUniformLocation(program, "overflow");
+
+  gl.useProgram(program);
+
+  // Make the memory pool, if possible:
+  // ::partition_alloc::internal::MaxDirectMapped.
+  // = 2 GB - 2 MB.
+  // 64KB Wasm page size)
+  //
+  // If allocation fails (for example, on 32-bit Android), fall back
+  // to 128 MB, and skip the portion of the test which tests the
+  // generation of INVALID_VALUE.
+  let gotLargeAllocation = false;
+  let memory;
+
+  try {
+    memory = new WebAssembly.Memory({initial: 32736});
+    gotLargeAllocation = true;
+  } catch (e) {
+    // Must be on a system that can't allocate that much memory. Try
+    // again with a smaller reservation.
+    try {
+      memory = new WebAssembly.Memory({initial: 2048});
+    } catch (e) {
+      // Unexpected. Fail verbosely.
+      send("FAILURE", "Failed to allocate even the smaller Wasm memory");
+      return;
+    }
+  }
+
+  if (gotLargeAllocation) {
+    // Feeding in all but a few bytes of that memory pool should cause
+    // GL_INVALID_VALUE to be generated as an implementation detail; this can not
+    // be guaranteed by the WebGL conformance tests. Note: this behavior could be
+    // changed to instead force a lost context if desired, per below.
+    const fewBytes = 8;
+    let array = new Int32Array(memory.buffer, fewBytes);
+    gl.uniform1iv(overflow, array);
+    let err = gl.getError();
+    console.log("GL error after very large uniform1iv call: " + err);
+    if (err != gl.INVALID_VALUE) {
+      send("FAILURE", "Expected gl.INVALID_VALUE, got " + err);
+      return;
+    }
+  }
+
+  // Feeding in significantly less of that memory pool (in this case, 64K less)
+  // should cause a lost context as an implementation detail; this can not be
+  // guaranteed by the WebGL conformance tests.
+  const moreBytes = 64 * 1024;
+  array = new Int32Array(memory.buffer, moreBytes);
+  gl.uniform1iv(overflow, array);
+  err = gl.getError();
+  console.log("GL error after slightly less large uniform1iv call: " + err);
+  // Delivery of context loss will race with execution here.
+  // If it hasn't been delivered within 5 seconds, fail the test.
+  timeout = setTimeout(timedOut, 5000);
+}
+</script>
+</head>
+<body onload="onLoad()">
+<canvas id="canvas1" width="64px" height="64px">
+</canvas>
+</body>
+</html>

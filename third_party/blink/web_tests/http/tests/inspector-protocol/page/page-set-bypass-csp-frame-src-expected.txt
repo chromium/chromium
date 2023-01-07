@@ -1,0 +1,6 @@
+Tests that Page.setBypassCSP works for main frame.
+Verify frame-src without bypass
+Refused to frame 'http://127.0.0.1:8000/inspector-protocol/page/resources/csp.php' because it violates the following Content Security Policy directive: "frame-src block-everything.com".
+
+Verify frame-src with bypass
+

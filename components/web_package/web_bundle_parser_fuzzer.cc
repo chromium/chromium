@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,16 +21,25 @@ namespace {
 
 class DataSource : public web_package::mojom::BundleDataSource {
  public:
-  DataSource(const uint8_t* data, size_t size) : data_(data), size_(size) {}
+  DataSource(const bool is_random_access_context, const std::string& data)
+      : is_random_access_context_(is_random_access_context), data_(data) {}
 
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {
-    if (offset >= size_) {
-      std::move(callback).Run(base::nullopt);
+    if (offset >= data_.size()) {
+      std::move(callback).Run(absl::nullopt);
       return;
     }
-    const uint8_t* start = data_ + offset;
-    length = std::min(length, size_ - offset);
+    const auto start = data_.begin() + offset;
+    length = std::min(length, data_.size() - offset);
     std::move(callback).Run(std::vector<uint8_t>(start, start + length));
+  }
+
+  void Length(LengthCallback callback) override {
+    std::move(callback).Run(data_.size());
+  }
+
+  void IsRandomAccessContext(IsRandomAccessContextCallback callback) override {
+    std::move(callback).Run(is_random_access_context_);
   }
 
   void AddReceiver(
@@ -39,15 +48,18 @@ class DataSource : public web_package::mojom::BundleDataSource {
   }
 
  private:
-  const uint8_t* data_;
-  size_t size_;
+  bool is_random_access_context_;
+  const std::string data_;
   mojo::ReceiverSet<web_package::mojom::BundleDataSource> receivers_;
 };
 
 class WebBundleParserFuzzer {
  public:
-  WebBundleParserFuzzer(const uint8_t* data, size_t size)
-      : data_source_(data, size) {}
+  WebBundleParserFuzzer(const bool is_random_access_context,
+                        const bool parse_integrity_block,
+                        const std::string& data)
+      : data_source_(is_random_access_context, data),
+        parse_integrity_block_(parse_integrity_block) {}
 
   void FuzzBundle(base::RunLoop* run_loop) {
     mojo::PendingRemote<web_package::mojom::BundleDataSource>
@@ -61,8 +73,29 @@ class WebBundleParserFuzzer {
                                    std::move(data_source_remote));
 
     quit_loop_ = run_loop->QuitClosure();
-    parser_->ParseMetadata(base::BindOnce(
-        &WebBundleParserFuzzer::OnParseMetadata, base::Unretained(this)));
+    if (parse_integrity_block_) {
+      parser_->ParseIntegrityBlock(
+          base::BindOnce(&WebBundleParserFuzzer::OnParseIntegrityBlock,
+                         base::Unretained(this)));
+      return;
+    } else {
+      parser_->ParseMetadata(
+          /*offset=*/-1, base::BindOnce(&WebBundleParserFuzzer::OnParseMetadata,
+                                        base::Unretained(this)));
+    }
+  }
+
+  void OnParseIntegrityBlock(
+      web_package::mojom::BundleIntegrityBlockPtr integrity_block,
+      web_package::mojom::BundleIntegrityBlockParseErrorPtr error) {
+    if (!integrity_block) {
+      std::move(quit_loop_).Run();
+      return;
+    }
+    parser_->ParseMetadata(
+        integrity_block->size,
+        base::BindOnce(&WebBundleParserFuzzer::OnParseMetadata,
+                       base::Unretained(this)));
   }
 
   void OnParseMetadata(web_package::mojom::BundleMetadataPtr metadata,
@@ -71,10 +104,8 @@ class WebBundleParserFuzzer {
       std::move(quit_loop_).Run();
       return;
     }
-    for (const auto& item : metadata->requests) {
-      for (auto& resp_location : item.second->response_locations)
-        locations_.push_back(std::move(resp_location));
-    }
+    for (auto& item : metadata->requests)
+      locations_.push_back(std::move(item.second));
     ParseResponses(0);
   }
 
@@ -99,6 +130,7 @@ class WebBundleParserFuzzer {
  private:
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
   DataSource data_source_;
+  bool parse_integrity_block_;
   base::OnceClosure quit_loop_;
   std::vector<web_package::mojom::BundleResponseLocationPtr> locations_;
 };
@@ -120,7 +152,13 @@ struct Environment {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment* env = new Environment();
 
-  WebBundleParserFuzzer fuzzer(data, size);
+  std::string web_bundle(reinterpret_cast<const char*>(data), size);
+  auto hash = std::hash<std::string>()(web_bundle);
+  bool is_random_access_context = hash & 0b01;
+  bool parse_integrity_block = hash & 0b10;
+
+  WebBundleParserFuzzer fuzzer(is_random_access_context, parse_integrity_block,
+                               web_bundle);
   base::RunLoop run_loop;
   env->task_executor.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&WebBundleParserFuzzer::FuzzBundle,

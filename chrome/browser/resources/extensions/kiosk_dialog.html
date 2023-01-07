@@ -58,11 +58,7 @@
       <template is="dom-repeat" items="[[apps_]]">
         <div class="list-item">
           <div class="item-name">
-            <img class="item-icon" src="[[item.iconURL]]"
-                alt$="[[appOrExtension(
-                    data.type,
-                    '$i18nPolymer{appIcon}',
-                    '$i18nPolymer{extensionIcon}')]]">
+            <img class="item-icon" src="[[item.iconURL]]" alt="">
             [[item.name]]
             <span hidden="[[!item.autoLaunch]]">
               $i18n{kioskAutoLaunch}
@@ -82,12 +78,12 @@
       </template>
     </div>
     <div id="add-kiosk-app">
-      <cr-input id="add-input" label="$i18n{kioskAddApp}"
+      <cr-input id="addInput" label="$i18n{kioskAddApp}"
           placeholder="$i18n{kioskAddAppHint}" value="{{addAppInput_}}"
           invalid="[[errorAppId_]]" on-keydown="clearInputInvalid_"
           error-message="[[getErrorMessage_(
               '$i18nPolymer{kioskInvalidApp}', errorAppId_)]]">
-        <cr-button id="add-button" on-click="onAddAppTap_"
+        <cr-button id="addButton" on-click="onAddAppTap_"
             disabled="[[!addAppInput_]]" slot="suffix">
           $i18n{add}
         </cr-button>
@@ -105,7 +101,7 @@
     </cr-button>
   </div>
 </cr-dialog>
-<cr-dialog id="confirm-dialog" close-text="$i18n{close}"
+<cr-dialog id="confirmDialog" close-text="$i18n{close}"
     ignore-enter-key on-close="stopPropagation_">
   <div slot="title">$i18n{kioskDisableBailoutWarningTitle}</div>
   <div slot="body">$i18n{kioskDisableBailoutWarningBody}</div>

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,8 +14,9 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/chromeos/file_system_provider/icon_set.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom-forward.h"
+#include "chrome/browser/ash/file_system_provider/icon_set.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -41,9 +42,10 @@ namespace file_manager_private {
 struct EntryProperties;
 struct IconSet;
 struct VolumeMetadata;
+struct MountableGuest;
 }
 }
-}
+}  // namespace extensions
 
 namespace ui {
 struct SelectedFileInfo;
@@ -98,7 +100,7 @@ class SingleEntryPropertiesGetterForDriveFs {
 
 // Fills out IDL IconSet struct with the provided icon set.
 void FillIconSet(extensions::api::file_manager_private::IconSet* output,
-                 const chromeos::file_system_provider::IconSet& input);
+                 const ash::file_system_provider::IconSet& input);
 
 // Converts the |volume| to VolumeMetadata to communicate with JavaScript via
 // private API.
@@ -146,6 +148,9 @@ void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
 
 // Get event logger to chrome://drive-internals page for the |profile|.
 drive::EventLogger* GetLogger(Profile* profile);
+
+std::vector<extensions::api::file_manager_private::MountableGuest>
+CreateMountableGuestList(Profile* profile);
 
 }  // namespace util
 }  // namespace file_manager

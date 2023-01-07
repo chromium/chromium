@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
@@ -31,6 +30,11 @@ class SubresourceFilterWebSocketBrowserTest
  public:
   SubresourceFilterWebSocketBrowserTest() {}
 
+  SubresourceFilterWebSocketBrowserTest(
+      const SubresourceFilterWebSocketBrowserTest&) = delete;
+  SubresourceFilterWebSocketBrowserTest& operator=(
+      const SubresourceFilterWebSocketBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     SubresourceFilterBrowserTest::SetUpOnMainThread();
     websocket_test_server_ = std::make_unique<net::SpawnedTestServer>(
@@ -50,18 +54,16 @@ class SubresourceFilterWebSocketBrowserTest
 
   void CreateWebSocketAndExpectResult(const GURL& url,
                                       bool expect_connection_success) {
-    bool websocket_connection_succeeded = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        base::StringPrintf("connectWebSocket('%s');", url.spec().c_str()),
-        &websocket_connection_succeeded));
-    EXPECT_EQ(expect_connection_success, websocket_connection_succeeded);
+    EXPECT_EQ(
+        expect_connection_success,
+        content::EvalJs(
+            browser()->tab_strip_model()->GetActiveWebContents(),
+            base::StringPrintf("connectWebSocket('%s');", url.spec().c_str()),
+            content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   }
 
  private:
   std::unique_ptr<net::SpawnedTestServer> websocket_test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterWebSocketBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest, BlockWebSocket) {
@@ -72,7 +74,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest, BlockWebSocket) {
   ConfigureAsPhishingURL(url);
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("echo-with-no-extension"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CreateWebSocketAndExpectResult(websocket_url,
                                  false /* expect_connection_success */);
 }
@@ -85,7 +87,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
   GURL websocket_url(GetWebSocketUrl("echo-with-no-extension"));
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("echo-with-no-extension"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   CreateWebSocketAndExpectResult(websocket_url,
                                  true /* expect_connection_success */);
@@ -98,7 +100,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
                          GetParam() == IN_WORKER ? "inWorker" : "")));
   GURL websocket_url(GetWebSocketUrl("echo-with-no-extension"));
   ConfigureAsPhishingURL(url);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   CreateWebSocketAndExpectResult(websocket_url,
                                  true /* expect_connection_success */);

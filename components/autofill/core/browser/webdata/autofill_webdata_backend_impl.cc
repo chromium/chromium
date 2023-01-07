@@ -1,18 +1,22 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
+#include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -147,7 +151,7 @@ void AutofillWebDataBackendImpl::NotifyThatSyncHasStarted(
 base::SupportsUserData* AutofillWebDataBackendImpl::GetDBUserData() {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (!user_data_)
-    user_data_.reset(new SupportsUserDataAggregatable());
+    user_data_ = std::make_unique<SupportsUserDataAggregatable>();
   return user_data_.get();
 }
 
@@ -510,6 +514,73 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerCardMetadata(
   return WebDatabase::COMMIT_NEEDED;
 }
 
+std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetIBANs(
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<std::unique_ptr<IBAN>> ibans;
+  AutofillTable::FromWebDatabase(db)->GetIBANs(&ibans);
+
+  return std::make_unique<WDResult<std::vector<std::unique_ptr<IBAN>>>>(
+      AUTOFILL_IBANS_RESULT, std::move(ibans));
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::AddIBAN(const IBAN& iban,
+                                                       WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (!AutofillTable::FromWebDatabase(db)->AddIBAN(iban)) {
+    NOTREACHED();
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+
+  for (auto& db_observer : db_observer_list_) {
+    db_observer.IBANChanged(IBANChange(IBANChange::ADD, iban.guid(), &iban));
+  }
+  return WebDatabase::COMMIT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::UpdateIBAN(const IBAN& iban,
+                                                          WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  // It is currently valid to try to update a missing IBAN. We simply drop
+  // the write and the caller will detect this on the next refresh.
+  std::unique_ptr<IBAN> original_iban =
+      AutofillTable::FromWebDatabase(db)->GetIBAN(iban.guid());
+  if (!original_iban)
+    return WebDatabase::COMMIT_NOT_NEEDED;
+
+  if (!AutofillTable::FromWebDatabase(db)->UpdateIBAN(iban)) {
+    NOTREACHED();
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+
+  for (auto& db_observer : db_observer_list_) {
+    db_observer.IBANChanged(IBANChange(IBANChange::UPDATE, iban.guid(), &iban));
+  }
+  return WebDatabase::COMMIT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::RemoveIBAN(
+    const std::string& guid,
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::unique_ptr<IBAN> iban =
+      AutofillTable::FromWebDatabase(db)->GetIBAN(guid);
+  if (!iban) {
+    NOTREACHED();
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+
+  if (!AutofillTable::FromWebDatabase(db)->RemoveIBAN(guid)) {
+    NOTREACHED();
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+
+  for (auto& db_observer : db_observer_list_) {
+    db_observer.IBANChanged(IBANChange(IBANChange::REMOVE, guid, iban.get()));
+  }
+  return WebDatabase::COMMIT_NEEDED;
+}
+
 WebDatabase::State AutofillWebDataBackendImpl::UpdateServerAddressMetadata(
     const AutofillProfile& profile,
     WebDatabase* db) {
@@ -568,11 +639,11 @@ AutofillWebDataBackendImpl::GetCreditCardCloudTokenData(WebDatabase* db) {
       AUTOFILL_CLOUDTOKEN_RESULT, std::move(cloud_token_data));
 }
 
-std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetCreditCardOffers(
+std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillOffers(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<std::unique_ptr<AutofillOfferData>> offers;
-  AutofillTable::FromWebDatabase(db)->GetCreditCardOffers(&offers);
+  AutofillTable::FromWebDatabase(db)->GetAutofillOffers(&offers);
   return std::make_unique<
       WDResult<std::vector<std::unique_ptr<AutofillOfferData>>>>(
       AUTOFILL_OFFER_DATA, std::move(offers));

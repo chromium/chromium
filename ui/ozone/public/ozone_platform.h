@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,10 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/containers/flat_set.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -25,22 +26,27 @@ class NativeDisplayDelegate;
 }
 
 namespace ui {
+enum class DomCode;
+enum class PlatformKeyboardHookTypes;
+
 class CursorFactory;
 class GpuPlatformSupportHost;
+class ImeKeyEventDispatcher;
+class InputMethod;
 class InputController;
+class KeyEvent;
 class OverlayManagerOzone;
 class PlatformClipboard;
 class PlatformGLEGLUtility;
+class PlatformGlobalShortcutListener;
+class PlatformGlobalShortcutListenerDelegate;
+class PlatformKeyboardHook;
 class PlatformMenuUtils;
 class PlatformScreen;
 class PlatformUserInputMonitor;
+class PlatformUtils;
 class SurfaceFactoryOzone;
 class SystemInputInjector;
-
-namespace internal {
-class InputMethodDelegate;
-}  // namespace internal
-class InputMethod;
 
 struct PlatformWindowInitProperties;
 
@@ -61,6 +67,10 @@ struct PlatformWindowInitProperties;
 class COMPONENT_EXPORT(OZONE) OzonePlatform {
  public:
   OzonePlatform();
+
+  OzonePlatform(const OzonePlatform&) = delete;
+  OzonePlatform& operator=(const OzonePlatform&) = delete;
+
   virtual ~OzonePlatform();
 
   // Additional initialization params for the platform. Platforms must not
@@ -99,10 +109,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // frame based on the currently-running window manager.
     bool custom_frame_pref_default = false;
 
-    // Determines whether switching between system and custom frames is
-    // supported.
-    bool use_system_title_bar = false;
-
     // Determines the type of message pump that should be used for GPU main
     // thread.
     base::MessagePumpType message_pump_type_for_gpu =
@@ -116,20 +122,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Determines if the platform supports vulkan swap chain.
     bool supports_vulkan_swap_chain = false;
 
-    // Linux only: determines if the platform uses the external Vulkan image
-    // factory.
-    bool uses_external_vulkan_image_factory = false;
-
     // Linux only: determines if Skia can fall back to the X11 output device.
     bool skia_can_fall_back_to_x11 = false;
-
-    // Wayland only: determines if the client must ignore the screen bounds when
-    // calculating bounds of menu windows.
-    bool ignore_screen_bounds_for_menus = false;
-
-    // Wayland only: determines whether BufferQueue needs a background image to
-    // be stacked below an AcceleratedWidget to make a widget opaque.
-    bool needs_background_image = false;
 
     // Wayland only: determines whether windows which are not top level ones
     // should be given parents explicitly.
@@ -149,20 +143,68 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Determines whether buffer formats should be fetched on GPU and passed
     // back via gpu extra info.
     bool fetch_buffer_formats_for_gmb_on_gpu = false;
+
+#if BUILDFLAG(IS_LINUX)
+    // TODO(crbug.com/1116701): add vaapi support for other Ozone platforms on
+    // Linux. At the moment, VA-API Linux implementation supports only X11
+    // backend. This implementation must be refactored to support Ozone
+    // properly. As a temporary solution, VA-API on Linux checks if vaapi is
+    // supported (which implicitly means that it is Ozone/X11).
+    bool supports_vaapi = false;
+#endif
+
+    // Indicates that the platform allows client applications to manipulate
+    // global screen coordinates. Wayland, for example, disallow it by design.
+    bool supports_global_screen_coordinates = true;
   };
 
-  // Properties available in the host process after initialization.
-  struct InitializedHostProperties {
+  // Groups platform properties that can only be known at run time.
+  struct PlatformRuntimeProperties {
+    // Values to override the value of the
+    // supports_server_side_window_decorations property in tests.
+    enum class SupportsSsdForTest {
+      kNotSet,  // The property is not overridden.
+      kYes,     // The platform should return true.
+      kNo,      // The plafrorm should return false.
+    };
+
     // Whether the underlying platform supports deferring compositing of buffers
     // via overlays. If overlays are not supported the promotion and validation
     // logic can be skipped.
     bool supports_overlays = false;
+    // Indicates whether the platform supports server-side window decorations.
+    bool supports_server_side_window_decorations = true;
+
+    // For platforms that have optional support for server-side decorations,
+    // this parameter allows setting the desired state in tests.  The platform
+    // must have the appropriate logic in its GetPlatformRuntimeProperties()
+    // method.
+    static SupportsSsdForTest override_supports_ssd_for_test;
+
+    // Wayland only: determines whether solid color overlays can be delegated
+    // without a backing image via a wayland protocol.
+    bool supports_non_backed_solid_color_buffers = false;
+
+    // Indicates whether the platform supports native pixmaps.
+    bool supports_native_pixmaps = false;
+
+    // Wayland only: determines whether BufferQueue needs a background image to
+    // be stacked below an AcceleratedWidget to make a widget opaque.
+    bool needs_background_image = false;
+
+    // Wayland only: determines whether clip rects can be delegated via the
+    // wayland protocol.
+    bool supports_clip_rect = false;
+
+    // Wayland only: determine whether toplevel surfaces can be activated and
+    // deactivated.
+    bool supports_activation = false;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.
   //
   // The browser process' initialization involves several steps -
-  // PreEarlyInitialization, PostMainMessageLoopStart, PostMainMessageLoopRun,
+  // PreEarlyInitialization, PostCreateMainMessageLoop, PostMainMessageLoopRun,
   // etc. In order to be consistent with that and allow platform specific
   // initialization steps, the OzonePlatform has three methods - one static
   // PreEarlyInitialization that is expected to do some early non-ui
@@ -179,21 +221,27 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // Sets error handlers if supported for the browser process after the message
   // loop started. It's required to call this so that we can exit cleanly if the
   // server can exit before we do.
-  virtual void PostMainMessageLoopStart(base::OnceCallback<void()> shutdown_cb);
+  virtual void PostCreateMainMessageLoop(
+      base::OnceCallback<void()> shutdown_cb);
   // Resets the error handlers if set.
   virtual void PostMainMessageLoopRun();
 
   // Initializes the subsystems/resources necessary for the UI process (e.g.
   // events) with additional properties to customize the ozone platform
   // implementation. Ozone will not retain InitParams after returning from
-  // InitalizeForUI.
-  static void InitializeForUI(const InitParams& args);
+  // InitializeForUI.
+  // Returns whether the initialisation completed successfully.  Should this
+  // have returned false, the browser must stop the startup and exit because it
+  // would not be able to work normally.
+  static bool InitializeForUI(const InitParams& args);
 
   // Initializes the subsystems for rendering but with additional properties
   // provided by |args| as with InitalizeForUI.
   static void InitializeForGPU(const InitParams& args);
 
   static OzonePlatform* GetInstance();
+
+  static bool IsInitialized();
 
   // Returns the current ozone platform name.
   // Some tests may skip based on the platform name.
@@ -213,26 +261,54 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
       PlatformWindowInitProperties properties) = 0;
   virtual std::unique_ptr<display::NativeDisplayDelegate>
   CreateNativeDisplayDelegate() = 0;
+  // Creates a new PlatformScreen subclass from the factory subclass.
   virtual std::unique_ptr<PlatformScreen> CreateScreen() = 0;
+  // This function must be called immediately after CreateScreen with the
+  // `screen` that was returned from CreateScreen.  They are separated to avoid
+  // observer recursion into display::Screen from inside CreateScreen.
+  virtual void InitScreen(PlatformScreen* screen) = 0;
   virtual PlatformClipboard* GetPlatformClipboard();
   virtual std::unique_ptr<InputMethod> CreateInputMethod(
-      internal::InputMethodDelegate* delegate,
+      ImeKeyEventDispatcher* ime_key_event_dispatcher,
       gfx::AcceleratedWidget widget) = 0;
   virtual PlatformGLEGLUtility* GetPlatformGLEGLUtility();
   virtual PlatformMenuUtils* GetPlatformMenuUtils();
+  virtual PlatformUtils* GetPlatformUtils();
+  virtual PlatformGlobalShortcutListener* GetPlatformGlobalShortcutListener(
+      PlatformGlobalShortcutListenerDelegate* delegate);
+  // Returns the keyboard hook that captures the specified keys.  See more in
+  // ui::KeyboardHook.  However, unlike that interface, Ozone tries to register
+  // the hook that it has created, and returns the one only if it was registered
+  // successfully.
+  // Handles creating both modifier and media keyboard hooks.  |dom_codes| and
+  // |accelerated_widget| are only used if |type| is
+  // PlatformKeyboardHookTypes::kModifier.
+  virtual std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
+      PlatformKeyboardHookTypes type,
+      base::RepeatingCallback<void(KeyEvent* event)> callback,
+      absl::optional<base::flat_set<DomCode>> dom_codes,
+      gfx::AcceleratedWidget accelerated_widget);
 
   // Returns true if the specified buffer format is supported.
   virtual bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                              gfx::BufferUsage usage) const;
+
+  // Returns whether a custom frame should be used for windows.
+  // The default behaviour is returning what is suggested by the
+  // custom_frame_pref_default property of the platform: if the platform
+  // suggests using the custom frame, likely it lacks native decorations.
+  // See https://crbug.com/1212555
+  virtual bool ShouldUseCustomFrame();
 
   // Returns a struct that contains configuration and requirements for the
   // current platform implementation. This can be called from either host or GPU
   // process at any time.
   virtual const PlatformProperties& GetPlatformProperties();
 
-  // Returns a struct that contains properties available in the host process
-  // after InitializeForUI() runs.
-  virtual const InitializedHostProperties& GetInitializedHostProperties();
+  // Returns runtime properties of the current platform implementation available
+  // after either InitializeUI() or InitializeGPU() runs. Runtime properties for
+  // UI and GPU may be different depending on availability of platform objects.
+  virtual const PlatformRuntimeProperties& GetPlatformRuntimeProperties();
 
   // Ozone platform implementations may also choose to expose mojo interfaces to
   // internal functionality. Embedders wishing to take advantage of ozone mojo
@@ -271,12 +347,26 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
   bool single_process() const { return single_process_; }
 
+  static bool ShouldFailInitializeUIForTest();
+
  private:
+  friend class OzonePlatformTest;
+
+  // For platforms that may fail at the early stage of initialising, sets so
+  // that they fail.
+  // See https://crbug.com/1280138.
+  static void SetFailInitializeUIForTest(bool fail);
+
   // Optional method for pre-early initialization. In case of X11, sets X11
   // error handlers so that errors can be caught if early initialization fails.
   virtual void PreEarlyInitialize();
 
-  virtual void InitializeUI(const InitParams& params) = 0;
+  // Initialises the platform in the UI process.  Returns whether that completed
+  // successfully, i. e., the startup process may proceed further.
+  // The platform implementation must check all conditions critical for normal
+  // operation, and return false if any of them are not met (e. g., the display
+  // server is not available).
+  virtual bool InitializeUI(const InitParams& params) = 0;
   virtual void InitializeGPU(const InitParams& params) = 0;
 
   bool initialized_ui_ = false;
@@ -287,8 +377,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // modifications to |single_process_| visible by other threads. Mutex is not
   // needed since it's set before other threads are started.
   volatile bool single_process_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatform);
 };
 
 }  // namespace ui

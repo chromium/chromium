@@ -1,25 +1,29 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {FileSelectionHandler} from './file_selection.m.js';
-// #import {FileFilter} from './directory_contents.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {AlertDialog, ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
-// #import {ListContainer} from './ui/list_container.m.js';
-// #import {util, strf} from '../../common/js/util.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format off
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {getFile} from '../../common/js/api.js';
+import {strf, UserCanceledError, util} from '../../common/js/util.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+
+import {FileFilter} from './directory_contents.js';
+import {DirectoryModel} from './directory_model.js';
+import {renameEntry, validateEntryName, validateFileName} from './file_rename.js';
+import {FileSelectionHandler} from './file_selection.js';
+import {ConfirmDialog} from './ui/dialogs.js';
+import {FilesAlertDialog} from './ui/files_alert_dialog.js';
+import {ListContainer} from './ui/list_container.js';
 
 /**
  * Controller to handle naming.
  */
-/* #export */ class NamingController {
+export class NamingController {
   /**
    * @param {!ListContainer} listContainer
-   * @param {!cr.ui.dialogs.AlertDialog} alertDialog
-   * @param {!cr.ui.dialogs.ConfirmDialog} confirmDialog
+   * @param {!FilesAlertDialog} alertDialog
+   * @param {!ConfirmDialog} confirmDialog
    * @param {!DirectoryModel} directoryModel
    * @param {!FileFilter} fileFilter
    * @param {!FileSelectionHandler} selectionHandler
@@ -30,10 +34,10 @@
     /** @private @const {!ListContainer} */
     this.listContainer_ = listContainer;
 
-    /** @private @const {!cr.ui.dialogs.AlertDialog} */
+    /** @private @const {!FilesAlertDialog} */
     this.alertDialog_ = alertDialog;
 
-    /** @private @const {!cr.ui.dialogs.ConfirmDialog} */
+    /** @private @const {!ConfirmDialog} */
     this.confirmDialog_ = confirmDialog;
 
     /** @private @const {!DirectoryModel} */
@@ -46,103 +50,91 @@
     this.selectionHandler_ = selectionHandler;
 
     /**
-     * Controls if a context menu is shown for the rename input, so it shouldn't
-     * commit the new name.
+     * Whether the entry being renamed is a root of a removable
+     * partition/volume.
      * @private {boolean}
      */
-    this.showingContextMenu_ = false;
+    this.isRemovableRoot_ = false;
+
+    /** @private {?VolumeInfo} */
+    this.volumeInfo_ = null;
 
     // Register events.
     this.listContainer_.renameInput.addEventListener(
         'keydown', this.onRenameInputKeyDown_.bind(this));
     this.listContainer_.renameInput.addEventListener(
         'blur', this.onRenameInputBlur_.bind(this));
-    this.listContainer_.renameInput.addEventListener(
-        'contextmenu', this.onContextMenu_.bind(this));
-    this.listContainer_.renameInput.addEventListener(
-        'focus', this.onFocus_.bind(this));
   }
 
   /**
    * Verifies the user entered name for file or folder to be created or
-   * renamed to. See also util.validateFileName.
+   * renamed to. See also validateFileName.
+   * Returns true immediately if the name is valid, else returns false
+   * after the user has dismissed the error dialog.
    *
    * @param {!DirectoryEntry} parentEntry The URL of the parent directory entry.
    * @param {string} name New file or folder name.
-   * @param {function(boolean)} onDone Function to invoke when user closes the
-   *    warning box or immediately if file name is correct. If the name was
-   *    valid it is passed true, and false otherwise.
+   * @return {!Promise<boolean>} True if valid.
+   * @private
    */
-  validateFileName(parentEntry, name, onDone) {
-    const fileNameErrorPromise = util.validateFileName(
-        parentEntry, name, !this.fileFilter_.isHiddenFilesVisible());
-    fileNameErrorPromise
-        .then(
-            onDone.bind(null, true),
-            message => {
-              this.alertDialog_.show(
-                  /** @type {string} */ (message), onDone.bind(null, false));
-            })
-        .catch(error => {
-          console.error(error.stack || error);
-        });
+  async validateFileName(parentEntry, name) {
+    try {
+      await validateFileName(
+          parentEntry, name, this.fileFilter_.isHiddenFilesVisible());
+      return true;
+    } catch (error) {
+      await this.alertDialog_.showAsync(/** @type {string} */ (error.message));
+      return false;
+    }
   }
 
   /**
    * @param {string} filename
    * @return {Promise<string>}
    */
-  validateFileNameForSaving(filename) {
+  async validateFileNameForSaving(filename) {
     const directory =
         /** @type {DirectoryEntry} */ (
             this.directoryModel_.getCurrentDirEntry());
     const currentDirUrl = directory.toURL().replace(/\/?$/, '/');
     const fileUrl = currentDirUrl + encodeURIComponent(filename);
 
-    return new Promise(this.validateFileName.bind(this, directory, filename))
-        .then(isValid => {
-          if (!isValid) {
-            return Promise.reject('Invalid filename.');
-          }
+    try {
+      const isValid = await this.validateFileName(directory, filename);
+      if (!isValid) {
+        throw new Error('Invalid filename.');
+      }
 
-          if (directory && util.isFakeEntry(directory)) {
-            // Can't save a file into a fake directory.
-            return Promise.reject('Cannot save into fake entry.');
-          }
+      if (directory && util.isFakeEntry(directory)) {
+        // Can't save a file into a fake directory.
+        throw new Error('Cannot save into fake entry.');
+      }
 
-          return new Promise(
-              directory.getFile.bind(directory, filename, {create: false}));
-        })
-        .then(
-            () => {
-              // An existing file is found. Show confirmation dialog to
-              // overwrite it. If the user select "OK" on the dialog, save it.
-              return new Promise((fulfill, reject) => {
-                this.confirmDialog_.show(
-                    strf('CONFIRM_OVERWRITE_FILE', filename),
-                    fulfill.bind(null, fileUrl), reject.bind(null, 'Cancelled'),
-                    () => {});
-              });
-            },
-            error => {
-              if (error.name == util.FileError.NOT_FOUND_ERR) {
-                // The file does not exist, so it should be ok to create a
-                // new file.
-                return fileUrl;
-              }
+      await getFile(directory, filename, {create: false});
+    } catch (error) {
+      if (error.name == util.FileError.NOT_FOUND_ERR) {
+        // The file does not exist, so it should be ok to create a new file.
+        return fileUrl;
+      }
 
-              if (error.name == util.FileError.TYPE_MISMATCH_ERR) {
-                // An directory is found.
-                // Do not allow to overwrite directory.
-                this.alertDialog_.show(
-                    strf('DIRECTORY_ALREADY_EXISTS', filename));
-                return Promise.reject(error);
-              }
+      if (error.name == util.FileError.TYPE_MISMATCH_ERR) {
+        // A directory is found. Do not allow to overwrite directory.
+        this.alertDialog_.show(strf('DIRECTORY_ALREADY_EXISTS', filename));
+        throw error;
+      }
 
-              // Unexpected error.
-              console.error('File save failed: ' + error.code);
-              return Promise.reject(error);
-            });
+      // Unexpected error.
+      console.warn('File save failed: ' + error.code);
+      throw error;
+    }
+
+    // An existing file is found. Show confirmation dialog to overwrite it.
+    // If the user selects "OK", save it.
+    return new Promise((fulfill, reject) => {
+      this.confirmDialog_.show(
+          strf('CONFIRM_OVERWRITE_FILE', filename), fulfill.bind(null, fileUrl),
+          () => reject(new UserCanceledError('Canceled')));
+    });
   }
 
   /**
@@ -152,7 +144,17 @@
     return !!this.listContainer_.renameInput.currentEntry;
   }
 
-  initiateRename() {
+  /**
+   * @param {boolean} isRemovableRoot Indicates whether the target is a
+   *     removable volume root or not.
+   * @param {VolumeInfo} volumeInfo A volume information about the target entry.
+   *     |volumeInfo| can be null if method is invoked on a folder that is in
+   *     the tree view and is not root of an external drive.
+   */
+  initiateRename(isRemovableRoot = false, volumeInfo = null) {
+    this.isRemovableRoot_ = isRemovableRoot;
+    this.volumeInfo_ = this.isRemovableRoot_ ? assert(volumeInfo) : null;
+
     const selectedIndex = this.listContainer_.selectionModel.selectedIndex;
     const item =
         this.listContainer_.currentList.getListItemByIndex(selectedIndex);
@@ -243,20 +245,13 @@
     }
   }
 
-  onContextMenu_(event) {
-    this.showingContextMenu_ = true;
-  }
-
-  onFocus_(event) {
-    this.showingContextMenu_ = false;
-  }
-
   /**
    * @param {Event} event Blur event.
    * @private
    */
   onRenameInputBlur_(event) {
-    if (this.showingContextMenu_) {
+    const contextMenu = this.listContainer_.renameInput.contextMenu;
+    if (contextMenu && !contextMenu.hidden) {
       return;
     }
 
@@ -268,8 +263,10 @@
 
   /**
    * @private
+   * @return {!Promise} Resolves when done renaming - both when renaming is
+   * successful and when it fails.
    */
-  commitRename_() {
+  async commitRename_() {
     const input = this.listContainer_.renameInput;
     const entry = input.currentEntry;
     const newName = input.value;
@@ -282,67 +279,68 @@
       return;
     }
 
-    input.validation_ = true;
-    const validationDone = valid => {
+    const volumeInfo = this.volumeInfo_;
+    const isRemovableRoot = this.isRemovableRoot_;
+
+    try {
+      input.validation_ = true;
+      await validateEntryName(
+          entry, newName, this.fileFilter_.isHiddenFilesVisible(), volumeInfo,
+          isRemovableRoot);
+    } catch (error) {
+      await this.alertDialog_.showAsync(/** @type {string} */ (error.message));
+
+      // Cancel rename if it fails to restore focus from alert dialog.
+      // Otherwise, just cancel the commitment and continue to rename.
+      if (document.activeElement != input) {
+        this.cancelRename_();
+      }
+
+      return;
+    } finally {
       input.validation_ = false;
+    }
 
-      if (!valid) {
-        // Cancel rename if it fails to restore focus from alert dialog.
-        // Otherwise, just cancel the commitment and continue to rename.
-        if (document.activeElement != input) {
-          this.cancelRename_();
-        }
-        return;
+    // Validation succeeded. Do renaming.
+    this.listContainer_.renameInput.currentEntry = null;
+    if (this.listContainer_.renameInput.parentNode) {
+      this.listContainer_.renameInput.parentNode.removeChild(
+          this.listContainer_.renameInput);
+    }
+
+    // Optimistically apply new name immediately to avoid flickering in
+    // case of success.
+    nameNode.textContent = newName;
+
+    try {
+      const newEntry =
+          await renameEntry(entry, newName, volumeInfo, isRemovableRoot);
+
+      // RemovableRoot doesn't have a callback to report renaming is done.
+      if (!isRemovableRoot) {
+        await this.directoryModel_.onRenameEntry(entry, assert(newEntry));
       }
 
-      // Validation succeeded. Do renaming.
-      this.listContainer_.renameInput.currentEntry = null;
-      if (this.listContainer_.renameInput.parentNode) {
-        this.listContainer_.renameInput.parentNode.removeChild(
-            this.listContainer_.renameInput);
-      }
-      renamedItemElement.setAttribute('renaming', 'provisional');
+      // Select new entry.
+      this.listContainer_.currentList.selectionModel.selectedIndex =
+          this.directoryModel_.getFileList().indexOf(newEntry);
+      // Force to update selection immediately.
+      this.selectionHandler_.onFileSelectionChanged();
 
-      // Optimistically apply new name immediately to avoid flickering in
-      // case of success.
-      nameNode.textContent = newName;
+      renamedItemElement.removeAttribute('renaming');
+      this.listContainer_.endBatchUpdates();
 
-      util.rename(
-          entry, newName,
-          newEntry => {
-            this.directoryModel_.onRenameEntry(entry, assert(newEntry), () => {
-              // Select new entry.
-              this.listContainer_.currentList.selectionModel.selectedIndex =
-                  this.directoryModel_.getFileList().indexOf(newEntry);
-              // Force to update selection immediately.
-              this.selectionHandler_.onFileSelectionChanged();
+      // Focus may go out of the list. Back it to the list.
+      this.listContainer_.currentList.focus();
+    } catch (error) {
+      // Write back to the old name.
+      nameNode.textContent = entry.name;
+      renamedItemElement.removeAttribute('renaming');
+      this.listContainer_.endBatchUpdates();
 
-              renamedItemElement.removeAttribute('renaming');
-              this.listContainer_.endBatchUpdates();
-
-              // Focus may go out of the list. Back it to the list.
-              this.listContainer_.currentList.focus();
-            });
-          },
-          error => {
-            // Write back to the old name.
-            nameNode.textContent = entry.name;
-            renamedItemElement.removeAttribute('renaming');
-            this.listContainer_.endBatchUpdates();
-
-            // Show error dialog.
-            const message = util.getRenameErrorMessage(error, entry, newName);
-            this.alertDialog_.show(message);
-          });
-    };
-
-    // TODO(mtomasz): this.getCurrentDirectoryEntry() might not return the
-    // actual parent if the directory content is a search result. Fix it to do
-    // proper validation.
-    this.validateFileName(
-        /** @type {!DirectoryEntry} */ (
-            this.directoryModel_.getCurrentDirEntry()),
-        newName, validationDone.bind(this));
+      // Show error dialog.
+      this.alertDialog_.show(error.message);
+    }
   }
 
   /**

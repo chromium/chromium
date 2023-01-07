@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <xf86drmMode.h>
 
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
@@ -48,6 +49,9 @@ class CrtcCommitRequest {
   const gfx::Point& origin() const { return origin_; }
   HardwareDisplayPlaneList* plane_list() const { return plane_list_; }
   const DrmOverlayPlaneList& overlays() const { return overlays_; }
+
+  // Adds trace records to |context|.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   CrtcCommitRequest(uint32_t crtc_id,

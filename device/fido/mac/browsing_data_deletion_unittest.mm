@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,9 +29,8 @@ extern "C" {
 // are stored. This test needs it because it tries to erase all credentials
 // belonging to the (test-only) keychain access group, and the corresponding
 // filter label (kSecAttrAccessGroup) appears to be ineffective *unless*
-// kSecAttrNoLegacy is `@YES`. Marked as weak import because the symbol is only
-// available in 10.11 or greater.
-extern const CFStringRef kSecAttrNoLegacy __attribute__((weak_import));
+// kSecAttrNoLegacy is `@YES`.
+extern const CFStringRef kSecAttrNoLegacy;
 }
 
 namespace device {
@@ -71,22 +70,18 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
 // profile they are associated with. May return a null reference if an error
 // occurred.
 base::ScopedCFTypeRef<CFArrayRef> QueryAllCredentials() {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    base::ScopedCFTypeRef<CFArrayRef> items;
-    OSStatus status = Keychain::GetInstance().ItemCopyMatching(
-        BaseQuery(), reinterpret_cast<CFTypeRef*>(items.InitializeInto()));
-    if (status == errSecItemNotFound) {
-      // The API returns null, but we should return an empty array instead to
-      // distinguish from real errors.
-      items = base::ScopedCFTypeRef<CFArrayRef>(
-          CFArrayCreate(nullptr, nullptr, 0, nullptr));
-    } else if (status != errSecSuccess) {
-      OSSTATUS_DLOG(ERROR, status);
-    }
-    return items;
+  base::ScopedCFTypeRef<CFArrayRef> items;
+  OSStatus status = Keychain::GetInstance().ItemCopyMatching(
+      BaseQuery(), reinterpret_cast<CFTypeRef*>(items.InitializeInto()));
+  if (status == errSecItemNotFound) {
+    // The API returns null, but we should return an empty array instead to
+    // distinguish from real errors.
+    items = base::ScopedCFTypeRef<CFArrayRef>(
+        CFArrayCreate(nullptr, nullptr, 0, nullptr));
+  } else if (status != errSecSuccess) {
+    OSSTATUS_DLOG(ERROR, status);
   }
-  NOTREACHED();
-  return base::ScopedCFTypeRef<CFArrayRef>(nullptr);
+  return items;
 }
 
 // Returns the number of WebAuthn credentials in the keychain (for all
@@ -97,16 +92,12 @@ ssize_t KeychainItemCount() {
 }
 
 bool ResetKeychain() {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    OSStatus status = Keychain::GetInstance().ItemDelete(BaseQuery());
-    if (status != errSecSuccess && status != errSecItemNotFound) {
-      OSSTATUS_DLOG(ERROR, status);
-      return false;
-    }
-    return true;
+  OSStatus status = Keychain::GetInstance().ItemDelete(BaseQuery());
+  if (status != errSecSuccess && status != errSecItemNotFound) {
+    OSSTATUS_DLOG(ERROR, status);
+    return false;
   }
-  NOTREACHED();
-  return false;
+  return true;
 }
 
 class BrowsingDataDeletionTest : public testing::Test {
@@ -139,9 +130,10 @@ class BrowsingDataDeletionTest : public testing::Test {
 
   bool MakeCredential(TouchIdAuthenticator* authenticator) {
     TestCallbackReceiver<CtapDeviceResponseCode,
-                         base::Optional<AuthenticatorMakeCredentialResponse>>
+                         absl::optional<AuthenticatorMakeCredentialResponse>>
         callback_receiver;
-    authenticator->MakeCredential(MakeRequest(), callback_receiver.callback());
+    authenticator->MakeCredential(MakeRequest(), MakeCredentialOptions(),
+                                  callback_receiver.callback());
     callback_receiver.WaitForCallback();
     auto result = callback_receiver.TakeResult();
     return std::get<0>(result) == CtapDeviceResponseCode::kSuccess;
@@ -151,14 +143,14 @@ class BrowsingDataDeletionTest : public testing::Test {
   bool DeleteCredentials(const std::string& metadata_secret) {
     return TouchIdCredentialStore(
                AuthenticatorConfig{kKeychainAccessGroup, metadata_secret})
-        .DeleteCredentials(base::Time(), base::Time::Max());
+        .DeleteCredentialsSync(base::Time(), base::Time::Max());
   }
 
   size_t CountCredentials() { return CountCredentials(kMetadataSecret); }
   size_t CountCredentials(const std::string& metadata_secret) {
     return TouchIdCredentialStore(
                AuthenticatorConfig{kKeychainAccessGroup, metadata_secret})
-        .CountCredentials(base::Time(), base::Time::Max());
+        .CountCredentialsSync(base::Time(), base::Time::Max());
   }
 
   base::test::TaskEnvironment task_environment_;

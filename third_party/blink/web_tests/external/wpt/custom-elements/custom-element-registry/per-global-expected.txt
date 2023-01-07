@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-PASS Discarding the browsing context must not change window.customElements
 FAIL Navigating from the initial about:blank must not replace window.customElements assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
-PASS document.open() must replace window.customElements
+PASS Discarding the browsing context must not change window.customElements
+PASS document.open() must not replace window.customElements
 Harness: the test ran to completion.
 

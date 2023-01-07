@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,33 +7,31 @@
 #include <unordered_set>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "content/browser/appcache/chrome_appcache_service.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
-#include "content/browser/cookie_store/cookie_store_context.h"
+#include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/resource_context_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -47,6 +45,7 @@
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/features.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -108,7 +107,7 @@ const base::FilePath::CharType kTrashDirname[] =
 const int kPartitionNameHashBytes = 6;
 
 // Needed for selecting all files in ObliterateOneDirectory() below.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 const int kAllFileTypes = base::FileEnumerator::FILES |
                           base::FileEnumerator::DIRECTORIES |
                           base::FileEnumerator::SHOW_SYM_LINKS;
@@ -232,8 +231,8 @@ void NormalizeActivePaths(const base::FilePath& storage_root,
     if (!storage_root.AppendRelativePath(*iter, &relative_path))
       continue;
 
-    std::vector<base::FilePath::StringType> components;
-    relative_path.GetComponents(&components);
+    std::vector<base::FilePath::StringType> components =
+        relative_path.GetComponents();
 
     DCHECK(!relative_path.empty());
     normalized_active_paths.insert(storage_root.Append(components.front()));
@@ -262,10 +261,10 @@ void NormalizeActivePaths(const base::FilePath& storage_root,
 void BlockingGarbageCollect(
     const base::FilePath& storage_root,
     const scoped_refptr<base::TaskRunner>& file_access_runner,
-    std::unique_ptr<std::unordered_set<base::FilePath>> active_paths) {
+    std::unordered_set<base::FilePath> active_paths) {
   CHECK(storage_root.IsAbsolute());
 
-  NormalizeActivePaths(storage_root, active_paths.get());
+  NormalizeActivePaths(storage_root, &active_paths);
 
   base::FileEnumerator enumerator(storage_root, false, kAllFileTypes);
   base::FilePath trash_directory;
@@ -276,8 +275,7 @@ void BlockingGarbageCollect(
   }
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
-    if (active_paths->find(path) == active_paths->end() &&
-        path != trash_directory) {
+    if (!base::Contains(active_paths, path) && path != trash_directory) {
       // Since |trash_directory| is unique for each run of this function there
       // can be no colllisions on the move.
       base::Move(path, trash_directory.Append(path.BaseName()));
@@ -285,8 +283,7 @@ void BlockingGarbageCollect(
   }
 
   file_access_runner->PostTask(
-      FROM_HERE, base::BindOnce(base::GetDeletePathRecursivelyCallback(),
-                                trash_directory));
+      FROM_HERE, base::GetDeletePathRecursivelyCallback(trash_directory));
 }
 
 }  // namespace
@@ -340,23 +337,22 @@ StoragePartitionImpl* StoragePartitionImplMap::Get(
   base::FilePath relative_partition_path = GetStoragePartitionPath(
       partition_config.partition_domain(), partition_config.partition_name());
 
-  base::Optional<StoragePartitionConfig> fallback_config =
+  absl::optional<StoragePartitionConfig> fallback_config =
       partition_config.GetFallbackForBlobUrls();
   StoragePartitionImpl* fallback_for_blob_urls =
       fallback_config.has_value() ? Get(*fallback_config, /*can_create=*/false)
                                   : nullptr;
 
   std::unique_ptr<StoragePartitionImpl> partition_ptr(
-      StoragePartitionImpl::Create(
-          browser_context_, partition_config.in_memory(),
-          relative_partition_path, partition_config.partition_domain()));
+      StoragePartitionImpl::Create(browser_context_, partition_config,
+                                   relative_partition_path));
   StoragePartitionImpl* partition = partition_ptr.get();
   partitions_[partition_config] = std::move(partition_ptr);
   partition->Initialize(fallback_for_blob_urls);
 
   // Arm the serviceworker cookie change observation API.
-  partition->GetCookieStoreContext()->ListenToCookieChanges(
-      partition->GetNetworkContext(), /*success_callback=*/base::DoNothing());
+  partition->GetCookieStoreManager()->ListenToCookieChanges(
+      partition->GetNetworkContext(), base::DoNothing());
 
   PostCreateInitialization(partition, partition_config.in_memory());
 
@@ -365,7 +361,8 @@ StoragePartitionImpl* StoragePartitionImplMap::Get(
 
 void StoragePartitionImplMap::AsyncObliterate(
     const std::string& partition_domain,
-    base::OnceClosure on_gc_required) {
+    base::OnceClosure on_gc_required,
+    base::OnceClosure done_callback) {
   // Find the active partitions for the domain. Because these partitions are
   // active, it is not possible to just delete the directories that contain
   // the backing data structures without causing the browser to crash. Instead,
@@ -379,15 +376,26 @@ void StoragePartitionImplMap::AsyncObliterate(
        ++it) {
     const StoragePartitionConfig& config = it->first;
     if (config.partition_domain() == partition_domain) {
-      it->second->ClearData(
-          // All except shader cache.
-          ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
-          StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-          base::Time(), base::Time::Max(), base::DoNothing());
+      active_partitions.push_back(it->second.get());
       if (!config.in_memory()) {
         paths_to_keep.push_back(it->second->GetPath());
       }
     }
+  }
+
+  // Create a barrier closure for keeping track of the callbacks in
+  // AsyncObliterate(). We have one callback for each active partition that is
+  // cleared and an additional one for BlockingObliteratePath()'s task reply.
+  int num_tasks = active_partitions.size() + 1;
+  auto subtask_done_callback =
+      base::BarrierClosure(num_tasks, std::move(done_callback));
+
+  for (auto*& active_partition : active_partitions) {
+    active_partition->ClearData(
+        // All except shader cache.
+        ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
+        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, blink::StorageKey(),
+        base::Time(), base::Time::Max(), subtask_done_callback);
   }
 
   // Start a best-effort delete of the on-disk storage excluding paths that are
@@ -397,25 +405,24 @@ void StoragePartitionImplMap::AsyncObliterate(
   base::FilePath domain_root = browser_context_->GetPath().Append(
       GetStoragePartitionDomainPath(partition_domain));
 
-  base::ThreadPool::PostTask(
+  base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&BlockingObliteratePath, browser_context_->GetPath(),
                      domain_root, paths_to_keep,
                      base::ThreadTaskRunnerHandle::Get(),
-                     std::move(on_gc_required)));
+                     std::move(on_gc_required)),
+      subtask_done_callback);
 }
 
 void StoragePartitionImplMap::GarbageCollect(
-    std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
+    std::unordered_set<base::FilePath> active_paths,
     base::OnceClosure done) {
   // Include all paths for current StoragePartitions in the active_paths since
   // they cannot be deleted safely.
-  for (PartitionMap::const_iterator it = partitions_.begin();
-       it != partitions_.end();
-       ++it) {
-    const StoragePartitionConfig& config = it->first;
+  for (const auto& part : partitions_) {
+    const StoragePartitionConfig& config = part.first;
     if (!config.in_memory())
-      active_paths->insert(it->second->GetPath());
+      active_paths.insert(part.second->GetPath());
   }
 
   // Find the directory holding the StoragePartitions and delete everything in
@@ -438,6 +445,17 @@ void StoragePartitionImplMap::ForEach(
   }
 }
 
+void StoragePartitionImplMap::DisposeInMemory(StoragePartition* partition) {
+  for (PartitionMap::const_iterator it = partitions_.begin();
+       it != partitions_.end(); ++it) {
+    if (it->second.get() == partition) {
+      DCHECK(it->first.in_memory());
+      partitions_.erase(it);
+      return;
+    }
+  }
+}
+
 void StoragePartitionImplMap::PostCreateInitialization(
     StoragePartitionImpl* partition,
     bool in_memory) {
@@ -451,14 +469,9 @@ void StoragePartitionImplMap::PostCreateInitialization(
     InitializeResourceContext(browser_context_);
   }
 
-  if (StoragePartition::IsAppCacheEnabled()) {
-    partition->GetAppCacheService()->Initialize(
-        in_memory ? base::FilePath()
-                  : partition->GetPath().Append(kAppCacheDirname),
-        browser_context_, browser_context_->GetSpecialStoragePolicy());
-  } else if (!in_memory) {
-    // If AppCache is not enabled, clean up any on disk storage.  This is the
-    // path that will execute once AppCache has been fully removed from Chrome.
+  if (!in_memory) {
+    // Clean up any lingering AppCache user data on disk, now that AppCache
+    // has been deprecated and removed.
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
@@ -466,29 +479,7 @@ void StoragePartitionImplMap::PostCreateInitialization(
             partition->GetPath().Append(kAppCacheDirname)));
   }
 
-  // Check first to avoid memory leak in unittests.
-  if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-    // Use PostTask() instead of RunOrPostTaskOnThread() because not posting a
-    // task causes it to run before the CacheStorageManager has been
-    // initialized, and then CacheStorageContextImpl::CacheManager() ends up
-    // returning null instead of using the CrossSequenceCacheStorageManager in
-    // unit tests that don't use a real IO thread, violating the DCHECK in
-    // BackgroundFetchDataManager::InitializeOnCoreThread().
-    // TODO(crbug.com/960012): This workaround should be unnecessary after
-    // CacheStorage moves off the IO thread to the thread pool.
-    BrowserThread::GetTaskRunnerForThread(
-        ServiceWorkerContext::GetCoreThreadId())
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(&BackgroundFetchContext::InitializeOnCoreThread,
-                           partition->GetBackgroundFetchContext()));
-
-    // We do not call InitializeURLRequestContext() for media contexts because,
-    // other than the HTTP cache, the media contexts share the same backing
-    // objects as their associated "normal" request context.  Thus, the previous
-    // call serves to initialize the media request context for this storage
-    // partition as well.
-  }
+  partition->GetBackgroundFetchContext()->Initialize();
 }
 
 }  // namespace content

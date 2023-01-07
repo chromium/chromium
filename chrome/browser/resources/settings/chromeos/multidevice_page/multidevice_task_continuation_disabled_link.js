@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,19 +12,45 @@
  * labelling since it contains two links, one to the Chrome Sync dependency
  * and the other to a Learn More page for Phone Hub.
  */
-Polymer({
-  is: 'settings-multidevice-task-continuation-disabled-link',
 
-  behaviors: [I18nBehavior],
+import '../../settings_shared.css.js';
+
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Router} from '../../router.js';
+import {routes} from '../os_route.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsMultideviceTaskContinuationDisabledLinkElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+class SettingsMultideviceTaskContinuationDisabledLinkElement extends
+    SettingsMultideviceTaskContinuationDisabledLinkElementBase {
+  static get is() {
+    return 'settings-multidevice-task-continuation-disabled-link';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   /** @override */
-  attached() {
-    const chromeSyncLink = this.$$('#chromeSyncLink');
+  connectedCallback() {
+    super.connectedCallback();
+
+    const chromeSyncLink = this.shadowRoot.querySelector('#chromeSyncLink');
     if (chromeSyncLink) {
       chromeSyncLink.addEventListener(
           'click', this.onChromeSyncLinkClick_.bind(this));
     }
-  },
+  }
 
   /**
    * @return {string} Localized summary of Task Continuation when Chrome Sync is
@@ -59,7 +85,7 @@ Polymer({
     chromeSyncLink.href = '#';
 
     return tempEl.innerHTML;
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -67,11 +93,15 @@ Polymer({
    */
   onChromeSyncLinkClick_(event) {
     event.preventDefault();
-    if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
-      window.open('chrome://settings/syncSetup/advanced');
-      this.fire('opened-browser-advanced-sync-settings');
-    } else {
-      settings.Router.getInstance().navigateTo(settings.routes.SYNC_ADVANCED);
-    }
-  },
-});
+    window.open('chrome://settings/syncSetup/advanced');
+
+    const openedBrowserAdvancedSyncSettingsEvent = new CustomEvent(
+        'opened-browser-advanced-sync-settings',
+        {bubbles: true, composed: true});
+    this.dispatchEvent(openedBrowserAdvancedSyncSettingsEvent);
+  }
+}
+
+customElements.define(
+    SettingsMultideviceTaskContinuationDisabledLinkElement.is,
+    SettingsMultideviceTaskContinuationDisabledLinkElement);

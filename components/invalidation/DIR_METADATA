@@ -1,5 +1,2 @@
-monorail {
-  component: "Services>Invalidation"
-}
+mixins: "//components/invalidation/COMMON_METADATA"
 
-team_email: "chromium-reviews@chromium.org"

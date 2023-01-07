@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
 #include "base/hash/md5_nacl.h"
 #else
 #include "base/hash/md5_boringssl.h"

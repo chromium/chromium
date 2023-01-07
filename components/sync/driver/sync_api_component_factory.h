@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/weak_handle.h"
 #include "components/sync/driver/data_type_controller.h"
 
 namespace invalidation {
@@ -18,10 +17,10 @@ class InvalidationService;
 
 namespace syncer {
 
-class DataTypeDebugInfoListener;
 class DataTypeEncryptionHandler;
 class DataTypeManager;
 class DataTypeManagerObserver;
+class ModelTypeConfigurer;
 class SyncEngine;
 class SyncInvalidationsService;
 
@@ -29,11 +28,9 @@ class SyncInvalidationsService;
 // service (like SyncableService) implementations.
 class SyncApiComponentFactory {
  public:
-  virtual ~SyncApiComponentFactory() {}
+  virtual ~SyncApiComponentFactory() = default;
 
   virtual std::unique_ptr<DataTypeManager> CreateDataTypeManager(
-      ModelTypeSet initial_types,
-      const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
       const DataTypeController::TypeMap* controllers,
       const DataTypeEncryptionHandler* encryption_handler,
       ModelTypeConfigurer* configurer,
@@ -50,10 +47,10 @@ class SyncApiComponentFactory {
       invalidation::InvalidationService* invalidator,
       syncer::SyncInvalidationsService* sync_invalidation_service) = 0;
 
-  // Clears all local transport data except the encryption bootstrap token.
-  // Upon calling this, the deletion is guaranteed to finish before a new engine
-  // returned by |CreateSyncEngine()| can do any proper work.
-  virtual void ClearAllTransportDataExceptEncryptionBootstrapToken() = 0;
+  // Clears all local transport data. Upon calling this, the deletion is
+  // guaranteed to finish before a new engine returned by |CreateSyncEngine()|
+  // can do any proper work.
+  virtual void ClearAllTransportData() = 0;
 };
 
 }  // namespace syncer

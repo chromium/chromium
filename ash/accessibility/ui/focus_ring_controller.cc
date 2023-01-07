@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/accessibility/ui/focus_ring_controller.h"
+
+#include <memory>
 
 #include "ash/accessibility/ui/focus_ring_layer.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -59,16 +61,16 @@ void FocusRingController::UpdateFocusRing() {
   // Workarounds that attempts to pick a better bounds.
   if (view->GetClassName() == views::LabelButton::kViewClassName) {
     view_bounds = view->GetLocalBounds();
-    view_bounds.Inset(2, 2, 2, 2);
+    view_bounds.Inset(2);
   }
 
   // Workarounds for system tray items that have customized focus borders.  The
   // insets here must be consistent with the ones used by those classes.
   if (view->GetClassName() == ActionableView::kViewClassName) {
     view_bounds = view->GetLocalBounds();
-    view_bounds.Inset(1, 1, 3, 3);
+    view_bounds.Inset(gfx::Insets::TLBR(1, 1, 3, 3));
   } else if (view->GetClassName() == TrayBackgroundView::kViewClassName) {
-    view_bounds.Inset(1, 1, 3, 3);
+    view_bounds.Inset(gfx::Insets::TLBR(1, 1, 3, 3));
   }
 
   // Convert view bounds to widget/window coordinates.
@@ -84,7 +86,7 @@ void FocusRingController::UpdateFocusRing() {
 
   // Update the focus ring layer.
   if (!focus_ring_layer_)
-    focus_ring_layer_.reset(new FocusRingLayer(this));
+    focus_ring_layer_ = std::make_unique<FocusRingLayer>(this);
   aura::Window* container = Shell::GetContainer(
       root_window, kShellWindowId_AccessibilityBubbleContainer);
   focus_ring_layer_->Set(container, view_bounds, /*stack_at_top=*/true);
@@ -93,8 +95,6 @@ void FocusRingController::UpdateFocusRing() {
 void FocusRingController::OnDeviceScaleFactorChanged() {
   UpdateFocusRing();
 }
-
-void FocusRingController::OnAnimationStep(base::TimeTicks timestamp) {}
 
 void FocusRingController::SetWidget(views::Widget* widget) {
   if (widget_) {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -31,17 +30,12 @@ class CONTENT_EXPORT AuraWindowVideoCaptureDevice final
       public base::SupportsWeakPtr<AuraWindowVideoCaptureDevice> {
  public:
   explicit AuraWindowVideoCaptureDevice(const DesktopMediaID& source_id);
-  ~AuraWindowVideoCaptureDevice() final;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
- protected:
-  // Overrides FrameSinkVideoCaptureDevice::CreateCapturer() to create a
-  // LameWindowCapturerChromeOS for window capture where compositor frame sinks
-  // are not present. See class comments for LameWindowCapturerChromeOS for
-  // further details.
-  void CreateCapturer(
-      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver) final;
-#endif
+  AuraWindowVideoCaptureDevice(const AuraWindowVideoCaptureDevice&) = delete;
+  AuraWindowVideoCaptureDevice& operator=(const AuraWindowVideoCaptureDevice&) =
+      delete;
+
+  ~AuraWindowVideoCaptureDevice() final;
 
  private:
   // Monitors the target Window and notifies the base class if it is destroyed.
@@ -51,8 +45,6 @@ class CONTENT_EXPORT AuraWindowVideoCaptureDevice final
   // post a notification if it is destroyed.
   const std::unique_ptr<WindowTracker, BrowserThread::DeleteOnUIThread>
       tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuraWindowVideoCaptureDevice);
 };
 
 }  // namespace content

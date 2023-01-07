@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,14 +40,14 @@
 // UIAlertControllerStyleActionSheet.
 @property(nonatomic, assign) UIAlertControllerStyle alertStyle;
 
-// Allows replacing title with an attributed string. |updateAttributedText| must
+// Allows replacing title with an attributed string. `updateAttributedText` must
 // be called afterward.
 @property(nonatomic, copy) NSAttributedString* attributedTitle;
-// Allows replacing message with an attributed string. |updateAttributedText|
+// Allows replacing message with an attributed string. `updateAttributedText`
 // must be called afterward.
 @property(nonatomic, copy) NSAttributedString* attributedMessage;
 
-// Updates text based on current |attributedTitle| and |attributedMessage|.
+// Updates text based on current `attributedTitle` and `attributedMessage`.
 - (void)updateAttributedText;
 
 @end

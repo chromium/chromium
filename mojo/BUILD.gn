@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,6 +29,7 @@ group("tests") {
     "//ipc:ipc_tests",
     "//mojo/public/tools:mojo_python_unittests",
     "//services/service_manager/tests",
+    "//third_party/ipcz/src:ipcz_tests",
   ]
 }
 
@@ -45,15 +46,17 @@ test("mojo_unittests") {
 }
 
 test("mojo_perftests") {
+  sources = [ "//mojo/core/handle_table_perftest.cc" ]
   deps = [
     "//mojo/core/test:run_all_perftests",
     "//mojo/core/test:test_support",
     "//mojo/public/c/system/tests:perftests",
     "//mojo/public/cpp/bindings/tests:perftests",
+    "//testing/perf",
   ]
 
   if (!is_ios) {
-    sources = [ "//mojo/core/message_pipe_perftest.cc" ]
+    sources += [ "//mojo/core/message_pipe_perftest.cc" ]
 
     deps += [
       "//base",

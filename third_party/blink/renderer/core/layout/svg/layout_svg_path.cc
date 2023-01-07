@@ -56,12 +56,12 @@ void LayoutSVGPath::StyleDidChange(StyleDifference diff,
                                    const ComputedStyle* old_style) {
   NOT_DESTROYED();
   LayoutSVGShape::StyleDidChange(diff, old_style);
-  SVGResources::UpdateMarkers(*GetElement(), old_style, StyleRef());
+  SVGResources::UpdateMarkers(*this, old_style);
 }
 
 void LayoutSVGPath::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResources::ClearMarkers(*GetElement(), Style());
+  SVGResources::ClearMarkers(*this, Style());
   LayoutSVGShape::WillBeDestroyed();
 }
 
@@ -103,20 +103,20 @@ void LayoutSVGPath::UpdateMarkers() {
   else
     builder.Build(GetPath());
 
-  if (marker_positions_.IsEmpty())
+  if (marker_positions_.empty())
     return;
 
   const float stroke_width = StrokeWidthForMarkerUnits();
-  FloatRect boundaries;
+  gfx::RectF boundaries;
   for (const auto& position : marker_positions_) {
     if (LayoutSVGResourceMarker* marker =
             position.SelectMarker(marker_start, marker_mid, marker_end)) {
-      boundaries.Unite(marker->MarkerBoundaries(
+      boundaries.Union(marker->MarkerBoundaries(
           marker->MarkerTransformation(position, stroke_width)));
     }
   }
 
-  stroke_bounding_box_.Unite(boundaries);
+  stroke_bounding_box_.Union(boundaries);
 }
 
 }  // namespace blink

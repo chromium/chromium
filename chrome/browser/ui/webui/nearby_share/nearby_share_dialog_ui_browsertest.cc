@@ -1,15 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/browser/sharesheet/sharesheet_controller.h"
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -17,12 +21,25 @@
 
 namespace {
 
-class TestObserver : public nearby_share::NearbyShareDialogUI::Observer {
- public:
-  // nearby_share::NearbyShareDialogUI::Observer:
-  void OnClose() override { close_called = true; }
+// Keep in sync with //chrome/browser/resources/nearby_share/shared/types.js
+enum class CloseReason {
+  kUnknown = 0,
+  kTransferStarted = 1,
+  kTransferSucceeded = 2,
+  kCancelled = 3,
+  kRejected = 4
+};
 
-  bool close_called = false;
+class TestSharesheetController : public sharesheet::SharesheetController {
+ public:
+  // sharesheet::SharesheetController
+  void SetBubbleSize(int width, int height) override {}
+  void CloseBubble(::sharesheet::SharesheetResult result) override {
+    last_result = result;
+  }
+  bool IsBubbleVisible() const override { return !last_result; }
+
+  absl::optional<::sharesheet::SharesheetResult> last_result;
 };
 
 class NearbyShareDialogUITest : public InProcessBrowserTest {
@@ -32,23 +49,31 @@ class NearbyShareDialogUITest : public InProcessBrowserTest {
   }
   ~NearbyShareDialogUITest() override = default;
 
-  TestObserver observer_;
+ protected:
+  content::WebContents* GetWebContentsForNearbyShareHost() const {
+    GURL kUrl(content::GetWebUIURL(chrome::kChromeUINearbyShareHost));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_TRUE(web_contents);
+    EXPECT_EQ(kUrl, web_contents->GetLastCommittedURL());
+    EXPECT_FALSE(web_contents->IsCrashed());
 
- private:
+    return web_contents;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
+  TestSharesheetController sharesheet_controller_;
 };
+
+std::string BuildCloseScript(CloseReason reason) {
+  return base::StringPrintf("chrome.send('close',[%d]);", reason);
+}
 
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(NearbyShareDialogUITest, RendersComponent) {
-  // First, check that navigation succeeds.
-  GURL kUrl(content::GetWebUIURL(chrome::kChromeUINearbyShareHost));
-  ui_test_utils::NavigateToURL(browser(), kUrl);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  EXPECT_EQ(kUrl, web_contents->GetLastCommittedURL());
-  EXPECT_FALSE(web_contents->IsCrashed());
+  content::WebContents* web_contents = GetWebContentsForNearbyShareHost();
 
   // Assert that we render the nearby-share-app component.
   int num_nearby_share_app = -1;
@@ -60,15 +85,9 @@ IN_PROC_BROWSER_TEST_F(NearbyShareDialogUITest, RendersComponent) {
   EXPECT_EQ(1, num_nearby_share_app);
 }
 
-IN_PROC_BROWSER_TEST_F(NearbyShareDialogUITest, ObserverGetsCalledOnClose) {
-  // First, check that navigation succeeds.
-  GURL kUrl(content::GetWebUIURL(chrome::kChromeUINearbyShareHost));
-  ui_test_utils::NavigateToURL(browser(), kUrl);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  EXPECT_EQ(kUrl, web_contents->GetLastCommittedURL());
-  EXPECT_FALSE(web_contents->IsCrashed());
+IN_PROC_BROWSER_TEST_F(NearbyShareDialogUITest,
+                       SharesheetControllerGetsCalledOnClose) {
+  content::WebContents* web_contents = GetWebContentsForNearbyShareHost();
 
   auto* webui = web_contents->GetWebUI();
   ASSERT_TRUE(webui);
@@ -78,12 +97,53 @@ IN_PROC_BROWSER_TEST_F(NearbyShareDialogUITest, ObserverGetsCalledOnClose) {
       webui->GetController()->GetAs<nearby_share::NearbyShareDialogUI>();
   ASSERT_TRUE(nearby_ui);
 
-  nearby_ui->AddObserver(&observer_);
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "chrome.send('close');"));
-  EXPECT_TRUE(observer_.close_called);
+  // Calling 'close' before a Sharesheet controller is registered via
+  // |SetSharesheetController| does not result in a crash.
+  std::string script = BuildCloseScript(CloseReason::kCancelled);
+  EXPECT_TRUE(content::ExecuteScript(web_contents, script));
+  EXPECT_FALSE(sharesheet_controller_.last_result);
 
-  nearby_ui->RemoveObserver(&observer_);
-  observer_.close_called = false;
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "chrome.send('close');"));
-  EXPECT_FALSE(observer_.close_called);
+  // The Sharesheet controller gets called on 'close' if it's been registered.
+  nearby_ui->SetSharesheetController(&sharesheet_controller_);
+  EXPECT_TRUE(content::ExecuteScript(web_contents, script));
+  EXPECT_EQ(::sharesheet::SharesheetResult::kCancel,
+            sharesheet_controller_.last_result);
+
+  // Any subsequent calls to 'close' do not call the Sharesheet controller,
+  // since that would result in a crash.
+  sharesheet_controller_.last_result.reset();
+  EXPECT_TRUE(content::ExecuteScript(web_contents, script));
+  EXPECT_FALSE(sharesheet_controller_.last_result);
+}
+
+IN_PROC_BROWSER_TEST_F(NearbyShareDialogUITest, CloseBubbleResults) {
+  for (CloseReason reason :
+       {CloseReason::kUnknown, CloseReason::kTransferStarted,
+        CloseReason::kTransferSucceeded, CloseReason::kCancelled,
+        CloseReason::kRejected}) {
+    content::WebContents* web_contents = GetWebContentsForNearbyShareHost();
+    auto* nearby_ui = web_contents->GetWebUI()
+                          ->GetController()
+                          ->GetAs<nearby_share::NearbyShareDialogUI>();
+
+    sharesheet_controller_.last_result.reset();
+    nearby_ui->SetSharesheetController(&sharesheet_controller_);
+    EXPECT_TRUE(content::ExecuteScript(web_contents, BuildCloseScript(reason)));
+
+    // Verify that the page-closed reason is translated into the correct
+    // SharesheetResult and passed into CloseBubble().
+    switch (reason) {
+      case CloseReason::kTransferStarted:
+      case CloseReason::kTransferSucceeded:
+        EXPECT_EQ(sharesheet::SharesheetResult::kSuccess,
+                  sharesheet_controller_.last_result);
+        break;
+      case CloseReason::kUnknown:
+      case CloseReason::kCancelled:
+      case CloseReason::kRejected:
+        EXPECT_EQ(sharesheet::SharesheetResult::kCancel,
+                  sharesheet_controller_.last_result);
+        break;
+    }
+  }
 }

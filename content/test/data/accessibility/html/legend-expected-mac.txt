@@ -1,6 +1,6 @@
 AXWebArea
 ++AXGroup
-++++AXGroup AXDescription='Browser Engines:'
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Browser Engines:'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Browser Engines:'
 ++++++AXStaticText AXValue='Browser: '

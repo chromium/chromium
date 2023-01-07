@@ -1,15 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/site_isolation/site_isolation_policy.h"
 
 #include "base/base_switches.h"
+#include "base/command_line.h"
+#include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_field_trial_list_resetter.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -37,6 +41,9 @@
 
 namespace site_isolation {
 namespace {
+
+using IsolatedOriginSource =
+    content::ChildProcessSecurityPolicy::IsolatedOriginSource;
 
 // Some command-line switches override field trials - the tests need to be
 // skipped in this case.
@@ -81,9 +88,10 @@ class BaseSiteIsolationTest : public testing::Test {
       return strict_isolation_enabled_;
     }
 
-    bool ShouldDisableSiteIsolation() override {
+    bool ShouldDisableSiteIsolation(
+        content::SiteIsolationMode site_isolation_mode) override {
       return SiteIsolationPolicy::
-          ShouldDisableSiteIsolationDueToMemoryThreshold();
+          ShouldDisableSiteIsolationDueToMemoryThreshold(site_isolation_mode);
     }
 
     std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() override {
@@ -94,33 +102,229 @@ class BaseSiteIsolationTest : public testing::Test {
   };
 
   SiteIsolationContentBrowserClient browser_client_;
-  content::ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
 };
 
 class SiteIsolationPolicyTest : public BaseSiteIsolationTest {
  public:
-  SiteIsolationPolicyTest() {
+  explicit SiteIsolationPolicyTest(
+      content::BrowserTaskEnvironment::TimeSource time_source =
+          content::BrowserTaskEnvironment::TimeSource::DEFAULT)
+      : task_environment_(time_source) {
     prefs_.registry()->RegisterListPref(prefs::kUserTriggeredIsolatedOrigins);
+    prefs_.registry()->RegisterDictionaryPref(
+        prefs::kWebTriggeredIsolatedOrigins);
     user_prefs::UserPrefs::Set(&browser_context_, &prefs_);
   }
+
+  SiteIsolationPolicyTest(const SiteIsolationPolicyTest&) = delete;
+  SiteIsolationPolicyTest& operator=(const SiteIsolationPolicyTest&) = delete;
 
  protected:
   content::BrowserContext* browser_context() { return &browser_context_; }
 
   PrefService* prefs() { return &prefs_; }
 
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
   TestingPrefServiceSimple prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteIsolationPolicyTest);
 };
+
+class WebTriggeredIsolatedOriginsPolicyTest : public SiteIsolationPolicyTest {
+ public:
+  WebTriggeredIsolatedOriginsPolicyTest()
+      : SiteIsolationPolicyTest(
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  WebTriggeredIsolatedOriginsPolicyTest(
+      const WebTriggeredIsolatedOriginsPolicyTest&) = delete;
+  WebTriggeredIsolatedOriginsPolicyTest& operator=(
+      const WebTriggeredIsolatedOriginsPolicyTest&) = delete;
+
+  void PersistOrigin(const std::string& origin) {
+    SiteIsolationPolicy::PersistIsolatedOrigin(
+        browser_context(), url::Origin::Create(GURL(origin)),
+        IsolatedOriginSource::WEB_TRIGGERED);
+    task_environment()->FastForwardBy(base::Milliseconds(1));
+  }
+
+  std::vector<std::string> GetStoredOrigins() {
+    std::vector<std::string> origins;
+    const auto& dict = user_prefs::UserPrefs::Get(browser_context())
+                           ->GetDict(prefs::kWebTriggeredIsolatedOrigins);
+    for (auto pair : dict)
+      origins.push_back(pair.first);
+    return origins;
+  }
+
+ protected:
+  void SetUp() override {
+    // Set up the COOP isolation feature with persistence enabled and a maximum
+    // of 3 stored sites.
+    base::test::ScopedFeatureList::FeatureAndParams coop_feature = {
+        ::features::kSiteIsolationForCrossOriginOpenerPolicy,
+        {{::features::kSiteIsolationForCrossOriginOpenerPolicyMaxSitesParam
+              .name,
+          base::NumberToString(3)},
+         {::features::kSiteIsolationForCrossOriginOpenerPolicyShouldPersistParam
+              .name,
+          "true"}}};
+
+    // Some machines running this test may be below the default memory
+    // threshold.  To ensure that COOP isolation is also enabled on those
+    // machines, set a very low 128MB threshold.
+    base::test::ScopedFeatureList::FeatureAndParams memory_threshold_feature = {
+        site_isolation::features::kSiteIsolationMemoryThresholds,
+        {{site_isolation::features::
+              kPartialSiteIsolationMemoryThresholdParamName,
+          "128"}}};
+
+    feature_list_.InitWithFeaturesAndParameters(
+        /* enabled_features = */ {coop_feature, memory_threshold_feature},
+        /* disabled_features = */ {});
+
+    // Disable strict site isolation to observe effects of COOP isolation.
+    SetEnableStrictSiteIsolation(false);
+    SiteIsolationPolicyTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify that persisting web-triggered isolated origins properly saves the
+// origins to prefs and respects the maximum number of entries (3 in this
+// test).
+TEST_F(WebTriggeredIsolatedOriginsPolicyTest, PersistIsolatedOrigin) {
+  PersistOrigin("https://foo1.com");
+  PersistOrigin("https://foo2.com");
+  PersistOrigin("https://foo3.com");
+
+  EXPECT_THAT(GetStoredOrigins(),
+              testing::UnorderedElementsAre(
+                  "https://foo1.com", "https://foo2.com", "https://foo3.com"));
+
+  // Adding foo4.com should evict the oldest entry (foo1.com).
+  PersistOrigin("https://foo4.com");
+  EXPECT_THAT(GetStoredOrigins(),
+              testing::UnorderedElementsAre(
+                  "https://foo2.com", "https://foo3.com", "https://foo4.com"));
+
+  // Adding foo5.com and foo6.com should evict the next two oldest entries.
+  PersistOrigin("https://foo5.com");
+  PersistOrigin("https://foo6.com");
+  EXPECT_THAT(GetStoredOrigins(),
+              testing::UnorderedElementsAre(
+                  "https://foo4.com", "https://foo5.com", "https://foo6.com"));
+
+  // Updating the timestamp on foo5.com should keep the current three entries.
+  PersistOrigin("https://foo5.com");
+  EXPECT_THAT(GetStoredOrigins(),
+              testing::UnorderedElementsAre(
+                  "https://foo4.com", "https://foo5.com", "https://foo6.com"));
+
+  // Adding two new entries should now evict foo4.com and foo6.com, since
+  // foo5.com has a more recent timestamp.
+  PersistOrigin("https://foo7.com");
+  PersistOrigin("https://foo8.com");
+  EXPECT_THAT(GetStoredOrigins(),
+              testing::UnorderedElementsAre(
+                  "https://foo5.com", "https://foo7.com", "https://foo8.com"));
+}
+
+// Verify that when origins stored in prefs contain more than the current
+// maximum number of entries, we clean up older entries when adding a new one
+// to go back under the size limit.
+TEST_F(WebTriggeredIsolatedOriginsPolicyTest, UpdatedMaxSize) {
+  // Populate the pref manually with more entries than the 3 allowed by the
+  // field trial param.
+  ScopedDictPrefUpdate update(
+      user_prefs::UserPrefs::Get(browser_context()),
+      site_isolation::prefs::kWebTriggeredIsolatedOrigins);
+  base::Value::Dict& dict = update.Get();
+  dict.Set("https://foo1.com", base::TimeToValue(base::Time::Now()));
+  dict.Set("https://foo2.com", base::TimeToValue(base::Time::Now()));
+  dict.Set("https://foo3.com", base::TimeToValue(base::Time::Now()));
+  dict.Set("https://foo4.com", base::TimeToValue(base::Time::Now()));
+  dict.Set("https://foo5.com", base::TimeToValue(base::Time::Now()));
+  EXPECT_THAT(GetStoredOrigins(),
+              testing::UnorderedElementsAre(
+                  "https://foo1.com", "https://foo2.com", "https://foo3.com",
+                  "https://foo4.com", "https://foo5.com"));
+
+  // Now, attempt to save a new origin.  This should evict the three oldest
+  // entries to make room for the new origin.
+  PersistOrigin("https://foo6.com");
+  EXPECT_THAT(GetStoredOrigins(),
+              testing::UnorderedElementsAre(
+                  "https://foo4.com", "https://foo5.com", "https://foo6.com"));
+}
+
+// Verify that when origins stored in prefs expire, we don't apply them when
+// loading persisted isolated origins, and we remove them from prefs.
+TEST_F(WebTriggeredIsolatedOriginsPolicyTest, Expiration) {
+  // Running this test with a command-line --site-per-process flag (which might
+  // be the case on some bots) conflicts with the feature configuration in this
+  // test.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSitePerProcess)) {
+    return;
+  }
+
+  EXPECT_TRUE(content::SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled());
+  EXPECT_TRUE(content::SiteIsolationPolicy::ShouldPersistIsolatedCOOPSites());
+
+  // Persist two origins which will eventually expire.
+  PersistOrigin("https://foo1.com");
+  PersistOrigin("https://foo2.com");
+  EXPECT_THAT(GetStoredOrigins(), testing::UnorderedElementsAre(
+                                      "https://foo1.com", "https://foo2.com"));
+
+  // Fast-forward time so we exceed the default expiration timeout.
+  base::TimeDelta default_timeout =
+      ::features::kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam
+          .default_value;
+  task_environment()->FastForwardBy(default_timeout + base::Days(1));
+
+  // foo1.com and foo2.com should still be in prefs. (Expired entries are only
+  // removed when we try to load them from prefs.)
+  EXPECT_THAT(GetStoredOrigins(), testing::UnorderedElementsAre(
+                                      "https://foo1.com", "https://foo2.com"));
+
+  // Persist another origin which should remain below expiration threshold.
+  PersistOrigin("https://foo3.com");
+  EXPECT_THAT(GetStoredOrigins(),
+              testing::UnorderedElementsAre(
+                  "https://foo1.com", "https://foo2.com", "https://foo3.com"));
+
+  // Loading persisted isolated origins should only load foo3.com.  Also,
+  // it should remove foo1.com and foo2.com from prefs.
+  SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(browser_context());
+
+  auto* cpsp = content::ChildProcessSecurityPolicy::GetInstance();
+  std::vector<url::Origin> isolated_origins = cpsp->GetIsolatedOrigins(
+      IsolatedOriginSource::WEB_TRIGGERED, browser_context());
+  EXPECT_THAT(isolated_origins,
+              testing::UnorderedElementsAre(
+                  url::Origin::Create(GURL("https://foo3.com"))));
+  EXPECT_THAT(GetStoredOrigins(),
+              testing::UnorderedElementsAre("https://foo3.com"));
+}
 
 // Helper class that enables site isolation for password sites.
 class PasswordSiteIsolationPolicyTest : public SiteIsolationPolicyTest {
  public:
   PasswordSiteIsolationPolicyTest() = default;
+
+  PasswordSiteIsolationPolicyTest(const PasswordSiteIsolationPolicyTest&) =
+      delete;
+  PasswordSiteIsolationPolicyTest& operator=(
+      const PasswordSiteIsolationPolicyTest&) = delete;
 
  protected:
   void SetUp() override {
@@ -132,8 +336,6 @@ class PasswordSiteIsolationPolicyTest : public SiteIsolationPolicyTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordSiteIsolationPolicyTest);
 };
 
 // Verifies that SiteIsolationPolicy::ApplyPersistedIsolatedOrigins applies
@@ -144,10 +346,10 @@ TEST_F(PasswordSiteIsolationPolicyTest, ApplyPersistedIsolatedOrigins) {
 
   // Add foo.com and bar.com to stored isolated origins.
   {
-    ListPrefUpdate update(prefs(), prefs::kUserTriggeredIsolatedOrigins);
-    base::ListValue* list = update.Get();
-    list->Append("http://foo.com");
-    list->Append("https://bar.com");
+    ScopedListPrefUpdate update(prefs(), prefs::kUserTriggeredIsolatedOrigins);
+    base::Value::List& list = update.Get();
+    list.Append("http://foo.com");
+    list.Append("https://bar.com");
   }
 
   // New SiteInstances for foo.com and bar.com shouldn't require a dedicated
@@ -193,6 +395,11 @@ class NoPasswordSiteIsolationPolicyTest : public SiteIsolationPolicyTest {
  public:
   NoPasswordSiteIsolationPolicyTest() = default;
 
+  NoPasswordSiteIsolationPolicyTest(const NoPasswordSiteIsolationPolicyTest&) =
+      delete;
+  NoPasswordSiteIsolationPolicyTest& operator=(
+      const NoPasswordSiteIsolationPolicyTest&) = delete;
+
  protected:
   void SetUp() override {
     feature_list_.InitAndDisableFeature(
@@ -203,8 +410,6 @@ class NoPasswordSiteIsolationPolicyTest : public SiteIsolationPolicyTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoPasswordSiteIsolationPolicyTest);
 };
 
 // Verifies that SiteIsolationPolicy::ApplyPersistedIsolatedOrigins ignores
@@ -222,9 +427,8 @@ TEST_F(NoPasswordSiteIsolationPolicyTest,
 
   // Add foo.com to stored isolated origins.
   {
-    ListPrefUpdate update(prefs(), prefs::kUserTriggeredIsolatedOrigins);
-    base::ListValue* list = update.Get();
-    list->Append("http://foo.com");
+    ScopedListPrefUpdate update(prefs(), prefs::kUserTriggeredIsolatedOrigins);
+    update->Append("http://foo.com");
   }
 
   // Applying saved isolated origins should have no effect, since site
@@ -266,20 +470,25 @@ class SitePerProcessMemoryThresholdBrowserTest
           SitePerProcessMemoryThresholdBrowserTestParams> {
  public:
   SitePerProcessMemoryThresholdBrowserTest() {
+    // When a memory threshold is specified, set it for both strict site
+    // isolation and partial site isolation modes, since these tests care about
+    // both. For example, UseDedicatedProcessesForAllSites() depends on the
+    // former, while isolated origins specified via field trials use the
+    // latter.
     switch (GetParam().threshold) {
       case SitePerProcessMemoryThreshold::kNone:
         break;
       case SitePerProcessMemoryThreshold::k128MB:
         threshold_feature_.InitAndEnableFeatureWithParameters(
-            features::kSitePerProcessOnlyForHighMemoryClients,
-            {{features::kSitePerProcessOnlyForHighMemoryClientsParamName,
-              "128"}});
+            features::kSiteIsolationMemoryThresholds,
+            {{features::kStrictSiteIsolationMemoryThresholdParamName, "128"},
+             {features::kPartialSiteIsolationMemoryThresholdParamName, "128"}});
         break;
       case SitePerProcessMemoryThreshold::k768MB:
         threshold_feature_.InitAndEnableFeatureWithParameters(
-            features::kSitePerProcessOnlyForHighMemoryClients,
-            {{features::kSitePerProcessOnlyForHighMemoryClientsParamName,
-              "768"}});
+            features::kSiteIsolationMemoryThresholds,
+            {{features::kStrictSiteIsolationMemoryThresholdParamName, "768"},
+             {features::kPartialSiteIsolationMemoryThresholdParamName, "768"}});
         break;
     }
 
@@ -298,6 +507,11 @@ class SitePerProcessMemoryThresholdBrowserTest
         break;
     }
   }
+
+  SitePerProcessMemoryThresholdBrowserTest(
+      const SitePerProcessMemoryThresholdBrowserTest&) = delete;
+  SitePerProcessMemoryThresholdBrowserTest& operator=(
+      const SitePerProcessMemoryThresholdBrowserTest&) = delete;
 
   void SetUp() override {
     // This way the test always sees the same amount of physical memory
@@ -320,7 +534,7 @@ class SitePerProcessMemoryThresholdBrowserTest
   // ContentBrowserClient::ShouldDisableSiteIsolation() returns true.
   std::vector<url::Origin> expected_embedder_origins_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android we don't expect any trial origins because the 512MB
   // physical memory used for testing is below the Android specific
   // hardcoded 1024MB memory limit that disables site isolation.
@@ -334,8 +548,6 @@ class SitePerProcessMemoryThresholdBrowserTest
  private:
   base::test::ScopedFeatureList threshold_feature_;
   base::test::ScopedFeatureList mode_feature_;
-
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessMemoryThresholdBrowserTest);
 };
 
 using SitePerProcessMemoryThresholdBrowserTestNoIsolation =
@@ -365,7 +577,7 @@ INSTANTIATE_TEST_SUITE_P(
     NoIsolation,
     SitePerProcessMemoryThresholdBrowserTestNoIsolation,
     testing::Values(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         // Expect no isolation on Android because 512MB physical memory
         // triggered by kEnableLowEndDeviceMode in SetUp() is below the 1024MB
         // Android specific memory limit which disables site isolation for all
@@ -389,7 +601,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(Isolation,
                          SitePerProcessMemoryThresholdBrowserTestIsolation,
                          testing::Values(
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
                              // See the note above regarding why this
                              // expectation is different on Android.
                              SitePerProcessMemoryThresholdBrowserTestParams{
@@ -446,7 +658,7 @@ INSTANTIATE_TEST_SUITE_P(
     TrialNoIsolatedOrigin,
     SitePerProcessMemoryThresholdBrowserTestNoIsolatedOrigin,
     testing::Values(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         // When the memory threshold is not explicitly specified, Android uses
         // a 1900MB global memory threshold.  The 512MB simulated device memory
         // is below 1900MB, so the test origin should not be isolated.
@@ -478,8 +690,9 @@ INSTANTIATE_TEST_SUITE_P(
 // or disabled state.
 class PasswordSiteIsolationFieldTrialTest : public BaseSiteIsolationTest {
  public:
-  explicit PasswordSiteIsolationFieldTrialTest(bool should_enable)
-      : field_trial_list_(std::make_unique<base::MockEntropyProvider>()) {
+  explicit PasswordSiteIsolationFieldTrialTest(bool should_enable) {
+    empty_feature_scope_.InitWithEmptyFeatureAndFieldTrialLists();
+
     const std::string kTrialName = "PasswordSiteIsolation";
     const std::string kGroupName = "FooGroup";  // unused
     scoped_refptr<base::FieldTrial> trial =
@@ -496,6 +709,11 @@ class PasswordSiteIsolationFieldTrialTest : public BaseSiteIsolationTest {
     feature_list_.InitWithFeatureList(std::move(feature_list));
   }
 
+  PasswordSiteIsolationFieldTrialTest(
+      const PasswordSiteIsolationFieldTrialTest&) = delete;
+  PasswordSiteIsolationFieldTrialTest& operator=(
+      const PasswordSiteIsolationFieldTrialTest&) = delete;
+
   void SetUp() override {
     // This test creates and tests its own field trial group, so it needs to
     // disable the field trial testing config, which might define an
@@ -509,15 +727,20 @@ class PasswordSiteIsolationFieldTrialTest : public BaseSiteIsolationTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
     EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    SiteIsolationPolicy::SetDisallowMemoryThresholdCachingForTesting(true);
+  }
+
+  void TearDown() override {
+    SiteIsolationPolicy::SetDisallowMemoryThresholdCachingForTesting(false);
   }
 
  protected:
-  base::test::ScopedFieldTrialListResetter trial_list_resetter_;
+  // |empty_feature_scope_| is used to prepare an environment with empty
+  // features and field trial lists.
+  base::test::ScopedFeatureList empty_feature_scope_;
+  // |feature_list_| is used to enable and disable features for
+  // PasswordSiteIsolationFieldTrialTest.
   base::test::ScopedFeatureList feature_list_;
-  base::FieldTrialList field_trial_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordSiteIsolationFieldTrialTest);
 };
 
 class EnabledPasswordSiteIsolationFieldTrialTest
@@ -526,8 +749,10 @@ class EnabledPasswordSiteIsolationFieldTrialTest
   EnabledPasswordSiteIsolationFieldTrialTest()
       : PasswordSiteIsolationFieldTrialTest(true /* should_enable */) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnabledPasswordSiteIsolationFieldTrialTest);
+  EnabledPasswordSiteIsolationFieldTrialTest(
+      const EnabledPasswordSiteIsolationFieldTrialTest&) = delete;
+  EnabledPasswordSiteIsolationFieldTrialTest& operator=(
+      const EnabledPasswordSiteIsolationFieldTrialTest&) = delete;
 };
 
 class DisabledPasswordSiteIsolationFieldTrialTest
@@ -536,8 +761,10 @@ class DisabledPasswordSiteIsolationFieldTrialTest
   DisabledPasswordSiteIsolationFieldTrialTest()
       : PasswordSiteIsolationFieldTrialTest(false /* should_enable */) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisabledPasswordSiteIsolationFieldTrialTest);
+  DisabledPasswordSiteIsolationFieldTrialTest(
+      const DisabledPasswordSiteIsolationFieldTrialTest&) = delete;
+  DisabledPasswordSiteIsolationFieldTrialTest& operator=(
+      const DisabledPasswordSiteIsolationFieldTrialTest&) = delete;
 };
 
 TEST_F(EnabledPasswordSiteIsolationFieldTrialTest, BelowThreshold) {
@@ -548,7 +775,7 @@ TEST_F(EnabledPasswordSiteIsolationFieldTrialTest, BelowThreshold) {
   // enabled on desktop.  It should be disabled on Android, because Android
   // defaults to a 1900MB memory threshold, which is above the 512MB physical
   // memory that this test simulates.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 #else
   EXPECT_TRUE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
@@ -559,8 +786,8 @@ TEST_F(EnabledPasswordSiteIsolationFieldTrialTest, BelowThreshold) {
   // now be disabled.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "768"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "768"}});
 
   EXPECT_FALSE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 
@@ -585,7 +812,7 @@ TEST_F(EnabledPasswordSiteIsolationFieldTrialTest, AboveThreshold) {
   // enabled on desktop.  It should be disabled on Android, because Android
   // defaults to a 1900MB memory threshold, which is above the 512MB physical
   // memory that this test simulates.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 #else
   EXPECT_TRUE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
@@ -596,8 +823,8 @@ TEST_F(EnabledPasswordSiteIsolationFieldTrialTest, AboveThreshold) {
   // still be enabled.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "128"}});
 
   EXPECT_TRUE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 
@@ -641,8 +868,8 @@ TEST_F(DisabledPasswordSiteIsolationFieldTrialTest,
   // this feature via command line.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "768"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "768"}});
 
   EXPECT_TRUE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 }
@@ -666,8 +893,8 @@ TEST_F(DisabledPasswordSiteIsolationFieldTrialTest,
 
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "128"}});
 
   EXPECT_TRUE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 }
@@ -680,8 +907,9 @@ TEST_F(DisabledPasswordSiteIsolationFieldTrialTest,
 // or disabled state.
 class StrictOriginIsolationFieldTrialTest : public BaseSiteIsolationTest {
  public:
-  explicit StrictOriginIsolationFieldTrialTest(bool should_enable)
-      : field_trial_list_(std::make_unique<base::MockEntropyProvider>()) {
+  explicit StrictOriginIsolationFieldTrialTest(bool should_enable) {
+    empty_feature_scope_.InitWithEmptyFeatureAndFieldTrialLists();
+
     const std::string kTrialName = "StrictOriginIsolation";
     const std::string kGroupName = "FooGroup";  // unused
     scoped_refptr<base::FieldTrial> trial =
@@ -698,6 +926,11 @@ class StrictOriginIsolationFieldTrialTest : public BaseSiteIsolationTest {
     feature_list_.InitWithFeatureList(std::move(feature_list));
   }
 
+  StrictOriginIsolationFieldTrialTest(
+      const StrictOriginIsolationFieldTrialTest&) = delete;
+  StrictOriginIsolationFieldTrialTest& operator=(
+      const StrictOriginIsolationFieldTrialTest&) = delete;
+
   void SetUp() override {
     // This test creates and tests its own field trial group, so it needs to
     // disable the field trial testing config, which might define an
@@ -711,15 +944,20 @@ class StrictOriginIsolationFieldTrialTest : public BaseSiteIsolationTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
     EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    SiteIsolationPolicy::SetDisallowMemoryThresholdCachingForTesting(true);
+  }
+
+  void TearDown() override {
+    SiteIsolationPolicy::SetDisallowMemoryThresholdCachingForTesting(false);
   }
 
  protected:
-  base::test::ScopedFieldTrialListResetter trial_list_resetter_;
+  // |empty_feature_scope_| is used to prepare an environment with empty
+  // features and field trial lists.
+  base::test::ScopedFeatureList empty_feature_scope_;
+  // |feature_list_| is used to enable and disable features for
+  // StrictOriginIsolationFieldTrialTest.
   base::test::ScopedFeatureList feature_list_;
-  base::FieldTrialList field_trial_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StrictOriginIsolationFieldTrialTest);
 };
 
 class EnabledStrictOriginIsolationFieldTrialTest
@@ -728,8 +966,10 @@ class EnabledStrictOriginIsolationFieldTrialTest
   EnabledStrictOriginIsolationFieldTrialTest()
       : StrictOriginIsolationFieldTrialTest(true /* should_enable */) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnabledStrictOriginIsolationFieldTrialTest);
+  EnabledStrictOriginIsolationFieldTrialTest(
+      const EnabledStrictOriginIsolationFieldTrialTest&) = delete;
+  EnabledStrictOriginIsolationFieldTrialTest& operator=(
+      const EnabledStrictOriginIsolationFieldTrialTest&) = delete;
 };
 
 class DisabledStrictOriginIsolationFieldTrialTest
@@ -738,8 +978,10 @@ class DisabledStrictOriginIsolationFieldTrialTest
   DisabledStrictOriginIsolationFieldTrialTest()
       : StrictOriginIsolationFieldTrialTest(false /* should_enable */) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisabledStrictOriginIsolationFieldTrialTest);
+  DisabledStrictOriginIsolationFieldTrialTest(
+      const DisabledStrictOriginIsolationFieldTrialTest&) = delete;
+  DisabledStrictOriginIsolationFieldTrialTest& operator=(
+      const DisabledStrictOriginIsolationFieldTrialTest&) = delete;
 };
 
 // Check that when strict origin isolation is enabled via a field trial, and
@@ -754,7 +996,7 @@ TEST_F(EnabledStrictOriginIsolationFieldTrialTest,
   // enabled on desktop.  It should be disabled on Android, because Android
   // defaults to a 1900MB memory threshold, which is above the 512MB physical
   // memory that this test simulates.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled());
 #else
   EXPECT_TRUE(content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled());
@@ -765,8 +1007,8 @@ TEST_F(EnabledStrictOriginIsolationFieldTrialTest,
   // still be enabled.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kStrictSiteIsolationMemoryThresholdParamName, "128"}});
   EXPECT_TRUE(content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled());
 
   // Simulate disabling strict origin isolation from command line.  (Note that
@@ -808,8 +1050,8 @@ TEST_F(DisabledStrictOriginIsolationFieldTrialTest,
   // this feature via command line.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "768"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kStrictSiteIsolationMemoryThresholdParamName, "768"}});
 
   EXPECT_TRUE(content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled());
 }
@@ -817,10 +1059,14 @@ TEST_F(DisabledStrictOriginIsolationFieldTrialTest,
 // The following tests verify that the list of Android's built-in isolated
 // origins takes effect. This list is only used in official builds, and only
 // when above the memory threshold.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OS_ANDROID)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_ANDROID)
 class BuiltInIsolatedOriginsTest : public SiteIsolationPolicyTest {
  public:
   BuiltInIsolatedOriginsTest() = default;
+
+  BuiltInIsolatedOriginsTest(const BuiltInIsolatedOriginsTest&) = delete;
+  BuiltInIsolatedOriginsTest& operator=(const BuiltInIsolatedOriginsTest&) =
+      delete;
 
  protected:
   void SetUp() override {
@@ -829,9 +1075,6 @@ class BuiltInIsolatedOriginsTest : public SiteIsolationPolicyTest {
         switches::kEnableLowEndDeviceMode);
     EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BuiltInIsolatedOriginsTest);
 };
 
 // Check that the list of preloaded isolated origins is properly applied when
@@ -845,8 +1088,8 @@ TEST_F(BuiltInIsolatedOriginsTest, DefaultThreshold) {
   // effect.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "128"}});
 
   // Ensure that isolated origins that are normally loaded on browser
   // startup are applied.
@@ -887,8 +1130,8 @@ TEST_F(BuiltInIsolatedOriginsTest, BelowThreshold) {
   // take effect.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "768"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "768"}});
 
   // Ensure that isolated origins that are normally loaded on browser
   // startup are applied.
@@ -919,8 +1162,8 @@ TEST_F(BuiltInIsolatedOriginsTest, NotAppliedWithFullSiteIsolation) {
   // be disabled by the memory threshold.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "128"}});
 
   // Ensure that isolated origins that are normally loaded on browser
   // startup are applied.
@@ -946,6 +1189,11 @@ class OptInOriginIsolationPolicyTest : public BaseSiteIsolationTest {
  public:
   OptInOriginIsolationPolicyTest() = default;
 
+  OptInOriginIsolationPolicyTest(const OptInOriginIsolationPolicyTest&) =
+      delete;
+  OptInOriginIsolationPolicyTest& operator=(
+      const OptInOriginIsolationPolicyTest&) = delete;
+
  protected:
   void SetUp() override {
     // Simulate a 512MB device.
@@ -968,8 +1216,6 @@ class OptInOriginIsolationPolicyTest : public BaseSiteIsolationTest {
   content::RenderViewHostTestEnabler rvh_test_enabler_;
 
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptInOriginIsolationPolicyTest);
 };
 
 // Check that opt-in origin isolation is not applied when below the memory
@@ -984,8 +1230,8 @@ TEST_F(OptInOriginIsolationPolicyTest, BelowThreshold) {
   // should still take effect.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "768"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "768"}});
 
   EXPECT_FALSE(content::SiteIsolationPolicy::
                    IsProcessIsolationForOriginAgentClusterEnabled());
@@ -1019,8 +1265,8 @@ TEST_F(OptInOriginIsolationPolicyTest, BelowThreshold) {
   // isolation in Blink, and should still be tracked by
   // ChildProcessSecurityPolicy to ensure consistent OAC behavior for this
   // origin within this BrowsingInstance.
-  EXPECT_TRUE(
-      ShouldOriginGetOptInIsolation(site_instance, url::Origin::Create(kUrl)));
+  EXPECT_TRUE(IsOriginAgentClusterEnabledForOrigin(site_instance,
+                                                   url::Origin::Create(kUrl)));
 }
 
 // Counterpart to the test above, but verifies that opt-in origin isolation is
@@ -1034,8 +1280,8 @@ TEST_F(OptInOriginIsolationPolicyTest, AboveThreshold) {
   // enabled.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "128"}});
 
   EXPECT_TRUE(content::SiteIsolationPolicy::
                   IsProcessIsolationForOriginAgentClusterEnabled());

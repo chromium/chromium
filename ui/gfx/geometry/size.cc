@@ -1,16 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/gfx/geometry/size.h"
-
-#if defined(OS_WIN)
-#include <windows.h>
-#elif defined(OS_IOS)
-#include <CoreGraphics/CoreGraphics.h>
-#elif defined(OS_APPLE)
-#include <ApplicationServices/ApplicationServices.h>
-#endif
 
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_math.h"
@@ -18,19 +10,18 @@
 #include "build/build_config.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#elif BUILDFLAG(IS_IOS)
+#include <CoreGraphics/CoreGraphics.h>
+#elif BUILDFLAG(IS_MAC)
+#include <ApplicationServices/ApplicationServices.h>
+#endif
+
 namespace gfx {
 
-#if defined(OS_APPLE)
-Size::Size(const CGSize& s)
-    : width_(s.width < 0 ? 0 : s.width),
-      height_(s.height < 0 ? 0 : s.height) {
-}
-
-Size& Size::operator=(const CGSize& s) {
-  set_width(s.width);
-  set_height(s.height);
-  return *this;
-}
+#if BUILDFLAG(IS_APPLE)
+Size::Size(const CGSize& s) : Size(s.width, s.height) {}
 #endif
 
 void Size::operator+=(const Size& size) {
@@ -41,14 +32,14 @@ void Size::operator-=(const Size& size) {
   Enlarge(-size.width(), -size.height());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 SIZE Size::ToSIZE() const {
   SIZE s;
   s.cx = width();
   s.cy = height();
   return s;
 }
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 CGSize Size::ToCGSize() const {
   return CGSizeMake(width(), height());
 }
@@ -70,13 +61,13 @@ void Size::Enlarge(int grow_width, int grow_height) {
 }
 
 void Size::SetToMin(const Size& other) {
-  width_ = width() <= other.width() ? width() : other.width();
-  height_ = height() <= other.height() ? height() : other.height();
+  width_ = std::min(width_, other.width_);
+  height_ = std::min(height_, other.height_);
 }
 
 void Size::SetToMax(const Size& other) {
-  width_ = width() >= other.width() ? width() : other.width();
-  height_ = height() >= other.height() ? height() : other.height();
+  width_ = std::max(width_, other.width_);
+  height_ = std::max(height_, other.height_);
 }
 
 std::string Size::ToString() const {

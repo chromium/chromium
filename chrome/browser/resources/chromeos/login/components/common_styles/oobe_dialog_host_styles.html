@@ -1,0 +1,72 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<link rel="import" href="/components/common_styles/common_styles.html">
+<link rel="import" href="/components/oobe_vars/oobe_custom_vars_css.html">
+<link rel="import" href="/components/oobe_vars/oobe_shared_vars_css.html">
+
+<dom-module id="oobe-dialog-host-styles">
+    <template>
+      <style include="oobe-common-styles">
+
+        :host(:not([hidden])) {
+          display: flex;
+          min-height: 0;
+        }
+
+        :host {
+          border-radius: 4px;
+          box-shadow: unset;
+          flex-direction: column;
+          height: 100%;
+          min-height: 0;
+          position: relative;
+          width: 100%;
+        }
+
+        .oobe-illustration {
+          max-height: 100%;
+          max-width: 100%;
+          object-fit: contain;
+        }
+
+        .oobe-tos-webview {
+          /* TODO(https://crbug.com/1320715) Revise the colors */
+          border: 1px solid var(--cros-app-shield-color);
+          border-radius: 4px;
+          box-shadow: inset 0 0 4px 4px rgba(var(--cros-textfield-background-color-disabled-rgb), 0.5);
+          padding: 13px 0;
+        }
+
+        .oobe-form {
+          /* 40px distance from subtitle (oobe forms spec) - 20px of footer-container */
+          padding-top: 20px;
+        }
+
+        /* Center-align both vertically and horizontally */
+        .content-centered {
+          margin: auto;
+        }
+
+        /* Center-align vertically in landscape mode */
+        :host-context([orientation=horizontal]) .landscape-vertical-centered {
+          margin: auto 0;
+        }
+
+        /* Align with header in landscape mode */
+        :host-context([orientation=horizontal]) .landscape-header-aligned {
+          padding-top: calc(var(--oobe-adaptive-dialog-header-top-padding)
+              + var(--oobe-adaptive-dialog-title-top-padding)
+              + var(--oobe-adaptive-dialog-icon-size));
+        }
+
+        /* Center-align horizontally in portrait mode */
+        :host-context([orientation=vertical]) .portrait-horizontal-centered {
+          margin: 0 auto;
+        }
+      </style>
+    </template>
+  </dom-module>

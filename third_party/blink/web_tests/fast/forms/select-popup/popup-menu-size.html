@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
 <style>
 #select1 {
@@ -40,8 +42,8 @@ function openPickerErrorCallback() {
 
 var select1 = document.getElementById('select1');
 
-openPicker(select1, function() {
-    shouldBe('popupWindow.innerWidth', '100');
+openPickerDeprecatedJsTest(select1, function() {
+    shouldBe('internals.pagePopupWindow.innerWidth', '100');
     finishJSTest();
 }, openPickerErrorCallback);
 </script>

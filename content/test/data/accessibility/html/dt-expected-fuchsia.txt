@@ -1,0 +1,10 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Coffee'
+++++++++++++UNKNOWN label='Coffee'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Black hot drink'
+++++++++++++UNKNOWN label='Black hot drink'

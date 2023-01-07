@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,7 +96,8 @@ void CameraAppDeviceBridgeImpl::InvalidateDevicePtrsOnDeviceIpcThread(
     base::OnceClosure callback) {
   auto device = GetWeakCameraAppDevice(device_id);
   if (device) {
-    device->InvalidatePtrs(std::move(callback), should_disable_new_ptrs);
+    device->ResetOnDeviceIpcThread(std::move(callback),
+                                   should_disable_new_ptrs);
   } else {
     std::move(callback).Run();
   }
@@ -110,7 +111,7 @@ void CameraAppDeviceBridgeImpl::SetCameraInfoGetter(
 
 void CameraAppDeviceBridgeImpl::UnsetCameraInfoGetter() {
   base::AutoLock lock(camera_info_getter_lock_);
-  camera_info_getter_ = {};
+  camera_info_getter_ = base::NullCallback();
 }
 
 void CameraAppDeviceBridgeImpl::SetVirtualDeviceController(
@@ -121,7 +122,7 @@ void CameraAppDeviceBridgeImpl::SetVirtualDeviceController(
 
 void CameraAppDeviceBridgeImpl::UnsetVirtualDeviceController() {
   base::AutoLock lock(virtual_device_controller_lock_);
-  virtual_device_controller_ = {};
+  virtual_device_controller_ = base::NullCallback();
 }
 
 base::WeakPtr<CameraAppDeviceImpl>
@@ -192,10 +193,10 @@ void CameraAppDeviceBridgeImpl::IsSupported(IsSupportedCallback callback) {
   std::move(callback).Run(is_supported_);
 }
 
-void CameraAppDeviceBridgeImpl::SetMultipleStreamsEnabled(
+void CameraAppDeviceBridgeImpl::SetVirtualDeviceEnabled(
     const std::string& device_id,
     bool enabled,
-    SetMultipleStreamsEnabledCallback callback) {
+    SetVirtualDeviceEnabledCallback callback) {
   base::AutoLock lock(virtual_device_controller_lock_);
   if (!virtual_device_controller_) {
     std::move(callback).Run(false);

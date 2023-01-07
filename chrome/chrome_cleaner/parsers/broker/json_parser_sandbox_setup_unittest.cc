@@ -1,8 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/multiprocess_test.h"
@@ -52,8 +53,8 @@ class JsonParserSandboxSetupTest : public base::MultiProcessTest {
 void ParseCallbackExpectedKeyValue(const std::string& expected_key,
                                    const std::string& expected_value,
                                    WaitableEvent* done,
-                                   base::Optional<base::Value> value,
-                                   const base::Optional<std::string>& error) {
+                                   absl::optional<base::Value> value,
+                                   const absl::optional<std::string>& error) {
   ASSERT_FALSE(error.has_value());
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
@@ -67,8 +68,8 @@ void ParseCallbackExpectedKeyValue(const std::string& expected_key,
 }
 
 void ParseCallbackExpectedError(WaitableEvent* done,
-                                base::Optional<base::Value> value,
-                                const base::Optional<std::string>& error) {
+                                absl::optional<base::Value> value,
+                                const absl::optional<std::string>& error) {
   ASSERT_TRUE(error.has_value());
   EXPECT_FALSE(error->empty());
   done->Signal();

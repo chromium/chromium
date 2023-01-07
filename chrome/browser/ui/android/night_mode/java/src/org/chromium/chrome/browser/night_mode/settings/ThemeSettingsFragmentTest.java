@@ -1,108 +1,139 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.night_mode.settings;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_DARKEN_WEBSITES_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 
 import android.os.Build;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
+import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
-
-import java.util.Arrays;
-import java.util.List;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /**
  * Tests for ThemeSettingsFragment.
  */
-// clang-format off
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-public class ThemeSettingsFragmentTest extends DummyUiActivityTestCase {
-    // clang-format on
-    @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(false).name("DefaultLightDisabled"),
-                    new ParameterSet().value(true).name("DefaultLightEnabled"));
+@RunWith(BaseJUnit4ClassRunner.class)
+@Features.DisableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
+public class ThemeSettingsFragmentTest {
+    @ClassRule
+    public static final DisableAnimationsTestRule disableAnimationsRule =
+            new DisableAnimationsTestRule();
 
     @Rule
-    public SettingsActivityTestRule<ThemeSettingsFragment> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(ThemeSettingsFragment.class);
+    public BlankUiTestActivitySettingsTestRule mSettingsTestRule =
+            new BlankUiTestActivitySettingsTestRule();
+    @Rule
+    public JniMocker mMocker = new JniMocker();
 
-    private boolean mDefaultToLight;
+    @Rule
+    public Features.JUnitProcessor processor = new Features.JUnitProcessor();
+
+    @Mock
+    public WebsitePreferenceBridge.Natives mMockWebsitePreferenceBridgeJni;
+    @Mock
+    public Profile mProfile;
+    @Mock
+    public Tracker mTracker;
+
     private ThemeSettingsFragment mFragment;
     private RadioButtonGroupThemePreference mPreference;
 
-    public ThemeSettingsFragmentTest(boolean defaultToLight) {
-        mDefaultToLight = defaultToLight;
-        NightModeUtils.setNightModeDefaultToLightForTesting(defaultToLight);
-    }
+    // Boolean used for web content auto dark mode.
+    private boolean mForceDarkModeEnabled;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @Before
+    public void setUp() {
+        // For some reason MockitoRule does not work with JniMocker (seems like an order issue), and
+        // RuleChain cannot be applied to MockitoRule since it is not a TestRule.
+        MockitoAnnotations.initMocks(this);
         SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
-        SharedPreferencesManager.getInstance().removeKey(UI_THEME_DARKEN_WEBSITES_ENABLED);
-        mSettingsActivityTestRule.startSettingsActivity();
-        mFragment = mSettingsActivityTestRule.getFragment();
-        mPreference = (RadioButtonGroupThemePreference) mFragment.findPreference(
-                ThemeSettingsFragment.PREF_UI_THEME_PREF);
+
+        mMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mMockWebsitePreferenceBridgeJni);
+
+        Profile.setLastUsedProfileForTesting(mProfile);
+        TrackerFactory.setTrackerForTests(mTracker);
+
+        // Default value for feature DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING.
+        mForceDarkModeEnabled = true;
+        Mockito.doAnswer(invocation -> mForceDarkModeEnabled)
+                .when(mMockWebsitePreferenceBridgeJni)
+                .isContentSettingEnabled(any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT));
+        Mockito.doAnswer(invocation -> {
+                   mForceDarkModeEnabled = (boolean) invocation.getArguments()[2];
+                   return null;
+               })
+                .when(mMockWebsitePreferenceBridgeJni)
+                .setContentSettingEnabled(
+                        any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), anyBoolean());
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
-            SharedPreferencesManager.getInstance().removeKey(UI_THEME_DARKEN_WEBSITES_ENABLED);
+            Profile.setLastUsedProfileForTesting(null);
+            TrackerFactory.setTrackerForTests(null);
         });
-
-        NightModeUtils.setNightModeDefaultToLightForTesting(null);
-        super.tearDownTest();
     }
 
     @Test
     @SmallTest
     @Feature({"Themes"})
     public void testSelectThemes() {
+        launchThemeSettings(ThemeSettingsEntry.SETTINGS);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Default to light parameter is only applicable pre-Q.
-            if (mDefaultToLight && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            int expectedDefaultTheme = ThemeType.LIGHT;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 Assert.assertFalse("Q should not default to light.",
                         NightModeUtils.isNightModeDefaultToLight());
-                return;
+                expectedDefaultTheme = ThemeType.SYSTEM_DEFAULT;
             }
 
-            int expectedDefaultTheme = mDefaultToLight ? ThemeType.LIGHT : ThemeType.SYSTEM_DEFAULT;
             Assert.assertEquals("Incorrect default theme setting.", expectedDefaultTheme,
                     NightModeUtils.getThemeSetting());
-            assertButtonCheckedCorrectly(
-                    mDefaultToLight ? "Light" : "System default", expectedDefaultTheme);
+            assertButtonCheckedCorrectly("Light", expectedDefaultTheme);
 
             // Select System default
             Assert.assertEquals(R.id.system_default, getButton(0).getId());
@@ -135,22 +166,21 @@ public class ThemeSettingsFragmentTest extends DummyUiActivityTestCase {
     @Feature({"Themes"})
     @Features.EnableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
     public void testDarkenWebsiteButton() {
+        launchThemeSettings(ThemeSettingsEntry.SETTINGS);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Default to light parameter is only applicable pre-Q.
-            if (mDefaultToLight && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            int expectedDefaultTheme = ThemeType.LIGHT;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 Assert.assertFalse("Q should not default to light.",
                         NightModeUtils.isNightModeDefaultToLight());
-                return;
+                expectedDefaultTheme = ThemeType.SYSTEM_DEFAULT;
             }
 
             LinearLayout checkboxContainer = mPreference.getCheckboxContainerForTesting();
             RadioButtonWithDescriptionLayout group = mPreference.getGroupForTesting();
 
-            int expectedDefaultTheme = mDefaultToLight ? ThemeType.LIGHT : ThemeType.SYSTEM_DEFAULT;
             Assert.assertEquals("Incorrect default theme setting.", expectedDefaultTheme,
                     NightModeUtils.getThemeSetting());
-            assertButtonCheckedCorrectly(
-                    mDefaultToLight ? "Light" : "System default", expectedDefaultTheme);
+            assertButtonCheckedCorrectly("Light", expectedDefaultTheme);
 
             // Select System default
             selectButton(0);
@@ -176,26 +206,51 @@ public class ThemeSettingsFragmentTest extends DummyUiActivityTestCase {
                             + " when dark theme is checked",
                     3, group.indexOfChild(checkboxContainer));
 
-            // Check darken website button
-            checkboxContainer.performClick();
-            SharedPreferencesManager sharedPreferencesManager =
-                    SharedPreferencesManager.getInstance();
-            Assert.assertTrue("Darken website feature should be enabled when darken website button"
-                            + " is checked",
+            // Checks for Darken website button.
+            Assert.assertTrue("Darken website check box should be checked by default.",
                     mPreference.isDarkenWebsitesEnabled());
-            Assert.assertTrue("Darken website feature should be enabled when darken website button"
-                            + " is checked",
-                    sharedPreferencesManager.readBoolean(UI_THEME_DARKEN_WEBSITES_ENABLED, false));
 
-            // Check system default, darken website button should stay checked
+            // Toggle the check box.
+            checkboxContainer.performClick();
+            Assert.assertFalse("Darken website check box should be unchecked.",
+                    mPreference.isDarkenWebsitesEnabled());
+            Mockito.verify(mMockWebsitePreferenceBridgeJni, Mockito.times(1))
+                    .setContentSettingEnabled(
+                            any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), eq(false));
+
+            checkboxContainer.performClick();
+            Assert.assertTrue("Darken website check box should be checked again.",
+                    mPreference.isDarkenWebsitesEnabled());
+            Mockito.verify(mMockWebsitePreferenceBridgeJni, Mockito.times(1))
+                    .setContentSettingEnabled(
+                            any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), eq(true));
+
+            // Check system default, darken website button should stay checked.
             selectButton(1);
             Assert.assertTrue(
-                    "Darken website button should stay its state when changing theme preference",
+                    "Darken website button should stay its state when changing theme preference.",
                     mPreference.isDarkenWebsitesEnabled());
-            Assert.assertTrue(
-                    "Darken website button should stay its state when changing theme preference",
-                    sharedPreferencesManager.readBoolean(UI_THEME_DARKEN_WEBSITES_ENABLED, false));
+            Mockito.verify(mMockWebsitePreferenceBridgeJni, Mockito.times(1))
+                    .setContentSettingEnabled(
+                            any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), eq(true));
         });
+    }
+
+    @Test
+    @SmallTest
+    public void testStartThemeSettings_FromAutoDarkMessages() {
+        launchThemeSettings(ThemeSettingsEntry.AUTO_DARK_MODE_MESSAGE);
+    }
+
+    private void launchThemeSettings(@ThemeSettingsEntry Integer settingsEntry) {
+        Bundle args = new Bundle();
+        args.putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY, settingsEntry);
+        mSettingsTestRule.launchPreference(ThemeSettingsFragment.class, args);
+
+        mFragment = (ThemeSettingsFragment) mSettingsTestRule.getPreferenceFragment();
+        mPreference = (RadioButtonGroupThemePreference) mFragment.findPreference(
+                ThemeSettingsFragment.PREF_UI_THEME_PREF);
+        assertThemeSettingsEntryRecorded(settingsEntry);
     }
 
     private RadioButtonWithDescription getButton(int index) {
@@ -219,5 +274,17 @@ public class ThemeSettingsFragmentTest extends DummyUiActivityTestCase {
         Assert.assertTrue(buttonTitle + " button should be checked.", getButton(index).isChecked());
         Assert.assertTrue(
                 "Buttons except " + buttonTitle + " should be unchecked.", isRestUnchecked(index));
+    }
+
+    private void assertThemeSettingsEntryRecorded(int sample) {
+        Assert.assertEquals("<Android.DarkTheme.ThemeSettingsEntry> should be recorded once.", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Android.DarkTheme.ThemeSettingsEntry"));
+        Assert.assertEquals(
+                "<Android.DarkTheme.ThemeSettingsEntry> should be recorded once for sample <"
+                        + sample + ">.",
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.DarkTheme.ThemeSettingsEntry", sample));
     }
 }

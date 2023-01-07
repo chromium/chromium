@@ -1,0 +1,19 @@
+<!--
+@BLINK-ALLOW:focus*
+@WAIT-FOR:done
+-->
+<html>
+<body>
+<div aria-hidden="true">
+  <div role="button">Button</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelector('[role=button]').tabIndex = 0;
+    document.title = 'done';
+  }, 50);
+});
+</script>
+</body>
+</html>

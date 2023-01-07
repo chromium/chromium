@@ -1,31 +1,34 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/search_engine_table_view_controller.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/search_engines/template_url_service.h"
-#include "components/search_engines/template_url_service_observer.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/ranges/algorithm.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/common/password_manager_features.h"
+#import "components/search_engines/template_url_service.h"
+#import "components/search_engines/template_url_service_observer.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
-#include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
-#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,9 +47,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 const CGFloat kTableViewSeparatorLeadingInset = 56;
-const int kFaviconDesiredSizeInPoint = 32;
-const int kFaviconMinSizeInPoint = 16;
-constexpr base::TimeDelta kMaxVisitAge = base::TimeDelta::FromDays(2);
+constexpr base::TimeDelta kMaxVisitAge = base::Days(2);
 const size_t kMaxcustomSearchEngines = 3;
 const char kUmaSelectDefaultSearchEngine[] =
     "Search.iOS.SelectDefaultSearchEngine";
@@ -93,6 +94,7 @@ const char kUmaSelectDefaultSearchEngine[] =
     _faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
+    self.shouldDisableDoneButtonOnEdit = YES;
     [self updateUIForEditState];
   }
   return self;
@@ -175,6 +177,11 @@ const char kUmaSelectDefaultSearchEngine[] =
   [self loadModel];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  self.navigationController.toolbarHidden = NO;
+}
+
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
   if (editing) {
     base::RecordAction(
@@ -245,13 +252,12 @@ const char kUmaSelectDefaultSearchEngine[] =
   [self deleteItemAtIndexPaths:indexPaths];
 }
 
-// Hide toolbar for non-editing mode or when no items are selected.
 - (BOOL)shouldHideToolbar {
-  return !self.editing || self.tableView.indexPathsForSelectedRows.count == 0;
+  return NO;
 }
 
-- (BOOL)shouldShowEditButton {
-  return YES;
+- (BOOL)shouldShowEditDoneButton {
+  return NO;
 }
 
 - (BOOL)editButtonEnabled {
@@ -259,6 +265,11 @@ const char kUmaSelectDefaultSearchEngine[] =
                                sectionIdentifier:SectionIdentifierFirstList] ||
          [self.tableViewModel hasItemForItemType:ItemTypeCustomEngine
                                sectionIdentifier:SectionIdentifierSecondList];
+}
+
+- (void)updateUIForEditState {
+  [super updateUIForEditState];
+  [self updatedToolbarForEditState];
 }
 
 #pragma mark - UITableViewDelegate
@@ -269,6 +280,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 
   // Keep selection in editing mode.
   if (self.editing) {
+    self.deleteButton.enabled = YES;
     return;
   }
 
@@ -340,6 +352,16 @@ const char kUmaSelectDefaultSearchEngine[] =
   self.updatingBackend = NO;
 }
 
+- (void)tableView:(UITableView*)tableView
+    didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [super tableView:tableView didDeselectRowAtIndexPath:indexPath];
+  if (!self.tableView.editing)
+    return;
+
+  if (self.tableView.indexPathsForSelectedRows.count == 0)
+    self.deleteButton.enabled = NO;
+}
+
 #pragma mark - UITableViewDataSource
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
@@ -355,7 +377,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 
   if (item.type == ItemTypePrepopulatedEngine) {
     _faviconLoader->FaviconForPageUrl(
-        engineItem.URL, kFaviconDesiredSizeInPoint, kFaviconMinSizeInPoint,
+        engineItem.URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
         /*fallback_to_google_server=*/YES, ^(FaviconAttributes* attributes) {
           // Only set favicon if the cell hasn't been reused.
           if (urlCell.cellUniqueIdentifier == engineItem.uniqueIdentifier) {
@@ -365,7 +387,7 @@ const char kUmaSelectDefaultSearchEngine[] =
         });
   } else {
     _faviconLoader->FaviconForIconUrl(
-        engineItem.URL, kFaviconDesiredSizeInPoint, kFaviconMinSizeInPoint,
+        engineItem.URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
         ^(FaviconAttributes* attributes) {
           // Only set favicon if the cell hasn't been reused.
           if (urlCell.cellUniqueIdentifier == engineItem.uniqueIdentifier) {
@@ -403,7 +425,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 #pragma mark - Private methods
 
 // Loads all TemplateURLs from TemplateURLService and classifies them into
-// |_firstList| and |_secondList|. If a TemplateURL is
+// `_firstList` and `_secondList`. If a TemplateURL is
 // prepopulated, created by policy or the default search engine, it will get
 // into the first list, otherwise the second list.
 - (void)loadSearchEngines {
@@ -425,7 +447,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   // Do not sort prepopulated search engines, they are already sorted by
   // locale use.
 
-  // Partially sort |_secondList| by TemplateURL's last_visited time.
+  // Partially sort `_secondList` by TemplateURL's last_visited time.
   auto begin = _secondList.begin();
   auto end = _secondList.end();
   auto pivot = begin + std::min(kMaxcustomSearchEngines, _secondList.size());
@@ -434,15 +456,14 @@ const char kUmaSelectDefaultSearchEngine[] =
                       return lhs->last_visited() > rhs->last_visited();
                     });
 
-  // Keep the search engines visited within |kMaxVisitAge| and erase others.
-  const base::Time cutoff = base::Time::Now() - kMaxVisitAge;
-  auto cutBegin = std::find_if(begin, pivot, [cutoff](const TemplateURL* url) {
-    return url->last_visited() < cutoff;
-  });
+  // Keep the search engines visited within `kMaxVisitAge` and erase others.
+  auto cutBegin = base::ranges::lower_bound(
+      begin, pivot, base::Time::Now() - kMaxVisitAge,
+      base::ranges::greater_equal(), &TemplateURL::last_visited);
   _secondList.erase(cutBegin, end);
 }
 
-// Creates a SearchEngineItem for |templateURL|.
+// Creates a SearchEngineItem for `templateURL`.
 - (SearchEngineItem*)createSearchEngineItemFromTemplateURL:
     (const TemplateURL*)templateURL {
   SearchEngineItem* item = nil;
@@ -477,19 +498,19 @@ const char kUmaSelectDefaultSearchEngine[] =
       SEARCH_ENGINE_MAX);
 }
 
-// Deletes custom search engines at |indexPaths|. If a custom engine is selected
+// Deletes custom search engines at `indexPaths`. If a custom engine is selected
 // as the default engine, resets default engine to the first prepopulated
 // engine.
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
-  // Update |_templateURLService|, |_firstList| and |_secondList|.
+  // Update `_templateURLService`, `_firstList` and `_secondList`.
   _updatingBackend = YES;
   size_t removedItemsInSecondList = 0;
   NSInteger firstSection = [self.tableViewModel
       sectionForSectionIdentifier:SectionIdentifierFirstList];
   bool resetDefaultEngine = false;
 
-  // Remove search engines from |_firstList|, |_secondList| and
-  // |_templateURLService|.
+  // Remove search engines from `_firstList`, `_secondList` and
+  // `_templateURLService`.
   for (NSIndexPath* path : indexPaths) {
     TemplateURL* engine = nullptr;
     if (path.section == firstSection) {
@@ -509,7 +530,7 @@ const char kUmaSelectDefaultSearchEngine[] =
       _secondList[path.row] = nullptr;
       ++removedItemsInSecondList;
     }
-    // If |engine| is selected as default search engine, reset the default
+    // If `engine` is selected as default search engine, reset the default
     // engine to the first prepopulated engine.
     if (engine == _templateURLService->GetDefaultSearchProvider()) {
       DCHECK(_firstList.size() > 0);
@@ -606,30 +627,13 @@ const char kUmaSelectDefaultSearchEngine[] =
     } else {
       engineItem.accessoryType = UITableViewCellAccessoryNone;
     }
-
-    // This function might be called inside the completion handler of
-    // [UITableView performBatchUpdates:completion:], which will cause a crash
-    // in iOS 12.
-    // TODO(crbug.com/1028546): Remove this workaround once iOS 12 is
-    // deprecated.
-    if (@available(iOS 13, *)) {
-    } else {
-      UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-      if (cell) {
-        TableViewCell* tableViewCell =
-            base::mac::ObjCCastStrict<TableViewCell>(cell);
-        [item configureCell:tableViewCell withStyler:self.styler];
-      }
-    }
   }
-  if (@available(iOS 13, *)) {
-    [self.tableView reloadRowsAtIndexPaths:indexPaths
-                          withRowAnimation:UITableViewRowAnimationAutomatic];
-  }
+  [self.tableView reloadRowsAtIndexPaths:indexPaths
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
-// Returns whether the |item| is different from an item that would be created
-// from |templateURL|.
+// Returns whether the `item` is different from an item that would be created
+// from `templateURL`.
 - (BOOL)isItem:(SearchEngineItem*)item
     differentForTemplateURL:(TemplateURL*)templateURL {
   NSString* name = base::SysUTF16ToNSString(templateURL->short_name());

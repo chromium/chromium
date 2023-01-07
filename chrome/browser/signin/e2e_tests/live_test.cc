@@ -1,8 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "net/dns/mock_host_resolver.h"

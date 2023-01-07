@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -28,6 +28,10 @@ class MockTapSuppressionController : public TapSuppressionController {
 
   MockTapSuppressionController(const TapSuppressionController::Config& config)
       : TapSuppressionController(config), last_actions_(NONE), time_() {}
+
+  MockTapSuppressionController(const MockTapSuppressionController&) = delete;
+  MockTapSuppressionController& operator=(const MockTapSuppressionController&) =
+      delete;
 
   ~MockTapSuppressionController() override {}
 
@@ -75,8 +79,6 @@ class MockTapSuppressionController : public TapSuppressionController {
   int last_actions_;
 
   base::TimeTicks time_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTapSuppressionController);
 };
 
 class TapSuppressionControllerTest : public testing::Test {
@@ -88,8 +90,8 @@ class TapSuppressionControllerTest : public testing::Test {
  protected:
   // testing::Test
   void SetUp() override {
-    tap_suppression_controller_.reset(
-        new MockTapSuppressionController(GetConfig()));
+    tap_suppression_controller_ =
+        std::make_unique<MockTapSuppressionController>(GetConfig());
   }
 
   void TearDown() override { tap_suppression_controller_.reset(); }
@@ -97,7 +99,7 @@ class TapSuppressionControllerTest : public testing::Test {
   static TapSuppressionController::Config GetConfig() {
     TapSuppressionController::Config config;
     config.enabled = true;
-    config.max_cancel_to_down_time = base::TimeDelta::FromMilliseconds(10);
+    config.max_cancel_to_down_time = base::Milliseconds(10);
     return config;
   }
 
@@ -141,8 +143,7 @@ TEST_F(TapSuppressionControllerTest, GFCAckBeforeTapInsufficientlyLateTapDown) {
 
   // Wait less than allowed delay between GestureFlingCancel and TapDown, so the
   // TapDown is still considered associated with the GestureFlingCancel.
-  tap_suppression_controller_->AdvanceTime(
-      base::TimeDelta::FromMilliseconds(7));
+  tap_suppression_controller_->AdvanceTime(base::Milliseconds(7));
   EXPECT_EQ(MockTapSuppressionController::NONE,
             tap_suppression_controller_->last_actions());
   EXPECT_EQ(MockTapSuppressionController::LAST_CANCEL_STOPPED_FLING,
@@ -175,8 +176,7 @@ TEST_F(TapSuppressionControllerTest, GFCAckBeforeTapSufficientlyLateTapDown) {
 
   // Wait more than allowed delay between GestureFlingCancel and TapDown, so the
   // TapDown is not considered associated with the GestureFlingCancel.
-  tap_suppression_controller_->AdvanceTime(
-      base::TimeDelta::FromMilliseconds(13));
+  tap_suppression_controller_->AdvanceTime(base::Milliseconds(13));
   EXPECT_EQ(MockTapSuppressionController::NONE,
             tap_suppression_controller_->last_actions());
   EXPECT_EQ(MockTapSuppressionController::LAST_CANCEL_STOPPED_FLING,
@@ -201,8 +201,8 @@ TEST_F(TapSuppressionControllerTest, GFCAckBeforeTapSufficientlyLateTapDown) {
 TEST_F(TapSuppressionControllerTest, NoSuppressionIfDisabled) {
   TapSuppressionController::Config disabled_config;
   disabled_config.enabled = false;
-  tap_suppression_controller_.reset(
-      new MockTapSuppressionController(disabled_config));
+  tap_suppression_controller_ =
+      std::make_unique<MockTapSuppressionController>(disabled_config);
 
   // Send GestureFlingCancel Ack.
   tap_suppression_controller_->NotifyGestureFlingCancelStoppedFling();

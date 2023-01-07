@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "v8/include/v8.h"
@@ -25,19 +25,13 @@ class CORE_EXPORT BoxedV8Module final : public GarbageCollected<BoxedV8Module> {
       : record_(isolate, module),
         identity_hash_(static_cast<unsigned>(module->GetIdentityHash())) {}
 
-  void Trace(Visitor* visitor) const {
-    // TODO(keishi): Remove UnsafeCast.
-    visitor->Trace(record_.UnsafeCast<v8::Value>());
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(record_); }
 
   v8::Local<v8::Module> NewLocal(v8::Isolate* isolate) const {
-    return record_.NewLocal(isolate);
+    return record_.Get(isolate);
   }
 
  private:
-  // TODO(keishi): Visitor only defines a trace method for v8::Value so this
-  // needs to be cast.
-  GC_PLUGIN_IGNORE("757708")
   TraceWrapperV8Reference<v8::Module> record_;
   const unsigned identity_hash_;
   friend struct BoxedV8ModuleHash;

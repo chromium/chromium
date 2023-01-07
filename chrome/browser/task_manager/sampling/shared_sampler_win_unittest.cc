@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler_win_defines.h"
@@ -40,6 +38,8 @@ class SharedSamplerTest : public testing::Test {
                             base::Unretained(this)));
   }
 
+  SharedSamplerTest(const SharedSamplerTest&) = delete;
+  SharedSamplerTest& operator=(const SharedSamplerTest&) = delete;
   ~SharedSamplerTest() override {}
 
  protected:
@@ -75,7 +75,7 @@ class SharedSamplerTest : public testing::Test {
   }
 
   void OnSamplerRefreshDone(
-      base::Optional<SharedSampler::SamplingResult> results) {
+      absl::optional<SharedSampler::SamplingResult> results) {
     if (results) {
       idle_wakeups_per_second_ = results->idle_wakeups_per_second;
       start_time_ = results->start_time;
@@ -97,8 +97,6 @@ class SharedSamplerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> blocking_pool_runner_;
   scoped_refptr<SharedSampler> shared_sampler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedSamplerTest);
 };
 
 // Tests that Idle Wakeups per second value can be obtained from SharedSampler.

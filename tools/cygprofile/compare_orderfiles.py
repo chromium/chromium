@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -42,7 +42,7 @@ def ParseOrderfile(filename):
   if not lines[0].startswith('.text.'):
     for entry in lines:
       symbol_name = entry.rstrip('\n')
-      assert symbol_name != '*' and symbol_name != '.text'
+      assert symbol_name not in ('*', '.text')
       already_seen.add(symbol_name)
       symbols.append(symbol_name)
   else:

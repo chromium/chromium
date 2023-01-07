@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/services/sharing/nearby/decoder/advertisement_decoder.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sharing {
 
@@ -194,10 +194,9 @@ mojom::CertificateInfoFramePtr GetCertificateInfoFrame(
         certificate.metadata_encryption_key_tag().end());
     // Convert timestamp from milliseconds since the Unix epoch.
     base::Time start =
-        base::Time::UnixEpoch() +
-        base::TimeDelta::FromMilliseconds(certificate.start_time());
-    base::Time end = base::Time::UnixEpoch() +
-                     base::TimeDelta::FromMilliseconds(certificate.end_time());
+        base::Time::UnixEpoch() + base::Milliseconds(certificate.start_time());
+    base::Time end =
+        base::Time::UnixEpoch() + base::Milliseconds(certificate.end_time());
 
     mojo_certificates.push_back(mojom::PublicCertificate::New(
         std::move(secret_id), std::move(authenticity_key),
@@ -259,7 +258,7 @@ void NearbySharingDecoder::DecodeFrame(const std::vector<uint8_t>& data,
   // Determine the frame type of the protobuf.
   sharing::nearby::V1Frame::FrameType proto_frame_type =
       proto_frame.v1().type();
-  mojom::V1FramePtr mojo_v1frame = mojom::V1Frame::New();
+  mojom::V1FramePtr mojo_v1frame;
 
   switch (proto_frame_type) {
     case sharing::nearby::V1Frame_FrameType_INTRODUCTION:
@@ -269,7 +268,7 @@ void NearbySharingDecoder::DecodeFrame(const std::vector<uint8_t>& data,
         return;
       }
 
-      mojo_v1frame->set_introduction(
+      mojo_v1frame = mojom::V1Frame::NewIntroduction(
           GetIntroductionFrame(proto_frame.v1().introduction()));
       break;
     case sharing::nearby::V1Frame_FrameType_RESPONSE:
@@ -279,7 +278,7 @@ void NearbySharingDecoder::DecodeFrame(const std::vector<uint8_t>& data,
         return;
       }
 
-      mojo_v1frame->set_connection_response(
+      mojo_v1frame = mojom::V1Frame::NewConnectionResponse(
           GetConnectionResponseFrame(proto_frame.v1().connection_response()));
       break;
     case sharing::nearby::V1Frame_FrameType_PAIRED_KEY_ENCRYPTION:
@@ -289,8 +288,9 @@ void NearbySharingDecoder::DecodeFrame(const std::vector<uint8_t>& data,
         return;
       }
 
-      mojo_v1frame->set_paired_key_encryption(GetPairedKeyEncryptionFrame(
-          proto_frame.v1().paired_key_encryption()));
+      mojo_v1frame =
+          mojom::V1Frame::NewPairedKeyEncryption(GetPairedKeyEncryptionFrame(
+              proto_frame.v1().paired_key_encryption()));
       break;
     case sharing::nearby::V1Frame_FrameType_PAIRED_KEY_RESULT:
       if (!proto_frame.v1().has_paired_key_result()) {
@@ -299,7 +299,7 @@ void NearbySharingDecoder::DecodeFrame(const std::vector<uint8_t>& data,
         return;
       }
 
-      mojo_v1frame->set_paired_key_result(
+      mojo_v1frame = mojom::V1Frame::NewPairedKeyResult(
           GetPairedKeyResultFrame(proto_frame.v1().paired_key_result()));
       break;
     case sharing::nearby::V1Frame_FrameType_CERTIFICATE_INFO:
@@ -309,11 +309,11 @@ void NearbySharingDecoder::DecodeFrame(const std::vector<uint8_t>& data,
         return;
       }
 
-      mojo_v1frame->set_certificate_info(
+      mojo_v1frame = mojom::V1Frame::NewCertificateInfo(
           GetCertificateInfoFrame(proto_frame.v1().certificate_info()));
       break;
     case sharing::nearby::V1Frame_FrameType_CANCEL:
-      mojo_v1frame->set_cancel_frame(mojom::CancelFrame::New());
+      mojo_v1frame = mojom::V1Frame::NewCancelFrame(mojom::CancelFrame::New());
       break;
     default:
       LOG(ERROR) << "Unknown type of v1frame, unable to process.";
@@ -321,9 +321,7 @@ void NearbySharingDecoder::DecodeFrame(const std::vector<uint8_t>& data,
       return;
   }
 
-  mojom::FramePtr mojo_frame = mojom::Frame::New();
-  mojo_frame->set_v1(std::move(mojo_v1frame));
-  std::move(callback).Run(std::move(mojo_frame));
+  std::move(callback).Run(mojom::Frame::NewV1(std::move(mojo_v1frame)));
 }
 
 }  // namespace sharing

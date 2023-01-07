@@ -1,11 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_UI_DEVTOOLS_AGENT_UTIL_H_
 #define COMPONENTS_UI_DEVTOOLS_AGENT_UTIL_H_
 
-#include "base/files/file_path.h"
+#include <string>
+
 #include "components/ui_devtools/devtools_export.h"
 
 namespace ui_devtools {

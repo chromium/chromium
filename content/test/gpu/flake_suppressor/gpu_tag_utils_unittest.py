@@ -1,0 +1,30 @@
+#!/usr/bin/env vpython3
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import unittest
+
+from flake_suppressor import gpu_tag_utils as tag_utils
+
+
+class RemoveMostIgnoredTagsUnittest(unittest.TestCase):
+  def testBasic(self) -> None:
+    tags = ['win', 'win-laptop', 'webgl-version-1']
+    filtered_tags = tag_utils.GpuTagUtils().RemoveMostIgnoredTags(tags)
+    self.assertEqual(filtered_tags, ('webgl-version-1', 'win'))
+
+
+class RemoveTemporarilyKeptIgnoredTagsUnittest(unittest.TestCase):
+  def testBasic(self) -> None:
+    # win-laptop shouldn't technically be here since it would have been removed
+    # by RemoveMostIgnoredTags(), but since this is *only* supposed to remove
+    # temporarily kept ignored tags, include it to test that.
+    tags = ['win', 'win-laptop', 'webgl-version-1', 'amd']
+    filtered_tags = tag_utils.GpuTagUtils().RemoveTemporarilyKeptIgnoredTags(
+        tags)
+    self.assertEqual(filtered_tags, ('amd', 'win', 'win-laptop'))
+
+
+if __name__ == '__main__':
+  unittest.main(verbosity=2)

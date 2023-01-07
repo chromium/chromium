@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -70,10 +70,7 @@ template("module_desc_java") {
   }
 
   android_library(_target_name) {
-    deps = [
-      "//base:base_java",
-      "//components/module_installer/android:module_installer_java",
-    ]
+    deps = [ "//components/module_installer/android:module_installer_java" ]
     srcjar_deps = [ ":${_target_name}__srcjar" ]
   }
 }

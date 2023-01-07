@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "base/macros.h"
 #include "snapshot/memory_snapshot.h"
 
 namespace crashpad {
@@ -29,6 +28,10 @@ namespace test {
 class TestMemorySnapshot final : public MemorySnapshot {
  public:
   TestMemorySnapshot();
+
+  TestMemorySnapshot(const TestMemorySnapshot&) = delete;
+  TestMemorySnapshot& operator=(const TestMemorySnapshot&) = delete;
+
   ~TestMemorySnapshot();
 
   void SetAddress(uint64_t address) { address_ = address; }
@@ -55,8 +58,6 @@ class TestMemorySnapshot final : public MemorySnapshot {
   size_t size_;
   char value_;
   bool should_fail_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMemorySnapshot);
 };
 
 }  // namespace test

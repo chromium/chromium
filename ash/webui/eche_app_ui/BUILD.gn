@@ -1,0 +1,241 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/test/base/js2gtest.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash, "Eche App is ash-chrome only")
+
+preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
+preprocess_folder = "preprocessed"
+
+static_library("eche_app_ui_pref") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  deps = [ "//base:base" ]
+}
+
+static_library("eche_app_ui") {
+  sources = [
+    "apps_access_manager.cc",
+    "apps_access_manager.h",
+    "apps_access_manager_impl.cc",
+    "apps_access_manager_impl.h",
+    "apps_access_setup_operation.cc",
+    "apps_access_setup_operation.h",
+    "eche_alert_generator.cc",
+    "eche_alert_generator.h",
+    "eche_app_manager.cc",
+    "eche_app_manager.h",
+    "eche_app_ui.cc",
+    "eche_app_ui.h",
+    "eche_connection_metrics_recorder.cc",
+    "eche_connection_metrics_recorder.h",
+    "eche_connection_scheduler.h",
+    "eche_connection_scheduler_impl.cc",
+    "eche_connection_scheduler_impl.h",
+    "eche_connector.h",
+    "eche_connector_impl.cc",
+    "eche_connector_impl.h",
+    "eche_feature_status_provider.cc",
+    "eche_feature_status_provider.h",
+    "eche_message_receiver.cc",
+    "eche_message_receiver.h",
+    "eche_message_receiver_impl.cc",
+    "eche_message_receiver_impl.h",
+    "eche_notification_click_handler.cc",
+    "eche_notification_click_handler.h",
+    "eche_presence_manager.cc",
+    "eche_presence_manager.h",
+    "eche_recent_app_click_handler.cc",
+    "eche_recent_app_click_handler.h",
+    "eche_signaler.cc",
+    "eche_signaler.h",
+    "eche_stream_status_change_handler.cc",
+    "eche_stream_status_change_handler.h",
+    "eche_tray_stream_status_observer.cc",
+    "eche_tray_stream_status_observer.h",
+    "eche_uid_provider.cc",
+    "eche_uid_provider.h",
+    "feature_status.cc",
+    "feature_status.h",
+    "feature_status_provider.cc",
+    "feature_status_provider.h",
+    "launch_app_helper.cc",
+    "launch_app_helper.h",
+    "system_info.cc",
+    "system_info.h",
+    "system_info_provider.cc",
+    "system_info_provider.h",
+    "untrusted_eche_app_ui.cc",
+    "untrusted_eche_app_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    ":eche_app_ui_pref",
+    "//ash",
+    "//ash/components/phonehub",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/services/device_sync/public/cpp:cpp",
+    "//ash/services/multidevice_setup/public/cpp:cpp",
+    "//ash/services/multidevice_setup/public/cpp:prefs",
+    "//ash/services/secure_channel/public/cpp/client",
+    "//ash/services/secure_channel/public/cpp/shared",
+    "//ash/services/secure_channel/public/mojom",
+    "//ash/webui/eche_app_ui/mojom",
+    "//ash/webui/eche_app_ui/proto",
+    "//ash/webui/resources:eche_app_resources",
+    "//ash/webui/resources:eche_bundle_resources",
+    "//chromeos/ash/components/multidevice:multidevice",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/services/network_config/public/cpp",
+    "//components/prefs",
+    "//content/public/browser",
+    "//mojo/public/js:resources",
+    "//ui/webui",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_apps_access_manager.cc",
+    "fake_apps_access_manager.h",
+    "fake_eche_connection_scheduler.cc",
+    "fake_eche_connection_scheduler.h",
+    "fake_eche_connector.cc",
+    "fake_eche_connector.h",
+    "fake_eche_message_receiver.cc",
+    "fake_eche_message_receiver.h",
+    "fake_feature_status_provider.cc",
+    "fake_feature_status_provider.h",
+    "fake_launch_app_helper.cc",
+    "fake_launch_app_helper.h",
+  ]
+
+  public_deps = [ ":eche_app_ui" ]
+
+  deps = [
+    "//ash/components/phonehub:phonehub",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "apps_access_manager_impl_unittest.cc",
+    "apps_access_setup_operation_unittest.cc",
+    "eche_alert_generator_unittest.cc",
+    "eche_app_manager_unittest.cc",
+    "eche_connection_scheduler_impl_unittest.cc",
+    "eche_connector_impl_unittest.cc",
+    "eche_feature_status_provider_unittest.cc",
+    "eche_message_receiver_impl_unittest.cc",
+    "eche_notification_click_handler_unittest.cc",
+    "eche_presence_manager_unittest.cc",
+    "eche_recent_app_click_handler_unittest.cc",
+    "eche_signaler_unittest.cc",
+    "eche_stream_status_change_handler_unittest.cc",
+    "eche_tray_stream_status_observer_unittest.cc",
+    "eche_uid_provider_unittest.cc",
+    "launch_app_helper_unittest.cc",
+    "system_info_provider_unittest.cc",
+  ]
+  deps = [
+    ":eche_app_ui",
+    ":eche_app_ui_pref",
+    ":test_support",
+    "//ash:test_support",
+    "//ash/components/phonehub",
+    "//ash/components/phonehub:debug",
+    "//ash/public/cpp",
+    "//ash/services/device_sync/public/cpp",
+    "//ash/services/device_sync/public/cpp:test_support",
+    "//ash/services/multidevice_setup/public/cpp",
+    "//ash/services/multidevice_setup/public/cpp:prefs",
+    "//ash/services/multidevice_setup/public/cpp:test_support",
+    "//ash/services/secure_channel/public/cpp/client:client",
+    "//ash/services/secure_channel/public/cpp/client:test_support",
+    "//ash/services/secure_channel/public/cpp/shared:shared",
+    "//ash/webui/eche_app_ui/proto",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/multidevice",
+    "//chromeos/ash/components/multidevice:test_support",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//dbus",
+    "//device/bluetooth:bluetooth",
+    "//testing/gtest",
+  ]
+}
+
+js_type_check("closure_compile") {
+  deps = [ ":app" ]
+}
+
+js_library("app") {
+  deps = [
+    "//ash/webui/eche_app_ui/mojom:mojom_js_library_for_compile",
+    "//ash/webui/system_apps/public/js:message_pipe",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
+  sources = [
+    "resources/browser_proxy.js",
+    "resources/message_types.js",
+    "resources/mock/js/app_bundle.js",
+    "resources/receiver.js",
+  ]
+}
+
+js2gtest("browser_tests_js") {
+  test_type = "mojo_lite_webui"
+  sources = [ "test/eche_app_ui_browsertest.js" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+generate_grd("build_grd") {
+  input_files_base_dir = rebase_path("resources", "//")
+  input_files = [
+    "../../system_apps/public/js/message_pipe.js",
+    "browser_proxy.js",
+    "message_types.js",
+    "receiver.js",
+  ]
+  manifest_files = []
+  grd_prefix = "ash_eche_app"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  deps = [ ":build_mojo_grdp" ]
+  grdp_files = [ "$target_gen_dir/ash_eche_app_mojo_resources.grdp" ]
+  resource_path_rewrites = [ "ash/webui/eche_app_ui/mojom/eche_app.mojom-lite.js|mojo/eche_app.mojom-lite.js" ]
+}
+
+generate_grd("build_mojo_grdp") {
+  grd_prefix = "ash_eche_app"
+  out_grd = "$target_gen_dir/${grd_prefix}_mojo_resources.grdp"
+  deps = [ ":preprocess_mojo" ]
+  manifest_files = [ "$target_gen_dir/$preprocess_mojo_manifest" ]
+  resource_path_rewrites = [ "ash/webui/eche_app_ui/mojom/eche_app.mojom-lite.js|mojo/eche_app.mojom-lite.js" ]
+}
+
+# Mojo files, for generating grdp
+preprocess_if_expr("preprocess_mojo") {
+  deps = [ "//ash/webui/eche_app_ui/mojom:mojom_js_library_for_compile" ]
+  in_folder = "$root_gen_dir"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
+  in_files = [ "ash/webui/eche_app_ui/mojom/eche_app.mojom-lite.js" ]
+}

@@ -1,23 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.weblayer_private.settings;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.url.GURL;
 import org.chromium.weblayer_private.WebLayerImpl;
 
 import java.util.Collections;
@@ -47,7 +47,7 @@ public class WebLayerSiteSettingsDelegate
     }
 
     @Override
-    public void getFaviconImageForURL(String faviconUrl, Callback<Bitmap> callback) {
+    public void getFaviconImageForURL(GURL faviconUrl, Callback<Drawable> callback) {
         // We don't currently support favicons on WebLayer.
         callback.onResult(null);
     }
@@ -55,13 +55,24 @@ public class WebLayerSiteSettingsDelegate
     @Override
     public boolean isCategoryVisible(@Type int type) {
         return type == Type.ADS || type == Type.ALL_SITES || type == Type.AUTOMATIC_DOWNLOADS
-                || type == Type.CAMERA || type == Type.COOKIES || type == Type.DEVICE_LOCATION
-                || type == Type.JAVASCRIPT || type == Type.MICROPHONE || type == Type.POPUPS
-                || type == Type.PROTECTED_MEDIA || type == Type.SOUND || type == Type.USE_STORAGE;
+                || type == Type.BACKGROUND_SYNC || type == Type.CAMERA || type == Type.COOKIES
+                || type == Type.DEVICE_LOCATION || type == Type.JAVASCRIPT
+                || type == Type.MICROPHONE || type == Type.POPUPS || type == Type.PROTECTED_MEDIA
+                || type == Type.SOUND || type == Type.USE_STORAGE;
+    }
+
+    @Override
+    public boolean isIncognitoModeEnabled() {
+        return true;
     }
 
     @Override
     public boolean isQuietNotificationPromptsFeatureEnabled() {
+        return false;
+    }
+
+    @Override
+    public boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled() {
         return false;
     }
 
@@ -78,22 +89,12 @@ public class WebLayerSiteSettingsDelegate
     @Override
     @Nullable
     public String getDelegateAppNameForOrigin(Origin origin, @ContentSettingsType int type) {
-        if (WebLayerImpl.isLocationPermissionManaged(origin)
-                && type == ContentSettingsType.GEOLOCATION) {
-            return WebLayerImpl.getClientApplicationName();
-        }
-
         return null;
     }
 
     @Override
     @Nullable
     public String getDelegatePackageNameForOrigin(Origin origin, @ContentSettingsType int type) {
-        if (WebLayerImpl.isLocationPermissionManaged(origin)
-                && type == ContentSettingsType.GEOLOCATION) {
-            return ContextUtils.getApplicationContext().getPackageName();
-        }
-
         return null;
     }
 
@@ -141,4 +142,38 @@ public class WebLayerSiteSettingsDelegate
 
     @Override
     public void dismissPrivacySandboxSnackbar() {}
+
+    @Override
+    public boolean isFirstPartySetsDataAccessEnabled() {
+        return false;
+    }
+
+    @Override
+    public boolean isFirstPartySetsDataAccessManaged() {
+        return false;
+    }
+
+    @Override
+    public boolean isPartOfManagedFirstPartySet(String origin) {
+        return false;
+    }
+
+    @Override
+    public void setFirstPartySetsDataAccessEnabled(boolean enabled) {}
+
+    @Override
+    public String getFirstPartySetOwner(String memberOrigin) {
+        return null;
+    }
+
+    @Override
+    public boolean canLaunchClearBrowsingDataDialog() {
+        return false;
+    }
+
+    @Override
+    public void launchClearBrowsingDataDialog(Activity currentActivity) {}
+
+    @Override
+    public void onDestroyView() {}
 }

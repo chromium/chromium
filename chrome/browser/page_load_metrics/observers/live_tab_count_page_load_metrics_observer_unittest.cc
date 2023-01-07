@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,14 +47,11 @@ class LiveTabCountPageLoadMetricsObserverTest
 
     page_load_metrics::mojom::PageLoadTiming timing;
     page_load_metrics::InitPageLoadTimingForTest(&timing);
-    timing.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(10);
+    timing.parse_timing->parse_start = base::Milliseconds(10);
     timing.navigation_start = base::Time::FromDoubleT(1);
-    timing.paint_timing->first_contentful_paint =
-        base::TimeDelta::FromMilliseconds(300);
-    timing.interactive_timing->first_input_delay =
-        base::TimeDelta::FromMilliseconds(5);
-    timing.interactive_timing->first_input_timestamp =
-        base::TimeDelta::FromMilliseconds(4780);
+    timing.paint_timing->first_contentful_paint = base::Milliseconds(300);
+    timing.interactive_timing->first_input_delay = base::Milliseconds(5);
+    timing.interactive_timing->first_input_timestamp = base::Milliseconds(4780);
     PopulateRequiredTimingFields(&timing);
 
     if (tab_state == kBackground) {

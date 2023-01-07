@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_PASSWORD_REUSE_MODAL_WARNING_DIALOG_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -39,9 +41,7 @@ class PasswordReuseModalWarningDialog
   ~PasswordReuseModalWarningDialog() override;
 
   void CreateSavedPasswordReuseModalWarningDialog(
-      const std::u16string message_body,
-      std::vector<std::u16string> placeholders,
-      std::vector<size_t> placeholder_offsets);
+      const std::u16string message_body);
   void CreateGaiaPasswordReuseModalWarningDialog(
       views::Label* message_body_label);
 
@@ -49,7 +49,7 @@ class PasswordReuseModalWarningDialog
   gfx::Size CalculatePreferredSize() const override;
   std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
-  gfx::ImageSkia GetWindowIcon() override;
+  ui::ImageModel GetWindowIcon() override;
 
   // ChromePasswordProtectionService::Observer:
   void OnGaiaPasswordChanged() override;
@@ -62,7 +62,7 @@ class PasswordReuseModalWarningDialog
 
  private:
   OnWarningDone done_callback_;
-  ChromePasswordProtectionService* service_;
+  raw_ptr<ChromePasswordProtectionService> service_;
   const GURL url_;
   const ReusedPasswordAccountType password_type_;
 

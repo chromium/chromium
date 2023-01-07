@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@ import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POL
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -47,21 +46,28 @@ import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.json.JSONArray;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.autofill_assistant.proto.ChipIcon;
+import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
+import org.chromium.chrome.browser.autofill_assistant.proto.DrawableProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptProto.TriggerScriptAction;
+import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptUIProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptUIProto.TriggerChip;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
 import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.components.autofill_assistant.R;
+import org.chromium.components.autofill_assistant.TriggerContext;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -69,6 +75,7 @@ import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
@@ -223,8 +230,7 @@ class AutofillAssistantUiTestUtil {
                 this.mContext = imageView.getContext();
                 int imageTintColor = imageView.getImageTintList().getColorForState(
                         imageView.getDrawable().getState(), -1);
-                int expectedColor =
-                        ApiCompatibilityUtils.getColor(mContext.getResources(), colorResId);
+                int expectedColor = mContext.getColor(colorResId);
                 return imageTintColor == expectedColor;
             }
 
@@ -340,6 +346,36 @@ class AutofillAssistantUiTestUtil {
             @Override
             public void describeTo(Description description) {
                 description.appendText("withTextGravity " + gravity);
+            }
+        };
+    }
+
+    /**
+     * Runs the main loop for at least the specified amount of time. Useful in cases where you need
+     * to ensure a negative, e.g., a certain view is never displayed. Intended usage:
+     * onView(isRoot()).waitAtLeast(...);
+     */
+    static ViewAction waitAtLeast(long millis) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return ViewMatchers.isRoot();
+            }
+
+            @Override
+            public String getDescription() {
+                return "Waits/idles for a specified amount of time";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                uiController.loopMainThreadUntilIdle();
+
+                long endTime = System.currentTimeMillis() + millis;
+                while (System.currentTimeMillis() < endTime) {
+                    uiController.loopMainThreadForAtLeast(
+                            Math.max(endTime - System.currentTimeMillis(), 50));
+                }
             }
         };
     }
@@ -470,7 +506,7 @@ class AutofillAssistantUiTestUtil {
                             .getWindowAndroid()
                             .getKeyboardDelegate()
                             .isKeyboardShowing(testRule.getActivity(),
-                                    testRule.getActivity().getCompositorViewHolder());
+                                    testRule.getActivity().getCompositorViewHolderForTesting());
             String errorMsg = "Timeout while waiting for the keyboard to be "
                     + (isShowing ? "visible" : "hidden");
             Criteria.checkThat(errorMsg, isKeyboardShowing, Matchers.is(isShowing));
@@ -499,31 +535,53 @@ class AutofillAssistantUiTestUtil {
      */
     public static void attachToCoordinator(CustomTabActivity activity, View view) {
         ThreadUtils.assertOnUiThread();
-        ViewGroup chromeCoordinatorView =
-                activity.findViewById(org.chromium.chrome.autofill_assistant.R.id.coordinator);
+        ViewGroup chromeCoordinatorView = activity.findViewById(R.id.coordinator);
         CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.gravity = Gravity.BOTTOM;
         chromeCoordinatorView.addView(view, lp);
     }
 
+    public static void startAutofillAssistant(
+            ChromeActivity activity, AutofillAssistantTestService testService) {
+        startAutofillAssistant(activity, testService, /* initialUrl = */ null);
+    }
     /**
-     * Starts the CCT test rule on a blank page.
+     * Starts Autofill Assistant on the given {@code activity} and injects the given {@code
+     * testService}. {@code initialUrl} will, if provided, override the default initial url for
+     * the trigger context, which is the initial url of the activity.
      */
-    public static void startOnBlankPage(CustomTabActivityTestRule testRule) {
-        testRule.startCustomTabActivityWithIntent(
-                AutofillAssistantUiTestUtil.createMinimalCustomTabIntentForAutobot(
-                        "about:blank", /* startImmediately = */ true));
+    public static void startAutofillAssistant(ChromeActivity activity,
+            AutofillAssistantTestService testService, @Nullable String initialUrl) {
+        testService.scheduleForInjection();
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> AutofillAssistantFacade.start(activity,
+                                TriggerContext.newBuilder()
+                                        .addParameter("ENABLED", true)
+                                        .addParameter("START_IMMEDIATELY", true)
+                                        .withInitialUrl(initialUrl != null
+                                                        ? initialUrl
+                                                        : activity.getInitialIntent()
+                                                                  .getDataString())
+                                        .build()));
     }
 
     /**
-     * Starts Autofill Assistant on the given {@code activity} and injects the given {@code
-     * testService}.
+     * Starts Autofill Assistant on the given {@code activity}. Will add the provided {@code url}
+     * and {@code scriptParameters} to the trigger context.
      */
-    public static void startAutofillAssistant(
-            ChromeActivity activity, AutofillAssistantTestService testService) {
-        testService.scheduleForInjection();
-        TestThreadUtils.runOnUiThreadBlocking(() -> AutofillAssistantFacade.start(activity));
+    public static void startAutofillAssistantWithParams(
+            ChromeActivity activity, String url, Map<String, Object> scriptParameters) {
+        TriggerContext.Builder argsBuilder =
+                TriggerContext.newBuilder().fromBundle(null).withInitialUrl(url);
+        for (Map.Entry<String, Object> param : scriptParameters.entrySet()) {
+            argsBuilder.addParameter(param.getKey(), param.getValue());
+        }
+        argsBuilder.addParameter("ENABLED", true);
+        argsBuilder.addParameter("ORIGINAL_DEEPLINK", url);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> AutofillAssistantFacade.start(activity, argsBuilder.build()));
     }
 
     /** Performs a single tap on the center of the specified element. */
@@ -549,6 +607,21 @@ class AutofillAssistantUiTestUtil {
         TestTouchUtils.singleClick(InstrumentationRegistry.getInstrumentation(), x, y);
     }
 
+    /** Scrolls to the specified element on the webpage, if necessary. */
+    public static void scrollIntoViewIfNeeded(WebContents webContents, String... elementIds)
+            throws Exception {
+        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
+                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
+        javascriptHelper.evaluateJavaScriptForTests(webContents,
+                "(function() {"
+                        + " " + getElementSelectorString(elementIds) + ".scrollIntoViewIfNeeded();"
+                        + " return [true];"
+                        + "})()");
+        javascriptHelper.waitUntilHasValue();
+        JSONArray result = new JSONArray(javascriptHelper.getJsonResultAndClear());
+        assert result.getBoolean(0);
+    }
+
     /** Computes the bounding rectangle of the specified DOM element in absolute screen space. */
     public static Rect getAbsoluteBoundingRect(
             ChromeActivityTestRule testRule, String... elementIds) throws Exception {
@@ -560,19 +633,22 @@ class AutofillAssistantUiTestUtil {
          * - First, convert viewport to compositor space (scrolling offset, multiply with factor).
          * - Then, convert compositor space to screen space (add content offset).
          */
-        Rect viewport = getViewport(testRule.getWebContents());
-        float cssToPysicalPixels =
-                (((float) testRule.getActivity().getCompositorViewHolder().getWidth()
-                        / (float) viewport.width()));
+        Coordinates coordinates = Coordinates.createFor(testRule.getWebContents());
+        float left = coordinates.getScrollXPixInt() / coordinates.getPageScaleFactor()
+                / coordinates.getDeviceScaleFactor();
+        float top = coordinates.getScrollYPixInt() / coordinates.getPageScaleFactor()
+                / coordinates.getDeviceScaleFactor();
 
         int[] compositorLocation = new int[2];
-        testRule.getActivity().getCompositorViewHolder().getLocationOnScreen(compositorLocation);
+        testRule.getActivity().getCompositorViewHolderForTesting().getLocationOnScreen(
+                compositorLocation);
         int offsetY = compositorLocation[1]
                 + testRule.getActivity().getBrowserControlsManager().getContentOffset();
-        return new Rect((int) ((elementRect.left - viewport.left) * cssToPysicalPixels),
-                (int) ((elementRect.top - viewport.top) * cssToPysicalPixels + offsetY),
-                (int) ((elementRect.right - viewport.left) * cssToPysicalPixels),
-                (int) ((elementRect.bottom - viewport.top) * cssToPysicalPixels + offsetY));
+
+        return new Rect((int) (coordinates.fromLocalCssToPix(elementRect.left - left)),
+                (int) (coordinates.fromLocalCssToPix(elementRect.top - top) + offsetY),
+                (int) (coordinates.fromLocalCssToPix(elementRect.right - left)),
+                (int) (coordinates.fromLocalCssToPix(elementRect.bottom - top) + offsetY));
     }
 
     /**
@@ -615,7 +691,7 @@ class AutofillAssistantUiTestUtil {
         Rect coords = getAbsoluteBoundingRect(testRule, elementIds);
         DisplayMetrics displayMetrics = testRule.getActivity().getResources().getDisplayMetrics();
 
-        return (coords.left < displayMetrics.widthPixels && 0 <= coords.right)
+        return (coords.right < displayMetrics.widthPixels && 0 <= coords.left)
                 && (coords.top < displayMetrics.heightPixels && 0 <= coords.bottom);
     }
 
@@ -643,45 +719,12 @@ class AutofillAssistantUiTestUtil {
                 () -> !checkElementExists(webContents, id), "Element is still on the page!");
     }
 
-    /** Checks whether the specified element is displayed in the DOM tree. */
-    public static boolean checkElementIsDisplayed(WebContents webContents, String... elementIds)
-            throws Exception {
-        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
-                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
-        javascriptHelper.evaluateJavaScriptForTests(webContents,
-                "(function() {"
-                        + " return [" + getElementSelectorString(elementIds)
-                        + ".style.display != \"none\"]; "
-                        + "})()");
-        javascriptHelper.waitUntilHasValue();
-        JSONArray result = new JSONArray(javascriptHelper.getJsonResultAndClear());
-        return result.getBoolean(0);
-    }
-
     /**
-     * Retrieves the visual viewport of the webpage in CSS pixel coordinates.
+     * Retrieves the value of a given property of an element.
+     * @return A JSONArray containing the property value as the single element.
      */
-    public static Rect getViewport(WebContents webContents) throws Exception {
-        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
-                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
-        javascriptHelper.evaluateJavaScriptForTests(webContents,
-                "(function() {"
-                        + " const v = window.visualViewport;"
-                        + " return ["
-                        + "   v.pageLeft, v.pageTop,"
-                        + "   v.pageLeft + v.width, v.pageTop + v.height"
-                        + " ];"
-                        + "})()");
-        javascriptHelper.waitUntilHasValue();
-        JSONArray values = new JSONArray(javascriptHelper.getJsonResultAndClear());
-        return new Rect(values.getInt(0), values.getInt(1), values.getInt(2), values.getInt(3));
-    }
-
-    /**
-     * Retrieves the value of the specified element.
-     */
-    public static String getElementValue(WebContents webContents, String... elementIds)
-            throws Exception {
+    private static JSONArray getElementProperty(
+            WebContents webContents, String propertyName, String... elementIds) throws Exception {
         if (!checkElementExists(webContents, elementIds)) {
             throw new IllegalArgumentException(Arrays.toString(elementIds) + " does not exist");
         }
@@ -689,11 +732,31 @@ class AutofillAssistantUiTestUtil {
                 new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
         javascriptHelper.evaluateJavaScriptForTests(webContents,
                 "(function() {"
-                        + " return [" + getElementSelectorString(elementIds) + ".value]"
+                        + " return [" + getElementSelectorString(elementIds) + "." + propertyName
+                        + "];"
                         + "})()");
         javascriptHelper.waitUntilHasValue();
         JSONArray result = new JSONArray(javascriptHelper.getJsonResultAndClear());
-        return result.getString(0);
+        if (result.length() != 1) {
+            throw new RuntimeException("Expected exactly one element in the result.");
+        }
+        return result;
+    }
+
+    /**
+     * Retrieves whether the element is checked, using the .checked property.
+     */
+    public static boolean getElementChecked(WebContents webContents, String... elementIds)
+            throws Exception {
+        return getElementProperty(webContents, "checked", elementIds).getBoolean(0);
+    }
+
+    /**
+     * Retrieves the value of the specified element.
+     */
+    public static String getElementValue(WebContents webContents, String... elementIds)
+            throws Exception {
+        return getElementProperty(webContents, "value", elementIds).getString(0);
     }
 
     /**
@@ -730,11 +793,60 @@ class AutofillAssistantUiTestUtil {
         return builder.toString();
     }
 
-    public static Intent createMinimalCustomTabIntentForAutobot(
-            String url, boolean startImmediately) {
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), url);
-        intent.putExtra(TriggerContext.PARAMETER_START_IMMEDIATELY, startImmediately);
-        return intent;
+    /**
+     * Creates a default trigger script UI, similar to the intended experience. It comprises three
+     * chips: 'Preferences', 'Not now', 'Continue'. 'Preferences' opens the cancel popup containing
+     * 'Not for this session' and 'Never show again'. Optionally, a blue message bubble and a
+     * default progress bar are shown.
+     */
+    public static TriggerScriptUIProto.Builder createDefaultTriggerScriptUI(
+            String statusMessage, String bubbleMessage, boolean withProgressBar) {
+        TriggerScriptUIProto.Builder builder =
+                TriggerScriptUIProto.newBuilder()
+                        .setStatusMessage(statusMessage)
+                        .setCalloutMessage(bubbleMessage)
+                        .addLeftAlignedChips(
+                                TriggerChip.newBuilder()
+                                        .setChip(ChipProto.newBuilder()
+                                                         .setType(ChipType.NORMAL_ACTION)
+                                                         .setIcon(ChipIcon.ICON_OVERFLOW))
+                                        .setAction(TriggerScriptAction.SHOW_CANCEL_POPUP))
+                        .addRightAlignedChips(
+                                TriggerChip.newBuilder()
+                                        .setChip(ChipProto.newBuilder()
+                                                         .setType(ChipType.NORMAL_ACTION)
+                                                         .setText("Not now"))
+                                        .setAction(TriggerScriptAction.NOT_NOW))
+                        .addRightAlignedChips(
+                                TriggerChip.newBuilder()
+                                        .setChip(ChipProto.newBuilder()
+                                                         .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                         .setText("Continue"))
+                                        .setAction(TriggerScriptAction.ACCEPT))
+                        .setCancelPopup(
+                                TriggerScriptUIProto.Popup.newBuilder()
+                                        .addChoices(
+                                                TriggerScriptUIProto.Popup.Choice.newBuilder()
+                                                        .setText("Not for this session")
+                                                        .setAction(
+                                                                TriggerScriptAction.CANCEL_SESSION))
+                                        .addChoices(TriggerScriptUIProto.Popup.Choice.newBuilder()
+                                                            .setText("Never show again")
+                                                            .setAction(TriggerScriptAction
+                                                                               .CANCEL_FOREVER)));
+        if (withProgressBar) {
+            builder.setProgressBar(
+                    TriggerScriptUIProto.ProgressBar.newBuilder()
+                            .addStepIcons(DrawableProto.newBuilder().setIcon(
+                                    DrawableProto.Icon.PROGRESSBAR_DEFAULT_INITIAL_STEP))
+                            .addStepIcons(DrawableProto.newBuilder().setIcon(
+                                    DrawableProto.Icon.PROGRESSBAR_DEFAULT_DATA_COLLECTION))
+                            .addStepIcons(DrawableProto.newBuilder().setIcon(
+                                    DrawableProto.Icon.PROGRESSBAR_DEFAULT_PAYMENT))
+                            .addStepIcons(DrawableProto.newBuilder().setIcon(
+                                    DrawableProto.Icon.PROGRESSBAR_DEFAULT_FINAL_STEP))
+                            .setActiveStep(1));
+        }
+        return builder;
     }
 }

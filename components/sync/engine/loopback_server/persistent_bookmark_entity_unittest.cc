@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
 
 #include "base/guid.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

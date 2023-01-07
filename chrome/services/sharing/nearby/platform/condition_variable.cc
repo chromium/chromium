@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ Exception ConditionVariable::Wait() {
 
 Exception ConditionVariable::Wait(absl::Duration timeout) {
   condition_variable_.TimedWait(
-      base::TimeDelta::FromMicroseconds(absl::ToInt64Microseconds(timeout)));
+      base::Microseconds(absl::ToInt64Microseconds(timeout)));
   return {Exception::kSuccess};
 }
 

@@ -1,7 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/ax_platform_node_win_unittest.h"
 
 #include <UIAutomationClient.h>
@@ -16,7 +17,6 @@
 #include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
-#include "ui/base/win/accessibility_misc_utils.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -38,6 +38,15 @@ class AXPlatformNodeTextProviderTest : public AXPlatformNodeWinTest {
       const AXPlatformNodeTextProviderTest&) = delete;
 
  protected:
+  void SetOwner(AXPlatformNodeWin* owner,
+                ITextRangeProvider* destination_range) {
+    ComPtr<ITextRangeProvider> destination_provider = destination_range;
+    ComPtr<AXPlatformNodeTextRangeProviderWin> destination_provider_interal;
+
+    destination_provider->QueryInterface(
+        IID_PPV_ARGS(&destination_provider_interal));
+    destination_provider_interal->SetOwnerForTesting(owner);
+  }
   AXPlatformNodeWin* GetOwner(
       const AXPlatformNodeTextProviderWin* text_provider) {
     return text_provider->owner_.Get();
@@ -83,9 +92,12 @@ TEST_F(AXPlatformNodeTextProviderTest, CreateDegenerateRangeFromStart) {
   update.nodes = {root_data, link_data, text1_data, text2_data};
 
   Init(update);
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* link_node = root_node->children()[0];
   AXNode* text2_node = link_node->children()[1];
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(root_node));
+  DCHECK(owner);
 
   ComPtr<IRawElementProviderSimple> root_node_raw =
       QueryInterfaceFromNode<IRawElementProviderSimple>(root_node);
@@ -109,6 +121,7 @@ TEST_F(AXPlatformNodeTextProviderTest, CreateDegenerateRangeFromStart) {
   ComPtr<ITextRangeProvider> text_range_provider =
       AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
           root_platform_node.Get());
+  SetOwner(owner, text_range_provider.Get());
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
@@ -128,6 +141,7 @@ TEST_F(AXPlatformNodeTextProviderTest, CreateDegenerateRangeFromStart) {
   text_range_provider =
       AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
           link_platform_node.Get());
+  SetOwner(owner, text_range_provider.Get());
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
   EXPECT_EQ(0, wcscmp(text_content.Get(), L""));
@@ -141,6 +155,7 @@ TEST_F(AXPlatformNodeTextProviderTest, CreateDegenerateRangeFromStart) {
   text_range_provider =
       AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
           text2_platform_node.Get());
+  SetOwner(owner, text_range_provider.Get());
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
   EXPECT_EQ(0, wcscmp(text_content.Get(), L""));
@@ -181,9 +196,12 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderRangeFromChild) {
 
   Init(update);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* text_node = root_node->children()[0];
   AXNode* empty_text_node = root_node->children()[1];
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(root_node));
+  DCHECK(owner);
 
   ComPtr<IRawElementProviderSimple> root_node_raw =
       QueryInterfaceFromNode<IRawElementProviderSimple>(root_node);
@@ -200,6 +218,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderRangeFromChild) {
   ComPtr<ITextRangeProvider> text_range_provider;
   EXPECT_HRESULT_SUCCEEDED(
       text_provider->RangeFromChild(text_node_raw.Get(), &text_range_provider));
+  SetOwner(owner, text_range_provider.Get());
 
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
@@ -220,6 +239,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderRangeFromChild) {
 
   EXPECT_HRESULT_SUCCEEDED(text_provider->RangeFromChild(
       empty_text_node_raw.Get(), &text_range_provider));
+  SetOwner(owner, text_range_provider.Get());
 
   base::win::ScopedBstr empty_text_content;
   EXPECT_HRESULT_SUCCEEDED(
@@ -303,8 +323,11 @@ TEST_F(AXPlatformNodeTextProviderTest,
 
   Init(update);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* dialog_node = root_node->children()[0];
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(root_node));
+  DCHECK(owner);
 
   ComPtr<IRawElementProviderSimple> root_node_raw =
       QueryInterfaceFromNode<IRawElementProviderSimple>(root_node);
@@ -319,13 +342,14 @@ TEST_F(AXPlatformNodeTextProviderTest,
   ComPtr<ITextRangeProvider> text_range_provider;
   EXPECT_HRESULT_SUCCEEDED(text_provider->RangeFromChild(dialog_node_raw.Get(),
                                                          &text_range_provider));
+  SetOwner(owner, text_range_provider.Get());
 
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
   EXPECT_EQ(base::WideToUTF16(text_content.Get()),
-            u"Dialog label.Dialog description." + kEmbeddedCharacterAsString +
-                u"ok.Some more detail " + u"about dialog.");
+            u"Dialog label.Dialog description.\n" + kEmbeddedCharacterAsString +
+                u"\nok.Some more detail " + u"about dialog.");
 
   // Check the reverse relationship that GetEnclosingElement on the text range
   // gives back the dialog.
@@ -352,11 +376,11 @@ TEST_F(AXPlatformNodeTextProviderTest, NearestTextIndexToPoint) {
 
   Init(root_data, text_data);
 
-  AXNode* root_node = GetRootAsAXNode();
+  AXNode* root_node = GetRoot();
   AXNode* text_node = root_node->children()[0];
 
   struct NearestTextIndexTestData {
-    AXNode* node;
+    raw_ptr<AXNode> node;
     struct point_offset_expected_index_pair {
       int point_offset_x;
       int expected_index;
@@ -414,6 +438,116 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderDocumentRange) {
   ComPtr<ITextRangeProvider> text_range_provider;
   EXPECT_HRESULT_SUCCEEDED(
       text_provider->get_DocumentRange(&text_range_provider));
+}
+
+TEST_F(AXPlatformNodeTextProviderTest,
+       ITextProviderDocumentRangeTrailingIgnored) {
+  // ++1 root
+  // ++++2 kGenericContainer
+  // ++++++3 kStaticText "Hello"
+  // ++++4 kGenericContainer
+  // ++++++5 kGenericContainer
+  // ++++++++6 kStaticText "3.14"
+  // ++++7 kGenericContainer (ignored)
+  // ++++++8 kGenericContainer (ignored)
+  // ++++++++9 kStaticText "ignored"
+  AXNodeData root_1;
+  AXNodeData gc_2;
+  AXNodeData static_text_3;
+  AXNodeData gc_4;
+  AXNodeData gc_5;
+  AXNodeData static_text_6;
+  AXNodeData gc_7_ignored;
+  AXNodeData gc_8_ignored;
+  AXNodeData static_text_9_ignored;
+
+  root_1.id = 1;
+  gc_2.id = 2;
+  static_text_3.id = 3;
+  gc_4.id = 4;
+  gc_5.id = 5;
+  static_text_6.id = 6;
+  gc_7_ignored.id = 7;
+  gc_8_ignored.id = 8;
+  static_text_9_ignored.id = 9;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {gc_2.id, gc_4.id, gc_7_ignored.id};
+  root_1.SetName("Document");
+
+  gc_2.role = ax::mojom::Role::kGenericContainer;
+  gc_2.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
+                           {static_text_3.id});
+  gc_2.child_ids = {static_text_3.id};
+
+  static_text_3.role = ax::mojom::Role::kStaticText;
+  static_text_3.SetName("Hello");
+
+  gc_4.role = ax::mojom::Role::kGenericContainer;
+  gc_4.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
+                           {gc_5.id});
+  gc_4.child_ids = {gc_5.id};
+
+  gc_5.role = ax::mojom::Role::kGenericContainer;
+  gc_5.child_ids = {static_text_6.id};
+
+  static_text_6.role = ax::mojom::Role::kStaticText;
+  static_text_6.SetName("3.14");
+
+  gc_7_ignored.role = ax::mojom::Role::kGenericContainer;
+  gc_7_ignored.child_ids = {gc_8_ignored.id};
+  gc_7_ignored.AddState(ax::mojom::State::kIgnored);
+
+  gc_8_ignored.role = ax::mojom::Role::kGenericContainer;
+  gc_8_ignored.child_ids = {static_text_9_ignored.id};
+  gc_8_ignored.AddState(ax::mojom::State::kIgnored);
+
+  static_text_9_ignored.role = ax::mojom::Role::kStaticText;
+  static_text_9_ignored.SetName("ignored");
+  static_text_9_ignored.AddState(ax::mojom::State::kIgnored);
+
+  AXTreeUpdate update;
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  update.tree_data = tree_data;
+  update.has_tree_data = true;
+  update.root_id = root_1.id;
+  update.nodes = {root_1,       gc_2,         static_text_3,
+                  gc_4,         gc_5,         static_text_6,
+                  gc_7_ignored, gc_8_ignored, static_text_9_ignored};
+
+  Init(update);
+
+  ComPtr<IRawElementProviderSimple> root_node =
+      GetRootIRawElementProviderSimple();
+
+  ComPtr<ITextProvider> text_provider;
+  EXPECT_HRESULT_SUCCEEDED(
+      root_node->GetPatternProvider(UIA_TextPatternId, &text_provider));
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_provider->get_DocumentRange(&text_range_provider));
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> text_range;
+  text_range_provider->QueryInterface(IID_PPV_ARGS(&text_range));
+
+  ComPtr<ITextProvider> root_text_provider;
+  EXPECT_HRESULT_SUCCEEDED(
+      root_node->GetPatternProvider(UIA_TextPatternId, &root_text_provider));
+  ComPtr<AXPlatformNodeTextProviderWin> root_platform_node;
+  root_text_provider->QueryInterface(IID_PPV_ARGS(&root_platform_node));
+  AXPlatformNodeWin* owner = GetOwner(root_platform_node.Get());
+
+  AXNodePosition::AXPositionInstance expected_start =
+      owner->GetDelegate()->CreateTextPositionAt(0)->AsLeafTextPosition();
+  AXNodePosition::AXPositionInstance expected_end =
+      owner->GetDelegate()
+          ->CreateTextPositionAt(0)
+          ->CreatePositionAtEndOfAnchor()
+          ->AsLeafTextPosition();
+  EXPECT_EQ(*GetStart(text_range.Get()), *expected_start);
+  EXPECT_EQ(*GetEnd(text_range.Get()), *expected_end);
 }
 
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderDocumentRangeNested) {
@@ -486,12 +620,23 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   textbox_data.SetName("textbox text");
   textbox_data.AddState(ax::mojom::State::kEditable);
 
+  AXNodeData nonatomic_textfield_data;
+  nonatomic_textfield_data.id = 4;
+  nonatomic_textfield_data.role = ax::mojom::Role::kTextField;
+  nonatomic_textfield_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+  nonatomic_textfield_data.child_ids = {5};
+
+  AXNodeData text_child_data;
+  text_child_data.id = 5;
+  text_child_data.role = ax::mojom::Role::kStaticText;
+  text_child_data.SetName("text");
+
   AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
   root_data.SetName("Document");
-  root_data.child_ids.push_back(2);
-  root_data.child_ids.push_back(3);
+  root_data.child_ids = {2, 3, 4};
 
   AXTreeUpdate update;
   AXTreeData tree_data;
@@ -499,9 +644,8 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   update.tree_data = tree_data;
   update.has_tree_data = true;
   update.root_id = root_data.id;
-  update.nodes.push_back(root_data);
-  update.nodes.push_back(text_data);
-  update.nodes.push_back(textbox_data);
+  update.nodes = {root_data, text_data, textbox_data, nonatomic_textfield_data,
+                  text_child_data};
   Init(update);
 
   ComPtr<IRawElementProviderSimple> root_node =
@@ -540,6 +684,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   ComPtr<ITextRangeProvider> text_range_provider;
   EXPECT_HRESULT_SUCCEEDED(SafeArrayGetElement(
       selections.Get(), &index, static_cast<void**>(&text_range_provider)));
+  SetOwner(owner, text_range_provider.Get());
 
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
@@ -566,6 +711,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
 
   EXPECT_HRESULT_SUCCEEDED(SafeArrayGetElement(
       selections.Get(), &index, static_cast<void**>(&text_range_provider)));
+  SetOwner(owner, text_range_provider.Get());
 
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
@@ -581,7 +727,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   selected_tree_data.sel_anchor_offset = 1;
   selected_tree_data.sel_focus_offset = 1;
 
-  AXNode* text_edit_node = GetRootAsAXNode()->children()[1];
+  AXNode* text_edit_node = GetRoot()->children()[1];
 
   ComPtr<IRawElementProviderSimple> text_edit_com =
       QueryInterfaceFromNode<IRawElementProviderSimple>(text_edit_node);
@@ -604,7 +750,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   EXPECT_HRESULT_SUCCEEDED(
       SafeArrayGetElement(selections.Get(), &index,
                           static_cast<void**>(&text_edit_range_provider)));
-
+  SetOwner(owner, text_edit_range_provider.Get());
   EXPECT_HRESULT_SUCCEEDED(
       text_edit_range_provider->GetText(-1, text_content.Receive()));
   EXPECT_EQ(0U, text_content.Length());
@@ -629,6 +775,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   EXPECT_HRESULT_SUCCEEDED(SafeArrayGetElement(
       selections.Get(), &index, static_cast<void**>(&text_range_provider)));
 
+  SetOwner(owner, text_range_provider.Get());
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
   EXPECT_EQ(0, wcscmp(text_content.Get(), L"some texttextbox text"));
@@ -653,9 +800,34 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   EXPECT_HRESULT_SUCCEEDED(SafeArrayGetElement(
       selections.Get(), &index, static_cast<void**>(&text_range_provider)));
 
+  SetOwner(owner, text_range_provider.Get());
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
   EXPECT_EQ(0, wcscmp(text_content.Get(), L""));
+  text_content.Reset();
+  selections.Reset();
+  text_range_provider.Reset();
+
+  // Verify that the selection set on a non-atomic text field returns the
+  // correct selection. Because the anchor/focus is a non-leaf element, the
+  // offset passed here is a child offset and not a text offset. This means that
+  // the accessible selection received should include the entire leaf text child
+  // and not only the first character of that non-atomic text field.
+  selected_tree_data.sel_anchor_object_id = 4;
+  selected_tree_data.sel_anchor_offset = 0;
+  selected_tree_data.sel_focus_object_id = 4;
+  selected_tree_data.sel_focus_offset = 1;
+
+  root_text_provider->GetSelection(selections.Receive());
+  ASSERT_NE(nullptr, selections.Get());
+
+  EXPECT_HRESULT_SUCCEEDED(SafeArrayGetElement(
+      selections.Get(), &index, static_cast<void**>(&text_range_provider)));
+
+  SetOwner(owner, text_range_provider.Get());
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetText(-1, text_content.Receive()));
+  EXPECT_EQ(0, wcscmp(text_content.Get(), L"text"));
   text_content.Reset();
   selections.Reset();
   text_range_provider.Reset();

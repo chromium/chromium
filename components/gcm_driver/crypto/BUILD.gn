@@ -1,8 +1,8 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/crypto.gni")
+import("//crypto/features.gni")
 
 static_library("crypto") {
   sources = [
@@ -29,8 +29,9 @@ static_library("crypto") {
     "//components/gcm_driver/crypto/proto",
     "//components/leveldb_proto",
     "//crypto",
-    "//crypto:platform",
     "//net",
+    "//third_party/boringssl",
+    "//third_party/leveldatabase",
     "//third_party/protobuf:protobuf_lite",
   ]
 }
@@ -69,7 +70,6 @@ source_set("unit_tests") {
     "//components/gcm_driver/crypto/proto",
     "//components/leveldb_proto",
     "//crypto",
-    "//crypto:platform",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/protobuf:protobuf_lite",

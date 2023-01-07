@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,16 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/inspector_protocol/crdtp/cbor.h"
 #include "third_party/inspector_protocol/crdtp/maybe.h"
 #include "third_party/inspector_protocol/crdtp/protocol_core.h"
 #include "third_party/inspector_protocol/crdtp/serializable.h"
-#include "third_party/inspector_protocol/crdtp/serializer_traits.h"
 #include "v8/include/v8-inspector.h"
+#include "v8/include/v8-script.h"
 
 namespace blink {
 
@@ -100,37 +98,9 @@ class CORE_EXPORT Binary : public crdtp::Serializable {
 }  // namespace blink
 
 // TODO(dgozman): migrate core/inspector/protocol to wtf::HashMap.
-namespace std {
-template <>
-struct hash<WTF::String> {
-  std::size_t operator()(const WTF::String& string) const {
-    return StringHash::GetHash(string);
-  }
-};
-}  // namespace std
 
 // See third_party/inspector_protocol/crdtp/serializer_traits.h.
 namespace crdtp {
-template <>
-struct SerializerTraits<WTF::String> {
-  static void Serialize(const WTF::String& str, std::vector<uint8_t>* out) {
-    if (str.length() == 0) {
-      cbor::EncodeString8(span<uint8_t>(nullptr, 0), out);  // Empty string.
-      return;
-    }
-    if (str.Is8Bit()) {
-      cbor::EncodeFromLatin1(
-          span<uint8_t>(reinterpret_cast<const uint8_t*>(str.Characters8()),
-                        str.length()),
-          out);
-      return;
-    }
-    cbor::EncodeFromUTF16(
-        span<uint16_t>(reinterpret_cast<const uint16_t*>(str.Characters16()),
-                       str.length()),
-        out);
-  }
-};
 
 template <>
 struct ProtocolTypeTraits<WTF::String> {

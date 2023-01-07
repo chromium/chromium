@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,13 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
-class EventCounts final : public ScriptWrappable,
-                          public Maplike<AtomicString, unsigned> {
+class EventCounts final
+    : public ScriptWrappable,
+      public Maplike<AtomicString, IDLString, uint32_t, IDLUnsignedLong> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -29,15 +31,18 @@ class EventCounts final : public ScriptWrappable,
 
   void Add(const AtomicString& event_type);
 
+  // Add multiple events with the same event type.
+  void AddMultipleEvents(const AtomicString& event_type, unsigned count);
+
   void Trace(Visitor* visitor) const override {
     ScriptWrappable::Trace(visitor);
   }
 
  private:
   // Maplike implementation.
-  PairIterable<AtomicString, unsigned>::IterationSource* StartIteration(
-      ScriptState*,
-      ExceptionState&) override;
+  PairIterable<AtomicString, IDLString, uint32_t, IDLUnsignedLong>::
+      IterationSource*
+      StartIteration(ScriptState*, ExceptionState&) override;
   bool GetMapEntry(ScriptState*,
                    const AtomicString& key,
                    unsigned& value,
@@ -48,4 +53,4 @@ class EventCounts final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_KEYBOARD_KEYBOARD_event_count_map_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_EVENT_COUNTS_H_

@@ -30,7 +30,9 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -41,7 +43,7 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 // Uncomment to run the SelectorQueryTests for stats in a release build.
 // #define RELEASE_QUERY_STATS
@@ -86,7 +88,7 @@ struct AllElementsSelectorQueryTrait {
   typedef HeapVector<Member<Element>> OutputType;
   static const bool kShouldOnlyMatchFirstElement = false;
   ALWAYS_INLINE static bool IsEmpty(const OutputType& output) {
-    return output.IsEmpty();
+    return output.empty();
   }
   ALWAYS_INLINE static void AppendElement(OutputType& output,
                                           Element& element) {
@@ -96,10 +98,8 @@ struct AllElementsSelectorQueryTrait {
 
 inline bool SelectorMatches(const CSSSelector& selector,
                             Element& element,
-                            const ContainerNode& root_node) {
-  SelectorChecker::Init init;
-  init.mode = SelectorChecker::kQueryingRules;
-  SelectorChecker checker(init);
+                            const ContainerNode& root_node,
+                            const SelectorChecker& checker) {
   SelectorChecker::SelectorCheckingContext context(&element);
   context.selector = &selector;
   context.scope = &root_node;
@@ -108,12 +108,16 @@ inline bool SelectorMatches(const CSSSelector& selector,
 
 bool SelectorQuery::Matches(Element& target_element) const {
   QUERY_STATS_RESET();
+  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
+      &target_element.GetDocument());
   return SelectorListMatches(target_element, target_element);
 }
 
 Element* SelectorQuery::Closest(Element& target_element) const {
   QUERY_STATS_RESET();
-  if (selectors_.IsEmpty())
+  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
+      &target_element.GetDocument());
+  if (selectors_.empty())
     return nullptr;
 
   for (Element* current_element = &target_element; current_element;
@@ -126,6 +130,8 @@ Element* SelectorQuery::Closest(Element& target_element) const {
 
 StaticElementList* SelectorQuery::QueryAll(ContainerNode& root_node) const {
   QUERY_STATS_RESET();
+  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
+      &root_node.GetDocument());
   NthIndexCache nth_index_cache(root_node.GetDocument());
   HeapVector<Member<Element>> result;
   Execute<AllElementsSelectorQueryTrait>(root_node, result);
@@ -134,6 +140,8 @@ StaticElementList* SelectorQuery::QueryAll(ContainerNode& root_node) const {
 
 Element* SelectorQuery::QueryFirst(ContainerNode& root_node) const {
   QUERY_STATS_RESET();
+  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
+      &root_node.GetDocument());
   NthIndexCache nth_index_cache(root_node.GetDocument());
   Element* matched_element = nullptr;
   Execute<SingleElementSelectorQueryTrait>(root_node, matched_element);
@@ -146,11 +154,12 @@ static void CollectElementsByClassName(
     const AtomicString& class_name,
     const CSSSelector* selector,
     typename SelectorQueryTrait::OutputType& output) {
+  SelectorChecker checker(SelectorChecker::kQueryingRules);
   for (Element& element : ElementTraversal::DescendantsOf(root_node)) {
     QUERY_STATS_INCREMENT(fast_class);
     if (!element.HasClassName(class_name))
       continue;
-    if (selector && !SelectorMatches(*selector, element, root_node))
+    if (selector && !SelectorMatches(*selector, element, root_node, checker))
       continue;
     SelectorQueryTrait::AppendElement(output, element);
     if (SelectorQueryTrait::kShouldOnlyMatchFirstElement)
@@ -267,10 +276,11 @@ void SelectorQuery::ExecuteForTraverseRoot(
   DCHECK_EQ(selectors_.size(), 1u);
 
   const CSSSelector& selector = *selectors_[0];
+  SelectorChecker checker(SelectorChecker::kQueryingRules);
 
   for (Element& element : ElementTraversal::DescendantsOf(traverse_root)) {
     QUERY_STATS_INCREMENT(fast_scan);
-    if (SelectorMatches(selector, element, root_node)) {
+    if (SelectorMatches(selector, element, root_node, checker)) {
       SelectorQueryTrait::AppendElement(output, element);
       if (SelectorQueryTrait::kShouldOnlyMatchFirstElement)
         return;
@@ -280,8 +290,9 @@ void SelectorQuery::ExecuteForTraverseRoot(
 
 bool SelectorQuery::SelectorListMatches(ContainerNode& root_node,
                                         Element& element) const {
+  SelectorChecker checker(SelectorChecker::kQueryingRules);
   for (auto* const selector : selectors_) {
-    if (SelectorMatches(*selector, element, root_node))
+    if (SelectorMatches(*selector, element, root_node, checker))
       return true;
   }
   return false;
@@ -310,6 +321,7 @@ void SelectorQuery::ExecuteWithId(
 
   const CSSSelector& first_selector = *selectors_[0];
   const TreeScope& scope = root_node.ContainingTreeScope();
+  SelectorChecker checker(SelectorChecker::kQueryingRules);
 
   if (scope.ContainsMultipleElementsWithId(selector_id_)) {
     // We don't currently handle cases where there's multiple elements with the
@@ -323,7 +335,7 @@ void SelectorQuery::ExecuteWithId(
       if (!element->IsDescendantOf(&root_node))
         continue;
       QUERY_STATS_INCREMENT(fast_id);
-      if (SelectorMatches(first_selector, *element, root_node)) {
+      if (SelectorMatches(first_selector, *element, root_node, checker)) {
         SelectorQueryTrait::AppendElement(output, *element);
         if (SelectorQueryTrait::kShouldOnlyMatchFirstElement)
           return;
@@ -339,7 +351,7 @@ void SelectorQuery::ExecuteWithId(
     if (!element->IsDescendantOf(&root_node))
       return;
     QUERY_STATS_INCREMENT(fast_id);
-    if (SelectorMatches(first_selector, *element, root_node))
+    if (SelectorMatches(first_selector, *element, root_node, checker))
       SelectorQueryTrait::AppendElement(output, *element);
     return;
   }
@@ -358,7 +370,7 @@ template <typename SelectorQueryTrait>
 void SelectorQuery::Execute(
     ContainerNode& root_node,
     typename SelectorQueryTrait::OutputType& output) const {
-  if (selectors_.IsEmpty())
+  if (selectors_.empty())
     return;
 
   if (use_slow_scan_) {
@@ -453,7 +465,7 @@ SelectorQuery::SelectorQuery(CSSSelectorList selector_list)
 SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
                                        const Document& document,
                                        ExceptionState& exception_state) {
-  if (selectors.IsEmpty()) {
+  if (selectors.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "The provided selector is empty.");
     return nullptr;
@@ -464,18 +476,22 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
   if (it != entries_.end())
     return it->value.get();
 
-  CSSSelectorList selector_list = CSSParser::ParseSelector(
+  Arena arena;
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           document, document.BaseURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-      nullptr, selectors);
+      nullptr, selectors, arena);
 
-  if (!selector_list.First()) {
+  if (selector_vector.empty()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "'" + selectors + "' is not a valid selector.");
     return nullptr;
   }
+
+  CSSSelectorList selector_list =
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   const unsigned kMaximumSelectorQueryCacheSize = 256;
   if (entries_.size() == kMaximumSelectorQueryCacheSize)

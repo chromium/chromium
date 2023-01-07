@@ -1,22 +1,22 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
+#import "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/files/file.h"
-#include "base/files/file_enumerator.h"
-#include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/path_service.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/system/sys_info.h"
+#import "base/files/file.h"
+#import "base/files/file_enumerator.h"
+#import "base/files/file_path.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/path_service.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/string_split.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/system/sys_info.h"
 #import "components/previous_session_info/previous_session_info_private.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -80,8 +80,8 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
   ASSERT_EQ("", traversal.Next().value());
 
   // Config file name is "Config-<6 random characters>" (f.e. Config-S0Zl1r).
-  std::vector<std::string> config_file_path_components;
-  config_file_path.GetComponents(&config_file_path_components);
+  std::vector<std::string> config_file_path_components =
+      config_file_path.GetComponents();
   ASSERT_FALSE(config_file_path_components.empty());
   std::string config_file_name = config_file_path_components.back();
   ASSERT_EQ(13U, config_file_name.size()) << config_file_name;
@@ -89,8 +89,8 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
 
   // Minidump file name is "<UUID>.dmp" (f.e.
   // f83dfc0a-771e-4a99-8540-e430ab995307.dmp).
-  std::vector<std::string> minidump_file_path_components;
-  minidump_file_path.GetComponents(&minidump_file_path_components);
+  std::vector<std::string> minidump_file_path_components =
+      minidump_file_path.GetComponents();
   ASSERT_FALSE(minidump_file_path_components.empty());
   std::string minidump_file_name = minidump_file_path_components.back();
   ASSERT_EQ(40U, minidump_file_name.size()) << minidump_file_name;

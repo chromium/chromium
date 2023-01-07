@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,60 +6,60 @@
 
 #include "base/notreached.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace gfx {
 
-gfx::Transform OverlayTransformToTransform(
-    gfx::OverlayTransform overlay_transform,
-    const gfx::SizeF& viewport_bounds) {
+Transform OverlayTransformToTransform(OverlayTransform overlay_transform,
+                                      const SizeF& viewport_bounds) {
   switch (overlay_transform) {
-    case gfx::OVERLAY_TRANSFORM_INVALID:
+    case OVERLAY_TRANSFORM_INVALID:
       NOTREACHED();
-      return gfx::Transform();
-    case gfx::OVERLAY_TRANSFORM_NONE:
-      return gfx::Transform();
-    case gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL:
-      return gfx::Transform(
+      return Transform();
+    case OVERLAY_TRANSFORM_NONE:
+      return Transform();
+    case OVERLAY_TRANSFORM_FLIP_HORIZONTAL:
+      return SkMatrixToTransform(
           SkMatrix::MakeAll(-1, 0, viewport_bounds.width(), 0, 1, 0, 0, 0, 1));
-    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL:
-      return gfx::Transform(
+    case OVERLAY_TRANSFORM_FLIP_VERTICAL:
+      return SkMatrixToTransform(
           SkMatrix::MakeAll(1, 0, 0, 0, -1, viewport_bounds.height(), 0, 0, 1));
-    case gfx::OVERLAY_TRANSFORM_ROTATE_90:
-      return gfx::Transform(
+    case OVERLAY_TRANSFORM_ROTATE_90:
+      return SkMatrixToTransform(
           SkMatrix::MakeAll(0, -1, viewport_bounds.height(), 1, 0, 0, 0, 0, 1));
-    case gfx::OVERLAY_TRANSFORM_ROTATE_180:
-      return gfx::Transform(SkMatrix::MakeAll(-1, 0, viewport_bounds.width(), 0,
-                                              -1, viewport_bounds.height(), 0,
-                                              0, 1));
-    case gfx::OVERLAY_TRANSFORM_ROTATE_270:
-      return gfx::Transform(
+    case OVERLAY_TRANSFORM_ROTATE_180:
+      return SkMatrixToTransform(
+          SkMatrix::MakeAll(-1, 0, viewport_bounds.width(), 0, -1,
+                            viewport_bounds.height(), 0, 0, 1));
+    case OVERLAY_TRANSFORM_ROTATE_270:
+      return SkMatrixToTransform(
           SkMatrix::MakeAll(0, 1, 0, -1, 0, viewport_bounds.width(), 0, 0, 1));
   }
 
   NOTREACHED();
-  return gfx::Transform();
+  return Transform();
 }
 
-gfx::OverlayTransform InvertOverlayTransform(gfx::OverlayTransform transform) {
+OverlayTransform InvertOverlayTransform(OverlayTransform transform) {
   switch (transform) {
-    case gfx::OVERLAY_TRANSFORM_INVALID:
+    case OVERLAY_TRANSFORM_INVALID:
       NOTREACHED();
-      return gfx::OVERLAY_TRANSFORM_NONE;
-    case gfx::OVERLAY_TRANSFORM_NONE:
-      return gfx::OVERLAY_TRANSFORM_NONE;
-    case gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL:
-      return gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL;
-    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL:
-      return gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_90:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_270;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_180:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_180;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_270:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_90;
+      return OVERLAY_TRANSFORM_NONE;
+    case OVERLAY_TRANSFORM_NONE:
+      return OVERLAY_TRANSFORM_NONE;
+    case OVERLAY_TRANSFORM_FLIP_HORIZONTAL:
+      return OVERLAY_TRANSFORM_FLIP_HORIZONTAL;
+    case OVERLAY_TRANSFORM_FLIP_VERTICAL:
+      return OVERLAY_TRANSFORM_FLIP_VERTICAL;
+    case OVERLAY_TRANSFORM_ROTATE_90:
+      return OVERLAY_TRANSFORM_ROTATE_270;
+    case OVERLAY_TRANSFORM_ROTATE_180:
+      return OVERLAY_TRANSFORM_ROTATE_180;
+    case OVERLAY_TRANSFORM_ROTATE_270:
+      return OVERLAY_TRANSFORM_ROTATE_90;
   }
   NOTREACHED();
-  return gfx::OVERLAY_TRANSFORM_NONE;
+  return OVERLAY_TRANSFORM_NONE;
 }
 
 }  // namespace gfx

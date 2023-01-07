@@ -1,15 +1,17 @@
+# mypy: allow-untyped-defs
+
+import errno
 import json
 import os
-
 import signal
 import socket
 import sys
 import time
 
-from mozlog import get_default_logger, handlers, proxy
+from mozlog import get_default_logger, handlers
 
 from . import mpcontext
-from .wptlogging import LogLevelRewriter
+from .wptlogging import LogLevelRewriter, QueueHandler, LogQueueThread
 
 here = os.path.dirname(__file__)
 repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir, os.pardir))
@@ -46,20 +48,59 @@ def serve_path(test_paths):
     return test_paths["/"]["tests_path"]
 
 
+def webtranport_h3_server_is_running(host, port, timeout):
+    # TODO(bashi): Move the following import to the beginning of this file
+    # once WebTransportH3Server is enabled by default.
+    from webtransport.h3.webtransport_h3_server import server_is_running  # type: ignore
+    return server_is_running(host, port, timeout)
+
+
 class TestEnvironmentError(Exception):
     pass
 
 
-class TestEnvironment(object):
+def get_server_logger():
+    logger = get_default_logger(component="wptserve")
+    log_filter = handlers.LogLevelFilter(lambda x: x, "info")
+    # Downgrade errors to warnings for the server
+    log_filter = LogLevelRewriter(log_filter, ["error"], "warning")
+    logger.component_filter = log_filter
+    return logger
+
+
+class ProxyLoggingContext:
+    """Context manager object that handles setup and teardown of a log queue
+    for handling logging messages from wptserve."""
+
+    def __init__(self, logger):
+        mp_context = mpcontext.get_context()
+        self.log_queue = mp_context.Queue()
+        self.logging_thread = LogQueueThread(self.log_queue, logger)
+        self.logger_handler = QueueHandler(self.log_queue)
+
+    def __enter__(self):
+        self.logging_thread.start()
+        return self.logger_handler
+
+    def __exit__(self, *args):
+        self.log_queue.put(None)
+        # Wait for thread to shut down but not for too long since it's a daemon
+        self.logging_thread.join(1)
+
+
+class TestEnvironment:
     """Context manager that owns the test environment i.e. the http and
     websockets servers"""
     def __init__(self, test_paths, testharness_timeout_multipler,
                  pause_after_test, debug_test, debug_info, options, ssl_config, env_extras,
-                 enable_quic=False, mojojs_path=None):
+                 enable_webtransport=False, mojojs_path=None, inject_script=None):
+
         self.test_paths = test_paths
         self.server = None
         self.config_ctx = None
         self.config = None
+        self.server_logger = get_server_logger()
+        self.server_logging_ctx = ProxyLoggingContext(self.server_logger)
         self.testharness_timeout_multipler = testharness_timeout_multipler
         self.pause_after_test = pause_after_test
         self.debug_test = debug_test
@@ -73,18 +114,18 @@ class TestEnvironment(object):
         self.env_extras = env_extras
         self.env_extras_cms = None
         self.ssl_config = ssl_config
-        self.enable_quic = enable_quic
+        self.enable_webtransport = enable_webtransport
         self.mojojs_path = mojojs_path
+        self.inject_script = inject_script
 
     def __enter__(self):
+        server_log_handler = self.server_logging_ctx.__enter__()
         self.config_ctx = self.build_config()
 
         self.config = self.config_ctx.__enter__()
 
         self.stash.__enter__()
         self.cache_manager.__enter__()
-
-        self.setup_server_logging()
 
         assert self.env_extras_cms is None, (
             "A TestEnvironment object cannot be nested")
@@ -96,9 +137,12 @@ class TestEnvironment(object):
             cm.__enter__()
             self.env_extras_cms.append(cm)
 
-        self.servers = serve.start(self.config,
+        self.servers = serve.start(self.server_logger,
+                                   self.config,
                                    self.get_routes(),
-                                   mp_context=mpcontext.get_context())
+                                   mp_context=mpcontext.get_context(),
+                                   log_handlers=[server_log_handler],
+                                   webtransport_h3=self.enable_webtransport)
 
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:
             self.ignore_interrupts()
@@ -107,9 +151,12 @@ class TestEnvironment(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.process_interrupts()
 
-        for scheme, servers in self.servers.items():
-            for port, server in servers:
-                server.kill()
+        for servers in self.servers.values():
+            for _, server in servers:
+                server.request_shutdown()
+        for servers in self.servers.values():
+            for _, server in servers:
+                server.wait()
         for cm in self.env_extras_cms:
             cm.__exit__(exc_type, exc_val, exc_tb)
 
@@ -118,6 +165,7 @@ class TestEnvironment(object):
         self.cache_manager.__exit__(exc_type, exc_val, exc_tb)
         self.stash.__exit__()
         self.config_ctx.__exit__(exc_type, exc_val, exc_tb)
+        self.server_logging_ctx.__exit__(exc_type, exc_val, exc_tb)
 
     def ignore_interrupts(self):
         signal.signal(signal.SIGINT, signal.SIG_IGN)
@@ -128,17 +176,20 @@ class TestEnvironment(object):
     def build_config(self):
         override_path = os.path.join(serve_path(self.test_paths), "config.json")
 
-        config = serve.ConfigBuilder()
+        config = serve.ConfigBuilder(self.server_logger)
 
         ports = {
             "http": [8000, 8001],
+            "http-private": [8002],
+            "http-public": [8003],
             "https": [8443, 8444],
+            "https-private": [8445],
+            "https-public": [8446],
             "ws": [8888],
             "wss": [8889],
             "h2": [9000],
+            "webtransport-h3": [11000],
         }
-        if self.enable_quic:
-            ports["quic-transport"] = [10000]
         config.ports = ports
 
         if os.path.exists(override_path):
@@ -163,27 +214,8 @@ class TestEnvironment(object):
 
         return config
 
-    def setup_server_logging(self):
-        server_logger = get_default_logger(component="wptserve")
-        assert server_logger is not None
-        log_filter = handlers.LogLevelFilter(lambda x: x, "info")
-        # Downgrade errors to warnings for the server
-        log_filter = LogLevelRewriter(log_filter, ["error"], "warning")
-        server_logger.component_filter = log_filter
-
-        server_logger = proxy.QueuedProxyLogger(server_logger,
-                                                mpcontext.get_context())
-
-        try:
-            # Set as the default logger for wptserve
-            serve.set_logger(server_logger)
-            serve.logger = server_logger
-        except Exception:
-            # This happens if logging has already been set up for wptserve
-            pass
-
     def get_routes(self):
-        route_builder = serve.RoutesBuilder()
+        route_builder = serve.RoutesBuilder(inject_script=self.inject_script)
 
         for path, format_args, content_type, route in [
                 ("testharness_runner.html", {}, "text/html", "/testharness_runner.html"),
@@ -239,8 +271,8 @@ class TestEnvironment(object):
             if not pending:
                 return
             time.sleep(each_sleep_secs)
-        raise EnvironmentError("Servers failed to start: %s" %
-                               ", ".join("%s:%s" % item for item in failed))
+        raise OSError("Servers failed to start: %s" %
+                      ", ".join("%s:%s" % item for item in failed))
 
     def test_servers(self):
         failed = []
@@ -253,17 +285,44 @@ class TestEnvironment(object):
 
         if not failed and self.test_server_port:
             for scheme, servers in self.servers.items():
-                # TODO(Hexcles): Find a way to test QUIC's UDP port.
-                if scheme == "quic-transport":
-                    continue
                 for port, server in servers:
+                    if scheme == "webtransport-h3":
+                        if not webtranport_h3_server_is_running(host, port, timeout=5.0):
+                            # TODO(bashi): Consider supporting retry.
+                            failed.append((host, port))
+                        continue
                     s = socket.socket()
                     s.settimeout(0.1)
                     try:
                         s.connect((host, port))
-                    except socket.error:
+                    except OSError:
                         pending.append((host, port))
                     finally:
                         s.close()
 
         return failed, pending
+
+
+def wait_for_service(logger, host, port, timeout=60):
+    """Waits until network service given as a tuple of (host, port) becomes
+    available or the `timeout` duration is reached, at which point
+    ``socket.error`` is raised."""
+    addr = (host, port)
+    logger.debug(f"Trying to connect to {host}:{port}")
+    end = time.time() + timeout
+    while end > time.time():
+        so = socket.socket()
+        try:
+            so.connect(addr)
+        except socket.timeout:
+            pass
+        except OSError as e:
+            if e.errno != errno.ECONNREFUSED:
+                raise
+        else:
+            logger.debug(f"Connected to {host}:{port}")
+            return True
+        finally:
+            so.close()
+        time.sleep(0.5)
+    raise OSError("Service is unavailable: %s:%i" % addr)

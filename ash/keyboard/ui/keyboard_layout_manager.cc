@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/keyboard/ui/keyboard_layout_manager.h"
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

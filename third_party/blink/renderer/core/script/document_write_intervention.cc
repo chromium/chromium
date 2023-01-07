@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
@@ -119,7 +119,7 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
   if (!settings)
     return false;
 
-  if (!document.GetFrame() || !document.GetFrame()->IsMainFrame())
+  if (!document.IsInOutermostMainFrame())
     return false;
 
   // Only block synchronously loaded (parser blocking) scripts.
@@ -151,21 +151,11 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
   // getDomainAndRegistry will return the empty string for domains that are
   // already top-level, such as localhost. Thus we only compare domains if we
   // get non-empty results back from getDomainAndRegistry.
-  if (!request_domain.IsEmpty() && !document_domain.IsEmpty() &&
+  if (!request_domain.empty() && !document_domain.empty() &&
       request_domain == document_domain)
     same_site = true;
 
   if (same_site) {
-    // This histogram is introduced to help decide whether we should also check
-    // same scheme while deciding whether or not to block the script as is done
-    // in other cases of "same site" usage. On the other hand we do not want to
-    // block more scripts than necessary.
-    if (params.Url().Protocol() !=
-        document.domWindow()->GetSecurityOrigin()->Protocol()) {
-      document.Loader()->DidObserveLoadingBehavior(
-          LoadingBehaviorFlag::
-              kLoadingBehaviorDocumentWriteBlockDifferentScheme);
-    }
     return false;
   }
 
@@ -176,10 +166,6 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
   // reloads the page.
   const WebFrameLoadType load_type = document.Loader()->LoadType();
   if (IsReloadLoadType(load_type)) {
-    // Recording this metric since an increase in number of reloads for pages
-    // where a script was blocked could be indicative of a page break.
-    document.Loader()->DidObserveLoadingBehavior(
-        LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlockReload);
     AddWarningHeader(&params);
     return false;
   }
@@ -224,6 +210,7 @@ void PossiblyFetchBlockedDocWriteScript(
   FetchParameters params(options.CreateFetchParameters(
       resource->Url(), context->GetSecurityOrigin(), context->GetCurrentWorld(),
       cross_origin, resource->Encoding(), FetchParameters::kIdleLoad));
+  params.SetRenderBlockingBehavior(RenderBlockingBehavior::kNonBlocking);
   AddHeader(&params);
   ScriptResource::Fetch(params, element_document.Fetcher(), nullptr,
                         ScriptResource::kNoStreaming);

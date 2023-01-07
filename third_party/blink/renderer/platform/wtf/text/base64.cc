@@ -292,7 +292,7 @@ bool Base64Decode(const String& in,
                   Vector<char>& out,
                   CharacterMatchFunctionPtr should_ignore_character,
                   Base64DecodePolicy policy) {
-  if (in.IsEmpty())
+  if (in.empty())
     return Base64DecodeInternal<LChar>(nullptr, 0, out, should_ignore_character,
                                        policy);
   if (in.Is8Bit())

@@ -27,6 +27,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SHADOW_ROOT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SHADOW_ROOT_H_
 
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -42,6 +44,7 @@ class Document;
 class ExceptionState;
 class GetInnerHTMLOptions;
 class SlotAssignment;
+class V8ObservableArrayCSSStyleSheet;
 class WhitespaceAttacher;
 
 enum class ShadowRootType { kOpen, kClosed, kUserAgent };
@@ -63,6 +66,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   // Make protected methods from base class public here.
   using TreeScope::SetDocument;
   using TreeScope::SetParentTreeScope;
+
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(slotchange, kSlotchange)
 
   Element& host() const {
     DCHECK(ParentOrShadowHostNode());
@@ -87,11 +92,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
 
   bool IsOpen() const { return GetType() == ShadowRootType::kOpen; }
   bool IsUserAgent() const { return GetType() == ShadowRootType::kUserAgent; }
-
-  // TODO(crbug.com/1179356) This tracks adding name based slot assignment
-  // support for user-agent Shadow DOM.
-  void EnableNameBasedSlotAssignment();
-  bool SupportsNameBasedSlotAssignment() const;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
@@ -138,11 +138,15 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
     return slot_assignment_mode_ ==
            static_cast<unsigned>(SlotAssignmentMode::kManual);
   }
+  bool IsNamedSlotting() const {
+    return slot_assignment_mode_ ==
+           static_cast<unsigned>(SlotAssignmentMode::kNamed);
+  }
   SlotAssignmentMode GetSlotAssignmentMode() const {
     return static_cast<SlotAssignmentMode>(slot_assignment_mode_);
   }
   String slotAssignment() const {
-    return IsManualSlotting() ? "manual" : "auto";
+    return IsManualSlotting() ? "manual" : "named";
   }
 
   void SetIsDeclarativeShadowRoot(bool flag) {
@@ -168,6 +172,16 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
     return needs_dir_auto_attribute_update_;
   }
 
+  void SetHasFocusgroupAttributeOnDescendant(bool flag) {
+    has_focusgroup_attribute_on_descendant_ = flag;
+  }
+  bool HasFocusgroupAttributeOnDescendant() const {
+    return has_focusgroup_attribute_on_descendant_;
+  }
+
+  void SetRegistry(CustomElementRegistry*);
+  CustomElementRegistry* registry() const { return registry_; }
+
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
   StyleSheetList& StyleSheets();
@@ -176,6 +190,17 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   }
 
   void Trace(Visitor*) const override;
+
+ protected:
+  void OnAdoptedStyleSheetSet(ScriptState*,
+                              V8ObservableArrayCSSStyleSheet&,
+                              uint32_t,
+                              Member<CSSStyleSheet>&,
+                              ExceptionState&) override;
+  void OnAdoptedStyleSheetDelete(ScriptState*,
+                                 V8ObservableArrayCSSStyleSheet&,
+                                 uint32_t,
+                                 ExceptionState&) override;
 
  private:
   void ChildrenChanged(const ChildrenChange&) override;
@@ -190,6 +215,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
 
   Member<StyleSheetList> style_sheet_list_;
   Member<SlotAssignment> slot_assignment_;
+  Member<CustomElementRegistry> registry_;
   unsigned child_shadow_root_count_ : 16;
   unsigned type_ : 2;
   unsigned registered_with_parent_shadow_root_ : 1;
@@ -198,7 +224,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   unsigned is_declarative_shadow_root_ : 1;
   unsigned available_to_element_internals_ : 1;
   unsigned needs_dir_auto_attribute_update_ : 1;
-  unsigned supports_name_based_slot_assignment_ : 1;
+  unsigned has_focusgroup_attribute_on_descendant_ : 1;
   unsigned unused_ : 7;
 };
 

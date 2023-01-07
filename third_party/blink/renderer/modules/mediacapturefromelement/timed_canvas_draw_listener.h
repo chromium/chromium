@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 
 #include <memory>
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_handler.h"
 #include "third_party/blink/renderer/modules/mediacapturefromelement/on_request_canvas_draw_listener.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -38,4 +39,4 @@ class TimedCanvasDrawListener final : public OnRequestCanvasDrawListener {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIACAPTUREFROMELEMENT_TIMED_CANVAS_DRAW_LISTENER_H_

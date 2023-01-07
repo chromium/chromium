@@ -1,0 +1,31 @@
+caption: Allow legacy TLS/DTLS downgrade in WebRTC
+default: false
+desc: |-
+  If enabled, WebRTC peer connections can downgrade to obsolete
+        versions of the TLS/DTLS (DTLS 1.0, TLS 1.0 and TLS 1.1) protocols.
+        When this policy is disabled or not set, these TLS/DTLS versions are
+        disabled.
+
+        This policy is temporary and will be removed in a future version
+        of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Allow WebRTC to use obsolete versions of the TLD/DTLS protocol
+  value: true
+- caption: Prevent WebRTC from using obsolete versions of TLS/DTLS
+  value: false
+owners:
+- hta@chromium.org
+- guidou@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:87-
+- chrome_os:87-
+tags: []
+type: main

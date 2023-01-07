@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,44 +7,55 @@ import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
 source_set("lib") {
-  sources = [
-    "pdf_nup_converter.cc",
-    "pdf_nup_converter.h",
-    "pdf_to_pwg_raster_converter.cc",
-    "pdf_to_pwg_raster_converter.h",
-    "printing_service.cc",
-    "printing_service.h",
-  ]
+  sources = []
 
-  deps = [
-    "//build:chromeos_buildflags",
-    "//components/crash/core/common:crash_key",
-    "//pdf",
-    "//printing",
-    "//printing/mojom",
-    "//ui/gfx",
-  ]
+  deps = []
+
+  public_deps = []
 
   if (enable_print_preview) {
-    deps += [ "//components/pwg_encoder" ]
+    sources = [
+      "pdf_nup_converter.cc",
+      "pdf_nup_converter.h",
+      "pdf_to_pwg_raster_converter.cc",
+      "pdf_to_pwg_raster_converter.h",
+      "printing_service.cc",
+      "printing_service.h",
+    ]
+
+    public_deps += [
+      "//base",
+      "//chrome/services/printing/public/mojom",
+      "//mojo/public/cpp/bindings",
+    ]
+
+    deps += [
+      "//build:chromeos_buildflags",
+      "//components/crash/core/common:crash_key",
+      "//components/pwg_encoder",
+      "//pdf",
+      "//printing",
+      "//printing/backend",
+      "//printing/mojom",
+    ]
   }
 
-  public_deps = [
-    "//base",
-    "//chrome/services/printing/public/mojom",
-    "//mojo/public/cpp/bindings",
-  ]
-
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "pdf_flattener.cc",
       "pdf_flattener.h",
+    ]
+
+    deps += [ "//pdf" ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
       "pdf_thumbnailer.cc",
       "pdf_thumbnailer.h",
     ]
 
     deps += [
-      "//build:chromeos_buildflags",
       "//pdf",
       "//ui/gfx/codec",
     ]
@@ -58,19 +69,41 @@ source_set("lib") {
       "pdf_to_emf_converter_factory.h",
     ]
 
-    deps += [ "//skia" ]
+    deps += [
+      "//skia",
+      "//ui/gfx",
+    ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos) {
+  if (enable_oop_printing) {
     sources += [
       "print_backend_service_impl.cc",
       "print_backend_service_impl.h",
     ]
-    deps += [ "//chrome/common/printing" ]
+
+    public_deps += [
+      "//base",
+      "//chrome/services/printing/public/mojom",
+      "//mojo/public/cpp/bindings",
+    ]
+
+    deps += [
+      "//chrome/common/printing",
+      "//components/crash/core/common",
+      "//ui/gfx",
+    ]
+
+    if (is_linux) {
+      deps += [
+        "//ui/linux:linux_ui",
+        "//ui/linux:linux_ui_factory",
+      ]
+    }
   }
 }
 
 if (is_chromeos_ash) {
+  assert(enable_print_preview)
   source_set("pdf_thumbnailer_test") {
     testonly = true
     sources = [ "pdf_thumbnailer_unittest.cc" ]

@@ -1,4 +1,4 @@
-# Copyright 2017 The Crashpad Authors. All rights reserved.
+# Copyright 2017 The Crashpad Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@ import("build/test.gni")
 import("util/net/tls.gni")
 
 config("crashpad_config") {
-  include_dirs = [ "." ]
+  include_dirs = [
+    ".",
+    root_gen_dir,
+  ]
 }
 
 if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
@@ -25,6 +28,7 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
     deps = [
       "client:client_test",
       "minidump:minidump_test",
+      "snapshot:snapshot_test",
       "test:googlemock_main",
       "test:test_test",
       "util:util_test",
@@ -32,9 +36,6 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
 
     data_deps = [ "//testing/buildbot/filters:crashpad_tests_filters" ]
 
-    if (!crashpad_is_ios) {
-      deps += [ "snapshot:snapshot_test" ]
-    }
     if (!crashpad_is_ios && !crashpad_is_fuchsia) {
       deps += [ "handler:handler_test" ]
     }
@@ -67,9 +68,9 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
   }
 
   if (crashpad_is_in_fuchsia) {
-    import("//src/sys/build/components.gni")
+    import("//build/components.gni")
     fuchsia_test_component("crashpad-test-component") {
-      manifest = "test/fuchsia_crashpad_tests.cmx"
+      manifest = "test/fuchsia_crashpad_tests.cml"
       deps = [
         ":crashpad-test-resources",
         ":crashpad_tests",
@@ -84,6 +85,17 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
 
     fuchsia_test_package("crashpad-test") {
       test_components = [ ":crashpad-test-component" ]
+
+      deps = [
+        "//src/connectivity/network/dns:component",
+        "//src/connectivity/network/netstack:component",
+      ]
+
+      test_specs = {
+        log_settings = {
+          max_severity = "FATAL"
+        }
+      }
     }
 
     _resource_files = [
@@ -151,11 +163,8 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
   test("crashpad_snapshot_test") {
     deps = [
       "snapshot:snapshot_test",
-      "test:googletest_main",
+      "test:googlemock_main",
     ]
-    if (crashpad_is_ios) {
-      deps -= [ "snapshot:snapshot_test" ]
-    }
   }
 
   test("crashpad_test_test") {

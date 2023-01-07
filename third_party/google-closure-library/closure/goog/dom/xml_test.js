@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.dom.xmlTest');
 goog.setTestOnly();
@@ -45,50 +37,6 @@ testSuite({
 
     const serializedDoc = domXml.serialize(doc);
     assertTrue(/(<\?xml version="1.0"\?>)?<root ?\/>/.test(serializedDoc));
-  },
-
-  testBelowMaxDepthInIE() {
-    if (userAgent.IE && !userAgent.isVersionOrHigher('9')) {
-      // This value is only effective in IE8 and below
-      domXml.MAX_ELEMENT_DEPTH = 5;
-      const junk = '<a><b><c><d><e>Hello</e></d></c></b></a>';
-      const doc = domXml.loadXml(junk);
-      assertEquals(
-          'Should not have caused a parse error', 0, Number(doc.parseError));
-    }
-  },
-
-  testAboveMaxDepthInIE() {
-    if (userAgent.IE && !userAgent.isVersionOrHigher('9')) {
-      // This value is only effective in IE8 and below
-      domXml.MAX_ELEMENT_DEPTH = 4;
-      const junk = '<a><b><c><d><e>Hello</e></d></c></b></a>';
-      const doc = domXml.loadXml(junk);
-      assertNotEquals(
-          'Should have caused a parse error', 0, Number(doc.parseError));
-    }
-  },
-
-  testBelowMaxSizeInIE() {
-    if (userAgent.IE && !userAgent.isVersionOrHigher('9')) {
-      // This value is only effective in IE8 and below
-      domXml.MAX_XML_SIZE_KB = 1;
-      const junk = '<a>' + new Array(50).join('<b>junk</b>') + '</a>';
-      const doc = domXml.loadXml(junk);
-      assertEquals(
-          'Should not have caused a parse error', 0, Number(doc.parseError));
-    }
-  },
-
-  testMaxSizeInIE() {
-    if (userAgent.IE && !userAgent.isVersionOrHigher('9')) {
-      // This value is only effective in IE8 and below
-      domXml.MAX_XML_SIZE_KB = 1;
-      const junk = '<a>' + new Array(1000).join('<b>junk</b>') + '</a>';
-      const doc = domXml.loadXml(junk);
-      assertNotEquals(
-          'Should have caused a parse error', 0, Number(doc.parseError));
-    }
   },
 
   testSelectSingleNodeNoActiveX() {

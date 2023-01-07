@@ -1,10 +1,31 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
 import("//media/media_options.gni")
 import("//remoting/remoting_options.gni")
+
+static_library("errors") {
+  sources = [
+    "errors.cc",
+    "errors.h",
+  ]
+  deps = [ "//remoting/base:base" ]
+}
+
+static_library("transport") {
+  sources = [
+    "transport.cc",
+    "transport.h",
+  ]
+  deps = [
+    ":errors",
+    "//base",
+    "//net",
+    "//remoting/base:base",
+  ]
+}
 
 static_library("protocol") {
   sources = [
@@ -17,7 +38,6 @@ static_library("protocol") {
     "auth_util.h",
     "authenticator.cc",
     "authenticator.h",
-    "bandwidth_estimator.h",
     "capability_names.h",
     "channel_authenticator.h",
     "channel_dispatcher_base.cc",
@@ -56,10 +76,9 @@ static_library("protocol") {
     "data_channel_manager.cc",
     "data_channel_manager.h",
     "datagram_channel_factory.h",
+    "desktop_capturer.h",
     "display_size.cc",
     "display_size.h",
-    "errors.cc",
-    "errors.h",
     "file_transfer_helpers.cc",
     "file_transfer_helpers.h",
     "frame_consumer.h",
@@ -139,7 +158,6 @@ static_library("protocol") {
     "port_allocator_factory.h",
     "port_range.cc",
     "port_range.h",
-    "process_stats_stub.h",
     "pseudotcp_adapter.cc",
     "pseudotcp_adapter.h",
     "pseudotcp_channel_factory.cc",
@@ -153,8 +171,6 @@ static_library("protocol") {
     "secure_channel_factory.cc",
     "secure_channel_factory.h",
     "session.h",
-    "session_config.cc",
-    "session_config.h",
     "session_manager.h",
     "session_options_provider.h",
     "session_plugin.h",
@@ -179,8 +195,6 @@ static_library("protocol") {
     "third_party_host_authenticator.cc",
     "third_party_host_authenticator.h",
     "token_validator.h",
-    "transport.cc",
-    "transport.h",
     "transport_context.cc",
     "transport_context.h",
     "v2_authenticator.cc",
@@ -195,47 +209,46 @@ static_library("protocol") {
     "webrtc_audio_module.h",
     "webrtc_audio_sink_adapter.cc",
     "webrtc_audio_sink_adapter.h",
-    "webrtc_bandwidth_estimator.cc",
-    "webrtc_bandwidth_estimator.h",
     "webrtc_connection_to_host.cc",
     "webrtc_connection_to_host.h",
     "webrtc_data_stream_adapter.cc",
     "webrtc_data_stream_adapter.h",
-    "webrtc_dummy_video_encoder.cc",
-    "webrtc_dummy_video_encoder.h",
     "webrtc_event_log_data.cc",
     "webrtc_event_log_data.h",
     "webrtc_transport.cc",
     "webrtc_transport.h",
     "webrtc_video_renderer_adapter.cc",
     "webrtc_video_renderer_adapter.h",
-    "webrtc_video_track_source.cc",
-    "webrtc_video_track_source.h",
   ]
 
   configs += [
     "//build/config:precompiled_headers",
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config/compiler:wexit_time_destructors",
   ]
 
   public_deps = [
+    ":errors",
+    ":session_config",
+    ":transport",
     "//remoting/proto",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/webrtc:net_address_utils",
+    "//components/webrtc:thread_wrapper",
     "//crypto",
     "//google_apis:google_apis",
-    "//jingle:jingle_glue",
-    "//jingle:webrtc_glue",
     "//net",
     "//remoting/base",
+    "//remoting/base:authorization",
+    "//remoting/base:logging",
     "//remoting/codec:decoder",
     "//remoting/proto/remoting/v1:network_traversal_proto",
     "//remoting/signaling",
     "//services/network/public/cpp:cpp",
+    "//third_party/abseil-cpp:absl",
     "//third_party/boringssl",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -244,8 +257,8 @@ static_library("protocol") {
 
   defines = []
 
-  # Must match condition in //remoting/codec/BUILD.gn
-  if (is_win || is_linux || is_chromeos) {
+  # Must be a subset of the platforms built in //remoting/codec/BUILD.gn
+  if (is_win) {
     defines += [ "USE_H264_ENCODER" ]
     deps += [
       "//media",
@@ -272,14 +285,35 @@ static_library("protocol") {
       "webrtc_connection_to_client.cc",
       "webrtc_connection_to_client.h",
       "webrtc_frame_scheduler.h",
-      "webrtc_frame_scheduler_simple.cc",
-      "webrtc_frame_scheduler_simple.h",
+      "webrtc_frame_scheduler_constant_rate.cc",
+      "webrtc_frame_scheduler_constant_rate.h",
+      "webrtc_video_encoder_factory.cc",
+      "webrtc_video_encoder_factory.h",
+      "webrtc_video_encoder_wrapper.cc",
+      "webrtc_video_encoder_wrapper.h",
+      "webrtc_video_frame_adapter.cc",
+      "webrtc_video_frame_adapter.h",
       "webrtc_video_stream.cc",
       "webrtc_video_stream.h",
+      "webrtc_video_track_source.cc",
+      "webrtc_video_track_source.h",
     ]
 
-    deps += [ "//remoting/codec:encoder" ]
+    deps += [
+      "//media:media",
+      "//media:shared_memory_support",
+      "//remoting/codec:encoder",
+    ]
   }
+}
+
+static_library("session_config") {
+  sources = [
+    "session_config.cc",
+    "session_config.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 static_library("test_support") {
@@ -366,7 +400,6 @@ source_set("unit_tests") {
     "negotiating_authenticator_unittest.cc",
     "pairing_registry_unittest.cc",
     "port_range_unittest.cc",
-    "ppapi_module_stub.cc",
     "pseudotcp_adapter_unittest.cc",
     "remoting_ice_config_request_unittest.cc",
     "sdp_message_unittest.cc",
@@ -377,7 +410,6 @@ source_set("unit_tests") {
     "v2_authenticator_unittest.cc",
     "validating_authenticator_unittest.cc",
     "webrtc_event_log_data_unittest.cc",
-    "webrtc_transport_unittest.cc",
   ]
 
   if (enable_remoting_host) {
@@ -388,12 +420,16 @@ source_set("unit_tests") {
       "video_frame_pump_unittest.cc",
       "webrtc_audio_source_adapter_unittest.cc",
       "webrtc_frame_scheduler_unittest.cc",
+      "webrtc_transport_unittest.cc",
+      "webrtc_video_encoder_wrapper_unittest.cc",
+      "webrtc_video_frame_adapter_unittest.cc",
+      "webrtc_video_track_source_unittest.cc",
     ]
   }
 
   deps = [
     ":test_support",
-    "//jingle:webrtc_glue",
+    "//components/webrtc:thread_wrapper",
     "//net:test_support",
     "//remoting/base:base",
     "//remoting/base:test_support",
@@ -404,6 +440,5 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libjingle_xmpp:rtc_xmllite",
-    "//third_party/libjingle_xmpp:rtc_xmpp",
   ]
 }

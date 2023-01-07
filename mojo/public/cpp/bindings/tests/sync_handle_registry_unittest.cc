@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,13 @@ class SyncHandleRegistryTest : public testing::Test {
  public:
   SyncHandleRegistryTest() : registry_(SyncHandleRegistry::current()) {}
 
+  SyncHandleRegistryTest(const SyncHandleRegistryTest&) = delete;
+  SyncHandleRegistryTest& operator=(const SyncHandleRegistryTest&) = delete;
+
   const scoped_refptr<SyncHandleRegistry>& registry() { return registry_; }
 
  private:
   scoped_refptr<SyncHandleRegistry> registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncHandleRegistryTest);
 };
 
 TEST_F(SyncHandleRegistryTest, DuplicateEventRegistration) {

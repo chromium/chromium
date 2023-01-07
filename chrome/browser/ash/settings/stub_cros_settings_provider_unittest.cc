@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/values.h"
-#include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -32,7 +32,7 @@ class StubCrosSettingsProviderTest : public testing::Test {
   void AssertPref(const std::string& prefName, const base::Value* value) {
     const base::Value* pref = provider_->Get(prefName);
     ASSERT_TRUE(pref);
-    ASSERT_TRUE(pref->Equals(value));
+    ASSERT_EQ(*pref, *value);
   }
 
   void ExpectObservers(const std::string& prefName, int count) {
@@ -59,7 +59,6 @@ TEST_F(StubCrosSettingsProviderTest, Defaults) {
   AssertPref(kAccountsPrefAllowGuest, &kTrueValue);
   AssertPref(kAccountsPrefAllowNewUser, &kTrueValue);
   AssertPref(kAccountsPrefShowUserNamesOnSignIn, &kTrueValue);
-  AssertPref(kAccountsPrefSupervisedUsersEnabled, &kTrueValue);
 
   const base::Value kFalseValue(false);
   AssertPref(kAccountsPrefFamilyLinkAccountsAllowed, &kFalseValue);

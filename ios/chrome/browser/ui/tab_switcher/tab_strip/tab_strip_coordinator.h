@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ class Browser;
 // Coordinator for the tab strip.
 @interface TabStripCoordinator : ChromeCoordinator
 
-// Initializes this Coordinator with its |browser| and a nil base view
+// Initializes this Coordinator with its `browser` and a nil base view
 // controller.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 

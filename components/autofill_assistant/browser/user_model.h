@@ -1,25 +1,31 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_USER_MODEL_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_USER_MODEL_H_
 
-#include <map>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/model.pb.h"
 #include "components/autofill_assistant/browser/value_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace autofill {
+class AutofillProfile;
+class CreditCard;
+}  // namespace autofill
+
 namespace autofill_assistant {
+
+class UserData;
+struct LoginChoice;
+struct CollectUserDataOptions;
 
 // Manages a map of |ValueProto| instances and notifies observers of changes.
 //
@@ -38,7 +44,11 @@ class UserModel {
   };
 
   UserModel();
-  ~UserModel();
+
+  UserModel(const UserModel&) = delete;
+  UserModel& operator=(const UserModel&) = delete;
+
+  virtual ~UserModel();
 
   base::WeakPtr<UserModel> GetWeakPtr();
 
@@ -54,45 +64,89 @@ class UserModel {
   // replaced (see |AddIdentifierPlaceholders|).
   // - Also supports the array operator to retrieve
   // a specific element of a list, e.g., "identifier[0]" to get the first item.
-  base::Optional<ValueProto> GetValue(const std::string& identifier) const;
+  absl::optional<ValueProto> GetValue(const std::string& identifier) const;
 
   // Returns the value for |reference| or nullopt if there is no such value.
-  base::Optional<ValueProto> GetValue(
+  absl::optional<ValueProto> GetValue(
       const ValueReferenceProto& reference) const;
 
   // Returns all specified values in a new std::vector. Returns nullopt if any
   // of the requested values was not found.
   template <class T>
-  base::Optional<std::vector<ValueProto>> GetValues(
+  absl::optional<std::vector<ValueProto>> GetValues(
       const T& value_references) const {
     std::vector<ValueProto> values;
     for (const auto& reference : value_references) {
       auto value = GetValue(reference);
       if (!value.has_value()) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       values.emplace_back(*value);
     }
     return values;
   }
 
+  void SetPhoneNumbers(
+      std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
+          profiles);
+
   // Replaces the set of available autofill credit cards.
   void SetAutofillCreditCards(
       std::unique_ptr<std::vector<std::unique_ptr<autofill::CreditCard>>>
           credit_cards);
+
+  // Sets the selected credit card. A nullptr |card| will clear the selected
+  // card. This also sets it to |user_data|.
+  // TODO(b/187286050) complete the migration to UserModel and remove UserData.
+  virtual void SetSelectedCreditCard(std::unique_ptr<autofill::CreditCard> card,
+                                     UserData* user_data);
+
+  // Sets the selected login choice. A nullptr |login_choice| will clear the
+  // selected login choice. This sets it to |user_data|.
+  // TODO(b/187286050) complete the migration to UserModel and remove UserData.
+  void SetSelectedLoginChoice(std::unique_ptr<LoginChoice> login_choice,
+                              UserData* user_data);
+
+  // Sets the selected login choice. If the identifier can not be found the
+  // selected login choice will be cleared. This sets it to |user_data|.
+  // TODO(b/187286050) complete the migration to UserModel and remove UserData.
+  void SetSelectedLoginChoiceByIdentifier(
+      const std::string& identifier,
+      const CollectUserDataOptions& collect_user_data_options,
+      UserData* user_data);
 
   // Replaces the set of available autofill profiles.
   void SetAutofillProfiles(
       std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
           profiles);
 
+  // Sets the selected autofill profile for |profile_name|. A nullptr |profile|
+  // will clear the entry. The profile is also set in |user_data|.
+  // TODO(b/187286050) complete the migration to UserModel and remove UserData.
+  virtual void SetSelectedAutofillProfile(
+      const std::string& profile_name,
+      std::unique_ptr<autofill::AutofillProfile> profile,
+      UserData* user_data);
+
   void SetCurrentURL(GURL current_url);
 
-  // Returns the credit card with |guid| or nullptr if there is no such card.
-  const autofill::CreditCard* GetCreditCard(const std::string& guid) const;
+  // Returns the credit card specified by |proto| or nullptr if there is no such
+  // card.
+  const autofill::CreditCard* GetCreditCard(
+      const AutofillCreditCardProto& proto) const;
 
-  // Returns the profile with |guid| or nullptr if there is no such profile.
-  const autofill::AutofillProfile* GetProfile(const std::string& guid) const;
+  // Returns the selected credit card or nullptr if no card has been selected.
+  const autofill::CreditCard* GetSelectedCreditCard() const;
+
+  // Returns the profile specified by |proto| or nullptr if there is no such
+  // profile.
+  const autofill::AutofillProfile* GetProfile(
+      const AutofillProfileProto& proto) const;
+
+  // Returns the selected profile for the specified |profile_name| or nullptr if
+  // there is no such profile.
+  const autofill::AutofillProfile* GetSelectedAutofillProfile(
+      const std::string& profile_name) const;
 
   GURL GetCurrentURL() const;
 
@@ -112,13 +166,23 @@ class UserModel {
  private:
   friend class UserModelTest;
 
-  std::map<std::string, ValueProto> values_;
-  std::map<std::string, std::unique_ptr<autofill::CreditCard>> credit_cards_;
-  std::map<std::string, std::unique_ptr<autofill::AutofillProfile>> profiles_;
+  base::flat_map<std::string, ValueProto> values_;
+  // Guid to credit card map.
+  base::flat_map<std::string, std::unique_ptr<autofill::CreditCard>>
+      credit_cards_;
+  // The selected credit card.
+  std::unique_ptr<autofill::CreditCard> selected_card_;
+  // Guid to profile map.
+  base::flat_map<std::string, std::unique_ptr<autofill::AutofillProfile>>
+      profiles_;
+  // Profile name to profile map.
+  base::flat_map<std::string, std::unique_ptr<autofill::AutofillProfile>>
+      selected_profiles_;
+  std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
+      phone_numbers_;
   GURL current_url_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<UserModel> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UserModel);
 };
 
 }  //  namespace autofill_assistant

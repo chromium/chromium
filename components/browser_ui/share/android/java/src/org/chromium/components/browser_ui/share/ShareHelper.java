@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.share;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -29,6 +28,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -38,6 +38,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
@@ -71,11 +72,33 @@ public class ShareHelper {
 
     private static final String EXTRA_SHARE_SCREENSHOT_AS_STREAM = "share_screenshot_as_stream";
 
+    /** The string identifier used as a key to set the extra stream's alt text */
+    private static final String EXTRA_STREAM_ALT_TEXT = "android.intent.extra.STREAM_ALT_TEXT";
+
     /** Force the use of a Chrome-specific intent chooser, not the system chooser. */
     private static boolean sForceCustomChooserForTesting;
 
     /** If non-null, will be used instead of the real activity. */
     private static FakeIntentReceiver sFakeIntentReceiverForTesting;
+
+    private static final String ANY_SHARE_HISTOGRAM_NAME = "Sharing.AnyShareStarted";
+
+    // These values are recorded as histogram values. Entries should not be
+    // renumbered and numeric values should never be reused.
+    @IntDef({ShareSourceAndroid.ANDROID_SHARE_SHEET, ShareSourceAndroid.CHROME_SHARE_SHEET,
+            ShareSourceAndroid.DIRECT_SHARE})
+    public @interface ShareSourceAndroid {
+        // This share is going via the Android share sheet.
+        int ANDROID_SHARE_SHEET = 0;
+
+        // This share is going via Chrome's share sheet.
+        int CHROME_SHARE_SHEET = 1;
+
+        // This share is happening via directly intenting to a specific share
+        // target.
+        int DIRECT_SHARE = 2;
+        int COUNT = 3;
+    };
 
     protected ShareHelper() {}
 
@@ -142,7 +165,6 @@ public class ShareHelper {
                     && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1;
         }
 
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
         public static void sendChooserIntent(WindowAndroid window, Intent sharingIntent,
                 @Nullable TargetChosenCallback callback) {
             final Context context = ContextUtils.getApplicationContext();
@@ -159,8 +181,8 @@ public class ShareHelper {
                     sLastRegisteredReceiver.cancel();
                 }
                 sLastRegisteredReceiver = new TargetChosenReceiver(callback);
-                context.registerReceiver(
-                        sLastRegisteredReceiver, new IntentFilter(sTargetChosenReceiveAction));
+                ContextUtils.registerNonExportedBroadcastReceiver(context, sLastRegisteredReceiver,
+                        new IntentFilter(sTargetChosenReceiveAction));
             }
 
             Intent intent = new Intent(sTargetChosenReceiveAction);
@@ -199,7 +221,7 @@ public class ShareHelper {
         }
 
         @Override
-        public void onIntentCompleted(WindowAndroid window, int resultCode, Intent data) {
+        public void onIntentCompleted(int resultCode, Intent data) {
             // NOTE: The validity of the returned |resultCode| is somewhat unexpected. For
             // background, a sharing flow starts with a "Chooser" activity that enables the user
             // to select the app to share to, and then when the user selects that application,
@@ -244,7 +266,7 @@ public class ShareHelper {
         final ShareDialogAdapter adapter =
                 new ShareDialogAdapter(context, manager, resolveInfoList);
         AlertDialog.Builder builder =
-                new AlertDialog.Builder(context, R.style.Theme_Chromium_AlertDialog);
+                new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog);
         builder.setTitle(context.getString(R.string.share_link_chooser_title));
         builder.setAdapter(adapter, null);
 
@@ -304,9 +326,11 @@ public class ShareHelper {
     public static void shareWithUi(ShareParams params) {
         if (TargetChosenReceiver.isSupported()) {
             // On LMR1+ open system share sheet.
+            recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
             shareWithSystemSheet(params);
         } else {
             // On L and below open custom share dialog.
+            recordShareSource(ShareSourceAndroid.CHROME_SHARE_SHEET);
             showCompatShareDialog(params);
         }
     }
@@ -360,11 +384,20 @@ public class ShareHelper {
             if (isFileShare) {
                 intent.setType(params.getFileContentType());
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                final boolean hasAltText =
+                        params.getFileAltTexts() != null && !params.getFileAltTexts().isEmpty();
 
                 if (isMultipleFileShare) {
                     intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, params.getFileUris());
+                    if (hasAltText) {
+                        intent.putStringArrayListExtra(
+                                EXTRA_STREAM_ALT_TEXT, params.getFileAltTexts());
+                    }
                 } else {
                     intent.putExtra(Intent.EXTRA_STREAM, params.getFileUris().get(0));
+                    if (hasAltText) {
+                        intent.putExtra(EXTRA_STREAM_ALT_TEXT, params.getFileAltTexts().get(0));
+                    }
                 }
             } else {
                 intent.setType("text/plain");
@@ -403,5 +436,14 @@ public class ShareHelper {
             // Could not find the icon. loadIcon call below will return the default app icon.
         }
         return info.loadIcon(manager);
+    }
+
+    /**
+     * Log that a share happened through some means other than ShareHelper.
+     * @param source The share source.
+     */
+    public static void recordShareSource(int source) {
+        RecordHistogram.recordEnumeratedHistogram(
+                ANY_SHARE_HISTOGRAM_NAME, source, ShareSourceAndroid.COUNT);
     }
 }

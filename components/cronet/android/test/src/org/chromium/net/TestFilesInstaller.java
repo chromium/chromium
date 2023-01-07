@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ import org.chromium.base.test.util.UrlUtils;
  */
 public final class TestFilesInstaller {
     // Name of the asset directory in which test files are stored.
-    private static final String TEST_FILE_ASSET_PATH = "components/cronet/test/data";
+    private static final String TEST_FILE_ASSET_PATH = "components/cronet/testing/test_server/data";
 
     /**
      * Installs test files if files have not been installed.

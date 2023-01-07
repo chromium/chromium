@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,55 +14,34 @@
 
 namespace net {
 
-namespace {
-
-std::string CertSlotsString(CERTCertificate* cert) {
-  std::string result;
-  crypto::ScopedPK11SlotList slots_for_cert(
-      PK11_GetAllSlotsForCert(cert, NULL));
-  for (PK11SlotListElement* slot_element =
-           PK11_GetFirstSafe(slots_for_cert.get());
-       slot_element;
-       slot_element =
-           PK11_GetNextSafe(slots_for_cert.get(), slot_element, PR_FALSE)) {
-    if (!result.empty())
-      result += ',';
-    base::StringAppendF(&result,
-                        "%lu:%lu",
-                        PK11_GetModuleID(slot_element->slot),
-                        PK11_GetSlotID(slot_element->slot));
-  }
-  return result;
-}
-
-}  // namespace
-
 NSSProfileFilterChromeOS::NSSProfileFilterChromeOS() = default;
 
 NSSProfileFilterChromeOS::NSSProfileFilterChromeOS(
     const NSSProfileFilterChromeOS& other) {
-  public_slot_.reset(other.public_slot_ ?
-      PK11_ReferenceSlot(other.public_slot_.get()) :
-      NULL);
-  private_slot_.reset(other.private_slot_ ?
-      PK11_ReferenceSlot(other.private_slot_.get()) :
-      NULL);
-  system_slot_.reset(
-      other.system_slot_ ? PK11_ReferenceSlot(other.system_slot_.get()) : NULL);
+  public_slot_.reset(other.public_slot_
+                         ? PK11_ReferenceSlot(other.public_slot_.get())
+                         : nullptr);
+  private_slot_.reset(other.private_slot_
+                          ? PK11_ReferenceSlot(other.private_slot_.get())
+                          : nullptr);
+  system_slot_.reset(other.system_slot_
+                         ? PK11_ReferenceSlot(other.system_slot_.get())
+                         : nullptr);
 }
 
 NSSProfileFilterChromeOS::~NSSProfileFilterChromeOS() = default;
 
 NSSProfileFilterChromeOS& NSSProfileFilterChromeOS::operator=(
     const NSSProfileFilterChromeOS& other) {
-  public_slot_.reset(other.public_slot_ ?
-      PK11_ReferenceSlot(other.public_slot_.get()) :
-      NULL);
-  private_slot_.reset(other.private_slot_ ?
-      PK11_ReferenceSlot(other.private_slot_.get()) :
-      NULL);
-  system_slot_.reset(
-      other.system_slot_ ? PK11_ReferenceSlot(other.system_slot_.get()) : NULL);
+  public_slot_.reset(other.public_slot_
+                         ? PK11_ReferenceSlot(other.public_slot_.get())
+                         : nullptr);
+  private_slot_.reset(other.private_slot_
+                          ? PK11_ReferenceSlot(other.private_slot_.get())
+                          : nullptr);
+  system_slot_.reset(other.system_slot_
+                         ? PK11_ReferenceSlot(other.system_slot_.get())
+                         : nullptr);
   return *this;
 }
 
@@ -117,11 +96,9 @@ bool NSSProfileFilterChromeOS::IsModuleAllowed(PK11SlotInfo* slot) const {
 
 bool NSSProfileFilterChromeOS::IsCertAllowed(CERTCertificate* cert) const {
   crypto::ScopedPK11SlotList slots_for_cert(
-      PK11_GetAllSlotsForCert(cert, NULL));
-  if (!slots_for_cert) {
-    DVLOG(2) << "cert no slots: " << base::StringPiece(cert->nickname);
+      PK11_GetAllSlotsForCert(cert, nullptr));
+  if (!slots_for_cert)
     return false;
-  }
 
   for (PK11SlotListElement* slot_element =
            PK11_GetFirstSafe(slots_for_cert.get());
@@ -129,14 +106,11 @@ bool NSSProfileFilterChromeOS::IsCertAllowed(CERTCertificate* cert) const {
        slot_element =
            PK11_GetNextSafe(slots_for_cert.get(), slot_element, PR_FALSE)) {
     if (IsModuleAllowed(slot_element->slot)) {
-      DVLOG(3) << "cert from " << CertSlotsString(cert)
-               << " allowed: " << base::StringPiece(cert->nickname);
       PK11_FreeSlotListElement(slots_for_cert.get(), slot_element);
       return true;
     }
   }
-  DVLOG(2) << "cert from " << CertSlotsString(cert)
-           << " filtered: " << base::StringPiece(cert->nickname);
+
   return false;
 }
 

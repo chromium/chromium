@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,23 +29,25 @@ DnsResolveFunction::~DnsResolveFunction() {}
 
 ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::unique_ptr<Resolve::Params> params(Resolve::Params::Create(*args_));
+  std::unique_ptr<Resolve::Params> params(Resolve::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  // Yes, we are passing zero as the port. There are some interesting but not
-  // presently relevant reasons why HostResolver asks for the port of the
-  // hostname you'd like to resolve, even though it doesn't use that value in
-  // determining its answer.
+  // Intentionally pass host only (no scheme or non-zero port) to only get a
+  // basic resolution for the hostname itself.
   net::HostPortPair host_port_pair(params->hostname, 0);
-  url::Origin origin = url::Origin::Create(extension_->url());
-  content::BrowserContext::GetDefaultStoragePartition(browser_context())
+  net::SchemefulSite site = net::SchemefulSite(extension_->origin());
+  browser_context()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
-      ->ResolveHost(host_port_pair, net::NetworkIsolationKey(origin, origin),
-                    nullptr, receiver_.BindNewPipeAndPassRemote());
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&DnsResolveFunction::OnComplete, base::Unretained(this),
-                     net::ERR_NAME_NOT_RESOLVED,
-                     net::ResolveErrorInfo(net::ERR_FAILED), base::nullopt));
+      ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                        std::move(host_port_pair)),
+                    net::NetworkAnonymizationKey(site, site), nullptr,
+                    receiver_.BindNewPipeAndPassRemote());
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &DnsResolveFunction::OnComplete, base::Unretained(this),
+      net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
+      /*resolved_addresses=*/absl::nullopt,
+      /*endpoint_results_with_metadata=*/absl::nullopt));
 
   // Balanced in OnComplete().
   AddRef();
@@ -55,7 +57,9 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
 void DnsResolveFunction::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   receiver_.reset();
 
@@ -63,8 +67,7 @@ void DnsResolveFunction::OnComplete(
   resolve_info.result_code = resolve_error_info.error;
   if (result == net::OK) {
     DCHECK(resolved_addresses.has_value() && !resolved_addresses->empty());
-    resolve_info.address = std::make_unique<std::string>(
-        resolved_addresses->front().ToStringWithoutPort());
+    resolve_info.address = resolved_addresses->front().ToStringWithoutPort();
   }
 
   Respond(ArgumentList(Resolve::Results::Create(resolve_info)));

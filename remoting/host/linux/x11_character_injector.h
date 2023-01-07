@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -22,6 +21,10 @@ class X11Keyboard;
 class X11CharacterInjector {
  public:
   explicit X11CharacterInjector(std::unique_ptr<X11Keyboard> keyboard);
+
+  X11CharacterInjector(const X11CharacterInjector&) = delete;
+  X11CharacterInjector& operator=(const X11CharacterInjector&) = delete;
+
   ~X11CharacterInjector();
 
   void Inject(uint32_t code_point);
@@ -57,7 +60,6 @@ class X11CharacterInjector {
   std::vector<KeyInfo> available_keycodes_;
 
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(X11CharacterInjector);
 };
 
 }  // namespace remoting

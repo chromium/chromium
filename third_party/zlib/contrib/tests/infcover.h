@@ -8,4 +8,5 @@ void cover_inflate(void);
 void cover_trees(void);
 void cover_fast(void);
 
+void cover_CVE_2022_37434(void);
 #endif

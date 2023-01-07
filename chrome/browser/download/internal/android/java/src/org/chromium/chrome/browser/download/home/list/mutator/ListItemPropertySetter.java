@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@ import java.util.List;
  * Post processes the items in the list and sets properties for UI as appropriate. The properties
  * being set are:
  * - Image item span width.
+ * - Margins between {@link OfflineItemFilter} types (image, document, etc.).
  */
 public class ListItemPropertySetter implements ListConsumer {
     private final DownloadManagerUiConfig mConfig;

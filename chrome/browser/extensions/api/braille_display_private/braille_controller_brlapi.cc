@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,17 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
 #include <cerrno>
 #include <cstring>
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/stl_util.h"
+#include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
@@ -32,13 +34,11 @@ namespace {
 
 // Delay between detecting a directory update and trying to connect
 // to the brlapi.
-constexpr base::TimeDelta kConnectionDelay =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kConnectionDelay = base::Milliseconds(500);
 
 // How long to periodically retry connecting after a brltty restart.
 // Some displays are slow to connect.
-constexpr base::TimeDelta kConnectRetryTimeout =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kConnectRetryTimeout = base::Seconds(20);
 
 }  // namespace
 
@@ -88,12 +88,12 @@ std::unique_ptr<DisplayState> BrailleControllerImpl::GetDisplayState() {
     } else if (rows * columns > 0) {
       // rows * columns == 0 means no display present.
       display_state->available = true;
-      display_state->text_column_count.reset(new int(columns));
-      display_state->text_row_count.reset(new int(rows));
+      display_state->text_column_count = columns;
+      display_state->text_row_count = rows;
 
       unsigned int cell_size = 0;
       connection_->GetCellSize(&cell_size);
-      display_state->cell_size.reset(new int(cell_size));
+      display_state->cell_size = cell_size;
     }
   }
   return display_state;
@@ -279,8 +279,7 @@ void BrailleControllerImpl::Disconnect() {
   if (!connection_ || !connection_->Connected())
     return;
   connection_->Disconnect();
-  DispatchOnDisplayStateChanged(
-      std::unique_ptr<DisplayState>(new DisplayState()));
+  DispatchOnDisplayStateChanged(std::make_unique<DisplayState>());
 }
 
 std::unique_ptr<BrlapiConnection>
@@ -318,7 +317,7 @@ void BrailleControllerImpl::DispatchKeyEvent(std::unique_ptr<KeyEvent> event) {
                                   base::Unretained(this), std::move(event)));
     return;
   }
-  VLOG(1) << "Dispatching key event: " << *event->ToValue();
+  VLOG(1) << "Dispatching key event: " << event->ToValue();
   for (auto& observer : observers_)
     observer.OnBrailleKeyEvent(*event);
 }

@@ -1,67 +1,66 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <cstdint>
 #include <iosfwd>
 #include <map>
 #include <memory>
+#include <ostream>
+#include <set>
 #include <utility>
+#include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
+#include "chrome/browser/privacy_budget/identifiability_study_state.h"
+#include "chrome/browser/privacy_budget/privacy_budget_browsertest_util.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
-#include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
-#include "chrome/test/base/chrome_test_utils.h"
-#include "components/metrics_services_manager/metrics_services_manager.h"
+#include "chrome/common/privacy_budget/types.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/test/fake_server/fake_server.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "components/ukm/ukm_test_helper.h"
-#include "components/unified_consent/unified_consent_service.h"
-#include "components/variations/service/buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "url/gurl.h"
 
-class Profile;
-
-namespace content {
-class WebContents;
-}  // namespace content
-namespace ukm {
-class UkmService;
-}  // namespace ukm
-
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
 #endif
 
+class Profile;
+
+namespace ukm {
+class UkmService;
+}  // namespace ukm
+
 namespace {
 
 using testing::IsSupersetOf;
 using testing::Key;
+using testing::UnorderedElementsAreArray;
 
 uint64_t HashFeature(const blink::mojom::WebFeature& feature) {
   return blink::IdentifiableSurface::FromTypeAndToken(
@@ -69,105 +68,45 @@ uint64_t HashFeature(const blink::mojom::WebFeature& feature) {
       .ToUkmMetricHash();
 }
 
-// This test runs on Android as well as desktop platforms.
-class PrivacyBudgetBrowserTest : public SyncTest {
+class EnableRandomSampling {
  public:
-  PrivacyBudgetBrowserTest() : SyncTest(SINGLE_CLIENT) {
-    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
-  }
-
-  void SetUpOnMainThread() override {
-    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    SyncTest::SetUpOnMainThread();
-  }
-
-  ukm::TestUkmRecorder& recorder() { return *ukm_recorder_; }
-
-  content::WebContents* web_contents() {
-    return chrome_test_utils::GetActiveWebContents(this);
-  }
-
-  ukm::UkmService* ukm_service() const {
-    return g_browser_process->GetMetricsServicesManager()->GetUkmService();
-  }
-
-  PrefService* local_state() const { return g_browser_process->local_state(); }
-
-  void EnableSyncForProfile(Profile* profile) {
-    std::unique_ptr<ProfileSyncServiceHarness> harness =
-        metrics::test::InitializeProfileForSync(profile,
-                                                GetFakeServer()->AsWeakPtr());
-    EXPECT_TRUE(harness->SetupSync());
-
-    unified_consent::UnifiedConsentService* consent_service =
-        UnifiedConsentServiceFactory::GetForProfile(profile);
-    if (consent_service)
-      consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-  }
+  EnableRandomSampling()
+      : privacy_budget_config_(
+            test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling) {}
 
  private:
   test::ScopedPrivacyBudgetConfig privacy_budget_config_;
-  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
+
+class PrivacyBudgetBrowserTestEnableRandomSampling
+    : private EnableRandomSampling,
+      public PlatformBrowserTest {};
+
+class PrivacyBudgetBrowserTestWithTestRecorder
+    : private EnableRandomSampling,
+      public PrivacyBudgetBrowserTestBaseWithTestRecorder {};
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, BrowserSideSettingsIsActive) {
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestEnableRandomSampling,
+                       BrowserSideSettingsIsActive) {
   ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
-  auto* settings = blink::IdentifiabilityStudySettings::Get();
+  const auto* settings = blink::IdentifiabilityStudySettings::Get();
   EXPECT_TRUE(settings->IsActive());
 }
 
-// When UKM resets the Client ID for some reason the study should reset its
-// local state as well.
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
-                       UkmClientIdChangesResetStudyState) {
-  EXPECT_TRUE(blink::IdentifiabilityStudySettings::Get()->IsActive());
-
-  // Sync needs to be enabled for reporting to be enabled.
-  auto* profile = ProfileManager::GetActiveUserProfile();
-  EnableSyncForProfile(profile);
-
-  bool reporting_allowed = true;
-  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
-      &reporting_allowed);
-
-  // UpdateUploadPermissions causes the MetricsServicesManager to look at the
-  // consent signals and re-evaluate whether reporting should be enabled.
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
-
-  ASSERT_TRUE(ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled())
-      << "UKM recording not enabled";
-
-  local_state()->SetString(prefs::kPrivacyBudgetActiveSurfaces, "1,2,3");
-  const auto first_prng_seed =
-      local_state()->GetUint64(prefs::kPrivacyBudgetSeed);
-
-  // Disallowing reporting is equivalent to revoking consent.
-  reporting_allowed = false;
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
-  ASSERT_FALSE(ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled())
-      << "UKM recording not disabled";
-
-  const auto second_prng_seed =
-      local_state()->GetUint64(prefs::kPrivacyBudgetSeed);
-
-  EXPECT_NE(first_prng_seed, second_prng_seed)
-      << "PRNG seeds from before and after resetting UKM Client ID are still "
-         "the same";
-  EXPECT_TRUE(
-      local_state()->GetString(prefs::kPrivacyBudgetActiveSurfaces).empty())
-      << "Active surface list still exists after resetting client ID";
-  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, SamplingScreenAPIs) {
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
+                       SamplingScreenAPIs) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::DOMMessageQueue messages;
+
+  content::DOMMessageQueue messages(web_contents());
   base::RunLoop run_loop;
 
+  // We expect 3 entries here generated by the two navigations from the test.
+  // The first navigation adds a document created entry and a web feature entry,
+  // while the second one generates only a document created entry.
   recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
-                                   run_loop.QuitClosure());
+                                   BarrierClosure(3u, run_loop.QuitClosure()));
 
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL(
@@ -193,14 +132,22 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, SamplingScreenAPIs) {
 
   auto merged_entries = recorder().GetMergedEntriesByName(
       ukm::builders::Identifiability::kEntryName);
-  // Shouldn't be more than one source here. If this changes, then we'd need to
-  // adjust this test to deal.
-  ASSERT_EQ(1u, merged_entries.size());
+
+  // We expect two merged entries, corresponding to the two navigations.
+  ASSERT_EQ(merged_entries.size(), 2u);
+
+  // We collect all metrics together and check that there is one that contains
+  // the web feature metrics.
+  auto metrics = merged_entries.begin()->second->metrics;
+
+  for (auto& it : merged_entries) {
+    metrics.insert(it.second->metrics.begin(), it.second->metrics.end());
+  }
 
   // All of the following features should be included in the list of returned
   // metrics here. The exact values depend on the test host.
   EXPECT_THAT(
-      merged_entries.begin()->second->metrics,
+      metrics,
       IsSupersetOf({
           Key(HashFeature(
               blink::mojom::WebFeature::kV8Screen_Height_AttributeGetter)),
@@ -215,13 +162,139 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, SamplingScreenAPIs) {
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, CallsCanvasToBlob) {
+IN_PROC_BROWSER_TEST_P(PrivacyBudgetBrowserTestWithTestRecorder,
+                       RecordingFeaturesCalledInWorker) {
+  const auto file_path = GetParam();
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::DOMMessageQueue messages;
+
+  content::DOMMessageQueue messages(web_contents());
   base::RunLoop run_loop;
 
+  std::vector<uint64_t> expected_keys = {
+      HashFeature(blink::mojom::WebFeature::kNavigatorUserAgent),
+  };
+
+  // We wait for the expected metrics to be reported. Since some of the
+  // metrics are reported from the renderer process, this is the only reliable
+  // way to be sure we waited long enough.
+  auto quit_run_loop = [this, &expected_keys, &run_loop]() {
+    if (GetReportedSurfaceKeys(expected_keys).size() == expected_keys.size())
+      run_loop.Quit();
+  };
   recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
-                                   run_loop.QuitClosure());
+                                   base::BindLambdaForTesting(quit_run_loop));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL(file_path)));
+
+  // The document calls a bunch of instrumented functions and sends a message
+  // back to the test. Receipt of the message indicates that the script
+  // successfully completed.
+  std::string done;
+  ASSERT_TRUE(messages.WaitForMessage(&done));
+
+  // Wait for the metrics to come down the pipe.
+  run_loop.Run();
+
+  // Test succeeds if there is no timeout. However, let's recheck the metrics
+  // here, so that if there is a timeout we get an output of which metrics are
+  // missing.
+  EXPECT_THAT(GetReportedSurfaceKeys(expected_keys), expected_keys);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrivacyBudgetBrowserTestWithTestRecorderParameterized,
+    PrivacyBudgetBrowserTestWithTestRecorder,
+    ::testing::Values("/privacy_budget/calls_dedicated_worker.html",
+// Shared workers are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
+                      "/privacy_budget/calls_shared_worker.html",
+#endif
+                      "/privacy_budget/calls_service_worker.html"));
+
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
+                       EveryNavigationRecordsDocumentCreatedMetrics) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::DOMMessageQueue messages(web_contents());
+  base::RunLoop run_loop;
+
+  // We expect 3 entries here generated by the two navigations from the test.
+  // The first navigation adds a document created entry and a web feature entry,
+  // while the second one generates only a document created entry.
+  recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
+                                   BarrierClosure(3u, run_loop.QuitClosure()));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL(
+                          "/privacy_budget/samples_screen_attributes.html")));
+
+  // The document calls a bunch of instrumented functions and sends a message
+  // back to the test. Receipt of the message indicates that the script
+  // successfully completed.
+  std::string screen_scrape;
+  ASSERT_TRUE(messages.WaitForMessage(&screen_scrape));
+
+  // The contents of the received message isn't used for anything other than
+  // diagnostics.
+  SCOPED_TRACE(screen_scrape);
+
+  // Navigating away from the test page causes the document to be unloaded. That
+  // will cause any buffered metrics to be flushed.
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents(),
+                                                      GURL("about:blank"), 1);
+
+  // Wait for the metrics to come down the pipe.
+  run_loop.Run();
+
+  auto merged_entries = recorder().GetMergedEntriesByName(
+      ukm::builders::Identifiability::kEntryName);
+
+  // We expect two merged entries, corresponding to the two navigations.
+  ASSERT_EQ(merged_entries.size(), 2u);
+
+  // Each entry in merged_entries corresponds to a committed navigation and they
+  // all should contain the document created metrics.
+  for (auto& it : merged_entries) {
+    EXPECT_THAT(it.second->metrics,
+                IsSupersetOf({
+                    Key(blink::IdentifiableSurface::FromTypeAndToken(
+                            blink::IdentifiableSurface::Type::kReservedInternal,
+                            blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                                kDocumentCreated_IsMainFrame)
+                            .ToUkmMetricHash()),
+                    Key(blink::IdentifiableSurface::FromTypeAndToken(
+                            blink::IdentifiableSurface::Type::kReservedInternal,
+                            blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                                kDocumentCreated_IsCrossOriginFrame)
+                            .ToUkmMetricHash()),
+                    Key(blink::IdentifiableSurface::FromTypeAndToken(
+                            blink::IdentifiableSurface::Type::kReservedInternal,
+                            blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                                kDocumentCreated_IsCrossSiteFrame)
+                            .ToUkmMetricHash()),
+                    Key(blink::IdentifiableSurface::FromTypeAndToken(
+                            blink::IdentifiableSurface::Type::kReservedInternal,
+                            blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                                kDocumentCreated_NavigationSourceId)
+                            .ToUkmMetricHash()),
+                }));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
+                       CallsCanvasToBlob) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::DOMMessageQueue messages(web_contents());
+  base::RunLoop run_loop;
+
+  // We expect 3 entries here generated by the two navigations
+  // from the test. The first navigation adds a document created entry and a web
+  // feature entry, while the second one generates only a document created
+  // entry.
+  recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
+                                   BarrierClosure(3u, run_loop.QuitClosure()));
 
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL(
@@ -240,17 +313,29 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, CallsCanvasToBlob) {
                                                       GURL("about:blank"), 1);
 
   // Wait for the metrics to come down the pipe.
-  content::RunAllTasksUntilIdle();
   run_loop.Run();
 
   auto merged_entries = recorder().GetMergedEntriesByName(
       ukm::builders::Identifiability::kEntryName);
-  // Shouldn't be more than one source here. If this changes, then we'd need to
-  // adjust this test to deal.
-  ASSERT_EQ(1u, merged_entries.size());
 
-  constexpr uint64_t input_digest = 9;
-  EXPECT_THAT(merged_entries.begin()->second->metrics,
+  // We expect two merged entries, corresponding to the two navigations.
+  ASSERT_EQ(merged_entries.size(), 2u);
+
+  // toBlob() is called on a context-less canvas, hence -1, which is the value
+  // of blink::CanvasRenderingContext::CanvasRenderingAPI::kUnknown.
+  constexpr uint64_t input_digest = -1;
+
+  // We collect all metrics together and check that there is one that contains
+  // the canvas readback metrics.
+  auto metrics = merged_entries.begin()->second->metrics;
+
+  for (auto& it : merged_entries) {
+    metrics.insert(it.second->metrics.begin(), it.second->metrics.end());
+  }
+
+  // The exact values depend on the test host, so we only check that the metric
+  // was collected.
+  EXPECT_THAT(metrics,
               IsSupersetOf({
                   Key(blink::IdentifiableSurface::FromTypeAndToken(
                           blink::IdentifiableSurface::Type::kCanvasReadback,
@@ -259,14 +344,26 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, CallsCanvasToBlob) {
               }));
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
-                       CanvasToBlobDifferentDocument) {
+// TODO(crbug.com/1238940, crbug.com/1238859): Test is flaky on Win and Android.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#define MAYBE_CanvasToBlobDifferentDocument \
+  DISABLED_CanvasToBlobDifferentDocument
+#else
+#define MAYBE_CanvasToBlobDifferentDocument CanvasToBlobDifferentDocument
+#endif
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
+                       MAYBE_CanvasToBlobDifferentDocument) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::DOMMessageQueue messages;
+
+  content::DOMMessageQueue messages(web_contents());
   base::RunLoop run_loop;
 
+  // We expect 3 entries here generated by the two navigations
+  // from the test. The first navigation adds a document created entry and a web
+  // feature entry, while the second one generates only a document created
+  // entry.
   recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
-                                   run_loop.QuitClosure());
+                                   BarrierClosure(3u, run_loop.QuitClosure()));
 
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL(
@@ -285,47 +382,293 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
                                                       GURL("about:blank"), 1);
 
   // Wait for the metrics to come down the pipe.
-  content::RunAllTasksUntilIdle();
   run_loop.Run();
 
   auto merged_entries = recorder().GetMergedEntriesByName(
       ukm::builders::Identifiability::kEntryName);
-  // Shouldn't be more than one source here. If this changes, then we'd need to
-  // adjust this test to deal.
-  ASSERT_EQ(1u, merged_entries.size());
+
+  // We expect two merged entries, corresponding to the two navigations.
+  ASSERT_EQ(merged_entries.size(), 2u);
 
   // (kCanvasReadback | input_digest << kTypeBits) = one of the merged_entries
   // If the value of the relevant merged entry changes, input_digest needs to
   // change. The new input_digest can be calculated by:
-  // new_input_digest = new_ukm_entry >> kTypeBits
-  constexpr uint64_t input_digest = UINT64_C(61919955620835840);
-  EXPECT_THAT(merged_entries.begin()->second->metrics,
+  // new_input_digest = new_ukm_entry >> kTypeBits;
+  constexpr uint64_t input_digest = UINT64_C(33457614533296512);
+  // We collect all metrics together and check that there is one that contains
+  // the canvas readback metrics.
+  auto metrics = merged_entries.begin()->second->metrics;
+
+  for (auto& it : merged_entries) {
+    metrics.insert(it.second->metrics.begin(), it.second->metrics.end());
+  }
+
+  // The exact values depend on the test host, so we only check that the metric
+  // was collected.
+  EXPECT_THAT(metrics,
               IsSupersetOf({
                   Key(blink::IdentifiableSurface::FromTypeAndToken(
                           blink::IdentifiableSurface::Type::kCanvasReadback,
                           input_digest)
                           .ToUkmMetricHash()),
               }));
-}
 
-#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
+  for (auto& metric : metrics) {
+    auto surface(blink::IdentifiableSurface::FromMetricHash(metric.first));
+    LOG(INFO) << "surface type " << static_cast<uint64_t>(surface.GetType())
+              << " surface input hash " << surface.GetInputHash() << " value "
+              << metric.second;
+  }
+}
 
 namespace {
-class PrivacyBudgetDefaultConfigBrowserTest : public PlatformBrowserTest {};
+
+// Test class that allows to enable UKM recording.
+class PrivacyBudgetBrowserTestWithUkmRecording
+    : private EnableRandomSampling,
+      public PrivacyBudgetBrowserTestBaseWithUkmRecording {};
+
 }  // namespace
 
-// //testing/variations/fieldtrial_testing_config.json defines a set of
-// parameters that should effectively enable the identifiability study for
-// browser tests. This test verifies that those settings work.
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetDefaultConfigBrowserTest, Variations) {
-  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
+// When UKM resets the Client ID for some reason the study should reset its
+// local state as well.
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithUkmRecording,
+                       UkmClientIdChangesResetStudyState) {
+  EXPECT_TRUE(blink::IdentifiabilityStudySettings::Get()->IsActive());
+  ASSERT_TRUE(EnableUkmRecording());
 
-  auto* settings = blink::IdentifiabilityStudySettings::Get();
-  EXPECT_TRUE(settings->IsActive());
-  EXPECT_TRUE(settings->IsTypeAllowed(
-      blink::IdentifiableSurface::Type::kCanvasReadback));
-  EXPECT_FALSE(
-      settings->IsTypeAllowed(blink::IdentifiableSurface::Type::kMediaQuery));
+  local_state()->SetString(prefs::kPrivacyBudgetSeenSurfaces, "1,2,3");
+
+  ASSERT_TRUE(DisableUkmRecording());
+
+  EXPECT_TRUE(
+      local_state()->GetString(prefs::kPrivacyBudgetSeenSurfaces).empty())
+      << "Active surface list still exists after resetting client ID";
 }
 
-#endif
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithUkmRecording,
+                       IncludesMetadata) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
+  ASSERT_TRUE(EnableUkmRecording());
+
+  constexpr blink::IdentifiableToken kDummyToken = 1;
+  constexpr blink::IdentifiableSurface kDummySurface =
+      blink::IdentifiableSurface::FromMetricHash(2125235);
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+
+  blink::IdentifiabilityMetricBuilder(ukm::UkmRecorder::GetNewSourceID())
+      .Add(kDummySurface, kDummyToken)
+      .Record(ukm_recorder);
+
+  blink::IdentifiabilitySampleCollector::Get()->Flush(ukm_recorder);
+
+  ukm::UkmTestHelper ukm_test_helper(ukm_service());
+  ukm_test_helper.BuildAndStoreLog();
+  std::unique_ptr<ukm::Report> ukm_report = ukm_test_helper.GetUkmReport();
+  ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
+  ASSERT_TRUE(ukm_report);
+  ASSERT_NE(ukm_report->entries_size(), 0);
+
+  std::map<uint64_t, int64_t> seen_metrics;
+  for (const auto& entry : ukm_report->entries()) {
+    ASSERT_TRUE(entry.has_event_hash());
+    if (entry.event_hash() != ukm::builders::Identifiability::kEntryNameHash) {
+      continue;
+    }
+    for (const auto& metric : entry.metrics()) {
+      ASSERT_TRUE(metric.has_metric_hash());
+      ASSERT_TRUE(metric.has_value());
+      seen_metrics.insert({metric.metric_hash(), metric.value()});
+    }
+  }
+
+  const std::pair<uint64_t, int64_t> kExpectedGenerationEntry{
+      ukm::builders::Identifiability::kStudyGeneration_626NameHash,
+      test::ScopedPrivacyBudgetConfig::kDefaultGeneration};
+  EXPECT_THAT(seen_metrics, testing::Contains(kExpectedGenerationEntry));
+
+  const std::pair<uint64_t, int64_t> kExpectedGeneratorEntry{
+      ukm::builders::Identifiability::kGeneratorVersion_926NameHash,
+      IdentifiabilityStudyState::kGeneratorVersion};
+  EXPECT_THAT(seen_metrics, testing::Contains(kExpectedGeneratorEntry));
+}
+
+namespace {
+
+class PrivacyBudgetGroupConfigBrowserTest : public PlatformBrowserTest {
+ public:
+  PrivacyBudgetGroupConfigBrowserTest() {
+    test::ScopedPrivacyBudgetConfig::Parameters parameters;
+
+    constexpr auto kSurfacesPerGroup = 40;
+    constexpr auto kGroupCount = 200;
+
+    auto counter = 0;
+    for (auto i = 0; i < kGroupCount; ++i) {
+      parameters.blocks.emplace_back();
+      auto& group = parameters.blocks.back();
+      group.reserve(kSurfacesPerGroup);
+      for (auto j = 0; j < kSurfacesPerGroup; ++j) {
+        group.push_back(blink::IdentifiableSurface::FromTypeAndToken(
+            blink::IdentifiableSurface::Type::kNavigator_GetUserMedia,
+            ++counter));
+      }
+    }
+
+    scoped_config_.Apply(parameters);
+  }
+
+ private:
+  test::ScopedPrivacyBudgetConfig scoped_config_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetGroupConfigBrowserTest, LoadsAGroup) {
+  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
+
+  const auto* settings = blink::IdentifiabilityStudySettings::Get();
+  ASSERT_TRUE(settings->IsActive());
+}
+
+namespace {
+
+class PrivacyBudgetAssignedBlockSamplingConfigTest
+    : public PlatformBrowserTest {
+ public:
+  PrivacyBudgetAssignedBlockSamplingConfigTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIdentifiabilityStudy,
+        {{features::kIdentifiabilityStudyBlockedMetrics.name, "44033,44289"},
+         {features::kIdentifiabilityStudyBlockedTypes.name, "13,25,28"},
+         {features::kIdentifiabilityStudyBlockWeights.name, "5202,37515,34582"},
+         {features::kIdentifiabilityStudyBlocks.name,
+          // Define three blocks of surfaces.
+          "9129224;865032;8710152;8678920;9305096,"
+          "1722309467823238416;3972031034286914064,"
+          "3873813933275956760;7532279523433960728;13014994009983628312,"},
+         {features::kIdentifiabilityStudyGeneration.name, "7"}});
+  }
+
+  static constexpr auto kBlockedSurface =
+      blink::IdentifiableSurface::FromMetricHash(44033);
+
+  // This surface is not mentioned above and is not blocked by default. It
+  // should be considered allowed, but its metrics will not be recorded because
+  // it is not one of the active surfaces.
+  static constexpr auto kAllowedInactiveSurface =
+      blink::IdentifiableSurface::FromMetricHash(44290);
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace
+
+// This test checks that the Identifiability Study configuration is picked up
+// correctly from the field trial parameters.
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetAssignedBlockSamplingConfigTest,
+                       LoadsSettingsFromFieldTrialParameters) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
+
+  const auto* settings = blink::IdentifiabilityStudySettings::Get();
+  EXPECT_TRUE(settings->IsActive());
+  // Allowed by default.
+  EXPECT_TRUE(settings->ShouldSampleType(
+      blink::IdentifiableSurface::Type::kCanvasReadback));
+
+  // Blocked surfaces. See fieldtrial_testing_config.json#IdentifiabilityStudy.
+  EXPECT_FALSE(settings->ShouldSampleSurface(kBlockedSurface));
+
+  // Some random surface that shouldn't be blocked.
+  EXPECT_TRUE(settings->ShouldSampleSurface(kAllowedInactiveSurface));
+
+  // Blocked types
+  EXPECT_FALSE(settings->ShouldSampleType(
+      blink::IdentifiableSurface::Type::kLocalFontLookupByFallbackCharacter));
+  EXPECT_FALSE(settings->ShouldSampleType(
+      blink::IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo));
+}
+
+namespace {
+
+class PrivacyBudgetBrowserTestActiveSampling : public PlatformBrowserTest {
+ public:
+  PrivacyBudgetBrowserTestActiveSampling() {
+    test::ScopedPrivacyBudgetConfig::Parameters params;
+    params.enabled = true;
+    params.enable_active_sampling = true;
+    params.actively_sampled_fonts = {"Arial", "Helvetica"};
+    privacy_budget_config_.Apply(params);
+
+    expected_keys_ = {
+        blink::IdentifiableSurface::FromTypeAndToken(
+            blink::IdentifiableSurface::Type::
+                kNavigatorUAData_GetHighEntropyValues,
+            blink::IdentifiableToken("model"))
+            .ToUkmMetricHash(),
+        blink::IdentifiableSurface::FromTypeAndToken(
+            blink::IdentifiableSurface::Type::kFontFamilyAvailable,
+            blink::IdentifiableToken("arial"))
+            .ToUkmMetricHash(),
+        blink::IdentifiableSurface::FromTypeAndToken(
+            blink::IdentifiableSurface::Type::kFontFamilyAvailable,
+            blink::IdentifiableToken("helvetica"))
+            .ToUkmMetricHash()};
+  }
+
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    PlatformBrowserTest::CreatedBrowserMainParts(parts);
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
+    // We wait for the expected metrics to be reported. Since some of the
+    // metrics are reported from the renderer process, this is the only reliable
+    // way to be sure we waited long enough.
+    run_loop_ = std::make_unique<base::RunLoop>();
+    ukm_recorder_->SetOnAddEntryCallback(
+        ukm::builders::Identifiability::kEntryName,
+        base::BindLambdaForTesting([this]() {
+          if (GetReportedSurfaceKeys().size() == expected_keys_.size())
+            run_loop_->Quit();
+        }));
+  }
+
+  base::flat_set<uint64_t> GetReportedSurfaceKeys() {
+    std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+        ukm_recorder_->GetMergedEntriesByName(
+            ukm::builders::Identifiability::kEntryName);
+
+    base::flat_set<uint64_t> reported_surface_keys;
+    for (const auto& entry : merged_entries) {
+      for (const auto& metric : entry.second->metrics) {
+        if (base::Contains(expected_keys_, metric.first))
+          reported_surface_keys.insert(metric.first);
+      }
+    }
+    return reported_surface_keys;
+  }
+
+  base::RunLoop& run_loop() { return *run_loop_; }
+
+  const std::vector<uint64_t> expected_keys() const { return expected_keys_; }
+
+ private:
+  test::ScopedPrivacyBudgetConfig privacy_budget_config_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+
+  std::vector<uint64_t> expected_keys_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestActiveSampling,
+                       ActiveSamplingIsPerformed) {
+  run_loop().Run();
+
+  // Test succeeds if there is no timeout. However, let's recheck the metrics
+  // here, so that if there is a timeout we get an output of which metrics are
+  // missing.
+  EXPECT_THAT(GetReportedSurfaceKeys(),
+              UnorderedElementsAreArray(expected_keys()));
+}

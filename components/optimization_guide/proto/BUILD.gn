@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,34 +9,30 @@ if (is_android) {
 }
 
 proto_library("optimization_guide_proto") {
+  proto_in_dir = "//"
   sources = [
     "common_types.proto",
-    "delay_async_script_execution_metadata.proto",
-    "delay_competing_low_priority_requests_metadata.proto",
     "hint_cache.proto",
     "hints.proto",
-    "lite_video_metadata.proto",
     "loading_predictor_metadata.proto",
     "models.proto",
+    "page_entities_metadata.proto",
+    "page_entities_model_metadata.proto",
     "page_topics_model_metadata.proto",
-    "performance_hints_metadata.proto",
-    "public_image_metadata.proto",
+    "page_topics_override_list.proto",
+    "push_notification.proto",
   ]
 }
 
 if (is_android) {
   proto_java_library("optimization_guide_proto_java") {
-    proto_path = "."
+    proto_path = "//"
     sources = [
       "common_types.proto",
-      "delay_async_script_execution_metadata.proto",
-      "delay_competing_low_priority_requests_metadata.proto",
       "hints.proto",
-      "lite_video_metadata.proto",
       "loading_predictor_metadata.proto",
       "models.proto",
-      "performance_hints_metadata.proto",
-      "public_image_metadata.proto",
+      "push_notification.proto",
     ]
   }
 }

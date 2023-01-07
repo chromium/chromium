@@ -1,24 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_NEARBY_SHARING_SHARESHEET_NEARBY_SHARE_ACTION_H_
 #define CHROME_BROWSER_NEARBY_SHARING_SHARESHEET_NEARBY_SHARE_ACTION_H_
 
-#include "chrome/browser/sharesheet/share_action.h"
+#include "chrome/browser/sharesheet/share_action/share_action.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
-#include "content/public/browser/web_contents_delegate.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "components/services/app_service/public/cpp/intent.h"
 
-namespace views {
-class WebView;
-}  // namespace views
+class Profile;
 
-class NearbyShareAction : public sharesheet::ShareAction,
-                          nearby_share::NearbyShareDialogUI::Observer,
-                          content::WebContentsDelegate {
+// NearbyShareAction is responsible for loading the Nearby UI within the
+// Sharesheet. A single instance is created on sign in to handle all operations.
+class NearbyShareAction : public sharesheet::ShareAction {
  public:
-  NearbyShareAction();
+  explicit NearbyShareAction(Profile* profile);
   ~NearbyShareAction() override;
   NearbyShareAction(const NearbyShareAction&) = delete;
   NearbyShareAction& operator=(const NearbyShareAction&) = delete;
@@ -28,29 +25,18 @@ class NearbyShareAction : public sharesheet::ShareAction,
   const gfx::VectorIcon& GetActionIcon() override;
   void LaunchAction(sharesheet::SharesheetController* controller,
                     views::View* root_view,
-                    apps::mojom::IntentPtr intent) override;
-  void OnClosing(sharesheet::SharesheetController* controller) override;
-  bool ShouldShowAction(const apps::mojom::IntentPtr& intent,
+                    apps::IntentPtr intent) override;
+  void OnClosing(sharesheet::SharesheetController* controller) override {}
+  bool HasActionView() override;
+  bool ShouldShowAction(const apps::IntentPtr& intent,
                         bool contains_hosted_document) override;
   bool OnAcceleratorPressed(const ui::Accelerator& accelerator) override;
-
-  // nearby_share::NearbyShareDialogUI::Observer:
-  void OnClose() override;
-
-  // content::WebContentsDelegate:
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
-  void WebContentsCreated(content::WebContents* source_contents,
-                          int opener_render_process_id,
-                          int opener_render_frame_id,
-                          const std::string& frame_name,
-                          const GURL& target_url,
-                          content::WebContents* new_contents) override;
+  void SetActionCleanupCallbackForArc(
+      base::OnceCallback<void()> callback) override;
 
   static std::vector<std::unique_ptr<Attachment>> CreateAttachmentsFromIntent(
       Profile* profile,
-      apps::mojom::IntentPtr intent);
+      apps::IntentPtr intent);
 
   void SetNearbyShareDisabledByPolicyForTesting(bool disabled) {
     nearby_share_disabled_by_policy_for_testing_ = disabled;
@@ -59,12 +45,9 @@ class NearbyShareAction : public sharesheet::ShareAction,
  private:
   bool IsNearbyShareDisabledByPolicy();
 
-  sharesheet::SharesheetController* controller_ = nullptr;
-  nearby_share::NearbyShareDialogUI* nearby_ui_ = nullptr;
-  base::Optional<bool> nearby_share_disabled_by_policy_for_testing_ =
-      base::nullopt;
-  views::WebView* web_view_;
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+  Profile* profile_;
+  absl::optional<bool> nearby_share_disabled_by_policy_for_testing_ =
+      absl::nullopt;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_SHARESHEET_NEARBY_SHARE_ACTION_H_

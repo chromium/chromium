@@ -1,0 +1,30 @@
+caption: Print Headers and Footers
+default: null
+desc: |-
+  Setting the policy to Enabled turns headers and footers on in print preview. Setting the policy to Disabled turns them off in print preview.
+
+        If you set the policy, users can't change it. If unset, users decides whether headers and footers appear.
+example_value: false
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Show headers and footers in print preview
+  value: true
+- caption: Hide headers and footers in print preview
+  value: false
+- caption: Allow the user to decide
+  value: null
+owners:
+- nicolaso@chromium.org
+- pastarmovj@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:70-
+- chrome.*:70-
+tags: []
+type: main

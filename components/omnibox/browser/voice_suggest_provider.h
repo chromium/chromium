@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,17 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 // Autocomplete provider serving Voice suggestions on Android.
 class VoiceSuggestProvider : public BaseSearchProvider {
  public:
-  VoiceSuggestProvider(AutocompleteProviderClient* client,
-                       AutocompleteProviderListener* listener);
+  explicit VoiceSuggestProvider(AutocompleteProviderClient* client);
 
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
@@ -38,8 +37,6 @@ class VoiceSuggestProvider : public BaseSearchProvider {
  private:
   // BaseSearchProvider:
   ~VoiceSuggestProvider() override;
-  const TemplateURL* GetTemplateURL(bool is_keyword) const override;
-  const AutocompleteInput GetInput(bool is_keyword) const override;
   bool ShouldAppendExtraParams(
       const SearchSuggestionParser::SuggestResult& result) const override;
   void RecordDeletionResult(bool success) override;
@@ -54,11 +51,6 @@ class VoiceSuggestProvider : public BaseSearchProvider {
   // Duplicate voice matches will be deduplicated automatically to the higher
   // ranked match.
   std::vector<std::pair<float, std::u16string>> voice_matches_;
-
-  // A pointer to the current AutocompleteInput, retained during the active
-  // stage of operation only. Used by the BaseSearchProvider to construct the
-  // final AutocompleteMatch objects.
-  const AutocompleteInput* autocomplete_input_{};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_VOICE_SUGGEST_PROVIDER_H_

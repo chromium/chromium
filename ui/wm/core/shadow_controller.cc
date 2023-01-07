@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -75,6 +76,9 @@ class ShadowController::Impl :
   // Returns the singleton instance for the specified Env.
   static Impl* GetInstance(aura::Env* env);
 
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
+
   void set_delegate(std::unique_ptr<ShadowControllerDelegate> delegate) {
     delegate_ = std::move(delegate);
   }
@@ -127,13 +131,11 @@ class ShadowController::Impl :
   // The shadow's bounds are initialized and it is added to the window's layer.
   void CreateShadowForWindow(aura::Window* window);
 
-  aura::Env* const env_;
+  const raw_ptr<aura::Env> env_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observation_manager_{this};
 
   std::unique_ptr<ShadowControllerDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 // static
@@ -212,7 +214,7 @@ void ShadowController::Impl::OnWindowBoundsChanged(
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
   ui::Shadow* shadow = GetShadowForWindow(window);
-  if (shadow)
+  if (shadow && window->GetProperty(aura::client::kUseWindowBoundsForShadow))
     shadow->SetContentBounds(gfx::Rect(new_bounds.size()));
 }
 
@@ -280,6 +282,9 @@ void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
     shadow->SetRoundedCornerRadius(corner_radius);
 
   shadow->Init(GetShadowElevationForActiveState(window));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  shadow->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+#endif
   shadow->SetContentBounds(gfx::Rect(window->bounds().size()));
   shadow->layer()->SetVisible(ShouldShowShadowForWindow(window));
   window->layer()->Add(shadow->layer());

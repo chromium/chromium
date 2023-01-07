@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,16 @@
 function getSlowURL(hostname) {
   // Waiting for 10 seconds should be more than sufficient.
   return getServerURL('slow?10', hostname);
+}
+
+function getInitiatorURLForExtension() {
+  var url = getURL('');
+  return url.slice(0, -1);
+}
+
+function getInitiatorURLForHostname(hostname) {
+  var url = getServerURL('', hostname);
+  return url.slice(0, -1);
 }
 
 // Get the URL of a page that inserts a frame with the given URL upon load.

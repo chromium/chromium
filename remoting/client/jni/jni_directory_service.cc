@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/android/jni_headers/DirectoryService_jni.h"
 #include "remoting/base/oauth_token_getter.h"
@@ -34,14 +33,11 @@ JniDirectoryService::RequestError MapError(
   switch (status_code) {
     case ProtobufHttpStatus::Code::UNAVAILABLE:
       return JniDirectoryService::RequestError::SERVICE_UNAVAILABLE;
-      break;
     case ProtobufHttpStatus::Code::PERMISSION_DENIED:
     case ProtobufHttpStatus::Code::UNAUTHENTICATED:
       return JniDirectoryService::RequestError::AUTH_FAILED;
-      break;
     default:
       return JniDirectoryService::RequestError::UNKNOWN;
-      break;
   }
 }
 

@@ -1,0 +1,16 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "logging_unittest.cc" ]
+
+  deps = [
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}

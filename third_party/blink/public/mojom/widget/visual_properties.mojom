@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@ module blink.mojom;
 import "cc/mojom/browser_controls_params.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
-import "third_party/blink/public/mojom/widget/screen_infos.mojom";
+import "ui/display/mojom/screen_infos.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // See public/common/widget/visual_properties.h
 struct VisualProperties {
   // Info about all screens, including the one currently showing the widget.
-  ScreenInfos screen_infos;
+  display.mojom.ScreenInfos screen_infos;
 
   // Whether or not blink should be in auto-resize mode.
   bool auto_resize_enabled = false;
@@ -48,7 +48,7 @@ struct VisualProperties {
 
   // Browser controls params such as top and bottom controls heights, whether
   // controls shrink blink size etc.
-  cc.mojom.BrowserControlsParams? browser_controls_params;
+  cc.mojom.BrowserControlsParams browser_controls_params;
 
   // Whether or not the focused node should be scrolled into view after the
   // resize.
@@ -92,4 +92,12 @@ struct VisualProperties {
   // Indicates whether a pinch gesture is currently active. Originates in the
   // main frame's renderer, and needs to be shared with subframes.
   bool is_pinch_gesture_active;
+
+  // The rect of the Windows Control Overlay, which contains system UX
+  // affordances (e.g. close), for installed desktop Progress Web Apps (PWAs),
+  // if the app specifies the 'window-controls-overlay' DisplayMode in its
+  // manifest. This is only valid and to be consumed by the outermost main
+  // frame.
+  gfx.mojom.Rect window_controls_overlay_rect;
+
 };

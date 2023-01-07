@@ -1,11 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/share_extension/share_extension_view.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/share_extension/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -62,7 +63,7 @@ const CGFloat kButtonFontSize = 17;
 @property(nonatomic, weak) id<ShareExtensionViewActionTarget> target;
 
 // Track if a button has been pressed. All button pressing will have no effect
-// if |dismissed| is YES.
+// if `dismissed` is YES.
 @property(nonatomic, assign) BOOL dismissed;
 
 @end
@@ -104,20 +105,18 @@ const CGFloat kButtonFontSize = 17;
         [self buttonWithTitle:openInChromeTitle
                      selector:@selector(openInChromePressed:)];
 
-    if (@available(iOS 13.4, *)) {
-      for (UIButton* button in
-           @[ self.readingListButton, bookmarksButton, openButton ]) {
-        button.pointerInteractionEnabled = YES;
-        button.pointerStyleProvider = ^UIPointerStyle*(
-            UIButton* button, __unused UIPointerEffect* proposedEffect,
-            __unused UIPointerShape* proposedShape) {
-          UITargetedPreview* preview =
-              [[UITargetedPreview alloc] initWithView:button];
-          UIPointerHoverEffect* effect =
-              [UIPointerHoverEffect effectWithPreview:preview];
-          return [UIPointerStyle styleWithEffect:effect shape:nil];
-        };
-      }
+    for (UIButton* button in
+         @[ self.readingListButton, bookmarksButton, openButton ]) {
+      button.pointerInteractionEnabled = YES;
+      button.pointerStyleProvider = ^UIPointerStyle*(
+          UIButton* theButton, __unused UIPointerEffect* proposedEffect,
+          __unused UIPointerShape* proposedShape) {
+        UITargetedPreview* preview =
+            [[UITargetedPreview alloc] initWithView:theButton];
+        UIPointerHoverEffect* effect =
+            [UIPointerHoverEffect effectWithPreview:preview];
+        return [UIPointerStyle styleWithEffect:effect shape:nil];
+      };
     }
 
     UIStackView* contentStack = [[UIStackView alloc] initWithArrangedSubviews:@[
@@ -140,13 +139,13 @@ const CGFloat kButtonFontSize = 17;
 // Returns a view containing the shared items (title, URL, screenshot). This
 // method will set the ivars.
 - (UIView*)sharedItemView {
-  // Title label. Text will be filled by |setTitle:| when available.
+  // Title label. Text will be filled by `setTitle:` when available.
   _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
   _titleLabel.font = [UIFont boldSystemFontOfSize:16];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  // URL label. Text will be filled by |setURL:| when available.
+  // URL label. Text will be filled by `setURL:` when available.
   _URLLabel = [[UILabel alloc] initWithFrame:CGRectZero];
   _URLLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _URLLabel.numberOfLines = 3;
@@ -154,7 +153,7 @@ const CGFloat kButtonFontSize = 17;
   _URLLabel.font = [UIFont systemFontOfSize:12];
   _URLLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  // Screenshot view. Image will be filled by |setScreenshot:| when available.
+  // Screenshot view. Image will be filled by `setScreenshot:` when available.
   _screenshotView = [[UIImageView alloc] initWithFrame:CGRectZero];
   [_screenshotView setTranslatesAutoresizingMaskIntoConstraints:NO];
   NSLayoutConstraint* imageWidthConstraint =
@@ -168,7 +167,7 @@ const CGFloat kButtonFontSize = 17;
   [_screenshotView setContentMode:UIViewContentModeScaleAspectFill];
   [_screenshotView setClipsToBounds:YES];
 
-  // |_screenshotView| should take as much space as needed. Lower compression
+  // `_screenshotView` should take as much space as needed. Lower compression
   // resistance of the other elements.
   [_titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
@@ -211,7 +210,6 @@ const CGFloat kButtonFontSize = 17;
         constraintEqualToAnchor:_itemView.centerYAnchor],
     [_itemView.heightAnchor
         constraintGreaterThanOrEqualToAnchor:_titleURLContainer.heightAnchor
-                                  multiplier:1
                                     constant:2 * kShareExtensionPadding],
     [_titleURLContainer.leadingAnchor
         constraintEqualToAnchor:_itemView.leadingAnchor
@@ -221,7 +219,6 @@ const CGFloat kButtonFontSize = 17;
                        constant:-kShareExtensionPadding],
     [_itemView.heightAnchor
         constraintGreaterThanOrEqualToAnchor:_screenshotView.heightAnchor
-                                  multiplier:1
                                     constant:2 * kShareExtensionPadding],
     [_screenshotView.centerYAnchor
         constraintEqualToAnchor:_itemView.centerYAnchor],
@@ -241,13 +238,13 @@ const CGFloat kButtonFontSize = 17;
   UIView* divider = [[UIView alloc] initWithFrame:CGRectZero];
   [divider setTranslatesAutoresizingMaskIntoConstraints:NO];
   divider.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-  CGFloat slidingConstant = ui_util::AlignValueToPixel(kDividerHeight);
+  CGFloat slidingConstant = AlignValueToPixel(kDividerHeight);
   [divider.heightAnchor constraintEqualToConstant:slidingConstant].active = YES;
   return divider;
 }
 
-// Returns a button containing title |title| and action |selector| on
-// |self.target|.
+// Returns a button containing title `title` and action `selector` on
+// `self.target`.
 - (UIButton*)buttonWithTitle:(NSString*)title selector:(SEL)selector {
   UIButton* button = [[ShareExtensionButton alloc] initWithFrame:CGRectZero];
   [button setTitle:title forState:UIControlStateNormal];
@@ -297,7 +294,7 @@ const CGFloat kButtonFontSize = 17;
   return navigationBar;
 }
 
-// Called when "Read Later" button has been pressed.
+// Called when "Add to Reading List" button has been pressed.
 - (void)addToReadingListPressed:(UIButton*)sender {
   if (self.dismissed) {
     return;
@@ -330,7 +327,7 @@ const CGFloat kButtonFontSize = 17;
   [self.target shareExtensionViewDidSelectOpenInChrome:sender];
 }
 
-// Animates the button |sender| by replacing its string to "Added", then call
+// Animates the button `sender` by replacing its string to "Added", then call
 // completion.
 - (void)animateButtonPressed:(UIButton*)sender
               withCompletion:(void (^)(void))completion {

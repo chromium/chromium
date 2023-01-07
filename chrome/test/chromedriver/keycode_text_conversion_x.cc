@@ -1,17 +1,16 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "chrome/test/chromedriver/keycode_text_conversion.h"
 
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
 #include <algorithm>
 
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
+#include "chrome/test/chromedriver/keycode_text_conversion.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/gfx/x/connection.h"
@@ -90,9 +89,9 @@ int KeyboardCodeToXKeyCode(ui::KeyboardCode key_code) {
   KeyCodeAndXKeyCode find;
   find.key_code = key_code;
   const KeyCodeAndXKeyCode* found = std::lower_bound(
-      kKeyCodeToXKeyCode, kKeyCodeToXKeyCode + base::size(kKeyCodeToXKeyCode),
+      kKeyCodeToXKeyCode, kKeyCodeToXKeyCode + std::size(kKeyCodeToXKeyCode),
       find);
-  if (found >= kKeyCodeToXKeyCode + base::size(kKeyCodeToXKeyCode) ||
+  if (found >= kKeyCodeToXKeyCode + std::size(kKeyCodeToXKeyCode) ||
       found->key_code != key_code)
     return -1;
   return found->x_key_code;
@@ -172,7 +171,7 @@ bool ConvertKeyCodeToText(ui::KeyboardCode key_code,
   }
   key_event.state = state;
   key_event.opcode = x11::KeyEvent::Press;
-  x11::Event event(std::move(key_event));
+  x11::Event event(false, std::move(key_event));
   uint16_t character = ui::GetCharacterFromXEvent(event);
 
   if (!character)

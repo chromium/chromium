@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define WEBLAYER_BROWSER_DOWNLOAD_MANAGER_DELEGATE_IMPL_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/download_manager.h"
@@ -22,6 +23,11 @@ class DownloadManagerDelegateImpl : public content::DownloadManagerDelegate,
  public:
   explicit DownloadManagerDelegateImpl(
       content::DownloadManager* download_manager);
+
+  DownloadManagerDelegateImpl(const DownloadManagerDelegateImpl&) = delete;
+  DownloadManagerDelegateImpl& operator=(const DownloadManagerDelegateImpl&) =
+      delete;
+
   ~DownloadManagerDelegateImpl() override;
 
   void set_download_dropped_closure_for_testing(
@@ -51,7 +57,7 @@ class DownloadManagerDelegateImpl : public content::DownloadManagerDelegate,
       const content::WebContents::Getter& web_contents_getter,
       const GURL& url,
       const std::string& request_method,
-      base::Optional<url::Origin> request_initiator,
+      absl::optional<url::Origin> request_initiator,
       bool from_download_cross_origin_redirect,
       bool content_initiated,
       content::CheckDownloadAllowedCallback check_download_allowed_cb) override;
@@ -75,11 +81,9 @@ class DownloadManagerDelegateImpl : public content::DownloadManagerDelegate,
   DownloadDelegate* GetDelegate(content::BrowserContext* browser_context);
   DownloadDelegate* GetDelegate(download::DownloadItem* item);
 
-  content::DownloadManager* download_manager_;
+  raw_ptr<content::DownloadManager> download_manager_;
   base::RepeatingClosure download_dropped_callback_;
   base::WeakPtrFactory<DownloadManagerDelegateImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerDelegateImpl);
 };
 
 }  // namespace weblayer

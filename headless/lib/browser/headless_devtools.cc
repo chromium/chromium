@@ -1,20 +1,21 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "headless/lib/browser/headless_devtools.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/browser/navigation_entry.h"
-#include "headless/grit/headless_lib_resources.h"
 #include "headless/public/headless_browser.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
@@ -41,6 +42,11 @@ class TCPEndpointServerSocketFactory : public content::DevToolsSocketFactory {
     }
   }
 
+  TCPEndpointServerSocketFactory(const TCPEndpointServerSocketFactory&) =
+      delete;
+  TCPEndpointServerSocketFactory& operator=(
+      const TCPEndpointServerSocketFactory&) = delete;
+
  private:
   // This function, and the logic below that uses it, is copied from
   // chrome/browser/devtools/remote_debugging_server.cc
@@ -52,7 +58,7 @@ class TCPEndpointServerSocketFactory : public content::DevToolsSocketFactory {
       return socket;
     if (socket->ListenWithAddressAndPort("::1", port, kBackLog) == net::OK)
       return socket;
-    return std::unique_ptr<net::ServerSocket>();
+    return nullptr;
   }
 
   // content::DevToolsSocketFactory.
@@ -64,7 +70,7 @@ class TCPEndpointServerSocketFactory : public content::DevToolsSocketFactory {
     if (socket->ListenWithAddressAndPort(endpoint_.host(), endpoint_.port(),
                                          kBackLog) == net::OK)
       return socket;
-    return std::unique_ptr<net::ServerSocket>();
+    return nullptr;
   }
 
   std::unique_ptr<net::ServerSocket> CreateForTethering(
@@ -73,16 +79,18 @@ class TCPEndpointServerSocketFactory : public content::DevToolsSocketFactory {
   }
 
   net::HostPortPair endpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPEndpointServerSocketFactory);
 };
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 class TCPAdoptServerSocketFactory : public content::DevToolsSocketFactory {
  public:
   // Construct a factory to use an already-open, already-listening socket.
   explicit TCPAdoptServerSocketFactory(const size_t socket_fd)
       : socket_fd_(socket_fd) {}
+
+  TCPAdoptServerSocketFactory(const TCPAdoptServerSocketFactory&) = delete;
+  TCPAdoptServerSocketFactory& operator=(const TCPAdoptServerSocketFactory&) =
+      delete;
 
  private:
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
@@ -90,7 +98,7 @@ class TCPAdoptServerSocketFactory : public content::DevToolsSocketFactory {
         new net::TCPServerSocket(nullptr, net::NetLogSource()));
     if (tsock->AdoptSocket(socket_fd_) != net::OK) {
       LOG(ERROR) << "Failed to adopt open socket";
-      return std::unique_ptr<net::ServerSocket>();
+      return nullptr;
     }
     // Note that we assume that the socket is already listening, so unlike
     // TCPEndpointServerSocketFactory, we don't call Listen.
@@ -103,15 +111,17 @@ class TCPAdoptServerSocketFactory : public content::DevToolsSocketFactory {
   }
 
   size_t socket_fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPAdoptServerSocketFactory);
 };
-#else   // defined(OS_POSIX)
+#else   // BUILDFLAG(IS_POSIX)
 
 // Placeholder class to use when a socket_fd is passed in on non-Posix.
 class DummyTCPServerSocketFactory : public content::DevToolsSocketFactory {
  public:
   explicit DummyTCPServerSocketFactory() {}
+
+  DummyTCPServerSocketFactory(const DummyTCPServerSocketFactory&) = delete;
+  DummyTCPServerSocketFactory& operator=(const DummyTCPServerSocketFactory&) =
+      delete;
 
  private:
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
@@ -122,10 +132,8 @@ class DummyTCPServerSocketFactory : public content::DevToolsSocketFactory {
       std::string* out_name) override {
     return nullptr;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(DummyTCPServerSocketFactory);
 };
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 void PostTaskToCloseBrowser(base::WeakPtr<HeadlessBrowserImpl> browser) {
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -145,7 +153,7 @@ void StartLocalDevToolsHttpHandler(HeadlessBrowserImpl* browser) {
 
   std::unique_ptr<content::DevToolsSocketFactory> socket_factory;
   const net::HostPortPair& endpoint = options->devtools_endpoint;
-  socket_factory.reset(new TCPEndpointServerSocketFactory(endpoint));
+  socket_factory = std::make_unique<TCPEndpointServerSocketFactory>(endpoint);
 
   content::DevToolsAgentHost::StartRemoteDebuggingServer(
       std::move(socket_factory),

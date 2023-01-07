@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/version_info/version_info.h"
 
 namespace safe_browsing {
@@ -89,7 +89,7 @@ void CollectEnvironmentData(ClientIncidentReport_EnvironmentData* data) {
   CollectProcessData(data->mutable_process());
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 void CollectPlatformProcessData(
     ClientIncidentReport_EnvironmentData_Process* process) {
   // Empty implementation for platforms that do not (yet) have their own

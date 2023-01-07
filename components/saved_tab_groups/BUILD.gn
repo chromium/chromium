@@ -1,0 +1,42 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("core") {
+  sources = [
+    "saved_tab_group.cc",
+    "saved_tab_group.h",
+    "saved_tab_group_model.cc",
+    "saved_tab_group_model.h",
+    "saved_tab_group_model_observer.h",
+    "saved_tab_group_sync_bridge_base.h",
+    "saved_tab_group_tab.cc",
+    "saved_tab_group_tab.h",
+  ]
+  deps = [
+    "//base",
+    "//components/sync",
+    "//components/tab_groups",
+    "//ui/gfx",
+    "//url",
+  ]
+  public_deps = []
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "saved_tab_group_model_unittest.cc",
+    "saved_tab_group_proto_conversion_unittest.cc",
+  ]
+  deps = [
+    ":core",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync",
+    "//components/sync:test_support",
+    "//components/tab_groups",
+    "//testing/gtest",
+    "//url",
+  ]
+}

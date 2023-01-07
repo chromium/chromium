@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_UI_MAIN_SCENE_STATE_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_UI_MAIN_SCENE_STATE_BROWSER_AGENT_H_
 
-#include "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/main/browser_user_data.h"
 
 @class SceneState;
 
@@ -13,10 +13,6 @@
 // objects) with a Browser.
 class SceneStateBrowserAgent : public BrowserUserData<SceneStateBrowserAgent> {
  public:
-  // Creates the browser agent, attaching it to |browser| and associating
-  // |scene_state| with it.
-  static void CreateForBrowser(Browser* browser, SceneState* scene_state);
-
   // Not copyable or moveable
   SceneStateBrowserAgent(const SceneStateBrowserAgent&) = delete;
   SceneStateBrowserAgent& operator=(const SceneStateBrowserAgent&) = delete;
@@ -26,10 +22,10 @@ class SceneStateBrowserAgent : public BrowserUserData<SceneStateBrowserAgent> {
   SceneState* GetSceneState();
 
  private:
-  SceneStateBrowserAgent(Browser* browser, SceneState* scene_state);
-
   friend class BrowserUserData<SceneStateBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  SceneStateBrowserAgent(Browser* browser, SceneState* scene_state);
 
   // The associated SceneState.
   __weak SceneState* scene_state_;

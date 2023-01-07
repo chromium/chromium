@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
@@ -35,6 +34,12 @@ UserInfo CreateTestUserInfo(const std::string& user_email) {
 class DetachableBaseNotificationControllerTest : public NoSessionAshTestBase {
  public:
   DetachableBaseNotificationControllerTest() = default;
+
+  DetachableBaseNotificationControllerTest(
+      const DetachableBaseNotificationControllerTest&) = delete;
+  DetachableBaseNotificationControllerTest& operator=(
+      const DetachableBaseNotificationControllerTest&) = delete;
+
   ~DetachableBaseNotificationControllerTest() override = default;
 
   void SetUp() override {
@@ -68,9 +73,6 @@ class DetachableBaseNotificationControllerTest : public NoSessionAshTestBase {
   SessionControllerImpl* session_controller() {
     return Shell::Get()->session_controller();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DetachableBaseNotificationControllerTest);
 };
 
 TEST_F(DetachableBaseNotificationControllerTest,
@@ -246,11 +248,11 @@ TEST_F(DetachableBaseNotificationControllerTest, NotificationOnUpdateRequired) {
 TEST_F(DetachableBaseNotificationControllerTest,
        NotificationOnUpdateRequiredBeforeLogin) {
   // Update requirement detected before login - expect the update required
-  // notification to be shown.
+  // notification to be hidden.
   detachable_base_handler()->BaseFirmwareUpdateNeeded();
-  EXPECT_TRUE(IsBaseRequiresUpdateNotificationVisible());
+  EXPECT_FALSE(IsBaseRequiresUpdateNotificationVisible());
 
-  // Login, expect the notification to still be there.
+  // Login, expect the notification to be shown.
   CreateUserSessions(1);
   EXPECT_TRUE(IsBaseRequiresUpdateNotificationVisible());
 

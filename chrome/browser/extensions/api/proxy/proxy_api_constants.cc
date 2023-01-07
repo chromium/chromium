@@ -1,11 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Constants for the Chrome Extensions Proxy Settings API.
 
 #include "chrome/browser/extensions/api/proxy/proxy_api_constants.h"
-#include "base/stl_util.h"
+
+#include <iterator>
 
 namespace extensions {
 namespace proxy_api_constants {
@@ -43,9 +44,9 @@ const char* const scheme_name[] = { "*error*",
 
 static_assert(SCHEME_MAX == SCHEME_FALLBACK,
               "SCHEME_MAX is incorrect");
-static_assert(base::size(field_name) == SCHEME_MAX + 1,
+static_assert(std::size(field_name) == SCHEME_MAX + 1,
               "field_name array size is incorrect");
-static_assert(base::size(scheme_name) == SCHEME_MAX + 1,
+static_assert(std::size(scheme_name) == SCHEME_MAX + 1,
               "scheme_name array size is incorrect");
 static_assert(SCHEME_ALL == 0, "SCHEME_ALL must be the first value");
 

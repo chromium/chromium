@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -223,6 +225,8 @@ class MODULES_EXPORT IDBValueUnwrapper {
 
   // True if at least one of the IDBValues' data was wrapped in a Blob.
   static bool IsWrapped(const Vector<std::unique_ptr<IDBValue>>&);
+
+  static bool IsWrapped(const Vector<Vector<std::unique_ptr<IDBValue>>>&);
 
   // Unwraps an IDBValue that has wrapped Blob data.
   //

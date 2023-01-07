@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -59,6 +60,11 @@ public interface ContextMenuItemDelegate {
     boolean isOpenInOtherWindowSupported();
 
     /**
+     * @return Whether Chrome can get itself into multi-window mode.
+     */
+    boolean canEnterMultiWindowMode();
+
+    /**
      * Called when the context menu is trying to start a download.
      * @param url Url of the download item.
      * @param isLink Whether or not the download is a link (as opposed to an image/video).
@@ -77,14 +83,24 @@ public interface ContextMenuItemDelegate {
      * Called when the {@code url} should be opened in a new tab with the same incognito state as
      * the current {@link Tab}.
      * @param url The URL to open.
+     * @param navigateToTab Whether or not to navigate to the new tab.
      */
-    void onOpenInNewTab(GURL url, Referrer referrer);
+    void onOpenInNewTab(GURL url, Referrer referrer, boolean navigateToTab);
+
+    /**
+     * Called when {@code url} should be opened in a new tab in the same group as the current
+     * {@link Tab}.
+     * @param url The URL to open.
+     */
+    void onOpenInNewTabInGroup(GURL url, Referrer referrer);
 
     /**
      * Called when the {@code url} should be opened in a new incognito tab.
      * @param url The URL to open.
+     * @param initiatorOrigin the origin from which the navigation is initiated, used elsewhere in
+     *         the navigation stack for privacy decisions.
      */
-    void onOpenInNewIncognitoTab(GURL url);
+    void onOpenInNewIncognitoTab(GURL url, Origin initiatorOrigin);
 
     /**
      * Called when the {@code url} is of an image and should be opened in the same tab.
@@ -97,17 +113,6 @@ public interface ContextMenuItemDelegate {
      * @param url The image URL to open.
      */
     void onOpenImageInNewTab(GURL url, Referrer referrer);
-
-    /**
-     * Called when the original image should be loaded.
-     */
-    void onLoadOriginalImage();
-
-    /**
-     * Returns whether the load image has been requested on a Lo-Fi image for the current page load.
-     * @return true if load image has been requested for the current page load.
-     */
-    boolean wasLoadOriginalImageRequestedForPageLoad();
 
     /**
      * Called when the {@code text} should be saved to the clipboard.
@@ -178,11 +183,6 @@ public interface ContextMenuItemDelegate {
      * @param pageUrl URL of the current page.
      */
     void onOpenInChrome(GURL linkUrl, GURL pageUrl);
-
-    /**
-     * Returns true if menu entries should be added for open in chrome.
-     */
-    boolean supportsOpenInChromeFromCct();
 
     /**
      * Called when the {@code url} should be opened in a new Chrome tab from CCT.

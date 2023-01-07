@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ namespace internal {
 
 // Sentinel value used to denote an invalid index and thus a null fragment. Note
 // that we choose a sentinel value over something more explicit like
-// base::Optional because this is used heavily in generated code, so code size
+// absl::optional because this is used heavily in generated code, so code size
 // is particularly relevant.
 constexpr size_t kInvalidFragmentIndex = std::numeric_limits<size_t>::max();
 
@@ -149,8 +149,7 @@ class MessageFragment<Array_Data<T>> {
     static_assert(
         std::numeric_limits<uint32_t>::max() > Traits::kMaxNumElements,
         "Max num elements castable to 32bit");
-    if (num_elements > Traits::kMaxNumElements)
-      return;
+    CHECK_LE(num_elements, Traits::kMaxNumElements);
 
     const uint32_t num_bytes =
         Traits::GetStorageSize(static_cast<uint32_t>(num_elements));

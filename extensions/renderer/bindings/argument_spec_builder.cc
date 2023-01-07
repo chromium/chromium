@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/renderer/bindings/argument_spec_builder.h"
 
+#include "base/strings/string_piece.h"
 
 namespace extensions {
 
@@ -27,7 +28,7 @@ ArgumentSpecBuilder& ArgumentSpecBuilder::MakeOptional() {
 ArgumentSpecBuilder& ArgumentSpecBuilder::AddProperty(
     base::StringPiece property_name,
     std::unique_ptr<ArgumentSpec> property_spec) {
-  properties_[property_name.as_string()] = std::move(property_spec);
+  properties_[std::string(property_name)] = std::move(property_spec);
   return *this;
 }
 

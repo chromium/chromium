@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,7 +72,7 @@ base::FilePath GetProfilesINI() {
   base::FilePath ini_file;
   // The default location of the profile folder containing user data is
   // under the "Application Data" folder in Windows XP, Vista, and 7.
-  if (!base::PathService::Get(base::DIR_APP_DATA, &ini_file))
+  if (!base::PathService::Get(base::DIR_ROAMING_APP_DATA, &ini_file))
     return base::FilePath();
 
   ini_file = ini_file.AppendASCII("Mozilla");

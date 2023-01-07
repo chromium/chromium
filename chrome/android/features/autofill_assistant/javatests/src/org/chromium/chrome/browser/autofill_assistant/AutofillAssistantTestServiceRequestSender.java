@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import com.google.protobuf.GeneratedMessageLite;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.autofill_assistant.AutofillAssistantDependencyInjector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
  */
 @JNINamespace("autofill_assistant")
 public class AutofillAssistantTestServiceRequestSender
-        implements AutofillAssistantServiceInjector.NativeServiceRequestSenderProvider {
+        implements AutofillAssistantDependencyInjector.NativeServiceRequestSenderProvider {
     static class Request {
         Request(String url, byte[] request) {
             mUrl = url;
@@ -42,7 +43,7 @@ public class AutofillAssistantTestServiceRequestSender
      * trigger script startup in order to take effect!
      */
     void scheduleForInjection() {
-        AutofillAssistantServiceInjector.setServiceRequestSenderToInject(this);
+        AutofillAssistantDependencyInjector.setServiceRequestSenderToInject(this);
     }
 
     /**

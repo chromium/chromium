@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,12 +36,12 @@ public class TabSelectionEditorLayoutBinder {
         } else if (TabSelectionEditorProperties.TOOLBAR_BACKGROUND_COLOR == propertyKey) {
             view.getToolbar().setToolbarBackgroundColor(
                     model.get(TabSelectionEditorProperties.TOOLBAR_BACKGROUND_COLOR));
+        } else if (TabSelectionEditorProperties.TOOLBAR_GROUP_TEXT_TINT == propertyKey) {
+            view.getToolbar().setTextColorStateList(
+                    model.get(TabSelectionEditorProperties.TOOLBAR_GROUP_TEXT_TINT));
         } else if (TabSelectionEditorProperties.TOOLBAR_GROUP_BUTTON_TINT == propertyKey) {
             view.getToolbar().setButtonTint(
                     model.get(TabSelectionEditorProperties.TOOLBAR_GROUP_BUTTON_TINT));
-        } else if (TabSelectionEditorProperties.TOOLBAR_TEXT_APPEARANCE == propertyKey) {
-            view.getToolbar().setTextAppearance(
-                    model.get(TabSelectionEditorProperties.TOOLBAR_TEXT_APPEARANCE));
         } else if (TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_TEXT == propertyKey) {
             view.getToolbar().setActionButtonText(
                     model.get(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_TEXT));
@@ -53,6 +53,12 @@ public class TabSelectionEditorLayoutBinder {
                 == propertyKey) {
             view.getToolbar().setActionButtonDescriptionResourceId(model.get(
                     TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_DESCRIPTION_RESOURCE_ID));
+        } else if (TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_VISIBILITY == propertyKey) {
+            view.getToolbar().setActionButtonVisibility(
+                    model.get(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_VISIBILITY));
+        } else if (TabSelectionEditorProperties.RELATED_TAB_COUNT_PROVIDER == propertyKey) {
+            view.getToolbar().setRelatedTabCountProvider(
+                    model.get(TabSelectionEditorProperties.RELATED_TAB_COUNT_PROVIDER));
         }
     }
 }

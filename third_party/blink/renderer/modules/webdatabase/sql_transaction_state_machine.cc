@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/modules/webdatabase/sql_transaction_state_machine.h"
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

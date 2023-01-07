@@ -1,11 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SESSIONS_CHROME_TAB_RESTORE_SERVICE_CLIENT_H_
 #define CHROME_BROWSER_SESSIONS_CHROME_TAB_RESTORE_SERVICE_CLIENT_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 
 class Profile;
@@ -15,16 +15,24 @@ class Profile;
 class ChromeTabRestoreServiceClient : public sessions::TabRestoreServiceClient {
  public:
   explicit ChromeTabRestoreServiceClient(Profile* profile);
+
+  ChromeTabRestoreServiceClient(const ChromeTabRestoreServiceClient&) = delete;
+  ChromeTabRestoreServiceClient& operator=(
+      const ChromeTabRestoreServiceClient&) = delete;
+
   ~ChromeTabRestoreServiceClient() override;
 
  private:
   // TabRestoreServiceClient:
   sessions::LiveTabContext* CreateLiveTabContext(
+      sessions::LiveTabContext* existing_context,
+      sessions::SessionWindow::WindowType type,
       const std::string& app_name,
       const gfx::Rect& bounds,
       ui::WindowShowState show_state,
       const std::string& workspace,
-      const std::string& user_title) override;
+      const std::string& user_title,
+      const std::map<std::string, std::string>& extra_data) override;
   sessions::LiveTabContext* FindLiveTabContextForTab(
       const sessions::LiveTab* tab) override;
   sessions::LiveTabContext* FindLiveTabContextWithID(
@@ -39,9 +47,7 @@ class ChromeTabRestoreServiceClient : public sessions::TabRestoreServiceClient {
   void GetLastSession(sessions::GetLastSessionCallback callback) override;
   void OnTabRestored(const GURL& url) override;
 
-  Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeTabRestoreServiceClient);
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_CHROME_TAB_RESTORE_SERVICE_CLIENT_H_

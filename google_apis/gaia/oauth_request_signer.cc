@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <cctype>
-#include <cstddef>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
@@ -412,7 +411,7 @@ bool OAuthRequestSigner::SignURL(
     switch (http_method) {
       case GET_METHOD:
         signed_text = request_base_url.spec() + '?';
-        FALLTHROUGH;
+        [[fallthrough]];
       case POST_METHOD:
         signed_text += BuildBaseStringParameters(parameters);
         break;

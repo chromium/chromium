@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <style>
 
-span {
-  display: inline-block;
-  border: solid;
-  width: 60px;
-  height: 30px;
-  box-sizing: border-box;
-  contain: size layout;
-  line-height: 1;
+div {
+    position: relative;
+    height: 3000px;
 }
 
-span:nth-child(2n) {
+.cell {
+    position: absolute;
+    border: solid;
+    width: 60px;
+    height: 30px;
+    box-sizing: border-box;
+    contain: size layout;
+    line-height: 1;
+}
+
+div:nth-child(2n) {
   text-align: center;
 }
 
-span:nth-child(3n) {
+div:nth-child(3n) {
   text-align: end;
 }
 </style>
@@ -24,14 +29,24 @@ span:nth-child(3n) {
   let textNodes = [];
 
   function populateData() {
-    for (let i = 0; i < 100*100; i++) {
-      let span = document.createElement('span');
-      span.classList.add('cell');
-      let textNode = document.createTextNode('' + (100 * Math.random()).toFixed(2));
-      span.appendChild(textNode);
-      document.body.appendChild(span);
-      textNodes.push(textNode);
-    }
+      let container = document.createElement('div');
+      let top = 0;
+      for (let i = 0; i < 100; i++) {
+          let left = 0;
+          for (let j = 0; j < 100; j++) {
+              let cell = document.createElement('div');
+              cell.classList.add('cell');
+              let textNode = document.createTextNode('' + (100 * Math.random()).toFixed(2));
+              cell.appendChild(textNode);
+              cell.style.left = left + "px";
+              cell.style.top = top + "px";
+              container.appendChild(cell);
+              textNodes.push(textNode);
+              left += 60;
+          }
+          top += 30;
+      }
+      document.body.appendChild(container);
   }
 
   function startTest() {

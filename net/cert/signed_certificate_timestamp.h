@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/hash_value.h"
@@ -19,10 +18,8 @@ class Pickle;
 class PickleIterator;
 }
 
-namespace net {
-
 // Structures related to Certificate Transparency (RFC6962).
-namespace ct {
+namespace net::ct {
 
 // Contains the data necessary to reconstruct the signed_entry of a
 // SignedCertificateTimestamp, from RFC 6962, Section 3.2.
@@ -49,7 +46,7 @@ struct NET_EXPORT SignedEntryData {
   ~SignedEntryData();
   void Reset();
 
-  Type type;
+  Type type = LOG_ENTRY_TYPE_X509;
 
   // Set if type == LOG_ENTRY_TYPE_X509
   std::string leaf_certificate;
@@ -88,8 +85,8 @@ struct NET_EXPORT DigitallySigned {
       HashAlgorithm other_hash_algorithm,
       SignatureAlgorithm other_signature_algorithm) const;
 
-  HashAlgorithm hash_algorithm;
-  SignatureAlgorithm signature_algorithm;
+  HashAlgorithm hash_algorithm = HASH_ALGO_NONE;
+  SignatureAlgorithm signature_algorithm = SIG_ALGO_ANONYMOUS;
   // 'signature' field.
   std::string signature_data;
 };
@@ -121,16 +118,20 @@ struct NET_EXPORT SignedCertificateTimestamp
 
   SignedCertificateTimestamp();
 
+  SignedCertificateTimestamp(const SignedCertificateTimestamp&) = delete;
+  SignedCertificateTimestamp& operator=(const SignedCertificateTimestamp&) =
+      delete;
+
   void Persist(base::Pickle* pickle);
   static scoped_refptr<SignedCertificateTimestamp> CreateFromPickle(
       base::PickleIterator* iter);
 
-  Version version;
+  Version version = V1;
   std::string log_id;
   base::Time timestamp;
   std::string extensions;
   DigitallySigned signature;
-  Origin origin;
+  Origin origin = SCT_EMBEDDED;
   // The log description is not one of the SCT fields, but a user-readable
   // name defined alongside the log key. It should not participate
   // in equality checks as the log's description could change while
@@ -141,14 +142,10 @@ struct NET_EXPORT SignedCertificateTimestamp
   friend class base::RefCountedThreadSafe<SignedCertificateTimestamp>;
 
   ~SignedCertificateTimestamp();
-
-  DISALLOW_COPY_AND_ASSIGN(SignedCertificateTimestamp);
 };
 
 using SCTList = std::vector<scoped_refptr<ct::SignedCertificateTimestamp>>;
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct
 
 #endif  // NET_CERT_SIGNED_CERTIFICATE_TIMESTAMP_H_

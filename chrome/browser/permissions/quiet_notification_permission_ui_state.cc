@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,6 @@
 // static
 void QuietNotificationPermissionUiState::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterDictionaryPref(prefs::kPermissionActions,
-                                   PrefRegistry::LOSSY_PREF);
   // TODO(crbug.com/1001857): Consider making this syncable.
   registry->RegisterBooleanPref(prefs::kEnableQuietNotificationPermissionUi,
                                 false /* default_value */);

@@ -1,4 +1,4 @@
-// Copyright (c) 2009 The Chromium Authors. All rights reserved.
+// Copyright 2009 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,9 +20,7 @@ namespace net {
 HttpByteRange::HttpByteRange()
     : first_byte_position_(kPositionNotSpecified),
       last_byte_position_(kPositionNotSpecified),
-      suffix_length_(kPositionNotSpecified),
-      has_computed_bounds_(false) {
-}
+      suffix_length_(kPositionNotSpecified) {}
 
 // static
 HttpByteRange HttpByteRange::Bounded(int64_t first_byte_position,

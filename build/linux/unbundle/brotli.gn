@@ -1,0 +1,35 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_brotli_dec") {
+  packages = [ "libbrotlidec" ]
+}
+
+pkg_config("system_brotli_enc") {
+  packages = [ "libbrotlienc" ]
+}
+
+shim_headers("brotli_shim") {
+  root_path = "include"
+  headers = [
+    "brotli/decode.h",
+    "brotli/encode.h",
+    "brotli/port.h",
+    "brotli/types.h",
+  ]
+}
+
+source_set("dec") {
+  deps = [ ":brotli_shim" ]
+  public_configs = [ ":system_brotli_dec" ]
+}
+
+source_set("enc") {
+  deps = [ ":brotli_shim" ]
+  public_configs = [ ":system_brotli_enc" ]
+}
+
+copy("brotli") {
+  sources = [ "/usr/bin/brotli" ]
+  outputs = [ "$root_out_dir/brotli" ]
+}

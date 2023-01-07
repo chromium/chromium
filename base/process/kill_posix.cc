@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,10 @@
 #include "base/debug/activity_tracker.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_iterator.h"
-#include "base/task/post_task.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace base {
 
@@ -57,7 +54,7 @@ TerminationStatus GetTerminationStatusImpl(ProcessHandle handle,
       case SIGSYS:
         return TERMINATION_STATUS_PROCESS_CRASHED;
       case SIGKILL:
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
         // On ChromeOS, only way a process gets kill by SIGKILL
         // is by oom-killer.
         return TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM;
@@ -92,7 +89,6 @@ TerminationStatus GetKnownDeadTerminationStatus(ProcessHandle handle,
   return GetTerminationStatusImpl(handle, true /* can_block */, exit_code);
 }
 
-#if !defined(OS_NACL_NONSFI)
 bool WaitForProcessesToExit(const FilePath::StringType& executable_name,
                             TimeDelta wait,
                             const ProcessFilter* filter) {
@@ -108,8 +104,8 @@ bool WaitForProcessesToExit(const FilePath::StringType& executable_name,
       result = true;
       break;
     }
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
-  } while ((end_time - TimeTicks::Now()) > TimeDelta());
+    PlatformThread::Sleep(Milliseconds(100));
+  } while ((end_time - TimeTicks::Now()).is_positive());
 
   return result;
 }
@@ -124,7 +120,7 @@ bool CleanupProcesses(const FilePath::StringType& executable_name,
   return exited_cleanly;
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 
 namespace {
 
@@ -132,6 +128,9 @@ class BackgroundReaper : public PlatformThread::Delegate {
  public:
   BackgroundReaper(base::Process child_process, const TimeDelta& wait_time)
       : child_process_(std::move(child_process)), wait_time_(wait_time) {}
+
+  BackgroundReaper(const BackgroundReaper&) = delete;
+  BackgroundReaper& operator=(const BackgroundReaper&) = delete;
 
   void ThreadMain() override {
     if (!wait_time_.is_zero()) {
@@ -145,7 +144,6 @@ class BackgroundReaper : public PlatformThread::Delegate {
  private:
   Process child_process_;
   const TimeDelta wait_time_;
-  DISALLOW_COPY_AND_ASSIGN(BackgroundReaper);
 };
 
 }  // namespace
@@ -157,10 +155,10 @@ void EnsureProcessTerminated(Process process) {
     return;
 
   PlatformThread::CreateNonJoinable(
-      0, new BackgroundReaper(std::move(process), TimeDelta::FromSeconds(2)));
+      0, new BackgroundReaper(std::move(process), Seconds(2)));
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void EnsureProcessGetsReaped(Process process) {
   DCHECK(!process.is_current());
 
@@ -171,9 +169,8 @@ void EnsureProcessGetsReaped(Process process) {
   PlatformThread::CreateNonJoinable(
       0, new BackgroundReaper(std::move(process), TimeDelta()));
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#endif  // !defined(OS_APPLE)
-#endif  // !defined(OS_NACL_NONSFI)
+#endif  // !BUILDFLAG(IS_APPLE)
 
 }  // namespace base

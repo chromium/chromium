@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,8 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/ranges/algorithm.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/dom_distiller/core/distilled_content_store.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
@@ -41,9 +42,13 @@ DomDistillerService::DomDistillerService(
       distiller_factory_(std::move(distiller_factory)),
       distiller_page_factory_(std::move(distiller_page_factory)),
       distilled_page_prefs_(std::move(distilled_page_prefs)),
-      distiller_ui_handle_(std::move(distiller_ui_handle)) {}
+      distiller_ui_handle_(std::move(distiller_ui_handle)),
+      weak_ptr_factory_(this) {}
 
-DomDistillerService::~DomDistillerService() {}
+DomDistillerService::~DomDistillerService() {
+  // There shouldn't be any tasks pending at this point.
+  DCHECK(tasks_.empty());
+}
 
 std::unique_ptr<DistillerPage> DomDistillerService::CreateDefaultDistillerPage(
     const gfx::Size& render_view_size) {
@@ -62,7 +67,7 @@ std::unique_ptr<ViewerHandle> DomDistillerService::ViewUrl(
     std::unique_ptr<DistillerPage> distiller_page,
     const GURL& url) {
   if (!url.is_valid()) {
-    return std::unique_ptr<ViewerHandle>();
+    return nullptr;
   }
 
   TaskTracker* task_tracker = nullptr;
@@ -110,10 +115,8 @@ TaskTracker* DomDistillerService::CreateTaskTracker(const ArticleEntry& entry) {
 }
 
 void DomDistillerService::CancelTask(TaskTracker* task) {
-  auto it = std::find_if(tasks_.begin(), tasks_.end(),
-                         [task](const std::unique_ptr<TaskTracker>& t) {
-                           return task == t.get();
-                         });
+  auto it =
+      base::ranges::find(tasks_, task, &std::unique_ptr<TaskTracker>::get);
   if (it != tasks_.end()) {
     it->release();
     tasks_.erase(it);
@@ -127,6 +130,14 @@ DistilledPagePrefs* DomDistillerService::GetDistilledPagePrefs() {
 
 DistillerUIHandle* DomDistillerService::GetDistillerUIHandle() {
   return distiller_ui_handle_.get();
+}
+
+base::WeakPtr<DomDistillerService> DomDistillerService::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+bool DomDistillerService::HasTaskTrackerForTesting(const GURL& url) const {
+  return GetTaskTrackerForUrl(url);
 }
 
 }  // namespace dom_distiller

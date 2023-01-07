@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/heap_profiling/multi_process/client_connection_manager.h"
 #include "components/services/heap_profiling/heap_profiling_service.h"
@@ -166,18 +167,15 @@ void Supervisor::RequestTraceWithHeapDump(TraceFinishedCallback callback,
                 base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED,
                 base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
                 base::trace_event::MemoryDumpDeterminism::NONE,
-                base::AdaptCallbackForRepeating(
-                    std::move(finished_dump_callback)));
+                std::move(finished_dump_callback));
       },
       std::move(finished_dump_callback));
 
   // The only reason this should return false is if tracing is already enabled,
   // which we've already checked.
-  // Use AdaptCallbackForRepeating since the argument passed to StartTracing()
-  // is intended to be a OnceCallback, but the code has not yet been migrated.
   bool result = content::TracingController::GetInstance()->StartTracing(
       GetBackgroundTracingConfig(anonymize),
-      base::AdaptCallbackForRepeating(std::move(trigger_memory_dump_callback)));
+      std::move(trigger_memory_dump_callback));
   DCHECK(result);
 }
 

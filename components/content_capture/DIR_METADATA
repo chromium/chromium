@@ -1,3 +1,1 @@
-monorail {
-  component: "Internals>ContentCapture"
-}
+mixins: "//components/content_capture/COMMON_METADATA"

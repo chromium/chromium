@@ -1,14 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_BASE_DECODER_H_
 #define MEDIA_BASE_DECODER_H_
 
+#include <ostream>
 #include <string>
 
-#include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
 
@@ -17,16 +16,19 @@ namespace media {
 // List of known AudioDecoder implementations; recorded to UKM, always add new
 // values to the end and do not reorder or delete values from this list.
 enum class AudioDecoderType : int {
-  kUnknown = 0,     // Decoder name string is not recognized or n/a.
-  kFFmpeg = 1,      // FFmpegAudioDecoder
-  kMojo = 2,        // MojoAudioDecoder
-  kDecrypting = 3,  // DecryptingAudioDecoder
-  kMediaCodec = 4,  // MediaCodecAudioDecoder (Android)
-  kBroker = 5,      // AudioDecoderBroker
-  kTesting = 6,     // Never send this to UKM, for tests only.
+  kUnknown = 0,          // Decoder name string is not recognized or n/a.
+  kFFmpeg = 1,           // FFmpegAudioDecoder
+  kMojo = 2,             // MojoAudioDecoder
+  kDecrypting = 3,       // DecryptingAudioDecoder
+  kMediaCodec = 4,       // MediaCodecAudioDecoder (Android)
+  kBroker = 5,           // AudioDecoderBroker
+  kTesting = 6,          // Never send this to UKM, for tests only.
+  kAudioToolbox = 7,     // AudioToolbox (macOS)
+  kMediaFoundation = 8,  // MediaFoundationAudioDecoder
+  kPassthroughDTS = 9,   // Passthrough DTS audio
 
   // Keep this at the end and equal to the last entry.
-  kMaxValue = kTesting,
+  kMaxValue = kPassthroughDTS,
 };
 
 // List of known VideoDecoder implementations; recorded to UKM, always add new

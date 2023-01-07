@@ -1,0 +1,9 @@
+# This file is for libpuffpatch in Chrome OS.
+
+Name: libpuffpatch
+Description: Puffin library for applying delta patches
+Version: 1.0.0
+# libpuffpatch library is static lib ATM, so we don't use private versions of
+# Libs and Requires fields.
+Libs: -lpuffpatch
+Requires: libbspatch

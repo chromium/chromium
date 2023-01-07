@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ import org.chromium.content_shell.ShellManager;
 import org.chromium.native_test.NativeBrowserTest;
 import org.chromium.native_test.NativeBrowserTestActivity;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.io.File;
@@ -59,7 +60,9 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
         ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
         setContentView(getTestActivityViewId());
         mShellManager = (ShellManager) findViewById(getShellManagerViewId());
-        mWindowAndroid = new ActivityWindowAndroid(this);
+        IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
+        mWindowAndroid = new ActivityWindowAndroid(
+                this, /* listenToActivityState= */ true, intentRequestTracker);
         mShellManager.setWindow(mWindowAndroid);
 
         Window wind = this.getWindow();

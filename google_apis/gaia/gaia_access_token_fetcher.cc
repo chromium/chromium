@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,48 +14,41 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
+const char GaiaAccessTokenFetcher::kOAuth2NetResponseCodeHistogramName[] =
+    "Gaia.ResponseCodesForOAuth2AccessToken";
+
+// static
+const char GaiaAccessTokenFetcher::kOAuth2ResponseHistogramName[] =
+    "Gaia.ResponseForOAuth2AccessToken";
+
+// static
 std::unique_ptr<GaiaAccessTokenFetcher>
 GaiaAccessTokenFetcher::CreateExchangeRefreshTokenForAccessTokenInstance(
     OAuth2AccessTokenConsumer* consumer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& refresh_token) {
   // Using `new` to access a non-public constructor.
-  return base::WrapUnique(new GaiaAccessTokenFetcher(
-      consumer, url_loader_factory, refresh_token, std::string()));
-}
-
-// static
-std::unique_ptr<GaiaAccessTokenFetcher>
-GaiaAccessTokenFetcher::CreateExchangeAuthCodeForRefeshTokenInstance(
-    OAuth2AccessTokenConsumer* consumer,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::string& auth_code) {
-  // Using `new` to access a non-public constructor.
-  return base::WrapUnique(new GaiaAccessTokenFetcher(
-      consumer, url_loader_factory, std::string(), auth_code));
+  return base::WrapUnique(
+      new GaiaAccessTokenFetcher(consumer, url_loader_factory, refresh_token));
 }
 
 GaiaAccessTokenFetcher::GaiaAccessTokenFetcher(
     OAuth2AccessTokenConsumer* consumer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::string& refresh_token,
-    const std::string& auth_code)
+    const std::string& refresh_token)
     : OAuth2AccessTokenFetcherImpl(consumer,
                                    url_loader_factory,
-                                   refresh_token,
-                                   auth_code) {}
+                                   refresh_token) {}
 
 GaiaAccessTokenFetcher::~GaiaAccessTokenFetcher() = default;
 
 void GaiaAccessTokenFetcher::RecordResponseCodeUma(int error_value) const {
-  base::UmaHistogramSparse("Gaia.ResponseCodesForOAuth2AccessToken",
-                           error_value);
+  base::UmaHistogramSparse(kOAuth2NetResponseCodeHistogramName, error_value);
 }
 
-void GaiaAccessTokenFetcher::RecordBadRequestTypeUma(
-    OAuth2ErrorCodesForHistogram access_error) const {
-  UMA_HISTOGRAM_ENUMERATION("Gaia.BadRequestTypeForOAuth2AccessToken",
-                            access_error, OAUTH2_ACCESS_ERROR_COUNT);
+void GaiaAccessTokenFetcher::RecordOAuth2Response(
+    OAuth2Response response) const {
+  base::UmaHistogramEnumeration(kOAuth2ResponseHistogramName, response);
 }
 
 GURL GaiaAccessTokenFetcher::GetAccessTokenURL() const {

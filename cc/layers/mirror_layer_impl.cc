@@ -1,8 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/layers/mirror_layer_impl.h"
+
+#include <memory>
 
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -17,7 +19,7 @@ MirrorLayerImpl::MirrorLayerImpl(LayerTreeImpl* tree_impl, int id)
 MirrorLayerImpl::~MirrorLayerImpl() = default;
 
 std::unique_ptr<LayerImpl> MirrorLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return MirrorLayerImpl::Create(tree_impl, id());
 }
 
@@ -40,9 +42,10 @@ void MirrorLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   const bool contents_opaque = false;
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
+  // TODO(crbug.com/1196414): Support 2D scales in mirror layers.
   PopulateScaledSharedQuadStateWithContentRects(
-      shared_quad_state, mirrored_layer->GetIdealContentsScale(), content_rect,
-      content_rect, contents_opaque);
+      shared_quad_state, mirrored_layer->GetIdealContentsScaleKey(),
+      content_rect, content_rect, contents_opaque);
 
   AppendDebugBorderQuad(render_pass, content_rect, shared_quad_state,
                         append_quads_data);
@@ -74,11 +77,11 @@ gfx::Rect MirrorLayerImpl::GetDamageRect() const {
   return gfx::Rect(bounds());
 }
 
-gfx::Rect MirrorLayerImpl::GetEnclosingRectInTargetSpace() const {
+gfx::Rect MirrorLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
   const LayerImpl* mirrored_layer =
       layer_tree_impl()->LayerById(mirrored_layer_id_);
-  return GetScaledEnclosingRectInTargetSpace(
-      mirrored_layer->GetIdealContentsScale());
+  return GetScaledEnclosingVisibleRectInTargetSpace(
+      mirrored_layer->GetIdealContentsScaleKey());
 }
 
 const char* MirrorLayerImpl::LayerTypeAsString() const {

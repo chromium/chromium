@@ -1,0 +1,11 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module fuchsia.test.mojom;
+
+// Mojo struct of fidl::InterfaceRequest<TestInterface>. |request| is a
+// channel handle.
+struct TestInterfaceRequest {
+  handle<platform> request;
+};

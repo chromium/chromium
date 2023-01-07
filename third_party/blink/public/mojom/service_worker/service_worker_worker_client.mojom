@@ -1,0 +1,18 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom";
+
+// ServiceWorkerWorkerClient represents a service worker client that is a worker
+// (i.e., a shared worker or dedicated worker). The main thread of
+// the renderer process uses this interface to tell the worker thread
+// when the controller service worker changes.
+interface ServiceWorkerWorkerClient {
+  // Called when the worker is controlled by a new service worker. This is only
+  // used to let the worker know that we now have a service worker (while there
+  // may or may not have been one previously), but not the other way around.
+  OnControllerChanged(ControllerServiceWorkerMode mode);
+};

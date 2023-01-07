@@ -1,15 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 
+#include "base/observer_list.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 
 namespace subresource_filter {
 
 SubresourceFilterObserverManager::SubresourceFilterObserverManager(
-    content::WebContents* web_contents) {}
+    content::WebContents* web_contents)
+    : content::WebContentsUserData<SubresourceFilterObserverManager>(
+          *web_contents) {}
 
 SubresourceFilterObserverManager::~SubresourceFilterObserverManager() {
   for (auto& observer : observers_)
@@ -42,20 +45,20 @@ void SubresourceFilterObserverManager::NotifyPageActivationComputed(
   }
 }
 
-void SubresourceFilterObserverManager::NotifySubframeNavigationEvaluated(
+void SubresourceFilterObserverManager::NotifyChildFrameNavigationEvaluated(
     content::NavigationHandle* navigation_handle,
     LoadPolicy load_policy) {
   for (auto& observer : observers_)
-    observer.OnSubframeNavigationEvaluated(navigation_handle, load_policy);
+    observer.OnChildFrameNavigationEvaluated(navigation_handle, load_policy);
 }
 
-void SubresourceFilterObserverManager::NotifyIsAdSubframeChanged(
+void SubresourceFilterObserverManager::NotifyIsAdFrameChanged(
     content::RenderFrameHost* render_frame_host,
-    bool is_ad_subframe) {
+    bool is_ad_frame) {
   for (auto& observer : observers_)
-    observer.OnIsAdSubframeChanged(render_frame_host, is_ad_subframe);
+    observer.OnIsAdFrameChanged(render_frame_host, is_ad_frame);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SubresourceFilterObserverManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SubresourceFilterObserverManager);
 
 }  // namespace subresource_filter

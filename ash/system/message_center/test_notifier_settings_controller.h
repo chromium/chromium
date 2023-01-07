@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_TEST_NOTIFIER_SETTINGS_CONTROLLER_H_
 
 #include "ash/public/cpp/notifier_settings_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -14,6 +13,12 @@ namespace ash {
 class TestNotifierSettingsController : public NotifierSettingsController {
  public:
   TestNotifierSettingsController();
+
+  TestNotifierSettingsController(const TestNotifierSettingsController&) =
+      delete;
+  TestNotifierSettingsController& operator=(
+      const TestNotifierSettingsController&) = delete;
+
   ~TestNotifierSettingsController() override;
 
   void set_no_notifiers(bool no_notifiers) { no_notifiers_ = no_notifiers; }
@@ -30,8 +35,6 @@ class TestNotifierSettingsController : public NotifierSettingsController {
   bool no_notifiers_ = false;
 
   base::ObserverList<NotifierSettingsObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNotifierSettingsController);
 };
 
 }  // namespace ash

@@ -22,6 +22,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_TRANSFORMABLE_CONTAINER_H_
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -38,7 +39,7 @@ class LayoutSVGTransformableContainer final : public LayoutSVGContainer {
     return type == kLayoutObjectSVGTransformableContainer ||
            LayoutSVGContainer::IsOfType(type);
   }
-  const FloatSize& AdditionalTranslation() const {
+  const gfx::Vector2dF& AdditionalTranslation() const {
     NOT_DESTROYED();
     return additional_translation_;
   }
@@ -56,7 +57,7 @@ class LayoutSVGTransformableContainer final : public LayoutSVGContainer {
   bool needs_transform_update_ : 1;
   bool transform_uses_reference_box_ : 1;
   AffineTransform local_transform_;
-  FloatSize additional_translation_;
+  gfx::Vector2dF additional_translation_;
 };
 
 template <>

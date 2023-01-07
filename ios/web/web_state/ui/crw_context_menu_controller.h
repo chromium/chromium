@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ class WebState;
 // Controller for displaying system Context Menu when the user is long pressing
 // on an element. This is working by adding an interaction to the whole web view
 // and then only adding focus on the element being long pressed.
-API_AVAILABLE(ios(13.0)) @interface CRWContextMenuController : NSObject
+@interface CRWContextMenuController : NSObject
 
 - (instancetype)initWithWebView:(WKWebView*)webView
                        webState:(web::WebState*)webState;

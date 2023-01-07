@@ -26,7 +26,7 @@ Cluster Telemetry service. You can specify a Gerrit patch for them and compare
 the results with and without the patch applied.
 
 ### Using Perf Try Bots
-[Perf Try Bots](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/perf_trybots.md)
+[Perf Try Bots](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/perf_trybots.md)
 lets you run only single story of `loading.desktop` or `loading.mobile`, because
 an entire loading benchmark is too large to run as a perf try job. You should
 only set the `Story` field, and leave the `Story Tags` field blank. Invalid
@@ -47,7 +47,7 @@ Googler only).
 For more in-depth analysis and shorter cycle times, it can be helpful to run the tests locally.
 
 First, [prepare your test device for
-Telemetry](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/telemetry_device_setup.md).
+Telemetry](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/telemetry_device_setup.md).
 
 Once you've done this, you can start the Telemetry benchmark with:
 
@@ -62,9 +62,9 @@ where `benchmark_name` can be `loading.desktop` or `loading.mobile`.
 The loading test cases are divided into groups based on their network traffic
 settings and cache conditions.
 
-All available traffic settings can be found in [traffic_setting.py](https://chromium.googlesource.com/catapult/+/master/telemetry/telemetry/page/traffic_setting.py)
+All available traffic settings can be found in [traffic_setting.py](https://chromium.googlesource.com/catapult/+/main/telemetry/telemetry/page/traffic_setting.py)
 
-All available caching conditions can be found in [cache_temperature.py](https://chromium.googlesource.com/catapult/+/master/telemetry/telemetry/page/cache_temperature.py)
+All available caching conditions can be found in [cache_temperature.py](https://chromium.googlesource.com/catapult/+/main/telemetry/telemetry/page/cache_temperature.py)
 
 Test cases of `loading.desktop` and `loading.mobile` are named with their
 corresponding settings. For example, `DevOpera_cold_3g` test case loads
@@ -90,8 +90,8 @@ or chrome-speed-metrics@google.com (Googlers only).
 
 ## Adding new loading test cases
 New test cases can be added by modifying
-[loading_desktop.py](https://chromium.googlesource.com/chromium/src/+/master/tools/perf/page_sets/loading_desktop.py)
-or [loading_mobile.py](https://chromium.googlesource.com/chromium/src/+/master/tools/perf/page_sets/loading_mobile.py) page sets.
+[loading_desktop.py](https://chromium.googlesource.com/chromium/src/+/main/tools/perf/page_sets/loading_desktop.py)
+or [loading_mobile.py](https://chromium.googlesource.com/chromium/src/+/main/tools/perf/page_sets/loading_mobile.py) page sets.
 
 For example, to add a new case of loading
 `https://en.wikipedia.org/wiki/Cats_and_the_Internet` on 2G and 3G networks with
@@ -105,13 +105,5 @@ self.AddStories(
   traffic_settings=[traffic_setting_module.2G, traffic_setting_module.3G])
 ```
 
-After adding the new page, record it and upload the page archive to cloud
-storage with:
-
-```
-$ ./tools/perf/record_wpr loading_desktop --browser=system \
-  --story-filter=wiki_cats --upload
-```
-
-If the extra story was added to `loading.mobile`, replace `loading_desktop` in
-the command above with `loading_mobile`.
+After adding the new page, record and upload it by following
+[these instructions](https://source.chromium.org/chromium/chromium/src/+/main:tools/perf/recording_benchmarks.md).

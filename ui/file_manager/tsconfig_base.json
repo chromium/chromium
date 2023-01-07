@@ -1,0 +1,17 @@
+{
+  "extends": "../../tools/typescript/tsconfig_base.json",
+  "compilerOptions": {
+    "lib": ["dom", "ES2015.Generator", "ES2015.Iterable", "ESNext"],
+
+    "allowJs": true,
+    "importsNotUsedAsValues": "preserve",
+    "typeRoots": [
+      "../../third_party/node/node_modules/@types"
+    ],
+    "types": [
+      "trusted-types",
+      "filesystem",
+      "filewriter"
+    ]
+  }
+}

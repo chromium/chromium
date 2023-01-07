@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ XRPlane::XRPlane(uint64_t id,
                  double timestamp)
     : XRPlane(id,
               session,
-              mojo::ConvertTo<base::Optional<blink::XRPlane::Orientation>>(
+              mojo::ConvertTo<absl::optional<blink::XRPlane::Orientation>>(
                   plane_data.orientation),
               mojo::ConvertTo<HeapVector<Member<DOMPointReadOnly>>>(
                   plane_data.polygon),
@@ -27,9 +27,9 @@ XRPlane::XRPlane(uint64_t id,
 
 XRPlane::XRPlane(uint64_t id,
                  XRSession* session,
-                 const base::Optional<Orientation>& orientation,
+                 const absl::optional<Orientation>& orientation,
                  const HeapVector<Member<DOMPointReadOnly>>& polygon,
-                 const base::Optional<device::Pose>& mojo_from_plane,
+                 const absl::optional<device::Pose>& mojo_from_plane,
                  double timestamp)
     : id_(id),
       polygon_(polygon),
@@ -52,12 +52,18 @@ XRSpace* XRPlane::planeSpace() const {
   return plane_space_;
 }
 
-base::Optional<TransformationMatrix> XRPlane::MojoFromObject() const {
+absl::optional<TransformationMatrix> XRPlane::MojoFromObject() const {
   if (!mojo_from_plane_) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  return TransformationMatrix(mojo_from_plane_->ToTransform().matrix());
+  return TransformationMatrix(mojo_from_plane_->ToTransform());
+}
+
+device::mojom::blink::XRNativeOriginInformationPtr XRPlane::NativeOrigin()
+    const {
+  return device::mojom::blink::XRNativeOriginInformation::NewPlaneId(
+      this->id());
 }
 
 String XRPlane::orientation() const {
@@ -90,7 +96,7 @@ void XRPlane::Update(const device::mojom::blink::XRPlaneData& plane_data,
 
   last_changed_time_ = timestamp;
 
-  orientation_ = mojo::ConvertTo<base::Optional<blink::XRPlane::Orientation>>(
+  orientation_ = mojo::ConvertTo<absl::optional<blink::XRPlane::Orientation>>(
       plane_data.orientation);
 
   mojo_from_plane_ = plane_data.mojo_from_plane;

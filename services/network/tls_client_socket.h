@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -24,6 +23,7 @@ namespace net {
 class ClientSocketFactory;
 class SSLClientContext;
 class SSLClientSocket;
+struct SSLConfig;
 class StreamSocket;
 }  // namespace net
 
@@ -35,6 +35,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TLSClientSocket
  public:
   TLSClientSocket(mojo::PendingRemote<mojom::SocketObserver> observer,
                   const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  TLSClientSocket(const TLSClientSocket&) = delete;
+  TLSClientSocket& operator=(const TLSClientSocket&) = delete;
+
   ~TLSClientSocket() override;
 
   void Connect(const net::HostPortPair& host_port_pair,
@@ -59,8 +63,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TLSClientSocket
   mojom::TCPConnectedSocket::UpgradeToTLSCallback connect_callback_;
   bool send_ssl_info_ = false;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(TLSClientSocket);
 };
 
 }  // namespace network

@@ -1,0 +1,46 @@
+{%- from 'macros' import hash_bang with context -%}
+{%- from 'macros' import make_maximized with context -%}
+{{ hash_bang() }}
+
+-- Copyright 2021 The Chromium Authors
+-- Use of this source code is governed by a BSD-style license that can be
+-- found in the LICENSE file.
+
+-- This script navigates to the homepage of reddit.com and then scrolls down the
+-- page continously. The script scrolls |navigation_cycles| times. Scrolling is
+-- done through javascript with window.scrollTo. It's done in increments to
+-- react to the fact the the DOM changes with content getting loaded.
+
+set myURL to "https://reddit.com"
+set scrollAmount to "100" --- % down the page
+
+tell application "{{ browser }}"
+
+    -- If {{ browser }} is already started then just bring
+    -- it to the forefront otherwise open it.
+    if it is running then
+      reopen
+    else
+      activate
+    end if
+
+    {{ make_maximized() }}
+
+    tell front window to set curTab to make new tab at after (get active tab) with properties {URL:myURL}
+    tell curTab
+        repeat while (loading)
+            delay 1
+        end repeat
+
+        repeat with i from 1 to {{ navigation_cycles }}
+
+          -- set the vertical scroll
+          repeat with y from 90 to 100
+            execute javascript "h=document.documentElement.scrollHeight-document.documentElement.clientHeight; window.scrollTo(0,h*" & y & "/100)"
+            delay 0.25
+          end repeat
+
+          delay 3
+        end repeat
+    end tell
+end tell

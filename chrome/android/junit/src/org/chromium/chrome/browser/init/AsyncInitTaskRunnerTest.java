@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
@@ -39,6 +40,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowAsyncTask.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class AsyncInitTaskRunnerTest {
     private static final int THREAD_WAIT_TIME_MS = 1000;
 

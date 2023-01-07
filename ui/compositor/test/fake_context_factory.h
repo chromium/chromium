@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_COMPOSITOR_TEST_FAKE_CONTEXT_FACTORY_H_
 #define UI_COMPOSITOR_TEST_FAKE_CONTEXT_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
@@ -26,6 +27,10 @@ namespace ui {
 class FakeContextFactory : public ui::ContextFactory {
  public:
   FakeContextFactory();
+
+  FakeContextFactory(const FakeContextFactory&) = delete;
+  FakeContextFactory& operator=(const FakeContextFactory&) = delete;
+
   ~FakeContextFactory() override;
 
   const viz::CompositorFrame& GetLastCompositorFrame() const;
@@ -47,12 +52,10 @@ class FakeContextFactory : public ui::ContextFactory {
   }
 
  private:
-  cc::FakeLayerTreeFrameSink* frame_sink_ = nullptr;
+  raw_ptr<cc::FakeLayerTreeFrameSink> frame_sink_ = nullptr;
   cc::TestTaskGraphRunner task_graph_runner_;
   viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   viz::RendererSettings renderer_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeContextFactory);
 };
 
 }  // namespace ui

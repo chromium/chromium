@@ -77,8 +77,9 @@ and `privileged_removal_calls`.
 To check out the internal resources set both of these to True in .gclient:
 
 *  `checkout_src_internal` (standard argument defined in DEPS)
-*  `checkout_chrome_cleaner_internal` (defined in src-internal's DEPS, causes the
-   internal resources to be checked out under `chrome/chrome_cleaner/internal`)
+*  `checkout_chrome_cleaner_internal` (defined in src-internal's DEPS, causes
+   the internal resources to be checked out under
+   `chrome/chrome_cleaner/internal`)
 
 To actually build with the internal resources, also set
 `is_internal_chrome_cleaner_build` to true in args.gn.
@@ -92,6 +93,9 @@ The build is controlled by the following arguments that can be set in args.gn:
    public resources.
 *  `is_official_chrome_cleaner_build`: If true, various development options
    will be disabled since the build is meant for release to end users.
+*  `enable_software_reporter`: This is true by default for `is_chrome_branded`
+   builds, but can be set to false if a Chrome branded build is needed but
+   Software Reporter execution is not required.
 *  `reporter_branding_path`, `cleaner_branding_path`, `version_path`: Paths to
    resource files that will be used to populate the VERSIONINFO of the
    executables.
@@ -103,4 +107,6 @@ The build is controlled by the following arguments that can be set in args.gn:
 
 ## Contact
 
-joenotcharles@chromium.org
+Please file bugs / feature requests / inquiries using the
+[Services>SafeBrowsing>ChromeCleanup component](https://bugs.chromium.org/p/chromium/issues/entry?components=Services%3ESafebrowsing%3EChromeCleanup)
+for tracking.

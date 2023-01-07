@@ -23,6 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_GROUPING_RULE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_GROUPING_RULE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

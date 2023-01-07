@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
@@ -105,7 +105,7 @@ TEST_F(StyleTraversalRootTest, Update_SingleRoot) {
 
 TEST_F(StyleTraversalRootTest, Update_CommonRoot) {
   StyleTraversalRootTestImpl root;
-  root.MarkDirty(DivElement(kC));
+  root.MarkDirty(DivElement(kB));
 
   // Initially make B a single root.
   root.Update(nullptr, DivElement(kB));
@@ -113,7 +113,7 @@ TEST_F(StyleTraversalRootTest, Update_CommonRoot) {
   EXPECT_TRUE(root.IsSingleRoot());
 
   // Adding C makes A a common root.
-  root.MarkDirty(DivElement(kB));
+  root.MarkDirty(DivElement(kC));
   root.Update(DivElement(kA), DivElement(kC));
   EXPECT_EQ(DivElement(kA), root.GetRootNode());
   EXPECT_FALSE(root.IsSingleRoot());

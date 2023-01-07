@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,14 +18,20 @@ struct LogicalOffset;
 // LogicalSize is the size of rect (typically a fragment) in the logical
 // coordinate system.
 // For more information about physical and logical coordinate systems, see:
-// https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/layout/README.md#coordinate-spaces
+// https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/README.md#coordinate-spaces
 struct CORE_EXPORT LogicalSize {
   constexpr LogicalSize() = default;
   constexpr LogicalSize(LayoutUnit inline_size, LayoutUnit block_size)
       : inline_size(inline_size), block_size(block_size) {}
 
-  // For testing only. It's defined in core/testing/core_unit_test_helpers.h.
-  inline LogicalSize(int inline_size, int block_size);
+  // This is deleted to avoid unwanted lossy conversion from float or double to
+  // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter
+  // instead.
+  LogicalSize(double, double) = delete;
+
+  // For testing only. It's defined in core/testing/core_unit_test_helper.h.
+  // 'constexpr' is to let compiler detect usage from production code.
+  constexpr LogicalSize(int inline_size, int block_size);
 
   // Use ToPhysicalSize to convert to a physical size.
 
@@ -43,8 +49,6 @@ struct CORE_EXPORT LogicalSize {
   constexpr bool IsEmpty() const {
     return inline_size == LayoutUnit() || block_size == LayoutUnit();
   }
-
-  void Transpose() { std::swap(inline_size, block_size); }
 };
 
 inline LogicalSize& operator-=(LogicalSize& a, const NGBoxStrut& b) {

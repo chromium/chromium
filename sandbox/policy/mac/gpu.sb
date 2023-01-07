@@ -1,4 +1,4 @@
-; Copyright 2017 The Chromium Authors. All rights reserved.
+; Copyright 2017 The Chromium Authors
 ; Use of this source code is governed by a BSD-style license that can be
 ; found in the LICENSE file.
 
@@ -18,6 +18,9 @@
 
 ; Allow communication between the GPU process and the UI server.
 (allow mach-lookup
+  ; Needed for AudioToolbox AAC encoding (https://crbug.com/1321287) and
+  ; xHE-AAC decoding (https://crbug.com/1289825).
+  (global-name "com.apple.audio.AudioComponentRegistrar")
   (global-name "com.apple.bsd.dirhelper")
   (global-name "com.apple.CARenderServer")
   (global-name "com.apple.cfprefsd.agent")
@@ -111,6 +114,7 @@
   (subpath "/Library/GPUBundles")
   (subpath "/Library/Video/Plug-Ins")
   (subpath "/System/Library/ColorSync/Profiles")
+  (subpath "/System/Library/Components/AudioCodecs.component")
   (subpath "/System/Library/CoreServices/RawCamera.bundle")
   (subpath "/System/Library/Extensions")  ; https://crbug.com/515280
   (subpath "/System/Library/Video/Plug-Ins")

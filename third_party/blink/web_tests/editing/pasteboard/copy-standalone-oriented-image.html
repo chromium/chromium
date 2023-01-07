@@ -1,0 +1,43 @@
+<html> 
+<head>
+<script>
+if (window.testRunner) {
+    testRunner.dumpEditingCallbacks();
+    testRunner.dumpAsLayoutWithPixelResults();
+}
+
+function editingTest() {
+    frames['imageframe'].document.execCommand("Copy");
+    
+    var s = window.getSelection();
+    var e = document.getElementById("dest");
+    s.collapse(e, 0);
+    document.execCommand("Paste");
+}
+</script>
+<style>
+.editable { 
+    border: 2px solid red; 
+    padding: 12px; 
+    font-size: 24px; 
+}
+
+iframe {
+    border: 2px solid blue; 
+}
+</style>
+</head>
+<body>
+
+<p>This is an automatic test of copying an image document.</p>
+<p>To perform this test manually, click once in the image frame, choose Edit -> Copy
+then click in the red box and paste the image. If the image pastes successfully the
+test is passed.</p>
+
+<iframe name="imageframe" src="support/exif-orientation-5-lu.jpg" onload="editingTest()">
+</iframe>
+
+<div id="dest" class="editable" contenteditable="true"> </div>
+
+</body>
+</html>

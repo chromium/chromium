@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string_or_write_params.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -32,7 +32,7 @@ class FileSystemWritableFileStream final : public WritableStream {
   // IDL defined functions specific to FileSystemWritableFileStream.
   ScriptPromise write(
       ScriptState*,
-      const ArrayBufferOrArrayBufferViewOrBlobOrUSVStringOrWriteParams& data,
+      const V8UnionBlobOrBufferSourceOrUSVStringOrWriteParams* data,
       ExceptionState&);
   ScriptPromise truncate(ScriptState*, uint64_t size, ExceptionState&);
   ScriptPromise seek(ScriptState*, uint64_t offset, ExceptionState&);

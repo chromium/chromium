@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,12 @@ namespace net {
 
 namespace {
 
-// Net data directory, relative to source root.
+// Net directory, relative to source root.
+const base::FilePath::CharType kNetRelativePath[] = FILE_PATH_LITERAL("net");
+
+// Net data directory, relative to net directory.
 const base::FilePath::CharType kNetDataRelativePath[] =
-    FILE_PATH_LITERAL("net/data");
+    FILE_PATH_LITERAL("data");
 
 // Test certificates directory, relative to kNetDataRelativePath.
 const base::FilePath::CharType kCertificateDataSubPath[] =
@@ -22,14 +25,18 @@ const base::FilePath::CharType kCertificateDataSubPath[] =
 
 }  // namespace
 
-base::FilePath GetTestNetDataDirectory() {
+base::FilePath GetTestNetDirectory() {
   base::FilePath src_root;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root);
   }
 
-  return src_root.Append(kNetDataRelativePath);
+  return src_root.Append(kNetRelativePath);
+}
+
+base::FilePath GetTestNetDataDirectory() {
+  return GetTestNetDirectory().Append(kNetDataRelativePath);
 }
 
 base::FilePath GetTestCertsDirectory() {

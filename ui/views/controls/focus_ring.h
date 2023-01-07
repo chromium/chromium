@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/scoped_observation.h"
+#include "ui/base/class_property.h"
+#include "ui/color/color_id.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/view.h"
@@ -33,9 +35,28 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
 
   using ViewPredicate = std::function<bool(View* view)>;
 
-  // Create a FocusRing and adds it to |parent|. The returned focus ring is
-  // owned by the |parent|.
-  static FocusRing* Install(View* parent);
+  // The default thickness and inset amount of focus ring halos. If you need
+  // the thickness of a specific focus ring, call halo_thickness() instead.
+  static constexpr float kDefaultHaloThickness = 2.0f;
+
+  // The default inset for the focus ring. Moves the ring slightly out from the
+  // edge of the host view, so that the halo doesn't significantly overlap the
+  // host view's contents. If you need a value for a specific focus ring, call
+  // halo_inset() instead.
+  static constexpr float kDefaultHaloInset = kDefaultHaloThickness * -0.5f;
+
+  // Creates a FocusRing and adds it to `host`.
+  static void Install(View* host);
+
+  // Gets the FocusRing, if present, from `host`.
+  static FocusRing* Get(View* host);
+  static const FocusRing* Get(const View* host);
+
+  // Removes the FocusRing, if present, from `host`.
+  static void Remove(View* host);
+
+  FocusRing(const FocusRing&) = delete;
+  FocusRing& operator=(const FocusRing&) = delete;
 
   ~FocusRing() override;
 
@@ -57,7 +78,13 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   // focus, but the FocusRing sits on the parent instead of the inner view.
   void SetHasFocusPredicate(const ViewPredicate& predicate);
 
-  void SetColor(base::Optional<SkColor> color);
+  absl::optional<ui::ColorId> GetColorId() const;
+  void SetColorId(absl::optional<ui::ColorId> color_id);
+
+  float GetHaloThickness() const;
+  float GetHaloInset() const;
+  void SetHaloThickness(float halo_thickness);
+  void SetHaloInset(float halo_inset);
 
   // View:
   void Layout() override;
@@ -65,6 +92,7 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
       const ViewHierarchyChangedDetails& details) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
   // ViewObserver:
   void OnViewFocused(View* view) override;
@@ -72,6 +100,9 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
 
  private:
   FocusRing();
+
+  SkPath GetPath() const;
+  SkRRect GetRingRoundRect() const;
 
   void RefreshLayer();
 
@@ -90,18 +121,43 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   // the focus ring shows an invalid appearance (usually a different color).
   bool invalid_ = false;
 
-  // Overriding color for the focus ring.
-  base::Optional<SkColor> color_;
+  // Overriding color_id for the focus ring.
+  absl::optional<ui::ColorId> color_id_;
 
   // The predicate used to determine whether the parent has focus.
-  base::Optional<ViewPredicate> has_focus_predicate_;
+  absl::optional<ViewPredicate> has_focus_predicate_;
+
+  // The thickness of the focus ring halo, in DIP.
+  float halo_thickness_ = kDefaultHaloThickness;
+
+  // The adjustment from the visible border of the host view to render the
+  // focus ring.
+  //
+  // At -0.5 * halo_thickness_ (the default), the inner edge of the focus
+  // ring will align with the outer edge of the default inkdrop. For very thin
+  // focus rings, a zero value may provide better visual results.
+  float halo_inset_ = kDefaultHaloInset;
 
   base::ScopedObservation<View, ViewObserver> view_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FocusRing);
 };
 
-VIEWS_EXPORT SkPath GetHighlightPath(const View* view);
+VIEWS_EXPORT SkPath
+GetHighlightPath(const View* view,
+                 float halo_thickness = FocusRing::kDefaultHaloThickness);
+
+// Set this on the FocusRing host to have the FocusRing paint an outline around
+// itself. This ensures that the FocusRing has sufficient contrast with its
+// surroundings (this is used for prominent MdTextButtons because they are blue,
+// while the background is light/dark, and the FocusRing doesn't contrast well
+// with both the interior and exterior of the button). This may need some polish
+// (such as blur?) in order to be expandable to all controls. For now it solves
+// color contrast on prominent buttons which is an a11y issue. See
+// https://crbug.com/1197631.
+// TODO(pbos): Consider polishing this well enough that this can be
+// unconditional. This may require rolling out `kCascadingBackgroundColor` to
+// more surfaces to have an accurate background color.
+VIEWS_EXPORT extern const ui::ClassProperty<bool>* const
+    kDrawFocusRingBackgroundOutline;
 
 }  // namespace views
 

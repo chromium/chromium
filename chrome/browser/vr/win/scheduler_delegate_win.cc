@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,6 @@ void SchedulerDelegateWin::AddInputSourceState(
 }
 
 void SchedulerDelegateWin::ConnectPresentingService(
-    device::mojom::VRDisplayInfoPtr display_info,
     device::mojom::XRRuntimeSessionOptionsPtr options) {
   NOTREACHED();
 }

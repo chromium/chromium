@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,8 +22,8 @@ setuptools.setup(
     ],
     author='The Chromium Authors',
     author_email='chromium-dev@chromium.org',
-    description='Google Resource and Internationalization Tool for managing '
-                'translations & resource files',
+    description=('Google Resource and Internationalization Tool for managing '
+                 'translations & resource files'),
     license='BSD-3',
     url='https://chromium.googlesource.com/chromium/src/tools/grit/',
     classifiers=[

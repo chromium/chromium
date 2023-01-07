@@ -1,0 +1,88 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// This needs to match the definition of net::ConnectionType.
+[Stable, Extensible]
+enum ConnectionType {
+  [Default] CONNECTION_UNKNOWN = 0,  // A connection exists, but its type is
+                                     // unknown. Also used as a default value.
+  CONNECTION_ETHERNET = 1,
+  CONNECTION_WIFI = 2,
+  CONNECTION_2G = 3,
+  CONNECTION_3G = 4,
+  CONNECTION_4G = 5,
+  CONNECTION_NONE = 6,     // No connection.
+  CONNECTION_BLUETOOTH = 7,
+  CONNECTION_5G = 8,
+  CONNECTION_LAST = CONNECTION_5G
+};
+
+// This needs to match the definition of net::ConnectionSubtype.
+[Stable, Extensible]
+enum ConnectionSubtype {
+  [Default] SUBTYPE_UNKNOWN = 0,
+  SUBTYPE_NONE,
+  SUBTYPE_OTHER,
+  SUBTYPE_GSM,
+  SUBTYPE_IDEN,
+  SUBTYPE_CDMA,
+  SUBTYPE_1XRTT,
+  SUBTYPE_GPRS,
+  SUBTYPE_EDGE,
+  SUBTYPE_UMTS,
+  SUBTYPE_EVDO_REV_0,
+  SUBTYPE_EVDO_REV_A,
+  SUBTYPE_HSPA,
+  SUBTYPE_EVDO_REV_B,
+  SUBTYPE_HSDPA,
+  SUBTYPE_HSUPA,
+  SUBTYPE_EHRPD,
+  SUBTYPE_HSPAP,
+  SUBTYPE_LTE,
+  SUBTYPE_LTE_ADVANCED,
+  SUBTYPE_BLUETOOTH_1_2,
+  SUBTYPE_BLUETOOTH_2_1,
+  SUBTYPE_BLUETOOTH_3_0,
+  SUBTYPE_BLUETOOTH_4_0,
+  SUBTYPE_ETHERNET,
+  SUBTYPE_FAST_ETHERNET,
+  SUBTYPE_GIGABIT_ETHERNET,
+  SUBTYPE_10_GIGABIT_ETHERNET,
+  SUBTYPE_WIFI_B,
+  SUBTYPE_WIFI_G,
+  SUBTYPE_WIFI_N,
+  SUBTYPE_WIFI_AC,
+  SUBTYPE_WIFI_AD,
+  SUBTYPE_LAST = SUBTYPE_WIFI_AD
+};
+
+// Implemented in Ash-chrome.
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="f1762d7c-f5cf-4580-8fad-e181dab68e4e"]
+interface  NetworkChange {
+    // Adds NetworkChangeObserver to NetworkChangeManagerClient in Ash.
+    AddObserver@0(pending_remote<NetworkChangeObserver> observer);
+};
+
+// Implemented in Lacros-chrome.
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="f95d3481-103e-4507-8e83-9bb6b7515c07"]
+interface NetworkChangeObserver {
+    // Notifies observer of network change.
+    OnNetworkChanged@0(
+        bool dns_changed,
+        bool ip_address_changed,
+        bool connection_type_changed,
+        // `new_connection_type` is ignored when `connection_type_changed` is
+        // set to false.
+        ConnectionType new_connection_type,
+        bool connection_subtype_changed,
+        // `new_connection_subtype` is ignored when `connectionsub_type_changed`
+        // is set to false.
+        ConnectionSubtype new_connection_subtype);
+};

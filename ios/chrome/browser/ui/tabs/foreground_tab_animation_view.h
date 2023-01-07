@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@
 // The content view (typically the new tab's view) to animate.
 @property(nonatomic, strong) UIView* contentView;
 
-// Starts a New Tab animation in |parentView|, from |originPoint| with
-// a |completion| block. The new tab will scale up and move from the direction
-// if |originPoint| to the center of the reciever. |originPoint| must be in
+// Starts a New Tab animation in `parentView`, from `originPoint` with
+// a `completion` block. The new tab will scale up and move from the direction
+// if `originPoint` to the center of the reciever. `originPoint` must be in
 // UIWindow coordinates.
 - (void)animateFrom:(CGPoint)originPoint withCompletion:(void (^)())completion;
 

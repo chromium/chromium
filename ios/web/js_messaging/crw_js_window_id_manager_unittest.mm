@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "ios/web/js_messaging/page_script_util.h"
-#include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -77,7 +77,7 @@ TEST_F(JSWindowIDManagerTest, MultipleInjections) {
   EXPECT_NSNE(windowID, [manager windowID]);
 }
 
-// Tests that injection will retry if |window.__gCrWeb| is not present.
+// Tests that injection will retry if `window.__gCrWeb` is not present.
 TEST_F(JSWindowIDManagerTest, InjectionRetry) {
   WKWebView* web_view = [[WKWebView alloc] init];
 

@@ -1,13 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
-#include <algorithm>
-
-#include "base/macros.h"
+#include "base/callback.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
@@ -34,6 +33,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest_mac.h"
+#include "ui/base/test/ui_controls.h"
+#include "url/gurl.h"
 
 namespace task_manager {
 
@@ -42,6 +43,10 @@ using browsertest_util::WaitForTaskManagerRows;
 class TaskManagerMacTest : public InProcessBrowserTest {
  public:
   TaskManagerMacTest() {}
+
+  TaskManagerMacTest(const TaskManagerMacTest&) = delete;
+  TaskManagerMacTest& operator=(const TaskManagerMacTest&) = delete;
+
   ~TaskManagerMacTest() override {}
 
   void SetUpOnMainThread() override {
@@ -66,8 +71,10 @@ class TaskManagerMacTest : public InProcessBrowserTest {
                                : nullptr;
   }
 
-  int TableFirstSelectedRow() const {
-    return [[GetTable() selectedRowIndexes] firstIndex];
+  absl::optional<size_t> TableFirstSelectedRow() const {
+    int index = [[GetTable() selectedRowIndexes] firstIndex];
+    return (index < 0) ? absl::nullopt
+                       : absl::make_optional(static_cast<size_t>(index));
   }
 
   void PressKillButton() {
@@ -80,9 +87,8 @@ class TaskManagerMacTest : public InProcessBrowserTest {
     if (!local_state)
       FAIL();
 
-    DictionaryPrefUpdate dict_update(local_state,
-                                     prefs::kTaskManagerColumnVisibility);
-    dict_update->Clear();
+    local_state->SetDict(prefs::kTaskManagerColumnVisibility,
+                         base::Value::Dict());
   }
 
   void ToggleColumnVisibility(TaskManagerMac* task_manager, int col_id) {
@@ -93,29 +99,24 @@ class TaskManagerMacTest : public InProcessBrowserTest {
   // Looks up a tab based on its tab ID.
   content::WebContents* FindWebContentsByTabId(SessionID tab_id) {
     auto& all_tabs = AllTabContentses();
-    auto tab_id_matches = [tab_id](content::WebContents* web_contents) {
-      return sessions::SessionTabHelper::IdForTab(web_contents) == tab_id;
-    };
-    auto it = std::find_if(all_tabs.begin(), all_tabs.end(), tab_id_matches);
+    auto it = base::ranges::find(all_tabs, tab_id,
+                                 &sessions::SessionTabHelper::IdForTab);
 
     return (it == all_tabs.end()) ? nullptr : *it;
   }
 
   // Returns the current TaskManagerTableModel index for a particular tab. Don't
   // cache this value, since it can change whenever the message loop runs.
-  int FindRowForTab(content::WebContents* tab) {
+  absl::optional<size_t> FindRowForTab(content::WebContents* tab) {
     SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
     std::unique_ptr<TaskManagerTester> tester =
         TaskManagerTester::Create(base::RepeatingClosure());
-    for (int i = 0; i < tester->GetRowCount(); ++i) {
+    for (size_t i = 0; i < tester->GetRowCount(); ++i) {
       if (tester->GetTabId(i) == tab_id)
         return i;
     }
-    return -1;
+    return absl::nullopt;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerMacTest);
 };
 
 // Tests that all defined columns have a corresponding string IDs for keying
@@ -138,10 +139,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, TableStartsWithDefaultColumns) {
   EXPECT_EQ(0u, [[table sortDescriptors] count]);
   NSArray* tableColumns = [table tableColumns];
   for (size_t i = 0; i < kColumnsSize; ++i) {
-    EXPECT_EQ(kColumns[i].id,
-              [[[tableColumns objectAtIndex:i] identifier] intValue]);
-    EXPECT_EQ(kColumns[i].default_visibility,
-              ![[tableColumns objectAtIndex:i] isHidden]);
+    EXPECT_EQ(kColumns[i].id, [[tableColumns[i] identifier] intValue]);
+    EXPECT_EQ(kColumns[i].default_visibility, ![tableColumns[i] isHidden]);
   }
 }
 
@@ -160,10 +159,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, ColumnsSettingsAreRestored) {
   EXPECT_EQ(0u, [[table sortDescriptors] count]);
   NSArray* tableColumns = [table tableColumns];
   for (size_t i = 0; i < kColumnsSize; ++i) {
-    EXPECT_EQ(kColumns[i].id,
-              [[[tableColumns objectAtIndex:i] identifier] intValue]);
-    EXPECT_EQ(kColumns[i].default_visibility,
-              ![[tableColumns objectAtIndex:i] isHidden]);
+    EXPECT_EQ(kColumns[i].id, [[tableColumns[i] identifier] intValue]);
+    EXPECT_EQ(kColumns[i].default_visibility, ![tableColumns[i] isHidden]);
     ToggleColumnVisibility(task_manager, kColumns[i].id);
   }
 
@@ -171,7 +168,6 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, ColumnsSettingsAreRestored) {
   // be nice to fake a click with -performClick: but that doesn't work (see
   // http://www.cocoabuilder.com/archive/cocoa/177610-programmatically-click-column-header-in-nstableview.html).
   bool is_sorted = false;
-  int sorted_col_id = -1;
   for (NSTableColumn* column in tableColumns) {
     if ([column isHidden])
       continue;
@@ -181,7 +177,6 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, ColumnsSettingsAreRestored) {
           [[column sortDescriptorPrototype] reversedSortDescriptor];
       [table setSortDescriptors:@[ newSortDescriptor ]];
       is_sorted = true;
-      sorted_col_id = [[column identifier] intValue];
       break;
     }
   }
@@ -210,8 +205,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   chrome::ShowTaskManager(browser());
 
   // Set up a total of three tabs in different processes.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.com", "/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title2.html")));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("b.com", "/title2.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -224,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   // Wait for their titles to appear in the TaskManager. There should be three
   // rows.
   auto pattern = browsertest_util::MatchTab("Title *");
-  int rows = 3;
+  size_t rows = 3;
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(rows, pattern));
 
   // Find the three tabs we set up, in TaskManager model order. Because we have
@@ -232,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   std::unique_ptr<TaskManagerTester> tester =
       TaskManagerTester::Create(base::RepeatingClosure());
   std::vector<content::WebContents*> tabs;
-  for (int i = 0; i < tester->GetRowCount(); ++i) {
+  for (size_t i = 0; i < tester->GetRowCount(); ++i) {
     // Filter based on our title.
     if (!base::MatchPattern(tester->GetRowTitle(i), pattern))
       continue;
@@ -244,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
 
   // Select the middle row, and store its tab id.
   [GetTable()
-          selectRowIndexes:[NSIndexSet indexSetWithIndex:FindRowForTab(tabs[1])]
+          selectRowIndexes:[NSIndexSet
+                               indexSetWithIndex:FindRowForTab(tabs[1]).value()]
       byExtendingSelection:NO];
   EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[1]));
   EXPECT_EQ(1, [GetTable() numberOfSelectedRows]);
@@ -286,11 +282,12 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   }
 
   // No row should now be selected.
-  ASSERT_EQ(-1, TableFirstSelectedRow());
+  ASSERT_FALSE(TableFirstSelectedRow().has_value());
 
   // Now select tabs[2].
   [GetTable()
-          selectRowIndexes:[NSIndexSet indexSetWithIndex:FindRowForTab(tabs[2])]
+          selectRowIndexes:[NSIndexSet
+                               indexSetWithIndex:FindRowForTab(tabs[2]).value()]
       byExtendingSelection:NO];
 
   // Focus and reload one of the sad tabs. It should reappear in the TM. The
@@ -308,4 +305,85 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[2]));
 }
 
+// TODO(crbug.com/1360939): Re-enable when no longer flaky.
+IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_NavigateSelection) {
+  ASSERT_NO_FATAL_FAILURE(ClearStoredColumnSettings());
+
+  chrome::ShowTaskManager(browser());
+
+  // Set up three new tabs that are in the same task group
+  size_t numGroupTabs = 3;
+  for (size_t i = 1; i <= numGroupTabs; ++i) {
+    chrome::AddTabAt(browser(), GURL(), i, true);
+  }
+
+  // Set up a tab in a different process than the previous New Tab task group
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title2.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Wait for their titles to appear in the TaskManager.
+  auto pattern = browsertest_util::MatchTab("Title *");
+  size_t rows = 1;
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(rows, pattern));
+
+  // Find the single tab we set up that is not in a task group
+  std::unique_ptr<TaskManagerTester> tester =
+      TaskManagerTester::Create(base::RepeatingClosure());
+  std::vector<content::WebContents*> tabs;
+  for (size_t i = 0; i < tester->GetRowCount(); ++i) {
+    // Filter based on our title.
+    if (!base::MatchPattern(tester->GetRowTitle(i), pattern))
+      continue;
+    content::WebContents* tab = FindWebContentsByTabId(tester->GetTabId(i));
+    EXPECT_NE(nullptr, tab);
+    tabs.push_back(tab);
+  }
+  EXPECT_EQ(1U, tabs.size());
+
+  // Select the row corresponding to the tab for title2.html
+  // and store its tab id.
+  [GetTable()
+          selectRowIndexes:[NSIndexSet
+                               indexSetWithIndex:FindRowForTab(tabs[0]).value()]
+      byExtendingSelection:NO];
+
+  absl::optional<size_t> selectedRowIndexes = TableFirstSelectedRow();
+  ASSERT_TRUE(selectedRowIndexes.has_value());
+  size_t expectedSelectedRowIndex = selectedRowIndexes.value();
+  EXPECT_EQ((size_t)[GetTable() numberOfRows] - 1, expectedSelectedRowIndex);
+
+  ui_controls::EnableUIControls();
+  TaskManagerWindowController* windowController =
+      GetTaskManagerMac()->CocoaControllerForTests();
+
+  // Navigate up to the three grouped tasks
+  ui_controls::SendKeyPress(windowController.window, ui::VKEY_UP, false, false,
+                            false, false);
+  expectedSelectedRowIndex -= numGroupTabs;
+  EXPECT_EQ(expectedSelectedRowIndex, TableFirstSelectedRow().value());
+  EXPECT_EQ(3, [GetTable() numberOfSelectedRows]);
+
+  // Navigate off of the three grouped tasks
+  ui_controls::SendKeyPress(windowController.window, ui::VKEY_UP, false, false,
+                            false, false);
+  expectedSelectedRowIndex--;
+  EXPECT_EQ(expectedSelectedRowIndex, TableFirstSelectedRow().value());
+  EXPECT_EQ(1, [GetTable() numberOfSelectedRows]);
+
+  // Navigate down into the three grouped tasks
+  ui_controls::SendKeyPress(windowController.window, ui::VKEY_DOWN, false,
+                            false, false, false);
+  expectedSelectedRowIndex++;
+  EXPECT_EQ(expectedSelectedRowIndex, TableFirstSelectedRow().value());
+  EXPECT_EQ(3, [GetTable() numberOfSelectedRows]);
+
+  // Navigate down into the single task
+  ui_controls::SendKeyPress(windowController.window, ui::VKEY_DOWN, false,
+                            false, false, false);
+  expectedSelectedRowIndex += numGroupTabs;
+  EXPECT_EQ(expectedSelectedRowIndex, TableFirstSelectedRow().value());
+  EXPECT_EQ(1, [GetTable() numberOfSelectedRows]);
+}
 }  // namespace task_manager

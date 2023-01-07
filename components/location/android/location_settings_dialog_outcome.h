@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_LOCATION_LOCATION_SETTINGS_DIALOG_OUTCOME_H_
-#define COMPONENTS_LOCATION_LOCATION_SETTINGS_DIALOG_OUTCOME_H_
+#ifndef COMPONENTS_LOCATION_ANDROID_LOCATION_SETTINGS_DIALOG_OUTCOME_H_
+#define COMPONENTS_LOCATION_ANDROID_LOCATION_SETTINGS_DIALOG_OUTCOME_H_
 
 // An enum to describe the outcome of a system location setting prompt.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.location
@@ -27,4 +27,4 @@ enum LocationSettingsDialogOutcome {
   NO_PROMPT = 3,
 };
 
-#endif  // COMPONENTS_LOCATION_LOCATION_SETTINGS_DIALOG_OUTCOME_H_
+#endif  // COMPONENTS_LOCATION_ANDROID_LOCATION_SETTINGS_DIALOG_OUTCOME_H_

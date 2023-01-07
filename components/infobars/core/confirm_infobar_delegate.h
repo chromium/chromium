@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_constants.h"
 
 namespace infobars {
@@ -55,11 +57,23 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // returns "OK" for the OK button and "Cancel" for the Cancel button.
   virtual std::u16string GetButtonLabel(InfoBarButton button) const;
 
+  // Returns the label for the specified button. The default implementation
+  // returns an empty image.
+  virtual ui::ImageModel GetButtonImage(InfoBarButton button) const;
+
+  // Returns whether the specified button is enabled. The default implementation
+  // returns true.
+  virtual bool GetButtonEnabled(InfoBarButton button) const;
+
+  // Returns the tooltip for the specified button. The default implementation
+  // returns an empty tooltip.
+  virtual std::u16string GetButtonTooltip(InfoBarButton button) const;
+
   // Returns whether or not the OK button will trigger a UAC elevation prompt on
   // Windows.
   virtual bool OKButtonTriggersUACPrompt() const;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Returns whether or not a tint should be applied to the icon background.
   // Defaults to true.
   virtual bool UseIconBackgroundTint() const;

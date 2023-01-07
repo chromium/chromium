@@ -1,12 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/main/policy_signout_scene_agent.h"
 
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/ui/authentication/signin/user_signin/policy_signout_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,7 +37,7 @@
   // was signed out due to policy.
   if (level == SceneActivationLevelForegroundActive &&
       appState.shouldShowPolicySignoutPrompt && !appState.currentUIBlocker) {
-    [HandlerForProtocol(self.dispatcher, PolicySignoutPromptCommands)
+    [HandlerForProtocol(self.dispatcher, PolicyChangeCommands)
         showPolicySignoutPrompt];
     appState.shouldShowPolicySignoutPrompt = NO;
   }

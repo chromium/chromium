@@ -51,7 +51,7 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamObserver {
   virtual ~WebMediaStreamObserver() = default;
 };
 
-class WebMediaStream {
+class BLINK_PLATFORM_EXPORT WebMediaStream {
  public:
   WebMediaStream() = default;
   WebMediaStream(const WebMediaStream& other) { Assign(other); }
@@ -62,33 +62,31 @@ class WebMediaStream {
     return *this;
   }
 
-  BLINK_PLATFORM_EXPORT void Assign(const WebMediaStream&);
+  void Assign(const WebMediaStream&);
 
-  BLINK_PLATFORM_EXPORT void Reset();
+  void Reset();
   bool IsNull() const { return private_.IsNull(); }
 
-  BLINK_PLATFORM_EXPORT WebString Id() const;
-  BLINK_PLATFORM_EXPORT int UniqueId() const;
+  WebString Id() const;
+  int UniqueId() const;
 
   // If a track is not found with the specified id, the returned track's
   // |IsNull| will return true.
-  BLINK_PLATFORM_EXPORT WebMediaStreamTrack
-  GetAudioTrack(const WebString& track_id) const;
-  BLINK_PLATFORM_EXPORT WebMediaStreamTrack
-  GetVideoTrack(const WebString& track_id) const;
+  WebMediaStreamTrack GetAudioTrack(const WebString& track_id) const;
+  WebMediaStreamTrack GetVideoTrack(const WebString& track_id) const;
 
   // These methods add/remove an observer to/from this WebMediaStream. The
   // caller is responsible for removing the observer before the destruction of
   // the WebMediaStream. Observers cannot be null, cannot be added or removed
   // more than once, and cannot invoke AddObserver/RemoveObserver in their
   // TrackAdded/TrackRemoved callbacks.
-  BLINK_PLATFORM_EXPORT void AddObserver(WebMediaStreamObserver*);
-  BLINK_PLATFORM_EXPORT void RemoveObserver(WebMediaStreamObserver*);
+  void AddObserver(WebMediaStreamObserver*);
+  void RemoveObserver(WebMediaStreamObserver*);
 
 #if INSIDE_BLINK
-  BLINK_PLATFORM_EXPORT explicit WebMediaStream(MediaStreamDescriptor*);
-  BLINK_PLATFORM_EXPORT operator MediaStreamDescriptor*() const;
-  BLINK_PLATFORM_EXPORT WebMediaStream& operator=(MediaStreamDescriptor*);
+  explicit WebMediaStream(MediaStreamDescriptor*);
+  operator MediaStreamDescriptor*() const;
+  WebMediaStream& operator=(MediaStreamDescriptor*);
 #endif
 
  private:

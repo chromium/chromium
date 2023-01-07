@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,6 +47,9 @@ class MemorySnapshotSanitized final : public MemorySnapshot {
                           RangeSet* ranges,
                           bool is_64_bit);
 
+  MemorySnapshotSanitized(const MemorySnapshotSanitized&) = delete;
+  MemorySnapshotSanitized& operator=(const MemorySnapshotSanitized&) = delete;
+
   ~MemorySnapshotSanitized() override;
 
   // MemorySnapshot:
@@ -64,8 +67,6 @@ class MemorySnapshotSanitized final : public MemorySnapshot {
   const MemorySnapshot* snapshot_;
   RangeSet* ranges_;
   bool is_64_bit_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemorySnapshotSanitized);
 };
 
 }  // namespace internal

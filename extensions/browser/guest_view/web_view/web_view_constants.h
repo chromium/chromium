@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -143,7 +143,6 @@ extern const int kInvalidPermissionRequestID;
 //
 // Note that these are not in an enum because using enums to declare bitmasks
 // results in the enum values being signed.
-extern const uint32_t WEB_VIEW_REMOVE_DATA_MASK_APPCACHE;
 extern const uint32_t WEB_VIEW_REMOVE_DATA_MASK_CACHE;
 extern const uint32_t WEB_VIEW_REMOVE_DATA_MASK_COOKIES;
 extern const uint32_t WEB_VIEW_REMOVE_DATA_MASK_FILE_SYSTEMS;

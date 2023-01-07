@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -400,8 +400,7 @@ WebTouchEvent* BuildTouchEvent(const InputEventData& event) {
       NOTREACHED();
   }
   WebTouchEventTraits::ResetType(
-      type,
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(event.event_time_stamp),
+      type, base::TimeTicks() + base::Seconds(event.event_time_stamp),
       web_event);
   web_event->touches_length = 0;
 
@@ -433,8 +432,7 @@ WebKeyboardEvent* BuildKeyEvent(const InputEventData& event) {
   }
   WebKeyboardEvent* key_event = new WebKeyboardEvent(
       type, event.event_modifiers,
-      base::TimeTicks() +
-          base::TimeDelta::FromSecondsD(event.event_time_stamp));
+      base::TimeTicks() + base::Seconds(event.event_time_stamp));
   key_event->windows_key_code = event.key_code;
   return key_event;
 }
@@ -442,8 +440,7 @@ WebKeyboardEvent* BuildKeyEvent(const InputEventData& event) {
 WebKeyboardEvent* BuildCharEvent(const InputEventData& event) {
   WebKeyboardEvent* key_event = new WebKeyboardEvent(
       WebInputEvent::Type::kChar, event.event_modifiers,
-      base::TimeTicks() +
-          base::TimeDelta::FromSecondsD(event.event_time_stamp));
+      base::TimeTicks() + base::Seconds(event.event_time_stamp));
 
   // Make sure to not read beyond the buffer in case some bad code doesn't
   // NULL-terminate it (this is called from plugins).
@@ -483,8 +480,7 @@ WebMouseEvent* BuildMouseEvent(const InputEventData& event) {
   }
   WebMouseEvent* mouse_event = new WebMouseEvent(
       type, event.event_modifiers,
-      base::TimeTicks() +
-          base::TimeDelta::FromSecondsD(event.event_time_stamp));
+      base::TimeTicks() + base::Seconds(event.event_time_stamp));
   mouse_event->pointer_type = blink::WebPointerProperties::PointerType::kMouse;
   mouse_event->button = static_cast<WebMouseEvent::Button>(event.mouse_button);
   if (mouse_event->GetType() == WebInputEvent::Type::kMouseMove) {
@@ -506,8 +502,7 @@ WebMouseEvent* BuildMouseEvent(const InputEventData& event) {
 WebMouseWheelEvent* BuildMouseWheelEvent(const InputEventData& event) {
   WebMouseWheelEvent* mouse_wheel_event = new WebMouseWheelEvent(
       WebInputEvent::Type::kMouseWheel, event.event_modifiers,
-      base::TimeTicks() +
-          base::TimeDelta::FromSecondsD(event.event_time_stamp));
+      base::TimeTicks() + base::Seconds(event.event_time_stamp));
   mouse_wheel_event->delta_x = event.wheel_delta.x;
   mouse_wheel_event->delta_y = event.wheel_delta.y;
   mouse_wheel_event->wheel_ticks_x = event.wheel_ticks.x;
@@ -518,7 +513,7 @@ WebMouseWheelEvent* BuildMouseWheelEvent(const InputEventData& event) {
   return mouse_wheel_event;
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #define VK_RETURN 0x0D
 
 #define VK_PRIOR 0x21
@@ -728,7 +723,7 @@ std::vector<std::unique_ptr<WebInputEvent>> CreateSimulatedWebInputEvents(
     case PP_INPUTEVENT_TYPE_KEYDOWN:
     case PP_INPUTEVENT_TYPE_KEYUP: {
 // Windows key down events should always be "raw" to avoid an ASSERT.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       WebKeyboardEvent* web_keyboard_event =
           static_cast<WebKeyboardEvent*>(original_event.get());
       if (web_keyboard_event->GetType() == WebInputEvent::Type::kKeyDown)

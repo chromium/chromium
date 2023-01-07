@@ -1,39 +1,68 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
+import("//pdf/features.gni")
+import("//printing/buildflags/buildflags.gni")
+
+assert(enable_pdf)
 
 static_library("renderer") {
-  sources = [
-    "pdf_accessibility_tree.cc",
+  friend = [ ":unit_tests" ]
+
+  public = [
+    "internal_plugin_renderer_helpers.h",
     "pdf_accessibility_tree.h",
-    "pdf_ax_action_target.cc",
     "pdf_ax_action_target.h",
-    "pepper_pdf_host.cc",
-    "pepper_pdf_host.h",
+    "pdf_internal_plugin_delegate.h",
+  ]
+
+  sources = [
+    "internal_plugin_renderer_helpers.cc",
+    "pdf_accessibility_tree.cc",
+    "pdf_ax_action_target.cc",
+    "pdf_internal_plugin_delegate.cc",
+    "pdf_view_web_plugin_client.cc",
+    "pdf_view_web_plugin_client.h",
   ]
 
   deps = [
     "//base",
-    "//components/pdf/common:interfaces",
     "//components/resources:components_resources",
     "//components/resources:components_scaled_resources",
+    "//components/services/screen_ai/buildflags",
+    "//components/services/screen_ai/public/mojom",
     "//components/strings",
     "//content/public/common",
-    "//content/public/renderer",
     "//gin",
     "//ipc",
+    "//net",
+    "//pdf:accessibility",
+    "//pdf:buildflags",
     "//pdf:features",
-    "//ppapi/host",
-    "//ppapi/proxy",
-    "//ppapi/proxy:ipc",
-    "//ppapi/shared_impl",
+    "//pdf:pdf_view_web_plugin",
+    "//printing/buildflags",
+    "//skia",
     "//third_party/blink/public:blink",
-    "//third_party/blink/public/strings:strings_grit",
+    "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/icu",
+    "//ui/display",
+    "//ui/gfx/geometry",
+    "//url",
     "//v8",
   ]
+
+  public_deps = [
+    "//content/public/renderer",
+    "//pdf/mojom",
+    "//ui/accessibility",
+    "//ui/gfx/geometry",
+  ]
+
+  if (enable_basic_printing) {
+    deps += [ "//components/printing/renderer" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -42,7 +71,13 @@ source_set("unit_tests") {
 
   deps = [
     ":renderer",
-    "//components/pdf/common:interfaces",
+    "//pdf:accessibility",
+    "//pdf/mojom",
     "//testing/gtest",
+    "//ui/gfx/geometry",
+
+    # TODO(crbug.com/1233217): The V8 dependency should have been propagated
+    # from ":renderer".
+    "//v8",
   ]
 }

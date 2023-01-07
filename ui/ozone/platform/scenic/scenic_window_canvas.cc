@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,14 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/ozone/platform/scenic/scenic_window.h"
 
 namespace ui {
 
 // How long we want to wait for release-fence from scenic for previous frames.
-constexpr base::TimeDelta kFrameReleaseTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kFrameReleaseTimeout = base::Milliseconds(500);
 
 ScenicWindowCanvas::Frame::Frame() = default;
 ScenicWindowCanvas::Frame::~Frame() = default;
@@ -75,7 +74,8 @@ ScenicWindowCanvas::ScenicWindowCanvas(ScenicSurface* scenic_surface)
 
 ScenicWindowCanvas::~ScenicWindowCanvas() = default;
 
-void ScenicWindowCanvas::ResizeCanvas(const gfx::Size& viewport_size) {
+void ScenicWindowCanvas::ResizeCanvas(const gfx::Size& viewport_size,
+                                      float scale) {
   viewport_size_ = viewport_size;
   viewport_size_.SetToMax(gfx::Size(1, 1));
 
@@ -166,10 +166,7 @@ void ScenicWindowCanvas::PresentCanvas(const gfx::Rect& damage) {
   ZX_CHECK(status == ZX_OK, status);
   scenic_surface_->scenic_session()->EnqueueReleaseFence(
       std::move(release_fence_dup));
-  scenic_surface_->scenic_session()->Present2(
-      /*requested_presentation_time=*/0,
-      /*requested_prediction_span=*/0,
-      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+  scenic_surface_->safe_presenter()->QueuePresent();
 
   // Move to the next buffer.
   current_frame_ = (current_frame_ + 1) % kNumBuffers;

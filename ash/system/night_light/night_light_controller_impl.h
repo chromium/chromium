@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/system/night_light/time_of_day.h"
+#include "ash/system/time/time_of_day.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -19,6 +19,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/aura/env_observer.h"
+#include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 class PrefRegistrySimple;
@@ -86,6 +87,10 @@ class ASH_EXPORT NightLightControllerImpl
   };
 
   NightLightControllerImpl();
+
+  NightLightControllerImpl(const NightLightControllerImpl&) = delete;
+  NightLightControllerImpl& operator=(const NightLightControllerImpl&) = delete;
+
   ~NightLightControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -186,8 +191,8 @@ class ASH_EXPORT NightLightControllerImpl
 
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
 
@@ -344,8 +349,6 @@ class ASH_EXPORT NightLightControllerImpl
   gfx::Vector3dF ambient_rgb_scaling_factors_ = {1.f, 1.f, 1.f};
 
   base::WeakPtrFactory<NightLightControllerImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(NightLightControllerImpl);
 };
 
 }  // namespace ash

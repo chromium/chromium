@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -298,9 +298,6 @@ const GoogleConfigParams kGoogleConfigs[] = {
     {"ampproject.net", true, false, false},
     {"ampproject.org", true, false, false},
     {"android.com", true, false, false},
-    {"anycast-edge.metric.gstatic.com", true, false, false},
-    {"anycast-stb.metric.gstatic.com", true, false, false},
-    {"anycast.metric.gstatic.com", true, false, false},
     {"cdn.ampproject.org", true, false, false},
     {"chromecast.com", true, false, false},
     {"chromeexperiments.com", true, false, false},
@@ -357,19 +354,6 @@ const GoogleConfigParams kGoogleConfigs[] = {
     {"picasa.com", true, false, false},
     {"recaptcha.net", true, false, false},
     {"stackdriver.com", true, false, false},
-    {"stbcast-stb.metric.gstatic.com", true, false, false},
-    {"stbcast.metric.gstatic.com", true, false, false},
-    {"stbcast2-stb.metric.gstatic.com", true, false, false},
-    {"stbcast2.metric.gstatic.com", true, false, false},
-    {"stbcast3-stb.metric.gstatic.com", true, false, false},
-    {"stbcast3.metric.gstatic.com", true, false, false},
-    {"stbcast4-stb.metric.gstatic.com", true, false, false},
-    {"stbcast4.metric.gstatic.com", true, false, false},
-    {"unicast-edge.metric.gstatic.com", true, false, false},
-    {"unicast-stb.metric.gstatic.com", true, false, false},
-    {"unicast.metric.gstatic.com", true, false, false},
-    {"unicast2-stb.metric.gstatic.com", true, false, false},
-    {"unicast2.metric.gstatic.com", true, false, false},
     {"waze.com", true, false, false},
     {"withgoogle.com", true, false, false},
     {"youtu.be", true, false, false},
@@ -549,14 +533,15 @@ std::unique_ptr<const DomainReliabilityConfig> CreateGoogleConfig(
   bool include_subdomains = params.include_subdomains && !is_www;
 
   auto config = std::make_unique<DomainReliabilityConfig>();
-  config->origin = GURL("https://" + hostname + "/");
+  GURL url("https://" + hostname + "/");
+  config->origin = url::Origin::Create(url);
   config->include_subdomains = include_subdomains;
   config->collectors.clear();
   if (params.include_origin_specific_collector) {
     GURL::Replacements replacements;
     replacements.SetPathStr(kGoogleOriginSpecificCollectorPathString);
     config->collectors.push_back(
-        std::make_unique<GURL>(config->origin.ReplaceComponents(replacements)));
+        std::make_unique<GURL>(url.ReplaceComponents(replacements)));
   }
   for (const char* collector : kGoogleStandardCollectors) {
     config->collectors.push_back(std::make_unique<GURL>(collector));
@@ -575,8 +560,8 @@ std::unique_ptr<const DomainReliabilityConfig> MaybeGetGoogleConfig(
       base::StartsWith(hostname, "www.", base::CompareCase::SENSITIVE);
   std::string hostname_parent = net::GetSuperdomain(hostname);
 
-  std::unique_ptr<const DomainReliabilityConfig> config = nullptr;
-  std::unique_ptr<const DomainReliabilityConfig> superdomain_config = nullptr;
+  std::unique_ptr<const DomainReliabilityConfig> config;
+  std::unique_ptr<const DomainReliabilityConfig> superdomain_config;
 
   for (const auto& params : kGoogleConfigs) {
     if (params.hostname == hostname) {

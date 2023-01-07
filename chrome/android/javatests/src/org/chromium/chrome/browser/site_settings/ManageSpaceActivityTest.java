@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -106,7 +105,6 @@ public class ManageSpaceActivityTest {
     @Test
     @MediumTest
     @Feature({"SiteEngagement"})
-    @DisabledTest(message = "https://crbug.com/1060975")
     public void testClearUnimportantOnly() throws Exception {
         final String cookiesUrl =
                 mTestServer.getURL("/chrome/test/data/android/storage_persistance.html");

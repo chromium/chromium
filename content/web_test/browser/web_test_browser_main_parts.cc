@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/web_test/browser/web_test_browser_main_parts.h"
+
+#include <memory>
 
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -11,6 +13,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
@@ -34,20 +37,15 @@
 #include "content/shell/browser/shell_plugin_service_filter.h"
 #endif
 
-#if defined(USE_AURA) && defined(USE_X11)
-#include "ui/events/devices/x11/touch_factory_x11.h"  // nogncheck
-#endif
-#if defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "ui/base/ime/init/input_method_initializer.h"
 #endif
 
 namespace content {
 
-WebTestBrowserMainParts::WebTestBrowserMainParts(
-    const MainFunctionParams& parameters)
-    : ShellBrowserMainParts(parameters) {}
+WebTestBrowserMainParts::WebTestBrowserMainParts() = default;
 
-WebTestBrowserMainParts::~WebTestBrowserMainParts() {}
+WebTestBrowserMainParts::~WebTestBrowserMainParts() = default;
 
 void WebTestBrowserMainParts::InitializeBrowserContexts() {
   set_browser_context(new WebTestBrowserContext(false));
@@ -57,7 +55,7 @@ void WebTestBrowserMainParts::InitializeBrowserContexts() {
 void WebTestBrowserMainParts::InitializeMessageLoopContext() {
 #if BUILDFLAG(ENABLE_PLUGINS)
   PluginService* plugin_service = PluginService::GetInstance();
-  plugin_service_filter_.reset(new ShellPluginServiceFilter);
+  plugin_service_filter_ = std::make_unique<ShellPluginServiceFilter>();
   plugin_service->SetFilter(plugin_service_filter_.get());
 #endif
 }

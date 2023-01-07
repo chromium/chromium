@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,15 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "url/gurl.h"
+
+namespace sync_pb {
+class EntitySpecifics;
+}
 
 namespace syncer {
 class UniquePosition;
@@ -30,6 +35,11 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
       const base::RepeatingClosure& nudge_for_commit_closure,
       base::OnceClosure on_bookmark_model_being_deleted_closure,
       SyncedBookmarkTracker* bookmark_tracker);
+
+  BookmarkModelObserverImpl(const BookmarkModelObserverImpl&) = delete;
+  BookmarkModelObserverImpl& operator=(const BookmarkModelObserverImpl&) =
+      delete;
+
   ~BookmarkModelObserverImpl() override;
 
   // BookmarkModelObserver:
@@ -43,7 +53,8 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
                          size_t new_index) override;
   void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* parent,
-                         size_t index) override;
+                         size_t index,
+                         bool added_by_user) override;
   void OnWillRemoveBookmarks(bookmarks::BookmarkModel* model,
                              const bookmarks::BookmarkNode* parent,
                              size_t old_index,
@@ -74,19 +85,38 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
   // Process a modification of a local node and updates |bookmark_tracker_|
   // accordingly. No-op if the commit can be optimized away, i.e. if |specifics|
   // are identical to the previously-known specifics (in hashed form).
-  void ProcessUpdate(const SyncedBookmarkTracker::Entity* entity,
+  void ProcessUpdate(const SyncedBookmarkTrackerEntity* entity,
                      const sync_pb::EntitySpecifics& specifics);
 
   // Processes the deletion of a bookmake node and updates the
   // |bookmark_tracker_| accordingly. If |node| is a bookmark, it gets marked
   // as deleted and that it requires a commit. If it's a folder, it recurses
   // over all children before processing the folder itself.
-  void ProcessDelete(const bookmarks::BookmarkNode* parent,
-                     const bookmarks::BookmarkNode* node);
+  void ProcessDelete(const bookmarks::BookmarkNode* node);
+
+  // Returns current unique_position from sync metadata for the tracked |node|.
+  syncer::UniquePosition GetUniquePositionForNode(
+      const bookmarks::BookmarkNode* node) const;
+
+  // Updates the unique position in sync metadata for the tracked |node| and
+  // returns the new position. A new position is generated based on the left and
+  // right node's positions. At least one of |prev| and |next| must be valid.
+  syncer::UniquePosition UpdateUniquePositionForNode(
+      const bookmarks::BookmarkNode* node,
+      bookmarks::BookmarkModel* model,
+      const syncer::UniquePosition& prev,
+      const syncer::UniquePosition& next);
+
+  // Updates unique positions for all children from |parent| starting from
+  // |start_index| (must not be 0).
+  void UpdateAllUniquePositionsStartingAt(
+      const bookmarks::BookmarkNode* parent,
+      bookmarks::BookmarkModel* bookmark_model,
+      size_t start_index);
 
   // Points to the tracker owned by the processor. It keeps the mapping between
   // bookmark nodes and corresponding sync server entities.
-  SyncedBookmarkTracker* const bookmark_tracker_;
+  const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;
 
   // The callback used to inform the sync engine that there are local changes to
   // be committed.
@@ -95,8 +125,6 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
   // The callback used to inform the processor that the bookmark is getting
   // deleted.
   base::OnceClosure on_bookmark_model_being_deleted_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelObserverImpl);
 };
 
 }  // namespace sync_bookmarks

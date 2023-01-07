@@ -1,22 +1,65 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 
+#include <cinttypes>
+#include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
 
 struct SameSizeAsDisplayItem {
-  virtual ~SameSizeAsDisplayItem() = default;  // Allocate vtable pointer.
   void* pointer;
-  uintptr_t key;
-  IntRect rect;
+  gfx::Rect rect;
   uint32_t i1;
   uint32_t i2;
 };
 ASSERT_SIZE(DisplayItem, SameSizeAsDisplayItem);
+
+void DisplayItem::Destruct() {
+  if (IsTombstone())
+    return;
+  if (auto* drawing = DynamicTo<DrawingDisplayItem>(this)) {
+    drawing->~DrawingDisplayItem();
+  } else if (auto* foreign_layer = DynamicTo<ForeignLayerDisplayItem>(this)) {
+    foreign_layer->~ForeignLayerDisplayItem();
+  } else {
+    To<ScrollbarDisplayItem>(this)->~ScrollbarDisplayItem();
+  }
+}
+
+bool DisplayItem::EqualsForUnderInvalidation(const DisplayItem& other) const {
+  DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled());
+  SECURITY_CHECK(!IsTombstone());
+  if (client_id_ != other.client_id_ || type_ != other.type_ ||
+      fragment_ != other.fragment_ ||
+      raster_effect_outset_ != other.raster_effect_outset_ ||
+      draws_content_ != other.draws_content_)
+    return false;
+
+  if (visual_rect_ != other.visual_rect_ &&
+      // Change of empty visual rect doesn't matter.
+      (visual_rect_.IsEmpty() && other.visual_rect_.IsEmpty()) &&
+      // Visual rect of a DrawingDisplayItem not drawing content doesn't matter.
+      (!IsDrawing() || draws_content_))
+    return false;
+
+  if (auto* drawing = DynamicTo<DrawingDisplayItem>(this)) {
+    return drawing->EqualsForUnderInvalidationImpl(
+        To<DrawingDisplayItem>(other));
+  }
+  if (auto* foreign_layer = DynamicTo<ForeignLayerDisplayItem>(this)) {
+    return foreign_layer->EqualsForUnderInvalidationImpl(
+        To<ForeignLayerDisplayItem>(other));
+  }
+  return To<ScrollbarDisplayItem>(this)->EqualsForUnderInvalidationImpl(
+      To<ScrollbarDisplayItem>(other));
+}
 
 #if DCHECK_IS_ON()
 
@@ -123,10 +166,10 @@ static String ForeignLayerTypeAsDebugString(DisplayItem::Type type) {
     DEBUG_STRING_CASE(ForeignLayerPlugin);
     DEBUG_STRING_CASE(ForeignLayerVideo);
     DEBUG_STRING_CASE(ForeignLayerRemoteFrame);
-    DEBUG_STRING_CASE(ForeignLayerContentsWrapper);
     DEBUG_STRING_CASE(ForeignLayerLinkHighlight);
     DEBUG_STRING_CASE(ForeignLayerViewportScroll);
     DEBUG_STRING_CASE(ForeignLayerViewportScrollbar);
+    DEBUG_STRING_CASE(ForeignLayerDocumentTransitionContent);
     DEFAULT_CASE;
   }
 }
@@ -145,10 +188,11 @@ WTF::String DisplayItem::TypeAsDebugString(Type type) {
 
   switch (type) {
     DEBUG_STRING_CASE(HitTest);
+    DEBUG_STRING_CASE(RegionCapture);
     DEBUG_STRING_CASE(ScrollHitTest);
     DEBUG_STRING_CASE(ResizerScrollHitTest);
     DEBUG_STRING_CASE(PluginScrollHitTest);
-    DEBUG_STRING_CASE(CustomScrollbarHitTest);
+    DEBUG_STRING_CASE(ScrollbarHitTest);
     DEBUG_STRING_CASE(LayerChunk);
     DEBUG_STRING_CASE(LayerChunkForeground);
     DEBUG_STRING_CASE(ScrollbarHorizontal);
@@ -158,22 +202,47 @@ WTF::String DisplayItem::TypeAsDebugString(Type type) {
   }
 }
 
-WTF::String DisplayItem::AsDebugString() const {
+String DisplayItem::AsDebugString(const PaintArtifact& paint_artifact) const {
   auto json = std::make_unique<JSONObject>();
-  PropertiesAsJSON(*json);
+  PropertiesAsJSON(*json, paint_artifact);
   return json->ToPrettyJSONString();
 }
 
-void DisplayItem::PropertiesAsJSON(JSONObject& json) const {
+String DisplayItem::IdAsString(const PaintArtifact& paint_artifact) const {
+  if (IsSubsequenceTombstone())
+    return "SUBSEQUENCE TOMBSTONE";
   if (IsTombstone())
-    json.SetBoolean("ISTOMBSTONE", true);
+    return "TOMBSTONE " + paint_artifact.IdAsString(GetId());
+  return paint_artifact.IdAsString(GetId());
+}
 
-  json.SetString("id", GetId().ToString());
-  json.SetString("visualRect", VisualRect().ToString());
+void DisplayItem::PropertiesAsJSON(JSONObject& json,
+                                   const PaintArtifact& paint_artifact,
+                                   bool client_known_to_be_alive) const {
+  json.SetString("id", IdAsString(paint_artifact));
+  if (IsSubsequenceTombstone())
+    return;
+
+  json.SetString("clientDebugName", paint_artifact.ClientDebugName(client_id_));
+  if (client_known_to_be_alive) {
+    json.SetString("invalidation", PaintInvalidationReasonToString(
+                                       GetPaintInvalidationReason()));
+  }
+  json.SetString("visualRect", String(VisualRect().ToString()));
   if (GetRasterEffectOutset() != RasterEffectOutset::kNone) {
     json.SetDouble(
         "outset",
         GetRasterEffectOutset() == RasterEffectOutset::kHalfPixel ? 0.5 : 1);
+  }
+
+  if (IsTombstone())
+    return;
+  if (auto* drawing = DynamicTo<DrawingDisplayItem>(this)) {
+    drawing->PropertiesAsJSONImpl(json);
+  } else if (auto* foreign_layer = DynamicTo<ForeignLayerDisplayItem>(this)) {
+    foreign_layer->PropertiesAsJSONImpl(json);
+  } else {
+    To<ScrollbarDisplayItem>(this)->PropertiesAsJSONImpl(json);
   }
 }
 
@@ -181,12 +250,17 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json) const {
 
 String DisplayItem::Id::ToString() const {
 #if DCHECK_IS_ON()
-  return String::Format("%s:%s:%d", client.ToString().Utf8().c_str(),
-                        DisplayItem::TypeAsDebugString(type).Utf8().c_str(),
+  return String::Format("%p:%s:%d", reinterpret_cast<void*>(client_id),
+                        DisplayItem::TypeAsDebugString(type).Utf8().data(),
                         fragment);
 #else
-  return String::Format("%p:%d:%d", &client, static_cast<int>(type), fragment);
+  return String::Format("%p:%d:%d", reinterpret_cast<void*>(client_id),
+                        static_cast<int>(type), fragment);
 #endif
+}
+
+String DisplayItem::Id::ToString(const PaintArtifact& paint_artifact) const {
+  return paint_artifact.IdAsString(*this);
 }
 
 std::ostream& operator<<(std::ostream& os, DisplayItem::Type type) {
@@ -202,11 +276,7 @@ std::ostream& operator<<(std::ostream& os, const DisplayItem::Id& id) {
 }
 
 std::ostream& operator<<(std::ostream& os, const DisplayItem& item) {
-#if DCHECK_IS_ON()
-  return os << item.AsDebugString().Utf8();
-#else
   return os << "{\"id\": " << item.GetId() << "}";
-#endif
 }
 
 }  // namespace blink

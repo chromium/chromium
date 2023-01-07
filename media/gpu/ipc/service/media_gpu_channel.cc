@@ -1,130 +1,96 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/gpu/ipc/service/media_gpu_channel.h"
 
-#include "base/single_thread_task_runner.h"
+#include <memory>
+#include <utility>
+
+#include "base/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
+#include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel.h"
-#include "ipc/message_filter.h"
-#include "media/gpu/ipc/common/media_messages.h"
+#include "ipc/ipc_mojo_bootstrap.h"
 #include "media/gpu/ipc/service/gpu_video_decode_accelerator.h"
+#include "media/mojo/mojom/gpu_accelerated_video_decoder.mojom.h"
 
 namespace media {
 
-class MediaGpuChannelDispatchHelper {
+namespace {
+
+class DecoderProviderImpl : public mojom::GpuAcceleratedVideoDecoderProvider,
+                            public gpu::CommandBufferStub::DestructionObserver {
  public:
-  MediaGpuChannelDispatchHelper(MediaGpuChannel* channel, int32_t routing_id)
-      : channel_(channel), routing_id_(routing_id) {}
+  DecoderProviderImpl(gpu::CommandBufferStub* stub,
+                      const AndroidOverlayMojoFactoryCB& overlay_factory_cb)
+      : stub_(stub), overlay_factory_cb_(overlay_factory_cb) {
+    stub_->AddDestructionObserver(this);
+  }
 
-  bool Send(IPC::Message* msg) { return channel_->Send(msg); }
+  DecoderProviderImpl(const DecoderProviderImpl&) = delete;
+  DecoderProviderImpl& operator=(const DecoderProviderImpl&) = delete;
+  ~DecoderProviderImpl() override {
+    if (stub_) {
+      stub_->RemoveDestructionObserver(this);
+    }
+  }
 
-  void OnCreateVideoDecoder(const VideoDecodeAccelerator::Config& config,
-                            int32_t decoder_route_id,
-                            IPC::Message* reply_message) {
-    channel_->OnCreateVideoDecoder(routing_id_, config, decoder_route_id,
-                                   reply_message);
+  // mojom::GpuAcceleratedVideoDecoderProvider:
+  void CreateAcceleratedVideoDecoder(
+      const VideoDecodeAccelerator::Config& config,
+      mojo::PendingAssociatedReceiver<mojom::GpuAcceleratedVideoDecoder>
+          receiver,
+      mojo::PendingAssociatedRemote<mojom::GpuAcceleratedVideoDecoderClient>
+          client,
+      CreateAcceleratedVideoDecoderCallback callback) override {
+    TRACE_EVENT0("gpu", "DecoderProviderImpl::CreateAcceleratedVideoDecoder");
+    // Only allow stubs that have a ContextGroup, that is, the GLES2 ones. Later
+    // code assumes the ContextGroup is valid.
+    if (!stub_ || !stub_->decoder_context()->GetContextGroup()) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    // Note that `decoder` is a self-deleting object.
+    GpuVideoDecodeAccelerator* decoder = new GpuVideoDecodeAccelerator(
+        stub_, stub_->channel()->io_task_runner(), overlay_factory_cb_);
+    std::move(callback).Run(
+        decoder->Initialize(config, std::move(receiver), std::move(client)));
   }
 
  private:
-  MediaGpuChannel* const channel_;
-  const int32_t routing_id_;
-  DISALLOW_COPY_AND_ASSIGN(MediaGpuChannelDispatchHelper);
+  // gpu::CommandBufferStub::DestructionObserver:
+  void OnWillDestroyStub(bool have_context) override { stub_ = nullptr; }
+
+  raw_ptr<gpu::CommandBufferStub> stub_;
+  const AndroidOverlayMojoFactoryCB overlay_factory_cb_;
 };
 
-// Filter to respond to GetChannelToken on the IO thread.
-class MediaGpuChannelFilter : public IPC::MessageFilter {
- public:
-  explicit MediaGpuChannelFilter(const base::UnguessableToken& channel_token)
-      : channel_token_(channel_token) {}
-
-  void OnFilterAdded(IPC::Channel* channel) override { channel_ = channel; }
-
-  void OnFilterRemoved() override { channel_ = nullptr; }
-
-  bool OnMessageReceived(const IPC::Message& msg) override {
-    bool handled = true;
-    IPC_BEGIN_MESSAGE_MAP(MediaGpuChannelFilter, msg)
-      IPC_MESSAGE_HANDLER_DELAY_REPLY(GpuCommandBufferMsg_GetChannelToken,
-                                      OnGetChannelToken)
-      IPC_MESSAGE_UNHANDLED(handled = false)
-    IPC_END_MESSAGE_MAP()
-    return handled;
-  }
-
-  void OnGetChannelToken(IPC::Message* reply_message) {
-    GpuCommandBufferMsg_GetChannelToken::WriteReplyParams(reply_message,
-                                                          channel_token_);
-    Send(reply_message);
-  }
-
-  bool Send(IPC::Message* msg) {
-    if (channel_)
-      return channel_->Send(msg);
-    return false;
-  }
-
- private:
-  ~MediaGpuChannelFilter() override = default;
-
-  IPC::Channel* channel_;
-  base::UnguessableToken channel_token_;
-};
+}  // namespace
 
 MediaGpuChannel::MediaGpuChannel(
     gpu::GpuChannel* channel,
-    const base::UnguessableToken& channel_token,
     const AndroidOverlayMojoFactoryCB& overlay_factory_cb)
-    : channel_(channel),
-      filter_(new MediaGpuChannelFilter(channel_token)),
-      overlay_factory_cb_(overlay_factory_cb) {
-  channel_->AddFilter(filter_.get());
+    : channel_(channel), overlay_factory_cb_(overlay_factory_cb) {
+  channel_->set_command_buffer_media_binder(
+      base::BindRepeating(&MediaGpuChannel::BindCommandBufferMediaReceiver,
+                          base::Unretained(this)));
 }
 
 MediaGpuChannel::~MediaGpuChannel() = default;
 
-bool MediaGpuChannel::Send(IPC::Message* msg) {
-  return channel_->Send(msg);
-}
-
-bool MediaGpuChannel::OnMessageReceived(const IPC::Message& message) {
-  MediaGpuChannelDispatchHelper helper(this, message.routing_id());
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(MediaGpuChannel, message)
-    IPC_MESSAGE_FORWARD_DELAY_REPLY(
-        GpuCommandBufferMsg_CreateVideoDecoder, &helper,
-        MediaGpuChannelDispatchHelper::OnCreateVideoDecoder)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
-void MediaGpuChannel::OnCreateVideoDecoder(
-    int32_t command_buffer_route_id,
-    const VideoDecodeAccelerator::Config& config,
-    int32_t decoder_route_id,
-    IPC::Message* reply_message) {
-  TRACE_EVENT0("gpu", "MediaGpuChannel::OnCreateVideoDecoder");
-  gpu::CommandBufferStub* stub =
-      channel_->LookupCommandBuffer(command_buffer_route_id);
-  // Only allow stubs that have a ContextGroup, that is, the GLES2 ones. Later
-  // code assumes the ContextGroup is valid.
-  if (!stub || !stub->decoder_context()->GetContextGroup()) {
-    reply_message->set_reply_error();
-    Send(reply_message);
-    return;
+void MediaGpuChannel::BindCommandBufferMediaReceiver(
+    gpu::CommandBufferStub* stub,
+    mojo::GenericPendingAssociatedReceiver receiver) {
+  if (auto r = receiver.As<mojom::GpuAcceleratedVideoDecoderProvider>()) {
+    IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
+    accelerated_video_decoder_providers_.Add(
+        std::make_unique<DecoderProviderImpl>(stub, overlay_factory_cb_),
+        std::move(r), stub->task_runner());
   }
-  GpuVideoDecodeAccelerator* decoder = new GpuVideoDecodeAccelerator(
-      decoder_route_id, stub, stub->channel()->io_task_runner(),
-      overlay_factory_cb_);
-  bool succeeded = decoder->Initialize(config);
-  GpuCommandBufferMsg_CreateVideoDecoder::WriteReplyParams(reply_message,
-                                                           succeeded);
-  Send(reply_message);
-
-  // decoder is registered as a DestructionObserver of this stub and will
-  // self-delete during destruction of this stub.
 }
 
 }  // namespace media

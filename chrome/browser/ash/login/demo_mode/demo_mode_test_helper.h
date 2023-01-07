@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 
@@ -20,7 +19,7 @@ namespace component_updater {
 class FakeCrOSComponentManager;
 }  // namespace component_updater
 
-namespace chromeos {
+namespace ash {
 
 // Creating a DemoModeTestHelper doesn't enable Demo Mode; it just sets up an
 // environment that can support Demo Mode in tests.
@@ -28,6 +27,10 @@ namespace chromeos {
 class DemoModeTestHelper {
  public:
   DemoModeTestHelper();
+
+  DemoModeTestHelper(const DemoModeTestHelper&) = delete;
+  DemoModeTestHelper& operator=(const DemoModeTestHelper&) = delete;
+
   ~DemoModeTestHelper();
 
   // Starts a Demo Mode session and loads a fake Demo Mode resources component.
@@ -67,12 +70,10 @@ class DemoModeTestHelper {
   component_updater::FakeCrOSComponentManager* fake_cros_component_manager_ =
       nullptr;
 
-  // True if this class initialized the DBusThreadManager.
-  bool dbus_thread_manager_initialized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoModeTestHelper);
+  // True if this class initialized the ConciergeClient.
+  bool concierge_client_initialized_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_MODE_TEST_HELPER_H_

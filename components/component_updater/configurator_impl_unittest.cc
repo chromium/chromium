@@ -1,11 +1,10 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/scoped_command_line.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
@@ -25,10 +24,13 @@ const int kDelayOneHour = kDelayOneMinute * 60;
 class ComponentUpdaterConfiguratorImplTest : public testing::Test {
  public:
   ComponentUpdaterConfiguratorImplTest() = default;
-  ~ComponentUpdaterConfiguratorImplTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ComponentUpdaterConfiguratorImplTest);
+  ComponentUpdaterConfiguratorImplTest(
+      const ComponentUpdaterConfiguratorImplTest&) = delete;
+  ComponentUpdaterConfiguratorImplTest& operator=(
+      const ComponentUpdaterConfiguratorImplTest&) = delete;
+
+  ~ComponentUpdaterConfiguratorImplTest() override = default;
 };
 
 TEST_F(ComponentUpdaterConfiguratorImplTest, FastUpdate) {

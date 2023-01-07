@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,13 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 
 namespace sessions {
@@ -46,7 +46,7 @@ SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
     SessionWindow::WindowType type);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateTabGroupCommand(
     const SessionID& tab_id,
-    base::Optional<tab_groups::TabGroupId> group);
+    absl::optional<tab_groups::TabGroupId> group);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
 CreateTabGroupMetadataUpdateCommand(
     const tab_groups::TabGroupId group,
@@ -100,6 +100,16 @@ SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetTabGuidCommand(
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetTabDataCommand(
     const SessionID& tab_id,
     const std::map<std::string, std::string>& data);
+
+SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateAddTabExtraDataCommand(
+    const SessionID& tab_id,
+    const std::string& key,
+    const std::string& data);
+
+SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateAddWindowExtraDataCommand(
+    const SessionID& window_id,
+    const std::string& key,
+    const std::string& data);
 
 // Searches for a pending command using |command_storage_manager| that can be
 // replaced with |command|. If one is found, pending command is removed, the

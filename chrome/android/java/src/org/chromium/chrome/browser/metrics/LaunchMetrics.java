@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.metrics;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
-import org.chromium.chrome.browser.webapps.WebApkUkmRecorder;
+import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
-import org.chromium.chrome.browser.webapps.WebappInfo;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.WebContents;
@@ -80,9 +80,9 @@ public class LaunchMetrics {
     public static void commitLaunchMetrics(WebContents webContents) {
         for (HomeScreenLaunch launch : sHomeScreenLaunches) {
             WebappInfo webappInfo = launch.mWebappInfo;
-            @WebDisplayMode
+            @DisplayMode.EnumType
             int displayMode =
-                    (webappInfo == null) ? WebDisplayMode.UNDEFINED : webappInfo.displayMode();
+                    (webappInfo == null) ? DisplayMode.UNDEFINED : webappInfo.displayMode();
             LaunchMetricsJni.get().recordLaunch(
                     launch.mIsShortcut, launch.mUrl, launch.mSource, displayMode, webContents);
             if (webappInfo != null && webappInfo.isForWebApk()) {
@@ -132,7 +132,7 @@ public class LaunchMetrics {
     @NativeMethods
     interface Natives {
         void recordLaunch(boolean isShortcut, String url, int source,
-                @WebDisplayMode int displayMode, WebContents webContents);
+                @DisplayMode.EnumType int displayMode, WebContents webContents);
         void recordHomePageLaunchMetrics(
                 boolean showHomeButton, boolean homepageIsNtp, String homepageUrl);
     }

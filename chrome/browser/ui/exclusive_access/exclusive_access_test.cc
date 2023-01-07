@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,12 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/exclusive_access/mouse_lock_controller.h"
@@ -26,6 +27,8 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/common/extension.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
@@ -36,7 +39,8 @@ using content::WebContents;
 
 FullscreenNotificationObserver::FullscreenNotificationObserver(
     Browser* browser) {
-  observer_.Add(browser->exclusive_access_manager()->fullscreen_controller());
+  observation_.Observe(
+      browser->exclusive_access_manager()->fullscreen_controller());
 }
 
 FullscreenNotificationObserver::~FullscreenNotificationObserver() = default;
@@ -102,7 +106,7 @@ bool ExclusiveAccessTest::RequestKeyboardLock(bool esc_key_locked) {
   // then we create a set of keys that does not include escape (we arbitrarily
   // chose the 'a' key) which means the user/test can just press escape to exit
   // fullscreen.
-  base::Optional<base::flat_set<ui::DomCode>> codes;
+  absl::optional<base::flat_set<ui::DomCode>> codes;
   if (esc_key_locked)
     codes = base::flat_set<ui::DomCode>({ui::DomCode::ESCAPE});
   else
@@ -166,7 +170,9 @@ ExclusiveAccessBubbleType ExclusiveAccessTest::GetExclusiveAccessBubbleType() {
 }
 
 bool ExclusiveAccessTest::IsExclusiveAccessBubbleDisplayed() {
-  return GetExclusiveAccessBubbleType() != EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
+  return GetExclusiveAccessManager()
+      ->context()
+      ->IsExclusiveAccessBubbleDisplayed();
 }
 
 void ExclusiveAccessTest::GoBack() {
@@ -186,7 +192,7 @@ void ExclusiveAccessTest::Reload() {
 void ExclusiveAccessTest::EnterActiveTabFullscreen() {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   FullscreenNotificationObserver fullscreen_observer(browser());
-  browser()->EnterFullscreenModeForTab(tab->GetMainFrame(), {});
+  browser()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
   fullscreen_observer.Wait();
 }
 
@@ -198,7 +204,9 @@ void ExclusiveAccessTest::ToggleBrowserFullscreen() {
 
 void ExclusiveAccessTest::EnterExtensionInitiatedFullscreen() {
   FullscreenNotificationObserver fullscreen_observer(browser());
-  browser()->ToggleFullscreenModeWithExtension(GURL("faux_extension"));
+  static const char kExtensionId[] = "extension-id";
+  browser()->ToggleFullscreenModeWithExtension(
+      extensions::Extension::GetBaseURLFromExtensionId(kExtensionId));
   fullscreen_observer.Wait();
 }
 

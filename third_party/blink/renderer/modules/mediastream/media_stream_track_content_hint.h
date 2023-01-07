@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,4 +24,4 @@ class MediaStreamTrackContentHint final {
 
 }  // namespace blink
 
-#endif  // MediaStreamTrack_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_TRACK_CONTENT_HINT_H_

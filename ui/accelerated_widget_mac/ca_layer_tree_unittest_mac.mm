@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,17 +51,18 @@ scoped_refptr<gl::GLImageIOSurface> CreateGLImage(const gfx::Size& size,
                                                   gfx::BufferFormat format,
                                                   bool video) {
   scoped_refptr<gl::GLImageIOSurface> gl_image(
-      gl::GLImageIOSurface::Create(size, GL_RGBA));
+      gl::GLImageIOSurface::Create(size));
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
       gfx::CreateIOSurface(size, format));
   if (video) {
     base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
     CVPixelBufferCreateWithIOSurface(nullptr, io_surface, nullptr,
                                      cv_pixel_buffer.InitializeInto());
-    gl_image->InitializeWithCVPixelBuffer(cv_pixel_buffer,
-                                          gfx::GenericSharedMemoryId(), format);
+    gl_image->InitializeWithCVPixelBuffer(cv_pixel_buffer, 0,
+                                          gfx::GenericSharedMemoryId(), format,
+                                          gfx::ColorSpace::CreateREC709());
   } else {
-    gl_image->Initialize(io_surface, gfx::GenericSharedMemoryId(), format);
+    gl_image->Initialize(io_surface, 0, gfx::GenericSharedMemoryId(), format);
   }
   return gl_image;
 }
@@ -73,7 +74,8 @@ bool ScheduleCALayer(ui::CARendererLayerTree* tree,
       properties->rounded_corner_bounds, properties->sorting_context_id,
       properties->transform, properties->gl_image.get(),
       properties->contents_rect, properties->rect, properties->background_color,
-      properties->edge_aa_mask, properties->opacity, properties->filter));
+      properties->edge_aa_mask, properties->opacity, properties->filter,
+      absl::nullopt, gfx::ProtectedVideoType::kClear));
 }
 
 void UpdateCALayerTree(std::unique_ptr<ui::CARendererLayerTree>& ca_layer_tree,
@@ -126,7 +128,7 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
     properties.contents_rect = gfx::RectF(0.0f, 0.25f, 0.5f, 0.75f);
     properties.rect = gfx::Rect(16, 32, 64, 128);
     properties.background_color = SkColorSetARGB(0xFF, 0xFF, 0, 0);
-    properties.edge_aa_mask = GL_CA_LAYER_EDGE_LEFT_CHROMIUM;
+    properties.edge_aa_mask = ui::CALayerEdge::kLayerEdgeLeft;
     properties.opacity = 0.5f;
     properties.gl_image =
         CreateGLImage(gfx::Size(256, 256), gfx::BufferFormat::BGRA_8888, false);
@@ -176,9 +178,9 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
                 [clip_and_sorting_layer sublayerTransform].m42);
 
       // Validate the transform layer.
-      EXPECT_EQ(properties.transform.matrix().get(3, 0),
+      EXPECT_EQ(properties.transform.rc(3, 0),
                 [transform_layer sublayerTransform].m41);
-      EXPECT_EQ(properties.transform.matrix().get(3, 1),
+      EXPECT_EQ(properties.transform.rc(3, 1),
                 [transform_layer sublayerTransform].m42);
 
       // Validate the content layer.
@@ -193,8 +195,7 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
       EXPECT_EQ(properties.opacity, [content_layer opacity]);
       EXPECT_NSEQ(kCAFilterLinear, [content_layer minificationFilter]);
       EXPECT_NSEQ(kCAFilterLinear, [content_layer magnificationFilter]);
-      if ([content_layer respondsToSelector:(@selector(contentsScale))])
-        EXPECT_EQ(properties.scale_factor, [content_layer contentsScale]);
+      EXPECT_EQ(properties.scale_factor, [content_layer contentsScale]);
     }
 
     // Update just the clip rect and re-commit.
@@ -264,15 +265,15 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
       EXPECT_EQ(transform_layer, [rounded_rect_layer sublayers][0]);
 
       // Validate the transform layer.
-      EXPECT_EQ(properties.transform.matrix().get(3, 0),
+      EXPECT_EQ(properties.transform.rc(3, 0),
                 [transform_layer sublayerTransform].m41);
-      EXPECT_EQ(properties.transform.matrix().get(3, 1),
+      EXPECT_EQ(properties.transform.rc(3, 1),
                 [transform_layer sublayerTransform].m42);
     }
 
     // Change the edge antialiasing mask and commit.
     {
-      properties.edge_aa_mask = GL_CA_LAYER_EDGE_TOP_CHROMIUM;
+      properties.edge_aa_mask = ui::CALayerEdge::kLayerEdgeTop;
       UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
 
       // Validate the tree structure.
@@ -471,12 +472,10 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
                 [clip_and_sorting_layer sublayerTransform].m42);
 
       // Validate the transform layer.
-      EXPECT_EQ(
-          properties.transform.matrix().get(3, 0) / properties.scale_factor,
-          [transform_layer sublayerTransform].m41);
-      EXPECT_EQ(
-          properties.transform.matrix().get(3, 1) / properties.scale_factor,
-          [transform_layer sublayerTransform].m42);
+      EXPECT_EQ(properties.transform.rc(3, 0) / properties.scale_factor,
+                [transform_layer sublayerTransform].m41);
+      EXPECT_EQ(properties.transform.rc(3, 1) / properties.scale_factor,
+                [transform_layer sublayerTransform].m42);
 
       // Validate the content layer.
       EXPECT_EQ(static_cast<id>(properties.gl_image->io_surface().get()),
@@ -492,8 +491,7 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
           gfx::Rect([content_layer bounds]));
       EXPECT_EQ(kCALayerBottomEdge, [content_layer edgeAntialiasingMask]);
       EXPECT_EQ(properties.opacity, [content_layer opacity]);
-      if ([content_layer respondsToSelector:(@selector(contentsScale))])
-        EXPECT_EQ(properties.scale_factor, [content_layer contentsScale]);
+      EXPECT_EQ(properties.scale_factor, [content_layer contentsScale]);
     }
 
     // Remove the rounded corners. This should result in the rounded corners

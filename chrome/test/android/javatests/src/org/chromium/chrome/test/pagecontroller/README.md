@@ -41,7 +41,6 @@ android_library("chrome_java_test_pagecontroller") {
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/android/PermissionDialog.java",
 +   "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/codelab/SearchEngineSelectionControllerForCodelab.java",
 +   "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/codelab/SettingsControllerForCodelab.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/first_run/DataSaverController.java",
   ...
   ]
 ```

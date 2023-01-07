@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "content/public/test/test_web_ui_data_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/policy/core/browser/browser_policy_connector_base.h"
@@ -61,18 +62,17 @@ class ManagedUIHandlerTest : public testing::Test {
   void InitializeHandler() {
     TestManagedUIHandler::InitializeInternal(
         &web_ui_, source_->GetWebUIDataSource(), profile());
-    web_ui_.HandleReceivedMessage("observeManagedUI", /*args=*/nullptr);
+    web_ui_.HandleReceivedMessage("observeManagedUI", base::Value::List());
   }
 
   bool IsSourceManaged() {
     const auto* local_strings = source_->GetLocalizedStrings();
-    const auto* managed =
-        local_strings->FindKeyOfType("isManaged", base::Value::Type::BOOLEAN);
-    if (managed == nullptr) {
+    absl::optional<bool> managed = local_strings->FindBool("isManaged");
+    if (!managed.has_value()) {
       ADD_FAILURE();
       return false;
     }
-    return managed->GetBool();
+    return managed.value();
   }
 
  private:
@@ -115,7 +115,7 @@ TEST_F(ManagedUIHandlerTest, ManagedUIBecomesEnabledByProfile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ManagedUIHandlerTest, ManagedUIDisabledForChildAccount) {
   profile_policy_connector()->OverrideIsManagedForTesting(true);
-  profile()->SetSupervisedUserId("supervised");
+  profile()->SetIsSupervisedProfile();
 
   InitializeHandler();
 

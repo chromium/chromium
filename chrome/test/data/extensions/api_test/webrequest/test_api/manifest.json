@@ -1,0 +1,11 @@
+{
+  "name": "webRequest",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests the webRequest API.",
+  "permissions": ["webRequest", "*://127.0.0.1/*"],
+  "background": {
+    "scripts": ["test_api.js"],
+    "persistent": true
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ class SpdySessionTestTaskObserver : public base::TaskObserver {
   uint16_t executed_count() const { return executed_count_; }
 
  private:
-  uint16_t executed_count_;
+  uint16_t executed_count_ = 0;
   std::string file_name_;
   std::string function_name_;
 };

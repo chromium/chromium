@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SYNC_GLUE_EXTENSION_MODEL_TYPE_CONTROLLER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"
 
 class Profile;
@@ -24,6 +24,11 @@ class ExtensionModelTypeController
       base::WeakPtr<syncer::SyncableService> syncable_service,
       const base::RepeatingClosure& dump_stack,
       Profile* profile);
+
+  ExtensionModelTypeController(const ExtensionModelTypeController&) = delete;
+  ExtensionModelTypeController& operator=(const ExtensionModelTypeController&) =
+      delete;
+
   ~ExtensionModelTypeController() override;
 
   // DataTypeController overrides.
@@ -31,9 +36,7 @@ class ExtensionModelTypeController
                   const ModelLoadCallback& model_load_callback) override;
 
  private:
-  Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionModelTypeController);
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace browser_sync

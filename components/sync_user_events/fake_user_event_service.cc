@@ -1,9 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync_user_events/fake_user_event_service.h"
-
 
 using sync_pb::UserEventSpecifics;
 
@@ -12,7 +11,7 @@ namespace syncer {
 FakeUserEventService::FakeUserEventService()
     : fake_controller_delegate_(syncer::USER_EVENTS) {}
 
-FakeUserEventService::~FakeUserEventService() {}
+FakeUserEventService::~FakeUserEventService() = default;
 
 void FakeUserEventService::RecordUserEvent(
     std::unique_ptr<UserEventSpecifics> specifics) {

@@ -265,8 +265,8 @@ TEST(SharedBufferTest, GetIteratorAt) {
   const SharedBuffer::Iterator iters[] = {
       it0, it1, it126, it127, it128, it4222, it4223, it4224, it4351,
   };
-  for (size_t i = 0; i < base::size(iters); ++i) {
-    for (size_t j = 0; j < base::size(iters); ++j) {
+  for (size_t i = 0; i < std::size(iters); ++i) {
+    for (size_t j = 0; j < std::size(iters); ++j) {
       EXPECT_EQ(i == j, iters[i] == iters[j]);
     }
   }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -90,6 +90,9 @@ class JumpList : public sessions::TabRestoreServiceObserver,
                  public history::TopSitesObserver,
                  public KeyedService {
  public:
+  JumpList(const JumpList&) = delete;
+  JumpList& operator=(const JumpList&) = delete;
+
   // Returns true if the custom JumpList is enabled.
   static bool Enabled();
 
@@ -182,6 +185,14 @@ class JumpList : public sessions::TabRestoreServiceObserver,
   void AddWindow(const sessions::TabRestoreService::Window& window,
                  const base::FilePath& cmd_line_profile_dir,
                  size_t max_items);
+
+  // Adds a new ShellLinkItem for each tab in |group| to the JumpList data
+  // provided that doing so will not exceed |max_items|. If
+  // |cmd_line_profile_dir| is not empty, it will be added to the command line
+  // switch --profile-directory.
+  void AddGroup(const sessions::TabRestoreService::Group& group,
+                const base::FilePath& cmd_line_profile_dir,
+                size_t max_items);
 
   // Starts loading a favicon for each URL in |icon_urls_|.
   // This function sends a query to HistoryService.
@@ -278,7 +289,7 @@ class JumpList : public sessions::TabRestoreServiceObserver,
   base::CancelableTaskTracker cancelable_task_tracker_;
 
   // The Profile object is used to listen for events.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Manages the registration of pref change observers.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
@@ -346,8 +357,6 @@ class JumpList : public sessions::TabRestoreServiceObserver,
 
   // For callbacks may run after destruction.
   base::WeakPtrFactory<JumpList> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JumpList);
 };
 
 #endif  // CHROME_BROWSER_WIN_JUMPLIST_H_

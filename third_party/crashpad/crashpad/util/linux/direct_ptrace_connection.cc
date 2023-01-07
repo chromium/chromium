@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,10 +39,6 @@ bool DirectPtraceConnection::Initialize(pid_t pid) {
   }
   pid_ = pid;
 
-  if (!memory_.Initialize(pid)) {
-    return false;
-  }
-
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
 }
@@ -77,14 +73,23 @@ bool DirectPtraceConnection::ReadFileContents(const base::FilePath& path,
   return LoggingReadEntireFile(path, contents);
 }
 
-ProcessMemory* DirectPtraceConnection::Memory() {
+ProcessMemoryLinux* DirectPtraceConnection::Memory() {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return &memory_;
+  if (!memory_) {
+    memory_ = std::make_unique<ProcessMemoryLinux>(this);
+  }
+  return memory_.get();
 }
 
 bool DirectPtraceConnection::Threads(std::vector<pid_t>* threads) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return ReadThreadIDs(pid_, threads);
+}
+
+ssize_t DirectPtraceConnection::ReadUpTo(VMAddress address,
+                                         size_t size,
+                                         void* buffer) {
+  return ptracer_.ReadUpTo(pid_, address, size, static_cast<char*>(buffer));
 }
 
 }  // namespace crashpad

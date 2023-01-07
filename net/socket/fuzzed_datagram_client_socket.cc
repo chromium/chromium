@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ int FuzzedDatagramClientSocket::Connect(const IPEndPoint& address) {
 }
 
 int FuzzedDatagramClientSocket::ConnectUsingNetwork(
-    NetworkChangeNotifier::NetworkHandle network,
+    handles::NetworkHandle network,
     const IPEndPoint& address) {
   CHECK(!connected_);
   return ERR_NOT_IMPLEMENTED;
@@ -62,9 +62,36 @@ int FuzzedDatagramClientSocket::FuzzedDatagramClientSocket::
   return ERR_NOT_IMPLEMENTED;
 }
 
-NetworkChangeNotifier::NetworkHandle
-FuzzedDatagramClientSocket::GetBoundNetwork() const {
-  return NetworkChangeNotifier::kInvalidNetworkHandle;
+int FuzzedDatagramClientSocket::ConnectAsync(const IPEndPoint& address,
+                                             CompletionOnceCallback callback) {
+  CHECK(!connected_);
+  int rv = Connect(address);
+  DCHECK_NE(rv, ERR_IO_PENDING);
+  if (data_provider_->ConsumeBool()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), rv));
+    return ERR_IO_PENDING;
+  }
+  return rv;
+}
+
+int FuzzedDatagramClientSocket::ConnectUsingNetworkAsync(
+    handles::NetworkHandle network,
+    const IPEndPoint& address,
+    CompletionOnceCallback callback) {
+  CHECK(!connected_);
+  return ERR_NOT_IMPLEMENTED;
+}
+
+int FuzzedDatagramClientSocket::ConnectUsingDefaultNetworkAsync(
+    const IPEndPoint& address,
+    CompletionOnceCallback callback) {
+  CHECK(!connected_);
+  return ERR_NOT_IMPLEMENTED;
+}
+
+handles::NetworkHandle FuzzedDatagramClientSocket::GetBoundNetwork() const {
+  return handles::kInvalidNetworkHandle;
 }
 
 void FuzzedDatagramClientSocket::ApplySocketTag(const SocketTag& tag) {}
@@ -93,34 +120,6 @@ int FuzzedDatagramClientSocket::GetLocalAddress(IPEndPoint* address) const {
 
 void FuzzedDatagramClientSocket::UseNonBlockingIO() {}
 
-int FuzzedDatagramClientSocket::WriteAsync(
-    DatagramBuffers buffers,
-    CompletionOnceCallback callback,
-    const NetworkTrafficAnnotationTag& traffic_annotation) {
-  return -1;
-}
-
-int FuzzedDatagramClientSocket::WriteAsync(
-    const char* buffer,
-    size_t buf_len,
-    CompletionOnceCallback callback,
-    const NetworkTrafficAnnotationTag& traffic_annotation) {
-  return -1;
-}
-
-DatagramBuffers FuzzedDatagramClientSocket::GetUnwrittenBuffers() {
-  DatagramBuffers result;
-  return result;
-}
-
-void FuzzedDatagramClientSocket::SetWriteAsyncEnabled(bool enabled) {}
-bool FuzzedDatagramClientSocket::WriteAsyncEnabled() {
-  return false;
-}
-void FuzzedDatagramClientSocket::SetMaxPacketSize(size_t max_packet_size) {}
-void FuzzedDatagramClientSocket::SetWriteMultiCoreEnabled(bool enabled) {}
-void FuzzedDatagramClientSocket::SetSendmmsgEnabled(bool enabled) {}
-void FuzzedDatagramClientSocket::SetWriteBatchingActive(bool active) {}
 int FuzzedDatagramClientSocket::SetMulticastInterface(
     uint32_t interface_index) {
   return ERR_NOT_IMPLEMENTED;

@@ -1,16 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be found
-// in the LICENSE file.
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_BYTE_STREAM_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_BYTE_STREAM_CONTROLLER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "v8/include/v8.h"
 
@@ -27,7 +29,8 @@ class StreamStartAlgorithm;
 class StreamPromiseResolver;
 class UnderlyingSource;
 
-class ReadableByteStreamController : public ReadableStreamController {
+class CORE_EXPORT ReadableByteStreamController
+    : public ReadableStreamController {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -37,10 +40,10 @@ class ReadableByteStreamController : public ReadableStreamController {
   ReadableStreamBYOBRequest* byobRequest();
 
   // https://streams.spec.whatwg.org/#rbs-controller-desired-size
-  base::Optional<double> desiredSize();
+  absl::optional<double> desiredSize();
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-get-desired-size
-  static base::Optional<double> GetDesiredSize(ReadableByteStreamController*);
+  static absl::optional<double> GetDesiredSize(ReadableByteStreamController*);
 
   // https://streams.spec.whatwg.org/#rbs-controller-close
   void close(ScriptState*, ExceptionState&);
@@ -77,7 +80,7 @@ class ReadableByteStreamController : public ReadableStreamController {
     void Trace(Visitor*) const;
   };
 
-  enum class ReaderType { kDefault, kBYOB };
+  enum class ReaderType { kDefault, kBYOB, kNone };
 
   // https://streams.spec.whatwg.org/#pull-into-descriptor
   struct PullIntoDescriptor final
@@ -90,6 +93,7 @@ class ReadableByteStreamController : public ReadableStreamController {
                                                         size_t);
 
     explicit PullIntoDescriptor(DOMArrayBuffer* buffer,
+                                size_t buffer_byte_length,
                                 size_t byte_offset,
                                 size_t byte_length,
                                 size_t bytes_filled,
@@ -98,12 +102,13 @@ class ReadableByteStreamController : public ReadableStreamController {
                                 ReaderType reader_type);
 
     Member<DOMArrayBuffer> buffer;
+    const size_t buffer_byte_length;
     size_t byte_offset;
     const size_t byte_length;
     size_t bytes_filled;
     const size_t element_size;
     const ViewConstructorType view_constructor;
-    const ReaderType reader_type;
+    ReaderType reader_type;
 
     void Trace(Visitor*) const;
   };
@@ -117,10 +122,10 @@ class ReadableByteStreamController : public ReadableStreamController {
                     v8::Local<v8::Value> e);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-enqueue
-  void Enqueue(ScriptState*,
-               ReadableByteStreamController*,
-               NotShared<DOMArrayBufferView> chunk,
-               ExceptionState&);
+  static void Enqueue(ScriptState*,
+                      ReadableByteStreamController*,
+                      NotShared<DOMArrayBufferView> chunk,
+                      ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-enqueue-chunk-to-queue
   static void EnqueueChunkToQueue(ReadableByteStreamController*,
@@ -128,10 +133,25 @@ class ReadableByteStreamController : public ReadableStreamController {
                                   size_t byte_offset,
                                   size_t byte_length);
 
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerenqueueclonedchunktoqueue
+  static void EnqueueClonedChunkToQueue(ReadableByteStreamController*,
+                                        DOMArrayBuffer*,
+                                        size_t byte_offset,
+                                        size_t byte_length);
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerenqueuedetachedpullintotoqueue
+  static void EnqueueDetachedPullIntoToQueue(ReadableByteStreamController*,
+                                             PullIntoDescriptor*);
+
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-process-pull-into-descriptors-using-queue
   static void ProcessPullIntoDescriptorsUsingQueue(
       ScriptState*,
-      ReadableByteStreamController*);
+      ReadableByteStreamController*,
+      ExceptionState&);
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerprocessreadrequestsusingqueue
+  static void ProcessReadRequestsUsingQueue(ScriptState*,
+                                            ReadableByteStreamController*);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-call-pull-if-needed
   static void CallPullIfNeeded(ScriptState*, ReadableByteStreamController*);
@@ -146,10 +166,13 @@ class ReadableByteStreamController : public ReadableStreamController {
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-commit-pull-into-descriptor
   static void CommitPullIntoDescriptor(ScriptState*,
                                        ReadableStream*,
-                                       PullIntoDescriptor*);
+                                       PullIntoDescriptor*,
+                                       ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-convert-pull-into-descriptor
-  static DOMArrayBufferView* ConvertPullIntoDescriptor(PullIntoDescriptor*);
+  static DOMArrayBufferView* ConvertPullIntoDescriptor(ScriptState*,
+                                                       PullIntoDescriptor*,
+                                                       ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-clear-pending-pull-intos
   static void ClearPendingPullIntos(ReadableByteStreamController*);
@@ -188,6 +211,11 @@ class ReadableByteStreamController : public ReadableStreamController {
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-fill-pull-into-descriptor-from-queue
   static bool FillPullIntoDescriptorFromQueue(ReadableByteStreamController*,
                                               PullIntoDescriptor*);
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerfillreadrequestfromqueue
+  static void FillReadRequestFromQueue(ScriptState*,
+                                       ReadableByteStreamController*,
+                                       StreamPromiseResolver* read_request);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-pull-into
   static void PullInto(ScriptState*,
@@ -233,6 +261,9 @@ class ReadableByteStreamController : public ReadableStreamController {
                                  NotShared<DOMArrayBufferView> view,
                                  ExceptionState&);
 
+  // https://streams.spec.whatwg.org/#can-transfer-array-buffer
+  static bool CanTransferArrayBuffer(DOMArrayBuffer* buffer);
+
   // https://streams.spec.whatwg.org/#transfer-array-buffer
   static DOMArrayBuffer* TransferArrayBuffer(ScriptState*,
                                              DOMArrayBuffer* buffer,
@@ -244,6 +275,9 @@ class ReadableByteStreamController : public ReadableStreamController {
 
   // https://streams.spec.whatwg.org/#rbs-controller-private-pull
   StreamPromiseResolver* PullSteps(ScriptState*) override;
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontroller-releasesteps
+  void ReleaseSteps() override;
 
   // autoAllocateChunkSize is encoded as 0 when it is undefined
   size_t auto_allocate_chunk_size_ = 0u;

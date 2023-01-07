@@ -1,0 +1,44 @@
+arc_support: The protocol handlers set via this policy are not used when handling
+  Android intents.
+caption: Register protocol handlers
+desc: |-
+  Setting the policy (as recommended only) lets you register a list of protocol handlers, which merge with the ones that the user registers, putting both sets in use. Set the property "protocol" to the scheme, such as "mailto", and set the property "URL" to the URL pattern of the application that handles the scheme specified in the "protocol" field. The pattern can include a "%s" placeholder, which the handled URL replaces.
+
+        Users can't remove a protocol handler registered by policy. However, by installing a new default handler, they can change the protocol handlers installed by policy.
+example_value:
+- default: true
+  protocol: mailto
+  url: https://mail.google.com/mail/?extsrc=mailto&url=%s
+features:
+  can_be_mandatory: false
+  can_be_recommended: true
+  dynamic_refresh: false
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- engedy@chromium.org
+- file://chrome/browser/custom_handlers/OWNERS
+schema:
+  items:
+    properties:
+      default:
+        description: A boolean flag indicating if the protocol handler should be set
+          as the default.
+        type: boolean
+      protocol:
+        description: The protocol for the protocol handler.
+        type: string
+      url:
+        description: The URL of the protocol handler.
+        type: string
+    required:
+    - protocol
+    - url
+    type: object
+  type: array
+supported_on:
+- chrome.*:37-
+- chrome_os:37-
+tags: []
+type: dict

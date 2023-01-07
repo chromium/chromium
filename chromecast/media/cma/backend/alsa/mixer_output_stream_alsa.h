@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/public/media/mixer_output_stream.h"
 
 namespace chromecast {
@@ -22,6 +21,10 @@ class AlsaWrapper;
 class MixerOutputStreamAlsa : public MixerOutputStream {
  public:
   MixerOutputStreamAlsa();
+
+  MixerOutputStreamAlsa(const MixerOutputStreamAlsa&) = delete;
+  MixerOutputStreamAlsa& operator=(const MixerOutputStreamAlsa&) = delete;
+
   ~MixerOutputStreamAlsa() override;
 
   void SetAlsaWrapperForTest(std::unique_ptr<AlsaWrapper> alsa);
@@ -83,8 +86,6 @@ class MixerOutputStreamAlsa : public MixerOutputStream {
   MediaPipelineBackend::AudioDecoder::RenderingDelay rendering_delay_;
 
   std::vector<uint8_t> output_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MixerOutputStreamAlsa);
 };
 
 }  // namespace media

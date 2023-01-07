@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -18,45 +17,35 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "ios/web/public/test/web_task_environment.h"
 using MetricsTaskEnvironment = web::WebTaskEnvironment;
-#else  // !defined(OS_IOS)
+#else  // !BUILDFLAG(IS_IOS)
 #include "content/public/test/browser_task_environment.h"
 using MetricsTaskEnvironment = content::BrowserTaskEnvironment;
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 namespace metrics {
 
 class NetworkMetricsProviderTest : public testing::Test {
  public:
+  NetworkMetricsProviderTest(const NetworkMetricsProviderTest&) = delete;
+  NetworkMetricsProviderTest& operator=(const NetworkMetricsProviderTest&) =
+      delete;
+
  protected:
   NetworkMetricsProviderTest()
       : task_environment_(MetricsTaskEnvironment::IO_MAINLOOP) {}
   ~NetworkMetricsProviderTest() override {}
 
-  void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::NetworkHandler::Initialize();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
-  void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
  private:
   MetricsTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkMetricsProviderTest);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 // Verifies that the effective connection type is correctly set.

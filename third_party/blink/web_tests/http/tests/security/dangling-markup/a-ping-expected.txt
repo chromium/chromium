@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 10: This test relies on dumping data via `testRunner.dumpPingLoaderCallbacks()`. No URLs containing 'block' should be pinged.
+CONSOLE ERROR: This test relies on dumping data via `testRunner.dumpPingLoaderCallbacks()`. No URLs containing 'block' should be pinged.
 PingLoader dispatched to 'http://127.0.0.1:8000/resources/square.png?1'.
 PingLoader dispatched to 'http://127.0.0.1:8000/resources/squ'.
 PingLoader dispatched to 'http://127.0.0.1:8000/security/dangling-markup/are.png?2'.
@@ -22,7 +22,6 @@ PingLoader dispatched to 'http://127.0.0.1:8000/resources/squ'.
 PingLoader dispatched to 'http://127.0.0.1:8000/security/dangling-markup/are.png?img=&#10;&amp;13'.
 PingLoader dispatched to 'http://127.0.0.1:8000/resources/squ'.
 PingLoader dispatched to 'http://127.0.0.1:8000/security/dangling-markup/are.png?img=&#10;&amp;14'.
-CONSOLE WARNING: line 49: Resource requests whose URLs contained both removed whitespace (`\n`, `\r`, `\t`) characters and less-than characters (`<`) are blocked. Please remove newlines and encode less-than characters from places like element attribute values in order to load these resources. See https://www.chromestatus.com/feature/5735596811091968 for more details.
 This is a testharness.js-based test.
 PASS URL: /resources/square.png?1
 PASS URL: /resources/squ\nare.png?2

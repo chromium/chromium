@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/accessibility/ax_event_manager.h"
 
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
 #include "ui/views/accessibility/ax_event_observer.h"
 
 namespace views {
@@ -31,6 +32,12 @@ void AXEventManager::NotifyViewEvent(views::View* view,
                                      ax::mojom::Event event_type) {
   for (AXEventObserver& observer : observers_)
     observer.OnViewEvent(view, event_type);
+}
+
+void AXEventManager::NotifyVirtualViewEvent(views::AXVirtualView* virtual_view,
+                                            ax::mojom::Event event_type) {
+  for (AXEventObserver& observer : observers_)
+    observer.OnVirtualViewEvent(virtual_view, event_type);
 }
 
 }  // namespace views

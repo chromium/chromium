@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
@@ -19,11 +19,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-class DictionaryValue;
-class ListValue;
 class SequencedTaskRunner;
-class Value;
-}
+}  // namespace base
 
 namespace policy {
 
@@ -42,6 +39,8 @@ extern const char kKeyDictionary[];
 class PolicyTestBase : public testing::Test {
  public:
   PolicyTestBase();
+  PolicyTestBase(const PolicyTestBase&) = delete;
+  PolicyTestBase& operator=(const PolicyTestBase&) = delete;
   ~PolicyTestBase() override;
 
   // testing::Test:
@@ -55,9 +54,6 @@ class PolicyTestBase : public testing::Test {
   // Needs to be the first member
   base::test::TaskEnvironment task_environment_;
   SchemaRegistry schema_registry_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PolicyTestBase);
 };
 
 // An interface for creating a test policy provider and creating a policy
@@ -70,6 +66,9 @@ class PolicyProviderTestHarness {
   PolicyProviderTestHarness(PolicyLevel level,
                             PolicyScope scope,
                             PolicySource source);
+  PolicyProviderTestHarness(const PolicyProviderTestHarness&) = delete;
+  PolicyProviderTestHarness& operator=(const PolicyProviderTestHarness&) =
+      delete;
   virtual ~PolicyProviderTestHarness();
 
   // Actions to run at gtest SetUp() time.
@@ -97,18 +96,16 @@ class PolicyProviderTestHarness {
                                        const base::ListValue* policy_value) = 0;
   virtual void InstallDictionaryPolicy(
       const std::string& policy_name,
-      const base::DictionaryValue* policy_value) = 0;
+      const base::Value::Dict& policy_value) = 0;
 
   // Not every provider supports installing 3rd party policy. Those who do
   // should override this method; the default just makes the test fail.
-  virtual void Install3rdPartyPolicy(const base::DictionaryValue* policies);
+  virtual void Install3rdPartyPolicy(const base::Value::Dict& policies);
 
  private:
   PolicyLevel level_;
   PolicyScope scope_;
   PolicySource source_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyProviderTestHarness);
 };
 
 // A factory method for creating a test harness.
@@ -120,9 +117,15 @@ typedef PolicyProviderTestHarness* (*CreatePolicyProviderTestHarness)();
 class ConfigurationPolicyProviderTest
     : public PolicyTestBase,
       public testing::WithParamInterface<CreatePolicyProviderTestHarness> {
+ public:
+  ConfigurationPolicyProviderTest(const ConfigurationPolicyProviderTest&) =
+      delete;
+  ConfigurationPolicyProviderTest& operator=(
+      const ConfigurationPolicyProviderTest&) = delete;
+
  protected:
   ConfigurationPolicyProviderTest();
-  virtual ~ConfigurationPolicyProviderTest();
+  ~ConfigurationPolicyProviderTest() override;
 
   void SetUp() override;
   void TearDown() override;
@@ -135,9 +138,6 @@ class ConfigurationPolicyProviderTest
 
   std::unique_ptr<PolicyProviderTestHarness> test_harness_;
   std::unique_ptr<ConfigurationPolicyProvider> provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConfigurationPolicyProviderTest);
 };
 
 // An extension of ConfigurationPolicyProviderTest that also tests loading of
@@ -145,12 +145,15 @@ class ConfigurationPolicyProviderTest
 // 3rd party policy should also instantiate these tests.
 class Configuration3rdPartyPolicyProviderTest
     : public ConfigurationPolicyProviderTest {
+ public:
+  Configuration3rdPartyPolicyProviderTest(
+      const Configuration3rdPartyPolicyProviderTest&) = delete;
+  Configuration3rdPartyPolicyProviderTest& operator=(
+      const Configuration3rdPartyPolicyProviderTest&) = delete;
+
  protected:
   Configuration3rdPartyPolicyProviderTest();
   virtual ~Configuration3rdPartyPolicyProviderTest();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Configuration3rdPartyPolicyProviderTest);
 };
 
 }  // namespace policy

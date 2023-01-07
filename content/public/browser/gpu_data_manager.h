@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_BROWSER_GPU_DATA_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_GPU_DATA_MANAGER_H_
 
-#include <list>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -30,15 +29,6 @@ enum GpuProcessKind {
   GPU_PROCESS_KIND_COUNT
 };
 
-enum GpuInfoRequest {
-  kGpuInfoRequestDxDiag = 1 << 0,
-  kGpuInfoRequestDx12 = 1 << 1,
-  kGpuInfoRequestVulkan = 1 << 2,
-  kGpuInfoRequestDx12Vulkan = kGpuInfoRequestVulkan | kGpuInfoRequestDx12,
-  kGpuInfoRequestAll =
-      kGpuInfoRequestDxDiag | kGpuInfoRequestDx12 | kGpuInfoRequestVulkan,
-};
-
 class GpuDataManagerObserver;
 
 // This class is fully thread-safe.
@@ -61,17 +51,13 @@ class GpuDataManager {
       gpu::GpuFeatureType feature) = 0;
 
   // This indicator might change because we could collect more GPU info or
-  // because the GPU blacklist could be updated.
+  // because the GPU blocklist could be updated.
   // If this returns false, any further GPU access, including establishing GPU
   // channel, and GPU info collection, should be blocked.
   // Can be called on any thread.
   // If |reason| is not nullptr and GPU access is blocked, upon return, |reason|
   // contains a description of the reason why GPU access is blocked.
   virtual bool GpuAccessAllowed(std::string* reason) = 0;
-
-  // Requests complete GPU info if it has not already been requested
-  virtual void RequestDxdiagDx12VulkanGpuInfoIfNeeded(GpuInfoRequest request,
-                                                      bool delayed) = 0;
 
   // Check if basic and context GPU info have been collected.
   virtual bool IsEssentialGpuInfoAvailable() = 0;

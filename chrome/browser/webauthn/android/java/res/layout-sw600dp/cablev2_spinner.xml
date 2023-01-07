@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+
+<ScrollView
+    xmlns:a="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    a:layout_width="match_parent"
+    a:layout_height="match_parent"
+    a:fillViewport="true"
+    a:scrollbars="none">
+
+  <LinearLayout
+      a:layout_width="match_parent"
+      a:layout_height="wrap_content"
+      a:orientation="vertical"
+      a:gravity="center">
+
+    <TextView
+        a:layout_width="match_parent"
+        a:layout_height="wrap_content"
+        a:layout_marginTop="-104dp"
+        a:layout_marginLeft="24dp"
+        a:layout_marginRight="24dp"
+        a:gravity="center_horizontal"
+        a:text="@string/cablev2_serverlink_connecting_to_your_device"
+        a:textSize="36sp" />
+
+    <RelativeLayout
+        a:layout_width="wrap_content"
+        a:layout_height="wrap_content"
+        a:layoutDirection="ltr"
+        a:layout_marginTop="52dp"
+        a:layout_marginLeft="24dp"
+        a:layout_marginRight="24dp"
+        a:layout_gravity="center_horizontal">
+      <ImageView
+          a:id="@+id/spinner"
+          a:contentDescription="@null"
+          a:layout_width="wrap_content"
+          a:layout_height="wrap_content"
+          a:layout_gravity="center"
+          a:layout_centerInParent="true"
+          a:layout_centerVertical="true" />
+      <ImageView
+          a:contentDescription="@null"
+          a:layout_height="wrap_content"
+          a:layout_width="wrap_content"
+          a:src="@drawable/ic_lock_googblue_48dp"
+          a:layout_centerInParent="true"
+          a:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <TextView
+        a:id="@+id/status_text"
+        a:layout_width="wrap_content"
+        a:layout_height="wrap_content"
+        a:layout_marginTop="4dp"
+        a:layout_marginBottom="16dp"
+        a:layout_gravity="center_horizontal"
+        a:padding="0px"
+        a:textSize="24sp" />
+
+  </LinearLayout>
+
+</ScrollView>

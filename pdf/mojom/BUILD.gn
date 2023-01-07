@@ -1,0 +1,18 @@
+# Copyright 2014 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "pdf.mojom" ]
+
+  public_deps = [
+    "//services/network/public/mojom:url_loader_base",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_only = true
+}

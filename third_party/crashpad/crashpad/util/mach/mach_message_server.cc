@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,9 @@ namespace {
 class MachMessageBuffer {
  public:
   MachMessageBuffer() : vm_() {}
+
+  MachMessageBuffer(const MachMessageBuffer&) = delete;
+  MachMessageBuffer& operator=(const MachMessageBuffer&) = delete;
 
   ~MachMessageBuffer() {}
 
@@ -81,8 +84,6 @@ class MachMessageBuffer {
 
  private:
   base::mac::ScopedMachVM vm_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachMessageBuffer);
 };
 
 // Wraps MachMessageWithDeadline(), using a MachMessageBuffer argument which

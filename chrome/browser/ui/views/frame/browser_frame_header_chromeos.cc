@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
@@ -175,6 +176,7 @@ SkColor BrowserFrameHeaderChromeOS::GetCurrentFrameColor() const {
 }
 
 void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
+  SetPaintAsActive(target_widget()->ShouldPaintAsActive());
   UpdateCaptionButtonColors();
   view()->SchedulePaint();
 }

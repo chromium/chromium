@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -399,7 +399,7 @@ void ConvertBGRAtoRGB(const unsigned char* bgra, int pixel_width,
 #ifdef PNG_TEXT_SUPPORTED
 
 inline char* strdup(const char* str) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return _strdup(str);
 #else
   return ::strdup(str);

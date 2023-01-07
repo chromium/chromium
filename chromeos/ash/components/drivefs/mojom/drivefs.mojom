@@ -1,0 +1,695 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module drivefs.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// This file tracks apps/drive/fs/chromeos/mojom/drivefs.mojom. Changes
+// should be made there first and then replicated here.
+
+// Implemented by DriveFS, used from Chrome.
+interface DriveFsBootstrap {
+  // Initialize a DriveFS instance with its configuration and mojo connections
+  // to the browser.
+  Init(DriveFsConfiguration config, pending_receiver<DriveFs> drive_fs,
+       pending_remote<DriveFsDelegate> delegate);
+};
+
+// Implemented by DriveFS, used from Chrome.
+interface DriveFs {
+  // Returns the metadata for |path|.
+  GetMetadata(mojo_base.mojom.FilePath path) => (
+      FileError error, FileMetadata? metadata);
+
+  // Sets the file at |path| to pinned or unpinned depending on the value of
+  // |pinned|.
+  SetPinned(mojo_base.mojom.FilePath path, bool pinned) => (FileError error);
+
+  // Update DriveFS with the current network state, including whether the
+  // network is available and whether syncing should be paused.
+  UpdateNetworkState(bool pause_syncing, bool is_offline);
+
+  // Reset DriveFS cache.
+  ResetCache() => (FileError error);
+
+  // Returns a PNG containing a thumbnail for |path|. If |crop_to_square|, a
+  // 360x360 thumbnail, cropped to fit a square is returned; otherwise a
+  // thumbnail up to 500x500, maintaining aspect ration, is returned. If |path|
+  // does not exist or does not have a thumbnail, |thumbnail| will be null.
+  GetThumbnail(mojo_base.mojom.FilePath path, bool crop_to_square) => (
+      array<uint8>? thumbnail);
+
+  // Copy a file at |source| to |target|. If |source| refers to a directory,
+  // kNotAFile is returned. |target| is the path to the desired output of the
+  // copy; its parent must be an existing directory.
+  CopyFile(mojo_base.mojom.FilePath source, mojo_base.mojom.FilePath target) =>
+      (FileError error);
+
+  // Start a search query with given parameters.
+  StartSearchQuery(pending_receiver<SearchQuery> query,
+                   QueryParameters query_params);
+
+  // Fetches all changelogs, i.e. for My Drive and all Team Drives.
+  FetchAllChangeLogs();
+
+  // Fetches the changelog(s) using the provided |options|.
+  FetchChangeLog(array<FetchChangeLogOptions> options);
+
+  // Send a native message |request| to DriveFS. |request| is a DriveFS
+  // specific message that looks like "native_opener/v2/$command_id/$message",
+  // where $command_id is an integer and $message is the base64 encoding of a
+  // JSPB encoded proto message.
+  //
+  // |response| is only filled out if |error| is kOk, and returns a JSPB
+  // encoded proto message.
+  SendNativeMessageRequest(string request) => (
+      FileError error, string response);
+
+  // Sets the arguments to be parsed by DriveFS on startup. Should only be
+  // called in developer mode.
+  SetStartupArguments(string arguments) => (bool success);
+
+  // Gets the currently set arguments parsed by DriveFS on startup. Should only
+  // be called in developer mode.
+  GetStartupArguments() => (string arguments);
+
+  // Enables or disables performance tracing, which logs to
+  // |data_dir_path|/Logs/drive_fs_trace.
+  SetTracingEnabled(bool enabled);
+
+  // Enables or disables networking for testing. Should only be called in
+  // developer mode.
+  SetNetworkingEnabled(bool enabled);
+
+  // Overrides syncing to be paused if enabled. Should only be called in
+  // developer mode.
+  ForcePauseSyncing(bool enable);
+
+  // Dumps account settings (including feature flags) to
+  // |data_dir_path/account_settings. Should only be called in developer mode.
+  DumpAccountSettings();
+
+  // Loads account settings (including feature flags) from
+  // |data_dir_path/account_settings. Should only be called in developer mode.
+  LoadAccountSettings();
+
+  // Establish communication session between extension and DriveFS.
+  CreateNativeHostSession(ExtensionConnectionParams params,
+      pending_receiver<NativeMessagingHost> session,
+      pending_remote<NativeMessagingPort> port);
+
+  // Find the files corresponding to Drive's item IDs provided.
+  // Paths returned are relative to the mount point.
+  LocateFilesByItemIds(array<string> item_ids) => (
+      array<FilePathOrError>? response);
+
+  // Returns the total and free space available in the user's Drive.
+  GetQuotaUsage() => (FileError error, QuotaUsage quota);
+
+  // Toggle mirror sync capability.
+  ToggleMirroring(bool enabled) => (MirrorSyncStatus status);
+
+  // Toggle syncing for supplied path.
+  ToggleSyncForPath(mojo_base.mojom.FilePath path,
+                    MirrorPathStatus status) => (FileError error);
+
+  // Retrieves a list of paths being synced.
+  GetSyncingPaths() => (FileError error, array<mojo_base.mojom.FilePath> paths);
+
+  // Tells DriveFS to update its cached pin states of hosted files (once).
+  PollHostedFilePinStates();
+
+  // Returns the total and free space available in the user's Drive and their
+  // organization's, if they belong to one.
+  GetPooledQuotaUsage() => (FileError error, PooledQuotaUsage quota);
+};
+
+// Implemented by Chrome, used from DriveFS.
+interface DriveFsDelegate {
+  // Get an access token for |client_id| and |app_id| with access to |scopes|.
+  // |access_token| is only valid if |status| is kSuccess.
+  GetAccessToken(string client_id, string app_id, array<string> scopes) => (
+      AccessTokenStatus status, string access_token);
+
+  // Invoked when the mount is ready for use.
+  OnMounted();
+
+  // Invoked if mounting has failed. If retry_delay is present the
+  // browser should try to mount again after the specified interval.
+  OnMountFailed(mojo_base.mojom.TimeDelta? retry_delay);
+
+  // Invoked when the mount is going away. If retry_delay is present the
+  // browser should try to mount again after the specified interval.
+  OnUnmounted(mojo_base.mojom.TimeDelta? retry_delay);
+
+  // Invoked when the syncing status changes.
+  OnSyncingStatusUpdate(SyncingStatus status);
+
+  // Invoked when server-side file changes are received.
+  OnFilesChanged(array<FileChange> changes);
+
+  // Invoked when a supported error occurs.
+  OnError(DriveError error);
+
+  // Invoked with the list of team drive IDs.
+  OnTeamDrivesListReady(array<string> team_drive_ids);
+
+  enum CreateOrDelete {
+    kCreated,
+    kDeleted,
+  };
+
+  // Invoked whenever a Team Drive root changes or gets deleted.
+  OnTeamDriveChanged(string team_drive_id, CreateOrDelete change_type);
+
+  // Invoked from time to time to indicate that drivefs is operational.
+  OnHeartbeat();
+
+  [Extensible]
+  enum ExtensionConnectionStatus {
+    kSuccess,
+    kExtensionNotFound,
+    kFeatureNotEnabled,
+  };
+
+  // Initiates connection to the extension specified.
+  ConnectToExtension(ExtensionConnectionParams params,
+      pending_receiver<NativeMessagingPort> port,
+      pending_remote<NativeMessagingHost> host) => (
+          ExtensionConnectionStatus error);
+
+  // Invoked when Drive wants to display a confirmation dialog.
+  DisplayConfirmDialog(DialogReason reason) => (DialogResult result);
+
+  // Executes the given request on Chrome's networking stack and
+  // calls the necessary callbacks on the |delegate|.
+  ExecuteHttpRequest(
+    HttpRequest request, pending_remote<HttpDelegate> delegate);
+
+  // On startup, retrieve the machine ID to ensure Chromebook is reassociated
+  // with an existing Computers root based on `doc_id`. If no ID is available it
+  // will return an empty string.
+  GetMachineRootID() => (string doc_id);
+
+  // Invoked when the machine ID is calculated to store in Chrome device prefs.
+  PersistMachineRootID(string doc_id);
+
+  // Invoked when the syncing status changes for items that are being tracked by
+  // the mirror stack.
+  OnMirrorSyncingStatusUpdate(SyncingStatus status);
+};
+
+// Next MinVersion: 7
+struct DriveFsConfiguration {
+  string user_email;
+
+  [MinVersion=1]
+  string? access_token;
+
+  [MinVersion=2]
+  bool enable_metrics = false;
+
+  // The directory name to use for lost and found within the user's My files
+  // directory.
+  [MinVersion=3]
+  string? lost_and_found_directory_name;
+
+  [MinVersion=4]
+  bool enable_experimental_mirroring = false;
+
+  [MinVersion=5]
+  bool enable_verbose_logging = false;
+
+  // Whether the network service bridge is available. This is enabled on CrOS by
+  // the |drive-fs-chrome-networking| flag.
+  [MinVersion=6]
+  bool enable_cros_network = false;
+};
+
+enum AccessTokenStatus {
+  // Getting an access token succeeded.
+  kSuccess,
+
+  // Getting an access token failed due to a transient error (e.g. network
+  // access is unavailable).
+  kTransientError,
+
+  // Getting an access token failed due to an auth error.
+  kAuthError,
+};
+
+[Extensible]
+enum MirrorSyncStatus {
+  // Successfully turned on mirror sync.
+  kSuccess,
+  // Failed to turn on mirror sync.
+  kFailure,
+  // The mirror sync feature is disabled by feature flag.
+  kFeatureNotEnabled,
+};
+
+[Extensible]
+enum MirrorPathStatus {
+  // Start syncing a particular path.
+  kStart,
+  // Stop syncing a particular path.
+  kStop,
+};
+
+enum DialogResult {
+  // The dialog was not displayed to the user.
+  kNotDisplayed,
+  // The user accepted the action proposed by the dialog.
+  kAccept,
+  // The user rejected the action proposed by the dialog.
+  kReject,
+  // The user closed the dialog without selecting an option.
+  kDismiss,
+};
+
+enum FileError {
+  // These match the values of drive::FileError in
+  // //components/drive/file_errors.h
+  kOk = 0,
+  kFailed = -1,
+  kInUse = -2,
+  kExists = -3,
+  kNotFound = -4,
+  kAccessDenied = -5,
+  kTooManyOpened = -6,
+  kNoMemory = -7,
+  kNoServerSpace = -8,
+  kNotADirectory = -9,
+  kInvalidOperation = -10,
+  kSecurity = -11,
+  kAbort = -12,
+  kNotAFile = -13,
+  kNotEmpty = -14,
+  kInvalidUrl = -15,
+  kNoConnection = -16,
+  kNoLocalSpace = -17,
+  kServiceUnavailable = -18,
+};
+
+// Errors received from DriveFS to be forwarded to the file manager UI.
+struct DriveError {
+  [Extensible] enum Type {
+    kCantUploadStorageFull,
+    kPinningFailedDiskFull,
+    kCantUploadStorageFullOrganization,
+  };
+
+  Type type;
+
+  // The path to the file where an error was encountered, if there was one.
+  mojo_base.mojom.FilePath path;
+};
+
+struct DialogReason {
+  [Extensible] enum Type {
+    kEnableDocsOffline,
+  };
+
+  Type type;
+
+  // The path to the file associated with this dialog, if there was one.
+  mojo_base.mojom.FilePath path;
+};
+
+// Next MinVersion: 6
+struct FileMetadata {
+  [Extensible] enum Type {
+    // A regular file.
+    kFile,
+
+    // A hosted document (e.g. a gdoc).
+    kHosted,
+
+    // A directory.
+    kDirectory,
+  };
+  Type type;
+
+  int64 size;
+
+  string content_mime_type;
+
+  string custom_icon_url;
+
+  // A URL to open the file in the Drive website.
+  string alternate_url;
+
+  // A URL to download the file.
+  string download_url;
+
+  mojo_base.mojom.Time modification_time;
+  mojo_base.mojom.Time last_viewed_by_me_time;
+
+  bool available_offline;
+  bool dirty;
+  bool pinned;
+  bool shared;
+  bool starred;
+
+  // May be present if the file is an image.
+  ImageMetadata? image_metadata;
+
+  // Never set.
+  array<uint8>? deprecated_thumbnail;
+
+  Capabilities capabilities;
+
+  [MinVersion=1] FolderFeature? folder_feature;
+
+  // Only present in QuickAccess queries.
+  [MinVersion=2] QuickAccess? quick_access;
+
+  // The unique device local ID used by DriveFS to refer to this file.
+  // Note: 0 is an invalid stable id.
+  [MinVersion=3] int64 stable_id = 0;
+
+  [Extensible] enum CanPinStatus {
+    kOk,
+    kDisabled,
+  };
+
+  // Is it currently possible to pin this item.
+  [MinVersion=4] CanPinStatus can_pin;
+
+  // Id of the associated Cello item. Useful for interacting with Drive API
+  // methods which require the server side file id, such as
+  // DriveAPIService::UpdateResource.
+  [MinVersion=5] string? item_id;
+};
+
+struct ImageMetadata {
+  // In pixels.
+  int32 height = 0;
+  int32 width = 0;
+
+  // Rotation in clockwise degrees.
+  int32 rotation = 0;
+};
+
+// Drive capabilities:
+struct Capabilities {
+  bool can_share = true;
+  bool can_copy = true;
+  bool can_delete = true;
+  bool can_rename = true;
+  bool can_add_children = true;
+};
+
+// Set on Drive Uploader roots and optionally on select sub-folders.
+struct FolderFeature {
+  // Identifies a root directory of a machine sync, used for the backup and
+  // restore feature.
+  bool is_machine_root = false;
+
+  // Identifies a sync folder.
+  bool is_arbitrary_sync_folder = false;
+
+  // Identifies an external media folder, that contains one time only uploads
+  // for USB devices, SD cards etc.
+  bool is_external_media = false;
+};
+
+struct QuickAccess {
+  // A [0, 1] score with the probability that a user wants this document next.
+  double score;
+};
+
+// Reason why this event occurred.
+// TODO(crbug.com/896777): Put this inside ItemEvent once the fix for the linked
+// bug is in libchrome.
+[Extensible]
+enum ItemEventReason {
+  // Due to sync traffic from file transfers.
+  kTransfer,
+  // Due to the user pinning a file.
+  kPin,
+};
+
+// Next MinVersion: 2
+struct ItemEvent {
+  enum State {
+    kQueued,
+    kInProgress,
+    kCompleted,
+    kFailed,
+  };
+
+  // The stable ID used by DriveFS.
+  int64 stable_id;
+
+  // A unique ID corresponding to a particular sync action.
+  int64 group_id;
+
+  string path;
+
+  State state;
+
+  // The following are valid only if |state| is kInProgress or kQueued. -1 acts
+  // as the sentinel value for unset.
+  int64 bytes_transferred = -1;
+  int64 bytes_to_transfer = -1;
+
+  [MinVersion=1] ItemEventReason reason = kTransfer;
+};
+
+struct SyncingStatus {
+  array<ItemEvent> item_events;
+};
+
+// A report of a server-side change to a file.
+// Next MinVersion: 2
+struct FileChange {
+  mojo_base.mojom.FilePath path;
+
+  enum Type {
+    kCreate,
+    kDelete,
+    kModify,
+  };
+
+  Type type;
+
+  // The unique device local ID used by DriveFS to refer to this file.
+  // Note: 0 is an invalid stable id.
+  [MinVersion=1] int64 stable_id = 0;
+};
+
+// Definition of the search request sent to DriveFS.
+// Next MinVersion: 3
+struct QueryParameters {
+  // Where this request should go to.
+  enum QuerySource {
+    kLocalOnly = 0,
+    kCloudOnly = 1,
+  };
+
+  // Which field should be used for sorting the results.
+  [Extensible]
+  enum SortField {
+    kNone = 0,
+    kLastModified = 1,
+    kLastViewedByMe = 2,
+    kFileSize = 3,
+  };
+
+  enum SortDirection {
+    kAscending = 0,
+    kDescending = 1,
+  };
+
+  // How many results to fetch per page.
+  int32 page_size = 100;
+
+  // Which source should be queried.
+  QuerySource query_source = kCloudOnly;
+
+  // Search for documents whose titles matches this string.
+  string? title;
+
+  // Full-text search by content. Works only with |kCloudOnly|.
+  string? text_content;
+
+  // Search for documents of this type.
+  string? mime_type;
+
+  // Results must be only from shared with me documents.
+  bool shared_with_me = false;
+
+  // Results must be only from available locally on the device. Works only
+  // with |kLocalOnly|.
+  bool available_offline = false;
+
+  // How to sort the returned results.
+  SortField sort_field = kNone;
+  SortDirection sort_direction = kAscending;
+
+  // The kind of query to perform.
+  [MinVersion=1] QueryKind query_kind = kRegular;
+
+  // Search for documents whose mime types match any of the string in the array.
+  // Note: this field is preferred to "mime_type" field above, when processing
+  // the query, the "mime_type" will be merged into this "mime_types" field.
+  [MinVersion=2] array<string>? mime_types;
+};
+
+// TODO(crbug.com/896777): Put this inside QueryParameters once linked bug is
+// fixed.
+enum QueryKind {
+  // Regular search.
+  kRegular = 0,
+
+  // QuickAccess query from the ItemSuggest API. Only page_size is used in a
+  // QuickAccess query.
+  kQuickAccess = 1,
+};
+
+// Represents a search request in progress.
+interface SearchQuery {
+  // Performs query and if successful returns next portion of results. If there
+  // are no more results to fetch then |results| is empty array.
+  GetNextPage() => (FileError error, array<QueryItem>? results);
+};
+
+// Single entry in search response.
+struct QueryItem {
+  FileMetadata metadata;
+  mojo_base.mojom.FilePath path;
+};
+
+struct FetchChangeLogOptions {
+  // Change ID for My Drive or Team Drive specified in a received push
+  // notification.
+  int64 change_id = -1;
+
+  // ID of the Team Drive to fetch the changelog for. Set to an empty string to
+  // fetch the My Drive changelog instead.
+  string team_drive_id;
+};
+
+// Implemented in the browser and used from DriveFS.
+// Roughly corresponds to a native messaging port to the extension and allows
+// sending messages from the DriveFS process to the extension.
+interface NativeMessagingPort {
+  // Send a native |message| to the extension. |message| is an
+  // opaque string in an extension-specific format.
+  PostMessageToExtension(string message);
+};
+
+// Implemented in DriveFS and used from the browser.
+// Roughly corresponds to a native messaging host instance and allows
+// processing of requests from the extension by the DriveFS process.
+// It's up to the extension and the host to agree to message ordering.
+interface NativeMessagingHost {
+  // Process |message| from the extension. |message| is an
+  // opaque string in an extension-specific format.
+  HandleMessageFromExtension(string message);
+};
+
+// Configuration of the connection between extension and DriveFS.
+struct ExtensionConnectionParams {
+  string extension_id;
+};
+
+// A single file path resolution result.
+union FilePathOrError {
+  FileError error;
+  mojo_base.mojom.FilePath path;
+};
+
+enum UserType {
+  // User doesn't belong to any organization.
+  kUnmanaged,
+  // User is a member of an organization.
+  kOrganization,
+};
+
+// Free and total space available in Drive relative to both the user and their
+// organization, if they belong to one.
+struct PooledQuotaUsage {
+  UserType user_type;
+
+  // How much space the individual user has used.
+  int64 used_user_bytes;
+  // The individual limit of a user. -1 means infinite.
+  int64 total_user_bytes = -1;
+
+  // The following two fields only have meaning if user_type is kOrganization.
+  // Whether the organization has exceeded its storage limit.
+  bool organization_limit_exceeded = false;
+  // Name of the organization the user belongs to.
+  string organization_name;
+};
+
+// Free and total space available in Drive.
+struct QuotaUsage {
+  uint64 free_cloud_bytes;
+  uint64 total_cloud_bytes;
+};
+
+// Matches errors from //net/base/net_error_list.h
+enum NetError {
+  kOk = 0,
+  kIOPending = -1,
+  kFailed = -2,
+  kAborted = -3,
+  kInvalidArgument = -4,
+  kInvalidHandle = -5,
+  kFileNotFound = -6,
+  kTimedOut = -7,
+  kNameNotResolved = -105,
+  kInternetDisconnected = -106,
+  kAddressUnreachable = -109,
+};
+
+struct HttpHeader  {
+  string key;
+  string value;
+};
+
+struct HttpRequest {
+  string method;
+  string url;
+  array<HttpHeader> headers;
+  int64 request_body_bytes;
+};
+
+struct HttpResponse {
+  int32 response_code;
+  array<HttpHeader> headers;
+};
+
+struct HttpCompletionStatus {
+  NetError error;
+  int64 response_body_bytes;
+};
+
+// This interface is backed by a |cello:HttpDelegate| on the DriveFS side and is
+// called from a |URLLoaderClient| on the Chrome side.
+interface HttpDelegate {
+  // Fetches a pipe that will provide the request body.
+  // This method should only be called once.
+  GetRequestBody(handle<data_pipe_producer> request_body);
+
+  // Called once when the response code and headers have been received.
+  // See |URLLoaderClient::OnReceiveResponse|
+  OnReceiveResponse(HttpResponse response);
+
+  // Called once after |OnReceiveResponse| when the body has been received.
+  // Provides a pipe for the response body to be read from.
+  // See |URLLoaderClient::OnStartLoadingResponseBody'
+  OnReceiveBody(handle<data_pipe_consumer> response_body);
+
+  // Called once after the URLLoader is done.
+  // NOTE: There may still be data remaining in the data pipe, so destruction
+  // should be deferred until all data is read.
+  // See |URLLoaderClient::OnComplete|
+  OnRequestComplete(HttpCompletionStatus status);
+};

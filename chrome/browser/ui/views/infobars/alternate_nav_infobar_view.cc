@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,20 +36,16 @@ AlternateNavInfoBarView::AlternateNavInfoBarView(
   std::u16string message_text = delegate_ptr->GetMessageTextWithOffset(&offset);
   DCHECK_NE(std::u16string::npos, offset);
   label_1_text_ = message_text.substr(0, offset);
-  label_1_ = CreateLabel(label_1_text_);
-  AddChildView(label_1_);
+  label_1_ = AddChildView(CreateLabel(label_1_text_));
 
   link_text_ = delegate_ptr->GetLinkText();
-  link_ = CreateLink(link_text_);
-  AddChildView(link_);
+  link_ = AddChildView(CreateLink(link_text_));
 
   label_2_text_ = message_text.substr(offset);
-  label_2_ = CreateLabel(label_2_text_);
-  AddChildView(label_2_);
+  label_2_ = AddChildView(CreateLabel(label_2_text_));
 }
 
-AlternateNavInfoBarView::~AlternateNavInfoBarView() {
-}
+AlternateNavInfoBarView::~AlternateNavInfoBarView() = default;
 
 // static
 void AlternateNavInfoBarView::ElideLabels(Labels* labels, int available_width) {

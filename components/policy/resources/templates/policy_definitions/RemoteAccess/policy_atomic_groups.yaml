@@ -1,0 +1,28 @@
+RemoteAccess:
+  caption: Remote access
+  policies:
+  - RemoteAccessClientFirewallTraversal
+  - RemoteAccessHostClientDomain
+  - RemoteAccessHostClientDomainList
+  - RemoteAccessHostFirewallTraversal
+  - RemoteAccessHostDomain
+  - RemoteAccessHostDomainList
+  - RemoteAccessHostRequireTwoFactor
+  - RemoteAccessHostTalkGadgetPrefix
+  - RemoteAccessHostRequireCurtain
+  - RemoteAccessHostAllowClientPairing
+  - RemoteAccessHostAllowGnubbyAuth
+  - RemoteAccessHostAllowRelayedConnection
+  - RemoteAccessHostUdpPortRange
+  - RemoteAccessHostMatchUsername
+  - RemoteAccessHostTokenUrl
+  - RemoteAccessHostTokenValidationUrl
+  - RemoteAccessHostTokenValidationCertificateIssuer
+  - RemoteAccessHostDebugOverridePolicies
+  - RemoteAccessHostAllowUiAccessForRemoteAssistance
+  - RemoteAccessHostAllowFileTransfer
+  - RemoteAccessHostEnableUserInterface
+  - RemoteAccessHostAllowRemoteAccessConnections
+  - RemoteAccessHostMaximumSessionDurationMinutes
+  - RemoteAccessHostClipboardSizeBytes
+  - RemoteAccessHostAllowRemoteSupportConnections

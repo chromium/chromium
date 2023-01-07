@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,9 +6,13 @@ template("generate_grd") {
   action(target_name) {
     script = "//ui/webui/resources/tools/generate_grd.py"
 
-    if (defined(invoker.deps)) {
-      deps = invoker.deps
-    }
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "testonly",
+                             "visibility",
+                           ])
 
     inputs = []
     outputs = [ invoker.out_grd ]
@@ -40,6 +44,13 @@ template("generate_grd") {
                 invoker.input_files_base_dir,
                 "--input-files",
               ] + invoker.input_files
+    }
+
+    if (defined(invoker.output_files_base_dir)) {
+      args += [
+        "--output-files-base-dir",
+        invoker.output_files_base_dir,
+      ]
     }
 
     if (defined(invoker.resource_path_rewrites)) {

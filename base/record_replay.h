@@ -8,8 +8,8 @@
 #define BASE_RECORD_REPLAY_H_
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 
 #include <cstdint>
 
@@ -32,7 +32,7 @@ void AssertBytes(const char* why, const void* buf, size_t size);
 uintptr_t RecordReplayValue(const char* why, uintptr_t v);
 void RecordReplayBytes(const char* why, void* buf, size_t size);
 
-size_t CreateOrderedLock(const char* name);
+int CreateOrderedLock(const char* name);
 void OrderedLock(int lock);
 void OrderedUnlock(int lock);
 

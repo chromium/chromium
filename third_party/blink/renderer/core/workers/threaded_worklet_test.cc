@@ -1,15 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <bitset>
-#include "base/single_thread_task_runner.h"
+
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/inspector/console_message_storage.h"
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_thread_holder.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -150,12 +152,6 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
   void CountDeprecation(WebFeature feature) {
     EXPECT_TRUE(IsCurrentThread());
     Deprecation::CountDeprecation(GlobalScope(), feature);
-
-    // CountDeprecation() should add a warning message.
-    EXPECT_EQ(1u, GetConsoleMessageStorage()->size());
-    String console_message = GetConsoleMessageStorage()->at(0)->Message();
-    EXPECT_TRUE(console_message.Contains("deprecated"));
-
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(&test::ExitRunLoop));
   }
@@ -173,7 +169,8 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
   WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
       std::unique_ptr<GlobalScopeCreationParams> creation_params) final {
     auto* global_scope = MakeGarbageCollected<FakeWorkletGlobalScope>(
-        std::move(creation_params), GetWorkerReportingProxy(), this);
+        std::move(creation_params), GetWorkerReportingProxy(), this,
+        /*create_microtask_queue=*/true);
     EXPECT_FALSE(global_scope->IsMainThreadWorkletGlobalScope());
     EXPECT_TRUE(global_scope->IsThreadedWorkletGlobalScope());
     return global_scope;
@@ -199,9 +196,9 @@ class ThreadedWorkletMessagingProxyForTest
   ~ThreadedWorkletMessagingProxyForTest() override = default;
 
   void Start() {
-    std::unique_ptr<Vector<char>> cached_meta_data = nullptr;
+    std::unique_ptr<Vector<char>> cached_meta_data;
     WorkerClients* worker_clients = nullptr;
-    std::unique_ptr<WorkerSettings> worker_settings = nullptr;
+    std::unique_ptr<WorkerSettings> worker_settings;
     InitializeWorkerThread(
         std::make_unique<GlobalScopeCreationParams>(
             GetExecutionContext()->Url(), mojom::blink::ScriptType::kModule,
@@ -214,21 +211,26 @@ class ThreadedWorkletMessagingProxyForTest
             mojo::Clone(GetExecutionContext()
                             ->GetContentSecurityPolicy()
                             ->GetParsedPolicies()),
+            Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
             GetExecutionContext()->GetReferrerPolicy(),
             GetExecutionContext()->GetSecurityOrigin(),
             GetExecutionContext()->IsSecureContext(),
             GetExecutionContext()->GetHttpsState(), worker_clients,
             nullptr /* content_settings_client */,
-            GetExecutionContext()->AddressSpace(),
-            OriginTrialContext::GetTokens(GetExecutionContext()).get(),
+            OriginTrialContext::GetInheritedTrialFeatures(GetExecutionContext())
+                .get(),
             base::UnguessableToken::Create(), std::move(worker_settings),
             mojom::blink::V8CacheOptions::kDefault,
             MakeGarbageCollected<WorkletModuleResponsesMap>(),
             mojo::NullRemote() /* browser_interface_broker */,
+            To<LocalDOMWindow>(GetExecutionContext())
+                ->GetFrame()
+                ->Loader()
+                .CreateWorkerCodeCacheHost(),
             BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
             GetExecutionContext()->GetAgentClusterID(), ukm::kInvalidSourceId,
             GetExecutionContext()->GetExecutionContextToken()),
-        base::nullopt, base::nullopt);
+        absl::nullopt, absl::nullopt);
   }
 
  private:
@@ -310,10 +312,11 @@ TEST_F(ThreadedWorkletTest, ContentSecurityPolicy) {
   // Set up the CSP for Document before starting ThreadedWorklet because
   // ThreadedWorklet inherits the owner Document's CSP.
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-  csp->DidReceiveHeader("script-src 'self' https://allowed.example.com",
-                        *(GetExecutionContext()->GetSecurityOrigin()),
-                        network::mojom::ContentSecurityPolicyType::kEnforce,
-                        network::mojom::ContentSecurityPolicySource::kHTTP);
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      "script-src 'self' https://allowed.example.com",
+      network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      *(GetExecutionContext()->GetSecurityOrigin())));
   GetExecutionContext()->SetContentSecurityPolicy(csp);
 
   MessagingProxy()->Start();
@@ -328,10 +331,10 @@ TEST_F(ThreadedWorkletTest, ContentSecurityPolicy) {
 
 TEST_F(ThreadedWorkletTest, InvalidContentSecurityPolicy) {
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-  csp->DidReceiveHeader("invalid-csp",
-                        *(GetExecutionContext()->GetSecurityOrigin()),
-                        network::mojom::ContentSecurityPolicyType::kEnforce,
-                        network::mojom::ContentSecurityPolicySource::kHTTP);
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      "invalid-csp", network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      *(GetExecutionContext()->GetSecurityOrigin())));
   GetExecutionContext()->SetContentSecurityPolicy(csp);
 
   MessagingProxy()->Start();

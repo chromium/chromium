@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_EVENTS_TEST_X11_EVENT_WAITER_H_
 #define UI_EVENTS_TEST_X11_EVENT_WAITER_H_
 
-#include <memory>
 
 #include "base/callback.h"
 #include "ui/gfx/x/connection.h"

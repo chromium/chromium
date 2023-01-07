@@ -67,7 +67,7 @@ resolution requests, but never complete them until cancellation.
 Used by most browser tests (via [`content::BrowserTestBase`](/content/public/test/browser_test_base.h)),
 `content::TestHostResolver` installs itself on creation globally into all host
 resolvers in the process. By default, only allows resolution of the local host
-and returns `net::ERR_NOT_IMPLEMENTED` for other hostnames. Allows setting rules
+and returns `net::ERR_NAME_NOT_RESOLVED` for other hostnames. Allows setting rules
 for other results using a [net::RuleBasedHostResolverProc](/net/dns/mock_host_resolver.h).
 
 *** note
@@ -219,17 +219,18 @@ Specific sources for a request can be
 specified using `net::HostResolver::ResolveHostParameters::source` and
 [`net::HostResolverSource`](/net/dns/host_resolver_source.h).
 
-The Job will then use *Task objects that implement the behavior specific to the
+The Job will then use \*Task objects that implement the behavior specific to the
 particular resolution sources.
 
 #### SYSTEM
 
 `net::HostResolverSource::SYSTEM`
-`net::HostResolverManager::TaskType::PROC`
+`net::HostResolverManager::TaskType::SYSTEM`
 
-Implemented by: `net::HostResolverManager::ProcTask`
+Implemented by: `net::HostResolverSystemTask`
 
-Usually called the "system resolver" or sometimes the "proc resolver". Results
+Usually called the "system resolver" or sometimes the "proc resolver" (because
+it was historically always implemented using net::HostResolverProc). Results
 are queried from the system or OS using the `getaddrinfo()` OS API call. This
 source is only capable of address (A and AAAA) resolves but will also query for
 canonname info if the request includes the `HOST_RESOLVER_CANONNAME` flag. The
@@ -248,18 +249,24 @@ always be used for **address resolves** when **any** of the following are true:
 
 Secure DNS requests cannot be made using the system resolver.
 
-`net::HostResolverManager::ProcTask` uses a blocking
-[`base::TaskRunner`](/base/task_runner.h) to make blocking resolution requests.
+`net::HostResolverSystemTask` posts a blocking task to a
+[`base::ThreadPool`](/base/task/thread_pool.h) to make blocking resolution
+requests.
 On a timeout, additional attempts are made, but previous attempts are not
 cancelled as there is no cancellation mechanism for `getaddrinfo()`. The first
 attempt to complete is used and any other attempt completions are ignored.
 
-Each attempt calls [`net::HostResolverProc`](/net/dns/host_resolver_proc.h). In
-prod, this is always implemented by a `net::SystemHostResolverProc`, which makes
-the actual call to `getaddrinfo()` using the
-[`net::AddressInfo`](/net/dns/address_info.h) helper, but in tests, the
-`net::HostResolverProc` may be replaced by a chain of test implementations to
-override behavior.
+In prod, the blocking task runner always calls `SystemHostResolverCall()`, which
+makes the actual call to `getaddrinfo()` using the
+[`net::AddressInfo`](/net/dns/address_info.h) helper. In tests, the blocking
+task runner may use a test implementation of
+[`net::HostResolverProc`](/net/dns/host_resolver_proc.h), which itself can be
+chained.
+
+Data collected specifically for this source:
+
+* "Net.DNS.SystemTask.SuccessTime"
+* "Net.DNS.SystemTask.FailureTime"
 
 #### DNS
 

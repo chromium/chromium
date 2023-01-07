@@ -29,8 +29,10 @@
 
 def read_checksum(filehandle):
     # We expect the comment to be at the beginning of the file.
+    # TODO(crbug/1197331): This returns binary and caller needs to decode
+    # it as ascii encoding for now. should change it to text in future.
     data = filehandle.read(2048)
-    comment_key = 'tEXtchecksum\x00'
+    comment_key = b'tEXtchecksum\x00'
     comment_pos = data.find(comment_key)
     if comment_pos == -1:
         return

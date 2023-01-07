@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ void MimeSniffingThrottle::WillProcessResponse(
       response_head->headers->GetNormalizedHeader("x-content-type-options",
                                                   &content_type_options)) {
     blocked_sniffing_mime =
-        base::LowerCaseEqualsASCII(content_type_options, "nosniff");
+        base::EqualsCaseInsensitiveASCII(content_type_options, "nosniff");
   }
 
   if (!blocked_sniffing_mime &&
@@ -55,15 +55,18 @@ void MimeSniffingThrottle::WillProcessResponse(
     mojo::PendingRemote<network::mojom::URLLoader> source_loader;
     mojo::PendingReceiver<network::mojom::URLLoaderClient>
         source_client_receiver;
+    mojo::ScopedDataPipeConsumerHandle body;
     MimeSniffingURLLoader* mime_sniffing_loader;
     std::tie(new_remote, new_receiver, mime_sniffing_loader) =
         MimeSniffingURLLoader::CreateLoader(
             weak_factory_.GetWeakPtr(), response_url, response_head->Clone(),
             task_runner_ ? task_runner_ : base::ThreadTaskRunnerHandle::Get());
     delegate_->InterceptResponse(std::move(new_remote), std::move(new_receiver),
-                                 &source_loader, &source_client_receiver);
+                                 &source_loader, &source_client_receiver,
+                                 &body);
     mime_sniffing_loader->Start(std::move(source_loader),
-                                std::move(source_client_receiver));
+                                std::move(source_client_receiver),
+                                std::move(body));
   }
 }
 
@@ -72,8 +75,10 @@ const char* MimeSniffingThrottle::NameForLoggingWillProcessResponse() {
 }
 
 void MimeSniffingThrottle::ResumeWithNewResponseHead(
-    network::mojom::URLResponseHeadPtr new_response_head) {
-  delegate_->UpdateDeferredResponseHead(std::move(new_response_head));
+    network::mojom::URLResponseHeadPtr new_response_head,
+    mojo::ScopedDataPipeConsumerHandle body) {
+  delegate_->UpdateDeferredResponseHead(std::move(new_response_head),
+                                        std::move(body));
   delegate_->Resume();
 }
 

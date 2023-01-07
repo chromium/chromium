@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Base64 en/decoding. Not much to say here except that we
@@ -22,7 +14,7 @@ goog.provide('goog.crypt.base64');
 
 goog.require('goog.asserts');
 goog.require('goog.crypt');
-goog.require('goog.string');
+goog.require('goog.string.internal');
 goog.require('goog.userAgent');
 goog.require('goog.userAgent.product');
 
@@ -91,7 +83,8 @@ goog.crypt.base64.paddingChars_ = '=.';
  * @private
  */
 goog.crypt.base64.isPadding_ = function(char) {
-  return goog.string.contains(goog.crypt.base64.paddingChars_, char);
+  'use strict';
+  return goog.string.internal.contains(goog.crypt.base64.paddingChars_, char);
 };
 
 
@@ -126,9 +119,8 @@ goog.crypt.base64.charToByteMap_ = null;
  * removal in per-browser compilations.
  * @private {boolean}
  */
-goog.crypt.base64.ASSUME_NATIVE_SUPPORT_ = goog.userAgent.GECKO ||
-    (goog.userAgent.WEBKIT && !goog.userAgent.product.SAFARI) ||
-    goog.userAgent.OPERA;
+goog.crypt.base64.ASSUME_NATIVE_SUPPORT_ =
+    goog.userAgent.GECKO || goog.userAgent.WEBKIT;
 
 
 /**
@@ -162,6 +154,7 @@ goog.crypt.base64.HAS_NATIVE_DECODE_ =
  * @return {string} The base64 encoded string.
  */
 goog.crypt.base64.encodeByteArray = function(input, alphabet) {
+  'use strict';
   // Assert avoids runtime dependency on goog.isArrayLike, which helps reduce
   // size of jscompiler output, and which yields slight performance increase.
   goog.asserts.assert(
@@ -170,36 +163,47 @@ goog.crypt.base64.encodeByteArray = function(input, alphabet) {
   if (alphabet === undefined) {
     alphabet = goog.crypt.base64.Alphabet.DEFAULT;
   }
-
   goog.crypt.base64.init_();
 
-  var byteToCharMap = goog.crypt.base64.byteToCharMaps_[alphabet];
+  const byteToCharMap = goog.crypt.base64.byteToCharMaps_[alphabet];
+  const output = new Array(Math.floor(input.length / 3));
+  const paddingChar = byteToCharMap[64] || '';
 
-  var output = [];
+  // Add all blocks for which we have four output bytes.
+  let inputIdx = 0;
+  let outputIdx = 0;
+  for (; inputIdx < input.length - 2; inputIdx += 3) {
+    const byte1 = input[inputIdx];
+    const byte2 = input[inputIdx + 1];
+    const byte3 = input[inputIdx + 2];
 
-  for (var i = 0; i < input.length; i += 3) {
-    var byte1 = input[i];
-    var haveByte2 = i + 1 < input.length;
-    var byte2 = haveByte2 ? input[i + 1] : 0;
-    var haveByte3 = i + 2 < input.length;
-    var byte3 = haveByte3 ? input[i + 2] : 0;
+    const outChar1 = byteToCharMap[byte1 >> 2];
+    const outChar2 = byteToCharMap[((byte1 & 0x03) << 4) | (byte2 >> 4)];
+    const outChar3 = byteToCharMap[((byte2 & 0x0F) << 2) | (byte3 >> 6)];
+    const outChar4 = byteToCharMap[byte3 & 0x3F];
 
-    var outByte1 = byte1 >> 2;
-    var outByte2 = ((byte1 & 0x03) << 4) | (byte2 >> 4);
-    var outByte3 = ((byte2 & 0x0F) << 2) | (byte3 >> 6);
-    var outByte4 = byte3 & 0x3F;
+    output[outputIdx++] = ((('' + outChar1) + outChar2) + outChar3) + outChar4;
+  }
 
-    if (!haveByte3) {
-      outByte4 = 64;
+  // Add our trailing block, in which case we can skip computations relating to
+  // byte3/outByte4.
+  let byte2 = 0;
+  let outChar3 = paddingChar;
+  switch (input.length - inputIdx) {
+    case 2:
+      byte2 = input[inputIdx + 1];
+      outChar3 = byteToCharMap[(byte2 & 0x0F) << 2] || paddingChar;
+      // fall through.
+    case 1:
+      const byte1 = input[inputIdx];
+      const outChar1 = byteToCharMap[byte1 >> 2];
+      const outChar2 = byteToCharMap[((byte1 & 0x03) << 4) | (byte2 >> 4)];
 
-      if (!haveByte2) {
-        outByte3 = 64;
-      }
-    }
-
-    output.push(
-        byteToCharMap[outByte1], byteToCharMap[outByte2],
-        byteToCharMap[outByte3] || '', byteToCharMap[outByte4] || '');
+      output[outputIdx] =
+          ((('' + outChar1) + outChar2) + outChar3) + paddingChar;
+      // fall through.
+    default:
+      // We've ended on a block, so we have no more bytes to encode.
   }
 
   return output.join('');
@@ -215,6 +219,7 @@ goog.crypt.base64.encodeByteArray = function(input, alphabet) {
  * @return {string} The base64 encoded string.
  */
 goog.crypt.base64.encodeString = function(input, alphabet) {
+  'use strict';
   // Shortcut for browsers that implement
   // a native base64 encoder in the form of "btoa/atob"
   if (goog.crypt.base64.HAS_NATIVE_ENCODE_ && !alphabet) {
@@ -236,6 +241,7 @@ goog.crypt.base64.encodeString = function(input, alphabet) {
  * @return {string} string representing the decoded value.
  */
 goog.crypt.base64.decodeString = function(input, useCustomDecoder) {
+  'use strict';
   // Shortcut for browsers that implement
   // a native base64 encoder in the form of "btoa/atob"
   if (goog.crypt.base64.HAS_NATIVE_DECODE_ && !useCustomDecoder) {
@@ -269,8 +275,11 @@ goog.crypt.base64.decodeString = function(input, useCustomDecoder) {
  * @return {!Array<number>} bytes representing the decoded value.
  */
 goog.crypt.base64.decodeStringToByteArray = function(input, opt_ignored) {
+  'use strict';
   var output = [];
-  function pushByte(b) { output.push(b); }
+  function pushByte(b) {
+    output.push(b);
+  }
 
   goog.crypt.base64.decodeStringInternal_(input, pushByte);
 
@@ -297,6 +306,7 @@ goog.crypt.base64.decodeStringToByteArray = function(input, opt_ignored) {
  * @return {!Uint8Array} bytes representing the decoded value.
  */
 goog.crypt.base64.decodeStringToUint8Array = function(input) {
+  'use strict';
   goog.asserts.assert(
       !goog.userAgent.IE || goog.userAgent.isVersionOrHigher('10'),
       'Browser does not support typed arrays');
@@ -359,6 +369,7 @@ goog.crypt.base64.decodeStringToUint8Array = function(input) {
  * @private
  */
 goog.crypt.base64.decodeStringInternal_ = function(input, pushByte) {
+  'use strict';
   goog.crypt.base64.init_();
 
   var nextCharIndex = 0;
@@ -373,7 +384,7 @@ goog.crypt.base64.decodeStringInternal_ = function(input, pushByte) {
       if (b != null) {
         return b;  // Common case: decoded the char.
       }
-      if (!goog.string.isEmptyOrWhitespace(ch)) {
+      if (!goog.string.internal.isEmptyOrWhitespace(ch)) {
         throw new Error('Unknown base64 encoding at char: ' + ch);
       }
       // We encountered whitespace: loop around to the next input char.
@@ -422,6 +433,7 @@ goog.crypt.base64.decodeStringInternal_ = function(input, pushByte) {
  * @private
  */
 goog.crypt.base64.init_ = function() {
+  'use strict';
   if (goog.crypt.base64.charToByteMap_) {
     return;
   }

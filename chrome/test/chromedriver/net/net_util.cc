@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,16 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
-#include "base/sequenced_task_runner.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -57,7 +59,7 @@ class SyncUrlFetcher {
 
     loader_ = network::SimpleURLLoader::Create(std::move(request),
                                                TRAFFIC_ANNOTATION_FOR_TESTS);
-    loader_->SetTimeoutDuration(base::TimeDelta::FromSeconds(10));
+    loader_->SetTimeoutDuration(base::Seconds(10));
     loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory_, base::BindOnce(&SyncUrlFetcher::OnURLLoadComplete,
                                             base::Unretained(this)));
@@ -77,9 +79,9 @@ class SyncUrlFetcher {
 
  private:
   GURL url_;
-  network::mojom::URLLoaderFactory* url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
   const scoped_refptr<base::SequencedTaskRunner> network_task_runner_;
-  std::string* response_;
+  raw_ptr<std::string> response_;
   base::WaitableEvent event_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
   bool success_;

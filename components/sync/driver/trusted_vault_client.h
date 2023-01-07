@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
 struct CoreAccountInfo;
@@ -37,6 +35,10 @@ class TrustedVaultClient {
   };
 
   TrustedVaultClient() = default;
+
+  TrustedVaultClient(const TrustedVaultClient&) = delete;
+  TrustedVaultClient& operator=(const TrustedVaultClient&) = delete;
+
   virtual ~TrustedVaultClient() = default;
 
   // Adds/removes an observer.
@@ -46,8 +48,6 @@ class TrustedVaultClient {
   // Attempts to fetch decryption keys, required by sync to resume.
   // Implementations are expected to NOT prompt the user for actions. |cb| is
   // called on completion with known keys or an empty list if none known.
-  // Concurrent calls to FetchKeys() must not be issued since implementations
-  // may not support them.
   virtual void FetchKeys(
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
@@ -58,10 +58,12 @@ class TrustedVaultClient {
   // the provided keys are not up-to-date. |cb| is run upon completion and
   // returns false if the call did not make any difference (e.g. the operation
   // is unsupported) or true if some change may have occurred (which indicates a
-  // second FetchKeys() attempt is worth). Concurrent calls to MarkKeysAsStale()
-  // must not be issued since implementations may not support them.
-  virtual void MarkKeysAsStale(const CoreAccountInfo& account_info,
-                               base::OnceCallback<void(bool)> cb) = 0;
+  // second FetchKeys() attempt is worth). During the execution, before |cb| is
+  // invoked, the behavior is unspecified if FetchKeys() is invoked, that is,
+  // FetchKeys() may or may not treat existing keys as stale (only guaranteed
+  // upon completion of MarkLocalKeysAsStale()).
+  virtual void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
+                                    base::OnceCallback<void(bool)> cb) = 0;
 
   // Allows implementations to store encryption keys fetched by other means such
   // as Web interactions. Implementations are free to completely ignore these
@@ -70,11 +72,6 @@ class TrustedVaultClient {
   virtual void StoreKeys(const std::string& gaia_id,
                          const std::vector<std::vector<uint8_t>>& keys,
                          int last_key_version) = 0;
-
-  // Allows implementation to remove all previously stored keys.
-  // Implementations must erase all keys saved during StoreKeys() call. Used
-  // when accounts cookies deleted by the user action.
-  virtual void RemoveAllStoredKeys() = 0;
 
   // Returns whether recoverability of the keys is degraded and user action is
   // required to add a new method. This may be called frequently and
@@ -86,13 +83,17 @@ class TrustedVaultClient {
 
   // Registers a new trusted recovery method that can be used to retrieve keys,
   // usually for the purpose of resolving a recoverability-degraded case
-  // surfaced by GetIsRecoverabilityDegraded().
+  // surfaced by GetIsRecoverabilityDegraded(). |method_type_hint| is an opaque
+  // value provided server-side that may be used for related future
+  // interactions with the server.
   virtual void AddTrustedRecoveryMethod(const std::string& gaia_id,
                                         const std::vector<uint8_t>& public_key,
+                                        int method_type_hint,
                                         base::OnceClosure cb) = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TrustedVaultClient);
+  // Clears all data associated with |account_info|. Doesn't remove account from
+  // storage.
+  virtual void ClearDataForAccount(const CoreAccountInfo& account_info) = 0;
 };
 
 }  // namespace syncer

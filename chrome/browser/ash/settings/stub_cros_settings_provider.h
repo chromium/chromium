@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "chromeos/settings/cros_settings_provider.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/prefs/pref_value_map.h"
 
 namespace ash {
@@ -20,6 +19,10 @@ class StubCrosSettingsProvider : public CrosSettingsProvider {
  public:
   explicit StubCrosSettingsProvider(const NotifyObserversCallback& notify_cb);
   StubCrosSettingsProvider();
+
+  StubCrosSettingsProvider(const StubCrosSettingsProvider&) = delete;
+  StubCrosSettingsProvider& operator=(const StubCrosSettingsProvider&) = delete;
+
   ~StubCrosSettingsProvider() override;
 
   // CrosSettingsProvider implementation.
@@ -59,8 +62,6 @@ class StubCrosSettingsProvider : public CrosSettingsProvider {
 
   // Pending callbacks to invoke when switching away from TEMPORARILY_UNTRUSTED.
   std::vector<base::OnceClosure> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubCrosSettingsProvider);
 };
 
 }  // namespace ash

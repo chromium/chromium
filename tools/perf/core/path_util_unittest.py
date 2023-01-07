@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,5 +16,5 @@ class PathUtilTest(unittest.TestCase):
       sys_path_within_context = list(sys.path)
     sys_path_after = list(sys.path)
 
-    self.assertEquals(sys_path_before, sys_path_after)
-    self.assertEquals(sys_path_before + ['_test_dir'], sys_path_within_context)
+    self.assertEqual(sys_path_before, sys_path_after)
+    self.assertEqual(sys_path_before + ['_test_dir'], sys_path_within_context)

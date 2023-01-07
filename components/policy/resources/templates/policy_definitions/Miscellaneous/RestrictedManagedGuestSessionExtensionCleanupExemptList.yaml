@@ -1,0 +1,24 @@
+caption: Configure the list of extension IDs exempt from the restricted managed guest
+  session clean-up procedure
+desc: |-
+  The policy only applies to managed guest sessions.
+        Setting the policy specifies a list of extension IDs that are exempt from the restricted managed guest session clean-up procedure (see <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME">DeviceRestrictedManagedGuestSessionEnabled</ph>).
+        Leaving the policy unset means no extensions are exempt from the reset procedure.
+example_value:
+- abcdefghijklmnopabcdefghijklmnop
+- bcdefghijklmnopabcdefghijklmnopa
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- mpetrisor@chromium.org
+- hendrich@chromium.org
+schema:
+  items:
+    pattern: ^[a-p]{32}$
+    type: string
+  type: array
+supported_on:
+- chrome_os:96-
+tags: []
+type: list

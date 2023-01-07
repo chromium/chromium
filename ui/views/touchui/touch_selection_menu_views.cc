@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,16 @@
 #include <memory>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/check.h"
+#include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -23,7 +28,7 @@
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/views_features.h"
 
 namespace views {
 namespace {
@@ -35,6 +40,7 @@ struct MenuCommand {
     {ui::TouchEditable::kCut, IDS_APP_CUT},
     {ui::TouchEditable::kCopy, IDS_APP_COPY},
     {ui::TouchEditable::kPaste, IDS_APP_PASTE},
+    {ui::TouchEditable::kSelectAll, IDS_APP_SELECT_ALL},
 };
 
 constexpr int kSpacingBetweenButtons = 2;
@@ -43,7 +49,7 @@ constexpr int kSpacingBetweenButtons = 2;
 
 TouchSelectionMenuViews::TouchSelectionMenuViews(
     TouchSelectionMenuRunnerViews* owner,
-    ui::TouchSelectionMenuClient* client,
+    base::WeakPtr<ui::TouchSelectionMenuClient> client,
     aura::Window* context)
     : BubbleDialogDelegateView(nullptr, BubbleBorder::BOTTOM_CENTER),
       owner_(owner),
@@ -80,7 +86,8 @@ void TouchSelectionMenuViews::ShowMenu(const gfx::Rect& anchor_rect,
   // |anchor_rect| plus the handle image height instead of |handle_image_size|.
   // Perhaps we should also allow for some minimum padding.
   if (menu_width > anchor_rect.width() - handle_image_size.width())
-    adjusted_anchor_rect.Inset(0, 0, 0, -handle_image_size.height());
+    adjusted_anchor_rect.Inset(
+        gfx::Insets::TLBR(0, 0, -handle_image_size.height(), 0));
   SetAnchorRect(adjusted_anchor_rect);
 
   BubbleDialogDelegateView::CreateBubble(this);
@@ -97,7 +104,10 @@ void TouchSelectionMenuViews::ShowMenu(const gfx::Rect& anchor_rect,
   // invokes widget->StackAbove(context). That causes the bubble to stack
   // _immediately_ above |context|; below any already-existing bubbles. That
   // doesn't make sense for a menu, so put it back on top.
-  widget->StackAtTop();
+  if (base::FeatureList::IsEnabled(features::kWidgetLayering))
+    widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+  else
+    widget->StackAtTop();
   widget->Show();
 }
 
@@ -108,8 +118,7 @@ bool TouchSelectionMenuViews::IsMenuAvailable(
   const auto is_enabled = [client](MenuCommand command) {
     return client->IsCommandIdEnabled(command.command_id);
   };
-  return std::any_of(std::cbegin(kMenuCommands), std::cend(kMenuCommands),
-                     is_enabled);
+  return base::ranges::any_of(kMenuCommands, is_enabled);
 }
 
 void TouchSelectionMenuViews::CloseMenu() {
@@ -123,6 +132,7 @@ void TouchSelectionMenuViews::CloseMenu() {
 TouchSelectionMenuViews::~TouchSelectionMenuViews() = default;
 
 void TouchSelectionMenuViews::CreateButtons() {
+  DCHECK(client_);
   for (const auto& command : kMenuCommands) {
     if (client_->IsCommandIdEnabled(command.command_id)) {
       CreateButton(
@@ -133,12 +143,9 @@ void TouchSelectionMenuViews::CreateButtons() {
   }
 
   // Finally, add ellipsis button.
-  CreateButton(u"...", base::BindRepeating(
-                           [](TouchSelectionMenuViews* menu) {
-                             menu->CloseMenu();
-                             menu->client_->RunContextMenu();
-                           },
-                           base::Unretained(this)))
+  CreateButton(u"...",
+               base::BindRepeating(&TouchSelectionMenuViews::EllipsisPressed,
+                                   base::Unretained(this)))
       ->SetID(ButtonViewId::kEllipsisButton);
   InvalidateLayout();
 }
@@ -171,8 +178,7 @@ void TouchSelectionMenuViews::OnPaint(gfx::Canvas* canvas) {
     const View* child = *i;
     int x = child->bounds().right() + kSpacingBetweenButtons / 2;
     canvas->FillRect(gfx::Rect(x, 0, 1, child->height()),
-                     GetNativeTheme()->GetSystemColor(
-                         ui::NativeTheme::kColorId_SeparatorColor));
+                     GetColorProvider()->GetColor(ui::kColorSeparator));
   }
 }
 
@@ -185,8 +191,15 @@ void TouchSelectionMenuViews::WindowClosing() {
 
 void TouchSelectionMenuViews::ButtonPressed(int command,
                                             const ui::Event& event) {
+  DCHECK(client_);
   CloseMenu();
   client_->ExecuteCommand(command, event.flags());
+}
+
+void TouchSelectionMenuViews::EllipsisPressed(const ui::Event& event) {
+  DCHECK(client_);
+  CloseMenu();
+  client_->RunContextMenu();
 }
 
 BEGIN_METADATA(TouchSelectionMenuViews, BubbleDialogDelegateView)

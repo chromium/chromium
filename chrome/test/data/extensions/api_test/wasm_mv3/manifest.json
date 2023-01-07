@@ -1,0 +1,13 @@
+{
+  "name": "Hello, WebAssembly!",
+  "description": "Verify usage of wasm in MV3",
+  "version": "0.1",
+  "manifest_version": 3,
+  "content_security_policy":{
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "background": {
+    "service_worker": "service_worker.js",
+    "type": "module"
+  }
+}

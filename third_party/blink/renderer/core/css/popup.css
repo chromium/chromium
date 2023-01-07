@@ -1,0 +1,37 @@
+/*
+ * Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * The default style sheet used to render elements with a `popup`
+ * content attribute (with HTMLPopupAttribute feature enabled).
+ */
+
+@namespace "http://www.w3.org/1999/xhtml";
+
+[popup]:not(:-internal-popup-opening-or-open,dialog[open]) {
+  display:none;
+}
+
+[popup] {
+  position: fixed;
+  inset: 0;
+  width: fit-content;
+  height: fit-content;
+  margin: auto;
+  border: solid;
+  padding: 0.25em;
+  overflow: auto;
+  color: CanvasText;
+  background-color: Canvas;
+}
+
+[popup]:open::backdrop {
+  /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
+  position: fixed;
+  inset: 0;
+  /* Specific to [popup]: */
+  pointer-events: none !important;
+  /* https://github.com/openui/open-ui/issues/561#issuecomment-1242297093 */
+  background-color: transparent;
+}

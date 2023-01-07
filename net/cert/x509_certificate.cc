@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,11 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -27,19 +27,18 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "net/cert/asn1_util.h"
-#include "net/cert/internal/cert_errors.h"
-#include "net/cert/internal/name_constraints.h"
-#include "net/cert/internal/parsed_certificate.h"
-#include "net/cert/internal/signature_algorithm.h"
-#include "net/cert/internal/verify_name_match.h"
-#include "net/cert/internal/verify_signed_data.h"
 #include "net/cert/pem.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/name_constraints.h"
+#include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/signature_algorithm.h"
+#include "net/cert/pki/verify_name_match.h"
+#include "net/cert/pki/verify_signed_data.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
 #include "net/der/parser.h"
 #include "net/dns/dns_util.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/pkcs7.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 #include "url/url_canon.h"
@@ -79,8 +78,8 @@ void SplitOnChar(const base::StringPiece& src,
 
 // Sets |value| to the Value from a DER Sequence Tag-Length-Value and return
 // true, or return false if the TLV was not a valid DER Sequence.
-WARN_UNUSED_RESULT bool ParseSequenceValue(const der::Input& tlv,
-                                           der::Input* value) {
+[[nodiscard]] bool ParseSequenceValue(const der::Input& tlv,
+                                      der::Input* value) {
   der::Parser parser(tlv);
   return parser.ReadTag(der::kSequence, value) && !parser.HasMore();
 }
@@ -112,31 +111,6 @@ bool GetNormalizedCertIssuer(CRYPTO_BUFFER* cert,
   return NormalizeName(issuer_value, out_normalized_issuer, &errors);
 }
 
-// Parses certificates from a PKCS#7 SignedData structure, appending them to
-// |handles|.
-void CreateCertBuffersFromPKCS7Bytes(
-    const char* data,
-    size_t length,
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>* handles) {
-  crypto::EnsureOpenSSLInit();
-  crypto::OpenSSLErrStackTracer err_cleaner(FROM_HERE);
-
-  CBS der_data;
-  CBS_init(&der_data, reinterpret_cast<const uint8_t*>(data), length);
-  STACK_OF(CRYPTO_BUFFER)* certs = sk_CRYPTO_BUFFER_new_null();
-
-  if (PKCS7_get_raw_certificates(certs, &der_data,
-                                 x509_util::GetBufferPool())) {
-    for (size_t i = 0; i < sk_CRYPTO_BUFFER_num(certs); ++i) {
-      handles->push_back(
-          bssl::UniquePtr<CRYPTO_BUFFER>(sk_CRYPTO_BUFFER_value(certs, i)));
-    }
-  }
-  // |handles| took ownership of the individual buffers, so only free the list
-  // itself.
-  sk_CRYPTO_BUFFER_free(certs);
-}
-
 }  // namespace
 
 // static
@@ -144,7 +118,7 @@ scoped_refptr<X509Certificate> X509Certificate::CreateFromBuffer(
     bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer,
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates) {
   DCHECK(cert_buffer);
-  scoped_refptr<X509Certificate> cert(
+  auto cert = base::WrapRefCounted(
       new X509Certificate(std::move(cert_buffer), std::move(intermediates)));
   if (!cert->cert_buffer())
     return nullptr;  // Initialize() failed.
@@ -157,7 +131,7 @@ scoped_refptr<X509Certificate> X509Certificate::CreateFromBufferUnsafeOptions(
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates,
     UnsafeCreateOptions options) {
   DCHECK(cert_buffer);
-  scoped_refptr<X509Certificate> cert(new X509Certificate(
+  auto cert = base::WrapRefCounted(new X509Certificate(
       std::move(cert_buffer), std::move(intermediates), options));
   if (!cert->cert_buffer())
     return nullptr;  // Initialize() failed.
@@ -183,7 +157,7 @@ X509Certificate::CreateFromDERCertChainUnsafeOptions(
   intermediate_ca_certs.reserve(der_certs.size() - 1);
   for (size_t i = 1; i < der_certs.size(); i++) {
     bssl::UniquePtr<CRYPTO_BUFFER> handle = CreateCertBufferFromBytes(
-        const_cast<char*>(der_certs[i].data()), der_certs[i].size());
+        base::as_bytes(base::make_span(der_certs[i])));
     if (!handle)
       break;
     intermediate_ca_certs.push_back(std::move(handle));
@@ -193,8 +167,8 @@ X509Certificate::CreateFromDERCertChainUnsafeOptions(
   if (der_certs.size() - 1 != intermediate_ca_certs.size())
     return nullptr;
 
-  bssl::UniquePtr<CRYPTO_BUFFER> handle = CreateCertBufferFromBytes(
-      const_cast<char*>(der_certs[0].data()), der_certs[0].size());
+  bssl::UniquePtr<CRYPTO_BUFFER> handle =
+      CreateCertBufferFromBytes(base::as_bytes(base::make_span(der_certs[0])));
   if (!handle)
     return nullptr;
 
@@ -204,18 +178,15 @@ X509Certificate::CreateFromDERCertChainUnsafeOptions(
 
 // static
 scoped_refptr<X509Certificate> X509Certificate::CreateFromBytes(
-    const char* data,
-    size_t length) {
-  return CreateFromBytesUnsafeOptions(data, length, {});
+    base::span<const uint8_t> data) {
+  return CreateFromBytesUnsafeOptions(data, {});
 }
 
 // static
 scoped_refptr<X509Certificate> X509Certificate::CreateFromBytesUnsafeOptions(
-    const char* data,
-    size_t length,
+    base::span<const uint8_t> data,
     UnsafeCreateOptions options) {
-  bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
-      CreateCertBufferFromBytes(data, length);
+  bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer = CreateCertBufferFromBytes(data);
   if (!cert_buffer)
     return nullptr;
 
@@ -234,32 +205,32 @@ scoped_refptr<X509Certificate> X509Certificate::CreateFromPickle(
 scoped_refptr<X509Certificate> X509Certificate::CreateFromPickleUnsafeOptions(
     base::PickleIterator* pickle_iter,
     UnsafeCreateOptions options) {
-  int chain_length = 0;
+  size_t chain_length = 0;
   if (!pickle_iter->ReadLength(&chain_length))
     return nullptr;
 
   std::vector<base::StringPiece> cert_chain;
   const char* data = nullptr;
-  int data_length = 0;
-  for (int i = 0; i < chain_length; ++i) {
+  size_t data_length = 0;
+  for (size_t i = 0; i < chain_length; ++i) {
     if (!pickle_iter->ReadData(&data, &data_length))
       return nullptr;
-    cert_chain.push_back(base::StringPiece(data, data_length));
+    cert_chain.emplace_back(data, data_length);
   }
   return CreateFromDERCertChainUnsafeOptions(cert_chain, options);
 }
 
 // static
 CertificateList X509Certificate::CreateCertificateListFromBytes(
-    const char* data,
-    size_t length,
+    base::span<const uint8_t> data,
     int format) {
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certificates;
 
   // Check to see if it is in a PEM-encoded form. This check is performed
   // first, as both OS X and NSS will both try to convert if they detect
   // PEM encoding, except they don't do it consistently between the two.
-  base::StringPiece data_string(data, length);
+  base::StringPiece data_string(reinterpret_cast<const char*>(data.data()),
+                                data.size());
   std::vector<std::string> pem_headers;
 
   // To maintain compatibility with NSS/Firefox, CERTIFICATE is a universally
@@ -273,8 +244,10 @@ CertificateList X509Certificate::CreateCertificateListFromBytes(
     std::string decoded(pem_tokenizer.data());
 
     bssl::UniquePtr<CRYPTO_BUFFER> handle;
-    if (format & FORMAT_PEM_CERT_SEQUENCE)
-      handle = CreateCertBufferFromBytes(decoded.c_str(), decoded.size());
+    if (format & FORMAT_PEM_CERT_SEQUENCE) {
+      handle =
+          CreateCertBufferFromBytes(base::as_bytes(base::make_span(decoded)));
+    }
     if (handle) {
       // Parsed a DER encoded certificate. All PEM blocks that follow must
       // also be DER encoded certificates wrapped inside of PEM blocks.
@@ -288,10 +261,11 @@ CertificateList X509Certificate::CreateCertificateListFromBytes(
     // data is one of the accepted formats.
     if (format & ~FORMAT_PEM_CERT_SEQUENCE) {
       for (size_t i = 0;
-           certificates.empty() && i < base::size(kFormatDecodePriority); ++i) {
+           certificates.empty() && i < std::size(kFormatDecodePriority); ++i) {
         if (format & kFormatDecodePriority[i]) {
           certificates = CreateCertBuffersFromBytes(
-              decoded.c_str(), decoded.size(), kFormatDecodePriority[i]);
+              base::as_bytes(base::make_span(decoded)),
+              kFormatDecodePriority[i]);
         }
       }
     }
@@ -307,10 +281,9 @@ CertificateList X509Certificate::CreateCertificateListFromBytes(
   // contains the binary representation of a Format, if it failed to parse
   // as a PEM certificate/chain.
   for (size_t i = 0;
-       certificates.empty() && i < base::size(kFormatDecodePriority); ++i) {
+       certificates.empty() && i < std::size(kFormatDecodePriority); ++i) {
     if (format & kFormatDecodePriority[i])
-      certificates =
-          CreateCertBuffersFromBytes(data, length, kFormatDecodePriority[i]);
+      certificates = CreateCertBuffersFromBytes(data, kFormatDecodePriority[i]);
   }
 
   CertificateList results;
@@ -365,15 +338,15 @@ bool X509Certificate::GetSubjectAltName(
                            x509_util::DefaultParseCertificateOptions(), &tbs,
                            nullptr))
     return false;
-  if (!tbs.has_extensions)
+  if (!tbs.extensions_tlv)
     return false;
 
   std::map<der::Input, ParsedExtension> extensions;
-  if (!ParseExtensions(tbs.extensions_tlv, &extensions))
+  if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions))
     return false;
 
   ParsedExtension subject_alt_names_extension;
-  if (!ConsumeExtension(SubjectAltNameOid(), &extensions,
+  if (!ConsumeExtension(der::Input(kSubjectAltNameOid), &extensions,
                         &subject_alt_names_extension)) {
     return false;
   }
@@ -552,7 +525,6 @@ bool X509Certificate::VerifyHostname(
     // Catch badly corrupt cert names up front.
     if (cert_san_dns_name.empty() ||
         cert_san_dns_name.find('\0') != std::string::npos) {
-      DVLOG(1) << "Bad name in cert: " << cert_san_dns_name;
       continue;
     }
     std::string presented_name(base::ToLowerASCII(cert_san_dns_name));
@@ -616,8 +588,8 @@ bool X509Certificate::GetPEMEncodedChain(
   if (!GetPEMEncoded(cert_buffer(), &pem_data))
     return false;
   encoded_chain.push_back(pem_data);
-  for (size_t i = 0; i < intermediate_ca_certs_.size(); ++i) {
-    if (!GetPEMEncoded(intermediate_ca_certs_[i].get(), &pem_data))
+  for (const auto& intermediate_ca_cert : intermediate_ca_certs_) {
+    if (!GetPEMEncoded(intermediate_ca_cert.get(), &pem_data))
       return false;
     encoded_chain.push_back(pem_data);
   }
@@ -649,7 +621,7 @@ void X509Certificate::GetPublicKeyInfo(const CRYPTO_BUFFER* cert_buffer,
   if (!pkey)
     return;
 
-  switch (pkey->type) {
+  switch (EVP_PKEY_id(pkey.get())) {
     case EVP_PKEY_RSA:
       *type = kPublicKeyTypeRSA;
       break;
@@ -668,42 +640,37 @@ void X509Certificate::GetPublicKeyInfo(const CRYPTO_BUFFER* cert_buffer,
 
 // static
 bssl::UniquePtr<CRYPTO_BUFFER> X509Certificate::CreateCertBufferFromBytes(
-    const char* data,
-    size_t length) {
+    base::span<const uint8_t> data) {
   der::Input tbs_certificate_tlv;
   der::Input signature_algorithm_tlv;
   der::BitString signature_value;
   // Do a bare minimum of DER parsing here to make sure the input is not
   // completely crazy. (This is required for at least
   // CreateCertificateListFromBytes with FORMAT_AUTO, if not more.)
-  if (!ParseCertificate(
-          der::Input(reinterpret_cast<const uint8_t*>(data), length),
-          &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
-          nullptr)) {
+  if (!ParseCertificate(der::Input(data.data(), data.size()),
+                        &tbs_certificate_tlv, &signature_algorithm_tlv,
+                        &signature_value, nullptr)) {
     return nullptr;
   }
 
-  return x509_util::CreateCryptoBuffer(reinterpret_cast<const uint8_t*>(data),
-                                       length);
+  return x509_util::CreateCryptoBuffer(data);
 }
 
 // static
 std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>
-X509Certificate::CreateCertBuffersFromBytes(const char* data,
-                                            size_t length,
+X509Certificate::CreateCertBuffersFromBytes(base::span<const uint8_t> data,
                                             Format format) {
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> results;
 
   switch (format) {
     case FORMAT_SINGLE_CERTIFICATE: {
-      bssl::UniquePtr<CRYPTO_BUFFER> handle =
-          CreateCertBufferFromBytes(data, length);
+      bssl::UniquePtr<CRYPTO_BUFFER> handle = CreateCertBufferFromBytes(data);
       if (handle)
         results.push_back(std::move(handle));
       break;
     }
     case FORMAT_PKCS7: {
-      CreateCertBuffersFromPKCS7Bytes(data, length, &results);
+      x509_util::CreateCertBuffersFromPKCS7Bytes(data, &results);
       break;
     }
     default: {
@@ -776,8 +743,9 @@ bool X509Certificate::IsSelfSigned(const CRYPTO_BUFFER* cert_buffer) {
   if (normalized_subject != normalized_issuer)
     return false;
 
-  std::unique_ptr<SignatureAlgorithm> signature_algorithm =
-      SignatureAlgorithm::Create(signature_algorithm_tlv, nullptr /* errors */);
+  absl::optional<SignatureAlgorithm> signature_algorithm =
+      ParseSignatureAlgorithm(signature_algorithm_tlv,
+                              /*errors=*/nullptr);
   if (!signature_algorithm)
     return false;
 

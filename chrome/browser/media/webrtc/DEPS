@@ -6,6 +6,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "chrome_screen_enumerator\.cc": [
+    "+ash/shell.h",
+  ],
   "desktop_capture_access_handler\.cc": [
     "+ash/shell.h",
   ],
@@ -13,7 +16,10 @@ specific_include_rules = {
     "+ash/shell.h",
     "+ash/wm/desks/desks_util.h",
   ],
-  "media_capture_devices_dispatcher\.cc": [
+  "media_stream_focus_delegate.cc": [
+    "+modules/desktop_capture/desktop_capture_options.h",
+  ],
+  "get_display_media_set_browsertest\.cc": [
     "+ash/shell.h",
   ],
   ".*_unittest\.cc": [

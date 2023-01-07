@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+// The NavigationApiHistoryEntry contains a subset of a session history item
+// that is used by the window.navigation API to represent a non-current history
+// entry. The browser ensures that a NavigationApiHistoryEntry is only sent to
+// the renderer if its |url| is same-origin to the navigation being committed.
+struct NavigationApiHistoryEntry {
+  mojo_base.mojom.String16 key;
+  mojo_base.mojom.String16 id;
+  // |url| is represented as a string rather than a url.mojom.Url in keeping
+  // with the FrameState mojo struct doing so (from which |url| is derived).
+  mojo_base.mojom.String16 url;
+  int64 item_sequence_number;
+  int64 document_sequence_number;
+  mojo_base.mojom.String16? state;
+};
+
+// A same-origin subset of the back/forward list exposed by the
+// window.navigation API.
+struct NavigationApiHistoryEntryArrays {
+  array<NavigationApiHistoryEntry> back_entries;
+  array<NavigationApiHistoryEntry> forward_entries;
+};

@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/core/svg/svg_path_query.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_point_tear_off.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -81,6 +81,7 @@ SVGPointTearOff* SVGPathElement::getPointAtLength(
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
+  EnsureComputedStyle();
   const SVGPathByteStream& byte_stream = PathByteStream();
   if (byte_stream.IsEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -96,7 +97,7 @@ SVGPointTearOff* SVGPathElement::getPointAtLength(
     if (length > computed_length)
       length = computed_length;
   }
-  FloatPoint point = path_query.GetPointAtLength(length);
+  gfx::PointF point = path_query.GetPointAtLength(length);
   return SVGPointTearOff::CreateDetached(point);
 }
 
@@ -154,7 +155,7 @@ void SVGPathElement::RemovedFrom(ContainerNode& root_parent) {
   InvalidateMPathDependencies();
 }
 
-FloatRect SVGPathElement::GetBBox() {
+gfx::RectF SVGPathElement::GetBBox() {
   // We want the exact bounds.
   return SVGPathElement::AsPath().TightBoundingRect();
 }

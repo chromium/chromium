@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,12 +47,11 @@ void ThinWebView::Destroy(JNIEnv* env, const JavaParamRef<jobject>& object) {
   delete this;
 }
 
-void ThinWebView::DocumentAvailableInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void ThinWebView::PrimaryPageChanged(content::Page& page) {
   // Disable browser controls when used for thin webview.
-  web_contents_->GetMainFrame()->UpdateBrowserControlsState(
-      cc::BrowserControlsState::kHidden, cc::BrowserControlsState::kHidden,
-      false);
+  web_contents_->UpdateBrowserControlsState(cc::BrowserControlsState::kHidden,
+                                            cc::BrowserControlsState::kHidden,
+                                            false);
 }
 
 void ThinWebView::SetWebContents(

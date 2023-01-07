@@ -1,0 +1,6 @@
+include_rules = [
+  # //chrome/browser/ui/quick_answers will contain implementation supporting
+  # both ash and Lacros browser.
+  "+ash",
+  "+content/browser/speech",
+]

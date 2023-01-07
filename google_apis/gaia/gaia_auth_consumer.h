@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,30 +12,10 @@
 class GoogleServiceAuthError;
 class OAuthMultiloginResult;
 
-typedef std::map<std::string, std::string> UserInfoMap;
-
 // An interface that defines the callbacks for objects that
 // GaiaAuthFetcher can return data to.
 class GaiaAuthConsumer {
  public:
-  struct ClientLoginResult {
-    ClientLoginResult();
-    ClientLoginResult(const std::string& new_sid,
-                      const std::string& new_lsid,
-                      const std::string& new_token,
-                      const std::string& new_data);
-    ClientLoginResult(const ClientLoginResult& other);
-    ~ClientLoginResult();
-
-    bool operator==(const ClientLoginResult &b) const;
-
-    std::string sid;
-    std::string lsid;
-    std::string token;
-    // TODO(chron): Remove the data field later. Don't use it if possible.
-    std::string data;  // Full contents of ClientLogin return.
-  };
-
   struct ClientOAuthResult {
     ClientOAuthResult(const std::string& new_refresh_token,
                       const std::string& new_access_token,
@@ -65,30 +45,25 @@ class GaiaAuthConsumer {
   };
 
   // Possible server responses to a token revocation request.
-  // Used in UMA, do not delete or reorder values.
   enum class TokenRevocationStatus {
     // Token revocation succeeded.
-    kSuccess = 0,
+    kSuccess,
     // Network connection was canceled, no response was received.
-    kConnectionCanceled = 1,
+    kConnectionCanceled,
     // Network connection failed, no response was received.
-    kConnectionFailed = 2,
+    kConnectionFailed,
     // Network connection timed out, no response was received.
-    kConnectionTimeout = 3,
+    kConnectionTimeout,
     // The token is unknown or invalid.
-    kInvalidToken = 4,
+    kInvalidToken,
     // The request was malformed.
-    kInvalidRequest = 5,
+    kInvalidRequest,
     // Internal server error.
-    kServerError = 6,
+    kServerError,
     // Other error.
-    kUnknownError = 7,
-
-    kMaxValue = kUnknownError
+    kUnknownError,
   };
 
-  // Used in UMA, do not delete or reorder values.
-  // Update enums.xml when adding entries.
   enum class ReAuthProofTokenStatus : int {
     // Successful request: used only to control FakeGaia response.
     kSuccess = 0,
@@ -105,24 +80,16 @@ class GaiaAuthConsumer {
     // A network error.
     kNetworkError = 6,
     // Other error.
-    kUnknownError = 7,
-
-    kMaxValue = kUnknownError
+    kUnknownError = 7
   };
 
   virtual ~GaiaAuthConsumer() {}
-
-  virtual void OnClientLoginSuccess(const ClientLoginResult& result) {}
-  virtual void OnClientLoginFailure(const GoogleServiceAuthError& error) {}
 
   virtual void OnClientOAuthCode(const std::string& auth_code) {}
   virtual void OnClientOAuthSuccess(const ClientOAuthResult& result) {}
   virtual void OnClientOAuthFailure(const GoogleServiceAuthError& error) {}
 
   virtual void OnOAuth2RevokeTokenCompleted(TokenRevocationStatus status) {}
-
-  virtual void OnGetUserInfoSuccess(const UserInfoMap& data) {}
-  virtual void OnGetUserInfoFailure(const GoogleServiceAuthError& error) {}
 
   virtual void OnUberAuthTokenSuccess(const std::string& token) {}
   virtual void OnUberAuthTokenFailure(const GoogleServiceAuthError& error) {}

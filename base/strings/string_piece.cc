@@ -1,15 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Copied from strings/stringpiece.cc with modifications
 
 #include "base/strings/string_piece.h"
 
-#include <limits.h>
-#include <string.h>
-
 #include <algorithm>
+#include <climits>
+#include <limits>
 #include <ostream>
+#include <string>
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -57,10 +56,8 @@ std::ostream& operator<<(std::ostream& o, WStringPiece piece) {
 
 namespace internal {
 
-template <typename CharT>
-size_t findT(BasicStringPiece<CharT> self,
-             BasicStringPiece<CharT> s,
-             size_t pos) {
+template <typename T, typename CharT = typename T::value_type>
+size_t findT(T self, T s, size_t pos) {
   if (pos > self.size())
     return BasicStringPiece<CharT>::npos;
 
@@ -79,10 +76,8 @@ size_t find(StringPiece16 self, StringPiece16 s, size_t pos) {
   return findT(self, s, pos);
 }
 
-template <typename CharT>
-size_t rfindT(BasicStringPiece<CharT> self,
-              BasicStringPiece<CharT> s,
-              size_t pos) {
+template <typename T, typename CharT = typename T::value_type>
+size_t rfindT(T self, T s, size_t pos) {
   if (self.size() < s.size())
     return BasicStringPiece<CharT>::npos;
 
@@ -125,10 +120,8 @@ size_t find_first_of(StringPiece self, StringPiece s, size_t pos) {
 }
 
 // Generic brute force version.
-template <typename CharT>
-size_t find_first_ofT(BasicStringPiece<CharT> self,
-                      BasicStringPiece<CharT> s,
-                      size_t pos) {
+template <typename T, typename CharT = typename T::value_type>
+size_t find_first_ofT(T self, T s, size_t pos) {
   // Use the faster std::find() if searching for a single character.
   typename BasicStringPiece<CharT>::const_iterator found =
       s.size() == 1 ? std::find(self.begin() + pos, self.end(), s[0])
@@ -136,7 +129,7 @@ size_t find_first_ofT(BasicStringPiece<CharT> self,
                                          s.begin(), s.end());
   if (found == self.end())
     return BasicStringPiece<CharT>::npos;
-  return found - self.begin();
+  return static_cast<size_t>(found - self.begin());
 }
 
 size_t find_first_of(StringPiece16 self, StringPiece16 s, size_t pos) {
@@ -145,11 +138,11 @@ size_t find_first_of(StringPiece16 self, StringPiece16 s, size_t pos) {
 
 // 8-bit version using lookup table.
 size_t find_first_not_of(StringPiece self, StringPiece s, size_t pos) {
-  if (self.size() == 0)
+  if (pos >= self.size())
     return StringPiece::npos;
 
   if (s.size() == 0)
-    return 0;
+    return pos;
 
   // Avoid the cost of BuildLookupTable() for a single-character search.
   if (s.size() == 1)
@@ -166,10 +159,8 @@ size_t find_first_not_of(StringPiece self, StringPiece s, size_t pos) {
 }
 
 // Generic brute-force version.
-template <typename CharT>
-size_t find_first_not_ofT(BasicStringPiece<CharT> self,
-                          BasicStringPiece<CharT> s,
-                          size_t pos) {
+template <typename T, typename CharT = typename T::value_type>
+size_t find_first_not_ofT(T self, T s, size_t pos) {
   if (self.size() == 0)
     return BasicStringPiece<CharT>::npos;
 
@@ -212,10 +203,8 @@ size_t find_last_of(StringPiece self, StringPiece s, size_t pos) {
 }
 
 // Generic brute-force version.
-template <typename CharT>
-size_t find_last_ofT(BasicStringPiece<CharT> self,
-                     BasicStringPiece<CharT> s,
-                     size_t pos) {
+template <typename T, typename CharT = typename T::value_type>
+size_t find_last_ofT(T self, T s, size_t pos) {
   if (self.size() == 0)
     return BasicStringPiece<CharT>::npos;
 
@@ -260,10 +249,8 @@ size_t find_last_not_of(StringPiece self, StringPiece s, size_t pos) {
 }
 
 // Generic brute-force version.
-template <typename CharT>
-size_t find_last_not_ofT(BasicStringPiece<CharT> self,
-                         BasicStringPiece<CharT> s,
-                         size_t pos) {
+template <typename T, typename CharT = typename T::value_type>
+size_t find_last_not_ofT(T self, T s, size_t pos) {
   if (self.size() == 0)
     return StringPiece::npos;
 

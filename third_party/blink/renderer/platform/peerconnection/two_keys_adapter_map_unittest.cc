@@ -1,10 +1,9 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/peerconnection/two_keys_adapter_map.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -22,8 +21,6 @@ class TwoKeysAdapterMapTest : public ::testing::Test {
     }
 
     String str;
-
-    DISALLOW_COPY_AND_ASSIGN(MoveOnlyValue);
   };
 
   TwoKeysAdapterMap<String, String, MoveOnlyValue> map_;

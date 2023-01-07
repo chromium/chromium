@@ -1,0 +1,128 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module auction_worklet.mojom;
+
+import "content/services/auction_worklet/public/mojom/bidder_worklet.mojom";
+import "content/services/auction_worklet/public/mojom/seller_worklet.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+import "services/network/public/mojom/url_loader_factory.mojom";
+import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+struct BrowserSignals {
+  url.mojom.Origin top_frame_origin;
+  url.mojom.Origin seller;
+};
+
+// Used by the browser to load and run FLEDGE worklets. This can run in a
+// sandboxed utility process (non-Android) or inside a regular renderer
+// (Android).
+// See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+[ServiceSandbox=sandbox.mojom.Sandbox.kServiceWithJit]
+interface AuctionWorkletService {
+  // Attempts to load Javascript at the specified URL and create a BidderWorklet
+  // from the response body. A single BidderWorklet object can be used for
+  // multiple different InterestGroups, as long as they share the `bidding_url`
+  // `wasm_helper_url`, and `trusted_scoring_signals_url` that were passed in
+  // when creating the BidderWorklet. A single BidderWorklet can be used in
+  // multiple auctions as long as they share a `top_window_origin`. In practice,
+  // the DevTools hooks restrict sharing to auctions within a single
+  // RenderFrame.
+  //
+  // All methods may be invoked immediately upon creation. If there's a pending
+  // load of the script, callbacks will be delayed until it completes.
+  //
+  // On load error, the worklet will close its pipe with a reason string. The
+  // reason string, and worklet errors messages more generally, are considered
+  // privileged and should not be passed to renderer processes.
+  //
+  // Arguments:
+  // `bidder_worklet` The pipe to communicate with the BidderWorklet. Closing
+  //  the pipe will abort any in-progress loads and destroy the worklet.
+  //
+  // `pause_for_debugger_on_start` If this is true, the worklet should not
+  //  commence any work until it gets a Runtime.runIfWaitingForDebugger debugger
+  //  command.
+  //
+  // `url_loader_factory` The URLLoaderFactory used to load the worklet script
+  //  and trusted bidding signals. It's recommended that the implementation be
+  //  restricted to exactly those URLs (keeping in mind query parameter usage
+  //  for trusted bidding signals and the allowed coalescing).
+  //
+  // `script_source_url` The URL of the seller worklet script.
+  //
+  // `wasm_helper_url` The URL of the wasm helper to load.
+  //
+  // `trusted_bidding_signals_url` The trusted bidding signals URL to fetch
+  //  for any any `trusted_bidding_signals_keys` provided to the BidderWorklet's
+  //  GenerateBid() method.
+  //
+  // `top_window_origin` The origin of the top-level window running the
+  //  auction(s) the BidderWorklet will be used in.
+  //
+  // `experiment_group_id`, `has_experiment_group_id`: An optional parameter to
+  // pass to trusted bidding server.
+  //  TODO(https://crbug.com/657632): Update when optional integers supported.
+  LoadBidderWorklet(
+      pending_receiver<BidderWorklet> bidder_worklet,
+      bool pause_for_debugger_on_start,
+      pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
+      url.mojom.Url script_source_url,
+      url.mojom.Url? wasm_helper_url,
+      url.mojom.Url? trusted_bidding_signals_url,
+      url.mojom.Origin top_window_origin,
+      bool has_experiment_group_id,
+      uint16 experiment_group_id);
+
+  // Attempts to load Javascript at the specified URL and loads a SellerWorklet.
+  // While a single SellerWorklet object can be used in auctions with different
+  // AuctionAdConfigs, the configs of all auctions using a single SellerWorklet
+  // object must share a `script_source_url` and `trusted_scoring_signals_url`,
+  // which match the ones passed in when creating the SellerWorklet. All
+  // auctions sharing a SellerWorklet must also have the same
+  // `top_window_origin`. In practice, the DevTools hooks and URLLoaderFactory
+  // hooks (which make script fetches act as if they were made from the parent
+  // frame) restrict sharing to auctions within a single RenderFrame.
+  //
+  // On load error, the worklet will close its pipe with a reason string. The
+  // reason string, and worklet errors messages more generally, are considered
+  // privileged and should not be passed to renderer processes.
+  //
+  // Arguments:
+  // `seller_worklet` The pipe to communicate with the SellerWorklet. Closing
+  //  the pipe will abort any in-progress loads destroy the worklet. The
+  //  callback will be invoked on seller worklet destruction if it hasn't
+  //  already, since it's on the AuctionWorkletService pipe instead of the
+  //  SellerWorklet pipe.
+  //
+  // `pause_for_debugger_on_start` If this is true, the worklet should not
+  //  commence any work until it gets a Runtime.runIfWaitingForDebugger debugger
+  //  command.
+  //
+  // `url_loader_factory` The UrlLoaderFactory used to load the worklet script.
+  //  It's recommended that the implementation be restricted to only load the
+  //  script URL.
+  //
+  // `script_source_url` is the URL of the seller worklet script.
+  //
+  // `trusted_scoring_signals_url` The trusted scoring signals URL for the
+  //  auction, if there is one.
+  //
+  // `top_window_origin` The origin of the top-level window running the auction.
+  //
+  // `experiment_group_id`, `has_experiment_group_id`: An optional parameter to
+  // pass to trusted signals server and as part of AuctionConfig.
+  //  TODO(https://crbug.com/657632): Update when optional integers supported.
+  LoadSellerWorklet(
+      pending_receiver<SellerWorklet> seller_worklet,
+      bool pause_for_debugger_on_start,
+      pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
+      url.mojom.Url script_source_url,
+      url.mojom.Url? trusted_scoring_signals_url,
+      url.mojom.Origin top_window_origin,
+      bool has_experiment_group_id,
+      uint16 experiment_group_id);
+};

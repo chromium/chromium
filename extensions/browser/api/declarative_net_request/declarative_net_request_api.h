@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -30,7 +29,7 @@ class DeclarativeNetRequestUpdateDynamicRulesFunction
   ExtensionFunction::ResponseAction Run() override;
 
  private:
-  void OnDynamicRulesUpdated(base::Optional<std::string> error);
+  void OnDynamicRulesUpdated(absl::optional<std::string> error);
 };
 
 class DeclarativeNetRequestGetDynamicRulesFunction : public ExtensionFunction {
@@ -64,7 +63,7 @@ class DeclarativeNetRequestUpdateSessionRulesFunction
   ExtensionFunction::ResponseAction Run() override;
 
  private:
-  void OnSessionRulesUpdated(base::Optional<std::string> error);
+  void OnSessionRulesUpdated(absl::optional<std::string> error);
 };
 
 class DeclarativeNetRequestGetSessionRulesFunction : public ExtensionFunction {
@@ -91,7 +90,7 @@ class DeclarativeNetRequestUpdateEnabledRulesetsFunction
   ~DeclarativeNetRequestUpdateEnabledRulesetsFunction() override;
 
  private:
-  void OnEnabledStaticRulesetsUpdated(base::Optional<std::string> error);
+  void OnEnabledStaticRulesetsUpdated(absl::optional<std::string> error);
 
   // ExtensionFunction override:
   ExtensionFunction::ResponseAction Run() override;
@@ -171,6 +170,19 @@ class DeclarativeNetRequestGetAvailableStaticRuleCountFunction
 
  protected:
   ~DeclarativeNetRequestGetAvailableStaticRuleCountFunction() override;
+
+  // ExtensionFunction override:
+  ExtensionFunction::ResponseAction Run() override;
+};
+
+class DeclarativeNetRequestTestMatchOutcomeFunction : public ExtensionFunction {
+ public:
+  DeclarativeNetRequestTestMatchOutcomeFunction();
+  DECLARE_EXTENSION_FUNCTION("declarativeNetRequest.testMatchOutcome",
+                             DECLARATIVENETREQUEST_TESTMATCHOUTCOME)
+
+ protected:
+  ~DeclarativeNetRequestTestMatchOutcomeFunction() override;
 
   // ExtensionFunction override:
   ExtensionFunction::ResponseAction Run() override;

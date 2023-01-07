@@ -1,17 +1,17 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/threading/thread_local.h"
 #include "base/check_op.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -26,8 +26,8 @@ class ThreadLocalTesterBase : public DelegateSimpleThreadPool::Delegate {
   ~ThreadLocalTesterBase() override = default;
 
  protected:
-  TLPType* tlp_;
-  WaitableEvent* done_;
+  raw_ptr<TLPType> tlp_;
+  raw_ptr<WaitableEvent> done_;
 };
 
 class SetThreadLocal : public ThreadLocalTesterBase {
@@ -40,12 +40,12 @@ class SetThreadLocal : public ThreadLocalTesterBase {
 
   void Run() override {
     DCHECK(!done_->IsSignaled());
-    tlp_->Set(val_);
+    tlp_->Set(val_.get());
     done_->Signal();
   }
 
  private:
-  char* val_;
+  raw_ptr<char> val_;
 };
 
 class GetThreadLocal : public ThreadLocalTesterBase {
@@ -63,7 +63,7 @@ class GetThreadLocal : public ThreadLocalTesterBase {
   }
 
  private:
-  char** ptr_;
+  raw_ptr<char*> ptr_;
 };
 
 }  // namespace
@@ -153,15 +153,17 @@ class SetTrueOnDestruction {
   SetTrueOnDestruction(bool* was_destroyed) : was_destroyed_(was_destroyed) {
     CHECK(was_destroyed != nullptr);
   }
+
+  SetTrueOnDestruction(const SetTrueOnDestruction&) = delete;
+  SetTrueOnDestruction& operator=(const SetTrueOnDestruction&) = delete;
+
   ~SetTrueOnDestruction() {
     EXPECT_FALSE(*was_destroyed_);
     *was_destroyed_ = true;
   }
 
  private:
-  bool* const was_destroyed_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetTrueOnDestruction);
+  const raw_ptr<bool> was_destroyed_;
 };
 
 }  // namespace
@@ -213,8 +215,8 @@ TEST(ThreadLocalTest, ThreadLocalOwnedPointerFreedOnThreadExit) {
 }
 
 TEST(ThreadLocalTest, ThreadLocalOwnedPointerCleansUpMainThreadOnDestruction) {
-  base::Optional<ThreadLocalOwnedPointer<SetTrueOnDestruction>>
-      tls_owned_pointer(base::in_place);
+  absl::optional<ThreadLocalOwnedPointer<SetTrueOnDestruction>>
+      tls_owned_pointer(absl::in_place);
   bool tls_was_destroyed_other = false;
 
   Thread thread("TestThread");
@@ -255,8 +257,8 @@ TEST(ThreadLocalTest, ThreadLocalOwnedPointerCleansUpMainThreadOnDestruction) {
 TEST(ThreadLocalTest, ThreadLocalOwnedPointerDeathIfDestroyedWithActiveThread) {
   testing::FLAGS_gtest_death_test_style = "threadsafe";
 
-  base::Optional<ThreadLocalOwnedPointer<int>> tls_owned_pointer(
-      base::in_place);
+  absl::optional<ThreadLocalOwnedPointer<int>> tls_owned_pointer(
+      absl::in_place);
 
   Thread thread("TestThread");
   thread.Start();

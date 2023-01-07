@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,10 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/public/media/decoder_config.h"
@@ -90,11 +88,17 @@ class MediaPipelineBackendManager : public media::CmaBackendFactory {
   MediaPipelineBackendManager(
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       MediaResourceTracker* media_resource_tracker);
+
+  MediaPipelineBackendManager(const MediaPipelineBackendManager&) = delete;
+  MediaPipelineBackendManager& operator=(const MediaPipelineBackendManager&) =
+      delete;
+
   ~MediaPipelineBackendManager() override;
 
   // media::CmaBackendFactory implementation:
   std::unique_ptr<CmaBackend> CreateBackend(
       const MediaPipelineDeviceParams& params) override;
+  scoped_refptr<base::SequencedTaskRunner> GetMediaTaskRunner() override;
 
   // Inform that a backend previously created is destroyed.
   // Must be called on the same thread as |media_task_runner_|.
@@ -131,6 +135,11 @@ class MediaPipelineBackendManager : public media::CmaBackendFactory {
   // If |power_save_enabled| is |false|, power save will be turned off and
   // automatic power save will be disabled until this is called with |true|.
   void SetPowerSaveEnabled(bool power_save_enabled);
+
+  // Temporarily disables power save mode even if there are no currently-playing
+  // audio streams. Useful to disable power save ahead of time if audio will
+  // start playing soon (within 5 seconds).
+  void TemporaryDisablePowerSave();
 
  private:
   friend class ActiveMediaPipelineBackendWrapper;
@@ -188,8 +197,6 @@ class MediaPipelineBackendManager : public media::CmaBackendFactory {
   int mixer_sfx_stream_count_ = 0;
 
   base::WeakPtrFactory<MediaPipelineBackendManager> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPipelineBackendManager);
 };
 
 }  // namespace media

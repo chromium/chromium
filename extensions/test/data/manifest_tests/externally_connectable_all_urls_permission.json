@@ -1,0 +1,12 @@
+{
+  "name": "Extension with deprecated externally_connectable.all_urls permission",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwBulalpRjkun/sRoaxIRpg6+qM6lJlI1whKuTJP9TzYxdTs955Wmfj6CmX07+VIbsFnAAcI67F2LhbmXiueYe39xGvvVQ3w5l+WPdJ8a9AV/t6Afpi3H0LRjB1oIB2k1rp/6j5tDY2zly4Q/eqlxEB+Y81RBw6gbo9LpFEOAxsZwRGMs2z1x7I7MybY38HFKM6d58U6ovm5QJuhgGWfmGI+4TdRf61OMxBPXArBDmNQGElsJJmclebD5fS2ynXcmN+/1e2oAdu6saQbb82gec7x8fOi9TEeYIFiQSPGY3/vlK5dSKGYU59O6nGIZMh2JA605IGuat//NdXDH77Yw+QIDAQAB",
+  "version": "1",
+  "manifest_version": 2,
+  "permissions": ["externally_connectable.all_urls"],
+  "externally_connectable": {
+    "matches": [
+      "<all_urls>"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,16 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <string>
+
 #include "base/base_paths.h"
 #include "base/big_endian.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -28,9 +30,11 @@
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
 #endif
 
@@ -55,20 +59,35 @@ const unsigned char kPngScaleChunk[12] = { 0x00, 0x00, 0x00, 0x00,
                                            'c', 's', 'C', 'l',
                                            0xc1, 0x30, 0x60, 0x4d };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// A string with the "LOTTIE" prefix that GRIT adds to Lottie assets.
+constexpr char kLottieData[] = "LOTTIEtest";
+
+// Mock of |lottie::ParseLottieAsStillImage|. Checks that |kLottieData| is
+// properly stripped of the "LOTTIE" prefix.
+gfx::ImageSkia ParseLottieAsStillImageForTesting(
+    const std::string& bytes_string) {
+  CHECK_EQ("test", bytes_string);
+
+  constexpr int kDimension = 16;
+  return gfx::ImageSkia(
+      gfx::ImageSkiaRep(gfx::Size(kDimension, kDimension), 0.f));
+}
+#endif
+
 // Returns |bitmap_data| with |custom_chunk| inserted after the IHDR chunk.
 void AddCustomChunk(const base::StringPiece& custom_chunk,
                     std::vector<unsigned char>* bitmap_data) {
-  EXPECT_LT(base::size(kPngMagic) + kPngChunkMetadataSize, bitmap_data->size());
+  EXPECT_LT(std::size(kPngMagic) + kPngChunkMetadataSize, bitmap_data->size());
   EXPECT_TRUE(std::equal(bitmap_data->begin(),
-                         bitmap_data->begin() + base::size(kPngMagic),
+                         bitmap_data->begin() + std::size(kPngMagic),
                          kPngMagic));
-  auto ihdr_start = bitmap_data->begin() + base::size(kPngMagic);
-  char ihdr_length_data[sizeof(uint32_t)];
+  auto ihdr_start = bitmap_data->begin() + std::size(kPngMagic);
+  uint8_t ihdr_length_data[sizeof(uint32_t)];
   for (size_t i = 0; i < sizeof(uint32_t); ++i)
     ihdr_length_data[i] = *(ihdr_start + i);
   uint32_t ihdr_chunk_length = 0;
-  base::ReadBigEndian(reinterpret_cast<char*>(ihdr_length_data),
-                      &ihdr_chunk_length);
+  base::ReadBigEndian(ihdr_length_data, &ihdr_chunk_length);
   EXPECT_TRUE(
       std::equal(ihdr_start + sizeof(uint32_t),
                  ihdr_start + sizeof(uint32_t) + sizeof(kPngIHDRChunkType),
@@ -106,6 +125,9 @@ class ResourceBundleTest : public testing::Test {
  public:
   ResourceBundleTest() : resource_bundle_(nullptr) {}
 
+  ResourceBundleTest(const ResourceBundleTest&) = delete;
+  ResourceBundleTest& operator=(const ResourceBundleTest&) = delete;
+
   ~ResourceBundleTest() override {}
 
   // Overridden from testing::Test:
@@ -127,10 +149,7 @@ class ResourceBundleTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  ResourceBundle* resource_bundle_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceBundleTest);
+  raw_ptr<ResourceBundle> resource_bundle_;
 };
 
 TEST_F(ResourceBundleTest, DelegateGetPathForResourcePack) {
@@ -138,7 +157,7 @@ TEST_F(ResourceBundleTest, DelegateGetPathForResourcePack) {
   ResourceBundle* resource_bundle = CreateResourceBundle(&delegate);
 
   base::FilePath pack_path(FILE_PATH_LITERAL("/path/to/test_path.pak"));
-  ui::ScaleFactor pack_scale_factor = ui::SCALE_FACTOR_200P;
+  ResourceScaleFactor pack_scale_factor = ui::k200Percent;
 
   EXPECT_CALL(delegate,
       GetPathForResourcePack(
@@ -224,7 +243,7 @@ TEST_F(ResourceBundleTest, DelegateLoadDataResourceBytes) {
       new base::RefCountedStaticMemory(data, sizeof(data)));
 
   int resource_id = 5;
-  ui::ScaleFactor scale_factor = ui::SCALE_FACTOR_NONE;
+  ResourceScaleFactor scale_factor = ui::kScaleFactorNone;
 
   EXPECT_CALL(delegate, LoadDataResourceBytes(resource_id, scale_factor))
       .Times(1).WillOnce(Return(static_memory.get()));
@@ -245,7 +264,7 @@ TEST_F(ResourceBundleTest, DelegateGetRawDataResource) {
   int resource_id = 5;
 
   EXPECT_CALL(delegate,
-              GetRawDataResource(resource_id, ui::SCALE_FACTOR_NONE, _))
+              GetRawDataResource(resource_id, ui::kScaleFactorNone, _))
       .Times(1)
       .WillOnce(DoAll(SetArgPointee<2>(string_piece), Return(true)));
 
@@ -259,11 +278,10 @@ TEST_F(ResourceBundleTest, IsGzipped) {
   base::FilePath data_path =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("sample.pak"));
   // Dump contents into a pak file and load it.
-  ASSERT_TRUE(
-      base::WriteFile(data_path, base::StringPiece(kSampleCompressPakContentsV5,
-                                                   kSampleCompressPakSizeV5)));
+  ASSERT_TRUE(base::WriteFile(
+      data_path, {kSampleCompressPakContentsV5, kSampleCompressPakSizeV5}));
   ResourceBundle* resource_bundle = CreateResourceBundle(nullptr);
-  resource_bundle->AddDataPackFromPath(data_path, SCALE_FACTOR_100P);
+  resource_bundle->AddDataPackFromPath(data_path, k100Percent);
 
   ASSERT_FALSE(resource_bundle->IsGzipped(1));
   ASSERT_FALSE(resource_bundle->IsGzipped(4));
@@ -278,11 +296,10 @@ TEST_F(ResourceBundleTest, IsBrotli) {
   base::FilePath data_path =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("sample.pak"));
   // Dump contents into a pak file and load it.
-  ASSERT_TRUE(
-      base::WriteFile(data_path, base::StringPiece(kSampleCompressPakContentsV5,
-                                                   kSampleCompressPakSizeV5)));
+  ASSERT_TRUE(base::WriteFile(
+      data_path, {kSampleCompressPakContentsV5, kSampleCompressPakSizeV5}));
   ResourceBundle* resource_bundle = CreateResourceBundle(nullptr);
-  resource_bundle->AddDataPackFromPath(data_path, SCALE_FACTOR_100P);
+  resource_bundle->AddDataPackFromPath(data_path, k100Percent);
 
   ASSERT_FALSE(resource_bundle->IsBrotli(1));
   ASSERT_FALSE(resource_bundle->IsBrotli(4));
@@ -365,6 +382,9 @@ class ResourceBundleImageTest : public ResourceBundleTest {
  public:
   ResourceBundleImageTest() {}
 
+  ResourceBundleImageTest(const ResourceBundleImageTest&) = delete;
+  ResourceBundleImageTest& operator=(const ResourceBundleImageTest&) = delete;
+
   ~ResourceBundleImageTest() override {}
 
   void SetUp() override {
@@ -374,12 +394,12 @@ class ResourceBundleImageTest : public ResourceBundleTest {
   }
 
   // Returns resource bundle which uses an empty data pak for locale data.
-  ui::ResourceBundle* CreateResourceBundleWithEmptyLocalePak() {
+  ResourceBundle* CreateResourceBundleWithEmptyLocalePak() {
     // Write an empty data pak for locale data.
     const base::FilePath& locale_path = dir_path().Append(
         FILE_PATH_LITERAL("locale.pak"));
-    EXPECT_TRUE(base::WriteFile(
-        locale_path, base::StringPiece(kEmptyPakContents, kEmptyPakSize)));
+    EXPECT_TRUE(
+        base::WriteFile(locale_path, {kEmptyPakContents, kEmptyPakSize}));
 
     ui::ResourceBundle* resource_bundle = CreateResourceBundle(nullptr);
 
@@ -394,26 +414,23 @@ class ResourceBundleImageTest : public ResourceBundleTest {
   // Returns the number of DataPacks managed by |resource_bundle|.
   size_t NumDataPacksInResourceBundle(ResourceBundle* resource_bundle) {
     DCHECK(resource_bundle);
-    return resource_bundle->data_packs_.size();
+    return resource_bundle->resource_handles_.size();
   }
 
  private:
   std::unique_ptr<DataPack> locale_pack_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceBundleImageTest);
 };
 
 TEST_F(ResourceBundleImageTest, LoadDataResourceBytes) {
   base::FilePath data_path = dir_path().Append(FILE_PATH_LITERAL("sample.pak"));
 
   // Dump contents into the pak files.
-  ASSERT_TRUE(
-      base::WriteFile(data_path, base::StringPiece(kSampleCompressPakContentsV5,
-                                                   kSampleCompressPakSizeV5)));
+  ASSERT_TRUE(base::WriteFile(
+      data_path, {kSampleCompressPakContentsV5, kSampleCompressPakSizeV5}));
 
   // Load pak file.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
-  resource_bundle->AddDataPackFromPath(data_path, SCALE_FACTOR_NONE);
+  resource_bundle->AddDataPackFromPath(data_path, kScaleFactorNone);
 
   // Test normal uncompressed data.
   scoped_refptr<base::RefCountedMemory> resource =
@@ -440,12 +457,11 @@ TEST_F(ResourceBundleImageTest, LoadDataResourceBytesNotFound) {
   base::FilePath data_path = dir_path().Append(FILE_PATH_LITERAL("sample.pak"));
 
   // Dump contents into the pak files.
-  ASSERT_TRUE(base::WriteFile(
-      data_path, base::StringPiece(kEmptyPakContents, kEmptyPakSize)));
+  ASSERT_TRUE(base::WriteFile(data_path, {kEmptyPakContents, kEmptyPakSize}));
 
   // Create a resource bundle from the file.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
-  resource_bundle->AddDataPackFromPath(data_path, SCALE_FACTOR_100P);
+  resource_bundle->AddDataPackFromPath(data_path, k100Percent);
 
   const int kUnfoundResourceId = 10000;
   EXPECT_EQ(nullptr,
@@ -454,7 +470,7 @@ TEST_F(ResourceBundleImageTest, LoadDataResourceBytesNotFound) {
   // Give a .pak file that doesn't exist so we will fail to load it.
   resource_bundle->AddDataPackFromPath(
       base::FilePath(FILE_PATH_LITERAL("non-existant-file.pak")),
-      ui::SCALE_FACTOR_NONE);
+      ui::kScaleFactorNone);
   EXPECT_EQ(nullptr,
             resource_bundle->LoadDataResourceBytes(kUnfoundResourceId));
 }
@@ -465,35 +481,32 @@ TEST_F(ResourceBundleImageTest, LoadDataResourceStringForScale) {
       dir_path().Append(FILE_PATH_LITERAL("sample_2x.pak"));
 
   // Dump content into pak files.
-  ASSERT_TRUE(
-      base::WriteFile(data_path, base::StringPiece(kSampleCompressPakContentsV5,
-                                                   kSampleCompressPakSizeV5)));
   ASSERT_TRUE(base::WriteFile(
-      data_2x_path, base::StringPiece(kSampleCompressScaledPakContents,
-                                      kSampleCompressScaledPakSize)));
+      data_path, {kSampleCompressPakContentsV5, kSampleCompressPakSizeV5}));
+  ASSERT_TRUE(base::WriteFile(data_2x_path, {kSampleCompressScaledPakContents,
+                                             kSampleCompressScaledPakSize}));
 
   // Load pak files.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
-  resource_bundle->AddDataPackFromPath(data_path, SCALE_FACTOR_100P);
-  resource_bundle->AddDataPackFromPath(data_2x_path, SCALE_FACTOR_200P);
+  resource_bundle->AddDataPackFromPath(data_path, k100Percent);
+  resource_bundle->AddDataPackFromPath(data_2x_path, k200Percent);
 
   // Resource ID 6 is brotlied and exists in both 1x and 2x paks, so we expect a
   // different result when requesting the 2x scale.
-  EXPECT_EQ("this is id 6", resource_bundle->LoadDataResourceStringForScale(
-                                6, SCALE_FACTOR_100P));
-  EXPECT_EQ("this is id 6 x2", resource_bundle->LoadDataResourceStringForScale(
-                                   6, SCALE_FACTOR_200P));
+  EXPECT_EQ("this is id 6",
+            resource_bundle->LoadDataResourceStringForScale(6, k100Percent));
+  EXPECT_EQ("this is id 6 x2",
+            resource_bundle->LoadDataResourceStringForScale(6, k200Percent));
 }
 
 TEST_F(ResourceBundleImageTest, LoadLocalizedResourceString) {
   base::FilePath data_path = dir_path().Append(FILE_PATH_LITERAL("sample.pak"));
   // Dump content into pak file.
-  ASSERT_TRUE(
-      base::WriteFile(data_path, base::StringPiece(kSampleCompressPakContentsV5,
-                                                   kSampleCompressPakSizeV5)));
+  ASSERT_TRUE(base::WriteFile(
+      data_path, {kSampleCompressPakContentsV5, kSampleCompressPakSizeV5}));
   // Load pak file.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
-  resource_bundle->AddDataPackFromPath(data_path, SCALE_FACTOR_NONE);
+  resource_bundle->AddDataPackFromPath(data_path, kScaleFactorNone);
   resource_bundle->OverrideLocalePakForTest(data_path);
 
   EXPECT_EQ("this is id 6", resource_bundle->LoadLocalizedResourceString(6));
@@ -503,12 +516,11 @@ TEST_F(ResourceBundleImageTest, LoadLocalizedResourceString) {
 TEST_F(ResourceBundleImageTest, LoadDataResourceString) {
   base::FilePath data_path = dir_path().Append(FILE_PATH_LITERAL("sample.pak"));
   // Dump content into pak file.
-  ASSERT_TRUE(
-      base::WriteFile(data_path, base::StringPiece(kSampleCompressPakContentsV5,
-                                                   kSampleCompressPakSizeV5)));
+  ASSERT_TRUE(base::WriteFile(
+      data_path, {kSampleCompressPakContentsV5, kSampleCompressPakSizeV5}));
   // Load pak file.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
-  resource_bundle->AddDataPackFromPath(data_path, SCALE_FACTOR_NONE);
+  resource_bundle->AddDataPackFromPath(data_path, kScaleFactorNone);
 
   // Resource ID 6 is Brotli compressed, expect it to be uncompressed.
   EXPECT_EQ("this is id 6", resource_bundle->LoadDataResourceString(6));
@@ -526,41 +538,42 @@ TEST_F(ResourceBundleImageTest, GetRawDataResource) {
       dir_path().Append(FILE_PATH_LITERAL("sample_2x.pak"));
 
   // Dump contents into the pak files.
-  ASSERT_TRUE(base::WriteFile(
-      data_path, base::StringPiece(kSamplePakContentsV4, kSamplePakSizeV4)));
-  ASSERT_TRUE(base::WriteFile(
-      data_2x_path, base::StringPiece(kSamplePakContents2x, kSamplePakSize2x)));
+  ASSERT_TRUE(
+      base::WriteFile(data_path, {kSamplePakContentsV4, kSamplePakSizeV4}));
+  ASSERT_TRUE(
+      base::WriteFile(data_2x_path, {kSamplePakContents2x, kSamplePakSize2x}));
 
   // Load the regular and 2x pak files.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
-  resource_bundle->AddDataPackFromPath(data_path, SCALE_FACTOR_100P);
-  resource_bundle->AddDataPackFromPath(data_2x_path, SCALE_FACTOR_200P);
+  resource_bundle->AddDataPackFromPath(data_path, k100Percent);
+  resource_bundle->AddDataPackFromPath(data_2x_path, k200Percent);
 
   // Resource ID 4 exists in both 1x and 2x paks, so we expect a different
   // result when requesting the 2x scale.
-  EXPECT_EQ("this is id 4", resource_bundle->GetRawDataResourceForScale(4,
-      SCALE_FACTOR_100P));
-  EXPECT_EQ("this is id 4 2x", resource_bundle->GetRawDataResourceForScale(4,
-      SCALE_FACTOR_200P));
+  EXPECT_EQ("this is id 4",
+            resource_bundle->GetRawDataResourceForScale(4, k100Percent));
+  EXPECT_EQ("this is id 4 2x",
+            resource_bundle->GetRawDataResourceForScale(4, k200Percent));
 
   // Resource ID 6 only exists in the 1x pak so we expect the same resource
   // for both scale factor requests.
-  EXPECT_EQ("this is id 6", resource_bundle->GetRawDataResourceForScale(6,
-      SCALE_FACTOR_100P));
-  EXPECT_EQ("this is id 6", resource_bundle->GetRawDataResourceForScale(6,
-      SCALE_FACTOR_200P));
+  EXPECT_EQ("this is id 6",
+            resource_bundle->GetRawDataResourceForScale(6, k100Percent));
+  EXPECT_EQ("this is id 6",
+            resource_bundle->GetRawDataResourceForScale(6, k200Percent));
 }
 
 // Test requesting image reps at various scale factors from the image returned
 // via ResourceBundle::GetImageNamed().
 TEST_F(ResourceBundleImageTest, GetImageNamed) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   display::win::SetDefaultDeviceScaleFactor(2.0);
 #endif
-  std::vector<ScaleFactor> supported_factors;
-  supported_factors.push_back(SCALE_FACTOR_100P);
-  supported_factors.push_back(SCALE_FACTOR_200P);
-  test::ScopedSetSupportedScaleFactors scoped_supported(supported_factors);
+  std::vector<ResourceScaleFactor> supported_factors;
+  supported_factors.push_back(k100Percent);
+  supported_factors.push_back(k200Percent);
+  test::ScopedSetSupportedResourceScaleFactors scoped_supported(
+      supported_factors);
   base::FilePath data_1x_path = dir_path().AppendASCII("sample_1x.pak");
   base::FilePath data_2x_path = dir_path().AppendASCII("sample_2x.pak");
 
@@ -570,40 +583,40 @@ TEST_F(ResourceBundleImageTest, GetImageNamed) {
 
   // Load the regular and 2x pak files.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
-  resource_bundle->AddDataPackFromPath(data_1x_path, SCALE_FACTOR_100P);
-  resource_bundle->AddDataPackFromPath(data_2x_path, SCALE_FACTOR_200P);
+  resource_bundle->AddDataPackFromPath(data_1x_path, k100Percent);
+  resource_bundle->AddDataPackFromPath(data_2x_path, k200Percent);
 
-  EXPECT_EQ(SCALE_FACTOR_200P, resource_bundle->GetMaxScaleFactor());
+  EXPECT_EQ(k200Percent, resource_bundle->GetMaxResourceScaleFactor());
 
   gfx::ImageSkia* image_skia = resource_bundle->GetImageSkiaNamed(3);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
   // ChromeOS/Windows load highest scale factor first.
-  EXPECT_EQ(ui::SCALE_FACTOR_200P,
-            GetSupportedScaleFactor(image_skia->image_reps()[0].scale()));
+  EXPECT_EQ(ui::k200Percent, GetSupportedResourceScaleFactor(
+                                 image_skia->image_reps()[0].scale()));
 #else
-  EXPECT_EQ(ui::SCALE_FACTOR_100P,
-            GetSupportedScaleFactor(image_skia->image_reps()[0].scale()));
+  EXPECT_EQ(ui::k100Percent, GetSupportedResourceScaleFactor(
+                                 image_skia->image_reps()[0].scale()));
 #endif
 
   // Resource ID 3 exists in both 1x and 2x paks. Image reps should be
   // available for both scale factors in |image_skia|.
-  gfx::ImageSkiaRep image_rep =
-      image_skia->GetRepresentation(
-      GetScaleForScaleFactor(ui::SCALE_FACTOR_100P));
-  EXPECT_EQ(ui::SCALE_FACTOR_100P, GetSupportedScaleFactor(image_rep.scale()));
-  image_rep =
-      image_skia->GetRepresentation(
-      GetScaleForScaleFactor(ui::SCALE_FACTOR_200P));
-  EXPECT_EQ(ui::SCALE_FACTOR_200P, GetSupportedScaleFactor(image_rep.scale()));
-
-  // The 1.4x pack was not loaded. Requesting the 1.4x resource should return
-  // either the 1x or the 2x resource.
+  gfx::ImageSkiaRep image_rep = image_skia->GetRepresentation(
+      GetScaleForResourceScaleFactor(ui::k100Percent));
+  EXPECT_EQ(ui::k100Percent,
+            GetSupportedResourceScaleFactor(image_rep.scale()));
   image_rep = image_skia->GetRepresentation(
-      ui::GetScaleForScaleFactor(ui::SCALE_FACTOR_140P));
-  ui::ScaleFactor scale_factor = GetSupportedScaleFactor(image_rep.scale());
-  EXPECT_TRUE(scale_factor == ui::SCALE_FACTOR_100P ||
-              scale_factor == ui::SCALE_FACTOR_200P);
+      GetScaleForResourceScaleFactor(ui::k200Percent));
+  EXPECT_EQ(ui::k200Percent,
+            GetSupportedResourceScaleFactor(image_rep.scale()));
+
+  // Requesting the 1.4x resource should return either the 1x or the 2x
+  // resource.
+  image_rep = image_skia->GetRepresentation(1.4f);
+  ResourceScaleFactor scale_factor =
+      GetSupportedResourceScaleFactor(image_rep.scale());
+  EXPECT_TRUE(scale_factor == ui::k100Percent ||
+              scale_factor == ui::k200Percent);
 
   // ImageSkia scales image if the one for the requested scale factor is not
   // available.
@@ -613,10 +626,11 @@ TEST_F(ResourceBundleImageTest, GetImageNamed) {
 // Test that GetImageNamed() behaves properly for images which GRIT has
 // annotated as having fallen back to 1x.
 TEST_F(ResourceBundleImageTest, GetImageNamedFallback1x) {
-  std::vector<ScaleFactor> supported_factors;
-  supported_factors.push_back(SCALE_FACTOR_100P);
-  supported_factors.push_back(SCALE_FACTOR_200P);
-  test::ScopedSetSupportedScaleFactors scoped_supported(supported_factors);
+  std::vector<ResourceScaleFactor> supported_factors;
+  supported_factors.push_back(k100Percent);
+  supported_factors.push_back(k200Percent);
+  test::ScopedSetSupportedResourceScaleFactors scoped_supported(
+      supported_factors);
   base::FilePath data_path = dir_path().AppendASCII("sample.pak");
   base::FilePath data_2x_path = dir_path().AppendASCII("sample_2x.pak");
 
@@ -627,77 +641,35 @@ TEST_F(ResourceBundleImageTest, GetImageNamedFallback1x) {
   CreateDataPackWithSingleBitmap(
       data_2x_path, 10,
       base::StringPiece(reinterpret_cast<const char*>(kPngScaleChunk),
-                        base::size(kPngScaleChunk)));
+                        std::size(kPngScaleChunk)));
 
   // Load the regular and 2x pak files.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
-  resource_bundle->AddDataPackFromPath(data_path, SCALE_FACTOR_100P);
-  resource_bundle->AddDataPackFromPath(data_2x_path, SCALE_FACTOR_200P);
+  resource_bundle->AddDataPackFromPath(data_path, k100Percent);
+  resource_bundle->AddDataPackFromPath(data_2x_path, k200Percent);
 
   gfx::ImageSkia* image_skia = resource_bundle->GetImageSkiaNamed(3);
 
   // The image rep for 2x should be available. It should be resized to the
   // proper 2x size.
-  gfx::ImageSkiaRep image_rep =
-      image_skia->GetRepresentation(GetScaleForScaleFactor(
-      ui::SCALE_FACTOR_200P));
-  EXPECT_EQ(ui::SCALE_FACTOR_200P, GetSupportedScaleFactor(image_rep.scale()));
+  gfx::ImageSkiaRep image_rep = image_skia->GetRepresentation(
+      GetScaleForResourceScaleFactor(ui::k200Percent));
+  EXPECT_EQ(ui::k200Percent,
+            GetSupportedResourceScaleFactor(image_rep.scale()));
   EXPECT_EQ(20, image_rep.pixel_width());
   EXPECT_EQ(20, image_rep.pixel_height());
 }
 
-#if defined(OS_WIN)
-// Tests GetImageNamed() behaves properly when the size of a scaled image
-// requires rounding as a result of using a non-integer scale factor.
-// Scale factors of 140 and 1805 are Windows specific.
-TEST_F(ResourceBundleImageTest, GetImageNamedFallback1xRounding) {
-  std::vector<ScaleFactor> supported_factors;
-  supported_factors.push_back(SCALE_FACTOR_100P);
-  supported_factors.push_back(SCALE_FACTOR_140P);
-  supported_factors.push_back(SCALE_FACTOR_180P);
-  test::ScopedSetSupportedScaleFactors scoped_supported(supported_factors);
-
-  base::FilePath data_path = dir_path().AppendASCII("sample.pak");
-  base::FilePath data_140P_path = dir_path().AppendASCII("sample_140P.pak");
-  base::FilePath data_180P_path = dir_path().AppendASCII("sample_180P.pak");
-
-  CreateDataPackWithSingleBitmap(data_path, 8, base::StringPiece());
-  // Mark 140% and 180% images as requiring 1x fallback.
-  CreateDataPackWithSingleBitmap(
-      data_140P_path, 8,
-      base::StringPiece(reinterpret_cast<const char*>(kPngScaleChunk),
-                        base::size(kPngScaleChunk)));
-  CreateDataPackWithSingleBitmap(
-      data_180P_path, 8,
-      base::StringPiece(reinterpret_cast<const char*>(kPngScaleChunk),
-                        base::size(kPngScaleChunk)));
-
-  ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
-  resource_bundle->AddDataPackFromPath(data_path, SCALE_FACTOR_100P);
-  resource_bundle->AddDataPackFromPath(data_140P_path, SCALE_FACTOR_140P);
-  resource_bundle->AddDataPackFromPath(data_180P_path, SCALE_FACTOR_180P);
-
-  // Non-integer dimensions should be rounded up.
-  gfx::ImageSkia* image_skia = resource_bundle->GetImageSkiaNamed(3);
-  gfx::ImageSkiaRep image_rep =
-    image_skia->GetRepresentation(
-    GetScaleForScaleFactor(ui::SCALE_FACTOR_140P));
-  EXPECT_EQ(12, image_rep.pixel_width());
-  image_rep = image_skia->GetRepresentation(
-    GetScaleForScaleFactor(ui::SCALE_FACTOR_180P));
-  EXPECT_EQ(15, image_rep.pixel_width());
-}
-#endif
-
 TEST_F(ResourceBundleImageTest, FallbackToNone) {
-  std::vector<ScaleFactor> supported_factors;
-  supported_factors.push_back(SCALE_FACTOR_100P);
-  supported_factors.push_back(SCALE_FACTOR_200P);
-  supported_factors.push_back(SCALE_FACTOR_300P);
+  std::vector<ResourceScaleFactor> supported_factors;
+  supported_factors.push_back(k100Percent);
+  supported_factors.push_back(k200Percent);
+  supported_factors.push_back(k300Percent);
 
   // Presents a consistent set of supported scale factors for all platforms.
-  // iOS does not include SCALE_FACTOR_100P, which breaks the test below.
-  test::ScopedSetSupportedScaleFactors scoped_supported(supported_factors);
+  // iOS does not include k100Percent, which breaks the test below.
+  test::ScopedSetSupportedResourceScaleFactors scoped_supported(
+      supported_factors);
 
   base::FilePath data_default_path = dir_path().AppendASCII("sample.pak");
 
@@ -706,13 +678,43 @@ TEST_F(ResourceBundleImageTest, FallbackToNone) {
 
     // Load the regular pak files only.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
-  resource_bundle->AddDataPackFromPath(data_default_path, SCALE_FACTOR_NONE);
+  resource_bundle->AddDataPackFromPath(data_default_path, kScaleFactorNone);
 
   gfx::ImageSkia* image_skia = resource_bundle->GetImageSkiaNamed(3);
   EXPECT_EQ(1u, image_skia->image_reps().size());
   EXPECT_TRUE(image_skia->image_reps()[0].unscaled());
-  EXPECT_EQ(ui::SCALE_FACTOR_100P,
-            GetSupportedScaleFactor(image_skia->image_reps()[0].scale()));
+  EXPECT_EQ(ui::k100Percent, GetSupportedResourceScaleFactor(
+                                 image_skia->image_reps()[0].scale()));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ResourceBundleImageTest, Lottie) {
+  ui::ResourceBundle::SetLottieParsingFunctions(
+      &ParseLottieAsStillImageForTesting,
+      /*parse_lottie_as_themed_still_image=*/nullptr);
+  test::ScopedSetSupportedResourceScaleFactors scoped_supported(
+      {k100Percent, k200Percent});
+  base::FilePath data_unscaled_path = dir_path().AppendASCII("sample.pak");
+
+  // Create the pak files.
+  const std::map<uint16_t, base::StringPiece> resources = {
+      std::make_pair(3u, kLottieData)};
+  DataPack::WritePack(data_unscaled_path, resources, ui::DataPack::BINARY);
+
+  // Load the unscaled pack file.
+  ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
+  resource_bundle->AddDataPackFromPath(data_unscaled_path, kScaleFactorNone);
+
+  gfx::ImageSkia* image_skia = resource_bundle->GetImageSkiaNamed(3);
+
+  // Unscaled image should always return scale=1.
+  EXPECT_EQ(1.f, image_skia->GetRepresentation(2.f).scale());
+  EXPECT_EQ(1.f, image_skia->GetRepresentation(1.f).scale());
+  EXPECT_EQ(1.f, image_skia->GetRepresentation(1.4f).scale());
+
+  // Lottie resource should be 'unscaled'.
+  EXPECT_TRUE(image_skia->image_reps()[0].unscaled());
+}
+#endif
 
 }  // namespace ui

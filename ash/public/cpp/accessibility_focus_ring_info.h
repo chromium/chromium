@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -41,6 +40,11 @@ enum class ASH_PUBLIC_EXPORT FocusRingStackingOrder {
 // TODO: This struct could possibly be merged with ash::AccessibilityFocusRing.
 struct ASH_PUBLIC_EXPORT AccessibilityFocusRingInfo {
   AccessibilityFocusRingInfo();
+
+  AccessibilityFocusRingInfo(const AccessibilityFocusRingInfo&) = delete;
+  AccessibilityFocusRingInfo& operator=(const AccessibilityFocusRingInfo&) =
+      delete;
+
   ~AccessibilityFocusRingInfo();
 
   bool operator==(const AccessibilityFocusRingInfo& other) const;
@@ -53,9 +57,6 @@ struct ASH_PUBLIC_EXPORT AccessibilityFocusRingInfo {
   SkColor color = SK_ColorTRANSPARENT;
   SkColor secondary_color = SK_ColorTRANSPARENT;
   SkColor background_color = SK_ColorTRANSPARENT;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFocusRingInfo);
 };
 
 }  // namespace ash

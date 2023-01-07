@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,14 +18,17 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.infobar.InfoBarContainer.InfoBarContainerObserver;
 import org.chromium.chrome.browser.infobar.ReaderModeInfoBar;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestWebContentsObserver;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
@@ -55,13 +58,16 @@ public class DistillabilityServiceTest {
     @Feature({"Distillability-Service"})
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    // TODO(crbug.com/1225333): Implement Messages based (or feature independent) method of
+    // verification that normal page triggers ReaderMode prompt.
+    @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE)
     public void testServiceAliveAfterNativePage() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
 
         final CallbackHelper readerShownCallbackHelper = new CallbackHelper();
 
-        mActivityTestRule.getInfoBarContainer().addObserver(new InfoBarContainerObserver() {
+        InfoBarContainerObserver infoBarObserver = new InfoBarContainerObserver() {
             @Override
             public void onAddInfoBar(InfoBarContainer container, InfoBar infoBar, boolean isFirst) {
                 if (infoBar instanceof ReaderModeInfoBar) readerShownCallbackHelper.notifyCalled();
@@ -77,10 +83,12 @@ public class DistillabilityServiceTest {
             @Override
             public void onInfoBarContainerShownRatioChanged(
                     InfoBarContainer container, float shownRatio) {}
-        });
+        };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getInfoBarContainer().addObserver(infoBarObserver));
 
-        TestWebContentsObserver observer =
-                new TestWebContentsObserver(mActivityTestRule.getWebContents());
+        TestWebContentsObserver observer = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> new TestWebContentsObserver(mActivityTestRule.getWebContents()));
         OnPageFinishedHelper finishHelper = observer.getOnPageFinishedHelper();
 
         // Navigate to a native page.

@@ -1,11 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_GRAVITY_FUSION_ALGORITHM_USING_ACCELEROMETER_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_GRAVITY_FUSION_ALGORITHM_USING_ACCELEROMETER_H_
 
-#include "base/macros.h"
 #include "services/device/generic_sensor/platform_sensor_fusion_algorithm.h"
 
 namespace device {
@@ -16,6 +15,12 @@ class GravityFusionAlgorithmUsingAccelerometer final
     : public PlatformSensorFusionAlgorithm {
  public:
   GravityFusionAlgorithmUsingAccelerometer();
+
+  GravityFusionAlgorithmUsingAccelerometer(
+      const GravityFusionAlgorithmUsingAccelerometer&) = delete;
+  GravityFusionAlgorithmUsingAccelerometer& operator=(
+      const GravityFusionAlgorithmUsingAccelerometer&) = delete;
+
   ~GravityFusionAlgorithmUsingAccelerometer() override;
 
   void SetFrequency(double frequency) override;
@@ -33,8 +38,6 @@ class GravityFusionAlgorithmUsingAccelerometer final
   double gravity_x_;
   double gravity_y_;
   double gravity_z_;
-
-  DISALLOW_COPY_AND_ASSIGN(GravityFusionAlgorithmUsingAccelerometer);
 };
 
 }  // namespace device

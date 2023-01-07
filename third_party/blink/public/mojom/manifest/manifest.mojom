@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@ import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/capture_links.mojom";
+import "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom";
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
@@ -16,6 +18,8 @@ import "url/mojom/origin.mojom";
 // The Manifest structure is an internal representation of the Manifest file
 // described in the "Manifest for Web Application" document:
 // http://w3c.github.io/manifest/
+// All fields will be their default constructed values (optional types nullopt)
+// if the manifest failed to parse.
 [JavaClassName="WebManifest"]
 struct Manifest {
   mojo_base.mojom.String16? name;
@@ -23,6 +27,9 @@ struct Manifest {
   mojo_base.mojom.String16? short_name;
 
   mojo_base.mojom.String16? description;
+
+  // Defaults to start_url with origin stripped when id field is not present.
+  mojo_base.mojom.String16? id;
 
   url.mojom.Url start_url;
 
@@ -34,7 +41,7 @@ struct Manifest {
 
   array<ManifestImageResource> icons;
 
-  array<ManifestImageResource> screenshots;
+  array<ManifestScreenshot> screenshots;
 
   array<ManifestShortcutItem> shortcuts;
 
@@ -42,17 +49,28 @@ struct Manifest {
 
   // TODO(crbug.com/829689): This field is non-standard and part of a Chrome
   // experiment. See:
-  // https://github.com/WICG/file-handling/blob/master/explainer.md
+  // https://github.com/WICG/file-handling/blob/main/explainer.md
   // As such, this field should not be exposed by default.
   array<ManifestFileHandler> file_handlers;
 
-  // TODO(crbug.com/1019239): This is going into the mainline manifest spec,
-  // remove the TODO once that PR goes in.
   // The URLProtocolHandler explainer can be found here:
-  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/URLProtocolHandler/explainer.md
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/URLProtocolHandler/explainer.md
   array<ManifestProtocolHandler> protocol_handlers;
 
+  // TODO(crbug.com/1072058): This field is non-standard and part of an
+  // experiment. See:
+  // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
   array<ManifestUrlHandler> url_handlers;
+
+  // TODO(crbug.com/1006642): This field is non-standard and part of an
+  // experiment. See:
+  // https://github.com/WICG/lock-screen/
+  ManifestLockScreen? lock_screen;
+
+  // TODO(crbug.com/1185678): This field is non-standard and part of a manifest
+  // incubation. See:
+  // https://wicg.github.io/manifest-incubations/index.html#dfn-note_taking
+  ManifestNoteTaking? note_taking;
 
   array<ManifestRelatedApplication> related_applications;
 
@@ -71,13 +89,43 @@ struct Manifest {
 
   mojo_base.mojom.String16? gcm_sender_id;
 
+  // Defaults to the start URL (or document URL if start URL isn't present) with
+  // filename, query, and fragment removed if not present.
   url.mojom.Url scope;
 
   // TODO(crbug.com/1163398): This field is non-standard and part of a Chrome
   // experiment. See:
-  // https://github.com/WICG/sw-launch/blob/master/declarative_link_capturing.md#proposal
+  // https://github.com/WICG/sw-launch/blob/main/declarative_link_capturing.md#proposal
   // As such, this field should not be exposed by default.
   CaptureLinks capture_links;
+
+  // TODO(crbug.com/1212263): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/robbiemc/pwa-isolated-storage/blob/main/explainer.md
+  bool isolated_storage;
+
+  array<ParsedPermissionsPolicyDeclaration> permissions_policy;
+
+  // TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/WICG/sw-launch/blob/main/launch_handler.md
+  ManifestLaunchHandler? launch_handler;
+
+  // TODO(crbug.com/1259777): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/translations-explainer.md
+  // A mapping of locales to their translations.
+  map<mojo_base.mojom.String16, ManifestTranslationItem> translations;
+
+  // TODO(crbug.com/1271804): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/user-preferences-explainer.md
+  ManifestUserPreferences? user_preferences;
+
+  // TODO(crbug.com/897314): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/tabbed-mode-explainer.md
+  ManifestTabStrip? tab_strip;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:
@@ -124,6 +172,25 @@ struct ManifestImageResource {
   array<Purpose> purpose;
 };
 
+// Structure representing a screenshot as per the Manifest specification, see:
+// https://www.w3.org/TR/manifest-app-info/#screenshots-member. This includes
+// a ImageResource with some additional members.
+struct ManifestScreenshot {
+  enum FormFactor {
+    kUnknown = 0,
+    kWide,
+    kNarrow,
+  };
+
+  ManifestImageResource image;
+
+  // The form factor for which a given screenshot applies.
+  FormFactor form_factor;
+
+  // This serves as the accessible name of the screenshot.
+  mojo_base.mojom.String16? label;
+};
+
 // Structure representing a share target file.
 struct ManifestFileFilter {
   mojo_base.mojom.String16? name;
@@ -144,6 +211,21 @@ struct ManifestUrlHandler {
   // If true, the application indicates that it wants to handle all subdomains
   // of |origin|. If false, the application only wants to handle |origin|.
   bool has_origin_wildcard;
+};
+
+// Structure representing lock screen capabilities.
+struct ManifestLockScreen {
+  // A URL for launching a special instance of the web application on the lock
+  // screen of a device. If valid, this web application is declaring itself
+  // capable of being used on the lock screen.
+  url.mojom.Url start_url;
+};
+
+// Structure representing note-taking application capabilities.
+struct ManifestNoteTaking {
+  // A URL for taking a new note in the web application. If valid, this web
+  // application is a note-taking application.
+  url.mojom.Url new_note_url;
 };
 
 // Structure representing a related application.
@@ -208,9 +290,86 @@ struct ManifestShareTarget {
 struct ManifestFileHandler {
   // The URL that will be opened when the file handler is invoked.
   url.mojom.Url action;
+  // Human-readable name for the file handler. May be displayed in file manager.
   mojo_base.mojom.String16 name;
+  // Icon representing the file handler. May be displayed in file manager.
+  array<ManifestImageResource> icons;
   // A mapping of a MIME types to a corresponding list of file extensions.
   map<mojo_base.mojom.String16, array<mojo_base.mojom.String16>> accept;
+
+  // How the app should be launched when there are multiple files being opened.
+  // For `kSingleClient`, they'll all be passed in a single launch. For
+  // `kMultipleClients`, multiple launched app instances will each get a single
+  // file.
+  enum LaunchType {
+    kSingleClient,
+    kMultipleClients,
+  };
+  LaunchType launch_type;
+};
+
+// Structure representing the translated manifest fields. Each field corresponds
+// to a translatable field in the Web App Manifest and contains a translation of
+// that field. Each field is optional as there is no mandatory field which must
+// be translated in any locale.
+struct ManifestTranslationItem {
+  mojo_base.mojom.String16? name;
+
+  mojo_base.mojom.String16? short_name;
+
+  mojo_base.mojom.String16? description;
+};
+
+// Structure representing overrides for certain user preferences.
+struct ManifestUserPreferences {
+  ManifestUserPreferenceOverrides? color_scheme_dark;
+};
+
+// Structure representing manifest fields that can be overridden given certain
+// user preferences (eg. dark mode). All fields are optional.
+struct ManifestUserPreferenceOverrides {
+  bool has_theme_color;
+  uint32 theme_color;
+
+  bool has_background_color;
+  uint32 background_color;
+};
+
+// Structure representing customizations to the tab strip.
+struct ManifestTabStrip {
+  HomeTabUnion home_tab;
+  NewTabButtonUnion new_tab_button;
+};
+
+// Represents whether a particular tab strip customization is present or not.
+// If kAuto, the platform can decide what the behaviour should be.
+enum TabStripMemberVisibility {
+  kAuto,
+  kAbsent,
+};
+
+union HomeTabUnion {
+  TabStripMemberVisibility visibility;
+  HomeTabParams params;
+};
+
+union NewTabButtonUnion {
+  TabStripMemberVisibility visibility;
+  NewTabButtonParams params;
+};
+
+// Structure representing the home tab customization to the tab strip.
+struct HomeTabParams {
+  // If the array is empty, the platform can choose what icon to use. This is
+  // the same as setting 'auto' on the icons field.
+  array<ManifestImageResource> icons;
+};
+
+// Structure representing the new tab button customization to the tab strip.
+struct NewTabButtonParams {
+  // If url is not present, the platform can choose what to do. This is the
+  // same as setting 'auto' on the url field.
+  url.mojom.Url? url;
 };
 
 // Debug information for a parsed manifest.

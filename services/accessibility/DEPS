@@ -1,0 +1,9 @@
+include_rules = [
+  "+ui/accessibility/ax_enum_util.h",
+  "+ui/accessibility/ax_enums.mojom.h",
+  "+ui/accessibility/ax_event.h",
+  "+ui/accessibility/ax_node_id_forward.h",
+  "+ui/accessibility/ax_relative_bounds.h",
+  "+ui/accessibility/ax_tree_id.h",
+  "+ui/accessibility/ax_tree_update.h",
+]

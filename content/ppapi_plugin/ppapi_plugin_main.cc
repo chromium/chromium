@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/threading/platform_thread.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
@@ -25,9 +25,11 @@
 #include "ipc/ipc_sender.h"
 #include "ppapi/proxy/plugin_globals.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/ui_base_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "content/child/dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h"
@@ -38,24 +40,28 @@
 #include "ui/gfx/win/direct_write.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_util.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "content/public/common/sandbox_init.h"
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "sandbox/policy/linux/sandbox_linux.h"
+#include "sandbox/policy/sandbox_type.h"
 #endif
 
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
 #include "gin/v8_initializer.h"
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 #include <stdlib.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_MAC)
+#include "base/system/sys_info.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
 sandbox::TargetServices* g_target_services = NULL;
 #else
 void* g_target_services = nullptr;
@@ -64,14 +70,22 @@ void* g_target_services = nullptr;
 namespace content {
 
 // Main function for starting the PPAPI plugin process.
-int PpapiPluginMain(const MainFunctionParams& parameters) {
-  const base::CommandLine& command_line = parameters.command_line;
+int PpapiPluginMain(MainFunctionParams parameters) {
+  const base::CommandLine& command_line = *parameters.command_line;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_MAC)
+  // Specified when launching the process in
+  // PpapiPluginSandboxedProcessLauncherDelegate::EnableCpuSecurityMitigations.
+  base::SysInfo::SetIsCpuSecurityMitigationsEnabled(true);
+#endif
+
+#if BUILDFLAG(IS_WIN)
   // https://crbug.com/1139752 Premature unload of shell32 caused process to
-  // crash during process shutdown.
-  HMODULE shell32_pin = ::LoadLibrary(L"shell32.dll");
-  UNREFERENCED_PARAMETER(shell32_pin);
+  // crash during process shutdown. Fixed in Windows 11.
+  if (base::win::GetVersion() < base::win::Version::WIN11) {
+    HMODULE shell32_pin = ::LoadLibrary(L"shell32.dll");
+    UNREFERENCED_PARAMETER(shell32_pin);
+  }
 
   g_target_services = parameters.sandbox_info->target_services;
 #endif
@@ -92,7 +106,7 @@ int PpapiPluginMain(const MainFunctionParams& parameters) {
     std::string locale = command_line.GetSwitchValueASCII(switches::kLang);
     base::i18n::SetICUDefaultLocale(locale);
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
     // TODO(shess): Flash appears to have a POSIX locale dependency
     // outside of the existing PPAPI ICU support.  Certain games hang
     // while loading, and it seems related to datetime formatting.
@@ -107,7 +121,14 @@ int PpapiPluginMain(const MainFunctionParams& parameters) {
 #endif
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (command_line.HasSwitch(switches::kTimeZoneForTesting)) {
+    std::string time_zone =
+        command_line.GetSwitchValueASCII(switches::kTimeZoneForTesting);
+    icu::TimeZone::adoptDefault(
+        icu::TimeZone::createTimeZone(icu::UnicodeString(time_zone.c_str())));
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
   // Specifies $HOME explicitly because some plugins rely on $HOME but
   // no other part of Chrome OS uses that.  See crbug.com/335290.
   base::FilePath homedir;
@@ -125,7 +146,7 @@ int PpapiPluginMain(const MainFunctionParams& parameters) {
   gin::V8Initializer::LoadV8Snapshot();
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   sandbox::policy::SandboxLinux::GetInstance()->InitializeSandbox(
       sandbox::policy::SandboxTypeFromCommandLine(command_line),
       sandbox::policy::SandboxLinux::PreSandboxHook(),
@@ -135,18 +156,18 @@ int PpapiPluginMain(const MainFunctionParams& parameters) {
   ChildProcess ppapi_process;
   base::RunLoop run_loop;
   ppapi_process.set_main_thread(
-      new PpapiThread(run_loop.QuitClosure(), parameters.command_line));
+      new PpapiThread(run_loop.QuitClosure(), command_line));
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
   // Startup tracing is usually enabled earlier, but if we forked from a zygote,
   // we can only enable it after mojo IPC support is brought up by PpapiThread,
   // because the mojo broker has to create the tracing SMB on our behalf due to
   // the zygote sandbox.
   if (parameters.zygote_child)
     tracing::EnableStartupTracingIfNeeded();
-#endif  // OS_POSIX && !OS_ANDROID && !OS_MAC
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!base::win::IsUser32AndGdi32Available())
     gfx::win::InitializeDirectWrite();
   InitializeDWriteFontProxy();
@@ -168,7 +189,7 @@ int PpapiPluginMain(const MainFunctionParams& parameters) {
 
   run_loop.Run();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   UninitializeDWriteFontProxy();
 #endif
   return 0;

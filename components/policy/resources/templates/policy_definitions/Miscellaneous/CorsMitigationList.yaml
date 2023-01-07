@@ -1,0 +1,34 @@
+caption: Enable <ph name="CORS">CORS</ph> check mitigations in the new <ph name="CORS">CORS</ph>
+  implementation
+deprecated: true
+desc: |-
+  Enable <ph name="CORS">CORS</ph> check mitigations in the new <ph name="CORS">CORS</ph> implementation, allowing Extensions to keep compatible behavior, and allowing <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to send specified headers without <ph name="CORS">CORS</ph> checks.
+
+        If this list is set to empty, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> tries to run Extensions in compatible manners, and does not introduce <ph name="API">API</ph> changes for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 79 as explained at <ph name="WEB_REQUEST_API_MANUAL">https://developer.chrome.com/extensions/webRequest</ph>.
+
+        If this list is set to have <ph name="HTTP">HTTP</ph> request header names, <ph name="CORS">CORS</ph> inspection will ignore the listed headers in addition to enable the mitigation for Extensions.
+
+        If this list is not set, both mitigations explained above are not applied.
+
+        For details on <ph name="CORS">CORS</ph>, visit: <ph name="CORS_HELP_URL">https://www.chromestatus.com/feature/5768642492891136</ph>.
+
+        Note that this policy was announced to be removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 82, but removed in version 84.
+example_value:
+- x-googapps-allowed-domains
+- youtube-restrict
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- toyoshim@chromium.org
+- yhirano@chromium.org
+- kinuko@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:79-83
+- chrome_os:79-83
+tags: []
+type: list

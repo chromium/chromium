@@ -1,13 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/arc/arc_fast_app_reinstall_starter.h"
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_util.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {

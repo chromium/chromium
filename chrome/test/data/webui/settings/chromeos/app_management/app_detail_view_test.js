@@ -1,16 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {AppManagementStore, updateArcSupported, FakePageHandler, ArcPermissionType, updateSelectedAppId, getPermissionValueBool, PageType, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf, isHidden, getPermissionItemByType, getPermissionCrToggleByType} from './test_util.m.js';
-// #import {flushTasks} from 'chrome://test/test_util.m.js';
-// clang-format on
-
 'use strict';
+
+import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
+import {setupFakeHandler, replaceStore, replaceBody} from './test_util.js';
 
 suite('<app-management-app-detail-view>', () => {
   let appDetailView;
@@ -21,16 +16,12 @@ suite('<app-management-app-detail-view>', () => {
     fakeHandler = setupFakeHandler();
     replaceStore();
 
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateArcSupported(true));
-
     // Create an ARC app.
-    const arcOptions = {type: apps.mojom.AppType.kArc};
+    const arcOptions = {type: appManagement.mojom.AppType.kArc};
 
     // Add an app, and make it the currently selected app.
     arcApp = await fakeHandler.addApp('app1_id', arcOptions);
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(arcApp.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(arcApp.id));
 
     appDetailView = document.createElement('app-management-app-detail-view');
 
@@ -40,23 +31,26 @@ suite('<app-management-app-detail-view>', () => {
 
   test('Change selected app', async () => {
     assertEquals(
-        app_management.AppManagementStore.getInstance().data.selectedAppId,
+        AppManagementStore.getInstance().data.selectedAppId,
         appDetailView.app_.id);
     assertEquals(arcApp.id, appDetailView.app_.id);
-    assertTrue(!!appDetailView.$$('app-management-arc-detail-view'));
-    assertFalse(!!appDetailView.$$('app-management-pwa-detail-view'));
-    const pwaOptions = {type: apps.mojom.AppType.kWeb};
+    assertTrue(!!appDetailView.shadowRoot.querySelector(
+        'app-management-arc-detail-view'));
+    assertFalse(!!appDetailView.shadowRoot.querySelector(
+        'app-management-pwa-detail-view'));
+    const pwaOptions = {type: appManagement.mojom.AppType.kWeb};
     // Add an second pwa app, and make it the currently selected app.
     const pwaApp = await fakeHandler.addApp('app2_id', pwaOptions);
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(pwaApp.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(pwaApp.id));
     await fakeHandler.flushPipesForTesting();
 
     assertEquals(
-        app_management.AppManagementStore.getInstance().data.selectedAppId,
+        AppManagementStore.getInstance().data.selectedAppId,
         appDetailView.app_.id);
     assertEquals(pwaApp.id, appDetailView.app_.id);
-    assertFalse(!!appDetailView.$$('app-management-arc-detail-view'));
-    assertTrue(!!appDetailView.$$('app-management-pwa-detail-view'));
+    assertFalse(!!appDetailView.shadowRoot.querySelector(
+        'app-management-arc-detail-view'));
+    assertTrue(!!appDetailView.shadowRoot.querySelector(
+        'app-management-pwa-detail-view'));
   });
 });

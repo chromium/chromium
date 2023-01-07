@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 #import <QuartzCore/CAAnimation.h>
 #import <QuartzCore/CAMediaTimingFunction.h>
 
-#include "base/check_op.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -91,13 +90,13 @@ const CGFloat kStrokeEndAtApogee = 1;
   UIColor* newTint = nil;
   switch (self.state) {
     case UIControlStateNormal:
-      newTint = self.configuration.buttonsTintColor;
+      newTint = self.toolbarConfiguration.buttonsTintColor;
       break;
     case UIControlStateHighlighted:
-      newTint = self.configuration.buttonsTintColorHighlighted;
+      newTint = self.toolbarConfiguration.buttonsTintColorHighlighted;
       break;
     default:
-      newTint = self.configuration.buttonsTintColor;
+      newTint = self.toolbarConfiguration.buttonsTintColor;
       break;
       }
   self.tintColor = newTint;
@@ -132,10 +131,10 @@ const CGFloat kStrokeEndAtApogee = 1;
   }
 }
 
-// Returns a keyframe-based animation of the property identified by |keyPath|.
-// The animation immediately sets the property's value to |initialValue|.
-// After |frameStart| frames, the property's value animates to
-// |intermediaryValue|, and then to |finalValue|.
+// Returns a keyframe-based animation of the property identified by `keyPath`.
+// The animation immediately sets the property's value to `initialValue`.
+// After `frameStart` frames, the property's value animates to
+// `intermediaryValue`, and then to `finalValue`.
 - (CAAnimation*)animationWithInitialValue:(id)initialValue
                         intermediaryValue:(id)intermediaryValue
                                finalValue:(id)finalValue
@@ -199,7 +198,7 @@ const CGFloat kStrokeEndAtApogee = 1;
   return animation;
 }
 
-// Starts animating the button towards the color |targetColor|.
+// Starts animating the button towards the color `targetColor`.
 - (void)animateToColor:(UIColor*)targetColor {
   _animationOnGoing = YES;
 
@@ -248,10 +247,10 @@ const CGFloat kStrokeEndAtApogee = 1;
                              forKeyPath:@"strokeColor"];
     colorAnimation.fillMode = kCAFillModeForwards;
 
-    // |self| needs to know when the animations are finished. This is achieved
-    // by having |self| be registered as a CAAnimationDelegate.
+    // `self` needs to know when the animations are finished. This is achieved
+    // by having `self` be registered as a CAAnimationDelegate.
     // Because all animations have the same duration, any animation can be used.
-    // Arbitrarly use the |strokeStartAnimation| of the first dot.
+    // Arbitrarly use the `strokeStartAnimation` of the first dot.
     if (i == 0) {
       strokeStartAnimation.delegate = self;
     }

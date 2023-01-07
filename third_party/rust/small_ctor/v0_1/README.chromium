@@ -1,0 +1,6 @@
+Name: small_ctor
+URL: https://crates.io/crates/small_ctor
+Description: A minimal, dependency free version of the ctor crate
+Version: 0.1.0
+Security Critical: no
+License: Apache 2.0

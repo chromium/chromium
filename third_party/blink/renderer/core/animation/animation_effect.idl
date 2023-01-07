@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://drafts.csswg.org/web-animations/#the-animationeffect-interface
+// https://w3.org/TR/web-animations-1/#the-animationeffect-interface
 
 [Exposed=Window]
 interface AnimationEffect {

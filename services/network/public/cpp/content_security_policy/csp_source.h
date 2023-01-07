@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,8 @@ COMPONENT_EXPORT(NETWORK_CPP)
 bool CheckCSPSource(const mojom::CSPSource& source,
                     const GURL& url,
                     const mojom::CSPSource& self_source,
-                    bool has_followed_redirect = false);
+                    bool has_followed_redirect = false,
+                    bool is_opaque_fenced_frame = false);
 
 // Compute the source intersection of |source_a| and |source_b|.
 // https://w3c.github.io/webappsec-cspee/#intersection-source-expressions

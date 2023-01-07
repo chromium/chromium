@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -19,6 +18,10 @@ namespace remoting {
 class MessageTracker final {
  public:
   MessageTracker();
+
+  MessageTracker(const MessageTracker&) = delete;
+  MessageTracker& operator=(const MessageTracker&) = delete;
+
   ~MessageTracker();
 
   // Tracks |id|. If |id| is already tracked then it will update its tracking
@@ -42,7 +45,6 @@ class MessageTracker final {
 
   std::map<std::string, base::Time> tracked_ids_;
   base::OneShotTimer cleanup_timer_;
-  DISALLOW_COPY_AND_ASSIGN(MessageTracker);
 };
 
 }  // namespace remoting

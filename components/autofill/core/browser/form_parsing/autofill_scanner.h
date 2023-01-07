@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
-#include <string>
 #include <vector>
-
-#include "base/macros.h"
 
 namespace autofill {
 
@@ -23,6 +20,10 @@ class AutofillScanner {
   explicit AutofillScanner(const std::vector<AutofillField*>& fields);
   explicit AutofillScanner(
       const std::vector<std::unique_ptr<AutofillField>>& fields);
+
+  AutofillScanner(const AutofillScanner&) = delete;
+  AutofillScanner& operator=(const AutofillScanner&) = delete;
+
   ~AutofillScanner();
 
   // Advances the cursor by one step, if possible.
@@ -65,8 +66,6 @@ class AutofillScanner {
 
   // The storage of non-owning pointers, used for the unique_ptr constructor.
   std::vector<AutofillField*> non_owning_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillScanner);
 };
 
 }  // namespace autofill

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CHROME_CHROME_CLEANER_IPC_MOJO_SANDBOX_HOOKS_H_
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/ipc/sandbox.h"
@@ -21,6 +20,10 @@ namespace chrome_cleaner {
 class MojoSandboxSetupHooks : public SandboxSetupHooks {
  public:
   MojoSandboxSetupHooks();
+
+  MojoSandboxSetupHooks(const MojoSandboxSetupHooks&) = delete;
+  MojoSandboxSetupHooks& operator=(const MojoSandboxSetupHooks&) = delete;
+
   ~MojoSandboxSetupHooks() override;
 
  protected:
@@ -43,21 +46,20 @@ class MojoSandboxSetupHooks : public SandboxSetupHooks {
   bool process_launch_attempt_reported_ = false;
   mojo::OutgoingInvitation outgoing_invitation_;
   mojo::PlatformChannel mojo_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoSandboxSetupHooks);
 };
 
 class MojoSandboxTargetHooks : public SandboxTargetHooks {
  public:
   MojoSandboxTargetHooks();
+
+  MojoSandboxTargetHooks(const MojoSandboxTargetHooks&) = delete;
+  MojoSandboxTargetHooks& operator=(const MojoSandboxTargetHooks&) = delete;
+
   ~MojoSandboxTargetHooks() override;
 
  protected:
   mojo::ScopedMessagePipeHandle ExtractSandboxMessagePipe(
       const base::CommandLine& command_line);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoSandboxTargetHooks);
 };
 
 }  // namespace chrome_cleaner

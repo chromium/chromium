@@ -1,13 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_ANIMATION_SLIDE_OUT_CONTROLLER_H_
 #define UI_VIEWS_ANIMATION_SLIDE_OUT_CONTROLLER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/scoped_target_handler.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -18,18 +17,23 @@ class SlideOutControllerDelegate;
 
 // This class contains logic to control sliding out of a layer in response to
 // swipes, i.e. gesture scroll events.
-class VIEWS_EXPORT SlideOutController : public ui::EventHandler,
-                                        public ui::ImplicitAnimationObserver {
+class VIEWS_EXPORT SlideOutController : public ui::EventHandler {
  public:
-  // Indicates how much the target layer is allowed to slide.
+  // Indicates how much the target layer is allowed to slide. See
+  // |OnGestureEvent()| for details.
   enum class SlideMode {
-    kFull,
-    kPartial,
-    kNone,
+    kFull,     // Fully allow sliding until it's swiped out.
+    kPartial,  // Partially allow sliding until the slide amount reaches the
+               // swipe-out threshold.
+    kNone,     // Don't allow sliding at all.
   };
 
   SlideOutController(ui::EventTarget* target,
                      SlideOutControllerDelegate* delegate);
+
+  SlideOutController(const SlideOutController&) = delete;
+  SlideOutController& operator=(const SlideOutController&) = delete;
+
   ~SlideOutController() override;
 
   void set_update_opacity(bool update_opacity) {
@@ -44,9 +48,6 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler,
 
   // ui::EventHandler
   void OnGestureEvent(ui::GestureEvent* event) override;
-
-  // ui::ImplicitAnimationObserver
-  void OnImplicitAnimationsCompleted() override;
 
   // Enables the swipe control with specifying the width of buttons. Buttons
   // will appear behind the view as user slides it partially and it's kept open
@@ -83,10 +84,12 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler,
   // delegate.
   void OnSlideOut();
 
+  void OnAnimationsCompleted();
+
   ui::ScopedTargetHandler target_handling_;
 
   // Unowned and outlives this object.
-  SlideOutControllerDelegate* delegate_;
+  raw_ptr<SlideOutControllerDelegate> delegate_;
 
   // Cumulative scroll amount since the beginning of current slide gesture.
   // Includes the initial shift when swipe control was open at gesture start.
@@ -96,7 +99,7 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler,
   SlideMode mode_ = SlideMode::kFull;
 
   // Whether the swipe control is enabled. See |SetSwipeControlWidth()|.
-  // Effective only when |mode_| is FULL.
+  // Effective only when |mode_| is FULL or PARTIAL.
   bool has_swipe_control_ = false;
 
   // The horizontal position offset to for swipe control.
@@ -104,7 +107,8 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler,
   int swipe_control_width_ = 0;
 
   // The position where the slided view stays after the touch released.
-  // Changed only when |mode_| is FULL and |has_swipe_control_| is true.
+  // Changed only when |mode_| is FULL or PARTIAL and |has_swipe_control_| is
+  // true.
   SwipeControlOpenState control_open_state_ = SwipeControlOpenState::kClosed;
 
   // If false, it doesn't update the opacity.
@@ -114,8 +118,6 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler,
   float opacity_ = 1.0;
 
   base::WeakPtrFactory<SlideOutController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SlideOutController);
 };
 
 }  // namespace views

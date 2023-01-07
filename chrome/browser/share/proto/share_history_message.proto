@@ -1,0 +1,40 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package sharing.mojom;
+
+option optimize_for = LITE_RUNTIME;
+
+message Target {
+  string component_name = 1;
+}
+
+message ShareHistory {
+  // There are at most WINDOW entries in this list, representing days within
+  // the last WINDOW days for which there is any history.
+  repeated DayShareHistory day_histories = 1;
+}
+
+message DayShareHistory {
+  // Which day this DayShareHistory is for. This is needed in case the app
+  // isn't run for >1 day - we can't always rely on the WINDOW entries
+  // being the most recent WINDOW days.
+  //
+  // This is stored as a number of days since the Unix epoch, and a day in this
+  // context runs from UTC midnight to UTC midnight.
+  int32 day = 1;
+
+  // All of the apps that were shared to on this day.
+  repeated TargetShareHistory target_histories = 2;
+}
+
+message TargetShareHistory {
+  // The actual target is identified by a component name.
+  Target target = 1;
+
+  // How many shares this target received.
+  int32 count = 2;
+}

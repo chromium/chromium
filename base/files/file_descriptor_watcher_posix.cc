@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_local.h"
@@ -182,7 +182,7 @@ FileDescriptorWatcher::Controller::Controller(MessagePumpForIO::Mode mode,
 }
 
 FileDescriptorWatcher::Controller::~Controller() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (io_thread_task_runner_->BelongsToCurrentThread()) {
     // If the MessagePumpForIO and the Controller live on the same thread.
@@ -192,11 +192,6 @@ FileDescriptorWatcher::Controller::~Controller() {
     // Synchronously wait until |watcher_| is deleted on the MessagePumpForIO
     // thread. This ensures that the file descriptor is never accessed after
     // this destructor returns.
-    //
-    // Use a ScopedClosureRunner to ensure that |done| is signaled even if the
-    // thread doesn't run any more tasks (if PostTask returns true, it means
-    // that the task was queued, but it doesn't mean that a RunLoop will run the
-    // task before the queue is deleted).
     //
     // We considered associating "generations" to file descriptors to avoid the
     // synchronous wait. For example, if the IO thread gets a "cancel" for fd=6,
@@ -210,7 +205,6 @@ FileDescriptorWatcher::Controller::~Controller() {
     // T2 (io)     Watcher::StartWatching()
     //               Incorrectly starts watching fd = 6 which now refers to a
     //               different file than when WatchReadable() was called.
-    WaitableEvent done;
     auto delete_task = BindOnce(
         [](Watcher* watcher) {
           // Since |watcher| is a raw pointer, it isn't deleted if this callback
@@ -228,7 +222,7 @@ FileDescriptorWatcher::Controller::~Controller() {
 }
 
 void FileDescriptorWatcher::Controller::StartWatching() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (io_thread_task_runner_->BelongsToCurrentThread()) {
     // If the MessagePumpForIO and the Controller live on the same thread.
     watcher_->StartWatching();
@@ -243,7 +237,7 @@ void FileDescriptorWatcher::Controller::StartWatching() {
 }
 
 void FileDescriptorWatcher::Controller::RunCallback() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   WeakPtr<Controller> weak_this = weak_factory_.GetWeakPtr();
 

@@ -1,9 +1,8 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/blink/renderer/modules/modules.gni")
-import("//third_party/webrtc/webrtc.gni")
 
 blink_modules_sources("peerconnection") {
   sources = [
@@ -23,8 +22,6 @@ blink_modules_sources("peerconnection") {
     "adapters/web_rtc_cross_thread_copier.h",
     "byte_buffer_queue.cc",
     "byte_buffer_queue.h",
-    "call_setup_state_tracker.cc",
-    "call_setup_state_tracker.h",
     "identifiability_metrics.cc",
     "identifiability_metrics.h",
     "media_stream_remote_video_source.cc",
@@ -55,6 +52,14 @@ blink_modules_sources("peerconnection") {
     "rtc_encoded_audio_frame.h",
     "rtc_encoded_audio_frame_delegate.cc",
     "rtc_encoded_audio_frame_delegate.h",
+    "rtc_encoded_audio_receiver_sink_optimizer.cc",
+    "rtc_encoded_audio_receiver_sink_optimizer.h",
+    "rtc_encoded_audio_receiver_source_optimizer.cc",
+    "rtc_encoded_audio_receiver_source_optimizer.h",
+    "rtc_encoded_audio_sender_sink_optimizer.cc",
+    "rtc_encoded_audio_sender_sink_optimizer.h",
+    "rtc_encoded_audio_sender_source_optimizer.cc",
+    "rtc_encoded_audio_sender_source_optimizer.h",
     "rtc_encoded_audio_underlying_sink.cc",
     "rtc_encoded_audio_underlying_sink.h",
     "rtc_encoded_audio_underlying_source.cc",
@@ -124,6 +129,10 @@ blink_modules_sources("peerconnection") {
     "rtc_void_request_promise_impl.h",
     "rtc_void_request_script_promise_resolver_impl.cc",
     "rtc_void_request_script_promise_resolver_impl.h",
+    "rtp_contributing_source_cache.cc",
+    "rtp_contributing_source_cache.h",
+    "speed_limit_uma_listener.cc",
+    "speed_limit_uma_listener.h",
     "thermal_resource.cc",
     "thermal_resource.h",
     "thermal_uma_listener.cc",
@@ -138,16 +147,20 @@ blink_modules_sources("peerconnection") {
     "webrtc_media_stream_track_adapter_map.h",
     "webrtc_set_description_observer.cc",
     "webrtc_set_description_observer.h",
+    "webrtc_video_perf_reporter.cc",
+    "webrtc_video_perf_reporter.h",
   ]
 
   public_deps = [ "//third_party/webrtc_overrides:webrtc_component" ]
   deps = [
-    "//jingle:webrtc_glue",
+    "//components/webrtc:thread_wrapper",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/abseil-cpp:absl",
+    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
     "//third_party/blink/renderer/modules/crypto",
     "//third_party/blink/renderer/modules/mediastream",
     "//third_party/blink/renderer/modules/webrtc",
+    "//third_party/re2",
   ]
 
   allow_circular_includes_from =
@@ -156,15 +169,6 @@ blink_modules_sources("peerconnection") {
 
 source_set("test_support") {
   testonly = true
-
-  # TODO(crbug.com/1173961): avoid depending on testonly webrtc targets.
-  if (rtc_include_tests) {
-    # This target uses some webrtc targets that are not part of
-    # "webrtc_component". This target relies on the fact that including a header
-    # that is not tracked by GN works without raising any warning. However it
-    # leads to build errors if rtc_include_tests = true.
-    check_includes = false
-  }
 
   sources = [
     "fake_rtc_rtp_transceiver_impl.cc",

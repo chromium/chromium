@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_BASE_WALL_CLOCK_TIME_SOURCE_H_
 #define MEDIA_BASE_WALL_CLOCK_TIME_SOURCE_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/default_tick_clock.h"
@@ -18,6 +18,10 @@ namespace media {
 class MEDIA_EXPORT WallClockTimeSource : public TimeSource {
  public:
   WallClockTimeSource();
+
+  WallClockTimeSource(const WallClockTimeSource&) = delete;
+  WallClockTimeSource& operator=(const WallClockTimeSource&) = delete;
+
   ~WallClockTimeSource() override;
 
   // TimeSource implementation.
@@ -36,7 +40,7 @@ class MEDIA_EXPORT WallClockTimeSource : public TimeSource {
   base::TimeDelta CurrentMediaTime_Locked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Allow for an injectable tick clock for testing.
-  const base::TickClock* tick_clock_ GUARDED_BY(lock_);
+  raw_ptr<const base::TickClock> tick_clock_ GUARDED_BY(lock_);
 
   bool ticking_ GUARDED_BY(lock_);
 
@@ -50,8 +54,6 @@ class MEDIA_EXPORT WallClockTimeSource : public TimeSource {
   // TODO(scherkus): Remove internal locking from this class after access to
   // Renderer::CurrentMediaTime() is single threaded http://crbug.com/370634
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallClockTimeSource);
 };
 
 }  // namespace media

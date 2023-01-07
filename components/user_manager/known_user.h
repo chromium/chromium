@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,159 +8,26 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "components/user_manager/user_manager_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 enum class AccountType;
 class PrefRegistrySimple;
+class PrefService;
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
 namespace user_manager {
-namespace known_user {
-// Methods for storage/retrieval of per-user properties in Local State.
 
-// Performs a lookup of properties associated with |account_id|. If found,
-// returns |true| and fills |out_value|. |out_value| can be NULL, if
-// only existence check is required.
-bool USER_MANAGER_EXPORT FindPrefs(const AccountId& account_id,
-                                   const base::DictionaryValue** out_value);
-
-// Updates (or creates) properties associated with |account_id| based
-// on |values|. |clear| defines if existing properties are cleared (|true|)
-// or if it is just a incremental update (|false|).
-void USER_MANAGER_EXPORT UpdatePrefs(const AccountId& account_id,
-                                     const base::DictionaryValue& values,
-                                     bool clear);
-
-// Returns true if |account_id| preference by |path| does exist,
-// fills in |out_value|. Otherwise returns false.
-bool USER_MANAGER_EXPORT GetStringPref(const AccountId& account_id,
-                                       const std::string& path,
-                                       std::string* out_value);
-
-// Updates user's identified by |account_id| string preference |path|.
-void USER_MANAGER_EXPORT SetStringPref(const AccountId& account_id,
-                                       const std::string& path,
-                                       const std::string& in_value);
-
-// Returns true if |account_id| preference by |path| does exist,
-// fills in |out_value|. Otherwise returns false.
-bool USER_MANAGER_EXPORT GetBooleanPref(const AccountId& account_id,
-                                        const std::string& path,
-                                        bool* out_value);
-
-// Updates user's identified by |account_id| boolean preference |path|.
-void USER_MANAGER_EXPORT SetBooleanPref(const AccountId& account_id,
-                                        const std::string& path,
-                                        const bool in_value);
-
-// Returns true if |account_id| preference by |path| does exist,
-// fills in |out_value|. Otherwise returns false.
-bool USER_MANAGER_EXPORT GetIntegerPref(const AccountId& account_id,
-                                        const std::string& path,
-                                        int* out_value);
-
-// Updates user's identified by |account_id| integer preference |path|.
-void USER_MANAGER_EXPORT SetIntegerPref(const AccountId& account_id,
-                                        const std::string& path,
-                                        const int in_value);
-
-// Returns true if |account_id| preference by |path| does exist,
-// fills in |out_value|. Otherwise returns false.
-bool USER_MANAGER_EXPORT GetPref(const AccountId& account_id,
-                                 const std::string& path,
-                                 const base::Value** out_value);
-
-// Updates user's identified by |account_id| value preference |path|.
-void USER_MANAGER_EXPORT SetPref(const AccountId& account_id,
-                                 const std::string& path,
-                                 base::Value in_value);
-
-// Removes user's identified by |account_id| preference |path|.
-void USER_MANAGER_EXPORT RemovePref(const AccountId& account_id,
-                                    const std::string& path);
-
-// Returns the list of known AccountIds.
-std::vector<AccountId> USER_MANAGER_EXPORT GetKnownAccountIds();
-
-// This call forms full account id of a known user by email and (optionally)
-// gaia_id.
-// This is a temporary call while migrating to AccountId.
-AccountId USER_MANAGER_EXPORT GetAccountId(const std::string& user_email,
-                                           const std::string& id,
-                                           const AccountType& account_type);
-
-// Returns true if |subsystem| data was migrated to GaiaId for the |account_id|.
-bool USER_MANAGER_EXPORT GetGaiaIdMigrationStatus(const AccountId& account_id,
-                                                  const std::string& subsystem);
-
-// Marks |subsystem| migrated to GaiaId for the |account_id|.
-void USER_MANAGER_EXPORT
-SetGaiaIdMigrationStatusDone(const AccountId& account_id,
-                             const std::string& subsystem);
-
-// Marks if user is ephemeral and should be removed on log out.
-void SetIsEphemeralUser(const AccountId& account_id, bool is_ephemeral);
-
-// Saves |account_id| into known users. Tries to commit the change on disk. Use
-// only if account_id is not yet in the known user list. Important if Chrome
-// crashes shortly after starting a session. Cryptohome should be able to find
-// known account_id on Chrome restart.
-void USER_MANAGER_EXPORT SaveKnownUser(const AccountId& account_id);
-
-// Updates |gaia_id| for user with |account_id|.
-// TODO(alemate): Update this once AccountId contains GAIA ID
-// (crbug.com/548926).
-void USER_MANAGER_EXPORT UpdateGaiaID(const AccountId& account_id,
-                                      const std::string& gaia_id);
-
-// Updates |account_id.account_type_| and |account_id.GetGaiaId()| or
-// |account_id.GetObjGuid()| for user with |account_id|.
-void USER_MANAGER_EXPORT UpdateId(const AccountId& account_id);
-
-// Find GAIA ID for user with |account_id|, fill in |out_value| and return
-// true
-// if GAIA ID was found or false otherwise.
-// TODO(antrim): Update this once AccountId contains GAIA ID
-// (crbug.com/548926).
-bool USER_MANAGER_EXPORT FindGaiaID(const AccountId& account_id,
-                                    std::string* out_value);
-
-// Setter and getter for DeviceId known user string preference.
-void USER_MANAGER_EXPORT SetDeviceId(const AccountId& account_id,
-                                     const std::string& device_id);
-
-std::string USER_MANAGER_EXPORT GetDeviceId(const AccountId& account_id);
-
-// Setter and getter for GAPSCookie known user string preference.
-void USER_MANAGER_EXPORT SetGAPSCookie(const AccountId& account_id,
-                                       const std::string& gaps_cookie);
-
-std::string USER_MANAGER_EXPORT GetGAPSCookie(const AccountId& account_id);
-
-// Saves whether the user authenticates using SAML.
-void USER_MANAGER_EXPORT UpdateUsingSAML(const AccountId& account_id,
-                                         const bool using_saml);
-
-// Returns if SAML needs to be used for authentication of the user with
-// |account_id|, if it is known (was set by a |UpdateUsingSaml| call).
-// Otherwise
-// returns false.
-bool USER_MANAGER_EXPORT IsUsingSAML(const AccountId& account_id);
-
-// Setter and getter for the known user preference that stores whether the user
-// authenticated via SAML using the principals API.
-void USER_MANAGER_EXPORT
-UpdateIsUsingSAMLPrincipalsAPI(const AccountId& account_id,
-                               bool is_using_saml_principals_api);
-
-bool USER_MANAGER_EXPORT
-GetIsUsingSAMLPrincipalsAPI(const AccountId& account_id);
+class UserManagerBase;
 
 // Enum describing whether a user's profile requires policy. If kPolicyRequired,
 // the profile initialization code will ensure that valid policy is loaded
@@ -171,114 +38,270 @@ enum class ProfileRequiresPolicy {
   kNoPolicyRequired
 };
 
-// Returns whether the current profile requires policy or not (returns UNKNOWN
-// if the profile has never been initialized and so the policy status is
-// not yet known).
-ProfileRequiresPolicy USER_MANAGER_EXPORT
-GetProfileRequiresPolicy(const AccountId& account_id);
+// Accessor for attributes of per-user properties stored in local_state.
+class USER_MANAGER_EXPORT KnownUser final {
+ public:
+  // Constructing KnownUser is cheap.
+  // |local_state| may not be nullptr. This is different from the legacy
+  // accessors (user_manager::known_user::) which will return a default value if
+  // local_state is not available.
+  explicit KnownUser(PrefService* local_state);
+  ~KnownUser();
 
-// Sets whether the profile requires policy or not.
-void USER_MANAGER_EXPORT
-SetProfileRequiresPolicy(const AccountId& account_id,
-                         ProfileRequiresPolicy policy_required);
+  KnownUser(const KnownUser& other) = delete;
+  KnownUser& operator=(const KnownUser& other) = delete;
 
-// Clears information whether profile requires policy.
-void USER_MANAGER_EXPORT
-ClearProfileRequiresPolicy(const AccountId& account_id);
+  // Updates (or creates) properties associated with |account_id|. Updates
+  // value found by |path| with |opt_value|. If |opt_value| has no value it
+  // clears the |path| in properties.
+  void SetPath(const AccountId& account_id,
+               const std::string& path,
+               absl::optional<base::Value> opt_value);
 
-// Saves why the user has to go through re-auth flow.
-void USER_MANAGER_EXPORT UpdateReauthReason(const AccountId& account_id,
-                                            const int reauth_reason);
+  // Returns `nullptr` if value is not found or not a string.
+  const std::string* FindStringPath(const AccountId& account_id,
+                                    base::StringPiece path) const;
 
-// Returns the reason why the user with |account_id| has to go through the
-// re-auth flow. Returns true if such a reason was recorded or false
-// otherwise.
-bool USER_MANAGER_EXPORT FindReauthReason(const AccountId& account_id,
-                                          int* out_value);
+  // Returns true if |account_id| preference by |path| does exist,
+  // fills in |out_value|. Otherwise returns false.
+  bool GetStringPrefForTest(const AccountId& account_id,
+                            const std::string& path,
+                            std::string* out_value);
 
-// Saves that a minimal migration was attempted for this user's cryptohome.
-void USER_MANAGER_EXPORT
-SetUserHomeMinimalMigrationAttempted(const AccountId& account_id,
-                                     bool minimal_migration_attempted);
+  // Updates user's identified by |account_id| string preference |path|.
+  void SetStringPref(const AccountId& account_id,
+                     const std::string& path,
+                     const std::string& in_value);
 
-// Returns true if minimal migration was attempted for this user's cryptohome.
-bool USER_MANAGER_EXPORT
-WasUserHomeMinimalMigrationAttempted(const AccountId& account_id);
+  absl::optional<bool> FindBoolPath(const AccountId& account_id,
+                                    base::StringPiece path) const;
 
-// Setter and getter for the information about challenge-response keys that can
-// be used by this user to authenticate.
-// The getter returns a null value when the property isn't present.
-// For the format of the value, refer to
-// chromeos/login/auth/challenge_response/known_user_pref_utils.h.
-void USER_MANAGER_EXPORT SetChallengeResponseKeys(const AccountId& account_id,
-                                                  base::Value value);
+  // Returns true if |account_id| preference by |path| does exist,
+  // fills in |out_value|. Otherwise returns false.
+  bool GetBooleanPrefForTest(const AccountId& account_id,
+                             const std::string& path,
+                             bool* out_value);
 
-base::Value USER_MANAGER_EXPORT
-GetChallengeResponseKeys(const AccountId& account_id);
+  // Updates user's identified by |account_id| boolean preference |path|.
+  void SetBooleanPref(const AccountId& account_id,
+                      const std::string& path,
+                      const bool in_value);
 
-void USER_MANAGER_EXPORT SetLastOnlineSignin(const AccountId& account_id,
-                                             base::Time time);
+  // Return absl::nullopt if the value is not found or doesn't have the int
+  // type.
+  absl::optional<int> FindIntPath(const AccountId& account_id,
+                                  base::StringPiece path) const;
 
-base::Time USER_MANAGER_EXPORT GetLastOnlineSignin(const AccountId& account_id);
+  // Returns true if |account_id| preference by |path| does exist,
+  // fills in |out_value|. Otherwise returns false.
+  bool GetIntegerPrefForTest(const AccountId& account_id,
+                             const std::string& path,
+                             int* out_value);
 
-void USER_MANAGER_EXPORT
-SetOfflineSigninLimit(const AccountId& account_id,
-                      base::Optional<base::TimeDelta> time_limit);
+  // Updates user's identified by |account_id| integer preference |path|.
+  void SetIntegerPref(const AccountId& account_id,
+                      const std::string& path,
+                      const int in_value);
 
-base::Optional<base::TimeDelta> USER_MANAGER_EXPORT
-GetOfflineSigninLimit(const AccountId& account_id);
+  // Returns true if |account_id| preference by |path| does exist,
+  // fills in |out_value|. Otherwise returns false.
+  bool GetPrefForTest(const AccountId& account_id,
+                      const std::string& path,
+                      const base::Value** out_value);
 
-void USER_MANAGER_EXPORT SetIsEnterpriseManaged(const AccountId& account_id,
-                                                bool is_enterprise_managed);
+  const base::Value* FindPath(const AccountId& account_id,
+                              const std::string& path) const;
 
-bool USER_MANAGER_EXPORT GetIsEnterpriseManaged(const AccountId& account_id);
+  // Removes user's identified by |account_id| preference |path|.
+  void RemovePref(const AccountId& account_id, const std::string& path);
 
-void USER_MANAGER_EXPORT SetAccountManager(const AccountId& account_id,
-                                           const std::string& manager);
-bool USER_MANAGER_EXPORT GetAccountManager(const AccountId& account_id,
-                                           std::string* manager);
-void USER_MANAGER_EXPORT
-SetUserLastLoginInputMethod(const AccountId& account_id,
-                            const std::string& input_method);
+  // Returns the list of known AccountIds.
+  std::vector<AccountId> GetKnownAccountIds();
 
-bool USER_MANAGER_EXPORT GetUserLastInputMethod(const AccountId& account_id,
-                                                std::string* input_method);
+  // This call forms full account id of a known user by email and (optionally)
+  // gaia_id.
+  // This is a temporary call while migrating to AccountId.
+  AccountId GetAccountId(const std::string& user_email,
+                         const std::string& id,
+                         const AccountType& account_type);
 
-// Exposes the user's PIN length in local state for PIN auto submit.
-void USER_MANAGER_EXPORT SetUserPinLength(const AccountId& account_id,
-                                          int pin_length);
+  // Saves |account_id| into known users. Tries to commit the change on disk.
+  // Use only if account_id is not yet in the known user list. Important if
+  // Chrome crashes shortly after starting a session. Cryptohome should be able
+  // to find known account_id on Chrome restart.
+  void SaveKnownUser(const AccountId& account_id);
 
-// Returns the user's PIN length if available, otherwise 0.
-int USER_MANAGER_EXPORT GetUserPinLength(const AccountId& account_id);
+  // Updates |account_id.account_type_| and |account_id.GetGaiaId()| or
+  // |account_id.GetObjGuid()| for user with |account_id|.
+  void UpdateId(const AccountId& account_id);
 
-// Whether the user needs to have their pin auto submit preferences backfilled.
-// TODO(crbug.com/1104164) - Remove this once most users have their
-// preferences backfilled.
-bool USER_MANAGER_EXPORT
-PinAutosubmitIsBackfillNeeded(const AccountId& account_id);
-void USER_MANAGER_EXPORT
-PinAutosubmitSetBackfillNotNeeded(const AccountId& account_id);
-void USER_MANAGER_EXPORT
-PinAutosubmitSetBackfillNeededForTests(const AccountId& account_id);
+  // Find GAIA ID for user with `account_id`, returns `nullptr` if not found.
+  const std::string* FindGaiaID(const AccountId& account_id);
 
-// Setter and getter for password sync token used for syncing SAML passwords
-// across multiple user devices.
-void USER_MANAGER_EXPORT SetPasswordSyncToken(const AccountId& account_id,
-                                              const std::string& token);
+  // Setter and getter for DeviceId known user string preference.
+  void SetDeviceId(const AccountId& account_id, const std::string& device_id);
 
-std::string USER_MANAGER_EXPORT
-GetPasswordSyncToken(const AccountId& account_id);
+  std::string GetDeviceId(const AccountId& account_id);
 
-// Removes all user preferences associated with |account_id|.
-// Not exported as code should not be calling this outside this component
-void RemovePrefs(const AccountId& account_id);
+  // Setter and getter for GAPSCookie known user string preference.
+  void SetGAPSCookie(const AccountId& account_id,
+                     const std::string& gaps_cookie);
 
-// Removes all ephemeral users.
-void CleanEphemeralUsers();
+  std::string GetGAPSCookie(const AccountId& account_id);
 
-// Register known user prefs.
-void USER_MANAGER_EXPORT RegisterPrefs(PrefRegistrySimple* registry);
-}
+  // Saves whether the user authenticates using SAML.
+  void UpdateUsingSAML(const AccountId& account_id, const bool using_saml);
+
+  // Returns if SAML needs to be used for authentication of the user with
+  // |account_id|, if it is known (was set by a |UpdateUsingSaml| call).
+  // Otherwise
+  // returns false.
+  bool IsUsingSAML(const AccountId& account_id);
+
+  // Setter and getter for the known user preference that stores whether the
+  // user authenticated via SAML using the principals API.
+  void UpdateIsUsingSAMLPrincipalsAPI(const AccountId& account_id,
+                                      bool is_using_saml_principals_api);
+
+  bool GetIsUsingSAMLPrincipalsAPI(const AccountId& account_id);
+
+  // Returns whether the current profile requires policy or not (returns UNKNOWN
+  // if the profile has never been initialized and so the policy status is
+  // not yet known).
+  ProfileRequiresPolicy GetProfileRequiresPolicy(const AccountId& account_id);
+
+  // Sets whether the profile requires policy or not.
+  void SetProfileRequiresPolicy(const AccountId& account_id,
+                                ProfileRequiresPolicy policy_required);
+
+  // Clears information whether profile requires policy.
+  void ClearProfileRequiresPolicy(const AccountId& account_id);
+
+  // Saves why the user has to go through re-auth flow.
+  void UpdateReauthReason(const AccountId& account_id, const int reauth_reason);
+
+  // Returns the reason why the user with |account_id| has to go through the
+  // re-auth flow. Returns absl::nullopt if value is not set.
+  absl::optional<int> FindReauthReason(const AccountId& account_id) const;
+
+  // Setter and getter for the information about challenge-response keys that
+  // can be used by this user to authenticate. The getter returns a null value
+  // when the property isn't present. For the format of the value, refer to
+  // chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h.
+  void SetChallengeResponseKeys(const AccountId& account_id, base::Value value);
+
+  base::Value GetChallengeResponseKeys(const AccountId& account_id);
+
+  void SetLastOnlineSignin(const AccountId& account_id, base::Time time);
+
+  base::Time GetLastOnlineSignin(const AccountId& account_id);
+
+  void SetOfflineSigninLimit(const AccountId& account_id,
+                             absl::optional<base::TimeDelta> time_limit);
+
+  absl::optional<base::TimeDelta> GetOfflineSigninLimit(
+      const AccountId& account_id);
+
+  void SetIsEnterpriseManaged(const AccountId& account_id,
+                              bool is_enterprise_managed);
+
+  bool GetIsEnterpriseManaged(const AccountId& account_id);
+
+  void SetAccountManager(const AccountId& account_id,
+                         const std::string& manager);
+  const std::string* GetAccountManager(const AccountId& account_id);
+  void SetUserLastLoginInputMethodId(const AccountId& account_id,
+                                     const std::string& input_method_id);
+
+  const std::string* GetUserLastInputMethodId(const AccountId& account_id);
+
+  // Exposes the user's PIN length in local state for PIN auto submit.
+  void SetUserPinLength(const AccountId& account_id, int pin_length);
+
+  // Returns the user's PIN length if available, otherwise 0.
+  int GetUserPinLength(const AccountId& account_id);
+
+  // Whether the user needs to have their pin auto submit preferences
+  // backfilled.
+  // TODO(crbug.com/1104164) - Remove this once most users have their
+  // preferences backfilled.
+  bool PinAutosubmitIsBackfillNeeded(const AccountId& account_id);
+  void PinAutosubmitSetBackfillNotNeeded(const AccountId& account_id);
+  void PinAutosubmitSetBackfillNeededForTests(const AccountId& account_id);
+
+  // Setter and getter for password sync token used for syncing SAML passwords
+  // across multiple user devices.
+  void SetPasswordSyncToken(const AccountId& account_id,
+                            const std::string& token);
+
+  const std::string* GetPasswordSyncToken(const AccountId& account_id) const;
+
+  // Saves the current major version as the version in which the user completed
+  // the onboarding flow.
+  void SetOnboardingCompletedVersion(
+      const AccountId& account_id,
+      const absl::optional<base::Version> version);
+  absl::optional<base::Version> GetOnboardingCompletedVersion(
+      const AccountId& account_id);
+  void RemoveOnboardingCompletedVersionForTests(const AccountId& account_id);
+
+  // Setter and getter for the last screen shown in the onboarding flow. This
+  // is used to resume the onboarding flow if it's not completed yet.
+  void SetPendingOnboardingScreen(const AccountId& account_id,
+                                  const std::string& screen);
+
+  void RemovePendingOnboardingScreen(const AccountId& account_id);
+
+  std::string GetPendingOnboardingScreen(const AccountId& account_id);
+
+  bool UserExists(const AccountId& account_id);
+
+  // Register known user prefs.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
+ private:
+  friend class KnownUserTest;
+  friend class UserManagerBase;
+
+  FRIEND_TEST_ALL_PREFIXES(KnownUserTest,
+                           CleanEphemeralUsersRemovesEphemeralAdOnly);
+  FRIEND_TEST_ALL_PREFIXES(KnownUserTest, CleanObsoletePrefs);
+  FRIEND_TEST_ALL_PREFIXES(KnownUserTest, MigrateOfflineSigninLimit);
+
+  // Performs a lookup of properties associated with |account_id|. Returns
+  // nullptr if not found.
+  const base::Value* FindPrefs(const AccountId& account_id) const;
+
+  // Removes all user preferences associated with |account_id|.
+  // Not exported as code should not be calling this outside this component
+  void RemovePrefs(const AccountId& account_id);
+
+  // Removes all ephemeral users.
+  void CleanEphemeralUsers();
+
+  // Marks if user is ephemeral and should be removed on log out.
+  void SetIsEphemeralUser(const AccountId& account_id, bool is_ephemeral);
+
+  // Removes all obsolete prefs from all users.
+  void CleanObsoletePrefs();
+
+  const base::raw_ptr<PrefService> local_state_;
+};
+
+// Legacy interface of KnownUsersDatabase.
+// TODO(https://crbug.com/1150434): Migrate callers and remove this.
+namespace known_user {
+// Methods for storage/retrieval of per-user properties in Local State.
+
+// Returns the list of known AccountIds.
+// TODO(https://crbug.com/1150434): Deprecated, use
+// KnownUser::GetKnownAccountIds instead.
+std::vector<AccountId> USER_MANAGER_EXPORT GetKnownAccountIds();
+
+AccountId USER_MANAGER_EXPORT
+GetPlatformKnownAccountId(const std::string& user_email);
+
+}  // namespace known_user
 }  // namespace user_manager
 
 #endif  // COMPONENTS_USER_MANAGER_KNOWN_USER_H_

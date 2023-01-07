@@ -1,0 +1,46 @@
+digraph graphname {
+    graph [fontname = "helvetica", fontsize=11, compound=true];
+    node [shape="box", fontname = "helvetica", fontsize=11];
+    edge [fontname = "helvetica", fontsize=11];
+    rankdir="LR";
+
+    subgraph cluster_renderer1 {
+        label = "Render Process 1";
+	web_page1 [label="Web Page Renderer 1"];
+    }
+
+    subgraph cluster_renderer2 {
+        label = "Render Process 2";
+	web_page2 [label="Web Page Renderer 2"];
+	web_page3 [label="Web Page Renderer 3"];
+    }
+
+    subgraph cluster_renderer3 {
+        label = "Render Process 3";
+	web_page4 [label="Web Page Renderer 4"];
+    }
+
+    subgraph cluster_browser {
+        label = "Browser Process";
+
+        subgraph cluster_window1 {
+		label = "Browser Window";
+		tab1 [label="Tab 1"];
+		tab2 [label="Tab 2"];
+	}
+
+        subgraph cluster_window2 {
+		label = "Browser Window";
+		tab3 [label="Tab 3"];
+		tab4 [label="Tab 4"];
+	}
+    }
+
+    tab1 -> web_page1 [dir=both];
+    tab2 -> web_page2 [dir=both];
+    tab3 -> web_page3 [dir=both];
+    tab4 -> web_page4 [dir=both];
+
+    os [label="Operating System"];
+    os -> tab1 [lhead=cluster_browser, dir=both];
+}

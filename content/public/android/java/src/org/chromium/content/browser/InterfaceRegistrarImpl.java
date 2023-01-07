@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ class InterfaceRegistrarImpl {
     private static boolean sHasRegisteredRegistrars;
 
     @CalledByNative
-    static void createInterfaceRegistry(int nativeHandle) {
+    static void createInterfaceRegistry(long nativeHandle) {
         ensureSingletonRegistrarsAreRegistered();
 
         InterfaceRegistry registry = InterfaceRegistry.create(
@@ -32,7 +32,14 @@ class InterfaceRegistrarImpl {
     }
 
     @CalledByNative
-    static void createInterfaceRegistryForWebContents(int nativeHandle, WebContents webContents) {
+    static void createInterfaceRegistryOnIOThread(long nativeHandle) {
+        InterfaceRegistry registry = InterfaceRegistry.create(
+                CoreImpl.getInstance().acquireNativeHandle(nativeHandle).toMessagePipeHandle());
+        registerInterfacesOnIOThread(registry);
+    }
+
+    @CalledByNative
+    static void createInterfaceRegistryForWebContents(long nativeHandle, WebContents webContents) {
         ensureSingletonRegistrarsAreRegistered();
 
         InterfaceRegistry registry = InterfaceRegistry.create(
@@ -42,7 +49,7 @@ class InterfaceRegistrarImpl {
 
     @CalledByNative
     static void createInterfaceRegistryForRenderFrameHost(
-            int nativeHandle, RenderFrameHost renderFrameHost) {
+            long nativeHandle, RenderFrameHost renderFrameHost) {
         ensureSingletonRegistrarsAreRegistered();
 
         InterfaceRegistry registry = InterfaceRegistry.create(
@@ -54,6 +61,10 @@ class InterfaceRegistrarImpl {
         if (sHasRegisteredRegistrars) return;
         sHasRegisteredRegistrars = true;
         InterfaceRegistrar.Registry.addSingletonRegistrar(new SingletonInterfaceRegistrar());
+    }
+
+    private static void registerInterfacesOnIOThread(InterfaceRegistry registry) {
+        registry.addInterface(AndroidFontLookup.MANAGER, new AndroidFontLookupImpl.Factory());
     }
 
     private static class SingletonInterfaceRegistrar implements InterfaceRegistrar<Void> {

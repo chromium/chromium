@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 namespace extensions {
 
 // Flaky for Mac: crbug.com/1141100
-#if defined(OS_MAC)
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_Storage DISABLED_Storage
 #else
 #define MAYBE_Storage Storage

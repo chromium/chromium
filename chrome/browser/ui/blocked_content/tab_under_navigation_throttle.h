@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
-#include "base/time/time.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -19,6 +17,9 @@ class NavigationHandle;
 constexpr char kBlockTabUnderFormatMessage[] =
     "Chrome stopped this site from navigating to %s, see "
     "https://www.chromestatus.com/feature/5675755719622656 for more details.";
+
+// TODO(https://crbug.com/954178): Remove this.
+BASE_DECLARE_FEATURE(kBlockTabUnders);
 
 // This class blocks navigations that we've classified as tab-unders. It does so
 // by communicating with the popup opener tab helper.
@@ -42,9 +43,6 @@ constexpr char kBlockTabUnderFormatMessage[] =
 //  legitimate for some cases (like auth).
 class TabUnderNavigationThrottle : public content::NavigationThrottle {
  public:
-  // TODO(https://crbug.com/954178): Remove this.
-  static const base::Feature kBlockTabUnders;
-
   // This enum backs a histogram. Update enums.xml if you make any updates, and
   // put new entries before |kLast|.
   enum class Action {
@@ -71,6 +69,10 @@ class TabUnderNavigationThrottle : public content::NavigationThrottle {
 
   static std::unique_ptr<content::NavigationThrottle> MaybeCreate(
       content::NavigationHandle* handle);
+
+  TabUnderNavigationThrottle(const TabUnderNavigationThrottle&) = delete;
+  TabUnderNavigationThrottle& operator=(const TabUnderNavigationThrottle&) =
+      delete;
 
   ~TabUnderNavigationThrottle() override;
 
@@ -111,8 +113,6 @@ class TabUnderNavigationThrottle : public content::NavigationThrottle {
 
   // True if the throttle has seen a tab under.
   bool seen_tab_under_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TabUnderNavigationThrottle);
 };
 
 #endif  // CHROME_BROWSER_UI_BLOCKED_CONTENT_TAB_UNDER_NAVIGATION_THROTTLE_H_

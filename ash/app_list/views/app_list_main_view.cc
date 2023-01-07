@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,32 +6,35 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
-#include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/search_box/search_box_view_base.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -47,21 +50,14 @@ namespace ash {
 
 AppListMainView::AppListMainView(AppListViewDelegate* delegate,
                                  AppListView* app_list_view)
-    : delegate_(delegate),
-      model_(delegate->GetModel()),
-      search_model_(delegate->GetSearchModel()),
-      app_list_view_(app_list_view) {
+    : delegate_(delegate), app_list_view_(app_list_view) {
   // We need a layer to apply transform to in small display so that the apps
   // grid fits in the display.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-
-  model_->AddObserver(this);
 }
 
-AppListMainView::~AppListMainView() {
-  model_->RemoveObserver(this);
-}
+AppListMainView::~AppListMainView() = default;
 
 void AppListMainView::Init(int initial_apps_page,
                            SearchBoxView* search_box_view) {
@@ -77,7 +73,7 @@ void AppListMainView::Init(int initial_apps_page,
 void AppListMainView::AddContentsViews() {
   DCHECK(search_box_view_);
   auto contents_view = std::make_unique<ContentsView>(app_list_view_);
-  contents_view->Init(model_);
+  contents_view->Init();
   contents_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   contents_view->layer()->SetMasksToBounds(true);
   contents_view_ = AddChildView(std::move(contents_view));
@@ -96,18 +92,6 @@ void AppListMainView::ShowAppListWhenReady() {
     GetWidget()->ShowInactive();
   else
     GetWidget()->Show();
-}
-
-void AppListMainView::ModelChanged() {
-  model_->RemoveObserver(this);
-  model_ = delegate_->GetModel();
-  model_->AddObserver(this);
-  search_model_ = delegate_->GetSearchModel();
-  search_box_view_->ModelChanged();
-  delete contents_view_;
-  contents_view_ = nullptr;
-  AddContentsViews();
-  Layout();
 }
 
 void AppListMainView::SetDragAndDropHostOfCurrentAppList(
@@ -139,56 +123,13 @@ void AppListMainView::Layout() {
     contents_view_->SetBoundsRect(rect);
 }
 
-void AppListMainView::ActivateApp(AppListItem* item, int event_flags) {
-  // TODO(jennyz): Activate the folder via AppListModel notification.
-  if (item->GetItemType() == AppListFolderItem::kItemType) {
-    contents_view_->ShowFolderContent(static_cast<AppListFolderItem*>(item));
-    UMA_HISTOGRAM_ENUMERATION(kAppListFolderOpenedHistogram,
-                              kFullscreenAppListFolders, kMaxFolderOpened);
-  } else {
-    base::RecordAction(base::UserMetricsAction("AppList_ClickOnApp"));
-
-    // Avoid using |item->id()| as the parameter. In some rare situations,
-    // activating the item may destruct it. Using the reference to an object
-    // which may be destroyed during the procedure as the function parameter
-    // may bring the crash like https://crbug.com/990282.
-    const std::string id = item->id();
-    delegate_->ActivateItem(id, event_flags,
-                            AppListLaunchedFrom::kLaunchedFromGrid);
-  }
-}
-
-void AppListMainView::CancelDragInActiveFolder() {
-  contents_view_->apps_container_view()
-      ->app_list_folder_view()
-      ->items_grid_view()
-      ->EndDrag(true);
-}
-
-void AppListMainView::OnResultInstalled(SearchResult* result) {
-  // Clears the search to show the apps grid. The last installed app
-  // should be highlighted and made visible already.
-  search_box_view_->ClearSearch();
-}
-
-// AppListModelObserver overrides:
-void AppListMainView::OnAppListStateChanged(AppListState new_state,
-                                            AppListState old_state) {
-  if (new_state == AppListState::kStateEmbeddedAssistant) {
-    search_box_view_->SetVisible(false);
-  } else {
-    search_box_view_->SetVisible(true);
-  }
-}
-
-void AppListMainView::QueryChanged(SearchBoxViewBase* sender) {
-  std::u16string raw_query = search_model_->search_box()->text();
-  std::u16string query;
-  base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
+void AppListMainView::QueryChanged(const std::u16string& trimmed_query,
+                                   bool initiated_by_user) {
+  app_list_view_->SetStateFromSearchBoxView(trimmed_query.empty(),
+                                            initiated_by_user);
   contents_view_->ShowSearchResults(search_box_view_->is_search_box_active() ||
-                                    !query.empty());
-
-  delegate_->StartSearch(raw_query);
+                                    !trimmed_query.empty());
+  contents_view_->search_result_page_view()->UpdateForNewSearch();
 }
 
 void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
@@ -199,38 +140,57 @@ void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
   if (search_box_view_->is_search_box_active()) {
     // Show zero state suggestions when search box is activated with an empty
     // query.
-    std::u16string raw_query = search_model_->search_box()->text();
-    std::u16string query;
-    base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
-    if (query.empty())
-      search_box_view_->ShowZeroStateSuggestions();
+    const bool is_query_empty = sender->IsSearchBoxTrimmedQueryEmpty();
+    if (features::IsProductivityLauncherEnabled()) {
+      app_list_view_->SetStateFromSearchBoxView(
+          is_query_empty, true /*triggered_by_contents_change*/);
+      contents_view_->ShowSearchResults(true);
+    } else {
+      if (is_query_empty)
+        search_box_view_->ShowZeroStateSuggestions();
+    }
   } else {
     // Close the search results page if the search box is inactive.
     contents_view_->ShowSearchResults(false);
   }
 }
 
-void AppListMainView::SearchBoxFocusChanged(SearchBoxViewBase* sender) {
-  // A fake focus (highlight) is always set on the first search result. When the
-  // user moves focus from the search box textfield (e.g. to close button or
-  // last search result), the fake focus should be removed.
-  if (sender->search_box()->HasFocus())
+void AppListMainView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
+  app_list_view_->RedirectKeyEventToSearchBox(event);
+
+  if (!IsUnhandledUpDownKeyEvent(*event))
     return;
 
-  SearchResultBaseView* first_result_view =
-      contents_view_->search_results_page_view()->first_result_view();
-  if (!first_result_view || !first_result_view->selected())
-    return;
-  first_result_view->SetSelected(false, base::nullopt);
+  // Handles arrow key events from the search box while the search box is
+  // inactive. This covers both folder traversal and apps grid traversal. Search
+  // result traversal is handled in |HandleKeyEvent|
+  AppListPage* page =
+      contents_view_->GetPageView(contents_view_->GetActivePageIndex());
+  views::View* next_view = nullptr;
+
+  if (event->key_code() == ui::VKEY_UP)
+    next_view = page->GetLastFocusableView();
+  else
+    next_view = page->GetFirstFocusableView();
+
+  if (next_view)
+    next_view->RequestFocus();
+  event->SetHandled();
+}
+
+bool AppListMainView::CanSelectSearchResults() {
+  // If there's a result, keyboard selection is allowed.
+  return !!contents_view_->search_result_page_view()->CanSelectSearchResults();
 }
 
 void AppListMainView::AssistantButtonPressed() {
   delegate_->StartAssistant();
 }
 
-void AppListMainView::BackButtonPressed() {
-  if (!contents_view_->Back())
-    app_list_view_->Dismiss();
+void AppListMainView::CloseButtonPressed() {
+  // Deactivate the search box.
+  search_box_view_->SetSearchBoxActive(false, ui::ET_UNKNOWN);
+  search_box_view_->ClearSearch();
 }
 
 }  // namespace ash

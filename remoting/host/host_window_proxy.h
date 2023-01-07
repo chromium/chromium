@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/host_window.h"
@@ -25,6 +24,10 @@ class HostWindowProxy : public HostWindow {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       std::unique_ptr<HostWindow> host_window);
+
+  HostWindowProxy(const HostWindowProxy&) = delete;
+  HostWindowProxy& operator=(const HostWindowProxy&) = delete;
+
   ~HostWindowProxy() override;
 
   // HostWindow overrides.
@@ -35,8 +38,6 @@ class HostWindowProxy : public HostWindow {
   // All thread switching logic is implemented in the ref-counted |Core| class.
   class Core;
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostWindowProxy);
 };
 
 }  // namespace remoting

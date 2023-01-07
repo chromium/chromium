@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,22 @@ void PropertyRegistry::RegisterProperty(const AtomicString& name,
                                         PropertyRegistration& registration) {
   DCHECK(!IsInRegisteredPropertySet(name));
   registered_properties_.Set(name, &registration);
+  registered_viewport_unit_flags_ |= registration.GetViewportUnitFlags();
   version_++;
 }
 
 void PropertyRegistry::DeclareProperty(const AtomicString& name,
                                        PropertyRegistration& registration) {
-  DCHECK(RuntimeEnabledFeatures::CSSVariables2AtPropertyEnabled());
   declared_properties_.Set(name, &registration);
+  declared_viewport_unit_flags_ |= registration.GetViewportUnitFlags();
   version_++;
 }
 
 void PropertyRegistry::RemoveDeclaredProperties() {
-  if (declared_properties_.IsEmpty())
+  if (declared_properties_.empty())
     return;
   declared_properties_.clear();
+  declared_viewport_unit_flags_ = 0;
   version_++;
 }
 
@@ -33,13 +35,15 @@ const PropertyRegistration* PropertyRegistry::Registration(
   // the registration from CSS.registerProperty must win.
   //
   // https://drafts.css-houdini.org/css-properties-values-api-1/#determining-registration
-  if (const auto* registration = registered_properties_.at(name))
-    return registration;
-  return declared_properties_.at(name);
+  auto it = registered_properties_.find(name);
+  if (it != registered_properties_.end())
+    return it->value;
+  it = declared_properties_.find(name);
+  return it != declared_properties_.end() ? it->value : nullptr;
 }
 
 bool PropertyRegistry::IsEmpty() const {
-  return registered_properties_.IsEmpty() && declared_properties_.IsEmpty();
+  return registered_properties_.empty() && declared_properties_.empty();
 }
 
 bool PropertyRegistry::IsInRegisteredPropertySet(

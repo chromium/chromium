@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/privacy_sandbox_dialog"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <org.chromium.components.browser_ui.widget.BoundedLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:maxWidthLandscape="@dimen/privacy_sandbox_dialog_max_width"
+        app:maxWidthPortrait="@dimen/privacy_sandbox_dialog_max_width">
+
+        <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/list_item_default_margin"
+                android:animateLayoutChanges="true"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_marginTop="@dimen/privacy_sandbox_dialog_illustration_margin_top"
+                    android:layout_marginBottom="@dimen/privacy_sandbox_dialog_illustration_margin_bottom"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    app:srcCompat="@drawable/privacy_sandbox_dialog_illustration"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:id="@+id/privacy_sandbox_consent_title"
+                    android:layout_marginBottom="@dimen/promo_between_text_margin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/privacy_sandbox_consent_title"
+                    style="@style/TextAppearance.Headline.Primary" />
+
+                <TextView
+                    android:layout_marginBottom="@dimen/list_item_default_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text="@string/privacy_sandbox_consent_subtitle"
+                    style="@style/TextAppearance.TextLarge.Primary" />
+
+                <TextView
+                    android:layout_marginBottom="@dimen/promo_between_text_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/privacy_sandbox_consent_heading_one"
+                    style="@style/TextAppearance.TextLarge.Primary" />
+
+                <TextView
+                    android:layout_marginBottom="@dimen/list_item_default_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/privacy_sandbox_consent_description_one"
+                    style="@style/TextAppearance.TextMedium.Secondary" />
+
+                <TextView
+                    android:layout_marginBottom="@dimen/promo_between_text_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/privacy_sandbox_consent_heading_two"
+                    style="@style/TextAppearance.TextLarge.Primary" />
+
+                <TextView
+                    android:layout_marginBottom="@dimen/list_item_default_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/privacy_sandbox_consent_description_two"
+                    style="@style/TextAppearance.TextMedium.Secondary" />
+
+                <LinearLayout
+                    android:layout_marginBottom="@dimen/list_item_default_margin"
+                    android:id="@+id/dropdown_element"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:minHeight="@dimen/privacy_sandbox_consent_dropdown_button_height"
+                        android:text="@string/privacy_sandbox_consent_dropdown_button"
+                        style="@style/TextAppearance.TextMedium.Secondary" />
+
+                    <org.chromium.ui.widget.CheckableImageView
+                        android:id="@+id/expand_arrow"
+                        android:layout_width="24dp"
+                        android:layout_height="@dimen/privacy_sandbox_consent_dropdown_button_height"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/dropdown_container"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/privacy_sandbox_consent_description_three"
+                    style="@style/TextAppearance.TextMedium.Secondary" />
+
+            </LinearLayout>
+
+        </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/promo_dialog_padding"
+            android:weightSum="2">
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/no_button"
+                android:focusable="true"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/privacy_sandbox_consent_button_margin_between"
+                android:text="@string/privacy_sandbox_dialog_no_button"
+                style="@style/OutlinedButton" />
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/yes_button"
+                android:focusable="true"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/privacy_sandbox_consent_button_margin_between"
+                android:text="@string/privacy_sandbox_dialog_yes_button"
+                style="@style/OutlinedButton" />
+        </LinearLayout>
+    </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
+</LinearLayout>

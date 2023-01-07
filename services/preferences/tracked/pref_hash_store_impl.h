@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define SERVICES_PREFERENCES_TRACKED_PREF_HASH_STORE_IMPL_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "services/preferences/tracked/pref_hash_calculator.h"
 #include "services/preferences/tracked/pref_hash_store.h"
 
@@ -33,6 +32,9 @@ class PrefHashStoreImpl : public PrefHashStore {
                     const std::string& legacy_device_id,
                     bool use_super_mac);
 
+  PrefHashStoreImpl(const PrefHashStoreImpl&) = delete;
+  PrefHashStoreImpl& operator=(const PrefHashStoreImpl&) = delete;
+
   ~PrefHashStoreImpl() override;
 
   // Clears the contents of this PrefHashStore. |IsInitialized()| will return
@@ -54,8 +56,6 @@ class PrefHashStoreImpl : public PrefHashStore {
 
   const PrefHashCalculator pref_hash_calculator_;
   bool use_super_mac_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefHashStoreImpl);
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_PREF_HASH_STORE_IMPL_H_

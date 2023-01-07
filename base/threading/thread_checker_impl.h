@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/sequence_token.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "base/threading/platform_thread.h"
+#include "base/threading/platform_thread_ref.h"
 
 namespace base {
 namespace debug {
@@ -47,8 +46,8 @@ class LOCKABLE BASE_EXPORT ThreadCheckerImpl {
   // `out_bound_at` is not null, this method allocates a StackTrace and returns
   // it in the out-parameter, storing inside it the stack from where the failing
   // ThreadChecker was bound to its thread.
-  bool CalledOnValidThread(std::unique_ptr<debug::StackTrace>* out_bound_at =
-                               nullptr) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CalledOnValidThread(
+      std::unique_ptr<debug::StackTrace>* out_bound_at = nullptr) const;
 
   // Changes the thread that is checked for in CalledOnValidThread.  This may
   // be useful when an object may be created on one thread and then used

@@ -1,0 +1,28 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+import "chromeos/ash/services/libassistant/public/mojom/android_app_info.mojom";
+
+// Interface grouping display related settings for Libassistant.
+interface DisplayController {
+  // Enable/disable ARC play store.
+  // This is disabled by default.
+  SetArcPlayStoreEnabled(bool enabled);
+
+  // Enable/disable device apps.
+  // Device Apps stores user's apps which could help improve user experience
+  // across Google services.
+  // This is disabled by default, and can not be disabled once it has been
+  // enabled.
+  SetDeviceAppsEnabled(bool enabled);
+
+  // Enable/disable Assistant related information.
+  // This is disabled by default.
+  SetRelatedInfoEnabled(bool enabled);
+
+  // Send the list with installed Android apps to Libassistant.
+  SetAndroidAppList(array<AndroidAppInfo> apps);
+};

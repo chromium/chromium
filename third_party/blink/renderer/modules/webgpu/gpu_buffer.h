@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_BUFFER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/flexible_array_buffer_view.h"
@@ -16,6 +16,9 @@ namespace blink {
 
 class DOMArrayBuffer;
 class GPUBufferDescriptor;
+class GPUMappedDOMArrayBuffer;
+class ExecutionContext;
+struct BoxedMappableWGPUBufferHandles;
 class ScriptPromiseResolver;
 
 class GPUBuffer : public DawnObject<WGPUBuffer> {
@@ -24,9 +27,11 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
  public:
   static GPUBuffer* Create(GPUDevice* device,
                            const GPUBufferDescriptor* webgpu_desc);
-  explicit GPUBuffer(GPUDevice* device,
-                     uint64_t size,
-                     WGPUBuffer buffer);
+  GPUBuffer(GPUDevice* device, uint64_t size, WGPUBuffer buffer);
+  ~GPUBuffer() override;
+
+  GPUBuffer(const GPUBuffer&) = delete;
+  GPUBuffer& operator=(const GPUBuffer&) = delete;
 
   void Trace(Visitor* visitor) const override;
 
@@ -40,41 +45,58 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                          uint64_t offset,
                          uint64_t size,
                          ExceptionState& exception_state);
-  DOMArrayBuffer* getMappedRange(uint64_t offset,
+  DOMArrayBuffer* getMappedRange(ExecutionContext* execution_context,
+                                 uint64_t offset,
                                  ExceptionState& exception_state);
-  DOMArrayBuffer* getMappedRange(uint64_t offset,
+  DOMArrayBuffer* getMappedRange(ExecutionContext* execution_context,
+                                 uint64_t offset,
                                  uint64_t size,
                                  ExceptionState& exception_state);
   void unmap(ScriptState* script_state);
   void destroy(ScriptState* script_state);
+  uint64_t size() const;
+  uint32_t usage() const;
+
+  void DetachMappedArrayBuffers(v8::Isolate* isolate);
 
  private:
   ScriptPromise MapAsyncImpl(ScriptState* script_state,
                              uint32_t mode,
                              uint64_t offset,
-                             base::Optional<uint64_t> size,
+                             absl::optional<uint64_t> size,
                              ExceptionState& exception_state);
   DOMArrayBuffer* GetMappedRangeImpl(uint64_t offset,
-                                     base::Optional<uint64_t> size,
+                                     absl::optional<uint64_t> size,
+                                     ExecutionContext* execution_context,
                                      ExceptionState& exception_state);
 
   void OnMapAsyncCallback(ScriptPromiseResolver* resolver,
                           WGPUBufferMapAsyncStatus status);
 
-  DOMArrayBuffer* CreateArrayBufferForMappedData(void* data,
-                                                 size_t data_length);
-  void ResetMappingState(ScriptState* script_state);
+  DOMArrayBuffer* CreateArrayBufferForMappedData(
+      void* data,
+      size_t data_length,
+      ExecutionContext* execution_context);
+  void ResetMappingState(v8::Isolate* isolate);
+
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().bufferSetLabel(GetHandle(), utf8_label.c_str());
+  }
 
   uint64_t size_;
 
   // Holds onto any ArrayBuffers returned by getMappedRange, mapReadAsync, or
   // mapWriteAsync.
-  HeapVector<Member<DOMArrayBuffer>> mapped_array_buffers_;
+  HeapVector<Member<GPUMappedDOMArrayBuffer>> mapped_array_buffers_;
+
+  // Mappable buffers remove themselves from this set on destruction.
+  // It tracks the set of buffers that need to be destroyed in the
+  // GPU::ContextDestroyed notification.
+  scoped_refptr<BoxedMappableWGPUBufferHandles> mappable_buffer_handles_;
 
   // List of ranges currently returned by getMappedRange, to avoid overlaps.
   Vector<std::pair<size_t, size_t>> mapped_ranges_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUBuffer);
 };
 
 }  // namespace blink

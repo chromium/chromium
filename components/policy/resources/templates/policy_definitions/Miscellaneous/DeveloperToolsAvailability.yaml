@@ -1,0 +1,43 @@
+arc_support: This policy also controls access to Android Developer Options. If you
+  set this policy to 'DeveloperToolsDisallowed' (value 2), users cannot access Developer
+  Options. If you set this policy to another value or leave it unset, users can access
+  Developer Options by tapping seven times on the build number in the Android settings
+  app.
+caption: Control where Developer Tools can be used
+desc: |-
+  Setting the policy to 0 (the default) means you can access the developer tools and the JavaScript console, but not in the context of extensions installed by enterprise policy. Setting the policy to 1 means you can access the developer tools and the JavaScript console in all contexts, including that of extensions installed by enterprise policy. Setting the policy to 2 means you can't acess developer tools, and you can't inspect website elements.
+
+        This setting also turns off keyboard shortcuts and menu or context menu entries to open developer tools or the JavaScript console.
+
+        As of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 99, this setting also controls entry points for the 'View page source' feature. If you set this policy to 'DeveloperToolsDisallowed' (value 2), users cannot access source viewing via keyboard shortcut or the context menu. To fully block source viewing, you must also add 'view-source:*' to the <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> policy.
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Disallow usage of the Developer Tools on extensions installed by enterprise
+    policy, allow usage of the Developer Tools in other contexts
+  name: DeveloperToolsDisallowedForForceInstalledExtensions
+  value: 0
+- caption: Allow usage of the Developer Tools
+  name: DeveloperToolsAllowed
+  value: 1
+- caption: Disallow usage of the Developer Tools
+  name: DeveloperToolsDisallowed
+  value: 2
+owners:
+- file://components/policy/resources/OWNERS
+- pmarko@chromium.org
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+supported_on:
+- chrome.*:68-
+- chrome_os:68-
+tags: []
+type: int-enum

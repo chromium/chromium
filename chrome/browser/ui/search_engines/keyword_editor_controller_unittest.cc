@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@ static const std::u16string kA(u"a");
 static const std::u16string kA1(u"a1");
 static const std::u16string kB(u"b");
 static const std::u16string kB1(u"b1");
+static const std::u16string kManaged(u"managed");
 
 // Base class for keyword editor tests. Creates a profile containing an
 // empty TemplateURLService.
@@ -57,11 +58,11 @@ class KeywordEditorControllerTest : public testing::Test,
 
   void OnModelChanged() override { model_changed_count_++; }
 
-  void OnItemsChanged(int start, int length) override {}
+  void OnItemsChanged(size_t start, size_t length) override {}
 
-  void OnItemsAdded(int start, int length) override {}
+  void OnItemsAdded(size_t start, size_t length) override {}
 
-  void OnItemsRemoved(int start, int length) override {}
+  void OnItemsRemoved(size_t start, size_t length) override {}
 
   void VerifyChanged() {
     ASSERT_EQ(1, model_changed_count_);
@@ -70,12 +71,16 @@ class KeywordEditorControllerTest : public testing::Test,
 
   void ClearChangeCount() { model_changed_count_ = 0; }
 
-  void SimulateDefaultSearchIsManaged(const std::string& url) {
+  void SimulateDefaultSearchIsManaged(const std::string& url,
+                                      bool is_mandatory) {
     TemplateURLData managed_engine;
-    managed_engine.SetShortName(u"managed");
-    managed_engine.SetKeyword(u"managed");
+    managed_engine.SetShortName(kManaged);
+    managed_engine.SetKeyword(kManaged);
     managed_engine.SetURL(url);
-    SetManagedDefaultSearchPreferences(managed_engine, true, &profile_);
+    is_mandatory
+        ? SetManagedDefaultSearchPreferences(managed_engine, true, &profile_)
+        : SetRecommendedDefaultSearchPreferences(managed_engine, true,
+                                                 &profile_);
   }
 
   TemplateURLTableModel* table_model() { return controller_->table_model(); }
@@ -100,7 +105,7 @@ class KeywordEditorControllerNoWebDataTest
 
 // Tests adding a TemplateURL.
 TEST_F(KeywordEditorControllerTest, Add) {
-  int original_row_count = table_model()->RowCount();
+  size_t original_row_count = table_model()->RowCount();
   controller()->AddTemplateURL(kA, kB, "http://c");
 
   // Verify the observer was notified.
@@ -145,7 +150,7 @@ TEST_F(KeywordEditorControllerTest, MakeDefault) {
   // Making an item the default sends a handful of changes. Which are sent isn't
   // important, what is important is 'something' is sent.
   VerifyChanged();
-  ASSERT_TRUE(util()->model()->GetDefaultSearchProvider() == turl);
+  ASSERT_EQ(turl, util()->model()->GetDefaultSearchProvider());
 
   // Making it default a second time should fail.
   controller()->MakeDefaultTemplateURL(index);
@@ -160,18 +165,48 @@ TEST_F(KeywordEditorControllerTest, CannotSetDefaultWhileManaged) {
   ClearChangeCount();
 
   const TemplateURL* turl1 = util()->model()->GetTemplateURLForKeyword(u"b");
-  ASSERT_TRUE(turl1 != NULL);
+  ASSERT_NE(turl1, nullptr);
   const TemplateURL* turl2 = util()->model()->GetTemplateURLForKeyword(u"b1");
-  ASSERT_TRUE(turl2 != NULL);
+  ASSERT_NE(turl2, nullptr);
 
   EXPECT_TRUE(controller()->CanMakeDefault(turl1));
   EXPECT_TRUE(controller()->CanMakeDefault(turl2));
 
-  SimulateDefaultSearchIsManaged(turl2->url());
+  SimulateDefaultSearchIsManaged(turl2->url(), /*is_mandatory=*/true);
   EXPECT_TRUE(util()->model()->is_default_search_managed());
 
   EXPECT_FALSE(controller()->CanMakeDefault(turl1));
   EXPECT_FALSE(controller()->CanMakeDefault(turl2));
+}
+
+// Tests that a TemplateURL can be made the default if the default search
+// provider is recommended via policy.
+TEST_F(KeywordEditorControllerTest, SetDefaultWhileRecommended) {
+  controller()->AddTemplateURL(kA, kB, "http://c{searchTerms}");
+  ClearChangeCount();
+  const TemplateURL* turl1 = util()->model()->GetTemplateURLForKeyword(kB);
+  ASSERT_NE(turl1, nullptr);
+  EXPECT_TRUE(controller()->CanMakeDefault(turl1));
+
+  // Simulate setting a recommended default provider. This adds another template
+  // URL to the model.
+  SimulateDefaultSearchIsManaged(turl1->url(), /*is_mandatory=*/false);
+  EXPECT_EQ(kManaged,
+            util()->model()->GetDefaultSearchProvider()->short_name());
+  EXPECT_FALSE(util()->model()->is_default_search_managed());
+  EXPECT_TRUE(controller()->CanMakeDefault(turl1));
+
+  int index = controller()->AddTemplateURL(kA1, kB1, "http://d{searchTerms}");
+  ClearChangeCount();
+  const TemplateURL* turl2 = util()->model()->GetTemplateURLForKeyword(kB1);
+  ASSERT_NE(turl2, nullptr);
+  EXPECT_TRUE(controller()->CanMakeDefault(turl2));
+
+  // Update the default search provider.
+  EXPECT_NE(turl2, util()->model()->GetDefaultSearchProvider());
+  controller()->MakeDefaultTemplateURL(index);
+  VerifyChanged();
+  EXPECT_EQ(turl2, util()->model()->GetDefaultSearchProvider());
 }
 
 // Tests that a TemplateURL can't be edited if it is the managed default search
@@ -182,20 +217,47 @@ TEST_F(KeywordEditorControllerTest, EditManagedDefault) {
   ClearChangeCount();
 
   const TemplateURL* turl1 = util()->model()->GetTemplateURLForKeyword(u"b");
-  ASSERT_TRUE(turl1 != NULL);
+  ASSERT_NE(turl1, nullptr);
   const TemplateURL* turl2 = util()->model()->GetTemplateURLForKeyword(u"b1");
-  ASSERT_TRUE(turl2 != NULL);
+  ASSERT_NE(turl2, nullptr);
 
   EXPECT_TRUE(controller()->CanEdit(turl1));
   EXPECT_TRUE(controller()->CanEdit(turl2));
 
   // Simulate setting a managed default.  This will add another template URL to
   // the model.
-  SimulateDefaultSearchIsManaged(turl2->url());
+  SimulateDefaultSearchIsManaged(turl2->url(), /*is_mandatory=*/true);
   EXPECT_TRUE(util()->model()->is_default_search_managed());
   EXPECT_TRUE(controller()->CanEdit(turl1));
   EXPECT_TRUE(controller()->CanEdit(turl2));
   EXPECT_FALSE(
+      controller()->CanEdit(util()->model()->GetDefaultSearchProvider()));
+}
+
+// Tests that a `TemplateURL` can be edited if it is the recommended default
+// search provider.
+TEST_F(KeywordEditorControllerTest, EditRecommendedDefault) {
+  controller()->AddTemplateURL(kA, kB, "http://c{searchTerms}");
+  controller()->AddTemplateURL(kA1, kB1, "http://d{searchTerms}");
+  ClearChangeCount();
+
+  const TemplateURL* turl1 = util()->model()->GetTemplateURLForKeyword(u"b");
+  ASSERT_NE(turl1, nullptr);
+  const TemplateURL* turl2 = util()->model()->GetTemplateURLForKeyword(u"b1");
+  ASSERT_NE(turl2, nullptr);
+
+  EXPECT_TRUE(controller()->CanEdit(turl1));
+  EXPECT_TRUE(controller()->CanEdit(turl2));
+
+  // Simulate setting a recommended default. This will add another template URL
+  // to the model.
+  SimulateDefaultSearchIsManaged(turl2->url(), /*is_mandatory=*/false);
+  EXPECT_EQ(kManaged,
+            util()->model()->GetDefaultSearchProvider()->short_name());
+  EXPECT_FALSE(util()->model()->is_default_search_managed());
+  EXPECT_TRUE(controller()->CanEdit(turl1));
+  EXPECT_TRUE(controller()->CanEdit(turl2));
+  EXPECT_TRUE(
       controller()->CanEdit(util()->model()->GetDefaultSearchProvider()));
 }
 
@@ -212,7 +274,7 @@ TEST_F(KeywordEditorControllerNoWebDataTest, MakeDefaultNoWebData) {
 // Mutates the TemplateURLService and make sure table model is updating
 // appropriately.
 TEST_F(KeywordEditorControllerTest, MutateTemplateURLService) {
-  int original_row_count = table_model()->RowCount();
+  size_t original_row_count = table_model()->RowCount();
 
   TemplateURLData data;
   data.SetShortName(u"b");
@@ -224,5 +286,5 @@ TEST_F(KeywordEditorControllerTest, MutateTemplateURLService) {
 
   // And should contain the newly added TemplateURL.
   ASSERT_EQ(original_row_count + 1, table_model()->RowCount());
-  ASSERT_GE(table_model()->IndexOfTemplateURL(turl), 0);
+  ASSERT_TRUE(table_model()->IndexOfTemplateURL(turl).has_value());
 }

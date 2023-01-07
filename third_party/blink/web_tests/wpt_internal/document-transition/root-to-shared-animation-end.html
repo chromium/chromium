@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="match" href="root-to-shared-animation-end-ref.html">
+
+<script src="/common/reftest-wait.js"></script>
+
+<style>
+body, html { padding: 0; margin: 0 }
+body {
+  background: lightgreen;
+}
+#box {
+  width: 400px;
+  height: 400px;
+  background: blue;
+  contain: paint;
+}
+.hidden {
+  contain: paint;
+  width: 10px;
+  height: 10px;
+  background: red;
+  page-transition-tag: hidden;
+}
+
+html::page-transition-container(hidden) { animation-duration: 300s; }
+html::page-transition-image-wrapper(hidden) { visibility: hidden; }
+
+html::page-transition-container(root) { animation-duration: 0s; }
+html::page-transition-incoming-image(*) { animation: unset; opacity: 0; }
+html::page-transition-outgoing-image(*) { animation: unset; opacity: 1; }
+</style>
+
+<div id=box></div>
+<div class=hidden></div>
+
+<script>
+async function runTest() {
+  let t = document.createDocumentTransition();
+  t.start(() => {
+    document.documentElement.style.pageTransitionTag = "none";
+    document.body.style.background = "yellow";
+    box.style.pageTransitionTag = "root";
+
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
+  });
+}
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+

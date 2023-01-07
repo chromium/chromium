@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,8 @@ namespace blink {
 class FontUniqueNameLookupWin : public FontUniqueNameLookup {
  public:
   FontUniqueNameLookupWin();
+  FontUniqueNameLookupWin(const FontUniqueNameLookupWin&) = delete;
+  FontUniqueNameLookupWin& operator=(const FontUniqueNameLookupWin&) = delete;
   ~FontUniqueNameLookupWin() override;
   sk_sp<SkTypeface> MatchUniqueName(const String& font_unique_name) override;
 
@@ -32,6 +34,8 @@ class FontUniqueNameLookupWin : public FontUniqueNameLookup {
 
   void PrepareFontUniqueNameLookup(
       NotifyFontUniqueNameLookupReady callback) override;
+
+  void Init() override;
 
  private:
   void EnsureServiceConnected();
@@ -43,14 +47,14 @@ class FontUniqueNameLookupWin : public FontUniqueNameLookup {
       base::FilePath font_file_path,
       uint32_t ttc_index);
 
+  void InitWithLookupMode(blink::mojom::UniqueFontLookupMode lookup_mode);
+
   mojo::Remote<mojom::blink::DWriteFontProxy> service_;
   WTF::Deque<NotifyFontUniqueNameLookupReady> pending_callbacks_;
-  base::Optional<blink::mojom::UniqueFontLookupMode> lookup_mode_;
-  base::Optional<bool> sync_available_;
+  absl::optional<blink::mojom::UniqueFontLookupMode> lookup_mode_;
+  absl::optional<bool> sync_available_;
   void ReceiveReadOnlySharedMemoryRegion(
       base::ReadOnlySharedMemoryRegion shared_memory_region);
-
-  DISALLOW_COPY_AND_ASSIGN(FontUniqueNameLookupWin);
 };
 
 }  // namespace blink

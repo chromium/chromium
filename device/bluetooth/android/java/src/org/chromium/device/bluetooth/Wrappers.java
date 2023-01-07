@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@ package org.chromium.device.bluetooth;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -46,7 +45,6 @@ import java.util.UUID;
  * pass through to the Android object and instead provide fake implementations.
  */
 @JNINamespace("device")
-@TargetApi(Build.VERSION_CODES.M)
 class Wrappers {
     private static final String TAG = "Bluetooth";
 
@@ -114,30 +112,30 @@ class Wrappers {
          */
         @CalledByNative("BluetoothAdapterWrapper")
         public static BluetoothAdapterWrapper createWithDefaultAdapter() {
-            final boolean hasMinAPI = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
-            if (!hasMinAPI) {
-                Log.i(TAG, "BluetoothAdapterWrapper.create failed: SDK version (%d) too low.",
-                        Build.VERSION.SDK_INT);
-                return null;
-            }
+            // In Android Q and earlier the BLUETOOTH and BLUETOOTH_ADMIN permissions must be
+            // granted in the manifest. In Android S and later the BLUETOOTH_SCAN and
+            // BLUETOOTH_CONNECT permissions can be requested at runtime after fetching the default
+            // adapter.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                final boolean hasPermission =
+                        ContextUtils.getApplicationContext().checkCallingOrSelfPermission(
+                                Manifest.permission.BLUETOOTH)
+                                == PackageManager.PERMISSION_GRANTED
+                        && ContextUtils.getApplicationContext().checkCallingOrSelfPermission(
+                                   Manifest.permission.BLUETOOTH_ADMIN)
+                                == PackageManager.PERMISSION_GRANTED;
 
-            final boolean hasPermissions =
-                    ContextUtils.getApplicationContext().checkCallingOrSelfPermission(
-                            Manifest.permission.BLUETOOTH)
-                            == PackageManager.PERMISSION_GRANTED
-                    && ContextUtils.getApplicationContext().checkCallingOrSelfPermission(
-                               Manifest.permission.BLUETOOTH_ADMIN)
-                            == PackageManager.PERMISSION_GRANTED;
-            if (!hasPermissions) {
-                Log.w(TAG, "BluetoothAdapterWrapper.create failed: Lacking Bluetooth permissions.");
-                return null;
+                if (!hasPermission) {
+                    Log.w(TAG,
+                            "BluetoothAdapterWrapper.create failed: Lacking Bluetooth permissions.");
+                    return null;
+                }
             }
 
             // Only Low Energy currently supported, see BluetoothAdapterAndroid class note.
             final boolean hasLowEnergyFeature =
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-                    && ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
-                               PackageManager.FEATURE_BLUETOOTH_LE);
+                    ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
+                            PackageManager.FEATURE_BLUETOOTH_LE);
             if (!hasLowEnergyFeature) {
                 Log.i(TAG, "BluetoothAdapterWrapper.create failed: No Low Energy support.");
                 return null;
@@ -388,6 +386,10 @@ class Wrappers {
             mGatt.close();
         }
 
+        public boolean requestMtu(int mtu) {
+            return mGatt.requestMtu(mtu);
+        }
+
         public void discoverServices() {
             mGatt.discoverServices();
         }
@@ -484,6 +486,11 @@ class Wrappers {
         }
 
         @Override
+        public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+            mWrapperCallback.onMtuChanged(mtu, status);
+        }
+
+        @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             mWrapperCallback.onServicesDiscovered(status);
         }
@@ -511,6 +518,7 @@ class Wrappers {
         public abstract void onDescriptorWrite(
                 BluetoothGattDescriptorWrapper descriptor, int status);
         public abstract void onConnectionStateChange(int status, int newState);
+        public abstract void onMtuChanged(int mtu, int status);
         public abstract void onServicesDiscovered(int status);
     }
 

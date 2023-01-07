@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2017 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_language_prompt_row"
+    style="@style/ListItemContainer"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <RadioButton
+        android:id="@+id/app_language_prompt_radiobutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingEnd="8dp" />
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:importantForAccessibility="noHideDescendants"
+        android:orientation="vertical"
+        android:gravity="center">
+
+      <TextView
+          android:id="@+id/primary_language_name"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+          android:ellipsize="end"
+          android:singleLine="true" />
+
+      <TextView
+          android:id="@+id/secondary_language_name"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+          android:ellipsize="end"
+          android:singleLine="true" />
+
+    </LinearLayout>
+
+</LinearLayout>

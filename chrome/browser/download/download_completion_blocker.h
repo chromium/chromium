@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_COMPLETION_BLOCKER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/download/public/common/download_item.h"
 
@@ -17,6 +16,11 @@
 class DownloadCompletionBlocker : public base::SupportsUserData::Data {
  public:
   DownloadCompletionBlocker();
+
+  DownloadCompletionBlocker(const DownloadCompletionBlocker&) = delete;
+  DownloadCompletionBlocker& operator=(const DownloadCompletionBlocker&) =
+      delete;
+
   ~DownloadCompletionBlocker() override;
 
   bool is_complete() const { return is_complete_; }
@@ -35,8 +39,6 @@ class DownloadCompletionBlocker : public base::SupportsUserData::Data {
  private:
   bool is_complete_;
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadCompletionBlocker);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_COMPLETION_BLOCKER_H_

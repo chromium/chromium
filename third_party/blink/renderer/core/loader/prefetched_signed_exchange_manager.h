@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PREFETCHED_SIGNED_EXCHANGE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PREFETCHED_SIGNED_EXCHANGE_MANAGER_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
@@ -23,9 +22,8 @@ class LocalFrame;
 class WebURLLoader;
 class WebURLRequest;
 
-// For SignedExchangeSubresourcePrefetch feature. This class holds the
-// prefetched signed exchange info and will returns loaders for matching
-// requests.
+// This class holds the prefetched signed exchange info and will returns
+// loaders for matching requests.
 class PrefetchedSignedExchangeManager final
     : public GarbageCollected<PrefetchedSignedExchangeManager> {
  public:
@@ -45,6 +43,10 @@ class PrefetchedSignedExchangeManager final
       HashMap<KURL,
               std::unique_ptr<WebNavigationParams::PrefetchedSignedExchange>>
           prefetched_exchanges_map);
+  PrefetchedSignedExchangeManager(const PrefetchedSignedExchangeManager&) =
+      delete;
+  PrefetchedSignedExchangeManager& operator=(
+      const PrefetchedSignedExchangeManager&) = delete;
   ~PrefetchedSignedExchangeManager();
 
   void Trace(Visitor* visitor) const;
@@ -95,8 +97,6 @@ class PrefetchedSignedExchangeManager final
   bool started_ = false;
 
   WTF::Vector<base::WeakPtr<PrefetchedSignedExchangeLoader>> loaders_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchedSignedExchangeManager);
 };
 
 }  // namespace blink

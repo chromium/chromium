@@ -1,0 +1,13 @@
+include_rules = [
+  "+components/bookmarks/browser",
+  "+components/commerce/core/proto",
+  "+components/session_proto_db",
+]
+
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^price_alert_util.mm": [
+    "+ios/chrome/browser/ui/ui_feature_flags.h",
+  ],
+}
+

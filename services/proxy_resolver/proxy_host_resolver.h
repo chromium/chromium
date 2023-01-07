@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace proxy_resolver {
@@ -35,7 +35,7 @@ class ProxyHostResolver {
   virtual std::unique_ptr<Request> CreateRequest(
       const std::string& hostname,
       net::ProxyResolveDnsOperation operation,
-      const net::NetworkIsolationKey& network_isolation_key) = 0;
+      const net::NetworkAnonymizationKey& network_aonymization_key) = 0;
 };
 
 }  // namespace proxy_resolver

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<style>
+  #highlight {
+    background-color: green;
+    color: yellow;
+
+  }
+  #selection {
+    color: green;
+  }
+
+  #selection strong{
+    color: initial;
+  }
+</style>
+<body>
+<div>There should be a green background color and yellow font coloe below from [ to ]:</div>
+<div>[<span id="highlight">Custom <strong>Highlight</strong> Inheritance</span>]</div>
+<div>There should be a selection below from [ to ], but background color only visible around 'Selection', and 'Text' and 'Sample' font color should be green:</div>
+<div>[<span id="selection">Text <strong>Selection</strong> Sample</span>]</div>
+<script>
+  let selection_range = new Range();
+  const selection_node = document.querySelector('#selection strong');
+  selection_range.setStart(selection_node, 0);
+  selection_range.setEnd(selection_node, 1);
+  window.getSelection().addRange(selection_range);
+</script>

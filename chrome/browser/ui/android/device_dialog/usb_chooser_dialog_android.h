@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
-#include "chrome/browser/chooser_controller/chooser_controller.h"
+#include "components/permissions/chooser_controller.h"
 
 namespace content {
 class RenderFrameHost;
@@ -20,22 +19,26 @@ class RenderFrameHost;
 
 // Represents a way to ask the user to select a USB device from a list of
 // options.
-class UsbChooserDialogAndroid : public ChooserController::View {
+class UsbChooserDialogAndroid : public permissions::ChooserController::View {
  public:
   // Creates and shows the dialog. Will return nullptr if the dialog was not
   // displayed. Otherwise |on_close| will be called when the user closes the
   // dialog.
   static std::unique_ptr<UsbChooserDialogAndroid> Create(
       content::RenderFrameHost* render_frame_host,
-      std::unique_ptr<ChooserController> controller,
+      std::unique_ptr<permissions::ChooserController> controller,
       base::OnceClosure on_close);
 
   explicit UsbChooserDialogAndroid(
-      std::unique_ptr<ChooserController> controller,
+      std::unique_ptr<permissions::ChooserController> controller,
       base::OnceClosure on_close);
+
+  UsbChooserDialogAndroid(const UsbChooserDialogAndroid&) = delete;
+  UsbChooserDialogAndroid& operator=(const UsbChooserDialogAndroid&) = delete;
+
   ~UsbChooserDialogAndroid() override;
 
-  // ChooserController::View implementation
+  // permissions::ChooserController::View implementation
   void OnOptionsInitialized() override;
   void OnOptionAdded(size_t index) override;
   void OnOptionRemoved(size_t index) override;
@@ -53,7 +56,7 @@ class UsbChooserDialogAndroid : public ChooserController::View {
   // Called when the chooser dialog is closed.
   void Cancel();
 
-  std::unique_ptr<ChooserController> controller_;
+  std::unique_ptr<permissions::ChooserController> controller_;
   base::OnceClosure on_close_;
 
   // The Java dialog code expects items to have unique string IDs while the
@@ -62,8 +65,6 @@ class UsbChooserDialogAndroid : public ChooserController::View {
   std::vector<std::string> item_id_map_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbChooserDialogAndroid);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_USB_CHOOSER_DIALOG_ANDROID_H_

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "remoting/test/fake_network_dispatcher.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
 
@@ -27,6 +27,10 @@ class FakePacketSocketFactory : public rtc::PacketSocketFactory,
  public:
   // |dispatcher| must outlive the factory.
   explicit FakePacketSocketFactory(FakeNetworkDispatcher* dispatcher);
+
+  FakePacketSocketFactory(const FakePacketSocketFactory&) = delete;
+  FakePacketSocketFactory& operator=(const FakePacketSocketFactory&) = delete;
+
   ~FakePacketSocketFactory() override;
 
   void OnSocketDestroyed(int port);
@@ -71,7 +75,7 @@ class FakePacketSocketFactory : public rtc::PacketSocketFactory,
       const rtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port) override;
-  rtc::AsyncPacketSocket* CreateServerTcpSocket(
+  rtc::AsyncListenSocket* CreateServerTcpSocket(
       const rtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port,
@@ -139,8 +143,6 @@ class FakePacketSocketFactory : public rtc::PacketSocketFactory,
   base::TimeDelta max_buffer_delay_;
 
   base::WeakPtrFactory<FakePacketSocketFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakePacketSocketFactory);
 };
 
 }  // namespace remoting

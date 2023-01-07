@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -36,14 +35,17 @@ struct ContentCapabilitiesInfo : public Extension::ManifestData {
 class ContentCapabilitiesHandler : public ManifestHandler {
  public:
   ContentCapabilitiesHandler();
+
+  ContentCapabilitiesHandler(const ContentCapabilitiesHandler&) = delete;
+  ContentCapabilitiesHandler& operator=(const ContentCapabilitiesHandler&) =
+      delete;
+
   ~ContentCapabilitiesHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentCapabilitiesHandler);
 };
 
 }  // namespace extensions

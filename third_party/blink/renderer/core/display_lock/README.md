@@ -40,13 +40,16 @@ DisplayLockUtilities class is provided with a set of static functions that
 perform common functionality, such as checking whether an element is within a
 locked subtree without itself being locked.
 
+### `hidden=until-found`
+
+The `hidden=until-found` HTML attribute applies a style of
+`content-visibility:hidden`, and also specially configures the DisplayLock to
+unlock in response to find-in-page, scroll to text fragment navigation, and
+element navigation.
+
 ### Ongoing work
 
 This feature is new, and some work is continuing in the area.
 
-In particular, we are working on adding a beforematch event as well as a
-hidden-matchable value for content-visibility property which allows
-searchability in hidden content.
-
-In addition, we are working on developing an updateRendering javascript method
+We are working on developing an updateRendering javascript method
 which allows asynchronous updates to locked / hidden display lock subtree.

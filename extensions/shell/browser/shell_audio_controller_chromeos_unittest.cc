@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,37 +8,39 @@
 
 #include <memory>
 
-#include "ash/components/audio/audio_device.h"
-#include "ash/components/audio/audio_devices_pref_handler.h"
-#include "ash/components/audio/cras_audio_handler.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/dbus/audio/audio_node.h"
-#include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
 using ::ash::AudioDevice;
 using ::ash::AudioDeviceType;
+using ::ash::AudioNode;
+using ::ash::AudioNodeList;
 using ::ash::CrasAudioHandler;
-using ::chromeos::AudioNode;
-using ::chromeos::AudioNodeList;
 
 class ShellAudioControllerTest : public testing::Test {
  public:
   ShellAudioControllerTest() : next_node_id_(1) {
-    chromeos::CrasAudioClient::InitializeFake();
+    ash::CrasAudioClient::InitializeFake();
     audio_client()->SetAudioNodesForTesting(AudioNodeList());
     CrasAudioHandler::InitializeForTesting();
 
-    controller_.reset(new ShellAudioController());
+    controller_ = std::make_unique<ShellAudioController>();
   }
+
+  ShellAudioControllerTest(const ShellAudioControllerTest&) = delete;
+  ShellAudioControllerTest& operator=(const ShellAudioControllerTest&) = delete;
 
   ~ShellAudioControllerTest() override {
     controller_.reset();
     CrasAudioHandler::Shutdown();
-    chromeos::CrasAudioClient::Shutdown();
+    ash::CrasAudioClient::Shutdown();
   }
 
  protected:
@@ -65,8 +67,8 @@ class ShellAudioControllerTest : public testing::Test {
     ASSERT_TRUE(false) << "Didn't find ID " << id;
   }
 
-  chromeos::FakeCrasAudioClient* audio_client() {
-    return chromeos::FakeCrasAudioClient::Get();
+  ash::FakeCrasAudioClient* audio_client() {
+    return ash::FakeCrasAudioClient::Get();
   }
 
   CrasAudioHandler* audio_handler() { return CrasAudioHandler::Get(); }
@@ -75,9 +77,6 @@ class ShellAudioControllerTest : public testing::Test {
 
   // Next audio node ID to be returned by CreateNode().
   uint64_t next_node_id_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellAudioControllerTest);
 };
 
 // Tests that higher-priority devices are activated as soon as they're

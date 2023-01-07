@@ -1,0 +1,82 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/webui/web_applications/system_apps.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/test/base/js2gtest.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+assert(is_chromeos_ash)
+
+js_library("message_pipe") {
+}
+
+js_library("sandboxed_load_time_data") {
+}
+
+js_library("dom_testing_helpers") {
+  testonly = true
+}
+
+js_library("message_pipe.m") {
+  sources =
+      [ "$root_gen_dir/ash/webui/system_apps/public/js/message_pipe.m.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js2gtest("browser_tests_js") {
+  test_type = "mojo_lite_webui"
+
+  sources = [ "message_pipe_browsertest.js" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [ "//ash/webui/web_applications/test:test_support" ]
+
+  data = [
+    "message_pipe.js",
+    "test_data/message_pipe_browsertest_trusted.html",
+    "test_data/message_pipe_browsertest_trusted.js",
+    "test_data/message_pipe_browsertest_untrusted.html",
+    "test_data/message_pipe_browsertest_untrusted.js",
+  ]
+}
+
+group("closure_compile") {
+  testonly = true
+  deps = [
+    ":closure_compile_message_pipe",
+    ":closure_compile_message_pipe_browsertest_js",
+  ]
+}
+
+js_type_check("closure_compile_message_pipe") {
+  closure_flags = system_app_closure_flags_strict
+  deps = [ ":message_pipe" ]
+}
+
+js_type_check("closure_compile_message_pipe_browsertest_js") {
+  testonly = true
+  closure_flags = system_app_closure_flags
+  deps = [ ":message_pipe_browsertest_js" ]
+}
+
+js_library("message_pipe_browsertest_js") {
+  testonly = true
+  sources = [
+    "message_pipe_browsertest.js",
+    "test_data/message_pipe_browsertest_trusted.js",
+    "test_data/message_pipe_browsertest_untrusted.js",
+  ]
+  externs_list = [
+    "//ash/webui/web_applications/js2gtest_support.externs.js",
+    "//third_party/chaijs/externs/chai-3.5.js",
+  ]
+  deps = [ ":message_pipe" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [ "message_pipe.js" ]
+}

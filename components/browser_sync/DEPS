@@ -5,6 +5,7 @@ include_rules = [
   "+components/bookmarks/managed",
   "+components/bookmarks/test",
   "+components/history/core/browser",
+  "+components/history/core/common",
   "+components/keyed_service/core",
   "+components/password_manager/core/browser",
   "+components/prefs",

@@ -1,15 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_TAB_DIALOGS_H_
 #define CHROME_BROWSER_UI_TAB_DIALOGS_H_
 
-#include <memory>
-#include <string>
+#include <set>
 
 #include "base/callback_forward.h"
 #include "base/supports_user_data.h"
+#include "extensions/common/extension_id.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
@@ -50,12 +50,18 @@ class TabDialogs : public base::SupportsUserData::Data {
       content::RenderWidgetHost* render_widget_host) = 0;
   virtual bool IsShowingHungRendererDialog() = 0;
 
-  // Shows a dialog asking the user to confirm linking to a managed account.
-  virtual void ShowProfileSigninConfirmation(
-      Browser* browser,
-      const std::string& username,
-      bool prompt_for_new_profile,
-      std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate) = 0;
+  // Shows the deprecated app dialog.
+  virtual void ShowDeprecatedAppsDialog(
+      const extensions::ExtensionId& optional_launched_extension_id,
+      const std::set<extensions::ExtensionId>& deprecated_app_ids,
+      content::WebContents* web_contents,
+      base::OnceClosure launch_anyways) = 0;
+
+  // Shows the force installed and deprecated app dialog.
+  virtual void ShowForceInstalledDeprecatedAppsDialog(
+      const extensions::ExtensionId& app_id,
+      content::WebContents* web_contents,
+      base::OnceClosure launch_anyways) = 0;
 
   // Shows or hides the ManagePasswords bubble.
   // Pass true for |user_action| if this is a user initiated action.

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -11,7 +11,6 @@
 #include <va/va.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -92,6 +91,9 @@ class VASurface : public base::RefCountedThreadSafe<VASurface> {
             unsigned int format,
             ReleaseCB release_cb);
 
+  VASurface(const VASurface&) = delete;
+  VASurface& operator=(const VASurface&) = delete;
+
   VASurfaceID id() const { return va_surface_id_; }
   const gfx::Size& size() const { return size_; }
   unsigned int format() const { return format_; }
@@ -104,8 +106,6 @@ class VASurface : public base::RefCountedThreadSafe<VASurface> {
   const gfx::Size size_;
   const unsigned int format_;
   ReleaseCB release_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(VASurface);
 };
 
 }  // namespace media

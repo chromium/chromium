@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "extensions/common/manifest.h"
 #include "url/gurl.h"
 
@@ -19,9 +18,11 @@ class FilePath;
 
 namespace content {
 class BrowserContext;
+class SiteInstance;
 class StoragePartition;
 class StoragePartitionConfig;
-}
+class RenderFrameHost;
+}  // namespace content
 
 namespace extensions {
 class Extension;
@@ -37,7 +38,7 @@ namespace util {
 bool CanBeIncognitoEnabled(const Extension* extension);
 
 // Returns true if |extension_id| can run in an incognito window.
-bool IsIncognitoEnabled(const std::string& extension_id,
+bool IsIncognitoEnabled(const ExtensionId& extension_id,
                         content::BrowserContext* context);
 
 // Returns true if |extension| can see events and data from another sub-profile
@@ -53,11 +54,11 @@ const std::string& GetPartitionDomainForExtension(const Extension* extension);
 // associated with |extension_id| has isolated storage.
 // Otherwise, return the default StoragePartitionConfig.
 content::StoragePartitionConfig GetStoragePartitionConfigForExtensionId(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* browser_context);
 
 content::StoragePartition* GetStoragePartitionForExtensionId(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* browser_context,
     bool can_create = true);
 
@@ -76,25 +77,38 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
 // extension.
 bool CanWithholdPermissionsFromExtension(const Extension& extension);
 bool CanWithholdPermissionsFromExtension(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const Manifest::Type type,
     const mojom::ManifestLocation location);
 
 // Returns a unique int id for each context.
 int GetBrowserContextId(content::BrowserContext* context);
 
-// Calculates the allowlist and blocklist for |extension| and forwards the
-// request to |browser_contexts|.
-void SetCorsOriginAccessListForExtension(
-    const std::vector<content::BrowserContext*>& browser_contexts,
-    const Extension& extension,
-    base::OnceClosure closure);
+// Returns whether the |extension| should be loaded in the given
+// |browser_context|.
+bool IsExtensionVisibleToContext(const Extension& extension,
+                                 content::BrowserContext* browser_context);
 
-// Resets the allowlist and blocklist for |extension| to empty lists for
-// |browser_context| and for all related regular+incognito contexts.
-void ResetCorsOriginAccessListForExtension(
-    content::BrowserContext* browser_context,
-    const Extension& extension);
+// Initializes file scheme access if the extension has such permission.
+void InitializeFileSchemeAccessForExtension(
+    int render_process_id,
+    const std::string& extension_id,
+    content::BrowserContext* browser_context);
+
+// Gets the ExtensionId associated with the given `site_instance`.  An empty
+// string is returned when `site_instance` is not associated with an extension.
+ExtensionId GetExtensionIdForSiteInstance(content::SiteInstance& site_instance);
+
+// Returns the extension id associated with the given `render_frame_host`, or
+// the empty string if there is none.
+std::string GetExtensionIdFromFrame(
+    content::RenderFrameHost* render_frame_host);
+
+// Returns true if the process corresponding to `render_process_id` can host an
+// extension with `extension_id`.  (It doesn't necessarily mean that the process
+// *does* host this specific extension at this point in time.)
+bool CanRendererHostExtensionOrigin(int render_process_id,
+                                    const ExtensionId& extension_id);
 
 }  // namespace util
 }  // namespace extensions

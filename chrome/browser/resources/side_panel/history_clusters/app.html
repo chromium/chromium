@@ -1,0 +1,22 @@
+<style>
+  :host {
+    --cr-toolbar-field-max-width: calc(100% - 32px);
+  }
+
+  #history-clusters {
+    height: calc(100% - 60px); /* 40px search field + 20px margin */
+  }
+
+  #searchbox {
+    margin: 16px auto 4px;
+  }
+</style>
+<cr-toolbar-search-field id="searchbox" on-search-changed="onSearchChanged_"
+                         label="$i18n{searchPrompt}"
+                         clear-label="$i18n{clearSearch}">
+</cr-toolbar-search-field>
+<history-clusters id="history-clusters"
+    query="[[query]]"
+    path="journeys"
+    on-query-changed-by-user="onQueryChangedByUser_">
+</history-clusters>

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/stl_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -247,7 +246,7 @@ DomCode UsLayoutKeyboardCodeToDomCode(KeyboardCode key_code) {
 
 KeyboardCode DomCodeToUsLayoutKeyboardCode(DomCode dom_code) {
   const DomCodeToKeyboardCodeEntry* end =
-      kDomCodeToKeyboardCodeMap + base::size(kDomCodeToKeyboardCodeMap);
+      kDomCodeToKeyboardCodeMap + std::size(kDomCodeToKeyboardCodeMap);
   const DomCodeToKeyboardCodeEntry* found = std::lower_bound(
       kDomCodeToKeyboardCodeMap, end, dom_code,
       [](const DomCodeToKeyboardCodeEntry& a, DomCode b) {
@@ -292,6 +291,23 @@ int ModifierDomKeyToEventFlag(DomKey key) {
   //   DomKey::SCROLL_LOCK
   //   DomKey::SUPER
   //   DomKey::SYMBOL_LOCK
+}
+
+DomCode UsLayoutDomKeyToDomCode(DomKey dom_key) {
+  if (dom_key.IsCharacter()) {
+    char16_t c = dom_key.ToCharacter();
+    for (const auto& it : kPrintableCodeMap) {
+      if (it.character[0] == c || it.character[1] == c) {
+        return it.dom_code;
+      }
+    }
+  }
+
+  for (const auto& it : kNonPrintableCodeMap) {
+    if (it.dom_key == dom_key)
+      return it.dom_code;
+  }
+  return DomCode::NONE;
 }
 
 }  // namespace ui

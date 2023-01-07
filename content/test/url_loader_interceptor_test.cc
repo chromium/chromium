@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/test/url_loader_interceptor.h"
+
 #include "base/command_line.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -26,6 +27,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 
 namespace content {
@@ -44,13 +46,9 @@ class URLLoaderInterceptorTest : public ContentBrowserTest {
   }
 
   bool DidImageLoad() {
-    int height = 0;
-    EXPECT_TRUE(ExecuteScriptAndExtractInt(
-        shell(),
-        "window.domAutomationController.send("
-        "document.getElementsByTagName('img')[0].naturalHeight)",
-        &height));
-    return !!height;
+    return EvalJs(shell(),
+                  "document.getElementsByTagName('img')[0].naturalHeight")
+               .ExtractInt() != 0;
   }
 
   GURL GetImageURL() { return embedded_test_server()->GetURL("/blank.jpg"); }
@@ -166,7 +164,7 @@ class TestBrowserClientWithHeaderClient
       int render_process_id,
       URLLoaderFactoryType type,
       const url::Origin& request_initiator,
-      base::Optional<int64_t> navigation_id,
+      absl::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
@@ -269,8 +267,10 @@ IN_PROC_BROWSER_TEST_F(URLLoaderInterceptorTest, InterceptBrowser) {
         params->client->OnComplete(status);
         return true;
       }));
-  auto* factory = BrowserContext::GetDefaultStoragePartition(
-                      shell()->web_contents()->GetBrowserContext())
+  auto* factory = shell()
+                      ->web_contents()
+                      ->GetBrowserContext()
+                      ->GetDefaultStoragePartition()
                       ->GetURLLoaderFactoryForBrowserProcess()
                       .get();
   factory->CreateLoaderAndStart(

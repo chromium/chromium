@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <limits.h>
 
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -18,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/common/child_process.mojom-test-utils.h"
+#include "content/common/content_constants_internal.h"
 #include "content/public/common/content_switches.h"
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_channel_mojo.h"
@@ -32,7 +34,7 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/posix/global_descriptors.h"
 #include "content/public/common/content_descriptors.h"
 #endif
@@ -46,10 +48,8 @@ namespace {
 class FakeChildProcessImpl
     : public content::mojom::ChildProcessInterceptorForTesting {
  public:
-  explicit FakeChildProcessImpl(
-      mojo::PendingRemote<IPC::mojom::ChannelBootstrap> legacy_ipc_bootstrap)
-      : legacy_ipc_bootstrap_(std::move(legacy_ipc_bootstrap)) {
-    ignore_result(disconnected_process_.BindNewPipeAndPassReceiver());
+  FakeChildProcessImpl() {
+    std::ignore = disconnected_process_.BindNewPipeAndPassReceiver();
   }
 
   // content::mojom::ChildProcessInterceptorForTesting overrides:
@@ -57,13 +57,7 @@ class FakeChildProcessImpl
     return disconnected_process_.get();
   }
 
-  void BootstrapLegacyIpc(
-      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> receiver) override {
-    mojo::FusePipes(std::move(receiver), std::move(legacy_ipc_bootstrap_));
-  }
-
  private:
-  mojo::PendingRemote<IPC::mojom::ChannelBootstrap> legacy_ipc_bootstrap_;
   mojo::Remote<content::mojom::ChildProcess> disconnected_process_;
 };
 
@@ -77,10 +71,10 @@ void InitializeMojo() {
 
 mojo::IncomingInvitation InitializeMojoIPCChannel() {
   mojo::PlatformChannelEndpoint endpoint;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   endpoint = mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
       *base::CommandLine::ForCurrentProcess());
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   endpoint = mojo::PlatformChannelEndpoint(mojo::PlatformHandle(base::ScopedFD(
       base::GlobalDescriptors::GetInstance()->Get(kMojoIPCChannel))));
 #endif
@@ -126,7 +120,7 @@ bool ReplayProcess::Initialize(int argc, const char** argv) {
   io_thread_.StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::GlobalDescriptors* g_fds = base::GlobalDescriptors::GetInstance();
   g_fds->Set(kMojoIPCChannel,
              kMojoIPCChannel + base::GlobalDescriptors::kBaseDescriptor);
@@ -143,15 +137,19 @@ bool ReplayProcess::Initialize(int argc, const char** argv) {
 
 void ReplayProcess::OpenChannel() {
   DCHECK(mojo_invitation_);
-  mojo::PendingRemote<IPC::mojom::ChannelBootstrap> bootstrap;
-  auto bootstrap_receiver = bootstrap.InitWithNewPipeAndPassReceiver();
+  mojo::ScopedMessagePipeHandle child_process_pipe_for_receiver =
+      mojo_invitation_->ExtractMessagePipe(
+          content::kChildProcessReceiverAttachmentName);
+  mojo::ScopedMessagePipeHandle legacy_ipc_bootstrap_pipe =
+      mojo_invitation_->ExtractMessagePipe(
+          content::kLegacyIpcBootstrapAttachmentName);
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<FakeChildProcessImpl>(std::move(bootstrap)),
+      std::make_unique<FakeChildProcessImpl>(),
       mojo::PendingReceiver<content::mojom::ChildProcess>(
-          mojo_invitation_->ExtractMessagePipe(0)));
+          std::move(child_process_pipe_for_receiver)));
   channel_ = IPC::ChannelProxy::Create(
       IPC::ChannelMojo::CreateClientFactory(
-          bootstrap_receiver.PassPipe(), io_thread_.task_runner(),
+          std::move(legacy_ipc_bootstrap_pipe), io_thread_.task_runner(),
           base::ThreadTaskRunnerHandle::Get()),
       this, io_thread_.task_runner(), base::ThreadTaskRunnerHandle::Get());
 }
@@ -181,7 +179,7 @@ void ReplayProcess::SendNextMessage() {
 
 void ReplayProcess::Run() {
   base::RepeatingTimer timer;
-  timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
+  timer.Start(FROM_HERE, base::Milliseconds(1),
               base::BindRepeating(&ReplayProcess::SendNextMessage,
                                   base::Unretained(this)));
   base::RunLoop().Run();

@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_coordinator.h"
 
-#include <memory>
+#import <memory>
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/main/browser.h"

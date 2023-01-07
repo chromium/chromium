@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,25 @@
 #import <Foundation/Foundation.h>
 
 #include <map>
+#include <string>
+#include <vector>
 
-enum class ApplicationModeForTabOpening { NORMAL, INCOGNITO, CURRENT };
+// Input format for the `TabOpening` protocol.
+enum class ApplicationModeForTabOpening {
+  NORMAL,
+  INCOGNITO,
+  CURRENT,
+  UNDETERMINED
+};
 
-enum NTPTabOpeningPostOpeningAction {
+enum TabOpeningPostOpeningAction {
   // No action should be done
   NO_ACTION = 0,
   START_VOICE_SEARCH,
   START_QR_CODE_SCANNER,
   FOCUS_OMNIBOX,
-  NTP_TAB_OPENING_POST_OPENING_ACTION_COUNT,
+  SHOW_DEFAULT_BROWSER_SETTINGS,
+  TAB_OPENING_POST_OPENING_ACTION_COUNT,
 };
 
 class GURL;
@@ -33,11 +42,11 @@ class GURL;
 @property(nonatomic, readonly, assign) const GURL& externalURL;
 
 // Original URL that should be opened. May or may not be the same as
-// |externalURL|.
+// `externalURL`.
 @property(nonatomic, readonly, assign) const GURL& completeURL;
 
 // The list of URLs to open. First URL in the vector is the same
-// as |externalURL|.
+// as `externalURL`.
 @property(nonatomic, readonly, assign) const std::vector<GURL>& URLs;
 
 // The URL query string parameters in the case that the app was launched as a
@@ -46,13 +55,13 @@ class GURL;
 @property(nonatomic, assign) std::map<std::string, std::string>
     externalURLParams;
 
-// Boolean to track if the app should launch in incognito mode.
-@property(nonatomic, readwrite, assign) BOOL launchInIncognito;
-// The mode in which the tab must be opened.
-@property(nonatomic, readonly) ApplicationModeForTabOpening applicationMode;
-// Action to be taken after opening the initial NTP.
+// The mode in which the tab must be opened. Defaults to NORMAL, unless the flag
+// `kIOS3PIntentsInIncognito` is enabled, in which case it is UNDETERMINED.
+// TODO(crbug.com/1318750): Change this comment when flag is enabled by default.
+@property(nonatomic, assign) ApplicationModeForTabOpening applicationMode;
+// Action to be taken after loading the URL.
 @property(nonatomic, readwrite, assign)
-    NTPTabOpeningPostOpeningAction postOpeningAction;
+    TabOpeningPostOpeningAction postOpeningAction;
 // Boolean to track if a Payment Request response is requested at startup.
 @property(nonatomic, readwrite, assign) BOOL completePaymentRequest;
 // Text query that should be executed on startup.
@@ -65,14 +74,19 @@ class GURL;
 // Chrome, the browser won't proceed in that disabled mode, and it will signal
 // to the user that a different mode is opened.
 @property(nonatomic, readwrite, getter=isUnexpectedMode) BOOL unexpectedMode;
+// Boolean to track whether the app was opened via a custom scheme from another
+// first-party app.
+@property(nonatomic, readwrite, assign) BOOL openedViaFirstPartyScheme;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
                         completeURL:(const GURL&)completeURL
+                    applicationMode:(ApplicationModeForTabOpening)mode
     NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithURLs:(const std::vector<GURL>&)URLs;
+- (instancetype)initWithURLs:(const std::vector<GURL>&)URLs
+             applicationMode:(ApplicationModeForTabOpening)mode;
 
 @end
 

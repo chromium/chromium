@@ -1,16 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_ORIGIN_TEXT_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_ORIGIN_TEXT_H_
 
-#include <string>
-
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/view.h"
 
 class Browser;
@@ -20,7 +19,7 @@ class Label;
 }
 
 // A URL's origin text with a fade in/out animation.
-class WebAppOriginText : public views::View {
+class WebAppOriginText : public views::View, public ui::LayerAnimationObserver {
  public:
   METADATA_HEADER(WebAppOriginText);
   explicit WebAppOriginText(Browser* browser);
@@ -28,7 +27,8 @@ class WebAppOriginText : public views::View {
   WebAppOriginText& operator=(const WebAppOriginText&) = delete;
   ~WebAppOriginText() override;
 
-  void SetTextColor(SkColor color);
+  // If `show_text` is true, the text will be shown for a few seconds.
+  void SetTextColor(SkColor color, bool show_text_);
 
   // Fades the text in and out.
   void StartFadeAnimation();
@@ -36,11 +36,16 @@ class WebAppOriginText : public views::View {
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
+  // ui::LayerAnimationObserver:
+  void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override {}
+  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
+  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
+  void OnLayerAnimationScheduled(
+      ui::LayerAnimationSequence* sequence) override {}
+
  private:
   // Owned by the views hierarchy.
-  views::Label* label_ = nullptr;
-
-  void AnimationComplete();
+  raw_ptr<views::Label> label_ = nullptr;
 
   base::WeakPtrFactory<WebAppOriginText> weak_factory_{this};
 };

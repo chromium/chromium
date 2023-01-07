@@ -7,7 +7,7 @@
 /* at a redacted point in time
  */
 /* Compiler settings for gen/chrome/credential_provider/gaiacp/gaia_credential_provider.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0622 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0626 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -41,6 +41,14 @@
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
+#endif
+
+#ifndef DECLSPEC_XFGVIRT
+#if _CONTROL_FLOW_GUARD_XFG
+#define DECLSPEC_XFGVIRT(base, func) __declspec(xfg_virtual(base, func))
+#else
+#define DECLSPEC_XFGVIRT(base, func)
+#endif
 #endif
 
 /* Forward Declarations */ 
@@ -121,22 +129,27 @@ EXTERN_C const IID IID_IGaiaCredentialProvider;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IGaiaCredentialProvider * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IGaiaCredentialProvider * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IGaiaCredentialProvider * This);
         
+        DECLSPEC_XFGVIRT(IGaiaCredentialProvider, GetUsageScenario)
         HRESULT ( STDMETHODCALLTYPE *GetUsageScenario )( 
             IGaiaCredentialProvider * This,
             /* [out] */ DWORD *cpus);
         
+        DECLSPEC_XFGVIRT(IGaiaCredentialProvider, OnUserAuthenticated)
         HRESULT ( STDMETHODCALLTYPE *OnUserAuthenticated )( 
             IGaiaCredentialProvider * This,
             /* [in] */ IUnknown *credential,
@@ -223,30 +236,37 @@ EXTERN_C const IID IID_IGaiaCredential;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IGaiaCredential * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IGaiaCredential * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IGaiaCredential * This);
         
+        DECLSPEC_XFGVIRT(IGaiaCredential, Initialize)
         HRESULT ( STDMETHODCALLTYPE *Initialize )( 
             IGaiaCredential * This,
             /* [in] */ IGaiaCredentialProvider *provider);
         
+        DECLSPEC_XFGVIRT(IGaiaCredential, Terminate)
         HRESULT ( STDMETHODCALLTYPE *Terminate )( 
             IGaiaCredential * This);
         
+        DECLSPEC_XFGVIRT(IGaiaCredential, OnUserAuthenticated)
         HRESULT ( STDMETHODCALLTYPE *OnUserAuthenticated )( 
             IGaiaCredential * This,
             /* [in] */ BSTR authentication_info,
             /* [out] */ BSTR *status_text);
         
+        DECLSPEC_XFGVIRT(IGaiaCredential, ReportError)
         HRESULT ( STDMETHODCALLTYPE *ReportError )( 
             IGaiaCredential * This,
             /* [in] */ LONG status,
@@ -331,22 +351,27 @@ EXTERN_C const IID IID_IReauthCredential;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IReauthCredential * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IReauthCredential * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IReauthCredential * This);
         
+        DECLSPEC_XFGVIRT(IReauthCredential, SetEmailForReauth)
         HRESULT ( STDMETHODCALLTYPE *SetEmailForReauth )( 
             IReauthCredential * This,
             /* [in] */ BSTR email);
         
+        DECLSPEC_XFGVIRT(IReauthCredential, SetOSUserInfo)
         HRESULT ( STDMETHODCALLTYPE *SetOSUserInfo )( 
             IReauthCredential * This,
             /* [in] */ BSTR sid,

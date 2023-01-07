@@ -1,0 +1,86 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/network_anonymization_key.mojom";
+
+// The status of a Reporting API report.
+enum ReportingApiReportStatus {
+  kQueued,
+  kPending,
+  kDoomed,
+  kSuccess,
+};
+
+// A Reporting API report.
+struct ReportingApiReport {
+  mojo_base.mojom.UnguessableToken id;
+  // The URL of the document that triggered the report.
+  url.mojom.Url url;
+  // The name of the endpoint group that should be used to deliver the report.
+  string group;
+  // The type of the report (specifies the set of data that is contained
+  // in the report body).
+  string type;
+  // When the report was generated.
+  mojo_base.mojom.TimeTicks timestamp;
+  // How many uploads deep the related request was.
+  int32 depth;
+  // The number of delivery attempts made so far, not including an active
+  // attempt.
+  int32 attempts;
+  // The body of the report.
+  mojo_base.mojom.DictionaryValue body;
+  // The status of the report.
+  ReportingApiReportStatus status;
+};
+
+struct ReportingApiEndpoint {
+  // The endpoint to which reports may be delivered.
+  url.mojom.Url url;
+  // The number of attempted uploads that were made for this endpoint.
+  int32 attempted_uploads;
+  // The number of uploads that have succeeded for this endpoint.
+  int32 successful_uploads;
+  // The number of individual reports that we've attempted to upload for this
+  // endpoint.  (Failed uploads will cause a report to be counted multiple
+  // times, once for each attempt.)
+  int32 attempted_reports;
+  // The number of individual reports that were successfully uploaded for
+  // this endpoint.
+  int32 successful_reports;
+  // Priority when multiple endpoints are configured for an origin; endpoints
+  // with numerically lower priorities are used first.
+  int32 priority;
+  // Weight when multiple endpoints are configured for an origin with the same
+  // priority; among those with the same priority, each endpoint has a chance
+  // of being chosen that is proportional to its weight.
+  int32 weight;
+  // Origin that configured this endpoint group.
+  url.mojom.Origin origin;
+  // Name of the endpoint group (defaults to "default" during header parsing).
+  string group_name;
+  // The NetworkAnonymizationKey the group is scoped to. Needed to prevent leaking
+  // third party contexts across sites.
+  NetworkAnonymizationKey network_anonymization_key;
+  // Source token for the document or worker which configured this endpoint.
+  mojo_base.mojom.UnguessableToken? reporting_source;
+};
+
+// Indirectly listens to changes in the Reporting Service via
+// ReportingCacheObserver as intermediate
+interface ReportingApiObserver {
+  // Called whenever a report is added
+  OnReportAdded(ReportingApiReport report);
+  // Called whenever a report is updated (status change or attempts incremented)
+  OnReportUpdated(ReportingApiReport report);
+  // Called on every update to the Reporting API endpoints
+  OnEndpointsUpdatedForOrigin(array<ReportingApiEndpoint> endpoints);
+};

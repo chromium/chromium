@@ -1,14 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 HidChooserContextFactory* HidChooserContextFactory::GetInstance() {
@@ -22,10 +21,17 @@ HidChooserContext* HidChooserContextFactory::GetForProfile(Profile* profile) {
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
+// static
+HidChooserContext* HidChooserContextFactory::GetForProfileIfExists(
+    Profile* profile) {
+  return static_cast<HidChooserContext*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
+}
+
 HidChooserContextFactory::HidChooserContextFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "HidChooserContext",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
@@ -36,7 +42,10 @@ KeyedService* HidChooserContextFactory::BuildServiceInstanceFor(
   return new HidChooserContext(Profile::FromBrowserContext(context));
 }
 
-content::BrowserContext* HidChooserContextFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+void HidChooserContextFactory::BrowserContextShutdown(
+    content::BrowserContext* context) {
+  auto* hid_chooser_context =
+      GetForProfileIfExists(Profile::FromBrowserContext(context));
+  if (hid_chooser_context)
+    hid_chooser_context->FlushScheduledSaveSettingsCalls();
 }

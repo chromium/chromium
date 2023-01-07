@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,12 +23,12 @@
     // When adding new engines, increment this number and use it as the new
     // max ID. This is used by UMA stats and must be updated to include the full
     // range or else not all engines will be counted in stats.
-    "kMaxPrepopulatedEngineID": 101,
+    "kMaxPrepopulatedEngineID": 102,
 
     // Increment this if you change the data in ways that mean users with
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
-    "kCurrentDataVersion": 125
+    "kCurrentDataVersion": 132
   },
 
   // The following engines are included in country lists and are added to the
@@ -116,11 +116,14 @@
       "name": "Google",
       "keyword": "google.com",
       "favicon_url": "https://www.google.com/images/branding/product/ico/googleg_lodp.ico",
-      "search_url": "{google:baseURL}search?q={searchTerms}&{google:RLZ}{google:originalQueryForSuggestion}{google:assistedQueryStats}{google:searchFieldtrialParameter}{google:iOSSearchLanguage}{google:prefetchSource}{google:searchClient}{google:sourceId}{google:contextualSearchVersion}ie={inputEncoding}",
-      "suggest_url": "{google:baseSuggestURL}search?{google:searchFieldtrialParameter}client={google:suggestClient}&gs_ri={google:suggestRid}&xssi=t&q={searchTerms}&{google:inputType}{google:omniboxFocusType}{google:cursorPosition}{google:currentPageUrl}{google:pageClassification}{google:searchVersion}{google:sessionToken}{google:prefetchQuery}sugkey={google:suggestAPIKeyParameter}",
+      "search_url": "{google:baseURL}search?q={searchTerms}&{google:RLZ}{google:originalQueryForSuggestion}{google:assistedQueryStats}{google:searchboxStats}{google:searchFieldtrialParameter}{google:iOSSearchLanguage}{google:prefetchSource}{google:searchClient}{google:sourceId}{google:contextualSearchVersion}ie={inputEncoding}",
+      "suggest_url": "{google:baseSuggestURL}search?{google:searchFieldtrialParameter}client={google:suggestClient}&gs_ri={google:suggestRid}&xssi=t&q={searchTerms}&{google:inputType}{google:omniboxFocusType}{google:cursorPosition}{google:currentPageUrl}{google:pageClassification}{google:clientCacheTimeToLive}{google:searchVersion}{google:sessionToken}{google:prefetchQuery}sugkey={google:suggestAPIKeyParameter}",
       "image_url": "{google:baseSearchByImageURL}upload",
       "contextual_search_url": "{google:baseURL}_/contextualsearch?{google:contextualSearchVersion}{google:contextualSearchContextData}",
       "image_url_post_params": "encoded_image={google:imageThumbnail},image_url={google:imageURL},sbisrc={google:imageSearchSource},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight}",
+      "side_search_param": "sidesearch",
+      "side_image_search_param": "sideimagesearch",
+      "image_search_branding_label": "Google Lens",
       "alternate_urls": [
         "{google:baseURL}#q={searchTerms}",
         "{google:baseURL}search#q={searchTerms}",
@@ -129,6 +132,8 @@
         "{google:baseURL}s?q={searchTerms}"
       ],
       "type": "SEARCH_ENGINE_GOOGLE",
+      "preconnect_to_search_url" : "ALLOWED",
+      "prefetch_likely_navigations" : "ALLOWED",
       "id": 1
     },
 
@@ -136,7 +141,7 @@
       "name": "@MAIL.RU",
       "keyword": "mail.ru",
       "favicon_url": "https://go.imgsmail.ru/favicon.ico",
-      "search_url": "https://go.mail.ru/search?q={searchTerms}&{mailru:referralID}",
+      "search_url": "https://go.mail.ru/search?q={searchTerms}&{mailru:referralID}&fr=ch_omnibox",
       "alternate_urls": [
         "https://go.mail.ru/msearch?q={searchTerms}&{mailru:referralID}"
       ],
@@ -154,6 +159,15 @@
       "suggest_url": "https://ac.search.naver.com/nx/ac?of=os&ie={inputEncoding}&q={searchTerms}&oe={outputEncoding}",
       "type": "SEARCH_ENGINE_NAVER",
       "id": 67
+    },
+
+    "petal_search": {
+      "name": "Petal Search",
+      "keyword": "petalsearch.com",
+      "favicon_url": "https://search-static-dre.dbankcdn.com/pc/v1/favicon.ico",
+      "search_url": "https://petalsearch.com/search?query={searchTerms}",
+      "type": "SEARCH_ENGINE_PETALSEARCH",
+      "id": 102
     },
 
     "qwant": {
@@ -217,8 +231,9 @@
       "name": "Yahoo!",
       "keyword": "yahoo.com",
       "favicon_url": "https://search.yahoo.com/favicon.ico",
-      "search_url": "https://search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
-      "suggest_url": "https://search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
+      "search_url": "https://search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas_sfp&p={searchTerms}",
+      "suggest_url": "https://search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas_sfp&command={searchTerms}",
+      "new_tab_url": "https://search.yahoo.com?fr=crmas_sfp",
       "type": "SEARCH_ENGINE_YAHOO",
       "id": 2
     },

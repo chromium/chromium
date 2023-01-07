@@ -1,17 +1,19 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/web_contents/web_contents_view_child_frame.h"
 
+#include <utility>
+
 #include "build/build_config.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/display/display_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -21,14 +23,13 @@ namespace content {
 
 WebContentsViewChildFrame::WebContentsViewChildFrame(
     WebContentsImpl* web_contents,
-    WebContentsViewDelegate* delegate,
+    std::unique_ptr<WebContentsViewDelegate> delegate,
     RenderViewHostDelegateView** delegate_view)
-    : web_contents_(web_contents),
-    delegate_(delegate) {
+    : web_contents_(web_contents), delegate_(std::move(delegate)) {
   *delegate_view = this;
 }
 
-WebContentsViewChildFrame::~WebContentsViewChildFrame() {}
+WebContentsViewChildFrame::~WebContentsViewChildFrame() = default;
 
 WebContentsView* WebContentsViewChildFrame::GetOuterView() {
   return web_contents_->GetOuterWebContents()->GetView();
@@ -79,13 +80,8 @@ void WebContentsViewChildFrame::CreateView(gfx::NativeView context) {
 
 RenderWidgetHostViewBase* WebContentsViewChildFrame::CreateViewForWidget(
     RenderWidgetHost* render_widget_host) {
-  blink::ScreenInfo screen_info;
-  if (auto* view = web_contents_->GetRenderWidgetHostView())
-    view->GetScreenInfo(&screen_info);
-  else
-    DisplayUtil::GetDefaultScreenInfo(&screen_info);
-  return RenderWidgetHostViewChildFrame::Create(render_widget_host,
-                                                screen_info);
+  return CreateRenderWidgetHostViewForInnerFrameTree(web_contents_,
+                                                     render_widget_host);
 }
 
 RenderWidgetHostViewBase* WebContentsViewChildFrame::CreateViewForChildWidget(
@@ -107,11 +103,15 @@ void WebContentsViewChildFrame::SetOverscrollControllerEnabled(bool enabled) {
   // This is managed by the outer view.
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool WebContentsViewChildFrame::CloseTabAfterEventTrackingIfNeeded() {
   return false;
 }
 #endif
+
+void WebContentsViewChildFrame::OnCapturerCountChanged() {}
+
+void WebContentsViewChildFrame::FullscreenStateChanged(bool is_fullscreen) {}
 
 void WebContentsViewChildFrame::RestoreFocus() {
   NOTREACHED();
@@ -146,21 +146,13 @@ void WebContentsViewChildFrame::GotFocus(
 }
 
 void WebContentsViewChildFrame::TakeFocus(bool reverse) {
-  RenderFrameProxyHost* rfp = web_contents_->GetMainFrame()
-                                  ->frame_tree_node()
-                                  ->render_manager()
-                                  ->GetProxyToOuterDelegate();
-  FrameTreeNode* outer_node = FrameTreeNode::GloballyFindByID(
-      web_contents_->GetOuterDelegateFrameTreeNodeId());
-  RenderFrameHostImpl* rfhi = outer_node->parent();
-
-  rfhi->AdvanceFocus(reverse ? blink::mojom::FocusType::kBackward
-                             : blink::mojom::FocusType::kForward,
-                     rfp);
+  // This is handled in RenderFrameHostImpl::TakeFocus we shouldn't
+  // end up here.
+  NOTREACHED();
 }
 
 void WebContentsViewChildFrame::ShowContextMenu(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     const ContextMenuParams& params) {
   NOTREACHED();
 }
@@ -169,15 +161,32 @@ void WebContentsViewChildFrame::StartDragging(
     const DropData& drop_data,
     DragOperationsMask ops,
     const gfx::ImageSkia& image,
-    const gfx::Vector2d& image_offset,
+    const gfx::Vector2d& cursor_offset,
+    const gfx::Rect& drag_obj_rect,
     const blink::mojom::DragEventSourceInfo& event_info,
     RenderWidgetHostImpl* source_rwh) {
   if (auto* view = GetOuterDelegateView()) {
-    view->StartDragging(
-        drop_data, ops, image, image_offset, event_info, source_rwh);
+    view->StartDragging(drop_data, ops, image, cursor_offset, drag_obj_rect,
+                        event_info, source_rwh);
   } else {
     web_contents_->GetOuterWebContents()->SystemDragEnded(source_rwh);
   }
+}
+
+RenderWidgetHostViewChildFrame*
+WebContentsViewChildFrame::CreateRenderWidgetHostViewForInnerFrameTree(
+    WebContentsImpl* web_contents,
+    RenderWidgetHost* render_widget_host) {
+  display::ScreenInfos screen_infos;
+  if (auto* view = web_contents->GetRenderWidgetHostView()) {
+    screen_infos = view->GetScreenInfos();
+  } else {
+    display::ScreenInfo screen_info;
+    display::DisplayUtil::GetDefaultScreenInfo(&screen_info);
+    screen_infos = display::ScreenInfos(screen_info);
+  }
+  return RenderWidgetHostViewChildFrame::Create(render_widget_host,
+                                                screen_infos);
 }
 
 }  // namespace content

@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -81,7 +81,7 @@ def main(args):
   options = _ParseOptions(args)
 
   input_paths = [options.input_dex_zip]
-  for feature_jars in options.features.itervalues():
+  for feature_jars in options.features.values():
     for feature_jar in feature_jars:
       input_paths.append(feature_jar)
 

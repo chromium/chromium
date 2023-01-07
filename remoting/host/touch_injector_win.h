@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/scoped_native_library.h"
 
 namespace remoting {
@@ -26,6 +25,9 @@ class TouchEvent;
 // The methods are virtual for mocking.
 class TouchInjectorWinDelegate {
  public:
+  TouchInjectorWinDelegate(const TouchInjectorWinDelegate&) = delete;
+  TouchInjectorWinDelegate& operator=(const TouchInjectorWinDelegate&) = delete;
+
   virtual ~TouchInjectorWinDelegate();
 
   // Determines whether Windows touch injection functions can be used.
@@ -51,8 +53,6 @@ class TouchInjectorWinDelegate {
   // Pointers to Windows touch injection functions.
   BOOL(NTAPI* initialize_touch_injection_func_)(UINT32, DWORD);
   BOOL(NTAPI* inject_touch_input_func_)(UINT32, const POINTER_TOUCH_INFO*);
-
-  DISALLOW_COPY_AND_ASSIGN(TouchInjectorWinDelegate);
 };
 
 // This class converts TouchEvent objects to POINTER_TOUCH_INFO so that it can
@@ -63,6 +63,10 @@ class TouchInjectorWinDelegate {
 class TouchInjectorWin {
  public:
   TouchInjectorWin();
+
+  TouchInjectorWin(const TouchInjectorWin&) = delete;
+  TouchInjectorWin& operator=(const TouchInjectorWin&) = delete;
+
   ~TouchInjectorWin();
 
   // Returns false if initialization of touch injection APIs fails.
@@ -99,8 +103,6 @@ class TouchInjectorWin {
   // and resize the vector.
   // All the POINTER_TOUCH_INFOs are stored as "move" points.
   std::map<uint32_t, POINTER_TOUCH_INFO> touches_in_contact_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchInjectorWin);
 };
 
 }  // namespace remoting

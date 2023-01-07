@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "third_party/blink/public/web/web_ax_object.h"
@@ -35,6 +34,10 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   static gin::WrapperInfo kWrapperInfo;
 
   WebAXObjectProxy(const blink::WebAXObject& object, Factory* factory);
+
+  WebAXObjectProxy(const WebAXObjectProxy&) = delete;
+  WebAXObjectProxy& operator=(const WebAXObjectProxy&) = delete;
+
   ~WebAXObjectProxy() override;
 
   // gin::Wrappable:
@@ -57,6 +60,8 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   }
 
   Factory* factory() const { return factory_; }
+
+  bool IsDetached() const { return !factory_; }
 
  private:
   friend class WebAXObjectProxyBindings;
@@ -203,6 +208,8 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   void ScrollToMakeVisible();
   void ScrollToMakeVisibleWithSubFocus(int x, int y, int width, int height);
   void ScrollToGlobalPoint(int x, int y);
+  void ScrollUp();
+  void ScrollDown();
   int ScrollX();
   int ScrollY();
   std::string ToString();
@@ -236,9 +243,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   blink::WebAXObject accessibility_object_;
   Factory* factory_;
 
-  v8::Persistent<v8::Function> notification_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAXObjectProxy);
+  v8::Global<v8::Function> notification_callback_;
 };
 
 class RootWebAXObjectProxy : public WebAXObjectProxy {
@@ -261,13 +266,7 @@ class WebAXObjectProxyList : public WebAXObjectProxy::Factory {
   v8::Local<v8::Object> GetOrCreate(const blink::WebAXObject&) override;
 
  private:
-  // Defines the Persistents as copyable because v8 does not support moving
-  // in non-copyable (default) traits either.
-  using CopyablePersistentObject =
-      v8::Persistent<v8::Object, v8::CopyablePersistentTraits<v8::Object>>;
-  // Because the v8::Persistent in this container uses CopyablePersistentObject
-  // traits, it will not leak on destruction.
-  std::vector<CopyablePersistentObject> elements_;
+  std::vector<v8::Global<v8::Object>> elements_;
 };
 
 }  // namespace content

@@ -12,13 +12,12 @@ Tests that WebXR doesn't update frame data when the tab is not focused
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       var pose = null;
       let counter = 0;
 
       function stepCheckFrameDataWhileFocusedTab() {
         function onAnimationFrame(session, frame) {
+          console.log('Got magic window frame while focused');
           // TODO(bsheedy): This is a workaround for crbug.com/787196. Either
           // remove the workaround once fixed or remove this todo.
           // Let several animation frames get triggered so we're sure to have a

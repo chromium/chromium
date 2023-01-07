@@ -1,50 +1,46 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
 <script src="resources/suggestion-picker-common.js"></script>
-</head>
+
 <body style="background-color: #bbbbbb;">
-<p id="description"></p>
-<div id="console"></div>
-<input type=week id=week value="2012-W12" min="2012-W02" max="2012-W08" list=suggestions>
+<input type=week value="2012-W12" min="2012-W02" max="2012-W08" list=suggestions>
 <datalist id=suggestions>
-    <option>2012-W01</option>
-    <option>2012-W02</option>
-    <option>2012-W03</option>
-    <option>2012-W04</option>
-    <option>2012-W05</option>
-    <option>2012-W06</option>
-    <option>2012-W07</option>
-    <option>2012-W08</option>
-    <option>2012-W09</option>
-    <option>2012-W10</option>
+  <option>2012-W01</option>
+  <option>2012-W02</option>
+  <option>2012-W03</option>
+  <option>2012-W04</option>
+  <option>2012-W05</option>
+  <option>2012-W06</option>
+  <option>2012-W07</option>
+  <option>2012-W08</option>
+  <option>2012-W09</option>
+  <option>2012-W10</option>
 </datalist>
+  
 <script>
-description('Tests that min/max attributes filter out suggestions as expected.');
+window.onload = () => {
+  const element = document.querySelector('input');
+  promise_test(() => {
+    return openPicker(element)
+    .then(() => {
+      internals.pagePopupWindow.focus();
 
-debug('Check that page popup doesn\'t exist at first.');
-shouldBeNull('document.getElementById("mock-page-popup")');
+      assert_equals(entryValues().length, 8);
+      assert_equals(entryValues()[0], '2012-W02');
+      assert_equals(entryValues()[1], '2012-W03');
+      assert_equals(entryValues()[2], '2012-W04');
+      assert_equals(entryValues()[3], '2012-W05');
+      assert_equals(entryValues()[4], '2012-W06');
+      assert_equals(entryValues()[5], '2012-W07');
+      assert_equals(entryValues()[6], '2012-W08');
+      assert_equals(entryValues()[7], '@openCalendarPicker');
 
-openPicker(document.getElementById('week'), test);
-
-function test() {
-    popupWindow.focus();
-
-    shouldBe('entryValues().length', '8');
-    shouldBeEqualToString('entryValues()[0]', '2012-W02');
-    shouldBeEqualToString('entryValues()[1]', '2012-W03');
-    shouldBeEqualToString('entryValues()[2]', '2012-W04');
-    shouldBeEqualToString('entryValues()[3]', '2012-W05');
-    shouldBeEqualToString('entryValues()[4]', '2012-W06');
-    shouldBeEqualToString('entryValues()[5]', '2012-W07');
-    shouldBeEqualToString('entryValues()[6]', '2012-W08');
-    shouldBeEqualToString('entryValues()[7]', '@openCalendarPicker');
-
-    finishJSTest();
-}
-
+      return attemptToClosePicker(element);
+    });
+  },'min/max attributes filter out suggestions');
+};
 </script>
-</body>
-</html>

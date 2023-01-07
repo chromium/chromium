@@ -1,0 +1,32 @@
+name: Update Head Docs
+
+on: [repository_dispatch, workflow_dispatch]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install latest nightly
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+    - name: Build Docs
+      uses: actions-rs/cargo@v1
+      with: 
+        command: doc
+        toolchain: nightly
+        args: --no-deps
+    - name: Copy docs
+      run: cp -ra target/doc/* docs/head/
+    - name: Commit files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "Update docs" -a
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}

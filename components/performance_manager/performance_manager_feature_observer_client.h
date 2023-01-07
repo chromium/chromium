@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,9 @@ class PerformanceManagerFeatureObserverClient
   ~PerformanceManagerFeatureObserverClient() override;
 
   // content::FeatureObserverClient implementation:
-  void OnStartUsing(content::GlobalFrameRoutingId id,
+  void OnStartUsing(content::GlobalRenderFrameHostId id,
                     blink::mojom::ObservedFeatureType feature_type) override;
-  void OnStopUsing(content::GlobalFrameRoutingId id,
+  void OnStopUsing(content::GlobalRenderFrameHostId id,
                    blink::mojom::ObservedFeatureType feature_type) override;
 };
 

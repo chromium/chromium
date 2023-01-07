@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,14 +20,16 @@ namespace metrics {
 class AccessibilityMetricsProvider : public metrics::MetricsProvider {
  public:
   AccessibilityMetricsProvider();
+
+  AccessibilityMetricsProvider(const AccessibilityMetricsProvider&) = delete;
+  AccessibilityMetricsProvider& operator=(const AccessibilityMetricsProvider&) =
+      delete;
+
   ~AccessibilityMetricsProvider() override;
 
   // MetricsProvider:
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityMetricsProvider);
 };
 
 }  // namespace metrics

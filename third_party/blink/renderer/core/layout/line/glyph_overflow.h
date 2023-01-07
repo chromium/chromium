@@ -26,8 +26,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LINE_GLYPH_OVERFLOW_H_
 
 #include <algorithm>
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -46,7 +46,7 @@ struct GlyphOverflow {
 
   // Compute GlyphOverflow from glyph bounding box. The |bounds| should be in
   // logical coordinates, using alphabetic baseline. See ShapeResult::Bounds().
-  void SetFromBounds(const FloatRect& bounds,
+  void SetFromBounds(const gfx::RectF& bounds,
                      const Font& font,
                      float text_width) {
     const SimpleFontData* font_data = font.PrimaryFont();
@@ -58,10 +58,10 @@ struct GlyphOverflow {
       ascent = font_data->GetFontMetrics().FloatAscent(baseline_type);
       descent = font_data->GetFontMetrics().FloatDescent(baseline_type);
     }
-    top = std::max(0.0f, -bounds.Y() - ascent);
-    bottom = std::max(0.0f, bounds.MaxY() - descent);
-    left = std::max(0.0f, -bounds.X());
-    right = std::max(0.0f, bounds.MaxX() - text_width);
+    top = std::max(0.0f, -bounds.y() - ascent);
+    bottom = std::max(0.0f, bounds.bottom() - descent);
+    left = std::max(0.0f, -bounds.x());
+    right = std::max(0.0f, bounds.right() - text_width);
   }
 
   // Top and bottom are the amounts of glyph overflows exceeding the font

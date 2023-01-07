@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -35,16 +34,18 @@ class OrphanedTestServerFilter : public base::ProcessFilter {
       : path_string_(path_string),
         port_string_(port_string) {}
 
+  OrphanedTestServerFilter(const OrphanedTestServerFilter&) = delete;
+  OrphanedTestServerFilter& operator=(const OrphanedTestServerFilter&) = delete;
+
   bool Includes(const base::ProcessEntry& entry) const override {
     if (entry.parent_pid() != 1)
       return false;
     bool found_path_string = false;
     bool found_port_string = false;
-    for (auto it = entry.cmd_line_args().begin();
-         it != entry.cmd_line_args().end(); ++it) {
-      if (it->find(path_string_) != std::string::npos)
+    for (const auto& cmd_line_arg : entry.cmd_line_args()) {
+      if (cmd_line_arg.find(path_string_) != std::string::npos)
         found_path_string = true;
-      if (it->find(port_string_) != std::string::npos)
+      if (cmd_line_arg.find(port_string_) != std::string::npos)
         found_port_string = true;
     }
     return found_path_string && found_port_string;
@@ -53,7 +54,6 @@ class OrphanedTestServerFilter : public base::ProcessFilter {
  private:
   std::string path_string_;
   std::string port_string_;
-  DISALLOW_COPY_AND_ASSIGN(OrphanedTestServerFilter);
 };
 
 // Given a file descriptor, reads into |buffer| until |bytes_max|
@@ -96,7 +96,7 @@ bool LocalTestServer::LaunchPython(
     const base::FilePath& testserver_path,
     const std::vector<base::FilePath>& python_path) {
   base::CommandLine python_command(base::CommandLine::NO_PROGRAM);
-  if (!GetPythonCommand(&python_command))
+  if (!GetPython3Command(&python_command))
     return false;
 
   python_command.AppendArgPath(testserver_path);

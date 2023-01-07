@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -308,7 +308,7 @@ const struct DomKeyToKeyboardCodeEntry {
     {DomKey::SELECT, VKEY_SELECT},
     // Device Keys
     // http://www.w3.org/TR/DOM-Level-3-Events-key/#keys-device
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     {DomKey::LAUNCH_ASSISTANT, VKEY_ASSISTANT},
     {DomKey::BRIGHTNESS_DOWN, VKEY_BRIGHTNESS_DOWN},
     {DomKey::BRIGHTNESS_UP, VKEY_BRIGHTNESS_UP},
@@ -318,7 +318,7 @@ const struct DomKeyToKeyboardCodeEntry {
     {DomKey::PRINT_SCREEN, VKEY_SNAPSHOT},
 // IME and Composition Keys
 // http://www.w3.org/TR/DOM-Level-3-Events-key/#keys-composition
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     {DomKey::COMPOSE, VKEY_COMPOSE},
 #endif
     {DomKey::CONVERT, VKEY_CONVERT},
@@ -389,7 +389,7 @@ const struct DomKeyToKeyboardCodeEntry {
     {DomKey::BROWSER_STOP, VKEY_BROWSER_STOP},
     // Media Controller Keys
     // http://www.w3.org/TR/DOM-Level-3-Events-key/#keys-media-controller
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     {DomKey::MEDIA_FAST_FORWARD, VKEY_OEM_104},
     {DomKey::MEDIA_PAUSE, VKEY_MEDIA_PAUSE},
     {DomKey::MEDIA_PLAY, VKEY_MEDIA_PLAY},
@@ -415,9 +415,13 @@ const struct DomCodeToKeyboardCodeEntry {
     // DomCode::SUSPEND                            0x000014 Suspend
     // DomCode::RESUME                             0x000015 Resume
     // DomCode::TURBO                              0x000016 Turbo
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     {DomCode::PRIVACY_SCREEN_TOGGLE,
      VKEY_PRIVACY_SCREEN_TOGGLE},  // 0x000017 PrivacyScreenToggle
+    {DomCode::MICROPHONE_MUTE_TOGGLE,
+     VKEY_MICROPHONE_MUTE_TOGGLE},  // 0x000018 MicrophoneMuteToggle
+    {DomCode::KEYBOARD_BACKLIGHT_TOGGLE,
+     VKEY_KBD_BACKLIGHT_TOGGLE},  // 0x000019 KeyboardBacklightToggle
 #endif
     {DomCode::SLEEP, VKEY_SLEEP},  // 0x010082 Sleep
     // DomCode::WAKE_UP                            0x010083 WakeUp
@@ -518,7 +522,7 @@ const struct DomCodeToKeyboardCodeEntry {
     {DomCode::NUMPAD_DECIMAL, VKEY_DECIMAL},    // 0x070063 NumpadDecimal
     {DomCode::INTL_BACKSLASH, VKEY_OEM_102},    // 0x070064 IntlBackslash
     {DomCode::CONTEXT_MENU, VKEY_APPS},         // 0x070065 ContextMenu
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     {DomCode::POWER, VKEY_POWER},  // 0x070066 Power
 #endif
     // DomCode::NUMPAD_EQUAL                       0x070067 NumpadEqual
@@ -577,7 +581,7 @@ const struct DomCodeToKeyboardCodeEntry {
     {DomCode::SHIFT_RIGHT, VKEY_RSHIFT},        // 0x0700E5 ShiftRight
     {DomCode::ALT_RIGHT, VKEY_RMENU},           // 0x0700E6 AltRight
     {DomCode::META_RIGHT, VKEY_RWIN},           // 0x0700E7 OSRight
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     {DomCode::BRIGHTNESS_UP, VKEY_BRIGHTNESS_UP},  // 0x0C006F BrightnessUp
     {DomCode::BRIGHTNESS_DOWN,
      VKEY_BRIGHTNESS_DOWN},                           // 0x0C0070 BrightnessDown
@@ -593,15 +597,21 @@ const struct DomCodeToKeyboardCodeEntry {
     // DomCode::EJECT                              0x0C00B8 Eject
     {DomCode::MEDIA_PLAY_PAUSE,
      VKEY_MEDIA_PLAY_PAUSE},  // 0x0C00CD MediaPlayPause
+#if BUILDFLAG(IS_POSIX)
+    {DomCode::DICTATE, VKEY_DICTATE},            // 0x0C00D8 Dictate
+    {DomCode::EMOJI_PICKER, VKEY_EMOJI_PICKER},  // 0x0C00D9 Emoji
+#endif
     {DomCode::MEDIA_SELECT,
      VKEY_MEDIA_LAUNCH_MEDIA_SELECT},                // 0x0C0183 MediaSelect
     {DomCode::LAUNCH_MAIL, VKEY_MEDIA_LAUNCH_MAIL},  // 0x0C018A LaunchMail
     {DomCode::LAUNCH_APP2, VKEY_MEDIA_LAUNCH_APP2},  // 0x0C0192 LaunchApp2
     {DomCode::LAUNCH_APP1, VKEY_MEDIA_LAUNCH_APP1},  // 0x0C0194 LaunchApp1
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     {DomCode::LAUNCH_CONTROL_PANEL,
      VKEY_SETTINGS},                              // 0x0C019F Launch Assistant
     {DomCode::LAUNCH_ASSISTANT, VKEY_ASSISTANT},  // 0x0C01CB Launch Assistant
+    {DomCode::NEW, VKEY_NEW},                     // 0x0C0201 AC New
+    {DomCode::CLOSE, VKEY_CLOSE},                 // 0x0C0203 AC Close
 #endif
     {DomCode::BROWSER_SEARCH, VKEY_BROWSER_SEARCH},  // 0x0C0221 BrowserSearch
     {DomCode::BROWSER_HOME, VKEY_BROWSER_HOME},      // 0x0C0223 BrowserHome
@@ -614,6 +624,10 @@ const struct DomCodeToKeyboardCodeEntry {
     {DomCode::BROWSER_FAVORITES,
      VKEY_BROWSER_FAVORITES},           // 0x0C022A BrowserFavorites
     {DomCode::ZOOM_TOGGLE, VKEY_ZOOM},  // 0x0C0232 ZoomToggle
+#if BUILDFLAG(IS_POSIX)
+    {DomCode::ALL_APPLICATIONS,
+     VKEY_ALL_APPLICATIONS},  // 0x0C02A2 All Applications
+#endif
 };
 
 // This table, used by UsLayoutKeyboardCodeToDomCode(), maps legacy
@@ -622,7 +636,7 @@ const struct DomCodeToKeyboardCodeEntry {
 const DomCodeToKeyboardCodeEntry kFallbackKeyboardCodeToDomCodeMap[] = {
     {DomCode::ALT_LEFT, VKEY_MENU},
     {DomCode::ALT_RIGHT, VKEY_ALTGR},
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     {DomCode::CONTEXT_MENU, VKEY_COMPOSE},
 #endif
     {DomCode::CONTROL_LEFT, VKEY_CONTROL},

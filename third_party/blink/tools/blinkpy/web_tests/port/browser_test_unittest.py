@@ -81,7 +81,7 @@ class BrowserTestWinTest(_BrowserTestTestCaseMixin,
     port_name = 'win'
     port_maker = browser_test.BrowserTestWinPort
     os_name = 'win'
-    os_version = 'win7'
+    os_version = 'win11'
     driver_name_endswith = 'browser_tests.exe'
     timeout_ms = 20000
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,6 @@ namespace blink {
 
 // Returns true iff back-forward cache and LoadingTasksUnfreezable are enabled.
 PLATFORM_EXPORT bool IsInflightNetworkRequestBackForwardCacheSupportEnabled();
-
-// Returns true iff back-forward cache and FreezeWhileKeepActive are enabled.
-PLATFORM_EXPORT bool IsFreezeWhileKeepActiveBackForwardCacheSupportEnabled();
 
 // Returns the param |param_name| of LoadingTasksUnfreezable as int, or
 // |default_value| if not set.

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,7 +72,7 @@ AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
 
     std::u16string display_string(url_formatter::FormatUrl(
         destination_url, url_formatter::kFormatUrlOmitDefaults & ~format_type,
-        net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
     if (trim_default_scheme) {
       AutocompleteProvider::TrimSchemePrefix(
           &display_string, input.added_default_scheme_to_typed_url());

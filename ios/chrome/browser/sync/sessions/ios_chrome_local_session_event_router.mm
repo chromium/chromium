@@ -1,23 +1,23 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/sync/sessions/ios_chrome_local_session_event_router.h"
+#import "ios/chrome/browser/sync/sessions/ios_chrome_local_session_event_router.h"
 
-#include <stddef.h>
+#import <stddef.h>
 
-#include "base/bind.h"
-#include "base/check.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/sync_sessions/sync_sessions_client.h"
-#include "components/sync_sessions/synced_tab_delegate.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
+#import "base/bind.h"
+#import "base/check.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/sync_sessions/sync_sessions_client.h"
+#import "components/sync_sessions/synced_tab_delegate.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/main/all_web_state_list_observation_registrar.h"
-#include "ios/chrome/browser/sync/glue/sync_start_util.h"
-#include "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
-#include "ios/chrome/browser/tabs/tab_parenting_global_observer.h"
+#import "ios/chrome/browser/sync/glue/sync_start_util.h"
+#import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
+#import "ios/chrome/browser/tabs/tab_parenting_global_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

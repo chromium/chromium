@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
@@ -29,7 +30,7 @@ namespace arc {
 namespace {
 
 // Directory cache will be cleared this duration after it is built.
-constexpr base::TimeDelta kCacheExpiration = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kCacheExpiration = base::Seconds(60);
 
 void OnGetFileSizeFromOpenFile(
     ArcDocumentsProviderRoot::GetFileInfoCallback callback,
@@ -379,7 +380,8 @@ void ArcDocumentsProviderRoot::GetFileInfoFromDocument(
         base::Time::FromJavaTime(document->last_modified);
   }
 
-  if ((fields & storage::FileSystemOperation::GET_METADATA_FIELD_SIZE) &&
+  if (base::FeatureList::IsEnabled(kDocumentsProviderUnknownSizeFeature) &&
+      (fields & storage::FileSystemOperation::GET_METADATA_FIELD_SIZE) &&
       info.size == kUnknownFileSize && !is_directory) {
     // We don't know the size from metadata and the size is requested, find it
     // out by opening the file
@@ -806,7 +808,8 @@ void ArcDocumentsProviderRoot::GetExtraMetadataFromDocument(
   metadata.supports_rename = document->supports_rename;
   metadata.dir_supports_create = document->dir_supports_create;
   metadata.supports_thumbnail = document->supports_thumbnail;
-  metadata.last_modified = base::Time::FromJavaTime(document->last_modified);
+  if (document->last_modified > 0)
+    metadata.last_modified = base::Time::FromJavaTime(document->last_modified);
   metadata.size = document->size;
   std::move(callback).Run(base::File::FILE_OK, metadata);
 }
@@ -870,9 +873,7 @@ void ArcDocumentsProviderRoot::ResolveToDocumentId(
     const base::FilePath& path,
     ResolveToDocumentIdCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<base::FilePath::StringType> components;
-  path.GetComponents(&components);
-  ResolveToDocumentIdRecursively(root_document_id_, components,
+  ResolveToDocumentIdRecursively(root_document_id_, path.GetComponents(),
                                  std::move(callback));
 }
 
@@ -951,7 +952,7 @@ void ArcDocumentsProviderRoot::ReadDirectoryInternal(
 
 void ArcDocumentsProviderRoot::ReadDirectoryInternalWithChildDocuments(
     const std::string& document_id,
-    base::Optional<std::vector<mojom::DocumentPtr>> maybe_children) {
+    absl::optional<std::vector<mojom::DocumentPtr>> maybe_children) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto iter = pending_callbacks_map_.find(document_id);

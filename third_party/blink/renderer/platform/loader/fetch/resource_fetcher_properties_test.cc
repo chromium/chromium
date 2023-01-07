@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 
-#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
@@ -18,15 +17,14 @@ namespace {
 
 class DetachableResourceFetcherPropertiesTest : public testing::Test {
  public:
-  const FetchClientSettingsObjectSnapshot& CreateFetchClientSettingsObject(
-      network::mojom::IPAddressSpace address_space) {
+  const FetchClientSettingsObjectSnapshot& CreateFetchClientSettingsObject() {
     return *MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
         KURL("https://example.com/foo.html"),
         KURL("https://example.com/foo.html"),
         SecurityOrigin::Create(KURL("https://example.com/")),
         network::mojom::ReferrerPolicy::kDefault,
         "https://example.com/foo.html", HttpsState::kModern,
-        AllowedByNosniff::MimeTypeCheck::kStrict, address_space,
+        AllowedByNosniff::MimeTypeCheck::kStrict,
         mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
         FetchClientSettingsObject::InsecureNavigationsSet());
   }
@@ -34,7 +32,7 @@ class DetachableResourceFetcherPropertiesTest : public testing::Test {
 
 TEST_F(DetachableResourceFetcherPropertiesTest, DetachWithDefaultValues) {
   const auto& original_client_settings_object =
-      CreateFetchClientSettingsObject(network::mojom::IPAddressSpace::kPublic);
+      CreateFetchClientSettingsObject();
   auto& properties = *MakeGarbageCollected<DetachableResourceFetcherProperties>(
       *MakeGarbageCollected<TestResourceFetcherProperties>(
           original_client_settings_object));
@@ -42,7 +40,7 @@ TEST_F(DetachableResourceFetcherPropertiesTest, DetachWithDefaultValues) {
   const auto& client_settings_object =
       properties.GetFetchClientSettingsObject();
   EXPECT_EQ(&original_client_settings_object, &client_settings_object);
-  EXPECT_FALSE(properties.IsMainFrame());
+  EXPECT_FALSE(properties.IsOutermostMainFrame());
   EXPECT_EQ(properties.GetControllerServiceWorkerMode(),
             mojom::ControllerServiceWorkerMode::kNoController);
   // We cannot call ServiceWorkerId as the service worker mode is kNoController.
@@ -59,7 +57,7 @@ TEST_F(DetachableResourceFetcherPropertiesTest, DetachWithDefaultValues) {
             &properties.GetFetchClientSettingsObject());
   EXPECT_EQ(properties.GetFetchClientSettingsObject().BaseUrl(),
             KURL("https://example.com/foo.html"));
-  EXPECT_FALSE(properties.IsMainFrame());
+  EXPECT_FALSE(properties.IsOutermostMainFrame());
   EXPECT_EQ(properties.GetControllerServiceWorkerMode(),
             mojom::ControllerServiceWorkerMode::kNoController);
   // We cannot call ServiceWorkerId as the service worker mode is kNoController.
@@ -73,14 +71,14 @@ TEST_F(DetachableResourceFetcherPropertiesTest, DetachWithDefaultValues) {
 
 TEST_F(DetachableResourceFetcherPropertiesTest, DetachWithNonDefaultValues) {
   const auto& original_client_settings_object =
-      CreateFetchClientSettingsObject(network::mojom::IPAddressSpace::kPublic);
+      CreateFetchClientSettingsObject();
   auto& original_properties =
       *MakeGarbageCollected<TestResourceFetcherProperties>(
           original_client_settings_object);
   auto& properties = *MakeGarbageCollected<DetachableResourceFetcherProperties>(
       original_properties);
 
-  original_properties.SetIsMainFrame(true);
+  original_properties.SetIsOutermostMainFrame(true);
   original_properties.SetControllerServiceWorkerMode(
       mojom::ControllerServiceWorkerMode::kControlled);
   original_properties.SetServiceWorkerId(133);
@@ -93,7 +91,7 @@ TEST_F(DetachableResourceFetcherPropertiesTest, DetachWithNonDefaultValues) {
   const auto& client_settings_object =
       properties.GetFetchClientSettingsObject();
   EXPECT_EQ(&original_client_settings_object, &client_settings_object);
-  EXPECT_TRUE(properties.IsMainFrame());
+  EXPECT_TRUE(properties.IsOutermostMainFrame());
   EXPECT_EQ(properties.GetControllerServiceWorkerMode(),
             mojom::ControllerServiceWorkerMode::kControlled);
   EXPECT_EQ(properties.ServiceWorkerId(), 133);
@@ -111,7 +109,7 @@ TEST_F(DetachableResourceFetcherPropertiesTest, DetachWithNonDefaultValues) {
             &properties.GetFetchClientSettingsObject());
   EXPECT_EQ(properties.GetFetchClientSettingsObject().BaseUrl(),
             KURL("https://example.com/foo.html"));
-  EXPECT_TRUE(properties.IsMainFrame());
+  EXPECT_TRUE(properties.IsOutermostMainFrame());
   EXPECT_EQ(properties.GetControllerServiceWorkerMode(),
             mojom::ControllerServiceWorkerMode::kNoController);
   // We cannot call ServiceWorkerId as the service worker mode is kNoController.

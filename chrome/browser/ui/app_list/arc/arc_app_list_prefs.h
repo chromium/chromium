@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,22 +14,23 @@
 #include <unordered_set>
 #include <vector>
 
+#include "ash/components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/mojom/compatibility_mode.mojom.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/layout.h"
 
 class ArcDefaultAppList;
@@ -67,24 +68,47 @@ class ArcAppListPrefs : public KeyedService,
                         public arc::mojom::AppHost,
                         public arc::ConnectionObserver<arc::mojom::AppInstance>,
                         public arc::ArcSessionManagerObserver,
-                        public arc::ArcPolicyBridge::Observer {
+                        public arc::ArcPolicyBridge::Observer,
+                        public arc::ArcResizeLockPrefDelegate {
  public:
+  struct WindowLayout {
+    // TODO(sstan): Refactor WindowLayout and AppInfo for adding move
+    // constructor.
+    WindowLayout();
+    WindowLayout(arc::mojom::WindowSizeType type,
+                 bool resizable,
+                 absl::optional<gfx::Rect> bounds);
+    WindowLayout(const WindowLayout& other);
+    ~WindowLayout();
+
+    arc::mojom::WindowSizeType type;
+    bool resizable;
+    absl::optional<gfx::Rect> bounds;
+
+    bool operator==(const WindowLayout& other) const;
+  };
   struct AppInfo {
     AppInfo(const std::string& name,
             const std::string& package_name,
             const std::string& activity,
             const std::string& intent_uri,
             const std::string& icon_resource_id,
+            const absl::optional<std::string>& version_name,
             const base::Time& last_launch_time,
             const base::Time& install_time,
             bool sticky,
             bool notifications_enabled,
             arc::mojom::ArcResizeLockState resize_lock_state,
+            bool resize_lock_needs_confirmation,
+            const WindowLayout& initial_window_layout,
             bool ready,
             bool suspended,
             bool show_in_launcher,
             bool shortcut,
-            bool launchable);
+            bool launchable,
+            bool need_fixup,
+            absl::optional<uint64_t> app_size_in_bytes,
+            absl::optional<uint64_t> data_size_in_bytes);
     AppInfo(const AppInfo& other);
     ~AppInfo();
 
@@ -93,6 +117,7 @@ class ArcAppListPrefs : public KeyedService,
     std::string activity;
     std::string intent_uri;
     std::string icon_resource_id;
+    absl::optional<std::string> version_name;
     base::Time last_launch_time;
     base::Time install_time;
     // Whether app could not be uninstalled.
@@ -101,6 +126,11 @@ class ArcAppListPrefs : public KeyedService,
     bool notifications_enabled;
     // The resize lock state of the app.
     arc::mojom::ArcResizeLockState resize_lock_state;
+    // Whether the confirmation dialog is needed when user requests resize if
+    // the app is in the resize-locked mode.
+    bool resize_lock_needs_confirmation;
+    // The app window initial window layout.
+    WindowLayout initial_window_layout;
     // Whether app is ready. Disabled and removed apps are not ready.
     bool ready;
     // Whether app was suspended by policy. It may have or may not have ready
@@ -113,6 +143,13 @@ class ArcAppListPrefs : public KeyedService,
     // Whether app can be launched. In some case we cannot launch an app because
     // it requires parameters we might not provide.
     bool launchable;
+    // Whether app need fixup. When ARC large version upgrade e.g. P to R, app
+    // may need fixup.
+    bool need_fixup;
+
+    // Storage size of app and it's related data.
+    absl::optional<uint64_t> app_size_in_bytes;
+    absl::optional<uint64_t> data_size_in_bytes;
 
     static void SetIgnoreCompareInstallTimeForTesting(bool ignore);
 
@@ -128,7 +165,8 @@ class ArcAppListPrefs : public KeyedService,
                 bool system,
                 bool vpn_provider,
                 base::flat_map<arc::mojom::AppPermission,
-                               arc::mojom::PermissionStatePtr> permissions);
+                               arc::mojom::PermissionStatePtr> permissions,
+                arc::mojom::WebAppInfoPtr web_app_info);
     ~PackageInfo();
 
     std::string package_name;
@@ -141,6 +179,7 @@ class ArcAppListPrefs : public KeyedService,
     // Maps app permission to permission states
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
         permissions;
+    arc::mojom::WebAppInfoPtr web_app_info;
   };
 
   class Observer : public base::CheckedObserver {
@@ -188,14 +227,16 @@ class ArcAppListPrefs : public KeyedService,
     virtual void OnTaskDescriptionChanged(
         int32_t task_id,
         const std::string& label,
-        const arc::mojom::RawIconPngData& icon) {}
+        const arc::mojom::RawIconPngData& icon,
+        uint32_t primary_color,
+        uint32_t status_bar_color) {}
     // Notifies that task has been destroyed.
     virtual void OnTaskDestroyed(int32_t task_id) {}
     // Notifies that task has been activated and moved to the front.
     virtual void OnTaskSetActive(int32_t task_id) {}
 
-    virtual void OnNotificationsEnabledChanged(
-        const std::string& package_name, bool enabled) {}
+    virtual void OnNotificationsEnabledChanged(const std::string& package_name,
+                                               bool enabled) {}
     // Notifies that package has been installed. This may be called in two
     // cases:
     // a) the package is being newly installed
@@ -224,6 +265,12 @@ class ArcAppListPrefs : public KeyedService,
 
     // Notifies that ArcAppListPrefs is destroyed.
     virtual void OnArcAppListPrefsDestroyed() {}
+
+    // Notifies that App instance connection is ready.
+    virtual void OnAppConnectionReady() {}
+
+    // Notifies that App instance connection is closed.
+    virtual void OnAppConnectionClosed() {}
 
    protected:
     ~Observer() override;
@@ -324,14 +371,6 @@ class ArcAppListPrefs : public KeyedService,
   // OnNotificationsEnabledChanged.
   void SetNotificationsEnabled(const std::string& app_id, bool enabled);
 
-  // Returns the resize lock state.
-  arc::mojom::ArcResizeLockState GetResizeLockState(
-      const std::string& app_id) const;
-  // Sets the resize lock state. This is called either by the Chrome OS
-  // settings or Ash.
-  void SetResizeLockState(const std::string& app_id,
-                          arc::mojom::ArcResizeLockState state);
-
   // Returns true if app is registered.
   bool IsRegistered(const std::string& app_id) const;
   // Returns true if app is a default app.
@@ -342,6 +381,8 @@ class ArcAppListPrefs : public KeyedService,
   bool IsShortcut(const std::string& app_id) const;
   // Returns true if package is controlled by policy.
   bool IsControlledByPolicy(const std::string& package_name) const;
+  // Returns true if app is able to be launched.
+  bool IsAbleToBeLaunched(const std::string& app_id) const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -355,6 +396,17 @@ class ArcAppListPrefs : public KeyedService,
 
   // arc::ArcPolicyBridge::Observer:
   void OnPolicySent(const std::string& policy) override;
+
+  // arc::ArcResizeLockPrefDelegate:
+  arc::mojom::ArcResizeLockState GetResizeLockState(
+      const std::string& app_id) const override;
+  void SetResizeLockState(const std::string& app_id,
+                          arc::mojom::ArcResizeLockState state) override;
+  bool GetResizeLockNeedsConfirmation(const std::string& app_id) override;
+  void SetResizeLockNeedsConfirmation(const std::string& app_id,
+                                      bool is_needed) override;
+  int GetShowSplashScreenDialogCount() const override;
+  void SetShowSplashScreenDialogCount(int count) override;
 
   // KeyedService:
   void Shutdown() override;
@@ -385,6 +437,9 @@ class ArcAppListPrefs : public KeyedService,
   void SetDefaultAppsReadyCallback(base::OnceClosure callback);
   void SimulateDefaultAppAvailabilityTimeoutForTesting();
 
+  void SetRemoveAllCallbackForTesting(base::OnceClosure callback);
+  bool is_remove_all_in_progress() { return is_remove_all_in_progress_; }
+
   // Returns true if:
   // 1. specified package is new in the system
   // 2. is not installed.
@@ -396,7 +451,7 @@ class ArcAppListPrefs : public KeyedService,
   bool IsDefaultPackage(const std::string& package_name) const;
 
  private:
-  friend class ChromeLauncherControllerTest;
+  friend class ChromeShelfControllerTestBase;
   friend class ArcAppModelBuilderTest;
   friend class app_list::ArcAppShortcutsSearchProviderTest;
 
@@ -429,8 +484,8 @@ class ArcAppListPrefs : public KeyedService,
   void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,
                      const std::string& activity,
-                     const base::Optional<std::string>& name,
-                     const base::Optional<std::string>& intent,
+                     const absl::optional<std::string>& name,
+                     const absl::optional<std::string>& intent,
                      int32_t session_id) override;
   // This interface is deprecated and will soon be replaced by
   // OnTaskDescriptionChanged().
@@ -440,7 +495,9 @@ class ArcAppListPrefs : public KeyedService,
       const std::vector<uint8_t>& icon_png_data) override;
   void OnTaskDescriptionChanged(int32_t task_id,
                                 const std::string& label,
-                                arc::mojom::RawIconPngDataPtr icon) override;
+                                arc::mojom::RawIconPngDataPtr icon,
+                                uint32_t primary_color,
+                                uint32_t status_bar_color) override;
   void OnTaskDestroyed(int32_t task_id) override;
   void OnTaskSetActive(int32_t task_id) override;
   void OnNotificationsEnabledChanged(const std::string& package_name,
@@ -450,7 +507,7 @@ class ArcAppListPrefs : public KeyedService,
   void OnPackageListRefreshed(
       std::vector<arc::mojom::ArcPackageInfoPtr> packages) override;
   void OnInstallationStarted(
-      const base::Optional<std::string>& package_name) override;
+      const absl::optional<std::string>& package_name) override;
   void OnInstallationFinished(
       arc::mojom::InstallationResultPtr result) override;
 
@@ -476,12 +533,17 @@ class ArcAppListPrefs : public KeyedService,
                          const std::string& activity,
                          const std::string& intent_uri,
                          const std::string& icon_resource_id,
+                         const absl::optional<std::string>& version_name,
                          const bool sticky,
                          const bool notifications_enabled,
                          const bool app_ready,
                          const bool suspended,
                          const bool shortcut,
-                         const bool launchable);
+                         const bool launchable,
+                         const bool need_fixup,
+                         const WindowLayout& initial_window_layout,
+                         const absl::optional<uint64_t> app_size_in_bytes,
+                         const absl::optional<uint64_t> data_size_in_bytes);
   // Adds or updates local pref for given package.
   void AddOrUpdatePackagePrefs(const arc::mojom::ArcPackageInfo& package);
   // Removes given package from local pref.
@@ -529,7 +591,7 @@ class ArcAppListPrefs : public KeyedService,
   // This checks if app is not registered yet and in this case creates
   // non-launchable app entry. In case app is already registered then updates
   // last launch time.
-  void HandleTaskCreated(const base::Optional<std::string>& name,
+  void HandleTaskCreated(const absl::optional<std::string>& name,
                          const std::string& package_name,
                          const std::string& activity);
 
@@ -569,6 +631,9 @@ class ArcAppListPrefs : public KeyedService,
 
   // Callback called once default apps are ready.
   void OnDefaultAppsReady();
+
+  // Records UMA metrics on app counts on ARC start.
+  void RecordAppIdsUma();
 
   Profile* const profile_;
 
@@ -635,6 +700,9 @@ class ArcAppListPrefs : public KeyedService,
   // Stored runtime and for the current active session only.
   // Not to be confused with `last_launch_time_`.
   std::map<const std::string, base::Time> launch_request_times_;
+
+  bool is_remove_all_in_progress_ = false;
+  base::OnceClosure remove_all_callback_for_testing_;
 
   base::WeakPtrFactory<ArcAppListPrefs> weak_ptr_factory_{this};
 };

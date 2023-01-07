@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lightweight_reactions_dialog"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/scene"
+        android:id="@+id/lightweight_reactions_scene"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/lightweight_reactions_divider"/>
+
+    <View
+        android:id="@+id/lightweight_reactions_divider"
+        android:background="@macro/divider_line_bg_color"
+        android:layout_above="@id/lightweight_reactions_toolbar"
+        android:layout_height="@dimen/toolbar_separator_height"
+        android:layout_width="match_parent"/>
+
+    <include layout="@layout/toolbar"
+        android:id="@+id/lightweight_reactions_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_total_height"
+        android:layout_alignParentBottom="true" />
+</RelativeLayout>

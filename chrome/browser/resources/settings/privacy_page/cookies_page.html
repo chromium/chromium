@@ -60,7 +60,8 @@
         <settings-collapse-radio-button id="allowAll"
             pref="[[prefs.generated.cookie_primary_setting]]"
             name="[[cookiePrimarySettingEnum_.ALLOW_ALL]]"
-            label="$i18n{cookiePageAllowAll}">
+            label="$i18n{cookiePageAllowAll}"
+            expand-aria-label="$i18n{cookiePageAllowAllExpandA11yLabel}">
           <div slot="collapse">
             <div class="bullet-line">
               <iron-icon icon="settings:cookie"></iron-icon>
@@ -75,7 +76,9 @@
         <settings-collapse-radio-button id="blockThirdPartyIncognito"
             pref="[[prefs.generated.cookie_primary_setting]]"
             name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY_INCOGNITO]]"
-            label="$i18n{cookiePageBlockThirdIncognito}">
+            label="$i18n{cookiePageBlockThirdIncognito}"
+            expand-aria-label=
+                "$i18n{cookiePageBlockThirdIncognitoExpandA11yLabel}">
           <div slot="collapse">
             <div class="bullet-line">
               <iron-icon icon="settings:cookie"></iron-icon>
@@ -94,7 +97,8 @@
         <settings-collapse-radio-button id="blockThirdParty"
             pref="[[prefs.generated.cookie_primary_setting]]"
             name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY]]"
-            label="$i18n{cookiePageBlockThird}">
+            label="$i18n{cookiePageBlockThird}"
+            expand-aria-label="$i18n{cookiePageBlockThirdExpandA11yLabel}">
           <div slot="collapse">
             <div class="bullet-line">
               <iron-icon icon="settings:cookie"></iron-icon>
@@ -104,12 +108,23 @@
               <iron-icon icon="settings:block"></iron-icon>
               <div class="secondary">$i18n{cookiePageBlockThirdBulTwo}</div>
             </div>
+            <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
+              <settings-toggle-button
+                  id="firstPartySetsToggle"
+                  pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
+                  label="$i18n{cookiePageFpsLabel}"
+                  sub-label="$i18n{cookiePageFpsSubLabel}"
+                  disabled="[[firstPartySetsToggleDisabled_(
+                      prefs.generated.cookie_primary_setting.value)]]">
+              </settings-toggle-button>
+            </template>
           </div>
         </settings-collapse-radio-button>
         <settings-collapse-radio-button id="blockAll"
             pref="[[blockAllPref_]]"
             name="[[cookiePrimarySettingEnum_.BLOCK_ALL]]"
-            label="$i18n{cookiePageBlockAll}">
+            label="$i18n{cookiePageBlockAll}"
+            expand-aria-label="$i18n{cookiePageBlockAllExpandA11yLabel}">
           <div slot="collapse">
             <div class="bullet-line">
               <iron-icon icon="settings:block"></iron-icon>
@@ -129,7 +144,10 @@
     </div>
     <settings-toggle-button id="clearOnExit" class="hr"
         pref="{{prefs.generated.cookie_session_only}}"
-        label="$i18n{deleteDataPostSession}"
+        label="$i18n{cookiePageClearOnExit}"
+<if expr="not chromeos_ash">
+        sub-label="[[getClearOnExitSubLabel_()]]"
+</if>
         on-settings-boolean-control-change="onClearOnExitChange_">
     </settings-toggle-button>
     <settings-do-not-track-toggle id="doNotTrack"
@@ -145,10 +163,10 @@
         on-settings-boolean-control-change="onNetworkPredictionChange_">
     </settings-toggle-button>
     <cr-link-row id="site-data-trigger" class="hr"
-        on-click="onSiteDataClick_" label="$i18n{siteSettingsCookieLink}"
+        on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <div  id="exceptionHeader" hidden="[[!enableContentSettingsRedesign_]]">
+    <div id="exceptionHeader">
       <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
     </div>
     <site-list id="allowExceptionsList"
@@ -181,4 +199,3 @@
           target="_blank" tabindex="-1" aria-disabled="true"
           role="none"></a>
     </cr-toast>
-

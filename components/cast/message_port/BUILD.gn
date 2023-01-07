@@ -1,16 +1,54 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//testing/test.gni")
 
+declare_args() {
+  # If true, forces cast_api_bindings::CreatePlatformMessagePortPair to use
+  # cast_message_port::CreateMessagePortPair as its implementation. Otherwise,
+  # uses one of the other types based on platform.
+  use_message_port_core = false
+}
+
+buildflag_header("message_port_buildflags") {
+  header = "message_port_buildflags.h"
+  flags = [ "USE_MESSAGE_PORT_CORE=$use_message_port_core" ]
+}
+
 source_set("message_port") {
-  if (is_fuchsia) {
-    public_deps = [ ":message_port_fuchsia" ]
+  public = [ "platform_message_port.h" ]
+  sources = [ "platform_message_port.cc" ]
+
+  public_deps = [ ":public" ]
+  deps = [
+    ":message_port_buildflags",
+    "//base",
+  ]
+
+  if (use_message_port_core) {
+    public_deps += [ ":message_port_core" ]
+  } else if (is_fuchsia) {
+    public_deps += [ ":message_port_fuchsia" ]
   } else {
-    public_deps = [ ":message_port_cast" ]
+    public_deps += [ ":message_port_cast" ]
   }
+}
+
+source_set("blink_message_port_adapter") {
+  public = [ "blink_message_port_adapter.h" ]
+  sources = [ "blink_message_port_adapter.cc" ]
+
+  public_deps = [
+    ":message_port",
+    "//third_party/blink/public/common",
+  ]
+  deps = [
+    ":message_port_cast",
+    "//base",
+  ]
 }
 
 source_set("public") {
@@ -25,32 +63,40 @@ source_set("public") {
   ]
 
   defines = [ "CAST_COMPONENT_IMPLEMENTATION" ]
-
-  visibility = [ ":*" ]
 }
 
 if (is_fuchsia) {
   source_set("message_port_fuchsia") {
-    public = [ "message_port_fuchsia.h" ]
+    public = [
+      "fuchsia/create_web_message.h",
+      "fuchsia/message_port_fuchsia.h",
+    ]
 
-    sources = [ "message_port_fuchsia.cc" ]
+    sources = [
+      "fuchsia/create_web_message.cc",
+      "fuchsia/message_port_fuchsia.cc",
+    ]
 
     public_deps = [
       ":public",
-      "//fuchsia:cast_fidl",
-      "//fuchsia/base",
+      "//base",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     ]
 
-    deps = [ "//base" ]
+    deps = [ "//third_party/fuchsia-sdk/sdk/pkg/fit-promise" ]
   }
 }
 
 source_set("message_port_cast") {
-  public = [ "message_port_cast.h" ]
+  public = [ "cast/message_port_cast.h" ]
 
-  sources = [ "message_port_cast.cc" ]
+  sources = [ "cast/message_port_cast.cc" ]
 
-  public_deps = [ ":public" ]
+  public_deps = [
+    ":public",
+    "//third_party/blink/public/common",
+  ]
 
   deps = [
     ":public",
@@ -59,15 +105,46 @@ source_set("message_port_cast") {
   ]
 }
 
+source_set("message_port_core") {
+  public = [
+    "cast_core/create_message_port_core.h",
+    "cast_core/message_connector.h",
+    "cast_core/message_port_core.h",
+    "cast_core/message_port_core_with_task_runner.h",
+  ]
+
+  sources = [
+    "cast_core/create_message_port_core.cc",
+    "cast_core/message_connector.cc",
+    "cast_core/message_port_core.cc",
+    "cast_core/message_port_core_with_task_runner.cc",
+  ]
+
+  public_deps = [ ":public" ]
+
+  deps = [
+    ":public",
+    "//base",
+  ]
+}
+
 source_set("message_port_unittest") {
   testonly = true
   sources = [ "message_port_unittest.cc" ]
   deps = [
+    ":blink_message_port_adapter",
     ":message_port",
+    ":message_port_buildflags",
+    ":message_port_cast",
+    ":message_port_core",
     ":test_message_port_receiver",
     "//base/test:test_support",
     "//testing/gtest",
   ]
+
+  if (is_fuchsia) {
+    deps += [ ":message_port_fuchsia" ]
+  }
 }
 
 source_set("test_message_port_receiver") {

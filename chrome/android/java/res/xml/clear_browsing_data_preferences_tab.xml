@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2017 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2017 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -44,4 +46,13 @@
         android:key="clear_site_settings_checkbox"
         android:persistent="false"
         android:title="@string/prefs_site_settings" />
+
+    <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
+        android:key="clear_google_data_text" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="clear_search_history_non_google_text" />
+
+    <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
+        android:key="sign_out_of_chrome_text" />
 </PreferenceScreen>

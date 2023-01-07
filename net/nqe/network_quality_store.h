@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -16,11 +15,7 @@
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_id.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 // NetworkQualityStore holds the network qualities of different networks in
 // memory. Entries are stored in LRU order, and older entries may be evicted.
@@ -29,6 +24,11 @@ class NET_EXPORT_PRIVATE NetworkQualityStore {
   // Observes changes in the cached network qualities.
   class NET_EXPORT_PRIVATE NetworkQualitiesCacheObserver {
    public:
+    NetworkQualitiesCacheObserver(const NetworkQualitiesCacheObserver&) =
+        delete;
+    NetworkQualitiesCacheObserver& operator=(
+        const NetworkQualitiesCacheObserver&) = delete;
+
     // Notifies the observer of a change in the cached network quality. The
     // observer must register and unregister itself on the IO thread. All the
     // observers would be notified on the IO thread. |network_id| is the ID of
@@ -38,14 +38,15 @@ class NET_EXPORT_PRIVATE NetworkQualityStore {
         const nqe::internal::CachedNetworkQuality& cached_network_quality) = 0;
 
    protected:
-    NetworkQualitiesCacheObserver() {}
-    virtual ~NetworkQualitiesCacheObserver() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(NetworkQualitiesCacheObserver);
+    NetworkQualitiesCacheObserver() = default;
+    virtual ~NetworkQualitiesCacheObserver() = default;
   };
 
   NetworkQualityStore();
+
+  NetworkQualityStore(const NetworkQualityStore&) = delete;
+  NetworkQualityStore& operator=(const NetworkQualityStore&) = delete;
+
   ~NetworkQualityStore();
 
   // Stores the network quality |cached_network_quality| of network with ID
@@ -100,14 +101,8 @@ class NET_EXPORT_PRIVATE NetworkQualityStore {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<NetworkQualityStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityStore);
 };
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal
 
 #endif  // NET_NQE_NETWORK_QUALITY_STORE_H_

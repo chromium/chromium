@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,9 +56,8 @@ void VisualsDecoderImpl::DecodeAndCropImage(const std::string& thumbnail_data,
 
   // kPreferredFaviconSize only has an effect for images with multiple frames
   // (.ico) and shouldn't make a difference for thumbnails.
-  image_decoder_->DecodeImage(
-      thumbnail_data, kPreferredFaviconSize,
-      base::AdaptCallbackForRepeating(std::move(callback)));
+  image_decoder_->DecodeImage(thumbnail_data, kPreferredFaviconSize,
+                              /*data_decoder=*/nullptr, std::move(callback));
 }
 
 }  // namespace offline_pages

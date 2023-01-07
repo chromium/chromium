@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.R;
@@ -19,15 +20,14 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.components.browser_ui.contacts_picker.ContactDetails;
 import org.chromium.components.browser_ui.contacts_picker.PickerAdapter;
-import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * A {@link PickerAdapter} with special behavior tailored for Chrome.
@@ -111,14 +111,9 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
         if (coreAccountInfo != null) {
             return coreAccountInfo.getEmail();
         }
-
-        AccountManagerFacade manager = AccountManagerFacadeProvider.getInstance();
-        List<Account> accounts = manager.tryGetGoogleAccounts();
-        if (accounts.size() > 0) {
-            return accounts.get(0).name;
-        }
-
-        return null;
+        final @Nullable Account defaultAccount = AccountUtils.getDefaultAccountIfFulfilled(
+                AccountManagerFacadeProvider.getInstance().getAccounts());
+        return defaultAccount != null ? defaultAccount.name : null;
     }
 
     @Override

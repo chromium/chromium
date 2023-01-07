@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,15 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "cc/layers/video_frame_provider.h"
 #include "content/common/content_export.h"
 #include "content/renderer/stream_texture_host_android.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -39,7 +40,11 @@ class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
       const gpu::Mailbox& mailbox,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
-      const base::Optional<gpu::VulkanYCbCrInfo>&)>;
+      const absl::optional<gpu::VulkanYCbCrInfo>&)>;
+
+  StreamTextureProxy() = delete;
+  StreamTextureProxy(const StreamTextureProxy&) = delete;
+  StreamTextureProxy& operator=(const StreamTextureProxy&) = delete;
 
   ~StreamTextureProxy() override;
 
@@ -57,7 +62,7 @@ class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
       const gpu::Mailbox& mailbox,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
-      const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info) override;
+      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) override;
 
   // Sends an IPC to the GPU process.
   // Asks the StreamTexture to forward its SurfaceTexture to the
@@ -72,6 +77,9 @@ class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
   // Clears |received_frame_cb_| in a thread safe way.
   void ClearReceivedFrameCB();
 
+  // Clears |create_video_frame_cb_| in a thread safe way.
+  void ClearCreateVideoFrameCB();
+
   struct Deleter {
     inline void operator()(StreamTextureProxy* ptr) const { ptr->Release(); }
   };
@@ -83,9 +91,6 @@ class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
   void BindOnThread();
   void Release();
 
-  // Clears |create_video_frame_cb_| in a thread safe way.
-  void ClearCreateVideoFrameCB();
-
   const std::unique_ptr<StreamTextureHost> host_;
 
   // Protects access to |received_frame_cb_| and |task_runner_|.
@@ -93,8 +98,6 @@ class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
   base::RepeatingClosure received_frame_cb_;
   CreateVideoFrameCB create_video_frame_cb_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(StreamTextureProxy);
 };
 
 typedef std::unique_ptr<StreamTextureProxy, StreamTextureProxy::Deleter>
@@ -106,6 +109,10 @@ class CONTENT_EXPORT StreamTextureFactory
  public:
   static scoped_refptr<StreamTextureFactory> Create(
       scoped_refptr<gpu::GpuChannelHost> channel);
+
+  StreamTextureFactory() = delete;
+  StreamTextureFactory(const StreamTextureFactory&) = delete;
+  StreamTextureFactory& operator=(const StreamTextureFactory&) = delete;
 
   // Create the StreamTextureProxy object. This internally creates a
   // gpu::StreamTexture and returns its route_id. If this route_id is invalid
@@ -122,13 +129,9 @@ class CONTENT_EXPORT StreamTextureFactory
   friend class base::RefCountedThreadSafe<StreamTextureFactory>;
   StreamTextureFactory(scoped_refptr<gpu::GpuChannelHost> channel);
   ~StreamTextureFactory();
-  // Creates a gpu::StreamTexture and returns its id.
-  unsigned CreateStreamTexture();
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
   std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(StreamTextureFactory);
 };
 
 }  // namespace content

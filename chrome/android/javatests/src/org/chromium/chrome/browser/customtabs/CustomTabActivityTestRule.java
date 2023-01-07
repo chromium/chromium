@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,9 +48,18 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
 
     /**
      * Start a {@link CustomTabActivity} with given {@link Intent}, and wait till a tab is
-     * initialized.
+     * initialized and the first frame is drawn.
      */
     public void startCustomTabActivityWithIntent(Intent intent) {
+        startCustomTabActivityWithIntentNotWaitingForFirstFrame(intent);
+        waitForFirstFrame();
+    }
+
+    /**
+     * Start a {@link CustomTabActivity} with given {@link Intent}, and wait till a tab is
+     * initialized.
+     */
+    public void startCustomTabActivityWithIntentNotWaitingForFirstFrame(Intent intent) {
         startActivityCompletely(intent);
         final Tab tab = getActivity().getActivityTab();
         Assert.assertTrue(TabTestUtils.isCustomTab(tab));

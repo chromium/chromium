@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,5 +85,17 @@ function createTabAndWaitUntilLoaded(url, callback) {
         callback(tab);
       }
     });
+  });
+}
+
+async function pollUntil(predicate, pollEveryMs) {
+  return new Promise(r => {
+    const id = setInterval(() => {
+      let ret;
+      if (ret = predicate()) {
+        clearInterval(id);
+        r(ret);
+      }
+    }, pollEveryMs);
   });
 }

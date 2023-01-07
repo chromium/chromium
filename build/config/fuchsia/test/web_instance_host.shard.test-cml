@@ -1,0 +1,9 @@
+{
+  use: [
+    {
+      protocol: [
+        "fuchsia.sys.Environment",
+      ],
+    },
+  ],
+}

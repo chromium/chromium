@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/metrics/tab_usage_recorder_metrics.h"
+#import "ios/chrome/browser/metrics/tab_usage_recorder_metrics.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,6 +45,9 @@ const char kRendererTerminationSawMemoryWarning[] =
 const char kRendererTerminationAliveRenderers[] =
     "Tab.RendererTermination.AliveRenderersCount";
 
+const char kRendererTerminationTotalTabCount[] =
+    "Tab.RendererTermination.TotalTabCount";
+
 // Name of histogram to record the number of renderers that were alive shortly
 // before a renderer termination. This metric is being recorded in case the OS
 // kills renderers in batches.
@@ -57,7 +60,7 @@ const char kRendererTerminationStateHistogram[] =
     "Tab.StateAtRendererTermination";
 
 // The recently alive renderer count metric counts all renderers that were alive
-// x seconds before a renderer termination. |kSecondsBeforeRendererTermination|
+// x seconds before a renderer termination. `kSecondsBeforeRendererTermination`
 // specifies x.
 const int kSecondsBeforeRendererTermination = 2;
 

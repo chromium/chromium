@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/view_prop.h"
 
 namespace ui {
@@ -41,6 +40,9 @@ class COMPONENT_EXPORT(UI_BASE) HWNDMessageFilter {
 // instance-subclassed, that subclassing is lost.
 class COMPONENT_EXPORT(UI_BASE) HWNDSubclass {
  public:
+  HWNDSubclass(const HWNDSubclass&) = delete;
+  HWNDSubclass& operator=(const HWNDSubclass&) = delete;
+
   ~HWNDSubclass();
 
   // Adds |filter| to the HWNDSubclass of |target|. Caller retains ownership of
@@ -75,8 +77,6 @@ class COMPONENT_EXPORT(UI_BASE) HWNDSubclass {
   std::vector<HWNDMessageFilter*> filters_;
   WNDPROC original_wnd_proc_;
   ui::ViewProp prop_;
-
-  DISALLOW_COPY_AND_ASSIGN(HWNDSubclass);
 };
 
 }  // namespace ui

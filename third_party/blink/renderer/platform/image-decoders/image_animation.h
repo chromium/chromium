@@ -34,4 +34,4 @@ using cc::kAnimationLoopInfinite;
 using cc::kAnimationNone;
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_ANIMATION_H_

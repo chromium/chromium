@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "media/base/bitrate.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace base {
@@ -34,17 +34,23 @@ class PepperVideoEncoderHost;
 class VideoEncoderShim : public media::VideoEncodeAccelerator {
  public:
   explicit VideoEncoderShim(PepperVideoEncoderHost* host);
+
+  VideoEncoderShim(const VideoEncoderShim&) = delete;
+  VideoEncoderShim& operator=(const VideoEncoderShim&) = delete;
+
   ~VideoEncoderShim() override;
 
   // media::VideoEncodeAccelerator implementation.
   media::VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles()
       override;
-  bool Initialize(const media::VideoEncodeAccelerator::Config& config,
-                  media::VideoEncodeAccelerator::Client* client) override;
+  bool Initialize(
+      const media::VideoEncodeAccelerator::Config& config,
+      media::VideoEncodeAccelerator::Client* client,
+      std::unique_ptr<media::MediaLog> media_log = nullptr) override;
   void Encode(scoped_refptr<media::VideoFrame> frame,
               bool force_keyframe) override;
   void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(uint32_t bitrate,
+  void RequestEncodingParametersChange(const media::Bitrate& bitrate,
                                        uint32_t framerate) override;
   void Destroy() override;
 
@@ -68,8 +74,6 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
   base::WeakPtrFactory<VideoEncoderShim> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoEncoderShim);
 };
 
 }  // namespace content

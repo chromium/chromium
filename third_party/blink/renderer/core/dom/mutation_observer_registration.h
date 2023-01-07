@@ -34,7 +34,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -51,7 +52,7 @@ class CORE_EXPORT MutationObserverRegistration final
                                Node*,
                                MutationObserverOptions,
                                const HashSet<AtomicString>& attribute_filter);
-  ~MutationObserverRegistration();
+  ~MutationObserverRegistration() override;
 
   void ResetObservation(MutationObserverOptions,
                         const HashSet<AtomicString>& attribute_filter);
@@ -59,7 +60,7 @@ class CORE_EXPORT MutationObserverRegistration final
   void ClearTransientRegistrations();
   bool HasTransientRegistrations() const {
     return transient_registration_nodes_ &&
-           !transient_registration_nodes_->IsEmpty();
+           !transient_registration_nodes_->empty();
   }
   void Unregister();
 

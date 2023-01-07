@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,10 @@
 #include <algorithm>
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
@@ -113,6 +112,9 @@ class CachedFontLinkSettings {
  public:
   static CachedFontLinkSettings* GetInstance();
 
+  CachedFontLinkSettings(const CachedFontLinkSettings&) = delete;
+  CachedFontLinkSettings& operator=(const CachedFontLinkSettings&) = delete;
+
   // Returns the linked fonts list correspond to |font|. Returned value will
   // never be null.
   const std::vector<Font>* GetLinkedFonts(const Font& font);
@@ -128,8 +130,6 @@ class CachedFontLinkSettings {
 
   // Map from font names to vectors of linked fonts.
   std::map<std::string, std::vector<Font> > cached_linked_fonts_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedFontLinkSettings);
 };
 
 // static
@@ -239,7 +239,7 @@ bool GetFallbackFont(const Font& font,
   // font handles and is not guaranteed to result in the correct typeface, see
   // https://crbug.com/1003829
   *result = Font(PlatformFont::CreateFromSkTypeface(
-      std::move(fallback_typeface), font.GetFontSize(), base::nullopt));
+      std::move(fallback_typeface), font.GetFontSize(), absl::nullopt));
   return true;
 }
 

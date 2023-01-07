@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/network.h"
+#include "content/public/browser/global_request_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -19,6 +19,7 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace net {
@@ -35,7 +36,7 @@ class URLLoaderFactoryOverride;
 namespace content {
 
 class InterceptionJob;
-class RenderProcessHost;
+class StoragePartition;
 struct CreateLoaderParameters;
 
 struct InterceptedRequestInfo {
@@ -53,6 +54,7 @@ struct InterceptedRequestInfo {
   protocol::Maybe<bool> is_download;
   protocol::Maybe<protocol::String> redirect_url;
   protocol::Maybe<protocol::String> renderer_request_id;
+  protocol::Maybe<protocol::String> redirected_request_id;
 };
 
 class DevToolsURLLoaderInterceptor {
@@ -79,10 +81,11 @@ class DevToolsURLLoaderInterceptor {
     AuthChallengeResponse(const std::u16string& username,
                           const std::u16string& password);
 
+    AuthChallengeResponse(const AuthChallengeResponse&) = delete;
+    AuthChallengeResponse& operator=(const AuthChallengeResponse&) = delete;
+
     const ResponseType response_type;
     const net::AuthCredentials credentials;
-
-    DISALLOW_COPY_AND_ASSIGN(AuthChallengeResponse);
   };
 
   struct Modifications {
@@ -97,9 +100,10 @@ class DevToolsURLLoaderInterceptor {
     Modifications(protocol::Maybe<std::string> modified_url,
                   protocol::Maybe<std::string> modified_method,
                   protocol::Maybe<protocol::Binary> modified_post_data,
-                  std::unique_ptr<HeadersVector> modified_headers);
+                  std::unique_ptr<HeadersVector> modified_headers,
+                  protocol::Maybe<bool> intercept_response);
     Modifications(
-        base::Optional<net::Error> error_reason,
+        absl::optional<net::Error> error_reason,
         scoped_refptr<net::HttpResponseHeaders> response_headers,
         scoped_refptr<base::RefCountedMemory> response_body,
         size_t body_offset,
@@ -112,7 +116,7 @@ class DevToolsURLLoaderInterceptor {
 
     // If none of the following are set then the request will be allowed to
     // continue unchanged.
-    base::Optional<net::Error> error_reason;  // Finish with error.
+    absl::optional<net::Error> error_reason;  // Finish with error.
     // If either of the below fields is set, complete the request by
     // responding with the provided headers and body.
     scoped_refptr<net::HttpResponseHeaders> response_headers;
@@ -124,6 +128,7 @@ class DevToolsURLLoaderInterceptor {
     protocol::Maybe<std::string> modified_method;
     protocol::Maybe<protocol::Binary> modified_post_data;
     std::unique_ptr<HeadersVector> modified_headers;
+    protocol::Maybe<bool> intercept_response;
     // AuthChallengeResponse is mutually exclusive with the above.
     std::unique_ptr<AuthChallengeResponse> auth_challenge_response;
   };
@@ -158,26 +163,31 @@ class DevToolsURLLoaderInterceptor {
                 std::vector<Pattern> patterns,
                 RequestInterceptedCallback callback);
     FilterEntry(FilterEntry&&);
+
+    FilterEntry(const FilterEntry&) = delete;
+    FilterEntry& operator=(const FilterEntry&) = delete;
+
     ~FilterEntry();
 
     const base::UnguessableToken target_id;
     std::vector<Pattern> patterns;
     const RequestInterceptedCallback callback;
-
-    DISALLOW_COPY_AND_ASSIGN(FilterEntry);
   };
 
   using HandleAuthRequestCallback =
       base::OnceCallback<void(bool use_fallback,
-                              const base::Optional<net::AuthCredentials>&)>;
+                              const absl::optional<net::AuthCredentials>&)>;
   // Can only be called on the IO thread.
-  static void HandleAuthRequest(int32_t process_id,
-                                int32_t routing_id,
-                                int32_t request_id,
+  static void HandleAuthRequest(GlobalRequestID req_id,
                                 const net::AuthChallengeInfo& auth_info,
                                 HandleAuthRequestCallback callback);
 
   explicit DevToolsURLLoaderInterceptor(RequestInterceptedCallback callback);
+
+  DevToolsURLLoaderInterceptor(const DevToolsURLLoaderInterceptor&) = delete;
+  DevToolsURLLoaderInterceptor& operator=(const DevToolsURLLoaderInterceptor&) =
+      delete;
+
   ~DevToolsURLLoaderInterceptor();
 
   void SetPatterns(std::vector<Pattern> patterns, bool handle_auth);
@@ -193,7 +203,8 @@ class DevToolsURLLoaderInterceptor {
       std::unique_ptr<ContinueInterceptedRequestCallback> callback);
 
   bool CreateProxyForInterception(
-      RenderProcessHost* rph,
+      int process_id,
+      StoragePartition* storage_partition,
       const base::UnguessableToken& frame_token,
       bool is_navigation,
       bool is_download,
@@ -207,7 +218,7 @@ class DevToolsURLLoaderInterceptor {
       const base::UnguessableToken& frame_token,
       int32_t process_id,
       bool is_download,
-      const base::Optional<std::string>& renderer_request_id,
+      const absl::optional<std::string>& renderer_request_id,
       std::unique_ptr<CreateLoaderParameters> create_params,
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
@@ -241,8 +252,6 @@ class DevToolsURLLoaderInterceptor {
   std::map<std::string, InterceptionJob*> jobs_;
 
   base::WeakPtrFactory<DevToolsURLLoaderInterceptor> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsURLLoaderInterceptor);
 };
 
 // The purpose of this class is to have a thin wrapper around

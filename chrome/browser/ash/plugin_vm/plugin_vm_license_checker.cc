@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/user_manager/user.h"
@@ -27,6 +27,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace plugin_vm {
 
@@ -40,17 +41,24 @@ constexpr char kValidationServicePath[] =
 constexpr char kValidationServiceQuery[] = "?checkOnly=true&access_token=";
 constexpr size_t kResponseMaxBodySize = 4 * 1024 * 1024;  // 4 MiB
 
-constexpr char kTrafficAnnotationMessage[] = R"(
+const GURL GetValidationEndpoint() {
+  return GURL(base::StrCat(
+      {kValidationEndpoint, kValidationServicePath, kValidationServiceQuery}));
+}
+
+const net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
+  return net::DefineNetworkTrafficAnnotation("chrome_plugin_vm_api",
+                                             R"(
       semantics {
         sender: "Chrome Plugin VM License Checker"
         description:
-          "Communication with the Plugin VM License Checker API to confirm"
+          "Communication with the Plugin VM License Checker API to confirm "
           "that the current managed user has a valid Plugin VM license."
         trigger:
-          "The request is triggered when the system recieves a PluginVmUserId"
+          "The request is triggered when the system receives a PluginVmUserId."
         data:
-          "The only transmitted information is an OAuth token. This information"
-          "is used to verify the Plugin VM license."
+          "The only transmitted information is an OAuth token. This "
+          "information is used to verify the Plugin VM license."
         destination: GOOGLE_OWNED_SERVICE
       }
       policy {
@@ -60,16 +68,7 @@ constexpr char kTrafficAnnotationMessage[] = R"(
         policy_exception_justification:
           "Managed users are not presented with the option to opt-in"
       }
-      })";
-
-const GURL GetValidationEndpoint() {
-  return GURL(base::StrCat(
-      {kValidationEndpoint, kValidationServicePath, kValidationServiceQuery}));
-}
-
-const net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
-  return net::DefineNetworkTrafficAnnotation("chrome_plugin_vm_api",
-                                             kTrafficAnnotationMessage);
+  )");
 }
 
 // Response Codes that indicate we don't need to evaluate the response body.
@@ -100,7 +99,7 @@ bool ResponseIndicatesValidLicense(int response_code,
 
   // Expected response body:
   // { "status": "ACTIVE", ...}
-  base::Optional<base::Value> response = base::JSONReader::Read(response_body);
+  absl::optional<base::Value> response = base::JSONReader::Read(response_body);
   if (!response || !response->is_dict()) {
     LOG(ERROR) << "response_body was of unexpected format.";
     return false;

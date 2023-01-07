@@ -1,0 +1,21 @@
+digraph graphname {
+    graph [fontname = "helvetica", fontsize=11];
+    node [shape="box", fontname = "helvetica", fontsize=11];
+    edge [fontname = "helvetica", fontsize=11];
+    rankdir="RL";
+
+    subgraph cluster_browser {
+        label = "Browser";
+	dom_tree [label="DOM Tree (with ARIA)"];
+	dom_tree -> ax_tree;
+	dom_tree -> layout_tree;
+	css [label="CSS"];
+	css -> layout_tree;
+	layout_tree [label="Layout Tree"];
+	layout_tree -> ax_tree;
+	ax_tree [label="Accessibility Tree"];
+    }
+
+    ax_tree -> at [label="Platform Accessibility APIs"];
+    at [label="Assistive Technology"];
+}

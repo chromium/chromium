@@ -7,13 +7,13 @@ digest() without data argument...
 error is: TypeError: Failed to execute 'digest' on 'SubtleCrypto': 2 arguments required, but only 1 present.
 
 digest() with data argument that is null...
-error is: TypeError: Failed to execute 'digest' on 'SubtleCrypto': The provided value is not of type '(ArrayBuffer or ArrayBufferView)'
+error is: TypeError: Failed to execute 'digest' on 'SubtleCrypto': The provided value is not of type '(ArrayBuffer or ArrayBufferView)'.
 
 digest() with data argument that is an integer...
-error is: TypeError: Failed to execute 'digest' on 'SubtleCrypto': The provided value is not of type '(ArrayBuffer or ArrayBufferView)'
+error is: TypeError: Failed to execute 'digest' on 'SubtleCrypto': The provided value is not of type '(ArrayBuffer or ArrayBufferView)'.
 
 digest() with algorithm as null...
-error is: TypeError: Failed to execute 'digest' on 'SubtleCrypto': Failed to convert value to 'object'.
+error is: NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name
 
 digest() with invalid agorithm that is sha...
 error is: NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name

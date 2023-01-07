@@ -50,7 +50,7 @@ Check that the WebAuthn addVirtualAuthenticator command validates parameters
 {
     error : {
         code : -32602
-        message : Large blob requires a CTAP 2.1 authenticator
+        message : Specified options require a CTAP 2.1 authenticator
     }
     id : <number>
     sessionId : <string>
@@ -58,7 +58,7 @@ Check that the WebAuthn addVirtualAuthenticator command validates parameters
 {
     error : {
         code : -32602
-        message : Large blob requires a CTAP 2.1 authenticator
+        message : Specified options require a CTAP 2.1 authenticator
     }
     id : <number>
     sessionId : <string>

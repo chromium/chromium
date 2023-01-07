@@ -1,20 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords/password_infobar_banner_interaction_handler.h"
 
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
-#include "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
-#import "ios/chrome/browser/ui/infobars/test/fake_infobar_ui_delegate.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,14 +28,13 @@ class PasswordInfobarBannerInteractionHandlerTest : public PlatformTest {
             SavePasswordInfobarBannerOverlayRequestConfig::RequestSupport()) {
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
-    InfobarOverlayRequestInserter::CreateForWebState(&web_state_);
+    InfobarOverlayRequestInserter::CreateForWebState(
+        &web_state_, &DefaultInfobarOverlayRequestFactory);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
-
-    FakeInfobarUIDelegate* ui_delegate = [[FakeInfobarUIDelegate alloc] init];
-    ui_delegate.infobarType = InfobarType::kInfobarTypePasswordSave;
     std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
-        ui_delegate, MockIOSChromeSavePasswordInfoBarDelegate::Create(
-                         @"username", @"password"));
+        InfobarType::kInfobarTypePasswordSave,
+        MockIOSChromeSavePasswordInfoBarDelegate::Create(@"username",
+                                                         @"password"));
     infobar_ = infobar.get();
     InfoBarManagerImpl::FromWebState(&web_state_)
         ->AddInfoBar(std::move(infobar));

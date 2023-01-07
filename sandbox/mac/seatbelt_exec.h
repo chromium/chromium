@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"  //nogncheck
 #include "sandbox/mac/seatbelt.pb.h"
 #include "sandbox/mac/seatbelt_export.h"
 
@@ -39,12 +38,11 @@ class SEATBELT_EXPORT SeatbeltExecClient {
   // added successfully.
 
   // Set a boolean parameter in the sandbox profile.
-  bool SetBooleanParameter(const std::string& key,
-                           bool value) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetBooleanParameter(const std::string& key, bool value);
 
   // Set a string parameter in the sandbox profile.
-  bool SetParameter(const std::string& key,
-                    const std::string& value) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetParameter(const std::string& key,
+                                  const std::string& value);
 
   // Set the actual sandbox profile, using the scheme-like SBPL.
   void SetProfile(const std::string& policy);
@@ -99,8 +97,10 @@ class SEATBELT_EXPORT SeatbeltExecServer {
     bool sandbox_required = false;
     std::unique_ptr<SeatbeltExecServer> server;
   };
-  static CreateFromArgumentsResult
-  CreateFromArguments(const char* executable_path, int argc, char** argv);
+  static CreateFromArgumentsResult CreateFromArguments(
+      const char* executable_path,
+      int argc,
+      const char* const* argv);
 
   // Reads the policy from the client, applies the profile, and returns whether
   // or not the operation succeeds.
@@ -114,8 +114,8 @@ class SEATBELT_EXPORT SeatbeltExecServer {
   // server because the process about to initialize a sandbox may need to add
   // some extra parameters, such as the path to the executable or the current
   // PID. This must be called before InitializeSandbox().
-  bool SetParameter(const std::string& key,
-                    const std::string& value) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetParameter(const std::string& key,
+                                  const std::string& value);
 
  private:
   // Reads from the |fd_| and stores the data into a string. This does

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 #define BASE_PROFILER_SUSPENDABLE_THREAD_DELEGATE_MAC_H_
 
 #include <mach/mach.h>
+#include <memory>
+#include <vector>
 
 #include "base/base_export.h"
 #include "base/profiler/module_cache.h"
-#include "base/profiler/native_unwinder_mac.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 #include "base/threading/platform_thread.h"
@@ -17,7 +18,7 @@
 namespace base {
 
 // Platform- and thread-specific implementation in support of stack sampling on
-// Mac.
+// Mac (X86_64) and iOS (X86_64 and ARM64).
 class BASE_EXPORT SuspendableThreadDelegateMac
     : public SuspendableThreadDelegate {
  public:

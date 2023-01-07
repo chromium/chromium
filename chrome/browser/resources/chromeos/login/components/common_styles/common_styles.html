@@ -1,15 +1,17 @@
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
-<link rel="import" href="/components/oobe_custom_vars_css.html">
-<link rel="import" href="/components/oobe_shared_vars_css.html">
+<link rel="import" href="../oobe_vars/oobe_custom_vars_css.html">
+<link rel="import" href="../oobe_vars/oobe_shared_vars_css.html">
+<link rel="import" href="../common_styles/oobe_flex_layout_styles.html">
 
-<dom-module id="oobe-common">
+<dom-module id="oobe-common-styles">
   <template>
-    <style>
-      <include src="../oobe_flex_layout.css">
-      <include src="../oobe_links.css">
+    <style include="oobe-flex-layout-styles">
+
       :host {
         --oobe-default-font: {
             color: var(--oobe-text-color);
@@ -22,7 +24,7 @@
         --oobe-header-font: {
             font-family: var(--oobe-header-font-family);
             font-size: var(--oobe-header-font-size);
-            font-weight: var(--oobe-default-font-weight);
+            font-weight: var(--oobe-header-font-weight);
             line-height: var(--oobe-header-line-height);
         };
 
@@ -45,31 +47,52 @@
          OobeScrollableBehavior. */
       .scrollable.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
         background: linear-gradient(0deg,
-                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+                        rgba(var(--google-grey-100-rgb), 1) 0,
+                        rgba(var(--google-grey-100-rgb), 0) 8px);
 
       }
       .scrollable.can-scroll.is-scrolled:not(.scrolled-to-bottom) {
         background: linear-gradient(0deg,
-                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px),
+                        rgba(var(--google-grey-100-rgb), 1) 0,
+                        rgba(var(--google-grey-100-rgb), 0) 8px),
                     linear-gradient(180deg,
-                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+                        rgba(var(--google-grey-100-rgb), 1) 0,
+                        rgba(var(--google-grey-100-rgb), 0) 8px);
       }
       .scrollable.is-scrolled.scrolled-to-bottom {
         background: linear-gradient(180deg,
-                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+                        rgba(var(--google-grey-100-rgb), 1) 0,
+                        rgba(var(--google-grey-100-rgb), 0) 8px);
       }
-    </style>
-  </template>
-</dom-module>
 
-<dom-module id="oobe-dialog-host">
-  <template>
-    <style include="oobe-common">
-      <include src="../oobe_dialog_host.css">
+      /* Links styles used within OOBE */
+
+      .oobe-local-link {
+        color: var(--cros-link-color);
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      .oobe-local-link:focus {
+        outline-color: var(--cros-focus-ring-color);
+        transition: outline-color 200ms;
+      }
+
+      .oobe-optin-row {
+        border-top: 1px solid var(--cros-color-primary-inverted);
+        font-size: 13px;
+        margin-top: 12px;
+        padding-top: 12px;
+      }
+
+      .oobe-optin-title {
+        color: var(--oobe-header-text-color);
+        font-weight: var(--oobe-header-font-weight);
+      }
+
+      .oobe-optin-content {
+        margin-inline-end: 16px;
+      }
     </style>
   </template>
 </dom-module>

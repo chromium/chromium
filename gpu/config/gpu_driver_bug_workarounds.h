@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/gpu_export.h"
@@ -38,7 +37,7 @@ class GPU_EXPORT GpuDriverBugWorkarounds {
 #undef GPU_OP
 
   // Note: 0 here means use driver limit.
-  GLint max_texture_size = 0;
+  GLint webgl_or_caps_max_texture_size = 0;
   GLint max_3d_array_texture_size = 0;
   GLint max_copy_texture_chromium_size = 0;
 };

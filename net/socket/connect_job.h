@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,33 +6,34 @@
 #define NET_SOCKET_CONNECT_JOB_H_
 
 #include <memory>
+#include <set>
 #include <string>
-#include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "net/base/address_list.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
-#include "net/base/privacy_mode.h"
 #include "net/base/request_priority.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/ssl_client_socket.h"
-#include "net/third_party/quiche/src/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
 class ClientSocketFactory;
 class HostPortPair;
 class HostResolver;
+struct HostResolverEndpointResult;
 class HttpAuthCache;
 class HttpAuthController;
 class HttpAuthHandlerFactory;
@@ -40,19 +41,15 @@ class HttpResponseInfo;
 class HttpUserAgentSettings;
 class NetLog;
 class NetLogWithSource;
-class NetworkIsolationKey;
 class NetworkQualityEstimator;
-struct NetworkTrafficAnnotationTag;
 class ProxyDelegate;
-class ProxyServer;
-class SocketPerformanceWatcherFactory;
-struct SSLConfig;
-class StreamSocket;
-class WebSocketEndpointLockManager;
 class QuicStreamFactory;
+class SocketPerformanceWatcherFactory;
 class SocketTag;
 class SpdySessionPool;
 class SSLCertRequestInfo;
+class StreamSocket;
+class WebSocketEndpointLockManager;
 
 // Immutable socket parameters intended for shared use by all ConnectJob types.
 // Excludes priority because it can be modified over the lifetime of a
@@ -80,22 +77,22 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
 
   CommonConnectJobParams& operator=(const CommonConnectJobParams& other);
 
-  ClientSocketFactory* client_socket_factory;
-  HostResolver* host_resolver;
-  HttpAuthCache* http_auth_cache;
-  HttpAuthHandlerFactory* http_auth_handler_factory;
-  SpdySessionPool* spdy_session_pool;
-  const quic::ParsedQuicVersionVector* quic_supported_versions;
-  QuicStreamFactory* quic_stream_factory;
-  ProxyDelegate* proxy_delegate;
-  const HttpUserAgentSettings* http_user_agent_settings;
-  SSLClientContext* ssl_client_context;
-  SocketPerformanceWatcherFactory* socket_performance_watcher_factory;
-  NetworkQualityEstimator* network_quality_estimator;
-  NetLog* net_log;
+  raw_ptr<ClientSocketFactory> client_socket_factory;
+  raw_ptr<HostResolver> host_resolver;
+  raw_ptr<HttpAuthCache> http_auth_cache;
+  raw_ptr<HttpAuthHandlerFactory> http_auth_handler_factory;
+  raw_ptr<SpdySessionPool> spdy_session_pool;
+  raw_ptr<const quic::ParsedQuicVersionVector> quic_supported_versions;
+  raw_ptr<QuicStreamFactory> quic_stream_factory;
+  raw_ptr<ProxyDelegate> proxy_delegate;
+  raw_ptr<const HttpUserAgentSettings> http_user_agent_settings;
+  raw_ptr<SSLClientContext> ssl_client_context;
+  raw_ptr<SocketPerformanceWatcherFactory> socket_performance_watcher_factory;
+  raw_ptr<NetworkQualityEstimator> network_quality_estimator;
+  raw_ptr<NetLog> net_log;
 
   // This must only be non-null for WebSockets.
-  WebSocketEndpointLockManager* websocket_endpoint_lock_manager;
+  raw_ptr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager;
 };
 
 // When a host resolution completes, OnHostResolutionCallback() is invoked. If
@@ -118,7 +115,8 @@ enum class OnHostResolutionCallbackResult {
 using OnHostResolutionCallback =
     base::RepeatingCallback<OnHostResolutionCallbackResult(
         const HostPortPair& host_port_pair,
-        const AddressList& address_list)>;
+        const std::vector<HostResolverEndpointResult>& endpoint_results,
+        const std::set<std::string>& aliases)>;
 
 // ConnectJob provides an abstract interface for "connecting" a socket.
 // The connection may involve host resolution, tcp connection, ssl connection,
@@ -130,8 +128,12 @@ class NET_EXPORT_PRIVATE ConnectJob {
   // function doesn't own |job|.
   class NET_EXPORT_PRIVATE Delegate {
    public:
-    Delegate() {}
-    virtual ~Delegate() {}
+    Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    virtual ~Delegate() = default;
 
     // Alerts the delegate that the connection completed. |job| must be
     // destroyed by the delegate. A std::unique_ptr<> isn't used because the
@@ -152,9 +154,6 @@ class NET_EXPORT_PRIVATE ConnectJob {
                                   HttpAuthController* auth_controller,
                                   base::OnceClosure restart_with_auth_callback,
                                   ConnectJob* job) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // A |timeout_duration| of 0 corresponds to no timeout.
@@ -172,27 +171,11 @@ class NET_EXPORT_PRIVATE ConnectJob {
              const NetLogWithSource* net_log,
              NetLogSourceType net_log_source_type,
              NetLogEventType net_log_connect_event_type);
-  virtual ~ConnectJob();
 
-  // Creates a ConnectJob with the specified parameters.
-  // |common_connect_job_params| and |delegate| must outlive the returned
-  // ConnectJob.
-  static std::unique_ptr<ConnectJob> CreateConnectJob(
-      bool using_ssl,
-      const HostPortPair& endpoint,
-      const ProxyServer& proxy_server,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-      const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* ssl_config_for_proxy,
-      bool force_tunnel,
-      PrivacyMode privacy_mode,
-      const OnHostResolutionCallback& resolution_callback,
-      RequestPriority request_priority,
-      SocketTag socket_tag,
-      const NetworkIsolationKey& network_isolation_key,
-      bool disable_secure_dns,
-      const CommonConnectJobParams* common_connect_job_params,
-      ConnectJob::Delegate* delegate);
+  ConnectJob(const ConnectJob&) = delete;
+  ConnectJob& operator=(const ConnectJob&) = delete;
+
+  virtual ~ConnectJob();
 
   // Accessors
   const NetLogWithSource& net_log() { return net_log_; }
@@ -235,9 +218,8 @@ class NET_EXPORT_PRIVATE ConnectJob {
   // Not safe to call after NotifyComplete() is invoked.
   virtual bool HasEstablishedConnection() const = 0;
 
-  // If the ConnectJobFailed, this method returns a list of failed attempts to
-  // connect to the destination server. Returns an empty list if connecting to a
-  // proxy.
+  // Returns a list of failed attempts to connect to the destination server.
+  // Returns an empty list if connecting to a proxy.
   virtual ConnectionAttempts GetConnectionAttempts() const;
 
   // Returns error information about any host resolution attempt.
@@ -252,9 +234,20 @@ class NET_EXPORT_PRIVATE ConnectJob {
   // SSLCertRequestInfo received. Otherwise, returns nullptr.
   virtual scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo();
 
+  // Returns the `HostResolverEndpointResult` structure corresponding to the
+  // chosen route. Should only be called on a successful connect. If the
+  // `ConnectJob` does not make DNS queries, or does not use the SVCB/HTTPS
+  // record, it may return `absl::nullopt`, to avoid callers getting confused by
+  // an empty `IPEndPoint` list.
+  virtual absl::optional<HostResolverEndpointResult>
+  GetHostResolverEndpointResult() const;
+
   const LoadTimingInfo::ConnectTiming& connect_timing() const {
     return connect_timing_;
   }
+
+  // Sets |done_closure_| which will be called when |this| is deleted.
+  void set_done_closure(base::OnceClosure done_closure);
 
   const NetLogWithSource& net_log() const { return net_log_; }
 
@@ -286,7 +279,7 @@ class NET_EXPORT_PRIVATE ConnectJob {
   }
 
   void SetSocket(std::unique_ptr<StreamSocket> socket,
-                 base::Optional<std::vector<std::string>> dns_aliases);
+                 absl::optional<std::set<std::string>> dns_aliases);
   void NotifyDelegateOfCompletion(int rv);
   void NotifyDelegateOfProxyAuth(const HttpResponseInfo& response,
                                  HttpAuthController* auth_controller,
@@ -322,19 +315,19 @@ class NET_EXPORT_PRIVATE ConnectJob {
   const base::TimeDelta timeout_duration_;
   RequestPriority priority_;
   const SocketTag socket_tag_;
-  const CommonConnectJobParams* common_connect_job_params_;
+  raw_ptr<const CommonConnectJobParams> common_connect_job_params_;
   // Timer to abort jobs that take too long.
   base::OneShotTimer timer_;
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   std::unique_ptr<StreamSocket> socket_;
   // Indicates if this is the topmost ConnectJob. The topmost ConnectJob logs an
   // extra begin and end event, to allow callers to log extra data before the
   // ConnectJob has started / after it has completed.
   const bool top_level_job_;
   NetLogWithSource net_log_;
+  // This is called when |this| is deleted.
+  base::ScopedClosureRunner done_closure_;
   const NetLogEventType net_log_connect_event_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectJob);
 };
 
 }  // namespace net

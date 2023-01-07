@@ -1,0 +1,27 @@
+caption: Allow Local Fonts permission on these sites
+desc: |-
+  Sets a list of site url patterns that specify sites which will automatically grant the local fonts permission. This will extend the ability of sites to see information about local fonts.
+
+        For detailed information on valid site url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed. This policy only matches based on origin, so any path in the URL pattern is ignored.
+
+        If this policy is not set for a site then the policy from <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME">DefaultLocalFontsSetting</ph> applies to the site, if set, otherwise the permission will follow the browser's defaults and allow users to choose this permission per site.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- dslee@chromium.org
+- storage-dev@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:103-
+- chrome_os:103-
+tags: []
+type: list

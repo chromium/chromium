@@ -11,10 +11,8 @@ locale.  The strings in this file are specific to iOS.
     <output filename="grit/ios_strings.h" type="rc_header">
       <emit emit_type="prepend"></emit>
     </output>
-    <output filename="ios_strings_am.pak" type="data_package" lang="am" />
     <output filename="ios_strings_ar.pak" type="data_package" lang="ar" />
     <output filename="ios_strings_bg.pak" type="data_package" lang="bg" />
-    <output filename="ios_strings_bn.pak" type="data_package" lang="bn" />
     <output filename="ios_strings_ca.pak" type="data_package" lang="ca" />
     <output filename="ios_strings_cs.pak" type="data_package" lang="cs" />
     <output filename="ios_strings_da.pak" type="data_package" lang="da" />
@@ -24,12 +22,9 @@ locale.  The strings in this file are specific to iOS.
     <output filename="ios_strings_en-US.pak" type="data_package" lang="en" />
     <output filename="ios_strings_es.pak" type="data_package" lang="es" />
     <output filename="ios_strings_es-MX.pak" type="data_package" lang="es-419" />
-    <output filename="ios_strings_et.pak" type="data_package" lang="et" />
     <output filename="ios_strings_fa.pak" type="data_package" lang="fa" />
     <output filename="ios_strings_fi.pak" type="data_package" lang="fi" />
-    <output filename="ios_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="ios_strings_fr.pak" type="data_package" lang="fr" />
-    <output filename="ios_strings_gu.pak" type="data_package" lang="gu" />
     <output filename="ios_strings_he.pak" type="data_package" lang="he" />
     <output filename="ios_strings_hi.pak" type="data_package" lang="hi" />
     <output filename="ios_strings_hr.pak" type="data_package" lang="hr" />
@@ -37,12 +32,8 @@ locale.  The strings in this file are specific to iOS.
     <output filename="ios_strings_id.pak" type="data_package" lang="id" />
     <output filename="ios_strings_it.pak" type="data_package" lang="it" />
     <output filename="ios_strings_ja.pak" type="data_package" lang="ja" />
-    <output filename="ios_strings_kn.pak" type="data_package" lang="kn" />
     <output filename="ios_strings_ko.pak" type="data_package" lang="ko" />
     <output filename="ios_strings_lt.pak" type="data_package" lang="lt" />
-    <output filename="ios_strings_lv.pak" type="data_package" lang="lv" />
-    <output filename="ios_strings_ml.pak" type="data_package" lang="ml" />
-    <output filename="ios_strings_mr.pak" type="data_package" lang="mr" />
     <output filename="ios_strings_ms.pak" type="data_package" lang="ms" />
     <output filename="ios_strings_nl.pak" type="data_package" lang="nl" />
     <!-- The translation console uses 'no' for Norwegian Bokmål. It should
@@ -54,12 +45,8 @@ locale.  The strings in this file are specific to iOS.
     <output filename="ios_strings_ro.pak" type="data_package" lang="ro" />
     <output filename="ios_strings_ru.pak" type="data_package" lang="ru" />
     <output filename="ios_strings_sk.pak" type="data_package" lang="sk" />
-    <output filename="ios_strings_sl.pak" type="data_package" lang="sl" />
     <output filename="ios_strings_sr.pak" type="data_package" lang="sr" />
     <output filename="ios_strings_sv.pak" type="data_package" lang="sv" />
-    <output filename="ios_strings_sw.pak" type="data_package" lang="sw" />
-    <output filename="ios_strings_ta.pak" type="data_package" lang="ta" />
-    <output filename="ios_strings_te.pak" type="data_package" lang="te" />
     <output filename="ios_strings_th.pak" type="data_package" lang="th" />
     <output filename="ios_strings_tr.pak" type="data_package" lang="tr" />
     <output filename="ios_strings_uk.pak" type="data_package" lang="uk" />
@@ -83,6 +70,7 @@ locale.  The strings in this file are specific to iOS.
     <file path="resources/ios_strings_bs.xtb" lang="bs" />
     <file path="resources/ios_strings_ca.xtb" lang="ca" />
     <file path="resources/ios_strings_cs.xtb" lang="cs" />
+    <file path="resources/ios_strings_cy.xtb" lang="cy" />
     <file path="resources/ios_strings_da.xtb" lang="da" />
     <file path="resources/ios_strings_de.xtb" lang="de" />
     <file path="resources/ios_strings_el.xtb" lang="el" />
@@ -168,6 +156,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_ACCNAME_VOICE_SEARCH" desc="The accessibility label for the voice search button in the location bar [Length: unlimited]">
         Voice Search
       </message>
+      <message name="IDS_IOS_ACCNAME_LENS" desc="The accessibility label for the Lens button in the location bar [Length: unlimited]">
+        Lens
+      </message>
       <message name="IDS_IOS_ACCOUNT_CONSISTENCY_CONFIRMATION_SCROLL_BUTTON" desc="Title of the button to scroll the confirmation screen when it is too small to show everything at once. [Length: 20m] [iOS only]">
         More
       </message>
@@ -180,26 +171,38 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON" desc="Title of the button to skip the selection of an account. [Length: 20em] [iOS only]">
         Cancel
       </message>
-      <message name="IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_ADD_ACCOUNT" desc="Title of the button to add a new account, the user will be able to use the added account to sign-in [Length: 16em] [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_ADD_ACCOUNT" desc="In Title Case: Button is displayed in the account picker dialog. Users can click it to add another account to the device, which can be used to sign in to Chrome. [iOS only]">
         Add Account…
       </message>
       <message name="IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_CHOOSE_ACCOUNT" desc="Label at the top an account list. The user has to select one of the accounts to sign-in. [Length: 20em] [iOS only]">
         Choose an Account
       </message>
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE" desc="Title on the sync consent dialog to explain why sync can be useful for the user. [iOS only]">
-        Turn on sync?
+        Turn On Sync?
       </message>
       <message name="IDS_IOS_SYNC_PROMO_TURN_ON_SYNC" desc="Button that the user can press if they want to turn on sync with this account. [iOS only]">
-        Turn on sync
+        Turn On Sync
       </message>
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE" desc="Title of the sync description section on the sync consent dialog to explain why sync can be useful for the user. [iOS only]">
         Sync your passwords, history &amp; more on all devices
       </message>
-      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE" desc="Subtitle of the sync description section on the sync consent dialog to explain why sync can be useful for the user. [iOS only]">
-        Google may use your history to personalize Search, ads, and other Google services.
+      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_TITLE" desc="Title of the sync description section on the sync consent dialog to explain why sync can be useful for the user when sync types are limited (i.e. managed by policies). [iOS only]">
+        To sync and personalize accross devices, turn on sync.
       </message>
-      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS" desc="Explination text on the sync consent dialog to explain the user they can customize sync settings. [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE" desc="Subtitle of the sync description section on the sync consent dialog to explain why sync can be useful for the user. [iOS only]">
+        Google may use your history to personalize Search and other Google services.
+      </message>
+      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS" desc="Explanation text on the sync consent dialog to explain the user they can customize sync settings. [iOS only]">
         You can always choose what to sync in <ph name="BEGIN_LINK">BEGIN_LINK</ph>settings<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS_POST_RESTORE_PROMO" desc="Explanation text on the sync consent dialog to explain the user they can customize sync settings. This is presented to the user after device restore from backup. [iOS only]">
+        Your sync settings will be restored based on your last backup. You can always choose what to sync in <ph name="BEGIN_LINK">BEGIN_LINK</ph>settings<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS" desc="Explanation text on the sync consent dialog to explain the user they can customize sync settings when sync types are limited. [iOS only]">
+        <ph name="BEGIN_LINK">BEGIN_LINK</ph>See What You Can Sync<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS_POST_RESTORE_PROMO" desc="Explanation text on the sync consent dialog to explain the user they can customize sync settings when sync types are limited. This is presented to the user after device restore from backup. [iOS only]">
+        Your sync settings will be restored based on your last backup. <ph name="BEGIN_LINK">BEGIN_LINK</ph>See What You Can Sync<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT" desc="Title of the button to add an account [Length: 15m] [iOS only]">
         Add Account
@@ -225,9 +228,6 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_SYNC_ALERT_MESSAGE" desc="Alert title to ask if the user really wants to cancel sign-in and sync.">
         Cancel Sync? You can turn on sync anytime in Settings.
       </message>
-      <message name="IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CONFIRM_MAIN_BUTTON" desc="Button title to confirm sign-in and sync after reviewing the sync settings. Related IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_MAIN_BUTTON.">
-        Confirm
-      </message>
       <message name="IDS_IOS_SHOW_ALL_PASSWORDS" desc="Button title in the keyboard accessory bar to open the list of all saved passwords. [Length: 20em] [iOS only]">
         Show All...
       </message>
@@ -237,8 +237,14 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_SUGGESTED_PASSWORD_HINT" desc="Text shown alongside a suggested password to tell user that generated passwords are recorded by chrome. [Length: unlimited] [iOS only]">
         Chrome will remember this password for you. You don't have to remember it.
       </message>
+      <message name="IDS_IOS_SUGGESTED_STRONG_PASSWORD" desc="Text that shows a suggested generated password at user's request [Length: unlimited] [iOS only]">
+        Use Strong Password:
+      </message>
       <message name="IDS_IOS_USE_SUGGESTED_PASSWORD" desc="Button title in a suggested password popup asking user if they want to use the suggested password. [Length: 20em] [iOS only]">
         Use Suggested Password
+      </message>
+      <message name="IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD" desc="Button title in a suggested password popup asking user if they want to use the suggested password. [Length: 20em] [iOS only]">
+        Use Password
       </message>
       <message name="IDS_IOS_APPLICATION_SHORTCUT_INCOGNITOSEARCH_TITLE" desc="Message when opening a New Incognito Search from springboard force touch static shortcuts. [Length: unlimited] [iOS only]." meaning="3D Touch entry to create a new Incognito tab.">
        Incognito Search
@@ -288,7 +294,7 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_AUTOFILL_COUNTRY" desc="Title of the field of a profile address representing the country/nation of the address. [Length: 15em] [iOS only]">
         Country
       </message>
-      <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_HOLDER_NAME" desc="The placeholder text for credit card holder name text field to add new credit card. [iOS only]">
+      <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_HOLDER_NAME" desc="The placeholder text for credit card holder name text field to add new credit card. [iOS only]" meaning="Name of a person">
           Name
       </message>
       <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_NUMBER" desc="The placeholder text for credit card number in the payments card unmask dialog. [iOS only]">
@@ -336,8 +342,8 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_AUTOFILL_SAVE_CARD_BADGE_HINT" desc="Accessibility Hint for the Save Card button which presents the current options to Save a Card. This is spoken by VoiceOver.   [Length:Unlimited] [iOS only]">
         Options to Save Card
       </message>
-      <message name="IDS_IOS_AUTOFILL_HONORIFIC_PREFIX" desc="Title of the field of a profile address representing the title that can be auto-filled by Chrome. [iOS only]" meaning="A 'Title' field in a web form could be a prefix like Ms., Mx., or Dr. or a position held, like Captain or Rabbi. [Length: 15em]">
-           Title
+      <message name="IDS_IOS_AUTOFILL_HONORIFIC_PREFIX" desc="Title of the field of a profile address representing the title that can be auto-filled by Chrome. A 'Title' field in a web form could be a prefix like Ms., Mx., or Dr. or a position held, like Captain or Rabbi. [Length: 15em] [iOS only]" meaning="Honorific">
+        Title
       </message>
       <message name="IDS_IOS_AUTOFILL_FULLNAME" desc="Title of the field of a profile address representing the full name of the addressee. [Length: 15em] [iOS only]">
         Full Name
@@ -363,6 +369,15 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_AUTOFILL_SET_UP_SCREENLOCK_CONTENT" desc="Message informing the user that in order to use the password, a screen lock needs to be set up on the device. This is shown as an alert message after the user tries to view or copy the password from a settings page. [CHAR_LIMIT=100]">
         To use passwords, you must first set a passcode on your device.
       </message>
+      <message name="IDS_IOS_CONSISTENCY_PROMO_ADD_ACCOUNT" desc="Button to add an account to the device.">
+        Add Account…
+      </message>
+      <message name="IDS_IOS_CONSISTENCY_PROMO_CHOOSE_ACCOUNT" desc="Presents the list of account on the device and invites the user to choose an account to sign-in.">
+        Choose an Account
+      </message>
+      <message name="IDS_IOS_CONSISTENCY_PROMO_SKIP" desc="Dismisses the sign-in promo on the web.">
+        Skip
+      </message>
       <message name="IDS_IOS_COPY_LINK_ACTION_TITLE" desc="Title of the action used to copy a link to the pasteboard. [iOS only]">
         Copy Link
       </message>
@@ -381,8 +396,11 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BANDWIDTH_MANAGEMENT_SETTINGS" desc="Title for the bandwidth management panel in settings [Length: 30em] [iOS only]">
         Bandwidth
       </message>
-      <message name="IDS_IOS_BLOCK_POPUPS" desc="Title for the view and option in Settings for blocking pop-up. [Length: 15em] [iOS only]">
+      <message name="IDS_IOS_BLOCK_POPUPS" desc="Title for the view and option in Settings for blocking pop-ups. [Length: 15em] [iOS only]">
         Block Pop-ups
+      </message>
+      <message name="IDS_IOS_SHOW_LINK_PREVIEWS" desc="Title for the view and option in Settings for showing link previews. [Length: unlimited] [iOS only]" meaning="Title for the Chrome Settings option for showing link previews. [Length: unlimited]">
+        Show Link Previews
       </message>
       <message name="IDS_IOS_BLUETOOTH_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's bluetooth capabilities.">
         This lets you discover relevant web pages based on your surroundings.
@@ -429,10 +447,7 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOOKMARK_GROUP_DELETE" desc="Button to delete a folder. [Length: 30em.] [iOS only]">
         Delete Folder
       </message>
-      <message name="IDS_IOS_BOOKMARK_ITEM_COUNT" desc="Displayed when there are more than one item in a bookmark folder [Length: 30em.]">
-        <ph name="COUNT">$1<ex>42</ex></ph> items
-      </message>
-      <message name="IDS_IOS_BOOKMARK_NAME_FIELD_HEADER" desc="Title shown above bookmark name field on Edit Bookmark screen. [Length: 20em]">
+      <message name="IDS_IOS_BOOKMARK_NAME_FIELD_HEADER" desc="Title shown above bookmark name field on Edit Bookmark screen. [Length: 20em]" meaning="Name of an inanimate object">
         Name
       </message>
       <message name="IDS_IOS_BOOKMARK_NEW_BOOKMARKS_BAR_TITLE" desc="Text that describes the bookmarks present in the bookmarks bar for chrome on desktop. [Length: 30em.] [iOS only]">
@@ -498,15 +513,6 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOOKMARK_NEW_ZERO_ITEM_LABEL" desc="Text that indicates that a user has selected zero bookmarks for editing. [Length: 30em.]">
         0 selected
       </message>
-      <message name="IDS_IOS_BOOKMARK_NO_BOOKMARKS_LABEL" desc="The label shown on the bookmark collection background when the user has no bookmarks on the selected folder. [Length: 30em.] [iOS only]">
-        No bookmarks here
-      </message>
-      <message name="IDS_IOS_BOOKMARK_NO_ITEM_COUNT" desc="Displayed when there are no items in a bookmark folder [Length: 30em.]">
-        No items
-      </message>
-      <message name="IDS_IOS_BOOKMARK_ONE_ITEM_COUNT" desc="Displayed when there is only one item in a bookmark folder [Length: 30em.]">
-        1 item
-      </message>
       <message name="IDS_IOS_BOOKMARK_PAGE_SAVED" desc="Presented in an infobar when a bookmark is created. [Length: 30em.]">
         Bookmarked
       </message>
@@ -522,8 +528,11 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOTTOM_TOOLBAR_IPH_PROMOTION_TEXT" desc="Text for the Bottom Toolbar Tip in-product help promotion, explaining that the bottom toolbar can be used to focus the Search Bar, instead of having to reach to the top toolbar. [iOS only]">
         Search bar is now easier to reach
       </message>
+      <message name="IDS_IOS_CALENDARS_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's calendar while the app is in use [Length: unlimited] [iOS only].">
+        This allows you to easily create calendar events using Google Lens.
+      </message>
       <message name="IDS_IOS_CAMERA_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's camera while the app is in use [Length: unlimited] [iOS only].">
-        This lets you take and upload photos.
+        This lets you take and upload photos, as well as scan QR codes
       </message>
       <message name="IDS_IOS_CARD_STACK_SCROLLED_NOTIFICATION" desc="The accessibility description for page scrolled notification [iOS only]">
         <ph name="INCOGNITO">$1<ex>Incognito</ex></ph> Tabs <ph name="FIRST_VISIBLE_TAB">$2<ex>3</ex></ph> through <ph name="LAST_VISIBLE_TAB">$3<ex>5</ex></ph> of <ph name="NUMBER_OF_OPEN_TABS">$4<ex>12</ex></ph>
@@ -542,6 +551,27 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_ACCOUNT_AND_HISTORY" desc="Footer message in the settings to clear browsing data that informs the user that clearing browsing data will not sign them out of Chrome and that other forms of history will still be available.">
         You won't be signed out of your Google Account. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">BEGIN_LINK</ph>history.google.com<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_GOOGLE_DSE" desc="Footer message in the settings to clear browsing data that informs the user they can seperately delete their search history and/or other account info at the 2 links provided.">
+        <ph name="BEGIN_LINK">BEGIN_LINK</ph>Search history<ph name="END_LINK">END_LINK</ph> and <ph name="BEGIN_LINK">BEGIN_LINK</ph>other forms of activity<ph name="END_LINK">END_LINK</ph> may be saved in your Google Account when you’re signed in. You can delete them anytime.
+      </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_KNOWN_DSE_SIGNED_IN" desc="Footer message in the settings to clear browsing data that informs a signed in user that they will need to look up instructions to delete their search history from their DSE, as well as that they won't be signed out and where to delete other account data.">
+        You won't be signed out of your Google Account. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Other forms of activity<ph name="END_LINK">END_LINK</ph> may be saved in your Google Account when you’re signed in. You can delete them anytime.
+
+        
+Your search engine is <ph name="DSE_NAME">$1<ex>DuckDuckGo</ex></ph>. See their instructions for deleting your search history, if applicable.
+      </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_KNOWN_DSE_SIGNED_OUT" desc="Footer message in the settings to clear browsing data that informs the user that they will need to look up instructions to delete their search history from their DSE.">
+        Your search engine is <ph name="DSE_NAME">$1<ex>DuckDuckGo</ex></ph>. See their instructions for deleting your search history, if applicable.
+      </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_UNKOWN_DSE_SIGNED_IN" desc="Footer message in the settings to clear browsing data that informs a signed in user that they will need to look up instructions to delete their search history from a DSE that is not well known to Google, as well as that they won't be signed out and where to delete other account data.">
+        You won't be signed out of your Google Account. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Other forms of activity<ph name="END_LINK">END_LINK</ph> may be saved in your Google Account when you’re signed in. You can delete them anytime.
+
+
+See your search engine’s instructions for deleting your search history, if applicable.
+      </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_UNKOWN_DSE_SIGNED_OUT" desc="Footer message in the settings to clear browsing data that informs the user that they will need to look up instructions to delete their search history from a DSE that is not well known to Google.">
+        See your search engine’s instructions for deleting your search history, if applicable.
       </message>
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_CLEAR_SYNC_AND_SAVED_SITE_DATA" desc="Footer message in the settings to clear browsing data that informs the user the synced data will be cleared on all devices and that saved site settings will not be deleted.">
         This clears synced data from all devices. Saved site settings will not be deleted and may reflect your browsing habits. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
@@ -601,7 +631,13 @@ locale.  The strings in this file are specific to iOS.
         Saved Passwords
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST" desc="The iOS menu item for adding a link to the reading list.">
-        Read Later
+        Add to Reading List
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_ADDTOBOOKMARKS" desc="The iOS context menu item for adding the url of a tab to the bookmarks. [iOS only]">
+        Add to Bookmarks
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_CLOSETAB" desc="The iOS context menu item for closing a tab. [iOS only]">
+        Close tab
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_COPY" desc="The iOS menu item for copying a link's URL into the pasteboard. Shorter than the desktop version [iOS only]">
         Copy Link URL
@@ -618,7 +654,6 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CONTENT_CONTEXT_OPEN_ALL_LINKS" desc="The iOS menu item for opening a list of links in new tabs. Shorter than the desktop version [iOS only]">
         Open all
       </message>
-
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW" desc="The iOS menu item for opening a link in a new window. [iOS only]">
         Open in New Window
       </message>
@@ -628,7 +663,7 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB" desc="The name of the Open Image in New Tab command in the content area context menu">
         Open Image in New Tab
       </message>
-      <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB" desc="The iOS menu item for opening a link in a new incognito tab. Shorter than the desktop version [Length: 25em] [iOS only]">
+      <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB" desc="The iOS menu item for opening a link in a new Incognito tab. Shorter than the desktop version [Length: 25em] [iOS only]">
         Open in New Incognito Tab
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB" desc="The iOS menu item for opening a link in another tab. Shorter than the desktop version [iOS only]">
@@ -636,6 +671,12 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE" desc="The name of the Save Image As command in the content area context menu">
         Save Image
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS" desc="The iOS context menu item for closing all the tabs in the grid. [iOS only]">
+        Close All Tabs
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_SELECTTABS" desc="The iOS context menu item for entering into the selection mode, where users can select tabs to perform bulk actions on them.[iOS only]">
+        Select Tabs
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_ACCESSIBILITY_LABEL_SUGGESTION" desc="The accessibility label of a suggestion. Summarizes fields in the reading list entry (title, publisher informations, status and informations). Read by Text-to-Speech.">
         <ph name="TITLE"><ex>Learn about the new Chromium Projects</ex>$1</ph>, <ph name="PUBLISHER_INFORMATION"><ex>The Chromium organization</ex>$2</ph>, <ph name="PUBLICATION_DATE"><ex>January 1 2017</ex>$3</ph>
@@ -652,6 +693,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_FOOTER_TITLE" desc="The title of the footer of the sections of Content Suggestions">
         More
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE" desc="The Most Visited module title on the new tab page [Length: 10em]">
+        Frequently Visited
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_READING_LIST" desc="The Reading List title on the new tab page [Length: 10em]">
         Reading List
       </message>
@@ -664,14 +708,23 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_RECENT_TABS" desc="The Recent Tabs title on the new tab page [Length: 10em]">
         Recent Tabs
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW" desc="The What's New title on the new tab page [Length: 10em]">
+        What's New
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_REMOVE" desc="The name of the Remove command in the Content Suggestions articles context menu">
         Remove
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SETTING_TITLE" desc="The title of the settings to toggle the articles suggestions on the NTP on/off">
         Article Suggestions
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE" desc="The Shortcuts module title on the new tab page [Length: 10em]">
+        Shortcuts
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOW" desc="The label in the header to show/uncollapse Content Suggestions [Length: 10em]">
         Show
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_TRENDING_QUERIES_MODULE_TITLE" desc="The Trending Queries module title on the new tab page [Length: 10em]">
+        Trending Searches
       </message>
       <message name="IDS_IOS_CONTENT_SETTINGS_TITLE" desc="Title for content settings dialog [Length: 29em] [iOS only]">
         Content Settings
@@ -679,11 +732,17 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CONTEXT_MENU_SEARCHWEBFORIMAGE" desc="Context menu text for option to perform a search for image [Length: 25em] [iOS only]">
         Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for This Image
       </message>
+      <message name="IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHGOOGLE" desc="Context menu text for option to search an image with Google [Length: 25em] [iOS only]">
+        Search Image with Google
+      </message>
       <message name="IDS_IOS_COPY_VERSION_HINT" desc="The accessibility hint for the label showing the Chrome version. [iOS only]">
         Double tap to copy.
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_MAIN_BUTTON_TEXT" desc="Text of the button that will take the user to the Settings page to configure the default browser [iOS only]">
+      <message name="IDS_IOS_OPEN_SETTINGS" desc="Text of the button that will take the user to the Settings page to configure the default browser [iOS only]">
         Open Settings
+      </message>
+      <message name="IDS_IOS_DEFAULT_NON_MODAL_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to Chrome or iOS settings where they can change the default browser. Used in the non-modal default browser promo [iOS only]">
+        Set…
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_REMIND_ME_LATER_BUTTON_TEXT" desc="Text of button that will show the default browser modal promo UI again at a later time.  [iOS only]">
         Remind Me Later
@@ -691,25 +750,20 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT" desc="Text of secondary button that will dismiss the default browser modal promo UI [iOS only]">
         No Thanks
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_ALL_TABS_TITLE" desc="Text of title for 'All your tabs' tailored default browser promo [iOS only]">
+        All Your Tabs In One Browser
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_BUILT_FOR_IOS_TITLE" desc="Text of title for 'Built for iOS' tailored default browser promo [iOS only]">
+        Built for iOS
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_BUILT_FOR_IPADOS_TITLE" desc="Text of title for 'Built for iPadOS' tailored default browser promo [iPadOS only]">
+        Built for iPadOS
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to settings, where they can change the default browser. Used in tailored default browser promo [iOS only]">
+        Switch in Settings…
+      </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE" desc="The title of the continue button on the disconnect dialog [Length: 20em].">
         Sign Out
-      </message>
-      <message name="IDS_IOS_DISCONNECT_DIALOG_CONTINUE_AND_CLEAR_MOBILE" desc="The title of the continue and clear browsing data button on the disconnect dialog [iOS only].">
-        Sign Out and Clear Data from this Device
-      </message>
-     <message name="IDS_IOS_DISCONNECT_NON_MANAGED_ACCOUNT_FOOTER_INFO_MOBILE" desc="The information text on the disconnect footer describing signout for non-managed accounts [Length: 400em].">
-      By signing out, your bookmarks, history, passwords, and other Chrome data will no longer be synced to your Google Account.
-      </message>
-      <message name="IDS_IOS_DISCONNECT_MANAGED_ACCOUNT_FOOTER_INFO_MOBILE" desc="The information text on the disconnect footer describing signout for managed accounts [Length: 400em].">
-      By signing out, your bookmarks, history, passwords, and other Chrome data will no longer be synced to your Google Account.
-
-Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex></ph>, your Chrome data will be deleted from this device when signing out. Your synced data will remain in your Google Account.
-      </message>
-      <message name="IDS_IOS_DISCONNECT_DESTRUCTIVE_DIALOG_INFO_MOBILE" desc="The information text on the disconnect dialog describing signout and clearing data [Length: 400em].">
-      This will sign you out, turn off sync, and clear all Chrome data from this device. Your synced data will remain in your Google Account.
-      </message>
-      <message name="IDS_IOS_DISCONNECT_KEEP_DATA_DIALOG_INFO_MOBILE" desc="The information text on the disconnect dialog describing signout without removing synced data [Length: 400em].">
-      This will sign you out and turn off sync, but your bookmarks, history, passwords and other Chrome data will remain on this device.
       </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_INFO_MOBILE" desc="The information text on the disconnect dialog [Length: 400em].">
         Changes to your bookmarks, history, passwords, and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account.
@@ -722,6 +776,12 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       </message>
       <message name="IDS_IOS_DISCOVER_FEED_HEADER_IPH" desc="In-product help that points at the menu icon for the news feed on Chrome's new tab page. This string instructs the user to open the menu for settings that let them control the content that appears on the feed.">
         Control your stories and activity here
+      </message>
+      <message name="IDS_IOS_DISCOVER_FEED_HEADER_TURNED_OFF_LABEL" desc="The message that appears in the feed header when the feed is turned off from the header menu. IMPORTANT: The 'Turn On' part of this string should match the content of IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM so that users understand what menu option to select.">
+        To see content, select Turn On from the menu
+      </message>
+      <message name="IDS_IOS_DISCOVER_AND_FOLLOWING_FEED_TITLE" desc="The title in the Discover and Following feed menu if Following is enabled. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
+        Discover &amp; Following
       </message>
       <message name="IDS_IOS_DISCOVER_FEED_TITLE" desc="The title in the Discover feed menu.">
         Discover
@@ -741,6 +801,9 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_DISCOVER_FEED_MENU_MANAGE_INTERESTS_ITEM" desc="The 'Manage Interests' action for the Discover feed header menu.">
         Manage Interests
       </message>
+      <message name="IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ITEM" desc="The 'Manage' action for the Discover feed header menu.">
+        Manage
+      </message>
       <message name="IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM" desc="The 'Turn Off' action for the Discover feed header menu.">
         Turn Off
       </message>
@@ -749,6 +812,12 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       </message>
       <message name="IDS_IOS_DISCOVER_FEED_MENU_ACCESSIBILITY_LABEL" desc="The accessibility label for the Discover feed header's menu button.">
         Options for Discover
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE" desc="Warning message displayed inside an alert before downloading a calendar file.[iOS only]">
+          This website wants to download a file and add it to your calendar.
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_TITLE" desc="Title of the alert displaying a warning message before downloading a calendar file.[iOS only]">
+          Calendar File Available
       </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_CANNOT_DETERMINE_FILE_SIZE" desc="Message displayed when the size of the file to be downloaded is unknown. [Length: 30em] [iOS only]">
         Cannot determine file size.
@@ -767,6 +836,9 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_COULDNT_DOWNLOAD" desc="Label displaying that downloading a file was unsuccessful. [Length: 25em] [iOS only]">
         Couldn't Download
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_CANNOT_BE_RETRIED" desc="Label displaying that downloading a file has failed and cannot be retried. [Length: 25em] [iOS only]">
+          Download failed and cannot be retried.
       </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_INSTALL_GOOGLE_DRIVE" desc="Button to install the Google Drive app. [Length: 25em] [iOS only]">
         Install Google Drive
@@ -825,11 +897,155 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_DOWNLOAD_MANAGER_GOOGLE_DRIVE" desc="Button for installing Google Drive app. Google Drive is a product name and should use the correct localized version of the product name. [Length: 25em] [iOS only]">
         Google Drive
       </message>
+      <message name="IDS_IOS_DOWNLOAD_MOBILECONFIG_CONTINUE" desc="Text in the confirmation dialog button that let the user download a .mobileconfig file.[iOS only]">
+          Continue
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_MESSAGE" desc="Warning message displayed inside an alert before downloading a .mobileconfig file.[iOS only]">
+          This website is trying to download a configuration profile.
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE" desc="Title of the alert displaying a warning message before downloading a .mobileconfig file.[iOS only]">
+          Configuration Profile Available
+      </message>
       <message name="IDS_IOS_FACETIME_BUTTON" desc="Text in the confirmation dialog button that will initiate a FaceTime call for the presented number. [Length: 10em] [iOS only]">
         FaceTime
       </message>
+      <message name="IDS_IOS_FEED_CUSTOM_SEARCH_ENGINE_LABEL" desc="Message informing users with custom search engines that the feed is provided by Google.">
+        Provided by Google
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_ACTIVITY_DETAIL" desc="The explanation of the 'Activity' row in the feed management UI.">
+        Control your Google Account data
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_ACTIVITY_TEXT" desc="The 'Activity' row title in the feed management UI.">
+        Activity
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_FOLLOWING_TEXT" desc="The 'Following' row title in the feed management UI.">
+        Following
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_INTERESTS_DETAIL" desc="The explanation of the 'Interests' row in the feed management UI.">
+        See and edit the topics you're interested in
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_INTERESTS_TEXT" desc="The 'Interests' row title in the feed management UI.">
+        Interests
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_HIDDEN_DETAIL" desc="The explanation of the 'Hidden' row in the feed management UI.">
+        See and edit topics you've hidden from your account
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_HIDDEN_TEXT" desc="The 'Hidden' row title in the feed management UI.">
+        Hidden
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_TITLE" desc="The title of the feed management UI.">
+        Manage
+      </message>
+      <message name="IDS_IOS_FEED_SORT_ACCESSIBILITY_LABEL" desc="The accessibility label for the Following feed header's sort button.">
+        Sort button for Following feed.
+      </message>
+      <message name="IDS_IOS_FEED_SORT_LATEST" desc="Sort by latest label text in feed sort menu.">
+        Sort by Latest
+      </message>
+      <message name="IDS_IOS_FEED_SORT_PUBLISHER" desc="Sort by publisher label text in feed sort menu.">
+        Sort by Publisher
+      </message>
+      <message name="IDS_IOS_FIRST_FOLLOW_TITLE" desc="The title of the first follow surface.">
+        You're following <ph name="CHANNEL_NAME">$1<ex>ESPN</ex></ph>
+      </message>
+      <message name="IDS_IOS_FIRST_FOLLOW_SUBTITLE" desc="The subtitle of the first follow surface.">
+        You'll now see stories from <ph name="CHANNEL_NAME">$1<ex>ESPN</ex></ph> when you open a new tab.
+      </message>
+      <message name="IDS_IOS_FIRST_FOLLOW_BODY" desc="The body of the first follow surface.">
+        Sites you follow are saved in your Google account. You can Manage them in Discover Settings.
+      </message>
+      <message name="IDS_IOS_FIRST_FOLLOW_GO_TO_FEED" desc="The action button to see the feed in the first follow surface.">
+        Go To Feed
+      </message>
+      <message name="IDS_IOS_FIRST_FOLLOW_GOT_IT" desc="The action button to dismiss the first follow surface.">
+        Got It
+      </message>
+      <message name="IDS_IOS_FOLLOW_WHILE_BROWSING_IPH" desc="The text of the while browsing follow IPH.">
+        To see updates from this site, follow it here.
+      </message>
+      <message name="IDS_IOS_FOLLOW_MANAGEMENT_EMPTY_TEXT" desc="The text of an empty following list.">
+        Visit a site and click Follow in the Chrome menu
+      </message>
+      <message name="IDS_IOS_FOLLOW_MANAGEMENT_EMPTY_TITLE" desc="The title of an empty following list.">
+        You'll find your followed sites here
+      </message>
+      <message name="IDS_IOS_FOLLOW_MANAGEMENT_TITLE" desc="The title of the following feed management UI.">
+        Following
+      </message>
+      <message name="IDS_IOS_FOLLOW_MANAGEMENT_CHANNEL_UNAVAILABLE" desc="An indication that a web channel is unavailable in the following feed management UI">
+        Unavailable
+      </message>
+      <message name="IDS_IOS_FOLLOW_MANAGEMENT_UNFOLLOW_ACTION" desc="The 'Unfollow' action for a channel in the following feed management UI">
+        Unfollow
+      </message>
+      <message name="IDS_IOS_FOLLOW_MANAGEMENT_VISIT_SITE_ACTION" desc="The 'Visit Site' action for a followed item in the following feed management UI">
+        Visit Site
+      </message>
+      <message name="IDS_IOS_FOLLOWING_FEED_TITLE" desc="The title in the Following feed header label.">
+        Following
+      </message>
       <message name="IDS_IOS_PHONE_CALL_BUTTON" desc="Text in the confirmation dialog button that will initiate a phone call for the presented number. [Length: 10em] [iOS only]">
         Call
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP" desc="Text of the row indicating the first step of setting the default browser [iOS only]">
+        Open <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Settings<ph name="END_BOLD">END_BOLD</ph>
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_PRIMARY_ACTION" desc="The primary action string on the default browser screen presented to the user on First Run [iOS only]">
+        Make Default in Settings…
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP" desc="Text of the row indicating the second step of setting the default browser [iOS only]">
+        Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Default Browser App<ph name="END_BOLD">END_BOLD</ph>
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION" desc="The secondary action string on the default browser screen presented to the user on First Run [iOS only]">
+        No, Thanks
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SCREEN_READ_MORE" desc="The label on the primary button of some screens in the first run experience if the content requires scrolling to the end [iOS only]">
+        More
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE" desc="In Title Case: Button on the very first screen of Chrome to continue into Chrome. [iOS only]">
+        Continue
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS" desc="In Title Case: Button to sign into Chrome with the displayed account and without having to reenter a password. Jessica is replaced with the user’s given name, or the user’s full name if the given name is not available. Ensure consistency with related OneGoogle sign-in buttons (TC ID 5569230012177947065). [iOS only]">
+        Continue as <ph name="FIRST_RUN_ACCOUNT_NAME">$1<ex>Jessica</ex></ph>
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN" desc="In Title Case: Button on the very first screen of Chrome to continue without signing into Chrome. [iOS only]">
+        Don’t Sign In
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION" desc="In Title Case: Button on the very first screen of Chrome for users to sign in when there is no Google Account on the device. [iOS only]">
+        Sign In…
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT_WITH_LINK_TO_SETTINGS" desc="Content string on the sync screen presented to the user on First Run [iOS only]">
+        You can always choose what to sync in <ph name="BEGIN_LINK">BEGIN_LINK</ph>settings<ph name="END_LINK">END_LINK</ph>. Google may use your history to personalize Search and other Google services.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION" desc="The primary action string on the sync screen presented to the user on First Run [iOS only]">
+        Turn on Sync
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION" desc="The secondary action string on the sync screen presented to the user on First Run [iOS only]">
+        Don't Turn On Sync
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE" desc="Subtitle on the sync screen presented to the user on First Run [iOS only]">
+        Sync your passwords, history, and more on all your devices
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE" desc="Title on the sync screen presented to the user on First Run [iOS only]">
+        Keep Your Devices in Sync
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_ACCEPT_BUTTON" desc="The label on the continue button of the welcome screen presented to the user on First Run [iOS only]">
+        Accept and Continue
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED" desc="Text to indicate that Chrome is managed by the user’s organization. [iOS only]">
+        Your browser is managed by your organization.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE" desc="The text is displayed in a footer on the very first screen of Chrome. The link ‘Terms of Service’ opens the Google Terms of Service. [iOS only]">
+        By continuing, you agree to the <ph name="BEGIN_LINK">BEGIN_LINK</ph>Terms of Service<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD" desc="The title of the welcome screen presented to the user on First Run when on iPad [iOS only]">
+        Built for Your iPad
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE" desc="The title of the welcome screen presented to the user on First Run when on iPhone [iOS only]">
+        Built for Your iPhone
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_MANAGED" desc="The disclaimer that the browser is managed on the welcome screen presented to the user on First Run when the browser is managed [iOS only]">
+        Your administrator has control over Chrome and can access its data
       </message>
       <message name="IDS_IOS_FIRSTRUN_BROWSER_MANAGED" desc="Label explaining that the app is managed by an organization. This is shown on the Welcome screen presented to the user on First Run. Only shown if some enterprise policies are set. [iOS only]">
         Your browser is managed by your organization. Some features may be disabled.
@@ -858,6 +1074,9 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_GOOGLE_APPS_SM_SETTINGS" desc="Title for the view in Settings for managing Google apps specific settings. Translate 'Google Apps'. [Length: 15em] [iOS only]">
         Google Apps
       </message>
+      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SIGNIN_DISABLED_BY_ADMINISTRATOR" desc="Feature detail text in the Google services Settings that notifies the user that express sign-in was disabled by their administrator [iOS only]">
+        Turned off by your administrator
+      </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTOCOMPLETE_SEARCHES_AND_URLS_DETAIL" desc="Feature detail text in the settings for the user to enable/disable, to have autocomplete searches and URLs. Text related to 'Autocomplete Searches and URLs' [iOS only]">
         Sends some cookies and searches from the address bar and search box to your default search engine.
       </message>
@@ -882,26 +1101,26 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_DETAIL" desc="Feature detail text in the settings for the user enable or disable. Related with 'Help improve Chrome's features and performance' feature. [iOS only]">
         Automatically sends usage statistics and crash reports to Google.
       </message>
-      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SIGN_IN_DETAIL_TEXT" desc="Invite the user to sign-in and explains the benefit. [iOS only]">
-        Sync and personalize across devices.
-      </message>
-      <message name="IDS_IOS_GOOGLE_SERVICES_SYNC_SETTINGS_TITLE" desc="Title for the view in the Settings for enabling/disabling Sync and all the Google services. [Length: 26em] [iOS only]">
-        Sync and Google Services
-      </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE" desc="Title for the view in the Settings for enabling/disabling Google services. [Length: 26em] [iOS only]">
         Google Services
       </message>
       <message name="IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE" desc="Title for the view in the Settings for enabling/disabling Sync. [Length: 26em] [iOS only]">
         Sync
       </message>
-      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_DISABLBED_BY_ADMINISTRATOR_STATUS" desc="Error displayed when the sync is disabled by the enterprise policy. The user doesn't have a regular gmail account.">
-        Sync is disabled by your administrator
+      <message name="IDS_IOS_SYNC_SETTINGS_TITLE" desc="Title for the navigation item in Advanced Settings. [Length: 26em] [iOS only]">
+        Sync
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_DISABLBED_BY_ADMINISTRATOR_TITLE" desc="Error displayed as title when the sync is disabled by the enterprise policy. The user doesn't have a regular gmail account.">
         Sync Is Disabled by Your Administrator
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_ENCRYPTION_FIX_NOW" desc="Title button to ask the user to reauthenticate. Syncing of encrypted types (e.g. passwords) is blocked until the user completes the reauth flow.">
         Verify it's you
+      </message>
+      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_EVERYTHING" desc="Title button to ask the user to reauthenticate, in order to add recovery options, affecting all sync data.">
+        To make sure you can always access your sync data, verify it's you
+      </message>
+      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_PASSWORDS" desc="Title button to ask the user to reauthenticate, in order to add recovery options, affecting passwords only.">
+        To make sure you can always access your saved passwords, verify it's you
       </message>
       <message name="IDS_IOS_HELP_ACCESSIBILITY_LABEL" desc="Used as the accessibility label read by screen readers for a Help button. [iOS only]">
         Help
@@ -933,19 +1152,34 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_ICON_SEARCH" desc="Accessibility label for the search icon [iOS only].">
         Search
       </message>
-      <message name="IDS_IOS_INCOGNITO_REAUTH_SYSTEM_DIALOG_REASON" desc="Text for system biometric authentication dialog to explain why authentication is required when the user attempts to authenticate to access incognito tabs. [iOS only]">
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_LEARN_MORE_HINT" desc="Accessibility hint for the 'Learn more' button in the incognito NTP [iOS only]">
+        Learn more about Incognito mode
+      </message>
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_TITLE" desc="Title of interstitial which lets the user choose, when they open a link from an external app, whether to open it in Incognito mode or in a regular tab. [iOS only]">
+        Open in Incognito?
+      </message>
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_URL_READ_MORE_BUTTON" desc="Button to unfold a URL which is being truncated, so as to let the user read more of the URL. [iOS only]">
+        more
+      </message>
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME_INCOGNITO" desc="Button to open a link from an external app in Incognito mode rather than a regular tab. [iOS only]">
+        Open in Chrome Incognito
+      </message>
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME" desc="Button to open a link from an external app in a regular tab rather than in Incognito mode. [iOS only]">
+        Open in Chrome
+      </message>
+      <message name="IDS_IOS_INCOGNITO_REAUTH_SYSTEM_DIALOG_REASON" desc="Text for system biometric authentication dialog to explain why authentication is required when the user attempts to authenticate to access Incognito tabs. [iOS only]">
         Use <ph name="BIOMETRIC_AUTHENITCATION_TYPE">$1<ex>Face ID</ex></ph> to unlock your Incognito tabs.
       </message>
-      <message name="IDS_IOS_INCOGNITO_REAUTH_GO_TO_NORMAL_TABS" desc="Button to go to non-incognito tabs on a screen that blocks incognito tabs until biometric authetication. [iOS only]">
+      <message name="IDS_IOS_INCOGNITO_REAUTH_GO_TO_NORMAL_TABS" desc="Button to go to non-Incognito tabs on a screen that blocks Incognito tabs until biometric authetication. [iOS only]">
        See Other Tabs
       </message>
-      <message name="IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON" desc="Button to initiate biometric authentication on a screen that blocks incognito tabs until biometric authetication. [iOS only]">
+      <message name="IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON" desc="Button to initiate biometric authentication on a screen that blocks Incognito tabs until biometric authetication. [iOS only]">
        Unlock With <ph name="BIOMETRIC_AUTHENITCATION_TYPE">$1<ex>Face ID</ex></ph>
       </message>
-      <message name="IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON_VOICEOVER_LABEL" desc="Voiceover label on the button that starts biometric authentication on a screen that blocks incognito tabs until biometric authetication. [iOS only]">
+      <message name="IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON_VOICEOVER_LABEL" desc="Voiceover label on the button that starts biometric authentication on a screen that blocks Incognito tabs until biometric authetication. [iOS only]">
        Unlock Incognito Tabs With <ph name="BIOMETRIC_AUTHENITCATION_TYPE">$1<ex>Face ID</ex></ph>
       </message>
-      <message name="IDS_IOS_INCOGNITO_REAUTH_SET_UP_PASSCODE_HINT" desc="Explanatory text for the setting to protect incognito tabs with biometric authentication, e.g. Face ID or Touch ID. Appears when the user has no Face ID, Touch ID, or passcode set up, and therefore the feature cannot be enabled. [iOS only]">
+      <message name="IDS_IOS_INCOGNITO_REAUTH_SET_UP_PASSCODE_HINT" desc="Explanatory text for the setting to protect Incognito tabs with biometric authentication, e.g. Face ID or Touch ID. Appears when the user has no Face ID, Touch ID, or passcode set up, and therefore the feature cannot be enabled. [iOS only]">
         To lock your Incognito tabs, set up Touch ID, Face ID, or a Passcode.
       </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_PASSCODE" desc="The passcode (pin code or password) used instead of biometric authentication, e.g. Face ID or Touch ID, for device authentication. [iOS only]">
@@ -962,6 +1196,9 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       </message>
       <message name="IDS_IOS_INFOBAR_BADGES_PASSWORD_HINT" desc="The iOS infobar badge item for saving password credentials [Length:Unlimited]">
         Options to Save Password
+      </message>
+      <message name="IDS_IOS_INFOBAR_BADGES_PERMISSIONS_HINT" desc="The iOS infobar badge item for permissions [Length:Unlimited]">
+        Options to Set Permissions
       </message>
       <message name="IDS_IOS_INFOBAR_BADGES_TRANSLATE_HINT" desc="The iOS infobar badge item for translate [Length:Unlimited]">
         Options to Translate the page
@@ -1048,12 +1285,6 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_KEYBOARD_PREVIOUS_TAB" desc="Title of the keyboard shortcut to switch to the previous tab in the tab strip. [Length: 20 em] [iOS only]">
         Previous Tab
       </message>
-      <message name="IDS_IOS_LOCATION_MODAL_TITLE" desc="The title of the locaton permissions modal [Length: unlimited] [iOS only].">
-          Use Your Current Location
-      </message>
-      <message name="IDS_IOS_LOCATION_MODAL_PRIMARY_BUTTON" desc="The primary button of the locaton permissions modal [Length: unlimited] [iOS only].">
-          Allow Location...
-      </message>
       <message name="IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_TEXT" desc="Text for the LongPress Toolbar Tip in-product help promotion, explaining that the user can long press on the toolbar's button to display more options. [iOS only]">
         Touch &amp; hold for more tab options
       </message>
@@ -1061,7 +1292,7 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
         Manage Your Google Account
       </message>
       <message name="IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE" desc="Title for the button that removes a Google account from the device">
-      Remove Account from this Device
+        Remove from this Device
       </message>
       <message name="IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE" desc="Title for the view in the Settings for enabling/disabling Sync. [iOS only]">
         Manage Sync
@@ -1082,19 +1313,19 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
         Google Activity Controls
       </message>
       <message name="IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_DESCRIPTION" desc="Subtitle for the cell to open 'Google Activity Controls' dialog.">
-        Control how your browsing history is used to personalize Search, ads and more
+        Control how your browsing history is used to personalize Search and more
       </message>
       <message name="IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_DESCRIPTION" desc="Subtitle for the cell to open 'Data from Chromium sync' web page where the user can control all their data data from sync.">
-        Manage synced data on Google Dashboard
+        Review your synced data
       </message>
       <message name="IDS_IOS_MANAGED_DISCONNECT_DIALOG_ACCEPT_UNITY" desc="Label on the button to proceed with signout and clear all Chrome data.[Length: 30em].">
         Clear
       </message>
       <message name="IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON" desc="The title of the Accept button of the Sign in to a managed account dialog. [40em]">
-        Accept and sign in
+        Accept and Sign in
       </message>
       <message name="IDS_IOS_MANAGED_SIGNIN_TITLE" desc="The title of the Sign in to a managed account dialog. [40em]">
-        Sign in with managed account
+        Sign in With Managed Account
       </message>
       <message name="IDS_IOS_MANAGED_SWITCH_ACCEPT_BUTTON" desc="The title of the Accept button of the Switch from a managed account dialog. [40em]">
         Accept and switch accounts
@@ -1102,11 +1333,17 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_MANAGED_SWITCH_TITLE" desc="The title of the Switch from a managed account dialog. [40em]">
         Sign out of managed account
       </message>
+      <message name="IDS_IOS_MANAGED_SYNC_TITLE" desc="The title of the Sync with a managed account dialog (alternative to IDS_IOS_MANAGED_SIGNIN_TITLE). Is only used when the User Policy feature is enabled using the --enable-user-policy-for-ios flag. [40em][iOS only]">
+        Sync With Managed Account
+      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_ADD_PAYMENT_METHOD" desc="The title for the button in the manual fallback UI that takes the user to the add new credit card screen through settings. In this screen, the user can input their card details and save them.">
         Add Payment Method...
       </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS" desc="The title for the button in the manual fallback UI that takes the user to the passwords settings. In this screen they see all the passwords and can erase them. Note it is different from IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS [30em]">
         Manage Passwords...
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS" desc="The title for the button in the manual fallback UI that takes the user to the passwords settings. In this screen they can manage the settings for their passwords. Note it is different from IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS [30em]">
+        Manage Settings...
       </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_NO_USERNAME" desc="The title for disabled buttons on the manual fallback passwords UI when a credential doesn't contains a username. [30em]">
         No Username
@@ -1129,8 +1366,20 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD" desc="The title for the manual fallback UI with all passwords without filter." meaning="The title for a list where the user is about to select a password or username to be filled in a form [Length: 10em]">
         Passwords
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that allows the user to select a saved password from a list, and fill it into the active field. [30em]">
+        Select Password...
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE" desc="The contents of a dialog asking the user to confirm they trust the current site before selecting a saved password to fill.">
+        If you trust <ph name="SITE">$1<ex>example.com</ex></ph>, you can use a saved password to sign in.
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_TITLE" desc="The title of a dialog asking the user to confirm they trust the current site before selecting a saved password to fill.">
+        Select Password
+      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that is used to trigger password generation on the active field. [30em]">
-        Suggest password...
+        Suggest Password...
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_SUGGEST_STRONG_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that is used to trigger password generation on the active field. 'Strong' refers to the fact that the password is randomly-generated, and thus hard to guess and unlikely to be reused. [30em]">
+        Suggest Strong Password...
       </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that is used to open a list of all the user credentials where they can select one to fill a form. This button is showed at the same time as a different button with  IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS as title. [30em]">
         Use Other Password...
@@ -1154,7 +1403,7 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
         Passwords
       </message>
       <message name="IDS_IOS_MICROPHONE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's microphone while the app is in use [Length: unlimited] [iOS only].">
-        This lets you search faster using your voice.
+        This lets you search using your voice
       </message>
       <message name="IDS_IOS_NAVIGATION_BAR_CANCEL_BUTTON" desc="Label of the cancel button displayed on the navigation bar  [Length: 7em] [iOS only].">
         Cancel
@@ -1174,10 +1423,13 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_NET_EXPORT_NO_EMAIL_ACCOUNTS_ALERT_TITLE" desc="The title of the alert informing a user with no email accounts that they need to configure an email account to send net-export data. [Length: 20em]">
         No Email Accounts
       </message>
-      <message name="IDS_IOS_NEW_INCOGNITO_TAB_IPH_PROMOTION_TEXT" desc="Text for the New Incognito Tab Tip in-product help promotion, explaining that incognito tabs can be used to browse privately. [iOS only]" meaning="The user has never created an incognito tab before. A bubble is displayed pointing to the tools menu button and informing users about how to use incognito mode.">
-        To browse privately, open an incognito tab
+      <message name="IDS_IOS_NEW_INCOGNITO_TAB" desc="Label for text saying the tab is a new Incognito tab.">
+        New Incognito Tab
       </message>
-      <message name="IDS_IOS_NEW_INCOGNITO_TAB_PAGE" desc="Label for text saying the user is on the new incognito tab page">
+      <message name="IDS_IOS_NEW_INCOGNITO_TAB_IPH_PROMOTION_TEXT" desc="Text for the New Incognito Tab Tip in-product help promotion, explaining that Incognito tabs can be used to browse privately. [iOS only]" meaning="The user has never created an Incognito tab before. A bubble is displayed pointing to the tools menu button and informing users about how to use Incognito mode.">
+        To browse privately, open an Incognito tab
+      </message>
+      <message name="IDS_IOS_NEW_INCOGNITO_TAB_PAGE" desc="Label for text saying the user is on the new Incognito tab page">
         New Incognito Tab Page
       </message>
       <message name="IDS_IOS_NEW_TAB_IPH_PROMOTION_TEXT" desc="Text for the New Tab Tip in-product help promotion, explaining that new tabs can be added and switched between. [iOS only]" meaning="The user has never created a new tab, and a bubble is displayed pointing to the tab switcher to inform users how to create tabs and switch between them.">
@@ -1201,6 +1453,18 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_NEW_TAB_RECENT_TABS" desc="The header of the panel containing the list of recently closed tabs and the tabs synced from other devices.[Length: 17em]">
         Recent Tabs
       </message>
+      <message name="IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY" desc="The text on the body of the new tab page Feed Signin Promo (compact version), explaining that users will content based on users interests if they enable sync. [iOS only]">
+        Sync to get content based on your interests.
+      </message>
+      <message name="IDS_IOS_NTP_FEED_SIGNIN_FULL_PROMO_BODY" desc="The text on the body of the new tab page Feed Signin Promo, explaining that users will see more relevant content if they enable sync. [iOS only]">
+        Sync for the most relevant content based on your interests.
+      </message>
+      <message name="IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE" desc="In Title Case: Button on the new tab page Feed Signin Promo which allow users to signin. [iOS only]">
+        Continue
+      </message>
+      <message name="IDS_IOS_NTP_FEED_SIGNIN_PROMO_TITLE" desc="In Title Case: Title   of the new tab page Feed Signin Promo. [iOS only]">
+        See Content for You
+      </message>
       <message name="IDS_IOS_OPEN_IN" desc="Label of the button that lets users open a document in another application. [Length: 15em] [iOS only]">
         Open in...
       </message>
@@ -1222,9 +1486,6 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_OPEN_SOURCE_LICENSES" desc="The label to access the open source licenses, displayed in the application settings [Length: 30em] [iOS only]">
         Open Source Licenses
       </message>
-      <message name="IDS_IOS_OPEN_TABS_ENABLE_SYNC_MOBILE" desc="Button label to enable Sync for user. [Length: 30em]">
-        Enable sync
-      </message>
       <message name="IDS_IOS_RECENT_TABS_SYNC_IN_PROGRESS" desc="Section header subtitle label while loading tabs in other devices. [Length: 30em] [iOS only]">
         Syncing...
       </message>
@@ -1234,6 +1495,31 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB" desc="Label for the accessibility action for the address and search bar autocomplete suggestion. Using this will switch to the already opened tab corresponding to the suggestion. [Read by Text-to-Speech]">
         Switch to existing tab
       </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_DEFAULT_BROWSER" desc="Subtitle for the Set Default Browser acceleration pedal in the omnibox that should correspond to the path to the Default Browser dialog in Settings">
+       Menu → Settings → Default Browser
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_CLEAR_BROWSING_DATA" desc="Subtitle for the Clear Browsing Data acceleration pedal in the omnibox that should correspond to the path to the Clear Browsing Data dialog in History">
+       Menu → History → Clear Browsing Data
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_PASSWORDS" desc="Subtitle for the Manage Passwords acceleration pedal in the omnibox that should correspond to the path to the Passwords Settings dialog in Settings">
+       Menu → Settings → Passwords
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_UPDATE_CREDIT_CARD" desc="Subtitle for the Manage Payment Methods acceleration pedal in the omnibox that should correspond to the path to the Payment Methods dialog in Settings">
+       Menu → Settings → Payment Methods
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_LAUNCH_INCOGNITO" desc="Subtitle for the Open Incognito Tab acceleration pedal in the omnibox that should correspond to the path to the New Incognito Tab button">
+       Menu → New Incognito Tab
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_RUN_CHROME_SAFETY_CHECK" desc="Subtitle for the Run Chrome Safety Check acceleration pedal in the omnibox that should correspond to the path to the Safety Check dialog in Settings">
+       Menu → Settings → Safety Check
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_CHROME_SETTINGS" desc="Subtitle for the Manage Settings acceleration pedal in the omnibox that should correspond to the path to Settings">
+       Menu → Settings
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_VIEW_CHROME_HISTORY" desc="Subtitle for the View Your Chrome History acceleration pedal in the omnibox that should correspond to the path to History">
+       Menu → History
+      </message>
+
       <message name="IDS_IOS_OPEN_TABS_LAST_USED" desc="Last used timestamp label [Length: 20em] [iOS only]">
         Last synced: <ph name="LAST_USED_TIME">$1<ex>3 mins ago</ex></ph>
       </message>
@@ -1253,7 +1539,10 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
         Off
       </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC" desc="Title of the button to sign out and turn off sync. [iOS only]">
-        Sign out and turn off sync
+        Sign Out and Turn Off Sync
+      </message>
+      <message name="IDS_IOS_OPTIONS_ACCOUNTS_RESTRICTED_IDENTITIES" desc="Message shown in the settings account switcher when enterprise policy has restricted some unseen identities. [iOS only]">
+          Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_OPTIONS_ADVANCED_TAB_LABEL" desc="The title of the Advanced section of the Settings page.  [Length: 20em] [iOS only]">
         Advanced
@@ -1278,14 +1567,17 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
 
 Handoff must also be enabled in the General section of Settings, and your devices must use the same iCloud account.
       </message>
+      <message name="IDS_IOS_OPTIONS_ENABLE_INCOGNITO_INTERSTITIAL" desc="Title for the option to enable the Incognito interstitial, which lets users open links from other apps in Incognito. [iOS only]">
+        Ask to Open Links from Other Apps in Incognito
+      </message>
       <message name="IDS_IOS_OPTIONS_GENERAL_TAB_LABEL" desc="The title of the Basics section of the Settings page. [iOS only]" meaning="The title of the Basics section of the Settings page.">
         Basics
       </message>
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_CONTINUE_BUTTON" desc="The title of Continue button in the Import Data settings screen [30em]">
         Continue
       </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_HEADER" desc="The header for the Import Data settings screen. [400em]">
-        You have bookmarks, history, passwords, and other settings from <ph name="USER_EMAIL1">$1<ex>johndoe@gmail.com</ex></ph>.
+      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_TITLE" desc="The title of the Import Data settings screen. [30em]">
+        Manage Data
       </message>
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_SUBTITLE" desc="The subtitle of the Import Data option on the Import Data settings screen. [400em]">
         Add existing data to <ph name="USER_EMAIL">$1<ex>john@doe.com</ex></ph>.
@@ -1293,17 +1585,11 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_TITLE" desc="The title of the Import Data option on the Import Data settings screen. [60em]">
         Combine my data
       </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SIGNIN" desc="The subtitle of the Keep Data Separate option on the Import Data settings screen when signing in. [400em]">
+      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SEPARATE_SUBTITLE" desc="The subtitle of the Keep Data Separate option on the Import Data settings screen. [400em]">
         Delete existing data.
       </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SWITCH" desc="The subtitle of the Keep Data separate option on the Import Data settings screen when switching accounts. [400em]">
-        Delete existing data. You can retrieve it by switching back to <ph name="USER_EMAIL1">$1<ex>john@doe.com</ex></ph>.
-      </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_TITLE" desc="The title of the Keep Data Separate option on the Import Data settings screen. [60em]">
+      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SEPARATE_TITLE" desc="The title of the Keep Data Separate option on the Import Data settings screen. [60em]">
         Keep my data separate
-      </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SWITCH" desc="The title of the Import Data settings screen when switching accounts. [30em]">
-        Switch Sync Account
       </message>
       <message name="IDS_IOS_OPTIONS_PRELOAD_WEBPAGES" desc="Title for opening the setting for if/when to preload webpages. [Length: 20em] [iOS only]">
         Preload Webpages
@@ -1341,12 +1627,12 @@ Sites can't use cookies to see your browsing activity across different sites, fo
       <message name="IDS_IOS_OPTIONS_PRIVACY_COOKIES_BLOCK_THIRD_PARTY_COOKIES_DETAIL" desc="Option detail to block third party cookies">
         Features on some sites may break
       </message>
-      <message name="IDS_IOS_OPTIONS_PRIVACY_COOKIES_BLOCK_THIRD_PARTY_COOKIES_INCOGNITO_DESCRIPTION" desc="Option description to block third party cookies in incognito">
+      <message name="IDS_IOS_OPTIONS_PRIVACY_COOKIES_BLOCK_THIRD_PARTY_COOKIES_INCOGNITO_DESCRIPTION" desc="Option description to block third party cookies in Incognito">
         Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart.
 
-While in incognito, sites can't use cookies to see your browsing activity across different sites, for example, to personalize ads.
+While in Incognito, sites can't use cookies to see your browsing activity across different sites, for example, to personalize ads.
       </message>
-      <message name="IDS_IOS_OPTIONS_PRIVACY_COOKIES_BLOCK_THIRD_PARTY_COOKIES_INCOGNITO_TITLE" desc="Option title to block third party cookies in incognito">
+      <message name="IDS_IOS_OPTIONS_PRIVACY_COOKIES_BLOCK_THIRD_PARTY_COOKIES_INCOGNITO_TITLE" desc="Option title to block third party cookies in Incognito">
         Block Third-Party Cookies in Incognito
       </message>
       <message name="IDS_IOS_OPTIONS_PRIVACY_COOKIES_BLOCK_THIRD_PARTY_COOKIES_TITLE" desc="Option title to block third party cookies">
@@ -1358,8 +1644,71 @@ While in incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_OPTIONS_PRIVACY_GOOGLE_SERVICES_FOOTER" desc="Footer to invite the user to open the Sync and Google Services settings.">
         For more settings that relate to privacy, security, and data collection, see <ph name="BEGIN_LINK">BEGIN_LINK</ph>Sync and Google Services<ph name="END_LINK">END_LINK</ph>.
       </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE" desc="Title for Price Notifications table view.">
+        Track Price
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_SECTION_HEADER" desc="Section header for a Price Notifications table view section that lists items available on the current page to have their prices tracked.">
+        Current Site
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKED_SECTION_HEADER" desc="Section header for a Price Notifications table view section that lists items the user is currently price tracking.">
+        Tracking Prices
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_EMPTY_LIST" desc="Table element description explaining that the current website does not contain any items that can have their prices tracked.">
+        Price tracking isn't available for this site.
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKING_EMPTY_LIST" desc="Table element description explaining that this section is the location where the user's price-tracked items will be displayed.">
+        The products you track will show up here.
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION" desc="A table header element that describes the effect of a user choosing to price-track an item.">
+        Get an alert if the price drops on any site.
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACK_BUTTON" desc="The title for a button that adds the price-trackable item to the user's stored price tracking list.">
+        Track
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_MENU_ITEM_STOP_TRACKING" desc="Title for action menu item that stops the price-tracking process for the given item.">
+        Stop price tracking
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_TITLE" desc="Title for Price Notifications settings menu.">
+        Notifications
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_OVERFLOW_MENU_TITLE" desc="Title for Price Tracking Notifications overflow menu destination title.">
+        Track Price
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACKING_TITLE" desc="Title for Price Tracking Notifications settings menu row.">
+        Tracking Price
+      </message>
+      <message name="IDS_IOS_TRACKING_PRICE_HEADER_TEXT" desc="Text for Tracking Price header.">
+        Manage how you receive price drop alerts for products you track
+      </message>
+      <message name="IDS_IOS_TRACKING_PRICE_MOBILE_NOTIFICATIONS_TITLE" desc="Title for Tracking Price mobile notifications row.">
+        Mobile Notifications
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing enhanced protection mode.">
+        Faster, proactive protection against dangerous websites, downloads, and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE" desc="Title for Privacy Safe Browsing enhanced protection mode.">
+        Enhanced Protection
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing standard protection mode.">
+        Standard protection against websites, downloads, and extensions that are known to be dangerous.
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE" desc="Title for Privacy Safe Browsing standard protection mode.">
+        Standard Protection
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing no protection mode.">
+        Does not protect you against dangerous websites, downloads, and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_TITLE" desc="Title for Privacy Safe Browsing no protection mode.">
+        No Protection (not recommended)
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_DETAIL_TITLE" desc="Detail title for Privacy Safe Browsing no protection mode.">
+        No Protection
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE" desc="Title for Privacy Safe Browsing table view.">
+        Safe Browsing
+      </message>
       <message name="IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER" desc="Footer to invite the user to open the Sync Settings and Google Services settings.">
-        For more settings that relate to privacy, security, and data collection, see <ph name="BEGIN_LINK">BEGIN_LINK</ph>Sync<ph name="END_LINK">END_LINK</ph> and <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Services<ph name="END_LINK">END_LINK</ph>.
+        For more settings that relate to privacy, security, and data collection, see both <ph name="BEGIN_LINK">BEGIN_LINK</ph>Sync<ph name="END_LINK">END_LINK</ph> and <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Services<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER" desc="Footer to invite the user to open the Google Services settings.">
         For more settings that relate to privacy, security, and data collection, see <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Services<ph name="END_LINK">END_LINK</ph>.
@@ -1415,6 +1764,9 @@ While in incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PAGE_INFO_OFFLINE_TITLE" desc="Title of the message to display in the page info bubble when the page you are on is an offline page.">
         Viewing Offline Version
       </message>
+      <message name="IDS_IOS_PAGE_INFO_PERMISSIONS_HEADER" desc="Header of the permissions section (in page info)">
+        Permissions
+      </message>
       <message name="IDS_IOS_PAGE_INFO_RELOAD" desc="Button title in the page info bubble that allows to reload the current page.">
         Reload
       </message>
@@ -1435,6 +1787,9 @@ While in incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PAGE_LOADED_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement when a page has loaded. [Length: unlimited] [iOS only]">
         Webpage loaded
+      </message>
+      <message name="IDS_IOS_PASSWORD_LEAK_CHANGE_CREDENTIALS" desc="The text of the OK button in the dialog for credentials leaked on the current site.">
+        Got It
       </message>
       <message name="IDS_IOS_PASSWORD_MANAGER_BLOCK_BUTTON" desc="Button text for the 'Save Password' infobar's 'Never remember for this site' option [Length: 10em]">
         Never
@@ -1463,8 +1818,61 @@ While in incognito, sites can't use cookies to see your browsing activity across
         <message name="IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD_TITLE" desc="Infobar title to update a password. [Length: 70em]">
         Update password
       </message>
+        <message name="IDS_IOS_PASSWORD_MANAGER_TITLE_VIEW_ACCESSIBILITY_LABEL" desc="The accessibility announcement read by Voice Over for the navigation bar title of the Password Manager.">
+          Google Password Manager
+        </message>
+      <message name="IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_TITLE" desc="Title for Safe Browsing no protection confirmation dialog.">
+        Turn Off Safe Browsing?
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_MESSAGE" desc="Message for Safe Browsing no protection confirmation dialog.">
+        Safe Browsing protects you against attackers who may trick you into doing something dangerous like installing malicious software or revealing personal information like passwords, phone numbers, or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.        </message>
+      <message name="IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_CONFIRM" desc="Message for Safe Browsing no protection confirmation button.">
+        Turn Off
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE" desc="Title for Safe Browsing enhanced protection mode.">
+        Enhanced Protection
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE" desc="Title for Safe Browsing extended reporting.">
+        Help Improve Security on the Web for Everyone
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_SUMMARY" desc="Summary for Safe Browsing extended reporting.">
+        Sends URLs of some pages you visit, limited system information, and some page content to Google, to help discover new threats and protect everyone on the web.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_TITLE" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
+        Warn You if Passwords Are Exposed in a Data Breach
+      </message>
+      <message name="IDS_IOS_TABLE_VIEW_INFO_BUTTON_ITEM_ACCESSIBILITY_TAP" desc="Accessibility hint for info button items that have a tap functionality.">
+        Button
+      </message>
       <message name="IDS_SAVE_PASSWORD_FOOTER" desc="The footer text of the infobar that offers user to save/update a password to Chrome.">
         Passwords are saved in your Google Account so you can use them on any device.
+      </message>
+      <message name="IDS_SAVE_PASSWORD_FOOTER_DISPLAYING_USER_EMAIL" desc="The footer text of the infobar that offers user to save/update a password to Chrome; also display's current user's email.">
+        You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_CAMERA" desc="Usually used to show whether user has enabled a site's permission to use the device camera.">
+        Camera
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_ACCESSIBLE" desc="Message shown in the infobar when camera access is enabled.">
+        Camera Access Allowed
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_AND_MICROPHONE_ACCESSIBLE" desc="Message shown in the infobar when both camera and microphone access are enabled.">
+        Camera and Microphone Access Allowed
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_INFOBAR_BANNER_MICROPHONE_ACCESSIBLE" desc="Message shown in the infobar when microphone access is enabled.">
+        Microphone Access Allowed
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_MICROPHONE" desc="Usually used to show whether user has enabled a site's permission to use the device microphone.">
+        Microphone
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_INFOBAR_MODAL_DESCRIPTION" desc="Description of the permissions infobar and in the page info used to update site permissions.">
+        <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>"<ph name="SITE_NAME">$1<ex>www.dailydot.com</ex></ph>"<ph name="END_BOLD">END_BOLD</ph> permissions will reset to off when you leave this site.
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_INFOBAR_MODAL_TITLE" desc="Title of the permissions infobar used to update site permissions.">
+        Permissions
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE" desc="Title of the infobar modal shown when the user taps Camera/Microphone access.">
+        Edit Permissions
       </message>
       <message name="IDS_IOS_PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION" desc="Specifies the reason for writing to the user's photo library while the app is in use [Length: unlimited] [iOS only].">
         This lets you save photos to your photo library.
@@ -1481,6 +1889,45 @@ While in incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_POPUPS_BLOCKED_MOBILE" desc="Message shown in the infobar when a popup is blocked [length: 20em]">
         Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS">$1<ex>1</ex></ph>)
       </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PROMO_TITLE" desc="The title text of the fullscreen, post restore sign-in promo. [iOS only]">
+        Welcome Back, <ph name="USER_NAME">$1<ex>Ben</ex></ph>
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PROMO_TITLE_SHORT" desc="The title text of the fullscreen, post restore sign-in promo, if there is not a name for the user. [iOS only]">
+        Welcome Back
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION" desc="The primary action text of the fullscreen, post restore sign-in promo. [iOS only]">
+        Continue as <ph name="USER_NAME">$1<ex>Ben</ex></ph>
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION_SHORT" desc="The primary action text of the fullscreen, post restore sign-in promo, if there is not a name for the user. [iOS only]">
+        Continue
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_SECONDARY_ACTION" desc="The secondary action text of the fullscreen, post restore sign-in promo. [iOS only]">
+        Don't Sign In
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_NOTE_IPHONE" desc="Text above the action buttons of the fullscreen post-restore sign-in promo. [iOS only]">
+        You were signed out as part of your iPhone reset. Tap continue below to sign in.
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_NOTE_IPAD" desc="Text above the action buttons of the fullscreen post-restore sign-in promo. [iOS only]">
+        You were signed out as part of your iPad reset. Tap continue below to sign in.
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_TITLE" desc="The title text of the alert post restore sign-in promo. [iOS only]">
+        Chrome is Signed Out
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_MESSAGE_IPHONE" desc="The message text of the alert post restore sign-in promo. [iOS only]">
+        You were signed out of your account <ph name="USER_NAME">$1<ex>example@gmail.com</ex></ph> as part of your iPhone reset. Tap continue below to sign in.
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_MESSAGE_IPAD" desc="The message text of the alert post restore sign-in promo. [iOS only]">
+        You were signed out of your account <ph name="USER_NAME">$1<ex>example@gmail.com</ex></ph> as part of your iPad reset. Tap continue below to sign in.
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_CANCEL_ACTION" desc="The cancel action text of the alert post restore sign-in promo. [iOS only]">
+        Ignore
+      </message>
+      <message name="IDS_IOS_PROMOS_MANAGER_ALERT_PROMO_DEFAULT_PRIMARY_BUTTON_TEXT" desc="The default text for the primary button alert promo. [iOS only]">
+        OK
+      </message>
+      <message name="IDS_IOS_PROMOS_MANAGER_ALERT_PROMO_DEFAULT_CANCEL_BUTTON_TEXT" desc="The default text for the cancel button alert promo. [iOS only]">
+        Cancel
+      </message>
       <message name="IDS_IOS_PRINT_PDF_ERROR_SUBTITLE" desc="Message of a popup window indicating that the printing operation did not succeed. [Length: 100em] [iOS only]">
         Make sure you have a network connection, and try again.
       </message>
@@ -1494,10 +1941,10 @@ While in incognito, sites can't use cookies to see your browsing activity across
         Try again
       </message>
       <message name="IDS_IOS_PRIVACY_POLICY" desc="The label to access the privacy policy, displayed in the application settings, with no product name. [Length: 30em] [iOS only]">
-        Privacy Notice
+        Google Privacy Policy
       </message>
       <message name="IDS_IOS_PRIVACY_POLICY_URL" translateable="false">
-        http://www.google.com/intl/[GRITLANGCODE]/chrome/browser/privacy/
+        https://policies.google.com/privacy
       </message>
       <message name="IDS_IOS_PROGRESS_BAR_ACCESSIBILITY" desc="Text read by voice over to inform the user about the progress of the page load. [Read by Text To Speech].">
         Page load progress bar, <ph name="EMAIL">$1<ex>20%</ex></ph> loaded.
@@ -1532,6 +1979,21 @@ While in incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_QR_SCANNER_MULTIPLE_FOREGROUND_APPS_ALERT_TITLE" desc="Title of a modal dialog shown when the user tries to open the QR scanner in a Split View mode. [Length: 40em] [iOS only]" meaning="Title of a Split View error dialog in QR Scanner.">
         Split View
       </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_ONE" desc="First bullet point under the Safe Browsing enhanced protection mode">
+         Predicts and warns you about dangerous events before they happen.
+       </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_THREE" desc="Third bullet point under the Safe Browsing enhanced protection mode">
+        Improves security for you and everyone on the web.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_FOUR" desc="Fourth bullet point under the Safe Browsing enhanced protection mode">
+        Warns you if passwords are exposed in a data breach.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_FIVE" desc="Fifth bullet point under the Safe Browsing enhanced protection mode">
+        Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity, and system information to help discover new threats. Temporarily links this data to your Google Account when you’re signed in, to protect you across Google apps.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_ONE" desc="First bullet point under the Safe Browsing standard protection mode.">
+        Detects and warns you about dangerous events when they happen.
+      </message>
       <message name="IDS_IOS_SCANNER_TORCH_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility label for the button to turn torch on and off in the Scanner. The current state of the button is communicated using the accessibility value. [Length: unlimited] [iOS only]"  meaning="The button to turn on and off the torch. [20em] [Read by Text-to-Speech]">
         Torch
       </message>
@@ -1540,6 +2002,12 @@ While in incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SCANNER_TORCH_ON_ACCESSIBILITY_VALUE" desc="Accessibility value of the button to turn torch off in the Scanner. The button communicates that the torch is currently on. [Length: unlimited] [iOS only]" meaning="The user will put on the torch [20em] [Read by Text-to-Speech]">
         On
+      </message>
+      <message name="IDS_IOS_TRACK_PRICES_ON_TABS" desc="This text shows in the price tracking settings dialog. It tells users the switch on the side can be used to turn on/off the 'Track prices on tabs' feature.">
+        Track Prices on Tabs
+      </message>
+      <message name="IDS_IOS_TRACK_PRICES_ON_TABS_DESCRIPTION" desc="This text shows below 'Track prices on tabs'. It describes what will happen when turning on this feature.">
+        See price drops on your tabs.
       </message>
       <message name="IDS_IOS_QR_SCANNER_VIEWPORT_CAPTION" desc="Message displayed below the QR scanner viewport instructing the user to position the scanned QR or bar code inside the viewport. [Length: unlimited] [iOS only]">
         Position QR code or barcode in this frame
@@ -1558,6 +2026,30 @@ While in incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_READING_LIST_CANCEL_BUTTON" desc="Label of the button to stop editing the reading list entries (delete, mark as read/unread) [Length: 25em]" meaning="Stop editing. [Length: 25em]">
         Cancel
+      </message>
+      <message name="IDS_IOS_READING_LIST_MESSAGES_IPH" desc="In-product help that points at the tools menu where the user can find the entry point to Reading List. [Length: 35em]">
+        When you're ready, find your reading list here
+      </message>
+      <message name="IDS_IOS_READING_LIST_MESSAGES_BANNER_SUBTITLE" desc="Subtitle of the banner indicating the estimated time to read of the page [iOS only]">
+          <ph name="TIME">$1</ph> minute read
+      </message>
+      <message name="IDS_IOS_READING_LIST_MESSAGES_BANNER_TITLE" desc="Title of the banner asking the user to add the current page to Reading List [iOS only]">
+          Add to Reading List for Later?
+      </message>
+      <message name="IDS_IOS_READING_LIST_MESSAGES_MAIN_ACTION" desc="Button text to indicate the user to add this page to Reading List [iOS only]">
+        Add
+      </message>
+      <message name="IDS_IOS_READING_LIST_MESSAGES_MODAL_DESCRIPTION" desc="Informational text explaining the utility of Reading List. [iOS only]">
+          You can save pages to read later or offline. Chrome will ask if you want to save long pages.
+        </message>
+      <message name="IDS_IOS_READING_LIST_MESSAGES_MODAL_NEVER_ASK" desc="Button text to indicate the user wants to be never shown the Add to Reading List prompt [iOS only]">
+        Never Ask
+      </message>
+      <message name="IDS_IOS_READING_LIST_MESSAGES_MODAL_TITLE" desc="Title of the Add to Reading List Messages Modal [Length: 25em] [iOS only]">
+        Add to Reading List
+      </message>
+      <message name="IDS_IOS_READING_LIST_MESSAGES_SETTING_TITLE" desc="Title of the setting to toggle the Add to Reading List Messages prompt on and off [iOS only]">
+        Ask to Add to Reading List
       </message>
       <message name="IDS_IOS_SCANNER_ALERT_CANCEL" desc="Title for a button to cancel a Scanner error dialog. The dialog will be dismissed and no action will be taken. [Length: 20em] [iOS only]" meaning="A button to cancel a Scanner error dialog.">
         Cancel
@@ -1579,6 +2071,30 @@ While in incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SCANNER_MULTIPLE_FOREGROUND_APPS_ALERT_TITLE" desc="Title of a modal dialog shown when the user tries to open the scanner in a Split View mode. [Length: 40em] [iOS only]" meaning="Title of a Split View error dialog in Scanner.">
         Split View
+      </message>
+      <message name="IDS_IOS_SNACKBAR_ACTION_GO_TO_FEED" desc="The iOS snackbar action when successfuly following a web content. [iOS only]">
+        GO TO FEED
+      </message>
+      <message name="IDS_IOS_SNACKBAR_ACTION_TRY_AGAIN" desc="The iOS snackbar message when failed to follow/unfollow a web content. [iOS only]">
+        TRY AGAIN
+      </message>
+      <message name="IDS_IOS_SNACKBAR_ACTION_UNDO" desc="The iOS snackbar action when succeed to unfollow a web content. [iOS only]">
+        UNDO
+      </message>
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_FOLLOW_FAILED" desc="The iOS snackbar message when failed to follow a web content. [iOS only]">
+        Can't follow. Something went wrong.
+      </message>
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_FOLLOW_SUCCEED" desc="The iOS snackbar message when ssucceed to follow a web content. [iOS only]">
+        Following <ph name="CHANNEL_NAME">$1<ex>CNN</ex></ph>
+      </message>
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_OFFLINE" desc="The iOS snackbar message when failed to follow/unfollow a web content because of offline. [iOS only]">
+        You're offline. Check your internet connection and try again.
+      </message>
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_UNFOLLOW_FAILED" desc="The iOS snackbar message when failed to unfollow a web content. [iOS only]">
+        Can't unfollow. Something went wrong.
+      </message>
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_UNFOLLOW_SUCCEED" desc="The iOS snackbar message when succeed to unfollow a web content. [iOS only]">
+        Unfollowed <ph name="CHANNEL_NAME">$1<ex>CNN</ex></ph>
       </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_DISABLED" desc="The material toast message when incogonito mode is disabled by policy [iOS only].">
         Your organization turned off Incognito mode
@@ -1609,9 +2125,6 @@ While in incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_READING_LIST_EDIT_BUTTON" desc="Label of the button to edit the reading list entries (delete, mark as read/unread) [Length: 20em]" meaning="Start editing the reading list entries. [Length: 20em]">
         Edit
-      </message>
-      <message name="IDS_IOS_READING_LIST_EMPTY_MESSAGE" desc="Message to explain to the user how to add entries to the reading list" meaning="[Length: unlimited]">
-        Your reading list is available offline. To add a page to your reading list, tap  <ph name="SHARE_OPENING_ICON">SHARE_OPENING_ICON<ex>(menu icon)</ex></ph>  then <ph name="READ_LATER_TEXT">READ_LATER_TEXT<ex>Read Later</ex></ph>.
       </message>
       <message name="IDS_IOS_READING_LIST_JUST_NOW" desc="String indicating that an event (adding item, distillation) happened less than one minute ago. [Length: 25em]">
         Just now
@@ -1656,7 +2169,7 @@ While in incognito, sites can't use cookies to see your browsing activity across
         Unread
       </message>
       <message name="IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION" desc="This message is shown in the Other Devices section of the Recent Tabs view if browser sign-in is disabled via policy by the device's administrator / organization.">
-        Turned off by your organization.
+        Turned off by your organization
       </message>
       <message name="IDS_IOS_RECENT_TABS_DISCLOSURE_VIEW_COLLAPSED_HINT" desc="The accessibility hint spoken to signify that the given cell expands the given section when tapped.">
         Expands the section.
@@ -1666,9 +2179,6 @@ While in incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_RECENT_TABS_HIDE_MENU_OPTION" desc="Context menu option to remove a foreign session. [Length: 15em] [iOS only]">
         Hide for now
-      </message>
-      <message name="IDS_IOS_RECENT_TABS_OPEN_ALL_MENU_OPTION" desc="Context menu option to open all tabs from a foreign session. [Length: 15em] [iOS only]">
-        Open all
       </message>
       <message name="IDS_IOS_RECENT_TABS_OTHER_DEVICES" desc="The name of the section informing the user on how to view tabs from other devices.[Length: 25em]">
         Other Devices
@@ -1718,8 +2228,59 @@ While in incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAVE_PASSWORDS" desc="Title for the switch item in Settings that can be toggled to enable or disable saving passwords. [Length: 15em] [iOS only]">
         Save Passwords
       </message>
+      <message name="IDS_IOS_OFFER_TO_SAVE_PASSWORDS" desc="Title for the switch item in Settings that can be toggled allowing users to be prompted if they want to save their passwords when logging into webpages. [Length: 25em] [iOS only]">
+        Offer To Save Passwords
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_ADD_PASSWORD_MANUALLY_TITLE" desc="Title of the view that allow user to enter the details for a new password credential to add it to the list the passwords. [iOS only]">
+        Add Password
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_SAVE_BUTTON" desc="Save button text for adding a new credential manually via settings [Length: 10em]">
+        Save
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_WEBSITE_PLACEHOLDER_TEXT" desc="Placeholder text for the website field when adding a new credential manually via settings [Length: 10em]">
+        example.com
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_USERNAME_PLACEHOLDER_TEXT" desc="Placeholder text for the username field indicating that the field is optional when adding a new credential manually via settings [Length: 10em]">
+        optional
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_PASSWORD_PLACEHOLDER_TEXT" desc="Placeholder text for the password field when adding a new credential manually via settings [Length: 10em]">
+        password
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_VIEW_PASSWORD_BUTTON" desc="View Password button text for viewing an existing credential. [Length: 10em]">
+        View Password
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION" desc="Section title in settings > password, about on-device Encryption. [iOS Only]">
+        On-Device Encryption
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_OPT_IN" desc="Section title in settings > password, explaining to the user what they can opt-in. [iOS Only]">
+        For added safety, encrypt passwords on your device before they’re saved to Google Password Manager.
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_SET_UP" desc="Section title in settings > password, allowing user to opt-in. [iOS Only]">
+        Set Up…
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_LEARN_MORE" desc="Section title in settings > password. [iOS Only]">
+        Your passwords are encrypted on your device before they’re saved to Google Password Manager.
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_OPTED_IN_LEARN_MORE" desc="Section title in settings > password, allow to learn more about on-device encryption. [iOS Only]">
+        Learn More
+      </message>
+      <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION" desc="Footer text shown when the user is trying to add a new credential manually via settings [iOS only]" meaning="Telling user to ensure provided password matches password on the website.">
+        Make sure you're saving your current password for this site.
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_MISSING_TLD_DESCRIPTION" desc="Footer text shown when the website field data misses the top-level domain when creating a new credential via settings [iOS only]" meaning="Suggesting user to add the top-level domain in the website text.">
+        Did you mean <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>?
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION" desc="Text shown alerting the user that a similar credential exists with the same username/website combination when adding a new credential [iOS only]">
+        You already saved a password for "<ph name="USERNAME">$1<ex>johndoe</ex></ph>" at <ph name="WEBSITE">$2<ex>twitter.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION_WITHOUT_USERNAME" desc="Text shown alerting the user that a similar credential exists with the same website combination when adding a new credential [iOS only]">
+        You already saved a password for <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING" desc="Disclaimer telling non-syncing users what will happen to their passwords">
+        Your password will be saved to your device.
+      </message>
       <message name="IDS_IOS_LEAK_CHECK_SWITCH" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
-        Warn you if passwords are exposed in a data breach
+        Warn You if Passwords Are Exposed in a Data Breach
       </message>
       <message name="IDS_IOS_LEAK_CHECK_SIGNED_OUT_ENABLED_DESC" desc="Text that describes the 'Password Leak Detection' functionality to signed-out users who have not disabled the feature.">
         When you sign in to your Google Account, this feature is turned on.
@@ -1727,26 +2288,60 @@ While in incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORDS" desc="Title for the view in Settings for managing saved passwords. [Length: 15em] [iOS only]">
         Passwords
       </message>
+      <message name="IDS_IOS_PASSWORD_MANAGER" desc="Title for the view in Settings for managing saved passwords. [Length: 15em] [iOS only]">
+        Password Manager
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS" desc="Title for the view in Settings for managing the settings related to saved passwords. [Length: 15em] [iOS only]">
+        Password Settings
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION" desc="Text displayed to inform the user that the browser is managed by Enterprise policies (without link). [iOS only]">
+        Managed by your organization
+      </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_INFO" desc="Text displayed to inform the user that the browser is managed by one or more Enterprise policies. [iOS only]">
         Managed by your organization. Some features may be unavailable. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_DETAILS" desc="Text displayed to inform the user that their Sign In/Sync is managed by their administrator. [iOS only]">
+          Your browser is managed. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Details<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_LEARN_MORE" desc="Text displayed to inform the user that their Sign In/Sync is managed by their administrator. [iOS only]">
+          Your browser is managed. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_RESTRICTED_ACCOUNTS_TO_PATTERNS_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Restrict Accounts To Patterns) [iOS only]">
+          Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden.
       </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SETTING_DESC_WITH_COMPANY_NAME" desc="Text displayed to inform the user that the browser is managed by Enterprise policies. MANAGER can be a domain or an email address. [iOS only]">
         Managed by <ph name="MANAGER">$1<ex>Google</ex></ph>. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SETTING_DESC_WITHOUT_COMPANY_NAME" desc="Text displayed to inform the user that the browser is managed by Enterprise policies without company name. [iOS only]">
-        Managed by your organization. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+        Managed by your organization.
+<ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SETTING_MESSAGE" desc="Text displayed to inform the user that the setting is managed by an Enterprise policy. [iOS only]">
         This setting is enforced by your administrator.
       </message>
+      <message name="IDS_IOS_ENTERPRISE_MANAGED_SETTING_SYNC_EVERYTHING_MESSAGE" desc="Text displayed to inform the user that the setting 'sync everything' is managed by an Enterprise policy. [iOS only]">
+        Your organization doesn't allow for you to sync everything.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_MANAGED_SYNC" desc="Text displayed to inform the user that syncable types are limited (i.e. managed). [iOS only]">
+        Your organization limits what you can sync.
+      </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
-        Your organization signed you out
+        You're Signed Out
       </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE" desc="The text in the 'Continue' button, displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy.">
         Continue
       </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_LEARN_MORE" desc="The text in the 'Learn More' button, displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy.">
         Learn More
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_MESSAGE" desc="Message displayed in a prompt when the user is signed out due to browser sign-in becoming disabled by policy.">
+        Your organization turned off sign in. You can still see your bookmarks, history, passwords and other settings on this device. If you make changes, they won’t sync to your account.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE" desc="Message displayed in a prompt when sync is disabled due to an enterprise policy. [iOS only]">
+        Your organization turned off sync. You can still see your bookmarks, history, passwords and other settings on this device. If you make changes, they won’t sync to your account.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE" desc="Title displayed in a prompt when sync is disabled due to an enterprise policy. [iOS only]">
+        Sync has Been Turned Off
       </message>
       <message name="IDS_IOS_EXPORT_PASSWORDS" desc="Button that the user can press to export passwords. [Length: 22em] [iOS only]">
         Export Passwords...
@@ -1773,9 +2368,10 @@ While in incognito, sites can't use cookies to see your browsing activity across
         To export passwords, you must first set a passcode on your device.
       </message>
       <message name="IDS_IOS_SETTINGS_HEADER_TEXT" desc="Header of the Default Browser Settings page explaining the default browser feature's utility.">
-      You can open links in Chrome automatically by making it your Default Browser App.
-      
-Follow the steps below:
+        You can open links in Chrome automatically by making it your Default Browser App.
+      </message>
+      <message name="IDS_IOS_SETTINGS_FOLLOW_STEPS_BELOW_TEXT" desc="The prompt under the Default Browser Settings page's header text.">
+        Follow the steps below:
       </message>
       <message name="IDS_IOS_SETTINGS_OPEN_CHROME_SETTINGS_BUTTON_TEXT" desc="Label of the button that opens the Chrome panel in Settings.app">
           Open Chrome Settings
@@ -1792,11 +2388,17 @@ Follow the steps below:
       <message name="IDS_IOS_SETTINGS_SELECT_CHROME_STEP" desc="Text of the row indicating the third step of setting the default browser.">
         3. Select Chrome
       </message>
-      <message name="IDS_IOS_SETTINGS_SIGNIN_DISABLED" desc="Subtext of the 'Sign in to Chrome' button in the settings. [iOS only]">
-        Turned off by your organization.
-      </message>
       <message name="IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT" desc="Header text with link for the view in Settings for managing saved passwords. [Length: unlimited] [iOS only]">
         View and manage saved passwords at <ph name="BEGIN_LINK">BEGIN_LINK</ph>passwords.google.com<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER" desc="Header text with link for the view in Settings for managing saved passwords. [Length: unlimited] [iOS only]">
+        Create, save, and manage your passwords so you can easily sign in to sites and apps. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_PASSWORD_MANAGER_HEADER_NOT_SYNCING" desc="Header text for the view in Settings for managing saved passwords. This string only appears when the user is not syncing their passwords. [Length: unlimited] [iOS only]">
+        Passwords are saved to Google Password Manager on this device only.
+      </message>
+      <message name="IDS_IOS_ADD_PASSWORD" desc="Text on a button which allows the user to save a password for a website in their Password Manager.">
+        Add Password...
       </message>
       <message name="IDS_IOS_CHECK_PASSWORDS" desc="Title for the item in Settings for Password Check feature" meaning="Label tells the user about status of Password Check [CHAR_LIMIT=25] [iOS only]">
         Check Passwords
@@ -1872,6 +2474,24 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SEARCH_COPIED_TEXT" desc="If a user has some text on their clipboard, this string will appear as an option when the user long-presses on Chrome's address bar. The user can select this option to search the default search engine for the text. This string is a complete sentence. If necessary for your language, you can translate as 'Search for Text That You Copied.' [iOS only]" meaning="Maximum characters: 32">
           Search for Copied Text
       </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_DESKTOP" desc="The label used to let the user choose that their pages will be loaded using the Desktop mode (vs Mobile)" meaning="The pages will be loaded in Desktop mode">
+        Desktop
+      </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_LABEL" desc="The label of the cell used to display the current mode (Desktop or Mobile) in which the pages will be loaded by default">
+        Default Site View
+      </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_MOBILE" desc="The label used to let the user choose that their pages will be loaded using the Mobile mode (vs Desktop)" meaning="The pages will be loaded in Mobile mode">
+        Mobile
+      </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_TITLE" desc="The title of the screen in which the user can choose the default mode (Desktop or Mobile) in which the pages will be loaded">
+        Default Site View
+      </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_TIP" desc="The text of the tip explaining to the user how to change the mode (desktop/mobile) in which the websites will be requested">
+        You can change the default site view to desktop in Settings > Content Settings
+      </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_TIP_VOICE_OVER" desc="The text of the tip explaining to the user how to change the mode (desktop/mobile) in which the websites will be requested. [Read by Text-to-Speech]">
+        You can change the default site view to desktop in Settings then Content Settings
+      </message>
       <message name="IDS_IOS_SEARCH_ENGINE_SETTING_CUSTOM_SECTION_HEADER" desc="The header for custom search engines section in Search Engine selection setting [iOS only]">
         Recently Visited
       </message>
@@ -1880,6 +2500,36 @@ Try to use a unique password for every site.
       </message>
       <message name="IDS_IOS_SEARCH_ENGINE_SETTING_TITLE" desc="The title for Search Engine selection setting [iOS only]">
         Search Engine
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS" desc="The title of the view that teaches users to turn on iOS auto-fill from Chrome password manager">
+        Passwords In Other Apps
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION" desc="The caption label below subtitle of the view that teaches users to turn off iOS auto-fill from Chrome password manager">
+        To turn off, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph> and go to AutoFill Passwords.
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1" desc="Text of the row indicating the first step of shortened instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        Open AutoFill Password Settings
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPAD" desc="Text of the row indicating the first step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        1. Open iPad Settings
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPHONE" desc="Text of the row indicating the first step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        1. Open iPhone Settings
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_2" desc="Text of the row indicating the second step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        2. Tap on Passwords
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3" desc="Text of the row indicating the third step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        3. Tap AutoFill Passwords
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE" desc="The subtitle of the view that teaches users to turn on iOS auto-fill from Chrome password manager">
+        Use the passwords you saved to Chrome in other apps on your device
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_SYNCING_ENABLED" desc="The subtitle of the view that teaches password-syncing users they can access passwords from their other devices">
+        You can also use saved passwords on your other devices.
+      </message>
+      <message name="IDS_IOS_SETTINGS_PRIVACY_TITLE" desc="Title for the Privacy and Security preferences.">
+        Privacy and Security
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_PASSWORDS_TITLE" desc="Title for the passwords element of safety check" meaning="Row title to access the passowrd check subpage if a probelm is found with user's saved passwords [CHAR_LIMIT=20]">
         Passwords
@@ -1893,20 +2543,32 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DESCRIPTION" desc="Description text on the Safe Browsing element describing what the Safe Browsing check does.">
         Stay protected from dangerous websites
       </message>
+      <message name="IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_TITLE" desc="Title for HTTPS-Only Mode toggle in settings">
+        Always Use Secure Connections
+      </message>
+      <message name="IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION" desc="Description text of HTTPS-Only Mode in  settings">
+        Upgrade to HTTPS, when possible. Secure sites might embed content that isn't secure.
+      </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_DESC" desc="Detail text for the Safe Browsing check if the user has Safe Browsing disabled">
         Off - Not recommended
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_DESC" desc="Detail text for the Safe Browsing check if the user has Safe Browsing enabled">
         Safe Browsing is on
       </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC" desc="Detail text for the Safe Browsing check if the user has Safe Browsing Standard Protection enabled">
+        Enhanced protection is on
+      </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC" desc="Detail text for the Safe Browsing check if the user has Safe Browsing Standard Protection enabled">
+        Standard protection is on
+      </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC_WITH_ENHANCED_PROTECTION" desc="Detail text for the Safe Browsing check if the user has Safe Browsing Standard Protection enabled">
+        Standard protection is on. For even more security, use Enhanced protection.
+      </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_MANAGED_DESC" desc="Detail text for the Safe Browsing check if the user's Safe Browsing setting is managed by their administrator and disabled">
         Turned off by your administrator
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_MANAGED_DESC" desc="Description text for when the device has updates managed by an administrator">
        Managed by your administrator
-      </message>
-      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_INFO" desc="String in the popover for the Safe Browsing check to direct the user to the Sync and Google Services page if Safe Browsing is disabled">
-        To turn on Safe Browsing, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Sync and Google Services<ph name="END_LINK">END_LINK</ph> and tap Safe Browsing.
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_OPEN_SAFE_BROWSING_INFO" desc="String in the popover for the Safe Browsing check to direct the user to the Google Services page if Safe Browsing is disabled">
         To turn on Safe Browsing, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Services<ph name="END_LINK">END_LINK</ph> and tap Safe Browsing.
@@ -1940,6 +2602,9 @@ Try to use a unique password for every site.
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORD_DELETE_BUTTON" desc="Button that the user can press to delete a saved password or a site-bound exception preventing saving passwords. [Length: single line available]">
         Delete
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORD_EMPTY_TITLE" desc="Text shown on the Password Manager screen when the user doesn't have any saved passwords to display.">
+        You'll find your passwords here
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORD_HIDDEN_LABEL" desc="Accessibility label stating that the element is displaying a hidden password.">
         Hidden, Password
@@ -2001,6 +2666,12 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SETTINGS_TOOLBAR_DELETE" desc="Label of the button displayed on the bottom toolbar of the settings' collections when they are in edit mode. Pressing this button deletes the currently selected items.">
         Delete
       </message>
+      <message name="IDS_IOS_SETTINGS_TOOLBAR_ADD" desc="Label of the button displayed on the bottom toolbar of the settings' collections. Pressing this button opens the Add view. For example: Clicking this button in the Password settings would open the add password view.">
+        Add
+      </message>
+      <message name="IDS_IOS_SETTINGS_TOOLBAR_SETTINGS_SUBMENU" desc="Button text in a toolbar that will take the user to a submenu with settings related to the currently-displayed content.">
+        Settings
+      </message>
         <message name="IDS_IOS_SETTINGS_SWIPE_DOWN_MESSAGE" desc="Message displayed whenever a user tries to dismiss a Settings screen which is being edited, or information is being added to it.">
         Are you sure you want to discard your changes?
       </message>
@@ -2035,7 +2706,7 @@ Try to use a unique password for every site.
         Create a QR Code
       </message>
       <message name="IDS_IOS_SHARE_MENU_READING_LIST_ACTION" desc="The text label of the Add To Reading List action in the extension menu that adds the current page to the reading list. [Length: 25em] [iOS only]">
-        Read Later
+        Add to Reading List
       </message>
       <message name="IDS_IOS_SHARE_MENU_REQUEST_DESKTOP_SITE" desc="Text label to the Request Desktop Site action in the extension menu that request the desktop version of the current page. [iOS only]">
         Request Desktop Site
@@ -2045,6 +2716,12 @@ Try to use a unique password for every site.
       </message>
       <message name="IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION" desc="Text label to the Send Tab To Self action in the extension menu that sends the current tab to the user's other devices. [iOS only]">
         Send To Your Devices
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL" desc = "Text when a signed out user attempts to use send-tab-to-self, then sees a sign-in promo.">
+        To send this tab to another device, sign in to Chrome on both devices.
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL" desc = "Text shown when a user with no available target devices attempts to use send-tab-to-self.">
+        To send this tab to another device, sign in to Chrome there.
       </message>
       <message name="IDS_IOS_SHARE_PAGE_BUTTON_LABEL" desc="Label of a button which will initiate a share flow for the current page. [iOS only]">
         Share Page...
@@ -2072,6 +2749,9 @@ Try to use a unique password for every site.
       </message>
       <message name="IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ITEM_SUBTITLE_DAYS" desc="Text label for the Send Tab To Self modal dialog that shows the last active time of a user's devicet. [iOS only]">
         Active <ph name="Days">$1<ex>2</ex></ph> Days Ago
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES_LINK" desc="Text with a link to a page where the user can manage the devices they can share a tab to.">
+        <ph name="BEGIN_LINK">BEGIN_LINK</ph>Your devices<ph name="END_LINK">END_LINK</ph> · <ph name="EMAIL">$1<ex>foo@gmail.com</ex></ph>
       </message>
       <message name="IDS_IOS_SHARE_MESSAGES_COMPLETE" desc="Message shown when message share has been sent. [Length: Unknown. Keep it short.] [iOS only]">
         Message sent.
@@ -2134,10 +2814,10 @@ Try to use a unique password for every site.
           Return to Recent Tab
       </message>
       <message name="IDS_IOS_RETURN_TO_RECENT_TAB_TIME_DAYS" desc="Type in days for time since the recent tab was opened, shortened to d.">
-          d ago
+          <ph name="TIME">$1</ph> d ago
           </message>
       <message name="IDS_IOS_RETURN_TO_RECENT_TAB_TIME_HOURS" desc="Type in hours for time since the recent tab was opened, shortened to h.">
-          h ago
+          <ph name="TIME">$1</ph> h ago
           </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_SAVED_HEADING" desc="The title for a list of username/site/password items. These items are already saved by the browser and can be deleted/edited. [Length: one line] [iOS only]">
       Saved Passwords
@@ -2154,17 +2834,143 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_TITLE" desc="The title of the Signed In Accounts view [iOS only] [30em]">
         You're signed in
       </message>
+      <message name="IDS_IOS_SIGN_IN_AGAIN" desc="Title displayed when there is an authentication failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
+        Sign In Again
+      </message>
+      <message name="IDS_IOS_SIGN_IN_DISMISS" desc="Title displayed when there is an unknown failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
+       Dismiss 
+      </message>
       <message name="IDS_IOS_SIGN_IN_FAILED" desc="Explanatory message shown when Sign in to Chrome failed for an unknown technical reason.  [Length: 50em] [iOS only]">
         Failed to sign in. Please try again later.
       </message>
+      <message name="IDS_IOS_WEBSIGN_ERROR_TITLE" desc="Title displayed when sign in fails due to an authentication issue. [iOS only]">
+        Something Went Wrong
+      </message>
+      <message name="IDS_IOS_WEBSIGN_ERROR_GENERIC_ERROR" desc="Title displayed when sign in fails due to an authentication issue. [iOS only]">
+        Can't sign-in.
+      </message>
+      <message name="IDS_IOS_WEBSIGN_ERROR_TIMEOUT_ERROR" desc="Title displayed when sign in fails due to an authentication issue. [iOS only]">
+        Check your connection and try signing in again.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_TITLE" desc="Search Tabs title displayed in What's New. [iOS only]">
+        Search Tabs Across Synced Devices
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_SUBTITLE" desc="Search Tabs subtitle displayed in What's New. [iOS only]">
+        Quickly find open and recently closed tabs across your synced devices.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_1" desc="Text of the row indicating the first step of Search Tabs in What's New. [iOS only]">
+        Open the Tab Grid
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_2" desc="Text of the row indicating the second step of Search Tabs in What's New. [iOS only]">
+        At the Top Left, Tap the Search Icon
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_3" desc="Text of the row indicating the third step of Search Tabs in What's New. [iOS only]">
+        Enter a Word or Phrase
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_TITLE" desc="New Menu title displayed in What's New. [iOS only]">
+        Explore the New Menu
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_SUBTITLE" desc="New Menu subtitle displayed in What's New. [iOS only]">
+        Now your saved bookmarks, passwords and more are at the top.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_STEP_1" desc="Text of the row indicating the first step of New Menu in What's New. [iOS only]">
+        Open the Chrome Menu
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_STEP_2" desc="Text of the row indicating the second step of New Menu in What's New. [iOS only]">
+        Explore the options in the menu bar
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_TITLE" desc="Share Highlight title displayed in What's New. [iOS only]">
+        Share Highlight
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_SUBTITLE" desc="Share Highlight subtitle displayed in What's New. [iOS only]">
+        Create and share a direct link to part of a page you've highlighted.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_STEP_1" desc="Text of the row indicating the first step of Share Highlight in What's New. [iOS only]">
+        Highlight Text on a Site
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_STEP_2" desc="Text of the row indicating the second step of Share Highlight in What's New. [iOS only]">
+        Tap Create Link in the Context Menu
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_STEP_3" desc="Text of the row indicating the third step of Share Highlight in What's New. [iOS only]">
+        Share the Link
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_TITLE" desc="Add Passwords Manually title displayed in What's New. [iOS only]">
+        Add Passwords Manually
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_SUBTITLE" desc="Add Passwords Manually subtitle displayed in What's New. [iOS only]">
+        Easily add site passwords to Google Password Manager anytime.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_1" desc="Text of the row indicating the first step of Share Highlight in What's New. [iOS only]">
+        Open Chrome Settings
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_2" desc="Text of the row indicating the second step of Share Highlight in What's New. [iOS only]">
+        Tap Passwords Then Tap Add
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_3" desc="Text of the row indicating the third step of Share Highlight in What's New. [iOS only]">
+        Enter Site and Password, Then Save
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_BUTTON_TITLE" desc="Text of the primary button of Share Highlight in What's New. [iOS only]">
+        Open Settings
+      </message>
+      <message name="IDS_IOS_WHATS_CHROME_TIP_CHROME_DEFAULT_TITLE" desc="Use Chrome By Default title displayed in What's New. [iOS only]">
+        Use Chrome By Default
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_SUBTITLE" desc="Use Chrome By Default subtitle displayed in What's New. [iOS only]">
+        You can now use Chrome anytime you browse or tap links in messages, documents, and other apps.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_1" desc="Text of the row indicating the first step of Use Chrome By Default in What's New. [iOS only]">
+        Open Chrome Settings
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_2" desc="Text of the row indicating the second step of Use Chrome By Default in What's New. [iOS only]">
+        Tap Default Browser App
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_3" desc="Text of the row indicating the third step of Use Chrome By Default in What's New. [iOS only]">
+        Select Chrome
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_BUTTON_TITLE" desc="Text of the primary button of Use Chrome By Default in What's New. [iOS only]">
+        Make Default in Settings...
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_TITLE" desc="Passwords In Other Apps title displayed in What's New. [iOS only]">
+        Passwords In Other Apps
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_SUBTITLE" desc="Passwords In Other Apps subtitle displayed in What's New. [iOS only]">
+        You can use the passwords you saved to Google Password Manager in other apps on your iPhone.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_1" desc="Text of the row indicating the first step of Passwords In Other Apps in What's New. [iOS only]">
+        Open AutoFill Password Settings
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_2" desc="Text of the row indicating the second step of Passwords In Other Apps in What's New. [iOS only]">
+        Select Chrome
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_BUTTON_TITLE" desc="Text of the primary button of Passwords In Other Apps in What's New. [iOS only]">
+        Open Settings
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_TITLE" desc="Autofill title displayed in What's New. [iOS only]">
+        Autofill
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_SUBTITLE" desc="Autofill subtitle displayed in What's New. [iOS only]">
+        Save passwords, payment methods, and addresses for Chrome to autofill later.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_STEP_1" desc="Text of the row indicating the first step of Autofill in What's New. [iOS only]">
+        Open Chrome Settings
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_STEP_2" desc="Text of the row indicating the second step of Autofill in What's New. [iOS only]">
+        Open Passwords, Payment Methods, or Address and More
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_STEP_3" desc="Text of the row indicating the third step of Autofill in What's New. [iOS only]">
+        Tap Add then Enter Your Info
+      </message>
+      <message name="IDS_IOS_SIGN_IN_INVALID_ACCOUNT_MESSAGE" desc="Message of the alert displayed when the user sign in with a restricted account.">
+        Your organization allows you to sign in only with certain accounts.
+      </message>
+      <message name="IDS_IOS_SIGN_IN_INVALID_ACCOUNT_TITLE" desc="Title of the alert displayed when the user sign in with a restricted account.">
+        Sign in with a Valid Account
+      </message>
       <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE" desc="The subtitle for the setting item to Sign in to Chrome [iOS only]">
-        Get your bookmarks, history, passwords, and other settings on all your devices
+        Get your bookmarks, history, passwords, and other settings on all your devices.
       </message>
-      <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SYNC_OFF" desc="The subtitle for the setting item of the signed in user when sync is off [iOS only]">
-        Sync is off
-      </message>
-      <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SYNC_ON" desc="The subtitle for the setting item of the signed in user when sync is on [iOS only]">
-        Sync is on
+      <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE_SYNC_MANAGED" desc="The subtitle for the setting item of the signed in user when sync is managed by policies [iOS only]">
+        To sync and personalize across devices, turn on sync.
       </message>
       <message name="IDS_IOS_SIGN_TRUSTED_VAULT_ERROR_DIALOG_TITLE" desc="Alert title to display an error after a reauthentication, related to IDS_IOS_SIGN_TRUSTED_VAULT_ERROR_DIALOG_MESSAGE [iOS only]">
         Authentication Error
@@ -2184,11 +2990,11 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SIGNOUT_DIALOG_KEEP_DATA_BUTTON" desc="This button signs the user out and all its data stays on the device. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
         Keep Data
       </message>
-      <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITHOUT_SYNC" desc="The signout dialog title. This dialog is used when the user have a gmail account and sync is turned on. Related to IDS_IOS_SIGNOUT_DIALOG_MESSAGE [iOS only].">
-        Sign Out?
-      </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON" desc="This button signs the user out. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
         Sign Out
+      </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_SYNC" desc="The text describes that sync will be off when user signs out [iOS only].">
+        Signing out turns off sync.
       </message>
       <message name="IDS_IOS_SPOTLIGHT_KEYWORD_EIGHT" desc="Keyword used in Spotlight that will be linked to the Chrome App. [iOS only]">
         Online
@@ -2249,13 +3055,13 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>reset sync<ph name=
       <message name="IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_INFO" desc="The information text for encrypting sync using a passphrase, shown on the passphrase screen [iOS only]">
         Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you will need to reset sync. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
-      <message name="IDS_IOS_SYNC_ENCRYPTION_FIX_NOW" desc="Title displayed when the signed in user needs to reauthenticate. Syncing of encrypted types (e.g. passwords) is blocked until the user completes the reauth flow.">
+      <message name="IDS_IOS_SYNC_VERIFY_ITS_YOU_BUTTON" desc="Button title displayed when the signed in user needs to reauthenticate. Syncing of encrypted types (e.g. passwords) is blocked until the user completes the reauth flow.">
         Verify It's You
       </message>
       <message name="IDS_IOS_SYNC_ENCRYPTION_TITLE" desc="The title for the Sync Encryption item [iOS only]">
         Encryption
       </message>
-      <message name="IDS_IOS_SYNC_ENTER_PASSPHRASE" desc="Title displayed when the signed in user needs to enter its sync passphrase. [Length: 20em] [iOS only]">
+      <message name="IDS_IOS_SYNC_ENTER_PASSPHRASE_BUTTON" desc="Button title displayed when the signed in user needs to enter its sync passphrase. [Length: 20em] [iOS only]">
         Enter Passphrase
       </message>
       <message name="IDS_IOS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL" desc="Instructions for the dialog where the user enters the passphrase.">
@@ -2275,7 +3081,7 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
         Could not connect to the server.
       </message>
       <message name="IDS_IOS_SYNC_ERROR_DESCRIPTION" desc="The error message to display when a generic error prevents sync from starting.">
-        Sync isn't working.
+        Sync Isn't Working.
       </message>
       <message name="IDS_IOS_SYNC_PASSWORDS_ERROR_DESCRIPTION" desc="The error message to display when a generic error prevents encrypted sync datatypes (passwords) from working.">
         Password sync isn't working
@@ -2313,32 +3119,35 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_SYNC_PASSWORDS_ERROR_TITLE" desc="Title of the error message shown for sync errors when it affects passwords only. [iOS only]">
         Password Sync Isn't Working
       </message>
-      <message name="IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
-        Initial sync setup was not finished. Sync is off.
+      <message name="IDS_SYNC_NEEDS_VERIFICATION_TITLE" desc="Title of the error message shown when sync needs to verify the user. [iOS only]">
+        Sync Needs To Verify It's You
       </message>
-      <message name="IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED_ACTION" desc="Button title to invite the user to review sync settings. The sign-in flow has been interrupted and the user never confirmed Sync.">
-        Open Settings
+      <message name="IDS_IOS_SYNC_SETTINGS_DISABLED_POPOVER_TEXT" desc="This text is shown when sync is disabled by an enterprise policy and the user taps on the info pop-over of the Sync button in the settings.">
+       Your organization requires you to turn off sync.
       </message>
-      <message name="IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED_DESCRIPTION" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
-        To start sync, turn on "Sync your Chrome data".
-      </message>
-      <message name="IDS_IOS_SYNC_SETUP_IN_PROGRESS" desc="The message to display when the sync setup is in progress and sync isn't available yet. [Length: 60em] [iOS only]">
-        Setup in progress…
-      </message>
-      <message name="IDS_IOS_SYNC_SETUP_NOT_CONFIRMED_TITLE" desc="Title of the error message shown for sync errors. [Length: 60em] [iOS only]">
-        Initial Sync Setup Not Finished
-      </message>
-      <message name="IDS_IOS_SYNC_SIGN_IN_AGAIN" desc="Title displayed when the signed in user needs sign in again. [Length: 20em] [iOS only]">
+      <message name="IDS_IOS_SYNC_SIGN_IN_AGAIN_BUTTON" desc="Button title displayed when the signed in user needs sign in again. [Length: 20em] [iOS only]">
         Sign in again
       </message>
       <message name="IDS_IOS_SYNC_STATUS_UNRECOVERABLE_ERROR" desc="Message shown throughout the sync settings screens when there is an unrecoverable error. [Length: 80em, can be multiple lines] [iOS only]">
         Sync has stopped working.
       </message>
-      <message name="IDS_IOS_SYNC_UPDATE_CREDENTIALS" desc="Title displayed when the signed in user needs to update its credentials. [Length: 20em] [iOS only]">
+      <message name="IDS_IOS_SYNC_UPDATE_CREDENTIALS_BUTTON" desc="Button title displayed when the signed in user needs to update its credentials. [Length: 20em] [iOS only]">
         Update
+      </message>
+      <message name="IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE" desc="The text in the 'Continue' button, displayed in a one-time alert when sync is disabled by policy.">
+        Continue
+      </message>
+      <message name="IDS_IOS_SYNC_SYNC_DISABLED_LEARN_MORE" desc="The text in the 'Learn More' button, displayed in a one-time alert when sync is disabled by policy.">
+        Learn More
       </message>
       <message name="IDS_IOS_TAB_GRID_DONE_BUTTON" desc="Title of the Done button in the tab grid UI. [iOS only]">
         Done
+      </message>
+      <message name="IDS_IOS_TAB_GRID_CANCEL_BUTTON" desc="Title of the Cancel button in the tab grid search UI. [iOS only]">
+        Cancel
+      </message>
+      <message name="IDS_IOS_TAB_GRID_SEARCHBAR_PLACEHOLDER" desc="Placeholder text for the search bar used to search tabs on the tab grid. [iOS only]">
+        Search Tabs...
       </message>
       <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON" desc="Title of the button in the tab grid UI that closes all the tabs in the grid. [iOS only]">
         Close All
@@ -2351,6 +3160,37 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON" desc="Title of the button in the tab grid UI that revert the close all action recently taken by the user. [iOS only]">
         Undo
       </message>
+      <message name="IDS_IOS_TAB_GRID_EDIT_BUTTON" desc="Title of the button in the tab grid UI that triggers a context menu with options to select tabs for bulk actions or to close all tabs. [iOS only]">
+        Edit
+      </message>
+      <message name="IDS_IOS_TAB_GRID_CLOSE_TABS_BUTTON" desc="Title of the button in the tab grid UI that the closes selected tabs. count refers to the number of tabs selected. According to its value, the string goes from signular to plural. [iOS only]">
+        {count, plural,
+          =1 {Close Tab}
+          other {Close Tabs}}
+      </message>
+      <message name="IDS_IOS_TAB_GRID_ADD_TO_BUTTON" desc="Title of the button in the tab grid UI that when tapped, will provide the user with a menu to add selected tabs to bookmarks or to the reading list. [iOS only]">
+        Add To...
+      </message>
+      <message name="IDS_IOS_TAB_GRID_CELL_DESELECTED" desc="Accessibility value of a tab grid cell while the tab grid is in edit mode. This string is read by VoiceOver to describe the state of a tab grid cell which is not currently selected.">
+          Not Selected
+      </message>
+      <message name="IDS_IOS_TAB_GRID_CELL_SELECTED" desc="Accessibility value of a tab grid cell while the tab grid is in edit mode. This string is read by VoiceOver to describe the state of a tab grid cell which is currently selected.">
+          Selected
+      </message>
+      <message name="IDS_IOS_TAB_GRID_DESELECT_ALL_BUTTON" desc="Title of the button in the tab grid UI selection mode, when tapped it will mark all tabs deselected.">
+          Deselect All
+          </message>
+      <message name="IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON" desc="Title of the button in the tab grid UI selection mode, when tapped it will mark all tabs selected.">
+          Select All
+          </message>
+      <message name="IDS_IOS_TAB_GRID_SELECT_TABS_TITLE" desc="Title shown in the tab grid selection mode when no tab is selected. [iOS only]">
+              Select Tabs
+      </message>
+      <message name="IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE" desc="Title shown in the tab grid selection mode to indicate the number of selected tabs. count refers to the number of tabs selected. According to its value, the string goes from singular to plural. [iOS only]">
+        {count, plural,
+          =1 {{count} Tab}
+          other {{count} Tabs}}
+      </message>
       <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_TITLE" desc="The accessibility label of the Incognito Tabs page in the tab grid UI. [iOS only]">
         Incognito Tabs
       </message>
@@ -2360,13 +3200,10 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TAB_GRID_REMOTE_TABS_TITLE" desc="The accessibility label of the Remote Tabs page in the tab grid UI. [iOS only]">
         Tabs from other devices
       </message>
-      <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_STATE_TITLE" desc="Title shown in the Incognito Tabs page when the grid is empty. [iOS only]">
-        No Incognito Tabs
-      </message>
       <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_MESSAGE" desc="Message shown in the Incognito Tabs page when the grid is empty, explaining that the user can open a new tab.">
         To browse the web privately, add a new tab
       </message>
-      <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_TITLE" desc="Title shown above a message on the incognito tab switcher when there are no incognito tabs. [iOS only]">
+      <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_TITLE" desc="Title shown above a message on the Incognito tab switcher when there are no Incognito tabs. [iOS only]">
         You'll find your Incognito tabs here
       </message>
       <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_UNAVAILABLE_MESSAGE" desc="Message shown in the Incognito Tabs page of the tab grid when the IncognitoModeAvailability enterprise policy is set to disabled. [iOS only]">
@@ -2383,15 +3220,6 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TAB_GRID_RECENT_TABS_UNAVAILABLE_TITLE" desc="Title shown above a message in the Recent Tabs page of the tab grid when the IncognitoModeAvailability enterprise policy is set to forced. [iOS only]">
         Recent Tabs are Unavailable
       </message>
-      <message name="IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_STATE_TITLE" desc="Title shown in the Regular Tabs page (as opposed to the Incognito Tabs page) when the grid is empty. [iOS only]">
-        No Open Tabs
-      </message>
-      <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_STATE_BODY" desc="Text body shown in the Incognito Tabs page when the grid is empty, explaining that the user can open a new tab. [iOS only]">
-        To browse the web privately, add a new tab.
-      </message>
-      <message name="IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_STATE_BODY" desc="Text body shown in the Regular Tabs page (as opposed to the Incognito Tabs page) when the grid is empty, explaining that the user can open a new tab. [iOS only]">
-        To browse the web, add a new tab.
-      </message>
       <message name="IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_TITLE" desc="Title shown above a message on the regular tab switcher when there are no tabs. [iOS only]">
         You'll find your tabs here
       </message>
@@ -2405,10 +3233,13 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TAB_GRID_REGULAR_TABS_UNAVAILABLE_TITLE" desc="Title shown above a message in the Regular Tabs page of the tab grid when the IncognitoModeAvailability enterprise policy is set to forced. [iOS only]">
         Only Incognito Mode is Available
       </message>
-      <message name="IDS_IOS_TAB_GRID_CREATE_NEW_INCOGNITO_TAB" desc="The accessibility label for the button that creates new incognito tabs. [iOS only]">
-        Create new incognito tab.
+      <message name="IDS_IOS_TAB_GRID_SEARCH_RESULTS_EMPTY_TITLE" desc="Title shown above a message on the  tab switcher when there are no matching tabs for the given search terms. [iOS only]">
+        No Results Found
       </message>
-      <message name="IDS_IOS_TAB_GRID_CREATE_NEW_TAB" desc="The accessibility label for the button that creates new regular tabs (as opposed to incognito tabs). [iOS only]">
+      <message name="IDS_IOS_TAB_GRID_CREATE_NEW_INCOGNITO_TAB" desc="The accessibility label for the button that creates new Incognito tabs. [iOS only]">
+        Create new Incognito tab.
+      </message>
+      <message name="IDS_IOS_TAB_GRID_CREATE_NEW_TAB" desc="The accessibility label for the button that creates new regular tabs (as opposed to Incognito tabs). [iOS only]">
         Create new tab.
       </message>
       <message name="IDS_IOS_TAB_STRIP_ENTER_TAB_SWITCHER" desc="The accessibility label of the tab strip button to enter the tab switcher. The tab switcher is a view showing the opened tabs, and allows users to switch, close, and open new tabs. [iOS only]">
@@ -2420,14 +3251,11 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TAB_SWITCHER_CLOSE_TAB" desc="The accessibility label for the closing of a selected tab. [iOS only]">
         Close tab.
       </message>
-      <message name="IDS_IOS_TAB_SWITCHER_CREATE_NEW_INCOGNITO_TAB" desc="The accessibility label for the button that creates new incognito tabs. [iOS only]">
-        Create new incognito tab.
+      <message name="IDS_IOS_TAB_SWITCHER_CREATE_NEW_INCOGNITO_TAB" desc="The accessibility label for the button that creates new Incognito tabs. [iOS only]">
+        Create new Incognito tab.
       </message>
-      <message name="IDS_IOS_TAB_SWITCHER_CREATE_NEW_TAB" desc="The accessibility label for the button that creates new regular tabs (as opposed to incognito tabs). [iOS only]">
+      <message name="IDS_IOS_TAB_SWITCHER_CREATE_NEW_TAB" desc="The accessibility label for the button that creates new regular tabs (as opposed to Incognito tabs). [iOS only]">
         Create new tab.
-      </message>
-      <message name="IDS_IOS_TAB_SWITCHER_ENABLE_SYNC_BUTTON" desc="Button label to enable sync for user. [Length: 30em] [iOS only]">
-          Turn on sync
       </message>
       <message name="IDS_IOS_TAB_SWITCHER_ENABLE_SYNC_TITLE" desc="Title label to enable sync for user. [Length: 30em] [iOS only]">
           Enable sync
@@ -2441,10 +3269,10 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TAB_SWITCHER_HEADER_OTHER_DEVICES_TABS" desc="Label shown to select the Other Devices tabs panel, as opposed to the Incognito and Non Incognito panels. [Length: 17em] [iOS only]">
         Other Devices
       </message>
-      <message name="IDS_IOS_TAB_SWITCHER_NO_LOCAL_INCOGNITO_TABS" desc="Label explaining that the user can open a new incognito tab. [iOS only]">
-        Open an incognito tab to browse the web privately.
+      <message name="IDS_IOS_TAB_SWITCHER_NO_LOCAL_INCOGNITO_TABS" desc="Label explaining that the user can open a new Incognito tab. [iOS only]">
+        Open an Incognito tab to browse the web privately.
       </message>
-      <message name="IDS_IOS_TAB_SWITCHER_NO_LOCAL_INCOGNITO_TABS_PROMO" desc="Title explaining that there are no opened incognito tabs. [iOS only]">
+      <message name="IDS_IOS_TAB_SWITCHER_NO_LOCAL_INCOGNITO_TABS_PROMO" desc="Title explaining that there are no opened Incognito tabs. [iOS only]">
         No Incognito Tabs
       </message>
       <message name="IDS_IOS_TAB_SWITCHER_NO_LOCAL_NON_INCOGNITO_TABS" desc="Label explaining that the user can open a new tab. [iOS only]">
@@ -2453,20 +3281,65 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TAB_SWITCHER_NO_LOCAL_NON_INCOGNITO_TABS_TITLE" desc="Title explaining that there are no opened tabs. [iOS only]">
         No Open Tabs
       </message>
+      <message name="IDS_IOS_TAB_SWITCHER_PRICE_CARD" desc="Acessibility label to describe the UI which displays a price drop in the Tab Switching UI when it is identified. [iOS only]">
+        Now <ph name="PRICE">$1<ex>$42</ex></ph> was <ph name="PREVIOUS_PRICE">$2<ex>$50</ex></ph>.
+      </message>
       <message name="IDS_IOS_TAB_SWITCHER_SYNC_IN_PROGRESS_PROMO" desc="Label explaining that the tabs are currently being synced. [iOS only]">
         Syncing your tabs...
       </message>
       <message name="IDS_IOS_TAB_SWITCHER_SYNC_IS_OFF" desc="Short paragraph(s) encouraging the user to enable sync on device [Length: 300em, may be line wrapped to multiple lines at run time.] [iOS only]">
           To get your tabs from your other devices, turn on sync.
       </message>
+      <message name="IDS_IOS_TABS_SEARCH_OPEN_TABS_SECTION_HEADER_TITLE" desc="Section header for the section that contains all the open tabs from the search results.">
+        Open Tabs
+      </message>
+      <message name="IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT" desc="The number of the open tabs found as search results in the tab grid.">
+        <ph name="COUNT">$1<ex>2</ex></ph> Found
+      </message>
+      <message name="IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS" desc="Section header for the suggested actions section shown in the tab grid at the bottom of search results.">
+        Suggested
+      </message>
+      <message name="IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_HISTORY" desc="Title for a suggested action presented at the end of search results to search through web history for the same search term. The number of matching items within history are shown inside the parenthesis.">
+        Search History (<ph name="COUNT">$1<ex>12</ex></ph> Found)
+      </message>
+      <message name="IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_HISTORY_UNKNOWN_RESULT_COUNT" desc="Title for a suggested action presented at the end of search results to search through web history for the same search term.">
+        Search History
+      </message>
+      <message name="IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_OPEN_TABS" desc="Title for a suggested action presented at the end of search results to search through open tabs for the same search term.">
+        Search Open Tabs
+      </message>
+      <message name="IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_RECENT_TABS" desc="Title for a suggested action presented at the end of search results to search through recent tabs for the same search term.">
+        Search Recent Tabs
+      </message>
+      <message name="IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_WEB" desc="Title for a suggested action presented at the end of search results to search the web for the same search term.">
+        Search on Web
+      </message>
+      <message name="IDS_IOS_TANGIBLE_SYNC_DISCLAIMER" desc="This string appears in the footer on a full-page screen that asks users if they want to turn on sync. 'Sync' is short for 'synchronization'. The first sentence informs the user where they can go to change their mind or to customize what Chrome/Chromium data types they choose to sync (a user's Chrome/Chromium data includes their bookmarks, passwords, history, settings, and more). The second sentence informs the user that if they choose to sync, then their history may be used to personalize Search and other services. Translate 'history' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c3162. [iOS only][CHAR_LIMIT=200].">
+        You can always choose what to sync in <ph name="BEGIN_LINK">BEGIN_LINK</ph>settings<ph name="END_LINK">END_LINK</ph>. Google may personalize Search and other services based on your history.
+      </message>
+      <message name="IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_BOOKMARKS" desc="This string appears as an item in a list of sync data types on a full-page screen that asks users if they want to turn on sync. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb. [iOS only][CHAR_LIMIT=25]">
+        Bookmarks
+      </message>
+      <message name="IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_HISTORY" desc="This string appears as an item in a list of sync data types on a full-page screen that asks users if they want to turn on sync. Translate 'history' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c3162. Translate 'and more' so that it conveys that there are additional similar items that are not listed. [iOS only][CHAR_LIMIT=30]">
+        History and more
+      </message>
+      <message name="IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_AUTOFILL" desc="This string appears as an item in a list of sync data types on a full-page screen that asks users if they want to turn on sync. Translate 'autofill' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=77d3626. [iOS only][CHAR_LIMIT=25]">
+        Autofill
+        </message>
+      <message name="IDS_IOS_TANGIBLE_SYNC_TITLE_SYNC" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on sync. 'Sync' is short for 'synchronization'. [iOS only][CHAR_LIMIT=20]">
+        Sync
+      </message>
+      <message name="IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on sync. 'Sync' is short for 'synchronization'. The tone should be informative and inviting. [iOS only][CHAR_LIMIT=35]">
+        Turn On Sync
+      </message>
+      <message name="IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP" desc="This string appears as a subheading a full-page screen that asks users if they want to turn on sync. This string explains to users that they can back up their Chrome/Chromium data and use it on all their computers, phones, and other devices; a user's Chrome/Chromium data includes their bookmarks, passwords, history, settings, and more. The word 'stuff' can be translated as 'data' or similar if there is no natural translation of 'stuff'. Maintain the level of formality that your language generally uses in the Chrome/Chromium app. The tone should be informative and inviting. [iOS only][CHAR_LIMIT=100]">
+        Back up your stuff and use it on any device
+      </message>
+      <message name="IDS_IOS_TANGIBLE_SYNC_SUBTITLE_SYNC" desc="This string appears as a subheading a full-page screen that asks users if they want to turn on sync. This string explains to users that they can get their Chrome data on all their computers, phones, and other devices; a user's Chrome data includes their bookmarks, passwords, history, settings, and more. Maintain the level of formality that your language generally uses in the Chrome app. The tone should be informative and inviting. [iOS only][CHAR_LIMIT=100]">
+        Sync your data on all devices
+      </message>
       <message name="IDS_IOS_TERMS_OF_SERVICE" desc="The label to access the terms of service, displayed in the application settings, with no product name. [Length: 30em] [iOS only]">
         Terms of Service
-      </message>
-      <message name="IDS_IOS_REVIEW_UPDATED_CHROME_TOS" desc="Text displayed on the New Tab Page to notify users of upcoming changes to the Terms of Serice">
-        Chrome’s Terms of Service are changing March 31. <ph name="BEGIN_LINK"><ex>BEGIN_LINK</ex>BEGIN_LINK</ph>Please review<ph name="END_LINK"><ex>END_LINK</ex>END_LINK</ph>
-      </message>
-      <message name="IDS_IOS_SET_DEFAULT_BROWSER" desc="Text displayed on the New Tab Page to notify users of the ability to set Chrome as the default browser">
-          New: Open sites in Chrome automatically by making it your Default Browser App. <ph name="BEGIN_LINK"><ex>BEGIN_LINK</ex>BEGIN_LINK</ph>Open Settings<ph name="END_LINK"><ex>END_LINK</ex>END_LINK</ph>
       </message>
       <message name="IDS_IOS_TEXT_ZOOM_ZOOM_IN" desc="Accessibility label for a button allowing the user to zoom in." meaning="User is asking page to zoom in">
         Zoom In
@@ -2474,11 +3347,11 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TEXT_ZOOM_ZOOM_OUT" desc="Accessibility label for a button allowing the user to zoom out." meaning="User is asking page to zoom out">
         Zoom Out
       </message>
-      <message name="IDS_IOS_TOGGLE_SETTING_SWITCH_ACCESSIBILITY_HINT" desc="Action hint for any switch in settings. This is spoken by VoiceOver. [iOS only]">
-        Double tap to toggle setting
-      </message>
       <message name="IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT" desc="Action hint for any managed switch in settings. This is spoken by VoiceOver. [iOS only]">
         This setting is managed, double tap for more information
+      </message>
+      <message name="IDS_IOS_TOGGLE_SWITCH_ACCESSIBILITY_HINT" desc="Action hint for any switch. This is spoken by VoiceOver. [iOS only]">
+        Double tap to toggle setting
       </message>
       <message name="IDS_IOS_TOOLBAR_CLOSE_MENU" desc="The accessibility label for the toolbar close settings menu button [iOS only].">
         Close Menu
@@ -2498,13 +3371,16 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TOOLS_MENU" desc="The accessibility label for the iOS tools menu [iOS only]">
         Tools Menu
       </message>
-      <message name="IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS" desc="The iOS menu item for adding the current page to the bookmarks. This is a verb  [iOS only]" meaning="Add current page to bookmarks. [Verb]">
-        Bookmark
+      <message name="IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS" desc="The iOS menu item for adding the current page to the bookmarks. [iOS only]">
+        Add to Bookmarks
       </message>
       <message name="IDS_IOS_TOOLS_MENU_BOOKMARKS" desc="The iOS menu item for opening the bookmarks manager [Length: 15em] [iOS only]">
         Bookmarks
       </message>
-      <message name="IDS_IOS_TOOLS_MENU_CLOSE_ALL_INCOGNITO_TABS" desc="The iOS menu item for closing all incognito tabs [iOS only]" meaning="[Length: unlimited]">
+      <message name="IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA" desc="The iOS menu item to open the Clear Browsing Data screen [iOS only]" meaning="[Length: unlimited]">
+        Clear Browsing Data
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_CLOSE_ALL_INCOGNITO_TABS" desc="The iOS menu item for closing all Incognito tabs [iOS only]" meaning="[Length: unlimited]">
         Close All Incognito Tabs
       </message>
       <message name="IDS_IOS_TOOLS_MENU_CLOSE_ALL_TABS" desc="The iOS menu item for closing all tabs [iOS only]" meaning="[Length: unlimited]">
@@ -2515,6 +3391,18 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       </message>
       <message name="IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK" desc="The iOS menu item for editing a bookmark. This is a verb." meaning="Edit the current bookmark [Length: unlimited] [Verb]">
         Edit Bookmark
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_ENTERPRISE_MANAGED" desc="Text displayed to inform the user that the browser is managed by Enterprise policies at the bottom of the overflow menu (without link). [iOS only]">
+        Managed by your organization
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_ENTERPRISE_LEARN_MORE" desc="Link displayed to allow the user to learn more why the browser is managed by Enterprise policies. Shown at the bottom of the overflow menu. [iOS only]">
+        Learn More
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_FOLLOW" desc="The iOS menu item for following web content. [iOS only]">
+        Follow <ph name="DOMAIN_NAME">$1<ex>google.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_UNFOLLOW" desc="The iOS menu item for unfollowing web content. [iOS only]">
+        Unfollow <ph name="DOMAIN_NAME">$1<ex>google.com</ex></ph>
       </message>
       <message name="IDS_IOS_TOOLS_MENU_TRANSLATE" desc="The iOS menu item for translating the current page [iOS only]" meaning="Open the translate infobar [Length: unlimited]">
         Translate
@@ -2531,10 +3419,10 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TOOLS_MENU_HISTORY" desc="The Tools menu item for opening the navigation history menu">
         History
       </message>
-<message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH" desc="The iOS menu item for opening a new incognito tab and doing a new search in that tab." meaning="Do a new search in a new incognito tab">
+<message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH" desc="The iOS menu item for opening a new Incognito tab and doing a new search in that tab." meaning="Do a new search in a new Incognito tab">
 Incognito Search
 </message>
-      <message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB" desc="The iOS menu item for opening a new incognito tab [iOS only]" meaning="Tools menu entry to create a new Incognito tab. [Length: Unlimited]">
+      <message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB" desc="The iOS menu item for opening a new Incognito tab [iOS only]" meaning="Tools menu entry to create a new Incognito tab. [Length: Unlimited]">
         New Incognito Tab
       </message>
 <message name="IDS_IOS_TOOLS_MENU_NEW_SEARCH" desc="The iOS menu item for opening a new tab and doing a new search in that tab." meaning="Do a new search in a new tab">
@@ -2542,6 +3430,12 @@ New Search
 </message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_TAB" desc="The iOS menu item for opening a new tab [iOS only]" meaning="Tools menu entry to create a new tab. [Length: Unlimited]">
         New Tab
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER" desc="The iOS menu item for opening the passwords list [iOS only]">
+        Password Manager
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_PASSWORDS" desc="The iOS menu item for opening the passwords list [iOS only]">
+        Passwords
       </message>
       <message name="IDS_IOS_TOOLS_MENU_PASTE_AND_GO" desc="The iOS menu item for pasting a URL or text in the omnibox and navigating to the page or searching for the text">
         Paste and Go
@@ -2554,6 +3448,15 @@ New Search
       </message>
       <message name="IDS_IOS_TOOLS_MENU_RECENT_TABS" desc="The iOS menu item for opening the panel showing the recently closed tabs and the tabs from other devices." meaning="[In Title case] [iOS only] [Length: Unlimited]">
         Recent Tabs
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME" desc="The iOS menu item for opening a share sheet with the URL to the Chrome app in the iOS app store" meaning="[In Title case] [iOS only] [Length: Unlimited]">
+        Share Chrome
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_TITLE" desc="The title displayed along with the app store link to Chrome, when sharing the chrome app" meaning="[In Title case] [iOS only] [Length: Unlimited]">
+        Chrome for iOS
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_DESC" desc="The description displayed along with the app store link to Chrome, when sharing the chrome app" meaning="[In Title case] [iOS only] [Length: Unlimited]">
+        Get Chrome for iOS
       </message>
       <message name="IDS_IOS_TOOLS_MENU_RELOAD" desc="The title of the button in the menu allowing the user to reload the page.">
         Reload
@@ -2723,9 +3626,6 @@ New Search
       <message name="IDS_IOS_SIGNIN_PROMO_CLOSE_ACCESSIBILITY" desc="Accessibility label to describe the close button action in the sign-in promo element.">
         Close sign-in promo
       </message>
-      <message name="IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL" desc="Acessibility label to describe the action on the sign-in promo. The action of the sign-in promo is to open the user consent view.">
-        Turn on sync for <ph name="NAME">$1<ex>John Doe</ex>.</ph>
-      </message>
       <message name="IDS_IOS_SIGNIN_PROMO_CONTINUE_AS" desc="Button that the user can press to login without asking the password and continue using Chrome with this acccount. [Length: 9em]">
         Continue as <ph name="NAME">$1<ex>John Doe</ex></ph>
       </message>
@@ -2753,7 +3653,7 @@ New Search
       <message name="IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN" desc="Text on the bookmarks context menu to open all selected bookmarks">
         Open All
       </message>
-      <message name="IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN_INCOGNITO" desc="Text on the bookmarks context menu to open selected bookmark in incognito">
+      <message name="IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN_INCOGNITO" desc="Text on the bookmarks context menu to open selected bookmark in Incognito">
         Open in Incognito
       </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE" desc="Text on the bookmarks context menu to move selected bookmark">
@@ -2804,6 +3704,12 @@ New Search
       <message name="IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION" desc="Button label that appears on a button to switch to some other window, when the user has multiple windows open, and one window is showing a dialog that has to be interacted with before any other window can be used.">
           Switch to Open Window
       </message>
+      <message name="IDS_IOS_USER_POLICY_CONTINUE" desc="Label of the button to continue with the current managed account in the User Policy notification dialog. [iOS only] [300em]">
+        Continue
+      </message>
+      <message name="IDS_IOS_USER_POLICY_SIGNOUT_AND_CLEAR_DATA" desc="Label of the button to sign out the current managed account and clear its data in the User Policy notification dialog. [iOS only] [300em]">
+        Sign Out and Clear Data
+      </message>
       <message name="IDS_IOS_APP_SWITCHER_SCENE_TITLE" desc="Shown under the Application title in the OS-level app switcher with the number of tabs in the window">
         {count, plural,
           =0 {{domain}}
@@ -2814,6 +3720,51 @@ New Search
         {count, plural,
           =1 {Now showing 1 Chrome window}
           other {Now showing {count} Chrome windows}}
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_TITLE" desc="Title of the What's new Feature">
+        What's New
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_LEARN_MORE_ACTION_TITLE" desc="Label of the button for users to learn more about a feature or a chrome tip.">
+        Learn more
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_SECTION_CHROME_TIP_TITLE" desc="Title of a section in a table view to inform users about a chrome tip.">
+        Chrome Tip
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_SECTION_FEATURED_TITLE" desc="Title of a section in a table view to inform users about the newest feature.">
+        Featured
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_SECTION_NEW_TITLE" desc="Title of a section in a table view to inform users about new features.">
+        New
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_IPH_TEXT" desc="An in product help message to inform the user about the feature What's New.">
+        Find out what's new in Chrome
+      </message>
+      <message name="IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT" desc="A message to inform the user that a credit card will be saved to their Google Account.">
+        Cards are saved to your Google Account.
+      </message>
+      <message name="IDS_IOS_SHARED_HIGHLIGHT_MENU_TITLE" desc="The title at the top of a menu which appears after a user taps on a highlighted passage in a web page. Title-cased.">
+        Highlighted Text
+      </message>
+      <message name="IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE" desc="An option in a menu which appears after a user taps on a highlighted passage in a web page. When selected, the user will be taken to a help article explaining how the highlighting feature works. Title-cased. [Length: 25em]">
+        Learn More...
+      </message>
+      <message name="IDS_IOS_SHARED_HIGHLIGHT_RESHARE" desc="An option in a menu which appears after a user taps on a highlighted passage in a web page. Selecting this option allows the user to share a link directly to the passage on which they tapped. Title-cased. [Length: 25em]">
+        Share Highlight
+      </message>
+      <message name="IDS_IOS_SHARED_HIGHLIGHT_REMOVE" desc="An option in a menu which appears after a user taps on a highlighted passage in a web page. Selecting this option causes the passage to no longer be highlighted. Title-cased. [Length: 25em]">
+        Remove
+      </message>
+      <message name="IDS_IOS_IPH_BUBBLE_SNOOZE" desc="Label of a button that appears in an in-product help Tip. Pressing this button will dismiss the Tip, the user will be reminded of the same Tip later on. Used as a button title in an info bubble." meaning="Used as a button title in an info bubble.">
+        Remind Me Later
+      </message>
+      <message name="IDS_IOS_PASSWORD_SUGGESTIONS_TIP_TITLE" desc="The title of the tip explaining to the user they can tap on Autofill password suggestions. Used as a title in an info bubble." meaning="Used as a title in an info bubble.">
+        Autofill Passwords
+      </message>
+      <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_PASTE_SEARCH" desc="Accessibility label for a button that starts a Paste and Search [iOS only]">
+        Paste and Search
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_CAROUSEL_TIP" desc="The text of the tip explaining to the user they can use the carousel in the overflow menu.">
+        Your saved bookmarks, passwords, settings, and more are now here
       </message>
     </messages>
   </release>

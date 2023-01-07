@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "base/callback.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 PortAllocator::PortAllocator(
     std::unique_ptr<rtc::NetworkManager> network_manager,
@@ -52,12 +52,13 @@ PortAllocator::PortAllocator(
 PortAllocator::~PortAllocator() = default;
 
 cricket::PortAllocatorSession* PortAllocator::CreateSessionInternal(
-    const std::string& content_name,
+    absl::string_view content_name,
     int component,
-    const std::string& ice_username_fragment,
-    const std::string& ice_password) {
-  return new PortAllocatorSession(this, content_name, component,
-                                  ice_username_fragment, ice_password);
+    absl::string_view ice_username_fragment,
+    absl::string_view ice_password) {
+  return new PortAllocatorSession(this, std::string(content_name), component,
+                                  std::string(ice_username_fragment),
+                                  std::string(ice_password));
 }
 
 PortAllocatorSession::PortAllocatorSession(PortAllocator* allocator,
@@ -103,5 +104,4 @@ PortAllocatorSession::GetPortConfiguration() {
   return config;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

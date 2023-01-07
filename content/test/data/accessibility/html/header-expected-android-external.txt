@@ -1,0 +1,2 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View text:"Chromium Browser" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="header", roleDescription="banner"]

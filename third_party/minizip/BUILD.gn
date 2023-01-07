@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,7 +9,9 @@ config("minizip_compiler_flags") {
     cflags = [
       # mz_zip.c does |UINT_MAX == UINT16_MAX && ...|.
       "-Wno-unreachable-code",
+      "-Wno-unused-but-set-variable",
       "-Wno-unused-function",
+      "-Wno-implicit-fallthrough",
     ]
 
     if (!is_nacl && (target_cpu == "x86" || target_cpu == "x64")) {
@@ -96,7 +98,6 @@ static_library("minizip") {
     # NOTE: Modifying visibility list requires approval from security team.
     ":minizip_compress_fuzzer",
     ":minizip_uncompress_fuzzer",
-    "//chrome/browser/resources/chromeos/zip_archiver/cpp:zip_archiver_library",
   ]
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
-#include "chrome/updater/win/ui/constants.h"
+#include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui.h"
-#include "chrome/updater/win/ui/util.h"
+#include "chrome/updater/win/ui/ui_constants.h"
+#include "chrome/updater/win/ui/ui_util.h"
 
 namespace updater {
 namespace ui {
@@ -29,7 +30,7 @@ constexpr int kAlphaScales[] = {0, 30, 47, 62, 75, 85, 93, kDefaultAlphaScale};
 
 uint8_t AlphaScaleToAlphaValue(int alpha_scale) {
   DCHECK(alpha_scale >= 0 && alpha_scale <= 100);
-  return uint8_t{alpha_scale * 255 / 100};
+  return static_cast<uint8_t>(alpha_scale * 255 / 100);
 }
 
 }  // namespace
@@ -63,6 +64,24 @@ void SplashScreen::Show() {
 
 void SplashScreen::Dismiss(base::OnceClosure on_close_closure) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // After the splash screen is dismissed, but before the progress UI is shown,
+  // there is a brief period of time when there are no windows for the current
+  // process.
+  //
+  // By default, Windows gives the previous foreground process (say the command
+  // line window) the foreground window at this point.
+  //
+  // To allow the subsequent progress UI to get foreground, the following call
+  // to `::LockSetForegroundWindow(LSFW_LOCK)` is made before closing the splash
+  // screen to prevent other applications from making a foreground change in
+  // between.
+  //
+  // To complete the cycle, the progress UI calls
+  // `::LockSetForegroundWindow(LSFW_UNLOCK)` before it calls
+  // `::SetForegroundWindow`.
+  ::LockSetForegroundWindow(LSFW_LOCK);
+
   on_close_closure_ = std::move(on_close_closure);
   switch (state_) {
     case WindowState::STATE_CREATED:
@@ -98,10 +117,9 @@ HRESULT SplashScreen::Initialize() {
 
   EnableSystemButtons(false);
 
-  std::wstring text;
-  LoadString(IDS_SPLASH_SCREEN_MESSAGE, &text);
   CWindow text_wnd = GetDlgItem(IDC_INSTALLER_STATE_TEXT);
-  text_wnd.SetWindowText(text.c_str());
+  text_wnd.SetWindowText(
+      GetLocalizedString(IDS_SPLASH_SCREEN_MESSAGE_BASE).c_str());
   text_wnd.ShowWindow(SW_SHOWNORMAL);
 
   InitProgressBar();
@@ -208,7 +226,7 @@ void SplashScreen::SwitchToState(WindowState new_state) {
     case WindowState::STATE_INITIALIZED:
       break;
     case WindowState::STATE_SHOW_NORMAL:
-      alpha_index_ = base::size(kAlphaScales) - 1;
+      alpha_index_ = std::size(kAlphaScales) - 1;
       break;
     case WindowState::STATE_FADING:
       DCHECK(IsWindow());

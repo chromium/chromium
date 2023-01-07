@@ -1,0 +1,63 @@
+<script type="text/javascript">
+function reportProgress(msg) {
+  if (window.domAutomationController) {
+    window.domAutomationController.send(msg);
+  }
+  console.log(msg);
+}
+
+// These must be "var" rather than "let" for the Telemetry harness to
+// see them.
+var gotDevice;
+var deviceLost;
+var proceed;
+
+const later = (delay) =>
+  new Promise(resolve => setTimeout(resolve, delay));
+
+async function init()
+{
+  reportProgress('LOADED');
+
+  // This bakes in knowledge that GpuDataManagerImplPrivate blocks
+  // WebGPU from fetching an adapter after two device losses on the
+  // same domain.
+  for (idx = 0; idx < 2; ++idx) {
+    let adapter = await navigator.gpu.requestAdapter();
+    if (!adapter) {
+      console.log('TEST FAILED - Could not get a GPUAdapter');
+      reportProgress('FAILED');
+      return;
+    }
+
+    let device;
+    try {
+      device = await adapter.requestDevice();
+      gotDevice = true;
+      deviceLost = false;
+    } catch {
+      console.log('TEST FAILED - Could not get a GPUDevice');
+      reportProgress('FAILED');
+      return;
+    }
+
+    console.log('Waiting for a GPU crash to cause device loss');
+    const {reason} = await device.lost;
+    gotDevice = false;
+    deviceLost = true;
+    if (reason !== undefined) {
+      console.log('TEST FAILED - Expected undefined device lost reason');
+      reportProgress('FAILED');
+    }
+
+    // The harness will tell us when to proceed to the second iteration.
+    while (!proceed) {
+      await later(100);
+    }
+  }
+
+  window.location.href = 'webgpu-domain-blocking-page2.html';
+}
+
+init();
+</script>

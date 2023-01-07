@@ -1,12 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
+#include "components/page_load_metrics/common/page_visit_final_status.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features.h"
+
+using page_load_metrics::PageVisitFinalStatus;
 
 namespace internal {
 
@@ -28,6 +39,34 @@ extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[] =
     "PageLoad.LayoutInstability.CumulativeShiftScore."
     "AfterBackForwardCacheRestore";
 
+const char
+    kAverageUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore
+        [] = "PageLoad.InteractiveTiming."
+             "AverageUserInteractionLatencyOverBudget."
+             "MaxEventDuration.AfterBackForwardCacheRestore";
+const char kNumInteractions_AfterBackForwardCacheRestore[] =
+    "PageLoad.InteractiveTiming.NumInteractions.AfterBackForwardCacheRestore";
+const char
+    kSlowUserInteractionLatencyOverBudgetHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore
+        [] = "PageLoad.InteractiveTiming."
+             "SlowUserInteractionLatencyOverBudget."
+             "HighPercentile2.MaxEventDuration.AfterBackForwardCacheRestore";
+const char
+    kSumOfUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore
+        [] = "PageLoad.InteractiveTiming."
+             "SumOfUserInteractionLatencyOverBudget."
+             "MaxEventDuration.AfterBackForwardCacheRestore";
+const char
+    kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore
+        [] = "PageLoad.InteractiveTiming."
+             "UserInteractionLatency."
+             "HighPercentile2.MaxEventDuration.AfterBackForwardCacheRestore";
+const char
+    kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore
+        [] = "PageLoad.InteractiveTiming."
+             "WorstUserInteractionLatency."
+             "MaxEventDuration.AfterBackForwardCacheRestore";
+
 // Enables to emit zero values for some key metrics when back-forward cache is
 // used.
 //
@@ -45,9 +84,9 @@ extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[] =
 //
 // For cumulative layout shift scores, we use actual score values for back-
 // forward cache navigations instead of 0s.
-const base::Feature kBackForwardCacheEmitZeroSamplesForKeyMetrics{
-    "BackForwardCacheEmitZeroSamplesForKeyMetrics",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBackForwardCacheEmitZeroSamplesForKeyMetrics,
+             "BackForwardCacheEmitZeroSamplesForKeyMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace internal
 
@@ -55,28 +94,115 @@ BackForwardCachePageLoadMetricsObserver::
     BackForwardCachePageLoadMetricsObserver() = default;
 
 BackForwardCachePageLoadMetricsObserver::
-    ~BackForwardCachePageLoadMetricsObserver() = default;
+    ~BackForwardCachePageLoadMetricsObserver() {
+  // TODO(crbug.com/1265307): Revert to the default destructor when we've
+  // figured out why sometimes page end metrics are not logged.
+  if (back_forward_cache_navigation_ids_.size() > 0) {
+    DCHECK(logged_page_end_metrics_);
+  }
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+BackForwardCachePageLoadMetricsObserver::OnStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url,
+    bool started_in_foreground) {
+  was_hidden_ = !started_in_foreground;
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+BackForwardCachePageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // TODO(https://crbug.com/1251387): This must be updated when FencedFrames
+  // supports back/forward cache.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+BackForwardCachePageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class mainly interested in the behavior after entreing Back/Forward
+  // Cache. Works as same as non prerendering case.
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+BackForwardCachePageLoadMetricsObserver::OnHidden(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (!in_back_forward_cache_) {
+    MaybeRecordForegroundDurationAfterBackForwardCacheRestore(
+        base::DefaultTickClock::GetInstance(),
+        /*app_entering_background=*/false);
+  }
+  was_hidden_ = true;
+  return CONTINUE_OBSERVING;
+}
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 BackForwardCachePageLoadMetricsObserver::OnEnterBackForwardCache(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   in_back_forward_cache_ = true;
-  MaybeRecordLayoutShiftScoreAfterBackForwardCacheRestore(timing);
+  RecordMetricsOnPageVisitEnd(timing, /*app_entering_background=*/false);
+  has_ever_entered_back_forward_cache_ = true;
   return CONTINUE_OBSERVING;
 }
 
 void BackForwardCachePageLoadMetricsObserver::OnRestoreFromBackForwardCache(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     content::NavigationHandle* navigation_handle) {
+  page_metrics_logged_due_to_backgrounding_ = false;
   in_back_forward_cache_ = false;
   back_forward_cache_navigation_ids_.push_back(
       navigation_handle->GetNavigationId());
+  content::WebContents* web_contents = GetDelegate().GetWebContents();
+  was_hidden_ = web_contents &&
+                web_contents->GetVisibility() == content::Visibility::HIDDEN;
+  logged_page_end_metrics_ = false;
+  restored_main_frame_layout_shift_score_ =
+      GetDelegate().GetMainFrameRenderData().layout_shift_score;
+  restored_layout_shift_score_ =
+      GetDelegate().GetPageRenderData().layout_shift_score;
+  // HistoryNavigation is a singular event, and we share the same instance as
+  // long as we use the same source ID.
+  ukm::builders::HistoryNavigation builder(
+      GetUkmSourceIdForBackForwardCacheRestore(
+          back_forward_cache_navigation_ids_.size() - 1));
+  bool amp_flag = GetDelegate().GetMainFrameMetadata().behavior_flags &
+                  blink::kLoadingBehaviorAmpDocumentLoaded;
+  builder.SetBackForwardCache_IsAmpPage(amp_flag);
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+BackForwardCachePageLoadMetricsObserver::ShouldObserveMimeType(
+    const std::string& mime_type) const {
+  PageLoadMetricsObserver::ObservePolicy policy =
+      PageLoadMetricsObserver::ShouldObserveMimeType(mime_type);
+  if (policy == STOP_OBSERVING && has_ever_entered_back_forward_cache_) {
+    // We should not record UKMs while prerendering. But the page in
+    // prerendering is not eligible for Back/Forward Cache and
+    // `has_ever_entered_back_forward_cache_` implies the page is not in
+    // prerendering. So, we can record UKM safely.
+    DCHECK_NE(GetDelegate().GetPrerenderingState(),
+              page_load_metrics::PrerenderingState::kInPrerendering);
+
+    ukm::builders::UserPerceivedPageVisit(
+        GetLastUkmSourceIdForBackForwardCacheRestore())
+        .SetNotCountedForCoreWebVitals(true)
+        .Record(ukm::UkmRecorder::Get());
+  }
+  return policy;
 }
 
 void BackForwardCachePageLoadMetricsObserver::
     OnFirstPaintAfterBackForwardCacheRestoreInPage(
         const page_load_metrics::mojom::BackForwardCacheTiming& timing,
         size_t index) {
+  if (index >= back_forward_cache_navigation_ids_.size())
+    return;
   auto first_paint = timing.first_paint_after_back_forward_cache_restore;
   DCHECK(!first_paint.is_zero());
   if (page_load_metrics::
@@ -109,6 +235,8 @@ void BackForwardCachePageLoadMetricsObserver::
     OnRequestAnimationFramesAfterBackForwardCacheRestoreInPage(
         const page_load_metrics::mojom::BackForwardCacheTiming& timing,
         size_t index) {
+  if (index >= back_forward_cache_navigation_ids_.size())
+    return;
   auto request_animation_frames =
       timing.request_animation_frames_after_back_forward_cache_restore;
   DCHECK_EQ(request_animation_frames.size(), 3u);
@@ -143,6 +271,8 @@ void BackForwardCachePageLoadMetricsObserver::
     OnFirstInputAfterBackForwardCacheRestoreInPage(
         const page_load_metrics::mojom::BackForwardCacheTiming& timing,
         size_t index) {
+  if (index >= back_forward_cache_navigation_ids_.size())
+    return;
   auto first_input_delay =
       timing.first_input_delay_after_back_forward_cache_restore;
   DCHECK(first_input_delay.has_value());
@@ -151,8 +281,7 @@ void BackForwardCachePageLoadMetricsObserver::
               first_input_delay, GetDelegate(), index)) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramFirstInputDelayAfterBackForwardCacheRestore,
-        *first_input_delay, base::TimeDelta::FromMilliseconds(1),
-        base::TimeDelta::FromSeconds(60), 50);
+        *first_input_delay, base::Milliseconds(1), base::Seconds(60), 50);
 
     // HistoryNavigation is a singular event, and we share the same instance as
     // long as we use the same source ID.
@@ -173,45 +302,147 @@ void BackForwardCachePageLoadMetricsObserver::
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 BackForwardCachePageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  OnComplete(timing);
-  return STOP_OBSERVING;
+  if (!in_back_forward_cache_)
+    RecordMetricsOnPageVisitEnd(timing, /*app_entering_background=*/true);
+  page_metrics_logged_due_to_backgrounding_ = true;
+  return CONTINUE_OBSERVING;
 }
 
 void BackForwardCachePageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   // If the page is in the back-forward cache and OnComplete is called, the page
-  // is evicted from the cache. Do not record CLS here as we have already
-  // recorded it in OnEnterBackForwardCache.
+  // is being evicted from the cache. Do not record metrics here as we have
+  // already recorded them in OnEnterBackForwardCache.
   if (in_back_forward_cache_)
     return;
+  RecordMetricsOnPageVisitEnd(timing, /*app_entering_background=*/false);
+}
 
+void BackForwardCachePageLoadMetricsObserver::RecordMetricsOnPageVisitEnd(
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    bool app_entering_background) {
+  if (page_metrics_logged_due_to_backgrounding_)
+    return;
   MaybeRecordLayoutShiftScoreAfterBackForwardCacheRestore(timing);
+  MaybeRecordPageEndAfterBackForwardCacheRestore(app_entering_background);
+  MaybeRecordForegroundDurationAfterBackForwardCacheRestore(
+      base::DefaultTickClock::GetInstance(), app_entering_background);
+  MaybeRecordNormalizedResponsivenessMetrics();
+
+  if (has_ever_entered_back_forward_cache_) {
+    page_load_metrics::RecordPageVisitFinalStatusForTiming(
+        timing, GetDelegate(), GetLastUkmSourceIdForBackForwardCacheRestore());
+    bool is_user_initiated_navigation =
+        // All browser initiated page loads are user-initiated.
+        GetDelegate().GetUserInitiatedInfo().browser_initiated ||
+        // Renderer-initiated navigations are user-initiated if there is an
+        // associated input event.
+        GetDelegate().GetUserInitiatedInfo().user_input_event;
+    ukm::builders::UserPerceivedPageVisit(
+        GetLastUkmSourceIdForBackForwardCacheRestore())
+        .SetUserInitiated(is_user_initiated_navigation)
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
+void BackForwardCachePageLoadMetricsObserver::
+    MaybeRecordNormalizedResponsivenessMetrics() {
+  if (!has_ever_entered_back_forward_cache_)
+    return;
+  // Normalized Responsiveness Metrics.
+  const page_load_metrics::NormalizedResponsivenessMetrics&
+      normalized_responsiveness_metrics =
+          GetDelegate().GetNormalizedResponsivenessMetrics();
+
+  if (!normalized_responsiveness_metrics.num_user_interactions)
+    return;
+
+  auto& max_event_durations =
+      normalized_responsiveness_metrics.normalized_max_event_durations;
+  // HistoryNavigation is a singular event, and we share the same instance as
+  // long as we use the same source ID.
+  ukm::builders::HistoryNavigation builder(
+      GetLastUkmSourceIdForBackForwardCacheRestore());
+  builder
+      .SetWorstUserInteractionLatencyAfterBackForwardCacheRestore_MaxEventDuration2(
+          max_event_durations.worst_latency.InMilliseconds());
+  UmaHistogramCustomTimes(
+      internal::
+          kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore,
+      max_event_durations.worst_latency, base::Milliseconds(1),
+      base::Seconds(60), 50);
+
+  builder
+      .SetSumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_MaxEventDuration2(
+          max_event_durations.sum_of_latency_over_budget.InMilliseconds());
+
+  builder
+      .SetAverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_MaxEventDuration2(
+          max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
+          normalized_responsiveness_metrics.num_user_interactions);
+
+  base::TimeDelta high_percentile2_max_event_duration = page_load_metrics::
+      ResponsivenessMetricsNormalization::ApproximateHighPercentile(
+          normalized_responsiveness_metrics.num_user_interactions,
+          max_event_durations.worst_ten_latencies);
+  base::TimeDelta high_percentile2_max_event_duration_over_budget =
+      page_load_metrics::ResponsivenessMetricsNormalization::
+          ApproximateHighPercentile(
+              normalized_responsiveness_metrics.num_user_interactions,
+              max_event_durations.worst_ten_latencies_over_budget);
+  builder
+      .SetSlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_HighPercentile2_MaxEventDuration2(
+          high_percentile2_max_event_duration_over_budget.InMilliseconds());
+  builder
+      .SetUserInteractionLatencyAfterBackForwardCacheRestore_HighPercentile2_MaxEventDuration(
+          high_percentile2_max_event_duration.InMilliseconds());
+  builder.SetNumInteractionsAfterBackForwardCacheRestore(
+      ukm::GetExponentialBucketMinForCounts1000(
+          normalized_responsiveness_metrics.num_user_interactions));
+
+  UmaHistogramCustomTimes(
+      internal::
+          kSumOfUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
+      max_event_durations.sum_of_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kAverageUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
+      max_event_durations.sum_of_latency_over_budget /
+          normalized_responsiveness_metrics.num_user_interactions,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kSlowUserInteractionLatencyOverBudgetHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
+      high_percentile2_max_event_duration_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
+      high_percentile2_max_event_duration, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  base::UmaHistogramCounts1000(
+      internal::kNumInteractions_AfterBackForwardCacheRestore,
+      normalized_responsiveness_metrics.num_user_interactions);
+
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void BackForwardCachePageLoadMetricsObserver::
     MaybeRecordLayoutShiftScoreAfterBackForwardCacheRestore(
         const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!last_main_frame_layout_shift_score_.has_value()) {
-    DCHECK(!last_layout_shift_score_.has_value());
-    last_main_frame_layout_shift_score_ =
-        GetDelegate().GetMainFrameRenderData().layout_shift_score;
-    last_layout_shift_score_ =
-        GetDelegate().GetPageRenderData().layout_shift_score;
-
-    // When this function is called first time, the page has not been in back-
-    // forward cache. The scores not after the page is restored from back-
-    // forward cache are recorded in other observers like
-    // UkmPageLoadMetricsObserver.
+  if (!has_ever_entered_back_forward_cache_ ||
+      !restored_main_frame_layout_shift_score_.has_value()) {
     return;
   }
-
+  DCHECK(restored_layout_shift_score_.has_value());
   double layout_main_frame_shift_score =
       GetDelegate().GetMainFrameRenderData().layout_shift_score -
-      last_main_frame_layout_shift_score_.value();
+      restored_main_frame_layout_shift_score_.value();
   DCHECK_GE(layout_main_frame_shift_score, 0);
   double layout_shift_score =
       GetDelegate().GetPageRenderData().layout_shift_score -
-      last_layout_shift_score_.value();
+      restored_layout_shift_score_.value();
   DCHECK_GE(layout_shift_score, 0);
 
   UMA_HISTOGRAM_COUNTS_100(
@@ -232,33 +463,26 @@ void BackForwardCachePageLoadMetricsObserver::
       GetDelegate().GetNormalizedCLSData(
           page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
               RESET);
-  builder
-      .SetAverageCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap5000ms(
-          page_load_metrics::LayoutShiftUkmValue(
-              normalized_cls_data.session_windows_gap5000ms_maxMax_average_cls))
-      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap1000ms(
-          page_load_metrics::LayoutShiftUkmValue(
-              normalized_cls_data.session_windows_gap1000ms_maxMax_max_cls))
-      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap1000ms_Max5000ms(
-          page_load_metrics::LayoutShiftUkmValue(
-              normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls))
-      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SlidingWindow_Duration1000ms(
-          page_load_metrics::LayoutShiftUkmValue(
-              normalized_cls_data.sliding_windows_duration1000ms_max_cls))
-      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SlidingWindow_Duration300ms(
-          page_load_metrics::LayoutShiftUkmValue(
-              normalized_cls_data.sliding_windows_duration300ms_max_cls))
-      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindowByInputs_Gap1000ms_Max5000ms(
-          page_load_metrics::LayoutShiftUkmValue(
-              normalized_cls_data
-                  .session_windows_by_inputs_gap1000ms_max5000ms_max_cls));
+  if (!normalized_cls_data.data_tainted) {
+    builder
+        .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap1000ms_Max5000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data
+                    .session_windows_gap1000ms_max5000ms_max_cls));
+    base::UmaHistogramCounts100(
+        "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+        "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms",
+        page_load_metrics::LayoutShiftUmaValue(
+            normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls));
+    base::UmaHistogramCustomCounts(
+        "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+        "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2",
+        page_load_metrics::LayoutShiftUmaValue10000(
+            normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls),
+        1, 24000, 50);
+  }
 
   builder.Record(ukm::UkmRecorder::Get());
-
-  last_main_frame_layout_shift_score_ =
-      GetDelegate().GetMainFrameRenderData().layout_shift_score;
-  last_layout_shift_score_ =
-      GetDelegate().GetPageRenderData().layout_shift_score;
 
   if (base::FeatureList::IsEnabled(
           internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics)) {
@@ -268,6 +492,72 @@ void BackForwardCachePageLoadMetricsObserver::
     UMA_HISTOGRAM_COUNTS_100(
         "PageLoad.LayoutInstability.CumulativeShiftScore",
         page_load_metrics::LayoutShiftUmaValue(layout_shift_score));
+  }
+}
+
+void BackForwardCachePageLoadMetricsObserver::
+    MaybeRecordPageEndAfterBackForwardCacheRestore(
+        bool app_entering_background) {
+  if (!has_ever_entered_back_forward_cache_)
+    return;
+  auto page_end_reason = GetDelegate().GetPageEndReason();
+  if (page_end_reason == page_load_metrics::PageEndReason::END_NONE &&
+      app_entering_background) {
+    page_end_reason =
+        page_load_metrics::PageEndReason::END_APP_ENTER_BACKGROUND;
+  }
+  // HistoryNavigation is a singular event, and we share the same instance as
+  // long as we use the same source ID.
+  ukm::builders::HistoryNavigation builder(
+      GetLastUkmSourceIdForBackForwardCacheRestore());
+  builder.SetPageEndReasonAfterBackForwardCacheRestore(page_end_reason);
+  builder.Record(ukm::UkmRecorder::Get());
+  logged_page_end_metrics_ = true;
+}
+
+void BackForwardCachePageLoadMetricsObserver::
+    MaybeRecordForegroundDurationAfterBackForwardCacheRestore(
+        const base::TickClock* clock,
+        bool app_entering_background) const {
+  if (!was_hidden_ && has_ever_entered_back_forward_cache_) {
+    // This logic for finding the foreground duration is intended to mimic
+    // page_load_metrics::GetInitialForegroundDuration, but adjusted to
+    // take into account the back forward cache.
+    absl::optional<base::TimeDelta> foreground_duration;
+    DCHECK(back_forward_cache_navigation_ids_.size() >= 1);
+    auto back_forward_state = GetDelegate().GetBackForwardCacheRestore(
+        back_forward_cache_navigation_ids_.size() - 1);
+
+    // If the BFCache restoration happened while not in the foreground, don't
+    // record a foreground duration.
+    if (!back_forward_state.was_in_foreground)
+      return;
+
+    absl::optional<base::TimeDelta> time_to_page_end =
+        GetDelegate().GetPageEndReason() == page_load_metrics::END_NONE
+            ? absl::optional<base::TimeDelta>()
+            : GetDelegate().GetPageEndTime() -
+                  back_forward_state.navigation_start_time;
+
+    // |first_background_time| is actually time-to-first-background here, i.e.
+    // it's a delta, not an absolute time, so does not need to be adjusted by
+    // navigation start time.
+    foreground_duration = page_load_metrics::OptionalMin(
+        back_forward_state.first_background_time, time_to_page_end);
+
+    if (!foreground_duration && app_entering_background) {
+      foreground_duration =
+          clock->NowTicks() - back_forward_state.navigation_start_time;
+    }
+
+    if (foreground_duration.has_value()) {
+      ukm::builders::HistoryNavigation builder(
+          GetLastUkmSourceIdForBackForwardCacheRestore());
+      builder.SetForegroundDurationAfterBackForwardCacheRestore(
+          ukm::GetSemanticBucketMinForDurationTiming(
+              foreground_duration.value().InMilliseconds()));
+      builder.Record(ukm::UkmRecorder::Get());
+    }
   }
 }
 

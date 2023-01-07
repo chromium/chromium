@@ -1,6 +1,5 @@
 include_rules = [
   "+net/base",
-  "+ui/base",
 ]
 
 # TODO(crbug.com/1167566): Remove when fake VariationsServiceClient created.

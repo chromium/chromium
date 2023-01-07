@@ -1,0 +1,18 @@
+<html>
+<body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(function() {
+  function go() {
+    var iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+    var offc = new iframe.contentWindow.OffscreenCanvas(69,69);
+    iframe.remove();
+    var context = offc.getContext("2d");
+  }
+  window.onload = go;
+}, "Verify that calling getContext on an OffscreenCanvas whose parent iframe has been remove does not crash.");
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+// Preserve the initial document.prerendering value.
+const initial_document_prerendering = document.prerendering;
+
+// Records if 'onprerenderingchange' event is triggered at least once.
+let onprerenderingchange_observed = false;
+document.addEventListener('prerenderingchange', e => {
+  onprerenderingchange_observed = true;
+});
+</script>
+</head>
+</html>

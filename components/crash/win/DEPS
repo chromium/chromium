@@ -1,0 +1,3 @@
+include_rules = [
+  "+third_party/crashpad/crashpad/handler/win/wer/crashpad_wer.h",
+]

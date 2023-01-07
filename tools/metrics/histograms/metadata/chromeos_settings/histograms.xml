@@ -1,0 +1,426 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Chrome OS Settings
+histograms along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Prefer owners from the OWNERS file in this directory. If you need a metrics
+reviewer, please send CLs to chromium-metrics-reviews@google.com rather than to
+specific individuals. These CLs will be automatically reassigned to a reviewer
+within about 5 minutes. This approach helps the metrics team to load-balance
+incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram
+    name="ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing"
+    enum="BooleanToggled" expires_after="2022-10-29">
+  <owner>josiahk@chromium.org</owner>
+  <owner>chromium-accessibility@chromium.org</owner>
+  <summary>
+    Records when a user changes the kFullscreenMagnifierFocusFollowing setting
+    on the Accessibility page.
+  </summary>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Accessibility.FullscreenMagnifierMouseFollowingMode"
+    enum="MagnifierMouseFollowingMode" expires_after="2022-12-13">
+  <owner>josiahk@chromium.org</owner>
+  <owner>chromium-accessibility@chromium.org</owner>
+  <summary>
+    Recorded when a user changes the value of the
+    kFullscreenMagnifierMouseFollowingMode setting on the Accessibility page.
+    Records the value of the setting.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Apps.DoNotDisturbOnOff"
+    enum="BooleanToggled" expires_after="2023-03-19">
+  <owner>hsuregan@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <summary>
+    Records when a user changes the kDoNotDisturbOnOff setting in the
+    Notifications subpage of the Apps section.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Bluetooth.BluetoothOnOff"
+    enum="BooleanToggled" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Records when users change the kBluetoothOnOff setting on the Bluetooth page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.BlurredWindowDuration" units="ms"
+    expires_after="2023-08-01">
+  <owner>wesokuhara@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    The amount of time between when the settings window becomes blurred and when
+    the user focuses it again.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Device.KeyboardFunctionKeys"
+    enum="BooleanToggled" expires_after="2023-03-15">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records when a user changes the kKeyboardFunctionKeys setting on the Device
+    page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Device.TouchpadSpeedValue"
+    enum="TouchpadSensitivity" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Records when users change the Touchpad Speed on the Device page. The value
+    saved is equal to the sensitivity value set on the slider, which ranges from
+    1 to 5.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Inputs.ShortcutReminderDismissed"
+    enum="SettingsInputsShortcutReminderState" expires_after="2023-02-19">
+  <owner>mlcui@google.com</owner>
+  <owner>cros-borders@google.com</owner>
+  <summary>
+    Records when users dismiss the shortcut reminder banner in Chrome OS' Inputs
+    OS settings page. The value saved indicates the keyboard shortcuts that were
+    previously shown in the banner before the user dismissed the banner.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Languages.Interaction"
+    enum="SettingsLanguagesPageInteraction" expires_after="2023-02-12">
+  <owner>myy@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Records when users interact with different element in the Chrome OS's
+    Languages OS settings page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Languages.OfferToTranslateCheckbox"
+    enum="BooleanChecked" expires_after="2022-10-12">
+  <owner>myy@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Records when users check/uncheck &quot;Offer to translate pages in this
+    language&quot; checkbox in OS Settings
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Languages.SupportPageVisits"
+    enum="SettingsLanguagesSupportPage" expires_after="2022-10-12">
+  <owner>myy@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Records when users visit a language settings support page for Chrome OS.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ChromeOS.Settings.Languages.Toggle"
+    enum="BooleanToggled" expires_after="2023-02-12">
+<!-- Name completed by histogram_suffixes name="SettingsLanguagesPageToggle" -->
+
+  <owner>myy@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Records when users interact with a toggle in the Chrome OS's Languages OS
+    settings page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.LoadCompletedTime" units="ms"
+    expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    The amount of time between the render frame host StartProvisionalLoad event
+    and the render frame DocumentOnLoadCompleted event for the Chrome OS
+    settings page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.LoadDocumentTime" units="ms"
+    expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    The amount of time between the render frame host StartProvisionalLoad and
+    DidFinishDocumentLoad events for the Chrome OS settings page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.NotificationPage.PermissionOnOff"
+    enum="BooleanToggled" expires_after="2023-03-19">
+  <owner>hsuregan@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <summary>
+    Records when a user changes the notification permission of any app in the
+    Notifications subpage of the Apps section.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.NumCharsOfQueries" units="characters"
+    expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    The number of characters for queries used to fetch results from the Settings
+    Search Mojo API.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ChromeOS.Settings.NumClicksUntilChange"
+    units="clicks" expires_after="2023-03-19">
+<!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
+
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>The number of clicks before changing a setting.</summary>
+</histogram>
+
+<histogram base="true" name="ChromeOS.Settings.NumNavigationsUntilChange"
+    units="navigations" expires_after="2023-01-15">
+<!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
+
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>The number of navigations before changing a setting.</summary>
+</histogram>
+
+<histogram base="true" name="ChromeOS.Settings.NumSearchesUntilChange"
+    units="searches" expires_after="2023-03-19">
+<!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
+
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>The number of searches before changing a setting.</summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.NumSearchResultsFetched" units="results"
+    expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    The number of search results fetched each time a successful search request
+    is made to the Settings Search Mojo API.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.OsBannerInteraction"
+    enum="CrosSettingsOsBannerInteraction" expires_after="2020-12-20">
+  <obsolete>
+    Removed as of 07/2022 (crbug/1231142).
+  </obsolete>
+  <owner>jamescook@chromium.org</owner>
+  <owner>cros-system-services@google.com</owner>
+  <summary>
+    Records whether the &quot;try your Chrome OS settings&quot; banner was shown
+    when the user opened a new Chrome browser settings tab and also records
+    interactions with the banner.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.PathVisited"
+    enum="WebUIOSSettingsPathHashes" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Paths visited within chrome://os-settings. For evaluating popularity and
+    priorities for OS Settings UI.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.People.AddAccountCount" units="accounts"
+    expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Records when users click the Add Account button on the People page. The
+    number of the account that would be added is saved, e.g. a sample of 2 means
+    the user entered the add account dialog for a 2nd account.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Privacy.PeripheralDataAccessProtection"
+    enum="BooleanEnabled" expires_after="2022-11-30">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records when the users clicks on the Peripheral Data Access toggle. A true
+    value refers to the user enables peripheral data access protection (toggle
+    is turned on).
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SearchLatency" units="ms"
+    expires_after="2023-08-01">
+  <owner>wesokuhara@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    The time fetching search results from the Settings Search Mojo API. Recorded
+    when getSearchHandler().search() completes.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SearchRequests"
+    enum="OsSettingSearchRequestTypes" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    The number of search requests made to the Settings Search Mojo API. For
+    search requests that succeeded with a response, the number of search
+    requests that had results which were discarded, and the number of search
+    requests that were shown to the user. Recorded when
+    getSearchHandler().search() completes.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SearchRequestsPerSession"
+    units="mojo search requests" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    The number of search requests made to the Settings Search Mojo API in one
+    session of the settings app.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SearchResultPersonalizationSelected"
+    enum="PersonalizationSearchConceptId" expires_after="2023-04-17">
+  <owner>cowmoo@google.com</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    External personalization search results clicked by user in the OS settings
+    search box.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SearchResultSectionSelected"
+    enum="OsSettingsSection" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Section search results clicked by user in the OS settings search box.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SearchResultSettingSelected"
+    enum="OsSetting" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Setting search results clicked by user in the OS settings search box.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SearchResultSubpageSelected"
+    enum="OsSettingsSubpage" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Subpage search results clicked by user in the OS settings search box.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SearchResultTypeSelected"
+    enum="OsSettingsSearchResultType" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Type of search results clicked by user in the OS settings search box.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SettingChanged" enum="OsSetting"
+    expires_after="2023-08-01">
+  <owner>wesokuhara@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Records the the setting id when the user changes a setting. Note that some
+    of the values of the OsSetting enum aren't strictly settings (such as
+    kKeyboardShortcuts, which is just a hyperlink). All of the recorded values
+    appear in the settings page.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ChromeOS.Settings.TimeUntilChange" units="ms"
+    expires_after="2023-03-19">
+<!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
+
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>
+    The time spent on the settings page before changing a setting.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.UserActionOnSearchResultsShown"
+    enum="OsSettingSearchBoxUserAction" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    The user action taken when search results exist and are displayed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Wifi.AddNetwork"
+    enum="NetworkDiscoveryState" expires_after="2023-02-13">
+  <owner>jonmann@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <owner>tnagel@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <owner>cros-privacy-core@google.com</owner>
+  <summary>
+    Recorded when the user adds a WiFi network that has not been added before.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Wifi.Hidden" enum="BooleanToggled"
+    expires_after="2023-02-13">
+  <owner>jonmann@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <owner>tnagel@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <owner>cros-privacy-core@google.com</owner>
+  <summary>
+    Recorded when the &quot;Hidden&quot; Wi-Fi network toggle is changed by the
+    user.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.WindowOpenDuration" units="ms"
+    expires_after="2023-03-26">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>
+    The amount of time between when a Chrome OS settings window is opened and
+    when it is closed.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

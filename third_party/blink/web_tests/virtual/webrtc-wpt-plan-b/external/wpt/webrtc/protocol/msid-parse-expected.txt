@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Description with no msid produces a track with a stream
-FAIL Description with msid:- appid produces a track with no stream assert_equals: expected 0 but got 1
-FAIL Description with msid:foo bar produces a stream with id foo assert_equals: expected "foo" but got "default"
-FAIL Description with two msid produces two streams assert_equals: expected 2 but got 1
-Harness: the test ran to completion.
-

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <unordered_map>
 
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -119,18 +118,22 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
   // navigation. We need to call Runtime.evaluate to force a roundtrip to the
   // renderer process, and make sure that we notice any pending navigations
   // (see crbug.com/524079).
-  base::DictionaryValue params;
-  params.SetString("expression", "1");
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value::Dict params;
+  params.Set("expression", "1");
+  base::Value result;
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Runtime.evaluate", params, timeout, &result);
-  int value = 0;
   if (status.code() == kDisconnected) {
     // If we receive a kDisconnected status code from Runtime.evaluate, don't
     // wait for pending navigations to complete, since we won't see any more
     // events from it until we reconnect.
     *is_pending = false;
     return Status(kOk);
+  } else if (status.code() == kTargetDetached) {
+    // If we receive a kTargetDetached status code from Runtime.evaluate, don't
+    // wait for pending navigations to complete, since the page has been closed.
+    *is_pending = false;
+    return status;
   } else if (status.code() == kUnexpectedAlertOpen) {
     // The JS event loop is paused while modal dialogs are open, so return
     // control to the test so that it can dismiss the dialog.
@@ -140,8 +143,8 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
              status.message().find(kTargetClosedMessage) != std::string::npos) {
     *is_pending = true;
     return Status(kOk);
-  } else if (status.IsError() || !result->GetInteger("result.value", &value) ||
-             value != 1) {
+  } else if (status.IsError() ||
+             result.FindIntPath("result.value").value_or(0) != 1) {
     return MakeNavigationCheckFailedStatus(status);
   }
 
@@ -152,14 +155,14 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
     // In the case that a http request is sent to server to fetch the page
     // content and the server hasn't responded at all, a dummy page is created
     // for the new window. In such case, the baseURL will be 'about:blank'.
-    base::DictionaryValue empty_params;
-    std::unique_ptr<base::DictionaryValue> result;
-    Status status = client_->SendCommandAndGetResultWithTimeout(
+    base::Value::Dict empty_params;
+    status = client_->SendCommandAndGetResultWithTimeout(
         "DOM.getDocument", empty_params, timeout, &result);
-    std::string base_url;
-    std::string doc_url;
-    if (status.IsError() || !result->GetString("root.baseURL", &base_url) ||
-        !result->GetString("root.documentURL", &doc_url))
+    if (status.IsError())
+      return MakeNavigationCheckFailedStatus(status);
+    std::string* base_url = result.FindStringPath("root.baseURL");
+    std::string* doc_url = result.FindStringPath("root.documentURL");
+    if (!base_url || !doc_url)
       return MakeNavigationCheckFailedStatus(status);
 
     // Need to check current frame valid again to avoid accessing invalid
@@ -170,7 +173,7 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
       return Status(kOk);
     }
 
-    if (doc_url != "about:blank" && base_url == "about:blank") {
+    if (*doc_url != "about:blank" && *base_url == "about:blank") {
       *is_pending = true;
       *loading_state_ = kLoading;
       return Status(kOk);
@@ -188,15 +191,17 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
 
 Status NavigationTracker::CheckFunctionExists(const Timeout* timeout,
                                               bool* exists) {
-  base::DictionaryValue params;
-  params.SetString("expression", "typeof(getWindowInfo)");
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value::Dict params;
+  params.Set("expression", "typeof(getWindowInfo)");
+  base::Value result;
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Runtime.evaluate", params, timeout, &result);
-  std::string type;
-  if (status.IsError() || !result->GetString("result.value", &type))
+  if (status.IsError())
     return MakeNavigationCheckFailedStatus(status);
-  *exists = type == "function";
+  std::string* type = result.FindStringPath("result.value");
+  if (!type)
+    return MakeNavigationCheckFailedStatus(status);
+  *exists = *type == "function";
   return Status(kOk);
 }
 
@@ -212,7 +217,7 @@ Status NavigationTracker::OnConnected(DevToolsClient* client) {
   clearFrameStates();
   initCurrentFrame(kUnknown);
   // Enable page domain notifications to allow tracking navigation state.
-  base::DictionaryValue empty_params;
+  base::Value::Dict empty_params;
   return client_->SendCommand("Page.enable", empty_params);
 }
 
@@ -363,13 +368,13 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
     // If case #3, the URL will be blank if the navigation hasn't been started
     // yet. In that case, expect a load to happen in the future.
     *loading_state_ = kUnknown;
-    base::DictionaryValue params;
-    params.SetString("expression", "document.URL");
-    std::unique_ptr<base::DictionaryValue> result;
+    base::Value::Dict params;
+    params.Set("expression", "document.URL");
+    base::Value result_dict;
     Status status(kOk);
     for (int attempt = 0; attempt < 3; attempt++) {
       status = client_->SendCommandAndGetResultWithTimeout(
-          "Runtime.evaluate", params, &command_timeout, &result);
+          "Runtime.evaluate", params, &command_timeout, &result_dict);
       if (status.code() == kUnknownError &&
           status.message().find(kTargetClosedMessage) != std::string::npos) {
         continue;
@@ -378,10 +383,12 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
       }
     }
 
-    std::string url;
-    if (status.IsError() || !result->GetString("result.value", &url))
+    if (status.IsError())
       return MakeNavigationCheckFailedStatus(status);
-    if (loadingState() == kUnknown && url.empty())
+    std::string* url = result_dict.FindStringPath("result.value");
+    if (!url)
+      return MakeNavigationCheckFailedStatus(status);
+    if (loadingState() == kUnknown && url->empty())
       *loading_state_ = kLoading;
   }
   return Status(kOk);

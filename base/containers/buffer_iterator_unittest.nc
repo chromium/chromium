@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class Complex {
   std::string string_;
 };
 
-#if defined(NCTEST_BUFFER_ITERATOR_CREATE_TYPE_UINT16)  // [r"fatal error: static_assert failed due to requirement 'std::is_same<unsigned short, char>::value || std::is_same<unsigned short, unsigned char>::value' \"Underlying buffer type must be char-type.\""]
+#if defined(NCTEST_BUFFER_ITERATOR_CREATE_TYPE_UINT16)  // [r"fatal error: static_assert failed due to requirement 'std::is_same<unsigned short, char>::value || std::is_same<unsigned short, unsigned char>::value': Underlying buffer type must be char-type."]
 
 void WontCompile() {
   constexpr size_t size = 64;

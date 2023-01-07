@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import java.util.List;
 import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IErrorPageCallbackClient;
+import org.chromium.weblayer_private.interfaces.IExternalIntentInIncognitoCallbackClient;
 import org.chromium.weblayer_private.interfaces.IFaviconFetcher;
 import org.chromium.weblayer_private.interfaces.IFaviconFetcherClient;
 import org.chromium.weblayer_private.interfaces.IFindInPageCallbackClient;
@@ -81,4 +82,7 @@ interface ITab {
 
   // Added in 90
   void addToHomescreen() = 32;
+
+  // Added in 93
+  void setExternalIntentInIncognitoCallbackClient(IExternalIntentInIncognitoCallbackClient client) = 33;
 }

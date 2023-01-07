@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,27 +8,24 @@
 #include <string>
 
 #include "ash/public/cpp/locale_update_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {
-
-class LocaleChangeObserver {
- public:
-  virtual ~LocaleChangeObserver() = default;
-
-  // Called when locale is changed.
-  virtual void OnLocaleChanged() = 0;
-};
 
 // Observes and handles locale change events.
 class LocaleUpdateControllerImpl : public LocaleUpdateController {
  public:
   LocaleUpdateControllerImpl();
+
+  LocaleUpdateControllerImpl(const LocaleUpdateControllerImpl&) = delete;
+  LocaleUpdateControllerImpl& operator=(const LocaleUpdateControllerImpl&) =
+      delete;
+
   ~LocaleUpdateControllerImpl() override;
 
-  void AddObserver(LocaleChangeObserver* observer);
-  void RemoveObserver(LocaleChangeObserver* observer);
+  // LocaleUpdateController:
+  void AddObserver(LocaleChangeObserver* observer) override;
+  void RemoveObserver(LocaleChangeObserver* observer) override;
 
  private:
   // LocaleUpdateController:
@@ -39,8 +36,6 @@ class LocaleUpdateControllerImpl : public LocaleUpdateController {
                            LocaleChangeConfirmationCallback callback) override;
 
   base::ObserverList<LocaleChangeObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleUpdateControllerImpl);
 };
 
 }  // namespace ash

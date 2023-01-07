@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,9 @@
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPoint.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace ash {
 namespace hud_display {
@@ -84,12 +86,13 @@ void Graph::Layout(const gfx::Rect& graph_bounds, const Graph* base) {
 
   // This is the first layer from the start and it is filled and is non-empty.
   if (!base && fill_ != Graph::Fill::NONE && !top_path_.empty()) {
+    gfx::RectF graph_bounds_f(graph_bounds);
     if (baseline_ == Baseline::BASELINE_BOTTOM) {
-      bottom_path_.push_back({graph_bounds.right(), graph_bounds.bottom()});
-      bottom_path_.push_back({top_path_.back().x(), graph_bounds.bottom()});
+      bottom_path_.push_back({graph_bounds_f.right(), graph_bounds_f.bottom()});
+      bottom_path_.push_back({top_path_.back().x(), graph_bounds_f.bottom()});
     } else {
-      bottom_path_.push_back({graph_bounds.right(), graph_bounds.y()});
-      bottom_path_.push_back({top_path_.back().x(), graph_bounds.y()});
+      bottom_path_.push_back({graph_bounds_f.right(), graph_bounds_f.y()});
+      bottom_path_.push_back({top_path_.back().x(), graph_bounds_f.y()});
     }
   }
 }

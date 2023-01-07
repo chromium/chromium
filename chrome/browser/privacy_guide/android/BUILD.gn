@@ -1,0 +1,118 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/privacy_guide/CookiesFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/MSBBFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideBottomSheetView.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideExplanationHeading.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideExplanationItem.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuidePagerAdapter.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/SafeBrowsingFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/StepDisplayHandler.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/StepDisplayHandlerImpl.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/SyncFragment.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/safe_browsing/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_viewpager2_viewpager2_java",
+    "//ui/android:ui_full_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.privacy_guide"
+}
+
+robolectric_library("junit") {
+  sources = [
+    "junit/src/org/chromium/chrome/browser/privacy_guide/CookiesFragmentTest.java",
+    "junit/src/org/chromium/chrome/browser/privacy_guide/MSBBFragmentTest.java",
+    "junit/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuidePagerAdapterTest.java",
+    "junit/src/org/chromium/chrome/browser/privacy_guide/SafeBrowsingFragmentTest.java",
+    "junit/src/org/chromium/chrome/browser/privacy_guide/StepDisplayHandlerImplTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/safe_browsing/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_fragment_fragment_testing_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideFragmentTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/junit:junit",
+    "//ui/android:ui_java_test_support",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/privacy_guide_cookies_image.xml",
+    "java/res/drawable/privacy_guide_done_image.xml",
+    "java/res/drawable/privacy_guide_illustration.xml",
+    "java/res/drawable/privacy_guide_msbb_image.xml",
+    "java/res/drawable/privacy_guide_sb_image.xml",
+    "java/res/drawable/privacy_guide_sync_image.xml",
+    "java/res/layout/privacy_guide_cookies_step.xml",
+    "java/res/layout/privacy_guide_done.xml",
+    "java/res/layout/privacy_guide_explanation_heading.xml",
+    "java/res/layout/privacy_guide_explanation_item.xml",
+    "java/res/layout/privacy_guide_fragment.xml",
+    "java/res/layout/privacy_guide_msbb_step.xml",
+    "java/res/layout/privacy_guide_sb_enhanced_explanation.xml",
+    "java/res/layout/privacy_guide_sb_standard_explanation.xml",
+    "java/res/layout/privacy_guide_sb_step.xml",
+    "java/res/layout/privacy_guide_steps.xml",
+    "java/res/layout/privacy_guide_sync_step.xml",
+    "java/res/layout/privacy_guide_welcome.xml",
+    "java/res/menu/privacy_guide_toolbar_menu.xml",
+    "java/res/values/attrs.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+  ]
+}

@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -57,7 +57,8 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
   MutableCSSPropertyValueSet* CopyProperties() const;
 
   const CSSValue* GetPropertyCSSValue(CSSPropertyID) const;
-  const CSSValue* GetPropertyCSSValue(AtomicString custom_property_name) const;
+  const CSSValue* GetPropertyCSSValue(
+      const AtomicString& custom_property_name) const;
   const CSSValue* GetPropertyCSSValue(const CSSPropertyName&) const;
   HeapHashMap<AtomicString, Member<const CSSValue>> GetVariables() const;
 
@@ -85,9 +86,17 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
   // being queried, if any.
   LayoutObject* StyledLayoutObject() const;
 
+  // If we are updating the style/layout-tree/layout with the intent to
+  // retrieve the computed value of a property, the appropriate
+  // property name/instance must be provided.
+  void UpdateStyleAndLayoutTreeIfNeeded(const CSSPropertyName*) const;
+  void UpdateStyleAndLayoutIfNeeded(const CSSProperty*) const;
+
   // CSSOM functions.
   CSSRule* parentRule() const override;
   const ComputedStyle* ComputeComputedStyle() const;
+  const Vector<AtomicString>* GetVariableNames() const;
+  wtf_size_t GetVariableNamesCount() const;
   String getPropertyValue(const String& property_name) override;
   String getPropertyPriority(const String& property_name) override;
   String GetPropertyShorthand(const String& property_name) override;
@@ -106,8 +115,12 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
                   ExceptionState&) override;
   const CSSValue* GetPropertyCSSValueInternal(CSSPropertyID) override;
   const CSSValue* GetPropertyCSSValueInternal(
-      AtomicString custom_property_name) override;
+      const AtomicString& custom_property_name) override;
   String GetPropertyValueInternal(CSSPropertyID) override;
+  String GetPropertyValueWithHint(const String& property_name,
+                                  unsigned index) override;
+  String GetPropertyPriorityWithHint(const String& property_name,
+                                     unsigned index) override;
   void SetPropertyInternal(CSSPropertyID,
                            const String& custom_property_name,
                            const String& value,
@@ -117,6 +130,7 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
 
   bool CssPropertyMatches(CSSPropertyID, const CSSValue&) const override;
 
+  AtomicString pseudo_argument_;
   Member<Node> node_;
   PseudoId pseudo_element_specifier_;
   bool allow_visited_style_;

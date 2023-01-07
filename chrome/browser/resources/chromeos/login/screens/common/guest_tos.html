@@ -1,0 +1,146 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_shared_style.css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_back_button.html">
+<link rel="import" href="../../components/buttons/oobe_next_button.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/display_manager_types.html">
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/web_view_loader.html">
+<link rel="import" href="../../components/web_view_helper.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_modal_dialog.html">
+
+<dom-module id="guest-tos-element">
+  <template>
+    <style include="oobe-dialog-host-styles">
+      #termsTitle {
+        color: var(--google-grey-900);
+        font-family: var(--oobe-header-font-family);
+        font-size: 18px;
+        font-weight: var(--oobe-header-font-weight);
+        line-height: 24px;
+        margin-bottom: 4px;
+      }
+
+      .tos-webview {
+        display: flex;
+        height: 470px;
+      }
+    </style>
+
+    <!-- LOADING DIALOG -->
+    <oobe-loading-dialog id="loading" for-step="loading" role="dialog"
+        title-key="guestTosLoading"
+        aria-label$="[[i18nDynamic(locale, 'guestTosLoading')]]">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+    </oobe-loading-dialog>
+
+    <!-- Google EULA Dialog -->
+    <oobe-adaptive-dialog id="googleEulaDialog" for-step="google-eula"
+        role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'guestTosGoogleEulaTitle')]]">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'guestTosGoogleEulaTitle')]]
+      </h1>
+      <div slot="content" class="flex layout vertical">
+        <webview id="guestTosGoogleEulaWebview" role="document"
+            class="oobe-tos-webview tos-webview"
+            on-contentload="onGoogleEulaContentLoad_">
+        </webview>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="googleEulaOkButton"
+            class="focus-on-show" inverse on-click="onTermsStepOkClick_"
+            text-key="guestTosOk"></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+
+    <!-- CrOS EULA Dialog -->
+    <oobe-adaptive-dialog id="crosEulaDialog" for-step="cros-eula"
+    role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'guestTosCrosEulaTitle')]]">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'guestTosCrosEulaTitle')]]
+      </h1>
+      <div slot="content" class="flex layout vertical">
+        <webview id="guestTosCrosEulaWebview" role="document"
+            class="oobe-tos-webview tos-webview">
+        </webview>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="crosEulaOkButton"
+            class="focus-on-show" inverse on-click="onTermsStepOkClick_"
+            text-key="guestTosOk"></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+
+    <!-- Loaded Dialog -->
+    <oobe-adaptive-dialog id="loaded" for-step="loaded" role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'guestTosTitle')]]">
+      <iron-icon slot="icon" icon="oobe-32:avatar"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'guestTosTitle')]]
+      </h1>
+      <div slot="content" class="landscape-header-aligned">
+        <div id="termsTitle">
+          [[i18nDynamic(locale, 'guestTosTermsTitle')]]
+        </div>
+        <div id="terms">
+          <div inner-h-t-m-l="[[getTerms_(locale)]]">
+          </div>
+        </div>
+
+        <!-- Usage stats toggle row -->
+        <div id="usageStats" class="layout horizontal center oobe-optin-row">
+          <div class="oobe-optin-content">
+            <span id="usageTitle" class="oobe-optin-title">
+              [[i18nDynamic(locale, 'guestTosUsageOptinTitle')]]
+            </span>
+            [[i18nDynamic(locale, 'guestTosUsageOptin')]]
+            <a id="usageLearnMore" on-click="onUsageLearnMoreClick_"
+                class="oobe-local-link" is="action-link">
+              [[i18nDynamic(locale, 'guestTosLearnMore')]]
+            </a>
+          </div>
+          <cr-toggle id="usageOptin" checked="{{usageChecked}}"
+              aria-describedby="usageTitle">
+          </cr-toggle>
+        </div>
+      </div>
+      <div slot="back-navigation">
+        <oobe-back-button on-click="onBackClick_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-next-button id="acceptButton" inverse on-click="onAcceptClick_"
+            text-key="guestTosAccept" class="focus-on-show">
+        </oobe-next-button>
+      </div>
+    </oobe-adaptive-dialog>
+
+    <oobe-modal-dialog id="usageLearnMorePopUp">
+      <div slot="content">
+        <span inner-h-t-m-l="[[getUsageLearnMoreText_(locale)]]"></span>
+      </div>
+    </oobe-modal-dialog>
+  </template>
+  <script src="guest_tos.js"></script>
+</dom-module>

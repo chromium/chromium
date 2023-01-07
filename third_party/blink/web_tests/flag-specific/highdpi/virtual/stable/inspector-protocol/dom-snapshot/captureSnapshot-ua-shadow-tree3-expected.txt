@@ -162,12 +162,19 @@ Tests that DOMSnapshot properly descends into the shadow tree
                     [9] : 8
                     [10] : 6
                 ]
+                pseudoIdentifier : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
                 pseudoType : {
                     index : [
                     ]
                     value : [
                     ]
                 }
+                shadowRootType : <object>
                 textValue : {
                     index : [
                         [0] : 8

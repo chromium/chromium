@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 #include "url/gurl.h"
@@ -48,6 +47,8 @@ struct InputComponents : public Extension::ManifestData {
 class InputComponentsHandler : public ManifestHandler {
  public:
   InputComponentsHandler();
+  InputComponentsHandler(const InputComponentsHandler&) = delete;
+  InputComponentsHandler& operator=(const InputComponentsHandler&) = delete;
   ~InputComponentsHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
@@ -57,8 +58,6 @@ class InputComponentsHandler : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(InputComponentsHandler);
 };
 
 }  // namespace extensions

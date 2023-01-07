@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,8 +19,8 @@ def TestResponse(code, content):
     response = httplib2.Response({'status': str(code)})
     if code != 200:
       raise request.BuildRequestError(url, response, content)
-    else:
-      return content
+    return content
+
   return Request
 
 

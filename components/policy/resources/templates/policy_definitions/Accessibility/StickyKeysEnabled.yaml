@@ -1,0 +1,19 @@
+caption: Enable sticky keys
+desc: |-
+  Setting the policy to True keeps sticky keys on. Setting the policy to False keeps sticky keys off.
+
+        If you set the policy, users can't change it. If not set, sticky keys is off at first, but users can turn it on any time.
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- amraboelkher@chromium.org
+- emaxx@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:76-
+tags: []
+type: main

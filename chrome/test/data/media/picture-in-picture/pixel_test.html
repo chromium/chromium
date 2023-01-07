@@ -9,20 +9,28 @@
 <script>
   const video = document.querySelector('video');
 
-  function isInPictureInPicture() {
-    window.domAutomationController.send(document.pictureInPictureElement == video);
+  async function enterPictureInPicture() {
+    await _waitForMetadata();
+    await video.requestPictureInPicture();
+    return true;
   }
 
-  function enterPictureInPicture() {
-    video.requestPictureInPicture()
-    .then(_ => window.domAutomationController.send(true))
-    .catch(_ => window.domAutomationController.send(false));
+  function _waitForMetadata() {
+    return new Promise(resolve => {
+      if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+        resolve();
+        return;
+      }
+
+      video.addEventListener('loadedmetadata', () => {
+        resolve();
+      }, { once: true });
+    });
   }
 
-  function ensureVideoIsPlaying() {
-    video.play()
-    .then(_ => { window.domAutomationController.send(true); })
-    .catch(e => { window.domAutomationController.send(false); });
+  async function play() {
+    await video.play();
+    return true;
   }
 </script>
 </html>

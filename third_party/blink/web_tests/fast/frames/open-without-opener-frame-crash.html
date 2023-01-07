@@ -12,7 +12,7 @@ window.jsTestIsAsync = true;
 if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 (function() {

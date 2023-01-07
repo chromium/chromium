@@ -2,7 +2,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_PARAGRAPH
 ++++ROLE_SYSTEM_STATICTEXT name='The aside tag defines some content aside from the content it is placed in.'
 ++IA2_ROLE_LANDMARK xml-roles:complementary
-++++IA2_ROLE_HEADING name='Aside tag' xml-roles:heading
+++++IA2_ROLE_HEADING name='Aside tag'
 ++++++ROLE_SYSTEM_STATICTEXT name='Aside tag'
 ++++IA2_ROLE_PARAGRAPH
 ++++++ROLE_SYSTEM_STATICTEXT name='The aside content should be related to the surrounding content.'

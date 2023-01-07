@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,17 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class AudioParam;
 
-class AudioParamMap final : public ScriptWrappable,
-                            public Maplike<String, AudioParam*> {
+class AudioParamMap final
+    : public ScriptWrappable,
+      public Maplike<String, IDLString, AudioParam*, AudioParam> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -37,9 +39,8 @@ class AudioParamMap final : public ScriptWrappable,
   }
 
  private:
-  PairIterable<String, AudioParam*>::IterationSource* StartIteration(
-      ScriptState*,
-      ExceptionState&) override;
+  PairIterable<String, IDLString, AudioParam*, AudioParam>::IterationSource*
+  StartIteration(ScriptState*, ExceptionState&) override;
   bool GetMapEntry(ScriptState*,
                    const String& key,
                    AudioParam*&,
@@ -50,4 +51,4 @@ class AudioParamMap final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_PARAM_MAP_H_

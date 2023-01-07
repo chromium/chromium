@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_EXPORT, ash::WindowState*)
 
 namespace ash {
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kWebAuthnRequestId, nullptr)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideDuringWindowDragging, false)
 

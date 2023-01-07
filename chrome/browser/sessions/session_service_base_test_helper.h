@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/sessions/core/session_id.h"
 
@@ -91,7 +92,7 @@ class SessionServiceBaseTestHelper {
   explicit SessionServiceBaseTestHelper(SessionServiceBase* base);
 
  private:
-  SessionServiceBase* service_;
+  raw_ptr<SessionServiceBase> service_;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_SERVICE_BASE_TEST_HELPER_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,6 @@
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_REPORT_GENERATOR_DESKTOP_H_
 
 #include "components/enterprise/browser/reporting/report_generator.h"
-
-#include <memory>
-#include <string>
 
 namespace enterprise_reporting {
 
@@ -23,8 +20,7 @@ class ReportGeneratorDesktop : public ReportGenerator::Delegate {
   ~ReportGeneratorDesktop() override = default;
 
   // ReportGenerator::Delegate implementation.
-  void SetAndroidAppInfos(
-      ReportGenerator::ReportRequest* basic_request) override;
+  void SetAndroidAppInfos(ReportRequest* basic_request) override;
 };
 
 }  // namespace enterprise_reporting

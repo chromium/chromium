@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -27,6 +27,13 @@ declare_args() {
   # TODO(crbug/1006769): Switch to perfetto's client library.
   use_perfetto_client_library = false
 
+  # Limits the defined //third_party/android_deps targets to only "buildCompile"
+  # and "buildCompileNoDeps" targets. This is useful for third-party
+  # repositories which do not use JUnit tests. For instance,
+  # limit_android_deps == true removes "gn gen" requirement for
+  # //third_party/robolectric .
+  limit_android_deps = false
+
   # Allows googletest to pretty-print various absl types.  Disabled for nacl due
   # to lack of toolchain support.
   gtest_enable_absl_printers = !is_nacl
@@ -35,22 +42,15 @@ declare_args() {
 # Allows different projects to specify their own suppression/ignore lists for
 # sanitizer tools.
 # asan_suppressions_file = "path/to/asan_suppressions.cc"
-# asan_win_blacklist_path = "path/to/asan/blocklist_win.txt"
+# asan_win_ignorelist_path = "path/to/asan/blocklist_win.txt"
 # lsan_suppressions_file = "path/to/lsan_suppressions.cc"
 # tsan_suppressions_file = "path/to/tsan_suppressions.cc"
-# tsan_blacklist_path = "path/to/tsan/ignores.txt"
-# msan_blacklist_path = "path/to/msan/blacklist.txt"
-# ubsan_blacklist_path = "path/to/ubsan/blacklist.txt"
-# ubsan_vptr_blacklist_path = "path/to/ubsan/vptr_blacklist.txt"
-# ubsan_security_blacklist_path = "path/to/ubsan/security_blacklist.txt"
-# cfi_blacklist_path = "path/to/cfi/ignores.txt"
-
-declare_args() {
-  # Android 32-bit non-component, non-clang builds cannot have symbol_level=2
-  # due to 4GiB file size limit, see https://crbug.com/648948.
-  # Set this flag to true to skip the assertion.
-  ignore_elf32_limitations = false
-}
+# tsan_ignorelist_path = "path/to/tsan/ignores.txt"
+# msan_ignorelist_path = "path/to/msan/ignorelist.txt"
+# ubsan_ignorelist_path = "path/to/ubsan/ignorelist.txt"
+# ubsan_vptr_ignorelist_path = "path/to/ubsan/vptr_ignorelist.txt"
+# ubsan_security_ignorelist_path = "path/to/ubsan/security_ignorelist.txt"
+# cfi_ignorelist_path = "path/to/cfi/ignores.txt"
 
 if (host_os == "mac" || is_apple) {
   # Needed for is_apple when targeting macOS or iOS, independent of host.

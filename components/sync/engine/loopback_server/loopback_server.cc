@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,26 +9,34 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/clamped_math.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
 #include "components/sync/engine/loopback_server/persistent_permanent_entity.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/loopback_server.pb.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
+#include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 
@@ -55,6 +63,14 @@ static const char kOtherBookmarksFolderServerTag[] = "other_bookmarks";
 static const char kOtherBookmarksFolderName[] = "Other Bookmarks";
 static const char kSyncedBookmarksFolderServerTag[] = "synced_bookmarks";
 static const char kSyncedBookmarksFolderName[] = "Synced Bookmarks";
+
+// Returns entity's version without increasing it by one for tombstones. The
+// version is updated and set in SaveEntity() and there is no need to increment
+// it again in CommitResponse. Otherwise, it would be possible that the next
+// commit request would return the same version.
+BASE_FEATURE(kSyncReturnRealVersionOnCommitInLoopbackServer,
+             "SyncReturnRealVersionOnCommitInLoopbackServer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 int GetServerMigrationVersion(
     const std::map<ModelType, int>& server_migration_versions,
@@ -118,7 +134,7 @@ class UpdateSieve {
   UpdateSieve(const sync_pb::GetUpdatesMessage& message,
               const std::map<ModelType, int>& server_migration_versions)
       : UpdateSieve(MessageToVersionMap(message, server_migration_versions)) {}
-  ~UpdateSieve() {}
+  ~UpdateSieve() = default;
 
   // Verifies if MIGRATION_DONE should be exercised. It intentionally returns
   // migrations in the order that they were triggered.  Doing it this way
@@ -130,10 +146,8 @@ class UpdateSieve {
     DCHECK(datatypes_to_migrate);
     datatypes_to_migrate->clear();
 
-    for (const auto& request_version : request_version_map_) {
-      const ModelType type = request_version.first;
-      const int client_migration_version =
-          request_version.second.migration_version();
+    for (const auto& [type, request_version] : request_version_map_) {
+      const int client_migration_version = request_version.migration_version();
 
       const int server_migration_version =
           GetServerMigrationVersion(server_migration_versions, type);
@@ -150,12 +164,11 @@ class UpdateSieve {
   // version between request progress markers and response entities.
   void SetProgressMarkers(
       sync_pb::GetUpdatesResponse* get_updates_response) const {
-    for (const auto& kv : response_version_map_) {
+    for (const auto& [type, response_version] : response_version_map_) {
       sync_pb::DataTypeProgressMarker* new_marker =
           get_updates_response->add_new_progress_marker();
-      new_marker->set_data_type_id(
-          GetSpecificsFieldNumberFromModelType(kv.first));
-      new_marker->set_token(kv.second.ToString());
+      new_marker->set_data_type_id(GetSpecificsFieldNumberFromModelType(type));
+      new_marker->set_token(response_version.ToString());
     }
   }
 
@@ -321,6 +334,10 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
 
   if (message.has_store_birthday() &&
       message.store_birthday() != GetStoreBirthday()) {
+    // The birthday provided by the client does not match the authoritative
+    // value server-side, which in the absence of client-side bugs means that
+    // the birthday was reset (e.g. via ClearServerDataMessage) since the last
+    // time the client interacted with the server.
     response->set_error_code(sync_pb::SyncEnums::NOT_MY_BIRTHDAY);
   } else {
     bool success = false;
@@ -361,7 +378,8 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
       }
     } else if (!throttled_datatypes_in_request.Empty()) {
       DLOG(WARNING) << "Throttled datatypes: "
-                    << ModelTypeSetToString(throttled_datatypes_in_request);
+                    << ModelTypeSetToDebugString(
+                           throttled_datatypes_in_request);
       response->set_error_code(sync_pb::SyncEnums::THROTTLED);
       response->mutable_error()->set_error_type(sync_pb::SyncEnums::THROTTLED);
       for (ModelType type : throttled_datatypes_in_request) {
@@ -371,9 +389,6 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
       // Avoid tests waiting too long after throttling is disabled.
       response->mutable_client_command()->set_throttle_delay_seconds(1);
     } else {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Sync.Local.RequestTypeOnError", message.message_contents(),
-          sync_pb::ClientToServerMessage_Contents_Contents_MAX);
       return net::HTTP_INTERNAL_SERVER_ERROR;
     }
   }
@@ -453,22 +468,19 @@ bool LoopbackServer::HandleGetUpdatesRequest(
   }
 
   std::vector<const LoopbackServerEntity*> wanted_entities;
-  for (const auto& id_and_entity : entities_) {
-    if (sieve->ClientWantsItem(*id_and_entity.second)) {
-      wanted_entities.push_back(id_and_entity.second.get());
+  for (const auto& [id, entity] : entities_) {
+    if (sieve->ClientWantsItem(*entity)) {
+      wanted_entities.push_back(entity.get());
     }
   }
 
-  int max_batch_size = max_get_updates_batch_size_;
-  if (get_updates.batch_size() > 0)
-    max_batch_size = std::min(max_batch_size, get_updates.batch_size());
-
-  if (static_cast<int>(wanted_entities.size()) > max_batch_size) {
-    response->set_changes_remaining(wanted_entities.size() - max_batch_size);
+  if (static_cast<int>(wanted_entities.size()) > max_get_updates_batch_size_) {
+    response->set_changes_remaining(wanted_entities.size() -
+                                    max_get_updates_batch_size_);
     std::partial_sort(wanted_entities.begin(),
-                      wanted_entities.begin() + max_batch_size,
+                      wanted_entities.begin() + max_get_updates_batch_size_,
                       wanted_entities.end(), SortByVersion);
-    wanted_entities.resize(max_batch_size);
+    wanted_entities.resize(max_get_updates_batch_size_);
   }
 
   bool send_encryption_keys_based_on_nigori = false;
@@ -487,7 +499,7 @@ bool LoopbackServer::HandleGetUpdatesRequest(
 
   if (send_encryption_keys_based_on_nigori ||
       get_updates.need_encryption_key()) {
-    for (const auto& key : keystore_keys_) {
+    for (const std::vector<uint8_t>& key : keystore_keys_) {
       response->add_encryption_keys(key.data(), key.size());
     }
   }
@@ -578,7 +590,9 @@ void LoopbackServer::BuildEntryResponseForSuccessfulCommit(
                                         : sync_pb::CommitResponse::SUCCESS);
   entry_response->set_id_string(entity.GetId());
 
-  if (entity.IsDeleted()) {
+  if (entity.IsDeleted() &&
+      !base::FeatureList::IsEnabled(
+          kSyncReturnRealVersionOnCommitInLoopbackServer)) {
     entry_response->set_version(entity.GetVersion() + 1);
   } else {
     entry_response->set_version(entity.GetVersion());
@@ -605,15 +619,15 @@ bool LoopbackServer::IsChild(const string& id,
 void LoopbackServer::DeleteChildren(const string& parent_id) {
   std::vector<sync_pb::SyncEntity> tombstones;
   // Find all the children of |parent_id|.
-  for (auto& entity : entities_) {
-    if (IsChild(entity.first, parent_id)) {
+  for (auto& [id, entity] : entities_) {
+    if (IsChild(id, parent_id)) {
       sync_pb::SyncEntity proto;
-      entity.second->SerializeAsProto(&proto);
+      entity->SerializeAsProto(&proto);
       tombstones.emplace_back(proto);
     }
   }
 
-  for (auto& tombstone : tombstones) {
+  for (sync_pb::SyncEntity& tombstone : tombstones) {
     SaveEntity(PersistentTombstoneEntity::CreateFromEntity(tombstone));
   }
 }
@@ -627,10 +641,8 @@ bool LoopbackServer::HandleCommitRequest(
   string guid = commit.cache_guid();
   ModelTypeSet committed_model_types;
 
-  ModelTypeSet enabled_types;
-  for (int field_number : commit.config_params().enabled_type_ids()) {
-    enabled_types.Put(GetModelTypeFromSpecificsFieldNumber(field_number));
-  }
+  ModelTypeSet enabled_types = GetModelTypeSetFromSpecificsFieldNumberList(
+      commit.config_params().enabled_type_ids());
 
   // TODO(pvalenzuela): Add validation of CommitMessage.entries.
   for (const sync_pb::SyncEntity& client_entity : commit.entries()) {
@@ -665,17 +677,37 @@ bool LoopbackServer::HandleCommitRequest(
     DCHECK(iter != entities_.end());
     committed_model_types.Put(iter->second->GetModelType());
 
-    // Notify observers about history having been synced. "History" sync is
-    // guarded by the user's selection in the settings page. This also excludes
-    // custom passphrase users who, in addition to HISTORY_DELETE_DIRECTIVES not
-    // being enabled, will commit encrypted specifics and hence cannot be
-    // iterated over.
-    if (observer_for_tests_ && iter->second->GetModelType() == SESSIONS &&
-        enabled_types.Has(HISTORY_DELETE_DIRECTIVES) &&
-        enabled_types.Has(TYPED_URLS)) {
-      for (const sync_pb::TabNavigation& navigation :
-           client_entity.specifics().session().tab().navigation()) {
-        observer_for_tests_->OnHistoryCommit(navigation.virtual_url());
+    // Notify observers about history having been synced. There are two
+    // iterations of "History sync" both guarded by the user's selection in the
+    // settings page:
+    // 1) The "old" one based on SESSIONS data, only enabled if TYPED_URLS and
+    //    HISTORY_DELETE_DIRECTIVES are also enabled. Note that for custom
+    //    passphrase users, HISTORY_DELETE_DIRECTIVES will not be enabled (and
+    //    since they commit encrypted specifics, the server couldn't inspect the
+    //    data anyway).
+    // 2) The "new" one based on a dedicated HISTORY data type. This data type
+    //    is itself disabled for custom passphrase users.
+    // In practice, at most one of TYPED_URLS or HISTORY can be enabled at the
+    // same time, so OnHistoryCommit() gets called at most once per URL.
+    DCHECK(!(enabled_types.Has(TYPED_URLS) && enabled_types.Has(HISTORY)));
+    if (observer_for_tests_) {
+      if (iter->second->GetModelType() == SESSIONS &&
+          enabled_types.Has(HISTORY_DELETE_DIRECTIVES) &&
+          enabled_types.Has(TYPED_URLS)) {
+        // "Old" history sync.
+        for (const sync_pb::TabNavigation& navigation :
+             client_entity.specifics().session().tab().navigation()) {
+          observer_for_tests_->OnHistoryCommit(navigation.virtual_url());
+        }
+      } else if (iter->second->GetModelType() == HISTORY) {
+        // "New" history sync.
+        const sync_pb::HistorySpecifics& specifics =
+            client_entity.specifics().history();
+        // The last entry of the redirect chain is the "actual" URL. In the case
+        // of no redirects, the "chain" has only a single entry.
+        observer_for_tests_->OnHistoryCommit(
+            specifics.redirect_entries(specifics.redirect_entries_size() - 1)
+                .url());
       }
     }
   }
@@ -695,6 +727,15 @@ void LoopbackServer::ClearServerData() {
   Init();
 }
 
+void LoopbackServer::DeleteAllEntitiesForModelType(ModelType model_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto should_delete_entry = [model_type](const auto& id_and_entity) {
+    return id_and_entity.second->GetModelType() == model_type;
+  };
+  base::EraseIf(entities_, should_delete_entry);
+  ScheduleSaveStateToFile();
+}
+
 std::string LoopbackServer::GetStoreBirthday() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::NumberToString(store_birthday_);
@@ -704,12 +745,11 @@ std::vector<sync_pb::SyncEntity> LoopbackServer::GetSyncEntitiesByModelType(
     ModelType model_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<sync_pb::SyncEntity> sync_entities;
-  for (const auto& kv : entities_) {
-    const LoopbackServerEntity& entity = *kv.second;
-    if (!(entity.IsDeleted() || entity.IsPermanent()) &&
-        entity.GetModelType() == model_type) {
+  for (const auto& [id, entity] : entities_) {
+    if (!(entity->IsDeleted() || entity->IsPermanent()) &&
+        entity->GetModelType() == model_type) {
       sync_pb::SyncEntity sync_entity;
-      entity.SerializeAsProto(&sync_entity);
+      entity->SerializeAsProto(&sync_entity);
       sync_entities.push_back(sync_entity);
     }
   }
@@ -720,12 +760,11 @@ std::vector<sync_pb::SyncEntity>
 LoopbackServer::GetPermanentSyncEntitiesByModelType(ModelType model_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<sync_pb::SyncEntity> sync_entities;
-  for (const auto& kv : entities_) {
-    const LoopbackServerEntity& entity = *kv.second;
-    if (!entity.IsDeleted() && entity.IsPermanent() &&
-        entity.GetModelType() == model_type) {
+  for (const auto& [id, entity] : entities_) {
+    if (!entity->IsDeleted() && entity->IsPermanent() &&
+        entity->GetModelType() == model_type) {
       sync_pb::SyncEntity sync_entity;
-      entity.SerializeAsProto(&sync_entity);
+      entity->SerializeAsProto(&sync_entity);
       sync_entities.push_back(sync_entity);
     }
   }
@@ -738,30 +777,29 @@ LoopbackServer::GetEntitiesAsDictionaryValue() {
   std::unique_ptr<base::DictionaryValue> dictionary(
       new base::DictionaryValue());
 
-  // Initialize an empty ListValue for all ModelTypes.
+  // Initialize an empty Value::List for all ModelTypes.
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType type : all_types) {
-    dictionary->Set(ModelTypeToString(type),
-                    std::make_unique<base::ListValue>());
+    dictionary->SetKey(ModelTypeToDebugString(type),
+                       base::Value(base::Value::Type::LIST));
   }
 
-  for (const auto& kv : entities_) {
-    const LoopbackServerEntity& entity = *kv.second;
-    if (entity.IsDeleted() || entity.IsPermanent()) {
+  for (const auto& [id, entity] : entities_) {
+    if (entity->IsDeleted() || entity->IsPermanent()) {
       // Tombstones are ignored as they don't represent current data. Folders
       // are also ignored as current verification infrastructure does not
       // consider them.
       continue;
     }
-    base::ListValue* list_value;
-    if (!dictionary->GetList(ModelTypeToString(entity.GetModelType()),
-                             &list_value)) {
-      return std::unique_ptr<base::DictionaryValue>();
+    base::Value* list_value;
+    if (!dictionary->Get(ModelTypeToDebugString(entity->GetModelType()),
+                         &list_value)) {
+      return nullptr;
     }
     // TODO(pvalenzuela): Store more data for each entity so additional
     // verification can be performed. One example of additional verification
     // is checking the correctness of the bookmark hierarchy.
-    list_value->AppendString(entity.GetName());
+    list_value->Append(entity->GetName());
   }
 
   return dictionary;
@@ -812,11 +850,12 @@ void LoopbackServer::SerializeState(sync_pb::LoopbackServerProto* proto) const {
   proto->set_version(kCurrentLoopbackServerProtoVersion);
   proto->set_store_birthday(store_birthday_);
   proto->set_last_version_assigned(version_);
-  for (const auto& key : keystore_keys_)
+  for (const std::vector<uint8_t>& key : keystore_keys_)
     proto->add_keystore_keys(key.data(), key.size());
-  for (const auto& entity : entities_) {
-    auto* new_entity = proto->mutable_entities()->Add();
-    entity.second->SerializeAsLoopbackServerEntity(new_entity);
+  for (const auto& [id, entity] : entities_) {
+    sync_pb::LoopbackServerEntity* new_entity =
+        proto->mutable_entities()->Add();
+    entity->SerializeAsLoopbackServerEntity(new_entity);
   }
 }
 
@@ -874,17 +913,17 @@ bool LoopbackServer::LoadStateFromFile() {
 
   // Ensures local sync file can be opened, read, and is not being written to.
   // Also makes sure file will not be written to during serialization.
-  base::File state_file(persistent_file_, base::File::FLAG_OPEN |
-                                              base::File::FLAG_READ |
-                                              base::File::FLAG_EXCLUSIVE_WRITE);
+  base::File state_file(persistent_file_,
+                        base::File::FLAG_OPEN | base::File::FLAG_READ |
+                            base::File::FLAG_WIN_EXCLUSIVE_WRITE);
   base::File::Error state_file_error = state_file.error_details();
 
   if (state_file_error != base::File::FILE_OK) {
     UMA_HISTOGRAM_ENUMERATION("Sync.Local.ReadPlatformFileError",
                               -state_file_error, -base::File::FILE_ERROR_MAX);
-    LOG(ERROR)
-        << "Loopback sync cannot read the persistent state file with error "
-        << base::File::ErrorToString(state_file_error);
+    LOG(ERROR) << "Loopback sync cannot read the persistent state file ("
+               << persistent_file_ << ") with error "
+               << base::File::ErrorToString(state_file_error);
     return false;
   }
 
@@ -894,10 +933,12 @@ bool LoopbackServer::LoadStateFromFile() {
     if (serialized.length() > 0 && proto.ParseFromString(serialized)) {
       return DeSerializeState(proto);
     }
-    LOG(ERROR) << "Loopback sync cannot parse the persistent state file.";
+    LOG(ERROR) << "Loopback sync cannot parse the persistent state file ("
+               << persistent_file_ << ").";
     return false;
   }
-  LOG(ERROR) << "Loopback sync cannot read the persistent state file.";
+  LOG(ERROR) << "Loopback sync cannot read the persistent state file ("
+             << persistent_file_ << ").";
   return false;
 }
 

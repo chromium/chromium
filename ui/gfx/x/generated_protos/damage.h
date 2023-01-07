@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xfixes.h"
@@ -92,6 +92,9 @@ class COMPONENT_EXPORT(X11) Damage {
 
   struct BadDamageError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
@@ -99,7 +102,6 @@ class COMPONENT_EXPORT(X11) Damage {
   struct NotifyEvent {
     static constexpr int type_id = 1;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     ReportLevel level{};
     uint16_t sequence{};
     Drawable drawable{};

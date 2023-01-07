@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,9 @@
 #include "base/compiler_specific.h"
 #include "base/debug/stack_trace.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
@@ -99,8 +100,8 @@ class LevelDBScope::UndoLogWriter : public leveldb::WriteBatch::Handler {
   const leveldb::Status& error() const { return error_; }
 
  private:
-  LevelDBScope* const scope_;
-  leveldb::DB* const db_;
+  const raw_ptr<LevelDBScope> scope_;
+  const raw_ptr<leveldb::DB> db_;
   std::string read_buffer_;
   leveldb::Status error_ = leveldb::Status::OK();
 };
@@ -109,6 +110,8 @@ LevelDBScope::EmptyRangeLessThan::EmptyRangeLessThan() = default;
 LevelDBScope::EmptyRangeLessThan::EmptyRangeLessThan(
     const leveldb::Comparator* comparator)
     : comparator_(comparator) {}
+LevelDBScope::EmptyRangeLessThan::EmptyRangeLessThan(
+    const LevelDBScope::EmptyRangeLessThan& other) = default;
 LevelDBScope::EmptyRangeLessThan& LevelDBScope::EmptyRangeLessThan::operator=(
     const LevelDBScope::EmptyRangeLessThan& other) = default;
 
@@ -123,7 +126,7 @@ LevelDBScope::LevelDBScope(
     std::vector<uint8_t> prefix,
     size_t write_batch_size,
     scoped_refptr<LevelDBState> level_db,
-    std::vector<ScopeLock> locks,
+    std::vector<PartitionedLock> locks,
     std::vector<std::pair<std::string, std::string>> empty_ranges,
     RollbackCallback rollback_callback,
     TearDownCallback tear_down_callback)
@@ -417,7 +420,7 @@ void LevelDBScope::SetModeToUndoLog() {
   mode_ = Mode::kUndoLogOnDisk;
 
   LevelDBScopesScopeMetadata metadata;
-  for (ScopeLock& lock : locks_) {
+  for (PartitionedLock& lock : locks_) {
     auto* lock_proto = metadata.add_locks();
     lock_proto->set_level(lock.level());
     auto* range = lock_proto->mutable_range();

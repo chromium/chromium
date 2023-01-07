@@ -1,17 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_NETWORK_QUALITY_TRACKER_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_NETWORK_QUALITY_TRACKER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/nqe/effective_connection_type.h"
 #include "services/network/public/mojom/network_quality_estimator_manager.mojom.h"
@@ -28,6 +26,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkQualityTracker
  public:
   class COMPONENT_EXPORT(NETWORK_CPP) EffectiveConnectionTypeObserver {
    public:
+    EffectiveConnectionTypeObserver(const EffectiveConnectionTypeObserver&) =
+        delete;
+    EffectiveConnectionTypeObserver& operator=(
+        const EffectiveConnectionTypeObserver&) = delete;
+
     // Called when there is a change in the effective connection type. The
     // |observer| is notified of the current effective connection type on the
     // same thread on which it was added.
@@ -37,9 +40,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkQualityTracker
    protected:
     EffectiveConnectionTypeObserver() {}
     virtual ~EffectiveConnectionTypeObserver() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(EffectiveConnectionTypeObserver);
   };
 
   // Observes changes in the HTTP RTT, transport RTT or downstream throughput
@@ -57,13 +57,15 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkQualityTracker
         base::TimeDelta transport_rtt,
         int32_t downstream_throughput_kbps) = 0;
 
+    RTTAndThroughputEstimatesObserver(
+        const RTTAndThroughputEstimatesObserver&) = delete;
+    RTTAndThroughputEstimatesObserver& operator=(
+        const RTTAndThroughputEstimatesObserver&) = delete;
+
     virtual ~RTTAndThroughputEstimatesObserver() {}
 
    protected:
     RTTAndThroughputEstimatesObserver() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(RTTAndThroughputEstimatesObserver);
   };
 
   // Running the |callback| returns the network service in use.
@@ -71,6 +73,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkQualityTracker
   // service.
   explicit NetworkQualityTracker(
       base::RepeatingCallback<network::mojom::NetworkService*()> callback);
+
+  NetworkQualityTracker(const NetworkQualityTracker&) = delete;
+  NetworkQualityTracker& operator=(const NetworkQualityTracker&) = delete;
 
   ~NetworkQualityTracker() override;
 
@@ -182,8 +187,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkQualityTracker
       receiver_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityTracker);
 };
 
 }  // namespace network

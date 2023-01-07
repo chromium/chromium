@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,6 +8,8 @@ static_library("webui") {
     "mojo_bubble_web_ui_controller.h",
     "mojo_web_ui_controller.cc",
     "mojo_web_ui_controller.h",
+    "untrusted_bubble_web_ui_controller.cc",
+    "untrusted_bubble_web_ui_controller.h",
     "untrusted_web_ui_controller.cc",
     "untrusted_web_ui_controller.h",
     "untrusted_web_ui_controller_factory.cc",
@@ -16,8 +18,6 @@ static_library("webui") {
     "webui_allowlist.h",
     "webui_allowlist_provider.cc",
     "webui_allowlist_provider.h",
-    "webui_config.cc",
-    "webui_config.h",
   ]
 
   deps = [
@@ -26,6 +26,24 @@ static_library("webui") {
     "//content/public/browser",
     "//services/service_manager/public/cpp",
   ]
+
+  public_deps = [
+    "//ui/webui/resources/js/browser_command:mojo_bindings",
+    "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
+  ]
+
+  if (!is_android && !is_ios) {
+    public_deps += [
+      "//ui/webui/resources/cr_components/color_change_listener:mojom",
+      "//ui/webui/resources/cr_components/customize_themes:mojom",
+      "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
+      "//ui/webui/resources/cr_components/most_visited:mojom",
+    ]
+    sources += [
+      "color_change_listener/color_change_handler.cc",
+      "color_change_listener/color_change_handler.h",
+    ]
+  }
 }
 
 source_set("test_support") {

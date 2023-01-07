@@ -10,8 +10,10 @@ include_rules = [
   # necessary for filtered listeners and do not themselves include any
   # extensions system knowledge.
   "+extensions/common/event_filter.h",
-  "+extensions/common/event_filtering_info.h",
   "+extensions/common/event_matcher.h",
+  "+extensions/common/mojom/event_dispatcher.mojom.h",
+  "+extensions/common/mojom/event_dispatcher.mojom-forward.h",
+  "+extensions/common/mojom/extra_response_data.mojom.h",
   "+extensions/common/value_counter.h",
 ]
 

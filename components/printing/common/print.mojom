@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,9 +25,10 @@ struct PreviewIds {
 // Parameters required to do print preview.
 [EnableIf=enable_print_preview]
 struct RequestPrintPreviewParams {
+  [EnableIf=is_chromeos_ash]
   bool is_from_arc = false;
+
   bool is_modifiable = false;
-  bool is_pdf = false;
   bool webnode_only = false;
   bool has_selection = false;
   bool selection_only = false;
@@ -149,6 +150,10 @@ struct PrintParams {
   mojo_base.mojom.String16 footer_template;
   // Whether to rasterize a PDF for printing
   bool rasterize_pdf = false;
+  // Override of the DPI to use if `rasterize_pdf` is true.  A non-positive
+  // value would be an invalid choice of a DPI, and indicates no override
+  // should be applied.
+  int32 rasterize_pdf_dpi = 0;
   // True if print backgrounds is requested by the user.
   bool should_print_backgrounds = false;
   // The document type of printed page(s) from render.
@@ -168,7 +173,7 @@ struct PrintPagesParams {
   // value for all the document.
   PrintParams params;
   // If empty, this means a request to render all the printed pages.
-  array<uint32> pages;
+  array<PageRange> pages;
 };
 
 // Parameters to describe a rendered page.
@@ -193,7 +198,6 @@ struct ScriptedPrintParams {
   uint32 expected_pages_count;
   bool has_selection;
   bool is_scripted;
-  bool is_modifiable;
   MarginType margin_type;
 };
 
@@ -246,9 +250,12 @@ interface PrintPreviewUI {
 
   // Tell the browser print preview found the selected printer has invalid
   // settings (which typically caused by disconnected network printer or
-  // printer driver is bogus).
+  // printer driver is bogus).  Extra information about the error provided in
+  // `details` can assist with debugging.
   [EnableIf=enable_print_preview]
-  PrinterSettingsInvalid(int32 document_cookie, int32 request_id);
+  PrinterSettingsInvalid(int32 document_cookie,
+                         int32 request_id,
+                         string details);
 
   // Notifies the browser of the default page layout according to the currently
   // selected printer and page size.
@@ -266,6 +273,17 @@ interface PrintPreviewUI {
   DidStartPreview(DidStartPreviewParams params, int32 request_id);
 };
 
+enum PrintFailureReason {
+  kGeneralFailure,
+  kInvalidPageRange,
+  kPrintingInProgress,
+};
+
+union PrintWithParamsResult {
+  DidPrintDocumentParams params;
+  PrintFailureReason failure_reason;
+};
+
 // Render process interface exposed to the browser to handle most of the
 // printing grunt work for RenderView.
 interface PrintRenderFrame {
@@ -273,9 +291,20 @@ interface PrintRenderFrame {
   // requested page, and then switch back the CSS to display media type.
   PrintRequestedPages();
 
+  // Requests the frame to be printed with specified parameters. This is used
+  // to programmatically produce PDF by request from the browser (e.g. over
+  // DevTools protocol) and, unlike other printing code paths, is not designed
+  // around the legacy protocol between renderer and the browser to support
+  // interactive print preview -- the final print settings are supplied by
+  // the caller and printing is completed without further round-trips to the
+  // browser.
+  PrintWithParams(PrintPagesParams params)
+      => (PrintWithParamsResult result);
+
   // Tells the RenderFrame to switch the CSS to print media type, render every
   // requested page using the print preview document's frame/node, and then
   // switch the CSS back to display media type.
+  [EnableIf=enable_print_preview]
   PrintForSystemDialog();
 
   // Tells the RenderFrame to initiate print preview for the entire document.
@@ -312,6 +341,12 @@ interface PrintRenderFrame {
   // Tells the RenderFrame to initiate printing or print preview for a
   // particular node, depending on which mode the RenderFrame is in.
   PrintNodeUnderContextMenu();
+
+  // Prints the content as a snapshot of the page to be analyzed for sensitive
+  // content.
+  [EnableIf=enable_print_content_analysis]
+  SnapshotForContentAnalysis()
+      => (DidPrintDocumentParams params);
 };
 
 // Browser process interface exposed to the renderer to handle the general
@@ -321,24 +356,9 @@ interface PrintManagerHost {
   // rendered pages according to the specified settings.
   DidGetPrintedPagesCount(int32 cookie, uint32 number_pages);
 
-  // Sends the document cookie of the current printer query to the browser.
-  DidGetDocumentCookie(int32 cookie);
-
-  // Sends the accessibility tree corresponding to a document being
-  // printed, needed for a tagged (accessible) PDF.
-  [EnableIf=enable_tagged_pdf]
-  SetAccessibilityTree(int32 cookie, ax.mojom.AXTreeUpdate accessibility_tree);
-
   // Request the default print settings.
   [Sync]
   GetDefaultPrintSettings() => (PrintParams default_settings);
-
-  // Update the current print settings with new |job_settings|.
-  [Sync]
-  UpdatePrintSettings(
-      int32 cookie,
-      mojo_base.mojom.DictionaryValue job_settings)
-      => (PrintPagesParams current_settings, bool canceled);
 
   // Tells the browser that the print dialog has been shown.
   DidShowPrintDialog();
@@ -358,7 +378,14 @@ interface PrintManagerHost {
   ShowInvalidPrinterSettingsError();
 
   // Tells the browser printing failed.
-  PrintingFailed(int32 cookie);
+  PrintingFailed(int32 cookie, PrintFailureReason reason);
+
+  // Update the current print settings with new |job_settings|.
+  [EnableIf=enable_print_preview, Sync]
+  UpdatePrintSettings(
+      int32 cookie,
+      mojo_base.mojom.DictionaryValue job_settings)
+      => (PrintPagesParams current_settings, bool canceled);
 
   // Tells the browser to set up the print preview requested by the script. It
   // runs a nested run loop in the renderer until print preview for
@@ -381,4 +408,11 @@ interface PrintManagerHost {
   // has been cancelled.
   [EnableIf=enable_print_preview, Sync]
   CheckForCancel(int32 preview_ui_id, int32 request_id) => (bool cancel);
+
+  // Sends the accessibility tree corresponding to a document being
+  // printed, needed for a tagged (accessible) PDF. Note that
+  // enable_print_preview must be set to true as well, but Mojo cannot express
+  // that. Instead, this dependency is enforced by GN.
+  [EnableIf=enable_tagged_pdf]
+  SetAccessibilityTree(int32 cookie, ax.mojom.AXTreeUpdate accessibility_tree);
 };

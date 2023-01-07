@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 namespace blink {
 
-void HeapObject::Trace(Visitor* visitor) const {
+void Object::Trace(Visitor* visitor) const {
+  visitor->Trace(m_persistent);
+  visitor->Trace(m_weakPersistent);
   visitor->Trace(m_crossThreadPersistent);
   visitor->Trace(m_crossThreadWeakPersistent);
 }

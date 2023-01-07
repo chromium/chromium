@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,24 +8,33 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/values.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
+enum class BackgroundServiceWorkerType {
+  kClassic,
+  kModule,
+};
+
 class BackgroundInfo : public Extension::ManifestData {
  public:
   BackgroundInfo();
+
+  BackgroundInfo(const BackgroundInfo&) = delete;
+  BackgroundInfo& operator=(const BackgroundInfo&) = delete;
+
   ~BackgroundInfo() override;
 
   static GURL GetBackgroundURL(const Extension* extension);
   static const std::vector<std::string>& GetBackgroundScripts(
       const Extension* extension);
   static const std::string& GetBackgroundServiceWorkerScript(
+      const Extension* extension);
+  static BackgroundServiceWorkerType GetBackgroundServiceWorkerType(
       const Extension* extension);
   static bool HasBackgroundPage(const Extension* extension);
   static bool HasPersistentBackgroundPage(const Extension* extension);
@@ -74,7 +83,10 @@ class BackgroundInfo : public Extension::ManifestData {
   std::vector<std::string> background_scripts_;
 
   // Optional service worker based background script.
-  base::Optional<std::string> background_service_worker_script_;
+  absl::optional<std::string> background_service_worker_script_;
+
+  // Optional service worker based background type.
+  absl::optional<BackgroundServiceWorkerType> background_service_worker_type_;
 
   // True if the background page should stay loaded forever; false if it should
   // load on-demand (when it needs to handle an event). Defaults to true.
@@ -86,14 +98,17 @@ class BackgroundInfo : public Extension::ManifestData {
   // allowing them to run in different processes.
   // Defaults to true.
   bool allow_js_access_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundInfo);
 };
 
 // Parses all background/event page-related keys in the manifest.
 class BackgroundManifestHandler : public ManifestHandler {
  public:
   BackgroundManifestHandler();
+
+  BackgroundManifestHandler(const BackgroundManifestHandler&) = delete;
+  BackgroundManifestHandler& operator=(const BackgroundManifestHandler&) =
+      delete;
+
   ~BackgroundManifestHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
@@ -104,8 +119,6 @@ class BackgroundManifestHandler : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundManifestHandler);
 };
 
 }  // namespace extensions

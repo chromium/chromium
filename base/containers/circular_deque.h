@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/check_op.h"
+#include "base/check.h"
 #include "base/containers/vector_buffer.h"
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "base/template_util.h"
 
 // base::circular_deque is similar to std::deque. Unlike std::deque, the
@@ -298,23 +298,28 @@ class circular_deque_const_iterator {
     // Since circular_deque doesn't guarantee stability, any attempt to
     // dereference this iterator after a mutation (i.e. the generation doesn't
     // match the original) in the container is illegal.
-    DCHECK_EQ(created_generation_, parent_deque_->generation_)
+    DCHECK(created_generation_ == parent_deque_->generation_)
         << "circular_deque iterator dereferenced after mutation.";
   }
   void CheckComparable(const circular_deque_const_iterator& other) const {
-    DCHECK_EQ(parent_deque_, other.parent_deque_);
+    DCHECK(parent_deque_ == other.parent_deque_);
     // Since circular_deque doesn't guarantee stability, two iterators that
     // are compared must have been generated without mutating the container.
     // If this fires, the container was mutated between generating the two
     // iterators being compared.
-    DCHECK_EQ(created_generation_, other.created_generation_);
+    DCHECK(created_generation_ == other.created_generation_);
   }
 #else
   inline void CheckUnstableUsage() const {}
   inline void CheckComparable(const circular_deque_const_iterator&) const {}
 #endif  // DCHECK_IS_ON()
 
-  const circular_deque<T>* parent_deque_;
+  // `parent_deque_` is not a raw_ptr<...> for performance reasons: Usually
+  // on-stack pointer, pointing back to the collection being iterated, owned by
+  // object that iterates over it.  Additionally this is supported by the
+  // analysis of sampling profiler data and tab_search:top100:2020.
+  RAW_PTR_EXCLUSION const circular_deque<T>* parent_deque_;
+
   size_t index_;
 
 #if DCHECK_IS_ON()
@@ -523,11 +528,11 @@ class circular_deque {
     return buffer_[i - right_size];
   }
   value_type& at(size_type i) {
-    return const_cast<value_type&>(base::as_const(*this).at(i));
+    return const_cast<value_type&>(std::as_const(*this).at(i));
   }
 
   value_type& operator[](size_type i) {
-    return const_cast<value_type&>(base::as_const(*this)[i]);
+    return const_cast<value_type&>(std::as_const(*this)[i]);
   }
 
   const value_type& operator[](size_type i) const { return at(i); }
@@ -714,9 +719,12 @@ class circular_deque {
   insert(const_iterator pos, InputIterator first, InputIterator last) {
     ValidateIterator(pos);
 
-    size_t inserted_items = std::distance(first, last);
-    if (inserted_items == 0)
+    const difference_type inserted_items_signed = std::distance(first, last);
+    if (inserted_items_signed == 0)
       return;  // Can divide by 0 when doing modulo below, so return early.
+    CHECK(inserted_items_signed > 0);
+    const size_type inserted_items =
+        static_cast<size_type>(inserted_items_signed);
 
     // Make a hole to copy the items into.
     iterator insert_cur;

@@ -1,0 +1,35 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "event.mojom" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "metrics.structured.mojom.Event"
+          cpp = "::metrics::structured::Event"
+        },
+      ]
+      traits_headers = [ "event_mojom_traits.h" ]
+      traits_sources = [ "event_mojom_traits.cc" ]
+      traits_public_deps = [ "//components/metrics/structured:events" ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "mojom_traits_unittest.cc" ]
+  deps = [
+    ":mojom",
+    "//components/metrics/structured:events",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

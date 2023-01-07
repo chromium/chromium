@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -68,8 +68,9 @@ class WebAppAudioFocusBrowserTest : public WebAppControllerBrowserTest {
   }
 
   content::WebContents* AddTestPageTabAtIndex(int index) {
-    AddTabAtIndex(index, embedded_test_server()->GetURL(kAudioFocusTestPageURL),
-                  ui::PAGE_TRANSITION_TYPED);
+    EXPECT_TRUE(AddTabAtIndex(
+        index, embedded_test_server()->GetURL(kAudioFocusTestPageURL),
+        ui::PAGE_TRANSITION_TYPED));
     content::WebContents* tab =
         browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(tab));
@@ -78,8 +79,7 @@ class WebAppAudioFocusBrowserTest : public WebAppControllerBrowserTest {
 
   const base::UnguessableToken& GetAudioFocusGroupId(
       content::WebContents* web_contents) {
-    WebAppTabHelperBase* helper =
-        WebAppTabHelperBase::FromWebContents(web_contents);
+    WebAppTabHelper* helper = WebAppTabHelper::FromWebContents(web_contents);
     return helper->GetAudioFocusGroupIdForTesting();
   }
 
@@ -128,21 +128,18 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
   // Open a new window from the PWA. It will open in the browser so it should
   // have no group id.
   {
-    content::WebContents* new_contents;
-    OpenWindow(web_contents, app_url, true, true, &new_contents);
+    content::WebContents* new_contents = OpenWindow(web_contents, app_url);
     EXPECT_EQ(base::UnguessableToken::Null(),
               GetAudioFocusGroupId(new_contents));
   }
 
   // Navigate inside the PWA and make sure we keep the same group id.
   {
-    std::string new_query_string = "t=1";
-    url::Component new_query(0, new_query_string.length());
-    url::Replacements<char> replacements;
-    replacements.SetQuery(new_query_string.c_str(), new_query);
+    GURL::Replacements replacements;
+    replacements.SetQueryStr("t=1");
     GURL new_url =
         web_contents->GetLastCommittedURL().ReplaceComponents(replacements);
-    NavigateInRenderer(web_contents, new_url);
+    ASSERT_TRUE(NavigateInRenderer(web_contents, new_url));
     EXPECT_EQ(group_id, GetAudioFocusGroupId(web_contents));
   }
 
@@ -168,7 +165,9 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
 
   // Navigate away and check that the group id is still the same because we are
   // part of the same window.
-  NavigateInRenderer(web_contents, GURL("https://www.example.com"));
+  // TODO(https://crbug.com/1204391): Understand why this returns false.
+  ASSERT_FALSE(
+      NavigateInRenderer(web_contents, GURL("https://www.example.com")));
   EXPECT_EQ(group_id, GetAudioFocusGroupId(web_contents));
 }
 
@@ -178,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, WebAppHasSameAudioFocus) {
 
   AppId app_id = InstallPWA(app_url);
 
-  ui_test_utils::NavigateToURL(browser(), app_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));

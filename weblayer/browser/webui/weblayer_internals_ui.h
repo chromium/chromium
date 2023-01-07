@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,9 @@ class WebLayerInternalsUI : public ui::MojoWebUIController,
  public:
   explicit WebLayerInternalsUI(content::WebUI* web_ui);
 
+  WebLayerInternalsUI(const WebLayerInternalsUI&) = delete;
+  WebLayerInternalsUI& operator=(const WebLayerInternalsUI&) = delete;
+
   ~WebLayerInternalsUI() override;
 
   // Instantiates implementor of the mojom::PageHandler mojo interface
@@ -29,7 +32,7 @@ class WebLayerInternalsUI : public ui::MojoWebUIController,
 
  private:
   // weblayer_internals::mojom::PageHandler:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void GetRemoteDebuggingEnabled(
       GetRemoteDebuggingEnabledCallback callback) override;
   void SetRemoteDebuggingEnabled(bool enabled) override;
@@ -38,8 +41,6 @@ class WebLayerInternalsUI : public ui::MojoWebUIController,
   mojo::Receiver<weblayer_internals::mojom::PageHandler> receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebLayerInternalsUI);
 };
 
 }  // namespace weblayer

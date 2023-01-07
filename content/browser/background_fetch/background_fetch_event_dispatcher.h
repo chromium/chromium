@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_EVENT_DISPATCHER_H_
 
 #include <stdint.h>
-#include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
 namespace content {
 
@@ -24,7 +24,7 @@ class ServiceWorkerRegistration;
 class ServiceWorkerVersion;
 
 // Responsible for dispatching the Background Fetch API events on a given
-// Service Worker. Must only be used on the service worker core thread.
+// Service Worker. Must only be used on the UI thread.
 class CONTENT_EXPORT BackgroundFetchEventDispatcher {
  public:
   // This enumeration is used for recording histograms. Treat as append-only.
@@ -41,6 +41,12 @@ class CONTENT_EXPORT BackgroundFetchEventDispatcher {
       BackgroundFetchContext* background_fetch_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       DevToolsBackgroundServicesContextImpl* devtools_context);
+
+  BackgroundFetchEventDispatcher(const BackgroundFetchEventDispatcher&) =
+      delete;
+  BackgroundFetchEventDispatcher& operator=(
+      const BackgroundFetchEventDispatcher&) = delete;
+
   ~BackgroundFetchEventDispatcher();
 
   // Dispatches one of the update, fail, or success events depending on the
@@ -146,13 +152,11 @@ class CONTENT_EXPORT BackgroundFetchEventDispatcher {
       blink::mojom::BackgroundFetchFailureReason failure_reason);
 
   // |background_fetch_context_| indirectly owns |this|.
-  BackgroundFetchContext* background_fetch_context_;
+  raw_ptr<BackgroundFetchContext> background_fetch_context_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 
   // Owned by BackgroundFetchContext.
-  DevToolsBackgroundServicesContextImpl* devtools_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchEventDispatcher);
+  raw_ptr<DevToolsBackgroundServicesContextImpl> devtools_context_;
 };
 
 }  // namespace content

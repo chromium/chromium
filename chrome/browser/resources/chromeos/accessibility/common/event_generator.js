@@ -1,13 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-goog.provide('EventGenerator');
-
-goog.require('KeyCode');
+import {KeyCode} from './key_code.js';
 
 /** Functions to send synthetic key and mouse events. */
-EventGenerator = class {
+export class EventGenerator {
   /**
    * Sends a single key stroke (down and up) with the given key code and
    *     keyboard modifiers (whether or not CTRL, ALT, SEARCH, and SHIFT are
@@ -38,7 +36,7 @@ EventGenerator = class {
    */
   static sendMouseClick(x, y, params = {
     delayMs: 0,
-    mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT
+    mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT,
   }) {
     if (EventGenerator.currentlyMidMouseClick) {
       EventGenerator.mouseClickQueue.push(arguments);
@@ -85,6 +83,6 @@ EventGenerator = class {
     chrome.accessibilityPrivate.sendSyntheticMouseEvent(
         {type, x, y, touchAccessibility});
   }
-};
+}
 
 EventGenerator.mouseClickQueue = [];

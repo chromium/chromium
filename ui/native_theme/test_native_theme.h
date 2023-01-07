@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_NATIVE_THEME_TEST_NATIVE_THEME_H_
 #define UI_NATIVE_THEME_TEST_NATIVE_THEME_H_
 
-#include "base/macros.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace ui {
@@ -13,6 +12,10 @@ namespace ui {
 class TestNativeTheme : public NativeTheme {
  public:
   TestNativeTheme();
+
+  TestNativeTheme(const TestNativeTheme&) = delete;
+  TestNativeTheme& operator=(const TestNativeTheme&) = delete;
+
   ~TestNativeTheme() override;
 
   // NativeTheme:
@@ -20,12 +23,13 @@ class TestNativeTheme : public NativeTheme {
                         State state,
                         const ExtraParams& extra) const override;
   void Paint(cc::PaintCanvas* canvas,
+             const ui::ColorProvider* color_provider,
              Part part,
              State state,
              const gfx::Rect& rect,
              const ExtraParams& extra,
              ColorScheme color_scheme,
-             const base::Optional<SkColor>& accent_color) const override;
+             const absl::optional<SkColor>& accent_color) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
@@ -43,11 +47,6 @@ class TestNativeTheme : public NativeTheme {
   }
   void AddColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
 
- protected:
-  SkColor GetSystemColorDeprecated(ColorId color_id,
-                                   ColorScheme color_scheme,
-                                   bool apply_processing) const override;
-
  private:
   bool dark_mode_ = false;
   bool contrast_preference_ = false;
@@ -55,8 +54,6 @@ class TestNativeTheme : public NativeTheme {
 
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNativeTheme);
 };
 
 }  // namespace ui

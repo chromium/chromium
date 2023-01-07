@@ -1,8 +1,6 @@
 include_rules = [
     # To only allow a subset of base/ in Blink, we explicitly list all
     # directories and files instead of writing 'base/'.
-    "+base/allocator/buildflags.h",
-    "+base/allocator/partition_allocator",
     "+base/atomic_ref_count.h",
     "+base/auto_reset.h",
     "+base/bind.h",
@@ -17,7 +15,6 @@ include_rules = [
     "+base/metrics/histogram_macros.h",
     "+base/no_destructor.h",
     "+base/numerics",
-    "+base/optional.h",
     "+base/process/process_metrics.h",
     "+base/rand_util.h",
     "+base/stl_util.h",
@@ -29,6 +26,7 @@ include_rules = [
     "+base/threading",
     "+base/time/time.h",
     "+base/tuple.h",
+    "+base/win/windows_types.h",
     # To avoid recursive dependency, we impose a blanket ban on using other
     # platform files. Think carefully if you want to relax this restriction.
     "-third_party/blink/renderer/platform",

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -18,24 +18,19 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MANAGER_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MANAGER_H_
 
-#include <memory>
-#include <string>
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 
 class AccountTrackerService;
 class PrefRegistrySimple;
 class PrefService;
-class PrimaryAccountPolicyManager;
 class ProfileOAuth2TokenService;
 
 namespace signin_metrics {
@@ -61,11 +56,13 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
     kRemoveAllAccounts,
   };
 
-  PrimaryAccountManager(
-      SigninClient* client,
-      ProfileOAuth2TokenService* token_service,
-      AccountTrackerService* account_tracker_service,
-      std::unique_ptr<PrimaryAccountPolicyManager> policy_manager);
+  PrimaryAccountManager(SigninClient* client,
+                        ProfileOAuth2TokenService* token_service,
+                        AccountTrackerService* account_tracker_service);
+
+  PrimaryAccountManager(const PrimaryAccountManager&) = delete;
+  PrimaryAccountManager& operator=(const PrimaryAccountManager&) = delete;
+
   ~PrimaryAccountManager() override;
 
   // Registers per-profile prefs.
@@ -97,15 +94,12 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // convenience wrapper over GetPrimaryAccountInfo().account_id.
   CoreAccountId GetPrimaryAccountId(signin::ConsentLevel consent_level) const;
 
-  // Signs a user in. PrimaryAccountManager assumes that |username| can be used
-  // to look up the corresponding account_id and gaia_id for this email.
-  void SetSyncPrimaryAccountInfo(const CoreAccountInfo& account_info);
-
-  // Sets the unconsented primary account. The unconsented primary account can
-  // only be changed if the user has not consented for sync If the user has
-  // consented for sync already, then use ClearPrimaryAccount() or RevokeSync()
-  // instead.
-  void SetUnconsentedPrimaryAccountInfo(const CoreAccountInfo& account_info);
+  // Sets the primary account with the required consent level. The primary
+  // account can only be changed if the user has not consented for sync. If the
+  // user has consented for sync already, then use ClearPrimaryAccount() or
+  // RevokeSync() instead.
+  void SetPrimaryAccountInfo(const CoreAccountInfo& account_info,
+                             signin::ConsentLevel consent_level);
 
   // Updates the primary account information from AccountTrackerService.
   void UpdatePrimaryAccountInfo();
@@ -144,19 +138,16 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void SetPrimaryAccountInternal(const CoreAccountInfo& account_info,
                                  bool consented_to_sync);
 
-  // Starts the sign out process. If |assert_signout_allowed| is true then
-  // the sign out process will DCHECK if user sign out is not allowed.
+  // Starts the sign out process.
   void StartSignOut(signin_metrics::ProfileSignout signout_source_metric,
                     signin_metrics::SignoutDelete signout_delete_metric,
-                    RemoveAccountsOption remove_option,
-                    bool assert_signout_allowed = false);
+                    RemoveAccountsOption remove_option);
 
   // The sign out process which is started by SigninClient::PreSignOut()
   void OnSignoutDecisionReached(
       signin_metrics::ProfileSignout signout_source_metric,
       signin_metrics::SignoutDelete signout_delete_metric,
       RemoveAccountsOption remove_option,
-      bool assert_signout_allowed,
       SigninClient::SignoutDecision signout_decision);
 
   // Returns the current state of the primary account.
@@ -173,12 +164,12 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
     return primary_account_info_;
   }
 
-  SigninClient* client_;
+  raw_ptr<SigninClient> client_;
 
   // The ProfileOAuth2TokenService instance associated with this object. Must
   // outlive this object.
-  ProfileOAuth2TokenService* token_service_ = nullptr;
-  AccountTrackerService* account_tracker_service_ = nullptr;
+  raw_ptr<ProfileOAuth2TokenService> token_service_ = nullptr;
+  raw_ptr<AccountTrackerService> account_tracker_service_ = nullptr;
 
   bool initialized_ = false;
 
@@ -188,10 +179,7 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // this field.
   CoreAccountInfo primary_account_info_;
 
-  std::unique_ptr<PrimaryAccountPolicyManager> policy_manager_;
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrimaryAccountManager);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MANAGER_H_

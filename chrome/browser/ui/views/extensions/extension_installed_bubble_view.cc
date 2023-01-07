@@ -1,10 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -12,6 +12,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_install_ui_default.h"
@@ -28,18 +29,19 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/views/sync/dice_bubble_sync_promo_view.h"
+#include "chrome/browser/ui/views/sync/bubble_sync_promo_view.h"
 #endif
 
 namespace {
@@ -78,20 +80,17 @@ views::View* AnchorViewForBrowser(const ExtensionInstalledBubbleModel* model,
   return reference_view;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<views::View> CreateSigninPromoView(
     Profile* profile,
     BubbleSyncPromoDelegate* delegate) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS does not show the signin promo.
-  return nullptr;
-#else
-  return std::make_unique<DiceBubbleSyncPromoView>(
+  return std::make_unique<BubbleSyncPromoView>(
       profile, delegate,
       signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
       IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE,
       /*dice_signin_button_prominent=*/true);
-#endif
 }
+#endif
 
 }  // namespace
 
@@ -133,7 +132,7 @@ class ExtensionInstalledBubbleView : public BubbleSyncPromoDelegate,
 
   void LinkClicked();
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
   const std::unique_ptr<ExtensionInstalledBubbleModel> model_;
 };
 
@@ -169,10 +168,11 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
                                    : views::BubbleBorder::TOP_RIGHT),
       browser_(browser),
       model_(std::move(model)) {
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION_INSTALLED);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   if (model_->show_sign_in_promo()) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     SetFootnoteView(CreateSigninPromoView(browser->profile(), this));
+#endif
   }
   SetIcon(model_->MakeIconOfSize(kMaxIconSize));
   SetShowIcon(true);
@@ -218,9 +218,9 @@ void ExtensionInstalledBubbleView::Init() {
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
   layout->set_minimum_cross_axis_size(kRightColumnWidth);
   // Indent by the size of the icon.
-  layout->set_inside_border_insets(gfx::Insets(
+  layout->set_inside_border_insets(gfx::Insets::TLBR(
       0,
-      GetWindowIcon().width() +
+      GetWindowIcon().Size().width() +
           provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL),
       0, 0));
   layout->set_cross_axis_alignment(
@@ -245,7 +245,7 @@ void ExtensionInstalledBubbleView::Init() {
 
 void ExtensionInstalledBubbleView::OnEnableSync(const AccountInfo& account) {
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser_, account,
+      browser_->profile(), account,
       signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE);
   GetWidget()->Close();
 }

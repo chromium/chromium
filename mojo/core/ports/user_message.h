@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <stddef.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 namespace mojo {
 namespace core {
@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessage {
   struct TypeInfo {};
 
   explicit UserMessage(const TypeInfo* type_info);
+
+  UserMessage(const UserMessage&) = delete;
+  UserMessage& operator=(const UserMessage&) = delete;
+
   virtual ~UserMessage();
 
   const TypeInfo* type_info() const { return type_info_; }
@@ -46,9 +50,9 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessage {
   virtual size_t GetSizeIfSerialized() const;
 
  private:
-  const TypeInfo* const type_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserMessage);
+  // `type_info_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data and tab_search:top100:2020).
+  RAW_PTR_EXCLUSION const TypeInfo* const type_info_;
 };
 
 }  // namespace ports

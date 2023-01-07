@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -138,7 +138,7 @@ void TracingObserverTracedValue::MemoryMapsAsValueInto(
                                               is_argument_filtering_enabled));
 
 // The following stats are only well defined on Linux-derived OSes.
-#if !defined(OS_MAC) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
     value->BeginDictionary("bs");  // byte stats
     value->SetString(
         "pss",

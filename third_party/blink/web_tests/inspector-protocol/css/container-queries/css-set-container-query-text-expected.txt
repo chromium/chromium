@@ -1,0 +1,58 @@
+Tests CSS.setContainerQueryText method.
+==== Initial style sheet text ====
+@container ((max-width: 200px) and (min-height: 100px)) {
+  div {
+    color: red;
+  }
+}
+
+
+Running test: testSimpleEdit
+==== Style sheet text ====
+@container ((min-width: 100px) and (max-height: 200px)) {
+  div {
+    color: red;
+  }
+}
+
+
+Running test: testFeatureChange
+==== Style sheet text ====
+@container (min-aspect-ratio: 1 / 1000) {
+  div {
+    color: red;
+  }
+}
+
+
+Running test: testInvalidParameters
+Expected protocol error: Invalid parameters (Failed to deserialize params.range.startLine - BINDINGS: int32 value expected <somewhere>)
+
+Running test: testInvalidText
+Expected protocol error: SyntaxError Selector or container query text is not valid.
+
+Running test: testEditSequentially
+==== Style sheet text ====
+@container (min-width: 50px) {
+  div {
+    color: red;
+  }
+}
+
+==== Style sheet text ====
+@container (min-height: 80px) {
+  div {
+    color: red;
+  }
+}
+
+
+Running test: testAfterSequentially
+==== Style sheet text ====
+@container (min-height: 20px) {
+  div {
+    color: red;
+  }
+}
+
+

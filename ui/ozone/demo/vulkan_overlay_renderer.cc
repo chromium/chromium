@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
@@ -89,7 +90,7 @@ bool VulkanOverlayRenderer::Initialize() {
       /* .pipelineBindPoint = */ VK_PIPELINE_BIND_POINT_GRAPHICS,
       /* .inputAttachmentCount = */ 0,
       /* .pInputAttachments = */ nullptr,
-      /* .colorAttachmentCount = */ base::size(color_attachment_references),
+      /* .colorAttachmentCount = */ std::size(color_attachment_references),
       /* .pColorAttachments = */ color_attachment_references,
       /* .pResolveAttachments = */ nullptr,
       /* .pDepthStencilAttachment = */ nullptr,
@@ -101,9 +102,9 @@ bool VulkanOverlayRenderer::Initialize() {
       /* .sType = */ VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
       /* .pNext = */ nullptr,
       /* .flags = */ 0,
-      /* .attachmentCount = */ base::size(render_pass_attachments),
+      /* .attachmentCount = */ std::size(render_pass_attachments),
       /* .pAttachments = */ render_pass_attachments,
-      /* .subpassCount = */ base::size(render_pass_subpasses),
+      /* .subpassCount = */ std::size(render_pass_subpasses),
       /* .pSubpasses = */ render_pass_subpasses,
       /* .dependencyCount = */ 0,
       /* .pDependencies = */ nullptr,
@@ -114,7 +115,7 @@ bool VulkanOverlayRenderer::Initialize() {
            VK_SUCCESS);
 
   command_pool_ = std::make_unique<gpu::VulkanCommandPool>(device_queue_.get());
-  CHECK(command_pool_->Initialize(false /* use_protected_memory */));
+  CHECK(command_pool_->Initialize());
 
   RecreateBuffers();
 
@@ -172,9 +173,9 @@ void VulkanOverlayRenderer::RenderFrame() {
 
   const Buffer& buffer = *buffers_[next_buffer_];
   next_buffer_++;
-  next_buffer_ %= base::size(buffers_);
+  next_buffer_ %= std::size(buffers_);
   ++in_use_buffers_;
-  DCHECK_LE(in_use_buffers_, base::size(buffers_));
+  DCHECK_LE(in_use_buffers_, std::size(buffers_));
 
   gpu::VulkanCommandBuffer& command_buffer = *buffer.command_buffer();
 
@@ -194,8 +195,8 @@ void VulkanOverlayRenderer::RenderFrame() {
             },
             /* .extent = */
             {
-                /* .width = */ buffer.size().width(),
-                /* .height = */ buffer.size().height(),
+                /* .width = */ static_cast<uint32_t>(buffer.size().width()),
+                /* .height = */ static_cast<uint32_t>(buffer.size().height()),
             },
         },
         /* .clearValueCount = */ 1,
@@ -217,7 +218,7 @@ std::unique_ptr<gfx::GpuFence> VulkanOverlayRenderer::SubmitFence(
     VkFence fence) {
   VkResult result;
   VkFence fences[] = {fence};
-  result = vkResetFences(device_queue_->GetVulkanDevice(), base::size(fences),
+  result = vkResetFences(device_queue_->GetVulkanDevice(), std::size(fences),
                          fences);
   CHECK_EQ(result, VK_SUCCESS);
 
@@ -239,7 +240,8 @@ void VulkanOverlayRenderer::SubmitFrame(
 
   ui::OverlayPlane primary_plane;
   primary_plane.pixmap = buffer->native_pixmap();
-  primary_plane.display_bounds = gfx::Rect(buffer->size());
+  primary_plane.overlay_plane_data.display_bounds =
+      gfx::RectF(buffer->size().width(), buffer->size().height());
   primary_plane.gpu_fence = std::move(gpu_fence);
 
   std::vector<ui::OverlayPlane> overlay_planes;
@@ -374,8 +376,8 @@ VulkanOverlayRenderer::Buffer::Create(
       /* .renderPass = */ vk_render_pass,
       /* .attachmentCount = */ 1,
       /* .pAttachments = */ &vk_image_view,
-      /* .width = */ size.width(),
-      /* .height = */ size.height(),
+      /* .width = */ static_cast<uint32_t>(size.width()),
+      /* .height = */ static_cast<uint32_t>(size.height()),
       /* .layers = */ 1,
   };
 
@@ -387,8 +389,7 @@ VulkanOverlayRenderer::Buffer::Create(
   }
 
   auto command_buffer = std::make_unique<gpu::VulkanCommandBuffer>(
-      vulkan_device_queue, vulkan_command_pool, true /* primary */,
-      false /* use_protected_memory */);
+      vulkan_device_queue, vulkan_command_pool, true /* primary */);
   CHECK(command_buffer->Initialize());
 
   VkFence fence = vulkan_implementation->CreateVkFenceForGpuFence(vk_device);

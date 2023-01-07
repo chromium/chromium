@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,20 +13,15 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_get_keys_operation.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_refresh_keys_operation.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 
 class AccountId;
 
-namespace base {
-class DictionaryValue;
-class ListValue;
-}  // namespace base
-
-namespace chromeos {
+namespace ash {
 
 class UserContext;
 
@@ -38,13 +33,17 @@ class EasyUnlockKeyManager {
   using GetDeviceDataListCallback = EasyUnlockGetKeysOperation::GetKeysCallback;
 
   EasyUnlockKeyManager();
+
+  EasyUnlockKeyManager(const EasyUnlockKeyManager&) = delete;
+  EasyUnlockKeyManager& operator=(const EasyUnlockKeyManager&) = delete;
+
   ~EasyUnlockKeyManager();
 
   // Clears existing Easy unlock keys and creates new ones for the given
   // `remote_devices` and the given `user_context`. `user_context` must have
   // secret to allow keys to be created.
   void RefreshKeys(const UserContext& user_context,
-                   const base::ListValue& remote_devices,
+                   const base::Value::List& remote_devices,
                    RefreshKeysCallback callback);
 
   // Retrieves the remote device data from cryptohome keys for the given
@@ -60,19 +59,18 @@ class EasyUnlockKeyManager {
   static void DeviceDataToRemoteDeviceDictionary(
       const AccountId& account_id,
       const EasyUnlockDeviceKeyData& data,
-      base::DictionaryValue* dict);
-  static bool RemoteDeviceDictionaryToDeviceData(
-      const base::DictionaryValue& dict,
-      EasyUnlockDeviceKeyData* data);
+      base::Value::Dict* dict);
+  static bool RemoteDeviceDictionaryToDeviceData(const base::Value::Dict& dict,
+                                                 EasyUnlockDeviceKeyData* data);
 
   // Helpers to convert between EasyUnlockDeviceKeyDataList and remote devices
-  // ListValue.
+  // base::Value::List.
   static void DeviceDataListToRemoteDeviceList(
       const AccountId& account_id,
       const EasyUnlockDeviceKeyDataList& data_list,
-      base::ListValue* device_list);
+      base::Value::List* device_list);
   static bool RemoteDeviceRefListToDeviceDataList(
-      const base::ListValue& device_list,
+      const base::Value::List& device_list,
       EasyUnlockDeviceKeyDataList* data_list);
 
   // Gets key label for the given key index.
@@ -87,7 +85,7 @@ class EasyUnlockKeyManager {
   // Called when the TPM key is ready to be used for creating Easy Unlock key
   // challenges.
   void RefreshKeysWithTpmKeyPresent(const UserContext& user_context,
-                                    base::ListValue* remote_devices,
+                                    base::Value::List remote_devices,
                                     RefreshKeysCallback callback);
 
   // Callback invoked after refresh keys operation.
@@ -109,10 +107,8 @@ class EasyUnlockKeyManager {
   std::unique_ptr<EasyUnlockGetKeysOperation> pending_read_operation_;
 
   base::WeakPtrFactory<EasyUnlockKeyManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockKeyManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_KEY_MANAGER_H_

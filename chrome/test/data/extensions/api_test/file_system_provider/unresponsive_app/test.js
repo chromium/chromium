@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
  * it should timeout, as the timeout for this test is set to 0 ms.
  */
 function onConfigureRequested(options, onSuccess, onError) {
-  setTimeout(onSuccess, 0);
+  setTimeout(onSuccess, 100);
 }
 
 /**

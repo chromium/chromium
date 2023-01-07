@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -16,7 +16,12 @@
 #include <unordered_set>
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/mojom/process.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
@@ -24,26 +29,18 @@
 #include "base/memory/singleton.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
-#include "base/stl_util.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/chromeos/process_snapshot_server.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/mojom/process.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
+#include "chrome/browser/ash/process_snapshot_server.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace arc {
 
-using base::kNullProcessId;
-using base::Process;
-using base::ProcessId;
-using std::vector;
+using ::base::kNullProcessId;
+using ::base::ProcessId;
 
 namespace {
 
@@ -114,7 +111,7 @@ void UpdateNspidToPidMap(
   TRACE_EVENT0("browser", "ArcProcessService::UpdateNspidToPidMap");
 
   // NB: |process_list| may have inconsistent information because the
-  // ProcessSnapshotServer gets them by simply walking procfs. Especially
+  // |ash::ProcessSnapshotServer| gets them by simply walking procfs. Especially
   // we must not assume the parent-child relationships are consistent.
 
   // Construct the process tree.
@@ -294,7 +291,7 @@ ArcProcessService* ArcProcessService::GetForBrowserContext(
 
 ArcProcessService::ArcProcessService(content::BrowserContext* context,
                                      ArcBridgeService* bridge_service)
-    : ProcessSnapshotServer::Observer(kProcessSnapshotRefreshTime),
+    : ash::ProcessSnapshotServer::Observer(kProcessSnapshotRefreshTime),
       arc_bridge_service_(bridge_service),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
@@ -307,7 +304,7 @@ ArcProcessService::ArcProcessService(content::BrowserContext* context,
 ArcProcessService::~ArcProcessService() {
   arc_bridge_service_->process()->RemoveObserver(this);
   if (is_observing_process_snapshot_)
-    ProcessSnapshotServer::Get()->RemoveObserver(this);
+    ash::ProcessSnapshotServer::Get()->RemoveObserver(this);
 }
 
 // static
@@ -438,14 +435,15 @@ void ArcProcessService::MaybeStopObservingProcessSnapshots() {
   if (!is_observing_process_snapshot_)
     return;
 
-  // We can stop observing the ProcessSnapshotServer only if there are no more
-  // pending requests, and we have a recent enough |cached_process_snapshot_|.
+  // We can stop observing the |ash::ProcessSnapshotServer| only if there are no
+  // more pending requests, and we have a recent enough
+  // |cached_process_snapshot_|.
   const bool should_stop_observing =
       pending_requests_.empty() && CanUseStaleProcessSnapshot();
   if (!should_stop_observing)
     return;
 
-  ProcessSnapshotServer::Get()->RemoveObserver(this);
+  ash::ProcessSnapshotServer::Get()->RemoveObserver(this);
   is_observing_process_snapshot_ = false;
 }
 
@@ -459,10 +457,10 @@ void ArcProcessService::HandleRequest(base::OnceClosure request) {
   }
 
   // We have a too stale |cached_process_snapshot_|, therefore request a fresher
-  // one by observing the ProcessSnapshotServer, and add |request| to the
+  // one by observing the |ash::ProcessSnapshotServer|, and add |request| to the
   // pending requests.
   if (!is_observing_process_snapshot_) {
-    ProcessSnapshotServer::Get()->AddObserver(this);
+    ash::ProcessSnapshotServer::Get()->AddObserver(this);
     is_observing_process_snapshot_ = true;
   }
 
@@ -477,14 +475,14 @@ void ArcProcessService::ContinueAppProcessListRequest(
   // but the user has not opted into ARC. This redundant check avoids that
   // logspam.
   if (!connection_ready_) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   mojom::ProcessInstance* process_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->process(), RequestProcessList);
   if (!process_instance) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 

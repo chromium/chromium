@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,7 @@ SupervisedUserSyncModelTypeController::SupervisedUserSyncModelTypeController(
           dump_stack,
           DelegateMode::kTransportModeWithSingleModel),
       profile_(profile) {
-  DCHECK(type == syncer::SUPERVISED_USER_SETTINGS ||
-         type == syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS);
+  DCHECK(type == syncer::SUPERVISED_USER_SETTINGS);
 }
 
 SupervisedUserSyncModelTypeController::
@@ -31,6 +30,6 @@ SupervisedUserSyncModelTypeController::
 syncer::DataTypeController::PreconditionState
 SupervisedUserSyncModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
-  return profile_->IsSupervised() ? PreconditionState::kPreconditionsMet
-                                  : PreconditionState::kMustStopAndClearData;
+  return profile_->IsChild() ? PreconditionState::kPreconditionsMet
+                             : PreconditionState::kMustStopAndClearData;
 }

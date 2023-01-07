@@ -31,11 +31,11 @@ Split `input` by delimiters that match a regex pattern.
 regex pattern in `delim_regex_pattern`. Here is an example:
 
 ```
-text_input=["hello there"]
-# split by whitespace
-result, begin, end = regex_split_with_offsets(text_input, "\s")
-# result = [["hello", "there"]]
-
+>>> text_input=["hello there"]
+>>> # split by whitespace
+>>> regex_split(input=text_input,
+...             delim_regex_pattern="\s")
+<tf.RaggedTensor [[b'hello', b'there']]>
 ```
 
 By default, delimiters are not included in the split string results.
@@ -43,20 +43,23 @@ Delimiters may be included by specifying a regex pattern
 `keep_delim_regex_pattern`. For example:
 
 ```
-text_input=["hello there"]
-# split by whitespace
-result, begin, end = regex_split_with_offsets(text_input, "\s", "\s")
-# result = [["hello", " ", "there"]]
+>>> text_input=["hello there"]
+>>> # split by whitespace
+>>> regex_split(input=text_input,
+...             delim_regex_pattern="\s",
+...             keep_delim_regex_pattern="\s")
+<tf.RaggedTensor [[b'hello', b' ', b'there']]>
 ```
 
 If there are multiple delimiters in a row, there are no empty splits emitted.
 For example:
 
 ```
-text_input=["hello  there"]  # two continuous whitespace characters
-# split by whitespace
-result, begin, end = regex_split_with_offsets(text_input, "\s")
-# result = [["hello", "there"]]
+>>> text_input=["hello  there"]  #  Note the two spaces between the words.
+>>> # split by whitespace
+>>> regex_split(input=text_input,
+...             delim_regex_pattern="\s")
+<tf.RaggedTensor [[b'hello', b'there']]>
 ```
 
 See https://github.com/google/re2/wiki/Syntax for the full list of supported

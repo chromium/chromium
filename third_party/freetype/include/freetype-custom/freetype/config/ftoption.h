@@ -4,7 +4,7 @@
  *
  *   User-selectable configuration macros (specification only).
  *
- * Copyright (C) 1996-2021 by
+ * Copyright (C) 1996-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -105,8 +105,7 @@ FT_BEGIN_HEADER
    *
    * ```
    *   FREETYPE_PROPERTIES=truetype:interpreter-version=35 \
-   *                       cff:no-stem-darkening=1 \
-   *                       autofitter:warping=1
+   *                       cff:no-stem-darkening=1
    * ```
    *
    */
@@ -220,8 +219,12 @@ FT_BEGIN_HEADER
    *   If you use a build system like cmake or the `configure` script,
    *   options set by those programs have precedence, overwriting the value
    *   here with the configured one.
+   *
+   *   If you use the GNU make build system directly (that is, without the
+   *   `configure` script) and you define this macro, you also have to pass
+   *   `SYSTEM_ZLIB=yes` as an argument to make.
    */
-/* #define FT_CONFIG_OPTION_SYSTEM_ZLIB */
+#define FT_CONFIG_OPTION_SYSTEM_ZLIB
 
 
   /**************************************************************************
@@ -528,6 +531,20 @@ FT_BEGIN_HEADER
 
   /**************************************************************************
    *
+   * OpenType SVG Glyph Support
+   *
+   *   Setting this macro enables support for OpenType SVG glyphs.  By
+   *   default, FreeType can only fetch SVG documents.  However, it can also
+   *   render them if external rendering hook functions are plugged in at
+   *   runtime.
+   *
+   *   More details on the hooks can be found in file `otsvg.h`.
+   */
+/* #define FT_CONFIG_OPTION_SVG */
+
+
+  /**************************************************************************
+   *
    * Error Strings
    *
    *   If this macro is set, `FT_Error_String` will return meaningful
@@ -569,12 +586,12 @@ FT_BEGIN_HEADER
   /**************************************************************************
    *
    * Define `TT_CONFIG_OPTION_POSTSCRIPT_NAMES` if you want to be able to
-   * load and enumerate the glyph Postscript names in a TrueType or OpenType
+   * load and enumerate Postscript names of glyphs in a TrueType or OpenType
    * file.
    *
-   * Note that when you do not compile the 'psnames' module by undefining the
-   * above `FT_CONFIG_OPTION_POSTSCRIPT_NAMES`, the 'sfnt' module will
-   * contain additional code used to read the PS Names table from a font.
+   * Note that if you do not compile the 'psnames' module by undefining the
+   * above `FT_CONFIG_OPTION_POSTSCRIPT_NAMES` macro, the 'sfnt' module will
+   * contain additional code to read the PostScript name table from a font.
    *
    * (By default, the module uses 'psnames' to extract glyph names.)
    */
@@ -913,24 +930,6 @@ FT_BEGIN_HEADER
 
   /**************************************************************************
    *
-   * Compile 'autofit' module with warp hinting.  The idea of the warping
-   * code is to slightly scale and shift a glyph within a single dimension so
-   * that as much of its segments are aligned (more or less) on the grid.  To
-   * find out the optimal scaling and shifting value, various parameter
-   * combinations are tried and scored.
-   *
-   * You can switch warping on and off with the `warping` property of the
-   * auto-hinter (see file `ftdriver.h` for more information; by default it
-   * is switched off).
-   *
-   * This experimental option is not active if the rendering mode is
-   * `FT_RENDER_MODE_LIGHT`.
-   */
-/* #define AF_CONFIG_OPTION_USE_WARPER */
-
-
-  /**************************************************************************
-   *
    * Use TrueType-like size metrics for 'light' auto-hinting.
    *
    * It is strongly recommended to avoid this option, which exists only to
@@ -1023,8 +1022,8 @@ FT_BEGIN_HEADER
 #error "Invalid CFF darkening parameters!"
 #endif
 
-FT_END_HEADER
 
+FT_END_HEADER
 
 #endif /* FTOPTION_H_ */
 

@@ -1,30 +1,33 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Some tests for the framework itself.
 
 #include <stddef.h>
+#include <stdlib.h>
 
 #include <windows.h>
 
+// Must be after windows.h.
+#include <versionhelpers.h>
+
+#include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_timeouts.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/target_services.h"
 #include "sandbox/win/tests/common/controller.h"
+#include "sandbox/win/tests/integration_tests/integration_tests_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
 
 namespace {
-std::wstring NonCollidingName() {
-  auto token = base::UnguessableToken::Create();
-  return base::UTF8ToWide(token.ToString().c_str());
-}
-
 struct PolicyDiagnosticsWaiter {
  public:
   PolicyDiagnosticsWaiter() {
@@ -41,12 +44,13 @@ struct PolicyDiagnosticsWaiter {
   }
 };
 
-class TestDiagnosticsReceiver : public PolicyDiagnosticsReceiver {
+class TestDiagnosticsReceiver final : public PolicyDiagnosticsReceiver {
  public:
   TestDiagnosticsReceiver() {}
-  ~TestDiagnosticsReceiver() final {}
-  TestDiagnosticsReceiver(PolicyDiagnosticsWaiter* waiter) { waiter_ = waiter; }
-  PolicyDiagnosticsWaiter* waiter_;
+  ~TestDiagnosticsReceiver() override {}
+  explicit TestDiagnosticsReceiver(PolicyDiagnosticsWaiter* waiter)
+      : waiter_(waiter) {}
+  raw_ptr<PolicyDiagnosticsWaiter> waiter_;
   void ReceiveDiagnostics(std::unique_ptr<PolicyList> policies) override {
     waiter_->policies = std::move(policies);
     ::SetEvent(waiter_->event.Get());
@@ -111,22 +115,21 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_args(int argc, wchar_t **argv) {
   return argc;
 }
 
-// Sets the first named event, then waits on the second. This ensures
+// Sets the first inherited event, then waits on the second. This ensures
 // this process is alive and remains alive while its parent tests diagnostics.
 SBOX_TESTS_COMMAND int IntegrationTestsTest_event(int argc, wchar_t** argv) {
   if (argc < 2)
     return SBOX_TEST_INVALID_PARAMETER;
 
-  HANDLE hEventA =
-      ::OpenEventW(SYNCHRONIZE | EVENT_MODIFY_STATE, false, argv[0]);
-  if (!hEventA)
+  base::win::ScopedHandle handle_started(
+      reinterpret_cast<HANDLE>(wcstoul(argv[0], nullptr, 16)));
+  if (!handle_started.IsValid())
     return SBOX_TEST_NOT_FOUND;
-  base::win::ScopedHandle handle_started(hEventA);
 
-  HANDLE hEventB = ::OpenEventW(SYNCHRONIZE, false, argv[1]);
-  if (!hEventB)
+  base::win::ScopedHandle handle_done(
+      reinterpret_cast<HANDLE>(wcstoul(argv[1], nullptr, 16)));
+  if (!handle_done.IsValid())
     return SBOX_TEST_NOT_FOUND;
-  base::win::ScopedHandle handle_done(hEventB);
 
   if (!::SetEvent(handle_started.Get()))
     return SBOX_TEST_FIRST_ERROR;
@@ -139,8 +142,8 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_event(int argc, wchar_t** argv) {
 
 // Creates a job and tries to run a process inside it. The function can be
 // called with up to two parameters. The first one if set to "none" means that
-// the child process should be run with the JOB_NONE JobLevel else it is run
-// with JOB_LOCKDOWN level. The second if present specifies that the
+// the child process should be run with the JobLevel::kNone JobLevel else it is
+// run with JobLevel::kLockdown level. The second if present specifies that the
 // JOB_OBJECT_LIMIT_BREAKAWAY_OK flag should be set on the job object created
 // in this function. The return value is either SBOX_TEST_SUCCEEDED if the test
 // has passed or a value between 0 and 4 indicating which part of the test has
@@ -171,12 +174,12 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_job(int argc, wchar_t **argv) {
   if (!::AssignProcessToJobObject(job, ::GetCurrentProcess()))
     return 3;
 
-  JobLevel job_level = JOB_LOCKDOWN;
+  JobLevel job_level = JobLevel::kLockdown;
   if (argc > 0 && wcscmp(argv[0], L"none") == 0)
-    job_level = JOB_NONE;
+    job_level = JobLevel::kNone;
 
   TestRunner runner(job_level, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
 
   if (1 != runner.RunTest(L"IntegrationTestsTest_args 1"))
     return 4;
@@ -189,44 +192,48 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_job(int argc, wchar_t **argv) {
 
 TEST(IntegrationTestsTest, CallsBeforeInit) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetTestState(BEFORE_INIT);
   ASSERT_EQ(BEFORE_INIT, runner.RunTest(L"IntegrationTestsTest_state"));
 }
 
 TEST(IntegrationTestsTest, CallsBeforeRevert) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetTestState(BEFORE_REVERT);
   ASSERT_EQ(BEFORE_REVERT, runner.RunTest(L"IntegrationTestsTest_state"));
 }
 
 TEST(IntegrationTestsTest, CallsAfterRevert) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetTestState(AFTER_REVERT);
   ASSERT_EQ(AFTER_REVERT, runner.RunTest(L"IntegrationTestsTest_state"));
 }
 
 TEST(IntegrationTestsTest, CallsEveryState) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetTestState(EVERY_STATE);
   ASSERT_EQ(AFTER_REVERT, runner.RunTest(L"IntegrationTestsTest_state2"));
 }
 
 TEST(IntegrationTestsTest, ForwardsArguments) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetTestState(BEFORE_INIT);
   ASSERT_EQ(1, runner.RunTest(L"IntegrationTestsTest_args first"));
-  ASSERT_EQ(4, runner.RunTest(L"IntegrationTestsTest_args first second third "
-                              L"fourth"));
+
+  TestRunner runner2;
+  runner2.SetTimeout(TestTimeouts::action_timeout());
+  runner2.SetTestState(BEFORE_INIT);
+  ASSERT_EQ(4, runner2.RunTest(L"IntegrationTestsTest_args first second third "
+                               L"fourth"));
 }
 
 TEST(IntegrationTestsTest, WaitForStuckChild) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetAsynchronous(true);
   runner.SetKillOnDestruction(false);
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
@@ -235,8 +242,9 @@ TEST(IntegrationTestsTest, WaitForStuckChild) {
 }
 
 TEST(IntegrationTestsTest, NoWaitForStuckChildNoJob) {
-  TestRunner runner(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
-  runner.SetTimeout(2000);
+  TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+                    USER_LOCKDOWN);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetAsynchronous(true);
   runner.SetKillOnDestruction(false);
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
@@ -253,11 +261,12 @@ TEST(IntegrationTestsTest, NoWaitForStuckChildNoJob) {
 
 TEST(IntegrationTestsTest, TwoStuckChildrenSecondOneHasNoJob) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetAsynchronous(true);
   runner.SetKillOnDestruction(false);
-  TestRunner runner2(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
-  runner2.SetTimeout(2000);
+  TestRunner runner2(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+                     USER_LOCKDOWN);
+  runner2.SetTimeout(TestTimeouts::action_timeout());
   runner2.SetAsynchronous(true);
   runner2.SetKillOnDestruction(false);
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
@@ -279,11 +288,12 @@ TEST(IntegrationTestsTest, TwoStuckChildrenSecondOneHasNoJob) {
 
 TEST(IntegrationTestsTest, TwoStuckChildrenFirstOneHasNoJob) {
   TestRunner runner;
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetAsynchronous(true);
   runner.SetKillOnDestruction(false);
-  TestRunner runner2(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
-  runner2.SetTimeout(2000);
+  TestRunner runner2(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+                     USER_LOCKDOWN);
+  runner2.SetTimeout(TestTimeouts::action_timeout());
   runner2.SetAsynchronous(true);
   runner2.SetKillOnDestruction(false);
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
@@ -303,44 +313,47 @@ TEST(IntegrationTestsTest, TwoStuckChildrenFirstOneHasNoJob) {
   ::TerminateProcess(runner2.process(), 0);
 }
 
-TEST(IntegrationTestsTest, MultipleStuckChildrenSequential) {
-  TestRunner runner;
-  runner.SetTimeout(2000);
-  runner.SetAsynchronous(true);
-  runner.SetKillOnDestruction(false);
-  TestRunner runner2(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
-  runner2.SetTimeout(2000);
-  runner2.SetAsynchronous(true);
-  runner2.SetKillOnDestruction(false);
+std::unique_ptr<TestRunner> StuckChildrenRunner() {
+  auto runner = std::make_unique<TestRunner>(
+      JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
+  runner->SetTimeout(TestTimeouts::action_timeout());
+  runner->SetAsynchronous(true);
+  runner->SetKillOnDestruction(false);
+  return runner;
+}
 
+TEST(IntegrationTestsTest, MultipleStuckChildrenSequential) {
+  auto runner = StuckChildrenRunner();
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"IntegrationTestsTest_stuck 100"));
-  // Actually both runners share the same singleton broker.
-  ASSERT_EQ(SBOX_ALL_OK, runner.broker()->WaitForAllTargets());
+            runner->RunTest(L"IntegrationTestsTest_stuck 100"));
+  // All runners share the same singleton broker.
+  auto* broker = runner->broker();
+  ASSERT_EQ(SBOX_ALL_OK, broker->WaitForAllTargets());
+
+  runner = StuckChildrenRunner();
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
-            runner2.RunTest(L"IntegrationTestsTest_stuck 2000"));
-  // Actually both runners share the same singleton broker.
-  ASSERT_EQ(SBOX_ALL_OK, runner.broker()->WaitForAllTargets());
+            runner->RunTest(L"IntegrationTestsTest_stuck 2000"));
+  ASSERT_EQ(SBOX_ALL_OK, broker->WaitForAllTargets());
 
   DWORD exit_code;
   // Checking the exit code for |runner| is flaky on the slow bots but at
   // least we know that the wait above has succeeded if we are here.
-  ASSERT_TRUE(::GetExitCodeProcess(runner2.process(), &exit_code));
+  ASSERT_TRUE(::GetExitCodeProcess(runner->process(), &exit_code));
   ASSERT_EQ(STILL_ACTIVE, exit_code);
   // Terminate the test process now.
-  ::TerminateProcess(runner2.process(), 0);
+  ::TerminateProcess(runner->process(), 0);
 
+  runner = StuckChildrenRunner();
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"IntegrationTestsTest_stuck 100"));
-  // Actually both runners share the same singleton broker.
-  ASSERT_EQ(SBOX_ALL_OK, runner.broker()->WaitForAllTargets());
+            runner->RunTest(L"IntegrationTestsTest_stuck 100"));
+  ASSERT_EQ(SBOX_ALL_OK, broker->WaitForAllTargets());
 }
 
 // Running from inside job that allows us to escape from it should be ok.
 TEST(IntegrationTestsTest, RunChildFromInsideJob) {
   TestRunner runner;
   runner.SetUnsandboxed(true);
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"IntegrationTestsTest_job with_job escape_flag"));
 }
@@ -351,16 +364,13 @@ TEST(IntegrationTestsTest, RunChildFromInsideJobNoEscape) {
   int expect_result = 4;  // Means the runner has failed to execute the child.
   // Check if we are on Win8 or newer and expect a success as newer windows
   // versions support nested jobs.
-  OSVERSIONINFOEX version_info = { sizeof version_info };
-  ::GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&version_info));
-  if (version_info.dwMajorVersion > 6 ||
-      (version_info.dwMajorVersion == 6 && version_info.dwMinorVersion >= 2)) {
+  if (IsWindows8OrGreater()) {
     expect_result = SBOX_TEST_SUCCEEDED;
   }
 
   TestRunner runner;
   runner.SetUnsandboxed(true);
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   ASSERT_EQ(expect_result,
             runner.RunTest(L"IntegrationTestsTest_job with_job"));
 }
@@ -370,29 +380,21 @@ TEST(IntegrationTestsTest, RunChildFromInsideJobNoEscape) {
 TEST(IntegrationTestsTest, RunJoblessChildFromInsideJob) {
   TestRunner runner;
   runner.SetUnsandboxed(true);
-  runner.SetTimeout(2000);
+  runner.SetTimeout(TestTimeouts::action_timeout());
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"IntegrationTestsTest_job none"));
 }
 
-// GetPolicyInfo validation
+// GetPolicyDiagnostics validation
 TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
   TestRunner runner;
-  // Unique event names so tests can run in parallel.
-  auto name_a = NonCollidingName();
-  auto name_done = NonCollidingName();
 
-  runner.SetTimeout(2000);
   runner.SetAsynchronous(true);
-  runner.AddRule(TargetPolicy::SUBSYS_SYNC, TargetPolicy::EVENTS_ALLOW_ANY,
-                 name_a.c_str());
-  runner.AddRule(TargetPolicy::SUBSYS_SYNC, TargetPolicy::EVENTS_ALLOW_ANY,
-                 name_done.c_str());
 
   // This helper can be reused if it has finished waiting.
   auto waiter = std::make_unique<PolicyDiagnosticsWaiter>();
   {
-    // But the receiver cannot be reused as it is consumed by GetPolicyInfo().
+    // Receiver cannot be reused as it is consumed by GetPolicyDiagnostics().
     auto receiver = std::make_unique<TestDiagnosticsReceiver>(waiter.get());
     auto result = runner.broker()->GetPolicyDiagnostics(std::move(receiver));
     ASSERT_EQ(SBOX_ALL_OK, result);
@@ -402,18 +404,20 @@ TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
     ASSERT_EQ(policies->size(), 0U);
   }
 
-  HANDLE event_a = CreateEventW(nullptr, true, false, name_a.c_str());
-  base::win::ScopedHandle handle_started(event_a);
-  HANDLE event_done = CreateEventW(nullptr, true, false, name_done.c_str());
-  base::win::ScopedHandle handle_done(event_done);
+  base::win::ScopedHandle handle_started(
+      CreateEventW(nullptr, true, false, nullptr));
+  base::win::ScopedHandle handle_done(
+      CreateEventW(nullptr, true, false, nullptr));
 
-  auto cmd_line = std::wstring(L"IntegrationTestsTest_event ");
-  cmd_line += name_a;
-  cmd_line += L" ";
-  cmd_line += name_done;
+  runner.GetPolicy()->AddHandleToShare(handle_started.Get());
+  runner.GetPolicy()->AddHandleToShare(handle_done.Get());
+  auto cmd_line = base::StringPrintf(L"IntegrationTestsTest_event %p %p",
+                                     handle_started.Get(), handle_done.Get());
 
   ASSERT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(cmd_line.c_str()));
-  ASSERT_EQ(WAIT_OBJECT_0, ::WaitForSingleObject(handle_started.Get(), 1000));
+  ASSERT_EQ(WAIT_OBJECT_0,
+            ::WaitForSingleObject(handle_started.Get(),
+                                  sandbox::SboxTestEventTimeout()));
 
   {
     // After starting a process, there should be one policy.
@@ -431,7 +435,7 @@ TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
   // in a job exits but before the final job notification is received
   // by the tracking thread. We have to give that notification a chance
   // before we test to see if the job itself is removed.
-  SleepEx(100, true);
+  SleepEx(TestTimeouts::tiny_timeout().InMilliseconds(), true);
   {
     // Finally there should be no processes and no policies.
     auto receiver = std::make_unique<TestDiagnosticsReceiver>(waiter.get());

@@ -52,7 +52,7 @@ void ReplayingCanvas::UpdateInRange() {
   if (to_step_ && step > to_step_)
     abort_drawing_ = true;
   if (step == from_step_)
-    this->SkCanvas::clear(SK_ColorTRANSPARENT);
+    SkCanvas::clear(SK_ColorTRANSPARENT);
 }
 
 bool ReplayingCanvas::abort() {
@@ -64,15 +64,15 @@ SkCanvas::SaveLayerStrategy ReplayingCanvas::getSaveLayerStrategy(
   // We're about to create a layer and we have not cleared the device yet.
   // Let's clear now, so it has effect on all layers.
   if (CallCount() <= from_step_)
-    this->SkCanvas::clear(SK_ColorTRANSPARENT);
+    SkCanvas::clear(SK_ColorTRANSPARENT);
 
-  return this->InterceptingCanvas<ReplayingCanvas>::getSaveLayerStrategy(rec);
+  return InterceptingCanvas<ReplayingCanvas>::getSaveLayerStrategy(rec);
 }
 
 void ReplayingCanvas::onDrawPicture(const SkPicture* picture,
                                     const SkMatrix* matrix,
                                     const SkPaint* paint) {
-  this->UnrollDrawPicture(picture, matrix, paint, this);
+  UnrollDrawPicture(picture, matrix, paint, this);
 }
 
 }  // namespace blink

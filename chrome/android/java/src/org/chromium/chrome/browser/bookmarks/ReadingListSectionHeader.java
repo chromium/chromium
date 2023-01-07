@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@ import android.content.Context;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 
 import java.util.Collections;
@@ -95,8 +95,7 @@ class ReadingListSectionHeader {
         int paddingTop = read ? context.getResources().getDimensionPixelSize(
                                  R.dimen.bookmark_reading_list_section_header_padding_top)
                               : 0;
-        return BookmarkListEntry.createSectionHeader(
-                title, /*description=*/null, paddingTop, context);
+        return BookmarkListEntry.createSectionHeader(title, paddingTop, context);
     }
 
     private static void recordMetrics(List<BookmarkListEntry> listItems) {
@@ -112,11 +111,11 @@ class ReadingListSectionHeader {
             }
         }
         RecordUserAction.record("Android.BookmarkPage.ReadingList.OpenReadingList");
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Bookmarks.ReadingList.NumberOfReadItems", numReadItems);
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Bookmarks.ReadingList.NumberOfUnreadItems", numUnreadItems);
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Bookmarks.ReadingList.NumberOfItems", numReadItems + numUnreadItems);
     }
 }

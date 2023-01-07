@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,27 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
+import com.google.errorprone.annotations.DoNotMock;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.MainDex;
+import org.chromium.url.mojom.Url;
+import org.chromium.url.mojom.UrlConstants;
 
 import java.util.Random;
 
 /**
- * A Java wrapper for GURL, Chromium's URL parsing library.
+ * An immutable Java wrapper for GURL, Chromium's URL parsing library.
  *
  * This class is safe to use during startup, but will block on the native library being sufficiently
  * loaded to use native GURL (and will not wait for content initialization). In practice it's very
@@ -35,6 +40,7 @@ import java.util.Random;
  */
 @JNINamespace("url")
 @MainDex
+@DoNotMock("Create a real instance instead. For Robolectric, see JUnitTestGURLs.java")
 public class GURL {
     private static final String TAG = "GURL";
     /* package */ static final int SERIALIZER_VERSION = 1;
@@ -44,6 +50,12 @@ public class GURL {
     public interface ReportDebugThrowableCallback {
         void run(Throwable throwable);
     }
+
+    /**
+     * Exception signalling that a GURL failed to parse due to an unexpected version marker in the
+     * serialized input.
+     */
+    public static class BadSerializerVersionException extends RuntimeException {}
 
     // Right now this is only collecting reports on Canary which has a relatively small population.
     private static final int DEBUG_REPORT_PERCENTAGE = 10;
@@ -76,7 +88,7 @@ public class GURL {
             return;
         }
         ensureNativeInitializedForGURL();
-        GURLJni.get().init(uri, this);
+        getNatives().init(uri, this);
     }
 
     @CalledByNative
@@ -131,7 +143,7 @@ public class GURL {
 
     @CalledByNative
     private long toNativeGURL() {
-        return GURLJni.get().createNative(mSpec, mIsValid, mParsed.toNativeParsed());
+        return getNatives().createNative(mSpec, mIsValid, mParsed.toNativeParsed());
     }
 
     /**
@@ -245,7 +257,14 @@ public class GURL {
     }
 
     protected void getOriginInternal(GURL target) {
-        GURLJni.get().getOrigin(mSpec, mIsValid, mParsed.toNativeParsed(), target);
+        getNatives().getOrigin(mSpec, mIsValid, mParsed.toNativeParsed(), target);
+    }
+
+    /**
+     * See native GURL::DomainIs().
+     */
+    public boolean domainIs(String domain) {
+        return getNatives().domainIs(mSpec, mIsValid, mParsed.toNativeParsed(), domain);
     }
 
     @Override
@@ -279,7 +298,9 @@ public class GURL {
     }
 
     /**
-     * Deserialize a GURL serialized with {@link GURL#serialize()}.
+     * Deserialize a GURL serialized with {@link GURL#serialize()}. This will re-parse in case of
+     * version mismatch, which may trigger undesired native loading. {@see
+     * deserializeLatestVersionOnly} if you want to fail in case of version mismatch.
      *
      * This function should *never* be used on a String coming from an untrusted source.
      *
@@ -287,35 +308,81 @@ public class GURL {
      */
     public static GURL deserialize(@Nullable String gurl) {
         try {
-            if (TextUtils.isEmpty(gurl)) return emptyGURL();
+            return deserializeLatestVersionOnly(gurl);
+        } catch (BadSerializerVersionException be) {
+            // Just re-parse the GURL on version changes.
             String[] tokens = gurl.split(Character.toString(SERIALIZER_DELIMITER));
-
-            // First token MUST always be the length of the serialized data.
-            String length = tokens[0];
-            if (gurl.length() != Integer.parseInt(length) + length.length() + 1) {
-                throw new IllegalArgumentException("Serialized GURL had the wrong length.");
-            }
-
-            // Last token MUST always be the original spec - just re-parse the GURL on version
-            // changes.
-            String spec = tokens[tokens.length - 1];
-            // Special case for empty spec - it won't get its own token.
-            if (gurl.endsWith(Character.toString(SERIALIZER_DELIMITER))) spec = "";
-
-            // Second token MUST always be the version number.
-            int version = Integer.parseInt(tokens[1]);
-            if (version != SERIALIZER_VERSION) return new GURL(spec);
-
-            boolean isValid = Boolean.parseBoolean(tokens[2]);
-            Parsed parsed = Parsed.deserialize(tokens, 3);
-            GURL result = new GURL();
-            result.init(spec, isValid, parsed);
-            return result;
+            return new GURL(getSpecFromTokens(gurl, tokens));
         } catch (Exception e) {
             // This is unexpected, maybe the storage got corrupted somehow?
             Log.w(TAG, "Exception while deserializing a GURL: " + gurl, e);
             return emptyGURL();
         }
+    }
+
+    /**
+     * Deserialize a GURL serialized with {@link #serialize()}, throwing {@code
+     * BadSerializerException} if the serialized input has a version other than the latest. This
+     * function should never be used on a String coming from an untrusted source.
+     */
+    public static GURL deserializeLatestVersionOnly(@Nullable String gurl) {
+        if (TextUtils.isEmpty(gurl)) return emptyGURL();
+        String[] tokens = gurl.split(Character.toString(SERIALIZER_DELIMITER));
+
+        // First token MUST always be the length of the serialized data.
+        String length = tokens[0];
+        if (gurl.length() != Integer.parseInt(length) + length.length() + 1) {
+            throw new IllegalArgumentException("Serialized GURL had the wrong length.");
+        }
+
+        String spec = getSpecFromTokens(gurl, tokens);
+        // Second token MUST always be the version number.
+        int version = Integer.parseInt(tokens[1]);
+        if (version != SERIALIZER_VERSION) {
+            throw new BadSerializerVersionException();
+        }
+
+        boolean isValid = Boolean.parseBoolean(tokens[2]);
+        Parsed parsed = Parsed.deserialize(tokens, 3);
+        GURL result = new GURL();
+        result.init(spec, isValid, parsed);
+        return result;
+    }
+
+    private static String getSpecFromTokens(String gurl, String[] tokens) {
+        // Last token MUST always be the original spec.
+        // Special case for empty spec - it won't get its own token.
+        return gurl.endsWith(Character.toString(SERIALIZER_DELIMITER)) ? ""
+                                                                       : tokens[tokens.length - 1];
+    }
+
+    /**
+     * Returns the instance of {@link Natives}. The Robolectric Shadow intercepts invocations of
+     * this method.
+     *
+     * <p>Unlike {@code GURLJni.TEST_HOOKS.setInstanceForTesting}, shadowing this method doesn't
+     * rely on tests correctly cleaning up global state.
+     */
+    private static Natives getNatives() {
+        return GURLJni.get();
+    }
+
+    /** Inits this GURL with the internal state of another GURL. */
+    @VisibleForTesting
+    /* package */ void initForTesting(GURL gurl) {
+        init(gurl.mSpec, gurl.mIsValid, gurl.mParsed);
+    }
+
+    /** @return A Mojom representation of this URL. */
+    public Url toMojom() {
+        Url url = new Url();
+        // See url/mojom/url_gurl_mojom_traits.cc.
+        url.url = TextUtils.isEmpty(getPossiblyInvalidSpec())
+                        || getPossiblyInvalidSpec().length() > UrlConstants.MAX_URL_CHARS
+                        || !isValid()
+                ? ""
+                : getPossiblyInvalidSpec();
+        return url;
     }
 
     @NativeMethods
@@ -329,6 +396,11 @@ public class GURL {
          * Reconstructs the native GURL for this Java GURL and initializes |target| with its Origin.
          */
         void getOrigin(String spec, boolean isValid, long nativeParsed, GURL target);
+
+        /**
+         * Reconstructs the native GURL for this Java GURL, and calls GURL.DomainIs.
+         */
+        boolean domainIs(String spec, boolean isValid, long nativeParsed, String domain);
 
         /**
          * Reconstructs the native GURL for this Java GURL, returning its native pointer.

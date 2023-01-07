@@ -47,13 +47,14 @@
     <cr-lazy-render id="dialog">
       <template>
         <cr-dialog consume-keydown-event>
-          <div slot="title">$i18n{removeSelected}</div>
-          <div slot="body">$i18n{deleteWarning}</div>
+          <div slot="title" id="title">$i18n{removeSelected}</div>
+          <div slot="body" id="body">$i18n{deleteWarning}</div>
           <div slot="button-container">
             <cr-button class="cancel-button" on-click="onDialogCancelTap_">
               $i18n{cancel}
             </cr-button>
-            <cr-button class="action-button" on-click="onDialogConfirmTap_">
+            <cr-button class="action-button" on-click="onDialogConfirmTap_"
+                <if expr="is_macosx">aria-describedby="title body"</if>>
               $i18n{deleteConfirm}
             </cr-button>
           </div>
@@ -74,6 +75,11 @@
               hidden="[[!canDeleteHistory_]]" disabled="[[pendingDelete]]"
               on-click="onRemoveFromHistoryTap_">
             $i18n{removeFromHistory}
+          </button>
+          <button id="menuRemoveBookmarkButton" class="dropdown-item"
+              hidden="[[!actionMenuModel_.item.starred]]"
+              on-click="onRemoveBookmarkTap_">
+            $i18n{removeBookmark}
           </button>
         </cr-action-menu>
       </template>

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ namespace ash {
 namespace {
 
 // Delay between timer callbacks. Each one plays a tick sound.
-constexpr auto kTimerDelay = base::TimeDelta::FromMilliseconds(500);
+constexpr auto kTimerDelay = base::Milliseconds(500);
 
 // The number of ticks of the timer before the first sound is generated.
 constexpr int kTimerTicksOfFirstSoundFeedback = 6;

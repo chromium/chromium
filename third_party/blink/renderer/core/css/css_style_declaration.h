@@ -23,7 +23,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -36,6 +35,7 @@ class CSSRule;
 class CSSStyleSheet;
 class CSSValue;
 class ExceptionState;
+class ExecutionContext;
 enum class SecureContextMode;
 
 class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
@@ -45,7 +45,7 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
  public:
   CSSStyleDeclaration(const CSSStyleDeclaration&) = delete;
   CSSStyleDeclaration& operator=(const CSSStyleDeclaration&) = delete;
-  ~CSSStyleDeclaration() override = default;
+  ~CSSStyleDeclaration() override;
 
   void Trace(Visitor* visitor) const override;
 
@@ -53,11 +53,7 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
   String cssFloat() { return GetPropertyValueInternal(CSSPropertyID::kFloat); }
   void setCSSFloat(const ExecutionContext* execution_context,
                    const String& value,
-                   ExceptionState& exception_state) {
-    SetPropertyInternal(CSSPropertyID::kFloat, String(), value, false,
-                        execution_context->GetSecureContextMode(),
-                        exception_state);
-  }
+                   ExceptionState& exception_state);
   virtual String cssText() const = 0;
   virtual void setCSSText(const ExecutionContext*,
                           const String&,
@@ -83,8 +79,18 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
   // it may be used by multiple documents at the same time.
   virtual const CSSValue* GetPropertyCSSValueInternal(CSSPropertyID) = 0;
   virtual const CSSValue* GetPropertyCSSValueInternal(
-      AtomicString custom_property_name) = 0;
+      const AtomicString& custom_property_name) = 0;
   virtual String GetPropertyValueInternal(CSSPropertyID) = 0;
+  // When determining the index of a css property in CSSPropertyValueSet,
+  // the value and priority can be obtained directly through the index.
+  // GetPropertyValueWithHint and GetPropertyPriorityWithHint are O(1).
+  // getPropertyValue and getPropertyPriority are O(n),
+  // because the array needs to be traversed to find the index.
+  // See https://crbug.com/1339812 for more details.
+  virtual String GetPropertyValueWithHint(const String& property_name,
+                                          unsigned index) = 0;
+  virtual String GetPropertyPriorityWithHint(const String& property_name,
+                                             unsigned index) = 0;
   virtual void SetPropertyInternal(CSSPropertyID,
                                    const String& property_value,
                                    const String& value,
@@ -95,17 +101,19 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
   virtual bool CssPropertyMatches(CSSPropertyID, const CSSValue&) const = 0;
   virtual CSSStyleSheet* ParentStyleSheet() const { return nullptr; }
 
-  // Attributes with the "CSSProperty" extended attribute result in
-  // calls to Get/SetPropertyAttribute.
-  String GetPropertyAttribute(const AtomicString& name);
-  void SetPropertyAttribute(const ExecutionContext*,
-                            const AtomicString& name,
-                            const String& value,
-                            ExceptionState& exception_state);
+  String AnonymousNamedGetter(const AtomicString& name);
+  // Note: AnonymousNamedSetter() can end up throwing an exception via
+  // SetPropertyInternal() even though it does not take an |ExceptionState| as
+  // an argument (see bug 829408).
+  NamedPropertySetterResult AnonymousNamedSetter(ScriptState*,
+                                                 const AtomicString& name,
+                                                 const ScriptValue& value);
+  NamedPropertyDeleterResult AnonymousNamedDeleter(const AtomicString& name);
+  void NamedPropertyEnumerator(Vector<String>& names, ExceptionState&);
+  bool NamedPropertyQuery(const AtomicString&, ExceptionState&);
 
  protected:
-  CSSStyleDeclaration(ExecutionContext* context)
-      : ExecutionContextClient(context) {}
+  explicit CSSStyleDeclaration(ExecutionContext* context);
 };
 
 }  // namespace blink

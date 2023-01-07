@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,10 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"  // for WARN_UNUSED_RESULT
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -38,7 +36,10 @@ class NET_EXPORT WebSocketEventInterface {
  public:
   typedef int WebSocketMessageType;
 
-  virtual ~WebSocketEventInterface() {}
+  WebSocketEventInterface(const WebSocketEventInterface&) = delete;
+  WebSocketEventInterface& operator=(const WebSocketEventInterface&) = delete;
+
+  virtual ~WebSocketEventInterface() = default;
 
   // Called when a URLRequest is created for handshaking.
   virtual void OnCreateURLRequest(URLRequest* request) = 0;
@@ -99,13 +100,13 @@ class NET_EXPORT WebSocketEventInterface {
   // |message| is a human readable string describing the failure. (It may be
   // empty.) |net_error| contains the network error code for the failure, which
   // may be |OK| if the failure was at a higher level. |response_code| contains
-  // the HTTP status code that caused the failure, or |base::nullopt| if the
+  // the HTTP status code that caused the failure, or |absl::nullopt| if the
   // attempt didn't get that far.
   //
   // This function deletes the Channel.
   virtual void OnFailChannel(const std::string& message,
                              int net_error,
-                             base::Optional<int> response_code) = 0;
+                             absl::optional<int> response_code) = 0;
 
   // Called when the browser starts the WebSocket Opening Handshake.
   virtual void OnStartOpeningHandshake(
@@ -116,7 +117,7 @@ class NET_EXPORT WebSocketEventInterface {
   // due to layering constraints).
   class NET_EXPORT SSLErrorCallbacks {
    public:
-    virtual ~SSLErrorCallbacks() {}
+    virtual ~SSLErrorCallbacks() = default;
 
     // Cancels the SSL response in response to the error.
     virtual void CancelSSLRequest(int error, const SSLInfo* ssl_info) = 0;
@@ -152,13 +153,10 @@ class NET_EXPORT WebSocketEventInterface {
       scoped_refptr<HttpResponseHeaders> response_headers,
       const IPEndPoint& socket_address,
       base::OnceCallback<void(const AuthCredentials*)> callback,
-      base::Optional<AuthCredentials>* credentials) = 0;
+      absl::optional<AuthCredentials>* credentials) = 0;
 
  protected:
-  WebSocketEventInterface() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketEventInterface);
+  WebSocketEventInterface() = default;
 };
 
 }  // namespace net

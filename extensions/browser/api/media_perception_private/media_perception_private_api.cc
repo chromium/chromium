@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ MediaPerceptionPrivateGetStateFunction::Run() {
 
 void MediaPerceptionPrivateGetStateFunction::GetStateCallback(
     extensions::api::media_perception_private::State state) {
-  Respond(OneArgument(base::Value::FromUniquePtrValue(state.ToValue())));
+  Respond(OneArgument(base::Value(state.ToValue())));
 }
 
 MediaPerceptionPrivateSetStateFunction ::
@@ -38,7 +38,7 @@ MediaPerceptionPrivateSetStateFunction::Run() {
   std::unique_ptr<extensions::api::media_perception_private::SetState::Params>
       params =
           extensions::api::media_perception_private::SetState::Params::Create(
-              *args_);
+              args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
   if (params->state.status !=
           extensions::api::media_perception_private::STATUS_RUNNING &&
@@ -56,7 +56,7 @@ MediaPerceptionPrivateSetStateFunction::Run() {
   // Check that device context is only provided with SetState RUNNING.
   if (params->state.status !=
           extensions::api::media_perception_private::STATUS_RUNNING &&
-      params->state.device_context.get() != nullptr) {
+      params->state.device_context) {
     return RespondNow(
         Error("Only provide deviceContext with SetState RUNNING."));
   }
@@ -64,7 +64,7 @@ MediaPerceptionPrivateSetStateFunction::Run() {
   // Check that video stream parameters are only provided with SetState RUNNING.
   if (params->state.status !=
           extensions::api::media_perception_private::STATUS_RUNNING &&
-      params->state.video_stream_param.get() != nullptr) {
+      params->state.video_stream_param) {
     return RespondNow(
         Error("SetState: status must be RUNNING to set videoStreamParam."));
   }
@@ -95,7 +95,7 @@ MediaPerceptionPrivateSetStateFunction::Run() {
 
 void MediaPerceptionPrivateSetStateFunction::SetStateCallback(
     extensions::api::media_perception_private::State state) {
-  Respond(OneArgument(base::Value::FromUniquePtrValue(state.ToValue())));
+  Respond(OneArgument(base::Value(state.ToValue())));
 }
 
 MediaPerceptionPrivateGetDiagnosticsFunction ::
@@ -116,7 +116,7 @@ MediaPerceptionPrivateGetDiagnosticsFunction::Run() {
 
 void MediaPerceptionPrivateGetDiagnosticsFunction::GetDiagnosticsCallback(
     extensions::api::media_perception_private::Diagnostics diagnostics) {
-  Respond(OneArgument(base::Value::FromUniquePtrValue(diagnostics.ToValue())));
+  Respond(OneArgument(base::Value(diagnostics.ToValue())));
 }
 
 MediaPerceptionPrivateSetAnalyticsComponentFunction::
@@ -130,7 +130,7 @@ MediaPerceptionPrivateSetAnalyticsComponentFunction::Run() {
   std::unique_ptr<
       extensions::api::media_perception_private::SetAnalyticsComponent::Params>
       params = extensions::api::media_perception_private::
-          SetAnalyticsComponent::Params::Create(*args_);
+          SetAnalyticsComponent::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   MediaPerceptionAPIManager* manager =
@@ -147,8 +147,7 @@ void MediaPerceptionPrivateSetAnalyticsComponentFunction::
     OnAnalyticsComponentSet(
         extensions::api::media_perception_private::ComponentState
             component_state) {
-  Respond(
-      OneArgument(base::Value::FromUniquePtrValue(component_state.ToValue())));
+  Respond(OneArgument(base::Value(component_state.ToValue())));
 }
 
 MediaPerceptionPrivateSetComponentProcessStateFunction::
@@ -162,7 +161,7 @@ MediaPerceptionPrivateSetComponentProcessStateFunction::Run() {
   std::unique_ptr<extensions::api::media_perception_private::
                       SetComponentProcessState::Params>
       params = extensions::api::media_perception_private::
-          SetComponentProcessState::Params::Create(*args_);
+          SetComponentProcessState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
   if (params->process_state.status !=
           extensions::api::media_perception_private::PROCESS_STATUS_STARTED &&
@@ -186,8 +185,7 @@ MediaPerceptionPrivateSetComponentProcessStateFunction::Run() {
 void MediaPerceptionPrivateSetComponentProcessStateFunction::
     OnComponentProcessStateSet(
         extensions::api::media_perception_private::ProcessState process_state) {
-  Respond(
-      OneArgument(base::Value::FromUniquePtrValue(process_state.ToValue())));
+  Respond(OneArgument(base::Value(process_state.ToValue())));
 }
 
 }  // namespace extensions

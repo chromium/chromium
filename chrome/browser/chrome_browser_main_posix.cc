@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,13 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/app/shutdown_signal_handlers_posix.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/shutdown_signal_handlers_posix.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/result_codes.h"
@@ -40,6 +40,9 @@ void SIGCHLDHandler(int signal) {
 // way through startup which causes all sorts of problems.
 class ExitHandler {
  public:
+  ExitHandler(const ExitHandler&) = delete;
+  ExitHandler& operator=(const ExitHandler&) = delete;
+
   // Invokes exit when appropriate.
   static void ExitWhenPossibleOnUIThread(int signal);
 
@@ -48,7 +51,7 @@ class ExitHandler {
   ~ExitHandler();
 
   // Called when a session restore has finished.
-  void OnSessionRestoreDone(int num_tabs_restored);
+  void OnSessionRestoreDone(Profile* profile, int num_tabs_restored);
 
   // Does the appropriate call to Exit.
   static void Exit();
@@ -59,8 +62,6 @@ class ExitHandler {
   // SessionRestore, so that the callback list does not contain any obsolete
   // callbacks.
   base::CallbackListSubscription on_session_restored_callback_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExitHandler);
 };
 
 // static
@@ -72,7 +73,7 @@ void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
   } else {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     switch (signal) {
       case SIGINT:
       case SIGHUP:
@@ -110,7 +111,7 @@ ExitHandler::ExitHandler() {
 ExitHandler::~ExitHandler() {
 }
 
-void ExitHandler::OnSessionRestoreDone(int /* num_tabs */) {
+void ExitHandler::OnSessionRestoreDone(Profile* profile, int /* num_tabs */) {
   if (!SessionRestore::IsRestoringSynchronously()) {
     // At this point the message loop may not be running (meaning we haven't
     // gotten through browser startup, but are close). Post the task to at which
@@ -136,9 +137,9 @@ void ExitHandler::Exit() {
 // ChromeBrowserMainPartsPosix -------------------------------------------------
 
 ChromeBrowserMainPartsPosix::ChromeBrowserMainPartsPosix(
-    const content::MainFunctionParams& parameters,
+    bool is_integration_test,
     StartupData* startup_data)
-    : ChromeBrowserMainParts(parameters, startup_data) {}
+    : ChromeBrowserMainParts(is_integration_test, startup_data) {}
 
 int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
   const int result = ChromeBrowserMainParts::PreEarlyInitialization();
@@ -150,13 +151,13 @@ int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
   struct sigaction action;
   memset(&action, 0, sizeof(action));
   action.sa_handler = SIGCHLDHandler;
-  CHECK_EQ(0, sigaction(SIGCHLD, &action, NULL));
+  CHECK_EQ(0, sigaction(SIGCHLD, &action, nullptr));
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-void ChromeBrowserMainPartsPosix::PostMainMessageLoopStart() {
-  ChromeBrowserMainParts::PostMainMessageLoopStart();
+void ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop() {
+  ChromeBrowserMainParts::PostCreateMainMessageLoop();
 
   // Exit in response to SIGINT, SIGTERM, etc.
   InstallShutdownSignalHandlers(
@@ -167,7 +168,7 @@ void ChromeBrowserMainPartsPosix::PostMainMessageLoopStart() {
 void ChromeBrowserMainPartsPosix::ShowMissingLocaleMessageBox() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED();  // Should not ever happen on ChromeOS.
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // Not called on Mac because we load the locale files differently.
   NOTREACHED();
 #elif defined(USE_AURA)

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,8 @@
 #define UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/view.h"
 
@@ -36,6 +35,10 @@ class VIEWS_EXPORT NativeViewHost : public View {
   METADATA_HEADER(NativeViewHost);
 
   NativeViewHost();
+
+  NativeViewHost(const NativeViewHost&) = delete;
+  NativeViewHost& operator=(const NativeViewHost&) = delete;
+
   ~NativeViewHost() override;
 
   // Attach a gfx::NativeView to this View. Its bounds will be kept in sync
@@ -99,14 +102,19 @@ class VIEWS_EXPORT NativeViewHost : public View {
 
   void NativeViewDestroyed();
 
+  // Sets the desired background color for repainting when the view is clipped.
+  // Defaults to transparent color if unset.
+  void SetBackgroundColorWhenClipped(absl::optional<SkColor> color);
+
   // Overridden from View:
   void Layout() override;
   void OnPaint(gfx::Canvas* canvas) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
   void OnFocus() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void SetVisible(bool visible) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
 
  protected:
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
@@ -141,7 +149,8 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // in the setter/accessor above.
   bool fast_resize_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHost);
+  // The color to use for repainting the background when the view is clipped.
+  absl::optional<SkColor> background_color_when_clipped_;
 };
 
 }  // namespace views

@@ -1,8 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sessions/session_service_log.h"
+
+#include <string>
+#include <utility>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -20,57 +23,69 @@ constexpr char kStartEventDidLastSessionCrashKey[] = "crashed";
 constexpr char kRestoreEventWindowCountKey[] = "window_count";
 constexpr char kRestoreEventTabCountKey[] = "tab_count";
 constexpr char kRestoreEventErroredReadingKey[] = "errored_reading";
+constexpr char kRestoreInitiatedEventRestoreBrowserKey[] = "restore_browser";
+constexpr char kRestoreInitiatedEventSynchronousKey[] = "synchronous";
 constexpr char kExitEventWindowCountKey[] = "window_count";
 constexpr char kExitEventTabCountKey[] = "tab_count";
+constexpr char kExitEventIsFirstSessionServiceKey[] = "first_session_service";
+constexpr char kExitEventDidScheduleCommandKey[] = "did_schedule_command";
 constexpr char kWriteErrorEventErrorCountKey[] = "error_count";
 constexpr char kWriteErrorEventUnrecoverableErrorCountKey[] =
     "unrecoverable_error_count";
 
 // This value is a balance between keeping too much in prefs, and the
 // ability to see the last few restarts.
-constexpr size_t kMaxEventCount = 12;
+constexpr size_t kMaxEventCount = 20;
 
-base::Value SerializeEvent(const SessionServiceEvent& event) {
-  base::Value serialized_event(base::Value::Type::DICTIONARY);
-  serialized_event.SetIntPath(kEventTypeKey, static_cast<int>(event.type));
-  serialized_event.SetStringPath(
+base::Value::Dict SerializeEvent(const SessionServiceEvent& event) {
+  base::Value::Dict serialized_event;
+  serialized_event.Set(kEventTypeKey, static_cast<int>(event.type));
+  serialized_event.Set(
       kEventTimeKey,
       base::NumberToString(event.time.since_origin().InMicroseconds()));
   switch (event.type) {
     case SessionServiceEventLogType::kStart:
-      serialized_event.SetBoolKey(kStartEventDidLastSessionCrashKey,
-                                  event.data.start.did_last_session_crash);
+      serialized_event.Set(kStartEventDidLastSessionCrashKey,
+                           event.data.start.did_last_session_crash);
       break;
     case SessionServiceEventLogType::kRestore:
-      serialized_event.SetIntKey(kRestoreEventWindowCountKey,
-                                 event.data.restore.window_count);
-      serialized_event.SetIntKey(kRestoreEventTabCountKey,
-                                 event.data.restore.tab_count);
-      serialized_event.SetBoolKey(kRestoreEventErroredReadingKey,
-                                  event.data.restore.encountered_error_reading);
+      serialized_event.Set(kRestoreEventWindowCountKey,
+                           event.data.restore.window_count);
+      serialized_event.Set(kRestoreEventTabCountKey,
+                           event.data.restore.tab_count);
+      serialized_event.Set(kRestoreEventErroredReadingKey,
+                           event.data.restore.encountered_error_reading);
       break;
     case SessionServiceEventLogType::kExit:
-      serialized_event.SetIntKey(kExitEventWindowCountKey,
-                                 event.data.exit.window_count);
-      serialized_event.SetIntKey(kExitEventTabCountKey,
-                                 event.data.exit.tab_count);
+      serialized_event.Set(kExitEventWindowCountKey,
+                           event.data.exit.window_count);
+      serialized_event.Set(kExitEventTabCountKey, event.data.exit.tab_count);
+      serialized_event.Set(kExitEventIsFirstSessionServiceKey,
+                           event.data.exit.is_first_session_service);
+      serialized_event.Set(kExitEventDidScheduleCommandKey,
+                           event.data.exit.did_schedule_command);
       break;
     case SessionServiceEventLogType::kWriteError:
-      serialized_event.SetIntKey(kWriteErrorEventErrorCountKey,
-                                 event.data.write_error.error_count);
-      serialized_event.SetIntKey(
-          kWriteErrorEventUnrecoverableErrorCountKey,
-          event.data.write_error.unrecoverable_error_count);
+      serialized_event.Set(kWriteErrorEventErrorCountKey,
+                           event.data.write_error.error_count);
+      serialized_event.Set(kWriteErrorEventUnrecoverableErrorCountKey,
+                           event.data.write_error.unrecoverable_error_count);
+      break;
+    case SessionServiceEventLogType::kRestoreCanceled:
+      break;
+    case SessionServiceEventLogType::kRestoreInitiated:
+      serialized_event.Set(kRestoreInitiatedEventRestoreBrowserKey,
+                           event.data.restore_initiated.restore_browser);
+      serialized_event.Set(kRestoreInitiatedEventSynchronousKey,
+                           event.data.restore_initiated.synchronous);
       break;
   }
   return serialized_event;
 }
 
-bool DeserializeEvent(const base::Value& serialized_event,
+bool DeserializeEvent(const base::Value::Dict& serialized_event,
                       SessionServiceEvent& event) {
-  if (!serialized_event.is_dict())
-    return false;
-  auto type = serialized_event.FindIntKey(kEventTypeKey);
+  auto type = serialized_event.FindInt(kEventTypeKey);
   if (!type)
     return false;
   if (*type < static_cast<int>(SessionServiceEventLogType::kMinValue) ||
@@ -79,69 +94,91 @@ bool DeserializeEvent(const base::Value& serialized_event,
   }
   event.type = static_cast<SessionServiceEventLogType>(*type);
 
-  const std::string* time_value = serialized_event.FindStringKey(kEventTimeKey);
+  const std::string* time_value = serialized_event.FindString(kEventTimeKey);
   if (!time_value)
     return false;
   int64_t time_int;
   if (!base::StringToInt64(*time_value, &time_int))
     return false;
-  event.time = base::Time() + base::TimeDelta::FromMicroseconds(time_int);
+  event.time = base::Time() + base::Microseconds(time_int);
 
   switch (event.type) {
     case SessionServiceEventLogType::kStart: {
       auto crash_value =
-          serialized_event.FindBoolKey(kStartEventDidLastSessionCrashKey);
+          serialized_event.FindBool(kStartEventDidLastSessionCrashKey);
       if (!crash_value)
         return false;
       event.data.start.did_last_session_crash = *crash_value;
       break;
     }
     case SessionServiceEventLogType::kRestore: {
-      auto window_count =
-          serialized_event.FindIntKey(kRestoreEventWindowCountKey);
+      auto window_count = serialized_event.FindInt(kRestoreEventWindowCountKey);
       if (!window_count)
         return false;
       event.data.restore.window_count = *window_count;
 
-      auto tab_count = serialized_event.FindIntKey(kRestoreEventTabCountKey);
+      auto tab_count = serialized_event.FindInt(kRestoreEventTabCountKey);
       if (!tab_count)
         return false;
       event.data.restore.tab_count = *tab_count;
 
       auto error_reading =
-          serialized_event.FindBoolKey(kRestoreEventErroredReadingKey);
+          serialized_event.FindBool(kRestoreEventErroredReadingKey);
       if (!error_reading)
         return false;
       event.data.restore.encountered_error_reading = *error_reading;
       break;
     }
     case SessionServiceEventLogType::kExit: {
-      auto window_count = serialized_event.FindIntKey(kExitEventWindowCountKey);
+      auto window_count = serialized_event.FindInt(kExitEventWindowCountKey);
       if (!window_count)
         return false;
       event.data.exit.window_count = *window_count;
 
-      auto tab_count = serialized_event.FindIntKey(kExitEventTabCountKey);
+      auto tab_count = serialized_event.FindInt(kExitEventTabCountKey);
       if (!tab_count)
         return false;
       event.data.exit.tab_count = *tab_count;
+
+      // The remaining values were added later on. Don't error if not found.
+      auto is_first_session_service =
+          serialized_event.FindBool(kExitEventIsFirstSessionServiceKey);
+      event.data.exit.is_first_session_service =
+          !is_first_session_service || *is_first_session_service;
+
+      auto did_schedule_command =
+          serialized_event.FindBool(kExitEventDidScheduleCommandKey);
+      event.data.exit.did_schedule_command =
+          !did_schedule_command || *did_schedule_command;
       break;
     }
     case SessionServiceEventLogType::kWriteError: {
       auto error_count =
-          serialized_event.FindIntKey(kWriteErrorEventErrorCountKey);
+          serialized_event.FindInt(kWriteErrorEventErrorCountKey);
       if (!error_count)
         return false;
       event.data.write_error.error_count = *error_count;
       event.data.write_error.unrecoverable_error_count = 0;
       // `kWriteErrorEventErrorCountKey` was added after initial code landed,
       // so don't fail if it isn't present.
-      auto unrecoverable_error_count = serialized_event.FindIntKey(
-          kWriteErrorEventUnrecoverableErrorCountKey);
+      auto unrecoverable_error_count =
+          serialized_event.FindInt(kWriteErrorEventUnrecoverableErrorCountKey);
       if (unrecoverable_error_count) {
         event.data.write_error.unrecoverable_error_count =
             *unrecoverable_error_count;
       }
+      break;
+    }
+    case SessionServiceEventLogType::kRestoreCanceled:
+      break;
+    case SessionServiceEventLogType::kRestoreInitiated: {
+      auto synchronous =
+          serialized_event.FindBool(kRestoreInitiatedEventSynchronousKey);
+      event.data.restore_initiated.synchronous = synchronous && *synchronous;
+      auto restore_browser =
+          serialized_event.FindBool(kRestoreInitiatedEventRestoreBrowserKey);
+      event.data.restore_initiated.restore_browser =
+          restore_browser && *restore_browser;
       break;
     }
   }
@@ -152,21 +189,21 @@ void SaveEventsToPrefs(Profile* profile,
                        const std::list<SessionServiceEvent>& events) {
   base::Value serialized_events(base::Value::Type::LIST);
   for (const SessionServiceEvent& event : events)
-    serialized_events.Append(SerializeEvent(event));
+    serialized_events.GetList().Append(SerializeEvent(event));
   profile->GetPrefs()->Set(kEventPrefKey, serialized_events);
 }
 
 }  // namespace
 
 std::list<SessionServiceEvent> GetSessionServiceEvents(Profile* profile) {
-  const base::ListValue* serialized_events =
+  const base::Value::List& serialized_events =
       profile->GetPrefs()->GetList(kEventPrefKey);
-  if (!serialized_events)
-    return {};
   std::list<SessionServiceEvent> events;
-  for (const auto& serialized_event : serialized_events->GetList()) {
+  for (const auto& serialized_event : serialized_events) {
     SessionServiceEvent event;
-    if (DeserializeEvent(serialized_event, event))
+    if (!serialized_event.is_dict())
+      continue;
+    if (DeserializeEvent(serialized_event.GetDict(), event))
       events.push_back(std::move(event));
   }
   return events;
@@ -182,12 +219,27 @@ void LogSessionServiceStartEvent(Profile* profile, bool after_crash) {
 
 void LogSessionServiceExitEvent(Profile* profile,
                                 int window_count,
-                                int tab_count) {
+                                int tab_count,
+                                bool is_first_session_service,
+                                bool did_schedule_command) {
   SessionServiceEvent event;
   event.type = SessionServiceEventLogType::kExit;
   event.time = base::Time::Now();
   event.data.exit.window_count = window_count;
   event.data.exit.tab_count = tab_count;
+  event.data.exit.is_first_session_service = is_first_session_service;
+  event.data.exit.did_schedule_command = did_schedule_command;
+  LogSessionServiceEvent(profile, event);
+}
+
+void LogSessionServiceRestoreInitiatedEvent(Profile* profile,
+                                            bool synchronous,
+                                            bool restore_browser) {
+  SessionServiceEvent event;
+  event.type = SessionServiceEventLogType::kRestoreInitiated;
+  event.time = base::Time::Now();
+  event.data.restore_initiated.synchronous = synchronous;
+  event.data.restore_initiated.restore_browser = restore_browser;
   LogSessionServiceEvent(profile, event);
 }
 
@@ -201,6 +253,13 @@ void LogSessionServiceRestoreEvent(Profile* profile,
   event.data.restore.window_count = window_count;
   event.data.restore.tab_count = tab_count;
   event.data.restore.encountered_error_reading = encountered_error_reading;
+  LogSessionServiceEvent(profile, event);
+}
+
+void LogSessionServiceRestoreCanceledEvent(Profile* profile) {
+  SessionServiceEvent event;
+  event.type = SessionServiceEventLogType::kRestoreCanceled;
+  event.time = base::Time::Now();
   LogSessionServiceEvent(profile, event);
 }
 

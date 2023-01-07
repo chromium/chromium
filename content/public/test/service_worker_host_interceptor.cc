@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -25,21 +26,13 @@ ServiceWorkerHostInterceptor::InterceptServiceWorkerHostWithScope(
     BrowserContext* browser_context,
     const GURL& scope,
     int* service_worker_process_id_out) {
-  base::RunLoop run_loop;
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   scoped_refptr<ServiceWorkerContextWrapper> context =
       static_cast<ServiceWorkerContextWrapper*>(
-          BrowserContext::GetDefaultStoragePartition(browser_context)
+          browser_context->GetDefaultStoragePartition()
               ->GetServiceWorkerContext());
-  BrowserThread::ID run_done_thread;
-  bool is_known_thread =
-      BrowserThread::GetCurrentThreadIdentifier(&run_done_thread);
-  DCHECK(is_known_thread);
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&ServiceWorkerHostInterceptor::
-                         FindRegistrationOnServiceWorkerCoreThread,
-                     base::Unretained(this), context, scope, run_done_thread,
-                     run_loop.QuitClosure()));
+  base::RunLoop run_loop;
+  FindRegistration(context, scope, run_loop.QuitClosure());
   run_loop.Run();
   *service_worker_process_id_out = service_worker_process_id_;
   return status_;
@@ -64,20 +57,17 @@ void ServiceWorkerHostInterceptor::OpenPaymentHandlerWindow(
   }
 }
 
-void ServiceWorkerHostInterceptor::FindRegistrationOnServiceWorkerCoreThread(
+void ServiceWorkerHostInterceptor::FindRegistration(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     const GURL& scope,
-    BrowserThread::ID run_done_thread,
     base::OnceClosure done) {
   context->FindRegistrationForScope(
-      scope,
-      base::BindOnce(&ServiceWorkerHostInterceptor::
-                         OnFoundRegistrationOnServiceWorkerCoreThread,
-                     base::Unretained(this), run_done_thread, std::move(done)));
+      scope, blink::StorageKey(url::Origin::Create(scope)),
+      base::BindOnce(&ServiceWorkerHostInterceptor::OnFoundRegistration,
+                     base::Unretained(this), std::move(done)));
 }
 
-void ServiceWorkerHostInterceptor::OnFoundRegistrationOnServiceWorkerCoreThread(
-    BrowserThread::ID run_done_thread,
+void ServiceWorkerHostInterceptor::OnFoundRegistration(
     base::OnceClosure done,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
@@ -88,7 +78,7 @@ void ServiceWorkerHostInterceptor::OnFoundRegistrationOnServiceWorkerCoreThread(
   forwarding_interface_ =
       service_worker_version_->service_worker_host_receiver_for_testing()
           .SwapImplForTesting(this);
-  RunOrPostTaskOnThread(FROM_HERE, run_done_thread, std::move(done));
+  std::move(done).Run();
 }
 
 }  // namespace content

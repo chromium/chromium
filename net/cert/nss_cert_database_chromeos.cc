@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
-#include "base/stl_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "net/cert/nss_cert_database.h"
@@ -71,13 +70,10 @@ void NSSCertDatabaseChromeOS::ListModules(
     bool need_rw) const {
   NSSCertDatabase::ListModules(modules, need_rw);
 
-  size_t pre_size = modules->size();
   const NSSProfileFilterChromeOS& profile_filter = profile_filter_;
   base::EraseIf(*modules, [&profile_filter](crypto::ScopedPK11Slot& module) {
     return !profile_filter.IsModuleAllowed(module.get());
   });
-  DVLOG(1) << "filtered " << pre_size - modules->size() << " of " << pre_size
-           << " modules";
 }
 
 bool NSSCertDatabaseChromeOS::SetCertTrust(CERTCertificate* cert,
@@ -130,12 +126,9 @@ NSSCertDatabase::CertInfoList NSSCertDatabaseChromeOS::ListCertsInfoImpl(
       crypto::ScopedPK11Slot(), add_certs_info));
 
   // Filter certificate information according to user profile.
-  size_t pre_size = certs_info.size();
   base::EraseIf(certs_info, [&profile_filter](CertInfo& cert_info) {
     return !profile_filter.IsCertAllowed(cert_info.cert.get());
   });
-  DVLOG(1) << "filtered " << pre_size - certs_info.size() << " of " << pre_size
-           << " certs";
 
   if (add_certs_info) {
     // Add Chrome OS specific information.

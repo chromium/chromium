@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,8 +95,8 @@ class MockChromePrompt : public mojom::ChromePrompt {
 
   void PromptUser(
       const std::vector<base::FilePath>& files_to_delete,
-      const base::Optional<std::vector<std::wstring>>& registry_keys,
-      const base::Optional<std::vector<std::wstring>>& extension_ids,
+      const absl::optional<std::vector<std::wstring>>& registry_keys,
+      const absl::optional<std::vector<std::wstring>>& extension_ids,
       mojom::ChromePrompt::PromptUserCallback callback) override {
     EXPECT_NE(test_config_.uws_expected, files_to_delete.empty());
     if (test_config_.uws_expected) {

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,6 +72,9 @@ class MEDIA_EXPORT MediaObserver {
   // Called when the media is playing/paused.
   virtual void OnPlaying() = 0;
   virtual void OnPaused() = 0;
+
+  // Called when the media is frozen.
+  virtual void OnFrozen() = 0;
 
   // Called when the data source is asynchronously initialized.
   virtual void OnDataSourceInitialized(const GURL& url_after_redirects) = 0;

@@ -1,12 +1,12 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_gesture_recognizer.h"
 
-#include <cmath>
+#import <cmath>
 
-#include "ui/gfx/geometry/angle_conversions.h"
+#import "ui/gfx/geometry/angle_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -14,7 +14,7 @@
 
 namespace {
 
-// The absolute maximum swipe angle from |x = y| for a swipe to begin.
+// The absolute maximum swipe angle from `x = y` for a swipe to begin.
 const CGFloat kMaxSwipeYAngle = 65;
 // The minimum distance between touches for a swipe to begin.
 const CGFloat kDefaultMinSwipeXThreshold = 4;
@@ -84,16 +84,16 @@ const CGFloat kDefaultMinSwipeXThreshold = 4;
   }
 
   // In iOS10, sometimes a PanGestureRecognizer will fire a touchesMoved even
-  // after touchesBegan sets its state to |UIGestureRecognizerStateFailed|.
+  // after touchesBegan sets its state to `UIGestureRecognizerStateFailed`.
   // Somehow the state is re-set to UIGestureRecognizerStatePossible, and ends
-  // up in moved.  Checking if |_startPoint| has been set is a secondary way to
+  // up in moved.  Checking if `_startPoint` has been set is a secondary way to
   // catch for failed gestures.
   if (CGPointEqualToPoint(_startPoint, CGPointZero)) {
     self.state = UIGestureRecognizerStateFailed;
     return;
   }
 
-  // Don't swipe at an angle greater than |kMaxSwipeYAngle|.
+  // Don't swipe at an angle greater than `kMaxSwipeYAngle`.
   UITouch* touch = [[event allTouches] anyObject];
   CGPoint currentPoint = [touch locationInView:self.view];
   CGFloat dy = currentPoint.y - _startPoint.y;
@@ -104,7 +104,7 @@ const CGFloat kDefaultMinSwipeXThreshold = 4;
     return;
   }
 
-  // On devices that support force presses a -touchesMoved fires when |force|
+  // On devices that support force presses a -touchesMoved fires when `force`
   // changes and not the location of the touch. Ignore these events.
   if (currentPoint.x == _startPoint.x) {
     self.state = UIGestureRecognizerStatePossible;
@@ -128,7 +128,7 @@ const CGFloat kDefaultMinSwipeXThreshold = 4;
     }
   }
 
-  // Begin recognizer after |self.swipeThreshold| distance swiped.
+  // Begin recognizer after `self.swipeThreshold` distance swiped.
   if (std::abs(currentPoint.x - _startPoint.x) > self.swipeThreshold) {
     if (_direction == UISwipeGestureRecognizerDirectionRight) {
       _swipeOffset = currentPoint.x;

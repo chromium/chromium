@@ -92,6 +92,21 @@ test_interpolation({
   {at: 1.5, expect: '125px'},
 ]);
 
+test_interpolation({
+  property: 'perspective',
+  from: '0px', // Test that there's no special handling of 0px, as for perspective()
+  to: '10px',
+}, [
+  {at: -20, expect: '0px'}, // perspective does not accept negative values
+  {at: -1, expect: '0px'}, // perspective does not accept negative values
+  {at: -0.3, expect: '0px'},
+  {at: 0, expect: '0px'},
+  {at: 0.3, expect: '3px'},
+  {at: 0.6, expect: '6px'},
+  {at: 1, expect: '10px'},
+  {at: 1.5, expect: '15px'},
+]);
+
 test_no_interpolation({
   property: 'perspective',
   from: '50px',

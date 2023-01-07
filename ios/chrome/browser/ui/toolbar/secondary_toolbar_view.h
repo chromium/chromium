@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 // containing the controls displayed only on specific size classes.
 @interface SecondaryToolbarView : UIView<AdaptiveToolbarView>
 
-// Initialize this View with the button |factory|.
+// Initialize this View with the button `factory`.
 - (instancetype)initWithButtonFactory:(ToolbarButtonFactory*)factory
     NS_DESIGNATED_INITIALIZER;
 

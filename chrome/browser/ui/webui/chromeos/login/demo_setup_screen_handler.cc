@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,61 +8,45 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId DemoSetupScreenView::kScreenId;
-
 DemoSetupScreenView::~DemoSetupScreenView() = default;
 
-DemoSetupScreenHandler::DemoSetupScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_user_acted_method_path("login.DemoSetupScreen.userActed");
-}
+DemoSetupScreenHandler::DemoSetupScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
-DemoSetupScreenHandler::~DemoSetupScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+DemoSetupScreenHandler::~DemoSetupScreenHandler() = default;
 
 void DemoSetupScreenHandler::Show() {
-  ShowScreen(kScreenId);
-}
-
-void DemoSetupScreenHandler::Hide() {}
-
-void DemoSetupScreenHandler::Bind(DemoSetupScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen);
+  ShowInWebUI();
 }
 
 void DemoSetupScreenHandler::OnSetupFailed(
     const DemoSetupController::DemoSetupError& error) {
   // TODO(wzang): Consider customization for RecoveryMethod::kReboot as well.
-  CallJS("login.DemoSetupScreen.onSetupFailed",
-         base::JoinString({error.GetLocalizedErrorMessage(),
-                           error.GetLocalizedRecoveryMessage()},
-                          u" "),
-         error.recovery_method() ==
-             DemoSetupController::DemoSetupError::RecoveryMethod::kPowerwash);
+  CallExternalAPI(
+      "onSetupFailed",
+      base::JoinString({error.GetLocalizedErrorMessage(),
+                        error.GetLocalizedRecoveryMessage()},
+                       u" "),
+      error.recovery_method() ==
+          DemoSetupController::DemoSetupError::RecoveryMethod::kPowerwash);
 }
 
 void DemoSetupScreenHandler::SetCurrentSetupStep(
     DemoSetupController::DemoSetupStep current_step) {
-  CallJS("login.DemoSetupScreen.setCurrentSetupStep",
-         DemoSetupController::GetDemoSetupStepString(current_step));
+  CallExternalAPI("setCurrentSetupStep",
+                  DemoSetupController::GetDemoSetupStepString(current_step));
 }
 
 void DemoSetupScreenHandler::OnSetupSucceeded() {
-  CallJS("login.DemoSetupScreen.onSetupSucceeded");
+  CallExternalAPI("onSetupSucceeded");
 }
-
-void DemoSetupScreenHandler::Initialize() {}
 
 void DemoSetupScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -82,9 +66,8 @@ void DemoSetupScreenHandler::DeclareLocalizedValues(
 }
 
 void DemoSetupScreenHandler::GetAdditionalParameters(
-    base::DictionaryValue* parameters) {
-  parameters->SetPath("demoSetupSteps",
-                      DemoSetupController::GetDemoSetupSteps());
+    base::Value::Dict* parameters) {
+  parameters->Set("demoSetupSteps", DemoSetupController::GetDemoSetupSteps());
 }
 
 }  // namespace chromeos

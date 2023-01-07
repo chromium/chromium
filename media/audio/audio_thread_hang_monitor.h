@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_AUDIO_AUDIO_THREAD_HANG_MONITOR_H_
 #define MEDIA_AUDIO_AUDIO_THREAD_HANG_MONITOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/audio/audio_manager.h"
 
 #include <atomic>
@@ -12,15 +13,14 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -68,10 +68,13 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   // zero, a default value is used.
   static Ptr Create(
       HangAction hang_action,
-      base::Optional<base::TimeDelta> hang_deadline,
+      absl::optional<base::TimeDelta> hang_deadline,
       const base::TickClock* clock,
       scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner,
       scoped_refptr<base::SequencedTaskRunner> monitor_task_runner = nullptr);
+
+  AudioThreadHangMonitor(const AudioThreadHangMonitor&) = delete;
+  AudioThreadHangMonitor& operator=(const AudioThreadHangMonitor&) = delete;
 
   ~AudioThreadHangMonitor();
 
@@ -95,7 +98,7 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
 
   AudioThreadHangMonitor(
       HangAction hang_action,
-      base::Optional<base::TimeDelta> hang_deadline,
+      absl::optional<base::TimeDelta> hang_deadline,
       const base::TickClock* clock,
       scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner);
 
@@ -124,7 +127,7 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   void DumpWithoutCrashing();
   void TerminateCurrentProcess();
 
-  const base::TickClock* const clock_;
+  const raw_ptr<const base::TickClock> clock_;
 
   // This flag is set to false on the monitor sequence and then set to true on
   // the audio thread to indicate that the audio thread is alive.
@@ -162,8 +165,6 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   // successive successful pings. If the most recent ping was failed, the number
   // is the negative of the number of successive failed pings.
   int recent_ping_state_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioThreadHangMonitor);
 };
 
 }  // namespace media

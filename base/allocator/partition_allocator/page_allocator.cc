@@ -1,129 +1,197 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 
-#include <limits.h>
-
 #include <atomic>
+#include <cstdint>
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/bits.h"
-#include "base/check_op.h"
-#include "base/lazy_instance.h"
-#include "base/no_destructor.h"
-#include "base/numerics/checked_math.h"
-#include "base/synchronization/lock.h"
+#include "base/allocator/partition_allocator/partition_lock.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/allocator/partition_allocator/page_allocator_internals_win.h"
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include "base/allocator/partition_allocator/page_allocator_internals_posix.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include "base/allocator/partition_allocator/page_allocator_internals_fuchsia.h"
 #else
 #error Platform not supported.
 #endif
 
-namespace base {
+namespace partition_alloc {
 
 namespace {
 
-LazyInstance<Lock>::Leaky g_reserve_lock = LAZY_INSTANCE_INITIALIZER;
+internal::Lock g_reserve_lock;
 
 // We may reserve/release address space on different threads.
-Lock& GetReserveLock() {
-  return g_reserve_lock.Get();
+internal::Lock& GetReserveLock() {
+  return g_reserve_lock;
 }
 
 std::atomic<size_t> g_total_mapped_address_space;
 
 // We only support a single block of reserved address space.
-void* s_reservation_address GUARDED_BY(GetReserveLock()) = nullptr;
-size_t s_reservation_size GUARDED_BY(GetReserveLock()) = 0;
+uintptr_t s_reservation_address PA_GUARDED_BY(GetReserveLock()) = 0;
+size_t s_reservation_size PA_GUARDED_BY(GetReserveLock()) = 0;
 
-void* AllocPagesIncludingReserved(void* address,
-                                  size_t length,
-                                  PageAccessibilityConfiguration accessibility,
-                                  PageTag page_tag) {
-  void* ret = SystemAllocPages(address, length, accessibility, page_tag);
-  if (ret == nullptr) {
-    const bool cant_alloc_length = kHintIsAdvisory || address == nullptr;
+uintptr_t AllocPagesIncludingReserved(
+    uintptr_t address,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageTag page_tag,
+    int file_descriptor_for_shared_alloc = -1) {
+  uintptr_t ret =
+      internal::SystemAllocPages(address, length, accessibility, page_tag,
+                                 file_descriptor_for_shared_alloc);
+  if (!ret) {
+    const bool cant_alloc_length = internal::kHintIsAdvisory || !address;
     if (cant_alloc_length) {
       // The system cannot allocate |length| bytes. Release any reserved address
       // space and try once more.
       ReleaseReservation();
-      ret = SystemAllocPages(address, length, accessibility, page_tag);
+      ret = internal::SystemAllocPages(address, length, accessibility, page_tag,
+                                       file_descriptor_for_shared_alloc);
     }
   }
   return ret;
 }
 
-// Trims |base| to given |trim_length| and |alignment|.
+// Trims memory at |base_address| to given |trim_length| and |alignment|.
 //
-// On failure, on Windows, this function returns nullptr and frees |base|.
-void* TrimMapping(void* base,
-                  size_t base_length,
-                  size_t trim_length,
-                  uintptr_t alignment,
-                  PageAccessibilityConfiguration accessibility) {
-  size_t pre_slack = reinterpret_cast<uintptr_t>(base) & (alignment - 1);
-  if (pre_slack) {
-    pre_slack = alignment - pre_slack;
-  }
+// On failure, on Windows, this function returns 0 and frees memory at
+// |base_address|.
+uintptr_t TrimMapping(uintptr_t base_address,
+                      size_t base_length,
+                      size_t trim_length,
+                      uintptr_t alignment,
+                      uintptr_t alignment_offset,
+                      PageAccessibilityConfiguration accessibility) {
+  PA_DCHECK(base_length >= trim_length);
+  PA_DCHECK(internal::base::bits::IsPowerOfTwo(alignment));
+  PA_DCHECK(alignment_offset < alignment);
+  uintptr_t new_base =
+      NextAlignedWithOffset(base_address, alignment, alignment_offset);
+  PA_DCHECK(new_base >= base_address);
+  size_t pre_slack = new_base - base_address;
   size_t post_slack = base_length - pre_slack - trim_length;
-  PA_DCHECK(base_length >= trim_length || pre_slack || post_slack);
+  PA_DCHECK(base_length == trim_length || pre_slack || post_slack);
   PA_DCHECK(pre_slack < base_length);
   PA_DCHECK(post_slack < base_length);
-  return TrimMappingInternal(base, base_length, trim_length, accessibility,
-                             pre_slack, post_slack);
+  return internal::TrimMappingInternal(base_address, base_length, trim_length,
+                                       accessibility, pre_slack, post_slack);
 }
 
 }  // namespace
 
-void* SystemAllocPages(void* hint,
-                       size_t length,
-                       PageAccessibilityConfiguration accessibility,
-                       PageTag page_tag) {
-  PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));
-  PA_DCHECK(!(reinterpret_cast<uintptr_t>(hint) &
-              PageAllocationGranularityOffsetMask()));
-  void* ptr = SystemAllocPagesInternal(hint, length, accessibility, page_tag);
-  if (ptr)
-    g_total_mapped_address_space.fetch_add(length, std::memory_order_relaxed);
+// Align |address| up to the closest, non-smaller address, that gives
+// |requested_offset| remainder modulo |alignment|.
+//
+// Examples for alignment=1024 and requested_offset=64:
+//   64 -> 64
+//   65 -> 1088
+//   1024 -> 1088
+//   1088 -> 1088
+//   1089 -> 2112
+//   2048 -> 2112
+uintptr_t NextAlignedWithOffset(uintptr_t address,
+                                uintptr_t alignment,
+                                uintptr_t requested_offset) {
+  PA_DCHECK(internal::base::bits::IsPowerOfTwo(alignment));
+  PA_DCHECK(requested_offset < alignment);
 
-  return ptr;
+  uintptr_t actual_offset = address & (alignment - 1);
+  uintptr_t new_address;
+  if (actual_offset <= requested_offset)
+    new_address = address + requested_offset - actual_offset;
+  else
+    new_address = address + alignment + requested_offset - actual_offset;
+  PA_DCHECK(new_address >= address);
+  PA_DCHECK(new_address - address < alignment);
+  PA_DCHECK(new_address % alignment == requested_offset);
+
+  return new_address;
 }
 
+namespace internal {
+
+uintptr_t SystemAllocPages(uintptr_t hint,
+                           size_t length,
+                           PageAccessibilityConfiguration accessibility,
+                           PageTag page_tag,
+                           int file_descriptor_for_shared_alloc) {
+  PA_DCHECK(!(length & internal::PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(!(hint & internal::PageAllocationGranularityOffsetMask()));
+  uintptr_t ret = internal::SystemAllocPagesInternal(
+      hint, length, accessibility, page_tag, file_descriptor_for_shared_alloc);
+  if (ret)
+    g_total_mapped_address_space.fetch_add(length, std::memory_order_relaxed);
+
+  return ret;
+}
+
+}  // namespace internal
+
+uintptr_t AllocPages(size_t length,
+                     size_t align,
+                     PageAccessibilityConfiguration accessibility,
+                     PageTag page_tag,
+                     int file_descriptor_for_shared_alloc) {
+  return AllocPagesWithAlignOffset(0, length, align, 0, accessibility, page_tag,
+                                   file_descriptor_for_shared_alloc);
+}
+uintptr_t AllocPages(uintptr_t address,
+                     size_t length,
+                     size_t align,
+                     PageAccessibilityConfiguration accessibility,
+                     PageTag page_tag) {
+  return AllocPagesWithAlignOffset(address, length, align, 0, accessibility,
+                                   page_tag);
+}
 void* AllocPages(void* address,
                  size_t length,
                  size_t align,
                  PageAccessibilityConfiguration accessibility,
                  PageTag page_tag) {
-  PA_DCHECK(length >= PageAllocationGranularity());
-  PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));
-  PA_DCHECK(align >= PageAllocationGranularity());
+  return reinterpret_cast<void*>(
+      AllocPages(reinterpret_cast<uintptr_t>(address), length, align,
+                 accessibility, page_tag));
+}
+
+uintptr_t AllocPagesWithAlignOffset(
+    uintptr_t address,
+    size_t length,
+    size_t align,
+    size_t align_offset,
+    PageAccessibilityConfiguration accessibility,
+    PageTag page_tag,
+    int file_descriptor_for_shared_alloc) {
+  PA_DCHECK(length >= internal::PageAllocationGranularity());
+  PA_DCHECK(!(length & internal::PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(align >= internal::PageAllocationGranularity());
   // Alignment must be power of 2 for masking math to work.
-  PA_DCHECK(base::bits::IsPowerOfTwo(align));
-  PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) &
-              PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(internal::base::bits::IsPowerOfTwo(align));
+  PA_DCHECK(align_offset < align);
+  PA_DCHECK(!(align_offset & internal::PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(!(address & internal::PageAllocationGranularityOffsetMask()));
   uintptr_t align_offset_mask = align - 1;
   uintptr_t align_base_mask = ~align_offset_mask;
-  PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) & align_offset_mask));
+  PA_DCHECK(!address || (address & align_offset_mask) == align_offset);
 
   // If the client passed null as the address, choose a good one.
-  if (address == nullptr) {
-    address = GetRandomPageBase();
-    address = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(address) &
-                                      align_base_mask);
+  if (!address) {
+    address = (GetRandomPageBase() & align_base_mask) + align_offset;
   }
 
   // First try to force an exact-size, aligned allocation from our random base.
@@ -137,125 +205,156 @@ void* AllocPages(void* address,
 #endif
 
   for (int i = 0; i < kExactSizeTries; ++i) {
-    void* ret =
-        AllocPagesIncludingReserved(address, length, accessibility, page_tag);
-    if (ret != nullptr) {
+    uintptr_t ret =
+        AllocPagesIncludingReserved(address, length, accessibility, page_tag,
+                                    file_descriptor_for_shared_alloc);
+    if (ret) {
       // If the alignment is to our liking, we're done.
-      if (!(reinterpret_cast<uintptr_t>(ret) & align_offset_mask))
+      if ((ret & align_offset_mask) == align_offset)
         return ret;
       // Free the memory and try again.
       FreePages(ret, length);
     } else {
       // |ret| is null; if this try was unhinted, we're OOM.
-      if (kHintIsAdvisory || address == nullptr)
-        return nullptr;
+      if (internal::kHintIsAdvisory || !address)
+        return 0;
     }
 
 #if defined(ARCH_CPU_32_BITS)
     // For small address spaces, try the first aligned address >= |ret|. Note
-    // |ret| may be null, in which case |address| becomes null.
-    address = reinterpret_cast<void*>(
-        (reinterpret_cast<uintptr_t>(ret) + align_offset_mask) &
-        align_base_mask);
+    // |ret| may be null, in which case |address| becomes null. If
+    // |align_offset| is non-zero, this calculation may get us not the first,
+    // but the next matching address.
+    address = ((ret + align_offset_mask) & align_base_mask) + align_offset;
 #else  // defined(ARCH_CPU_64_BITS)
     // Keep trying random addresses on systems that have a large address space.
-    address = GetRandomPageBase();
-    address = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(address) &
-                                      align_base_mask);
+    address = NextAlignedWithOffset(GetRandomPageBase(), align, align_offset);
 #endif
   }
 
   // Make a larger allocation so we can force alignment.
-  size_t try_length = length + (align - PageAllocationGranularity());
+  size_t try_length = length + (align - internal::PageAllocationGranularity());
   PA_CHECK(try_length >= length);
-  void* ret;
+  uintptr_t ret;
 
   do {
     // Continue randomizing only on POSIX.
-    address = kHintIsAdvisory ? GetRandomPageBase() : nullptr;
-    ret = AllocPagesIncludingReserved(address, try_length, accessibility,
-                                      page_tag);
+    address = internal::kHintIsAdvisory ? GetRandomPageBase() : 0;
+    ret =
+        AllocPagesIncludingReserved(address, try_length, accessibility,
+                                    page_tag, file_descriptor_for_shared_alloc);
     // The retries are for Windows, where a race can steal our mapping on
     // resize.
-  } while (ret != nullptr && (ret = TrimMapping(ret, try_length, length, align,
-                                                accessibility)) == nullptr);
+  } while (ret && (ret = TrimMapping(ret, try_length, length, align,
+                                     align_offset, accessibility)) == 0);
 
   return ret;
 }
 
-void FreePages(void* address, size_t length) {
-  PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) &
-              PageAllocationGranularityOffsetMask()));
-  PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));
-  FreePagesInternal(address, length);
+void FreePages(uintptr_t address, size_t length) {
+  PA_DCHECK(!(address & internal::PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(!(length & internal::PageAllocationGranularityOffsetMask()));
+  internal::FreePagesInternal(address, length);
   PA_DCHECK(g_total_mapped_address_space.load(std::memory_order_relaxed) > 0);
   g_total_mapped_address_space.fetch_sub(length, std::memory_order_relaxed);
 }
+void FreePages(void* address, size_t length) {
+  FreePages(reinterpret_cast<uintptr_t>(address), length);
+}
 
+bool TrySetSystemPagesAccess(uintptr_t address,
+                             size_t length,
+                             PageAccessibilityConfiguration accessibility) {
+  PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
+  return internal::TrySetSystemPagesAccessInternal(address, length,
+                                                   accessibility);
+}
 bool TrySetSystemPagesAccess(void* address,
                              size_t length,
                              PageAccessibilityConfiguration accessibility) {
-  PA_DCHECK(!(length & SystemPageOffsetMask()));
-  return TrySetSystemPagesAccessInternal(address, length, accessibility);
+  return TrySetSystemPagesAccess(reinterpret_cast<uintptr_t>(address), length,
+                                 accessibility);
 }
 
-void SetSystemPagesAccess(void* address,
+void SetSystemPagesAccess(uintptr_t address,
                           size_t length,
                           PageAccessibilityConfiguration accessibility) {
-  PA_DCHECK(!(length & SystemPageOffsetMask()));
-  SetSystemPagesAccessInternal(address, length, accessibility);
+  PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
+  internal::SetSystemPagesAccessInternal(address, length, accessibility);
 }
 
+void DecommitSystemPages(
+    uintptr_t address,
+    size_t length,
+    PageAccessibilityDisposition accessibility_disposition) {
+  PA_DCHECK(!(address & internal::SystemPageOffsetMask()));
+  PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
+  internal::DecommitSystemPagesInternal(address, length,
+                                        accessibility_disposition);
+}
 void DecommitSystemPages(
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
-  PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) & SystemPageOffsetMask()));
-  PA_DCHECK(!(length & SystemPageOffsetMask()));
-  DecommitSystemPagesInternal(address, length, accessibility_disposition);
+  DecommitSystemPages(reinterpret_cast<uintptr_t>(address), length,
+                      accessibility_disposition);
+}
+
+void DecommitAndZeroSystemPages(uintptr_t address, size_t length) {
+  PA_DCHECK(!(address & internal::SystemPageOffsetMask()));
+  PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
+  internal::DecommitAndZeroSystemPagesInternal(address, length);
+}
+void DecommitAndZeroSystemPages(void* address, size_t length) {
+  DecommitAndZeroSystemPages(reinterpret_cast<uintptr_t>(address), length);
 }
 
 void RecommitSystemPages(
-    void* address,
+    uintptr_t address,
     size_t length,
     PageAccessibilityConfiguration accessibility,
     PageAccessibilityDisposition accessibility_disposition) {
-  PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) & SystemPageOffsetMask()));
-  PA_DCHECK(!(length & SystemPageOffsetMask()));
-  PA_DCHECK(accessibility != PageInaccessible);
-  RecommitSystemPagesInternal(address, length, accessibility,
-                              accessibility_disposition);
+  PA_DCHECK(!(address & internal::SystemPageOffsetMask()));
+  PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
+  PA_DCHECK(accessibility.permissions !=
+            PageAccessibilityConfiguration::kInaccessible);
+  internal::RecommitSystemPagesInternal(address, length, accessibility,
+                                        accessibility_disposition);
 }
 
 bool TryRecommitSystemPages(
-    void* address,
+    uintptr_t address,
     size_t length,
     PageAccessibilityConfiguration accessibility,
     PageAccessibilityDisposition accessibility_disposition) {
   // Duplicated because we want errors to be reported at a lower level in the
   // crashing case.
-  PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) & SystemPageOffsetMask()));
-  PA_DCHECK(!(length & SystemPageOffsetMask()));
-  PA_DCHECK(accessibility != PageInaccessible);
-  return TryRecommitSystemPagesInternal(address, length, accessibility,
-                                        accessibility_disposition);
+  PA_DCHECK(!(address & internal::SystemPageOffsetMask()));
+  PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
+  PA_DCHECK(accessibility.permissions !=
+            PageAccessibilityConfiguration::kInaccessible);
+  return internal::TryRecommitSystemPagesInternal(
+      address, length, accessibility, accessibility_disposition);
 }
 
+void DiscardSystemPages(uintptr_t address, size_t length) {
+  PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
+  internal::DiscardSystemPagesInternal(address, length);
+}
 void DiscardSystemPages(void* address, size_t length) {
-  PA_DCHECK(!(length & SystemPageOffsetMask()));
-  DiscardSystemPagesInternal(address, length);
+  DiscardSystemPages(reinterpret_cast<uintptr_t>(address), length);
 }
 
 bool ReserveAddressSpace(size_t size) {
   // To avoid deadlock, call only SystemAllocPages.
-  AutoLock guard(GetReserveLock());
-  if (s_reservation_address == nullptr) {
-    void* mem =
-        SystemAllocPages(nullptr, size, PageInaccessible, PageTag::kChromium);
-    if (mem != nullptr) {
+  internal::ScopedGuard guard(GetReserveLock());
+  if (!s_reservation_address) {
+    uintptr_t mem = internal::SystemAllocPages(
+        0, size, PageAccessibilityConfiguration::kInaccessible,
+        PageTag::kChromium);
+    if (mem) {
       // We guarantee this alignment when reserving address space.
-      PA_DCHECK(!(reinterpret_cast<uintptr_t>(mem) &
-                  PageAllocationGranularityOffsetMask()));
+      PA_DCHECK(!(mem & internal::PageAllocationGranularityOffsetMask()));
       s_reservation_address = mem;
       s_reservation_size = size;
       return true;
@@ -266,27 +365,27 @@ bool ReserveAddressSpace(size_t size) {
 
 bool ReleaseReservation() {
   // To avoid deadlock, call only FreePages.
-  AutoLock guard(GetReserveLock());
+  internal::ScopedGuard guard(GetReserveLock());
   if (!s_reservation_address)
     return false;
 
   FreePages(s_reservation_address, s_reservation_size);
-  s_reservation_address = nullptr;
+  s_reservation_address = 0;
   s_reservation_size = 0;
   return true;
 }
 
 bool HasReservationForTesting() {
-  AutoLock guard(GetReserveLock());
-  return s_reservation_address != nullptr;
+  internal::ScopedGuard guard(GetReserveLock());
+  return s_reservation_address;
 }
 
 uint32_t GetAllocPageErrorCode() {
-  return s_allocPageErrorCode;
+  return internal::s_allocPageErrorCode;
 }
 
 size_t GetTotalMappedSize() {
   return g_total_mapped_address_space;
 }
 
-}  // namespace base
+}  // namespace partition_alloc

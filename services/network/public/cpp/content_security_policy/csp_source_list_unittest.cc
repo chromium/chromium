@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/content_security_policy/csp_source_list.h"
-#include "base/strings/stringprintf.h"
+#include "base/memory/raw_ptr.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -14,15 +14,23 @@ namespace network {
 
 namespace {
 
+// A CSPSource used in test not interested checking the interactions with
+// 'self'. It doesn't match any URL.
+static const network::mojom::CSPSource no_self;
+
 // Allow() is an abbreviation of CheckCSPSourceList. Useful for writing
 // test expectations on one line.
-bool Allow(const mojom::CSPSourceListPtr& source_list,
-           const GURL& url,
-           const mojom::CSPSource& self,
-           bool is_redirect = false,
-           bool is_response_check = false) {
-  return CheckCSPSourceList(*source_list, url, self, is_redirect,
-                            is_response_check);
+bool Allow(
+    const mojom::CSPSourceListPtr& source_list,
+    const GURL& url,
+    const mojom::CSPSource& self,
+    bool is_redirect = false,
+    bool is_response_check = false,
+    mojom::CSPDirectiveName directive_name = mojom::CSPDirectiveName::FrameSrc,
+    bool is_opaque_fenced_frame = false) {
+  return CheckCSPSourceList(directive_name, *source_list, url, self,
+                            is_redirect, is_response_check,
+                            is_opaque_fenced_frame);
 }
 
 std::vector<mojom::ContentSecurityPolicyPtr> Parse(
@@ -106,10 +114,10 @@ TEST(CSPSourceList, AllowStar) {
 
   {
     // With a protocol of 'file', '*' allow 'file:'
-    auto self = network::mojom::CSPSource::New(
+    auto file = network::mojom::CSPSource::New(
         "file", "example.com", url::PORT_UNSPECIFIED, "", false, false);
-    EXPECT_TRUE(Allow(source_list, GURL("file://not-example.com"), *self));
-    EXPECT_FALSE(Allow(source_list, GURL("applewebdata://a.test"), *self));
+    EXPECT_TRUE(Allow(source_list, GURL("file://not-example.com"), *file));
+    EXPECT_FALSE(Allow(source_list, GURL("applewebdata://a.test"), *file));
   }
 }
 
@@ -175,6 +183,48 @@ TEST(CSPSourceTest, SelfIsUnique) {
   EXPECT_FALSE(Allow(source_list, GURL("http://a.com"), *no_self_source));
   EXPECT_FALSE(
       Allow(source_list, GURL("data:text/html,hello"), *no_self_source));
+}
+
+// Test that 'unsafe-allow-redirects' is only applied to navigate-to.
+TEST(CSPSourceList, UnsafeAllowRedirects) {
+  auto self = network::mojom::CSPSource::New("http", "example.com", 80, "",
+                                             false, false);
+  std::vector<mojom::CSPSourcePtr> sources;
+  sources.push_back(mojom::CSPSource::New("", "a.com", url::PORT_UNSPECIFIED,
+                                          "", false, false));
+  auto source_list = mojom::CSPSourceList::New();
+  source_list->sources = std::move(sources);
+  source_list->allow_response_redirects = true;
+
+  EXPECT_TRUE(Allow(source_list, GURL("http://a.com"), *self,
+                    /*is_redirect=*/false, /*is_response_check=*/false,
+                    mojom::CSPDirectiveName::NavigateTo));
+  EXPECT_TRUE(Allow(source_list, GURL("http://b.com"), *self,
+                    /*is_redirect=*/false, /*is_response_check=*/false,
+                    mojom::CSPDirectiveName::NavigateTo));
+  EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), *self,
+                     /*is_redirect=*/false, /*is_response_check=*/true,
+                     mojom::CSPDirectiveName::NavigateTo));
+
+  EXPECT_TRUE(Allow(source_list, GURL("http://a.com"), *self,
+                    /*is_redirect=*/false, /*is_response_check=*/false,
+                    mojom::CSPDirectiveName::FrameSrc));
+  EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), *self,
+                     /*is_redirect=*/false, /*is_response_check=*/false,
+                     mojom::CSPDirectiveName::FrameSrc));
+  EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), *self,
+                     /*is_redirect=*/false, /*is_response_check=*/true,
+                     mojom::CSPDirectiveName::FrameSrc));
+
+  EXPECT_TRUE(Allow(source_list, GURL("http://a.com"), *self,
+                    /*is_redirect=*/false, /*is_response_check=*/false,
+                    mojom::CSPDirectiveName::FormAction));
+  EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), *self,
+                     /*is_redirect=*/false, /*is_response_check=*/false,
+                     mojom::CSPDirectiveName::FormAction));
+  EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), *self,
+                     /*is_redirect=*/false, /*is_response_check=*/true,
+                     mojom::CSPDirectiveName::FormAction));
 }
 
 TEST(CSPSourceList, Subsume) {
@@ -494,6 +544,10 @@ TEST(CSPSourceList, SubsumeAllowAllInline) {
        {"http://example1.com/foo/ 'unsafe-inline' 'nonce-yay'",
         "http://example1.com/foo/ 'unsafe-inline' 'sha512-321cba'"},
        true},
+      {mojom::CSPDirectiveName::DefaultSrc,
+       "http://example1.com/foo/ 'unsafe-inline' 'strict-dynamic'",
+       {"http://example1.com/foo/ 'unsafe-inline'"},
+       false},
   };
 
   auto origin_b =
@@ -1018,7 +1072,7 @@ TEST(CSPSourceList, SubsumeListNoScheme) {
   struct TestCase {
     std::string required;
     std::vector<std::string> response_csp;
-    mojom::CSPSource* origin;
+    raw_ptr<mojom::CSPSource> origin;
     bool expected;
   } cases[] = {
       {"http://a.com", {"a.com"}, origin_https.get(), true},
@@ -1050,6 +1104,28 @@ TEST(CSPSourceList, SubsumeListNoScheme) {
         << " should " << (test.expected ? "" : "not ") << "subsume "
         << base::JoinString(test.response_csp, ", ");
   }
+}
+
+TEST(CSPSourceList, OpaqueURLMatchingAllowStar) {
+  auto source_list = mojom::CSPSourceList::New();
+  source_list->allow_star = true;
+  EXPECT_TRUE(Allow(source_list, GURL("https://not-example.com"), no_self,
+                    /*is_redirect=*/false,
+                    /*is_response_check=*/false,
+                    mojom::CSPDirectiveName::FencedFrameSrc,
+                    /*is_opaque_fenced_frame=*/true));
+}
+
+TEST(CSPSourceList, OpaqueURLMatchingAllowSelf) {
+  auto self = network::mojom::CSPSource::New("https", "example.com", 443, "",
+                                             false, false);
+
+  auto source_list = mojom::CSPSourceList::New();
+  source_list->allow_self = true;
+  EXPECT_FALSE(Allow(
+      source_list, GURL("https://example.com"), *self, /*is_redirect=*/false,
+      /*is_response_check=*/false, mojom::CSPDirectiveName::FencedFrameSrc,
+      /*is_opaque_fenced_frame=*/true));
 }
 
 }  // namespace network

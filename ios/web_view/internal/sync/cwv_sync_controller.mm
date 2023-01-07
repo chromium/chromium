@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,7 @@ CWVSyncError CWVConvertGoogleServiceAuthErrorStateToCWVSyncError(
       return CWVSyncErrorUnexpectedServiceResponse;
     // The following errors are unexpected on iOS.
     case GoogleServiceAuthError::SERVICE_ERROR:
+    case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
     case GoogleServiceAuthError::NUM_STATES:
       NOTREACHED();
       return CWVSyncErrorNone;
@@ -107,8 +108,19 @@ class WebViewSyncControllerObserverBridge : public syncer::SyncServiceObserver {
 }
 
 namespace {
+// Provider of trusted vault features.
+__weak id<CWVTrustedVaultProvider> gTrustedVaultProvider;
 // Data source that can provide access tokens.
 __weak id<CWVSyncControllerDataSource> gSyncDataSource;
+}
+
++ (void)setTrustedVaultProvider:
+    (id<CWVTrustedVaultProvider>)trustedVaultProvider {
+  gTrustedVaultProvider = trustedVaultProvider;
+}
+
++ (id<CWVTrustedVaultProvider>)trustedVaultProvider {
+  return gTrustedVaultProvider;
 }
 
 + (void)setDataSource:(id<CWVSyncControllerDataSource>)dataSource {
@@ -153,6 +165,11 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
 
 #pragma mark - Public Methods
 
+- (BOOL)isSyncing {
+  return _syncService->GetTransportState() ==
+         syncer::SyncService::TransportState::ACTIVE;
+}
+
 - (CWVIdentity*)currentIdentity {
   if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     CoreAccountInfo accountInfo =
@@ -171,6 +188,16 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
       ->IsPassphraseRequiredForPreferredDataTypes();
 }
 
+- (BOOL)isTrustedVaultKeysRequired {
+  return _syncService->GetUserSettings()
+      ->IsTrustedVaultKeyRequiredForPreferredDataTypes();
+}
+
+- (BOOL)isTrustedVaultRecoverabilityDegraded {
+  return _syncService->GetUserSettings()
+      ->IsTrustedVaultRecoverabilityDegraded();
+}
+
 - (void)startSyncWithIdentity:(CWVIdentity*)identity {
   DCHECK(!self.currentIdentity)
       << "Already syncing! Call -stopSyncAndClearIdentity first.";
@@ -183,7 +210,8 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
       base::SysNSStringToUTF8(identity.email));
   CHECK(_identityManager->HasAccountWithRefreshToken(accountId));
 
-  _identityManager->GetPrimaryAccountMutator()->SetPrimaryAccount(accountId);
+  _identityManager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      accountId, signin::ConsentLevel::kSync);
   CHECK_EQ(_identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
            accountId);
 
@@ -200,7 +228,7 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
   auto* primaryAccountMutator = _identityManager->GetPrimaryAccountMutator();
   primaryAccountMutator->ClearPrimaryAccount(
       signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_SETTINGS,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+      signin_metrics::SignoutDelete::kIgnoreMetric);
 }
 
 - (BOOL)unlockWithPassphrase:(NSString*)passphrase {
@@ -255,6 +283,10 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
                           }];
       [_delegate syncController:self didFailWithError:error];
     }
+  }
+
+  if ([_delegate respondsToSelector:@selector(syncControllerDidUpdateState:)]) {
+    [_delegate syncControllerDidUpdateState:self];
   }
 }
 

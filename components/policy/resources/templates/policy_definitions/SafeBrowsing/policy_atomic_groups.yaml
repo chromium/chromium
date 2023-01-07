@@ -1,0 +1,13 @@
+PasswordProtection:
+  caption: Password protection
+  policies:
+  - PasswordProtectionWarningTrigger
+  - PasswordProtectionLoginURLs
+  - PasswordProtectionChangePasswordURL
+SafeBrowsing:
+  caption: Safe Browsing settings
+  policies:
+  - SafeBrowsingEnabled
+  - SafeBrowsingExtendedReportingEnabled
+  - SafeBrowsingProtectionLevel
+  - SafeBrowsingAllowlistDomains

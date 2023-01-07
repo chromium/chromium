@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,10 @@ class TestKeyboardUIFactory : public KeyboardUIFactory {
   };
 
   explicit TestKeyboardUIFactory(ui::InputMethod* input_method);
+
+  TestKeyboardUIFactory(const TestKeyboardUIFactory&) = delete;
+  TestKeyboardUIFactory& operator=(const TestKeyboardUIFactory&) = delete;
+
   ~TestKeyboardUIFactory() override;
 
   // Overridden from KeyboardUIFactory:
@@ -49,8 +53,6 @@ class TestKeyboardUIFactory : public KeyboardUIFactory {
 
  private:
   ui::InputMethod* input_method_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestKeyboardUIFactory);
 };
 
 }  // namespace keyboard

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
@@ -19,7 +17,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace chromeos {
+namespace ash {
 
 // OAuth2TokenFetcher is used to convert authenticated cookie jar from the
 // authentication profile into OAuth2 tokens and GAIA credentials that will be
@@ -38,6 +36,10 @@ class OAuth2TokenFetcher : public base::SupportsWeakPtr<OAuth2TokenFetcher>,
   OAuth2TokenFetcher(
       OAuth2TokenFetcher::Delegate* delegate,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  OAuth2TokenFetcher(const OAuth2TokenFetcher&) = delete;
+  OAuth2TokenFetcher& operator=(const OAuth2TokenFetcher&) = delete;
+
   ~OAuth2TokenFetcher() override;
 
   void StartExchangeFromAuthCode(const std::string& auth_code,
@@ -65,10 +67,8 @@ class OAuth2TokenFetcher : public base::SupportsWeakPtr<OAuth2TokenFetcher>,
   std::string session_index_;
   std::string signin_scoped_device_id_;
   std::string auth_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2TokenFetcher);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_OAUTH2_TOKEN_FETCHER_H_

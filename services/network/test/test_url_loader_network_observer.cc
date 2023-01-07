@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,13 +28,13 @@ void TestURLLoaderNetworkObserver::OnSSLCertificateError(
 }
 
 void TestURLLoaderNetworkObserver::OnCertificateRequested(
-    const base::Optional<base::UnguessableToken>& window_id,
+    const absl::optional<base::UnguessableToken>& window_id,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<mojom::ClientCertificateResponder>
         client_cert_responder) {}
 
 void TestURLLoaderNetworkObserver::OnAuthRequired(
-    const base::Optional<base::UnguessableToken>& window_id,
+    const absl::optional<base::UnguessableToken>& window_id,
     uint32_t request_id,
     const GURL& url,
     bool first_auth_attempt,
@@ -47,6 +47,7 @@ void TestURLLoaderNetworkObserver::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,
     int32_t load_flags,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     OnClearSiteDataCallback callback) {
   std::move(callback).Run();
 }

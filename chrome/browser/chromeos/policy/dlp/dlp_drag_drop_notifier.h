@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,20 @@ class DlpDragDropNotifier : public DlpDataTransferNotifier {
   void NotifyBlockedAction(
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst) override;
+
+  // Warns the user that this drop action is not recommended.
+  void WarnOnDrop(const ui::DataTransferEndpoint* const data_src,
+                  const ui::DataTransferEndpoint* const data_dst,
+                  base::OnceClosure drop_cb);
+
+ protected:
+  // Added as protected so tests can refer to them.
+  void ProceedPressed(views::Widget* widget);
+
+  void CancelPressed(views::Widget* widget);
+
+  // views::WidgetObserver
+  void OnWidgetDestroying(views::Widget* widget) override;
 };
 
 }  // namespace policy

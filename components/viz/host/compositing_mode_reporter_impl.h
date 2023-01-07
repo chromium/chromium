@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_VIZ_HOST_COMPOSITING_MODE_REPORTER_IMPL_H_
 #define COMPONENTS_VIZ_HOST_COMPOSITING_MODE_REPORTER_IMPL_H_
 
-#include "base/macros.h"
 #include "components/viz/host/viz_host_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

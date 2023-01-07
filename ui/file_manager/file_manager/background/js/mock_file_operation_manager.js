@@ -1,20 +1,18 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
-/* #ignore */ 'use strict';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+
 
 /**
  * Mock implementation of {FileOperationManager} for tests.
  * @implements {FileOperationManager}
  */
-/* #export */ class MockFileOperationManager extends cr.EventTarget {
+export class MockFileOperationManager extends EventTarget {
   constructor() {
     super();
 
@@ -58,7 +56,7 @@
         sourceEntries: sourceEntries,
         targetEntry: targetEntry,
         isMove: isMove,
-        opt_taskId: opt_taskId
+        opt_taskId: opt_taskId,
       });
       // Reset the resolver for the next paste call.
       this.pasteResolver = null;
@@ -97,11 +95,23 @@
     return this.generatedTaskIds.indexOf(id) !== -1;
   }
 
-  hasQueuedTasks() {}
-  filterSameDirectoryEntry() {}
-  willUseTrash() {}
+  /** @return {boolean} */
+  hasQueuedTasks() {
+    throw new Error('Not implemented');
+  }
+  /** @return {Promise} */
+  filterSameDirectoryEntry(sourceEntries, targetEntry, isMove) {}
+  /** @return {boolean} */
+  willUseTrash(volumeManager, entries) {
+    throw new Error('Not implemented');
+  }
   deleteEntries() {}
-  restoreDeleted() {}
-  emptyTrash() {}
-  zipSelection() {}
+  cancelZip() {}
+  setFileManager() {}
+  notifyExtractDone() {}
+  handleMissingPassword() {}
+  /** @return {!Promise<!FileEntry>} */
+  async writeFile(file, destination) {
+    throw new Error('Not implemented');
+  }
 }

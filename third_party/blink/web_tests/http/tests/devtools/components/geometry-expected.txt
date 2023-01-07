@@ -17,13 +17,13 @@ Scalar Product:0
 Running: testCrossProduct
 Cross Product: [-70.0000, 20.0000, 26.0000]
 Cross Product: [3.0000, 2.0000, -3.0000]
-Cross Product: [0, 0, 0]
+Cross Product: [0.0000, 0.0000, 0.0000]
 
 Running: testCalculateAngle
 Calculate angle: 180.0000
 Calculate angle: 141.9840
 Calculate angle: 90.0000
-Calculate angle: 0
+Calculate angle: 0.0000
 
 Running: testRadiansToDegrees
 deg: 180.0000
@@ -32,7 +32,7 @@ deg: 30.0000
 
 Running: testDegreesToRadians
 rad: -0.5236
-rad: 0
+rad: 0.0000
 rad: 0.5236
 rad: 1.5708
 rad: 3.1416

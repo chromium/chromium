@@ -50,7 +50,7 @@ The View/ViewBinder should be tested as an independent unit.
 
 ### Best practices for testability for your View:
 
- * Tests for UI should be based on the [DummyUiActivity](/ui/android/javatests/src/org/chromium/ui/test/util/DummyUiActivity.java).  This activity does not have any dependencies on the Chrome browser and allows you to test your UI in isolation.  This ensures you are not competing against other Chrome tasks and can write a test that is much faster and less flaky than legacy UI instrumentation tests.
+ * Tests for UI should be based on the [BlankUiTestActivity](/ui/android/javatests/src/org/chromium/ui/test/util/BlankUiTestActivity.java).  This activity does not have any dependencies on the Chrome browser and allows you to test your UI in isolation.  This ensures you are not competing against other Chrome tasks and can write a test that is much faster and less flaky than legacy UI instrumentation tests.
  * When adding tests for your UI component, add a [RenderTest](/ui/android/javatests/src/org/chromium/ui/test/util/RENDER_TESTS.md) to ensure the UI is consistent from release to release unless you explicitly changed it.
 
 ### Useful helpers / Links

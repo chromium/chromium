@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,15 +12,12 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "services/device/public/mojom/serial.mojom.h"
-#include "services/device/serial/buffer.h"
 
 namespace device {
 
@@ -35,13 +32,20 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
       const base::FilePath& port,
       scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner);
 
-  typedef base::OnceCallback<void(bool success)> OpenCompleteCallback;
+  SerialIoHandler(const SerialIoHandler&) = delete;
+  SerialIoHandler& operator=(const SerialIoHandler&) = delete;
+
+  using OpenCompleteCallback = base::OnceCallback<void(bool success)>;
+  using ReadCompleteCallback =
+      base::OnceCallback<void(uint32_t bytes_read, mojom::SerialReceiveError)>;
+  using WriteCompleteCallback =
+      base::OnceCallback<void(uint32_t bytes_written, mojom::SerialSendError)>;
 
   // Initiates an asynchronous Open of the device.
   virtual void Open(const mojom::SerialConnectionOptions& options,
                     OpenCompleteCallback callback);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Signals that the port has been opened.
   void OnPathOpened(
       scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
@@ -56,17 +60,19 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   // Reports the open error from the permission broker.
   void ReportPathOpenError(const std::string& error_name,
                            const std::string& error_message);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Performs an async Read operation. Behavior is undefined if this is called
-  // while a Read is already pending. Otherwise, the Done or DoneWithError
-  // method on |buffer| will eventually be called with a result.
-  void Read(std::unique_ptr<WritableBuffer> buffer);
+  // Performs an async read operation. Behavior is undefined if this is called
+  // while a read is already pending. Otherwise, |callback| will be called
+  // (potentially synchronously) with a result. |buffer| must remain valid until
+  // |callback| is run.
+  void Read(base::span<uint8_t> buffer, ReadCompleteCallback callback);
 
-  // Performs an async Write operation. Behavior is undefined if this is called
-  // while a Write is already pending. Otherwise, the Done or DoneWithError
-  // method on |buffer| will eventually be called with a result.
-  void Write(std::unique_ptr<ReadOnlyBuffer> buffer);
+  // Performs an async write operation. Behavior is undefined if this is called
+  // while a write is already pending. Otherwise, |callback| will be called
+  // (potentially synchronously) with a result. |buffer| must remain valid until
+  // |callback| is run.
+  void Write(base::span<const uint8_t> buffer, WriteCompleteCallback callback);
 
   // Indicates whether or not a read is currently pending.
   bool IsReadPending() const;
@@ -117,15 +123,13 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   // Performs a platform-specific read operation. This must guarantee that
   // ReadCompleted is called when the underlying async operation is completed
   // or the SerialIoHandler instance will leak.
-  // NOTE: Implementations of ReadImpl should never call ReadCompleted directly.
-  // Use QueueReadCompleted instead to avoid reentrancy.
+  // NOTE: Implementations of ReadImpl may call ReadCompleted directly.
   virtual void ReadImpl() = 0;
 
   // Performs a platform-specific write operation. This must guarantee that
   // WriteCompleted is called when the underlying async operation is completed
   // or the SerialIoHandler instance will leak.
-  // NOTE: Implementations of WriteImpl should never call WriteCompleted
-  // directly. Use QueueWriteCompleted instead to avoid reentrancy.
+  // NOTE: Implementations of WriteImpl may call WriteCompleted directly.
   virtual void WriteImpl() = 0;
 
   // Platform-specific read cancelation.
@@ -153,24 +157,10 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   // if the associated I/O operation was the only thing keeping it alive.
   void WriteCompleted(int bytes_written, mojom::SerialSendError error);
 
-  // Queues a ReadCompleted call on the current thread. This is used to allow
-  // ReadImpl to immediately signal completion with 0 bytes and an error,
-  // without being reentrant.
-  void QueueReadCompleted(int bytes_read, mojom::SerialReceiveError error);
-
-  // Queues a WriteCompleted call on the current thread. This is used to allow
-  // WriteImpl to immediately signal completion with 0 bytes and an error,
-  // without being reentrant.
-  void QueueWriteCompleted(int bytes_written, mojom::SerialSendError error);
-
   const base::File& file() const { return file_; }
 
-  char* pending_read_buffer() const {
-    return pending_read_buffer_ ? pending_read_buffer_->GetData() : NULL;
-  }
-
-  uint32_t pending_read_buffer_len() const {
-    return pending_read_buffer_ ? pending_read_buffer_->GetSize() : 0;
+  base::span<uint8_t> pending_read_buffer() const {
+    return pending_read_buffer_;
   }
 
   mojom::SerialReceiveError read_cancel_reason() const {
@@ -179,12 +169,8 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
 
   bool read_canceled() const { return read_canceled_; }
 
-  const uint8_t* pending_write_buffer() const {
-    return pending_write_buffer_ ? pending_write_buffer_->GetData() : NULL;
-  }
-
-  uint32_t pending_write_buffer_len() const {
-    return pending_write_buffer_ ? pending_write_buffer_->GetSize() : 0;
+  base::span<const uint8_t> pending_write_buffer() const {
+    return pending_write_buffer_;
   }
 
   mojom::SerialSendError write_cancel_reason() const {
@@ -224,11 +210,13 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   // Currently applied connection options.
   mojom::SerialConnectionOptions options_;
 
-  std::unique_ptr<WritableBuffer> pending_read_buffer_;
+  base::span<uint8_t> pending_read_buffer_;
+  ReadCompleteCallback pending_read_callback_;
   mojom::SerialReceiveError read_cancel_reason_;
   bool read_canceled_;
 
-  std::unique_ptr<ReadOnlyBuffer> pending_write_buffer_;
+  base::span<const uint8_t> pending_write_buffer_;
+  WriteCompleteCallback pending_write_callback_;
   mojom::SerialSendError write_cancel_reason_;
   bool write_canceled_;
 
@@ -239,8 +227,6 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
 
   // On Chrome OS, PermissionBrokerClient should be called on the UI thread.
   scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialIoHandler);
 };
 
 }  // namespace device

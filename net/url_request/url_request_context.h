@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,38 +8,38 @@
 #ifndef NET_URL_REQUEST_URL_REQUEST_CONTEXT_H_
 #define NET_URL_REQUEST_URL_REQUEST_CONTEXT_H_
 
+#include <stdint.h>
 #include <memory>
 #include <set>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "base/trace_event/memory_dump_provider.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
-#include "net/http/http_network_session.h"
-#include "net/http/http_server_properties.h"
-#include "net/http/transport_security_state.h"
+#include "net/log/net_log_source.h"
 #include "net/net_buildflags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
-
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-}
-}
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class CertVerifier;
+class ClientSocketFactory;
 class CookieStore;
 class CTPolicyEnforcer;
 class HostResolver;
 class HttpAuthHandlerFactory;
+class HttpNetworkSession;
+struct HttpNetworkSessionContext;
+struct HttpNetworkSessionParams;
+class HttpServerProperties;
 class HttpTransactionFactory;
 class HttpUserAgentSettings;
 class NetLog;
@@ -50,42 +50,44 @@ class ProxyResolutionService;
 class QuicContext;
 class SCTAuditingDelegate;
 class SSLConfigService;
+class TransportSecurityPersister;
+class TransportSecurityState;
 class URLRequest;
 class URLRequestJobFactory;
 class URLRequestThrottlerManager;
-
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-class FtpAuthCache;
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
+class URLRequestContextBuilder;
 
 #if BUILDFLAG(ENABLE_REPORTING)
 class NetworkErrorLoggingService;
+class PersistentReportingAndNelStore;
 class ReportingService;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-// Subclass to provide application-specific context for URLRequest
-// instances. URLRequestContext does not own these member variables, since they
-// may be shared with other contexts. URLRequestContextStorage can be used for
-// automatic lifetime management. Most callers should use an existing
-// URLRequestContext rather than creating a new one, as guaranteeing that the
-// URLRequestContext is destroyed before its members can be difficult.
-class NET_EXPORT URLRequestContext
-    : public base::trace_event::MemoryDumpProvider {
+// Class that provides application-specific context for URLRequest
+// instances. May only be created by URLRequestContextBuilder.
+// Owns most of its member variables, except a few that may be shared
+// with other contexts.
+class NET_EXPORT URLRequestContext final {
  public:
-  URLRequestContext();
-  ~URLRequestContext() override;
+  // URLRequestContext must be created by URLRequestContextBuilder.
+  explicit URLRequestContext(base::PassKey<URLRequestContextBuilder> pass_key);
+  URLRequestContext(const URLRequestContext&) = delete;
+  URLRequestContext& operator=(const URLRequestContext&) = delete;
+
+  ~URLRequestContext();
 
   // May return nullptr if this context doesn't have an associated network
   // session.
-  const HttpNetworkSession::Params* GetNetworkSessionParams() const;
+  const HttpNetworkSessionParams* GetNetworkSessionParams() const;
 
   // May return nullptr if this context doesn't have an associated network
   // session.
-  const HttpNetworkSession::Context* GetNetworkSessionContext() const;
+  const HttpNetworkSessionContext* GetNetworkSessionContext() const;
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if !defined(OS_WIN) && !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_WIN) && \
+    !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // This function should not be used in Chromium, please use the version with
   // NetworkTrafficAnnotationTag in the future.
   //
@@ -98,135 +100,90 @@ class NET_EXPORT URLRequestContext
       URLRequest::Delegate* delegate) const;
 #endif
 
-  // |traffic_annotation| is metadata about the network traffic send via this
+  // `traffic_annotation` is metadata about the network traffic send via this
   // URLRequest, see net::DefineNetworkTrafficAnnotation. Note that:
   // - net provides the API for tagging requests with an opaque identifier.
-  // - tools/traffic_annotation/traffic_annotation.proto contains the Chrome
+  // - chrome/browser/privacy/traffic_annotation.proto contains the Chrome
   // specific .proto describing the verbose annotation format that Chrome's
   // callsites are expected to follow.
   // - tools/traffic_annotation/ contains sample and template for annotation and
   // tools will be added for verification following crbug.com/690323.
+  //
+  // `is_for_websockets` should be true iff this was created for use by a
+  // websocket. HTTP/HTTPS requests fail if it's true, and WS/WSS requests fail
+  // if it's false. This is to protect against broken consumers.
+  //
+  // `net_log_source_id` is used to construct NetLogWithSource using the
+  // specified Source ID. This method is expected to be used when URLRequest
+  // wants to take over existing NetLogSource.
   std::unique_ptr<URLRequest> CreateRequest(
       const GURL& url,
       RequestPriority priority,
       URLRequest::Delegate* delegate,
-      NetworkTrafficAnnotationTag traffic_annotation) const;
+      NetworkTrafficAnnotationTag traffic_annotation,
+      bool is_for_websockets = false,
+      const absl::optional<net::NetLogSource> net_log_source =
+          absl::nullopt) const;
 
   NetLog* net_log() const { return net_log_; }
 
-  void set_net_log(NetLog* net_log) {
-    net_log_ = net_log;
-  }
+  HostResolver* host_resolver() const { return host_resolver_.get(); }
 
-  HostResolver* host_resolver() const {
-    return host_resolver_;
-  }
-
-  void set_host_resolver(HostResolver* host_resolver) {
-    DCHECK(host_resolver);
-    host_resolver_ = host_resolver;
-  }
-
-  CertVerifier* cert_verifier() const {
-    return cert_verifier_;
-  }
-
-  void set_cert_verifier(CertVerifier* cert_verifier) {
-    cert_verifier_ = cert_verifier;
-  }
+  CertVerifier* cert_verifier() const { return cert_verifier_.get(); }
 
   // Get the proxy service for this context.
   ProxyResolutionService* proxy_resolution_service() const {
-    return proxy_resolution_service_;
-  }
-  void set_proxy_resolution_service(
-      ProxyResolutionService* proxy_resolution_service) {
-    proxy_resolution_service_ = proxy_resolution_service;
+    return proxy_resolution_service_.get();
   }
 
-  ProxyDelegate* proxy_delegate() const { return proxy_delegate_; }
-  void set_proxy_delegate(ProxyDelegate* proxy_delegate) {
-    proxy_delegate_ = proxy_delegate;
-  }
+  ProxyDelegate* proxy_delegate() const { return proxy_delegate_.get(); }
 
   // Get the ssl config service for this context.
-  SSLConfigService* ssl_config_service() const { return ssl_config_service_; }
-  void set_ssl_config_service(SSLConfigService* service) {
-    ssl_config_service_ = service;
+  SSLConfigService* ssl_config_service() const {
+    return ssl_config_service_.get();
   }
 
   // Gets the HTTP Authentication Handler Factory for this context.
   // The factory is only valid for the lifetime of this URLRequestContext
   HttpAuthHandlerFactory* http_auth_handler_factory() const {
-    return http_auth_handler_factory_;
-  }
-  void set_http_auth_handler_factory(HttpAuthHandlerFactory* factory) {
-    http_auth_handler_factory_ = factory;
+    return http_auth_handler_factory_.get();
   }
 
   // Gets the http transaction factory for this context.
   HttpTransactionFactory* http_transaction_factory() const {
-    return http_transaction_factory_;
-  }
-  void set_http_transaction_factory(HttpTransactionFactory* factory) {
-    http_transaction_factory_ = factory;
+    return http_transaction_factory_.get();
   }
 
-  void set_network_delegate(NetworkDelegate* network_delegate) {
-    network_delegate_ = network_delegate;
-  }
-  NetworkDelegate* network_delegate() const { return network_delegate_; }
+  NetworkDelegate* network_delegate() const { return network_delegate_.get(); }
 
-  void set_http_server_properties(
-      HttpServerProperties* http_server_properties) {
-    http_server_properties_ = http_server_properties;
-  }
   HttpServerProperties* http_server_properties() const {
-    return http_server_properties_;
+    return http_server_properties_.get();
   }
 
   // Gets the cookie store for this context (may be null, in which case
   // cookies are not stored).
-  CookieStore* cookie_store() const { return cookie_store_; }
-  void set_cookie_store(CookieStore* cookie_store);
+  CookieStore* cookie_store() const { return cookie_store_.get(); }
 
   TransportSecurityState* transport_security_state() const {
-    return transport_security_state_;
-  }
-  void set_transport_security_state(
-      TransportSecurityState* state) {
-    transport_security_state_ = state;
+    return transport_security_state_.get();
   }
 
-  CTPolicyEnforcer* ct_policy_enforcer() const { return ct_policy_enforcer_; }
-  void set_ct_policy_enforcer(CTPolicyEnforcer* enforcer) {
-    ct_policy_enforcer_ = enforcer;
+  CTPolicyEnforcer* ct_policy_enforcer() const {
+    return ct_policy_enforcer_.get();
   }
 
   SCTAuditingDelegate* sct_auditing_delegate() const {
-    return sct_auditing_delegate_;
-  }
-  void set_sct_auditing_delegate(SCTAuditingDelegate* delegate) {
-    sct_auditing_delegate_ = delegate;
+    return sct_auditing_delegate_.get();
   }
 
   const URLRequestJobFactory* job_factory() const { return job_factory_; }
-  void set_job_factory(const URLRequestJobFactory* job_factory) {
-    job_factory_ = job_factory;
-  }
 
   // May return nullptr.
   URLRequestThrottlerManager* throttler_manager() const {
-    return throttler_manager_;
-  }
-  void set_throttler_manager(URLRequestThrottlerManager* throttler_manager) {
-    throttler_manager_ = throttler_manager;
+    return throttler_manager_.get();
   }
 
-  QuicContext* quic_context() const { return quic_context_; }
-  void set_quic_context(QuicContext* quic_context) {
-    quic_context_ = quic_context;
-  }
+  QuicContext* quic_context() const { return quic_context_.get(); }
 
   // Gets the URLRequest objects that hold a reference to this
   // URLRequestContext.
@@ -242,131 +199,170 @@ class NET_EXPORT URLRequestContext
   // Get the underlying |HttpUserAgentSettings| implementation that provides
   // the HTTP Accept-Language and User-Agent header values.
   const HttpUserAgentSettings* http_user_agent_settings() const {
-    return http_user_agent_settings_;
-  }
-  void set_http_user_agent_settings(
-      const HttpUserAgentSettings* http_user_agent_settings) {
-    http_user_agent_settings_ = http_user_agent_settings;
+    return http_user_agent_settings_.get();
   }
 
   // Gets the NetworkQualityEstimator associated with this context.
   // May return nullptr.
   NetworkQualityEstimator* network_quality_estimator() const {
-    return network_quality_estimator_;
-  }
-  void set_network_quality_estimator(
-      NetworkQualityEstimator* network_quality_estimator) {
-    network_quality_estimator_ = network_quality_estimator;
+    return network_quality_estimator_.get();
   }
 
 #if BUILDFLAG(ENABLE_REPORTING)
-  ReportingService* reporting_service() const { return reporting_service_; }
-  void set_reporting_service(ReportingService* reporting_service) {
-    reporting_service_ = reporting_service;
+  ReportingService* reporting_service() const {
+    return reporting_service_.get();
   }
 
   NetworkErrorLoggingService* network_error_logging_service() const {
-    return network_error_logging_service_;
-  }
-  void set_network_error_logging_service(
-      NetworkErrorLoggingService* network_error_logging_service) {
-    network_error_logging_service_ = network_error_logging_service;
+    return network_error_logging_service_.get();
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-  void set_enable_brotli(bool enable_brotli) { enable_brotli_ = enable_brotli; }
-
   bool enable_brotli() const { return enable_brotli_; }
-
-  // Sets the |check_cleartext_permitted| flag, which controls whether to check
-  // system policy before allowing a cleartext http or ws request.
-  void set_check_cleartext_permitted(bool check_cleartext_permitted) {
-    check_cleartext_permitted_ = check_cleartext_permitted;
-  }
 
   // Returns current value of the |check_cleartext_permitted| flag.
   bool check_cleartext_permitted() const { return check_cleartext_permitted_; }
 
-  void set_require_network_isolation_key(bool require_network_isolation_key) {
-    require_network_isolation_key_ = require_network_isolation_key;
-  }
   bool require_network_isolation_key() const {
     return require_network_isolation_key_;
   }
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  void set_ftp_auth_cache(FtpAuthCache* auth_cache) {
-    ftp_auth_cache_ = auth_cache;
-  }
-  FtpAuthCache* ftp_auth_cache() { return ftp_auth_cache_; }
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
-
-  // Sets a name for this URLRequestContext. Currently the name is used in
-  // MemoryDumpProvier to annotate memory usage. The name does not need to be
-  // unique.
-  void set_name(const std::string& name) { name_ = name; }
-  const std::string& name() const { return name_; }
-
-  // MemoryDumpProvider implementation:
-  // This is reported as
-  // "memory:chrome:all_processes:reported_by_chrome:net:effective_size_avg."
-  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                    base::trace_event::ProcessMemoryDump* pmd) override;
+  // If != handles::kInvalidNetworkHandle, the network which this
+  // context has been bound to.
+  handles::NetworkHandle bound_network() const { return bound_network_; }
 
   void AssertCalledOnValidThread() {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   }
 
+  // DEPRECATED: Do not use this even in tests. This is for a legacy use.
+  void SetJobFactoryForTesting(const URLRequestJobFactory* job_factory) {
+    job_factory_ = job_factory;
+  }
+
  private:
-  // Ownership for these members are not defined here. Clients should either
-  // provide storage elsewhere or have a subclass take ownership.
-  NetLog* net_log_;
-  HostResolver* host_resolver_;
-  CertVerifier* cert_verifier_;
-  HttpAuthHandlerFactory* http_auth_handler_factory_;
-  ProxyResolutionService* proxy_resolution_service_;
-  ProxyDelegate* proxy_delegate_;
-  SSLConfigService* ssl_config_service_;
-  NetworkDelegate* network_delegate_;
-  HttpServerProperties* http_server_properties_;
-  const HttpUserAgentSettings* http_user_agent_settings_;
-  CookieStore* cookie_store_;
-  TransportSecurityState* transport_security_state_;
-  CTPolicyEnforcer* ct_policy_enforcer_;
-  SCTAuditingDelegate* sct_auditing_delegate_;
-  HttpTransactionFactory* http_transaction_factory_;
-  const URLRequestJobFactory* job_factory_;
-  URLRequestThrottlerManager* throttler_manager_;
-  QuicContext* quic_context_;
-  NetworkQualityEstimator* network_quality_estimator_;
+  friend class URLRequestContextBuilder;
+
+  HttpNetworkSession* http_network_session() const {
+    return http_network_session_.get();
+  }
+
+  void set_net_log(NetLog* net_log);
+  void set_host_resolver(std::unique_ptr<HostResolver> host_resolver);
+  void set_cert_verifier(std::unique_ptr<CertVerifier> cert_verifier);
+  void set_proxy_resolution_service(
+      std::unique_ptr<ProxyResolutionService> proxy_resolution_service);
+  void set_proxy_delegate(std::unique_ptr<ProxyDelegate> proxy_delegate);
+  void set_ssl_config_service(std::unique_ptr<SSLConfigService> service);
+  void set_http_auth_handler_factory(
+      std::unique_ptr<HttpAuthHandlerFactory> factory);
+  void set_http_network_session(
+      std::unique_ptr<HttpNetworkSession> http_network_session);
+  void set_http_transaction_factory(
+      std::unique_ptr<HttpTransactionFactory> factory);
+  void set_network_delegate(std::unique_ptr<NetworkDelegate> network_delegate);
+  void set_http_server_properties(
+      std::unique_ptr<HttpServerProperties> http_server_properties);
+  void set_cookie_store(std::unique_ptr<CookieStore> cookie_store);
+  void set_transport_security_state(
+      std::unique_ptr<TransportSecurityState> state);
+  void set_ct_policy_enforcer(std::unique_ptr<CTPolicyEnforcer> enforcer);
+  void set_sct_auditing_delegate(std::unique_ptr<SCTAuditingDelegate> delegate);
+  void set_job_factory(std::unique_ptr<const URLRequestJobFactory> job_factory);
+  void set_throttler_manager(
+      std::unique_ptr<URLRequestThrottlerManager> throttler_manager);
+  void set_quic_context(std::unique_ptr<QuicContext> quic_context);
+  void set_http_user_agent_settings(
+      std::unique_ptr<const HttpUserAgentSettings> http_user_agent_settings);
+  void set_network_quality_estimator(
+      NetworkQualityEstimator* network_quality_estimator);
+  void set_client_socket_factory(
+      std::unique_ptr<ClientSocketFactory> client_socket_factory);
 #if BUILDFLAG(ENABLE_REPORTING)
-  ReportingService* reporting_service_;
-  NetworkErrorLoggingService* network_error_logging_service_;
+  void set_persistent_reporting_and_nel_store(
+      std::unique_ptr<PersistentReportingAndNelStore>
+          persistent_reporting_and_nel_store);
+  void set_reporting_service(
+      std::unique_ptr<ReportingService> reporting_service);
+  void set_network_error_logging_service(
+      std::unique_ptr<NetworkErrorLoggingService>
+          network_error_logging_service);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  FtpAuthCache* ftp_auth_cache_;
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
+  void set_enable_brotli(bool enable_brotli) { enable_brotli_ = enable_brotli; }
+  void set_check_cleartext_permitted(bool check_cleartext_permitted) {
+    check_cleartext_permitted_ = check_cleartext_permitted;
+  }
+  void set_require_network_isolation_key(bool require_network_isolation_key) {
+    require_network_isolation_key_ = require_network_isolation_key;
+  }
+  void set_bound_network(handles::NetworkHandle network) {
+    bound_network_ = network;
+  }
+
+  void set_transport_security_persister(
+      std::unique_ptr<TransportSecurityPersister> transport_security_persister);
+
+  raw_ptr<NetLog> net_log_ = nullptr;
+
+  std::unique_ptr<HostResolver> host_resolver_;
+  std::unique_ptr<CertVerifier> cert_verifier_;
+  std::unique_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
+  std::unique_ptr<ProxyDelegate> proxy_delegate_;
+  std::unique_ptr<NetworkDelegate> network_delegate_;
+  std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
+  std::unique_ptr<SSLConfigService> ssl_config_service_;
+  std::unique_ptr<HttpServerProperties> http_server_properties_;
+  std::unique_ptr<const HttpUserAgentSettings> http_user_agent_settings_;
+  std::unique_ptr<CookieStore> cookie_store_;
+  std::unique_ptr<TransportSecurityState> transport_security_state_;
+  std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
+  std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
+  std::unique_ptr<QuicContext> quic_context_;
+  std::unique_ptr<ClientSocketFactory> client_socket_factory_;
+
+  // The storage duplication for URLRequestJobFactory is needed because of
+  // SetJobFactoryForTesting. Once this method is removable, we can only store a
+  // unique_ptr similarly to the other fields.
+  std::unique_ptr<const URLRequestJobFactory> job_factory_storage_;
+  raw_ptr<const URLRequestJobFactory> job_factory_ = nullptr;
+
+  std::unique_ptr<URLRequestThrottlerManager> throttler_manager_;
+
+#if BUILDFLAG(ENABLE_REPORTING)
+  // Must precede |reporting_service_| and |network_error_logging_service_|
+  std::unique_ptr<PersistentReportingAndNelStore>
+      persistent_reporting_and_nel_store_;
+
+  std::unique_ptr<ReportingService> reporting_service_;
+  std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service_;
+#endif  // BUILDFLAG(ENABLE_REPORTING)
+
+  // May be used (but not owned) by the HttpTransactionFactory.
+  std::unique_ptr<HttpNetworkSession> http_network_session_;
+
+  // `http_transaction_factory_` might hold a raw pointer on
+  // `http_network_session_` so it needs to be declared last.
+  std::unique_ptr<HttpTransactionFactory> http_transaction_factory_;
+
+  raw_ptr<NetworkQualityEstimator> network_quality_estimator_ = nullptr;
+
+  std::unique_ptr<TransportSecurityPersister> transport_security_persister_;
 
   std::unique_ptr<std::set<const URLRequest*>> url_requests_;
 
   // Enables Brotli Content-Encoding support.
-  bool enable_brotli_;
+  bool enable_brotli_ = false;
   // Enables checking system policy before allowing a cleartext http or ws
   // request. Only used on Android.
-  bool check_cleartext_permitted_;
+  bool check_cleartext_permitted_ = false;
 
-  // Triggers a DCHECK if a NetworkIsolationKey/IsolationInfo is not provided to
-  // a request when true.
-  bool require_network_isolation_key_;
+  // Triggers a DCHECK if a NetworkAnonymizationKey/IsolationInfo is not
+  // provided to a request when true.
+  bool require_network_isolation_key_ = false;
 
-  // An optional name which can be set to describe this URLRequestContext.
-  // Used in MemoryDumpProvier to annotate memory usage. The name does not need
-  // to be unique.
-  std::string name_;
+  handles::NetworkHandle bound_network_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContext);
 };
 
 }  // namespace net

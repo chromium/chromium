@@ -1,11 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/power/dual_role_notification.h"
 
+#include <memory>
 #include <set>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -63,13 +65,13 @@ void DualRoleNotification::Update() {
     }
 
     if (source.id == current_power_source_id) {
-      new_source.reset(new PowerStatus::PowerSource(source));
+      new_source = std::make_unique<PowerStatus::PowerSource>(source);
       continue;
     }
     num_sinks_found++;
     // The notification only shows the sink port if it is the only sink.
     if (num_sinks_found == 1)
-      new_sink.reset(new PowerStatus::PowerSource(source));
+      new_sink = std::make_unique<PowerStatus::PowerSource>(source);
     else
       new_sink.reset();
   }
@@ -136,7 +138,8 @@ std::unique_ptr<Notification> DualRoleNotification::CreateNotification() {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DUAL_ROLE_MESSAGE),
       std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierDualRole),
+                                 kNotifierDualRole,
+                                 NotificationCatalogName::kDualRole),
       message_center::RichNotificationData(), std::move(delegate),
       kNotificationChargingUsbCIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);

@@ -310,7 +310,7 @@ xsltAddKey(xsltStylesheetPtr style, const xmlChar *name,
     current = end = 0;
     while (match[current] != 0) {
 	start = current;
-	while (IS_BLANK_CH(match[current]))
+	while (xmlIsBlank_ch(match[current]))
 	    current++;
 	end = current;
 	while ((match[end] != 0) && (match[end] != '|')) {
@@ -834,24 +834,7 @@ fprintf(stderr, "xsltInitCtxtKey %s : %d\n", keyDef->name, ctxt->keyInitLevel);
 		*/
 		xmlXPathNodeSetAdd(keylist, cur);
 	    }
-	    switch (cur->type) {
-		case XML_ELEMENT_NODE:
-		case XML_TEXT_NODE:
-		case XML_CDATA_SECTION_NODE:
-		case XML_PI_NODE:
-		case XML_COMMENT_NODE:
-		    cur->psvi = keyDef;
-		    break;
-		case XML_ATTRIBUTE_NODE:
-		    ((xmlAttrPtr) cur)->psvi = keyDef;
-		    break;
-		case XML_DOCUMENT_NODE:
-		case XML_HTML_DOCUMENT_NODE:
-		    ((xmlDocPtr) cur)->psvi = keyDef;
-		    break;
-		default:
-		    break;
-	    }
+            xsltSetSourceNodeFlags(ctxt, cur, XSLT_SOURCE_NODE_HAS_KEY);
 	    xmlFree(str);
 	    str = NULL;
 

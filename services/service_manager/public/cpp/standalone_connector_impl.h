@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_STANDALONE_CONNECTOR_IMPL_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) StandaloneConnectorImpl
   };
 
   explicit StandaloneConnectorImpl(Delegate* delegate);
+
+  StandaloneConnectorImpl(const StandaloneConnectorImpl&) = delete;
+  StandaloneConnectorImpl& operator=(const StandaloneConnectorImpl&) = delete;
+
   ~StandaloneConnectorImpl() override;
 
   // Produces a new remote Connector endpoint whose connection requests are
@@ -67,11 +71,9 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) StandaloneConnectorImpl
       RegisterServiceInstanceCallback callback) override;
   void Clone(mojo::PendingReceiver<mojom::Connector> receiver) override;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   mojo::ReceiverSet<mojom::Connector> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(StandaloneConnectorImpl);
 };
 
 }  // namespace service_manager

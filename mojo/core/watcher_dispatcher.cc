@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/record_replay.h"
 #include "mojo/core/watch.h"
@@ -24,11 +23,11 @@ WatcherDispatcher::WatcherDispatcher(MojoTrapEventHandler handler)
   recordreplay::RegisterPointer("WatcherDispatcher", this);
 
   // https://linear.app/replay/issue/RUN-999
-  CHECK(!recordreplay::AreEventsDisallowed());
+  CHECK(!recordreplay::AreEventsDisallowed() || recordreplay::HasDivergedFromRecording());
 
   // https://linear.app/replay/issue/RUN-816
   if (recordreplay::IsRecordingOrReplaying("pointer-ids"))
-    CHECK(recordreplay::PointerId(this));
+    CHECK(recordreplay::PointerId(this) || recordreplay::HasDivergedFromRecording());
 }
 
 void WatcherDispatcher::NotifyHandleState(Dispatcher* dispatcher,
@@ -260,13 +259,14 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
         for (WatchSet::const_iterator search_iter = ready_watches_.begin();
              search_iter != ready_watches_.end();
              ++search_iter) {
-          if (*search_iter == last_watch_to_block_arming_) {
+          if (*search_iter == reinterpret_cast<const Watch*>(last_watch_to_block_arming_)) {
             next_ready_iter = search_iter;
             break;
           }
         }
       } else {
-        next_ready_iter = ready_watches_.find(last_watch_to_block_arming_);
+        next_ready_iter = ready_watches_.find(
+            reinterpret_cast<const Watch*>(last_watch_to_block_arming_));
       }
       if (next_ready_iter != ready_watches_.end())
         ++next_ready_iter;
@@ -284,7 +284,7 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
       blocking_events[i].signals_state = watch->last_known_signals_state();
 
       // Iterate and wrap around.
-      last_watch_to_block_arming_ = watch;
+      last_watch_to_block_arming_ = reinterpret_cast<uintptr_t>(watch);
       ++next_ready_iter;
       if (next_ready_iter == ready_watches_.end())
         next_ready_iter = ready_watches_.begin();

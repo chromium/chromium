@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,9 @@ class WM_PUBLIC_EXPORT ActivationChangeObserver {
   enum class ActivationReason {
     // When a window is activated due to a call to the ActivationClient API.
     ACTIVATION_CLIENT,
-    // When a user clicks or taps a window in the 2-dimensional screen space.
+    // When a user clicks or taps a window in the 2-dimensional screen space or
+    // when a user moves a mouse over a window while focus follows cursor is
+    // enabled.
     INPUT_EVENT,
     // When a new window is activated as a side effect of a window
     // disposition changing.

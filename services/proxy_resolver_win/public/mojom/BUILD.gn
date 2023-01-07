@@ -1,0 +1,33 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win)
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "proxy_resolver_win.mojom" ]
+  deps = [
+    "//services/network/public/mojom:mojom_proxy_config",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  public_deps = [ "//sandbox/policy/mojom" ]
+
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "proxy_resolver_win.mojom.WinHttpStatus"
+          cpp = "::net::WinHttpStatus"
+        },
+      ]
+      traits_headers = [ "//services/proxy_resolver_win/public/cpp/proxy_resolver_win_mojom_traits.h" ]
+      traits_sources = [ "//services/proxy_resolver_win/public/cpp/proxy_resolver_win_mojom_traits.cc" ]
+    },
+  ]
+}

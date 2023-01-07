@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
@@ -26,6 +25,9 @@ class WebHistoryServiceFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static WebHistoryServiceFactory* GetInstance();
 
+  WebHistoryServiceFactory(const WebHistoryServiceFactory&) = delete;
+  WebHistoryServiceFactory& operator=(const WebHistoryServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<WebHistoryServiceFactory>;
 
@@ -35,8 +37,6 @@ class WebHistoryServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebHistoryServiceFactory);
 };
 
 }  // namespace ios

@@ -21,7 +21,6 @@
 // https://html.spec.whatwg.org/C/#the-option-element
 
 [
-    ConstructorCallWith=Document,
     Exposed=Window,
     HTMLConstructor,
     NamedConstructor=Option(optional DOMString data = "",

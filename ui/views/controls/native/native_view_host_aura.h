@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,11 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/controls/native/native_view_host_wrapper.h"
 #include "ui/views/views_export.h"
 
@@ -29,6 +28,10 @@ class NativeViewHostAura : public NativeViewHostWrapper,
                            public aura::WindowObserver {
  public:
   explicit NativeViewHostAura(NativeViewHost* host);
+
+  NativeViewHostAura(const NativeViewHostAura&) = delete;
+  NativeViewHostAura& operator=(const NativeViewHostAura&) = delete;
+
   ~NativeViewHostAura() override;
 
   // Overridden from NativeViewHostWrapper:
@@ -49,7 +52,7 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   void SetFocus() override;
   gfx::NativeView GetNativeViewContainer() const override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
-  gfx::NativeCursor GetCursor(int x, int y) override;
+  ui::Cursor GetCursor(int x, int y) override;
   void SetVisible(bool visible) override;
   void SetParentAccessible(gfx::NativeViewAccessible) override;
   gfx::NativeViewAccessible GetParentAccessible() override;
@@ -89,7 +92,7 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   void UpdateInsets();
 
   // Our associated NativeViewHost.
-  NativeViewHost* host_;
+  raw_ptr<NativeViewHost> host_;
 
   std::unique_ptr<ClippingWindowDelegate> clipping_window_delegate_;
 
@@ -117,8 +120,6 @@ class NativeViewHostAura : public NativeViewHostWrapper,
 
   // The top insets to exclude the underlying native view from the target.
   int top_inset_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostAura);
 };
 
 }  // namespace views

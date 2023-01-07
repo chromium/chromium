@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
@@ -49,6 +50,107 @@ AnimationEffect::AnimationEffect(const Timing& timing,
       needs_update_(true),
       cancel_time_(AnimationTimeDelta()) {
   timing_.AssertValid();
+  InvalidateNormalizedTiming();
+}
+
+// Scales all timing values so that end_time == timeline_duration
+// https://drafts.csswg.org/web-animations-2/#time-based-animation-to-a-proportional-animation
+void AnimationEffect::EnsureNormalizedTiming() const {
+  // Only run the normalization process if needed
+  if (normalized_)
+    return;
+
+  normalized_ = Timing::NormalizedTiming();
+  // A valid timeline duration signifies use of a progress based timeline.
+  if (TimelineDuration()) {
+    // Normalize timings for progress based timelines
+    normalized_->timeline_duration = TimelineDuration();
+
+    bool has_timeline_offset = timing_.start_delay.IsTimelineOffset() ||
+                               timing_.end_delay.IsTimelineOffset();
+
+    if (timing_.iteration_duration && !has_timeline_offset) {
+      // Scaling up iteration_duration allows animation effect to be able to
+      // handle values produced by progress based timelines. At this point it
+      // can be assumed that EndTimeInternal() will give us a good value.
+
+      const AnimationTimeDelta active_duration = MultiplyZeroAlwaysGivesZero(
+          timing_.iteration_duration.value(), timing_.iteration_count);
+      DCHECK_GE(active_duration, AnimationTimeDelta());
+
+      // Per the spec, the end time has a lower bound of 0.0:
+      // https://w3.org/TR/web-animations-1/#end-time
+      const AnimationTimeDelta end_time =
+          std::max(timing_.start_delay.AsTimeValue() + active_duration +
+                       timing_.end_delay.AsTimeValue(),
+                   AnimationTimeDelta());
+
+      // Negative start_delay that is >= iteration_duration or iteration_count
+      // of 0 will cause end_time to be 0 or negative.
+      if (end_time.is_zero()) {
+        // end_time of zero causes division by zero so we handle it here
+        normalized_->start_delay = AnimationTimeDelta();
+        normalized_->end_delay = AnimationTimeDelta();
+        normalized_->iteration_duration = AnimationTimeDelta();
+      } else if (end_time.is_inf()) {
+        // The iteration count or duration may be infinite; however, start and
+        // end delays are strictly finite. Thus, in the limit when end time
+        // approaches infinity:
+        //    start delay / end time = finite / infinite = 0
+        //    end delay / end time = finite / infinite = 0
+        //    iteration duration / end time = 1 / iteration count
+        // This condition can be reached by switching to a scroll timeline on
+        // an existing infinite duration animation.
+        // Note that base::TimeDelta::operator/() DCHECKS that the numerator and
+        // denominator cannot both be zero or both be infinite since both cases
+        // are undefined. Fortunately, we can evaluate the limit in the infinite
+        // end time case based on the definition of end time
+        normalized_->start_delay = AnimationTimeDelta();
+        normalized_->end_delay = AnimationTimeDelta();
+        normalized_->iteration_duration =
+            (1.0 / timing_.iteration_count) *
+            normalized_->timeline_duration.value();
+      } else {
+        // convert to percentages then multiply by the timeline_duration
+        normalized_->start_delay =
+            (timing_.start_delay.AsTimeValue() / end_time) *
+            normalized_->timeline_duration.value();
+
+        normalized_->end_delay = (timing_.end_delay.AsTimeValue() / end_time) *
+                                 normalized_->timeline_duration.value();
+
+        normalized_->iteration_duration =
+            (timing_.iteration_duration.value() / end_time) *
+            normalized_->timeline_duration.value();
+      }
+    } else {
+      // Handle iteration_duration value of "auto". Treat the duration as "auto"
+      // if the using timeline offsets for the start or end delay since in this
+      // case the duration is arbitrary.
+      normalized_->iteration_duration = IntrinsicIterationDuration();
+      std::pair<AnimationTimeDelta, AnimationTimeDelta> delay_pair =
+          TimelineOffsetsToTimeDelays();
+      normalized_->start_delay = delay_pair.first;
+      normalized_->end_delay = delay_pair.second;
+    }
+  } else {
+    // Monotonic timeline case.
+    // Populates normalized values for use with time based timelines.
+    normalized_->start_delay = timing_.start_delay.AsTimeValue();
+    normalized_->end_delay = timing_.end_delay.AsTimeValue();
+    normalized_->iteration_duration =
+        timing_.iteration_duration.value_or(AnimationTimeDelta());
+  }
+
+  normalized_->active_duration = MultiplyZeroAlwaysGivesZero(
+      normalized_->iteration_duration, timing_.iteration_count);
+
+  // Per the spec, the end time has a lower bound of 0.0:
+  // https://w3.org/TR/web-animations-1/#end-time#end-time
+  normalized_->end_time =
+      std::max(normalized_->start_delay + normalized_->active_duration +
+                   normalized_->end_delay,
+               AnimationTimeDelta());
 }
 
 void AnimationEffect::UpdateSpecifiedTiming(const Timing& timing) {
@@ -81,6 +183,8 @@ void AnimationEffect::UpdateSpecifiedTiming(const Timing& timing) {
     if (!timing_.HasTimingOverride(Timing::kOverrideTimingFunction))
       timing_.timing_function = timing.timing_function;
   }
+
+  InvalidateNormalizedTiming();
   InvalidateAndNotifyOwner();
 }
 
@@ -95,70 +199,89 @@ EffectTiming* AnimationEffect::getTiming() const {
 }
 
 ComputedEffectTiming* AnimationEffect::getComputedTiming() const {
-  return SpecifiedTiming().getComputedTiming(EnsureCalculated(),
-                                             IsA<KeyframeEffect>(this));
+  return SpecifiedTiming().getComputedTiming(
+      EnsureCalculated(), NormalizedTiming(), IsA<KeyframeEffect>(this));
 }
 
 void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
                                    ExceptionState& exception_state) {
+  if (GetAnimation() && GetAnimation()->timeline() &&
+      GetAnimation()->timeline()->IsScrollTimeline()) {
+    if (optional_timing->hasDuration()) {
+      if (optional_timing->duration()->IsUnrestrictedDouble()) {
+        double duration =
+            optional_timing->duration()->GetAsUnrestrictedDouble();
+        if (duration == std::numeric_limits<double>::infinity()) {
+          exception_state.ThrowTypeError(
+              "Effect duration cannot be Infinity when used with Scroll "
+              "Timelines");
+          return;
+        }
+      } else if (optional_timing->duration()->GetAsString() == "auto") {
+        // TODO(crbug.com/1216527)
+        // Eventually we hope to be able to be more flexible with
+        // iteration_duration "auto" and its interaction with start_delay and
+        // end_delay. For now we will throw an exception if either delay is set.
+        // Once delays are changed to CSSNumberish, we will need to adjust logic
+        // here to allow for percentage values but not time values.
+
+        // If either delay or end_delay are non-zero, we can't handle "auto"
+        if (SpecifiedTiming().start_delay.IsNonzeroTimeBasedDelay() ||
+            SpecifiedTiming().end_delay.IsNonzeroTimeBasedDelay()) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              "Effect duration \"auto\" with time delays is not yet "
+              "implemented when used with Scroll Timelines");
+          return;
+        }
+      }
+    }
+
+    if (optional_timing->hasIterations() &&
+        optional_timing->iterations() ==
+            std::numeric_limits<double>::infinity()) {
+      // iteration count of infinity makes no sense for scroll timelines
+      exception_state.ThrowTypeError(
+          "Effect iterations cannot be Infinity when used with Scroll "
+          "Timelines");
+      return;
+    }
+  }
+
   // TODO(crbug.com/827178): Determine whether we should pass a Document in here
   // (and which) to resolve the CSS secure/insecure context against.
   if (!TimingInput::Update(timing_, optional_timing, nullptr, exception_state))
     return;
+
+  InvalidateNormalizedTiming();
   InvalidateAndNotifyOwner();
 }
 
-base::Optional<Timing::Phase> TimelinePhaseToTimingPhase(
-    base::Optional<TimelinePhase> phase) {
-  base::Optional<Timing::Phase> result;
-  if (phase) {
-    switch (phase.value()) {
-      case TimelinePhase::kBefore:
-        result = Timing::Phase::kPhaseBefore;
-        break;
-      case TimelinePhase::kActive:
-        result = Timing::Phase::kPhaseActive;
-        break;
-      case TimelinePhase::kAfter:
-        result = Timing::Phase::kPhaseAfter;
-        break;
-      case TimelinePhase::kInactive:
-        // Timing::Phase does not have an inactive phase.
-        break;
-    }
-  }
-  return result;
-}
-
 void AnimationEffect::UpdateInheritedTime(
-    base::Optional<AnimationTimeDelta> inherited_time,
-    base::Optional<TimelinePhase> inherited_timeline_phase,
+    absl::optional<AnimationTimeDelta> inherited_time,
+    bool at_progress_timeline_boundary,
+    double inherited_playback_rate,
     TimingUpdateReason reason) const {
-  base::Optional<double> playback_rate = base::nullopt;
-  if (GetAnimation())
-    playback_rate = GetAnimation()->playbackRate();
   const Timing::AnimationDirection direction =
-      (playback_rate && playback_rate.value() < 0)
-          ? Timing::AnimationDirection::kBackwards
-          : Timing::AnimationDirection::kForwards;
+      (inherited_playback_rate < 0) ? Timing::AnimationDirection::kBackwards
+                                    : Timing::AnimationDirection::kForwards;
 
-  base::Optional<Timing::Phase> timeline_phase =
-      TimelinePhaseToTimingPhase(inherited_timeline_phase);
-
-  bool needs_update = needs_update_ || last_update_time_ != inherited_time ||
-                      (owner_ && owner_->EffectSuppressed()) ||
-                      last_update_phase_ != timeline_phase;
+  bool needs_update =
+      needs_update_ || last_update_time_ != inherited_time ||
+      last_at_progress_timeline_boundary_ != at_progress_timeline_boundary ||
+      (owner_ && owner_->EffectSuppressed());
   needs_update_ = false;
   last_update_time_ = inherited_time;
-  last_update_phase_ = timeline_phase;
+  // A finished animation saturates inherited time at 0 or effect end.
+  // If we hit a progress timeline boundary and then enter the after phase
+  // timeline time doesn't change. Thus, we need to track boundary transitions
+  // as well since this can affect the phase (active vs after).
+  last_at_progress_timeline_boundary_ = at_progress_timeline_boundary;
 
-  const base::Optional<double> local_time =
-      inherited_time ? base::make_optional(inherited_time.value().InSecondsF())
-                     : base::nullopt;
   if (needs_update) {
     Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(
-        local_time, timeline_phase, direction, IsA<KeyframeEffect>(this),
-        playback_rate);
+        inherited_time, at_progress_timeline_boundary, NormalizedTiming(),
+        direction, IsA<KeyframeEffect>(this), inherited_playback_rate);
 
     const bool was_canceled = calculated.phase != calculated_.phase &&
                               calculated.phase == Timing::kPhaseNone;
@@ -187,9 +310,9 @@ void AnimationEffect::UpdateInheritedTime(
     // FIXME: This probably shouldn't be recursive.
     UpdateChildrenAndEffects();
     calculated_.time_to_forwards_effect_change = CalculateTimeToEffectChange(
-        true, local_time, calculated_.time_to_next_iteration);
+        true, inherited_time, calculated_.time_to_next_iteration);
     calculated_.time_to_reverse_effect_change = CalculateTimeToEffectChange(
-        false, local_time, calculated_.time_to_next_iteration);
+        false, inherited_time, calculated_.time_to_next_iteration);
   }
 }
 
@@ -210,6 +333,14 @@ Animation* AnimationEffect::GetAnimation() {
 }
 const Animation* AnimationEffect::GetAnimation() const {
   return owner_ ? owner_->GetAnimation() : nullptr;
+}
+
+AnimationEffect::TimeDelayPair AnimationEffect::TimelineOffsetsToTimeDelays()
+    const {
+  if (GetAnimation() && GetAnimation()->timeline()) {
+    return GetAnimation()->timeline()->TimelineOffsetsToTimeDelays(timing_);
+  }
+  return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
 }
 
 void AnimationEffect::Trace(Visitor* visitor) const {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,7 +76,7 @@ void WebMemoryImplTest::MeasureAndVerify(
                   ? *entry->attribution[0]->url
                   : *entry->attribution[0]->src;
           actual[attribution_tag] =
-              entry->memory ? Bytes{entry->memory->bytes} : base::nullopt;
+              entry->memory ? Bytes{entry->memory->bytes} : absl::nullopt;
         }
         EXPECT_EQ(expected, actual);
         measurement_done = true;
@@ -136,7 +136,7 @@ TEST_F(WebMemoryImplPMTest, WebMeasureMemory) {
         run_loop.Quit();
       });
   auto bad_message_callback =
-      base::BindLambdaForTesting([&](const std::string& error) {
+      base::BindLambdaForTesting([&](base::StringPiece error) {
         ADD_FAILURE() << error;
         run_loop.Quit();
       });
@@ -180,7 +180,7 @@ TEST_F(WebMemoryImplPMTest, MeasurementInterrupted) {
         FAIL() << "Measurement callback ran unexpectedly";
       });
   auto bad_message_callback =
-      base::BindOnce([](const std::string& error) { FAIL() << error; });
+      base::BindOnce([](base::StringPiece error) { FAIL() << error; });
 
   base::WeakPtr<FrameNode> frame_node_wrapper =
       PerformanceManager::GetFrameNodeForRenderFrameHost(child_frame());
@@ -202,19 +202,19 @@ TEST_F(WebMemoryImplPMTest, MeasurementInterrupted) {
 
     auto data = NewPerProcessV8MemoryUsage(1);
     AddIsolateMemoryUsage(frame_token, 1001u, data->isolates[0].get());
-    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+    ExpectQueryAndDelayReply(&mock_reporter, base::Seconds(10),
                              std::move(data));
   }
 
   // Verify that requests are sent but reply is not yet received.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   ::testing::Mock::VerifyAndClearExpectations(&mock_reporter);
 
   // Remove the child frame, which will destroy the child process.
   content::RenderFrameHostTester::For(child_frame())->Detach();
 
   // Advance until the reply is expected to make sure nothing explodes.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
 }
 
 TEST_F(WebMemoryImplPMTest, MeasurementDisallowed) {
@@ -227,7 +227,7 @@ TEST_F(WebMemoryImplPMTest, MeasurementDisallowed) {
         run_loop.Quit();
       });
   auto bad_message_callback =
-      base::BindLambdaForTesting([&](const std::string& error) {
+      base::BindLambdaForTesting([&](base::StringPiece error) {
         SUCCEED() << error;
         run_loop.Quit();
       });

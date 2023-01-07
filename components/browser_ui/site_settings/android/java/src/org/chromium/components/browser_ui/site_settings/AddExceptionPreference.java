@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.components.browser_ui.site_settings.WebsitePreference.PARAM_SUBDOMAIN_SETTINGS;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
 import android.content.Context;
@@ -18,15 +19,20 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.CheckBoxWithDescription;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /**
@@ -83,10 +89,11 @@ public class AddExceptionPreference
 
         setKey(key);
         Resources resources = getContext().getResources();
-        mPrefAccentColor =
-                ApiCompatibilityUtils.getColor(resources, R.color.default_control_color_active);
+        mPrefAccentColor = SemanticColorUtils.getDefaultControlColorActive(getContext());
         mErrorColor = resources.getColor(R.color.default_red);
-        mDefaultColor = resources.getColor(R.color.default_text_color);
+        mDefaultColor =
+                AppCompatResources.getColorStateList(getContext(), R.color.default_text_color_list)
+                        .getDefaultColor();
 
         Drawable plusIcon = ApiCompatibilityUtils.getDrawable(resources, R.drawable.plus);
         plusIcon.mutate();
@@ -118,27 +125,37 @@ public class AddExceptionPreference
                 (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.add_site_dialog, null);
         final EditText input = (EditText) view.findViewById(R.id.site);
-        final CheckBox thirdPartyExceptionsBox =
-                (CheckBox) view.findViewById(R.id.third_parties_exception_checkbox);
+        final CheckBoxWithDescription checkBox =
+                (CheckBoxWithDescription) view.findViewById(R.id.add_site_dialog_checkbox);
 
-        if (!mCategory.showSites(SiteSettingsCategory.Type.COOKIES)) {
-            // TODO(crbug.com/1077766): Change the string of the checkbox to something like
-            // "including third-party cookies on this site".
-            thirdPartyExceptionsBox.setVisibility(View.GONE);
-            thirdPartyExceptionsBox.setChecked(false);
+        if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
+            checkBox.setVisibility(View.VISIBLE);
+            checkBox.setPrimaryText(getContext().getString(
+                    R.string.website_settings_third_party_cookies_exception_label));
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
+            // Default to domain level setting for Request Desktop Site.
+            checkBox.setChecked(true);
+            if (ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS,
+                        PARAM_SUBDOMAIN_SETTINGS, false)) {
+                checkBox.setVisibility(View.VISIBLE);
+                checkBox.setPrimaryText(getContext().getString(
+                        R.string.website_settings_domain_desktop_site_exception_checkbox_primary));
+                checkBox.setDescriptionText(getContext().getString(
+                        R.string.website_settings_domain_desktop_site_exception_checkbox_description));
+            }
         }
 
         DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int button) {
                 if (button == AlertDialog.BUTTON_POSITIVE) {
-                    boolean isThirdPartyException = thirdPartyExceptionsBox.isChecked();
-                    String hostname = input.getText().toString().trim();
-
-                    // If a user clicks the third party checkbox, set wildcard as primary
-                    String primary = isThirdPartyException ? SITE_WILDCARD : hostname;
-                    String secondary = !isThirdPartyException ? SITE_WILDCARD : hostname;
-
+                    int categoryType = mCategory.getType();
+                    boolean isChecked = checkBox.isChecked();
+                    String pattern = input.getText().toString().trim();
+                    pattern = updatePatternIfNeeded(pattern, categoryType, isChecked);
+                    String primary = getPrimaryPattern(pattern, categoryType, isChecked);
+                    String secondary = getSecondaryPattern(pattern, categoryType, isChecked);
                     mSiteAddedCallback.onAddSite(primary, secondary);
                 } else {
                     dialog.dismiss();
@@ -147,7 +164,7 @@ public class AddExceptionPreference
         };
 
         AlertDialog.Builder alert =
-                new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog);
+                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog);
         AlertDialog alertDialog =
                 alert.setTitle(R.string.website_settings_add_site_dialog_title)
                         .setMessage(mDialogMessage)
@@ -176,19 +193,15 @@ public class AddExceptionPreference
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // The intent is to capture a hostname and register it as an exception using a
-                // pattern. But a pattern can be used to express things that are not supported, such
+                // The intent is to capture a url pattern and register it as an exception.
+                // But a pattern can be used to express things that are not supported, such
                 // as domains, schemes and ports. Therefore we need to filter out invalid values
                 // before passing them on to the validity checker for patterns.
-                String hostname = s.toString().trim();
-                boolean hasError = hostname.length() > 0
-                        && (hostname.contains(":") || hostname.contains(" ")
-                                || hostname.startsWith(".")
-                                || !WebsitePreferenceBridgeJni.get().isContentSettingsPatternValid(
-                                        hostname));
+                String pattern = s.toString().trim();
+                boolean isValid = isPatternValid(pattern, mCategory.getType());
 
                 // Vibrate when adding characters only, not when deleting them.
-                if (hasError && count != 0) {
+                if (!isValid && count != 0) {
                     if (Settings.System.getInt(getContext().getContentResolver(),
                                 Settings.System.HAPTIC_FEEDBACK_ENABLED, 1)
                             == 1) {
@@ -197,9 +210,57 @@ public class AddExceptionPreference
                     }
                 }
 
-                okButton.setEnabled(!hasError && hostname.length() > 0);
-                input.setTextColor(hasError ? mErrorColor : mDefaultColor);
+                okButton.setEnabled(isValid && pattern.length() > 0);
+                input.setTextColor(isValid ? mDefaultColor : mErrorColor);
             }
         });
+    }
+
+    @VisibleForTesting
+    static String updatePatternIfNeeded(@NonNull String pattern, int type, boolean isChecked) {
+        if (type != SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
+            return pattern;
+        }
+        if (isChecked) {
+            return WebsitePreferenceBridge.toDomainWildcardPattern(pattern);
+        } else {
+            return WebsitePreferenceBridge.toHostOnlyPattern(pattern);
+        }
+    }
+
+    @VisibleForTesting
+    static String getPrimaryPattern(@NonNull String pattern, int type, boolean isChecked) {
+        if (type != SiteSettingsCategory.Type.COOKIES) {
+            return pattern;
+        }
+        // If a user clicks the third party checkbox, set wildcard as primary.
+        return isChecked ? SITE_WILDCARD : pattern;
+    }
+
+    @VisibleForTesting
+    static String getSecondaryPattern(@NonNull String pattern, int type, boolean isChecked) {
+        if (type != SiteSettingsCategory.Type.COOKIES) {
+            return SITE_WILDCARD;
+        }
+        // If a user clicks the third party checkbox, set pattern as secondary.
+        return isChecked ? pattern : SITE_WILDCARD;
+    }
+
+    @VisibleForTesting
+    static boolean isPatternValid(@NonNull String pattern, int type) {
+        if (pattern.length() == 0) {
+            return true;
+        }
+        if (pattern.contains(":") && !isColonAllowed(type)) {
+            return false;
+        }
+        if (pattern.contains(" ") || pattern.startsWith(".")) {
+            return false;
+        }
+        return WebsitePreferenceBridgeJni.get().isContentSettingsPatternValid(pattern);
+    }
+
+    private static boolean isColonAllowed(int type) {
+        return type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE;
     }
 }

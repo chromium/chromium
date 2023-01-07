@@ -1,11 +1,10 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources_scroll = [
-  "ns_scroller_imp_details.h",
   "programmatic_scroll_animator.cc",
   "programmatic_scroll_animator.h",
   "scroll_alignment.cc",
@@ -18,6 +17,8 @@ blink_core_sources_scroll = [
   "scroll_animator_compositor_coordinator.h",
   "scroll_customization.cc",
   "scroll_customization.h",
+  "scroll_into_view_util.cc",
+  "scroll_into_view_util.h",
   "scroll_state_data.h",
   "scroll_types.h",
   "scrollable_area.cc",
@@ -46,8 +47,8 @@ if (is_mac) {
   blink_core_sources_scroll += [
     "mac_scrollbar_animator_impl.h",
     "mac_scrollbar_animator_impl.mm",
+    "scrollbar_theme_mac.cc",
     "scrollbar_theme_mac.h",
-    "scrollbar_theme_mac.mm",
     "web_scrollbar_theme.mm",
   ]
 }
@@ -56,5 +57,19 @@ if (use_aura) {
   blink_core_sources_scroll += [
     "scrollbar_theme_aura.cc",
     "scrollbar_theme_aura.h",
+    "scrollbar_theme_fluent.cc",
+    "scrollbar_theme_fluent.h",
   ]
+}
+
+blink_core_tests_scroll = [
+  "scroll_animator_test.cc",
+  "scroll_test.cc",
+  "scrollable_area_test.cc",
+  "scrollbar_test_suite.h",
+  "scrollbar_theme_overlay_test.cc",
+]
+
+if (use_aura) {
+  blink_core_tests_scroll += [ "scrollbar_theme_fluent_unittest.cc" ]
 }

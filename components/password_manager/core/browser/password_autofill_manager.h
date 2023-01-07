@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,20 @@
 
 #include "base/callback.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/gfx/image/image.h"
+
+namespace autofill {
+class AutofillDriver;
+}
 
 namespace favicon_base {
 struct FaviconImageResult;
@@ -39,25 +44,31 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   PasswordAutofillManager(PasswordManagerDriver* password_manager_driver,
                           autofill::AutofillClient* autofill_client,
                           PasswordManagerClient* password_client);
-  virtual ~PasswordAutofillManager();
+
+  PasswordAutofillManager(const PasswordAutofillManager&) = delete;
+  PasswordAutofillManager& operator=(const PasswordAutofillManager&) = delete;
+
+  ~PasswordAutofillManager() override;
 
   // AutofillPopupDelegate implementation.
   void OnPopupShown() override;
   void OnPopupHidden() override;
   void OnPopupSuppressed() override;
-  void DidSelectSuggestion(const std::u16string& value,
-                           int identifier) override;
-  void DidAcceptSuggestion(const std::u16string& value,
-                           int identifier,
+  void DidSelectSuggestion(
+      const std::u16string& value,
+      int frontend_id,
+      const autofill::Suggestion::BackendId& backend_id) override;
+  void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
                            int position) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
-                                   int identifier,
+                                   int frontend_id,
                                    std::u16string* title,
                                    std::u16string* body) override;
-  bool RemoveSuggestion(const std::u16string& value, int identifier) override;
+  bool RemoveSuggestion(const std::u16string& value, int frontend_id) override;
   void ClearPreviewedForm() override;
   autofill::PopupType GetPopupType() const override;
-  autofill::AutofillDriver* GetAutofillDriver() override;
+  absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
+      override;
   int32_t GetWebContentsPopupControllerAxId() const override;
   void RegisterDeletionCallback(base::OnceClosure deletion_callback) override;
 
@@ -116,6 +127,8 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   using ShowAllPasswords = base::StrongAlias<class ShowAllPasswordsTag, bool>;
   using ShowPasswordSuggestions =
       base::StrongAlias<class ShowPasswordSuggestionsTag, bool>;
+  using ShowWebAuthnCredentials =
+      base::StrongAlias<class ShowWebAuthnCredentialsTag, bool>;
 
   // Builds the suggestions used to show or update the autofill popup.
   std::vector<autofill::Suggestion> BuildSuggestions(
@@ -123,7 +136,8 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
       ForPasswordField for_password_field,
       ShowAllPasswords show_all_passwords,
       OffersGeneration for_generation,
-      ShowPasswordSuggestions show_password_suggestions);
+      ShowPasswordSuggestions show_password_suggestions,
+      ShowWebAuthnCredentials show_webauthn_credentials);
 
   // Called just before showing a popup to log which |suggestions| were shown.
   void LogMetricsForSuggestions(
@@ -181,17 +195,27 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
       autofill::AutofillClient::PopupOpenArgs reopen_args,
       PasswordManagerClient::ReauthSucceeded reauth_succeeded);
 
+  // Called when the biometric reauth that guards password filling completes.
+  // |frontend_id| identifies the suggestion that was selected for filling.
+  void OnBiometricReauthCompleted(const std::u16string& username_value,
+                                  int frontend_id,
+                                  bool auth_succeded);
+
+  // Cancels an ongoing biometric re-authentication. Usually, because
+  // the filling scope has changed or because |this| is being destroyed.
+  void CancelBiometricReauthIfOngoing();
+
   std::unique_ptr<autofill::PasswordFormFillData> fill_data_;
 
   // Contains the favicon for the credentials offered on the current page.
   gfx::Image page_favicon_;
 
   // The driver that owns |this|.
-  PasswordManagerDriver* password_manager_driver_;
+  raw_ptr<PasswordManagerDriver> password_manager_driver_;
 
-  autofill::AutofillClient* autofill_client_;  // weak
+  raw_ptr<autofill::AutofillClient> autofill_client_;  // weak
 
-  PasswordManagerClient* password_client_;
+  raw_ptr<PasswordManagerClient> password_client_;
 
   // If not null then it will be called in destructor.
   base::OnceClosure deletion_callback_;
@@ -199,9 +223,12 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // Used to track a requested favicon.
   base::CancelableTaskTracker favicon_tracker_;
 
-  base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
+  // Used to trigger a reauthentication prompt based on biometrics that needs
+  // to be cleared before the password is filled. Currently only used
+  // on Android, Mac and Windows.
+  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_;
 
-  DISALLOW_COPY_AND_ASSIGN(PasswordAutofillManager);
+  base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

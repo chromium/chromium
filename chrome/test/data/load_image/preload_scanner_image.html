@@ -1,0 +1,14 @@
+<html>
+<head></head>
+<div>
+  This page has an image below the viewport that will only load when it is scrolled into view.
+</div>
+<div style="height:11000px;"></div>
+<img src="image.png" />
+<script src="common.js"></script>
+<script>
+function loadBelowViewportImage() {
+  document.images[0].scrollIntoView();
+}
+</script>
+</html>

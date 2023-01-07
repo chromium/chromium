@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Възникна неочаквана грешка. Моля, подайте сигнал за този проблем до програмистите.</translation>
 <translation id="1697532407822776718">Готово!</translation>
 <translation id="1742469581923031760">Установява се връзка…</translation>
+<translation id="177040763384871009">За да разрешите в браузъра на клиента да се отварят връзки, върху които е кликнато на отдалеченото устройство, системният уеб браузър трябва да бъде <ph name="URL_FORWARDER_NAME" />.</translation>
 <translation id="177096447311351977">IP адрес на канала за клиентската програма: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Изтриване</translation>
 <translation id="2009755455353575666">Връзката не бе успешна</translation>
@@ -24,7 +25,7 @@
 Ако до <ph name="SERVICE_SCRIPT_NAME" /> има отметка, премахнете я и я поставете отново.</translation>
 <translation id="225614027745146050">Добре дошли</translation>
 <translation id="2320166752086256636">Скриване на клавиатурата</translation>
-<translation id="2333212046079545895">Авторски права 2021 г. Google LLC. Всички права запазени.</translation>
+<translation id="2329392777730037872"><ph name="URL" /> не се отвори на устройството клиент.</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2366718077645204424">Не можем да се свържем с хоста. Това вероятно се дължи на конфигурацията на използваната от вас мрежа.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Последно онлайн: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -35,6 +36,7 @@
 <translation id="2599300881200251572">Тази услуга активира входящите връзки от клиентски програми за отдалечен работен плот на Chrome.</translation>
 <translation id="2647232381348739934">Услуга за Chromoting</translation>
 <translation id="2676780859508944670">В процес на работа…</translation>
+<translation id="2692522824157224199">Авторски права 2022 г. Google LLC. Всички права запазени.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">При удостоверяването възникна проблем. Моля, влезте отново в профила си.</translation>
 <translation id="2803375539583399270">Въведете ПИН кодa</translation>
@@ -55,6 +57,7 @@
 <translation id="369442766917958684">Офлайн.</translation>
 <translation id="3695446226812920698">Научете как</translation>
 <translation id="3776024066357219166">Сесията ви в отдалечения работен плот на Chrome приключи.</translation>
+<translation id="3858860766373142691">Име</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3905196214175737742">Невалиден домейн на собственика на хоста.</translation>
 <translation id="3931191050278863510">Хостът е спрян.</translation>
@@ -67,14 +70,16 @@
 <translation id="4176825807642096119">Код за достъп</translation>
 <translation id="4227991223508142681">Помощна програма за обезпечаване на хоста</translation>
 <translation id="4240294130679914010">Деинсталираща програма за хоста на Chromoting</translation>
+<translation id="4257751272692708833">Пренасочване на URL адреси за „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="4277736576214464567">Кодът за достъп е невалиден. Моля, опитайте отново.</translation>
 <translation id="4281844954008187215">Условия за ползване</translation>
+<translation id="4372650392690220936">Авторски права 2022 г. Авторите на Chromium. Всички права запазени.</translation>
 <translation id="4405930547258349619">Библиотека на ядрото</translation>
 <translation id="443560535555262820">Отваряне на предпочитанията за достъпност</translation>
 <translation id="4450893287417543264">Да не се показва отново</translation>
-<translation id="4512952200932940229">Авторски права 2021 г. Авторите на Chromium. Всички права запазени.</translation>
 <translation id="4513946894732546136">Отзиви</translation>
 <translation id="4563926062592110512">Връзката с клиентската програма е прекъсната: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">Конфигурацията за <ph name="URL_FORWARDER_NAME" /> е неправилна. Моля, изберете друг уеб браузър по подразбиране, след което активирайте отново препращането на URL адреси.</translation>
 <translation id="4635770493235256822">Отдалечени устройства</translation>
 <translation id="4660011489602794167">Показване на клавиатурата</translation>
 <translation id="4703799847237267011">Сесията ви в Chromoting приключи.</translation>
@@ -87,6 +92,7 @@
 <translation id="4867841927763172006">Изпращане на PrtScn</translation>
 <translation id="4974476491460646149">Връзката с хоста „<ph name="HOSTNAME" />“ е прекратена</translation>
 <translation id="4985296110227979402">Трябва първо да настроите компютъра си за отдалечен достъп</translation>
+<translation id="4987330545941822761">Отдалеченият работен плот на Chrome не може да избере браузъра, с който да се отварят URL адреси локално. Моля, изберете браузър от списъка по-долу.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (офлайн)</translation>
 <translation id="507204348399810022">Наистина ли искате да деактивирате отдалечените връзки с/ъс <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">Невалиден идентификатор на хост.</translation>
@@ -94,7 +100,6 @@
 <translation id="5222676887888702881">Изход</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
 <translation id="5308380583665731573">Свързване</translation>
-<translation id="5327248766486351172">Име</translation>
 <translation id="533625276787323658">Няма компютри, с които да се свържете</translation>
 <translation id="5397086374758643919">Деинсталираща програма за хоста на отдалечения работен плот на Chrome</translation>
 <translation id="5419418238395129586">Последно онлайн: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@
 <translation id="5750083143895808682">Влязохте като <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Повторно свързване</translation>
 <translation id="5810269635982033450">Екранът работи като тракпад</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> поиска достъп с цел да вижда екрана ви и да управлява клавиатурата и мишката ви. Натиснете „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“, ако не очаквате тази заявка. В противен случай изберете „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“, за да разрешите осъществяването на връзката, когато имате готовност.</translation>
 <translation id="5823658491130719298">Отворете Chrome на компютъра, до който искате да осъществите отдалечен достъп, и посетете <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Опции за изгледа</translation>
 <translation id="6033507038939587647">Опции за клавиатурата</translation>
@@ -121,6 +127,7 @@
 <translation id="6612717000975622067">Изпращане на Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Споделяне</translation>
 <translation id="677755392401385740">За потребителя е стартиран хост: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Помощно приложение, чрез което URL адресите се отварят на клиента в „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="6939719207673461467">Показване/скриване на клавиатурата.</translation>
 <translation id="6963936880795878952">Връзките с отдалечения компютър са временно блокирани, защото някой опита да се свърже с него посредством невалиден ПИН код. Моля, пробвайте отново по-късно.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -133,10 +140,12 @@
 <translation id="7144878232160441200">Повторен опит</translation>
 <translation id="7312846573060934304">Хостът е офлайн.</translation>
 <translation id="7319983568955948908">Спиране на споделянето</translation>
+<translation id="7359298090707901886">Избраният браузър не може да бъде използван за отваряне на URL адреси на локалното устройство.</translation>
 <translation id="7401733114166276557">Отдалечен работен плот на Chrome</translation>
 <translation id="7434397035092923453">Отказан е достъп на клиентска програма: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Установена е връзка с клиентска програма: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Промяна на профила</translation>
+<translation id="7535110896613603182">Отваряне на настройките за приложения по подразбиране</translation>
 <translation id="7628469622942688817">Запомняне на ПИН кода ми на това устройство.</translation>
 <translation id="7649070708921625228">Помощ</translation>
 <translation id="7658239707568436148">Отказ</translation>
@@ -161,6 +170,7 @@
 За да направите това, кликнете върху „<ph name="BUTTON_NAME" />“ по-долу. Ще се отвори панелът за предпочитанията за достъпност. Поставете отметка в квадратчето до <ph name="SERVICE_SCRIPT_NAME" />.
 
 Ако до <ph name="SERVICE_SCRIPT_NAME" /> има отметка, премахнете я и я поставете отново.</translation>
+<translation id="8305209735512572429">Процес за отдалечено удостоверяване в мрежата</translation>
 <translation id="8383794970363966105">За да използвате Chromoting, ще се наложи да добавите профил в Google към устройството си.</translation>
 <translation id="8386846956409881180">Хостът е конфигуриран с невалидни идентификационни данни за OAuth.</translation>
 <translation id="8397385476380433240">Предоставяне на разрешение на <ph name="PRODUCT_NAME" /></translation>

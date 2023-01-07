@@ -1,13 +1,7 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import argparse
-import os
-import re
-import subprocess
-import sys
-import tempfile
 """Wrapper around actool to compile assets catalog.
 
 The script compile_xcassets.py is a wrapper around actool to compile
@@ -22,28 +16,19 @@ empty. This should to treat all warnings as error until actool has
 an option to fail with non-zero error code when there are warnings.
 """
 
+import argparse
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+
 # Pattern matching a section header in the output of actool.
 SECTION_HEADER = re.compile('^/\\* ([^ ]*) \\*/$')
 
 # Name of the section containing informational messages that can be ignored.
 NOTICE_SECTION = 'com.apple.actool.compilation-results'
-
-# Regular expressions matching spurious messages from actool that should be
-# ignored (as they are bogus). Generally a bug should be filed with Apple
-# when adding a pattern here.
-SPURIOUS_PATTERNS = [
-    re.compile(v) for v in [
-        # crbug.com/770634, likely a bug in Xcode 9.1 beta, remove once build
-        # requires a version of Xcode with a fix.
-        r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]: notice: \(null\)',
-
-        # crbug.com/770634, likely a bug in Xcode 9.2 beta, remove once build
-        # requires a version of Xcode with a fix.
-        r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]: notice: 76x76@1x app'
-        ' icons only apply to iPad apps targeting releases of iOS prior to'
-        ' 10.0.',
-    ]
-]
 
 # Map special type of asset catalog to the corresponding command-line
 # parameter that need to be passed to actool.
@@ -52,14 +37,13 @@ ACTOOL_FLAG_FOR_ASSET_TYPE = {
     '.launchimage': '--launch-image',
 }
 
-
-def IsSpuriousMessage(line):
-  """Returns whether line contains a spurious message that should be ignored."""
-  for pattern in SPURIOUS_PATTERNS:
-    match = pattern.search(line)
-    if match is not None:
-      return True
-  return False
+def FixAbsolutePathInLine(line, relative_paths):
+  """Fix absolute paths present in |line| to relative paths."""
+  absolute_path = line.split(':')[0]
+  relative_path = relative_paths.get(absolute_path, absolute_path)
+  if absolute_path == relative_path:
+    return line
+  return relative_path + line[len(absolute_path):]
 
 
 def FilterCompilerOutput(compiler_output, relative_paths):
@@ -100,22 +84,19 @@ def FilterCompilerOutput(compiler_output, relative_paths):
       current_section = match.group(1)
       continue
     if current_section and current_section != NOTICE_SECTION:
-      if IsSpuriousMessage(line):
-        continue
-      absolute_path = line.split(':')[0]
-      relative_path = relative_paths.get(absolute_path, absolute_path)
-      if absolute_path != relative_path:
-        line = relative_path + line[len(absolute_path):]
       if not data_in_section:
         data_in_section = True
         filtered_output.append('/* %s */\n' % current_section)
-      filtered_output.append(line + '\n')
+
+      fixed_line = FixAbsolutePathInLine(line, relative_paths)
+      filtered_output.append(fixed_line + '\n')
 
   return ''.join(filtered_output)
 
 
-def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
-                        inputs, compress_pngs, partial_info_plist):
+def CompileAssetCatalog(output, platform, target_environment, product_type,
+                        min_deployment_target, inputs, compress_pngs,
+                        partial_info_plist):
   """Compile the .xcassets bundles to an asset catalog using actool.
 
   Args:
@@ -134,8 +115,6 @@ def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
       '--notices',
       '--warnings',
       '--errors',
-      '--platform',
-      platform,
       '--minimum-deployment-target',
       min_deployment_target,
   ]
@@ -146,10 +125,41 @@ def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
   if product_type != '':
     command.extend(['--product-type', product_type])
 
-  if platform == 'macosx':
-    command.extend(['--target-device', 'mac'])
-  else:
-    command.extend(['--target-device', 'iphone', '--target-device', 'ipad'])
+  if platform == 'mac':
+    command.extend([
+        '--platform',
+        'macosx',
+        '--target-device',
+        'mac',
+    ])
+  elif platform == 'ios':
+    if target_environment == 'simulator':
+      command.extend([
+          '--platform',
+          'iphonesimulator',
+          '--target-device',
+          'iphone',
+          '--target-device',
+          'ipad',
+      ])
+    elif target_environment == 'device':
+      command.extend([
+          '--platform',
+          'iphoneos',
+          '--target-device',
+          'iphone',
+          '--target-device',
+          'ipad',
+      ])
+    elif target_environment == 'catalyst':
+      command.extend([
+          '--platform',
+          'macosx',
+          '--target-device',
+          'ipad',
+          '--ui-framework-family',
+          'uikit',
+      ])
 
   # Scan the input directories for the presence of asset catalog types that
   # require special treatment, and if so, add them to the actool command-line.
@@ -168,7 +178,7 @@ def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
 
       command.extend([ACTOOL_FLAG_FOR_ASSET_TYPE[asset_type], asset_name])
 
-  # Always ask actool to generate a partial Info.plist file. If not path
+  # Always ask actool to generate a partial Info.plist file. If no path
   # has been given by the caller, use a temporary file name.
   temporary_file = None
   if not partial_info_plist:
@@ -200,12 +210,23 @@ def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT)
-    stdout, _ = process.communicate()
+    stdout = process.communicate()[0].decode('utf-8')
 
-    # Filter the output to remove all garbarge and to fix the paths.
-    stdout = FilterCompilerOutput(stdout.decode('UTF-8'), relative_paths)
+    # If the invocation of `actool` failed, copy all the compiler output to
+    # the standard error stream and exit. See https://crbug.com/1205775 for
+    # example of compilation that failed with no error message due to filter.
+    if process.returncode:
+      for line in stdout.splitlines():
+        fixed_line = FixAbsolutePathInLine(line, relative_paths)
+        sys.stderr.write(fixed_line + '\n')
+      sys.exit(1)
 
-    if process.returncode or stdout:
+    # Filter the output to remove all garbage and to fix the paths. If the
+    # output is not empty after filtering, then report the compilation as a
+    # failure (as some version of `actool` report error to stdout, yet exit
+    # with an return code of zero).
+    stdout = FilterCompilerOutput(stdout, relative_paths)
+    if stdout:
       sys.stderr.write(stdout)
       sys.exit(1)
 
@@ -220,8 +241,13 @@ def Main():
   parser.add_argument('--platform',
                       '-p',
                       required=True,
-                      choices=('macosx', 'iphoneos', 'iphonesimulator'),
+                      choices=('mac', 'ios'),
                       help='target platform for the compiled assets catalog')
+  parser.add_argument('--target-environment',
+                      '-e',
+                      default='',
+                      choices=('simulator', 'device', 'catalyst'),
+                      help='target environment for the compiled assets catalog')
   parser.add_argument(
       '--minimum-deployment-target',
       '-t',
@@ -252,9 +278,15 @@ def Main():
                      'to the containing bundle: %s\n' % (args.output, ))
     sys.exit(1)
 
-  CompileAssetCatalog(args.output, args.platform, args.product_type,
-                      args.minimum_deployment_target, args.inputs,
-                      args.compress_pngs, args.partial_info_plist)
+  if os.path.exists(args.output):
+    if os.path.isfile(args.output):
+      os.unlink(args.output)
+    else:
+      shutil.rmtree(args.output)
+
+  CompileAssetCatalog(args.output, args.platform, args.target_environment,
+                      args.product_type, args.minimum_deployment_target,
+                      args.inputs, args.compress_pngs, args.partial_info_plist)
 
 
 if __name__ == '__main__':

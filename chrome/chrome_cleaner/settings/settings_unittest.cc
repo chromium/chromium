@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
 #include "chrome/chrome_cleaner/settings/engine_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -160,7 +161,7 @@ TEST_F(SettingsTest, Timeouts) {
       // Switch not present.
       {"", false, base::TimeDelta()},
       // Valid number of minutes.
-      {"100", true, base::TimeDelta::FromMinutes(100)},
+      {"100", true, base::Minutes(100)},
       // Disabled.
       {"0", true, base::TimeDelta()},
       // Invalid values.

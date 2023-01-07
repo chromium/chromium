@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@ std::vector<chromeos::Printer> FakeCupsProxyServiceDelegate::GetPrinters(
   return {};
 }
 
-base::Optional<chromeos::Printer> FakeCupsProxyServiceDelegate::GetPrinter(
+absl::optional<chromeos::Printer> FakeCupsProxyServiceDelegate::GetPrinter(
     const std::string& id) {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::vector<std::string>

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,26 +6,27 @@
 
 #include <memory>
 
-#if defined(OS_WIN)
-#include <windows.h>
-#include <shellapi.h>
-#endif
-
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "chrome/grit/theme_resources.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_throbber.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+// windows.h needs to come first.  The gap above prevents reordering.
+#include <shellapi.h>
+
 #include "chrome/browser/win/app_icon.h"
 #include "ui/gfx/icon_util.h"
 #endif
@@ -34,7 +35,7 @@ namespace {
 
 gfx::ImageSkia CreateDefaultFavicon() {
   gfx::ImageSkia icon;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The default window icon is the application icon, not the default favicon.
   HICON app_icon = GetAppIcon();
   icon = gfx::ImageSkia::CreateFromBitmap(
@@ -49,6 +50,9 @@ gfx::ImageSkia CreateDefaultFavicon() {
 
 class DefaultFavicon {
  public:
+  DefaultFavicon(const DefaultFavicon&) = delete;
+  DefaultFavicon& operator=(const DefaultFavicon&) = delete;
+
   static const DefaultFavicon& GetInstance() {
     static base::NoDestructor<DefaultFavicon> default_favicon;
     return *default_favicon;
@@ -62,8 +66,6 @@ class DefaultFavicon {
   DefaultFavicon() : icon_(CreateDefaultFavicon()) {}
 
   const gfx::ImageSkia icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultFavicon);
 };
 
 }  // namespace
@@ -93,11 +95,9 @@ void TabIconView::PaintThrobber(gfx::Canvas* canvas) {
   if (throbber_start_time_ == base::TimeTicks())
     throbber_start_time_ = base::TimeTicks::Now();
 
-  gfx::PaintThrobberSpinning(
-      canvas, GetLocalBounds(),
-      GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_ThrobberSpinningColor),
-      base::TimeTicks::Now() - throbber_start_time_);
+  gfx::PaintThrobberSpinning(canvas, GetLocalBounds(),
+                             GetColorProvider()->GetColor(ui::kColorThrobber),
+                             base::TimeTicks::Now() - throbber_start_time_);
 }
 
 void TabIconView::PaintFavicon(gfx::Canvas* canvas,
@@ -139,7 +139,8 @@ void TabIconView::PaintButtonContents(gfx::Canvas* canvas) {
       return;
     }
 
-    gfx::ImageSkia favicon = model_->GetFaviconForTabIconView();
+    gfx::ImageSkia favicon =
+        model_->GetFaviconForTabIconView().Rasterize(GetColorProvider());
     if (!favicon.isNull()) {
       PaintFavicon(canvas, favicon);
       return;

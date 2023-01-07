@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.site_settings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -24,9 +23,10 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.subresource_filter.SubresourceFilterFeatureList;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -42,7 +42,8 @@ public class SiteSettingsCategory {
             Type.CLIPBOARD, Type.COOKIES, Type.IDLE_DETECTION, Type.DEVICE_LOCATION,
             Type.JAVASCRIPT, Type.MICROPHONE, Type.NFC, Type.NOTIFICATIONS, Type.POPUPS,
             Type.PROTECTED_MEDIA, Type.SENSORS, Type.SOUND, Type.USB, Type.VIRTUAL_REALITY,
-            Type.USE_STORAGE})
+            Type.USE_STORAGE, Type.AUTO_DARK_WEB_CONTENT, Type.REQUEST_DESKTOP_SITE,
+            Type.FEDERATED_IDENTITY_API})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         // All updates here must also be reflected in {@link #preferenceKey(int)
@@ -70,10 +71,13 @@ public class SiteSettingsCategory {
         int BLUETOOTH = 20;
         int VIRTUAL_REALITY = 21;
         int USE_STORAGE = 22;
+        int AUTO_DARK_WEB_CONTENT = 23;
+        int REQUEST_DESKTOP_SITE = 24;
+        int FEDERATED_IDENTITY_API = 25;
         /**
          * Number of handled categories used for calculating array sizes.
          */
-        int NUM_ENTRIES = 23;
+        int NUM_ENTRIES = 26;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -145,14 +149,17 @@ public class SiteSettingsCategory {
     }
 
     /**
-     * Convert Type into {@link ContentSettingsType}
+     * Convert Type into {@link ContentSettingsType}.
      */
-    public static int contentSettingsType(@Type int type) {
+    public static @ContentSettingsType int contentSettingsType(@Type int type) {
+        // This switch statement is ordered by types alphabetically.
         switch (type) {
             case Type.ADS:
                 return ContentSettingsType.ADS;
             case Type.AUGMENTED_REALITY:
                 return ContentSettingsType.AR;
+            case Type.AUTO_DARK_WEB_CONTENT:
+                return ContentSettingsType.AUTO_DARK_WEB_CONTENT;
             case Type.AUTOMATIC_DOWNLOADS:
                 return ContentSettingsType.AUTOMATIC_DOWNLOADS;
             case Type.BACKGROUND_SYNC:
@@ -167,8 +174,12 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.CLIPBOARD_READ_WRITE;
             case Type.COOKIES:
                 return ContentSettingsType.COOKIES;
+            case Type.REQUEST_DESKTOP_SITE:
+                return ContentSettingsType.REQUEST_DESKTOP_SITE;
             case Type.DEVICE_LOCATION:
                 return ContentSettingsType.GEOLOCATION;
+            case Type.FEDERATED_IDENTITY_API:
+                return ContentSettingsType.FEDERATED_IDENTITY_API;
             case Type.IDLE_DETECTION:
                 return ContentSettingsType.IDLE_DETECTION;
             case Type.JAVASCRIPT:
@@ -194,7 +205,7 @@ public class SiteSettingsCategory {
             // case Type.ALL_SITES
             // case Type.USE_STORAGE
             default:
-                return -1; // Conversion unavailable.
+                return ContentSettingsType.DEFAULT; // Conversion unavailable.
         }
     }
 
@@ -217,11 +228,14 @@ public class SiteSettingsCategory {
      * Convert Type into preference String
      */
     public static String preferenceKey(@Type int type) {
+        // This switch statement is ordered by types alphabetically.
         switch (type) {
             case Type.ADS:
                 return "ads";
             case Type.AUGMENTED_REALITY:
                 return "augmented_reality";
+            case Type.AUTO_DARK_WEB_CONTENT:
+                return "auto_dark_web_content";
             case Type.ALL_SITES:
                 return "all_sites";
             case Type.AUTOMATIC_DOWNLOADS:
@@ -238,8 +252,12 @@ public class SiteSettingsCategory {
                 return "clipboard";
             case Type.COOKIES:
                 return "cookies";
+            case Type.REQUEST_DESKTOP_SITE:
+                return "request_desktop_site";
             case Type.DEVICE_LOCATION:
                 return "device_location";
+            case Type.FEDERATED_IDENTITY_API:
+                return "federated_identity_api";
             case Type.IDLE_DETECTION:
                 return "idle_detection";
             case Type.JAVASCRIPT:
@@ -271,6 +289,13 @@ public class SiteSettingsCategory {
     }
 
     /**
+     * Returns the {@link SiteSettingsCategory.Type} for this category.
+     */
+    public @Type int getType() {
+        return mCategory;
+    }
+
+    /**
      * Returns the {@link ContentSettingsType} for this category, or -1 if no such type exists.
      */
     public @ContentSettingsType int getContentSettingsType() {
@@ -283,13 +308,6 @@ public class SiteSettingsCategory {
      */
     public @ContentSettingsType int getObjectChooserDataType() {
         return objectChooserDataTypeFromGuard(contentSettingsType(mCategory));
-    }
-
-    /**
-     * Returns whether this category is the specified type.
-     */
-    public boolean showSites(@Type int type) {
-        return type == mCategory;
     }
 
     /**
@@ -307,12 +325,12 @@ public class SiteSettingsCategory {
     public boolean isManaged() {
         // TODO(dullweber): Why do we check some permissions for managed state and some for user
         // modifiability and some not at all?
-        if (showSites(Type.AUTOMATIC_DOWNLOADS) || showSites(Type.BACKGROUND_SYNC)
-                || showSites(Type.JAVASCRIPT) || showSites(Type.POPUPS)) {
+        if (mCategory == Type.AUTOMATIC_DOWNLOADS || mCategory == Type.BACKGROUND_SYNC
+                || mCategory == Type.JAVASCRIPT || mCategory == Type.POPUPS) {
             return WebsitePreferenceBridge.isContentSettingManaged(
                     getBrowserContextHandle(), getContentSettingsType());
-        } else if (showSites(Type.COOKIES) || showSites(Type.DEVICE_LOCATION)
-                || showSites(Type.CAMERA) || showSites(Type.MICROPHONE)) {
+        } else if (mCategory == Type.COOKIES || mCategory == Type.DEVICE_LOCATION
+                || mCategory == Type.CAMERA || mCategory == Type.MICROPHONE) {
             return !WebsitePreferenceBridge.isContentSettingUserModifiable(
                     getBrowserContextHandle(), getContentSettingsType());
         }
@@ -325,8 +343,8 @@ public class SiteSettingsCategory {
      */
     public boolean isManagedByCustodian() {
         // TODO(dullweber): Why do we only check these types?
-        if (showSites(Type.COOKIES) || showSites(Type.DEVICE_LOCATION) || showSites(Type.CAMERA)
-                || showSites(Type.MICROPHONE)) {
+        if (mCategory == Type.COOKIES || mCategory == Type.DEVICE_LOCATION
+                || mCategory == Type.CAMERA || mCategory == Type.MICROPHONE) {
             return WebsitePreferenceBridge.isContentSettingManagedByCustodian(
                     getBrowserContextHandle(), getContentSettingsType());
         }
@@ -356,8 +374,7 @@ public class SiteSettingsCategory {
         String globalMessage = getMessageForEnablingOsGlobalPermission(context);
         String unsupportedMessage = getMessageIfNotSupported(context);
 
-        Resources resources = context.getResources();
-        int color = ApiCompatibilityUtils.getColor(resources, R.color.default_control_color_active);
+        int color = SemanticColorUtils.getDefaultControlColorActive(context);
         ForegroundColorSpan linkSpan = new ForegroundColorSpan(color);
 
         if (perAppIntent != null) {
@@ -398,8 +415,7 @@ public class SiteSettingsCategory {
         Drawable icon = ApiCompatibilityUtils.getDrawable(
                 context.getResources(), R.drawable.exclamation_triangle);
         icon.mutate();
-        int disabledColor = ApiCompatibilityUtils.getColor(
-                context.getResources(), R.color.default_control_color_active);
+        int disabledColor = SemanticColorUtils.getDefaultControlColorActive(context);
         icon.setColorFilter(disabledColor, PorterDuff.Mode.SRC_IN);
         return icon;
     }

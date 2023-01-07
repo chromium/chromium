@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,16 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/test/base/web_ui_browser_test.h"
+#include "services/network/test/test_network_context.h"
 
 class NetInternalsTest : public WebUIBrowserTest {
  public:
   NetInternalsTest();
+
+  NetInternalsTest(const NetInternalsTest&) = delete;
+  NetInternalsTest& operator=(const NetInternalsTest&) = delete;
+
   ~NetInternalsTest() override;
 
   void SetUpOnMainThread() override;
@@ -32,7 +36,7 @@ class NetInternalsTest : public WebUIBrowserTest {
   // True if the test server has already been successfully started.
   bool test_server_started_;
 
-  DISALLOW_COPY_AND_ASSIGN(NetInternalsTest);
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NET_INTERNALS_NET_INTERNALS_UI_BROWSERTEST_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,12 @@ const char kCachePrefPath[] = "prefetch.search_prefetch.cache";
 // created when a prefetch request gets a 503 response with Retry-After header.
 const char kRetryAfterPrefPath[] =
     "chrome.prefetch_proxy.origin_decider.retry_after";
+
+// This pref contains an integer (enum of type NetworkPredictionOptions),
+// determining which preload pages mode (specifying whether or how much we are
+// allowed to preload pages) has been selected by the user. Note that the name
+// of this pref does not match the others in this file for legacy reasons.
+const char kNetworkPredictionOptions[] = "net.network_prediction_options";
 
 }  // namespace prefs
 }  // namespace prefetch

@@ -1,0 +1,4 @@
+include_rules = [
+     # This file is part of the tab management public API.
+    "+chrome/android/features/tab_ui/public/android/java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherCustomViewManager.java",
+]

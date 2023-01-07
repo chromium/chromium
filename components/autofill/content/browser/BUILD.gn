@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,12 +8,17 @@ static_library("browser") {
   sources = [
     "autofill_log_router_factory.cc",
     "autofill_log_router_factory.h",
+    "bad_message.cc",
+    "bad_message.h",
     "content_autofill_driver.cc",
     "content_autofill_driver.h",
     "content_autofill_driver_factory.cc",
     "content_autofill_driver_factory.h",
-    "key_press_handler_manager.cc",
-    "key_press_handler_manager.h",
+    "content_autofill_router.cc",
+    "content_autofill_router.h",
+    "form_forest.cc",
+    "form_forest.h",
+    "form_forest_util_inl.h",
     "risk/fingerprint.cc",
     "risk/fingerprint.h",
   ]
@@ -24,11 +29,15 @@ static_library("browser") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/keyed_service/content",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
     "//skia",
+    "//third_party/abseil-cpp:absl",
   ]
   deps = [
     "//base",
     "//base:i18n",
+    "//components/autofill_assistant/core/public:public",
     "//components/os_crypt",
     "//components/prefs",
     "//components/profile_metrics",
@@ -36,10 +45,9 @@ static_library("browser") {
     "//components/strings",
     "//components/user_prefs",
     "//components/version_info",
+    "//components/webauthn/core/browser",
     "//content/public/browser",
-    "//content/public/common",
     "//gpu/config",
-    "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
     "//ppapi/buildflags",
@@ -55,7 +63,7 @@ static_library("browser") {
   ]
 
   if (!is_android) {
-    deps += [ "//components/autofill/content/browser/webauthn" ]
+    deps += [ "//components/webauthn/content/browser" ]
   }
 }
 
@@ -64,16 +72,39 @@ proto_library("risk_proto") {
   proto_out_dir = "components/autofill/content/browser/risk/proto"
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "content_autofill_driver_factory_test_api.cc",
+    "content_autofill_driver_factory_test_api.h",
+    "content_autofill_driver_test_api.h",
+    "content_autofill_router_test_api.h",
+    "form_forest_test_api.cc",
+    "form_forest_test_api.h",
+    "test_autofill_manager_injector.h",
+  ]
+
+  public_deps = [
+    ":browser",
+    "//content/public/browser",
+    "//content/test:test_support",
+  ]
+
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "autofill_internals_log_router_unittest.cc",
+    "content_autofill_driver_factory_unittest.cc",
     "content_autofill_driver_unittest.cc",
-    "key_press_handler_manager_unittest.cc",
+    "form_forest_unittest.cc",
   ]
 
   deps = [
     ":browser",
+    ":test_support",
     "//base",
     "//components/autofill/content/common/mojom",
     "//components/autofill/core/browser",

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <resources>
     <!-- These constants should be in sync with the context names on go/mobilehelprecs.
      If the context ID cannot be found, the default help page will be shown to the user.-->
@@ -16,7 +18,6 @@
     <string name="help_context_privacy">mobile_privacy</string>
     <string name="help_context_general">mobile_general</string>
     <string name="help_context_protected_content">protected_content</string>
-    <string name="help_context_data_reduction">reduce_data_usage</string>
     <string name="help_context_incognito_learn_more">chrome_incognito</string>
     <string name="help_context_sad_tab">mobile_awsnap</string>
     <string name="help_context_clear_browsing_data">clear_browsing_data</string>

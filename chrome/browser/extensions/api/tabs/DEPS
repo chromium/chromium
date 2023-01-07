@@ -1,0 +1,6 @@
+# TODO(crbug.com/1261125): Replace with a better window abstraction.
+specific_include_rules = {
+  "tabs_api_unittest\.cc": [
+    "+ash/test",
+  ],
+}

@@ -1,0 +1,72 @@
+<style include="common cros-button-style">
+  #container {
+    display: grid;
+    grid-template-areas:
+      '. . userpreview  . .'
+      '. . middle       . .'
+      '. . rbg-keyboard . .'
+      '. . .            . .';
+    grid-template-columns: 1fr 24px minmax(480px, 960px) 24px 1fr;
+    grid-template-rows: 108px 1fr auto 32px;
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  user-preview {
+    grid-area: userpreview;
+  }
+
+  #middle {
+    display: grid;
+    gap: 16px;
+    grid-area: middle;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  }
+
+  keyboard-backlight {
+    grid-area: rbg-keyboard;
+    margin-top: 16px;
+  }
+
+  #ambientSubpageLink {
+    --cr-icon-button-size: 48px;
+    /* Make the arrow align with the thumbnail image */
+    margin-inline-end: -18px;
+  }
+
+  #ambientLabel > h2 {
+    color: var(--cros-text-color-primary);
+    font: var(--personalization-app-label-font);
+    margin: 14px 0;
+  }
+</style>
+<div id="container">
+  <user-preview path="[[path]]">
+  </user-preview>
+  <div id="middle">
+    <wallpaper-preview>
+      <template is="dom-if" if="[[isDarkLightModeEnabled_()]]">
+        <personalization-theme></personalization-theme>
+      </template>
+    </wallpaper-preview>
+    <template is="dom-if" if="[[isAmbientModeAllowed_()]]">
+      <ambient-preview clickable="[[clickable_]]" main-page>
+        <div id="ambientLabel">
+          <h2 on-click="onClickAmbientSubpageLink_" class="clickable">
+            $i18n{screensaverLabel}
+          </h2>
+          <cr-icon-button id="ambientSubpageLink"
+                iron-icon="cr:chevron-right"
+                on-click="onClickAmbientSubpageLink_"
+                class="tast-open-subpage"
+                aria-label="$i18n{ariaLabelChangeScreensaver}">
+          </cr-icon-button>
+        </div>
+      </ambient-preview>
+    </template>
+  </div>
+  <template is="dom-if" if="[[isRgbKeyboardSupported_()]]">
+    <keyboard-backlight></keyboard-backlight>
+  </template>
+</div>

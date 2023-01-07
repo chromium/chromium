@@ -1,0 +1,6 @@
+[
+  RuntimeEnabled=SharedStorageAPI,
+  ImplementedAs=WindowSharedStorage
+] partial interface Window {
+  [MeasureAs=SharedStorageAPI_SharedStorage_DOMReference] readonly attribute SharedStorage sharedStorage;
+};

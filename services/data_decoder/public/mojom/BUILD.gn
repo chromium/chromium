@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,22 +12,29 @@ mojom("mojom") {
     "image_decoder.mojom",
     "json_parser.mojom",
     "web_bundler.mojom",
-    "xml_parser.mojom",
   ]
 
   public_deps = [
     ":mojom_resource_snapshot_for_web_bundle",
+    ":mojom_xml_parser",
     "//components/web_package/mojom",
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "ble_scan_parser.mojom" ]
     public_deps += [ "//device/bluetooth/public/mojom" ]
   }
+}
+
+mojom("mojom_xml_parser") {
+  sources = [ "xml_parser.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
 }
 
 mojom("mojom_resource_snapshot_for_web_bundle") {

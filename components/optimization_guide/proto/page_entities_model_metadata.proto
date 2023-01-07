@@ -1,0 +1,25 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "PageEntitiesModelMetadataProto";
+
+package optimization_guide.proto;
+
+message PageEntitiesModelMetadata {
+  // The maximum model format feature flag that is supported.
+  //
+  // If sent from the server, this is the maximum model format feature flag the
+  // returned model supports. If sent from the client, this is the maximum
+  // model format feature flag the client knows how to evaluate.
+  optional int32 max_model_format_feature_flag = 1;
+
+  // The slices to load into the entity annotator.
+  //
+  // Will only be populated by the server.
+  repeated string slice = 2;
+}

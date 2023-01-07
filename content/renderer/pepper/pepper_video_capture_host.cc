@@ -1,16 +1,18 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/renderer/pepper/pepper_video_capture_host.h"
 
-#include "base/numerics/ranges.h"
+#include <memory>
+
+#include "base/cxx17_backports.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_media_device_manager.h"
 #include "content/renderer/pepper/pepper_platform_video_capture.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
-#include "content/renderer/render_frame_impl.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -163,7 +165,7 @@ void PepperVideoCaptureHost::OnFrameReady(
                 buffers_[i].buffer->size(), frame->timestamp());
         int uv_size = mapped_frame->coded_size().GetArea() / 2;
         std::vector<uint8_t> temp_uv_buffer(uv_size);
-        media::Status status = media::ConvertAndScaleFrame(
+        media::EncoderStatus status = media::ConvertAndScaleFrame(
             *mapped_frame, *dst_frame, temp_uv_buffer);
         if (!status.is_ok())
           return;
@@ -277,11 +279,10 @@ int32_t PepperVideoCaptureHost::OnOpen(
   if (!document_url.is_valid())
     return PP_ERROR_FAILED;
 
-  platform_video_capture_.reset(new PepperPlatformVideoCapture(
-      renderer_ppapi_host_->GetRenderFrameForInstance(pp_instance())->
-          GetRoutingID(),
-      device_id,
-      this));
+  platform_video_capture_ = std::make_unique<PepperPlatformVideoCapture>(
+      renderer_ppapi_host_->GetRenderFrameForInstance(pp_instance())
+          ->GetRoutingID(),
+      device_id, this);
 
   open_reply_context_ = context->MakeReplyMessageContext();
 
@@ -362,11 +363,11 @@ void PepperVideoCaptureHost::SetRequestedInfo(
     const PP_VideoCaptureDeviceInfo_Dev& device_info,
     uint32_t buffer_count) {
   // Clamp the buffer count to between 1 and |kMaxBuffers|.
-  buffer_count_hint_ = base::ClampToRange(buffer_count, 1U, kMaxBuffers);
+  buffer_count_hint_ = base::clamp(buffer_count, 1U, kMaxBuffers);
   // Clamp the frame rate to between 1 and |kMaxFramesPerSecond - 1|.
   int frames_per_second =
-      base::ClampToRange(device_info.frames_per_second, 1U,
-                         uint32_t{media::limits::kMaxFramesPerSecond - 1});
+      base::clamp(device_info.frames_per_second, 1U,
+                  uint32_t{media::limits::kMaxFramesPerSecond - 1});
 
   video_capture_params_.requested_format = media::VideoCaptureFormat(
       gfx::Size(device_info.width, device_info.height), frames_per_second,

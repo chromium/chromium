@@ -1,5 +1,5 @@
 // This file provides an OriginTrialsHelper object which can be used by
-// LayoutTests that are checking members exposed to script by origin trials.
+// WebTests that are checking members exposed to script by origin trials.
 //
 // The current available methods are:
 // check_properties_exist:

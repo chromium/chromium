@@ -1,291 +1,82 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("../tools/optimize_webui.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
+import("//extensions/buildflags/buildflags.gni")
 
-preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+build_webui("build") {
+  grd_prefix = "history"
 
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
+  static_files = [
+    "history.html",
+    "images/list.svg",
+    "images/sign_in_promo_dark.svg",
+    "images/sign_in_promo.svg",
+  ]
 
-  optimize_webui("build") {
-    host = "history"
-    js_module_in_files = [
-      "history.js",
-      "lazy_load.js",
-    ]
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
-    js_out_files = [
+  # Files holding a Polymer element definition and have an equivalent .html file.
+  web_component_files = [
+    "app.ts",
+    "history_item.ts",
+    "history_list.ts",
+    "history_toolbar.ts",
+    "router.ts",
+    "side_bar.ts",
+    "synced_device_card.ts",
+    "synced_device_manager.ts",
+  ]
+
+  non_web_component_files = [
+    "browser_service.ts",
+    "constants.ts",
+    "externs.ts",
+    "history.ts",
+    "lazy_load.ts",
+    "query_manager.ts",
+    "searched_label.ts",
+  ]
+
+  # Files that are passed as input to css_to_wrapper().
+  css_files = [
+    "shared_style.css",
+    "shared_vars.css",
+  ]
+
+  icons_html_files = [ "shared_icons.html" ]
+
+  ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
+
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/history_clusters:build_ts",
+    "//ui/webui/resources/mojo:library",
+  ]
+
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "history"
+    optimize_webui_out_files = [
       "history.rollup.js",
       "lazy_load.rollup.js",
       "shared.rollup.js",
     ]
-    out_manifest = "$target_gen_dir/$build_manifest"
-
-    deps = [
-      ":preprocess",
-      ":preprocess_generated",
-      "../../../../ui/webui/resources:preprocess",
+    optimize_webui_in_files = [
+      "history.js",
+      "lazy_load.js",
     ]
-    excludes = [ "chrome://resources/js/cr.m.js" ]
-  }
-}
-
-generate_grd("build_grd") {
-  grd_prefix = "history"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "history.html",
-    "images/sign_in_promo_dark.svg",
-    "images/sign_in_promo.svg",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [
+    optimize_webui_excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/bindings.js",
+    ]
+    optimize_webui_resource_paths_rewrites = [
       "history.rollup.js|history.js",
       "lazy_load.rollup.js|lazy_load.js",
     ]
-  } else {
-    deps = [
-      ":preprocess",
-      ":preprocess_generated",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_gen_manifest",
-    ]
   }
-}
-
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [
-    "browser_service.js",
-    "constants.js",
-    "externs.js",
-    "history.js",
-    "lazy_load.js",
-    "query_manager.js",
-    "searched_label.js",
-  ]
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [
-    "app.js",
-    "history_item.js",
-    "history_list.js",
-    "history_toolbar.js",
-    "router.js",
-    "shared_style.js",
-    "shared_vars.js",
-    "side_bar.js",
-    "synced_device_card.js",
-    "synced_device_manager.js",
-  ]
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/history_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/history_resources.h",
-    "grit/history_resources_map.cc",
-    "grit/history_resources_map.h",
-    "history_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":app",
-    ":browser_service",
-    ":constants",
-    ":externs",
-    ":history_item",
-    ":history_list",
-    ":history_toolbar",
-    ":query_manager",
-    ":router",
-    ":searched_label",
-    ":side_bar",
-    ":synced_device_card",
-    ":synced_device_manager",
-  ]
-}
-
-js_library("constants") {
-}
-
-js_library("browser_service") {
-  deps = [
-    ":constants",
-    ":externs",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("externs") {
-}
-
-js_library("history_item") {
-  deps = [
-    ":browser_service",
-    ":constants",
-    ":externs",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:icon.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
-  ]
-}
-
-js_library("history_list") {
-  deps = [
-    ":browser_service",
-    ":constants",
-    ":externs",
-    ":history_item",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//third_party/polymer/v3_0/components-chromium/iron-scroll-threshold:iron-scroll-threshold",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("history_toolbar") {
-  deps = [
-    ":constants",
-    ":externs",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_selection_overlay",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("app") {
-  deps = [
-    ":constants",
-    ":externs",
-    ":history_list",
-    ":history_toolbar",
-    ":side_bar",
-    ":synced_device_card",
-    ":synced_device_manager",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:find_shortcut_behavior",
-    "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("query_manager") {
-  deps = [
-    ":browser_service",
-    ":externs",
-    ":router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("router") {
-  deps = [
-    ":constants",
-    ":externs",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("searched_label") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("side_bar") {
-  deps = [
-    ":browser_service",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior",
-    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
-    "//third_party/polymer/v3_0/components-chromium/paper-ripple:paper-ripple",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_menu_selector:cr_menu_selector",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("synced_device_card") {
-  deps = [
-    ":browser_service",
-    ":constants",
-    ":externs",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:icon.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:focus_row.m",
-  ]
-}
-
-js_library("synced_device_manager") {
-  deps = [
-    ":browser_service",
-    ":synced_device_card",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:focus_grid.m",
-  ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "app.js",
-    "history_item.js",
-    "history_list.js",
-    "history_toolbar.js",
-    "router.js",
-    "shared_style.js",
-    "shared_vars.js",
-    "side_bar.js",
-    "synced_device_card.js",
-    "synced_device_manager.js",
-  ]
 }

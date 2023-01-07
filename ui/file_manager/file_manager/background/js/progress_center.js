@@ -1,21 +1,21 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ProgressCenterPanelInterface} from '../../externs/progress_center_panel.m.js';
-// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
-// #import {str} from '../../common/js/util.m.js';
-// #import {AsyncUtil} from '../../common/js/async_util.m.js';
-// #import {ProgressItemState, ProgressCenterItem} from '../../common/js/progress_center_common.m.js';
-// clang-format on
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
+import {getFilesAppIconURL} from '../../common/js/url_constants.js';
+import {str} from '../../common/js/util.js';
+import {xfm} from '../../common/js/xfm.js';
+import {ProgressCenter} from '../../externs/background/progress_center.js';
+import {ProgressCenterPanelInterface} from '../../externs/progress_center_panel.js';
 
 /**
  * Implementation of {ProgressCenter} at the background page.
  * @implements {ProgressCenter}
  * @final
  */
-/* #export */ class ProgressCenterImpl {
+export class ProgressCenterImpl {
   constructor() {
     /**
      * Current items managed by the progress center.
@@ -64,7 +64,8 @@
   updateItem(item) {
     // Update item.
     const index = this.getItemIndex_(item.id);
-    if (item.state === ProgressItemState.PROGRESSING) {
+    if (item.state === ProgressItemState.PROGRESSING ||
+        item.state === ProgressItemState.SCANNING) {
       if (index === -1) {
         this.items_.push(item);
       } else {
@@ -240,9 +241,9 @@ ProgressCenterImpl.Notifications_ = class {
      */
     this.dismissCallback_ = dismissCallback;
 
-    chrome.notifications.onButtonClicked.addListener(
+    xfm.notifications.onButtonClicked.addListener(
         this.onButtonClicked_.bind(this));
-    chrome.notifications.onClosed.addListener(this.onClosed_.bind(this));
+    xfm.notifications.onClosed.addListener(this.onClosed_.bind(this));
   }
 
   /**
@@ -278,7 +279,7 @@ ProgressCenterImpl.Notifications_ = class {
           item.state === ProgressItemState.COMPLETED) {
         if (previousState === NotificationState.VISIBLE) {
           this.queue_.run(proceed => {
-            chrome.notifications.clear(item.id, proceed);
+            xfm.notifications.clear(item.id, proceed);
           });
         }
         return;
@@ -288,8 +289,8 @@ ProgressCenterImpl.Notifications_ = class {
     // Create/update the notification with the item.
     this.queue_.run(proceed => {
       const params = {
-        title: chrome.runtime.getManifest().name,
-        iconUrl: chrome.runtime.getURL('/common/images/icon96.png'),
+        title: str('FILEMANAGER_APP_NAME'),
+        iconUrl: getFilesAppIconURL().toString(),
         type: item.state === ProgressItemState.PROGRESSING ? 'progress' :
                                                              'basic',
         message: item.message,
@@ -298,13 +299,13 @@ ProgressCenterImpl.Notifications_ = class {
             item.progressRateInPercent :
             undefined,
         priority: (item.state === ProgressItemState.ERROR || !item.quiet) ? 0 :
-                                                                            -1
+                                                                            -1,
       };
 
       if (newlyAdded) {
-        chrome.notifications.create(item.id, params, proceed);
+        xfm.notifications.create(item.id, params, proceed);
       } else {
-        chrome.notifications.update(item.id, params, proceed);
+        xfm.notifications.update(item.id, params, proceed);
       }
     });
   }
@@ -321,7 +322,7 @@ ProgressCenterImpl.Notifications_ = class {
     delete this.ids_[id];
 
     this.queue_.run(proceed => {
-      chrome.notifications.clear(id, proceed);
+      xfm.notifications.clear(id, proceed);
     });
   }
 
@@ -356,5 +357,5 @@ ProgressCenterImpl.Notifications_ = class {
  */
 ProgressCenterImpl.Notifications_.NotificationState_ = {
   VISIBLE: 'visible',
-  DISMISSED: 'dismissed'
+  DISMISSED: 'dismissed',
 };

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -34,6 +34,10 @@ class SystemIndicatorManager : public ExtensionRegistryObserver,
                                public KeyedService {
  public:
   SystemIndicatorManager(Profile* profile, StatusTray* status_tray);
+
+  SystemIndicatorManager(const SystemIndicatorManager&) = delete;
+  SystemIndicatorManager& operator=(const SystemIndicatorManager&) = delete;
+
   ~SystemIndicatorManager() override;
 
   // Sets the icon of the system indicator for the given |extension| to
@@ -53,6 +57,10 @@ class SystemIndicatorManager : public ExtensionRegistryObserver,
   // A structure representing the system indicator for an extension.
   struct SystemIndicator {
     SystemIndicator();
+
+    SystemIndicator(const SystemIndicator&) = delete;
+    SystemIndicator& operator=(const SystemIndicator&) = delete;
+
     ~SystemIndicator();
 
     // A dynamically-set icon (through systemIndicator.setIcon()). Takes
@@ -63,8 +71,6 @@ class SystemIndicatorManager : public ExtensionRegistryObserver,
     // The system tray indicator. This is only non-null if the system indicator
     // is enabled.
     std::unique_ptr<ExtensionIndicatorIcon> system_tray_indicator;
-
-    DISALLOW_COPY_AND_ASSIGN(SystemIndicator);
   };
 
   // ExtensionRegistryObserver:
@@ -80,15 +86,13 @@ class SystemIndicatorManager : public ExtensionRegistryObserver,
 
   using SystemIndicatorMap = std::map<ExtensionId, SystemIndicator>;
 
-  Profile* profile_;
-  StatusTray* status_tray_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<StatusTray> status_tray_;
   SystemIndicatorMap system_indicators_;
   base::ThreadChecker thread_checker_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemIndicatorManager);
 };
 
 }  // namespace extensions

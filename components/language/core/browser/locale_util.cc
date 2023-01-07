@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ std::string GetApplicationLocale(PrefService* local_state) {
   // LoadLocaleResources(), which is how the global locale is set.
   // TODO(asvitkine): We should try to refactor things so that the logic is not
   // duplicated in multiple files.
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   // The pref isn't always registered in unit tests.
   if (local_state->HasPrefPath(prefs::kApplicationLocale))
     preferred_locale = local_state->GetString(prefs::kApplicationLocale);

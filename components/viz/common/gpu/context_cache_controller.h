@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/viz_common_export.h"
 
 class GrDirectContext;
@@ -87,9 +87,9 @@ class VIZ_COMMON_EXPORT ContextCacheController {
   void PostIdleCallback(uint32_t current_idle_generation) const;
   void InvalidatePendingIdleCallbacks();
 
-  gpu::ContextSupport* context_support_;
+  raw_ptr<gpu::ContextSupport> context_support_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  GrDirectContext* gr_context_ = nullptr;
+  raw_ptr<GrDirectContext> gr_context_ = nullptr;
 
   std::unique_ptr<ScopedVisibility> held_visibility_;
 
@@ -97,7 +97,7 @@ class VIZ_COMMON_EXPORT ContextCacheController {
   // the idle callback. Exceptions to this are |current_idle_generation_|,
   // which has its own lock, and weak_ptr_ and task_runner_, which may be
   // accessed from multiple threads without locking.
-  base::Lock* context_lock_ = nullptr;
+  raw_ptr<base::Lock> context_lock_ = nullptr;
 
   uint32_t num_clients_visible_ = 0;
   uint32_t num_clients_busy_ = 0;

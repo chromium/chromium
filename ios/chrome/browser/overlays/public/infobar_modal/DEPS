@@ -1,0 +1,11 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^save_address_profile_infobar_modal_overlay_request_config.mm": [
+    "+ios/chrome/browser/ui/autofill/autofill_ui_type_util.h",
+  ],
+  "^save_card_infobar_modal_overlay_request_config.mm": [
+    "+ios/chrome/browser/ui/autofill/save_card_message_with_links.h",
+  ],
+
+}
+

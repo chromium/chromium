@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,19 @@
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/metrics/serialization/metric_sample.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
 namespace {
+
+using ::testing::IsEmpty;
 
 class SerializationUtilsTest : public testing::Test {
  protected:
@@ -216,6 +221,51 @@ TEST_F(SerializationUtilsTest, WriteReadTest) {
   int64_t size = 0;
   ASSERT_TRUE(base::GetFileSize(filepath(), &size));
   ASSERT_EQ(0, size);
+}
+
+TEST_F(SerializationUtilsTest, TooManyMessagesTest) {
+  std::unique_ptr<MetricSample> hist =
+      MetricSample::HistogramSample("myhist", 1, 2, 3, 4);
+
+  constexpr int kDiscardedSamples = 50000;
+  for (int i = 0;
+       i < SerializationUtils::kMaxMessagesPerRead + kDiscardedSamples; i++) {
+    SerializationUtils::WriteMetricToFile(*hist.get(), filename());
+  }
+
+  std::vector<std::unique_ptr<MetricSample>> vect;
+  SerializationUtils::ReadAndTruncateMetricsFromFile(filename(), &vect);
+  ASSERT_EQ(SerializationUtils::kMaxMessagesPerRead,
+            static_cast<int>(vect.size()));
+  for (auto& sample : vect) {
+    ASSERT_NE(nullptr, sample.get());
+    EXPECT_TRUE(hist->IsEqual(*sample));
+  }
+
+  int64_t size = 0;
+  ASSERT_TRUE(base::GetFileSize(filepath(), &size));
+  ASSERT_EQ(0, size);
+}
+
+TEST_F(SerializationUtilsTest, ReadEmptyFile) {
+  {
+    // Create a zero-length file and then close file descriptor.
+    base::File file(filepath(),
+                    base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(file.IsValid());
+  }
+
+  std::vector<std::unique_ptr<MetricSample>> vect;
+  SerializationUtils::ReadAndTruncateMetricsFromFile(filename(), &vect);
+  EXPECT_THAT(vect, IsEmpty());
+}
+
+TEST_F(SerializationUtilsTest, ReadNonExistentFile) {
+  base::DeleteFile(filepath());  // Ensure non-existance.
+  base::HistogramTester histogram_tester;
+  std::vector<std::unique_ptr<MetricSample>> vect;
+  SerializationUtils::ReadAndTruncateMetricsFromFile(filename(), &vect);
+  EXPECT_THAT(vect, IsEmpty());
 }
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_DISPLAY_LOCK_CONTROLLER_H_
 
 #include <memory>
-
-#include "base/macros.h"
 
 namespace feature_engagement {
 class DisplayLockHandle;
@@ -17,6 +15,9 @@ class DisplayLockHandle;
 // held.
 class DisplayLockController {
  public:
+  DisplayLockController(const DisplayLockController&) = delete;
+  DisplayLockController& operator=(const DisplayLockController&) = delete;
+
   virtual ~DisplayLockController() = default;
 
   // Acquiring a display lock means that no in-product help can be displayed
@@ -28,9 +29,6 @@ class DisplayLockController {
 
  protected:
   DisplayLockController() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayLockController);
 };
 
 }  // namespace feature_engagement

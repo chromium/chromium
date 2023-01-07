@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,8 +7,6 @@ deps = {
         "https://src.chromium.org/chrome/trunk/src/components/policy/test_support",
     "src/net/tools/testserver":
         "https://src.chromium.org/chrome/trunk/src/net/tools/testserver",
-    "src/third_party/tlslite/tlslite":
-        "https://src.chromium.org/chrome/trunk/src/third_party/tlslite/tlslite",
     "src/third_party/protobuf/python/google":
         "https://src.chromium.org/chrome/trunk/src/third_party/protobuf/python/google",
     "src/tools/telemetry":

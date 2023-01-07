@@ -1,11 +1,11 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_LAYERS_TEXTURE_LAYER_CLIENT_H_
 #define CC_LAYERS_TEXTURE_LAYER_CLIENT_H_
 
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/release_callback.h"
 
 namespace viz {
 struct TransferableResource;
@@ -22,7 +22,7 @@ class TextureLayerClient {
   virtual bool PrepareTransferableResource(
       SharedBitmapIdRegistrar* bitmap_registar,
       viz::TransferableResource* transferable_resource,
-      std::unique_ptr<viz::SingleReleaseCallback>* release_callback) = 0;
+      viz::ReleaseCallback* release_callback) = 0;
 
  protected:
   virtual ~TextureLayerClient() {}

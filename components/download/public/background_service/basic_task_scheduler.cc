@@ -1,21 +1,21 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/download/public/background_service/basic_task_scheduler.h"
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/download/public/background_service/download_service.h"
+#include "components/download/public/background_service/background_download_service.h"
 
 namespace download {
 
 BasicTaskScheduler::BasicTaskScheduler(
-    const base::RepeatingCallback<DownloadService*()>& get_download_service)
+    const base::RepeatingCallback<BackgroundDownloadService*()>&
+        get_download_service)
     : get_download_service_(get_download_service) {}
 
 BasicTaskScheduler::~BasicTaskScheduler() = default;
@@ -31,7 +31,7 @@ void BasicTaskScheduler::ScheduleTask(download::DownloadTaskType task_type,
                      weak_factory_.GetWeakPtr(), task_type));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, scheduled_tasks_[task_type].callback(),
-      base::TimeDelta::FromSeconds(window_start_time_seconds));
+      base::Seconds(window_start_time_seconds));
 }
 
 void BasicTaskScheduler::CancelTask(download::DownloadTaskType task_type) {

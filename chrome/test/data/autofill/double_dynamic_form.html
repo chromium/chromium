@@ -29,9 +29,6 @@
 
 <script src="dynamic_form_utils.js"></script>
 <script>
-
-var notify_on_first_name_input_appear = false;
-
 function CountryChanged() {
   RemoveForm('form1');
   var new_form = AddNewFormAndFields('form1', 'addr1.1');
@@ -40,29 +37,11 @@ function CountryChanged() {
   new_form.elements[0].addEventListener('change', function(){
     RemoveForm("form1")
     var new_form2 = AddNewFormAndFields("form2", "addr1.2");
-    document.getElementsByTagName('body')[0].appendChild(new_form2);
-
-    if (notify_on_first_name_input_appear) {
-      // Give time to see if it fills.
-      setTimeout(function() {
-        window.domAutomationController.send(document.getElementById("firstname_form2").value != '');
-      }, 1000);
-    }
+    document.body.appendChild(new_form2);
+    window['refill'] = true;
+    console.log('An event happened that should not trigger a second refill.');
   });
 
-  document.getElementsByTagName('body')[0].appendChild(new_form);
+  document.body.appendChild(new_form);
 }
-
-function hasRefilled() {
-  var first_name_input = document.getElementById('firstname_form2');
-  if (first_name_input) {
-    // Give time to see if it fills.
-    setTimeout(function() {
-      window.domAutomationController.send(first_name_input.value != '');
-    }, 1000);
-  } else {
-    notify_on_first_name_input_appear = true;
-  }
-}
-
 </script>

@@ -1,0 +1,29 @@
+<style>
+  #container {
+    display: grid;
+    grid-template-areas:
+      '. . userpreview . .'
+      '. . avatars     . .'
+      '. . .           . .';
+    grid-template-columns: 1fr 24px minmax(568px, 920px) 24px 1fr;
+    grid-template-rows: auto auto 12px;
+  }
+  user-preview {
+    grid-area: userpreview;
+    margin-bottom: 16px;
+  }
+  avatar-list {
+    grid-area: avatars;
+  }
+  user-preview + avatar-list {
+    border-top: 1px solid var(--cros-separator-color);
+    padding-top: 8px;
+  }
+</style>
+<div id="container">
+  <template is="dom-if"
+      if="[[isNotEnterpriseManaged_(isUserImageEnterpriseManaged_)]]">
+    <user-preview path="[[path]]"></user-preview>
+    <avatar-list></avatar-list>
+  </template>
+</div>

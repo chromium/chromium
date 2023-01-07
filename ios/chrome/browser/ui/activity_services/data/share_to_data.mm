@@ -1,11 +1,11 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
+#import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
 
-#include "base/check.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
 #import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -32,8 +32,8 @@
       isPageSearchable:(BOOL)isPageSearchable
       canSendTabToSelf:(BOOL)canSendTabToSelf
              userAgent:(web::UserAgentType)userAgent
-    thumbnailGenerator:
-        (ChromeActivityItemThumbnailGenerator*)thumbnailGenerator {
+    thumbnailGenerator:(ChromeActivityItemThumbnailGenerator*)thumbnailGenerator
+          linkMetadata:(LPLinkMetadata*)linkMetadata {
   DCHECK(shareURL.is_valid());
   DCHECK(visibleURL.is_valid());
   DCHECK(title);
@@ -49,6 +49,7 @@
     _canSendTabToSelf = canSendTabToSelf;
     _userAgent = userAgent;
     _thumbnailGenerator = thumbnailGenerator;
+    _linkMetadata = linkMetadata;
   }
   return self;
 }

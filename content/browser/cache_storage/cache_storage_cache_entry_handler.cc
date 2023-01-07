@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,10 @@
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
-#include "base/optional.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/cache_storage/background_fetch_cache_entry_handler_impl.h"
+#include "content/browser/cache_storage/cache_storage.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
-#include "content/browser/cache_storage/legacy/legacy_cache_storage.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/filter/source_stream.h"
@@ -18,6 +17,7 @@
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
 namespace content {
@@ -104,6 +104,9 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
         disk_cache_index_(disk_cache_index),
         side_data_disk_cache_index_(side_data_disk_cache_index) {}
 
+  EntryReaderImpl(const EntryReaderImpl&) = delete;
+  EntryReaderImpl& operator=(const EntryReaderImpl&) = delete;
+
   void Read(uint64_t offset,
             uint64_t length,
             mojo::ScopedDataPipeProducerHandle pipe,
@@ -140,11 +143,7 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
     auto wrapped_buf = base::MakeRefCounted<net::WrappedIOBuffer>(
         reinterpret_cast<char*>(output_buf.data()));
 
-    // Because net-style functions do not call their callback if they
-    // complete synchronously, we have to wrap the ReadSideDataCallback into a
-    // repeating callback.  It may be called asynchronously by Read or if Read
-    // succeeds or fails synchronously, we will call it manually ourselves.
-    auto read_callback = base::AdaptCallbackForRepeating(base::BindOnce(
+    auto split_callback = base::SplitOnceCallback(base::BindOnce(
         [](mojo_base::BigBuffer output_buf, ReadSideDataCallback callback,
            int result) {
           std::move(callback).Run(result, std::move(output_buf));
@@ -154,11 +153,11 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
     uint64_t offset = 0;
     int result =
         blob_entry_->Read(std::move(wrapped_buf), side_data_disk_cache_index_,
-                          offset, length, read_callback);
+                          offset, length, std::move(split_callback.first));
 
     if (result == net::ERR_IO_PENDING)
       return;
-    read_callback.Run(result);
+    std::move(split_callback.second).Run(result);
   }
 
  private:
@@ -168,7 +167,6 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
   const CacheStorageCache::EntryIndex side_data_disk_cache_index_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(EntryReaderImpl);
 };
 
 }  // namespace
@@ -218,7 +216,7 @@ int CacheStorageCacheEntryHandler::DiskCacheBlobEntry::GetSize(
 
 void CacheStorageCacheEntryHandler::DiskCacheBlobEntry::Invalidate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cache_handle_ = base::nullopt;
+  cache_handle_ = absl::nullopt;
   entry_handler_ = nullptr;
   disk_cache_entry_ = nullptr;
 }

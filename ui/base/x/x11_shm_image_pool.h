@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -33,6 +33,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XShmImagePool : public x11::EventObserver {
                 int depth,
                 std::size_t max_frames_pending,
                 bool enable_multibuffering);
+
+  XShmImagePool(const XShmImagePool&) = delete;
+  XShmImagePool& operator=(const XShmImagePool&) = delete;
 
   ~XShmImagePool() override;
 
@@ -62,7 +65,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XShmImagePool : public x11::EventObserver {
 
     x11::Shm::Seg shmseg{};
     int shmid = 0;
-    void* shmaddr = nullptr;
+    raw_ptr<void> shmaddr = nullptr;
     bool shmem_attached_to_server = false;
     SkBitmap bitmap;
     std::unique_ptr<SkCanvas> canvas;
@@ -81,7 +84,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XShmImagePool : public x11::EventObserver {
 
   void Cleanup();
 
-  x11::Connection* const connection_;
+  const raw_ptr<x11::Connection> connection_;
   const x11::Drawable drawable_;
   const x11::VisualId visual_;
   const int depth_;
@@ -95,8 +98,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XShmImagePool : public x11::EventObserver {
   std::list<SwapClosure> swap_closures_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(XShmImagePool);
 };
 
 }  // namespace ui

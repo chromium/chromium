@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Zero initial, no maximum WebAssembly.Table(): Property 'initial' is required
+FAIL Non-zero initial, no maximum WebAssembly.Table(): Property 'initial' is required
+FAIL Zero maximum WebAssembly.Table(): Property 'initial' is required
+FAIL Non-zero maximum WebAssembly.Table(): Property 'initial' is required
+Harness: the test ran to completion.
+

@@ -1,175 +1,244 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1026101648481255140">Riprendi l'installazione</translation>
+<translation id="1029669172902658969">Riavvia per aggiornare &amp;Chromium OS</translation>
 <translation id="1065672644894730302">Impossibile leggere le preferenze. Alcune funzioni potrebbero non essere disponibili e le modifiche alle preferenze non verranno salvate.</translation>
 <translation id="1098170124587656448">Chromium può contribuire a proteggerti da violazioni dei dati, estensioni non valide e non solo</translation>
 <translation id="1104942323762546749">Chromium vuole esportare le password. Per consentire l'esportazione, digita la tua password Windows.</translation>
 <translation id="113122355610423240">Chromium è il tuo browser predefinito</translation>
 <translation id="1131805035311359397">Per controllare che le tue password siano protette da violazioni dei dati e altri problemi di sicurezza, <ph name="BEGIN_LINK" />accedi a Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
+<translation id="1203500561924088507">L'installazione è terminata. Dovrai riavviare il browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1231839967188101156">Se attivi l'opzione, Chromium libera spazio dalle schede non attive. In questo modo le schede attive e altre app hanno più risorse per il computer e mantengono Chromium veloce. Le schede inattive si riattivano automaticamente quando ci torni. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Risparmio memoria ha reso Chromium più veloce</translation>
 <translation id="1315551408014407711">Configura il tuo nuovo profilo di Chromium</translation>
+<translation id="1385859895174722837">Assistente Google in Chromium</translation>
 <translation id="1396446129537741364">Chromium sta cercando di visualizzare le password.</translation>
 <translation id="1414495520565016063">Hai eseguito l'accesso a Chromium.</translation>
-<translation id="1414973082589232775">Per poter usare Rosetta per riprodurre contenuti multimediali protetti, devi riavviare Chromium.</translation>
-<translation id="151962892725702025">Impossibile sincronizzare i dati in Chromium OS perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
 <translation id="1524282610922162960">Condividi una scheda di Chromium</translation>
 <translation id="1553461853655228091">Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento}=1{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
+<translation id="1625909126243026060">Esamina i controlli per la privacy e la sicurezza più importanti in Chromium</translation>
+<translation id="1632539827495546968">Se vuoi utilizzare questo account solo una volta, puoi utilizzare la <ph name="GUEST_LINK_BEGIN" />modalità Ospite<ph name="GUEST_LINK_END" /> del browser Chromium. Se vuoi aggiungere un account per qualcun altro, <ph name="LINK_BEGIN" />aggiungi una nuova persona<ph name="LINK_END" /> a <ph name="DEVICE_TYPE" />.
+
+A questo account potrebbero essere applicate le autorizzazioni già concesse a siti web e app. Puoi gestire i tuoi Account Google nelle <ph name="SETTINGS_LINK_BEGIN" />Impostazioni<ph name="SETTINGS_LINK_END" />.</translation>
+<translation id="1640672724030957280">Download in corso...</translation>
 <translation id="1708666629004767631">È disponibile una nuova versione più sicura di Chromium.</translation>
+<translation id="17264556997921157">Puoi visualizzare e rimuovere argomenti di interesse usati dai siti per mostrarti annunci. Chromium stima i tuoi interessi in base alla tua recente cronologia di navigazione.</translation>
 <translation id="1774152462503052664">Lascia Chromium in esecuzione in background</translation>
 <translation id="1779356040007214683">Per rendere Chromium più sicuro, abbiamo disattivato alcune estensioni che non sono elencate nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e potrebbero essere state aggiunte a tua insaputa.</translation>
 <translation id="1808667845054772817">Reinstalla Chromium</translation>
+<translation id="185970820835152459">Puoi gestire gli Account Google a cui hai eseguito l'accesso. I tuoi Account Google vengono usati per il browser Chromium, il Play Store, Gmail e altro ancora. Se vuoi aggiungere un account per qualcun altro, come un membro del gruppo Famiglia, aggiungi invece una nuova persona a <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
+<translation id="1863308913976887472">I siti possono memorizzare su Chromium informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
 <translation id="1881322772814446296">Stai per accedere con un account gestito e per dare al relativo amministratore il controllo del tuo profilo Chromium. I tuoi dati di Chromium, come app, Preferiti, cronologia, password e altre impostazioni, verranno collegati definitivamente a <ph name="USER_NAME" />. Potrai eliminare questi dati tramite la Dashboard di Google Account, ma non potrai associare questi dati a un altro account. Se preferisci puoi creare un nuovo profilo per mantenere separati i dati di Chromium esistenti. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Se disattivi questa funzione, puoi accedere ai siti Google quali Gmail senza accedere a Chromium</translation>
 <translation id="1929939181775079593">Chromium non risponde. Riavviarlo ora?</translation>
+<translation id="193439633299369377">Per applicare l'aggiornamento è necessario riavviare Chromium OS.</translation>
+<translation id="1940680973325097484">Se vuoi utilizzare questo account solo una volta, puoi utilizzare la modalità Ospite del browser Chromium. Se vuoi aggiungere un account per qualcun altro, <ph name="LINK_BEGIN" />aggiungi una nuova persona<ph name="LINK_END" /> a <ph name="DEVICE_TYPE" />.
+
+A questo account potrebbero essere applicate le autorizzazioni già concesse a siti web e app. Puoi gestire i tuoi Account Google nelle <ph name="SETTINGS_LINK_BEGIN" />Impostazioni<ph name="SETTINGS_LINK_END" />.</translation>
+<translation id="1953553007165777902">Download in corso… Minuti rimanenti: <ph name="MINUTE" /></translation>
 <translation id="1966382378801805537">Chromium non è in grado di determinare o impostare il browser predefinito</translation>
 <translation id="2008474315282236005">Verrà eliminato 1 elemento da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
+<translation id="2018879682492276940">Installazione non riuscita. Riprova.</translation>
 <translation id="2020032459870799438">Per controllare che le tue altre password siano protette da violazioni dei dati e altri problemi di sicurezza, <ph name="BEGIN_LINK" />accedi a Chromium<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Scegli se includere la cronologia di Chromium per esperienze ancora più personalizzate nei servizi Google</translation>
+<translation id="2088953378266246249">Informazioni su come Chromium gestisce i suoi certificati radice</translation>
+<translation id="2174178932569897599">Personalizza Chromium</translation>
+<translation id="2174917724755363426">Installazione non completata. Vuoi annullarla?</translation>
 <translation id="2185166961232948079">Chromium - Accesso rete - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Se condividi un computer, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chromium in base alle proprie esigenze.</translation>
-<translation id="2294245788148774212">(Facoltativo) Contribuisci a migliorare le funzionalità e le prestazioni di Chromium OS inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
+<translation id="2313870531055795960">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chromium. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura.</translation>
 <translation id="2343156876103232566">Per inviare un numero da questo dispositivo al tuo telefono Android, accedi a Chromium su entrambi i dispositivi.</translation>
 <translation id="2347108572062610441">Questa estensione ha cambiato la pagina mostrata all'avvio di Chromium.</translation>
+<translation id="2359808026110333948">Continua</translation>
+<translation id="2384373936468275798">Impossibile sincronizzare i dati in Chromium OS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="2396765026452590966">L'estensione "<ph name="EXTENSION_NAME" />" ha cambiato la pagina mostrata all'avvio di Chromium.</translation>
+<translation id="2401032172288869980">Chromium deve avere le autorizzazioni di accesso al microfono e alla fotocamera per questo sito</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Disinstalla</translation>
-<translation id="2535480412977113886">Impossibile sincronizzare i dati in Chromium OS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="2560420686485554789">Chromium deve avere accesso allo spazio di archiviazione per poter scaricare file</translation>
 <translation id="2572494885440352020">Supporto Chromium</translation>
-<translation id="2577788541081224677">Per accedere ai tuoi contenuti Chromium su tutti i tuoi dispositivi, accedi per poter attivare la sincronizzazione.</translation>
 <translation id="2583187216237139145">Tutti i dati di Chromium generati durante l'utilizzo di questo profilo (come i preferiti, la cronologia, le password e altre impostazioni) possono essere rimossi dall'amministratore del profilo di lavoro. <ph name="LEARN_MORE" /></translation>
-<translation id="2587578672395088481">Per applicare l'aggiornamento è necessario riavviare Chromium OS.</translation>
 <translation id="2648074677641340862">Durante l'installazione si è verificato un errore del sistema operativo. Scarica di nuovo Chromium.</translation>
 <translation id="2661879430930417727">Se condividi un dispositivo, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chromium in base alle proprie esigenze</translation>
-<translation id="270245676623587882">Chromium consiglia di disattivare questa estensione perché al momento non soddisfa gli standard di Navigazione sicura avanzata.</translation>
+<translation id="2669853942967761236">Chromium ha bloccato questo file di archivio perché potrebbe nascondere malware</translation>
+<translation id="268602741124540128">Ti diamo il benvenuto in Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Scheda Chromium</translation>
 <translation id="2718390899429598676">Per maggiore sicurezza, Chromium cripterà i tuoi dati.</translation>
 <translation id="2770231113462710648">Cambia browser predefinito con:</translation>
 <translation id="2799223571221894425">Riavvia</translation>
-<translation id="2816712596130903444">Vuoi separare il profilo Chromium?</translation>
 <translation id="2837693172913560447">Questa operazione creerà un nuovo profilo Chromium per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Rimuovi da Chromium...</translation>
+<translation id="2850691299438350830">Ti protegge su Chromium e potrebbe essere utilizzata per migliorare la tua sicurezza in altre app Google se hai eseguito l'accesso</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">Informazioni su &amp;Chromium</translation>
-<translation id="2942419255987443909">La realizzazione di Chromium OS è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux (beta)<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2915996080311180594">Riavvia in seguito</translation>
+<translation id="2928420929544864228">Installazione completata.</translation>
 <translation id="2977470724722393594">Chromium è aggiornato</translation>
+<translation id="2977506796191543575">Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura</translation>
 <translation id="2983934633046890458">Chromium sta cercando di modificare le password.</translation>
 <translation id="3032706164202344641">Chromium non può controllare le tue password. Riprova più tardi.</translation>
 <translation id="3032787606318309379">Aggiunta a Chromium in corso...</translation>
-<translation id="3068515742935458733">Aiutaci a migliorare Chromium inviando a Google rapporti sugli arresti anomali e <ph name="UMA_LINK" /></translation>
+<translation id="3038232873781883849">In attesa dell'installazione…</translation>
+<translation id="3068515742935458733">Aiutaci a migliorare Chromium inviando a Google report sugli arresti anomali e <ph name="UMA_LINK" /></translation>
+<translation id="3101560983689755071">La cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chromium elimina automaticamente i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi possono essere aggiornati.</translation>
 <translation id="3103660991484857065">Il programma di installazione non è riuscito a decomprimere l'archivio. Scarica di nuovo Chromium.</translation>
 <translation id="3130323860337406239">Chromium sta utilizzando il microfono.</translation>
 <translation id="3155163173539279776">Riavvia Chromium</translation>
 <translation id="3179665906251668410">Apri link in una finestra di navigazione in inco&amp;gnito di Chromium</translation>
+<translation id="3185330573522821672">Personalizza il tuo nuovo profilo Chromium</translation>
 <translation id="3190315855212034486">Spiacenti, si è verificato un arresto anomalo di Chromium. Riavviarlo ora?</translation>
 <translation id="3229526316128325841">Chromium vuole esportare le password.</translation>
 <translation id="3258596308407688501">Chromium non è in grado di leggere e scrivere nella directory dei dati:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3283186697780795848">La versione di Chromium <ph name="PRODUCT_VERSION" /> è installata</translation>
+<translation id="3286538390144397061">Riavvia adesso</translation>
 <translation id="328888136576916638">Mancano le chiavi dell'API di Google. Alcune funzionalità di Chromium verranno disattivate.</translation>
 <translation id="3296368748942286671">Continua a eseguire applicazioni in background dopo la chiusura di Chromium</translation>
-<translation id="331951419404882060">Impossibile sincronizzare i dati in Chromium OS a causa di un errore durante l'accesso.</translation>
 <translation id="3350761136195634146">Esiste già un profilo Chromium con questo account</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vuoi passare a un profilo Chromium esistente?</translation>
+<translation id="3412460710772753638">In Gestore delle password su questo dispositivo</translation>
 <translation id="3430503420100763906">Con i profili Chromium puoi separare tutti i tuoi contenuti di Chromium. Crea profili per amici e familiari oppure dividi i dati di lavoro e i contenuti di svago.</translation>
 <translation id="347328004046849135">Chromium ti invierà una notifica quando accederai con una password compromessa</translation>
 <translation id="3474745554856756813">Verranno eliminati <ph name="ITEMS_COUNT" /> elementi da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
+<translation id="3497319089134299931">La scorciatoia <ph name="SHORTCUT" /> consente di passare da un profilo Chromium all'altro</translation>
 <translation id="3509308970982693815">Chiudi tutte le finestre di Chromium e riprova.</translation>
+<translation id="3518180795744733843">L'Assistente Google in Chromium può completare azioni per te sui siti web</translation>
+<translation id="3533435340678213462">Per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Puoi anche rimuovere gli interessi che non vuoi che Chromium prenda in considerazione.</translation>
+<translation id="3567254597502212821">La cronologia di navigazione, ossia un record dei siti visitati da Chromium sul dispositivo in uso.</translation>
 <translation id="3575459661164320785">È stato rilevato software dannoso sul tuo computer. Chromium può rimuoverlo, ripristinare le tue impostazioni e disattivare le estensioni per ristabilire il normale funzionamento del browser.</translation>
+<translation id="3593091352817399191">Un altro account ha già eseguito l'accesso. Per tenere separata la tua navigazione, Chromium può creare per te il tuo profilo personale.</translation>
 <translation id="3639635944603682591">I dati di navigazione di questa persona verranno eliminati dal dispositivo. Per recuperare i dati, accedi a Chromium con il nome utente <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio.}=1{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio. La finestra di navigazione in incognito non verrà riaperta.}other{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="3651803019964686660">Per inviare un numero da <ph name="ORIGIN" /> al tuo telefono Android, accedi a Chromium su entrambi i dispositivi.</translation>
 <translation id="3685209450716071127">Chromium non può controllare le tue password. Prova a controllare la connessione a Internet.</translation>
+<translation id="3702352323269013324">Scopri di più sulla personalizzazione degli annunci in Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento}=1{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
-<translation id="371088601698879021">Chromium OS può ripristinare sempre le app e le pagine dopo il riavvio senza chiedere conferma ogni volta.</translation>
 <translation id="3713809861844741608">Apri link in una nuova &amp;scheda di Chromium</translation>
 <translation id="3728336900324680424">Chromium accederà al tuo Drive per inserire suggerimenti nella barra degli indirizzi</translation>
 <translation id="378917192836375108">Chromium ti consente di fare clic su un numero di telefono sul Web e di chiamarlo con Skype.</translation>
+<translation id="3830894615770080216">Sistema Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="386822487697155367">Ricevi assistenza per Chromium OS</translation>
+<translation id="3871664619793219264">Accedi ai tuoi contenuti del browser Chromium da <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="388648406173476553">Personalizza e controlla Chromium. C'è qualcosa che richiede la tua attenzione. Fai clic per avere informazioni dettagliate.</translation>
 <translation id="3889543394854987837">Fai clic sul tuo nome per aprire Chromium e iniziare a navigare.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chromium. Per tenere separata la tua navigazione, Chromium può creare per te il tuo profilo personale.</translation>
+<translation id="391789666908693569">Il tuo account è gestito da <ph name="MANAGER_NAME" />. L'amministratore può vedere e modificare questo profilo del browser Chromium e i relativi dati, come preferiti, cronologia e password.</translation>
 <translation id="3945058413678539331">Chromium sta cercando di copiare le password. Per consentire l'operazione, digita la tua password Windows.</translation>
+<translation id="3962623956404948996">Chromium consiglia di analizzare questo file perché potrebbe essere pericoloso</translation>
+<translation id="3997429360543082038">Informazioni su Chromium OS</translation>
+<translation id="4019629340646866719">La realizzazione di Chromium OS è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Contribuisci a migliorare Chromium indicando le <ph name="BEGIN_LINK" />impostazioni attuali<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Nell'ultima versione sono stati apportati miglioramenti rilevanti in materia di sicurezza e sono state aggiunte nuove funzioni.</translation>
+<translation id="4148957013307229264">Installazione...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Accesso rete - Chromium</translation>
 <translation id="421369550622382712">Scopri app, giochi, estensioni e temi straordinari per Chromium.</translation>
 <translation id="4216212958613226427">Questa lingua è utilizzata per la UI di Chromium</translation>
+<translation id="4222932583846282852">Annullamento…</translation>
 <translation id="4230135487732243613">Collegare i tuoi dati Chromium a questo account?</translation>
-<translation id="4264410486868823224"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Chromium OS.</translation>
 <translation id="4271805377592243930">Ricevi assistenza per Chromium</translation>
 <translation id="4285930937574705105">Installazione non riuscita a causa di un errore imprecisato. Se Chromium è in esecuzione, chiudilo e riprova.</translation>
+<translation id="4304713468139749426">Gestione password</translation>
+<translation id="4334294535648607276">Download completato.</translation>
+<translation id="439358628917130594"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Chromium OS.</translation>
 <translation id="4407044323746248786">Vuoi uscire comunque da Chromium?</translation>
 <translation id="4415566066719264597">Lascia Chromium in esecuzione in background</translation>
 <translation id="4423735387467980091">Personalizza e controlla Chromium</translation>
-<translation id="4491398312037323794">Questa pagina ti consente di gestire gli Account Google a cui hai eseguito l'accesso. Questi account saranno disponibili nel browser Chromium e nelle app del Play Store, nonché in servizi come Gmail, Drive e YouTube. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
+<translation id="4427306783828095590">La protezione avanzata blocca malware e tentativi di phishing con maggiore efficacia</translation>
 <translation id="452711251841752011">Ti diamo il benvenuto in Chromium; nuova finestra del browser aperta</translation>
 <translation id="4544142686420020088">Si è verificato un errore: Chromium non si è aggiornato. <ph name="BEGIN_LINK" />Risolvi i problemi di aggiornamento e gli aggiornamenti non riusciti di Chromium.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Vuoi continuare con un nuovo profilo Chromium?</translation>
 <translation id="4567424176335768812">Hai eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" />. Ora puoi accedere ai tuoi Preferiti, alla tua cronologia e ad altre impostazioni su tutti i tuoi dispositivi su cui esegui l'accesso.</translation>
+<translation id="4594305310729380060">In Gestore delle password su questo dispositivo</translation>
 <translation id="459535195905078186">Applicazioni Chromium</translation>
+<translation id="4613863813562375431">Versione di Chromium OS</translation>
+<translation id="4621240073146040695">Aggiornamento quasi completato. Riavvia Chromium per terminare l'aggiornamento.</translation>
+<translation id="4665829708273112819">Avviso: Chromium non è in grado di impedire alle estensioni di registrare la tua cronologia di navigazione. Per disattivare questa estensione in modalità di navigazione in incognito, deseleziona questa opzione.</translation>
+<translation id="4673151026126227699">Se condividi anche report sull'utilizzo di Chromium, questi report includono gli URL visitati</translation>
 <translation id="4677944499843243528">Sembra che il profilo sia in uso in un altro processo Chromium (<ph name="PROCESS_ID" />) su un altro computer (<ph name="HOST_NAME" />). Chromium ha bloccato il profilo affinché non venga danneggiato. Se sei sicuro che nessun altro processo stia utilizzando questo profilo, puoi sbloccare il profilo e riavviare Chromium.</translation>
-<translation id="469338717132742108">Ricevi assistenza per Chromium OS</translation>
+<translation id="4680828127924988555">Annulla l'installazione</translation>
 <translation id="4708774505295300557">Qualcuno ha già eseguito l'accesso a Chromium su questo computer come <ph name="ACCOUNT_EMAIL_LAST" />. Crea un nuovo utente Chromium per tenere separate le tue informazioni.</translation>
 <translation id="4746050847053251315">Vuoi chiudere comunque Chromium?</translation>
 <translation id="4748217263233248895">È stato appena applicato un aggiornamento di sicurezza speciale per Chromium. Riavvia ora e le schede verranno ripristinate.</translation>
-<translation id="4750035648288509542">Aggiornamento quasi terminato. Riavvia Chromium per terminare l'aggiornamento. Le finestre di navigazione in incognito non verranno riaperte.</translation>
+<translation id="4765210420921718862">Puoi cambiare idea in qualsiasi momento. In questo caso, usa le impostazioni di Chromium. Le prove vengono eseguite insieme alla modalità corrente di pubblicazione degli annunci, quindi non vedrai immediatamente le modifiche.</translation>
 <translation id="4788777615168560705">Chromium non può controllare le tue password. Riprova tra 24 ore oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Viene usato lo stesso controllo ortografico utilizzato nella Ricerca Google. Il testo che digiti nel browser viene inviato a Google. Puoi modificare questo comportamento in qualsiasi momento nelle impostazioni.</translation>
 <translation id="4888717733111232871">Regola inbound per consentire il traffico mDNS in Chromium.</translation>
+<translation id="4893347770495441059">Riavvia per aggiornare &amp;Chromium</translation>
 <translation id="4943838377383847465">Chromium è in modalità background.</translation>
 <translation id="4987820182225656817">Gli ospiti possono utilizzare Chromium senza lasciare tracce.</translation>
 <translation id="4994636714258228724">Aggiungiti a Chromium</translation>
+<translation id="5114678101347489141">Chromium sta esaminando nuove funzionalità che consentano ai siti di offrire la stessa esperienza di navigazione utilizzando meno informazioni personali</translation>
 <translation id="5224391634244552924">Nessuna password salvata. Chromium può controllare le password quando le salvi.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chromium. Questa operazione creerà un nuovo profilo Chromium per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Riavvia Chromium per applicare le modifiche</translation>
+<translation id="5296845517486664001">Quando sono attive le prove e se Chromium ti ha inserito in modo casuale in una prova attiva, la cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chromium elimina i tuoi interessi ogni mese.</translation>
 <translation id="5358375970380395591">Stai per accedere con un account gestito e per dare al relativo amministratore il controllo del tuo profilo Chromium. I tuoi dati di Chromium, come app, Preferiti, cronologia, password e altre impostazioni, verranno collegati definitivamente a <ph name="USER_NAME" />. Potrai eliminare questi dati tramite la Dashboard di Google Account, ma non potrai associare questi dati a un altro account. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Aggiornamento di Chromium in corso (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Consenti l'accesso a Chromium</translation>
 <translation id="5398878173008909840">È disponibile una nuova versione di Chromium.</translation>
-<translation id="5416696090975899932">Impossibile visualizzare l'anteprima di stampa in Chromium senza il visualizzatore PDF integrato.</translation>
+<translation id="5405650547142096840">Rimuovi da Chromium</translation>
 <translation id="5427571867875391349">Imposta Chromium come browser predefinito</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium beta</translation>
-<translation id="5479196819031988440">Chromium OS non è in grado di aprire la pagina.</translation>
+<translation id="5473971139929175403">Chromium potrebbe non funzionare correttamente perché non è più supportato su questa distribuzione Linux</translation>
 <translation id="5480860683791598150">Chromium deve poter accedere alla tua posizione per condividerla con questo sito</translation>
+<translation id="5487574057737591516">Per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Se Chromium ha fatto la scelta sbagliata o se non vuoi ricevere determinati annunci, puoi rimuovere un interesse.</translation>
 <translation id="549669000822060376">Attendi mentre Chromium installa gli aggiornamenti di sistema più recenti.</translation>
 <translation id="5496810170689441661">Chromium sta cercando di modificare le password. Per consentire la modifica, digita la tua password Windows.</translation>
+<translation id="5527463683072221100">Apri PDF in Chromium</translation>
+<translation id="5614091477838198795">Se attivi l'opzione, uscirai anche da Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{È disponibile un aggiornamento di Chromium}=1{È disponibile un aggiornamento di Chromium}other{È disponibile un aggiornamento di Chromium da # giorni}}</translation>
 <translation id="5634636535844844681">Chromium richiede Windows 7 o versioni successive.</translation>
 <translation id="5653831366781983928">Riavvia subito Chromium</translation>
 <translation id="5698481217667032250">Visualizza Chromium in questa lingua</translation>
-<translation id="5736967399513123100">Per poter riprodurre contenuti multimediali protetti su Chromium, devi installare Rosetta. Vuoi installare ora?</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
+<translation id="5883558403894052917">Chromium ha rilevato che i seguenti elementi contengono malware:</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Accesso rete</translation>
+<translation id="5924017743176219022">Connessione a Internet in corso…</translation>
+<translation id="5941711191222866238">Riduci a icona</translation>
+<translation id="5972142260211327093">Se Chromium ti ha inserito in modo casuale in una prova attiva, la cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chromium elimina i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi vengono aggiornati.</translation>
 <translation id="5987687638152509985">Aggiorna Chromium per avviare la sincronizzazione</translation>
-<translation id="6039377483953237732">Versione di Chromium OS</translation>
+<translation id="5988505247484123880">È normale che i siti che visiti memorizzino argomenti di tuo interesse per personalizzare la tua esperienza. I siti possono anche memorizzare su Chromium informazioni relative ai tuoi interessi.</translation>
+<translation id="6003112304606738118">Download in corso… Ore rimanenti: <ph name="HOURS" /></translation>
+<translation id="6040143037577758943">Chiudi</translation>
 <translation id="6055895534982063517">È disponibile una nuova versione di Chromium con una velocità senza precedenti.</translation>
 <translation id="6063093106622310249">&amp;Apri in Chromium</translation>
 <translation id="6072279588547424923">L'estensione <ph name="EXTENSION_NAME" /> è stata aggiunta a Chromium</translation>
+<translation id="6072463441809498330">Rendi Chromium più veloce</translation>
 <translation id="608006075545470555">Aggiungi profilo di lavoro a questo browser</translation>
-<translation id="608189560609172163">Impossibile sincronizzare i dati in Chromium a causa di un errore durante l'accesso.</translation>
 <translation id="6096348254544841612">È disponibile un nuovo aggiornamento.</translation>
+<translation id="6119438414301547735">Consenti all'estensione di mostrare le richieste di accesso nella barra degli strumenti di Chromium</translation>
 <translation id="6120345080069858279">Chromium salverà la password nel tuo Account Google affinché tu non debba memorizzarla.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> è pericoloso, pertanto è stato bloccato da Chromium.</translation>
 <translation id="6134968993075716475">Navigazione sicura è disattivata. Chromium consiglia di attivarla.</translation>
+<translation id="6145820983052037069">Puoi passare da un profilo Chromium all'altro qui</translation>
 <translation id="6183079672144801177">Assicurati di aver effettuato l'accesso a Chromium sul tuo dispositivo <ph name="TARGET_DEVICE_NAME" /> e prova a ripetere l'invio.</translation>
 <translation id="6212496753309875659">Questo computer ha già una versione più recente di Chromium. Se il software non funziona, disinstalla Chromium e riprova.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium verrà riavviato ora}=1{Chromium verrà riavviato tra 1 secondo}other{Chromium verrà riavviato tra # secondi}}</translation>
+<translation id="6241367896540709610">Chromium deve avere l'autorizzazione di accesso allo spazio di archiviazione per poter scaricare file</translation>
+<translation id="6245734527075554892">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chromium</translation>
 <translation id="6248213926982192922">Imposta Chromium come browser predefinito</translation>
 <translation id="6266342355635466082">Chromium non può controllare la disponibilità di aggiornamenti. Prova a controllare la connessione a Internet.</translation>
 <translation id="6268381023930128611">Uscire da Chromium?</translation>
+<translation id="6273793429163604305">Inizializzazione in corso…</translation>
 <translation id="6281746429495226318">Personalizza il tuo profilo Chromium</translation>
 <translation id="6290827346642914212">Assegna un nome al tuo profilo Chromium</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> potrebbe essere pericoloso, pertanto è stato bloccato da Chromium.</translation>
 <translation id="6309712487085796862">Chromium sta utilizzando la videocamera.</translation>
+<translation id="632355235628111698">Chromium ha bloccato questo file perché è pericoloso</translation>
+<translation id="6327105987658262776">Nessun aggiornamento disponibile.</translation>
 <translation id="6333502561965082103">C'è un'altra operazione in corso su Chromium. Riprova più tardi.</translation>
 <translation id="6334986366598267305">Ora è più facile utilizzare Chromium con il tuo Account Google e sui computer condivisi.</translation>
 <translation id="6373523479360886564">Vuoi disinstallare Chromium?</translation>
+<translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> Chromium può stimare i tuoi interessi. Dopodiché, un sito che visiti può chiedere a Chromium di conoscere i tuoi interessi per personalizzare gli annunci da mostrarti.</translation>
 <translation id="6403826409255603130">Chromium è un browser web che esegue le pagine web e le applicazioni alla velocità della luce. È veloce, stabile e facile da utilizzare. Naviga su Internet in modo più sicuro grazie alla protezione da malware e phishing integrata in Chromium.</translation>
-<translation id="6434250628340475518">Sistema Chromium OS</translation>
+<translation id="6442900851116057561">Riavvia Chromium OS</translation>
 <translation id="6455857529632101747">Ti diamo il benvenuto nei profili Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium si riavvierà tra 1 secondo}other{Chromium si riavvierà tra # secondi}}</translation>
 <translation id="6475912303565314141">Controlla anche la pagina visualizzata all'avvio di Chromium.</translation>
@@ -178,30 +247,41 @@
 <translation id="6570579332384693436">Per correggere gli errori ortografici, Chromium invia a Google il testo digitato nei campi di testo</translation>
 <translation id="6598877126913850652">Vai alle impostazioni di notifica di Chromium</translation>
 <translation id="6613594504749178791">Le modifiche verranno applicate al prossimo riavvio di Chromium.</translation>
+<translation id="665732753414869868">Chromium deve avere l'autorizzazione di accesso alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="6676384891291319759">Accesso a Internet</translation>
+<translation id="668175097507315160">Impossibile sincronizzare i dati in Chromium OS a causa di un errore durante l'accesso.</translation>
+<translation id="6709350901466051922">Chromium deve avere l'autorizzazione di accesso al microfono per questo sito</translation>
 <translation id="6717134281241384636">Impossibile utilizzare il tuo profilo perché proviene da una versione più recente di Chromium.
 
 Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory per il profilo o utilizza una versione più recente di Chromium.</translation>
-<translation id="6734080038664603509">Aggiorna &amp;Chromium</translation>
+<translation id="6730677189742196061">Risparmio memoria ha reso Chromium più veloce</translation>
 <translation id="6734291798041940871">Chromium è già installato per tutti gli utenti sul computer.</translation>
 <translation id="673636774878526923">Per accedere ai tuoi contenuti Chromium su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione.</translation>
 <translation id="6774082503108938489">Uno dei tuoi genitori ha disattivato "Autorizzazioni per siti, app ed estensioni" per Chromium. L'attivazione di <ph name="EXTENSION_TYPE_PARAMETER" /> non è consentita.</translation>
+<translation id="6779406956731413166">La realizzazione di Chromium OS è stata possibile grazie a <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivi.</translation>
 <translation id="6847869444787758381">Chromium ti avvisa se le tue password vengono compromesse</translation>
+<translation id="6852530923436401894">Chromium ha bloccato questo file perché ha un malware</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiata in Chromium)</translation>
+<translation id="6873893289264747459">Chromium ha rilevato che l'estensione "<ph name="EXTENSION_NAME" />" contiene malware</translation>
 <translation id="6893813176749746474">Chromium è stato aggiornato ma non lo utilizzi da almeno 30 giorni.</translation>
-<translation id="6897548120660295439">Rosetta consente di riprodurre i contenuti multimediali protetti in questa pagina su Chromium.</translation>
 <translation id="691026815377248078">Chromium richiede l'accesso al Bluetooth per continuare l'accoppiamento. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="6929417474050522668">Quando sono attive le prove, Ad measurement consente ai siti che visiti di chiedere a Chromium informazioni che li aiutino a valutare il rendimento dei loro annunci. Ad measurement limita il tracciamento tra siti trasferendo il minor numero possibile di informazioni tra i siti.</translation>
+<translation id="6940431691900807093">Dopodiché, un sito che visiti può chiedere a Chromium di conoscere i tuoi interessi per personalizzare gli annunci che ti vengono mostrati. Chromium può condividere fino a 3 interessi.</translation>
 <translation id="6964305034639999644">Apri link in una finestra di navigazione in inco&amp;gnito di Chromium</translation>
 <translation id="6978145336957848883">Le password inefficaci sono facili da indovinare. Consenti a Chromium di <ph name="BEGIN_LINK" />creare e memorizzare password efficaci per te<ph name="END_LINK" />.</translation>
+<translation id="6985329841647292029">Termini di Chromium OS</translation>
 <translation id="6990124437352146030">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere al microfono</translation>
-<translation id="701244094609242530">Chromium non può controllare le tue estensioni. Riprova più tardi.</translation>
+<translation id="7025789849649390912">Installazione interrotta.</translation>
 <translation id="705851970750939768">Aggiorna Chromium</translation>
 <translation id="7067091210845072982">Se un'immagine è senza descrizione utile, Chromium proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google.</translation>
+<translation id="718435575166326686">Chromium deve avere l'autorizzazione di accesso alla fotocamera per questo sito</translation>
 <translation id="7196312274710523067">Impossibile avviare Chromium. Riprova.</translation>
 <translation id="7197677400338048821">Chromium non può controllare le tue password. Riprova tra 24 ore.</translation>
+<translation id="7218568399872925918">I siti visitati memorizzano le tue informazioni fino alla chiusura di Chromium</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
-<translation id="731644333568559921">Aggiorna &amp;Chromium OS</translation>
+<translation id="7246575524853130370">I tuoi interessi stimati da Chromium</translation>
+<translation id="7309928523159922338">Ad measurement consente ai siti che visiti di chiedere a Chromium informazioni che li aiutino a valutare il rendimento dei loro annunci. Ad measurement limita il tracciamento tra siti trasferendo il minor numero possibile di informazioni tra i siti.</translation>
 <translation id="731795002583552498">Aggiornamento di Chromium in corso</translation>
 <translation id="7318036098707714271">Il file delle preferenze è danneggiato o non valido.
 
@@ -210,70 +290,91 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="734373864078049451">I tuoi siti web, i tuoi segnalibri e gli altri contenuti Chromium sempre disponibili e aggiornati qui.</translation>
 <translation id="7349591376906416160">L'amministratore di sistema ha configurato Chromium per l'apertura di <ph name="ALTERNATIVE_BROWSER_NAME" /> per accedere a <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7448255348454382571">Riavvia Chromium OS</translation>
+<translation id="7398989605938454041">Con i profili Chromium puoi separare tutti i tuoi contenuti di Chromium. In questo modo potrai alternare lavoro e divertimento con più facilità.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium per gli sviluppatori</translation>
 <translation id="7451052299415159299">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera</translation>
+<translation id="7467949745582939695">Vuoi riavviare Chromium?</translation>
 <translation id="7483335560992089831">Impossibile installare una versione di Chromium uguale a quella in esecuzione. Chiudi Chromium e riprova.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium verrà riavviato tra 1 minuto}other{Chromium verrà riavviato tra # minuti}}</translation>
-<translation id="7549178288319965365">Informazioni su Chromium OS</translation>
 <translation id="7561906087460245826">Cancella anche i dati di Chromium (<ph name="URL" />)</translation>
-<translation id="7585853947355360626">Se un'impostazione non viene mostrata in questa pagina, cercala nelle <ph name="LINK_BEGIN" />impostazioni del sistema operativo Chromium<ph name="LINK_END" />.</translation>
+<translation id="7582945390259497898">Chromium può stimare i tuoi interessi. Dopodiché, un sito che visiti può chiedere a Chromium di conoscere i tuoi interessi per personalizzare gli annunci da mostrarti.</translation>
+<translation id="7583399374488819119">Programma di installazione di <ph name="COMPANY_NAME" /></translation>
+<translation id="7597596667193879455">Hai attivato la Navigazione sicura avanzata nel tuo account. Ora attivala per Chromium.</translation>
 <translation id="761356813943268536">Chromium sta utilizzando videocamera e microfono.</translation>
 <translation id="7617377681829253106">Da oggi Chromium è ancora meglio</translation>
+<translation id="7649070708921625228">Guida</translation>
+<translation id="7682213815243802460">Puoi scoprire di più su queste funzionalità nelle impostazioni di Chrome.</translation>
+<translation id="7682601070171973634">Chromium sta esplorando nuove funzionalità che consentono ai siti di offrire la stessa esperienza di navigazione utilizzando meno dati di tua proprietà</translation>
 <translation id="7686590090926151193">Chromium non è il browser predefinito</translation>
 <translation id="7689606757190482937">Sincronizza e personalizza Chromium sui tuoi dispositivi</translation>
-<translation id="7729447699958282447">Impossibile sincronizzare i dati in Chromium perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
 <translation id="7745317241717453663">Verranno eliminati i tuoi dati di navigazione da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Il programma di installazione non ha creato una directory temporanea. Verifica di disporre di spazio libero sul disco e dell'autorizzazione per l'installazione del software.</translation>
-<translation id="7773960292263897147">Chromium non è in grado di impedire alle estensioni di registrare la tua cronologia di navigazione. Per disattivare questa estensione in modalità di navigazione in incognito, deseleziona questa opzione.</translation>
+<translation id="7786760609782648049">Rendi Chromium più veloce</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
-<translation id="7827169012280634081">Cancella cookie e dati dei siti alla chiusura di Chromium</translation>
 <translation id="7828947555739565424">Esiste già un profilo Chromium con questo account su questo dispositivo</translation>
-<translation id="7857220146454061152">Per ricevere gli aggiornamenti futuri di Chromium, devi avere macOS 10.11 o versioni successive. Su questo computer è installato macOS 10.10.</translation>
+<translation id="7845233973568007926">L'installazione è terminata. Dovrai riavviare il computer per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7867198900892795913">Non è stato possibile aggiornare Chromium alla versione più recente, quindi non potrai utilizzare le nuove funzioni e gli aggiornamenti di sicurezza.</translation>
-<translation id="7898472181347242998">Per controllare se il tuo dispositivo è aggiornato, vai alle <ph name="LINK_BEGIN" />Impostazioni di Chromium OS<ph name="LINK_END" /></translation>
-<translation id="7907774600618164274">Chromium OS non si è chiuso correttamente.</translation>
+<translation id="7872446069773932638">Download in corso… Secondi rimanenti: <ph name="SECONDS" /></translation>
+<translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Come puoi gestire i tuoi dati:<ph name="END_BOLD" /> per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Puoi anche rimuovere gli interessi che non vuoi che Chromium prenda in considerazione.</translation>
 <translation id="7937630085815544518">Hai eseguito l'accesso a Chromium come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7975919845073681630">Questa è un'installazione secondaria, di conseguenza Chromium non può essere impostato come browser predefinito.</translation>
+<translation id="7997934263947464652">Estensioni, app e temi da origini sconosciute possono danneggiare il tuo dispositivo. Chromium consiglia di installare questi elementi soltanto dal <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Dopo che Chromium avrà ottenuto l'accesso, i siti web potranno chiederti l'accesso.</translation>
+<translation id="80471789339884597">L'installazione è terminata. Dovrai riavviare tutti i browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8105840573057009683">Chromium deve avere l'autorizzazione di accesso alla posizione per questo sito</translation>
+<translation id="8133124826068723441">Impossibile sincronizzare i dati in Chromium OS perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
+<translation id="813913629614996137">Inizializzazione...</translation>
 <translation id="81770708095080097">Questo file è pericoloso, pertanto è stato bloccato da Chromium.</translation>
+<translation id="8213374284266571500">Chromium ha bloccato questo file perché è un tipo di file pericoloso</translation>
 <translation id="8248265253516264921">Se un'immagine è senza descrizione utile, Chromium proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="8266560134891435528">Chromium non può controllare le tue password perché non hai effettuato l'accesso</translation>
 <translation id="8276522524898344151">Chromium sta cercando di copiare le password.</translation>
 <translation id="8290862415967981663">Questo file potrebbe essere pericoloso, pertanto è stato bloccato da Chromium.</translation>
 <translation id="8330519371938183845">Accedi per sincronizzare e personalizzare Chromium sui tuoi dispositivi</translation>
 <translation id="8340674089072921962">L'indirizzo <ph name="USER_EMAIL_ADDRESS" /> utilizzava in precedenza Chromium</translation>
+<translation id="8357820681460164151">Per accedere ai tuoi contenuti del browser Chromium su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione</translation>
 <translation id="8417404458978023919">{0,plural, =1{Riavvia Chromium entro un giorno}other{Riavvia Chromium entro # giorni}}</translation>
 <translation id="8453117565092476964">L'archivio di installazione è danneggiato o non valido. Scarica di nuovo Chromium.</translation>
+<translation id="8463672209299734063">(Facoltativo) Contribuisci a migliorare le funzionalità e le prestazioni di Chromium OS inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
 <translation id="8493179195440786826">Chromium non è aggiornato</translation>
 <translation id="8550334526674375523">Questo profilo di lavoro è completamente separato dal tuo profilo personale.</translation>
 <translation id="8558383651099478961">Uno dei tuoi genitori ha disattivato "Autorizzazioni per siti, app ed estensioni" per Chromium. L'aggiunta di <ph name="EXTENSION_TYPE_PARAMETER" /> non è consentita.</translation>
+<translation id="8561285221328166383">Per ricevere gli aggiornamenti futuri di Chromium, devi avere macOS 10.13 o versioni successive. Su questo computer è installato macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium può controllare le tue password quando accedi con il tuo Account Google</translation>
+<translation id="8574036838419011058">Quando questa modalità è attiva, Chromium risparmia carica della batteria limitando l'attività in background e gli effetti visivi, ad esempio lo scorrimento continuo e le frequenze di fotogrammi dei video. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>
+<translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> i siti possono memorizzare su Chromium informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
 <translation id="8619360774459241877">Avvio di Chromium...</translation>
 <translation id="8621669128220841554">Installazione non riuscita a causa di un errore imprecisato. Scarica di nuovo Chromium.</translation>
 <translation id="8697124171261953979">Controlla anche la pagina visualizzata all'avvio di Chromium o quando esegui ricerche dalla Omnibox.</translation>
 <translation id="8704119203788522458">Questo è il tuo account Chromium</translation>
+<translation id="8713679423359107094">Quando chiudi tutte le finestre di Chromium, i cookie e i dati dei siti vengono cancellati automaticamente</translation>
+<translation id="8796443464227412154">Quando chiudi Chromium, verrà <ph name="BEGIN_BOLD" />eseguita la disconnessione dalla maggior parte dei siti<ph name="END_BOLD" />. Se la sincronizzazione è disattivata, verrà anche <ph name="BEGIN_BOLD" />eseguita la disconnessione dai servizi Google e da Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera e al microfono</translation>
-<translation id="8803635938069941624">Termini di Chromium OS</translation>
-<translation id="8821041990367117597">Impossibile sincronizzare i dati in Chromium perché i dati di accesso dell'account sono obsoleti.</translation>
+<translation id="8833697763442816810">Sistema Chromium OS</translation>
+<translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Quali dati vengono utilizzati:<ph name="END_BOLD" /> la cronologia di navigazione, ossia un record dei siti visitati da Chromium sul dispositivo in uso.</translation>
 <translation id="8862326446509486874">Non disponi dei diritti appropriati per l'installazione a livello di sistema. Prova a eseguire nuovamente il programma di installazione come Amministratore.</translation>
 <translation id="8880203542552872219">In questo caso, modifica la password salvata su Chromium in modo che corrisponda alla nuova password.</translation>
 <translation id="8897323336392112261">Controlla anche la pagina visualizzata all'avvio di Chromium o quando fai clic sul pulsante Pagina iniziale.</translation>
 <translation id="8907580949721785412">Chromium sta cercando di visualizzare le password. Per consentire la visualizzazione, digita la tua password Windows.</translation>
+<translation id="8931379085695076764">Chromium può stimare i tuoi interessi in base alla cronologia di navigazione delle ultime settimane. Queste informazioni rimangono sul dispositivo.</translation>
 <translation id="8941642502866065432">Impossibile aggiornare Chromium</translation>
-<translation id="8974095189086268230">La realizzazione di Chromium OS è stata possibile grazie a <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivi.</translation>
+<translation id="897581876605952338">Logo di Chromium Enterprise</translation>
 <translation id="8986207147630327271">Stai per aggiungere a questo browser un profilo di lavoro che sarà controllato dal tuo amministratore.</translation>
 <translation id="9019929317751753759">Per rendere Chromium più sicuro, abbiamo disattivato la seguente estensione non presente nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> che potrebbe essere stata aggiunta a tua insaputa.</translation>
-<translation id="9047197236183657400">Vuoi spostare l'account a un nuovo profilo Chromium?</translation>
+<translation id="9022552996538154597">Accedi a Chromium</translation>
 <translation id="9089354809943900324">Chromium non è aggiornato</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium verrà riavviato tra un'ora}other{Chromium verrà riavviato tra # ore}}</translation>
 <translation id="91086099826398415">Apri link in una nuova &amp;scheda di Chromium</translation>
 <translation id="911206726377975832">Eliminare anche i tuoi dati di navigazione?</translation>
+<translation id="9144490074902256427">Durante le prove, puoi vedere e rimuovere argomenti di interesse che i siti hanno usato per mostrarti annunci. Chromium stima i tuoi interessi in base alla tua recente cronologia di navigazione.</translation>
 <translation id="9158494823179993217">L'amministratore di sistema ha configurato Chromium per l'apertura di un browser alternativo per accedere a <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="9185526690718004400">Riavvia per aggiornare &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9214764063801632699">Sistema Chromium OS</translation>
 <translation id="93478295209880648">Chromium potrebbe non funzionare correttamente perché non è più supportato su Windows XP o Windows Vista</translation>
+<translation id="942598560705308788">Certificati gestiti da Chromium</translation>
+<translation id="945990405696787151">Per ricevere gli aggiornamenti futuri di Chromium, devi avere macOS 10.13 o versioni successive. Su questo computer è installato il sistema operativo X 10.11.</translation>
 <translation id="965162752251293939">Chi usa Chromium?</translation>
+<translation id="967427899662692980">Usa la funzionalità di sicurezza più efficace di Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

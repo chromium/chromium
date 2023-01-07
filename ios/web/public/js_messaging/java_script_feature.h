@@ -1,26 +1,27 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_PUBLIC_JS_MESSAGING_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_PUBLIC_JS_MESSAGING_JAVA_SCRIPT_FEATURE_H_
 
-#include <map>
+#import <Foundation/Foundation.h>
+
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-
-@class NSString;
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+class TimeDelta;
 class Value;
 }  // namespace base
 
 namespace web {
 
+class FuzzerEnvWithJavaScriptFeature;
 class ScriptMessage;
 class WebState;
 class WebFrame;
@@ -33,6 +34,12 @@ class WebFrame;
 // state itself and can be used application-wide across browser states. However,
 // this is not guaranteed of JavaScriptFeature subclasses.
 class JavaScriptFeature {
+  // `FuzzerEnvWithJavaScriptFeature` stores subclasses of `JavaScriptFeature`
+  // and invokes `ScriptMessageReceived` function in a public API. So fuzzers
+  // can call `ScriptMessageReceived` functions without friending with each
+  // subclass.
+  friend class FuzzerEnvWithJavaScriptFeature;
+
  public:
   // The content world which this feature supports.
   // NOTE: Features should use kAnyContentWorld whenever possible to allow for
@@ -69,7 +76,7 @@ class JavaScriptFeature {
       kInjectOncePerWindow = 0,
       // The script will be re-injected when the document is re-created.
       // NOTE: This is necessary to re-add event listeners and to re-inject
-      // modifications to the DOM and |document| JS object. Note, however, that
+      // modifications to the DOM and `document` JS object. Note, however, that
       // this option can also overwrite or duplicate state which was already
       // previously added to the window's state.
       kReinjectOnDocumentRecreation,
@@ -81,9 +88,18 @@ class JavaScriptFeature {
       kMainFrame,
     };
 
+    // Mapping of placeholder to their replacement value.
+    using PlaceholderReplacements = NSDictionary<NSString*, NSString*>*;
+
+    // Callback used to perform placeholder replacement in the script. The
+    // returned value is a dictionary mapping "placeholder" to the "value"
+    // that needs it to be substituted by with in the script.
+    using PlaceholderReplacementsCallback =
+        base::RepeatingCallback<PlaceholderReplacements()>;
+
     // Creates a FeatureScript with the script file from the application bundle
-    // with |filename| to be injected at |injection_time| into |target_frames|
-    // using |reinjection_behavior|. If |replacements| is provided, it will be
+    // with `filename` to be injected at `injection_time` into `target_frames`
+    // using `reinjection_behavior`. If `replacements` is provided, it will be
     // used to replace placeholder with the corresponding string values.
     static FeatureScript CreateWithFilename(
         const std::string& filename,
@@ -91,12 +107,16 @@ class JavaScriptFeature {
         TargetFrames target_frames,
         ReinjectionBehavior reinjection_behavior =
             ReinjectionBehavior::kInjectOncePerWindow,
-        std::map<std::string, NSString*> replacements =
-            std::map<std::string, NSString*>());
+        const PlaceholderReplacementsCallback& replacements_callback =
+            PlaceholderReplacementsCallback());
 
     FeatureScript(const FeatureScript& other);
+    FeatureScript& operator=(const FeatureScript&);
 
-    // Returns the JavaScript string of the script with |script_filename_|.
+    FeatureScript(FeatureScript&&);
+    FeatureScript& operator=(FeatureScript&&);
+
+    // Returns the JavaScript string of the script with `script_filename_`.
     NSString* GetScriptString() const;
 
     InjectionTime GetInjectionTime() const { return injection_time_; }
@@ -109,17 +129,17 @@ class JavaScriptFeature {
                   InjectionTime injection_time,
                   TargetFrames target_frames,
                   ReinjectionBehavior reinjection_behavior,
-                  std::map<std::string, NSString*> replacements);
+                  const PlaceholderReplacementsCallback& replacements_callback);
 
-    // Returns the given |script| string after swapping the placeholders from
-    // |replacements_| with their values.
+    // Returns `script` after swapping the placeholders with their value as
+    // instructed by `replacements_callback_`.
     NSString* ReplacePlaceholders(NSString* script) const;
 
     std::string script_filename_;
     InjectionTime injection_time_;
     TargetFrames target_frames_;
     ReinjectionBehavior reinjection_behavior_;
-    std::map<std::string, NSString*> replacements_;
+    PlaceholderReplacementsCallback replacements_callback_;
   };
 
   JavaScriptFeature(ContentWorld supported_world,
@@ -140,24 +160,32 @@ class JavaScriptFeature {
 
   // Returns the script message handler name which this feature will receive
   // messages from JavaScript. Returning null will not register any handler.
-  virtual base::Optional<std::string> GetScriptMessageHandlerName() const;
+  virtual absl::optional<std::string> GetScriptMessageHandlerName() const;
 
   using ScriptMessageHandler =
       base::RepeatingCallback<void(WebState* web_state,
                                    const ScriptMessage& message)>;
   // Returns the script message handler callback if
-  // |GetScriptMessageHandlerName()| returns a handler name.
-  base::Optional<ScriptMessageHandler> GetScriptMessageHandler() const;
+  // `GetScriptMessageHandlerName()` returns a handler name.
+  absl::optional<ScriptMessageHandler> GetScriptMessageHandler() const;
 
   JavaScriptFeature(const JavaScriptFeature&) = delete;
 
  protected:
   explicit JavaScriptFeature(ContentWorld supported_world);
 
+  // Calls `function_name` with `parameters` in `web_frame` within the content
+  // world that this feature has been configured. `web_frame` must not be null.
+  // See WebFrame::CallJavaScriptFunction for more details.
   bool CallJavaScriptFunction(WebFrame* web_frame,
                               const std::string& function_name,
                               const std::vector<base::Value>& parameters);
 
+  // Calls `function_name` with `parameters` in `web_frame` within the content
+  // world that this feature has been configured. `callback` will be called with
+  // the return value of the function if it completes within `timeout`.
+  // `web_frame` must not be null.
+  // See WebFrame::CallJavaScriptFunction for more details.
   bool CallJavaScriptFunction(
       WebFrame* web_frame,
       const std::string& function_name,
@@ -165,8 +193,9 @@ class JavaScriptFeature {
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout);
 
-  // Callback for script messages registered through |GetScriptMessageHandler|.
-  // Called when a WebState sent |message|.
+  // Callback for script messages registered through `GetScriptMessageHandler`.
+  // `ScriptMessageReceived` is called when `web_state` receives a `message`.
+  // `web_state` will always be non-null.
   virtual void ScriptMessageReceived(WebState* web_state,
                                      const ScriptMessage& message);
 

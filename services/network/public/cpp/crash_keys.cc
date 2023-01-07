@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 
 #include "base/debug/crash_logging.h"
 
-namespace network {
-namespace debug {
+namespace network::debug {
 
 namespace {
 base::debug::CrashKeyString* GetCrashKey() {
@@ -27,5 +26,4 @@ void ClearDeserializationCrashKeyString() {
   base::debug::ClearCrashKeyString(GetCrashKey());
 }
 
-}  // namespace debug
-}  // namespace network
+}  // namespace network::debug

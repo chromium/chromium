@@ -70,8 +70,6 @@ they fall largely outside the purview of the network stack team:
 
 * **Blink>ServiceWorker**
 
-* **Blink>Storage>AppCache**
-
 * **Blink>Network>WebSockets**
 
     Issues with the WebSockets.  Attach this component to any issue about the

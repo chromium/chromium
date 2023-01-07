@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
@@ -17,7 +17,7 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
  * initializing the AccountManagerFacade.
  */
 public class ChromeBrowserTestRule implements TestRule {
-    private final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    private final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Override
     public Statement apply(final Statement base, Description description) {
@@ -32,20 +32,20 @@ public class ChromeBrowserTestRule implements TestRule {
                 base.evaluate();
             }
         };
-        return mAccountManagerTestRule.apply(statement, description);
+        return mSigninTestRule.apply(statement, description);
     }
 
     /**
      * Adds an account of the given accountName to the fake AccountManagerFacade.
      */
     public CoreAccountInfo addAccount(String accountName) {
-        return mAccountManagerTestRule.addAccount(accountName);
+        return mSigninTestRule.addAccount(accountName);
     }
 
     /**
      * Add and sign in an account with the default name.
      */
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
-        return mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        return mSigninTestRule.addTestAccountThenSigninAndEnableSync();
     }
 }

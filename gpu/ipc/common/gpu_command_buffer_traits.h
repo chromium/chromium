@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@ namespace gpu {
 struct Mailbox;
 struct MailboxHolder;
 struct SyncToken;
-struct TextureInUseResponse;
 struct VulkanYCbCrInfo;
 }
 
@@ -23,16 +22,6 @@ namespace IPC {
 template <>
 struct GPU_EXPORT ParamTraits<gpu::SyncToken> {
   using param_type = gpu::SyncToken;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* p);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct GPU_EXPORT ParamTraits<gpu::TextureInUseResponse> {
-  using param_type = gpu::TextureInUseResponse;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

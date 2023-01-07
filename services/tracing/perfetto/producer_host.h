@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/tracing/perfetto/producer_host.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/producer.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/tracing_service.h"
@@ -39,6 +39,10 @@ class ProducerHost : public tracing::mojom::ProducerHost,
                      public perfetto::Producer {
  public:
   explicit ProducerHost(base::tracing::PerfettoTaskRunner*);
+
+  ProducerHost(const ProducerHost&) = delete;
+  ProducerHost& operator=(const ProducerHost&) = delete;
+
   ~ProducerHost() override;
 
   // Keep in sync with tools/metrics/histograms/enums.xml. These values are
@@ -59,7 +63,7 @@ class ProducerHost : public tracing::mojom::ProducerHost,
       mojo::PendingRemote<mojom::ProducerClient> producer_client,
       perfetto::TracingService* service,
       const std::string& name,
-      mojo::ScopedSharedBufferHandle shared_memory,
+      base::UnsafeSharedMemoryRegion shared_memory,
       uint64_t shared_memory_buffer_page_size_bytes);
 
   // perfetto::Producer implementation.
@@ -107,15 +111,13 @@ class ProducerHost : public tracing::mojom::ProducerHost,
 
  private:
   mojo::Remote<mojom::ProducerClient> producer_client_;
-  base::tracing::PerfettoTaskRunner* task_runner_;
+  raw_ptr<base::tracing::PerfettoTaskRunner> task_runner_;
 
  protected:
   // Perfetto guarantees that no OnXX callbacks are invoked on |this|
   // immediately after |producer_endpoint_| is destroyed.
   std::unique_ptr<perfetto::TracingService::ProducerEndpoint>
       producer_endpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProducerHost);
 };
 
 }  // namespace tracing

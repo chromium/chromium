@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,7 @@
  * @fileoverview APIs used by CRWContextMenuController.
  */
 
-goog.provide('__crWeb.mainFrameContextMenu');
-
-// Requires __crWeb.allFramesContextMenu provided by __crWeb.allFramesWebBundle.
-
-/** Beginning of anonymous object */
-(function() {
+// Requires functions from all_frame_context_menu.js
 
 /**
  * Finds the url of the image or link under the selected point. Sends the
@@ -28,13 +23,12 @@ goog.provide('__crWeb.mainFrameContextMenu');
  * @param {number} webViewWidth the width of web view.
  * @param {number} webViewHeight the height of web view.
  */
-__gCrWeb['findElementAtPoint'] =
-    function(requestId, x, y, webViewWidth, webViewHeight) {
-      var scale = getPageWidth() / webViewWidth;
-      __gCrWeb.findElementAtPointInPageCoordinates(requestId,
-                                                   x * scale,
-                                                   y * scale);
-    };
+__gCrWeb['findElementAtPoint'] = function(
+    requestId, x, y, webViewWidth, webViewHeight, surroundingTextEnabled) {
+  var scale = getPageWidth() / webViewWidth;
+  __gCrWeb.findElementAtPointInPageCoordinates(
+      requestId, x * scale, y * scale, surroundingTextEnabled);
+};
 
 /**
  * Returns the margin in points around touchable elements (e.g. links for
@@ -49,5 +43,3 @@ var getPageWidth = function() {
       documentElement.offsetWidth, documentBody.scrollWidth,
       documentBody.offsetWidth);
 };
-
-}());  // End of anonymouse object

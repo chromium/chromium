@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,8 +52,10 @@ std::unique_ptr<SctpTransportProxy> CreateProxy(
   DCHECK(worker_thread);
   LocalFrame* frame = To<LocalDOMWindow>(context)->GetFrame();
   DCHECK(frame);
-  return SctpTransportProxy::Create(*frame, main_thread, worker_thread,
-                                    native_transport, delegate);
+  return SctpTransportProxy::Create(
+      *frame, main_thread, worker_thread,
+      rtc::scoped_refptr<webrtc::SctpTransportInterface>(native_transport),
+      delegate);
 }
 
 }  // namespace
@@ -64,8 +66,8 @@ RTCSctpTransport::RTCSctpTransport(
     : RTCSctpTransport(context,
                        native_transport,
                        context->GetTaskRunner(TaskType::kNetworking),
-                       PeerConnectionDependencyFactory::GetInstance()
-                           ->GetWebRtcNetworkTaskRunner()) {}
+                       PeerConnectionDependencyFactory::From(*context)
+                           .GetWebRtcNetworkTaskRunner()) {}
 
 RTCSctpTransport::RTCSctpTransport(
     ExecutionContext* context,
@@ -76,7 +78,7 @@ RTCSctpTransport::RTCSctpTransport(
       current_state_(webrtc::SctpTransportState::kNew),
       native_transport_(native_transport),
       proxy_(CreateProxy(context,
-                         native_transport,
+                         native_transport.get(),
                          this,
                          main_thread,
                          worker_thread)) {}
@@ -100,9 +102,9 @@ double RTCSctpTransport::maxMessageSize() const {
   return std::numeric_limits<double>::infinity();
 }
 
-base::Optional<int16_t> RTCSctpTransport::maxChannels() const {
+absl::optional<int16_t> RTCSctpTransport::maxChannels() const {
   if (!current_state_.MaxChannels())
-    return base::nullopt;
+    return absl::nullopt;
   return current_state_.MaxChannels().value();
 }
 

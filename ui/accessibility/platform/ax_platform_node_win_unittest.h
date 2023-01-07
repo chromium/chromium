@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,11 @@
 #include <unordered_set>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/win/atl.h"  // Must be before UIAutomationCore.h
+#include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
-#include "ui/base/win/accessibility_misc_utils.h"
+
+#include <UIAutomationCore.h>
 
 struct IAccessible;
 struct IAccessible2;
@@ -126,10 +129,12 @@ class AXPlatformNodeWinTest : public AXPlatformNodeTest {
   using PatternSet = std::unordered_set<LONG>;
   PatternSet GetSupportedPatternsFromNodeId(AXNodeID id);
 
+  void TestGetColumnHeadersForRole(ax::mojom::Role role);
+
   std::unique_ptr<AXFragmentRootWin> ax_fragment_root_;
 
   std::unique_ptr<TestFragmentRootDelegate> test_fragment_root_delegate_;
-
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

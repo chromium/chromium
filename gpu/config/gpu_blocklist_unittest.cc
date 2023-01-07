@@ -1,13 +1,16 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <vector>
 
 #include "gpu/config/gpu_blocklist.h"
+#include "gpu/config/gpu_driver_bug_list_autogen.h"
 #include "gpu/config/gpu_feature_type.h"
 #include "gpu/config/gpu_info.h"
+#include "gpu/config/software_rendering_list_autogen.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace gpu {
 
@@ -90,15 +93,19 @@ GPU_BLOCKLIST_FEATURE_TEST(AcceleratedWebGL, GPU_FEATURE_TYPE_ACCELERATED_WEBGL)
 GPU_BLOCKLIST_FEATURE_TEST(AcceleratedVideoDecode,
                            GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE)
 
-GPU_BLOCKLIST_FEATURE_TEST(GpuRasterization, GPU_FEATURE_TYPE_GPU_RASTERIZATION)
+GPU_BLOCKLIST_FEATURE_TEST(AcceleratedVideoEncode,
+                           GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE)
 
-GPU_BLOCKLIST_FEATURE_TEST(OOPRasterization, GPU_FEATURE_TYPE_OOP_RASTERIZATION)
+GPU_BLOCKLIST_FEATURE_TEST(GpuRasterization, GPU_FEATURE_TYPE_GPU_RASTERIZATION)
 
 GPU_BLOCKLIST_FEATURE_TEST(WebGL2, GPU_FEATURE_TYPE_ACCELERATED_WEBGL2)
 
 GPU_BLOCKLIST_FEATURE_TEST(GL, GPU_FEATURE_TYPE_ACCELERATED_GL)
 
 GPU_BLOCKLIST_FEATURE_TEST(Vulkan, GPU_FEATURE_TYPE_VULKAN)
+
+GPU_BLOCKLIST_FEATURE_TEST(AcceleratedWebGPU,
+                           GPU_FEATURE_TYPE_ACCELERATED_WEBGPU)
 
 // Test for invariant "Assume the newly last added entry has the largest ID".
 // See GpuControlList::GpuControlList.
@@ -115,6 +122,58 @@ TEST_F(GpuBlocklistTest, TestBlocklistIsValid) {
   auto entries = list->GetEntryIDsFromIndices(indices);
   auto real_max_entry_id = *std::max_element(entries.begin(), entries.end());
   EXPECT_EQ(real_max_entry_id, max_entry_id);
+}
+
+void TestBlockList(const GpuControlList::Entry* entries, size_t count) {
+  for (size_t i = 0; i < count; ++i) {
+    const auto& entry = entries[i];
+    if (const auto* gl_strings = entry.conditions.gl_strings) {
+      if (gl_strings->gl_vendor) {
+        EXPECT_TRUE(RE2(gl_strings->gl_vendor).ok())
+            << "gl_vendor=" << gl_strings->gl_vendor;
+      }
+      if (gl_strings->gl_renderer) {
+        EXPECT_TRUE(RE2(gl_strings->gl_renderer).ok())
+            << "gl_renderer=" << gl_strings->gl_renderer;
+      }
+      if (gl_strings->gl_extensions) {
+        EXPECT_TRUE(RE2(gl_strings->gl_extensions).ok())
+            << "gl_extensions=" << gl_strings->gl_extensions;
+      }
+      if (gl_strings->gl_version) {
+        EXPECT_TRUE(RE2(gl_strings->gl_version).ok())
+            << "gl_version=" << gl_strings->gl_version;
+      }
+    }
+    for (size_t j = 0; j < entry.exception_size; ++j) {
+      const auto& conditions = entry.exceptions[j];
+      if (const auto* gl_strings = conditions.gl_strings) {
+        if (gl_strings->gl_vendor) {
+          EXPECT_TRUE(RE2(gl_strings->gl_vendor).ok())
+              << "gl_vendor=" << gl_strings->gl_vendor;
+        }
+        if (gl_strings->gl_renderer) {
+          EXPECT_TRUE(RE2(gl_strings->gl_renderer).ok())
+              << "gl_renderer=" << gl_strings->gl_renderer;
+        }
+        if (gl_strings->gl_extensions) {
+          EXPECT_TRUE(RE2(gl_strings->gl_extensions).ok())
+              << "gl_extensions=" << gl_strings->gl_extensions;
+        }
+        if (gl_strings->gl_version) {
+          EXPECT_TRUE(RE2(gl_strings->gl_version).ok())
+              << "gl_version=" << gl_strings->gl_version;
+        }
+      }
+    }
+  }
+}
+
+// It checks software_rendering_list.json
+TEST_F(GpuBlocklistTest, VerifyGLStrings) {
+  TestBlockList(kSoftwareRenderingListEntries,
+                kSoftwareRenderingListEntryCount);
+  TestBlockList(kGpuDriverBugListEntries, kGpuDriverBugListEntryCount);
 }
 
 }  // namespace gpu

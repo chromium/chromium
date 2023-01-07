@@ -38,7 +38,7 @@ These benchmarks are run continuously on the [chrome.perf][] waterfall,
 collecting and reporting results on the
 [Chrome Performance Dashboard][chromeperf].
 
-[system_health]: https://chromium.googlesource.com/chromium/src/+/master/tools/perf/page_sets/system_health/
+[system_health]: https://chromium.googlesource.com/chromium/src/+/main/tools/perf/page_sets/system_health/
 [chrome.perf]: https://ci.chromium.org/p/chrome/g/chrome.perf/console
 [chromeperf]: https://chromeperf.appspot.com/report
 

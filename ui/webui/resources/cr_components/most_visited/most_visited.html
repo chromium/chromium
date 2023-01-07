@@ -1,0 +1,315 @@
+<style include="cr-hidden-style cr-icons">
+  :host {
+    --icon-button-color-active: var(--google-grey-700);
+    --icon-button-color: var(--google-grey-600);
+    --icon-size: 48px;
+    --tile-background-color: rgb(229, 231, 232);
+    --tile-hover-color: rgba(var(--google-grey-900-rgb), .1);
+    --tile-size: 112px;
+    --title-height: 32px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --tile-background-color: var(--google-grey-100);
+    }
+  }
+
+  :host([is-dark_]) {
+    --icon-button-color-active: var(--google-grey-300);
+    --icon-button-color: white;
+    --tile-hover-color: rgba(255, 255, 255, .1);
+  }
+
+  #container {
+    --content-width: calc(var(--column-count) * var(--tile-size)
+      /* We add an extra pixel because rounding errors on different zooms can
+       * make the width shorter than it should be. */
+      + 1px);
+    display: flex;
+    flex-wrap: wrap;
+    height: calc(var(--row-count) * var(--tile-size));
+    justify-content: center;
+    margin-bottom: 8px;
+    opacity: 0;
+    overflow: hidden;
+    padding: 2px;  /* Padding added so focus rings are not clipped. */
+    transition: opacity 300ms ease-in-out;
+    width: calc(var(--content-width) + 12px);
+  }
+
+  :host([visible_]) #container {
+    opacity: 1;
+  }
+
+  #addShortcutIcon,
+  .query-tile-icon {
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    height: 24px;
+    width: 24px;
+  }
+
+  #addShortcutIcon {
+    -webkit-mask-image: url(chrome://resources/images/add.svg);
+    background-color: var(--google-grey-900);
+  }
+
+  .query-tile-icon {
+    -webkit-mask-image: url(chrome://resources/images/icon_search.svg);
+    background-color: var(--google-grey-700);
+  }
+
+  @media (forced-colors: active) {
+    #addShortcutIcon,
+    .query-tile-icon {
+      background-color: ButtonText;
+    }
+  }
+
+  :host([use-white-tile-icon_]) #addShortcutIcon {
+    background-color: white;
+  }
+
+  :host([use-white-tile-icon_]) .query-tile-icon {
+    background-color: var(--google-grey-400);
+  }
+
+  .tile,
+  #addShortcut {
+    -webkit-tap-highlight-color: transparent;
+    align-items: center;
+    border-radius: 4px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: var(--tile-size);
+    opacity: 1;
+    outline: none;
+    position: relative;
+    text-decoration: none;
+    transition-duration: 300ms;
+    transition-property: left, top;
+    transition-timing-function: ease-in-out;
+    user-select: none;
+    width: var(--tile-size);
+  }
+
+  .tile {
+    touch-action: none;
+  }
+
+  :host-context(.focus-outline-visible) .tile:focus,
+  :host-context(.focus-outline-visible) #addShortcut:focus {
+    box-shadow: var(--most-visited-focus-shadow);
+  }
+
+  @media (forced-colors: active) {
+    :host-context(.focus-outline-visible) .tile:focus,
+    :host-context(.focus-outline-visible) #addShortcut:focus {
+      /* Use outline instead of box-shadow (which does not work) in Windows
+         HCM. */
+      outline: var(--cr-focus-outline-hcm);
+    }
+  }
+
+  #addShortcut {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    justify-content: unset;
+    padding: 0;
+  }
+
+  :host(:not([reordering_])) .tile:hover,
+  :host(:not([reordering_])) #addShortcut:hover,
+  .force-hover {
+    background-color: var(--tile-hover-color);
+  }
+
+  .tile-icon {
+    align-items: center;
+    background-color: var(--tile-background-color);
+    border-radius: 50%;
+    display: flex;
+    flex-shrink: 0;
+    height: var(--icon-size);
+    justify-content: center;
+    margin-top: 16px;
+    width: var(--icon-size);
+  }
+
+  .tile-icon img {
+    height: 24px;
+    width: 24px;
+  }
+
+  .tile-title {
+    align-items: center;
+    border-radius: calc(var(--title-height) / 2 + 2px);
+    color: var(--most-visited-text-color);
+    display: flex;
+    height: var(--title-height);
+    line-height: calc(var(--title-height) / 2);
+    margin-top: 6px;
+    padding: 2px 8px;
+    width: 88px;
+  }
+
+  :host([use-title-pill_]) .tile-title {
+    background-color: white;
+    color: var(--google-grey-800);
+  }
+
+  .tile-title span {
+    font-weight: 400;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    text-shadow: var(--most-visited-text-shadow);
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .tile[query-tile] .tile-title span {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    white-space: initial;
+  }
+
+  :host([use-title-pill_]) .tile-title span {
+    text-shadow: none;
+  }
+
+  .title-rtl {
+    direction: rtl;
+  }
+
+  .title-ltr {
+    direction: ltr;
+  }
+
+  .tile.dragging {
+    background-color: var(--tile-hover-color);
+    transition-property: none;
+    z-index: 2;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--icon-button-color);
+    --cr-icon-button-size: 28px;
+    --cr-icon-button-transition: none;
+    margin: 4px 2px;
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: opacity 100ms ease-in-out;
+  }
+
+  :host-context([dir=rtl]) cr-icon-button {
+    left: 0;
+    right: unset;
+  }
+
+  :host(:not([reordering_])) .tile:hover cr-icon-button,
+  .force-hover cr-icon-button {
+    opacity: 1;
+    transition-delay: 400ms;
+  }
+
+  :host(:not([reordering_])) cr-icon-button:active,
+  :host-context(.focus-outline-visible):host(:not([reordering_]))
+      cr-icon-button:focus,
+  :host(:not([reordering_])) cr-icon-button:hover {
+    --cr-icon-button-fill-color: var(--icon-button-color-active);
+    opacity: 1;
+    transition-delay: 0s;
+  }
+</style>
+<div id="container" hidden$="[[!visible_]]"
+    style="--tile-background-color: [[rgbaOrInherit_(theme.backgroundColor)]];
+           --column-count: [[columnCount_]]; --row-count: [[rowCount_]];">
+  <dom-repeat id="tiles" items="[[tiles_]]" on-dom-change="onTilesRendered_">
+    <template>
+      <a class="tile" href$="[[item.url.url]]" title$="[[item.title]]"
+          aria-label="[[item.title]]" on-dragstart="onDragStart_"
+          on-touchstart="onTouchStart_" hidden$="[[isHidden_(index, maxVisibleTiles_)]]"
+          on-click="onTileClick_" on-keydown="onTileKeyDown_"
+          query-tile$="[[item.isQueryTile]]">
+        <cr-icon-button id="actionMenuButton" class="icon-more-vert"
+            title="[[i18n('moreActions')]]" on-click="onTileActionButtonClick_"
+            tabindex="0" hidden$="[[!customLinksEnabled_]]"></cr-icon-button>
+        <cr-icon-button id="removeButton" class="icon-clear"
+            title="[[i18n('linkRemove')]]" on-click="onTileRemoveButtonClick_"
+            tabindex="0" hidden$="[[customLinksEnabled_]]"></cr-icon-button>
+        <div class="tile-icon">
+          <img src$="[[getFaviconUrl_(item.url)]]" draggable="false"
+              hidden$="[[item.isQueryTile]]" alt=""></img>
+          <div class="query-tile-icon" draggable="false"
+              hidden$="[[!item.isQueryTile]]"></div>
+        </div>
+        <div class$="tile-title [[getTileTitleDirectionClass_(item)]]">
+          <span>[[item.title]]</span>
+        </div>
+      </a>
+    </template>
+  </dom-repeat>
+  <cr-button id="addShortcut" tabindex="0" on-click="onAdd_"
+      hidden$="[[!showAdd_]]" on-keydown="onAddShortcutKeyDown_"
+      aria-label="[[i18n('addLinkTitle')]]" title="[[i18n('addLinkTitle')]]" noink>
+    <div class="tile-icon">
+      <div id="addShortcutIcon" draggable="false"></div>
+    </div>
+    <div class="tile-title">
+      <span>[[i18n('addLinkTitle')]]</span>
+    </div>
+  </cr-button>
+  <cr-dialog id="dialog" on-close="onDialogClose_">
+    <div slot="title">[[dialogTitle_]]</div>
+    <div slot="body">
+      <cr-input id="dialogInputName" label="[[i18n('nameField')]]"
+          value="{{dialogTileTitle_}}" spellcheck="false" autofocus></cr-input>
+      <cr-input id="dialogInputUrl" label="[[i18n('urlField')]]"
+          value="{{dialogTileUrl_}}" invalid="[[dialogTileUrlInvalid_]]"
+          error-message="[[dialogTileUrlError_]]" spellcheck="false" type="url"
+          on-blur="onDialogTileUrlBlur_">
+      </cr-input>
+    </div>
+    <div slot="button-container">
+      <cr-button class="cancel-button" on-click="onDialogCancel_">
+        [[i18n('linkCancel')]]
+      </cr-button>
+      <cr-button class="action-button" on-click="onSave_"
+          disabled$="[[dialogSaveDisabled_]]">
+        [[i18n('linkDone')]]
+      </cr-button>
+    </div>
+  </cr-dialog>
+  <cr-action-menu id="actionMenu">
+    <button id="actionMenuEdit" class="dropdown-item" on-click="onEdit_">
+      [[i18n('editLinkTitle')]]
+    </button>
+    <button id="actionMenuRemove" class="dropdown-item" on-click="onRemove_">
+      [[i18n('linkRemove')]]
+    </button>
+  </cr-action-menu>
+</div>
+<cr-toast id="toast" duration="10000">
+  <div>[[toastContent_]]</div>
+  <dom-if if="[[showToastButtons_]]">
+    <template>
+      <cr-button id="undo" aria-label="[[i18n('undoDescription')]]"
+          on-click="onUndoClick_">
+        [[i18n('undo')]]
+      </cr-button>
+      <cr-button id="restore"
+          aria-label$="[[getRestoreButtonText_(customLinksEnabled_)]]"
+          on-click="onRestoreDefaultsClick_">
+        [[getRestoreButtonText_(customLinksEnabled_)]]
+      </cr-button>
+    </template>
+  </dom-if>
+</cr-toast>

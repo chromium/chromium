@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
-#include "base/values.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -22,12 +21,14 @@ class BackgroundTracingConfig;
 // called on the UI thread.
 class BackgroundTracingManager {
  public:
-  CONTENT_EXPORT static BackgroundTracingManager* GetInstance();
+  CONTENT_EXPORT static BackgroundTracingManager& GetInstance();
 
-  // ReceiveCallback will be called on the UI thread every time the
-  // BackgroundTracingManager finalizes a trace. The first parameter of this
-  // callback is the trace data. The second is metadata that was generated and
-  // embedded into the trace. The third is a callback to notify the
+  CONTENT_EXPORT static const char kContentTriggerConfig[];
+
+  // If a ReceiveCallback is set it will be called on the UI thread every time
+  // the BackgroundTracingManager finalizes a trace. The first parameter of
+  // this callback is the trace data. The second is metadata that was generated
+  // and embedded into the trace. The third is a callback to notify the
   // BackgroundTracingManager that you've finished processing the trace data
   // and whether we were successful or not.
   //
@@ -50,13 +51,16 @@ class BackgroundTracingManager {
   //
   // In preemptive mode, recording begins immediately and any calls to
   // TriggerNamedEvent() will potentially trigger the trace to finalize and get
-  // uploaded to the specified upload_sink. Once the trace has been uploaded,
-  // tracing will be enabled again.
+  // uploaded. Once the trace has been uploaded, tracing will be enabled again.
   //
   // In reactive mode, recording begins when TriggerNamedEvent() is called, and
   // continues until either the next call to TriggerNamedEvent, or a timeout
   // occurs. Tracing will not be re-enabled after the trace is finalized and
-  // uploaded to the upload_sink.
+  // uploaded.
+  //
+  // This function uploads traces through UMA using SetTraceToUpload /
+  // GetLatestTraceToUpload. To specify a destination to upload to, use
+  // SetActiveScenarioWithReceiveCallback.
   //
   // Calls to SetActiveScenario() with a config will fail if tracing is
   // currently on. Use WhenIdle to register a callback to get notified when
@@ -66,6 +70,15 @@ class BackgroundTracingManager {
     ANONYMIZE_DATA,
   };
   virtual bool SetActiveScenario(
+      std::unique_ptr<BackgroundTracingConfig> config,
+      DataFiltering data_filtering) = 0;
+
+  // Identical to SetActiveScenario except that whenever a trace is finalized,
+  // BackgroundTracingManager calls `receive_callback` to upload the trace.
+  // `local_output` should be true if `receive_callback` saves the trace
+  // locally (such as for testing), false if `receive_callback` uploads the
+  // trace to a server.
+  virtual bool SetActiveScenarioWithReceiveCallback(
       std::unique_ptr<BackgroundTracingConfig> config,
       ReceiveCallback receive_callback,
       DataFiltering data_filtering) = 0;

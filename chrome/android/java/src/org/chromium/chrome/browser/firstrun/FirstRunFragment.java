@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,13 @@ import android.app.Activity;
  */
 public interface FirstRunFragment {
     /**
-     * Notifies this fragment that native has been initialized.
+     * Notifies that the object returned by {@link #getPageDelegate()} and its dependencies have
+     * been fully initialized, including native initialization.
+     *
+     * TODO(https://crbug.com/1346301): Remove this method.
+     * @deprecated Use {@link FirstRunPageDelegate#getNativeInitializationPromise()} instead.
      */
+    @Deprecated
     default void onNativeInitialized() {}
 
     /**
@@ -38,4 +43,9 @@ public interface FirstRunFragment {
     default FirstRunPageDelegate getPageDelegate() {
         return (FirstRunPageDelegate) getActivity();
     }
+
+    /**
+     * Reset the fragment state. This can be used when the fragment is revisited with back button.
+     */
+    default void reset() {}
 }

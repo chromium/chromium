@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@ enum class ReloadType : short {
   // Reloads the visible item.
   NORMAL = 0,
 
-  // Reloads the transient item, or pending item if transient doesn't exist, or
-  // last committed item if both of them don't exist, using the original URL
-  // used to create it. This is used for cases where the user wants to refresh a
-  // page using a different configuration (e.g. user agent).
+  // Reloads the pending item, or the last committed item if no pending item
+  // exists, using the original URL used to create it. This is used for cases
+  // where the user wants to refresh a page using a different configuration
+  // (e.g. user agent).
   ORIGINAL_REQUEST_URL,
 };
 

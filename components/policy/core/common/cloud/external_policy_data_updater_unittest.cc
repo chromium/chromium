@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@
 #include "crypto/sha2.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -301,8 +302,8 @@ TEST_F(ExternalPolicyDataUpdaterTest, RetryWithBackoff) {
   // Make a fetch request.
   RequestExternalDataFetchAndWait(0);
 
-  base::TimeDelta expected_delay = base::TimeDelta::FromSeconds(15);
-  const base::TimeDelta delay_cap = base::TimeDelta::FromHours(12);
+  base::TimeDelta expected_delay = base::Seconds(15);
+  const base::TimeDelta delay_cap = base::Hours(12);
 
   // The backoff delay is capped at 12 hours, which is reached after 12 retries:
   // 15 * 2^12 == 61440 > 43200 == 12 * 60 * 60
@@ -329,8 +330,7 @@ TEST_F(ExternalPolicyDataUpdaterTest, RetryWithBackoff) {
     // to 100%.
     base::TimeDelta delay = backend_task_runner_->NextPendingTaskDelay();
     EXPECT_GT(delay,
-              base::TimeDelta::FromMilliseconds(
-                  0.799 * expected_delay.InMilliseconds()));
+              base::Milliseconds(0.799 * expected_delay.InMilliseconds()));
     EXPECT_LE(delay, expected_delay);
 
     if (i < 12) {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,7 +80,7 @@ void OnGetVisualsDoneExtractThumbnail(
 void OnDeletePageDone(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
                       OfflinePageModel::DeletePageResult result) {
   base::android::RunIntCallbackAndroid(j_callback_obj,
-                                       static_cast<int>(result));
+                                       static_cast<int32_t>(result));
 }
 
 std::string RequestListToString(

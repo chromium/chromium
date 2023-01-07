@@ -180,7 +180,7 @@ void LayoutSVGResourceContainer::MarkAllClientsForInvalidation(
   if (is_invalidating_)
     return;
   LocalSVGResource* resource = ResourceForContainer(*this);
-  if (!resource)
+  if (!resource || resource->Target() != GetElement())
     return;
   // Remove modes for which invalidations have already been
   // performed. If no modes remain we are done.

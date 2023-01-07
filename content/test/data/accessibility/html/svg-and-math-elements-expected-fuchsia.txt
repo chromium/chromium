@@ -1,0 +1,13 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++IMAGE label='original'
+++++++++UNKNOWN label='created'
+++++++++UNKNOWN label='created'
+++++++UNKNOWN
+++++++++UNKNOWN label='original'
+++++++++UNKNOWN label='created'
+++++++++UNKNOWN label='created'
+++++++STATIC_TEXT label='Done'
+++++++++UNKNOWN label='Done'

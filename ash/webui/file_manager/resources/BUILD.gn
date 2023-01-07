@@ -1,0 +1,236 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/resources/tools/optimize_webui.gni")
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash)
+
+preprocess_folder = "$target_gen_dir/preprocessed"
+mojom_webui_folder = "$root_gen_dir/mojom-webui/ash/webui/file_manager/mojom"
+
+js_library("init_globals") {
+}
+
+js_library("runtime_loaded_test_util_swa") {
+}
+
+js_library("script_loader") {
+}
+
+js_library("test_util_swa") {
+}
+
+js_library("main") {
+}
+
+js_library("main_js") {
+  sources = [
+    "main.js",
+    "script_loader.js",
+  ]
+  deps = [
+    "//ash/webui/file_manager/mojom:mojom_webui_js",
+    "//ui/file_manager/file_manager/common/js:glitch",
+  ]
+
+  externs_list = [ "$externs_path/chrome_extensions.js" ]
+}
+
+files_app_path =
+    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
+                root_build_dir)
+
+js_type_check("closure_compile") {
+  deps = [
+    ":main_js",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  closure_flags =
+      default_closure_args + mojom_js_args + [
+        "js_module_root=" + rebase_path(".", root_build_dir),
+        "js_module_root=" + rebase_path(mojom_webui_folder, root_build_dir),
+        "browser_resolver_prefix_replacements=\"chrome://file-manager/=" +
+            rebase_path("//ui/file_manager/file_manager/", root_build_dir) +
+            "\"",
+      ]
+}
+
+action("gen_main_html") {
+  inputs = [ "//ui/file_manager/file_manager/main.html" ]
+
+  script = "//ash/webui/file_manager/resources/gen_main_html.py"
+
+  args = [
+    "--source",
+    rebase_path("//ui/file_manager/file_manager/main.html", root_build_dir),
+    "--target",
+    rebase_path("$target_gen_dir/main.html", root_build_dir),
+  ]
+
+  outputs = [
+    "$target_gen_dir/main.html",
+    "$target_gen_dir/main.html.stamp",
+  ]
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"  #target_gen_dir
+  out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/manifest_preprocess.json"
+
+  in_files = [
+    "main.js",
+    "runtime_loaded_test_util_swa.js",
+    "script_loader.js",
+    "test_util_swa.js",
+  ]
+
+  deps = [
+    ":main",
+    ":script_loader",
+  ]
+}
+
+preprocess_if_expr("preprocess_mojo") {
+  in_folder = mojom_webui_folder
+  in_files = [ "file_manager.mojom-webui.js" ]
+  out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/manifest_preprocess_mojo.json"
+  deps = [ "//ash/webui/file_manager/mojom:mojom_webui_js" ]
+}
+
+# Only build Labs for debug (non-optimize-webui).
+if (!optimize_webui) {
+  ts_files = [ "labs/main.ts" ]
+
+  copy("copy_labs") {
+    sources = [ "labs/labs.html" ] + ts_files
+    outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
+  }
+
+  ts_library("labs_build_ts") {
+    root_dir = target_gen_dir
+    out_dir = "$target_gen_dir/tsc"
+    tsconfig_base = "labs/tsconfig_base.json"
+    extra_deps = [ ":copy_labs" ]
+
+    in_files = ts_files
+  }
+}
+
+optimize_webui("build") {
+  host = "file-manager"
+  input = rebase_path(preprocess_folder, root_build_dir)
+
+  js_module_in_files = [
+    "main.js",
+    "runtime_loaded_test_util_swa.js",
+  ]
+
+  js_out_files = [
+    "main.rollup.js",
+    "runtime_loaded_test_util_swa.rollup.js",
+    "shared.rollup.js",
+  ]
+
+  excludes = [
+    "chrome://resources/js/load_time_data.m.js",
+    "chrome://resources/mojo/mojo/public/js/bindings.js",
+  ]
+
+  external_paths = [ "chrome://file-manager|$files_app_path" ]
+
+  deps = [
+    ":preprocess",
+    ":preprocess_mojo",
+    "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:preprocess",
+  ]
+}
+
+generated_static_grdp = "$target_gen_dir/static_resources.grdp"
+
+generate_grd("build_static_grdp") {
+  out_grd = generated_static_grdp
+  grd_prefix = "file_manager_swa"
+
+  input_files_base_dir = rebase_path(".", "//")
+
+  input_files = [
+    "images/icon192.png",
+    "init_globals.js",
+  ]
+}
+
+grd_prefix = "file_manager_swa"
+generated_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+
+generate_grd("build_grd") {
+  out_grd = generated_grd
+
+  grdp_files = [ generated_static_grdp ]
+
+  deps = [
+    ":build",
+    ":build_static_grdp",
+    ":gen_main_html",
+    ":preprocess",
+    ":preprocess_mojo",
+  ]
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  input_files = [ "main.html" ]
+  manifest_files = [ "$target_gen_dir/manifest_preprocess_mojo.json" ]
+
+  if (optimize_webui) {
+    input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+    input_files += [
+      "main.rollup.js",
+      "shared.rollup.js",
+      "runtime_loaded_test_util_swa.rollup.js",
+    ]
+
+    resource_path_rewrites = [
+      "main.rollup.js|main.js",
+      "runtime_loaded_test_util_swa.rollup.js|runtime_loaded_test_util_swa.js",
+    ]
+  } else {
+    manifest_files += [ "$target_gen_dir/manifest_preprocess.json" ]
+
+    # Labs:
+    manifest_files +=
+        filter_include(get_target_outputs(":labs_build_ts"), [ "*.manifest" ])
+    input_files += [ "labs/labs.html" ]
+    deps += [
+      ":copy_labs",
+      ":labs_build_ts",
+    ]
+  }
+}
+
+grit("file_manager_swa_resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+
+  source = generated_grd
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/file_manager_swa_resources.h",
+    "grit/file_manager_swa_resources_map.cc",
+    "grit/file_manager_swa_resources_map.h",
+    "file_manager_swa_resources.pak",
+  ]
+  output_dir = target_gen_dir
+}

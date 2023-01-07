@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
 #include "base/time/time.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -46,6 +47,10 @@ bool AreAnimationsEnabled() {
 class DotBackground : public views::Background {
  public:
   DotBackground() = default;
+
+  DotBackground(const DotBackground&) = delete;
+  DotBackground& operator=(const DotBackground&) = delete;
+
   ~DotBackground() override = default;
 
   void Paint(gfx::Canvas* canvas, views::View* view) const override {
@@ -59,9 +64,6 @@ class DotBackground : public views::Background {
 
     canvas->DrawCircle(center, radius, flags);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DotBackground);
 };
 
 }  // namespace
@@ -144,21 +146,19 @@ void AssistantProgressIndicator::VisibilityChanged(views::View* starting_from,
           start_offset,
           ui::LayerAnimationElement::AnimatableProperty::TRANSFORM);
     }
-    start_offset += base::TimeDelta::FromMilliseconds(216);
+    start_offset += base::Milliseconds(216);
 
     // Schedule transformation animation.
     child->layer()->GetAnimator()->ScheduleAnimation(
         CreateLayerAnimationSequence(
             // Animate scale up.
-            CreateTransformElement(transform,
-                                   base::TimeDelta::FromMilliseconds(266)),
+            CreateTransformElement(transform, base::Milliseconds(266)),
             // Animate scale down.
-            CreateTransformElement(gfx::Transform(),
-                                   base::TimeDelta::FromMilliseconds(450)),
+            CreateTransformElement(gfx::Transform(), base::Milliseconds(450)),
             // Pause before next iteration.
             ui::LayerAnimationElement::CreatePauseElement(
                 ui::LayerAnimationElement::AnimatableProperty::TRANSFORM,
-                base::TimeDelta::FromMilliseconds(500)),
+                base::Milliseconds(500)),
             // Animation parameters.
             {/*is_cyclic=*/true}));
   }

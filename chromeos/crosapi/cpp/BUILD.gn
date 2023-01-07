@@ -1,6 +1,8 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
 
 # C++ components used by both lacros-chrome and ash-chrome.
 config("crosapi_implementation") {
@@ -10,8 +12,8 @@ config("crosapi_implementation") {
 component("cpp") {
   output_name = "crosapi_public_cpp"
   sources = [
-    "crosapi_constants.cc",
-    "crosapi_constants.h",
+    "gurl_os_handler_utils.cc",
+    "gurl_os_handler_utils.h",
     "keystore_service_util.cc",
     "keystore_service_util.h",
     "scoped_allow_sync_call.cc",
@@ -19,10 +21,26 @@ component("cpp") {
   ]
   configs += [ ":crosapi_implementation" ]
   deps = [
+    ":crosapi_constants",
     "//base",
     "//chromeos/crosapi/mojom",
     "//mojo/public/cpp/bindings",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "lacros_startup_state.cc",
+      "lacros_startup_state.h",
+    ]
+  }
+}
+
+static_library("crosapi_constants") {
+  sources = [
+    "crosapi_constants.cc",
+    "crosapi_constants.h",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -33,5 +51,8 @@ source_set("unit_tests") {
     "//chromeos/crosapi/mojom",
     "//testing/gtest",
   ]
-  sources = [ "keystore_service_util_unittest.cc" ]
+  sources = [
+    "gurl_os_handler_unittest.cc",
+    "keystore_service_util_unittest.cc",
+  ]
 }

@@ -1,0 +1,49 @@
+<body>
+<img src="/images/green-16x16.png" id=image>
+<span id=span style="display: inline-block;width: 15px; height: 15px"></span>
+<script>
+const image = document.getElementById("image");
+const span = document.getElementById("span");
+const loadImage = size => {
+  return event => {
+    let zoom;
+    if (location.search.includes("replace")) {
+      zoom = document.getElementById("image");
+    } else {
+      zoom = new Image();
+    }
+    zoom.src=`/images/green-${size}.png`;
+    document.body.appendChild(zoom);
+  }
+};
+
+// Turn off BFCache to see if it helps with BFCache bot flakes.
+window.addEventListener("unload", () => { console.log("Turn off BFCache"); });
+
+image.addEventListener("mouseover", loadImage("100x50"));
+span.addEventListener("mouseover", loadImage("256x256"));
+
+const dispatch_mouseover = () => {
+  span.dispatchEvent(new Event("mouseover"))
+};
+
+const run_test = async entries_expected => {
+  await new Promise(resolve => {
+    let entries_seen = 0;
+    const PO = new PerformanceObserver(list => {
+    const entries = list.getEntries();
+      for (let entry of entries) {
+        if (entry.url) {
+          entries_seen++;
+        }
+      }
+      if (entries_seen >= entries_expected) {
+        PO.disconnect();
+        resolve()
+      }
+    });
+    PO.observe({type: "largest-contentful-paint", buffered: true});
+  });
+};
+</script>
+</body>

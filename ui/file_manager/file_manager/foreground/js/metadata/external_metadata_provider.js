@@ -1,18 +1,19 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {MetadataItem} from './metadata_item.m.js';
-// #import {MetadataProvider} from './metadata_provider.m.js';
-// #import {MetadataRequest} from './metadata_request.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {MetadataItem} from './metadata_item.js';
+import {MetadataProvider} from './metadata_provider.js';
+import {MetadataRequest} from './metadata_request.js';
 
 /**
  * Metadata provider for FileEntry#getMetadata.
  * TODO(hirono): Rename thumbnailUrl with externalThumbnailUrl.
  * @final
  */
-/* #export */ class ExternalMetadataProvider extends MetadataProvider {
+export class ExternalMetadataProvider extends MetadataProvider {
   constructor() {
     super(ExternalMetadataProvider.PROPERTY_NAMES);
   }
@@ -57,94 +58,46 @@
     for (let i = 0; i < propertiesList.length; i++) {
       const prop = propertiesList[i];
       const item = new MetadataItem();
-      if (prop.alternateUrl !== undefined || nameMap['alternateUrl']) {
-        item.alternateUrl = prop.alternateUrl;
-      }
-      if (prop.availableOffline !== undefined || nameMap['availableOffline']) {
-        item.availableOffline = prop.availableOffline;
-      }
-      if (prop.availableWhenMetered !== undefined ||
-          nameMap['availableWhenMetered']) {
-        item.availableWhenMetered = prop.availableWhenMetered;
-      }
+      item.alternateUrl = prop.alternateUrl;
+      item.availableOffline = prop.availableOffline;
+      item.availableWhenMetered = prop.availableWhenMetered;
       if (prop.contentMimeType !== undefined || nameMap['contentMimeType']) {
         item.contentMimeType = prop.contentMimeType || '';
       }
-      if (prop.croppedThumbnailUrl !== undefined ||
-          nameMap['croppedThumbnailUrl']) {
-        item.croppedThumbnailUrl = prop.croppedThumbnailUrl;
-      }
+      item.croppedThumbnailUrl = prop.croppedThumbnailUrl;
       if (prop.customIconUrl !== undefined || nameMap['customIconUrl']) {
         item.customIconUrl = prop.customIconUrl || '';
       }
-      if (prop.dirty !== undefined || nameMap['dirty']) {
-        item.dirty = prop.dirty;
-      }
-      if (prop.externalFileUrl !== undefined || nameMap['externalFileUrl']) {
-        item.externalFileUrl = prop.externalFileUrl;
-      }
-      if (prop.hosted !== undefined || nameMap['hosted']) {
-        item.hosted = prop.hosted;
-      }
-      if (prop.imageHeight !== undefined || nameMap['imageHeight']) {
-        item.imageHeight = prop.imageHeight;
-      }
-      if (prop.imageRotation !== undefined || nameMap['imageRotation']) {
-        item.imageRotation = prop.imageRotation;
-      }
-      if (prop.imageWidth !== undefined || nameMap['imageWidth']) {
-        item.imageWidth = prop.imageWidth;
-      }
-      if (prop.modificationTime !== undefined || nameMap['modificationTime']) {
+      item.dirty = prop.dirty;
+      item.externalFileUrl = prop.externalFileUrl;
+      item.hosted = prop.hosted;
+      item.imageHeight = prop.imageHeight;
+      item.imageRotation = prop.imageRotation;
+      item.imageWidth = prop.imageWidth;
+      if (prop.modificationTime !== undefined) {
         item.modificationTime = new Date(prop.modificationTime);
       }
-      if (prop.modificationByMeTime !== undefined ||
-          nameMap['modificationByMeTime']) {
+      if (prop.modificationByMeTime !== undefined) {
         item.modificationByMeTime = new Date(prop.modificationByMeTime);
       }
-      if (prop.pinned !== undefined || nameMap['pinned']) {
-        item.pinned = prop.pinned;
-      }
-      if (prop.present !== undefined || nameMap['present']) {
-        item.present = prop.present;
-      }
-      if (prop.shared !== undefined || nameMap['shared']) {
-        item.shared = prop.shared;
-      }
-      if (prop.sharedWithMe !== undefined || nameMap['sharedWithMe']) {
-        item.sharedWithMe = prop.sharedWithMe;
-      }
+      item.pinned = prop.pinned;
+      item.present = prop.present;
+      item.shared = prop.shared;
+      item.sharedWithMe = prop.sharedWithMe;
       if (prop.size !== undefined || nameMap['size']) {
         item.size = requests[i].entry.isFile ? (prop.size || 0) : -1;
       }
-      if (prop.thumbnailUrl !== undefined || nameMap['thumbnailUrl']) {
-        item.thumbnailUrl = prop.thumbnailUrl;
-      }
-      if (prop.canCopy !== undefined || nameMap['canCopy']) {
-        item.canCopy = prop.canCopy;
-      }
-      if (prop.canDelete !== undefined || nameMap['canDelete']) {
-        item.canDelete = prop.canDelete;
-      }
-      if (prop.canRename !== undefined || nameMap['canRename']) {
-        item.canRename = prop.canRename;
-      }
-      if (prop.canAddChildren !== undefined || nameMap['canAddChildren']) {
-        item.canAddChildren = prop.canAddChildren;
-      }
-      if (prop.canShare !== undefined || nameMap['canShare']) {
-        item.canShare = prop.canShare;
-      }
-      if (prop.isMachineRoot !== undefined || nameMap['isMachineRoot']) {
-        item.isMachineRoot = prop.isMachineRoot;
-      }
-      if (prop.isExternalMedia !== undefined || nameMap['isExternalMedia']) {
-        item.isExternalMedia = prop.isExternalMedia;
-      }
-      if (prop.isArbitrarySyncFolder !== undefined ||
-          nameMap['isArbitrarySyncFolder']) {
-        item.isArbitrarySyncFolder = prop.isArbitrarySyncFolder;
-      }
+      item.thumbnailUrl = prop.thumbnailUrl;
+      item.canCopy = prop.canCopy;
+      item.canDelete = prop.canDelete;
+      item.canRename = prop.canRename;
+      item.canAddChildren = prop.canAddChildren;
+      item.canShare = prop.canShare;
+      item.canPin = prop.canPin;
+      item.isMachineRoot = prop.isMachineRoot;
+      item.isExternalMedia = prop.isExternalMedia;
+      item.isArbitrarySyncFolder = prop.isArbitrarySyncFolder;
+      item.syncStatus = prop.syncStatus;
       results.push(item);
     }
     return results;
@@ -178,7 +131,9 @@ ExternalMetadataProvider.PROPERTY_NAMES = [
   'canRename',
   'canAddChildren',
   'canShare',
+  'canPin',
   'isMachineRoot',
   'isExternalMedia',
   'isArbitrarySyncFolder',
+  'syncStatus',
 ];

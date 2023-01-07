@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,9 @@
 #include <stddef.h>
 #include <cctype>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_digest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -66,10 +64,11 @@ TEST(PSLMatchingUtilsTest, GetMatchResultNormalCredentials) {
   for (const TestData& data : cases) {
     PasswordForm form;
     form.url = GURL(data.form_origin);
-    form.signon_realm = form.url.GetOrigin().spec();
-    PasswordStore::FormDigest digest(
+    form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
+    PasswordFormDigest digest(
         PasswordForm::Scheme::kHtml,
-        GURL(data.digest_origin).GetOrigin().spec(), GURL(data.digest_origin));
+        GURL(data.digest_origin).DeprecatedGetOriginAsURL().spec(),
+        GURL(data.digest_origin));
 
     EXPECT_EQ(data.match_result, GetMatchResult(form, digest))
         << "form_origin = " << data.form_origin << ", digest = " << digest;
@@ -123,10 +122,11 @@ TEST(PSLMatchingUtilsTest, GetMatchResultPSL) {
   for (const TestData& data : cases) {
     PasswordForm form;
     form.url = GURL(data.form_origin);
-    form.signon_realm = form.url.GetOrigin().spec();
-    PasswordStore::FormDigest digest(
+    form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
+    PasswordFormDigest digest(
         PasswordForm::Scheme::kHtml,
-        GURL(data.digest_origin).GetOrigin().spec(), GURL(data.digest_origin));
+        GURL(data.digest_origin).DeprecatedGetOriginAsURL().spec(),
+        GURL(data.digest_origin));
 
     EXPECT_EQ(data.match_result, GetMatchResult(form, digest))
         << "form_origin = " << data.form_origin << ", digest = " << digest;
@@ -188,9 +188,10 @@ TEST(PSLMatchingUtilsTest, GetMatchResultFederated) {
     form.signon_realm =
         "federation://" + form.url.host() + "/" + form.federation_origin.host();
 
-    PasswordStore::FormDigest digest(
+    PasswordFormDigest digest(
         PasswordForm::Scheme::kHtml,
-        GURL(data.digest_origin).GetOrigin().spec(), GURL(data.digest_origin));
+        GURL(data.digest_origin).DeprecatedGetOriginAsURL().spec(),
+        GURL(data.digest_origin));
 
     EXPECT_EQ(data.match_result, GetMatchResult(form, digest))
         << "form_origin = " << data.form_origin
@@ -259,9 +260,10 @@ TEST(PSLMatchingUtilsTest, GetMatchResultFederatedPSL) {
     form.signon_realm =
         "federation://" + form.url.host() + "/" + form.federation_origin.host();
 
-    PasswordStore::FormDigest digest(
+    PasswordFormDigest digest(
         PasswordForm::Scheme::kHtml,
-        GURL(data.digest_origin).GetOrigin().spec(), GURL(data.digest_origin));
+        GURL(data.digest_origin).DeprecatedGetOriginAsURL().spec(),
+        GURL(data.digest_origin));
 
     EXPECT_EQ(data.match_result, GetMatchResult(form, digest))
         << "form_origin = " << data.form_origin

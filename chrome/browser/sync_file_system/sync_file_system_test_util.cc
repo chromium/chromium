@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
 #include "content/public/test/test_utils.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 
 using content::BrowserThread;
 
@@ -19,7 +19,7 @@ namespace sync_file_system {
 
 namespace drive_backend {
 class MetadataDatabase;
-}  // drive_backend
+}  // namespace drive_backend
 
 template <typename R>
 void AssignAndQuit(base::RunLoop* run_loop, R* result_out, R result) {
@@ -58,7 +58,7 @@ template base::OnceCallback<void(SyncStatusCode)> AssignAndQuitCallback(
 #define INSTANTIATE_RECEIVER(type) \
   template base::OnceCallback<void(type)> CreateResultReceiver(type*)
 INSTANTIATE_RECEIVER(SyncStatusCode);
-INSTANTIATE_RECEIVER(google_apis::DriveApiErrorCode);
+INSTANTIATE_RECEIVER(google_apis::ApiErrorCode);
 INSTANTIATE_RECEIVER(std::unique_ptr<RemoteFileSyncService::OriginStatusMap>);
 #undef INSTANTIATE_RECEIVER
 

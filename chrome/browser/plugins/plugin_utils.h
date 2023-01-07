@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 class GURL;
@@ -25,6 +24,10 @@ class Origin;
 
 class PluginUtils {
  public:
+  PluginUtils() = delete;
+  PluginUtils(const PluginUtils&) = delete;
+  PluginUtils& operator=(const PluginUtils&) = delete;
+
   // |is_default| and |is_managed| may be nullptr. In that case, they aren't
   // set.
   static void GetPluginContentSetting(
@@ -47,9 +50,6 @@ class PluginUtils {
   // keys and the corresponding extensions Ids as values.
   static base::flat_map<std::string, std::string> GetMimeTypeToExtensionIdMap(
       content::BrowserContext* browser_context);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PluginUtils);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_UTILS_H_

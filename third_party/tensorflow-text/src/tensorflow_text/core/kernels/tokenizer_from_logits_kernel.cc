@@ -19,7 +19,8 @@
 
 #include "absl/strings/str_cat.h"
 #include "icu4c/source/common/unicode/uchar.h"
-#include "icu4c/source/common/unicode/unistr.h"
+#include "icu4c/source/common/unicode/umachine.h"
+#include "icu4c/source/common/unicode/utf8.h"
 #include "tensorflow/core/framework/op_kernel.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -57,8 +58,10 @@ bool GetUTF8Chars(absl::string_view text,
 }
 
 bool IsBreakChar(absl::string_view text) {
-  icu::UnicodeString ustr(text.data(), text.length());
-  return ustr.length() == 1 && u_isUWhiteSpace(ustr[0]);
+  UChar32 c;
+  int position = 0;
+  U8_NEXT_OR_FFFD(text.data(), position, text.length(), c);
+  return u_isUWhiteSpace(c);
 }
 
 // Tokenizes text, the input string #(batch_index).  Knowing the batch_index

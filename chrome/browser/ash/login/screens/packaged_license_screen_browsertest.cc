@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/enrollment_config.h"
-#include "chrome/browser/chromeos/policy/server_backed_device_state.h"
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -21,9 +21,9 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using ::testing::ElementsAre;
+namespace ash {
 
-namespace chromeos {
+using ::testing::ElementsAre;
 
 class PackagedLicenseScreenTest : public OobeBaseTest {
  public:
@@ -41,12 +41,11 @@ class PackagedLicenseScreenTest : public OobeBaseTest {
   }
 
   void SetUpLicense(bool value) {
-    DictionaryPrefUpdate dict(local_state(), prefs::kServerBackedDeviceState);
+    ScopedDictPrefUpdate dict(local_state(), prefs::kServerBackedDeviceState);
     if (value) {
-      dict.Get()->Set(policy::kDeviceStatePackagedLicense,
-                      std::make_unique<base::Value>(true));
+      dict->Set(policy::kDeviceStatePackagedLicense, true);
     } else {
-      dict.Get()->Remove(policy::kDeviceStatePackagedLicense, nullptr);
+      dict->Remove(policy::kDeviceStatePackagedLicense);
     }
   }
 
@@ -148,4 +147,4 @@ IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, NoLicense) {
           static_cast<int>(WizardController::ScreenShownStatus::kSkipped), 1)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

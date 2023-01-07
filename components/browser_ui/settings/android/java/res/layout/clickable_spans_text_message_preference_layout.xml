@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Layout used by ClickableSpansTextMessagePreference. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/PreferenceLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/title"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        style="@style/PreferenceTitle" />
+
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/summary"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        style="@style/PreferenceSummary" />
+
+</LinearLayout>

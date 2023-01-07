@@ -1,9 +1,10 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 if (is_win) {
   files = get_path_info([
+                          "argument_parser.py",
                           "chrome_helper.py",
                           "create_zip.py",
                           "config/chrome_beta_installed.prop",
@@ -36,13 +37,14 @@ if (is_win) {
                           "config/previous_chrome_system_installed.prop",
                           "config/previous_chrome_user_installed.prop",
                           "file_operations.py",
+                          "installer_test.py",
                           "launch_chrome.py",
                           "process_operations.py",
                           "property_walker.py",
                           "quit_chrome.py",
                           "registry_operations.py",
+                          "run_mini_installer_tests.py",
                           "test_chrome_with_chromedriver.py",
-                          "test_installer.py",
                           "test_page.html",
                           "uninstall_chrome.py",
                           "update_lastrun.py",
@@ -56,14 +58,14 @@ if (is_win) {
     testonly = true
 
     data_deps = [
-      "//chrome/installer/mini_installer:mini_installer",
+      "//chrome/installer/mini_installer",
       "//chrome/installer/mini_installer:previous_version_mini_installer",
-      "//chrome/test/chromedriver:chromedriver",
+      "//chrome/test/chromedriver",
+      "//testing:test_scripts_shared",
+      "//third_party/catapult/third_party/typ",
     ]
     data = [
-             "//third_party/webdriver/pylib/",
              "//testing/scripts/",
-             "//testing/xvfb.py",
              "//third_party/depot_tools/download_from_google_storage.py",
              "//third_party/depot_tools/gsutil.py",
            ] + files
@@ -73,14 +75,17 @@ if (is_win) {
     testonly = true
     output_zip_file = "$root_out_dir/mini_installer_tests.zip"
     script = "create_zip.py"
+    inputs = files
     outputs = [ output_zip_file ]
-    data = files
     args = [
       "--o",
       rebase_path(output_zip_file, root_build_dir),
       "--chromedriver-path",
       rebase_path("$root_out_dir/chromedriver.exe", root_build_dir),
     ]
-    deps = [ "//chrome/test/chromedriver:chromedriver" ]
+    deps = [
+      "//chrome/test/chromedriver",
+      "//third_party/catapult/third_party/typ",
+    ]
   }
 }

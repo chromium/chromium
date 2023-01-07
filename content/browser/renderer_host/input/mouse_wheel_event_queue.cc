@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -123,7 +123,7 @@ void MouseWheelEventQueue::ProcessMouseWheelAck(
     scroll_update.SetPositionInScreen(
         event_sent_for_gesture_ack_->event.PositionInScreen());
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // Swap X & Y if Shift is down and when there is no horizontal movement.
     if (event_sent_for_gesture_ack_->event.event_action ==
             blink::WebMouseWheelEvent::EventAction::kScrollHorizontal &&
@@ -133,7 +133,7 @@ void MouseWheelEventQueue::ProcessMouseWheelAck(
       scroll_update.data.scroll_update.delta_y =
           event_sent_for_gesture_ack_->event.delta_x;
     } else
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
     {
       scroll_update.data.scroll_update.delta_x =
           event_sent_for_gesture_ack_->event.delta_x;
@@ -185,13 +185,11 @@ void MouseWheelEventQueue::ProcessMouseWheelAck(
     bool current_phase_ended = false;
     bool scroll_phase_ended = false;
     bool momentum_phase_ended = false;
-    bool has_phase_info = false;
 
     if (event_sent_for_gesture_ack_->event.phase !=
             blink::WebMouseWheelEvent::kPhaseNone ||
         event_sent_for_gesture_ack_->event.momentum_phase !=
             blink::WebMouseWheelEvent::kPhaseNone) {
-      has_phase_info = true;
       scroll_phase_ended = event_sent_for_gesture_ack_->event.phase ==
                                blink::WebMouseWheelEvent::kPhaseEnded ||
                            event_sent_for_gesture_ack_->event.phase ==
@@ -206,10 +204,6 @@ void MouseWheelEventQueue::ProcessMouseWheelAck(
 
     bool needs_update = scroll_update.data.scroll_update.delta_x != 0 ||
                         scroll_update.data.scroll_update.delta_y != 0;
-
-    // For every GSU event record whether it is latched or not.
-    if (needs_update)
-      RecordLatchingUmaMetric(client_->IsWheelScrollInProgress());
 
     bool synthetic = event_sent_for_gesture_ack_->event.has_synthetic_phase;
 
@@ -325,10 +319,6 @@ void MouseWheelEventQueue::SendScrollBegin(
 
   client_->ForwardGestureEventWithLatencyInfo(
       scroll_begin, ui::LatencyInfo(ui::SourceEventType::WHEEL));
-}
-
-void MouseWheelEventQueue::RecordLatchingUmaMetric(bool latched) {
-  UMA_HISTOGRAM_BOOLEAN("WheelScrolling.WasLatched", latched);
 }
 
 }  // namespace content

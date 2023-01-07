@@ -1,14 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.weblayer_private;
 
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.webkit.WebResourceResponse;
 
-import org.chromium.base.TimeUtilsJni;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -34,10 +32,6 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
     private final TabImpl mTab;
     private long mNativeNavigationController;
     private INavigationControllerClient mNavigationControllerClient;
-
-    // Conversion between native TimeTicks and SystemClock.uptimeMillis().
-    private long mNativeTickOffsetUs;
-    private boolean mNativeTickOffsetUsComputed;
 
     private Map<Long, PageImpl> mPages = new HashMap<>();
 
@@ -240,6 +234,11 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
     }
 
     @CalledByNative
+    private void getOrCreatePageForNavigation(NavigationImpl navigation) throws RemoteException {
+        navigation.getPage();
+    }
+
+    @CalledByNative
     private void navigationCompleted(NavigationImpl navigation) throws RemoteException {
         mNavigationControllerClient.navigationCompleted(navigation.getClientNavigation());
     }
@@ -250,9 +249,9 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
     }
 
     @CalledByNative
-    private void loadStateChanged(boolean isLoading, boolean toDifferentDocument)
+    private void loadStateChanged(boolean isLoading, boolean shouldShowLoadingUi)
             throws RemoteException {
-        mNavigationControllerClient.loadStateChanged(isLoading, toDifferentDocument);
+        mNavigationControllerClient.loadStateChanged(isLoading, shouldShowLoadingUi);
     }
 
     @CalledByNative
@@ -267,22 +266,20 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
 
     @CalledByNative
     private void onFirstContentfulPaint2(
-            long navigationStartTick, long firstContentfulPaintDurationMs) throws RemoteException {
+            long navigationStartMs, long firstContentfulPaintDurationMs) throws RemoteException {
         if (WebLayerFactoryImpl.getClientMajorVersion() < 88) return;
 
         mNavigationControllerClient.onFirstContentfulPaint2(
-                (navigationStartTick - getNativeTickOffsetUs()) / 1000,
-                firstContentfulPaintDurationMs);
+                navigationStartMs, firstContentfulPaintDurationMs);
     }
 
     @CalledByNative
-    private void onLargestContentfulPaint(long navigationStartTick,
-            long largestContentfulPaintDurationMs) throws RemoteException {
+    private void onLargestContentfulPaint(
+            long navigationStartMs, long largestContentfulPaintDurationMs) throws RemoteException {
         if (WebLayerFactoryImpl.getClientMajorVersion() < 88) return;
 
         mNavigationControllerClient.onLargestContentfulPaint(
-                (navigationStartTick - getNativeTickOffsetUs()) / 1000,
-                largestContentfulPaintDurationMs);
+                navigationStartMs, largestContentfulPaintDurationMs);
     }
 
     @CalledByNative
@@ -290,16 +287,11 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
         mNavigationControllerClient.onOldPageNoLongerRendered(uri);
     }
 
-    private long getNativeTickOffsetUs() {
-        // See logic in CustomTabsConnection.java that this was based on.
-        if (!mNativeTickOffsetUsComputed) {
-            // Compute offset from time ticks to uptimeMillis.
-            mNativeTickOffsetUsComputed = true;
-            long nativeNowUs = TimeUtilsJni.get().getTimeTicksNowUs();
-            long javaNowUs = SystemClock.uptimeMillis() * 1000;
-            mNativeTickOffsetUs = nativeNowUs - javaNowUs;
-        }
-        return mNativeTickOffsetUs;
+    @CalledByNative
+    private void onPageLanguageDetermined(PageImpl page, String language) throws RemoteException {
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 93) return;
+
+        mNavigationControllerClient.onPageLanguageDetermined(page.getClientPage(), language);
     }
 
     private static final class NavigateParamsImpl extends INavigateParams.Stub {

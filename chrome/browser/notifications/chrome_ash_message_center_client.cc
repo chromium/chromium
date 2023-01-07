@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,13 @@
 
 #include "ash/public/cpp/notifier_metadata.h"
 #include "ash/public/cpp/notifier_settings_observer.h"
+#include "base/feature_list.h"
 #include "base/i18n/string_compare.h"
-#include "base/stl_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/notifications/arc_application_notifier_controller.h"
 #include "chrome/browser/notifications/extension_notifier_controller.h"
+#include "chrome/browser/notifications/pwa_notifier_controller.h"
 #include "chrome/browser/notifications/web_page_notifier_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -31,7 +33,7 @@ ChromeAshMessageCenterClient* g_chrome_ash_message_center_client = nullptr;
 // All notifier actions are performed on the notifiers for the currently active
 // profile, so this just returns the active profile.
 Profile* GetProfileForNotifiers() {
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(
+  return ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager::UserManager::Get()->GetActiveUser());
 }
 
@@ -73,8 +75,8 @@ class ForwardingNotificationDelegate
     delegate_->HandleNotificationClosed(notification_id_, by_user);
   }
 
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     if (button_index) {
       delegate_->HandleNotificationButtonClicked(notification_id_,
                                                  *button_index, reply);
@@ -108,13 +110,19 @@ ChromeAshMessageCenterClient::ChromeAshMessageCenterClient(
   DCHECK(!g_chrome_ash_message_center_client);
   g_chrome_ash_message_center_client = this;
 
-  sources_.insert(
-      std::make_pair(message_center::NotifierType::APPLICATION,
-                     std::make_unique<ExtensionNotifierController>(this)));
+  if (base::FeatureList::IsEnabled(features::kQuickSettingsPWANotifications)) {
+    sources_.insert(
+        std::make_pair(message_center::NotifierType::APPLICATION,
+                       std::make_unique<PwaNotifierController>(this)));
+  } else {
+    sources_.insert(
+        std::make_pair(message_center::NotifierType::APPLICATION,
+                       std::make_unique<ExtensionNotifierController>(this)));
 
-  sources_.insert(
-      std::make_pair(message_center::NotifierType::WEB_PAGE,
-                     std::make_unique<WebPageNotifierController>(this)));
+    sources_.insert(
+        std::make_pair(message_center::NotifierType::WEB_PAGE,
+                       std::make_unique<WebPageNotifierController>(this)));
+  }
 
   sources_.insert(std::make_pair(
       message_center::NotifierType::ARC_APPLICATION,

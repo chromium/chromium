@@ -1,25 +1,34 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/themes/theme_service.h"
 
+#include <cmath>
+
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
-#include "chrome/browser/themes/increased_contrast_theme_supplier.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/themes/theme_service_test_utils.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/color/chrome_color_mixers.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -35,16 +44,28 @@
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/test_native_theme.h"
+#include "ui/views/views_features.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_factory.h"
+#include "ui/linux/linux_ui_getter.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace {
+
+enum class ContrastMode { kNonHighContrast, kHighContrast };
+enum class SystemTheme { kDefault, kCustom };
 
 // A class that ensures any installed extension is uninstalled before it goes
 // out of scope.  This ensures the temporary directory used to load the
@@ -77,11 +98,30 @@ class ThemeScoper {
   }
 
  private:
-  extensions::ExtensionService* extension_service_ = nullptr;
-  extensions::ExtensionRegistry* extension_registry_ = nullptr;
+  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
   std::string extension_id_;
   base::ScopedTempDir temp_dir_;
 };
+
+#if BUILDFLAG(IS_LINUX)
+class LinuxUiGetterImpl : public ui::LinuxUiGetter {
+ public:
+  explicit LinuxUiGetterImpl(bool use_system_theme)
+      : linux_ui_theme_(use_system_theme ? ui::GetDefaultLinuxUiTheme()
+                                         : nullptr) {}
+  ~LinuxUiGetterImpl() override = default;
+  ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
+    return linux_ui_theme_;
+  }
+  ui::LinuxUiTheme* GetForProfile(Profile* profile) override {
+    return linux_ui_theme_;
+  }
+
+ private:
+  ui::LinuxUiTheme* const linux_ui_theme_;
+};
+#endif
 
 }  // namespace
 
@@ -142,37 +182,13 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
 
     scoped_refptr<extensions::UnpackedInstaller> installer(
         extensions::UnpackedInstaller::Create(service_));
-    if (service_->IsExtensionEnabled(extension_id)) {
-      extensions::TestExtensionRegistryObserver observer(registry_);
-      installer->Load(path);
-      observer.WaitForExtensionLoaded();
-    } else {
-      content::WindowedNotificationObserver observer(
-          extensions::NOTIFICATION_EXTENSION_UPDATE_DISABLED,
-          content::Source<Profile>(profile()));
-      installer->Load(path);
-      observer.Wait();
-    }
+
+    extensions::TestExtensionRegistryObserver observer(registry_);
+    installer->Load(path);
+    observer.WaitForExtensionInstalled();
 
     // Let the ThemeService finish creating the theme pack.
     base::RunLoop().RunUntilIdle();
-  }
-
-  void set_theme_supplier(ThemeService* theme_service,
-                          scoped_refptr<CustomThemeSupplier> theme_supplier) {
-    theme_service->theme_supplier_ = theme_supplier;
-  }
-
-  SkColor GetOmniboxColor(ThemeService* theme_service,
-                          int id,
-                          bool incognito) const {
-    bool has_custom_color;
-    base::Optional<SkColor> color =
-        theme_service->theme_helper_.GetOmniboxColor(
-            id, incognito, theme_service->GetThemeSupplier(),
-            &has_custom_color);
-    EXPECT_TRUE(color);
-    return color.value_or(gfx::kPlaceholderColor);
   }
 
   bool IsExtensionDisabled(const std::string& id) const {
@@ -180,36 +196,170 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
                                        extensions::ExtensionRegistry::DISABLED);
   }
 
-  // Returns the separator color as the opaque result of blending it atop the
-  // frame color (which is the color we use when calculating the contrast of the
-  // separator with the tab and frame colors).
-  static SkColor GetSeparatorColor(SkColor tab_color, SkColor frame_color) {
-    return color_utils::GetResultingPaintColor(
-        ThemeHelper::GetSeparatorColor(tab_color, frame_color), frame_color);
-  }
-
  protected:
-  ui::TestNativeTheme native_theme_;
-  extensions::ExtensionRegistry* registry_ = nullptr;
-  ThemeService* theme_service_ = nullptr;
+  ui::TestNativeTheme test_native_theme_;
+  raw_ptr<extensions::ExtensionRegistry> registry_ = nullptr;
+  raw_ptr<ThemeService> theme_service_ = nullptr;
 };
 
-class IncognitoThemeServiceTest : public ThemeServiceTest,
-                                  public testing::WithParamInterface<bool> {
+class ColorProviderTest
+    : public ThemeServiceTest,
+      public testing::WithParamInterface<
+          std::tuple<ui::NativeTheme::ColorScheme, ContrastMode, SystemTheme>> {
  public:
-  IncognitoThemeServiceTest() {
-    bool flag_enabled = GetParam();
-    if (flag_enabled) {
-      feature_list_.InitAndEnableFeature(
-          features::kIncognitoBrandConsistencyForDesktop);
+  ColorProviderTest() = default;
+
+  // ThemeServiceTest:
+  void SetUp() override {
+    ThemeServiceTest::SetUp();
+
+    // Only perform mixer initialization once.
+    static bool initialized_mixers = false;
+    if (!initialized_mixers) {
+#if BUILDFLAG(IS_LINUX)
+      // Ensures LinuxUi is configured on supported linux platforms.
+      // Initializing the toolkit also adds the native toolkit ColorMixers.
+      ui::OzonePlatform::InitParams ozone_params;
+      ozone_params.single_process = true;
+      ui::OzonePlatform::InitializeForUI(ozone_params);
+      auto* linux_ui = ui::GetDefaultLinuxUi();
+      ASSERT_TRUE(linux_ui);
+      ui::LinuxUi::SetInstance(linux_ui);
+#endif  // BUILDFLAG(IS_LINUX)
+
+      // Add the Chrome ColorMixers after native ColorMixers.
+      ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+          base::BindRepeating(AddChromeColorMixers));
+
+      initialized_mixers = true;
+    }
+#if BUILDFLAG(IS_LINUX)
+    linux_ui_getter_ = std::make_unique<LinuxUiGetterImpl>(
+        std::get<SystemTheme>(GetParam()) == SystemTheme::kCustom);
+#endif  // BUILDFLAG(IS_LINUX)
+
+    const auto param_tuple = GetParam();
+    auto color_scheme = std::get<ui::NativeTheme::ColorScheme>(param_tuple);
+    const auto contrast_mode = std::get<ContrastMode>(param_tuple);
+    const auto system_theme = std::get<SystemTheme>(param_tuple);
+
+    // ThemeService tracks the global NativeTheme instance for native UI. Update
+    // this to reflect test params and propagate any updates.
+    native_theme_ = ui::NativeTheme::GetInstanceForNativeUi();
+#if BUILDFLAG(IS_LINUX)
+    if (system_theme == SystemTheme::kCustom)
+      native_theme_ = ui::GetDefaultLinuxUiTheme()->GetNativeTheme();
+#endif
+    original_forced_colors_ = native_theme_->InForcedColorsMode();
+    original_preferred_contrast_ = native_theme_->GetPreferredContrast();
+    original_should_use_dark_colors_ = native_theme_->ShouldUseDarkColors();
+
+    const bool high_contrast = contrast_mode == ContrastMode::kHighContrast;
+#if BUILDFLAG(IS_WIN)
+    if (high_contrast)
+      color_scheme = ui::NativeTheme::ColorScheme::kPlatformHighContrast;
+    native_theme_->set_forced_colors(high_contrast);
+#endif  // BUILDFLAG(IS_WIN)
+    native_theme_->SetPreferredContrast(
+        high_contrast ? ui::NativeTheme::PreferredContrast::kMore
+                      : ui::NativeTheme::PreferredContrast::kNoPreference);
+    native_theme_->set_use_dark_colors(color_scheme ==
+                                       ui::NativeTheme::ColorScheme::kDark);
+
+    // If native_theme_ has changed, call
+    // NativeTheme::NotifyOnNativeThemeUpdated to notify observers that the
+    // NativeTheme has been updated so that the ThemeService will know to update
+    // its ThemeSupplier to match the NativeTheme. The ColorProvider cache will
+    // also be reset.
+    if (original_forced_colors_ != native_theme_->InForcedColorsMode() ||
+        original_preferred_contrast_ != native_theme_->GetPreferredContrast() ||
+        original_should_use_dark_colors_ !=
+            native_theme_->ShouldUseDarkColors()) {
+      native_theme_->NotifyOnNativeThemeUpdated();
+    }
+
+    // Update ThemeService to use the system theme if necessary.
+    if (system_theme == SystemTheme::kCustom) {
+      theme_service_->UseSystemTheme();
+    } else {
+      theme_service_->UseDefaultTheme();
     }
   }
+
+  void TearDown() override {
+    // Restore the original NativeTheme parameters.
+    native_theme_->set_forced_colors(original_forced_colors_);
+    native_theme_->SetPreferredContrast(original_preferred_contrast_);
+    native_theme_->set_use_dark_colors(original_should_use_dark_colors_);
+    native_theme_->NotifyOnNativeThemeUpdated();
+    ThemeServiceTest::TearDown();
+  }
+
+  static std::string ParamInfoToString(
+      ::testing::TestParamInfo<
+          std::tuple<ui::NativeTheme::ColorScheme, ContrastMode, SystemTheme>>
+          param_info) {
+    auto param_tuple = param_info.param;
+    return ColorSchemeToString(
+               std::get<ui::NativeTheme::ColorScheme>(param_tuple)) +
+           ContrastModeToString(std::get<ContrastMode>(param_tuple)) +
+           SystemThemeToString(std::get<SystemTheme>(param_tuple));
+  }
+
+  SkColor GetColor(ui::ColorId id) const {
+    const auto* const color_provider =
+        ui::ColorProviderManager::Get().GetColorProviderFor(
+            native_theme_->GetColorProviderKey(nullptr));
+    return color_provider->GetColor(id);
+  }
+
+ private:
+  static std::string ColorSchemeToString(ui::NativeTheme::ColorScheme scheme) {
+    switch (scheme) {
+      case ui::NativeTheme::ColorScheme::kDefault:
+        NOTREACHED()
+            << "Cannot unit test kDefault as it depends on machine state.";
+        return "InvalidColorScheme";
+      case ui::NativeTheme::ColorScheme::kLight:
+        return "kLight";
+      case ui::NativeTheme::ColorScheme::kDark:
+        return "kDark";
+      case ui::NativeTheme::ColorScheme::kPlatformHighContrast:
+        return "kPlatformHighContrast";
+    }
+  }
+
+  static std::string ContrastModeToString(ContrastMode contrast_mode) {
+    return contrast_mode == ContrastMode::kHighContrast ? "HighContrast" : "";
+  }
+
+  static std::string SystemThemeToString(SystemTheme system_theme) {
+    return system_theme == SystemTheme::kCustom ? "SystemTheme" : "";
+  }
+
+  // Store the parameter values of the global NativeTheme for UI instance
+  // configured during SetUp() to check if an update should be propagated and
+  // to restore the NativeTheme to its original state in TearDown().
+  bool original_forced_colors_ = false;
+  ui::NativeTheme::PreferredContrast original_preferred_contrast_ =
+      ui::NativeTheme::PreferredContrast::kNoPreference;
+  bool original_should_use_dark_colors_ = false;
+  raw_ptr<ui::NativeTheme> native_theme_;
+#if BUILDFLAG(IS_LINUX)
+  std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    IncognitoThemeServiceTestWithIncognitoBrandConsistencyFlag,
-    IncognitoThemeServiceTest,
-    testing::Values(false, true));
+    ,
+    ColorProviderTest,
+    ::testing::Combine(::testing::Values(ui::NativeTheme::ColorScheme::kLight,
+                                         ui::NativeTheme::ColorScheme::kDark),
+                       ::testing::Values(ContrastMode::kNonHighContrast,
+                                         ContrastMode::kHighContrast),
+                       ::testing::Values(SystemTheme::kDefault,
+                                         SystemTheme::kCustom)),
+    ColorProviderTest::ParamInfoToString);
 
 // Installs then uninstalls a theme and makes sure that the ThemeService
 // reverts to the default theme after the uninstall.
@@ -306,118 +456,6 @@ TEST_F(ThemeServiceTest, ThemeUpgrade) {
   UpdateUnpackedTheme(scoper1.extension_id());
   EXPECT_EQ(scoper2.extension_id(), theme_service_->GetThemeID());
   EXPECT_TRUE(IsExtensionDisabled(scoper1.extension_id()));
-}
-
-TEST_F(ThemeServiceTest, IncognitoTest) {
-  // This test relies on incognito being meaningfully different than default,
-  // which is not currently true in dark mode.
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
-
-  // Should get the same ThemeService for incognito and original profiles.
-  ThemeService* otr_theme_service =
-      ThemeServiceFactory::GetForProfile(profile_->GetPrimaryOTRProfile());
-  EXPECT_EQ(theme_service_, otr_theme_service);
-
-#if !defined(OS_MAC)
-  // Should get a different ThemeProvider for incognito and original profiles.
-  const ui::ThemeProvider& provider =
-      ThemeService::GetThemeProviderForProfile(profile());
-  const ui::ThemeProvider& otr_provider =
-      ThemeService::GetThemeProviderForProfile(
-          profile_->GetPrimaryOTRProfile());
-  EXPECT_NE(&provider, &otr_provider);
-  // And (some) colors should be different.
-  EXPECT_NE(provider.GetColor(ThemeProperties::COLOR_TOOLBAR),
-            otr_provider.GetColor(ThemeProperties::COLOR_TOOLBAR));
-#endif
-}
-
-TEST_P(IncognitoThemeServiceTest, IncognitoCustomColor_WithAutoGeneratedTheme) {
-  theme_service_->BuildAutogeneratedThemeFromColor(
-      SkColorSetRGB(100, 100, 100));
-
-  // Should get the same ThemeService for incognito and original profiles.
-  ThemeService* otr_theme_service =
-      ThemeServiceFactory::GetForProfile(profile_->GetPrimaryOTRProfile());
-  EXPECT_EQ(theme_service_, otr_theme_service);
-
-  const ui::ThemeProvider& otr_provider =
-      ThemeService::GetThemeProviderForProfile(
-          profile_->GetPrimaryOTRProfile());
-
-  SkColor default_incognito_color = ThemeProperties::GetDefaultColor(
-      ThemeProperties::COLOR_FRAME_ACTIVE, /*incognito= */ true,
-      /*dark_mode= */ false);
-  bool is_brand_consistency_flag_enabled = GetParam();
-
-  if (is_brand_consistency_flag_enabled) {
-    EXPECT_EQ(default_incognito_color,
-              otr_provider.GetColor(ThemeProperties::COLOR_FRAME_ACTIVE));
-  } else {
-    EXPECT_NE(default_incognito_color,
-              otr_provider.GetColor(ThemeProperties::COLOR_FRAME_ACTIVE));
-  }
-}
-
-TEST_P(IncognitoThemeServiceTest, IncognitoCustomColor_WithExtensionOverride) {
-  ThemeScoper scoper = LoadUnpackedTheme();
-  EXPECT_TRUE(theme_service_->UsingExtensionTheme());
-
-  // Should get the same ThemeService for incognito and original profiles.
-  ThemeService* otr_theme_service =
-      ThemeServiceFactory::GetForProfile(profile_->GetPrimaryOTRProfile());
-  EXPECT_EQ(theme_service_, otr_theme_service);
-
-  const ui::ThemeProvider& otr_provider =
-      ThemeService::GetThemeProviderForProfile(
-          profile_->GetPrimaryOTRProfile());
-
-  SkColor default_incognito_color = ThemeProperties::GetDefaultColor(
-      ThemeProperties::COLOR_TOOLBAR, /*incognito=*/true,
-      /*dark_mode=*/false);
-  bool is_brand_consistency_flag_enabled = GetParam();
-
-  if (is_brand_consistency_flag_enabled) {
-    EXPECT_EQ(default_incognito_color,
-              otr_provider.GetColor(ThemeProperties::COLOR_TOOLBAR));
-  } else {
-    EXPECT_NE(default_incognito_color,
-              otr_provider.GetColor(ThemeProperties::COLOR_TOOLBAR));
-  }
-}
-
-TEST_F(ThemeServiceTest, GetColorForToolbarButton) {
-  // This test relies on toolbar buttons having no tint, which is not currently
-  // true in dark mode.
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
-
-  const ui::ThemeProvider& theme_provider =
-      ThemeService::GetThemeProviderForProfile(profile());
-  SkColor default_toolbar_button_color =
-      theme_provider.GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
-  EXPECT_FALSE(theme_provider.HasCustomColor(
-      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON));
-
-  ThemeScoper scoper1 = LoadUnpackedTheme(
-      "extensions/theme_test_toolbar_button_color/manifest.json");
-
-  // Should get a new color after installing a theme.
-  SkColor toolbar_button_explicit_color =
-      theme_provider.GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
-  EXPECT_NE(toolbar_button_explicit_color, default_toolbar_button_color);
-  EXPECT_TRUE(theme_provider.HasCustomColor(
-      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON));
-
-  ThemeScoper scoper2 = LoadUnpackedTheme(
-      "extensions/theme_test_toolbar_button_tint/manifest.json");
-
-  // Should get the color based on a tint.
-  SkColor toolbar_button_tinted_color =
-      theme_provider.GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
-  EXPECT_NE(toolbar_button_tinted_color, default_toolbar_button_color);
-  EXPECT_NE(toolbar_button_tinted_color, toolbar_button_explicit_color);
-  EXPECT_TRUE(theme_provider.HasCustomColor(
-      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON));
 }
 
 TEST_F(ThemeServiceTest, NTPLogoAlternate) {
@@ -539,151 +577,89 @@ TEST_F(ThemeServiceTest, UseDefaultTheme_DisableExtensionTest) {
   EXPECT_FALSE(service_->IsExtensionEnabled(scoper.extension_id()));
 }
 
-TEST_F(ThemeServiceTest, OmniboxContrast) {
-  using TP = ThemeProperties;
-  for (bool dark : {false, true}) {
-    native_theme_.SetDarkMode(dark);
-    for (bool high_contrast : {false, true}) {
-      set_theme_supplier(
-          theme_service_,
-          high_contrast ? base::MakeRefCounted<IncreasedContrastThemeSupplier>(
-                              &native_theme_)
-                        : nullptr);
-      constexpr int contrasting_ids[][2] = {
-          {TP::COLOR_OMNIBOX_TEXT, TP::COLOR_OMNIBOX_BACKGROUND},
-          {TP::COLOR_OMNIBOX_TEXT, TP::COLOR_OMNIBOX_BACKGROUND_HOVERED},
-          {TP::COLOR_OMNIBOX_TEXT, TP::COLOR_OMNIBOX_RESULTS_BG},
-          {TP::COLOR_OMNIBOX_TEXT, TP::COLOR_OMNIBOX_RESULTS_BG_HOVERED},
-          {TP::COLOR_OMNIBOX_TEXT_DIMMED, TP::COLOR_OMNIBOX_BACKGROUND},
-          {TP::COLOR_OMNIBOX_SELECTED_KEYWORD, TP::COLOR_OMNIBOX_RESULTS_BG},
-          {TP::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED,
-           TP::COLOR_OMNIBOX_RESULTS_BG_SELECTED},
-          {TP::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED, TP::COLOR_OMNIBOX_RESULTS_BG},
-          {TP::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED,
-           TP::COLOR_OMNIBOX_RESULTS_BG_SELECTED},
-          {TP::COLOR_OMNIBOX_RESULTS_ICON, TP::COLOR_OMNIBOX_RESULTS_BG},
-          {TP::COLOR_OMNIBOX_RESULTS_ICON,
-           TP::COLOR_OMNIBOX_RESULTS_BG_HOVERED},
-          {TP::COLOR_OMNIBOX_RESULTS_ICON_SELECTED,
-           TP::COLOR_OMNIBOX_RESULTS_BG_SELECTED},
-          {TP::COLOR_OMNIBOX_RESULTS_URL, TP::COLOR_OMNIBOX_RESULTS_BG},
-          {TP::COLOR_OMNIBOX_RESULTS_URL_SELECTED,
-           TP::COLOR_OMNIBOX_RESULTS_BG_SELECTED},
-          {TP::COLOR_OMNIBOX_BUBBLE_OUTLINE, TP::COLOR_OMNIBOX_RESULTS_BG},
-          {TP::COLOR_OMNIBOX_BUBBLE_OUTLINE_EXPERIMENTAL_KEYWORD_MODE,
-           TP::COLOR_OMNIBOX_RESULTS_BG},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT,
-           TP::COLOR_OMNIBOX_BACKGROUND},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT,
-           TP::COLOR_OMNIBOX_BACKGROUND_HOVERED},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT,
-           TP::COLOR_OMNIBOX_RESULTS_BG},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE,
-           TP::COLOR_OMNIBOX_BACKGROUND},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE,
-           TP::COLOR_OMNIBOX_BACKGROUND_HOVERED},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE,
-           TP::COLOR_OMNIBOX_RESULTS_BG},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS,
-           TP::COLOR_OMNIBOX_BACKGROUND},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS,
-           TP::COLOR_OMNIBOX_RESULTS_BG},
-          {TP::COLOR_OMNIBOX_TEXT_DIMMED, TP::COLOR_OMNIBOX_BACKGROUND_HOVERED},
-          {TP::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED,
-           TP::COLOR_OMNIBOX_RESULTS_BG_HOVERED},
-          {TP::COLOR_OMNIBOX_RESULTS_URL, TP::COLOR_OMNIBOX_RESULTS_BG_HOVERED},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS,
-           TP::COLOR_OMNIBOX_BACKGROUND_HOVERED},
-      };
-      auto check_sufficient_contrast = [&](int id1, int id2) {
-        const float contrast = color_utils::GetContrastRatio(
-            GetOmniboxColor(theme_service_, id1, dark),
-            GetOmniboxColor(theme_service_, id2, dark));
-        EXPECT_GE(contrast, color_utils::kMinimumReadableContrastRatio);
-      };
-      for (const int* ids : contrasting_ids)
-        check_sufficient_contrast(ids[0], ids[1]);
-      if (high_contrast)
-        check_sufficient_contrast(TP::COLOR_OMNIBOX_RESULTS_BG_SELECTED,
-                                  TP::COLOR_OMNIBOX_RESULTS_BG);
-    }
-  }
-}
+TEST_P(ColorProviderTest, OmniboxContrast) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1336315): Windows platform high contrast colors are not
+  // sufficiently high-contrast to pass this test.
+  if (std::get<ContrastMode>(GetParam()) == ContrastMode::kHighContrast)
+    return;
+#endif
 
-// Ensure nothing DCHECKs if either of COLOR_OMNIBOX_BACKGROUND or
-// COLOR_OMNIBOX_TEXT are translucent (https://crbug.com/1006102).
-TEST_F(ThemeServiceTest, TranslucentOmniboxBackgroundAndText) {
-  using TP = ThemeProperties;
-  class TranslucentOmniboxThemeSupplier : public CustomThemeSupplier {
-   public:
-    TranslucentOmniboxThemeSupplier()
-        : CustomThemeSupplier(ThemeType::EXTENSION) {}
-    bool GetColor(int id, SkColor* color) const override {
-      switch (id) {
-        case TP::COLOR_OMNIBOX_BACKGROUND:
-          *color = SkColorSetARGB(127, 255, 255, 255);
-          return true;
-        case TP::COLOR_OMNIBOX_TEXT:
-          *color = SkColorSetARGB(127, 0, 0, 0);
-          return true;
-      }
-      return CustomThemeSupplier::GetColor(id, color);
-    }
-
-   private:
-    ~TranslucentOmniboxThemeSupplier() override = default;
+  constexpr ui::ColorId contrasting_ids[][2] = {
+      {kColorOmniboxResultsIcon, kColorOmniboxResultsBackground},
+      {kColorOmniboxResultsIcon, kColorOmniboxResultsBackgroundHovered},
+      {kColorOmniboxResultsIconSelected,
+       kColorOmniboxResultsBackgroundSelected},
+      {kColorOmniboxResultsTextSelected,
+       kColorOmniboxResultsBackgroundSelected},
+      {kColorOmniboxResultsTextDimmed, kColorOmniboxResultsBackground},
+      {kColorOmniboxResultsTextDimmed, kColorOmniboxResultsBackgroundHovered},
+      {kColorOmniboxResultsTextDimmedSelected,
+       kColorOmniboxResultsBackgroundSelected},
+      {kColorOmniboxResultsTextNegative, kColorOmniboxResultsBackground},
+      {kColorOmniboxResultsTextNegative, kColorOmniboxResultsBackgroundHovered},
+      {kColorOmniboxResultsTextNegativeSelected,
+       kColorOmniboxResultsBackgroundSelected},
+      {kColorOmniboxResultsTextPositive, kColorOmniboxResultsBackground},
+      {kColorOmniboxResultsTextPositive, kColorOmniboxResultsBackgroundHovered},
+      {kColorOmniboxResultsTextPositiveSelected,
+       kColorOmniboxResultsBackgroundSelected},
+      {kColorOmniboxResultsTextSecondary, kColorOmniboxResultsBackground},
+      {kColorOmniboxResultsTextSecondary,
+       kColorOmniboxResultsBackgroundHovered},
+      {kColorOmniboxResultsTextSecondarySelected,
+       kColorOmniboxResultsBackgroundSelected},
+      {kColorOmniboxResultsUrl, kColorOmniboxResultsBackground},
+      {kColorOmniboxResultsUrl, kColorOmniboxResultsBackgroundHovered},
+      {kColorOmniboxResultsUrlSelected, kColorOmniboxResultsBackgroundSelected},
+      {kColorOmniboxBubbleOutline, kColorOmniboxResultsBackground},
+      {kColorOmniboxBubbleOutlineExperimentalKeywordMode,
+       kColorOmniboxResultsBackground},
+      {kColorOmniboxSecurityChipDefault, kColorToolbarBackgroundSubtleEmphasis},
+      {kColorOmniboxSecurityChipDefault,
+       kColorToolbarBackgroundSubtleEmphasisHovered},
+      {kColorOmniboxSecurityChipSecure, kColorToolbarBackgroundSubtleEmphasis},
+      {kColorOmniboxSecurityChipSecure,
+       kColorToolbarBackgroundSubtleEmphasisHovered},
+      {kColorOmniboxSecurityChipDangerous,
+       kColorToolbarBackgroundSubtleEmphasis},
+      {kColorOmniboxSecurityChipDangerous,
+       kColorToolbarBackgroundSubtleEmphasisHovered},
+      {kColorOmniboxKeywordSelected, kColorToolbarBackgroundSubtleEmphasis},
+      {kColorOmniboxKeywordSelected,
+       kColorToolbarBackgroundSubtleEmphasisHovered},
+      {kColorOmniboxText, kColorToolbarBackgroundSubtleEmphasis},
+      {kColorOmniboxText, kColorToolbarBackgroundSubtleEmphasisHovered},
+      {kColorOmniboxText, kColorOmniboxResultsBackground},
+      {kColorOmniboxText, kColorOmniboxResultsBackgroundHovered},
+      {kColorOmniboxTextDimmed, kColorToolbarBackgroundSubtleEmphasis},
+      {kColorOmniboxTextDimmed, kColorToolbarBackgroundSubtleEmphasisHovered},
   };
-  set_theme_supplier(theme_service_,
-                     base::MakeRefCounted<TranslucentOmniboxThemeSupplier>());
-
-  constexpr int ids[] = {
-      TP::COLOR_OMNIBOX_BACKGROUND,
-      TP::COLOR_OMNIBOX_TEXT,
-      TP::COLOR_OMNIBOX_BACKGROUND_HOVERED,
-      TP::COLOR_OMNIBOX_SELECTED_KEYWORD,
-      TP::COLOR_OMNIBOX_TEXT_DIMMED,
-      TP::COLOR_OMNIBOX_RESULTS_BG,
-      TP::COLOR_OMNIBOX_RESULTS_BG_HOVERED,
-      TP::COLOR_OMNIBOX_RESULTS_BG_SELECTED,
-      TP::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED,
-      TP::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED,
-      TP::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED,
-      TP::COLOR_OMNIBOX_RESULTS_ICON,
-      TP::COLOR_OMNIBOX_RESULTS_ICON_SELECTED,
-      TP::COLOR_OMNIBOX_RESULTS_URL,
-      TP::COLOR_OMNIBOX_RESULTS_URL_SELECTED,
-      TP::COLOR_OMNIBOX_BUBBLE_OUTLINE,
-      TP::COLOR_OMNIBOX_BUBBLE_OUTLINE_EXPERIMENTAL_KEYWORD_MODE,
-      TP::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT,
-      TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE,
-      TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS,
-  };
-
-  for (int id : ids) {
-    GetOmniboxColor(theme_service_, id, false);
-    GetOmniboxColor(theme_service_, id, true);
+  auto check_sufficient_contrast =
+      [&](ui::ColorId id1, ui::ColorId id2,
+          float expected_contrast_ratio =
+              color_utils::kMinimumReadableContrastRatio) {
+        const theme_service::test::PrintableSkColor color1{GetColor(id1)};
+        const theme_service::test::PrintableSkColor color2{GetColor(id2)};
+        const float contrast =
+            color_utils::GetContrastRatio(color1.color, color2.color);
+        EXPECT_GE(contrast, expected_contrast_ratio)
+            << "Color 1: " << theme_service::test::ColorIdToString(id1) << " - "
+            << color1
+            << "\nColor 2: " << theme_service::test::ColorIdToString(id2)
+            << " - " << color2;
+      };
+  for (const ui::ColorId* ids : contrasting_ids)
+    check_sufficient_contrast(ids[0], ids[1]);
+#if !BUILDFLAG(USE_GTK) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1336796): GTK and LaCrOS do not have a sufficiently
+  // high-contrast selected row color to pass this test.
+  if (std::get<ContrastMode>(GetParam()) == ContrastMode::kHighContrast) {
+    check_sufficient_contrast(kColorOmniboxResultsBackgroundSelected,
+                              kColorOmniboxResultsBackground,
+                              color_utils::kMinimumVisibleContrastRatio);
   }
-}
-
-TEST_F(ThemeServiceTest, NativeIncreasedContrastChanged) {
-  theme_service_->UseDefaultTheme();
-
-  native_theme_.SetUserHasContrastPreference(true);
-  theme_service_->OnNativeThemeUpdated(&native_theme_);
-  EXPECT_TRUE(theme_service_->UsingDefaultTheme());
-  bool using_increased_contrast =
-      theme_service_->GetThemeSupplier() &&
-      theme_service_->GetThemeSupplier()->get_theme_type() ==
-          CustomThemeSupplier::ThemeType::INCREASED_CONTRAST;
-  bool expecting_increased_contrast =
-      theme_service_->theme_helper_for_testing()
-          .ShouldUseIncreasedContrastThemeSupplier(&native_theme_);
-  EXPECT_EQ(using_increased_contrast, expecting_increased_contrast);
-
-  native_theme_.SetUserHasContrastPreference(false);
-  theme_service_->OnNativeThemeUpdated(&native_theme_);
-  EXPECT_TRUE(theme_service_->UsingDefaultTheme());
-  EXPECT_EQ(theme_service_->GetThemeSupplier(), nullptr);
+#endif
 }
 
 // Sets and unsets themes using the BrowserThemeColor policy.
@@ -741,12 +717,18 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
   EXPECT_TRUE(theme_service_->UsingExtensionTheme());
   EXPECT_FALSE(theme_service_->UsingPolicyTheme());
   EXPECT_EQ(scoper.extension_id(), theme_service_->GetThemeID());
+  EXPECT_TRUE(service_->IsExtensionEnabled(scoper.extension_id()));
+  EXPECT_TRUE(registry_->GetInstalledExtension(scoper.extension_id()));
 
-  // Applying policy theme should disable the extension theme.
+  // Applying policy theme should unset the extension theme but not disable the
+  // extension..
   profile_->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyThemeColor, std::make_unique<base::Value>(100));
   EXPECT_FALSE(theme_service_->UsingExtensionTheme());
   EXPECT_TRUE(theme_service_->UsingPolicyTheme());
+  EXPECT_EQ(scoper.extension_id(), theme_service_->GetThemeID());
+  EXPECT_TRUE(service_->IsExtensionEnabled(scoper.extension_id()));
+  EXPECT_TRUE(registry_->GetInstalledExtension(scoper.extension_id()));
 
   // Cannot set other themes while a policy theme is applied.
   theme_service_->BuildAutogeneratedThemeFromColor(
@@ -757,10 +739,17 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
   EXPECT_FALSE(theme_service_->UsingExtensionTheme());
   EXPECT_TRUE(theme_service_->UsingPolicyTheme());
 
-  // Removing policy color unsets the policy theme.
+  // Removing policy color unsets the policy theme and restores the extension
+  // theme.
   profile_->GetTestingPrefService()->RemoveManagedPref(
       prefs::kPolicyThemeColor);
+  EXPECT_FALSE(theme_service_->UsingDefaultTheme());
+  EXPECT_FALSE(theme_service_->UsingAutogeneratedTheme());
+  EXPECT_TRUE(theme_service_->UsingExtensionTheme());
   EXPECT_FALSE(theme_service_->UsingPolicyTheme());
+  EXPECT_EQ(scoper.extension_id(), theme_service_->GetThemeID());
+  EXPECT_TRUE(service_->IsExtensionEnabled(scoper.extension_id()));
+  EXPECT_TRUE(registry_->GetInstalledExtension(scoper.extension_id()));
 }
 
 }  // namespace theme_service_internal

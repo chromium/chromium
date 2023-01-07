@@ -1,0 +1,80 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/media/webrtc/server/tachyon/proto/tachyon_enums.proto
+// Messages not used in Chrome have been omitted.
+
+syntax = "proto3";
+
+package nearbyshare.tachyon_proto;
+
+option optimize_for = LITE_RUNTIME;
+
+message ApiVersion {
+  enum Value {
+    UNKNOWN = 0;
+
+    // Initial version.
+    V1 = 1;
+
+    // RequestHeaders and AuthToken only.
+    V2 = 2;
+
+    // Block leaked playstore APKs.
+    V3 = 3;
+
+    // InboxMessage.message bytes are used.
+    V4 = 4;
+  }
+}
+
+message Platform {
+  enum Type {
+    UNKNOWN = 0;
+    TEST = 4;
+    DESKTOP = 6;
+  }
+}
+
+message LocationStandard {
+  enum Format {
+    UNKNOWN = 0;
+    // E164 country codes:
+    // https://en.wikipedia.org/wiki/List_of_country_calling_codes
+    // e.g. +1 for USA
+    E164_CALLING = 1;
+
+    // ISO 3166-1 alpha-2 country codes:
+    // https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+    ISO_3166_1_ALPHA_2 = 2;
+  }
+}
+
+message IdType {
+  enum Type {
+    UNSET = 0;
+    NOT_KNOWN = 25;  // client does not know the id type.
+    NEARBY_ID = 27;  // Used by Nearby devices. go/tachyon-express-nearby.
+  }
+}
+
+// Connectivity status from the client network to ice_servers.
+//
+// This message is intended to be binary compatible and should be kept up to
+// date with BlockStatus in
+// google3/google/communications/networktraversal/v1alpha/networktraversal.proto
+message ConnectivityStatus {
+  // Status enumerations.
+  enum Type {
+    // Unspecified.
+    UNKNOWN = 0;
+
+    // ICE connectivity is not blocked.
+    ICE_UNBLOCKED = 1;
+
+    // ICE connectivity is possibly blocked.
+    ICE_POSSIBLY_BLOCKED = 2;
+  }
+}

@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "description": "Tests the webNavigation API events - simpleLoad.",
   "background": {
-    "page": "test_simpleLoad.html"
+    "scripts": ["test_simpleLoad.js"],
+    "persistent": true
   },
   "permissions": ["webNavigation", "tabs"]
 }

@@ -1,13 +1,10 @@
 $$ This is a pump file for generating file templates.  Pump is a python
-$$ script that is part of the Google Test suite of utilities.  Description
-$$ can be found here:
-$$
-$$ https://github.com/google/googletest/blob/master/googletest/docs/PumpManual.md
+$$ script that is part of the Google Test suite of utilities.
 
 $$ MAX_ARITY controls the number of arguments that dispatch::Invoke() supports.
 $$ It is choosen to match the number of arguments base::BindOnce() supports.
 $var MAX_ARITY = 7
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +14,6 @@ $var MAX_ARITY = 7
 #include <oaidl.h>
 
 #include "base/basictypes.h"
-#include "base/macros.h"
 #include "base/template_util.h"
 #include "base/win/scoped_variant.h"
 
@@ -50,6 +46,10 @@ class ScopedVariantArg : public VARIANTARG {
   ScopedVariantArg() {
     vt = VT_EMPTY;
   }
+
+ScopedVariantArg(const ScopedVariantArg&) = delete;
+ScopedVariantArg& operator=(const ScopedVariantArg&) = delete;
+
 
   ~ScopedVariantArg() {
     VariantClear(this);
@@ -96,8 +96,6 @@ class ScopedVariantArg : public VARIANTARG {
     *other = *this;
     *static_cast<VARIANTARG*>(this) = temp;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVariantArg);
 };
 
 // Make sure the layouts of |VARIANTARG| and |ScopedVariantArg| are identical.

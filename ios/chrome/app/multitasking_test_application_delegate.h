@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,6 @@
 
 // Subclass that allows setting up environments for multitasking tests.
 @interface MultitaskingTestApplicationDelegate : MainApplicationDelegate
-
-- (BOOL)application:(UIApplication*)application
-    didFinishLaunchingWithOptions:(NSDictionary*)launchOptions;
 @end
 
 #endif  // IOS_CHROME_APP_MULTITASKING_TEST_APPLICATION_DELEGATE_H_

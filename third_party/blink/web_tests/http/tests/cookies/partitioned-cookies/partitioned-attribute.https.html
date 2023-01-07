@@ -1,0 +1,46 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+function deleteExistingCookie(cookieLine) {
+  const expiresInPast = "; Expires=Thu, 01 Jan 1970 00:00:01 GMT";
+  document.cookie = cookieLine + expiresInPast;
+  assert_equals(document.cookie, "");
+}
+
+function assertInvalidCookie(cookieLine) {
+  document.cookie = cookieLine;
+  assert_equals(document.cookie, "");
+}
+
+test(() => {
+  assert_equals(document.cookie, "");
+
+  // Valid Partitioned cookie: has Secure, Domain is allowed.
+  const cookie = "foo=bar";
+  const cookieLine = cookie + "; Secure; SameSite=None; Partitioned;";
+  document.cookie = cookieLine;
+  assert_equals(document.cookie, cookie);
+  deleteExistingCookie(cookieLine);
+
+  // Domain is allowed.
+  const domainCookieLine = cookieLine + ` Domain=${
+      window.location.hostname};`;
+  document.cookie = domainCookieLine;
+  assert_equals(document.cookie, cookie);
+  deleteExistingCookie(domainCookieLine);
+
+  // Path is allowed.
+  const pathCookieLine = cookieLine + ` Path=${
+      window.location.pathname.split('/').slice(0, 2).join('/')};`;
+  document.cookie = pathCookieLine;
+  assert_equals(document.cookie, cookie);
+  deleteExistingCookie(pathCookieLine);
+
+  // Invalid Partitioned cookie: No Secure attribute.
+  // No SameSite=None since that independently requires Secure.
+  assertInvalidCookie(cookie + "; Path=/; Partitioned;");
+}, "Partitioned cookie attribute semantics");
+
+</script>

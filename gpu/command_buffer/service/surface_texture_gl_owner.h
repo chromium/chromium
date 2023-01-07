@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,13 +26,16 @@ namespace gpu {
 // present in the surface.
 class GPU_GLES2_EXPORT SurfaceTextureGLOwner : public TextureOwner {
  public:
+  SurfaceTextureGLOwner(const SurfaceTextureGLOwner&) = delete;
+  SurfaceTextureGLOwner& operator=(const SurfaceTextureGLOwner&) = delete;
+
   gl::GLContext* GetContext() const override;
   gl::GLSurface* GetSurface() const override;
   void SetFrameAvailableCallback(
       const base::RepeatingClosure& frame_available_cb) override;
   gl::ScopedJavaSurface CreateJavaSurface() const override;
   void UpdateTexImage() override;
-  void EnsureTexImageBound() override;
+  void EnsureTexImageBound(GLuint service_id) override;
   void ReleaseBackBuffers() override;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer() override;
@@ -43,13 +46,14 @@ class GPU_GLES2_EXPORT SurfaceTextureGLOwner : public TextureOwner {
   void RunWhenBufferIsAvailable(base::OnceClosure callback) override;
 
  protected:
-  void OnTextureDestroyed(gles2::AbstractTexture*) override;
+  void ReleaseResources() override;
 
  private:
   friend class TextureOwner;
   friend class SurfaceTextureTransformTest;
 
-  SurfaceTextureGLOwner(std::unique_ptr<gles2::AbstractTexture> texture);
+  SurfaceTextureGLOwner(std::unique_ptr<gles2::AbstractTexture> texture,
+                        scoped_refptr<SharedContextState> context_state);
   ~SurfaceTextureGLOwner() override;
 
   static bool DecomposeTransform(float matrix[16],
@@ -67,7 +71,6 @@ class GPU_GLES2_EXPORT SurfaceTextureGLOwner : public TextureOwner {
   bool is_frame_available_callback_set_ = false;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(SurfaceTextureGLOwner);
 };
 
 }  // namespace gpu

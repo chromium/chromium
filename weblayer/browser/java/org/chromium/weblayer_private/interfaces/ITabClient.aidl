@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,4 +47,7 @@ interface ITabClient {
       in IObjectWrapper linkText, in IObjectWrapper titleOrAltText,
       in IObjectWrapper srcUrl, in boolean isImage, in boolean isVideo, in boolean canDownload,
       in IContextMenuParams contextMenuParams) = 13;
+
+  // Added in M101.
+  void onVerticalOverscroll(float accumulatedOverscrollY) = 14;
 }

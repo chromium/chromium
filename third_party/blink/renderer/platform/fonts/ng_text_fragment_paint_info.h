@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,11 @@ class ShapeResultView;
 
 // Bridge struct for painting text. Encapsulates info needed by the paint code.
 struct PLATFORM_EXPORT NGTextFragmentPaintInfo {
+  NGTextFragmentPaintInfo Slice(unsigned slice_from, unsigned slice_to) const;
+  NGTextFragmentPaintInfo WithStartOffset(unsigned start_from) const;
+  NGTextFragmentPaintInfo WithEndOffset(unsigned end_to) const;
+  unsigned Length() const { return to - from; }
+
   // The string to paint. May include surrounding context.
   const StringView text;
 

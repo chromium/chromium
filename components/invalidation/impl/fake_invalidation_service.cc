@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,11 @@ bool FakeInvalidationService::UpdateInterestedTopics(
   return invalidator_registrar_->UpdateRegisteredTopics(handler, topic_set);
 }
 
+void FakeInvalidationService::UnsubscribeFromUnregisteredTopics(
+    InvalidationHandler* handler) {
+  invalidator_registrar_->RemoveUnregisteredTopics(handler);
+}
+
 void FakeInvalidationService::UnregisterInvalidationHandler(
     InvalidationHandler* handler) {
   invalidator_registrar_->UnregisterHandler(handler);
@@ -57,9 +62,8 @@ InvalidationLogger* FakeInvalidationService::GetInvalidationLogger() {
 }
 
 void FakeInvalidationService::RequestDetailedStatus(
-    base::RepeatingCallback<void(const base::DictionaryValue&)> caller) const {
-  base::DictionaryValue value;
-  caller.Run(value);
+    base::RepeatingCallback<void(base::Value::Dict)> caller) const {
+  caller.Run(base::Value::Dict());
 }
 
 void FakeInvalidationService::SetInvalidatorState(InvalidatorState state) {
@@ -75,20 +79,20 @@ void FakeInvalidationService::EmitInvalidationForTest(
   // If no one is listening to this invalidation, do not send it out.
   Topics subscribed_topics = invalidator_registrar_->GetAllSubscribedTopics();
   if (subscribed_topics.find(invalidation.topic()) == subscribed_topics.end()) {
-    mock_ack_handler_.RegisterUnsentInvalidation(&invalidation_copy);
+    fake_ack_handler_.RegisterUnsentInvalidation(&invalidation_copy);
     return;
   }
 
-  // Otherwise, register the invalidation with the mock_ack_handler_ and deliver
+  // Otherwise, register the invalidation with the fake_ack_handler_ and deliver
   // it to the appropriate consumer.
-  mock_ack_handler_.RegisterInvalidation(&invalidation_copy);
+  fake_ack_handler_.RegisterInvalidation(&invalidation_copy);
   TopicInvalidationMap invalidation_map;
   invalidation_map.Insert(invalidation_copy);
   invalidator_registrar_->DispatchInvalidationsToHandlers(invalidation_map);
 }
 
-MockAckHandler* FakeInvalidationService::GetMockAckHandler() {
-  return &mock_ack_handler_;
+FakeAckHandler* FakeInvalidationService::GetFakeAckHandler() {
+  return &fake_ack_handler_;
 }
 
 }  // namespace invalidation

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ namespace tracing {
 // TODO(b/147673438): Change to the new model flow events when finalized
 void COMPONENT_EXPORT(TRACING_CPP) FillFlowEvent(
     const perfetto::EventContext&,
-    perfetto::protos::pbzero::TrackEvent_LegacyEvent_FlowDirection,
+    perfetto::protos::pbzero::TrackEvent::LegacyEvent::FlowDirection,
     uint64_t bind_id);
 
 }  // namespace tracing

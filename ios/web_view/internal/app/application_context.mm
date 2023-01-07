@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,10 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/component_updater/component_updater_service.h"
+#include "components/component_updater/installer_policies/autofill_states_component_installer.h"
+#include "components/component_updater/timer_update_scheduler.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -17,10 +20,13 @@
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/translate/core/browser/translate_download_manager.h"
+#include "components/update_client/update_client.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "ios/web_view/internal/app/web_view_io_thread.h"
+#import "ios/web_view/internal/component_updater/web_view_component_updater_configurator.h"
 #import "ios/web_view/internal/cwv_flags_internal.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/log/net_log.h"
@@ -29,6 +35,7 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -74,8 +81,8 @@ void ApplicationContext::SaveState() {
     shared_url_loader_factory_->Detach();
 
   if (network_context_) {
-    base::DeleteSoon(FROM_HERE, {web::WebThread::IO},
-                     network_context_owner_.release());
+    web::GetIOThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, network_context_owner_.release());
   }
 }
 
@@ -99,6 +106,10 @@ PrefService* ApplicationContext::GetLocalState() {
     flags_ui::PrefServiceFlagsStorage::RegisterPrefs(pref_registry.get());
     PrefProxyConfigTrackerImpl::RegisterPrefs(pref_registry.get());
     signin::IdentityManager::RegisterLocalStatePrefs(pref_registry.get());
+    component_updater::RegisterComponentUpdateServicePrefs(pref_registry.get());
+    update_client::RegisterPrefs(pref_registry.get());
+    component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
+        pref_registry.get());
 
     base::FilePath local_state_path;
     base::PathService::Get(base::DIR_APP_DATA, &local_state_path);
@@ -184,6 +195,22 @@ net::NetLog* ApplicationContext::GetNetLog() {
   return net::NetLog::Get();
 }
 
+component_updater::ComponentUpdateService*
+ApplicationContext::GetComponentUpdateService() {
+  if (!component_updater_) {
+    // TODO(crbug.com/1298671): Brand code should be configurable.
+    std::string brand_code =
+        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ? "APLB"
+                                                                   : "APLA";
+    component_updater_ = component_updater::ComponentUpdateServiceFactory(
+        MakeComponentUpdaterConfigurator(
+            base::CommandLine::ForCurrentProcess()),
+        std::make_unique<component_updater::TimerUpdateScheduler>(),
+        brand_code);
+  }
+  return component_updater_.get();
+}
+
 WebViewIOThread* ApplicationContext::GetWebViewIOThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(web_view_io_thread_.get());
@@ -195,6 +222,21 @@ void ApplicationContext::SetApplicationLocale(const std::string& locale) {
   application_locale_ = locale;
   translate::TranslateDownloadManager::GetInstance()->set_application_locale(
       application_locale_);
+}
+
+SafeBrowsingService* ApplicationContext::GetSafeBrowsingService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!safe_browsing_service_) {
+    safe_browsing_service_ = base::MakeRefCounted<SafeBrowsingServiceImpl>();
+  }
+  return safe_browsing_service_.get();
+}
+
+void ApplicationContext::ShutdownSafeBrowsingServiceIfNecessary() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (safe_browsing_service_) {
+    safe_browsing_service_->ShutDown();
+  }
 }
 
 }  // namespace ios_web_view

@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_EVENTS_TEST_TEST_EVENT_SOURCE_H_
 #define UI_EVENTS_TEST_TEST_EVENT_SOURCE_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_source.h"
 
@@ -32,7 +32,7 @@ class TestEventSource : public EventSource, public EventSink {
   EventDispatchDetails OnEventFromSource(Event* event) override;
 
  private:
-  EventSink* sink_;
+  raw_ptr<EventSink> sink_;
   int events_sent_ = 0;
   int events_sunk_ = 0;
 };

@@ -1,15 +1,15 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/sessions/session_util.h"
+#import "ios/chrome/browser/sessions/session_util.h"
 
-#include "base/check_op.h"
-#include "base/files/file_path.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/sessions/core/serialized_navigation_entry.h"
-#include "components/sessions/ios/ios_serialized_navigation_builder.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/check_op.h"
+#import "base/files/file_path.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/sessions/core/serialized_navigation_entry.h"
+#import "components/sessions/ios/ios_serialized_navigation_builder.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "components/sessions/core/serialized_user_agent_override.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/sessions_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sessions {
 class SessionCommand;
@@ -52,6 +52,13 @@ std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
     SessionID window_id,
     const std::string& app_name);
 
+// Creates a SessionCommand storing a tab extra data.
+std::unique_ptr<SessionCommand> CreateAddExtraDataCommand(
+    SessionCommand::id_type command,
+    const SessionID& session_id,
+    const std::string& key,
+    const std::string& data);
+
 // Converts a SessionCommand previously created by
 // CreateUpdateTabNavigationCommand into a
 // SerializedNavigationEntry. Returns true on success. If
@@ -75,7 +82,7 @@ bool RestoreSetTabUserAgentOverrideCommand2(
     const SessionCommand& command,
     SessionID* tab_id,
     std::string* user_agent_override,
-    base::Optional<std::string>* opaque_ua_metadata_override);
+    absl::optional<std::string>* opaque_ua_metadata_override);
 
 // Backwards compatible version that restores versions that didn't have
 // structured user agent override.
@@ -94,6 +101,13 @@ bool RestoreSetWindowAppNameCommand(const SessionCommand& command,
 bool RestoreSetWindowUserTitleCommand(const SessionCommand& command,
                                       SessionID* window_id,
                                       std::string* user_title);
+
+// Extracts a SessionCommand as previously created by
+// CreateAddExtraDataCommand into the tab/window id, key and data.
+bool RestoreAddExtraDataCommand(const SessionCommand& command,
+                                SessionID* session_id,
+                                std::string* key,
+                                std::string* data);
 
 }  // namespace sessions
 

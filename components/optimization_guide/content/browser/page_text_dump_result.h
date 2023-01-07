@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <set>
 #include <string>
 
-#include "base/optional.h"
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -26,7 +26,7 @@ class FrameTextDumpResult {
 
   // Creates a preliminary instance with the given metadata.
   static FrameTextDumpResult Initialize(mojom::TextDumpEvent event,
-                                        content::GlobalFrameRoutingId rfh_id,
+                                        content::GlobalRenderFrameHostId rfh_id,
                                         bool amp_frame,
                                         int unique_navigation_id);
 
@@ -38,12 +38,14 @@ class FrameTextDumpResult {
   // Whether the class instance is completed yet.
   bool IsCompleted() const;
 
-  // The text dump contents. Set only for completed instances.
-  const base::Optional<std::u16string>& contents() const { return contents_; }
+  // The text dump contents. Set only for completed instances. Note that
+  // the string must be treated as untrusted data.
+  const absl::optional<std::u16string>& contents() const { return contents_; }
 
   // The text dump contents, decoded to UTF-8 as a best effort. Set only for
-  // completed instances.
-  base::Optional<std::string> utf8_contents() const;
+  // completed instances. Note that the string must be treated as untrusted
+  // data.
+  absl::optional<std::string> utf8_contents() const;
 
   // The event at which the text dump is taken. Set for both preliminary and
   // completed instances.
@@ -51,7 +53,7 @@ class FrameTextDumpResult {
 
   // The unique identifier for the content::RenderFrameHost that the text dump
   // was taken in. Set for both preliminary and completed instances.
-  content::GlobalFrameRoutingId rfh_id() const { return rfh_id_; }
+  content::GlobalRenderFrameHostId rfh_id() const { return rfh_id_; }
 
   // The unique id of the visible navigation for this frame dump, taken from the
   // visible NavigationEntry.
@@ -103,8 +105,8 @@ class FrameTextDumpResult {
   FrameTextDumpResult();
 
   mojom::TextDumpEvent event_;
-  base::Optional<std::u16string> contents_;
-  content::GlobalFrameRoutingId rfh_id_;
+  absl::optional<std::u16string> contents_;
+  content::GlobalRenderFrameHostId rfh_id_;
   bool amp_frame_ = false;
   int unique_navigation_id_ = -1;
 };
@@ -120,14 +122,16 @@ class PageTextDumpResult {
   void AddFrameTextDumpResult(const FrameTextDumpResult& frame_result);
 
   // Returns the concatenation of all AMP frames. nullopt if no AMP frames are
-  // present.
-  base::Optional<std::string> GetAMPTextContent() const;
+  // present. Note that the string must be treated as untrusted data.
+  absl::optional<std::string> GetAMPTextContent() const;
 
   // Returns the concatenation of the mainframe. nullopt if not present.
-  base::Optional<std::string> GetMainFrameTextContent() const;
+  // Note that the string must be treated as untrusted data.
+  absl::optional<std::string> GetMainFrameTextContent() const;
 
   // Returns the concatenation of all frames, AMP or main. nullopt if |empty()|.
-  base::Optional<std::string> GetAllFramesTextContent() const;
+  // Note that the string must be treated as untrusted data.
+  absl::optional<std::string> GetAllFramesTextContent() const;
 
   bool empty() const { return frame_results_.empty(); }
 

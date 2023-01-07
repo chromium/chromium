@@ -1,0 +1,227 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module app_management.mojom;
+
+import "url/mojom/url.mojom";
+
+// The types of apps available in the registry.
+enum AppType {
+  kUnknown = 0,
+  kArc,                   // Android app.
+  kBuiltIn,               // Built-in app.
+  kCrostini,              // Linux (via Crostini) app.
+  kChromeApp,             // Chrome app.
+  kWeb,                   // Web app.
+  kMacOs,                 // Mac OS app.
+  kPluginVm,              // Plugin VM app, see go/pluginvm.
+  kStandaloneBrowser,     // Lacros browser app, see //docs/lacros.md.
+  kRemote,                // Remote app.
+  kBorealis,              // Borealis app, see go/borealis-app.
+  kSystemWeb,             // System web app.
+  kStandaloneBrowserChromeApp,  // Chrome app hosted in Lacros.
+  kExtension,             // Browser extension.
+  kStandaloneBrowserExtension,  // Extension hosted in Lacros.
+};
+
+// Augments a bool to include an 'unknown' value.
+enum OptionalBool {
+  kUnknown = 0,
+  kFalse,
+  kTrue,
+};
+
+// The types of permissions in App Service.
+enum PermissionType {
+  kUnknown         = 0,
+  kCamera          = 1,
+  kLocation        = 2,
+  kMicrophone      = 3,
+  kNotifications   = 4,
+  kContacts        = 5,
+  kStorage         = 6,
+  kPrinting        = 7,
+  kFileHandling    = 8,
+};
+
+enum TriState {
+  kAllow,
+  kBlock,
+  kAsk,
+};
+
+union PermissionValue {
+  bool bool_value;
+  TriState tristate_value;
+};
+
+struct Permission {
+  PermissionType permission_type;
+  PermissionValue value;
+  // If the permission is managed by an enterprise policy.
+  bool is_managed;
+};
+
+// How the app was installed.
+// This should be kept in sync with histogram.xml, and InstallReason in
+// enums.xml.
+// Note the enumeration is used in UMA histogram so entries should not be
+// re-ordered or removed. New entries should be added at the bottom.
+enum InstallReason {
+  kUnknown = 0,
+  kSystem,     // Installed with the system and is considered a part of the OS.
+  kPolicy,     // Installed by policy.
+  kOem,        // Installed by an OEM.
+  kDefault,    // Preinstalled by default, but is not considered a system app.
+  kSync,       // Installed by sync.
+  kUser,       // Installed by user action.
+  kSubApp,     // Installed by the SubApp API call.
+  kKiosk,      // Installed by Kiosk on Chrome OS.
+  kCommandLine,     // Installed by the command line argument.
+};
+
+// Where the app was installed from.
+// This should be kept in sync with histogram.xml, and InstallSource in
+// enums.xml.
+// Note the enumeration is used in UMA histogram so entries should not be
+// re-ordered or removed. New entries should be added at the bottom.
+enum InstallSource {
+  kUnknown = 0,
+  kSystem,          // Installed as part of Chrome OS.
+  kSync,            // Installed from sync.
+  kPlayStore,       // Installed from Play store.
+  kChromeWebStore,  // Installed from Chrome web store.
+  kBrowser,         // Installed from browser.
+};
+
+// The window mode that each app will open in.
+enum WindowMode {
+  kUnknown = 0,
+  // Opens in a standalone window
+  kWindow,
+  // Opens in the default web browser
+  kBrowser,
+  // Opens in a tabbed app window
+  kTabbedWindow,
+};
+
+// The RunOnOsLoginModes must be kept in sync with RunOnOsLoginMode in
+// chrome/browser/web_applications/web_app_constants.h
+enum RunOnOsLoginMode {
+  kUnknown = 0,
+  // App won't run on OS Login.
+  kNotRun,
+  // App will run in windowed mode on OS Login.
+  kWindowed,
+};
+
+// RunOnOsLoginMode struct to be used to verify if the mode is set by policy
+// or not.
+struct RunOnOsLogin {
+  RunOnOsLoginMode login_mode;
+  // If the run on os login mode is policy
+  // controlled or not.
+  bool is_managed;
+};
+
+struct App {
+  string id;
+
+  AppType type;
+
+  // The fields below may be omitted because this struct is also used to signal
+  // updates.
+  string? title;
+
+  string? description;
+  OptionalBool is_pinned;
+  OptionalBool is_policy_pinned;
+  string? version;
+  string? size;
+  map<PermissionType, Permission> permissions;
+  InstallReason install_reason;
+  InstallSource install_source;
+  bool hide_more_settings;
+  bool hide_pin_to_shelf;
+  bool is_preferred_app;
+  WindowMode window_mode;
+  bool hide_window_mode;
+  bool resize_locked;
+  bool hide_resize_locked;
+  array<string> supported_links;
+  RunOnOsLogin? run_on_os_login;
+  FileHandlingState? file_handling_state;
+  string? app_size;
+  string? data_size;
+  string publisher_id;
+};
+
+// Extension-based apps primarily use install-time permissions that cannot be
+// changed after installation. This struct is used for the page to receive
+// string descriptions of those permissions to display to the user.
+struct ExtensionAppPermissionMessage {
+  string message;
+  array<string> submessages;
+};
+
+interface PageHandlerFactory {
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Browser interface.
+interface PageHandler {
+  GetApps() => (array<App> apps);
+  // Returns null if the app is not found.
+  GetApp(string app_id) => (App? app);
+  GetExtensionAppPermissionMessages(string app_id) =>
+      (array<ExtensionAppPermissionMessage> messages);
+  // Pins or unpins for an app identified with `app_id`.
+  SetPinned(string app_id, OptionalBool pinned);
+  // Sets `permission` for an app identified with `app_id`.
+  SetPermission(string app_id,
+                Permission permission);
+  // Enables resize lock mode for the app identified by `app_id`.
+  SetResizeLocked(string app_id, bool locked);
+  Uninstall(string app_id);
+  OpenNativeSettings(string app_id);
+  SetPreferredApp(string app_id, bool is_preferred_app);
+  // Returns a list of |app_ids| that are currently set as preferred apps
+  // and have overlapping intent filters with |app_id|.
+  GetOverlappingPreferredApps(string app_id) => (array<string> app_ids);
+  // Used to set the Window Mode from the frontend inside
+  // app_management_page_handler.
+  SetWindowMode(string app_id, WindowMode window_mode);
+  // Used to set the Run On OS Login Modes from the frontend
+  // of an app via app_management_page_handler.
+  SetRunOnOsLoginMode(string app_id, RunOnOsLoginMode run_on_os_login_mode);
+  // Used to set the state of the File Handling API from the frontend inside
+  // app_management_page_handler.
+  SetFileHandlingEnabled(string app_id, bool enabled);
+  // Called when the second link in the File Handling section is clicked, iff
+  // that link's URL is not valid (i.e. `learn_more_url` was empty). If it's a
+  // valid URL instead, this won't be called.
+  ShowDefaultAppAssociationsUi();
+  // Opens the store page for an app with the given |app_id|.
+  OpenStorePage(string app_id);
+};
+
+// Frontend interface.
+interface Page {
+  OnAppAdded(App app);
+  OnAppChanged(App update);
+  OnAppRemoved(string app_id);
+};
+
+struct FileHandlingState {
+  bool enabled;
+  bool is_managed;
+  // A list of all file type associations, such as "MD, TXT, CSV".
+  string user_visible_types;
+  // A label that displays a possibly truncated list of file type associations
+  // and may be linkified to display overflow.
+  string user_visible_types_label;
+  // The URL for the learn more link. If null, the link defaults to "#".
+  url.mojom.Url? learn_more_url;
+};

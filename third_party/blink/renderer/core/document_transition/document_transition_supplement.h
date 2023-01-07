@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 namespace blink {
 class DocumentTransition;
+class V8DocumentTransitionCallback;
 
 class CORE_EXPORT DocumentTransitionSupplement
     : public GarbageCollected<DocumentTransitionSupplement>,
@@ -21,9 +22,12 @@ class CORE_EXPORT DocumentTransitionSupplement
 
   // Supplement functionality.
   static DocumentTransitionSupplement* From(Document&);
-  static DocumentTransitionSupplement* FromIfExists(Document&);
+  static DocumentTransitionSupplement* FromIfExists(const Document&);
 
-  static DocumentTransition* documentTransition(Document&);
+  static DocumentTransition* EnsureDocumentTransition(Document&);
+
+  static DocumentTransition* createDocumentTransition(Document&,
+                                                      ExceptionState&);
 
   DocumentTransition* GetTransition();
 

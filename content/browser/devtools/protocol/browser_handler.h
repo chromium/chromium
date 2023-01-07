@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,24 +6,33 @@
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_BROWSER_HANDLER_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "components/download/public/common/download_item.h"
 #include "content/browser/devtools/protocol/browser.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 
 namespace content {
 
 class BrowserContext;
+class FrameTreeNode;
 
 namespace protocol {
 
-class BrowserHandler : public DevToolsDomainHandler, public Browser::Backend {
+class BrowserHandler : public DevToolsDomainHandler,
+                       public Browser::Backend,
+                       public download::DownloadItem::Observer {
  public:
   explicit BrowserHandler(bool allow_set_download_behavior);
+
+  BrowserHandler(const BrowserHandler&) = delete;
+  BrowserHandler& operator=(const BrowserHandler&) = delete;
+
   ~BrowserHandler() override;
 
   static Response FindBrowserContext(
       const Maybe<std::string>& browser_context_id,
       BrowserContext** browser_context);
+
+  static std::vector<BrowserHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
   void Wire(UberDispatcher* dispatcher) override;
 
@@ -65,7 +74,8 @@ class BrowserHandler : public DevToolsDomainHandler, public Browser::Backend {
 
   Response SetDownloadBehavior(const std::string& behavior,
                                Maybe<std::string> browser_context_id,
-                               Maybe<std::string> download_path) override;
+                               Maybe<std::string> download_path,
+                               Maybe<bool> events_enabled) override;
   Response DoSetDownloadBehavior(const std::string& behavior,
                                  BrowserContext* browser_context,
                                  Maybe<std::string> download_path);
@@ -76,12 +86,21 @@ class BrowserHandler : public DevToolsDomainHandler, public Browser::Backend {
   Response Crash() override;
   Response CrashGpuProcess() override;
 
+  // DownloadItem::Observer overrides
+  void OnDownloadUpdated(download::DownloadItem* item) override;
+  void OnDownloadDestroyed(download::DownloadItem* item) override;
+
+  void DownloadWillBegin(FrameTreeNode* ftn, download::DownloadItem* item);
+
  private:
+  void SetDownloadEventsEnabled(bool enabled);
+
+  std::unique_ptr<Browser::Frontend> frontend_;
   base::flat_set<std::string> contexts_with_overridden_permissions_;
   base::flat_set<std::string> contexts_with_overridden_downloads_;
+  bool download_events_enabled_;
   const bool allow_set_download_behavior_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserHandler);
+  base::flat_set<download::DownloadItem*> pending_downloads_;
 };
 
 }  // namespace protocol

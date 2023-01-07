@@ -1,0 +1,20 @@
+Tests auto-attach of shared workers.
+{
+    attached : true
+    browserContextId : <string>
+    canAccessOpener : false
+    targetId : <string>
+    title : 
+    type : shared_worker
+    url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/shared-worker.js
+}
+{
+    attached : true
+    browserContextId : <string>
+    canAccessOpener : false
+    targetId : <string>
+    title : 
+    type : shared_worker
+    url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/shared-worker.js?worker2
+}
+

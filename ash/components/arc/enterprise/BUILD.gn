@@ -1,0 +1,43 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("enterprise") {
+  sources = [
+    "arc_apps_tracker.h",
+    "arc_data_remove_requested_pref_handler.cc",
+    "arc_data_remove_requested_pref_handler.h",
+    "arc_data_snapshotd_bridge.cc",
+    "arc_data_snapshotd_bridge.h",
+    "arc_data_snapshotd_manager.cc",
+    "arc_data_snapshotd_manager.h",
+    "arc_snapshot_reboot_notification.h",
+    "snapshot_hours_policy_service.cc",
+    "snapshot_hours_policy_service.h",
+    "snapshot_reboot_controller.cc",
+    "snapshot_reboot_controller.h",
+    "snapshot_session_controller.cc",
+    "snapshot_session_controller.h",
+  ]
+
+  deps = [
+    "//ash/components/arc:prefs",
+    "//ash/constants",
+    "//base",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/arc",
+    "//chromeos/ash/components/dbus/upstart:upstart",
+    "//chromeos/ash/components/policy",
+    "//chromeos/dbus/power",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//ui/gl",
+    "//ui/ozone",
+  ]
+}

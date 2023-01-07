@@ -1,0 +1,11 @@
+Document
+++Text Name='Some '
+++Text
+++++Text Name='highlighted text'
+++Text Name=' example.'
+++Group
+++++Text Name='Good job!'
+++ListItem
+++++Text Name='Some footnote.'
+++Group
+++++Text Name='The meaning is.'

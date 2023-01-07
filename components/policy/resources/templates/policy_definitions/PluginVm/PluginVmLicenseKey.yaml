@@ -1,0 +1,20 @@
+caption: <ph name="PLUGIN_VM_NAME">PluginVm</ph> license key
+deprecated: true
+desc: |-
+  Setting the policy specifies the <ph name="PLUGIN_VM_NAME">PluginVm</ph> license key for this device.
+
+        This policy was removed in M94.
+device_only: true
+example_value: LICENSE_KEY
+features:
+  dynamic_refresh: true
+owners:
+- okalitova@chromium.org
+- aoldemeier@chromium.org
+schema:
+  sensitiveValue: true
+  type: string
+supported_on:
+- chrome_os:73-93
+tags: []
+type: string

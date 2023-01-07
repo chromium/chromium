@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -78,12 +77,6 @@ ftl::InboxMessage CreateInboxMessage(const std::string& message_id,
   return message;
 }
 
-FtlMessagingClient::MessageCallback CreateNotReachedMessageCallback() {
-  return base::BindRepeating(
-      [](const ftl::Id& sender_id, const std::string& sender_registration_id,
-         const ftl::ChromotingMessage& message) { NOTREACHED(); });
-}
-
 base::OnceCallback<void(const ProtobufHttpStatus&)>
 CheckStatusThenQuitRunLoopCallback(
     const base::Location& from_here,
@@ -107,6 +100,11 @@ std::string GetChromotingMessageText(const ftl::InboxMessage& message) {
 class MockMessageReceptionChannel : public MessageReceptionChannel {
  public:
   MockMessageReceptionChannel() = default;
+
+  MockMessageReceptionChannel(const MockMessageReceptionChannel&) = delete;
+  MockMessageReceptionChannel& operator=(const MockMessageReceptionChannel&) =
+      delete;
+
   ~MockMessageReceptionChannel() override = default;
 
   // MessageReceptionChannel implementations.
@@ -127,8 +125,6 @@ class MockMessageReceptionChannel : public MessageReceptionChannel {
  private:
   StreamOpener stream_opener_;
   MessageCallback on_incoming_msg_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMessageReceptionChannel);
 };
 
 class MockRegistrationManager : public RegistrationManager {
@@ -160,7 +156,7 @@ class FtlMessagingClientTest : public testing::Test {
   ProtobufHttpTestResponder test_responder_;
   FakeOAuthTokenGetter token_getter_{OAuthTokenGetter::Status::SUCCESS, "", ""};
   std::unique_ptr<FtlMessagingClient> messaging_client_;
-  MockMessageReceptionChannel* mock_message_reception_channel_;
+  raw_ptr<MockMessageReceptionChannel> mock_message_reception_channel_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -181,115 +177,6 @@ void FtlMessagingClientTest::SetUp() {
 
 void FtlMessagingClientTest::TearDown() {
   messaging_client_.reset();
-}
-
-TEST_F(FtlMessagingClientTest, TestPullMessages_ReturnsNoMessage) {
-  base::RunLoop run_loop;
-  auto subscription = messaging_client_->RegisterMessageCallback(
-      CreateNotReachedMessageCallback());
-  messaging_client_->PullMessages(CheckStatusThenQuitRunLoopCallback(
-      FROM_HERE, ProtobufHttpStatus::Code::OK, &run_loop));
-  test_responder_.AddResponseToMostRecentRequestUrl(
-      ftl::PullMessagesResponse());
-  run_loop.Run();
-}
-
-TEST_F(FtlMessagingClientTest, TestPullMessages_Unauthenticated) {
-  base::RunLoop run_loop;
-  auto subscription = messaging_client_->RegisterMessageCallback(
-      CreateNotReachedMessageCallback());
-  messaging_client_->PullMessages(CheckStatusThenQuitRunLoopCallback(
-      FROM_HERE, ProtobufHttpStatus::Code::UNAUTHENTICATED, &run_loop));
-  test_responder_.AddErrorToMostRecentRequestUrl(ProtobufHttpStatus(
-      ProtobufHttpStatus::Code::UNAUTHENTICATED, "Unauthenticated"));
-  run_loop.Run();
-}
-
-TEST_F(FtlMessagingClientTest, TestPullMessages_IgnoresMessageWithoutRegId) {
-  base::RunLoop run_loop;
-
-  auto subscription = messaging_client_->RegisterMessageCallback(
-      CreateNotReachedMessageCallback());
-
-  messaging_client_->PullMessages(CheckStatusThenQuitRunLoopCallback(
-      FROM_HERE, ProtobufHttpStatus::Code::OK, &run_loop));
-
-  ftl::PullMessagesResponse response;
-  ftl::InboxMessage* message = response.add_messages();
-  *message = CreateInboxMessage(kMessage1Id, kMessage1Text);
-  message->clear_sender_registration_id();
-  test_responder_.AddResponseToMostRecentRequestUrl(response);
-
-  ftl::AckMessagesRequest request;
-  ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(1, request.messages_size());
-  EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-  EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-
-  test_responder_.AddResponseToMostRecentRequestUrl(ftl::AckMessagesResponse());
-  run_loop.Run();
-}
-
-TEST_F(FtlMessagingClientTest, TestPullMessages_IgnoresUnknownMessageType) {
-  base::RunLoop run_loop;
-
-  auto subscription = messaging_client_->RegisterMessageCallback(
-      CreateNotReachedMessageCallback());
-
-  messaging_client_->PullMessages(CheckStatusThenQuitRunLoopCallback(
-      FROM_HERE, ProtobufHttpStatus::Code::OK, &run_loop));
-
-  ftl::PullMessagesResponse response;
-  ftl::InboxMessage* message = response.add_messages();
-  *message = CreateInboxMessage(kMessage1Id, kMessage1Text);
-  message->set_message_type(ftl::InboxMessage_MessageType_UNKNOWN);
-  test_responder_.AddResponseToMostRecentRequestUrl(response);
-
-  ftl::AckMessagesRequest request;
-  ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(1, request.messages_size());
-  EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-  EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-
-  test_responder_.AddResponseToMostRecentRequestUrl(ftl::AckMessagesResponse());
-  run_loop.Run();
-}
-
-TEST_F(FtlMessagingClientTest, TestPullMessages_ReturnsAndAcksTwoMessages) {
-  base::RunLoop run_loop;
-
-  base::MockCallback<FtlMessagingClient::MessageCallback> mock_on_incoming_msg;
-
-  EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId,
-                                        StanzaTextMatches(kMessage1Text)))
-      .WillOnce(Return());
-  EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId,
-                                        StanzaTextMatches(kMessage2Text)))
-      .WillOnce(Return());
-
-  auto subscription =
-      messaging_client_->RegisterMessageCallback(mock_on_incoming_msg.Get());
-
-  messaging_client_->PullMessages(CheckStatusThenQuitRunLoopCallback(
-      FROM_HERE, ProtobufHttpStatus::Code::OK, &run_loop));
-
-  ftl::PullMessagesResponse pull_messages_response;
-  ftl::InboxMessage* message = pull_messages_response.add_messages();
-  *message = CreateInboxMessage(kMessage1Id, kMessage1Text);
-  message = pull_messages_response.add_messages();
-  *message = CreateInboxMessage(kMessage2Id, kMessage2Text);
-  test_responder_.AddResponseToMostRecentRequestUrl(pull_messages_response);
-
-  ftl::AckMessagesRequest request;
-  ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(2, request.messages_size());
-  EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-  EXPECT_EQ(kFakeReceiverId, request.messages(1).receiver_id().id());
-  EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-  EXPECT_EQ(kMessage2Id, request.messages(1).message_id());
-
-  test_responder_.AddResponseToMostRecentRequestUrl(ftl::AckMessagesResponse());
-  run_loop.Run();
 }
 
 TEST_F(FtlMessagingClientTest, TestSendMessage_Unauthenticated) {
@@ -423,12 +310,12 @@ TEST_F(FtlMessagingClientTest,
   ftl::InboxMessage message = CreateInboxMessage(kMessage1Id, kMessage1Text);
   mock_message_reception_channel_->on_incoming_msg()->Run(message);
 
-  ftl::AckMessagesRequest request;
+  ftl::BatchAckMessagesRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(1, request.messages_size());
-  EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-  EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-  test_responder_.AddResponseToMostRecentRequestUrl(ftl::AckMessagesResponse());
+  EXPECT_EQ(1, request.message_ids_size());
+  EXPECT_EQ(kMessage1Id, request.message_ids(0));
+  test_responder_.AddResponseToMostRecentRequestUrl(
+      ftl::BatchAckMessagesResponse());
 
   run_loop.Run();
 }
@@ -437,31 +324,47 @@ TEST_F(FtlMessagingClientTest, ReceivedDuplicatedMessage_AckAndDrop) {
   base::RunLoop run_loop;
 
   base::MockCallback<FtlMessagingClient::MessageCallback> mock_on_incoming_msg;
-  EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId,
-                                        StanzaTextMatches(kMessage1Text)))
-      .WillOnce(Return());
+  EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId, _))
+      .WillOnce([](const ftl::Id&, const std::string&,
+                   const ftl::ChromotingMessage& message) {
+        EXPECT_EQ(kMessage1Text, message.xmpp().stanza());
+      })
+      .WillOnce([](const ftl::Id&, const std::string&,
+                   const ftl::ChromotingMessage& message) {
+        EXPECT_EQ(kMessage2Text, message.xmpp().stanza());
+      });
+
+  EXPECT_CALL(test_responder_.GetMockInterceptor(), Run(_))
+      .WillOnce([](const network::ResourceRequest& request) {
+        ftl::BatchAckMessagesRequest message;
+        ProtobufHttpTestResponder::ParseRequestMessage(request, &message);
+        EXPECT_EQ(1, message.message_ids_size());
+        EXPECT_EQ(kMessage1Id, message.message_ids(0));
+      })
+      .WillOnce([](const network::ResourceRequest& request) {
+        ftl::BatchAckMessagesRequest message;
+        ProtobufHttpTestResponder::ParseRequestMessage(request, &message);
+        EXPECT_EQ(1, message.message_ids_size());
+        EXPECT_EQ(kMessage1Id, message.message_ids(0));
+      })
+      .WillOnce([&](const network::ResourceRequest& request) {
+        ftl::BatchAckMessagesRequest message;
+        ProtobufHttpTestResponder::ParseRequestMessage(request, &message);
+        EXPECT_EQ(1, message.message_ids_size());
+        EXPECT_EQ(kMessage2Id, message.message_ids(0));
+        run_loop.Quit();
+      });
 
   auto subscription =
       messaging_client_->RegisterMessageCallback(mock_on_incoming_msg.Get());
+  ftl::InboxMessage message_1 = CreateInboxMessage(kMessage1Id, kMessage1Text);
+  mock_message_reception_channel_->on_incoming_msg()->Run(message_1);
 
-  messaging_client_->PullMessages(CheckStatusThenQuitRunLoopCallback(
-      FROM_HERE, ProtobufHttpStatus::Code::OK, &run_loop));
+  ftl::InboxMessage message_2 = CreateInboxMessage(kMessage1Id, kMessage1Text);
+  mock_message_reception_channel_->on_incoming_msg()->Run(message_2);
 
-  ftl::PullMessagesResponse pull_messages_response;
-  *pull_messages_response.add_messages() =
-      CreateInboxMessage(kMessage1Id, kMessage1Text);
-  *pull_messages_response.add_messages() =
-      CreateInboxMessage(kMessage1Id, kMessage1Text);
-  test_responder_.AddResponseToMostRecentRequestUrl(pull_messages_response);
-
-  ftl::AckMessagesRequest request;
-  ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(2, request.messages_size());
-  EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-  EXPECT_EQ(kFakeReceiverId, request.messages(1).receiver_id().id());
-  EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-  EXPECT_EQ(kMessage1Id, request.messages(1).message_id());
-  test_responder_.AddResponseToMostRecentRequestUrl(ftl::AckMessagesResponse());
+  ftl::InboxMessage message_3 = CreateInboxMessage(kMessage2Id, kMessage2Text);
+  mock_message_reception_channel_->on_incoming_msg()->Run(message_3);
 
   run_loop.Run();
 }

@@ -1,44 +1,44 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++link name='Empty anchor' inPageLinkTargetId=anchor
+++++++link name='Empty anchor' defaultActionVerb=jump inPageLinkTargetId=genericContainer
 ++++++++staticText name='Empty anchor'
 ++++++++++inlineTextBox name='Empty anchor'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
-++++++link name='Anchor with content' inPageLinkTargetId=anchor
+++++++link name='Anchor with content' defaultActionVerb=jump inPageLinkTargetId=genericContainer
 ++++++++staticText name='Anchor with content'
 ++++++++++inlineTextBox name='Anchor with content'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
-++++++link name='Anchor with ID' inPageLinkTargetId=anchor
+++++++link name='Anchor with ID' defaultActionVerb=jump inPageLinkTargetId=genericContainer
 ++++++++staticText name='Anchor with ID'
 ++++++++++inlineTextBox name='Anchor with ID'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
-++++++link name='Empty span' inPageLinkTargetId=genericContainer
+++++++link name='Empty span' defaultActionVerb=jump inPageLinkTargetId=genericContainer
 ++++++++staticText name='Empty span'
 ++++++++++inlineTextBox name='Empty span'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
-++++++link name='Span with content' inPageLinkTargetId=genericContainer
+++++++link name='Span with content' defaultActionVerb=jump inPageLinkTargetId=genericContainer
 ++++++++staticText name='Span with content'
 ++++++++++inlineTextBox name='Span with content'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
-++++++link name='Paragraph with content' inPageLinkTargetId=paragraph
+++++++link name='Paragraph with content' defaultActionVerb=jump inPageLinkTargetId=paragraph
 ++++++++staticText name='Paragraph with content'
 ++++++++++inlineTextBox name='Paragraph with content'
 ++++++paragraph
-++++++++anchor
+++++++++genericContainer
 ++++++++staticText name='After empty anchor'
 ++++++++++inlineTextBox name='After empty anchor'
 ++++++paragraph
-++++++++anchor name='Anchor with content'
+++++++++genericContainer
 ++++++++++staticText name='Anchor with content'
 ++++++++++++inlineTextBox name='Anchor with content'
 ++++++paragraph
-++++++++anchor name='Anchor with ID'
+++++++++genericContainer
 ++++++++++staticText name='Anchor with ID'
 ++++++++++++inlineTextBox name='Anchor with ID'
 ++++++paragraph

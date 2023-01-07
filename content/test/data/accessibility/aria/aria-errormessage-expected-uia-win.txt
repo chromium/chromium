@@ -1,0 +1,11 @@
+Document
+++Group IsControlElement=false
+++++Edit Name='Invalid is true' ControllerFor='{region}'
+++++Edit Name='Invalid is false'
+++++Edit Name='Invalid is not set'
+++Group IsControlElement=false
+++++Text Name='Error for invalid input'
+++Group IsControlElement=false
+++++Text Name='Error for input which is not invalid'
+++Group IsControlElement=false
+++++Text Name='Error for input with invalid not set'

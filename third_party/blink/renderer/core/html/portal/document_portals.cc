@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,12 @@ namespace blink {
 const char DocumentPortals::kSupplementName[] = "DocumentPortals";
 
 // static
-DocumentPortals& DocumentPortals::From(Document& document) {
+DocumentPortals* DocumentPortals::Get(Document& document) {
+  return Supplement<Document>::From<DocumentPortals>(document);
+}
+
+// static
+DocumentPortals& DocumentPortals::GetOrCreate(Document& document) {
   DocumentPortals* supplement =
       Supplement<Document>::From<DocumentPortals>(document);
   if (!supplement) {

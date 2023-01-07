@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/cast_channel/cast_message_util.h"
-#include "components/cast_channel/enum_table.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
+#include "components/media_router/common/providers/cast/channel/enum_table.h"
 
 namespace media_router {
 
@@ -31,7 +31,7 @@ static constexpr char kHistogramCastAppType[] =
 // contains all possible combinations of ReceiverAppType.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Please keep it in sync with
-// MediaRouterRequestReceiverAppType in tools/metrics/histograms/enums.xml.
+// ReceiverAppTypeSet in tools/metrics/histograms/enums.xml.
 enum class ReceiverAppTypeSet {
   // Web-based Cast receiver apps. This is supported by all Cast media source
   // by default.

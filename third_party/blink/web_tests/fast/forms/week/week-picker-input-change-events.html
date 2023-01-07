@@ -3,6 +3,8 @@
 <head>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
@@ -19,7 +21,7 @@ let weekElement = document.getElementById("week");
 
 promise_test(() => {
     assert_equals(internals.pagePopupWindow, null);
-    return openPickerWithPromise(weekElement).then(() => {
+    return openPicker(weekElement).then(() => {
         assert_equals(weekElement.value, "2020-W02");
         assert_not_equals(internals.pagePopupWindow, null);
         assert_equals(inputEventCount, 0, "No input event should have not have fired before making changes.");
@@ -49,7 +51,7 @@ promise_test(() => {
 promise_test(() => {
     inputEventCount = changeEventCount = 0;
     assert_equals(internals.pagePopupWindow, null);
-    return openPickerWithPromise(weekElement).then(() => {
+    return openPicker(weekElement).then(() => {
         assert_equals(weekElement.value, "2020-W04");
         assert_not_equals(internals.pagePopupWindow, null);
         assert_equals(inputEventCount, 0, "No input event should have not have fired before making changes.");

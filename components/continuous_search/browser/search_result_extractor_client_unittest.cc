@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "components/continuous_search/browser/test/fake_search_result_extractor.h"
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,12 +37,11 @@ mojom::CategoryResultsPtr GenerateValidResults(const GURL& document_url) {
   expected_results->category_type = mojom::Category::kOrganic;
   {
     mojom::ResultGroupPtr result_group = mojom::ResultGroup::New();
-    result_group->label = "Group 1";
-    result_group->is_ad_group = false;
+    result_group->type = mojom::ResultType::kSearchResults;
     {
       mojom::SearchResultPtr result = mojom::SearchResult::New();
       result->link = GURL("https://www.bar.com/");
-      result->title = "Bar";
+      result->title = u"Bar";
       result_group->results.push_back(std::move(result));
     }
     expected_results->groups.push_back(std::move(result_group));
@@ -75,7 +75,7 @@ class SearchResultExtractorClientRenderViewHostTest
   // interface.
   void OverrideInterface(FakeSearchResultExtractor* extractor) {
     web_contents()
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->GetRemoteAssociatedInterfaces()
         ->OverrideBinderForTesting(
             mojom::SearchResultExtractor::Name_,
@@ -94,7 +94,7 @@ TEST_F(SearchResultExtractorClientRenderViewHostTest, RequestDataSuccess) {
   SearchResultExtractorClient client;
   base::RunLoop loop;
   client.RequestData(
-      web_contents(),
+      web_contents(), {mojom::ResultType::kSearchResults},
       base::BindOnce(CheckResponse, SearchResultExtractorClientStatus::kSuccess,
                      std::move(expected_results), loop.QuitClosure()));
   loop.Run();
@@ -105,7 +105,7 @@ TEST_F(SearchResultExtractorClientRenderViewHostTest,
   SearchResultExtractorClient client;
   base::RunLoop loop;
   client.RequestData(
-      nullptr,
+      nullptr, {mojom::ResultType::kSearchResults},
       base::BindOnce(CheckResponse,
                      SearchResultExtractorClientStatus::kWebContentsGone,
                      mojom::CategoryResults::New(), loop.QuitClosure()));
@@ -122,7 +122,7 @@ TEST_F(SearchResultExtractorClientRenderViewHostTest, RequestDataFailed) {
   SearchResultExtractorClient client;
   base::RunLoop loop;
   client.RequestData(
-      web_contents(),
+      web_contents(), {mojom::ResultType::kSearchResults},
       base::BindOnce(CheckResponse,
                      SearchResultExtractorClientStatus::kNoResults,
                      mojom::CategoryResults::New(), loop.QuitClosure()));
@@ -140,7 +140,7 @@ TEST_F(SearchResultExtractorClientRenderViewHostTest, RequestDataUrlMismatch) {
   SearchResultExtractorClient client;
   base::RunLoop loop;
   client.RequestData(
-      web_contents(),
+      web_contents(), {mojom::ResultType::kSearchResults},
       base::BindOnce(CheckResponse,
                      SearchResultExtractorClientStatus::kUnexpectedUrl,
                      mojom::CategoryResults::New(), loop.QuitClosure()));
@@ -153,7 +153,7 @@ TEST_F(SearchResultExtractorClientRenderViewHostTest, NonSrpUrl) {
   SearchResultExtractorClient client;
   base::RunLoop loop;
   client.RequestData(
-      web_contents(),
+      web_contents(), {mojom::ResultType::kSearchResults},
       base::BindOnce(
           CheckResponse,
           SearchResultExtractorClientStatus::kWebContentsHasNonSrpUrl,

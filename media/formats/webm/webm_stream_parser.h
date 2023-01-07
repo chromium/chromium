@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/byte_queue.h"
@@ -25,16 +24,20 @@ class WebMClusterParser;
 class MEDIA_EXPORT WebMStreamParser : public StreamParser {
  public:
   WebMStreamParser();
+
+  WebMStreamParser(const WebMStreamParser&) = delete;
+  WebMStreamParser& operator=(const WebMStreamParser&) = delete;
+
   ~WebMStreamParser() override;
 
   // StreamParser implementation.
   void Init(InitCB init_cb,
-            const NewConfigCB& config_cb,
-            const NewBuffersCB& new_buffers_cb,
+            NewConfigCB config_cb,
+            NewBuffersCB new_buffers_cb,
             bool ignore_text_tracks,
-            const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-            const NewMediaSegmentCB& new_segment_cb,
-            const EndMediaSegmentCB& end_of_segment_cb,
+            EncryptedMediaInitDataCB encrypted_media_init_data_cb,
+            NewMediaSegmentCB new_segment_cb,
+            EndMediaSegmentCB end_of_segment_cb,
             MediaLog* media_log) override;
   void Flush() override;
   bool GetGenerateTimestampsFlag() const override;
@@ -81,14 +84,12 @@ class MEDIA_EXPORT WebMStreamParser : public StreamParser {
 
   NewMediaSegmentCB new_segment_cb_;
   EndMediaSegmentCB end_of_segment_cb_;
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   bool unknown_segment_size_;
 
   std::unique_ptr<WebMClusterParser> cluster_parser_;
   ByteQueue byte_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMStreamParser);
 };
 
 }  // namespace media

@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_BASE_LEAKY_BUCKET_H_
 #define REMOTING_BASE_LEAKY_BUCKET_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace remoting {
@@ -17,6 +16,10 @@ class LeakyBucket {
   // |depth| specifies depth of the bucket in drops. kUnlimitedDepth indicate
   // that bucket size is unlimited. |rate| is specified in drops per second.
   LeakyBucket(int depth, int rate);
+
+  LeakyBucket(const LeakyBucket&) = delete;
+  LeakyBucket& operator=(const LeakyBucket&) = delete;
+
   ~LeakyBucket();
 
   // If the bucket can fit |drops| then adds them and returns true. Otherwise
@@ -42,8 +45,6 @@ class LeakyBucket {
   // UpdateLevel(), which is called from RefillOrSpill() and UpdateRate().
   int current_level_;
   base::TimeTicks level_updated_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(LeakyBucket);
 };
 
 }  // namespace remoting

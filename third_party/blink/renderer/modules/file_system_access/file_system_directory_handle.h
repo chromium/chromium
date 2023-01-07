@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
@@ -26,24 +27,28 @@ class FileSystemDirectoryHandle final : public FileSystemHandle {
       mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>);
 
   // FileSystemDirectoryHandle IDL interface:
-  FileSystemDirectoryIterator* entries();
-  FileSystemDirectoryIterator* keys();
-  FileSystemDirectoryIterator* values();
+  FileSystemDirectoryIterator* entries(ExceptionState&);
+  FileSystemDirectoryIterator* keys(ExceptionState&);
+  FileSystemDirectoryIterator* values(ExceptionState&);
 
   bool isDirectory() const override { return true; }
 
   ScriptPromise getFileHandle(ScriptState*,
                               const String& name,
-                              const FileSystemGetFileOptions*);
+                              const FileSystemGetFileOptions*,
+                              ExceptionState&);
   ScriptPromise getDirectoryHandle(ScriptState*,
                                    const String& name,
-                                   const FileSystemGetDirectoryOptions*);
-  ScriptValue getEntries(ScriptState*);
+                                   const FileSystemGetDirectoryOptions*,
+                                   ExceptionState&);
   ScriptPromise removeEntry(ScriptState*,
                             const String& name,
-                            const FileSystemRemoveOptions*);
+                            const FileSystemRemoveOptions*,
+                            ExceptionState&);
 
-  ScriptPromise resolve(ScriptState*, FileSystemHandle* possible_child);
+  ScriptPromise resolve(ScriptState*,
+                        FileSystemHandle* possible_child,
+                        ExceptionState&);
 
   mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> Transfer()
       override;
@@ -62,12 +67,22 @@ class FileSystemDirectoryHandle final : public FileSystemHandle {
       bool writable,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               mojom::blink::PermissionStatus)>) override;
+  void MoveImpl(
+      mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> dest,
+      const String& new_entry_name,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>)
+      override;
+  void RemoveImpl(
+      const FileSystemRemoveOptions* options,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>)
+      override;
   // IsSameEntry for directories is implemented in terms of resolve, as resolve
   // also can be used to figure out if two directories are the same entry.
   void IsSameEntryImpl(
       mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> other,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr, bool)>)
       override;
+  void GetUniqueIdImpl(base::OnceCallback<void(const WTF::String&)>) override;
 
   HeapMojoRemote<mojom::blink::FileSystemAccessDirectoryHandle> mojo_ptr_;
 };

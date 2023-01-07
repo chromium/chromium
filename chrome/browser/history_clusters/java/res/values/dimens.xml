@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <dimen name="visit_item_remove_button_lateral_padding">18dp</dimen>
+    <dimen name="related_search_chip_list_chip_spacing">4dp</dimen>
+    <dimen name="related_search_chip_list_side_padding">16dp</dimen>
+    <dimen name="thick_divider_height">4dp</dimen>
+    <dimen name="divider_margin">8dp</dimen>
+</resources>

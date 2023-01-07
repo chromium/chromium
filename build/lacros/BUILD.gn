@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,13 +8,21 @@ import("//build/util/process_version.gni")
 python_library("lacros_resource_sizes_py") {
   pydeps_file = "lacros_resource_sizes.pydeps"
   data = [ "//buildtools/third_party/eu-strip/bin/eu-strip" ]
-  data_deps = [ "//third_party/catapult/tracing:convert_chart_json" ]
+  data_deps = [
+    "//build/util:test_results",
+    "//third_party/catapult/tracing:convert_chart_json",
+  ]
 }
 
-process_version("lacros_version_metadata") {
-  sources = [ "//chrome/VERSION" ]
-
-  template_file = "metadata.json.in"
-  output = "$root_out_dir/metadata.json"
-  process_only = true
+# Lacros is built with "{arch}-generic" configuration. However, in Chrome
+# OS, it is just "one board variation", so the libraries on the *-generic
+# boards may not be compatible with the ones on the actual DUTs.
+# One of the common pattern recently we hit is symbols exposed by libgcc.
+# The symbols start to be exposed recently because of libunwind transition
+# and along with it they are or are not re-exposed by other libraries, too,
+# depending on per-board implementation.
+# To mitigate the situation, marking -shared-libgcc to look up the system
+# libgcc always.
+config("optional_shared_libgcc") {
+  ldflags = [ "-shared-libgcc" ]
 }

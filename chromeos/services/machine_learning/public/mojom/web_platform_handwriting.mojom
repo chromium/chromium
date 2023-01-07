@@ -1,0 +1,134 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 2
+
+module chromeos.machine_learning.web_platform.mojom;
+
+// https://github.com/WICG/handwriting-recognition/blob/main/explainer.md
+
+// This mojom file is copied from the file below in chromium repo,
+// "//third_party/blink/public/mojom/handwriting/handwriting.mojom"
+// Notice that some modifications are made,
+//   1. The module is changed to `chromeos.machine_learning.web_platform.mojom`.
+//   2. `[Stable]` tags are added.
+//   3. Interface `HandwritingRecognitionService`
+//      and `CreateHandwritingRecognizerResult` are removed because they not
+//      used here.
+//   4. The paths of imported mojoms are changed.
+//   5. Feature query related structs are removed because they are not being
+//      used for now.
+// For the overlapping definitions, the two files should be kept consistent.
+
+import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Represents a single point in a handwriting stroke.
+// Corresponds to handwriting_point.idl.
+[Stable]
+struct HandwritingPoint {
+  // Represent the horizontal (location.x) and vertical (location.y) location
+  // of the point.
+  // The top-left corner coordinate is (location.x=0, location.y=0).
+  gfx.mojom.PointF location;
+  // The time elapsed since the starting time (e.g. when the first ink point
+  // of the drawing is captured).
+  mojo_base.mojom.TimeDelta? t;
+};
+
+// Represents a stroke which is just a series of points.
+// Corresponds to handwriting_stroke.idl.
+[Stable]
+struct HandwritingStroke {
+  array<HandwritingPoint> points;
+};
+
+// Represents a segment of a handwriting stroke in the grapheme detected.
+// One `HandwritingDrawingSegment` can only refer one stroke, denoted by
+// `stroke_index` which is the index of the stroke in the input stroke arrays
+// (i.e., the first parameter of the `HandwritingRecognizer::GetPrediction`
+// function).
+// The reason we need this struct is that different parts of one single stroke
+// can belong to different grapheme detected.
+// Corresponds to handwriting_drawing_segment.idl.
+[Stable]
+struct HandwritingDrawingSegment {
+  // The index of the corresponding stroke in the input stroke array.
+  uint32 stroke_index;
+  // The index of the first point in the stroke that belongs to this drawing
+  // segment.
+  uint32 begin_point_index;
+  // The index of the last point in the stroke that belongs to this drawing
+  // segment.
+  uint32 end_point_index;
+};
+
+// Represents a segment detected.
+// Corresponds to handwriting_segment.idl.
+[Stable]
+struct HandwritingSegment {
+  // The string representation of this grapheme.
+  string grapheme;
+  // HandwritingPrediction.text.slice(begin_index, end_index) === grapheme
+  // If the grapheme spans multiple Unicode code points,
+  // `end_index - begin_index` is greater than 1.
+  uint32 begin_index;
+  uint32 end_index;
+  array<HandwritingDrawingSegment> drawing_segments;
+};
+
+// Represents one single prediction result.
+// The final prediction output is an array of it.
+// Corresponds to handwriting_prediction.idl.
+[Stable]
+struct HandwritingPrediction {
+  string text;
+  array<HandwritingSegment> segmentation_result;
+};
+
+// Represents the hints provided to the recognizer for better performance.
+// Corresponds to handwriting_hints.idl.
+[Stable]
+struct HandwritingHints {
+  // The type of content to be recognized. The recognizer may use these to
+  // better rank the recognition results. (e.g. "text", "email", "number",
+  // "per-character").
+  string recognition_type@0;
+  // Identifies how the strokes are captured. (e.g. "touch", "mouse", "pen")
+  string input_type@1;
+  // Deprecated because we want to change `text_context` to be optional, see
+  // the comment of `text_context` below.
+  string deprecated_text_context@2;
+  // The maximum number of alternative predictions to generate.
+  uint32 alternatives@3;
+  // The text that comes before the handwriting. This can be texts that were
+  // previously recognized, or were given as the writing context (e.g.
+  // "Write your name here:"). This is the linguistic context to help
+  // disambiguate the handwriting (e.g. “Hello world” vs. “Hello word”).
+  [MinVersion=1] string? text_context@4;
+};
+
+// Used in creating recognizer.
+// Corresponds to handwriting_model_constraint.idl.
+[Stable]
+struct HandwritingModelConstraint {
+  // Languages are IETF BCP 47 language tags, e.g., "en", "zh-CN", "zh-Hans".
+  array<string> languages;
+};
+
+// Interface for a renderer to use a specific handwriting recognition backend.
+// The browser handles the requests and forwards them to the appropriate
+// backend.
+[Stable]
+interface HandwritingRecognizer {
+  // Does the recognition and outputs the prediction result.
+  // This is used by IDL API `blink::HandwritingDrawing::getPrediction`.
+  // The input `strokes` and `hints` should both come from
+  // `blink::HandwritingDrawing`.
+  // If the returned `Optional` has no value, it means there is some error in
+  // recognition. If the returned `Optional` has value but the array is empty,
+  // it means the recognizer can not recognize anything from the input.
+  GetPrediction@0(array<HandwritingStroke> strokes, HandwritingHints hints)
+    => (array<HandwritingPrediction>? prediction);
+};

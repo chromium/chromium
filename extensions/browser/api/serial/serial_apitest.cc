@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -74,6 +73,9 @@ class FakeSerialPort : public device::mojom::SerialPort {
     options_.cts_flow_control = false;
     options_.has_cts_flow_control = true;
   }
+
+  FakeSerialPort(const FakeSerialPort&) = delete;
+  FakeSerialPort& operator=(const FakeSerialPort&) = delete;
 
   ~FakeSerialPort() override = default;
 
@@ -163,7 +165,7 @@ class FakeSerialPort : public device::mojom::SerialPort {
     std::move(callback).Run(std::move(info));
   }
 
-  void Close(CloseCallback callback) override {
+  void Close(bool flush, CloseCallback callback) override {
     in_stream_watcher_.Cancel();
     in_stream_.reset();
     out_stream_watcher_.Cancel();
@@ -280,8 +282,6 @@ class FakeSerialPort : public device::mojom::SerialPort {
   mojo::SimpleWatcher in_stream_watcher_;
   mojo::ScopedDataPipeProducerHandle out_stream_;
   mojo::SimpleWatcher out_stream_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSerialPort);
 };
 
 class FakeSerialPortManager : public device::mojom::SerialPortManager {
@@ -290,6 +290,9 @@ class FakeSerialPortManager : public device::mojom::SerialPortManager {
     AddPort(base::FilePath(FILE_PATH_LITERAL("/dev/fakeserialmojo")));
     AddPort(base::FilePath(FILE_PATH_LITERAL("\\\\COM800\\")));
   }
+
+  FakeSerialPortManager(const FakeSerialPortManager&) = delete;
+  FakeSerialPortManager& operator=(const FakeSerialPortManager&) = delete;
 
   ~FakeSerialPortManager() override = default;
 
@@ -336,8 +339,6 @@ class FakeSerialPortManager : public device::mojom::SerialPortManager {
 
   mojo::ReceiverSet<device::mojom::SerialPortManager> receivers_;
   std::map<base::UnguessableToken, std::unique_ptr<FakeSerialPort>> ports_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSerialPortManager);
 };
 
 class SerialApiTest : public ExtensionApiTest {

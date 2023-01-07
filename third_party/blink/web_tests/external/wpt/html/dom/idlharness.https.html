@@ -98,7 +98,7 @@ idl_test(
       ],
       HTMLPictureElement: ['document.createElement("picture")'],
       HTMLImageElement: ['document.createElement("img")', 'new Image()'],
-      HTMLIframeElement: ['document.createElement("iframe")'],
+      HTMLIFrameElement: ['document.createElement("iframe")'],
       HTMLEmbedElement: ['document.createElement("embed")'],
       HTMLObjectElement: ['document.createElement("object")'],
       HTMLParamElement: ['document.createElement("param")'],
@@ -211,9 +211,6 @@ idl_test(
       MediaStreamEvent: [],
       ErrorEvent: [],
       EventSource: ['new EventSource("http://invalid")'],
-      // https://web-platform-tests.org/writing-tests/server-features.html?tests-involving-multiple-origins
-      WebSocket: ['new WebSocket("wss://nonexistent.' + get_host_info().ORIGINAL_HOST + '")'],
-      CloseEvent: ['new CloseEvent("close")'],
       AbstractWorker: [],
       Worker: [],
       SharedWorker: [],

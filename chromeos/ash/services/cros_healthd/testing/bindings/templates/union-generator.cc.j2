@@ -1,0 +1,39 @@
+{%- import "method-macro.cc.j2" as method_macro %}
+
+{%- set class_name = union.name ~ "DataGenerator" -%}
+
+std::unique_ptr<{{class_name}}> {{class_name}}::Create(
+    ::ash::cros_healthd::connectivity::Context* context) {
+  return std::unique_ptr<{{class_name}}>(new {{class_name}}(context, false));
+}
+
+{{class_name}}::{{class_name}}(
+    ::ash::cros_healthd::connectivity::Context* context, bool nullable)
+  : nullable_(nullable) {
+  {{method_macro.define_data_generator("", "context", union.fields)}}
+}
+
+{{union.name}}Ptr {{class_name}}::Generate() {
+  {%  for field in union.fields -%}
+  if (union_field_counter_ == {{loop.index0}}) {
+    if (!{{field.mojom_name}}__generator__->HasNext() &&
+        (union_field_counter_ + 1 < {{union.fields|length}} || nullable_)
+    ) {
+     ++union_field_counter_;
+    } else {
+      auto res = {{union.name}}::New();
+      res->set_{{field.mojom_name}}({{
+        field.mojom_name}}__generator__->Generate());
+      return res;
+    }
+  }
+  {%  endfor -%}
+  return nullptr;
+}
+
+bool {{class_name}}::HasNext() {
+  return (
+    {{method_macro.params_has_next("", union.fields)}} ||
+    (nullable_ && union_field_counter_ < {{union.fields|length}})
+  );
+}

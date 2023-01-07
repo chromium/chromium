@@ -1,13 +1,10 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_
 #define CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "content/public/browser/content_browser_client.h"
 
 namespace base {
@@ -19,6 +16,12 @@ class CommandLine;
 class BrowserProcessPlatformPartBase {
  public:
   BrowserProcessPlatformPartBase();
+
+  BrowserProcessPlatformPartBase(const BrowserProcessPlatformPartBase&) =
+      delete;
+  BrowserProcessPlatformPartBase& operator=(
+      const BrowserProcessPlatformPartBase&) = delete;
+
   virtual ~BrowserProcessPlatformPartBase();
 
   // Called after creating the process singleton or when another chrome
@@ -37,9 +40,6 @@ class BrowserProcessPlatformPartBase {
 
   // Called at the end of BrowserProcessImpl::PreMainMessageLoopRun().
   virtual void PreMainMessageLoopRun();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserProcessPlatformPartBase);
 };
 
 #endif  // CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_

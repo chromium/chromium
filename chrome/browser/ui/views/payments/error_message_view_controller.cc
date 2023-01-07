@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,38 @@
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+
+namespace {
+
+class PaymentsErrorLabel : public views::Label {
+ public:
+  METADATA_HEADER(PaymentsErrorLabel);
+  PaymentsErrorLabel()
+      : Label(l10n_util::GetStringUTF16(IDS_PAYMENTS_ERROR_MESSAGE)) {
+    SetMultiLine(true);
+    SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  }
+  ~PaymentsErrorLabel() override = default;
+
+  // views::Label:
+  void OnThemeChanged() override {
+    Label::OnThemeChanged();
+    SetEnabledColor(GetColorProvider()->GetColor(ui::kColorAlertHighSeverity));
+  }
+};
+
+BEGIN_METADATA(PaymentsErrorLabel, views::Label)
+END_METADATA
+
+}  // namespace
 
 namespace payments {
 
@@ -58,20 +85,12 @@ std::u16string ErrorMessageViewController::GetSheetTitle() {
 void ErrorMessageViewController::FillContentView(views::View* content_view) {
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, kPaymentRequestRowHorizontalInsets), 0);
+      gfx::Insets::VH(0, kPaymentRequestRowHorizontalInsets), 0);
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
   content_view->SetLayoutManager(std::move(layout));
-
-  std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_PAYMENTS_ERROR_MESSAGE));
-  label->SetEnabledColor(label->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_AlertSeverityHigh));
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-  content_view->AddChildView(label.release());
+  content_view->AddChildView(std::make_unique<PaymentsErrorLabel>());
 }
 
 }  // namespace payments

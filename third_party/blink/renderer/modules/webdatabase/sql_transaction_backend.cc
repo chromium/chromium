@@ -30,7 +30,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_authorizer.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_context.h"
@@ -406,7 +405,7 @@ void SQLTransactionBackend::DoCleanup() {
              ->GetDatabaseThread()
              ->IsDatabaseThread());
 
-  MutexLocker locker(statement_mutex_);
+  base::AutoLock locker(statement_lock_);
   statement_queue_.clear();
 
   if (sqlite_transaction_) {
@@ -484,7 +483,7 @@ SQLTransactionBackend::StateFunction SQLTransactionBackend::StateFunctionFor(
       &SQLTransactionBackend::SendToFrontendState,
   };
 
-  DCHECK(base::size(kStateFunctions) ==
+  DCHECK(std::size(kStateFunctions) ==
          static_cast<int>(SQLTransactionState::kNumberOfStates));
   DCHECK_LT(state, SQLTransactionState::kNumberOfStates);
 
@@ -494,7 +493,7 @@ SQLTransactionBackend::StateFunction SQLTransactionBackend::StateFunctionFor(
 void SQLTransactionBackend::EnqueueStatementBackend(
     SQLStatementBackend* statement_backend) {
   DCHECK(IsMainThread());
-  MutexLocker locker(statement_mutex_);
+  base::AutoLock locker(statement_lock_);
   statement_queue_.push_back(statement_backend);
 }
 
@@ -635,7 +634,7 @@ SQLTransactionState SQLTransactionBackend::OpenTransactionAndPreflight() {
     database_->EnableAuthorizer();
     return NextStateForTransactionError();
   }
-  has_version_mismatch_ = !database_->ExpectedVersion().IsEmpty() &&
+  has_version_mismatch_ = !database_->ExpectedVersion().empty() &&
                           (database_->ExpectedVersion() != actual_version);
 
   // Spec 4.3.2.3: Perform preflight steps, jumping to the error callback if
@@ -714,8 +713,8 @@ void SQLTransactionBackend::GetNextStatement() {
              ->IsDatabaseThread());
   current_statement_backend_ = nullptr;
 
-  MutexLocker locker(statement_mutex_);
-  if (!statement_queue_.IsEmpty())
+  base::AutoLock locker(statement_lock_);
+  if (!statement_queue_.empty())
     current_statement_backend_ = statement_queue_.TakeFirst();
 }
 

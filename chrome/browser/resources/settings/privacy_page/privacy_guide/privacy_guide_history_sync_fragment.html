@@ -1,0 +1,65 @@
+<style include="privacy-guide-fragment-shared"></style>
+<template is="dom-if" if="[[enablePrivacyGuide2_]]">
+  <div class="header-phase2" focus-element tabindex="-1">
+    <picture>
+      <source
+          srcset="./images/privacy_guide/history_sync_graphic_dark_v2.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/history_sync_graphic_v2.svg">
+    </picture>
+    <h2 class="header-label-phase2">
+      $i18n{privacyGuideHistorySyncCardHeader}
+    </h2>
+  </div>
+</template>
+<template is="dom-if" if="[[!enablePrivacyGuide2_]]">
+  <div class="header" focus-element tabindex="-1">
+    <picture>
+      <source
+          srcset="./images/privacy_guide/history_sync_graphic_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/history_sync_graphic.svg">
+    </picture>
+    <h2 class="header-label">$i18n{privacyGuideHistorySyncCardHeader}</h2>
+  </div>
+</template>
+<div class="fragment-content">
+  <div class="embedded-setting-wrapper">
+    <settings-toggle-button id="historyToggle"
+        pref="{{historySyncVirtualPref_}}"
+        on-change="onToggleClick_"
+        label="$i18n{privacyGuideHistorySyncSettingLabel}">
+    </settings-toggle-button>
+  </div>
+  <div class="description-wrapper two-column">
+    <div class="description-column description-column-first">
+      <div class=description-header>
+        $i18n{privacyGuideFeatureDescriptionHeader}
+      </div>
+      <div role="list">
+        <privacy-guide-description-item
+            role="listitem"
+            icon="settings20:history"
+            label="$i18n{privacyGuideHistorySyncFeatureDescription1}">
+        </privacy-guide-description-item>
+        <privacy-guide-description-item
+            role="listitem"
+            icon="settings20:dns"
+            label="$i18n{privacyGuideHistorySyncFeatureDescription2}">
+        </privacy-guide-description-item>
+      </div>
+    </div>
+    <div class="description-column">
+      <div class=description-header>
+        $i18n{privacyGuideThingsToConsider}
+      </div>
+      <div role="list">
+        <privacy-guide-description-item
+            role="listitem"
+            icon="settings20:link"
+            label="$i18n{privacyGuideHistorySyncPrivacyDescription1}">
+        </privacy-guide-description-item>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,24 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 class HungPluginTabHelper;
-class InfoBarService;
+
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 class HungPluginInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a hung plugin infobar and delegate and adds the infobar to
-  // |infobar_service|.  Returns the infobar if it was successfully added.
-  static infobars::InfoBar* Create(InfoBarService* infobar_service,
-                                   HungPluginTabHelper* helper,
-                                   int plugin_child_id,
-                                   const std::u16string& plugin_name);
+  // |infobar_manager|.  Returns the infobar if it was successfully added.
+  static infobars::InfoBar* Create(
+      infobars::ContentInfoBarManager* infobar_manager,
+      HungPluginTabHelper* helper,
+      int plugin_child_id,
+      const std::u16string& plugin_name);
 
  private:
   HungPluginInfoBarDelegate(HungPluginTabHelper* helper,
@@ -35,7 +40,7 @@ class HungPluginInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
 
-  HungPluginTabHelper* helper_;
+  raw_ptr<HungPluginTabHelper> helper_;
   int plugin_child_id_;
 
   std::u16string message_;

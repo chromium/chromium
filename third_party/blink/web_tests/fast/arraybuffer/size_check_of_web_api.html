@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html crossorigin>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+  <script>
+test(() => {
+  let mem;
+  try {
+    mem = new WebAssembly.Memory({initial: 33000, maximum: 33000});
+  } catch (e) {
+    // We failed to allocate the WebAssembly memory. We can just return.
+    assert_equals(e.constructor, RangeError);
+    assert_equals(e.message,
+      "WebAssembly.Memory(): could not allocate memory");
+    return;
+  }
+  const encoder = new TextEncoder();
+  let data = new Uint8Array(mem.buffer);
+  assert_throws_js(RangeError,
+    () => encoder.encodeInto("Hello World", data));
+}, "Test that webgl rejects an ArrayBuffer bigger than 2GB.");
+
+test(() => {
+  let mem;
+  try {
+    mem = new WebAssembly.Memory({initial: 33000, maximum: 33000});
+  } catch (e) {
+    // We failed to allocate the WebAssembly memory. We can just return.
+    assert_equals(e.constructor, RangeError);
+    assert_equals(e.message,
+      "WebAssembly.Memory(): could not allocate memory");
+    return;
+  }
+  const encoder = new TextEncoder();
+  let data = new Uint8Array(mem.buffer, 10, 16);
+  encoder.encodeInto("Hello World", data);
+}, "Test that webgl accepts a small view of ArrayBuffer bigger than 2GB.");
+  </script>
+</body>
+</html>

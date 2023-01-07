@@ -1,0 +1,71 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/crx_file/crx3.gni")
+
+group("puffin_patch_test_files") {
+  testonly = true
+  data_deps = [
+    ":puff_patch_v1_to_v2",
+    ":puff_patch_v2_to_v1",
+    ":puffin_app_v1_crx",
+    ":puffin_app_v2_crx",
+  ]
+}
+
+executable("puffin_app_v1_binary") {
+  testonly = true
+  sources = [ "puffin_app_v1/main.cc" ]
+}
+
+executable("puffin_app_v2_binary") {
+  testonly = true
+  sources = [ "puffin_app_v2/main.cc" ]
+}
+
+crx3("puffin_app_v1") {
+  base_dir = "$root_build_dir"
+  key = "//chrome/updater/test/data/selfupdate_test_key.der"
+  output = "$root_build_dir/puffin_app_v1_crx.crx3"
+  testonly = true
+  deps = [ ":puffin_app_v1_binary" ]
+  if (is_win) {
+    inputs = [ "$root_build_dir/puffin_app_v1_binary.exe" ]
+  } else {
+    inputs = [ "$root_build_dir/puffin_app_v1_binary" ]
+  }
+}
+
+crx3("puffin_app_v2") {
+  base_dir = "$root_build_dir"
+  key = "//chrome/updater/test/data/selfupdate_test_key.der"
+  output = "$root_build_dir/puffin_app_v2_crx.crx3"
+  testonly = true
+  deps = [ ":puffin_app_v2_binary" ]
+  if (is_win) {
+    inputs = [ "$root_build_dir/puffin_app_v2_binary.exe" ]
+  } else {
+    inputs = [ "$root_build_dir/puffin_app_v2_binary" ]
+  }
+}
+
+copy("puffin_app_v1_crx") {
+  sources = [ "puffin_app_v1.crx3" ]
+  outputs = [ "$root_build_dir/puffin_app_v1.crx3" ]
+}
+
+copy("puffin_app_v2_crx") {
+  sources = [ "puffin_app_v2.crx3" ]
+  outputs = [ "$root_build_dir/puffin_app_v2.crx3" ]
+}
+
+copy("puff_patch_v1_to_v2") {
+  sources = [ "puffin_app_v1_to_v2.puff" ]
+  outputs = [ "$root_build_dir/puffin_app_v1_to_v2.puff" ]
+}
+
+copy("puff_patch_v2_to_v1") {
+  sources = [ "puffin_app_v2_to_v1.puff" ]
+  outputs = [ "$root_build_dir/puffin_app_v2_to_v1.puff" ]
+}

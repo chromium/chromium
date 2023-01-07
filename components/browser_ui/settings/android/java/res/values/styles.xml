@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources>
     <style name="PreferenceTitle">
@@ -41,7 +43,7 @@
     </style>
 
     <style name="SettingsFragment">
-        <item name="android:divider">?android:attr/listDivider</item>
+        <item name="android:divider">@drawable/list_divider</item>
     </style>
 
     <style name="SettingsFragmentList">

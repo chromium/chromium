@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 
@@ -16,7 +17,7 @@ class MockEncodedVideoFrame : public EncodedVideoFrame {
   MOCK_CONST_METHOD0(Data, base::span<const uint8_t>());
   MOCK_CONST_METHOD0(Codec, media::VideoCodec());
   MOCK_CONST_METHOD0(IsKeyFrame, bool());
-  MOCK_CONST_METHOD0(ColorSpace, base::Optional<media::VideoColorSpace>());
+  MOCK_CONST_METHOD0(ColorSpace, absl::optional<media::VideoColorSpace>());
   MOCK_CONST_METHOD0(Resolution, gfx::Size());
 };
 

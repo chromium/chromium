@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,10 +35,9 @@ bool IOSChromePrefModelAssociatorClient::IsMergeableDictionaryPreference(
   return false;
 }
 
-std::unique_ptr<base::Value>
-IOSChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
+base::Value IOSChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
     const std::string& pref_name,
     const base::Value& local_value,
     const base::Value& server_value) const {
-  return nullptr;
+  return base::Value();
 }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -157,9 +157,7 @@ TYPED_TEST(SharedMemoryRegionTest, MapAt) {
   const size_t kDataSize = kPageSize * 2;
   const size_t kCount = kDataSize / sizeof(uint32_t);
 
-  TypeParam region;
-  WritableSharedMemoryMapping rw_mapping;
-  std::tie(region, rw_mapping) = CreateMappedRegion<TypeParam>(kDataSize);
+  auto [region, rw_mapping] = CreateMappedRegion<TypeParam>(kDataSize);
   ASSERT_TRUE(region.IsValid());
   ASSERT_TRUE(rw_mapping.IsValid());
   uint32_t* ptr = static_cast<uint32_t*>(rw_mapping.memory());
@@ -168,30 +166,19 @@ TYPED_TEST(SharedMemoryRegionTest, MapAt) {
     ptr[i] = i;
 
   rw_mapping = WritableSharedMemoryMapping();
-  off_t bytes_offset = kPageSize;
-  typename TypeParam::MappingType mapping =
-      region.MapAt(bytes_offset, kDataSize - bytes_offset);
-  ASSERT_TRUE(mapping.IsValid());
 
-  off_t int_offset = bytes_offset / sizeof(uint32_t);
-  const uint32_t* ptr2 = static_cast<const uint32_t*>(mapping.memory());
-  for (size_t i = int_offset; i < kCount; ++i) {
-    EXPECT_EQ(ptr2[i - int_offset], i);
+  for (size_t bytes_offset = sizeof(uint32_t); bytes_offset <= kPageSize;
+       bytes_offset += sizeof(uint32_t)) {
+    typename TypeParam::MappingType mapping =
+        region.MapAt(bytes_offset, kDataSize - bytes_offset);
+    ASSERT_TRUE(mapping.IsValid());
+
+    size_t int_offset = bytes_offset / sizeof(uint32_t);
+    const uint32_t* ptr2 = static_cast<const uint32_t*>(mapping.memory());
+    for (size_t i = int_offset; i < kCount; ++i) {
+      EXPECT_EQ(ptr2[i - int_offset], i);
+    }
   }
-}
-
-TYPED_TEST(SharedMemoryRegionTest, MapAtNotAlignedOffsetFails) {
-  const size_t kDataSize = SysInfo::VMAllocationGranularity();
-
-  TypeParam region;
-  WritableSharedMemoryMapping rw_mapping;
-  std::tie(region, rw_mapping) = CreateMappedRegion<TypeParam>(kDataSize);
-  ASSERT_TRUE(region.IsValid());
-  ASSERT_TRUE(rw_mapping.IsValid());
-  off_t offset = kDataSize / 2;
-  typename TypeParam::MappingType mapping =
-      region.MapAt(offset, kDataSize - offset);
-  EXPECT_FALSE(mapping.IsValid());
 }
 
 TYPED_TEST(SharedMemoryRegionTest, MapZeroBytesFails) {

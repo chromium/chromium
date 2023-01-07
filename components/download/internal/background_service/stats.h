@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,9 @@
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_STATS_H_
 
 #include "base/files/file.h"
-#include "base/optional.h"
-#include "components/download/internal/background_service/controller.h"
+#include "components/download/internal/background_service/constants.h"
 #include "components/download/internal/background_service/download_blockage_status.h"
 #include "components/download/internal/background_service/driver_entry.h"
-#include "components/download/internal/background_service/entry.h"
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/task/download_task_types.h"
@@ -69,25 +67,6 @@ enum class ServiceApiAction {
 
   // The count of entries for the enum.
   COUNT = 5,
-};
-
-// Enum used by UMA metrics to tie to specific actions taken on a Model.  This
-// can be used to track failure events.
-enum class ModelAction {
-  // Represents an attempt to initialize the Model.
-  INITIALIZE = 0,
-
-  // Represents an attempt to add an Entry to the Model.
-  ADD = 1,
-
-  // Represents an attempt to update an Entry in the Model.
-  UPDATE = 2,
-
-  // Represents an attempt to remove an Entry from the Model.
-  REMOVE = 3,
-
-  // The count of entries for the enum.
-  COUNT = 4,
 };
 
 // Enum used by UMA metrics to log the status of scheduled tasks.
@@ -152,6 +131,9 @@ enum class DownloadEvent {
 // if |status| contains more than one initialization failure.
 void LogControllerStartupStatus(bool in_recovery, const StartupStatus& status);
 
+// Logs the service starting up result.
+void LogStartUpResult(bool in_recovery, StartUpResult result);
+
 // Logs an action taken on the service API.
 void LogServiceApiAction(DownloadClient client, ServiceApiAction action);
 
@@ -159,22 +141,16 @@ void LogServiceApiAction(DownloadClient client, ServiceApiAction action);
 void LogStartDownloadResult(DownloadClient client,
                             DownloadParams::StartResult result);
 
-// Logs download completion event, download time, and the file size.
-void LogDownloadCompletion(CompletionType type, uint64_t file_size_bytes);
+// Logs download completion event, and the file size.
+void LogDownloadCompletion(DownloadClient client,
+                           CompletionType type,
+                           uint64_t file_size_bytes);
 
 // Logs various pause reasons for download. The reasons are not mutually
 // exclusive.
 void LogDownloadPauseReason(const DownloadBlockageStatus& blockage_status,
                             bool on_upload_data_received);
 void LogEntryRemovedWhileWaitingForUploadResponse();
-
-// Logs statistics about the result of a model operation.  Used to track failure
-// cases.
-void LogModelOperationResult(ModelAction action, bool success);
-
-// Logs the total number of all entries, and the number of entries in each
-// state after the model is initialized.
-void LogEntries(std::map<Entry::State, uint32_t>& entries_count);
 
 // Log statistics about the status of a TaskFinishedCallback.
 void LogScheduledTaskStatus(DownloadTaskType task_type,
@@ -191,13 +167,6 @@ void LogFileCleanupStatus(FileCleanupReason reason,
 
 // Logs the file life time for successfully completed download.
 void LogFileLifeTime(const base::TimeDelta& file_life_time);
-
-// Logs the total disk space utilized by download files.
-// This includes the total size of all the files in |file_dir|.
-// This function is costly and should be called only once.
-void LogFileDirDiskUtilization(int64_t total_disk_space,
-                               int64_t free_disk_space,
-                               int64_t files_size);
 
 // Logs an action the Controller takes on an active download.
 void LogEntryEvent(DownloadEvent event);

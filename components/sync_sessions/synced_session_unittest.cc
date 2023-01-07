@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -28,8 +29,8 @@ using sessions::SerializedNavigationEntryTestHelper;
 // Create a sync_pb::TabNavigation from the constants above.
 sync_pb::TabNavigation MakeSyncDataForTest() {
   sync_pb::TabNavigation sync_data;
-  sync_data.set_virtual_url(test_data::VirtualUrl().spec());
-  sync_data.set_referrer(test_data::ReferrerUrl().spec());
+  sync_data.set_virtual_url("http://www.virtual-url.com/");
+  sync_data.set_referrer("http://www.referrer.com/");
   sync_data.set_obsolete_referrer_policy(test_data::kReferrerPolicy);
   sync_data.set_correct_referrer_policy(test_data::kReferrerPolicy);
   sync_data.set_title(base::UTF16ToUTF8(test_data::kTitle));
@@ -39,7 +40,7 @@ sync_pb::TabNavigation MakeSyncDataForTest() {
   sync_data.set_timestamp_msec(syncer::TimeToProtoTime(test_data::kTimestamp));
   sync_data.set_redirect_type(sync_pb::SyncEnums::CLIENT_REDIRECT);
   sync_data.set_navigation_home_page(true);
-  sync_data.set_favicon_url(test_data::FaviconUrl().spec());
+  sync_data.set_favicon_url("http://virtual-url.com/favicon.ico");
   sync_data.set_http_status_code(test_data::kHttpStatusCode);
   // The redirect chain only syncs one way.
   return sync_data;
@@ -55,20 +56,21 @@ TEST(SyncedSessionTest, SessionNavigationFromSyncData) {
       SessionNavigationFromSyncData(test_data::kIndex, sync_data);
 
   EXPECT_EQ(test_data::kIndex, navigation.index());
-  EXPECT_EQ(test_data::kUniqueID, navigation.unique_id());
-  EXPECT_EQ(test_data::ReferrerUrl(), navigation.referrer_url());
-  EXPECT_EQ(test_data::kReferrerPolicy, navigation.referrer_policy());
-  EXPECT_EQ(test_data::VirtualUrl(), navigation.virtual_url());
-  EXPECT_EQ(test_data::kTitle, navigation.title());
+  EXPECT_EQ(sync_data.unique_id(), navigation.unique_id());
+  EXPECT_EQ(sync_data.referrer(), navigation.referrer_url().spec());
+  EXPECT_EQ(sync_data.correct_referrer_policy(), navigation.referrer_policy());
+  EXPECT_EQ(sync_data.virtual_url(), navigation.virtual_url().spec());
+  EXPECT_EQ(base::UTF8ToUTF16(sync_data.title()), navigation.title());
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
       navigation.transition_type(), test_data::kTransitionType));
   EXPECT_FALSE(navigation.has_post_data());
   EXPECT_EQ(-1, navigation.post_id());
   EXPECT_EQ(GURL(), navigation.original_request_url());
   EXPECT_FALSE(navigation.is_overriding_user_agent());
-  EXPECT_EQ(test_data::kTimestamp, navigation.timestamp());
-  EXPECT_EQ(test_data::FaviconUrl(), navigation.favicon_url());
-  EXPECT_EQ(test_data::kHttpStatusCode, navigation.http_status_code());
+  EXPECT_EQ(sync_data.timestamp_msec(),
+            syncer::TimeToProtoTime(navigation.timestamp()));
+  EXPECT_EQ(sync_data.favicon_url(), navigation.favicon_url().spec());
+  EXPECT_EQ(sync_data.http_status_code(), navigation.http_status_code());
   // The redirect chain only syncs one way.
 }
 
@@ -81,25 +83,25 @@ TEST(SyncedSessionTest, SessionNavigationToSyncData) {
   const sync_pb::TabNavigation sync_data =
       SessionNavigationToSyncData(navigation);
 
-  EXPECT_EQ(test_data::VirtualUrl().spec(), sync_data.virtual_url());
-  EXPECT_EQ(test_data::ReferrerUrl().spec(), sync_data.referrer());
-  EXPECT_EQ(test_data::kTitle, base::ASCIIToUTF16(sync_data.title()));
+  EXPECT_EQ(navigation.virtual_url().spec(), sync_data.virtual_url());
+  EXPECT_EQ(navigation.referrer_url().spec(), sync_data.referrer());
+  EXPECT_EQ(navigation.title(), base::UTF8ToUTF16(sync_data.title()));
   EXPECT_EQ(sync_pb::SyncEnums_PageTransition_AUTO_SUBFRAME,
             sync_data.page_transition());
   EXPECT_TRUE(sync_data.has_redirect_type());
-  EXPECT_EQ(test_data::kUniqueID, sync_data.unique_id());
-  EXPECT_EQ(syncer::TimeToProtoTime(test_data::kTimestamp),
+  EXPECT_EQ(navigation.unique_id(), sync_data.unique_id());
+  EXPECT_EQ(syncer::TimeToProtoTime(navigation.timestamp()),
             sync_data.timestamp_msec());
-  EXPECT_EQ(test_data::kTimestamp.ToInternalValue(), sync_data.global_id());
-  EXPECT_EQ(test_data::FaviconUrl().spec(), sync_data.favicon_url());
-  EXPECT_EQ(test_data::kHttpStatusCode, sync_data.http_status_code());
+  EXPECT_EQ(navigation.favicon_url().spec(), sync_data.favicon_url());
+  EXPECT_EQ(navigation.http_status_code(), sync_data.http_status_code());
   // The proto navigation redirects don't include the final chain entry
   // (because it didn't redirect) so the lengths should differ by 1.
-  ASSERT_EQ(3, sync_data.navigation_redirect_size() + 1);
-  EXPECT_EQ(test_data::RedirectUrl0().spec(),
-            sync_data.navigation_redirect(0).url());
-  EXPECT_EQ(test_data::RedirectUrl1().spec(),
-            sync_data.navigation_redirect(1).url());
+  ASSERT_EQ(navigation.redirect_chain().size(),
+            static_cast<size_t>(sync_data.navigation_redirect_size() + 1));
+  for (auto i = 0; i < sync_data.navigation_redirect_size(); ++i) {
+    EXPECT_EQ(navigation.redirect_chain()[i].spec(),
+              sync_data.navigation_redirect(i).url());
+  }
   EXPECT_FALSE(sync_data.has_last_navigation_redirect_url());
   EXPECT_FALSE(sync_data.has_replaced_navigation());
 }
@@ -138,21 +140,23 @@ TEST(SyncedSessionTest, SessionNavigationToSyncDataWithReplacedNavigation) {
 TEST(SyncedSessionTest, SessionNavigationToSyncDataWithLastRedirectUrl) {
   SerializedNavigationEntry navigation =
       SerializedNavigationEntryTestHelper::CreateNavigationForTest();
-  SerializedNavigationEntryTestHelper::SetVirtualURL(test_data::OtherUrl(),
+  SerializedNavigationEntryTestHelper::SetVirtualURL(GURL("http://other.com"),
                                                      &navigation);
 
   const sync_pb::TabNavigation sync_data =
       SessionNavigationToSyncData(navigation);
   EXPECT_TRUE(sync_data.has_last_navigation_redirect_url());
-  EXPECT_EQ(test_data::VirtualUrl().spec(),
+  ASSERT_FALSE(navigation.redirect_chain().empty());
+  EXPECT_EQ(navigation.redirect_chain().back().spec(),
             sync_data.last_navigation_redirect_url());
 
-  // The redirect chain should be the same as in the above test.
-  ASSERT_EQ(3, sync_data.navigation_redirect_size() + 1);
-  EXPECT_EQ(test_data::RedirectUrl0().spec(),
-            sync_data.navigation_redirect(0).url());
-  EXPECT_EQ(test_data::RedirectUrl1().spec(),
-            sync_data.navigation_redirect(1).url());
+  // The redirect chain should be the same as in SessionNavigationToSyncData.
+  ASSERT_EQ(navigation.redirect_chain().size(),
+            static_cast<size_t>(sync_data.navigation_redirect_size() + 1));
+  for (auto i = 0; i < sync_data.navigation_redirect_size(); ++i) {
+    EXPECT_EQ(navigation.redirect_chain()[i].spec(),
+              sync_data.navigation_redirect(i).url());
+  }
 }
 
 // Ensure all transition types and qualifiers are converted to/from the sync
@@ -169,8 +173,11 @@ TEST(SyncedSessionTest, SessionNavigationToSyncDataWithTransitionTypes) {
     // breaking.
     for (uint32_t qualifier = ui::PAGE_TRANSITION_FORWARD_BACK; qualifier != 0;
          qualifier <<= 1) {
-      if (qualifier == static_cast<uint32_t>(ui::PAGE_TRANSITION_FROM_API))
-        continue;  // We don't sync PAGE_TRANSITION_FROM_API.
+      if (qualifier == static_cast<uint32_t>(ui::PAGE_TRANSITION_FROM_API) ||
+          qualifier == static_cast<uint32_t>(ui::PAGE_TRANSITION_CHAIN_START) ||
+          qualifier == static_cast<uint32_t>(ui::PAGE_TRANSITION_CHAIN_END)) {
+        continue;  // We don't sync PAGE_TRANSITION_FROM_API or CHAIN_START/END.
+      }
       ui::PageTransition transition =
           ui::PageTransitionFromInt(core_type | qualifier);
       SerializedNavigationEntryTestHelper::SetTransitionType(transition,
@@ -187,6 +194,26 @@ TEST(SyncedSessionTest, SessionNavigationToSyncDataWithTransitionTypes) {
           constructed_transition, transition));
     }
   }
+}
+
+TEST(SyncedSessionTest, SessionNavigationToSyncDataWithLargeFavicon) {
+  SerializedNavigationEntry navigation =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+
+  ASSERT_TRUE(SessionNavigationToSyncData(navigation).has_favicon_url());
+
+  // The URL size is greater than |kMaxFaviconUrlSizeToSync| so it will be
+  // omitted.
+  navigation.set_favicon_url(
+      GURL(std::string("http://virtual-url.com/") + std::string(2048, 'z')));
+
+  const sync_pb::TabNavigation sync_data =
+      SessionNavigationToSyncData(navigation);
+
+  EXPECT_FALSE(sync_data.has_favicon_url());
+
+  // The rest of the fields should sync normally, let's verify one of them.
+  EXPECT_EQ(navigation.virtual_url().spec(), sync_data.virtual_url());
 }
 
 // Create a typical SessionTab protocol buffer and set an existing
@@ -262,7 +289,7 @@ TEST(SyncedSessionTest, SessionTabToSyncData) {
   tab.session_storage_persistent_id = "fake";
 
   const sync_pb::SessionTab sync_data =
-      SessionTabToSyncData(tab, /*browser_type=*/base::nullopt);
+      SessionTabToSyncData(tab, /*browser_type=*/absl::nullopt);
   EXPECT_EQ(5, sync_data.tab_id());
   EXPECT_EQ(10, sync_data.window_id());
   EXPECT_EQ(13, sync_data.tab_visual_index());
@@ -283,13 +310,13 @@ TEST(SyncedSessionTest, SessionTabToSyncData) {
 }
 
 TEST(SyncedSessionTest, SessionTabToSyncDataWithBrowserType) {
-  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_TABBED,
+  EXPECT_EQ(sync_pb::SyncEnums_BrowserType_TYPE_TABBED,
             SessionTabToSyncData(sessions::SessionTab(),
-                                 sync_pb::SessionWindow_BrowserType_TYPE_TABBED)
+                                 sync_pb::SyncEnums_BrowserType_TYPE_TABBED)
                 .browser_type());
-  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_POPUP,
+  EXPECT_EQ(sync_pb::SyncEnums_BrowserType_TYPE_POPUP,
             SessionTabToSyncData(sessions::SessionTab(),
-                                 sync_pb::SessionWindow_BrowserType_TYPE_POPUP)
+                                 sync_pb::SyncEnums_BrowserType_TYPE_POPUP)
                 .browser_type());
 }
 

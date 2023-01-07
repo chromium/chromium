@@ -1,7 +1,6 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 
 #include "chrome/browser/guest_view/web_view/chrome_web_view_guest_delegate.h"
 
@@ -33,7 +32,11 @@ ChromeWebViewGuestDelegate::~ChromeWebViewGuestDelegate() {
 }
 
 bool ChromeWebViewGuestDelegate::HandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  DCHECK_EQ(guest_web_contents(),
+            content::WebContents::FromRenderFrameHost(&render_frame_host));
+
   if ((params.source_type == ui::MENU_SOURCE_LONG_PRESS ||
        params.source_type == ui::MENU_SOURCE_LONG_TAP ||
        params.source_type == ui::MENU_SOURCE_TOUCH) &&
@@ -52,7 +55,7 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
   ContextMenuDelegate* menu_delegate =
       ContextMenuDelegate::FromWebContents(guest_web_contents());
   DCHECK(menu_delegate);
-  pending_menu_ = menu_delegate->BuildMenu(guest_web_contents(), params);
+  pending_menu_ = menu_delegate->BuildMenu(render_frame_host, params);
   // It's possible for the returned menu to be null, so early out to avoid
   // a crash. TODO(wjmaclean): find out why it's possible for this to happen
   // in the first place, and if it's an error.
@@ -65,7 +68,7 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
   std::unique_ptr<base::ListValue> items =
       MenuModelToValue(pending_menu_->menu_model());
   args->Set(webview::kContextMenuItems, std::move(items));
-  args->SetInteger(webview::kRequestId, request_id);
+  args->SetIntKey(webview::kRequestId, request_id);
   web_view_guest()->DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventContextMenuShow, std::move(args)));
   return true;
@@ -75,15 +78,13 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
 std::unique_ptr<base::ListValue> ChromeWebViewGuestDelegate::MenuModelToValue(
     const ui::SimpleMenuModel& menu_model) {
   std::unique_ptr<base::ListValue> items(new base::ListValue());
-  for (int i = 0; i < menu_model.GetItemCount(); ++i) {
-    std::unique_ptr<base::DictionaryValue> item_value(
-        new base::DictionaryValue());
+  for (size_t i = 0; i < menu_model.GetItemCount(); ++i) {
+    base::Value::Dict item_value;
     // TODO(lazyboy): We need to expose some kind of enum equivalent of
     // |command_id| instead of plain integers.
-    item_value->SetInteger(webview::kMenuItemCommandId,
-                           menu_model.GetCommandIdAt(i));
-    item_value->SetString(webview::kMenuItemLabel, menu_model.GetLabelAt(i));
-    items->Append(std::move(item_value));
+    item_value.Set(webview::kMenuItemCommandId, menu_model.GetCommandIdAt(i));
+    item_value.Set(webview::kMenuItemLabel, menu_model.GetLabelAt(i));
+    items->GetList().Append(std::move(item_value));
   }
   return items;
 }

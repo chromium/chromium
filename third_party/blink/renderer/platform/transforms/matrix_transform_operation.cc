@@ -30,20 +30,13 @@ scoped_refptr<TransformOperation> MatrixTransformOperation::Accumulate(
   DCHECK(other_op.IsSameType(*this));
   const auto& other = To<MatrixTransformOperation>(other_op);
 
-  TransformationMatrix from_t(other.a_, other.b_, other.c_, other.d_, other.e_,
-                              other.f_);
-  TransformationMatrix to_t(a_, b_, c_, d_, e_, f_);
-
-  // If either matrix is non-invertible, fail and fallback to replace.
-  if (!from_t.IsInvertible() || !to_t.IsInvertible())
-    return nullptr;
-
   // Similar to interpolation, accumulating matrices is done by decomposing
   // them, accumulating the individual functions, and then recomposing.
 
   TransformationMatrix::Decomposed2dType from_decomp;
   TransformationMatrix::Decomposed2dType to_decomp;
-  if (!from_t.Decompose2D(from_decomp) || !to_t.Decompose2D(to_decomp)) {
+  if (!other.matrix_.Decompose2D(from_decomp) ||
+      !matrix_.Decompose2D(to_decomp)) {
     return nullptr;
   }
 
@@ -56,8 +49,9 @@ scoped_refptr<TransformOperation> MatrixTransformOperation::Accumulate(
   from_decomp.translate_y += to_decomp.translate_y;
   from_decomp.angle += to_decomp.angle;
 
-  from_t.Recompose2D(from_decomp);
-  return MatrixTransformOperation::Create(from_t);
+  TransformationMatrix result;
+  result.Recompose2D(from_decomp);
+  return MatrixTransformOperation::Create(result);
 }
 
 scoped_refptr<TransformOperation> MatrixTransformOperation::Blend(
@@ -67,29 +61,31 @@ scoped_refptr<TransformOperation> MatrixTransformOperation::Blend(
   DCHECK(!from || CanBlendWith(*from));
 
   // convert the TransformOperations into matrices
-  TransformationMatrix from_t;
-  TransformationMatrix to_t(a_, b_, c_, d_, e_, f_);
-  if (!to_t.IsInvertible())
+  if (!matrix_.IsInvertible())
     return nullptr;
+
+  TransformationMatrix from_t;
   if (from) {
     const MatrixTransformOperation* m =
         static_cast<const MatrixTransformOperation*>(from);
-    from_t.SetMatrix(m->a_, m->b_, m->c_, m->d_, m->e_, m->f_);
+    from_t = m->matrix_;
     if (!from_t.IsInvertible())
       return nullptr;
   }
 
+  TransformationMatrix to_t = matrix_;
   if (blend_to_identity)
     std::swap(from_t, to_t);
 
   to_t.Blend(from_t, progress);
-  return MatrixTransformOperation::Create(to_t.A(), to_t.B(), to_t.C(),
-                                          to_t.D(), to_t.E(), to_t.F());
+  return MatrixTransformOperation::Create(to_t);
 }
 
 scoped_refptr<TransformOperation> MatrixTransformOperation::Zoom(
     double factor) {
-  return Create(a_, b_, c_, d_, e_ * factor, f_ * factor);
+  TransformationMatrix m = matrix_;
+  m.Zoom(factor);
+  return Create(m);
 }
 
 }  // namespace blink

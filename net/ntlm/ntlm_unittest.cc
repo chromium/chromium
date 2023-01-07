@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,13 +17,11 @@
 #include <iterator>
 #include <string>
 
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/ntlm/ntlm_test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace ntlm {
+namespace net::ntlm {
 
 namespace {
 
@@ -256,7 +254,9 @@ TEST(NtlmTest, GenerateSessionBaseKeyWithClientTimestampV2SpecTests) {
 
 TEST(NtlmTest, GenerateChannelBindingHashV2SpecTests) {
   uint8_t v2_channel_binding_hash[kChannelBindingsHashLen];
-  GenerateChannelBindingHashV2(test::kChannelBindings, v2_channel_binding_hash);
+  GenerateChannelBindingHashV2(
+      reinterpret_cast<const char*>(test::kChannelBindings),
+      v2_channel_binding_hash);
 
   ASSERT_EQ(0, memcmp(test::kExpectedChannelBindingHashV2,
                       v2_channel_binding_hash, kChannelBindingsHashLen));
@@ -306,14 +306,14 @@ TEST(NtlmTest, GenerateUpdatedTargetInfo) {
 
   uint64_t server_timestamp = UINT64_MAX;
   std::vector<uint8_t> updated_target_info = GenerateUpdatedTargetInfo(
-      true, true, test::kChannelBindings, test::kNtlmSpn, server_av_pairs,
-      &server_timestamp);
+      true, true, reinterpret_cast<const char*>(test::kChannelBindings),
+      test::kNtlmSpn, server_av_pairs, &server_timestamp);
 
   // With MIC and EPA enabled 3 additional AvPairs will be added.
   // 1) A flags AVPair with the MIC_PRESENT bit set.
   // 2) A channel bindings AVPair containing the channel bindings hash.
   // 3) A target name AVPair containing the SPN of the server.
-  ASSERT_EQ(base::size(test::kExpectedTargetInfoSpecResponseV2),
+  ASSERT_EQ(std::size(test::kExpectedTargetInfoSpecResponseV2),
             updated_target_info.size());
   ASSERT_EQ(0, memcmp(test::kExpectedTargetInfoSpecResponseV2,
                       updated_target_info.data(), updated_target_info.size()));
@@ -331,9 +331,9 @@ TEST(NtlmTest, GenerateUpdatedTargetInfoNoEpaOrMic) {
   // When both EPA and MIC are false the target info does not get modified by
   // the client.
   std::vector<uint8_t> updated_target_info = GenerateUpdatedTargetInfo(
-      false, false, test::kChannelBindings, test::kNtlmSpn, server_av_pairs,
-      &server_timestamp);
-  ASSERT_EQ(base::size(test::kExpectedTargetInfoFromSpecV2),
+      false, false, reinterpret_cast<const char*>(test::kChannelBindings),
+      test::kNtlmSpn, server_av_pairs, &server_timestamp);
+  ASSERT_EQ(std::size(test::kExpectedTargetInfoFromSpecV2),
             updated_target_info.size());
   ASSERT_EQ(0, memcmp(test::kExpectedTargetInfoFromSpecV2,
                       updated_target_info.data(), updated_target_info.size()));
@@ -356,11 +356,11 @@ TEST(NtlmTest, GenerateUpdatedTargetInfoWithServerTimestamp) {
   // When both EPA and MIC are false the target info does not get modified by
   // the client.
   std::vector<uint8_t> updated_target_info = GenerateUpdatedTargetInfo(
-      false, false, test::kChannelBindings, test::kNtlmSpn, server_av_pairs,
-      &server_timestamp);
+      false, false, reinterpret_cast<const char*>(test::kChannelBindings),
+      test::kNtlmSpn, server_av_pairs, &server_timestamp);
   // Verify that the server timestamp was read from the target info.
   ASSERT_EQ(test::kServerTimestamp, server_timestamp);
-  ASSERT_EQ(base::size(test::kExpectedTargetInfoFromSpecPlusServerTimestampV2),
+  ASSERT_EQ(std::size(test::kExpectedTargetInfoFromSpecPlusServerTimestampV2),
             updated_target_info.size());
   ASSERT_EQ(0, memcmp(test::kExpectedTargetInfoFromSpecPlusServerTimestampV2,
                       updated_target_info.data(), updated_target_info.size()));
@@ -373,8 +373,8 @@ TEST(NtlmTest, GenerateUpdatedTargetInfoWhenServerSendsNoTargetInfo) {
 
   uint64_t server_timestamp = UINT64_MAX;
   std::vector<uint8_t> updated_target_info = GenerateUpdatedTargetInfo(
-      true, true, test::kChannelBindings, test::kNtlmSpn, server_av_pairs,
-      &server_timestamp);
+      true, true, reinterpret_cast<const char*>(test::kChannelBindings),
+      test::kNtlmSpn, server_av_pairs, &server_timestamp);
 
   // With MIC and EPA enabled 3 additional AvPairs will be added.
   // 1) A flags AVPair with the MIC_PRESENT bit set.
@@ -386,7 +386,7 @@ TEST(NtlmTest, GenerateUpdatedTargetInfoWhenServerSendsNoTargetInfo) {
   // Server pairs) not present.
   const size_t kMissingServerPairsLength = 32;
 
-  ASSERT_EQ(base::size(test::kExpectedTargetInfoSpecResponseV2) -
+  ASSERT_EQ(std::size(test::kExpectedTargetInfoSpecResponseV2) -
                 kMissingServerPairsLength,
             updated_target_info.size());
   ASSERT_EQ(0, memcmp(test::kExpectedTargetInfoSpecResponseV2 +
@@ -419,5 +419,4 @@ TEST(NtlmTest, GenerateNtlmProofWithClientTimestampV2) {
                       proof, kNtlmProofLenV2));
 }
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm

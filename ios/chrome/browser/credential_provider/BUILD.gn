@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,6 +19,8 @@ if (ios_enable_credential_provider_extension) {
     sources = [
       "archivable_credential+password_form.h",
       "archivable_credential+password_form.mm",
+      "credential_provider_migrator.h",
+      "credential_provider_migrator.mm",
       "credential_provider_service.h",
       "credential_provider_service.mm",
       "credential_provider_service_factory.h",
@@ -28,6 +30,7 @@ if (ios_enable_credential_provider_extension) {
       "credential_provider_util.h",
       "credential_provider_util.mm",
     ]
+    public_deps = [ "//base" ]
     deps = [
       ":buildflags",
       "//base",
@@ -36,13 +39,20 @@ if (ios_enable_credential_provider_extension) {
       "//components/keyed_service/ios",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:affiliation",
+      "//components/password_manager/core/common",
+      "//components/password_manager/core/common:features",
+      "//components/prefs:prefs",
       "//components/signin/public/identity_manager",
       "//ios/chrome/browser/browser_state",
+      "//ios/chrome/browser/favicon",
       "//ios/chrome/browser/passwords",
       "//ios/chrome/browser/signin",
       "//ios/chrome/browser/sync",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
+      "//ios/chrome/common/credential_provider:ui",
+      "//ios/chrome/common/ui/favicon:favicon",
+      "//ios/chrome/common/ui/favicon:favicon_constants",
       "//ios/public/provider/chrome/browser/signin",
       "//url",
     ]
@@ -57,19 +67,27 @@ if (ios_enable_credential_provider_extension) {
     testonly = true
     sources = [
       "archivable_credential+password_form_unittest.mm",
+      "credential_provider_migrator_unittest.mm",
       "credential_provider_service_unittest.mm",
+      "credential_provider_util_unittest.mm",
     ]
     deps = [
       ":credential_provider",
       "//base/test:test_support",
       "//components/autofill/core/common",
       "//components/password_manager/core/browser:test_support",
+      "//components/password_manager/core/common",
+      "//components/prefs",
+      "//components/prefs:test_support",
       "//ios/chrome/browser/browser_state:test_support",
+      "//ios/chrome/browser/favicon",
+      "//ios/chrome/browser/history",
       "//ios/chrome/browser/signin",
       "//ios/chrome/browser/signin:test_support",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
       "//ios/chrome/common/credential_provider:ui",
+      "//ios/chrome/test:test_support",
       "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
       "//ios/public/provider/chrome/browser/signin:test_support",
       "//ios/web/public/test",

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/raster_cmd_helper.h"
-#include "gpu/command_buffer/client/raster_implementation.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
@@ -47,9 +46,7 @@ ContextResult RasterInProcessContext::Initialize(
     CommandBufferTaskExecutor* task_executor,
     const ContextCreationAttribs& attribs,
     const SharedMemoryLimits& memory_limits,
-    GpuMemoryBufferManager* gpu_memory_buffer_manager,
     ImageFactory* image_factory,
-    GpuChannelManagerDelegate* gpu_channel_manager_delegate,
     gpu::raster::GrShaderCache* gr_shader_cache,
     GpuProcessActivityFlags* activity_flags) {
   DCHECK(attribs.enable_raster_interface);
@@ -63,13 +60,9 @@ ContextResult RasterInProcessContext::Initialize(
 
   command_buffer_ =
       std::make_unique<InProcessCommandBuffer>(task_executor, GURL());
-  auto result = command_buffer_->Initialize(
-      nullptr /* surface */, true /* is_offscreen */, kNullSurfaceHandle,
-      attribs, gpu_memory_buffer_manager, image_factory,
-      gpu_channel_manager_delegate, base::ThreadTaskRunnerHandle::Get(),
-      nullptr /* task_sequence */,
-      nullptr /*display_compositor_memory_and_task_controller_on_gpu */,
-      gr_shader_cache, activity_flags);
+  auto result = command_buffer_->Initialize(attribs, image_factory,
+                                            base::ThreadTaskRunnerHandle::Get(),
+                                            gr_shader_cache, activity_flags);
   if (result != ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;
@@ -78,11 +71,6 @@ ContextResult RasterInProcessContext::Initialize(
   // Check for consistency.
   DCHECK(!attribs.bind_generates_resource);
   constexpr bool bind_generates_resource = false;
-
-  // TODO(https://crbug.com/829469): Remove check once we fuzz RasterDecoder.
-  // enable_oop_rasterization is currently necessary to create RasterDecoder
-  // in InProcessCommandBuffer.
-  DCHECK(attribs.enable_oop_rasterization);
 
   // Create the RasterCmdHelper, which writes the command buffer protocol.
   auto raster_helper =
@@ -113,7 +101,7 @@ const GpuFeatureInfo& RasterInProcessContext::GetGpuFeatureInfo() const {
   return command_buffer_->GetGpuFeatureInfo();
 }
 
-raster::RasterInterface* RasterInProcessContext::GetImplementation() {
+raster::RasterImplementation* RasterInProcessContext::GetImplementation() {
   return raster_implementation_.get();
 }
 

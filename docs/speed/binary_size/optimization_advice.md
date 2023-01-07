@@ -1,7 +1,6 @@
-# Optimizing Chrome's Image Size
+# Optimizing Chrome's Binary Size
 
-The Chrome image size is important on all platforms as it affects download
-and update times.
+Read first: [binary_size_explainer.md](binary_size_explainer.md)
 
  >
  > This document primarily focuses on Android and Chrome OS where image size
@@ -113,22 +112,6 @@ There are two mechanisms for compressing Chrome l10n files.
 
 ## Android Focused Advice
 
-Googlers: See also [go/abp-performance/apk-size].
-
-[go/abp-performance/apk-size]: https://goto.google.com/abp-performance/apk-size
-
-### How To Tell if It's Worth Spending Time on Binary Size?
-
- * Binary size is a shared resource, and thus its growth is largely due to the
-   tragedy of the commons.
- * It typically takes about a week of engineering time to reduce Android's
-   binary size by 50kb.
- * As of 2019, Chrome for Android (arm32) grows by about 100kb per week.
- * To get a feeling for how large existing features are, refer to the
-   [milestone size breakdowns] and group by "Component".
-
-[milestone size breakdowns]: https://storage.googleapis.com/chrome-supersize/index.html
-
 ### Optimizing Translations (Strings)
 
  * Use [Android System strings](https://developer.android.com/reference/android/R.string.html) where appropriate
@@ -140,12 +123,9 @@ Googlers: See also [go/abp-performance/apk-size].
  * Would a vector image work?
    * Images that can be described by a series of paths should generally be
      stored as vectors.
-     * The one exception is if the image will be used pre-Lollipop in a
-       notification or application icon.
    * For images used in native code: [VectorIcon](https://chromium.googlesource.com/chromium/src/+/HEAD/components/vector_icons/README.md).
    * For Android drawables: [VectorDrawable](https://developer.android.com/guide/topics/graphics/vector-drawable-resources).
-     * Convert from `.svg` online using https://inloop.github.io/svg2android/.
-     * Optimize vector drawables with [avocado](https://bugs.chromium.org/p/chromium/issues/detail?id=982302).
+     * Convert from `.svg` following [this guide](https://developer.android.com/studio/write/vector-asset-studio.html#svg).
      * (Googlers): Find most icons as .svg at [go/icons](https://goto.google.com/icons).
  * Would **lossy** compression make sense (often true for large images)?
    * If so, [use lossy webp](https://codereview.chromium.org/2615243002/).
@@ -195,7 +175,9 @@ Practical advice:
  * Ensure no symbols exist that are used only by tests.
  * Be concise with strings used for error handling.
    * Identical strings throughout the codebase are de-duped. Take advantage of
-     this for error-related strings.
+     this for log strings and exception messages.
+   * For exceptions, prefer to omit a message altogether unless it provides
+     more detail than the stack trace will.
 
 #### Optimizing Native Code
  * If there's a notable increase in `.data.rel.ro`:
@@ -229,6 +211,12 @@ Practical advice:
          a single `base::StringPiece`.
 
 #### Optimizing Java Code
+ * If you're adding a new feature, see if it makes sense for it to be packaged
+   into its own [feature split]. E.g.:
+   * Has a non-trivial amount of Dex (>50kb)
+   * Not needed on startup
+   * Has a small integration surface (calls into it must be done with
+     reflection).
  * Prefer fewer large JNI calls over many small JNI calls.
  * Minimize the use of class initializers (`<clinit>()`).
    * If R8 cannot determine that they are "trivial", they will prevent
@@ -236,8 +224,6 @@ Practical advice:
    * In C++, static objects are created at compile time, but in Java they
      are created by executing code within `<clinit>()`. There is often little
      advantage to initializing class fields statically vs. upon first use.
- * Use `String.format()` instead of concatenation.
-   * Concatenation causes a lot of StringBuilder code to be generated.
  * Try to use default values for fields rather than explicit initialization.
    * E.g. Name booleans such that they start as "false".
    * E.g. Use integer sentinels that have initial state as 0.
@@ -246,14 +232,25 @@ Practical advice:
      classes have a constructor in addition to the callback method.
    * E.g. rather than have `onFailure()` vs `onSuccess()`, have an
      `onFinished(bool)`.
-   * E.g. rather than have `onTextChanged()`, `onDateChanged()`, ..., have a
-     single `onChanged()` that assumes everything changed.
- * Ensure unused code is optimized away by ProGuard / R8.
-   * Add `@CheckDiscard` to methods or classes that you expect R8 to inline.
-   * Add `@RemovableInRelease` to force a method to be a no-op when DCHECKs
-     are disabled.
+   * E.g. rather than have `onTextChanged(newValue)`, `onDateChanged(newValue)`,
+     ..., have a single `onChanged()`, where callbacks use getters to retrieve
+     the new values.
+     * This design allows classes to use a shared callback for multiple listeners.
+     * This design simplifies data flow by forcing the use of getters (assuming
+       getters exist in the first place).
+ * Do not override `equals()`, `toString()`, `hashCode()` unless necessary. Since
+   these methods are defined on `Object`, R8 can basically never remove them.
+ * Ensure unused code is optimized away by R8.
    * See [here][proguard-build-doc] for more info on how Chrome uses ProGuard.
+   * Add `@CheckDiscard` to methods or classes that you expect R8 to inline.
+   * Guard code with `BuildConfig.ENABLE_ASSERTS` to strip it in release builds.
+   * Use [//third_party/r8/playground][r8-playground] to figure out how various
+     coding patterns are optimized by R8.
+   * Build with `enable_proguard_obfuscation = false` and use
+     `//third_party/android_sdk/public/build-tools/*/dexdump` to see how code was
+     optimized directly in apk / bundle targets.
 
+[feature split]: /docs/android_dynamic_feature_modules.md
 [proguard-build-doc]: /build/android/docs/java_optimization.md
 [size-trybot]: /tools/binary_size/README.md#Binary-Size-Trybot-android_binary_size
 [diagnose_bloat]: /tools/binary_size/README.md#diagnose_bloat_py
@@ -261,6 +258,7 @@ Practical advice:
 [template_bloat_one]: https://bugs.chromium.org/p/chromium/issues/detail?id=716393
 [template_bloat_two]: https://chromium-review.googlesource.com/c/chromium/src/+/2639396
 [supersize-console]: /tools/binary_size/README.md#Usage_console
+[r8-playground]: /third_party/r8/playground
 
 ### Optimizing Third-Party Android Dependencies
 
@@ -268,8 +266,7 @@ Practical advice:
    is being pulled in.
    * Use ProGuard's [-whyareyoukeeping] to see why unwanted symbols are kept
      (e.g. to [//base/android/proguard/chromium_apk.flags](/base/android/proguard/chromium_apk.flags)).
-   * Try adding [-assumenosideeffects] rules to strip out unwanted calls
-     (equivalent to adding @RemovableInRelease annotations).
+   * Try adding [-assumenosideeffects] rules to strip out unwanted calls.
  * Consider removing all resources via `strip_resources = true`.
  * Remove specific drawables via `resource_exclusion_regex`.
 

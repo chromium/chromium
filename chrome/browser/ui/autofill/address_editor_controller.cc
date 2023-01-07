@@ -1,24 +1,24 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/validation_rules_storage_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/messages.h"
 #include "ui/base/l10n/l10n_util.h"
-
 
 AddressEditorController::AddressEditorController(
     const autofill::AutofillProfile& profile_to_edit,
@@ -56,8 +56,9 @@ void AddressEditorController::UpdateEditorFields() {
   if (chosen_country_index_ < countries_.size())
     chosen_country_code = countries_[chosen_country_index_].first;
 
-  std::unique_ptr<base::ListValue> components(new base::ListValue);
-  autofill::GetAddressComponents(chosen_country_code, locale_, components.get(),
+  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;
+  autofill::GetAddressComponents(chosen_country_code, locale_,
+                                 /*include_literals=*/false, &components,
                                  &language_code_);
   profile_to_edit_.set_language_code(language_code_);
 
@@ -65,71 +66,56 @@ void AddressEditorController::UpdateEditorFields() {
   editor_fields_.emplace_back(
       autofill::ADDRESS_HOME_COUNTRY,
       l10n_util::GetStringUTF16(IDS_LIBADDRESSINPUT_COUNTRY_OR_REGION_LABEL),
-      EditorField::LengthHint::HINT_SHORT, EditorField::ControlType::COMBOBOX);
+      EditorField::LengthHint::HINT_LONG, EditorField::ControlType::COMBOBOX);
 
-  for (size_t line_index = 0; line_index < components->GetSize();
-       ++line_index) {
-    const base::ListValue* line = nullptr;
-    if (!components->GetList(line_index, &line)) {
-      NOTREACHED();
-      return;
-    }
-    DCHECK_NE(nullptr, line);
-    for (size_t component_index = 0; component_index < line->GetSize();
-         ++component_index) {
-      const base::DictionaryValue* component = nullptr;
-      if (!line->GetDictionary(component_index, &component)) {
-        NOTREACHED();
-        return;
-      }
-      std::string field_type;
-      if (!component->GetString(autofill::kFieldTypeKey, &field_type)) {
-        NOTREACHED();
-        return;
-      }
-      std::string field_name;
-      if (!component->GetString(autofill::kFieldNameKey, &field_name)) {
-        NOTREACHED();
-        return;
-      }
-      bool field_length;
-      if (!component->GetBoolean(autofill::kFieldLengthKey, &field_length)) {
-        NOTREACHED();
-        return;
-      }
+  for (const std::vector<::i18n::addressinput::AddressUiComponent>& line :
+       components) {
+    for (const ::i18n::addressinput::AddressUiComponent& component : line) {
       EditorField::LengthHint length_hint =
-          field_length == autofill::kLongField
+          component.length_hint ==
+                  i18n::addressinput::AddressUiComponent::HINT_LONG
               ? EditorField::LengthHint::HINT_LONG
               : EditorField::LengthHint::HINT_SHORT;
       autofill::ServerFieldType server_field_type =
-          autofill::GetFieldTypeFromString(field_type);
+          autofill::i18n::TypeForField(component.field);
       EditorField::ControlType control_type =
-          EditorField::ControlType::TEXTFIELD;
-      if (server_field_type == autofill::ADDRESS_HOME_COUNTRY)
-        control_type = EditorField::ControlType::COMBOBOX;
+          server_field_type == autofill::ADDRESS_HOME_COUNTRY
+              ? EditorField::ControlType::COMBOBOX
+              : EditorField::ControlType::TEXTFIELD;
+
       editor_fields_.emplace_back(server_field_type,
-                                  base::UTF8ToUTF16(field_name), length_hint,
-                                  control_type);
+                                  base::UTF8ToUTF16(component.name),
+                                  length_hint, control_type);
     }
   }
   // Always add phone number and email at the end.
-  // TODO(crbug.com/1167060): use internationalized strings for both fields.
-  // Phone number is using a payment string, and the email is using an
-  // non-internationalized string.
   editor_fields_.emplace_back(
       autofill::PHONE_HOME_WHOLE_NUMBER,
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_FIELD_LABEL_PHONE),
+      l10n_util::GetStringUTF16(IDS_SETTINGS_AUTOFILL_ADDRESSES_PHONE),
       EditorField::LengthHint::HINT_SHORT,
       EditorField::ControlType::TEXTFIELD_NUMBER);
 
-  editor_fields_.emplace_back(autofill::EMAIL_ADDRESS, u"Email",
-                              EditorField::LengthHint::HINT_LONG,
-                              EditorField::ControlType::TEXTFIELD);
+  editor_fields_.emplace_back(
+      autofill::EMAIL_ADDRESS,
+      l10n_util::GetStringUTF16(IDS_SETTINGS_AUTOFILL_ADDRESSES_EMAIL),
+      EditorField::LengthHint::HINT_LONG, EditorField::ControlType::TEXTFIELD);
 }
 
 void AddressEditorController::SetProfileInfo(autofill::ServerFieldType type,
                                              const std::u16string& value) {
-  profile_to_edit_.SetInfo(type, value, locale_);
+  // Since the countries combobox contains the country names, not the country
+  // codes, and hence we should use SetInfo() to make sure they get converted to
+  // country codes.
+  if (type == autofill::ADDRESS_HOME_COUNTRY) {
+    profile_to_edit_.SetInfoWithVerificationStatus(
+        type, value, locale_,
+        autofill::structured_address::VerificationStatus::kUserVerified);
+    return;
+  }
+
+  profile_to_edit_.SetRawInfoWithVerificationStatus(
+      type, value,
+      autofill::structured_address::VerificationStatus::kUserVerified);
 }
 
 std::u16string AddressEditorController::GetProfileInfo(

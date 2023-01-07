@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define COMPONENTS_OFFLINE_PAGES_TASK_TEST_TASK_RUNNER_H_
 
 #include <memory>
-
-#include "base/macros.h"
 
 namespace offline_pages {
 class Task;

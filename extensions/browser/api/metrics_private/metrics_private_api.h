@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,14 +113,31 @@ class MetricsPrivateRecordEnumerationValueFunction
   ResponseAction Run() override;
 };
 
-class MetricsPrivateRecordSparseHashableFunction
+class MetricsPrivateRecordSparseValueWithHashMetricNameFunction
     : public MetricsHistogramHelperFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordSparseHashable",
-                             METRICSPRIVATE_RECORDSPARSEHASHABLE)
+  DECLARE_EXTENSION_FUNCTION(
+      "metricsPrivate.recordSparseValueWithHashMetricName",
+      METRICSPRIVATE_RECORDSPARSEVALUEWITHHASHMETRICNAME)
 
  protected:
-  ~MetricsPrivateRecordSparseHashableFunction() override {}
+  ~MetricsPrivateRecordSparseValueWithHashMetricNameFunction() override =
+      default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class MetricsPrivateRecordSparseValueWithPersistentHashFunction
+    : public MetricsHistogramHelperFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "metricsPrivate.recordSparseValueWithPersistentHash",
+      METRICSPRIVATE_RECORDSPARSEVALUEWITHPERSISTENTHASH)
+
+ protected:
+  ~MetricsPrivateRecordSparseValueWithPersistentHashFunction() override =
+      default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

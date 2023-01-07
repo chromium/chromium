@@ -1,0 +1,41 @@
+<html>
+<head>
+</head>
+<body>
+    <textarea id='txt1'
+              virtualkeyboardpolicy='manual'
+              onfocusin='FocusIn1()'
+              onkeydown='HideVKCalled()'></textarea>
+    <textarea id='txt2'
+              virtualkeyboardpolicy='manual'
+              onfocusin='FocusIn1()'
+              onkeydown='HideVKCalled()'></textarea>
+    <textarea id='txt3' virtualkeyboardpolicy='auto'></textarea>
+    <textarea id='txt4' virtualkeyboardpolicy='auto'></textarea>
+    <script>
+      txt4.focus();
+      let elemRect1 = txt1.getBoundingClientRect();
+      let elemRect2 = txt2.getBoundingClientRect();
+      let elemRect3 = txt3.getBoundingClientRect();
+      let elemRect4 = txt4.getBoundingClientRect();
+      let VKRect = navigator.virtualKeyboard.boundingRect, numEvents = 0;
+      navigator.virtualKeyboard.overlaysContent = true;
+      const editContext = new EditContext();
+      txt2.editContext = editContext;
+      editContext.inputPanelPolicy = "manual";
+
+      navigator.virtualKeyboard.addEventListener('geometrychange',
+       evt => {
+         numEvents++;
+         VKRect = navigator.virtualKeyboard.boundingRect
+       }, false);
+
+      function FocusIn1() {
+         navigator.virtualKeyboard.show();
+      }
+      function HideVKCalled() {
+         navigator.virtualKeyboard.hide();
+      }
+    </script>
+  </body>
+</html>

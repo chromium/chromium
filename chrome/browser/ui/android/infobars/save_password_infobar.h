@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,22 @@
 #define CHROME_BROWSER_UI_ANDROID_INFOBARS_SAVE_PASSWORD_INFOBAR_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
-#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/infobars/chrome_confirm_infobar.h"
+#include "components/infobars/android/confirm_infobar.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
 class SavePasswordInfoBarDelegate;
 
 // The infobar to be used with SavePasswordInfoBarDelegate.
-class SavePasswordInfoBar : public ChromeConfirmInfoBar {
+class SavePasswordInfoBar : public infobars::ConfirmInfoBar {
  public:
   explicit SavePasswordInfoBar(
       std::unique_ptr<SavePasswordInfoBarDelegate> delegate,
-      base::Optional<AccountInfo> account_info);
+      const AccountInfo& account_info);
+
+  SavePasswordInfoBar(const SavePasswordInfoBar&) = delete;
+  SavePasswordInfoBar& operator=(const SavePasswordInfoBar&) = delete;
+
   ~SavePasswordInfoBar() override;
 
  private:
@@ -32,9 +34,7 @@ class SavePasswordInfoBar : public ChromeConfirmInfoBar {
 
   base::android::ScopedJavaGlobalRef<jobject> java_infobar_;
 
-  base::Optional<AccountInfo> account_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavePasswordInfoBar);
+  AccountInfo account_info_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_SAVE_PASSWORD_INFOBAR_H_

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/firefox_importer_utils.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
@@ -27,9 +27,9 @@
 #include "sql/statement.h"
 #include "url/gurl.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 #include "chrome/utility/importer/nss_decryptor.h"
-#endif
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 
 namespace {
 
@@ -120,7 +120,7 @@ void FirefoxImporter::StartImport(const importer::SourceProfile& source_profile,
   source_path_ = source_profile.source_path;
   app_path_ = source_profile.app_path;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   locale_ = source_profile.locale;
 #endif
 
@@ -150,13 +150,13 @@ void FirefoxImporter::StartImport(const importer::SourceProfile& source_profile,
     ImportBookmarks();
     bridge_->NotifyItemEnded(importer::FAVORITES);
   }
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
   if ((items & importer::PASSWORDS) && !cancelled()) {
     bridge_->NotifyItemStarted(importer::PASSWORDS);
     ImportPasswords();
     bridge_->NotifyItemEnded(importer::PASSWORDS);
   }
-#endif
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
   if ((items & importer::AUTOFILL_FORM_DATA) && !cancelled()) {
     bridge_->NotifyItemStarted(importer::AUTOFILL_FORM_DATA);
     ImportAutofillFormData();
@@ -375,7 +375,7 @@ void FirefoxImporter::ImportBookmarks() {
   }
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 void FirefoxImporter::ImportPasswords() {
   // Initializes NSS3.
   NSSDecryptor decryptor;
@@ -401,7 +401,7 @@ void FirefoxImporter::ImportPasswords() {
     }
   }
 }
-#endif
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 
 void FirefoxImporter::ImportHomepage() {
   GURL home_page = GetHomepage(source_path_);

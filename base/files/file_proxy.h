@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 
 namespace base {
@@ -64,11 +63,11 @@ class BASE_EXPORT FileProxy : public SupportsWeakPtr<FileProxy> {
                     StatusCallback callback);
 
   // Creates a temporary file for writing. The path and an open file are
-  // returned. It is invalid to pass a null callback. The additional file flags
-  // will be added on top of the default file flags which are:
+  // returned. It is invalid to pass a null callback. These additional file
+  // flags will be added on top of the default file flags:
   //   File::FLAG_CREATE_ALWAYS
   //   File::FLAG_WRITE
-  //   File::FLAG_TEMPORARY.
+  //   File::FLAG_WIN_TEMPORARY.
   //
   // This returns false if task posting to |task_runner| has failed.
   bool CreateTemporary(uint32_t additional_file_flags,

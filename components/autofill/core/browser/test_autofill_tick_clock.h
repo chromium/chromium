@@ -1,13 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_TICK_CLOCK_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_TICK_CLOCK_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 
 namespace base {
@@ -22,7 +19,11 @@ namespace autofill {
 // this gets destroyed.
 class TestAutofillTickClock {
  public:
-  TestAutofillTickClock();
+  explicit TestAutofillTickClock(base::TimeTicks now_ticks = {});
+
+  TestAutofillTickClock(const TestAutofillTickClock&) = delete;
+  TestAutofillTickClock& operator=(const TestAutofillTickClock&) = delete;
+
   ~TestAutofillTickClock();
 
   // Set the time to be returned from AutofillTickClock::Now() calls.
@@ -33,8 +34,6 @@ class TestAutofillTickClock {
 
  private:
   base::SimpleTestTickClock test_tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillTickClock);
 };
 
 }  // namespace autofill

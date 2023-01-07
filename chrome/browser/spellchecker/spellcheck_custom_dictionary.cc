@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <sstream>
 #include <utility>
 #include <vector>
 
@@ -16,12 +17,13 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/hash/md5.h"
+#include "base/observer_list.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"
@@ -29,7 +31,8 @@
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_error_factory.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/dictionary_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -324,7 +327,7 @@ void SpellcheckCustomDictionary::WaitUntilReadyToSync(base::OnceClosure done) {
     wait_until_ready_to_sync_cb_ = std::move(done);
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 SpellcheckCustomDictionary::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -383,14 +386,13 @@ syncer::SyncDataList SpellcheckCustomDictionary::GetAllSyncDataForTesting(
   return data;
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 SpellcheckCustomDictionary::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::unique_ptr<Change> dictionary_change(new Change);
   for (const syncer::SyncChange& change : change_list) {
-    DCHECK(change.IsValid());
     const std::string& word =
         change.sync_data().GetSpecifics().dictionary().word();
     switch (change.change_type()) {
@@ -414,7 +416,7 @@ SpellcheckCustomDictionary::ProcessSyncChanges(
   Notify(*dictionary_change);
   Save(std::move(dictionary_change));
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 SpellcheckCustomDictionary::LoadFileResult::LoadFileResult()
@@ -510,11 +512,11 @@ void SpellcheckCustomDictionary::Save(
                      std::move(dictionary_change), custom_dictionary_path_));
 }
 
-base::Optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
+absl::optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
     const Change& dictionary_change) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!IsSyncing() || dictionary_change.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   // The number of words on the sync server should not exceed the limits.
   int server_size = static_cast<int>(words_.size()) -
@@ -549,7 +551,7 @@ base::Optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
   }
 
   // Send the changes to the sync processor.
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, sync_change_list);
   if (error.has_value())
     return error;
@@ -559,7 +561,7 @@ base::Optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
   if (words_.size() > spellcheck::kMaxSyncableDictionaryWords)
     StopSyncing(syncer::DICTIONARY);
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void SpellcheckCustomDictionary::Notify(const Change& dictionary_change) {

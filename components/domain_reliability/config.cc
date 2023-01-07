@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,23 +7,27 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace {
 
 bool ConvertURL(const base::Value* value, GURL* url) {
-  std::string url_string;
-  if (!value->GetAsString(&url_string))
+  if (!value->is_string())
     return false;
-  *url = GURL(url_string);
+  *url = GURL(value->GetString());
   return url->is_valid();
 }
 
-bool ConvertOrigin(const base::Value* value, GURL* url) {
-  return ConvertURL(value, url) && !url->has_username() &&
-         !url->has_password() && url->SchemeIs(url::kHttpsScheme) &&
-         url->path_piece() == "/" && !url->has_query() && !url->has_ref();
+bool ConvertOrigin(const base::Value* value, url::Origin* origin) {
+  GURL url;
+  if (ConvertURL(value, &url) && !url.has_username() && !url.has_password() &&
+      url.SchemeIs(url::kHttpsScheme) && url.path_piece() == "/" &&
+      !url.has_query() && !url.has_ref()) {
+    *origin = url::Origin::Create(url);
+    return true;
+  }
+  return false;
 }
 
 bool IsValidSampleRate(double p) {
@@ -44,7 +48,7 @@ DomainReliabilityConfig::~DomainReliabilityConfig() {}
 // static
 std::unique_ptr<const DomainReliabilityConfig>
 DomainReliabilityConfig::FromJSON(const base::StringPiece& json) {
-  base::Optional<base::Value> value = base::JSONReader::Read(json);
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
   if (!value)
     return nullptr;
 
@@ -59,7 +63,7 @@ DomainReliabilityConfig::FromJSON(const base::StringPiece& json) {
 }
 
 bool DomainReliabilityConfig::IsValid() const {
-  if (!origin.is_valid() || collectors.empty() ||
+  if (origin.opaque() || collectors.empty() ||
       !IsValidSampleRate(success_sample_rate) ||
       !IsValidSampleRate(failure_sample_rate)) {
     return false;
@@ -80,7 +84,7 @@ double DomainReliabilityConfig::GetSampleRate(bool request_successful) const {
 // static
 void DomainReliabilityConfig::RegisterJSONConverter(
     base::JSONValueConverter<DomainReliabilityConfig>* converter) {
-  converter->RegisterCustomValueField<GURL>(
+  converter->RegisterCustomValueField<url::Origin>(
       "origin", &DomainReliabilityConfig::origin, &ConvertOrigin);
   converter->RegisterBoolField("include_subdomains",
                                &DomainReliabilityConfig::include_subdomains);

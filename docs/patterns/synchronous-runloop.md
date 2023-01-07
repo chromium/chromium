@@ -149,7 +149,7 @@ class GizmoReadyWaiter : public GizmoObserver {
 
   void WaitForGizmoReady() {
     if (!gizmo_->ready()) {
-      gizmo_observer_.Add(gizmo_);
+      gizmo_observation_.Observe(gizmo_);
       run_loop_.Run();
     }
   }
@@ -162,7 +162,7 @@ class GizmoReadyWaiter : public GizmoObserver {
  private:
   RunLoop run_loop_;
   Gizmo* gizmo_;
-  ScopedObserver<Gizmo, GizmoObserver> gizmo_observer_{this};
+  base::ScopedObservation<Gizmo, GizmoObserver> gizmo_observation_{this};
 };
 ```
 
@@ -311,21 +311,21 @@ class GizmoReadyWaiter : public GizmoObserver {
     ASSERT_TRUE(gizmo_)
         << "Trying to call Wait() after the Gizmo was destroyed!";
     if (!gizmo_->ready()) {
-      gizmo_observer_.Add(gizmo_);
+      gizmo_observation_.Observe(gizmo_);
       run_loop_.Run();
     }
   }
 
   // GizmoObserver:
   void OnGizmoReady(Gizmo* observed_gizmo) {
-    gizmo_observer_.Remove(observed_gizmo);
+    gizmo_observation_.Reset();
     run_loop_.Quit();
   }
   void OnGizmoDestroying(Gizmo* observed_gizmo) {
     DCHECK_EQ(gizmo_, observed_gizmo);
     gizmo_ = nullptr;
     // Remove the observer now, to avoid a UAF in the destructor.
-    gizmo_observer_.Remove(observed_gizmo);
+    gizmo_observation_.Reset();
     // Bail out so we don't time out in the test waiting for a ready state
     // that will never come.
     run_loop_.Quit();
@@ -336,7 +336,7 @@ class GizmoReadyWaiter : public GizmoObserver {
  private:
   RunLoop run_loop_;
   Gizmo* gizmo_;
-  ScopedObserver<Gizmo, GizmoObserver> gizmo_observer_{this};
+  base::ScopedObservation<Gizmo, GizmoObserver> gizmo_observation_{this};
 };
 ```
 

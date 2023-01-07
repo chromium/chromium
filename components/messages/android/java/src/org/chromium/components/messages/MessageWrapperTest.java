@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.messages;
 
 import static org.mockito.Mockito.never;
+
+import android.graphics.Bitmap;
 
 import androidx.test.filters.SmallTest;
 
@@ -47,7 +49,7 @@ public class MessageWrapperTest {
     @Test
     @SmallTest
     public void testMessageProperties() {
-        MessageWrapper message = MessageWrapper.create(1);
+        MessageWrapper message = MessageWrapper.create(1, MessageIdentifier.TEST_MESSAGE);
         PropertyModel messageProperties = message.getMessageProperties();
 
         message.setTitle("Title");
@@ -58,13 +60,17 @@ public class MessageWrapperTest {
         Assert.assertEquals("Description doesn't match provided value", "Description",
                 messageProperties.get(MessageBannerProperties.DESCRIPTION));
 
+        message.setDescriptionMaxLines(2);
+        Assert.assertEquals("Description max lines doesn't match provided value", 2,
+                messageProperties.get(MessageBannerProperties.DESCRIPTION_MAX_LINES));
+
         message.setPrimaryButtonText("Primary button");
         Assert.assertEquals("Button text doesn't match provided value", "Primary button",
                 messageProperties.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
 
-        message.setSecondaryActionText("Primary button");
-        Assert.assertEquals("Button text doesn't match provided value", "Primary button",
-                messageProperties.get(MessageBannerProperties.SECONDARY_ACTION_TEXT));
+        message.setSecondaryButtonMenuText("Secondary button");
+        Assert.assertEquals("Button text doesn't match provided value", "Secondary button",
+                messageProperties.get(MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT));
 
         message.setIconResourceId(1);
         Assert.assertEquals("Icon resource id doesn't match provided value", 1,
@@ -73,6 +79,12 @@ public class MessageWrapperTest {
         message.setSecondaryIconResourceId(2);
         Assert.assertEquals("Icon resource id doesn't match provided value", 2,
                 messageProperties.get(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID));
+
+        Assert.assertNull("Initially icon should not be set",
+                messageProperties.get(MessageBannerProperties.ICON));
+        message.setIcon(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888));
+        Assert.assertNotNull("Call to setIcon() didn't update ICON property",
+                messageProperties.get(MessageBannerProperties.ICON));
     }
 
     /**
@@ -82,9 +94,9 @@ public class MessageWrapperTest {
     @SmallTest
     public void testCallbacks() {
         final long nativePtr = 1;
-        MessageWrapper message = MessageWrapper.create(nativePtr);
+        MessageWrapper message = MessageWrapper.create(nativePtr, MessageIdentifier.TEST_MESSAGE);
         PropertyModel messageProperties = message.getMessageProperties();
-        messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
+        messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
         Mockito.verify(mNativeMock).handleActionClick(nativePtr);
         messageProperties.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
         Mockito.verify(mNativeMock).handleSecondaryActionClick(nativePtr);
@@ -100,11 +112,11 @@ public class MessageWrapperTest {
     @SmallTest
     public void testDestroyedMessageWrapperCallbacks() {
         final long nativePtr = 1;
-        MessageWrapper message = MessageWrapper.create(nativePtr);
+        MessageWrapper message = MessageWrapper.create(nativePtr, MessageIdentifier.TEST_MESSAGE);
         PropertyModel messageProperties = message.getMessageProperties();
 
         message.clearNativePtr();
-        messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
+        messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
         Mockito.verify(mNativeMock, never()).handleActionClick(nativePtr);
         messageProperties.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
         Mockito.verify(mNativeMock, never()).handleSecondaryActionClick(nativePtr);
@@ -112,5 +124,37 @@ public class MessageWrapperTest {
                 .onResult(DismissReason.PRIMARY_ACTION);
         Mockito.verify(mNativeMock, never())
                 .handleDismissCallback(Mockito.anyLong(), Mockito.anyInt());
+    }
+
+    /**
+     * Tests the secondary menu functionality including addition, selection and clearance of items.
+     */
+    @Test
+    @SmallTest
+    public void testSecondaryMenuUpdates() {
+        final long nativePtr = 1;
+        MessageWrapper message = MessageWrapper.create(1, MessageIdentifier.TEST_MESSAGE);
+
+        message.setTitle("Title");
+        message.setSecondaryIconResourceId(2);
+        message.setPrimaryButtonText("Primary button");
+
+        // Add secondary menu items.
+        PropertyModel item1 = message.addSecondaryMenuItem(1, 0, "Item 1");
+        message.addSecondaryMenuItemDivider();
+        PropertyModel item2 = message.addSecondaryMenuItem(2, 0, "Item 2");
+        MessageSecondaryMenuItems messageSecondaryMenuItems =
+                message.getMessageSecondaryMenuItemsForTesting();
+        Assert.assertEquals("Size of secondary menu does not match.", 3,
+                messageSecondaryMenuItems.mMenuItems.size());
+
+        // Select a secondary menu item.
+        message.onItemSelected(item1);
+        Mockito.verify(mNativeMock).handleSecondaryMenuItemSelected(nativePtr, 1);
+
+        // Clear the secondary menu.
+        message.clearSecondaryMenuItems();
+        Assert.assertEquals(
+                "Secondary menu is not cleared.", 0, messageSecondaryMenuItems.mMenuItems.size());
     }
 }

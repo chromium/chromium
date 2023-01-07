@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -128,8 +128,8 @@ void ArImageTransport::OnFrameAvailable() {
   // UV transform, that's usually a Y flip.
   transport_surface_texture_->GetTransformMatrix(
       &transport_surface_texture_uv_matrix_[0]);
-  transport_surface_texture_uv_transform_.matrix().setColMajorf(
-      transport_surface_texture_uv_matrix_);
+  transport_surface_texture_uv_transform_ =
+      gfx::Transform::ColMajorF(transport_surface_texture_uv_matrix_);
 
   on_transport_frame_available_.Run(transport_surface_texture_uv_transform_);
 }
@@ -170,7 +170,7 @@ bool ArImageTransport::ResizeSharedBuffer(WebXrPresentationState* webxr,
       gpu::GpuMemoryBufferImpl::DestructionCallback());
 
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                 gpu::SHARED_IMAGE_USAGE_GLES2;
   buffer->mailbox_holder = mailbox_bridge_->CreateSharedImage(
       buffer->gmb.get(), gfx::ColorSpace(), shared_image_usage);
@@ -298,7 +298,7 @@ gpu::MailboxHolder ArImageTransport::TransferCameraImageFrame(
 
   std::unique_ptr<gl::GLFence> gl_fence = gl::GLFence::CreateForGpuFence();
   std::unique_ptr<gfx::GpuFence> gpu_fence = gl_fence->GetGpuFence();
-  mailbox_bridge_->WaitForClientGpuFence(gpu_fence.release());
+  mailbox_bridge_->WaitForClientGpuFence(*gpu_fence);
 
   mailbox_bridge_->GenSyncToken(
       &camera_image_shared_buffer->mailbox_holder.sync_token);
@@ -375,7 +375,7 @@ void ArImageTransport::CopyTextureToFramebuffer(
 
   // Draw the ARCore texture!
   float uv_transform_floats[16];
-  uv_transform.matrix().asColMajorf(uv_transform_floats);
+  uv_transform.GetColMajorF(uv_transform_floats);
   ar_renderer_->Draw(texture, uv_transform_floats);
 }
 

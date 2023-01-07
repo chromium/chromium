@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,11 @@ class MergeSessionLoaderThrottle
   explicit MergeSessionLoaderThrottle(
       scoped_refptr<ChromeRenderThreadObserver::ChromeOSListener>
           chromeos_listener);
+
+  MergeSessionLoaderThrottle(const MergeSessionLoaderThrottle&) = delete;
+  MergeSessionLoaderThrottle& operator=(const MergeSessionLoaderThrottle&) =
+      delete;
+
   ~MergeSessionLoaderThrottle() override;
 
  private:
@@ -50,8 +55,6 @@ class MergeSessionLoaderThrottle
   scoped_refptr<ChromeRenderThreadObserver::ChromeOSListener>
       chromeos_listener_;
   base::WeakPtrFactory<MergeSessionLoaderThrottle> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MergeSessionLoaderThrottle);
 };
 
 #endif  // CHROME_RENDERER_CHROMEOS_MERGE_SESSION_LOADER_THROTTLE_H_

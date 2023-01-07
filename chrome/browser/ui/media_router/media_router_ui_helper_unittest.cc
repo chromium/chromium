@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,17 @@ TEST(MediaRouterUIHelperTest, GetExtensionNameEmptyWhenNotExtensionURL) {
       std::make_unique<extensions::ExtensionRegistry>(nullptr);
 
   EXPECT_EQ("", GetExtensionName(url, registry.get()));
+}
+
+TEST(MediaRouterUIHelperTest, GetRouteRequestTimeout) {
+  EXPECT_EQ(base::Seconds(20),
+            GetRouteRequestTimeout(MediaCastMode::PRESENTATION));
+  EXPECT_EQ(base::Seconds(60),
+            GetRouteRequestTimeout(MediaCastMode::TAB_MIRROR));
+  EXPECT_EQ(base::Seconds(120),
+            GetRouteRequestTimeout(MediaCastMode::DESKTOP_MIRROR));
+  EXPECT_EQ(base::Seconds(60),
+            GetRouteRequestTimeout(MediaCastMode::REMOTE_PLAYBACK));
 }
 
 }  // namespace media_router

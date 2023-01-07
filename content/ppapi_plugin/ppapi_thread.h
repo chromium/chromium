@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,26 +11,25 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/scoped_native_library.h"
 #include "build/build_config.h"
 #include "content/child/child_thread_impl.h"
-#include "content/public/common/pepper_plugin_info.h"
+#include "content/public/common/content_plugin_info.h"
 #include "ppapi/c/pp_module.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/proxy/plugin_dispatcher.h"
 #include "ppapi/proxy/plugin_globals.h"
 #include "ppapi/proxy/plugin_proxy_delegate.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
 
 namespace base {
 class CommandLine;
 class FilePath;
+class WaitableEvent;
 }
 
 namespace discardable_memory {
@@ -49,9 +48,16 @@ class PpapiThread : public ChildThreadImpl,
                     public ppapi::proxy::PluginDispatcher::PluginDelegate,
                     public ppapi::proxy::PluginProxyDelegate {
  public:
+  PpapiThread() = delete;
+
   PpapiThread(base::RepeatingClosure quit_closure,
               const base::CommandLine& command_line);
+
+  PpapiThread(const PpapiThread&) = delete;
+  PpapiThread& operator=(const PpapiThread&) = delete;
+
   ~PpapiThread() override;
+
   void Shutdown() override;
 
  private:
@@ -95,8 +101,6 @@ class PpapiThread : public ChildThreadImpl,
                        int renderer_child_id,
                        bool incognito);
   void OnSetNetworkState(bool online);
-  void OnCrash();
-  void OnHang();
 
   // Sets up the channel to the given renderer. If |renderer_pid| is
   // base::kNullProcessId, the channel is set up to the browser. On success,
@@ -118,7 +122,7 @@ class PpapiThread : public ChildThreadImpl,
   ppapi::proxy::PluginGlobals plugin_globals_;
 
   // Storage for plugin entry points.
-  PepperPluginInfo::EntryPoints plugin_entry_points_;
+  ContentPluginInfo::EntryPoints plugin_entry_points_;
 
   // Local concept of the module ID. Some functions take this. It's necessary
   // for the in-process PPAPI to handle this properly, but for proxied it's
@@ -140,8 +144,6 @@ class PpapiThread : public ChildThreadImpl,
 
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PpapiThread);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ int64_t ToDatabaseTime(base::Time time) {
 
 base::Time FromDatabaseTime(int64_t serialized_time) {
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(serialized_time));
+      base::Microseconds(serialized_time));
 }
 
 std::string ToDatabaseFilePath(const base::FilePath& file_path) {

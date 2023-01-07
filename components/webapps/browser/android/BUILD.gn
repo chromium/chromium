@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,20 +22,34 @@ android_library("java") {
     "java/src/org/chromium/components/webapps/AppDetailsDelegate.java",
     "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
     "java/src/org/chromium/components/webapps/WebappsUtils.java",
+    "java/src/org/chromium/components/webapps/bottomsheet/AddToHomescreenBottomSheetViewBinder.java",
+    "java/src/org/chromium/components/webapps/bottomsheet/ImageZoomView.java",
+    "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetController.java",
+    "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetControllerFactory.java",
+    "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetControllerProvider.java",
+    "java/src/org/chromium/components/webapps/bottomsheet/PwaInstallBottomSheetContent.java",
+    "java/src/org/chromium/components/webapps/bottomsheet/PwaInstallBottomSheetView.java",
     "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
   ]
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/infobars/android:java",
     "//components/webapk/android/libs/client:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
-  srcjar_deps = [ ":webapps_java_enums_srcjar" ]
+  srcjar_deps = [
+    ":webapps_java_enums_srcjar",
+    "//components/webapps/browser/android/webapk:enums_srcjar",
+  ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
@@ -47,6 +61,8 @@ generate_jni("webapps_jni_headers") {
     "java/src/org/chromium/components/webapps/AppBannerManager.java",
     "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
     "java/src/org/chromium/components/webapps/WebappsUtils.java",
+    "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetController.java",
+    "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetControllerProvider.java",
     "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
   ]
 }
@@ -63,22 +79,30 @@ java_cpp_enum("webapps_java_enums_srcjar") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable-hdpi/google_play.png",
+    "java/res/drawable-hdpi/google_play_dark.png",
     "java/res/drawable-hdpi/star_gray.png",
     "java/res/drawable-hdpi/star_green.png",
     "java/res/drawable-mdpi/google_play.png",
+    "java/res/drawable-mdpi/google_play_dark.png",
     "java/res/drawable-mdpi/star_gray.png",
     "java/res/drawable-mdpi/star_green.png",
     "java/res/drawable-xhdpi/google_play.png",
+    "java/res/drawable-xhdpi/google_play_dark.png",
     "java/res/drawable-xhdpi/star_gray.png",
     "java/res/drawable-xhdpi/star_green.png",
     "java/res/drawable-xxhdpi/google_play.png",
+    "java/res/drawable-xxhdpi/google_play_dark.png",
     "java/res/drawable-xxhdpi/star_gray.png",
     "java/res/drawable-xxhdpi/star_green.png",
     "java/res/drawable-xxxhdpi/google_play.png",
+    "java/res/drawable-xxxhdpi/google_play_dark.png",
     "java/res/drawable-xxxhdpi/star_gray.png",
     "java/res/drawable-xxxhdpi/star_green.png",
     "java/res/drawable/rating_bar.xml",
     "java/res/layout/add_to_homescreen_dialog.xml",
+    "java/res/layout/image_zoom_view.xml",
+    "java/res/layout/pwa_install_bottom_sheet_content.xml",
+    "java/res/layout/pwa_install_bottom_sheet_toolbar.xml",
     "java/res/mipmap-hdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-mdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-xhdpi/shortcut_icon_shadow.png",
@@ -108,27 +132,36 @@ source_set("unit_tests") {
   sources = [
     "add_to_homescreen_data_fetcher_unittest.cc",
     "shortcut_info_unittest.cc",
+    "webapk/webapk_icon_hasher_unittest.cc",
+    "webapk/webapk_proto_builder_unittest.cc",
     "webapps_utils_unittest.cc",
   ]
   deps = [
     "//base",
     "//components/favicon/content",
     "//components/favicon_base",
+    "//components/webapk:proto",
     "//components/webapps/browser",
+    "//components/webapps/common:mojo_bindings",
     "//content/public/browser",
     "//content/test:test_support",
+    "//net:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:common",
     "//third_party/blink/public/mojom:mojom_platform",
     "//ui/gfx:test_support",
     "//url",
   ]
+
+  data = [
+    "//components/test/data/webapps/nostore.html",
+    "//components/test/data/webapps/simple.html",
+    "//components/test/data/webapps/title1.html",
+  ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/components/webapps/AddToHomescreenDialogViewTest.java",
     "java/src/org/chromium/components/webapps/AddToHomescreenMediatorTest.java",
@@ -136,11 +169,9 @@ java_library("junit") {
   ]
   deps = [
     ":java",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

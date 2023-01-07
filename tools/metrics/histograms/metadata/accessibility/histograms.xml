@@ -1,0 +1,2156 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Accessibility histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="AccessibilityEveryReport">
+  <variant name=".EveryReport"
+      summary="sent with every metrics report, and preferred for computing
+               uniques"/>
+</variants>
+
+<variants name="SodaLanguageCode">
+  <variant name="de-DE" summary="German language code"/>
+  <variant name="en-US" summary="English language code"/>
+  <variant name="es-ES" summary="Spanish language code"/>
+  <variant name="fr-FR" summary="French language code"/>
+  <variant name="it-IT" summary="Italian language code"/>
+  <variant name="ja-JP" summary="Japanese language code"/>
+</variants>
+
+<variants name="SwitchAccessMenuAction">
+  <variant name="ActionRecorder"
+      summary="Switch Access Menu Action: Action Recorder"/>
+  <variant name="Copy" summary="Switch Access Menu Action: Copy"/>
+  <variant name="Cut" summary="Switch Access Menu Action: Cut"/>
+  <variant name="Decrement" summary="Switch Access Menu Action: Decrement"/>
+  <variant name="Dictation" summary="Switch Access Menu Action: Dictation"/>
+  <variant name="DisplayBrightnessDown"
+      summary="Switch Access Menu Action: Display Brightness Down"/>
+  <variant name="DisplayBrightnessUp"
+      summary="Switch Access Menu Action: Display Brightness Up"/>
+  <variant name="DisplayMenu"
+      summary="Switch Access Menu Action: Display Menu"/>
+  <variant name="DisplayMirror"
+      summary="Switch Access Menu Action: Display Mirror"/>
+  <variant name="DisplayRotate"
+      summary="Switch Access Menu Action: Display Rotate"/>
+  <variant name="DisplayZoomIn"
+      summary="Switch Access Menu Action: Display Zoom In"/>
+  <variant name="DisplayZoomOut"
+      summary="Switch Access Menu Action: Display Zoom Out"/>
+  <variant name="EndTextSelection"
+      summary="Switch Access Menu Action: End Text Selection"/>
+  <variant name="ExecuteMacro"
+      summary="Switch Access Menu Action: Execute Macro"/>
+  <variant name="Increment" summary="Switch Access Menu Action: Increment"/>
+  <variant name="ItemScan" summary="Switch Access Menu Action: Item Scan"/>
+  <variant name="JumpToBeginningOfText"
+      summary="Switch Access Menu Action: Jump To Beginning Of Text"/>
+  <variant name="JumpToEndOfText"
+      summary="Switch Access Menu Action: Jump To End Of Text"/>
+  <variant name="Keyboard" summary="Switch Access Menu Action: Keyboard"/>
+  <variant name="LeaveGroup" summary="Switch Access Menu Action: Leave Group"/>
+  <variant name="LeftClick" summary="Switch Access Menu Action: Left Click"/>
+  <variant name="MediaFastforward"
+      summary="Switch Access Menu Action: Media Fastforward"/>
+  <variant name="MediaMenu" summary="Switch Access Menu Action: Media Menu"/>
+  <variant name="MediaMute" summary="Switch Access Menu Action: Media Mute"/>
+  <variant name="MediaPlayPause"
+      summary="Switch Access Menu Action: Media Play Pause"/>
+  <variant name="MediaRewind"
+      summary="Switch Access Menu Action: Media Rewind"/>
+  <variant name="MediaVolumeDown"
+      summary="Switch Access Menu Action: Media Volume Down"/>
+  <variant name="MediaVolumeUp"
+      summary="Switch Access Menu Action: Media Volume Up"/>
+  <variant name="MoveBackwardOneCharOfText"
+      summary="Switch Access Menu Action: Move Backward One Char Of Text"/>
+  <variant name="MoveBackwardOneWordOfText"
+      summary="Switch Access Menu Action: Move Backward One Word Of Text"/>
+  <variant name="MoveCursor" summary="Switch Access Menu Action: Move Cursor"/>
+  <variant name="MoveDownOneLineOfText"
+      summary="Switch Access Menu Action: Move Down One Line Of Text"/>
+  <variant name="MoveForwardOneCharOfText"
+      summary="Switch Access Menu Action: Move Forward One Char Of Text"/>
+  <variant name="MoveForwardOneWordOfText"
+      summary="Switch Access Menu Action: Move Forward One Word Of Text"/>
+  <variant name="MoveUpOneLineOfText"
+      summary="Switch Access Menu Action: Move Up One Line Of Text"/>
+  <variant name="Paste" summary="Switch Access Menu Action: Paste"/>
+  <variant name="PointScan" summary="Switch Access Menu Action: Point Scan"/>
+  <variant name="RightClick" summary="Switch Access Menu Action: Right Click"/>
+  <variant name="ScrollDown" summary="Switch Access Menu Action: Scroll Down"/>
+  <variant name="ScrollLeft" summary="Switch Access Menu Action: Scroll Left"/>
+  <variant name="ScrollRight"
+      summary="Switch Access Menu Action: Scroll Right"/>
+  <variant name="ScrollUp" summary="Switch Access Menu Action: Scroll Up"/>
+  <variant name="Select" summary="Switch Access Menu Action: Select"/>
+  <variant name="Settings" summary="Switch Access Menu Action: Settings"/>
+  <variant name="Shortcuts" summary="Switch Access Menu Action: Shortcuts"/>
+  <variant name="StartRecording"
+      summary="Switch Access Menu Action: Start Recording"/>
+  <variant name="StartTextSelection"
+      summary="Switch Access Menu Action: Start Text Selection"/>
+  <variant name="StopRecording"
+      summary="Switch Access Menu Action: Stop Recording"/>
+  <variant name="SystemDiagnostics"
+      summary="Switch Access Menu Action: System Diagnostics"/>
+  <variant name="SystemHelp" summary="Switch Access Menu Action: System Help"/>
+  <variant name="SystemLauncher"
+      summary="Switch Access Menu Action: System Launcher"/>
+  <variant name="SystemMenu" summary="Switch Access Menu Action: System Menu"/>
+  <variant name="SystemScreenshot"
+      summary="Switch Access Menu Action: System Screenshot"/>
+  <variant name="SystemStatusBar"
+      summary="Switch Access Menu Action: System Status Bar"/>
+  <variant name="SystemTaskManager"
+      summary="Switch Access Menu Action: System Task Manager"/>
+  <variant name="UserLock" summary="Switch Access Menu Action: User Lock"/>
+  <variant name="UserMenu" summary="Switch Access Menu Action: User Menu"/>
+  <variant name="UserNextUser"
+      summary="Switch Access Menu Action: User Next User"/>
+  <variant name="UserPreviousUser"
+      summary="Switch Access Menu Action: User Previous User"/>
+  <variant name="UserSignOut"
+      summary="Switch Access Menu Action: User Sign Out"/>
+  <variant name="WebBookmark"
+      summary="Switch Access Menu Action: Web Bookmark"/>
+  <variant name="WebBottomOfPage"
+      summary="Switch Access Menu Action: Web Bottom Of Page"/>
+  <variant name="WebClearHistory"
+      summary="Switch Access Menu Action: Web Clear History"/>
+  <variant name="WebDownloads"
+      summary="Switch Access Menu Action: Web Downloads"/>
+  <variant name="WebFindInPage"
+      summary="Switch Access Menu Action: Web Find In Page"/>
+  <variant name="WebMenu" summary="Switch Access Menu Action: Web Menu"/>
+  <variant name="WebTopOfPage"
+      summary="Switch Access Menu Action: Web Top Of Page"/>
+</variants>
+
+<histogram name="Accessibility.ActiveTime" units="ms"
+    expires_after="2023-02-26">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <summary>
+    The amount of time accessibility was enabled and actively used. Reported
+    when we switch states from active to inactive.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.Cache.MaxNodesInCache" units="count"
+    expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the maximum number of AccessibilityNodeInfo objects that were stored
+    in the Java-side cache during a single session.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.Cache.PercentageRetrievedFromCache"
+    units="%" expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the percentage of calls from the Android framework to create a new
+    AccessibilityNodeInfo object that were serviced from the cache rather than
+    constructing the object from scratch during a single session.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.OnDemand.EventsDropped" units="count"
+    expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Tracks the number of AccessibilityEvents dropped when the OnDemand
+    accessibility services feature is enabled. Recorded at the end of a session.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.OnDemand.OneHundredPercentEventsDropped"
+    units="count" expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Tracks the number of AccessibilityEvents dropped when the OnDemand
+    accessibility services feature is enabled, and when the total percentage of
+    dropped events is 100%. Recorded at the end of a session.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.Android.OnDemand.OneHundredPercentEventsDropped.{AXMode}"
+    units="count" expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Tracks the number of AccessibilityEvents dropped when the OnDemand
+    accessibility services feature is enabled, and the ComputeAXMode feature is
+    enabled, and the number of events dropped is 100%. Tracks for when the
+    AXMode is set to {AXMode}. Recorded a the end of a session.
+  </summary>
+  <token key="AXMode">
+    <variant name="Basic"
+        summary="kAXModeBasic - Includes only NativeAPIs and WebContents"/>
+    <variant name="Complete"
+        summary="kAXModeComplete - Includes NativeAPIs, WebContents,
+                 InlineTextBoxes, ScreenReader, and HTML"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.Android.OnDemand.PercentageDropped" units="%"
+    expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Tracks the percentage of AccessibilityEvents dropped when the OnDemand
+    accessibility services feature is enabled. Recorded at the end of a session.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.OnDemand.PercentageDropped.{AXMode}"
+    units="%" expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Tracks the percentage of AccessibilityEvents dropped when the OnDemand
+    accessibility services feature is enabled, and the ComputeAXMode feature is
+    enabled. Tracks for when the AXMode is set to {AXMode}. Recorded at the end
+    of a session.
+  </summary>
+  <token key="AXMode">
+    <variant name="Basic"
+        summary="kAXModeBasic - Includes only NativeAPIs and WebContents"/>
+    <variant name="Complete"
+        summary="kAXModeComplete - Includes NativeAPIs, WebContents,
+                 InlineTextBoxes, ScreenReader, and HTML"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.Android.ScreenReader{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks whether a screen reader is enabled on Android (e.g. Talkback). This
+    is checked once, 45 seconds after startup. Note: prefer
+    Accessibility.Android.ScreenReader.EveryReport when querying for unique
+    users, as it is logged more frequently. {AccessibilityEveryReport}
+  </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.Android.TabSwitcherPreferenceEnabled"
+    enum="BooleanEnabled" expires_after="M81">
+  <owner>twellington@chromium.org</owner>
+  <owner>tedchoc@chromium.org</owner>
+  <summary>
+    Tracks whether the accessibility tab switcher is enabled when an
+    accessibility service (e.g. TalkBack or Switch Access) is enabled that would
+    typically cause the accessibility tab switcher to be used. Recorded when the
+    activity is resumed or accessibility services are turned on.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.UserFontSizePref.Change" units="%"
+    expires_after="2023-07-01">
+  <owner>twellington@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
+  <summary>
+    Records the current user font size pref when exiting accessibility settings
+    if the preference was changed. The font size ranges from 50% to 200% and can
+    be set in increments of 5%; the default is 100%.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.UserFontSizePref.OnStartup" units="%"
+    expires_after="2023-07-01">
+  <owner>twellington@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
+  <summary>
+    Records the current user font size pref during deferred startup for
+    ChromeActivity. The font size ranges from 50% to 200% and can be set in
+    increments of 5%; the default is 100%.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AndroidServiceInfo"
+    enum="AccessibilityAndroidServiceInfoEnum" expires_after="M109">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>mschillaci@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Deprecated as of 10/2022, M109. Now using the per-variant enum (below).
+    Tracks flags and capabilities of enabled accessibility services. Recorded
+    every time an Android web content view first creates a virtual view
+    hierarchy, indicating that some accessibility service is running. The number
+    of emits of this histogram won't be as useful as the unique user counts. The
+    primary purpose of this is to guide optimization by determining what
+    capabilities of accessibility services are widespread and which ones are
+    relatively rare.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AndroidServiceInfo.{RunningApps}"
+    enum="AccessibilityAndroidServiceInfoEnum" expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks events, flags, feedback and capabilities of enabled accessibility
+    services separated into variants based on the types of running accessibility
+    services. This information would be a subset of the (now deprecated)
+    Accessibility.AndroidServiceInfo histogram. It will allow us to look at the
+    same histograms but only for a subset of users (e.g. what are the requested
+    flags etc of enabled accessibility services for clients running only a
+    password manager).
+  </summary>
+  <token key="RunningApps">
+    <variant name="ALL_VARIANTS"/>
+    <variant name="ASSISTIVE_TECH"/>
+    <variant name="ASSISTIVE_TECH_WITH_PASSWORD_MANAGER"/>
+    <variant name="ASSISTIVE_TECH_WITH_UNKNOWN"/>
+    <variant name="PASSWORD_MANAGER"/>
+    <variant name="PASSWORD_MANAGER_WITH_UNKNOWN"/>
+    <variant name="UNKNOWN"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ATK-APIs" enum="AccessibilityATKAPIEnum"
+    expires_after="2022-11-18">
+  <owner>jdiggs@chromium.org</owner>
+  <owner>jkim@igalia.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks usage of ATK APIs on Linux Desktop. Recorded when ATK APIs that are
+    supposed to trigger AX mode enabled is called.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AutoDisabled.DisabledTime" units="ms"
+    expires_after="2023-02-26">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The total amount of time accessibility was disabled due to being
+    auto-disabled, before being enabled again.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AutoDisabled.EnabledTime" units="ms"
+    expires_after="2023-02-26">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The total amount of time accessibility was enabled before being
+    auto-disabled.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AutoDisabled.EventCount" units="count"
+    expires_after="2023-02-26">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The number of user input events that were received within one time window,
+    without any accompanying accessibility API usage, that triggered
+    accessibility to be auto-disabled.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CaptionSettingsLoadedFromPrefs"
+    enum="BooleanEnabled" expires_after="2023-09-06">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Whether custom caption settings were loaded from the user preferences.
+    Recorded when WebKit preferences are overridden.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CaptionSettingsLoadedFromSystemSettings"
+    enum="BooleanEnabled" expires_after="2023-09-06">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Whether custom caption settings were loaded from the system preferences.
+    Recorded when WebKit preferences are overridden.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ChromeVox.PerformGestureType"
+    enum="ChromeVoxGestureType" expires_after="2023-04-09">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    A user can control ChromeVox via a variety of gestures on the touch screen.
+    For example, swiping right with one finger causes ChromeVox to navigate to
+    the next object. Track all possible gestures here.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosAlwaysShowA11yMenu" enum="BooleanEnabled"
+    expires_after="2023-02-19">
+  <owner>dtseng@chromium.org</owner>
+  <owner>kenjibaheux@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS Accessibility Menu is set to be shown regardless of
+    the state of a11y features.(logged once 45 secs after startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosAutoclick" enum="BooleanEnabled"
+    expires_after="2023-07-01">
+  <owner>kenjibaheux@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS Autoclick feature is on (logged once 45 secs after
+    startup). Warning: this histogram was expired 2021-12-31 to 2022-07-07, data
+    might be missing.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosAutoclick.TrayMenu.ChangeAction"
+    enum="AutoclickActionType" expires_after="2023-04-24">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Recorded when a user has picked a new autoclick action type from the bubble
+    menu.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosCaretHighlight" enum="BooleanEnabled"
+    expires_after="2023-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS caret highlighting is on (logged once 45 secs after
+    startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosCursorColor" enum="BooleanEnabled"
+    expires_after="2023-04-10">
+  <owner>dtseng@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS feature to colorize the cursor is enabled (logged once
+    45 secs after startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosCursorHighlight" enum="BooleanEnabled"
+    expires_after="2022-11-18">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS cursor highlighting is on (logged once 45 secs after
+    startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosDictation" enum="BooleanEnabled"
+    expires_after="2023-04-09">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the ChromeOS dictation feature is enabled (logged once 45 secs after
+    startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosDictation.Language" enum="LocaleCodeISO639"
+    expires_after="2023-02-26">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The language used for speech recognition in dictation on ChromeOS. This is
+    logged each time Dictation is toggled on. From M99 to M104 this was logged
+    using base::PersistantHash instead of base::HashMetricName; data from that
+    period can be decoded using a map between the two hashing functions. See
+    crbug.com/1342966.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.CrosDictation.ListeningDuration.NetworkRecognition"
+    units="ms" expires_after="2023-02-26">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Duration that the network speech recognition service was listening for
+    dictation. Recorded each time a user toggles dictation on until dictation is
+    stopped, either by the user action, error, or timeout.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.CrosDictation.ListeningDuration.OnDeviceRecognition"
+    units="ms" expires_after="2023-03-05">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Duration that the on-device speech recognition service was listening for
+    dictation. Recorded each time a user toggles dictation on until dictation is
+    stopped, either by the user action, error, or timeout.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosDictation.MacroFailed"
+    enum="CrosDictationMacroName" expires_after="2023-01-30">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Recorded whenever Dictation fails to perform a macro.</summary>
+</histogram>
+
+<histogram name="Accessibility.CrosDictation.MacroRecognized"
+    enum="CrosDictationMacroName" expires_after="2023-04-09">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Recorded whenever Dictation recognizes a macro.</summary>
+</histogram>
+
+<histogram name="Accessibility.CrosDictation.MacroSucceeded"
+    enum="CrosDictationMacroName" expires_after="2023-04-09">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Recorded whenever Dictation successfully performs a macro.</summary>
+</histogram>
+
+<histogram name="Accessibility.CrosDictation.ToggleDictationMethod"
+    enum="CrosDictationToggleDictationMethod" expires_after="2023-03-19">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records how users invoke Dictation.</summary>
+</histogram>
+
+<histogram name="Accessibility.CrosDictation.UsedOnDeviceSpeech"
+    enum="BooleanUsage" expires_after="2023-02-26">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When Dictation was toggled on, records whether on-device speech recognition
+    was used. If on-device recognition was not used, network speech was used.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosDockedMagnifier" enum="BooleanEnabled"
+    expires_after="2023-04-10">
+  <owner>dtseng@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS Docked Magnifier feature is on (logged once 45 secs
+    after startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosFocusHighlight" enum="BooleanEnabled"
+    expires_after="2022-05-01">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS focus highlighting is on (logged once 45 secs after
+    startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosHighContrast" enum="BooleanEnabled"
+    expires_after="2023-04-10">
+  <owner>dtseng@chromium.org</owner>
+  <owner>kenjibaheux@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS High Contrast mode feature is on (logged once 45 secs
+    after startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosLargeCursor" enum="BooleanEnabled"
+    expires_after="2023-03-26">
+  <owner>dtseng@chromium.org</owner>
+  <owner>kenjibaheux@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS Large Cursor feature is on (logged once 45 secs after
+    startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosLargeCursorSize" units="dip"
+    expires_after="2022-11-21">
+  <owner>sarakato@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Cursor size of the Chrome OS Large Cursor (logged once 45 secs after
+    startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosScreenMagnifier" enum="BooleanEnabled"
+    expires_after="2023-03-26">
+  <owner>dtseng@chromium.org</owner>
+  <owner>josiahk@google.com</owner>
+  <owner>kenjibaheux@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS Screen Magnifier feature is on (logged once 45 secs
+    after startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak" enum="BooleanEnabled"
+    expires_after="2023-03-23">
+  <owner>dtseng@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS select-to-speak is on (logged once 45 secs after
+    startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.BackgroundShading"
+    enum="BooleanEnabled" expires_after="2023-03-23">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether Select-to-Speak had background shading enabled when activated.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.BubbleDismissMethod"
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2023-03-23">
+  <owner>ajitnarayanan@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When Select-to-speak is active, the user can dismiss the bubble menu in
+    multiple ways: by clicking the cancel button on the Select-to-speak menu or
+    using keyboard shortcuts. Track the methods here.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.EnhancedNetworkVoices"
+    enum="BooleanEnabled" expires_after="2023-03-23">
+  <owner>ajitnarayanan@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether enhanced network TTS voices were enabled when Select-to-Speak was
+    activated.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.NavigationControls"
+    enum="BooleanEnabled" expires_after="2023-03-23">
+  <owner>ajitnarayanan@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether Select-to-Speak's navigation controls were on when activated.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.OverrideSpeechRateMultiplier"
+    enum="CrosSelectToSpeakOverrideSpeechRateMultiplier"
+    expires_after="2023-03-23">
+  <owner>ajitnarayanan@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The multiplier with which the user overrode the speech rate setting in
+    Select-to-Speak. By default, the global Text-to-Speech setting is used,
+    which the user can temporarily override. The override multiplier is stored
+    as a sparse histogram with values (100 * multiple). For example, a speech
+    rate multiplier of 1.0 (default) will be seen as 100. Emitted once every
+    time playback starts, including on resume after pause or change of
+    selection.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.ParagraphNavigationMethod"
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2023-03-23">
+  <owner>ajitnarayanan@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When Select-to-speak is active, the user can navigate between paragraphs in
+    multiple ways: by clicking the navigation buttons on the Select-to-speak
+    menu or using keyboard shortcuts. Track the methods here.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.SentenceNavigationMethod"
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2023-03-23">
+  <owner>ajitnarayanan@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When Select-to-speak is active, the user can navigate between sentences in
+    multiple ways: by clicking the navigation buttons on the Select-to-speak
+    menu or using keyboard shortcuts. Track the methods here.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.StartSpeechMethod"
+    enum="CrosSelectToSpeakStartSpeechMethod" expires_after="2023-03-23">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    A user may activate Select-to-Speak by holding down 'search' and clicking or
+    dragging a region with the mouse, or by highlighting an area and using
+    search + s to read just the highlighted area. Track the methods here.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.StateChangeEvent"
+    enum="CrosSelectToSpeakStateChangeEvent" expires_after="2023-03-23">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    A user has tapped a button in the tray to change Select-to-Speak's state.
+    The tap was interpreted by Select-to-Speak as a request to start selection,
+    to cancel speech, or to cancel selection, depending on Select-to-Speak's
+    internal state when the tap occured. This tracks when the button was tapped
+    and the event that it generated.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.TtsEngineUsed"
+    enum="CrosSelectToSpeakTtsEngineUsed" expires_after="2023-03-23">
+  <owner>ajitnarayanan@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Which TTS engine was used for making TTS requests from Select-to-speak. This
+    is recorded every time a new speech request is made in Select-to-speak. Note
+    that this is only recorded on the start of speech, so it is not recorded,
+    for example, when the user resumes speech after pausing it.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.CrosShelfNavigationButtonsInTabletModeChanged.OOBE"
+    enum="BooleanEnabled" expires_after="2021-07-27">
+  <owner>gzadina@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The value for shelf navigation buttons setting set by the user during OOBE.
+    The metric will be reported after the setting has been stable for 10
+    seconds, or the OOBE screen in which the value can be set is closed (if the
+    setting changes multiple times in quick succession, only the final value
+    will be reported).
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.CrosShelfNavigationButtonsInTabletModeChanged.OsSettings"
+    enum="BooleanEnabled" expires_after="2021-10-25">
+  <owner>gzadina@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The value for shelf navigation buttons setting set by the user in Chrome OS
+    Settings page. The metric will be reported after the setting change has been
+    stable for 10 seconds, or the settings window in which the value is set gets
+    closed (if the setting changes multiple times in quick succession, only the
+    final value will be reported).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSpokenFeedback{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="2022-11-18">
+  <owner>dtseng@chromium.org</owner>
+  <owner>kenjibaheux@google.com</owner>
+  <owner>aleventhal@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS Spoken Feedback feature is on (logged once 45 secs
+    after startup). Note: prefer Accessibility.CrosSpokenFeedback.EveryReport
+    when querying for unique users, as it is logged more frequently.
+    {AccessibilityEveryReport}
+  </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.CrosStickyKeys" enum="BooleanEnabled"
+    expires_after="2022-11-18">
+  <owner>dtseng@chromium.org</owner>
+  <owner>kenjibaheux@google.com</owner>
+  <owner>tengs@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS Sticky Keys feature is on (logged once 45 secs after
+    startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess" enum="BooleanEnabled"
+    expires_after="2023-03-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS switch access is on (logged once 45 secs after
+    startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.AutoScan" enum="BooleanEnabled"
+    expires_after="2023-03-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The value of the Switch Access &quot;Auto Scan&quot; setting, logged
+    immediately after toggling. This will show us how often users are turning
+    the feature on, and how often they are turning it back off again.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.AutoScan.KeyboardSpeedMs"
+    units="ms" expires_after="2023-03-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Measures the user-set speed for scanning between keyboard keys in Switch
+    Access, logged immediately after changing the setting. Values range from 1ms
+    to 10000ms, in 100ms buckets.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.AutoScan.SpeedMs" units="ms"
+    expires_after="2023-03-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Measures the user-set speed for auto scanning between items in Switch
+    Access, logged immediately after changing the setting. Values range from 1ms
+    to 10000ms, in 100ms buckets.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.Error"
+    enum="CrosSwitchAccessError" expires_after="2023-03-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Switch Access error occurred. See CrosSwitchAccessError enum for error
+    types.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.NextKeyCode" enum="KeyCode"
+    expires_after="2023-03-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Which key code user has assigned to the Next Action (e.g. 32 for the Space
+    key)
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.PreviousKeyCode" enum="KeyCode"
+    expires_after="2023-03-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Which key code user has assigned to the Previous Action (e.g. 32 for the
+    Space key)
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSwitchAccess.SelectKeyCode" enum="KeyCode"
+    expires_after="2023-03-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>anastasi@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Which key code user has assigned to the Select Action (e.g. 32 for the Space
+    key)
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosVirtualKeyboard" enum="BooleanEnabled"
+    expires_after="2023-04-17">
+  <owner>dtseng@chromium.org</owner>
+  <owner>kenjibaheux@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS Virtual Keyboard feature is on (logged once 45 secs
+    after startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.FocusHighlight.ToggleEnabled"
+    enum="BooleanEnabled" expires_after="never">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The value of the &quot;show a quick focus highlight&quot; setting, logged
+    immediately after toggling. This will show us how often users are turning
+    the feature on, and how often they are turning it back off again.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ImageLabels" enum="BooleanEnabled"
+    expires_after="2023-07-01">
+  <obsolete>
+    Logged on profile open, including for profiles that do not show web content.
+    (For those profiles, this logged the value of disabled.) Replaced in M-107
+    with Accessibility.ImageLabels2, which is similar but not logged for
+    unnecessary profiles.
+  </obsolete>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome accessibility image label setting is on. Logged once 45
+    secs after profile open.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ImageLabels.Android" enum="BooleanEnabled"
+    expires_after="2023-07-01">
+  <owner>dtseng@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome accessibility image label setting is on for Android.
+    Logged once 45 secs after profile open, which always happens when the
+    browser starts.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ImageLabels.Android.DialogOption"
+    enum="AccessibilityImageLabelModeAndroid" expires_after="2023-07-01">
+  <owner>dtseng@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When a user opens the accessibility image label dialog on Android, records
+    what option they select on user interaction.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ImageLabels.Android.OnlyOnWifi"
+    enum="BooleanEnabled" expires_after="2023-07-01">
+  <owner>dtseng@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome accessibility image label setting for Android is set to
+    only be enabled on a Wi-Fi connection. Logged once 45 secs after profile
+    open, which always happens when the browser starts.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ImageLabels.ModalDialogAccepted"
+    enum="BooleanAccepted" expires_after="2023-07-01">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <summary>
+    Whether a user accepts or does not accept a modal dialog enabling the image
+    labels option. If the user does not accept it this does not track whether
+    they closed it with the negative button, the close button, or keyboard
+    escape.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ImageLabels.PageLanguage" enum="LanguageName"
+    expires_after="2023-07-01">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The language of a web page where image labels were requested, as detected by
+    Chrome (not necessarily what language the page claims to be in).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ImageLabels.RequestLanguage" enum="LanguageName"
+    expires_after="2023-07-01">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The language that was requested for image descriptions, based on the page
+    language, the user's accept languages and top languages, and the server
+    languages.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ImageLabels.{Result}By{Dimension}"
+    units="pixels" expires_after="2023-07-01">
+  <owner>dtseng@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Counts the number of images that got a certain result from automatic image
+    labeling (empty, error, or success), as a function of the function of one of
+    the image's dimensions - either the min or the max dimension.
+  </summary>
+  <token key="Result">
+    <variant name="Empty"/>
+    <variant name="Error"/>
+    <variant name="Success"/>
+  </token>
+  <token key="Dimension">
+    <variant name="MaxDimension"/>
+    <variant name="MinDimension"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ImageLabels.{Result}By{Length}"
+    units="characters" expires_after="2023-07-01">
+  <owner>dtseng@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Counts the number of images that got a certain result from automatic image
+    labeling (empty, error, or success), as a function of the function of the
+    length of the characters in the image's name - either the original name, or
+    the name after removing stopwords.
+  </summary>
+  <token key="Result">
+    <variant name="Empty"/>
+    <variant name="Error"/>
+    <variant name="Success"/>
+  </token>
+  <token key="Length">
+    <variant name="NameLength"/>
+    <variant name="NonStopNameLength"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ImageLabels2" enum="BooleanEnabled"
+    expires_after="2023-07-01">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome accessibility image label setting is on. Logged once 45
+    secs after profile open. Only logged for regular profiles, Incognito
+    profiles, and guest off-the-record profiles, as these are the only profiles
+    that can display web content.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.InactiveTime" units="ms"
+    expires_after="2023-03-19">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>abigailbklein@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <summary>
+    The amount of time accessibility was enabled but not actively used. Reported
+    when we switch states from inactive to active. This histogram will not be
+    logged if the auto-disable accessibility feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.iOS.NewLargerTextCategory" enum="BooleanHit"
+    expires_after="2023-10-16">
+  <owner>gambard@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <summary>
+    This metric is related to the Preferred Content Size chosen by the user. It
+    is only recorded once per session. This is hit if the chosen category is not
+    listed in the map defined in
+    /ios/chrome/browser/ui/util/dynamic_type_util.mm. In that case, we should
+    update the code by adding an entry for the new category in that map. This is
+    logged when the helper to returning the multiplier associated with the
+    current preferred content size is called.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LanguageDetection.CountDetectionAttempted"
+    units="count" expires_after="2021-11-19">
+  <owner>chrishall@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <summary>
+    The number of nodes on this page for which language detection was attempted.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LanguageDetection.CountLabelled" units="count"
+    expires_after="2021-11-19">
+  <owner>chrishall@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <summary>
+    The number of nodes on this page for which a detected language was
+    successfully assigned.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LanguageDetection.LangsPerPage" units="count"
+    expires_after="2022-05-01">
+  <owner>chrishall@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <summary>
+    The number of unique languages which were detected to be the most probable
+    language for at least one node on the page, regardless of whether a detected
+    language was assigned for that node.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LanguageDetection.PercentageLabelledWithTop"
+    units="%" expires_after="2021-11-19">
+  <owner>chrishall@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <summary>
+    Of the nodes which had a detected language assigned, the percentage for
+    which the assigned language was the language detected as having the highest
+    probability.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LanguageDetection.PercentageLanguageDetected"
+    units="%" expires_after="2021-11-19">
+  <owner>chrishall@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <summary>
+    Of the nodes for which language detection was attempted, the percentage for
+    which a language was successfully assigned.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LanguageDetection.PercentageOverridden"
+    units="%" expires_after="2021-11-19">
+  <owner>chrishall@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <summary>
+    Of the nodes for which a detected language was successfully assigned, the
+    percentage where the assigned language differs from the author-provided
+    language.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption" enum="BooleanEnabled"
+    expires_after="2023-06-13">
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Live Caption feature is enabled. This is logged once, 45 seconds
+    after startup.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.AudioPropertyChanged"
+    enum="BooleanEnabled" expires_after="2023-06-13">
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the sample rate or channel count of a Live Caption audio stream
+    changed midstream. This is logged once per audio stream on the destruction
+    of the Cloud speech recognition client.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.CaptionBubbleError"
+    enum="CaptionBubbleErrorType" expires_after="2023-06-13">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when the caption bubble displays an error. This is logged once each
+    time the caption bubble model encounters an error.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}2"
+    units="ms" expires_after="2022-09-30">
+  <obsolete>
+    Deprecated as of 09/2022. Now using
+    Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}3 This metric
+    measured the total speech recognition time not only for Live Caption but
+    also for other applications that use SODA.
+  </obsolete>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Measures how long SODA was running while the Live Caption UI was
+    {Visibility}. Logged once on the destruction of the
+    SpeechRecognitionRecognizerImpl.
+  </summary>
+  <token key="Visibility">
+    <variant name="Hidden"
+        summary="hidden. This might be because it was closed by user or
+                 because there was an error passing transcriptions to the UI"/>
+    <variant name="Visible" summary="visible and showing transcriptions"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}3"
+    units="ms" expires_after="2023-06-13">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Measures how long SODA was running while the Live Caption UI was
+    {Visibility}. Logged once on the destruction of the
+    SpeechRecognitionRecognizerImpl.
+  </summary>
+  <token key="Visibility">
+    <variant name="Hidden"
+        summary="hidden. This might be because it was closed by user or
+                 because there was an error passing transcriptions to the UI"/>
+    <variant name="Visible" summary="visible and showing transcriptions"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.EnableFrom{Entrypoint}"
+    enum="BooleanEnabled" expires_after="2023-06-13">
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when a user enables or disables the Live Caption feature from
+    {Entrypoint}.
+  </summary>
+  <token key="Entrypoint">
+    <variant name="GlobalMediaControls"
+        summary="global media controls (Zenith)"/>
+    <variant name="Settings" summary="chrome://settings"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.ExpandBubble"
+    enum="LiveCaptionExpandBubbleEvent" expires_after="2023-06-13">
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when a user expands or collapses the Live Caption bubble.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.FeatureEnabled"
+    enum="BooleanEnabled" expires_after="2023-06-13">
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Live Caption feature flag is enabled. This is logged once at the
+    time of component registration.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.LiveCaptionPinBubbleEvent"
+    enum="LiveCaptionPinBubbleEvent" expires_after="2023-06-13">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records when a user pins or unpins the Live Caption bubble.</summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.LoadSodaErrorCode"
+    enum="WinGetLastError" expires_after="2023-06-13">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The error code of a failed attempt to load the Speech On-Device API (SODA)
+    binary. This is logged once for each media stream if the SODA binary failed
+    to load on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.LoadSodaResult"
+    enum="LoadSodaResult" expires_after="2023-06-13">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The result of an attempt to load the Speech On-Device API (SODA) binary.
+    This is logged once for each media stream when the SODA binary is loaded.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.Session2"
+    enum="LiveCaptionSessionEvent" expires_after="2023-06-13">
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Logged when the Live Caption bubble appears and disappears. Stream start
+    indicates when the bubble appears due to an audio session starting. Stream
+    end indicates when the bubble disappears due to a tab change, a navigation,
+    or the audio session ending and the bubble fading out due to inactivity.
+    Close button clicked indicates when the bubble disappears due to a user
+    clicking the close button on the caption bubble.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.LiveCaption.SodaVerificationFailureMissingIndicatorFile"
+    enum="Boolean" expires_after="2023-06-13">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the verification of the Speech On-Device API (SODA) component failed
+    due to a mismatch of the component architecture. Logged once during the
+    verification step of the SODA component installation on Windows only.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.SpeechRecognitionServiceLanguage"
+    enum="SodaLanguageCode" expires_after="2023-06-13">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The language code used to initialize the speech recognition service. Logged
+    once when getting the Speech On-Device API (SODA) config path to use with
+    the speech recognition service.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Mac.ScreenReader{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks whether a screen reader is enabled on Mac (e.g. VoiceOver). This is
+    logged once, 45 seconds after startup. Note: prefer
+    Accessibility.Mac.ScreenReader.EveryReport when querying for unique users,
+    as it is logged more frequently. {AccessibilityEveryReport}
+  </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ManuallyEnabled" enum="BooleanEnabled"
+    expires_after="2023-03-05">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>kenjibaheux@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether Chrome has enabled accessibility support because the user passed the
+    --force-renderer-accessibility flag on the command-line (logged once 45 secs
+    after startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ModeFlag" enum="AccessibilityModeFlagEnum"
+    expires_after="2023-02-19">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether individual accessibility mode flags are set. Tracked when each mode
+    flag is flipped from false to true. These flags are flipped automatically
+    when software communicates with Chrome via accessibility APIs. Flags can
+    only be flipped off by advanced users or for debugging using
+    chrome://accessibility/ - and that isn't tracked in this histogram.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.OOBEStartupSoundDelay" units="ms"
+    expires_after="never">
+<!-- expires-never: Core metric for monitoring OOBE accessibility status. -->
+
+  <owner>lpalmaro@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Delay between login_prompt_visible and Chrome OS OOBE startup sound
+    playback. Depends on sound subsystem initialization time.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.PDF.HasAccessibleText" enum="BooleanExists"
+    expires_after="2023-02-26">
+  <owner>dtseng@chromium.org</owner>
+  <owner>nektar@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When a PDF is constructed for accessibility, true if any page of the PDF
+    contains any accessible text derived from a text run. Note that a PDF
+    containing a mix of images and text will record true even though the images
+    may themselves contain inaccessible text.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.Performance.BrowserAccessibilityManager::OnAccessibilityEvents"
+    units="ms" expires_after="2023-03-26">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the browser main thread handling accessibility events
+    sent from the renderer process and processed by BrowserAccessibilityManager.
+
+    Accessibility.Performance.HandleAXEvents can still often record values when
+    processing is relatively cheap because we exit before handing off the nodes
+    to BrowserAccessibilityManager for various reasons (e.g. BFCache). This
+    histogram only measures events which are processed by
+    BrowserAccessibilityManager and thus should have a better histogram to
+    understand the cost of doing so, and be used to meaure optimizations.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Performance.HandleAXEvents" units="ms"
+    expires_after="2023-03-26">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the browser main thread handling accessibility events
+    sent from the renderer process. Logged each time the method is run without
+    returning early.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Performance.ProcessDeferredAccessibilityEvents"
+    units="ms" expires_after="2023-03-05">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the render process processing deferred accessibility
+    events. Logged each time the method is run during the accessbility document
+    lifecycle.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Performance.SendPendingAccessibilityEvents"
+    units="ms" expires_after="2023-03-05">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the render process sending pending accessibility
+    events. Logged each time the method is run without returning early.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Performance.Tree.Unserialize" units="ms"
+    expires_after="2023-02-19">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the browser process unserializing accessibility
+    updates. Logged each time the method is run without returning early.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Performance.WinAPIs.{API}" units="microseconds"
+    expires_after="2023-04-24">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>kschmi@microsoft.com</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>dlibby@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time taken to execute the public Windows API that {API}. This is
+    recorded for all Windows users that call into our public APIs.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+  <token key="API">
+    <variant name="UMA_API_ELEMENT_PROVIDER_FROM_POINT"
+        summary="finds a node given a point."/>
+    <variant name="UMA_API_GET_BOUNDINGRECTANGLE"
+        summary="gets the bounding rectangle of a node."/>
+    <variant name="UMA_API_GET_PATTERN_PROVIDER"
+        summary="retrieves an object that provides support for the given
+                 control pattern."/>
+    <variant name="UMA_API_GET_PROPERTY_VALUE"
+        summary="gets the value of the specified property."/>
+    <variant name="UMA_API_NAVIGATE"
+        summary="navigates by one node in the given direction."/>
+    <variant name="UMA_API_TEXT_RANGEFROMPOINT"
+        summary="gets the text range under the given point."/>
+    <variant name="UMA_API_TEXTRANGE_COMPARE"
+        summary="compares two text ranges"/>
+    <variant name="UMA_API_TEXTRANGE_COMPAREENDPOINTS"
+        summary="compares two endpoints"/>
+    <variant name="UMA_API_TEXTRANGE_EXPANDTOENCLOSINGUNIT"
+        summary="expands or contracts the text range to given unit."/>
+    <variant name="UMA_API_TEXTRANGE_FINDATTRIBUTE"
+        summary="searches for an attribute within text range."/>
+    <variant name="UMA_API_TEXTRANGE_FINDTEXT"
+        summary="searches for given text within the text range."/>
+    <variant name="UMA_API_TEXTRANGE_GETATTRIBUTEVALUE"
+        summary="gets the value of the given attribute."/>
+    <variant name="UMA_API_TEXTRANGE_GETBOUNDINGRECTANGLES"
+        summary="gets the bounding rectanges of a text range."/>
+    <variant name="UMA_API_TEXTRANGE_GETCHILDREN"
+        summary="gets all children within a text range."/>
+    <variant name="UMA_API_TEXTRANGE_GETENCLOSINGELEMENT"
+        summary="gets the element that encloses the text range."/>
+    <variant name="UMA_API_TEXTRANGE_GETTEXT"
+        summary="gets the text within a text range."/>
+    <variant name="UMA_API_TEXTRANGE_MOVE"
+        summary="moves the text range by the given amount."/>
+    <variant name="UMA_API_TEXTRANGE_MOVEENDPOINTBYUNIT"
+        summary="moves endpoint by the given unit."/>
+    <variant name="UMA_API_TEXTRANGE_MOVEENPOINTBYRANGE"
+        summary="moves endpoint by the given range."/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.Reliability.Tree.UnserializeError"
+    enum="AccessibilityTreeUnserializeError" expires_after="2022-11-18">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the type of failure that occured when unserializing the accessibility
+    tree. When an error in unserialization occurs, this is emitted and
+    unserialization aborts. In the case of a tree with multiple issues, only the
+    first error is recorded. Refer to AXTree::Unserialize for details.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Shortcuts.CrosDockedMagnifier"
+    enum="BooleanEnabled" expires_after="2021-12-12">
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>poromov@chromium.org</owner>
+  <summary>
+    Whether the Chrome OS Docked Magnifier shortcut is enabled. It's being
+    emitted when the Docked Magnifier shortcut is triggered.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Shortcuts.CrosHighContrast"
+    enum="BooleanEnabled" expires_after="2021-08-09">
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>poromov@chromium.org</owner>
+  <summary>
+    Whether the Chrome OS High Contrast mode shortcut is enabled. It's being
+    emitted when the High Contrast shortcut is triggered.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Shortcuts.CrosScreenMagnifier"
+    enum="BooleanEnabled" expires_after="2021-08-09">
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>poromov@chromium.org</owner>
+  <summary>
+    Whether the Chrome OS Full-screen Magnifier mode shortcut is enabled. It's
+    being emitted when the Full-screen Magnifier shortcut is triggered.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Shortcuts.CrosSpokenFeedback"
+    enum="BooleanEnabled" expires_after="2021-08-09">
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>poromov@chromium.org</owner>
+  <summary>
+    Whether the Chrome OS Spoken Feedback shortcut is enabled. It's being
+    emitted when the Spoken Feedback shortcut is triggered.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
+    expires_after="2023-09-06">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Whether a VTT file contains an embedded style block. Recorded when a VTT
+    file is parsed.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WebSpeech.Duration" units="ms"
+    expires_after="2023-02-12">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Measures the duration of a call to the WebSpeech API. Recorded once per call
+    to the Open Speech API that powers the WebSpeech API.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WinAPIs" enum="AccessibilityWinAPIEnum"
+    expires_after="2023-02-12">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>nektar@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Tracks usage of all public Windows accessibility APIs.</summary>
+</histogram>
+
+<histogram name="Accessibility.WinAPIs.GetPropertyValue"
+    enum="AccessibilityWinAPIGetPropertyValueEnum" expires_after="2023-02-12">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>nektar@chromium.org</owner>
+  <owner>dlibby@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks properties requested via UI Automation GetPropertyValue().
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WinHighContrastTheme"
+    enum="AccessibilityHighContrastColorScheme" expires_after="2022-12-25">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>almaher@microsoft.com</owner>
+  <owner>weblayoutdev@microsoft.com</owner>
+  <summary>
+    Tracks which Windows high contrast theme is set in system settings (logged
+    once 45 secs after startup). AccessibilityHighContrastColorScheme::None
+    indicates that high contrast mode is not enabled.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WinJAWS{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>kenjibaheux@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the third-party JAWS screen reader is running (logged once 45 secs
+    after startup). Note: prefer Accessibility.WinJAWS.EveryReport when querying
+    for unique users, as it is logged more frequently.
+    {AccessibilityEveryReport}
+  </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.WinNVDA{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>kenjibaheux@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the third-party NVDA screen reader is running (logged once 45 secs
+    after startup). Note: prefer Accessibility.WinNVDA.EveryReport when querying
+    for unique users, as it is logged more frequently.
+    {AccessibilityEveryReport}
+  </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.WinScreenReader2{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="2020-09-13">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>aleventhal@chromium.org</owner>
+  <summary>
+    Whether the accessibility mode flag shows that a screen reader is running
+    (logged once 45 secs after startup). In this case, Chrome has detected
+    accessibility calls that would normally only occur from a screen reader. See
+    also the more specific metrics such as Accessibility.WinJAWS/WinNVDA. Note:
+    prefer Accessibility.WinScreenReader2.EveryReport when querying for unique
+    users, as it is logged more frequently. {AccessibilityEveryReport}
+  </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.WinStickyKeys" enum="BooleanEnabled"
+    expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>kenjibaheux@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether Windows system settings show that Sticky Keys are enabled.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WinSupernova{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>kenjibaheux@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the third-party Supernova screen reader is running (logged once 45
+    secs after startup). Note: prefer Accessibility.Supernova.EveryReport when
+    querying for unique users, as it is logged more frequently.
+    {AccessibilityEveryReport}
+  </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.WinZoomText{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>kenjibaheux@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the third-party ZoomText screen magnifier is running. Note: prefer
+    Accessibility.WinZoomText.EveryReport when querying for unique users, as it
+    is logged more frequently. {AccessibilityEveryReport}
+  </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="DomDistiller.DistillabilityRejection" enum="DistillRejection"
+    expires_after="M85">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    The reason to reject distillability at PageDistillableAfterParsing time.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.DistillabilityScoreNMF.Negative" units="score"
+    expires_after="M77">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Score of distillability from AdaBoost model, non-mobile-friendly only. The
+    score shown here is multiplied by 100.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.DistillabilityScoreNMF.Positive" units="score"
+    expires_after="M77">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Score of distillability from AdaBoost model, non-mobile-friendly only. The
+    score shown here is multiplied by 100.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.InfoBarUsage" enum="BooleanUsage"
+    expires_after="2023-02-19">
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    &quot;Used&quot; is recorded when the user clicks the infobar to enter
+    Reader Mode. &quot;Not Used&quot; is recorded when the user clicks the close
+    button. If there's no user action, nothing is recorded.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.LongArticleScoreNMF.Negative" units="score"
+    expires_after="M85">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Score of long article from AdaBoost model, distillable and
+    non-mobile-friendly only. The score shown here is multiplied by 100.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.LongArticleScoreNMF.Positive" units="score"
+    expires_after="M85">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Score of long article from AdaBoost model, distillable and
+    non-mobile-friendly only. The score shown here is multiplied by 100.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.MessageDismissalCondition"
+    enum="ReaderModeMessageDismissalCondition" expires_after="2023-03-05">
+  <owner>twellington@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
+  <summary>
+    Records whether the user accepted or ignored/dismissed the Reader Mode
+    message prompt in conjunction with the Reader Mode accessibility setting.
+    Recorded for Android only.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.PageDistillableAfterLoading"
+    enum="DistillableType2" expires_after="M85">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records the &quot;Distillable Type&quot; (mobile-friendly not distillable,
+    mobile-friendly distillable, non-mobile-friendly not distillable,
+    non-mobile-friendly distillable) for each analyzed page after loading.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.PageDistillableAfterParsing"
+    enum="DistillableType2" expires_after="M85">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records the &quot;Distillable Type&quot; (mobile-friendly not distillable,
+    mobile-friendly distillable, non-mobile-friendly not distillable,
+    non-mobile-friendly distillable) for each analyzed page after parsing.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.PageHasDistilledData"
+    enum="BooleanHasDistilledData" expires_after="M85">
+  <owner>kuan@chromium.org</owner>
+  <summary>Records whether a page has distilled data.</summary>
+</histogram>
+
+<histogram name="DomDistiller.ReaderMode.EntryPoint"
+    enum="ReaderModeEntryPoint" expires_after="2023-02-12">
+  <owner>katie@chromium.org</owner>
+  <owner>gilmanmh@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>The method a user used to enter reader mode on an article.</summary>
+</histogram>
+
+<histogram name="DomDistiller.ReaderMode.ExitPoint" enum="ReaderModeEntryPoint"
+    expires_after="2021-10-10">
+  <owner>katie@chromium.org</owner>
+  <owner>gilmanmh@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The method a user used to exit reader mode and return to the original
+    article.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.ReaderModeAccessibilitySettingSelected"
+    enum="Boolean" expires_after="2023-03-05">
+  <owner>twellington@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
+  <summary>
+    Records when the Reader Mode accessibility setting is selected or
+    deselected. Recorded for Android only.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
+    expires_after="2023-03-05">
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records if the panel became visible at any point after a page was navigated.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Statistics.FirstPageWordCount" units="words"
+    expires_after="M85">
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records the number of words in a distilled page. This only records the first
+    page of a multi-page article.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Statistics.WordCount" units="words"
+    expires_after="M85">
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records the number of words in a distilled page. For articles with multiple
+    pages, each page is counted separately.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.ActivelyViewingArticleBeforeDistilling"
+    units="ms" expires_after="2021-08-19">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Records the amount of active time a user spent on a distillable page before
+    switching that page to Reader Mode. Active time is time that the article was
+    visible, not total time the page was open: the timer is paused when the page
+    is not visible. This is not recorded when the user opens a distillable page
+    but does not switch to Reader Mode from that page (via the omnibox icon or
+    menu option).
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.ActivelyViewingReaderModePage" units="ms"
+    expires_after="2021-08-19">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Records the amount of active time a user spent on a Reader Mode page. Active
+    time is the time the Reader Mode page was visible, not the total time the
+    page was open: the timer is paused when the page is not visible. This is
+    recorded regardless of how a user enters the page: e.g. using the
+    forward/back buttons, entering the URL directly, or coming from a
+    distillable page all start the timer equally.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.ArticleProcessing" units="ms"
+    expires_after="M77">
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Time spent in DomDistiller's identification of text content.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.DistillationTotal" units="ms"
+    expires_after="M85">
+  <owner>yfriedman@chromium.org</owner>
+  <summary>Complete time spent in DomDistiller's processing of a page.</summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.DistillPage" units="ms" expires_after="M77">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Time spent in DistillPageImpl(), mostly ExecuteJavaScript(), including
+    compilation and execution.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.DocumentConstruction" units="ms"
+    expires_after="M77">
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Time spent in creating DomDistiller's internal representation of the HTML
+    document.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.Formatting" units="ms" expires_after="M77">
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Time spent in DomDistiller's final processing of article content/formatting.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.MarkupParsing" units="ms"
+    expires_after="M77">
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Time spent in DomDistiller's processing of article metadata.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.RunJavaScript" units="ms"
+    expires_after="M77">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Time spent in ExecuteJavaScript() in DomDistiller. It includes JavaScript
+    code transmission through IPC, parsing, compilation, execution, and
+    returning the JSON back through IPC.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.ViewerLoading" units="ms"
+    expires_after="M77">
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records the time from the Reader Mode panel opening to the viewer loaded.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Time.ViewingReaderModePage" units="ms"
+    expires_after="2023-02-26">
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records the amount of time a user spent on a Reader Mode Page.
+  </summary>
+</histogram>
+
+<histogram name="PumpkinInstaller.InstallationSuccess" enum="BooleanSuccess"
+    expires_after="2023-01-01">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Pumpkin installation is triggered when one of the features using Pumpkin
+    (currently the only feature using Pumpkin is Dictation) are enabled. This
+    histogram is recorded once when Pumpkin installation finishes with either
+    success or failure.
+  </summary>
+</histogram>
+
+<histogram name="SodaInstaller.BinaryInstallationFailureTime" units="ms"
+    expires_after="2023-01-01">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>yilkal@chromium.org</owner>
+  <summary>
+    Soda Installation is triggered when one of the features using SODA (e.g.
+    Live Caption, Projector, Offline Dictation) are enabled. Records the time
+    taken to get to SODA binary installation error. This is recorded once when
+    SODA installation attempt fails.
+  </summary>
+</histogram>
+
+<histogram name="SodaInstaller.BinaryInstallationResult" enum="BooleanSuccess"
+    expires_after="2023-01-01">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>yilkal@chromium.org</owner>
+  <summary>
+    Soda Installation is triggered when one of the features using SODA (e.g.
+    Live Caption, Projector, Offline Dictation) are enabled. Records whether
+    SODA binary installation succeeded. This is recorded once when SODA
+    installation attempt finishes with either success or failure.
+  </summary>
+</histogram>
+
+<histogram name="SodaInstaller.BinaryInstallationSuccessTime" units="ms"
+    expires_after="2023-01-01">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>yilkal@chromium.org</owner>
+  <summary>
+    Soda Installation is triggered when one of the features using SODA (e.g.
+    Live Caption, Projector, Offline Dictation) are enabled. Records the time
+    taken to successfully install SODA binary. This is recorded once when SODA
+    installation attempt succeedes.
+  </summary>
+</histogram>
+
+<histogram
+    name="SodaInstaller.Language.{SodaLanguageCode}.InstallationFailureTime"
+    units="ms" expires_after="2023-01-01">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>yilkal@chromium.org</owner>
+  <summary>
+    Soda Installation is triggered when one of the features using SODA (e.g.
+    Live Caption, Projector, Offline Dictation) are enabled. Records the time
+    taken to get to SODA language pack installation error. This is recorded once
+    when SODA language pack installation attempt fails.
+  </summary>
+  <token key="SodaLanguageCode" variants="SodaLanguageCode"/>
+</histogram>
+
+<histogram name="SodaInstaller.Language.{SodaLanguageCode}.InstallationResult"
+    enum="BooleanSuccess" expires_after="2023-01-01">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>yilkal@chromium.org</owner>
+  <summary>
+    Soda Installation is triggered when one of the features using SODA (e.g.
+    Live Caption, Projector, Offline Dictation) are enabled. Records whether
+    SODA language pack installation succeeded or not. This is recorded once when
+    SODA language pack installation attempt finishes with either success or
+    failure.
+  </summary>
+  <token key="SodaLanguageCode" variants="SodaLanguageCode"/>
+</histogram>
+
+<histogram
+    name="SodaInstaller.Language.{SodaLanguageCode}.InstallationSuccessTime"
+    units="ms" expires_after="2023-01-01">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>yilkal@chromium.org</owner>
+  <summary>
+    Soda Installation is triggered when one of the features using SODA (e.g.
+    Live Caption, Projector, Offline Dictation) are enabled. Records the time
+    taken to successfully install SODA language pack. This is recorded once when
+    SODA language pack installation succeedes.
+  </summary>
+  <token key="SodaLanguageCode" variants="SodaLanguageCode"/>
+</histogram>
+
+<histogram name="TextToSpeech.Event" enum="TextToSpeechEvent"
+    expires_after="2023-07-01">
+  <owner>dtseng@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Events fired by the text-to-speech engine when speaking an utterance.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.FromExtensionAPI"
+    enum="TextToSpeechFromExtensionAPI" expires_after="2023-07-01">
+  <owner>dtseng@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Indicates if an utterance spoken via synthesized text-to-speech was
+    triggered by the Chrome TTS extension API or the web speech API.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.HasVoiceName"
+    enum="TextToSpeechHasVoiceName" expires_after="2023-07-01">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    True if an utterance spoken via synthesized text-to-speech requested a
+    specific voice by name.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.Native" enum="TextToSpeechNative"
+    expires_after="2023-07-01">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    True if an utterance is spoken with native speech provided by the operating
+    system, otherwise it's spoken via a Chrome extension that implements
+    text-to-speech support.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.Source" enum="TextToSpeechSource"
+    expires_after="2023-07-01">
+  <owner>joelriley@google.com</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    ChromeOS source that triggered text-to-speech utterance via extension API,
+    from a few known accessibility clients (Select-to-speak, ChromeVox).
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.TextLength" units="bytes"
+    expires_after="2023-07-01">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The length of an utterance to be spoken via synthesized text-to-speech.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

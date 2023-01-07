@@ -1,0 +1,146 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable actions='{DEFAULT, SET_VALUE}' value='2008-09-01'
+++++++++UNKNOWN
+++++++++++UNKNOWN
+++++++++++++UNKNOWN focusable label='Month' actions='{SET_VALUE}' value='09'
+++++++++++++++STATIC_TEXT label='09'
+++++++++++++++++UNKNOWN label='09'
+++++++++++++STATIC_TEXT label='/'
+++++++++++++++UNKNOWN label='/'
+++++++++++++UNKNOWN focusable label='Day' actions='{SET_VALUE}' value='01'
+++++++++++++++STATIC_TEXT label='01'
+++++++++++++++++UNKNOWN label='01'
+++++++++++++STATIC_TEXT label='/'
+++++++++++++++UNKNOWN label='/'
+++++++++++++UNKNOWN focusable label='Year' actions='{SET_VALUE}' value='2008'
+++++++++++++++STATIC_TEXT label='2008'
+++++++++++++++++UNKNOWN label='2008'
+++++++++UNKNOWN focusable label='Show date picker'
+++++++++UNKNOWN focusable
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++++++++BUTTON focusable label='Show month selection panel' actions='{DEFAULT}'
+++++++++++++++++++++++++STATIC_TEXT label='September 2008'
+++++++++++++++++++++++++IMAGE actions='{DEFAULT}'
+++++++++++++++++++++BUTTON focusable label='Show previous month' actions='{DEFAULT}'
+++++++++++++++++++++++IMAGE actions='{DEFAULT}'
+++++++++++++++++++++BUTTON focusable label='Show next month' actions='{DEFAULT}'
+++++++++++++++++++++++IMAGE actions='{DEFAULT}'
+++++++++++++++++++GRID focusable has_input_focus actions='{DEFAULT}' number_of_rows=6 number_of_columns=7
+++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++++++++++STATIC_TEXT label='S'
+++++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++++++++++STATIC_TEXT label='M'
+++++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++++++++++STATIC_TEXT label='T'
+++++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++++++++++STATIC_TEXT label='W'
+++++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++++++++++STATIC_TEXT label='T'
+++++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++++++++++STATIC_TEXT label='F'
+++++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++++++++++STATIC_TEXT label='S'
+++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++++++++++++++TABLE_ROW actions='{DEFAULT}'
+++++++++++++++++++++++++++CELL focusable label='Sunday, August 31, 2008' actions='{DEFAULT}' cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='31'
+++++++++++++++++++++++++++CELL focusable selected label='Monday, September 1, 2008' actions='{DEFAULT}' cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='1'
+++++++++++++++++++++++++++CELL focusable label='Tuesday, September 2, 2008' actions='{DEFAULT}' cell_column_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='2'
+++++++++++++++++++++++++++CELL focusable label='Wednesday, September 3, 2008' actions='{DEFAULT}' cell_column_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='3'
+++++++++++++++++++++++++++CELL focusable label='Thursday, September 4, 2008' actions='{DEFAULT}' cell_column_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='4'
+++++++++++++++++++++++++++CELL focusable label='Friday, September 5, 2008' actions='{DEFAULT}' cell_column_index=5 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='5'
+++++++++++++++++++++++++++CELL focusable label='Saturday, September 6, 2008' actions='{DEFAULT}' cell_column_index=6 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='6'
+++++++++++++++++++++++++TABLE_ROW actions='{DEFAULT}' row_index=1
+++++++++++++++++++++++++++CELL focusable label='Sunday, September 7, 2008' actions='{DEFAULT}' cell_row_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='7'
+++++++++++++++++++++++++++CELL focusable label='Monday, September 8, 2008' actions='{DEFAULT}' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='8'
+++++++++++++++++++++++++++CELL focusable label='Tuesday, September 9, 2008' actions='{DEFAULT}' cell_row_index=1 cell_column_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='9'
+++++++++++++++++++++++++++CELL focusable label='Wednesday, September 10, 2008' actions='{DEFAULT}' cell_row_index=1 cell_column_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='10'
+++++++++++++++++++++++++++CELL focusable label='Thursday, September 11, 2008' actions='{DEFAULT}' cell_row_index=1 cell_column_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='11'
+++++++++++++++++++++++++++CELL focusable label='Friday, September 12, 2008' actions='{DEFAULT}' cell_row_index=1 cell_column_index=5 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='12'
+++++++++++++++++++++++++++CELL focusable label='Saturday, September 13, 2008' actions='{DEFAULT}' cell_row_index=1 cell_column_index=6 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='13'
+++++++++++++++++++++++++TABLE_ROW actions='{DEFAULT}' row_index=2
+++++++++++++++++++++++++++CELL focusable label='Sunday, September 14, 2008' actions='{DEFAULT}' cell_row_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='14'
+++++++++++++++++++++++++++CELL focusable label='Monday, September 15, 2008' actions='{DEFAULT}' cell_row_index=2 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='15'
+++++++++++++++++++++++++++CELL focusable label='Tuesday, September 16, 2008' actions='{DEFAULT}' cell_row_index=2 cell_column_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='16'
+++++++++++++++++++++++++++CELL focusable label='Wednesday, September 17, 2008' actions='{DEFAULT}' cell_row_index=2 cell_column_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='17'
+++++++++++++++++++++++++++CELL focusable label='Thursday, September 18, 2008' actions='{DEFAULT}' cell_row_index=2 cell_column_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='18'
+++++++++++++++++++++++++++CELL focusable label='Friday, September 19, 2008' actions='{DEFAULT}' cell_row_index=2 cell_column_index=5 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='19'
+++++++++++++++++++++++++++CELL focusable label='Saturday, September 20, 2008' actions='{DEFAULT}' cell_row_index=2 cell_column_index=6 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='20'
+++++++++++++++++++++++++TABLE_ROW actions='{DEFAULT}' row_index=3
+++++++++++++++++++++++++++CELL focusable label='Sunday, September 21, 2008' actions='{DEFAULT}' cell_row_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='21'
+++++++++++++++++++++++++++CELL focusable label='Monday, September 22, 2008' actions='{DEFAULT}' cell_row_index=3 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='22'
+++++++++++++++++++++++++++CELL focusable label='Tuesday, September 23, 2008' actions='{DEFAULT}' cell_row_index=3 cell_column_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='23'
+++++++++++++++++++++++++++CELL focusable label='Wednesday, September 24, 2008' actions='{DEFAULT}' cell_row_index=3 cell_column_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='24'
+++++++++++++++++++++++++++CELL focusable label='Thursday, September 25, 2008' actions='{DEFAULT}' cell_row_index=3 cell_column_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='25'
+++++++++++++++++++++++++++CELL focusable label='Friday, September 26, 2008' actions='{DEFAULT}' cell_row_index=3 cell_column_index=5 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='26'
+++++++++++++++++++++++++++CELL focusable label='Saturday, September 27, 2008' actions='{DEFAULT}' cell_row_index=3 cell_column_index=6 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='27'
+++++++++++++++++++++++++TABLE_ROW actions='{DEFAULT}' row_index=4
+++++++++++++++++++++++++++CELL focusable label='Sunday, September 28, 2008' actions='{DEFAULT}' cell_row_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='28'
+++++++++++++++++++++++++++CELL focusable label='Monday, September 29, 2008' actions='{DEFAULT}' cell_row_index=4 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='29'
+++++++++++++++++++++++++++CELL focusable label='Tuesday, September 30, 2008' actions='{DEFAULT}' cell_row_index=4 cell_column_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='30'
+++++++++++++++++++++++++++CELL focusable label='Wednesday, October 1, 2008' actions='{DEFAULT}' cell_row_index=4 cell_column_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='1'
+++++++++++++++++++++++++++CELL focusable label='Thursday, October 2, 2008' actions='{DEFAULT}' cell_row_index=4 cell_column_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='2'
+++++++++++++++++++++++++++CELL focusable label='Friday, October 3, 2008' actions='{DEFAULT}' cell_row_index=4 cell_column_index=5 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='3'
+++++++++++++++++++++++++++CELL focusable label='Saturday, October 4, 2008' actions='{DEFAULT}' cell_row_index=4 cell_column_index=6 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='4'
+++++++++++++++++++++++++TABLE_ROW actions='{DEFAULT}' row_index=5
+++++++++++++++++++++++++++CELL focusable label='Sunday, October 5, 2008' actions='{DEFAULT}' cell_row_index=5 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='5'
+++++++++++++++++++++++++++CELL focusable label='Monday, October 6, 2008' actions='{DEFAULT}' cell_row_index=5 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='6'
+++++++++++++++++++++++++++CELL focusable label='Tuesday, October 7, 2008' actions='{DEFAULT}' cell_row_index=5 cell_column_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='7'
+++++++++++++++++++++++++++CELL focusable label='Wednesday, October 8, 2008' actions='{DEFAULT}' cell_row_index=5 cell_column_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='8'
+++++++++++++++++++++++++++CELL focusable label='Thursday, October 9, 2008' actions='{DEFAULT}' cell_row_index=5 cell_column_index=4 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='9'
+++++++++++++++++++++++++++CELL focusable label='Friday, October 10, 2008' actions='{DEFAULT}' cell_row_index=5 cell_column_index=5 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='10'
+++++++++++++++++++++++++++CELL focusable label='Saturday, October 11, 2008' actions='{DEFAULT}' cell_row_index=5 cell_column_index=6 cell_row_span=1 cell_column_span=1
+++++++++++++++++++++++++++++STATIC_TEXT label='11'
+++++++++++++++++++++BUTTON focusable label='Clear' actions='{DEFAULT}'
+++++++++++++++++++++++STATIC_TEXT label='Clear'
+++++++++++++++++++++BUTTON focusable label='Today' actions='{DEFAULT}'
+++++++++++++++++++++++STATIC_TEXT label='Today'

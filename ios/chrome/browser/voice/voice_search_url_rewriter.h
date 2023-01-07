@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ namespace web {
 class BrowserState;
 }
 
-// Adds the voice search flags to |url| if it's a Google search URL.  This
+// Adds the voice search flags to `url` if it's a Google search URL.  This
 // function is a web::BrowserURLRewriter::URLRewriter, and is intended to be
 // used as a transient URLRewriter when performing a Google Search using Voice
 // Search.

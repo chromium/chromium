@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -62,12 +62,16 @@ instrumentation_test_apk("webview_ui_test_app_test_apk") {
     "//third_party/android_sdk:android_test_base_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
-    "//third_party/ub-uiautomator:ub_uiautomator_java",
+    "//ui/android:ui_java_test_support",
   ]
   data = [ "test/data/" ]
+
+  # Tell GN to ignore 'incremental_install' even if the user has it in their GN
+  # args because it's incompatible with 'use_webview_provider'.
+  never_incremental = true
   use_webview_provider = system_webview_apk_target
 }

@@ -1,15 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/keep_alive_registry/keep_alive_registry.h"
 
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/browser_watcher/activity_data_names.h"
 #include "components/browser_watcher/extended_crash_reporting.h"
 #endif
@@ -23,7 +24,7 @@ KeepAliveRegistry* KeepAliveRegistry::GetInstance() {
 }
 
 bool KeepAliveRegistry::IsKeepingAlive() const {
-  return registered_count_ > 0;
+  return registered_count_ > 0 && !(IsRestartAllowed() && is_restarting_);
 }
 
 bool KeepAliveRegistry::IsKeepingAliveOnlyByBrowserOrigin() const {
@@ -86,6 +87,21 @@ bool KeepAliveRegistry::IsShuttingDown() const {
 
 void KeepAliveRegistry::SetIsShuttingDown(bool value) {
   is_shutting_down_ = value;
+}
+
+bool KeepAliveRegistry::IsRestarting() const {
+  return is_restarting_;
+}
+
+void KeepAliveRegistry::SetRestarting() {
+  bool old_keeping_alive = IsKeepingAlive();
+  is_restarting_ = true;
+  bool new_keeping_alive = IsKeepingAlive();
+
+  // keep alive state can be updated by |is_restarting_| change.
+  // If that happens, notify observers.
+  if (old_keeping_alive != new_keeping_alive)
+    OnKeepAliveStateChanged(new_keeping_alive);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -158,7 +174,7 @@ void KeepAliveRegistry::Unregister(KeepAliveOrigin origin,
 void KeepAliveRegistry::OnKeepAliveStateChanged(bool new_keeping_alive) {
   DVLOG(1) << "Notifying KeepAliveStateObservers: KeepingAlive changed to: "
            << new_keeping_alive;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   browser_watcher::ExtendedCrashReporting::SetDataBool(
       browser_watcher::kActivityKeepAlive, new_keeping_alive);
 #endif
@@ -169,7 +185,7 @@ void KeepAliveRegistry::OnKeepAliveStateChanged(bool new_keeping_alive) {
 void KeepAliveRegistry::OnRestartAllowedChanged(bool new_restart_allowed) {
   DVLOG(1) << "Notifying KeepAliveStateObservers: Restart changed to: "
            << new_restart_allowed;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   browser_watcher::ExtendedCrashReporting::SetDataBool(
       browser_watcher::kActivityRestartAllowed, new_restart_allowed);
 #endif

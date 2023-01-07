@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ void ExtensionWebRequestTimeTracker::AnalyzeLogRequest(
 
   // Ignore really short requests. Time spent on these is negligible, and any
   // extra delay the extension adds is likely to be noise.
-  constexpr auto kMinRequestTimeToCare = base::TimeDelta::FromMilliseconds(10);
+  constexpr auto kMinRequestTimeToCare = base::Milliseconds(10);
   if (request_duration >= kMinRequestTimeToCare) {
     const int percentage =
         base::ClampRound(log.block_duration / request_duration * 100);

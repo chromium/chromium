@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_VIDEO_FRAME_ATTACHMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_VIDEO_FRAME_ATTACHMENT_H_
 
-#include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
@@ -21,7 +20,7 @@ class MODULES_EXPORT VideoFrameAttachment
   ~VideoFrameAttachment() override = default;
 
   bool IsLockedToAgentCluster() const override {
-    return !frame_handles_.IsEmpty();
+    return !frame_handles_.empty();
   }
 
   size_t size() const { return frame_handles_.size(); }

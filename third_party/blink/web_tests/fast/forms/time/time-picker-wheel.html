@@ -6,6 +6,8 @@ if (window.internals)
 <script src="../../../resources/gesture-util.js"></script>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
@@ -15,7 +17,7 @@ if (window.internals)
 let t = async_test('Test scrolling in time picker.');
 
 async function test1() {
-  let hourColumn = popupWindow.global.picker.timeColumns.firstChild;
+  let hourColumn = internals.pagePopupWindow.global.picker.timeColumns.firstChild;
   const scrollHourTopBeforeWheelEvent = hourColumn.scrollTop;
   // scroll up by 2 ticks ~ 2 cells
   await dispatchWheelEvent(hourColumn, 0, -2);
@@ -33,5 +35,6 @@ async function test1() {
   }, 200);
 }
 
-openPicker(document.getElementById('time'), t.step_func(test1));
+openPicker(document.getElementById('time'))
+  .then(t.step_func(test1));
 </script>

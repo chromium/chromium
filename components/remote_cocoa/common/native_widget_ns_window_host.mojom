@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module remote_cocoa.mojom;
 
+import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "ui/base/accelerators/mojom/accelerator.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
@@ -89,6 +90,11 @@ interface NativeWidgetNSWindowHost {
   DispatchKeyEventToMenuControllerRemote(ui.mojom.Event event) =>
       (bool event_swallowed, bool event_handled);
 
+  // Called when the NSEvent monitor observes an event. If `event_handled` is
+  // true, then do not continue dispatching the event.
+  [Sync]
+  DispatchMonitorEvent(ui.mojom.Event event) => (bool event_handled);
+
   // Synchronously return in  |has_menu_controller| whether or not a menu
   // controller exists for this widget.
   [Sync]
@@ -131,6 +137,9 @@ interface NativeWidgetNSWindowHost {
 
   // Called when the window is miniaturized or deminiaturized.
   OnWindowMiniaturizedChanged(bool miniaturized);
+
+  // Called when the window's zoomed state changes.
+  OnWindowZoomedChanged(bool zoomed);
 
   // Called when the current display or the properties of the current display
   // change.
@@ -209,7 +218,7 @@ interface NativeWidgetNSWindowHost {
   // view and in |host_pid| the pid for the host process.
   [Sync]
   GetRootViewAccessibilityToken() =>
-      (int64 host_pid, array<uint8> element_token);
+      (mojo_base.mojom.ProcessId host_pid, array<uint8> element_token);
 
   // Return the result for -[NSUserInterfaceValidations
   // validateUserInterfaceItem] for a given command, along with any state for
@@ -217,6 +226,14 @@ interface NativeWidgetNSWindowHost {
   [Sync]
   ValidateUserInterfaceItem(int32 command) =>
       (ValidateUserInterfaceItemResult result);
+
+  // Returns in |will_execute| whether or not ExecuteCommand() will execute
+  // the chrome command |command| with |window_open_disposition| and
+  // |is_before_first_responder|.
+  [Sync]
+  WillExecuteCommand(int32 command,
+                     ui.mojom.WindowOpenDisposition window_open_disposition,
+                     bool is_before_first_responder) => (bool will_execute);
 
   // Execute the chrome command |command| with |window_open_disposition|. If
   // |is_before_first_responder| then only call ExecuteCommand if the command

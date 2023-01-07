@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,37 +19,43 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/simple_menu_model.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/desks_helper.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/toolbar/move_to_desks_menu_model.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/multi_user_window_manager.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#endif
+
+#if defined(USE_OZONE) && !BUILDFLAG(IS_CHROMEOS)
+#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 SystemMenuModelBuilder::SystemMenuModelBuilder(
     ui::AcceleratorProvider* provider,
     Browser* browser)
-    : menu_delegate_(provider, browser) {
-}
+    : menu_delegate_(provider, browser) {}
 
-SystemMenuModelBuilder::~SystemMenuModelBuilder() {
-}
+SystemMenuModelBuilder::~SystemMenuModelBuilder() = default;
 
 void SystemMenuModelBuilder::Init() {
   ui::SimpleMenuModel* model = new ui::SimpleMenuModel(&menu_delegate_);
   menu_model_.reset(model);
   BuildMenu(model);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows we put the menu items in the system menu (not at the end). Doing
   // this necessitates adding a trailing separator.
   model->AddSeparator(ui::NORMAL_SEPARATOR);
@@ -70,7 +76,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
     ui::SimpleMenuModel* model) {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   model->AddItemWithStringId(IDC_MINIMIZE_WINDOW, IDS_MINIMIZE_WINDOW_MENU);
   model->AddItemWithStringId(IDC_MAXIMIZE_WINDOW, IDS_MAXIMIZE_WINDOW_MENU);
   model->AddItemWithStringId(IDC_RESTORE_WINDOW, IDS_RESTORE_WINDOW_MENU);
@@ -79,22 +85,30 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   model->AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
   model->AddItemWithStringId(IDC_RESTORE_TAB, IDS_RESTORE_TAB);
   model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
-  if (base::FeatureList::IsEnabled(features::kWindowNaming))
-    model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
+  model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
   if (chrome::CanOpenTaskManager()) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     model->AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);
   }
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   model->AddSeparator(ui::NORMAL_SEPARATOR);
-  model->AddCheckItemWithStringId(IDC_USE_SYSTEM_TITLE_BAR,
-                                  IDS_SHOW_WINDOW_DECORATIONS_MENU);
+  bool supports_server_side_decorations = true;
+#if defined(USE_OZONE) && !BUILDFLAG(IS_CHROMEOS)
+  supports_server_side_decorations =
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .supports_server_side_window_decorations;
+#endif
+  if (supports_server_side_decorations) {
+    model->AddCheckItemWithStringId(IDC_USE_SYSTEM_TITLE_BAR,
+                                    IDS_SHOW_WINDOW_DECORATIONS_MENU);
+  }
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   model->AddItemWithStringId(IDC_CLOSE_WINDOW, IDS_CLOSE_WINDOW_MENU);
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AppendMoveToDesksMenu(model);
 #endif
   AppendTeleportMenu(model);
@@ -109,10 +123,11 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
   model->AddItemWithStringId(IDC_RELOAD, IDS_APP_MENU_RELOAD);
   if (!web_app::AppBrowserController::IsWebApp(browser())) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
-    if (browser()->deprecated_is_app())
+    if (browser()->is_type_app() || browser()->is_type_app_popup()) {
       model->AddItemWithStringId(IDC_NEW_TAB, IDS_APP_MENU_NEW_WEB_PAGE);
-    else
+    } else {
       model->AddItemWithStringId(IDC_SHOW_AS_TAB, IDS_SHOW_AS_TAB);
+    }
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     model->AddItemWithStringId(IDC_CUT, IDS_CUT);
     model->AddItemWithStringId(IDC_COPY, IDS_COPY);
@@ -124,17 +139,16 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
     model->AddSubMenuWithStringId(IDC_ZOOM_MENU, IDS_ZOOM_MENU,
                                   zoom_menu_contents_.get());
   }
-  if (browser()->deprecated_is_app() && chrome::CanOpenTaskManager()) {
+  if ((browser()->is_type_app() || browser()->is_type_app_popup()) &&
+      chrome::CanOpenTaskManager()) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     model->AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);
   }
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   model->AddItemWithStringId(IDC_CLOSE_WINDOW, IDS_CLOSE);
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AppendMoveToDesksMenu(model);
 #endif
   AppendTeleportMenu(model);
@@ -148,21 +162,20 @@ void SystemMenuModelBuilder::AddFrameToggleItems(ui::SimpleMenuModel* model) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
-  if (ash::features::IsBentoEnabled()) {
-    auto* desks_helper = ash::DesksHelper::Get();
-    if (desks_helper && desks_helper->GetNumberOfDesks() > 1) {
-      model->AddSeparator(ui::NORMAL_SEPARATOR);
-      move_to_desks_model_ = std::make_unique<MoveToDesksMenuModel>(
-          &menu_delegate_,
-          views::Widget::GetWidgetForNativeWindow(
-              menu_delegate_.browser()->window()->GetNativeWindow()));
-      model->AddSubMenuWithStringId(IDC_MOVE_TO_DESKS_MENU,
-                                    IDS_MOVE_TO_DESKS_MENU,
-                                    move_to_desks_model_.get());
-    }
-  }
+  gfx::NativeWindow window =
+      menu_delegate_.browser()->window()->GetNativeWindow();
+  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(window))
+    return;
+
+  model->AddSeparator(ui::NORMAL_SEPARATOR);
+  move_to_desks_model_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
+      std::make_unique<chromeos::MoveToDesksMenuDelegate>(
+          views::Widget::GetWidgetForNativeWindow(window)));
+  model->AddSubMenuWithStringId(chromeos::MoveToDesksMenuModel::kMenuCommandId,
+                                IDS_MOVE_TO_DESKS_MENU,
+                                move_to_desks_model_.get());
 }
 #endif
 

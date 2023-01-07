@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "ui/gfx/linux/client_native_pixmap_factory_dmabuf.h"
 #include "ui/gfx/native_pixmap_handle.h"
 

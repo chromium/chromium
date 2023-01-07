@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/number_property_functions.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
@@ -21,19 +21,19 @@ class InheritedNumberChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedNumberChecker(const CSSProperty& property,
-                         base::Optional<double> number)
+                         absl::optional<double> number)
       : property_(property), number_(number) {}
 
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
-    base::Optional<double> parent_number =
+    absl::optional<double> parent_number =
         NumberPropertyFunctions::GetNumber(property_, *state.ParentStyle());
     return number_ == parent_number;
   }
 
   const CSSProperty& property_;
-  const base::Optional<double> number_;
+  const absl::optional<double> number_;
 };
 
 const CSSValue* CSSNumberInterpolationType::CreateCSSValue(
@@ -42,8 +42,7 @@ const CSSValue* CSSNumberInterpolationType::CreateCSSValue(
     const StyleResolverState&) const {
   double number = To<InterpolableNumber>(value).Value();
   return CSSNumericLiteralValue::Create(
-      round_to_integer_ ? round(number) : number,
-      CSSPrimitiveValue::UnitType::kNumber);
+      round_to_integer_ ? round(number) : number, UnitType());
 }
 
 InterpolationValue CSSNumberInterpolationType::CreateNumberValue(
@@ -60,7 +59,7 @@ InterpolationValue CSSNumberInterpolationType::MaybeConvertNeutral(
 InterpolationValue CSSNumberInterpolationType::MaybeConvertInitial(
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  base::Optional<double> initial_number =
+  absl::optional<double> initial_number =
       NumberPropertyFunctions::GetInitialNumber(
           CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle());
   if (!initial_number)
@@ -73,7 +72,7 @@ InterpolationValue CSSNumberInterpolationType::MaybeConvertInherit(
     ConversionCheckers& conversion_checkers) const {
   if (!state.ParentStyle())
     return nullptr;
-  base::Optional<double> inherited =
+  absl::optional<double> inherited =
       NumberPropertyFunctions::GetNumber(CssProperty(), *state.ParentStyle());
   conversion_checkers.push_back(
       std::make_unique<InheritedNumberChecker>(CssProperty(), inherited));
@@ -96,7 +95,7 @@ InterpolationValue CSSNumberInterpolationType::MaybeConvertValue(
 InterpolationValue
 CSSNumberInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
-  base::Optional<double> underlying_number =
+  absl::optional<double> underlying_number =
       NumberPropertyFunctions::GetNumber(CssProperty(), style);
   if (!underlying_number)
     return nullptr;
@@ -111,12 +110,10 @@ void CSSNumberInterpolationType::ApplyStandardPropertyValue(
       CssProperty(), To<InterpolableNumber>(interpolable_value).Value());
   if (!NumberPropertyFunctions::SetNumber(CssProperty(), *state.Style(),
                                           clamped_number)) {
-    StyleBuilder::ApplyProperty(
-        GetProperty().GetCSSProperty(), state,
-        ScopedCSSValue(
-            *CSSNumericLiteralValue::Create(
-                clamped_number, CSSPrimitiveValue::UnitType::kNumber),
-            nullptr));
+    StyleBuilder::ApplyProperty(GetProperty().GetCSSProperty(), state,
+                                ScopedCSSValue(*CSSNumericLiteralValue::Create(
+                                                   clamped_number, UnitType()),
+                                               nullptr));
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,17 @@ void WidgetFadeAnimator::FadeIn() {
   fade_animation_.Start();
 }
 
-void WidgetFadeAnimator::FadeOut() {
-  if (IsFadingOut())
+void WidgetFadeAnimator::CancelFadeIn() {
+  if (!IsFadingIn())
     return;
 
-  DCHECK(widget_);
+  fade_animation_.Stop();
+  animation_type_ = FadeType::kNone;
+}
+
+void WidgetFadeAnimator::FadeOut() {
+  if (IsFadingOut() || !widget_)
+    return;
 
   // If the widget is already hidden, then there is no current animation and
   // nothing to do. If the animation is close-on-hide, however, we should still
@@ -94,7 +100,7 @@ void WidgetFadeAnimator::AnimationEnded(const gfx::Animation* animation) {
   fade_complete_callbacks_.Notify(this, animation_type);
 }
 
-void WidgetFadeAnimator::OnWidgetClosing(Widget* widget) {
+void WidgetFadeAnimator::OnWidgetDestroying(Widget* widget) {
   widget_observation_.Reset();
   fade_animation_.End();
   animation_type_ = FadeType::kNone;

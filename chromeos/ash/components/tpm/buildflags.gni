@@ -1,0 +1,9 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # True if the NSS slots should fall back to software-backed initialization
+  # in case of a disabled TPM.
+  nss_slots_software_fallback = false
+}

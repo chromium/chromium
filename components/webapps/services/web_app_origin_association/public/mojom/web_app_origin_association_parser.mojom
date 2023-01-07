@@ -1,14 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module webapps.mojom;
 
+import "sandbox/policy/mojom/sandbox.mojom";
 import "url/mojom/url.mojom";
 
 // The WebAppOriginAssociation structure is an internal representation of the
 // web app origin association file described in the "PWAs as URL Handlers"
-// explainer: https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+// explainer: https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
 struct WebAppOriginAssociation {
   array<AssociatedWebApp> apps;
 };
@@ -31,6 +32,7 @@ struct WebAppOriginAssociationError {
 
 // Interface for parsing web app origin association files. Lives in a utility
 // process, and used as part of the "PWAs as URL Handlers" feature.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface WebAppOriginAssociationParser {
   // Parses the |raw_json| into a WebAppOriginAssociation object, along
   // with any errors. If parsing failed, |association| will be null. If no

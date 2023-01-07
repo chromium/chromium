@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ios/chrome/browser/voice/speech_input_locale.h"
 
 namespace voice {
@@ -22,6 +21,9 @@ class SpeechInputLocaleConfig {
   // Returns a pointer to the singleton object.
   static SpeechInputLocaleConfig* GetInstance();
 
+  SpeechInputLocaleConfig(const SpeechInputLocaleConfig&) = delete;
+  SpeechInputLocaleConfig& operator=(const SpeechInputLocaleConfig&) = delete;
+
   // Returns the default locale as determined by the system language.
   virtual SpeechInputLocale GetDefaultLocale() const = 0;
 
@@ -29,7 +31,7 @@ class SpeechInputLocaleConfig {
   // by their display names.
   virtual const std::vector<SpeechInputLocale>& GetAvailableLocales() const = 0;
 
-  // Returns the SpeechInputLocale to use for |locale_code|. If |locale_code| is
+  // Returns the SpeechInputLocale to use for `locale_code`. If `locale_code` is
   // not contained in GetAvailableLocales()'s return value, then the
   // SpeechInputLocaleConfig will attempt to match with an appropriate subsitute
   // (e.g. "en-NZ" => "en-AU").
@@ -40,7 +42,7 @@ class SpeechInputLocaleConfig {
   // codes (e.g. "en", "fr") that can be used to trigger Text To Speech results.
   virtual const std::vector<std::string>& GetTextToSpeechLanguages() const = 0;
 
-  // Returns whether the language portion of |locale_code| is an available
+  // Returns whether the language portion of `locale_code` is an available
   // TTS language.
   virtual bool IsTextToSpeechEnabledForCode(
       const std::string& locale_code) const = 0;
@@ -48,8 +50,6 @@ class SpeechInputLocaleConfig {
  protected:
   SpeechInputLocaleConfig() = default;
   virtual ~SpeechInputLocaleConfig() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechInputLocaleConfig);
 };
 
 }  // namespace voice

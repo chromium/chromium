@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,24 +14,12 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
-
-namespace {
-class AutoSignal {
- public:
-  explicit AutoSignal(base::WaitableEvent* event) : event_(event) {
-    DCHECK(event);
-  }
-  ~AutoSignal() { event_->Signal(); }
-
- private:
-  base::WaitableEvent* event_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoSignal);
-};
-}  // namespace
 
 // static
 std::unique_ptr<PlatformPaintWorkletLayerPainter>
@@ -92,7 +80,7 @@ void PaintWorkletPaintDispatcher::DispatchWorklets(
   ongoing_jobs_ = std::move(worklet_job_map);
 
   scoped_refptr<base::SingleThreadTaskRunner> runner =
-      Thread::Current()->GetTaskRunner();
+      Thread::Current()->GetDeprecatedTaskRunner();
   WTF::CrossThreadClosure on_done = CrossThreadBindRepeating(
       [](base::WeakPtr<PaintWorkletPaintDispatcher> dispatcher,
          scoped_refptr<base::SingleThreadTaskRunner> runner) {

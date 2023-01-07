@@ -10,7 +10,7 @@ offscreenContext.fillRect(0, 0, 100, 100);
 
 // For testing that the offscreen canvas has drawn
 var testCanvas = document.createElement("canvas");
-var testContext = testCanvas.getContext("2d");
+var testContext = testCanvas.getContext("2d", {willReadFrequently: true});
 
 // Make sure that the canvas has been drawn to before capturing
 function waitForCanvasToDraw() {

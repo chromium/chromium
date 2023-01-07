@@ -1,22 +1,25 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 class EyeDropperView::ViewPositionHandler {
@@ -32,15 +35,14 @@ class EyeDropperView::ViewPositionHandler {
   // Timer used for updating the window location.
   base::RepeatingTimer timer_;
 
-  EyeDropperView* owner_;
+  raw_ptr<EyeDropperView> owner_;
 };
 
 EyeDropperView::ViewPositionHandler::ViewPositionHandler(EyeDropperView* owner)
     : owner_(owner) {
-  // Use a value close to the refresh rate @60hz.
   // TODO(iopopesc): Use SetCapture instead of a timer when support for
   // activating the eye dropper without closing the color popup is added.
-  timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(16), this,
+  timer_.Start(FROM_HERE, base::Hertz(60), this,
                &EyeDropperView::ViewPositionHandler::UpdateViewPosition);
 }
 
@@ -65,10 +67,15 @@ class EyeDropperView::ScreenCapturer
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
 
   SkBitmap GetBitmap() const;
+  SkColor GetColor(int x, int y) const;
+  int original_offset_x() const;
+  int original_offset_y() const;
 
  private:
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
   SkBitmap frame_;
+  int original_offset_x_;
+  int original_offset_y_;
 };
 
 EyeDropperView::ScreenCapturer::ScreenCapturer() {
@@ -89,10 +96,52 @@ void EyeDropperView::ScreenCapturer::OnCaptureResult(
   memcpy(frame_.getAddr32(0, 0), frame->data(),
          frame->size().height() * frame->stride());
   frame_.setImmutable();
+
+  // The captured frame is in full desktop coordinates. E.g. the top left
+  // monitor should start from (0, 0), so we need to compute the correct
+  // origins.
+  original_offset_x_ = 0;
+  original_offset_y_ = 0;
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+#if BUILDFLAG(IS_WIN)
+    // The window parameter is intentionally passed as nullptr on Windows
+    // because a non-null window parameter causes errors when restoring windows
+    // to saved positions in variable-DPI situations. See
+    // https://crbug.com/1224715 for details.
+    gfx::Rect scaled_bounds =
+        display::Screen::GetScreen()->DIPToScreenRectInWindow(
+            /*window=*/nullptr, display.bounds());
+#else
+    gfx::Rect scaled_bounds = gfx::ScaleToEnclosingRect(
+        display.bounds(), display.device_scale_factor());
+#endif
+    if (scaled_bounds.origin().x() < original_offset_x_) {
+      original_offset_x_ = scaled_bounds.origin().x();
+    }
+    if (scaled_bounds.origin().y() < original_offset_y_) {
+      original_offset_y_ = scaled_bounds.origin().y();
+    }
+  }
 }
 
 SkBitmap EyeDropperView::ScreenCapturer::GetBitmap() const {
   return frame_;
+}
+
+SkColor EyeDropperView::ScreenCapturer::GetColor(int x, int y) const {
+  // It's not clear how control can reach here with out-of-bounds coordinates,
+  // but avoid a crash if it does.
+  return (x < 0 || x >= frame_.width() || y < 0 || y >= frame_.height())
+             ? gfx::kPlaceholderColor
+             : frame_.getColor(x, y);
+}
+
+int EyeDropperView::ScreenCapturer::original_offset_x() const {
+  return original_offset_x_;
+}
+
+int EyeDropperView::ScreenCapturer::original_offset_y() const {
+  return original_offset_y_;
 }
 
 EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
@@ -102,9 +151,13 @@ EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
       view_position_handler_(std::make_unique<ViewPositionHandler>(this)),
       screen_capturer_(std::make_unique<ScreenCapturer>()) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
+  // This is owned as a unique_ptr<EyeDropper> elsewhere.
   SetOwnedByWidget(false);
+  // TODO(pbos): Remove this, perhaps by separating the contents view from the
+  // EyeDropper/WidgetDelegate.
+  set_owned_by_client();
   SetPreferredSize(GetSize());
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // Use TYPE_MENU for Linux to ensure that the eye dropper view is displayed
   // above the color picker.
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_MENU);
@@ -127,13 +180,14 @@ EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
   widget->SetContentsView(this);
   MoveViewToFront();
   HideCursor();
-  pre_dispatch_handler_ = std::make_unique<PreEventDispatchHandler>(this);
+  pre_dispatch_handler_ = std::make_unique<PreEventDispatchHandler>(
+      this, content::WebContents::FromRenderFrameHost(render_frame_host_)
+                ->GetNativeView());
   widget->Show();
   CaptureInputIfNeeded();
   // The ignore selection time should be long enough to allow the user to see
   // the UI.
-  ignore_selection_time_ =
-      base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(500);
+  ignore_selection_time_ = base::TimeTicks::Now() + base::Milliseconds(500);
 }
 
 EyeDropperView::~EyeDropperView() {
@@ -165,11 +219,13 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   const SkBitmap frame = screen_capturer_->GetBitmap();
   // The captured frame is not scaled so we need to use widget's bounds in
   // pixels to have the magnified region match cursor position.
-  const gfx::Point center_position =
+  gfx::Point center_position =
       display::Screen::GetScreen()
           ->DIPToScreenRectInWindow(GetWidget()->GetNativeWindow(),
                                     GetWidget()->GetWindowBoundsInScreen())
           .CenterPoint();
+  center_position.Offset(-screen_capturer_->original_offset_x(),
+                         -screen_capturer_->original_offset_y());
   view_canvas->DrawImageInt(gfx::ImageSkia::CreateFrom1xBitmap(frame),
                             center_position.x() - pixel_count / 2,
                             center_position.y() - pixel_count / 2, pixel_count,
@@ -178,14 +234,15 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
 
   // Store the pixel color under the cursor as it is the last color seen
   // by the user before selection.
-  selected_color_ = frame.getColor(center_position.x(), center_position.y());
+  selected_color_ =
+      screen_capturer_->GetColor(center_position.x(), center_position.y());
 
   // Paint grid.
+  const auto* color_provider = GetColorProvider();
   cc::PaintFlags flags;
   flags.setStrokeWidth(1);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  // TODO(iopopesc): Get all colors from theming object.
-  flags.setColor(SK_ColorGRAY);
+  flags.setColor(color_provider->GetColor(kColorEyedropperGrid));
   for (int i = 0; i < pixel_count; ++i) {
     view_canvas->DrawLine(
         gfx::PointF(padding.width() + i * kPixelSize, padding.height()),
@@ -203,18 +260,20 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   gfx::RectF pixel((size().width() - kPixelSize) / 2,
                    (size().height() - kPixelSize) / 2, kPixelSize, kPixelSize);
   flags.setAntiAlias(true);
-  flags.setColor(SK_ColorWHITE);
+  flags.setColor(
+      color_provider->GetColor(kColorEyedropperCentralPixelOuterRing));
   flags.setStrokeWidth(2);
-  pixel.Inset(-0.5f, -0.5f);
+  pixel.Inset(-0.5f);
   view_canvas->DrawRect(pixel, flags);
-  flags.setColor(SK_ColorBLACK);
+  flags.setColor(
+      color_provider->GetColor(kColorEyedropperCentralPixelInnerRing));
   flags.setStrokeWidth(1);
-  pixel.Inset(0.5f, 0.5f);
+  pixel.Inset(0.5f);
   view_canvas->DrawRect(pixel, flags);
 
   // Paint outline.
   flags.setStrokeWidth(2);
-  flags.setColor(SK_ColorDKGRAY);
+  flags.setColor(color_provider->GetColor(kColorEyedropperBoundary));
   flags.setAntiAlias(true);
   if (GetWidget()->IsTranslucentWindowOpacitySupported()) {
     view_canvas->DrawCircle(
@@ -265,6 +324,10 @@ void EyeDropperView::OnColorSelected() {
 
   // Use the last selected color and notify listener.
   listener_->ColorSelected(selected_color_.value());
+}
+
+void EyeDropperView::OnColorSelectionCanceled() {
+  listener_->ColorSelectionCanceled();
 }
 
 BEGIN_METADATA(EyeDropperView, views::WidgetDelegateView)

@@ -1,3 +1,4 @@
+CONSOLE ERROR: Uncaught ReferenceError: test_driver is not defined
 PASS successfullyParsed is true
 
 TEST COMPLETE

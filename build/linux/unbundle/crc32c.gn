@@ -1,0 +1,11 @@
+import("//build/shim_headers.gni")
+
+shim_headers("crc32c_shim") {
+  root_path = "src/include"
+  headers = [ "crc32c/crc32c.h" ]
+}
+
+source_set("crc32c") {
+  deps = [ ":crc32c_shim" ]
+  libs = [ "crc32c" ]
+}

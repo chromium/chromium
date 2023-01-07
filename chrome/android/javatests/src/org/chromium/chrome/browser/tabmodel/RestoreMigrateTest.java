@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,12 +22,13 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabIdManager;
-import org.chromium.chrome.browser.tab.TabStateFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -112,6 +113,7 @@ public class RestoreMigrateTest {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false);
         TabbedModeTabPersistencePolicy.resetMigrationTaskForTesting();
+        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
         ContextUtils.initApplicationContextForTests(mAppContextToRestore);
     }
 
@@ -121,7 +123,8 @@ public class RestoreMigrateTest {
             @Override
             public TabPersistentStore call() {
                 TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(
-                        selectorIndex, false);
+                        selectorIndex, false, true,
+                        TabWindowManagerSingleton.getInstance().getMaxSimultaneousSelectors());
                 TabPersistentStore store =
                         new TabPersistentStore(persistencePolicy, selector, null);
                 return store;

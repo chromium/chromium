@@ -30,10 +30,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOM_MESSAGE_EVENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOM_MESSAGE_EVENT_H_
 
-#include "base/optional.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_dom_event.h"
@@ -50,9 +51,9 @@ class WebFrame;
 // An interface for posting message events to the target frame. The message
 // events are used for communication between documents and described here:
 // http://www.w3.org/TR/2012/WD-webmessaging-20120313/#terminology
-class WebDOMMessageEvent : public WebDOMEvent {
+class BLINK_EXPORT WebDOMMessageEvent : public WebDOMEvent {
  public:
-  BLINK_EXPORT WebDOMMessageEvent(
+  WebDOMMessageEvent(
       const WebSerializedScriptValue& message_data,
       const WebString& origin = WebString(),
       const WebFrame* source_frame = nullptr,
@@ -60,23 +61,13 @@ class WebDOMMessageEvent : public WebDOMEvent {
       WebVector<MessagePortChannel> ports = WebVector<MessagePortChannel>());
   WebDOMMessageEvent() = default;
 
-  BLINK_EXPORT WebString Origin() const;
-
-  base::Optional<base::UnguessableToken> locked_agent_cluster_id() const {
-    return locked_agent_cluster_id_;
-  }
+  WebString Origin() const;
 
 #if INSIDE_BLINK
-  explicit WebDOMMessageEvent(
-      MessageEvent* e,
-      base::Optional<base::UnguessableToken> locked_agent_cluster_id)
-      : WebDOMEvent(e), locked_agent_cluster_id_(locked_agent_cluster_id) {}
+  explicit WebDOMMessageEvent(MessageEvent* e) : WebDOMEvent(e) {}
 #endif
-
- private:
-  base::Optional<base::UnguessableToken> locked_agent_cluster_id_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOM_MESSAGE_EVENT_H_

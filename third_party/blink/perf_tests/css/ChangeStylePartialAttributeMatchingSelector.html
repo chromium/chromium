@@ -15,7 +15,7 @@
         PerfTestRunner.measureTime({
             description: "Measures the performance of partial attribute matching.",
             run: function() {
-                var rule = applyCSSRule("[class^='wrap'] { color: red; }");
+                var rule = applyCSSRule("[class^='wrap'] { cursor: crosshair; }");
                 forceStyleRecalc(document.body);
                 rule.remove();
                 forceStyleRecalc(document.body);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,16 @@ using content::WebContents;
 namespace extensions {
 namespace {
 
-class PageActionApiTest : public ExtensionApiTest {
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class PageActionApiTest : public ExtensionApiTest,
+                          public testing::WithParamInterface<ContextType> {
+ public:
+  PageActionApiTest() : ExtensionApiTest(GetParam()) {}
+  ~PageActionApiTest() override = default;
+  PageActionApiTest(const PageActionApiTest&) = delete;
+  PageActionApiTest& operator=(const PageActionApiTest&) = delete;
+
  protected:
   ExtensionAction* GetPageAction(const Extension& extension) {
     ExtensionAction* extension_action =
@@ -43,7 +52,14 @@ class PageActionApiTest : public ExtensionApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PageActionApiTest, Basic) {
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         PageActionApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         PageActionApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(PageActionApiTest, Basic) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(RunExtensionTest("page_action/basics")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
@@ -51,8 +67,8 @@ IN_PROC_BROWSER_TEST_F(PageActionApiTest, Basic) {
   {
     // Tell the extension to update the page action state.
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(browser(),
-        GURL(extension->GetResourceURL("update.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(extension->GetResourceURL("update.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -77,14 +93,15 @@ IN_PROC_BROWSER_TEST_F(PageActionApiTest, Basic) {
   {
     // Tell the extension to update the page action state again.
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(browser(),
-        GURL(extension->GetResourceURL("update2.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(extension->GetResourceURL("update2.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
   // We should not be creating icons asynchronously, so we don't need an
   // observer.
-  ExtensionActionIconFactory icon_factory(profile(), extension, action, NULL);
+  ExtensionActionIconFactory icon_factory(profile(), extension, action,
+                                          nullptr);
 
   // Test that we received the changes.
   tab_id = sessions::SessionTabHelper::FromWebContents(
@@ -95,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(PageActionApiTest, Basic) {
 }
 
 // Test that calling chrome.pageAction.setPopup() can enable a popup.
-IN_PROC_BROWSER_TEST_F(PageActionApiTest, AddPopup) {
+IN_PROC_BROWSER_TEST_P(PageActionApiTest, AddPopup) {
   // Load the extension, which has no default popup.
   ASSERT_TRUE(RunExtensionTest("page_action/add_popup")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
@@ -130,9 +147,8 @@ IN_PROC_BROWSER_TEST_F(PageActionApiTest, AddPopup) {
   // Load a page which removes the popup using chrome.pageAction.setPopup().
   {
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
-        browser(),
-        GURL(extension->GetResourceURL("change_popup.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(extension->GetResourceURL("change_popup.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -142,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(PageActionApiTest, AddPopup) {
 }
 
 // Test that calling chrome.pageAction.setPopup() can remove a popup.
-IN_PROC_BROWSER_TEST_F(PageActionApiTest, RemovePopup) {
+IN_PROC_BROWSER_TEST_P(PageActionApiTest, RemovePopup) {
   // Load the extension, which has a page action with a default popup.
   ASSERT_TRUE(RunExtensionTest("page_action/remove_popup")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
@@ -161,9 +177,8 @@ IN_PROC_BROWSER_TEST_F(PageActionApiTest, RemovePopup) {
   // Load a page which removes the popup using chrome.pageAction.setPopup().
   {
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
-        browser(),
-        GURL(extension->GetResourceURL("remove_popup.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(extension->GetResourceURL("remove_popup.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -171,33 +186,32 @@ IN_PROC_BROWSER_TEST_F(PageActionApiTest, RemovePopup) {
       << "Page action popup should have been removed.";
 }
 
-
 // Test http://crbug.com/57333: that two page action extensions using the same
 // icon for the page action icon and the extension icon do not crash.
-IN_PROC_BROWSER_TEST_F(PageActionApiTest, TestCrash57333) {
+IN_PROC_BROWSER_TEST_P(PageActionApiTest, TestCrash57333) {
   // Load extension A.
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("page_action")
-                                          .AppendASCII("crash_57333")
-                                          .AppendASCII("Extension1")));
+                                .AppendASCII("crash_57333")
+                                .AppendASCII("Extension1")));
   // Load extension B.
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("page_action")
-                                          .AppendASCII("crash_57333")
-                                          .AppendASCII("Extension2")));
+                                .AppendASCII("crash_57333")
+                                .AppendASCII("Extension2")));
 }
 
-IN_PROC_BROWSER_TEST_F(PageActionApiTest, Getters) {
+IN_PROC_BROWSER_TEST_P(PageActionApiTest, Getters) {
   ASSERT_TRUE(RunExtensionTest("page_action/getters")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
   ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(browser(),
-      GURL(extension->GetResourceURL("update.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
 // Verify triggering page action.
-IN_PROC_BROWSER_TEST_F(PageActionApiTest, TestTriggerPageAction) {
+IN_PROC_BROWSER_TEST_P(PageActionApiTest, TestTriggerPageAction) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(RunExtensionTest("trigger_actions/page_action")) << message_;
@@ -205,11 +219,12 @@ IN_PROC_BROWSER_TEST_F(PageActionApiTest, TestTriggerPageAction) {
   ASSERT_TRUE(extension) << message_;
 
   // Page action icon is displayed when a tab is created.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
   chrome::NewTab(browser());
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
 
   // Give the extension time to show the page action on the tab.
   WaitForPageActionVisibilityChangeTo(1);

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/browser.h"
@@ -26,14 +26,18 @@ namespace autofill {
 
 class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
  public:
-  SaveCardBubbleControllerImplTest() {}
+  SaveCardBubbleControllerImplTest() = default;
+  SaveCardBubbleControllerImplTest(const SaveCardBubbleControllerImplTest&) =
+      delete;
+  SaveCardBubbleControllerImplTest& operator=(
+      const SaveCardBubbleControllerImplTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DialogBrowserTest::SetUpCommandLine(command_line);
   }
 
   LegalMessageLines GetTestLegalMessage() {
-    std::unique_ptr<base::Value> value(base::JSONReader::ReadDeprecated(
+    absl::optional<base::Value> value(base::JSONReader::Read(
         "{"
         "  \"line\" : [ {"
         "     \"template\": \"The legal documents are: {0} and {1}.\","
@@ -46,10 +50,9 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
         "     } ]"
         "  } ]"
         "}"));
-    base::DictionaryValue* dictionary;
-    value->GetAsDictionary(&dictionary);
+    EXPECT_TRUE(value->is_dict());
     LegalMessageLines legal_message_lines;
-    LegalMessageLine::Parse(*dictionary, &legal_message_lines,
+    LegalMessageLine::Parse(*value, &legal_message_lines,
                             /*escape_apostrophes=*/true);
     return legal_message_lines;
   }
@@ -111,9 +114,7 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
   SaveCardBubbleControllerImpl* controller() { return controller_; }
 
  private:
-  SaveCardBubbleControllerImpl* controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleControllerImplTest);
+  raw_ptr<SaveCardBubbleControllerImpl> controller_ = nullptr;
 };
 
 // Invokes a bubble asking the user if they want to save a credit card locally.

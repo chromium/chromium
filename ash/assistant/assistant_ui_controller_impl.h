@@ -1,13 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_ASSISTANT_ASSISTANT_UI_CONTROLLER_IMPL_H_
 #define ASH_ASSISTANT_ASSISTANT_UI_CONTROLLER_IMPL_H_
-
-#include <map>
-#include <memory>
-#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
@@ -20,9 +16,8 @@
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -49,26 +44,32 @@ class ASH_EXPORT AssistantUiControllerImpl
  public:
   explicit AssistantUiControllerImpl(
       AssistantControllerImpl* assistant_controller);
+
+  AssistantUiControllerImpl(const AssistantUiControllerImpl&) = delete;
+  AssistantUiControllerImpl& operator=(const AssistantUiControllerImpl&) =
+      delete;
+
   ~AssistantUiControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Provides a pointer to the |assistant| owned by AssistantService.
-  void SetAssistant(chromeos::assistant::Assistant* assistant);
+  void SetAssistant(assistant::Assistant* assistant);
 
   // AssistantUiController:
   const AssistantUiModel* GetModel() const override;
   int GetNumberOfSessionsWhereOnboardingShown() const override;
   bool HasShownOnboarding() const override;
+  void SetKeyboardTraversalMode(bool keyboard_traversal_mode) override;
   void ShowUi(AssistantEntryPoint entry_point) override;
-  void CloseUi(AssistantExitPoint exit_point) override;
-  void ToggleUi(base::Optional<AssistantEntryPoint> entry_point,
-                base::Optional<AssistantExitPoint> exit_point) override;
+  void ToggleUi(absl::optional<AssistantEntryPoint> entry_point,
+                absl::optional<AssistantExitPoint> exit_point) override;
+  absl::optional<base::ScopedClosureRunner> CloseUi(
+      AssistantExitPoint exit_point) override;
+  void SetAppListBubbleWidth(int width) override;
 
   // AssistantInteractionModelObserver:
-  void OnInputModalityChanged(InputModality input_modality) override;
   void OnInteractionStateChanged(InteractionState interaction_state) override;
-  void OnMicStateChanged(MicState mic_state) override;
 
   // AssistantControllerObserver:
   void OnAssistantControllerConstructed() override;
@@ -81,8 +82,8 @@ class ASH_EXPORT AssistantUiControllerImpl
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      base::Optional<AssistantEntryPoint> entry_point,
-      base::Optional<AssistantExitPoint> exit_point) override;
+      absl::optional<AssistantEntryPoint> entry_point,
+      absl::optional<AssistantExitPoint> exit_point) override;
 
   // AssistantViewDelegateObserver:
   void OnOnboardingShown() override;
@@ -93,19 +94,15 @@ class ASH_EXPORT AssistantUiControllerImpl
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
 
- private:
-  // Updates UI mode to |ui_mode| if specified. Otherwise UI mode is updated on
-  // the basis of interaction/widget visibility state. If |due_to_interaction|
-  // is true, the UI mode changed because of an Assistant interaction.
-  void UpdateUiMode(base::Optional<AssistantUiMode> ui_mode = base::nullopt,
-                    bool due_to_interaction = false);
+  void ShowUnboundErrorToast();
 
+ private:
   AssistantControllerImpl* const assistant_controller_;  // Owned by Shell.
   AssistantUiModel model_;
   bool has_shown_onboarding_ = false;
 
   // Owned by AssistantService.
-  chromeos::assistant::Assistant* assistant_ = nullptr;
+  assistant::Assistant* assistant_ = nullptr;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
@@ -117,7 +114,8 @@ class ASH_EXPORT AssistantUiControllerImpl
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_controller_observation_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(AssistantUiControllerImpl);
+  base::WeakPtrFactory<AssistantUiControllerImpl>
+      weak_factory_for_delayed_visibility_changes_{this};
 };
 
 }  // namespace ash

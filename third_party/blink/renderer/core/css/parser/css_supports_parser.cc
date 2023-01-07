@@ -1,53 +1,22 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
 
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
-namespace {
-
-// The result kUnknown must be converted to 'false' if passed to a context
-// which requires a boolean value.
-// TODO(crbug.com/1052274): This is supposed to happen at the top-level,
-// but currently happens on ConsumeGeneralEnclosed's result.
-CSSSupportsParser::Result EvalUnknown(CSSSupportsParser::Result result) {
-  return result == CSSSupportsParser::Result::kUnknown
-             ? CSSSupportsParser::Result::kUnsupported
-             : result;
-}
-
-// https://drafts.csswg.org/css-syntax/#typedef-any-value
-bool IsNextTokenAllowedForAnyValue(CSSParserTokenRange& range) {
-  switch (range.Peek().GetType()) {
-    case kBadStringToken:
-    case kEOFToken:
-    case kBadUrlToken:
-      return false;
-    case kRightParenthesisToken:
-    case kRightBracketToken:
-    case kRightBraceToken:
-      return range.Peek().GetBlockType() == CSSParserToken::kBlockEnd;
-    default:
-      return true;
-  }
-}
-
-// https://drafts.csswg.org/css-syntax/#typedef-any-value
-bool ConsumeAnyValue(CSSParserTokenRange& range) {
-  DCHECK(!range.AtEnd());
-  while (IsNextTokenAllowedForAnyValue(range))
-    range.Consume();
-  return range.AtEnd();
-}
-
-}  // namespace
+using css_parsing_utils::AtIdent;
+using css_parsing_utils::ConsumeAnyValue;
+using css_parsing_utils::ConsumeIfIdent;
 
 CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsCondition(
     CSSParserTokenStream& stream,
@@ -57,20 +26,6 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsCondition(
   return supports_parser.ConsumeSupportsCondition(stream);
 }
 
-bool CSSSupportsParser::AtIdent(const CSSParserToken& token,
-                                const char* ident) {
-  return token.GetType() == kIdentToken &&
-         EqualIgnoringASCIICase(token.Value(), ident);
-}
-
-bool CSSSupportsParser::ConsumeIfIdent(CSSParserTokenStream& stream,
-                                       const char* ident) {
-  if (!AtIdent(stream.Peek(), ident))
-    return false;
-  stream.ConsumeIncludingWhitespace();
-  return true;
-}
-
 // <supports-condition> = not <supports-in-parens>
 //                   | <supports-in-parens> [ and <supports-in-parens> ]*
 //                   | <supports-in-parens> [ or <supports-in-parens> ]*
@@ -78,8 +33,11 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsCondition(
     CSSParserTokenStream& stream) {
   // not <supports-in-parens>
   stream.ConsumeWhitespace();
-  if (ConsumeIfIdent(stream, "not"))
-    return !ConsumeSupportsInParens(stream);
+  if (ConsumeIfIdent(stream, "not")) {
+    Result result = ConsumeSupportsInParens(stream);
+    stream.ConsumeWhitespace();
+    return !result;
+  }
 
   // <supports-in-parens> [ and <supports-in-parens> ]*
   // | <supports-in-parens> [ or <supports-in-parens> ]*
@@ -126,6 +84,18 @@ bool CSSSupportsParser::IsSupportsSelectorFn(
           first_token.FunctionId() == CSSValueID::kSelector);
 }
 
+bool CSSSupportsParser::IsFontTechFn(const CSSParserToken& first_token,
+                                     const CSSParserToken& second_token) {
+  return (first_token.GetType() == kFunctionToken &&
+          first_token.FunctionId() == CSSValueID::kFontTech);
+}
+
+bool CSSSupportsParser::IsFontFormatFn(const CSSParserToken& first_token,
+                                       const CSSParserToken& second_token) {
+  return (first_token.GetType() == kFunctionToken &&
+          first_token.FunctionId() == CSSValueID::kFontFormat);
+}
+
 bool CSSSupportsParser::IsSupportsDecl(const CSSParserToken& first_token,
                                        const CSSParserToken& second_token) {
   return first_token.GetType() == kLeftParenthesisToken &&
@@ -135,7 +105,10 @@ bool CSSSupportsParser::IsSupportsDecl(const CSSParserToken& first_token,
 bool CSSSupportsParser::IsSupportsFeature(const CSSParserToken& first_token,
                                           const CSSParserToken& second_token) {
   return IsSupportsSelectorFn(first_token, second_token) ||
-         IsSupportsDecl(first_token, second_token);
+         IsSupportsDecl(first_token, second_token) ||
+         (RuntimeEnabledFeatures::SupportsFontFormatTechEnabled() &&
+          (IsFontFormatFn(first_token, second_token) ||
+           IsFontTechFn(first_token, second_token)));
 }
 
 bool CSSSupportsParser::IsGeneralEnclosed(const CSSParserToken& first_token) {
@@ -158,32 +131,38 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsInParens(
   // ( <supports-condition> )
   if (IsEnclosedSupportsCondition(first_token, stream.Peek())) {
     Result result = ConsumeSupportsCondition(stream);
-    return guard.AtEndOfBlock() ? result : Result::kParseFailure;
+    return stream.AtEnd() ? result : Result::kParseFailure;
   }
 
   // <supports-feature>
   if (IsSupportsFeature(first_token, stream.Peek())) {
     Result result = ConsumeSupportsFeature(first_token, stream);
-    return guard.AtEndOfBlock() ? result : Result::kParseFailure;
+    return stream.AtEnd() ? result : Result::kParseFailure;
   }
 
   // <general-enclosed>
-  //
-  // TODO(crbug.com/1052274): Support kUnknown beyond this point.
-  //
-  // The result kUnknown is supposed to be evaluated at the top level, but
-  // we have already shipped the behavior of evaluating it here, and Firefox
-  // does the same thing.
-  return EvalUnknown(ConsumeGeneralEnclosed(first_token, stream));
+  return ConsumeGeneralEnclosed(first_token, stream);
 }
 
-// <supports-feature> = <supports-selector-fn> | <supports-decl>
+// https://drafts.csswg.org/css-conditional-4/#at-supports-ext
+// <supports-feature> = <supports-selector-fn> | <supports-font-tech-fn>
+//                    | <supports-font-format-fn> | <supports-decl>
 CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsFeature(
     const CSSParserToken& first_token,
     CSSParserTokenStream& stream) {
   // <supports-selector-fn>
   if (IsSupportsSelectorFn(first_token, stream.Peek()))
     return ConsumeSupportsSelectorFn(first_token, stream);
+
+  // <supports-font-tech-fn>
+  if (IsFontTechFn(first_token, stream.Peek()) &&
+      RuntimeEnabledFeatures::SupportsFontFormatTechEnabled())
+    return ConsumeFontTechFn(first_token, stream);
+
+  // <supports-font-format-fn>
+  if (IsFontFormatFn(first_token, stream.Peek()) &&
+      RuntimeEnabledFeatures::SupportsFontFormatTechEnabled())
+    return ConsumeFontFormatFn(first_token, stream);
 
   // <supports-decl>
   return ConsumeSupportsDecl(first_token, stream);
@@ -198,6 +177,72 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsSelectorFn(
   if (CSSSelectorParser::SupportsComplexSelector(block, parser_.GetContext()))
     return Result::kSupported;
   return Result::kUnsupported;
+}
+
+CSSSupportsParser::Result CSSSupportsParser::ConsumeFontFormatFn(
+    const CSSParserToken& first_token,
+    CSSParserTokenStream& stream) {
+  DCHECK(IsFontFormatFn(first_token, stream.Peek()));
+  DCHECK(RuntimeEnabledFeatures::SupportsFontFormatTechEnabled());
+
+  auto format_block = stream.ConsumeUntilPeekedTypeIs<kRightParenthesisToken>();
+
+  // Parse errors inside the parentheses are treated as kUnsupported to
+  // simulate parsing the font-tech function as <general-enclosed>. In
+  // other words: even if this block is not understood as font-tech, it
+  // can be parsed as <general-enclosed> and result in false.
+
+  CSSIdentifierValue* consumed_value =
+      css_parsing_utils::ConsumeFontFormatIdent(format_block);
+
+  if (!consumed_value)
+    return Result::kUnsupported;
+
+  CSSSupportsParser::Result parse_result = Result::kUnsupported;
+
+  parse_result =
+      css_parsing_utils::IsSupportedKeywordFormat(consumed_value->GetValueID())
+          ? Result::kSupported
+          : Result::kUnsupported;
+
+  format_block.ConsumeWhitespace();
+  if (!format_block.AtEnd())
+    return Result::kUnsupported;
+
+  return parse_result;
+}
+
+CSSSupportsParser::Result CSSSupportsParser::ConsumeFontTechFn(
+    const CSSParserToken& first_token,
+    CSSParserTokenStream& stream) {
+  DCHECK(IsFontTechFn(first_token, stream.Peek()));
+  DCHECK(RuntimeEnabledFeatures::SupportsFontFormatTechEnabled());
+  auto technology_block =
+      stream.ConsumeUntilPeekedTypeIs<kRightParenthesisToken>();
+
+  // Parse errors inside the parentheses are treated as kUnsupported to
+  // simulate parsing the font-tech function as <general-enclosed>. In
+  // other words: even if this block is not understood as font-tech, it
+  // can be parsed as <general-enclosed> and result in false.
+
+  CSSIdentifierValue* consumed_value =
+      css_parsing_utils::ConsumeFontTechIdent(technology_block);
+
+  if (!consumed_value)
+    return Result::kUnsupported;
+
+  CSSSupportsParser::Result parse_result = Result::kUnsupported;
+
+  parse_result =
+      css_parsing_utils::IsSupportedKeywordTech(consumed_value->GetValueID())
+          ? Result::kSupported
+          : Result::kUnsupported;
+
+  technology_block.ConsumeWhitespace();
+  if (!technology_block.AtEnd())
+    return Result::kUnsupported;
+
+  return parse_result;
 }
 
 // <supports-decl> = ( <declaration> )
@@ -218,14 +263,12 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeGeneralEnclosed(
     CSSParserTokenStream& stream) {
   if (IsGeneralEnclosed(first_token)) {
     auto block = stream.ConsumeUntilPeekedTypeIs<kRightParenthesisToken>();
-    // Note that <any-value> matches a sequence of one or more tokens, hence the
-    // block-range can't be empty.
-    // https://drafts.csswg.org/css-syntax-3/#typedef-any-value
-    if (block.AtEnd() || !ConsumeAnyValue(block))
+    // TODO(crbug.com/1269284): We should allow empty values here.
+    if (!ConsumeAnyValue(block) || !block.AtEnd())
       return Result::kParseFailure;
 
     stream.ConsumeWhitespace();
-    return Result::kUnknown;
+    return Result::kUnsupported;
   }
   return Result::kParseFailure;
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,29 +7,22 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/values.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-#include "components/prefs/pref_registry_simple.h"
 
 namespace chromeos {
-
-class HIDDetectionScreen;
 
 // Interface between HID detection screen and its representation, either WebUI
 // or Views one. Note, do not forget to call OnViewDestroyed in the
 // dtor.
-class HIDDetectionView {
+class HIDDetectionView : public base::SupportsWeakPtr<HIDDetectionView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"hid-detection"};
+  inline constexpr static StaticOobeScreenId kScreenId{"hid-detection",
+                                                       "HIDDetectionScreen"};
 
-  virtual ~HIDDetectionView() {}
+  virtual ~HIDDetectionView() = default;
 
   virtual void Show() = 0;
-  virtual void Hide() = 0;
-  virtual void Bind(HIDDetectionScreen* screen) = 0;
-  virtual void Unbind() = 0;
   virtual void SetKeyboardState(const std::string& value) = 0;
   virtual void SetMouseState(const std::string& value) = 0;
   virtual void SetTouchscreenDetectedState(bool value) = 0;
@@ -48,14 +41,16 @@ class HIDDetectionScreenHandler
  public:
   using TView = HIDDetectionView;
 
-  explicit HIDDetectionScreenHandler(JSCallsContainer* js_calls_container);
+  HIDDetectionScreenHandler();
+
+  HIDDetectionScreenHandler(const HIDDetectionScreenHandler&) = delete;
+  HIDDetectionScreenHandler& operator=(const HIDDetectionScreenHandler&) =
+      delete;
+
   ~HIDDetectionScreenHandler() override;
 
   // HIDDetectionView implementation:
   void Show() override;
-  void Hide() override;
-  void Bind(HIDDetectionScreen* screen) override;
-  void Unbind() override;
   void SetKeyboardState(const std::string& value) override;
   void SetMouseState(const std::string& value) override;
   void SetTouchscreenDetectedState(bool value) override;
@@ -69,14 +64,8 @@ class HIDDetectionScreenHandler
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void DeclareJSCallbacks() override;
-  void Initialize() override;
 
-  // Registers the preference for derelict state.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  // Emulate that a USB Mouse and a USB Keyboard are connected for testing.
-  void HandleEmulateDevicesConnectedForTesting();
+  void GetAdditionalParameters(base::Value::Dict* dict) override;
 
   // State that has been exported to JS. Used by tests.
   std::string keyboard_state_for_test() const { return keyboard_state_; }
@@ -110,15 +99,15 @@ class HIDDetectionScreenHandler
   std::string keyboard_device_name_;
   std::string keyboard_device_label_;
   bool continue_button_enabled_ = false;
-
-  HIDDetectionScreen* screen_ = nullptr;
-
-  // If true, Initialize() will call Show().
-  bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HIDDetectionScreenHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::HIDDetectionScreenHandler;
+using ::chromeos::HIDDetectionView;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_HID_DETECTION_SCREEN_HANDLER_H_

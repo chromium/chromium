@@ -1,0 +1,333 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/app_list/search/omnibox_provider.h"
+
+#include <cstddef>
+#include <string>
+#include <vector>
+
+#include "ash/constants/ash_features.h"
+#include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/app_list/search/omnibox_util.h"
+#include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
+#include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
+#include "chrome/common/chrome_constants.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/suggestion_answer.h"
+#include "components/variations/scoped_variations_ids_provider.h"
+#include "components/variations/variations_ids_provider.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace app_list::test {
+
+// Note that there is necessarily a lot of overlap with unittest in the lacros
+// omnibox provider unittest, since this is testing the same behavior.
+namespace {
+
+// Helper functions to populate search results.
+// Currently only the ones that may affect test results are filled.
+AutocompleteMatch NewOmniboxResult(const std::string& url) {
+  AutocompleteMatch result;
+
+  result.relevance = 1.0;
+  result.destination_url = GURL(url);
+  result.stripped_destination_url = GURL(url);
+  result.contents = u"contents";
+  result.description = u"description";
+  result.type = AutocompleteMatchType::BOOKMARK_TITLE;
+
+  return result;
+}
+
+AutocompleteMatch NewAnswerResult(const std::string& url,
+                                  SuggestionAnswer::AnswerType answer_type) {
+  AutocompleteMatch result;
+
+  result.relevance = 1.0;
+  result.destination_url = GURL(url);
+  result.stripped_destination_url = GURL(url);
+  result.contents = u"contents";
+  result.description = u"description";
+  SuggestionAnswer answer;
+  answer.set_type(answer_type);
+  result.answer = answer;
+
+  return result;
+}
+
+AutocompleteMatch NewOpenTabResult(const std::string& url) {
+  AutocompleteMatch result;
+
+  result.relevance = 1.0;
+  result.destination_url = GURL(url);
+  result.stripped_destination_url = GURL(url);
+  result.contents = u"contents";
+  result.description = u"description";
+  result.type = AutocompleteMatchType::OPEN_TAB;
+
+  return result;
+}
+
+// A mock class for the AutoCompleteController.
+class MockAutoCompleteController : public AutocompleteController {
+ public:
+  MockAutoCompleteController()
+      : AutocompleteController(
+            std::make_unique<FakeAutocompleteProviderClient>(),
+            0) {}
+  MockAutoCompleteController(const MockAutoCompleteController&) = delete;
+  MockAutoCompleteController& operator=(const MockAutoCompleteController&) =
+      delete;
+  ~MockAutoCompleteController() override = default;
+
+  // Do nothing when it is called by OmniboxProvider.
+  void Start(const AutocompleteInput& input) override {}
+};
+
+}  // namespace
+
+class OmniboxProviderTest : public testing::Test {
+ public:
+  OmniboxProviderTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kProductivityLauncher);
+  }
+  OmniboxProviderTest(const OmniboxProviderTest&) = delete;
+  OmniboxProviderTest& operator=(const OmniboxProviderTest&) = delete;
+  ~OmniboxProviderTest() override = default;
+
+  void SetUp() override {
+    // Create the profile manager and an active profile.
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    // The profile needs a template URL service for history Omnibox results.
+    profile_ = profile_manager_->CreateTestingProfile(
+        chrome::kInitialProfile,
+        {{TemplateURLServiceFactory::GetInstance(),
+          base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)}});
+
+    // Create client of our provider.
+    search_controller_ = std::make_unique<TestSearchController>();
+
+    // Create the object to actually test.
+    list_controller_ =
+        std::make_unique<::test::TestAppListControllerDelegate>();
+    provider_ =
+        std::make_unique<OmniboxProvider>(profile_, list_controller_.get());
+    provider_->set_controller(search_controller_.get());
+
+    std::unique_ptr<AutocompleteController> controller =
+        std::make_unique<MockAutoCompleteController>();
+    provider_->set_controller_for_test(std::move(controller));
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void TearDown() override {
+    provider_.reset();
+    search_controller_.reset();
+    list_controller_.reset();
+    scoped_feature_list_.Reset();
+    profile_ = nullptr;
+    profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
+  }
+
+  void ProduceResults(const AutocompleteResult& results) {
+    provider_->PopulateFromACResult(std::move(results));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Starts a search and waits for the query to be sent
+  void StartSearch(const std::u16string& query) {
+    provider_->Start(query);
+    base::RunLoop().RunUntilIdle();
+  }
+
+ protected:
+  std::unique_ptr<TestSearchController> search_controller_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
+  std::unique_ptr<AppListControllerDelegate> list_controller_;
+
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  TestingProfile* profile_;
+
+  std::unique_ptr<OmniboxProvider> provider_;
+};
+
+// Test that results each instantiate a Chrome search result.
+TEST_F(OmniboxProviderTest, Basic) {
+  StartSearch(u"query");
+
+  std::vector<AutocompleteMatch> to_produce;
+  AutocompleteResult result;
+
+  to_produce.emplace_back(NewOmniboxResult("https://example.com/result"));
+  to_produce.emplace_back(
+      NewAnswerResult("https://example.com/answer",
+                      SuggestionAnswer::AnswerType::ANSWER_TYPE_WEATHER));
+  to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab"));
+  result.AppendMatches(to_produce);
+  ProduceResults(std::move(result));
+
+  // Results always appear after answer and open tab entries.
+  ASSERT_EQ(3u, search_controller_->last_results().size());
+  EXPECT_EQ("omnibox_answer://https://example.com/answer",
+            search_controller_->last_results()[0]->id());
+  EXPECT_EQ("opentab://https://example.com/open_tab",
+            search_controller_->last_results()[1]->id());
+  EXPECT_EQ("https://example.com/result",
+            search_controller_->last_results()[2]->id());
+}
+
+// Test that newly-produced results supersede previous results.
+TEST_F(OmniboxProviderTest, NewResults) {
+  StartSearch(u"query");
+
+  // Produce one result.
+  std::vector<AutocompleteMatch> to_produce;
+  AutocompleteResult result;
+
+  to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab_1"));
+  result.AppendMatches(to_produce);
+  ProduceResults(std::move(result));
+
+  // Then produce another.
+  StartSearch(u"query");
+
+  to_produce.clear();
+  AutocompleteResult new_result;
+  to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab_2"));
+  new_result.AppendMatches(to_produce);
+  ProduceResults(std::move(new_result));
+
+  // Only newest result should be stored.
+  ASSERT_EQ(1u, search_controller_->last_results().size());
+  EXPECT_EQ("opentab://https://example.com/open_tab_2",
+            search_controller_->last_results()[0]->id());
+}
+
+// Test that invalid URLs aren't accepted.
+TEST_F(OmniboxProviderTest, BadUrls) {
+  StartSearch(u"query");
+
+  // All results have bad URLs.
+  std::vector<AutocompleteMatch> to_produce;
+  AutocompleteResult result;
+
+  to_produce.emplace_back(NewOmniboxResult(""));
+  to_produce.emplace_back(NewAnswerResult(
+      "badscheme", SuggestionAnswer::AnswerType::ANSWER_TYPE_WEATHER));
+  to_produce.emplace_back(NewOpenTabResult("http://?k=v"));
+  result.AppendMatches(to_produce);
+  ProduceResults(std::move(result));
+
+  // None of the results should be accepted.
+  EXPECT_TRUE(search_controller_->last_results().empty());
+}
+
+// Test that results with the same URL are deduplicated in the correct order.
+TEST_F(OmniboxProviderTest, Deduplicate) {
+  StartSearch(u"query");
+
+  // A result that has the same URL as another result, but is a history (i.e.
+  // higher-priority) type.
+  auto history_result = NewOmniboxResult("https://example.com/result_1");
+  history_result.contents = u"history";
+  history_result.description = u"history description";
+  history_result.type = AutocompleteMatchType::SEARCH_HISTORY;
+
+  std::vector<AutocompleteMatch> to_produce;
+  AutocompleteResult result;
+
+  to_produce.emplace_back(NewOmniboxResult("https://example.com/result_2"));
+  to_produce.emplace_back(NewOmniboxResult("https://example.com/result_1"));
+  to_produce.emplace_back(std::move(history_result));
+
+  result.AppendMatches(to_produce);
+  ProduceResults(std::move(result));
+
+  // Only the higher-priority (i.e. history) result for URL 1 should be kept.
+  ASSERT_EQ(2u, search_controller_->last_results().size());
+  EXPECT_EQ("https://example.com/result_1",
+            search_controller_->last_results()[0]->id());
+  EXPECT_EQ(u"history", search_controller_->last_results()[0]->title());
+  EXPECT_EQ("https://example.com/result_2",
+            search_controller_->last_results()[1]->id());
+}
+
+// Test that results aren't created for URLs for which there are other
+// specialist producers.
+TEST_F(OmniboxProviderTest, UnhandledUrls) {
+  StartSearch(u"query");
+
+  // Drive URLs aren't handled (_unless_ they are open tabs pointing to the
+  // Drive website), and file URLs aren't handled.
+  std::vector<AutocompleteMatch> to_produce;
+  AutocompleteResult result;
+
+  to_produce.emplace_back(NewOmniboxResult("https://drive.google.com/doc1"));
+  to_produce.emplace_back(
+      NewAnswerResult("https://docs.google.com/doc2",
+                      SuggestionAnswer::AnswerType::ANSWER_TYPE_FINANCE));
+  to_produce.emplace_back(NewOpenTabResult("https://drive.google.com/doc1"));
+  to_produce.emplace_back(NewOpenTabResult("https://docs.google.com/doc2"));
+  to_produce.emplace_back(NewOpenTabResult("file:///docs/doc3"));
+  result.AppendMatches(to_produce);
+  ProduceResults(std::move(result));
+
+  ASSERT_EQ(2u, search_controller_->last_results().size());
+  EXPECT_EQ("opentab://https://drive.google.com/doc1",
+            search_controller_->last_results()[0]->id());
+  EXPECT_EQ("opentab://https://docs.google.com/doc2",
+            search_controller_->last_results()[1]->id());
+}
+
+// Test that answers of certain kinds (that tend to over-trigger) aren't shown
+// on very short queries.
+TEST_F(OmniboxProviderTest, ShortQuery) {
+  // Start with a query that is one character too short.
+  StartSearch(std::u16string(kMinQueryLengthForCommonAnswers - 1, 'a'));
+
+  // All results except dictionary and translate answers are allowed.
+  std::vector<AutocompleteMatch> to_produce;
+  AutocompleteResult result;
+
+  to_produce.emplace_back(NewOmniboxResult("https://nonanswer.com/"));
+  to_produce.emplace_back(
+      NewAnswerResult("https://finance.com/",
+                      SuggestionAnswer::AnswerType::ANSWER_TYPE_FINANCE));
+  to_produce.emplace_back(NewOpenTabResult("https://opentab.com/"));
+  to_produce.emplace_back(
+      NewAnswerResult("https://translation.com/",
+                      SuggestionAnswer::AnswerType::ANSWER_TYPE_TRANSLATION));
+  to_produce.emplace_back(
+      NewAnswerResult("https://dictionary.com/",
+                      SuggestionAnswer::AnswerType::ANSWER_TYPE_DICTIONARY));
+  result.AppendMatches(to_produce);
+  ProduceResults(std::move(result));
+
+  ASSERT_EQ(3u, search_controller_->last_results().size());
+  EXPECT_EQ("omnibox_answer://https://finance.com/",
+            search_controller_->last_results()[0]->id());
+  EXPECT_EQ("opentab://https://opentab.com/",
+            search_controller_->last_results()[1]->id());
+  EXPECT_EQ("https://nonanswer.com/",
+            search_controller_->last_results()[2]->id());
+}
+
+}  // namespace app_list::test

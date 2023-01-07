@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/accessibility_controller.h"
+#include "base/time/time.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ash {
@@ -87,9 +88,9 @@ void TestAccessibilityControllerClient::OnSelectToSpeakPanelAction(
 void TestAccessibilityControllerClient::SetA11yOverrideWindow(
     aura::Window* a11y_override_window) {}
 
-base::Optional<Sound>
+absl::optional<Sound>
 TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
-  return std::exchange(sound_key_, base::nullopt);
+  return std::exchange(sound_key_, absl::nullopt);
 }
 
 }  // namespace ash

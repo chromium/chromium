@@ -12,10 +12,10 @@
 <if expr="is_ios">
   <translation id="IDS_WEB_FONT_FAMILY">Helvetica,Apple SD Gothic Neo,AppleGothic,sans-serif</translation>
 </if>
-<if expr="desktop_linux and not chromeos">
+<if expr="is_linux">
   <translation id="IDS_WEB_FONT_FAMILY">Noto Sans CJK KR,NanumGothic,UnDotum,Baekmuk Gulim,sans-serif</translation>
 </if>
-<if expr="chromeos">
+<if expr="is_chromeos">
   <translation id="IDS_UI_FONT_FAMILY_CROS">Roboto, Noto Sans CJK KR, 13px</translation>
   <translation id="IDS_WEB_FONT_FAMILY">Roboto, Noto Sans CJK KR, sans-serif</translation>
 </if>

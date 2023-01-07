@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include <lib/zx/job.h>
 
 #include "base/memory/ref_counted.h"
+#include "base/threading/sequence_bound.h"
 #include "sandbox/policy/export.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 namespace base {
 class FilteredServiceDirectory;
 struct LaunchOptions;
-class SequencedTaskRunner;
 }  // namespace base
 
 namespace sandbox {
@@ -25,14 +25,11 @@ namespace policy {
 class SANDBOX_POLICY_EXPORT SandboxPolicyFuchsia {
  public:
   // Must be called on the IO thread.
-  explicit SandboxPolicyFuchsia(SandboxType type);
+  explicit SandboxPolicyFuchsia(sandbox::mojom::Sandbox type);
   ~SandboxPolicyFuchsia();
 
-  // Sets the service directory to pass to the child process when launching it.
-  // This is only supported for SandboxType::kWebContext processes.  If this is
-  // not called for a WEB_CONTEXT process then it will receive no services.
-  void SetServiceDirectory(
-      fidl::InterfaceHandle<::fuchsia::io::Directory> service_directory_client);
+  SandboxPolicyFuchsia(const SandboxPolicyFuchsia&) = delete;
+  SandboxPolicyFuchsia& operator=(const SandboxPolicyFuchsia&) = delete;
 
   // Modifies the process launch |options| to achieve  the level of
   // isolation appropriate for current the sandbox type. The caller may then add
@@ -41,17 +38,15 @@ class SANDBOX_POLICY_EXPORT SandboxPolicyFuchsia {
   void UpdateLaunchOptionsForSandbox(base::LaunchOptions* options);
 
  private:
-  SandboxType type_;
+  sandbox::mojom::Sandbox type_;
 
   // Services directory used for the /svc namespace of the child process.
-  std::unique_ptr<base::FilteredServiceDirectory> service_directory_;
+  base::SequenceBound<base::FilteredServiceDirectory>
+      filtered_service_directory_;
   fidl::InterfaceHandle<::fuchsia::io::Directory> service_directory_client_;
-  scoped_refptr<base::SequencedTaskRunner> service_directory_task_runner_;
 
   // Job in which the child process is launched.
   zx::job job_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxPolicyFuchsia);
 };
 
 }  // namespace policy

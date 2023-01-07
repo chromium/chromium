@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<item android:state_selected="true">
+    <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
+        android:shape="rectangle"
+        app:surfaceElevation="@dimen/section_tab_selected_bg_elevation">
+      <corners android:radius="@dimen/section_tab_background_corner_radius"/>
+      <stroke android:width="@dimen/section_tab_bezel_width" android:color="@android:color/transparent" />
+    </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
+  </item>
+</selector>

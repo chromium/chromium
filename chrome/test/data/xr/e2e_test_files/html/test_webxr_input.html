@@ -13,8 +13,6 @@ that Daydream controller input is registered when using Daydream View.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       var selectStartCount = 0;
       var selectEndCount = 0;
       var selectCount = 0;
@@ -35,6 +33,7 @@ that Daydream controller input is registered when using Daydream View.
         assert_true(selectStartCount == selectCount,
                     'selectstart fired before select');
         selectStartCount++;
+        console.log("Received selectStart: " + selectStartCount);
       }
 
       function onSelect(ev) {
@@ -45,6 +44,7 @@ that Daydream controller input is registered when using Daydream View.
         assert_true(selectCount == selectEndCount,
                     'select fired after selectend');
         selectCount++;
+        console.log("Received onSelect: " + selectCount);
       }
 
       function onSelectEnd(ev) {
@@ -56,6 +56,8 @@ that Daydream controller input is registered when using Daydream View.
         assert_true(selectEndCount == selectCount,
                     'selectend fired before select');
         currentIteration++;
+        console.log("Received selectEnd: " + selectEndCount);
+        console.log("Finished iteration: " + currentIteration + " of " + iterations);
         if (currentIteration == iterations) {
           done();
         } else if (finishAfterEachInput) {

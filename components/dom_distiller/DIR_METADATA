@@ -1,5 +1,2 @@
-monorail {
-  component: "UI>Browser>ReaderMode"
-}
+mixins: "//components/dom_distiller/COMMON_METADATA"
 
-team_email: "dom-distiller-eng@google.com"

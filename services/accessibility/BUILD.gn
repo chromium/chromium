@@ -1,0 +1,69 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//services/accessibility/buildflags.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags =
+      [ "ENABLE_ACCESSIBILITY_SERVICE=$enable_accessibility_service_internal" ]
+}
+
+source_set("lib") {
+  sources = [
+    "automation_impl.cc",
+    "automation_impl.h",
+  ]
+  public_deps = [
+    "//services/accessibility/public/mojom",
+    "//ui/accessibility:ax_base",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "accessibility_service_cros.cc",
+      "accessibility_service_cros.h",
+      "assistive_technology_controller_impl.cc",
+      "assistive_technology_controller_impl.h",
+    ]
+  } else {
+    sources += [
+      "accessibility_service_chrome.cc",
+      "accessibility_service_chrome.h",
+    ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_automation_client.cc",
+    "fake_automation_client.h",
+  ]
+
+  deps = [ ":lib" ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  deps = [
+    ":lib",
+    ":test_support",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+
+  if (is_chromeos_ash) {
+    sources = [
+      "accessibility_service_cros_unittest.cc",
+      "assistive_technology_controller_impl_unittest.cc",
+    ]
+  } else {
+    sources = [ "accessibility_service_chrome_unittest.cc" ]
+  }
+}

@@ -1,23 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
 
-// This enum lists eviction reasons from the renderer.
-enum RendererEvictionReason {
-  // JavaScript execution ocurrs.
-  kJavaScriptExecution,
-  // Datapipe for reading network requests is already drained upon bfcache entrance.
-  kNetworkRequestDatapipeDrained,
-  // Network request is redirected.
-  kNetworkRequestRedirected,
-  // Network request is open for too long.
-  kNetworkRequestTimeout,
-  // Network request buffers too much data.
-  kNetworkExceedsBufferLimit,
-};
-//
+import "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom";
+
 // This interface defines back-forward cache related methods that will be
 // invoked from the renderer process.
 //
@@ -29,4 +17,10 @@ interface BackForwardCacheControllerHost {
   // Evicts the page from the back/forward cache due to e.g., JavaScript
   // execution and network request redirect.
   EvictFromBackForwardCache(RendererEvictionReason reason);
+
+  // Sent by the blink's FrameScheduler when a list of active features
+  // the scheduler tracks changes.
+  // See blink::scheduler::SchedulingPolicy::Feature for the meaning
+  // of the individual bits.
+  DidChangeBackForwardCacheDisablingFeatures(uint64 features_mask);
 };

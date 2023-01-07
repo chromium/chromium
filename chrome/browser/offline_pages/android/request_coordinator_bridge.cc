@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,7 +78,8 @@ void OnRemoveRequestsDone(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
 
 void SavePageLaterCallback(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
                            AddRequestResult value) {
-  base::android::RunIntCallbackAndroid(j_callback_obj, static_cast<int>(value));
+  base::android::RunIntCallbackAndroid(j_callback_obj,
+                                       static_cast<int32_t>(value));
 }
 
 RequestCoordinator* GetRequestCoordinator(

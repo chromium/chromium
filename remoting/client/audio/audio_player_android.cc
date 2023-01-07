@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/client/audio/audio_player_android.h"
 
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace remoting {
@@ -81,7 +81,7 @@ bool AudioPlayerAndroid::ResetAudioPlayer(
   const SLboolean reqs[] = {SL_BOOLEAN_TRUE};
 
   if ((*engine_)->CreateAudioPlayer(engine_, &player_object_, &source, &sink,
-                                    base::size(ids), ids,
+                                    std::size(ids), ids,
                                     reqs) != SL_RESULT_SUCCESS ||
       (*player_object_)->Realize(player_object_, SL_BOOLEAN_FALSE) !=
           SL_RESULT_SUCCESS ||

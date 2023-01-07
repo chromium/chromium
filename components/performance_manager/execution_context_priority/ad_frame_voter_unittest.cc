@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/performance_manager/execution_context_priority/ad_frame_voter.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -69,7 +70,7 @@ class AdFrameVoterTest : public GraphTestHarness {
   AdFrameVoterTest& operator=(const AdFrameVoterTest&) = delete;
 
   void SetUp() override {
-    GetGraphFeaturesHelper().EnableExecutionContextRegistry();
+    GetGraphFeatures().EnableExecutionContextRegistry();
     Super::SetUp();
     auto wrapper = std::make_unique<GraphOwnedWrapper>();
     wrapper_ = wrapper.get();
@@ -82,7 +83,7 @@ class AdFrameVoterTest : public GraphTestHarness {
   VoterId voter_id() const { return wrapper_->voter_id(); }
 
  private:
-  GraphOwnedWrapper* wrapper_ = nullptr;
+  raw_ptr<GraphOwnedWrapper> wrapper_ = nullptr;
 };
 
 // Tests that the AdFrameVoter correctly casts a vote for an ad frame.

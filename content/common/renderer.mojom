@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,10 @@ import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_types.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/color/color_id.mojom";
 
 struct UpdateScrollbarThemeParams {
   // TODO(avi): Update these to optional values when optional numeric types are
@@ -33,8 +34,15 @@ struct UpdateScrollbarThemeParams {
 struct UpdateSystemColorInfoParams {
   bool is_dark_mode;
   bool forced_colors;
+
   // uint32 represents a SkColor in the map.
+  // TODO(crbug.com/1251637): These colors should be consolidated into the
+  // renderer's ColorProviders.
   map<SystemThemeColor, uint32> colors;
+
+  // Maps used to reconstruct ColorProvider instances in the renderer.
+  map<color.mojom.RendererColorId, skia.mojom.SkColor> light_colors;
+  map<color.mojom.RendererColorId, skia.mojom.SkColor> dark_colors;
 };
 
 // The background state for the render process.  When backgrounded the process's
@@ -108,19 +116,6 @@ interface Renderer {
   // Android.
   SetWebKitSharedTimersSuspended(bool suspend);
 
-  // Sets the user-agent string. This is needed because getting the value in the
-  // renderer from the system leads to a wrong value due to sandboxing. This
-  // must be called as early as possible, during the renderer process
-  // initialization.
-  SetUserAgent(string user_agent);
-
-  // Sets the user agent metadata. This will replace `SetUserAgent()` if we
-  // decide to ship https://github.com/WICG/ua-client-hints.
-  SetUserAgentMetadata(blink.mojom.UserAgentMetadata metadata);
-
-  // Sets the CORS exempt header list for sanity checking (e.g. DCHECKs).
-  SetCorsExemptHeaderList(array<string> list);
-
   // Tells the renderer about a scrollbar appearance change. Only for use on
   // OS X.
   UpdateScrollbarTheme(UpdateScrollbarThemeParams params);
@@ -141,11 +136,6 @@ interface Renderer {
   SetProcessState(RenderProcessBackgroundState background_state,
                   RenderProcessVisibleState visible_state);
 
-  // Tells the scheduler about "keep-alive" state which can be due to:
-  // service workers, shared workers, or fetch keep-alive.
-  // If set to true, then the scheduler should not freeze the renderer.
-  SetSchedulerKeepActive(bool keep_active);
-
   // Tells the renderer process that it has been locked to a site (i.e., a
   // scheme plus eTLD+1, such as https://google.com), or to a more specific
   // origin.
@@ -162,7 +152,7 @@ interface Renderer {
   // This property is process global because we ensure that a renderer process
   // host only cross-origin isolated agents or only non-cross-origin isolated
   // agents, not both.
-  // This is called at most once. This is called earlier than any frame commit.
+  // This is called at most once, prior to committing a navigation.
   SetIsCrossOriginIsolated(bool value);
 
   // A single API call to convey record/replay events
@@ -170,4 +160,36 @@ interface Renderer {
   RecordReplayBrowserEvent(
       string name,
       mojo_base.mojom.DictionaryValue params);
+
+  // Set whether this renderer process has the "isolated application" isolation
+  // level. Similarly to the `SetIsCrossOriginIsolated()` method above, this
+  // flag is process global, and called at most once, prior to committing a
+  // navigation.
+  //
+  // TODO(crbug.com/1206150): We need a specification for this restriction.
+  SetIsIsolatedApplication(bool value);
+
+  // Initialize renderer user agent string, user agent metadata and CORS exempt
+  // header list on renderer startup.
+  //
+  // |user_agent| sets the user-agent string. This is needed because getting the
+  // value in the renderer from the system leads to a wrong value due to
+  // sandboxing. This must be called as early as possible, during the renderer
+  // process initialization.
+  //
+  // |full_user_agent| sets the full user-agent with high-entropy information.
+  //
+  // |reduced_user_agent| sets a user-agent with high-entropy information
+  // reduced to common values.
+  //
+  // |metadata| sets the user agent metadata. This will replace `SetUserAgent()`
+  // if we decide to ship https://github.com/WICG/ua-client-hints.
+  //
+  // |cors_exempt_header_list| sets the CORS exempt header list for sanity
+  // checking (e.g. DCHECKs).
+  InitializeRenderer(string user_agent,
+                     string full_user_agent,
+                     string reduced_user_agent,
+                     blink.mojom.UserAgentMetadata metadata,
+                     array<string> cors_exempt_header_list);
 };

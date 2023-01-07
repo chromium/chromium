@@ -1,27 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_CERT_X509_CERT_TYPES_H_
 #define NET_CERT_X509_CERT_TYPES_H_
 
-#include <stddef.h>
-#include <string.h>
-
-#include <map>
-#include <set>
 #include <string>
 #include <vector>
 
-#include "base/strings/string_piece.h"
-#include "build/build_config.h"
-#include "net/base/hash_value.h"
 #include "net/base/net_export.h"
-#include "net/cert/cert_status_flags.h"
-
-namespace base {
-class Time;
-}  // namespace base
 
 namespace net {
 
@@ -62,23 +49,6 @@ struct NET_EXPORT CertPrincipal {
   std::vector<std::string> domain_components;
 };
 
-// A list of ASN.1 date/time formats that ParseCertificateDate() supports,
-// encoded in the canonical forms specified in RFC 2459/3280/5280.
-enum CertDateFormat {
-  // UTCTime: Format is YYMMDDHHMMSSZ
-  CERT_DATE_FORMAT_UTC_TIME,
-
-  // GeneralizedTime: Format is YYYYMMDDHHMMSSZ
-  CERT_DATE_FORMAT_GENERALIZED_TIME,
-};
-
-// Attempts to parse |raw_date|, an ASN.1 date/time string encoded as
-// |format|, and writes the result into |*time|. If an invalid date is
-// specified, or if parsing fails, returns false, and |*time| will not be
-// updated.
-NET_EXPORT_PRIVATE bool ParseCertificateDate(const base::StringPiece& raw_date,
-                                             CertDateFormat format,
-                                             base::Time* time);
 }  // namespace net
 
 #endif  // NET_CERT_X509_CERT_TYPES_H_

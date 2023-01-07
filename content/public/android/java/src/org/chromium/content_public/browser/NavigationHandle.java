@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.NetError;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /**
  * JNI bridge with content::NavigationHandle
@@ -18,27 +20,52 @@ import org.chromium.url.GURL;
 @JNINamespace("content")
 public class NavigationHandle {
     private long mNativeNavigationHandleProxy;
-    private final boolean mIsInMainFrame;
+    private final boolean mIsInPrimaryMainFrame;
     private final boolean mIsRendererInitiated;
     private final boolean mIsSameDocument;
-    private Integer mPageTransition;
+    private @PageTransition int mPageTransition;
     private GURL mUrl;
+    private GURL mReferrerUrl;
+    private GURL mBaseUrlForDataUrl;
     private boolean mHasCommitted;
     private boolean mIsDownload;
     private boolean mIsErrorPage;
-    private boolean mIsFragmentNavigation;
+    private boolean mIsPrimaryMainFrameFragmentNavigation;
     private boolean mIsValidSearchFormUrl;
     private @NetError int mErrorCode;
     private int mHttpStatusCode;
+    private final Origin mInitiatorOrigin;
+    private final boolean mIsPost;
+    private boolean mHasUserGesture;
+    private boolean mIsRedirect;
+    private boolean mIsExternalProtocol;
+    private final long mNavigationId;
+    private final boolean mIsPageActivation;
+    private final boolean mIsReload;
 
     @CalledByNative
-    public NavigationHandle(long nativeNavigationHandleProxy, GURL url, boolean isInMainFrame,
-            boolean isSameDocument, boolean isRendererInitiated) {
+    public NavigationHandle(long nativeNavigationHandleProxy, @NonNull GURL url,
+            @NonNull GURL referrerUrl, @NonNull GURL baseUrlForDataUrl,
+            boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
+            Origin initiatorOrigin, @PageTransition int transition, boolean isPost,
+            boolean hasUserGesture, boolean isRedirect, boolean isExternalProtocol,
+            long navigationId, boolean isPageActivation, boolean isReload) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
-        mIsInMainFrame = isInMainFrame;
+        mReferrerUrl = referrerUrl;
+        mBaseUrlForDataUrl = baseUrlForDataUrl;
+        mIsInPrimaryMainFrame = isInPrimaryMainFrame;
         mIsSameDocument = isSameDocument;
         mIsRendererInitiated = isRendererInitiated;
+        mInitiatorOrigin = initiatorOrigin;
+        mPageTransition = transition;
+        mIsPost = isPost;
+        mHasUserGesture = hasUserGesture;
+        mIsRedirect = isRedirect;
+        mIsExternalProtocol = isExternalProtocol;
+        mNavigationId = navigationId;
+        mIsPageActivation = isPageActivation;
+        mIsReload = isReload;
     }
 
     /**
@@ -46,8 +73,10 @@ public class NavigationHandle {
      * @param url The new URL.
      */
     @CalledByNative
-    private void didRedirect(GURL url) {
+    private void didRedirect(GURL url, boolean isExternalProtocol) {
         mUrl = url;
+        mIsRedirect = true;
+        mIsExternalProtocol = isExternalProtocol;
     }
 
     /**
@@ -55,17 +84,19 @@ public class NavigationHandle {
      */
     @CalledByNative
     public void didFinish(@NonNull GURL url, boolean isErrorPage, boolean hasCommitted,
-            boolean isFragmentNavigation, boolean isDownload, boolean isValidSearchFormUrl,
-            int transition, @NetError int errorCode, int httpStatuscode) {
+            boolean isPrimaryMainFrameFragmentNavigation, boolean isDownload,
+            boolean isValidSearchFormUrl, @PageTransition int transition, @NetError int errorCode,
+            int httpStatuscode, boolean isExternalProtocol) {
         mUrl = url;
         mIsErrorPage = isErrorPage;
         mHasCommitted = hasCommitted;
-        mIsFragmentNavigation = isFragmentNavigation;
+        mIsPrimaryMainFrameFragmentNavigation = isPrimaryMainFrameFragmentNavigation;
         mIsDownload = isDownload;
         mIsValidSearchFormUrl = isValidSearchFormUrl;
-        mPageTransition = transition == -1 ? null : transition;
+        mPageTransition = transition;
         mErrorCode = errorCode;
         mHttpStatusCode = httpStatuscode;
+        mIsExternalProtocol = isExternalProtocol;
     }
 
     /**
@@ -84,15 +115,34 @@ public class NavigationHandle {
      * The URL the frame is navigating to.  This may change during the navigation when encountering
      * a server redirect.
      */
+    @NonNull
     public GURL getUrl() {
         return mUrl;
     }
 
+    /** The referrer URL for the navigation. */
+    @NonNull
+    public GURL getReferrerUrl() {
+        return mReferrerUrl;
+    }
+
     /**
-     * Whether the navigation is taking place in the main frame or in a subframe.
+     * Used for specifying a base URL for pages loaded via data URLs.
      */
-    public boolean isInMainFrame() {
-        return mIsInMainFrame;
+    @NonNull
+    public GURL getBaseUrlForDataUrl() {
+        return mBaseUrlForDataUrl;
+    }
+
+    /**
+     * Whether the navigation is taking place in the main frame of the primary
+     * frame tree. With MPArch (crbug.com/1164280), a WebContents may have
+     * additional frame trees for prerendering pages in addition to the primary
+     * frame tree (holding the page currently shown to the user). This remains
+     * constant over the navigation lifetime.
+     */
+    public boolean isInPrimaryMainFrame() {
+        return mIsInPrimaryMainFrame;
     }
 
     /**
@@ -147,7 +197,7 @@ public class NavigationHandle {
 
     /**
      * Return the HTTP status code. This can be used after the response is received in
-     * didFinishNavigation()
+     * didFinishNavigationInPrimaryMainFrame()
      */
     public int httpStatusCode() {
         return mHttpStatusCode;
@@ -156,15 +206,15 @@ public class NavigationHandle {
     /**
      * Returns the page transition type.
      */
-    public Integer pageTransition() {
+    public @PageTransition int pageTransition() {
         return mPageTransition;
     }
 
     /**
-     * Returns true on same-document navigation with fragment change.
+     * Returns true on same-document navigation with fragment change in the primary main frame.
      */
-    public boolean isFragmentNavigation() {
-        return mIsFragmentNavigation;
+    public boolean isPrimaryMainFrameFragmentNavigation() {
+        return mIsPrimaryMainFrameFragmentNavigation;
     }
 
     /**
@@ -210,6 +260,56 @@ public class NavigationHandle {
      */
     public void removeRequestHeader(String headerName) {
         NavigationHandleJni.get().removeRequestHeader(mNativeNavigationHandleProxy, headerName);
+    }
+
+    /**
+     * Get the Origin that initiated this navigation. May be null in the case of navigations
+     * originating from the browser.
+     */
+    public Origin getInitiatorOrigin() {
+        return mInitiatorOrigin;
+    }
+
+    /** True if the the navigation method is "POST". */
+    public boolean isPost() {
+        return mIsPost;
+    }
+
+    /** True if the navigation was initiated by the user. */
+    public boolean hasUserGesture() {
+        return mHasUserGesture;
+    }
+
+    /** Is the navigation a redirect (in which case URL is the "target" address). */
+    public boolean isRedirect() {
+        return mIsRedirect;
+    }
+
+    /** True if the target URL can't be handled by Chrome's internal protocol handlers. */
+    public boolean isExternalProtocol() {
+        return mIsExternalProtocol;
+    }
+
+    /**
+     * Get a unique ID for this navigation.
+     */
+    public long getNavigationId() {
+        return mNavigationId;
+    }
+
+    /*
+     * Whether this navigation is activating an existing page (e.g. served from
+     * the BackForwardCache or Prerender).
+     */
+    public boolean isPageActivation() {
+        return mIsPageActivation;
+    }
+
+    /**
+     * Whether this navigation was initiated by a page reload.
+     */
+    public boolean isReload() {
+        return mIsReload;
     }
 
     @NativeMethods

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ namespace blink {
 //                      bool has_children);
 // }
 template <typename Visitor>
-void VisitLayoutNGTableColumn(const Vector<NGBlockNode>& columns,
+void VisitLayoutNGTableColumn(const HeapVector<NGBlockNode>& columns,
                               wtf_size_t table_column_count,
                               Visitor* visitor) {
   wtf_size_t current_column_index = 0;

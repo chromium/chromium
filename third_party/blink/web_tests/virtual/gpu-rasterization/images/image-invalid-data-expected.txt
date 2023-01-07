@@ -1,1 +1,0 @@
-This is test for an image with invalid data. No crash means test PASS.

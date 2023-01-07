@@ -1,0 +1,15 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
+// Helper to facilitate testing of renderer-side state in content_browsertests.
+interface RenderFrameTestHelper {
+  // Get the DocumentToken for the RenderFrame's active document. A RenderFrame
+  // can be reused for a cross-document navigation; after the navigation, the
+  // newly-committed document is considered the active document.
+  GetDocumentToken() => (blink.mojom.DocumentToken token);
+};

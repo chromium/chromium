@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,12 @@ namespace offline_pages {
 class PrefetchBackgroundTaskHandlerImplTest : public testing::Test {
  public:
   PrefetchBackgroundTaskHandlerImplTest();
+
+  PrefetchBackgroundTaskHandlerImplTest(
+      const PrefetchBackgroundTaskHandlerImplTest&) = delete;
+  PrefetchBackgroundTaskHandlerImplTest& operator=(
+      const PrefetchBackgroundTaskHandlerImplTest&) = delete;
+
   ~PrefetchBackgroundTaskHandlerImplTest() override;
 
   void SetUp() override;
@@ -40,9 +46,6 @@ class PrefetchBackgroundTaskHandlerImplTest : public testing::Test {
   TestingProfile profile_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<PrefetchBackgroundTaskHandlerImpl> task_handler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefetchBackgroundTaskHandlerImplTest);
 };
 
 PrefetchBackgroundTaskHandlerImplTest::PrefetchBackgroundTaskHandlerImplTest()

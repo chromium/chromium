@@ -1,14 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_BASE_FRAME_RATE_ESTIMATOR_H_
 #define MEDIA_BASE_FRAME_RATE_ESTIMATOR_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "media/base/media_export.h"
 #include "media/base/moving_average.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -25,7 +24,7 @@ class MEDIA_EXPORT FrameRateEstimator {
 
   // Return the current (bucketed) frame rate (not duration), or nullopt if one
   // isn't available with suitable certainty.
-  base::Optional<int> ComputeFPS();
+  absl::optional<int> ComputeFPS();
 
   // Reset everything.
   void Reset();
@@ -43,7 +42,7 @@ class MEDIA_EXPORT FrameRateEstimator {
   uint64_t required_samples_;
 
   // Most recently computed bucketed FPS (not duration), if any.
-  base::Optional<int> most_recent_bucket_;
+  absl::optional<int> most_recent_bucket_;
 };
 
 }  // namespace media

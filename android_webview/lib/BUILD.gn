@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,17 +19,21 @@ source_set("lib") {
     "//android_webview/browser/gfx",
     "//android_webview/common",
     "//android_webview/gpu",
+    "//android_webview/js_sandbox/service:js_sandbox",
     "//android_webview/renderer",
     "//base",
     "//cc/base",
     "//components/autofill/core/common",
     "//components/crash/core/common",
+    "//components/embedder_support:embedder_support",
     "//components/gwp_asan/buildflags",
     "//components/metrics",
     "//components/power_scheduler",
     "//components/safe_browsing/android:safe_browsing_api_handler",
     "//components/services/heap_profiling/public/cpp",
     "//components/spellcheck:buildflags",
+    "//components/translate/core/common",
+    "//components/variations",
     "//components/version_info",
     "//components/version_info/android:channel_getter",
     "//components/viz/common",
@@ -37,12 +41,13 @@ source_set("lib") {
     "//content/public/browser",
     "//content/public/common",
     "//content/public/common:content_descriptor_keys",
+    "//device/base:base",
     "//gin",
     "//gpu/command_buffer/service",
     "//gpu/config",
-    "//gpu/ipc:gl_in_process_context",
     "//media",
     "//media:media_buildflags",
+    "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/events:gesture_detection",
   ]

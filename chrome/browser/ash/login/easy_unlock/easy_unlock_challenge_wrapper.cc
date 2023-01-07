@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,10 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager.h"
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Salt added to a SecureMessage.
@@ -80,4 +79,4 @@ void EasyUnlockChallengeWrapper::OnChannelBindingDataSigned(
   std::move(callback_).Run(wrapped_challenge.SerializeAsString());
 }
 
-}  // namespace chromeos
+}  // namespace ash

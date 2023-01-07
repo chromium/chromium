@@ -28,7 +28,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_SHADER_PRECISION_FORMAT_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/khronos/GLES2/gl2.h"
 
 namespace blink {

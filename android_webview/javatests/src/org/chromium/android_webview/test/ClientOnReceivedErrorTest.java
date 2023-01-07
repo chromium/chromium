@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,13 +18,18 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.WebviewErrorCode;
+import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * Tests for the ContentViewClient.onReceivedError() method.
+ * Tests for the ContentViewClient.onReceivedError() method. Tests for the
+ * ContentViewClient.onReceivedError() method. Historically, this test suite focused on the basic
+ * callback behavior from the 1st iteration of the callback. Now chromium only supports one version
+ * of the callback, so the distinction between this and ClientOnReceivedError2Test.java is no longer
+ * as significant.
  */
 @RunWith(AwJUnit4ClassRunner.class)
 public class ClientOnReceivedErrorTest {
@@ -33,6 +38,9 @@ public class ClientOnReceivedErrorTest {
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
+
+    // URLs which do not exist on the public internet (because they use the ".test" TLD).
+    private static final String BAD_HTML_URL = "http://fake.domain.test/a.html";
 
     @Before
     public void setUp() {
@@ -46,48 +54,42 @@ public class ClientOnReceivedErrorTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testOnReceivedErrorOnInvalidUrl() throws Throwable {
-        TestCallbackHelperContainer.OnReceivedErrorHelper onReceivedErrorHelper =
-                mContentsClient.getOnReceivedErrorHelper();
+        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
 
-        String url = "http://id.be.really.surprised.if.this.address.existed.blah/";
-        int onReceivedErrorCallCount = onReceivedErrorHelper.getCallCount();
-        mActivityTestRule.loadUrlAsync(mAwContents, url);
+        int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
+        mActivityTestRule.loadUrlAsync(mAwContents, BAD_HTML_URL);
 
         // Verify that onReceivedError is called. The particular error code
         // that is returned depends on the configuration of the device (such as
         // existence of a proxy) so we don't test for it.
-        onReceivedErrorHelper.waitForCallback(onReceivedErrorCallCount,
-                                              1 /* numberOfCallsToWaitFor */,
-                                              WAIT_TIMEOUT_MS,
-                                              TimeUnit.MILLISECONDS);
-        Assert.assertEquals(url, onReceivedErrorHelper.getFailingUrl());
-        Assert.assertNotNull(onReceivedErrorHelper.getDescription());
+        onReceivedErrorHelper.waitForCallback(onReceivedErrorCount,
+                /* numberOfCallsToWaitFor= */ 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Assert.assertEquals(BAD_HTML_URL, onReceivedErrorHelper.getRequest().url);
+        Assert.assertNotNull(onReceivedErrorHelper.getError().description);
     }
 
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testOnReceivedErrorOnInvalidScheme() throws Throwable {
-        TestCallbackHelperContainer.OnReceivedErrorHelper onReceivedErrorHelper =
-                mContentsClient.getOnReceivedErrorHelper();
+        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
 
         String url = "foo://some/resource";
-        int onReceivedErrorCallCount = onReceivedErrorHelper.getCallCount();
+        int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, url);
 
-        onReceivedErrorHelper.waitForCallback(onReceivedErrorCallCount);
-        Assert.assertEquals(
-                WebviewErrorCode.ERROR_UNSUPPORTED_SCHEME, onReceivedErrorHelper.getErrorCode());
-        Assert.assertEquals(url, onReceivedErrorHelper.getFailingUrl());
-        Assert.assertNotNull(onReceivedErrorHelper.getDescription());
+        onReceivedErrorHelper.waitForCallback(onReceivedErrorCount);
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNSUPPORTED_SCHEME,
+                onReceivedErrorHelper.getError().errorCode);
+        Assert.assertEquals(url, onReceivedErrorHelper.getRequest().url);
+        Assert.assertNotNull(onReceivedErrorHelper.getError().description);
     }
 
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testNoErrorOnFailedSubresourceLoad() throws Throwable {
-        TestCallbackHelperContainer.OnReceivedErrorHelper onReceivedErrorHelper =
-                mContentsClient.getOnReceivedErrorHelper();
+        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
 
@@ -103,49 +105,49 @@ public class ClientOnReceivedErrorTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testNonExistentAssetUrl() throws Throwable {
-        TestCallbackHelperContainer.OnReceivedErrorHelper onReceivedErrorHelper =
-                mContentsClient.getOnReceivedErrorHelper();
+        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
         final String url = "file:///android_asset/does_not_exist.html";
-        int onReceivedErrorCallCount = onReceivedErrorHelper.getCallCount();
+        int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, url);
 
-        onReceivedErrorHelper.waitForCallback(onReceivedErrorCallCount);
-        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, onReceivedErrorHelper.getErrorCode());
-        Assert.assertEquals(url, onReceivedErrorHelper.getFailingUrl());
-        Assert.assertNotNull(onReceivedErrorHelper.getDescription());
+        onReceivedErrorHelper.waitForCallback(onReceivedErrorCount);
+        Assert.assertEquals(
+                WebviewErrorCode.ERROR_UNKNOWN, onReceivedErrorHelper.getError().errorCode);
+        Assert.assertEquals(url, onReceivedErrorHelper.getRequest().url);
+        Assert.assertNotNull(onReceivedErrorHelper.getError().description);
     }
 
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testNonExistentResourceUrl() throws Throwable {
-        TestCallbackHelperContainer.OnReceivedErrorHelper onReceivedErrorHelper =
-                mContentsClient.getOnReceivedErrorHelper();
+        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
         final String url = "file:///android_res/raw/does_not_exist.html";
-        int onReceivedErrorCallCount = onReceivedErrorHelper.getCallCount();
+        int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, url);
 
-        onReceivedErrorHelper.waitForCallback(onReceivedErrorCallCount);
-        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, onReceivedErrorHelper.getErrorCode());
-        Assert.assertEquals(url, onReceivedErrorHelper.getFailingUrl());
-        Assert.assertNotNull(onReceivedErrorHelper.getDescription());
+        onReceivedErrorHelper.waitForCallback(onReceivedErrorCount);
+        Assert.assertEquals(
+                WebviewErrorCode.ERROR_UNKNOWN, onReceivedErrorHelper.getError().errorCode);
+        Assert.assertEquals(url, onReceivedErrorHelper.getRequest().url);
+        Assert.assertNotNull(onReceivedErrorHelper.getError().description);
     }
 
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testCacheMiss() throws Throwable {
-        TestCallbackHelperContainer.OnReceivedErrorHelper onReceivedErrorHelper =
-                mContentsClient.getOnReceivedErrorHelper();
+        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
         final String url = "http://example.com/index.html";
-        int onReceivedErrorCallCount = onReceivedErrorHelper.getCallCount();
+        int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents)
                 .setCacheMode(WebSettings.LOAD_CACHE_ONLY);
         mActivityTestRule.loadUrlAsync(mAwContents, url);
 
-        onReceivedErrorHelper.waitForCallback(onReceivedErrorCallCount);
-        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, onReceivedErrorHelper.getErrorCode());
-        Assert.assertEquals(url, onReceivedErrorHelper.getFailingUrl());
-        Assert.assertFalse(onReceivedErrorHelper.getDescription().isEmpty());
+        onReceivedErrorHelper.waitForCallback(onReceivedErrorCount);
+        Assert.assertEquals(
+                WebviewErrorCode.ERROR_UNKNOWN, onReceivedErrorHelper.getError().errorCode);
+        Assert.assertEquals(url, onReceivedErrorHelper.getRequest().url);
+        Assert.assertFalse(onReceivedErrorHelper.getError().description.isEmpty());
     }
 }

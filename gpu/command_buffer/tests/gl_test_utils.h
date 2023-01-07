@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,10 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 
 namespace gl {
@@ -26,8 +28,8 @@ class GLTestHelper {
  public:
   static const uint8_t kCheckClearValue = 123u;
 
-  static bool InitializeGL(gl::GLImplementation gl_impl);
-  static bool InitializeGLDefault();
+  static gl::GLDisplay* InitializeGL(gl::GLImplementation gl_impl);
+  static gl::GLDisplay* InitializeGLDefault();
 
   static bool HasExtension(const char* extension);
   static bool CheckGLError(const char* msg, int line);
@@ -120,7 +122,7 @@ class GpuCommandBufferTestEGL {
     return gfx::HasExtension(gl_extensions_, extension);
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Create GLImageNativePixmap filled in with the given pixels.
   scoped_refptr<gl::GLImageNativePixmap> CreateGLImageNativePixmap(
       gfx::BufferFormat format,
@@ -140,6 +142,7 @@ class GpuCommandBufferTestEGL {
   gl::GLWindowSystemBindingInfo window_system_binding_info_;
   gfx::ExtensionSet egl_extensions_;
   gfx::ExtensionSet gl_extensions_;
+  raw_ptr<gl::GLDisplay> gl_display_ = nullptr;
 };
 
 }  // namespace gpu

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -35,8 +35,6 @@ class TestSystemHealthBenchmarks(unittest.TestCase):
 
   def testSystemHealthStorySetIsUsed(self):
     for b in _GetAllSystemHealthBenchmarks():
-      if b is system_health_benchmark.WebLayerStartupSystemHealthBenchmark:
-        continue
       if b is system_health_benchmark.WebviewStartupSystemHealthBenchmark:
         continue
       if b is system_health_benchmark.PCScanSystemHealthBenchmark:
@@ -59,7 +57,8 @@ class TestSystemHealthStories(unittest.TestCase):
       # so they explicitly override RunPageInteractions method.
       if s.name.startswith('long_running:'):
         continue
-      self.assertEquals(s.__class__.RunPageInteractions,
+      self.assertEqual(
+          s.__class__.RunPageInteractions,
           system_health_story.SystemHealthStory.RunPageInteractions,
           'Story %s overrides RunPageInteractions. Override _DidLoadDocument '
           'instead' % s.name)

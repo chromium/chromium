@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tab;
 
-import org.chromium.base.annotations.MockedInTests;
+import org.chromium.build.annotations.MockedInTests;
 
 /**
  */
@@ -26,8 +26,9 @@ public interface TabLifecycle {
      * displayed. It restores the ContentView if it is not available after the cold start and
      * reloads the tab if its renderer has crashed.
      * @param type Specifies how the tab was selected.
+     * @param caller The caller of this method.
      */
-    void show(@TabSelectionType int type);
+    void show(@TabSelectionType int type, int caller);
 
     /**
      * Triggers the hiding logic for the view backing the tab.

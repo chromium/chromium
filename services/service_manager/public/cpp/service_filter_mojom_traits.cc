@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,13 @@ bool StructTraits<service_manager::mojom::ServiceFilterDataView,
   std::string service_name;
   if (!data.ReadServiceName(&service_name))
     return false;
-  base::Optional<base::Token> instance_group;
+  absl::optional<base::Token> instance_group;
   if (!data.ReadInstanceGroup(&instance_group))
     return false;
-  base::Optional<base::Token> instance_id;
+  absl::optional<base::Token> instance_id;
   if (!data.ReadInstanceId(&instance_id))
     return false;
-  base::Optional<base::Token> globally_unique_id;
+  absl::optional<base::Token> globally_unique_id;
   if (!data.ReadGloballyUniqueId(&globally_unique_id))
     return false;
   out->set_service_name(service_name);

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,8 +24,8 @@ class TraceDownloaderTests(unittest.TestCase):
 
   def testGetLocalTraceFileName(self):
     computed_name = trace_downloader.GetLocalTraceFileName(
-        'https://console.developers.google.com/m/cloudstorage/b/'
-        'chrome-telemetry-output/o/20201029T003106_99943/v8.browsing_mobile/'
+        'https://storage.cloud.google.com/chrome-telemetry-output/'
+        '20201029T003106_99943/v8.browsing_mobile/'
         'browse_shopping_amazon_2019/retry_0/trace.html')
 
     expected_name = ('20201029T003106_99943_v8.browsing_mobile_'

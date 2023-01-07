@@ -27,6 +27,7 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -84,8 +85,8 @@ void ExternalDateTimeChooser::OpenDateTimeChooser(
     date_time_dialog_value->suggestions.push_back(suggestion->Clone());
   }
 
-  auto response_callback = WTF::Bind(&ExternalDateTimeChooser::ResponseHandler,
-                                     WrapPersistent(this));
+  auto response_callback = WTF::BindOnce(
+      &ExternalDateTimeChooser::ResponseHandler, WrapPersistent(this));
   GetDateTimeChooser(frame).OpenDateTimeDialog(
       std::move(date_time_dialog_value), std::move(response_callback));
 }
@@ -145,6 +146,10 @@ void ExternalDateTimeChooser::DidCancelChooser() {
 
 void ExternalDateTimeChooser::EndChooser() {
   DCHECK(client_);
+  if (date_time_chooser_.is_bound()) {
+    date_time_chooser_->CloseDateTimeDialog();
+    date_time_chooser_.reset();
+  }
   DateTimeChooserClient* client = client_;
   client_ = nullptr;
   client->DidEndChooser();

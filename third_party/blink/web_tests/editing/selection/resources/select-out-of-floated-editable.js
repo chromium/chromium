@@ -3,6 +3,7 @@ function log(msg) {
 }
 
 if (window.testRunner && window.eventSender) {
+    testRunner.setTextSubpixelPositioning(true);
     testRunner.dumpAsText();
 
     var x = floatedEditable.offsetLeft + (floatedEditable.offsetWidth / 2);

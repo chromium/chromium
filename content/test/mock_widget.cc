@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,13 +72,17 @@ void MockWidget::WasHidden() {
     std::move(shown_hidden_callback_).Run();
 }
 
-void MockWidget::WasShown(base::TimeTicks show_request_timestamp,
-                          bool was_evicted,
+void MockWidget::WasShown(bool was_evicted,
                           blink::mojom::RecordContentToVisibleTimeRequestPtr
                               record_tab_switch_time_request) {
   is_hidden_ = false;
   if (shown_hidden_callback_)
     std::move(shown_hidden_callback_).Run();
 }
+
+void MockWidget::RequestPresentationTimeForNextFrame(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {}
+
+void MockWidget::CancelPresentationTimeRequest() {}
 
 }  // namespace content

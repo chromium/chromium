@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_capacity_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -97,6 +97,18 @@ class NativeIOFileManager final : public ScriptWrappable,
                   String new_name,
                   ScriptPromiseResolver* resolver);
 
+  // Executes the actual requestCapacity, after preconditions have been checked.
+  void RequestCapacityImpl(uint64_t requested_capacity,
+                           ScriptPromiseResolver* resolver);
+
+  // Executes the actual releaseCapacity, after preconditions have been checked.
+  void ReleaseCapacityImpl(uint64_t requested_difference,
+                           ScriptPromiseResolver* resolver);
+
+  // Executes the actual getRemainingCapacity, after preconditions have been
+  // checked.
+  void GetRemainingCapacityImpl(ScriptPromiseResolver* resolver);
+
   // Called when the mojo backend disconnects.
   void OnBackendDisconnect();
 
@@ -128,7 +140,7 @@ class NativeIOFileManager final : public ScriptWrappable,
   HeapMojoRemote<mojom::blink::NativeIOHost> backend_;
 
   // Caches results of checking if storage access is allowed.
-  base::Optional<bool> storage_access_allowed_;
+  absl::optional<bool> storage_access_allowed_;
 };
 
 }  // namespace blink

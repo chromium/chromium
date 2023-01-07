@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace sensors {
@@ -40,8 +40,13 @@ class FakeSensorDevice final : public mojom::SensorDevice {
   mojo::ReceiverId AddReceiver(
       mojo::PendingReceiver<mojom::SensorDevice> pending_receiver);
   void RemoveReceiver(mojo::ReceiverId id);
+  void RemoveReceiverWithReason(mojo::ReceiverId id,
+                                mojom::SensorDeviceDisconnectReason reason,
+                                const std::string& description);
 
   void ClearReceivers();
+  void ClearReceiversWithReason(mojom::SensorDeviceDisconnectReason reason,
+                                const std::string& description);
   bool HasReceivers() const;
   size_t SizeOfReceivers() const;
 
@@ -49,6 +54,18 @@ class FakeSensorDevice final : public mojom::SensorDevice {
                     const std::string& attr_value);
 
   void ResetObserverRemote(mojo::ReceiverId id);
+  void ResetObserverRemoteWithReason(mojo::ReceiverId id,
+                                     mojom::SensorDeviceDisconnectReason reason,
+                                     const std::string& description);
+
+  // Unlike SetChannelsEnabled() below, SetChannelsEnabledWithId() is used
+  // without a mojo pipe, instead, with the mojo::ReceiverId from AddReceiver().
+  // It lets the tests manually enable or disable channels to simulate some
+  // unexpected behaviors of iioservice, such as channels being unavailable
+  // suddenly.
+  void SetChannelsEnabledWithId(mojo::ReceiverId id,
+                                const std::vector<int32_t>& iio_chn_indices,
+                                bool en);
 
   // Implementation of mojom::SensorDevice.
   void SetTimeout(uint32_t timeout) override {}
@@ -74,7 +91,7 @@ class FakeSensorDevice final : public mojom::SensorDevice {
     ClientData();
     ~ClientData();
 
-    base::Optional<double> frequency;
+    absl::optional<double> frequency;
     std::vector<bool> channels_enabled;
     mojo::Remote<mojom::SensorDeviceSamplesObserver> observer;
   };

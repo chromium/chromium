@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests DOM update highlights in the DOM tree.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container">
@@ -141,7 +141,7 @@
 
     function callback() {
       var treeOutline = ElementsTestRunner.firstElementsTreeOutline();
-      var highlights = treeOutline._element.getElementsByClassName('dom-update-highlight');
+      var highlights = treeOutline.elementInternal.getElementsByClassName('dom-update-highlight');
       for (var i = 0; i < highlights.length; ++i)
         highlights[i].classList.remove('dom-update-highlight');
       next();

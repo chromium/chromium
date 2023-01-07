@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
+
 
 import argparse
 import collections
@@ -14,7 +14,12 @@ import logging
 import tempfile
 import os
 import sys
-import urllib
+try:
+  from urllib.parse import urlencode
+  from urllib.request import urlopen
+except ImportError:
+  from urllib import urlencode
+  from urllib2 import urlopen
 
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -49,7 +54,7 @@ def pre_cell(data, html_class='center'):
   }
 
 
-class LinkTarget(object):
+class LinkTarget:
   # Opens the linked document in a new window or tab.
   NEW_TAB = '_blank'
   # Opens the linked document in the same frame as it was clicked.
@@ -104,9 +109,7 @@ def action_cell(action, data, html_class):
 
 
 def flakiness_dashbord_link(test_name, suite_name):
-  url_args = urllib.urlencode([
-      ('testType', suite_name),
-      ('tests', test_name)])
+  url_args = urlencode([('testType', suite_name), ('tests', test_name)])
   return ('https://test-results.appspot.com/'
          'dashboards/flakiness_dashboard.html#%s' % url_args)
 
@@ -124,8 +127,7 @@ def logs_cell(result, test_name, suite_name):
         target=LinkTarget.NEW_TAB))
   if link_list:
     return links_cell(link_list)
-  else:
-    return cell('(no logs)')
+  return cell('(no logs)')
 
 
 def code_search(test, cs_base_url):
@@ -156,7 +158,7 @@ def create_test_table(results_dict, cs_base_url, suite_name):
   ]
 
   test_row_blocks = []
-  for test_name, test_results in results_dict.iteritems():
+  for test_name, test_results in results_dict.items():
     test_runs = []
     for index, result in enumerate(test_results):
       if index == 0:
@@ -214,31 +216,25 @@ def create_suite_table(results_dict):
     cell(data=0),  # elapsed_time_ms
   ]
 
-  suite_row_dict = {}
-  for test_name, test_results in results_dict.iteritems():
+  suite_row_dict = collections.defaultdict(lambda: [
+      # Note: |suite_name| will be given in the following for loop.
+      # It is not assigned yet here.
+      action_cell('showTestsOfOneSuiteOnlyWithNewState("%s")' % suite_name,
+                  suite_name, 'left'),  # suite_name
+      cell(data=0),  # number_success_tests
+      cell(data=0),  # number_fail_tests
+      cell(data=0),  # all_tests
+      cell(data=0),  # elapsed_time_ms
+  ])
+  for test_name, test_results in results_dict.items():
     # TODO(mikecase): This logic doesn't work if there are multiple test runs.
     # That is, if 'per_iteration_data' has multiple entries.
     # Since we only care about the result of the last test run.
     result = test_results[-1]
 
-    suite_name = (test_name.split('#')[0] if '#' in test_name
-                  else test_name.split('.')[0])
-    if suite_name in suite_row_dict:
-      suite_row = suite_row_dict[suite_name]
-    else:
-      suite_row = [
-        action_cell(
-          'showTestsOfOneSuiteOnlyWithNewState("%s")' % suite_name,
-          suite_name,
-          'left'
-        ),             # suite_name
-        cell(data=0),  # number_success_tests
-        cell(data=0),  # number_fail_tests
-        cell(data=0),  # all_tests
-        cell(data=0),  # elapsed_time_ms
-      ]
-
-    suite_row_dict[suite_name] = suite_row
+    suite_name = (test_name.split('#')[0]
+                  if '#' in test_name else test_name.split('.')[0])
+    suite_row = suite_row_dict[suite_name]
 
     suite_row[ALL_COUNT_INDEX]['data'] += 1
     footer_row[ALL_COUNT_INDEX]['data'] += 1
@@ -250,10 +246,12 @@ def create_suite_table(results_dict):
       suite_row[FAIL_COUNT_INDEX]['data'] += 1
       footer_row[FAIL_COUNT_INDEX]['data'] += 1
 
-    suite_row[TIME_INDEX]['data'] += result['elapsed_time_ms']
-    footer_row[TIME_INDEX]['data'] += result['elapsed_time_ms']
+    # Some types of crashes can have 'null' values for elapsed_time_ms.
+    if result['elapsed_time_ms'] is not None:
+      suite_row[TIME_INDEX]['data'] += result['elapsed_time_ms']
+      footer_row[TIME_INDEX]['data'] += result['elapsed_time_ms']
 
-  for suite in suite_row_dict.values():
+  for suite in list(suite_row_dict.values()):
     if suite[FAIL_COUNT_INDEX]['data'] > 0:
       suite[FAIL_COUNT_INDEX]['class'] += ' failure'
     else:
@@ -264,13 +262,12 @@ def create_suite_table(results_dict):
   else:
     footer_row[FAIL_COUNT_INDEX]['class'] += ' success'
 
-  return (header_row,
-          [[suite_row] for suite_row in suite_row_dict.values()],
+  return (header_row, [[suite_row]
+                       for suite_row in list(suite_row_dict.values())],
           footer_row)
 
 
 def feedback_url(result_details_link):
-  # pylint: disable=redefined-variable-type
   url_args = [
       ('labels', 'Pri-2,Type-Bug,Restrict-View-Google'),
       ('summary', 'Result Details Feedback:'),
@@ -278,8 +275,7 @@ def feedback_url(result_details_link):
   ]
   if result_details_link:
     url_args.append(('comment', 'Please check out: %s' % result_details_link))
-  url_args = urllib.urlencode(url_args)
-  # pylint: enable=redefined-variable-type
+  url_args = urlencode(url_args)
   return 'https://bugs.chromium.org/p/chromium/issues/entry?%s' % url_args
 
 
@@ -319,17 +315,16 @@ def results_to_html(results_dict, cs_base_url, bucket, test_name,
           'feedback_url': feedback_url(None),
         })
     return (html_render, None, None)
-  else:
-    dest = google_storage_helper.unique_name(
-        '%s_%s_%s' % (test_name, builder_name, build_number))
-    result_details_link = google_storage_helper.get_url_link(
-        dest, '%s/html' % bucket)
-    html_render = main_template.render(  #  pylint: disable=no-member
-        {
-          'tb_values': [suite_table_values, test_table_values],
-          'feedback_url': feedback_url(result_details_link),
-        })
-    return (html_render, dest, result_details_link)
+  dest = google_storage_helper.unique_name(
+      '%s_%s_%s' % (test_name, builder_name, build_number))
+  result_details_link = google_storage_helper.get_url_link(
+      dest, '%s/html' % bucket)
+  html_render = main_template.render(  #  pylint: disable=no-member
+      {
+        'tb_values': [suite_table_values, test_table_values],
+        'feedback_url': feedback_url(result_details_link),
+      })
+  return (html_render, dest, result_details_link)
 
 
 def result_details(json_path, test_name, cs_base_url, bucket=None,
@@ -349,7 +344,7 @@ def result_details(json_path, test_name, cs_base_url, bucket=None,
 
   results_dict = collections.defaultdict(list)
   for testsuite_run in json_object['per_iteration_data']:
-    for test, test_runs in testsuite_run.iteritems():
+    for test, test_runs in testsuite_run.items():
       results_dict[test].extend(test_runs)
   return results_to_html(results_dict, cs_base_url, bucket, test_name,
                          builder_name, build_number, local_output)
@@ -376,12 +371,12 @@ def ui_screenshot_set(json_path):
   ui_screenshots = []
   # pylint: disable=too-many-nested-blocks
   for testsuite_run in json_object['per_iteration_data']:
-    for _, test_runs in testsuite_run.iteritems():
+    for _, test_runs in testsuite_run.items():
       for test_run in test_runs:
         if 'ui screenshot' in test_run['links']:
           screenshot_link = test_run['links']['ui screenshot']
           if screenshot_link.startswith('file:'):
-            with contextlib.closing(urllib.urlopen(screenshot_link)) as f:
+            with contextlib.closing(urlopen(screenshot_link)) as f:
               test_screenshots = json.load(f)
           else:
             # Assume anything that isn't a file link is a google storage link
@@ -408,7 +403,7 @@ def upload_screenshot_set(json_path, test_name, bucket, builder_name,
   dest = google_storage_helper.unique_name(
     'screenshots_%s_%s_%s' % (test_name, builder_name, build_number),
     suffix='.json')
-  with tempfile.NamedTemporaryFile(suffix='.json') as temp_file:
+  with tempfile.NamedTemporaryFile(mode='w', suffix='.json') as temp_file:
     temp_file.write(screenshot_set)
     temp_file.flush()
     return google_storage_helper.upload(
@@ -468,7 +463,7 @@ def main():
       with open(args.output_json, 'w') as f:
         json.dump({}, f)
     return
-  elif len(args.positional) != 0 and args.json_file:
+  if len(args.positional) != 0 and args.json_file:
     raise parser.error('Exactly one of args.positional and '
                        'args.json_file should be given.')
 
@@ -518,8 +513,7 @@ def main():
 
   if ui_screenshot_set_link:
     ui_catalog_url = 'https://chrome-ui-catalog.appspot.com/'
-    ui_catalog_query = urllib.urlencode(
-        {'screenshot_source': ui_screenshot_set_link})
+    ui_catalog_query = urlencode({'screenshot_source': ui_screenshot_set_link})
     ui_screenshot_link = '%s?%s' % (ui_catalog_url, ui_catalog_query)
 
   if args.output_json:

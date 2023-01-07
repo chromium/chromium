@@ -1,8 +1,10 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/notifications/web_page_notifier_controller.h"
+
+#include <memory>
 
 #include "ash/public/cpp/notifier_metadata.h"
 #include "base/bind.h"
@@ -35,7 +37,7 @@ std::vector<ash::NotifierMetadata> WebPageNotifierController::GetNotifierList(
   favicon::FaviconService* const favicon_service =
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
-  favicon_tracker_.reset(new base::CancelableTaskTracker());
+  favicon_tracker_ = std::make_unique<base::CancelableTaskTracker>();
   patterns_.clear();
   for (ContentSettingsForOneType::const_iterator iter = settings.begin();
        iter != settings.end(); ++iter) {
@@ -82,7 +84,8 @@ void WebPageNotifierController::SetNotifierEnabled(
   // TODO(mukai): fix this.
   ContentSetting default_setting =
       HostContentSettingsMapFactory::GetForProfile(profile)
-          ->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS, NULL);
+          ->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
+                                     nullptr);
 
   DCHECK(default_setting == CONTENT_SETTING_ALLOW ||
          default_setting == CONTENT_SETTING_BLOCK ||

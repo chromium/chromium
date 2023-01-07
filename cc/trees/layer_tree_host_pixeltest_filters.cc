@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
+
+#include <memory>
 
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -13,7 +15,7 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/solid_color_content_layer_client.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace cc {
 namespace {
@@ -30,8 +32,6 @@ class LayerTreeHostFiltersPixelTest
   // generating separate base line file paths.
   const char* GetRendererSuffix() {
     switch (renderer_type_) {
-      case viz::RendererType::kGL:
-        return "gl";
       case viz::RendererType::kSkiaGL:
         return "skia_gl";
       case viz::RendererType::kSkiaVk:
@@ -109,27 +109,23 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
 
-#if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
   // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
   float percentage_pixels_large_error = 1.09f;  // 436px / (200*200)
   float percentage_pixels_small_error = 0.0f;
   float average_error_allowed_in_bad_pixels = 1.f;
   int large_error_allowed = 1;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
-      percentage_pixels_large_error,
-      percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels,
-      large_error_allowed,
-      small_error_allowed));
+      percentage_pixels_large_error, percentage_pixels_small_error,
+      average_error_allowed_in_bad_pixels, large_error_allowed,
+      small_error_allowed);
 #endif
 
-  RunPixelTest(
-      background,
-      use_software_renderer()
-          ? base::FilePath(FILE_PATH_LITERAL("backdrop_filter_blur_sw.png"))
-          : base::FilePath(FILE_PATH_LITERAL("backdrop_filter_blur.png")));
+  RunPixelTest(background,
+               base::FilePath(FILE_PATH_LITERAL("backdrop_filter_blur_.png"))
+                   .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterInvalid) {
@@ -153,6 +149,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterInvalid) {
 }
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRadius) {
+#if defined(MEMORY_SANITIZER)
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    GTEST_SKIP() << "TODO(crbug.com/1324336): Uninitialized data error";
+  }
+#endif
   if (use_software_renderer()) {
     // TODO(989238): Software renderer does not support/implement
     // kClamp_TileMode.
@@ -174,7 +175,9 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRadius) {
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
 
-#if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_FUCHSIA)
+  pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(false);
+#elif BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
   // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
   float percentage_pixels_large_error = 1.09f;  // 436px / (200*200)
   float percentage_pixels_small_error = 0.0f;
@@ -184,11 +187,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRadius) {
   // Windows using Dawn D3D12 has 4044 pixels off by max of 2.
   if (use_d3d12())
     percentage_pixels_large_error = 2.5275f;  // 4044px / (400*400)
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed));
+      small_error_allowed);
 #endif
   RunPixelTest(
       background,
@@ -229,11 +232,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRounded) {
           1.01f * percentage_pixels_small_error;
   // Divide average error by 4 since we blur most of the result.
   float average_error_allowed_in_bad_pixels = small_error_threshold / 4.f;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_or_small_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_limit,
-      small_error_threshold));
+      small_error_threshold);
 
   RunPixelTest(background, use_software_renderer()
                                ? base::FilePath(FILE_PATH_LITERAL(
@@ -243,6 +246,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRounded) {
 }
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurOutsets) {
+#if defined(MEMORY_SANITIZER)
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    GTEST_SKIP() << "TODO(crbug.com/1324336): Uninitialized data error";
+  }
+#endif
   scoped_refptr<SolidColorLayer> background = CreateSolidColorLayer(
       gfx::Rect(200, 200), SK_ColorWHITE);
 
@@ -262,8 +270,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurOutsets) {
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
 
-#if defined(OS_WIN) || defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_ARM64)
-#if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN) || defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
   // Windows has 5.9325% pixels by at most 2: crbug.com/259922
   float percentage_pixels_large_error = 6.0f;
 #else
@@ -274,13 +282,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurOutsets) {
   float average_error_allowed_in_bad_pixels = 2.f;
   int large_error_allowed = 2;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
-      percentage_pixels_large_error,
-      percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels,
-      large_error_allowed,
-      small_error_allowed));
+      percentage_pixels_large_error, percentage_pixels_small_error,
+      average_error_allowed_in_bad_pixels, large_error_allowed,
+      small_error_allowed);
 #else
   if (use_skia_vulkan())
     pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
@@ -374,8 +380,8 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
 // See skbug.com/9545
 TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
        DISABLED_BackdropFilterBlurOffAxis) {
-#if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN)
   // Windows has 116 pixels off by at most 2: crbug.com/225027
   float percentage_pixels_large_error = 0.3f;  // 116px / (200*200), rounded up
   int large_error_allowed = 2;
@@ -389,13 +395,11 @@ TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
   float percentage_pixels_small_error = 0.0f;
   float average_error_allowed_in_bad_pixels = 1.f;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
-      percentage_pixels_large_error,
-      percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels,
-      large_error_allowed,
-      small_error_allowed));
+      percentage_pixels_large_error, percentage_pixels_small_error,
+      average_error_allowed_in_bad_pixels, large_error_allowed,
+      small_error_allowed);
 #else
   if (use_skia_vulkan() || renderer_type_ == viz::RendererType::kSkiaDawn)
     pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
@@ -569,7 +573,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
 
     background->AddChild(layer);
 
-    rect.Inset(kInset, kInset);
+    rect.Inset(kInset);
   }
 
   scoped_refptr<SolidColorLayer> filter =
@@ -589,9 +593,13 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
   filter->SetBackdropFilters(filters);
   filter->ClearBackdropFilterBounds();
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(_MIPS_ARCH_LOONGSON) || \
-    defined(ARCH_CPU_ARM64)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_FUCHSIA)
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(false);
+  }
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
+    defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN)
   // Windows has 153 pixels off by at most 2: crbug.com/225027
   float percentage_pixels_large_error = 0.3825f;  // 153px / (200*200)
   int large_error_allowed = 2;
@@ -600,8 +608,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
     percentage_pixels_large_error = 0.415f;  // 166px / (200*200)
     large_error_allowed = 1;
   }
-#elif defined(OS_MAC)
-  // There's a 1 pixel error on MacOS
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  // There's a 1 pixel error on MacOS and ChromeOS
   float percentage_pixels_large_error = 0.0025f;  // 1px / (200*200)
   int large_error_allowed = 1;
 #elif defined(_MIPS_ARCH_LOONGSON)
@@ -615,20 +623,16 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
   float percentage_pixels_small_error = 0.0f;
   float average_error_allowed_in_bad_pixels = 1.f;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed));
+      small_error_allowed);
 #endif
 
   RunPixelTest(
       background,
-      base::FilePath(
-          (use_swangle() || use_skia_vulkan())
-              ? FILE_PATH_LITERAL("backdrop_filter_on_scaled_layer_.png")
-              : FILE_PATH_LITERAL(
-                    "backdrop_filter_on_scaled_layer_legacy_swiftshader_.png"))
+      base::FilePath(FILE_PATH_LITERAL("backdrop_filter_on_scaled_layer_.png"))
           .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
@@ -671,16 +675,18 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterRotated) {
 
   // Allow some fuzziness so that this doesn't fail when Skia makes minor
   // changes to blur or rectangle rendering.
-  float percentage_pixels_large_error = 4.f;
+  // Fuchsia/Flutter forces off the lowp skia raster pipeline resulting
+  // in a totally different code path for software rendering.
+  float percentage_pixels_large_error = 5.f;
   float percentage_pixels_small_error = 0.0f;
   float average_error_allowed_in_bad_pixels = 2.f;
   int large_error_allowed = 2;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed));
+      small_error_allowed);
 
   RunPixelTest(background,
                base::FilePath(FILE_PATH_LITERAL("backdrop_filter_rotated_.png"))
@@ -734,18 +740,14 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageRenderSurfaceScaled) {
     average_error_allowed_in_bad_pixels = 1.f;
     large_error_allowed = 1;
   }
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       /*discard_alpha=*/true, percentage_pixels_large_error,
       percentage_pixels_small_error, average_error_allowed_in_bad_pixels,
-      large_error_allowed, small_error_allowed));
+      large_error_allowed, small_error_allowed);
 
   RunPixelTest(
       background,
-      base::FilePath(
-          (use_swangle() || use_skia_vulkan())
-              ? FILE_PATH_LITERAL("scaled_render_surface_layer_.png")
-              : FILE_PATH_LITERAL(
-                    "scaled_render_surface_layer_legacy_swiftshader_.png"))
+      base::FilePath(FILE_PATH_LITERAL("scaled_render_surface_layer_.png"))
           .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
@@ -799,18 +801,18 @@ TEST_P(LayerTreeHostFiltersPixelTest, ZoomFilter) {
   contained_zoom->SetBackdropFilterBounds(gfx::RRectF(mid_filter_bounds, 0));
   root->AddChild(contained_zoom);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows has 1 pixel off by 1: crbug.com/259915
   float percentage_pixels_large_error = 0.00111112f;  // 1px / (300*300)
   float percentage_pixels_small_error = 0.0f;
   float average_error_allowed_in_bad_pixels = 1.f;
   int large_error_allowed = 1;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed));
+      small_error_allowed);
 #endif
 
   RunPixelTest(std::move(root),
@@ -840,14 +842,14 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedFilter) {
 
   background->AddChild(child);
 
-#if defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
 #if defined(ARCH_CPU_ARM64)
   // Windows, macOS, and Fuchsia on ARM64 has some pixels difference
   // crbug.com/1029728, crbug.com/1048249, crbug.com/1128443
-  float percentage_pixels_large_error = 0.391112f;
-  float average_error_allowed_in_bad_pixels = 1.1f;
+  float percentage_pixels_large_error = 1.f;
+  float average_error_allowed_in_bad_pixels = 2.f;
   int large_error_allowed = 3;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // Windows has 1 pixel off by 1: crbug.com/259915
   float percentage_pixels_large_error = 0.00111112f;  // 1px / (300*300)
   float average_error_allowed_in_bad_pixels = 1.f;
@@ -862,11 +864,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedFilter) {
 #endif
   float percentage_pixels_small_error = 0.0f;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed));
+      small_error_allowed);
 #endif
 
   RunPixelTest(background,
@@ -896,21 +898,21 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
   child->SetTransform(transform);
   FilterOperations filters;
   filters.Append(FilterOperation::CreateDropShadowFilter(
-      gfx::Point(10.0f, 10.0f), 0.0f, SK_ColorBLACK));
+      gfx::Point(10.0f, 10.0f), 0.0f, SkColors::kBlack));
   child->SetFilters(filters);
 
   background->AddChild(child);
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS) || \
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
     defined(ARCH_CPU_ARM64) || defined(USE_OZONE)
 #if defined(ARCH_CPU_ARM64) && \
-    (defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC))
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC))
   // Windows, macOS, and Fuchsia on ARM64 has some pixels difference.
   // crbug.com/1029728, crbug.com/1128443
   float percentage_pixels_large_error = 0.89f;
   float average_error_allowed_in_bad_pixels = 5.f;
   int large_error_allowed = 17;
-#elif defined(OS_MAC) || defined(OS_CHROMEOS) || defined(USE_OZONE)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || defined(USE_OZONE)
   // There's a 1 pixel error on MacOS and ChromeOS
   float percentage_pixels_large_error = 0.00111112f;  // 1px / (300*300)
   float average_error_allowed_in_bad_pixels = 1.f;
@@ -926,11 +928,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
 #endif
   float percentage_pixels_small_error = 0.0f;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed));
+      small_error_allowed);
 #else
   if (use_skia_vulkan())
     pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
@@ -1005,8 +1007,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, EnlargedTextureWithAlphaThresholdFilter) {
   filter_layer->AddChild(child1);
   filter_layer->AddChild(child2);
 
-  rect1.Inset(-5, -5);
-  rect2.Inset(-5, -5);
+  rect1.Inset(-5);
+  rect2.Inset(-5);
   FilterOperation::ShapeRects alpha_shape = {rect1, rect2};
   FilterOperations filters;
   filters.Append(
@@ -1085,8 +1087,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, BlurFilterWithClip) {
   // Force the allocation a larger textures.
   set_enlarge_texture_amount(gfx::Size(50, 50));
 
-#if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN)
   // Windows has 1880 pixels off by 1: crbug.com/259915
   float percentage_pixels_large_error = 4.7f;  // 1880px / (200*200)
 #else
@@ -1098,11 +1100,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, BlurFilterWithClip) {
   float average_error_allowed_in_bad_pixels = 1.f;
   int large_error_allowed = 2;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed));
+      small_error_allowed);
 #endif
 
   RunPixelTest(filter_layer,
@@ -1222,11 +1224,11 @@ class BackdropFilterInvertTest : public LayerTreeHostFiltersPixelTest {
       int large_error_allowed = 1;
       float percentage_pixels_small_error = 0.0f;
       int small_error_allowed = 0;
-      pixel_comparator_.reset(new FuzzyPixelComparator(
+      pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
           true,  // discard_alpha
           percentage_pixels_large_error, percentage_pixels_small_error,
           average_error_allowed_in_bad_pixels, large_error_allowed,
-          small_error_allowed));
+          small_error_allowed);
     }
     RunPixelTest(std::move(root), expected_result);
   }
@@ -1260,4 +1262,4 @@ TEST_P(BackdropFilterInvertTest, HiDpi) {
 }  // namespace
 }  // namespace cc
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

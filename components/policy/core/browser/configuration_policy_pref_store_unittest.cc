@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,17 +56,17 @@ TEST_F(ConfigurationPolicyPrefStoreListTest, GetDefault) {
 }
 
 TEST_F(ConfigurationPolicyPrefStoreListTest, SetValue) {
-  std::unique_ptr<base::ListValue> in_value(new base::ListValue());
-  in_value->AppendString("test1");
-  in_value->AppendString("test2,");
+  base::Value in_value(base::Value::Type::LIST);
+  in_value.Append("test1");
+  in_value.Append("test2,");
   PolicyMap policy;
   policy.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-             POLICY_SOURCE_CLOUD, in_value->Clone(), nullptr);
+             POLICY_SOURCE_CLOUD, in_value.Clone(), nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
   ASSERT_TRUE(value);
-  EXPECT_TRUE(in_value->Equals(value));
+  EXPECT_EQ(in_value, *value);
 }
 
 // Test cases for string-valued policy settings.
@@ -91,7 +91,7 @@ TEST_F(ConfigurationPolicyPrefStoreStringTest, SetValue) {
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
   ASSERT_TRUE(value);
-  EXPECT_TRUE(base::Value("http://chromium.org").Equals(value));
+  EXPECT_EQ(base::Value("http://chromium.org"), *value);
 }
 
 // Test cases for boolean-valued policy settings.
@@ -116,20 +116,16 @@ TEST_F(ConfigurationPolicyPrefStoreBooleanTest, SetValue) {
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
   ASSERT_TRUE(value);
-  bool boolean_value = true;
-  bool result = value->GetAsBoolean(&boolean_value);
-  ASSERT_TRUE(result);
-  EXPECT_FALSE(boolean_value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
 
   policy.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
              POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
   UpdateProviderPolicy(policy);
   value = nullptr;
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
-  boolean_value = false;
-  result = value->GetAsBoolean(&boolean_value);
-  ASSERT_TRUE(result);
-  EXPECT_TRUE(boolean_value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_TRUE(value->GetBool());
 }
 
 // Test cases for integer-valued policy settings.
@@ -153,7 +149,7 @@ TEST_F(ConfigurationPolicyPrefStoreIntegerTest, SetValue) {
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
-  EXPECT_TRUE(base::Value(2).Equals(value));
+  EXPECT_EQ(base::Value(2), *value);
 }
 
 // Exercises the policy refresh mechanism.
@@ -187,7 +183,7 @@ TEST_F(ConfigurationPolicyPrefStoreRefreshTest, Refresh) {
   UpdateProviderPolicy(policy);
   observer_.VerifyAndResetChangedKey(kTestPref);
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
-  EXPECT_TRUE(base::Value("http://www.chromium.org").Equals(value));
+  EXPECT_EQ(base::Value("http://www.chromium.org"), *value);
 
   UpdateProviderPolicy(policy);
   EXPECT_TRUE(observer_.changed_keys.empty());

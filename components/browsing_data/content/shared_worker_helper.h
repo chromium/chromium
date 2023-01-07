@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 
 #include <list>
 #include <set>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -33,7 +33,7 @@ class SharedWorkerHelper
   struct SharedWorkerInfo {
     SharedWorkerInfo(const GURL& worker,
                      const std::string& name,
-                     const url::Origin& constructor_origin);
+                     const blink::StorageKey& storage_key);
     SharedWorkerInfo(const SharedWorkerInfo& other);
     ~SharedWorkerInfo();
 
@@ -41,13 +41,16 @@ class SharedWorkerHelper
 
     GURL worker;
     std::string name;
-    url::Origin constructor_origin;
+    blink::StorageKey storage_key;
   };
 
   using FetchCallback =
       base::OnceCallback<void(const std::list<SharedWorkerInfo>&)>;
 
   explicit SharedWorkerHelper(content::StoragePartition* storage_partition);
+
+  SharedWorkerHelper(const SharedWorkerHelper&) = delete;
+  SharedWorkerHelper& operator=(const SharedWorkerHelper&) = delete;
 
   // Starts the fetching process returning the list of shared workers, which
   // will notify its completion via |callback|. This must be called only in the
@@ -57,7 +60,7 @@ class SharedWorkerHelper
   // Requests the given Shared Worker to be deleted.
   virtual void DeleteSharedWorker(const GURL& worker,
                                   const std::string& name,
-                                  const url::Origin& constructor_origin);
+                                  const blink::StorageKey& storage_key);
 
  protected:
   virtual ~SharedWorkerHelper();
@@ -65,9 +68,7 @@ class SharedWorkerHelper
  private:
   friend class base::RefCountedThreadSafe<SharedWorkerHelper>;
 
-  content::StoragePartition* storage_partition_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerHelper);
+  raw_ptr<content::StoragePartition> storage_partition_;
 };
 
 // This class is an implementation of SharedWorkerHelper that does
@@ -78,11 +79,14 @@ class CannedSharedWorkerHelper : public SharedWorkerHelper {
   explicit CannedSharedWorkerHelper(
       content::StoragePartition* storage_partition);
 
+  CannedSharedWorkerHelper(const CannedSharedWorkerHelper&) = delete;
+  CannedSharedWorkerHelper& operator=(const CannedSharedWorkerHelper&) = delete;
+
   // Adds Shared Worker to the set of canned Shared Workers that is returned by
   // this helper.
   void AddSharedWorker(const GURL& worker,
                        const std::string& name,
-                       const url::Origin& constructor_origin);
+                       const blink::StorageKey& storage_key);
 
   // Clears the list of canned Shared Workers.
   void Reset();
@@ -101,14 +105,12 @@ class CannedSharedWorkerHelper : public SharedWorkerHelper {
   void StartFetching(FetchCallback callback) override;
   void DeleteSharedWorker(const GURL& worker,
                           const std::string& name,
-                          const url::Origin& constructor_origin) override;
+                          const blink::StorageKey& storage_key) override;
 
  private:
   ~CannedSharedWorkerHelper() override;
 
   std::set<SharedWorkerInfo> pending_shared_worker_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CannedSharedWorkerHelper);
 };
 
 }  // namespace browsing_data

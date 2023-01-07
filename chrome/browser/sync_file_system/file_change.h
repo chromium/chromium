@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/files/file_path.h"
 #include "chrome/browser/sync_file_system/sync_file_type.h"
 #include "storage/browser/file_system/file_system_url.h"
 

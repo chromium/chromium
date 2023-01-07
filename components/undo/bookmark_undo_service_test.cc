@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +25,9 @@ class BookmarkUndoServiceTest : public testing::Test {
  public:
   BookmarkUndoServiceTest();
 
+  BookmarkUndoServiceTest(const BookmarkUndoServiceTest&) = delete;
+  BookmarkUndoServiceTest& operator=(const BookmarkUndoServiceTest&) = delete;
+
   void SetUp() override;
   void TearDown() override;
 
@@ -34,8 +37,6 @@ class BookmarkUndoServiceTest : public testing::Test {
  private:
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<BookmarkUndoService> bookmark_undo_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkUndoServiceTest);
 };
 
 BookmarkUndoServiceTest::BookmarkUndoServiceTest() {}
@@ -44,7 +45,7 @@ void BookmarkUndoServiceTest::SetUp() {
   DCHECK(!bookmark_model_);
   DCHECK(!bookmark_undo_service_);
   bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
-  bookmark_undo_service_.reset(new BookmarkUndoService);
+  bookmark_undo_service_ = std::make_unique<BookmarkUndoService>();
   bookmark_undo_service_->Start(bookmark_model_.get());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_.get());
 }
@@ -122,8 +123,9 @@ TEST_F(BookmarkUndoServiceTest, UndoBookmarkGroupedAction) {
   const BookmarkNode* n1 =
       model->AddURL(model->other_node(), 0, u"foo", GURL("http://www.foo.com"));
   undo_service->undo_manager()->StartGroupingActions();
-  model->SetTitle(n1, u"bar");
-  model->SetURL(n1, GURL("http://www.bar.com"));
+  model->SetTitle(n1, u"bar", bookmarks::metrics::BookmarkEditSource::kOther);
+  model->SetURL(n1, GURL("http://www.bar.com"),
+                bookmarks::metrics::BookmarkEditSource::kOther);
   undo_service->undo_manager()->EndGroupingActions();
 
   EXPECT_EQ(2U, undo_service->undo_manager()->undo_count());
@@ -214,7 +216,8 @@ TEST_F(BookmarkUndoServiceTest, UndoBookmarkRenameDelete) {
 
   const BookmarkNode* f1 = model->AddFolder(model->other_node(), 0, u"folder");
   model->AddURL(f1, 0, u"foo", GURL("http://www.foo.com"));
-  model->SetTitle(f1, u"Renamed");
+  model->SetTitle(f1, u"Renamed",
+                  bookmarks::metrics::BookmarkEditSource::kOther);
   model->Remove(model->other_node()->children().front().get());
 
   // Undo the folder removal and ensure the folder and bookmark were restored.

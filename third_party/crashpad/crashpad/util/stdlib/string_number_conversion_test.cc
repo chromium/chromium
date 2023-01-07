@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 #include <sys/types.h>
 
 #include <array>
+#include <iterator>
 #include <limits>
 #include <type_traits>
 
-#include "base/stl_util.h"
 #include "gtest/gtest.h"
 
 #define STRINGIFY(a) STR(a)
@@ -277,7 +277,7 @@ TEST(StringNumberConversion, StringToInt) {
   //   "decimal digit terminates octal escape sequence".
   int output;
   std::string kEmbeddedNullInput(kEmbeddedNullInputRaw,
-                                 base::size(kEmbeddedNullInputRaw) - 1);
+                                 std::size(kEmbeddedNullInputRaw) - 1);
   EXPECT_FALSE(StringToNumber(kEmbeddedNullInput, &output));
 }
 
@@ -307,7 +307,7 @@ TEST(StringNumberConversion, StringToUnsignedInt) {
   //   "decimal digit terminates octal escape sequence".
   unsigned int output;
   std::string kEmbeddedNullInput(kEmbeddedNullInputRaw,
-                                 base::size(kEmbeddedNullInputRaw) - 1);
+                                 std::size(kEmbeddedNullInputRaw) - 1);
   EXPECT_FALSE(StringToNumber(kEmbeddedNullInput, &output));
 }
 

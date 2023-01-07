@@ -1,13 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/chrome_signin_url_loader_throttle.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/header_modification_delegate.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace signin {
@@ -24,6 +26,9 @@ class URLLoaderThrottle::ThrottleRequestAdapter : public ChromeRequestAdapter {
                              headers_to_remove),
         throttle_(throttle) {}
 
+  ThrottleRequestAdapter(const ThrottleRequestAdapter&) = delete;
+  ThrottleRequestAdapter& operator=(const ThrottleRequestAdapter&) = delete;
+
   ~ThrottleRequestAdapter() override = default;
 
   // ChromeRequestAdapter
@@ -35,13 +40,15 @@ class URLLoaderThrottle::ThrottleRequestAdapter : public ChromeRequestAdapter {
     return throttle_->request_destination_;
   }
 
+  bool IsOutermostMainFrame() const override {
+    return throttle_->is_outermost_main_frame_;
+  }
+
   bool IsFetchLikeAPI() const override {
     return throttle_->request_is_fetch_like_api_;
   }
 
-  GURL GetReferrerOrigin() const override {
-    return throttle_->request_referrer_.GetOrigin();
-  }
+  GURL GetReferrer() const override { return throttle_->request_referrer_; }
 
   void SetDestructionCallback(base::OnceClosure closure) override {
     if (!throttle_->destruction_callback_)
@@ -49,9 +56,7 @@ class URLLoaderThrottle::ThrottleRequestAdapter : public ChromeRequestAdapter {
   }
 
  private:
-  URLLoaderThrottle* const throttle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottleRequestAdapter);
+  const raw_ptr<URLLoaderThrottle> throttle_;
 };
 
 class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
@@ -60,6 +65,9 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
                           net::HttpResponseHeaders* headers)
       : throttle_(throttle), headers_(headers) {}
 
+  ThrottleResponseAdapter(const ThrottleResponseAdapter&) = delete;
+  ThrottleResponseAdapter& operator=(const ThrottleResponseAdapter&) = delete;
+
   ~ThrottleResponseAdapter() override = default;
 
   // ResponseAdapter
@@ -67,14 +75,11 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
     return throttle_->web_contents_getter_;
   }
 
-  bool IsMainFrame() const override {
-    return throttle_->request_destination_ ==
-           network::mojom::RequestDestination::kDocument;
+  bool IsOutermostMainFrame() const override {
+    return throttle_->is_outermost_main_frame_;
   }
 
-  GURL GetOrigin() const override {
-    return throttle_->request_url_.GetOrigin();
-  }
+  GURL GetURL() const override { return throttle_->request_url_; }
 
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_;
@@ -95,10 +100,8 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
   }
 
  private:
-  URLLoaderThrottle* const throttle_;
-  net::HttpResponseHeaders* headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottleResponseAdapter);
+  const raw_ptr<URLLoaderThrottle> throttle_;
+  raw_ptr<net::HttpResponseHeaders> headers_;
 };
 
 // static
@@ -122,6 +125,7 @@ void URLLoaderThrottle::WillStartRequest(network::ResourceRequest* request,
   request_url_ = request->url;
   request_referrer_ = request->referrer;
   request_destination_ = request->destination;
+  is_outermost_main_frame_ = request->is_outermost_main_frame;
   request_is_fetch_like_api_ = request->is_fetch_like_api;
 
   net::HttpRequestHeaders modified_request_headers;

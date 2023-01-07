@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
@@ -33,6 +34,9 @@ class SaveCardBubbleViews : public AutofillBubbleBase,
                       content::WebContents* web_contents,
                       SaveCardBubbleController* controller);
 
+  SaveCardBubbleViews(const SaveCardBubbleViews&) = delete;
+  SaveCardBubbleViews& operator=(const SaveCardBubbleViews&) = delete;
+
   void Show(DisplayReason reason);
 
   // AutofillBubbleBase:
@@ -42,7 +46,6 @@ class SaveCardBubbleViews : public AutofillBubbleBase,
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
-  void OnWidgetClosing(views::Widget* widget) override;
 
   // Returns the footnote view, so it can be searched for clickable views.
   // Exists for testing (specifically, browsertests).
@@ -74,14 +77,9 @@ class SaveCardBubbleViews : public AutofillBubbleBase,
  private:
   friend class SaveCardBubbleViewsFullFormBrowserTest;
 
-  views::View* footnote_view_ = nullptr;
+  raw_ptr<views::View> footnote_view_ = nullptr;
 
-  SaveCardBubbleController* controller_;  // Weak reference.
-
-  PaymentsBubbleClosedReason closed_reason_ =
-      PaymentsBubbleClosedReason::kUnknown;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleViews);
+  raw_ptr<SaveCardBubbleController> controller_;  // Weak reference.
 };
 
 }  // namespace autofill

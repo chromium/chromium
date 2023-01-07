@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 
@@ -21,6 +20,10 @@ class ShellNavigationUIData : public content::NavigationUIData {
  public:
   ShellNavigationUIData();
   explicit ShellNavigationUIData(content::NavigationHandle* navigation_handle);
+
+  ShellNavigationUIData(const ShellNavigationUIData&) = delete;
+  ShellNavigationUIData& operator=(const ShellNavigationUIData&) = delete;
+
   ~ShellNavigationUIData() override;
 
   // Creates a new ChromeNavigationUIData that is a deep copy of the original.
@@ -38,8 +41,6 @@ class ShellNavigationUIData : public content::NavigationUIData {
  private:
   // Manages the lifetime of optional ExtensionNavigationUIData information.
   std::unique_ptr<ExtensionNavigationUIData> extension_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellNavigationUIData);
 };
 
 }  // namespace extensions

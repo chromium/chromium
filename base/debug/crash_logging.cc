@@ -1,11 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/debug/crash_logging.h"
 
-namespace base {
-namespace debug {
+#include "base/strings/string_piece.h"
+#include "build/build_config.h"
+
+namespace base::debug {
 
 namespace {
 
@@ -17,6 +19,24 @@ CrashKeyString* AllocateCrashKeyString(const char name[],
                                        CrashKeySize value_length) {
   if (!g_crash_key_impl)
     return nullptr;
+
+    // TODO(https://crbug.com/1341077): It would be great if the DCHECKs below
+    // could also be enabled on Android, but debugging tryjob failures was a bit
+    // difficult... :-/
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_ANDROID)
+  base::StringPiece name_piece = name;
+
+  // Some `CrashKeyImplementation`s reserve certain characters and disallow
+  // using them in crash key names.  See also https://crbug.com/1341077.
+  DCHECK_EQ(base::StringPiece::npos, name_piece.find(':'))
+      << "; name_piece = " << name_piece;
+
+  // Some `CrashKeyImplementation`s support only short crash key names (e.g. see
+  // the DCHECK in crash_reporter::internal::CrashKeyStringImpl::Set).
+  // Enforcing this restrictions here ensures that crash keys will work for all
+  // `CrashKeyStringImpl`s.
+  DCHECK_LT(name_piece.size(), 40u);
+#endif
 
   return g_crash_key_impl->Allocate(name, value_length);
 }
@@ -33,6 +53,13 @@ void ClearCrashKeyString(CrashKeyString* crash_key) {
     return;
 
   g_crash_key_impl->Clear(crash_key);
+}
+
+void OutputCrashKeysToStream(std::ostream& out) {
+  if (!g_crash_key_impl)
+    return;
+
+  g_crash_key_impl->OutputCrashKeysToStream(out);
 }
 
 ScopedCrashKeyString::ScopedCrashKeyString(CrashKeyString* crash_key,
@@ -53,5 +80,4 @@ void SetCrashKeyImplementation(std::unique_ptr<CrashKeyImplementation> impl) {
   g_crash_key_impl = impl.release();
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

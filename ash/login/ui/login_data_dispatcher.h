@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,10 @@
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/mojom/tray_action.mojom.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+
+class AccountId;
 
 namespace ash {
 
@@ -67,6 +68,17 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
     virtual void OnFingerprintAuthResult(const AccountId& account_id,
                                          bool successful);
 
+    // Called after unlock was aborted after successful auth attempt.
+    virtual void OnResetFingerprintUIState(const AccountId& account_id);
+
+    // Called when smart lock state is changed.
+    virtual void OnSmartLockStateChanged(const AccountId& user,
+                                         SmartLockState state);
+
+    // Called after a smart lock authentication attempt.
+    virtual void OnSmartLockAuthResult(const AccountId& account_id,
+                                       bool successful);
+
     // Called when auth should be enabled for |user|. By default, auth should be
     // enabled.
     virtual void OnAuthEnabledForUser(const AccountId& user);
@@ -93,9 +105,11 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
     // Called when the lock screen note state changes.
     virtual void OnLockScreenNoteStateChanged(mojom::TrayActionState state);
 
-    // Called when an easy unlock icon should be displayed.
+    // TODO(https://crbug.com/1233614): Delete this method in favor of
+    // OnSmartLockStateChanged once SmartLock UI revamp is enabled. Called when
+    // an easy unlock icon should be displayed.
     virtual void OnShowEasyUnlockIcon(const AccountId& user,
-                                      const EasyUnlockIconOptions& icon);
+                                      const EasyUnlockIconInfo& icon_info);
 
     // Called when a warning message should be displayed, or hidden if |message|
     // is empty.
@@ -146,9 +160,18 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
 
     // Called when the state of the OOBE dialog is changed.
     virtual void OnOobeDialogStateChanged(OobeDialogState state);
+
+    // Called when the focused pod is changed on the login screen with the
+    // corresponding `account_id`. In case all the pods lost focus the
+    // `EmptyAccountId` passed as the argument.
+    virtual void OnFocusPod(const AccountId& account_id);
   };
 
   LoginDataDispatcher();
+
+  LoginDataDispatcher(const LoginDataDispatcher&) = delete;
+  LoginDataDispatcher& operator=(const LoginDataDispatcher&) = delete;
+
   ~LoginDataDispatcher() override;
 
   void AddObserver(Observer* observer);
@@ -164,12 +187,16 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
   void SetPinEnabledForUser(const AccountId& user, bool enabled) override;
   void SetChallengeResponseAuthEnabledForUser(const AccountId& user,
                                               bool enabled) override;
-  void SetFingerprintState(const AccountId& account_id,
-                           FingerprintState state) override;
   void SetAvatarForUser(const AccountId& account_id,
                         const UserAvatar& avatar) override;
+  void SetFingerprintState(const AccountId& account_id,
+                           FingerprintState state) override;
   void NotifyFingerprintAuthResult(const AccountId& account_id,
                                    bool successful) override;
+  void ResetFingerprintUIState(const AccountId& account_id) override;
+  void SetSmartLockState(const AccountId& user, SmartLockState state) override;
+  void NotifySmartLockAuthResult(const AccountId& account_id,
+                                 bool successful) override;
   void EnableAuthForUser(const AccountId& account_id) override;
   void DisableAuthForUser(const AccountId& account_id,
                           const AuthDisabledData& auth_disabled_data) override;
@@ -180,8 +207,10 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
                                     bool enabled) override;
   void ForceOnlineSignInForUser(const AccountId& user) override;
   void SetLockScreenNoteState(mojom::TrayActionState state);
+  // TODO(https://crbug.com/1233614): Delete ShowEasyUnlockIcon in favor of
+  // SetSmartLockState once SmartLock UI revamp is enabled.
   void ShowEasyUnlockIcon(const AccountId& user,
-                          const EasyUnlockIconOptions& icon) override;
+                          const EasyUnlockIconInfo& icon_info) override;
   void UpdateWarningMessage(const std::u16string& message) override;
   void SetSystemInfo(bool show,
                      bool enforced,
@@ -205,11 +234,10 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
       DetachableBasePairingStatus pairing_status);
   void HandleFocusLeavingLockScreenApps(bool reverse) override;
   void NotifyOobeDialogState(OobeDialogState state) override;
+  void NotifyFocusPod(const AccountId& account_id) override;
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDataDispatcher);
 };
 
 }  // namespace ash

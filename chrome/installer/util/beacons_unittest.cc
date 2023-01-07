@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/installer/util/beacons.h"
 
 #include <memory>
-#include <tuple>
 
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_timeouts.h"
@@ -140,7 +139,7 @@ TEST_P(BeaconTest, Location) {
   //   Software\Chromium, so it always exists.
 
   // Silence unused variable warnings.
-  ignore_result(wrong_root);
+  std::ignore = wrong_root;
 #endif
 
   // The right key should exist.
@@ -168,9 +167,7 @@ class DefaultBrowserBeaconTest
   void SetUp() override {
     Super::SetUp();
 
-    install_static::InstallConstantIndex mode_index;
-    const char* level;
-    std::tie(mode_index, level) = GetParam();
+    auto [mode_index, level] = GetParam();
 
     system_install_ = (std::string(level) != "user");
 
